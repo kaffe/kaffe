@@ -46,6 +46,9 @@ public class ConverterAlias {
 	alias.put("EBCDIC",		"CP1046");
 	alias.put("UTF-8",		"UTF8");
 	alias.put("KOI8-R",		"KOI8_R");
+	alias.put("EUCJP",              "EUC_JP");
+	alias.put("EUC-JP",             "EUC_JP");
+	alias.put("EUCJIS",             "EUC_JP");
 	/* add more here */
     }
 
