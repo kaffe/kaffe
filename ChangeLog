@@ -1,3 +1,22 @@
+2003-05-30  Dalibor Topic <robilad@yahoo.com>
+
+	* libltdl/acinclude.m4
+ 	Replaced by updated libtool.m4 from top directory.
+
+	* aclocal.m4,
+ 	configure,
+ 	kaffe/scripts/Makefile.in,
+ 	kaffe/scripts/compat/Makefile.in,
+ 	libltdl/aclocal.m4,
+ 	libltdl/configure:
+ 	regenerated.
+
+2003-05-30 Tony Wyatt <wyattaw@optushome.com.au>
+	
+	* libtool.m4:
+ 	Remove parentheses around finish_eval part which
+	broke on amigaos pdksh.
+
 2003-05-29  Dalibor Topic <robilad@yahoo.com>
 
 	* configure.in:
