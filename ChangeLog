@@ -1,3 +1,8 @@
+Mon Jan 11 16:42:57 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in (AWT_LIBS, X_LIBS): replace -R with -rpath
+	* configure, config/stamp-h1.in, include/stamp-h2.in: regen
+
 Mon Jan 11 16:27:06 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/javalib/Makefile.am (EXTRA_DIST): add class_DATA
