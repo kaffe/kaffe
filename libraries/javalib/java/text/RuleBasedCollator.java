@@ -35,13 +35,12 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-
 package java.text;
 
-import java.util.Vector;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Comparator;
+import java.util.Vector;
 
 /* Written using "Java Class Libraries", 2nd edition, plus online
  * API docs for JDK 1.2 from http://www.javasoft.com.
@@ -117,8 +116,8 @@ import java.util.Comparator;
  * anywhere in the previous rule string segment so the rule following the
  * reset rule cannot be inserted.
  * <p>
- * "&lt; a &amp; A @ &lt e &amp; E &lt f&amp; F" - This sequence is equivalent to the following
- * "&lt; a &amp; A &lt E &amp; e &lt f &amp; F".
+ * "&lt; a &amp; A @ &lt; e &amp; E &lt; f&amp; F" - This sequence is equivalent to the following
+ * "&lt; a &amp; A &lt; E &amp; e &lt; f &amp; F".
  * <p>
  * For a description of the various comparison strength types, see the
  * documentation for the <code>Collator</code> class.
@@ -151,7 +150,7 @@ public class RuleBasedCollator extends Collator
    */
   final class CollationElement
   {
-    String char_seq;
+    String key;
     int primary;
     short secondary;
     short tertiary;
@@ -159,10 +158,10 @@ public class RuleBasedCollator extends Collator
     boolean ignore;
     String expansion;
 
-    CollationElement(String char_seq, int primary, short secondary, short tertiary,
+    CollationElement(String key, int primary, short secondary, short tertiary,
 		     short equality, String expansion)
     {
-      this.char_seq = char_seq;
+      this.key = key;
       this.primary = primary;
       this.secondary = secondary;
       this.tertiary = tertiary;
@@ -171,9 +170,9 @@ public class RuleBasedCollator extends Collator
       this.expansion = expansion;
     }
     
-    CollationElement(String char_seq)
+    CollationElement(String key)
     {
-      this.char_seq = char_seq;
+      this.key = key;
       this.ignore = true;
     }
 
@@ -181,8 +180,7 @@ public class RuleBasedCollator extends Collator
     {
       return (primary << 16) + (secondary << 8) + tertiary;
     }
-
-  } // inner class CollationElement
+  }
 
   /**
    * Basic collation instruction (internal format) to build the series of
@@ -211,6 +209,56 @@ public class RuleBasedCollator extends Collator
   }
 
   /**
+   * This the the original rule string.
+   */
+  private String rules;
+
+  /**
+   * This is the table of collation element values
+   */
+  private Object[] ce_table;
+
+  /**
+   * Quick-prefix finder.
+   */
+  HashMap prefix_tree;
+
+  /**
+   * This is the value of the last sequence entered into
+   * <code>ce_table</code>. It is used to compute the
+   * ordering value of unspecified character.
+   */
+  private int last_primary_value;
+
+  /**
+   * This variable is true if accents need to be sorted
+   * in the other direction.
+   */
+  private boolean inverseAccentComparison;
+  
+  /**
+   * This method initializes a new instance of <code>RuleBasedCollator</code>
+   * with the specified collation rules.  Note that an application normally
+   * obtains an instance of <code>RuleBasedCollator</code> by calling the
+   * <code>getInstance</code> method of <code>Collator</code>.  That method
+   * automatically loads the proper set of rules for the desired locale.
+   *
+   * @param rules The collation rule string.
+   *
+   * @exception ParseException If the rule string contains syntax errors.
+   */
+  public RuleBasedCollator(String rules) throws ParseException
+  {
+    if (rules.equals(""))
+      throw new ParseException("empty rule set", 0);
+    
+    this.rules = rules;
+
+    buildCollationVector(parseString(rules));
+    buildPrefixAccess();
+  }
+
+  /**
    * This method returns the number of common characters at the beginning
    * of the string of the two parameters.
    *
@@ -221,14 +269,17 @@ public class RuleBasedCollator extends Collator
    */
   static int findPrefixLength(String prefix, String s)
   {
-    int i;
+    int index;
+    int len = prefix.length();
 
-    for (i = 0; i < prefix.length() && i < s.length(); i++)
+    for (index = 0; index < len && index < s.length(); ++index)
       {
-	if (prefix.charAt(i) != s.charAt(i))
-	  return i;
+	if (prefix.charAt(index) != s.charAt(index))
+	  return index;
       }
-    return i;
+
+
+    return index;
   }
 
   /**
@@ -515,6 +566,16 @@ main_parse_loop:
   }
 
   /**
+   * This method creates a copy of this object.
+   *
+   * @return A copy of this object.
+   */
+  public Object clone()
+  {
+    return super.clone();
+  }
+
+  /**
    * This method completely parses a string 'rules' containing sorting rules.
    *
    * @param rules String containing the rules to be parsed. 
@@ -533,34 +594,6 @@ main_parse_loop:
     
     return v;
   }
-
-  /**
-   * This the the original rule string.
-   */
-  private String rules;
-
-  /**
-   * This is the table of collation element values
-   */
-  private Object[] ce_table;
-
-  /**
-   * Quick-prefix finder.
-   */
-  HashMap prefix_tree;
-
-  /**
-   * This is the value of the last sequence entered into
-   * <code>ce_table</code>. It is used to compute the
-   * ordering value of unspecified character.
-   */
-  private int last_primary_value;
-
-  /**
-   * This variable is true if accents need to be sorted
-   * in the other direction.
-   */
-  private boolean inverseAccentComparison;
 
   /**
    * This method uses the sorting instructions built by {@link #parseString}
@@ -669,101 +702,8 @@ element_loop:
       {
 	CollationElement e = (CollationElement) ce_table[i];
 
-	prefix_tree.put(e.char_seq, e);
+	prefix_tree.put(e.key, e);
       }
-  }
-
-  /**
-   * This method initializes a new instance of <code>RuleBasedCollator</code>
-   * with the specified collation rules.  Note that an application normally
-   * obtains an instance of <code>RuleBasedCollator</code> by calling the
-   * <code>getInstance</code> method of <code>Collator</code>.  That method
-   * automatically loads the proper set of rules for the desired locale.
-   *
-   * @param rules The collation rule string.
-   *
-   * @exception ParseException If the rule string contains syntax errors.
-   */
-  public RuleBasedCollator(String rules) throws ParseException
-  {
-    this.rules = rules;
-
-    if (rules.equals(""))
-      throw new ParseException("Empty rule set", 0);
-
-    buildCollationVector(parseString(rules));
-    buildPrefixAccess();
-  }
-
-  /**
-   * This method returns a <code>String</code> containing the collation rules
-   * for this object.
-   *
-   * @return The collation rules for this object.
-   */
-  public String getRules()
-  {
-    return rules;
-  }
-
-  /**
-   * This method builds a default collation element without invoking
-   * the database created from the rules passed to the constructor.
-   *
-   * @param c Character which needs a collation element.
-   * @return A valid brand new CollationElement instance.
-   */
-  CollationElement getDefaultElement(char c)
-  {
-    int v;
-
-    // Preliminary support for generic accent sorting inversion (I don't know if all
-    // characters in the range should be sorted backward). This is the place
-    // to fix this if needed.
-    if (inverseAccentComparison && (c >= 0x02B9 && c <= 0x0361))
-      v = 0x0361 - ((int)c - 0x02B9);
-    else
-      v = (short)c;
-    return new CollationElement(""+c, last_primary_value + v,
-				(short)0, (short)0, (short) 0, null);
-  }
-
-  /**
-   * This method returns an instance for <code>CollationElementIterator</code>
-   * for the specified <code>String</code> under the collation rules for this
-   * object.
-   *
-   * @param str The <code>String</code> to return the <code>CollationElementIterator</code> instance for.
-   *
-   * @return A <code>CollationElementIterator</code> for the specified <code>String</code>.
-   */
-  public CollationElementIterator getCollationElementIterator(String str)
-  {
-    return new CollationElementIterator(this, str);
-  }  
-
-  /**
-   * This method returns an instance of <code>CollationElementIterator</code>
-   * for the <code>String</code> represented by the specified
-   * <code>CharacterIterator</code>.
-   *
-   * @param ci The <code>CharacterIterator</code> with the desired <code>String</code>.
-   *
-   * @return A <code>CollationElementIterator</code> for the specified <code>String</code>.
-   */
-  public CollationElementIterator getCollationElementIterator(CharacterIterator ci)
-  {
-    StringBuffer sb = new StringBuffer("");
-
-    // Right now we assume that we will read from the beginning of the string.
-    char c = ci.first();
-    while (c != CharacterIterator.DONE) 
-      {
-        sb.append(c);
-        c = ci.next();
-      }
-
-    return getCollationElementIterator(sb.toString());
   }
 
   /**
@@ -772,21 +712,23 @@ element_loop:
    * the second.  The value depends not only on the collation rules in
    * effect, but also the strength and decomposition settings of this object.
    *
-   * @param s1 The first <code>String</code> to compare.
-   * @param s2 A second <code>String</code> to compare to the first.
+   * @param source The first <code>String</code> to compare.
+   * @param target A second <code>String</code> to compare to the first.
    *
-   * @return A negative integer if s1 &lt; s2, a positive integer
-   * if s1 &gt; s2, or 0 if s1 == s2.
+   * @return A negative integer if source &lt; target, a positive integer
+   * if source &gt; target, or 0 if source == target.
    */
-  public int compare(String s1, String s2)
+  public int compare(String source, String target)
   {
-    CollationElementIterator cei1 = getCollationElementIterator(s1);
-    CollationElementIterator cei2 = getCollationElementIterator(s2);
+    CollationElementIterator cs, ct;
+
+    cs = getCollationElementIterator(source);
+    ct = getCollationElementIterator(target);
 
     for(;;)
       {
-        CollationElement ord1block = cei1.nextBlock(); 
-        CollationElement ord2block = cei2.nextBlock(); 
+        CollationElement ord1block = cs.nextBlock(); 
+        CollationElement ord2block = ct.nextBlock(); 
 	int ord1;
 	int ord2;
 
@@ -808,14 +750,14 @@ element_loop:
         if (ord1 == ord2)
 	  {
 	    if (getStrength() == IDENTICAL)
-	      if (!ord1block.char_seq.equals(ord2block.char_seq))
-		return ord1block.char_seq.compareTo(ord2block.char_seq);
+	      if (!ord1block.key.equals(ord2block.key))
+		return ord1block.key.compareTo(ord2block.key);
 	    continue;
 	  }
 
         // Check for primary strength differences
-        int prim1 = cei1.primaryOrder(ord1); 
-        int prim2 = cei2.primaryOrder(ord2); 
+        int prim1 = cs.primaryOrder(ord1); 
+        int prim2 = ct.primaryOrder(ord2); 
 
         if (prim1 < prim2)
           return -1;
@@ -825,8 +767,8 @@ element_loop:
           continue;
 
         // Check for secondary strength differences
-        int sec1 = cei1.secondaryOrder(ord1);
-        int sec2 = cei2.secondaryOrder(ord2);
+        int sec1 = cs.secondaryOrder(ord1);
+        int sec2 = ct.secondaryOrder(ord2);
 
         if (sec1 < sec2)
           return -1;
@@ -836,8 +778,8 @@ element_loop:
           continue;
 
         // Check for tertiary differences
-        int tert1 = cei1.tertiaryOrder(ord1);
-        int tert2 = cei2.tertiaryOrder(ord2);
+        int tert1 = cs.tertiaryOrder(ord1);
+        int tert2 = ct.tertiaryOrder(ord2);
 
         if (tert1 < tert2)
           return -1;
@@ -847,8 +789,86 @@ element_loop:
 	  continue;
 
 	// Apparently JDK does this (at least for my test case).
-	return ord1block.char_seq.compareTo(ord2block.char_seq);    
+	return ord1block.key.compareTo(ord2block.key);    
       }
+  }
+
+  /**
+   * This method tests this object for equality against the specified 
+   * object.  This will be true if and only if the specified object is
+   * another reference to this object.
+   *
+   * @param obj The <code>Object</code> to compare against this object.
+   *
+   * @return <code>true</code> if the specified object is equal to this object,
+   * <code>false</code> otherwise.
+   */
+  public boolean equals(Object obj)
+  {
+    if (obj == this)
+      return true;
+    else
+      return false;
+  }
+
+  /**
+   * This method builds a default collation element without invoking
+   * the database created from the rules passed to the constructor.
+   *
+   * @param c Character which needs a collation element.
+   * @return A valid brand new CollationElement instance.
+   */
+  CollationElement getDefaultElement(char c)
+  {
+    int v;
+
+    // Preliminary support for generic accent sorting inversion (I don't know if all
+    // characters in the range should be sorted backward). This is the place
+    // to fix this if needed.
+    if (inverseAccentComparison && (c >= 0x02B9 && c <= 0x0361))
+      v = 0x0361 - ((int) c - 0x02B9);
+    else
+      v = (short) c;
+    return new CollationElement("" + c, last_primary_value + v,
+				(short) 0, (short) 0, (short) 0, null);
+  }
+
+  /**
+   * This method returns an instance for <code>CollationElementIterator</code>
+   * for the specified <code>String</code> under the collation rules for this
+   * object.
+   *
+   * @param source The <code>String</code> to return the
+   * <code>CollationElementIterator</code> instance for.
+   *
+   * @return A <code>CollationElementIterator</code> for the specified
+   * <code>String</code>.
+   */
+  public CollationElementIterator getCollationElementIterator(String source)
+  {
+    return new CollationElementIterator(this, source);
+  }
+
+  /**
+   * This method returns an instance of <code>CollationElementIterator</code>
+   * for the <code>String</code> represented by the specified
+   * <code>CharacterIterator</code>.
+   *
+   * @param source The <code>CharacterIterator</code> with the desired <code>String</code>.
+   *
+   * @return A <code>CollationElementIterator</code> for the specified <code>String</code>.
+   */
+  public CollationElementIterator getCollationElementIterator(CharacterIterator source)
+  {
+    StringBuffer expand = new StringBuffer("");
+    
+    // Right now we assume that we will read from the beginning of the string.
+    for (char c = source.first();
+	 c != CharacterIterator.DONE;
+	 c = source.next())
+      decomposeCharacter(c, expand);
+
+    return getCollationElementIterator(expand.toString());
   }
 
   /**
@@ -858,13 +878,13 @@ element_loop:
    * provide speed benefits if multiple comparisons are performed, such
    * as during a sort.
    *
-   * @param str The <code>String</code> to create a <code>CollationKey</code> for.
+   * @param source The <code>String</code> to create a <code>CollationKey</code> for.
    *
    * @return A <code>CollationKey</code> for the specified <code>String</code>.
    */
-  public CollationKey getCollationKey(String str)
+  public CollationKey getCollationKey(String source)
   {
-    CollationElementIterator cei = getCollationElementIterator(str);
+    CollationElementIterator cei = getCollationElementIterator(source);
     Vector vect = new Vector(25);
 
     int ord = cei.next();
@@ -894,31 +914,25 @@ element_loop:
 
     for (int i = 0; i < objarr.length; i++)
       {
-        int j = ((Integer)objarr[i]).intValue();
-        key [i * 4] = (byte)((j & 0xFF000000) >> 24);
-        key [i * 4 + 1] = (byte)((j & 0x00FF0000) >> 16);
-        key [i * 4 + 2] = (byte)((j & 0x0000FF00) >> 8);
-        key [i * 4 + 3] = (byte)(j & 0x000000FF);
+        int j = ((Integer) objarr[i]).intValue();
+        key [i * 4] = (byte) ((j & 0xFF000000) >> 24);
+        key [i * 4 + 1] = (byte) ((j & 0x00FF0000) >> 16);
+        key [i * 4 + 2] = (byte) ((j & 0x0000FF00) >> 8);
+        key [i * 4 + 3] = (byte) (j & 0x000000FF);
       }
 
-    return new CollationKey(this, str, key);
+    return new CollationKey(this, source, key);
   }
 
   /**
-   * This method tests this object for equality against the specified 
-   * object.  This will be true if and only if the specified object is
-   * another reference to this object.
+   * This method returns a <code>String</code> containing the collation rules
+   * for this object.
    *
-   * @param obj The <code>Object</code> to compare against this object.
-   *
-   * @return <code>true</code> if the specified object is equal to this object, <code>false</code> otherwise.
+   * @return The collation rules for this object.
    */
-  public boolean equals(Object obj)
+  public String getRules()
   {
-    if (obj == this)
-      return true;
-    else
-      return false;
+    return rules;
   }
 
   /**
@@ -929,15 +943,5 @@ element_loop:
   public int hashCode()
   {
     return System.identityHashCode(this);
-  }
-
-  /**
-   * This method creates a copy of this object.
-   *
-   * @return A copy of this object.
-   */
-  public Object clone()
-  {
-    return super.clone();
   }
 }
