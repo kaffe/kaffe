@@ -1,3 +1,7 @@
+Mon Jan 11 04:35:47 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* ltconfig: updated from libtool
+
 Mon Jan 11 04:17:09 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* acinclude.m4, libltdl/acinclude.m4: updated from libtool.m4

@@ -1495,13 +1495,13 @@ EOF
   $rm conftest*
 
   # Do not use the global_symbol_pipe unless it works.
-  echo "$ac_t$pipe_works" 1>&6
   if test "$pipe_works" = yes; then
     break
   else
     global_symbol_pipe=
   fi
 done
+echo "$ac_t$pipe_works" 1>&6
 
 # Check hardcoding attributes.
 echo $ac_n "checking how to hardcode library paths into programs... $ac_c" 1>&6
