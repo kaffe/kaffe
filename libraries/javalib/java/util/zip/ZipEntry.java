@@ -44,7 +44,7 @@ public class ZipEntry implements ZipConstants {
     }
     name = nm;
     time = -1;
-    crc = 0;
+    crc = -1;
     size = -1;
     method = -1;
     extra = null;

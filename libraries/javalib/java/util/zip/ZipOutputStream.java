@@ -22,7 +22,7 @@ public static final int STORED = 0;
 
 private static final int ZIPVER = 0x000a;
 
-private int method = STORED;
+private int method = DEFLATED;
 private int level = Deflater.DEFAULT_COMPRESSION;
 private byte[] lh = new byte[LOC_RECSZ];
 private byte[] ch = new byte[CEN_RECSZ];
@@ -119,7 +119,7 @@ public void closeEntry() throws IOException
 	if (curr.size != -1 && curr.size != in) {
 		throw new ZipException("uncompress size set incorrectly");
 	}
-	if (curr.crc != 0 && curr.crc != crcval) {
+	if (curr.crc != -1 && curr.crc != crcval) {
 		throw new ZipException("crc set incorrectly");
 	}
 
@@ -201,7 +201,7 @@ public void putNextEntry(ZipEntry ze) throws IOException
 			throw new ZipException("size not set in stored entry");
 		}
 		ze.csize = ze.size;
-		if (ze.crc == 0) {
+		if (ze.crc == -1) {
 			throw new ZipException("crc not set in stored entry");
 		}
 	}

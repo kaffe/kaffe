@@ -1,3 +1,9 @@
+Sat Feb 13 00:59:00 1999  Moses DeJong <dejong@cs.umn.edu>
+
+	* libraries/javalib/java/util/zip/ZipEntry.java,
+	libraries/javalib/java/util/zip/ZipOutputStream.java:
+	fixes for default values.
+
 Sat Feb 13 00:48:35 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* configure.in, configure: check for right gif_lib.h version
