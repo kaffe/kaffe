@@ -52,6 +52,8 @@ extern uintp Kaffe_JNI_estart;
 extern uintp Kaffe_JNI_eend;
 extern void Kaffe_JNIExceptionHandler(void);
 
+extern void printStackTrace(struct Hjava_lang_Throwable*, struct Hjava_lang_Object*, int);
+
 static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, exceptionInfo*);
 
 /*
@@ -392,24 +394,23 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 		exitThread();
 	} 
 
-	/* I don't know what to do here. */
-	fprintf(stderr, "Internal error.\n"
+	/* We don't know what to do here. */
+	fprintf(stderr, "Internal error: caught an unexpected exception.\n"
 		"Please check your CLASSPATH and your installation.\n");
 
 	/*
-	 * Print this so we get more informative mail...
+	 * Display the exception and stack trace to help in debugging.
 	 */
-	fprintf(stderr, "Exception thrown was of type `%s'\n", cname);
 	{
 		Hjava_lang_String *msg;
 		msg = unhand((Hjava_lang_Throwable*)eobj)->message;
 		if (msg) {
-			fprintf(stderr, "Message was `%s'\n",
-				stringJava2C(msg));
+			fprintf(stderr, "%s: %s\n", cname, stringJava2C(msg));
 		} else {
-			fprintf(stderr, "NULL message\n");
+			fprintf(stderr, "%s\n", cname);
 		}
 	}
+	printStackTrace((Hjava_lang_Throwable*)eobj, 0, 1);
 	ABORT();
 }
 
