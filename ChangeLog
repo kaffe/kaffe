@@ -4,6 +4,15 @@
 
 	2003-12-26  Michael Koch  <konqueror@gmx.de>
 
+        * java/beans/beancontext/BeanContextServicesSupport.java
+        (serialVersionUID): New field.
+
+2004-01-03  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2003-12-26  Michael Koch  <konqueror@gmx.de>
+
         * java/awt/image/ImagingOpException.java
         (serialVersionUID): Fixed.
 
