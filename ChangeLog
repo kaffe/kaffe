@@ -1,3 +1,17 @@
+2004-11-09  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/io/ObjectOutputStream.java,
+	libraries/javalib/java/io/eleteFileHelper.java:
+        Resynced with GNU Classpath.
+
+	2004-11-06  Tom Tromey  <tromey@redhat.com>
+
+        * java/io/ObjectOutputStream.java (currentObjectStreamClass): Now
+        package-private.
+        (setBlockDataMode): Likewise.
+        * java/io/DeleteFileHelper.java (DeleteFileHelper): Now
+        package-private.
+
 2004-11-08  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/java/nio/charset/ISO_8859_1.java,
