@@ -69,6 +69,28 @@
 	(MOUSE_WHEEL) new constant.
 	(MOUSE_LAST) increased to make space for MOUSE_WHEEL.
 
+2003-05-17 Tim Stack <stack@cs.utah.edu>
+
+	* config/Makefile.am,
+	include/Makefile.am,
+	kaffe/kaffe/Makefile.am,
+	kaffe/kaffevm/Makefile.am,
+	kaffe/kaffevm/jit3/Makefile.am,
+	kaffe/kaffevm/systems/Makefile.am,
+	kaffe/scripts/Makefile.am,
+	libraries/clib/awt/Makefile.am,
+	test/regression/SerializationCompatibility.java:
+	Fixes for distclean that satisfy distcheck.
+
+2003-05-17 Tim Stack <stack@cs.utah.edu>
+
+	* config/i386/freebsd2/md.h:
+	Remove xprof stuff, they were moved to xprofile-md.h
+
+	* kaffe/xprof/Makefile.am:
+	change AM_CFLAGS back to CFLAGS, we need to override CFLAGS so that
+	-pg isn't set.
+	
 2003-05-15 Tim Stack <stack@cs.utah.edu>
 
 	* configure,
