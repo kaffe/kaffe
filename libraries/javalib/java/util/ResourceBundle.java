@@ -59,8 +59,8 @@ public static ResourceBundle getBundle(String baseName, Locale locale,
 	}
 
 	if (bundle == null) {
-		throw new MissingResourceException("no bundles found: "
-		    + baseName, "ResourceBundle", baseName);
+		throw new MissingResourceException("Can't find bundle for base name "
+		    + baseName + ",locale " + locale, "ResourceBundle", baseName);
 	}
 
 	return (bundle);
