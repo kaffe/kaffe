@@ -2,6 +2,13 @@ Thu May 18 11:16:06 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: fix bug where
 	blockInts was not properly initialized when starting new threads
+	* libraries/javalib/java/io/File.java: fix equals()
+	* libraries/javalib/java/util/TimeZone.java: scan for TZif zone files
+	* libraries/javalib/java/util/SimpleTimeZone.java: don't automatically
+	register ID's into the available ID list
+	* libraries/javalib/kaffe/util/UNIXTimeZone.java: new file
+	* libraries/javalib/Klasses.jar: regen
+	* libraries/javalib/Makefile.{in,am}: add UNIXTimeZone.java
 
 Mon May 15 10:30:38 PDT 2000  Patrick Doyle <doylep@ecf.utoronto.ca>
 
