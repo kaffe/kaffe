@@ -22,7 +22,7 @@ Java_kaffe_io_ByteToCharDefault_convert( JNIEnv* env, jobject _this,
 										  jarray fromBytes, jint fromPos, jint fromLen,
 										  jarray toChars, jint toPos, jint toLen )
 {
-  register  i, j;
+  register jint i, j;
   jboolean  isCopy;
   jbyte     *jb  = (*env)->GetByteArrayElements( env, fromBytes, &isCopy);
   int       blen = (*env)->GetArrayLength( env, fromBytes);
