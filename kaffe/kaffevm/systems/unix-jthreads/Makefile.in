@@ -58,7 +58,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 $(top_srcdir)/m4/esd.m4 \
 	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+mkinstalldirs = $(mkdir_p)
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
@@ -68,7 +68,7 @@ libkthread_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_libkthread_la_OBJECTS = jthread.lo syscalls.lo signal.lo jqueue.lo
 libkthread_la_OBJECTS = $(am_libkthread_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
-depcomp = $(SHELL) $(top_srcdir)/depcomp
+depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/jqueue.Plo ./$(DEPDIR)/jthread.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/signal.Plo ./$(DEPDIR)/syscalls.Plo

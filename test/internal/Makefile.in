@@ -62,7 +62,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 $(top_srcdir)/m4/esd.m4 \
 	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+mkinstalldirs = $(mkdir_p)
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
@@ -80,7 +80,7 @@ am__DEPENDENCIES_3 = ../../kaffe/kaffevm/libkaffevm.la \
 @NEED_LIBXPROF_TRUE@am__DEPENDENCIES_4 =  \
 @NEED_LIBXPROF_TRUE@	../../kaffe/xprof/libkaffexprof.la
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
-depcomp = $(SHELL) $(top_srcdir)/depcomp
+depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/jitBasic.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/jit_stub.Po ./$(DEPDIR)/version.Po

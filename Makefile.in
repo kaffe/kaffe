@@ -50,8 +50,9 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/project.properties.in \
 	$(srcdir)/project.xml.in $(top_srcdir)/configure \
 	$(top_srcdir)/include/kaffe/jtypes.h.in AUTHORS ChangeLog \
-	INSTALL config.guess config.rpath config.sub depcomp \
-	install-sh ltmain.sh missing mkinstalldirs
+	INSTALL config.rpath mkinstalldirs scripts/config.guess \
+	scripts/config.sub scripts/depcomp scripts/install-sh \
+	scripts/ltmain.sh scripts/missing
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 $(top_srcdir)/m4/esd.m4 \
@@ -66,7 +67,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno configure.status.lineno
-mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+mkinstalldirs = $(mkdir_p)
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES = project.xml project.properties
@@ -599,7 +600,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/compat-include $(distdir)/developers $(distdir)/include/kaffe $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/m4 $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/run_time
+	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/compat-include $(distdir)/developers $(distdir)/include/kaffe $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/m4 $(distdir)/scripts $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/run_time
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

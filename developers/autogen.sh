@@ -112,7 +112,12 @@ aclocal -I m4
 autoheader -Wall
 automake --add-missing --copy -Wall || true  # ignore warnings
 autoconf -Wall
-patch < developers/patch-config.sub-superh.diff
+
+(
+ cd scripts
+ patch < ../developers/patch-config.sub-superh.diff
+ cd ..
+)
 
 (
  cd libltdl
@@ -124,5 +129,4 @@ patch < developers/patch-config.sub-superh.diff
  autoconf -Wall
  patch < ../developers/patch-config.sub-superh.diff
 )
-
 
