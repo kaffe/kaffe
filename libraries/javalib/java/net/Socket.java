@@ -1,9 +1,3 @@
-package java.net;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 /*
  * Java core library component.
  *
@@ -13,7 +7,14 @@ import java.io.OutputStream;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-final public class Socket
+
+package java.net;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+public class Socket
 {
 	private static SocketImplFactory factory = null;
 /* This must be a public member, since ServerSocket accept has to access it to setup the socket!
