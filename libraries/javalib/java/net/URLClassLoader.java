@@ -174,6 +174,7 @@ public class URLClassLoader extends SecureClassLoader {
 		// Download JAR file
 		try {
 			file = File.createTempFile("jar", null);
+			file.deleteOnExit();
 			InputStream in = url.openStream();
 			FileOutputStream out = new FileOutputStream(file);
 			byte[] buf = new byte[1024];

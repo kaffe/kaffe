@@ -100,7 +100,8 @@ public static File createTempFile(String prefix, String suffix, File dir)
 	}
 	while (true) {
 		File f = new File(dir, prefix
-		    + Integer.toHexString(random.nextInt(0x100000)) + suffix);
+		    + Integer.toHexString(
+			random.nextInt(0x100000)).toUpperCase() + suffix);
 		if (!f.exists()) {
 			return f;
 		}
@@ -116,10 +117,8 @@ public boolean delete() {
 native private boolean delete0();
 native private boolean rmdir0();
 
+// XXX FIXME implement me .. using Godmar's Application stuff ..
 public void deleteOnExit() {
-	// XXX FIXME implement me .. using Godmar's Application stuff ..
-	throw new kaffe.util.NotImplemented(
-	    File.class.getName() + ".deleteOnExit()");
 }
 
 public int compareTo(Object that) {

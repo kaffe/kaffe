@@ -70,6 +70,7 @@ public class JarURLConnection extends java.net.JarURLConnection {
 
 			// Save it to a temp file
 			underlyingFile = File.createTempFile("jar", null);
+			underlyingFile.deleteOnExit();
 			OutputStream out = new FileOutputStream(underlyingFile);
 			byte[] buf = new byte[1024];
 			for (int r; (r = in.read(buf)) != -1; )
