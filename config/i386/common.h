@@ -79,6 +79,18 @@ typedef int64	profiler_click_t;
 
 #endif
 
+#ifndef KAFFE_PLUS_M_ASM_CONSTRAINT
+# if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 8)
+#  define KAFFE_PLUS_M_ASM_CONSTRAINT "+m"
+# else
+#  define KAFFE_PLUS_M_ASM_CONSTRAINT "=m"
+/* Note: it should really be `+m', to indicate both input and output,
+   but gcc 2.7 didn't accept it yet.  As long as we don't assign to
+   *(A) ``just before'' COMPARE_AND_EXCHANGE, so that gcc could
+   consider the assignment dead, it should be fine.  */
+# endif
+#endif
+
 /*
  * Do an atomic compare and exchange.  The address 'A' is checked against  
  * value 'O' and if they match it's exchanged with value 'N'.
@@ -91,8 +103,8 @@ typedef int64	profiler_click_t;
 			lock \n\
 			cmpxchgl %2,%1 \n\
 			sete %0" \
-		  : "=q" (ret), "=m" (*(A)) \
-		  : "r" (N), "a" (O), "1" (*(A)) : "cc" ); \
+		  : "=q" (ret), KAFFE_PLUS_M_ASM_CONSTRAINT (*(A)) \
+		  : "r" (N), "a" (O) : "cc" ); \
 		(ret); \
 	})
 

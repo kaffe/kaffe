@@ -1,3 +1,9 @@
+1999-11-21  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* config/i386/common.h (COMPARE_AND_EXCHANGE): Rework asm
+	constraints so that it compiles without optimization and with
+	older releases of gcc.
+
 Fri Nov 12 15:35:40 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* config/config-mem.h: precede <mmap.h> include with <sys/types.h>
