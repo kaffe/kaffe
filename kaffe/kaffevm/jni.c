@@ -3674,8 +3674,8 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	}
 	finishInsnSequence(&ncode);
 
-	/* Install it */
-	SET_METHOD_NATIVECODE(xmeth, ncode.code);
+	installMethodCode(xmeth, &ncode);
+
 	xmeth->accflags |= ACC_JNI;
 }
 #endif

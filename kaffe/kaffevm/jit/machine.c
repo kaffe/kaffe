@@ -109,7 +109,7 @@ extern int enable_readonce;
 void	initInsnSequence(int, int, int);
 void	finishInsnSequence(nativeCodeInfo*);
 static void generateInsnSequence(void);
-static void installMethodCode(Method*, nativeCodeInfo*);
+void	installMethodCode(Method*, nativeCodeInfo*);
 static void checkCaughtExceptions(Method* meth, int pc);
 
 void	endBlock(sequence*);
@@ -329,7 +329,6 @@ finishInsnSequence(nativeCodeInfo* code)
 /*
  * Install the compiled code in the method.
  */
-static
 void
 installMethodCode(Method* meth, nativeCodeInfo* code)
 {
