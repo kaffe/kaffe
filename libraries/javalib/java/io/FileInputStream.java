@@ -26,7 +26,15 @@ public FileInputStream(FileDescriptor fdObj) {
 
 public FileInputStream(String name) throws FileNotFoundException {
 	System.getSecurityManager().checkRead(name);		
-	open(name);
+	try {
+		open(name);
+	} catch (IOException e) {
+		/* Note that open may throw an IOException, but the spec says 
+		 * that this constructor throws only FileNotFoundExceptions, 
+		 * hence we must map them.
+		 */
+		throw new FileNotFoundException(name + " " + e.getMessage());
+	}
 }
 
 native public int available() throws IOException;
