@@ -151,7 +151,7 @@ final public static synchronized String readUTF(DataInput in) throws IOException
 				/* Valid 2 byte string '110' */
 				byte data2=in.readByte();
 
-				if ((data2 & 0xC0) == 0xF0) {
+				if ((data2 & 0xC0) == 0x80) {
 					/* Valid 2nd byte */
 					char toAdd=(char )((((int )(data & 0x1F)) << 6) + (data2 & 0x3F));
 					buffer.append(toAdd);
@@ -162,11 +162,11 @@ final public static synchronized String readUTF(DataInput in) throws IOException
 				/* Valid 3 byte string '1110' */
 				byte data2=in.readByte();
 
-				if ((data2 & 0xC0) == 0xF0) {
+				if ((data2 & 0xC0) == 0x80) {
 					/* Valid 2nd byte */
 					byte data3=in.readByte();
 
-					if ((data3 & 0xC0) == 0xF0) {
+					if ((data3 & 0xC0) == 0x80) {
 						/* Valid 3rd byte */
 						char toAdd=(char )((((int )(data & 0x0F)) << 12) + (((int )(data2 & 0x3F)) << 6)+ (data3 & 0x3F));
 						buffer.append(toAdd);
