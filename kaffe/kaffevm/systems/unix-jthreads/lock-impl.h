@@ -20,14 +20,14 @@ struct _jthread;
 typedef struct _jmutex
 {
         struct _jthread *holder;
-        struct _jthread *waiting;
+        struct _KaffeNodeQueue *waiting;
 } jmutex;
 
 /*
  * a condition variable is simply expressed as a list of threads
  * waiting to be notified
  */
-typedef struct _jthread *jcondvar;
+typedef struct _KaffeNodeQueue *jcondvar;
 
 
 /* 

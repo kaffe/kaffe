@@ -245,9 +245,9 @@ with_engine = @with_engine@
 noinst_LTLIBRARIES = libkthread.la
 libkthread_la_LDFLAGS = $(KVMLIBFLAGS)
 libkthread_la_LIBADD = $(NET_LIBS)
-libkthread_la_SOURCES = jthread.c syscalls.c signal.c
+libkthread_la_SOURCES = jthread.c syscalls.c signal.c jqueue.c
 EXTRA_DIST = Makefile.frag config-jthreads.h jsignal.h jthread.h \
-		lock-impl.h thread-impl.h
+		lock-impl.h thread-impl.h jqueue.h
 
 
 AM_CPPFLAGS = \
@@ -266,14 +266,14 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 
 libkthread_la_DEPENDENCIES =
-am_libkthread_la_OBJECTS = jthread.lo syscalls.lo signal.lo
+am_libkthread_la_OBJECTS = jthread.lo syscalls.lo signal.lo jqueue.lo
 libkthread_la_OBJECTS = $(am_libkthread_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/jthread.Plo ./$(DEPDIR)/signal.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/syscalls.Plo
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/jqueue.Plo ./$(DEPDIR)/jthread.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/signal.Plo ./$(DEPDIR)/syscalls.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -311,6 +311,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jqueue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jthread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/signal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/syscalls.Plo@am__quote@

@@ -24,6 +24,10 @@ static {
 	System.loadLibrary("net");
 }
 
+public PlainDatagramSocketImpl() {
+	timeout = -1; // = NOTIMEOUT
+}
+
 protected void create() throws SocketException {
 	datagramSocketCreate();
 }
@@ -115,5 +119,6 @@ protected native void socketSetOption(int option, Object value);
 protected native int socketGetOption(int option);
 private native void datagramSocketCreate();
 private native void datagramSocketClose();
+protected native void setBlocking(boolean block);
 
 }

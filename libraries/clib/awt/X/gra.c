@@ -822,7 +822,6 @@ Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz, Graphics* 
   	img->xImg = XGetImage( X->dsp, img->pix, 0, 0, img->width, img->height,
 						   0xffffffff, ZPixmap);
   }
-
   iw = img->xImg->width;
 
   if ( dx1 > dx0 ) {

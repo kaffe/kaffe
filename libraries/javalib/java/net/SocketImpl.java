@@ -48,6 +48,7 @@ abstract protected int available() throws IOException;
 abstract protected void bind(InetAddress host, int port) throws IOException;
 abstract protected void close() throws IOException;
 abstract protected void connect(InetAddress address, int port) throws IOException;
+abstract protected void connect(SocketAddress address, int timeout) throws IOException;
 abstract protected void connect(String host, int port) throws IOException;
 abstract protected void create(boolean stream) throws IOException;
 abstract protected void listen(int backlog) throws IOException;

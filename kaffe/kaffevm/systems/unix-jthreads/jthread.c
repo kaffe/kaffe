@@ -17,6 +17,9 @@
 #include "jthread.h"
 #include "jsignal.h"
 #include "xprofiler.h"
+#include "jqueue.h"
+/* For NOTIMEOUT */
+#include "jsyscall.h"
 
 
 /* Flags used for threading I/O calls */
@@ -69,17 +72,21 @@ static int talive; 		/* number of threads alive */
 static int tdaemon;		/* number of daemons alive */
 static void (*runOnExit)(void);	/* function to run when all non-daemon die */
 
-static jthread**threadQhead;	/* double-linked run queue */ 
-static jthread**threadQtail;
-static jthread* liveThreads;	/* list of all live threads */
-static jthread* alarmList;	/* list of all threads on alarm queue */
-static jthread* waitForList;	/* list of all threads waiting for a child */
+#define JTHREADQ(q) ((jthread *)(q)->element)
+static KaffePool *queuePool;    /* pool of single-linked node */
+static KaffeNodeQueue**threadQhead;	/* double-linked run queue */ 
+static KaffeNodeQueue**threadQtail;
+static KaffeNodeQueue* liveThreads;	/* list of all live threads */
+static KaffeNodeQueue* alarmList;	/* list of all threads on alarm queue */
+static KaffeNodeQueue* waitForList;	/* list of all threads waiting for a child */
 
 static int maxFd = -1;		/* highest known fd */
 static fd_set readsPending;	/* fds we want to read from */
 static fd_set writesPending;	/* fds we want to write to */
-static jthread* readQ[FD_SETSIZE];	/* threads blocked on read */
-static jthread* writeQ[FD_SETSIZE];	/* threads blocked on write */
+static KaffeNodeQueue* readQ[FD_SETSIZE];	/* threads blocked on read */
+static KaffeNodeQueue* writeQ[FD_SETSIZE];	/* threads blocked on write */
+static jbool blockingFD[FD_SETSIZE];            /* file descriptor which should 
+						   really block */
 static jmutex threadLock;	/* static lock to protect liveThreads etc. */
 
 static int sigPending;		/* flags that says whether a intr is pending */
@@ -152,6 +159,8 @@ static void die(void);
 static int jthreadedFileDescriptor(int fd);
 static void intsDisable(void);
 static void intsRestore(void);
+static void addWaitQThread(jthread *jtid, KaffeNodeQueue **queue);
+static void cleanupWaitQ(jthread *jtid);
 
 /*
  * macros to set and extract stack pointer from jmp_buf
@@ -211,10 +220,10 @@ static void intsRestore(void);
  * Check whether a thread is on a given list
  */
 static int
-isOnList(jthread *list, jthread *t)
+isOnList(KaffeNodeQueue *list, jthread *t)
 {
-	for (; list; list = list->nextQ) {
-		if (list == t) {
+	for (; list != NULL; list = list->next) {
+		if (JTHREADQ(list) == t) {
 			return (1);
 		}
 	}
@@ -230,15 +239,15 @@ internalYield(void)
 {
         int priority = currentJThread->priority; 
    
-        if (threadQhead[priority] &&
+        if (threadQhead[priority] != 0 &&
 		threadQhead[priority] != threadQtail[priority])
         {
                 /* Get the first thread and move it to the end */
-		jthread *firstThread = threadQhead[priority];
-                threadQhead[priority] = firstThread->nextQ;  
-                threadQtail[priority]->nextQ = firstThread;
-                threadQtail[priority] = firstThread;
-                firstThread->nextQ = 0;
+		KaffeNodeQueue *firstThreadNode = threadQhead[priority];
+                threadQhead[priority] = firstThreadNode->next;  
+                threadQtail[priority]->next = firstThreadNode;
+                threadQtail[priority] = firstThreadNode;
+                firstThreadNode->next = 0;
                 needReschedule = true;
         }
 }
@@ -246,7 +255,8 @@ internalYield(void)
 static void
 addToAlarmQ(jthread* jtid, jlong timeout)
 {
-	jthread** tidp;
+	KaffeNodeQueue** tidp;
+	KaffeNodeQueue* node;
 	jlong ct;
 
 	assert(intsDisabled());
@@ -261,16 +271,20 @@ addToAlarmQ(jthread* jtid, jlong timeout)
 		/* Find place in alarm list and insert it */
 		for (tidp = &alarmList;
 		     (*tidp) != 0;
-		     tidp = &(*tidp)->nextalarm) {
-			if ((*tidp)->time > jtid->time) {
+		     tidp = &(*tidp)->next) {
+		        if (JTHREADQ(*tidp)->time > jtid->time)
+			{
 				break;
 			}
 		}
-		jtid->nextalarm = *tidp;
-		*tidp = jtid;
+		node = KaffePoolNewNode(queuePool);
+		node->next = *tidp;
+		JTHREADQ(node) = jtid;
+		*tidp = node;
 		
 		/* If I'm head of alarm list, restart alarm */
-		if (tidp == &alarmList) {
+		if (tidp == &alarmList)
+		{
 			MALARM(timeout);
 		}
 	} else {
@@ -281,17 +295,21 @@ addToAlarmQ(jthread* jtid, jlong timeout)
 static void
 removeFromAlarmQ(jthread* jtid)
 {
-	jthread** tidp;
+	KaffeNodeQueue** tidp;
 
 	assert(intsDisabled());
 
 	jtid->flags &= ~THREAD_FLAGS_ALARM;
 
 	/* Find thread in alarm list and remove it */
-	for (tidp = &alarmList; (*tidp) != 0; tidp = &(*tidp)->nextalarm) {
-		if ((*tidp) == jtid) {
-			(*tidp) = jtid->nextalarm;
-			jtid->nextalarm = 0;
+	for (tidp = &alarmList; (*tidp) != 0; tidp = &(*tidp)->next)
+	{
+		if (JTHREADQ(*tidp) == jtid)
+		{
+			KaffeNodeQueue *node = *tidp;
+		
+			(*tidp) = node->next;
+			KaffePoolReleaseNode(queuePool, node);
 			break;
 		}
 	}
@@ -325,8 +343,10 @@ static inline void
 processSignals(void)
 {
 	int i;
-	for (i = 1; i < NSIG; i++) {
-		if (pendingSig[i]) {
+	for (i = 1; i < NSIG; i++)
+	{
+		if (pendingSig[i])
+		{
 			pendingSig[i] = 0;
 			handleInterrupt(i, 0);
 		}
@@ -552,19 +572,21 @@ alarmException(void)
 
 	/* Wake all the threads which need waking */
 	time = currentTime();
-	while (alarmList != 0 && alarmList->time <= time) {
+	while (alarmList != 0 && JTHREADQ(alarmList)->time <= time) {
+	        KaffeNodeQueue* node = alarmList;
 		/* Restart thread - this will tidy up the alarm and blocked
 		 * queues.
 		 */
-		jtid = alarmList;
-		alarmList = alarmList->nextalarm;
-		jtid->flags |= THREAD_FLAGS_INTERRUPTED;
+		jtid = JTHREADQ(node);
+		alarmList = node->next;
+		KaffePoolReleaseNode(queuePool, node);
+		
 		resumeThread(jtid);
 	}
 
 	/* Restart alarm */
 	if (alarmList != 0) {
-		MALARM(alarmList->time - time);
+		MALARM(JTHREADQ(alarmList)->time - time);
 	}
 }
 
@@ -614,7 +636,6 @@ jthread_dumpthreadinfo(jthread_t tid)
 		tid->status == THREAD_DEAD ? "DEAD" : "UNKNOWN!!!", 
 		printflags(tid->flags));
 	if (tid->blockqueue != NULL) {
-		jthread *t;
 		int i;
 
 		dprintf(" blocked");
@@ -640,6 +661,7 @@ jthread_dumpthreadinfo(jthread_t tid)
 			}
 		}
 
+#if 0
 		dprintf("@%p (%p->", tid->blockqueue,
 					     t = *tid->blockqueue);
 		while (t && t->nextQ) {
@@ -647,6 +669,7 @@ jthread_dumpthreadinfo(jthread_t tid)
 			dprintf("%p->", t);
 		}
 		dprintf("|) ");
+#endif
 	}
 }
 
@@ -703,7 +726,7 @@ handleInterrupt(int sig, SIGNAL_CONTEXT_POINTER(sc))
 static void
 resumeThread(jthread* jtid)
 {
-	jthread** ntid;
+	KaffeNodeQueue** ntid;
 
 DBG(JTHREAD,	dprintf("resumeThread %p\n", jtid);	)
 	intsDisable();
@@ -718,16 +741,27 @@ DBG(JTHREAD,	dprintf("resumeThread %p\n", jtid);	)
 		}
 		/* Remove from lockQ if necessary */
 		if (jtid->blockqueue != 0) {
-			for (ntid = jtid->blockqueue; 
-				*ntid != 0; 
-				ntid = &(*ntid)->nextQ) 
+		  KaffeNodeQueue **queue;
+
+		  for (queue= &jtid->blockqueue;
+		       *queue != 0;
+		       queue = &(*queue)->next)
+		    {
+		      for (ntid = (KaffeNodeQueue **)((*queue)->element); 
+			   *ntid != 0;
+			   ntid = &(*ntid)->next) 
 			{
-				if (*ntid == jtid) {
-					*ntid = jtid->nextQ;
-					break;
-				}
+			  if (JTHREADQ(*ntid) == jtid) {
+			    KaffeNodeQueue *node = *ntid;
+			    
+			    *ntid = node->next;
+			    KaffePoolReleaseNode(queuePool, node);
+			    break;
+			  }
 			}
-			jtid->blockqueue = 0;
+		    }
+		    KaffePoolReleaseList(queuePool, jtid->blockqueue);
+		    jtid->blockqueue = NULL;
 		}
 
 		jtid->status = THREAD_RUNNING;
@@ -737,17 +771,20 @@ DBG(JTHREAD,	dprintf("resumeThread %p\n", jtid);	)
 			/* Need to wait for the suspender to resume them. */
 		}
 		else if (threadQhead[jtid->priority] == 0) {
-			threadQhead[jtid->priority] = jtid;
-			threadQtail[jtid->priority] = jtid;
+			threadQhead[jtid->priority] = KaffePoolNewNode(queuePool);
+			JTHREADQ(threadQhead[jtid->priority]) = jtid;
+			threadQtail[jtid->priority] = threadQhead[jtid->priority];
 			if (jtid->priority > currentJThread->priority) {
 				needReschedule = true;
 			}
 		}
 		else {
-			threadQtail[jtid->priority]->nextQ = jtid;
-			threadQtail[jtid->priority] = jtid;
+		        KaffeNodeQueue *queue = KaffePoolNewNode(queuePool);
+			
+			JTHREADQ(queue) = jtid;
+			threadQtail[jtid->priority]->next = queue;
+			threadQtail[jtid->priority] = queue;
 		}
-		jtid->nextQ = 0;
 	} else {
 DBG(JTHREAD,		dprintf("Re-resuming %p\n", jtid); )
 	}
@@ -755,20 +792,84 @@ DBG(JTHREAD,		dprintf("Re-resuming %p\n", jtid); )
 }
 
 /*
+ * Add a new waiting queue for this thread.
+ * Assert: ints must be disabled to avoid reschedule
+ * while we set up the waiting queues.
+ */
+static void
+addWaitQThread(jthread *jtid, KaffeNodeQueue **queue)
+{
+	KaffeNodeQueue *node;
+
+	assert(intsDisabled()); 
+	assert(queue != NULL);
+	assert(jtid != NULL);
+	
+	/* Insert onto head of lock wait Q */
+	node = KaffePoolNewNode(queuePool);
+	node->next = *queue;
+	JTHREADQ(node) = jtid;
+	*queue = node;
+	
+	/* Add the new queue to the list of registered blocking queues */
+	node = KaffePoolNewNode(queuePool);
+	node->next = jtid->blockqueue;
+	node->element = queue;
+	
+	jtid->blockqueue = node;
+}
+
+static void
+cleanupWaitQ(jthread *jtid)
+{
+	KaffeNodeQueue **ntid;
+	
+	if (jtid->blockqueue != 0) {
+		KaffeNodeQueue **queue;
+		
+		for (queue= &jtid->blockqueue;
+		     *queue != 0;
+		     queue = &(*queue)->next)
+			{
+				KaffeNodeQueue **one_wait_queue = (KaffeNodeQueue **)((*queue)->element);
+				
+				for (ntid = one_wait_queue; 
+				     *ntid != 0;
+				     ntid = &(*ntid)->next) 
+					{
+						KaffeNodeQueue *node = *ntid;
+						
+						if (JTHREADQ(node) == jtid) {
+							*ntid = node->next;
+							KaffePoolReleaseNode(queuePool, node);
+							break;
+						}
+					}
+			}
+		KaffePoolReleaseList(queuePool, jtid->blockqueue);
+		jtid->blockqueue = NULL;
+	}
+}
+
+/*
  * Suspend a thread on a queue.
  * Return true if thread was interrupted.
  */
 static int
-suspendOnQThread(jthread* jtid, jthread** queue, jlong timeout)
+suspendOnQThread(jthread* jtid, KaffeNodeQueue** queue, jlong timeout)
 {
 	int rc = false;
-	jthread** ntid;
-	jthread* last;
+	KaffeNodeQueue** ntid;
+	KaffeNodeQueue* last;
 
 DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%qd) bI %d\n", 
 	jtid, queue, timeout, blockInts); )
 
+	assert(timeout >= 0 || timeout == NOTIMEOUT);
 	assert(intsDisabled()); 
+
+	if (timeout == 0)
+		return false;
 
 	if (jtid->status != THREAD_SUSPENDED) {
 		jtid->status = THREAD_SUSPENDED;
@@ -777,25 +878,26 @@ DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%qd) bI %d\n",
 		last = 0;
 		for (ntid = &threadQhead[jtid->priority]; 
 			*ntid != 0; 
-			ntid = &(*ntid)->nextQ) 
+			ntid = &(*ntid)->next) 
 		{
-			if (*ntid == jtid) {
+			if (JTHREADQ(*ntid) == jtid) {
+			        KaffeNodeQueue *node = (*ntid);
+				
 				/* Remove thread from runq */
-				*ntid = jtid->nextQ;
+				*ntid = node->next;
+				KaffePoolReleaseNode(queuePool, node);
 				if (*ntid == 0) {
 					threadQtail[jtid->priority] = last;
 				}
 
 				/* Insert onto head of lock wait Q */
 				if (queue != 0) {
-					jtid->nextQ = *queue;
-					*queue = jtid;
-					jtid->blockqueue = queue;
+				  addWaitQThread(jtid, queue);
 				}
 
 				/* If I have a timeout, insert into alarmq */
-				if (timeout > NOTIMEOUT) {
-					addToAlarmQ(jtid, timeout);
+				if (timeout != NOTIMEOUT) {
+				  addToAlarmQ(jtid, timeout);
 				}
 
 				/* If I was running, reschedule */
@@ -811,7 +913,7 @@ DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%qd) bI %d\n",
 			last = *ntid;
 		}
 	} else {
-	DBG(JTHREAD,	
+	DBG(JTHREAD,
 		dprintf("Re-suspending %p on %p\n", jtid, *queue); )
 	}
 	return (rc);
@@ -823,8 +925,8 @@ DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%qd) bI %d\n",
 static void 
 killThread(jthread *tid)
 {
-	jthread	**ntid;
-	jthread* last;
+	KaffeNodeQueue **ntid;
+	KaffeNodeQueue* last;
 
 	intsDisable();
 
@@ -846,10 +948,13 @@ DBG(JTHREAD,
 
 			for (ntid = &threadQhead[pri]; 
 				*ntid != 0; 
-				ntid = &(*ntid)->nextQ) 
+				ntid = &(*ntid)->next) 
 			{
-				if (*ntid == tid) {
-					*ntid = tid->nextQ;
+				if (JTHREADQ(*ntid) == tid) {
+				        KaffeNodeQueue *node = (*ntid);
+					
+					*ntid = node->next;
+					KaffePoolReleaseNode(queuePool, node);
 					if (*ntid == 0)
 						threadQtail[pri] = last;	
 					break;
@@ -869,12 +974,17 @@ DBG(JTHREAD,
 		 */
 		/* Remove thread from live list so it can be garbaged */
 		for (ntid = &liveThreads; *ntid != 0; ntid =
-			     &(*ntid)->nextlive) { 
-			if (tid == (*ntid)) {
-				(*ntid) = tid->nextlive;
-				break;
+			     &(*ntid)->next) { 
+			if (tid == JTHREADQ(*ntid)) {
+			  KaffeNodeQueue *node = (*ntid);
+			  
+			  (*ntid) = node->next;
+			  KaffePoolReleaseNode(queuePool, node);
+			  break;
 			}
 		}
+
+		cleanupWaitQ(tid);
 
 		/* Dead Jim - let the GC pick up the remains */
 		tid->status = THREAD_DEAD;
@@ -925,11 +1035,11 @@ DBG(JTHREAD,
 void    
 jthread_destroy(jthread *jtid)
 {
-	jthread *x;
+	KaffeNodeQueue *x;
 
 	if (DBGEXPR(JTHREAD, true, false)) {
-		for (x = liveThreads; x; x = x->nextlive)
-			assert(x != jtid);
+		for (x = liveThreads; x; x = x->next)
+			assert(JTHREADQ(x) != jtid);
 	}
 	deallocator(jtid);
 }
@@ -940,10 +1050,10 @@ jthread_destroy(jthread *jtid)
 void
 jthread_walkLiveThreads(void (*func)(void *jlThread))
 {
-        jthread* tid;
+        KaffeNodeQueue* liveQ;
 
-        for (tid = liveThreads; tid != NULL; tid = tid->nextlive) {
-                func(tid->localData.jlThread);
+        for (liveQ = liveThreads; liveQ != NULL; liveQ = liveQ->next) {
+                func(JTHREADQ(liveQ)->localData.jlThread);
         }
 }
 
@@ -1026,19 +1136,21 @@ jthread_t jthread_from_data(threadData *td, void *suspender)
 
 	intsDisable();
 	{
-		jthread_t curr;
+		KaffeNodeQueue *curr;
+		jthread_t tid;
 		
 		for( curr = liveThreads;
 		     (curr != NULL) && (retval == NULL);
-		     curr = curr->nextlive)
+		     curr = curr->next)
 		{
-			if( &curr->localData == td )
+		        tid = JTHREADQ(curr);
+			if( &tid->localData == td )
 			{
-				if( curr != currentJThread )
+				if( tid != currentJThread )
 				{
-					jthread_suspend(curr, suspender);
+					jthread_suspend(tid, suspender);
 				}
-				retval = curr;
+				retval = tid;
 			}
 		}
 	}
@@ -1104,6 +1216,9 @@ jthread_init(int pre,
 	 */
 	ignoreSignal(SIGHUP);
 
+	KaffeSetDefaultAllocator(_allocator, _deallocator);
+	queuePool = KaffeCreatePool();
+
 #if defined(SIGVTALRM)
 	registerAsyncSignalHandler(SIGVTALRM, interrupt);
 #endif
@@ -1153,8 +1268,17 @@ jthread_init(int pre,
 	onstop = _onstop;
 	ondeadlock = _ondeadlock;
 	destructor1 = _destructor1;
-	threadQhead = allocator((maxpr + 1) * sizeof (jthread *));
-	threadQtail = allocator((maxpr + 1) * sizeof (jthread *));
+	threadQhead = (KaffeNodeQueue **)allocator((maxpr + 1) * sizeof (KaffeNodeQueue *));
+	threadQtail = (KaffeNodeQueue **)allocator((maxpr + 1) * sizeof (KaffeNodeQueue *));
+	for (i=0;i<FD_SETSIZE;i++) {
+	  readQ[i] = writeQ[i] = NULL;
+	  blockingFD[i] = true;
+	}
+	alarmList = NULL;
+	waitForList = NULL;
+
+	for (i=0;i<=maxpr;i++)
+	  threadQhead[i] = threadQtail[i] = NULL;
 
 	/* create the helper pipe for lost wakeup problem */
 	if (pipe(sigPipe) != 0) {
@@ -1183,9 +1307,10 @@ jthread_init(int pre,
         jtid->status = THREAD_SUSPENDED;
         jtid->flags = THREAD_FLAGS_NOSTACKALLOC;
         jtid->func = (void (*)(void*))jthread_init;
-        jtid->nextlive = liveThreads;
+        
+	liveThreads = KaffePoolNewNode(queuePool);
+	JTHREADQ(liveThreads) = jtid;
         jtid->time = 0;
-        liveThreads = jtid;
 
         talive++;
         currentJThread = jtid;
@@ -1251,7 +1376,7 @@ void
 jthread_disable_stop(void)
 {
 	if (currentJThread) {
-DBG(JTHREAD,	dprintf("disable stop for thread  %p\n", currentJThread);	)
+	  //DBG(JTHREAD,	dprintf("disable stop for thread  %p\n", currentJThread);	)
 		intsDisable();
 		currentJThread->flags |= THREAD_FLAGS_DONTSTOP;
 		currentJThread->stopCounter++;
@@ -1271,7 +1396,7 @@ void
 jthread_enable_stop(void)
 {
 	if (currentJThread) {
-DBG(JTHREAD,	dprintf("enable stop for thread  %p\n", currentJThread);	)
+	  //DBG(JTHREAD,	dprintf("enable stop for thread  %p\n", currentJThread);	)
 		intsDisable();
 		if (--currentJThread->stopCounter == 0) {
 			currentJThread->flags &= ~THREAD_FLAGS_DONTSTOP;
@@ -1342,6 +1467,7 @@ jthread *
 jthread_create(unsigned char pri, void (*func)(void *), int daemon,
         void *jlThread, size_t threadStackSize)
 {
+        KaffeNodeQueue *liveQ;
 	jthread *jtid; 
 	void	*oldstack, *newstack;
 #if defined(__ia64__)
@@ -1373,9 +1499,12 @@ jthread_create(unsigned char pri, void (*func)(void *), int daemon,
         jtid->localData.jlThread = jlThread;
         jtid->status = THREAD_SUSPENDED;
         jtid->flags = THREAD_FLAGS_GENERAL;
+	jtid->blockqueue = NULL;
 
-        jtid->nextlive = liveThreads;
-        liveThreads = jtid;
+	liveQ = KaffePoolNewNode(queuePool);
+	liveQ->next = liveThreads;
+	JTHREADQ(liveQ) = jtid;
+	liveThreads = liveQ;
 
         talive++;       
         if ((jtid->daemon = daemon) != 0) {
@@ -1538,8 +1667,9 @@ jthread_alive(jthread *jtid)
 void
 jthread_setpriority(jthread* jtid, int prio)
 {
-	jthread** ntid;
-	jthread* last;
+	KaffeNodeQueue** ntid;
+	KaffeNodeQueue* last;
+	KaffeNodeQueue* node;
 
 	if (jtid->status == THREAD_SUSPENDED) {
 		jtid->priority = (unsigned char)prio;
@@ -1549,13 +1679,15 @@ jthread_setpriority(jthread* jtid, int prio)
 	intsDisable();
 
 	/* Remove from current thread list */
-	last = 0;
+	last = NULL;
+	node = NULL;
 	for (ntid = &threadQhead[jtid->priority]; 
 		*ntid != 0; 
-		ntid = &(*ntid)->nextQ) 
+		ntid = &(*ntid)->next) 
 	{
-		if (*ntid == jtid) {
-			*ntid = jtid->nextQ;
+		if (JTHREADQ(*ntid) == jtid) {
+			node = *ntid;
+			*ntid = node->next;
 			if (*ntid == 0) {
 				threadQtail[jtid->priority] = last;
 			}
@@ -1564,17 +1696,19 @@ jthread_setpriority(jthread* jtid, int prio)
 		last = *ntid;
 	}
 
+	assert(node != NULL);
+
 	/* Insert onto a new one */
 	jtid->priority = (unsigned char)prio;
 	if (threadQhead[prio] == 0) {
-		threadQhead[prio] = jtid;
-		threadQtail[prio] = jtid;
+		threadQhead[prio] = node;
+		threadQtail[prio] = node;
 	}
 	else {
-		threadQtail[prio]->nextQ = jtid;
-		threadQtail[prio] = jtid;
+		threadQtail[prio]->next = node;
+		threadQtail[prio] = node;
 	}
-	jtid->nextQ = 0;
+	node->next = NULL;
 
 	/* If I was rescheduled, or something of greater priority was,
 	 * insist on a reschedule.
@@ -1614,6 +1748,7 @@ void
 jthread_exit(void)
 {
 	jthread* tid;
+	KaffeNodeQueue *liveQ;
 
 DBG(JTHREAD,
 	dprintf("jthread_exit %p\n", currentJThread);		)
@@ -1644,8 +1779,9 @@ DBG(JTHREAD,
 		 */
 		intsDisable();
 
-		for (tid = liveThreads; tid != 0; tid = tid->nextlive) {
-			/* The current thread is still on the live
+		for (liveQ = liveThreads; liveQ != 0; liveQ = liveQ->next) {
+		        tid = JTHREADQ(liveQ);
+		        /* The current thread is still on the live
 			 * list, and we don't want to recursively
 			 * suicide.
 			 */
@@ -1695,9 +1831,9 @@ reschedule(void)
 			if (threadQhead[i] == 0) 
 			    continue;
 
-			if (threadQhead[i] != currentJThread) {
+			if (JTHREADQ(threadQhead[i]) != currentJThread) {
 				lastThread = currentJThread;
-				currentJThread = threadQhead[i];
+				currentJThread = JTHREADQ(threadQhead[i]);
 
 				{
 					struct rusage ru;
@@ -1794,17 +1930,35 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
  *
  */
 
+
+static void
+removeQueueFromBlockQueue(jthread *jtid, KaffeNodeQueue *queue)
+{
+  KaffeNodeQueue **thisQ;
+  
+  for (thisQ = &(jtid->blockqueue); *thisQ != 0; thisQ = &(*thisQ)->next) {
+    KaffeNodeQueue *node = *thisQ;
+    
+    if (*((KaffeNodeQueue **)node->element) == queue) {
+      *thisQ = node->next;
+      KaffePoolReleaseNode(queuePool, node);
+      break;
+    }
+  }
+}
+
 /*
  * resume all threads blocked on a given queue
  */
 static void
-resumeQueue(jthread *queue)
+resumeQueue(KaffeNodeQueue *queue)
 {
-	jthread *tid, *ntid;
+	KaffeNodeQueue *tid;
+	KaffeNodeQueue *ntid;
+	
 	for (tid = queue; tid != 0; tid = ntid) {
-		ntid = tid->nextQ;
-		tid->blockqueue = 0;
-		resumeThread(tid);
+		ntid = tid->next;
+		resumeThread(JTHREADQ(tid));
 	}
 }
 
@@ -2016,12 +2170,15 @@ DBG(JTHREAD,
 void 
 jmutex_initialise(jmutex *lock)
 {
-	lock->holder = lock->waiting = NULL;
+	lock->holder = NULL;
+	lock->waiting = NULL;
 }
 
 void
 jmutex_lock(jmutex *lock)
 {
+DBG(JTHREAD,
+	dprintf("jmutex_lock(%p)\n", lock); )
 	intsDisable();
 	jthread_current()->flags |= THREAD_FLAGS_WAIT_MUTEX;
 	while (lock->holder != NULL)
@@ -2035,14 +2192,18 @@ jmutex_lock(jmutex *lock)
 void
 jmutex_unlock(jmutex *lock)
 {
+DBG(JTHREAD,
+	dprintf("jmutex_unlock(%p)\n", lock); )
 	intsDisable();
 	lock->holder = NULL;
 	if (lock->waiting != 0) {
 		jthread* tid;
-		tid = lock->waiting;
-		lock->waiting = tid->nextQ;
+		KaffeNodeQueue* node = lock->waiting;
+
+		tid = JTHREADQ(node);
+		lock->waiting = node->next;
+		KaffePoolReleaseNode(queuePool, node);
 		assert(tid->status != THREAD_RUNNING);
-		tid->blockqueue = 0;
 		resumeThread(tid);
 	}
 	intsRestore();
@@ -2070,13 +2231,16 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 	intsDisable();
 
 	/* give up mutex */
-	lock->holder = NULL;			
+	lock->holder = NULL;
 	if (lock->waiting != NULL) {
 		jthread* tid;
-		tid = lock->waiting;
-		lock->waiting = tid->nextQ;
+		KaffeNodeQueue* node = lock->waiting;
+
+		tid = JTHREADQ(node);
+		lock->waiting = node->next;
+		KaffePoolReleaseNode(queuePool, node);
+
 		assert(tid->status != THREAD_RUNNING);
-		tid->blockqueue = 0;
 		resumeThread(tid);
 	}
 
@@ -2108,13 +2272,14 @@ jcondvar_signal(jcondvar *cv, jmutex *lock)
 {
 	intsDisable();
 	if (*cv != NULL) {
-		jthread* tid;
+		KaffeNodeQueue* condQ;
 		/* take off condvar queue */
-		tid = *cv;
-		*cv = tid->nextQ;
+		condQ = *cv;
+		*cv = condQ->next;
+
 		/* put on lock queue */
-		tid->nextQ = lock->waiting;
-		lock->waiting = tid;
+		condQ->next = lock->waiting;
+		lock->waiting = condQ;
 	}
 	intsRestore();
 }
@@ -2126,13 +2291,13 @@ jcondvar_broadcast(jcondvar *cv, jmutex *lock)
 	if (*cv != NULL) {
 		/* splice the lists `*cv' and `lock->waiting' */
 
-		jthread** tidp;
+		KaffeNodeQueue** condp;
 		/* advance to last element in cv list */
-		for (tidp = cv; *tidp != 0; tidp = &(*tidp)->nextQ)
+		for (condp = cv; *condp != 0; condp = &(*condp)->next)
 			;
-		(*tidp) = lock->waiting;
-		lock->waiting = *cv;
-		*cv = NULL;
+		(*condp) = lock->waiting;
+		lock->waiting = *condp;
+		*condp = NULL;
 	}
 	intsRestore();
 }
@@ -2343,7 +2508,7 @@ jthreadedOpen(const char* path, int flags, int mode, int *out)
 #define BREAK_IF_LATE(deadline, timeout)		\
 	if (timeout != NOTIMEOUT) {			\
 		if (currentTime() >= deadline) {	\
-			errno = EINTR;			\
+			errno = ETIMEDOUT;		\
 			break;				\
 		}					\
 	}
@@ -2412,6 +2577,10 @@ jthreadedConnect(int fd, struct sockaddr* addr, int len, int timeout)
 			break;
 		} else if (r == -1 && errno == EINPROGRESS) {
 			inProgress = 1;
+			if (!blockingFD[fd]) {
+				intsRestore();
+				return (EWOULDBLOCK);
+			}
 		}
 		IGNORE_EINTR(r)
 		CALL_BLOCK_ON_FILE(fd, TH_CONNECT, timeout)
@@ -2441,6 +2610,10 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 				|| errno == EAGAIN)) {
 			break;	/* success or real error */
 		}
+		if (r == EWOULDBLOCK && !blockingFD[fd]) {
+			intsRestore();
+			return (EWOULDBLOCK);
+		}
 		IGNORE_EINTR(r)
 		CALL_BLOCK_ON_FILE(fd, TH_ACCEPT, timeout)
 		BREAK_IF_LATE(deadline, timeout)
@@ -2460,7 +2633,8 @@ jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *out)
 	/* absolute time at which timeout is reached */
 	jlong deadline = 0;
 
-	assert(timeout >= 0);
+
+	assert(timeout >= 0 || timeout == NOTIMEOUT);
 	intsDisable();
 	SET_DEADLINE(deadline, timeout)
 	for (;;) {
@@ -2472,6 +2646,50 @@ jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *out)
 		IGNORE_EINTR(r)
 		CALL_BLOCK_ON_FILE(fd, TH_READ, timeout)
 		BREAK_IF_LATE(deadline, timeout)
+	}
+	SET_RETURN_OUT(r, out, r)
+	intsRestore();
+	return (r);
+}
+
+/*
+ * Threaded write with timeout
+ */
+int
+jthreadedTimedWrite(int fd, const void* buf, size_t len, int timeout, ssize_t *out)
+{
+	ssize_t r = 1;
+	/* absolute time at which timeout is reached */
+	jlong deadline = 0;
+	const void *ptr = buf;
+
+	assert(timeout >= 0 || timeout == NOTIMEOUT);
+	intsDisable();
+	SET_DEADLINE(deadline, timeout)
+	while (len > 0 && r > 0) {
+		r = write(fd, ptr, len);
+		if (r >= 0) {
+			(char *) ptr += r;
+			len -= r;
+			r = (char *) ptr - (char *) buf;
+			continue;
+		}
+		if (!(errno == EWOULDBLOCK || errno == EINTR 
+				|| errno == EAGAIN)) {
+			break;	/* real error or success */
+		}
+		if (errno == EINTR) {
+			r = 1;
+			continue;
+		}
+		if (blockOnFile(fd, TH_WRITE, timeout)) {
+			/* interrupted by jthread_interrupt() */
+			errno = EINTR;
+			*out = (char *) ptr - (char *) buf;
+			break;
+		}
+		BREAK_IF_LATE(deadline, timeout)
+		r = 1;
 	}
 	SET_RETURN_OUT(r, out, r)
 	intsRestore();
@@ -2517,7 +2735,11 @@ jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *out)
 			break;
 		}
 		/* must be EWOULDBLOCK or EAGAIN */
-
+		if (!blockingFD[fd]) {
+			errno = EWOULDBLOCK;
+			*out = (char *) ptr - (char *) buf;
+			break;
+		}
 		if (blockOnFile(fd, TH_WRITE, NOTIMEOUT)) {
 			/* interrupted by jthread_interrupt() */
 			errno = EINTR;
@@ -2573,7 +2795,7 @@ void
 childDeath(void)
 {
 	if (waitForList) {
-		resumeThread(waitForList);
+		resumeQueue(waitForList);
 	}
 }
 
@@ -2612,7 +2834,10 @@ DBG(JTHREAD,
 			break;
 		}
 		BLOCKED_ON_EXTERNAL(currentJThread);
-		suspendOnQThread(currentJThread, &waitForList, NOTIMEOUT);
+		if (suspendOnQThread(currentJThread, &waitForList, NOTIMEOUT)) {
+			ret = EINTR;
+			break;
+		}
 	}
 	intsRestore();
 	return (ret);
@@ -2772,4 +2997,81 @@ DBG(JTHREAD,
 
 	exit(-1);
 	/* NEVER REACHED */	
+}
+
+int
+jthreadedSelect(int a, fd_set* b, fd_set* c, fd_set* d, 
+		struct timeval* e, int* out)
+{
+	int rc = 0;
+	struct timeval tval;
+	int i;
+	jlong time_milli;
+	int second_time = 0;
+	
+	assert(a < FD_SETSIZE);
+	
+	tval.tv_sec = 0;
+	tval.tv_usec = 0;
+
+	time_milli = e->tv_usec / 1000 + e->tv_sec * 1000;
+
+	intsDisable();
+
+	for (;;) {
+		if ((*out = select(a, b, c, d, &tval)) == -1) {
+			rc = errno;
+			break;
+		}
+		if ((*out == 0 && second_time) || *out != 0)
+			break;
+
+		if (time_milli != 0) {
+			for (i=0;i<a;i++) {
+				if (b && FD_ISSET(i, b))
+					addWaitQThread(currentJThread, &readQ[i]);
+				if (c && FD_ISSET(i, c))
+					addWaitQThread(currentJThread, &writeQ[i]);
+			}
+
+			if (suspendOnQThread(currentJThread, NULL, time_milli)) {
+				rc = EINTR;
+				*out = 0;
+				break;
+			}
+		}
+		second_time = 1;
+	}
+	
+	intsRestore();
+	return (rc);
+}
+
+int jthreadedPipeCreate(int *read_fd, int *write_fd)
+{
+	int r;
+	int pairs[2];
+
+	intsDisable();
+	/* Cygnus WinNT requires this */
+	r = pipe(pairs);
+	if (r == -1) {
+		r = errno;
+	} else {
+		*read_fd = jthreadedFileDescriptor(pairs[0]);
+		*write_fd = jthreadedFileDescriptor(pairs[1]);
+		r = 0;
+	}
+	intsRestore();
+	return (r);
+}
+
+
+void jthread_set_blocking(int fd, jbool blocking)
+{
+	assert(fd < FD_SETSIZE);
+
+	intsDisable();
+	blockingFD[fd] = blocking;
+	intsRestore();
 }

@@ -5,6 +5,81 @@
 	must stop just before the end of the image so GetPixel can still
 	interpolate without error.
 
+	* kaffe/kaffevm/systems/unix-jthreads/jqueue.c,
+	kaffe/kaffevm/systems/unix-jthreads/jqueue.h:
+	Added management of a pool of nodes.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthreads.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthreads.h:
+	(general comment) changed the internal queueing system, thread
+	descriptor does not contain anymore the next elements but are
+	put in an external queue management. This new scheme provides a way
+	to wait on several queue at the same time.
+	(jthreadedSelect) moved from jsyscall.c and implemented using the new
+	queue management.
+	(NOTIMEOUT) changed to VM wide constant, moreover its value is now
+	-1 because we may need 0 for no wait.
+	(blockingFD) added to permit the use of non-blocking fd in a threaded
+	system.
+	(BREAK_IF_LATE) return ETIMEDOUT if we time out (and not EINTR).
+	(alarmException) removed THREAD_FLAGS_INTERRUPTED as alarm does not
+	interrupt a thread.
+	(jthread_set_blocking) new jthread call to specify the blocking state
+	of a file descriptor.
+	
+	* kaffe/kaffevm/systems/unix-jthreads/Makefile.am:
+	(libkthread_la_SOURCES) added jqueue.c
+	(EXTRA_DIST) added jqueue.h
+
+	* kaffe/kaffevm/systems/unix-jthreads/config-jthreads.h:
+	(NOTIMEOUT) changed value from 0 to -1
+	
+	* include/kaffe/jsyscall.h:
+	(macros) Added KPIPECREATE, KPIPEREAD, KPIPEWRITE,
+	KMSYNC and the relevant entry in SystemCallInterface.
+	(NOTIMEOUT) added with value -1
+
+	* kaffe/kaffevm/ksem.h: Fix the format of the timeout when entering
+	in JThreads (0 => NOTIMEOUT).
+
+	* libraries/clib/net/PlainSocketImpl.c
+	(socketConnect, socketRead, socketWrite) throw the right exception
+	when a time out occurs.
+	(socketConnect) new parameter "timeout".
+	(waitForConnection) wait for a non-blocking connect, if the socket is
+	non-blocking returns immediately but updates the value of connecting
+	and connected.
+	(setBlocking) set the blocking state of the socket fd.
+
+	* libraries/javalib/java/net/PlainDatagramSocketImpl.java:
+	(PlainDatagramSocketImpl) initialize timeout to -1
+	(receive) check if a ETIMEDOUT is returned and so throw
+	SocketTimeoutException.
+	
+	* libraries/javalib/java/net/PlainSocketImpl.java:
+	(blocking, connecting) added
+	(PlainSocketImpl) initialize timeout to -1 to take into account
+	NOTIMEOUT.
+	(setOption) take care of the timeout
+	(socketConnect, connect) new parameter timeout.
+
+	* libraries/javalib/java/net/Socket.java:
+	(connect) new overloads of connect to comply with Java 1.4
+	(getLocalSocketAddress) new method in Java 1.4
+
+	* libraries/javalib/java/net/SocketImpl.java:
+	(connect) added new overload of connect to comply with Java 1.4.
+
+	* test/regression/SoTimeout.java: updated to test the right exception
+	throwed when a socket timeout occurs.
+
+	* test/regression/ThreadStop.java: fixed the expected output according
+	to the JDK.
+
+	* kaffe/kaffevm/systems/unix-jthreads/Makefile.in: regenerated
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated
+
 2003-08-04 Kiyo Inaba <inaba@src.ricoh.co.jp>
 	
 	* config/alpha/linux/config.frag,

@@ -10,6 +10,7 @@
 
 package java.net;
 
+import java.lang.IllegalArgumentException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,7 +33,7 @@ public Socket(String host, int port) throws UnknownHostException, IOException {
 public Socket(InetAddress address, int port, InetAddress localAddr, int localPort) throws IOException {
     if (localAddr == null)
         throw new NullPointerException();
-    connect(address, port, true, localAddr, localPort);
+    connect(address, port, true, localAddr, localPort, -1);
 }
     
 public Socket(String host, int port, InetAddress localAddr, int localPort) throws IOException {
@@ -50,11 +51,43 @@ public Socket(String host, int port, boolean stream) throws IOException {
  * @deprecated.
  */
 public Socket(InetAddress address, int port, boolean stream) throws IOException {
-    connect(address, port, stream, null, 0);
+    connect(address, port, stream, null, 0, -1);
+}
+
+/**
+ * @since 1.4
+ */
+public void connect(SocketAddress address) throws IOException {
+    if (address == null)
+	throw new IllegalArgumentException();
+
+    if (address instanceof InetSocketAddress) {
+	InetSocketAddress inetaddress = (InetSocketAddress)address;
+
+	connect(inetaddress.getAddress(), inetaddress.getPort(), true,
+		null, 0, -1);
+    } else
+	throw new IllegalArgumentException();
+}
+
+/**
+ * @since 1.4
+ */
+public void connect(SocketAddress address, int timeout) throws IOException {
+    if (address == null)
+	throw new IllegalArgumentException();
+
+    if (address instanceof InetSocketAddress) {
+	InetSocketAddress inetaddress = (InetSocketAddress)address;
+
+	connect(inetaddress.getAddress(), inetaddress.getPort(), true,
+		null, 0, timeout);
+   } else
+	throw new IllegalArgumentException();
 }
 
 private void connect(InetAddress address, int port, boolean stream,
-                     InetAddress localAddr, int localPort) throws IOException {
+                     InetAddress localAddr, int localPort, int timeout) throws IOException {
     impl = factory.createSocketImpl();
     try {
         impl.create(stream);
@@ -111,6 +144,18 @@ public InetAddress getLocalAddress() {
 		return InetAddress.getByName("0.0.0.0");
 	} catch (UnknownHostException e2) { }
 	return null;
+}
+
+public SocketAddress getLocalSocketAddress() {
+	InetAddress addr;
+
+	try {
+		addr = (InetAddress) impl.getOption(SocketOptions.SO_BINDADDR);
+	} catch (SocketException e) {
+		return null;
+	}
+	
+	return new InetSocketAddress(addr, getPort());
 }
 
 public static synchronized void setSocketImplFactory(SocketImplFactory fac) throws IOException {

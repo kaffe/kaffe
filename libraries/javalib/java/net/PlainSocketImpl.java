@@ -22,11 +22,18 @@ public class PlainSocketImpl
 
 private InputStream in;
 private OutputStream out;
-private int timeout;
+protected int timeout;
 private boolean closed;
+private boolean blocking;
+private boolean connecting;
 
 static {
 	System.loadLibrary("net");
+}
+
+public PlainSocketImpl() {
+        timeout = -1; // As defined in jsyscall.h
+	blocking = true;
 }
 
 protected void accept(SocketImpl s) throws IOException {
@@ -54,7 +61,13 @@ protected void connect(String host, int port) throws IOException {
 }
 
 protected void connect(InetAddress address, int port) throws IOException {
-	socketConnect(address, port);
+	socketConnect(address, port, this.timeout);
+}
+
+protected void connect(SocketAddress address, int timeout) throws IOException {
+        InetSocketAddress iaddr = (InetSocketAddress)address;
+	
+	socketConnect(iaddr.getAddress(), iaddr.getPort(), timeout);
 }
 
 protected void create(boolean stream) throws IOException {
@@ -145,7 +158,12 @@ public void setOption(int option, Object data) throws SocketException {
 		if (timo < 0) {
 			throw new IllegalArgumentException("timeout < 0");
 		}
-		this.timeout = timo;
+		// This is for our infinite timeout, 0 is reserved for
+		// some non-blocking operation.
+		if (timo == 0)
+			this.timeout = -1;
+		else
+			this.timeout = timo;
 		return;
 
 	case SO_BINDADDR:
@@ -205,14 +223,18 @@ protected void write(byte[] buf, int offset, int len) throws IOException {
 
 public native void socketSetOption(int option, Object data) throws SocketException;
 public native int socketGetOption(int option) throws SocketException;
-native private void socketAccept(SocketImpl sock);
-native private int  socketAvailable();
-native private void socketBind(InetAddress addr, int port);
-native private void socketClose();
-native private void socketConnect(InetAddress addr, int port);
-native private void socketCreate(boolean stream);
-native private void socketListen(int count);
-native private int socketRead(byte[] buf, int offset, int len) throws IOException;
-native private void socketWrite(byte[] buf, int offset, int len) throws IOException;
+protected native void socketAccept(SocketImpl sock);
+protected native int  socketAvailable();
+protected native void socketBind(InetAddress addr, int port);
+protected native void socketClose();
+protected native void socketConnect(InetAddress addr, int port, int timeout);
+protected native void socketCreate(boolean stream);
+protected native void socketListen(int count);
+protected native int socketRead(byte[] buf, int offset, int len) throws IOException;
+protected native void socketWrite(byte[] buf, int offset, int len) throws IOException;
+
+// This function are principally for the NIO implementation of sockets.
+protected native void waitForConnection() throws IOException;
+protected native void setBlocking(boolean blocking);
 
 }

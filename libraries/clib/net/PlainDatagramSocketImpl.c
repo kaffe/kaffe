@@ -220,7 +220,7 @@ java_net_PlainDatagramSocketImpl_peek(struct Hjava_net_PlainDatagramSocketImpl* 
 
 	rc = KRECVFROM(unhand(unhand(this)->fd)->fd,
 		0, 0, MSG_PEEK, (struct sockaddr*)&saddr,
-		&alen, 0 /* timeout */, &r);
+		&alen, NOTIMEOUT /* timeout */, &r);
 	if (rc) {
 		SignalError("java.net.SocketException", SYS_ERROR(rc));
 	}
@@ -258,6 +258,9 @@ DBG(NATIVENET,
 	switch( rc )
 	{
 	case 0:
+		break;
+	case ETIMEDOUT:
+		SignalError("java.net.SocketTimeoutException", SYS_ERROR(rc));
 		break;
 	case EINTR:
 		SignalError("java.io.InterruptedIOException", SYS_ERROR(rc));

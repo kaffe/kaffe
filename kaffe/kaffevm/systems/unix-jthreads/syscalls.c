@@ -292,20 +292,6 @@ jthreadedGetHostByAddr(const char *host, int l, int t, struct hostent** out)
 }
 
 static int
-jthreadedSelect(int a, fd_set* b, fd_set* c, fd_set* d, 
-		struct timeval* e, int* out)
-{
-	int rc = 0;
-
-	jthread_spinon(0);
-	if ((*out = select(a, b, c, d, e)) == -1) {
-		rc = errno;
-	}
-	jthread_spinoff(0);
-	return (rc);
-}
-
-static int
 jthreadedMmap(void **memory, size_t *size, int mode, int fd, off_t *offset)
 {
 #if defined(HAVE_MMAP)
@@ -319,7 +305,6 @@ jthreadedMmap(void **memory, size_t *size, int mode, int fd, off_t *offset)
   
 	pages_offset = (*offset)/getpagesize();
 	*offset = pages_offset*getpagesize();
-	fprintf(stderr, "pages_offset=%lu pages_sz=%lu\n", pages_offset, (unsigned long) pages_sz);
 
 	switch (mode) {
 		case KAFFE_MMAP_READ:
@@ -367,6 +352,27 @@ jthreadedMunmap(void *memory, size_t size)
 #endif
 }
 
+static int
+jthreadedMsync(void *memory, size_t size)
+{
+#if defined(HAVE_MMAP)
+	int rc = 0;
+
+	jthread_spinon(0);
+	memory = (void *)(((size_t)memory/getpagesize()) * getpagesize());
+	size += getpagesize();
+	/* TODO: Try not to freeze the entire VM. */
+	if (msync(memory, size, MS_SYNC | MS_INVALIDATE) < 0) {
+		rc = errno;
+	}
+	jthread_spinoff(0);
+
+	return rc;
+#else
+	return (-ENOTSUP);
+#endif
+}
+
 /*
  * The syscall interface as provided by the internal jthread system.
  */
@@ -404,5 +410,9 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         jthreadedWaitpid,
         jthreadedKill,
         jthreadedMmap,
-        jthreadedMunmap
+        jthreadedMunmap,
+        jthreadedMsync,
+	jthreadedPipeCreate,
+        jthreadedTimedRead,
+	jthreadedTimedWrite
 };

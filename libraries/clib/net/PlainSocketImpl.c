@@ -22,6 +22,7 @@
 #include "java_net_SocketOptions.h"
 #include "nets.h"
 #include <jsyscall.h>
+#include <jthread.h>
 #include "../../../kaffe/kaffevm/debug.h"
 #include "../../../kaffe/kaffevm/object.h"
 #include "../../../kaffe/kaffevm/itypes.h"
@@ -142,7 +143,7 @@ java_net_PlainSocketImpl_socketCreate(struct Hjava_net_PlainSocketImpl* this, jb
 void
 java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl* this,
 				       struct Hjava_net_InetAddress* daddr, 
-				       jint dport)
+				       jint dport, jint timeout)
 {
 	int fd;
 	int r;
@@ -163,10 +164,18 @@ java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl* this,
 	addr.sin_addr.s_addr = htonl(unhand(daddr)->address);
 
 	fd = unhand(unhand(this)->fd)->fd;
-	r = KCONNECT(fd, (struct sockaddr*)&addr, sizeof(addr), unhand(this)->timeout);
-	if (r == EINTR || r == ETIMEDOUT) {
+	r = KCONNECT(fd, (struct sockaddr*)&addr, sizeof(addr), timeout);
+	if (r == EINTR) {
 		SignalError("java.io.InterruptedIOException", 
-			    "Connect timed out or was interrupted");
+			    "Connect was interrupted");
+	}
+	if (r == ETIMEDOUT) {
+	        SignalError("java.net.SocketTimeoutException",
+			    "Connect timed out");
+	}
+	if (r == EWOULDBLOCK && unhand(this)->blocking) {
+		unhand(this)->connecting = true;
+		return;
 	}
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
@@ -301,9 +310,13 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 
 	alen = sizeof(addr);
 	rc = KACCEPT(unhand(unhand(this)->fd)->fd, (struct sockaddr*)&addr, &alen, unhand(this)->timeout, &r);
-	if (rc == EINTR || rc == ETIMEDOUT) {
+	if (rc == EINTR) {
 		SignalError("java.io.InterruptedIOException", 
-			    "Accept timed out or was interrupted");
+			    "Accept was interrupted");
+	}
+	if (rc == ETIMEDOUT) {
+	        SignalError("java.net.SocketTimeoutException",
+			    "Accept timed out");
 	}
 	if (rc) {
 		SignalError("java.io.IOException", SYS_ERROR(rc));
@@ -559,7 +572,11 @@ java_net_PlainSocketImpl_socketRead(struct Hjava_net_PlainSocketImpl* this, HArr
         rc = KSOCKREAD(fd, &unhand_array(buf)->body[offset], len, unhand(this)->timeout, &r);
 	if (rc == EINTR || rc == ETIMEDOUT) {
 		SignalError("java.io.InterruptedIOException", 
-			    "Read timed out or was interrupted");
+			    "Read was interrupted");
+	}
+	if (rc == ETIMEDOUT) {
+	        SignalError("java.net.SocketTimeoutException",
+			    "Read timed out");
 	}
         if (rc) {
                 SignalError("java.io.IOException", SYS_ERROR(rc));
@@ -598,4 +615,45 @@ java_net_PlainSocketImpl_socketWrite(struct Hjava_net_PlainSocketImpl* this, HAr
 	} else {
 		SignalError("java.io.IOException", "fd invalid"); 
 	}
+}
+
+void
+java_net_PlainSocketImpl_setBlocking(struct Hjava_net_PlainSocketImpl* this, jbool blocking)
+{
+	if (blocking == unhand(this)->blocking)
+		return;
+	
+	unhand(this)->blocking = true;
+	jthread_set_blocking(unhand(unhand(this)->fd)->fd, blocking);
+}
+
+void
+java_net_PlainSocketImpl_waitForConnection(struct Hjava_net_PlainSocketImpl* this)
+{
+	fd_set w;
+	int fd = unhand(unhand(this)->fd)->fd;
+	int o, r;
+	struct timeval tv;
+	struct timeval *ptv = NULL;
+	
+	if (!unhand(this)->blocking) {
+		if (!unhand(this)->connecting)
+			return;
+		
+		FD_ZERO(&w);
+		FD_SET(fd, &w);
+		tv.tv_sec = 0;
+		tv.tv_usec = 0;
+		ptv = &tv;
+	}
+
+	r = KSELECT(fd+1, NULL, &w, NULL, ptv, &o);
+	if (r == EINTR) {
+		SignalError("java.io.InterruptedIOException", SYS_ERROR(r));
+	}
+	if (r != 0) {
+		SignalError("java.io.IOException", SYS_ERROR(r));
+	}
+	if (o != 0 && FD_ISSET(fd, &w))
+		unhand(this)->connecting = false;
 }

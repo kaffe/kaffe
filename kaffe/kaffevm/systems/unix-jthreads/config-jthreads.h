@@ -122,7 +122,7 @@ typedef int sigset_t;
 
 /* define our own jlong and NOTIMEOUT */
 typedef signed long long	jlong;
-#define NOTIMEOUT	0
+#define NOTIMEOUT	-1
 #define true		1
 #define false		0
 

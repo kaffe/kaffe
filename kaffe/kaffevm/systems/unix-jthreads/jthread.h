@@ -43,7 +43,6 @@
 
 #include <sys/resource.h>
 
-#define  NOTIMEOUT                       0
 #if defined (HAVE_SYS_POLL_H) || defined(HAVE_POLL_H)
 #define USE_POLL	1
 #endif
@@ -67,6 +66,7 @@
 
 #endif  /* !KVER */
 
+#include "jqueue.h"
 #include "lock-impl.h"
 
 /* thread status */
@@ -103,10 +103,7 @@ typedef struct _jthread {
 	jlong				time;
 	jlong				startUsed;
 	jlong				totalUsed;
-	struct _jthread*		nextQ;
-	struct _jthread*		nextlive;
-	struct _jthread*		nextalarm;
-	struct _jthread**		blockqueue;
+        KaffeNodeQueue*                 blockqueue; 
 	unsigned long			flags;
 	void				(*func)(void *);
 	int				daemon;
@@ -380,12 +377,19 @@ int jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 	int timeout, int *);
 int jthreadedRead(int fd, void* buf, size_t len, ssize_t *);
 int jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *);
+int jthreadedTimedWrite(int fd, const void* buf, size_t len, int timeout, ssize_t *);
 int jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *);
 int jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
         struct sockaddr* from, int* fromlen, int timeout, ssize_t *);
 int jthreadedWaitpid(int wpid, int* status, int options, int *);
 int jthreadedForkExec(char **argv, char **arge,
 	int ioes[4], int *, const char *);
+int
+jthreadedSelect(int a, fd_set* b, fd_set* c, fd_set* d, 
+		struct timeval* e, int* out);
+int jthreadedPipeCreate(int *read_fd, int *write_fd);
+
+void jthread_set_blocking(int fd, jbool blocking);
 
 /* restore an fd, i.e., put it in blocking state without async I/O */
 #define JTHREAD_RESTORE_FD

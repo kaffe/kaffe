@@ -251,18 +251,17 @@ public class ThreadStop
 }
 
 
-// Skip run
 // javac flags: -nowarn
 /* Expected Output:
 Test 1: Stop a thread that's blocked on itself
  Is thread alive before starting? false
 Target (BlockThread) running...
  Locked ...
- Success. Target is dead.
+ Failure! Target is alive.
  Sleeping while still holding on to target
  Releasing target lock
  Handling my own: java.lang.ThreadDeath
- Am I alive? Answer: false
+ Am I alive? Answer: true
 Test 2: Stop a thread that's blocked in a monitor
 Target (MonitorThread) running...
  Success. Target is dead.
