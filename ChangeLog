@@ -1,3 +1,8 @@
+Mon Jun 28 12:36:21 PDT 1999  Edouard Parmelan <Edouard.Parmelan@quadratec.fr>
+
+	* config/i386/jit-i386.def, config/i386/jit-icode.h: fix i386
+	problem with -0.0 (PR #122).
+
 Mon Jun 28 10:26:59 PDT 1999  YAMAGUCHI Yuji <yamag@distribution.co.jp>
 
 	* libraries/javalib/java/text/SimpleDateFormat.java: fix bug
