@@ -115,6 +115,10 @@ public void print(double x) {
 public void print(char x[]) {
 	for (int k = 0; k < x.length; k++)
 		write((int) x[k]);	// this is our default char encoding
+	// technically not to spec, but it appears to be what Sun does
+	if (autoFlush) {
+		flush();
+	}
 }
 
 public void print(String x) {
