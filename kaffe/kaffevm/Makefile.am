@@ -154,9 +154,9 @@ noinst_HEADERS = \
 	../../binreloc/prefix.h
 
 md.c: stamp-h01
-	@if test ! -f $@; then rm -f stamp-h02; $(MAKE) stamp-h02; \
+	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
 	else :; fi
-stamp-h02: $(top_builddir)/config.status
+stamp-h01: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_MD_C) md.c $@
 
 CLEANFILES = so_locations

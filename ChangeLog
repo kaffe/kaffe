@@ -1,3 +1,10 @@
+2004-07-13  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/Makefile.am: Renamed all occurrences of stamp-h02
+	in stamp-h01.
+
+	* kaffe/kaffevm/Makefile.in: Regenerated.
+
 2004-07-12  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* configure.ac: Added a point to chose different
