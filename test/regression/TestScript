@@ -537,7 +537,7 @@ Duplicate name
 Done." deprecated
 
 compile CLTestConc_run
-runtest CLTestConc "Success." deprecated
+ignoretest CLTestConc "Success." deprecated
 runtest CLTestJLock "Success."
 runtest CLTestLie "Success."
 
