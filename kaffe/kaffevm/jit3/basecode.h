@@ -119,7 +119,7 @@ void _slot_slot_const(SlotInfo*, SlotInfo*, jword, ifunc, int);
 		void func(sequence*);					\
 		_slot_slot_fconst((dst), (src), (src2), (func), (t));	\
 	}
-void _slot_slot_fconst(SlotInfo*, SlotInfo*, double, ifunc, int);
+void _slot_slot_fconst(SlotInfo*, SlotInfo*, float, ifunc, int);
 
 #define	slot_slot_slot(dst, src, src2, func, t)				\
 	{								\

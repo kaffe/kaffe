@@ -1,3 +1,18 @@
+2003-07-01  Timothy S. Stack <stack@cs.utah.edu>
+
+	* configure.in:
+	Autoheader doesn't understand --localdir anymore.
+
+	* kaffe/kaffevm/jit3/basecode.c,
+	kaffe/kaffevm/jit3/basecode.h,
+	kaffe/kaffevm/jit3/icode.c,
+	kaffe/kaffevm/jit3/registers.h:
+	Load/Store float constants as floats and not doubles, otherwise
+	the jitted code will read floats from the constant pool that were
+	stored as doubles.
+
+	Reported by: Gerlando Falauto <iurly@writeme.com>
+	
 2003-06-30  Dalibor Topic <robilad@yahoo.com>
 
 	* configure.in: 

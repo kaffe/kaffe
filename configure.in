@@ -7,7 +7,7 @@ AC_PREFIX_DEFAULT(/usr/local/kaffe)
 AM_MAINTAINER_MODE
 
 dnl needed for autoheader to find acconfig.h
-AUTOHEADER="$AUTOHEADER --localdir config"
+AUTOHEADER="$AUTOHEADER --include=config"
 
 dnl abssrcdir is the absolute path to the source base (regardless of where
 dnl you are building it)

@@ -166,12 +166,12 @@ _slot_slot_const(SlotInfo* dst, SlotInfo* s1, jword s2, ifunc f, int type)
 }
 
 void
-_slot_slot_fconst(SlotInfo* dst, SlotInfo* s1, double s2, ifunc f, int type)
+_slot_slot_fconst(SlotInfo* dst, SlotInfo* s1, float s2, ifunc f, int type)
 {
 	sequence* seq = nextSeq();
 
 	ASSIGNSLOT_R(seq, 1, s1);
-	seq->u[2].value.d = s2;
+	seq->u[2].value.f = s2;
 	ASSIGNSLOT_W(seq, 0, dst);
 
 	SEQ_TYPE(type);

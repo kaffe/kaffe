@@ -183,7 +183,7 @@ void	preloadRegister(SlotData*, int, int);
 #define const_long(I)		s->u[I].value.l
 #define const_label(I)		s->u[I].labconst
 #define const_method(I)		s->u[I].methconst
-#define	const_float(I)		s->u[I].value.d
+#define	const_float(I)		s->u[I].value.f
 #define	const_double(I)		s->u[I].value.d
 
 /* Reserve a register */

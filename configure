@@ -1948,7 +1948,7 @@ fi
 
 
 
-AUTOHEADER="$AUTOHEADER --localdir config"
+AUTOHEADER="$AUTOHEADER --include=config"
 
 case x$srcdir in
 x/*)
