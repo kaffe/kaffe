@@ -612,9 +612,11 @@ jthreadedForkExec(char **argv, char **arge, int ioes[4], int *outpid)
 
 	case -1:
 		/* Error */
+		err = errno;
 		/* Close all pipe fds */
 		close_fds(fds, 8);
-		return (errno);		/* XXX unprotected! */
+		sigprocmask(SIG_UNBLOCK, &nsig, 0);
+		return (err);
 
 	default:
 		/* Parent */

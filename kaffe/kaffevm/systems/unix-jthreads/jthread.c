@@ -1015,6 +1015,7 @@ jthread_init(int pre,
 	 * mode.  So by default, when debugging, we want stdio be synchronous.
 	 * To override this, give the ASYNCSTDIO flag.
 	 */
+#ifndef _HURD_ASYNC_QUICKFIX_
 	if (DBGEXPR(ANY, DBGEXPR(ASYNCSTDIO, true, false), true)) {
 		for (i = 0; i < 3; i++) {
 			if (i != jthreadedFileDescriptor(i)) {
@@ -1022,6 +1023,7 @@ jthread_init(int pre,
 			}
 		}
 	}
+#endif
 
 	/*
 	 * On some systems, it is essential that we put the fds back
@@ -2497,9 +2499,11 @@ DBG(JTHREAD,
 
 	case -1:
 		/* Error */
+		err = errno;
 		/* Close all pipe fds */
 		close_fds(fds, 8);
-		return (errno);		/* XXX unprotected! */
+		sigprocmask(SIG_UNBLOCK, &nsig, 0);
+		return (err);
 
 	default:
 		/* Parent */
