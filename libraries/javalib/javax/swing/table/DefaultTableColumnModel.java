@@ -298,7 +298,40 @@ public class DefaultTableColumnModel
    */
   public int[] getSelectedColumns()
   {
-    return null; // TODO
+    // FIXME: Implementation of this method was taken from private method 
+    // JTable.getSelections(), which is used in various places in JTable
+    // including selected row calculations and cannot be simply removed.
+    // This design should be improved to illuminate duplication of code.
+    
+    ListSelectionModel lsm = this.selectionModel;    
+    int sz = getSelectedColumnCount();
+    int [] ret = new int[sz];
+
+    int lo = lsm.getMinSelectionIndex();
+    int hi = lsm.getMaxSelectionIndex();
+    int j = 0;
+    java.util.ArrayList ls = new java.util.ArrayList();
+    if (lo != -1 && hi != -1)
+      {
+        switch (lsm.getSelectionMode())
+          {
+          case ListSelectionModel.SINGLE_SELECTION:
+            ret[0] = lo;
+            break;      
+      
+          case ListSelectionModel.SINGLE_INTERVAL_SELECTION:            
+            for (int i = lo; i <= hi; ++i)
+              ret[j++] = i;
+            break;
+            
+          case ListSelectionModel.MULTIPLE_INTERVAL_SELECTION:        
+            for (int i = lo; i <= hi; ++i)
+              if (lsm.isSelectedIndex(i))        
+                ret[j++] = i;
+            break;
+          }
+      }
+    return ret;
   }
 
   /**
@@ -307,7 +340,37 @@ public class DefaultTableColumnModel
    */
   public int getSelectedColumnCount()
   {
-    return 0; // TODO
+    // FIXME: Implementation of this method was taken from private method 
+    // JTable.countSelections(), which is used in various places in JTable
+    // including selected row calculations and cannot be simply removed.
+    // This design should be improved to illuminate duplication of code.
+   
+    ListSelectionModel lsm = this.selectionModel;
+    int lo = lsm.getMinSelectionIndex();
+    int hi = lsm.getMaxSelectionIndex();
+    int sum = 0;
+    
+    if (lo != -1 && hi != -1)
+      {
+        switch (lsm.getSelectionMode())
+          {
+          case ListSelectionModel.SINGLE_SELECTION:
+            sum = 1;
+            break;
+            
+          case ListSelectionModel.SINGLE_INTERVAL_SELECTION:
+            sum = hi - lo + 1;
+            break;
+            
+          case ListSelectionModel.MULTIPLE_INTERVAL_SELECTION:        
+            for (int i = lo; i <= hi; ++i)
+              if (lsm.isSelectedIndex(i))        
+                ++sum;
+            break;
+          }
+      }
+     
+     return sum;
   }
 
   /**

@@ -42,6 +42,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.awt.Point;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -571,6 +572,58 @@ public class JTable extends JComponent
     repaint();
   }
 
+ /**
+   * Returns index of the column that contains specified point 
+   * or -1 if this table doesn't contain this point.
+   *
+   * @param point point to identify the column
+   * @return index of the column that contains specified point or 
+   * -1 if this table doesn't contain this point.
+   */
+  public int columnAtPoint(Point point)
+  {
+    int x0 = getLocation().x;
+    int ncols = getColumnCount();
+    Dimension gap = getIntercellSpacing();
+    TableColumnModel cols = getColumnModel();
+    int x = point.x;
+    
+    for (int i = 0; i < ncols; ++i)
+      {
+        int width = cols.getColumn(i).getWidth() + (gap == null ? 0 : gap.width);
+        if (0 <= x && x < width)
+          return i;
+        x -= width;  
+      }
+    
+    return -1;
+  }
+
+  /**
+   * Returns index of the row that contains specified point or 
+   * -1 if this table doesn't contain this point.
+   *
+   * @param point point to identify the row
+   * @return index of the row that contains specified point or 
+   * -1 if this table doesn't contain this point.
+   */
+  public int rowAtPoint(Point point)
+  {
+    int y0 = getLocation().y;
+    int nrows = getRowCount();
+    Dimension gap = getIntercellSpacing();
+    int height = getRowHeight() + (gap == null ? 0 : gap.height);
+    int y = point.y;
+    
+    for (int i = 0; i < nrows; ++i)
+      {
+        if (0 <= y && y < height)
+          return i;
+        y -= height;
+      }
+      
+    return -1;
+  }
 
   /** 
    * Calculate the visible rectangle for a particular row and column. The
@@ -921,11 +974,11 @@ public class JTable extends JComponent
             break;
             
           case ListSelectionModel.SINGLE_INTERVAL_SELECTION:
-            sum = hi - lo;
+            sum = hi - lo + 1;
             break;
             
           case ListSelectionModel.MULTIPLE_INTERVAL_SELECTION:        
-            for (int i = lo; i < hi; ++i)
+            for (int i = lo; i <= hi; ++i)
               if (lsm.isSelectedIndex(i))        
                 ++sum;
             break;
@@ -952,12 +1005,12 @@ public class JTable extends JComponent
             break;      
       
           case ListSelectionModel.SINGLE_INTERVAL_SELECTION:            
-            for (int i = lo; i < hi; ++i)
+            for (int i = lo; i <= hi; ++i)
               ret[j++] = i;
             break;
             
           case ListSelectionModel.MULTIPLE_INTERVAL_SELECTION:        
-            for (int i = lo; i < hi; ++i)
+            for (int i = lo; i <= hi; ++i)
               if (lsm.isSelectedIndex(i))        
                 ret[j++] = i;
             break;
@@ -1328,13 +1381,16 @@ public class JTable extends JComponent
 
   /**
    * Set the value of the {@link #selectionMode} property by
-   * delegation to the {@link #selectionModel} field.
+   * delegation to the {@link #selectionModel} field. The same selection
+   * mode is set for row and column selection models.
    *
    * @param s The new value of the property
    */ 
   public void setSelectionMode(int s)
-  {
-    selectionModel.setSelectionMode(s);
+  { 
+    selectionModel.setSelectionMode(s);    
+    columnModel.getSelectionModel().setSelectionMode(s);
+    
     repaint();
   }
 

@@ -1,5 +1,71 @@
 2005-01-08  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+	
+	2005-01-07  Olga Rodimina  <rodimina@redhat.com>
+
+	* javax/swing/JTable.java
+	(columnAtPoint): New Method. Implemented.
+	(rowAtPoint): Likewise.
+	(countSelections): Fixed few small count errors.
+	(getSelections): Likewise.
+	(setSelectionMode): Set selection mode for column
+	selection model in addition to row selection model.
+	* javax/swing/plaf/basic/BasicTableUI.java:
+	(getRowForPoint): Removed. Replaced by
+	JTable.rowAtPoint().
+	(getColForPoint): Removed. Replaced by
+	JTable.columnAtPoint().
+	(updateSelection): Updated to call JTable.columnAtPoint
+	and JTable.rowAtPoint.
+	* javax/swing/table/DefaultTableColumnModel.java:
+	(getSelectedColumns): Implemented.
+	(getSelectedColumnCount): Implemented.
+
+	2005-01-07  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/table/DefaultTableModel.java
+	(DefaultTableModel()): Added Javadocs.
+	(DefaultTableModel(int, int)): Fixed implementation.
+	(DefaultTableModel(Vector, int)): Throw IllegalArgumentException
+	for negative rowCount.
+	(DefaultTableModel(Object[], int)): Added Javadocs.
+	(DefaultTableModel(Vector, Vector)): Likewise.
+	(DefaultTableModel(Object[][], Object[])): Likewise.
+	(getDataVector): Likewise.
+	(setDataVector(Vector, Vector)): Likewise.
+	(setDataVector(Object[][], Object[])): Likewise.
+	(newDataAvailable): Likewise.
+	(newRowsAdded): Likewise.
+	(rowsRemoved): Likewise.
+	(setColumnIdentifiers(Vector)): Allow for null argument.
+	(setColumnIdentifiers(Object[])): Added Javadocs.
+	(setNumRows): Likewise.
+	(setRowCount): Adds new rows if necessary, and sends more specific
+	TableModelEvent.
+	(setColumnCount): Allow for null columnIdentifiers.
+	(addColumn(Object)): Added Javadocs.
+	(addColumn(Object, Vector)): Handle null columnData.
+	(addColumn(Object, Object[])): Handle columnData with more or less
+	entries than rows in the table.
+	(addRow(Vector)): Fire appropriate event.
+	(addRow(Object[])): Added Javadocs.
+	(insertRow(int, Vector)): Fire appropriate event.
+	(insertRow(int, Object[])): Added Javadocs.
+	(moveRow): Reimplemented.
+	(removeRow(int)): Fire appropriate event.
+	(getColumnCount): Allow for null columnIdentifiers.
+	(getColumnName): Now returns empty string when column index is too
+	large.
+	(isCellEditable): Added Javadocs.
+	(getValueAt): Likewise.
+	(setValueAt): Fire more specific event.
+	(convertToVector): Added Javadocs.
+	* javax/swing/table/TableModel.java
+	Added Javadocs.
+	
+2005-01-08  Dalibor Topic  <robilad@kaffe.org>
+
 	* test/jni/Makefile.am (jniReflect_LDADD, jniExecClass_LDADD): 
 	Added missing libraries.
 
