@@ -1,6 +1,21 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/verifier/verify-type.c
+	(TFLOAT): Made static. 
+	(getTFLOAT) Added.
+
+	* kaffe/kaffevm/verifier/verify-type.h: 
+	(TFLOAT) Removed prototype.
+	(getTFLOAT) Added prototype.
+
+	* kaffe/kaffevm/verifier/verify.c,
+	kaffe/kaffevm/verifier/verify-debug.c,
+	kaffe/kaffevm/verifier/verify-block.c:
+	Replaced use of TFLOAT by getTFLOAT.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/verifier/verify-type.c
 	(TDOUBLE): Made static. 
 	(getTDOUBLE) Added.
 
@@ -9,6 +24,7 @@
 	(getTDOUBLE) Added prototype.
 
 	* kaffe/kaffevm/verifier/verify.c,
+	kaffe/kaffevm/verifier/verify-debug.c,
 	kaffe/kaffevm/verifier/verify-block.c:
 	Replaced use of TDOUBLE by getTDOUBLE.
 	

@@ -38,7 +38,12 @@ static Type  verify_INT;
 Type* TINT = &verify_INT;
        
 static Type  verify_FLOAT;
-Type* TFLOAT = &verify_FLOAT;
+static Type* TFLOAT = &verify_FLOAT;
+
+Type* getTFLOAT(void)
+{
+  return TFLOAT;
+}
        
 static Type  verify_LONG;
 Type* TLONG = &verify_LONG;

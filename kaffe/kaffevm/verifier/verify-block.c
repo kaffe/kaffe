@@ -503,7 +503,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case FCONST_0:
 		case FCONST_1:
 		case FCONST_2:
-			OPSTACK_PUSH(TFLOAT);
+			OPSTACK_PUSH(getTFLOAT());
 			break;
 			
 		case LCONST_0:
@@ -526,7 +526,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			tag = CONST_TAG(idx, pool);
 			switch(tag) {
 			case CONSTANT_Integer: OPSTACK_PUSH(TINT);    break;
-			case CONSTANT_Float:   OPSTACK_PUSH(TFLOAT);  break;
+			case CONSTANT_Float:   OPSTACK_PUSH(getTFLOAT());  break;
 			case CONSTANT_ResolvedString:
 			case CONSTANT_String:
 			        /* we do this because we might be loading a class before
@@ -635,8 +635,8 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case FLOAD:
 			GET_CONST_INDEX;
 		FLOAD_common:
-			ENSURE_LOCAL_TYPE(idx, TFLOAT);
-			OPSTACK_PUSH(TFLOAT);
+			ENSURE_LOCAL_TYPE(idx, getTFLOAT());
+			OPSTACK_PUSH(getTFLOAT());
 			break;
 			
 			
@@ -648,8 +648,8 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case FSTORE:
 			GET_CONST_INDEX;
 		FSTORE_common:
-			OPSTACK_POP_T(TFLOAT);
-			block->locals[idx] = *TFLOAT;
+			OPSTACK_POP_T(getTFLOAT());
+			block->locals[idx] = *getTFLOAT();
 			break;
 			
 			
@@ -782,7 +782,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			break;
 			
 		case IALOAD: ARRAY_LOAD(TINT,   getTINTARR());   break;
-		case FALOAD: ARRAY_LOAD(TFLOAT, getTFLOATARR()); break;
+		case FALOAD: ARRAY_LOAD(getTFLOAT(), getTFLOATARR()); break;
 		case CALOAD: ARRAY_LOAD(TINT,   getTCHARARR());  break;
 		case SALOAD: ARRAY_LOAD(TINT,   getTSHORTARR()); break;
 			
@@ -867,7 +867,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 			
 		case IASTORE: ARRAY_STORE(TINT,   getTINTARR());   break;
-		case FASTORE: ARRAY_STORE(TFLOAT, getTFLOATARR()); break;
+		case FASTORE: ARRAY_STORE(getTFLOAT(), getTFLOATARR()); break;
 		case CASTORE: ARRAY_STORE(TINT,   getTCHARARR());  break;
 		case SASTORE: ARRAY_STORE(TINT,   getTSHORTARR()); break;
 			
@@ -921,10 +921,10 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 			
 		case FADD: case FSUB: case FMUL: case FDIV: case FREM:
-			OPSTACK_POP_T(TFLOAT);
+			OPSTACK_POP_T(getTFLOAT());
 			break;
 		case FNEG:
-			OPSTACK_PEEK_T(TFLOAT);
+			OPSTACK_PEEK_T(getTFLOAT());
 			break;
 			
 			
@@ -944,8 +944,8 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 		case FCMPG:
 		case FCMPL:
-			OPSTACK_POP_T(TFLOAT);
-			OPSTACK_POP_T(TFLOAT);
+			OPSTACK_POP_T(getTFLOAT());
+			OPSTACK_POP_T(getTFLOAT());
 			opstackPushBlind(block, TINT);
 			break;
 				
@@ -982,7 +982,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 		case I2F:
 			OPSTACK_POP_T(TINT);
-			opstackPushBlind(block, TFLOAT);
+			opstackPushBlind(block, getTFLOAT());
 			break;
 		case I2L:
 			OPSTACK_POP_T(TINT);
@@ -996,15 +996,15 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			break;
 			
 		case F2I:
-			OPSTACK_POP_T(TFLOAT);
+			OPSTACK_POP_T(getTFLOAT());
 			opstackPushBlind(block, TINT);
 			break;
 		case F2L:
-			OPSTACK_POP_T(TFLOAT);
+			OPSTACK_POP_T(getTFLOAT());
 			OPSTACK_WPUSH(TLONG);
 			break;
 		case F2D:
-			OPSTACK_POP_T(TFLOAT);
+			OPSTACK_POP_T(getTFLOAT());
 			OPSTACK_WPUSH(getTDOUBLE());
 			break;
 			
@@ -1014,7 +1014,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			break;
 		case L2F:
 			OPSTACK_WPOP_T(TLONG);
-			opstackPushBlind(block, TFLOAT);
+			opstackPushBlind(block, getTFLOAT());
 			break;
 		case L2D:
 			OPSTACK_WPOP_T(TLONG);
@@ -1027,7 +1027,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			break;
 		case D2F:
 			OPSTACK_WPOP_T(getTDOUBLE());
-			opstackPushBlind(block, TFLOAT);
+			opstackPushBlind(block, getTFLOAT());
 			break;
 		case D2L:
 			OPSTACK_WPOP_T(getTDOUBLE());
@@ -1197,7 +1197,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				opstackPushBlind(block, TINT);
 				break;
 				
-			case 'F': opstackPushBlind(block, TFLOAT); break;
+			case 'F': opstackPushBlind(block, getTFLOAT()); break;
 			case 'J': OPSTACK_WPUSH(TLONG); break;
 			case 'D': OPSTACK_WPUSH(getTDOUBLE()); break;
 				
@@ -1237,7 +1237,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				OPSTACK_POP_T_BLIND(TINT);
 				break;
 				
-			case 'F': OPSTACK_POP_T_BLIND(TFLOAT);   break;
+			case 'F': OPSTACK_POP_T_BLIND(getTFLOAT());   break;
 			case 'J': OPSTACK_WPOP_T_BLIND(TLONG);   break;
 			case 'D': OPSTACK_WPOP_T_BLIND(getTDOUBLE()); break;
 				
@@ -1284,7 +1284,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				OPSTACK_POP_T_BLIND(TINT);
 				break;
 				
-			case 'F': OPSTACK_POP_T_BLIND(TFLOAT);   break;
+			case 'F': OPSTACK_POP_T_BLIND(getTFLOAT());   break;
 			case 'J': OPSTACK_WPOP_T_BLIND(TLONG);   break;
 			case 'D': OPSTACK_WPOP_T_BLIND(getTDOUBLE()); break;
 				
@@ -1392,7 +1392,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			}
 			break;
 		case FRETURN:
-			OPSTACK_PEEK_T(TFLOAT);
+			OPSTACK_PEEK_T(getTFLOAT());
 			sig = getMethodReturnSig(v->method);
 			if (strcmp(sig, "F")) {
 				return verifyError(v, "freturn: method doesn't return an float");

@@ -681,7 +681,7 @@ checkMethodCall(Verifier* v,
 			break;
 			
 		case 'F':
-			if (binfo->opstack[paramIndex].data.class != TFLOAT->data.class) {
+			if (binfo->opstack[paramIndex].data.class != getTFLOAT()->data.class) {
 				return typeErrorInCheckMethodCall(v, argbuf, pc, idx, pool, methSig);
 			}
 			
@@ -749,7 +749,7 @@ checkMethodCall(Verifier* v,
 		break;
 		
 	case 'F':
-		binfo->opstack[binfo->stacksz++] = *TFLOAT;
+		binfo->opstack[binfo->stacksz++] = *getTFLOAT();
 		break;
 		
 	case 'J':
@@ -853,7 +853,7 @@ loadInitialArgs(Verifier* v)
 		switch (*argbuf) {
 		case 'Z': case 'S': case 'B': case 'C':
 		case 'I': locals[paramCount++] = *TINT; break;
-		case 'F': locals[paramCount++] = *TFLOAT; break;
+		case 'F': locals[paramCount++] = *getTFLOAT(); break;
 			
 		case 'J':
 			if (paramCount + 1 > v->method->localsz) {

@@ -429,7 +429,7 @@ printType(const Type* t)
 		else if (type == TLONG->data.class) {
 			dprintf("TLONG");
 		}
-		else if (type == TFLOAT->data.class) {
+		else if (type == getTFLOAT()->data.class) {
 			dprintf("TFLOAT");
 		}
 		else if (type == getTDOUBLE()->data.class) {
