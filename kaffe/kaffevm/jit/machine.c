@@ -213,7 +213,7 @@ translate(Method* meth, errorInfo *einfo)
 		goto done3;
 	}
 
-	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
+	if (Kaffe_JavaVMArgs.enableVerboseJIT) {
 		tms = currentTime();
 	}
 
@@ -398,7 +398,7 @@ DBG(JIT,
 		isStatic ? "static" : "normal", meth->ncode);	
     )
 
-	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
+	if (Kaffe_JavaVMArgs.enableVerboseJIT) {
 		tme = currentTime();
 		jitStats.time += (tme - tms);
 		printf("<JIT: %s.%s%s time %dms (%dms) @ %p>\n",

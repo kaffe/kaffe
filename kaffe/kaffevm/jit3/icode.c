@@ -303,7 +303,7 @@ epilogue(Method* meth UNUSED)
 	l->to = 0;
 	l->from = 0;
 #if defined(TRACE_METHOD_END)
-	if (Kaffe_JavaVMArgs[0].enableVerboseCall != 0) {
+	if (Kaffe_JavaVMArgs.enableVerboseCall != 0) {
                 begin_func_sync();
                 call_soft(soft_end);
                 popargs();
