@@ -21,7 +21,8 @@
 #include "jqueue.h"
 /* For NOTIMEOUT */
 #include "jsyscall.h"
-
+/* For jlong */
+#include "kaffe/jni_md.h"
 /* For Hjava_lang_VMThread */
 #include "thread.h"
 

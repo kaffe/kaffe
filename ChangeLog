@@ -1,3 +1,10 @@
+2004-09-04  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	Include kaffe/jni_md.h to fix build on netbsd.
+
+	Reported by: Kiyo Inaba <inaba@src.ricoh.co.jp>
+
 2004-09-03  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
