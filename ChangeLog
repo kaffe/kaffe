@@ -1,3 +1,10 @@
+Thu Feb 11 18:26:44 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* include/Makefile.am (DERIVED_HDRS): rework rule so as to
+	properly handle parallel builds and to not touch header files
+	that haven't changed, avoiding unneeded rebuilds
+	* include/Makefile.in: regen
+
 Thu Feb 11 16:47:02 1999  Edouard Parmelan  <Edouard.Parmelan@quadratec.fr>
 
 	* configure.in (AC_CHECK_LIBRARY): use KSAVE_LIBS, not SAVE_LIBS

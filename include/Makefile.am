@@ -76,11 +76,27 @@ include_HEADERS = $(INSTALL_DERIVED_HDRS) \
 	java_lang_Object.h \
 	java_lang_String.h
 
-$(DERIVED_HDRS): $(KLASSES_JAR)
-	@test -x $(KAFFEH) || ($(MAKE_KAFFEH))
-	$(KAFFEH) -classpath $(KLASSES_JAR) -o temp_$@ \
-	    `echo $@ | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`
-	rm -f $@
-	mv temp_$@ $@
+$(DERIVED_HDRS): stamp-h0all
+	@if test -f $@; then :; else \
+## If this file is removed after stamp-h0all is built, force its rebuild.
+	  rm -f stamp-h0all; $(MAKE) DERIVED_HDRS=$@ stamp-h0all; \
+	fi
 
-CLEANFILES = $(DERIVED_HDRS) temp_*.h
+stamp-h0all: $(KLASSES_JAR)
+## If KAFFEH does not exist, build it
+	@test -x $(KAFFEH) || ($(MAKE_KAFFEH))
+## Then, generate each header file,
+## but if it does not change, do not touch it
+	@for f in $(DERIVED_HDRS); do \
+	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
+	  echo "$(KAFFEH) -classpath $(KLASSES_JAR) -o $$f $$class"; \
+	  $(KAFFEH) -classpath $(KLASSES_JAR) -o stamp-h0$$f $$class; \
+	  if test -f $$f && cmp $$f stamp-h0$$f >/dev/null; then \
+	    rm -f stamp-h0$$f; \
+	  else \
+	    rm -f $$f; mv stamp-h0$$f $$f; \
+	  fi; \
+	done
+	@echo timestamp > $@
+
+CLEANFILES = $(DERIVED_HDRS)
