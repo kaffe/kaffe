@@ -37,10 +37,10 @@ testthreads:
 		fi
 
 clean:
-		rm -f *.class kaffe.core core
+		rm -f *.class Kaffe.core core ExceptionTest
 
-distclean:
-		rm -f *.class Makefile kaffe.core core .depend
+distclean:	clean
+		rm -f Makefile
 
 install:
 
