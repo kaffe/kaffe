@@ -40,6 +40,7 @@
 #include "java_io_InputStream.h"
 #include "java_io_PrintStream.h"
 #include "java_lang_System.h"
+#include "java_lang_Throwable.h"
 #include <native.h>
 #include <jni.h>
 

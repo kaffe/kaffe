@@ -14,8 +14,6 @@
 
 #include "object.h"
 #include "native.h"
-#include "java_lang_VMThrowable.h"
-#include "java_lang_Throwable.h"
 
 #define	STRINGCLASS	"java/lang/String"
 #define	OBJECTCLASS	"java/lang/Object"

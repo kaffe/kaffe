@@ -1,3 +1,14 @@
+2003-08-05 Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/baseClasses.h:
+	removed unnecessary includes.
+
+        * kaffe/kaffevm/exception.c,
+        kaffe/kaffevm/stackTrace.c,
+        libraries/clib/native/System.c:
+	Added include statements for java_lang_Throwable.h and
+	java_lang_VMThrowable.h.
+
 2003-08-05 Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/net/UnknownHostException.java:

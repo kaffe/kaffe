@@ -40,6 +40,9 @@
 #include "slots.h"
 #include "gcj/gcj.h"
 
+#include "java_lang_Throwable.h"
+#include "java_lang_VMThrowable.h"
+
 #if defined(INTERPRETER)
 #define	FIRSTFRAME(f, e)	/* Does nothing */
 
