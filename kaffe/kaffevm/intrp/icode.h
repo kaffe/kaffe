@@ -293,6 +293,8 @@
 #define	softcall_nullpointer()			soft_nullpointer()
 #define	softcall_nosuchmethod(c,n,s)		soft_nosuchmethod(c,n,s)
 #define	softcall_nosuchfield(c,n)		soft_nosuchfield(c,n)
+#define	softcall_linkage(c,n)			soft_linkage(c,n)
+#define	softcall_illegalaccess(c,n)		soft_illegalaccess(c,n)
 #define	softcall_nosuchclass(c)			soft_nosuchclass(c)
 
 #define	softcall_checkarraystore(a, o)		soft_checkarraystore((a)[0].v.taddr, (o)[0].v.taddr)

@@ -1,3 +1,11 @@
+2003-09-02  Timothy S. Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/intrp/icode.h,
+	kaffe/kaffevm/jit/icode_internal.h,
+	kaffe/kaffevm/jit/icode.c:
+	Add softcall_linkage and softcall_illegalaccess to make calls to
+	the corresponding soft_ functions.
+
 2003-09-02  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/gnu/xml/aelfred2/XmlParser.java:
