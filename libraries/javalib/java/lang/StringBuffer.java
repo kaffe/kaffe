@@ -104,7 +104,7 @@ private synchronized void checkIndex(int index)
 	}
 }
 
-private void ensureCapacity(int minCapacity) {
+public void ensureCapacity(int minCapacity) {
 	if (minCapacity <= 0)
 		return;
 	synchronized (this) {
