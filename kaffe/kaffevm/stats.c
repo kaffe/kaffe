@@ -75,7 +75,8 @@ reportCounter(timespent *counter, int type)
 	}
 
 	/* find group */
-	strncpy(buf, counter->name, sizeof buf);
+	strncpy(buf, counter->name, sizeof(buf));
+	buf[sizeof(buf) - 1] = '\0';
 	g = strchr(buf, '-');
 	if (g != 0) {
 		g[0] = '\0';

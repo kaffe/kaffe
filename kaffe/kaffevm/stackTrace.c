@@ -103,7 +103,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 	uintp pc;
 	int32 linenr;
 	uintp linepc;
-	char buf[256];			/* FIXME: unchecked buffer */
+	char *buf;
 	int len;
 	int j;
 	Hjava_lang_Object* str;
@@ -128,27 +128,27 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 					}
 				}
 			}
-			class_dot_name = KMALLOC(strlen(CLASS_CNAME(meth->class)) + 1);
-			if (!class_dot_name) {
-				errorInfo info;
-				/* Even if we are reporting an out of
-				   memory, this is ok.  If we can't
-				   allocate a new one, the vm will
-				   die in an orderly manner.
-				*/
-				postOutOfMemory(&info);
-				throwError(&info);
-			}
+			/* Even if we are reporting an out of memory and
+			   checkPtr fails, this is ok.  If we can't allocate
+			   a new one, the vm will die in an orderly manner.
+			*/
+			class_dot_name = checkPtr(
+			    KMALLOC(strlen(CLASS_CNAME(meth->class)) + 1));
 			pathname2classname(CLASS_CNAME(meth->class), class_dot_name);
+			buf = checkPtr(KMALLOC(strlen(class_dot_name)
+			    + strlen(meth->name->data)
+			    + strlen(CLASS_SOURCEFILE(meth->class))
+			    + 64));
+
 			if (linenr == -1) {
 				if (meth->accflags & ACC_NATIVE) {
-					sprintf(buf, "\tat %.80s.%.80s(%s:native)",
+					sprintf(buf, "\tat %s.%s(%s:native)",
 						class_dot_name,
 						meth->name->data, 
 						CLASS_SOURCEFILE(meth->class));
 				}
 				else {
-					sprintf(buf, "\tat %.80s.%.80s(%s:line unknown, pc %p)",
+					sprintf(buf, "\tat %s.%s(%s:line unknown, pc %p)",
 						class_dot_name,
 						meth->name->data, 
 						CLASS_SOURCEFILE(meth->class),
@@ -156,7 +156,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 				}
 			}
 			else {
-				sprintf(buf, "\tat %.80s.%.80s(%s:%d)",
+				sprintf(buf, "\tat %s.%s(%s:%d)",
 					class_dot_name,
 					meth->name->data,
 					CLASS_SOURCEFILE(meth->class),
@@ -175,6 +175,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 			} else {
 				fprintf(stderr, "%s\n", buf);
 			}
+			KFREE(buf);
 		}
 	}
 	if (p != 0 || !nullOK) {

@@ -38,7 +38,7 @@
 #include "stringSupport.h"
 #include "stats.h"
 
-#define	MAXBUF		256
+#define KLASSES_JAR	"Klasses.jar"
 
 classpathEntry* classpath;
 
@@ -61,7 +61,7 @@ static classFile findClassInJar(char*, struct _errorInfo*);
 Hjava_lang_Class*
 findClass(classEntry* centry, errorInfo *einfo)
 {
-	char buf[MAXBUF];
+	char *buf;
 	classFile hand;
 	const char* cname;
 	Hjava_lang_Class* class = 0;
@@ -80,11 +80,12 @@ findClass(classEntry* centry, errorInfo *einfo)
 	/* Look for the class */
 CDBG(	dprintf("Scanning for class %s\n", cname);		)
 
-	strcpy(buf, cname);
-	strcat(buf, ".class");
+	buf = checkPtr(KMALLOC(strlen(cname) + 8));
+	sprintf(buf, "%s.class", cname);
 
 	/* Find class in Jar file */
 	hand = findClassInJar(buf, einfo);
+	KFREE(buf);
 	if (hand.type == CP_INVALID) {
 		return (0);
 	}
@@ -136,7 +137,7 @@ CDBG(	dprintf("Scanning for class %s\n", cname);		)
 static classFile
 findClassInJar(char* cname, errorInfo *einfo)
 {
-	char buf[MAXBUF];
+	char *buf;
 	int fp;
 	struct stat sbuf;
 	classFile hand;
@@ -191,11 +192,13 @@ ZDBG(			dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			goto done;
 
 		case CP_DIR:
-			strcpy(buf, ptr->path);
-			strcat(buf, file_separator);
-			strcat(buf, cname);
+			buf = checkPtr(KMALLOC(strlen(ptr->path)
+			    + strlen(file_separator) + strlen(cname) + 1));
+			sprintf(buf, "%s%s%s",
+			    ptr->path, file_separator, cname);
 FDBG(			dprintf("Opening java file %s for %s\n", buf, cname); )
 			rc = KOPEN(buf, O_RDONLY|O_BINARY, 0, &fp);
+			KFREE(buf);
 			/* if we can't open the file, we keep looking */
 			if (rc) {
 				break;	/* will be NoClassDefFoundError */
@@ -339,34 +342,36 @@ static
 void
 discoverClasspath(const char* home)
 {
-#if defined(DIR) /* Windows HACK - XXX */
+#if defined(HAVE_DIRENT_H)
 	DIR* dir;
 	struct dirent* entry;
 	int len;
 	int hlen;
 	char* name;
-	char buf[256];		/* FIXME:  FIXED SIZED BUFFER */
+	char* buf;
 
 	dir = opendir(home);
 	if (dir == 0) {
 		return;
 	}
 
-	/* Add '.' and <home>/Klasses.zip at the beginning */
+	/* Add '.' and <home>/Klasses.jar at the beginning */
 	addClasspath(".");
-	strcpy(buf, home);
-	strcat(buf, "/Klasses.jar");
+	buf = KMALLOC(strlen(home) + strlen(KLASSES_JAR) + 2);
+	sprintf(buf, "%s/%s", home, KLASSES_JAR);
 	addClasspath(buf);
+	KFREE(buf);
 
 	hlen = strlen(home);
 	while ((entry = readdir(dir)) != 0) {
 		name = entry->d_name;
 		len = strlen(name);
-		if (strcmp(&name[len-4], ".zip") == 0 || strcmp(&name[len-4], ".jar") == 0) {
-			strcpy(buf, home);
-			strcat(buf, "/");
-			strcat(buf, name);
+		if (len > 4 && (strcmp(&name[len-4], ".zip") == 0
+		    || strcmp(&name[len-4], ".jar") == 0)) {
+			buf = KMALLOC(strlen(home) + strlen(name) + 2);
+			sprintf(buf, "%s/%s", home, name);
 			addClasspath(buf);
+			KFREE(buf);
 		}
 	}
 	closedir(dir);

@@ -298,10 +298,12 @@ jclass
 Kaffe_FindClass(JNIEnv* env, const char* name)
 {
 	Hjava_lang_Class* cls;
-	char buf[1024];		/* FIXME: UNCHECKED BUFFER! */
+	char *buf;
 	errorInfo info;
 
 	BEGIN_EXCEPTION_HANDLING(0);
+
+	buf = checkPtr(KMALLOC(strlen(name) + 1));
 	classname2pathname((char*)name, buf);
 
 	if (buf[0] == '[') {
@@ -313,6 +315,7 @@ Kaffe_FindClass(JNIEnv* env, const char* name)
 	else {
 		cls = lookupClass(buf, &info);
 	}
+	KFREE(buf);
 
 	if (cls == 0) {
 		postError(env, &info);
@@ -2715,12 +2718,7 @@ Kaffe_GetStringUTFChars(JNIEnv* env, jstring data, jbool* copy)
 		*copy = JNI_TRUE;
 	}
 
-	buf = KMALLOC(Kaffe_GetStringUTFLength(env, data) + 1);
-	if (!buf) {
-		errorInfo info;
-		postOutOfMemory(&info);
-		throwError(&info);
-	}
+	buf = checkPtr(KMALLOC(Kaffe_GetStringUTFLength(env, data) + 1));
 
 	ptr = STRING_DATA(str);
 	len = STRING_SIZE(str);

@@ -118,12 +118,7 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, slots* args)
 		arraydims = array;
 	}
 	else {
-		arraydims = KCALLOC(dims+1, sizeof(int));
-		if (!arraydims) {
-			errorInfo info;
-			postOutOfMemory(&info);
-			throwError(&info);
-		}
+		arraydims = checkPtr(KCALLOC(dims+1, sizeof(int)));
 	}
 
 	/* stack grows up, so move to the first dimension */
@@ -167,12 +162,7 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 		arraydims = array;
 	}
 	else {
-		arraydims = KCALLOC(dims+1, sizeof(int));
-		if (!arraydims) {
-			errorInfo info;
-			postOutOfMemory(&info);
-			throwError(&info);
-		}
+		arraydims = checkPtr(KCALLOC(dims+1, sizeof(int)));
 	}
 
 	/* Extract the dimensions into an array */
@@ -401,13 +391,8 @@ soft_checkcast(Hjava_lang_Class* c, Hjava_lang_Object* o)
 		const char *fromtype = CLASS_CNAME(OBJECT_CLASS(o));
 		const char *totype = CLASS_CNAME(c);
 		char *format = "can't cast `%s' to `%s'";
-		char *buf = KMALLOC(strlen(fromtype) 
-			+ strlen(totype) + strlen(format));
-		if (!buf) {
-			errorInfo info;
-			postOutOfMemory(&info);
-			throwError(&info);
-		}
+		char *buf = checkPtr(KMALLOC(strlen(fromtype) 
+			+ strlen(totype) + strlen(format)));
 		sprintf(buf, format, fromtype, totype);
 		ccexc = ClassCastException(buf);
 		KFREE(buf);
@@ -480,12 +465,15 @@ soft_stackoverflow(void)
 void            
 soft_nosuchmethod(Hjava_lang_Class* c, Utf8Const* n, Utf8Const* s)
 {
-	char buf[200];
-	strncpy(buf, CLASS_CNAME(c), sizeof(buf));
-	strncat(buf, ".", sizeof(buf));
-	strncat(buf, n->data, sizeof(buf));
-	strncat(buf, s->data, sizeof(buf));
-	throwException(NoSuchMethodError(buf));
+	Hjava_lang_Throwable *e;
+	char *buf;
+
+	buf = checkPtr(KMALLOC(strlen(CLASS_CNAME(c)
+	    + strlen(n->data) + strlen(s->data) + 2)));
+	sprintf(buf, "%s.%s%s", CLASS_CNAME(c), n->data, s->data);
+	e = NoSuchMethodError(buf);
+	KFREE(buf);
+	throwException(e);
 }
 
 /*
@@ -494,13 +482,15 @@ soft_nosuchmethod(Hjava_lang_Class* c, Utf8Const* n, Utf8Const* s)
 void
 soft_nosuchfield(Utf8Const* c, Utf8Const* n)
 {
-	char buf[200];
-	strncpy(buf, c->data, sizeof(buf));
-	strncat(buf, ".", sizeof(buf));
-	strncat(buf, n->data, sizeof(buf));
-	throwException(NoSuchFieldError(buf));
-}
+	Hjava_lang_Throwable *e;
+	char *buf;
 
+	buf = checkPtr(KMALLOC(strlen(c->data) + strlen(n->data) + 2));
+	sprintf(buf, "%s.%s", c->data, n->data);
+	e = NoSuchFieldError(buf);
+	KFREE(buf);
+	throwException(e);
+}
 
 /*
  * soft_initialise_class.
