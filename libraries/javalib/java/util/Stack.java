@@ -20,7 +20,7 @@ public boolean empty() {
 	return isEmpty();
 }
 
-public synchronized Object peek() throws EmptyStackException {
+public synchronized Object peek() {
 	try {
 		return elementAt(size() - 1);
 	} catch (ArrayIndexOutOfBoundsException _) {
@@ -28,7 +28,7 @@ public synchronized Object peek() throws EmptyStackException {
 	}
 }
 
-public synchronized Object pop() throws EmptyStackException {
+public synchronized Object pop() {
 	Object peeked = peek();
 
 	removeElementAt(size() - 1);
