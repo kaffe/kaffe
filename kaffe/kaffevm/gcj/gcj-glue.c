@@ -40,61 +40,6 @@ kenvCreateObject(struct Hjava_lang_Class *clazz, int size)
 	return (newObject(clazz));
 }
 
-/*
- * cname is a qualified class name, like
- * [[I or Ljava/lang/String; or LHelloWorld; or [[[Ljava/lang/Object;
- */
-Hjava_lang_Class *
-kenvFindClass(char *cname, errorInfo *einfo)
-{
-	char buf[1024];			/* XXX */
-	Utf8Const *name;
-	Hjava_lang_Class *class;
-
-	/* XXX handle classloaders -- but how? */
-        if (cname[0] == '[') {
-		/* loadArray does want the "L...;" */
-		name = utf8ConstNew(cname, -1);
-                class = loadArray(name, 0, einfo);
-        } else {
-		/* loadClass doesn't want the "L...;" */
-		if (*cname == 'L') {
-			strcpy(buf, cname+1);
-			assert(buf[strlen(buf) - 1] == ';');
-			buf[strlen(buf) - 1] = '\0';
-		} else {
-			/* else could be a primitive class such as "long" */
-			strcpy(buf, cname);
-		}
-		name = utf8ConstNew(buf, -1);
-                class = loadClass(name, 0, einfo);
-        }
-	utf8ConstRelease(name);
-
-DBG(GCJ, dprintf(__FUNCTION__": `%s' --> @%p\n", buf, class); )
-
-	return (class);
-}
-
-void 
-kenvPostClassNotFound(const char *utf8name, errorInfo *einfo)
-{
-	postNoClassDefFoundError(einfo, utf8name);
-}
-
-void
-kenvProcessClass(struct Hjava_lang_Class *class)
-{
-	errorInfo info;
-
-DBG(GCJ, dprintf("processing kaffe class for %s@%p from st=%d to %d...\n",  
-	CLASS_CNAME(class), class, class->state, CSTATE_COMPLETE);
-    )
-	if (processClass(class, CSTATE_COMPLETE, &info) == false) {
-		throwError(&info);
-	}
-}
-
 /* Given a const char * type name as a class name, create a
  * pathname.  I.e., makes a utf8const "[Ljava/lang/String;" from
  * [Ljava.lang.String
@@ -117,6 +62,62 @@ makePathUtf8FromClassChar(const char *name)
 		KFREE(b);
 	}
 	return (utf8);
+}
+
+/*
+ * cname is a qualified class name, like
+ * [[I or Ljava.lang.String; or LHelloWorld; or [[[Ljava.lang.Object;
+ * or a qualified path name where there's a slash instead of the dot
+ */
+Hjava_lang_Class *
+kenvFindClass(char *cname, errorInfo *einfo)
+{
+	char buf[1024];			/* XXX */
+	Utf8Const *name;
+	Hjava_lang_Class *class;
+
+	/* XXX handle classloaders -- but how? */
+        if (cname[0] == '[') {
+		/* loadArray does want the "L...;" */
+		name = makePathUtf8FromClassChar(cname);
+                class = loadArray(name, 0, einfo);
+        } else {
+		/* loadClass doesn't want the "L...;" */
+		if (*cname == 'L') {
+			strcpy(buf, cname+1);
+			assert(buf[strlen(buf) - 1] == ';');
+			buf[strlen(buf) - 1] = '\0';
+		} else {
+			/* else could be a primitive class such as "long" */
+			strcpy(buf, cname);
+		}
+		name = makePathUtf8FromClassChar(buf);
+                class = loadClass(name, 0, einfo);
+        }
+	utf8ConstRelease(name);
+
+DBG(GCJ, dprintf(__FUNCTION__": `%s' --> @%p\n", cname, class); )
+
+	return (class);
+}
+
+void 
+kenvPostClassNotFound(const char *utf8name, errorInfo *einfo)
+{
+	postNoClassDefFoundError(einfo, utf8name);
+}
+
+void
+kenvProcessClass(struct Hjava_lang_Class *class)
+{
+	errorInfo info;
+
+DBG(GCJ, dprintf("processing kaffe class for %s@%p from st=%d to %d...\n",  
+	CLASS_CNAME(class), class, class->state, CSTATE_COMPLETE);
+    )
+	if (processClass(class, CSTATE_COMPLETE, &info) == false) {
+		throwError(&info);
+	}
 }
 
 /*
