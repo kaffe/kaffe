@@ -68,7 +68,7 @@ run()
 	RESULT="$1.fail"
 	TMPRESULT="$1.tmp"
 	$VERBOSE $JAVA $*
-	$JAVA $* >$TMPRESULT 2>&1 &
+	$JAVA $* <&0 >$TMPRESULT 2>&1 &
 	error=$?
 	pid=$!
 	$VERBOSE "Background pid: $pid"

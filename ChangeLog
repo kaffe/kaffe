@@ -1,3 +1,12 @@
+2003-08-23  Jim Pick  <jim@kaffe.org>
+
+	* test/regression/TestScript.in:
+	Fix for breakage introduced by killer process - need to explicitly
+	pipe standard input into test process.  The "wc.java" test was
+	broken by this.
+
+	Reported by: Ito Kazumitsu <kas@maczuka.gcd.org>
+
 2003-08-22  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* gnu/java/lang/reflect/TypeSignature.java:
