@@ -52,23 +52,23 @@ import org.w3c.dom.NodeList;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class Selector
+public class Selector
 extends Expr
 {
 
-  static final int ANCESTOR = 0;
-  static final int ANCESTOR_OR_SELF = 1;
-  static final int ATTRIBUTE = 2;
-  static final int CHILD = 3;
-  static final int DESCENDANT = 4;
-  static final int DESCENDANT_OR_SELF = 5;
-  static final int FOLLOWING = 6;
-  static final int FOLLOWING_SIBLING = 7;
-  static final int NAMESPACE = 8;
-  static final int PARENT = 9;
-  static final int PRECEDING = 10;
-  static final int PRECEDING_SIBLING = 11;
-  static final int SELF = 12;
+  public static final int ANCESTOR = 0;
+  public static final int ANCESTOR_OR_SELF = 1;
+  public static final int ATTRIBUTE = 2;
+  public static final int CHILD = 3;
+  public static final int DESCENDANT = 4;
+  public static final int DESCENDANT_OR_SELF = 5;
+  public static final int FOLLOWING = 6;
+  public static final int FOLLOWING_SIBLING = 7;
+  public static final int NAMESPACE = 8;
+  public static final int PARENT = 9;
+  public static final int PRECEDING = 10;
+  public static final int PRECEDING_SIBLING = 11;
+  public static final int SELF = 12;
 
   /**
    * Axis to select nodes in.
@@ -80,11 +80,19 @@ extends Expr
    */
   final Test[] tests;
 
-  Selector (int axis, List tests)
+  public Selector (int axis, List tests)
   {
     this.axis = axis;
     this.tests = new Test[tests.size ()];
     tests.toArray (this.tests);
+  }
+
+  /**
+   * Returns the list of tests to perform on candidates.
+   */
+  public Test[] getTests()
+  {
+    return tests;
   }
 
   public Object evaluate (Node context)

@@ -107,18 +107,7 @@ public final class XMLJ
     String systemId = input.getSystemId ();
     if (in == null)
       {
-        if (systemId == null)
-          {
-            throw new IOException ("no system ID");
-          }
-        try
-          {
-            in = new URL (systemId).openStream ();
-          }
-        catch (MalformedURLException e)
-          {
-            in = new FileInputStream (systemId);
-          }
+        in = getInputStream(systemId);
       }
     return new NamedInputStream (systemId, in, LOOKAHEAD);
   }
@@ -143,20 +132,26 @@ public final class XMLJ
       }
     if (in == null)
       {
-        if (systemId == null)
-          {
-            throw new IOException ("no system ID");
-          }
-        try
-          {
-            in = new URL (systemId).openStream ();
-          }
-        catch (MalformedURLException e)
-          {
-            in = new FileInputStream (systemId);
-          }
+        in = getInputStream(systemId);
       }
     return new NamedInputStream (systemId, in, LOOKAHEAD);
+  }
+
+  private static InputStream getInputStream(String systemId)
+    throws IOException
+  {
+    if (systemId == null)
+      {
+        throw new IOException("no system ID");
+      }
+    try
+      {
+        return new URL(systemId).openStream();
+      }
+    catch (MalformedURLException e)
+      {
+        return new FileInputStream(systemId);
+      }
   }
 
   /**
@@ -174,11 +169,21 @@ public final class XMLJ
   /**
    * Convenience method for xmljDocLoader
    */
-  static NamedInputStream getInputStream (String base, String url)
+  static NamedInputStream xmljGetInputStream(String base, String url)
     throws IOException
   {
-    URL u = (base == null) ? new URL (url) : new URL (new URL (base), url);
-    return getInputStream (u);
+    try
+      {
+        if (base != null)
+          {
+            url = new URL(new URL(base), url).toString();
+          }
+      }
+    catch (MalformedURLException e)
+      {
+      }
+    InputStream in = getInputStream(url);
+    return new NamedInputStream(url, in, LOOKAHEAD);
   }
 
   /**

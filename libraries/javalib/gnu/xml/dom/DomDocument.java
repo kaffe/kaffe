@@ -863,7 +863,16 @@ nyi (); // FIXME createTreeWalker
 
     public Node adoptNode (Node source)
     {
-      // TODO
+      if (source instanceof DomNode)
+        {
+          DomNode node = (DomNode) source;
+          if (node.parent != null)
+            {
+              return null;
+            }
+          node.owner = this;
+          return node;
+        }
       return null;
     }
 

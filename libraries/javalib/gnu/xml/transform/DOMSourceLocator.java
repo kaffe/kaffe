@@ -1,5 +1,5 @@
 /*
- * Root.java
+ * DOMSourceLocator.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -36,31 +36,50 @@
  * exception statement from your version. 
  */
 
-package gnu.xml.xpath;
+package gnu.xml.transform;
 
-import java.util.Collections;
-import org.w3c.dom.Document;
+import javax.xml.transform.dom.DOMLocator;
 import org.w3c.dom.Node;
 
 /**
- * Expression that evaluates to the document root.
+ * Simple DOMLocator implementation.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class Root
-extends Expr
+class DOMSourceLocator
+  implements DOMLocator
 {
 
-  public Object evaluate (Node context)
+  final Node node;
+
+  DOMSourceLocator(Node node)
   {
-    Document doc = (context instanceof Document) ? (Document) context :
-      context.getOwnerDocument ();
-    return Collections.singleton (doc);
+    this.node = node;
   }
 
-  public String toString ()
+  public Node getOriginatingNode()
   {
-    return "/";
+    return node;
+  }
+
+  public String getPublicId()
+  {
+    return null;
+  }
+
+  public String getSystemId()
+  {
+    return null;
+  }
+
+  public int getLineNumber()
+  {
+    return -1;
+  }
+
+  public int getColumnNumber()
+  {
+    return -1;
   }
   
 }

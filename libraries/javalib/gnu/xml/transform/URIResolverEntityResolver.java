@@ -1,5 +1,5 @@
 /*
- * Root.java
+ * URIResolverEntityResolver.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -36,31 +36,49 @@
  * exception statement from your version. 
  */
 
-package gnu.xml.xpath;
+package gnu.xml.transform;
 
-import java.util.Collections;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import java.io.IOException;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.URIResolver;
+import javax.xml.transform.sax.SAXSource;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
- * Expression that evaluates to the document root.
+ * EntityResolver that wraps a URIResolver.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class Root
-extends Expr
+class URIResolverEntityResolver
+  implements EntityResolver
 {
 
-  public Object evaluate (Node context)
+  final URIResolver resolver;
+
+  URIResolverEntityResolver(URIResolver resolver)
   {
-    Document doc = (context instanceof Document) ? (Document) context :
-      context.getOwnerDocument ();
-    return Collections.singleton (doc);
+    this.resolver = resolver;
   }
 
-  public String toString ()
+  public InputSource resolveEntity(String publicId, String systemId)
+    throws SAXException, IOException
   {
-    return "/";
+    try
+      {
+        Source source = resolver.resolve(null, systemId);
+        if (source == null)
+          {
+            return null;
+          }
+        return SAXSource.sourceToInputSource(source);
+      }
+    catch (TransformerException e)
+      {
+        throw new SAXException(e);
+      }
   }
   
 }

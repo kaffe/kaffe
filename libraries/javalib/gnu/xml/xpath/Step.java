@@ -41,8 +41,8 @@ package gnu.xml.xpath;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
 import org.w3c.dom.Node;
 
 /**
@@ -50,14 +50,14 @@ import org.w3c.dom.Node;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class Step
+public class Step
 extends Expr
 {
 
   final Expr lhs;
   final Expr rhs;
 
-  Step (Expr lhs, Expr rhs)
+  public Step (Expr lhs, Expr rhs)
   {
     this.lhs = lhs;
     this.rhs = rhs;
@@ -69,7 +69,7 @@ extends Expr
     if (left instanceof Collection)
       {
         Collection ns = (Collection) left;
-        Set ret1 = new LinkedHashSet ();
+        Set ret1 = new TreeSet ();
         Object ret2 = null;
         for (Iterator i = ns.iterator (); i.hasNext (); )
           {

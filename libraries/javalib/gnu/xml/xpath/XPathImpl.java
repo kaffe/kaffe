@@ -53,7 +53,7 @@ import org.xml.sax.InputSource;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class XPathImpl
+public class XPathImpl
   implements XPath
 {
 
@@ -159,5 +159,5 @@ class XPathImpl
     XPathExpression expr = compile(expression);
     return expr.evaluate(source);
   }
-  
+
 }

@@ -78,7 +78,7 @@ import org.w3c.dom.traversal.*;
  * @author David Brownell
  */
 public abstract class DomNode
-    implements Node, NodeList, EventTarget, DocumentEvent, Cloneable
+    implements Node, NodeList, EventTarget, DocumentEvent, Cloneable, Comparable
 {
     //
     // CLASS DATA
@@ -125,8 +125,8 @@ public abstract class DomNode
     // PER-INSTANCE DATA
     //
 
-    private Document			owner;
-    private DomNode			parent;
+    Document			owner;
+    DomNode			parent;
 
     // Bleech ... "package private" so a builder can populate entity refs.
     // writable during construction.  DOM spec is nasty.
@@ -141,11 +141,57 @@ public abstract class DomNode
     private int				nListeners;
 
     // Optimize access to siblings by caching indices.
-    private transient int		parentIndex;
+    private transient int index;
+
+    // Optimize document order comparison by caching the depth of this node
+    // in the tree.
+    private transient int depth;
 
     // DOM Level 3 userData dictionary.
     private Map                         userData;
 
+    /**
+     * DOM nodes have a natural ordering: document order.
+     */
+    public final int compareTo(Object other)
+    {
+      if (other instanceof DomNode)
+        {
+          DomNode n1 = this;
+          DomNode n2 = (DomNode) other;
+          if (n1.owner != n2.owner)
+            {
+              return 0;
+            }
+          int d1 = n1.depth, d2 = n2.depth;
+          int delta = d1 - d2;
+          while (d1 > d2) {
+            n1 = n1.parent;
+            d1--;
+          }
+          while (d2 > d1) {
+            n2 = n2.parent;
+            d2--;
+          }
+          int c = compareTo2(n1, n2);
+          return (c != 0) ? c : delta;
+        }
+      return 0;
+    }
+
+    /**
+     * Compare two nodes at the same depth.
+     */
+    final int compareTo2(DomNode n1, DomNode n2)
+    {
+      if (n1.depth == 0 || n1 == n2)
+        {
+          return 0;
+        }
+      int c = compareTo2(n1.parent, n2.parent);
+      return (c != 0) ? c : n1.index - n2.index;
+    }
+    
 	//
 	// Some of the methods here are declared 'final' because
 	// knowledge about their implementation is built into this
@@ -312,9 +358,7 @@ public abstract class DomNode
 	n += children.length;
 
 	DomNode newKids [] = new DomNode [n];
-
-	for (int i = 0; i < length; i++)
-	    newKids [i] = children [i];
+        System.arraycopy(children, 0, newKids, 0, length);
 	children = newKids;
     }
 
@@ -423,6 +467,7 @@ public abstract class DomNode
 	
 	if (childType != ATTRIBUTE_NODE)
 	    newChild.parent  = this;
+        newChild.depth = depth + 1;
     }
 
 
@@ -550,7 +595,8 @@ public abstract class DomNode
 		if (!(length < children.length))
 		    ensureEnough (1);
 		reparent (child);
-		children [length++] = child;
+                child.index = length++;
+		children [child.index] = child;
 		if (reportMutations)
 		    insertionEvent (null, child);
 	    } else {
@@ -607,7 +653,11 @@ public abstract class DomNode
 		    if (children [i] != refChild)
 			i--;
 		    for (int j = ++length; j > i; j--)
+                      {
+                        children [j - 1].index = j;
 			children [j] = children [j - 1];
+                      }
+                    child.index = i;
 		    children [i] = child;
 		    if (reportMutations)
 			insertionEvent (null, child);
@@ -685,6 +735,7 @@ public abstract class DomNode
 		    reparent (child);
 		    if (children [i] != refChild)
 			i--;
+                    child.index = i;
 		    children [i] = child;
 		    rmchild.parent = null;
 		    if (reportMutations)
@@ -732,7 +783,10 @@ public abstract class DomNode
 	    if (reportMutations)
 		removalEvent (null, child);
 	    for (int j = i + 1; j < length; j++, i++)
+              {
+                children [j].index = i;
 		children [i] = children [j];
+              }
 	    children [i] = null;
 	    child.parent = null;
 	    length--;
@@ -805,30 +859,7 @@ public abstract class DomNode
     {
 	if (parent == null || getNodeType() == ATTRIBUTE_NODE)
 	    return null;
-
-	// we know parent.getChildNodes () returns itself
-	// ... and that we're somewhere in parent.children[]
-	int index;
-
-	if (parentIndex < parent.length
-		&& parent.children [parentIndex] == this) {
-	    index = parentIndex + 1;
-	    if (index < parent.length)
-		return parent.children [index];
-	    else
-		return null;
-	}
-
-	for (index = 0; index < parent.length; index++) {
-	    if (parent.children [index] == this) {
-		parentIndex = index++;
-		if (index < parent.length)
-		    return parent.children [index];
-		else
-		    break;
-	    }
-	}
-	return null;
+        return (index < parent.length) ? parent.children[index + 1] : null;
     }
 
 
@@ -840,19 +871,7 @@ public abstract class DomNode
     {
 	if (parent == null || getNodeType () == ATTRIBUTE_NODE)
 	    return null;
-
-	NodeList	siblings = parent.getChildNodes ();
-	int		len = siblings.getLength ();
-
-	if (siblings.item (parentIndex) == this)
-	    return siblings.item (parentIndex - 1);
-
-	for (int i = 0; i < len; i++)
-	    if (siblings.item (i) == this) {
-		parentIndex = i;
-		return siblings.item (--i);
-	    }
-	return null;
+        return (index > 0) ? parent.children[index - 1] : null;
     }
 
 
@@ -1755,5 +1774,29 @@ public abstract class DomNode
           }
         return userData.get (key);
       }
+
+  public String toString()
+  {
+    String nodeName = getNodeName();
+    String nodeValue = getNodeValue();
+    StringBuffer buf = new StringBuffer(getClass().getName());
+    buf.append('[');
+    if (nodeName != null)
+      {
+        buf.append(nodeName);
+      }
+    if (nodeValue != null)
+      {
+        if (nodeName != null)
+          {
+            buf.append('=');
+          }
+        buf.append('\'');
+        buf.append(nodeValue);
+        buf.append('\'');
+      }
+    buf.append(']');
+    return buf.toString();
+  }
 
 }

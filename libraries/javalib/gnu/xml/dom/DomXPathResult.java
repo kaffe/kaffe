@@ -82,7 +82,7 @@ implements XPathResult
           case XPathResult.ANY_TYPE:
           case XPathResult.ANY_UNORDERED_NODE_TYPE:
             type = (ns.size () == 1) ? XPathResult.FIRST_ORDERED_NODE_TYPE :
-              XPathResult.UNORDERED_NODE_ITERATOR_TYPE;
+              XPathResult.ORDERED_NODE_ITERATOR_TYPE;
             break;
           default:
             type = requestedType;
@@ -128,6 +128,8 @@ implements XPathResult
     switch (type)
       {
       case XPathResult.FIRST_ORDERED_NODE_TYPE:
+      case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
+      case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
       case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
       case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
         Collection ns = (Collection) value;
@@ -148,6 +150,8 @@ implements XPathResult
     switch (type)
       {
       case XPathResult.FIRST_ORDERED_NODE_TYPE:
+      case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
+      case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
       case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
       case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
         return ((Collection) value).size ();
@@ -186,6 +190,8 @@ implements XPathResult
     switch (type)
       {
       case XPathResult.FIRST_ORDERED_NODE_TYPE:
+      case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
+      case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
       case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
       case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
         Collection ns = (Collection) value;
@@ -214,6 +220,10 @@ implements XPathResult
         return "STRING_TYPE";
       case XPathResult.FIRST_ORDERED_NODE_TYPE:
         return "FIRST_ORDERED_NODE_TYPE";
+      case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
+        return "ORDERED_NODE_ITERATOR_TYPE";
+      case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
+        return "ORDERED_NODE_SNAPSHOT_TYPE";
       case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
         return "UNORDERED_NODE_ITERATOR_TYPE";
       case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:

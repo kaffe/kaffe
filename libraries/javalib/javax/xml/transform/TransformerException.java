@@ -95,6 +95,7 @@ public class TransformerException
     if (cause != null)
       {
         initCause(cause);
+        this.cause = cause;
       }
   }
 

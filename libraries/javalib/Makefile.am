@@ -160,6 +160,7 @@ Klasses_jar_SRCS = \
 	$(gnu_xml_libxmlj_transform_SRCS) \
 	$(gnu_xml_libxmlj_util_SRCS) \
 	$(gnu_xml_pipeline_SRCS) \
+	$(gnu_xml_transform_SRCS) \
 	$(gnu_xml_util_SRCS) \
 	$(gnu_xml_xpath_SRCS) \
 	$(java_applet_SRCS) \
@@ -1475,6 +1476,18 @@ gnu_xml_pipeline_SRCS = \
 	gnu/xml/pipeline/WellFormednessFilter.java \
 	gnu/xml/pipeline/XIncludeFilter.java \
 	gnu/xml/pipeline/XsltFilter.java
+gnu_xml_transform_SRCS = \
+	gnu/xml/transform/DOMResultWrapper.java \
+	gnu/xml/transform/DOMSerializer.java \
+	gnu/xml/transform/DOMSourceLocator.java \
+	gnu/xml/transform/DOMSourceWrapper.java \
+	gnu/xml/transform/ErrorListenerErrorHandler.java \
+	gnu/xml/transform/Stylesheet.java \
+	gnu/xml/transform/Template.java \
+	gnu/xml/transform/TemplatesImpl.java \
+	gnu/xml/transform/TransformerFactoryImpl.java \
+	gnu/xml/transform/TransformerImpl.java \
+	gnu/xml/transform/URIResolverEntityResolver.java
 gnu_xml_util_SRCS = \
 	gnu/xml/util/DoParse.java \
 	gnu/xml/util/DomParser.java \
@@ -1507,6 +1520,7 @@ gnu_xml_xpath_SRCS = \
 	gnu/xml/xpath/XPathFactoryImpl.java \
 	gnu/xml/xpath/XPathImpl.java \
 	gnu/xml/xpath/XPathParser.java \
+	gnu/xml/xpath/XPathTest.java \
 	gnu/xml/xpath/XPathTokenizer.java
 java_applet_SRCS = \
 	java/applet/Applet.java \

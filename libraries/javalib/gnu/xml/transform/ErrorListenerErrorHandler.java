@@ -1,5 +1,5 @@
 /*
- * Root.java
+ * ErrorListenerErrorHandler.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -36,31 +36,67 @@
  * exception statement from your version. 
  */
 
-package gnu.xml.xpath;
+package gnu.xml.transform;
 
-import java.util.Collections;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.TransformerException;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
- * Expression that evaluates to the document root.
+ * An ErrorHandler that wraps an ErrorListener.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class Root
-extends Expr
+class ErrorListenerErrorHandler
+  implements ErrorHandler
 {
 
-  public Object evaluate (Node context)
+  final ErrorListener listener;
+
+  ErrorListenerErrorHandler(ErrorListener listener)
   {
-    Document doc = (context instanceof Document) ? (Document) context :
-      context.getOwnerDocument ();
-    return Collections.singleton (doc);
+    this.listener = listener;
   }
 
-  public String toString ()
+  public void warning(SAXParseException e)
+    throws SAXException
   {
-    return "/";
+    try
+      {
+        listener.warning(new TransformerException(e));
+      }
+    catch (TransformerException e2)
+      {
+        throw new SAXException(e2);
+      }
+  }
+  
+  public void error(SAXParseException e)
+    throws SAXException
+  {
+    try
+      {
+        listener.error(new TransformerException(e));
+      }
+    catch (TransformerException e2)
+      {
+        throw new SAXException(e2);
+      }
+  }
+  
+  public void fatalError(SAXParseException e)
+    throws SAXException
+  {
+    try
+      {
+        listener.fatalError(new TransformerException(e));
+      }
+    catch (TransformerException e2)
+      {
+        throw new SAXException(e2);
+      }
   }
   
 }

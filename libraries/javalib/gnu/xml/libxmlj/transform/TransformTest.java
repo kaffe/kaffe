@@ -70,14 +70,15 @@ public class TransformTest
   {
 
     // Force use of Libxsltj
-    System.setProperty ("javax.xml.transform.TransformerFactory",
-			"gnu.xml.libxmlj.transform.GnomeTransformerFactory");
+    /*System.setProperty ("javax.xml.transform.TransformerFactory",
+			"gnu.xml.libxmlj.transform.GnomeTransformerFactory");*/
 
     // Read arguments
     if (args.length < 1)
       {
 	System.err.println ("Usage: java " + TransformTest.class.getName ()
-			    + " <stylesheet> <source> <result>");
+			    + " <stylesheet> [<source> [<result>]]");
+        System.exit(1);
       }
     Source xsltSource = new StreamSource (args[0]);
     Source source = new StreamSource (System.in);

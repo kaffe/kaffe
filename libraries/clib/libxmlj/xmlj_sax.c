@@ -709,6 +709,12 @@ xmljSAXSetDocumentLocator (void *vctx, xmlSAXLocatorPtr loc)
   env = sax->env;
   target = sax->obj;
 
+  if (target == NULL)
+    {
+      /* No Java parse context */
+      return;
+    }
+
   /* Update locator on sax context */
   sax->loc = loc;
   if ((*env)->ExceptionOccurred (env))

@@ -42,7 +42,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.TreeSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
@@ -138,7 +138,7 @@ public abstract class Expr
     try
       {
         DocumentBuilderFactory factory =
-          DocumentBuilderFactory.newInstance();
+          new gnu.xml.dom.JAXPFactory();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(source);
         return evaluate(doc, returnType);
@@ -171,7 +171,7 @@ public abstract class Expr
    * The last function returns a number equal to the context size from the
    * expression evaluation context.
    */
-  final double _last (Node context)
+  static double _last (Node context)
   {
     Node parent = context.getParentNode ();
     int ret = (parent == null || !parent.hasChildNodes ()) ? 0 :
@@ -187,7 +187,7 @@ public abstract class Expr
    * The position function returns a number equal to the context position
    * from the expression evaluation context.
    */
-  final double _position (Node context)
+  static double _position (Node context)
   {
     int count = 0;
     while (context != null)
@@ -202,7 +202,7 @@ public abstract class Expr
    * The count function returns the number of nodes in the argument
    * node-set.
    */
-  final double _count (Node context, Collection nodeSet)
+  static double _count (Node context, Collection nodeSet)
   {
     return (double) nodeSet.size ();
   }
@@ -219,9 +219,9 @@ public abstract class Expr
    * same document as the context node that have a unique ID equal to any of
    * the tokens in the list.
    */
-  final Collection _id (Node context, Object object)
+  static Collection _id (Node context, Object object)
   {
-    Set ret = new LinkedHashSet ();
+    Set ret = new TreeSet ();
     if (object instanceof Collection)
       {
         Collection nodeSet = (Collection) object;
@@ -256,7 +256,7 @@ public abstract class Expr
    * an empty string is returned. If the argument is omitted, it defaults to
    * a node-set with the context node as its only member.
    */
-  final String _local_name (Node context, Collection nodeSet)
+  static String _local_name (Node context, Collection nodeSet)
   {
     if (nodeSet == null || nodeSet.size () == 0)
       {
@@ -276,7 +276,7 @@ public abstract class Expr
    * empty string is returned. If the argument is omitted, it defaults to a
    * node-set with the context node as its only member.
    */
-  final String _namespace_uri (Node context, Collection nodeSet)
+  static String _namespace_uri (Node context, Collection nodeSet)
   {
     if (nodeSet == null || nodeSet.size () == 0)
       {
@@ -304,7 +304,7 @@ public abstract class Expr
    * string is returned. If the argument it omitted, it defaults to a
    * node-set with the context node as its only member.
    */
-  final String _name (Node context, Collection nodeSet)
+  static String _name (Node context, Collection nodeSet)
   {
     if (nodeSet == null || nodeSet.size () == 0)
       {
@@ -320,7 +320,7 @@ public abstract class Expr
    * Descend the node in document order and return the first matching node
    * in the node-set.
    */
-  final Node firstNode (Node node, Collection nodeSet)
+  static Node firstNode (Node node, Collection nodeSet)
   {
     if (nodeSet.contains (node))
       {
@@ -345,7 +345,7 @@ public abstract class Expr
   /**
    * Implementation of the XPath <code>string</code> function.
    */
-  final String _string (Node context, Object object)
+  static String _string (Node context, Object object)
   {
     if (object == null)
       {
@@ -387,7 +387,7 @@ public abstract class Expr
   /**
    * The concat function returns the concatenation of its arguments.
    */
-  final String _concat (Node context, String s1, String s2)
+  static String _concat (Node context, String s1, String s2)
   {
     return s1 + s2;
   }
@@ -396,7 +396,7 @@ public abstract class Expr
    * The starts-with function returns true if the first argument string
    * starts with the second argument string, and otherwise returns false.
    */
-  final boolean _starts_with (Node context, String s1, String s2)
+  static boolean _starts_with (Node context, String s1, String s2)
   {
     return s1.startsWith (s2);
   }
@@ -405,7 +405,7 @@ public abstract class Expr
    * The contains function returns true if the first argument string
    * contains the second argument string, and otherwise returns false.
    */
-  final boolean _contains (Node context, String s1, String s2)
+  static boolean _contains (Node context, String s1, String s2)
   {
     return s1.indexOf (s2) != -1;
   }
@@ -417,7 +417,7 @@ public abstract class Expr
    * the first argument string does not contain the second argument string.
    * For example, substring-before("1999/04/01","/") returns 1999.
    */
-  final String _substring_before (Node context, String s1, String s2)
+  static String _substring_before (Node context, String s1, String s2)
   {
     int index = s1.indexOf (s2);
     return (index == -1) ? "" : s1.substring (0, index);
@@ -431,7 +431,7 @@ public abstract class Expr
    * For example, substring-after("1999/04/01","/") returns 04/01, and
    * substring-after("1999/04/01","19") returns 99/04/01.
    */
-  final String _substring_after (Node context, String s1, String s2)
+  static String _substring_after (Node context, String s1, String s2)
   {
     int index = s1.indexOf (s2);
     return (index == -1) ? "" : s1.substring (index + s2.length ());
@@ -446,7 +446,7 @@ public abstract class Expr
    * continuing to the end of the string. For example, substring("12345",2)
    * returns "2345".
    */
-  final String _substring (Node context, String s1, double pos, double len)
+  static String _substring (Node context, String s1, double pos, double len)
   {
     int ipos = Math.max (((int) Math.round (pos)) - 1, 0);
     int ilen = Math.min (((int) Math.round (len)) - 1, s1.length ());
@@ -459,7 +459,7 @@ public abstract class Expr
    * node converted to a string, in other words the string-value of the
    * context node.
    */
-  final double _string_length (Node context, String string)
+  static double _string_length (Node context, String string)
   {
     if (string == null)
       {
@@ -477,7 +477,7 @@ public abstract class Expr
    * converted to a string, in other words the string-value of the context
    * node.
    */
-  final String _normalize_space (Node context, String string)
+  static String _normalize_space (Node context, String string)
   {
     if (string == null)
       {
@@ -512,7 +512,7 @@ public abstract class Expr
    * argument string is longer than the second argument string, then excess
    * characters are ignored.
    */
-  final String _translate (Node context, String string, String search,
+  static String _translate (Node context, String string, String search,
                             String replace)
   {
     StringBuffer buf = new StringBuffer ();
@@ -547,7 +547,7 @@ public abstract class Expr
   /**
    * Implementation of the XPath <code>boolean</code> function.
    */
-  final boolean _boolean (Node context, Object object)
+  static boolean _boolean (Node context, Object object)
   {
     if (object instanceof Boolean)
       {
@@ -572,7 +572,7 @@ public abstract class Expr
    * The not function returns true if its argument is false, and false
    * otherwise.
    */
-  final boolean _not (Node context, boolean b)
+  static boolean _not (Node context, boolean b)
   {
     return !b;
   }
@@ -580,7 +580,7 @@ public abstract class Expr
   /**
    * The true function returns true.
    */
-  final boolean _true (Node context)
+  static boolean _true (Node context)
   {
     return true;
   }
@@ -588,7 +588,7 @@ public abstract class Expr
   /**
    * The false function returns false.
    */
-  final boolean _false (Node context)
+  static boolean _false (Node context)
   {
     return false;
   }
@@ -607,7 +607,7 @@ public abstract class Expr
    * such that the attribute value is equal to the argument ignoring that
    * suffix of the attribute value and ignoring case.
    */
-  final boolean _lang (Node context, String lang)
+  static boolean _lang (Node context, String lang)
   {
     String clang = getLang (context);
     while (clang == null && context != null)
@@ -619,7 +619,7 @@ public abstract class Expr
       clang.toLowerCase ().startsWith (lang.toLowerCase ());
   }
 
-  final String getLang (Node node)
+  static String getLang (Node node)
   {
     if (node instanceof Element)
       {
@@ -633,7 +633,7 @@ public abstract class Expr
   /**
    * Implementation of the XPath <code>number</code> function.
    */
-  final double _number (Node context, Object object)
+  static double _number (Node context, Object object)
   {
     if (object == null)
       {
@@ -672,7 +672,7 @@ public abstract class Expr
    * node-set, of the result of converting the string-values of the node to
    * a number.
    */
-  final double _sum (Node context, Collection nodeSet)
+  static double _sum (Node context, Collection nodeSet)
   {
     double ret = 0.0;
     for (Iterator i = nodeSet.iterator (); i.hasNext (); )
@@ -686,7 +686,7 @@ public abstract class Expr
    * The floor function returns the largest (closest to positive infinity)
    * number that is not greater than the argument and that is an integer.
    */
-  final double _floor (Node context, double number)
+  static double _floor (Node context, double number)
   {
     return Math.floor (number);
   }
@@ -696,7 +696,7 @@ public abstract class Expr
    * infinity) number that is not less than the argument and that is an
    * integer.
    */
-  final double _ceiling (Node context, double number)
+  static double _ceiling (Node context, double number)
   {
     return Math.ceil (number);
   }
@@ -712,7 +712,7 @@ public abstract class Expr
    * negative zero is returned. If the argument is less than zero, but
    * greater than or equal to -0.5, then negative zero is returned.
    */
-  final double _round (Node context, double number)
+  static double _round (Node context, double number)
   {
     return (double) Math.round (number);
   }
@@ -720,7 +720,7 @@ public abstract class Expr
   /**
    * Computes the XPath string-value of the specified node-set.
    */
-  final String stringValue (Collection nodeSet)
+  static String stringValue (Collection nodeSet)
   {
     StringBuffer buf = new StringBuffer ();
     for (Iterator i = nodeSet.iterator (); i.hasNext (); )
@@ -733,12 +733,12 @@ public abstract class Expr
   /**
    * Computes the XPath string-value of the specified node.
    */
-  final String stringValue (Node node)
+  static String stringValue (Node node)
   {
     return stringValue (node, false);
   }
   
-  final String stringValue (Node node, boolean elementMode)
+  static String stringValue (Node node, boolean elementMode)
   {
     switch (node.getNodeType ())
       {

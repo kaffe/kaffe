@@ -1,5 +1,5 @@
 /*
- * Root.java
+ * TemplatesImpl.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -36,31 +36,47 @@
  * exception statement from your version. 
  */
 
-package gnu.xml.xpath;
+package gnu.xml.transform;
 
-import java.util.Collections;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import java.util.Properties;
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.URIResolver;
 
 /**
- * Expression that evaluates to the document root.
+ * GNU precompiled stylesheet implementation.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class Root
-extends Expr
+class TemplatesImpl
+  implements Templates
 {
 
-  public Object evaluate (Node context)
+  final URIResolver uriResolver;
+  final ErrorListener errorListener;
+  final Stylesheet stylesheet;
+
+  TemplatesImpl(URIResolver resolver, ErrorListener listener,
+                Stylesheet stylesheet)
   {
-    Document doc = (context instanceof Document) ? (Document) context :
-      context.getOwnerDocument ();
-    return Collections.singleton (doc);
+    uriResolver = resolver;
+    errorListener = listener;
+    this.stylesheet = stylesheet;
   }
 
-  public String toString ()
+  public Transformer newTransformer()
+    throws TransformerConfigurationException
   {
-    return "/";
+    return new TransformerImpl(uriResolver, errorListener, stylesheet);
+  }
+
+  public Properties getOutputProperties()
+  {
+    // TODO
+    return null;
   }
   
 }

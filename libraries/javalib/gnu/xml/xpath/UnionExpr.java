@@ -40,8 +40,8 @@ package gnu.xml.xpath;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
 import org.w3c.dom.Node;
 
 /**
@@ -68,7 +68,7 @@ extends Expr
     Object right = rhs.evaluate (context);
     if (left instanceof Collection && right instanceof Collection)
       {
-        Set ret = new LinkedHashSet ();
+        Set ret = new TreeSet ();
         ret.addAll ((Collection) left);
         ret.addAll ((Collection) right);
         return ret;

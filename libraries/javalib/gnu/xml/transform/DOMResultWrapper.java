@@ -1,5 +1,5 @@
 /*
- * Root.java
+ * DOMResultWrapper.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -36,31 +36,90 @@
  * exception statement from your version. 
  */
 
-package gnu.xml.xpath;
+package gnu.xml.transform;
 
-import java.util.Collections;
-import org.w3c.dom.Document;
+import java.io.IOException;
+import java.io.OutputStream;
+import javax.xml.transform.Result;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Node;
 
 /**
- * Expression that evaluates to the document root.
+ * A DOM result that wraps an underlying result.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class Root
-extends Expr
+class DOMResultWrapper
+  extends DOMResult
 {
 
-  public Object evaluate (Node context)
+  final Result result;
+
+  DOMResultWrapper(Result result)
   {
-    Document doc = (context instanceof Document) ? (Document) context :
-      context.getOwnerDocument ();
-    return Collections.singleton (doc);
+    this.result = result;
+  }
+  
+  public Node getNode()
+  {
+    if (result instanceof DOMResult)
+      {
+        return ((DOMResult) result).getNode();
+      }
+    return null;
   }
 
-  public String toString ()
+  public Node getNextSibling()
   {
-    return "/";
+    if (result instanceof DOMResult)
+      {
+        return ((DOMResult) result).getNextSibling();
+      }
+    return null;
+  }
+
+  public String getSystemId()
+  {
+    return result.getSystemId();
+  }
+
+  public void setSystemId(String systemId)
+  {
+    result.setSystemId(systemId);
+  }
+
+  public void setNode(Node node)
+  {
+    if (result instanceof DOMResult)
+      {
+        ((DOMResult) result).setNode(node);
+      }
+    else if (result instanceof StreamResult)
+      {
+        try
+          {
+            StreamResult sr = (StreamResult) result;
+            OutputStream out = sr.getOutputStream();
+            DOMSerializer.serialize(node, out);
+            out.close();
+          }
+        catch (IOException e)
+          {
+            // TODO
+            e.printStackTrace();
+          }
+      }
+    else if (result instanceof SAXResult)
+      {
+        // TODO
+      }
+  }
+
+  public void setNextSibling(Node node)
+  {
+    // Will never be called by transform
   }
   
 }

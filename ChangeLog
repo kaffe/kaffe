@@ -1,5 +1,64 @@
 2004-11-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/xml/transform/DOMResultWrapper.java,
+	libraries/javalib/gnu/xml/transform/DOMSerializer.java,
+	libraries/javalib/gnu/xml/transform/DOMSourceLocator.java,
+	libraries/javalib/gnu/xml/transform/DOMSourceWrapper.java,
+	libraries/javalib/gnu/xml/transform/ErrorListenerErrorHandler.java,
+	libraries/javalib/gnu/xml/transform/Stylesheet.java,
+	libraries/javalib/gnu/xml/transform/Template.java,
+	libraries/javalib/gnu/xml/transform/TemplatesImpl.java,
+	libraries/javalib/gnu/xml/transform/TransformerFactoryImpl.java,
+	libraries/javalib/gnu/xml/transform/TransformerImpl.java,
+	libraries/javalib/gnu/xml/transform/URIResolverEntityResolver.java,
+	libraries/javalib/gnu/xml/xpath/XPathTest.java:
+	New files taken from GNU JAXP.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/clib/libxmlj/xmlj_sax.c,
+	libraries/clib/libxmlj/xmlj_transform.c,
+	libraries/javalib/gnu/xml/dom/DomDocument.java,
+	libraries/javalib/gnu/xml/dom/DomNode.java,
+	libraries/javalib/gnu/xml/dom/DomXPathResult.java,
+	libraries/javalib/gnu/xml/libxmlj/transform/GnomeTransformer.java,
+	libraries/javalib/gnu/xml/libxmlj/transform/TransformTest.java,
+	libraries/javalib/gnu/xml/libxmlj/util/XMLJ.java,
+	libraries/javalib/gnu/xml/xpath/Expr.java,
+	libraries/javalib/gnu/xml/xpath/NameTest.java,
+	libraries/javalib/gnu/xml/xpath/NodeTypeTest.java,
+	libraries/javalib/gnu/xml/xpath/Root.java,
+	libraries/javalib/gnu/xml/xpath/Selector.java,
+	libraries/javalib/gnu/xml/xpath/Step.java,
+	libraries/javalib/gnu/xml/xpath/Test.java,
+	libraries/javalib/gnu/xml/xpath/UnionExpr.java,
+	libraries/javalib/gnu/xml/xpath/XPathImpl.java,
+	libraries/javalib/javax/xml/parsers/DocumentBuilderFactory.java,
+	libraries/javalib/javax/xml/parsers/SAXParserFactory.java,
+	libraries/javalib/javax/xml/transform/TransformerException.java,
+	libraries/javalib/javax/xml/transform/TransformerFactory.java,
+	libraries/javalib/javax/xml/xpath/XPathFactory.java:
+	Resynced with GNU JAXP.
+
+	2004-10-31  Chris Burdess  <dog@gnu.org>
+
+        * DomNode.java: Implement Comparable using natural document order.
+        * xpath: Use natural document ordering in DomNode.
+
+	2004-10-30  Chris Burdess  <dog@gnu.org>
+
+        * transform: Experimental XSLT transformer using XPath
+        implementation.
+
+	2004-11-01  Chris Burdess <dog@gnu.org>
+
+        * xmlj_sax.c: Fixed segfault with external entities in transform.
+
+2004-11-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/beans/PropertyEditorSupport.java:
         Resynced with GNU Classpath.
 

@@ -45,22 +45,32 @@ import org.w3c.dom.Node;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class NodeTypeTest
-extends Test
+public class NodeTypeTest
+  extends Test
 {
 
   final short type;
   final String data;
 
-  NodeTypeTest (short type)
+  public NodeTypeTest (short type)
   {
     this (type, null);
   }
 
-  NodeTypeTest (short type, String data)
+  public NodeTypeTest (short type, String data)
   {
     this.type = type;
     this.data = data;
+  }
+
+  public short getNodeType()
+  {
+    return type;
+  }
+
+  public String getData()
+  {
+    return data;
   }
 
   boolean matches (Node node)

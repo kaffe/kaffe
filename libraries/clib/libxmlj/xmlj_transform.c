@@ -609,7 +609,7 @@ xmljDocLoader (const xmlChar *uri, xmlDictPtr dict, int options,
   jobject inputStream;
   jbyteArray detectBuffer;
 
-  fprintf(stderr,"xmljDocLoader:2\n");
+  /*fprintf(stderr,"xmljDocLoader:1\n");*/
   fflush(stdout);
   env = xmljGetJNIEnv ();
   if (!env)
@@ -622,8 +622,8 @@ xmljDocLoader (const xmlChar *uri, xmlDictPtr dict, int options,
       return NULL;
     }
   getInputStream =
-    (*env)->GetMethodID (env, xmljClass, "getInputStream",
-                         "(Ljava/lang/String;Ljava/lang/String;)Lgnu/xml/libxmlj/util/NamedInputStream;");
+    (*env)->GetStaticMethodID (env, xmljClass, "xmljGetInputStream",
+                               "(Ljava/lang/String;Ljava/lang/String;)Lgnu/xml/libxmlj/util/NamedInputStream;");
   if (!getInputStream)
     {
       return NULL;

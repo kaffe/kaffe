@@ -113,7 +113,7 @@ public abstract class XPathFactory
     int count = 0;
     do
       {
-        className = getFactoryClassName(loader, count);
+        className = getFactoryClassName(loader, count++);
         if (className != null)
           {
             try

@@ -45,8 +45,8 @@ import org.w3c.dom.Node;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class NameTest
-extends Test
+public class NameTest
+  extends Test
 {
 
   final String name;
@@ -58,6 +58,16 @@ extends Test
     this.name = name;
     this.anyLocalName = anyLocalName;
     this.any = any;
+  }
+
+  public boolean matchesAny()
+  {
+    return any;
+  }
+
+  public boolean matchesAnyLocalName()
+  {
+    return anyLocalName;
   }
 
   boolean matches (Node node)
