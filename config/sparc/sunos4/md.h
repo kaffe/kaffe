@@ -15,6 +15,12 @@
 #include "sparc/common.h"
 #include "sparc/threads.h"
 
+/*
+ * Redefine stack pointer offset.
+ */
+#undef  SP_OFFSET
+#define SP_OFFSET       2
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

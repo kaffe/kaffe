@@ -72,7 +72,7 @@ all:		mkkaffevm
 @cpu_os_frag@
 @threads_frag@
 
-OBJECT=		$(COMMON) $(ENGINE_OBJECTS) $(CPU_OBJECTS) $(CPUOS_OBJECTS)
+OBJECT=		$(COMMON) $(THREAD) $(ENGINE_OBJECTS) $(CPU_OBJECTS) $(CPUOS_OBJECTS)
 
 DEPENDS=       $(OBJECT:@OBJEXT@=.d)
 

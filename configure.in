@@ -397,8 +397,8 @@ if test "$have_x" = "yes" ; then
 fi
 if test "${x_libraries}" != NONE && test -n "${x_libraries}"; then
 	X_LIBRARIES=-L`echo ${x_libraries} | sed -e "s/:/ -L/g"`
+	X_LIBRARIES="$X_LIBRARIES -lX11"
 fi
-X_LIBRARIES="$X_LIBRARIES -lX11"
 if test "${x_includes}" != NONE && test -n "${x_includes}"; then
 	X_INCLUDES=-I`echo ${x_includes} | sed -e "s/:/ -I/g"`
 fi
@@ -485,6 +485,7 @@ AC_CHECK_FUNCS(sbrk valloc memalign mallopt)
 AC_CHECK_FUNCS(waitpid kill fork execve)
 AC_CHECK_FUNCS(rld_load shl_load LoadLibrary dld_link)
 AC_CHECK_FUNCS(sync fsync)
+AC_CHECK_FUNCS(atexit on_exit)
 
 dnl Some systems must include dlfcn to get these right.
 AC_CACHE_CHECK([for dlopen], ac_cv_func_dlopen,

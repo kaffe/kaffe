@@ -265,6 +265,12 @@
 /* Do we have fsync */
 #undef	HAVE_fsync
 
+/* Do we have atexit */
+#undef	HAVE_ATEXIT
+
+/* Do we have on_exit (Sun OS 4.x) */
+#undef	HAVE_ON_EXIT
+
 /* Do we have dlopen */
 #undef	HAVE_DLOPEN
 
