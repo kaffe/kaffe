@@ -54,7 +54,6 @@ COMMON=\
 		locks$(OBJEXT) \
 		support$(OBJEXT) \
 		soft$(OBJEXT) \
-		flags$(OBJEXT) \
 		string$(OBJEXT) \
 		verify$(OBJEXT) \
 		code-analyse$(OBJEXT) \
