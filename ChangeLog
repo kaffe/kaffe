@@ -1,3 +1,8 @@
+Mon Jul 20 18:41:19 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/findInJar.c: fix to allow for read-only strings
+	  as classpath.
+
 Sun Jul 19 23:46:30 1998  Rick Greer <rick@sandpiper.com>
 
 	* config/alpha/common.h: system-dependent stuff for alpha/linux
