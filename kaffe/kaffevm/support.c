@@ -286,12 +286,28 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 	for (; *sig != ')'; i++, sig++) {
 		call.calltype[i] = *sig;
 		switch (*sig) {
-		case 'I':
 		case 'Z':
+			call.callsize[i] = 1;
+			in[i].i = args[i].z;
+			break;
+
 		case 'S':
+			call.callsize[i] = 1;
+			in[i].i = args[i].s;
+			break;
+
 		case 'B':
+			call.callsize[i] = 1;
+			in[i].i = args[i].b;
+			break;
+
 		case 'C':
+			call.callsize[i] = 1;
+			in[i].i = args[i].c;
+			break;
+
 		case 'F':
+		case 'I':
 			call.callsize[i] = 1;
 			in[i] = args[i];
 			break;
