@@ -15,7 +15,7 @@ import java.lang.SecurityManager;
 import java.net.InetAddress;
 import java.security.Permission;
 
-class RMISecurityManager extends SecurityManager {
+public class RMISecurityManager extends SecurityManager {
 
 public RMISecurityManager() {
 }
