@@ -1245,7 +1245,8 @@ gnu_java_security_der_SRCS = \
 	gnu/java/security/der/DERValue.java \
 	gnu/java/security/der/DERWriter.java
 gnu_java_security_provider_SRCS = \
-	gnu/java/security/provider/DefaultPolicy.java
+	gnu/java/security/provider/DefaultPolicy.java \
+	gnu/java/security/provider/SHA1PRNG.java
 gnu_java_security_x509_SRCS = \
 	gnu/java/security/x509/X500DistinguishedName.java
 gnu_java_text_SRCS = \

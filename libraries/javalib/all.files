@@ -842,6 +842,7 @@ gnu/java/security/der/DERReader.java
 gnu/java/security/der/DERValue.java
 gnu/java/security/der/DERWriter.java
 gnu/java/security/provider/DefaultPolicy.java
+gnu/java/security/provider/SHA1PRNG.java
 gnu/java/security/x509/X500DistinguishedName.java
 gnu/java/text/AttributedFormatBuffer.java
 gnu/java/text/BaseBreakIterator.java
