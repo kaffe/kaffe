@@ -513,3 +513,4 @@
 
 /* Define default KAFFEHOME */
 #undef DEFAULT_KAFFEHOME
+
