@@ -253,8 +253,19 @@ FDBG(			dprintf("Opening java file %s for %s\n", buf, cname); )
 	/* If we call out the loop then we didn't find anything */
 	hand.type = CP_INVALID;
 	/* cut off the ".class" suffix for the exception msg */
-	cname[strlen(cname) - strlen(".class")] = '\0';
-	postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError), cname);
+	{	int dot = strlen(cname) - strlen(".class");
+		if ((dot > 0) && (strcmp(cname + dot, ".class") == 0)) {
+			cname[dot] = 0;
+		}
+		else {
+			dot = -1;
+		}
+		cname[dot] = '\0';
+		postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError), cname);
+		if (dot > 0) {
+			cname[dot] = '.';
+		}
+	}
 
 	done:;
 	unlockStaticMutex(&jarlock);
