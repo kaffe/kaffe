@@ -50,9 +50,7 @@ public static Registry createRegistry(int port) throws RemoteException {
 }
 
 public static Registry createRegistry(int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
-	RegistryImpl impl = new RegistryImpl(port, csf, ssf);
-	((UnicastServerRef)impl.getRef()).exportObject(impl);
-	return (impl);
+	return (new RegistryImpl(port, csf, ssf));
 }
 
 }

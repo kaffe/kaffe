@@ -9,6 +9,7 @@
 package kaffe.rmi.registry;
 
 import java.rmi.registry.Registry;
+import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
 import java.rmi.AccessException;
@@ -34,6 +35,7 @@ public RegistryImpl(int port) throws RemoteException {
 
 public RegistryImpl(int port, RMIClientSocketFactory cf, RMIServerSocketFactory sf) throws RemoteException {
 	super(new UnicastServerRef(new ObjID(ObjID.REGISTRY_ID), port, sf));
+	((UnicastServerRef)getRef()).exportObject(this);
 }
 
 public Remote lookup(String name) throws RemoteException, NotBoundException, AccessException {
@@ -84,8 +86,7 @@ public static void main(String[] args) {
 	}
 
 	try {
-		RegistryImpl impl = new RegistryImpl(port);
-		((UnicastServerRef)impl.getRef()).exportObject(impl);
+		Registry impl = LocateRegistry.createRegistry(port);
 	}
 	catch (RemoteException _) {
 		System.err.println("Registry failed");
