@@ -219,15 +219,18 @@ java_lang_Double_toStringWithPrecision(jdouble val, jint max_precision)
 double
 java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 {
-	char buf0[MAXNUMLEN];
+	char *buf0;
+	double val;
 
-	/* stringJava2CBuf would silently promote 0 to an empty string */
+	/* stringJava2C would silently promote 0 to an empty string */
 	if (str == 0) {
 		SignalError("java.lang.NullPointerException", "");
 	}
-	stringJava2CBuf(str, buf0, sizeof(buf0));
+	buf0 = stringJava2C(str);
 
-	return valueOfCharArray(buf0);
+	val = valueOfCharArray(buf0);
+	gc_free(buf0);
+	return val;
 }
 
 /*
