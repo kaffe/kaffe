@@ -431,6 +431,11 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 #else
 	int align = 0;
 #endif
+#if defined(REGISTER_JIT_METHOD_LENGTH)
+	int jitlen = REGISTER_JIT_METHOD_LENGTH;
+#else
+	int jitlen = 0;
+#endif
 	uint32 constlen;
 	nativecode* methblock;
 	nativecode* codebase;
@@ -444,12 +449,12 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	 * NB: we assume the allocator returns at least 8-byte aligned 
 	 * addresses.   XXX: this should really be gc_memalign
 	 */  
-	methblock = gc_malloc(constlen + CODEPC + (align ? (align - 8) : 0), GC_ALLOC_JITCODE);
+	methblock = gc_malloc(jitlen + constlen + CODEPC + (align ? (align - 8) : 0), GC_ALLOC_JITCODE);
 	if (methblock == 0) {
 		postOutOfMemory(einfo);
 		return (false);
 	}
-	codebase = methblock + constlen;
+	codebase = methblock + jitlen + constlen;
 	/* align entry point if so desired */
 	if (align != 0 && (unsigned long)codebase % align != 0) {
 		int pad = (align - (unsigned long)codebase % align);
@@ -463,11 +468,14 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	gc_free(codeblock);
 
 	/* Establish any code constants */
-	establishConstants(methblock);
+	establishConstants(methblock + jitlen);
 
 	/* Link it */
 	linkLabels(codeInfo, (uintp)codebase);
 
+#if defined(REGISTER_JIT_METHOD)
+	REGISTER_JIT_METHOD (methblock, codebase, CODEPC);
+#endif
 	/* Note info on the compiled code for later installation */
 	code->mem = methblock;
 	code->memlen = constlen + CODEPC;
@@ -496,7 +504,7 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	if (CLASS_IS_INTERFACE(meth->class) && utf8ConstEqual(meth->name, init_name)) {
 		KFREE(METHOD_NATIVECODE(meth));
 	}
-	SET_METHOD_NATIVECODE(meth, code->code);
+	SET_METHOD_JITCODE(meth, code->code);
 	/* Free bytecode before replacing it with native code */
 	if (meth->c.bcode.code != 0) {
 		KFREE(meth->c.bcode.code);
