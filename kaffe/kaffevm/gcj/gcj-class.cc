@@ -15,7 +15,7 @@
 #include "config-std.h"
 #include "gcj.h"
 
-#if defined(HAVE_GCJ_SUPPORT)
+#if defined(HAVE_GCJ_SUPPORT) && defined(TRANSLATOR) && defined(JIT3)
 #define private public
 #include <java/lang/Object.h>
 #include <java/lang/Class.h>
@@ -692,7 +692,7 @@ findPrimitiveClass(void *symbol)
 {
 #define I(type) 				\
 	if (symbol == &_Jv_##type##Class) {	\
-		return (#type);			\
+		return (";" #type);		\
 	} 
 
 	I(int) else

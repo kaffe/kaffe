@@ -23,11 +23,7 @@
 #include "jit3/machine.h"
 #include "object.h"
 
-#if !defined(TRANSLATOR)
-#error gcj only available for translator at this time
-#endif
-
-#if defined(HAVE_GCJ_SUPPORT)
+#if defined(HAVE_GCJ_SUPPORT) && defined(JIT3) && defined(TRANSLATOR)
 
 /*
  * GCJ code wants to create an object.  
@@ -730,4 +726,4 @@ kenvFree(void * ptr)
 	KFREE(ptr);
 }
 
-#endif
+#endif /* HAVE_GCJ_SUPPORT */

@@ -34,6 +34,7 @@ extern void * soft_checkcast(void *type, java::lang::Object *obj);
 extern int soft_instanceof(void *type, java::lang::Object *obj);
 extern void soft_checkarraystore(java::lang::Object *array, java::lang::Object *obj);
 
+extern void *getCurrentThread(void);
 extern void lockObject(java::lang::Object*);
 extern void unlockObject(java::lang::Object*);
 }

@@ -11,7 +11,7 @@
  */
 
 #include "config.h"
-#if defined(HAVE_GCJ_SUPPORT)
+#if defined(HAVE_GCJ_SUPPORT) && defined(JIT3)
 
 #include "config-std.h"
 #include "config-setjmp.h"
@@ -198,10 +198,10 @@ kenvThrowBadArrayIndex(int idx)
  *      void *eh_ptr;
  *      long cfa_offset;
  *      long args_size;
- *      long reg_or_offset[FIRST_PSEUDO_REGISTER+1];  
+ *      long reg_or_offset[DWARF_FRAME_REGISTERS+1];  
  *      unsigned short cfa_reg;
  *      unsigned short retaddr_column;
- *      char saved[FIRST_PSEUDO_REGISTER+1];
+ *      char saved[DWARF_FRAME_REGISTERS+1];
  *    } frame_state;
  *
  */
@@ -214,7 +214,7 @@ dumpFS(char *label, struct frame_state *s)
 	fprintf(stderr, "cfa = %p, eh_ptr = %p, "
 			"cfa_offset = %ld, args_size = %ld\n",
 			s->cfa, s->eh_ptr, s->cfa_offset, s->args_size);
-	for (i = 0; i <= FIRST_PSEUDO_REGISTER; i++) {
+	for (i = 0; i <= DWARF_FRAME_REGISTERS; i++) {
 		char *w = s->saved[i] == REG_SAVED_OFFSET ? "Off" :
 			  s->saved[i] == REG_SAVED_REG ? "Reg" : "Und";
 		if (s->saved[i] == 0) {	/* skip unsaved ones, they're not
@@ -250,7 +250,7 @@ gcjStateForReplacement(void *pc_target,
 	int i, n;
 	int is_trampoline = 0;
 	Method *meth;
-	struct kaffe_frame_descriptor frame_desc[FIRST_PSEUDO_REGISTER];
+	struct kaffe_frame_descriptor frame_desc[DWARF_FRAME_REGISTERS];
 	stackTraceInfo frame;
 	gcjException *einf = *(__get_eh_info());
 

@@ -17,7 +17,7 @@
 
 /* Begin of kaffe-specific configuration header */
 #include "config.h"
-#if defined(HAVE_GCJ_SUPPORT)
+#if defined(HAVE_GCJ_SUPPORT) && defined(JIT3) && defined(TRANSLATOR)
 
 #include "gtypes.h"
 #include "md.h"
