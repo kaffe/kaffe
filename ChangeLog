@@ -1,3 +1,17 @@
+2004-04-16  Riccardo Mottola <zuse@libero.it>
+
+	* config/m68k/openbsd2/jit.h:
+	(CALL_KAFFE_FUNCTION): Removed.
+	(CALL_KAFFE_FUNCTION_VARARGS) Rearranged.
+	(FPFRAME, HAVE_TRAMPOLINE, methodTrampoline,
+	FILL_IN_TRAMPOLINE, FIXUP_TRAMPOLINE_DECL, 
+	FIXUP_TRAMPOLINE_INIT, NR_GLOBALS, NR_ARGUMENTS,
+	SRNR, SAVEMASK, RESTOREMASK): Copied over from 
+	config/m68k/jit.h in order to fix compilation problems.
+
+	* config/m68k/openbsd2/md.h:
+	Include m68k/common.h for compare & exchange macro.
+
 2004-04-16  Ito kazumitsu <kaz@maczuka.gcd.org>
         * kaffe/kaffevm/locks.c
 	slowUnlockMutex(): lk->holder may be null. So check it before
@@ -67,7 +81,6 @@
 	Fix bug where the exec code would search the path for
 	a binary, but then didn't use the found file.
 
->>>>>>> 1.2228
 2004-04-15  Jim Pick <jim@kaffe.org>
 
 	* configure.ac:

@@ -5,8 +5,15 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2004
+ *	Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
+ *
+ * Modified by Riccardo Mottola <rmottola@users.sourceforge.net>
+ * after m68k/jit.h by Kiyo Inaba
+ *
  */
 
 /* NOTE:
@@ -17,6 +24,51 @@
 
 #ifndef __m68k_jit_h
 #define __m68k_jit_h
+
+/**/
+/* Exception handling information. */
+/**/
+
+extern struct _thread* currentThread;
+
+/* Structure of exception frame on stack */
+typedef struct _exceptionFrame {
+        uintp	retfp;
+        uintp	retpc;
+} exceptionFrame;
+
+/* Is this frame valid (ie. is it on the current stack) ? */
+#define	FRAMEOKAY(f)							\
+	((f) && (f)->retfp >= (uintp)TCTX(currentThread)->stackBase &&	\
+	 (f)->retfp < (uintp)TCTX(currentThread)->stackEnd)
+
+/* Get the next frame in the chain */
+#define	NEXTFRAME(f)							\
+	((f) = (exceptionFrame*)(f)->retfp)
+
+/* Extract the PC from the given frame */
+#define	PCFRAME(f)		((f)->retpc)
+#define FPFRAME(f)		((f)->retfp)
+
+/* Get the first exception frame from a subroutine call */
+#define	FIRSTFRAME(f, o)						\
+	((f) = *(exceptionFrame*)__builtin_frame_address(0))
+
+/* Extract the object argument from given frame */
+#define FRAMEOBJECT(obj, f, einfo)					\
+	(obj) = *(Hjava_lang_Object**)((f) + 8)
+
+/* Call the relevant exception handler (rewinding the stack as
+   necessary). */
+/* using a6 for the frame pointer (FRAME_POINTER_REGNUM)? XXX */
+#define CALL_KAFFE_EXCEPTION(frame, info, obj)				\
+	__asm__ __volatile__(						\
+		"move%.l %0,%/a6\n\t"					\
+		"move%.l %1,%/d0\n\t"					\
+		"jmp %2"						\
+		: : "g"(frame->retfp), "g"(obj), 			\
+		    "m"(*(nativecode*)info.handler)			\
+		: "d0", "cc", "memory")
 
 /**/
 /* Native function invocation. */
@@ -42,63 +94,35 @@
 		: "m"(*meth->ncode), "g"(obj), "g"(nargs), "a"(argptr),	\
 		  "m"(4*(nargs+1))					\
 		: "cc", "memory", "a0","d0","d1")
-
-#define CALL_KAFFE_FUNCTION(meth, obj)                                  \
-	__asm__ __volatile__(						\
-		"movem%.l %/d0-%/d7/%/a0-%/a5,%-\n\t"			\
-		"fmovem %/fp0-%/fp7,%-\n\t"				\
-		"move%.l %1,%-\n\t"					\
-		"jsr %0\n\t"						\
-		"addl %#4,%/sp\n\t"					\
-		"fmovem %+,%/fp0-%/fp7\n\t"				\
-		"movem%.l %+,%/d0-%/d7/%/a0-%/a5"			\
-		: : "m"(*meth->ncode), "g"(obj)				\
-		: "cc", "memory")
 		
+
+
 /**/
-/* Exception handling information. */
+/* Method dispatch.  */
 /**/
 
-extern struct _thread* currentThread;
+#define HAVE_TRAMPOLINE
 
-/* Structure of exception frame on stack */
-typedef struct _exceptionFrame {
-        uintp	retfp;
-        uintp	retpc;
-} exceptionFrame;
+typedef struct _methodTrampoline {
+        unsigned short call;
+	int fixup;
+	struct _methods* meth;
+	void** where;
+} methodTrampoline;
 
-/* Is this frame valid (ie. is it on the current stack) ? */
-#define	FRAMEOKAY(f)							\
-	((f) && (f)->retfp >= (uintp)TCTX(currentThread)->stackBase &&	\
-	 (f)->retfp < (uintp)TCTX(currentThread)->stackEnd)
+extern void m68k_do_fixup_trampoline(void);
 
-/* Get the next frame in the chain */
-#define	NEXTFRAME(f)							\
-	((f) = (exceptionFrame*)(f)->retfp)
+#define FILL_IN_TRAMPOLINE(t,m,w)					\
+        do {                                                            \
+                (t)->call = 0x4eb9;	/* jsr abs.l */			\
+                (t)->fixup = (int)m68k_do_fixup_trampoline;		\
+                (t)->meth = (m);                                        \
+		(t)->where = (w);					\
+        } while (0)
 
-/* Extract the PC from the given frame */
-#define	PCFRAME(f)		((f)->retpc)
-
-/* Get the first exception frame from a subroutine call */
-#define	FIRSTFRAME(f, o)						\
-	((f) = *(exceptionFrame*)__builtin_frame_address(0))
-
-/* Extract the object argument from given frame */
-#define FRAMEOBJECT(obj, f, einfo)					\
-	(obj) = *(Hjava_lang_Object**)((f) + 8)
-
-/* Call the relevant exception handler (rewinding the stack as
-   necessary). */
-/* using a6 for the frame pointer (FRAME_POINTER_REGNUM)? XXX */
-#define CALL_KAFFE_EXCEPTION(frame, info, obj)				\
-	__asm__ __volatile__(						\
-		"move%.l %0,%/a6\n\t"					\
-		"move%.l %1,%/d0\n\t"					\
-		"jmp %2"						\
-		: : "g"(frame->retfp), "g"(obj), 			\
-		    "m"(*(nativecode*)info.handler)			\
-		: "d0", "cc", "memory")
-
+#define FIXUP_TRAMPOLINE_DECL	void** _data
+#define FIXUP_TRAMPOLINE_INIT	(meth = (Method*)_data[0], \
+				 where = (void**)_data[1])
 
 /**/
 /* Register management information. */
@@ -139,12 +163,25 @@ typedef struct _exceptionFrame {
 /* Number of registers in the register set */
 #define	NR_REGISTERS	24
 
+/* Number of function globals in register set */
+#define NR_GLOBALS      8
+
+/* Number of arguments passed in registers - we don't have any */
+#undef  NR_ARGUMENTS
+
+/* Define the registers to be saved and restore in the prologue/epilogue */
+#define SRNR            10
+#define SAVEMASK        0x3F3C
+#define RESTOREMASK     0x3CFC
+
+
 /**/
 /* Opcode generation. */
 /**/
 
 /* Define if generated code uses two operands rather than one */
 #define	TWO_OPERAND
+
 
 /**/
 /* Slot management information. */
