@@ -1,3 +1,10 @@
+Thu Apr  9 14:30:59 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* New internal threading system added.  Should run on FreeBSD,
+	  Linux, and Solaris.  Use --with-threads=unix-jthreads to enable.
+	  This system is preemptive and uses asynchronous I/O.
+	* Added more regression test cases for new system.
+
 Mon Mar 30 10:52:13 PST 1998	Tim Wilkinson	<tim@transvirtual.com>
 
 	* Too much stuff has changed to document it all here.  Sorry.
