@@ -16,6 +16,7 @@ struct {        \
 
 A(int, Int);
 A(short, Short);
+A(long, Long);
 A(long long, LongLong);
 A(float, Float);
 A(double, Double);
@@ -23,9 +24,10 @@ A(char, Char);
 A(struct { short _; }, ShortStruct);
 A(struct { char _; }, CharStruct);
 A(struct { int _; }, IntStruct);
+A(struct { long _; }, LongStruct);
 A(struct { float _; }, FloatStruct);
 A(struct { double _; }, DoubleStruct);
-A(struct { long long _; }, LongStruct);
+A(struct { long long _; }, LongLongStruct);
 
 main()
 {
@@ -36,12 +38,14 @@ main()
   P(Short);
   P(Int);
   P(Float);
+  P(Long);
   P(LongLong);
   P(Double);
   P(CharStruct);
   P(ShortStruct);
   P(IntStruct);
   P(FloatStruct);
-  P(DoubleStruct);
   P(LongStruct);
+  P(LongLongStruct);
+  P(DoubleStruct);
 }
