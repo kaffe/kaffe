@@ -43,7 +43,7 @@ newObjectChecked(Hjava_lang_Class* class, errorInfo *info)
 				     "(class: %s) "
 				     "Abstract class.",
 				     CLASS_CNAME(class));
-		return (0);
+		return (NULL);
 	}
 	obj = gc_malloc((size_t)(CLASS_FSIZE(class)), class->alloc_type);
 
@@ -102,14 +102,14 @@ newClass(void)
 	Hjava_lang_Class* cls;
 
 	cls = gc_malloc(sizeof(Hjava_lang_Class), KGC_ALLOC_CLASSOBJECT);
-	if (cls == 0) {
+	if (cls == NULL) {
 		goto done;
 	}
 
 	/* Turn off class gc */
 	if (Kaffe_JavaVMArgs.enableClassGC == 0) {
 		if (!gc_add_ref(cls)) {
-			return 0;
+			return NULL;
 		}
 	}
 
@@ -129,8 +129,8 @@ DBG(NEWOBJECT,
 Hjava_lang_Object*
 newArrayChecked(Hjava_lang_Class* elclass, jsize count, errorInfo *info)
 {
-	Hjava_lang_Class* class = 0;
-	Hjava_lang_Object* obj = 0;
+	Hjava_lang_Class* class = NULL;
+	Hjava_lang_Object* obj = NULL;
 
 	if ((class = lookupArray(elclass, info)) != NULL) {
 		size_t total_count;

@@ -87,7 +87,7 @@ stringC2Java(const char* cs)
 	/* Get buffer */
 	if (len * sizeof(*ary) > sizeof(buf)) {
 		ary = gc_malloc(len * sizeof(*ary), KGC_ALLOC_FIXED);
-		if (!ary) return 0;
+		if (!ary) return NULL;
 	} else {
 		ary = buf;
 	}
@@ -121,7 +121,7 @@ stringC2CharArray(const char* cs)
 					     (jsize)len, &info);
 	if (!ary) {
 		discardErrorInfo(&info);
-		return 0;
+		return NULL;
 	}
 	
 	/* Convert C chars to Java chars */
@@ -166,7 +166,7 @@ utf8Const2JavaReplace(const Utf8Const *utf8, jchar from_ch, jchar to_ch)
 	/* Get buffer */
 	if (uniLen * sizeof(jchar) > sizeof(buf)) {
 		jc = gc_malloc(uniLen * sizeof(*jc), KGC_ALLOC_FIXED);
-		if (!jc) return 0;
+		if (!jc) return NULL;
 	} else {
 		jc = buf;
 	}
@@ -445,7 +445,7 @@ stringCharArray2Java(const jchar *data, int len)
 		} else {
 			fakeAry = (HArrayOfChar*)buf;
 		}
-		if (!fakeAry) return 0;
+		if (!fakeAry) return NULL;
 		
 		memset(fakeAry, 0, sizeof(*fakeAry));
 		memcpy(unhand_array(fakeAry)->body, data, len * sizeof(*data));
@@ -475,14 +475,14 @@ stringCharArray2Java(const jchar *data, int len)
 					     &info);
 	if (!ary) {
 		discardErrorInfo(&info);
-		return 0;
+		return NULL;
 	}
 	
 	memcpy(ARRAY_DATA(ary), data, len * sizeof(jchar));
 	string = (Hjava_lang_String*)newObjectChecked(getStringClass(), &info);
 	if (!string) {
 		discardErrorInfo(&info);
-		return 0;
+		return NULL;
 	}
 	unhand(string)->value = ary;
 	unhand(string)->count = len;

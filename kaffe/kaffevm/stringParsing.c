@@ -119,7 +119,7 @@ int pushFrame(parseErrorInfo *pe,
 	}
 	else
 	{
-		pe->position = 0;
+		pe->position = NULL;
 		pe->op = op;
 	}
 	return( retval );
@@ -130,7 +130,7 @@ void popFrame(parseStack *ps)
 {
 	parseFrame *prev;
 
-	assert(ps != 0);
+	assert(ps != NULL);
 
 	prev = ps->top->prev;
 	if( ps->depth >= PREALLOC_FRAMES )
@@ -142,7 +142,7 @@ void popFrame(parseStack *ps)
 static
 void cutFrames(parseStack *ps)
 {
-	assert(ps != 0);
+	assert(ps != NULL);
 	
 	while( ps->depth >= PREALLOC_FRAMES )
 	{
@@ -465,7 +465,7 @@ int parseString_private(parseErrorInfo *pe,
 			int op,
 			va_list args)
 {
-	char *str, *str_end, *str_ptr = 0, *term_ptr, *new_pos = 0;
+	char *str, *str_end, *str_ptr = NULL, *term_ptr, *new_pos = NULL;
 	int values_pos = 0, len, retval = 1;
 	stringScript *script_pos = script;
 	parseValue pv;
@@ -494,7 +494,7 @@ int parseString_private(parseErrorInfo *pe,
         VA_LIST_COPY (tmp_args, args);
 #endif
 
-	assert(subString != 0);
+	assert(subString != NULL);
 
 	str = subString->data;
 	str_end = subString->data + subString->len;

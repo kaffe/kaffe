@@ -143,7 +143,7 @@ do_execute_java_class_method_v(jvalue *retval, const char* cname,
 {
 	Hjava_lang_Class* clazz;
 	errorInfo info;
-	Method* mb = 0;
+	Method* mb = NULL;
 	char *buf;
 
 	/* Convert "." to "/" and lookup class */
@@ -153,10 +153,10 @@ do_execute_java_class_method_v(jvalue *retval, const char* cname,
 	KFREE(buf);
 
 	/* Get method */
-	if (clazz != 0) {
+	if (clazz != NULL) {
 		mb = lookupClassMethod(clazz, method_name, signature, &info);
 	}
-	if (mb == 0) {
+	if (mb == NULL) {
 		throwError(&info);
 	}
 
@@ -166,7 +166,7 @@ do_execute_java_class_method_v(jvalue *retval, const char* cname,
 	}
 
 	/* Make the call */
-	callMethodV(mb, METHOD_NATIVECODE(mb), 0, argptr, retval);
+	callMethodV(mb, METHOD_NATIVECODE(mb), NULL, argptr, retval);
 }
 
 /**
@@ -660,13 +660,13 @@ lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, erro
 	name_utf8 = utf8ConstNew(name, -1);
 	if (!name_utf8) {
 		postOutOfMemory(einfo);
-		return 0;
+		return NULL;
 	}
 	sig_utf8 = utf8ConstNew(sig, -1);
 	if (!sig_utf8) {
 		utf8ConstRelease(name_utf8);
 		postOutOfMemory(einfo);
-		return 0;
+		return NULL;
 	}
 	meth = findMethod(cls, name_utf8, sig_utf8, einfo);
 	utf8ConstRelease(name_utf8);
@@ -687,7 +687,7 @@ lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, erro
 Method*
 lookupObjectMethod(Hjava_lang_Object* obj, const char* name, const char* sig, errorInfo *einfo)
 {
-	assert(obj != 0 && name != 0 && sig != 0);
+	assert(obj != NULL && name != NULL && sig != NULL);
 	return (lookupClassMethod(OBJECT_CLASS(obj), name, sig, einfo));
 }
 
@@ -705,10 +705,10 @@ SignalError(const char* cname, const char* str)
 
 	if (str == NULL || *str == '\0') {
 		obj = (Hjava_lang_Throwable*)execute_java_constructor(cname,
-			0, 0, ERROR_SIGNATURE0);
+			NULL, NULL, ERROR_SIGNATURE0);
 	} else {
 		obj = (Hjava_lang_Throwable*)execute_java_constructor(cname,
-			0, 0, ERROR_SIGNATURE, checkPtr(stringC2Java(str)));
+			NULL, NULL, ERROR_SIGNATURE, checkPtr(stringC2Java(str)));
 	}
 	throwException(obj);
 }
@@ -784,7 +784,7 @@ currentTime(void)
 
 #if defined(HAVE_GETTIMEOFDAY)
 	struct timeval tm;
-	gettimeofday(&tm, 0);
+	gettimeofday(&tm, NULL);
 	tme = (((jlong)tm.tv_sec * (jlong)1000) + ((jlong)tm.tv_usec / (jlong)1000));
 #elif defined(HAVE_FTIME)
 	struct timeb tm;
@@ -904,13 +904,13 @@ kprintf(FILE* out, const char* mess, ...)
 void 
 enterUnsafeRegion(void)
 {
-	KTHREAD(spinon)(0);
+	KTHREAD(spinon)(NULL);
 }
 
 void 
 leaveUnsafeRegion(void)
 {
-	KTHREAD(spinoff)(0);
+	KTHREAD(spinoff)(NULL);
 }
 
 /* XXX Ick */

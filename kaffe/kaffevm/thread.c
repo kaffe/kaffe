@@ -84,7 +84,7 @@ KaffeVM_unlinkNativeAndJavaThread()
 	jthread_t thread = KTHREAD(current)();
 	threadData *thread_data = KTHREAD(get_data)(thread);
 
-	thread_data->jniEnv = 0;
+	thread_data->jniEnv = NULL;
 
 	KSEM(destroy) (&thread_data->sem);
 }
@@ -131,7 +131,7 @@ createThread(Hjava_lang_VMThread* vmtid, void (*func)(void *), void *arg,
 
 	if (nativeThread == NULL) {
 		postOutOfMemory(einfo);
-		return 0;
+		return NULL;
 	}
 	
 	return nativeThread;
@@ -258,7 +258,7 @@ attachFakedThreadInstance(const char* nm, int isDaemon)
         unhand(tid)->contextClassLoader = (struct Hjava_lang_ClassLoader *) retval.l;
 
 	/* Attach thread to threadGroup */
-	do_execute_java_method(NULL, unhand(tid)->group, "addThread", "(Ljava/lang/Thread;)V", 0, 0, tid);
+	do_execute_java_method(NULL, unhand(tid)->group, "addThread", "(Ljava/lang/Thread;)V", NULL, 0, tid);
 
 	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)=%p done\n", nm, tid); );
 }
@@ -320,12 +320,12 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	);
   
   /* Keep daemon threads as root objects */
   vmtid = (Hjava_lang_Thread*)newObject(VMThreadClass);
-  assert(vmtid != 0);
+  assert(vmtid != NULL);
   
   name = stringC2Java(nm);
   if (!name) {
     postOutOfMemory(einfo);
-    return 0;
+    return NULL;
   }
   tid = (Hjava_lang_Thread *)
     execute_java_constructor(NULL, NULL,
@@ -353,7 +353,7 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	);
   
   if (nativeTid == NULL) {
     postOutOfMemory(einfo);
-    return 0;
+    return NULL;
   }
 
   KTHREAD(get_data)(nativeTid)->exceptPtr = NULL;
@@ -695,7 +695,7 @@ initNativeThreads(int nativestacksize)
 	stackSize = MAINSTACKSIZE;
 #endif
 	DBG(INIT, dprintf("Detected stackSize %lu\n", stackSize); );
-	KTHREAD(createfirst)(stackSize, (unsigned char)java_lang_Thread_NORM_PRIORITY, 0);
+	KTHREAD(createfirst)(stackSize, (unsigned char)java_lang_Thread_NORM_PRIORITY, NULL);
 
 	/*
 	 * initialize some things that are absolutely necessary:

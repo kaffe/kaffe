@@ -1,5 +1,15 @@
 2004-12-19  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/locks.c, kaffe/kaffevm/lookup.c,
+	  kaffe/kaffevm/object.c, kaffe/kaffevm/readClass.c,
+	  kaffe/kaffevm/reflect.c, kaffe/kaffevm/soft.c,
+	  kaffe/kaffevm/stackTrace.c, kaffe/kaffevm/string.c,
+	  kaffe/kaffevm/stringParsing.c, kaffe/kaffevm/support.c,
+	  kaffe/kaffevm/thread.c, kaffe/kaffevm/utf8const.c:
+	  Sparse NULL-constant fixes.
+
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c,
 	  kaffe/kaffevm/kaffe-gc/gc-incremental.h,
 	  kaffe/kaffevm/kaffe-gc/gc-mem.c:

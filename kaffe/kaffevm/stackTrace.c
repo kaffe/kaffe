@@ -68,7 +68,7 @@ buildStackTrace(struct _exceptionFrame* base)
 	if (!info) {
 	    dprintf("buildStackTrace(%p): can't allocate stackTraceInfo\n",
 		    base);
-	    return 0;
+	    return NULL;
 	}
 
 	cnt = 0;
@@ -102,7 +102,7 @@ stacktraceFindMethod(uintp fp UNUSED, uintp pc)
 	if (pc_base) {
 		return *(Method **)pc_base;
 	}
-	return 0;
+	return NULL;
 }
 
 #elif defined(INTERPRETER)
@@ -282,16 +282,16 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 			for (j = len;  --j >= 0; ) {
 				cptr[j] = (unsigned char)buf[j];
 			}
-			if (p != 0 || !nullOK) {
+			if (p != NULL || !nullOK) {
 				do_execute_java_method(p, "println",
-					"([C)V", 0, 0, str);
+					"([C)V", NULL, NULL, str);
 			} else {
 				dprintf("%s\n", buf);
 			}
 			KFREE(buf);
 		}
 	}
-	if (p != 0 || !nullOK) {
-		do_execute_java_method(NULL, p, "flush", "()V", 0, 0);
+	if (p != NULL || !nullOK) {
+		do_execute_java_method(NULL, p, "flush", "()V", NULL, 0);
 	}
 }

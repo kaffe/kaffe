@@ -43,11 +43,11 @@ makeParameters(Method* meth)
 	Hjava_lang_Class* clazz;
 
 	array = (HArrayOfObject*)AllocObjectArray(METHOD_NARGS(meth),
-	    "Ljava/lang/Class;", 0);
+	    "Ljava/lang/Class;", NULL);
 	for (i = 0; i < METHOD_NARGS(meth); ++i) {
 		clazz = getClassFromSignaturePart(METHOD_ARG_TYPE(meth, i),
 					      meth->class->loader, &info);
-		if (clazz == 0) {
+		if (clazz == NULL) {
 			throwError(&info);
 		}
 		unhand_array(array)->body[i] = &clazz->head;
@@ -91,14 +91,14 @@ makeExceptions(Method* meth)
 		meth = meth->declared_exceptions_u.remote_exceptions;
 	}
 	nr = meth->ndeclared_exceptions;
-	array = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;", 0);
+	array = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;", NULL);
 	ptr = (Hjava_lang_Class**)&unhand_array(array)->body[0];
 	for (i = 0; i < nr; i++) {
 		errorInfo info;
 		Hjava_lang_Class* clazz;
 		clazz = getClass(meth->declared_exceptions[i], meth->class,
 				&info);
-		if (clazz == 0) {
+		if (clazz == NULL) {
 			throwError(&info);
 		}
 		*ptr++ = clazz;
@@ -114,7 +114,7 @@ KaffeVM_makeReflectConstructor(struct Hjava_lang_Class* clazz, int slot)
 
 	mth = CLASS_METHODS(clazz) + slot;
 	meth = (Hjava_lang_reflect_Constructor*)
-	    AllocObject("java/lang/reflect/Constructor", 0);
+	    AllocObject("java/lang/reflect/Constructor", NULL);
 
 	unhand(meth)->clazz = clazz;
 	unhand(meth)->slot = slot;
@@ -132,7 +132,7 @@ KaffeVM_makeReflectMethod(struct Hjava_lang_Class* clazz, int slot)
 
 	mth = CLASS_METHODS(clazz) + slot;
 	meth = (Hjava_lang_reflect_Method*)
-	    AllocObject("java/lang/reflect/Method", 0);
+	    AllocObject("java/lang/reflect/Method", NULL);
 
 	unhand(meth)->clazz = clazz;
 	unhand(meth)->slot = slot;
@@ -153,11 +153,11 @@ KaffeVM_makeReflectField(struct Hjava_lang_Class* clazz, int slot)
 
 	fld = CLASS_FIELDS(clazz) + slot;
 	field = (Hjava_lang_reflect_Field*)
-	    AllocObject("java/lang/reflect/Field", 0);
+	    AllocObject("java/lang/reflect/Field", NULL);
 	unhand(field)->clazz = clazz;
 	unhand(field)->slot = slot;
 	unhand(field)->type = resolveFieldType(fld, clazz, &info);
-	if (unhand(field)->type == 0) {
+	if (unhand(field)->type == NULL) {
 		throwError(&info);
 	}
 	unhand(field)->name = checkPtr(utf8Const2Java(fld->name));

@@ -129,8 +129,8 @@ DBG(SLOWLOCKS,
 				(lk != heavyLock) ? "new" : "special");
 );
 			lk->holder = (void*)old;
-			lk->mux = 0;
-			lk->cv = 0;
+			lk->mux = NULL;
+			lk->cv = NULL;
 		}
 		return (lk);
 	}
@@ -240,17 +240,17 @@ DBG(SLOWLOCKS,
 	/* Final unlock - if someone is waiting for it now would be a good
 	 * time to tell them.
 	 */
-	if (lk->mux != 0) {
+	if (lk->mux != NULL) {
 		tid = lk->mux;
 		lk->mux = KTHREAD(get_data)(tid)->nextlk;
-		KTHREAD(get_data)(tid)->nextlk = 0;
-		lk->holder = 0;
+		KTHREAD(get_data)(tid)->nextlk = NULL;
+		lk->holder = NULL;
 		putHeavyLock(lkp, lk);
 		KSEM(put)(&KTHREAD(get_data)(tid)->sem);
 	}
 	/* If someone's waiting to be signaled keep the heavy in place */
-	else if (lk->cv != 0) {
-		lk->holder = 0;
+	else if (lk->cv != NULL) {
+		lk->holder = NULL;
 		putHeavyLock(lkp, lk);
 	}
 	else {
@@ -462,13 +462,13 @@ locks_internal_unlockMutex(iLock** lkp, void* where, iLock *heavyLock)
 void
 lockObject(Hjava_lang_Object* obj)
 {
-	locks_internal_lockMutex(&obj->lock, &obj, 0);
+	locks_internal_lockMutex(&obj->lock, &obj, NULL);
 }
 
 void
 unlockObject(Hjava_lang_Object* obj)
 {
-	locks_internal_unlockMutex(&obj->lock, &obj, 0);
+	locks_internal_unlockMutex(&obj->lock, &obj, NULL);
 }
 
 void
@@ -484,7 +484,7 @@ slowLockObject(Hjava_lang_Object* obj, void* where)
 		jvmpiPostEvent(&ev);
 	}
 #endif
-	slowLockMutex(&obj->lock, where, 0);
+	slowLockMutex(&obj->lock, where, NULL);
 #if defined(ENABLE_JVMPI)
 	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_ENTERED) )
 	{
@@ -510,7 +510,7 @@ slowUnlockObject(Hjava_lang_Object* obj, void* where)
 		jvmpiPostEvent(&ev);
 	}
 #endif
-	slowUnlockMutex(&obj->lock, where, 0);
+	slowUnlockMutex(&obj->lock, where, NULL);
 }
 
 void

@@ -162,7 +162,7 @@ utf8ConstNew(const char *s, int slen)
 	if (sizeof(Utf8Const) + len + 1 > sizeof(buf)) {
 		fake = gc_malloc(sizeof(Utf8Const) + len + 1, KGC_ALLOC_UTF8CONST);
 		if (!fake) {
-			return 0;
+			return NULL;
 		}
 	} else {
 		fake = (Utf8Const*)buf;
@@ -192,7 +192,7 @@ utf8ConstNew(const char *s, int slen)
 	if ((char *) fake == buf) {
 		utf8 = gc_malloc(sizeof(Utf8Const) + len + 1, KGC_ALLOC_UTF8CONST);
 		if (!utf8) {
-			return 0;
+			return NULL;
 		}
 		memcpy((char *) utf8->data, s, len);
 		((char*)utf8->data)[len] = '\0';
@@ -390,8 +390,8 @@ utf8ConstEncode(const jchar *chars, int clength)
 
 	/* Now fill it in */
 	buf = KMALLOC(size + 1);
-	if (buf == 0) {
-		return 0;
+	if (buf == NULL) {
+		return NULL;
 	}
 
 	utf8ConstEncodeTo(chars, clength, buf);

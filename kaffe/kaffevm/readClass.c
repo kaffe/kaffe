@@ -40,14 +40,14 @@ readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoa
 	const char* className = NULL;
 
 	if (! checkBufSize(fp, 4+2+2, className, einfo))
-		return 0;
+		return NULL;
 
 	/* Read in class info */
 	readu4(&magic, fp);
 	if (magic != JAVAMAGIC) {
 		postExceptionMessage(einfo, JAVA_LANG(ClassFormatError), 
 				    "Bad magic number 0x%x", magic);
-		return 0;
+		return NULL;
 	}
 	readu2(&minor_version, fp);
 	readu2(&major_version, fp);
@@ -71,11 +71,11 @@ readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoa
 	}
 
 	if (readConstantPool(classThis, fp, einfo) == false) {
-		return 0;
+		return NULL;
 	}
 
 	if (! checkBufSize(fp, 2+2+2, className, einfo))
-		return 0;
+		return NULL;
 
 	readu2(&access_flags, fp);
 	readu2(&this_class, fp);
@@ -84,7 +84,7 @@ readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoa
 	if (! setupClass(classThis,
 			 this_class, super_class, access_flags,
 			 loader, einfo)) {
-		return (0);
+		return (NULL);
 	}
 
 	/* CLASS_CNAME(classThis) is now defined. */
@@ -93,7 +93,7 @@ readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoa
 	    readFields(fp, classThis, einfo) == false ||
 	    readMethods(fp, classThis, einfo) == false ||
 	    readAttributes(fp, classThis, READATTR_CLASS, classThis, einfo) == false) {
-		return 0;
+		return NULL;
 	}
 
 	return (classThis);
@@ -127,7 +127,7 @@ readInterfaces(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 
 	interfaces = (Hjava_lang_Class**)
 		gc_malloc(sizeof(Hjava_lang_Class**) * interfaces_count, KGC_ALLOC_INTERFACE);
-	if (interfaces == 0) {
+	if (interfaces == NULL) {
 		postOutOfMemory(einfo);
 		return false;	
 	}				

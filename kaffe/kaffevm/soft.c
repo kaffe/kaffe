@@ -56,7 +56,7 @@ soft_new(Hjava_lang_Class* c)
 		goto bad;
 	}
 	obj = newObjectChecked(c, &info);
-	if (obj == 0) {
+	if (obj == NULL) {
 		goto bad;
 	}
 
@@ -67,7 +67,7 @@ DBG(NEWINSTR,
 	return (obj);
 bad:
 	throwError(&info);
-	return (0);
+	return (NULL);
 }
 
 /*
@@ -84,7 +84,7 @@ soft_newarray(jint type, jint size)
 	}
 
 	obj = newArrayChecked(TYPE_CLASS(type), (jsize)size, &info);
-	if (obj == 0) {
+	if (obj == NULL) {
 		throwError(&info);
 	}
 
@@ -109,7 +109,7 @@ soft_anewarray(Hjava_lang_Class* elclass, jint size)
 	}
 
 	obj = newArrayChecked(elclass, (jsize)size, &info);
-	if (obj == 0) {
+	if (obj == NULL) {
 		throwError(&info);
 	}
 
@@ -387,7 +387,7 @@ soft_instanceof(Hjava_lang_Class* c, Hjava_lang_Object* o)
 void*
 soft_checkcast(Hjava_lang_Class* c, Hjava_lang_Object* o)
 {
-	if (o != 0 && !instanceof(c, OBJECT_CLASS(o))) {
+	if (o != NULL && !instanceof(c, OBJECT_CLASS(o))) {
 		/*
 		 * Let's be a bit more informative as to why the class
 		 * cast exception happened.
@@ -424,7 +424,7 @@ soft_checkcast(Hjava_lang_Class* c, Hjava_lang_Object* o)
 void
 soft_athrow(Hjava_lang_Object* o)
 {
-	if (o == 0) {
+	if (o == NULL) {
 		soft_nullpointer();
 	}
 	else {
@@ -583,7 +583,7 @@ soft_initialise_class(Hjava_lang_Class* c)
 void
 soft_checkarraystore(Hjava_lang_Object* array, Hjava_lang_Object* obj)
 {
-	if (obj != 0 && soft_instanceof(CLASS_ELEMENT_TYPE(OBJECT_CLASS(array)), obj) == 0) {
+	if (obj != NULL && soft_instanceof(CLASS_ELEMENT_TYPE(OBJECT_CLASS(array)), obj) == 0) {
 		Hjava_lang_Throwable* asexc;
 		const char* f = "can't store `%s' in `%s'";
 		const char *otype = CLASS_CNAME(OBJECT_CLASS(obj));

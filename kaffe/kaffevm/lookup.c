@@ -51,11 +51,11 @@ getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool shouldLoadC
 	Method* mptr;
 	int i;
 
-	call->class = 0;
-	call->method = 0;
-	call->signature = 0;
-	call->name = 0;
-	call->cname = 0;
+	call->class = NULL;
+	call->method = NULL;
+	call->signature = NULL;
+	call->name = NULL;
+	call->cname = NULL;
 
 	pool = CLASS_CONSTANTS(this);
 	if (pool->tags[idx] != CONSTANT_Methodref &&
@@ -93,7 +93,7 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	);
 
 		call->class = class;
 		call->cname = class->name;
-		call->method = 0;
+		call->method = NULL;
 		/* Find method - we don't use findMethod(...) yet since this
 		 * will initialise our class (and we don't want to do that).
 		 */
@@ -103,7 +103,7 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	);
 			 * contains all methods of all implemented interfaces, we
 			 * don't need to search superinterfaces here.
 			 */
-			for (; class != 0; class = class->superclass) {
+			for (; class != NULL; class = class->superclass) {
 				mptr = findMethodLocal(class, name, sig);
 				if (mptr != NULL) {
 					call->method = mptr;
@@ -120,7 +120,7 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	);
 			if (mptr == NULL) {
 				for (i = class->total_interface_len - 1; i >= 0; i--) {
 					mptr = findMethodLocal(class->interfaces[i], name, sig);
-					if (mptr != 0) {
+					if (mptr != NULL) {
 						break;
 					}
 				}
@@ -251,8 +251,8 @@ getField(constIndex idx, Hjava_lang_Class* this, bool isStaticField, fieldInfo* 
 	Field* field;
 	Hjava_lang_Class* class;
 
-	ret->field = 0;
-	ret->class = 0;
+	ret->field = NULL;
+	ret->class = NULL;
 	
 	pool = CLASS_CONSTANTS(this);
 	if (pool->tags[idx] != CONSTANT_Fieldref) {
@@ -347,19 +347,19 @@ findMethod(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature, error
 	if (class->state < CSTATE_USABLE) {
 		success = processClass(class, CSTATE_COMPLETE, einfo);
 		if (!success)
-			return (0);
+			return (NULL);
 	}
 
 	/*
 	 * Lookup method - this could be alot more efficient but never mind.
 	 * Also there is no attempt to honour PUBLIC, PRIVATE, etc.
 	 */
-	for (; class != 0; class = class->superclass) {
+	for (; class != NULL; class = class->superclass) {
 		Method* mptr = findMethodLocal(class, name, signature);
 		if (mptr != NULL) {
 			return mptr;
 		}
 	}
 	postExceptionMessage(einfo, JAVA_LANG(NoSuchMethodError), "%s", name->data);
-	return (0);
+	return (NULL);
 }
