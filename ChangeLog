@@ -1,3 +1,23 @@
+2000-12-03  Edouard G. Parmelan  <egp@free.fr>
+
+	* kaffe/kaffevm/exception.c, kaffe/kaffevm/exception.h:
+	(throwFreshException): Remove this broken function.
+	(error2Throwable): Roll-back new parameter need for
+	throwFreshException() framework.
+	(throwError): Roll-back use of throwFreshException().
+
+	* kaffe/kaffevm/jni.c, kaffe/kaffevm/locks.c,
+	kaffe/kaffevm/lookup.c, kaffe/kaffevm/soft.c,
+	kaffe/kaffevm/support.c, kaffe/kaffevm/thread.c,
+	kaffe/kaffevm/intrp/machine.c, kaffe/kaffevm/jit3/machine.c,
+	libraries/clib/native/Class.c, libraries/clib/native/Method.c:
+	Roll-back use of throwFreshException().
+
+	* test/regression/IndexTest.java,
+	test/regression/InvTarExcTest.java: Roll-back side effect of
+	throwFreshException().
+
+
 Fri Dec  1 18:41:36 MST 2000  Godmar Back <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/gcFuncs.c: unregister ourselves from implementor
