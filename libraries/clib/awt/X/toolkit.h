@@ -24,7 +24,9 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #if defined(HAVE_LIBXEXT)
+#if defined(HAVE_X11_EXTENSIONS_XSHM_H)
 #include <X11/extensions/XShm.h>
+#endif /* defined(HAVE_X11_EXTENSIONS_XSHM_H) */
 #else
 // #undef USE_XSHM_EXTENSION
 #define	XShmGetImage(A,B,C,D,E,F)		0
