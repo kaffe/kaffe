@@ -1,5 +1,25 @@
 2004-04-22  Dalibor Topic <robilad@kaffe.org>
 
+        * libraries/javalib/java/sql/Array.java,
+        libraries/javalib/java/sql/DatabaseMetaData.java,
+        libraries/javalib/java/sql/DriverManager.java,
+        libraries/javalib/java/sql/ResultSet.java:
+	Resynced with GNU Classpath.
+
+	2004-04-22 Dalibor Topic <robilad@kaffe.org>
+
+        * java/sql/DriverManager.java:
+        Cleaned up imports.
+
+	2004-04-18  Michael Koch  <konqueror@gmx.de>
+
+        * java/sql/Array.java,
+        java/sql/DatabaseMetaData.java,
+        java/sql/ResultSet.java:
+        Fixed HTML tags in javadocs.
+
+2004-04-22  Dalibor Topic <robilad@kaffe.org>
+
         * libraries/javalib/java/util/jar/Attributes.java,
         libraries/javalib/java/util/jar/JarFile.java,
         libraries/javalib/java/util/jar/JarInputStream.java,
