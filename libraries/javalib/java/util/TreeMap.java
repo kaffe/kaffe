@@ -26,14 +26,14 @@ public class TreeMap extends AbstractMap
 	private static final int BLACK = 0;
 	private static final int RED = 1;
 	private static final Node NIL;
-	private final Comparator c;
+	private Comparator c;
 	private Node insertionPoint;		// used by find() method
 	private int modCount = 0;
 	private Node root = NIL;
 	private int size = 0;
 
 	// Tree nodes look like this
-	private static class Node implements Map.Entry, Cloneable {
+	private static class Node implements Map.Entry {
 		int color;
 		Node left;
 		Node right;
@@ -77,19 +77,21 @@ public class TreeMap extends AbstractMap
 		}
 
 		Node cloneTree() {
-			Node clone;
-			try {
-				clone = (Node)super.clone();
-			} catch (CloneNotSupportedException e) {
-				return null;		// should never happen
-			}
+			Node clone = new Node(key, value);
+			clone.color = color;
 			if (left != NIL) {
 				clone.left = left.cloneTree();
 				clone.left.parent = clone;
 			}
+			else {
+				clone.left = NIL;
+			}
 			if (right != NIL) {
 				clone.right = right.cloneTree();
 				clone.right.parent = clone;
+			}
+			else {
+				clone.right = NIL;
 			}
 			return clone;
 		}
@@ -217,13 +219,20 @@ public class TreeMap extends AbstractMap
 
 	public Object clone() {
 		TreeMap clone;
-		try {
-			clone = (TreeMap)super.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;			// should never happen
+		/* Clone the class */
+                try {
+                        clone = (TreeMap)super.clone();
+                } catch (CloneNotSupportedException e) {
+                        return null;                    // should never happen
+                }
+		Comparator c = this.comparator();
+		clone.c = (c != null) ? c : Arrays.DEFAULT_COMPARATOR;
+		/* Copy the key/value pairs into the clone */
+		for (Iterator i = this.entrySet().iterator(); i.hasNext(); ) {
+			Map.Entry e = (Map.Entry)i.next();
+			clone.put(e.getKey(), e.getValue());
 		}
-		clone.root = root.cloneTree();
-		return clone;
+		return (clone);
 	}
 
 	public Set entrySet() {
