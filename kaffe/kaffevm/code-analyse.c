@@ -348,9 +348,6 @@ verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 	int32 tabpc;
 	int32 idx;
 	int32 sp;
-	int32 lcl;
-	int32 lclw;
-	int32 lclww;
 	int32 opc;
 	callInfo call;
 	fieldInfo finfo;
@@ -412,14 +409,11 @@ verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 			}
 		}
 
-		/* Retrieve a potential local slot */
-		lcl = BYTE(pc+1);
-		lclw = WORD(pc+1);
-		lclww = DWORD(pc+1);
-
 IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		switch (INSN(pc)) {
+		int32 lcl;
+
 		case NOP:
 			INCPC(1);
 			break;
@@ -438,20 +432,19 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case ICONST_4:
 		case ICONST_5:
 			STKPUSH(1);
-			lcl = INSN(pc) - ICONST_0;
-			STACKOUT_CONST(0, TINT, lcl);
+			STACKOUT_CONST(0, TINT, INSN(pc) - ICONST_0);
 			INCPC(1);
 			break;
 
 		case BIPUSH:
 			STKPUSH(1);
-			STACKOUT_CONST(0, TINT, lcl);
+			STACKOUT_CONST(0, TINT, BYTE(pc+1));
 			INCPC(2);
 			break;
 
 		case SIPUSH:
 			STKPUSH(1);
-			STACKOUT_CONST(0, TINT, lclw);
+			STACKOUT_CONST(0, TINT, WORD(pc+1));
 			INCPC(3);
 			break;
 
@@ -481,7 +474,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case LDC1:
 			STKPUSH(1);
-			lcl = (uint8)lcl;
+			lcl = (uint8)BYTE(pc + 1);
 			CONSTANTTYPE(type, lcl);
 			STACKOUT(0, type);
 			INCPC(2);
@@ -489,14 +482,14 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case LDC2:
 			STKPUSH(1);
-			CONSTANTTYPE(type, (uint16)lclw);
+			CONSTANTTYPE(type, (uint16)WORD(pc+1));
 			STACKOUT(0, type);
 			INCPC(3);
 			break;
 
 		case LDC2W:
 			STKPUSH(2);
-			CONSTANTTYPE(type, (uint16)lclw);
+			CONSTANTTYPE(type, (uint16)WORD(pc+1));
 			STACKOUT(0, type);
 			STACKOUT(1, TVOID);
 			INCPC(3);
@@ -516,12 +509,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			if (wide) {
 				wide = false;
 				STKPUSH(1);
-				STACKOUT_LOCAL(0, TINT, lclw);
+				STACKOUT_LOCAL(0, TINT, WORD(pc+1));
 				INCPC(3);
 			}
 			else {
 				STKPUSH(1);
-				STACKOUT_LOCAL(0, TINT, lcl);
+				STACKOUT_LOCAL(0, TINT, BYTE(pc+1));
 				INCPC(2);
 			}
 			break;
@@ -541,14 +534,14 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			if (wide) {
 				wide = false;
 				STKPUSH(2);
-				STACKOUT_LOCAL(0, TLONG, lclw);
-				STACKOUT_LOCAL(1, TVOID, lclw+1);
+				STACKOUT_LOCAL(0, TLONG, WORD(pc+1));
+				STACKOUT_LOCAL(1, TVOID, WORD(pc+1)+1);
 				INCPC(3);
 			}
 			else {
 				STKPUSH(2);
-				STACKOUT_LOCAL(0, TLONG, lcl);
-				STACKOUT_LOCAL(1, TVOID, lcl+1);
+				STACKOUT_LOCAL(0, TLONG, BYTE(pc+1));
+				STACKOUT_LOCAL(1, TVOID, BYTE(pc+1)+1);
 				INCPC(2);
 			}
 			break;
@@ -567,12 +560,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			if (wide) {
 				wide = false;
 				STKPUSH(1);
-				STACKOUT_LOCAL(0, TFLOAT, lclw);
+				STACKOUT_LOCAL(0, TFLOAT, WORD(pc+1));
 				INCPC(3);
 			}
 			else {
 				STKPUSH(1);
-				STACKOUT_LOCAL(0, TFLOAT, lcl);
+				STACKOUT_LOCAL(0, TFLOAT, BYTE(pc+1));
 				INCPC(2);
 			}
 			break;
@@ -590,13 +583,15 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case DLOAD:
 			if (wide) {
+				lcl = WORD(pc+1);
 				wide = false;
 				STKPUSH(2);
-				STACKOUT_LOCAL(0, TDOUBLE, lclw);
-				STACKOUT_LOCAL(1, TVOID, lclw+1);
+				STACKOUT_LOCAL(0, TDOUBLE, lcl);
+				STACKOUT_LOCAL(1, TVOID, lcl+1);
 				INCPC(3);
 			}
 			else {
+				lcl = BYTE(pc+1);
 				STKPUSH(2);
 				STACKOUT_LOCAL(0, TDOUBLE, lcl);
 				STACKOUT_LOCAL(1, TVOID, lcl+1);
@@ -618,12 +613,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			if (wide) {
 				wide = false;
 				STKPUSH(1);
-				STACKOUT_LOCAL(0, TOBJ, lclw);
+				STACKOUT_LOCAL(0, TOBJ, WORD(pc+1));
 				INCPC(3);
 			}
 			else {
 				STKPUSH(1);
-				STACKOUT_LOCAL(0, TOBJ, lcl);
+				STACKOUT_LOCAL(0, TOBJ, BYTE(pc+1));
 				INCPC(2);
 			}
 			break;
@@ -683,12 +678,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case ISTORE:
 			if (wide) {
-				LOCALOUT_STACK(lclw, TINT, 0);
+				LOCALOUT_STACK(WORD(pc+1), TINT, 0);
 				INCPC(1);
 				wide = false;
 			}
 			else {
-				LOCALOUT_STACK(lcl, TINT, 0);
+				LOCALOUT_STACK(BYTE(pc+1), TINT, 0);
 			}
 			STKPOP(1);
 			INCPC(2);
@@ -707,12 +702,14 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case LSTORE:
 			if (wide) {
-				LOCALOUT_STACK(lclw, TLONG, 0);
-				LOCALOUT_STACK(lclw+1, TVOID, 1);
+				lcl = WORD(pc+1);
+				LOCALOUT_STACK(lcl, TLONG, 0);
+				LOCALOUT_STACK(lcl+1, TVOID, 1);
 				INCPC(1);
 				wide = false;
 			}
 			else {
+				lcl = BYTE(pc+1);
 				LOCALOUT_STACK(lcl, TLONG, 0);
 				LOCALOUT_STACK(lcl+1, TVOID, 1);
 			}
@@ -734,12 +731,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case FSTORE:
 			STACKIN(0, TFLOAT);
 			if (wide) {
-				LOCALOUT(lclw, TFLOAT);
+				LOCALOUT(WORD(pc+1), TFLOAT);
 				INCPC(1);
 				wide = false;
 			}
 			else {
-				LOCALOUT(lcl, TFLOAT);
+				LOCALOUT(BYTE(pc+1), TFLOAT);
 			}
 			STKPOP(1);
 			INCPC(2);
@@ -762,14 +759,14 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			STACKIN(0, TDOUBLE);
 			STACKIN(1, TVOID);
 			if (wide) {
-				LOCALOUT(lclw, TDOUBLE);
-				LOCALOUT(lclw+1, TVOID);
+				LOCALOUT(WORD(pc+1), TDOUBLE);
+				LOCALOUT(WORD(pc+1)+1, TVOID);
 				INCPC(1);
 				wide = false;
 			}
 			else {
-				LOCALOUT(lcl, TDOUBLE);
-				LOCALOUT(lcl+1, TVOID);
+				LOCALOUT(BYTE(pc+1), TDOUBLE);
+				LOCALOUT(BYTE(pc+1)+1, TVOID);
 			}
 			STKPOP(2);
 			INCPC(2);
@@ -787,12 +784,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case ASTORE:
 			if (wide) {
-				LOCALOUT_STACK(lclw, TOBJ, 0);
+				LOCALOUT_STACK(WORD(pc+1), TOBJ, 0);
 				INCPC(1);
 				wide = false;
 			}
 			else {
-				LOCALOUT_STACK(lcl, TOBJ, 0);
+				LOCALOUT_STACK(BYTE(pc+1), TOBJ, 0);
 			}
 			STKPOP(1);
 			INCPC(2);
@@ -1100,12 +1097,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case IINC:
 			if (wide) {
-				LOCALINOUT(lclw, TINT);
+				LOCALINOUT(WORD(pc+1), TINT);
 				INCPC(2);
 				wide = false;
 			}
 			else {
-				LOCALINOUT(lcl, TINT);
+				LOCALINOUT(BYTE(pc+1), TINT);
 			}
 			INCPC(3);
 			break;
@@ -1248,7 +1245,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case IFLE:
 			STACKIN(0, TINT);
 			STKPOP(1);
-			FRAMEMERGE(pc + lclw, sp);
+			FRAMEMERGE(pc + WORD(pc+1), sp);
 			FRAMEMERGE(pc + 3, sp);
 			INCPC(3);
 			break;
@@ -1262,7 +1259,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			STACKIN(0, TINT);
 			STACKIN(1, TINT);
 			STKPOP(2);
-			FRAMEMERGE(pc + lclw, sp);
+			FRAMEMERGE(pc + WORD(pc+1), sp);
 			FRAMEMERGE(pc + 3, sp);
 			INCPC(3);
 			break;
@@ -1272,25 +1269,25 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			STACKIN(0, TOBJ);
 			STACKIN(1, TOBJ);
 			STKPOP(2);
-			FRAMEMERGE(pc + lclw, sp);
+			FRAMEMERGE(pc + WORD(pc+1), sp);
 			FRAMEMERGE(pc + 3, sp);
 			INCPC(3);
 			break;
 
 		case GOTO:
-			FRAMEMERGE(pc + lclw, sp);
+			FRAMEMERGE(pc + WORD(pc+1), sp);
 			INCPC(3);
 			break;
 
 		case GOTO_W:
-			FRAMEMERGE(pc + lclww, sp);
+			FRAMEMERGE(pc + DWORD(pc+1), sp);
 			INCPC(5);
 			break;
 
 		case JSR:
 			STKPUSH(1);
 			STACKOUT(0, TADDR);
-			FRAMEMERGE(pc + lclw, sp);
+			FRAMEMERGE(pc + WORD(pc+1), sp);
 			STKPOP(1);
 			FRAMEMERGE(pc + 3, sp);
 			INCPC(3);
@@ -1299,14 +1296,14 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case JSR_W:
 			STKPUSH(1);
 			STACKOUT(0, TADDR);
-			FRAMEMERGE(pc + lclww, sp);
+			FRAMEMERGE(pc + DWORD(pc+1), sp);
 			STKPOP(1);
 			FRAMEMERGE(pc + 5, sp);
 			INCPC(5);
 			break;
 
 		case RET:
-			LOCALIN(lcl, TADDR);
+			LOCALIN(BYTE(pc+1), TADDR);
 			INCPC(2);
 			break;
 
@@ -1371,7 +1368,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case GETSTATIC:
-			if (getField(lclw, meth->class, true, &finfo, einfo) == 0) {
+			if (getField(WORD(pc+1), meth->class, true, &finfo, einfo) == 0) {
 				failed = true;
 				goto done;
 			}
@@ -1410,7 +1407,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case PUTSTATIC:
-			if (getField(lclw, meth->class, true, &finfo, einfo) == 0) {
+			if (getField(WORD(pc+1), meth->class, true, &finfo, einfo) == 0) {
 				failed = true;
 				goto done;
 			}
@@ -1449,7 +1446,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case GETFIELD:
-			if (getField(lclw, meth->class, false, &finfo, einfo) == 0) {
+			if (getField(WORD(pc+1), meth->class, false, &finfo, einfo) == 0) {
 				failed = true;
 				goto done;
 			}
@@ -1486,7 +1483,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case PUTFIELD:
-			if (getField(lclw, meth->class, false, &finfo, einfo) == 0) {
+			if (getField(WORD(pc+1), meth->class, false, &finfo, einfo) == 0) {
 				failed = true;
 				goto done;
 			}
@@ -1531,7 +1528,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
-			if (getMethodSignatureClass(lclw, meth->class, true, false, &call, einfo) == false) {
+			if (getMethodSignatureClass(WORD(pc+1), meth->class, true, false, &call, einfo) == false) {
 				if (!checkNoClassDefFoundError(einfo) || call.signature == 0) {
 					failed = true;
 					goto done;
@@ -1634,7 +1631,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case INVOKEINTERFACE:
-			if (getMethodSignatureClass(lclw, meth->class, true, false, &call, einfo) == false) {
+			if (getMethodSignatureClass(WORD(pc+1), meth->class, true, false, &call, einfo) == false) {
 				if (!checkNoClassDefFoundError(einfo) || call.signature == 0) {
 					failed = true;
 					goto done;
@@ -1736,7 +1733,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case INVOKESTATIC:
-			if (getMethodSignatureClass(lclw, meth->class, true, false, &call, einfo) == false) {
+			if (getMethodSignatureClass(WORD(pc+1), meth->class, true, false, &call, einfo) == false) {
 				if (!checkNoClassDefFoundError(einfo) || call.signature == 0) {
 					failed = true;
 					goto done;
@@ -1836,7 +1833,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case NEW:
-			if (getClass(lclw, meth->class, einfo) == 0) {
+			if (getClass(WORD(pc+1), meth->class, einfo) == 0) {
 				if (!checkNoClassDefFoundError(einfo)) {
 					failed = true;
 					goto done;
@@ -1854,7 +1851,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case ANEWARRAY:
-			if (getClass(lclw, meth->class, einfo) == 0) {
+			if (getClass(WORD(pc+1), meth->class, einfo) == 0) {
 				if (!checkNoClassDefFoundError(einfo)) {
 					failed = true;
 					goto done;
@@ -1866,7 +1863,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case MULTIANEWARRAY:
-			if (getClass(lclw, meth->class, einfo) == 0) {
+			if (getClass(WORD(pc+1), meth->class, einfo) == 0) {
 				if (!checkNoClassDefFoundError(einfo)) {
 					failed = true;
 					goto done;
@@ -1893,7 +1890,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case CHECKCAST:
-			if (getClass(lclw, meth->class, einfo) == 0) {
+			if (getClass(WORD(pc+1), meth->class, einfo) == 0) {
 				if (!checkNoClassDefFoundError(einfo)) {
 					failed = true;
 					goto done;
@@ -1906,7 +1903,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case INSTANCEOF:
-			if (getClass(lclw, meth->class, einfo) == 0) {
+			if (getClass(WORD(pc+1), meth->class, einfo) == 0) {
 				if (!checkNoClassDefFoundError(einfo)) {
 					failed = true;
 					goto done;
@@ -1929,7 +1926,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case IFNONNULL:
 			STACKIN(0, TOBJ);
 			STKPOP(1);
-			FRAMEMERGE(pc + lclw, sp);
+			FRAMEMERGE(pc + WORD(pc+1), sp);
 			FRAMEMERGE(pc + 3, sp);
 			INCPC(3);
 			break;
