@@ -20,6 +20,20 @@
 /* Exception handling information. */
 /**/
 
+/* Structure of exception frame on stack */
+typedef struct _exceptionFrame {
+	char*	return_frame;
+	char*	return_pc;
+} exceptionFrame;
+
+extern void __mipsGetNextFrame(struct _exceptionFrame*);
+
+#define	STACK_NEXT_FRAME(F)	__mipsGetNextFrame(F)
+#define	FIRSTFRAME(F,O)		(F).return_frame = 0; \
+				__mipsGetNextFrame(&F)
+#define	NEXTFRAME(F)		((F)->return_frame)
+#define	PCFRAME(F)		((F)->return_pc)
+
 /* Extract the object argument from given frame */
 #define FRAMEOBJECT(f)							\
 	(*(Hjava_lang_Object**)(f))
@@ -32,7 +46,7 @@
 		move $fp,%0						\n\
 		jr %1							\n\
 		nop							\n\
-	" : : "r" (F), "r" (H), "r" (O) : "$2")
+	" : : "r" ((F)->return_frame), "r" ((H).handler), "r" (O) : "$2")
 
 /**/
 /* Method dispatch.  */
@@ -45,14 +59,12 @@
 typedef struct _methodTrampoline {
 	unsigned code[5];
 	struct _methods *meth;
-	void** where;
-	unsigned pad[1];
 } methodTrampoline;
 
 extern void mips_do_fixup_trampoline(void);
 
 /* We must construct jump address since jal can not hold absolute address */
-#define FILL_IN_TRAMPOLINE(t,m,w)					\
+#define FILL_IN_TRAMPOLINE(t,m)					\
 	do {								\
 		uint32 pc = (unsigned int)mips_do_fixup_trampoline;	\
 		(t)->code[0] = 0x001f1021;	/* addu $2,$31,$0 */	\
@@ -61,12 +73,10 @@ extern void mips_do_fixup_trampoline(void);
 		(t)->code[3] = 0x0320f809;	/* jalr $31,$25 */		\
 		(t)->code[4] = 0x00000000;	/* nop */		\
 		(t)->meth = (m);					\
-		(t)->where = (w);					\
 	} while (0)
 
-#define FIXUP_TRAMPOLINE_DECL	Method *_meth, void* _where
-#define FIXUP_TRAMPOLINE_INIT	meth = _meth; \
-				where = _where;
+#define FIXUP_TRAMPOLINE_DECL	Method *_meth
+#define FIXUP_TRAMPOLINE_INIT	meth = _meth;
 
 /**/
 /* Register management information. */

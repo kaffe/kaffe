@@ -228,6 +228,7 @@ define_insn(prologue, prologue_xxC) {
 	int i;
 	int fi;
 	int a;
+	const char* sig;
 
 	/* Max_args is the maximum number of arguments this method pushed
 	 * onto the stack (allowing for alignment).  We always allow for
@@ -291,8 +292,9 @@ define_insn(prologue, prologue_xxC) {
 		a++;
 	}
 
+	sig = meth->signature->data;
 	for (j = 0; i < limit; j++) {
-		char ch = meth->sig->elem[j]->data[0];
+		char ch = *sig;
 
 		/* We must align doubles and longs, and this might take
 		 * us past the end of our register arguments so check this.
@@ -300,6 +302,18 @@ define_insn(prologue, prologue_xxC) {
 		if (ch == 'D' || ch == 'J') {
 			a += a % 2;	/* Align */
 		}
+		else if (ch == '[') {
+			while (*sig == '[') {
+				sig++;
+			}
+			if (*sig == 'L') {
+				sig = strchr(sig, ';');
+			}
+		}
+		else if (ch == 'L') {
+			sig = strchr(sig, ';');
+		}
+
 		if (a >= NR_ARGUMENTS) {
 			break;
 		}
@@ -336,6 +350,8 @@ define_insn(prologue, prologue_xxC) {
 			a++;
 			break;
 		}
+
+		sig++;
 	}
 #if defined(STACK_LIMIT)
 	if (a < NR_ARGUMENTS) {

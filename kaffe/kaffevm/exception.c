@@ -226,6 +226,15 @@ void*
 nextFrame(void* fm)
 {  
 #if defined(TRANSLATOR)
+#if defined(STACK_NEXT_FRAME)
+	STACK_NEXT_FRAME((exceptionFrame*)fm);
+        if (jthread_on_current_stack((void *)NEXTFRAME((exceptionFrame*)fm))) {
+		return (fm);
+	}
+	else {
+		return (0);
+	}
+#else
         exceptionFrame* nfm;
 
         nfm = (exceptionFrame*)NEXTFRAME(fm);
@@ -236,6 +245,7 @@ nextFrame(void* fm)
         else {
                 return (0);
         }
+#endif
 #else
         vmException* nfm;
         nfm = ((vmException*)fm)->prev;

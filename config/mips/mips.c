@@ -16,9 +16,9 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "classMethod.h"
-#include "objects.h"
+#include "object.h"
 #include "support.h"
-#include "../../kaffe/kaffevm/threads.h"
+#include "../../kaffe/kaffevm/thread.h"
 
 extern int maxArgs;
 extern int isStatic;
@@ -36,14 +36,14 @@ int* argMap;
  */
 static
 void
-endOfFrames(stackFrame* fm)
+endOfFrames(exceptionFrame* fm)
 {
 	fm->return_pc = 0;
 	fm->return_frame = 0;
 }
 
 void
-__mipsGetNextFrame(stackFrame* fm)
+__mipsGetNextFrame(exceptionFrame* fm)
 {
 	int* spc;
 	int* pc;
@@ -163,12 +163,10 @@ end:;
 		endOfFrames(fm);
 	}
 	else {
-		fm->return_pc = ppc;
-		fm->return_frame = pfp;
+		fm->return_pc = (char*)ppc;
+		fm->return_frame = (char*)pfp;
 	}
 }
-
-#if defined(TRANSLATOR)
 
 /*
  * On the MIPS the arguments are aligned to their natural boundaries, so
@@ -181,6 +179,7 @@ __mipsInitJit(Method* meth)
 	int i;
 	int j;
 	int a;
+	const char* sig;
 
 	a = maxArgs;
 #if defined(STACK_LIMIT)
@@ -188,7 +187,7 @@ __mipsInitJit(Method* meth)
 #endif
 	if (a > totalMaxArgs) {
 		totalMaxArgs = a;
-		argMap = gc_realloc_fixed(argMap, totalMaxArgs * sizeof(int));
+		argMap = jrealloc(argMap, totalMaxArgs * sizeof(int));
 	}
 
 	i = 0;
@@ -200,14 +199,26 @@ __mipsInitJit(Method* meth)
 		a++;
 	}
 
-	for (j = 0; j < meth->sig->len; j++) {
-		char ch = meth->sig->elem[j]->data[0];
+	sig = meth->signature->data;
+	for (sig++; *sig != ')'; sig++) {
+		char ch = *sig;
 		if (ch == 'D' || ch == 'J') {
 			a += a % 2;
 			argMap[i++] = a++;
 			argMap[i++] = a++;
 		}
 		else {
+			if (ch == '[') {
+				while (*sig == '[') {
+					sig++;
+				}
+				if (*sig == 'L') {
+					sig = strchr(sig, ';');
+				}
+			}
+			else if (ch == 'L') {
+				sig = strchr(sig, ';');
+			}
 			argMap[i++] = a++;
 		}
 	}
@@ -215,4 +226,3 @@ __mipsInitJit(Method* meth)
 	argMap[i++] = a++;
 #endif
 }
-#endif

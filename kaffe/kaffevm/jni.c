@@ -50,6 +50,7 @@ extern int maxArgs;
 extern int maxLocal;
 extern int isStatic;
 extern int maxTemp;
+extern int maxStack;
 #endif
 
 /*
@@ -3601,7 +3602,8 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	nativeCodeInfo ncode;
 	SlotInfo* tmp;
 	bool success = true;
-	int arg0;
+	int j;
+	int an;
 
 	/* Convert the signature into a simple string of types, and
 	 * count the size of the arguments too.
@@ -3640,6 +3642,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	 * arguments.
 	 */
 	enterTranslator();
+
 #if defined(KAFFE_PROFILER)
 	if (profFlag) {
 		profiler_get_clicks(xmeth->jitClicks);
@@ -3651,7 +3654,8 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 #endif
 
 	maxArgs = maxLocal = count; /* make sure args are spilled if needed */
-	success = initInsnSequence(0, 0, count, 0, &info);
+	maxStack = 0;
+	success = initInsnSequence(xmeth, 0, maxLocal, maxStack, &info);
 	if (!success) {
 		goto done;
 	}
@@ -3702,42 +3706,106 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 		mon_enter(xmeth, local(0));
 	}
 
-	/* Add extra arguments */
+#if defined(PUSHARG_FORWARDS)
+
 	if (use_JNI) {
-		/* JNIEnv, class or JNIEnv, this */
-		arg0 = 1 + isStatic;
+		/* Push the JNI info */
+		pusharg_ref_const((void*)&Kaffe_JNIEnv, 0);
+
+		/* If static, push the class, else push the object */
+		if (METHOD_IS_STATIC(xmeth)) {
+			pusharg_ref_const(xmeth->class, 1);
+			an = 0;
+		}
+		else {
+			pusharg_ref(local(0), 1);
+			an = 1;
+		}
+		count = 2;
 	}
 	else {
-		/* no extra arguments for KNI */
-		arg0 = 0;
+		/* If static, nothing, else push the object */
+		if (!METHOD_IS_STATIC(xmeth)) {
+			pusharg_ref(local(0), 0);
+			an = 1;
+		}
+		else {
+			an = 0;
+		}
+		count = an;
 	}
 
 	/* Push the specified arguments */
-	while (i > 0) {
-		i--;
-		count--;
-		switch (buf[i]) {
+	for (j = 0; j < i; j++) {
+		switch (buf[j]) {
 		case '[':
 		case 'L':
-			pusharg_ref(local(count), count+arg0);
+			pusharg_ref(local(an), count);
 			break;
 		case 'I':
 		case 'Z':
 		case 'S':
 		case 'B':
 		case 'C':
-			pusharg_int(local(count), count+arg0);
+			pusharg_int(local(an), count);
 			break;
 		case 'F':
-			pusharg_float(local(count), count+arg0);
+			pusharg_float(local(an), count);
+			break;
+		case 'J':
+			pusharg_long(local(an), count);
+			count++;
+			an++;
+			break;
+		case 'D':
+			pusharg_double(local(an), count);
+			count++;
+			an++;
+			break;
+		}
+		count++;
+		an++;
+	}
+
+#else
+
+	/* Push the specified arguments */
+	count = maxArgs;
+	if (use_JNI) {
+		count++;
+		if (isStatic) {
+			count++;
+		}
+	}
+	an = maxArgs;
+
+	for (j = i - 1; j >= 0; j--) {
+		count--;
+		an--;
+		switch (buf[j]) {
+		case '[':
+		case 'L':
+			pusharg_ref(local(an), count);
+			break;
+		case 'I':
+		case 'Z':
+		case 'S':
+		case 'B':
+		case 'C':
+			pusharg_int(local(an), count);
+			break;
+		case 'F':
+			pusharg_float(local(an), count);
 			break;
 		case 'J':
 			count--;
-			pusharg_long(local(count), count+arg0);
+			an--;
+			pusharg_long(local(an), count);
 			break;
 		case 'D':
 			count--;
-			pusharg_double(local(count), count+arg0);
+			an--;
+			pusharg_double(local(an), count);
 			break;
 		}
 	}
@@ -3760,6 +3828,8 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 			pusharg_ref(local(0), 0);
 		}
 	}
+
+#endif
 
 	/* Make the call */
 	end_sub_block();
