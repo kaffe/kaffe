@@ -186,7 +186,7 @@ typedef struct _methodTrampoline {
  (n) == 7 ? 5 : \
  (n) + 4)
 
-#define FIRST_PSEUDO_REGISTER 		19
+#define DWARF_FRAME_REGISTERS 		17
 #define DWARF_FRAME_RETURN_COLUMN	8
 
 /* offset of CFA from cfa register */
