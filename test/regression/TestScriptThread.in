@@ -87,5 +87,9 @@ ignoretest ThreadStop
 runtest DeadThread
 runtest tthrd1
 
+# Test interrupting I/O
+# This is kind of tricky, and Sun doesn't support it.
+runtest SoInterrupt
+
 # All done okay
 exit $overallerror

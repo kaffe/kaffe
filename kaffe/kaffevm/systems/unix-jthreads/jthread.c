@@ -38,6 +38,7 @@
 #define THREAD_FLAGS_DONTSTOP        	16
 #define THREAD_FLAGS_DYING        	32
 #define THREAD_FLAGS_BLOCKEDEXTERNAL	64
+#define THREAD_FLAGS_INTERRUPTED	128
 
 /*
  * If option DETECTDEADLOCK is given, detect deadlocks.  
@@ -129,7 +130,6 @@ static void handleInterrupt(int sig);
 static void interrupt(int sig);
 static void childDeath(void);
 static void handleIO(int);
-static void blockOnFile(int fd, int op, int timeout);
 static void killThread(jthread *jtid);
 static void resumeThread(jthread* jtid);
 static void reschedule(void);
@@ -548,6 +548,7 @@ printflags(unsigned i)
 	    { THREAD_FLAGS_DONTSTOP, "DONTSTOP" },
 	    { THREAD_FLAGS_DYING, "DYING" },
 	    { THREAD_FLAGS_BLOCKEDEXTERNAL, "BLOCKEDEXTERNAL" },
+	    { THREAD_FLAGS_INTERRUPTED, "INTERRUPTED" },
 	    { 0, NULL }
 	}, *f = flags;
 
@@ -708,10 +709,12 @@ DBG(JTHREAD,		dprintf("Re-resuming 0x%x\n", jtid); )
 
 /*
  * Suspend a thread on a queue.
+ * Return true if thread was interrupted.
  */
-void
+int
 suspendOnQThread(jthread* jtid, jthread** queue, jlong timeout)
 {
+	int rc = false;
 	jthread** ntid;
 	jthread* last;
 
@@ -750,6 +753,10 @@ DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%qd) bI %d\n",
 				/* If I was running, reschedule */
 				if (jtid == currentJThread) {
 					reschedule();
+					if (jtid->flags & THREAD_FLAGS_INTERRUPTED) {
+						jtid->flags &= ~THREAD_FLAGS_INTERRUPTED;
+						rc = true;
+					}
 				}
 				break;
 			}
@@ -759,6 +766,7 @@ DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%qd) bI %d\n",
 	DBG(JTHREAD,	
 		dprintf("Re-suspending 0x%x on %x\n", jtid, *queue); )
 	}
+	return (rc);
 }
 
 /*
@@ -1091,6 +1099,7 @@ void
 jthread_interrupt(jthread *jtid)
 {
 	if (jtid != currentJThread) {
+		jtid->flags |= THREAD_FLAGS_INTERRUPTED;
 		resumeThread(jtid);
 	}
 }
@@ -1583,10 +1592,12 @@ DBG(JTHREADDETAIL,
  *
  * Interrupts are disabled on entry and exit.
  * fd is assumed to be valid.
+ * Returns true if operation was interrupted.
  */
-static void
+static int
 blockOnFile(int fd, int op, int timeout)
 {
+	int rc = false;
 DBG(JTHREAD,
 	dprintf("blockOnFile(%d,%s)\n", fd, op == TH_READ ? "r":"w"); )
 
@@ -1598,14 +1609,15 @@ DBG(JTHREAD,
 	}
 	if (op == TH_READ) {
 		FD_SET(fd, &readsPending);
-		suspendOnQThread(currentJThread, &readQ[fd], timeout);
+		rc = suspendOnQThread(currentJThread, &readQ[fd], timeout);
 		FD_CLR(fd, &readsPending);
 	}
 	else {
 		FD_SET(fd, &writesPending);
-		suspendOnQThread(currentJThread, &writeQ[fd], timeout);
+		rc = suspendOnQThread(currentJThread, &writeQ[fd], timeout);
 		FD_CLR(fd, &writesPending);
 	}
+	return (rc);
 }
 
 /*============================================================================
@@ -1897,47 +1909,67 @@ jthreadedOpen(const char* path, int flags, int mode, int *out)
 }
 
 /*
+ * various building blocks for timeout system call functions
+ */
+#define SET_DEADLINE(deadline, timeout) 		\
+	if (timeout != NOTIMEOUT) {			\
+		deadline = timeout + currentTime();	\
+	}
+
+#define BREAK_IF_LATE(deadline, timeout)		\
+	if (timeout != NOTIMEOUT) {			\
+		if (currentTime() >= deadline) {	\
+			errno = EINTR;			\
+			break;				\
+		}					\
+	}
+
+#define IGNORE_EINTR()					\
+	if (errno == EINTR) {				\
+		continue;				\
+	}
+
+#define SET_RETURN(r)					\
+	if (r == -1) {					\
+		r = errno;				\
+	} 
+
+#define SET_RETURN_OUT(r, out, ret)			\
+	if (r == -1) {					\
+		r = errno;				\
+	} else {					\
+		*out = ret;				\
+		r = 0;					\
+	}
+
+#define CALL_BLOCK_ON_FILE(A, B, C)				\
+	if (blockOnFile(A, B, C)) {				\
+		/* interrupted via jthread_interrupt() */ 	\
+		errno = EINTR; 					\
+		break;						\
+	}
+/*
  * Threaded socket connect.
  */
 int
 jthreadedConnect(int fd, struct sockaddr* addr, size_t len, int timeout)
 {
 	int r;
-	int haveBlocked = 0;
+	jlong deadline = 0;
 
 	intsDisable();	
+	SET_DEADLINE(deadline, timeout)
 	for (;;) {
 		r = connect(fd, addr, len);
-		if (r == 0 || !(errno == EINPROGRESS || errno == EINTR)) {
-			if (haveBlocked && r == -1 && errno == EISCONN) {
-				/* on Solaris 2.5, connect returns
-				   EISCONN when we retry a connect
-				   attempt in background.  This might
-				   lead to false positives if the
-				   connect fails and another thread
-				   tries to connect this socket and
-				   succeeds before this one is waken
-				   up.  Let's just hope it doesn't
-				   happen for now.  */
-				r = 0;
-			}
+		if (r == 0 || !(errno == EINPROGRESS 
+				|| errno == EINTR || errno == EISCONN)) {
 			break;	/* success or real error */
 		}
-		if (errno == EINTR) {
-			/* ignore */
-			continue;
-		}
-		if (haveBlocked) {
-			errno = EINTR;
-			break;
-		}
-
-		blockOnFile(fd, TH_CONNECT, timeout);
-		haveBlocked++;
+		IGNORE_EINTR()
+		CALL_BLOCK_ON_FILE(fd, TH_CONNECT, timeout)
+		BREAK_IF_LATE(deadline, timeout)
 	}
-	if (r == -1) {
-		r = errno;
-	}
+	SET_RETURN(r)
 	intsRestore();
 	return (r);
 }
@@ -1949,33 +1981,23 @@ int
 jthreadedAccept(int fd, struct sockaddr* addr, size_t* len, 
 		int timeout, ssize_t* out)
 {
+	/* absolute time at which time out is reached */
+	jlong deadline = 0;
 	int r;
-	int haveBlocked = 0;
 
 	intsDisable();
+	SET_DEADLINE(deadline, timeout)
 	for (;;) {
 		r = accept(fd, addr, len);
 		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR 
 				|| errno == EAGAIN)) {
 			break;	/* success or real error */
 		}
-		if (errno == EINTR) {
-			/* ignore */
-			continue;
-		}
-		if (haveBlocked) {
-			errno = EINTR;
-			break;
-		}
-		blockOnFile(fd, TH_ACCEPT, timeout);
-		haveBlocked++;
+		IGNORE_EINTR()
+		CALL_BLOCK_ON_FILE(fd, TH_ACCEPT, timeout)
+		BREAK_IF_LATE(deadline, timeout)
 	}
-	if (r == -1) {
-		r = errno;
-	} else {
-		*out = jthreadedFileDescriptor(r);
-		r = 0;
-	}
+	SET_RETURN_OUT(r, out, jthreadedFileDescriptor(r))
 	intsRestore();
 	return (r);
 }
@@ -1986,37 +2008,24 @@ jthreadedAccept(int fd, struct sockaddr* addr, size_t* len,
 int
 jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *out)
 {
-	ssize_t r;
-	int haveBlocked = 0;
+	ssize_t r = -1;
+	/* absolute time at which timeout is reached */
+	jlong deadline = 0;
 
+	assert(timeout >= 0);
 	intsDisable();
+	SET_DEADLINE(deadline, timeout)
 	for (;;) {
 		r = read(fd, buf, len);
 		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR 
 				|| errno == EAGAIN)) {
 			break;	/* real error or success */
 		}
-		if (errno == EINTR) {
-			/* ignore */
-			continue;
-		}
-		else if (errno == EAGAIN) {
-			/* ignore - go back to sleep */
-		}
-		else if (haveBlocked) {
-			errno = EINTR;
-			break;
-		}
-
-		blockOnFile(fd, TH_READ, timeout);
-		haveBlocked++;
+		IGNORE_EINTR()
+		CALL_BLOCK_ON_FILE(fd, TH_READ, timeout)
+		BREAK_IF_LATE(deadline, timeout)
 	}
-	if (r == -1) {
-		r = errno;
-	} else {
-		*out = r;
-		r = 0;
-	}
+	SET_RETURN_OUT(r, out, r)
 	intsRestore();
 	return (r);
 }
@@ -2038,7 +2047,6 @@ jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *out)
 {
 	ssize_t r = 1;
 	const void* ptr;
-	int haveBlocked = 0;
 
 	ptr = buf;
 
@@ -2061,23 +2069,16 @@ jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *out)
 			break;
 		}
 		/* must be EWOULDBLOCK or EAGAIN */
-		if (haveBlocked) {
-			/* bail out the second time */
+
+		if (blockOnFile(fd, TH_WRITE, NOTIMEOUT)) {
+			/* interrupted by jthread_interrupt() */
 			errno = EINTR;
 			*out = ptr - buf;
 			break;
 		}
-
-		blockOnFile(fd, TH_WRITE, NOTIMEOUT);
-		haveBlocked++;
 		r = 1;
 	}
-	if (r == -1) {
-		r = errno;
-	} else {
-		*out = r;
-		r = 0;
-	}
+	SET_RETURN_OUT(r, out, r)
 	intsRestore();
 	return (r); 
 }
@@ -2090,8 +2091,9 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 	struct sockaddr* from, int* fromlen, int timeout, ssize_t *out)
 {
 	int r;
-	int haveBlocked = 0;
+	jlong deadline = 0;
  
+	SET_DEADLINE(deadline, timeout)
 	intsDisable();
 	for (;;) {
 		r = recvfrom(fd, buf, len, flags, from, fromlen);
@@ -2099,23 +2101,12 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 					|| errno == EAGAIN)) {
 			break;
 		}
-		if (errno == EINTR) {
-			continue;
-		}
+		IGNORE_EINTR()
 		/* else EWOULDBLOCK or EAGAIN */
-		if (haveBlocked) {
-			errno = EINTR;
-			break;
-		}
-		blockOnFile(fd, TH_READ, timeout);
-		haveBlocked++;
+		CALL_BLOCK_ON_FILE(fd, TH_READ, timeout)
+		BREAK_IF_LATE(deadline, timeout)
 	}
-	if (r == -1) {
-		r = errno;
-	} else {
-		*out = r;
-		r = 0;
-	}
+	SET_RETURN_OUT(r, out, r)
 	intsRestore();
 	return (r);
 }
