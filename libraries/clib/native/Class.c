@@ -183,6 +183,10 @@ java_lang_Class_getName(struct Hjava_lang_Class* c)
 struct Hjava_lang_Object*
 java_lang_Class_newInstance(struct Hjava_lang_Class* this)
 {
+	if (CLASS_IS_PRIMITIVE(this)) {
+		SignalError("java.lang.InstantiationException", 
+			    CLASS_CNAME(this));
+	}
 	return (execute_java_constructor(0, this, "()V"));
 }
 

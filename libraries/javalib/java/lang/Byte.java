@@ -38,7 +38,7 @@ public static Byte decode(String nm) throws NumberFormatException {
 			val = parseByte(nm.substring(1), 8);
 	}
 	else {
-		val = parseByte(nm.substring(1), 10);
+		val = parseByte(nm, 10);
 	}
 
 	return new Byte(val);
