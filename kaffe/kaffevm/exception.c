@@ -599,17 +599,13 @@ DBG(ELOOKUP,
 		ptr->class->name->data, ptr->name->data,
 		ptr->exception_table->length, pc); )
 
-	/*
-	 * XXX this list could be sorted so that if pc < start_pc, no
-	 * further searching is necessary.
-	 */
 	for (i = 0; i < ptr->exception_table->length; i++) {
 		uintp start_pc = eptr[i].start_pc;
 		uintp end_pc = eptr[i].end_pc;
 		uintp handler_pc = eptr[i].handler_pc;
 
 DBG(ELOOKUP,	dprintf("  Handler %d covers %#x-%#x\n", i, start_pc, end_pc); )
-		if (pc < start_pc || pc > end_pc) {
+		if (pc < start_pc || pc >= end_pc) {
 			continue;
 		}
 

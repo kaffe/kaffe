@@ -1,3 +1,12 @@
+Thu Oct  3 2002 Patrick Tullmann  <pat@tullmann.org>
+	* kaffe/kaffevm/exception.c: The end of an exception
+	handler range is not inclusive.
+	* test/regression/CatchLimits.j,test/regression/CatchLimits.class.save:
+	A handwritten bytecode test case for the limits of exception
+	ranges and a pre-compiled version (needs Jasmin to compile the
+	bytecodes).
+	* test/regression/Makefile.*: update for new test and regenerate
+	
 Fri Sep 27 2002 Patrick Tullmann  <pat@tullmann.org>
 	* libraries/javalib/Makefile.{am,in}: Fix bootstrap
 	rule so it works when building outside source tree.
