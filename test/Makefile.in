@@ -14,8 +14,8 @@ test:
 		@echo "*** Running tests"
 		@DESTDIR=`pwd` ; export DESTDIR ;\
 		. ../ENVIRONMENT ;\
-		cd $(srcdir)/regression &&\
-		if ./TestScript ; then \
+		cd regression &&\
+		if sh TestScript ; then \
 			echo "*** Passed" ; \
 			exit 0 ;\
 		else \
@@ -27,8 +27,8 @@ testthreads:
 		@echo "*** Running tests for new threading system"
 		@DESTDIR=`pwd` ; export DESTDIR ;\
 		. ../ENVIRONMENT ;\
-		cd $(srcdir)/regression &&\
-		if ./TestScriptThread ; then \
+		cd regression &&\
+		if sh TestScriptThread ; then \
 			echo "*** Passed" ; \
 			exit 0 ;\
 		else \

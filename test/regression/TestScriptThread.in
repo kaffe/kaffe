@@ -15,16 +15,24 @@
 RESULT=/tmp/kaffer.$$
 CHECK=/tmp/kaffec.$$
 JAVA=kaffe
-JAVAC=javac
+SRCDIR=@srcdir@
+JIKES=@JIKES@
 overallerror=0
 error=0
 
 # If we have a destination directory, clean it and make sure we use it
 # for later compilations.
 if test "$DESTDIR" != "" ; then
-	rm -f $DESTDIR/*.class
+	rm -f $DESTDIR/*.class $DESTDIR/*.fail
 else
 	DESTDIR="."
+fi
+
+# Use jikes if available
+if test "$JIKES" = "" ; then
+	JAVAC="javac"
+else
+        JAVAC="jikes -nowarn -classpath $DESTDIR:$SRCDIR:$SRCDIR/../../libraries/javalib/Klasses.jar"
 fi
 
 echo_n_sp ()
@@ -35,7 +43,7 @@ echo_n_sp ()
 compile()
 {
 	echo ERROR > $RESULT
-	$JAVAC -d $DESTDIR $1.java > $RESULT 2>&1
+	$JAVAC -d $DESTDIR $SRCDIR/$1.java > $RESULT 2>&1
 	if test "`cat $RESULT`" != "" ; then
 		echo "error compiling"
 		cat $RESULT
@@ -49,17 +57,14 @@ run()
 	echo "$2" > $CHECK
 	echo ERROR > $RESULT
 	(cd $DESTDIR ; $JAVA $1 > $RESULT 2>&1)
-	if cmp -s $RESULT $CHECK ; then
+	if cmp -s $RESULT $SRCDIR/$1.out ; then
 		:
 	else
-		echo "error running"
-		echo "  Should have got:"
-		cat $CHECK
-		echo "  But got instead:"
-		cat $RESULT
+		cp $RESULT $DESTDIR/$1.fail
+		echo "ERROR: output saved to $1.fail"
 		error=1
 	fi
-	rm -f $RESULT $CHECK
+	rm -f $RESULT
 }
 
 runtest()
@@ -68,7 +73,7 @@ runtest()
 	echo_n_sp "$1 ..." 1>&2
 	compile $1
 	if test $error = 0 ; then
-		run $1 "$2"
+		run $1
 	fi
 	if test $error = 0 ; then
 		echo "passed" 1>&2
@@ -84,41 +89,15 @@ ignoretest()
 }
 
 # Test threadedWaitfor, basically
-runtest ExecTest "Okay
-Okay"
+runtest ExecTest
 
 # Test catching our own death
-ignoretest CatchDeath "Caught java.lang.ThreadDeath
-Caught java.lang.ThreadDeath
-Caught java.lang.ThreadDeath"
+ignoretest CatchDeath
 
 # Test various ways of stopping threads
-ignoretest ThreadStop "Test 1: Stop a thread that's blocked on itself
-Target (BlockThread) running...
- Locked ...
- Success. Target is dead.
- Sleeping while still holding on to target
- Releasing target lock
- Handling my own: java.lang.ThreadDeath
- Am I alive? Answer: false
-Test 2: Stop a thread that's blocked in a monitor
-Target (MonitorThread) running...
- Success. Target is dead.
-Test 3: Stop a thread that's running
-Target (RunThread) running...
- Success. Target is dead.
-Test 4: Stop a thread that's done
- Success. Target is dead.
-Test 6: Have a thread stop itself
- Success. Target is dead.
-All tests completed"
-
-runtest DeadThread "1 true
-true 1"
-
-runtest tthrd1 "main start
-true 1
-main end"
+ignoretest ThreadStop
+runtest DeadThread
+runtest tthrd1
 
 # All done okay
 exit $overallerror

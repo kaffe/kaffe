@@ -1,0 +1,5 @@
+Static initializer test
+Running static initializer of Throw
+Now loading java.math.BigDecimal
+Success 1.
+Success 2.

@@ -1,0 +1,236 @@
+#! /bin/sh
+#
+# Perform a standard set of test on the Kaffe system.  This script should
+# be built up as we add more test and so, hopefully, avoid re-releasing
+# bugs which have been fixed.
+#
+# Copyright (c) 1996, 1997
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+RESULT=/tmp/kaffer.$$
+CHECK=/tmp/kaffec.$$
+JAVA=kaffe
+JIKES=@JIKES@
+SRCDIR=@srcdir@
+overallerror=0
+error=0
+unset KAFFE_DEBUG
+unset CLASSPATH
+
+# If we have a destination directory, clean it and make sure we use it
+# for later compilations.
+if test "$DESTDIR" != "" ; then
+	rm -f $DESTDIR/*.class $DESTDIR/*.fail
+else
+	DESTDIR="."
+fi
+
+# Use jikes if available
+if test "$JIKES" = "" ; then
+	JAVAC="javac"
+else
+        JAVAC="jikes -nowarn -classpath $DESTDIR:$SRCDIR:$SRCDIR/../../libraries/javalib/Klasses.jar"
+fi
+
+echo_n_sp ()
+{
+	echo ${1+"$@"} | tr '\012' ' '
+}
+
+compile()
+{
+	FILES=`echo $* | awk -v SRCDIR=$SRCDIR '{ for (i = 1; i <= NF; i++) printf "%s/%s.java ", SRCDIR, $i }'`
+	echo ERROR > ${RESULT}
+	if test "$2" = "deprecated" ; then
+		NOWARN="-nowarn"
+	else
+		NOWARN=""
+	fi
+	${JAVAC} ${NOWARN} -d ${DESTDIR} ${FILES} >${RESULT} 2>&1
+	if test "$2" = "deprecated" ; then
+		OUTPUT=`cat ${RESULT} | grep -v warning`
+	else
+		OUTPUT=`cat ${RESULT}`
+	fi
+	if test "${OUTPUT}" != "" ; then
+		echo "error compiling:"
+		cat ${RESULT}
+		error=1
+	fi
+	rm -f ${RESULT}
+}
+
+#
+# second arg:
+#	sort:		sort output
+#
+run()
+{
+	echo ERROR > $RESULT
+	if test "x$2" = "xsort"; then
+	    (cd $DESTDIR ; $JAVA $1 2>&1 | sort > $RESULT)
+	else
+	    (cd $DESTDIR ; $JAVA $1 > $RESULT 2>&1)
+	fi
+	if cmp -s $RESULT $SRCDIR/$1.out ; then
+		:
+	else
+		cp $RESULT $DESTDIR/$1.fail
+		error=1
+	fi
+	rm -f $RESULT
+}
+
+#
+# second arg:
+# 	deprecated:	use -nowarn
+#	sort:		sort output
+#
+runtest()
+{
+	error=0
+	echo_n_sp "$1 ..." 1>&2
+	if test "x$2" = "xdeprecated"; then
+		compile $1 deprecated
+	elif test "x$2" != "xnocompile"; then
+		compile $1
+	fi
+	if test $error = 0 ; then
+		run $1 $2
+	fi
+	if test $error = 0 ; then
+		echo "passed" 1>&2
+	else
+		echo "failed: output saved to $1.fail" 1>&2
+		overallerror=1
+	fi
+}
+
+ignoretest()
+{
+	error=0
+	echo "$1 ... ignored" 1>&2
+}
+
+# Simple health check
+cp $SRCDIR/HelloWorldApp.class.save $DESTDIR/HelloWorldApp.class
+run HelloWorldApp
+
+# Now test the compiler
+rm -f $DESTDIR/HelloWorldApp.class
+runtest HelloWorldApp
+
+# Test ints, longs, floats and doubles
+runtest TestIntLong
+ignoretest TestFloatDouble
+runtest ModuloTest
+
+# Test strings
+runtest Str
+runtest Str2
+runtest InternHog
+
+# Test exceptions
+runtest IndexTest
+runtest StackDump
+
+# Test threads
+runtest tname
+runtest ttest
+runtest ThreadInterrupt
+runtest UncaughtException
+
+# Misc tests
+runtest ReflectInterfaces
+runtest TestSerializable
+runtest NullPointerTest
+runtest LostFrame
+runtest ConstructorTest
+runtest burford
+runtest IllegalInterface
+runtest GetInterfaces
+runtest DeadThread
+runtest SignedShort
+runtest CharCvt
+runtest BadFloatTest
+runtest ExecTest
+runtest ProcessTest
+runtest UDPTest
+
+runtest finaltest
+echo_n_sp "finaltest2 ..." 1>&2
+compile finaltest2
+if test $error = 0 ; then
+	run finaltest
+fi
+if test $error = 0 ; then
+	echo "passed" 1>&2
+else
+	overallerror=1
+fi
+
+runtest forNameTest
+runtest KaffeVerifyBug
+runtest Schtum
+runtest tthrd1
+runtest Reflect 
+runtest Bean
+
+#
+# simple test for Method.invoke
+#
+runtest ReflectInvoke
+
+#
+# simple test for InvocationTargetExceptions
+#
+runtest InvTarExcTest
+
+#
+# tests for ClassLoader
+# this test must be compiled with 'nowarn' because it uses a
+# deprecated API (defineClass with 3 params)
+#
+
+# compile the example class
+compile Hello
+
+runtest CLTest deprecated
+
+compile CLTestConc_run
+runtest CLTestConc deprecated
+runtest CLTestJLock
+runtest CLTestLie
+runtest CLTestFindLoaded
+
+compile ExceptionTest
+runtest ExceptionTestClassLoader
+runtest ExceptionTestClassLoader2
+
+# Garbage collection tests
+compile ClassGC ClassGCTest ClassGCTestLater
+runtest ClassGC nocompile
+
+# These tests must have their output sorted, because they're multi-threaded.
+runtest GCTest sort
+runtest ThreadLocalTest sort
+
+runtest BitSetTest 
+runtest ExceptionInInitializerTest
+runtest InitTest
+runtest ProcessClassTest
+runtest ProcessClassInst
+runtest ProcessClassStop deprecated
+runtest FindSystemClass
+runtest ProcessClassLockTest
+runtest DoubleBug
+runtest Overflow
+runtest TestUnlock
+runtest MarkResetTest
+runtest HashtableTest1
+
+# All done okay
+exit $overallerror

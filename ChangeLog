@@ -1,3 +1,14 @@
+Mon Dec 28 17:18:40 1998  Archie Cobbs <archie@whistle.com>
+
+	* configure configure.in test/regression/TestScript{Thread}.in
+	test/regression/*.out test/Makefile.in: detect and use jikes if
+	available and separate each test's output into a separate
+	individual file.
+	* test/regression/TestScript{Thread}: remove
+	* libraries/javalib/java/net/DatagramPacket.java: don't
+	leave address as null, even if we can't find one, otherwise
+	UDPTest fails on machines with only a loopback IP address.
+
 Sat Dec 26 17:59:40 1998  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffeh/constants.c kaffe/kaffevm/baseClasses.c

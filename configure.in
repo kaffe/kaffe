@@ -805,6 +805,8 @@ kaffe/scripts/compat/java \
 kaffe/scripts/compat/javac \
 kaffe/scripts/compat/appletviewer \
 kaffe/scripts/compat/javadoc \
+test/regression/TestScript \
+test/regression/TestScriptThread \
 "
 
 dnl =========================================================================

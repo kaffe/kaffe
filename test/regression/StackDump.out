@@ -1,0 +1,13 @@
+java.lang.NullPointerException
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.main(14)
