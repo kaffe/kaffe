@@ -216,7 +216,14 @@ public class TreeMap extends AbstractMap
 	}
 
 	public Object clone() {
-		TreeMap clone = (TreeMap)super.clone();
+		TreeMap clone;
+		try {
+			clone = (TreeMap)super.clone();
+		} catch (CloneNotSupportedException e) {
+			clone = null;		// can't happen
+		}
+		clone.keyset = null;
+		clone.valcol = null;
 		clone.root = root.cloneTree();
 		return clone;
 	}

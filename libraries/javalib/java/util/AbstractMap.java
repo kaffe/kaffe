@@ -16,8 +16,8 @@
 package java.util;
 
 public abstract class AbstractMap implements Map {
-	private Set keyset;
-	private Collection valcol;
+	Set keyset;
+	Collection valcol;
 
 	protected AbstractMap() {
 	}
@@ -206,18 +206,5 @@ public abstract class AbstractMap implements Map {
 		b.append("}");
 		return b.toString();
 	}
-
-	public Object clone() {
-		AbstractMap clone;
-		try {
-			clone = (AbstractMap)super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new Error();
-		}
-		clone.keyset = null;
-		clone.valcol = null;
-		return clone;
-	}
-
 }
 

@@ -41,5 +41,16 @@ public abstract class AbstractSet extends AbstractCollection implements Set {
 		    sum += i.next().hashCode());
 		return sum;
 	}
+
+	public boolean removeAll(Collection c) {
+		if (size() < c.size())
+			return super.removeAll(c);
+		boolean status = false;
+		for (Iterator i = c.iterator(); i.hasNext(); ) {
+			if (remove(i.next()))
+				status = true;
+		}
+		return status;
+	}
 }
 
