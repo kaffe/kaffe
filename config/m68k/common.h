@@ -149,4 +149,30 @@
 
 #endif	/* defined(__linux__) */
 
+
+/*
+ * Do an atomic compare and exchange.  The address 'A' is checked against
+ * value 'O' and if they match it's exchanged with value 'N'.
+ * We return '1' if the exchange is sucessful, otherwise 0.
+ */
+#define COMPARE_AND_EXCHANGE(A,O,N)		\
+({						\
+	unsigned int tmp, ret = 0;		\
+						\
+	asm volatile(				\
+	"1:	movel	%2, %0\n"		\
+	"	cmpl	%4, %0\n"		\
+	"	bne	2f\n"			\
+	"	casl	%0, %5, %2\n"		\
+	"	bne	1b\n"			\
+	"	movl	#1, %1\n"		\
+	"2:\n"					\
+	: "=&r" (tmp), "=&r" (ret), "=m" (*(A))	\
+	: "m" (*(A)), "r" (O), "r" (N)		\
+	: "memory");				\
+						\
+	ret;					\
+})
+
+
 #endif
