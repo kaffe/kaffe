@@ -1,3 +1,9 @@
+2004-06-09  Ito Kazumitsu  <kaz@ph.maczuka.gcd.org>
+
+	* libraries/javalib/kaffe/lang/UNIXProcess.java:
+	Close the internal stream sync when the subprocess is finished.
+	Close input/output streams in the method finalize().
+
 2004-06-07  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* configure.ac: Check for setrlimit. Fixed typo.

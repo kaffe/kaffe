@@ -34,6 +34,7 @@ public class UNIXProcess extends Process {
 	OutputStream stdin_stream;
 	InputStream raw_stdout;
 	InputStream raw_stderr;
+	FileOutputStream sync;
 	Throwable throwable;		// saved to rethrow in correct thread
 
 public UNIXProcess(final String argv[], final String arge[], File dir)
@@ -75,6 +76,7 @@ public UNIXProcess(final String argv[], final String arge[], File dir)
 				this.notifyAll();
 			}
 			synchronized(UNIXProcess.this) {
+				try_close(sync);
 				UNIXProcess.this.notifyAll();
 			}
 		}
@@ -116,7 +118,7 @@ public UNIXProcess(final String argv[], final String arge[], File dir)
 		raw_stderr = new FileInputStream(stderr_fd);
 
 		// now signal child to proceed
-		FileOutputStream sync = new FileOutputStream(sync_fd);
+		sync = new FileOutputStream(sync_fd);
 		byte[] sbuf = new byte[1];
 		try {
 			sync.write(sbuf);
@@ -164,6 +166,7 @@ public void destroy() {
 		raw_stdout.close();
 		raw_stderr.close();
 		stdin_stream.close();
+		sync.close();
 	}
 	catch (IOException e) {
 		e.printStackTrace();
@@ -184,6 +187,31 @@ private native int forkAndExec(Object cmd[], Object env[], String dirPath);
 private native int execWait();
 private native static void sendSignal0(int pid, int signum);
 private native static int getKillSignal();
+
+protected void finalize() throws Throwable {
+	super.finalize();
+	try_close(raw_stdout);
+	try_close(raw_stderr);
+	try_close(stdin_stream);
+}
+
+private static void try_close(InputStream stream) {
+	if (stream != null) {
+		try {
+			stream.close();
+		}
+		catch (IOException e) {}
+	}
+}
+
+private static void try_close(OutputStream stream) {
+	if (stream != null) {
+		try {
+			stream.close();
+		}
+		catch (IOException e) {}
+	}
+}
 
 }
 
