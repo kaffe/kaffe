@@ -1,3 +1,10 @@
+Wed Jul 03 08:21:11 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+        From: Dalibor Topic <robilad@yahoo.com>
+	
+	* libraries/javalib/rebuildLib.in: Fix for bash shell scripting
+	when trying to rebuild Java libs using kjc.
+
 Fri Jun 28 18:20:21 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* kaffe/kaffe/version.c: Reworded copyright message again.
