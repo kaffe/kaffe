@@ -2,7 +2,11 @@ Fri Jun 26 20:06:02 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* libraries/clib/native/Method.c:
 	  libraries/clib/native/Constructor.c: fixed Constructor.newInstance
-	and Method.invoke so that the proper JNI function is used.
+	  and Method.invoke so that the proper JNI function is used.
+	* libraries/clib/native/Class.c: fixed the getConstructor methods
+	  to *not* follow their superclass pointers when reflecting 
+	  constructors. 
+	  test/regression/TestScript: fixed test result.
 
 Wed Jun 17 11:25:56 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
