@@ -1,3 +1,10 @@
+Wed Jan 13 17:27:47 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/intrp/Makefile.in: regen
+	* kaffe/kaffevm/systems/oskit-pthreads/Makefile.in: regen
+	* kaffe/kaffevm/systems/unix-internal/Makefile.in: regen
+	* kaffe/scripts/bat/Makefile.in: regen
+
 Wed Jan 13 16:46:02 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libltdl/configure.in, libltdl/ltdl.c: updated from libtool, to
