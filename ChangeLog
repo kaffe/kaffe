@@ -1,3 +1,76 @@
+2001-05-07  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/java/util/zip/ZipOutputStream.java: STORED and
+	DEFLATED must be declared not inherited.
+
+	* libraries/javalib/kaffe/io/ByteToCharConverter.java (havePending):
+	New function that return true iif converter have pending bytes.
+
+	* libraries/javalib/java/io/InputStreamReader.java (read): avoid
+	read blocking.
+	Detected with ikjc.
+
+	* configure.in: Test whether we get an unexpected arithmetic
+	exception for LONG_MIN % -1l or LONG_MIN / -1l.
+
+	* kaffe/kaffevm/intrp/icode.h (rem_int, div_int): workaround
+	LONG_INT % -1l and LONG_MIN / -1l bugs.
+
+	* config/i386/jit.h (EXTRA_LABELS): New label Llong8 (near
+	relative jump).
+
+	* config/i386/jit-i386.def (div_int, rem_int),
+	config/i386/jit3-i386.def (div_int, rem_int): workaround LONG_INT
+	% -1l and LONG_MIN / -1l bugs.
+
+	* test/regression/divtest.java: more division and modulo tests.
+
+	* test/regression/Makefile.am (XFAIL_TESTS): Remove divtest.java
+
+	* libraries/javalib/java/io/PipedInputStream.java (close): Mark as
+	finished to break read loop.
+	Mauve test gnu.testlet.java.io.PipedStream.close.
+
+	* libraries/javalib/java/lang/Double.java,
+	libraries/javalib/java/lang/Float.java: Made POSITIVE_INFINITY,
+	NEGATIVE_INFINITY, NaN, MIN_VALUE and MAX_VALUE compile time
+	constants.  This is required by many Jacks test (105 new tests
+	succes with this patch).
+
+	* test/regression/DoubleConst.java, test/regression/Makefile.am:
+	New test case to ensure that compile-time constants are correctly
+	compiled.
+
+	* configure.in, kaffe/xprof/Makefile.am: avoid GNU Make function
+	($filter-out -pg,@CFLAGS@) and create new AM_CONDITIONAL whether
+	libxprof is needed.
+
+	* kaffe/Makefile.am, kaffe/kaffe/Makefile.am: compile and use
+	libxprof only when configured with --enable-xprofiling or
+	--enable-xdebugging or --enable-feedback.
+
+	* kaffe/xprof/feedback.c, kaffe/xprof/fileSections.c,
+	kaffe/xprof/sectionFile.c: conditional compile on KAFFE_FEEDBACK.
+
+	* kaffe/xprof/mangle.c: conditional compile on KAFFE_XDEBUGGING or
+	KAFFE_XPROFILER.
+
+	* kaffe/xprof/memorySamples.c: conditional compile on
+	KAFFE_XPROFILER.
+
+	* configure, config/config.h.in, */Makefile.in: Regenerated.
+
+2001-05-06  Carlos Valiente  <yo@virutass.net>
+
+	* libraries/javalib/java/util/zip/DeflaterOutputStream.java
+	(write): handle empty write case.
+
+	* libraries/javalib/java/util/zip/ZipInputStream.java
+	(closeEntry): Allow null CRC with null size.
+
+	* test/regression/Makefile.am, test/regression/ZipTest.java: new
+	test case.
+
 2001-04-21  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/native/clib/Class.c (getModifiers): InnerTest proves
@@ -118,7 +191,7 @@ Mon Apr 02 16:41:59 MDT 2001  Jason Baker  <jbaker@cs.utah.edu>
 	hasWriteObject method as in TVT implementation.
 
 	* libraries/javalib/kaffe/io/ObjectStreamClassImpl.java
-	(getObjectWithoutSuper): cancle my 2000-06-15 fix.
+	(getObjectWithoutSuper): cancel my 2000-06-15 fix.
 	(invokeSuperclassInitV): removed, cancel my 2000-06-15 fix.
 	(hasWriteObject): Add Java method.
 	(hasWriteObject0): Old native hasWriteObject method, made it
