@@ -13,6 +13,7 @@
 #include "debug.h"
 #include "itypes.h"
 #include "soft.h"
+#include "verify.h"
 #include "verify-debug.h"
 #include "verify-type.h"
 #include "verify-uninit.h"
@@ -166,9 +167,9 @@ initVerifierPrimTypes(void)
 }
 
 
-/*
- * resolveType()
- *     Ensures that the type is a pointer to an instance of Hjava_lang_Class.
+/**
+ *  If the given type is a simply a signature or class name, we
+ *  resolve it to be a pointer to an actual Class object in memory.
  */
 void
 resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
@@ -198,28 +199,48 @@ resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
 	}
 }
 
+/**
+ * Constructs the list of common supertypes from t1 and t2,
+ * storing the result in t2 as a TINFO_SUPERTYPES.
+ * In the process, it allocates memory for the new supertype
+ * list and puts it onto our SupertypeSet of memory allocations.
+ */
+void
+mergeSupersets(SupertypeSet* supertypes, Type* t1, Type* t2)
+{
+	/* TODO */
+}
+
+/**
+ * Frees all the memory allocated during the creation of the
+ * given SupertypeSet.
+ *
+ * @param supertypes The supertype list to be deallocated.
+ * @deffunc void freeSupertypes (SupertypeSet* supertypes)
+ */
+void
+freeSupertypes(SupertypeSet* supertypes)
+{
+	SupertypeSet* l;
+	while (supertypes) {
+		l = supertypes->next;
+		gc_free(supertypes->list);
+		gc_free(supertypes);
+		supertypes = l;
+	}
+}
 
 /*
- * mergeTypes()
- *     merges two types, t1 and t2, into t2.  this result could
- *     be a common superclass, a common class that both types implement, or,
- *     in the event that the types are not compatible, TUNSTABLE.
+ * merges two types, t1 and t2, into t2.
+ * if t1 and t2 cannot be merged, t2 will become TUNSTABLE.
+ * frequently, merging will result in t2 being represented as a supertype list.
  *
- * returns whether an actual merger was made (i.e. they weren't the same type)
- *
- * note: the precedence of merged types goes (from highest to lowest):
+ * the precedence of merged types goes (from highest to lowest):
  *     actual pointer to Hjava_lang_Class*
  *     TINFO_SIG
  *     TINFO_NAME
  *
- * TODO: right now the priority is to be a common superclass, as stated in
- *       the JVML2 specs.  a better verification technique might check this first,
- *       and then check interfaces that both classes implement.  of course, depending
- *       on the complexity of the inheritance hirearchy, this could take a lot of time.
- *       
- *       the ideal solution is to remember *all* possible highest resolution types,
- *       which, of course, would require allocating more memory on the fly, etc., so,
- *       at least for now, we're not really even considering it.
+ * @return whether an actual merger was made (i.e. they two types given were not the same type)
  */
 bool
 mergeTypes(errorInfo* einfo, Hjava_lang_Class* this,
@@ -249,50 +270,56 @@ mergeTypes(errorInfo* einfo, Hjava_lang_Class* this,
 		*t2 = *t1;
 		return true;
 	}
+	else if (t2->data.class == TOBJ->data.class) {
+		return false;
+	}
 	
 	
-	/* not equivalent, must resolve them */
+	/* must resolve them to go on */
 	resolveType(einfo, this, t1);
-	if (t1->data.class == NULL) {
-		return false;
-	}
-
 	resolveType(einfo, this, t2);
-	if (t2->data.class == NULL) {
+	if ((t1->tinfo & TINFO_CLASS && t1->data.class == NULL) ||
+	    (t2->tinfo & TINFO_CLASS && t2->data.class == NULL)) {
 		return false;
 	}
 	
-	if (CLASS_IS_INTERFACE(t1->data.class) &&
-	    instanceof_interface(t1->data.class, t2->data.class)) {
-	
-		/* t1 is an interface and t2 implements it,
-		 * so the interface is the merged type.
-		 */
 
-		*t2 = *t1;
-		
-		return true;
+	if (CLASS_IS_INTERFACE(t1->data.class)) {
+		if (instanceof_interface(t1->data.class, t2->data.class)) {
+			/* t1 is an interface and t2 implements or extends it,
+			 * so the interface is the merged type.
+			 */
+			*t2 = *t1;
+			return true;
+		}
+		else if (!CLASS_IS_INTERFACE(t2->data.class)) {
+			t2->data.class = TOBJ->data.class;
+			return true;
+		}
+		/* we now know that t2 is an interface */
+		else if (instanceof_interface(t2->data.class, t1->data.class)) {
+			/* t2 is a superinterface of t1 */
+			return false;
+		}
+		else {
+			/* TODO: need to pass the actual SupertypeSet */
+			mergeSupersets(NULL, t1, t2);
+			return true;
+		}
+	} else if (CLASS_IS_INTERFACE(t2->data.class)) {
+		/* TODO */
+	}
 	
-	} else if (CLASS_IS_INTERFACE(t2->data.class) &&
-		   instanceof_interface(t2->data.class, t1->data.class)) {
-		
-		/* same as above, but we don't need to merge, since
-		 * t2 already is the merged type
-		 */
-
-		return false;
-	} else {
-		/*
-		 * neither of the types is an interface, so we have to
-		 * check for common superclasses. Only merge iff t2 is
-		 * not the common superclass.
-		 */
+	/* possibilities left:
+	 *   1) both are classes
+	 *   2) 
+		 *  1) both are classes
+		/* TODO: create supertypes here */
 		Hjava_lang_Class *tmp = t2->data.class;
 		
 		t2->data.class = getCommonSuperclass(t1->data.class, t2->data.class);
 		
 		return tmp != t2->data.class;
-	} 
 }
 
 
@@ -331,7 +358,8 @@ isReference(const Type* type)
 	return (type->tinfo & TINFO_NAME ||
 		type->tinfo & TINFO_SIG ||
 		type->tinfo & TINFO_CLASS ||
-		type->tinfo & TINFO_UNINIT);
+		type->tinfo & TINFO_UNINIT ||
+		type->tinfo & TINFO_SUPERTYPES);
 }
 
 /*
@@ -347,6 +375,12 @@ isArray(const Type* type)
 	else if (type->tinfo & TINFO_NAME || type->tinfo & TINFO_SIG) {
 		return (*(type->data.sig) == '[');
 	}
+	else if (type->tinfo & TINFO_SUPERTYPES) {
+		/* if one of the supertypes is an array, it follows that
+		 * all supertypes in the list must be arrays
+		 */
+		return ((*CLASS_CNAME(type->data.supertypes->list[0])) == '[');
+	}
 	else if (type->tinfo != TINFO_CLASS) {
 		return false;
 	}
@@ -354,7 +388,6 @@ isArray(const Type* type)
 		return (*(CLASS_CNAME(type->data.class)) == '[');
 	}
 }
-
 
 /*
  * sameType()
@@ -382,6 +415,12 @@ sameType(Type* t1, Type* t2)
 			(t1->data.uninit == t2->data.uninit ||
 			 sameRefType(&(t1->data.uninit->type),
 				     &(t2->data.uninit->type))));
+		
+	case TINFO_SUPERTYPES:
+		/* if we're unsure as to what type t1 might be, then
+		 * we have to perform a merge
+		 */
+		return false;
 		
 	default:
 		DBG(VERIFY3, dprintf("%ssameType(): unrecognized tinfo (%d)\n", indent, t1->tinfo); );
@@ -503,12 +542,19 @@ sameRefType(Type* t1, Type* t2)
 	}
 }
 
-
-/*
- * returns whether t2 can be a t1
+/**
+ * Determines whether t2 can be used as a t1;  that is, whether
+ * t2 implements or inherits from t1.
+ *
+ * As a side effect, it (potentially) modifies t2's supertype
+ * list, if present, by removing those types incompatible with t1.
+ * If t1 is represented by a list, then t1 could be *any* of the
+ * elements on the list. TODO
+ *
+ * @return whether t2 can be a t1.
  */
 bool
-typecheck(errorInfo* einfo, Hjava_lang_Class* this, Type* t1, Type* t2)
+typecheck(errorInfo* einfo, Verifier* v, Type* t1, Type* t2)
 {
 	DBG(VERIFY3, dprintf("%stypechecking ", indent); printType(t1); dprintf("  vs.  "); printType(t2); dprintf("\n"); );
 	
@@ -524,16 +570,26 @@ typecheck(errorInfo* einfo, Hjava_lang_Class* this, Type* t1, Type* t2)
 	else if (sameType(t1, TOBJ)) {
 		return true;
 	}
+	/* TODO: supertype checking */
+	else if (t1->tinfo & TINFO_SUPERTYPES) {
 
-	resolveType(einfo, this, t1);
+	}
+	else if (t2->tinfo & TINFO_SUPERTYPES) {
+		/* t1 is NOTE a supertypes, so we simply 
+		 * TODO
+		 */
+	}
+	
+	
+	resolveType(einfo, v->class, t1);
 	if (t1->data.class == NULL) {
 		return false;
 	}
 
-	resolveType(einfo, this, t2);
+	resolveType(einfo, v->class, t2);
 	if (t2->data.class == NULL) {
 		return false;
 	}
-
+	
 	return instanceof(t1->data.class, t2->data.class);
 }

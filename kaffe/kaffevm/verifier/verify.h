@@ -14,6 +14,37 @@
 #include "errors.h"
 #include "gtypes.h"
 
+
+/**
+ * This structure eases memory management and parameter
+ * passing by storing all dynamically allocated structures
+ * that are passed around a lot in one place.
+ *
+ * The verification of one method will have one Verifier
+ * associated with it.
+ */
+typedef struct Verifier
+{
+	/* the method being verified */
+	Hjava_lang_Class* class; /* not const because classloader may need it */
+	const Method* method;
+	
+	/* information about the basic blocks */
+	uint32              numBlocks;
+	uint32*             status;
+	struct  BlockInfo** blocks;
+	
+	/* memory allocated for type checking */
+	struct SigStack*           sigs;
+	struct UninitializedType*  uninits;
+	struct SupertypeSet*       supertypes;
+} Verifier;
+
+
+/**********************************************************
+ * Methods used in both pass 2 and pass 3
+ **********************************************************/
+
 extern bool isTrustedClass(Hjava_lang_Class* class);
 extern const char* parseBaseTypeDescriptor(const char* sig);
 extern const char* parseObjectTypeDescriptor(const char* sig);

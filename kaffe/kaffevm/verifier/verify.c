@@ -250,35 +250,34 @@ getDWord(const unsigned char* code,
 /***********************************************************************************
  * Methods for Pass 3 Verification
  ***********************************************************************************/
-static bool               verifyMethod(errorInfo* einfo, Method* method);
-static BlockInfo**        verifyMethod3a(errorInfo* einfo,
-					 Method* method,
-					 uint32* status,     /* array of status info for all opcodes */
-					 uint32* numBlocks); /* number of basic blocks */
+static bool               verifyMethod(errorInfo* einfo,
+				       Method* method);
+
+/* checks static constraints in bytecode */
+static void               verifyMethod3a(errorInfo* einfo,
+					 Verifier* v);
+
+/* typechecks bytecode and performs the rest of verification */
 static bool               verifyMethod3b(errorInfo* einfo,
-					 const Method* method,
-					 const uint32* status,
-					 BlockInfo** blocks,
-					 const uint32 numBlocks,
-					 SigStack** sigs,
-					 UninitializedType** uninits);
+					 Verifier* v);
 
-static bool               merge(errorInfo* einfo, const Method* method, BlockInfo* fromBlock, BlockInfo* toBlock);
+
+static bool               loadInitialArgs(errorInfo* einfo,
+					  Verifier* v);
 static bool               verifyBasicBlock(errorInfo*,
-					   const Method*,
-					   BlockInfo*,
-					   SigStack**,
-					   UninitializedType**);
+					   Verifier* v,
+					   BlockInfo*);
+static bool               mergeBasicBlocks(errorInfo* einfo,
+					   const Method* method,
+					   BlockInfo* fromBlock,
+					   BlockInfo* toBlock);
 
-static const char*        getNextArg(const char* sig, char* buf);
-static bool               loadInitialArgs(const Method* method, errorInfo* einfo,
-					  BlockInfo* block, SigStack** sigs, UninitializedType** uninits);
-
+/* for verifying method calls */
 static const char*        getReturnSig(const Method*);
 static uint32             countSizeOfArgsInSignature(const char* sig);
-static bool               checkMethodCall(errorInfo* einfo, const Method* method,
-					  BlockInfo* binfo, uint32 pc,
-					  SigStack** sigs, UninitializedType** uninits);
+static const char*        getNextArg(const char* sig, char* buf);
+static bool               checkMethodCall(errorInfo* einfo, Verifier* v,
+					  BlockInfo* binfo, uint32 pc);
 
 /*
  * Verify pass 3:  Check the consistency of the bytecode.
@@ -297,7 +296,7 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
 	 * NOTE: we don't skip interfaces here because an interface may contain a <clinit> method with bytecode
 	 */
 	if (isTrustedClass(class)) {
-		goto done;
+		return success;
 	}
 	
 	
@@ -306,18 +305,29 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
 	
 	
 	DBG(VERIFY3, dprintf("\nPass 3 Verifying Class \"%s\"\n", CLASS_CNAME(class)); );
+	
 	DBG(VERIFY3, {
+		/* print out the superclass hirearchy */
 		Hjava_lang_Class* tmp;
 		for (tmp = class->superclass; tmp; tmp = tmp->superclass) {
-			dprintf("                        |-> %s\n", CLASS_CNAME(tmp));
+			dprintf("                       C|-> %s\n", CLASS_CNAME(tmp));
 		}
 	});
+	DBG(VERIFY3, {
+		/* print out the complete list of implemented interfaces */
+		int i;
+		for (i = class->total_interface_len - 1; i >=0; i--) {
+			dprintf("                       I|-> %s\n", CLASS_CNAME(class->interfaces[i]));
+		}
+	});
+	
 	
 	for (n = CLASS_NMETHODS(class), method = CLASS_METHODS(class);
 	     n > 0;
 	     --n, ++method) {
 		
-		DBG(VERIFY3, dprintf("\n  -----------------------------------\n  considering method %s%s\n",
+		DBG(VERIFY3, dprintf("\n  -----------------------------------\n  considering method %s.%s%s\n",
+				     CLASS_CNAME(class),
 				     METHOD_NAMED(method), METHOD_SIGD(method)); );
 		
 		/* if it's abstract or native, no verification necessary */
@@ -358,32 +368,33 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
  */
 static
 void
-cleanupInVerifyMethod(uint32* status, SigStack* sigs, UninitializedType* uninits, uint32* numBlocks, BlockInfo ** blocks)
+cleanupInVerifyMethod(Verifier* v)
 {
 	DBG(VERIFY3, dprintf("    cleaning up..."); );
-	gc_free(status);
-	if (blocks != NULL) {
-		while (*numBlocks > 0) {
-			freeBlock(blocks[--(*numBlocks)]);
+	gc_free(v->status);
+	if (v->blocks != NULL) {
+		while (v->numBlocks > 0) {
+			freeBlock(v->blocks[--v->numBlocks]);
 		}
-		gc_free(blocks);
+		gc_free(v->blocks);
 	}
-        freeSigStack(sigs);
-        freeUninits(uninits);
+        freeSigStack(v->sigs);
+        freeUninits(v->uninits);
+	freeSupertypes(v->supertypes);
         DBG(VERIFY3, dprintf(" done\n"); );
 }
 
 static inline
 bool
-failInVerifyMethod(errorInfo *einfo, Method* method, uint32* status, SigStack* sigs, UninitializedType* uninits, uint32* numBlocks, BlockInfo ** blocks)
+failInVerifyMethod(errorInfo *einfo, Verifier* v)
 {
         DBG(VERIFY3, dprintf("    Verify Method 3b: %s.%s%s: FAILED\n",
-			     CLASS_CNAME(method->class), METHOD_NAMED(method), METHOD_SIGD(method)); );
+			     CLASS_CNAME(v->method->class), METHOD_NAMED(v->method), METHOD_SIGD(v->method)); );
 	if (einfo->type == 0) {
 		DBG(VERIFY3, dprintf("      DBG ERROR: should have raised an exception\n"); );
 		postException(einfo, JAVA_LANG(VerifyError));
 	}
-        cleanupInVerifyMethod(status, sigs, uninits, numBlocks, blocks);
+        cleanupInVerifyMethod(v);
         return(false);
 }
 
@@ -399,31 +410,32 @@ verifyMethod(errorInfo *einfo, Method* method)
         /* to save some typing, etc. */
 	int codelen  = METHOD_BYTECODE_LEN(method);
 	
-	uint32* status = NULL; /* the status of each instruction...changed, visited, etc.
-				* used primarily to help find the basic blocks initially
-				*/
-
-	SigStack* sigs = NULL;
+	Verifier v;
+	v.class = method->class;
+	v.method = method;
+	v.numBlocks = 0;
+	v.status = NULL;
+	v.blocks = NULL;
+	v.sigs = NULL;
+	v.uninits = NULL;
+	v.supertypes = NULL;
+	v.uninits = NULL;
 	
-	UninitializedType* uninits = NULL;
-	
-	uint32      numBlocks = 0;
-	BlockInfo** blocks    = NULL;
 	
 	/**************************************************************************************************
 	 * Memory Allocation
 	 **************************************************************************************************/
 	DBG(VERIFY3, dprintf("        allocating memory for verification (codelen = %d)...\n", codelen); );
 	
-        status   = checkPtr((char*)gc_malloc(codelen * sizeof(uint32), GC_ALLOC_VERIFIER));
+        v.status = checkPtr((uint32*)gc_malloc(codelen * sizeof(uint32), GC_ALLOC_VERIFIER));
 	
 	/* find basic blocks and allocate memory for them */
-	blocks = verifyMethod3a(einfo, method, status, &numBlocks);
-	if (!blocks) {
+	verifyMethod3a(einfo, &v);
+	if (!v.blocks) {
 		DBG(VERIFY3, dprintf("        some kinda error finding the basic blocks in pass 3a\n"); );
 		
 		/* propagate error */
-		return failInVerifyMethod(einfo, method, status, sigs, uninits, &numBlocks, blocks);
+		return failInVerifyMethod(einfo, &v);
 	}
 	
 	DBG(VERIFY3, dprintf("        done allocating memory\n"); );
@@ -433,28 +445,26 @@ verifyMethod(errorInfo *einfo, Method* method)
 	
 	/* load initial arguments into local variable array */
 	DBG(VERIFY3, dprintf("    about to load initial args...\n"); );
-	if (!loadInitialArgs(method, einfo, blocks[0], &sigs, &uninits)) {
+	if (!loadInitialArgs(einfo, &v)) {
 	        /* propagate error */
-		return failInVerifyMethod(einfo, method, status, sigs, uninits, &numBlocks, blocks);
+		return failInVerifyMethod(einfo, &v);
 	}
 	DBG(VERIFY3, {
 	        /* print out the local arguments */
 		int n;
-		for(n = 0; n < method->localsz; n++) {
+		for(n = 0; n < v.method->localsz; n++) {
 			dprintf("        local %d: ", n);
-			printType(&blocks[0]->locals[n]);
+			printType(&(v.blocks[0]->locals[n]));
 			dprintf("\n");
 		}
 	} );
 	
 	
-	if (!verifyMethod3b(einfo, method,
-			    status, blocks, numBlocks,
-			    &sigs, &uninits)) {
-		return failInVerifyMethod(einfo, method, status, sigs, uninits, &numBlocks, blocks);
+	if (!verifyMethod3b(einfo, &v)) {
+		return failInVerifyMethod(einfo, &v);
 	}
 	
-	cleanupInVerifyMethod(status, sigs, uninits, &numBlocks, blocks);
+	cleanupInVerifyMethod(&v);
 	DBG(VERIFY3, dprintf("    Verify Method 3b: done\n"); );
 	return(true);
 }
@@ -500,21 +510,18 @@ getNextPC(const unsigned char * code, const uint32 pc)
  *       of pass 3b, structural constraint checking.
  */
 static
-BlockInfo**
-verifyMethod3a(errorInfo* einfo,
-	       Method* method,
-	       uint32* status,    /* array of status info for all opcodes */
-	       uint32* numBlocks) /* number of basic blocks */
+void
+verifyMethod3a(errorInfo* einfo, Verifier* v)
 {
 
 #define ENSURE_NON_WIDE \
 	if (wide) { \
-		return verifyErrorInVerifyMethod3a(einfo, method, "illegal instruction following wide instruction"); \
+		return verifyErrorInVerifyMethod3a(einfo, v, "illegal instruction following wide instruction"); \
 	}
 
 #define CHECK_POOL_IDX(_IDX) \
 	if (_IDX > pool->size) { \
-		return verifyErrorInVerifyMethod3a(einfo, method, "attempt to access a constant pool index beyond constant pool range"); \
+		return verifyErrorInVerifyMethod3a(einfo, v, "attempt to access a constant pool index beyond constant pool range"); \
 	}
 
 	
@@ -527,23 +534,25 @@ verifyMethod3a(errorInfo* einfo,
 	CHECK_POOL_IDX(_IDX)
 
 #define BRANCH_IN_BOUNDS(_N, _INST) \
-	if (_N < 0 || _N >= codelen) { \
-	  return branchInBoundsErrorInVerifyMethod3a(einfo, method, codelen, _N); \
+	if (_N >= codelen) { \
+		branchInBoundsErrorInVerifyMethod3a(einfo, v, codelen, _N); \
+		return; \
 	}
 
         /* makes sure the index given for a local variable is within the correct index */
 #define CHECK_LOCAL_INDEX(_N) \
-	if ((_N) >= method->localsz) { \
-	  return checkLocalIndexErrorInVerifyMethod3a(einfo, method, pc, code, _N); \
+	if ((_N) >= v->method->localsz) { \
+		checkLocalIndexErrorInVerifyMethod3a(einfo, v, pc, code, _N); \
+		return; \
 	}
 	
-	constants* pool     = CLASS_CONSTANTS(method->class);
+	const constants* pool     = CLASS_CONSTANTS(v->method->class);
 	
 	/* used for looking at method signatures... */
 	const char* sig;
 	
-	int codelen         = METHOD_BYTECODE_LEN(method);
-	unsigned char* code = METHOD_BYTECODE_CODE(method);
+	uint32 codelen      = (uint32)METHOD_BYTECODE_LEN(v->method);
+	unsigned char* code = METHOD_BYTECODE_CODE(v->method);
 	
 	uint32 pc = 0, newpc = 0, n = 0, idx = 0;
 	int32 branchoffset = 0;
@@ -557,22 +566,24 @@ verifyMethod3a(errorInfo* einfo,
 	
 	
 	DBG(VERIFY3, dprintf("    Verifier Pass 3a: checking static constraints and finding basic blocks...\n"); );
-	
+	if (METHOD_BYTECODE_LEN(v->method) < 0) {
+		verifyErrorInVerifyMethod3a(einfo, v, "method bytecode length is less than 0");
+	}
 	
 	/* find the start of every instruction and basic block to determine legal branches
 	 *
 	 * also, this makes sure that only legal instructions follow the WIDE instruction
 	 */
-	status[0] |= START_BLOCK;
+	v->status[0] |= START_BLOCK;
 	wide = false;
 	pc = 0;
 	while(pc < codelen) {
-		status[pc] |= IS_INSTRUCTION;
+		v->status[pc] |= IS_INSTRUCTION;
 		
 		DBG(VERIFY3, dprintf("        instruction: (%d) ", pc); printInstruction(code[pc]); dprintf("\n"); );
 		
 		if (codelen < getNextPC(code, pc)) {
-			return verifyErrorInVerifyMethod3a(einfo, method, "last operand in code array is cut off");
+			return verifyErrorInVerifyMethod3a(einfo, v, "last operand in code array is cut off");
 		}
 		
 		switch(code[pc]) {
@@ -622,7 +633,8 @@ verifyMethod3a(errorInfo* einfo,
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_Integer && n != CONSTANT_Float &&
 			    n != CONSTANT_String && n != CONSTANT_ResolvedString) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "ldc* on constant pool entry other than int/float/string");
+				verifyErrorInVerifyMethod3a(einfo, v, "ldc* on constant pool entry other than int/float/string");
+				return;
 			}
 			break;
 			
@@ -630,7 +642,8 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_Double && n != CONSTANT_Long) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "ldc2_w on constant pool entry other than long or double");
+				verifyErrorInVerifyMethod3a(einfo, v, "ldc2_w on constant pool entry other than long or double");
+				return;
 			}
 			break;
 			
@@ -641,7 +654,8 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			idx = CONST_TAG(idx, pool);
 			if (idx != CONSTANT_Fieldref) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "[get/put][field/static] accesses something in the constant pool that is not a CONSTANT_Fieldref");
+				verifyErrorInVerifyMethod3a(einfo, v, "[get/put][field/static] accesses something in the constant pool that is not a CONSTANT_Fieldref");
+				return;
 			}
 			break;
 			
@@ -653,17 +667,20 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_Methodref) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "invoke* accesses something in the constant pool that is not a CONSTANT_Methodref");
+				verifyErrorInVerifyMethod3a(einfo, v, "invoke* accesses something in the constant pool that is not a CONSTANT_Methodref");
+				return;
 			}
 			
 			sig = METHODREF_SIGD(idx, pool);
 			if (*sig == '<') {
 				if (!strcmp(constructor_name->data, sig)) {
 					if (code[pc] != INVOKESPECIAL) {
-						return verifyErrorInVerifyMethod3a(einfo, method, "only invokespecial can be used to execute <init> methods");
+						 verifyErrorInVerifyMethod3a(einfo, v, "only invokespecial can be used to execute <init> methods");
+						 return;
 					}
 				} else {
-					return verifyErrorInVerifyMethod3a(einfo, method, "no method with a name whose first character is '<' may be called by an invoke instruction");
+					verifyErrorInVerifyMethod3a(einfo, v, "no method with a name whose first character is '<' may be called by an invoke instruction");
+					return;
 				}
 			}
 			
@@ -683,18 +700,22 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_InterfaceMethodref) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "invokeinterface accesses something in the constant pool that is not a CONSTANT_InterfaceMethodref");
+				verifyErrorInVerifyMethod3a(einfo, v, "invokeinterface accesses something in the constant pool that is not a CONSTANT_InterfaceMethodref");
+				return;
 			}
 			
 			sig = INTERFACEMETHODREF_SIGD(idx, pool);
 			if (*sig == '<') {
-				return verifyErrorInVerifyMethod3a(einfo, method, "invokeinterface cannot be used to invoke any instruction with a name starting with '<'");
+				verifyErrorInVerifyMethod3a(einfo, v, "invokeinterface cannot be used to invoke any instruction with a name starting with '<'");
+				return;
 			}
 			
 			if (code[pc + 3] == 0) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "fourth byte of invokeinterface is zero");
+				verifyErrorInVerifyMethod3a(einfo, v, "fourth byte of invokeinterface is zero");
+				return;
 			} else if (code[pc + 4] != 0) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "fifth byte of invokeinterface is not zero");
+				verifyErrorInVerifyMethod3a(einfo, v, "fifth byte of invokeinterface is not zero");
+				return;
 			}
 			
 			break;
@@ -707,7 +728,8 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(n, pc);
 			n = CONST_TAG(n, pool);
 			if (n != CONSTANT_Class && n != CONSTANT_ResolvedClass) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "instanceof/checkcast indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+				verifyErrorInVerifyMethod3a(einfo, v, "instanceof/checkcast indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+				return;
 			}
 			
 			break;
@@ -719,18 +741,21 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_Class && n != CONSTANT_ResolvedClass) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "multinewarray indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+				verifyErrorInVerifyMethod3a(einfo, v, "multinewarray indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+				return;
 			}
 			
 			/* number of dimensions must be <= num dimensions of array type being created */
 			sig = CLASS_NAMED(idx, pool);
 			newpc = code[pc + 3];
 			if (newpc == 0) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "dimensions operand of multianewarray must be non-zero");
+				verifyErrorInVerifyMethod3a(einfo, v, "dimensions operand of multianewarray must be non-zero");
+				return;
 			}
 			for(n = 0; *sig == '['; sig++, n++);
 			if (n < newpc) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "dimensions operand of multianewarray is > the number of dimensions in array being created");
+				verifyErrorInVerifyMethod3a(einfo, v, "dimensions operand of multianewarray is > the number of dimensions in array being created");
+				return;
 			}
 			
 			break;
@@ -742,13 +767,15 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_Class && n != CONSTANT_ResolvedClass) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "new indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+				verifyErrorInVerifyMethod3a(einfo, v, "new indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+				return;
 			}
 			
 			/* cannot create arrays with NEW */
 			sig = CLASS_NAMED(idx, pool);
 			if (*sig == '[') {
-				return verifyErrorInVerifyMethod3a(einfo, method, "new instruction used to create a new array");
+				verifyErrorInVerifyMethod3a(einfo, v, "new instruction used to create a new array");
+				return;
 			}
 			break;
 			
@@ -759,14 +786,16 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_Class && n != CONSTANT_ResolvedClass) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "anewarray indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+				verifyErrorInVerifyMethod3a(einfo, v, "anewarray indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+				return;
 			}
 			
 			/* count the number of dimensions of the array being created...it must be <= 255 */
 			sig = CLASS_NAMED(idx, pool);
 			for (n = 0; *sig == '['; sig++, n++);
 			if (n > 255) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "anewarray used to create an array of > 255 dimensions");
+				verifyErrorInVerifyMethod3a(einfo, v, "anewarray used to create an array of > 255 dimensions");
+				return;
 			}
 			
 			break;
@@ -776,7 +805,8 @@ verifyMethod3a(errorInfo* einfo,
 			
 			n = code[pc + 1];
 			if (n < 4 || n > 11) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "newarray operand must be in the range [4,11]");
+				verifyErrorInVerifyMethod3a(einfo, v, "newarray operand must be in the range [4,11]");
+				return;
 			}
 			
 			break;
@@ -797,8 +827,8 @@ verifyMethod3a(errorInfo* einfo,
 		case FLOAD: case FSTORE:
 			if (wide == true) {
 			        /* the WIDE is considered the beginning of the instruction */
-				status[pc] ^= IS_INSTRUCTION;
-				status[pc] |= WIDE_MODDED;
+				v->status[pc] ^= IS_INSTRUCTION;
+				v->status[pc] |= WIDE_MODDED;
 				
 				pc++;
 				wide = false;
@@ -816,8 +846,8 @@ verifyMethod3a(errorInfo* einfo,
 		case DLOAD: case DSTORE:
 			if (wide == true) {
 			        /* the WIDE is considered the beginning of the instruction */
-				status[pc] ^= IS_INSTRUCTION;
-				status[pc] |= WIDE_MODDED;
+				v->status[pc] ^= IS_INSTRUCTION;
+				v->status[pc] |= WIDE_MODDED;
 				
 				pc++;
 				wide = false;
@@ -839,8 +869,8 @@ verifyMethod3a(errorInfo* einfo,
 		case IINC:
 			if (wide == true) {
 			        /* the WIDE is considered the beginning of the instruction */
-				status[pc] ^= IS_INSTRUCTION;
-				status[pc] |= WIDE_MODDED;
+				v->status[pc] ^= IS_INSTRUCTION;
+				v->status[pc] |= WIDE_MODDED;
 				
 				pc += 2;
 				wide = false;
@@ -853,24 +883,24 @@ verifyMethod3a(errorInfo* einfo,
 			 ********************************************************************/
 		case GOTO:
 			ENSURE_NON_WIDE;
-			status[pc] |= END_BLOCK;
+			v->status[pc] |= END_BLOCK;
 			
 			n = pc + 1;
 			branchoffset = getWord(code, n);
 			newpc = pc + branchoffset;
 			BRANCH_IN_BOUNDS(newpc, "goto");
-			status[newpc] |= START_BLOCK;
+			v->status[newpc] |= START_BLOCK;
 			break;
 			
 		case GOTO_W:
 			ENSURE_NON_WIDE;
-			status[pc] |= END_BLOCK;
+			v->status[pc] |= END_BLOCK;
 			
 			n = pc + 1;
 			branchoffset = getDWord(code, n);
 			newpc = pc + branchoffset;
 			BRANCH_IN_BOUNDS(newpc, "goto_w");
-			status[newpc] |= START_BLOCK;
+			v->status[newpc] |= START_BLOCK;
 			break;
 			
 			
@@ -883,17 +913,17 @@ verifyMethod3a(errorInfo* einfo,
 		case IF_ICMPLT:	 case IFLT:
 		case IF_ICMPLE:	 case IFLE:
 			ENSURE_NON_WIDE;
-			status[pc] |= END_BLOCK;
+			v->status[pc] |= END_BLOCK;
 			
 			newpc = getNextPC(code, pc);
 			BRANCH_IN_BOUNDS(newpc, "if<condition> = false");
-			status[newpc] |= START_BLOCK;
+			v->status[newpc] |= START_BLOCK;
 			
 			n            = pc + 1;
 			branchoffset = getWord(code, n);
 			newpc        = pc + branchoffset;
 			BRANCH_IN_BOUNDS(newpc, "if<condition> = true");
-			status[newpc] |= START_BLOCK;
+			v->status[newpc] |= START_BLOCK;
 			break;
 			
 			
@@ -907,26 +937,26 @@ verifyMethod3a(errorInfo* einfo,
 			
 		JSR_common:
 			ENSURE_NON_WIDE;
-			status[pc] |= END_BLOCK;
+			v->status[pc] |= END_BLOCK;
 			
 			BRANCH_IN_BOUNDS(newpc, "jsr");
-			status[newpc] |= START_BLOCK;
+			v->status[newpc] |= START_BLOCK;
 			
 			/* the next instruction is a target for branching via RET */
 			pc = getNextPC(code, pc);
 			BRANCH_IN_BOUNDS(pc, "jsr/ret");
-			status[pc] |= START_BLOCK;
+			v->status[pc] |= START_BLOCK;
 			continue;
 			
 		case RET:
-			status[pc] |= END_BLOCK;
+			v->status[pc] |= END_BLOCK;
 			if (!wide) {
 				GET_IDX(idx, pc);
 			} else {
 				GET_WIDX(idx, pc);
 				
-				status[pc] ^= IS_INSTRUCTION;
-				status[pc] |= WIDE_MODDED;
+				v->status[pc] ^= IS_INSTRUCTION;
+				v->status[pc] |= WIDE_MODDED;
 				
 				wide = false;
 				pc += 2;
@@ -938,7 +968,7 @@ verifyMethod3a(errorInfo* einfo,
 			
 		case LOOKUPSWITCH:
 			ENSURE_NON_WIDE;
-			status[pc] |= END_BLOCK;
+			v->status[pc] |= END_BLOCK;
 			
 			/* default branch...between 0 and 3 bytes of padding are added so that the
 			 * default branch is at an address that is divisible by 4
@@ -948,7 +978,7 @@ verifyMethod3a(errorInfo* einfo,
 			else   n = pc + 1;
 			newpc = pc + getDWord(code, n);
 			BRANCH_IN_BOUNDS(newpc, "lookupswitch");
-			status[newpc] |= START_BLOCK;
+			v->status[newpc] |= START_BLOCK;
 			DBG(VERIFY3,
 			    dprintf("          lookupswitch: pc = %d ... instruction = ", newpc);
 			    printInstruction(code[newpc]);
@@ -959,14 +989,16 @@ verifyMethod3a(errorInfo* einfo,
 			n += 4;
 			low = getDWord(code, n);
 			if (low < 0) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "lookupswitch with npairs < 0");
+				verifyErrorInVerifyMethod3a(einfo, v, "lookupswitch with npairs < 0");
+				return;
 			}
 			
 			/* make sure all targets are in bounds */
-			for (n += 4, high = n + 8*low; n < high; n += 8) {
+			/* NOTE: the cast here is only there to keep gcc from complaining */
+			for (n += 4, high = n + 8*low; n < (uint32)high; n += 8) {
 				newpc = pc + getDWord(code, n+4);
 				BRANCH_IN_BOUNDS(newpc, "lookupswitch");
-				status[newpc] |= START_BLOCK;
+				v->status[newpc] |= START_BLOCK;
 				
 				DBG(VERIFY3,
 				    dprintf("          lookupswitch: pc = %d ... instruction = ", newpc);
@@ -981,7 +1013,7 @@ verifyMethod3a(errorInfo* einfo,
 			
 		case TABLESWITCH:
 			ENSURE_NON_WIDE;
-			status[pc] |= END_BLOCK;
+			v->status[pc] |= END_BLOCK;
 			
 			/* default branch...between 0 and 3 bytes of padding are added so that the
 			 * default branch is at an address that is divisible by 4
@@ -991,7 +1023,7 @@ verifyMethod3a(errorInfo* einfo,
 			else   n = pc + 1;
 			newpc = pc + getDWord(code, n);
 			BRANCH_IN_BOUNDS(newpc, "tableswitch");
-			status[newpc] |= START_BLOCK;
+			v->status[newpc] |= START_BLOCK;
 			DBG(VERIFY3,
 			    dprintf("          tableswitch: pc = %d ... instruction = ", newpc);
 			    printInstruction(code[newpc]);
@@ -1003,17 +1035,19 @@ verifyMethod3a(errorInfo* einfo,
 			high = getDWord(code, n + 8);
 			if (high < low) {
 				DBG(VERIFY3, dprintf("ERROR: low = %d, high = %d\n", low, high); );
-				return verifyErrorInVerifyMethod3a(einfo, method, "tableswitch high val < low val");
+				verifyErrorInVerifyMethod3a(einfo, v, "tableswitch high val < low val");
+				return;
 			}
 			n += 12;
 			
 			/* high and low are used as temps in this loop that checks
 			 * the validity of all the branches in the table
 			 */
-			for (high = n + 4*(high - low + 1); n < high; n += 4) {
+			/* NOTE: the cast is only to keep gcc from complaining */
+			for (high = n + 4*(high - low + 1); n < (uint32)high; n += 4) {
 				newpc = pc + getDWord(code, n);
 				BRANCH_IN_BOUNDS(newpc, "tableswitch");
-				status[newpc] |= START_BLOCK;
+				v->status[newpc] |= START_BLOCK;
 				
 				DBG(VERIFY3,
 				    dprintf("          tableswitch: pc = %d ... instruction = ", newpc);
@@ -1035,13 +1069,14 @@ verifyMethod3a(errorInfo* einfo,
 		case DRETURN:
 		case ATHROW:
 			ENSURE_NON_WIDE;
-			status[pc] |= END_BLOCK;
+			v->status[pc] |= END_BLOCK;
 			break;
 			
 			
 		default:
 			if (wide == true) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "illegal instruction following wide instruction");
+				verifyErrorInVerifyMethod3a(einfo, v, "illegal instruction following wide instruction");
+				return;
 			}
 		}
 		
@@ -1053,8 +1088,8 @@ verifyMethod3a(errorInfo* einfo,
 	
 	/* newpc is going to stand for the PC of the previous instruction */
 	for (newpc = 0, pc = 0; pc < codelen; pc++) {
-		if (status[pc] & IS_INSTRUCTION) {
-			if (status[pc] & START_BLOCK) {
+		if (v->status[pc] & IS_INSTRUCTION) {
+			if (v->status[pc] & START_BLOCK) {
 				blockCount++;
 				
 				if (newpc < pc) {
@@ -1063,52 +1098,60 @@ verifyMethod3a(errorInfo* einfo,
 					 * have been marked so if it were some kind of
 					 * branch).
 					 */
-					status[newpc] |= END_BLOCK;
+					v->status[newpc] |= END_BLOCK;
 				}
 			}
 			
 			newpc = pc;
 		}
-		else if (status[pc] & START_BLOCK) {
-			return verifyErrorInVerifyMethod3a(einfo, method, "branch into middle of instruction");
+		else if (v->status[pc] & START_BLOCK) {
+			verifyErrorInVerifyMethod3a(einfo, v, "branch into middle of instruction");
+			return;
 		}
 	}
 	
 	
 	DBG(VERIFY3, dprintf("        perusing exception table\n"); );
-	if (method->exception_table != 0) {
+	if (v->method->exception_table != 0) {
 		jexceptionEntry *entry;
-		for (n = 0; n < method->exception_table->length; n++) {
-			entry = &(method->exception_table->entry[n]);
+		for (n = 0; n < v->method->exception_table->length; n++) {
+			entry = &(v->method->exception_table->entry[n]);
 
 			pc = entry->start_pc;
 			if (pc >= codelen) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "try block is beyond bound of method code");
+				verifyErrorInVerifyMethod3a(einfo, v, "try block is beyond bound of method code");
+				return;
 			}
-			else if (!(status[pc] & IS_INSTRUCTION)) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "try block starts in the middle of an instruction");
+			else if (!(v->status[pc] & IS_INSTRUCTION)) {
+				verifyErrorInVerifyMethod3a(einfo, v, "try block starts in the middle of an instruction");
+				return;
 			}
 			
 			pc = entry->end_pc;
 			if (pc <= entry->start_pc) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "try block ends before its starts");
+				verifyErrorInVerifyMethod3a(einfo, v, "try block ends before its starts");
+				return;
 			}
 			else if (pc > codelen) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "try block ends beyond bound of method code");
+				verifyErrorInVerifyMethod3a(einfo, v, "try block ends beyond bound of method code");
+				return;
 			}
-			else if (!(status[pc] & IS_INSTRUCTION)) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "try block ends in the middle of an instruction");
+			else if (!(v->status[pc] & IS_INSTRUCTION)) {
+				verifyErrorInVerifyMethod3a(einfo, v, "try block ends in the middle of an instruction");
+				return;
 			}
 			
 			pc = entry->handler_pc;
 			if (pc >= codelen) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "exception handler is beyond bound of method code");
+				verifyErrorInVerifyMethod3a(einfo, v, "exception handler is beyond bound of method code");
+				return;
 			}
-			else if (!(status[pc] & IS_INSTRUCTION)) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "exception handler starts in the middle of an instruction");
+			else if (!(v->status[pc] & IS_INSTRUCTION)) {
+				verifyErrorInVerifyMethod3a(einfo, v, "exception handler starts in the middle of an instruction");
+				return;
 			}
 			
-			status[pc] |= (EXCEPTION_HANDLER & START_BLOCK);
+			v->status[pc] |= (EXCEPTION_HANDLER & START_BLOCK);
 			
 			
 			/* verify properties about the clause
@@ -1117,37 +1160,42 @@ verifyMethod3a(errorInfo* einfo,
 			 */
 			if (entry->catch_type != 0) {
 				if (entry->catch_type == NULL) {
-					entry->catch_type = getClass(entry->catch_idx, method->class, einfo);
+					entry->catch_type = getClass(entry->catch_idx, v->method->class, einfo);
 				}
 				if (entry->catch_type == NULL) {
 					DBG(VERIFY3, dprintf("        ERROR: could not resolve catch type...\n"); );
 					entry->catch_type = UNRESOLVABLE_CATCHTYPE;
 					
-					return verifyErrorInVerifyMethod3a(einfo, method, "unresolvable catch type");
+					verifyErrorInVerifyMethod3a(einfo, v, "unresolvable catch type");
+					return;
 				}
 				if (!instanceof(javaLangThrowable, entry->catch_type)) {
-					return verifyErrorInVerifyMethod3a(einfo, method, "Exception to be handled by exception handler is not a subclass of Java/Lang/Throwable");
+					verifyErrorInVerifyMethod3a(einfo, v, "Exception to be handled by exception handler is not a subclass of Java/Lang/Throwable");
+					return;
 				}
 			}
 		}
 	}
 
-	if (method->lvars != NULL) {
-		for (n = 0; n < method->lvars->length; n++) {
+	if (v->method->lvars != NULL) {
+		for (n = 0; n < v->method->lvars->length; n++) {
 			localVariableEntry *lve;
 
-			lve = &method->lvars->entry[n];
+			lve = &v->method->lvars->entry[n];
 
 			pc = lve->start_pc;
 			if (pc >= codelen) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "local variable is beyond bound of method code");
+				verifyErrorInVerifyMethod3a(einfo, v, "local variable is beyond bound of method code");
+				return;
 			}
-			else if (!(status[pc] & IS_INSTRUCTION)) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "local variable starts in the middle of an instruction");
+			else if (!(v->status[pc] & IS_INSTRUCTION)) {
+				verifyErrorInVerifyMethod3a(einfo, v, "local variable starts in the middle of an instruction");
+				return;
 			}
 			
 			if ((pc + lve->length) > codelen) {
-				return verifyErrorInVerifyMethod3a(einfo, method, "local variable is beyond bound of method code");
+				verifyErrorInVerifyMethod3a(einfo, v, "local variable is beyond bound of method code");
+				return;
 			}
 		}
 	}
@@ -1161,8 +1209,8 @@ verifyMethod3a(errorInfo* einfo,
 	blocks = checkPtr((BlockInfo**)gc_malloc(blockCount * sizeof(BlockInfo*), GC_ALLOC_VERIFIER));
 	
 	for (inABlock = true, n = 0, pc = 0; pc < codelen; pc++) {
-		if (status[pc] & START_BLOCK) {
-			blocks[n] = createBlock(method);
+		if (v->status[pc] & START_BLOCK) {
+			blocks[n] = createBlock(v->method);
 			blocks[n]->startAddr = pc;
 			n++;
 			
@@ -1173,7 +1221,7 @@ verifyMethod3a(errorInfo* einfo,
 					     n-1, blocks[n-1]->startAddr); );
 		}
 		
-		if (inABlock && (status[pc] & END_BLOCK)) {
+		if (inABlock && (v->status[pc] & END_BLOCK)) {
 			blocks[n-1]->lastAddr = pc;
 			
 			inABlock = false;
@@ -1187,8 +1235,8 @@ verifyMethod3a(errorInfo* einfo,
 	
 	DBG(VERIFY3, dprintf("    Verifier Pass 3a: done\n"); );
 	
-	*numBlocks = blockCount;
-	return blocks;
+	v->numBlocks = blockCount;
+	v->blocks = blocks;
 	
 	
 #undef CHECK_LOCAL_INDEX	
@@ -1205,13 +1253,13 @@ verifyMethod3a(errorInfo* einfo,
  */
 static inline 
 bool
-verifyErrorInVerifyMethod3b(errorInfo* einfo, const Method* method, BlockInfo* curBlock, const char * msg)
+verifyErrorInVerifyMethod3b(errorInfo* einfo, Verifier* v, BlockInfo* curBlock, const char * msg)
 {
         gc_free(curBlock);
         if (einfo->type == 0) {
         	postExceptionMessage(einfo, JAVA_LANG(VerifyError),
 				     "in method \"%s.%s\": %s",
-				     CLASS_CNAME(method->class), METHOD_NAMED(method), msg);
+				     CLASS_CNAME(v->method->class), METHOD_NAMED(v->method), msg);
 	}
 	return(false);
 }
@@ -1267,18 +1315,16 @@ verifyErrorInVerifyMethod3b(errorInfo* einfo, const Method* method, BlockInfo* c
  */
 static
 bool
-verifyMethod3b(errorInfo* einfo, const Method* method,
-	       const uint32* status,
-	       BlockInfo** blocks, const uint32 numBlocks,
-	       SigStack** sigs,
-	       UninitializedType** uninits)
+verifyMethod3b(errorInfo* einfo, Verifier* v)
 {
-	const uint32 codelen      = METHOD_BYTECODE_LEN(method);
-	const unsigned char* code = METHOD_BYTECODE_CODE(method);
+	const uint32 codelen      = METHOD_BYTECODE_LEN(v->method);
+	const unsigned char* code = METHOD_BYTECODE_CODE(v->method);
 	
+	
+	BlockInfo** blocks = v->blocks; /* aliased for convenience */
 	uint32 curIndex;
 	BlockInfo* curBlock;
-	BlockInfo* nextBlock;	
+	BlockInfo* nextBlock;
 
 	uint32 pc = 0, newpc = 0, n = 0;
 	int32 high = 0, low = 0;  /* for the switching instructions */
@@ -1287,13 +1333,13 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 	
 	DBG(VERIFY3, dprintf("    Verifier Pass 3b: Data Flow Analysis and Type Checking...\n"); );
 	DBG(VERIFY3, dprintf("        memory allocation...\n"); );
-	curBlock = createBlock(method);
+	curBlock = createBlock(v->method);
 	
 	
 	DBG(VERIFY3, dprintf("        doing the dirty data flow analysis...\n"); );
 	blocks[0]->status |= CHANGED;
 	curIndex = 0;
-	while(curIndex < numBlocks) {
+	while(curIndex < v->numBlocks) {
 		DBG(VERIFY3,
 		    dprintf("      blockNum/first pc/changed/stksz = %d / %d / %d / %d\n",
 			    curIndex,
@@ -1301,7 +1347,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 			    blocks[curIndex]->status & CHANGED,
 			    blocks[curIndex]->stacksz);
 		    dprintf("          before:\n");
-		    printBlock(method, blocks[curIndex], "                 ");
+		    printBlock(v->method, blocks[curIndex], "                 ");
 		    );
 		
 		if (!(blocks[curIndex]->status & CHANGED)) {
@@ -1312,19 +1358,19 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 		
 		blocks[curIndex]->status ^= CHANGED; /* unset CHANGED bit */
 		blocks[curIndex]->status |= VISITED; /* make sure we've visited it...important for merging */
-		copyBlockData(method, blocks[curIndex], curBlock);
+		copyBlockData(v->method, blocks[curIndex], curBlock);
 		
 		if (curBlock->status & EXCEPTION_HANDLER && curBlock->stacksz > 0) {
-			return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "it's possible to reach an exception handler with a nonempty stack");
+			return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "it's possible to reach an exception handler with a nonempty stack");
 		}
 		
 		
-		if (!verifyBasicBlock(einfo, method, curBlock, sigs, uninits)) {
-			return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "failure to verify basic block");
+		if (!verifyBasicBlock(einfo, v, curBlock)) {
+			return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "failure to verify basic block");
 		}
 		
 		
-		DBG(VERIFY3, dprintf("          after:\n"); printBlock(method, curBlock, "                 "); );
+		DBG(VERIFY3, dprintf("          after:\n"); printBlock(v->method, curBlock, "                 "); );
 		
 		
 		/*
@@ -1338,20 +1384,20 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 			case GOTO:
 				newpc = pc + 1;
 				newpc = pc + getWord(code, newpc);
-				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
+				nextBlock = inWhichBlock(newpc, blocks, v->numBlocks);
 				
-				if (!merge(einfo, method, curBlock, nextBlock)) {
-					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging operand stacks");
+				if (!mergeBasicBlocks(einfo, v->method, curBlock, nextBlock)) {
+					return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "error merging operand stacks");
 				}
 				break;
 				
 			case GOTO_W:
 				newpc = pc + 1;
 				newpc = pc + getDWord(code, newpc);
-				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
+				nextBlock = inWhichBlock(newpc, blocks, v->numBlocks);
 				
-				if (!merge(einfo, method, curBlock, nextBlock)) {
-					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging operand stacks");
+				if (!mergeBasicBlocks(einfo, v->method, curBlock, nextBlock)) {
+					return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "error merging operand stacks");
 				}
 				break;
 					
@@ -1363,21 +1409,21 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				newpc = pc + 1;
 				newpc = pc + getDWord(code, newpc);
 			JSR_common:
-				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
+				nextBlock = inWhichBlock(newpc, blocks, v->numBlocks);
 				
-				if (!merge(einfo, method, curBlock, nextBlock)) {
-					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "jsr: error merging operand stacks");
+				if (!mergeBasicBlocks(einfo, v->method, curBlock, nextBlock)) {
+					return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "jsr: error merging operand stacks");
 				}
 	
-				/*
+				/* TODO:
 				 * args, we need to verify the RET block first ...
 				 */
-				for (;curIndex<numBlocks && blocks[curIndex]!=nextBlock; curIndex++);
-				assert (curIndex < numBlocks);
+				for (;curIndex < v->numBlocks && blocks[curIndex] != nextBlock; curIndex++);
+				assert (curIndex < v->numBlocks);
 				continue;
 				
 			case RET:
-				if (status[pc] & WIDE_MODDED) {
+				if (v->status[pc] & WIDE_MODDED) {
 					n = pc + 1;
 					n = getWord(code, n);
 				} else {
@@ -1385,7 +1431,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				}
 				
 				if (!IS_ADDRESS(&curBlock->locals[n])) {
-					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "ret instruction does not refer to a variable with type returnAddress");
+					return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "ret instruction does not refer to a variable with type returnAddress");
 				}
 				
 				newpc = curBlock->locals[n].tinfo;
@@ -1393,9 +1439,9 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				/* each instance of return address can only be used once */
 				curBlock->locals[n] = *TUNSTABLE;
 				
-				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
-				if (!merge(einfo, method, curBlock, nextBlock)) {
-					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging opstacks when returning from a subroutine");
+				nextBlock = inWhichBlock(newpc, blocks, v->numBlocks);
+				if (!mergeBasicBlocks(einfo, v->method, curBlock, nextBlock)) {
+					return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "error merging opstacks when returning from a subroutine");
 				}
 
 				/* 
@@ -1415,19 +1461,19 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 			case IF_ICMPLE:	 case IFLE:
 				newpc     = pc + 1;
 				newpc     = pc + getWord(code, newpc);
-				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
+				nextBlock = inWhichBlock(newpc, blocks, v->numBlocks);
 				
-				if (!merge(einfo, method, curBlock, nextBlock)) {
-					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging operand stacks");
+				if (!mergeBasicBlocks(einfo, v->method, curBlock, nextBlock)) {
+					return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "error merging operand stacks");
 				}
 				
 				/* if the condition is false, then the next block is the one that will be executed */
 				curIndex++;
-				if (curIndex >= numBlocks) {
-					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "execution falls off the end of a basic block");
+				if (curIndex >= v->numBlocks) {
+					return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "execution falls off the end of a basic block");
 				}
-				else if (!merge(einfo, method, curBlock, blocks[curIndex])) {
-					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging operand stacks");
+				else if (!mergeBasicBlocks(einfo, v->method, curBlock, blocks[curIndex])) {
+					return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "error merging operand stacks");
 				}
 				break;
 				
@@ -1440,9 +1486,9 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				if (n) n = pc + 5 - n;
 				else   n = pc + 1;
 				newpc = pc + getDWord(code, n);
-				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
-				if (!merge(einfo, method, curBlock, nextBlock)) {
-					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging into the default branch of a lookupswitch instruction");
+				nextBlock = inWhichBlock(newpc, blocks, v->numBlocks);
+				if (!mergeBasicBlocks(einfo, v->method, curBlock, nextBlock)) {
+					return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "error merging into the default branch of a lookupswitch instruction");
 				}
 				
 				/* get number of key/target pairs */
@@ -1450,11 +1496,12 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				low = getDWord(code, n);
 				
 				/* branch into all targets */
-				for (n += 4, high = n + 8*low; n < high; n += 8) {
+				/* NOTE: the cast is there only to keep gcc happy */
+				for (n += 4, high = n + 8*low; n < (uint32)high; n += 8) {
 					newpc = pc + getDWord(code, n+4);
-					nextBlock = inWhichBlock(newpc, blocks, numBlocks);
-					if (!merge(einfo, method, curBlock, nextBlock)) {
-						return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging into a branch of a lookupswitch instruction");
+					nextBlock = inWhichBlock(newpc, blocks, v->numBlocks);
+					if (!mergeBasicBlocks(einfo, v->method, curBlock, nextBlock)) {
+						return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "error merging into a branch of a lookupswitch instruction");
 					}
 				}
 				
@@ -1478,11 +1525,12 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				/* high and low are used as temps in this loop that checks
 				 * the validity of all the branches in the table
 				 */
-				for (high = n + 4*(high - low + 1); n < high; n += 4) {
+				/* NOTE: the cast is there only to keep gcc happy */
+				for (high = n + 4*(high - low + 1); n < (uint32)high; n += 4) {
 					newpc = pc + getDWord(code, n);
-					nextBlock = inWhichBlock(newpc, blocks, numBlocks);
-					if (!merge(einfo, method, curBlock, nextBlock)) {
-						return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging into a branch of a tableswitch instruction");
+					nextBlock = inWhichBlock(newpc, blocks, v->numBlocks);
+					if (!mergeBasicBlocks(einfo, v->method, curBlock, nextBlock)) {
+						return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "error merging into a branch of a tableswitch instruction");
 					}
 				}
 				break;
@@ -1501,18 +1549,18 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				
 			default:
 				for (n = pc + 1; n < codelen; n++) {
-					if (status[n] & IS_INSTRUCTION) break;
+					if (v->status[n] & IS_INSTRUCTION) break;
 				}
 				if (n == codelen) {
-					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "execution falls off the end of a code block");
+					return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "execution falls off the end of a code block");
 				}
-				else if (!merge(einfo, method, curBlock, blocks[curIndex+1])) {
-					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging operand stacks");
+				else if (!mergeBasicBlocks(einfo, v->method, curBlock, blocks[curIndex+1])) {
+					return verifyErrorInVerifyMethod3b(einfo, v, curBlock, "error merging operand stacks");
 				}
 			}
 		
 		
-		for (curIndex = 0; curIndex < numBlocks; curIndex++) {
+		for (curIndex = 0; curIndex < v->numBlocks; curIndex++) {
 			if (blocks[curIndex]->status & CHANGED)
 				break;
 		}
@@ -1530,9 +1578,9 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
  */
 static inline
 bool
-verifyErrorInMerge(errorInfo* einfo,
-		   const Method* method,
-		   const char * msg)
+verifyErrorInMergeBasicBlocks(errorInfo* einfo,
+			      const Method* method,
+			      const char * msg)
 {
         if (einfo->type == 0) {
         	postExceptionMessage(einfo, JAVA_LANG(VerifyError),
@@ -1574,10 +1622,10 @@ verifyErrorInMerge(errorInfo* einfo,
  */
 static
 bool
-merge(errorInfo* einfo,
-      const Method* method,
-      BlockInfo* fromBlock,
-      BlockInfo* toBlock)
+mergeBasicBlocks(errorInfo* einfo,
+		 const Method* method,
+		 BlockInfo* fromBlock,
+		 BlockInfo* toBlock)
 {
 	uint32 n;
 	
@@ -1588,12 +1636,12 @@ merge(errorInfo* einfo,
 	if (toBlock->startAddr < fromBlock->startAddr) {
 		for (n = 0; n < method->localsz; n++) {
 			if (fromBlock->locals[n].tinfo & TINFO_UNINIT) {
-				return verifyErrorInMerge(einfo, method, "uninitialized object reference in a local variable during a backwards branch");
+				return verifyErrorInMergeBasicBlocks(einfo, method, "uninitialized object reference in a local variable during a backwards branch");
 			}
 		}
 		for (n = 0; n < fromBlock->stacksz; n++) {
 			if (fromBlock->opstack[n].tinfo & TINFO_UNINIT) {
-				return verifyErrorInMerge(einfo, method, "uninitialized object reference on operand stack during a backwards branch");
+				return verifyErrorInMergeBasicBlocks(einfo, method, "uninitialized object reference on operand stack during a backwards branch");
 			}
 		}
 	}
@@ -1661,14 +1709,13 @@ merge(errorInfo* einfo,
 static inline
 bool
 verifyErrorInVerifyBasicBlock(errorInfo* einfo,
-			      const Method* method,
-			      Hjava_lang_Class* this,
+			      const Verifier* v,
 			      const char * msg)
 {
 	if (einfo->type == 0) {
 		postExceptionMessage(einfo, JAVA_LANG(VerifyError),
 				     "in method \"%s.%s\": %s",
-				     CLASS_CNAME(this), METHOD_NAMED(method), msg);
+				     CLASS_CNAME(v->method->class), METHOD_NAMED(v->method), msg);
 	}
 	return(false);
 }
@@ -1679,15 +1726,14 @@ verifyErrorInVerifyBasicBlock(errorInfo* einfo,
 static inline
 bool
 ensureLocalTypeErrorInVerifyBasicBlock(errorInfo* einfo,
-				       const Method* method,
-				       BlockInfo* block,
-				       Hjava_lang_Class* this,
-				       unsigned int n)
+				       const Verifier* v,
+				       const BlockInfo* block,
+				       const unsigned int n)
 {
 	if (block->locals[n].data.class == TUNSTABLE->data.class) {
-		return verifyErrorInVerifyBasicBlock(einfo, method, this, "attempt to access an unstable local variable");
+		return verifyErrorInVerifyBasicBlock(einfo, v, "attempt to access an unstable local variable");
 	} else {
-		return verifyErrorInVerifyBasicBlock(einfo, method, this, "attempt to access a local variable not of the correct type");
+		return verifyErrorInVerifyBasicBlock(einfo, v, "attempt to access a local variable not of the correct type");
 	}
 }
 
@@ -1697,15 +1743,15 @@ ensureLocalTypeErrorInVerifyBasicBlock(errorInfo* einfo,
 static inline
 bool
 ensureOpstackSizeErrorInVerifyBasicBlock(errorInfo* einfo,
-					 const Method* method,
-					 BlockInfo* block,
-					 Hjava_lang_Class* this)
+					 const Verifier* v,
+					 const BlockInfo* block)
+
 {
 	DBG(VERIFY3,
 	    dprintf("                here's the stack: \n");
-	    printBlock(method, block, "                    ");
+	    printBlock(v->method, block, "                    ");
 	    );
-	return verifyErrorInVerifyBasicBlock(einfo, method, this, "not enough items on stack for operation");
+	return verifyErrorInVerifyBasicBlock(einfo, v, "not enough items on stack for operation");
 }
 
 /*
@@ -1714,22 +1760,21 @@ ensureOpstackSizeErrorInVerifyBasicBlock(errorInfo* einfo,
 static inline
 bool
 checkStackOverflowErrorInVerifyBasicBlock(errorInfo* einfo,
-					  const Method* method,
-					  BlockInfo* block,
-					  Hjava_lang_Class* this,
-					  unsigned int n)
+					  const Verifier* v,
+					  const BlockInfo* block,
+					  const unsigned int n)
 {
 	DBG(VERIFY3,
 	    dprintf("                block->stacksz: %d :: N = %d :: method->stacksz = %d\n",
 		    block->stacksz,
 		    n,
-		    method->stacksz);
+		    v->method->stacksz);
 	    );
                 DBG(VERIFY3,
 		    dprintf("                here's the stack: \n");
-		    printBlock(method, block, "                    ");
+		    printBlock(v->method, block, "                    ");
 		    );
-		return verifyErrorInVerifyBasicBlock(einfo, method, this, "stack overflow");
+		return verifyErrorInVerifyBasicBlock(einfo, v, "stack overflow");
 }
 
 /*
@@ -1837,9 +1882,8 @@ opstackPopNBlind(BlockInfo* block,
 static inline
 bool
 opstackPeekTBlindErrorInVerifyBasicBlock(errorInfo* einfo,
-					 const Method* method,
+					 const Verifier* v,
 					 BlockInfo* block,
-					 Hjava_lang_Class* this,
 					 const Type* type)
 {
 	DBG(VERIFY3,
@@ -1849,7 +1893,7 @@ opstackPeekTBlindErrorInVerifyBasicBlock(errorInfo* einfo,
 	    printType(type);
 	    dprintf("\n");
 	    );
-	return verifyErrorInVerifyBasicBlock(einfo, method, this, "top of opstack does not have desired type");
+	return verifyErrorInVerifyBasicBlock(einfo, v, "top of opstack does not have desired type");
 }
 
 /*
@@ -1858,18 +1902,13 @@ opstackPeekTBlindErrorInVerifyBasicBlock(errorInfo* einfo,
  */
 static
 bool
-verifyBasicBlock(errorInfo* einfo,
-		 const Method* method,
-		 BlockInfo* block,
-		 SigStack** sigs,
-		 UninitializedType** uninits)
+verifyBasicBlock(errorInfo* einfo, Verifier* v, BlockInfo* block)
 {
 	/**************************************************************************************************
 	 * VARIABLES
 	 **************************************************************************************************/
 	uint32            pc   = 0;
-	unsigned char*    code = METHOD_BYTECODE_CODE(method);
-	Hjava_lang_Class* this = method->class;
+	unsigned char*    code = METHOD_BYTECODE_CODE(v->method);
 	
 	bool wide = false;       /* was the previous opcode a WIDE instruction? */
 	
@@ -1886,7 +1925,7 @@ verifyBasicBlock(errorInfo* einfo,
 	int tag;                 /* used for constant tag stuff */
 	
 	uint32     idx;          /* index into constant pool */
-	constants* pool = CLASS_CONSTANTS(method->class);
+	const constants* pool = CLASS_CONSTANTS(v->class);
 	
 	const char* sig;
 	
@@ -1907,28 +1946,28 @@ verifyBasicBlock(errorInfo* einfo,
 	
 	/* checks whether the specified local variable is of the specified type. */
 #define ENSURE_LOCAL_TYPE(_N, _TINFO) \
-	if (!typecheck(einfo, this, (_TINFO), &block->locals[_N])) { \
-		return ensureLocalTypeErrorInVerifyBasicBlock(einfo, method, block, this, _N); \
+	if (!typecheck(einfo, v, (_TINFO), &block->locals[_N])) { \
+		return ensureLocalTypeErrorInVerifyBasicBlock(einfo, v, block, _N); \
 	} 
 	
 	/* only use with TLONG and TDOUBLE */
 #define ENSURE_LOCAL_WTYPE(_N, _TINFO) \
 	if (block->locals[_N].data.class != (_TINFO)->data.class) { \
-		return verifyErrorInVerifyBasicBlock(einfo, method, this, "local variable not of correct type"); \
+		return verifyErrorInVerifyBasicBlock(einfo, v, "local variable not of correct type"); \
 	} \
 	else if (block->locals[_N + 1].data.class != TWIDE->data.class) { \
-		return verifyErrorInVerifyBasicBlock(einfo, method, this, "accessing a long or double in a local where the following local has been corrupted"); \
+		return verifyErrorInVerifyBasicBlock(einfo, v, "accessing a long or double in a local where the following local has been corrupted"); \
 	}
 
 	
 #define ENSURE_OPSTACK_SIZE(_N) \
 	if (block->stacksz < (_N)) { \
-		return ensureOpstackSizeErrorInVerifyBasicBlock(einfo, method, block, this); \
+		return ensureOpstackSizeErrorInVerifyBasicBlock(einfo, v, block); \
 	}
 
 #define CHECK_STACK_OVERFLOW(_N) \
-	if (block->stacksz + _N > method->stacksz) { \
-		return checkStackOverflowErrorInVerifyBasicBlock(einfo, method, block, this, _N); \
+	if (block->stacksz + _N > v->method->stacksz) { \
+		return checkStackOverflowErrorInVerifyBasicBlock(einfo, v, block, _N); \
 	}
 	
 #define OPSTACK_PUSH(_TINFO) \
@@ -1943,8 +1982,8 @@ verifyBasicBlock(errorInfo* einfo,
 	
 	/* ensure that the top item on the stack is of type _T	*/
 #define OPSTACK_PEEK_T_BLIND(_TINFO) \
-	if (!typecheck(einfo, this, _TINFO, getOpstackTop(block))) { \
-		return opstackPeekTBlindErrorInVerifyBasicBlock(einfo, method, block, this, _TINFO); \
+	if (!typecheck(einfo, v, _TINFO, getOpstackTop(block))) { \
+		return opstackPeekTBlindErrorInVerifyBasicBlock(einfo, v, block, _TINFO); \
 	}
 	
 #define OPSTACK_PEEK_T(_TINFO) \
@@ -1956,9 +1995,9 @@ verifyBasicBlock(errorInfo* einfo,
 	 */
 #define OPSTACK_WPEEK_T_BLIND(_TINFO) \
 	if (getOpstackTop(block)->data.class != TWIDE->data.class) { \
-		return verifyErrorInVerifyBasicBlock(einfo, method, this, "trying to pop a wide value off operand stack where there is none"); \
+		return verifyErrorInVerifyBasicBlock(einfo, v, "trying to pop a wide value off operand stack where there is none"); \
 	} else if (getOpstackWTop(block)->data.class != (_TINFO)->data.class) { \
-		return verifyErrorInVerifyBasicBlock(einfo, method, this, "mismatched stack types"); \
+		return verifyErrorInVerifyBasicBlock(einfo, v, "mismatched stack types"); \
 	}
 	
 #define OPSTACK_WPEEK_T(_TINFO) \
@@ -2111,7 +2150,7 @@ verifyBasicBlock(errorInfo* einfo,
 		ALOAD_common:
 			if (!isReference(&block->locals[idx])) {
 				DBG(VERIFY3, dprintf("%sERROR: ", indent); printType(&block->locals[idx]); dprintf("\n"); );
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aload<_n> where local variable does not contain an object reference");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "aload<_n> where local variable does not contain an object reference");
 			}
 			
 			OPSTACK_PUSH(&block->locals[idx]);
@@ -2130,7 +2169,7 @@ verifyBasicBlock(errorInfo* einfo,
 			type = getOpstackTop(block);
 			
 			if (!IS_ADDRESS(type) && !isReference(type)) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "astore: top of stack is not a return address or reference type");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "astore: top of stack is not a return address or reference type");
 			}
 			
 			block->locals[idx] = *type;
@@ -2265,7 +2304,7 @@ verifyBasicBlock(errorInfo* einfo,
 			case TYPE_Short:   OPSTACK_PUSH(TSHORTARR);  break;
 			case TYPE_Int:     OPSTACK_PUSH(TINTARR);    break;
 			case TYPE_Long:    OPSTACK_PUSH(TLONGARR);   break;
-			default: return verifyErrorInVerifyBasicBlock(einfo, method, this, "newarray of unknown type");
+			default: return verifyErrorInVerifyBasicBlock(einfo, v, "newarray of unknown type");
 			}
 			break;
 			
@@ -2275,7 +2314,7 @@ verifyBasicBlock(errorInfo* einfo,
 			type = getOpstackTop(block);
 			if (!isArray(type)) {
 				DBG(VERIFY3, dprintf("%stype = ", indent); printType(type); dprintf("\n"); );
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "arraylength: top of operand stack is not an array");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "arraylength: top of operand stack is not an array");
 			}
 			
 			*type = *TINT;
@@ -2297,14 +2336,14 @@ verifyBasicBlock(errorInfo* einfo,
 			ENSURE_OPSTACK_SIZE(2);
 			
 			if (getOpstackTop(block)->data.class != TINT->data.class) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aaload: item on top of stack is not an integer");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "aaload: item on top of stack is not an integer");
 			}
 			opstackPopBlind(block);
 			
 			type = getOpstackTop(block);
 			if (!isArray(type)) {
 				DBG(VERIFY3, dprintf("%serror: type = ", indent); printType(type); dprintf("\n"); );
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aaload: top of operand stack is not an array");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "aaload: top of operand stack is not an array");
 			}
 			
 			if (type->tinfo & TINFO_NAME || type->tinfo & TINFO_SIG) {
@@ -2332,13 +2371,13 @@ verifyBasicBlock(errorInfo* einfo,
 			/* BALOAD can be used for bytes or booleans .... */
 			OPSTACK_POP_T(TINT);
 
-			if (!typecheck (einfo, this, TBYTEARR, getOpstackTop(block)) &&
-			    !typecheck (einfo, this, TBOOLARR, getOpstackTop(block))) {
+			if (!typecheck (einfo, v, TBYTEARR, getOpstackTop(block)) &&
+			    !typecheck (einfo, v, TBOOLARR, getOpstackTop(block))) {
                                 DBG(VERIFY3,
                                     dprintf("                OPSTACK_TOP: ");
                                     printType(getOpstackTop(block));
                                     dprintf(" vs. what's we wanted: TBYTEARR or TBOOLARR"); )
-                                return verifyErrorInVerifyBasicBlock(einfo, method, this, "top of opstack does not have desired type");
+                                return verifyErrorInVerifyBasicBlock(einfo, v, "top of opstack does not have desired type");
 			}
 
 			opstackPopBlind(block);
@@ -2353,7 +2392,7 @@ verifyBasicBlock(errorInfo* einfo,
 			ENSURE_OPSTACK_SIZE(3);
 			
 			if (getOpstackItem(block, 2)->data.class != TINT->data.class) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aastore: array index is not an integer");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "aastore: array index is not an integer");
 			}
 			
 			type      = getOpstackItem(block, 1);
@@ -2367,7 +2406,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			if (!isArray(arrayType)) {
 				DBG(VERIFY3, dprintf("%serror: type = ", indent); printType(type); dprintf("\n"); );
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aastore: top of operand stack is not an array");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "aastore: top of operand stack is not an array");
 			}
 			
 			if (arrayType->tinfo & TINFO_NAME || arrayType->tinfo & TINFO_SIG) {
@@ -2383,8 +2422,8 @@ verifyBasicBlock(errorInfo* einfo,
 				}
 			}
 			
-			if (!typecheck(einfo, this, arrayType, type)) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "attempting to store incompatible type in array");
+			if (!typecheck(einfo, v, arrayType, type)) {
+				return verifyErrorInVerifyBasicBlock(einfo, v, "attempting to store incompatible type in array");
 			}
 			
 			opstackPopNBlind(block, 3);
@@ -2418,13 +2457,13 @@ verifyBasicBlock(errorInfo* einfo,
 			OPSTACK_POP_T(TINT);
 			OPSTACK_POP_T(TINT);
 
-			if ( !typecheck(einfo, this, TBYTEARR, getOpstackTop(block)) &&
-			     !typecheck(einfo, this, TBOOLARR, getOpstackTop(block))) {
+			if ( !typecheck(einfo, v, TBYTEARR, getOpstackTop(block)) &&
+			     !typecheck(einfo, v, TBOOLARR, getOpstackTop(block))) {
 				DBG(VERIFY3,
 				    dprintf("                OPSTACK_TOP: ");
 				    printType(getOpstackTop(block));
 				    dprintf(" vs. what's we wanted: TBYTEARR or TBOOLARR"); )
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "top of opstack does not have desired type");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "top of opstack does not have desired type");
 			}
 			opstackPopBlind(block);
 			break;			
@@ -2579,7 +2618,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case INSTANCEOF:
 			ENSURE_OPSTACK_SIZE(1);
 			if (!isReference(getOpstackItem(block, 1))) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "instanceof: top of stack is not a reference type");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "instanceof: top of stack is not a reference type");
 			}
 			*getOpstackTop(block) = *TINT;
 			break;
@@ -2594,7 +2633,7 @@ verifyBasicBlock(errorInfo* einfo,
 			ENSURE_OPSTACK_SIZE(n);
 			while (n > 0) {
 				if (getOpstackTop(block)->data.class != TINT->data.class) {
-					return verifyErrorInVerifyBasicBlock(einfo, method, this, "multinewarray: first <n> things on opstack must be integers");
+					return verifyErrorInVerifyBasicBlock(einfo, v, "multinewarray: first <n> things on opstack must be integers");
 				}
 				opstackPopBlind(block);
 				n--;
@@ -2644,16 +2683,16 @@ verifyBasicBlock(errorInfo* einfo,
 				const char* namestr = CLASS_NAMED(idx, pool);
 				
 				if (*namestr == '[') {
-					return verifyErrorInVerifyBasicBlock(einfo, method, this, "new: used to create an array");
+					return verifyErrorInVerifyBasicBlock(einfo, v, "new: used to create an array");
 				}
 				
 				type->tinfo = TINFO_NAME;				
 				type->data.name = namestr;
 			}
 			
-			*uninits = pushUninit(*uninits, type);
+			v->uninits = pushUninit(v->uninits, type);
 			type->tinfo = TINFO_UNINIT;
-			type->data.uninit  = *uninits;
+			type->data.uninit  = v->uninits;
 			
 			DBG(VERIFY3,
 			    dprintf("%s", indent);
@@ -2673,7 +2712,7 @@ verifyBasicBlock(errorInfo* einfo,
 				type->data.class  = lookupArray(class, einfo);
 				
 				if (type->data.class == NULL) {
-					return verifyErrorInVerifyBasicBlock(einfo, method, this, "anewarray: error creating array type");
+					return verifyErrorInVerifyBasicBlock(einfo, v, "anewarray: error creating array type");
 				}
 			} else {
 				char* namestr;
@@ -2681,11 +2720,11 @@ verifyBasicBlock(errorInfo* einfo,
 				sig = CLASS_NAMED(idx, pool);
 				if (*sig == '[') {
 					namestr = checkPtr(gc_malloc(sizeof(char) * (strlen(sig) + 2), GC_ALLOC_VERIFIER));
-					*sigs = pushSig(*sigs, namestr);
+					v->sigs = pushSig(v->sigs, namestr);
 					sprintf(namestr, "[%s", sig);
 				} else {
 					namestr = checkPtr(gc_malloc(sizeof(char) * (strlen(sig) + 4), GC_ALLOC_VERIFIER));
-					*sigs = pushSig(*sigs, namestr);
+					v->sigs = pushSig(v->sigs, namestr);
 					sprintf(namestr, "[L%s;", sig);
 				}
 				
@@ -2702,8 +2741,8 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case GETFIELD:
 			ENSURE_OPSTACK_SIZE(1);
-			if (!checkUninit(this, getOpstackTop(block))) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "getfield: uninitialized type on top of operand stack");
+			if (!checkUninit(v->class, getOpstackTop(block))) {
+				return verifyErrorInVerifyBasicBlock(einfo, v, "getfield: uninitialized type on top of operand stack");
 			}
 			
 			GET_WIDX;
@@ -2749,7 +2788,7 @@ verifyBasicBlock(errorInfo* einfo,
 				
 			default:
 				DBG(VERIFY3, dprintf("%sweird type signature: %s", indent, sig); );
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "get{field/static}: unrecognized type signature");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "get{field/static}: unrecognized type signature");
 				break;
 			}
 			break;
@@ -2760,8 +2799,8 @@ verifyBasicBlock(errorInfo* einfo,
 			else                      n = 2;
 			ENSURE_OPSTACK_SIZE(n);
 			
-			if (!checkUninit(this, getOpstackTop(block))) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "putfield: uninitialized type on top of operand stack");
+			if (!checkUninit(v->class, getOpstackTop(block))) {
+				return verifyErrorInVerifyBasicBlock(einfo, v, "putfield: uninitialized type on top of operand stack");
 			}
 			
 			GET_WIDX;
@@ -2787,7 +2826,7 @@ verifyBasicBlock(errorInfo* einfo,
 				
 			default:
 				DBG(VERIFY3, dprintf("%sweird type signature: %s", indent, sig); );
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "put{field/static}: unrecognized type signature");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "put{field/static}: unrecognized type signature");
 				break;
 			}
 			
@@ -2834,7 +2873,7 @@ verifyBasicBlock(errorInfo* einfo,
 				
 			default:
 				DBG(VERIFY3, dprintf("%sweird type signature: %s", indent, sig); );
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "put{field/static}: unrecognized type signature");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "put{field/static}: unrecognized type signature");
 				break;
 			}
 			break;
@@ -2865,7 +2904,7 @@ verifyBasicBlock(errorInfo* einfo,
 			ENSURE_OPSTACK_SIZE(2);
 			if (!isReference(getOpstackTop(block)) ||
 			    !isReference(getOpstackWTop(block))) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "if_acmp* when item on top of stack is not a reference type");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "if_acmp* when item on top of stack is not a reference type");
 			}
 			opstackPopBlind(block);
 			opstackPopBlind(block);
@@ -2891,7 +2930,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case IFNULL:
 			ENSURE_OPSTACK_SIZE(1);
 			if (!isReference(getOpstackItem(block, 1))) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "if[non]null: thing on top of stack is not a reference");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "if[non]null: thing on top of stack is not a reference");
 			}
 			opstackPopBlind(block);
 			break;
@@ -2910,57 +2949,57 @@ verifyBasicBlock(errorInfo* einfo,
 		case INVOKEINTERFACE:
 			
 		case INVOKESTATIC:
-			if (!checkMethodCall(einfo, method, block, pc, sigs, uninits)) {
+			if (!checkMethodCall(einfo, v, block, pc)) {
 				DBG(VERIFY3,
 				    dprintf("\n                some problem with a method call...here's the block:\n");
-				    printBlock(method, block, "                "); );
+				    printBlock(v->method, block, "                "); );
 				
 				/* propagate error */
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "invoke* error");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "invoke* error");
 			}
 			break;
 			
 			
 		case IRETURN:
 			OPSTACK_PEEK_T(TINT);
-			sig = getReturnSig(method);
+			sig = getReturnSig(v->method);
 			if (strlen(sig) != 1 || (*sig != 'I' && *sig != 'Z' && *sig != 'S' && *sig != 'B' && *sig != 'C')) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "ireturn: method doesn't return an integer");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "ireturn: method doesn't return an integer");
 			}
 			break;
 		case FRETURN:
 			OPSTACK_PEEK_T(TFLOAT);
-			sig = getReturnSig(method);
+			sig = getReturnSig(v->method);
 			if (strcmp(sig, "F")) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "freturn: method doesn't return an float");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "freturn: method doesn't return an float");
 			}
 			break;
 		case LRETURN:
 			OPSTACK_WPEEK_T(TLONG);
-			sig = getReturnSig(method);
+			sig = getReturnSig(v->method);
 			if (strcmp(sig, "J")) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "lreturn: method doesn't return a long");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "lreturn: method doesn't return a long");
 			}
 			break;
 		case DRETURN:
 			OPSTACK_WPEEK_T(TDOUBLE);
-			sig = getReturnSig(method);
+			sig = getReturnSig(v->method);
 			if (strcmp(sig, "D")) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dreturn: method doesn't return a double");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "dreturn: method doesn't return a double");
 			}
 			break;
 		case RETURN:
-			sig = getReturnSig(method);
+			sig = getReturnSig(v->method);
 			if (strcmp(sig, "V")) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "return: must return something in a non-void function");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "return: must return something in a non-void function");
 			}
 			break;
 		case ARETURN:
 			ENSURE_OPSTACK_SIZE(1);
 			t->tinfo = TINFO_SIG;
-			t->data.sig  = getReturnSig(method);
-			if (!typecheck(einfo, this, t, getOpstackTop(block))) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "areturn: top of stack is not type compatible with method return type");
+			t->data.sig  = getReturnSig(v->method);
+			if (!typecheck(einfo, v, t, getOpstackTop(block))) {
+				return verifyErrorInVerifyBasicBlock(einfo, v, "areturn: top of stack is not type compatible with method return type");
 			}
 			break;
 			
@@ -2974,14 +3013,14 @@ verifyBasicBlock(errorInfo* einfo,
 			}
 			t->tinfo = TINFO_CLASS;
 			t->data.class = javaLangThrowable;
-			if (!typecheck(einfo, this, t, getOpstackTop(block))) {
+			if (!typecheck(einfo, v, t, getOpstackTop(block))) {
 				DBG(VERIFY3, dprintf("%sATHROW error: ", indent); printType(getOpstackTop(block)); dprintf ("\n"); );
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "athrow: object on top of stack is not a subclass of throwable");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "athrow: object on top of stack is not a subclass of throwable");
 			}
 			
-			for (n = 0; n < method->localsz; n++) {
+			for (n = 0; n < v->method->localsz; n++) {
 				if (block->locals[n].tinfo & TINFO_UNINIT) {
-					return verifyErrorInVerifyBasicBlock(einfo, method, this, "athrow: uninitialized class instance in a local variable");
+					return verifyErrorInVerifyBasicBlock(einfo, v, "athrow: uninitialized class instance in a local variable");
 				}
 			}
 			break;
@@ -2996,7 +3035,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case BREAKPOINT:
 		        /* for internal use only: cannot appear in a class file */
-			return verifyErrorInVerifyBasicBlock(einfo, method, this, "breakpoint instruction cannot appear in classfile");
+			return verifyErrorInVerifyBasicBlock(einfo, v, "breakpoint instruction cannot appear in classfile");
 			break;
 			
 			
@@ -3004,7 +3043,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case MONITOREXIT:
 			ENSURE_OPSTACK_SIZE(1);
 			if(!isReference(getOpstackTop(block))) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "monitor*: top of stack is not an object reference");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "monitor*: top of stack is not an object reference");
 			}
 			opstackPopBlind(block);
 			break;
@@ -3013,7 +3052,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case DUP:
 			ENSURE_OPSTACK_SIZE(1);
 			if (isWide(getOpstackTop(block))) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dup: on a long or double");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "dup: on a long or double");
 			}
 			
 			OPSTACK_PUSH(getOpstackTop(block));
@@ -3022,7 +3061,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case DUP_X1:
 			ENSURE_OPSTACK_SIZE(2);
 			if (isWide(getOpstackTop(block)) || isWide(getOpstackWTop(block))) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dup_x1: splits up a double or long");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "dup_x1: splits up a double or long");
 			}
 			
 			OPSTACK_PUSH(getOpstackTop(block));
@@ -3034,7 +3073,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case DUP_X2:
 			ENSURE_OPSTACK_SIZE(3);
 			if (isWide(getOpstackTop(block))) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "cannot dup_x2 when top item on operand stack is a two byte item");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "cannot dup_x2 when top item on operand stack is a two byte item");
 			}
 			
 			OPSTACK_PUSH(getOpstackTop(block));
@@ -3054,7 +3093,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case DUP2_X1:
 			ENSURE_OPSTACK_SIZE(2);
 			if (isWide(getOpstackItem(block, 2))) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dup_x1 requires top 2 bytes on operand stack to be single bytes items");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "dup_x1 requires top 2 bytes on operand stack to be single bytes items");
 			}
 			CHECK_STACK_OVERFLOW(2);
 			
@@ -3069,7 +3108,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case DUP2_X2:
 			ENSURE_OPSTACK_SIZE(4);
 			if (isWide(getOpstackItem(block, 2)) || isWide(getOpstackItem(block, 4))) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dup2_x2 where either 2nd or 4th byte is 2nd half of a 2 byte item");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "dup2_x2 where either 2nd or 4th byte is 2nd half of a 2 byte item");
 			}
 			CHECK_STACK_OVERFLOW(2);
 			
@@ -3086,7 +3125,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case SWAP:
 			ENSURE_OPSTACK_SIZE(2);
 			if (isWide(getOpstackTop(block)) || isWide(getOpstackWTop(block))) {
-				return verifyErrorInVerifyBasicBlock(einfo, method, this, "cannot swap 2 bytes of a long or double");
+				return verifyErrorInVerifyBasicBlock(einfo, v, "cannot swap 2 bytes of a long or double");
 			}
 			
 			tt         = *getOpstackWTop(block);
@@ -3102,7 +3141,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		default:
 		        /* should never get here because of preprocessing in defineBasicBlocks() */
-			return verifyErrorInVerifyBasicBlock(einfo, method, this, "unknown opcode encountered");
+			return verifyErrorInVerifyBasicBlock(einfo, v, "unknown opcode encountered");
 		}
 		
 		
@@ -3275,16 +3314,15 @@ typeErrorInCheckMethodCall(errorInfo* einfo,
  */
 static
 bool
-checkMethodCall(errorInfo* einfo, const Method* method,
-		BlockInfo* binfo, uint32 pc,
-		SigStack** sigs, UninitializedType** uninits)
+checkMethodCall(errorInfo* einfo, Verifier* v,
+		BlockInfo* binfo, uint32 pc)
 {
-	const unsigned char* code        = METHOD_BYTECODE_CODE(method);
+	const unsigned char* code        = METHOD_BYTECODE_CODE(v->method);
 	const uint32 opcode              = code[pc];
 	
-	const constants* pool            = CLASS_CONSTANTS(method->class);
+	const constants* pool            = CLASS_CONSTANTS(v->class);
 	const uint32 idx                 = getWord(code, pc + 1);
-				   				 
+	
 	const uint32 classIdx            = METHODREF_CLASS(idx, pool);
 	Type  mrc;
 	Type* methodRefClass             = &mrc;
@@ -3303,20 +3341,20 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 	
 	
 	if (nargs > binfo->stacksz) {
-		return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "not enough stuff on opstack for method invocation");
+		return verifyErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig, "not enough stuff on opstack for method invocation");
 	}
 	
 	
 	/* make sure that the receiver is type compatible with the class being invoked */
 	if (opcode != INVOKESTATIC) {
 		if (nargs == binfo->stacksz) {
-			return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "not enough stuff on opstack for method invocation");
+			return verifyErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig, "not enough stuff on opstack for method invocation");
 		}
 		
 		
 		receiver = &binfo->opstack[binfo->stacksz - (nargs + 1)];
 		if (!(receiver->tinfo & TINFO_UNINIT) && !isReference(receiver)) {
-			return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "invoking a method on something that is not a reference");
+			return verifyErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig, "invoking a method on something that is not a reference");
 		}
 		
 		if (pool->tags[classIdx] == CONSTANT_Class) {
@@ -3340,33 +3378,33 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 					if (!sameType(methodRefClass, &uninit->type) &&
 					    uninit->type.data.class != TOBJ->data.class &&
 					    !sameType(methodRefClass, &t_uninit_super)) {
-						return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "incompatible receiving type for superclass constructor call");
+						return verifyErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig, "incompatible receiving type for superclass constructor call");
 					}
 				} else if (!sameType(methodRefClass, &uninit->type)) {
 					DBG(VERIFY3,
 					    dprintf("%smethodRefClass: ", indent); printType(methodRefClass);
 					    dprintf("\n%sreceiver: ", indent); printType(&uninit->type); dprintf("\n"); );
-					return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "incompatible receiving type for constructor call");
+					return verifyErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig, "incompatible receiving type for constructor call");
 				}
 				
 				/* fix front of list, if necessary */
-				if (uninit == *uninits) {
-					*uninits = (*uninits)->next;
-					if (*uninits) {
-						(*uninits)->prev = NULL;
+				if (uninit == v->uninits) {
+					v->uninits = v->uninits->next;
+					if (v->uninits) {
+						(v->uninits)->prev = NULL;
 					}
 					uninit->next = NULL;
 				}
 				
-				popUninit(method, uninit, binfo);
+				popUninit(v->method, uninit, binfo);
 			}
 			else if (!sameType(methodRefClass, receiver)) {
-				return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "incompatible receiving type for constructor call");
+				return verifyErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig, "incompatible receiving type for constructor call");
 			}
 		}
-		else if (!typecheck(einfo, method->class, methodRefClass, receiver)) {
+		else if (!typecheck(einfo, v, methodRefClass, receiver)) {
 			if (receiver->tinfo & TINFO_UNINIT) {
-				return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "invoking a method on an uninitialized object reference");
+				return verifyErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig, "invoking a method on an uninitialized object reference");
 			}
 			
 			DBG(VERIFY3,
@@ -3376,7 +3414,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			    printType(receiver);
 			    dprintf("\n");
 			    );
-			return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "expected method receiver does not typecheck with object on operand stack");
+			return verifyErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig, "expected method receiver does not typecheck with object on operand stack");
 		}
 	}
 	
@@ -3391,7 +3429,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		
 		if (paramIndex >= binfo->stacksz) {
 			gc_free(argbuf);
-			return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "error: not enough parameters on stack for method invocation");
+			return verifyErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig, "error: not enough parameters on stack for method invocation");
 		}
 		
 		
@@ -3401,8 +3439,8 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			t->tinfo = TINFO_SIG;
 			t->data.sig = argbuf;
 			
-			if (!typecheck(einfo, method->class, t, &binfo->opstack[paramIndex])) {
-				return typeErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig);
+			if (!typecheck(einfo, v, t, &binfo->opstack[paramIndex])) {
+				return typeErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig);
 			}
 			
 			binfo->opstack[paramIndex] = *TUNSTABLE;
@@ -3412,7 +3450,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		case 'Z': case 'S': case 'B': case 'C':
 		case 'I':
 			if (binfo->opstack[paramIndex].data.class != TINT->data.class) {
-				return typeErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig);
+				return typeErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig);
 			}
 			
 			binfo->opstack[paramIndex] = *TUNSTABLE;
@@ -3421,7 +3459,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			
 		case 'F':
 			if (binfo->opstack[paramIndex].data.class != TFLOAT->data.class) {
-				return typeErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig);
+				return typeErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig);
 			}
 			
 			binfo->opstack[paramIndex] = *TUNSTABLE;
@@ -3431,7 +3469,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		case 'J':
 			if (binfo->opstack[paramIndex].data.class != TLONG->data.class ||
 			    !isWide(&binfo->opstack[paramIndex + 1])) {
-				return typeErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig);
+				return typeErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig);
 			}
 			
 			binfo->opstack[paramIndex]    = *TUNSTABLE;
@@ -3442,7 +3480,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		case 'D':
 			if (binfo->opstack[paramIndex].data.class != TDOUBLE->data.class ||
 			    !isWide(&binfo->opstack[paramIndex + 1])) {
-				return typeErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig);
+				return typeErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig);
 			}
 			
 			binfo->opstack[paramIndex]     = *TUNSTABLE;
@@ -3451,7 +3489,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			break;
 			
 		default:
-			return typeErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig);
+			return typeErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig);
 		}
 	}
 	binfo->stacksz -= nargs;
@@ -3471,13 +3509,13 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 	sig = getNextArg(sig, argbuf);
 	
 	if (*argbuf == 'J' || *argbuf == 'D') {
-		if (method->stacksz < binfo->stacksz + 2) {
-			return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "not enough room on operand stack for method call's return value");
+		if (v->method->stacksz < binfo->stacksz + 2) {
+			return verifyErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig, "not enough room on operand stack for method call's return value");
 		}
 	}
 	else if (*argbuf != 'V') {
-		if (method->stacksz < binfo->stacksz + 1) {
-			return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "not enough room on operand stack for method call's return value");
+		if (v->method->stacksz < binfo->stacksz + 1) {
+			return verifyErrorInCheckMethodCall(einfo, v->method, argbuf, pc, idx, pool, methSig, "not enough room on operand stack for method call's return value");
 		}
 	}
 	
@@ -3508,7 +3546,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		
 	case '[':
 	case 'L':
-		*sigs = pushSig(*sigs, argbuf);
+		v->sigs = pushSig(v->sigs, argbuf);
 		
 		binfo->opstack[binfo->stacksz].data.class = (Hjava_lang_Class*)argbuf;
 		binfo->opstack[binfo->stacksz].tinfo = TINFO_SIG;
@@ -3538,14 +3576,13 @@ checkMethodCall(errorInfo* einfo, const Method* method,
  */
 static
 bool
-loadInitialArgs(const Method* method, errorInfo* einfo,
-		BlockInfo* block,
-		SigStack** sigs, UninitializedType** uninits)
+loadInitialArgs(errorInfo* einfo,
+		Verifier* v)
 {
 #define VERIFY_ERROR(_MSG) \
 	postExceptionMessage(einfo, JAVA_LANG(VerifyError), \
 			     "method %s.%s: %s", \
-			     CLASS_CNAME(method->class), METHOD_NAMED(method), _MSG); \
+			     CLASS_CNAME(v->method->class), METHOD_NAMED(v->method), _MSG); \
 	gc_free(argbuf); \
 	return(false)
 
@@ -3556,34 +3593,38 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 	uint32 paramCount = 0;
 	
 	/* the +1 skips the initial '(' */
-	const char* sig = METHOD_SIGD(method) + 1;
+	const char* sig = METHOD_SIGD(v->method) + 1;
 	char* argbuf    = checkPtr(gc_malloc((strlen(sig)+1) * sizeof(char), GC_ALLOC_VERIFIER));
 	char* newsig    = NULL;
 	
+	/* load the initial argument into the first basic block.
+	 */
+	BlockInfo* block = v->blocks[0];
 	Type* locals = block->locals;
+	
 	
 	DBG(VERIFY3, dprintf("        sig: %s\n", sig); );
 	
 	/* must have at least 1 local variable for the object reference	*/
-	if (!METHOD_IS_STATIC(method)) {
-		if (method->localsz <= 0) {
+	if (!METHOD_IS_STATIC(v->method)) {
+		if (v->method->localsz <= 0) {
 			VERIFY_ERROR("number of locals in non-static method must be > 0");
 		}
 		
 		/* the first local variable in every method is the class to which it belongs */
 		locals[0].tinfo = TINFO_CLASS;
-		locals[0].data.class = method->class;
+		locals[0].data.class = v->method->class;
 		paramCount++;
-		if (!strcmp(METHOD_NAMED(method), constructor_name->data)) {
+		if (!strcmp(METHOD_NAMED(v->method), constructor_name->data)) {
 		        /* the local reference in a constructor is uninitialized */
-			*uninits = pushUninit(*uninits, &locals[0]);
+			v->uninits = pushUninit(v->uninits, &locals[0]);
 			locals[0].tinfo = TINFO_UNINIT_SUPER;
-			locals[0].data.uninit = *uninits;
+			locals[0].data.uninit = v->uninits;
 		}
 	}
 	
 	for (sig = getNextArg(sig, argbuf); *argbuf != ')'; sig = getNextArg(sig, argbuf)) {
-		if (paramCount > method->localsz) {
+		if (paramCount > v->method->localsz) {
 			LOCAL_OVERFLOW_ERROR;
 		}
 		
@@ -3593,7 +3634,7 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 		case 'F': locals[paramCount++] = *TFLOAT; break;
 			
 		case 'J':
-			if (paramCount + 1 > method->localsz) {
+			if (paramCount + 1 > v->method->localsz) {
 				LOCAL_OVERFLOW_ERROR;
 			}
 			locals[paramCount] = *TLONG;
@@ -3602,7 +3643,7 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 			break;
 			
 		case 'D':
-			if (paramCount + 1 > method->localsz) {
+			if (paramCount + 1 > v->method->localsz) {
 				LOCAL_OVERFLOW_ERROR;
 			}
 			locals[paramCount] = *TDOUBLE;
@@ -3613,7 +3654,7 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 		case '[':
 		case 'L':
 			newsig = checkPtr(gc_malloc((strlen(argbuf) + 1) * sizeof(char), GC_ALLOC_VERIFIER));
-			*sigs = pushSig(*sigs, newsig);
+			v->sigs = pushSig(v->sigs, newsig);
 			sprintf(newsig, "%s", argbuf);
 			locals[paramCount].tinfo = TINFO_SIG;
 			locals[paramCount].data.sig = newsig;

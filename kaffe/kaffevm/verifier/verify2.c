@@ -265,7 +265,7 @@ bool
 verify2(Hjava_lang_Class* class, errorInfo *einfo)
 {
 	constants* pool;
-	int idx;
+	uint32 idx;
 	int tag;
 	
 	

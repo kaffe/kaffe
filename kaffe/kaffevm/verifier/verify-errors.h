@@ -16,40 +16,39 @@
  * Helper function for error reporting in verifyMethod3a.
  */
 static inline
-BlockInfo **
+void
 verifyErrorInVerifyMethod3a(errorInfo* einfo,
-			    Method* method,
+			    const Verifier* v,
 			    const char * msg)
 {
 	if (einfo->type == 0) {
 		postExceptionMessage(einfo, JAVA_LANG(VerifyError),
 				     "in method \"%s.%s\": %s",
-				     CLASS_CNAME(method->class), METHOD_NAMED(method), msg);
+				     CLASS_CNAME(v->method->class), METHOD_NAMED(v->method), msg);
 	}
-	return NULL;
 }
 
 /*
  * Helper function for error reporting in BRANCH_IN_BOUNDS macro in verifyMethod3a.
  */
 static inline
-BlockInfo **
+void
 branchInBoundsErrorInVerifyMethod3a(errorInfo* einfo,
-				    Method* method,
-				    int codelen,
+				    const Verifier* v,
+				    uint32 codelen,
 				    uint32 n)
 {
   DBG(VERIFY3, dprintf("ERROR: branch to (%d) out of bound (%d) \n", n, codelen); );
-  return verifyErrorInVerifyMethod3a(einfo, method, "branch out of method code");
+  verifyErrorInVerifyMethod3a(einfo, v, "branch out of method code");
 }
 
 /*
  * Helper function for error reporting in CHECK_LOCAL_INDEX macro in verifyMethod3a.
  */
 static inline
-BlockInfo **
+void
 checkLocalIndexErrorInVerifyMethod3a(errorInfo* einfo,
-				     Method* method,
+				     const Verifier* v,
 				     uint32 pc,
 				     unsigned char* code,
 				     uint32 n)
@@ -57,9 +56,9 @@ checkLocalIndexErrorInVerifyMethod3a(errorInfo* einfo,
   DBG(VERIFY3,
       dprintf("ERROR:  pc = %d, instruction = ", pc);
       printInstruction(code[pc]);
-      dprintf(", localsz = %d, localindex = %d\n", method->localsz, n);
+      dprintf(", localsz = %d, localindex = %d\n", v->method->localsz, n);
       );
-  return verifyErrorInVerifyMethod3a(einfo, method, "attempting to access a local variable beyond local array");
+  verifyErrorInVerifyMethod3a(einfo, v, "attempting to access a local variable beyond local array");
 }
 
 #endif

@@ -15,6 +15,30 @@
 
 #include "classMethod.h"
 
+
+struct Verifier;
+
+
+/* structure to hold the merger of two types in the event of
+ * multiple inheritence.
+ * it is implemented as a stack.
+ *
+ * also is a list of all supertype lists allocated during
+ * the verification of a specific method.  the memory used here
+ * is freed after verification of the method is completed.
+ */
+typedef struct SupertypeSet
+{
+	uint32 count;
+	Hjava_lang_Class** list;
+	
+	struct SupertypeSet* next;
+} SupertypeSet;
+
+
+/* represents a Type, which could get a primitive type, a reference type,
+ * or a system type such as an address or uninitialized.
+ */
 typedef struct Type
 {
 	uint32 tinfo;
@@ -26,10 +50,9 @@ typedef struct Type
 		Hjava_lang_Class* class;
 		
 	        /* uninitialized object reference */
-		struct unitialized_types_double_list* uninit;
+		struct UninitializedType* uninit;
 		
-	        /* list of supertypes in the event of multiple inheritence of interfaces. */
-		Hjava_lang_Class** supertypes;
+		SupertypeSet* supertypes;
 		
 	        /* return address for TINFO_ADDR */
 		uint32 addr;
@@ -50,7 +73,7 @@ typedef struct Type
  *   TINFO_UNINIT_SUPER reserved for the self-reference in a constructor method.  when the receiver of a call to <init>()
  *                      is of type TINFO_UNINIT_SUPER, then the <init>() referenced may be in the current class of in its
  *                      superclass.
- *   TINFO_SUPERLIST    a list of supertypes.  used when merging two types that have multiple common supertypes.
+ *   TINFO_SUPERTYPES   a set of supertypes.  used when merging two types that have multiple common supertypes.
  *                      this can occur with the multiple inheritence of interfaces.
  *                      the zeroth element is always a common superclass, the rest are common superinterfaces.
  */
@@ -62,7 +85,7 @@ typedef struct Type
 #define TINFO_CLASS        16
 #define TINFO_UNINIT       32
 #define TINFO_UNINIT_SUPER 96
-#define TINFO_SUPERLIST    128
+#define TINFO_SUPERTYPES    128
 
 #define IS_ADDRESS(_TINFO) ((_TINFO)->tinfo & TINFO_ADDR)
 #define IS_PRIMITIVE_TYPE(_TINFO) ((_TINFO)->tinfo & TINFO_PRIMITIVE)
@@ -103,10 +126,16 @@ extern bool sameType(Type* t1, Type* t2);
 extern void resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type);
 
 extern bool mergeTypes(errorInfo*, Hjava_lang_Class* this,
-				     Type* t1, Type* t2);
+		       Type* t1, Type* t2);
 extern Hjava_lang_Class*  getCommonSuperclass(Hjava_lang_Class* t1,
 					      Hjava_lang_Class* t2);
 
-extern bool typecheck(errorInfo*, Hjava_lang_Class* this, Type* t1, Type* t2);
+extern bool typecheck(errorInfo*, struct Verifier* v, Type* t1, Type* t2);
+
+
+/* for dealing with the supertype lists */
+extern void mergeSupersets(SupertypeSet* supertypes, Type* t1, Type* t2);
+extern void freeSupertypes(SupertypeSet* supertypes);
+
 
 #endif /* !defined(VERIFY_TYPE_H) */

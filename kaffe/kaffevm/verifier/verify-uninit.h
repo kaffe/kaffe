@@ -23,12 +23,12 @@
  *
  * doubly linked list to allow for easy removal of types
  */
-typedef struct unitialized_types_double_list
+typedef struct UninitializedType
 {
 	struct Type type;
 	
-	struct unitialized_types_double_list* prev;
-	struct unitialized_types_double_list* next;
+	struct UninitializedType* prev;
+	struct UninitializedType* next;
 } UninitializedType;
 
 

@@ -20,7 +20,7 @@
 /* TODO: use the builtin hash table data structure instead 
  * so we can avoid repeats
  */
-typedef struct sig_stack
+typedef struct SigStack
 {
 	const char* sig;
 	struct sig_stack* next;

@@ -19,7 +19,7 @@
 /*
  * basic block header information
  */
-typedef struct block_info
+typedef struct BlockInfo
 {
         /* address of start of block */
 	uint32 startAddr;

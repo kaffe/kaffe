@@ -17,8 +17,21 @@
 /* for debugging */
 #if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 
+/* change these indentations to whatever makes more sense, but
+ * but these values produce some easy-to-read debugging output.
+ */
 const char* indent  = "                ";
 const char* indent2 = "                        ";
+
+/* these prototypes are here to keep gcc from complaining */
+uint32 printConstantPoolEntry(const Hjava_lang_Class* class, uint32 idx);
+void printConstantPool(const Hjava_lang_Class* class);
+void printInstruction(const int opcode);
+void printType(const Type*);
+void printBlock(const Method* method, const BlockInfo* binfo, const char* id);
+
+
+
 
 uint32
 printConstantPoolEntry(const Hjava_lang_Class* class, uint32 idx)
@@ -484,6 +497,14 @@ printType(const Type* t)
 		printType(&(t->data.uninit->type));
 		break;
 		
+	case TINFO_SUPERTYPES: {
+		uint32 i;
+		dprintf("TINFO_SUPERTYPES: ");
+		for (i = 0; i < t->data.supertypes->count; i++) {
+			dprintf("%s, ", CLASS_CNAME(t->data.supertypes->list[i]));
+		}
+	}
+		
 	default:
 		dprintf("UNRECOGNIZED TINFO");
 		break;
@@ -496,19 +517,19 @@ printType(const Type* t)
  *    For debugging.  Prints out a basic block.
  */
 void
-printBlock(const Method* method, const BlockInfo* binfo, const char* indent)
+printBlock(const Method* method, const BlockInfo* binfo, const char* local_indent)
 {
 	uint32 n;
 	
-	dprintf("%slocals:\n", indent);
+	dprintf("%slocals:\n", local_indent);
 	for (n = 0; n < method->localsz; n++) {
-		dprintf("%s    %d: ", indent, n);
+		dprintf("%s    %d: ", local_indent, n);
 		printType(&binfo->locals[n]);
 		dprintf("\n");
 	}
-	dprintf("%sopstack (%d):\n", indent, binfo->stacksz);
+	dprintf("%sopstack (%d):\n", local_indent, binfo->stacksz);
 	for (n = 0; n < method->stacksz; n++) {
-		dprintf("%s    %d: ", indent, n);
+		dprintf("%s    %d: ", local_indent, n);
 		printType(&binfo->opstack[n]);
 		dprintf("\n");
 	}
