@@ -20,6 +20,7 @@ abstract public class ByteToCharConverter
 	private static String encodingRoot;
 	private static String encodingDefault;
 	private static Hashtable cache = new Hashtable();
+	private static Object noConverter = new Object();
 	protected byte[] buf;
 	protected int blen;
 
@@ -80,44 +81,49 @@ public int flush ( char[] to, int tpos, int tlen ) {
 	}
 }
 
-public static ByteToCharConverter getConverter ( String enc ) throws UnsupportedEncodingException {
+private static ByteToCharConverter getConverterInternal ( String enc ) {
 	ByteToCharConverter conv;
 
-	conv = (ByteToCharConverter)cache.get(enc);
-	if (conv != null) {
-		return (conv);
+	Object obj = cache.get(enc);
+	if (obj == noConverter) {
+		return (null);
+	}
+	if (obj != null) {
+		return ((ByteToCharConverter)obj);
 	}
 	String realenc = ConverterAlias.alias(enc);
 	try {
-		conv = (ByteToCharConverter)Class.forName(encodingRoot + ".ByteToChar" + realenc).newInstance();
-		cache.put(enc, conv);
-		return (conv);
+		obj = Class.forName(encodingRoot + ".ByteToChar" + realenc).newInstance();
+		cache.put(enc, obj);
+		return ((ByteToCharConverter)obj);
 	}
 	catch (ClassNotFoundException _) {
-		throw new UnsupportedEncodingException(enc);
 	}
 	catch (ClassCastException _) {
-		throw new UnsupportedEncodingException(enc);
 	}
 	catch (IllegalAccessException _) {
-		throw new UnsupportedEncodingException(enc);
 	}
 	catch (InstantiationException _) {
-		throw new UnsupportedEncodingException(enc);
 	}
+	cache.put(enc, noConverter);
+	return (null);
 }
 
+public static ByteToCharConverter getConverter ( String enc ) throws UnsupportedEncodingException {
+	ByteToCharConverter conv = getConverterInternal(enc);
+	if (conv != null) {
+		return (conv);
+	}
+	throw new UnsupportedEncodingException(enc);
+}
 public static ByteToCharConverter getDefault() {
-	String enc = encodingDefault;
-	if (ClassLoader.getSystemResourceAsStream(encodingRoot + ".ByteToChar" + enc) == null) {
-		enc = "Default";
+	ByteToCharConverter conv;
+
+	conv = getConverterInternal(encodingDefault);
+	if (conv == null) {
+		conv = getConverterInternal("Default");
 	}
-	try {
-		return (getConverter(enc));
-	}
-	catch (UnsupportedEncodingException __) {
-		return (null);
-	}
+	return (conv);
 }
 
 abstract public int getNumberOfChars ( byte[] from, int fpos, int flen );

@@ -54,7 +54,7 @@ buildStackTrace(struct _exceptionFrame* base)
 
 	cnt = 0;
 
-	STACKTRACEINIT(trace, &orig, 0, orig);
+	STACKTRACEINIT(trace, &orig, base, orig);
 
 	for(; !STACKTRACEEND(trace); STACKTRACESTEP(trace)) {
 		info[cnt].pc = STACKTRACEPC(trace);
