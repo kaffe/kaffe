@@ -49,6 +49,7 @@ import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.AllPermission;
 import java.security.Permission;
+import java.security.PrivilegedAction;
 import java.security.Security;
 import java.security.SecurityPermission;
 import java.util.PropertyPermission;
@@ -1013,12 +1014,16 @@ public class SecurityManager
    * @see #checkPackageAccess(String)
    * @see #checkPackageDefinition(String)
    */
-  void checkPackageList(String packageName, String restriction,
+  void checkPackageList(String packageName, final String restriction,
                         String permission)
   {
     // Use the toString() hack to do the null check.
     Permission p = new RuntimePermission(permission + packageName.toString());
-    String list = Security.getProperty("package." + restriction);
+    String list = (String)AccessController.doPrivileged(new PrivilegedAction() {
+	public Object run() {
+	    return Security.getProperty("package." + restriction);
+	}
+    });
     if (list == null)
       return;
     while (! "".equals(packageName))
