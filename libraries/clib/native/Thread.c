@@ -119,10 +119,8 @@ java_lang_Thread_interrupt0(struct Hjava_lang_Thread* this)
 	interruptThread(this);
 }
 
-#include "../../../include/java_lang_Thread$Finalizer.h"
-
 void
-java_lang_Thread$Finalizer_finalize(struct Hjava_lang_Thread$Finalizer* this)
+java_lang_Thread_finalize0(struct Hjava_lang_Thread* this)
 {
-	finalizeThread(unhand(this)->this0);
+	finalizeThread(this);
 }
