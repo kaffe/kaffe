@@ -32,7 +32,19 @@ __alpha_ra (int *pc)
 	}
 
 	if ((*p & 0xffff0000) == ((0x8 << 26) | ((30 & 0x1f) << 21) | ((30 & 0x1f) << 16))) {
-	    /* lda $sp,N($sp) */
+	    /* lda $sp,N($sp) or lda $sp,-N($sp) */
+	    return -1;
+	}
+
+	if ((*p & ~(0xFF << 13)) == 0x43c0141e) {
+	    /* addq $sp,N,$sp */
+	    /* epilogue: frame cleanup */
+	    return -1;
+	}
+
+	if ((*p & ~(0xFF << 13)) == 0x43c0153e) {
+	    /* subq $sp,N,$sp */
+	    /* prologue: frame allocation */
 	    return -1;
 	}
     }
@@ -55,13 +67,11 @@ __alpha_nextFrame (exceptionFrame *frame)
 	/* first frame, retreive current $sp and $ra and compute
 	   caller frame because this stack will be erased after this
 	   function return */
-	register char *_sp asm("30");
-	register char *_fp asm("15");
 
     here: ;
 	pc = &&here;
-	sp = _sp;
-	fp = _fp;
+	asm volatile ("mov $30,%0" : "=r"(sp));
+	asm volatile ("mov $15,%0" : "=r"(fp));
 
 	DBG(STACKTRACE,
 	    dprintf ("firstFrame pc %p sp %p fp %p\n", pc, sp, fp); );
@@ -82,10 +92,9 @@ __alpha_nextFrame (exceptionFrame *frame)
     framesize = 0;
     use_fp = 0;
 
-    /* First, walk forward and stop on these instructions:
-       - ret 31,($REG),1 frame less procedure
-       - lda $sp,-N($sp) __attribute__("noreturn")
-    */
+    /* Stack allocation in prologue: lda $sp,-N($sp) or subq $sp,N,$sp
+       Stack cleanup in epilogue: lda $sp,N($sp) or addq $sp,N,$sp */
+
     /* Scan forward and stop on ret 31,($REG),1 or lda $sp,-N($sp) for
        __attribute__("noreturn") function.  */
     for (p = pc; ; p++) {
@@ -117,7 +126,7 @@ __alpha_nextFrame (exceptionFrame *frame)
 	}
 
 	if ((*p & 0xffff0000) == ((0x8 << 26) | ((30 & 0x1f) << 21) | ((30 & 0x1f) << 16))) {
-	    /* lda $sp,N($sp) */
+	    /* lda $sp,N($sp) or lda $sp,-N($sp) */
 	    short low = *p & 0x0000ffff;
 
 	    DBG(STACKTRACE,
@@ -125,12 +134,12 @@ __alpha_nextFrame (exceptionFrame *frame)
 
 	    if (low < 0) {
 		/* lda $sp,-N($sp) */
+		/* prologue: frame allocation */
 		if (framesize == 0) {
-		    /* pass end of function without finding epilogue
-		       marker (ret instruction), look backward for
-		       prologue.  Handle __attribute__("noreturn")
-		       function followed by a frame procedure as
-		       ThrowError().  */
+		    /* pass end of function without finding epilogue,
+		       scan backward for prologue.  Handle function
+		       with __attribute__("noreturn") followed by a
+		       frame procedure as ThrowError().  */
 		    goto scan_backward;
 		}
 
@@ -138,10 +147,50 @@ __alpha_nextFrame (exceptionFrame *frame)
                    but we have already catch stack frame.  */
 		goto extract_ldq;
 	    }
-	    /* save framesize */
+	    else {
+		/* lda $sp,-N($sp) */
+		/* epilogue: frame cleanup */
+
+		/* save framesize and continue to find ret instruction */
+		framesize = low;
+		continue;
+	    }
+	}
+
+	if ((*p & ~(0xFF << 13)) == 0x43c0153e) {
+	    /* subq $sp,N,$sp */
+	    /* prologue: frame allocation */
+	    short low = (*p >> 13) & 0xff;
+
+	    DBG(STACKTRACE,
+		dprintf ("subq $sp,%d,$sp at %p\n", (int)low, p); );
+
+	    if (framesize == 0) {
+		/* pass end of function without finding epilogue, scan
+		   backward for prologue.  Handle function with
+		   __attribute__("noreturn") followed by a frame
+		   procedure as ThrowError().  */
+		goto scan_backward;
+	    }
+
+	    /* This also catch __attribute__("noreturn") function
+	       but we have already catch stack frame.  */
+	    goto extract_ldq;
+	}
+
+	if ((*p & ~(0xFF << 13)) == 0x43c0141e) {
+	    /* addq $sp,N,$sp */
+	    /* epilogue: frame cleanup */
+	    short low = (*p >> 13) & 0xff;
+
+	    DBG(STACKTRACE,
+		dprintf ("addq $sp,%d,$sp at %p\n", (int)low, p); );
+
+	    /* save framesize and continue to find ret instruction */
 	    framesize = low;
 	    continue;
 	}
+
     }
 
  scan_backward:
@@ -151,7 +200,7 @@ __alpha_nextFrame (exceptionFrame *frame)
     for (p = pc; ; p--) {
 
 	if ((*p & 0xffff0000) == ((0x8 << 26) | ((30 & 0x1f) << 21) | ((30 & 0x1f) << 16))) {
-	    /* lda $sp,N($sp) */
+	    /* lda $sp,N($sp) or lda $sp,-N($sp) */
 	    short low = *p & 0x0000ffff;
 
 	    DBG(STACKTRACE,
@@ -159,14 +208,42 @@ __alpha_nextFrame (exceptionFrame *frame)
 
 	    if (low < 0) {
 		/* lda $sp,-N($sp) */
+		/* prologue: frame allocation */
+
 		framesize = -low;
 		goto extract_stq;
 	    }
 	    else {
 		/* lda $sp,N($sp) */
-		/* scan _before_ start of function */
+		/* epilogue: frame cleanup */
+
+		/* scan _before_ start of function :-( */
 		return NULL;
 	    }
+	}
+
+	if ((*p & ~(0xFF << 13)) == 0x43c0153e) {
+	    /* subq $sp,N,$sp */
+	    /* prologue: frame allocation */
+	    short low = (*p >> 13) & 0xff;
+
+	    DBG(STACKTRACE,
+		dprintf ("subq $sp,%d,$sp at %p\n", (int)low, p); );
+
+	    framesize = low;
+	    goto extract_stq;
+	}
+
+	if ((*p & ~(0xFF << 13)) == 0x43c0141e) {
+	    /* addq $sp,N,$sp */
+	    /* epilogue: frame cleanup */
+	    short low = (*p >> 13) & 0xff;
+
+	    DBG(STACKTRACE,
+		dprintf ("addq $sp,%d,$sp at %p\n", (int)low, p); );
+
+	    /* scan _before_ start of function :-( */
+	    return NULL;
 	}
     }
 
@@ -201,7 +278,7 @@ __alpha_nextFrame (exceptionFrame *frame)
 	sp = fp;
 
     use_fp = 0;
-    for (; p > pc; p--) {
+    for (; p >= pc; p--) {
 	if ((*p & 0xffff0000) == ((0x29 << 26) | ((reg & 0x1f) << 21) | ((30 & 0x1f) << 16))) {
 	    /* ldq $REG,N(sp) */
 	    short low = *p & 0x0000ffff;
@@ -223,7 +300,8 @@ __alpha_nextFrame (exceptionFrame *frame)
 	    continue;
 	}
     }
-    /* special case for __divl() that don't reload t9 but save it.  */
+    /* special case for __divl() on Tru64 that don't reload return
+       address register t9 in epilogue but save it in prologue.  */
     if (use_fp == 0)
 	goto scan_backward;
 
