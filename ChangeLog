@@ -1,3 +1,8 @@
+Thu Apr 22 09:38:32 PDT 1999  Robert Zawiasa <rhz@bibl.u-szeged.hu>
+
+	* libraries/javalib/kaffe/net/www/protocol/http/HttpURLConnection.java:
+	MIME headers are case-insensitive, so compare them that way.
+
 Thu Apr 22 09:34:37 PDT 1999  Pavel Roskin <pavel_roskin@geocities.com>
 
 	* libraries/javalib/java/awt/widgets/RowCanvas.java,
