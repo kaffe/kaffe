@@ -1,3 +1,12 @@
+1999-06-10  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/jni.c (Call*Method*): If method is not virtual,
+	for example, a constructor, use JNI_METHOD_CODE to get its
+	address.
+	Reported by Paul Graunke <ptg@rice.edu>
+	* kaffe/kaffevm/jni.c (Kaffe_AllocObject): Check whether class is
+	not interface nor abstract.
+
 Thu Jun 10 12:22:17 PDT 1999  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
 	* libraries/javalib/java/awt/GridBagLayout.java
