@@ -1,3 +1,9 @@
+Thu Feb 18 15:55:45 PST 1999 Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/systems/unix-jthread/signal.c: make sure
+	async signals are blocked when we get SIGINT or SIGTERM.
+	This fixes the kaffe-wont-die problem on FreeBSD for me.
+
 Thu Feb 18 15:18:19 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* test/regression/TestScript.in (run): accept exit status 77 as
