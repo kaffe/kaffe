@@ -16,6 +16,7 @@
 struct _exceptionFrame;
 struct Hjava_lang_Class;
 struct Hjava_lang_Object;
+struct Hjava_lang_Throwable;
 struct _methods;
 struct _errorInfo;
 

@@ -24,6 +24,7 @@
 #include "errors.h"
 #include "file.h"
 #include "exception.h"
+#include "classMethod.h"
 #include "stringSupport.h"
 #include "locks.h"
 

@@ -11,6 +11,7 @@
 #ifndef __code_h
 #define __code_h
 
+#include "gtypes.h"
 
 union _attribute_info;
 struct _jexception;

@@ -32,6 +32,7 @@
 #include "soft.h"
 #include "md.h"
 #include "stackTrace.h"
+#include "support.h"
 
 
 Hjava_lang_Object*

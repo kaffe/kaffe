@@ -28,6 +28,7 @@
 #include "itypes.h"
 #include "bytecode.h"
 #include "exception.h"
+#include "classMethod.h"
 #include "md.h"
 #include "external.h"
 #include "lookup.h"

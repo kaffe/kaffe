@@ -20,6 +20,7 @@
 #include "access.h"
 #include "object.h"
 #include "constants.h"
+#include "errors.h"
 #ifdef KAFFEH
 #include <readClassConfig.h>
 #else
@@ -41,8 +42,9 @@ readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoa
 	/* Read in class info */
 	readu4(&magic, fp);
 	if (magic != JAVAMAGIC) {
-		fprintf(stderr, "Bad magic %x in class\n", magic);
-		EXIT(1);
+		SET_LANG_EXCEPTION_MESSAGE(einfo, ClassFormatError, 
+				    "Bad magic number");
+		return (0);
 	}
 	readu2(&minor_version, fp);
 	readu2(&major_version, fp);

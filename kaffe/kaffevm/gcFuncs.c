@@ -24,6 +24,7 @@
 #include "code.h"
 #include "file.h"
 #include "readClass.h"
+#include "classMethod.h"
 #include "baseClasses.h"
 #include "stringSupport.h"
 #include "thread.h"

@@ -29,6 +29,7 @@
 #include "locks.h"
 #include "files.h"
 #include "baseClasses.h"
+#include "classMethod.h"
 #include "external.h"
 #include "jar.h"
 #include "jsyscall.h"

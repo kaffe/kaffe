@@ -21,9 +21,6 @@ typedef struct _errorInfo {
 	void *mess;			/* accompanying data, usually msg */
 } errorInfo;
 
-#include "classMethod.h"
-#include "support.h"
-
 #define SET_LANG_EXCEPTION(ep, NAME) { \
   (ep)->classname = "java.lang." #NAME; \
   (ep)->mess = ""; }

@@ -1,3 +1,13 @@
+Wed Mar 17 22:50:33 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffeh/readClassConfig.h, kaffe/kaffevm/baseClasses.c,
+	kaffe/kaffevm/classMethod.c, kaffe/kaffevm/code.h,
+	kaffe/kaffevm/constants.c, kaffe/kaffevm/errors.h
+	kaffe/kaffevm/exception.h, kaffe/kaffevm/findInJar.c
+	kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/lookup.c
+	kaffe/kaffevm/readClass.c, kaffe/kaffevm/stackTrace.c:
+	handle bad magic in classfiles gracefully.
+
 Tue Mar 16 22:17:46 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/clib/awt/X/tlk.c, libraries/clib/awt/X/toolkit.h:
