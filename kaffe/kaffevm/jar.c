@@ -479,7 +479,9 @@ static int jarRead(jarFile *jf, uint8 *buf, size_t len,
 /*
  * Convenient seek function that operates on regular or mmap'ed files.
  */
-static inline off_t jarSeek(jarFile *jf, off_t offset, int whence)
+static 
+off_t 
+jarSeek(jarFile *jf, off_t offset, int whence)
 {
 	off_t retval = (off_t)-1;
 
