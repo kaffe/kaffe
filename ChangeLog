@@ -1,5 +1,9 @@
 2003-12-03  Dalibor Topic <robilad@kaffe.org>
 
+	* THRIDPARTY: Added information about Jessie.
+
+2003-12-03  Dalibor Topic <robilad@kaffe.org>
+
         * extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeq.c,
         extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqEvent.c,
         extensions/sound/esd/org_tritonus_lowlevel_esd_EsdStream.c,
