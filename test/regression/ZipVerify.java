@@ -3,6 +3,7 @@
 // Submitted by Moses DeJong <dejong@cs.umn.edu>
 
 import java.io.*;
+import java.util.*;
 import java.util.zip.*;
 
 public class ZipVerify {
@@ -11,6 +12,8 @@ public class ZipVerify {
 
     public static void main(String[] argv) throws Exception
     {
+	TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+
 	/*
 	boolean compressed = false;
 

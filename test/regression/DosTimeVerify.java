@@ -1,5 +1,6 @@
 // Submitted by Moses DeJong <dejong@cs.umn.edu>
 import java.io.*;
+import java.util.*;
 import java.util.zip.*;
 
 public class DosTimeVerify {
