@@ -1,7 +1,15 @@
 2004-06-01  Dalibor Topic  <robilad@kaffe.org>
 
+        * tools/gjdoc/javalib/Makefile.am:
+	(EXTRA_DIST) Removed META-INF.
+
+        * tools/gjdoc/javalib/Makefile.in:
+	Regenerated.
+
+2004-06-01  Dalibor Topic  <robilad@kaffe.org>
+
         * Makefile.am:
-	(DIST_SUBDIRS) Added test.
+	(DIST_SUBDIRS) Added tools.
 
         * Makefile.in:
 	Regenerated.

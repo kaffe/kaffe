@@ -141,8 +141,7 @@ gjdoc_ressources = \
 EXTRA_DIST = \
 	$(toolslib_DATA) \
 	$(gjdoc_jar_SRCS) \
-	$(gjdoc_ressources) \
-	META-INF
+	$(gjdoc_ressources)
 
 if HAVE_ZIP
 JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(ZIP) -r $$dstdir/$(CLASSFILE) $(SRCDIRS))
