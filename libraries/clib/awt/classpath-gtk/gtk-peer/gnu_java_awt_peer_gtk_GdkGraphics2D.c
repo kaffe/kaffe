@@ -400,7 +400,6 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics2D_gdkDrawDrawable
   struct graphics2d *src = NULL, *dst = NULL;
   gint s_height, s_width, d_height, d_width, height, width;
   cairo_matrix_t *matrix;
-  GdkGC *gc;
   cairo_operator_t tmp_op;
 
   gdk_threads_enter();
@@ -605,20 +604,21 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics2D_setGradient
      negate offsets. oh well.
      
    */
-
-  double a = (x2 - x1 == 0.) ? 0. : ((cyclic ? 3.0 : 2.0) / (x2 - x1));
-  double c = (y2 - y1 == 0.) ? 0. : (1. / (y2 - y1));
-  double dx = (x1 == 0.) ? 0. : 1. / x1;
-  double dy = (y1 == 0.) ? 0. : 1. / y1;
-
-  cairo_matrix_set_affine (mat,
-			   a, 0.,
-			   c, 0.,
-			   dx, dy);
-
-  cairo_surface_set_matrix (surf, mat);
-  cairo_matrix_destroy (mat);
-  cairo_surface_set_filter (surf, CAIRO_FILTER_BILINEAR);
+  {
+    double a = (x2 - x1 == 0.) ? 0. : ((cyclic ? 3.0 : 2.0) / (x2 - x1));
+    double c = (y2 - y1 == 0.) ? 0. : (1. / (y2 - y1));
+    double dx = (x1 == 0.) ? 0. : 1. / x1;
+    double dy = (y1 == 0.) ? 0. : 1. / y1;
+    
+    cairo_matrix_set_affine (mat,
+			     a, 0.,
+			     c, 0.,
+			     dx, dy);
+    
+    cairo_surface_set_matrix (surf, mat);
+    cairo_matrix_destroy (mat);
+    cairo_surface_set_filter (surf, CAIRO_FILTER_BILINEAR);
+  }
 
   /* FIXME: repeating gradients (not to mention hold gradients) don't seem to work. */
   /*   cairo_surface_set_repeat (surf, cyclic ? 1 : 0); */
@@ -751,7 +751,7 @@ JNIEXPORT jintArray JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics2D_getImagePix
   jint i, px;
 
   gdk_threads_enter();
-  if (peer_is_disposed(env, obj)) { gdk_threads_leave(); return; }
+  if (peer_is_disposed(env, obj)) { gdk_threads_leave(); return NULL; }
 
   gr = (struct graphics2d *) NSA_GET_G2D_PTR (env, obj);
   g_assert (gr != NULL);

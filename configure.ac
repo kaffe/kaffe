@@ -1465,6 +1465,19 @@ if test x"$ac_cv_declared_swab" = x"yes"; then
   AC_DEFINE(HAVE_DECLARED_SWAB, 1, [Is function swab declared])
 fi
 
+dnl ------------------------------------------------------------
+dnl determine whether to enable the cairo GTK Graphics2D backend
+dnl ------------------------------------------------------------
+AC_ARG_ENABLE([gtk-cairo],
+              [AS_HELP_STRING(--enable-gtk-cairo,build the cairo Graphics2D implementation on GTK [default=no])],
+	              [case "${enableval}" in
+	                yes) GTK_CAIRO=yes ;;
+	                no) GTK_CAIRO=no ;;
+	                *) GTK_CAIRO=yes ;;
+	              esac],
+	      [GTK_CAIRO=no])
+AM_CONDITIONAL(GTK_CAIRO, test "x${enable_gtk_cairo}" = xyes)
+
 dnl -------------------------------------------------------------------------
 dnl Configure AWT engine
 dnl -------------------------------------------------------------------------
@@ -1586,6 +1599,7 @@ AM_CONDITIONAL(COND_CLASSPATH_GTK_AWT, test x"$with_classpath_gtk_awt" != x"no")
 
 if test x"$enable_native_awt" = x"yes"; then
    if test x"$with_classpath_gtk_awt" = x"yes"; then
+
 	dnl -----------------------------------------------------------------------
 	dnl                    Classpath Gtk peer support
 	dnl -----------------------------------------------------------------------
@@ -1599,6 +1613,16 @@ if test x"$enable_native_awt" = x"yes"; then
 	PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.4 gthread-2.0 >= 2.2 libart-2.0)
 	AC_SUBST(GTK_CFLAGS)
 	AC_SUBST(GTK_LIBS)
+
+	if test "x${enable_gtk_cairo}" = xyes
+  	then
+		PKG_CHECK_MODULES(CAIRO, cairo)
+    		PKG_CHECK_MODULES(PANGOFT2, pangoft2)
+  	fi
+  	AC_SUBST(CAIRO_LIBS)
+  	AC_SUBST(CAIRO_CFLAGS)
+  	AC_SUBST(PANGOFT2_LIBS)
+  	AC_SUBST(PANGOFT2_CFLAGS)
 
         AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/classpath-gtk/gtk-peer/libgtkpeer.la"
    fi
