@@ -1,3 +1,8 @@
+Fri Apr 12 14:12:39 2002  Jim Pick  <jim@kaffe.org>
+
+	* Make sure calls to postExceptionMessage() don't pass random
+	string in fmt field (security).  Thanks to KF. 
+
 Fri Apr 12 13:26:13 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* libraries/javalib/Klasses.jar: regenerated using javac 1.4.0.
 	Options: -target 1.1 -O.

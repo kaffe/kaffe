@@ -117,7 +117,7 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
 			errorInfo einfo_copy = einfo;
 			postExceptionMessage(&einfo,
 				JAVA_LANG(ClassNotFoundException),
-				einfo.mess);
+				"%s", einfo.mess);
 			discardErrorInfo(&einfo_copy);
 		} else
 		if ((einfo.type & KERR_EXCEPTION) && !strcmp(einfo.classname, "java.lang.NoClassDefFoundError"))
@@ -142,7 +142,7 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
 				errorInfo einfo_copy = einfo;
 				postExceptionMessage(&einfo,
 					JAVA_LANG(ClassNotFoundException),
-					einfo.mess);
+					"%s", einfo.mess);
 				discardErrorInfo(&einfo_copy);
 			}
 		}

@@ -66,7 +66,7 @@ java_lang_NativeLibrary_linkLibrary(struct Hjava_lang_String *jpath)
 	stringJava2CBuf(jpath, path, sizeof(path));
 	if ((index = loadNativeLibrary(path, errbuf, sizeof(errbuf))) < 0) {
 		postExceptionMessage(&einfo, 
-		    JAVA_LANG(UnsatisfiedLinkError), errbuf);
+		    JAVA_LANG(UnsatisfiedLinkError), "%s", errbuf);
 		throwError(&einfo);
 	}
 	return index;

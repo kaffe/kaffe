@@ -605,7 +605,7 @@ kenvFindMethod(Hjava_lang_Class *kclass,
 			}
 		}
 	}
-	postExceptionMessage(&info, JAVA_LANG(NoSuchMethodError), mname);
+	postExceptionMessage(&info, JAVA_LANG(NoSuchMethodError), "%s", mname);
 	throwError(&info);
 	return (0);
 found:

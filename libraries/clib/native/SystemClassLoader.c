@@ -69,7 +69,7 @@ kaffe_lang_SystemClassLoader_findClass0(Hkaffe_lang_SystemClassLoader* this, Hja
 			errorInfo info_tmp = info;
 			postExceptionMessage(&info,
 				JAVA_LANG(ClassNotFoundException), 
-				info.mess);
+				"%s", info.mess);
 			discardErrorInfo(&info_tmp);
 		}
 		if (name != buffer) {

@@ -316,7 +316,7 @@ findMethod(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature, error
 			return mptr;
 		}
 	}
-	postExceptionMessage(einfo, JAVA_LANG(NoSuchMethodError), name->data);
+	postExceptionMessage(einfo, JAVA_LANG(NoSuchMethodError), "%s", name->data);
 	return (0);
 }
 

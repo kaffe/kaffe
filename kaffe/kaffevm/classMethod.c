@@ -151,7 +151,7 @@ retry:
 	 */
 	if (class->state == CSTATE_FAILED) {
 		postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError),
-			class->name->data);
+			"%s", class->name->data);
 		success = false;
 		goto done;
 	}
@@ -437,7 +437,7 @@ retry:
 		if (class->state == CSTATE_INIT_FAILED) {
 			postExceptionMessage(einfo,
 				JAVA_LANG(NoClassDefFoundError),
-				class->name->data);
+				"%s", class->name->data);
 			success = false;
 			goto done;
 		}
@@ -1033,7 +1033,7 @@ DBG(VMCLASSLOADER,
     )
 				postExceptionMessage(einfo,
 					JAVA_LANG(NoClassDefFoundError),
-					name->data);
+					"%s", name->data);
 			} else
 			if (strcmp(clazz->name->data, name->data)) {
 DBG(VMCLASSLOADER,
@@ -2206,7 +2206,7 @@ DBG(RESERROR,
 	dprintf("lookupClassField failed %s:%s\n",
 		clp->name->data, name->data);
     )
-	postExceptionMessage(einfo, JAVA_LANG(NoSuchFieldError), name->data);
+	postExceptionMessage(einfo, JAVA_LANG(NoSuchFieldError), "%s", name->data);
 	return (0);
 }
 

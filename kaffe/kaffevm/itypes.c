@@ -199,7 +199,7 @@ getClassFromSignature(const char* sig, Hjava_lang_ClassLoader* loader, errorInfo
 	 * .class file, or it could be a malformed user input from 
 	 * Class.forName()
 	 */
-	postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError), sig0);
+	postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError), "%s", sig0);
 	return (0);
 }
 

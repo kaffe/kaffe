@@ -167,7 +167,7 @@ postExceptionMessage(errorInfo *einfo,
 void
 postNoClassDefFoundError(errorInfo* einfo, const char* cname)
 {
-	postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError), cname);
+	postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError), "%s", cname);
 	einfo->type |= KERR_NO_CLASS_FOUND;
 }
 
