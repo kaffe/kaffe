@@ -40,11 +40,21 @@ jniBase_LDADD= \
 jniBase_DEPENDENCIES= $(LIBKAFFEVM)
 
 jniExecClass_SOURCES= jniExecClass.c
-jniExecClass_LDADD= "-dlopen" $(LIBNATIVE) $(LIBKAFFEVM) @LIBLTDL@
+jniExecClass_LDADD= \
+	"-dlopen" $(LIBNATIVE) \
+	$(LIBKAFFEVM) \
+	$(LIBREPLACE) \
+        $(LTLIBINTL) \
+	@LIBLTDL@
 jniExecClass_DEPENDENCIES= $(LIBKAFFEVM)
 
 jniReflect_SOURCES= jniReflect.c
-jniReflect_LDADD= "-dlopen" $(LIBNATIVE) $(LIBKAFFEVM) @LIBLTDL@
+jniReflect_LDADD= \
+	"-dlopen" $(LIBNATIVE) \
+	$(LIBKAFFEVM) \
+	$(LIBREPLACE) \
+        $(LTLIBINTL) \
+	@LIBLTDL@
 jniReflect_DEPENDENCIES= $(LIBKAFFEVM)
 
 TESTS_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`

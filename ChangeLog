@@ -1,3 +1,10 @@
+2005-01-08  Dalibor Topic  <robilad@kaffe.org>
+
+	* test/jni/Makefile.am (jniReflect_LDADD, jniExecClass_LDADD): 
+	Added missing libraries.
+
+	* test/jni/Makefile.in: Regenerated.
+	
 2005-01-08  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jar.c (cacheJarFile): When removing
