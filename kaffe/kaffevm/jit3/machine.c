@@ -374,6 +374,8 @@ SCHK(			sanityCheck();				)
 	}
 
 done:;
+	resetLabels();
+	resetConstants();
 	tidyAnalyzeMethod(&codeInfo);
 
 	reinvoke = false;
@@ -719,15 +721,9 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz, errorInfo
 	initSeq();
 	initRegisters();
 	initSlots(stackno);
-	resetLabels();
-	resetConstants();
 
 	/* Before generating code, try to guess how much space we'll need. */
-	if (codeblock_size < codesize)
-		codeblock_size = codesize;
-	if (codeblock_size < ALLOCCODEBLOCKSZ) {
-		codeblock_size = ALLOCCODEBLOCKSZ;
-	}
+	codeblock_size = ALLOCCODEBLOCKSZ;
 	codeblock = gc_malloc(codeblock_size + CODEBLOCKREDZONE, GC_ALLOC_JITTEMP);
 	if (codeblock == 0) {
 		postOutOfMemory(einfo);
@@ -759,11 +755,20 @@ generateInsnSequence(errorInfo* einfo)
 
 		/* If we overrun the codeblock, reallocate and continue.  */
 		if (CODEPC >= codeblock_size) {
+			nativecode *new_codeblock;
+			
 			codeblock_size += ALLOCCODEBLOCKSZ;
-			codeblock = gc_realloc(codeblock, codeblock_size + CODEBLOCKREDZONE, GC_ALLOC_JITTEMP);
-			if (codeblock == 0) {
+			new_codeblock = gc_realloc(codeblock,
+						   codeblock_size +
+						   CODEBLOCKREDZONE,
+						   GC_ALLOC_JITTEMP);
+			if (new_codeblock == NULL) {
+				gc_free(codeblock);
+				codeblock = NULL;
 				postOutOfMemory(einfo);
 				return (false);
+			} else {
+				codeblock = new_codeblock;
 			}
 		}
 

@@ -20,8 +20,7 @@
 
 #include <stdarg.h>
 
-#define	gc_calloc_fixed(A,B)	gc_malloc((A)*(B), GC_ALLOC_JITTEMP)
-
+static constpoolchunk* poolchunks;
 constpool* firstConst;
 constpool* lastConst;
 constpool* currConst;
@@ -75,14 +74,20 @@ newConstant(int type, ...)
 		c = currConst;
 	}
 
-	if (!c) {
+	if (c == NULL) {
+		constpoolchunk *cpc;
 		int i;
 
 		/* Allocate chunk of constpool elements */
-		c = gc_calloc_fixed(ALLOCCONSTNR, sizeof(constpool));
+		cpc = gc_malloc(sizeof(constpoolchunk), GC_ALLOC_JITTEMP);
 		/* XXX Ack! */
-		assert(c != 0);
+		assert(cpc != 0);
 
+		cpc->next = poolchunks;
+		poolchunks = cpc;
+
+		c = &cpc->data[0];
+		
 		/* Attach to current chain */
 		if (lastConst == 0) {
 			firstConst = c;
@@ -90,13 +95,12 @@ newConstant(int type, ...)
 		else {
 			lastConst->next = c;
 		}
-		lastConst = &c[ALLOCCONSTNR-1];
+		lastConst = &cpc->data[ALLOCCONSTNR-1];
 
 		/* Link elements into list */
-		for (i = 0; i < ALLOCCONSTNR-1; i++) {
-			c[i].next = &c[i+1];
+		for (i = 0; i < ALLOCCONSTNR - 2; i++) {
+			cpc->data[i].next = &cpc->data[i+1];
 		}
-		c[ALLOCCONSTNR-1].next = NULL;
 	}
 
 	c->type = type;
@@ -173,4 +177,15 @@ resetConstants(void)
 {
 	currConst = firstConst;
 	nConst = 0;
+	while( (poolchunks != NULL) && (poolchunks->next != NULL) )
+	{
+		constpoolchunk *cpc = poolchunks;
+
+		poolchunks = cpc->next;
+		gc_free(poolchunks);
+	}
+	if( poolchunks != NULL )
+	{
+		poolchunks->data[ALLOCCONSTNR - 1].next = NULL;
+	}
 }

@@ -25,6 +25,7 @@
 #include "thread.h"
 #include "jthread.h"
 
+static labelchunk* labelchunks;
 static label* firstLabel;
 static label* lastLabel;
 static label* currLabel;
@@ -33,7 +34,6 @@ static uint32 labelCount;
 
 /* Custom edition */
 #define	kprintf	kaffe_dprintf
-#define	gc_calloc_fixed(A,B)	gc_malloc((A)*(B), GC_ALLOC_JITTEMP)
 #include "debug.h"
 
 #if defined(KAFFE_VMDEBUG)
@@ -66,6 +66,17 @@ void
 resetLabels(void)
 {
 	currLabel = firstLabel;
+	while( (labelchunks != NULL) && (labelchunks->next != NULL) )
+	{
+		labelchunk *lc = labelchunks;
+
+		labelchunks = lc->next;
+		gc_free(labelchunks);
+	}
+	if( labelchunks != NULL )
+	{
+		labelchunks->data[ALLOCLABELNR - 1].next = NULL;
+	}
 }
 
 label *getLastEpilogueLabel(void)
@@ -227,9 +238,17 @@ newLabel(void)
 
 	ret = currLabel;
 	if (ret == 0) {
+		labelchunk *lc;
+		
 		/* Allocate chunk of label elements */
-		ret = gc_calloc_fixed(ALLOCLABELNR, sizeof(label));
+		lc = gc_malloc(sizeof(labelchunk), GC_ALLOC_JITTEMP);
+		assert(lc != NULL);
 
+		lc->next = labelchunks;
+		labelchunks = lc;
+
+		ret = &lc->data[0];
+		
 		/* Attach to current chain */
 		if (lastLabel == 0) {
 			firstLabel = ret;
@@ -237,16 +256,15 @@ newLabel(void)
 		else {
 			lastLabel->next = ret;
 		}
-		lastLabel = &ret[ALLOCLABELNR-1];
+		lastLabel = &lc->data[ALLOCLABELNR-1];
 
 		/* Link elements into list */
-		for (i = 0; i < ALLOCLABELNR-1; i++) {
+		for (i = 0; i < ALLOCLABELNR - 2; i++) {
 #if defined(KAFFE_VMDEBUG)
-			sprintf(ret[i].name, "L%d", labelCount + i);
+			sprintf(lc->data[i].name, "L%d", labelCount + i);
 #endif
-			ret[i].next = &ret[i+1];
+			lc->data[i].next = &lc->data[i+1];
 		}
-		ret[ALLOCLABELNR-1].next = 0;
 	}
 	currLabel = ret->next;
 	labelCount += 1;

@@ -113,6 +113,18 @@ typedef struct _label_ {
 #define	ALLOCLABELNR	1024
 
 /**
+ * Labels are allocated and tracked as part of a chunk as represented by this
+ * structure.
+ *
+ * next - Link to the next chunk in the list.
+ * data - The labels contained in the chunk.
+ */
+typedef struct _labelchunk {
+	struct _labelchunk *next;
+	label data[ALLOCLABELNR];
+} labelchunk;
+
+/**
  * Set the address of all epilogue labels used in this method.
  *
  * Note:  There can be more than one epilogue label because there can be more

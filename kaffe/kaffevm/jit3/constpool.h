@@ -69,7 +69,19 @@ typedef struct _constpool {
 	} val;
 } constpool;
 
-#define ALLOCCONSTNR	32
+#define ALLOCCONSTNR	64
+
+/**
+ * constpools are allocated and tracked as part of a chunk as represented by
+ * this structure.
+ *
+ * next - Link to the next chunk in the list.
+ * data - The constpools contained in the chunk.
+ */
+typedef struct _constpoolchunk {
+	struct _constpoolchunk *next;
+	constpool data[ALLOCCONSTNR];
+} constpoolchunk;
 
 /**
  * These variables track the pool of constpool objects allocated by the jitter.

@@ -1,3 +1,14 @@
+2003-09-16  Timothy S. Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/jit3/jni.c,
+	kaffe/kaffevm/jit3/constpool.h,
+	kaffe/kaffevm/jit3/constpool.c,
+	kaffe/kaffevm/jit3/labels.h,
+	kaffe/kaffevm/jit3/labels.c,
+	kaffe/kaffevm/jit3/machine.c:
+	Change allocation behavior to free large pools of memory after
+	jitting is done.
+	
 2003-09-16  Dalibor Topic <robilad@kaffe.org>
 
 	* developers/patch-libtool-amiga.diff,

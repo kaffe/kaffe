@@ -4018,6 +4018,9 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 		xmeth->accflags |= ACC_JNI;
 
 done:
+	resetConstants();
+	resetLabels();
+
 #if defined(KAFFE_PROFILER)
 	if (profFlag) {
 		profiler_click_t end;
