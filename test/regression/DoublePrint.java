@@ -49,8 +49,6 @@ class DoublePrint {
       System.out.println("  " + fcases[k]);
     }
     System.out.println("  0.0/0.0 = " + (dmeth() / dmeth()));
-    System.exit(77); // SKIP it while we decide what to do about it
-    // Note (Un)expected output below
   }
 
   public static double dmeth() {
@@ -70,7 +68,7 @@ Double values:
   NaN
   Infinity
   -Infinity
-  4.9406564584124654E-324
+  4.9406564584124654E-324	<--- kaffe is wrong
   1.7976931348623157E308
   123.75
   -9000000.0
@@ -85,7 +83,7 @@ Float values:
   NaN
   Infinity
   -Infinity
-  1.4012985E-45
+  1.4012985E-45			<--- kaffe is wrong
   3.4028235E38
   123.75
   1.0E7
@@ -102,11 +100,11 @@ Double values:
   NaN
   Infinity
   -Infinity
-  4.9E-324             <--- this is wrong
+  4.9E-324
   1.7976931348623157E308
   123.75
   -9000000.0
-  0.0010               <--- this is wrong
+  0.0010	               <--- JDK is wrong
   1.05E9
   0.0/0.0 = NaN
 
@@ -117,10 +115,10 @@ Float values:
   NaN
   Infinity
   -Infinity
-  1.4E-45               <--- this is wrong
+  1.4E-45
   3.4028235E38
   123.75
   1.0E7
-  -0.0010               <--- this is wrong
+  -0.0010	               <--- JDK is wrong
   0.0/0.0 = NaN
 */
