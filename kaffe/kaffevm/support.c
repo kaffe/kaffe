@@ -685,7 +685,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		sysdepCallMethod(&call);
 
 		if (syncobj != 0) {
-			unlockKnownJavaMutex(syncobj);
+			unlockObject(syncobj);
 		}
 	}
 #endif

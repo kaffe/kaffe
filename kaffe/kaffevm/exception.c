@@ -324,8 +324,8 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 			}
 
 			/* If not here, exit monitor if synchronised. */
-			if (obj !=0 && (meth->accflags & ACC_SYNCHRONISED) != 0) {
-				_slowUnlockMutexIfHeld(&obj->lock, frame->fp);
+			if (obj != 0 && (einfo.method->accflags & ACC_SYNCHRONISED) != 0) {
+				_slowUnlockMutexIfHeld(&obj->lock, frame->jbuf);
 			}
 		}
 	}
@@ -369,7 +369,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 			}
 
 			/* If method found and synchronised, unlock the lock */
-			if (obj !=0 && (meth->accflags & ACC_SYNCHRONISED) != 0) {
+			if (obj != 0 && (meth->accflags & ACC_SYNCHRONISED) != 0) {
 				_slowUnlockMutexIfHeld(&obj->lock, frame->fp);
 			}
 #if defined(KAFFE_PROFILER)
