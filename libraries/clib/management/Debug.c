@@ -2,7 +2,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include "../../../kaffe/kaffevm/gtypes.h"
-#include <jni.h>
+#include "kaffe_management_Debug.h"
 #include "../../../kaffe/kaffevm/debug.h"
 
 void
