@@ -1,7 +1,10 @@
 package java.awt;
 
+import java.awt.font.GlyphVector;
+import java.awt.font.FontRenderContext;
 import java.awt.peer.FontPeer;
 import java.io.Serializable;
+import java.text.CharacterIterator;
 import kaffe.util.Ptr;
 
 /**
@@ -221,5 +224,30 @@ public String toString() {
 
 	return getClass().getName() + "[family=" +getFamily() + ",name=" + name
 	    + ",style=" + s + ",size=" + size + ']';
+}
+
+/* taken from GNU Classpath */
+public GlyphVector
+createGlyphVector(FontRenderContext ctx, String str)
+{
+  throw new UnsupportedOperationException ();
+}
+
+public GlyphVector
+createGlyphVector(FontRenderContext ctx, CharacterIterator i)
+{
+  throw new UnsupportedOperationException ();
+}
+
+public GlyphVector
+createGlyphVector(FontRenderContext ctx, char[] chars)
+{
+  throw new UnsupportedOperationException ();
+}
+
+public GlyphVector
+createGlyphVector(FontRenderContext ctx, int[] glyphCodes)
+{
+  throw new UnsupportedOperationException ();
 }
 }
