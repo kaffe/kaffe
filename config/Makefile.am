@@ -115,6 +115,9 @@ EXTRA_DIST = \
 	ia64/sysdepCallMethod.h \
 	x86_64/common.h \
 	x86_64/atomic.h \
+	x86_64/freebsd2/config.frag \
+	x86_64/freebsd2/md.c \
+	x86_64/freebsd2/md.h \
 	x86_64/linux/config.frag \
 	x86_64/linux/md.c \
 	x86_64/linux/md.h \

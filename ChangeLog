@@ -1,3 +1,8 @@
+2005-04-04  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/Makefile.am:
+	Added x86-64-freebsd2 port.
+
 2005-04-03  Guilhem Lavaux  <guilhem@kaffe.org>,
 	Mark Wielaard <mark@klomp.org>
 	
