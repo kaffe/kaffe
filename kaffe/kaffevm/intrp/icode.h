@@ -5,8 +5,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #ifndef __icode_h
@@ -83,8 +83,21 @@
 #define	add_ref(t, f1, f2)			(t)[0].v.taddr = (void*)((uint8*)((f1)[0].v.taddr) + ((f2)[0].v.tint))
 #define	sub_int(t, f1, f2)			(t)[0].v.tint = ((f1)[0].v.tint) - ((f2)[0].v.tint)
 #define	mul_int(t, f1, f2)			(t)[0].v.tint = ((f1)[0].v.tint) * ((f2)[0].v.tint)
-#define	div_int(t, f1, f2)			(t)[0].v.tint = ((f1)[0].v.tint) / ((f2)[0].v.tint)
-#define	rem_int(t, f1, f2)			(t)[0].v.tint = ((f1)[0].v.tint) % ((f2)[0].v.tint)
+
+#if LONG_DIVISION_BROKEN
+/* LONG_MIN / -1l on i386 produces an arithmetic exception.  Since
+   anything / -1l is -anything, special-case it.  */
+# define div_int(t, f1, f2)			(t)[0].v.tint = ((((f2)[0].v.tint) != -1) ? (((f1)[0].v.tint) / ((f2)[0].v.tint)) : -((f1)[0].v.tint))
+#else
+# define div_int(t, f1, f2)			(t)[0].v.tint = ((f1)[0].v.tint) / ((f2)[0].v.tint)
+#endif
+#if LONG_MODULO_BROKEN
+/* LONG_MIN % -1l on i386 produces an arithmetic exception.  Since
+   anything % -1l is 0, special-case it.  */
+# define rem_int(t, f1, f2)			(t)[0].v.tint = ((((f2)[0].v.tint) != -1) ? (((f1)[0].v.tint) % ((f2)[0].v.tint)) : 0)
+#else
+# define rem_int(t, f1, f2)			(t)[0].v.tint = ((f1)[0].v.tint) % ((f2)[0].v.tint)
+#endif
 #define	neg_int(t, f)				(t)[0].v.tint = -((f)[0].v.tint)
 #define	lshl_int_const(t, f, c)			(t)[0].v.tint = ((f)[0].v.tint) << (c & 31)
 #define	lshl_int(t, f1, f2)			(t)[0].v.tint = ((f1)[0].v.tint) << ((f2)[0].v.tint & 31)
