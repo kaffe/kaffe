@@ -1,3 +1,11 @@
+2003-04-09 Marc Kleine-Budde <kleine-budde@gmx.de>
+
+	* kaffe/xprof/xprofiler.c:
+	(xProfileStage) replace use of gc_free by KMALLOC
+
+	* kaffe/kaffevm/jit/machine.c
+	(finishInsnSequence) replace use of gc_free by KMALLOC
+
 2003-04-08 Tim Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/jit3/icode.c:

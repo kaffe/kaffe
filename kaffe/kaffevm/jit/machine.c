@@ -476,7 +476,7 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	memcpy(codebase, codeblock, CODEPC);
 	addToCounter(&jitcodeblock, "jitmem-codeblock", 1,
 		-(jlong)GCSIZEOF(codeblock));
-	gc_free(codeblock);
+	KFREE(codeblock);
 
 	/* Establish any code constants */
 	establishConstants(methblock + exc_len);

@@ -377,7 +377,7 @@ void xProfileStage(char *stage_name)
 			fprintf(stderr,
 				"XProf Notice: Cannot create gmon file %s\n",
 				filename);
-			gc_free(filename);
+			KFREE(filename);
 			resetMemorySamples(kaffe_memory_samples);
 		}
 	}
