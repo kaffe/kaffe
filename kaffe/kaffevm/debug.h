@@ -93,11 +93,13 @@
 # define DBG_AWT_IMG		DBG_BIT(48)
 # define DBG_AWT_WND		DBG_BIT(49)
 # define DBG_AWT_GRA		DBG_BIT(50)
-# define DBG_AWT		(DBG_AWT_MEM | DBG_AWT_CLR | DBG_AWT_EVT \
-				 | DBG_AWT_IMG | DBG_AWT_WND | DBG_AWT_GRA)
+# define DBG_AWT_FNT		DBG_BIT(51)
+# define DBG_AWT		(DBG_AWT_MEM | DBG_AWT_CLR | DBG_AWT_EVT    \
+				 | DBG_AWT_IMG | DBG_AWT_WND | DBG_AWT_GRA  \
+				 | DBG_AWT_FNT)
 
 /* let's reserve 51-63 for temporary uses */
-# define DBG_SLACKANAL		DBG_BIT(51) 
+# define DBG_SLACKANAL		DBG_BIT(52) 
 
 # define DBG_ALL		((jlong)(-1))
 # define DBG_ANY                DBG_ALL

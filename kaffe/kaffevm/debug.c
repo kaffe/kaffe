@@ -116,6 +116,7 @@ static struct debug_opts
 	D(DBG_AWT_IMG,	"AWT subsystem."),
 	D(DBG_AWT_WND,	"AWT subsystem."),
 	D(DBG_AWT_GRA,	"AWT subsystem."),
+	D(DBG_AWT_FNT,	"AWT subsystem."),
 	D(DBG_AWT,	"Debug all of AWT."),
 
 	/* you can define combinations too */
