@@ -69,6 +69,7 @@ libkaffevm_la_SOURCES = \
 	debug.c \
 	exception.c \
 	external.c \
+	file.c \
 	findInJar.c \
 	fp.c \
 	gc.c \

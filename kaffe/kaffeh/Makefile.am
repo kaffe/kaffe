@@ -10,15 +10,27 @@ AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH -I$(top_builddir)/inc
 
 bin_PROGRAMS = kaffeh
 
-GEN_SRCS = inflate.c jar.c utf8const.c readClass.c constants.c debug.c
+GEN_SRCS = \
+	constants.c \
+	debug.c \
+	file.c \
+	inflate.c \
+	jar.c \
+	readClass.c \
+	utf8const.c
 
 DISTCLEANFILES = $(GEN_SRCS)
 
-kaffeh_SOURCES = sigs.c support.c main.c mem.c
+kaffeh_SOURCES = \
+	main.c \
+	mem.c \
+	sigs.c \
+	support.c
 
 nodist_kaffeh_SOURCES = $(GEN_SRCS)
 
-noinst_HEADERS = kaffeh-support.h \
+noinst_HEADERS = \
+	kaffeh-support.h \
 	java_lang_ClassLoader.h \
 	java_lang_Object.h \
 	java_lang_String.h

@@ -73,10 +73,11 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_kaffeh_OBJECTS = sigs.$(OBJEXT) support.$(OBJEXT) main.$(OBJEXT) \
-	mem.$(OBJEXT)
-am__objects_1 = inflate.$(OBJEXT) jar.$(OBJEXT) utf8const.$(OBJEXT) \
-	readClass.$(OBJEXT) constants.$(OBJEXT) debug.$(OBJEXT)
+am_kaffeh_OBJECTS = main.$(OBJEXT) mem.$(OBJEXT) sigs.$(OBJEXT) \
+	support.$(OBJEXT)
+am__objects_1 = constants.$(OBJEXT) debug.$(OBJEXT) file.$(OBJEXT) \
+	inflate.$(OBJEXT) jar.$(OBJEXT) readClass.$(OBJEXT) \
+	utf8const.$(OBJEXT)
 nodist_kaffeh_OBJECTS = $(am__objects_1)
 kaffeh_OBJECTS = $(am_kaffeh_OBJECTS) $(nodist_kaffeh_OBJECTS)
 kaffeh_LDADD = $(LDADD)
@@ -84,10 +85,11 @@ DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/in
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/constants.Po ./$(DEPDIR)/debug.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/inflate.Po ./$(DEPDIR)/jar.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/main.Po ./$(DEPDIR)/mem.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/readClass.Po ./$(DEPDIR)/sigs.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/support.Po ./$(DEPDIR)/utf8const.Po
+@AMDEP_TRUE@	./$(DEPDIR)/file.Po ./$(DEPDIR)/inflate.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/jar.Po ./$(DEPDIR)/main.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/mem.Po ./$(DEPDIR)/readClass.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/sigs.Po ./$(DEPDIR)/support.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/utf8const.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -341,11 +343,25 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH -I$(top_builddir)/include
-GEN_SRCS = inflate.c jar.c utf8const.c readClass.c constants.c debug.c
+GEN_SRCS = \
+	constants.c \
+	debug.c \
+	file.c \
+	inflate.c \
+	jar.c \
+	readClass.c \
+	utf8const.c
+
 DISTCLEANFILES = $(GEN_SRCS)
-kaffeh_SOURCES = sigs.c support.c main.c mem.c
+kaffeh_SOURCES = \
+	main.c \
+	mem.c \
+	sigs.c \
+	support.c
+
 nodist_kaffeh_SOURCES = $(GEN_SRCS)
-noinst_HEADERS = kaffeh-support.h \
+noinst_HEADERS = \
+	kaffeh-support.h \
 	java_lang_ClassLoader.h \
 	java_lang_Object.h \
 	java_lang_String.h
@@ -423,6 +439,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/constants.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debug.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inflate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jar.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@

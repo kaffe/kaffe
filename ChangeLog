@@ -1,5 +1,25 @@
 2004-04-27  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/file.c:
+	New file.
+
+	* kaffe/kaffeh/Makefile.am:
+	(GEN_SOURCES) Added file.c.
+
+        * kaffe/kaffeh/Makefile.in:
+	Regenerated.
+
+        * kaffe/kaffevm/Makefile.am:
+	(libkaffevm_la_SOURCES) Added file.c.
+
+        * kaffe/kaffevm/Makefile.in:
+	Regenerated.
+
+        * kaffe/kaffevm/file.h:
+	Moved implementation to file.c
+
+2004-04-27  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/i386/beos/md.h,
         config/i386/bsdi/md.h,
         config/i386/dgux/md.h,
