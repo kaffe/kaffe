@@ -42,7 +42,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -788,7 +787,7 @@ public class JTable extends JComponent
     
     return renderer.getTableCellRendererComponent(this,
                                                   dataModel.getValueAt(row, 
-                                                                       convertColumnIndexToView(column)),
+						                       convertColumnIndexToModel(column)),
                                                   isSelected,
                                                   false, // hasFocus
                                                   row, column);
@@ -867,13 +866,13 @@ public class JTable extends JComponent
 
   /**
    * Get the value of the {@link #columnCount} property by
-   * delegation to the @{link #dataModel} field.
+   * delegation to the @{link #columnModel} field.
    *
    * @return The current value of the columnCount property
    */
   public int getColumnCount()
   {
-    return dataModel.getColumnCount();
+    return columnModel.getColumnCount();    
   }
 
   /**
@@ -1131,10 +1130,25 @@ public class JTable extends JComponent
     return tableHeader;
   }
 
+  /**
+   * Removes specified column from displayable columns of this table.
+   *
+   * @param column column to removed
+   */
   public void removeColumn(TableColumn column)
+  {    
+    columnModel.removeColumn(column);
+  }
+
+  /**
+   * Moves column at the specified index to new given location.
+   *
+   * @param column index of the column to move
+   * @param targetColumn index specifying new location of the column
+   */ 
+  public void moveColumn(int column,int targetColumn) 
   {
-    // FIXME: Implement me.
-    throw new Error("not implemented");
+    columnModel.moveColumn(column, targetColumn);
   }
 
   /**
@@ -1166,6 +1180,9 @@ public class JTable extends JComponent
    */ 
   public void setRowHeight(int r)
   {
+    if (rowHeight < 1)
+      throw new IllegalArgumentException();
+    
     rowHeight = r;
     revalidate();
     repaint();

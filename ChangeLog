@@ -2,6 +2,37 @@
 
 	Resynced with GNU Classpath.
 
+	2004-12-30  Olga Rodimina  <rodimina@redhat.com>
+
+	(prepareRenderer): Get column's index in dataModel instead
+	of column's view index.
+	(getColumnCount): return count of the columns in ColumnModel,
+	not in dataModel.
+	(removeColumn): Implemented.
+	(moveColumm): Likewise.
+	(setRowHeight): throw IllegalArgumentException if height is
+	less then 1.
+	* javax/swing/table/DefaultTableColumnModel.java: Add javadocs.
+	(DefaultTableColumnModel):Add call to createSelectionModel().
+	(addColumn): Fire columnAdded event to registered listeners.
+	(removeColumn): Fire columnRemoved event to registered listeners.
+	(moveColumn): Fire columnMoved event to registered listeners.
+	(setColumnMargin): Fire ColumnMarginChanged event to registered listeners.
+	(getColumnIndex): Changed parameter name.
+	(setColumnSelectionAllowed): Likewise.
+	(fireColumnAdded): Implemented.
+	(fireColumnRemoved): Likewise.
+	(fireColumnMoved): Likewise.
+	(fireColumnMarginChanged): Likewise.
+	(getListeners): Changed parameter name.
+	(propertyChange): Implemented.
+	(valueChanged): Changed parameter name.
+	(createSelectionModel): Implemented.
+	
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2004-12-29  Jerry Quinn  <jlquinn@optonline.net>
 
 	* java/awt/Button.java,

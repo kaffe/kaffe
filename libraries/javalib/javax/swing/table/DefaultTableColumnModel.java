@@ -66,37 +66,37 @@ public class DefaultTableColumnModel
   private static final long serialVersionUID = 6580012493508960512L;
 
   /**
-   * tableColumns
+   * Columns that this model keeps track of.
    */
   protected Vector tableColumns;
 
   /**
-   * selectionModel
+   * Selection Model that keeps track of columns selection
    */
   protected ListSelectionModel selectionModel;
 
   /**
-   * columnMargin
+   * Space between two columns. By default it is set to 1
    */
   protected int columnMargin;
 
   /**
-   * listenerList
+   * listenerList keeps track of all listeners registered with this model
    */
   protected EventListenerList listenerList = new EventListenerList();
 
   /**
-   * changeEvent
+   * changeEvent is fired when change occurs in one of the columns properties
    */
   protected transient ChangeEvent changeEvent = new ChangeEvent(this);
 
   /**
-   * columnSelectionAllowed
+   * Indicates whether columns can be selected 
    */
   protected boolean columnSelectionAllowed;
 
   /**
-   * totalColumnWidth
+   * Total width of all the columns in this model
    */
   protected int totalColumnWidth;
 
@@ -106,55 +106,66 @@ public class DefaultTableColumnModel
   public DefaultTableColumnModel()
   {
     tableColumns = new Vector();
-    setSelectionModel(new DefaultListSelectionModel());
+    setSelectionModel(createSelectionModel());
     columnMargin = 1;
     columnSelectionAllowed = false;
   }
 
   /**
-   * addColumn
-   * @param value0 TODO
+   * addColumn adds column to the model. This method fires ColumnAdded 
+   * event to model's registered TableColumnModelListeners.
+   *
+   * @param col column to add
    */
   public void addColumn(TableColumn col)
   {
     tableColumns.add(col);
     invalidateWidthCache();
+    fireColumnAdded(new TableColumnModelEvent(this,0,tableColumns.size()));
   }
 
   /**
-   * removeColumn
-   * @param value0 TODO
+   * removeColumn removes table column from the model. This method fires 
+   * ColumnRemoved event to model's registered TableColumnModelListeners.
+   *
+   * @param col column to be removed
    */
   public void removeColumn(TableColumn col)
   {
+    int index = getColumnIndex(col);
+    fireColumnRemoved(new TableColumnModelEvent(this,index,0));    
     tableColumns.remove(col);
     invalidateWidthCache();
   }
 
   /**
-   * moveColumn
-   * @param value0 TODO
-   * @param value1 TODO
+   * moveColumn moves column at index i to index j. This method fires
+   * ColumnMoved event to model's registered TableColumnModelListeners.
+   *
+   * @param i index of the column that will be moved
+   * @param j index of column's new location
    */
   public void moveColumn(int i, int j)
   {
     Object tmp = tableColumns.get(i);
     tableColumns.set(i, tableColumns.get(j));
     tableColumns.set(j, tmp);
+    fireColumnAdded(new TableColumnModelEvent(this,i,j));
   }
 
   /**
-   * setColumnMargin
-   * @param value0 TODO
+   * setColumnMargin sets margin of the columns.
+   * @param m new column margin
    */
   public void setColumnMargin(int m)
   {
     columnMargin = m;
+    fireColumnMarginChanged();
   }
 
   /**
-   * getColumnCount
-   * @return int
+   * getColumnCount returns number of columns in the model
+   * @return int number of columns in the model
    */
   public int getColumnCount()
   {
@@ -171,19 +182,20 @@ public class DefaultTableColumnModel
   }
 
   /**
-   * getColumnIndex
-   * @param value0 TODO
-   * @return int
+   * getColumnIndex returns index of the specified column
+   *
+   * @param identifier identifier of the column
+   * @return int index of the given column
    */
-  public int getColumnIndex(Object obj)
+  public int getColumnIndex(Object identifier)
   {
-    return tableColumns.indexOf(obj, 0);
+    return tableColumns.indexOf(identifier, 0);
   }
 
   /**
-   * getColumn
-   * @param value0 TODO
-   * @return TableColumn
+   * getColumn returns column at the specified index
+   * @param i index of the column 
+   * @return TableColumn column at the specified index
    */
   public TableColumn getColumn(int i)
   {
@@ -191,8 +203,8 @@ public class DefaultTableColumnModel
   }
 
   /**
-   * getColumnMargin
-   * @return int
+   * getColumnMargin returns column margin
+   * @return int column margin
    */
   public int getColumnMargin()
   {
@@ -200,9 +212,10 @@ public class DefaultTableColumnModel
   }
 
   /**
-   * getColumnIndexAtX
-   * @param value0 TODO
-   * @return int
+   * getColumnIndexAtX returns column that contains specified x-coordinate.
+   * @param x x-coordinate that column should contain
+   * @return int index of the column that contains specified x-coordinate relative
+   * to this column model
    */
   public int getColumnIndexAtX(int x)
   {    
@@ -218,8 +231,10 @@ public class DefaultTableColumnModel
   }
 
   /**
-   * getTotalColumnWidth
-   * @return int
+   * getTotalColumnWidth returns total width of all the columns including
+   * column's margins.
+   *
+   * @return total width of all the columns
    */
   public int getTotalColumnWidth()
   {
@@ -229,8 +244,10 @@ public class DefaultTableColumnModel
   }
 
   /**
-   * setSelectionModel
-   * @param model TODO
+   * setSelectionModel sets selection model that will be used by this ColumnTableModel
+   * to keep track of currently selected columns
+   *
+   * @param model new selection model
    * @exception IllegalArgumentException if model is null
    */
   public void setSelectionModel(ListSelectionModel model)
@@ -243,8 +260,8 @@ public class DefaultTableColumnModel
   }
 
   /**
-   * getSelectionModel
-   * @return ListSelectionModel
+   * getSelectionModel returns selection model
+   * @return ListSelectionModel selection model
    */
   public ListSelectionModel getSelectionModel()
   {
@@ -252,17 +269,21 @@ public class DefaultTableColumnModel
   }
 
   /**
-   * setColumnSelectionAllowed
-   * @param value0 TODO
+   * setColumnSelectionAllowed sets whether column selection is allowed
+   * or not.
+   *
+   * @param flag true if column selection is allowed and false otherwise
    */
-  public void setColumnSelectionAllowed(boolean a)
+  public void setColumnSelectionAllowed(boolean flag)
   {
-    columnSelectionAllowed = a;
+    columnSelectionAllowed = flag;
   }
 
   /**
-   * getColumnSelectionAllowed
-   * @return boolean
+   * getColumnSelectionAllowed indicates whether column selection is 
+   * allowed or not.
+   *
+   * @return boolean true if column selection is allowed and false otherwise.
    */
   public boolean getColumnSelectionAllowed()
   {
@@ -270,8 +291,10 @@ public class DefaultTableColumnModel
   }
 
   /**
-   * getSelectedColumns
-   * @return int[]
+   * getSelectedColumns returns array containing indexes of currently 
+   * selected columns
+   *
+   * @return int[] array containing indexes of currently selected columns
    */
   public int[] getSelectedColumns()
   {
@@ -279,8 +302,8 @@ public class DefaultTableColumnModel
   }
 
   /**
-   * getSelectedColumnCount
-   * @return int
+   * getSelectedColumnCount returns number of currently selected columns
+   * @return int number of currently selected columns
    */
   public int getSelectedColumnCount()
   {
@@ -288,7 +311,9 @@ public class DefaultTableColumnModel
   }
 
   /**
-   * addColumnModelListener
+   * addColumnModelListener adds specified listener to the model's
+   * listener list
+   *
    * @param listener the listener to add
    */
   public void addColumnModelListener(TableColumnModelListener listener)
@@ -297,7 +322,9 @@ public class DefaultTableColumnModel
   }
 
   /**
-   * removeColumnModelListener
+   * removeColumnModelListener removes specified listener from the model's 
+   * listener list.
+   *
    * @param listener the listener to remove
    */
   public void removeColumnModelListener(TableColumnModelListener listener)
@@ -315,35 +342,53 @@ public class DefaultTableColumnModel
   }	  
 
   /**
-   * fireColumnAdded
-   * @param value0 TODO
+   * fireColumnAdded fires TableColumnModelEvent to registered 
+   * TableColumnModelListeners to indicate that column was added
+   *
+   * @param e TableColumnModelEvent
    */
-  protected void fireColumnAdded(TableColumnModelEvent value0)
-  {
-    // TODO
+  protected void fireColumnAdded(TableColumnModelEvent e)
+  {    
+    TableColumnModelListener[] listeners = getColumnModelListeners();
+
+    for (int i=0; i< listeners.length; i++)
+      listeners[i].columnAdded(e);        
   }
 
   /**
-   * fireColumnRemoved
-   * @param value0 TODO
+   * fireColumnAdded fires TableColumnModelEvent to registered 
+   * TableColumnModelListeners to indicate that column was removed
+   *
+   * @param e TableColumnModelEvent
    */
-  protected void fireColumnRemoved(TableColumnModelEvent value0)
+  protected void fireColumnRemoved(TableColumnModelEvent e)
   {
-    // TODO
+    TableColumnModelListener[] listeners = getColumnModelListeners();
+
+    for (int i=0; i< listeners.length; i++)
+      listeners[i].columnRemoved(e);        
   }
 
   /**
-   * fireColumnMoved
-   * @param value0 TODO
+   * fireColumnAdded fires TableColumnModelEvent to registered 
+   * TableColumnModelListeners to indicate that column was moved
+   *
+   * @param e TableColumnModelEvent
    */
-  protected void fireColumnMoved(TableColumnModelEvent value0)
+  protected void fireColumnMoved(TableColumnModelEvent e)
   {
-    // TODO
+    TableColumnModelListener[] listeners = getColumnModelListeners();
+
+    for (int i=0; i< listeners.length; i++)
+      listeners[i].columnMoved(e);        
   }
 
   /**
-   * fireColumnSelectionChanged
-   * @param value0 TODO
+   * fireColumnSelectionChanged fires TableColumnModelEvent to model's
+   * registered TableColumnModelListeners to indicate that different column 
+   * was selected.
+   *
+   * @param evt ListSelectionEvent
    */
   protected void fireColumnSelectionChanged(ListSelectionEvent evt)
   {
@@ -353,52 +398,64 @@ public class DefaultTableColumnModel
   }
 
   /**
-   * fireColumnMarginChanged
+   * fireColumnMarginChanged fires TableColumnModelEvent to model's
+   * registered TableColumnModelListeners to indicate that column margin
+   * was changed.
    */
   protected void fireColumnMarginChanged()
   {
-    // TODO
+    EventListener [] listeners = getListeners(TableColumnModelListener.class);
+    for (int i = 0; i < listeners.length; ++i)
+      ((TableColumnModelListener)listeners[i]).columnMarginChanged(changeEvent);
   }
 
   /**
-   * getListeners
-   * @param value0 TODO
-   * @return EventListener[]
+   * getListeners returns currently registered listeners with this model.
+   * @param listenerType type of listeners to return
+   *
+   * @return EventListener[] array of model's listeners of the specified type
    */
-  public EventListener[] getListeners(Class klass)
+  public EventListener[] getListeners(Class listenerType)
   {
-    return listenerList.getListeners(klass);
+    return listenerList.getListeners(listenerType);
   }
 
   /**
-   * propertyChange
-   * @param value0 TODO
+   * propertyChange handles changes occuring in the properties of the
+   * model's columns. 
+   *
+   * @param evt PropertyChangeEvent
    */
-  public void propertyChange(PropertyChangeEvent value0)
+  public void propertyChange(PropertyChangeEvent evt)
   {
-    // TODO
+    if (evt.getPropertyName().equals(TableColumn.COLUMN_WIDTH_PROPERTY))
+	invalidateWidthCache(); 
   }
 
   /**
-   * valueChanged
-   * @param value0 TODO
+   * valueChanged handles changes in the selectionModel.
+   * @param e ListSelectionEvent
    */
-  public void valueChanged(ListSelectionEvent value0)
+  public void valueChanged(ListSelectionEvent e)
   {
-    fireColumnSelectionChanged(value0);
+    fireColumnSelectionChanged(e);
   }
 
   /**
-   * createSelectionModel
-   * @return ListSelectionModel
+   * createSelectionModel creates selection model that will keep track
+   * of currently selected column(s)
+   *
+   * @return ListSelectionModel selection model of the columns
    */
   protected ListSelectionModel createSelectionModel()
-  {
-    return null; // TODO
+  {    
+    return new DefaultListSelectionModel();
   }
 
   /**
-   * recalcWidthCache
+   * recalcWidthCache calculates total width of the columns.
+   * If the current cache of the total width is in invalidated state, 
+   * then width is recalculated. Otherwise nothing is done.
    */
   protected void recalcWidthCache()
   {
