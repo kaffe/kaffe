@@ -1,0 +1,128 @@
+Cross compiling Kaffe
+---------------------
+
+This document provides some pointers for cross compiling the Kaffe VM.
+The 'configure' mechanism used by kaffe enables users to do cross
+compiling much easier, but still it's in the dark side...
+
+'Host', 'Target' and 'Build'
+============================
+To cross compiling a language processor (like compiler, interpreter)
+so many users are confused for the term 'host', 'target' or 'build'.
+Suppose you want to make a kaffe 'running on m68k/linux' by using
+existing development environment on 'i686/linux', you have to find
+cross-tools 'running on i686/linux' and 'generates code for m68k/linux'.
+But the language processor (in this case 'kaffe' itself), is configured
+to run on m68k/linux. Fully confused, isn't it?
+
+In configure, the flag '--host' specifies 'for what processor and OS
+you want to make this kaffe to run' and '--build' specifies 'on which
+processor and OS you want to generate this kaffe'.
+
+The other issue is how to specify cross-compiler (and some other tools)
+to the configure process. The easiest way (in my opinion) is to use
+shell's environment variable to override default behavior of 'configure'.
+
+Simple example
+==============
+Based on the discussion above, simplest configure script to use cross
+tools like 'm68k-linux-gcc' to generate kaffe for m68k/linux becomes
+
+  CC=m68k-linux-gcc NM=m68k-linux-nm AR=m68k-linux-ar \
+	../kaffe-1.1.0/configure --host=m68k-linux --build=i686-linux
+
+The other way to do the same thing is to add cross-tools bin dir into
+the PATH environment and simple configure without specifying CC etc.
+If you find m68k-linux-gcc in '/proj/cross/bin' then same gcc can be
+accessed by '/proj/cross/m68k-linux/bin/gcc' if you use default for
+installing cross-gcc. So if you add '/proj/cross/m68k-linux/bin' to
+your PATH environment variable, you need not to specify CC when you
+configure. Someone said this approach is simpler than the previous
+one, and you can decide which is better for you.
+
+And anyway, configuring and making your kaffe binary in different
+directory from source directory is a good practice. This is really
+needed for cross compiling.
+
+It does not work!
+=================
+The way how to supply options to configure is roughly ok, but it is
+not enough. Because, include files needed to compile some library
+files are generated automatically while build, and 'jar' file is
+also generated while build. These files need runnable (on build computer)
+'kaffeh' and 'kaffe' to generate.
+
+To do that, you first have to make and install 'native' kaffe, and
+totally you may have three directories. In this document I use
+'kaffe-1.1.0' where you store the source code, 'kaffe-native' where
+you make native kaffe, and 'kaffe-m68k-linux' where you make cross
+compiled kaffe.
+
+Then, you have
+  . --- kaffe-1.1.0
+     +- kaffe-native
+     +- kaffe-m68k-linux
+and, you first visit 'kaffe-native' and do '../kaffe-1.1.0/configure' and
+'make; make install' first. Then you copy generated 'rt.jar' in somewhere
+by
+  cp libraries/javalib/rt.jar /tmp/rt.jar
+
+And then, you can
+
+  CC=m68k-linux-gcc NM=m68k-linux-nm AR=m68k-linux-ar \
+	../kaffe-1.1.0/configure --host=m68k-linux --build=i686-linux \
+	--with-rt-jar=/tmp/rt.jar
+
+How to test cross-built kaffe?
+==============================
+When you test cross-built kaffe, simply copying the 'kaffe-bin' to the
+target machine is not enough. At least you have to copy 'rt.jar' file
+and native library files.
+
+To simplify this, I usually mount build directory from target machine,
+and keep the directory structure same for both build machine and target
+machine.
+
+If you want to check the completeness of your build by using regression
+tests suite in kaffe (by 'make check'), you have to check the location
+of shell is same for both build machine and target machine, or modify
+it by your hand.
+
+Library mismatch
+================
+Sometimes, you want to use different version of libraries (libc etc.)
+installed on cross-build environment and target environment. This means
+you also have to copy these files to the target machine.
+
+But, I usually specify static link option for building kaffe, and in
+this case the configuration line becomes
+  CC=m68k-linux-gcc NM=m68k-linux-nm AR=m68k-linux-ar \
+	../kaffe-1.1.0/configure --host=m68k-linux --build=i686-linux \
+	--with-staticbin --with-staticlib --with-staticvm \
+	--with-threads=unix-jthreads --without-x \
+	--with-rt-jar=/tmp/rt.jar
+
+The 'with-threads' option and 'without-x' option is not related to
+library issue, but I usually specify these too to reduce the time needed
+for build.
+
+Super-H
+=======
+Usually, cross-tools suffix and host name needed for kaffe is same.
+But in case of Hitachi Super-H family, these are different. So in
+this case you have to specify
+  CC=sh3-linux-gcc NM=sh3-linux-nm AR=sh3-linux-ar \
+	../kaffe-1.1.0/configure --host=superh-linux --build=i686-linux \
+	--with-staticbin --with-staticlib --with-staticvm \
+	--with-threads=unix-jthreads --without-x \
+	--with-rt-jar=/tmp/rt.jar
+
+So where's cross tools?
+=======================
+One of the hardest thing for cross-compiling kaffe should be this. If
+you are linux user, you may be happy that you can find binary versions
+of these in several places in the internet. If you are using some
+other OS, you may need to make cross-tools from GNU's source code.
+
+I'd like to put more information for this issue in the future release
+of this document.

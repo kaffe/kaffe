@@ -54,8 +54,10 @@ Currently you have the choice between:
 
   a Qt based AWT backend. It uses Trolltech's cross-platform graphical
   library. It works with Qt 3 and Qt 2, embedded or x11 version. It
-  may work with other versions of Qt 3 or Qt 2 (Win32, OS X), but it
-  has not been tested in such configurations. If you can test it in
+  should also work with Qtopia. 
+
+  It may work with other versions of Qt 3 or Qt 2 (Win32, OS X), but
+  it has not been tested in such configurations. If you can test it in
   such configurations, please report your experiences to the Kaffe
   Mailing List, kaffe@kaffe.org.
 
@@ -89,6 +91,67 @@ Currently you have the choice between:
 
   More information on Qt is available from http://www.trolltech.com.
 
+Troubleshooting
+---------------
+
+* Qt-based AWT backend
+
+  * Compilation problems
+
+    Make sure that either QTDIR is set, or that you passed a
+    --with-qtdir flag to the configure sript. Don't use relative
+    paths to specify directories.
+
+  * Moc trouble
+
+    Make sure that the build system picks up the right moc for the
+    version of qt you are compiling against. So if you have several
+    versions of qt installed on your system, put QTDIR/bin to the
+    front of your PATH before you start configuring and building
+    kaffe.
+
+  * Linker complains about missing symbols
+
+    That could be an instance of moc trouble above, but more often
+    it's a problem between C++ ABIs of the compiler used to build qt
+    you want to link against, and the compiler you used to build
+    kaffe's Qt-based AWT with.
+
+    The GNU C++ compiler g++ had a short period where the ABI changed
+    with almost every release, so if you are using a Qt library
+    compiled with one of those 'interim' versions, your best bet is to
+    rebuild Qt frim scratch with your current compiler.
+
+  * QTDIR, QTEDIR, QPEDIR is pointing to the wrong directory.
+
+    Qt uses QTDIR to find its fonts, and may use the other environment
+    variables to locate other crucial bits for execution. Make sure
+    that you've got them pointing to the right directories, i.e. the
+    versions you compiled against. Read Qt toolkits installation
+    description for more information on those environment variables.
+
+  * Dynamical linking fails 
+
+    Make sure that you've linked to correct versions of Qt
+    library. Use ldd to check if KAFFE_HOME/jre/lib/your-cpu/libawt.so
+    links to it.
+
+    Other that that, you should make sure that the Qt libraries can be
+    found by the linker. Putting QTDIR/lib in LD_LIBRARY_PATH might
+    help.
+
+  * Qt-embedded AWT doesn't work in console
+
+    You need to redirect the stdout and stderr streams so that they
+    don't interfere with the framebuffer. The Qt based AWT
+    implementation is still rather rough, so it prints a lot of
+    debugging output which confuses the framebuffer, apparently.
+
+  Finally, if all else fails, you are on your own. Build kaffe with
+  support for debugging, read FAQ/FAQ.debugging and try to figure
+  out what's wrong using a debugger. Good luck and please keep in
+  touch with the kaffe mailing list kaffe@kaffe.org.
+
 Other AWT backends
 ------------------
 
@@ -119,3 +182,42 @@ http://www.sinby.com/en/developer/VirtualMachine/nano-X.html .
 
 If you are interested in merging them in, contact the Kaffe Mailing
 List on kaffe@kaffe.org.
+
+Projects
+--------
+
+If you want to contribute to kaffe's AWT developement, you could
+
+* Write documentation
+
+  Document the workings of kaffe's AWT to make life easier for porters
+  and mergers.
+
+* Clean up Qt-based AWT implementation
+
+  There is a lot of commented and ifdef-ed out code, which would need
+  someone to review it and remove the cruft.
+
+* Refactor current AWT implementation
+
+  The AWT implementations share some common native code that should be
+  in a common AWT library. Take a look at Pocketlinux for an idea.
+
+  Kaffe's AWT doesn't follow Sun's peer concepts, and makes it hard to
+  'override' the default AWT implementation. Refactor kaffe's AWT to
+  allow alternative AWT implementations (like PJA) to be plugged in
+  easily, and to allow multiple native AWT backends to be built and
+  selected at runtime.
+
+* Merge in another AWT implementation
+
+  Pick one of the Pocketlinux AWT implementations, and merge it in.
+
+* Write another AWT implementation
+
+  If your platform has a native graphical library, then the presumably
+  fastest AWT implementation would use the native toolkit.
+
+  Or go the other way around, and write an AWT implementation for a
+  cross platform graphical toolkit, like wxWindows, or SDL, bringing
+  AWT to platforms where no Qt or X11 are available.

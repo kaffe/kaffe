@@ -1,3 +1,19 @@
+2003-06-04  Dalibor Topic <robilad@yahoo.com>
+
+	* FAQ/FAQ.automake:
+	updated autotools version information.
+
+	* FAQ/FAQ.unicode:
+	rewritten to just say that kaffe uses Classpath's implementation.
+
+	* FAQ/FAQ.awt:
+	Added Troubleshooting and Projects section. Added Qtopia to list
+	of Qt platforms the AWT impementation should run on.
+
+2003-06-04 Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* FAQ/FAQ.cross-compiling: new file
+	
 2003-06-03  Dalibor Topic <robilad@yahoo.com>
 
 	* gwqt.m4:

@@ -2,11 +2,8 @@
 IMPORTANT NOTE:
 
 - in order to modify the Makefiles and configure.in, you need rather
-recent versions of autoconf and automake: autoconf 2.13 and the
-automake snapshot available from
-http://www.dcc.unicamp.br/~oliva/snapshots/automake/automake-1.4a-dep-20000313.tar.gz
-It may still work with automake 1.4, but then you'll need GNU make.
-This new automake snapshot does not depend on GNU make at all.
+recent versions of autoconf and automake: autoconf 2.57 and automake
+1.7.5.
 
 **************************************************************************
 
