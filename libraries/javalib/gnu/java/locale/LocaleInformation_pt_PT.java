@@ -55,8 +55,8 @@ public class LocaleInformation_pt_PT extends ListResourceBundle
   static
   {
     currenciesDisplayName = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -73,8 +73,8 @@ public class LocaleInformation_pt_PT extends ListResourceBundle
   static
   {
     currenciesSymbol = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesSymbolValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesSymbolValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -83,16 +83,17 @@ public class LocaleInformation_pt_PT extends ListResourceBundle
       }
   }
 
-  private static final String territoriesKeys = "PS|MP|GL|MO|YU|AE|MK|PL|SM|VN|MG|SI|PG|MD|VI|SG|MC|VG|CZ|SC|CX|YE|VC|VA|LV|UZ|CM|FK|RO|UM|RE|LA|BY|KZ|KY|ER|KR|KP|BJ|KN|HK|EH|EG|EE|TM|KG|BA|KE|TJ|NC|AZ|TF|TD|TC|GW|AQ|GS|MU|AM";
 
-  private static final String territoriesValues = "Territ\u00f3rio Palestiniano|Ilhas Mariana do Norte|Gronel\u00e2ndia|Macau - Regi\u00e3o Administrativa Especial da China|Jugosl\u00e1via|Emiratos \u00c1rabes Unidos|Maced\u00f3nia, Rep\u00fablica da|Pol\u00f3nia|S\u00e3o Marino|Vietname|Madag\u00e1scar|Eslov\u00e9nia|Papua Nova Guin\u00e9|Mold\u00e1via, Rep\u00fablica da|Ilhas Virgin E.U.A.|Singapura|M\u00f3naco|Ilhas Virgin Brit\u00e2nicas|Rep\u00fablica Checa|Seicheles|Ilha do Natal|I\u00e9men|Saint Vincent e Grenadines|Santa S\u00e9 (Estado da Cidade do Vaticano)|Let\u00f3nia|Uzbaquist\u00e3o|Camar\u00f5es|Ilhas Falkland|Rom\u00e9nia|Ilhas Minor Outlying (E.U.A)|Reunion|Lao, Rep\u00fablica Popular Democr\u00e1tica|Bielorr\u00fassia|Cazaquist\u00e3o|Ilhas Caim\u00e3o|Eritreia|Coreia do Sul|Coreia do Norte|Benim|Saint Kitts e Nevis|Hong Kong - Regi\u00e3o Administrativa Especial da China|Sahara Ocidental|Egipto|Est\u00f3nia|Turquemenist\u00e3o|Quirguizist\u00e3o|B\u00f3snia-Herzegovina|Qu\u00e9nia|Tajiquist\u00e3o|Nova Caled\u00f3nia|Azerbeij\u00e3o|Territ\u00f3rios Franceses a Sul|Tchade|Ilhas Turcas e Caicos|Guin\u00e9-Bissau|Ant\u00e1rctica|Ilhas South Georgia e South Sandwich|Maur\u00edcias|Arm\u00e9nia";
+  private static final String territoriesKeys = "PS\u00A6MP\u00A6GL\u00A6MO\u00A6YU\u00A6AE\u00A6MK\u00A6PL\u00A6SM\u00A6VN\u00A6MG\u00A6SI\u00A6PG\u00A6MD\u00A6VI\u00A6SG\u00A6MC\u00A6VG\u00A6CZ\u00A6SC\u00A6CX\u00A6YE\u00A6VC\u00A6VA\u00A6LV\u00A6UZ\u00A6CM\u00A6FK\u00A6RO\u00A6UM\u00A6RE\u00A6LA\u00A6BY\u00A6KZ\u00A6KY\u00A6ER\u00A6KR\u00A6KP\u00A6BJ\u00A6KN\u00A6HK\u00A6EH\u00A6EG\u00A6EE\u00A6TM\u00A6KG\u00A6BA\u00A6KE\u00A6TJ\u00A6NC\u00A6AZ\u00A6TF\u00A6TD\u00A6TC\u00A6GW\u00A6AQ\u00A6GS\u00A6MU\u00A6AM";
+
+  private static final String territoriesValues = "Territ\u00f3rio Palestiniano\u00A6Ilhas Mariana do Norte\u00A6Gronel\u00e2ndia\u00A6Macau - Regi\u00e3o Administrativa Especial da China\u00A6Jugosl\u00e1via\u00A6Emiratos \u00c1rabes Unidos\u00A6Maced\u00f3nia, Rep\u00fablica da\u00A6Pol\u00f3nia\u00A6S\u00e3o Marino\u00A6Vietname\u00A6Madag\u00e1scar\u00A6Eslov\u00e9nia\u00A6Papua Nova Guin\u00e9\u00A6Mold\u00e1via, Rep\u00fablica da\u00A6Ilhas Virgin E.U.A.\u00A6Singapura\u00A6M\u00f3naco\u00A6Ilhas Virgin Brit\u00e2nicas\u00A6Rep\u00fablica Checa\u00A6Seicheles\u00A6Ilha do Natal\u00A6I\u00e9men\u00A6Saint Vincent e Grenadines\u00A6Santa S\u00e9 (Estado da Cidade do Vaticano)\u00A6Let\u00f3nia\u00A6Uzbaquist\u00e3o\u00A6Camar\u00f5es\u00A6Ilhas Falkland\u00A6Rom\u00e9nia\u00A6Ilhas Minor Outlying (E.U.A)\u00A6Reunion\u00A6Lao, Rep\u00fablica Popular Democr\u00e1tica\u00A6Bielorr\u00fassia\u00A6Cazaquist\u00e3o\u00A6Ilhas Caim\u00e3o\u00A6Eritreia\u00A6Coreia do Sul\u00A6Coreia do Norte\u00A6Benim\u00A6Saint Kitts e Nevis\u00A6Hong Kong - Regi\u00e3o Administrativa Especial da China\u00A6Sahara Ocidental\u00A6Egipto\u00A6Est\u00f3nia\u00A6Turquemenist\u00e3o\u00A6Quirguizist\u00e3o\u00A6B\u00f3snia-Herzegovina\u00A6Qu\u00e9nia\u00A6Tajiquist\u00e3o\u00A6Nova Caled\u00f3nia\u00A6Azerbeij\u00e3o\u00A6Territ\u00f3rios Franceses a Sul\u00A6Tchade\u00A6Ilhas Turcas e Caicos\u00A6Guin\u00e9-Bissau\u00A6Ant\u00e1rctica\u00A6Ilhas South Georgia e South Sandwich\u00A6Maur\u00edcias\u00A6Arm\u00e9nia";
 
   private static final Hashtable territories;
   static
   {
     territories = new Hashtable();
-    Enumeration keys = new StringTokenizer(territoriesKeys, "|");
-    Enumeration values = new StringTokenizer(territoriesValues, "|");
+    Enumeration keys = new StringTokenizer(territoriesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(territoriesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -101,16 +102,16 @@ public class LocaleInformation_pt_PT extends ListResourceBundle
       }
   }
 
-  private static final String languagesKeys = "sl|pl|cs|et";
+  private static final String languagesKeys = "sl\u00A6pl\u00A6cs\u00A6et";
 
-  private static final String languagesValues = "esloveno|polaco|checo|est\u00f3nio";
+  private static final String languagesValues = "esloveno\u00A6polaco\u00A6checo\u00A6est\u00f3nio";
 
   private static final Hashtable languages;
   static
   {
     languages = new Hashtable();
-    Enumeration keys = new StringTokenizer(languagesKeys, "|");
-    Enumeration values = new StringTokenizer(languagesValues, "|");
+    Enumeration keys = new StringTokenizer(languagesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(languagesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

@@ -55,8 +55,8 @@ public class LocaleInformation_uz_AF extends ListResourceBundle
   static
   {
     currenciesDisplayName = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -73,8 +73,8 @@ public class LocaleInformation_uz_AF extends ListResourceBundle
   static
   {
     currenciesSymbol = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesSymbolValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesSymbolValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -144,7 +144,7 @@ public class LocaleInformation_uz_AF extends ListResourceBundle
 
   private static final String[][] zoneStrings =
   {
-    { "AFT", "\u0627\u0641\u063a\u0627\u0646\u0633\u062a\u0627\u0646 \u0648\u0642\u062a\u06cc", "AFT", "\u0627\u0641\u063a\u0627\u0646\u0633\u062a\u0627\u0646 \u0648\u0642\u062a\u06cc",  "Asia/Kabul" },
+    {  "Asia/Kabul", "AFT", "\u0627\u0641\u063a\u0627\u0646\u0633\u062a\u0627\u0646 \u0648\u0642\u062a\u06cc", "AFT", "\u0627\u0641\u063a\u0627\u0646\u0633\u062a\u0627\u0646 \u0648\u0642\u062a\u06cc"},
   };
 
   private static final String territoriesKeys = "AF";
@@ -155,8 +155,8 @@ public class LocaleInformation_uz_AF extends ListResourceBundle
   static
   {
     territories = new Hashtable();
-    Enumeration keys = new StringTokenizer(territoriesKeys, "|");
-    Enumeration values = new StringTokenizer(territoriesValues, "|");
+    Enumeration keys = new StringTokenizer(territoriesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(territoriesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -165,16 +165,16 @@ public class LocaleInformation_uz_AF extends ListResourceBundle
       }
   }
 
-  private static final String languagesKeys = "uz|fa|ps";
+  private static final String languagesKeys = "uz\u00A6fa\u00A6ps";
 
-  private static final String languagesValues = "\u0627\u06c9\u0632\u0628\u06d0\u06a9|\u062f\u0631\u06cc|\u067e\u0634\u062a\u0648";
+  private static final String languagesValues = "\u0627\u06c9\u0632\u0628\u06d0\u06a9\u00A6\u062f\u0631\u06cc\u00A6\u067e\u0634\u062a\u0648";
 
   private static final Hashtable languages;
   static
   {
     languages = new Hashtable();
-    Enumeration keys = new StringTokenizer(languagesKeys, "|");
-    Enumeration values = new StringTokenizer(languagesValues, "|");
+    Enumeration keys = new StringTokenizer(languagesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(languagesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

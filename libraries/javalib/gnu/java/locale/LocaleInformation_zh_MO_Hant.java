@@ -71,8 +71,8 @@ public class LocaleInformation_zh_MO_Hant extends ListResourceBundle
   static
   {
     territories = new Hashtable();
-    Enumeration keys = new StringTokenizer(territoriesKeys, "|");
-    Enumeration values = new StringTokenizer(territoriesValues, "|");
+    Enumeration keys = new StringTokenizer(territoriesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(territoriesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

@@ -55,8 +55,8 @@ public class LocaleInformation_af extends ListResourceBundle
   static
   {
     currenciesDisplayName = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -73,8 +73,8 @@ public class LocaleInformation_af extends ListResourceBundle
   static
   {
     currenciesSymbol = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesSymbolValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesSymbolValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -147,16 +147,16 @@ public class LocaleInformation_af extends ListResourceBundle
     "nm.",
   };
 
-  private static final String territoriesKeys = "AU|TD|AT|GW|AR|MZ|MY|MX|GR|AM|ZA|MV|GQ|AL|SY|GN|MR|GM|SV|AG|AF|ST|AE|MN|SP|MK|SO|GE|MH|MG|GB|SK|GA|SI|SG|MA|SE|SD|SC|SB|SA|YE|LY|FR|LV|LU|LT|LR|FM|RU|FJ|RO|LB|KZ|ET|ES|KW|KR|KP|KN|KM|EH|EG|EE|KH|KG|KE|DZ|QA|DO|DK|JO|DJ|JM|DE|PL|VN|PH|PG|CZ|CY|CV|CU|VC|VA|IT|IS|CN|CM|IQ|CL|UZ|IN|CI|CH|CG|CF|US|CA|IE|ID|BY|BT|BR|UA|NZ|HU|HT|BO|BN|HR|TZ|NR|BH|BG|BF|TT|NO|BE|BD|TR|NL|BA|TN|TM|TJ|NE|AZ|ZM|NA";
+  private static final String territoriesKeys = "AU\u00A6TD\u00A6AT\u00A6GW\u00A6AR\u00A6MZ\u00A6MY\u00A6MX\u00A6GR\u00A6AM\u00A6ZA\u00A6MV\u00A6GQ\u00A6AL\u00A6SY\u00A6GN\u00A6MR\u00A6GM\u00A6SV\u00A6AG\u00A6AF\u00A6ST\u00A6AE\u00A6MN\u00A6SP\u00A6MK\u00A6SO\u00A6GE\u00A6MH\u00A6MG\u00A6GB\u00A6SK\u00A6GA\u00A6SI\u00A6SG\u00A6MA\u00A6SE\u00A6SD\u00A6SC\u00A6SB\u00A6SA\u00A6YE\u00A6LY\u00A6FR\u00A6LV\u00A6LU\u00A6LT\u00A6LR\u00A6FM\u00A6RU\u00A6FJ\u00A6RO\u00A6LB\u00A6KZ\u00A6ET\u00A6ES\u00A6KW\u00A6KR\u00A6KP\u00A6KN\u00A6KM\u00A6EH\u00A6EG\u00A6EE\u00A6KH\u00A6KG\u00A6KE\u00A6DZ\u00A6QA\u00A6DO\u00A6DK\u00A6JO\u00A6DJ\u00A6JM\u00A6DE\u00A6PL\u00A6VN\u00A6PH\u00A6PG\u00A6CZ\u00A6CY\u00A6CV\u00A6CU\u00A6VC\u00A6VA\u00A6IT\u00A6IS\u00A6CN\u00A6CM\u00A6IQ\u00A6CL\u00A6UZ\u00A6IN\u00A6CI\u00A6CH\u00A6CG\u00A6CF\u00A6US\u00A6CA\u00A6IE\u00A6ID\u00A6BY\u00A6BT\u00A6BR\u00A6UA\u00A6NZ\u00A6HU\u00A6HT\u00A6BO\u00A6BN\u00A6HR\u00A6TZ\u00A6NR\u00A6BH\u00A6BG\u00A6BF\u00A6TT\u00A6NO\u00A6BE\u00A6BD\u00A6TR\u00A6NL\u00A6BA\u00A6TN\u00A6TM\u00A6TJ\u00A6NE\u00A6AZ\u00A6ZM\u00A6NA";
 
-  private static final String territoriesValues = "Australi\u00eb|Tsjaad|Oostenryk|Guinee-Bissau|Argentini\u00eb|Mosambiek|Maleisi\u00eb|Meksiko|Griekeland|Armeni\u00eb|Suid-Afrika|Maldive|Ekwatoriaal-Guinee|Albani\u00eb|Siri\u00eb|Guinee|Mouritani\u00eb|Gambi\u00eb|Salvador|Antigua en Barbuda|Afganistan|Sao Tome en Principe|Verenigde Arabiese Emirate|Mongoli\u00eb|Serwi\u00eb|Macedoni\u00eb|Somali\u00eb|Georgi\u00eb|Marshall-eilande|Madagaskar|Groot-Brittanje|Slowakye|Gaboen|Sloweni\u00eb|Singapoer|Marokko|Swede|Soedan|Seychelle|Solomon Eilande|Saoedi-Arabi\u00eb|Jemen|Libi\u00eb|Frankryk|Letland|Luxemburg|Litaue|Liberi\u00eb|Mikronesi\u00eb|Rusland|Fidji|Roemeni\u00eb|Libanon|Kasakstan|Ethiopi\u00eb|Spanje|Koeweit|Suid-Korea|Noord-Korea|Saint Kitts en Nevis|Comore|Wes-Sahara|Egipte|Estland|Kambodja|Kirgisi\u00eb|Kenia|Algeri\u00eb|Katar|Dominikaanse Republiek|Denemarke|Jordani\u00eb|Djiboeti|Jamaika|Duitsland|Pole|Vi\u00ebtnam|Filippyne|Papoea Nieu-Guinee|Tjeggiese Republiek|Ciprus|Kaap Verde|Kuba|Saint Vincent en die Grenadine|Vatikaan|Itali\u00eb|Ysland|Sjina|Kameroen|Irak|Chili|Oesbekistan|Indi\u00eb|Ivoorkus|Switserland|Kongo|Sentraal-Afrikaanse Republiek|Verenigde State van Amerika|Kanada|Ierland|Indonesi\u00eb|Wit-Rusland|Bhoetan|Brasili\u00eb|Oekraine|Nieu-Seeland|Hongarye|Ha\u00efti|Bolivi\u00eb|Broenei|Kroasi\u00eb|Tanzani\u00eb|Naoeroe|Bahrein|Bulgarye|Boerkina Fasso|Trinidad en Tobago|Noorwe\u00eb|Belgi\u00eb|Bangladesj|Turkye|Nederland|Bosni\u00eb en Herzegowina|Tunisi\u00eb|Turkmeni\u00eb|Tadjikistan|Nigeri\u00eb|Aserbeidjan|Zambi\u00eb|Namibi\u00eb";
+  private static final String territoriesValues = "Australi\u00eb\u00A6Tsjaad\u00A6Oostenryk\u00A6Guinee-Bissau\u00A6Argentini\u00eb\u00A6Mosambiek\u00A6Maleisi\u00eb\u00A6Meksiko\u00A6Griekeland\u00A6Armeni\u00eb\u00A6Suid-Afrika\u00A6Maldive\u00A6Ekwatoriaal-Guinee\u00A6Albani\u00eb\u00A6Siri\u00eb\u00A6Guinee\u00A6Mouritani\u00eb\u00A6Gambi\u00eb\u00A6Salvador\u00A6Antigua en Barbuda\u00A6Afganistan\u00A6Sao Tome en Principe\u00A6Verenigde Arabiese Emirate\u00A6Mongoli\u00eb\u00A6Serwi\u00eb\u00A6Macedoni\u00eb\u00A6Somali\u00eb\u00A6Georgi\u00eb\u00A6Marshall-eilande\u00A6Madagaskar\u00A6Groot-Brittanje\u00A6Slowakye\u00A6Gaboen\u00A6Sloweni\u00eb\u00A6Singapoer\u00A6Marokko\u00A6Swede\u00A6Soedan\u00A6Seychelle\u00A6Solomon Eilande\u00A6Saoedi-Arabi\u00eb\u00A6Jemen\u00A6Libi\u00eb\u00A6Frankryk\u00A6Letland\u00A6Luxemburg\u00A6Litaue\u00A6Liberi\u00eb\u00A6Mikronesi\u00eb\u00A6Rusland\u00A6Fidji\u00A6Roemeni\u00eb\u00A6Libanon\u00A6Kasakstan\u00A6Ethiopi\u00eb\u00A6Spanje\u00A6Koeweit\u00A6Suid-Korea\u00A6Noord-Korea\u00A6Saint Kitts en Nevis\u00A6Comore\u00A6Wes-Sahara\u00A6Egipte\u00A6Estland\u00A6Kambodja\u00A6Kirgisi\u00eb\u00A6Kenia\u00A6Algeri\u00eb\u00A6Katar\u00A6Dominikaanse Republiek\u00A6Denemarke\u00A6Jordani\u00eb\u00A6Djiboeti\u00A6Jamaika\u00A6Duitsland\u00A6Pole\u00A6Vi\u00ebtnam\u00A6Filippyne\u00A6Papoea Nieu-Guinee\u00A6Tjeggiese Republiek\u00A6Ciprus\u00A6Kaap Verde\u00A6Kuba\u00A6Saint Vincent en die Grenadine\u00A6Vatikaan\u00A6Itali\u00eb\u00A6Ysland\u00A6Sjina\u00A6Kameroen\u00A6Irak\u00A6Chili\u00A6Oesbekistan\u00A6Indi\u00eb\u00A6Ivoorkus\u00A6Switserland\u00A6Kongo\u00A6Sentraal-Afrikaanse Republiek\u00A6Verenigde State van Amerika\u00A6Kanada\u00A6Ierland\u00A6Indonesi\u00eb\u00A6Wit-Rusland\u00A6Bhoetan\u00A6Brasili\u00eb\u00A6Oekraine\u00A6Nieu-Seeland\u00A6Hongarye\u00A6Ha\u00efti\u00A6Bolivi\u00eb\u00A6Broenei\u00A6Kroasi\u00eb\u00A6Tanzani\u00eb\u00A6Naoeroe\u00A6Bahrein\u00A6Bulgarye\u00A6Boerkina Fasso\u00A6Trinidad en Tobago\u00A6Noorwe\u00eb\u00A6Belgi\u00eb\u00A6Bangladesj\u00A6Turkye\u00A6Nederland\u00A6Bosni\u00eb en Herzegowina\u00A6Tunisi\u00eb\u00A6Turkmeni\u00eb\u00A6Tadjikistan\u00A6Nigeri\u00eb\u00A6Aserbeidjan\u00A6Zambi\u00eb\u00A6Namibi\u00eb";
 
   private static final Hashtable territories;
   static
   {
     territories = new Hashtable();
-    Enumeration keys = new StringTokenizer(territoriesKeys, "|");
-    Enumeration values = new StringTokenizer(territoriesValues, "|");
+    Enumeration keys = new StringTokenizer(territoriesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(territoriesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -173,8 +173,8 @@ public class LocaleInformation_af extends ListResourceBundle
   static
   {
     languages = new Hashtable();
-    Enumeration keys = new StringTokenizer(languagesKeys, "|");
-    Enumeration values = new StringTokenizer(languagesValues, "|");
+    Enumeration keys = new StringTokenizer(languagesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(languagesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

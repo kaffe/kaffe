@@ -47,16 +47,16 @@ import java.util.ListResourceBundle;
 
 public class LocaleInformation_sw extends ListResourceBundle
 {
-  private static final String currenciesDisplayNameKeys = "TZS|KES";
+  private static final String currenciesDisplayNameKeys = "TZS\u00A6KES";
 
-  private static final String currenciesDisplayNameValues = "TZS|KES";
+  private static final String currenciesDisplayNameValues = "TZS\u00A6KES";
 
   private static final Hashtable currenciesDisplayName;
   static
   {
     currenciesDisplayName = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -65,16 +65,16 @@ public class LocaleInformation_sw extends ListResourceBundle
       }
   }
 
-  private static final String currenciesSymbolKeys = "TZS|KES";
+  private static final String currenciesSymbolKeys = "TZS\u00A6KES";
 
-  private static final String currenciesSymbolValues = "TSh|KSh";
+  private static final String currenciesSymbolValues = "TSh\u00A6KSh";
 
   private static final Hashtable currenciesSymbol;
   static
   {
     currenciesSymbol = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesSymbolValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesSymbolValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -144,19 +144,19 @@ public class LocaleInformation_sw extends ListResourceBundle
 
   private static final String[][] zoneStrings =
   {
-    { "EAT", "Saa za Africa Mashariki", "EAT", "Saa za Africa Mashariki",  "Africa/Nairobi" },
+    {  "Africa/Nairobi", "EAT", "Saa za Africa Mashariki", "EAT", "Saa za Africa Mashariki"},
   };
 
-  private static final String territoriesKeys = "TD|AR|MZ|MY|MX|ZA|GQ|AG|ST|AE|SO|MH|GB|MC|MA|SE|SC|SB|SA|YE|FR|LU|RU|ET|ES|KR|KP|KN|KM|EG|KH|EC|KE|PY|DO|DM|JP|DK|PT|DJ|JM|DE|PH|PG|CZ|CV|VC|VA|IT|CO|IS|CN|IR|CM|IQ|UY|IN|CI|CH|IL|CG|CF|US|CA|BS|BR|HU|HR|TZ|NP|TT|NO|BE|TR|NL|BA|NI|TL";
+  private static final String territoriesKeys = "TD\u00A6AR\u00A6MZ\u00A6MY\u00A6MX\u00A6ZA\u00A6GQ\u00A6AG\u00A6ST\u00A6AE\u00A6SO\u00A6MH\u00A6GB\u00A6MC\u00A6MA\u00A6SE\u00A6SC\u00A6SB\u00A6SA\u00A6YE\u00A6FR\u00A6LU\u00A6RU\u00A6ET\u00A6ES\u00A6KR\u00A6KP\u00A6KN\u00A6KM\u00A6EG\u00A6KH\u00A6EC\u00A6KE\u00A6PY\u00A6DO\u00A6DM\u00A6JP\u00A6DK\u00A6PT\u00A6DJ\u00A6JM\u00A6DE\u00A6PH\u00A6PG\u00A6CZ\u00A6CV\u00A6VC\u00A6VA\u00A6IT\u00A6CO\u00A6IS\u00A6CN\u00A6IR\u00A6CM\u00A6IQ\u00A6UY\u00A6IN\u00A6CI\u00A6CH\u00A6IL\u00A6CG\u00A6CF\u00A6US\u00A6CA\u00A6BS\u00A6BR\u00A6HU\u00A6HR\u00A6TZ\u00A6NP\u00A6TT\u00A6NO\u00A6BE\u00A6TR\u00A6NL\u00A6BA\u00A6NI\u00A6TL";
 
-  private static final String territoriesValues = "Chadi|Ajentina|Msumbiji|Malasya|Meksiko|Afrika ya Kusini|Guinea ya Ikweta|Antigua na Barbuda|Sao Tome na Principe|Muugano wa Falme za Nchi za Kiarabu|Somali|Visiwa vya Marshall|Uingereza|Monako|Moroko|Uswidi|Visiwa vya Shelisheli|Visiwa vya Solomon|Arabuni Saudi|Yemeni|Ufaransa|Luksemburg|Urusi|Uhabeshi|Uhispania|Korea ya Kusini|Korea ya Kaskazini|Saint Kitts na Nevis|Visiwa vya Komoro|Misri|Kampuchea|Ekvado|Kenya|Paragwai|Jamhuri ya Dominikan|Dominika|Ujapani|Udenmarki|Ureno|Jibuti|Jamaika|Udachi|Filipino|Papua Guinea Mpya|Jamhuri ya Czech|Rasi Verde|Saint Vincent na Grenadines|Vatikano|Uitaliani|Kolombia|Barafu|Uchina|Uajemi|Kamerun|Iraki|Urugwai|Uhindi|Pwani ya Pembe|Uswisi|Uyahudi|Kongo|Jamhuri ya Afrika ya Kati|Muungano wa Nchi za Amerika|Kanada|Visiwa vya Bahama|Brazili|Hungaria|Kroatia|Tanzania|Nepali|Trinidad na Tobago|Unorwe|Ubelgiji|Uturuki|Uholanzi|Bosnia na Herzegowina|Nikaragua|Timor ya Mashariki";
+  private static final String territoriesValues = "Chadi\u00A6Ajentina\u00A6Msumbiji\u00A6Malasya\u00A6Meksiko\u00A6Afrika ya Kusini\u00A6Guinea ya Ikweta\u00A6Antigua na Barbuda\u00A6Sao Tome na Principe\u00A6Muugano wa Falme za Nchi za Kiarabu\u00A6Somali\u00A6Visiwa vya Marshall\u00A6Uingereza\u00A6Monako\u00A6Moroko\u00A6Uswidi\u00A6Visiwa vya Shelisheli\u00A6Visiwa vya Solomon\u00A6Arabuni Saudi\u00A6Yemeni\u00A6Ufaransa\u00A6Luksemburg\u00A6Urusi\u00A6Uhabeshi\u00A6Uhispania\u00A6Korea ya Kusini\u00A6Korea ya Kaskazini\u00A6Saint Kitts na Nevis\u00A6Visiwa vya Komoro\u00A6Misri\u00A6Kampuchea\u00A6Ekvado\u00A6Kenya\u00A6Paragwai\u00A6Jamhuri ya Dominikan\u00A6Dominika\u00A6Ujapani\u00A6Udenmarki\u00A6Ureno\u00A6Jibuti\u00A6Jamaika\u00A6Udachi\u00A6Filipino\u00A6Papua Guinea Mpya\u00A6Jamhuri ya Czech\u00A6Rasi Verde\u00A6Saint Vincent na Grenadines\u00A6Vatikano\u00A6Uitaliani\u00A6Kolombia\u00A6Barafu\u00A6Uchina\u00A6Uajemi\u00A6Kamerun\u00A6Iraki\u00A6Urugwai\u00A6Uhindi\u00A6Pwani ya Pembe\u00A6Uswisi\u00A6Uyahudi\u00A6Kongo\u00A6Jamhuri ya Afrika ya Kati\u00A6Muungano wa Nchi za Amerika\u00A6Kanada\u00A6Visiwa vya Bahama\u00A6Brazili\u00A6Hungaria\u00A6Kroatia\u00A6Tanzania\u00A6Nepali\u00A6Trinidad na Tobago\u00A6Unorwe\u00A6Ubelgiji\u00A6Uturuki\u00A6Uholanzi\u00A6Bosnia na Herzegowina\u00A6Nikaragua\u00A6Timor ya Mashariki";
 
   private static final Hashtable territories;
   static
   {
     territories = new Hashtable();
-    Enumeration keys = new StringTokenizer(territoriesKeys, "|");
-    Enumeration values = new StringTokenizer(territoriesValues, "|");
+    Enumeration keys = new StringTokenizer(territoriesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(territoriesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -173,8 +173,8 @@ public class LocaleInformation_sw extends ListResourceBundle
   static
   {
     languages = new Hashtable();
-    Enumeration keys = new StringTokenizer(languagesKeys, "|");
-    Enumeration values = new StringTokenizer(languagesValues, "|");
+    Enumeration keys = new StringTokenizer(languagesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(languagesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

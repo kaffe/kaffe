@@ -114,8 +114,8 @@ public class LocaleInformation_ml extends ListResourceBundle
   static
   {
     territories = new Hashtable();
-    Enumeration keys = new StringTokenizer(territoriesKeys, "|");
-    Enumeration values = new StringTokenizer(territoriesValues, "|");
+    Enumeration keys = new StringTokenizer(territoriesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(territoriesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -132,8 +132,8 @@ public class LocaleInformation_ml extends ListResourceBundle
   static
   {
     languages = new Hashtable();
-    Enumeration keys = new StringTokenizer(languagesKeys, "|");
-    Enumeration values = new StringTokenizer(languagesValues, "|");
+    Enumeration keys = new StringTokenizer(languagesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(languagesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

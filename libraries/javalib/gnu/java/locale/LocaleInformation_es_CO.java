@@ -47,16 +47,16 @@ import java.util.ListResourceBundle;
 
 public class LocaleInformation_es_CO extends ListResourceBundle
 {
-  private static final String currenciesDisplayNameKeys = "COP|USD";
+  private static final String currenciesDisplayNameKeys = "COP\u00A6USD";
 
-  private static final String currenciesDisplayNameValues = "Peso de Colombia|D\u00f3lar Americano";
+  private static final String currenciesDisplayNameValues = "Peso de Colombia\u00A6D\u00f3lar Americano";
 
   private static final Hashtable currenciesDisplayName;
   static
   {
     currenciesDisplayName = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -73,8 +73,8 @@ public class LocaleInformation_es_CO extends ListResourceBundle
   static
   {
     currenciesSymbol = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesSymbolValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesSymbolValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

@@ -55,8 +55,8 @@ public class LocaleInformation_so extends ListResourceBundle
   static
   {
     currenciesDisplayName = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -73,8 +73,8 @@ public class LocaleInformation_so extends ListResourceBundle
   static
   {
     currenciesSymbol = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesSymbolValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesSymbolValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -147,16 +147,16 @@ public class LocaleInformation_so extends ListResourceBundle
     "gn",
   };
 
-  private static final String territoriesKeys = "AU|TD|AT|MZ|AO|MX|MW|GR|AM|ZA|MV|SY|MT|GN|MR|AF|AE|ML|MK|SO|GD|SL|MC|MA|SE|SD|SA|YE|LY|FR|LV|LU|LS|LR|RU|FI|LK|RO|LB|KZ|ET|ES|KW|KR|KP|EG|KH|KE|QA|JP|DK|PT|JO|DJ|JM|DE|PL|PK|VN|PH|VE|CU|VA|IT|IS|CN|IR|CM|IQ|CL|IN|CH|IL|US|OM|CA|IE|ID|UG|BR|NZ|HU|HR|TZ|BJ|BH|NO|BE|BD|ZW|TR|BB|BA|TN|NI|NG|ZM|TH|TG|NA";
+  private static final String territoriesKeys = "AU\u00A6TD\u00A6AT\u00A6MZ\u00A6AO\u00A6MX\u00A6MW\u00A6GR\u00A6AM\u00A6ZA\u00A6MV\u00A6SY\u00A6MT\u00A6GN\u00A6MR\u00A6AF\u00A6AE\u00A6ML\u00A6MK\u00A6SO\u00A6GD\u00A6SL\u00A6MC\u00A6MA\u00A6SE\u00A6SD\u00A6SA\u00A6YE\u00A6LY\u00A6FR\u00A6LV\u00A6LU\u00A6LS\u00A6LR\u00A6RU\u00A6FI\u00A6LK\u00A6RO\u00A6LB\u00A6KZ\u00A6ET\u00A6ES\u00A6KW\u00A6KR\u00A6KP\u00A6EG\u00A6KH\u00A6KE\u00A6QA\u00A6JP\u00A6DK\u00A6PT\u00A6JO\u00A6DJ\u00A6JM\u00A6DE\u00A6PL\u00A6PK\u00A6VN\u00A6PH\u00A6VE\u00A6CU\u00A6VA\u00A6IT\u00A6IS\u00A6CN\u00A6IR\u00A6CM\u00A6IQ\u00A6CL\u00A6IN\u00A6CH\u00A6IL\u00A6US\u00A6OM\u00A6CA\u00A6IE\u00A6ID\u00A6UG\u00A6BR\u00A6NZ\u00A6HU\u00A6HR\u00A6TZ\u00A6BJ\u00A6BH\u00A6NO\u00A6BE\u00A6BD\u00A6ZW\u00A6TR\u00A6BB\u00A6BA\u00A6TN\u00A6NI\u00A6NG\u00A6ZM\u00A6TH\u00A6TG\u00A6NA";
 
-  private static final String territoriesValues = "Awstraaliya|Jaad|Osteeriya|Musambiig|Angoola|Meksiko|Malaawi|Giriigga|Armeeniya|Koonfur Afrika|Maaldiqeen|Suuriya|Maalda|Gini|Muritaaniya|Afgaanistaan|Imaaraadka Carabta ee Midoobay|Maali|Makadooniya|Soomaaliya|Giriinaada|Siraaliyoon|Moonako|Marooko|Iswidhan|Sudaan|Sacuudi Carabiya|Yaman|Liibiya|Faransiis|Laatfiya|Luksemboorg|Losooto|Laybeeriya|Ruush|Fiinlaand|Siirilaanka|Rumaaniya|Lubnaan|Kasaakhistaan|Itoobiya|Isbeyn|Kuwayt|Kuuriyada Koonfureed|Kuuriyada Waqooyi|Masar|Kamboodiya|Kiiniya|Qadar|Jabbaan|Danmaark|Bortuqaal|Urdun|Jabuuti|Jameyka|Jarmal|Booland|Bakistaan|Fiyetnaam|Filibiin|Fenisuweela|Kuuba|Faatikaan|Talyaani|Iislaand|Shiinaha|Iiraan|Kameruun|Ciraaq|Jili|Hindiya|Swiiserlaand|Israa'iil|Qaramada Midoobey ee Maraykanka|Cumaan|Kanada|Ayrlaanda|Indoneesiya|Ugaanda|Braasiil|Neyuusilaand|Hangeri|Korweeshiya|Tansaaniya|Beniin|Baxrayn|Noorweey|Beljiyam|Bangaala-Deesh|Simbaabwe|Turki|Baarbadoos|Boosniya Heersigoviina|Tuniisiya|Nikaraaguwa|Nayjeeriya|Saambiya|Taylaand|Toogo|Namiibiya";
+  private static final String territoriesValues = "Awstraaliya\u00A6Jaad\u00A6Osteeriya\u00A6Musambiig\u00A6Angoola\u00A6Meksiko\u00A6Malaawi\u00A6Giriigga\u00A6Armeeniya\u00A6Koonfur Afrika\u00A6Maaldiqeen\u00A6Suuriya\u00A6Maalda\u00A6Gini\u00A6Muritaaniya\u00A6Afgaanistaan\u00A6Imaaraadka Carabta ee Midoobay\u00A6Maali\u00A6Makadooniya\u00A6Soomaaliya\u00A6Giriinaada\u00A6Siraaliyoon\u00A6Moonako\u00A6Marooko\u00A6Iswidhan\u00A6Sudaan\u00A6Sacuudi Carabiya\u00A6Yaman\u00A6Liibiya\u00A6Faransiis\u00A6Laatfiya\u00A6Luksemboorg\u00A6Losooto\u00A6Laybeeriya\u00A6Ruush\u00A6Fiinlaand\u00A6Siirilaanka\u00A6Rumaaniya\u00A6Lubnaan\u00A6Kasaakhistaan\u00A6Itoobiya\u00A6Isbeyn\u00A6Kuwayt\u00A6Kuuriyada Koonfureed\u00A6Kuuriyada Waqooyi\u00A6Masar\u00A6Kamboodiya\u00A6Kiiniya\u00A6Qadar\u00A6Jabbaan\u00A6Danmaark\u00A6Bortuqaal\u00A6Urdun\u00A6Jabuuti\u00A6Jameyka\u00A6Jarmal\u00A6Booland\u00A6Bakistaan\u00A6Fiyetnaam\u00A6Filibiin\u00A6Fenisuweela\u00A6Kuuba\u00A6Faatikaan\u00A6Talyaani\u00A6Iislaand\u00A6Shiinaha\u00A6Iiraan\u00A6Kameruun\u00A6Ciraaq\u00A6Jili\u00A6Hindiya\u00A6Swiiserlaand\u00A6Israa'iil\u00A6Qaramada Midoobey ee Maraykanka\u00A6Cumaan\u00A6Kanada\u00A6Ayrlaanda\u00A6Indoneesiya\u00A6Ugaanda\u00A6Braasiil\u00A6Neyuusilaand\u00A6Hangeri\u00A6Korweeshiya\u00A6Tansaaniya\u00A6Beniin\u00A6Baxrayn\u00A6Noorweey\u00A6Beljiyam\u00A6Bangaala-Deesh\u00A6Simbaabwe\u00A6Turki\u00A6Baarbadoos\u00A6Boosniya Heersigoviina\u00A6Tuniisiya\u00A6Nikaraaguwa\u00A6Nayjeeriya\u00A6Saambiya\u00A6Taylaand\u00A6Toogo\u00A6Namiibiya";
 
   private static final Hashtable territories;
   static
   {
     territories = new Hashtable();
-    Enumeration keys = new StringTokenizer(territoriesKeys, "|");
-    Enumeration values = new StringTokenizer(territoriesValues, "|");
+    Enumeration keys = new StringTokenizer(territoriesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(territoriesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -173,8 +173,8 @@ public class LocaleInformation_so extends ListResourceBundle
   static
   {
     languages = new Hashtable();
-    Enumeration keys = new StringTokenizer(languagesKeys, "|");
-    Enumeration values = new StringTokenizer(languagesValues, "|");
+    Enumeration keys = new StringTokenizer(languagesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(languagesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

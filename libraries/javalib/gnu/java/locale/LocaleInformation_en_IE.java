@@ -55,8 +55,8 @@ public class LocaleInformation_en_IE extends ListResourceBundle
   static
   {
     currenciesDisplayName = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -73,8 +73,8 @@ public class LocaleInformation_en_IE extends ListResourceBundle
   static
   {
     currenciesSymbol = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesSymbolValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesSymbolValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -90,7 +90,7 @@ public class LocaleInformation_en_IE extends ListResourceBundle
 
   private static final String[][] zoneStrings =
   {
-    { "GMT", "Greenwich Mean Time", "IST", "Irish Summer Time",  "Europe/Dublin" },
+    {  "Europe/Dublin", "GMT", "Greenwich Mean Time", "IST", "Irish Summer Time"},
   };
 
   private static final Object[][] contents =

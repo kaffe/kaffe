@@ -47,16 +47,16 @@ import java.util.ListResourceBundle;
 
 public class LocaleInformation_de_CH extends ListResourceBundle
 {
-  private static final String territoriesKeys = "MH|BD|DJ|SB|BW|GB|ST|BN|RW|ZW|CV";
+  private static final String territoriesKeys = "MH\u00A6BD\u00A6DJ\u00A6SB\u00A6BW\u00A6GB\u00A6ST\u00A6BN\u00A6RW\u00A6ZW\u00A6CV";
 
-  private static final String territoriesValues = "Marshall-Inseln|Bangladesh|Djibouti|Salomon-Inseln|Botswana|Grossbritannien|Sao Tom\u00e9 und Principe|Brunei|Rwanda|Zimbabwe|Kapverden";
+  private static final String territoriesValues = "Marshall-Inseln\u00A6Bangladesh\u00A6Djibouti\u00A6Salomon-Inseln\u00A6Botswana\u00A6Grossbritannien\u00A6Sao Tom\u00e9 und Principe\u00A6Brunei\u00A6Rwanda\u00A6Zimbabwe\u00A6Kapverden";
 
   private static final Hashtable territories;
   static
   {
     territories = new Hashtable();
-    Enumeration keys = new StringTokenizer(territoriesKeys, "|");
-    Enumeration values = new StringTokenizer(territoriesValues, "|");
+    Enumeration keys = new StringTokenizer(territoriesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(territoriesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

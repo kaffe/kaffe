@@ -47,16 +47,16 @@ import java.util.ListResourceBundle;
 
 public class LocaleInformation_zh_SG_Hans extends ListResourceBundle
 {
-  private static final String territoriesKeys = "ID|AU|SA|MK|KR|NZ|CZ";
+  private static final String territoriesKeys = "ID\u00A6AU\u00A6SA\u00A6MK\u00A6KR\u00A6NZ\u00A6CZ";
 
-  private static final String territoriesValues = "\u5370\u5c3c|\u6fb3\u6d32|\u6c99\u5730\u963f\u62c9\u4f2f|\u9a6c\u5176\u987f|\u5357\u97e9|\u7ebd\u897f\u5170|\u6377\u514b";
+  private static final String territoriesValues = "\u5370\u5c3c\u00A6\u6fb3\u6d32\u00A6\u6c99\u5730\u963f\u62c9\u4f2f\u00A6\u9a6c\u5176\u987f\u00A6\u5357\u97e9\u00A6\u7ebd\u897f\u5170\u00A6\u6377\u514b";
 
   private static final Hashtable territories;
   static
   {
     territories = new Hashtable();
-    Enumeration keys = new StringTokenizer(territoriesKeys, "|");
-    Enumeration values = new StringTokenizer(territoriesValues, "|");
+    Enumeration keys = new StringTokenizer(territoriesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(territoriesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -65,16 +65,16 @@ public class LocaleInformation_zh_SG_Hans extends ListResourceBundle
       }
   }
 
-  private static final String languagesKeys = "root|sh";
+  private static final String languagesKeys = "root\u00A6sh";
 
-  private static final String languagesValues = "\u6839 \u6e90|\u585e\u5c14\u7ef4\u4e9a\u514b\u7f57\u5730\u4e9a\u6587";
+  private static final String languagesValues = "\u6839 \u6e90\u00A6\u585e\u5c14\u7ef4\u4e9a\u514b\u7f57\u5730\u4e9a\u6587";
 
   private static final Hashtable languages;
   static
   {
     languages = new Hashtable();
-    Enumeration keys = new StringTokenizer(languagesKeys, "|");
-    Enumeration values = new StringTokenizer(languagesValues, "|");
+    Enumeration keys = new StringTokenizer(languagesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(languagesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

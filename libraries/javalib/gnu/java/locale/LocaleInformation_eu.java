@@ -55,8 +55,8 @@ public class LocaleInformation_eu extends ListResourceBundle
   static
   {
     currenciesDisplayName = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -73,8 +73,8 @@ public class LocaleInformation_eu extends ListResourceBundle
   static
   {
     currenciesSymbol = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesSymbolValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesSymbolValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -137,16 +137,16 @@ public class LocaleInformation_eu extends ListResourceBundle
     "larunbata",
   };
 
-  private static final String territoriesKeys = "TD|GW|AQ|MZ|MY|MX|GR|ZA|MV|GQ|SZ|MU|SY|GN|AG|AF|ST|AE|SR|SP|MK|MH|SL|MG|SK|SI|MD|MC|SG|MA|SE|SC|SB|LY|FR|LV|LU|LT|RW|FM|RU|FI|RO|LC|LB|ET|ES|KR|KP|KN|KM|EH|EG|KH|EC|KG|KE|DZ|QA|PY|DO|DM|JP|DK|JO|DJ|JM|DE|PL|PH|PG|CZ|CY|CV|CU|VC|VA|IT|CO|IS|CN|CM|IQ|CL|UY|CI|CH|CG|CF|US|CA|IE|BY|BS|BR|UA|NZ|HU|BO|HR|TT|NO|BE|TR|NL|BA|NI|TJ|TH";
+  private static final String territoriesKeys = "TD\u00A6GW\u00A6AQ\u00A6MZ\u00A6MY\u00A6MX\u00A6GR\u00A6ZA\u00A6MV\u00A6GQ\u00A6SZ\u00A6MU\u00A6SY\u00A6GN\u00A6AG\u00A6AF\u00A6ST\u00A6AE\u00A6SR\u00A6SP\u00A6MK\u00A6MH\u00A6SL\u00A6MG\u00A6SK\u00A6SI\u00A6MD\u00A6MC\u00A6SG\u00A6MA\u00A6SE\u00A6SC\u00A6SB\u00A6LY\u00A6FR\u00A6LV\u00A6LU\u00A6LT\u00A6RW\u00A6FM\u00A6RU\u00A6FI\u00A6RO\u00A6LC\u00A6LB\u00A6ET\u00A6ES\u00A6KR\u00A6KP\u00A6KN\u00A6KM\u00A6EH\u00A6EG\u00A6KH\u00A6EC\u00A6KG\u00A6KE\u00A6DZ\u00A6QA\u00A6PY\u00A6DO\u00A6DM\u00A6JP\u00A6DK\u00A6JO\u00A6DJ\u00A6JM\u00A6DE\u00A6PL\u00A6PH\u00A6PG\u00A6CZ\u00A6CY\u00A6CV\u00A6CU\u00A6VC\u00A6VA\u00A6IT\u00A6CO\u00A6IS\u00A6CN\u00A6CM\u00A6IQ\u00A6CL\u00A6UY\u00A6CI\u00A6CH\u00A6CG\u00A6CF\u00A6US\u00A6CA\u00A6IE\u00A6BY\u00A6BS\u00A6BR\u00A6UA\u00A6NZ\u00A6HU\u00A6BO\u00A6HR\u00A6TT\u00A6NO\u00A6BE\u00A6TR\u00A6NL\u00A6BA\u00A6NI\u00A6TJ\u00A6TH";
 
-  private static final String territoriesValues = "Txad|Ginea-Bissau|Antartika|Mozambike|Malasia|Mexiko|Grezia|Hegoafrika|Maldivak|Ekuatore Ginea|Swazilandia|Maurizio|Siria|Ginea|Antigua eta Barbuda|Afganistan|Sao Tom\u00e9 eta Principe|Arabiar Emirrerri Batuak|Surinam|Serbia|Mazedonia|Marshall uharteak|Sierra Leona|Madagaskar|Eslovakia|Eslovenia|Moldavia|Monako|Singapur|Maroko|Suedia|Seychelleak|Salomon uharteak|Libia|Frantzia|Letonia|Luxenburgo|Lituania|Ruanda|Mikronesia|Errusia|Finlandia|Errumania|Santa Luzia|Libano|Etiopia|Espainia|Hego Korea|Ipar Korea|Saint Kitts eta Nevis|Komoreak|Mendebaldeko Sahara|Egipto|Kanbodia|Ekuador|Kirgizistan|Kenia|Aljeria|Katar|Paraguai|Dominikar Errepublika|Dominika|Japonia|Danimarka|Jordania|Djibuti|Jamaika|Alemania|Polonia|Filipinak|Papua Ginea Berria|Txekiar errepublika|Zipre|Cabo Verde|Kuba|Saint Vincent eta Grenadinak|Vatikano|Italia|Kolonbia|Islandia|Txina|Kamerun|Irak|Txile|Uruguai|Boli Kosta|Suitza|Kongo|Afrika Erdiko Errepublika|Ameriketako Estatu Batuak|Kanada|Irlanda|Bielorrusia|Bahamak|Brasil|Ukraina|Zeelanda Berria|Hungaria|Bolibia|Kroazia|Trinidad eta Tobago|Norvegia|Belgika|Turkia|Herbehereak|Bosnia-Herzegovina|Nikaragua|Tadjikistan|Tailandia";
+  private static final String territoriesValues = "Txad\u00A6Ginea-Bissau\u00A6Antartika\u00A6Mozambike\u00A6Malasia\u00A6Mexiko\u00A6Grezia\u00A6Hegoafrika\u00A6Maldivak\u00A6Ekuatore Ginea\u00A6Swazilandia\u00A6Maurizio\u00A6Siria\u00A6Ginea\u00A6Antigua eta Barbuda\u00A6Afganistan\u00A6Sao Tom\u00e9 eta Principe\u00A6Arabiar Emirrerri Batuak\u00A6Surinam\u00A6Serbia\u00A6Mazedonia\u00A6Marshall uharteak\u00A6Sierra Leona\u00A6Madagaskar\u00A6Eslovakia\u00A6Eslovenia\u00A6Moldavia\u00A6Monako\u00A6Singapur\u00A6Maroko\u00A6Suedia\u00A6Seychelleak\u00A6Salomon uharteak\u00A6Libia\u00A6Frantzia\u00A6Letonia\u00A6Luxenburgo\u00A6Lituania\u00A6Ruanda\u00A6Mikronesia\u00A6Errusia\u00A6Finlandia\u00A6Errumania\u00A6Santa Luzia\u00A6Libano\u00A6Etiopia\u00A6Espainia\u00A6Hego Korea\u00A6Ipar Korea\u00A6Saint Kitts eta Nevis\u00A6Komoreak\u00A6Mendebaldeko Sahara\u00A6Egipto\u00A6Kanbodia\u00A6Ekuador\u00A6Kirgizistan\u00A6Kenia\u00A6Aljeria\u00A6Katar\u00A6Paraguai\u00A6Dominikar Errepublika\u00A6Dominika\u00A6Japonia\u00A6Danimarka\u00A6Jordania\u00A6Djibuti\u00A6Jamaika\u00A6Alemania\u00A6Polonia\u00A6Filipinak\u00A6Papua Ginea Berria\u00A6Txekiar errepublika\u00A6Zipre\u00A6Cabo Verde\u00A6Kuba\u00A6Saint Vincent eta Grenadinak\u00A6Vatikano\u00A6Italia\u00A6Kolonbia\u00A6Islandia\u00A6Txina\u00A6Kamerun\u00A6Irak\u00A6Txile\u00A6Uruguai\u00A6Boli Kosta\u00A6Suitza\u00A6Kongo\u00A6Afrika Erdiko Errepublika\u00A6Ameriketako Estatu Batuak\u00A6Kanada\u00A6Irlanda\u00A6Bielorrusia\u00A6Bahamak\u00A6Brasil\u00A6Ukraina\u00A6Zeelanda Berria\u00A6Hungaria\u00A6Bolibia\u00A6Kroazia\u00A6Trinidad eta Tobago\u00A6Norvegia\u00A6Belgika\u00A6Turkia\u00A6Herbehereak\u00A6Bosnia-Herzegovina\u00A6Nikaragua\u00A6Tadjikistan\u00A6Tailandia";
 
   private static final Hashtable territories;
   static
   {
     territories = new Hashtable();
-    Enumeration keys = new StringTokenizer(territoriesKeys, "|");
-    Enumeration values = new StringTokenizer(territoriesValues, "|");
+    Enumeration keys = new StringTokenizer(territoriesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(territoriesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -163,8 +163,8 @@ public class LocaleInformation_eu extends ListResourceBundle
   static
   {
     languages = new Hashtable();
-    Enumeration keys = new StringTokenizer(languagesKeys, "|");
-    Enumeration values = new StringTokenizer(languagesValues, "|");
+    Enumeration keys = new StringTokenizer(languagesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(languagesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

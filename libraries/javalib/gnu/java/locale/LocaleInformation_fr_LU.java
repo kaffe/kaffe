@@ -55,8 +55,8 @@ public class LocaleInformation_fr_LU extends ListResourceBundle
   static
   {
     currenciesDisplayName = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -65,16 +65,16 @@ public class LocaleInformation_fr_LU extends ListResourceBundle
       }
   }
 
-  private static final String currenciesSymbolKeys = "FRF|LUF";
+  private static final String currenciesSymbolKeys = "FRF\u00A6LUF";
 
-  private static final String currenciesSymbolValues = "FRF|F";
+  private static final String currenciesSymbolValues = "FRF\u00A6F";
 
   private static final Hashtable currenciesSymbol;
   static
   {
     currenciesSymbol = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesSymbolValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesSymbolValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

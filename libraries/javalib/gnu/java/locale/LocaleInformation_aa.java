@@ -47,16 +47,16 @@ import java.util.ListResourceBundle;
 
 public class LocaleInformation_aa extends ListResourceBundle
 {
-  private static final String currenciesDisplayNameKeys = "DJF|ERN";
+  private static final String currenciesDisplayNameKeys = "DJF\u00A6ERN";
 
-  private static final String currenciesDisplayNameValues = "DJF|ERN";
+  private static final String currenciesDisplayNameValues = "DJF\u00A6ERN";
 
   private static final Hashtable currenciesDisplayName;
   static
   {
     currenciesDisplayName = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -65,16 +65,16 @@ public class LocaleInformation_aa extends ListResourceBundle
       }
   }
 
-  private static final String currenciesSymbolKeys = "DJF|ERN|USD";
+  private static final String currenciesSymbolKeys = "DJF\u00A6ERN\u00A6USD";
 
-  private static final String currenciesSymbolValues = "FD|$|US$";
+  private static final String currenciesSymbolValues = "FD\u00A6$\u00A6US$";
 
   private static final Hashtable currenciesSymbol;
   static
   {
     currenciesSymbol = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesSymbolValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesSymbolValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -147,16 +147,16 @@ public class LocaleInformation_aa extends ListResourceBundle
     "carra",
   };
 
-  private static final String territoriesKeys = "ER|DJ|ET";
+  private static final String territoriesKeys = "ER\u00A6DJ\u00A6ET";
 
-  private static final String territoriesValues = "Eretria|Yabuuti|Otobbia";
+  private static final String territoriesValues = "Eretria\u00A6Yabuuti\u00A6Otobbia";
 
   private static final Hashtable territories;
   static
   {
     territories = new Hashtable();
-    Enumeration keys = new StringTokenizer(territoriesKeys, "|");
-    Enumeration values = new StringTokenizer(territoriesValues, "|");
+    Enumeration keys = new StringTokenizer(territoriesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(territoriesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -173,8 +173,8 @@ public class LocaleInformation_aa extends ListResourceBundle
   static
   {
     languages = new Hashtable();
-    Enumeration keys = new StringTokenizer(languagesKeys, "|");
-    Enumeration values = new StringTokenizer(languagesValues, "|");
+    Enumeration keys = new StringTokenizer(languagesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(languagesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

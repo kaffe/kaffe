@@ -55,8 +55,8 @@ public class LocaleInformation_gu extends ListResourceBundle
   static
   {
     currenciesDisplayName = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -73,8 +73,8 @@ public class LocaleInformation_gu extends ListResourceBundle
   static
   {
     currenciesSymbol = new Hashtable();
-    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "|");
-    Enumeration values = new StringTokenizer(currenciesSymbolValues, "|");
+    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesSymbolValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -142,16 +142,16 @@ public class LocaleInformation_gu extends ListResourceBundle
     "\u0a89\u0aa4\u0acd\u0aa4\u0ab0\u00a0\u0aae\u0aa7\u0acd\u0aaf\u0abe\u0ab9\u0acd\u0aa8",
   };
 
-  private static final String territoriesKeys = "TR|IN|CN|GE|DE|NP|TM|US|EG|PK";
+  private static final String territoriesKeys = "TR\u00A6IN\u00A6CN\u00A6GE\u00A6DE\u00A6NP\u00A6TM\u00A6US\u00A6EG\u00A6PK";
 
-  private static final String territoriesValues = "\u0aa4\u0ac1\u0ab0\u0acd\u0a95\u0ab8\u0acd\u0aa4\u0abe\u0aa8|\u0aad\u0abe\u0ab0\u0aa4|\u0a9a\u0ac0\u0aa8|\u0a9c\u0acd\u0aaf\u0acb\u0ab0\u0acd\u0a9c\u0ac0\u0aaf\u0abe|\u0a9c\u0aae\u0abf\u0aa8\u0ac0|\u0aa8\u0ac7\u0aaa\u0abe\u0ab3|\u0aa4\u0ac1\u0ab0\u0acd\u0a95\u0acd\u0aae\u0aa8\u0abf\u0ab8\u0acd\u0aa4\u0abe\u0aa8|\u0ab8\u0a82\u0aaf\u0ac1\u0a95\u0aa4 \u0ab0\u0abe\u0a9c\u0acd\u0aaf \u0a85\u0aae\u0ac7\u0ab0\u0abf\u0a95\u0abe|\u0aae\u0abf\u0ab8\u0ab0|\u0a95\u0ab0\u0abe\u0a82\u0a9a\u0ac0";
+  private static final String territoriesValues = "\u0aa4\u0ac1\u0ab0\u0acd\u0a95\u0ab8\u0acd\u0aa4\u0abe\u0aa8\u00A6\u0aad\u0abe\u0ab0\u0aa4\u00A6\u0a9a\u0ac0\u0aa8\u00A6\u0a9c\u0acd\u0aaf\u0acb\u0ab0\u0acd\u0a9c\u0ac0\u0aaf\u0abe\u00A6\u0a9c\u0aae\u0abf\u0aa8\u0ac0\u00A6\u0aa8\u0ac7\u0aaa\u0abe\u0ab3\u00A6\u0aa4\u0ac1\u0ab0\u0acd\u0a95\u0acd\u0aae\u0aa8\u0abf\u0ab8\u0acd\u0aa4\u0abe\u0aa8\u00A6\u0ab8\u0a82\u0aaf\u0ac1\u0a95\u0aa4 \u0ab0\u0abe\u0a9c\u0acd\u0aaf \u0a85\u0aae\u0ac7\u0ab0\u0abf\u0a95\u0abe\u00A6\u0aae\u0abf\u0ab8\u0ab0\u00A6\u0a95\u0ab0\u0abe\u0a82\u0a9a\u0ac0";
 
   private static final Hashtable territories;
   static
   {
     territories = new Hashtable();
-    Enumeration keys = new StringTokenizer(territoriesKeys, "|");
-    Enumeration values = new StringTokenizer(territoriesValues, "|");
+    Enumeration keys = new StringTokenizer(territoriesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(territoriesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();
@@ -168,8 +168,8 @@ public class LocaleInformation_gu extends ListResourceBundle
   static
   {
     languages = new Hashtable();
-    Enumeration keys = new StringTokenizer(languagesKeys, "|");
-    Enumeration values = new StringTokenizer(languagesValues, "|");
+    Enumeration keys = new StringTokenizer(languagesKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(languagesValues, "\u00A6");
     while (keys.hasMoreElements())
       {
          String key = (String) keys.nextElement();

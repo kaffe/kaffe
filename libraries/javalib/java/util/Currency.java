@@ -38,7 +38,7 @@ exception statement from your version. */
 
 package java.util;
 
-import gnu.java.locale.LocaleInformation;
+import gnu.java.locale.LocaleHelper;
 
 import java.io.IOException;
 import java.io.ObjectStreamException;
@@ -93,17 +93,6 @@ public final class Currency
    * @serial the number of fraction digits
    */
   private transient int fractionDigits;
-
-  /**
-   * The currency symbol used when formatting currency strings.
-   * When this field is <code>null</code> the <code>currencyCode</code>
-   * has to be used instead.
-   *
-   * @see #getSymbol()
-   * @see #getSymbol(java.util.Locale)
-   * @serial the currency symbol, or <code>null</code>
-   */
-  private transient String currencySymbol;
   
   /**
    * A cached map of country codes
@@ -207,9 +196,6 @@ public final class Currency
       }
     /* Retrieve the fraction digits */
     fractionDigits = Integer.parseInt(properties.getProperty(fractionDigitsKey));
-    /* Get currency symbol */
-    currencySymbol =
-      (String) LocaleInformation.getCurrencySymbols().get(currencyCode);
   }
 
   /**
@@ -360,16 +346,16 @@ public final class Currency
 
   /**
    * This method returns the symbol which precedes or follows a
-   * value in this particular currency.  In cases where there is no
-   * such symbol for the currency, the ISO 4217 currency
-   * code is returned.
+   * value in this particular currency in the default locale.
+   * In cases where there is no such symbol for the currency,
+   * the ISO 4217 currency code is returned.
    *
    * @return the currency symbol, or the ISO 4217 currency code if
    *         one doesn't exist.
    */
   public String getSymbol()
   {
-    return currencySymbol == null ? getCurrencyCode() : currencySymbol;
+    return getSymbol(Locale.getDefault());
   }
 
   /**
@@ -399,11 +385,8 @@ public final class Currency
    */
   public String getSymbol(Locale locale)
   {
-    /* 
-       We don't currently have the currency symbols, so we always
-       return the currency code.
-    */
-    return getCurrencyCode();
+    return LocaleHelper.getLocalizedString(locale, currencyCode,
+					   "currenciesSymbol", false, true);
   }
 
   /**

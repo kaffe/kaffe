@@ -2,6 +2,187 @@
 
         Resynced with GNU Classpath.
 	
+	2005-01-31  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* gnu/java/locale/LocaleHelper.java:
+	New utility class.
+	(getLocalizedString(java.util.Locale,
+	String, String, boolean, boolean)):
+	More generic version of what was
+	java.util.Locale.getDisplayString, now
+	available to all classes.
+	* gnu/java/locale/LocaleInformation.java,
+	gnu/java/locale/LocaleInformation_aa.java,
+	gnu/java/locale/LocaleInformation_aa_ET.java,
+	gnu/java/locale/LocaleInformation_af.java,
+	gnu/java/locale/LocaleInformation_am.java,
+	gnu/java/locale/LocaleInformation_am_ET.java,
+	gnu/java/locale/LocaleInformation_ar.java,
+	gnu/java/locale/LocaleInformation_as.java,
+	gnu/java/locale/LocaleInformation_az.java,
+	gnu/java/locale/LocaleInformation_be.java,
+	gnu/java/locale/LocaleInformation_bg.java,
+	gnu/java/locale/LocaleInformation_bn.java,
+	gnu/java/locale/LocaleInformation_byn.java
+	gnu/java/locale/LocaleInformation_byn_ER.java
+	gnu/java/locale/LocaleInformation_ca.java,
+	gnu/java/locale/LocaleInformation_cs.java,
+	gnu/java/locale/LocaleInformation_cy.java,
+	gnu/java/locale/LocaleInformation_da.java,
+	gnu/java/locale/LocaleInformation_de.java,
+	gnu/java/locale/LocaleInformation_de_AT.java,
+	gnu/java/locale/LocaleInformation_de_BE.java,
+	gnu/java/locale/LocaleInformation_de_CH.java,
+	gnu/java/locale/LocaleInformation_de_LU.java,
+	gnu/java/locale/LocaleInformation_dv.java,
+	gnu/java/locale/LocaleInformation_dz.java,
+	gnu/java/locale/LocaleInformation_dz_BT.java,
+	gnu/java/locale/LocaleInformation_el.java,
+	gnu/java/locale/LocaleInformation_el_GR.java,
+	gnu/java/locale/LocaleInformation_en.java,
+	gnu/java/locale/LocaleInformation_en_AU.java,
+	gnu/java/locale/LocaleInformation_en_BE.java,
+	gnu/java/locale/LocaleInformation_en_CA.java,
+	gnu/java/locale/LocaleInformation_en_GB.java,
+	gnu/java/locale/LocaleInformation_en_HK.java,
+	gnu/java/locale/LocaleInformation_en_IE.java,
+	gnu/java/locale/LocaleInformation_en_MT.java,
+	gnu/java/locale/LocaleInformation_en_NZ.java,
+	gnu/java/locale/LocaleInformation_en_PH.java,
+	gnu/java/locale/LocaleInformation_en_SG.java,
+	gnu/java/locale/LocaleInformation_en_US.java,
+	gnu/java/locale/LocaleInformation_en_ZW.java,
+	gnu/java/locale/LocaleInformation_eo.java,
+	gnu/java/locale/LocaleInformation_es.java,
+	gnu/java/locale/LocaleInformation_es_AR.java,
+	gnu/java/locale/LocaleInformation_es_CL.java,
+	gnu/java/locale/LocaleInformation_es_CO.java,
+	gnu/java/locale/LocaleInformation_es_ES.java,
+	gnu/java/locale/LocaleInformation_es_MX.java,
+	gnu/java/locale/LocaleInformation_es_PR.java,
+	gnu/java/locale/LocaleInformation_et.java,
+	gnu/java/locale/LocaleInformation_eu.java,
+	gnu/java/locale/LocaleInformation_fa.java,
+	gnu/java/locale/LocaleInformation_fa_AF.java,
+	gnu/java/locale/LocaleInformation_fi.java,
+	gnu/java/locale/LocaleInformation_fo.java,
+	gnu/java/locale/LocaleInformation_fr.java,
+	gnu/java/locale/LocaleInformation_fr_CA.java,
+	gnu/java/locale/LocaleInformation_fr_LU.java,
+	gnu/java/locale/LocaleInformation_ga.java,
+	gnu/java/locale/LocaleInformation_ga_IE.java,
+	gnu/java/locale/LocaleInformation_gez.java
+	gnu/java/locale/LocaleInformation_gez_ER.java
+	gnu/java/locale/LocaleInformation_gez_ET.java
+	gnu/java/locale/LocaleInformation_gl.java,
+	gnu/java/locale/LocaleInformation_gu.java,
+	gnu/java/locale/LocaleInformation_gv.java,
+	gnu/java/locale/LocaleInformation_haw.java
+	gnu/java/locale/LocaleInformation_haw_US.java
+	gnu/java/locale/LocaleInformation_he.java,
+	gnu/java/locale/LocaleInformation_hi.java,
+	gnu/java/locale/LocaleInformation_hr.java,
+	gnu/java/locale/LocaleInformation_hu.java,
+	gnu/java/locale/LocaleInformation_hy.java,
+	gnu/java/locale/LocaleInformation_id.java,
+	gnu/java/locale/LocaleInformation_is.java,
+	gnu/java/locale/LocaleInformation_it.java,
+	gnu/java/locale/LocaleInformation_it_IT.java,
+	gnu/java/locale/LocaleInformation_iu.java,
+	gnu/java/locale/LocaleInformation_ja.java,
+	gnu/java/locale/LocaleInformation_ka.java,
+	gnu/java/locale/LocaleInformation_kk.java,
+	gnu/java/locale/LocaleInformation_kl.java,
+	gnu/java/locale/LocaleInformation_km.java,
+	gnu/java/locale/LocaleInformation_kn.java,
+	gnu/java/locale/LocaleInformation_ko.java,
+	gnu/java/locale/LocaleInformation_kok.java
+	gnu/java/locale/LocaleInformation_kok_IN.java
+	gnu/java/locale/LocaleInformation_kw.java,
+	gnu/java/locale/LocaleInformation_ky.java,
+	gnu/java/locale/LocaleInformation_lo.java,
+	gnu/java/locale/LocaleInformation_lt.java,
+	gnu/java/locale/LocaleInformation_lv.java,
+	gnu/java/locale/LocaleInformation_mk.java,
+	gnu/java/locale/LocaleInformation_ml.java,
+	gnu/java/locale/LocaleInformation_mn.java,
+	gnu/java/locale/LocaleInformation_mn_MN.java,
+	gnu/java/locale/LocaleInformation_mr.java,
+	gnu/java/locale/LocaleInformation_ms.java,
+	gnu/java/locale/LocaleInformation_ms_BN.java,
+	gnu/java/locale/LocaleInformation_mt.java,
+	gnu/java/locale/LocaleInformation_nb.java,
+	gnu/java/locale/LocaleInformation_nl.java,
+	gnu/java/locale/LocaleInformation_nn.java,
+	gnu/java/locale/LocaleInformation_om.java,
+	gnu/java/locale/LocaleInformation_om_ET.java,
+	gnu/java/locale/LocaleInformation_or.java,
+	gnu/java/locale/LocaleInformation_pa.java,
+	gnu/java/locale/LocaleInformation_pl.java,
+	gnu/java/locale/LocaleInformation_ps.java,
+	gnu/java/locale/LocaleInformation_pt.java,
+	gnu/java/locale/LocaleInformation_pt_PT.java,
+	gnu/java/locale/LocaleInformation_ro.java,
+	gnu/java/locale/LocaleInformation_ru.java,
+	gnu/java/locale/LocaleInformation_sa.java,
+	gnu/java/locale/LocaleInformation_sid.java
+	gnu/java/locale/LocaleInformation_sid_ET.java
+	gnu/java/locale/LocaleInformation_sk.java,
+	gnu/java/locale/LocaleInformation_sl.java,
+	gnu/java/locale/LocaleInformation_so.java,
+	gnu/java/locale/LocaleInformation_so_DJ.java,
+	gnu/java/locale/LocaleInformation_so_ET.java,
+	gnu/java/locale/LocaleInformation_so_SO.java,
+	gnu/java/locale/LocaleInformation_sq.java,
+	gnu/java/locale/LocaleInformation_sr.java,
+	gnu/java/locale/LocaleInformation_sr_Latn.java,
+	gnu/java/locale/LocaleInformation_sv.java,
+	gnu/java/locale/LocaleInformation_sw.java,
+	gnu/java/locale/LocaleInformation_syr.java
+	gnu/java/locale/LocaleInformation_syr_SY.java
+	gnu/java/locale/LocaleInformation_ta.java,
+	gnu/java/locale/LocaleInformation_te.java,
+	gnu/java/locale/LocaleInformation_th.java,
+	gnu/java/locale/LocaleInformation_ti.java,
+	gnu/java/locale/LocaleInformation_ti_ER.java,
+	gnu/java/locale/LocaleInformation_ti_ET.java,
+	gnu/java/locale/LocaleInformation_tig.java
+	gnu/java/locale/LocaleInformation_tig_ER.java
+	gnu/java/locale/LocaleInformation_tr.java,
+	gnu/java/locale/LocaleInformation_tt.java,
+	gnu/java/locale/LocaleInformation_uk.java,
+	gnu/java/locale/LocaleInformation_ur.java,
+	gnu/java/locale/LocaleInformation_uz.java,
+	gnu/java/locale/LocaleInformation_uz_AF.java,
+	gnu/java/locale/LocaleInformation_vi.java,
+	gnu/java/locale/LocaleInformation_wal.java
+	gnu/java/locale/LocaleInformation_wal_ET.java
+	gnu/java/locale/LocaleInformation_zh.java,
+	gnu/java/locale/LocaleInformation_zh_HK_Hant.java,
+	gnu/java/locale/LocaleInformation_zh_Hant.java,
+	gnu/java/locale/LocaleInformation_zh_MO_Hant.java,
+	gnu/java/locale/LocaleInformation_zh_SG_Hans.java,
+	Locales updated with re-ordered zone strings,
+	new separator ('|' replaced with \u00A6) and updated
+	data from the latest CLDR CVS (including 16 new
+	locales).
+	* java/util/Currency.java:
+	 (currencySymbol): Removed.
+	(getCurrencyCode()): Rewritten to call
+	getCurrencyCode(Locale.getDefault()).
+	(getCurrencyCode(java.util.Locale)): Rewritten to
+	lookup localized currency symbol from our locale data.
+	* java/util/Locale.java:
+	(getDisplayLanguage(java.util.Locale)): Now calls
+	method in LocaleHelper.
+	(getDisplayCountry(java.util.Locale)): Likewise.
+	(getDisplayVariant(java.util.Locale)): Likewise.
+	(getDisplayString()): Rewritten in LocaleHelper.
+	
+2005-01-31  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+	
 	2005-01-29  Quentin Anciaux  <quentin.anciaux@advalvas.be>
 
 	* gnu/classpath/SystemProperties.java (static): Add all aliases

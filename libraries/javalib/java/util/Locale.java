@@ -39,6 +39,7 @@ exception statement from your version. */
 package java.util;
 
 import gnu.classpath.SystemProperties;
+import gnu.java.locale.LocaleHelper;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -617,7 +618,8 @@ public final class Locale implements Serializable, Cloneable
    */
   public String getDisplayLanguage(Locale inLocale)
   {
-    return getDisplayString(inLocale, language, "languages");
+    return LocaleHelper.getLocalizedString(inLocale, language,
+					   "languages", true, false);
   }
 
   /**
@@ -663,7 +665,8 @@ public final class Locale implements Serializable, Cloneable
    */
   public String getDisplayCountry(Locale inLocale)
   {
-    return getDisplayString(inLocale, country, "territories");
+    return LocaleHelper.getLocalizedString(inLocale, country,
+					    "territories", true, false);
   }
 
   /**
@@ -688,10 +691,10 @@ public final class Locale implements Serializable, Cloneable
    * Gets the name of the variant specified by this locale, in a form suitable
    * for display to the user.  If possible, the display name will be localized
    * to the specified locale.  For example, if the locale instance is a revised
-   * variant, and the specified locale is <code>Locale.UK</code>, the result would be
-   * 'REVISED'.  Using the German locale would instead give 'Revidiert'.  If the
-   * display name can not be localized to the supplied locale, it will fall back on
-   * other output in the following order:
+   * variant, and the specified locale is <code>Locale.UK</code>, the result
+   * would be 'REVISED'.  Using the German locale would instead give
+   * 'Revidiert'.  If the display name can not be localized to the supplied
+   * locale, it will fall back on other output in the following order:
    * </p>
    * <ul>
    * <li>the display name in the default locale</li>
@@ -710,87 +713,8 @@ public final class Locale implements Serializable, Cloneable
    */
   public String getDisplayVariant(Locale inLocale)
   {
-    return getDisplayString(inLocale, variant, "variants");
-  }
-
-  /**
-   * This method is used by the display name lookup methods to retrieve
-   * the localized name of a particular piece of locale data.    
-   * If the display name can not be localized to the supplied
-   * locale, it will fall back on other output in the following order:
-   * </p>
-   * <ul>
-   * <li>the display name in the default locale</li>
-   * <li>the display name in English</li>
-   * <li>the ISO code</li>
-   * </ul>
-   * <p>
-   * If the language is unspecified by this locale, then the empty string is
-   * returned.
-   * </p>
-   *
-   * @param inLocale the locale to use for formatting the display string.
-   * @param key the locale data used as a key to the localized lookup tables.
-   * @param tableName the name of the hashtable containing the localized data.
-   */
-  private String getDisplayString(Locale inLocale, String key, String tableName)
-  {
-    String displayString;
-    Hashtable table;
-
-    if (key.equals(""))
-      {
-	return "";
-      }
-    /* Display in inLocale */
-    try
-      {
-        table = (Hashtable)
-	  ResourceBundle.getBundle("gnu.java.locale.LocaleInformation",
-				   inLocale).getObject(tableName);
-	displayString = (String) table.get(key);
-      }
-    catch (MissingResourceException exception)
-      {
-	displayString = null;
-      }
-    /* Display in default locale */
-    if (displayString == null)
-      {
-	try 
-	  {
-	    ResourceBundle bundle;
-	    
-	    bundle = ResourceBundle.getBundle("gnu.java.locale.LocaleInformation");
-	    table = (Hashtable) bundle.getObject(tableName);
-	    displayString = (String) table.get(key);
-	  }
-	catch (MissingResourceException exception)
-	  {
-	    displayString = null;
-	  }
-      }
-    /* Display in English */
-    if (displayString == null)
-      {
-	try
-	  {
-	    table = (Hashtable)
-	      ResourceBundle.getBundle("gnu.java.locale.LocaleInformation",
-				       Locale.ENGLISH).getObject(tableName);
-	    displayString= (String) table.get(key);
-	  }
-	catch (MissingResourceException exception)
-	  {
-	    displayString = null;
-	  }
-      }
-    /* Display ISO code */
-    if (displayString == null)
-      {
-	displayString = key;
-      }
-    return displayString;
+    return LocaleHelper.getLocalizedString(inLocale, variant, "variants",
+					   true, false);
   }
 
   /**

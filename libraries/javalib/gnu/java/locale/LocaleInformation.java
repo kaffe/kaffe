@@ -40,104 +40,145 @@ exception statement from your version. */
 
 package gnu.java.locale;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
 import java.util.ListResourceBundle;
 
 public class LocaleInformation extends ListResourceBundle
 {
-  private static final String[] ampms = { "AM", "PM" };
+  private static final String currenciesDisplayNameKeys = "INR\u00A6JPY\u00A6ITL\u00A6EUR\u00A6GBP\u00A6USD";
 
-  private static final String[][] zoneStrings =
+  private static final String currenciesDisplayNameValues = "INR\u00A6JPY\u00A6ITL\u00A6EUR\u00A6GBP\u00A6USD";
+
+  private static final Hashtable currenciesDisplayName;
+  static
   {
-    { "GMT", "Greenwich Mean Time", "GMT",
-      /**/   "Greenwich Mean Time", "GMT", "GMT" },
-    { "PST", "Pacific Standard Time", "PST",
-      /**/   "Pacific Daylight Time", "PDT", "San Francisco" },
-    { "MST", "Mountain Standard Time", "MST",
-      /**/   "Mountain Daylight Time", "MDT", "Denver" },
-    { "PNT", "Mountain Standard Time", "MST",
-      /**/   "Mountain Standard Time", "MST", "Phoenix" },
-    { "CST", "Central Standard Time", "CST",
-      /**/   "Central Daylight Time", "CDT", "Chicago" },
-    { "EST", "Eastern Standard Time", "EST",
-      /**/   "Eastern Daylight Time", "EDT", "Boston" },
-    { "IET", "Eastern Standard Time", "EST",
-      /**/   "Eastern Standard Time", "EST", "Indianapolis" },
-    { "PRT", "Atlantic Standard Time", "AST",
-      /**/   "Atlantic Daylight Time", "ADT", "Halifax" },
-    { "CNT", "Newfoundland Standard Time", "NST",
-      /**/   "Newfoundland Daylight Time", "NDT", "St. Johns" },
-    { "ECT", "Central European Standard Time", "CET",
-      /**/   "Central European Daylight Time", "CEST", "Paris" },
-    { "CTT", "China Standard Time", "CST",
-      /**/   "China Standard Time", "CST", "Shanghai" },
-    { "JST", "Japan Standard Time", "JST",
-      /**/   "Japan Standard Time", "JST", "Tokyo" },
-    { "HST", "Hawaii Standard Time", "HST",
-      /**/   "Hawaii Standard Time", "HST", "Honolulu" },
-    { "AST", "Alaska Standard Time", "AKST",
-      /**/   "Alaska Daylight Time", "AKDT", "Anchorage" }
+    currenciesDisplayName = new Hashtable();
+    Enumeration keys = new StringTokenizer(currenciesDisplayNameKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesDisplayNameValues, "\u00A6");
+    while (keys.hasMoreElements())
+      {
+         String key = (String) keys.nextElement();
+         String value = (String) values.nextElement();
+         currenciesDisplayName.put(key, value);
+      }
+  }
+
+  private static final String currenciesSymbolKeys = "INR\u00A6JPY\u00A6ITL\u00A6EUR\u00A6GBP\u00A6USD";
+
+  private static final String currenciesSymbolValues = "=0#Rs.|1#Re.|1<Rs.\u00A6\u00a5\u00A6\u20a4\u00A6\u20ac\u00A6\u00a3\u00A6$";
+
+  private static final Hashtable currenciesSymbol;
+  static
+  {
+    currenciesSymbol = new Hashtable();
+    Enumeration keys = new StringTokenizer(currenciesSymbolKeys, "\u00A6");
+    Enumeration values = new StringTokenizer(currenciesSymbolValues, "\u00A6");
+    while (keys.hasMoreElements())
+      {
+         String key = (String) keys.nextElement();
+         String value = (String) values.nextElement();
+         currenciesSymbol.put(key, value);
+      }
+  }
+
+  private static final String[] shortMonths = {
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    null,
   };
 
-  private static final class HashtableCurrencySymbols extends java.util.Hashtable
-  {
-    public HashtableCurrencySymbols()
-    {
-      super();
-      put("GBP", "\u00a3");
-      put("JPY", "\u00A5");
-      put("ITL", "\u20A4");
-      put("NGN", "\u20A6");
-      put("ESP", "\u20A7");
-      put("INR", "=0#\u20A8.|1#Re.|1<\u20A8."); /* Complex format -- see DecimalFormat */
-      put("KRW", "\u20A9");
-      put("ILS", "\u20AA");
-      put("VND", "\u20AB");
-      put("EUR", "\u20ac");
-      put("TWD", "NT$");
-      put("USD", "US$");
-      put("CAD", "CAN$");
-      put("AUD", "A$");
-      put("JMD", "J$");
-      put("ZWD", "Z$");
-      put("IQD", "ID");
-      put("EEK", "kr");
-    }
-  }
+  private static final String[] months = {
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    null,
+  };
 
-  private static final java.util.Hashtable currencySymbols = new HashtableCurrencySymbols();
-  
-  public static java.util.Hashtable getCurrencySymbols()
-  {
-    return currencySymbols;
-  }
-  
+  private static final String[] shortWeekdays = {
+    null,
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+  };
+
+  private static final String[] weekdays = {
+    null,
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+  };
+
+  private static final String[] eras = {
+    "BCE",
+    "CE",
+  };
+
+  private static final String[] ampms = {
+    "AM",
+    "PM",
+  };
+
+
   private static final Object[][] contents =
   {
-    { "localPatternChars", "GyMdkHmsSEDFwWahKzYeugAZ" },
-    { "currencySymbols", currencySymbols },
-    { "decimalSeparator", "." },
-    { "groupingSeparator", "," },
-    { "patternSeparator", ";" },
     { "percent", "%" },
-    { "zeroDigit", "0" },
-    { "digit", "#" },
-    { "minusSign", "-" },
-    { "exponential", "E" },
     { "perMill", "\u2030" },
+    { "exponential", "E" },
     { "infinity", "\u221e" },
     { "NaN", "\ufffd" },
-    { "numberFormat", "#,##0.###;-#,##0.###" },
+    { "minusSign", "-" },
+    { "zeroDigit", "0" },
+    { "decimalSeparator", "." },
+    { "groupingSeparator", "," },
+    { "digit", "#" },
     { "percentFormat", "#,##0%" },
-    { "shortDateFormat", "M/d/yy" },
-    { "mediumDateFormat", "MMM d, yyyy" },
-    { "longDateFormat", "MMMM d, yyyy" },
-    { "fullDateFormat", "EEEE, MMMM d, yyyy" },
-    { "shortTimeFormat", "h:mm a" },
-    { "mediumTimeFormat", "h:mm:ss a" },
-    { "longTimeFormat", "h:mm:ss a z" },
-    { "fullTimeFormat", "h:mm:ss a z" },
+    { "currencyFormat", "\u00a4 #,##0.00;-\u00a4 #,##0.00" },
+    { "localPatternChars", "GyMdkHmsSEDFwWahKzYeugAZ" },
+    { "currenciesDisplayName", currenciesDisplayName },
+    { "currenciesSymbol", currenciesSymbol },
+    { "shortMonths", shortMonths },
+    { "months", months },
+    { "shortWeekdays", shortWeekdays },
+    { "weekdays", weekdays },
+    { "eras", eras },
     { "ampms", ampms },
-    { "zoneStrings", zoneStrings },
+    { "shortDateFormat", "yy/MM/dd" },
+    { "mediumDateFormat", "yyyy MMM d" },
+    { "longDateFormat", "yyyy MMMM d" },
+    { "fullDateFormat", "EEEE, yyyy MMMM dd" },
+    { "shortTimeFormat", "HH:mm" },
+    { "mediumTimeFormat", "HH:mm:ss" },
+    { "longTimeFormat", "HH:mm:ss z" },
+    { "fullTimeFormat", "HH:mm:ss z" },
   };
 
   public Object[][] getContents() { return contents; }

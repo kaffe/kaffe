@@ -1102,6 +1102,7 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/Calendar_de.java \
 	gnu/java/locale/Calendar_en.java \
 	gnu/java/locale/Calendar_nl.java \
+	gnu/java/locale/LocaleHelper.java \
 	gnu/java/locale/LocaleInformation.java \
 	gnu/java/locale/LocaleInformation_aa.java \
 	gnu/java/locale/LocaleInformation_aa_DJ.java \
@@ -1137,6 +1138,8 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/LocaleInformation_bn_IN.java \
 	gnu/java/locale/LocaleInformation_br_FR.java \
 	gnu/java/locale/LocaleInformation_bs_BA.java \
+	gnu/java/locale/LocaleInformation_byn.java \
+	gnu/java/locale/LocaleInformation_byn_ER.java \
 	gnu/java/locale/LocaleInformation_ca.java \
 	gnu/java/locale/LocaleInformation_ca_ES.java \
 	gnu/java/locale/LocaleInformation_cs.java \
@@ -1224,12 +1227,17 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/LocaleInformation_fr_LU.java \
 	gnu/java/locale/LocaleInformation_ga.java \
 	gnu/java/locale/LocaleInformation_ga_IE.java \
+	gnu/java/locale/LocaleInformation_gez.java \
+	gnu/java/locale/LocaleInformation_gez_ER.java \
+	gnu/java/locale/LocaleInformation_gez_ET.java \
 	gnu/java/locale/LocaleInformation_gl.java \
 	gnu/java/locale/LocaleInformation_gl_ES.java \
 	gnu/java/locale/LocaleInformation_gu.java \
 	gnu/java/locale/LocaleInformation_gu_IN.java \
 	gnu/java/locale/LocaleInformation_gv.java \
 	gnu/java/locale/LocaleInformation_gv_GB.java \
+	gnu/java/locale/LocaleInformation_haw.java \
+	gnu/java/locale/LocaleInformation_haw_US.java \
 	gnu/java/locale/LocaleInformation_he.java \
 	gnu/java/locale/LocaleInformation_he_IL.java \
 	gnu/java/locale/LocaleInformation_hi.java \
@@ -1262,6 +1270,8 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/LocaleInformation_kn_IN.java \
 	gnu/java/locale/LocaleInformation_ko.java \
 	gnu/java/locale/LocaleInformation_ko_KR.java \
+	gnu/java/locale/LocaleInformation_kok.java \
+	gnu/java/locale/LocaleInformation_kok_IN.java \
 	gnu/java/locale/LocaleInformation_kw.java \
 	gnu/java/locale/LocaleInformation_kw_GB.java \
 	gnu/java/locale/LocaleInformation_ky.java \
@@ -1314,6 +1324,8 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/LocaleInformation_sa.java \
 	gnu/java/locale/LocaleInformation_sa_IN.java \
 	gnu/java/locale/LocaleInformation_se_NO.java \
+	gnu/java/locale/LocaleInformation_sid.java \
+	gnu/java/locale/LocaleInformation_sid_ET.java \
 	gnu/java/locale/LocaleInformation_sk.java \
 	gnu/java/locale/LocaleInformation_sk_SK.java \
 	gnu/java/locale/LocaleInformation_sl.java \
@@ -1332,6 +1344,8 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/LocaleInformation_sw.java \
 	gnu/java/locale/LocaleInformation_sw_KE.java \
 	gnu/java/locale/LocaleInformation_sw_TZ.java \
+	gnu/java/locale/LocaleInformation_syr.java \
+	gnu/java/locale/LocaleInformation_syr_SY.java \
 	gnu/java/locale/LocaleInformation_ta.java \
 	gnu/java/locale/LocaleInformation_ta_IN.java \
 	gnu/java/locale/LocaleInformation_te.java \
@@ -1342,6 +1356,8 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/LocaleInformation_ti.java \
 	gnu/java/locale/LocaleInformation_ti_ER.java \
 	gnu/java/locale/LocaleInformation_ti_ET.java \
+	gnu/java/locale/LocaleInformation_tig.java \
+	gnu/java/locale/LocaleInformation_tig_ER.java \
 	gnu/java/locale/LocaleInformation_tr.java \
 	gnu/java/locale/LocaleInformation_tr_TR.java \
 	gnu/java/locale/LocaleInformation_tt.java \
@@ -1352,6 +1368,8 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/LocaleInformation_uz.java \
 	gnu/java/locale/LocaleInformation_uz_AF.java \
 	gnu/java/locale/LocaleInformation_vi.java \
+	gnu/java/locale/LocaleInformation_wal.java \
+	gnu/java/locale/LocaleInformation_wal_ET.java \
 	gnu/java/locale/LocaleInformation_zh.java \
 	gnu/java/locale/LocaleInformation_zh_CN_Hans.java \
 	gnu/java/locale/LocaleInformation_zh_HK_Hant.java \
