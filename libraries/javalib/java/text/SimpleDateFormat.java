@@ -400,8 +400,9 @@ public Date parse(String source, ParsePosition pos) {
 
 		if (letter == '\'') {
 			// quoted text
-			if (patt[i] == '\'') {
-				if (source.charAt(index) != '\'') {
+			if ((i < patt.length) && (patt[i] == '\'')) {
+				if ((index >= endIndex) ||
+				    (source.charAt(index) != '\'')) {
 					pos.setIndex(startIndex);
 					pos.setErrorIndex(index);
 					return null;
@@ -411,7 +412,8 @@ public Date parse(String source, ParsePosition pos) {
 			}
 			else {
 				while ((i < patt.length) && patt[i] != '\'') {
-					if (source.charAt(index) != patt[i]) {
+					if ((index >= endIndex) ||
+					    (source.charAt(index) != patt[i])) {
 						pos.setIndex(startIndex);
 						pos.setErrorIndex(index);
 						return null;
@@ -429,7 +431,7 @@ public Date parse(String source, ParsePosition pos) {
 			int val = -1;
 			
 			// count pattern len
-			while (i < patt.length && patt[i] == letter) {
+			while ((i < patt.length) && (patt[i] == letter)) {
 				plen++;
 				i++;
 			}
@@ -528,7 +530,8 @@ public Date parse(String source, ParsePosition pos) {
 		}
 		else {
 			// match litteral
-			if (source.charAt(index) != letter) {
+			if ((index >= endIndex) ||
+			    (source.charAt(index) != letter)) {
 				pos.setIndex(startIndex);
 				pos.setErrorIndex(index);
 				return null;
