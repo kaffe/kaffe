@@ -1601,11 +1601,16 @@ serialized_converters = \
 	kaffe/io/CharToByteCP918.ser \
 	kaffe/io/CharToByteKOI8_R.ser
 
+gnu_regexp_message_bundles = \
+	gnu/regexp/MessagesBundle_fr.properties \
+	gnu/regexp/MessagesBundle.properties
+
 EXTRA_DIST = Klasses.jar.bootstrap $(toolslib_DATA) $(Klasses_jar_SRCS) \
 	$(Awt_SRCS) $(Rest_SRCS) $(RMI_SRCS) \
         bootstrap.classlist \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
+	$(gnu_regexp_message_bundles) \
 	kaffe/io/ByteToCharEUC_JP.tbl \
 	kaffe/io/CharToByteEUC_JP.tbl \
 	kaffe/lang/unicode.idx \
@@ -1651,6 +1656,7 @@ jar-classes rt.jar: $(LIBDIR)/stamp
 	cp $(srcdir)/kaffe/lang/unicode.idx $(srcdir)/kaffe/lang/unicode.tbl $(LIBDIR)/kaffe/lang
 	cp $(srcdir)/kaffe/io/ByteToCharEUC_JP.tbl $(srcdir)/kaffe/io/CharToByteEUC_JP.tbl $(LIBDIR)/kaffe/io
 	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
+	for i in $(gnu_regexp_message_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	rm -f rt.jar
 	(cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
 

@@ -1,3 +1,11 @@
+2002-11-29 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Makefile.am: added gnu.regexp message bundles.
+	* libraries/javalib/Makefile.in: regenerated.
+	* libraries/javalib/gnu/regexp/MessagesBundle.properties,
+	libraries/javalib/gnu/regexp/MessagesBundle_fr.properties:
+	new files. Taken from gnu.regexp CVS.
+
 2002-11-28 Dalibor Topic <robilad@yahoo.com>
 
 	Merged in new packages: javax.sound.sampled from PockeLinux,
