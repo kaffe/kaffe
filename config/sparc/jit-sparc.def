@@ -1160,7 +1160,7 @@ define_insn(returnarg_float, freturnarg_xxR)
 	int r = rreg_float(2);
 
 	finsn_RRR(1, 0 /* REG_f0 */, 0, r);
-	debug(("fmovs %s,%s\n", fregname(REG_f0), fregname(r)));
+	debug(("fmovs %s,%s\n", regname(REG_f0), fregname(r)));
 }
 
 define_insn(returnarg_double, freturnargl_xxR)
@@ -1169,6 +1169,6 @@ define_insn(returnarg_double, freturnargl_xxR)
 
 	finsn_RRR(1, 0 /* REG_f0 */, 0, r);
 	finsn_RRR(1, 1 /* REG_f1 */, 0, r+1);
-	debug(("fmovs %s,%s\n", fregname(REG_f0), fregname(r)));
-	debug(("fmovs %s,%s\n", fregname(REG_f1), fregname(r+1)));
+	debug(("fmovs %s,%s\n", regname(REG_f0), fregname(r)));
+	debug(("fmovs %s,%s\n", regname(REG_f1), fregname(r+1)));
 }

@@ -2,6 +2,7 @@ Sun Aug 15 16:16:02 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/awt/Insets.java: made toString()
 	more informative.
+	* config/sparc/jit-sparc.def: bugfix for #522
 
 1999-08-15  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
