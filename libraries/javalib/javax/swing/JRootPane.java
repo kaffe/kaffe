@@ -333,6 +333,11 @@ public class JRootPane extends JComponent
   protected Container contentPane;
 
   protected JButton defaultButton;
+
+  /**
+   * @since 1.4
+   */
+  private int windowDecorationStyle = NONE;
   
   /**
    * DOCUMENT ME!
@@ -345,6 +350,11 @@ public class JRootPane extends JComponent
     getLayeredPane().add(menuBar, JLayeredPane.FRAME_CONTENT_LAYER);
   }
 
+  public void setMenuBar(JMenuBar m)
+  {
+    setJMenuBar(m);
+  }
+
   /**
    * DOCUMENT ME!
    *
@@ -353,6 +363,11 @@ public class JRootPane extends JComponent
   public JMenuBar getJMenuBar()
   {
     return menuBar;
+  }
+
+  public JMenuBar getMenuBar()
+  {
+    return getJMenuBar();
   }
 
   /**
@@ -568,5 +583,33 @@ public class JRootPane extends JComponent
     JButton oldButton = defaultButton;
     defaultButton = newButton;
     firePropertyChange("defaultButton", oldButton, newButton);
+  }
+
+  /**
+   * @since 1.4
+   */
+  public int getWindowDecorationStyle()
+  {
+    return windowDecorationStyle;
+  }
+
+  /**
+   * @since 1.4
+   */
+  public void setWindowDecorationStyle(int style)
+  {
+    if (style != NONE
+	&& style != FRAME
+	&& style != INFORMATION_DIALOG
+	&& style != ERROR_DIALOG
+	&& style != COLOR_CHOOSER_DIALOG
+	&& style != FILE_CHOOSER_DIALOG
+	&& style != QUESTION_DIALOG
+	&& style != WARNING_DIALOG)
+      throw new IllegalArgumentException("invalid style");
+    
+    int oldStyle = windowDecorationStyle;
+    windowDecorationStyle = style;
+    firePropertyChange("windowDecorationStyle", oldStyle, style);
   }
 }
