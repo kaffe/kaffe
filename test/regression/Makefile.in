@@ -467,60 +467,62 @@ TEST_NATIVE = \
 	TestNative.java
 
 
-@HAVE_JASMIN_TRUE@JASMIN_TESTS = \
-@HAVE_JASMIN_TRUE@	FloatAlias.j \
-@HAVE_JASMIN_TRUE@	BadCatch1.j \
-@HAVE_JASMIN_TRUE@	BadCatch2.j \
-@HAVE_JASMIN_TRUE@	CircularClass.j \
-@HAVE_JASMIN_TRUE@	CircularInterface.j \
-@HAVE_JASMIN_TRUE@	ClassFlags1.j \
-@HAVE_JASMIN_TRUE@	ClassFlags2.j \
-@HAVE_JASMIN_TRUE@	DuplicateField.j \
-@HAVE_JASMIN_TRUE@	EmptyMethod.j \
-@HAVE_JASMIN_TRUE@	FieldFlags1.j \
-@HAVE_JASMIN_TRUE@	FieldFlags2.j \
-@HAVE_JASMIN_TRUE@	FieldFlags3.j \
-@HAVE_JASMIN_TRUE@	FieldFlags4.j \
-@HAVE_JASMIN_TRUE@	FieldRefSignature1.j \
-@HAVE_JASMIN_TRUE@	FieldSignature1.j \
-@HAVE_JASMIN_TRUE@	FieldSignature2.j \
-@HAVE_JASMIN_TRUE@	FieldSignature3.j \
-@HAVE_JASMIN_TRUE@	FieldSignature4.j \
-@HAVE_JASMIN_TRUE@	InvokedMethodSignature1.j \
-@HAVE_JASMIN_TRUE@	InvokedMethodSignature2.j \
-@HAVE_JASMIN_TRUE@	InvokedMethodSignature3.j \
-@HAVE_JASMIN_TRUE@	MethodFlags1.j \
-@HAVE_JASMIN_TRUE@	MethodFlags2.j \
-@HAVE_JASMIN_TRUE@	MethodFlags3.j \
-@HAVE_JASMIN_TRUE@	MethodFlags4.j \
-@HAVE_JASMIN_TRUE@	MethodFlags5.j \
-@HAVE_JASMIN_TRUE@	MethodSignature1.j \
-@HAVE_JASMIN_TRUE@	MethodSignature2.j \
-@HAVE_JASMIN_TRUE@	MethodSignature3.j \
-@HAVE_JASMIN_TRUE@	MethodSignature4.j \
-@HAVE_JASMIN_TRUE@	MethodSignature5.j \
-@HAVE_JASMIN_TRUE@	MethodSignature6.j \
-@HAVE_JASMIN_TRUE@	MethodSignature7.j \
-@HAVE_JASMIN_TRUE@	MethodSignature8.j \
-@HAVE_JASMIN_TRUE@	MethodSignature9.j
+JASMIN_TESTS_DIST = \
+	FloatAlias.j \
+	BadCatch1.j \
+	BadCatch2.j \
+	CircularClass.j \
+	CircularInterface.j \
+	ClassFlags1.j \
+	ClassFlags2.j \
+	DuplicateField.j \
+	EmptyMethod.j \
+	FieldFlags1.j \
+	FieldFlags2.j \
+	FieldFlags3.j \
+	FieldFlags4.j \
+	FieldRefSignature1.j \
+	FieldSignature1.j \
+	FieldSignature2.j \
+	FieldSignature3.j \
+	FieldSignature4.j \
+	InvokedMethodSignature1.j \
+	InvokedMethodSignature2.j \
+	InvokedMethodSignature3.j \
+	MethodFlags1.j \
+	MethodFlags2.j \
+	MethodFlags3.j \
+	MethodFlags4.j \
+	MethodFlags5.j \
+	MethodSignature1.j \
+	MethodSignature2.j \
+	MethodSignature3.j \
+	MethodSignature4.j \
+	MethodSignature5.j \
+	MethodSignature6.j \
+	MethodSignature7.j \
+	MethodSignature8.j \
+	MethodSignature9.j
 
 @HAVE_JASMIN_FALSE@JASMIN_TESTS = 
+@HAVE_JASMIN_TRUE@JASMIN_TESTS = JASMIN_TESTS_DIST
 
-@HAVE_BCEL_TRUE@BCEL_TESTS = \
-@HAVE_BCEL_TRUE@	BadClassFileCode.java \
-@HAVE_BCEL_TRUE@	BadClassFileConstants.java
+BCEL_TESTS_DIST = \
+	BadClassFileCode.java \
+	BadClassFileConstants.java
 
+@HAVE_BCEL_TRUE@BCEL_TESTS = BCEL_TESTS_DIST
 @HAVE_BCEL_FALSE@BCEL_TESTS = 
-@USER_WANT_GNU_CRYPTO_FALSE@TEST_GNU_CRYPTO = 
 
 @USER_WANT_GNU_CRYPTO_TRUE@TEST_GNU_CRYPTO = \
 @USER_WANT_GNU_CRYPTO_TRUE@	TestGnuCrypto.java
 
+@USER_WANT_GNU_CRYPTO_FALSE@TEST_GNU_CRYPTO = 
 
 TEST_Overflow = Overflow.java
+@HAVE_GCJ_SUPPORT_FALSE@TESTS = $(ALWAYS_TESTS)
 
 @HAVE_GCJ_SUPPORT_TRUE@TESTS = $(ALWAYS_TESTS) $(TEST_Overflow)
-@HAVE_GCJ_SUPPORT_FALSE@TESTS = $(ALWAYS_TESTS)
 
 XFAIL_TESTS = 
 
@@ -537,7 +539,10 @@ EXTRA_DIST = $(ALWAYS_TESTS) \
 	LoaderTest_Class3.java \
 	LoaderTest_Loader1.java \
 	LoaderTest_Loader2.java \
-	CatchLimits.j
+	$(JASMIN_TESTS_DIST) \
+	CatchLimits.j \
+	$(BCEL_TESTS_DIST) \
+	TestGnuCrypto.java
 
 
 CLEANFILES = *.class *.fail *.out core *.core ExceptionTest ziptest1.zip \

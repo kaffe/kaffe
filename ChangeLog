@@ -1,3 +1,37 @@
+2003-12-07  Jim Pick <jim@kaffe.org>
+
+	(On Release 1.1.3 Branch)
+
+	* README,
+	RELEASE-NOTES,
+	WHATSNEW:
+	Updated version number in docs, summarized
+	changes.
+
+	* configure.in:
+	Bumped version number.
+
+	* Makefile.am,
+	test/regression/Makefile.am,
+	test/regression/run_time/Makefile.am:
+	Some fixes for "make dist".
+
+	* aclocal.m4,
+	configure,
+	kaffe/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	kaffe/kaffevm/Makefile.in,
+	kaffe/kaffevm/gcj/Makefile.in,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	libltdl/config-h.in,
+	libraries/clib/Makefile.in,
+	libraries/javalib/Makefile.in,
+	test/internal/Makefile.in,
+	test/regression/Makefile.in,
+	test/regression/run_time/Makefile.in:
+	Regenerated.
+
 2003-12-07  Dalibor Topic <robilad@kaffe.org>
 
 	* developers/mauve-kaffe:

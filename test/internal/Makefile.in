@@ -256,12 +256,12 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-@NEED_LIBXPROF_FALSE@libxprof = #
 
 @NEED_LIBXPROF_TRUE@libxprof = ../../kaffe/xprof/libkaffexprof.la
-@ENABLE_JVMPI_FALSE@libjvmpi = #
+@NEED_LIBXPROF_FALSE@libxprof = #
 
 @ENABLE_JVMPI_TRUE@libjvmpi = ../../kaffe/jvmpi/libkaffejvmpi.la
+@ENABLE_JVMPI_FALSE@libjvmpi = #
 
 check_PROGRAMS = jitBasic
 

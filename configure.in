@@ -1,6 +1,6 @@
-AC_INIT([kaffe],[1.1.x-cvs],[kaffe@kaffe.org])
+AC_INIT([kaffe],[1.1.3],[kaffe@kaffe.org])
 AC_CONFIG_SRCDIR([kaffe])
-AM_INIT_AUTOMAKE(kaffe, 1.1.x-cvs)
+AM_INIT_AUTOMAKE(kaffe, 1.1.3)
 
 AC_PREFIX_DEFAULT(/usr/local/kaffe)
 

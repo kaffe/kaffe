@@ -78,4 +78,5 @@ EXTRA_DIST = \
 	a/PublicToPackage.java \
 	a/PublicToProtected.java \
 	PublicToPrivate.java \
+	PublicToPrivateField.java \
 	StaticToInst.java

@@ -269,9 +269,9 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
 SRCDIRS = gnu java javax kaffe org
+@COND_PURE_JAVA_MATH_FALSE@JAVA_MATH_FILES = native_java_math.files
 
 @COND_PURE_JAVA_MATH_TRUE@JAVA_MATH_FILES = pure_java_math.files
-@COND_PURE_JAVA_MATH_FALSE@JAVA_MATH_FILES = native_java_math.files
 
 JAVA = $(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
 KAFFELIBRARYPATH = $(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/
@@ -2981,11 +2981,11 @@ EXTRA_DIST = \
 LIBDIR = lib
 
 rebuildLib = ./rebuildLib
-@HAVE_ZIP_FALSE@JAR_CMD1 = $(JAR) -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
 
 @HAVE_ZIP_TRUE@JAR_CMD1 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -r $$dstdir/rt.jar META-INF)
-@HAVE_ZIP_FALSE@JAR_CMD2 = $(JAR) -uvf rt.jar -C $(srcdir) META-INF/
+@HAVE_ZIP_FALSE@JAR_CMD1 = $(JAR) -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
 @HAVE_ZIP_TRUE@JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
+@HAVE_ZIP_FALSE@JAR_CMD2 = $(JAR) -uvf rt.jar -C $(srcdir) META-INF/
 subdir = libraries/javalib
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

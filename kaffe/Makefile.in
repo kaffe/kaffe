@@ -252,12 +252,12 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-@NEED_LIBXPROF_FALSE@XPROF_SUBDIRS = #
 
 @NEED_LIBXPROF_TRUE@XPROF_SUBDIRS = xprof
-@ENABLE_JVMPI_FALSE@JVMPI_SUBDIRS = #
+@NEED_LIBXPROF_FALSE@XPROF_SUBDIRS = #
 
 @ENABLE_JVMPI_TRUE@JVMPI_SUBDIRS = jvmpi
+@ENABLE_JVMPI_FALSE@JVMPI_SUBDIRS = #
 
 SUBDIRS = kaffeh kaffevm $(XPROF_SUBDIRS) $(JVMPI_SUBDIRS) kaffe scripts man
 subdir = kaffe
