@@ -1,3 +1,9 @@
+2004-09-01  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/m68k/jit-m68k.def,
+	config/m68k/jit3-m68k.def: Unification of jit-m68k.def and
+	jit3-m68k.def, step 1.
+
 2004-09-01	jrandom <jrandom@i2p.net>
 
 	* kaffe/libraries/clib/zip/Inflater.c: 

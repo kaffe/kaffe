@@ -4,6 +4,9 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2004
+ *	Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -15,6 +18,9 @@
 #include "classMethod.h"
 #include "access.h"
 #include "gtypes.h"
+#if defined(JIT3)
+#include "soft.h"
+#endif
 
 #define	REG_d0			0
 #define	REG_d1			1
@@ -104,6 +110,7 @@ op_addl_dd(int src, int dst)
 	WOUT(0xD080 | (dst << 9) | (MODE_d << 3) | (src & 7));
 }
 
+#if !defined(HAVE_NO_ADDAW)
 static inline void
 op_addaw_ia(int imm, int dst)
 {
@@ -113,6 +120,7 @@ op_addaw_ia(int imm, int dst)
 	WOUT(0xD0C0 | ((dst & 7) << 9) | MODE_src_imm);
 	WOUT(imm);
 }
+#endif
 
 static inline void
 op_addal_ia(int imm, int dst)
@@ -196,6 +204,74 @@ op_asr_dd(int src, int dst)
 }
 
 static inline void
+op_blo_16(int disp)
+{
+	debug(("blo %+d\n", disp));
+	WOUT(0x6500);
+	WOUT(disp);
+}
+
+#if defined(HAVE_NO_LONG_BRANCHES)
+
+static inline void
+op_beq_16(int disp)
+{
+	debug(("beq %+d\n", disp));
+	WOUT(0x6700);
+	WOUT(disp);
+}
+
+static inline void
+op_bne_16(int disp)
+{
+	debug(("bne %+d\n", disp));
+	WOUT(0x6600);
+	WOUT(disp);
+}
+
+static inline void
+op_blt_16(int disp)
+{
+	debug(("blt %+d\n", disp));
+	WOUT(0x6D00);
+	WOUT(disp);
+}
+
+static inline void
+op_ble_16(int disp)
+{
+	debug(("ble %+d\n", disp));
+	WOUT(0x6F00);
+	WOUT(disp);
+}
+
+static inline void
+op_bgt_16(int disp)
+{
+	debug(("bgt %+d\n", disp));
+	WOUT(0x6E00);
+	WOUT(disp);
+}
+
+static inline void
+op_bge_16(int disp)
+{
+	debug(("bge %+d\n", disp));
+	WOUT(0x6C00);
+	WOUT(disp);
+}
+
+static inline void
+op_bra_16(int disp)
+{
+	debug(("bra %+d\n", disp));
+	WOUT(0x6000);
+	WOUT(disp);
+}
+
+#else
+
+static inline void
 op_beq_32(int disp)
 {
 	debug(("beq %+d\n", disp));
@@ -258,6 +334,7 @@ op_bra_32(int disp)
 	WOUT(0x60FF);
 	LOUT(disp);
 }
+#endif
 
 static inline void
 op_bsr_32(int disp)
@@ -492,6 +569,17 @@ op_movel_ad(int src, int dst)
 	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_d << 6) | (MODE_a << 3) | (src & 7));
 }
 
+#if defined(JIT3)
+static inline void
+op_movel_da(int src, int dst)
+{
+	debug(("movel %s, %s\n", regname(src), regname(dst)));
+	assert_areg(src);
+	assert_dreg(dst);
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_a << 6) | (MODE_d << 3) | (src & 7));
+}
+#endif
+
 static inline void
 op_movel_dd(int src, int dst)
 {
@@ -566,6 +654,26 @@ op_movel_ap(int src, int dst)
 	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_predec << 6) | (MODE_a << 3) | (src & 7));
 }
 
+#if defined(JIT3)
+static inline void
+op_movel_pd(int src, int dst)
+{
+	debug(("movel +(%s), %s\n", regname(src), regname(dst)));
+	assert_areg(src);
+	assert_dreg(dst);
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_d << 6) | (MODE_postinc << 3) | (src & 7));
+}
+
+static inline void
+op_movel_pa(int src, int dst)
+{
+	debug(("movel +(%s), %s\n", regname(src), regname(dst)));
+	assert_areg(src);
+	assert_areg(dst);
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_a << 6) | (MODE_postinc << 3) | (src & 7));
+}
+#endif
+
 static inline void
 op_movel_dp(int src, int dst)
 {
@@ -635,6 +743,7 @@ op_moveal_ia(int imm, int dst)
 	LOUT(imm);
 }
 
+#if defined(JIT3)
 static inline void
 op_moveml_ro(int mask, int areg, int disp)
 {
@@ -643,6 +752,7 @@ op_moveml_ro(int mask, int areg, int disp)
 	assert_areg(areg);
 	WOUT(0x48C0 | (MODE_inddisp << 3) | (areg & 7));
 	WOUT(mask);
+	WOUT(disp);
 }
 
 static inline void
@@ -653,7 +763,27 @@ op_moveml_or(int areg, int disp, int mask)
 	assert_areg(areg);
 	WOUT(0x4CC0 | (MODE_inddisp << 3) | (areg & 7));
 	WOUT(mask);
+	WOUT(disp);
 }
+
+static inline void
+op_moveml_rp(int mask, int areg)
+{
+	debug(("moveml 0x%04x, -(%s)\n", mask, regname(areg)));
+	assert_areg(areg);
+	WOUT(0x48C0 | (MODE_predec << 3) | (areg & 7));
+	WOUT(mask);
+}
+
+static inline void
+op_moveml_pr(int areg, int mask)
+{
+	debug(("moveml +(%s), 0x%04x\n", regname(areg), mask));
+	assert_areg(areg);
+	WOUT(0x4CC0 | (MODE_postinc << 3) | (areg & 7));
+	WOUT(mask);
+}
+#endif
 
 static inline void
 op_moveq_id(int imm, int dst)
@@ -749,6 +879,7 @@ op_subl_dd(int src, int dst)
 	WOUT(0x9080 | (dst << 9) | (MODE_d << 3) | src);
 }
 
+#if !defined(HAVE_NO_SUBAW)
 static inline void
 op_subaw_ia(int disp, int dst)
 {
@@ -758,6 +889,16 @@ op_subaw_ia(int disp, int dst)
 	WOUT(0x90C0 | ((dst & 7) << 9) | MODE_src_imm);
 	WOUT(disp);
 }
+#else
+static inline void
+op_subal_ia(int imm, int dst)
+{
+	debug(("subal #%d, %s\n", imm, regname(dst)));
+	assert_areg(dst);
+	WOUT(0x91C0 | ((dst & 7) << 9) | MODE_src_imm);
+	LOUT(imm);
+}
+#endif
 
 static inline void
 op_subql_id(int imm, int dst)
@@ -1014,8 +1155,8 @@ op_fmovemx_ro(int mask, int base, int disp)
 	debug(("fmovemx 0x%02x, %d(%s)\n", mask, disp, regname(base)));
 	assert_s16(disp);
 	assert_areg(base);
-	WOUT((0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7)));
-	WOUT((0xD000 | mask));
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7));
+	WOUT(0xD000 | mask);
 }
 
 static inline void
@@ -1024,8 +1165,8 @@ op_fmovemx_or(int base, int disp, int mask)
 	debug(("fmovemx %d(%s), 0x%02x\n", disp, regname(base), mask));
 	assert_s16(disp);
 	assert_areg(base);
-	WOUT((0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7)));
-	WOUT((0xE000 | mask));
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7));
+	WOUT(0xE000 | mask);
 }
 
 static inline void
@@ -1094,11 +1235,12 @@ define_insn(nop, nop)
 
 define_insn(prologue, prologue_xxC)
 {
-	Method* meth = const_method(2);
+	Method* meth;
 	int framesize;
 
 #ifdef KAFFE_VMDEBUG
 	if (jit_debug) {
+		meth = const_method(2);
 		printf("\n%s.%s %s\n", meth->class->name->data,
 			meth->name->data, METHOD_SIGD(meth));
 	}
@@ -1124,9 +1266,30 @@ define_insn(eprologue, eprologue_xxx)
 	/* Be careful not to dealocate our current frame even for
 	   an instant.  */
 	op_moveal_aa(REG_fp, REG_a0);
+
+#if !defined(HAVE_NO_SUBAW)
 	op_subaw_ia(framesize, REG_a0);
+#else
+	op_subal_ia(framesize, REG_a0);
+#endif
+
 	op_moveal_aa(REG_a0, REG_sp);
 }
+
+#if defined(JIT3)
+define_insn(check_stack_limit, check_stack_limit_xRC)
+{
+	int r = rreg_ref(1);
+	label* l = const_label(2);
+
+	op_cmpal_aa(REG_sp, r);
+	op_blo_16(8);
+	l->type |= Llong|Labsolute;
+	l->at = CODEPC+2;
+	l->from = CODEPC+2;
+	op_jsr_32((uintp)soft_stackoverflow);
+}
+#endif
 
 /* --------------------------------------------------------------------- */
 
@@ -1348,9 +1511,11 @@ define_insn(add_ref_const, addr_RRC)
 	if (o >= 1 && o <= 8) {
 		op_addql_ia(o, rw);
 	}
+#if !defined(HAVE_NO_ADDAW)
 	else if (o >= -0x8000 && o < 0x8000) {
 		op_addaw_ia(o, rw);
 	}
+#endif
 	else {
 		op_addal_ia(o, rw);
 	}
@@ -1722,6 +1887,7 @@ define_insn(cmp_ref, cmpr_xRR)
 	op_cmpal_aa(r2, r1);
 }
 
+#if !defined(HAVE_NO_SWAP_ANY)
 define_insn(swap_any, swap_RxR)
 {
 	int r1, r2, type = 0;
@@ -1759,6 +1925,7 @@ define_insn(swap_any, swap_RxR)
 		ABORT();
 	}
 }
+#endif
 
 /* --------------------------------------------------------------------- */
 
@@ -2007,6 +2174,40 @@ define_insn(branch, branch_xCC)
 	label* l = const_label(1);
 	int bt = const_int(2);
 
+#if defined(HAVE_NO_LONG_BRANCHES)
+	l->type |= Llong16 | Lrelative | Lrangecheck;
+	l->at = CODEPC+2;
+	l->from = CODEPC+2;
+
+	switch (bt) {
+	case ba:
+		op_bra_16(0);
+		break;
+	case beq:
+		op_beq_16(0);
+		break;
+	case bne:
+		op_bne_16(0);
+		break;
+	case blt:
+		op_blt_16(0);
+		break;
+	case ble:
+		op_ble_16(0);
+		break;
+	case bgt:
+		op_bgt_16(0);
+		break;
+	case bge:
+		op_bge_16(0);
+		break;
+	case bult:
+		op_blo_16(0);
+		break;
+	default:
+		abort();
+	}
+#else
 	l->type |= Llong | Lrelative | Lrangecheck;
 	l->at = CODEPC+2;
 	l->from = CODEPC+2;
@@ -2039,6 +2240,7 @@ define_insn(branch, branch_xCC)
 	default:
 		ABORT();
 	}
+#endif
 }
 
 define_insn(branch_indirect, branch_indirect_xRC)
@@ -2145,9 +2347,11 @@ define_insn(popargs, popargs_xxC)
 		if (o <= 0x8) {
 			op_addql_ia(o, REG_sp);
 		}
+#if !defined(HAVE_NO_ADDAW)
 		else if (o < 0x8000) {
 			op_addaw_ia(o, REG_sp);
 		}
+#endif
 		else {
 			op_addal_ia(o, REG_sp);
 		}
@@ -2233,7 +2437,11 @@ define_insn(returnarg_ref, returnargr_xxR)
 
 define_insn(returnarg_long, returnargl_xxR)
 {
+#if !defined(JIT3)
 	SlotInfo *r;
+#else
+	REGSLOT *r;
+#endif
 	int rl, rh;
 
 	r = seq_slot(s, 2);

@@ -5,7 +5,7 @@
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * Copyright (c) 2004
- *      Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
+ *	Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
@@ -15,7 +15,10 @@
 #include <string.h>
 #include "classMethod.h"
 #include "access.h"
+#include "gtypes.h"
+#if defined(JIT3)
 #include "soft.h"
+#endif
 
 #define	REG_d0			0
 #define	REG_d1			1
@@ -566,6 +569,7 @@ op_movel_ad(int src, int dst)
 	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_d << 6) | (MODE_a << 3) | (src & 7));
 }
 
+#if defined(JIT3)
 static inline void
 op_movel_da(int src, int dst)
 {
@@ -574,6 +578,7 @@ op_movel_da(int src, int dst)
 	assert_dreg(dst);
 	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_a << 6) | (MODE_d << 3) | (src & 7));
 }
+#endif
 
 static inline void
 op_movel_dd(int src, int dst)
@@ -649,6 +654,7 @@ op_movel_ap(int src, int dst)
 	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_predec << 6) | (MODE_a << 3) | (src & 7));
 }
 
+#if defined(JIT3)
 static inline void
 op_movel_pd(int src, int dst)
 {
@@ -666,6 +672,7 @@ op_movel_pa(int src, int dst)
 	assert_areg(dst);
 	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_a << 6) | (MODE_postinc << 3) | (src & 7));
 }
+#endif
 
 static inline void
 op_movel_dp(int src, int dst)
@@ -736,6 +743,7 @@ op_moveal_ia(int imm, int dst)
 	LOUT(imm);
 }
 
+#if defined(JIT3)
 static inline void
 op_moveml_ro(int mask, int areg, int disp)
 {
@@ -775,6 +783,7 @@ op_moveml_pr(int areg, int mask)
 	WOUT(0x4CC0 | (MODE_postinc << 3) | (areg & 7));
 	WOUT(mask);
 }
+#endif
 
 static inline void
 op_moveq_id(int imm, int dst)
@@ -880,8 +889,7 @@ op_subaw_ia(int disp, int dst)
 	WOUT(0x90C0 | ((dst & 7) << 9) | MODE_src_imm);
 	WOUT(disp);
 }
-#endif
-
+#else
 static inline void
 op_subal_ia(int imm, int dst)
 {
@@ -890,6 +898,7 @@ op_subal_ia(int imm, int dst)
 	WOUT(0x91C0 | ((dst & 7) << 9) | MODE_src_imm);
 	LOUT(imm);
 }
+#endif
 
 static inline void
 op_subql_id(int imm, int dst)
@@ -1214,7 +1223,7 @@ op_fdsubx_ff(int src, int dst)
 
 define_insn(unimplemented, unimplemented)
 {
-	abort();
+	ABORT();
 }
 
 define_insn(nop, nop)
@@ -1311,18 +1320,20 @@ define_insn(eprologue, eprologue_xxx)
 	op_moveal_aa(REG_a0, REG_sp);
 }
 
+#if defined(JIT3)
 define_insn(check_stack_limit, check_stack_limit_xRC)
 {
-        int r = rreg_ref(1);
-        label* l = const_label(2);
+	int r = rreg_ref(1);
+	label* l = const_label(2);
 
 	op_cmpal_aa(REG_sp, r);
 	op_blo_16(8);
-        l->type |= Llong|Labsolute;
-        l->at = CODEPC+2;
-        l->from = CODEPC+2;
+	l->type |= Llong|Labsolute;
+	l->at = CODEPC+2;
+	l->from = CODEPC+2;
 	op_jsr_32((uintp)soft_stackoverflow);
 }
+#endif
 
 /* --------------------------------------------------------------------- */
 
@@ -1745,14 +1756,13 @@ define_insn(div_double, divd_RRR)
 
 define_insn(rem_int, remi_RRR)
 {
-	int d;
+	int d = rreg_int(2);
 	int n;
 	int x;
 
 	/* If register is global then we cannot trash 'd' - we'll pick d0
 	 * to trash instead (we can be assured d != d0).
 	 */
-	d = rreg_int(2);
 	if (isRegisterGlobal(d)) {
 		x = REG_d0;
 	}
@@ -1982,7 +1992,7 @@ define_insn(swap_any, swap_RxR)
 		op_exg_da(r2, r1);
 		break;
 	default:
-		abort();
+		ABORT();
 	}
 }
 #endif
@@ -2265,7 +2275,7 @@ define_insn(branch, branch_xCC)
 		op_blo_16(0);
 		break;
 	default:
-		abort();
+		ABORT();
 	}
 #else
 	l->type |= Llong | Lrelative | Lrangecheck;
@@ -2298,7 +2308,7 @@ define_insn(branch, branch_xCC)
 		op_blo_32(0);
 		break;
 	default:
-		abort();
+		ABORT();
 	}
 #endif
 }
@@ -2406,7 +2416,7 @@ define_insn(popargs, popargs_xxC)
 	int o = const_int(2) * 4;
 
 	if (o < 0) {
-		abort();
+		ABORT();
 	}
 	else if (o > 0) {
 		if (o <= 0x8) {
