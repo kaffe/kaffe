@@ -1,4 +1,30 @@
 2003-05-07 Dalibor Topic <robilad@yahoo.com>
+	* WHATSNEW:
+	Added information about native2ascii.
+	
+        * kaffe/scripts/native2ascii.in:
+	Use kaffe's own implementation.
+
+	* libraries/javalib/profiles/allatonce/all.files,
+        libraries/javalib/profiles/default/rmi.files:
+	Added kaffe.tools.native2ascii.Native2ASCII.java.
+
+        * libltdl/config.guess,
+        libltdl/config.sub,
+        libltdl/configure.ac,
+        libltdl/install-sh,
+        libltdl/ltmain.sh,
+        libltdl/missing,
+        libltdl/mkinstalldirs,
+        test/internal/Makefile.in:
+	Added files I forgot from last automake/libtool update.
+	
+2003-05-07 Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/kaffe/tools/native2ascii/Native2ASCII.java:
+	new file.
+	
+2003-05-07 Dalibor Topic <robilad@yahoo.com>
 
 	* FAQ/FAQ.awt:
 	Added information on third party AWT backends.
