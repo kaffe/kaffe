@@ -541,7 +541,7 @@ clean-hook:
 $(srcdir)/Klasses.jar:
 	$(MAKE) classes build-classes
 
-classes:
+classes: rebuildLib
 	$(SHELL) ./rebuildLib
 
 build-classes:
