@@ -40,9 +40,12 @@ static {
 	if (sin != null) {
 		try {
 			props.load(sin);
-			sin.close();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
+		} finally {
+			try {
+				sin.close();
+			} catch (IOException e) {
+			}
 		}
 	}
 
@@ -99,7 +102,7 @@ public static Properties getProperties() {
 public static String getProperty(String key) {
 	checkPropertyAccess();
 
-	return getProperty(key, null);
+	return props.getProperty(key);
 }
 
 public static String getProperty(String key, String def) {
