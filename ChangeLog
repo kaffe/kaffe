@@ -1,3 +1,8 @@
+Tue May 14 20:59:36 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/clib/native/Field.c:
+	renamed setXXX methods to setXXX0 as indicated in the java file.
+
 Tue May 14 20:52:20 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/lang/reflect/Array.java:
