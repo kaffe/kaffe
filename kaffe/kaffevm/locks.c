@@ -69,6 +69,9 @@ static struct {
 static jboolean _SemGet(void*, jlong);
 static void _SemPut(void*);
 
+/* Count number of backoffs */
+int backoffcount = 0;
+
 /*
  * Initialise the locking system.
  */
@@ -106,6 +109,7 @@ getHeavyLock(iLock** lkp)
 		old = *lkp;
 		if (old == LOCKINPROGRESS || !COMPARE_AND_EXCHANGE(lkp, old, LOCKINPROGRESS)) {
 			tid = getCurrentThread();
+			backoffcount++;
 			SEMGET(unhand(tid)->sem, timeout);
 			/* Back off */
 			timeout = (timeout << 1)|timeout;
