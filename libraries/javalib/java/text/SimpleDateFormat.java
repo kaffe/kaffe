@@ -538,9 +538,12 @@ public class SimpleDateFormat extends DateFormat
 	    ranges.add(new Integer(buffer.length()));
 	  }
       } else {
-	attributes.add(null);
 	buffer.append(o.toString());
-	ranges.add(new Integer(buffer.length()));
+	if (attributes != null)
+	  {
+	    attributes.add(null);
+	    ranges.add(new Integer(buffer.length()));
+	  }
       }
     }
     return buffer;
