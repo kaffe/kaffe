@@ -17,7 +17,7 @@ package java.security;
 
 public interface PrivilegedExceptionAction {
 
-	public Object run() throws Exception;
+	Object run() throws Exception;
 
 }
 

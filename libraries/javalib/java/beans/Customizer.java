@@ -12,8 +12,8 @@ package java.beans;
 
 public interface Customizer {
 
-  public abstract void setObject(Object bean);
-  public abstract void addPropertyChangeListener(PropertyChangeListener listener);
-  public abstract void removePropertyChangeListener(PropertyChangeListener listener);
+  void setObject(Object bean);
+  void addPropertyChangeListener(PropertyChangeListener listener);
+  void removePropertyChangeListener(PropertyChangeListener listener);
 
 }

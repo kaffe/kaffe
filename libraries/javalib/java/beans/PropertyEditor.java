@@ -15,27 +15,27 @@ import java.awt.Rectangle;
  */
 public interface PropertyEditor
 {
-abstract public void addPropertyChangeListener(PropertyChangeListener listener);
+void addPropertyChangeListener(PropertyChangeListener listener);
 
-abstract public String getAsText();
+String getAsText();
 
-abstract public Component getCustomEditor();
+Component getCustomEditor();
 
-abstract public String getJavaInitializationString();
+String getJavaInitializationString();
 
-abstract public String[] getTags();
+String[] getTags();
 
-abstract public Object getValue();
+Object getValue();
 
-abstract public boolean isPaintable();
+boolean isPaintable();
 
-abstract public void paintValue(Graphics gfx, Rectangle box);
+void paintValue(Graphics gfx, Rectangle box);
 
-abstract public void removePropertyChangeListener(PropertyChangeListener listener);
+void removePropertyChangeListener(PropertyChangeListener listener);
 
-abstract public void setAsText(String text) throws IllegalArgumentException;
+void setAsText(String text) throws IllegalArgumentException;
 
-abstract public void setValue(Object value);
+void setValue(Object value);
 
-abstract public boolean supportsCustomEditor();
+boolean supportsCustomEditor();
 }

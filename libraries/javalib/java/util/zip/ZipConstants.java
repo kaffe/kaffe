@@ -14,65 +14,65 @@ package java.util.zip;
 
 interface ZipConstants {
 
-  public final static int CEN_SIGNATURE = 0;
-  public final static int CEN_VERSIONMADE = 4;
-  public final static int CEN_VERSIONEXTRACT = 6;
-  public final static int CEN_FLAGS = 8;
-  public final static int CEN_METHOD = 10;
-  public final static int CEN_TIME = 12;
-  public final static int CEN_DATE = 14;
-  public final static int CEN_CRC = 16;
-  public final static int CEN_COMPRESSEDSIZE = 20;
-  public final static int CEN_UNCOMPRESSEDSIZE = 24;
-  public final static int CEN_FILENAMELEN = 28;
-  public final static int CEN_EXTRAFIELDLEN = 30;
-  public final static int CEN_FILECOMMENTLEN = 32;
-  public final static int CEN_DISKNUMBER = 34;
-  public final static int CEN_INTERNALATTR = 36;
-  public final static int CEN_EXTERNALATTR = 38;
-  public final static int CEN_LCLOFFSET = 42;
+  int CEN_SIGNATURE = 0;
+  int CEN_VERSIONMADE = 4;
+  int CEN_VERSIONEXTRACT = 6;
+  int CEN_FLAGS = 8;
+  int CEN_METHOD = 10;
+  int CEN_TIME = 12;
+  int CEN_DATE = 14;
+  int CEN_CRC = 16;
+  int CEN_COMPRESSEDSIZE = 20;
+  int CEN_UNCOMPRESSEDSIZE = 24;
+  int CEN_FILENAMELEN = 28;
+  int CEN_EXTRAFIELDLEN = 30;
+  int CEN_FILECOMMENTLEN = 32;
+  int CEN_DISKNUMBER = 34;
+  int CEN_INTERNALATTR = 36;
+  int CEN_EXTERNALATTR = 38;
+  int CEN_LCLOFFSET = 42;
 
-  public final static int CEN_RECSZ = 46;
+  int CEN_RECSZ = 46;
 
-  public final static long CEN_HEADSIG = 0x02014b50;
+  long CEN_HEADSIG = 0x02014b50;
 
-  public final static int END_SIGNATURE = 0;
-  public final static int END_DISKNUMBER = 4;
-  public final static int END_CENDISKNUMBER = 6;
-  public final static int END_TOTALCENONDISK = 8;
-  public final static int END_TOTALCEN = 10;
-  public final static int END_CENSIZE = 12;
-  public final static int END_CENOFFSET = 16;
-  public final static int END_COMMENTLEN = 20;
+  int END_SIGNATURE = 0;
+  int END_DISKNUMBER = 4;
+  int END_CENDISKNUMBER = 6;
+  int END_TOTALCENONDISK = 8;
+  int END_TOTALCEN = 10;
+  int END_CENSIZE = 12;
+  int END_CENOFFSET = 16;
+  int END_COMMENTLEN = 20;
 
-  public final static int END_RECSZ = 22;
+  int END_RECSZ = 22;
 
-  public final static long END_ENDSIG = 0x06054b50;
+  long END_ENDSIG = 0x06054b50;
 
-  public final static int LOC_SIGNATURE = 0;
-  public final static int LOC_VERSIONEXTRACT = 4;
-  public final static int LOC_FLAGS = 6;
-  public final static int LOC_METHOD = 8;
-  public final static int LOC_TIME = 10;
-  public final static int LOC_DATE = 12;
-  public final static int LOC_CRC = 14;
-  public final static int LOC_COMPRESSEDSIZE = 18;
-  public final static int LOC_UNCOMPRESSEDSIZE = 22;
-  public final static int LOC_FILENAMELEN = 26;
-  public final static int LOC_EXTRAFIELDLEN = 28;
+  int LOC_SIGNATURE = 0;
+  int LOC_VERSIONEXTRACT = 4;
+  int LOC_FLAGS = 6;
+  int LOC_METHOD = 8;
+  int LOC_TIME = 10;
+  int LOC_DATE = 12;
+  int LOC_CRC = 14;
+  int LOC_COMPRESSEDSIZE = 18;
+  int LOC_UNCOMPRESSEDSIZE = 22;
+  int LOC_FILENAMELEN = 26;
+  int LOC_EXTRAFIELDLEN = 28;
 
-  public final static int LOC_RECSZ = 30;
+  int LOC_RECSZ = 30;
 
-  public final static long LOC_HEADSIG = 0x04034b50;
+  long LOC_HEADSIG = 0x04034b50;
 
-  public final static long DATA_HEADSIG = 0x08074b50;
-  public final static int DATA_SIGNATURE = 0;
-  public final static int DATA_CRC = 4;
-  public final static int DATA_COMPRESSEDSIZE = 8;
-  public final static int DATA_UNCOMPRESSEDSIZE = 12;
+  long DATA_HEADSIG = 0x08074b50;
+  int DATA_SIGNATURE = 0;
+  int DATA_CRC = 4;
+  int DATA_COMPRESSEDSIZE = 8;
+  int DATA_UNCOMPRESSEDSIZE = 12;
 
-  public final static int DATA_RECSZ = 16;
+  int DATA_RECSZ = 16;
 
-  public static final int DEFLATED = 8;
-  public static final int STORED = 0;
+  int DEFLATED = 8;
+  int STORED = 0;
 }

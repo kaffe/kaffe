@@ -63,7 +63,6 @@ static synchronized PaintEvt getEvent ( Component source, int id,
 static synchronized PaintEvt getEvent ( int srcIdx, int id, int x, int y, int width, int height ) {
 	PaintEvt e;
 	Component source = sources[srcIdx];
-	Rectangle r;
 
 	if ( (Toolkit.flags & Toolkit.EXTERNAL_DECO) != 0 ) {
 		x += source.deco.x;

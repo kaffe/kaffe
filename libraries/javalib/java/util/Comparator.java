@@ -12,7 +12,7 @@ package java.util;
 
 public interface Comparator {
 
-public int compare(Object o1, Object o2);
-public boolean equals(Object obj);
+int compare(Object o1, Object o2);
+boolean equals(Object obj);
 
 }

@@ -12,8 +12,8 @@ package java.util;
 
 public interface Iterator {
 
-public boolean hasNext();
-public Object next();
-public void remove();
+boolean hasNext();
+Object next();
+void remove();
 
 }

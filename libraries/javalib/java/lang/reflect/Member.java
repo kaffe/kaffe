@@ -15,12 +15,12 @@ package java.lang.reflect;
 
 public interface Member {
 
-final public static int PUBLIC = 0;
-final public static int DECLARED = 1;
+int PUBLIC = 0;
+int DECLARED = 1;
 
-abstract public Class getDeclaringClass();
+Class getDeclaringClass();
 
-abstract public int getModifiers();
+int getModifiers();
 
-abstract public String getName();
+String getName();
 }

@@ -715,7 +715,6 @@ void repaintLine( Graphics g, int row, int startX, TextBuffer tb) {
 	int ss = selXStart( row);
 	int se = selXEnd( row, tb);
 	int y0 = d + (row - first) * rowHeight;
-	int xa = tCursor.width;
 
 	if ( ss == se ) {
 		x0 = (startX == 0) ? 0 : tb.getPos( startX) + xOffs;

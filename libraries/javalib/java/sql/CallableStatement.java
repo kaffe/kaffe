@@ -15,22 +15,22 @@ import java.math.BigDecimal;
 public interface CallableStatement
   extends PreparedStatement {
 
-public abstract void registerOutParameter(int parameterIndex, int sqlType) throws SQLException;
-public abstract void registerOutParameter(int parameterIndex, int sqlType, int scale) throws SQLException;
-public abstract boolean wasNull() throws SQLException;
-public abstract String getString(int parameterIndex) throws SQLException;
-public abstract boolean getBoolean(int parameterIndex) throws SQLException;
-public abstract byte getByte(int parameterIndex) throws SQLException;
-public abstract short getShort(int parameterIndex) throws SQLException;
-public abstract int getInt(int parameterIndex) throws SQLException;
-public abstract long getLong(int parameterIndex) throws SQLException;
-public abstract float getFloat(int parameterIndex) throws SQLException;
-public abstract double getDouble(int parameterIndex) throws SQLException;
-public abstract BigDecimal getBigDecimal(int parameterIndex, int scale) throws SQLException;
-public abstract byte[] getBytes(int parameterIndex) throws SQLException;
-public abstract Date getDate(int parameterIndex) throws SQLException;
-public abstract Time getTime(int parameterIndex) throws SQLException;
-public abstract Timestamp getTimestamp(int parameterIndex) throws SQLException;
-public abstract Object getObject(int parameterIndex) throws SQLException;
+void registerOutParameter(int parameterIndex, int sqlType) throws SQLException;
+void registerOutParameter(int parameterIndex, int sqlType, int scale) throws SQLException;
+boolean wasNull() throws SQLException;
+String getString(int parameterIndex) throws SQLException;
+boolean getBoolean(int parameterIndex) throws SQLException;
+byte getByte(int parameterIndex) throws SQLException;
+short getShort(int parameterIndex) throws SQLException;
+int getInt(int parameterIndex) throws SQLException;
+long getLong(int parameterIndex) throws SQLException;
+float getFloat(int parameterIndex) throws SQLException;
+double getDouble(int parameterIndex) throws SQLException;
+BigDecimal getBigDecimal(int parameterIndex, int scale) throws SQLException;
+byte[] getBytes(int parameterIndex) throws SQLException;
+Date getDate(int parameterIndex) throws SQLException;
+Time getTime(int parameterIndex) throws SQLException;
+Timestamp getTimestamp(int parameterIndex) throws SQLException;
+Object getObject(int parameterIndex) throws SQLException;
 
 }

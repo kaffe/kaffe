@@ -15,9 +15,9 @@ import java.io.IOException;
  */
 public interface Transferable
 {
-abstract public Object getTransferData ( DataFlavor flavor ) throws UnsupportedFlavorException, IOException;
+Object getTransferData ( DataFlavor flavor ) throws UnsupportedFlavorException, IOException;
 
-abstract public DataFlavor[] getTransferDataFlavors();
+DataFlavor[] getTransferDataFlavors();
 
-abstract public boolean isDataFlavorSupported ( DataFlavor flavor );
+boolean isDataFlavorSupported ( DataFlavor flavor );
 }

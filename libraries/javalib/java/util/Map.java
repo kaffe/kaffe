@@ -13,28 +13,28 @@ package java.util;
 
 public interface Map {
 
-	public static interface Entry {
-		public Object getKey();
-		public Object getValue();
-		public Object setValue(Object value);
-		public boolean equals(Object o);
-		public int hashCode();
+	interface Entry {
+		Object getKey();
+		Object getValue();
+		Object setValue(Object value);
+		boolean equals(Object o);
+		int hashCode();
 	}
 
-	public int size();
-	public boolean isEmpty();
-	public boolean containsKey(Object o);
-	public boolean containsValue(Object o);
-	public Object get(Object key);
-	public Object put(Object key, Object value);
-	public void putAll(Map m);
-	public void clear();
-	public Set keySet();
-	public Set entrySet();
-	public Collection values();
-	public boolean equals(Object o);
-	public int hashCode();
-	public Object remove(Object o);
+	int size();
+	boolean isEmpty();
+	boolean containsKey(Object o);
+	boolean containsValue(Object o);
+	Object get(Object key);
+	Object put(Object key, Object value);
+	void putAll(Map m);
+	void clear();
+	Set keySet();
+	Set entrySet();
+	Collection values();
+	boolean equals(Object o);
+	int hashCode();
+	Object remove(Object o);
 
 }
 

@@ -17,11 +17,11 @@ import java.util.EventListener;
 public interface ComponentListener
  extends EventListener
 {
-public void componentHidden ( ComponentEvent evt );
+void componentHidden ( ComponentEvent evt );
 
-public void componentMoved ( ComponentEvent evt );
+void componentMoved ( ComponentEvent evt );
 
-public void componentResized ( ComponentEvent evt );
+void componentResized ( ComponentEvent evt );
 
-public void componentShown ( ComponentEvent evt );
+void componentShown ( ComponentEvent evt );
 }

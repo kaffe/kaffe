@@ -12,6 +12,6 @@ package kaffe.lang;
 
 public interface MemoryAdviceCallback {
 
-public void memoryAdvice(int newcolor);
+void memoryAdvice(int newcolor);
 
 }

@@ -12,21 +12,21 @@ package java.util;
 
 public interface Set extends Collection {
 
-	public int size();
-	public boolean isEmpty();
-	public boolean contains(Object o);
-	public Iterator iterator();
-	public Object[] toArray();
-	public Object[] toArray(Object[] a);
-	public boolean add(Object o);
-	public boolean remove(Object o);
-	public boolean containsAll(Collection c);
-	public boolean addAll(Collection c);
-	public boolean removeAll(Collection c);
-	public boolean retainAll(Collection c);
-	public void clear();
-	public boolean equals(Object o);
-	public int hashCode();
+	int size();
+	boolean isEmpty();
+	boolean contains(Object o);
+	Iterator iterator();
+	Object[] toArray();
+	Object[] toArray(Object[] a);
+	boolean add(Object o);
+	boolean remove(Object o);
+	boolean containsAll(Collection c);
+	boolean addAll(Collection c);
+	boolean removeAll(Collection c);
+	boolean retainAll(Collection c);
+	void clear();
+	boolean equals(Object o);
+	int hashCode();
 
 }
 

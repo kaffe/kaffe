@@ -12,6 +12,6 @@ package java.net;
 
 public interface SocketImplFactory {
 
-abstract public SocketImpl createSocketImpl();
+SocketImpl createSocketImpl();
 
 }

@@ -17,9 +17,9 @@ package java.security;
 
 public interface Principal {
 
-	public boolean equals(Object another);
-	public String toString();
-	public int hashCode();
-	public String getName();
+	boolean equals(Object another);
+	String toString();
+	int hashCode();
+	String getName();
 }
 

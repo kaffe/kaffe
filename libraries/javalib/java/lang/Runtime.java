@@ -21,13 +21,13 @@ public class Runtime
 /**
  *  XXX This is not part of the public interface.
  */
-public static interface MemoryAdvice {
+public interface MemoryAdvice {
 
 	// These should match those in kaffe.lang.MemoryAdvice
-	public static final int GREEN = 0;
-	public static final int YELLOW = 1;
-	public static final int ORANGE = 2;
-	public static final int RED = 3;
+	int GREEN = 0;
+	int YELLOW = 1;
+	int ORANGE = 2;
+	int RED = 3;
 }
 
 private static Runtime currentRuntime = new Runtime();

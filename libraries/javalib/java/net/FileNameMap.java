@@ -13,6 +13,6 @@ package java.net;
 
 public interface FileNameMap {
 
-  public abstract String getContentTypeFor(String filename);
+  String getContentTypeFor(String filename);
 
 }

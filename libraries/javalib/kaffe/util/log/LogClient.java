@@ -13,9 +13,9 @@ package kaffe.util.log;
 
 public interface LogClient
 {
-public void disable();
+void disable();
 
-public void enable();
+void enable();
 
-public void newLogLine ( LogStream ls );
+void newLogLine ( LogStream ls );
 }

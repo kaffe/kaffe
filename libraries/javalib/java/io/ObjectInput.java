@@ -12,12 +12,12 @@ package java.io;
 
 public interface ObjectInput extends DataInput {
 
-  public abstract Object readObject() throws ClassNotFoundException, IOException;
-  public abstract int read() throws IOException;
-  public abstract int read(byte b[]) throws IOException;
-  public abstract int read(byte b[], int off, int len) throws IOException;
-  public abstract long skip(long n) throws IOException;
-  public abstract int available() throws IOException;
-  public abstract void close() throws IOException;
+  Object readObject() throws ClassNotFoundException, IOException;
+  int read() throws IOException;
+  int read(byte b[]) throws IOException;
+  int read(byte b[], int off, int len) throws IOException;
+  long skip(long n) throws IOException;
+  int available() throws IOException;
+  void close() throws IOException;
 
 }

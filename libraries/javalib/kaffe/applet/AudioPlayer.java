@@ -1,7 +1,6 @@
 package kaffe.applet;
 
 import java.applet.AudioClip;
-import java.io.FileInputStream;
 import java.net.URL;
 
 public class AudioPlayer

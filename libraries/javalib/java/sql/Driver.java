@@ -14,11 +14,11 @@ import java.util.Properties;
 
 public interface Driver {
 
-public abstract Connection connect(String url, Properties info) throws SQLException;
-public abstract boolean acceptsURL(String url) throws SQLException;
-public abstract DriverPropertyInfo[] getPropertyInfo(String url, Properties info) throws SQLException;
-public abstract int getMajorVersion();
-public abstract int getMinorVersion();
-public abstract boolean jdbcCompliant();
+Connection connect(String url, Properties info) throws SQLException;
+boolean acceptsURL(String url) throws SQLException;
+DriverPropertyInfo[] getPropertyInfo(String url, Properties info) throws SQLException;
+int getMajorVersion();
+int getMinorVersion();
+boolean jdbcCompliant();
 
 }

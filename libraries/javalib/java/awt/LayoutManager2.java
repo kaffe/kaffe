@@ -16,9 +16,9 @@ public interface LayoutManager2
   extends LayoutManager {
 
 void addLayoutComponent ( Component child, Object constraints );
-public float getLayoutAlignmentX ( Container parent );
-public float getLayoutAlignmentY ( Container parent );
-public void invalidateLayout ( Container parent );
-public Dimension maximumLayoutSize ( Container parent );
+float getLayoutAlignmentX ( Container parent );
+float getLayoutAlignmentY ( Container parent );
+void invalidateLayout ( Container parent );
+Dimension maximumLayoutSize ( Container parent );
 
 }

@@ -20,7 +20,7 @@ import java.io.ObjectInputStream;
 public class IntegerIntegerHashtable
 	implements Serializable {
 
-  static final long serialVersionUID = 329217906565329940L;
+  private static final long serialVersionUID = 329217906565329940L;
 
   private int keys[];
   private int elements[];
@@ -242,7 +242,6 @@ public class IntegerIntegerHashtable
   }
   
   public synchronized String toString() {
-    boolean firstTime = true;
     StringBuffer result = new StringBuffer();
 
     result.append('{');

@@ -20,7 +20,6 @@ public class Font
 	final private static long serialVersionUID = -4206021311591459213L;
 
 public Font ( String fntName, int fntStyle, int fntSize ) {
-	Object v;
 	String spec;
 
 	name = fntName;

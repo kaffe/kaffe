@@ -12,6 +12,6 @@ package java.net;
 
 public interface DatagramSocketImplFactory {
 
-abstract public DatagramSocketImpl createDatagramSocketImpl();
+DatagramSocketImpl createDatagramSocketImpl();
 
 }

@@ -14,7 +14,7 @@ public class Exception
 	extends Throwable
 {
 
-public static final long serialVersionUID = -3387516993124229948l;
+private static final long serialVersionUID = -3387516993124229948l;
 
 public Exception () {
 	super();

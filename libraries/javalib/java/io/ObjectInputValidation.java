@@ -12,6 +12,6 @@ package java.io;
 
 public interface ObjectInputValidation {
 
-  public abstract void validateObject() throws InvalidObjectException;
+  void validateObject() throws InvalidObjectException;
 
 }

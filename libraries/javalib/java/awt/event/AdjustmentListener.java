@@ -17,5 +17,5 @@ import java.util.EventListener;
 public interface AdjustmentListener
   extends EventListener
 {
-public void adjustmentValueChanged ( AdjustmentEvent evt );
+void adjustmentValueChanged ( AdjustmentEvent evt );
 }

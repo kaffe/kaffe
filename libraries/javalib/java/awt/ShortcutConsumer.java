@@ -12,5 +12,5 @@ package java.awt;
 
 interface ShortcutConsumer
 {
-public void handleShortcut( MenuShortcut ms);
+void handleShortcut( MenuShortcut ms);
 }

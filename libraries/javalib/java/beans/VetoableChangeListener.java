@@ -14,6 +14,6 @@ import java.util.EventListener;
 
 public interface VetoableChangeListener extends EventListener {
 
-  public abstract void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException;
+  void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException;
 
 }

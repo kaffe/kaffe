@@ -11,5 +11,5 @@ package java.awt.peer;
  */
 
 public interface ActiveEvent {
-public void dispatch();
+void dispatch();
 }

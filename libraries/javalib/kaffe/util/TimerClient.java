@@ -14,6 +14,6 @@ package kaffe.util;
 
 public interface TimerClient {
 
-public void timerExpired ( Timer timer );
+void timerExpired ( Timer timer );
 
 }

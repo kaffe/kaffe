@@ -16,22 +16,22 @@ import java.util.Hashtable;
 
 public interface ImageConsumer {
 
-final public static int RANDOMPIXELORDER = 1;
-final public static int TOPDOWNLEFTRIGHT = 2;
-final public static int COMPLETESCANLINES = 4;
-final public static int SINGLEPASS = 8;
-final public static int SINGLEFRAME = 16;
-final public static int IMAGEERROR = 1;
-final public static int SINGLEFRAMEDONE = 2;
-final public static int STATICIMAGEDONE = 3;
-final public static int IMAGEABORTED = 4;
+int RANDOMPIXELORDER = 1;
+int TOPDOWNLEFTRIGHT = 2;
+int COMPLETESCANLINES = 4;
+int SINGLEPASS = 8;
+int SINGLEFRAME = 16;
+int IMAGEERROR = 1;
+int SINGLEFRAMEDONE = 2;
+int STATICIMAGEDONE = 3;
+int IMAGEABORTED = 4;
 
-public void imageComplete ( int status );
-public void setColorModel ( ColorModel model );
-public void setDimensions ( int width, int height );
-public void setHints ( int hints );
-public void setPixels ( int x, int y, int w, int h, ColorModel model, byte pixels[], int offset, int scansize );
-public void setPixels ( int x, int y, int w, int h, ColorModel model, int pixels[], int offset, int scansize );
-public void setProperties ( Hashtable properties );
+void imageComplete ( int status );
+void setColorModel ( ColorModel model );
+void setDimensions ( int width, int height );
+void setHints ( int hints );
+void setPixels ( int x, int y, int w, int h, ColorModel model, byte pixels[], int offset, int scansize );
+void setPixels ( int x, int y, int w, int h, ColorModel model, int pixels[], int offset, int scansize );
+void setProperties ( Hashtable properties );
 
 }

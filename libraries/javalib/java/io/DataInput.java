@@ -14,20 +14,20 @@ package java.io;
 
 public interface DataInput {
 
-abstract public boolean readBoolean() throws IOException;
-abstract public byte readByte() throws IOException;
-abstract public char readChar() throws IOException;
-abstract public double readDouble() throws IOException;
-abstract public float readFloat() throws IOException;
-abstract public void readFully(byte b[]) throws IOException;
-abstract public void readFully(byte b[], int off, int len) throws IOException;
-abstract public int readInt() throws IOException;
-abstract public String readLine() throws IOException;
-abstract public long readLong() throws IOException;
-abstract public short readShort() throws IOException;
-abstract public String readUTF() throws IOException;
-abstract public int readUnsignedByte() throws IOException;
-abstract public int readUnsignedShort() throws IOException;
-abstract public int skipBytes(int n) throws IOException;
+boolean readBoolean() throws IOException;
+byte readByte() throws IOException;
+char readChar() throws IOException;
+double readDouble() throws IOException;
+float readFloat() throws IOException;
+void readFully(byte b[]) throws IOException;
+void readFully(byte b[], int off, int len) throws IOException;
+int readInt() throws IOException;
+String readLine() throws IOException;
+long readLong() throws IOException;
+short readShort() throws IOException;
+String readUTF() throws IOException;
+int readUnsignedByte() throws IOException;
+int readUnsignedShort() throws IOException;
+int skipBytes(int n) throws IOException;
 
 }

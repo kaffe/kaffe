@@ -14,7 +14,7 @@ public class IOException
 	  extends Exception
 {
 
-public static final long serialVersionUID = 7818375828146090155l;
+private static final long serialVersionUID = 7818375828146090155l;
 
 public IOException () {
 	super();

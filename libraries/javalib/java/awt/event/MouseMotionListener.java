@@ -17,7 +17,7 @@ import java.util.EventListener;
 public interface MouseMotionListener
  extends EventListener
 {
-public void mouseDragged ( MouseEvent evt );
+void mouseDragged ( MouseEvent evt );
 
-public void mouseMoved ( MouseEvent evt );
+void mouseMoved ( MouseEvent evt );
 }

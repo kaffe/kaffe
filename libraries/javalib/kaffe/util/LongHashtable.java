@@ -10,8 +10,6 @@
 
 package kaffe.util;
 
-import java.io.IOException;
-
 /**
  * A simple hashtable using +ints as keys.
  */
@@ -232,7 +230,6 @@ public class LongHashtable {
   }
   
   public synchronized String toString() {
-    boolean firstTime = true;
     StringBuffer result = new StringBuffer();
 
     result.append('{');

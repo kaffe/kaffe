@@ -4,5 +4,5 @@ import java.awt.event.KeyEvent;
 
 public interface KeyHook
 {
-public boolean intercept ( KeyEvent evt );
+boolean intercept ( KeyEvent evt );
 }

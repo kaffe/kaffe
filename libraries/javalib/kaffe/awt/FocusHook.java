@@ -4,5 +4,5 @@ import java.awt.event.FocusEvent;
 
 public interface FocusHook
 {
-public boolean intercept ( FocusEvent evt );
+boolean intercept ( FocusEvent evt );
 }

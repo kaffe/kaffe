@@ -17,17 +17,17 @@ import java.util.EventListener;
 public interface WindowListener
  extends EventListener
 {
-public void windowActivated ( WindowEvent evt );
+void windowActivated ( WindowEvent evt );
 
-public void windowClosed ( WindowEvent evt );
+void windowClosed ( WindowEvent evt );
 
-public void windowClosing ( WindowEvent evt );
+void windowClosing ( WindowEvent evt );
 
-public void windowDeactivated ( WindowEvent evt );
+void windowDeactivated ( WindowEvent evt );
 
-public void windowDeiconified ( WindowEvent evt );
+void windowDeiconified ( WindowEvent evt );
 
-public void windowIconified ( WindowEvent evt );
+void windowIconified ( WindowEvent evt );
 
-public void windowOpened ( WindowEvent evt );
+void windowOpened ( WindowEvent evt );
 }

@@ -14,7 +14,7 @@ public class InvalidClassException
   extends ObjectStreamException
 {
 
-public static final long serialVersionUID = -4333316296251054416L;
+private static final long serialVersionUID = -4333316296251054416L;
 
 public String classname;
 

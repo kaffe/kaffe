@@ -74,8 +74,6 @@ public ScrollPane () {
 }
 
 public ScrollPane ( int policy ) {
-	int bw = BORDER_WIDTH;
-
 	layoutm = null;
 	
 	if ( (policy >= 0) && (policy <= 2) )

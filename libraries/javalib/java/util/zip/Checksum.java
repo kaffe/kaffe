@@ -12,9 +12,9 @@ package java.util.zip;
 
 public interface Checksum {
 
-  public abstract void update(int b);
-  public abstract void update(byte b[], int off, int len);
-  public abstract long getValue();
-  public abstract void reset();
+  void update(int b);
+  void update(byte b[], int off, int len);
+  long getValue();
+  void reset();
 
 }

@@ -12,11 +12,11 @@ package java.io;
 
 public interface ObjectOutput extends DataOutput {
 
-public abstract void writeObject(Object obj) throws IOException;
-public abstract void write(int b) throws IOException;
-public abstract void write(byte b[]) throws IOException;
-public abstract void write(byte b[], int off, int len) throws IOException;
-public abstract void flush() throws IOException;
-public abstract void close() throws IOException;
+void writeObject(Object obj) throws IOException;
+void write(int b) throws IOException;
+void write(byte b[]) throws IOException;
+void write(byte b[], int off, int len) throws IOException;
+void flush() throws IOException;
+void close() throws IOException;
 
 }

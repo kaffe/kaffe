@@ -12,11 +12,11 @@ package java.util;
 
 public interface ListIterator extends Iterator {
 
-	public boolean hasPrevious();
-	public Object previous();
-	public int nextIndex();
-	public int previousIndex();
-	public void set(Object o);
-	public void add(Object o);
+	boolean hasPrevious();
+	Object previous();
+	int nextIndex();
+	int previousIndex();
+	void set(Object o);
+	void add(Object o);
 
 }

@@ -16,17 +16,17 @@ import java.util.EventListener;
 public interface MouseListener
   extends EventListener
 {
-public void mouseClicked ( MouseEvent evt );
+void mouseClicked ( MouseEvent evt );
 
 /**
  * This method informs the listener that the mouse has entered
  * the source Component
  */
-public void mouseEntered ( MouseEvent evt );
+void mouseEntered ( MouseEvent evt );
 
-public void mouseExited ( MouseEvent evt );
+void mouseExited ( MouseEvent evt );
 
-public void mousePressed ( MouseEvent evt );
+void mousePressed ( MouseEvent evt );
 
-public void mouseReleased ( MouseEvent evt );
+void mouseReleased ( MouseEvent evt );
 }

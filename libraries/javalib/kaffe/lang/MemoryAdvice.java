@@ -85,7 +85,6 @@ public synchronized void removeCallback(MemoryAdviceCallback call) {
 
 public void run() {
 	Enumeration e;
-	Object[] args = new Object[1];
 	int col;
 
 	for (;;) {

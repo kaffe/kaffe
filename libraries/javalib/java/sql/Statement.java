@@ -12,23 +12,23 @@ package java.sql;
 
 public interface Statement {
 
-public abstract ResultSet executeQuery(String sql) throws SQLException;
-public abstract int executeUpdate(String sql) throws SQLException;
-public abstract void close() throws SQLException;
-public abstract int getMaxFieldSize() throws SQLException;
-public abstract void setMaxFieldSize(int max) throws SQLException;
-public abstract int getMaxRows() throws SQLException;
-public abstract void setMaxRows(int max) throws SQLException;
-public abstract void setEscapeProcessing(boolean enable) throws SQLException;
-public abstract int getQueryTimeout() throws SQLException;
-public abstract void setQueryTimeout(int seconds) throws SQLException;
-public abstract void cancel() throws SQLException;
-public abstract SQLWarning getWarnings() throws SQLException;
-public abstract void clearWarnings() throws SQLException;
-public abstract void setCursorName(String name) throws SQLException;
-public abstract boolean execute(String sql) throws SQLException;
-public abstract ResultSet getResultSet() throws SQLException;
-public abstract int getUpdateCount() throws SQLException;
-public abstract boolean getMoreResults() throws SQLException;
+ResultSet executeQuery(String sql) throws SQLException;
+int executeUpdate(String sql) throws SQLException;
+void close() throws SQLException;
+int getMaxFieldSize() throws SQLException;
+void setMaxFieldSize(int max) throws SQLException;
+int getMaxRows() throws SQLException;
+void setMaxRows(int max) throws SQLException;
+void setEscapeProcessing(boolean enable) throws SQLException;
+int getQueryTimeout() throws SQLException;
+void setQueryTimeout(int seconds) throws SQLException;
+void cancel() throws SQLException;
+SQLWarning getWarnings() throws SQLException;
+void clearWarnings() throws SQLException;
+void setCursorName(String name) throws SQLException;
+boolean execute(String sql) throws SQLException;
+ResultSet getResultSet() throws SQLException;
+int getUpdateCount() throws SQLException;
+boolean getMoreResults() throws SQLException;
 
 }

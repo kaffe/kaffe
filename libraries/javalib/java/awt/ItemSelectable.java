@@ -15,9 +15,9 @@ import java.awt.event.ItemListener;
  */
 public interface ItemSelectable
 {
-public void addItemListener ( ItemListener listener );
+void addItemListener ( ItemListener listener );
 
-public Object[] getSelectedObjects ();
+Object[] getSelectedObjects ();
 
-public void removeItemListener ( ItemListener listener );
+void removeItemListener ( ItemListener listener );
 }

@@ -12,11 +12,11 @@ package java.util;
 
 public interface SortedMap extends Map {
 
-public Comparator comparator();
-public SortedMap subMap(Object fromKey, Object toKey);
-public SortedMap headMap(Object toKey);
-public SortedMap tailMap(Object fromKey);
-public Object firstKey();
-public Object lastKey();
+Comparator comparator();
+SortedMap subMap(Object fromKey, Object toKey);
+SortedMap headMap(Object toKey);
+SortedMap tailMap(Object fromKey);
+Object firstKey();
+Object lastKey();
 
 }

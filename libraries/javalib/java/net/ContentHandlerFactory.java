@@ -12,5 +12,5 @@ package java.net;
  */
 public interface ContentHandlerFactory
 {
-abstract public ContentHandler createContentHandler(String mimetype);
+ContentHandler createContentHandler(String mimetype);
 }

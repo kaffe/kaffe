@@ -16,29 +16,29 @@ import java.math.BigDecimal;
 public interface PreparedStatement 
   extends Statement {
 
-public abstract ResultSet executeQuery() throws SQLException;
-public abstract int executeUpdate() throws SQLException;
-public abstract void setNull(int parameterIndex, int sqlType) throws SQLException;
-public abstract void setBoolean(int parameterIndex, boolean x) throws SQLException;
-public abstract void setByte(int parameterIndex, byte x) throws SQLException;
-public abstract void setShort(int parameterIndex, short x) throws SQLException;
-public abstract void setInt(int parameterIndex, int x) throws SQLException;
-public abstract void setLong(int parameterIndex, long x) throws SQLException;
-public abstract void setFloat(int parameterIndex, float x) throws SQLException;
-public abstract void setDouble(int parameterIndex, double x) throws SQLException;
-public abstract void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException;
-public abstract void setString(int parameterIndex, String x) throws SQLException;
-public abstract void setBytes(int parameterIndex, byte x[]) throws SQLException;
-public abstract void setDate(int parameterIndex, Date x) throws SQLException;
-public abstract void setTime(int parameterIndex, Time x) throws SQLException;
-public abstract void setTimestamp(int parameterIndex, Timestamp x) throws SQLException;
-public abstract void setAsciiStream(int parameterIndex, InputStream x, int length) throws SQLException;
-public abstract void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException;
-public abstract void setBinaryStream(int parameterIndex, InputStream x, int length) throws SQLException;
-public abstract void clearParameters() throws SQLException;
-public abstract void setObject(int parameterIndex, Object x, int targetSqlType, int scale) throws SQLException;
-public abstract void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException;
-public abstract void setObject(int parameterIndex, Object x) throws SQLException;
-public abstract boolean execute() throws SQLException;
+ResultSet executeQuery() throws SQLException;
+int executeUpdate() throws SQLException;
+void setNull(int parameterIndex, int sqlType) throws SQLException;
+void setBoolean(int parameterIndex, boolean x) throws SQLException;
+void setByte(int parameterIndex, byte x) throws SQLException;
+void setShort(int parameterIndex, short x) throws SQLException;
+void setInt(int parameterIndex, int x) throws SQLException;
+void setLong(int parameterIndex, long x) throws SQLException;
+void setFloat(int parameterIndex, float x) throws SQLException;
+void setDouble(int parameterIndex, double x) throws SQLException;
+void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException;
+void setString(int parameterIndex, String x) throws SQLException;
+void setBytes(int parameterIndex, byte x[]) throws SQLException;
+void setDate(int parameterIndex, Date x) throws SQLException;
+void setTime(int parameterIndex, Time x) throws SQLException;
+void setTimestamp(int parameterIndex, Timestamp x) throws SQLException;
+void setAsciiStream(int parameterIndex, InputStream x, int length) throws SQLException;
+void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException;
+void setBinaryStream(int parameterIndex, InputStream x, int length) throws SQLException;
+void clearParameters() throws SQLException;
+void setObject(int parameterIndex, Object x, int targetSqlType, int scale) throws SQLException;
+void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException;
+void setObject(int parameterIndex, Object x) throws SQLException;
+boolean execute() throws SQLException;
 
 }

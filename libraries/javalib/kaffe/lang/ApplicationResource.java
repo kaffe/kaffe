@@ -9,6 +9,6 @@ package kaffe.lang;
 
 public interface ApplicationResource {
 
-public abstract void freeResource();
+void freeResource();
 
 }

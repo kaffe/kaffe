@@ -14,19 +14,19 @@ package java.io;
 
 public interface DataOutput {
 
-abstract public void write(byte b[]) throws IOException;
-abstract public void write(byte b[], int off, int len) throws IOException;
-abstract public void write(int b) throws IOException;
-abstract public void writeBoolean(boolean v) throws IOException;
-abstract public void writeByte(int v) throws IOException;
-abstract public void writeBytes(String s) throws IOException;
-abstract public void writeChar(int v) throws IOException;
-abstract public void writeChars(String s) throws IOException;
-abstract public void writeDouble(double v) throws IOException;
-abstract public void writeFloat(float v) throws IOException;
-abstract public void writeInt(int v) throws IOException;
-abstract public void writeLong(long v) throws IOException;
-abstract public void writeShort(int v) throws IOException;
-abstract public void writeUTF(String str) throws IOException;
+void write(byte b[]) throws IOException;
+void write(byte b[], int off, int len) throws IOException;
+void write(int b) throws IOException;
+void writeBoolean(boolean v) throws IOException;
+void writeByte(int v) throws IOException;
+void writeBytes(String s) throws IOException;
+void writeChar(int v) throws IOException;
+void writeChars(String s) throws IOException;
+void writeDouble(double v) throws IOException;
+void writeFloat(float v) throws IOException;
+void writeInt(int v) throws IOException;
+void writeLong(long v) throws IOException;
+void writeShort(int v) throws IOException;
+void writeUTF(String str) throws IOException;
 
 }

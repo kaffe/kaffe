@@ -12,5 +12,5 @@ package java.util;
  */
 public interface Observer
 {
-abstract public void update(Observable o, Object arg);
+void update(Observable o, Object arg);
 }

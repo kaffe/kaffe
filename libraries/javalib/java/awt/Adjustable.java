@@ -15,36 +15,36 @@ import java.awt.event.AdjustmentListener;
  */
 public interface Adjustable
 {
-	final public static int HORIZONTAL = 0;
-	final public static int VERTICAL = 1;
+	int HORIZONTAL = 0;
+	int VERTICAL = 1;
 
-public void addAdjustmentListener ( AdjustmentListener listener );
+void addAdjustmentListener ( AdjustmentListener listener );
 
-public int getBlockIncrement ();
+int getBlockIncrement ();
 
-public int getMaximum ();
+int getMaximum ();
 
-public int getMinimum ();
+int getMinimum ();
 
-public int getOrientation ();
+int getOrientation ();
 
-public int getUnitIncrement ();
+int getUnitIncrement ();
 
-public int getValue ();
+int getValue ();
 
-public int getVisibleAmount ();
+int getVisibleAmount ();
 
-public void removeAdjustmentListener ( AdjustmentListener listener );
+void removeAdjustmentListener ( AdjustmentListener listener );
 
-public void setBlockIncrement ( int inc );
+void setBlockIncrement ( int inc );
 
-public void setMaximum ( int max );
+void setMaximum ( int max );
 
-public void setMinimum ( int min );
+void setMinimum ( int min );
 
-public void setUnitIncrement ( int inc );
+void setUnitIncrement ( int inc );
 
-public void setValue ( int v );
+void setValue ( int v );
 
-public void setVisibleAmount ( int a );
+void setVisibleAmount ( int a );
 }

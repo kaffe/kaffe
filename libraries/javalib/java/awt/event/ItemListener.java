@@ -17,5 +17,5 @@ import java.util.EventListener;
 public interface ItemListener
   extends EventListener
 {
-public void itemStateChanged ( ItemEvent evt );
+void itemStateChanged ( ItemEvent evt );
 }

@@ -17,7 +17,7 @@ package java.security;
 
 public interface Guard {
 
-	public void checkGuard(Object object) throws SecurityException;
+	void checkGuard(Object object) throws SecurityException;
 
 }
 

@@ -14,8 +14,6 @@ import java.io.Serializable;
 import java.io.Externalizable;
 import java.util.Hashtable;
 import java.io.ObjectStreamConstants;
-import java.io.IOException;
-import kaffe.io.ObjectInputStreamImpl;
 import kaffe.io.SerializationFactory;
 import kaffe.io.DefaultSerializationFactory;
 

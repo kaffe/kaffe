@@ -17,7 +17,7 @@ import java.util.EventListener;
 public interface FocusListener
  extends EventListener
 {
-public void focusGained ( FocusEvent evt );
+void focusGained ( FocusEvent evt );
 
-public void focusLost ( FocusEvent evt );
+void focusLost ( FocusEvent evt );
 }

@@ -16,6 +16,6 @@
 package java.io;
 
 public interface FileFilter {
-	public boolean accept(File f);
+	boolean accept(File f);
 }
 

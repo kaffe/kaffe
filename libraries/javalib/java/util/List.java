@@ -12,16 +12,16 @@ package java.util;
 
 public interface List extends Collection {
 
-	public void add(int index, Object element);
-	public boolean addAll(int index, Collection c);
-	public Object get(int index);
-	public int indexOf(Object o);
-	public int lastIndexOf(Object o);
-	public ListIterator listIterator();
-	public ListIterator listIterator(int index);
-	public Object remove(int index);
-	public Object set(int index, Object element);
-	public List subList(int fromIndex, int toIndex);
+	void add(int index, Object element);
+	boolean addAll(int index, Collection c);
+	Object get(int index);
+	int indexOf(Object o);
+	int lastIndexOf(Object o);
+	ListIterator listIterator();
+	ListIterator listIterator(int index);
+	Object remove(int index);
+	Object set(int index, Object element);
+	List subList(int fromIndex, int toIndex);
 
 }
 

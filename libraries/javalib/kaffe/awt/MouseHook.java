@@ -4,5 +4,5 @@ import java.awt.event.MouseEvent;
 
 public interface MouseHook
 {
-public boolean intercept ( MouseEvent e );
+boolean intercept ( MouseEvent e );
 }

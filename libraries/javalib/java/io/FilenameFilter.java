@@ -13,6 +13,6 @@ package java.io;
 
 public interface FilenameFilter {
 
-abstract public boolean accept(File dir, String name);
+boolean accept(File dir, String name);
 
 }

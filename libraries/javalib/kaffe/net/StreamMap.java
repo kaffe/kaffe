@@ -14,6 +14,6 @@ import java.io.InputStream;
 
 public interface StreamMap {
 
-  public abstract String getContentTypeFor(InputStream in);
+  String getContentTypeFor(InputStream in);
 
 }

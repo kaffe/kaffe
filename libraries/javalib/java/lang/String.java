@@ -38,7 +38,7 @@ public final class String implements Serializable, Comparable {
 	int hash;
 
 	/* This is what Sun's JDK1.1 "serialver java.lang.String" spits out */
-	static final long serialVersionUID = -6849794470754667710L;
+	private static final long serialVersionUID = -6849794470754667710L;
 
 	public static final Comparator CASE_INSENSITIVE_ORDER = new ICComp();
 

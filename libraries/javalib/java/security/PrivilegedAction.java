@@ -17,7 +17,7 @@ package java.security;
 
 public interface PrivilegedAction {
 
-	public Object run();
+	Object run();
 
 }
 

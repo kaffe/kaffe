@@ -14,6 +14,6 @@ import java.util.EventListener;
 
 public interface PropertyChangeListener extends EventListener {
 
-  public abstract void propertyChange(PropertyChangeEvent evt);
+  void propertyChange(PropertyChangeEvent evt);
 
 }

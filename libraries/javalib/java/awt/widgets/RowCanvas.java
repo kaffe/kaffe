@@ -160,7 +160,6 @@ void innerLayout() {
 void makeVisible ( int row) {
   int mv = getVisibleRows();
 	int rs = rows.size();
-	int my = rs - mv;
 
 	// we need bounds to calculate visible range
 	// defer until next layout

@@ -14,7 +14,7 @@ public interface ResourceReader
 	 *		and no trailing .class suffix)
 	 * @return array of bytes in class file format
 	 */
-	public byte[] getByteCode(String name) throws Exception;
+	byte[] getByteCode(String name) throws Exception;
 
 	/**
 	 * Read byte code.
@@ -23,5 +23,5 @@ public interface ResourceReader
 	 *	
 	 * @return array of bytes of that resource
 	 */
-	public InputStream getResourceAsStream(String name) throws Exception;
+	InputStream getResourceAsStream(String name) throws Exception;
 }

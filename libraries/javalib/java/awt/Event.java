@@ -13,8 +13,6 @@
 
 package java.awt;
 
-import java.awt.event.AdjustmentEvent;
-
 public class Event implements java.io.Serializable
 {
 	public Object arg;

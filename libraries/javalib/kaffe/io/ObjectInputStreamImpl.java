@@ -78,7 +78,7 @@ public int read() throws IOException {
 
 	// begin of plain data
 	int b = in.read();
-	int size;
+
 	switch (b) {
 	case ObjectStreamConstants.TC_BLOCKDATA:
 		/* byte following tag indicates number of bytes */

@@ -12,9 +12,9 @@ package java.beans;
 
 public interface Visibility {
 
-  public abstract boolean needsGui();
-  public abstract void dontUseGui();
-  public abstract void okToUseGui();
-  public abstract boolean avoidingGui();
+  boolean needsGui();
+  void dontUseGui();
+  void okToUseGui();
+  boolean avoidingGui();
 
 }

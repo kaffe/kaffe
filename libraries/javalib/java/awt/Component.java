@@ -20,7 +20,6 @@ import java.awt.event.WindowEvent;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 import java.awt.peer.ComponentPeer;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Vector;

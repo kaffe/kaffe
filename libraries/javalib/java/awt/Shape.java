@@ -14,5 +14,5 @@ package java.awt;
  */
 public interface Shape
 {
-public Rectangle getBounds();
+Rectangle getBounds();
 }

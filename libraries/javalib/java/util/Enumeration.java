@@ -11,6 +11,6 @@
 package java.util;
 
 public interface Enumeration {
-  public abstract boolean hasMoreElements();
-  public abstract Object nextElement();
+  boolean hasMoreElements();
+  Object nextElement();
 }

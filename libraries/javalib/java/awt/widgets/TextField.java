@@ -647,7 +647,6 @@ public void setText( String text) {
 
 protected void setTextCursor( int xIdx, boolean resetSel, boolean repaintAll) {
 	int repIdx = 0;
-	int db = BORDER_WIDTH;
 	TextBuffer tb = getBuffer();
 
 	if ( xIdx > tb.len)

@@ -12,11 +12,11 @@ package java.util;
 
 public interface SortedSet extends Set {
 
-public Comparator comparator();
-public SortedSet subSet(Object fromElement, Object toElement);
-public SortedSet headSet(Object toElement);
-public SortedSet tailSet(Object fromElement);
-public Object first();
-public Object last();
+Comparator comparator();
+SortedSet subSet(Object fromElement, Object toElement);
+SortedSet headSet(Object toElement);
+SortedSet tailSet(Object fromElement);
+Object first();
+Object last();
 
 }

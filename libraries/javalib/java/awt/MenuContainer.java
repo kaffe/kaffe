@@ -21,6 +21,6 @@ void remove( MenuComponent c);
 /**
  * @deprecated
  */
-public boolean postEvent(Event evt);
+boolean postEvent(Event evt);
 
 }

@@ -16,15 +16,15 @@ import java.awt.Image;
 
 public interface ImageObserver {
 
-final public static int WIDTH = 1;
-final public static int HEIGHT = 2;
-final public static int PROPERTIES = 4;
-final public static int SOMEBITS = 8;
-final public static int FRAMEBITS = 16;
-final public static int ALLBITS = 32;
-final public static int ERROR = 64;
-final public static int ABORT = 128;
+int WIDTH = 1;
+int HEIGHT = 2;
+int PROPERTIES = 4;
+int SOMEBITS = 8;
+int FRAMEBITS = 16;
+int ALLBITS = 32;
+int ERROR = 64;
+int ABORT = 128;
 
-public boolean imageUpdate ( Image img, int infoflags, int x, int y, int width, int height );
+boolean imageUpdate ( Image img, int infoflags, int x, int y, int width, int height );
 
 }

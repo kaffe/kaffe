@@ -12,30 +12,30 @@ package java.sql;
 
 public interface Connection {
 
-public static final int TRANSACTION_NONE = 0;
-public static final int TRANSACTION_READ_UNCOMMITTED = 1;
-public static final int TRANSACTION_READ_COMMITTED = 2;
-public static final int TRANSACTION_REPEATABLE_READ = 4;
-public static final int TRANSACTION_SERIALIZABLE = 8;
+int TRANSACTION_NONE = 0;
+int TRANSACTION_READ_UNCOMMITTED = 1;
+int TRANSACTION_READ_COMMITTED = 2;
+int TRANSACTION_REPEATABLE_READ = 4;
+int TRANSACTION_SERIALIZABLE = 8;
 
-public abstract Statement createStatement() throws SQLException;
-public abstract PreparedStatement prepareStatement(String sql) throws SQLException;
-public abstract CallableStatement prepareCall(String sql) throws SQLException;
-public abstract String nativeSQL(String sql) throws SQLException;
-public abstract void setAutoCommit(boolean autoCommit) throws SQLException;
-public abstract boolean getAutoCommit() throws SQLException;
-public abstract void commit() throws SQLException;
-public abstract void rollback() throws SQLException;
-public abstract void close() throws SQLException;
-public abstract boolean isClosed() throws SQLException;
-public abstract DatabaseMetaData getMetaData() throws SQLException;
-public abstract void setReadOnly(boolean readOnly) throws SQLException;
-public abstract boolean isReadOnly() throws SQLException;
-public abstract void setCatalog(String catalog) throws SQLException;
-public abstract String getCatalog() throws SQLException;
-public abstract void setTransactionIsolation(int level) throws SQLException;
-public abstract int getTransactionIsolation() throws SQLException;
-public abstract SQLWarning getWarnings() throws SQLException;
-public abstract void clearWarnings() throws SQLException;
+Statement createStatement() throws SQLException;
+PreparedStatement prepareStatement(String sql) throws SQLException;
+CallableStatement prepareCall(String sql) throws SQLException;
+String nativeSQL(String sql) throws SQLException;
+void setAutoCommit(boolean autoCommit) throws SQLException;
+boolean getAutoCommit() throws SQLException;
+void commit() throws SQLException;
+void rollback() throws SQLException;
+void close() throws SQLException;
+boolean isClosed() throws SQLException;
+DatabaseMetaData getMetaData() throws SQLException;
+void setReadOnly(boolean readOnly) throws SQLException;
+boolean isReadOnly() throws SQLException;
+void setCatalog(String catalog) throws SQLException;
+String getCatalog() throws SQLException;
+void setTransactionIsolation(int level) throws SQLException;
+int getTransactionIsolation() throws SQLException;
+SQLWarning getWarnings() throws SQLException;
+void clearWarnings() throws SQLException;
 
 }

@@ -12,7 +12,7 @@ package java.io;
 
 public interface Externalizable extends Serializable {
 
-  public abstract void writeExternal(ObjectOutput out) throws IOException;
-  public abstract void readExternal(ObjectInput in) throws IOException, ClassNotFoundException;
+  void writeExternal(ObjectOutput out) throws IOException;
+  void readExternal(ObjectInput in) throws IOException, ClassNotFoundException;
 
 }

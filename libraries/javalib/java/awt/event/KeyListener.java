@@ -17,9 +17,9 @@ import java.util.EventListener;
 public interface KeyListener
  extends EventListener
 {
-public void keyPressed ( KeyEvent evt );
+void keyPressed ( KeyEvent evt );
 
-public void keyReleased ( KeyEvent evt );
+void keyReleased ( KeyEvent evt );
 
-public void keyTyped ( KeyEvent evt );
+void keyTyped ( KeyEvent evt );
 }

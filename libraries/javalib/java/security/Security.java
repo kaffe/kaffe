@@ -56,7 +56,6 @@ public final class Security {
 		for (Iterator i = props.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry ent = (Map.Entry)i.next();
 			String key = (String)ent.getKey();
-			int position = 0;
 
 			if (!key.startsWith(PROV_PREFIX)) {
 				continue;
