@@ -158,11 +158,13 @@ INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(to
 
 lib_LTLIBRARIES = libkaffevm.la
 
+@HAVE_GCJ_SUPPORT_TRUE@libgcj = \
+@HAVE_GCJ_SUPPORT_TRUE@gcj/libgcj.la
 libkaffevm_la_LDFLAGS = $(KVMLIBFLAGS) -export-dynamic -release $(KVER)
 libkaffevm_la_DEPENDENCIES = \
 	$(LIBLTDL) \
 	$(ENGINE_NAME)/libengine.la \
-	gcj/libgcj.la \
+	$(libgcj) \
 	systems/$(THREAD_SYSTEM)/libkthread.la
 
 libkaffevm_la_LIBADD = $(libkaffevm_la_DEPENDENCIES) $(VM_LIBS) $(M_LIBS)
