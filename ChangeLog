@@ -1,3 +1,8 @@
+Tue Dec 15 22:13:46 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/scripts/kaffe.in (KAFFE_DEBUG): find `GDB' or `GNU gdb'
+ 	anywhere in the `--version' output, not only in the beginning
+
 Tue Dec 15 16:11:24 1998  Archie Cobbs <archie@whistle.com>
 
 	* configure, configure.in: use -lgcc on FreeBSD platform

@@ -55,7 +55,7 @@ if test x"${KAFFE_DEBUG+set}"x != x"set"x; then
     exec $KAFFE_BINDIR/Kaffe ${1+"$@"}
 else
     case `"$KAFFE_DEBUG" --version </dev/null 2>/dev/null` in
-    "GDB"*|"GNU gdb"*)
+    *"GDB"* | *"GNU gdb"*)
 	# start command-line gdb within the correct working directory,
 	# and set up the specified argument list
 	{
