@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-27  Audrius Meskauskas  <audriusa@bluewin.ch>
+
+        * javax/swing/JComboBox.java (constructors): selecting the
+        first item if the box was constructed from the provided
+        non - empty array or vector.
+
+2005-03-02  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-27  Roman Kennke  <roman@ontographics.com>
 
         * javax/swing/plaf/basic/BasicListUI:
