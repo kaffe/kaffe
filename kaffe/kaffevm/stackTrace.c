@@ -112,6 +112,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 	Hjava_lang_Object* str;
 	jchar* cptr;
 	char* class_dot_name;
+	errorInfo einfo;
 
 	info = (stackTraceInfo*)unhand(o)->backtrace;
 	if (info == 0) {
@@ -167,7 +168,15 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 			}
 			KFREE(class_dot_name);
 			len = strlen(buf);
-			str = newArray(TYPE_CLASS(TYPE_Char), len);
+			str = newArrayChecked(TYPE_CLASS(TYPE_Char), len, &einfo);
+			if (!str) {
+				KFREE(buf);
+				if (nullOK) {
+					return;
+				} else {
+					throwError(&einfo);
+				}
+			}
 			cptr = (jchar*)OBJARRAY_DATA(str);
 			for (j = len;  --j >= 0; ) {
 				cptr[j] = (unsigned char)buf[j];
