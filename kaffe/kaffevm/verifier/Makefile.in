@@ -51,16 +51,17 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/alsa.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
-	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/esd.m4 \
-	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/gettext.m4 \
-	$(top_srcdir)/m4/gnu-crypto.m4 $(top_srcdir)/m4/gwqt.m4 \
-	$(top_srcdir)/m4/herrno.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lcmessage.m4 \
-	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
-	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
-	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
-	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/compile_value.m4 \
+	$(top_srcdir)/m4/esd.m4 $(top_srcdir)/m4/gcc_attribute.m4 \
+	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gnu-crypto.m4 \
+	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/herrno.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
+	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/libxml.m4 \
+	$(top_srcdir)/m4/libxslt.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
@@ -74,10 +75,9 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 libkaffeverifier_la_LIBADD =
-am_libkaffeverifier_la_OBJECTS = verify.lo verify2.lo \
-	verify3a.lo verify3b.lo verify-block.lo \
-	verify-debug.lo verify-sigstack.lo verify-type.lo \
-	verify-uninit.lo
+am_libkaffeverifier_la_OBJECTS = verify.lo verify2.lo verify3a.lo \
+	verify3b.lo verify-block.lo verify-debug.lo verify-sigstack.lo \
+	verify-type.lo verify-uninit.lo
 libkaffeverifier_la_OBJECTS = $(am_libkaffeverifier_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -88,8 +88,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/verify-type.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/verify-uninit.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/verify.Plo ./$(DEPDIR)/verify2.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/verify3a.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/verify3b.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/verify3a.Plo ./$(DEPDIR)/verify3b.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \

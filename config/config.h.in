@@ -6,6 +6,21 @@
 /* Define the version we're compiling for */
 #undef ARCHOS
 
+/* sizeof(char) */
+#undef COMPILE_VALUE_SIZEOF_CHAR
+
+/* sizeof(int) */
+#undef COMPILE_VALUE_SIZEOF_INT
+
+/* sizeof(long) */
+#undef COMPILE_VALUE_SIZEOF_LONG
+
+/* sizeof(short) */
+#undef COMPILE_VALUE_SIZEOF_SHORT
+
+/* sizeof((((struct sockaddr_in *) 0) ->sin_port)) */
+#undef COMPILE_VALUE_SIZEOF_SIN_PORT
+
 /* Define default KAFFEHOME */
 #undef DEFAULT_KAFFEHOME
 

@@ -47986,14 +47986,17 @@ echo "$as_me:$LINENO: result: $ac_cv_type_in_port_t" >&5
 echo "${ECHO_T}$ac_cv_type_in_port_t" >&6
 if test "$ac_cv_type_in_port_t" != yes; then
     ac_cv_sin_port_size=unknown
-    if test "$cross_compiling" = yes; then
-  { { echo "$as_me:$LINENO: error: cannot run test program while cross compiling
-See \`config.log' for more details." >&5
-echo "$as_me: error: cannot run test program while cross compiling
-See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
+
+    ac_c_compile_value_expand="sizeof((((struct sockaddr_in *) 0) ->sin_port))"
+  echo "$as_me:$LINENO: checking value of sizeof((((struct sockaddr_in *) 0) ->sin_port)) by analyzing object code" >&5
+echo $ECHO_N "checking value of sizeof((((struct sockaddr_in *) 0) ->sin_port)) by analyzing object code... $ECHO_C" >&6
+if test "${ac_cv_c_compile_value_sizeof_sin_port+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  cat >conftest.$ac_ext <<_ACEOF
+
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -c -o conftest.o"
+    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
@@ -48003,166 +48006,415 @@ cat >>conftest.$ac_ext <<_ACEOF
     #include <sys/types.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
-    int main() {
-	struct sockaddr_in addr;
-	return (sizeof(addr.sin_port) == sizeof(long)) ? 0 : 1;
-    }
 
+      #include <stddef.h>
+      #include <stdint.h>
+      #include <stdlib.h>
+      #define COMPILE_VALUE $ac_c_compile_value_expand
+      #define HEX_DIGIT(n)      ((n) >= 10 ? 'a' + (n) - 10 : '0' + (n))
+      char object_code_block[] = {
+        '\n', 'e', '4', 'V', 'A',
+        '0', 'x',
+        (char) HEX_DIGIT((((COMPILE_VALUE / 16) / 16) / 16) % 16),
+        (char) HEX_DIGIT(((COMPILE_VALUE / 16) / 16) % 16),
+        (char) HEX_DIGIT((COMPILE_VALUE / 16) % 16),
+        (char) HEX_DIGIT(COMPILE_VALUE % 16),
+        'Y', '3', 'p', 'M', '\n'
+      };
+int
+main ()
+{
+
+  ;
+  return 0;
+}
 _ACEOF
-rm -f conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_sin_port_size=long
+  ac_cv_c_compile_value_sizeof_sin_port=`
+        typeset -i n=\`sed -ne 's/^e4VA0x\(.*\)Y3pM$/0x\1/p' < conftest.o\`;
+        echo $n`
 else
-  echo "$as_me: program exited with status $ac_status" >&5
-echo "$as_me: failed program was:" >&5
+  echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
+ac_cv_c_compile_value_sizeof_sin_port=0
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+    CFLAGS="$save_CFLAGS"
 fi
-    if test "$cross_compiling" = yes; then
-  { { echo "$as_me:$LINENO: error: cannot run test program while cross compiling
-See \`config.log' for more details." >&5
-echo "$as_me: error: cannot run test program while cross compiling
-See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
+echo "$as_me:$LINENO: result: $ac_cv_c_compile_value_sizeof_sin_port" >&5
+echo "${ECHO_T}$ac_cv_c_compile_value_sizeof_sin_port" >&6
+
+cat >>confdefs.h <<_ACEOF
+#define COMPILE_VALUE_SIZEOF_SIN_PORT $ac_cv_c_compile_value_sizeof_sin_port
+_ACEOF
+
+
+
+    ac_c_compile_value_expand="sizeof(long)"
+  echo "$as_me:$LINENO: checking value of sizeof(long) by analyzing object code" >&5
+echo $ECHO_N "checking value of sizeof(long) by analyzing object code... $ECHO_C" >&6
+if test "${ac_cv_c_compile_value_sizeof_long+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  cat >conftest.$ac_ext <<_ACEOF
+
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -c -o conftest.o"
+    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    int main() {
-	struct sockaddr_in addr;
-	return (sizeof(addr.sin_port) == sizeof(int)) ? 0 : 1;
-    }
+      #include <stddef.h>
+      #include <stdint.h>
+      #include <stdlib.h>
+      #define COMPILE_VALUE $ac_c_compile_value_expand
+      #define HEX_DIGIT(n)      ((n) >= 10 ? 'a' + (n) - 10 : '0' + (n))
+      char object_code_block[] = {
+        '\n', 'e', '4', 'V', 'A',
+        '0', 'x',
+        (char) HEX_DIGIT((((COMPILE_VALUE / 16) / 16) / 16) % 16),
+        (char) HEX_DIGIT(((COMPILE_VALUE / 16) / 16) % 16),
+        (char) HEX_DIGIT((COMPILE_VALUE / 16) % 16),
+        (char) HEX_DIGIT(COMPILE_VALUE % 16),
+        'Y', '3', 'p', 'M', '\n'
+      };
+int
+main ()
+{
 
+  ;
+  return 0;
+}
 _ACEOF
-rm -f conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_sin_port_size=int
+  ac_cv_c_compile_value_sizeof_long=`
+        typeset -i n=\`sed -ne 's/^e4VA0x\(.*\)Y3pM$/0x\1/p' < conftest.o\`;
+        echo $n`
 else
-  echo "$as_me: program exited with status $ac_status" >&5
-echo "$as_me: failed program was:" >&5
+  echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
+ac_cv_c_compile_value_sizeof_long=0
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+    CFLAGS="$save_CFLAGS"
 fi
-    if test "$cross_compiling" = yes; then
-  { { echo "$as_me:$LINENO: error: cannot run test program while cross compiling
-See \`config.log' for more details." >&5
-echo "$as_me: error: cannot run test program while cross compiling
-See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
+echo "$as_me:$LINENO: result: $ac_cv_c_compile_value_sizeof_long" >&5
+echo "${ECHO_T}$ac_cv_c_compile_value_sizeof_long" >&6
+
+cat >>confdefs.h <<_ACEOF
+#define COMPILE_VALUE_SIZEOF_LONG $ac_cv_c_compile_value_sizeof_long
+_ACEOF
+
+
+
+    ac_c_compile_value_expand="sizeof(int)"
+  echo "$as_me:$LINENO: checking value of sizeof(int) by analyzing object code" >&5
+echo $ECHO_N "checking value of sizeof(int) by analyzing object code... $ECHO_C" >&6
+if test "${ac_cv_c_compile_value_sizeof_int+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  cat >conftest.$ac_ext <<_ACEOF
+
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -c -o conftest.o"
+    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    int main() {
-	struct sockaddr_in addr;
-	return (sizeof(addr.sin_port) == sizeof(short)) ? 0 : 1;
-    }
+      #include <stddef.h>
+      #include <stdint.h>
+      #include <stdlib.h>
+      #define COMPILE_VALUE $ac_c_compile_value_expand
+      #define HEX_DIGIT(n)      ((n) >= 10 ? 'a' + (n) - 10 : '0' + (n))
+      char object_code_block[] = {
+        '\n', 'e', '4', 'V', 'A',
+        '0', 'x',
+        (char) HEX_DIGIT((((COMPILE_VALUE / 16) / 16) / 16) % 16),
+        (char) HEX_DIGIT(((COMPILE_VALUE / 16) / 16) % 16),
+        (char) HEX_DIGIT((COMPILE_VALUE / 16) % 16),
+        (char) HEX_DIGIT(COMPILE_VALUE % 16),
+        'Y', '3', 'p', 'M', '\n'
+      };
+int
+main ()
+{
 
+  ;
+  return 0;
+}
 _ACEOF
-rm -f conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_sin_port_size=short
+  ac_cv_c_compile_value_sizeof_int=`
+        typeset -i n=\`sed -ne 's/^e4VA0x\(.*\)Y3pM$/0x\1/p' < conftest.o\`;
+        echo $n`
 else
-  echo "$as_me: program exited with status $ac_status" >&5
-echo "$as_me: failed program was:" >&5
+  echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
+ac_cv_c_compile_value_sizeof_int=0
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+    CFLAGS="$save_CFLAGS"
 fi
-    if test "$cross_compiling" = yes; then
-  { { echo "$as_me:$LINENO: error: cannot run test program while cross compiling
-See \`config.log' for more details." >&5
-echo "$as_me: error: cannot run test program while cross compiling
-See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
+echo "$as_me:$LINENO: result: $ac_cv_c_compile_value_sizeof_int" >&5
+echo "${ECHO_T}$ac_cv_c_compile_value_sizeof_int" >&6
+
+cat >>confdefs.h <<_ACEOF
+#define COMPILE_VALUE_SIZEOF_INT $ac_cv_c_compile_value_sizeof_int
+_ACEOF
+
+
+
+    ac_c_compile_value_expand="sizeof(short)"
+  echo "$as_me:$LINENO: checking value of sizeof(short) by analyzing object code" >&5
+echo $ECHO_N "checking value of sizeof(short) by analyzing object code... $ECHO_C" >&6
+if test "${ac_cv_c_compile_value_sizeof_short+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  cat >conftest.$ac_ext <<_ACEOF
+
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -c -o conftest.o"
+    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    int main() {
-	struct sockaddr_in addr;
-	return (sizeof(addr.sin_port) == sizeof(char)) ? 0 : 1;
-    }
+      #include <stddef.h>
+      #include <stdint.h>
+      #include <stdlib.h>
+      #define COMPILE_VALUE $ac_c_compile_value_expand
+      #define HEX_DIGIT(n)      ((n) >= 10 ? 'a' + (n) - 10 : '0' + (n))
+      char object_code_block[] = {
+        '\n', 'e', '4', 'V', 'A',
+        '0', 'x',
+        (char) HEX_DIGIT((((COMPILE_VALUE / 16) / 16) / 16) % 16),
+        (char) HEX_DIGIT(((COMPILE_VALUE / 16) / 16) % 16),
+        (char) HEX_DIGIT((COMPILE_VALUE / 16) % 16),
+        (char) HEX_DIGIT(COMPILE_VALUE % 16),
+        'Y', '3', 'p', 'M', '\n'
+      };
+int
+main ()
+{
 
+  ;
+  return 0;
+}
 _ACEOF
-rm -f conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_sin_port_size=char
+  ac_cv_c_compile_value_sizeof_short=`
+        typeset -i n=\`sed -ne 's/^e4VA0x\(.*\)Y3pM$/0x\1/p' < conftest.o\`;
+        echo $n`
 else
-  echo "$as_me: program exited with status $ac_status" >&5
-echo "$as_me: failed program was:" >&5
+  echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
+ac_cv_c_compile_value_sizeof_short=0
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+    CFLAGS="$save_CFLAGS"
 fi
+echo "$as_me:$LINENO: result: $ac_cv_c_compile_value_sizeof_short" >&5
+echo "${ECHO_T}$ac_cv_c_compile_value_sizeof_short" >&6
+
+cat >>confdefs.h <<_ACEOF
+#define COMPILE_VALUE_SIZEOF_SHORT $ac_cv_c_compile_value_sizeof_short
+_ACEOF
+
+
+
+    ac_c_compile_value_expand="sizeof(char)"
+  echo "$as_me:$LINENO: checking value of sizeof(char) by analyzing object code" >&5
+echo $ECHO_N "checking value of sizeof(char) by analyzing object code... $ECHO_C" >&6
+if test "${ac_cv_c_compile_value_sizeof_char+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -c -o conftest.o"
+    cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+      #include <stddef.h>
+      #include <stdint.h>
+      #include <stdlib.h>
+      #define COMPILE_VALUE $ac_c_compile_value_expand
+      #define HEX_DIGIT(n)      ((n) >= 10 ? 'a' + (n) - 10 : '0' + (n))
+      char object_code_block[] = {
+        '\n', 'e', '4', 'V', 'A',
+        '0', 'x',
+        (char) HEX_DIGIT((((COMPILE_VALUE / 16) / 16) / 16) % 16),
+        (char) HEX_DIGIT(((COMPILE_VALUE / 16) / 16) % 16),
+        (char) HEX_DIGIT((COMPILE_VALUE / 16) % 16),
+        (char) HEX_DIGIT(COMPILE_VALUE % 16),
+        'Y', '3', 'p', 'M', '\n'
+      };
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_c_compile_value_sizeof_char=`
+        typeset -i n=\`sed -ne 's/^e4VA0x\(.*\)Y3pM$/0x\1/p' < conftest.o\`;
+        echo $n`
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_c_compile_value_sizeof_char=0
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+    CFLAGS="$save_CFLAGS"
+fi
+echo "$as_me:$LINENO: result: $ac_cv_c_compile_value_sizeof_char" >&5
+echo "${ECHO_T}$ac_cv_c_compile_value_sizeof_char" >&6
+
+cat >>confdefs.h <<_ACEOF
+#define COMPILE_VALUE_SIZEOF_CHAR $ac_cv_c_compile_value_sizeof_char
+_ACEOF
+
+
+
+    if test x"$ac_cv_c_compile_value_sizeof_char" = x"$ac_cv_c_compile_value_sizeof_sin_port"; then
+	ac_cv_sin_port_size=char
+    fi
+    if  test x"$ac_cv_c_compile_value_sizeof_int" = x"$ac_cv_c_compile_value_sizeof_sin_port"; then
+        ac_cv_sin_port_size=int
+    fi
+    if  test x"$ac_cv_c_compile_value_sizeof_long" = x"$ac_cv_c_compile_value_sizeof_sin_port"; then
+        ac_cv_sin_port_size=long
+    fi
+    if  test x"$ac_cv_c_compile_value_sizeof_short" = x"$ac_cv_c_compile_value_sizeof_sin_port"; then
+        ac_cv_sin_port_size=short
+    fi
+
     if test "$ac_cv_sin_port_size" = unknown; then
 	{ { echo "$as_me:$LINENO: error: Failed to get size of sin_port in struct sockaddr_in." >&5
 echo "$as_me: error: Failed to get size of sin_port in struct sockaddr_in." >&2;}
    { (exit 1); exit 1; }; }
     fi
+
 
 cat >>confdefs.h <<_ACEOF
 #define in_port_t unsigned $ac_cv_sin_port_size

@@ -54,45 +54,47 @@ in_port_t in_port;
 ]])],[ac_cv_type_in_port_t=yes],[ac_cv_type_in_port_t=no])])
 if test "$ac_cv_type_in_port_t" != yes; then
     ac_cv_sin_port_size=unknown
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
+    AC_C_COMPILE_VALUE(
+	[sizeof((((struct sockaddr_in *) 0) ->sin_port))],
+	[sizeof_sin_port],[
     #include <sys/types.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
-    int main() {
-	struct sockaddr_in addr;
-	return (sizeof(addr.sin_port) == sizeof(long)) ? 0 : 1;
-    }
-    ]])],[ac_cv_sin_port_size=long],[],[])
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    int main() {
-	struct sockaddr_in addr;
-	return (sizeof(addr.sin_port) == sizeof(int)) ? 0 : 1;
-    }
-    ]])],[ac_cv_sin_port_size=int],[],[])
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    int main() {
-	struct sockaddr_in addr;
-	return (sizeof(addr.sin_port) == sizeof(short)) ? 0 : 1;
-    }
-    ]])],[ac_cv_sin_port_size=short],[],[])
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    int main() {
-	struct sockaddr_in addr;
-	return (sizeof(addr.sin_port) == sizeof(char)) ? 0 : 1;
-    }
-    ]])],[ac_cv_sin_port_size=char],[],[])
+    ])
+    AC_C_COMPILE_VALUE(
+	[sizeof(long)],
+	[sizeof_long],
+	[])
+    AC_C_COMPILE_VALUE(
+	[sizeof(int)],
+	[sizeof_int],
+	[])
+    AC_C_COMPILE_VALUE(
+	[sizeof(short)],
+	[sizeof_short],
+	[])
+    AC_C_COMPILE_VALUE(
+	[sizeof(char)],
+	[sizeof_char],
+	[])
+
+    if test x"$ac_cv_c_compile_value_sizeof_char" = x"$ac_cv_c_compile_value_sizeof_sin_port"; then 
+	ac_cv_sin_port_size=char
+    fi
+    if  test x"$ac_cv_c_compile_value_sizeof_int" = x"$ac_cv_c_compile_value_sizeof_sin_port"; then
+        ac_cv_sin_port_size=int
+    fi
+    if  test x"$ac_cv_c_compile_value_sizeof_long" = x"$ac_cv_c_compile_value_sizeof_sin_port"; then
+        ac_cv_sin_port_size=long
+    fi
+    if  test x"$ac_cv_c_compile_value_sizeof_short" = x"$ac_cv_c_compile_value_sizeof_sin_port"; then
+        ac_cv_sin_port_size=short
+    fi
+
     if test "$ac_cv_sin_port_size" = unknown; then
 	AC_MSG_ERROR([Failed to get size of sin_port in struct sockaddr_in.])
     fi
+
     AC_DEFINE_UNQUOTED(in_port_t, unsigned $ac_cv_sin_port_size,
 [Define to `unsigned char', `unsigned short', `unsigned int' or
 `unsigned long' according with size of `sin_port' in `struct sockaddr_in',
