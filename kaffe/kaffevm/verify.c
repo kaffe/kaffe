@@ -436,7 +436,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 				     m > 0;
 				     --m, ++method) {
 					
-					if (METHOD_IS_FINAL(method) &&
+					if (METHOD_IS_FINAL(method) && !METHOD_IS_PRIVATE(method) &&
 					    
 					    // the following exceptions come from testing against Sun's JVM behavior
 					    (strcmp(init_name->data, METHOD_NAMED(method)) &&
