@@ -93,9 +93,9 @@ public class ThreadInterrupt {
 	Thread watchdog = new Thread() {
 	    public void run() {
 		try {
-		    Thread.sleep(2000);
+		    Thread.sleep(3000);
 		} catch (InterruptedException _) { }
-		System.out.println("Failure 4.:   Time out.");
+		System.out.println("Failure 4/5.:   Time out.");
 		System.exit(-1);
 	    }
 	};
@@ -109,6 +109,14 @@ public class ThreadInterrupt {
 		System.out.println("Failure 4.");
 	    } catch (InterruptedException e) {
 		System.out.println("Success 4.");
+	    }
+
+	    me.interrupt();
+	    try {
+		Thread.sleep(4000);
+		System.out.println("Failure 5.");
+	    } catch (InterruptedException e) {
+		System.out.println("Success 5.");
 	    }
 	}
 	System.exit(0);

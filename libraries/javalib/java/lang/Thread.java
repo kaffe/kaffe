@@ -130,6 +130,9 @@ public class Thread implements Runnable {
 
   public static void sleep(long millis) throws InterruptedException
   {
+    if (Thread.interrupted()) {
+      throw new InterruptedException();
+    }
     sleep0(millis);
     if (Thread.interrupted()) {
       throw new InterruptedException();
