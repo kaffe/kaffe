@@ -313,6 +313,7 @@ addToSHA(SHA1_CTX* c, uidItem* base, int len)
 {
 	int i;
 	int mod;
+	jshort tmp;
 
 	/* Sort the items into the required order */
 	if (len > 1) {
@@ -322,11 +323,15 @@ addToSHA(SHA1_CTX* c, uidItem* base, int len)
 	/* Now enter the data into the SHA */
 	for (i = 0; i < len; i++) {
 		if (base[i].name != 0) {
+			tmp = htons(strlen(base[i].name));
+			SHA1Update(c, (char*)&tmp, sizeof(tmp));
 			SHA1Update(c, base[i].name, strlen(base[i].name));
 			if (base[i].modifier != -1) {
 				/* Java is in 'network' order - bad but handy */
 				mod = htonl(base[i].modifier & ACC_MASK);
 				SHA1Update(c, (char*)&mod, sizeof(mod));
+				tmp = htons(strlen(base[i].desc));
+				SHA1Update(c, (char*)&tmp, sizeof(tmp));
 				SHA1Update(c, base[i].desc, strlen(base[i].desc));
 			}
 		}
@@ -381,6 +386,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	uidItem* base;
 	int len;
 	errorInfo einfo;
+	jshort tmp;
 
 	fld = lookupClassField(cls, serialVersionUIDName, true, &einfo);
 	if (fld != 0) {
@@ -402,6 +408,8 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	SHA1Init(&c);
 
 	/* Class -> name(UTF), modifier(INT) */
+	tmp = htons(strlen(cls->name->data));
+	SHA1Update(&c, (char*)&tmp, sizeof(tmp));
 	SHA1Update(&c, cls->name->data, strlen(cls->name->data));
 	mod = htonl((int)cls->accflags & (ACC_ABSTRACT|ACC_FINAL|ACC_INTERFACE|ACC_PUBLIC));
 	SHA1Update(&c, (char*)&mod, sizeof(mod));
