@@ -1,6 +1,42 @@
 2005-01-07  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+	
+	2005-01-04  Tom Tromey  <tromey@redhat.com>
+
+	* vm/reference/java/lang/VMProcess.java (VMProcess): Constructor
+	now package-private.
+	(processThread, workList, reapedPid, reapedExitValue, state, cmd,
+	env, dir, exception, pid, stdin, stdout, stderr, exitValue): Now
+	package-private.
+	(nativeSpawn, nativeReap): Likewise.
+	* vm/reference/java/lang/VMThread.java (currentThread): Reordered
+	modifiers.
+	* vm/reference/java/security/VMAccessController.java
+	(DEFAULT_CONTEXT): Reordered modifiers.
+
+	* gnu/java/nio/SelectorImpl.java: Removed unused import.
+	* gnu/java/security/der/DERWriter.java: Removed unused import.
+	* gnu/java/net/protocol/http/Connection.java: Removed unused
+	import.
+	* gnu/java/nio/PipeImpl.java (read): Reordered modifiers.  Fixed
+	indentation.
+	(write): Likewise.
+	* gnu/java/rmi/server/ConnectionRunnerPool.java
+	(getConnectionRunner): Reordered modifiers.
+	* gnu/java/text/FormatCharacterIterator.java (debug): Removed
+	useless `final'.
+	(dumpTable): Likewise.
+	* gnu/java/net/PlainDatagramSocketImpl.java (bind): Reordered
+	modifiers.
+	(create, setOption, getOption, close, join, leave): Likewise.
+	* gnu/java/net/PlainSocketImpl.java (create): Reordered
+	modifiers.
+	(bind, listen, accept): Likewise.
+	
+2005-01-07  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 
 	2005-01-04  Robert Schuster <thebohemian@gmx.net>
 

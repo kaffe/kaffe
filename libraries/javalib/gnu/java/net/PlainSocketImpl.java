@@ -272,21 +272,21 @@ protected void sendUrgentData(int data) throws IOException {
 	// TODO: replace with a real function.
 }
 
-public native void socketSetOption(int option, Object data) throws SocketException;
-public native int socketGetOption(int option) throws SocketException;
-protected native void socketAccept(SocketImpl sock);
-protected native int  socketAvailable();
-protected native void socketBind(InetAddress addr, int port);
-protected native void socketClose();
-protected native void socketConnect(InetAddress addr, int port, int timeout);
-protected native void socketCreate(boolean stream);
-protected native void socketListen(int count);
-protected native int socketRead(byte[] buf, int offset, int len) throws IOException;
-protected native void socketWrite(byte[] buf, int offset, int len) throws IOException;
+public synchronized native void socketSetOption(int option, Object data) throws SocketException;
+public synchronized native int socketGetOption(int option) throws SocketException;
+protected synchronized native void socketAccept(SocketImpl sock);
+protected synchronized native int  socketAvailable();
+protected synchronized native void socketBind(InetAddress addr, int port);
+protected synchronized native void socketClose();
+protected synchronized native void socketConnect(InetAddress addr, int port, int timeout);
+protected synchronized native void socketCreate(boolean stream);
+protected synchronized native void socketListen(int count);
+protected synchronized native int socketRead(byte[] buf, int offset, int len) throws IOException;
+protected synchronized native void socketWrite(byte[] buf, int offset, int len) throws IOException;
 
 // This function are principally for the NIO implementation of sockets.
-protected native void waitForConnection() throws IOException;
-protected native void setBlocking(boolean blocking);
+protected synchronized native void waitForConnection() throws IOException;
+protected synchronized native void setBlocking(boolean blocking);
 
 /* Taken from GNU Classpath. */
 

@@ -155,23 +155,23 @@ protected void receive(DatagramPacket packet) throws IOException
     }
 }
 
-protected native int peekData(DatagramPacket p) throws IOException;
-protected native void bind(int lport, InetAddress laddr) throws SocketException;
-protected native void send0(DatagramPacket p) throws IOException;
-protected native int peek(InetAddress i) throws IOException;
-protected native void receive0(DatagramPacket p) throws IOException;
-protected native void setTTL(byte ttl) throws IOException;
-protected native byte getTTL() throws IOException;
-protected native void join(InetAddress inetaddr) throws IOException;
-protected native void leave(InetAddress inetaddr) throws IOException;
-protected native void joinGroup(SocketAddress inetaddr,
+protected synchronized native int peekData(DatagramPacket p) throws IOException;
+protected synchronized native void bind(int lport, InetAddress laddr) throws SocketException;
+protected synchronized native void send0(DatagramPacket p) throws IOException;
+protected synchronized native int peek(InetAddress i) throws IOException;
+protected synchronized native void receive0(DatagramPacket p) throws IOException;
+protected synchronized native void setTTL(byte ttl) throws IOException;
+protected synchronized native byte getTTL() throws IOException;
+protected synchronized native void join(InetAddress inetaddr) throws IOException;
+protected synchronized native void leave(InetAddress inetaddr) throws IOException;
+protected synchronized native void joinGroup(SocketAddress inetaddr,
 				NetworkInterface netIf) throws IOException;
-protected native void leaveGroup(SocketAddress inetaddr,
+protected synchronized native void leaveGroup(SocketAddress inetaddr,
 				 NetworkInterface netIf) throws IOException;
-protected native void socketSetOption(int option, Object value);
-protected native int socketGetOption(int option);
-private native void datagramSocketCreate();
-private native void datagramSocketClose();
-protected native void setBlocking(boolean block);
+protected synchronized native void socketSetOption(int option, Object value);
+protected synchronized native int socketGetOption(int option);
+private synchronized native void datagramSocketCreate();
+private synchronized native void datagramSocketClose();
+protected synchronized native void setBlocking(boolean block);
 
 }
