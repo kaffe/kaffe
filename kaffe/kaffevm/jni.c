@@ -2806,6 +2806,53 @@ Kaffe_ReleaseStringUTFChars(JNIEnv* env UNUSED, jstring data UNUSED, const jbyte
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	KFREE(chars);
+	
+	END_EXCEPTION_HANDLING();
+}
+
+static void
+Kaffe_GetStringRegion(JNIEnv *env, jstring data, jsize start, jsize len, jchar *buf)
+{
+	Hjava_lang_String* const str = (Hjava_lang_String*)data;
+        jchar *str_ptr;
+	jsize str_len;
+	
+        BEGIN_EXCEPTION_HANDLING_VOID();
+
+	str_ptr = STRING_DATA(str);
+	str_len = STRING_SIZE(str);
+
+	if (start >= len || start+len >= str_len) {
+	      errorInfo einfo;
+	      
+	      postException(&einfo, "java.lang.StringIndexOutOfBoundsException");
+	      throwError(&einfo);
+	}
+	
+	memcpy(buf, &str_ptr[start], len*sizeof(jchar));
+
+        END_EXCEPTION_HANDLING();
+}
+
+static void
+Kaffe_GetStringUTFRegion(JNIEnv *env, jstring data, jsize start, jsize len, char *buf)
+{
+        Hjava_lang_String* const str = (Hjava_lang_String*)data;
+	jchar *str_ptr;
+	jsize str_len;
+
+	BEGIN_EXCEPTION_HANDLING_VOID();
+	
+	str_ptr = STRING_DATA(str);
+	str_len = STRING_SIZE(str); 
+	if (start >= len || start+len >= str_len) {
+	      errorInfo einfo;
+	      
+	      postException(&einfo, "java.lang.StringIndexOutOfBoundsException");
+	      throwError(&einfo);
+	}
+
+	utf8ConstEncodeTo(&str_ptr[start], len, buf);
 
 	END_EXCEPTION_HANDLING();
 }
@@ -4430,8 +4477,8 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	Kaffe_MonitorEnter,
 	Kaffe_MonitorExit,
 	Kaffe_GetJavaVM,
-	NULL,
-	NULL,
+	Kaffe_GetStringRegion,
+	Kaffe_GetStringUTFRegion,
 	Kaffe_GetPrimitiveArrayCritical,
 	Kaffe_ReleasePrimitiveArrayCritical,
 	NULL,

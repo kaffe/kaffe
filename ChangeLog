@@ -1,5 +1,14 @@
 2004-04-16  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/jni.c, include/jni.h
+	(Kaffe_GetStringRegion, Kaffe_GetStringUTFRegion): New JNI 1.2 calls.
+
+	* kaffe/kaffevm/utf8const.c, kaffe/kaffevm/utf8const.h
+	(utf8ConstEncodeTo, utf8ConstEncode): Splitted utf8Encode in two
+	parts to remove redundant code.
+
+2004-04-16  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/support.c
 	(callMethodV, callMethodA): If the called method is a JNI, then
 	throw the waiting exception in exceptObj.

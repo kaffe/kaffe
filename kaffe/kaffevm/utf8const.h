@@ -52,6 +52,13 @@ extern void		  utf8ConstDecode(const Utf8Const*, jchar*);
  * that contains the array's utf8 encoding.
  */
 extern char * utf8ConstEncode(const jchar *chars, int clength);
+/* 
+ * Encode a jchar[] Array into a zero-terminated C string
+ * that contains the array's utf8 encoding.
+ *
+ * WARNING: buf is assumed to have the sufficient size (clength*2 is sufficient).
+ */
+extern void utf8ConstEncodeTo(const jchar *chars, int clength, char *buf);
 
 static inline bool utf8ConstEqual(Utf8Const* a, Utf8Const* b) __UNUSED__;
 static inline bool utf8ConstEqual(Utf8Const* a, Utf8Const* b)

@@ -321,8 +321,8 @@ struct JNINativeInterface {
 
         /* New JNI 1.2 functions */
 	
-        void* reserved12; /* GetStringRegion */
-        void* reserved13; /* GetStringUTFRegion */
+        void  (*GetStringRegion)                (JNIEnv*, jstring, jsize, jsize, jchar*); 
+        void  (*GetStringUTFRegion)             (JNIEnv*, jstring, jsize, jsize, char*); 
 	void* (*GetPrimitiveArrayCritical)	(JNIEnv*, jarray, jboolean*);
 	void  (*ReleasePrimitiveArrayCritical)	(JNIEnv*, jarray, void*, jint);
         void* reserved16; /* GetStringCritical */

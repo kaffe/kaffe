@@ -337,15 +337,41 @@ utf8ConstDecode(const Utf8Const *utf8, jchar *buf)
  * Encode a jchar[] Array into a zero-terminated C string
  * that contains the array's utf8 encoding.
  *
- * NB.: Caller must free via KFREE.
+ * NB.: This function assumes the output array has a sufficient size.
+Caller must free via KFREE.
  */
-char *
-utf8ConstEncode(const jchar *chars, int clength)
+void utf8ConstEncodeTo(const jchar *chars, int clength, char *buf)
 {
 	int i, pos = 0;
-	unsigned int size = 0;
-	char * buf;
 
+	for (i = 0; i < clength; i++) {
+		jchar ch = chars[i];
+		if (ch >= 0x0001 && ch <= 0x007f) {
+			buf[pos++] = (char) ch;
+		} else if (ch <= 0x07ff) {
+			buf[pos++] = (char) (0xc0 | (0x3f & (ch >> 6)));
+			buf[pos++] = (char) (0x80 | (0x3f &  ch));
+		} else {
+			buf[pos++] = (char) (0xe0 | (0x0f & (ch >> 12)));
+			buf[pos++] = (char) (0x80 | (0x3f & (ch >>  6)));
+			buf[pos++] = (char) (0x80 | (0x3f &  ch));
+		}
+	}
+}
+
+/*
+ * Encode a jchar[] Array into a zero-terminated C string
+ * that contains the array's utf8 encoding.
+ *
+ * NB.: Caller must free via KFREE.
+ */
+char*
+utf8ConstEncode(const jchar *chars, int clength)
+{
+        char *buf;
+	int i;
+	unsigned int size = 0;
+	
 	/* Size output array */
 	for (i = 0; i < clength; i++) {
 		jchar ch = chars[i];
@@ -361,23 +387,12 @@ utf8ConstEncode(const jchar *chars, int clength)
 	/* Now fill it in */
 	buf = KMALLOC(size + 1);
 	if (buf == 0) {
-		return (0);
+		return 0;
 	}
 
-	for (i = 0; i < clength; i++) {
-		jchar ch = chars[i];
-		if (ch >= 0x0001 && ch <= 0x007f) {
-			buf[pos++] = (char) ch;
-		} else if (ch <= 0x07ff) {
-			buf[pos++] = (char) (0xc0 | (0x3f & (ch >> 6)));
-			buf[pos++] = (char) (0x80 | (0x3f &  ch));
-		} else {
-			buf[pos++] = (char) (0xe0 | (0x0f & (ch >> 12)));
-			buf[pos++] = (char) (0x80 | (0x3f & (ch >>  6)));
-			buf[pos++] = (char) (0x80 | (0x3f &  ch));
-		}
-	}
-	return (buf);
+	utf8ConstEncodeTo(chars, clength, buf);
+	
+	return buf;
 }
 
 /*
