@@ -98,6 +98,7 @@
 	}
 
 #define	class_object()		(crinfo)
+#define class_name(IDX)		(WORD2UTF(xmeth->class->constants.data[IDX]))
 
 /* -------------------------------------------------------------------- */
 /* Objects */

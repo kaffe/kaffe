@@ -488,9 +488,12 @@ soft_stackoverflow(void)
  * soft_nosuchclass.
  */
 void            
-soft_nosuchclass(void)
+soft_nosuchclass(Utf8Const* c)
 {
-	throwException(NoClassDefFoundError);
+	char buf[256];
+
+	sprintf(buf, "%.80s", c->data);
+	throwException(NoClassDefFoundError(buf));
 }
 
 /*

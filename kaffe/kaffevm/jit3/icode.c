@@ -4619,10 +4619,12 @@ softcall_fakecall(label* from, label* to, void* func)
 }
 
 void
-softcall_nosuchclass(void)
+softcall_nosuchclass(Utf8Const* name)
 {
 	begin_func_sync();
+	pusharg_utf8_const(name, 0);
 	call_soft(soft_nosuchclass);
+	popargs();
 	end_func_sync();
 }
 

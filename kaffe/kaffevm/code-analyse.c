@@ -1525,10 +1525,13 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
 			if (getMethodSignatureClass(lclw, meth->class, true, false, &call, einfo) == false) {
-#if 0
-				failed = true;
-				goto done;
-#endif
+				/* Failed to load class - but so long as we
+				 * have the method signature we can proceed.
+				 */
+				if (call.signature == 0) {
+					failed = true;
+					goto done;
+				}
 			}
 
 			sig = call.signature->data;
@@ -1628,10 +1631,13 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case INVOKEINTERFACE:
 			if (getMethodSignatureClass(lclw, meth->class, true, false, &call, einfo) == false) {
-#if 0
-				failed = true;
-				goto done;
-#endif
+				/* Failed to load class - but so long as we
+				 * have the method signature we can proceed.
+				 */
+				if (call.signature == 0) {
+					failed = true;
+					goto done;
+				}
 			}
 
 			sig = call.signature->data;
@@ -1730,10 +1736,13 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case INVOKESTATIC:
 			if (getMethodSignatureClass(lclw, meth->class, true, false, &call, einfo) == false) {
-#if 0
-				failed = true;
-				goto done;
-#endif
+				/* Failed to load class - but so long as we
+				 * have the method signature we can proceed.
+				 */
+				if (call.signature == 0) {
+					failed = true;
+					goto done;
+				}
 			}
 
 			sig = call.signature->data;
@@ -1829,13 +1838,10 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case NEW:
-			class = getClass(lclw, meth->class, einfo);
-#if 0
-			if (class == 0) {
-				failed = true;
-				goto done;
-			}
-#endif
+			/* We might fail to load the class - but it doesn't
+			 * actually matter here.
+			 */
+			(void)getClass(lclw, meth->class, einfo);
 			STKPUSH(1);
 			STACKOUT(0, TOBJ);
 			INCPC(3);
@@ -1848,26 +1854,20 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case ANEWARRAY:
-			class = getClass(lclw, meth->class, einfo);
-#if 0
-			if (class == 0) {
-				failed = true;
-				goto done;
-			}
-#endif
+			/* We might fail to load the class - but it doesn't
+			 * actually matter here.
+			 */
+			(void)getClass(lclw, meth->class, einfo);
 			STACKIN(0, TINT);
 			STACKOUT(0, TOBJ);
 			INCPC(3);
 			break;
 
 		case MULTIANEWARRAY:
-			class = getClass(lclw, meth->class, einfo);
-#if 0
-			if (class == 0) {
-				failed = true;
-				goto done;
-			}
-#endif
+			/* We might fail to load the class - but it doesn't
+			 * actually matter here.
+			 */
+			(void)getClass(lclw, meth->class, einfo);
 			for (idx = INSN(pc+3) - 1; idx >= 0; idx--) {
 				STACKIN(idx, TINT);
 			}
@@ -1889,13 +1889,10 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case CHECKCAST:
-			class = getClass(lclw, meth->class, einfo);
-#if 0
-			if (class == 0) {
-				failed = true;
-				goto done;
-			}
-#endif
+			/* We might fail to load the class - but it doesn't
+			 * actually matter here.
+			 */
+			(void)getClass(lclw, meth->class, einfo);
 			/* SET_INSN(pc, CHECKCAST_FAST); */
 			STACKIN(0, TOBJ);
 			STACKOUT(0, TOBJ);
@@ -1903,13 +1900,10 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case INSTANCEOF:
-			class = getClass(lclw, meth->class, einfo);
-#if 0
-			if (class == 0) {
-				failed = true;
-				goto done;
-			}
-#endif
+			/* We might fail to load the class - but it doesn't
+			 * actually matter here.
+			 */
+			(void)getClass(lclw, meth->class, einfo);
 			/* SET_INSN(pc, INSTANCEOF_FAST); */
 			STACKIN(0, TOBJ);
 			STACKOUT(0, TINT);

@@ -2248,8 +2248,15 @@ define_insn(INVOKEVIRTUAL)
 
 	get_method_info_noerror(idx);
 
+	/* If class doesn't exists, call 'NoSuchClassError' */
+	if (method_class() == 0) {
+		softcall_nosuchclass(method_classname());
+		low = method_returntype();
+		pop(method_nargs() + 1);
+		METHOD_RETURN_VALUE();
+	}
 	/* If method doesn't exists, call 'NoSuchMethodError' */
-	if (method_method() == 0) {
+	else if (method_method() == 0) {
 		softcall_nosuchmethod(method_class(), method_name(), method_sig());
 		low = method_returntype();
 		pop(method_nargs() + 1);
@@ -2303,8 +2310,15 @@ define_insn(INVOKESPECIAL)
 
 	get_special_method_info_noerror(idx);
 
+	/* If class doesn't exists, call 'NoSuchClassError' */
+	if (method_class() == 0) {
+		softcall_nosuchclass(method_classname());
+		low = method_returntype();
+		pop(method_nargs() + 1);
+		METHOD_RETURN_VALUE();
+	}
 	/* If method doesn't exists, call 'NoSuchMethodError' */
-	if (method_method() == 0) {
+	else if (method_method() == 0) {
 		softcall_nosuchmethod(method_class(), method_name(), method_sig());
 		low = method_returntype();
 		pop(method_nargs() + 1);
@@ -2348,8 +2362,15 @@ define_insn(INVOKESTATIC)
 
 	get_method_info_noerror(idx);
 
+	/* If class doesn't exists, call 'NoSuchClassError' */
+	if (method_class() == 0) {
+		softcall_nosuchclass(method_classname());
+		low = method_returntype();
+		pop(method_nargs());
+		METHOD_RETURN_VALUE();
+	}
 	/* If method doesn't exists, call 'NoSuchMethodError' */
-	if (method_method() == 0) {
+	else if (method_method() == 0) {
 		softcall_nosuchmethod(method_class(), method_name(), method_sig());
 		low = method_returntype();
 		pop(method_nargs());
@@ -2389,8 +2410,15 @@ define_insn(INVOKEINTERFACE)
 
 	get_interface_method_info_noerror(idx);
 
+	/* If class doesn't exists, call 'NoSuchClassError' */
+	if (method_class() == 0) {
+		softcall_nosuchclass(method_classname());
+		low = method_returntype();
+		pop((uint8)getpc(2));
+		METHOD_RETURN_VALUE();
+	}
 	/* If method doesn't exists, call 'NoSuchMethodError' */
-	if (method_method() == 0) {
+	else if (method_method() == 0) {
 		softcall_nosuchmethod(method_class(), method_name(), method_sig());
 		low = method_returntype();
 		pop((uint8)getpc(2));
@@ -2437,12 +2465,11 @@ define_insn(NEW)
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 
 	get_class_info_noerror(idx);
+	push(1);
 	if (class_object() == 0) {
-		push(1);
-		softcall_nosuchclass();
+		softcall_nosuchclass(class_name(idx));
 	}
 	else {
-		push(1);
 		softcall_new(stack(0), class_object());
 	}
 }
@@ -2469,8 +2496,13 @@ define_insn(ANEWARRAY)
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 
-	get_class_info(idx);
-	softcall_anewarray(stack(0), stack(0), class_object());
+	get_class_info_noerror(idx);
+	if (class_object() == 0) {
+		softcall_nosuchclass(class_name(idx));
+	}
+	else {
+		softcall_anewarray(stack(0), stack(0), class_object());
+	}
 }
 
 define_insn(ARRAYLENGTH)
@@ -2507,8 +2539,13 @@ define_insn(CHECKCAST)
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 
-	get_class_info(idx);
-	softcall_checkcast(stack(0), rstack(0), class_object());
+	get_class_info_noerror(idx);
+	if (class_object() == 0) {
+		softcall_nosuchclass(class_name(idx));
+	}
+	else {
+		softcall_checkcast(stack(0), rstack(0), class_object());
+	}
 }
 
 define_insn(INSTANCEOF)
@@ -2521,8 +2558,13 @@ define_insn(INSTANCEOF)
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 
-	get_class_info(idx);
-	softcall_instanceof(stack(0), rstack(0), class_object());
+	get_class_info_noerror(idx);
+	if (class_object() == 0) {
+		softcall_nosuchclass(class_name(idx));
+	}
+	else {
+		softcall_instanceof(stack(0), rstack(0), class_object());
+	}
 }
 
 define_insn(MONITORENTER)

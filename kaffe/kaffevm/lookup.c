@@ -52,6 +52,12 @@ getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool loadClass, 
 	Method* mptr;
 	int i;
 
+	call->class = 0;
+	call->method = 0;
+	call->signature = 0;
+	call->name = 0;
+	call->cname = 0;
+
 	pool = CLASS_CONSTANTS(this);
 	if (pool->tags[idx] != CONSTANT_Methodref &&
 	    pool->tags[idx] != CONSTANT_InterfaceMethodref) {
@@ -69,15 +75,11 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
 	call->name = name;
 	call->signature = sig;
 
-	if (loadClass == false) {
-		call->class = 0;
-		call->method = 0;
-		call->cname = 0;
-	}
-	else {
+	if (loadClass == true) {
 		ci = METHODREF_CLASS(idx, pool);
 		class = getClass(ci, this, einfo);
 		if (class == NULL) {
+			call->cname = WORD2UTF(pool->data[ci]);
 			countInsAndOuts(sig->data, &call->in, &call->out, &call->rettype);
 			return (false);
 		}
