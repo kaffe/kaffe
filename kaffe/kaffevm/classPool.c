@@ -174,7 +174,7 @@ walkClassEntries(Collector *collector, Hjava_lang_ClassLoader* loader)
                      entry = entry->next)
                 {
                         if (entry->loader == loader) {
-                                GC_markObject(collector, entry->data.cl, loader);
+                                GC_markObject(collector, entry->data.cl);
                         }
                 }
         }
