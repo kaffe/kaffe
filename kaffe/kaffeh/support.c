@@ -352,6 +352,14 @@ DBG(	printf("Method %s%s\n", (char*)cpool->data[m.name_index], (char*)cpool->dat
 		case 'D':
 			fprintf(jni_include, "jdouble");
 			break;
+		case 'V':
+			fprintf(jni_include, "void");
+			break;
+		default:
+			fprintf(stderr, "unknown return type `%c' for "
+				"method %s.%s, bailing out.\n", *ret,
+				className, name);
+			exit(0);
 		}
 		fprintf(jni_include, " Java_%s_%s(JNIEnv*", className, name);
 		if ((m.access_flags & ACC_STATIC)) {
