@@ -21,7 +21,8 @@
 #endif
 #include <signal.h>
 
-static inline void
+static 
+void
 setBlockState(jthread_t cur, unsigned int newState, void *sp, sigset_t *old_mask)
 {
   int suspendSig;

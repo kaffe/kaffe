@@ -1,3 +1,9 @@
+2005-02-06  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c
+	(setBlockState): De-inlined to fix compiler warnings
+	with gcc 3.4 on powerpc-linux.
+
 2005-02-06  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure.ac: Setup SEMAPHORE_LIB correctly. Force enable_mips2 to
