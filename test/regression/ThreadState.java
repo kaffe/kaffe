@@ -95,7 +95,9 @@ public class ThreadState extends Thread {
     }
 
     // OK
-    System.out.println("Success.");
+    synchronized (ThreadState.class) {
+      System.out.println("Success.");
+    }
     verbose(getName() + " exiting");
   }
 
