@@ -58,10 +58,9 @@ static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, except
  * Create an exception from error information.
  */
 Hjava_lang_Throwable* 
-error2Throwable(errorInfo* einfo, int *fresh)
+error2Throwable(errorInfo* einfo)
 {
 	Hjava_lang_Throwable *err = 0;
-	int created = 0;
 
 	switch (einfo->type & KERR_CODE_MASK) {
 	case KERR_EXCEPTION:
@@ -74,7 +73,6 @@ error2Throwable(errorInfo* einfo, int *fresh)
 				    0, 0, "(Ljava/lang/String;)V",
 				    checkPtr(stringC2Java(einfo->mess)));
 		}
-		created = 1;
 		break;
 
 	case KERR_INITIALIZER_ERROR:
@@ -84,7 +82,6 @@ error2Throwable(errorInfo* einfo, int *fresh)
 				    JAVA_LANG(ExceptionInInitializerError),
 				    0, 0, "(Ljava/lang/Throwable;)V",
 				    einfo->throwable);
-			created = 1;
 			break;
 		}
 		/* FALLTHRU */
@@ -96,10 +93,6 @@ error2Throwable(errorInfo* einfo, int *fresh)
 	case KERR_OUT_OF_MEMORY:
 		err = gc_throwOOM();
 		break;
-	}
-
-	if (fresh) {
-		*fresh = created;
 	}
 
 	discardErrorInfo(einfo);
@@ -225,13 +218,8 @@ throwError(errorInfo* einfo)
 	Hjava_lang_Throwable* eobj;
 	int fresh;
 
-	eobj = error2Throwable (einfo, &fresh);
-	if (fresh) {
-		throwFreshException (eobj);
-	}
-	else {
-		throwException(eobj);
-	}
+	eobj = error2Throwable (einfo);
+	throwException(eobj);
 }
  
 /*
@@ -249,23 +237,6 @@ throwException(Hjava_lang_Throwable* eobj)
 		EXIT(1);
 	}
 	unhand(eobj)->backtrace = buildStackTrace(0);
-	dispatchException(eobj, (stackTraceInfo*)unhand(eobj)->backtrace);
-}
-
-/*
- * Throw a fresh exception.
- *
- * Semantic: just dispatch from were the exception is created.  Used
- * as an optimization for throwException(new FooBarException).
- */
-void
-throwFreshException(Hjava_lang_Throwable* eobj)
-{
-	if (eobj == 0) {
-		dprintf("Exception thrown on null object ... aborting\n");
-		ABORT();
-		EXIT(1);
-	}
 	dispatchException(eobj, (stackTraceInfo*)unhand(eobj)->backtrace);
 }
 
