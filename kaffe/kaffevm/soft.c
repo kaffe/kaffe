@@ -241,7 +241,7 @@ soft_lookupmethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, int idx)
 		goto notfound;
 	}
 
-	meth = *(Method**)((void*)cls->dtable 
+	meth = *(Method**)((char*)cls->dtable 
 			+ DTABLE_METHODOFFSET + dtableidx * DTABLE_METHODSIZE);
 	return (meth);
 

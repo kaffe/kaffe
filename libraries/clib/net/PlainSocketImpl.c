@@ -322,6 +322,7 @@ java_net_PlainSocketImpl_socketAvailable(struct Hjava_net_PlainSocketImpl* this)
 		SignalError("java.io.IOException", SYS_ERROR(errno));
 	}
 #else
+#if !defined(__WIN32__) /* Windows hack - XXX */
 	/* This uses KSELECT() to work out if we can read - but what
 	 * happens at the end of file?
 	 */
@@ -339,6 +340,9 @@ java_net_PlainSocketImpl_socketAvailable(struct Hjava_net_PlainSocketImpl* this)
 	else {
 		len = 0;
 	}
+#else
+	len = 0;
+#endif
 #endif
 
 	DBG(NATIVENET,

@@ -26,7 +26,8 @@
 #elif defined(HAVE_DREM)
 #define IEEERemainder(a, b) drem(a, b)
 #else
-#error "Kaffe requires a truncating-division-based floating-point remainder operation"
+#define	IEEERemainder(a, b) 0
+/* Kaffe requires a truncating-division-based floating-point remainder operation */
 #endif
 
 /* IEEE 754 remainder for floats */
@@ -40,7 +41,8 @@
 #if defined(HAVE_FMOD)
 #define javaRemainder(a, b) fmod(a, b)
 #else
-#error "Kaffe requires a truncating-division-based floating-point remainder operation"
+#define	javaRemainder(a, b) 0
+/* Kaffe requires a truncating-division-based floating-point remainder operation */
 #endif
 
 /* Java remainder for floats */

@@ -455,7 +455,7 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 		int pad = (align - (unsigned int)codebase % align);
 		/* assert the allocator indeed returned 8 bytes aligned addrs */
 		assert(pad <= align - 8);	
-		codebase = (void*)codebase + pad;
+		codebase = (char*)codebase + pad;
 	}
 	memcpy(codebase, codeblock, CODEPC);
 	addToCounter(&jitcodeblock, "jitmem-codeblock", 1,
@@ -502,7 +502,7 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 		KFREE(meth->c.bcode.code);
 	}
 	meth->c.ncode.ncode_start = code->mem;
-	meth->c.ncode.ncode_end = code->code + code->codelen;
+	meth->c.ncode.ncode_end = (char*)code->code + code->codelen;
 
 	/* Flush code out of cache */
 	FLUSH_DCACHE(meth->ncode, meth->c.ncode.ncode_end);

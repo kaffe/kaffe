@@ -103,7 +103,8 @@ void throwError(struct _errorInfo*) __NORETURN__;
  * error.  This convenience function can be used when it is safe to
  * signal the error immidiately.
  */
-static inline 
+static
+inline 
 void *checkPtr(void *p)
 {
 	if (!p) {

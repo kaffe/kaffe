@@ -27,6 +27,19 @@
 #undef	__WIN32__
 #define __WIN32__ 1
 #endif
+#if defined(__WIN32__)
+#if defined(HAVE_WINSOCK2_H)
+#include <winsock2.h>
+#if _MSC_VER < 1200
+#define HAVE_INT32 1
+#endif
+#endif
+#if defined(__cplusplus)
+#define HAVE_BOOL 1
+#else
+#define inline
+#endif
+#endif
 
 /* Hack for NetBSD */
 #if defined(__NetBSD__)

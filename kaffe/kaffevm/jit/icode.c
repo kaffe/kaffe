@@ -1490,7 +1490,7 @@ void
 load_addr_long(SlotInfo* dst, void* addr)
 {
 	load_addr_int(dst, addr);
-	load_addr_int(dst+1, addr+4);
+	load_addr_int(dst+1, (char*)addr+4);
 }
 
 #if defined(HAVE_load_float)

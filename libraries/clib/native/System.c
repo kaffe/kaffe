@@ -20,6 +20,9 @@
 #if defined(HAVE_PWD_H)
 #include <pwd.h>
 #endif
+#if defined(HAVE_TIME_H)
+#include <time.h>
+#endif
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/gtypes.h"
 #include "../../../kaffe/kaffevm/object.h"
@@ -281,7 +284,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 
 	/* Figure out the local time zone; fallback to GMT if we can't */
 	tzone = "GMT";
-#if defined(HAVE_TM_ZONE)
+#if defined(HAVE_TM_ZONE) && defined(HAVE_LOCALTIME)
 	{
 		const time_t now = time(NULL);
 

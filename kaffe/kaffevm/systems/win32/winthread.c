@@ -14,7 +14,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include "gtypes.h"
-#include "threads.h"
+#include "thread.h"
 #include "locks.h"
 #include "gc.h"
 #include "support.h"

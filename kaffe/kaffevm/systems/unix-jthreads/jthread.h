@@ -243,9 +243,9 @@ jthread_stackcheck(int left)
 {
 	int rc;
 #if defined(STACK_GROWS_UP)
-        rc = jthread_on_current_stack((void*)&rc + left);
+        rc = jthread_on_current_stack((char*)&rc + left);
 #else
-        rc = jthread_on_current_stack((void*)&rc - left);
+        rc = jthread_on_current_stack((char*)&rc - left);
 #endif
 	return (rc);
 }

@@ -222,6 +222,7 @@ java_io_File_rmdir0(struct Hjava_io_File* this)
 HArrayOfObject* /* [Ljava.lang.String; */
 java_io_File_list0(struct Hjava_io_File* this)
 {
+#if defined(DIR) /* Windows hack - XXX */
 	char path[MAXPATHLEN];
 	DIR* dir;
 	struct dirent* entry;
@@ -294,6 +295,9 @@ java_io_File_list0(struct Hjava_io_File* this)
 	}
 
 	return (array);
+#else
+	return (0);
+#endif
 }
 
 /*

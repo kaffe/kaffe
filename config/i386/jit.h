@@ -53,11 +53,25 @@ typedef struct _exceptionFrame {
 
 #define HAVE_TRAMPOLINE
 
+#if defined(__GNUC__)
+#define	PACKED	__attribute__((packed))
+#else
+#define	PACKED
+#endif
+
+#if defined(_MSC_VER)
+#pragma pack ( push, 1 )
+#endif
+
 typedef struct _methodTrampoline {
-	unsigned char call	__attribute__((packed));
-	int fixup		__attribute__((packed));
-	struct _methods* meth	__attribute__((packed));
+	unsigned char call PACKED;
+	int fixup PACKED;
+	struct _methods* meth PACKED;
 } methodTrampoline;
+
+#if defined(_MSC_VER)
+#pragma pack ( pop )
+#endif
 
 extern void i386_do_fixup_trampoline(void);
 

@@ -342,6 +342,7 @@ static
 void
 discoverClasspath(const char* home)
 {
+#if defined(DIR) /* Windows HACK - XXX */
 	DIR* dir;
 	struct dirent* entry;
 	int len;
@@ -372,6 +373,7 @@ discoverClasspath(const char* home)
 		}
 	}
 	closedir(dir);
+#endif
 }
 
 /*

@@ -8,8 +8,8 @@
  * of this file. 
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "config.h"
+#include "config-io.h"
 #include <assert.h>
 #include <native.h>
 #include "java_io_FileDescriptor.h"

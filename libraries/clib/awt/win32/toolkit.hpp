@@ -13,6 +13,7 @@
 
 #include "config.h"
 #include "config-std.h"
+#include "config-io.h"
 #include "config-mem.h"
 #include "jni.h"
 #include <tchar.h>
@@ -24,7 +25,7 @@ extern "C" {
 #include "..\..\..\..\include\java_lang_Object.h"
 #include "..\..\..\..\kaffe\kaffevm\gc.h"
 
-#include "..\..\..\..\kaffe\kaffevm\jdebug.h"
+#include "..\..\..\..\kaffe\kaffevm\debug.h"
 }
 
 extern "C" void kprintf( const char*, ...); 
@@ -138,14 +139,14 @@ extern JNIEnv   *JniEnv;
 
 static inline void* _awt_malloc_wrapper ( size_t size )
 {
-	void *adr = gc_malloc_fixed( size);
+	void *adr = KMALLOC( size);
 	DBG( awt_mem, ("malloc: %d  -> %x\n", size, adr));
 	return adr;
 }
 
 static inline void* _awt_calloc_wrapper ( int n, size_t size )
 {
-	void *adr = gc_malloc_fixed( n * size);
+	void *adr = KCALLOC( n, size);
 	DBG( awt_mem, ("calloc: %d,%d  -> %x\n", n, size, adr));
 	return adr;
 }
@@ -153,7 +154,7 @@ static inline void* _awt_calloc_wrapper ( int n, size_t size )
 static inline void _awt_free_wrapper ( void* adr )
 {
 	DBG( awt_mem, ("free: %x\n", adr));
-	gc_free_fixed( adr);
+	KFREE( adr);
 }
 
 #define AWT_MALLOC(_n) \
@@ -365,12 +366,9 @@ jobject selectionRequest ( JNIEnv* env, Toolkit* X );
  * file io wrapper macros (for image production)
  */
 
-extern "C" {
-#include "jfilesystem.h"
-}
-#define AWT_OPEN(_file)               open(_file, JOPEN_READ)
-#define AWT_REWIND(_fd)               lseek(_fd, 0, JSEEK_SET)
-#define AWT_SETPOS(_fd,_off)          lseek(_fd, _off, JSEEK_CUR)
+#define AWT_OPEN(_file)               open(_file, O_RDONLY|O_BINARY)
+#define AWT_REWIND(_fd)               lseek(_fd, 0, SEEK_SET)
+#define AWT_SETPOS(_fd,_off)          lseek(_fd, _off, SEEK_CUR)
 #define AWT_READ(_fd,_buf,_count)     read(_fd,_buf,_count)
 #define AWT_CLOSE(_fd)                close(_fd)
 
