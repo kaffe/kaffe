@@ -316,10 +316,9 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 $(KAFFEH_HDRS): $(KLASSES_JAR)
-	if test -x $(KAFFEH_FOR_BUILD); then \
-	  $(KAFFEH_FOR_BUILD) -d @srcdir@ -classpath $(KLASSES_JAR) \
-	    `echo $@ | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
-	fi
+	@test -x $(KAFFEH_FOR_BUILD) || ($(MAKE_KAFFEH_FOR_BUILD))
+	$(KAFFEH_FOR_BUILD) -d @srcdir@ -classpath $(KLASSES_JAR) \
+	    `echo $@ | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
