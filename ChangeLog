@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-26  Audrius Meskauskas  <audriusa@bluewin.ch>
+
+        * javax/swing/JTextArea.java (replaceRange):
+        Fixing doc.remove(start, length) misinterpretation.
+
+2005-03-02  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-26  Roman Kennke  <roman@ontographics.com>
 
         * javax/swing/plaf/basic/BasicListUI
