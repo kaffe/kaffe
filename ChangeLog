@@ -1,3 +1,15 @@
+2004-12-10  Adam Heath  <doogie@brainfood.com>
+
+	* scripts/sort-warnings.pl, scripts/LogWarning.pl,
+	  scripts/WarningDescription.pl:
+	  Start adding description support to the various detected
+	  warnings.  Currently, only -Wmissing-braces has a description;
+	  this was copied from the gcc info docs.
+
+2004-12-10  Adam Heath  <doogie@brainfood.com>
+
+	* I'm 30 today!
+
 2004-12-09  Adam Heath  <doogie@brainfood.com>
 
 	* scripts/sort-warnings.pl:

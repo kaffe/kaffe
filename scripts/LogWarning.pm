@@ -4,14 +4,19 @@ package LogWarning;
 use strict;
 use warnings;
 
+use WarningDescription;
+
 sub new {
 	my $class = shift;
-	return bless( {
+	my %data = (
 		'compiler'	    => $_[ 0 ],
 		'simple-name'	=> $_[ 1 ],
-		'regex'		    => $_[ 2 ],
-		'description'	=> $_[ 3 ]
-	}, $class );
+		'regex'		    => $_[ 2 ]
+    );
+
+    my $self = bless( \%data, $class );
+    $data{ 'description' } = ref( $_[ 3 ] ) ? $_[ 3 ] : new WarningDescription( $self, $_[ 3 ] );
+    return $self;
 }
 
 sub compiler {
@@ -25,8 +30,13 @@ sub compiler {
 
 sub name {
     my $self = shift;
+	return $self->shortName() . $self->index();
+}
+
+sub shortName {
+    my $self = shift;
     my $compiler = $self->compiler();
-	return ( $compiler ? $compiler . "/" : "" ) . $self->{ 'simple-name' } . $self->index();
+	return ( $compiler ? $compiler . "/" : "" ) . $self->{ 'simple-name' };
 }
 
 sub index {
@@ -44,9 +54,9 @@ sub regex {
 	return $self->{ 'regex' };
 }
 
-sub description {
+sub description_text {
     my $self = shift;
-	return $self->{ 'description' };
+	return $self->{ 'description' }->description();
 }
 
 1;

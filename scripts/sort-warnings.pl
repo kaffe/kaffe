@@ -49,6 +49,16 @@ my $skip_line_regex = qr,
         awaiting\ finalization>$
     ),x;
 
+
+my @descriptions = (
+    new WarningDescription( 'gcc', '-Wmissing-braces', "Warn if an aggregate or union initializer is not fully bracketed.
+In the following example, the initializer for `a' is not fully
+bracketed, but that for `b' is fully bracketed.
+
+int a[2][2] = { 0, 1, 2, 3 };
+int b[2][2] = { { 0, 1 }, { 2, 3 } };" ),
+);
+
 my @warning_types = (
 	new JikesWarning( 'throws-uncheck', qr/Since type "([^"]+)" is an unchecked exception, it does not need to be listed in the throws clause.$/m, '' ),
 	new JikesWarning( 'throws-unchecked', qr/Since type "([^"]+)" is an unchecked exception, it does not need to be listed in the throws clause.$/m ),
@@ -154,6 +164,21 @@ for ( my $i = 0; $i < @warning_types; $i++ ) {
 }
 # </auto-number duplicate entries>
 
+# <create name warning map>
+my %warning_map;
+for ( my $i = 0; $i < @warning_types; $i++ ) {
+    $warning_map{ $warning_types[ $i ]->name() } = $warning_types[ $i ];
+}
+# </create name warning map>
+
+# <create description name map>
+my %description_map;
+for ( my $i = 0; $i < @descriptions; $i++ ) {
+    $description_map{ $descriptions[ $i ]->name() } = $descriptions[ $i ];
+}
+# </create description name map>
+print STDERR Dumper( \%description_map );
+
 #print( STDERR join(',', keys( %warning_types ) )."\n" );
 my $text;
 my $removeNext = 0;
@@ -220,7 +245,15 @@ foreach my $file ( sort( { $file_errors{ $b } <=> $file_errors{ $a } } keys( %fi
 print( "\n" );
 foreach my $type ( sort( { $error_counts{ $b } <=> $error_counts{ $a } } keys( %errors ) ) ) {
 	my $h1 = $errors{ $type };
-	print( "Type: $type\nCount: $error_counts{ $type }\n" );
+    my $warning = $warning_map{ $type };
+	print( "Type: $type\n" );
+    my $description = $warning->description_text();
+    if ( !$description ) {
+        $description = $description_map{ $warning->shortName() };
+        $description = $description->description() if ( $description );
+    }
+    print( "Description:\n" . join( "", map( { "\t$_\n" } split( "\n", $description ) ) ) ) if ( $description );
+    print( "Count: $error_counts{ $type }\n" );
 	foreach my $file ( sort( keys( %$h1 ) ) ) {
 		my @text = ();
 		my $file_warning_count = 0;
