@@ -16,19 +16,20 @@
 #include "../../../kaffe/kaffevm/lookup.h"
 #include "../../../kaffe/kaffevm/access.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
+#include "../../../kaffe/kaffevm/support.h"
 #include <native.h>
 #include "java_io_ObjectInputStream.h"
 #include "java_io_ObjectOutputStream.h"
 #include "kaffe_io_ObjectStreamClassImpl.h"
 #include "sha-1.h"
 
-extern jclass Kaffe_FindClass(JNIEnv*, const char*);
-extern void Kaffe_ExceptionClear(JNIEnv*);
-extern jobject Kaffe_NewObject(JNIEnv*, jclass, jmethodID, ...);
+extern jobject Kaffe_NewObject(JNIEnv*, jclass, jmethodID, ...);   /* XXX */
 
 static Hjava_lang_Object* newSerialObject(Hjava_lang_Class*,Hjava_lang_Object*);
 static HArrayOfObject* getFields(struct Hkaffe_io_ObjectStreamClassImpl*);
+static char* getClassName(Hjava_lang_Class* cls);
 
+/* NB: these guys are all write once and then immutable */
 static Utf8Const* serialVersionUIDName;
 static Utf8Const* writeObjectName;
 static Utf8Const* readObjectName;
@@ -338,14 +339,30 @@ addToSHA(SHA1_CTX* c, uidItem* base, int len)
 	}
 }
 
+/*
+ * Take a class name of the form pkg/subpkg/name, return a newly
+ * allocated one of the form pkg.subpkg.name.
+ * Caller must free using KFREE.
+ */
+static char*
+pathname2ClassnameCopy(const char *orig)
+{
+	char* str;
+	str = KMALLOC(strlen(orig) + 1);
+	pathname2classname(orig, str);
+	return (str);
+}
+
 static
 const char*
 getFieldDesc(Field* fld)
 {
 	if (!FIELD_RESOLVED(fld)) {
+		/* XXX: is this right?  Is it dotted as opposed to slashed? */
 		return (((Utf8Const*)(void*)fld->type)->data);
 	}
 	else if (!CLASS_IS_PRIMITIVE(FIELD_TYPE(fld))) {
+		/* XXX: should that be pathname2ClassnameCopy ??? */
 		return (FIELD_TYPE(fld)->name->data);
 	}
 	else {
@@ -357,42 +374,17 @@ static
 char*
 getMethodDesc(Method* mth)
 {
-	const char* orig;
-	char* str;
-	int i;
-
-	orig = mth->signature->data;
-	str = KMALLOC(strlen(orig) + 1);
-	for (i = strlen(orig); i >= 0; i--) {
-		if (orig[i] == '/') {
-			str[i] = '.';
-		}
-		else {
-			str[i] = orig[i];
-		}
-	}
-	return (str);
+	return (pathname2ClassnameCopy(mth->signature->data));
 }
 
+/*
+ * get this class's name in the form pkg.subpkg.name
+ */
 static
 char*
-getInterfaceName(Hjava_lang_Class* cls)
+getClassName(Hjava_lang_Class* cls)
 {
-	const char* orig;
-	char* str;
-	int i;
-
-	orig = cls->name->data;
-	str = KMALLOC(strlen(orig) + 1);
-	for (i = strlen(orig); i >= 0; i--) {
-		if (orig[i] == '/') {
-			str[i] = '.';
-		}
-		else {
-			str[i] = orig[i];
-		}
-	}
-	return (str);
+	return (pathname2ClassnameCopy(cls->name->data));
 }
 
 jlong
@@ -408,6 +400,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	int len;
 	errorInfo einfo;
 	jshort tmp;
+	char *classname;
 
 	fld = lookupClassField(cls, serialVersionUIDName, true, &einfo);
 	if (fld != 0) {
@@ -433,7 +426,12 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	/* Class -> name(UTF), modifier(INT) */
 	tmp = htons(strlen(cls->name->data));
 	SHA1Update(&c, (char*)&tmp, sizeof(tmp));
-	SHA1Update(&c, cls->name->data, strlen(cls->name->data));
+	/* we store the classname with slashes as path names, 
+	 * but here we must use the dotted form
+	 */
+	classname = getClassName(cls);
+	SHA1Update(&c, classname, strlen(classname));
+	KFREE(classname);
 	mod = htonl((int)cls->accflags & (ACC_ABSTRACT|ACC_FINAL|ACC_INTERFACE|ACC_PUBLIC));
 	SHA1Update(&c, (char*)&mod, sizeof(mod));
 
@@ -445,7 +443,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	 */
 	if (!CLASS_IS_ARRAY(cls) && cls->interface_len > 0) {
 		for (i = cls->interface_len-1; i >= 0; i--) {
-			base[i].name = getInterfaceName(cls->interfaces[i]);
+			base[i].name = getClassName(cls->interfaces[i]);
 			base[i].modifier = -1;
 			base[i].desc = 0;
 		}
@@ -589,6 +587,7 @@ newSerialObject(Hjava_lang_Class* clazz, Hjava_lang_Object* obj)
 	n = CLASS_NMETHODS(clazz);
 	for (mptr = CLASS_METHODS(clazz); --n >= 0; ++mptr) {
 		if (strcmp(mptr->name->data, "<init>") == 0 && strcmp(mptr->signature->data, "()V") != 0) {
+			/* XXX !!! */
 			return ((Hjava_lang_Object*)Kaffe_NewObject(0, clazz, (jmethodID)mptr, obj));
 		}
 	}
