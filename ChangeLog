@@ -1,3 +1,22 @@
+2004-05-13 Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/text/RuleBasedCollator.java
+	(CollationElement, CollationSorter): Made static.
+	(last_tertiary_value, SPECIAL_UNKNOWN_SEQ): Introduced special
+	collation elements for unknown character this is for sequence
+	using resets.
+	(mergeRules): Fixed insertion point.
+	(buildCollationVector): Initialize last_tertiary_value.
+	(compare): Handle special cases of accented characters.
+	(getDefaultAccentedElement): New method.
+	(getCollationFixed): Fixed key building.
+	
+	* libraries/javalib/java/text/CollationElementIterator.java
+	(text_indexes): New field.
+	(nextBlock, previousBlock): Updated textIndex according to
+	text_indexes.
+	(setText): Build text_indexes. Better handling of expansion ordering.
+
 2004-05-13  Dalibor Topic  <robilad@kaffe.org>
 
 	*  configure.ac: Allow enabling of jvmpi, xdebugging and 

@@ -147,7 +147,7 @@ public class RuleBasedCollator extends Collator
    * This class describes what rank has a character (or a sequence of characters) 
    * in the lexicographic order. Each element in a rule has a collation element.
    */
-  final class CollationElement
+  final static class CollationElement
   {
     String key;
     int primary;
@@ -189,7 +189,7 @@ public class RuleBasedCollator extends Collator
    * {@link #mergeRules(int,java.lang.String,java.util.Vector,java.util.Vector)})
    * as a temporary state while merging two sets of instructions.
    */
-  final class CollationSorter
+  final static class CollationSorter
   {
     static final int GREATERP = 0;
     static final int GREATERS = 1;
@@ -230,10 +230,27 @@ public class RuleBasedCollator extends Collator
   private int last_primary_value;
 
   /**
+   * This is the value of the last secondary sequence of the
+   * primary 0, entered into
+   * <code>ce_table</code>. It is used to compute the
+   * ordering value of an unspecified accented character.
+   */
+  private int last_tertiary_value;
+
+  /**
    * This variable is true if accents need to be sorted
    * in the other direction.
    */
   private boolean inverseAccentComparison;
+
+  /**
+   * This collation element is special to unknown sequence.
+   * The JDK uses it to mark and sort the characters which has
+   * no collation rules.
+   */
+  static final CollationElement SPECIAL_UNKNOWN_SEQ = 
+    new CollationElement("", (short) 32767, (short) 0, (short) 0,
+			 (short) 0, null);
   
   /**
    * This method initializes a new instance of <code>RuleBasedCollator</code>
@@ -356,14 +373,14 @@ public class RuleBasedCollator extends Collator
 	  (CollationSorter) main.elementAt(insertion_point-1);
 	
 	sorter.expansionOrdering = starter.substring(max_length); // Skip the first good prefix element
-	
+		
 	main.insertElementAt(sorter, insertion_point);
 	
 	/*
 	 * This is a new set of rules. Append to the list.
 	 */
 	patch.removeElementAt(0);
-	insertion_point = main.size();
+	insertion_point++;
       }
 
     // Now insert all elements of patch at the insertion point.
@@ -392,7 +409,7 @@ public class RuleBasedCollator extends Collator
   {
     boolean ignoreChars = (base_offset == 0);
     int operator = -1;
-    StringBuffer sb = new StringBuffer("");
+    StringBuffer sb = new StringBuffer();
     boolean doubleQuote = false;
     boolean eatingChars = false;
     boolean nextIsModifier = false;
@@ -605,6 +622,7 @@ main_parse_loop:
     throws ParseException
   {
     int primary_seq = 0;
+    int last_tertiary_seq = 0;
     short secondary_seq = 0;
     short tertiary_seq = 0;
     short equality_seq = 0;
@@ -652,6 +670,8 @@ element_loop:
 	    continue element_loop;
 	  case CollationSorter.GREATERT:
 	    tertiary_seq++;
+	    if (primary_seq == 0)
+	      last_tertiary_seq = tertiary_seq;
 	    equality_seq = 0;
 	    break;
 	  case CollationSorter.IGNORE:
@@ -686,6 +706,7 @@ element_loop:
     ce_table = v.toArray();
 
     last_primary_value = primary_seq+1;
+    last_tertiary_value = last_tertiary_seq+1;
   }
 
   /**
@@ -757,6 +778,17 @@ element_loop:
         // Check for primary strength differences
         int prim1 = CollationElementIterator.primaryOrder(ord1); 
         int prim2 = CollationElementIterator.primaryOrder(ord2); 
+	
+	if (prim1 == 0 && getStrength() < TERTIARY)
+	  {
+	    ct.previousBlock();
+	    continue;
+	  }
+	else if (prim2 == 0 && getStrength() < TERTIARY)
+	  {
+	    cs.previousBlock();
+	    continue;
+	  }
 
         if (prim1 < prim2)
           return -1;
@@ -769,7 +801,7 @@ element_loop:
         int sec1 = CollationElementIterator.secondaryOrder(ord1);
         int sec2 = CollationElementIterator.secondaryOrder(ord2);
 
-        if (sec1 < sec2)
+	if (sec1 < sec2)
           return -1;
         else if (sec1 > sec2)
           return 1;
@@ -830,6 +862,28 @@ element_loop:
       v = (short) c;
     return new CollationElement("" + c, last_primary_value + v,
 				(short) 0, (short) 0, (short) 0, null);
+  }
+
+  /**
+   * This method builds a default collation element for an accented character
+   * without invoking the database created from the rules passed to the constructor.
+   *
+   * @param c Character which needs a collation element.
+   * @return A valid brand new CollationElement instance.
+   */
+  CollationElement getDefaultAccentedElement(char c)
+  {
+    int v;
+
+    // Preliminary support for generic accent sorting inversion (I don't know if all
+    // characters in the range should be sorted backward). This is the place
+    // to fix this if needed.
+    if (inverseAccentComparison && (c >= 0x02B9 && c <= 0x0361))
+      v = 0x0361 - ((int) c - 0x02B9);
+    else
+      v = (short) c;
+    return new CollationElement("" + c, (short) 0,
+				(short) 0, (short) (last_tertiary_value + v), (short) 0, null);
   }
 
   /**
@@ -894,11 +948,12 @@ element_loop:
         switch (getStrength())
           {
             case PRIMARY:
-               ord = CollationElementIterator.primaryOrder(ord);
-               break;
-
+	      ord = CollationElementIterator.primaryOrder(ord);
+	      break;
+	      
             case SECONDARY:
-               ord = CollationElementIterator.secondaryOrder(ord);
+	      ord = CollationElementIterator.primaryOrder(ord) << 8;
+	      ord |= CollationElementIterator.secondaryOrder(ord);
 
             default:
                break;

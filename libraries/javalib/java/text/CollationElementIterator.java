@@ -92,6 +92,11 @@ public final class CollationElementIterator
   private Object[] text_decomposition;
 
   /**
+   * Array containing the index of the specified block.
+   */
+  private int[] text_indexes;
+
+  /**
    * This method initializes a new instance of <code>CollationElementIterator</code>
    * to iterate over the specified <code>String</code> using the rules in the
    * specified <code>RuleBasedCollator</code>.
@@ -112,9 +117,11 @@ public final class CollationElementIterator
       return null;
     
     RuleBasedCollator.CollationElement e =
-      (RuleBasedCollator.CollationElement) text_decomposition[index++];
+      (RuleBasedCollator.CollationElement) text_decomposition[index];
     
-    textIndex += e.key.length();
+    textIndex = text_indexes[index];
+    
+    index++;
 
     return e;
   }
@@ -128,7 +135,7 @@ public final class CollationElementIterator
     RuleBasedCollator.CollationElement e =
       (RuleBasedCollator.CollationElement) text_decomposition[index];
 
-    textIndex -= e.key.length();
+    textIndex = text_indexes[index];
     
     return e;
   }
@@ -231,7 +238,9 @@ public final class CollationElementIterator
   public void setText(String text)
   {
     int idx = 0;
+    int idx_idx = 1;
     int alreadyExpanded = 0;
+    int idxToMove = 0;
 
     this.text = text;
     this.index = 0;
@@ -239,6 +248,8 @@ public final class CollationElementIterator
     String work_text = text.intern();
 
     Vector v = new Vector();
+    Vector vi = new Vector();
+
     // Build element collection ordered as they come in "text".
     while (idx < work_text.length())
       {
@@ -277,11 +288,36 @@ public final class CollationElementIterator
 	
 	if (prefix == null)
 	  {
-	    RuleBasedCollator.CollationElement e =
-	      collator.getDefaultElement(work_text.charAt (idx));
-	    
-	    v.add (e);
-	    idx++;
+	    if (alreadyExpanded > 0)
+	      {
+		RuleBasedCollator.CollationElement e =
+		  collator.getDefaultAccentedElement (work_text.charAt (idx));
+		
+		v.add (e);
+		vi.add (new Integer(idx_idx));
+		idx++;
+		alreadyExpanded--;
+		if (alreadyExpanded == 0)
+		  {
+		    idx_idx += idxToMove;
+		    idxToMove = 0; 
+		  }
+		else
+		  idx_idx++;
+	      }
+	    else
+	      {
+		RuleBasedCollator.CollationElement e =
+		  collator.getDefaultElement (work_text.charAt (idx));
+		Integer i_ref = new Integer(idx_idx);
+
+		v.add (RuleBasedCollator.SPECIAL_UNKNOWN_SEQ);
+		vi.add (i_ref);
+		v.add (e);
+		vi.add (i_ref);
+		idx_idx++;
+		idx++;
+	      }
 	    continue;
 	  }
 
@@ -290,18 +326,39 @@ public final class CollationElementIterator
 	    work_text = prefix.expansion
 	      + work_text.substring (idx+prefix.key.length());
 	    idx = 0;
-	    alreadyExpanded = prefix.expansion.length();
 	    v.add (prefix);
+	    vi.add (new Integer(idx_idx));
+	    if (alreadyExpanded == 0)
+	      idxToMove = prefix.key.length();
+	    else
+	      idxToMove = 0;
+	    alreadyExpanded += prefix.expansion.length();
 	  }
 	else
 	  {
 	    if (!prefix.ignore)
-	      v.add (prefix);
+	      {
+		v.add (prefix);
+		vi.add (new Integer(idx_idx));
+	      }
 	    idx += prefix.key.length();
+	    if (alreadyExpanded > 0)
+	      {
+		alreadyExpanded -= prefix.key.length();
+		if (alreadyExpanded == 0)
+		  {
+		    idx_idx += idxToMove;
+		    idxToMove = 0;
+		  }
+	      } else
+		idx_idx += prefix.key.length();
 	  }
       }
     
     text_decomposition = v.toArray();
+    text_indexes = new int[vi.size()];
+    for (int i = 0; i < vi.size(); i++) 
+      text_indexes[i] = ((Integer)vi.elementAt(i)).intValue();
   }
 
   /**
