@@ -10,10 +10,10 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include "../../../../kaffe/kaffevm/gtypes.h"
-#include "../../../../kaffe/kaffevm/classMethod.h"
-#include "../../../../kaffe/kaffevm/lookup.h"
-#include "../../../../kaffe/kaffevm/stringSupport.h"
+#include "gtypes.h"
+#include "classMethod.h"
+#include "lookup.h"
+#include "stringSupport.h"
 #include <jni.h>
 #include <native.h>
 #include "java_lang_reflect_Method.h"

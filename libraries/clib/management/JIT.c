@@ -12,7 +12,7 @@
 
 #include "config.h"
 #include "config-std.h"
-#include "../../../kaffe/kaffevm/gtypes.h"
+#include "gtypes.h"
 #include "kaffe_management_JIT.h"
 #include "classMethod.h"
 #include "lookup.h"
@@ -26,9 +26,9 @@
  */
 #if defined(TRANSLATOR) 
 #if defined(JIT3)
-#include "../../../kaffe/kaffevm/jit3/machine.h"
+#include "jit3/machine.h"
 #else
-#include "../../../kaffe/kaffevm/jit/machine.h"
+#include "jit/machine.h"
 #endif
 #endif
 
