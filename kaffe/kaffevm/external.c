@@ -135,6 +135,8 @@ initNative(void)
 	char* ptr;
 	int len;
 
+	DBG(INIT, dprintf("initNative()\n"); )
+
 	lpath = (char*)Kaffe_JavaVMArgs[0].libraryhome;
 	if (lpath == 0) {
 		lpath = getenv(LIBRARYPATH);
@@ -157,6 +159,8 @@ initNative(void)
 	if (lpath != 0) {
 		strcat(libraryPath, lpath);
 	}
+
+	DBG(INIT, dprintf("got lpath %s and libraryPath %s\n", lpath, libraryPath); )
 
 	LIBRARYINIT();
 
@@ -181,6 +185,7 @@ initNative(void)
 		strcat(lib, LIBRARYSUFFIX);
 
 		if (loadNativeLibrary(lib, NULL, 0) >= 0) {
+			DBG(INIT, dprintf("initNative() done\n"); )
 			return;
 		}
 	}

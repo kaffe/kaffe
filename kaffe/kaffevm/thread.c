@@ -86,6 +86,8 @@ initThreads(void)
 {
 	errorInfo info;
 
+	DBG(INIT, dprintf("initThreads()\n"); )
+
 	/* Get a handle on the thread and thread group classes */
 	ThreadClass = lookupClass(THREADCLASS, NULL, &info);
 	assert(ThreadClass != 0);
@@ -110,6 +112,8 @@ initThreads(void)
 
 	/* Allocate a thread to be the main thread */
 	createInitialThread("main");
+
+	DBG(INIT, dprintf("initThreads() done\n"); )
 }
 
 static int
@@ -227,6 +231,8 @@ createInitialThread(const char* nm)
 {
 	Hjava_lang_Thread* tid;
 
+	DBG(INIT, dprintf("createInitialThread(%s)\n", nm); )
+
 	/* Allocate a thread to be the main thread */
 	tid = (Hjava_lang_Thread*)newObject(ThreadClass);
 	assert(tid != 0);
@@ -264,6 +270,8 @@ createInitialThread(const char* nm)
 	
 	/* Attach thread to threadGroup */
 	do_execute_java_method(unhand(tid)->group, "add", "(Ljava/lang/Thread;)V", 0, 0, tid);
+
+	DBG(INIT, dprintf("createInitialThread(%s) done\n", nm); )
 }
 
 /*
@@ -618,6 +626,8 @@ onDeadlock(void)
 void
 initNativeThreads(int nativestacksize)
 {
+	DBG(INIT, dprintf("initNativeThreads(0x%x)\n", nativestacksize); )
+
 	/* Even though the underlying operating or threading system could
 	 * probably extend the main thread's stack, we must impose this 
 	 * artificial boundary, because otherwise we wouldn't be able to 
@@ -633,4 +643,6 @@ initNativeThreads(int nativestacksize)
 		broadcastDeath,
 		throwDeath,
 		onDeadlock);
+	
+	DBG(INIT, dprintf("initNativeThreads(0x%x) done\n", nativestacksize); )
 }

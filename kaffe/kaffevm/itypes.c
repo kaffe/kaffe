@@ -93,6 +93,8 @@ bad:
 void
 initTypes(void)
 {
+	DBG(INIT, dprintf("initTypes()\n"); )
+
 	initPrimClass(&byteClass, "byte", 'B', 1);
 	initPrimClass(&shortClass, "short", 'S', 2);
 	initPrimClass(&intClass, "int", 'I', 4);
@@ -111,6 +113,8 @@ initTypes(void)
 	TYPE_CLASS(TYPE_Short) = shortClass;
 	TYPE_CLASS(TYPE_Int) = intClass;
 	TYPE_CLASS(TYPE_Long) = longClass;
+
+	DBG(INIT, dprintf("initTypes() done\n"); )
 }
 
 /*
@@ -119,6 +123,8 @@ initTypes(void)
 void
 finishTypes(void)
 {
+	DBG(INIT, dprintf("finishTypes()\n"); )
+
 	byteClass->head.dtable = ClassClass->dtable;
 	shortClass->head.dtable = ClassClass->dtable;
 	intClass->head.dtable = ClassClass->dtable;
@@ -128,6 +134,8 @@ finishTypes(void)
 	floatClass->head.dtable = ClassClass->dtable;
 	doubleClass->head.dtable = ClassClass->dtable;
 	voidClass->head.dtable = ClassClass->dtable;
+
+	DBG(INIT, dprintf("finishTypes() done\n"); )
 }
 
 static

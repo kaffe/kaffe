@@ -386,10 +386,13 @@ utf8ConstInit(void)
 #if !defined(KAFFEH)
 	int iLockRoot;
 #endif
-	
+	DBG(INIT, dprintf("utf8ConstInit()\n"); )
+
 	lockUTF();
 	hashTable = hashInit(utf8ConstHashValueInternal,
 		utf8ConstCompare, UTFmalloc, UTFfree);
 	assert(hashTable != NULL);
 	unlockUTF();
+
+	DBG(INIT, dprintf("utf8ConstInit() done\n"); )
 }

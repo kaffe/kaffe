@@ -346,6 +346,8 @@ initClasspath(void)
 	int len;
 	classpathEntry* ptr;
 
+	DBG(INIT, dprintf("initClasspath()\n"); )
+
 	cp = (char*)Kaffe_JavaVMArgs[0].bootClasspath;
 	hm = (char*)Kaffe_JavaVMArgs[0].classhome;
 
@@ -383,6 +385,8 @@ initClasspath(void)
 	}
 	
 	realClassPath = (char *)Kaffe_JavaVMArgs[0].classpath;
+
+	DBG(INIT, dprintf("initClasspath() done, got %s\n", realBootClassPath); )
 }
 
 void

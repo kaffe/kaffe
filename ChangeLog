@@ -1,4 +1,14 @@
+2003-06-11  Helmer Kraemer  <hkraemer@freenet.de>
 
+	* kaffe/kaffevm/baseClasses.c,
+	kaffe/kaffevm/findInJar.c,
+	kaffe/kaffevm/external.c,
+	kaffe/kaffevm/gcFuncs.c,
+	kaffe/kaffevm/itypes.c,
+	kaffe/kaffevm/thread.c,
+	kaffe/kaffevm/utf8const.c:
+	add some debug messages to show the initialization steps
+	
 2003-06-11 Helmer Kraemer <hkraemer@freenet.de>
 
 	* libraries/javalib/java/lang/System.java,

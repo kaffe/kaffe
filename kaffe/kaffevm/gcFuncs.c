@@ -581,6 +581,8 @@ initCollector(void)
 {
 	Collector *gc = createGC(gc_walk_refs);
 
+	DBG(INIT, dprintf("initCollector()\n"); )
+
 	GC_registerGcTypeByIndex(gc, GC_ALLOC_JAVASTRING,
 	    stringWalk, GC_OBJECT_NORMAL, stringDestroy, "j.l.String");
 	GC_registerGcTypeByIndex(gc, GC_ALLOC_NOWALK,
@@ -615,5 +617,7 @@ initCollector(void)
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_REF, "gc-refs");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JITTEMP, "jit-temp-data");
         GC_registerFixedTypeByIndex(gc, GC_ALLOC_JAR, "jar");
+
+	DBG(INIT, dprintf("initCollector() done\n"); )
 	return (gc);
 }
