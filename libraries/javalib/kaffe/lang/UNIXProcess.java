@@ -118,6 +118,10 @@ public OutputStream getOutputStream() {
 	return stdin_stream;
 }
 
+public int getPID() {
+	return pid;
+}
+
 public int waitFor() throws InterruptedException {
 	synchronized(this) {
 		while (isalive == true) {
