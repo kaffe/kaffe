@@ -113,7 +113,7 @@ uintp gc_heap_range;
 
 #ifndef gc_pgsize
 static size_t gc_pgsize;
-int gc_pgbits;
+static int gc_pgbits;
 #endif
 
 #ifdef KAFFE_VMDEBUG

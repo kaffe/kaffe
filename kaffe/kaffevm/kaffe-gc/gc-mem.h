@@ -20,10 +20,6 @@
 #define ALIGNMENT_OF_SIZE(S)	(S)
 #endif
 
-#ifndef gc_pgsize
-extern int gc_pgbits;
-#endif
-
 extern size_t gc_heap_total;
 extern size_t gc_heap_limit;
 
