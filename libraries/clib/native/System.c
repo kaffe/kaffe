@@ -147,13 +147,33 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 #endif
 
 	/* Add the default properties:
+	 *
+	 * Standard:
+	 *
 	 * java.version		Java version number
 	 * java.vendor          Java vendor specific string
 	 * java.vendor.url      Java vendor URL
+	 * java.home            Java installation directory
+	 *
+	 * java.vm.specification.version
+	 *			Java Virtual Machine specification version
+	 * java.vm.specification.vendor
+	 *			Java Virtual Machine specification vendor
+	 * java.vm.specification.name
+	 *			Java Virtual Machine specification name
+	 * java.vm.version	Java Virtual Machine implementation version
+	 * java.vm.vendor	Java Virtual Machine implementation vendor
+	 * java.vm.name		Java Virtual Machine implementation name
+	 *
+	 * java.specification.version
+	 *			Java Runtime Environment specification version
+	 * java.specification.vendor
+	 *			Java Runtime Environment specification vendor
+	 * java.specification.name
+	 *			Java Runtime Environment specification name
+	 *
 	 * java.class.version   Java class version number
 	 * java.class.path      Java classpath
-	 * java.home            Java installation directory
-	 * java.compiler        Java JIT compiler
 	 *
 	 * os.name              Operating System Name
 	 * os.arch              Operating System Architecture
@@ -170,6 +190,9 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	 * user.region          User's country locale code
 	 * user.timezone	User's timezone
 	 *
+	 * Others:
+	 *
+	 * java.compiler        Java JIT compiler
 	 * file.encoding	Character encoding for locale
 	 * file.encoding.pkg	Character encoding package
 	 */
@@ -178,6 +201,21 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	setProperty(p, "java.vendor", kaffe_vendor);
 	setProperty(p, "java.vendor.url", kaffe_vendor_url);
 	setProperty(p, "java.compiler", getEngine());
+
+	setProperty(p, "java.vm.specification.version",
+		  kaffe_vm_specification_version);
+	setProperty(p, "java.vm.specification.vendor", 
+		  kaffe_vm_specification_vendor);
+	setProperty(p, "java.vm.specification.name", 
+		  kaffe_vm_specification_name);
+	setProperty(p, "java.vm.version", kaffe_vm_version);
+	setProperty(p, "java.vm.vendor", kaffe_vm_vendor);
+	setProperty(p, "java.vm.name", kaffe_vm_name);
+	setProperty(p, "java.specification.version", 
+		  kaffe_specification_version);
+	setProperty(p, "java.specification.vendor", kaffe_specification_vendor);
+	setProperty(p, "java.specification.name", kaffe_specification_name);
+	setProperty(p, "java.class.version", kaffe_class_version);
 
 	jhome = getenv(KAFFEHOME);
 	if (jhome == 0) {
