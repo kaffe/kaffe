@@ -668,7 +668,7 @@ dnl Check for thread libraries
 if test x$with_threads = xunix-pthreads ; then
 	ACX_PTHREAD([THREADLIBS="$PTHREAD_LIBS "
                      CC="$PTHREAD_CC"])
-	AC_CHECK_LIB(semaphore,sem_init,SEMAPHORE_LIB)
+	AC_CHECK_LIB(semaphore,sem_init,SEMAPHORE_LIB="-lsemaphore")
 	AC_SUBST(SEMAPHORE_LIB)
 	KAFFE_CHECK_SEMAPHORE
 
@@ -1227,6 +1227,7 @@ AC_ARG_ENABLE([mips2],
 AC_MSG_CHECKING([whether to enable MIPS II instructions])
 if test x"$enable_mips2" != x"no"; then
     AC_DEFINE([HAVE_MIPSII_INSTRUCTIONS], 1, [Enable MIPS II instructions])
+    enable_mips2=yes
 fi
 AC_MSG_RESULT($enable_mips2)
 

@@ -28252,7 +28252,7 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_semaphore_sem_init" >&5
 echo "${ECHO_T}$ac_cv_lib_semaphore_sem_init" >&6
 if test $ac_cv_lib_semaphore_sem_init = yes; then
-  SEMAPHORE_LIB
+  SEMAPHORE_LIB="-lsemaphore"
 fi
 
 
@@ -28409,6 +28409,11 @@ done
 
   echo "$as_me:$LINENO: checking for working semaphores" >&5
 echo $ECHO_N "checking for working semaphores... $ECHO_C" >&6
+  old_LDFLAGS="$LDFLAGS"
+  old_CFLAGS="$CFLAGS"
+  LDFLAGS="$LDFLAGS $THREADLIBS $SEMAPHORE_LIB"
+  CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+
   if test "$cross_compiling" = yes; then
 
 
@@ -28474,6 +28479,8 @@ fi
 rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 
+  LDFLAGS="$old_LDFLAGS"
+  CFLAGS="$old_CFLAGS"
 
 
 	if test -z "$THREADLIBS"; then
@@ -43718,6 +43725,7 @@ cat >>confdefs.h <<\_ACEOF
 #define HAVE_MIPSII_INSTRUCTIONS 1
 _ACEOF
 
+    enable_mips2=yes
 fi
 echo "$as_me:$LINENO: result: $enable_mips2" >&5
 echo "${ECHO_T}$enable_mips2" >&6
@@ -58453,7 +58461,7 @@ EOF
 if uudecode$EXEEXT Test.uue; then
         ac_cv_prog_uudecode_base64=yes
 else
-        echo "configure: 58456: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
+        echo "configure: 58464: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
         echo "configure: failed file was:" >&5
         cat Test.uue >&5
         ac_cv_prog_uudecode_base64=no
@@ -58571,7 +58579,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 58574 "configure" */
+/* #line 58582 "configure" */
 public class Test {
 }
 EOF
@@ -58608,7 +58616,7 @@ JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 TEST=Test
 cat << \EOF > $JAVA_TEST
-/* [#]line 58611 "configure" */
+/* [#]line 58619 "configure" */
 public class Test {
 public static void main (String args[]) {
         System.exit (0);

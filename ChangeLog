@@ -1,3 +1,10 @@
+2005-02-06  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* configure.ac: Setup SEMAPHORE_LIB correctly. Force enable_mips2 to
+	yes if omitted.
+
+	* m4/semaphore.m4: Use the pthread flags to check semaphore functions.
+
 2005-02-05  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/signal.c
