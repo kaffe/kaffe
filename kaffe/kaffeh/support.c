@@ -344,6 +344,10 @@ findClass(char* nm)
 			hand.size = sbuf.st_size;
 			hand.base = malloc(hand.size);
 			hand.buf = hand.base;
+			if (read(fd, hand.base, hand.size) != hand.size) {
+				close(fd);
+				break;
+			}
 
 			objectDepth++;
 			savepool = constant_pool;
