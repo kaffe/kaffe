@@ -364,6 +364,7 @@ runtest ExecTest "Okay
 Okay"
 
 runtest ProcessTest "ProcessTest: Success."
+runtest UDPTest "UDPTest: Success."
 
 runtest finaltest "3.1415926536"
 echo -n "finaltest2 ... " 1>&2
