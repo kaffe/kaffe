@@ -1,3 +1,9 @@
+Thu Jan 28 11:18:42 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/clib/native/Class.c: throw InstantiationException when
+	attempting to newInstance primitive classes
+	* libraries/javalib/java/lang/Byte.java: fix for decode
+
 Wed Jan 27 18:38:25 1999  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
        * kaffe/kaffevm/systems/unix-jthreads/signal.c,
