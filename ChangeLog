@@ -1,6 +1,13 @@
 2004-02-16  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+        (opstackWPushBlind): New static inline function.
+        (OPSTACK_WPUSH_BLIND) Removed.
+        Replaced use of OPSTACK_WPUSH_BLIND by opstackWPushBlind.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (opstackPushBlind): New static inline function.
         (OPSTACK_PUSH_BLIND) Removed.
         Replaced use of OPSTACK_PUSH_BLIND by opstackPushBlind.

@@ -2626,6 +2626,19 @@ opstackPushBlind(BlockInfo* block,
 }
 
 /*
+ * Helper function for opstack access in verifyBasicBlock.
+ * only use for LONGs and DOUBLEs.
+ */
+static inline
+void
+opstackWPushBlind(BlockInfo* block,
+		  const Type* type)
+{
+	opstackPushBlind(block, type);
+	opstackPushBlind(block, TWIDE);
+}
+
+/*
  * verifyBasicBlock()
  *   Simulates execution of a basic block by modifying its simulated operand stack and local variable array.
  */
@@ -2707,16 +2720,10 @@ verifyBasicBlock(errorInfo* einfo,
 #define OPSTACK_PUSH(_TINFO) \
 	CHECK_STACK_OVERFLOW(1); \
 	opstackPushBlind(block, _TINFO)
-	
-	
-	/* only use for LONGs and DOUBLEs */
-#define OPSTACK_WPUSH_BLIND(_TINFO) \
-	opstackPushBlind(block, _TINFO); \
-	opstackPushBlind(block, TWIDE)
-	
+
 #define OPSTACK_WPUSH(_T) \
 	CHECK_STACK_OVERFLOW(2); \
-        OPSTACK_WPUSH_BLIND(_T)
+        opstackWPushBlind(block, _T)
 	
 	
 	
@@ -3328,12 +3335,12 @@ verifyBasicBlock(errorInfo* einfo,
 		case I2L:
 			OPSTACK_POP_T(TINT);
 			CHECK_STACK_OVERFLOW(2);
-			OPSTACK_WPUSH_BLIND(TLONG);
+			opstackWPushBlind(block, TLONG);
 			break;
 		case I2D:
 			OPSTACK_POP_T(TINT);
 			CHECK_STACK_OVERFLOW(2);
-			OPSTACK_WPUSH_BLIND(TDOUBLE);
+			opstackWPushBlind(block, TDOUBLE);
 			break;
 			
 		case F2I:
@@ -3359,7 +3366,7 @@ verifyBasicBlock(errorInfo* einfo,
 			break;
 		case L2D:
 			OPSTACK_WPOP_T(TLONG);
-			OPSTACK_WPUSH_BLIND(TDOUBLE);
+			opstackWPushBlind(block, TDOUBLE);
 			break;
 			
 		case D2I:
@@ -3372,7 +3379,7 @@ verifyBasicBlock(errorInfo* einfo,
 			break;
 		case D2L:
 			OPSTACK_WPOP_T(TDOUBLE);
-			OPSTACK_WPUSH_BLIND(TLONG);
+			opstackWPushBlind(block, TLONG);
 			break;
 			
 			
