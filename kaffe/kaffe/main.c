@@ -294,7 +294,7 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 	cls = (*env)->FindClass(env, "java/lang/String");
 	if (checkException())
 		goto done;
-	args = (*env)->NewObjectArray(env, argc, cls, 0);
+	args = (*env)->NewObjectArray(env, argc, cls, NULL);
 	if (checkException())
 		goto done;
 	for (i = 0; i < argc; i++) {

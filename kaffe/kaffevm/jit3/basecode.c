@@ -27,7 +27,7 @@ writeslot(sequence* seq, int slot, SlotInfo* data, int len)
 	SlotData* sdata;
 
 	if (data == 0) {
-		seq->u[slot].slot = 0;
+		seq->u[slot].slot = NULL;
 		return;
 	}
 	sdata = data->slot;
@@ -68,7 +68,7 @@ readslot(sequence* seq, int slot, SlotInfo* data, int len)
 	SlotData* sdata;
 
 	if (data == 0) {
-		seq->u[slot].slot = 0;
+		seq->u[slot].slot = NULL;
 		return;
 	}
 
@@ -184,7 +184,7 @@ slot_slot_slot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 {
 	sequence* seq;
 #if defined(TWO_OPERAND)
-	SlotInfo* olddst = 0;
+	SlotInfo* olddst = NULL;
 
 	/* Two operand systems cannot handle three operand ops.
 	 * We need to fix it so the dst is one of the source ops.
@@ -231,7 +231,7 @@ lslot_lslot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 	/* Two operand systems cannot handle three operand ops.
 	 * We need to fixit so the dst is one of the source ops.
 	 */
-	SlotInfo* olddst = 0;
+	SlotInfo* olddst = NULL;
 	if (s1 != 0 && s2 != 0 && dst != 0) {
 		if (s2 == dst) {
 			olddst = dst;
@@ -268,7 +268,7 @@ lslot_lslot_slot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 	/* Two operand systems cannot handle three operand ops.
 	 * We need to fixit so the dst is one of the source ops.
 	 */
-	SlotInfo* olddst = 0;
+	SlotInfo* olddst = NULL;
 	if (s1 != 0 && s2 != 0 && dst != 0) {
 		if (s2 == dst) {
 			olddst = dst;
@@ -305,7 +305,7 @@ slot_slot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 	/* Two operand systems cannot handle three operand ops.
 	 * We need to fixit so the dst is one of the source ops.
 	 */
-	SlotInfo* olddst = 0;
+	SlotInfo* olddst = NULL;
 	if (s1 != 0 && s2 != 0 && dst != 0) {
 		if (s2 == dst) {
 			olddst = dst;

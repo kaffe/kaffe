@@ -1,5 +1,15 @@
 2004-12-16  Adam Heath  <doogieg@brainfood.com>
 
+	* config/i386/linux/xprofile-md.h, kaffe/kaffe/main.c
+	  kaffe/kaffevm/access.c, kaffe/kaffevm/classMethod.c
+	  kaffe/kaffevm/classPool.c, kaffe/kaffevm/code-analyse.c
+	  kaffe/kaffevm/code.c, kaffe/kaffevm/exception.c
+	  kaffe/kaffevm/locks.h, kaffe/kaffevm/jit3/basecode.c
+	  kaffe/kaffevm/jit3/icode.c:
+	  First set of fixes after using sparse: 0 -> NULL changes.
+
+2004-12-16  Adam Heath  <doogieg@brainfood.com>
+
 	* scripts/sort-warnings.pl, scripts/SparseWarning.pm:
 	  Add support for sparse.
 

@@ -194,14 +194,14 @@ reload_double(SlotData* dst)
 void
 copyslots(SlotInfo* dst, SlotInfo* src, int type)
 {
-	slot_slot_slot(dst, 0, src, slotAlias, Tcopy);
+	slot_slot_slot(dst, NULL, src, slotAlias, Tcopy);
 	activeSeq->u[1].value.i = type;
 }
 
 void
 copylslots(SlotInfo* dst, SlotInfo* src, int type)
 {
-	lslot_lslot_lslot(dst, 0, src, slotAlias, Tcopy);
+	lslot_lslot_lslot(dst, NULL, src, slotAlias, Tcopy);
 	activeSeq->u[1].value.i = type;
 }
 
@@ -228,8 +228,8 @@ prologue(Method* meth)
 	setupArgumentRegisters();
 
 	/* Emit prologue code */
-	slot_const_const(0, (jword)l, (jword)meth, HAVE_prologue, Tnull);
-        slot_const_const(0, (jword)createSpillMask(), SR_START, doReload, Tnull);
+	slot_const_const(NULL, (jword)l, (jword)meth, HAVE_prologue, Tnull);
+        slot_const_const(NULL, (jword)createSpillMask(), SR_START, doReload, Tnull);
 	
 #if defined(ENABLE_JVMPI)
 	{
@@ -261,7 +261,7 @@ check_stack_limit(void)
 	l->to = (uintp)c;
 	l->from = 0;
 
-	slot_slot_const(0, stack_limit, (jword)l, HAVE_check_stack_limit_constpool, Tnull);
+	slot_slot_const(NULL, stack_limit, (jword)l, HAVE_check_stack_limit_constpool, Tnull);
 #elif defined(HAVE_check_stack_limit)
 	label* l;
 
@@ -271,7 +271,7 @@ check_stack_limit(void)
 	l->to = (uintp)soft_stackoverflow;
 	l->from = 0;
 
-	slot_slot_const(0, stack_limit, (jword)l, HAVE_check_stack_limit, Tnull);
+	slot_slot_const(NULL, stack_limit, (jword)l, HAVE_check_stack_limit, Tnull);
 #endif
 #endif /* STACK_LIMIT */
 }
@@ -288,8 +288,8 @@ exception_prologue(void)
 	l->from = 0;
 
 	/* Emit exception prologue code */
-	slot_const_const(0, (jword)l, 0, HAVE_exception_prologue, Tnull);
-        slot_const_const(0, (jword)createSpillMask(), SR_EXCEPTION, doReload, Tnull);
+	slot_const_const(NULL, (jword)l, 0, HAVE_exception_prologue, Tnull);
+        slot_const_const(NULL, (jword)createSpillMask(), SR_EXCEPTION, doReload, Tnull);
 }
 
 void
@@ -311,7 +311,7 @@ epilogue(Method* meth UNUSED)
         }
 #endif
 
-	slot_const_const(0, (jword)l, 0, HAVE_epilogue, Tnull);
+	slot_const_const(NULL, (jword)l, 0, HAVE_epilogue, Tnull);
 }
 
 void
@@ -352,12 +352,12 @@ mon_enter(methods* meth, SlotInfo* obj)
 		l->to = (uintp)slowLockObject;
 		l->from = 0;
 		if (METHOD_IS_STATIC(meth) == 0) {
-			meth = 0;
+			meth = NULL;
 		}
 		else {
-			obj = 0;
+			obj = NULL;
 		}
-		slot_slot_slot_const_const(0, 0, obj, (jword)meth, (jword)l, HAVE_mon_enter, Tnull);
+		slot_slot_slot_const_const(NULL, NULL, obj, (jword)meth, (jword)l, HAVE_mon_enter, Tnull);
 		end_func_sync();
 	}
 #else
@@ -392,12 +392,12 @@ mon_exit(methods* meth, SlotInfo* obj)
 		l->to = (uintp)slowUnlockObject;
 		l->from = 0;
 		if (METHOD_IS_STATIC(meth) == 0) {
-			meth = 0;
+			meth = NULL;
 		}
 		else {
-			obj = 0;
+			obj = NULL;
 		}
-		slot_slot_slot_const_const(0, 0, obj, (jword)meth, (jword)l, HAVE_mon_exit, Tnull);
+		slot_slot_slot_const_const(NULL, NULL, obj, (jword)meth, (jword)l, HAVE_mon_exit, Tnull);
 		end_func_sync();
 	}
 #else
@@ -425,7 +425,7 @@ softcall_monitorenter(SlotInfo* mon)
 	l->at = 0;
 	l->to = (uintp)slowLockObject;
 	l->from = 0;
-	slot_slot_slot_const_const(0, 0, mon, 0, (jword)l, HAVE_mon_enter, Tnull);
+	slot_slot_slot_const_const(NULL, NULL, mon, 0, (jword)l, HAVE_mon_enter, Tnull);
 #else
 	pusharg_ref(mon, 0);
 	call_soft(lockObject);
@@ -444,7 +444,7 @@ softcall_monitorexit(SlotInfo* mon)
 	l->at = 0;
 	l->to = (uintp)slowUnlockObject;
 	l->from = 0;
-	slot_slot_slot_const_const(0, 0, mon, 0, (jword)l, HAVE_mon_exit, Tnull);
+	slot_slot_slot_const_const(NULL, NULL, mon, 0, (jword)l, HAVE_mon_exit, Tnull);
 #else
 	pusharg_ref(mon, 0);
 	call_soft(unlockObject);
@@ -474,14 +474,14 @@ mark_all_writes(void)
 void
 _start_sub_block(void)
 {
-	slot_const_const(0, (jword)createSpillMask(), SR_SUBBASIC, doReload, Tnull);
+	slot_const_const(NULL, (jword)createSpillMask(), SR_SUBBASIC, doReload, Tnull);
 	setupSlotsForBasicBlock();
 }
 
 void
 _start_basic_block(void)
 {
-	slot_const_const(0, (jword)createSpillMask(), SR_BASIC, doReload, Tnull);
+	slot_const_const(NULL, (jword)createSpillMask(), SR_BASIC, doReload, Tnull);
 	setupSlotsForBasicBlock();
 }
 
@@ -489,26 +489,26 @@ void
 _end_sub_block(void)
 {
 	mark_all_writes();
-	slot_const_const(0, (jword)createSpillMask(), SR_SUBBASIC, doSpill, Tnull);
+	slot_const_const(NULL, (jword)createSpillMask(), SR_SUBBASIC, doSpill, Tnull);
 }
 
 void
 _end_basic_block(void)
 {
 	mark_all_writes();
-	slot_const_const(0, (jword)createSpillMask(), SR_BASIC, doSpill, Tnull);
+	slot_const_const(NULL, (jword)createSpillMask(), SR_BASIC, doSpill, Tnull);
 }
 
 void
 _syncRegisters(uintp stk UNUSED, uintp temp UNUSED)
 {
-	slot_const_const(0, (jword)createSpillMask(), SR_SYNC, doSpill, Tnull);
+	slot_const_const(NULL, (jword)createSpillMask(), SR_SYNC, doSpill, Tnull);
 }
 
 void
 _start_instruction(uintp _pc)
 {
-	slot_const_const(0, 0, _pc, startInsn, Tnull);
+	slot_const_const(NULL, 0, _pc, startInsn, Tnull);
 }
 
 void
@@ -531,7 +531,7 @@ void
 begin_sync(void)
 {
 	assert(lastSpill == 0);
-	slot_const_const(0, 0, SR_BASIC, doSpill, Tnull);
+	slot_const_const(NULL, 0, SR_BASIC, doSpill, Tnull);
 	lastSpill = activeSeq;
 }
 
@@ -541,7 +541,7 @@ end_sync(void)
 	/* Make sure a sync is in progress */
 	assert(lastSpill != 0);
 	lastSpill->u[1].smask = createSpillMask();
-	lastSpill = 0;
+	lastSpill = NULL;
 	mark_all_writes();
 }
 
@@ -549,7 +549,7 @@ void
 begin_func_sync(void)
 {
 	assert(lastSpill == 0);
-	slot_const_const(0, 0, SR_FUNCTION, doSpill, Tnull);
+	slot_const_const(NULL, 0, SR_FUNCTION, doSpill, Tnull);
 	lastSpill = activeSeq;
 
 	/* If we might throw and catch and exception we better make everything
@@ -571,10 +571,10 @@ end_func_sync(void)
 	/* Save the slots to spill */
 	assert(lastSpill != 0);
 	lastSpill->u[1].smask = mask;
-	lastSpill = 0;
+	lastSpill = NULL;
 
 	/* Create a reload and save the slots to reload */
-	slot_const_const(0, (jword)mask, SR_FUNCTION, doReload, Tnull);
+	slot_const_const(NULL, (jword)mask, SR_FUNCTION, doReload, Tnull);
 }
 
 
@@ -587,7 +587,7 @@ move_int_const(SlotInfo* dst, jint val)
 {
 #if defined(HAVE_move_int_const)
 	if (HAVE_move_int_const_rangecheck(val)) {
-		slot_slot_const(dst, 0, val, HAVE_move_int_const, Tconst);
+		slot_slot_const(dst, NULL, val, HAVE_move_int_const, Tconst);
 	}
 	else
 #endif
@@ -621,7 +621,7 @@ move_ref_const(SlotInfo* dst, void *val)
 {
 #if defined(HAVE_move_ref_const)
 	if (HAVE_move_ref_const_rangecheck(val)) {
-		slot_slot_const(dst, 0, (jword)val, HAVE_move_ref_const, Tconst);
+		slot_slot_const(dst, NULL, (jword)val, HAVE_move_ref_const, Tconst);
 	}
 	else
 #endif
@@ -730,7 +730,7 @@ move_float_const(SlotInfo* dst, float val)
 {
 #if defined(HAVE_move_float_const)
 	if (HAVE_move_float_const_rangecheck(val)) {
-		slot_slot_fconst(dst, 0, val, HAVE_move_float_const, Tconst);
+		slot_slot_fconst(dst, NULL, val, HAVE_move_float_const, Tconst);
 	}
 	else
 #endif
@@ -746,7 +746,7 @@ move_float_const(SlotInfo* dst, float val)
 		l->from = 0;
 
 #if defined(HAVE_load_constpool_float)
-		slot_slot_const(dst, 0, (jword)l, HAVE_load_constpool_float, Tnull);
+		slot_slot_const(dst, NULL, (jword)l, HAVE_load_constpool_float, Tnull);
 #else
 		{
 			SlotInfo* tmp;
@@ -764,7 +764,7 @@ move_double_const(SlotInfo* dst, jdouble val)
 {
 #if defined(HAVE_move_double_const)
 	if (HAVE_move_double_const_rangecheck(val)) {
-		lslot_slot_fconst(dst, 0, val, HAVE_move_double_const, Tconst);
+		lslot_slot_fconst(dst, NULL, val, HAVE_move_double_const, Tconst);
 	}
 	else
 #endif
@@ -800,7 +800,7 @@ move_any(SlotInfo* dst, SlotInfo* src)
 	if (dst == src) {
 	}
 	else if (isGlobal(dst->slot)) {
-		slot_slot_slot(dst, 0, src, HAVE_move_any, Tcopy);
+		slot_slot_slot(dst, NULL, src, HAVE_move_any, Tcopy);
 	}
 	else {
 		copyslots(dst, src, Rref);
@@ -820,7 +820,7 @@ move_int(SlotInfo* dst, SlotInfo* src)
 	}
 #endif
 	else if (isGlobal(dst->slot)) {
-		slot_slot_slot(dst, 0, src, HAVE_move_int, Tcopy);
+		slot_slot_slot(dst, NULL, src, HAVE_move_int, Tcopy);
 	}
 	else {
 		copyslots(dst, src, Rint);
@@ -839,7 +839,7 @@ move_ref(SlotInfo* dst, SlotInfo* src)
 	}
 #endif
 	else if (isGlobal(dst->slot)) {
-		slot_slot_slot(dst, 0, src, HAVE_move_ref, Tcopy);
+		slot_slot_slot(dst, NULL, src, HAVE_move_ref, Tcopy);
 	}
 	else {
 		copyslots(dst, src, Rref);
@@ -882,7 +882,7 @@ move_float(SlotInfo* dst, SlotInfo* src)
 #endif
 	else if (isGlobal(dst->slot)) {
 #if defined(HAVE_move_float)
-		slot_slot_slot(dst, 0, src, HAVE_move_float, Tcopy);
+		slot_slot_slot(dst, NULL, src, HAVE_move_float, Tcopy);
 #elif defined(HAVE_NO_FLOATING_POINT)
 		move_int(dst, src);
 #else
@@ -906,7 +906,7 @@ move_double(SlotInfo* dst, SlotInfo* src)
 #endif
 	else if (isGlobal(dst->slot)) {
 #if defined(HAVE_move_double)
-		lslot_lslot_lslot(dst, 0, src, HAVE_move_double, Tcopy);
+		lslot_lslot_lslot(dst, NULL, src, HAVE_move_double, Tcopy);
 #elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 		move_long(dst, src);
 #else
@@ -922,7 +922,7 @@ move_double(SlotInfo* dst, SlotInfo* src)
 void
 move_label_const(SlotInfo* dst, label* lab)
 {
-	slot_slot_const(dst, 0, (jword)lab, HAVE_move_label_const, Tnull);
+	slot_slot_const(dst, NULL, (jword)lab, HAVE_move_label_const, Tnull);
 }
 #endif
 
@@ -1693,11 +1693,11 @@ void
 neg_int(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_neg_int)
-	slot_slot_slot(dst, 0, src, HAVE_neg_int, Tcomplex);
+	slot_slot_slot(dst, NULL, src, HAVE_neg_int, Tcomplex);
 #else
 	SlotInfo* zero;
 	slot_alloctmp(zero);
-	move_int_const(zero, 0);
+	move_int_const(zero, NULL);
 	sub_int(dst, zero, src);
 	slot_freetmp(zero);
 #endif
@@ -1754,11 +1754,11 @@ void
 neg_float(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_neg_float)
-	slot_slot_slot(dst, 0, src, HAVE_neg_float, Tcomplex);
+	slot_slot_slot(dst, NULL, src, HAVE_neg_float, Tcomplex);
 #else
 	SlotInfo* zero;
 	slot_alloctmp(zero);
-	move_float_const(zero, 0);
+	move_float_const(zero, NULL);
 	sub_float(dst, zero, src);
 	slot_freetmp(zero);
 #endif
@@ -1768,11 +1768,11 @@ void
 neg_double(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_neg_double)
-	lslot_lslot_lslot(dst, 0, src, HAVE_neg_double, Tcomplex);
+	lslot_lslot_lslot(dst, NULL, src, HAVE_neg_double, Tcomplex);
 #else
 	SlotInfo* zero;
 	slot_alloc2tmp(zero);
-	move_double_const(zero, 0);
+	move_double_const(zero, NULL);
 	sub_double(dst, zero, src);
 	slot_free2tmp(zero);
 #endif
@@ -2182,7 +2182,7 @@ lshr_long(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 void
 load_int(SlotInfo* dst, SlotInfo* src)
 {
-	slot_slot_slot(dst, 0, src, HAVE_load_int, Tload);
+	slot_slot_slot(dst, NULL, src, HAVE_load_int, Tload);
 }
 #endif
 
@@ -2212,7 +2212,7 @@ void
 load_addr_int(SlotInfo* dst, void* addr)
 {
 #if defined(HAVE_load_addr_int)
-	slot_slot_const(dst, 0, (uintp)addr, HAVE_load_addr_int, Tload);
+	slot_slot_const(dst, NULL, (uintp)addr, HAVE_load_addr_int, Tload);
 #else
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
@@ -2226,7 +2226,7 @@ load_addr_int(SlotInfo* dst, void* addr)
 void
 load_ref(SlotInfo* dst, SlotInfo* src)
 {
-	slot_slot_slot(dst, 0, src, HAVE_load_ref, Tload);
+	slot_slot_slot(dst, NULL, src, HAVE_load_ref, Tload);
 }
 #endif
 
@@ -2256,7 +2256,7 @@ void
 load_addr_ref(SlotInfo* dst, void* addr)
 {
 #if defined(HAVE_load_addr_ref)
-	slot_slot_const(dst, 0, (uintp)addr, HAVE_load_addr_ref, Tload);
+	slot_slot_const(dst, NULL, (uintp)addr, HAVE_load_addr_ref, Tload);
 #else
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
@@ -2298,7 +2298,7 @@ void
 load_float(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_load_float)
-	slot_slot_slot(dst, 0, src, HAVE_load_float, Tload);
+	slot_slot_slot(dst, NULL, src, HAVE_load_float, Tload);
 #elif defined(HAVE_NO_FLOATING_POINT)
 	load_int(dst, src);
 #else
@@ -2310,7 +2310,7 @@ void
 load_addr_float(SlotInfo* dst, void* addr)
 {
 #if defined(HAVE_load_addr_float)
-	slot_slot_const(dst, 0, (uintp)addr, HAVE_load_addr_float, Tload);
+	slot_slot_const(dst, NULL, (uintp)addr, HAVE_load_addr_float, Tload);
 #else
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
@@ -2324,7 +2324,7 @@ void
 load_double(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_load_double)
-	lslot_lslot_slot(dst, 0, src, HAVE_load_double, Tload);
+	lslot_lslot_slot(dst, NULL, src, HAVE_load_double, Tload);
 #elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	load_long(dst, src);
 #else
@@ -2350,7 +2350,7 @@ void
 load_byte(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_load_byte)
-	slot_slot_slot(dst, 0, src, HAVE_load_byte, Tload);
+	slot_slot_slot(dst, NULL, src, HAVE_load_byte, Tload);
 #else
 	load_int(dst, src);
 	lshl_int_const(dst, dst, 8 * (sizeof(jint) - sizeof(jbyte)));
@@ -2362,7 +2362,7 @@ void
 load_char(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_load_char)
-	slot_slot_slot(dst, 0, src, HAVE_load_char, Tload);
+	slot_slot_slot(dst, NULL, src, HAVE_load_char, Tload);
 #else
 	load_int(dst, src);
 	and_int_const(dst, dst, (1 << (8 * sizeof(jchar))) - 1);
@@ -2373,7 +2373,7 @@ void
 load_short(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_load_short)
-	slot_slot_slot(dst, 0, src, HAVE_load_short, Tload);
+	slot_slot_slot(dst, NULL, src, HAVE_load_short, Tload);
 #else
 	load_int(dst, src);
 	lshl_int_const(dst, dst, 8 * (sizeof(jint) - sizeof(jshort)));
@@ -2740,7 +2740,7 @@ load_key(SlotInfo* dst, SlotInfo* src)
 void
 store_int(SlotInfo* dst, SlotInfo* src)
 {
-	slot_slot_slot(0, dst, src, HAVE_store_int, Tstore);
+	slot_slot_slot(NULL, dst, src, HAVE_store_int, Tstore);
 }
 #endif
 
@@ -2776,7 +2776,7 @@ void
 store_addr_int(void* addr, SlotInfo* src)
 {
 #if defined(HAVE_store_addr_int)
-	slot_slot_const(0, src, (uintp)addr, HAVE_store_addr_int, Tstore);
+	slot_slot_const(NULL, src, (uintp)addr, HAVE_store_addr_int, Tstore);
 #else
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
@@ -2790,7 +2790,7 @@ store_addr_int(void* addr, SlotInfo* src)
 void
 store_ref(SlotInfo* dst, SlotInfo* src)
 {
-	slot_slot_slot(0, dst, src, HAVE_store_ref, Tstore);
+	slot_slot_slot(NULL, dst, src, HAVE_store_ref, Tstore);
 }
 #endif
 
@@ -2820,7 +2820,7 @@ void
 store_addr_ref(void* addr, SlotInfo* src)
 {
 #if defined(HAVE_store_addr_ref)
-	slot_slot_const(0, src, (uintp)addr, HAVE_store_addr_ref, Tstore);
+	slot_slot_const(NULL, src, (uintp)addr, HAVE_store_addr_ref, Tstore);
 #else
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
@@ -2885,7 +2885,7 @@ void
 store_float(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_store_float)
-	slot_slot_slot(0, dst, src, HAVE_store_float, Tstore);
+	slot_slot_slot(NULL, dst, src, HAVE_store_float, Tstore);
 #elif defined(HAVE_NO_FLOATING_POINT)
 	store_int(dst, src);
 #else
@@ -2933,7 +2933,7 @@ void
 store_double(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_store_double)
-	slot_slot_lslot(0, dst, src, HAVE_store_double, Tstore);
+	slot_slot_lslot(NULL, dst, src, HAVE_store_double, Tstore);
 #elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	store_long(dst, src);
 #else
@@ -2981,7 +2981,7 @@ void
 store_byte(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_store_byte)
-	slot_slot_slot(0, dst, src, HAVE_store_byte, Tstore);
+	slot_slot_slot(NULL, dst, src, HAVE_store_byte, Tstore);
 #else
 	/* FIXME -- this is unlikely to work as-is as it doesn't
 	   allow for alignment requirements on the integer load.  */
@@ -3045,7 +3045,7 @@ void
 store_char(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_store_char)
-	slot_slot_slot(0, dst, src, HAVE_store_char, Tstore);
+	slot_slot_slot(NULL, dst, src, HAVE_store_char, Tstore);
 #else
 	/* FIXME -- this is unlikely to work as-is as it doesn't
 	   allow for alignment requirements on the integer load.  */
@@ -3103,7 +3103,7 @@ void
 store_short(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_store_short)
-	slot_slot_slot(0, dst, src, HAVE_store_short, Tstore);
+	slot_slot_slot(NULL, dst, src, HAVE_store_short, Tstore);
 #else
 	/* FIXME -- this is unlikely to work as-is as it doesn't
 	   allow for alignment requirements on the integer load.  */
@@ -3392,7 +3392,7 @@ pusharg_int_const(int val, int idx)
 {
 #if defined(HAVE_pusharg_int_const)
 	if (HAVE_pusharg_int_const_rangecheck(val)) {
-		slot_const_const(0, val, idx, HAVE_pusharg_int_const, Tnull);
+		slot_const_const(NULL, val, idx, HAVE_pusharg_int_const, Tnull);
 		argcount += 1;
 	}
 	else
@@ -3417,7 +3417,7 @@ pusharg_int(SlotInfo* src, int idx)
 	else
 #endif
 	{
-		slot_slot_const(0, src, idx, HAVE_pusharg_int, Tnull);
+		slot_slot_const(NULL, src, idx, HAVE_pusharg_int, Tnull);
 		argcount += 1;
 	}
 }
@@ -3434,7 +3434,7 @@ pusharg_ref(SlotInfo* src, int idx)
 	else
 #endif
 	{
-		slot_slot_const(0, src, idx, HAVE_pusharg_ref, Tnull);
+		slot_slot_const(NULL, src, idx, HAVE_pusharg_ref, Tnull);
 		argcount += 1;
 	}
 }
@@ -3445,7 +3445,7 @@ pusharg_ref_const(void* val, int idx)
 {
 #if defined(HAVE_pusharg_ref_const)
 	if (HAVE_pusharg_ref_const_rangecheck((jword)val)) {
-		slot_const_const(0, (jword)val, idx, HAVE_pusharg_ref_const, Tnull);
+		slot_const_const(NULL, (jword)val, idx, HAVE_pusharg_ref_const, Tnull);
 		argcount += 1;
 	}
 	else
@@ -3483,7 +3483,7 @@ void
 pusharg_float(SlotInfo* src, int idx)
 {
 #if defined(HAVE_pusharg_float)
-	slot_slot_const(0, src, idx, HAVE_pusharg_float, Tnull);
+	slot_slot_const(NULL, src, idx, HAVE_pusharg_float, Tnull);
 	argcount += 1;
 #elif defined(HAVE_NO_FLOATING_POINT)
 	pusharg_int(src, idx);
@@ -3496,7 +3496,7 @@ void
 pusharg_double(SlotInfo* src, int idx)
 {
 #if defined(HAVE_pusharg_double)
-	lslot_lslot_const(0, src, idx, HAVE_pusharg_double, Tnull);
+	lslot_lslot_const(NULL, src, idx, HAVE_pusharg_double, Tnull);
 	argcount += pusharg_long_idx_inc;
 #elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	pusharg_long(src, idx);
@@ -3535,7 +3535,7 @@ popargs_internal(int does_return UNUSED)
 		 * it might be better to add a new back end call to
 		 * end_func_sync.
 		 */
-		slot_slot_const(0, 0, argcount, HAVE_popargs, Tnull);
+		slot_slot_const(NULL, NULL, argcount, HAVE_popargs, Tnull);
 #endif
 		if (argcount > maxPush) {
 			maxPush = argcount;
@@ -3554,7 +3554,7 @@ popargs_internal(int does_return UNUSED)
 void
 branch_and_link(label* dst, int type)
 {
-	slot_const_const(0, (jword)dst, type & ~blink, HAVE_branch_and_link, Tnull);
+	slot_const_const(NULL, (jword)dst, type & ~blink, HAVE_branch_and_link, Tnull);
 }
 #endif
 
@@ -3570,7 +3570,7 @@ branch(label* dst, int type)
 	else
 #endif
 	{
-		slot_const_const(0, (jword)dst, type & ~blink, HAVE_branch, Tnull);
+		slot_const_const(NULL, (jword)dst, type & ~blink, HAVE_branch, Tnull);
 	}
 }
 #endif
@@ -3579,10 +3579,10 @@ void
 cbranch_int(SlotInfo* s1, SlotInfo* s2, label* dst, int type)
 {
 #if defined(HAVE_cbranch_int)
-	slot_slot_slot_const_const(0, s1, s2, (jword)dst, type,
+	slot_slot_slot_const_const(NULL, s1, s2, (jword)dst, type,
 				   HAVE_cbranch_int, Tcomplex);
 #else
-	cmp_int(0, s1, s2);
+	cmp_int(NULL, s1, s2);
 	branch(dst, type);
 #endif
 }
@@ -3591,7 +3591,7 @@ void
 cbranch_offset_int(SlotInfo* s1, SlotInfo* s2, jint s3, label* dst, int type)
 {
 #if defined(HAVE_cmp_int)
-	cmp_offset_int(0, s1, s2, s3);
+	cmp_offset_int(NULL, s1, s2, s3);
 	branch(dst, type);
 #else
 	SlotInfo* tmp;
@@ -3607,7 +3607,7 @@ cbranch_int_const(SlotInfo* s1, jint val, label* dst, int type)
 {
 #if defined(HAVE_cbranch_int_const)
 	if (HAVE_cbranch_int_const_rangecheck(val)) {
-		slot_slot_const_const_const(0, s1, val, (jword)dst, type, HAVE_cbranch_int_const, Tcomplex);
+		slot_slot_const_const_const(NULL, s1, val, (jword)dst, type, HAVE_cbranch_int_const, Tcomplex);
 	}
 	else {
 		SlotInfo* tmp;
@@ -3617,7 +3617,7 @@ cbranch_int_const(SlotInfo* s1, jint val, label* dst, int type)
 		slot_freetmp(tmp);
 	}
 #else
-	cmp_int_const(0, s1, val);
+	cmp_int_const(NULL, s1, val);
 	branch(dst, type);
 #endif
 }
@@ -3629,7 +3629,7 @@ cbranch_ref(SlotInfo* s1, SlotInfo* s2, label* dst, int type)
 	slot_slot_slot_const_const(0, s1, s2, (jword)dst, type,
 				   HAVE_cbranch_ref, Tcomplex);
 #else
-	cmp_ref(0, s1, s2);
+	cmp_ref(NULL, s1, s2);
 	branch(dst, type);
 #endif
 }
@@ -3639,7 +3639,7 @@ cbranch_ref_const(SlotInfo* s1, void *val, label* dst, int type)
 {
 #if defined(HAVE_cbranch_ref_const)
 	if (HAVE_cbranch_ref_const_rangecheck((jword)val)) {
-		slot_slot_const_const_const(0, s1, (jword)val, (jword)dst, type,
+		slot_slot_const_const_const(NULL, s1, (jword)val, (jword)dst, type,
 					    HAVE_cbranch_ref_const, Tcomplex);
 	}
 	else
@@ -3651,7 +3651,7 @@ cbranch_ref_const(SlotInfo* s1, void *val, label* dst, int type)
 		slot_freetmp(tmp);
 	}
 #else
-	cmp_ref_const(0, s1, val);
+	cmp_ref_const(NULL, s1, val);
 	branch(dst, type);
 #endif
 }
@@ -3660,7 +3660,7 @@ void
 branch_indirect(SlotInfo* dst)
 {
 #if defined(HAVE_branch_indirect)
-	slot_slot_const(0, dst, ba, HAVE_branch_indirect, Tnull);
+	slot_slot_const(NULL, dst, ba, HAVE_branch_indirect, Tnull);
 #else
 	load_ref(dst, dst);
 	call(dst);
@@ -3671,7 +3671,7 @@ branch_indirect(SlotInfo* dst)
 void
 call(SlotInfo* dst)
 {
-	slot_slot_const(0, dst, ba, HAVE_call, Tnull);
+	slot_slot_const(NULL, dst, ba, HAVE_call, Tnull);
 }
 #endif
 
@@ -3687,7 +3687,7 @@ call_indirect_method(Method *meth)
 		ptr = PMETHOD_NATIVECODE(meth);
 
 #if defined(HAVE_call_indirect_const)
-		slot_const_const(0, (jword)ptr, ba, HAVE_call_indirect_const, Tnull);
+		slot_const_const(NULL, (jword)ptr, ba, HAVE_call_indirect_const, Tnull);
 #else
 		{
 			SlotInfo* tmp;
@@ -3720,7 +3720,7 @@ _call_soft(void *routine, int profiled)
 	l->to = (uintp)routine;	/* What place does it goto */
 	l->from = 0;
 
-	slot_const_const(0, (jword)l, ba, HAVE_call_ref, Tnull);
+	slot_const_const(NULL, (jword)l, ba, HAVE_call_ref, Tnull);
 #else
 	label* l;
 	constpool* c;
@@ -3755,7 +3755,7 @@ call_soft(void *routine)
 void
 return_int(SlotInfo* dst)
 {
-	slot_slot_slot(dst, 0, 0, HAVE_return_int, Tnull);
+	slot_slot_slot(dst, NULL, NULL, HAVE_return_int, Tnull);
 }
 #endif
 
@@ -3763,7 +3763,7 @@ return_int(SlotInfo* dst)
 void
 return_ref(SlotInfo* dst)
 {
-	slot_slot_slot(dst, 0, 0, HAVE_return_ref, Tnull);
+	slot_slot_slot(dst, NULL, NULL, HAVE_return_ref, Tnull);
 }
 #endif
 
@@ -3771,7 +3771,7 @@ return_ref(SlotInfo* dst)
 void
 return_long(SlotInfo* dst)
 {
-	lslot_lslot_lslot(dst, 0, 0, HAVE_return_long, Tnull);
+	lslot_lslot_lslot(dst, NULL, NULL, HAVE_return_long, Tnull);
 }
 #endif
 
@@ -3779,7 +3779,7 @@ void
 return_float(SlotInfo* dst)
 {
 #if defined(HAVE_return_float)
-	slot_slot_slot(dst, 0, 0, HAVE_return_float, Tnull);
+	slot_slot_slot(dst, NULL, NULL, HAVE_return_float, Tnull);
 #if defined(HAVE_FLOATING_POINT_STACK)
 	begin_sync();
 	end_sync();
@@ -3795,7 +3795,7 @@ void
 return_double(SlotInfo* dst)
 {
 #if defined(HAVE_return_double)
-	lslot_lslot_lslot(dst, 0, 0, HAVE_return_double, Tnull);
+	lslot_lslot_lslot(dst, NULL, NULL, HAVE_return_double, Tnull);
 #if defined(HAVE_FLOATING_POINT_STACK)
 	begin_sync();
 	end_sync();
@@ -3815,7 +3815,7 @@ returnarg_int(SlotInfo* src)
 	softcall_exit_method(globalMethod);
 #endif
 
-	slot_slot_slot(0, 0, src, HAVE_returnarg_int, Tcopy);
+	slot_slot_slot(NULL, NULL, src, HAVE_returnarg_int, Tcopy);
 }
 #endif
 
@@ -3827,7 +3827,7 @@ returnarg_ref(SlotInfo* src)
 	softcall_exit_method(globalMethod);
 #endif
 
-	slot_slot_slot(0, 0, src, HAVE_returnarg_ref, Tcopy);
+	slot_slot_slot(NULL, NULL, src, HAVE_returnarg_ref, Tcopy);
 }
 #endif
 
@@ -3839,7 +3839,7 @@ returnarg_long(SlotInfo* src)
 	softcall_exit_method(globalMethod);
 #endif
 
-	lslot_lslot_lslot(0, 0, src, HAVE_returnarg_long, Tcopy);
+	lslot_lslot_lslot(NULL, NULL, src, HAVE_returnarg_long, Tcopy);
 }
 #endif
 
@@ -3851,7 +3851,7 @@ returnarg_float(SlotInfo* src)
 #endif
 
 #if defined(HAVE_returnarg_float)
-	slot_slot_slot(0, 0, src, HAVE_returnarg_float, Tcopy);
+	slot_slot_slot(NULL, NULL, src, HAVE_returnarg_float, Tcopy);
 #elif defined(HAVE_NO_FLOATING_POINT)
 	returnarg_int(src);
 #else
@@ -3867,7 +3867,7 @@ returnarg_double(SlotInfo* src)
 #endif
 
 #if defined(HAVE_returnarg_double)
-	lslot_lslot_lslot(0, 0, src, HAVE_returnarg_double, Tcopy);
+	lslot_lslot_lslot(NULL, NULL, src, HAVE_returnarg_double, Tcopy);
 #elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	returnarg_long(src);
 #else
@@ -3895,7 +3895,7 @@ reference_label(int32 i UNUSED, int32 n)
 	}
 	else {
 		l = labtab[n];
-		labtab[n] = 0;
+		labtab[n] = NULL;
 	}
 	return (l);
 }
@@ -3927,7 +3927,7 @@ reference_table_label(int32 n)
 	}
 	else {
 		l = labtab[n];
-		labtab[n] = 0;
+		labtab[n] = NULL;
 	}
 	return (l);
 }
@@ -3955,13 +3955,13 @@ set_label(int i UNUSED, int n)
 		labtab[n]->at = 0;
 		labtab[n]->from = 0;
 		labtab[n]->to = 0;
-		slot_slot_const(0, 0, (jword)labtab[n], HAVE_set_label, Tnull);
+		slot_slot_const(NULL, NULL, (jword)labtab[n], HAVE_set_label, Tnull);
 	}
 	else {
 		assert(labtab[n]->type == Lnull);
 		labtab[n]->type = Linternal;
-		slot_slot_const(0, 0, (jword)labtab[n], HAVE_set_label, Tnull);
-		labtab[n] = 0;
+		slot_slot_const(NULL, NULL, (jword)labtab[n], HAVE_set_label, Tnull);
+		labtab[n] = NULL;
 	}
 }
 #endif
@@ -3977,7 +3977,7 @@ build_code_ref(uint8* pos, uintp _pc)
 		  pos[2] * 0x00000100 + pos[3] * 0x00000001);
 	l = reference_code_label(_pc+offset);
 
-	slot_slot_const(0, 0, (jword)l, HAVE_build_code_ref, Tnull);
+	slot_slot_const(NULL, NULL, (jword)l, HAVE_build_code_ref, Tnull);
 	return (l);
 }
 #endif
@@ -3989,7 +3989,7 @@ build_key(uint8* pos)
 	jint val = (pos[0] * 0x01000000 + pos[1] * 0x00010000 +
 		    pos[2] * 0x00000100 + pos[3] * 0x00000001);
 
-	slot_slot_const(0, 0, val, HAVE_build_key, Tnull);
+	slot_slot_const(NULL, NULL, val, HAVE_build_key, Tnull);
 }
 #endif
 
@@ -4220,10 +4220,10 @@ void
 cvt_int_float(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_cvt_int_float)
-	slot_slot_slot(dst, 0, src, HAVE_cvt_int_float, Tcomplex);
+	slot_slot_slot(dst, NULL, src, HAVE_cvt_int_float, Tcomplex);
 #else
 	begin_func_sync();
-	pusharg_int(src, 0);
+	pusharg_int(src, NULL);
 	call_soft(soft_cvtif);
 	popargs();
 	end_func_sync();
@@ -4235,10 +4235,10 @@ void
 cvt_int_double(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_cvt_int_double)
-	lslot_lslot_slot(dst, 0, src, HAVE_cvt_int_double, Tcomplex);
+	lslot_lslot_slot(dst, NULL, src, HAVE_cvt_int_double, Tcomplex);
 #else
 	begin_func_sync();
-	pusharg_int(src, 0);
+	pusharg_int(src, NULL);
 	call_soft(soft_cvtid);
 	popargs();
 	end_func_sync();
@@ -4318,7 +4318,7 @@ void
 cvt_float_double(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_cvt_float_double)
-	lslot_lslot_slot(dst, 0, src, HAVE_cvt_float_double, Tcomplex);
+	lslot_lslot_slot(dst, NULL, src, HAVE_cvt_float_double, Tcomplex);
 #else
 	begin_func_sync();
 	pusharg_float(src, 0);
@@ -4334,7 +4334,7 @@ cvt_double_int(SlotInfo* dst, SlotInfo* src)
 {
 	used_ieee_rounding = true;
 #if defined(HAVE_cvt_double_int)
-	slot_slot_lslot(dst, 0, src, HAVE_cvt_double_int, Tcomplex);
+	slot_slot_lslot(dst, NULL, src, HAVE_cvt_double_int, Tcomplex);
 #else
 	begin_func_sync();
 	pusharg_double(src, 0);
@@ -4365,7 +4365,7 @@ void
 cvt_double_float(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_cvt_double_float)
-	slot_slot_lslot(dst, 0, src, HAVE_cvt_double_float, Tcomplex);
+	slot_slot_lslot(dst, NULL, src, HAVE_cvt_double_float, Tcomplex);
 #else
 	begin_func_sync();
 	pusharg_double(src, 0);
@@ -4380,7 +4380,7 @@ void
 cvt_int_byte(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_cvt_int_byte)
-	slot_slot_slot(dst, 0, src, HAVE_cvt_int_byte, Tcomplex);
+	slot_slot_slot(dst, NULL, src, HAVE_cvt_int_byte, Tcomplex);
 #else
 	lshl_int_const(dst, src, 8 * (sizeof(jint) - sizeof(jbyte)));
 	ashr_int_const(dst, dst, 8 * (sizeof(jint) - sizeof(jbyte)));
@@ -4663,7 +4663,7 @@ explicit_check_null(int x, SlotInfo* obj, int y)
 #endif
 	{
 		end_sub_block();
-		cbranch_ref_const_ne(obj, 0, reference_label(x, y));
+		cbranch_ref_const_ne(obj, NULL, reference_label(x, y));
 		softcall_nullpointer();
 		start_sub_block();
 		set_label(x, y);
@@ -4826,7 +4826,7 @@ softcall_fakecall(label* from, label* to, void* func)
 	constpool* c;
 
 	/* Set the label for getting here */
-	slot_slot_const(0, 0, (jword)to, HAVE_set_label, Tnull);
+	slot_slot_const(NULL, NULL, (jword)to, HAVE_set_label, Tnull);
 
 	/* We must put our 'from' in a constant.  We use the 'from' as
 	 * the constant value so it won't be aliases with others.
@@ -4852,12 +4852,12 @@ softcall_fakecall(label* from, label* to, void* func)
 	/* Make the fake call - passing the call label and the label we
 	 * got here from.
 	 */
-	slot_const_const(0, (jword)from, (jword)l, HAVE_fakecall_constpool, Tnull);
+	slot_const_const(NULL, (jword)from, (jword)l, HAVE_fakecall_constpool, Tnull);
 #elif defined(HAVE_fakecall)
 	label* l;
 
 	/* Set the label for getting here */
-	slot_slot_const(0, 0, (jword)to, HAVE_set_label, Tnull);
+	slot_slot_const(NULL, NULL, (jword)to, HAVE_set_label, Tnull);
 
 	/* Build a label to hold the fake call */
 	l = newLabel();
@@ -4869,7 +4869,7 @@ softcall_fakecall(label* from, label* to, void* func)
 	/* Make the fake call - passing the call label and the label we
 	 * got here from.
 	 */
-	slot_const_const(0, (jword)from, (jword)l, HAVE_fakecall, Tnull);
+	slot_const_const(NULL, (jword)from, (jword)l, HAVE_fakecall, Tnull);
 #endif
 }
 
@@ -5332,6 +5332,6 @@ softcall_writeref_static(void* from, SlotInfo* to)
 void
 get_arg_ptr(SlotInfo* dst)
 {
-        slot_slot_slot(dst, 0, 0, HAVE_get_arg_ptr, Tcomplex);
+        slot_slot_slot(dst, NULL, NULL, HAVE_get_arg_ptr, Tcomplex);
 }
 #endif

@@ -61,7 +61,7 @@
                                     vmExcept_jumpToHandler((VmExceptHandler *)(F)); /* Does not return */
 #else
 
-#define DISPATCH_EXCEPTION(F,H,E) thread_data->exceptObj = 0;\
+#define DISPATCH_EXCEPTION(F,H,E) thread_data->exceptObj = NULL;\
                                   CALL_KAFFE_EXCEPTION((F),(H),(E));
 
 #endif	/* TRANSLATOR */
@@ -79,17 +79,17 @@ static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, uintp*
 Hjava_lang_Throwable*
 error2Throwable(errorInfo* einfo)
 {
-	Hjava_lang_Throwable *err = 0;
+	Hjava_lang_Throwable *err = NULL;
 
 	switch (einfo->type & KERR_CODE_MASK) {
 	case KERR_EXCEPTION:
 		if (einfo->mess == 0 || *einfo->mess == '\0') {
 			err = (Hjava_lang_Throwable*)execute_java_constructor(
-				    einfo->classname, 0, 0, "()V");
+				    einfo->classname, NULL, NULL, "()V");
 		} else {
 			err = (Hjava_lang_Throwable*)execute_java_constructor(
 				    einfo->classname,
-				    0, 0, "(Ljava/lang/String;)V",
+				    NULL, NULL, "(Ljava/lang/String;)V",
 				    checkPtr(stringC2Java(einfo->mess)));
 		}
 		break;
@@ -99,7 +99,7 @@ error2Throwable(errorInfo* einfo)
 			   "java/lang/ExceptionInInitializerError") != 0) {
 			err = (Hjava_lang_Throwable*)execute_java_constructor(
 				    JAVA_LANG(ExceptionInInitializerError),
-				    0, 0, "(Ljava/lang/Throwable;)V",
+				    NULL, NULL, "(Ljava/lang/Throwable;)V",
 				    einfo->throwable);
 			break;
 		}
@@ -137,7 +137,7 @@ postException(errorInfo *einfo, const char *name)
 	einfo->type = KERR_EXCEPTION;
 	einfo->classname = name;
 	einfo->mess = "";
-	einfo->throwable = 0;
+	einfo->throwable = NULL;
 }
 
 void
@@ -162,7 +162,7 @@ vpostExceptionMessage(errorInfo *einfo,
 	einfo->type = KERR_EXCEPTION | KERR_FREE_MESSAGE;
 	einfo->classname = fullname;
 	einfo->mess = msgBuf;
-	einfo->throwable = 0;
+	einfo->throwable = NULL;
 }
 
 /*
@@ -261,7 +261,7 @@ throwException(struct Hjava_lang_Throwable* eobj)
 		  (Hjava_lang_VMThrowable*)newObject(javaLangVMThrowable);
 		unhand(eobj)->vmState = vmstate;
 	}
-	backtrace = buildStackTrace(0);
+	backtrace = buildStackTrace(NULL);
 	unhand(vmstate)->backtrace = backtrace;
 	dispatchException(eobj, (stackTraceInfo*)backtrace);
 }
@@ -280,7 +280,7 @@ throwExternalException(Hjava_lang_Throwable* eobj)
 		ABORT();
 		EXIT(1);
 	}
-	dispatchException(eobj, (stackTraceInfo*)buildStackTrace(0));
+	dispatchException(eobj, (stackTraceInfo*)buildStackTrace(NULL));
 }
 
 #if 0
@@ -373,7 +373,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 
 		/* Find the sync. object */
 		if ((frame->meth->accflags & ACC_SYNCHRONISED)==0) {
-			obj = 0;
+			obj = NULL;
 		} else if (frame->meth->accflags & ACC_STATIC) {
 			obj = &frame->meth->class->head;
 		} else {
@@ -392,7 +392,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 
 		/* If not here, exit monitor if synchronised. */
 		if (frame->meth->accflags & ACC_SYNCHRONISED) {
-			locks_internal_slowUnlockMutexIfHeld(&obj->lock, (void *)frame->fp, 0);
+			locks_internal_slowUnlockMutexIfHeld(&obj->lock, (void *)frame->fp, NULL);
 		}	    
 
 		/* If method found and profiler enable, fix self+children time */
@@ -418,7 +418,7 @@ unhandledException(Hjava_lang_Throwable *eobj)
 	Hjava_lang_Class* class;
 
 	/* Clear held exception object */
-	THREAD_DATA()->exceptObj = 0;
+	THREAD_DATA()->exceptObj = NULL;
 
 	class = OBJECT_CLASS(&eobj->base);
 	cname = CLASS_CNAME(class);
@@ -443,7 +443,7 @@ unhandledException(Hjava_lang_Throwable *eobj)
 				  "option on kaffe.\n");
 		}
 	}
-	printStackTrace((Hjava_lang_Throwable*)eobj, 0, 1);
+	printStackTrace((Hjava_lang_Throwable*)eobj, NULL, 1);
 	ABORT();
 }
 

@@ -26,7 +26,7 @@
 
 char *checkAccessFlags(access_type_t type, accessFlags access_flags)
 {
-	const char *retval = 0;
+	const char *retval = NULL;
 
 	if( (type == ACC_TYPE_CLASS) &&
 	    (access_flags & ACC_INTERFACE) &&
@@ -294,7 +294,7 @@ int checkAccess(struct Hjava_lang_Class *context,
 static
 Hjava_lang_Class *findSuperMethod(Hjava_lang_Class *orig_cl, Method *meth)
 {
-	Hjava_lang_Class *cl, *retval = 0;
+	Hjava_lang_Class *cl, *retval = NULL;
 
 	for( cl = orig_cl->superclass; cl && !retval; cl = cl->superclass )
 	{
@@ -345,7 +345,7 @@ int checkMethodAccess(struct Hjava_lang_Class *context,
 			}
 			else
 			{
-				cl = 0;
+				cl = NULL;
 			}
 		}
 	}
@@ -356,7 +356,7 @@ int checkMethodAccess(struct Hjava_lang_Class *context,
 static
 Hjava_lang_Class *findSuperField(Hjava_lang_Class *orig_cl, Field *field)
 {
-	Hjava_lang_Class *retval = 0;
+	Hjava_lang_Class *retval = NULL;
 
 	if( field->clazz != orig_cl )
 	{

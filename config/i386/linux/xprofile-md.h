@@ -20,7 +20,7 @@
  */
 static inline struct gmonparam *getGmonParam(void)
 {
-	return 0;
+	return NULL;
 }
 
 #define _MCOUNT_DECL _mcount

@@ -21,11 +21,11 @@
 struct _iLock;
 
 #define	LOCKOBJECT			struct _iLock**
-#define	lockMutex(O)			(KTHREAD(disable_stop)(), locks_internal_lockMutex(&(O)->lock, &iLockRoot, 0))
-#define	unlockMutex(O)			do { locks_internal_unlockMutex(&(O)->lock, &iLockRoot, 0); KTHREAD(enable_stop)(); } while (0)
-#define	waitCond(O,T)			locks_internal_waitCond(&(O)->lock, (T), 0)
-#define	signalCond(O)			locks_internal_signalCond(&(O)->lock, 0)
-#define	broadcastCond(O)		locks_internal_broadcastCond(&(O)->lock, 0)
+#define	lockMutex(O)			(KTHREAD(disable_stop)(), locks_internal_lockMutex(&(O)->lock, &iLockRoot, NULL))
+#define	unlockMutex(O)			do { locks_internal_unlockMutex(&(O)->lock, &iLockRoot, NULL); KTHREAD(enable_stop)(); } while (0)
+#define	waitCond(O,T)			locks_internal_waitCond(&(O)->lock, (T), NULL)
+#define	signalCond(O)			locks_internal_signalCond(&(O)->lock, NULL)
+#define	broadcastCond(O)		locks_internal_broadcastCond(&(O)->lock, NULL)
 
 #define	lockStaticMutex(THING)		(KTHREAD(disable_stop)(), locks_internal_lockMutex(&(THING)->lock, &iLockRoot, &(THING)->heavyLock))
 #define	unlockStaticMutex(THING)	do { locks_internal_unlockMutex(&(THING)->lock, &iLockRoot, &(THING)->heavyLock); KTHREAD(enable_stop)(); } while(0)

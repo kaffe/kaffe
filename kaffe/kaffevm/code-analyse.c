@@ -97,7 +97,7 @@ DBG(CODEANALYSE,
 		localuse[lcl].first = 0x7FFFFFFF;
 		localuse[lcl].last = -1;
 		localuse[lcl].write = -1;
-		localuse[lcl].type = 0;
+		localuse[lcl].type = NULL;
 	}
 
 DBG(CODEANALYSE,
@@ -2022,7 +2022,7 @@ tidyAnalyzeMethod(codeinfo** codeInfo)
 	}
 	KFREE((*codeInfo)->localuse);
 	KFREE(*codeInfo);
-	*codeInfo = 0;
+	*codeInfo = NULL;
 DBG(CODEANALYSE,
 	dprintf("%s %p: clearing codeInfo %p\n",__FUNCTION__, 
 		THREAD_NATIVE(), codeInfo);

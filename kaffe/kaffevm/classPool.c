@@ -51,7 +51,7 @@ lookupClassEntryInternal(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 			return (entry);
 		}
 	}
-	return (0);
+	return (NULL);
 }
 
 /*
@@ -80,12 +80,12 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader,
 	entry = gc_malloc(sizeof(classEntry), KGC_ALLOC_CLASSPOOL);
 	if (entry == 0) {
 		postOutOfMemory(einfo);
-		return (0);
+		return (NULL);
 	}
 	entry->name = name;
 	entry->loader = loader;
-	entry->data.cl = 0;
-	entry->next = 0;
+	entry->data.cl = NULL;
+	entry->next = NULL;
 
 	/* Lock the class table and insert entry into it (if not already
 	   there) */
@@ -255,7 +255,7 @@ static iStaticLock	mappingLock = KAFFE_STATIC_LOCK_INITIALIZER;
 static
 nameDependency *findNameDependency(jthread_t jt)
 {
-	nameDependency *curr, *retval = 0;
+	nameDependency *curr, *retval = NULL;
 
 	for( curr = dependencies; curr && !retval; curr = curr->next )
 	{
@@ -403,7 +403,7 @@ int classMappingLoad(classEntry *ce,
 	jthread_t jt;
 	int iLockRoot;
 
-	*out_cl = 0;
+	*out_cl = NULL;
 	jt = KTHREAD(current)();
 	while( !done )
 	{
@@ -462,7 +462,7 @@ int classMappingLoad(classEntry *ce,
 
 Hjava_lang_Class *classMappingLoaded(classEntry *ce, Hjava_lang_Class *cl)
 {
-	Hjava_lang_Class *retval = 0;
+	Hjava_lang_Class *retval = NULL;
 	int iLockRoot;
 
 	assert(ce != 0);

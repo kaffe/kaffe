@@ -442,7 +442,7 @@ retry:
 		 * If the finalizer is empty, we set class->finalizer to null.
 		 * Find finalizer first without calling findMethod.
 		 */
-		meth = 0;
+		meth = NULL;
 		for (nclass = class; nclass != 0; nclass = nclass->superclass) {
 			meth = findMethodLocal(nclass, final_name, void_signature);
 			if (meth != NULL) {
@@ -468,9 +468,9 @@ retry:
 			if (!object_fin && meth->class == ObjectClass) {
 				object_fin = meth;
 			}
-			class->finalizer = 0;
+			class->finalizer = NULL;
 		} else if (meth == object_fin) {
-			class->finalizer = 0;
+			class->finalizer = NULL;
 		} else {
 			class->finalizer = meth;
 		}
@@ -510,7 +510,7 @@ retry:
 
 	DO_CLASS_STATE(CSTATE_COMPLETE) {
 		JNIEnv *env = THREAD_JNIENV();
-		jthrowable exc = 0;
+		jthrowable exc = NULL;
 		JavaVM *vms[1];
 		jsize jniworking;
 
@@ -561,19 +561,19 @@ DBG(STATICINIT,
 			dprintf("using JNI\n");
 )
 			(*env)->ExceptionClear(env);
-			(*env)->CallStaticVoidMethodA(env, class, (jmethodID)meth, 0);
+			(*env)->CallStaticVoidMethodA(env, class, (jmethodID)meth, NULL);
 			exc = (*env)->ExceptionOccurred(env);
 			(*env)->ExceptionClear(env);
 		} else {
 DBG(STATICINIT,
 			dprintf("using callMethodA\n");
     )
-			callMethodA(meth, METHOD_NATIVECODE(meth), 0, 0, 0, 1);
+			callMethodA(meth, METHOD_NATIVECODE(meth), NULL, NULL, NULL, 1);
 		}
 
 		lockClass(class);
 
-		class->processingThread = 0;
+		class->processingThread = NULL;
 		
 		if (exc != 0) {
 			if( soft_instanceof(javaLangException, exc) )
@@ -623,8 +623,8 @@ DBG(STATICINIT,
 		    1) {
 			METHOD_NATIVECODE(meth) = 0;
 			KFREE(meth->c.ncode.ncode_start);
-			meth->c.ncode.ncode_start = 0;
-			meth->c.ncode.ncode_end = 0;
+			meth->c.ncode.ncode_start = NULL;
+			meth->c.ncode.ncode_end = NULL;
 		}
 	}
 
@@ -660,7 +660,7 @@ DBG(RESERROR,
 static int
 expandMethods(Hjava_lang_Class *cl, Method *imeth, errorInfo *einfo)
 {
-	Method *new_methods = 0;
+	Method *new_methods = NULL;
 	int retval = 0;
 	
 	/*
@@ -948,17 +948,17 @@ internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags,
 	assert(cl->superclass == 0);
 	cl->superclass = (Hjava_lang_Class*)(uintp)su;
 	cl->msize = 0;
-	CLASS_FIELDS(cl) = 0;
+	CLASS_FIELDS(cl) = NULL;
 	CLASS_FSIZE(cl) = 0;
 	cl->accflags = flags;
-	cl->vtable = 0;
-        cl->interfaces = 0;
+	cl->vtable = NULL;
+        cl->interfaces = NULL;
 	cl->interface_len = 0;
 	assert(cl->state < CSTATE_LOADED);
 	cl->state = CSTATE_LOADED;
 	cl->loader = loader;
 	cl->this_index = this_index;
-	cl->inner_classes = 0;
+	cl->inner_classes = NULL;
 	cl->nr_inner_classes = 0;
 	cl->this_inner_index = -1;
 	return 1;
@@ -977,12 +977,12 @@ setupClass(Hjava_lang_Class* cl, constIndex c, constIndex s,
 	if (pool->tags[c] != CONSTANT_Class) {
                 postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 				     "this class constant pool index is bogus");
-		return false;
+		return (NULL);
 	}
 
 	if (!internalSetupClass(cl, WORD2UTF(pool->data[c]), flags, c, s,
 				loader, einfo))
-		return 0;
+		return (NULL);
 	return (cl);
 }
 
@@ -1122,7 +1122,7 @@ DBG(RESERROR,	dprintf("addMethod: no method name.\n");		)
 		postExceptionMessage(einfo,
 				     JAVA_LANG(ClassFormatError),
 				     "No method name");
-		return (0);
+		return (NULL);
 	}
 	sc = signature_index;
 	if (pool->tags[sc] != CONSTANT_Utf8) {
@@ -1132,7 +1132,7 @@ DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	)
 				     JAVA_LANG(ClassFormatError),
 				     "No signature for method: %s",
 				     WORD2UTF (pool->data[nc])->data);
-		return (0);
+		return (NULL);
 	}
 	name = WORD2UTF (pool->data[nc]);
 	signature = WORD2UTF (pool->data[sc]);
@@ -1158,10 +1158,10 @@ DBG(CLASSFILE,
 	mt->class = c;
 	/* Warning: ACC_CONSTRUCTION match ACC_STRICT */
 	mt->accflags = access_flags & ACC_MASK;
-	mt->c.bcode.code = 0;
+	mt->c.bcode.code = NULL;
 	mt->stacksz = 0;
 	mt->localsz = 0;
-	mt->exception_table = 0;
+	mt->exception_table = NULL;
 	mt->idx = -1;
 
 	/* Mark constructors as such */
@@ -1195,7 +1195,7 @@ DBG(RESERROR,	dprintf("addField: no field name.\n");			)
 		postExceptionMessage(einfo,
 				     JAVA_LANG(ClassFormatError),
 				     "No field name");
-		return (0);
+		return (NULL);
 	}
 
 	--CLASS_FSIZE(c);	/* holds field count initially */
@@ -1221,7 +1221,7 @@ DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
 				     "No signature name for field: %s",
 				     CLASS_CONST_UTF8(c, nc)->data);
 		CLASS_NFIELDS(c)++;
-		return (0);
+		return (NULL);
 	}
 	utf8ConstAssign(ft->name, WORD2UTF(pool->data[nc]));
 	utf8ConstAssign(ft->signature, CLASS_CONST_UTF8(c, sc));
@@ -1241,7 +1241,7 @@ DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
 		/* NB: since this class is primitive, getClassFromSignature
 		 * will not fail.  Hence it's okay to pass errorInfo as NULL
 		 */
-		FIELD_TYPE(ft) = getClassFromSignature(sig, 0, NULL);
+		FIELD_TYPE(ft) = getClassFromSignature(sig, NULL, NULL);
 		FIELD_SIZE(ft) = TYPE_PRIM_SIZE(FIELD_TYPE(ft));
 	}
 
@@ -1527,7 +1527,7 @@ loadArray(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 				     "%s",
 				     name->data);
 	}
-	return (0);
+	return (NULL);
 }
 
 /*
@@ -1546,7 +1546,7 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 
 	utf8 = utf8ConstNew(name, -1);
 	if (!utf8) goto bad;
-	centry = lookupClassEntry(utf8, 0, &info);
+	centry = lookupClassEntry(utf8, NULL, &info);
 	if (!centry) goto bad;
 
 	utf8ConstRelease(utf8);
@@ -1600,16 +1600,16 @@ lookupClass(const char* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 	utf8 = utf8ConstNew(name, -1);
 	if (!utf8) {
 		postOutOfMemory(einfo);
-		return 0;
+		return NULL;
 	}
 	class = loadClass(utf8, loader, einfo);
 	utf8ConstRelease(utf8);
-	if (class != 0) {
+	if (class != NULL) {
 		if (processClass(class, CSTATE_COMPLETE, einfo) == true) {
 			return (class);
 		}
 	}
-	return (0);
+	return (NULL);
 }
 
 /*
@@ -2119,7 +2119,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 		class->itable2dtable[j++] = class->interfaces[i];
 		for (; inm--; imeth++) {
 			Hjava_lang_Class* ncl;
-			Method *cmeth = 0;
+			Method *cmeth = NULL;
 
 			/* ignore static methods in interface --- can an
 			 * interface have any beside <clinit>?
@@ -2145,7 +2145,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 				}
 			}
 			/* not found */
-			cmeth = 0;
+			cmeth = NULL;
 
 		    found:;
 
@@ -2155,7 +2155,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 			if (cmeth && (METHOD_IS_STATIC(cmeth) ||
 				      METHOD_IS_CONSTRUCTOR(cmeth)))
 			{
-				cmeth = 0;
+				cmeth = NULL;
 			}
 
 			/* cmeth == 0 if
@@ -2395,7 +2395,7 @@ Hjava_lang_String*
 resolveString(Hjava_lang_Class* clazz, int idx, errorInfo *info)
 {
 	Utf8Const* utf8;
-	Hjava_lang_String* str = 0;
+	Hjava_lang_String* str = NULL;
 	constants* pool;
 	int iLockRoot;
 
@@ -2502,7 +2502,7 @@ lookupClassFieldLocal(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic)
 		fptr++;
 	}
 
-	return (0);
+	return (NULL);
 }
 
 /*
@@ -2548,7 +2548,7 @@ DBG(RESERROR,
 		isStatic?"static":"non-static",clp->name->data, name->data);
     )
 	postExceptionMessage(einfo, JAVA_LANG(NoSuchFieldError), "%s", name->data);
-	return (0);
+	return (NULL);
 }
 
 /*
@@ -2742,14 +2742,14 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	 * construct the array type.
 	 */
 	if (c == 0) {
-		return (0);
+		return (NULL);
 	}
 
 	/* Build signature for array type */
 	if (CLASS_IS_PRIMITIVE (c)) {
 		if (c == voidClass) {
 			postException(einfo, JAVA_LANG(VerifyError));
-			return (0);
+			return (NULL);
 		}
 
 		arr_class = CLASS_ARRAY_CACHE(c);
@@ -2774,12 +2774,12 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 
 	if (!arr_name) {
 		postOutOfMemory(einfo);
-		return (0);
+		return (NULL);
 	}
 	centry = lookupClassEntry(arr_name, c->loader, einfo);
 	if (centry == 0) {
 		utf8ConstRelease(arr_name);
-		return (0);
+		return (NULL);
 	}
 
 	if (centry->data.cl != 0) {
@@ -2798,7 +2798,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	arr_class = newClass();
 	if (arr_class == 0) {
 		postOutOfMemory(einfo);
-		centry->data.cl = c = 0;
+		centry->data.cl = c = NULL;
 		goto bail;
 	}
 
@@ -2806,7 +2806,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	if (c->loader == 0) {
 		if (!gc_add_ref(arr_class)) {
 			postOutOfMemory(einfo);
-			centry->data.cl = c = 0;
+			centry->data.cl = c = NULL;
 			goto bail;
 		}
 	}
@@ -2820,10 +2820,10 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	if (c->accflags & ACC_PUBLIC) {
 		arr_flags |= ACC_PUBLIC;
 	}
-	internalSetupClass(arr_class, arr_name, arr_flags, 0, 0, c->loader, 0);
+	internalSetupClass(arr_class, arr_name, arr_flags, 0, 0, c->loader, NULL);
 	arr_class->superclass = ObjectClass;
 	if (buildDispatchTable(arr_class, einfo) == false) {
-		centry->data.cl = c = 0;
+		centry->data.cl = c = NULL;
 		goto bail;
 	}
 	CLASS_ELEMENT_TYPE(arr_class) = c;

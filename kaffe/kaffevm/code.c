@@ -84,7 +84,7 @@ addCode(Method* m, uint32 len UNUSED, classFile* fp, errorInfo *einfo)
 			}
 		}
 		else {
-			c.exception_table = 0;
+			c.exception_table = NULL;
 		}
 		KGC_WRITE(m, c.code);
 		KGC_WRITE(m, c.exception_table);
