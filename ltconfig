@@ -1294,6 +1294,14 @@ else
     hardcode_shlibpath_var=no
     ;;
 
+  sysv4.3*)
+    archive_cmds='$LD -G -h $soname -o $lib $libobjs $deplibs'
+    hardcode_direct=no
+    hardcode_minus_L=no
+    hardcode_shlibpath_var=no
+    export_dynamic_flag_spec='-Bexport'
+    ;;
+
   uts4*)
     archive_cmds='$LD -G -h $soname -o $lib $libobjs $deplibs'
     hardcode_libdir_flag_spec='-L$libdir'
@@ -1332,12 +1340,14 @@ if test -z "$NM"; then
 	#   nm: unknown option "B" ignored
 	if ($ac_dir/nm -B /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
 	  NM="$ac_dir/nm -B"
+	  break
 	elif ($ac_dir/nm -p /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
 	  NM="$ac_dir/nm -p"
+	  break
 	else
-	  NM="$ac_dir/nm"
+	  NM=${NM="$ac_dir/nm"} # keep the first match, but
+	  continue # so that we can try to find one that supports BSD flags
 	fi
-	break
       fi
     done
     IFS="$ac_save_ifs"
@@ -1410,11 +1420,11 @@ void nm_test_func(){}
 main(){nm_test_var='a';nm_test_func();return(0);}
 EOF
 
-  echo "$progname:1413: checking if global_symbol_pipe works" >&5
-  if { (eval echo $progname:1414: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
+  echo "$progname:1423: checking if global_symbol_pipe works" >&5
+  if { (eval echo $progname:1424: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
     # Now try to grab the symbols.
     nlist=conftest.nm
-    if { echo "$progname:1417: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
+    if { echo "$progname:1427: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
 
       # Try sorting and uniquifying the output.
       if sort "$nlist" | uniq > "$nlist"T; then
@@ -1472,7 +1482,7 @@ EOF
 	  save_CFLAGS="$CFLAGS"
 	  LIBS="conftestm.$objext"
 	  CFLAGS="$CFLAGS$no_builtin_flag"
-	  if { (eval echo $progname:1475: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+	  if { (eval echo $progname:1485: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
 	    pipe_works=yes
 	  else
 	    echo "$progname: failed program was:" >&5
@@ -1644,7 +1654,7 @@ irix5*)
 irix6*)
   version_type=osf
   soname_spec='${libname}${release}.so'
-  library_names_spec='${libname}${release}.so$versuffix $libname.so'
+  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so $libname.so'
   shlibpath_var=LD_LIBRARYN32_PATH
   ;;
 
@@ -1709,7 +1719,7 @@ os2*)
 osf3* | osf4*)
   version_type=osf
   soname_spec='${libname}${release}.so'
-  library_names_spec='${libname}${release}.so$versuffix $libname.so'
+  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so $libname.so'
   shlibpath_var=LD_LIBRARY_PATH
   deplibs_check_method='pass_all'
   ;;

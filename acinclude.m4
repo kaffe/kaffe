@@ -303,7 +303,7 @@ AC_CACHE_VAL(ac_cv_path_NM,
   ac_cv_path_NM="$NM"
 else
   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in /usr/ucb /usr/ccs/bin $PATH /bin; do
+  for ac_dir in $PATH /usr/ccs/bin /usr/ucb /bin; do
     test -z "$ac_dir" && ac_dir=.
     if test -f $ac_dir/nm; then
       # Check to see if the nm accepts a BSD-compat flag.
@@ -311,12 +311,14 @@ else
       #   nm: unknown option "B" ignored
       if ($ac_dir/nm -B /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
         ac_cv_path_NM="$ac_dir/nm -B"
+	break
       elif ($ac_dir/nm -p /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
         ac_cv_path_NM="$ac_dir/nm -p"
+	break
       else
-        ac_cv_path_NM="$ac_dir/nm"
+        ac_cv_path_NM=${ac_cv_path_NM="$ac_dir/nm"} # keep the first match, but
+	continue # so that we can try to find one that supports BSD flags
       fi
-      break
     fi
   done
   IFS="$ac_save_ifs"

@@ -1292,6 +1292,7 @@ compiler."
 	libext=al
 	oldlibs="$output_objdir/$libname.$libext $oldlibs"
 	build_libtool_libs=convenience
+	build_old_libs=yes
 	dependency_libs="$deplibs"
 
 	if test -n "$vinfo"; then
@@ -1703,8 +1704,8 @@ EOF
 	# Create links to the real library.
 	for linkname in $linknames; do
 	  if test "$realname" != "$linkname"; then
-	    $show "(cd $output_objdir && $LN_S $realname $linkname)"
-	    $run eval '(cd $output_objdir && $LN_S $realname $linkname)' || exit $?
+	    $show "(cd $output_objdir && $rm $linkname && $LN_S $realname $linkname)"
+	    $run eval '(cd $output_objdir && $rm $linkname && $LN_S $realname $linkname)' || exit $?
 	  fi
 	done
 
@@ -2355,8 +2356,8 @@ libdir='$install_libdir'\
 
       # Do a symbolic link so that the libtool archive can be found in
       # LD_LIBRARY_PATH before the program is installed.
-      $show "(cd $output_objdir && $LN_S ../$outputname $outputname)"
-      $run eval "(cd $output_objdir && $LN_S ../$outputname $outputname)" || exit $?
+      $show "(cd $output_objdir && $rm $outputname && $LN_S ../$outputname $outputname)"
+      $run eval "(cd $output_objdir && $rm $outputname && $LN_S ../$outputname $outputname)" || exit $?
       ;;
     esac
     exit 0

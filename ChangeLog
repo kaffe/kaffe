@@ -1,3 +1,12 @@
+Wed Jan 13 07:20:37 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in, libltdl/configure.in: removed macro to check
+	autoconf/automake version
+	* */acinclude.m4: udpated from libtool's libtool.m4
+	* */aclocal.m4, */configure: regen
+	* ltconfig, ltmain.sh, libltdl/ltdl.h, libltdl/ltdl.c: updated
+	from libtool
+
 Tue Jan 12 23:56:06 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/StreamTokenizer.java: make sure

@@ -1,27 +1,6 @@
 AC_INIT(kaffe)
 AM_INIT_AUTOMAKE(kaffe, 1.0b3)
 
-dnl usage: TEST_VERSION(variable, usable versions,
-dnl 			alternate program[, unusable versions])
-dnl USABLE and UNUSABLE VERSIONS can be a list of versions separated by `|'
-dnl If an unusable version is found, the VARIABLE will be defined to
-dnl the alternate program.
-dnl Same if the version does not match usable version.
-AC_DEFUN(TEST_VERSION, [dnl
-test_name=`echo $1 | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz'`
-AC_MSG_CHECKING([$test_name version])
-changequote(, )dnl
-test_version=`(case ${$1} in *missing*) echo missing;; *) eval ${$1} --version;; esac) 2>&1 | sed -e 's/[^ ]* //g' -e 1q`
-changequote([, ])dnl
-case "$test_version" in
-ifelse($#, 4, [$4) $1=$3
-   AC_MSG_RESULT([$test_version, rejected, not using]);;
-])dnl
-""|missing|$2) AC_MSG_RESULT([$test_version, ok]);;
-*) $1=$3
-   AC_MSG_RESULT([$test_version, too old, not using]);;
-esac])
-
 AM_MAINTAINER_MODE
 
 dnl needed for autoheader to find acconfig.h
