@@ -80,7 +80,7 @@ public class CharArrayWriter extends Writer {
 
   public String toString()
   {
-    return (new String(buf));
+    return (new String(buf, 0, count));
   }
 
   public void flush()
