@@ -23,15 +23,57 @@
 #include <native.h>
 
 /*
- * Convert double to string.
+ * Convert a "normal" double to a string.
+ *
+ * Here "val" is the double or float value and "maxPrecision" is
+ * the maximum number of digits after the decimal point that are
+ * significant (and therefore should be displayed).
+ *
+ * This assumes printf(3) conforms to ISO 9899: 1990 (``ISO C'').
  */
 struct Hjava_lang_String*
-java_lang_Double_toString(jdouble val)
+java_lang_Double_normalToString(jdouble val, jint maxPrecision)
 {
-	char str[MAXNUMLEN];
+	static const jlong negBit = 0x8000000000000000LL; /* "LL" gcc-ism */
+	const jlong bits = java_lang_Double_doubleToLongBits(val);
+	char *s, *t, buf[MAXNUMLEN];
+	int k;
 
-	sprintf(str, "%.11g", val);
-	return (stringC2Java(str));
+	/* Deal with negative numbers manually so negative zero is "-0.0" */
+	s = buf;
+	if (bits & negBit) {
+		val = -val;
+		*s++ = '-';
+	}
+
+	if (val == 0.0 || (val >= 1.0e-3 && val < 1.0e7)) {
+
+		/* Print in decimal notation */
+		sprintf(s, "%.*f", (int) maxPrecision, (double) val);
+
+		/* Trim off trailing zeroes after the decimal point */
+		for (k = strlen(buf) - 1;
+		    buf[k] == '0' && buf[k - 1] != '.';
+		    k--) {
+			buf[k] = '\0';
+		}
+	} else {
+
+		/* Print in exponential notation */
+		sprintf(s, "%.*E", (int) maxPrecision, (double) val);
+
+		/* Trim off the leading zero in the exponent, if any */
+		s = strchr(buf, 'E');
+		assert(s != NULL && (s[1] == '-' || s[1] == '+'));
+		if (s[2] == '0' && s[3] != '\0') {
+			memmove(s + 2, s + 3, strlen(s + 2));
+		}
+
+		/* Trim off trailing zeroes after the decimal point */
+		for (t = s - 1; *t == '0' && t[-1] != '.'; t--);
+		memmove(t + 1, s, strlen(s) + 1);
+	}
+	return (stringC2Java(buf));
 }
 
 /*
@@ -135,9 +177,17 @@ java_lang_Double_doubleToLongBits(jdouble val)
 jdouble
 java_lang_Double_longBitsToDouble(jlong val)
 {
+	static const jlong expMask = 0x7ff0000000000000LL; /* "LL" gcc-ism */
+	static const jlong manMask = 0x000fffffffffffffLL;
+	static const jlong NaNBits = 0x7ff8000000000000LL;
 	jvalue d;
-	d.j = val;
 
+	/* Force all possible NaN values into the canonical NaN value */
+	if ((val & expMask) == expMask && (val & manMask) != 0)
+		val = NaNBits;
+
+	/* Convert value */
+	d.j = val;
 #if defined(DOUBLE_ORDER_OPPOSITE)
 	{
 		/* swap low and high word */

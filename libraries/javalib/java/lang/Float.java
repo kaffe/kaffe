@@ -11,16 +11,21 @@
 package java.lang;
 
 public final class Float extends Number {
-  private final float value;
-  
   public static final float POSITIVE_INFINITY = 1.0f / 0.0f;
   public static final float NEGATIVE_INFINITY = -1.0f / 0.0f;
   public static final float NaN = 0.0f / 0.0f;
-  public static final float MAX_VALUE = 3.40282346638528860e+38f;
-  //public static final float MIN_VALUE = 1.40129846432481707e-45f;
-  public static final float MIN_VALUE = 1.40129846432481707e-38f;
+  public static final float MIN_VALUE = intBitsToFloat(0x1);
+  public static final float MAX_VALUE = intBitsToFloat(0x7f7fffff);
   public static final Class TYPE = Class.getPrimitiveClass("float");
-  
+
+  private static final int DECIMAL_PRECISION = 7; // ceiling (23 log 2)
+
+  private final float value;
+
+  public static native Float valueOf(String s) throws NumberFormatException;
+  public static native int floatToIntBits(float value);
+  public static native float intBitsToFloat(int bits);
+
   public Float(float value) {
     this.value = value;
   }
@@ -76,17 +81,20 @@ public final class Float extends Number {
   public int intValue() {
     return (int )value;
   }
-  
-  public static native int floatToIntBits(float value);
-  public static native float intBitsToFloat(int bits);
-  
-  public static native String toString(float f);
+
+  public static String toString(float value) {
+    if (isNaN(value))
+      return "NaN";
+    if (value == POSITIVE_INFINITY)
+      return "Infinity";
+    if (value == NEGATIVE_INFINITY)
+      return "-Infinity";
+    return Double.normalToString((double) value, DECIMAL_PRECISION);
+  }
 
   public String toString() {
     return toString(this.floatValue());
   }
-  
-  public static native Float valueOf(String s) throws NumberFormatException;
   
   public static boolean isNaN(float v) {
     /* A NaN is the only number which doesn't equal itself */

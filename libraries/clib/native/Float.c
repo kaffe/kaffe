@@ -17,21 +17,7 @@
 #include <native.h>
 #include "defs.h"
 #include "java_lang_Float.h"
-
-/*
- * Convert float into a string.
- */
-struct Hjava_lang_String*
-java_lang_Float_toString(jfloat val)
-{
-	char str[MAXNUMLEN];
-
-	sprintf(str, "%g", val);
-	return (stringC2Java(str));
-}
-
-struct Hjava_lang_Double;
-extern double java_lang_Double_valueOf0(struct Hjava_lang_String*);
+#include "java_lang_Double.h"
 
 /*
  * Convert string to float object. (JDK 1.0.2)
@@ -61,7 +47,16 @@ java_lang_Float_floatToIntBits(jfloat val)
 float
 java_lang_Float_intBitsToFloat(jint val)
 {
-        jvalue d;
+	static const jint expMask = 0x7f800000;
+	static const jint manMask = 0x007fffff;
+	static const jint NaNBits = 0x7fc00000;
+	jvalue d;
+
+	/* Force all possible NaN values into the canonical NaN value */
+	if ((val & expMask) == expMask && (val & manMask) != 0)
+		val = NaNBits;
+
+	/* Convert value */
 	d.i = val;
 	return d.f;
 }

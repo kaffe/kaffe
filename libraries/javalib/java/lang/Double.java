@@ -14,16 +14,20 @@ public final class Double extends Number {
   public static final double POSITIVE_INFINITY = 1.0 / 0.0;
   public static final double NEGATIVE_INFINITY = -1.0 / 0.0;
   public static final double NaN = 0.0 / 0.0;
-  public static final double MAX_VALUE = 1.79769313486231570E+308;
-  public static final double MIN_VALUE = 2.2250738585072014E-308;
+  public static final double MIN_VALUE = longBitsToDouble(0x1L);
+  public static final double MAX_VALUE = longBitsToDouble(0x7fefffffffffffffL);
   public static final Class TYPE = Class.getPrimitiveClass("double");
+
+  private static final int DECIMAL_PRECISION = 16;  // ceiling (51 log 2)
 
   private final double value;
 
-  public static native String toString(double d);
   public static native Double valueOf(String s) throws NumberFormatException;
   public static native long doubleToLongBits(double value);
   public static native double longBitsToDouble(long bits);
+
+  static native String normalToString(double value, int maxPrecision);
+  static native double valueOf0(String s) throws NumberFormatException;
   
   public Double(double value) {
     this.value = value;
@@ -35,6 +39,16 @@ public final class Double extends Number {
 
   public double doubleValue() {
     return value;
+  }
+
+  public static String toString(double value) {
+    if (isNaN(value))
+      return "NaN";
+    if (value == POSITIVE_INFINITY)
+      return "Infinity";
+    if (value == NEGATIVE_INFINITY)
+      return "-Infinity";
+    return Double.normalToString(value, DECIMAL_PRECISION);
   }
 
   public String toString() {
