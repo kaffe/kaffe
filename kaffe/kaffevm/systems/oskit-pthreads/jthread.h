@@ -81,6 +81,9 @@ extern pthread_key_t		jthread_key;
  */
 void* jthread_getcookie(void* tid);
 
+#define SIG_STOP 	SIGUSR1	/* signal sent on Thread.stop */
+#define SIG_INT		SIGUSR2	/* signal sent to interrupt call */
+
 /****************************************************************************
  *
  * The following functions form the interface provided by the 

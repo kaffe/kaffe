@@ -22,13 +22,6 @@
 #include <jcpuinherit.h>
 #endif
 
-/*
- * This idea stolen from gc/linux_threads.c in Ferguson & Boehm's pthreads
- * port.
- */
-#define SIG_STOP 	SIGUSR1
-#define SIG_INT		SIGUSR2
-
 /* thread status */
 #define THREAD_NEWBORN                	0
 #define THREAD_RUNNING                  1
@@ -336,13 +329,13 @@ jthread_init(int pre,
 	pmain = pthread_self();
 
 	/* establish SIG_STOP handler */
-	act.sa_handler = catch_death;
+	act.sa_handler = (void *)catch_death;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIG_STOP);
 	sigaction(SIG_STOP, &act, 0);
 
-	act.sa_handler = catch_int;
+	act.sa_handler = (void *)catch_int;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIG_INT);
@@ -596,7 +589,7 @@ remove_thread(jthread_t tid)
 	pthread_mutex_unlock(&threadLock);
 
 	/* If we only have daemons left, then we should exit. */
-	if (talive == tdaemon) {
+	if (talive == tdaemon && !tid->daemon) {
 DBG(JTHREAD,
 		dprintf("all done, closing shop\n");
     )

@@ -27,6 +27,64 @@
 #include "jthread.h"
 #include "jsyscall.h"
 
+#include <oskit/time.h>
+#include <oskit/com/listener.h>
+#include <oskit/dev/clock.h>
+#include <oskit/dev/timer.h>
+
+extern oskit_clock_t *oskit_system_clock;
+
+/*
+ * Interrupt a network system call.  It is OK for the timer to expire
+ * just after the call returns, the SIG_INT handler does nothing.  The
+ * timer will not fire during a subsequent call, since it is destroyed
+ * on the way out.
+ */
+static oskit_error_t
+interrupt_me(struct oskit_iunknown *me, void *_tid)
+{
+	pthread_kill((pthread_t) _tid, SIG_INT);
+	return 0;
+}
+
+/*
+ * Use oskit timers rather than machine timers, since there is an
+ * unlimited supply of them.  We create and destroy a timer for every
+ * call, is it worthwhile to cache a timer for each thread?
+ */
+static oskit_timer_t *
+make_net_timer(int ms)
+{
+	oskit_timer_t *timer;
+	oskit_listener_t *listener;
+	oskit_itimerspec_t spec;
+
+	memset(&spec, 0, sizeof(spec));
+	spec.it_value.tv_sec = ms/1000;
+	spec.it_value.tv_nsec = (ms % 1000) * 1000000;
+	listener = oskit_create_listener(interrupt_me,
+					 (void *) pthread_self());
+	oskit_clock_createtimer(oskit_system_clock, &timer);
+	oskit_timer_setlistener(timer, listener);
+	oskit_listener_release(listener);
+	oskit_timer_settime(timer, 0, &spec);
+	return timer;
+}
+
+#define WITH_TIMEOUT(MS,EXP)			\
+{						\
+    oskit_timer_t *_timer = 0;			\
+    int _r;					\
+						\
+    if (MS) _timer = make_net_timer(MS);	\
+    _r = (EXP);					\
+    if (_timer) oskit_timer_release(_timer);	\
+    return _r;					\
+}
+
+/* return error code or 0 */   
+#define ERR(EXP) (((EXP) < 0) ? errno : 0)
+
 static int
 oskit_pthread_open(const char *path, int f, int m, int *outfd)
 {
@@ -107,15 +165,7 @@ oskit_pthread_socket(int a, int b, int c, int *outfd)
 static int
 oskit_pthread_connect(int fd, struct sockaddr* addr, size_t len, int timeout)
 {
-	/* XXX implement timeout */
-        int r = connect(fd, addr, len);
-        /* annul EALREADY error --- is this really necessary or is this
-	 * a java.net bug? 
-	 */
-        if (r == -1 && errno == EALREADY) {
-                r = 0;
-	}
-        return (r);
+	WITH_TIMEOUT(timeout, ERR(connect(fd, addr, len)));
 }
 
 static int
@@ -134,26 +184,20 @@ static int
 oskit_pthread_accept(int fd, struct sockaddr* a, size_t *l, int timeout, 
 	int* outfd)
 {
-	/* XXX implement timeout!!! */
-	*outfd = accept(fd, a, l);
-	return (*outfd == -1) ? errno : 0;
+	WITH_TIMEOUT(timeout, ERR(*outfd = accept(fd, a, l)));
 }
 
 static int
 oskit_pthread_sock_read(int f, void* b, size_t l, int timeout, ssize_t *out)
 {
-	/* XXX implement timeout!!! */
-	*out = read(f, b, l);
-	return (*out == -1) ? errno : 0;
+	WITH_TIMEOUT(timeout, ERR(*out = read(f, b, l)));
 }
 
 static int
 oskit_pthread_recvfrom(int a, void* b, size_t c, int d, struct sockaddr* e, 
 	int* f, int timeout, ssize_t *out)
 {
-	/* XXX implement timeout!!! */
-	*out = recvfrom(a, b, c, d, e, f);
-	return (*out == -1) ? errno : 0;
+	WITH_TIMEOUT(timeout, ERR(*out = recvfrom(a, b, c, d, e, f)));
 }
 
 static int
