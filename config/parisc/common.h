@@ -18,6 +18,15 @@ typedef jdouble d4int_f (int, int, int, int);
 typedef jfloat f4int_f (int, int, int, int);
 typedef jlong j4int_f (int, int, int, int);
 
+#define NEED_STACK_ALIGN
+#define STACK_ALIGN(p)  ((((unsigned long)(p)) & 15) ^ (unsigned long)(p))
+
+#if NEED_sysdepCallMethod
+/* FIXME: this doesn't work for parisc-linux, because on parisc-linux
+ * there is no fparg relocation, so we cannot just pass everything in
+ * general purpose registers
+ */
+
 #define sysdepCallMethod(CALL)						\
 do {									\
   int argidx;								\
@@ -52,5 +61,27 @@ do {									\
   (CALL)->ret->j =							\
     ((j4int_f *) ((CALL)->function)) (sa[0], sa[-1], sa[-2], sa[-3]);	\
 } while (0);
+#endif
+
+/*
+ * Do an atomic compare and exchange.  The address 'A' is checked against
+ * value 'O' and if they match it's exchanged with value 'N'.
+ * We return '1' if the exchange is sucessful, otherwise 0.
+ *
+ * pa doesn't have an atomic compare-and-exchange instruction. we use
+ * a C version a la MIPS for now. Might not be SMP safe.
+ */
+#define COMPARE_AND_EXCHANGE(A,O,N)            \
+({                                             \
+    int ret = 0;                               \
+    jthread_suspendall();                      \
+                                               \
+    if (*(A) == (O)) {                         \
+       *(A) = (N);                             \
+       ret = 1;                                \
+    }                                          \
+    jthread_unsuspendall();                    \
+    ret;                                       \
+})
 
 #endif

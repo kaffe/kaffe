@@ -1,3 +1,14 @@
+Fri Apr 26 09:45:41 CEST 2002 Randolph Chung <tausq@debian.org>
+	* config/parisc/common.h, config/parisc/linux/config.frag,
+	config/parisc/linux/md.c, config/parisc/linux/md.h: initial
+	support of parisc-linux.
+
+Fri Apr 26 09:43:39 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* config/parisc/threads.h: merged in from pocketlinux kaffe. It is
+	just a comment change, but that is the only thing that differed
+	in the pockelinux implementation. So config/parisc can be
+	considered as fully merged.
+
 Fri Apr 26 02:36:55 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* FAQ/FAQ.classlibrary-compile: added paragraph on jikes
 	bugs. Updated information on Sun's javac to reflect later
