@@ -2,6 +2,9 @@ Sat Jul 31 17:15:55 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/clib/native/String.c: fix bug in indexOf()
 	* test/regression/Str2.java: add a couple more tests
+	* test/regression/TestScript.in: set KAFFEHOME for HashTest
+	* libraries/javalib/java/lang/URL.java: optimize equals()
+	* aclocal.m4, configure, config/config.h.in: regen
 
 Thu Jul 29 22:42:50 PDT 1999  Archie Cobbs <archie@whistle.com>
 
