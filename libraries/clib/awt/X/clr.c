@@ -9,6 +9,7 @@
  */
 
 #include "toolkit.h"
+#include "config-mem.h"
 #include <limits.h>
 #include <math.h>
 
