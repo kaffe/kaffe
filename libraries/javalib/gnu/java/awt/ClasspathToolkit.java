@@ -62,6 +62,7 @@ import java.text.AttributedString;
 import java.util.HashMap;
 import java.util.Map;
 import java.awt.peer.RobotPeer;
+import javax.imageio.spi.IIORegistry;
 
 
 /**
@@ -355,6 +356,14 @@ public abstract class ClasspathToolkit
 
   public abstract RobotPeer createRobot (GraphicsDevice screen)
     throws AWTException;
+
+  /** 
+   * Used to register ImageIO SPIs provided by the toolkit.
+   */
+
+  public void registerImageIOSpis(IIORegistry reg)
+  {
+  }
 
   public abstract boolean nativeQueueEmpty();
   public abstract void wakeNativeQueue();  

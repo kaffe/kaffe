@@ -451,7 +451,7 @@ public class GdkGraphics2D extends Graphics2D
     return defaultHints;
   }
 
-  private final int[] findSimpleIntegerArray(ColorModel cm, Raster raster)
+  public static final int[] findSimpleIntegerArray (ColorModel cm, Raster raster)
   {
     if (cm == null || raster == null)
       return null;
@@ -494,10 +494,11 @@ public class GdkGraphics2D extends Graphics2D
   {
     if (bimage != null && pixelConversionRequired)
       {
-        bimage.getRaster().setPixels(0, 0, 
-                                     bimage.getRaster().getWidth (),
-                                     bimage.getRaster().getHeight (), 
-                                     pixelBuffer);
+        int height = bimage.getHeight();
+        int width = bimage.getWidth();
+        for (int y = 0; y < height; ++y)
+          for (int x = 0; x < width; ++x)
+            bimage.setRGB(x, y, pixelBuffer[y*width+height]);
       }
   }
 

@@ -649,6 +649,11 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     return new GdkRobotPeer (screen);
   }
 
+  public void registerImageIOSpis(IIORegistry reg)
+  {
+    GdkPixbufDecoder.registerSpis(reg);
+  }
+
   public native boolean nativeQueueEmpty();
   public native void wakeNativeQueue();  
   public native void iterateNativeQueue(EventQueue locked);

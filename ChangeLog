@@ -2,6 +2,58 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-01-11  Graydon Hoare  <graydon@redhat.com>
+
+	* gnu/java/awt/ClasspathToolkit.java
+	(registerImageIOSpis): New method.
+	* gnu/java/awt/image/ImageDecoder.java
+	(imageDecoder): New constructor using InputStream
+	(startProduction): Handle existing InputStream.
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java
+	(findSimpleIntegerArray): Make public and static.
+	(updateBufferedImage): Set each pixel, in a loop.
+	* gnu/java/awt/peer/gtk/GdkPixbufDecoder.java:
+	Implement ImageIO SPI classes.
+	(createBufferedImage): Rewrite in terms of SPI classes.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java
+	(registerImageIOSpis): New method.
+	* java/lang/reflect/natMethod.cc
+	(_Jv_CallAnyMethodA): Borrow a patch from aph, applied to trunk,
+	which lets JNI call interface methods properly.
+	* javax/imageio/ImageIO.java
+	(WriterFormatFilter.filter): Fix copy-and-paste typos.
+	(WriterMIMETypeFilter.filter): Likewise.
+	(ImageReaderIterator): Pass extension argument through to SPI.
+	(getReadersByFilter): Likewise.
+	(getWritersByFilter): Likewise.
+	(getImageReadersByFormatName): Likewise.
+	(getImageReadersByMIMEType): Likewise.
+	(getImageReadersBySuffix): Likewise.
+	(getImageWritersByFormatName): Likewise.
+	(getImageWritersByMIMEType): Likewise.
+	(getImageWritersBySuffix): Likewise.
+	(read): Implement.
+	(write): Implement.
+	* javax/imageio/ImageReader.java
+	(progressListeners): Initialize.
+	(setInput): Implement.
+	* javax/imageio/ImageWriter.java
+	(progressListeners): Initialize.
+	(warningListeners): Likewise.
+	(warningLocales): Likewise.
+	(setOutput): Test "isInstance" rather than class equality.
+	* javax/imageio/spi/IIORegistry.java
+	(static): Add reader and writer SPIs.
+	(IIORegistry): Call ClasspathToolkit.registerImageIOSpis.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c
+	(query_formats): New function.
+	(save_to_stream): Likewise.
+	(Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_streamImage): Likewise.
+	
+2005-01-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-01-11  Michael Koch  <konqueror@gmx.de>
 
 	* configure.ac: Check for gdk-pixbuf-2.0.
