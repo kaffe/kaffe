@@ -1,6 +1,11 @@
 2004-02-28  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+        Use getIdx and getWIdx consistently.
+
+2004-02-28  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
 	Use getNextPC consistently.
 
 2004-02-28  Dalibor Topic <robilad@kaffe.org>

@@ -2782,10 +2782,10 @@ verifyBasicBlock(errorInfo* einfo,
 	 **************************************************************************************************/
 
 #define GET_IDX \
-	idx = code[pc + 1]
+	idx = getIdx(code, pc)
 	
 #define GET_WIDX \
-	idx = pc + 1; idx = getWord(code, idx)
+	idx = getWIdx(code, pc)
 	
 	
 	/* checks whether the specified local variable is of the specified type. */
