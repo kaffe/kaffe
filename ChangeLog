@@ -1,6 +1,6 @@
 Wed Oct 11 10:20:07 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
-	* kaffe/kaffevm/mem.old/gc-incremental.c (gcRealloc): Take the
+	* kaffe/kaffevm/mem/gc-incremental.c (gcRealloc): Take the
 	gc_unit into account when copying the old allocated data into the
 	new location.
 
