@@ -27,9 +27,9 @@ inline jclass JNIEnv::FindClass(const char* a)
 	return (functions->FindClass(this, a));
 }
 
-inline jclass JNIEnv::GetSuperClass(jclass a)
+inline jclass JNIEnv::GetSuperclass(jclass a)
 {
-	return (functions->GetSuperClass(this, a));
+	return (functions->GetSuperclass(this, a));
 }
 
 inline jboolean JNIEnv::IsAssignableFrom(jclass a, jclass b)
