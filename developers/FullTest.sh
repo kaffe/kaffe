@@ -43,7 +43,7 @@ BASE_OBJ_DIR=/home/pat/kaffe-core/obj
 # About 70Mb of installed stuff 
 BASE_INSTALL_DIR=/home/pat/kaffe-core/install
 
-GMAKE=make
+GMAKE=${GMAKE:-make}
 # -s means quiet; -j for multiple jobs
 MAKE_OPTS="-s -j 2"
 
@@ -153,6 +153,7 @@ for s in $STATICBUILD; do
 		rm -f "$TRACEF"
 		touch "$TRACEF"
 		
+		date
 		status "${PREFIX}-${e}-${b}${STATDIR}:"
 		
 		# Clean out whatever cruft may exist
