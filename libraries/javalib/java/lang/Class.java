@@ -246,7 +246,8 @@ native public Object newInstance() throws InstantiationException, IllegalAccessE
  * toString() 
  */
 public String toString() {
-	return (isInterface() ? "interface " : "class ") + getName();
+	return (isInterface() ? "interface " : isPrimitive() ? "" : "class ")
+	    + getName();
 }
 
 }
