@@ -276,9 +276,9 @@ void*
 jthread_stacklimit(void)
 {
 #if defined(STACK_GROWS_UP)
-        return (void*)((int)currentJThread->stackEnd - REDZONE);
+        return (void*)((long)currentJThread->stackEnd - REDZONE);
 #else
-        return (void*)((int)currentJThread->stackBase + REDZONE);
+        return (void*)((long)currentJThread->stackBase + REDZONE);
 #endif
 }
 
