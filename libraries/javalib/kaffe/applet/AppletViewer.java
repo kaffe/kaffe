@@ -1,4 +1,3 @@
-package kaffe.applet;
 
 /**
  * Copyright (c) 1998, 1999
@@ -12,6 +11,8 @@ package kaffe.applet;
  * These classes have been rewritten in a way that allow applications
  * to easily embed applets in their own containers
  */
+
+package kaffe.applet;
 
 import java.applet.Applet;
 import java.applet.AppletContext;
@@ -37,8 +38,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +49,7 @@ import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -55,9 +57,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
-import java.lang.String;
+import java.util.zip.ZipFile;
 
 public class AppletViewer
   extends Frame
@@ -74,180 +75,16 @@ public class AppletViewer
     AppletContext		context;
     private static Vector 	applets = new Vector();
 
-public static class AppletClassLoader extends ClassLoader
-{
-    URL codebase = null;
-    ZipFile	ziparchive;
-    String archive;
-    private static int jarcounter;
-
-    public AppletClassLoader(URL codebase, String archive) {
-	this.codebase = codebase;
-	this.archive = archive;
-
-	if (debug) {
-	    System.out.println("AV: codebase= " + codebase);
-	    System.out.println("AV: archive= " + archive);
-	}
-
-	try {
-	    // copy jar file over
-	    if (!archive.equals("")) {
-		URL url = new URL(codebase, archive);
-		if (debug)
-		    System.out.println("AV: opening url: " + url);
-
-		InputStream in = url.openStream();
-		byte b[] = new byte[4096];
-		int r;
-
-		//
-		// This is way too unixy
-		//
-		File lf = new File("/tmp/jar-" + jarcounter++);
-		FileOutputStream out = new FileOutputStream(lf);
-		while ((r = in.read(b)) != -1) {
-		    out.write(b, 0, r);
-		}
-		out.close();
-		in.close();
-		ziparchive = new ZipFile(lf);
-		lf.delete();	
-		if (debug) {
-		    Enumeration e = ziparchive.entries();
-		    System.out.println("AV: dumping archive");
-		    while (e.hasMoreElements()) {
-			System.out.println("AV: " + e.nextElement());
-		    }
-		}
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
+    // Our class loader
+    private static class AppletClassLoader extends URLClassLoader {
+      AppletClassLoader(URL codebase, String archive) throws IOException {
+	  super(new URL[0]);
+	  for (StringTokenizer t = new StringTokenizer(archive, ", ");
+		  t.hasMoreTokens(); ) {
+	      addURL(new URL(codebase, t.nextToken()));
+	  }
+      }
     }
-
-    private InputStream getStreamByName(String cname) throws Exception {
-	if (ziparchive == null) {
-	    URL url = new URL(codebase, cname);
-	    if (debug) 
-		System.out.println("AV: opening URL " + url);
-	    return (url.openStream());
-	} else {
-	    ZipEntry ze = ziparchive.getEntry(cname);
-	    if (ze == null) {
-		throw new Exception("Didn't find " + cname + " in " + archive);
-	    }
-	    return (ziparchive.getInputStream(ze));
-	}		
-    }
-
-    Hashtable intercept = new Hashtable();
-
-    public void interceptClass(String name, Class c) {
-	intercept.put(name, c);
-    }
-
-    protected 
-    Class loadClass(String name, boolean resolve) 
-	throws ClassNotFoundException 
-    {
-        Class cls = findLoadedClass(name);
-
-	//
-	// intercept before passing on to system if intercepting class
-	// has been registered for that name.
-	//
-	if (cls == null) {
-	    cls = (Class)intercept.get(name);
-	}
- 
-        if (cls == null) {
-                try {
-                        if (this.getParent() != null) {
-                                cls = this.getParent().loadClass(name);
-                        }
-                        else {
-                                cls = findSystemClass(name);
-                        }
-                }
-                catch (ClassNotFoundException _) {
-                        cls = findClass(name);
-                }
-        }
-        if (resolve) {
-                resolveClass(cls);
-        }
-        return (cls);
-    }
-
-    public Class findClass(String name) throws ClassNotFoundException {
-	InputStream in = null;
-	String cname = name.replace('.', '/') + ".class";
-	if (debug)
-	    System.out.println("AV: loading class " + name);
-
-	try {
-	    in = getStreamByName(cname);
-	    int  total = 0;
-	    byte code[] = new byte[8192];	
-
-	    for (;;) {
-		int r = in.read(code, total, code.length-total);
-		if (r == -1) {
-		    break;
-		} else {
-		    total += r;
-		    if (total == code.length) {
-			byte []ncode = new byte[code.length * 2];
-			System.arraycopy(code, 0, ncode, 0, code.length);
-			code = ncode;
-		    }
-		}
-	    }
-
-	    if (debug)
-		System.out.println("AV: Defining " + name + " with " 
-			+ total + " bytes");
-
-	    Class c = defineClass(name, code, 0, total);
-	    return (c);
-	} catch (Exception e) {
-	    System.out.println(e.getMessage());
-	    throw new ClassNotFoundException(e.getMessage());
-	}
-    }
-
-    public URL getResource(String name) {
-	if (debug)
-	    System.out.println("AV: getResource called: " + name);
-
-	try {
-	    return new URL(codebase, name);	// ???
-	} catch (Exception e) {
-	    System.out.println(e);
-	    return (null);
-	}
-    }
-
-    public InputStream getResourceAsStream(String name) {
-	// hack for old version of custom, remove me when fixed!!!
-	while (name.startsWith("/"))
-	    name = name.substring(1);
-
-	if (debug) {
-	    System.out.println("AV: getResourceAsStream: " + name);
-	}
-
-	try {
-	    return (getStreamByName(name));
-	} catch (Exception e) {
-	    if (debug) {
-		System.out.println(e);
-	    }
-	    return (null);
-	}
-    }
-}
 
 public static class DefaultAppletContext implements AppletContext {
     private Vector apps = new Vector();
