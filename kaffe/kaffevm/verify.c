@@ -2639,6 +2639,27 @@ opstackWPushBlind(BlockInfo* block,
 }
 
 /*
+ * Helper function for error reporting in OPSTACK_PEEK_T_BLIND macro in verifyBasicBlock.
+ */
+static inline
+bool
+opstackPeekTBlindErrorInVerifyBasicBlock(errorInfo* einfo,
+					 const Method* method,
+					 BlockInfo* block,
+					 Hjava_lang_Class* this,
+					 const Type* type)
+{
+	DBG(VERIFY3,
+	    dprintf("                OPSTACK_TOP: ");
+	    printType(getOpstackTop(block));
+	    dprintf(" vs. what's we wanted: ");
+	    printType(type);
+	    dprintf("\n");
+	    );
+	return verifyErrorInVerifyBasicBlock(einfo, method, this, "top of opstack does not have desired type");
+}
+
+/*
  * verifyBasicBlock()
  *   Simulates execution of a basic block by modifying its simulated operand stack and local variable array.
  */
@@ -2730,12 +2751,7 @@ verifyBasicBlock(errorInfo* einfo,
 	/* ensure that the top item on the stack is of type _T	*/
 #define OPSTACK_PEEK_T_BLIND(_TINFO) \
 	if (!typecheck(einfo, this, _TINFO, getOpstackTop(block))) { \
-		DBG(VERIFY3, \
-		    dprintf("                OPSTACK_TOP: "); \
-		    printType(getOpstackTop(block)); \
-		    dprintf(" vs. what's we wanted: "); \
-		    printType(_TINFO); dprintf("\n"); ); \
-		return verifyErrorInVerifyBasicBlock(einfo, method, this, "top of opstack does not have desired type"); \
+		return opstackPeekTBlindErrorInVerifyBasicBlock(einfo, method, block, this, _TINFO); \
 	}
 	
 #define OPSTACK_PEEK_T(_TINFO) \
