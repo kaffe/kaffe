@@ -13,7 +13,7 @@ package java.util;
 
 public interface Map {
 
-	interface Entry {
+	public interface Entry {
 		Object getKey();
 		Object getValue();
 		Object setValue(Object value);
