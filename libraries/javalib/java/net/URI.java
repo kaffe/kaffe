@@ -456,7 +456,10 @@ public final class URI
   public URL toURL ()
     throws IllegalArgumentException, MalformedURLException
   {
-    return null;
+    if (isAbsolute()) {
+        return new URL(this.toString());
+    }
+    throw new IllegalArgumentException("not absolute");
   }
 
   /**
