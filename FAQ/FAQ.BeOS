@@ -6,24 +6,13 @@ made to work for the most part; however, that system relies on
 asynchronous I/O notifications, as well as virtual timer alarms, both
 of which are absent on BeOS R4.
 
-beos-native was modeled upon the oskit-pthreads system, which relies
-on mutexes and condition variables.  BeOS has the former, but not the
-latter, so I defined a condition variable type based upon an article I
-found posted on the Web [1].  The implementation has since been corrected
-with the help of Chris Tate of Be DTS [2].
+beos-native no longer uses its own implementation of condition variables.
+Instead, it implements and uses a new Kaffe locking primitive called
+a "Ksem".
 
-To build Kaffe for BeOS, you must configure Kaffe as follows:
-
-	./configure --prefix=<insert-your-prefix-here>
-
-Oddly enough, the executables produced are roughly the same size whether
-or not the "--disable-shared" flag is supplied, leading me to believe
-that libtool isn't doing what it should to truly support shared libs.
-Nonetheless, Kaffe appears to work properly with or without the flag.
-
-As of 15 August 1999, AWT for Kaffe is under development by the BeKaffe
-group, from whom patches are available.  These patches will be submitted
-for inclusion into the Kaffe source tree at a later date.
+AWT for Kaffe is under separate development by the BeKaffe group, from
+whom source patches and tar balls are available (please refer to their
+web site on SourceForge for more information).
 
 Also, the following entry points in the jthread interface have yet to be
 implemented:
@@ -54,21 +43,12 @@ executes exit_thread().
 The gethostbyname() and gethostbyaddr() wrappers in beos-native/syscalls.c
 are not thread-safe.
 
-As of 08 Sep 1999, the 'ProcessClassStop' test fails on Kaffe/BeOS, as
-well as on Kaffe/Linux.  Additionally, the 'KaffeVerifyBug',
-'SoInterrupt', 'SoTimeout' and 'UDPTest' tests fail on Kaffe/BeOS when
-run from the regression test suite, though not from the command line.
-Test output suggests a linkage problem (libtool again?).  The 'GCTest'
-test will also sometimes fail, with the main thread chugging along
-and the finaliser and one or more user threads blocked indefinitely.
+As of 25 June 2000, the following tests fail: CLTestJLock, ClassGC, GCTest,
+NullInvoke, ProcessClassInst, ThreadState, ThreadStop, CatchDeath and
+SoTimeout (again!).
 
-NOTES
-=====
-[1] "Locks and Condition Variables",
-    http://www.cs.umd.edu/~hollings/cs412/s96/synch/locks.html
-[2] Shortly after I applied Chris' corrections, he identified
-    potential race problems in the new code; I've received a new set
-    of corrections from him, which I'm currently testing.
+Although Kaffe has been built and tested on BeOS 5, it has not been
+configured for BONE, as that networking code is still unavailable to users.
 
 REV HISTORY
 ===========
@@ -82,3 +62,4 @@ REV HISTORY
 26 Mar 99 -- Implemented most socket timeouts; SoTimeout now passes
 28 Jul 99 -- Fixed condition variable code (thanks to Chris Tate of Be DTS)
 31 Aug 99 -- Updated for JIT version 3
+25 Jun 00 -- Updated for Ksems

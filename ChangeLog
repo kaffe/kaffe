@@ -1,3 +1,11 @@
+Thu Jul  6 10:28:25 EDT 2000 Alan L. Batongbacal <alanlb@vt.edu>
+
+	* kaffe/kaffevm/systems/beos-native/{bjthread.c,jthread.h}: updated
+	to conform with 1.0.5 jthread interface; dropped condition variable
+	implementation in favor of Ksem mechanism
+	* kaffe/kaffevm/systems/beos-native/{thread-impl.h,lock-impl.h}: new
+	files required by threading and locking layer revisions
+
 Thu Jun 29 11:05:07 PDT 2000  Zsolt Rizsanyi <rizsanyi@altavista.net>
 
 	* libraries/javalib/java/awt/widgets/Choice.java: add remove(int)

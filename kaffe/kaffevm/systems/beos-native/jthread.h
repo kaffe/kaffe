@@ -44,24 +44,6 @@
 #define PTI_AREA_SIZE	(B_PAGE_SIZE * 6)
 
 /*
- * Instead of a raw semaphore, we'll implement a jmutex using a Benaphore.
- */
-typedef struct {
-	sem_id mutex;
-	int32  mutex_count;
-} jmutex;
-
-/*
- * The condition variable implementation is courtesy of Chris Tate (Be DTS).
- */
-typedef struct {
-	sem_id cond;
-	sem_id handshake;
-	int32  wait_count;
-	sem_id wait_count_lock;
-} jcondvar;
-
-/*
  * This is our internal structure representing a "jthread" which is mapped
  * on top of a BeOS native thread.
  */
@@ -136,13 +118,22 @@ jthread_init(
 	int preemptive,			/* preemptive scheduling */
 	int maxpr, 			/* maximum priority */
 	int minpr, 			/* minimum priority */
-	int mainthreadpr,		/* priority of current (main) thread */
-	size_t mainThreadStackSize,	/* assumed main stack size */
         void *(*_allocator)(size_t),	/* memory allocator */
 	void (*_deallocator)(void*),	/* memory deallocator */
 	void (*_destructor1)(void*),	/* called when a thread exits */ 
 	void (*_onstop)(void),		/* called when a thread is stopped */
 	void (*_ondeadlock)(void));     /* called on deadlock */
+
+
+/*
+ * Create the first thread - actually bind the first thread to the java
+ * context.
+ */
+jthread_t
+jthread_createfirst(size_t mainThreadStackSize, 
+		    unsigned char prio, 
+		    void* jlThread);
+
 
 /*
  * create a thread with a given priority
@@ -156,13 +147,12 @@ jthread_create(unsigned int pri, 	/* initial priority */
 
 struct _exceptionFrame;
 typedef void (*exchandler_t)(struct _exceptionFrame*);
-
-/*
- * Initialize handlers for null pointer accesses and div by zero
- */
-void 	jthread_initexceptions(exchandler_t _nullHandler,
-			       exchandler_t _floatingHandler);
-
+                
+/*                                                                      
+ * Initialize handlers for null pointer accesses and div by zero        
+ */             
+void    jthread_initexceptions(exchandler_t _nullHandler,
+                               exchandler_t _floatingHandler);
 
 /*
  * set a function to be run when last non-daemon dies 
@@ -192,7 +182,7 @@ void	jthread_setpriority(jthread_t jtid, int prio);
 static inline void 	
 jthread_yield(void)
 { 
-	snooze(0);
+	snooze(1);
 }
 
 /*
@@ -245,10 +235,14 @@ int 	jthread_on_current_stack(void *bp);
  */
 int 	jthread_stackcheck(int left);
 
-/*
- * determine conservative limit to stack growth
- */
-void*	jthread_stacklimit(void);
+#define	REDZONE	1024
+
+static inline void*
+jthread_stacklimit(void)
+{
+	jthread_t currentJThread = GET_JTHREAD();
+	return ((void*)((char*)currentJThread->stack_bottom + REDZONE));
+}
 
 /*
  * determine the "interesting" stack range a conservative gc must walk
@@ -287,18 +281,9 @@ void jthread_suspendall(void);
  */
 void jthread_unsuspendall(void);
 
-/* 
- * Locking API
+/*
+ * Signals
  */
-void jmutex_initialise(jmutex *lock);
-void jmutex_lock(jmutex *lock);
-void jmutex_unlock(jmutex *lock);
-
-void jcondvar_initialise(jcondvar *cv);
-void jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
-void jcondvar_signal(jcondvar *cv, jmutex *lock);
-void jcondvar_broadcast(jcondvar *cv, jmutex *lock);
-
 void catchSignal(int sig, void* handler);
 
 #endif
