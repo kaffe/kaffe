@@ -58,7 +58,6 @@ abstract public class Calendar
 	final public static int UNDECIMBER = 12;
 	final public static int AM = 0;
 	final public static int PM = 1;
-	private static Vector calendars = new Vector();
 	private TimeZone zone;
 	private Locale locale;
 	private boolean lenient;
@@ -87,10 +86,6 @@ protected Calendar(TimeZone zne, Locale aLocale)
 	mindaysinfirstweek = 1;
 	zone = zne;
 	locale = aLocale;
-
-	synchronized(calendars) {
-		calendars.addElement(this);
-	}
 }
 
 abstract public void add(int field, int amount);
@@ -181,16 +176,6 @@ public static synchronized Calendar getInstance(TimeZone zone)
 
 public static synchronized Calendar getInstance(TimeZone zone, Locale aLocale)
 {
-	synchronized(calendars) {
-		Enumeration e = calendars.elements();
-		while (e.hasMoreElements()) {
-			Calendar c = (Calendar)e.nextElement();
-			if (c.zone == zone && c.locale == aLocale) {
-//				c = new GregorianCalendar(c.zone, c.locale);
-				return (c);
-			}
-		}
-	}
 	return (new GregorianCalendar( zone, aLocale));
 }
 
