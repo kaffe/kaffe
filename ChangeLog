@@ -1,5 +1,13 @@
 2005-01-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* test/regression/InnerTest.java, 
+	test/regression/TestSerialFields.java,
+	test/regression/TestSerialPersistent.java,
+	test/regression/TestSerialVersions.java:
+	Adapated expected output to match the one from jikes.
+
+2005-01-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* test/regression/TestScript.in, 
 	Makefile.am (BUILD_ENVIRONMENT-make): Removed JAVAX_CRYPTO_JAR.	
 

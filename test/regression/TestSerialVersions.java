@@ -405,105 +405,12 @@ public class TestSerialVersions
 Generating canonical stream
   Serializing TestSerialVersions$Test0001
     OK.
-TestSerialVersions$Test0001:
-  OK. Got: TestSerialVersions$Test0001: 66, 105
-  Ser Fields:
-    [x:int]
-    [y:int]
-  Serializing TestSerialVersions$Test0001
-    OK.
-
-TestSerialVersions$Test0002:
+TestSerialVersions$Test0014:
   Deserialize exception: java.io.InvalidClassException
   Ser Fields:
-    [x:double]
-    [y:double]
-  Serializing TestSerialVersions$Test0002
-    OK.
-
-TestSerialVersions$Test0003:
-  Deserialize exception: java.io.InvalidClassException
-  Ser Fields:
-    [x:short]
-    [y:short]
-  Serializing TestSerialVersions$Test0003
-    OK.
-
-TestSerialVersions$Test0004:
-  Deserialize exception: java.io.InvalidClassException
-  Ser Fields:
-    [x:java.lang.String]
-    [y:java.lang.String]
-  Serializing TestSerialVersions$Test0004
-    OK.
-
-TestSerialVersions$Test0005:
-  OK. Got: TestSerialVersions$Test0005: <no fields>
-  Ser Fields:
-  Serializing TestSerialVersions$Test0005
-    OK.
-
-TestSerialVersions$Test0052:
-  OK. Got: TestSerialVersions$Test0052: y=105
-  Ser Fields:
-    [y:int]
-  Serializing TestSerialVersions$Test0052
-    OK.
-
-TestSerialVersions$Test0006:
-  Deserialize exception: java.io.InvalidClassException
-  Ser Fields:
-    [x:int]
-    [y:int]
-  Serializing TestSerialVersions$Test0006
-    OK.
-
-TestSerialVersions$Test0007:
-  Deserialize exception: java.io.InvalidClassException
-  Ser Fields:
-    [x:int]
-    [y:int]
-  Serializing TestSerialVersions$Test0007
-    Serialization exception: java.io.InvalidClassException
-
-TestSerialVersions$Test0008:
-  OK. Got: TestSerialVersions$Test0008: <no fields>
-  Ser Fields:
-    [x:int]
-    [y:int]
-  Serializing TestSerialVersions$Test0008
-    Serialization exception: java.io.InvalidClassException
-
-TestSerialVersions$Test0009:
-  Deserialize exception: java.io.InvalidClassException
-  Ser Fields:
-    [x:java.lang.String]
-    [y:java.lang.String]
-  Serializing TestSerialVersions$Test0009
-    Serialization exception: java.io.InvalidClassException
-
-TestSerialVersions$Test0010:
-  OK. Got: TestSerialVersions$Test0010: 0, 0
-  Ser Fields:
-    [xodd:java.lang.String]
-    [yodd:java.lang.String]
-  Serializing TestSerialVersions$Test0010
-    Serialization exception: java.io.InvalidClassException
-
-TestSerialVersions$Test0011:
-  OK. Got: TestSerialVersions$Test0011: 0, 0
-  Ser Fields:
-    [xodd:java.lang.String]
-    [yodd:java.lang.String]
-  Serializing TestSerialVersions$Test0011
-    OK.
-
-TestSerialVersions$Test0012:
-  OK. Got: TestSerialVersions$Test0012: 0, 0
-  Ser Fields:
-    [xodd:java.lang.String]
-    [yodd:java.lang.String]
-  Serializing TestSerialVersions$Test0012
+    [x:[I]
+    [y:[I]
+  Serializing TestSerialVersions$Test0014
     OK.
 
 TestSerialVersions$Test0013:
@@ -514,12 +421,105 @@ TestSerialVersions$Test0013:
   Serializing TestSerialVersions$Test0013
     OK.
 
-TestSerialVersions$Test0014:
+TestSerialVersions$Test0012:
+  OK. Got: TestSerialVersions$Test0012: 0, 0
+  Ser Fields:
+    [xodd:java.lang.String]
+    [yodd:java.lang.String]
+  Serializing TestSerialVersions$Test0012
+    OK.
+
+TestSerialVersions$Test0011:
+  OK. Got: TestSerialVersions$Test0011: 0, 0
+  Ser Fields:
+    [xodd:java.lang.String]
+    [yodd:java.lang.String]
+  Serializing TestSerialVersions$Test0011
+    OK.
+
+TestSerialVersions$Test0010:
+  OK. Got: TestSerialVersions$Test0010: 0, 0
+  Ser Fields:
+    [xodd:java.lang.String]
+    [yodd:java.lang.String]
+  Serializing TestSerialVersions$Test0010
+    Serialization exception: java.io.InvalidClassException
+
+TestSerialVersions$Test0009:
   Deserialize exception: java.io.InvalidClassException
   Ser Fields:
-    [x:[I]
-    [y:[I]
-  Serializing TestSerialVersions$Test0014
+    [x:java.lang.String]
+    [y:java.lang.String]
+  Serializing TestSerialVersions$Test0009
+    Serialization exception: java.io.InvalidClassException
+
+TestSerialVersions$Test0008:
+  OK. Got: TestSerialVersions$Test0008: <no fields>
+  Ser Fields:
+    [x:int]
+    [y:int]
+  Serializing TestSerialVersions$Test0008
+    Serialization exception: java.io.InvalidClassException
+
+TestSerialVersions$Test0007:
+  Deserialize exception: java.io.InvalidClassException
+  Ser Fields:
+    [x:int]
+    [y:int]
+  Serializing TestSerialVersions$Test0007
+    Serialization exception: java.io.InvalidClassException
+
+TestSerialVersions$Test0006:
+  Deserialize exception: java.io.InvalidClassException
+  Ser Fields:
+    [x:int]
+    [y:int]
+  Serializing TestSerialVersions$Test0006
+    OK.
+
+TestSerialVersions$Test0052:
+  OK. Got: TestSerialVersions$Test0052: y=105
+  Ser Fields:
+    [y:int]
+  Serializing TestSerialVersions$Test0052
+    OK.
+
+TestSerialVersions$Test0005:
+  OK. Got: TestSerialVersions$Test0005: <no fields>
+  Ser Fields:
+  Serializing TestSerialVersions$Test0005
+    OK.
+
+TestSerialVersions$Test0004:
+  Deserialize exception: java.io.InvalidClassException
+  Ser Fields:
+    [x:java.lang.String]
+    [y:java.lang.String]
+  Serializing TestSerialVersions$Test0004
+    OK.
+
+TestSerialVersions$Test0003:
+  Deserialize exception: java.io.InvalidClassException
+  Ser Fields:
+    [x:short]
+    [y:short]
+  Serializing TestSerialVersions$Test0003
+    OK.
+
+TestSerialVersions$Test0002:
+  Deserialize exception: java.io.InvalidClassException
+  Ser Fields:
+    [x:double]
+    [y:double]
+  Serializing TestSerialVersions$Test0002
+    OK.
+
+TestSerialVersions$Test0001:
+  OK. Got: TestSerialVersions$Test0001: 66, 105
+  Ser Fields:
+    [x:int]
+    [y:int]
+  Serializing TestSerialVersions$Test0001
     OK.
 
 */

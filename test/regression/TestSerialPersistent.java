@@ -337,76 +337,13 @@ public class TestSerialPersistent
 }
 
 /* Expected Output:
-Checking TestSerialPersistent$Default:
+Checking TestSerialPersistent$Overlap2:
    [0]: int i
-   [1]: java.lang.String s
- Serialization:
-  Ok: 83 bytes.
-Checking TestSerialPersistent$DefaultTransient:
-   [0]: int i
-   [1]: java.lang.String s
- Serialization:
-  Ok: 92 bytes.
-Checking TestSerialPersistent$Subset:
-   [0]: int i
-   [1]: java.lang.String s
- Serialization:
-  Ok: 82 bytes.
-Checking TestSerialPersistent$Subclass:
-   [0]: int xi
-   [1]: java.lang.String xs
- Serialization:
-  Ok: 146 bytes.
-Checking TestSerialPersistent$FieldSort:
-   [0]: int ia
-   [1]: int ib
-   [2]: int ic
-   [3]: java.lang.String sa
-   [4]: java.lang.String sb
- Serialization:
-  Ok: 116 bytes.
-Checking TestSerialPersistent$TransientOverlap:
-   [0]: int i
-   [1]: java.lang.String s
- Serialization:
-  Ok: 92 bytes.
-Checking TestSerialPersistent$ContainsNull:
-   THREW: java.lang.NullPointerException
-Checking TestSerialPersistent$IsNull:
-   [0]: int i
-   [1]: java.lang.String s
- Serialization:
-  Ok: 82 bytes.
-Checking TestSerialPersistent$IsNoFieldsMagic:
- Serialization:
-  Ok: 57 bytes.
-Checking TestSerialPersistent$NonPrivate:
-   [0]: int expected
- Serialization:
-  Ok: 67 bytes.
-Checking TestSerialPersistent$WrongType:
-   [0]: int expected
- Serialization:
-  Ok: 66 bytes.
-Checking TestSerialPersistent$ReallyWrongType:
-   [0]: int expected
- Serialization:
-  Ok: 72 bytes.
-Checking TestSerialPersistent$Empty:
- Serialization:
-  Ok: 47 bytes.
-Checking TestSerialPersistent$NamesMismatch:
-   [0]: long l
-   [1]: java.lang.Class c
+   [1]: java.lang.String i
  Serialization:
    THREW: java.io.InvalidClassException
-Checking TestSerialPersistent$SubtypeSpec:
+Checking TestSerialPersistent$Overlap1:
    [0]: int i
-   [1]: java.lang.Object s
- Serialization:
-   THREW: java.io.InvalidClassException
-Checking TestSerialPersistent$TypesMismatch:
-   [0]: int s
    [1]: java.lang.String i
  Serialization:
    THREW: java.io.InvalidClassException
@@ -416,14 +353,77 @@ Checking TestSerialPersistent$Duplicates:
    [2]: int i
  Serialization:
   Ok: 76 bytes.
-Checking TestSerialPersistent$Overlap1:
-   [0]: int i
+Checking TestSerialPersistent$TypesMismatch:
+   [0]: int s
    [1]: java.lang.String i
  Serialization:
    THREW: java.io.InvalidClassException
-Checking TestSerialPersistent$Overlap2:
+Checking TestSerialPersistent$SubtypeSpec:
    [0]: int i
-   [1]: java.lang.String i
+   [1]: java.lang.Object s
  Serialization:
    THREW: java.io.InvalidClassException
+Checking TestSerialPersistent$NamesMismatch:
+   [0]: long l
+   [1]: java.lang.Class c
+ Serialization:
+   THREW: java.io.InvalidClassException
+Checking TestSerialPersistent$Empty:
+ Serialization:
+  Ok: 47 bytes.
+Checking TestSerialPersistent$ReallyWrongType:
+   [0]: int expected
+ Serialization:
+  Ok: 72 bytes.
+Checking TestSerialPersistent$WrongType:
+   [0]: int expected
+ Serialization:
+  Ok: 66 bytes.
+Checking TestSerialPersistent$NonPrivate:
+   [0]: int expected
+ Serialization:
+  Ok: 67 bytes.
+Checking TestSerialPersistent$IsNoFieldsMagic:
+ Serialization:
+  Ok: 57 bytes.
+Checking TestSerialPersistent$IsNull:
+   [0]: int i
+   [1]: java.lang.String s
+ Serialization:
+  Ok: 82 bytes.
+Checking TestSerialPersistent$ContainsNull:
+   THREW: java.lang.NullPointerException
+Checking TestSerialPersistent$TransientOverlap:
+   [0]: int i
+   [1]: java.lang.String s
+ Serialization:
+  Ok: 92 bytes.
+Checking TestSerialPersistent$FieldSort:
+   [0]: int ia
+   [1]: int ib
+   [2]: int ic
+   [3]: java.lang.String sa
+   [4]: java.lang.String sb
+ Serialization:
+  Ok: 116 bytes.
+Checking TestSerialPersistent$Subclass:
+   [0]: int xi
+   [1]: java.lang.String xs
+ Serialization:
+  Ok: 146 bytes.
+Checking TestSerialPersistent$Subset:
+   [0]: int i
+   [1]: java.lang.String s
+ Serialization:
+  Ok: 82 bytes.
+Checking TestSerialPersistent$DefaultTransient:
+   [0]: int i
+   [1]: java.lang.String s
+ Serialization:
+  Ok: 92 bytes.
+Checking TestSerialPersistent$Default:
+   [0]: int i
+   [1]: java.lang.String s
+ Serialization:
+  Ok: 83 bytes.
 */

@@ -154,10 +154,6 @@ InnerBase: get: class InnerBase$publicInstanceClass [1] public
 InnerBase: get: class InnerBase$publicStaticClass [9] public static
 InnerBase: get: interface InnerBase$publicInstanceInterface [609] public abstract static interface
 InnerBase: get: interface InnerBase$publicStaticInterface [609] public abstract static interface
-InnerTest: declared: class InnerTest$1 [10] final
-InnerTest: declared: class InnerTest$2 [10] final
-InnerTest: declared: class InnerTest$3 [10] final
-InnerTest: declared: class InnerTest$4 [10] final
 InnerTest: declared: class InnerTest$Inner [9] public static
 InnerTest: declaring: <null>
 InnerTest: get: class InnerBase$publicInstanceClass [1] public
