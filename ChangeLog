@@ -1,3 +1,8 @@
+2003-07-14  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* java/util/BitSet.java:
+	copied from GNU Classpath to have JDK 1.4 features.
+
 2003-07-14  Dalibor Topic <robilad@kaffe.org>
 
 	* replace/inet_ntop.c, replace/inet_pton.c:
