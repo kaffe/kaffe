@@ -13,7 +13,6 @@ package java.lang;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.security.AccessController;
-import kaffe.lang.Application;
 import kaffe.lang.ApplicationResource;
 
 public class Thread
@@ -91,9 +90,7 @@ public Thread(ThreadGroup group, Runnable target, String name) {
 	this.group.checkAccess();
 	this.group.add(this);
 
-	// make sure this.name is non-zero before calling addResource
 	this.name = name.toCharArray();
-	Application.addResource(this);
 	this.target = target;
 	this.interrupting = false;
 
@@ -205,7 +202,6 @@ void finish() {
 	if (tg != null) {
 		tg.remove(this);
 	}
-	Application.removeResource(this);
 }
 
 public void freeResource() {
@@ -272,6 +268,13 @@ public static boolean interrupted() {
 	boolean i = curr.interrupting;
 	curr.interrupting = false;
 	return (i);
+}
+
+/**
+ * @return True if the thread has already run to completion.
+ */
+final boolean hasDied() {
+	return dying;
 }
 
 public final boolean isAlive () {

@@ -283,7 +283,6 @@ kaffe/io/StdErrorStream.java
 kaffe/io/StdInputStream.java
 kaffe/io/StdOutputStream.java
 kaffe/lang/AppClassLoader.java
-kaffe/lang/Application.java
 kaffe/lang/ApplicationException.java
 kaffe/lang/ApplicationResource.java
 kaffe/lang/ClassPathReader.java

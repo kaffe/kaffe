@@ -135,6 +135,10 @@ public static void runFinalizersOnExit(boolean value) {
 	Runtime.getRuntime().runFinalizersOnExit(value);
 }
 
+private static void exitJavaCleanup() {
+	Runtime.getRuntime().exitJavaCleanup();
+}
+
 public static void setErr(PrintStream err) {
 	// XXX call security manager for RuntimePermission("SetIO")
 	setErr0(err);

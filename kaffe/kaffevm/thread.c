@@ -570,6 +570,9 @@ static
 void
 runfinalizer(void)
 {
+	/* Do java-land cleanup */
+	do_execute_java_method(SystemClass, "exitJavaCleanup",
+			       "()V", NULL, true);
 	if (runFinalizerOnExit) {
 		invokeFinalizer();
 	}

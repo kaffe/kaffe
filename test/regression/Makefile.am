@@ -141,7 +141,8 @@ TEST_MISC = \
 	LostTrampolineFrame.java \
         NetworkInterfaceTest.java \
         InetAddressTest.java \
-        InetSocketAddressTest.java 
+        InetSocketAddressTest.java \
+        ShutdownHookTest.java
 
 TEST_REFLECTION = \
 	ReflectInvoke.java \

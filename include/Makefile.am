@@ -104,7 +104,6 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	kaffe_io_ByteToCharIconv.h \
 	kaffe_io_CharToByteDefault.h \
 	kaffe_io_CharToByteIconv.h \
-	kaffe_lang_Application.h \
 	kaffe_lang_MemoryAdvice.h \
 	kaffe_lang_UNIXProcess.h \
 	kaffe_management_JIT.h \

@@ -250,7 +250,6 @@ IO_SRCS = \
 
 
 LANG_SRCS = \
-		Application.c \
 		Class.c \
 		ClassLoader.c \
 		Compiler.c \
@@ -308,11 +307,11 @@ libnative_la_DEPENDENCIES =
 am__objects_1 = ByteToCharDefault.lo ByteToCharIconv.lo \
 	CharToByteDefault.lo CharToByteIconv.lo \
 	ObjectStreamClassImpl.lo
-am__objects_2 = Application.lo Class.lo ClassLoader.lo Compiler.lo \
-	Double.lo Float.lo Math.lo MemoryAdvice.lo NativeLibrary.lo \
-	Object.lo PrimordialClassLoader.lo RMIHashes.lo Runtime.lo \
-	String.lo System.lo Thread.lo ThreadStack.lo Throwable.lo \
-	UNIXProcess.lo ZipFile.lo
+am__objects_2 = Class.lo ClassLoader.lo Compiler.lo Double.lo Float.lo \
+	Math.lo MemoryAdvice.lo NativeLibrary.lo Object.lo \
+	PrimordialClassLoader.lo RMIHashes.lo Runtime.lo String.lo \
+	System.lo Thread.lo ThreadStack.lo Throwable.lo UNIXProcess.lo \
+	ZipFile.lo
 am__objects_3 = Array.lo Constructor.lo Field.lo Method.lo
 am__objects_4 = DateFormat.lo
 am__objects_5 = TestNative.lo
@@ -325,8 +324,7 @@ libnative_la_OBJECTS = $(am_libnative_la_OBJECTS)
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Application.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Array.Plo ./$(DEPDIR)/Arrays.Plo \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Array.Plo ./$(DEPDIR)/Arrays.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ByteToCharDefault.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ByteToCharIconv.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/CharToByteDefault.Plo \
@@ -404,7 +402,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Application.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Array.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Arrays.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ByteToCharDefault.Plo@am__quote@

@@ -16,7 +16,6 @@ IO_SRCS = \
 		ObjectStreamClassImpl.c
 
 LANG_SRCS = \
-		Application.c \
 		Class.c \
 		ClassLoader.c \
 		Compiler.c \

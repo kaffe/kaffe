@@ -1,4 +1,43 @@
-2003-07-08  Timothy S. Stack <stack@cs.utah.edu>'
+2003-07-08  Guilhem Lavaux <guilhem.lavaux@free.fr>
+
+	* include/Makefile.am:
+	Removed kaffe_lang_Application.h
+
+	* libraries/clib/native/Makefile.am:
+	Removed Application.c
+	
+	* libraries/clib/native/Application.c,
+	libraries/javalib/kaffe/lang/Application.java:
+	removed
+	
+	* libraries/clib/native/Runtime.c:
+	renamed exitInternal() into exit0()
+	
+	* libraries/javalib/java/lang/Runtime.java:
+	(exitInternal, addShutdownHook, removeShutdownHook,
+	exitJavaCleanup, runShutdownHooks) implement the Shutdown hook
+	Java 1.3 feature, removed kaffe/lang/Application.  
+
+	* libraries/javalib/java/lang/System.java:
+	(exitJavaCleanup) Added a hook for
+	java.lang.Runtime.exitJavaCleanup.
+	
+	* libraries/javalib/java/lang/Thread.java:
+	(hasDied) Added to detect when a thread has run to completion.
+	
+	* kaffe/kaffevm/threads.c:
+	Call System.exitJavaCleanup() before final exit.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	Execute runOnExit with interrupts enabled.
+
+	* test/regression/Makefile.am:
+	Added ShutdownHookTest.java
+	
+	* test/regression/ShutdownHookTest.java:
+	Test for shutdown hooks.
+	
+2003-07-08  Timothy S. Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c:
 	Handle large timeout values correctly.

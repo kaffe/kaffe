@@ -1565,11 +1565,6 @@ DBG(JTHREAD,
 	jmutex_unlock(&threadLock);
 	jthread_enable_stop();
 
-	/* we disable interrupts while we go out to prevent a reschedule
-	 * in killThread()
-	 */
-	intsDisable();
-
 	/* If we only have daemons left, then we should exit. */
 	if (talive == tdaemon) {
 DBG(JTHREAD,
@@ -1577,6 +1572,10 @@ DBG(JTHREAD,
 		if (runOnExit != 0) {
 		    runOnExit();
 		}
+		/* we disable interrupts while we go out to prevent a reschedule
+		 * in killThread()
+		 */
+		intsDisable();
 
 		for (tid = liveThreads; tid != 0; tid = tid->nextlive) {
 			/* The current thread is still on the live
@@ -1588,6 +1587,10 @@ DBG(JTHREAD,
 		}
 		EXIT(0);
 	}
+	/* we disable interrupts while we go out to prevent a reschedule
+	 * in killThread()
+	 */
+	intsDisable();
 	for (;;) {
 		killThread(currentJThread);
 		jthread_sleep(1000);

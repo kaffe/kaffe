@@ -340,7 +340,6 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	kaffe_io_ByteToCharIconv.h \
 	kaffe_io_CharToByteDefault.h \
 	kaffe_io_CharToByteIconv.h \
-	kaffe_lang_Application.h \
 	kaffe_lang_MemoryAdvice.h \
 	kaffe_lang_UNIXProcess.h \
 	kaffe_management_JIT.h \
@@ -377,12 +376,12 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 
 
 JNI_DERIVED_HDRS = $(INSTALL_JNI_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS)
-@USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
 
 
 # rmi.jar
 # kaffe_rmi_server_RMIHashes.h
 @USE_COMPAT_IFADDRS_TRUE@ifaddrs_compat = ifaddrs.h
+@USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
 
 nodist_noinst_HEADERS = \
 	$(NOINSTALL_DERIVED_HDRS) \

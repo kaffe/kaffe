@@ -17,6 +17,8 @@ import java.io.OutputStream;
 import java.io.FileNotFoundException;
 
 import java.util.StringTokenizer;
+import java.util.Vector;
+import java.util.Enumeration;
 
 import kaffe.lang.ThreadStack;
 
@@ -37,7 +39,12 @@ public interface MemoryAdvice {
 private static Runtime currentRuntime = new Runtime();
 private static kaffe.lang.MemoryAdvice advice
 	= kaffe.lang.MemoryAdvice.getInstance();
+private static final Vector shutdownHooks = new Vector(0);
+private static boolean VMShuttingDown = false;
 
+private static final RuntimePermission SHUTDOWN_HOOKS =
+	new RuntimePermission("shutdownHooks");
+	
 private Runtime () {
 }
 
@@ -82,25 +89,33 @@ public Process exec(String[] cmdarray, String[] envp, File dir)
 private native Process execInternal(String cmdary[], String envp[], File dir)
 	throws IOException;
 
-public void exit(int status) {
+/**
+ * Callback used to execute the shutdown hooks.
+ */
+void exitJavaCleanup() {
+        runShutdownHooks();
+}
+
+public void exit(int status) throws SecurityException {
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkExit(status);
-	// Handle application extensions - if this thread is part of an
-	// application then we exit that rather than the whole thing.
-	if (!kaffe.lang.Application.exit(status)) {
-		exitInternal(status);
-	}
-	// kaffe.lang.Application.exit does not destroy the thread
-	// that invoked exit().  We stop that thread now.
-	Thread.currentThread().destroy();
+
+	/* First we cleanup the Virtual Machine */
+	exitJavaCleanup();
+	/* Now we run the VM exit function */
+	exit0(status);
 }
 
-public void halt(int status) {
-	exitInternal(status);
+public void halt(int status) throws SecurityException {
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkExit(status);
+
+	exit0(status);
 }
 
-native private void exitInternal(int status);
+native private void exit0(int status);
 
 native public long freeMemory();
 
@@ -177,15 +192,85 @@ int waitForMemoryAdvice(int level) throws InterruptedException {
 	return (advice.waitForOtherColor(level));
 }
 
-public void addShutdownHook(Thread hook) {
-	// XXX implement me
-       System.err.println("WARNING: Not implemented method called " +
-			  getClass().getName() + ".addShutdownHook()");
+/**
+ * Mark the VM as shutting down and walk the list of hooks.
+ */
+private void runShutdownHooks() {
+       Enumeration hook_enum;
+       
+       /* According to Java 1.3 we need to run all hooks simultaneously
+	* and then wait for them.
+	*/
+       synchronized (this) {
+	       if( VMShuttingDown )
+	       {
+		       /*
+			* Another thread called exit(), ignore and kill the
+			* thread.
+			*/
+		       throw new ThreadDeath();
+	       }
+	       else
+	       {
+		       VMShuttingDown = true;
+	       }
+       }
+       /* We start all threads at once as in the specification */
+       hook_enum = shutdownHooks.elements();
+       while (hook_enum.hasMoreElements()) {
+	       Thread hook = (Thread)hook_enum.nextElement();
+
+	       try {
+		       hook.start();
+	       } catch (Exception e) {
+		       e.printStackTrace();
+	       }
+       }
+
+       /* Now we wait for each thread */
+       hook_enum = shutdownHooks.elements();
+       while (hook_enum.hasMoreElements()) {
+	       Thread hook = (Thread)hook_enum.nextElement();
+
+	       /* XXX Should this timeout? */
+	       try {
+		       hook.join();
+	       } catch (Exception e) {
+		       e.printStackTrace();
+	       }
+       }
 }
 
-public boolean removeShutdownHook(Thread hook) {
-	// XXX implement me
-	return false;
+public void addShutdownHook(Thread hook) throws IllegalArgumentException, IllegalStateException {
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkPermission(SHUTDOWN_HOOKS);
+
+	synchronized(this) {
+		if (VMShuttingDown)
+			throw new IllegalStateException("VM is shutting down.");
+	}
+	if (hook.isAlive() || hook.isInterrupted() || hook.hasDied())
+		throw new IllegalArgumentException("Thread has already been started once.");
+
+	synchronized( shutdownHooks ) {
+		if (shutdownHooks.contains(hook))
+			throw new IllegalArgumentException("Thread already in shutdown queue.");
+		shutdownHooks.addElement(hook);
+	}
+}
+
+public boolean removeShutdownHook(Thread hook) throws IllegalStateException {
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkPermission(SHUTDOWN_HOOKS);
+
+	synchronized(this) {
+		if (VMShuttingDown)
+			throw new IllegalStateException("VM is shutting down.");
+	}
+
+	return shutdownHooks.removeElement(hook);
 }
 
 native public void runFinalization();
