@@ -261,16 +261,6 @@ AC_SUBST_FILE(engine_frag)dnl
 engine_frag=$srcdir/kaffe/kaffevm/$with_engine/Makefile.frag
 
 dnl =========================================================================
-
-AC_MSG_CHECKING(library type)
-if test "$dynamic_libraries" = "no" ; then
-	AC_MSG_RESULT(static)
-else
-	AC_MSG_RESULT(shared)
-fi
-AC_CHECK_FUNCS(getpagesize)
-
-dnl =========================================================================
 dnl Allow selection of debugging mechanisms
 dnl -------------------------------------------------------------------------
 
@@ -680,10 +670,12 @@ dnl -------------------------------------------------------------------------
 
 AC_FUNC_STRFTIME
 AC_FUNC_MMAP
-AC_CHECK_FUNCS(select socket getsockname)
-AC_CHECK_FUNCS(memcpy memmove)
-AC_CHECK_FUNCS(mkdir)
-AC_CHECK_FUNCS(getcwd getwd gettimeofday ftime time uname getuid)
+AC_CHECK_FUNCS([dnl
+select socket getsockname getpagesize dnl
+memcpy memmove dnl
+mkdir dnl
+getcwd getwd gettimeofday ftime time uname getuid dnl
+])
 
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
@@ -708,16 +700,18 @@ if test x"$ac_cv_long_long_modulo_broken" = x"yes"; then
   AC_DEFINE(LONG_LONG_MODULO_BROKEN, 1, [Define if LONG_LONG_MIN % -1ll produces an arithmetic exception])
 fi
 
-AC_CHECK_FUNCS(strerror hstrerror)
-AC_CHECK_FUNCS(fcntl ioctl)
-AC_CHECK_FUNCS(alarm setitimer)
-AC_CHECK_FUNCS(sigprocmask sigsetmask sigemptyset sigaddset signal sigaction)
-AC_CHECK_FUNCS(sbrk valloc memalign mallopt)
-AC_CHECK_FUNCS(mprotect madvise)
-AC_CHECK_FUNCS(waitpid kill fork execve execvp)
-AC_CHECK_FUNCS(sync fsync)
-AC_CHECK_FUNCS(atexit on_exit vsnprintf snprintf)
-AC_CHECK_FUNCS(__throw __terminate_func __get_eh_info)
+AC_CHECK_FUNCS([dnl
+strerror hstrerror dnl
+fcntl ioctl dnl
+alarm setitimer dnl
+sigprocmask sigsetmask sigemptyset sigaddset signal sigaction dnl
+sbrk valloc memalign mallopt dnl
+mprotect madvise dnl
+waitpid kill fork execve execvp dnl
+sync fsync dnl
+atexit on_exit vsnprintf snprintf dnl
+__throw __terminate_func __get_eh_info dnl
+])
 
 if test "$host_cpu" = "alpha" ; then
   AC_CACHE_CHECK([for alpha support of amask instruction],

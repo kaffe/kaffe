@@ -1,3 +1,10 @@
+1999-05-17  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in: Reverted ``be verbose about static/shared
+	libraries'', ltconfig already prints that information.  Merged
+	several AC_CHECK_FUNCS into fewer loops.
+	* configure: Rebuilt.
+
 1999-05-16  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* include/distclean-hack (DISTCLEAN_LOCAL): Avoid error in case of 
