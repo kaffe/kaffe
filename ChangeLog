@@ -1,3 +1,10 @@
+2004-11-10  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* config/config-hacks.h (DOUBLE_ORDER_OPPOSITE): only define
+	on little endian arm using fpa
+
+	Reported by: Jari Korva <jpkorva@iki.fi>
+	
 2004-11-10  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/javax/imageio/spi/ServiceRegistry.java,

@@ -68,14 +68,15 @@
 #define	HAVE_UNALIGNEDACCESS
 #endif
 
-/* ARM processors, in little endian mode, use a big endian word order for
- * doubles.  We define this constant to declare that the word order in a
- * 64 bit double is the opposite of the word order in a 64 bit int.
+/* On arm, word order of doubles is always big endian when
+ * using FPA. When using VFP, word order of doubles follows
+ * the word order of the memory system.
  *
- * If you change this definition, also change strtod("-0.0") check
- * in configure.in.
+ * Therefore, the word order of doubles is opposite to the
+ * word order of jlongs when using a little endian arm
+ * unless VFP is used.
  */
-#if defined(__arm__)
+#if defined(__ARMEL__) && !defined(__VFP_FP__)
 #define DOUBLE_ORDER_OPPOSITE
 #endif
 
