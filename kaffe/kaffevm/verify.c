@@ -303,8 +303,12 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 				     m > 0;
 				     --m, ++method) {
 				
-					if (METHOD_IS_FINAL(method)) {
-					
+					if (METHOD_IS_FINAL(method) &&
+					    
+					    // the following exceptions come from testing against Sun's JVM behavior
+					    (strcmp(init_name->data, method->name->data) &&
+					     strcmp("this", method->name->data))) {
+						
 						// make sure the method in question was not overriden in the current class
 						for (n = CLASS_NMETHODS(class), curMethod = CLASS_METHODS(class);
 						     n > 0;
@@ -320,7 +324,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 							    && utf8ConstEqual(METHOD_SIG(curMethod), METHOD_SIG(method)))
 								{
 									postExceptionMessage(einfo, JAVA_LANG(VerifyError),
-											     "final method \"%s()\" declared in class \"%s\" is overriden in class \"%s\"",
+											     "final method \"%s\" declared in class \"%s\" is overriden in class \"%s\"",
 											     method->name->data,
 											     superclass->name->data,
 											     class->name->data);

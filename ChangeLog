@@ -1,5 +1,12 @@
 2003-06-29  Rob Gonzalez <rob@kaffe.org>
 
+	* kaffe/kaffevm/verify.c
+	Allow final methods named "<clinit>" or "this" to be
+	overridden in subclasses.  This mimicks the behavior
+	of Sun's pass 2 verifier.
+
+2003-06-29  Rob Gonzalez <rob@kaffe.org>
+
 	This is the first of a series of small checkins that will
 	integrate a verifier into kaffe.  This one adds most of
 	pass 2 verification, though without a parser for type
