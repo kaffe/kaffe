@@ -180,6 +180,7 @@ java/awt/Paint.java
 java/awt/PaintEvt.java
 java/awt/Panel.java
 java/awt/peer/ComponentPeer.java
+java/awt/peer/ContainerPeer.java
 java/awt/peer/FontPeer.java
 java/awt/peer/LightweightPeer.java
 java/awt/peer/MenuComponentPeer.java

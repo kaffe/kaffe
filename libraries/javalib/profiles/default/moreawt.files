@@ -42,7 +42,6 @@ java/awt/peer/CanvasPeer.java
 java/awt/peer/CheckboxMenuItemPeer.java
 java/awt/peer/CheckboxPeer.java
 java/awt/peer/ChoicePeer.java
-java/awt/peer/ContainerPeer.java
 java/awt/peer/DialogPeer.java
 java/awt/peer/FileDialogPeer.java
 java/awt/peer/FramePeer.java
