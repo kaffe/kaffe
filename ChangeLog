@@ -1,3 +1,11 @@
+Fri May 24 17:14:44 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/clib/native/Method.c:
+	(Java_java_lang_reflect_Method_init0) removed unused parameter
+	clazz. Added JNIEXPORT and JNICALL to prototype.
+	(Java_java_lang_reflect_Method_invoke0) Added JNIEXPORT and
+	JNICALL to prototype.
+
 Fri May 24 17:07:32 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/util/zip/ZipFile.java:

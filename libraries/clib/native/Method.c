@@ -59,8 +59,8 @@ static jmethodID Jmeth;
 static jmethodID Fmeth;
 static jmethodID Dmeth;
 
-void
-Java_java_lang_reflect_Method_init0(JNIEnv* env, jclass clazz)
+JNIEXPORT void JNICALL
+Java_java_lang_reflect_Method_init0(JNIEnv* env)
 {
 	Zclass = (*env)->FindClass(env, "java.lang.Boolean");
 	Zvalue = (*env)->GetFieldID(env, Zclass, "value", "Z");
@@ -118,7 +118,7 @@ java_lang_reflect_Method_getModifiers(struct Hjava_lang_reflect_Method* this)
 		return (flags & ACC_MASK);
 }
 
-jobject
+JNIEXPORT jobject JNICALL
 Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, jobjectArray _argobj)
 {
 	Hjava_lang_Class* clazz;
