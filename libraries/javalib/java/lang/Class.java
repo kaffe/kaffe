@@ -62,7 +62,7 @@ public static Class forName(String className, boolean initialize, ClassLoader lo
 		 * load the requested class.
 		 */
 		if (loader == null) {
-			loader = SystemClassLoader.getClassLoader();
+			loader = ClassLoader.getSystemClassLoader();
 		}
 	}
 

@@ -1,3 +1,19 @@
+Wed Aug 21 18:55:38 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/clib/native/System.c:
+	(java_lang_System_arraycopy) removed.
+	* libraries/javalib/java/beans/Beans.java:
+	removed import of kaffe.lang.SystemClassLoader and replaced
+	references to SystemClassLoader.getClassLoader with
+	ClassLoader.getSystemClassLoader
+	* libraries/javalib/java/lang/Class.java:
+	same.
+	* libraries/javalib/java/lang/System.java:
+	(arraycopy) replaced native version with java version from
+	pocketlinux.
+	* libraries/javalib/Klasses.jar.bootstrap:
+	regenerated.
+
 Fri Aug 16 23:55:24 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/lang/Class.java:

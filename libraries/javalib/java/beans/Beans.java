@@ -3,7 +3,6 @@ package java.beans;
 import java.io.IOException;
 import java.io.InputStream;
 import kaffe.io.ClassLoaderObjectInputStream;
-import kaffe.lang.SystemClassLoader;
 
 /*
  * Java core library component.
@@ -28,7 +27,7 @@ public static Object getInstanceOf(Object bean, Class targetType) {
 
 public static Object instantiate(ClassLoader cld, String beanName) throws IOException, ClassNotFoundException {
 	if (cld == null) {
-		cld = SystemClassLoader.getClassLoader();
+		cld = ClassLoader.getSystemClassLoader();
 	}
 
 	final InputStream in = cld.getResourceAsStream(beanName.replace('.', '/') + ".ser");

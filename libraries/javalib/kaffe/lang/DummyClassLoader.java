@@ -24,7 +24,7 @@ DummyClassLoader() {
 static public ClassLoader getCurrentClassLoader() {
 	ClassLoader loader = singleton.currentClassLoader();
 	if (loader == null) {
-		loader = SystemClassLoader.getClassLoader();
+		loader = ClassLoader.getSystemClassLoader();
 	}
 	return (loader);
 }

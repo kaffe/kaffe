@@ -84,8 +84,138 @@ static {
 
 private System() { }
 
-native public static void arraycopy(Object src,
-	int src_position, Object dst, int dst_position, int length);
+public static void arraycopy(Object src, int src_position, Object dst, int dst_position, int length) {
+
+	if (dst instanceof Object[]) {
+		Object[] d = (Object[])dst;
+		Object[] s = (Object[])src;
+		if (dst_position < src_position) {
+			for (int i = 0; i < length; i++) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+		else {
+			for (int i = length - 1; i >= 0; i--) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+	}
+	else if (dst instanceof int[]) {
+		int[] d = (int[])dst;
+		int[] s = (int[])src;
+		if (dst_position < src_position) {
+			for (int i = 0; i < length; i++) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+		else {
+			for (int i = length - 1; i >= 0; i--) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+	}
+	else if (dst instanceof float[]) {
+		float[] d = (float[])dst;
+		float[] s = (float[])src;
+		if (dst_position < src_position) {
+			for (int i = 0; i < length; i++) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+		else {
+			for (int i = length - 1; i >= 0; i--) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+	}
+	else if (dst instanceof long[]) {
+		long[] d = (long[])dst;
+		long[] s = (long[])src;
+		if (dst_position < src_position) {
+			for (int i = 0; i < length; i++) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+		else {
+			for (int i = length - 1; i >= 0; i--) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+	}
+	else if (dst instanceof double[]) {
+		double[] d = (double[])dst;
+		double[] s = (double[])src;
+		if (dst_position < src_position) {
+			for (int i = 0; i < length; i++) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+		else {
+			for (int i = length - 1; i >= 0; i--) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+	}
+	else if (dst instanceof boolean[]) {
+		boolean[] d = (boolean[])dst;
+		boolean[] s = (boolean[])src;
+		if (dst_position < src_position) {
+			for (int i = 0; i < length; i++) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+		else {
+			for (int i = length - 1; i >= 0; i--) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+	}
+	else if (dst instanceof byte[]) {
+		byte[] d = (byte[])dst;
+		byte[] s = (byte[])src;
+		if (dst_position < src_position) {
+			for (int i = 0; i < length; i++) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+		else {
+			for (int i = length - 1; i >= 0; i--) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+	}
+	else if (dst instanceof char[]) {
+		char[] d = (char[])dst;
+		char[] s = (char[])src;
+		if (dst_position < src_position) {
+			for (int i = 0; i < length; i++) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+		else {
+			for (int i = length - 1; i >= 0; i--) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+	}
+	else if (dst instanceof short[]) {
+		short[] d = (short[])dst;
+		short[] s = (short[])src;
+		if (dst_position < src_position) {
+			for (int i = 0; i < length; i++) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+		else {
+			for (int i = length - 1; i >= 0; i--) {
+				d[dst_position+i] = s[src_position+i];
+			}
+		}
+	}
+	else {
+		throw new ArrayStoreException("not arrays");
+	}
+}
 
 private static void checkPropertyAccess() {
 	SecurityManager sm = getSecurityManager();
