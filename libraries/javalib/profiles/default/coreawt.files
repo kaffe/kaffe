@@ -195,11 +195,11 @@ java/awt/ShortcutHandler.java
 java/awt/Stroke.java
 java/awt/Toolkit.java
 java/awt/Transparency.java
-java/awt/widgets/CheckboxGroup.java
-java/awt/widgets/Checkbox.java
-java/awt/widgets/List.java
-java/awt/widgets/RowCanvas.java
-java/awt/widgets/Scrollbar.java
+java/awt/CheckboxGroup.java
+java/awt/Checkbox.java
+java/awt/List.java
+java/awt/RowCanvas.java
+java/awt/Scrollbar.java
 java/awt/WindowEvt.java
 java/awt/Window.java
 java/awt/WMEvent.java

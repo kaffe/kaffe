@@ -1,3 +1,46 @@
+2003-08-12  Dalibor Topic <robilad@kaffe.org>
+
+	Moved AWT widgets into the java/awt/ directory to fix build
+	problems due to directory/package name mismatch.
+	
+	* libraries/javalib/Makefile.am:
+	Regenerated.
+	
+	* libraries/javalib/java/awt/Button.java,
+        libraries/javalib/java/awt/Checkbox.java,
+        libraries/javalib/java/awt/CheckboxGroup.java,
+        libraries/javalib/java/awt/Choice.java,
+        libraries/javalib/java/awt/Label.java,
+        libraries/javalib/java/awt/List.java,
+        libraries/javalib/java/awt/RowCanvas.java,
+        libraries/javalib/java/awt/Scrollbar.java,
+        libraries/javalib/java/awt/TextArea.java,
+        libraries/javalib/java/awt/TextBuffer.java,
+        libraries/javalib/java/awt/TextComponent.java,
+        libraries/javalib/java/awt/TextCursor.java,
+        libraries/javalib/java/awt/TextField.java:
+	New files, moved from libraries/javalib/java/awt/widgets/.
+	
+        * libraries/javalib/java/awt/widgets/Button.java,
+        libraries/javalib/java/awt/widgets/Checkbox.java,
+        libraries/javalib/java/awt/widgets/CheckboxGroup.java,
+        libraries/javalib/java/awt/widgets/Choice.java,
+        libraries/javalib/java/awt/widgets/Label.java,
+        libraries/javalib/java/awt/widgets/List.java,
+        libraries/javalib/java/awt/widgets/RowCanvas.java,
+        libraries/javalib/java/awt/widgets/Scrollbar.java,
+        libraries/javalib/java/awt/widgets/TextArea.java,
+        libraries/javalib/java/awt/widgets/TextBuffer.java,
+        libraries/javalib/java/awt/widgets/TextComponent.java,
+        libraries/javalib/java/awt/widgets/TextCursor.java,
+        libraries/javalib/java/awt/widgets/TextField.java:
+	Removed, moved to libraries/javalib/java/awt/.
+
+        * libraries/javalib/profiles/allatonce/all.files,
+        libraries/javalib/profiles/default/awt.files,
+        libraries/javalib/profiles/default/coreawt.files:
+	Adapted for moved files.
+	
 2003-08-12  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/bootstrap.classlist: updated (added some

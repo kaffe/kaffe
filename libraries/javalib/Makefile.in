@@ -275,10 +275,10 @@ toolslib_DATA = kjc.jar
 Klasses_jar_SRCS = \
 	$(gnu_classpath_SRCS) \
 	$(gnu_java_awt_SRCS) \
+	$(gnu_java_io_SRCS) \
 	$(gnu_java_lang_SRCS) \
 	$(gnu_java_lang_reflect_SRCS) \
 	$(gnu_java_locale_SRCS) \
-	$(gnu_java_io_SRCS) \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
 	$(gnu_java_security_SRCS) \
@@ -306,7 +306,6 @@ Klasses_jar_SRCS = \
 	$(java_awt_image_renderable_SRCS) \
 	$(java_awt_peer_SRCS) \
 	$(java_awt_print_SRCS) \
-	$(java_awt_widgets_SRCS) \
 	$(java_beans_SRCS) \
 	$(java_beans_beancontext_SRCS) \
 	$(java_io_SRCS) \
@@ -427,6 +426,10 @@ gnu_java_awt_SRCS = \
 	gnu/java/awt/ComponentDataBlitOp.java \
 	gnu/java/awt/EventModifier.java
 
+gnu_java_io_SRCS = \
+	gnu/java/io/NullOutputStream.java \
+	gnu/java/io/ObjectIdentityWrapper.java
+
 gnu_java_lang_SRCS = \
 	gnu/java/lang/CharData.java
 
@@ -438,10 +441,6 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/Calendar_en.java \
 	gnu/java/locale/Calendar.java \
 	gnu/java/locale/Calendar_nl.java
-
-gnu_java_io_SRCS = \
-	gnu/java/io/NullOutputStream.java \
-	gnu/java/io/ObjectIdentityWrapper.java
 
 gnu_java_nio_SRCS = \
 	gnu/java/nio/DatagramChannelImpl.java \
@@ -595,9 +594,13 @@ java_awt_SRCS = \
 	java/awt/BasicStroke.java \
 	java/awt/BorderLayout.java \
 	java/awt/BufferCapabilities.java \
+	java/awt/Button.java \
 	java/awt/Canvas.java \
 	java/awt/CardLayout.java \
+	java/awt/CheckboxGroup.java \
+	java/awt/Checkbox.java \
 	java/awt/CheckboxMenuItem.java \
+	java/awt/Choice.java \
 	java/awt/ClassAnalyzer.java \
 	java/awt/ClassProperties.java \
 	java/awt/Color.java \
@@ -649,8 +652,10 @@ java_awt_SRCS = \
 	java/awt/KeyEventDispatcher.java \
 	java/awt/KeyEventPostProcessor.java \
 	java/awt/KeyEvt.java \
+	java/awt/Label.java \
 	java/awt/LayoutManager2.java \
 	java/awt/LayoutManager.java \
+	java/awt/List.java \
 	java/awt/MediaTracker.java \
 	java/awt/MenuBar.java \
 	java/awt/MenuComponent.java \
@@ -679,6 +684,8 @@ java_awt_SRCS = \
 	java/awt/Rectangle.java \
 	java/awt/RenderingHints.java \
 	java/awt/RootWindow.java \
+	java/awt/RowCanvas.java \
+	java/awt/Scrollbar.java \
 	java/awt/ScrollPaneAdjustable.java \
 	java/awt/ScrollPane.java \
 	java/awt/Shape.java \
@@ -686,7 +693,12 @@ java_awt_SRCS = \
 	java/awt/ShortcutHandler.java \
 	java/awt/Stroke.java \
 	java/awt/SystemColor.java \
+	java/awt/TextArea.java \
+	java/awt/TextBuffer.java \
+	java/awt/TextComponent.java \
+	java/awt/TextCursor.java \
 	java/awt/TextEvt.java \
+	java/awt/TextField.java \
 	java/awt/Toolkit.java \
 	java/awt/Transparency.java \
 	java/awt/WindowEvt.java \
@@ -884,21 +896,6 @@ java_awt_print_SRCS = \
 	java/awt/print/PrinterGraphics.java \
 	java/awt/print/PrinterIOException.java \
 	java/awt/print/PrinterJob.java
-
-java_awt_widgets_SRCS = \
-	java/awt/widgets/Button.java \
-	java/awt/widgets/CheckboxGroup.java \
-	java/awt/widgets/Checkbox.java \
-	java/awt/widgets/Choice.java \
-	java/awt/widgets/Label.java \
-	java/awt/widgets/List.java \
-	java/awt/widgets/RowCanvas.java \
-	java/awt/widgets/Scrollbar.java \
-	java/awt/widgets/TextArea.java \
-	java/awt/widgets/TextBuffer.java \
-	java/awt/widgets/TextComponent.java \
-	java/awt/widgets/TextCursor.java \
-	java/awt/widgets/TextField.java
 
 java_beans_SRCS = \
 	java/beans/AppletInitializer.java \
