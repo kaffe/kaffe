@@ -165,6 +165,9 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 			break;
 		case 'H':
 			val = calendar.get(Calendar.HOUR_OF_DAY);
+			if (plen > 1 && val < 10) {
+				buf.append('0');
+			}
 			buf.append(val);
 			if (pos.field == HOUR_OF_DAY0_FIELD) {
 				pos.begin = cpos;
