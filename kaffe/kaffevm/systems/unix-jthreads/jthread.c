@@ -215,7 +215,9 @@ makeListFromQueue(jthread *first, jthread_t **threads)
 	}
 
 	/* allocate an array */
-	list = allocator(n * sizeof(jthread_t *));
+	/* XXX: We use the real malloc here since we don't want to get
+	 * stuck in a gc */
+	list = malloc(n * sizeof(jthread_t *));
 	assert(list != 0);
 
 	/* and copy them in */
@@ -943,6 +945,14 @@ jthread_init(int pre,
 	 */
 	ignoreSignal(SIGHUP);
 
+#if defined(SIGVTALRM)
+	registerAsyncSignalHandler(SIGVTALRM, interrupt);
+#endif
+	registerAsyncSignalHandler(SIGALRM, interrupt);
+	registerAsyncSignalHandler(SIGIO, interrupt);
+        registerAsyncSignalHandler(SIGCHLD, interrupt);
+        registerAsyncSignalHandler(SIGUSR1, interrupt);
+
 	/* 
 	 * If debugging is not enabled, set stdin, stdout, and stderr in 
 	 * async mode.
@@ -961,7 +971,7 @@ jthread_init(int pre,
 	if (DBGEXPR(ANY, DBGEXPR(ASYNCSTDIO, true, false), true)) {
 		for (i = 0; i < 3; i++) {
 			if (i != jthreadedFileDescriptor(i)) {
-				return 0;
+				return (0);
 			}
 		}
 	}
@@ -984,14 +994,6 @@ jthread_init(int pre,
 	destructor1 = _destructor1;
 	threadQhead = allocator((maxpr + 1) * sizeof (jthread *));
 	threadQtail = allocator((maxpr + 1) * sizeof (jthread *));
-
-#if defined(SIGVTALRM)
-	registerAsyncSignalHandler(SIGVTALRM, interrupt);
-#endif
-	registerAsyncSignalHandler(SIGALRM, interrupt);
-	registerAsyncSignalHandler(SIGIO, interrupt);
-        registerAsyncSignalHandler(SIGCHLD, interrupt);
-        registerAsyncSignalHandler(SIGUSR1, interrupt);
 
 	/* create the helper pipe for lost wakeup problem */
 	if (pipe(sigPipe) != 0) {

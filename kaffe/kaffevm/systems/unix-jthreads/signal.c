@@ -99,7 +99,7 @@ floatingException(EXCEPTIONPROTO)
 }
 
 /* -----------------------------------------------
- * OS signal handling code.  See doc/Signals.txt for information.
+ * OS signal handling code.  See FAQ/FAQ.jsignal for information.
  * ----------------------------------------------- */
 
 static void
@@ -119,7 +119,7 @@ registerSignalHandler(int sig, void* handler, int isAsync)
 		sigemptyset(&newact.sa_mask);
 	sigaddset(&newact.sa_mask, SIGIO);
 	sigaddset(&newact.sa_mask, SIGALRM);
-		sigaddset(&newact.sa_mask, SIGCHLD);
+	sigaddset(&newact.sa_mask, SIGCHLD);
 #if defined(SIGVTALRM)
 	sigaddset(&newact.sa_mask, SIGVTALRM);
 #endif
@@ -195,13 +195,15 @@ registerSyncSignalHandler(int sig, void* handler)
 
 /*
  * Restore an asynchronous signal handler.  
- * Only necesary on some platforms.
+ * Only necesary on some platforms which don't provide SIGACTION
  */
 void
 restoreAsyncSignalHandler(int sig, void* handler)
 {
+#if !defined(HAVE_SIGACTION)
 	/* XXX need a configure-time test for this. */
 	registerAsyncSignalHandler(sig, handler);
+#endif
 }
 
 
@@ -212,8 +214,10 @@ restoreAsyncSignalHandler(int sig, void* handler)
 void
 restoreSyncSignalHandler(int sig, void* handler)
 {
+#if !defined(HAVE_SIGACTION)
 	/* XXX need a configure-time test for this. */
 	registerSyncSignalHandler(sig, handler);
+#endif
 }
 
 
