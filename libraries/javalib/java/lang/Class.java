@@ -367,7 +367,8 @@ public URL getResource(String name) {
  */
 public InputStream getResourceAsStream(String name) {
   	try {
-  		return (getResource(name).openStream());
+            URL res = getResource(name);
+            return (res == null ? null : res.openStream());
   	}
   	catch (IOException e) {
   		return null;

@@ -1,3 +1,25 @@
+Fri Oct 25 10:30:19 CEST 2002 Oskar Sandberg <oskar@freenetproject.org>
+
+	* libraries/javalib/java/lang/Class.java:
+	(getResourceAsStream) Return null if ran for a resource that does
+	not exist, instead of throwing a NullPointerException.
+
+	Reported by: Matthew Toseland <toad@amphibian.dyndns.org>
+
+Fri Oct 25 10:19:08 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/io/DataInputStream.java:
+	(DataInputStream) wrap input stream in a PushbackInputStream.
+	(readLine) avoid leaving dangling '\n' in the input stream if
+	there are characters available for reading after a '\r' is read.
+
+	Reported by: Jukka Santala <jsantala@nic.fi>
+
+Tue Oct 22 15:22:23 EEST 2002 Jukka Santala <jsantala@nic.fi>
+
+	* libraries/javalib/kaffe/net/www/protocol/http/
+	HttpURLConnection.java: Actually use the proxy socket.
+	
 Sat Oct 19 21:12:10 CEST 2002 Jukka Santala <jsantala@tml.hut.fi>
 	* kaffe/kaffe/version.c: fixed a typo.
 	* kaffe/kaffevm/jit3/machine.c, kaffe/kaffevm/jit3/registers.c:

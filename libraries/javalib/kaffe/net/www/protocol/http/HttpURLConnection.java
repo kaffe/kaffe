@@ -88,12 +88,14 @@ public void connect() throws IOException {
 			}
 		}
 
-		port = url.getPort();
-		host = url.getHost();
-		if (port == -1) {
-			port = 80;
+		if (sock == null) {
+			port = url.getPort();
+			host = url.getHost();
+			if (port == -1) {
+				port = 80;
+			}
+			sock = new Socket(host, port);
 		}
-		sock = new Socket(host, port);
 
 		in = new BufferedInputStream(sock.getInputStream());
 		out = new DataOutputStream(sock.getOutputStream());
