@@ -184,7 +184,7 @@ initBaseClasses(void)
 	if (f == 0) {
 		fprintf(stderr,
 		    "\nCould not initialize Kaffe.\n"
-		    "It's likely that your CLASSPATH settings are wrong. "
+		    "It's likely that your CLASSPATH settings are wrong.  "
 		    "Please make sure\nyour CLASSPATH does not include any "
 		    "java.lang.* classes from other JVM\nvendors, such as "
 		    "Sun's classes.zip, BEFORE Kaffe's Klasses.jar.\n"
