@@ -14,6 +14,7 @@ gnu/inet/ftp/FTPException.java
 gnu/inet/ftp/FTPResponse.java
 gnu/inet/ftp/FTPURLConnection.java
 gnu/inet/ftp/FTPURLStreamHandler.java
+gnu/inet/ftp/Handler.java
 gnu/inet/ftp/PassiveModeDTP.java
 gnu/inet/ftp/StreamInputStream.java
 gnu/inet/ftp/StreamOutputStream.java
@@ -975,6 +976,7 @@ java/util/logging/LogManager.java
 java/util/logging/LogRecord.java
 java/util/logging/MemoryHandler.java
 java/util/logging/SimpleFormatter.java
+java/util/logging/SocketHandler.java
 java/util/logging/StreamHandler.java
 java/util/logging/XMLFormatter.java
 java/util/mime/MimeType.java
