@@ -1,3 +1,8 @@
+2004-02-26  Riccardo Mottola  <zuse@libero.it>
+
+	* config/sparc/jit-sparc.def:
+	Fixed compiler warnings.
+
 2004-04-25  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.h

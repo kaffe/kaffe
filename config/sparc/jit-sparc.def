@@ -32,7 +32,7 @@ int jit_debug;
 #define	REG_f1			33
 
 #ifdef KAFFE_VMDEBUG
-static char* rnames[] = {
+static const char* rnames[] = {
 	"g0", "g1", "g2", "g3", "g4", "g5", "g6", "g7",
 	"o0", "o1", "o2", "o3", "o4", "o5", "o6", "o7",
 	"l0", "l1", "l2", "l3", "l4", "l5", "l6", "l7",
@@ -123,7 +123,7 @@ define_insn(prologue, prologue_xLC)
 	l->type = Lframe|Labsolute|Lgeneral;
 	l->at = (uintp)CODEPC;
 
-	insn_RRC(2, 0x3c, REG_sp, REG_sp, 0);
+	insn_RRC(2, (unsigned int)0x3c, REG_sp, REG_sp, 0);
 
 	debug(("save sp,?,sp\n"));
 
@@ -142,7 +142,7 @@ define_insn(epilogue, epilogue_xxx)
 {
 	setEpilogueLabel ((uintp)CODEPC);
 
-	insn_RRC(2, 0x38, REG_g0, REG_i7, 8);
+	insn_RRC(2, (unsigned int)0x38, REG_g0, REG_i7, 8);
 	insn_RRR(0x3D, REG_g0, REG_g0, REG_g0);
 
 	debug(("ret\n"));
