@@ -4,6 +4,9 @@ Treat it as an TODO list.   This file is divided in three sections.
 MISSING AND/OR BROKEN FEATURES
 ---------------------------------------------------------------------------
 
+* FileInputStream does not throw an exception when passed a
+  directory (either as a File or a String name of a directory).
+
 * File.getCanonicalPath() is not properly implemented.
   This needs a native implementation.
 
