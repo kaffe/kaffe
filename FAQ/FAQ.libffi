@@ -34,3 +34,7 @@ architectures for which we do have them.
 
 	- Godmar 	(2/5/99)
 
+The failure in InvTarExcTest is now resolved.  It was due to stack trace that
+miss some native methods.
+
+        - Edouard	(17/6/2000)
