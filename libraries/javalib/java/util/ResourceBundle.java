@@ -215,9 +215,11 @@ public abstract class ResourceBundle
         if (o != null)
           return o;
       }
- 
-    throw new MissingResourceException("Key not found", getClass().getName(),
-				       key);
+
+    String className = getClass().getName();
+    throw new MissingResourceException("Key '" + key
+				       + "'not found in Bundle: "
+				       + className, className, key);
   }
 
   /**
@@ -533,7 +535,7 @@ public abstract class ResourceBundle
 	catch (IOException ex)
 	  {
 	    MissingResourceException mre = new MissingResourceException
-	      ("Failed to load bundle", localizedName, "");
+	      ("Failed to load bundle: " + localizedName, localizedName, "");
 	    mre.initCause(ex);
 	    throw mre;
 	  }
