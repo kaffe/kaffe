@@ -27,16 +27,34 @@ ServerSocket() {
 }
 
 public ServerSocket(int port) throws IOException {
-	this(port, 50);
+	this(port, 50, InetAddress.anyLocalAddress);
 }
 
 public ServerSocket(int port, int backlog) throws IOException {
+	this(port, backlog, InetAddress.anyLocalAddress);
+}
+
+/**
+ *  Create a server with the specified port, listen backlog, and local 
+ * IP address to bind to. The bindAddr argument can be used on a 
+ * multi-homed host for a ServerSocket that will only accept connect 
+ * requests to one of its addresses.  If bindAddr is null, it will default 
+ * accepting connections on any/all local addresses. The port must be 
+ * between 0 and 65535, inclusive. 
+ *
+ * @param port 		the local TCP port
+ * @param backlog 	the listen backlog
+ * @param bindAddr 	the local InetAddress the server will bind to
+ */
+public ServerSocket(int port, int backlog, InetAddress bindAddr) throws IOException {
 	this();
 
 	System.getSecurityManager().checkListen(port);
 
+	if (bindAddr == null)
+		bindAddr = InetAddress.anyLocalAddress;
 	impl.create(true);
-	impl.bind(InetAddress.anyLocalAddress, port);
+	impl.bind(bindAddr, port);
 	impl.listen(backlog);
 }
 
