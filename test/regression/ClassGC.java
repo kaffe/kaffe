@@ -75,21 +75,42 @@ public class ClassGC extends ClassLoader {
 	    c.newInstance();
 	}
     }
-    public static boolean gotOne;
+    public static boolean gotOneForF;
+    public static boolean gotOneForG;
 }
 
 class ClassGCTest
 {
 	public static class HObject {
 		protected void finalize() throws Throwable {
-			if (!ClassGC.gotOne) {
-				ClassGC.gotOne = true;
+			if (!ClassGC.gotOneForF) {
+				ClassGC.gotOneForF = true;
 				System.out.println("Success.");
 			}
 		}
 	}
 
 	public static Object f = new HObject();
+
+	/* Make sure interfaces are GC'd also */
+	public interface HInterface {
+		void func();
+	}
+
+	public static class HImplementor implements HInterface {
+		public void func()
+		{
+		}
+
+		protected void finalize() throws Throwable {
+			if (!ClassGC.gotOneForG) {
+				ClassGC.gotOneForG = true;
+				System.out.println("Success.");
+			}
+		}
+	}
+
+	public static Object g = new HImplementor();
 }
 
 class ClassGCTestLater
@@ -114,5 +135,6 @@ class ClassGCTestLater
 
 
 /* Expected Output:
+Success.
 Success.
 */
