@@ -39,7 +39,7 @@ Treat it as an TODO list.
 * Kaffe does not currently provide its own implementation of RMI.
 
 * java.math.* is incomplete.  java.math.BigInteger is mostly written and
-  relies on the GNU Multi-precession math pacakge (GMP).  BigDecimal is
+  relies on the GNU Multi-precision math package (GMP).  BigDecimal is
   completely incomplete (?) and will just throw exceptions when used.
 
 * There are problems with String.intern().  Specifically, if a string
@@ -57,3 +57,9 @@ Treat it as an TODO list.
 * Sparc/Linux port is broken due to the odd way in which setjmp/longjmp is
   done.  If someone wants to provide some alternate functions for these that
   work we'd be greatful.
+
+* While Kaffe currently doesn't compile with other compilers than Cygnus
+  cygwin32 gcc compiler, we do know that people are trying to compile it
+  with compilers such as Visual C++.  Jongwon Kim <freefish@chollian.net>
+  reports that FIELD_OFFSET in classMethod.h conflicts with winnt.h.
+
