@@ -10,8 +10,17 @@
  * Interface to the debugging code for the verifier.
  */
 
-#ifdef KAFFE_VMDEBUG
+#if !defined(VERIFY_DEBUG_H)
+#define VERIFY_DEBUG_H
+
+#include "classMethod.h"
+#include "verify.h"
+#include "verify-block.h"
+
+#if defined(KAFFE_VMDEBUG)
 extern void printInstruction(const int opcode);
 extern void printType(const Type*);
 extern void printBlock(const Method* method, const BlockInfo* binfo, const char* indent);
-#endif
+#endif /* defined(KAFFE_VMDEBUG) */
+
+#endif /* !defined(VERIFY_DEBUG_H) */

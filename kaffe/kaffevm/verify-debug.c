@@ -12,6 +12,7 @@
 
 #include "debug.h"
 #include "verify.h"
+#include "verify-uninit.h"
 
 /* for debugging */
 #if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))

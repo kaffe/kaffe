@@ -10,6 +10,9 @@
  * Interface to code for handing of signature stack in the verifier.
  */
 
+#if !defined(VERIFY_SIGSTACK_H)
+#define VERIFY_SIGSTACK_H
+
 /*
  * the sig stack is the stack of signatures that we have allocated memory for which
  * must be freed after verification.
@@ -25,3 +28,5 @@ typedef struct sig_stack
 
 extern SigStack*          pushSig(SigStack* sigs, const char* sig);
 extern void               freeSigStack(SigStack* sigs);
+
+#endif /* !defined(VERIFY_SIGSTACK_H) */

@@ -80,61 +80,6 @@ typedef struct Type
 #define IS_PRIMITIVE_TYPE(_TINFO) ((_TINFO)->tinfo & TINFO_PRIMITIVE)
 
 
-/*
- * holds the list of uninitialized items.  that way, if we DUP some uninitialized
- * reference, put it into a local variable, dup it again, etc, all will point to
- * one item in this list, so when we <init> any of those we can init them all! :)
- *
- * doubly linked list to allow for easy removal of types
- */
-typedef struct unitialized_types_double_list
-{
-	struct Type type;
-	
-	struct unitialized_types_double_list* prev;
-	struct unitialized_types_double_list* next;
-} UninitializedType;
-
-
-
-/*
- * basic block header information
- */
-typedef struct block_info
-{
-        /* address of start of block */
-	uint32 startAddr;
-        uint32 lastAddr;  /* whether it be the address of a GOTO, etc. */
-	
-        /* status of block...
-	 * changed (needs to be re-evaluated), visited, etc. 
-	 */
-	uint32 status;
-	
-        /* array of local variables */
-	Type*  locals;
-	
-        /* simulated operand stack */
-	uint32 stacksz;
-	Type*  opstack;
-} BlockInfo;
-
-/* status flags for a basic block.
- * these also pertain to the status[] array for the entire instruction array
- */
-#define CHANGED            1
-#define VISITED            2
-#define IS_INSTRUCTION     4
-
-/* if the instruction is preceeded by WIDE */
-#define WIDE_MODDED        8
-
-/* used at the instruction status level to find basic blocks */
-#define START_BLOCK       16
-#define END_BLOCK         32
-
-#define EXCEPTION_HANDLER 64
-
 void initVerifierPrimTypes(void);
 bool sameType(Type* t1, Type* t2);
 bool verify3(Hjava_lang_Class* class, errorInfo *einfo);

@@ -1,3 +1,35 @@
+2004-03-02  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify-block.c,
+        kaffe/kaffevm/verify-block.h:
+	New files.
+
+        * kaffe/kaffevm/Makefile.am:
+	(libkaffevm_la_SOURCES): Added verify-block.c.
+        (noinst_HEADERS): Added verify-block.h.
+
+        * kaffe/kaffevm/Makefile.in:
+	Regenerated.
+
+        * kaffe/kaffevm/verify-debug.c:
+	Include "verify-uninit.h".
+
+        * kaffe/kaffevm/verify-debug.h,
+        kaffe/kaffevm/verify-sigstack.h,
+        kaffe/kaffevm/verify-uninit.h:
+	Added preprocessor guards. Fix up includes.
+
+        * kaffe/kaffevm/verify.c,
+        kaffe/kaffevm/verify.h:
+	(UninitializedType) Moved over to 
+	kaffe/kaffevm/verify-uninit.h.
+	(BlockInfo, CHANGED, VISITED, IS_INSTRUCTION,
+	WIDE_MODDED, START_BLOCK, END_BLOCK, EXCEPTION_HANDLER)
+	Moved over to kaffe/kaffevm/verify-block.h.
+	(createBlock, copyBlockData, copyBlockState, freeBlock,
+	inWhichBlock) Moved over to
+	kaffe/kaffevm/verify-block.c.
+
 2004-02-29  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify-sigstack.c,
@@ -5,7 +37,7 @@
 	New files.
 
         * kaffe/kaffevm/Makefile.am:
-	(libkaffevm_la_SOURCES): Added verify-sugstack.c.
+	(libkaffevm_la_SOURCES): Added verify-sigstack.c.
         (noinst_HEADERS): Added verify-sigstackt.h.
 
         * kaffe/kaffevm/Makefile.in:

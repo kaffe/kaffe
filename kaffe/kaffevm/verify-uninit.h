@@ -10,7 +10,27 @@
  * Interface to the code for handing of uninitialized type in the verifier.
  */
 
+#if !defined(VERIFY_UNINIT_H)
+#define VERIFY_UNINIT_H
+
 #include "verify.h"
+#include "verify-block.h"
+
+/*
+ * holds the list of uninitialized items.  that way, if we DUP some uninitialized
+ * reference, put it into a local variable, dup it again, etc, all will point to
+ * one item in this list, so when we <init> any of those we can init them all! :)
+ *
+ * doubly linked list to allow for easy removal of types
+ */
+typedef struct unitialized_types_double_list
+{
+	struct Type type;
+	
+	struct unitialized_types_double_list* prev;
+	struct unitialized_types_double_list* next;
+} UninitializedType;
+
 
 /*
  * checkUninit()
@@ -39,3 +59,5 @@ extern void popUninit(const Method* method, UninitializedType* uninit, BlockInfo
  */
 
 extern void freeUninits(UninitializedType* uninits);
+
+#endif /* !defined(VERIFY_UNINIT_H) */

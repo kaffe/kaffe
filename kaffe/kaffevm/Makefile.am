@@ -93,6 +93,7 @@ libkaffevm_la_SOURCES = \
 	gcFuncs.c \
 	gcRefs.c \
 	verify.c \
+	verify-block.c \
 	verify-debug.c \
 	verify-sigstack.c \
 	verify-uninit.c
@@ -138,6 +139,7 @@ noinst_HEADERS = \
 	threadData.h \
 	utf8const.h \
 	verify.h \
+	verify-block.h \
 	verify-debug.h \
 	verify-sigstack.h \
 	verify-uninit.h
