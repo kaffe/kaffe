@@ -1,5 +1,10 @@
 2004-02-10  Dalibor Topic <robilad@kaffe.org>
 
+	* config/m68k/jit3-m68k.def:
+	Removed explicit definition of KAFFE_VMDEBUG.
+
+2004-02-10  Dalibor Topic <robilad@kaffe.org>
+
 	* config/m68k/netbsd1/jit-md.h:
 	Added missing includes for m68k_sync_icache.
 
