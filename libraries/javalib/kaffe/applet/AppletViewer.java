@@ -149,7 +149,7 @@ public static class DefaultAppletStub extends Panel implements AppletStub {
     Hashtable		paramDict;
     Dimension		preferredSize;
 
-    public DefaultAppletStub(URL documentbase, AppletTag tag,
+    public DefaultAppletStub(URL documentBase, AppletTag tag,
 		AppletContext context)
     {
 	this.paramDict = tag.getParameters();
