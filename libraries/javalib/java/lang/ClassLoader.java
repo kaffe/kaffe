@@ -29,7 +29,7 @@ private Hashtable loadedClasses = new Hashtable();
 private ClassLoader parent;
 
 protected ClassLoader() {
-	this(getBaseClassLoader());
+	this(getSystemClassLoader());
 }
 
 protected ClassLoader(ClassLoader parent) {
@@ -37,7 +37,7 @@ protected ClassLoader(ClassLoader parent) {
 	this.parent = parent;
 }
 
-final protected Class defineClass(String name, byte data[], int offset, int length) throws ClassFormatError {
+protected final Class defineClass(String name, byte data[], int offset, int length) throws ClassFormatError {
 	Class clazz = defineClass0(name, data, offset, length);
 	if (name != null) {
 		loadedClasses.put(name, clazz);
@@ -51,15 +51,15 @@ final protected Class defineClass(String name, byte data[], int offset, int leng
 /**
  * @deprecated
  */
-final protected Class defineClass(byte data[], int offset, int length) throws ClassFormatError {
+protected final Class defineClass(byte data[], int offset, int length) throws ClassFormatError {
 	return (defineClass(null, data, offset, length));
 }
 
-final protected Class findLoadedClass(String name) {
+protected final Class findLoadedClass(String name) {
 	return (findLoadedClass0(name));
 }
 
-final protected Class findSystemClass(String name) throws ClassNotFoundException {
+protected final Class findSystemClass(String name) throws ClassNotFoundException {
 	return (findSystemClass0(name));
 }
 
@@ -122,15 +122,15 @@ protected Class findLocalClass(String name) throws ClassNotFoundException {
 	throw new ClassNotFoundException(name);
 }
 
-final protected void resolveClass(Class c) {
+protected final void resolveClass(Class c) {
 	resolveClass0(c);
 }
 
-final protected void setSigners(Class cl, Object signers[]) {
+protected final void setSigners(Class cl, Object signers[]) {
 	// Signer's are not currently supported.
 }
 
-public ClassLoader getParent() {
+public final ClassLoader getParent() {
 	return (parent);
 }
 
@@ -139,19 +139,11 @@ public final Enumeration getResources(String name) throws IOException {
 }
 
 
-public Enumeration getLocalResources(String name) throws IOException {
-	return (null);
-}
-
-public URL getLocalResource(String name) {
-	return (null);
-}
-
 public static Enumeration getSystemResources(String name) throws IOException {
 	throw new kaffe.util.NotImplemented(ClassLoader.class.getName() + ".getSystemResources(String)");
 }
 
-public static ClassLoader getBaseClassLoader() {
+public static ClassLoader getSystemClassLoader() {
 	return (null);
 }
 
