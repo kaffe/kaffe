@@ -28,13 +28,14 @@ private LineNumberReader lineIn;
 private Reader rawIn;
 private TableEntry lookup[] = new TableEntry[256];
 private TableEntry ordinary = new TableEntry();
-private boolean pushBack = false;
+private boolean pushBack;
 private boolean EOLSignificant;
 private boolean CComments;
 private boolean CPlusPlusComments;
 private boolean toLower;
 private StringBuffer buffer = new StringBuffer();
 private boolean endOfFile;
+private boolean EOLPushedBack;
 
 /**
  * @deprecated
@@ -56,7 +57,13 @@ public StreamTokenizer(Reader r) {
 private int chrRead() throws IOException {
 	if (endOfFile) {
 		return (-1);
-	} else {
+	}
+	else {
+		/* if EOL was pushed back, increase line number again */
+		if (EOLPushedBack) {
+			EOLPushedBack = false;
+			lineIn.setLineNumber(lineIn.getLineNumber() + 1);
+		}
 		return (pushIn.read());
 	}
 }
@@ -67,6 +74,12 @@ private void unRead(int c) throws IOException {
 		endOfFile = true;
 	} else {
 		pushIn.unread(c);
+
+		/* decrease line number if EOL is pushed back */
+		if (c == '\n') {
+			EOLPushedBack = true;
+			lineIn.setLineNumber(lineIn.getLineNumber() - 1);
+		}
 	}
 }
 
@@ -92,156 +105,51 @@ public int nextToken() throws IOException {
 	if (pushBack == true) {
 		/* Do nothing */
 		pushBack = false;
-		return (ttype);
 	}
 	else {
-		return (nextTokenType());
+		/* pushBack is false,
+		 * so get the next token type
+		 */
+		nextTokenType();
 	}
+
+	return (ttype);
 }
 
-private int nextTokenType() throws IOException {
+private void nextTokenType() throws IOException {
+        /* Sets ttype to the type of the next token */ 
+
 	int chr = chrRead();
-	if (chr=='/' && (CComments || CPlusPlusComments)) {
-		/* Check for C/C++ comments */
-		int next = chrRead();
-		if (next == '/' && (CPlusPlusComments)) {
-			/* C++ comment */
-			skipLine();
-
-			nextTokenType();
-			return (ttype);
-		}
-		else if (next == '*' && (CComments)) {
-			/* C comments */
-			skipCComment();
-
-			nextTokenType();
-			return (ttype);
-		}
-		else {
-			unRead(next);
-		}
-	}
-
-	if (chr=='\n' && EOLSignificant) {
-		sval = null;
-		ttype = TT_EOL;
-		return (ttype);
-	}
 
 	TableEntry e = lookup(chr);
 
 	if (e.isWhitespace) {
 		/* Skip whitespace and return nextTokenType */
-		while (lookup(chr).isWhitespace) {
-			chr = chrRead();
-			if (chr=='\n' && EOLSignificant) {
-				ttype = TT_EOL;
-				return (ttype);
-			}
-		}
-
-		/* For next time */
-		unRead(chr);
-		ttype = nextTokenType();
+		parseWhitespaceChars(chr);
 	}
 	else if (e.isNumeric) {
 		/* Parse the number and return */
-		buffer.setLength( 0);
-		while (lookup(chr).isNumeric) {
-			buffer.append((char)chr);
-			chr = chrRead();
-			if (chr == '\n' && EOLSignificant)
-				break;
-		}
-
-		/* For next time */
-		unRead(chr);
-
-		try {
-			nval = new Double(buffer.toString()).doubleValue();
-			ttype = TT_NUMBER;
-		}
-		catch ( NumberFormatException x) {
-			ttype = TT_WORD;
-			sval = buffer.toString();
-			if (toLower) {
-				sval = sval.toLowerCase();
-			}
-		}
+		parseNumericChars(chr);
 	}
 	else if (e.isAlphabetic) {
 		/* Parse the word and return */
-		buffer.setLength( 0);
-		while (lookup(chr).isAlphabetic || lookup(chr).isNumeric) {
-			buffer.append((char)chr);
-			chr = chrRead();
-			if (chr == '\n' && EOLSignificant)
-				break;
-		}
-
-		/* For next time */
-		unRead(chr);
-
-		ttype = TT_WORD;
-		sval = buffer.toString();
-		if (toLower) {
-			sval = sval.toLowerCase();
-		}
-	}
-	else if (e.isStringQuote) {
-		/* Parse string and return word */
-		int cq = chr;
-
-		buffer.setLength( 0);
-		chr = chrRead();
-		while ( chr != cq) {
-			if ( chr == '\\' ) {
-				chr = chrRead();
-				switch (chr) {
-				case 'a':
-					chr = 0x7;
-					break;
-				case 'b':
-					chr = '\b';
-					break;
-				case 'f':
-					chr = 0xC;
-					break;
-				case 'n':
-					chr = '\n';
-					break;
-				case 'r':
-					chr = '\r';
-					break;
-				case 't':
-					chr = '\t';
-					break;
-				case 'v':
-					chr = 0xB;
-					break;
-				}
-			}
-			buffer.append((char)chr);
-			chr = chrRead();
-			if ( chr == -1 ) {
-				break;
-			}
-		}
-
-		/* JDK doc says:  When the nextToken method encounters a
-		 * string constant, the ttype field is set to the string
-		 * delimiter and the sval field is set to the body of the
-		 * string.
-		 */
-		ttype = cq;
-		sval = buffer.toString();      
+		parseAlphabeticChars(chr);
 	}
 	else if (e.isComment) {
 		/* skip comment and return nextTokenType() */
-		skipLine();
-
-		ttype = nextTokenType();    
+		parseCommentChars();
+	}
+	else if (e.isStringQuote) {
+		/* Parse string and return word */
+		parseStringQuoteChars(chr);
+	}
+	else if (chr=='/' && CPlusPlusComments) {
+		/* Check for C++ comments */
+		parseCPlusPlusCommentChars();
+	}
+	else if (chr=='/' && CComments) {
+		/* Check for C comments */
+		parseCCommentChars();
 	}
 	else {
 		/* Just return it as a token */
@@ -253,8 +161,230 @@ private int nextTokenType() throws IOException {
 			ttype = chr;
 		}
 	}
+}
 
-	return (ttype);
+private void parseWhitespaceChars(int chr) throws IOException {
+	do {
+		if (chr=='\n' && EOLSignificant) {
+			ttype = TT_EOL;
+			return;
+		}
+		
+		chr = chrRead();
+	} while (chr != -1 && lookup(chr).isWhitespace);
+	
+	/* For next time */
+	unRead(chr);
+
+	nextTokenType();
+}
+
+private void parseNumericChars(int chr) throws IOException {
+	boolean dotParsed = false;
+
+	buffer.setLength( 0);
+
+	/* Parse characters until a non-numeric character, 
+	 * or the first '-' after the first character, or
+	 * the second decimal dot is parsed.
+	 */
+	do {
+		if (chr == '.') {
+			if (dotParsed) {
+				/* Second decimal dot parsed,
+				 * so the number is finished.
+				 */
+				break;
+			}
+			else {
+				/* First decimal dot parsed */
+				dotParsed = true;
+			}
+		}
+
+		buffer.append((char)chr);
+		chr = chrRead();
+
+	} while (lookup(chr).isNumeric
+		 && chr != '-'
+		 && !(chr == '.' && dotParsed));
+
+
+	/* For next time */
+	unRead(chr);
+
+	try {
+		nval = Double.parseDouble(buffer.toString());
+		ttype = TT_NUMBER;
+	}
+	catch ( NumberFormatException x) {
+		if (buffer.toString().equals("-")) {
+			/* if the first character was an '-'
+			 * but no other numeric characters followed
+			 */
+			ttype = '-';
+		}
+		else if (buffer.toString().equals(".")) {
+			/* A sole decimal dot is parsed as the 
+			 * decimal number 0.0 according to what the
+			 * JDK 1.1 does.
+			 */
+			ttype = TT_NUMBER;
+			nval = 0.0;
+		}
+		else {
+			/* A minus and a decimal dot are parsed as the 
+			 * decimal number -0.0 according to what the
+			 * JDK 1.1 does.
+			 */
+			ttype = TT_NUMBER;
+			nval = -0.0;
+		}		
+	}
+}
+	
+private void parseAlphabeticChars(int chr) throws IOException {
+	buffer.setLength( 0);
+
+	while (lookup(chr).isAlphabetic || lookup(chr).isNumeric) {
+		buffer.append((char)chr);
+		chr = chrRead();
+	}
+
+	/* For next time */
+	unRead(chr);
+
+	ttype = TT_WORD;
+	sval = buffer.toString();
+	if (toLower) {
+		sval = sval.toLowerCase();
+	}
+}
+
+private void parseCommentChars() throws IOException {
+	skipLine();
+
+	nextTokenType();
+}
+
+private void parseStringQuoteChars(int chr) throws IOException {
+	int cq = chr;
+
+	/* Save the correct line number in case the string
+	 * contains escaped EOL characters. Reset line number
+	 * later accordingly.
+	 */
+	int stringLineNumber = lineIn.getLineNumber();
+
+	buffer.setLength( 0);
+	chr = chrRead();
+	while ( chr != cq && chr != '\n' && chr != -1) {
+		if ( chr == '\\' ) {
+			chr = chrRead();
+			switch (chr) {
+			case 'a':
+				chr = 0x7;
+				break;
+			case 'b':
+				chr = '\b';
+				break;
+			case 'f':
+				chr = 0xC;
+				break;
+			case 'n':
+				chr = '\n';
+				break;
+			case 'r':
+				chr = '\r';
+				break;
+			case 't':
+				chr = '\t';
+				break;
+			case 'v':
+				chr = 0xB;
+				break;
+			default:
+				if ('0' <=  chr && chr <= '7') {
+					/* it's an octal escape */
+					chr = parseOctalEscape(chr);
+				}
+			}
+		}
+		buffer.append((char)chr);
+		chr = chrRead();
+	}
+	if ( chr == '\n' ) {
+		unRead(chr);
+	}
+
+	/* JDK doc says:  When the nextToken method encounters a
+	 * string constant, the ttype field is set to the string
+	 * delimiter and the sval field is set to the body of the
+	 * string.
+	 */
+	ttype = cq;
+	sval = buffer.toString();
+
+	lineIn.setLineNumber(stringLineNumber);
+}
+
+private void parseCPlusPlusCommentChars() throws IOException {
+	int next = chrRead();
+	if (next == '/') {
+		/* C++ comment */
+		skipLine();
+
+		nextTokenType();
+	}
+	else {
+		unRead(next);
+
+		ttype = '/';
+	}
+}
+
+private void parseCCommentChars() throws IOException {
+	int next = chrRead();
+	if (next == '*') {
+		/* C comment */
+		skipCComment();
+
+		nextTokenType();
+	}
+	else {
+		unRead(next);
+
+		ttype = '/';
+	}
+}
+
+private int parseOctalEscape(int chr) throws IOException {
+	int value = 0;
+	int digits = 1;
+	boolean maybeThreeOctalDigits = false;
+
+	/* There could be one, two, or three octal
+	 * digits specifying a character's code.
+	 * If it's three digits, the Java Language
+	 * Specification says that the first one has
+	 * to be in the range between '0' and '3'.
+	 */
+	if ('0' <= chr && chr <= '3') {
+		maybeThreeOctalDigits = true;
+	}
+
+	do {
+		value = value * 8 + Character.digit((char) chr, 8);
+		chr = chrRead();
+		digits++;
+
+	} while (('0' <= chr && chr <= '7')
+		 && (digits <= 2 || maybeThreeOctalDigits)
+		 && (digits <= 3));
+
+	unRead(chr);
+
+	return (value);
 }
 
 public void ordinaryChar(int c) {
@@ -269,6 +399,14 @@ public void ordinaryChar(int c) {
 }
 
 public void ordinaryChars(int low, int hi) {
+	if (low < 0) {
+		low = 0;
+	}
+
+	if (hi > 255) {
+		hi = 255;
+	}
+
 	for (int letter=low; letter<=hi; letter++) {
 		ordinaryChar(letter);
 	}
@@ -332,9 +470,15 @@ private void skipCComment() throws IOException {
 }
 
 private void skipLine() throws IOException {
-	while (chrRead() != '\n')
-		;
-	if (EOLSignificant) {
+	/* Skip all characters to the end of line or EOF,
+	 * whichever comes first.
+	 */
+	int chr = chrRead();
+
+	while (chr != '\n' && chr != -1)
+		chr = chrRead();
+
+	if (chr == '\n') {
 		unRead('\n');
 	}
 }
@@ -358,14 +502,22 @@ public String toString() {
 		return ("Token[n="+nval+"], line "+lineno());
 	}
 	else if (ttype == TT_WORD) {
-	        return ("Token["+sval+"], line "+lineno());
+		return ("Token["+sval+"], line "+lineno());
 	}
 	else {
-	        return ("Token[\'"+ (char) ttype +"\'], line "+lineno());
+		return ("Token[\'"+ (char) ttype +"\'], line "+lineno());
 	}
 }
 
 public void whitespaceChars(int low, int hi) {
+        if (low < 0) {
+		low = 0;
+	}
+
+	if (hi > 255) {
+		hi = 255;
+	}
+
 	for (int letter = low; letter <= hi; letter++) {
 		TableEntry e = lookup(letter);
 		e.isWhitespace = true;
@@ -375,6 +527,14 @@ public void whitespaceChars(int low, int hi) {
 }
 
 public void wordChars(int low, int hi) {
+	if (low < 0) {
+		low = 0;
+	}
+
+	if (hi > 255) {
+		hi = 255;
+	}
+
 	for (int letter = low; letter <= hi; letter++) {
 		lookup(letter).isAlphabetic = true;
 	}    
