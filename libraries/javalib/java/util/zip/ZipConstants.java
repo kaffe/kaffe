@@ -27,22 +27,34 @@ public interface ZipConstants {
   public final static int CEN_FILENAMELEN = 28;
   public final static int CEN_EXTRAFIELDLEN = 30;
   public final static int CEN_FILECOMMENTLEN = 32;
-  public final static int CEN_DISKNUMBER = 36;
-  public final static int CEN_INTERNALATTR = 38;
-  public final static int CEN_EXTERNALATTR = 40;
+  public final static int CEN_DISKNUMBER = 34;
+  public final static int CEN_INTERNALATTR = 36;
+  public final static int CEN_EXTERNALATTR = 38;
   public final static int CEN_LCLOFFSET = 42;
 
   public final static int CEN_RECSZ = 46;
 
   public final static long CEN_HEADSIG = 0x02014b50;
-  public final static long CEN_ENDSIG = 0x06054b50;
+
+  public final static int END_SIGNATURE = 0;
+  public final static int END_DISKNUMBER = 4;
+  public final static int END_CENDISKNUMBER = 6;
+  public final static int END_TOTALCENONDISK = 8;
+  public final static int END_TOTALCEN = 10;
+  public final static int END_CENSIZE = 12;
+  public final static int END_CENOFFSET = 16;
+  public final static int END_COMMENTLEN = 20;
+
+  public final static int END_RECSZ = 22;
+
+  public final static long END_ENDSIG = 0x06054b50;
 
   public final static int LOC_SIGNATURE = 0;
   public final static int LOC_VERSIONEXTRACT = 4;
   public final static int LOC_FLAGS = 6;
   public final static int LOC_METHOD = 8;
   public final static int LOC_TIME = 10;
-  public final static int LOC_DATA = 12;
+  public final static int LOC_DATE = 12;
   public final static int LOC_CRC = 14;
   public final static int LOC_COMPRESSEDSIZE = 18;
   public final static int LOC_UNCOMPRESSEDSIZE = 22;

@@ -15,7 +15,7 @@ public class ZipEntry implements ZipConstants {
   public static final int STORED = Deflater.NO_COMPRESSION;
   public static final int DEFLATED = Deflater.DEFLATED;
 
-  private String name;
+  String name;
   long time;
   long crc;
   long size;
