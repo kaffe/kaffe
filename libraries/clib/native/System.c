@@ -230,6 +230,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	 * Others:
 	 *
 	 * java.compiler        Java JIT compiler
+	 * java.ext.dirs        Path of extension directory or directories
 	 * file.encoding	Character encoding for locale
 	 * file.encoding.pkg	Character encoding package
 	 * kaffe.compiler	Default java compiler
@@ -281,7 +282,9 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	setProperty(p, "java.class.path", cpath);
 
 	setProperty(p, "sun.boot.class.path", realBootClassPath); 
-        
+
+	setProperty(p, "java.ext.dirs", "");
+
 	setProperty(p, "file.separator", file_separator);
 	setProperty(p, "path.separator", path_separator);
 	setProperty(p, "line.separator", line_separator);

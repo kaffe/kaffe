@@ -1,3 +1,9 @@
+2004-02-20  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/clib/native/System.c
+	(java_lang_System_initProperties):
+	Added java.ext.dirs.
+
 2004-02-16  Jim Pick  <jim@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
