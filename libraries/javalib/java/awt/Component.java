@@ -784,10 +784,10 @@ public abstract class Component
    * events).
    *
    * @param enabled true to enable this component
-   *
+   * 
    * @see #isEnabled()
    * @see #isLightweight()
-   *
+   * 
    * @since 1.1
    */
   public void setEnabled(boolean enabled)
@@ -811,7 +811,7 @@ public abstract class Component
    * Enables or disables this component.
    *
    * @param enabled true to enable this component
-   *
+   * 
    * @deprecated use {@link #setEnabled(boolean)} instead
    */
   public void enable(boolean enabled)
@@ -867,9 +867,9 @@ public abstract class Component
    * not show the component, if a parent is invisible.
    *
    * @param visible true to make this component visible
-   *
+   * 
    * @see #isVisible()
-   *
+   * 
    * @since 1.1
    */
   public void setVisible(boolean visible)
@@ -908,7 +908,7 @@ public abstract class Component
    * Makes this component visible or invisible.
    *
    * @param visible true to make this component visible
-   *
+   * 
    * @deprecated use {@link #setVisible(boolean)} instead
    */
   public void show(boolean visible)
@@ -1047,14 +1047,14 @@ public abstract class Component
    * property.
    *
    * @param newFont the new font for this component
-   *
+   * 
    * @see #getFont()
    */
   public void setFont(Font newFont)
   {
     if (font == newFont)
       return;
-
+    
     Font oldFont = font;
     font = newFont;
     if (peer != null)
@@ -1827,7 +1827,7 @@ public abstract class Component
    * Paints this entire component, including any sub-components.
    *
    * @param g the graphics context for this paint job
-   *
+   * 
    * @see #paint(Graphics)
    */
   public void paintAll(Graphics g)
@@ -1911,7 +1911,7 @@ public abstract class Component
    * in this class simply calls the <code>paint()</code> method.
    *
    * @param g the graphics context of the print device
-   *
+   * 
    * @see #paint(Graphics)
    */
   public void print(Graphics g)
@@ -1926,7 +1926,7 @@ public abstract class Component
    * <code>paintAll()</code> method.
    *
    * @param g the graphics context of the print device
-   *
+   * 
    * @see #paintAll(Graphics)
    */
   public void printAll(Graphics g)
@@ -3612,12 +3612,12 @@ public abstract class Component
    * @return set of traversal keys
    *
    * @throws IllegalArgumentException if id is invalid
-   *
+   * 
    * @see #setFocusTraversalKeys (int, Set)
    * @see KeyboardFocusManager#FORWARD_TRAVERSAL_KEYS
    * @see KeyboardFocusManager#BACKWARD_TRAVERSAL_KEYS
    * @see KeyboardFocusManager#UP_CYCLE_TRAVERSAL_KEYS
-   *
+   * 
    * @since 1.4
    */
   public Set getFocusTraversalKeys (int id)
@@ -4114,9 +4114,9 @@ public abstract class Component
    * Adds the specified popup menu to this component.
    *
    * @param popup the popup menu to be added
-   *
+   * 
    * @see #remove(MenuComponent)
-   *
+   * 
    * @since 1.1
    */
   public synchronized void add(PopupMenu popup)
