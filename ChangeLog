@@ -1,3 +1,24 @@
+2003-08-05 Dalibor Topic <robilad@kaffe.org>
+
+        libraries/javalib/awt/AWTError.java,
+        libraries/javalib/awt/AWTException.java,
+        libraries/javalib/awt/IllegalComponentStateException.java,
+        libraries/javalib/beans/IntrospectionException.java,
+        libraries/javalib/beans/PropertyVetoException.java,
+        libraries/javalib/io/CharConversionException.java,
+        libraries/javalib/io/EOFException.java,
+        libraries/javalib/io/FileNotFoundException.java,
+        libraries/javalib/io/IOException.java,
+        libraries/javalib/io/InvalidObjectException.java,
+        libraries/javalib/io/NotActiveException.java,
+        libraries/javalib/io/NotSerializableException.java,
+        libraries/javalib/io/ObjectStreamException.java,
+        libraries/javalib/io/StreamCorruptedException.java,
+        libraries/javalib/io/SyncFailedException.java,
+        libraries/javalib/io/UTFDataFormatException.java,
+        libraries/javalib/io/UnsupportedEncodingException.java:
+	Merged in from GNU Classpath.
+
 2003-08-04 Dalibor Topic <robilad@kaffe.org>
 
 	* kaffe/kaffevm/baseClasses.c:
