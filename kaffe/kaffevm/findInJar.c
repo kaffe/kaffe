@@ -36,6 +36,10 @@
 #include "access.h"
 #include "gcj/gcj.h"
 
+#ifdef __riscos__
+#include <unixlib/local.h>
+#endif
+
 /* Handle Manifest Class-Path attribute.  It will be better to handle that
    in a ClassLoader.  */
 #define HANDLE_MANIFEST_CLASSPATH	1
@@ -484,6 +488,9 @@ insertClasspath(const char* cp, int prepend)
 {
 	classpathEntry* ptr;
 	classpathEntry* lptr;
+#ifdef __riscos__
+        char unixpath[256];
+#endif
 
 DBG(INITCLASSPATH,
 	dprintf("insertClasspath(): '%s' %spend\n", cp, prepend ? "pre" : "ap"); )
@@ -499,6 +506,11 @@ DBG(INITCLASSPATH,
 		}
 		lptr = ptr;
 	}
+
+#ifdef __riscos__
+        __unixify(cp, 0, unixpath, 256, __RISCOSIFY_FILETYPE_NOTSPECIFIED);
+        cp = unixpath;
+#endif
 
 	ptr = KMALLOC(sizeof(classpathEntry) + strlen(cp) + 1);
 	ptr->type = getClasspathType(cp);

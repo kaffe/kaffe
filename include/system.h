@@ -40,6 +40,10 @@
 #define	file_separator		"/"
 #define	path_separator		";"
 #define	line_separator		"\n"
+#elif defined(__riscos__)
+#define	file_separator		"/"
+#define	path_separator		","
+#define	line_separator		"\n"
 #else
 #error "Separators undefined for this system"
 #endif

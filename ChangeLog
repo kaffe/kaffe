@@ -1,3 +1,26 @@
+2003-02-25 Dalibor Topic <robilad@yahoo.com>
+
+	* README, WHATSNEW:
+	Added information on RISC OS port.
+	
+2003-02-22 Peter Naulls <peter@chocky.org>
+	* config/config.alias,
+	Add RISC OS dectection.
+
+	* config/arm/trampolines.c,
+	Allow ARM assembly to work on RISC OS.
+
+	* include/system.h,
+	#defines for RISC OS
+
+	* kaffe/kaffevm/external.c, kaffe/kaffevm/findInJar.c,
+	Allow classpath and library path to be in RISC OS format.
+
+2003-02-22 David Marston <david.marston@physics.org>
+
+	* config/arm/riscos,
+	New directory and files for RISC OS support, allows Hello World to run.
+
 2003-02-21 Dalibor Topic <robilad@yahoo.com>
 
 	Merged more fixes from JanosVM 1.0.

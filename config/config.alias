@@ -18,6 +18,7 @@ esac
 case "$Khost_os" in
 
 aix*)		Khost_os=aix ;;
+aof*)		Khost_os=riscos ;;
 aux*)		Khost_os=a-ux ;;
 bsdi3*)		Khost_os=bsdi3 ;;
 bsdi*)		Khost_os=bsdi ;;

@@ -35,6 +35,10 @@
 #include "ltdl.h"
 #include "feedback.h"
 
+#ifdef __riscos__
+#include <unixlib/local.h>
+#endif
+
 #ifndef STUB_PREFIX
 #define STUB_PREFIX ""
 #define STUB_PREFIX_LEN 0
@@ -127,6 +131,10 @@ initNative(void)
 	if (lpath == 0) {
 		lpath = getenv(LIBRARYPATH);
 	}
+#ifdef __riscos__
+        __unixify(lpath, 0, lib, MAXLIBPATH, __RISCOSIFY_FILETYPE_NOTSPECIFIED);
+        lpath = strdup(lib);
+#endif
 
 	len = 0;
 	if (lpath != 0) {

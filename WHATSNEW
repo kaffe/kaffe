@@ -1,5 +1,7 @@
 What's New since Kaffe OpenVM 1.0.7
 ------------------------------------------------------
+* Port to RISC OS
+
 * Port to Playstation 2 GNU/Linux
 
 * Port to SuperH GNU/Linux

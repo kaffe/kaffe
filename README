@@ -42,7 +42,7 @@ while 'I' means 'interpreter'):
             |      |    NeXTStep 3.x    Solaris 2.x	Fujitsu UXP/DS
             |      |    BSDI 3.x	OpenBSD 2.x
   ------------------------------------------------------------------------
-  ARM       | J+I  |    Linux/Netwinder NetBSD 1.x
+  ARM       | J+I  |    Linux/Netwinder NetBSD 1.x	RISC OS
   ------------------------------------------------------------------------
   MIPS      | J+I  |    Linux/Cobalt    IRIX 5 & 6	NetBSD 1.x
 	    |	   |	Ultrix 4.2      PS2Linux

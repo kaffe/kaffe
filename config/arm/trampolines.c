@@ -20,7 +20,13 @@ TRAMPOLINE_FUNCTION()
  * Otherwise we'll try to construct one.
  */
 #if !defined(START_ASM_FUNC)
+
+#ifdef __riscos__
+#define	START_ASM_FUNC() "ALIGN\n\tEXPORT\t"
+#else
 #define	START_ASM_FUNC() ".text\n\t.align 4\n\t.globl "
+#endif
+
 #endif
 #if !defined(END_ASM_FUNC)
 #define	END_ASM_FUNC() ""
@@ -35,8 +41,12 @@ TRAMPOLINE_FUNCTION()
 
 asm(
 	START_ASM_FUNC() C_FUNC_NAME(arm_do_fixup_trampoline) "\n"
-C_FUNC_NAME(arm_do_fixup_trampoline) ":				\n
-	stmdb	sp!,{r0,r1,r2,r3,lr}\n
+#ifdef __riscos__
+"|" C_FUNC_NAME(arm_do_fixup_trampoline) "|\n"
+#else
+C_FUNC_NAME(arm_do_fixup_trampoline) ":				\n"
+#endif
+"	stmdb	sp!,{r0,r1,r2,r3,lr}\n
 	mov	r0,ip\n
 	bl	" C_FUNC_NAME(soft_fixup_trampoline) "		\n
 	mov	ip, r0\n
@@ -50,8 +60,12 @@ C_FUNC_NAME(arm_do_fixup_trampoline) ":				\n
 
 asm(
 	START_ASM_FUNC() C_FUNC_NAME(arm_do_fixup_trampoline) "\n"
-C_FUNC_NAME(arm_do_fixup_trampoline) ":				\n
-	stmdb	sp!,{r0,r1,r2,r3,lr}\n
+#ifdef __riscos__
+"|" C_FUNC_NAME(arm_do_fixup_trampoline) "|\n"
+#else
+C_FUNC_NAME(arm_do_fixup_trampoline) ":				\n"
+#endif
+"	stmdb	sp!,{r0,r1,r2,r3,lr}\n
 	mov	r0,ip\n
 	bl	" C_FUNC_NAME(soft_fixup_trampoline) " (PLT)	\n
 	mov	ip, r0\n
