@@ -185,7 +185,6 @@ void
 java_net_PlainDatagramSocketImpl_socketSetOption(struct Hjava_net_PlainDatagramSocketImpl* this, jint opt, struct Hjava_lang_Object* arg)
 {
 	struct Hjava_net_InetAddress* addrp;
-	struct Hjava_lang_Integer* intp;
 	struct sockaddr_in addr;
 	int k, v, r;
 
