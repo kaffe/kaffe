@@ -153,9 +153,9 @@ Klasses_jar_SRCS =  	$(gnu_java_util_SRCS) 	$(gnu_regexp_SRCS) 	$(java_io_SRCS) 
 
 Awt_SRCS =  	$(gnu_java_awt_SRCS) 	$(java_applet_SRCS) 	$(java_awt_SRCS) 	$(java_awt_color_SRCS) 	$(java_awt_datatransfer_SRCS) 	$(java_awt_dnd_SRCS) 	$(java_awt_dnd_peer_SRCS) 	$(java_awt_event_SRCS) 	$(java_awt_font_SRCS) 	$(java_awt_geom_SRCS) 	$(java_awt_image_SRCS) 	$(java_awt_peer_SRCS) 	$(java_awt_print_SRCS) 	$(java_awt_widgets_SRCS) 	$(kaffe_applet_SRCS) 	$(kaffe_awt_SRCS) 	$(kaffe_util_log_SRCS)
 
-Rest_SRCS =  	$(gnu_java_nio_SRCS) 	$(gnu_java_nio_charset_SRCS) 	$(gnu_java_util_prefs_SRCS) 	$(java_beans_SRCS) 	$(java_beans_beancontext_SRCS) 	$(java_nio_SRCS) 	$(java_nio_channels_SRCS) 	$(java_nio_channels_spi_SRCS) 	$(java_nio_charset_SRCS) 	$(java_nio_charset_spi_SRCS) 	$(java_util_logging_SRCS) 	$(java_util_mime_SRCS) 	$(java_util_prefs_SRCS) 	$(kaffe_beans_editors_SRCS) 	$(kaffe_net_www_protocol_SRCS) 	$(kaffe_net_www_protocol_file_SRCS) 	$(kaffe_net_www_protocol_ftp_SRCS) 	$(kaffe_net_www_protocol_http_SRCS) 	$(kaffe_net_www_protocol_jar_SRCS) 	$(kaffe_net_www_protocol_system_SRCS) 	$(kaffe_text_collator_SRCS) 	$(kaffe_text_dateformat_SRCS) 	$(kaffe_text_numberformat_SRCS) 	$(kaffe_util_locale_SRCS) 
+Rest_SRCS =  	$(gnu_java_nio_SRCS) 	$(gnu_java_nio_charset_SRCS) 	$(gnu_java_util_prefs_SRCS) 	$(gnu_javax_rmi_SRCS) 	$(gnu_javax_rmi_CORBA_SRCS) 	$(java_beans_SRCS) 	$(java_beans_beancontext_SRCS) 	$(java_nio_SRCS) 	$(java_nio_channels_SRCS) 	$(java_nio_channels_spi_SRCS) 	$(java_nio_charset_SRCS) 	$(java_nio_charset_spi_SRCS) 	$(java_util_logging_SRCS) 	$(java_util_mime_SRCS) 	$(java_util_prefs_SRCS) 	$(javax_accessibility_SRCS) 	$(javax_rmi_SRCS) 	$(javax_rmi_CORBA_SRCS) 	$(javax_sql_SRCS) 	$(javax_swing_text_SRCS) 	$(kaffe_beans_editors_SRCS) 	$(kaffe_net_www_protocol_SRCS) 	$(kaffe_net_www_protocol_file_SRCS) 	$(kaffe_net_www_protocol_ftp_SRCS) 	$(kaffe_net_www_protocol_http_SRCS) 	$(kaffe_net_www_protocol_jar_SRCS) 	$(kaffe_net_www_protocol_system_SRCS) 	$(kaffe_text_collator_SRCS) 	$(kaffe_text_dateformat_SRCS) 	$(kaffe_text_numberformat_SRCS) 	$(kaffe_util_locale_SRCS) 
 
-RMI_SRCS =  	$(java_rmi_SRCS) 	$(java_rmi_activation_SRCS) 	$(java_rmi_dgc_SRCS) 	$(java_rmi_registry_SRCS) 	$(java_rmi_server_SRCS) 	$(javax_naming_SRCS) 	$(javax_naming_directory_SRCS) 	$(javax_naming_event_SRCS) 	$(javax_naming_ldap_SRCS) 	$(javax_naming_spi_SRCS) 	$(javax_sound_sampled_SRCS) 	$(javax_transaction_SRCS) 	$(javax_transaction_xa_SRCS) 	$(javax_xml_parsers_SRCS) 	$(javax_xml_transform_SRCS) 	$(javax_xml_transform_dom_SRCS) 	$(javax_xml_transform_sax_SRCS) 	$(javax_xml_transform_stream_SRCS) 	$(kaffe_rmi_dgc_SRCS) 	$(kaffe_rmi_registry_SRCS) 	$(kaffe_rmi_rmic_SRCS) 	$(kaffe_rmi_server_SRCS) 	$(kaffe_tools_compiler_SRCS) 	$(kaffe_tools_jar_SRCS) 	$(kaffe_tools_serialver_SRCS) 	$(org_w3c_dom_SRCS) 	$(org_w3c_dom_css_SRCS) 	$(org_w3c_dom_events_SRCS) 	$(org_w3c_dom_html_SRCS) 	$(org_w3c_dom_ranges_SRCS) 	$(org_w3c_dom_stylesheets_SRCS) 	$(org_w3c_dom_traversal_SRCS) 	$(org_w3c_dom_views_SRCS) 	$(org_xml_sax_SRCS) 	$(org_xml_sax_ext_SRCS) 	$(org_xml_sax_helpers_SRCS) 
+RMI_SRCS =  	$(gnu_xml_aelfred2_SRCS) 	$(gnu_xml_dom_SRCS) 	$(gnu_xml_pipeline_SRCS) 	$(gnu_xml_util_SRCS) 	$(java_rmi_SRCS) 	$(java_rmi_activation_SRCS) 	$(java_rmi_dgc_SRCS) 	$(java_rmi_registry_SRCS) 	$(java_rmi_server_SRCS) 	$(javax_naming_SRCS) 	$(javax_naming_directory_SRCS) 	$(javax_naming_event_SRCS) 	$(javax_naming_ldap_SRCS) 	$(javax_naming_spi_SRCS) 	$(javax_sound_sampled_SRCS) 	$(javax_transaction_SRCS) 	$(javax_transaction_xa_SRCS) 	$(javax_xml_parsers_SRCS) 	$(javax_xml_transform_SRCS) 	$(javax_xml_transform_dom_SRCS) 	$(javax_xml_transform_sax_SRCS) 	$(javax_xml_transform_stream_SRCS) 	$(kaffe_rmi_dgc_SRCS) 	$(kaffe_rmi_registry_SRCS) 	$(kaffe_rmi_rmic_SRCS) 	$(kaffe_rmi_server_SRCS) 	$(kaffe_tools_compiler_SRCS) 	$(kaffe_tools_jar_SRCS) 	$(kaffe_tools_serialver_SRCS) 	$(org_w3c_dom_SRCS) 	$(org_w3c_dom_css_SRCS) 	$(org_w3c_dom_events_SRCS) 	$(org_w3c_dom_html_SRCS) 	$(org_w3c_dom_ranges_SRCS) 	$(org_w3c_dom_stylesheets_SRCS) 	$(org_w3c_dom_traversal_SRCS) 	$(org_w3c_dom_views_SRCS) 	$(org_xml_sax_SRCS) 	$(org_xml_sax_ext_SRCS) 	$(org_xml_sax_helpers_SRCS) 
 
 gnu_java_awt_SRCS =  	gnu/java/awt/BitMaskExtent.java 	gnu/java/awt/Buffers.java 	gnu/java/awt/EventModifier.java
 
@@ -167,7 +167,19 @@ gnu_java_util_SRCS =  	gnu/java/util/EmptyEnumeration.java
 
 gnu_java_util_prefs_SRCS =  	gnu/java/util/prefs/FileBasedFactory.java 	gnu/java/util/prefs/MemoryBasedFactory.java 	gnu/java/util/prefs/MemoryBasedPreferences.java 	gnu/java/util/prefs/NodeReader.java 	gnu/java/util/prefs/NodeWriter.java
 
+gnu_javax_rmi_SRCS =  	gnu/javax/rmi/PortableServer.java
+
+gnu_javax_rmi_CORBA_SRCS =  	gnu/javax/rmi/CORBA/DelegateFactory.java 	gnu/javax/rmi/CORBA/GetDelegateInstanceException.java 	gnu/javax/rmi/CORBA/PortableRemoteObjectDelegateImpl.java 	gnu/javax/rmi/CORBA/StubDelegateImpl.java 	gnu/javax/rmi/CORBA/UtilDelegateImpl.java 	gnu/javax/rmi/CORBA/ValueHandlerImpl.java
+
 gnu_regexp_SRCS =  	gnu/regexp/CharIndexedCharArray.java 	gnu/regexp/CharIndexedInputStream.java 	gnu/regexp/CharIndexed.java 	gnu/regexp/CharIndexedReader.java 	gnu/regexp/CharIndexedStringBuffer.java 	gnu/regexp/CharIndexedString.java 	gnu/regexp/REException.java 	gnu/regexp/REFilterInputStream.java 	gnu/regexp/REFilterReader.java 	gnu/regexp/RE.java 	gnu/regexp/REMatchEnumeration.java 	gnu/regexp/REMatch.java 	gnu/regexp/RESyntax.java 	gnu/regexp/RETokenAny.java 	gnu/regexp/RETokenBackRef.java 	gnu/regexp/RETokenChar.java 	gnu/regexp/RETokenEnd.java 	gnu/regexp/RETokenEndSub.java 	gnu/regexp/REToken.java 	gnu/regexp/RETokenLookAhead.java 	gnu/regexp/RETokenOneOf.java 	gnu/regexp/RETokenPOSIX.java 	gnu/regexp/RETokenRange.java 	gnu/regexp/RETokenRepeated.java 	gnu/regexp/RETokenStart.java 	gnu/regexp/RETokenWordBoundary.java 	gnu/regexp/UncheckedRE.java
+
+gnu_xml_aelfred2_SRCS =  	gnu/xml/aelfred2/JAXPFactory.java 	gnu/xml/aelfred2/SAXDriver.java 	gnu/xml/aelfred2/XmlParser.java 	gnu/xml/aelfred2/XmlReader.java
+
+gnu_xml_dom_SRCS =  	gnu/xml/dom/Consumer.java 	gnu/xml/dom/DomAttr.java 	gnu/xml/dom/DomCDATA.java 	gnu/xml/dom/DomCharacterData.java 	gnu/xml/dom/DomComment.java 	gnu/xml/dom/DomDoctype.java 	gnu/xml/dom/DomDocument.java 	gnu/xml/dom/DomElement.java 	gnu/xml/dom/DomEntity.java 	gnu/xml/dom/DomEntityReference.java 	gnu/xml/dom/DomEvent.java 	gnu/xml/dom/DomEx.java 	gnu/xml/dom/DomExtern.java 	gnu/xml/dom/DomFragment.java 	gnu/xml/dom/DomImpl.java 	gnu/xml/dom/DomIterator.java 	gnu/xml/dom/DomNamedNodeMap.java 	gnu/xml/dom/DomNode.java 	gnu/xml/dom/DomNotation.java 	gnu/xml/dom/DomNsNode.java 	gnu/xml/dom/DomPI.java 	gnu/xml/dom/DomText.java 	gnu/xml/dom/JAXPFactory.java
+
+gnu_xml_pipeline_SRCS =  	gnu/xml/pipeline/CallFilter.java 	gnu/xml/pipeline/DomConsumer.java 	gnu/xml/pipeline/EventConsumer.java 	gnu/xml/pipeline/EventFilter.java 	gnu/xml/pipeline/LinkFilter.java 	gnu/xml/pipeline/NSFilter.java 	gnu/xml/pipeline/PipelineFactory.java 	gnu/xml/pipeline/TeeConsumer.java 	gnu/xml/pipeline/TextConsumer.java 	gnu/xml/pipeline/ValidationConsumer.java 	gnu/xml/pipeline/WellFormednessFilter.java 	gnu/xml/pipeline/XIncludeFilter.java 	gnu/xml/pipeline/XsltFilter.java
+
+gnu_xml_util_SRCS =  	gnu/xml/util/DomParser.java 	gnu/xml/util/DoParse.java 	gnu/xml/util/Resolver.java 	gnu/xml/util/SAXNullTransformerFactory.java 	gnu/xml/util/XCat.java 	gnu/xml/util/XHTMLWriter.java 	gnu/xml/util/XMLWriter.java
 
 java_applet_SRCS =  	java/applet/Applet.java 	java/applet/AppletContext.java 	java/applet/AppletStub.java 	java/applet/AudioClip.java
 
@@ -259,6 +271,8 @@ java_util_regex_SRCS =  	java/util/regex/Matcher.java 	java/util/regex/Pattern.j
 
 java_util_zip_SRCS =  	java/util/zip/Adler32.java 	java/util/zip/CRC32.java 	java/util/zip/CheckedInputStream.java 	java/util/zip/CheckedOutputStream.java 	java/util/zip/Checksum.java 	java/util/zip/DataFormatException.java 	java/util/zip/Deflater.java 	java/util/zip/DeflaterOutputStream.java 	java/util/zip/GZIPInputStream.java 	java/util/zip/GZIPOutputStream.java 	java/util/zip/Inflater.java 	java/util/zip/InflaterInputStream.java 	java/util/zip/ZipConstants.java 	java/util/zip/ZipEntry.java 	java/util/zip/ZipException.java 	java/util/zip/ZipFile.java 	java/util/zip/ZipInputStream.java 	java/util/zip/ZipOutputStream.java
 
+javax_accessibility_SRCS =  	javax/accessibility/AccessibleAction.java 	javax/accessibility/AccessibleBundle.java 	javax/accessibility/AccessibleComponent.java 	javax/accessibility/AccessibleContext.java 	javax/accessibility/AccessibleEditableText.java 	javax/accessibility/AccessibleExtendedComponent.java 	javax/accessibility/AccessibleExtendedTable.java 	javax/accessibility/AccessibleHyperlink.java 	javax/accessibility/AccessibleHypertext.java 	javax/accessibility/AccessibleIcon.java 	javax/accessibility/Accessible.java 	javax/accessibility/AccessibleKeyBinding.java 	javax/accessibility/AccessibleRelation.java 	javax/accessibility/AccessibleRelationSet.java 	javax/accessibility/AccessibleResourceBundle.java 	javax/accessibility/AccessibleRole.java 	javax/accessibility/AccessibleSelection.java 	javax/accessibility/AccessibleState.java 	javax/accessibility/AccessibleStateSet.java 	javax/accessibility/AccessibleTable.java 	javax/accessibility/AccessibleTableModelChange.java 	javax/accessibility/AccessibleText.java 	javax/accessibility/AccessibleValue.java
+
 javax_naming_SRCS =  	javax/naming/AuthenticationException.java 	javax/naming/AuthenticationNotSupportedException.java 	javax/naming/BinaryRefAddr.java 	javax/naming/Binding.java 	javax/naming/CannotProceedException.java 	javax/naming/CommunicationException.java 	javax/naming/CompositeName.java 	javax/naming/CompoundName.java 	javax/naming/ConfigurationException.java 	javax/naming/Context.java 	javax/naming/ContextNotEmptyException.java 	javax/naming/InitialContext.java 	javax/naming/InsufficientResourcesException.java 	javax/naming/InterruptedNamingException.java 	javax/naming/InvalidNameException.java 	javax/naming/LimitExceededException.java 	javax/naming/LinkException.java 	javax/naming/LinkLoopException.java 	javax/naming/LinkRef.java 	javax/naming/MalformedLinkException.java 	javax/naming/NameAlreadyBoundException.java 	javax/naming/NameClassPair.java 	javax/naming/Name.java 	javax/naming/NameNotFoundException.java 	javax/naming/NameParser.java 	javax/naming/NamingEnumeration.java 	javax/naming/NamingException.java 	javax/naming/NamingSecurityException.java 	javax/naming/NoInitialContextException.java 	javax/naming/NoPermissionException.java 	javax/naming/NotContextException.java 	javax/naming/OperationNotSupportedException.java 	javax/naming/PartialResultException.java 	javax/naming/RefAddr.java 	javax/naming/Referenceable.java 	javax/naming/Reference.java 	javax/naming/ReferralException.java 	javax/naming/ServiceUnavailableException.java 	javax/naming/SizeLimitExceededException.java 	javax/naming/StringRefAddr.java 	javax/naming/TimeLimitExceededException.java
 
 javax_naming_directory_SRCS =  	javax/naming/directory/AttributeInUseException.java 	javax/naming/directory/Attribute.java 	javax/naming/directory/AttributeModificationException.java 	javax/naming/directory/Attributes.java 	javax/naming/directory/BasicAttribute.java 	javax/naming/directory/BasicAttributes.java 	javax/naming/directory/DirContext.java 	javax/naming/directory/InitialDirContext.java 	javax/naming/directory/InvalidAttributeIdentifierException.java 	javax/naming/directory/InvalidAttributesException.java 	javax/naming/directory/InvalidAttributeValueException.java 	javax/naming/directory/InvalidSearchControlsException.java 	javax/naming/directory/InvalidSearchFilterException.java 	javax/naming/directory/ModificationItem.java 	javax/naming/directory/NoSuchAttributeException.java 	javax/naming/directory/SchemaViolationException.java 	javax/naming/directory/SearchControls.java 	javax/naming/directory/SearchResult.java
@@ -269,7 +283,15 @@ javax_naming_ldap_SRCS =  	javax/naming/ldap/ControlFactory.java 	javax/naming/l
 
 javax_naming_spi_SRCS =  	javax/naming/spi/DirectoryManager.java 	javax/naming/spi/DirObjectFactory.java 	javax/naming/spi/DirStateFactory.java 	javax/naming/spi/InitialContextFactoryBuilder.java 	javax/naming/spi/InitialContextFactory.java 	javax/naming/spi/NamingManager.java 	javax/naming/spi/ObjectFactoryBuilder.java 	javax/naming/spi/ObjectFactory.java 	javax/naming/spi/ResolveResult.java 	javax/naming/spi/Resolver.java 	javax/naming/spi/StateFactory.java
 
+javax_rmi_SRCS =  	javax/rmi/BAD_OPERATION.java 	javax/rmi/ORB.java 	javax/rmi/PortableRemoteObject.java
+
+javax_rmi_CORBA_SRCS =  	javax/rmi/CORBA/ClassDesc.java 	javax/rmi/CORBA/ObjectImpl.java 	javax/rmi/CORBA/PortableRemoteObjectDelegate.java 	javax/rmi/CORBA/StubDelegate.java 	javax/rmi/CORBA/Stub.java 	javax/rmi/CORBA/SystemException.java 	javax/rmi/CORBA/Tie.java 	javax/rmi/CORBA/UtilDelegate.java 	javax/rmi/CORBA/Util.java 	javax/rmi/CORBA/ValueHandler.java
+
 javax_sound_sampled_SRCS =  	javax/sound/sampled/AudioFileFormat.java 	javax/sound/sampled/AudioFormat.java 	javax/sound/sampled/AudioInputStream.java 	javax/sound/sampled/AudioSystem.java 	javax/sound/sampled/Clip.java 	javax/sound/sampled/Control.java 	javax/sound/sampled/DataLine.java 	javax/sound/sampled/LineEvent.java 	javax/sound/sampled/Line.java 	javax/sound/sampled/LineListener.java 	javax/sound/sampled/LineUnavailableException.java 	javax/sound/sampled/Mixer.java 	javax/sound/sampled/Port.java 	javax/sound/sampled/SourceDataLine.java 	javax/sound/sampled/TargetDataLine.java 	javax/sound/sampled/UnsupportedAudioFileException.java
+
+javax_sql_SRCS =  	javax/sql/ConnectionEvent.java 	javax/sql/ConnectionEventListener.java 	javax/sql/ConnectionPoolDataSource.java 	javax/sql/DataSource.java 	javax/sql/PooledConnection.java 	javax/sql/RowSetEvent.java 	javax/sql/RowSetInternal.java 	javax/sql/RowSet.java 	javax/sql/RowSetListener.java 	javax/sql/RowSetMetaData.java 	javax/sql/RowSetReader.java 	javax/sql/RowSetWriter.java 	javax/sql/XAConnection.java 	javax/sql/XADataSource.java
+
+javax_swing_text_SRCS =  	javax/swing/text/AttributeSet.java 	javax/swing/text/BadLocationException.java
 
 javax_transaction_SRCS =  	javax/transaction/HeuristicCommitException.java 	javax/transaction/HeuristicMixedException.java 	javax/transaction/HeuristicRollbackException.java 	javax/transaction/InvalidTransactionException.java 	javax/transaction/NotSupportedException.java 	javax/transaction/RollbackException.java 	javax/transaction/Status.java 	javax/transaction/Synchronization.java 	javax/transaction/SystemException.java 	javax/transaction/Transaction.java 	javax/transaction/TransactionManager.java 	javax/transaction/TransactionRequiredException.java 	javax/transaction/TransactionRolledbackException.java 	javax/transaction/UserTransaction.java
 
@@ -461,7 +483,10 @@ distdir: $(DISTFILES)
 	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu libraries/javalib/Makefile
 	$(mkinstalldirs) $(distdir)/gnu/java/awt $(distdir)/gnu/java/nio \
 	   $(distdir)/gnu/java/nio/charset $(distdir)/gnu/java/util \
-	   $(distdir)/gnu/java/util/prefs $(distdir)/gnu/regexp \
+	   $(distdir)/gnu/java/util/prefs $(distdir)/gnu/javax/rmi \
+	   $(distdir)/gnu/javax/rmi/CORBA $(distdir)/gnu/regexp \
+	   $(distdir)/gnu/xml/aelfred2 $(distdir)/gnu/xml/dom \
+	   $(distdir)/gnu/xml/pipeline $(distdir)/gnu/xml/util \
 	   $(distdir)/java/applet $(distdir)/java/awt \
 	   $(distdir)/java/awt/color $(distdir)/java/awt/datatransfer \
 	   $(distdir)/java/awt/dnd $(distdir)/java/awt/dnd/peer \
@@ -486,9 +511,12 @@ distdir: $(DISTFILES)
 	   $(distdir)/java/util/jar $(distdir)/java/util/logging \
 	   $(distdir)/java/util/mime $(distdir)/java/util/prefs \
 	   $(distdir)/java/util/regex $(distdir)/java/util/zip \
-	   $(distdir)/javax/naming $(distdir)/javax/naming/directory \
+	   $(distdir)/javax/accessibility $(distdir)/javax/naming \
+	   $(distdir)/javax/naming/directory \
 	   $(distdir)/javax/naming/event $(distdir)/javax/naming/ldap \
-	   $(distdir)/javax/naming/spi $(distdir)/javax/sound/sampled \
+	   $(distdir)/javax/naming/spi $(distdir)/javax/rmi \
+	   $(distdir)/javax/rmi/CORBA $(distdir)/javax/sound/sampled \
+	   $(distdir)/javax/sql $(distdir)/javax/swing/text \
 	   $(distdir)/javax/transaction $(distdir)/javax/transaction/xa \
 	   $(distdir)/javax/xml/parsers $(distdir)/javax/xml/transform \
 	   $(distdir)/javax/xml/transform/dom \

@@ -1,3 +1,152 @@
+2002-12-03 Dalibor Topic <robilad@yahoo.com>
+
+	Added Aelfred2 XML parser from GNU jaxp. Added
+	javax.accessibility, javax.rmi, javax.rmi.CORBA,
+	javax.sql, javax.swing.text from GNU Classpath.
+
+	* FAQ/FAQ.awt: updated with info on Qt 2 and
+	building with static vs. shared libraries.
+	
+	* libraries/javalib/Makefile.am:
+	added new files and packages.
+	* libraries/javalib/Makefile.in: regenerated.
+	
+	* libraries/javalib/gnu/javax/rmi/CORBA/DelegateFactory.java,
+	libraries/javalib/gnu/javax/rmi/CORBA/GetDelegateInstanceException.java,
+	libraries/javalib/gnu/javax/rmi/CORBA/PortableRemoteObjectDelegateImpl.java,
+	libraries/javalib/gnu/javax/rmi/CORBA/StubDelegateImpl.java,
+	libraries/javalib/gnu/javax/rmi/CORBA/UtilDelegateImpl.java,
+	libraries/javalib/gnu/javax/rmi/CORBA/ValueHandlerImpl.java:
+	new files taken from GNU Classpath.
+	
+	* libraries/javalib/gnu/javax/rmi/PortableServer.java:
+	new file from GNU Classpath.
+	
+	* libraries/javalib/gnu/xml/aelfred2/JAXPFactory.java,
+	libraries/javalib/gnu/xml/aelfred2/SAXDriver.java,
+	libraries/javalib/gnu/xml/aelfred2/XmlParser.java,
+	libraries/javalib/gnu/xml/aelfred2/XmlReader.java:
+	new files from GNU jaxp.
+	
+	* libraries/javalib/gnu/xml/dom/Consumer.java,
+	libraries/javalib/gnu/xml/dom/DomAttr.java,
+	libraries/javalib/gnu/xml/dom/DomCDATA.java,
+	libraries/javalib/gnu/xml/dom/DomCharacterData.java,
+	libraries/javalib/gnu/xml/dom/DomComment.java,
+	libraries/javalib/gnu/xml/dom/DomDoctype.java,
+	libraries/javalib/gnu/xml/dom/DomDocument.java,
+	libraries/javalib/gnu/xml/dom/DomElement.java,
+	libraries/javalib/gnu/xml/dom/DomEntity.java,
+	libraries/javalib/gnu/xml/dom/DomEntityReference.java,
+	libraries/javalib/gnu/xml/dom/DomEvent.java,
+	libraries/javalib/gnu/xml/dom/DomEx.java,
+	libraries/javalib/gnu/xml/dom/DomExtern.java,
+	libraries/javalib/gnu/xml/dom/DomFragment.java,
+	libraries/javalib/gnu/xml/dom/DomImpl.java,
+	libraries/javalib/gnu/xml/dom/DomIterator.java,
+	libraries/javalib/gnu/xml/dom/DomNamedNodeMap.java,
+	libraries/javalib/gnu/xml/dom/DomNode.java,
+	libraries/javalib/gnu/xml/dom/DomNotation.java,
+	libraries/javalib/gnu/xml/dom/DomNsNode.java,
+	libraries/javalib/gnu/xml/dom/DomPI.java,
+	libraries/javalib/gnu/xml/dom/DomText.java,
+	libraries/javalib/gnu/xml/dom/JAXPFactory.java:
+	new files from GNU jaxp.
+	
+	* libraries/javalib/gnu/xml/pipeline/CallFilter.java,
+	libraries/javalib/gnu/xml/pipeline/DomConsumer.java,
+	libraries/javalib/gnu/xml/pipeline/EventConsumer.java,
+	libraries/javalib/gnu/xml/pipeline/EventFilter.java,
+	libraries/javalib/gnu/xml/pipeline/LinkFilter.java,
+	libraries/javalib/gnu/xml/pipeline/NSFilter.java,
+	libraries/javalib/gnu/xml/pipeline/PipelineFactory.java,
+	libraries/javalib/gnu/xml/pipeline/TeeConsumer.java,
+	libraries/javalib/gnu/xml/pipeline/TextConsumer.java,
+	libraries/javalib/gnu/xml/pipeline/ValidationConsumer.java,
+	libraries/javalib/gnu/xml/pipeline/WellFormednessFilter.java,
+	libraries/javalib/gnu/xml/pipeline/XIncludeFilter.java,
+	libraries/javalib/gnu/xml/pipeline/XsltFilter.java:
+	new files from GNU jaxp.
+	
+	* libraries/javalib/gnu/xml/util/DoParse.java,
+	libraries/javalib/gnu/xml/util/DomParser.java,
+	libraries/javalib/gnu/xml/util/Resolver.java,
+	libraries/javalib/gnu/xml/util/SAXNullTransformerFactory.java,
+	libraries/javalib/gnu/xml/util/XCat.java,
+	libraries/javalib/gnu/xml/util/XHTMLWriter.java,
+	libraries/javalib/gnu/xml/util/XMLWriter.java:
+	new files from GNU jaxp.
+	
+	* libraries/javalib/java/lang/ClassNotFoundException.java:
+	Replaced with implementation from GNU Classpath.
+	(ClassNotFoundException) new constructor accepting a cause.
+	
+	* libraries/javalib/javax/accessibility/Accessible.java,
+	libraries/javalib/javax/accessibility/AccessibleAction.java,
+	libraries/javalib/javax/accessibility/AccessibleBundle.java,
+	libraries/javalib/javax/accessibility/AccessibleComponent.java,
+	libraries/javalib/javax/accessibility/AccessibleContext.java,
+	libraries/javalib/javax/accessibility/AccessibleEditableText.java,
+	libraries/javalib/javax/accessibility/AccessibleExtendedComponent.java,
+	libraries/javalib/javax/accessibility/AccessibleExtendedTable.java,
+	libraries/javalib/javax/accessibility/AccessibleHyperlink.java,
+	libraries/javalib/javax/accessibility/AccessibleHypertext.java,
+	libraries/javalib/javax/accessibility/AccessibleIcon.java,
+	libraries/javalib/javax/accessibility/AccessibleKeyBinding.java,
+	libraries/javalib/javax/accessibility/AccessibleRelation.java,
+	libraries/javalib/javax/accessibility/AccessibleRelationSet.java,
+	libraries/javalib/javax/accessibility/AccessibleResourceBundle.java,
+	libraries/javalib/javax/accessibility/AccessibleRole.java,
+	libraries/javalib/javax/accessibility/AccessibleSelection.java,
+	libraries/javalib/javax/accessibility/AccessibleState.java,
+	libraries/javalib/javax/accessibility/AccessibleStateSet.java,
+	libraries/javalib/javax/accessibility/AccessibleTable.java,
+	libraries/javalib/javax/accessibility/AccessibleTableModelChange.java,
+	libraries/javalib/javax/accessibility/AccessibleText.java,
+	libraries/javalib/javax/accessibility/AccessibleValue.java:
+	new files from GNU Classpath.
+	
+	* libraries/javalib/javax/rmi/CORBA/ClassDesc.java,
+	libraries/javalib/javax/rmi/CORBA/ObjectImpl.java,
+	libraries/javalib/javax/rmi/CORBA/PortableRemoteObjectDelegate.java,
+	libraries/javalib/javax/rmi/CORBA/Stub.java,
+	libraries/javalib/javax/rmi/CORBA/StubDelegate.java,
+	libraries/javalib/javax/rmi/CORBA/SystemException.java,
+	libraries/javalib/javax/rmi/CORBA/Tie.java,
+	libraries/javalib/javax/rmi/CORBA/Util.java,
+	libraries/javalib/javax/rmi/CORBA/UtilDelegate.java,
+	libraries/javalib/javax/rmi/CORBA/ValueHandler.java:
+	new files from GNU Classpath.
+
+	* libraries/javalib/javax/rmi/BAD_OPERATION.java,
+	libraries/javalib/javax/rmi/ORB.java,
+	libraries/javalib/javax/rmi/PortableRemoteObject.java:
+	new files from GNU Classpath.
+	
+	* libraries/javalib/javax/sound/sampled/Clip.java:
+	(open) added missing method. Necessary for ant 1.5.1
+	to build.
+	
+	* libraries/javalib/javax/sql/ConnectionEvent.java,
+	libraries/javalib/javax/sql/ConnectionEventListener.java,
+	libraries/javalib/javax/sql/ConnectionPoolDataSource.java,
+	libraries/javalib/javax/sql/DataSource.java,
+	libraries/javalib/javax/sql/PooledConnection.java,
+	libraries/javalib/javax/sql/RowSet.java,
+	libraries/javalib/javax/sql/RowSetEvent.java,
+	libraries/javalib/javax/sql/RowSetInternal.java,
+	libraries/javalib/javax/sql/RowSetListener.java,
+	libraries/javalib/javax/sql/RowSetMetaData.java,
+	libraries/javalib/javax/sql/RowSetReader.java,
+	libraries/javalib/javax/sql/RowSetWriter.java,
+	libraries/javalib/javax/sql/XAConnection.java,
+	libraries/javalib/javax/sql/XADataSource.java:
+	new files from GNU Classpath.
+	
+	* libraries/javalib/javax/swing/text/AttributeSet.java,
+	libraries/javalib/javax/swing/text/BadLocationException.java,
+	new files from GNU Classpath.
+
 2002-12-02 Dalibor Topic <robilad@yahoo.com>
 
 	Upgraded libtool and libltdl files to libtool 1.4.3.

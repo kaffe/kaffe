@@ -12,6 +12,8 @@ What's New since Kaffe OpenVM 1.0.7
 * Many improvements to serialization, localization,
   and reflection.
 
+* Built-in XML parser (Aelfred2).
+
 * New packages:
 
   * java.awt.color
@@ -29,12 +31,17 @@ What's New since Kaffe OpenVM 1.0.7
   * java.util.logging
   * java.util.prefs
   * java.util.regex
+  * javax.accessibility
   * javax.naming
   * javax.naming.directory
   * javax.naming.event
   * javax.naming.ldap
   * javax.naming.spi
+  * javax.rmi
+  * javax.rmi.CORBA
   * javax.sound.sampled
+  * javax.sql
+  * javax.swing.text
   * javax.transaction
   * javax.transaction.xa
   * javax.xml.parsers

@@ -48,11 +48,17 @@ Currently you have the choice between:
 * --with-awt=qt
 
   a Qt based AWT backend. It uses Trolltech's cross-platform graphical
-  library. It works with Qt 3, embedded or x11 version. It may work
-  with Qt 2, or with other versions of Qt 3 (Win32, OS X), but it has
-  not been tested in such configurations. If you can test it in such
-  configurations, please report your experiences to the Kaffe Mailing
-  List, kaffe@kaffe.org.
+  library. It works with Qt 3 and Qt 2, embedded or x11 version. It
+  may work with other versions of Qt 3 or Qt 2 (Win32, OS X), but it
+  has not been tested in such configurations. If you can test it in
+  such configurations, please report your experiences to the Kaffe
+  Mailing List, kaffe@kaffe.org.
+
+  If you are developing against a dynamically linked version of Qt,
+  you need to compile kaffe with dynamically linked libraries. If you
+  are developing against a static version of Qt, you need to compile
+  kaffe with statically linked libraries. In general, you should try
+  to match linking types of libraries.
 
   In order to compile the Qt based AWT backend, you need to have an
   installation of Qt libraries including the moc compiler and the Qt

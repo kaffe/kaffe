@@ -66,6 +66,8 @@ Rest_SRCS = \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
 	$(gnu_java_util_prefs_SRCS) \
+	$(gnu_javax_rmi_SRCS) \
+	$(gnu_javax_rmi_CORBA_SRCS) \
 	$(java_beans_SRCS) \
 	$(java_beans_beancontext_SRCS) \
 	$(java_nio_SRCS) \
@@ -76,6 +78,11 @@ Rest_SRCS = \
 	$(java_util_logging_SRCS) \
 	$(java_util_mime_SRCS) \
 	$(java_util_prefs_SRCS) \
+	$(javax_accessibility_SRCS) \
+	$(javax_rmi_SRCS) \
+	$(javax_rmi_CORBA_SRCS) \
+	$(javax_sql_SRCS) \
+	$(javax_swing_text_SRCS) \
 	$(kaffe_beans_editors_SRCS) \
 	$(kaffe_net_www_protocol_SRCS) \
 	$(kaffe_net_www_protocol_file_SRCS) \
@@ -88,6 +95,10 @@ Rest_SRCS = \
 	$(kaffe_text_numberformat_SRCS) \
 	$(kaffe_util_locale_SRCS) 
 RMI_SRCS = \
+	$(gnu_xml_aelfred2_SRCS) \
+	$(gnu_xml_dom_SRCS) \
+	$(gnu_xml_pipeline_SRCS) \
+	$(gnu_xml_util_SRCS) \
 	$(java_rmi_SRCS) \
 	$(java_rmi_activation_SRCS) \
 	$(java_rmi_dgc_SRCS) \
@@ -169,6 +180,15 @@ gnu_java_util_prefs_SRCS = \
 	gnu/java/util/prefs/MemoryBasedPreferences.java \
 	gnu/java/util/prefs/NodeReader.java \
 	gnu/java/util/prefs/NodeWriter.java
+gnu_javax_rmi_SRCS = \
+	gnu/javax/rmi/PortableServer.java
+gnu_javax_rmi_CORBA_SRCS = \
+	gnu/javax/rmi/CORBA/DelegateFactory.java \
+	gnu/javax/rmi/CORBA/GetDelegateInstanceException.java \
+	gnu/javax/rmi/CORBA/PortableRemoteObjectDelegateImpl.java \
+	gnu/javax/rmi/CORBA/StubDelegateImpl.java \
+	gnu/javax/rmi/CORBA/UtilDelegateImpl.java \
+	gnu/javax/rmi/CORBA/ValueHandlerImpl.java
 gnu_regexp_SRCS = \
 	gnu/regexp/CharIndexedCharArray.java \
 	gnu/regexp/CharIndexedInputStream.java \
@@ -197,6 +217,57 @@ gnu_regexp_SRCS = \
 	gnu/regexp/RETokenStart.java \
 	gnu/regexp/RETokenWordBoundary.java \
 	gnu/regexp/UncheckedRE.java
+gnu_xml_aelfred2_SRCS = \
+	gnu/xml/aelfred2/JAXPFactory.java \
+	gnu/xml/aelfred2/SAXDriver.java \
+	gnu/xml/aelfred2/XmlParser.java \
+	gnu/xml/aelfred2/XmlReader.java
+gnu_xml_dom_SRCS =\
+	gnu/xml/dom/Consumer.java \
+	gnu/xml/dom/DomAttr.java \
+	gnu/xml/dom/DomCDATA.java \
+	gnu/xml/dom/DomCharacterData.java \
+	gnu/xml/dom/DomComment.java \
+	gnu/xml/dom/DomDoctype.java \
+	gnu/xml/dom/DomDocument.java \
+	gnu/xml/dom/DomElement.java \
+	gnu/xml/dom/DomEntity.java \
+	gnu/xml/dom/DomEntityReference.java \
+	gnu/xml/dom/DomEvent.java \
+	gnu/xml/dom/DomEx.java \
+	gnu/xml/dom/DomExtern.java \
+	gnu/xml/dom/DomFragment.java \
+	gnu/xml/dom/DomImpl.java \
+	gnu/xml/dom/DomIterator.java \
+	gnu/xml/dom/DomNamedNodeMap.java \
+	gnu/xml/dom/DomNode.java \
+	gnu/xml/dom/DomNotation.java \
+	gnu/xml/dom/DomNsNode.java \
+	gnu/xml/dom/DomPI.java \
+	gnu/xml/dom/DomText.java \
+	gnu/xml/dom/JAXPFactory.java
+gnu_xml_pipeline_SRCS = \
+	gnu/xml/pipeline/CallFilter.java \
+	gnu/xml/pipeline/DomConsumer.java \
+	gnu/xml/pipeline/EventConsumer.java \
+	gnu/xml/pipeline/EventFilter.java \
+	gnu/xml/pipeline/LinkFilter.java \
+	gnu/xml/pipeline/NSFilter.java \
+	gnu/xml/pipeline/PipelineFactory.java \
+	gnu/xml/pipeline/TeeConsumer.java \
+	gnu/xml/pipeline/TextConsumer.java \
+	gnu/xml/pipeline/ValidationConsumer.java \
+	gnu/xml/pipeline/WellFormednessFilter.java \
+	gnu/xml/pipeline/XIncludeFilter.java \
+	gnu/xml/pipeline/XsltFilter.java
+gnu_xml_util_SRCS = \
+	gnu/xml/util/DomParser.java \
+	gnu/xml/util/DoParse.java \
+	gnu/xml/util/Resolver.java \
+	gnu/xml/util/SAXNullTransformerFactory.java \
+	gnu/xml/util/XCat.java \
+	gnu/xml/util/XHTMLWriter.java \
+	gnu/xml/util/XMLWriter.java
 java_applet_SRCS = \
 	java/applet/Applet.java \
 	java/applet/AppletContext.java \
@@ -1164,6 +1235,30 @@ java_util_zip_SRCS = \
 	java/util/zip/ZipFile.java \
 	java/util/zip/ZipInputStream.java \
 	java/util/zip/ZipOutputStream.java
+javax_accessibility_SRCS = \
+	javax/accessibility/AccessibleAction.java \
+	javax/accessibility/AccessibleBundle.java \
+	javax/accessibility/AccessibleComponent.java \
+	javax/accessibility/AccessibleContext.java \
+	javax/accessibility/AccessibleEditableText.java \
+	javax/accessibility/AccessibleExtendedComponent.java \
+	javax/accessibility/AccessibleExtendedTable.java \
+	javax/accessibility/AccessibleHyperlink.java \
+	javax/accessibility/AccessibleHypertext.java \
+	javax/accessibility/AccessibleIcon.java \
+	javax/accessibility/Accessible.java \
+	javax/accessibility/AccessibleKeyBinding.java \
+	javax/accessibility/AccessibleRelation.java \
+	javax/accessibility/AccessibleRelationSet.java \
+	javax/accessibility/AccessibleResourceBundle.java \
+	javax/accessibility/AccessibleRole.java \
+	javax/accessibility/AccessibleSelection.java \
+	javax/accessibility/AccessibleState.java \
+	javax/accessibility/AccessibleStateSet.java \
+	javax/accessibility/AccessibleTable.java \
+	javax/accessibility/AccessibleTableModelChange.java \
+	javax/accessibility/AccessibleText.java \
+	javax/accessibility/AccessibleValue.java
 javax_naming_SRCS = \
 	javax/naming/AuthenticationException.java \
 	javax/naming/AuthenticationNotSupportedException.java \
@@ -1257,6 +1352,21 @@ javax_naming_spi_SRCS = \
 	javax/naming/spi/ResolveResult.java \
 	javax/naming/spi/Resolver.java \
 	javax/naming/spi/StateFactory.java
+javax_rmi_SRCS = \
+	javax/rmi/BAD_OPERATION.java \
+	javax/rmi/ORB.java \
+	javax/rmi/PortableRemoteObject.java
+javax_rmi_CORBA_SRCS = \
+	javax/rmi/CORBA/ClassDesc.java \
+	javax/rmi/CORBA/ObjectImpl.java \
+	javax/rmi/CORBA/PortableRemoteObjectDelegate.java \
+	javax/rmi/CORBA/StubDelegate.java \
+	javax/rmi/CORBA/Stub.java \
+	javax/rmi/CORBA/SystemException.java \
+	javax/rmi/CORBA/Tie.java \
+	javax/rmi/CORBA/UtilDelegate.java \
+	javax/rmi/CORBA/Util.java \
+	javax/rmi/CORBA/ValueHandler.java
 javax_sound_sampled_SRCS = \
 	javax/sound/sampled/AudioFileFormat.java \
 	javax/sound/sampled/AudioFormat.java \
@@ -1274,6 +1384,24 @@ javax_sound_sampled_SRCS = \
 	javax/sound/sampled/SourceDataLine.java \
 	javax/sound/sampled/TargetDataLine.java \
 	javax/sound/sampled/UnsupportedAudioFileException.java
+javax_sql_SRCS = \
+	javax/sql/ConnectionEvent.java \
+	javax/sql/ConnectionEventListener.java \
+	javax/sql/ConnectionPoolDataSource.java \
+	javax/sql/DataSource.java \
+	javax/sql/PooledConnection.java \
+	javax/sql/RowSetEvent.java \
+	javax/sql/RowSetInternal.java \
+	javax/sql/RowSet.java \
+	javax/sql/RowSetListener.java \
+	javax/sql/RowSetMetaData.java \
+	javax/sql/RowSetReader.java \
+	javax/sql/RowSetWriter.java \
+	javax/sql/XAConnection.java \
+	javax/sql/XADataSource.java
+javax_swing_text_SRCS = \
+	javax/swing/text/AttributeSet.java \
+	javax/swing/text/BadLocationException.java
 javax_transaction_SRCS = \
 	javax/transaction/HeuristicCommitException.java \
 	javax/transaction/HeuristicMixedException.java \

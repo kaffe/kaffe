@@ -6,6 +6,7 @@
  */
 package javax.sound.sampled;
 
+import java.io.IOException;
 
 /**
  * The Clip interface represents a special kind of data line whose
@@ -21,6 +22,8 @@ public interface Clip
                     byte[] data,
                     int offset,
                     int bufferSize) throws LineUnavailableException;
+
+  public void open (AudioInputStream stream) throws LineUnavailableException, IOException;
 
   public int getFrameLength ();
 
