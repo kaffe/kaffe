@@ -72,6 +72,8 @@ static struct debug_opts
 	D(GCALLOC,   "Debug gc_heap_alloc*"),
 	D(GCFREE,   "Debug gc_heap_free*"),
 	D(GCSYSALLOC,   "Show allocations of system memory"),
+	D(GCWALK,   "Show gc walking"),
+	D(GCPRECISE, "Debug precise collection of the heap."),
 	D(GCSTAT,   "Show allocation statistics"),
 	{ "GCMEM", DBG_GCPRIM|DBG_GCALLOC|DBG_GCFREE|DBG_GCSYSALLOC|DBG_GCSTAT, 
 			"All allocation and free operations in gc-mem" },
@@ -91,6 +93,10 @@ static struct debug_opts
 	D(JIT, 	"Debug JIT compiler--show emitted instructions."),
 	D(MOREJIT, 	"Debug JIT compiler--show callinfo."),
 	D(NOGC,	"Turn garbage collection off."),
+	D(STATICINIT,	"Announce when static initializers are called."),
+	D(CLASSFILE,	"Show when methods and fields are added."),
+	D(RESERROR,	"Show error in class file resolution."),
+	D(VMCLASSLOADER,"Announce when VM calls class loaders.."),
 
 	/* you can define combinations too */
 	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP, 

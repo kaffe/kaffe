@@ -68,6 +68,12 @@
 # define DBG_NOGC		DBG_BIT(28) 
 # define DBG_JIT		DBG_BIT(29) 
 # define DBG_MOREJIT		DBG_BIT(30) 
+# define DBG_STATICINIT		DBG_BIT(31) 
+# define DBG_RESERROR		DBG_BIT(32)
+# define DBG_GCPRECISE		DBG_BIT(33)
+# define DBG_CLASSFILE		DBG_BIT(34)
+# define DBG_VMCLASSLOADER	DBG_BIT(35)
+# define DBG_GCWALK		DBG_BIT(36)
 
 /* let's reserve 50-63 for temporary uses */
 # define DBG_SLACKANAL		DBG_BIT(50) 
