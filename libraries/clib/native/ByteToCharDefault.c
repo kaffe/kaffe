@@ -14,6 +14,7 @@
  */
 
 
+#include "config.h"
 #include "kaffe_io_ByteToCharDefault.h"
 
 

@@ -23,20 +23,9 @@
 #define STRING_DATA(STR)	\
 		(&(unhand_array(unhand(STR)->value)->body[unhand(STR)->offset]))
 
-/* Create a String object from the supplied C (not UTF-8!) string */
-extern Hjava_lang_String* stringC2Java(const char*);
-
 /* Return the interned String object having the char array value.
    Create and intern a new String if necessary. */
 extern Hjava_lang_String* stringCharArray2Java(const jchar*, int);
-
-/* Convert a String object into a C string (truncating the higher 8 bits).
-   Returns the string in an KMALLOC()'d buffer. Caller is responsible for
-   calling KFREE() on the buffer when finished. */
-extern char*		  stringJava2C(const Hjava_lang_String*);
-
-/* Like stringJava2C() but use a caller-supplied buffer instead of KMALLOC() */
-extern char*		  stringJava2CBuf(const Hjava_lang_String*, char*, int);
 
 /* Create a Utf8Const object from a String object after replacing all 
    occurrences of the first character with the second. 
@@ -74,9 +63,5 @@ extern Hjava_lang_String* utf8Const2Java(const Utf8Const*);
    of the first character with the second. */
 extern Hjava_lang_String* utf8Const2JavaReplace(const Utf8Const *,
 				jchar, jchar);
-
-/* Compare a Utf8Const and a String object */
-extern int		  utf8ConstEqualJavaString(const Utf8Const*,
-				const Hjava_lang_String*);
 
 #endif

@@ -1,3 +1,25 @@
+2004-03-26  Adam Heath <doogie@debian.org>
+
+        * kaffe/kaffeh/main.c,
+        kaffe/kaffevm/baseClasses.c,
+        kaffe/kaffevm/classMethod.h,
+        kaffe/kaffevm/file.h,
+        kaffe/kaffevm/stringSupport.h,
+        kaffe/kaffevm/verify-debug.h,
+        kaffe/kaffevm/gcj/gcj.h,
+        kaffe/kaffevm/jit3/labels.h,
+        kaffe/kaffevm/jit3/registers.h,
+        kaffe/xprof/mangle.h,
+        libraries/clib/awt/X/cbd.c,
+        libraries/clib/awt/X/fnt.c,
+        libraries/clib/awt/X/toolkit.h,
+        libraries/clib/native/ByteToCharDefault.c,
+        libraries/clib/native/CharToByteDefault.c,
+        libraries/clib/native/Compiler.c,
+        libraries/extensions/sound/common/common.h,
+        libraries/extensions/sound/esd/common.h:
+	Fixed tons of compiler warnings.
+
 2004-03-26  Dalibor Topic <robilad@kaffe.org>
 
 	* config/i386/jit3-i386.def:

@@ -91,8 +91,7 @@ checkBufSize(classFile* cf, int need, const char* cfname, errorInfo* einfo)
 		else
 			postExceptionMessage(einfo,
 					     JAVA_LANG(ClassFormatError),
-					     "Truncated class file",
-					     cfname);
+					     "Truncated class file");
 			
 		return false;
 	}

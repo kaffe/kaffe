@@ -211,10 +211,4 @@ extern void slot_kill_readonce(SlotData*);
 extern void HAVE_kill_readonce_register(SlotData *s);
 #endif
 
-extern void HAVE_move_register_int(int, int);
-extern void HAVE_move_register_ref(int, int);
-extern void HAVE_move_register_long(int, int);
-extern void HAVE_move_register_float(int, int);
-extern void HAVE_move_register_double(int, int);
-
 #endif

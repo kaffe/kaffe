@@ -255,7 +255,7 @@ static inline void* _awt_malloc_wrapper ( size_t size )
   return adr;
 }
 
-static inline void* _awt_calloc_wrapper ( int n, size_t size )
+static inline void* _awt_calloc_wrapper ( size_t n, size_t size )
 {
   void *adr;
   enterUnsafeRegion();
@@ -289,51 +289,51 @@ static inline void _awt_free_wrapper ( void* adr )
  */
 
 
-static inline char* java2CString ( JNIEnv *env, Toolkit* X, jstring jstr ) {
+static inline char* java2CString ( JNIEnv *env, Toolkit* tk, jstring jstr ) {
   jboolean isCopy;
-  register int i;
-  int      n = (*env)->GetStringLength( env, jstr);
+  register unsigned int i;
+  jsize n = (*env)->GetStringLength( env, jstr);
   const jchar    *jc = (*env)->GetStringChars( env, jstr, &isCopy);
 
-  if ( n >= X->nBuf ) {
-	if ( X->buf )
-	  AWT_FREE( X->buf);
-	X->buf = AWT_MALLOC( n+1);
-	X->nBuf = n+1;
+  if ( n >= tk->nBuf ) {
+	if ( tk->buf )
+	  AWT_FREE( tk->buf);
+	tk->buf = AWT_MALLOC( n+1);
+	tk->nBuf = n+1;
   }
 
-  for ( i=0; i<n; i++ ) X->buf[i] = (char) jc[i];
-  X->buf[i] = 0;
+  for ( i=0; i<n; i++ ) tk->buf[i] = (char) jc[i];
+  tk->buf[i] = 0;
   (*env)->ReleaseStringChars( env, jstr, jc);
 
-  return X->buf;
+  return tk->buf;
 }
 
-static inline char* jchar2CString ( Toolkit* X, jchar* jc, int len ) {
-  register int i;
-  int      n = len+1;
+static inline char* jchar2CString ( Toolkit* tk, jchar* jc, size_t len ) {
+  register size_t i;
+  size_t  n = len+1;
   
-  if ( n > X->nBuf ) {
-	if ( X->buf )
-	  AWT_FREE( X->buf);
-	X->buf  = AWT_MALLOC( n);
-	X->nBuf = n;
+  if ( n > tk->nBuf ) {
+	if ( tk->buf )
+	  AWT_FREE( tk->buf);
+	tk->buf  = AWT_MALLOC( n);
+	tk->nBuf = n;
   }
 
-  for ( i=0; i<len; i++ ) X->buf[i] = (char) jc[i];
-  X->buf[i] = 0;
+  for ( i=0; i<len; i++ ) tk->buf[i] = (char) jc[i];
+  tk->buf[i] = 0;
 
-  return X->buf;
+  return tk->buf;
 }
 
-static inline void* getBuffer ( Toolkit* X, unsigned int nBytes ) {
-  if ( nBytes > X->nBuf ) {
-	if ( X->buf )
-	  AWT_FREE( X->buf);
-	X->buf  = AWT_MALLOC( nBytes);
-	X->nBuf = nBytes;
+static inline void* getBuffer ( Toolkit* tk, unsigned int nBytes ) {
+  if ( nBytes > tk->nBuf ) {
+	if ( tk->buf )
+	  AWT_FREE( tk->buf);
+	tk->buf  = AWT_MALLOC( nBytes);
+	tk->nBuf = nBytes;
   }
-  return X->buf;
+  return tk->buf;
 }
 
 #ifdef KAFFE_I18N
@@ -371,9 +371,9 @@ static inline wchar_t* jbyte2wchar( jbyte *jc, int len ) {
 #define CM_DIRECT       4
 #define CM_GENERIC      5  /* grays, DirectColor (packed) etc. */
 
-int needsFullAlpha ( Toolkit* X, Image *img, double threshold );
+int needsFullAlpha ( Toolkit* tk, Image *img, double threshold );
 
-void initColorMapping ( JNIEnv* env, jclass clazz, Toolkit* X);
+void initColorMapping ( JNIEnv* env, jclass clazz, Toolkit* tk);
 jlong Java_java_awt_Toolkit_clrBright ( JNIEnv* env, jclass clazz, jint rgb );
 jlong Java_java_awt_Toolkit_clrDark ( JNIEnv* env, jclass clazz, jint rgb );
 
@@ -404,28 +404,28 @@ jlong Java_java_awt_Toolkit_clrDark ( JNIEnv* env, jclass clazz, jint rgb );
 
 
 static inline jint
-pixelValue ( Toolkit* X, jint rgb )
+pixelValue ( Toolkit* tk, jint rgb )
 {
   int      r,g,b;
   XColor   xclr;
 
-  switch ( X->colorMode ) {
+  switch ( tk->colorMode ) {
   case CM_PSEUDO_256:
-	return X->pclr->pix [JI8(JRED(rgb))] [JI8(JGREEN(rgb))] [JI8(JBLUE(rgb))];
+	return tk->pclr->pix [JI8(JRED(rgb))] [JI8(JGREEN(rgb))] [JI8(JBLUE(rgb))];
 
   case CM_TRUE:
-	SIGNED_RSHIFT( b, (rgb & X->tclr->blueMask), X->tclr->blueShift);
-	SIGNED_RSHIFT( g, (rgb & X->tclr->greenMask), X->tclr->greenShift);
-	SIGNED_RSHIFT( r, (rgb & X->tclr->redMask), X->tclr->redShift);
+	SIGNED_RSHIFT( b, (rgb & tk->tclr->blueMask), tk->tclr->blueShift);
+	SIGNED_RSHIFT( g, (rgb & tk->tclr->greenMask), tk->tclr->greenShift);
+	SIGNED_RSHIFT( r, (rgb & tk->tclr->redMask), tk->tclr->redShift);
 	return ( b | g | r );
 
   case CM_TRUE_888:
 	return (rgb & 0xffffff);
 
   case CM_DIRECT:
-	return (((jint)X->dclr->redPix[JRED(rgb)]     << X->dclr->redShift) |
-			((jint)X->dclr->greenPix[JGREEN(rgb)] << X->dclr->greenShift) |
-			((jint)X->dclr->bluePix[JBLUE(rgb)]   << X->dclr->blueShift));
+	return (((jint)tk->dclr->redPix[JRED(rgb)]     << tk->dclr->redShift) |
+			((jint)tk->dclr->greenPix[JGREEN(rgb)] << tk->dclr->greenShift) |
+			((jint)tk->dclr->bluePix[JBLUE(rgb)]   << tk->dclr->blueShift));
 
   default:
 	/*
@@ -436,36 +436,36 @@ pixelValue ( Toolkit* X, jint rgb )
 	xclr.green = (rgb & 0xff00);
 	xclr.blue = (rgb & 0xff) << 8;
 	xclr.flags = DoRed | DoGreen | DoBlue;
-	XAllocColor( X->dsp, DefaultColormapOfScreen( DefaultScreenOfDisplay( X->dsp)), &xclr);
+	XAllocColor( tk->dsp, DefaultColormapOfScreen( DefaultScreenOfDisplay( tk->dsp)), &xclr);
 	return xclr.pixel;
   }
 }
 
 static inline void
-rgbValues ( Toolkit* X, unsigned long pixel, int* r, int* g, int* b )
+rgbValues ( Toolkit* tk, unsigned long pixel, int* r, int* g, int* b )
 {
   Visual         *v;
   XColor         xclr;
 
-  switch ( X->colorMode ) {
+  switch ( tk->colorMode ) {
   case CM_PSEUDO_256:
-	*r = X->pclr->rgb[(unsigned char)pixel].r;
-	*g = X->pclr->rgb[(unsigned char)pixel].g;
-	*b = X->pclr->rgb[(unsigned char)pixel].b;
+	*r = tk->pclr->rgb[(unsigned char)pixel].r;
+	*g = tk->pclr->rgb[(unsigned char)pixel].g;
+	*b = tk->pclr->rgb[(unsigned char)pixel].b;
 	break;
 
   case CM_TRUE:
-	v = DefaultVisual( X->dsp, DefaultScreen( X->dsp));
-	SIGNED_LSHIFT( *r, (pixel & v->red_mask), X->tclr->redShift);
-	SIGNED_LSHIFT( *g, (pixel & v->green_mask), X->tclr->greenShift);
-	SIGNED_LSHIFT( *b, (pixel & v->blue_mask), X->tclr->blueShift);
+	v = DefaultVisual( tk->dsp, DefaultScreen( tk->dsp));
+	SIGNED_LSHIFT( *r, (pixel & v->red_mask), tk->tclr->redShift);
+	SIGNED_LSHIFT( *g, (pixel & v->green_mask), tk->tclr->greenShift);
+	SIGNED_LSHIFT( *b, (pixel & v->blue_mask), tk->tclr->blueShift);
 	*r >>= 16;
 	*g >>= 8;
 	break;
 /*
-	*r = ((pixel & v->red_mask)   << X->tclr->redShift)   >> 16;
-	*g = ((pixel & v->green_mask) << X->tclr->greenShift) >> 8;
-	*b = ((pixel & v->blue_mask)  << X->tclr->blueShift);
+	*r = ((pixel & v->red_mask)   << tk->tclr->redShift)   >> 16;
+	*g = ((pixel & v->green_mask) << tk->tclr->greenShift) >> 8;
+	*b = ((pixel & v->blue_mask)  << tk->tclr->blueShift);
 	break;
 */
   case CM_TRUE_888:
@@ -475,10 +475,10 @@ rgbValues ( Toolkit* X, unsigned long pixel, int* r, int* g, int* b )
 	break;
 
   case CM_DIRECT:
-	v = DefaultVisual( X->dsp, DefaultScreen( X->dsp));
-	*r = X->dclr->red[   ((pixel & v->red_mask) >> X->dclr->redShift) ];
-	*g = X->dclr->green[ ((pixel & v->green_mask) >> X->dclr->greenShift) ];
-	*b = X->dclr->blue[  ((pixel & v->blue_mask) >> X->dclr->blueShift) ];
+	v = DefaultVisual( tk->dsp, DefaultScreen( tk->dsp));
+	*r = tk->dclr->red[   ((pixel & v->red_mask) >> tk->dclr->redShift) ];
+	*g = tk->dclr->green[ ((pixel & v->green_mask) >> tk->dclr->greenShift) ];
+	*b = tk->dclr->blue[  ((pixel & v->blue_mask) >> tk->dclr->blueShift) ];
 	break;
 
   default:
@@ -487,7 +487,7 @@ rgbValues ( Toolkit* X, unsigned long pixel, int* r, int* g, int* b )
 	 * slow (esp. for images) because XAllocColor is a roundtrip
 	 */
 	xclr.pixel = pixel;
-	XQueryColor( X->dsp, DefaultColormapOfScreen( DefaultScreenOfDisplay( X->dsp)), &xclr);
+	XQueryColor( tk->dsp, DefaultColormapOfScreen( DefaultScreenOfDisplay( tk->dsp)), &xclr);
 	*r = xclr.red >> 8;
 	*g = xclr.green >> 8;
 	*b = xclr.blue >> 8;
@@ -501,12 +501,11 @@ rgbValues ( Toolkit* X, unsigned long pixel, int* r, int* g, int* b )
  * image functions
  */
 
-int needsFullAlpha(Toolkit*, Image*, double);
 Image* createImage ( int width, int height);
-void createXMaskImage ( Toolkit* X, Image* img );
-void createXImage ( Toolkit* X, Image* img );
-void createAlphaImage ( Toolkit* X, Image* img );
-void initScaledImage ( Toolkit* X, Image *tgt, Image *src,
+void createXMaskImage ( Toolkit* tk, Image* img );
+void createXImage ( Toolkit* tk, Image* img );
+void createAlphaImage ( Toolkit* tk, Image* img );
+void initScaledImage ( Toolkit* tk, Image *tgt, Image *src,
 					   int dx0, int dy0, int dx1, int dy1,
 					   int sx0, int sy0, int sx1, int sy1 );
 void Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img);
@@ -528,8 +527,8 @@ GetAlpha ( AlphaImage* img, int col, int row )
  * clipboard functions
  */
 
-jobject selectionClear ( JNIEnv* env, Toolkit* X );
-jobject selectionRequest ( JNIEnv* env, Toolkit* X );
+jobject selectionClear ( JNIEnv* env, Toolkit* tk );
+jobject selectionRequest ( JNIEnv* env, Toolkit* tk );
 
 
 /*****************************************************************************************
@@ -566,7 +565,7 @@ jobject selectionRequest ( JNIEnv* env, Toolkit* X );
 #define WND_MAPPED     0x08
 #define WND_DESTROYED  0x10
 
-static inline int getFreeSourceIdx ( Toolkit* X, Window wnd ) {
+static inline int getFreeSourceIdx ( Toolkit* tk, Window wnd ) {
   register int i, n;
 
   /*
@@ -574,11 +573,11 @@ static inline int getFreeSourceIdx ( Toolkit* X, Window wnd ) {
    * (window IDs usually already are hashed, so it does not make sense to
    * hash them again - we just could make it worse
    */
-  for ( i = (unsigned long)wnd, n=0; n < X->nWindows; i++, n++ ) {
-	i %= X->nWindows;
-	if ( (int)(X->windows[i].w) <= 0 ) {
-	  X->srcIdx = i;
-	  X->lastWindow = wnd;
+  for ( i = (unsigned long)wnd, n=0; n < tk->nWindows; i++, n++ ) {
+	i %= tk->nWindows;
+	if ( (int)(tk->windows[i].w) <= 0 ) {
+	  tk->srcIdx = i;
+	  tk->lastWindow = wnd;
 
 	  return i;
 	}
@@ -587,7 +586,7 @@ static inline int getFreeSourceIdx ( Toolkit* X, Window wnd ) {
   return -1;
 }
 
-static inline int getSourceIdx ( Toolkit* X, Window w )
+static inline int getSourceIdx ( Toolkit* tk, Window w )
 {
   int      n;
   register int i;
@@ -596,14 +595,14 @@ static inline int getSourceIdx ( Toolkit* X, Window w )
 	return X->srcIdx;
   }
   else {
-	for ( i = (unsigned long) w, n=0; n < X->nWindows; i++, n++ ) {
-	  i %= X->nWindows;
-	  if ( X->windows[i].w == w ){
-		X->srcIdx = i;
-		X->lastWindow = w;
-		return X->srcIdx;
+	for ( i = (unsigned long) w, n=0; n < tk->nWindows; i++, n++ ) {
+	  i %= tk->nWindows;
+	  if ( tk->windows[i].w == w ){
+		tk->srcIdx = i;
+		tk->lastWindow = w;
+		return tk->srcIdx;
 	  }
-	  else if ( X->windows[i].w == 0 ){
+	  else if ( tk->windows[i].w == 0 ){
 		return -1;
 	  }
 	}
@@ -611,9 +610,9 @@ static inline int getSourceIdx ( Toolkit* X, Window w )
   }
 }
 
-static inline int checkSource ( Toolkit* X, int idx )
+static inline int checkSource ( Toolkit* tk, int idx )
 {
-  return ( (idx >= 0) && (idx < X->nWindows) && (X->windows[idx].w) );
+  return ( (idx >= 0) && (idx < tk->nWindows) && (tk->windows[idx].w) );
 }
 
 
@@ -625,10 +624,10 @@ static inline int checkSource ( Toolkit* X, int idx )
 #define FWD_CLEAR  1  /* reset focus forwarding */
 #define FWD_REVERT 2  /* reset focus on owner */
 
-static inline void resetFocusForwarding ( Toolkit* X )
+static inline void resetFocusForwarding ( Toolkit* tk )
 {
-  X->fwdIdx = -1;
-  X->focusFwd = 0;
+  tk->fwdIdx = -1;
+  tk->focusFwd = 0;
 }
 
 
@@ -639,5 +638,57 @@ static inline void resetFocusForwarding ( Toolkit* X )
  */
 
 #define	USE_POLLING_AWT	1
+
+/* Clipboard */
+
+typedef void ClipBoard;
+extern jobject Java_java_awt_Toolkit_cbdInitClipboard ( JNIEnv* env, jclass clazz );
+extern void Java_java_awt_Toolkit_cbdFreeClipboard ( JNIEnv* env, jclass clazz, ClipBoard* cbd );
+extern jboolean Java_java_awt_Toolkit_cbdSetOwner ( JNIEnv* env, jclass clazz, ClipBoard* cbd );
+extern jobject Java_java_awt_Toolkit_cbdGetContents ( JNIEnv* env, jclass clazz, ClipBoard* cbd );
+
+/* Color */
+
+extern jint Java_java_awt_Toolkit_clrGetPixelValue ( JNIEnv* env, jclass clazz, jint rgb );
+extern void Java_java_awt_Toolkit_clrSetSystemColors ( JNIEnv* env, jclass clazz, jintArray sysClrs );
+extern jobject Java_java_awt_Toolkit_clrGetColorModel ( JNIEnv* env, jclass clazz );
+
+/* Event */
+
+extern jobject Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz );
+extern jobject Java_java_awt_Toolkit_evtGetNextEvent ( JNIEnv* env, jclass clazz );
+extern jobject Java_java_awt_Toolkit_evtPeekEvent ( JNIEnv* env, jclass clazz );
+extern jobject Java_java_awt_Toolkit_evtPeekEventId ( JNIEnv* env, jclass clazz, jint id );
+extern void Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz );
+extern void Java_java_awt_Toolkit_evtSendWMEvent ( JNIEnv* env, jclass clazz, jobject wmEvt );
+extern jint Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env, jclass clazz, Window wnd );
+extern jint Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env, jclass clazz, Window wnd );
+
+/* Font */
+extern void* Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec, jint style, jint size );
+
+#ifdef KAFFE_I18N
+#define KAFFE_FONT_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, XOC xoc, ## args )
+#else
+#define KAFFE_FONT_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, XFontStruct* fs, ## args )
+#endif
+
+extern KAFFE_FONT_FUNC_DECL( void, Java_java_awt_Toolkit_fntFreeFont );
+extern KAFFE_FONT_FUNC_DECL( void *, Java_java_awt_Toolkit_fntInitFontMetrics );
+extern KAFFE_FONT_FUNC_DECL( void, Java_java_awt_Toolkit_fntFreeFontMetrics );
+extern KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetAscent );
+extern KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetDescent );
+extern KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetFixedWidth );
+extern KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetHeight );
+extern KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetLeading );
+extern KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxAdvance );
+extern KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxAscent );
+extern KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxDescent );
+extern KAFFE_FONT_FUNC_DECL( jboolean, Java_java_awt_Toolkit_fntIsWideFont );
+extern KAFFE_FONT_FUNC_DECL( jobject, Java_java_awt_Toolkit_fntGetWidths );
+extern KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntBytesWidth, jbyteArray jBytes, jint off, jint len );
+extern KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntCharWidth, jchar jChar );
+extern KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntCharsWidth, jcharArray jChars, jint off, jint len );
+extern KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntStringWidth, jstring jStr );
 
 #endif

@@ -51,7 +51,7 @@ char* outputName = 0;
 char* directoryName = 0;
 
 static void usage(void);
-static int options(char**);
+static int options(int argc, char**);
 
 /*
  * MAIN
@@ -64,7 +64,7 @@ main(int argc, char* argv[])
 	int farg;
 
 	/* Process arguments */
-	farg = options(argv);
+	farg = options(argc, argv);
 
 	if (argv[farg] == 0) {
 		usage();
@@ -198,11 +198,11 @@ main(int argc, char* argv[])
  */
 static
 int
-options(char** argv)
+options(int argc, char** argv)
 {
 	int i;
 
-	for (i = 1; argv[i] != 0; i++) {
+	for (i = 1; i < argc; i++) {
 		if (argv[i][0] != '-') {
 			break;
 		}

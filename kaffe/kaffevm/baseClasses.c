@@ -95,9 +95,6 @@ Hjava_lang_Class* javaIoIOException;
 /* Initialisation prototypes */
 void initClasspath(void);
 void initNative(void);
-void initThreads(void);
-
-extern JavaVMInitArgs Kaffe_JavaVMArgs[];
 
 /*
  * Initialise the machine.

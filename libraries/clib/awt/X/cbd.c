@@ -8,6 +8,7 @@
  * of this file. 
  */
 
+#include "config.h"
 #include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -19,7 +20,6 @@ jmethodID  lostOwnership;
 jmethodID  createTransferable;
 jmethodID  getNativeData;
 
-typedef void ClipBoard;
 
 
 /*****************************************************************************************
@@ -28,7 +28,7 @@ typedef void ClipBoard;
  */
 
 jobject
-selectionClear ( JNIEnv* env, Toolkit* X )
+selectionClear ( JNIEnv* env, Toolkit* tk )
 {
   (*env)->CallStaticVoidMethod( env, NativeClipboard, lostOwnership);
 
@@ -36,7 +36,7 @@ selectionClear ( JNIEnv* env, Toolkit* X )
 }
 
 jobject
-selectionRequest ( JNIEnv* env, Toolkit* X )
+selectionRequest ( JNIEnv* env, Toolkit* tk )
 {
   XEvent     e;
   char       *mime;
@@ -45,14 +45,14 @@ selectionRequest ( JNIEnv* env, Toolkit* X )
   jbyte      *data;
   jboolean   isCopy;
   int        len;
-  Atom       target = X->event.xselectionrequest.target;
+  Atom       target = tk->event.xselectionrequest.target;
 
   if ( target == JAVA_OBJECT )
 	mime = "application/x-java-serialized-object";
   else if ( target == XA_STRING )
 	mime = "text/plain; charset=unicode";
   else
-	mime = XGetAtomName( X->dsp, target);
+	mime = XGetAtomName( tk->dsp, target);
 
   jMimeType = (*env)->NewStringUTF( env, (const char*) mime);
   jData = (*env)->CallStaticObjectMethod( env, NativeClipboard, getNativeData, jMimeType);
@@ -61,26 +61,26 @@ selectionRequest ( JNIEnv* env, Toolkit* X )
 	data = (*env)->GetByteArrayElements( env, jData, &isCopy);
 	len = (*env)->GetArrayLength( env, jData);
 
-	XChangeProperty( X->dsp,
-					 X->event.xselectionrequest.requestor,
-					 X->event.xselectionrequest.property,
-					 X->event.xselectionrequest.target,
+	XChangeProperty( tk->dsp,
+					 tk->event.xselectionrequest.requestor,
+					 tk->event.xselectionrequest.property,
+					 tk->event.xselectionrequest.target,
 					 8, PropModeReplace, data, len);
 
 	(*env)->ReleaseByteArrayElements( env, jData, data, JNI_ABORT);
-	e.xselection.property  = X->event.xselectionrequest.property;
+	e.xselection.property  = tk->event.xselectionrequest.property;
   }
   else {
 	e.xselection.property  = None;  /* format not supported */
   }
 
   e.xselection.type      = SelectionNotify;
-  e.xselection.requestor = X->event.xselectionrequest.requestor;
-  e.xselection.selection = X->event.xselectionrequest.selection;
+  e.xselection.requestor = tk->event.xselectionrequest.requestor;
+  e.xselection.selection = tk->event.xselectionrequest.selection;
   e.xselection.target    = target;
-  e.xselection.time      = X->event.xselectionrequest.time;
+  e.xselection.time      = tk->event.xselectionrequest.time;
 
-  XSendEvent( X->dsp, e.xselection.requestor, False, 0, &e);
+  XSendEvent( tk->dsp, e.xselection.requestor, False, 0, &e);
 
   return 0; /* don't pass event to Java */
 }
@@ -95,24 +95,24 @@ selectionRequest ( JNIEnv* env, Toolkit* X )
  *    length of *pData otherwise
  */
 static int
-getRawData ( Toolkit* X, Atom target, unsigned char** pData )
+getRawData ( Toolkit* tk, Atom target, unsigned char** pData )
 {
   int              i, format;
   unsigned long    len = 8191, remain = 1;
   Atom             type;
   XEvent           e;
 
-  XConvertSelection( X->dsp, XA_PRIMARY, target, SELECTION_DATA, X->cbdOwner, CurrentTime);
+  XConvertSelection( tk->dsp, XA_PRIMARY, target, SELECTION_DATA, tk->cbdOwner, CurrentTime);
 
   for ( i=0; i<2; i++ ) {
-	XSync( X->dsp, False);
-	if ( XCheckTypedWindowEvent( X->dsp, X->cbdOwner, SelectionNotify, &e) ){
+	XSync( tk->dsp, False);
+	if ( XCheckTypedWindowEvent( tk->dsp, tk->cbdOwner, SelectionNotify, &e) ){
 	  if ( e.xselection.property == None )  /* target type not supported by owner */
 		return 0;
 
 	  while ( remain ) {
 		len += remain;
-		XGetWindowProperty( X->dsp, X->cbdOwner, SELECTION_DATA, 0, len, False,
+		XGetWindowProperty( tk->dsp, tk->cbdOwner, SELECTION_DATA, 0, len, False,
 							AnyPropertyType, &type, &format, &len, &remain, pData);
 	  }
 	  return len;

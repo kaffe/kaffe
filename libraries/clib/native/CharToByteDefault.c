@@ -12,6 +12,7 @@
  * of this file. 
  */
 
+#include "config.h"
 #include "kaffe_io_CharToByteDefault.h"
 
 jint

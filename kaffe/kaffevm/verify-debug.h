@@ -25,7 +25,7 @@ extern uint32 printConstantPoolEntry(const Hjava_lang_Class* class, uint32 idx);
 extern void printConstantPool(const Hjava_lang_Class* class);
 extern void printInstruction(const int opcode);
 extern void printType(const Type*);
-extern void printBlock(const Method* method, const BlockInfo* binfo, const char* indent);
+extern void printBlock(const Method* method, const BlockInfo* binfo, const char* id);
 #endif /* defined(KAFFE_VMDEBUG) */
 
 #endif /* !defined(VERIFY_DEBUG_H) */

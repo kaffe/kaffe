@@ -92,7 +92,7 @@ char *mangleType(int prepend, char *type);
 /*
  * Mangle string `src' of length `len', and place the result into `dest'
  */
-int mangleString(char *dest, char *src, int slen, int unicode);
+int mangleString(char *dest, char *src, int slen, int uc);
 /*
  * Determine the mangled length of the given string.  If the string doesn't
  * require any escapes then zero is returned.  If len is -1 then `term' is

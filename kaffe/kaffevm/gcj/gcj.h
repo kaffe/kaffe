@@ -146,15 +146,6 @@ extern bool comparePath2ClassName(const char *cname, const char *pname);
 
 #define GCJ2KAFFE(gcjClass)	((struct Hjava_lang_Class*)((gcjClass)->thread))
 
-extern struct Hjava_lang_Class* intClass;
-extern struct Hjava_lang_Class* longClass;
-extern struct Hjava_lang_Class* booleanClass;
-extern struct Hjava_lang_Class* charClass;
-extern struct Hjava_lang_Class* floatClass;
-extern struct Hjava_lang_Class* doubleClass;
-extern struct Hjava_lang_Class* byteClass;
-extern struct Hjava_lang_Class* shortClass;
-extern struct Hjava_lang_Class* voidClass;
 extern void gcjInitPrimitiveClasses(void);
 
 #define FIELD_UNRESOLVED_FLAG   0x8000

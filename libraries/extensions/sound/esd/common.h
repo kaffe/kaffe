@@ -21,6 +21,7 @@
  */
 
 
+#include "config.h"
 #include <esd.h>
 #include "../common/HandleFieldHandler.h"
 #include "../common/common.h"

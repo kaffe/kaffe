@@ -525,8 +525,6 @@ Hjava_lang_Class*	lookupArray(Hjava_lang_Class*, errorInfo*);
 Hjava_lang_Class*	lookupObjectArrayClass(Hjava_lang_Class*);
 Field*			lookupClassField(Hjava_lang_Class*, Utf8Const*, bool, errorInfo *einfo);
 
-Hjava_lang_Class*	getClass(constIndex, Hjava_lang_Class*, errorInfo *einfo);
-
 void			countInsAndOuts(const char*, short*, short*, char*);
 int			sizeofSigChar(char, bool);
 int			sizeofSigItem(const char**, bool);

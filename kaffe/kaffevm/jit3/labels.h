@@ -192,7 +192,7 @@ void resetLabels(void);
  * @return A label matching the given "pc" or NULL if there are no more
  *   internal labels found.
  */
-label *getInternalLabel(label **lptr, uintp pc);
+label *getInternalLabel(label **lptr, uintp counter);
 
 #if defined(KAFFE_VMDEBUG)
 /*

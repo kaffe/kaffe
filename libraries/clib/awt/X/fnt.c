@@ -65,7 +65,7 @@ int dsize[] = { 0, 10, -10, 20, -20, 30, -30, 40, -40 };
  */
 
 #ifdef KAFFE_I18N
-XOC create_xoc(Toolkit *X,char *font_name)
+static XOC create_xoc(Toolkit *X,char *font_name)
 {
   XOC xoc;
   int i;
@@ -191,152 +191,124 @@ Java_java_awt_Toolkit_fntFreeFont ( JNIEnv* env, jclass clazz, XFontStruct* fs )
  */
 
 #ifdef KAFFE_I18N
-void *
-Java_java_awt_Toolkit_fntInitFontMetrics ( JNIEnv* env, jclass clazz, void* xoc )
+KAFFE_FONT_FUNC_DECL( void *, Java_java_awt_Toolkit_fntInitFontMetrics )
 {
   return xoc;
 }
 
-void
-Java_java_awt_Toolkit_fntFreeFontMetrics ( JNIEnv* env, jclass clazz, XOC xoc )
+KAFFE_FONT_FUNC_DECL( void, Java_java_awt_Toolkit_fntFreeFontMetrics )
 {
 }
 
-jint
-Java_java_awt_Toolkit_fntGetAscent ( JNIEnv* env, jclass clazz, XOC xoc )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetAscent )
 {
   return -XExtentsOfFontSet(xoc)->max_logical_extent.y;	
 }
 
-jint
-Java_java_awt_Toolkit_fntGetDescent ( JNIEnv* env, jclass clazz, XOC xoc )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetDescent )
 {
   XFontSetExtents *xfse=XExtentsOfFontSet(xoc);
   return xfse->max_logical_extent.height-(-xfse->max_logical_extent.y);
 }
 
-jint
-Java_java_awt_Toolkit_fntGetFixedWidth ( JNIEnv* env, jclass clazz, XOC xoc )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetFixedWidth )
 {
   XFontSetExtents *xfse=XExtentsOfFontSet(xoc);
   return ( xfse->max_logical_extent.width == xfse->max_ink_extent.width ) ?
 	  xfse->max_logical_extent.width : 0;
 }
 
-jint
-Java_java_awt_Toolkit_fntGetHeight ( JNIEnv* env, jclass clazz, XOC xoc )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetHeight )
 {
   return XExtentsOfFontSet(xoc)->max_logical_extent.height;
 }
 
-jint
-Java_java_awt_Toolkit_fntGetLeading ( JNIEnv* env, jclass clazz, XOC xoc )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetLeading )
 {
   return 0;  /* no leading (interline spacing) for X fonts */
 }
 
-jint
-Java_java_awt_Toolkit_fntGetMaxAdvance ( JNIEnv* env, jclass clazz, XOC xoc )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxAdvance )
 {
   return XExtentsOfFontSet(xoc)->max_logical_extent.width;
 }
 
-jint
-Java_java_awt_Toolkit_fntGetMaxAscent ( JNIEnv* env, jclass clazz, XOC xoc )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxAscent )
 {
   XFontSetExtents *xfse=XExtentsOfFontSet(xoc);
   return -xfse->max_logical_extent.y;
 }
 
-jint
-Java_java_awt_Toolkit_fntGetMaxDescent ( JNIEnv* env, jclass clazz, XOC xoc )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxDescent )
 {
   XFontSetExtents *xfse=XExtentsOfFontSet(xoc);
   return xfse->max_logical_extent.height-(-xfse->max_logical_extent.y);
 }
 
-jboolean
-Java_java_awt_Toolkit_fntIsWideFont ( JNIEnv* env, jclass clazz, XOC xoc )
+KAFFE_FONT_FUNC_DECL( jboolean, Java_java_awt_Toolkit_fntIsWideFont )
 {
   return 2; /* We assume that wide font is double-wide. */
 }
 
 #else
 
-void*
-Java_java_awt_Toolkit_fntInitFontMetrics ( JNIEnv* env, jclass clazz, void* fs )
+KAFFE_FONT_FUNC_DECL( void *, Java_java_awt_Toolkit_fntInitFontMetrics )
 {
   return fs;
 }
 
-void
-Java_java_awt_Toolkit_fntFreeFontMetrics ( JNIEnv* env, jclass clazz, XFontStruct* fs )
+KAFFE_FONT_FUNC_DECL( void, Java_java_awt_Toolkit_fntFreeFontMetrics 
 {
 }
 
-
-jint
-Java_java_awt_Toolkit_fntGetAscent ( JNIEnv* env, jclass clazz, XFontStruct* fs )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetAscent )
 {
   return fs->ascent;
 }
 
-jint
-Java_java_awt_Toolkit_fntGetDescent ( JNIEnv* env, jclass clazz, XFontStruct* fs )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetDescent )
 {
   return fs->descent;
 }
 
-jint
-Java_java_awt_Toolkit_fntGetFixedWidth ( JNIEnv* env, jclass clazz, XFontStruct* fs )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetFixedWidth 
 {
   return (fs->min_bounds.width == fs->max_bounds.width) ? fs->max_bounds.width : 0;
 }
 
-jint
-Java_java_awt_Toolkit_fntGetHeight ( JNIEnv* env, jclass clazz, XFontStruct* fs )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetHeight )
 {
   return fs->ascent + fs->descent +1;
 }
 
-jint
-Java_java_awt_Toolkit_fntGetLeading ( JNIEnv* env, jclass clazz, XFontStruct* fs )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetLeading )
 {
   return 0;  /* no leading (interline spacing) for X fonts */
 }
 
-jint
-Java_java_awt_Toolkit_fntGetMaxAdvance ( JNIEnv* env, jclass clazz, XFontStruct* fs )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxAdvance )
 {
   return fs->max_bounds.width;
 }
 
-jint
-Java_java_awt_Toolkit_fntGetMaxAscent ( JNIEnv* env, jclass clazz, XFontStruct* fs )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxAscent )
 {
   return fs->max_bounds.ascent;
 }
 
-jint
-Java_java_awt_Toolkit_fntGetMaxDescent ( JNIEnv* env, jclass clazz, XFontStruct* fs )
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxDescent )
 {
   return fs->max_bounds.descent;
 }
 
-jboolean
-Java_java_awt_Toolkit_fntIsWideFont ( JNIEnv* env, jclass clazz, XFontStruct* fs )
+KAFFE_FONT_FUNC_DECL( jboolean, Java_java_awt_Toolkit_fntIsWideFont )
 {
   return (fs->min_byte1 | fs->max_byte1);
 }
 
 #endif
 
-jobject
-#ifdef KAFFE_I18N
-Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XOC xoc )
-#else
-Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XFontStruct* fs )
-#endif	
+KAFFE_FONT_FUNC_DECL( jobject, Java_java_awt_Toolkit_fntGetWidths )
 {
   jintArray widths;
   jint      *jw;
@@ -384,14 +356,7 @@ Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XFontStruct* fs 
 }
 
 
-jint
-#ifdef KAFFE_I18N
-Java_java_awt_Toolkit_fntBytesWidth ( JNIEnv* env, jclass clazz,
-        XOC xoc, jbyteArray jBytes, jint off, jint len )
-#else
-Java_java_awt_Toolkit_fntBytesWidth ( JNIEnv* env, jclass clazz,
-	XFontStruct* fs, jbyteArray jBytes, jint off, jint len )
-#endif
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntBytesWidth, jbyteArray jBytes, jint off, jint len )
 {
   jboolean  isCopy;
   jbyte    *jb = (*env)->GetByteArrayElements( env, jBytes, &isCopy);
@@ -432,13 +397,7 @@ Java_java_awt_Toolkit_fntBytesWidth ( JNIEnv* env, jclass clazz,
 #endif  
 }
 
-jint
-#ifdef KAFFE_I18N
-Java_java_awt_Toolkit_fntCharWidth ( JNIEnv* env, jclass clazz, 
-	XOC xoc, jchar jChar )
-#else	
-Java_java_awt_Toolkit_fntCharWidth ( JNIEnv* env, jclass clazz, XFontStruct* fs, jchar jChar )
-#endif	
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntCharWidth, jchar jChar )
 {
 #ifdef KAFFE_I18N
   wchar_t wch;
@@ -464,14 +423,7 @@ Java_java_awt_Toolkit_fntCharWidth ( JNIEnv* env, jclass clazz, XFontStruct* fs,
 #endif  
 }
 
-jint
-#ifdef KAFFE_I18N
-Java_java_awt_Toolkit_fntCharsWidth ( JNIEnv* env, jclass clazz,
-	XOC xoc, jcharArray jChars, jint off, jint len )
-#else
-Java_java_awt_Toolkit_fntCharsWidth ( JNIEnv* env, jclass clazz,		
-	XFontStruct* fs, jcharArray jChars, jint off, jint len )
-#endif
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntCharsWidth, jcharArray jChars, jint off, jint len )
 {
   jboolean  isCopy;
   jchar    *jc = (*env)->GetCharArrayElements( env, jChars, &isCopy);
@@ -524,13 +476,7 @@ Java_java_awt_Toolkit_fntCharsWidth ( JNIEnv* env, jclass clazz,
 #endif  
 }
 
-jint
-#ifdef KAFFE_I18N
-Java_java_awt_Toolkit_fntStringWidth ( JNIEnv* env, jclass clazz, 
-	XOC xoc, jstring jStr )
-#else
-Java_java_awt_Toolkit_fntStringWidth ( JNIEnv* env, jclass clazz, XFontStruct* fs, jstring jStr )
-#endif	
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntStringWidth, jstring jStr )
 {
   jboolean isCopy;
   const jchar    *jc = (*env)->GetStringChars( env, jStr, &isCopy);
