@@ -455,7 +455,7 @@ no) ;;
    fi;;
 esac
 
-AM_CONDITIONAL(ENABLE_JVMPI, test x"$enable_jvmpi" = x"yes")
+AM_CONDITIONAL(ENABLE_JVMPI, test x"$enable_jvmpi" != x"no")
 
 dnl =========================================================================
 dnl Allow user to specify a dnsjava.jar file for class file testing.
@@ -490,9 +490,9 @@ no) xprofiling=no ;;
 *)  xprofiling=yes; need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_XPROFILER";;
 esac
 dnl ENABLE_XPROF controls installation of xprof scripts in kaffe/scripts/Makefile.am
-AM_CONDITIONAL(ENABLE_XPROF, test x"$enable_xprofiling" = x"yes")
+AM_CONDITIONAL(ENABLE_XPROF, test x"$xprofiling" = x"yes")
 
-if test x"$enable_xprofiling" = x"yes"; then
+if test x"$xprofiling" = x"yes"; then
   if test -f "$srcdir/config/$Khost_cpu/$Khost_os/xprofile-md.h"; then
     CONFIG_XPROFILE_MD_H="\$(top_srcdir)/config/$Khost_cpu/$Khost_os/xprofile-md.h"
     AC_SUBST(CONFIG_XPROFILE_MD_H)
@@ -1495,7 +1495,7 @@ no)
 *)
 	if test x"$alsa_found" = x"yes"; then
 		ALSA_DIR=alsa
-		ALSA_LIB="\$(top_builddir)/libraries/extensions/sound/alsa/libtritonusalsa.la"
+		ALSA_LIB="\$(top_builddir)/libraries/clib/sound/alsa/libtritonusalsa.la"
 	fi
 	;;
 esac
@@ -1513,7 +1513,7 @@ no)
 *)
 	if test x"$esd_found" = x"yes"; then
 		ESD_DIR=esd
-		ESD_LIB="\$(top_builddir)/libraries/extensions/sound/esd/libtritonusesd.la"
+		ESD_LIB="\$(top_builddir)/libraries/clib/sound/esd/libtritonusesd.la"
 	fi
 	;;
 esac

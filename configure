@@ -26292,7 +26292,7 @@ esac
 
 
 
-if test x"$enable_jvmpi" = x"yes"; then
+if test x"$enable_jvmpi" != x"no"; then
   ENABLE_JVMPI_TRUE=
   ENABLE_JVMPI_FALSE='#'
 else
@@ -26343,7 +26343,7 @@ no) xprofiling=no ;;
 esac
 
 
-if test x"$enable_xprofiling" = x"yes"; then
+if test x"$xprofiling" = x"yes"; then
   ENABLE_XPROF_TRUE=
   ENABLE_XPROF_FALSE='#'
 else
@@ -26352,7 +26352,7 @@ else
 fi
 
 
-if test x"$enable_xprofiling" = x"yes"; then
+if test x"$xprofiling" = x"yes"; then
   if test -f "$srcdir/config/$Khost_cpu/$Khost_os/xprofile-md.h"; then
     CONFIG_XPROFILE_MD_H="\$(top_srcdir)/config/$Khost_cpu/$Khost_os/xprofile-md.h"
 
@@ -52035,7 +52035,7 @@ no)
 *)
 	if test x"$alsa_found" = x"yes"; then
 		ALSA_DIR=alsa
-		ALSA_LIB="\$(top_builddir)/libraries/extensions/sound/alsa/libtritonusalsa.la"
+		ALSA_LIB="\$(top_builddir)/libraries/clib/sound/alsa/libtritonusalsa.la"
 	fi
 	;;
 esac
@@ -52054,7 +52054,7 @@ no)
 *)
 	if test x"$esd_found" = x"yes"; then
 		ESD_DIR=esd
-		ESD_LIB="\$(top_builddir)/libraries/extensions/sound/esd/libtritonusesd.la"
+		ESD_LIB="\$(top_builddir)/libraries/clib/sound/esd/libtritonusesd.la"
 	fi
 	;;
 esac

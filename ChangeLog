@@ -1,4 +1,20 @@
-2004-05-13 Guilhem Lavaux <guilhem@kaffe.org>
+2004-05-14  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/text/DecimalFormat.java
+	(parse): Fixed parsing of decimal strings. Number of maximum digits
+	to be read should now work.
+
+	* libraries/javalib/java/text/SimpleDateFormat.java:
+	(SimpleDateFormat): Set maximumFractionDigit to 0 for the number
+	formatter. This fixes DateFormatTest.
+
+2004-05-14  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* configure.ac: Fixed jvmpi, xprof and sound extension.
+
+	* configure: Regenerated.
+	
+2004-05-13  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/text/RuleBasedCollator.java
 	(CollationElement, CollationSorter): Made static.
