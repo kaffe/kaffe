@@ -185,7 +185,6 @@ statsReport(void)
 static void
 registerCounter(timespent *counter, char *name, int type)
 {
-	if (!counters) atexit(statsReport);
 	if (!counter->name) {
 		counter->name = name;
 		counter->next = counters;
@@ -284,6 +283,10 @@ stopTiming(timespent *counter)
 void 
 statsSetMaskStr(char *mask)
 {
+	static int once = 0;
+
+	if (!once) atexit(statsReport);
+	once = 1;
 	statMask = mask;
 }
 
