@@ -7,6 +7,17 @@
 
 2004-06-21  Dalibor Topic  <robilad@kaffe.org>
 
+        * config/s390/atomicity32.h,
+        config/s390/atomicity64.h:
+	New files, taken from glibc 2.3.2.
+
+        * config/s390/common.h:
+	Include atomicity file for the architecture.
+
+        Reported by: Bastian Blank <waldi@debian.org>
+
+2004-06-21  Dalibor Topic  <robilad@kaffe.org>
+
         * configure.ac:
 	Removed checks for winbase.h, winnt.h and
 	winsock.h.
