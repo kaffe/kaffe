@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/* NB: Collator is serializable only in JDK 1.1, not in JDK 1.2 */
 public abstract class Collator implements Cloneable, Serializable {
 
 public final static int NO_DECOMPOSITION = 0;
