@@ -47,7 +47,7 @@ static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', '
  * typedefs & defines
  */
 
-#include <bits/local_lim.h>
+#include <limits.h>
 
 /*
  * This is the configurable section. Note that SCHED_FIFO is the only

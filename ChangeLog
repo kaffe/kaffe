@@ -1,5 +1,12 @@
 2004-03-15  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	Import limits.h instead of linux specific bits/local_lim.h.
+
+	Reported by: Riccardo Mottola <zuse@libero.it>
+
+2004-03-15  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
 	Poll for POLLHUP, too, since some systems only set
 	PULLHUP on EOF.
