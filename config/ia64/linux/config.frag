@@ -9,3 +9,6 @@ fi
 if [ "$cross_compiling" = yes ]; then
   ac_cv_c_char_unsigned=${ac_cv_c_char_unsigned='no'}
 fi
+
+# work around bug in gcc's optimizer
+CFLAGS="$CFLAGS -g -O1 -fno-omit-frame-pointer"
