@@ -1,5 +1,16 @@
 2003-08-24  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/javalib/essential.files: Added
+	AttributedCharacterIterator.java and CharacterIterator.java for KJC.
+
+	* libraries/javalib/java/text/DecimalFormat.java: Fixed a typo.
+
+	* libraries/javalib/java/text/FieldPosition.java:
+	(getFieldAttribute) added
+	(FieldPosition) Added one constructor and implemented the other one.
+
+2003-08-24  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* config/i386/openbsd2/md.h: Added signal defines for profiler in
 	jthreads.
 

@@ -527,7 +527,7 @@ public class DecimalFormat extends NumberFormat
 	    dest.insert(decimal_index, symbols.getDecimalSeparator());
 	    if (fieldPos != null && 
 		(fieldPos.getField() == FRACTION_FIELD ||
-		 fieldPos.getFieldAttribut() == NumberFormat.Field.FRACTION))
+		 fieldPos.getFieldAttribute() == NumberFormat.Field.FRACTION))
 	      {
 		fieldPos.setBeginIndex(decimal_index + 1);
 		fieldPos.setEndIndex(dest.length());

@@ -219,6 +219,8 @@ java/security/NoSuchAlgorithmException.java
 java/security/cert/Certificate.java
 java/security/cert/CertificateException.java
 java/security/cert/CertificateEncodingException.java
+java/text/AttributedCharacterIterator.java
+java/text/CharacterIterator.java
 java/text/ChoiceFormat.java
 java/text/DateFormat.java
 java/text/DateFormatSymbols.java

@@ -65,10 +65,35 @@ public class FieldPosition
   private int end;
 
   /**
-   *
+   * This is the field attribute value.
    */
-  public FieldPosition (Format.Field field, int attribute)
+  private Format.Field field_attribute;
+
+  /**
+   * This method initializes a new instance of <code>FieldPosition</code>
+   * to have the specified field attribute. The attribute will be used as
+   * an id.
+   *
+   * @param field The field format attribute.
+   */
+  public FieldPosition (Format.Field field)
   {
+    this.field_attribute = field;
+  }
+
+  /**
+   * This method initializes a new instance of <code>FieldPosition</code>
+   * to have the specified field attribute. The attribute will be used as
+   * an id is non null. The integer field id is only used if the Format.Field
+   * attribute is not used by the formatter.
+   *
+   * @param field The field format attribute.
+   * @param field_id The field identifier value.
+   */
+  public FieldPosition (Format.Field field, int field_id)
+  {
+    this.field_attribute = field;
+    this.field_id = field_id;
   }
 
   /**
@@ -90,6 +115,11 @@ public class FieldPosition
   public int getField ()
   {
     return field_id;
+  }
+
+  public Format.Field getFieldAttribute ()
+  {
+    return field_attribute;
   }
 
   /**
