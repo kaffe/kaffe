@@ -4,6 +4,19 @@
 
 	2004-01-09  Michael Koch  <konqueror@gmx.de>
 
+        * java/util/logging/Filter.java
+        (isLoggable): Removed redundant modifier.
+        * java/util/logging/LogManager.java:
+        Removed redundant semicolon.
+        * java/util/logging/XMLFormatter.java
+        (format): Removed unused variable "key".
+
+2004-01-10  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
+	2004-01-09  Michael Koch  <konqueror@gmx.de>
+
         * java/io/ObjectInputStream.java
         (inputGetObjectStreamClasses): Removed unused variable "ret_val".
 
