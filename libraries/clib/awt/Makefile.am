@@ -6,9 +6,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = $(AWT_DIR)
-
-DIST_SUBDIRS = X qt
+SUBDIRS = X qt classpath-gtk
 
 EXTRA_DIST = \
 	win32/btn.cpp \

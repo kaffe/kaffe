@@ -62,8 +62,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
-	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
-	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/pkg.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
@@ -146,7 +147,6 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 BCEL_JAR = @BCEL_JAR@
 BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
@@ -200,6 +200,8 @@ F77 = @F77@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
 GMSGFMT = @GMSGFMT@
+GTK_CFLAGS = @GTK_CFLAGS@
+GTK_LIBS = @GTK_LIBS@
 HAVE_BCEL_FALSE = @HAVE_BCEL_FALSE@
 HAVE_BCEL_TRUE = @HAVE_BCEL_TRUE@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
@@ -277,6 +279,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATHSEP = @PATHSEP@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PATH_TO_RT_JAR = @PATH_TO_RT_JAR@
+PKG_CONFIG = @PKG_CONFIG@
 POSUB = @POSUB@
 PROFILE = @PROFILE@
 PTHREAD_CC = @PTHREAD_CC@

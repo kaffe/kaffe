@@ -95,7 +95,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_util_zip_Inflater.h \
 	java_util_zip_ZipEntry.h \
 	java_util_zip_ZipFile.h \
-	kaffe_applet_AudioPlayer.h \
 	kaffe_lang_PrimordialClassLoader.h \
 	kaffe_lang_ThreadStack.h \
 	kaffe_management_Classpath.h \
@@ -106,6 +105,54 @@ DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 INSTALL_JNI_DERIVED_HDRS =
 
 NOINSTALL_JNI_DERIVED_HDRS = \
+	gnu_java_awt_peer_gtk_GdkFontMetrics.h \
+	gnu_java_awt_peer_gtk_GdkGraphics.h \
+	gnu_java_awt_peer_gtk_GdkPixbufDecoder.h \
+	gnu_java_awt_peer_gtk_GtkButtonPeer.h \
+	gnu_java_awt_peer_gtk_GtkCanvasPeer.h \
+	gnu_java_awt_peer_gtk_GtkCheckboxGroupPeer.h \
+	gnu_java_awt_peer_gtk_GtkCheckboxMenuItemPeer.h \
+	gnu_java_awt_peer_gtk_GtkCheckboxPeer.h \
+	gnu_java_awt_peer_gtk_GtkChoicePeer.h \
+	gnu_java_awt_peer_gtk_GtkClipboard.h \
+	gnu_java_awt_peer_gtk_GtkComponentPeer.h \
+	gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.h \
+	gnu_java_awt_peer_gtk_GtkFileDialogPeer.h \
+	gnu_java_awt_peer_gtk_GtkFramePeer.h \
+	gnu_java_awt_peer_gtk_GtkGenericPeer.h \
+	gnu_java_awt_peer_gtk_GtkImagePainter.h \
+	gnu_java_awt_peer_gtk_GtkLabelPeer.h \
+	gnu_java_awt_peer_gtk_GtkListPeer.h \
+	gnu_java_awt_peer_gtk_GtkMainThread.h \
+	gnu_java_awt_peer_gtk_GtkMenuBarPeer.h \
+	gnu_java_awt_peer_gtk_GtkMenuComponentPeer.h \
+	gnu_java_awt_peer_gtk_GtkMenuItemPeer.h \
+	gnu_java_awt_peer_gtk_GtkMenuPeer.h \
+	gnu_java_awt_peer_gtk_GtkPanelPeer.h \
+	gnu_java_awt_peer_gtk_GtkPopupMenuPeer.h \
+	gnu_java_awt_peer_gtk_GtkScrollbarPeer.h \
+	gnu_java_awt_peer_gtk_GtkScrollPanePeer.h \
+	gnu_java_awt_peer_gtk_GtkTextAreaPeer.h \
+	gnu_java_awt_peer_gtk_GtkTextComponentPeer.h \
+	gnu_java_awt_peer_gtk_GtkTextFieldPeer.h \
+	gnu_java_awt_peer_gtk_GtkToolkit.h \
+	gnu_java_awt_peer_gtk_GtkWindowPeer.h \
+	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h \
+	gnu_xml_libxmlj_dom_GnomeAttr.h \
+	gnu_xml_libxmlj_dom_GnomeDocument.h \
+	gnu_xml_libxmlj_dom_GnomeDocumentBuilder.h \
+	gnu_xml_libxmlj_dom_GnomeDocumentType.h	\
+	gnu_xml_libxmlj_dom_GnomeElement.h \
+	gnu_xml_libxmlj_dom_GnomeEntity.h \
+	gnu_xml_libxmlj_dom_GnomeNamedNodeMap.h \
+	gnu_xml_libxmlj_dom_GnomeNode.h \
+	gnu_xml_libxmlj_dom_GnomeNodeList.h \
+	gnu_xml_libxmlj_dom_GnomeProcessingInstruction.h \
+	gnu_xml_libxmlj_dom_MatchingNodeList.h \
+	gnu_xml_libxmlj_sax_GnomeLocator.h \
+	gnu_xml_libxmlj_sax_GnomeXMLReader.h \
+	gnu_xml_libxmlj_transform_LibxsltStylesheet.h \
+	gnu_xml_libxmlj_transform_JavaContext.h \
 	java_math_BigInteger.h \
 	gnu_java_nio_channels_FileChannelImpl.h \
 	gnu_java_nio_NIOServerSocket.h \

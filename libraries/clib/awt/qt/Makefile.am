@@ -14,24 +14,24 @@
 	$(MOC) -o $@ $<
 
 
-native_LTLIBRARIES = libawt.la
+native_LTLIBRARIES = libqteawt.la
 
 AM_CXXFLAGS := -fno-exceptions -fno-rtti $(CXXFLAGS) $(QT_CXXFLAGS)
 AM_CPPFLAGS = -I$(top_builddir)/include
 
 AWT_LIBS = -L$(QTDIR)/lib
 
-libawt_la_LDFLAGS = \
+libqteawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libawt_la_LIBADD = $(AWT_LIBS) $(QT_LDADD)
+libqteawt_la_LIBADD = $(AWT_LIBS) $(QT_LDADD)
 
-libawt_la_MOC = \
+libqteawt_la_MOC = \
 	evt.moc.cc
-libawt_la_SOURCES = \
+libqteawt_la_SOURCES = \
 	tlk.cc \
 	wnd.cc \
 	evt.cc \
@@ -41,15 +41,15 @@ libawt_la_SOURCES = \
 	img.cc \
 	cbd.cc
 
-nodist_libawt_la_SOURCES = \
-	$(libawt_la_MOC)
+nodist_libqteawt_la_SOURCES = \
+	$(libqteawt_la_MOC)
 
 noinst_HEADERS = \
 	keysyms.h \
 	toolkit.h \
 	tlkprops.h
 
-BUILT_SOURCES = $(libawt_la_MOC)
+BUILT_SOURCES = $(libqteawt_la_MOC)
 
 CLEANFILES = so_locations $(BUILT_SOURCES)
 

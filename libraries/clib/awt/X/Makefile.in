@@ -23,7 +23,7 @@
 # of this file. 
 
 
-SOURCES = $(libawt_la_SOURCES)
+SOURCES = $(libxawt_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -62,8 +62,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
-	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
-	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/pkg.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
@@ -77,10 +78,10 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libawt_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am_libawt_la_OBJECTS = tlk.lo wnd.lo evt.lo gra.lo fnt.lo clr.lo \
+libxawt_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am_libxawt_la_OBJECTS = tlk.lo wnd.lo evt.lo gra.lo fnt.lo clr.lo \
 	img.lo imggif.lo imgjpeg.lo imgpng.lo cbd.lo
-libawt_la_OBJECTS = $(am_libawt_la_OBJECTS)
+libxawt_la_OBJECTS = $(am_libxawt_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -97,8 +98,8 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
 	$(AM_CFLAGS) $(CFLAGS)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libawt_la_SOURCES)
-DIST_SOURCES = $(libawt_la_SOURCES)
+SOURCES = $(libxawt_la_SOURCES)
+DIST_SOURCES = $(libxawt_la_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -115,7 +116,6 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 BCEL_JAR = @BCEL_JAR@
 BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
@@ -169,6 +169,8 @@ F77 = @F77@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
 GMSGFMT = @GMSGFMT@
+GTK_CFLAGS = @GTK_CFLAGS@
+GTK_LIBS = @GTK_LIBS@
 HAVE_BCEL_FALSE = @HAVE_BCEL_FALSE@
 HAVE_BCEL_TRUE = @HAVE_BCEL_TRUE@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
@@ -246,6 +248,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATHSEP = @PATHSEP@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PATH_TO_RT_JAR = @PATH_TO_RT_JAR@
+PKG_CONFIG = @PKG_CONFIG@
 POSUB = @POSUB@
 PROFILE = @PROFILE@
 PTHREAD_CC = @PTHREAD_CC@
@@ -346,20 +349,20 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-native_LTLIBRARIES = libawt.la
+native_LTLIBRARIES = libxawt.la
 AM_CFLAGS = @CFLAGS@ @X_CFLAGS@
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni
 
-libawt_la_LDFLAGS = \
+libxawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libawt_la_LIBADD = $(AWT_LIBS)
-libawt_la_SOURCES = \
+libxawt_la_LIBADD = $(AWT_LIBS)
+libxawt_la_SOURCES = \
 	tlk.c \
 	wnd.c \
 	evt.c \
@@ -438,8 +441,8 @@ clean-nativeLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libawt.la: $(libawt_la_OBJECTS) $(libawt_la_DEPENDENCIES) 
-	$(LINK) -rpath $(nativedir) $(libawt_la_LDFLAGS) $(libawt_la_OBJECTS) $(libawt_la_LIBADD) $(LIBS)
+libxawt.la: $(libxawt_la_OBJECTS) $(libxawt_la_DEPENDENCIES) 
+	$(LINK) -rpath $(nativedir) $(libxawt_la_LDFLAGS) $(libxawt_la_OBJECTS) $(libxawt_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

@@ -606,11 +606,11 @@ dnl -------------------------------------------------------------------------
 
 AC_ARG_WITH([threads],
               AS_HELP_STRING([--with-threads=SYSTEM],
-                             [Define which threading system to use @<:@default=unix-jthreads@:>@]))
+                             [Define which threading system to use @<:@default=unix-pthreads@:>@]))
 
 AC_MSG_CHECKING(thread system)
 if test x"$with_threads" = x"" ; then
-	with_threads=unix-jthreads
+	with_threads=unix-pthreads
 fi
 if test ! -d $srcdir/kaffe/kaffevm/systems/${with_threads} ; then
 	AC_MSG_ERROR(Configuration $Khost_cpu-$Khost_os does not support $with_threads threads)
@@ -965,66 +965,6 @@ if test $ac_cv_func_MD5Init = no; then
 fi
 SECURITY_LIBS="$CTLIBS $SECURITY_LIBS"
 AC_SUBST(SECURITY_LIBS)
-
-dnl Checks for libraries for X related libraries.
-AC_PATH_XTRA
-if test x"$no_x" = x"yes"; then
-  AWT_LIBS=
-else
-  dnl Csup is needed for IRIX libraries such as libjpeg and libpng
-  dnl Instead of adding it to both JPEG_LIBS and PNG_LIBS, use X_LIBS
-  AC_CHECK_LIBRARY(Csup,__T_9__nothrow,X_LIBS)
-  OLIBS=$LIBS
-  LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $OLIBS"
-  AC_CHECK_LIBRARY(Xext,XShmQueryExtension,X_PRE_LIBS)
-  OCPPFLAGS=$CPPFLAGS
-  CPPFLAGS="$CPPFLAGS $X_CFLAGS"
-  AC_CHECK_HEADERS([sys/ipc.h])
-  AC_CHECK_HEADERS([sys/shm.h])
-  AC_CHECK_HEADERS([X11/extensions/XShm.h], [], [],
-   [[#include <X11/Xlib.h>
-   ]])
-  CPPFLAGS=$OCPPFLAGS	
-  LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $OLIBS"
-  AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
-  AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
-  AC_CACHE_CHECK([for a usable version of gif_lib.h],
-    kaffe_cv_gif_lib_version, [dnl
-	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <gif_lib.h>
-]], [[
-	((GifFileType *)0)->UserData;
-]])],[kaffe_cv_gif_lib_version=yes],[kaffe_cv_gif_lib_version=no])])
-  if test x"$kaffe_cv_gif_lib_version" = x"yes"; then
-    AC_DEFINE(HAVE_GIF_LIB_H, 1, [Do we have the right version of libungif])
-    AC_CHECK_LIBRARY(ungif,DGifOpen,GIF_LIBS)
-  fi
-
-  LIBS=$OLIBS
-  dnl If libpng is included, we also need libz - if we don't have it then
-  dnl we can't include png support.
-  if test -n "$PNG_LIBS" && test -n "$ZIP_LIBS"; then
-    PNG_LIBS="$PNG_LIBS $ZIP_LIBS $M_LIBS"
-  else
-    PNG_LIBS=""
-  fi
-
-  dnl For each -L switch in X_LIBS, add a corresponding -R, unless
-  dnl AC_PATH_XTRA has already taken care of them.
-  case "$X_LIBS" in
-  "-R"* | *" -R"*) ;;
-  "-L"* | *" -L"*)
-    for ac_xlibdir in $X_LIBS; do
-      case "$ac_xlibdir" in
-      -L*) X_LIBS="$X_LIBS "`echo "$ac_xlibdir" | sed 's/^-L/-R/'`;;
-      esac
-    done ;;
-  esac
-
-  AWT_LIBS="$JPEG_LIBS $PNG_LIBS $GIF_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
-  AWT_LIBS="$CTLIBS $AWT_LIBS"
-  AC_SUBST(AWT_LIBS)
-fi
 
 dnl -------------------------------------------------------------------------
 
@@ -1529,54 +1469,133 @@ dnl -------------------------------------------------------------------------
 dnl Configure AWT engine
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH([awt],
-	    AS_HELP_STRING([--with-awt=GRAPHICSYS],
-			   [specify AWT engine (no, [X], qt)]))
+AC_ARG_ENABLE([awt],
+	AS_HELP_STRING([--disable-native-awt],
+		       [disable build of Kaffe's all native AWT backends (enabled by default)]),
+	[],
+	[enable_native_awt=yes]
+)
 
-dnl If no AWT defined, choose an appropriate default.
-if test x"$with_awt" = x"no" ; then
-	with_awt=no
-fi
-if test x"$with_awt" = x"" ; then
-	# if no X is available, and AWT is undefined,
-	# don't build AWT support
-        if test x"$no_x" = x"yes"; then
-	        with_awt=no
+
+AC_ARG_WITH([kaffe-x-awt],
+	AS_HELP_STRING([--without-kaffe-x-awt],
+		       [disable build of Kaffe's Xlib-based AWT engine (built by default)]),
+	[],
+	[with_kaffe_x_awt=yes]
+)
+
+if test x"$enable_native_awt" = x"yes"; then
+   if test x"$with_kaffe_x_awt" = x"yes"; then
+
+      dnl Checks for libraries for X related libraries.
+      AC_PATH_XTRA
+      if test x"$no_x" = x"yes"; then
+	    AWT_LIBS=
+      else
+	dnl Csup is needed for IRIX libraries such as libjpeg and libpng
+	dnl Instead of adding it to both JPEG_LIBS and PNG_LIBS, use X_LIBS
+	AC_CHECK_LIBRARY(Csup,__T_9__nothrow,X_LIBS)
+	OLIBS=$LIBS
+	LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $OLIBS"
+	AC_CHECK_LIBRARY(Xext,XShmQueryExtension,X_PRE_LIBS)
+	OCPPFLAGS=$CPPFLAGS
+	CPPFLAGS="$CPPFLAGS $X_CFLAGS"
+	AC_CHECK_HEADERS([sys/ipc.h])
+	AC_CHECK_HEADERS([sys/shm.h])
+	AC_CHECK_HEADERS([X11/extensions/XShm.h], [], [],
+	[[#include <X11/Xlib.h>
+	]])
+	CPPFLAGS=$OCPPFLAGS	
+	LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $OLIBS"
+	AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
+	AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
+	AC_CACHE_CHECK([for a usable version of gif_lib.h],
+		kaffe_cv_gif_lib_version, [dnl
+		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <gif_lib.h>
+]], [[
+	((GifFileType *)0)->UserData;
+]])],[kaffe_cv_gif_lib_version=yes],[kaffe_cv_gif_lib_version=no])])
+	if test x"$kaffe_cv_gif_lib_version" = x"yes"; then
+	   AC_DEFINE(HAVE_GIF_LIB_H, 1, [Do we have the right version of libungif])
+	   AC_CHECK_LIBRARY(ungif,DGifOpen,GIF_LIBS)
+        fi
+
+	LIBS=$OLIBS
+	dnl If libpng is included, we also need libz - if we don't have it then
+	dnl we can't include png support.
+	if test -n "$PNG_LIBS" && test -n "$ZIP_LIBS"; then
+		PNG_LIBS="$PNG_LIBS $ZIP_LIBS $M_LIBS"
 	else
-	        with_awt=X
+		PNG_LIBS=""
 	fi
+
+	dnl For each -L switch in X_LIBS, add a corresponding -R, unless
+	dnl AC_PATH_XTRA has already taken care of them.
+	case "$X_LIBS" in
+	     "-R"* | *" -R"*) ;;
+	     "-L"* | *" -L"*)
+	     for ac_xlibdir in $X_LIBS; do
+	     case "$ac_xlibdir" in
+		  -L*) X_LIBS="$X_LIBS "`echo "$ac_xlibdir" | sed 's/^-L/-R/'`;;
+	     esac
+	     done ;;
+        esac
+
+	AWT_LIBS="$JPEG_LIBS $PNG_LIBS $GIF_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
+	AWT_LIBS="$CTLIBS $AWT_LIBS"
+	AC_SUBST(AWT_LIBS)
+     fi
+
+     if test "$have_x" = "no"; then
+	AC_MSG_ERROR([Configuration --with-kaffe-x-awt not supported - missing X support])
+     fi
+
+     AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/X/libxawt.la"
+   fi
 fi
 
-case $with_awt in
-no)
-	;;
+AC_ARG_WITH([kaffe-qte-awt],
+            AS_HELP_STRING([--without-kaffe-qte-awt],
+                           [disable build of Kaffe's Qt2/3/embedded-based AWT engine (built by default)]),
+        [],
+        [with_kaffe_qt_awt=yes]
+)
 
-X)
-	if test "$have_x" = "no"; then
-		AC_MSG_ERROR(Configuration 'with-awt=$with_awt' not supported - missing X support)
-	else
-		AWT_DIR=X
-	fi
-	;;
-
-qt)
+if test x"$enable_native_awt" = x"yes"; then
+   if test x"$with_kaffe_qt_awt" = x"yes"; then
 	gw_CHECK_QT
-	AWT_DIR=qt
-	;;
 
-*)
-	AC_MSG_ERROR(Configuration 'with-awt=$with_awt' not supported)
-	;;
-esac
-
-if test x"${AWT_DIR+set}" = x"set"; then
-  AWT_LIB="\$(top_builddir)/libraries/clib/awt/$AWT_DIR/libawt.la"
-else
-  AWT_DIR=
-  AWT_LIB=
+        AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/qt/libqteawt.la"
+   fi
 fi
 
-AC_SUBST(AWT_DIR)
+AC_ARG_WITH([classpath-gtk-awt],
+            AS_HELP_STRING([--without-classpath-gtk-awt],
+                           [disable build of GNU Classpath's Gtk+-based AWT engine (built by default)]),
+        [],
+        [with_classpath_gtk_awt=yes]
+)
+
+if test x"$enable_native_awt" = x"yes"; then
+   if test x"$with_classpath_gtk_awt" = x"yes"; then
+	dnl -----------------------------------------------------------------------
+	dnl                    Classpath Gtk peer support
+	dnl -----------------------------------------------------------------------
+
+	if test x"$with_threads" != x"unix-pthreads"; then
+                AC_MSG_ERROR([Configuration --with-classpath-gtk-awt not supported - only available with pthreads])
+	fi
+
+	dnl Check for AWT related gthread/gtk/libart_lgpl
+
+	PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.2 gthread-2.0 >= 2.2 libart-2.0)
+	AC_SUBST(GTK_CFLAGS)
+	AC_SUBST(GTK_LIBS)
+
+        AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/classpath-gtk/gtk-peer/libgtkpeer.la"
+   fi
+fi
 
 dnl -------------------------------------------------------------------------
 dnl Configure sound backend
@@ -2033,6 +2052,8 @@ AC_CONFIG_FILES([kaffe/scripts/Makefile])
 AC_CONFIG_FILES([kaffe/scripts/bat/Makefile])
 AC_CONFIG_FILES([kaffe/scripts/compat/Makefile])
 AC_CONFIG_FILES([libraries/javalib/Makefile])
+AC_CONFIG_FILES([libraries/javalib/awt-implementations/Makefile])
+AC_CONFIG_FILES([libraries/javalib/awt-implementations/kaffe/Makefile])
 AC_CONFIG_FILES([libraries/javalib/gmp-math/Makefile])
 AC_CONFIG_FILES([libraries/clib/Makefile])
 AC_CONFIG_FILES([libraries/clib/native/Makefile])
@@ -2045,6 +2066,10 @@ AC_CONFIG_FILES([libraries/clib/math/Makefile])
 AC_CONFIG_FILES([libraries/clib/management/Makefile])
 AC_CONFIG_FILES([libraries/clib/security/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/Makefile])
+AC_CONFIG_FILES([libraries/clib/awt/classpath-gtk/Makefile])
+AC_CONFIG_FILES([libraries/clib/awt/classpath-gtk/classpath/Makefile])
+AC_CONFIG_FILES([libraries/clib/awt/classpath-gtk/gtk-peer/Makefile])
+AC_CONFIG_FILES([libraries/clib/awt/classpath-gtk/resource/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/X/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/qt/Makefile])
 AC_CONFIG_FILES([libraries/clib/sound/Makefile])

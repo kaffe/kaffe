@@ -20,7 +20,6 @@ libio_la_LDFLAGS = \
 
 libio_la_SOURCES = \
 	File.c \
-	ObjectInputStream.c \
-	AudioPlayer.c
+	ObjectInputStream.c
 
 CLEANFILES = so_locations

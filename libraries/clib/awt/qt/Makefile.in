@@ -27,7 +27,7 @@
 # of this file. 
 
 
-SOURCES = $(libawt_la_SOURCES) $(nodist_libawt_la_SOURCES)
+SOURCES = $(libqteawt_la_SOURCES) $(nodist_libqteawt_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -66,8 +66,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
-	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
-	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/pkg.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
@@ -81,13 +82,14 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libawt_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-am_libawt_la_OBJECTS = tlk.lo wnd.lo evt.lo gra.lo fnt.lo clr.lo \
+libqteawt_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+am_libqteawt_la_OBJECTS = tlk.lo wnd.lo evt.lo gra.lo fnt.lo clr.lo \
 	img.lo cbd.lo
 am__objects_1 = evt.moc.lo
-nodist_libawt_la_OBJECTS = $(am__objects_1)
-libawt_la_OBJECTS = $(am_libawt_la_OBJECTS) \
-	$(nodist_libawt_la_OBJECTS)
+nodist_libqteawt_la_OBJECTS = $(am__objects_1)
+libqteawt_la_OBJECTS = $(am_libqteawt_la_OBJECTS) \
+	$(nodist_libqteawt_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -104,8 +106,8 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libawt_la_SOURCES) $(nodist_libawt_la_SOURCES)
-DIST_SOURCES = $(libawt_la_SOURCES)
+SOURCES = $(libqteawt_la_SOURCES) $(nodist_libqteawt_la_SOURCES)
+DIST_SOURCES = $(libqteawt_la_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -122,7 +124,6 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-AWT_DIR = @AWT_DIR@
 AWT_LIBS = -L$(QTDIR)/lib
 BCEL_JAR = @BCEL_JAR@
 BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
@@ -176,6 +177,8 @@ F77 = @F77@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
 GMSGFMT = @GMSGFMT@
+GTK_CFLAGS = @GTK_CFLAGS@
+GTK_LIBS = @GTK_LIBS@
 HAVE_BCEL_FALSE = @HAVE_BCEL_FALSE@
 HAVE_BCEL_TRUE = @HAVE_BCEL_TRUE@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
@@ -253,6 +256,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATHSEP = @PATHSEP@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PATH_TO_RT_JAR = @PATH_TO_RT_JAR@
+PKG_CONFIG = @PKG_CONFIG@
 POSUB = @POSUB@
 PROFILE = @PROFILE@
 PTHREAD_CC = @PTHREAD_CC@
@@ -353,20 +357,20 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-native_LTLIBRARIES = libawt.la
+native_LTLIBRARIES = libqteawt.la
 AM_CXXFLAGS := -fno-exceptions -fno-rtti $(CXXFLAGS) $(QT_CXXFLAGS)
 AM_CPPFLAGS = -I$(top_builddir)/include
-libawt_la_LDFLAGS = \
+libqteawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libawt_la_LIBADD = $(AWT_LIBS) $(QT_LDADD)
-libawt_la_MOC = \
+libqteawt_la_LIBADD = $(AWT_LIBS) $(QT_LDADD)
+libqteawt_la_MOC = \
 	evt.moc.cc
 
-libawt_la_SOURCES = \
+libqteawt_la_SOURCES = \
 	tlk.cc \
 	wnd.cc \
 	evt.cc \
@@ -376,15 +380,15 @@ libawt_la_SOURCES = \
 	img.cc \
 	cbd.cc
 
-nodist_libawt_la_SOURCES = \
-	$(libawt_la_MOC)
+nodist_libqteawt_la_SOURCES = \
+	$(libqteawt_la_MOC)
 
 noinst_HEADERS = \
 	keysyms.h \
 	toolkit.h \
 	tlkprops.h
 
-BUILT_SOURCES = $(libawt_la_MOC)
+BUILT_SOURCES = $(libqteawt_la_MOC)
 CLEANFILES = so_locations $(BUILT_SOURCES)
 EXTRA_DIST = evt.h
 all: $(BUILT_SOURCES)
@@ -448,8 +452,8 @@ clean-nativeLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libawt.la: $(libawt_la_OBJECTS) $(libawt_la_DEPENDENCIES) 
-	$(CXXLINK) -rpath $(nativedir) $(libawt_la_LDFLAGS) $(libawt_la_OBJECTS) $(libawt_la_LIBADD) $(LIBS)
+libqteawt.la: $(libqteawt_la_OBJECTS) $(libqteawt_la_DEPENDENCIES) 
+	$(CXXLINK) -rpath $(nativedir) $(libqteawt_la_LDFLAGS) $(libqteawt_la_OBJECTS) $(libqteawt_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

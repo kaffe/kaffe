@@ -6,22 +6,22 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-native_LTLIBRARIES = libawt.la
+native_LTLIBRARIES = libxawt.la
 
 AM_CFLAGS = @CFLAGS@ @X_CFLAGS@
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni
 
-libawt_la_LDFLAGS = \
+libxawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libawt_la_LIBADD = $(AWT_LIBS)
+libxawt_la_LIBADD = $(AWT_LIBS)
 
-libawt_la_SOURCES = \
+libxawt_la_SOURCES = \
 	tlk.c \
 	wnd.c \
 	evt.c \

@@ -345,6 +345,85 @@ checkException(void)
 }
 
 /*
+ * Set a user property.
+ *
+ * @param propStr property to set
+ * @return updated user properties
+ */
+static 
+userProperty*
+setUserProperty(char * propStr)
+{
+        size_t sz;
+	userProperty * prop;
+
+        prop = malloc(sizeof(userProperty));
+        assert(prop != 0);
+        prop->next = userProperties;
+        userProperties = prop;
+        for (sz = 0; propStr[sz] != 0; sz++) {
+        	if (propStr[sz] == '=') {
+                	propStr[sz] = 0;
+                        sz++;
+                        break;
+         	}
+    	}
+       	prop->key = propStr;
+        prop->value = &propStr[sz];
+
+	return prop;
+}
+
+/*
+ * Set AWT backend to use in Kaffe's AWT
+ *
+ * @param propStr AWT backend
+ * @return updated user properties
+ */
+static 
+userProperty*
+setKaffeAWT(char * propStr)
+{
+	char    *newbootcpath;
+	unsigned int      bootcpathlength;
+	const char *prefix = LIBDIR;
+	const char *suffix = file_separator "kaffeawt.jar";
+	char *backend_property = strdup(propStr);
+        userProperty* prop;
+
+	bootcpathlength = strlen(prefix)
+        		+ strlen(suffix)
+        		+ strlen(path_separator)
+                        + ((vmargs.bootClasspath != NULL) ?
+                           strlen(vmargs.bootClasspath) : 0)
+                        + 1;
+
+      	/* Get longer buffer FIXME:  free the old one */
+       	if ((newbootcpath = malloc(bootcpathlength)) == NULL) 
+	{
+           	fprintf(stderr,  _("Error: out of memory.\n"));
+                exit(1);
+      	}
+
+        /* Construct new boot classpath */
+       	strcpy(newbootcpath, prefix);
+        strcat(newbootcpath, suffix);
+        strcat(newbootcpath, path_separator);
+        if( vmargs.bootClasspath != 0 ) 
+	{
+        	strcat(newbootcpath, vmargs.bootClasspath);
+	}
+
+        /* set the new boot classpath */
+        vmargs.bootClasspath = newbootcpath;
+
+        /* select Xlib backend */
+        prop = setUserProperty(backend_property);
+
+	return prop;
+}
+
+/*
  * Process program's flags.
  */
 static
@@ -415,6 +494,16 @@ options(char** argv, int argc)
 			/* set the new classpath */
 			vmargs.classpath = newcpath;
 		}
+                /* Extra option to use kaffe's Xlib AWT backend.
+                 */
+                else if (strncmp(argv[i], "-Xkaffe-xlib-awt", (j=16)) == 0) {
+			prop = setKaffeAWT("kaffe.awt.nativelib=xawt");
+                }
+                /* Extra option to use kaffe's Qt/Embedded AWT backend.
+                 */
+                else if (strncmp(argv[i], "-Xkaffe-qte-awt", (j=15)) == 0) {
+                        prop = setKaffeAWT("kaffe.awt.nativelib=qteawt");
+                }
 #if defined(ENABLE_BINRELOC) && defined(USE_GMP)
 		/* Extra option to use gmp for native, fast bignums.
 		 * Only available with binreloc, since binreloc is used to
@@ -714,20 +803,8 @@ options(char** argv, int argc)
 		else if (argv[i][1] ==  'D') {
 			/* Set a property */
 			char *propStr = strdup(&argv[i][2]);
-			
-			prop = malloc(sizeof(userProperty));
-			assert(prop != 0);
-			prop->next = userProperties;
-			userProperties = prop;
-			for (sz = 0; propStr[sz] != 0; sz++) {
-				if (propStr[sz] == '=') {
-					propStr[sz] = 0;
-					sz++;
-					break;
-				}
-			}
-			prop->key = propStr;
-			prop->value = &propStr[sz];
+
+			prop = setUserProperty(propStr);
 		}
 		else if (argv[i][1] == 'X') {
 			fprintf(stderr, 
@@ -817,6 +894,9 @@ usage(void)
 #if defined(ENABLE_BINRELOC) && defined(USE_GMP)
         fprintf(stderr, _("	-Xnative-big-math	 Use GMP for faster, native bignum calculations\n"));
 #endif /* defined(ENABLE_BINRELOC) && defined(USE_GMP) */
+	fprintf(stderr, _("	-Xkaffe-xlib-awt	Use Kaffe's Xlib AWT backend\n"));
+	fprintf(stderr, _("	-Xkaffe-qte-awt		Use Kaffe's Qt2/3/Embedded AWT backend\n"));
+
 	fprintf(stderr, _("  * Option currently ignored.\n"
 			  "\n"
 			  "Compatibility options:\n"
