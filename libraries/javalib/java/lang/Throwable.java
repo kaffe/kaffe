@@ -12,10 +12,17 @@ package java.lang;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 
-public class Throwable extends Object
+public class Throwable extends Object implements Serializable
 {
-	private Object backtrace = null;
+	/*
+	 * NB: this is a place where native code stores private
+	 * data.  The gc will mark the memory referenced, but its allocation
+	 * type is such that it won't be walked further.
+	 * Do not use kaffe.util.Ptr here.
+	 */
+	private transient Object backtrace = null;
 	private String message = null;
 
 public Throwable()
