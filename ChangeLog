@@ -1,3 +1,11 @@
+2003-05-27 Tim Stack <stack@cs.utah.edu>
+
+	* aclocal.m4, configure, libtool.m4:
+	Set need_version to yes for OpenBSD.
+
+	* libraries/javalib/Makefile.am:
+	Set BOOTCLASSPATH for the pure-java Jar command.
+	
 2003-05-27  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* configure.in:
