@@ -301,8 +301,8 @@ public synchronized boolean waitForID ( int id, long ms) throws InterruptedExcep
 			return false;
 		}
 	
-		if ((e.img.checkImage(e.w, e.h, e, true) & (ImageObserver.FRAMEBITS|ImageObserver.ALLBITS)) == 0) {
-			synchronized ( e ) {
+		synchronized ( e ) {
+			if ((e.img.checkImage(e.w, e.h, e, true) & (ImageObserver.FRAMEBITS|ImageObserver.ALLBITS|ImageObserver.ERROR)) == 0) {
 				e.wait( ms);
 			}
 		}
@@ -337,7 +337,7 @@ public boolean imageUpdate ( Image img, int infoflags, int x, int y, int width, 
 			w = width;
 			h = height;
 		}
-		if ( (infoflags & (ALLBITS | FRAMEBITS | ABORT)) != 0 ) {
+		if ( (infoflags & (ALLBITS | FRAMEBITS | ABORT | ImageObserver.ERROR)) != 0 ) {
 			notify();
 			return (false);
 		}

@@ -1,3 +1,29 @@
+Thu May 30 11:51:36 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+        From: Jukka Santala <jsantala@tml.hut.fi>
+	
+	* libraries/javalib/java/awt/MediaTracker.java: This will probably
+	need some further testing. One class in X-Smiles passes a fake URL
+	to MediaTracker in hopes that it'll fast-fail and just get
+	ignored. Though we'll probably change that, in interest of
+	compatibility I wrote a patch to make this work on Kaffe more or
+	less as it seems on other JRE's. Problem is, it's not exactly well
+	documented.
+
+	It appears that with URL class the error occurs even before MediaTracker
+	enters its wait() section, and hence it never catches the notify() -
+	leading to "hangs" of several minutes or worse while Kaffe waits to time
+	out. In this patch, flags are checked for ImageObserver.ERROR before
+	entering wait(), and the synchronized section has been extended to
+	encompass all of that to prevent race-conditions between the check and
+	wait() on the assumption that with an URL the error could come in with
+	some latency. For the latter reason, imageUpdate() has also been modified
+	to fire notify() in this case.
+
+	We probably SHOULD also check ABORT in the same manner, but since I
+	couldn't immediately come up with a test-case to compare this against
+	other JRE's, I didn't add that in yet.
+	
 Thu May 30 11:31:58 PDT 2002  Jim Pick  <jim@kaffe.org>
 
         From: Jukka Santala <jsantala@tml.hut.fi>
