@@ -58,8 +58,7 @@ libkaffevm_la_SOURCES = \
 BUILT_SOURCES = \
 	java_lang_Cloneable.h \
 	gc-mem.c \
-	md.c \
-	trampolines.c
+	md.c
 
 java_lang_Cloneable.h: $(top_srcdir)/libraries/javalib/Klasses.jar
 	if test -x $(KAFFEH_FOR_HOST); then \
@@ -79,9 +78,3 @@ md.c: stamp-h02
 	else :; fi
 stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_MD_C) md.c $@
-
-trampolines.c: stamp-h03
-	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h03; \
-	else :; fi
-stamp-h03: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_C) trampolines.c $@

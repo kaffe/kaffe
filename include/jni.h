@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <sys/types.h>
 #include "jtypes.h"
 #include "jmalloc.h"
 

@@ -1,3 +1,14 @@
+Mon Jan 11 10:05:33 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* include/jni.h: include <sys/types.h> for size_t on SunOS4
+
+	* configure.in (KAFFEVM_TRAMPOLINES_C): define as empty in intrp
+	* kaffe/kaffevm/Makefile.am: moved creation of trampolines.c to...
+	* kaffe/kaffevm/jit/Makefile.am: ... here
+	* configure, kaffe/kaffevm/Makefile.in: regen
+	* kaffe/kaffevm/jit/Makefile.in: ditto
+	* config/stamp-h1.in, include/stamp-h2.in
+
 Mon Jan 11 08:04:55 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in, libltdl/configure.in (TEST_VERSION): was not

@@ -248,6 +248,7 @@ THREAD_DIR=systems/$with_threads
 dnl =========================================================================
 dnl Look for trampoline code if in JIT mode
 dnl -------------------------------------------------------------------------
+KAFFEVM_TRAMPOLINES_C=
 if test "$with_engine" != "intrp" ; then
 	AC_MSG_CHECKING(for trampolines)
 	if test -f $srcdir/config/$host_cpu/trampolines.c ; then

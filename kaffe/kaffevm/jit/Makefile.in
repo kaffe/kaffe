@@ -125,7 +125,7 @@ libengine_la_SOURCES =  	basecode.c 	constpool.c 	funcs.c 	icode.c 	labels.c 	re
 EXTRA_DIST =  	Makefile.frag 	basecode.h 	checks.h 	codeproto.h 	constpool.h 	icode_internal.h 	labels.h 	machine.h 	registers.h 	seq.h 	slots.h
 
 
-BUILT_SOURCES = jit.def icode.h
+BUILT_SOURCES = jit.def icode.h trampolines.c
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -158,7 +158,7 @@ TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/basecode.P .deps/constpool.P .deps/funcs.P \
 .deps/icode.P .deps/labels.P .deps/machine.P .deps/registers.P \
-.deps/seq.P .deps/slots.P
+.deps/seq.P .deps/slots.P .deps/trampolines.P
 SOURCES = $(libengine_la_SOURCES)
 OBJECTS = $(libengine_la_OBJECTS)
 
@@ -389,6 +389,12 @@ jit.def: stamp-h02
 	else :; fi
 stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_JIT_DEF) jit.def $@
+
+trampolines.c: stamp-h03
+	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h03; \
+	else :; fi
+stamp-h03: $(top_builddir)/config.status
+	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_C) trampolines.c $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -129,7 +129,7 @@ libkaffevm_la_LIBADD =  	$(top_builddir)/libltdl/libltdl.la 	$(ENGINE_NAME)/libe
 libkaffevm_la_SOURCES =  	baseClasses.c 	classMethod.c 	code-analyse.c 	code.c 	constants.c 	debug.c 	exception.c 	external.c 	findInJar.c 	gc-mem.c 	gc.c 	hashtab.c 	inflate.c 	itypes.c 	jar.c 	jni.c 	locks.c 	lookup.c 	md.c 	object.c 	readClass.c 	soft.c 	stackTrace.c 	string.c 	support.c 	thread.c 	utf8const.c 	verify.c
 
 
-BUILT_SOURCES =  	java_lang_Cloneable.h 	gc-mem.c 	md.c 	trampolines.c
+BUILT_SOURCES =  	java_lang_Cloneable.h 	gc-mem.c 	md.c
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
@@ -170,8 +170,7 @@ DEP_FILES =  .deps/baseClasses.P .deps/classMethod.P \
 .deps/gc.P .deps/hashtab.P .deps/inflate.P .deps/itypes.P .deps/jar.P \
 .deps/jni.P .deps/locks.P .deps/lookup.P .deps/md.P .deps/object.P \
 .deps/readClass.P .deps/soft.P .deps/stackTrace.P .deps/string.P \
-.deps/support.P .deps/thread.P .deps/trampolines.P .deps/utf8const.P \
-.deps/verify.P
+.deps/support.P .deps/thread.P .deps/utf8const.P .deps/verify.P
 SOURCES = $(libkaffevm_la_SOURCES)
 OBJECTS = $(libkaffevm_la_OBJECTS)
 
@@ -508,12 +507,6 @@ md.c: stamp-h02
 	else :; fi
 stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_MD_C) md.c $@
-
-trampolines.c: stamp-h03
-	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h03; \
-	else :; fi
-stamp-h03: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_C) trampolines.c $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

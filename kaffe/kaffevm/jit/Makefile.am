@@ -36,7 +36,7 @@ EXTRA_DIST = \
 	seq.h \
 	slots.h
 
-BUILT_SOURCES = jit.def icode.h
+BUILT_SOURCES = jit.def icode.h trampolines.c
 
 icode.h: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
@@ -49,3 +49,9 @@ jit.def: stamp-h02
 	else :; fi
 stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_JIT_DEF) jit.def $@
+
+trampolines.c: stamp-h03
+	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h03; \
+	else :; fi
+stamp-h03: $(top_builddir)/config.status
+	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_C) trampolines.c $@
