@@ -1,6 +1,36 @@
+2003-05-29  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Makefile.in:
+	regenerated.
+	
 2003-05-28  Ito Kazumitsu <kaz@maczuka.gcd.org>
 	* libraries/javalib/Makefile.in:
 	add new java/nio files to java_nio_SRCS
+
+2003-05-28  Dalibor Topic <robilad@yahoo.com>
+
+        * developers/autogen.sh:
+        uncommented class file list updating since it works again on
+        Mandrake 9.1.
+
+        * libraries/javalib/gnu/java/nio/ByteBufferImpl.java,
+        libraries/javalib/gnu/java/nio/CharBufferImpl.java,
+        libraries/javalib/gnu/java/nio/DoubleBufferImpl.java,
+        libraries/javalib/gnu/java/nio/FloatBufferImpl.java,
+        libraries/javalib/gnu/java/nio/IntBufferImpl.java,
+        libraries/javalib/gnu/java/nio/LongBufferImpl.java,
+        libraries/javalib/gnu/java/nio/ShortBufferImpl.java:
+        removed.
+        
+        * libraries/javalib/Makefile.am:
+        libraries/javalib/profiles/allatonce/all.files,
+        libraries/javalib/profiles/default/nio.files,
+        updated to reflect class library changes.
+        
+        * kaffe/scripts/compat/Makefile.in,
+        kaffe/scripts/Makefile.in,
+        libraries/javalib/Makefile.in:
+        regenerated.
 
 2003-05-28  Ito Kazumitsu <kaz@maczuka.gcd.org>
 	* libraries/javalib/Makefile.in:
