@@ -1,3 +1,9 @@
+Sat Mar 20 14:59:00 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/lang/String.java: fix lastIndexOf(int, int)
+	to behave according to JDK 1.2 spec.
+	* test/regression/GCTest.java: synchronize output
+
 Thu Mar 18 16:16:11 1999  YAMAGUCHI Yuji <yamag@distribution.co.jp>
 
 	* libraries/javalib/java/io/PipedOutputStream.java, 
