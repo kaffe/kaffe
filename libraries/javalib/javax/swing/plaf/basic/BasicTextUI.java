@@ -45,6 +45,8 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -228,9 +230,20 @@ public abstract class BasicTextUI extends TextUI
     caret.setBlinkRate(defaults.getInt(prefix + ".caretBlinkRate"));
   }
 
+  private FocusListener focuslistener = new FocusListener() {
+      public void focusGained(FocusEvent e)
+      {
+        textComponent.repaint();
+      }
+      public void focusLost(FocusEvent e)
+      {
+        textComponent.repaint();
+      }
+    };
+
   protected void installListeners()
   {
-    // Do nothing here.
+    textComponent.addFocusListener(focuslistener);
   }
 
   protected String getKeymapName()
@@ -328,7 +341,7 @@ public abstract class BasicTextUI extends TextUI
 
   protected void uninstallListeners()
   {
-    // Do nothing here.
+    textComponent.removeFocusListener(focuslistener);
   }
 
   protected void uninstallKeyboardActions()
@@ -367,7 +380,7 @@ public abstract class BasicTextUI extends TextUI
 
     rootView.paint(g, getVisibleEditorRect());
 
-    if (caret != null)
+    if (caret != null && textComponent.hasFocus())
       caret.paint(g);
   }
 
