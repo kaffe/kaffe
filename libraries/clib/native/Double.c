@@ -52,7 +52,10 @@ java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 		case '\t':
 		case '\n':
 		case '\r':	/* Ignore whitespace */
+		case 'F':
 		case 'f':	/* Ignore float suffix. */
+		case 'D':
+		case 'd':	/* Ignore double suffix. */
 			endbuf++;
 			break;
 		default:
