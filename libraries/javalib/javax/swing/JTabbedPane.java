@@ -518,12 +518,12 @@ public class JTabbedPane extends JComponent implements Serializable,
      *         or equal to title.length.
      */
     public void setDisplayedMnemonicIndex(int index)
-                                   throws IllegalArgumentException
+      throws IllegalArgumentException
     {
       if (index < -1 || title != null && index >= title.length())
 	throw new IllegalArgumentException();
 
-      if (title == null || title.charAt(index) != mnemonicKey)
+      if (title == null || mnemonicKey == 0 || title.charAt(index) != mnemonicKey)
 	index = -1;
 
       underlinedChar = index;
