@@ -3601,7 +3601,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	int an;
 	int iLockRoot;
 
-	isStatic = METHOD_IS_STATIC(xmeth);
+	isStatic = METHOD_IS_STATIC(xmeth) ? 1 : 0;
 	count = sizeofSigMethod(xmeth, false);
 	count += 1 - isStatic;
 
