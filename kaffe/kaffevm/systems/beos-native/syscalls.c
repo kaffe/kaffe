@@ -276,8 +276,6 @@ beos_native_forkexec(char *argv[], char *env[], int ioes[4], int *outpid)
 	char b[1];
 	int pid, i, err;
 
-	extern char** environ;
-
 	/* 
 	 * we need execve() and fork() for this to work.  Don't bother if
 	 * we don't have them.
@@ -355,11 +353,11 @@ DBG(JTHREAD,
 
 		/* execute program */
 #if defined(HAVE_EXECVP)
-		if (environ == NULL)
+		if (env == NULL)
 			execvp(argv[0], argv);
 		else
 #endif
-			execve(argv[0], argv, environ);
+			execve(argv[0], argv, env);
 		break;
 
 	case -1:
