@@ -1,0 +1,154 @@
+
+Documentation about the Kaffe/GCJ integration.
+By Godmar Back <gback@cs.utah.edu>, Nov 29, 1999
+
+
+The Kaffe/GCJ integration is at this point 95% complete.
+
+Here's a list of the remaining limitations/problems:
+
+    - exception dispatch is not thread-safe
+
+    - deadlock in AWT and javac.
+
+    - static synchronized methods are probably not handled properly.
+
+    - it's x86 only at this point.
+
+    - floating point exceptions do not work properly on x86.
+
+    - setjmp/longjmp based exceptions not supported.
+
+    - linker scripts for native aliases not implemented, awaiting libtool fix.
+
+    - disregards order of class files in classpath when shared objects
+      are included.
+
+    - fixup only supports a single module.  Need scripts.
+
+    - exception dispatch and stack trace computation for jitted code
+      is broken.
+      
+    - only supports dlopen-style dynamic linking.
+
+
+I know this sounds horrible, but I'd still claim we're at 95% completion.
+
+
+
+What are the goals of the kaffe/gcj integration?
+
+One overriding priority when doing this work was to accomplish it in a
+way that would allow a *stock gcj installation* to be used to build
+shared object files that could be used with Kaffe.  I believe it would
+have been unacceptable for people to have to have multiple gcj 
+installation around.
+
+On the other hand, we do not see kaffe as a libgcj replacement or
+competitor.  While there may be overlap, they have different goals.
+Gcj support in kaffe requires you to have libgcj installation on your 
+machine when you build kaffe.  (Pre-installed versions of kaffe do not
+require this just to run gcj-compiled code.)
+
+A second goal was to be able to arbitrarily mix and match precompiled
+and just-in-time compiled code.  *Any* class in the system can be either
+precompiled or just-in-time compiled, and they should interact seemlessly.
+
+
+Because I considered changing gcj a taboo, I used what I call a 
+surrogate-based approach.  For each run-time object that describes a 
+class, method or field that gcj code expects, there exists a surrogate 
+kaffe object that describes the very same class, method, or field.
+Here's a picture:
+
+	|----------|		     |---------|
+	|GCJ class | <---    ------> | Kaffe   |
+	|          |	  \ /	     | class   |
+	|          |       X	     | (valid  |
+	|          |      / \	     | data)   |
+	|GCJ2KAFFE | -----   ------  | gcjPeer |
+	|----------|		     |---------|
+
+	java::lang::Class		struct Hjava_lang_Class
+
+The GCJ2KAFFE macro (ab)uses the "thread" field in java::lang::Class to
+hold a pointer to its kaffe surrogate class.
+
+Similarly, a class's method, field, interface, and dispatch table are 
+created from their gcj counter parts.  A constant pool is not created,
+instead, processing of constants done directly from the GCJ class object.
+
+To ensure consistency, we directly include GCJ header files in some
+files in the gcj/ subdirectory.  We communicate between those files
+and the files that include Kaffe's headers by using basic types such
+as int or char *.  For instance, a GCJ utf8const is passed as a const char*
+to the kaffe code where a Kaffe utf8const is created.
+
+To be continued....
+
+
+
+
+
+How do I use kaffe/gcj?
+
+You first have to compile your .java (if gcj supports it) or your .class
+files against Kaffe's class libraries.  To do that, you need to create
+an uncompressed jar file with Kaffe's class libraries, or extract these
+class libraries in a directory.  Directly using Kaffe's Klasses.jar does not
+currently work cause gcj does not support compressed jar files.
+
+Then you have to build a shared module.
+
+Example:
+	gcj -g -fPIC -c -classpath .:....kaffeclasspathlocation.... X.class
+	gcj -shared -o X.so X.o
+
+Be sure to specify Kaffe's class libraries, or else gcj will pick up
+libgcj.zip, which is incompatible.
+
+Next, you need to create a so-called fixup module.  To do this, compile
+and run the program fixup.c in developers.
+
+Example:
+	....fixup X > _fixup_X.cc
+	g++ -fPIC -Ilibgcj_include_dir -c _fixup_X.cc
+	gcc -shared -o _fixup_X.so _fixup_X.o
+
+Note:  the prefix "_fixup_" is currently hardwired.  For every shared
+module X.so, there has to be _fixup_X.so module in LD_LIBRARY_PATH.
+
+Next, include X.so in your classpath and run it:
+
+	setenv CLASSPATH X.so
+	kaffe X
+
+That's it.
+
+
+How do I compile Kaffe's class libraries?
+
+First, make sure that you've compiled them with jikes, not with kjc.
+Kjc generates correct code that gcj rejects.  
+
+You can compile the class libraries as individual files.  I recommend 
+using the -w option to turn off warnings, or else gcj will warn you about
+unreachable bytecode jikes generates in almost every file.
+I've been using -O3.  I believe that more options need to be specified
+in order to get full inlining of private methods. (-finline-functions?)
+
+~/kaffe/developers/GCJ.note.1 contains a list of files that you mustn't
+compile with optimizations turned on.  See the URLs in this file as to
+why.
+
+
+Note that fixup currently patches up all external symbols.  For this
+reasons, we really only support one big shared module.  So if you want
+precompile your app *and* the library, you have 
+	1. first create .o files for all .class files
+	2. link all these .o files into one big .so
+	3. invoke fixup on the .so
+
+creating two .so files and fixing them up separately will probably not 
+work at this time.
+
