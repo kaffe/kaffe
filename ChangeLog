@@ -1,3 +1,9 @@
+Wed Jul 17 23:26:19 CEST 2002 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/util/Calendar.java:
+	(areAllFieldsSet) new private method, used by toString.
+	(toString) new method.
+
 Wed Jul 17 03:55:58 CEST 2002 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/lang/Class.java:

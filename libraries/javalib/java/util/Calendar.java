@@ -88,6 +88,16 @@ protected Calendar(TimeZone zne, Locale aLocale)
 	locale = aLocale;
 }
 
+private boolean areAllFieldsSet() {
+	for (int i = 0; i < FIELD_COUNT; ++i) {
+		if (!isSet(i)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 abstract public void add(int field, int amount);
 
 abstract public boolean after(Object when);
@@ -324,5 +334,34 @@ protected void setTimeInMillis(long millis)
 public void setTimeZone(TimeZone value)
 {
 	zone = value;
+}
+
+public String toString() {
+	return getClass().getName()
+		+ "[time=" + time
+		+ ",areFieldsSet=" + areFieldsSet
+		+ ",areAllFieldsSet=" + areAllFieldsSet()
+		+ ",lenient=" + isLenient()
+		+ ",zone=" + getTimeZone()
+		+ ",firstDayOfWeek=" + getFirstDayOfWeek()
+		+ ",minimalDaysInFirstWeek=" + getMinimalDaysInFirstWeek()
+		+ ",ERA=" + get(ERA)
+		+ ",YEAR=" + get(YEAR)
+		+ ",MONTH=" + get(MONTH)
+		+ ",WEEK_OF_YEAR=" + get(WEEK_OF_YEAR)
+		+ ",WEEK_OF_MONTH=" + get(WEEK_OF_MONTH)
+		+ ",DAY_OF_MONTH=" + get(DAY_OF_MONTH)
+		+ ",DAY_OF_YEAR=" + get(DAY_OF_YEAR)
+		+ ",DAY_OF_WEEK=" + get(DAY_OF_WEEK)
+		+ ",DAY_OF_WEEK_IN_MONTH=" + get(DAY_OF_WEEK_IN_MONTH)
+		+ ",AM_PM=" + get(AM_PM)
+		+ ",HOUR=" + get(HOUR)
+		+ ",HOUR_OF_DAY=" + get(HOUR_OF_DAY)
+		+ ",MINUTE=" + get(MINUTE)
+		+ ",SECOND=" + get(SECOND)
+		+ ",MILLISECOND=" + get(MILLISECOND)
+		+ ",ZONE_OFFSET=" + get(ZONE_OFFSET)
+		+ ",DST_OFFSET=" + get(DST_OFFSET)
+		+ ']';
 }
 }
