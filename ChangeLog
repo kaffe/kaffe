@@ -2,6 +2,17 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-27  Chris Burdess  <dog@gnu.org>
+
+        * gnu/java/net/protocol/file/Connection.java: Return correct content
+        length for directory listing.
+        * java/net/URLClassLoader.java: Correction for URLClassLoader, bug
+        #11285: return valid URLs for directories.
+
+2005-03-02  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-27  Roman Kennke  <roman@ontographics.com>
 
         * javax/swing/JList.java
