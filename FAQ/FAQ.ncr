@@ -1,0 +1,21 @@
+
+Documentation about the Kaffe port to NCR MP-RAS.
+By Edouard G. Parmelan <egp@free.fr>, Mar 4, 2000
+
+Autoconf macro that detect required libraries to link with X11 don't
+handle NCR MP-RAS case correctly and don't figure that -lnsl is needed :(
+To be able to use AWT, you should add set X_EXTRA_LIBS=-lnsl when
+running configure.
+
+Using a Bourne-compatible shell user you can do that on the command line
+like this:
+    X_EXTRA_LIBS=-lnsl PATH_TO_KAFFE/configure
+
+Or on systems that have the `env' program, you can do it like this:
+    % env X_EXTRA_LIBS=-lnsl PATH_TO_KAFFE/configure
+
+To enable debuging support (--enable-debug) you need function
+strcasecmp() from -lc89, set LIBS=-lc89 when running configure.
+
+You *must* disable gcj with --disable-gcj option of configure as gcc prebuild
+from http://ncrinfo.ncr.com/pub/contrib don't contains g++.
