@@ -87,8 +87,17 @@
 # define DBG_LIBTOOL		DBG_BIT(43)
 # define DBG_NATIVENET		DBG_BIT(44)
 
-/* let's reserve 50-63 for temporary uses */
-# define DBG_SLACKANAL		DBG_BIT(50) 
+# define DBG_AWT_MEM		DBG_BIT(45)
+# define DBG_AWT_CLR		DBG_BIT(46)
+# define DBG_AWT_EVT		DBG_BIT(47)
+# define DBG_AWT_IMG		DBG_BIT(48)
+# define DBG_AWT_WND		DBG_BIT(49)
+# define DBG_AWT_GRA		DBG_BIT(50)
+# define DBG_AWT		(DBG_AWT_MEM | DBG_AWT_CLR | DBG_AWT_EVT \
+				 | DBG_AWT_IMG | DBG_AWT_WND | DBG_AWT_GRA)
+
+/* let's reserve 51-63 for temporary uses */
+# define DBG_SLACKANAL		DBG_BIT(51) 
 
 # define DBG_ALL		((jlong)(-1))
 # define DBG_ANY                DBG_ALL

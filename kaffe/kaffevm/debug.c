@@ -110,6 +110,14 @@ static struct debug_opts
 	D(LIBTOOL, 	"Debug libtool stuff."),
 	D(NATIVENET,	"Show network accesses from the native code."),
 
+	D(DBG_AWT_MEM,	"AWT subsystem."),
+	D(DBG_AWT_CLR,	"AWT subsystem."),
+	D(DBG_AWT_EVT,	"AWT subsystem."),
+	D(DBG_AWT_IMG,	"AWT subsystem."),
+	D(DBG_AWT_WND,	"AWT subsystem."),
+	D(DBG_AWT_GRA,	"AWT subsystem."),
+	D(DBG_AWT,	"Debug all of AWT."),
+
 	/* you can define combinations too */
 	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP, 
 			"Various lookup operations" },
