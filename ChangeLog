@@ -1,3 +1,14 @@
+2003-05-19  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/javalib/java/net/URLClassLoader.java: 
+	(findResources) remove leading slash from resource name if
+	necessary
+	
+	* libraries/clib/native/ClassLoader.c:
+	(java_lang_ClassLoader_loadArrayClass) convert VerifyErrors and
+	NoClassDefFoundErrors into ClassNotFoundExceptions, ensure the
+	passed class name is valid utf8 before passing it to utf8ConstNew
+
 2003-05-19  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
 
         Add support for Linux/AMD64.

@@ -39,77 +39,54 @@ java_lang_ClassLoader_loadArrayClass (struct Hjava_lang_ClassLoader* this, struc
         Utf8Const* c;
         char* name;
         char buffer[100];
+	info.type = 0;
 
         if (len <= sizeof(buffer) - 1) {
                 name = buffer;
-        }
-        else {
+        } else {
                 name = KMALLOC (len);
         }
 
         if (!name) {
                 postOutOfMemory(&info);
-                throwError(&info);
+       		goto error; 
         }
-        else {
-                stringJava2CBuf(str, name, len + 1);
-                classname2pathname(name, name);
 
-                c = utf8ConstNew(name, len);
-                if (!c) {
-                    postOutOfMemory(&info);
-                    throwError(&info);
-                }
-                else {
-                    clazz = loadArray(c, this, &info);
+	stringJava2CBuf(str, name, len + 1);
+	classname2pathname(name, name);
 
-                    utf8ConstRelease(c);
+	/*
+	 * if the name isn't valid utf8, there's no way loading the class could succeed
+	 */
+	if (!utf8ConstIsValidUtf8 (name, len)) {
+		postExceptionMessage (&info, JAVA_LANG(ClassNotFoundException), "%s", name);
+		goto error;
+	}
 
-			if (clazz == 0) {
+	c = utf8ConstNew(name, len);
+	if (!c) {
+		postOutOfMemory(&info);
+		goto error; 
+	}
 	
-	                /*
-                 * upgrade error to an exception if *this* class wasn't found.
-                 * See discussion in Class.forName()
-                 */
-                if ((info.type & KERR_EXCEPTION)
-                    && !strcmp(info.classname, "java.lang.NoClassDefFoundError")) {
-                        /*
-                         * However, we don't upgrade if it is a second attempt
-                         * to load a class whose loading has already failed.
-                         */
-                        classEntry* centry;
+	clazz = loadArray(c, this, &info);
 
-                        stringJava2CBuf(str, name, len + 1);
-                        classname2pathname(name, name);
-                        c = utf8ConstNew(name, len);
+	utf8ConstRelease(c);
 
-                        centry = lookupClassEntry(c, 0, &info);
-                        if (centry == 0
-                            || (centry->class
-                                && centry->class->state == CSTATE_FAILED)) {
-                                utf8ConstRelease(c);
-                                throwError(&info);
-                        }
-                        utf8ConstRelease(c);
-
-                        if (!strcmp(info.mess, name)) {
-                                errorInfo info_tmp = info;
-                                postExceptionMessage(&info,
-                                                     JAVA_LANG(ClassNotFoundException),
-                                                     "%s", info.mess);
-                                discardErrorInfo(&info_tmp);
-                        }
-                }
-
-	
-				if (name != buffer) {
-					KFREE (name);
-				}
-
-				throwError (&info);
-			}
-                }
-        }
+	if (clazz == 0) {
+		/*
+		 * change VerifyErrors (happens when loading an array of void) and
+		 * NoClassDefFoundErrors (happens when element class is not found)
+		 * into ClassNotFoundExceptions 
+		 */
+		if ((info.type & KERR_EXCEPTION)
+			&& (!strcmp(info.classname, "java.lang.NoClassDefFoundError") ||
+			    !strcmp(info.classname, "java.lang.VerifyError"))) {
+			discardErrorInfo (&info);
+			postExceptionMessage (&info, JAVA_LANG(ClassNotFoundException), "%s", name);
+			goto error;
+		}
+	}
 
         if (name != buffer) {
                 KFREE(name);
@@ -122,6 +99,17 @@ java_lang_ClassLoader_loadArrayClass (struct Hjava_lang_ClassLoader* this, struc
                 throwError(&info);
         }
         return (clazz);
+
+error:
+	if (name && name!=buffer) {
+		KFREE (name);
+	}
+
+	if (info.type) {
+		throwError (&info);
+	}
+
+	return 0;
 }
 
 /*

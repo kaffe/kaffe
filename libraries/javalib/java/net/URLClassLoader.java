@@ -157,6 +157,11 @@ public class URLClassLoader extends SecureClassLoader {
 
 	public Enumeration findResources(String name) throws IOException {
 		Vector v = new Vector();
+
+		if (name.charAt(0)=='/') {
+			name = name.substring(1);
+		}
+
 		for (int i = 0; i < urls.size(); i++) {
 			URL url = (URL)urls.elementAt(i);
 			try {
