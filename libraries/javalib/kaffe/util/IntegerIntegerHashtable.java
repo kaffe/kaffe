@@ -23,6 +23,8 @@ import java.lang.ClassNotFoundException;
 public class IntegerIntegerHashtable
 	implements Serializable {
 
+  static final long serialVersionUID = 329217906565329940L;
+
   private int keys[];
   private int elements[];
   private int iloadFactor;
