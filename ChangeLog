@@ -1,3 +1,8 @@
+Tue Jul 14 15:05:28 1998  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/m68k/sunos4/md.h, config.frag:  machine-specific macros
+	  sysdepCallMethod, ALIGNMENT_OF_SIZE.
+
 Tue Jul 14 00:00:00 1998  Transvirtual Technologies     <info@transvirtual.com>
 
         * Version 1.0-b1 of Kaffe OpenVM released.
