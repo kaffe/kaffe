@@ -39,7 +39,7 @@ exception statement from your version. */
 package gnu.java.net.protocol.ftp;
 
 import gnu.java.net.GetLocalHostAction;
-import gnu.java.net.GetSystemPropertyAction;
+import gnu.java.security.action.GetPropertyAction;
 
 import java.io.FileNotFoundException;
 import java.io.FilterInputStream;
@@ -113,7 +113,7 @@ public class FTPURLConnection
     else
       {
         username = "anonymous";
-        PrivilegedAction a = new GetSystemPropertyAction("user.name");
+        PrivilegedAction a = new GetPropertyAction("user.name");
         String systemUsername =(String) AccessController.doPrivileged(a);
         a = new GetLocalHostAction();
         InetAddress localhost =(InetAddress) AccessController.doPrivileged(a);

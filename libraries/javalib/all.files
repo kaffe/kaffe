@@ -931,7 +931,6 @@ gnu/java/net/CRLFOutputStream.java
 gnu/java/net/DNSJavaInetAddressImpl.java
 gnu/java/net/EmptyX509TrustManager.java
 gnu/java/net/GetLocalHostAction.java
-gnu/java/net/GetSystemPropertyAction.java
 gnu/java/net/HeaderFieldHelper.java
 gnu/java/net/InetAddressImpl.java
 gnu/java/net/LineInputStream.java
