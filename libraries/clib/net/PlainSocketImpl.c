@@ -310,27 +310,31 @@ java_net_PlainSocketImpl_socketAvailable(struct Hjava_net_PlainSocketImpl* this)
 {
 	int r;
 	jint len;
+	int fd;
+#if (!(defined(HAVE_IOCTL) && defined(FIONREAD)) && !defined(__WIN32__))
+	static struct timeval tm = { 0, 0 };
+	fd_set rd;
+#endif
 
 	DBG(NATIVENET,
 	    dprintf("socketAvailable(%p)\n", this);
 	    )
+	fd = unhand(unhand(this)->fd)->fd;
 
 #if defined(HAVE_IOCTL) && defined(FIONREAD)
 	/* XXX make part of system call interface to protect errno */
-	r = ioctl(unhand(unhand(this)->fd)->fd, FIONREAD, &len);
+	r = ioctl(fd, FIONREAD, &len);
 	if (r < 0) {
 		SignalError("java.io.IOException", SYS_ERROR(errno));
 	}
 #else
-#if !defined(__WIN32__) /* Windows hack - XXX */
+#if defined(__WIN32__) /* Windows hack - XXX */
+	len = 0;
+#else
 	/* This uses KSELECT() to work out if we can read - but what
 	 * happens at the end of file?
 	 */
-	static struct timeval tm = { 0, 0 };
-	int fd;
-	fd_set rd;
 
-	fd = unhand(unhand(this)->fd)->fd;
 	FD_ZERO(&rd);
 	FD_SET(fd, &rd);
 	KSELECT(fd+1, &rd, NULL, NULL, &tm, &r);	/* XXX ignore ret code*/
@@ -340,10 +344,8 @@ java_net_PlainSocketImpl_socketAvailable(struct Hjava_net_PlainSocketImpl* this)
 	else {
 		len = 0;
 	}
-#else
-	len = 0;
-#endif
-#endif
+#endif	/* defined(__WIN32__) */
+#endif  /* defined(HAVE_IOCTL) && defined(FIONREAD) */
 
 	DBG(NATIVENET,
 	    dprintf("socketAvailable(%p) -> %d\n", this, len);
