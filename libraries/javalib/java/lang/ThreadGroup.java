@@ -20,7 +20,7 @@ public class ThreadGroup
 	private boolean destroyed = false;
 	private boolean daemon = false;
 	private int nthreads = 0;
-	private Thread[] threads;
+	private Thread[] threads = new Thread[0];
 	private int ngroups = 0;
 	private ThreadGroup[] groups = new ThreadGroup[0];
 
@@ -111,17 +111,6 @@ final public void checkAccess() {
 	System.getSecurityManager().checkAccess(this);
 }
 
-private int copyArray(Object srcArray[], Object destArray[], int destIndex) {
-
-	for (int i = 0; i < srcArray.length; i++) {
-		if (srcArray[i] != null && destIndex < destArray.length) {
-			destArray[destIndex] = srcArray[i];
-			destIndex++;
-		}
-	}
-	return (destIndex);
-}
-
 final public synchronized void destroy() {
 	checkAccess();
 
@@ -146,22 +135,37 @@ final public synchronized void destroy() {
 }
 
 public int enumerate(ThreadGroup list[]) {
+	checkAccess();
 	return enumerate(list, true, 0);
 }
 
 public int enumerate(ThreadGroup list[], boolean recurse) {
+	checkAccess();
 	return enumerate(list, recurse, 0);
 }
 
 private int enumerate(ThreadGroup list[], boolean recurse, int pos) {
+	ThreadGroup[] gr = null;
 
 	/* First do the local threads */
-	pos = copyArray(groups, list, pos);
+	synchronized (this) {
+		for (int i = 0; i < groups.length && pos < list.length; i++) {
+			if (groups[i] != null)
+				list[pos++] = groups[i];
+		}
+
+		if (recurse && groups != null) {
+			gr = new ThreadGroup[groups.length];
+			System.arraycopy (groups, 0, gr, 0, groups.length);
+		}
+	}
 
 	/* Iterate through sub-groups */
-	for (int i = 0; i < groups.length; i++) {
-		if (groups[i] != null) {
-			pos = groups[i].enumerate(list, recurse, pos);
+	if (gr != null) {
+		for (int i = 0; i < gr.length; i++) {
+			if (gr[i] != null) {
+				pos = gr[i].enumerate(list, true, pos);
+			}
 		}
 	}
 
@@ -169,22 +173,37 @@ private int enumerate(ThreadGroup list[], boolean recurse, int pos) {
 }
 
 public int enumerate(Thread list[]) {
+	checkAccess();
 	return enumerate(list, true, 0);
 }
 
 public int enumerate(Thread list[], boolean recurse) {
+	checkAccess();
 	return enumerate(list, recurse, 0);
 }
 
 private int enumerate(Thread list[], boolean recurse, int pos) {
+	ThreadGroup[] gr = null;
 
 	/* First do the local threads */
-	pos = copyArray(threads, list, pos);
+	synchronized (this) {
+		/* Include active threads only */
+		for (int i = 0; i < threads.length && pos < list.length; i++) {
+			if (threads[i] != null && threads[i].isAlive())
+				list[pos++] = threads[i];
+		}
+		if (recurse && groups != null) {
+			gr = new ThreadGroup[groups.length];
+			System.arraycopy (groups, 0, gr, 0, groups.length);
+		}
+	}
 
 	/* Iterate through sub-groups */
-	for (int i = 0; i < groups.length; i++) {
-		if (groups[i] != null) {
-			pos = groups[i].enumerate(list, recurse, pos);
+	if (gr != null) {
+		for (int i = 0; i < gr.length; i++) {
+			if (gr[i] != null) {
+				pos = gr[i].enumerate(list, true, pos);
+			}
 		}
 	}
 
