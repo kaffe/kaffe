@@ -93,7 +93,7 @@ void KaffePThread_clearBlockingCall(void *sigdata)
 }
 
 void
-jmutex_lock( jmutex* lk )
+jmutex_lock(jmutex* lk )
 {
   jthread_t cur = jthread_current ();
   sigset_t oldmask;
@@ -122,7 +122,7 @@ ThreadCondWait(jthread_t cur, jcondvar *cv, jmutex *mux)
  * have to convert into a absolute timespec now)
  */
 jboolean
-jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
+jcondvar_wait (jcondvar* cv, jmutex *mux, jlong timeout )
 {
   jthread_t cur = jthread_current();
   int             status = 0;

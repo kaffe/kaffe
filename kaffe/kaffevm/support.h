@@ -132,9 +132,9 @@ extern struct _methods*	lookupClassMethod(struct Hjava_lang_Class*, const char*,
 extern struct _methods*	lookupObjectMethod(struct Hjava_lang_Object*, const char*, const char*, struct _errorInfo*);
 
 struct _strconst;
-extern void SignalError(const char *, const char *) NONRETURNING;
-extern void SignalErrorf(const char *, const char *, ...) NONRETURNING PRINTFFORMAT(2,3);
-extern void unimp(const char*) NONRETURNING;
+extern void SignalError(const char *, const char *);
+extern void SignalErrorf(const char *, const char *, ...) PRINTFFORMAT(2,3);
+extern void unimp(const char*);
 extern void kprintf(FILE*, const char*, ...) PRINTFFORMAT(2,3);
 extern int addClasspath(const char*);
 extern int prependClasspath(const char*);

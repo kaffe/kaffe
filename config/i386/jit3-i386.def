@@ -168,7 +168,7 @@ extern bool used_ieee_division;
 
 /* --------------------------------------------------------------------- */
 
-define_insn(unimplemented, NONRETURNING unimplemented)
+define_insn(unimplemented, unimplemented)
 {
 	ABORT();
 }

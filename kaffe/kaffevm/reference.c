@@ -123,7 +123,7 @@ void KaffeVM_registerObjectReference(jobject reference, jobject obj, kgc_referen
 
 bool KaffeVM_isReferenced(jobject obj)
 {
-  referenceLinkListHead *ref;
+  const referenceLinkListHead *ref;
 
   lockStaticMutex(&referencesLock);
   ref = hashFind(referencesHashTable, obj);

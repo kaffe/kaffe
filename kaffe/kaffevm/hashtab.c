@@ -99,7 +99,7 @@ hashDestroy(hashtab_t tab)
  * or is equal to something that is already there. This returns the
  * matching pointer that is actually in the table.
  */
-void *
+const void *
 hashAdd(hashtab_t tab, const void *ptr)
 {
 	int	i;
@@ -144,7 +144,7 @@ hashRemove(hashtab_t tab, const void *ptr)
 /*
  * Find a matching pointer in the table.
  */
-void *
+const void *
 hashFind(hashtab_t tab, const void *ptr)
 {
 	int i;

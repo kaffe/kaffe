@@ -24,7 +24,7 @@
 #include "labels.h"
 #include "codeproto.h"
 #include "gc.h"
-
+#include "funcs.h"
 #include "debug.h"
 
 #include "kaffe_jni.h"

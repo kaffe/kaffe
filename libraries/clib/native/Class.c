@@ -686,6 +686,7 @@ java_lang_Class_getConstructor0(struct Hjava_lang_Class* this, HArrayOfObject* a
 	}
 
 	SignalError("java.lang.NoSuchMethodException", ""); /* FIXME */
+	return NULL;
 }
 
 static

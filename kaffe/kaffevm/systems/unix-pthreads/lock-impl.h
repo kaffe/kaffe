@@ -25,12 +25,12 @@ extern void KaffePThread_setBlockingCall(void *sigdata);
 extern void KaffePThread_clearBlockingCall(void *sigdata);
 
 static inline void jmutex_initialise( jmutex* lk ) __UNUSED__;
-extern void jmutex_lock( jmutex* lk );
+extern void jmutex_lock(jmutex* lk );
 static inline void jmutex_unlock( jmutex* lk ) __UNUSED__;
 
 static inline void jcondvar_initialise( jcondvar* cv ) __UNUSED__;
 static inline void jcondvar_signal( jcondvar* cv, jmutex *mux ) __UNUSED__;
-extern jboolean jcondvar_wait( jcondvar* cv, jmutex* mux, jlong timeout );
+extern jboolean jcondvar_wait(jcondvar* cv, jmutex* mux, jlong timeout );
 
 
 /* inline jmutex/jcondvar functions.  */

@@ -1,5 +1,5 @@
 /*
- * ksem.h
+ * ksem.c
  *
  * Copyright (c) 200
  *	University of Utah.  All Rights Reserved.

@@ -18,6 +18,7 @@
 #define NEED_sysdepCallMethod 1
 #endif
 
+#include "machine.h"
 #include "methodcalls.h"
 
 #define TDBG(s)

@@ -335,9 +335,6 @@ slot_slot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 }
 
 void
-#if defined(TWO_OPERAND)
-NONRETURNING
-#endif
 slot_lslot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 {
 	sequence* seq;

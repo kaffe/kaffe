@@ -14,8 +14,8 @@ typedef struct KaffeVM_Arguments {
         const char*     classpath;
         const char*     bootClasspath;
         jint            (*vfprintf)(FILE*, const char*, va_list);
-        void            (*exit)(jint) NONRETURNING;
-        void            (*abort)(void) NONRETURNING;
+        void            (*exit)(jint);
+        void            (*abort)(void);
         jint            enableClassGC;
         jint            enableVerboseGC;
         jint            disableAsyncGC;

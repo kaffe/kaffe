@@ -138,7 +138,7 @@ utf8ConstNew(const char *s, int slen)
 	
 	/* Lock intern table */
 	lockUTF();
-	utf8 = hashFind(hashTable, fake);
+	utf8 = (Utf8Const *) hashFind(hashTable, fake);
 
 	if (utf8 != NULL) {
 		assert(utf8->nrefs >= 1);
@@ -170,7 +170,7 @@ utf8ConstNew(const char *s, int slen)
 
 	/* Add to hash table */
 	lockUTF();
-	temp = hashAdd(hashTable, utf8);
+	temp = (Utf8Const *) hashAdd(hashTable, utf8);
 
 	/* 
 	 * temp == 0    -> hash table couldn't resize, return 0

@@ -41,7 +41,7 @@ static
 bool
 checkField(Field *field, errorInfo *einfo)
 {
-	char *reason = checkAccessFlags(CLASS_IS_INTERFACE(field->clazz) ? ACC_TYPE_INTERFACE_FIELD : ACC_TYPE_FIELD,
+	const char *reason = checkAccessFlags(CLASS_IS_INTERFACE(field->clazz) ? ACC_TYPE_INTERFACE_FIELD : ACC_TYPE_FIELD,
 					field->accflags);
 	if (reason) {
 		postExceptionMessage(einfo,

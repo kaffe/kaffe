@@ -573,7 +573,7 @@ broadcastDeath(void *jlThread)
         unlockMutex(&tid->base);
 }
 
-static void NONRETURNING
+static void
 throwDeath(void)
 {
 	throwException(ThreadDeath);

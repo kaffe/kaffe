@@ -67,7 +67,7 @@ KaffeJNI_addJNIref(jref obj)
 	table = THREAD_DATA()->jnireferences;
 
 	if (table->used == table->frameSize) {
-	  Kaffe_FatalError(THREAD_DATA()->jniEnv, "No more room for local references");
+	  Kaffe_FatalError(THREAD_JNIENV(), "No more room for local references");
 	}
 
 	idx = table->next;

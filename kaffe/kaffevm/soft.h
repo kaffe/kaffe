@@ -30,18 +30,18 @@ void*	soft_lookupinterfacemethod(struct Hjava_lang_Object*, struct Hjava_lang_Cl
 void*	soft_checkcast(struct Hjava_lang_Class*, struct Hjava_lang_Object*);
 jint	soft_instanceof(struct Hjava_lang_Class*, struct Hjava_lang_Object*);
 
-void	soft_athrow(struct Hjava_lang_Object*) NONRETURNING;
-void	soft_badarrayindex(void) NONRETURNING;
-void	soft_nullpointer(void) NONRETURNING;
-void	soft_divzero(void) NONRETURNING;
-void	soft_nosuchmethod(struct Hjava_lang_Class*, Utf8Const*, Utf8Const*) NONRETURNING;
-void	soft_nosuchfield(Utf8Const*, Utf8Const*) NONRETURNING;
-void	soft_nosuchclass(Utf8Const*) NONRETURNING;
-void	soft_linkage(Utf8Const*, Utf8Const*) NONRETURNING;
-void	soft_illegalaccess(Utf8Const*, Utf8Const*) NONRETURNING;
-void	soft_incompatibleclasschange(Utf8Const*, Utf8Const*) NONRETURNING;
-void	soft_abstractmethod(Utf8Const*, Utf8Const*) NONRETURNING;
-void	soft_stackoverflow(void) NONRETURNING;
+void	soft_athrow(struct Hjava_lang_Object*);
+void	soft_badarrayindex(void);
+void	soft_nullpointer(void);
+void	soft_divzero(void);
+void	soft_nosuchmethod(struct Hjava_lang_Class*, Utf8Const*, Utf8Const*);
+void	soft_nosuchfield(Utf8Const*, Utf8Const*);
+void	soft_nosuchclass(Utf8Const*);
+void	soft_linkage(Utf8Const*, Utf8Const*);
+void	soft_illegalaccess(Utf8Const*, Utf8Const*);
+void	soft_incompatibleclasschange(Utf8Const*, Utf8Const*);
+void	soft_abstractmethod(Utf8Const*, Utf8Const*);
+void	soft_stackoverflow(void);
 void	soft_checkarraystore(struct Hjava_lang_Object*, struct Hjava_lang_Object*);
 void	soft_addreference(void*, void*);
 

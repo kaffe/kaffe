@@ -1,3 +1,63 @@
+2005-03-31  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/i386/jit3-i386.def,
+	include/errors.h,
+	include/kaffe_jni.h,
+	kaffe/kaffevm/baseClasses.c,
+	kaffe/kaffevm/exception.c,
+	kaffe/kaffevm/exception.h,
+	kaffe/kaffevm/soft.h,
+	kaffe/kaffevm/support.h,
+	kaffe/kaffevm/thread.c,
+	kaffe/kaffevm/jit3/basecode.c,
+	kaffe/kaffevm/jit3/codeproto.h,
+	libraries/clib/native/Runtime.c:
+	Removed NONRETURNING modifiers.
+	
+	* kaffe/kaffevm/access.h,
+	kaffe/kaffevm/access.c (checkAccessFlags):
+	Return const char*.
+
+	* kaffe/kaffevm/exception.c (vmExcept_getSyncObj):
+	Only define for interpreter.
+
+	* kaffe/kaffevm/hashtab.c,
+	kaffe/kaffevm/hashtab.h:
+	Return const void *.
+
+	* kaffe/kaffevm/ksem.c:
+	Fixed comment.
+
+	* kaffe/kaffevm/ksem.h: Indentation changes.
+
+	* kaffe/kaffevm/reference.c:
+	(KaffeVM_isReferenced) Made ref const.
+
+	* kaffe/kaffevm/string.c,
+	kaffe/kaffevm/utf8const.c,
+	kaffe/kaffevm/jni/jni-string.c:
+	Added casts to fix warnings.
+
+	* kaffe/kaffevm/jit/machine.h,
+	kaffe/kaffevm/jit/methodcalls.c,
+	kaffe/kaffevm/jit3/registers.c:
+	Added missing includes.
+
+	* kaffe/kaffevm/jni/jni.c:
+	Use THREAD_JNIENV instead of accessing the jniEnv
+	field directly.
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/lock-impl.h:
+	Whitespace fixes.
+
+	* kaffe/kaffevm/verifier/verify2.c:
+	(checkField) Made reason const.
+
+	* libraries/clib/native/Array.c,
+	libraries/clib/native/Class.c:
+	Made all codepaths return from non-void functions.
+	
 2005-03-31  Gerrit P. Haase <gp@familiehaase.de>
 
         * kaffe/jvmpi/Makefile.am,

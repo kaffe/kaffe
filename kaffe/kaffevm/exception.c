@@ -54,6 +54,16 @@
 #include "java_lang_VMThrowable.h"
 
 #if defined(INTERPRETER)
+
+static struct Hjava_lang_Object*
+vmExcept_getSyncObj(VmExceptHandler* eh)
+{
+	assert(eh != NULL);
+	assert(eh->meth != NULL);
+	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
+	return eh->frame.intrp.syncobj;
+}
+
 #define FRAMEOBJECT(O, F, E)    (O) = vmExcept_getSyncObj((VmExceptHandler*)(F))
 
 
@@ -66,10 +76,10 @@
 
 #endif	/* TRANSLATOR */
 
-static void nullException(struct _exceptionFrame *) NONRETURNING;
-static void floatingException(struct _exceptionFrame *) NONRETURNING;
-static void stackOverflowException(struct _exceptionFrame *) NONRETURNING;
-static void dispatchException(Hjava_lang_Throwable*, stackTraceInfo*) NONRETURNING;
+static void nullException(struct _exceptionFrame *);
+static void floatingException(struct _exceptionFrame *);
+static void stackOverflowException(struct _exceptionFrame *);
+static void dispatchException(Hjava_lang_Throwable*, stackTraceInfo*);
 
 static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, uintp*);
 
@@ -113,15 +123,6 @@ vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj)
 	assert(eh->meth != NULL);
 	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
 	eh->frame.intrp.syncobj = syncobj;
-}
-
-static struct Hjava_lang_Object*
-vmExcept_getSyncObj(VmExceptHandler* eh)
-{
-	assert(eh != NULL);
-	assert(eh->meth != NULL);
-	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
-	return eh->frame.intrp.syncobj;
 }
 
 void 

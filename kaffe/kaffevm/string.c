@@ -290,7 +290,7 @@ stringFree(const void *ptr)
 {
 	/* XXX assumes stringLock isn't acquired recursively (which it isn't) */
         unlockStaticMutex(&stringLock);	
-	KFREE(ptr);
+	KFREE((void *) ptr);
 	lockStaticMutex(&stringLock);
 }
 
@@ -447,7 +447,7 @@ stringCharArray2Java(const jchar *data, int len)
 
 		/* Return existing copy of this string, if any */
 		lockStaticMutex(&stringLock);
-		string = hashFind(hashTable, &fakeString);
+		string = (Hjava_lang_String *) hashFind(hashTable, &fakeString);
 		unlockStaticMutex(&stringLock);
 
 		if (fakeAry != (HArrayOfChar*)buf) {

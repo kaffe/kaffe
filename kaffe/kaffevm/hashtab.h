@@ -49,9 +49,9 @@ typedef void		(*freefunc_t)(const void *ptr);
 
 extern hashtab_t	hashInit(hashfunc_t, compfunc_t, 
 				 allocfunc_t, freefunc_t);
-extern void*		hashAdd(hashtab_t, const void*);
+extern const void*	hashAdd(hashtab_t, const void*);
 extern void		hashRemove(hashtab_t, const void*);
-extern void*		hashFind(hashtab_t, const void*);
+extern const void*	hashFind(hashtab_t, const void*);
 extern void		hashDestroy(hashtab_t);
 
 #endif	/* __hashtab_h */

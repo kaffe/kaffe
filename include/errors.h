@@ -112,7 +112,7 @@ extern void dumpErrorInfo(errorInfo *);
 
 #if !defined(KAFFEH)
 
-void throwError(struct _errorInfo*) NONRETURNING;
+void throwError(struct _errorInfo*);
 
 /*
  * KMALLOC and all the allocating string functions return null on

@@ -185,7 +185,7 @@ KaffeJNI_ReleaseStringUTFChars(JNIEnv* env UNUSED, jstring data UNUSED, const ch
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  KFREE(chars);
+  KFREE((void *) chars);
 	
   END_EXCEPTION_HANDLING();
 }

@@ -268,7 +268,7 @@ initialiseKaffe(void)
 	KGC_enable(main_collector);
 }
 
-static void NONRETURNING
+static void
 abortWithEarlyClassFailure(errorInfo* einfo)
 {
 	DBG(INIT,

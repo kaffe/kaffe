@@ -24,7 +24,7 @@
 #include "lookup.h"
 #include "soft.h"
 
-char *checkAccessFlags(access_type_t type, accessFlags access_flags)
+const char *checkAccessFlags(access_type_t type, accessFlags access_flags)
 {
 	const char *retval = NULL;
 

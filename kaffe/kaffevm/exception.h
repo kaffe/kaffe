@@ -103,11 +103,11 @@ typedef struct VmExceptHandler {
 
 #define VMEXCEPTHANDLER_KAFFEJNI_HANDLER ((struct _methods*)1)
 
-void throwException(struct Hjava_lang_Throwable*) NONRETURNING; 
-void throwExternalException(struct Hjava_lang_Throwable*) NONRETURNING;
+void throwException(struct Hjava_lang_Throwable*); 
+void throwExternalException(struct Hjava_lang_Throwable*);
 struct Hjava_lang_Throwable* error2Throwable(struct _errorInfo* einfo);
 
-void unhandledException(struct Hjava_lang_Throwable *eobj) NONRETURNING;
+void unhandledException(struct Hjava_lang_Throwable *eobj);
 
 extern void initExceptions(void);
 

@@ -59,11 +59,12 @@ struct Hjava_lang_Class;
 /*
  * Check the validity of the given flags.
  *
- * access_flags - The flag set to check.
- * return - NULL if the flags are valid, otherwise it returns a description
+ * @param type Type of access.
+ * @param access_flags The flag set to check.
+ * @return NULL if the flags are valid, otherwise it returns a description
  * of the problem.
  */
-char *checkAccessFlags(access_type_t type, accessFlags access_flags);
+const char *checkAccessFlags(access_type_t type, accessFlags access_flags);
 
 /*
  * Check the accessibility of a slot from a specific context.

@@ -10,6 +10,9 @@
 #ifndef __machine_h
 #define __machine_h
 
+#include "errors.h"
+#include "gtypes.h"
+
 /* -------------------------------------------------------------------- */
 
 #define KJIT(funcName) KaffeJIT_ ## funcName
