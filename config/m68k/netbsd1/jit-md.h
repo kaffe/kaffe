@@ -44,6 +44,7 @@
 /*
  * Flush the cache on netbsd.
  */
+/*
 #define FLUSH_040NETBSD_DCACHE(beg, end) \
 	__asm__ __volatile__( \
 		"movem%.l %/d0-%/d7/%/a0-%/a5,%-\n\t" \
@@ -54,8 +55,11 @@
 		"trap   %#12\n\t" \
 		"movem%.l %+,%/d0-%/d7/%/a0-%/a5" \
 		: : "g" (beg), "g" (end))
-
+*/
 #undef	FLUSH_DCACHE
+/*
 #define	FLUSH_DCACHE(B,E)	FLUSH_040NETBSD_DCACHE(B,E)
+*/
+#define FLUSH_DCACHE(_start,_end) m68k_sync_icache((_start), (uintp)(_end) - (uintp)(_start))
 
 #endif
