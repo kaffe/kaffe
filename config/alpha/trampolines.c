@@ -46,8 +46,8 @@ asm(
 	lda    	$30,-14*8($30)		# reserve 14 on stack	\n\
 	.frame	$30,14*8,$26,0					\n\
 	# Save frame registers					\n\
-	.mask	0x04000000,-14*8				\n\
 	stq	$26,0*8($30)		# ra			\n\
+	.mask	0x04000000,-14*8				\n\
 	.prologue 1						\n\
 	# Save register arguments				\n\
 	stq	$16,1*8($30)		# a0			\n\
@@ -68,7 +68,7 @@ asm(
 	mov	$1,$16						\n\
 	# Call C to do the fixup				\n\
 	jsr	$26," C_FUNC_NAME(soft_fixup_trampoline) "	\n\
-	ldgp	$29,0,($26)					\n\
+	ldgp	$29,0($26)					\n\
 	mov	$0,$27						\n\
 								\n\
 	ldq	$26,0*8($30)					\n\
