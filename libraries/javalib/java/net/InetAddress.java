@@ -243,10 +243,6 @@ public class InetAddress implements Serializable
     lookup_time = System.currentTimeMillis();
 
     family = 2; /* AF_INET */
-    address = addr[3] & 0xff;
-    address |= (addr[2] << 8) & 0xff00;
-    address |= (addr[1] << 16) & 0xff0000;
-    address |= (addr[0] << 24) & 0xff000000;
   }
 
   /**
@@ -550,14 +546,8 @@ public class InetAddress implements Serializable
    */
   public String toString()
   {
-    String host;
     String address = getHostAddress();
-
-    if (hostName != null)
-      host = hostName;
-    else
-      host = address;
-
+    String host = (hostName != null) ? hostName : address;
     return host + "/" + address;
   }
 
