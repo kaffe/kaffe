@@ -34,7 +34,25 @@ public final class Matcher {
     }
 
     public boolean find() {
-	return find(position);
+	boolean first = (match == null);
+	match = pattern.getRE().getMatch(input, position);
+	if (match != null) {
+	    int endIndex = match.getEndIndex();
+	    // Are we stuck at the same position?
+	    if (!first && endIndex == position) {
+		match = null;
+		// Not at the end of the input yet?
+		if (position < input.length() - 1) {
+		    position++;
+		    return find(position);
+		} else {
+		    return false;
+		}
+	    }
+	    position = endIndex;
+	    return true;
+	}
+	return false;
     }
 
     public boolean find(int start) {

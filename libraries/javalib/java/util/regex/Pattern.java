@@ -3,7 +3,7 @@ import java.io.Serializable;
 import gnu.regexp.RE;
 import gnu.regexp.RESyntax;
 import gnu.regexp.REException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public final class Pattern implements Serializable {
 
@@ -85,36 +85,58 @@ public final class Pattern implements Serializable {
 
     public String[] split(CharSequence input, int limit) {
 	Matcher matcher = new Matcher(this, input);
-	Vector list = new Vector();
+	ArrayList list = new ArrayList();
+	int empties = 0;
 	int count = 0;
 	int start = 0;
 	int end;
-	while (matcher.find()) {
+	boolean matched;
+	while (matched = matcher.find() && (limit <= 0 || count < limit - 1)) {
 	    ++count;
 	    end = matcher.start();
 	    if (start == end) {
-		if (limit != 0) {
-		    list.addElement("");
-		}
+		empties++;
 	    } else {
+		while (empties-- > 0) {
+		    list.add("");
+		}
 		String text = input.subSequence(start, end).toString();
-		list.addElement(text);
+		list.add(text);
 	    }
 	    start = matcher.end();
-	    if (count == limit) break;
 	}
-	// last token at end
-	if (count != limit) {
-	    String text = input.subSequence(start, input.length()).toString();
-	    if (!("".equals(text) && (limit == 0))) {
-		list.addElement(text);
+
+	// We matched nothing.
+	if (!matched && count == 0) {
+		return new String[] { input.toString() };
+	}
+
+	// Is the last token empty?
+	boolean emptyLast = (start == input.length());
+
+	// Can/Must we add empties or an extra last token at the end?
+	if (list.size() < limit || limit < 0 || (limit == 0 && !emptyLast)) {
+	    if (limit > list.size()) {
+		int max = limit - list.size();
+		empties = (empties > max) ? max : empties;
+	    }
+	    while (empties-- > 0) {
+		list.add("");
 	    }
 	}
-	if (list.size() == 0) {
-		list.addElement(input.toString());
+
+	// last token at end
+	if (limit != 0 || (limit == 0 && !emptyLast)) {
+	    String t = input.subSequence(start, input.length()).toString();
+	    if ("".equals(t) && limit == 0) {
+		// Don't add.
+	    } else {
+		list.add(t);
+	    }
 	}
+
 	String[] output = new String [list.size()];
-	list.copyInto(output);
+	list.toArray(output);
 	return output;
     }
 }

@@ -1,3 +1,12 @@
+2004-01-10  Mark Wielaard  <mark@klomp.org>
+
+        * java/util/regex/Matcher.java (find): Check whether or not we are
+	stuck at the same position after a successful match and bump position
+        of possible.
+        * java/util/regex/Pattern.java (split(CharSequence, int)): Use
+        ArrayList, not Vector. Make sure we match at most limit -1 times, when
+        limit > 0. Check whether or not to add emtpty strings.
+
 2004-01-10  Dalibor Topic <robilad@kaffe.org>
 
         Resynced with GNU Classpath.
