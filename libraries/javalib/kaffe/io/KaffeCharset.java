@@ -46,7 +46,7 @@ public class KaffeCharset extends Charset
   // I know nothing about any charset other than myself.
   public boolean contains (Charset cs)
   {
-    return this.getClass().isInstance(cs);
+    return this.name().equalsIgnoreCase(cs.name());
   }
 
   private static final class Decoder extends CharsetDecoder
@@ -68,6 +68,8 @@ public class KaffeCharset extends Charset
 
     private kaffe.io.ByteToCharConverter b2c;
 
+    // Kaffe's BytetoCharConverter cannot report byte sequence being
+    // malformed. Undecodable bytes are always converted to '?'.
     protected CoderResult decodeLoop (ByteBuffer in, CharBuffer out)
     {
       byte[] inbuf = null;
@@ -80,7 +82,7 @@ public class KaffeCharset extends Charset
       if (in.hasArray())
         {
           inbuf = in.array();
-          inPos = in.position();
+          inPos = in.arrayOffset() + in.position();
           inLen = in.remaining();
           in.position(in.limit());
         }
@@ -94,7 +96,7 @@ public class KaffeCharset extends Charset
       if (out.hasArray())
         {
           outbuf = out.array();
-          outPos = out.position();
+          outPos = out.arrayOffset() + out.position();
           outLen = out.remaining();
         }
       else {
@@ -107,7 +109,7 @@ public class KaffeCharset extends Charset
 
       if (out.hasArray())
         {
-          out.position(outPos + l);
+          out.position(out.position() + l);
         }
       else
         {
@@ -155,6 +157,8 @@ public class KaffeCharset extends Charset
 
     private kaffe.io.CharToByteConverter c2b;
 
+    // Kaffe's CharToByteConverter cannot report characters being unmappable.
+    // Unmappable characters are always converted to '?'.
     protected CoderResult encodeLoop (CharBuffer in, ByteBuffer out)
     {
       char[] inbuf = null;
@@ -167,7 +171,7 @@ public class KaffeCharset extends Charset
       if (in.hasArray())
         {
           inbuf = in.array();
-          inPos = in.position();
+          inPos = in.arrayOffset() + in.position();
           inLen = in.remaining();
           in.position(in.limit());
         }
@@ -181,11 +185,11 @@ public class KaffeCharset extends Charset
       if (out.hasArray())
         {
           outbuf = out.array();
-          outPos = out.position();
+          outPos = out.arrayOffset() + out.position();
           outLen = out.remaining();
         }
-else {
-  outbuf = new byte[out.remaining()];
+      else {
+          outbuf = new byte[out.remaining()];
           outPos = 0;
           outLen = outbuf.length;
         }
@@ -194,7 +198,7 @@ else {
 
       if (out.hasArray())
         {
-          out.position(outPos + l);
+          out.position(out.position() + l);
         }
       else
         {

@@ -191,6 +191,7 @@ public final class FileChannelImpl extends FileChannel
       {
 	byte[] buffer = src.array();
 	write(buffer, src.arrayOffset() + src.position(), len);
+        src.position(src.position() + len);
       }
     else
       {

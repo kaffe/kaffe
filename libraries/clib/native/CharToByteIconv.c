@@ -25,6 +25,8 @@
 #include <unistd.h>
 #endif
 
+#include <errno.h>
+
 static jfieldID cd_id;
 static jmethodID carry_id;
 
@@ -82,6 +84,15 @@ Java_kaffe_io_CharToByteIconv_convert (JNIEnv* env, jobject _this,
     int		ret;
 
     ret = iconv (cd, (ICONV_CONST char **) &icv_in, &icv_inlen, &icv_out, &icv_outlen);
+    if (ret < 0) {
+	/* convert the unmappable character to '?' */
+	if (errno == EILSEQ && icv_outlen > 0) {
+		icv_in += 2;
+		icv_inlen -= 2;
+		*(icv_out++) = '?';
+		icv_outlen--;
+	}
+    }
     if (icv_inlen > 0) {
 	/* In case we have some bytes left, save them */
 	(*env)->CallVoidMethod(env, _this, carry_id,

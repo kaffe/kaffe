@@ -1,3 +1,19 @@
+2005-01-12  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/clib/native/CharToByteIconv.c
+	(Java_kaffe_io_CharToByteIconv_convert):
+	Check whether errno == EILSEQ.
+
+	* libraries/javalib/all.files:
+	Add kaffe/libraries/javalib/kaffe/io/KaffeCharset.java and
+	kaffe/libraries/javalib/kaffe/io/KaffeCharsetProvider.java.
+
+	* libraries/javalib/gnu/java/nio/channels/FileChannelImpl.java
+	(write(ByteBuffer)): Move the position of the source buffer forward.
+
+	* kaffe/libraries/javalib/kaffe/io/KaffeCharset.java:
+	Initial bugs fixed.
+
 2005-01-12  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/javalib/gnu/java/io/EncodingManager.java

@@ -3381,6 +3381,8 @@ kaffe/io/CharToByteUTF8.java
 kaffe/io/CircularBuffer.java
 kaffe/io/ClassLoaderObjectInputStream.java
 kaffe/io/ConverterAlias.java
+kaffe/io/KaffeCharset.java
+kaffe/io/KaffeCharsetProvider.java
 kaffe/io/NullOutputStream.java
 kaffe/io/StdErrorStream.java
 kaffe/io/StdInputStream.java
