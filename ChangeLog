@@ -1,3 +1,12 @@
+Sat Jun  1 17:33:34 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* configure.in, kaffe/kaffe/.cvsignore, kaffe/kaffe/Makefile.am,
+	kaffe/kaffe/Makefile.in, kaffe/scripts/kaffe.in,
+	kaffe/scripts/kaffexprof.in: Renamed binary built from Kaffe to
+	kaffe-bin, because wrapper script is also called "kaffe", which is
+	a problem on some filesystems that don't respect case
+	(eg. Darwin).
+	
 Sat Jun  1 10:33:35 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* kaffe/kaffevm/debug.c: Rearranged #ifdef DEBUG so that

@@ -20,7 +20,7 @@ prefix="@prefix@"
 exec_prefix="@exec_prefix@"
 
 if test -f "$1.s"; then
-    $NM -n @jrebindir@/@Kaffe_TRANSF@ | $AWK -f @bindir@/nm2as.awk | cat - $1.s | $AS - -o $1
+    $NM -n @jrebindir@/@kaffebin_TRANSF@ | $AWK -f @bindir@/nm2as.awk | cat - $1.s | $AS - -o $1
     $GPROF $1 $2
 else
     echo "Can't find assembler file $1.s"

@@ -1258,9 +1258,9 @@ AC_SUBST(DIRSEP)
 
 dnl Set up program transform names
 kaffe_TRANSF=`echo kaffe | sed ${program_transform_name}`
-Kaffe_TRANSF=`echo Kaffe | sed "s/${EXEEXT}$//" | sed ${program_transform_name}`
+kaffebin_TRANSF=`echo kaffe-bin | sed "s/${EXEEXT}$//" | sed ${program_transform_name}`
 AC_SUBST(kaffe_TRANSF)
-AC_SUBST(Kaffe_TRANSF)
+AC_SUBST(kaffebin_TRANSF)
 
 dnl These are not to be used during configuration, only during build.
 CPPFLAGS="-DKVER='\"\$(KVER)\"' -I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"

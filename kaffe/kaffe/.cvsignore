@@ -3,5 +3,5 @@
 *.lo
 Makefile
 *.la
-Kaffe
+kaffe-bin
 version-info.h

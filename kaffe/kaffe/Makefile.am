@@ -6,7 +6,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-jrebin_PROGRAMS = Kaffe
+jrebin_PROGRAMS = kaffe-bin
 
 if NEED_LIBXPROF
 libxprof = ../xprof/libkaffexprof.la
@@ -17,13 +17,13 @@ endif
 INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kaffe/xprof
 
-Kaffe_SOURCES = main.c version.c version.h
+kaffe_bin_SOURCES = main.c version.c version.h
 
 LIBKAFFEVM = ../kaffevm/libkaffevm.la $(libxprof)
 
-Kaffe_LDFLAGS = $(KVMBINFLAGS) -export-dynamic
-Kaffe_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS)
-Kaffe_DEPENDENCIES = $(LIBKAFFEVM) $(JAVA_LIBS)
+kaffe_bin_LDFLAGS = $(KVMBINFLAGS) -export-dynamic
+kaffe_bin_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS)
+kaffe_bin_DEPENDENCIES = $(LIBKAFFEVM) $(JAVA_LIBS)
 
 ### Rules to generate the version-info header file
 version.o: version-info.h

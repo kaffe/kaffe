@@ -42,7 +42,7 @@ if test x"$(uname -m)"x = x"ia64"x; then
   # Use ia32 version of Kaffe, if requested
   ia32mode=no
   for arg in "$@"; do
-    [ -z "${arg/#-ia32/}" ] && ia32mode=yes
+    [ "$arg" = "-ia32" ] && ia32mode=yes
   done
   if test x"${ia32mode}"x = x"yes"x; then
     KAFFE_TARGET_ARCH=$(echo ${KAFFE_LIBDIR/ia64/i?86} | sed -e "s/.*\(i.86\)/\1/")
@@ -86,7 +86,7 @@ if [ -f "${HOME}/.kafferc" ]; then
 fi
 
 if test x"${KAFFE_DEBUG+set}"x != x"set"x; then
-    exec $KAFFE_JREBINDIR/@Kaffe_TRANSF@ ${1+"$@"}
+    exec $KAFFE_JREBINDIR/@kaffebin_TRANSF@ ${1+"$@"}
 else
     case `"$KAFFE_DEBUG" --version </dev/null 2>/dev/null` in
     *"GDB"* | *"GNU gdb"*)
@@ -101,7 +101,7 @@ else
 	    echo "cd `pwd`"
 	    echo "set args $*"
 	} > $KAFFE_DEBUG_TEMPFILE
-	exec "$KAFFE_DEBUG" -command $KAFFE_DEBUG_TEMPFILE $KAFFE_JREBINDIR/@Kaffe_TRANSF@
+	exec "$KAFFE_DEBUG" -command $KAFFE_DEBUG_TEMPFILE $KAFFE_JREBINDIR/@kaffebin_TRANSF@
 	rm -f $KAFFE_DEBUG_TEMPFILE ;;
     DDD*)
 	if test -z "$KAFFE_DEBUG_TEMPFILE"; then
@@ -121,11 +121,11 @@ else
     "GNU Emacs"*)
 	# start gdb within GNU Emacs, move into the current working
 	# directory and set up the specified argument list
-	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"gdb $KAFFE_JREBINDIR/@Kaffe_TRANSF@\") (gud-call \"cd `pwd`\") (gud-call \"set args $*\"))";;
+	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"gdb $KAFFE_JREBINDIR/@kaffebin_TRANSF@\") (gud-call \"cd `pwd`\") (gud-call \"set args $*\"))";;
     XEmacs*)
 	# start gdb within XEmacs, move into the current working
 	# directory and set up the specified argument list
-	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"$KAFFE_JREBINDIR/@Kaffe_TRANSF@\") (gdb-call \"cd `pwd`\") (gdb-call \"set args $*\"))";;
+	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"$KAFFE_JREBINDIR/@kaffebin_TRANSF@\") (gdb-call \"cd `pwd`\") (gdb-call \"set args $*\"))";;
     *) echo you must set KAFFE_DEBUG to either emacs or gdb >&2;;
     esac
 fi

@@ -10960,7 +10960,7 @@ DIRSEP=`echo "$ac_cv_kaffe_dirsep" | sed 's,\\\\,\\\\\\\\,g'`
 
 
 kaffe_TRANSF=`echo kaffe | sed ${program_transform_name}`
-Kaffe_TRANSF=`echo Kaffe | sed "s/${EXEEXT}$//" | sed ${program_transform_name}`
+kaffebin_TRANSF=`echo kaffe-bin | sed "s/${EXEEXT}$//" | sed ${program_transform_name}`
 
 
 
@@ -11290,7 +11290,7 @@ s%@securitydir@%$securitydir%g
 s%@PATHSEP@%$PATHSEP%g
 s%@DIRSEP@%$DIRSEP%g
 s%@kaffe_TRANSF@%$kaffe_TRANSF%g
-s%@Kaffe_TRANSF@%$Kaffe_TRANSF%g
+s%@kaffebin_TRANSF@%$kaffebin_TRANSF%g
 s%@CFLAGS_WITHOUT_PG@%$CFLAGS_WITHOUT_PG%g
 s%@subdirs@%$subdirs%g
 

@@ -133,24 +133,24 @@ securitydir = @securitydir@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
-jrebin_PROGRAMS = Kaffe
+jrebin_PROGRAMS = kaffe-bin
 @NEED_LIBXPROF_TRUE@libxprof = ../xprof/libkaffexprof.la
 @NEED_LIBXPROF_FALSE@libxprof = #
 
 INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl 	-I$(top_srcdir)/kaffe/xprof
 
 
-Kaffe_SOURCES = main.c version.c version.h
+kaffe_bin_SOURCES = main.c version.c version.h
 
 LIBKAFFEVM = ../kaffevm/libkaffevm.la $(libxprof)
 
-Kaffe_LDFLAGS = $(KVMBINFLAGS) -export-dynamic
-Kaffe_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS)
-Kaffe_DEPENDENCIES = $(LIBKAFFEVM) $(JAVA_LIBS)
+kaffe_bin_LDFLAGS = $(KVMBINFLAGS) -export-dynamic
+kaffe_bin_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS)
+kaffe_bin_DEPENDENCIES = $(LIBKAFFEVM) $(JAVA_LIBS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
-jrebin_PROGRAMS =  Kaffe$(EXEEXT)
+jrebin_PROGRAMS =  kaffe-bin$(EXEEXT)
 PROGRAMS =  $(jrebin_PROGRAMS)
 
 
@@ -162,7 +162,7 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-Kaffe_OBJECTS =  main.$(OBJEXT) version.$(OBJEXT)
+kaffe_bin_OBJECTS =  main.$(OBJEXT) version.$(OBJEXT)
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -175,8 +175,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/main.P .deps/version.P
-SOURCES = $(Kaffe_SOURCES)
-OBJECTS = $(Kaffe_OBJECTS)
+SOURCES = $(kaffe_bin_SOURCES)
+OBJECTS = $(kaffe_bin_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -252,9 +252,9 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 
-Kaffe$(EXEEXT): $(Kaffe_OBJECTS) $(Kaffe_DEPENDENCIES)
-	@rm -f Kaffe$(EXEEXT)
-	$(LINK) $(Kaffe_LDFLAGS) $(Kaffe_OBJECTS) $(Kaffe_LDADD) $(LIBS)
+kaffe-bin$(EXEEXT): $(kaffe_bin_OBJECTS) $(kaffe_bin_DEPENDENCIES)
+	@rm -f kaffe-bin$(EXEEXT)
+	$(LINK) $(kaffe_bin_LDFLAGS) $(kaffe_bin_OBJECTS) $(kaffe_bin_LDADD) $(LIBS)
 
 tags: TAGS
 
