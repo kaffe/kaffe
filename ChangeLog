@@ -1,3 +1,9 @@
+Sun Feb 21 19:14:02 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/soft.c: make sure we call va_end() before exiting
+	via thrown exception. On most architectures this macro is empty
+	anyway, but just in case...
+
 Sat Feb 20 20:14:42 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in: new --with-rtlibraries switch, to pass -R flags to 
