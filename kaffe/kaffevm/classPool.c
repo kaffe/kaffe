@@ -147,7 +147,12 @@ findMethodFromPC(uintp pc)
 				imeth = CLASS_NMETHODS(entry->class);
 				ptr = CLASS_METHODS(entry->class);
 				for (; --imeth >= 0;  ptr++) {
-					if (pc >= (uintp)METHOD_NATIVECODE(ptr) && pc < (uintp)ptr->c.ncode.ncode_end) {
+					uintp ncode;
+					if (!METHOD_TRANSLATED(ptr)) {
+						continue;
+					}
+					ncode = (uintp)METHOD_NATIVECODE(ptr);
+					if (pc >= ncode && pc < (uintp)ptr->c.ncode.ncode_end) {
 						return (ptr);
 					}
 				}

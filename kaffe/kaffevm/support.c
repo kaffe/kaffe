@@ -302,7 +302,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 	 */
 	meth = (Method*)func;
 	if (meth->accflags & ACC_NATIVE) {
-		if (METHOD_NATIVECODE(meth) == 0) {
+		if (!METHOD_TRANSLATED(meth)) {
 			errorInfo info;
 			if (native(meth, &info) == false) {
 				throwError(&info);

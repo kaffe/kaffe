@@ -2186,30 +2186,42 @@ define_insn(INVOKEVIRTUAL)
 		METHOD_RETURN_VALUE();
 	}
 	else {
+		int is_virtual = method_method()->idx >= 0;
 		idx = method_nargs();
 
 		CHECK_NULL(INVOKEVIRTUAL, stack(idx), 34);
 
 		check_stack_ref(idx);
 
-		/* Find dispatch table in object */
-		load_offset_ref(mtable, stack(idx), method_dtable_offset);
+		if (is_virtual) {
+			/* Find dispatch table in object */
+			load_offset_ref(mtable, stack(idx), 
+					method_dtable_offset);
 
-		/* Check method table for cached entry */
-		load_offset_ref(tmp, mtable,
-			DTABLE_METHODOFFSET + method_idx() * DTABLE_METHODSIZE);
+			/* Check method table for cached entry */
+			load_offset_ref(tmp, mtable,
+				DTABLE_METHODOFFSET + 
+				method_idx() * DTABLE_METHODSIZE);
+		}
 
 		/* Push arguments & object */
 		build_call_frame(method_sig(), stack(idx), idx);
 		idx++;
 
-		slot_nowriteback(tmp);
+		if (is_virtual) {
+			slot_nowriteback(tmp);
+		}
+
 		pop(idx);
 		end_sub_block();
 
 		/* Call it */
 		low = method_returntype();
-		call(tmp);
+		if (is_virtual) {
+			call(tmp);
+		} else {
+			call_indirect_method(method_method());
+		}
 
 		/* Pop args */
 		popargs();

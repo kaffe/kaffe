@@ -86,11 +86,11 @@ static bool resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo);
 bool
 processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 {
-	int i;
 	Method* meth;
 	Hjava_lang_Class* nclass;
 	bool success = true;	/* optimistic */
 #ifdef DEBUG
+	int i;
 	static int depth;
 #endif
 	static Method *object_fin;
@@ -990,8 +990,6 @@ DBG(GCJ, 		dprintf(__FUNCTION__": adding class %s to pool@%p\n",
 			clazz->centry = centry;
 			assert(CLASS_GCJ(clazz));
 		}
-#else
-#warning No GCJ Support
 #endif
 		else {
 			/* no classloader, use findClass */
@@ -1490,7 +1488,6 @@ buildTrampoline(Method *meth, void **where, errorInfo *einfo)
 #else
 	ret = meth;
 #endif
-
 	*where = ret;
 	return (ret);
 }

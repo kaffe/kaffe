@@ -1,7 +1,6 @@
 #include "config.h"
 #include "debug.h"
 #include "config-mem.h"
-#include "config-hacks.h"
 #include "classMethod.h"
 #include "errors.h"
 #include "access.h"

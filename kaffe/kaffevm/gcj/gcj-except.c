@@ -11,7 +11,6 @@
 
 #include "config.h"
 #include "config-std.h"
-#include "config-hacks.h"
 #include "config-setjmp.h"
 #include "gtypes.h"
 #include "classMethod.h"

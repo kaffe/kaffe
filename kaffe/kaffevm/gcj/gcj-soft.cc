@@ -12,7 +12,6 @@
 #include "config.h"
 #include "debug.h"
 #include "config-std.h"
-#include "config-hacks.h"
 #include "gcj.h"
 #include <stdarg.h>
 
