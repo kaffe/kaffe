@@ -1,3 +1,7 @@
+Fri Jun 28 18:20:21 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* kaffe/kaffe/version.c: Reworded copyright message again.
+
 Fri Jun 28 18:09:19 PDT 2002  Jim Pick  <jim@kaffe.org>
 
         * configure.in: Move AC_REQUIRE([AC_LTDL_SHLIBEXT]) after
