@@ -1246,8 +1246,11 @@ java_awt_image_SRCS = \
 	java/awt/image/ComponentSampleModel.java \
 	java/awt/image/CropImageFilter.java \
 	java/awt/image/DataBufferByte.java \
+	java/awt/image/DataBufferDouble.java \
+	java/awt/image/DataBufferFloat.java \
 	java/awt/image/DataBufferInt.java \
 	java/awt/image/DataBuffer.java \
+	java/awt/image/DataBufferShort.java \
 	java/awt/image/DataBufferUShort.java \
 	java/awt/image/DirectColorModel.java \
 	java/awt/image/FilteredImageSource.java \

@@ -60,13 +60,8 @@ import java.nio.channels.WritableByteChannel;
  * Instances of this class are created by invoking getChannel
  * Upon a Input/Output/RandomAccessFile object.
  */
-
 public final class FileChannelImpl extends FileChannel
 {
-  // These are WHENCE values for seek.
-//   public static final int SET = 0;
-//   public static final int CUR = 1;
-
   // These are mode values for open().
   public static final int READ   = 1;
   public static final int WRITE  = 2;
@@ -97,11 +92,9 @@ public final class FileChannelImpl extends FileChannel
   // However, this is necessary because if open() throws an exception
   // we want to make sure this has the value -1.  This is the most
   // efficient way to accomplish that.
-  int fd = -1;
+  private int fd = -1;
 
-  int mode;
-  int length;
-  long pos;
+  private int mode;
 
   public FileChannelImpl ()
   {
@@ -114,29 +107,37 @@ public final class FileChannelImpl extends FileChannel
     this.mode = mode;
   }
 
+  /* Used by init() (native code) */
+  FileChannelImpl (int fd, int mode)
+  {
+    this.fd = fd;
+    this.mode = mode;
+  }
+
   public static FileChannelImpl in;
   public static FileChannelImpl out;
   public static FileChannelImpl err;
 
   private native int open (String path, int mode) throws FileNotFoundException;
 
-  /** Attach to an already-opened file.  */
-  public FileChannelImpl (int desc, int mode)
-  {
-    fd = desc;
-    this.mode = mode;
-  }
-
   public native int available () throws IOException;
-  private native long implPosition ();
-  private native void seek (long newPosition);
-  private native void implTruncate (long size);
+  private native long implPosition () throws IOException;
+  private native void seek (long newPosition) throws IOException;
+  private native void implTruncate (long size) throws IOException;
   
-  public native void unlock (long pos, long len);
+  public native void unlock (long pos, long len) throws IOException;
 
   public native long size () throws IOException;
     
   protected native void implCloseChannel() throws IOException;
+
+  /**
+   * Makes sure the Channel is properly closed.
+   */
+  protected void finalize() throws IOException
+  {
+    this.close();
+  }
 
   public int read (ByteBuffer dst) throws IOException
   {
@@ -356,7 +357,7 @@ public final class FileChannelImpl extends FileChannel
    * Otherwise return false.
    */
   private native boolean lock(long position, long size,
-			      boolean shared, boolean wait);
+			      boolean shared, boolean wait) throws IOException;
   
   public FileLock lock (long position, long size, boolean shared)
     throws IOException
@@ -420,7 +421,9 @@ public final class FileChannelImpl extends FileChannel
     if ((mode & WRITE) == 0)
        throw new NonWritableChannelException ();
 
-    implTruncate (size);
+    if (size < size ())
+      implTruncate (size);
+
     return this;
   }
 }

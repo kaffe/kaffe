@@ -39,17 +39,98 @@ package gnu.java.text;
 import java.text.AttributedCharacterIterator;
 import java.util.HashMap;
 
+/**
+ * This interface describes a modifiable buffer which contains attributed
+ * characters. The implementation may or may not implements attributes. It
+ * aims to greatly simplify and clarify the implementation of java.text 
+ * formatters. The buffer may be appended or have its tail cut. It may also
+ * be completely cleant up.
+ *
+ * @author Guilhem Lavaux <guilhem@kaffe.org>
+ * @date April 10, 2004
+ */
 public interface FormatBuffer 
 {
+  /**
+   * This method appends a simple string to the buffer. This part of
+   * the buffer will be attributed using the default attribute.
+   *
+   * @param s The string to append to the buffer.
+   */
   public void append(String s);
+
+  /**
+   * This method appends a simple string to the buffer. This part of
+   * the buffer will have the specified attribute (and only this one).
+   * The default attribute may be changed after calling this method.
+   *
+   * @param s The string to append to the buffer.
+   * @param attr Attribute to use for the string in the buffer.
+   */
   public void append(String s, AttributedCharacterIterator.Attribute attr);
+
+  /**
+   * This method appends a simple string to the buffer. This part of
+   * the buffer will be attributed using the specified ranges and attributes.
+   * To have an example on how to specify ranges see {@link gnu.java.text.FormatCharacterIterator}. 
+   * 
+   * @param s The string to append to the buffer.
+   * @param ranges The ranges describing how the attributes should be applied
+   * to the string.
+   * @param attrs The attributes of the string in the buffer.
+   */
   public void append(String s, int[] ranges, HashMap[] attrs);
+
+  /**
+   * This method appends a simple char to the buffer. This part of
+   * the buffer will be attributed using the default attribute.
+   *
+   * @param c The character to append to the buffer.
+   */
   public void append(char c);
+
+  /**
+   * This method appends a simple character to the buffer. This part of
+   * the buffer will have the specified attribute (and only this one).
+   * The default attribute may be changed after calling this method.
+   *
+   * @param c The character to append to the buffer.
+   * @param attr Attribute to use for the character in the buffer.
+   */
   public void append(char c, AttributedCharacterIterator.Attribute attr);
+
+  /**
+   * This method changes the current default attribute for the next string
+   * or character which will be appended to the buffer.
+   *
+   * @param attr The attribute which will be used by default.
+   */
   public void setDefaultAttribute(AttributedCharacterIterator.Attribute attr);
+
+  /**
+   * This method returns the current default attribute for the buffer.
+   *
+   * @return The default attribute for the buffer.
+   */
   public AttributedCharacterIterator.Attribute getDefaultAttribute();
+
+  /**
+   * This method cuts the last characters of the buffer. The number of
+   * characters to cut is given by "length".
+   *
+   * @param length Number of characters to cut at the end of the buffer.
+   */
   public void cutTail(int length);
+  
+  /**
+   * This method resets completely the buffer.
+   */
   public void clear();
 
+  /**
+   * This method returns the number of character in the buffer.
+   *
+   * @return The number of character in the buffer.
+   */
   public int length();
 }

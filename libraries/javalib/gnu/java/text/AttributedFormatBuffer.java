@@ -40,6 +40,12 @@ import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * This class is an implementation of a FormatBuffer with attributes.
+ * 
+ * @author Guilhem Lavaux <guilhem@kaffe.org>
+ * @date April 10, 2004
+ */
 public class AttributedFormatBuffer implements FormatBuffer
 {
   private StringBuffer buffer;
@@ -50,13 +56,23 @@ public class AttributedFormatBuffer implements FormatBuffer
   private int startingRange;
   AttributedCharacterIterator.Attribute defaultAttr;
 
+  /**
+   * This constructor accepts a StringBuffer. If the buffer contains
+   * already some characters they will not be attributed. 
+   */
   public AttributedFormatBuffer(StringBuffer buffer)
   {
     this.buffer = buffer;
     this.ranges = new ArrayList();
     this.attributes = new ArrayList();
     this.defaultAttr = null;
-    this.startingRange = -1;
+    if (buffer.length() != 0)
+      {
+	this.startingRange = buffer.length();
+	addAttribute(buffer.length(), null);
+      }
+    else
+      this.startingRange = -1;
   }
 
   public AttributedFormatBuffer(int prebuffer)
@@ -178,6 +194,10 @@ public class AttributedFormatBuffer implements FormatBuffer
     startingRange = -1;
   }
 
+  /**
+   * This method synchronizes the state of the attribute array.
+   * After calling it you may call {@link #getDefaultAttribute()}.
+   */
   public void sync()
   {
     if (startingRange < 0 || startingRange == buffer.length())
@@ -193,16 +213,33 @@ public class AttributedFormatBuffer implements FormatBuffer
     System.arraycopy(attributes.toArray(), 0, a_attributes, 0, a_attributes.length);
   }
 
+  /**
+   * This method returns the internal StringBuffer describing
+   * the attributed string.
+   *
+   * @return An instance of StringBuffer which contains the string.
+   */
   public StringBuffer getBuffer()
   {
     return buffer;
   }
-  
+
+  /**
+   * This method returns the ranges for the attributes.
+   *
+   * @return An array of int describing the ranges.
+   */
   public int[] getRanges()
   {
     return a_ranges;
   }
 
+  /**
+   * This method returns the array containing the map on the 
+   * attributes.
+   *
+   * @return An array of {@link java.util.Map} containing the attributes.
+   */
   public HashMap[] getAttributes()
   {
     return a_attributes;

@@ -1,5 +1,5 @@
 /* Decoder.java -- Base class for byte->char decoders
-   Copyright (C) 1998 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -60,16 +60,9 @@ public abstract class Decoder extends Reader
  */
 
 /**
-  * This is the name of the current encoding. MUST be overriden by
-  * subclasses.
+  * This is the name of the current encoding. Set in the constructor.
   */
-protected static String scheme_name = "undefined";
-
-/**
-  * This is a description of the current encoding.  MUST be overridden
-  * by subclasses.
-  */
-protected static String scheme_description = "undefined";
+private final String scheme_name;
 
 /*************************************************************************/
 
@@ -80,37 +73,7 @@ protected static String scheme_description = "undefined";
 /**
   * This is the <code>InputStream</code> bytes are read from
   */
-protected InputStream in;
-
-/*************************************************************************/
-
-/*
- * Class Methods
- */
-
-/**
-  * This method returns the name of the encoding scheme in use
-  *
-  * @return The name of the encoding scheme
-  */
-public static String
-getSchemeName()
-{
-  return(scheme_name);
-}
-
-/*************************************************************************/
-
-/**
-  * This method returns a description of the encoding scheme in use
-  *
-  * @param A description of the decoding scheme.
-  */
-public static String
-getSchemeDescription()
-{
-  return(scheme_description);
-}
+protected final InputStream in;
 
 /*************************************************************************/
 
@@ -123,11 +86,13 @@ getSchemeDescription()
   * specified <code>InputStream</code>.
   *
   * @param in The <code>InputStream</code> to read from
+  * @param name The character scheme name
   */
-public
-Decoder(InputStream in)
+protected
+Decoder(InputStream in, String name)
 {
   this.in = in;
+  this.scheme_name = name;
 }
 
 /*************************************************************************/
@@ -136,6 +101,18 @@ Decoder(InputStream in)
  * Instance Methods
  */
 
+/**
+  * This method returns the name of the encoding scheme in use
+  *
+  * @return The name of the encoding scheme
+  */
+public String
+getSchemeName()
+{
+  return(scheme_name);
+}
+
+/*************************************************************************/
 /**
   * For a given set of bytes, this method returns the number of characters
   * that byte array will translate into.  If the bytes do not all translate 
@@ -197,7 +174,7 @@ convertToChars(byte[] buf) throws CharConversionException
 /*************************************************************************/
 
 /**
-  * This method converts <code>len<code> bytes from a specified array to
+  * This method converts <code>len</code> bytes from a specified array to
   * characters starting at index <code>offset</code> into the array.  The
   * results are returned in a newly allocated char array.
   *

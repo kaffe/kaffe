@@ -48,7 +48,7 @@ public class KaffeEncoder extends Encoder
 public
 KaffeEncoder(OutputStream out, String enc)
 {
-  super(out);
+  super(out, enc);
   try {
       converter = CharToByteConverter.getConverter(enc);
   }

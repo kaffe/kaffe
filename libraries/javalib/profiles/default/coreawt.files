@@ -20,6 +20,7 @@ java/awt/color/ColorSpace.java
 java/awt/color/ICC_ColorSpace.java
 java/awt/color/ICC_Profile.java
 java/awt/Color.java
+java/awt/ColorPaintContext.java
 java/awt/ComponentEvt.java
 java/awt/Component.java
 java/awt/Composite.java
@@ -130,8 +131,11 @@ java/awt/image/ColorModel.java
 java/awt/image/ComponentColorModel.java
 java/awt/image/ComponentSampleModel.java
 java/awt/image/DataBufferByte.java
+java/awt/image/DataBufferDouble.java
+java/awt/image/DataBufferFloat.java
 java/awt/image/DataBufferInt.java
 java/awt/image/DataBuffer.java
+java/awt/image/DataBufferShort.java
 java/awt/image/DataBufferUShort.java
 java/awt/image/DirectColorModel.java
 java/awt/image/ImageConsumer.java
@@ -144,6 +148,7 @@ java/awt/ImageFrameLoader.java
 java/awt/ImageLoader.java
 java/awt/ImageNativeProducer.java
 java/awt/image/MemoryImageSource.java
+java/awt/image/PixelInterleavedSampleModel.java
 java/awt/image/Raster.java
 java/awt/image/RasterOp.java
 java/awt/image/renderable/RenderContext.java

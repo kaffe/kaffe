@@ -38,22 +38,25 @@ exception statement from your version. */
 
 package gnu.java.security.der;
 
-import gnu.java.security.OID;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
+
 import java.math.BigInteger;
+
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+
+import gnu.java.security.OID;
 
 /**
  * This class decodes DER sequences into Java objects. The methods of
@@ -332,7 +335,7 @@ public class DERReader implements DER
               Integer.parseInt(str.substring( 6,  8)),    // hour
               Integer.parseInt(str.substring( 8, 10)));   // minute
             if (date.length() == 12);
-              calendar.set(calendar.SECOND,
+              calendar.set(Calendar.SECOND,
                 Integer.parseInt(str.substring(10, 12)));
           }
         catch (NumberFormatException nfe)
@@ -359,13 +362,13 @@ public class DERReader implements DER
                 case 18:
                 case 17:
                 case 16:
-                  calendar.set(calendar.MILLISECOND,
+                  calendar.set(Calendar.MILLISECOND,
                     Integer.parseInt(date.substring(15)));
                 case 14:
-                  calendar.set(calendar.SECOND,
+                  calendar.set(Calendar.SECOND,
                     Integer.parseInt(date.substring(12, 14)));
                 case 12:
-                  calendar.set(calendar.MINUTE,
+                  calendar.set(Calendar.MINUTE,
                     Integer.parseInt(date.substring(10, 12)));
               }
           }

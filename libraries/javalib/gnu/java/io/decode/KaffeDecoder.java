@@ -41,7 +41,7 @@ public
 KaffeDecoder(InputStream in, String enc)
    throws java.io.UnsupportedEncodingException
 {
-  super(in);
+  super(in, enc);
   // try {
       converter = ByteToCharConverter.getConverter(enc);
   // }

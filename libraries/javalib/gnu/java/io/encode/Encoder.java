@@ -1,5 +1,5 @@
 /* Encoder.java -- Base class for char->byte encoders
-   Copyright (C) 1998 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -63,13 +63,7 @@ public abstract class Encoder extends Writer
   * This is the name of the current encoding. MUST be overriden by
   * subclasses.
   */
-protected static String scheme_name = "undefined";
-
-/**
-  * This is a description of the current encoding.  MUST be overridden
-  * by subclasses.
-  */
-protected static String scheme_description = "undefined";
+private final String scheme_name;
 
 /*************************************************************************/
 
@@ -80,7 +74,7 @@ protected static String scheme_description = "undefined";
 /**
   * This is the <code>OutputStream</code> bytes are written to
   */
-protected OutputStream out;
+protected final OutputStream out;
 
 /**
   * This is the value that is substituted for bad characters that can't
@@ -104,23 +98,10 @@ protected boolean bad_char_set;
   *
   * @return The name of the encoding scheme
   */
-public static String
+public String
 getSchemeName()
 {
   return(scheme_name);
-}
-
-/*************************************************************************/
-
-/**
-  * This method returns a description of the encoding scheme in use
-  *
-  * @param A description of the decoding scheme.
-  */
-public static String
-getSchemeDescription()
-{
-  return(scheme_description);
 }
 
 /*************************************************************************/
@@ -133,12 +114,14 @@ getSchemeDescription()
   * This method initializes a new <code>Encoder</code> to write to the
   * specified <code>OutputStream</code>.
   *
+  * @param name The character scheme name
   * @param out The <code>OutputStream</code> to read from
   */
-public
-Encoder(OutputStream out)
+protected
+Encoder(OutputStream out, String name)
 {
   this.out = out;
+  this.scheme_name = name;
 }
 
 /*************************************************************************/
@@ -212,7 +195,7 @@ convertToBytes(char[] buf) throws CharConversionException
 /*************************************************************************/
 
 /**
-  * This method converts <code>len<code> chars from a specified array to
+  * This method converts <code>len</code> chars from a specified array to
   * bytes starting at index <code>offset</code> into the array.  The
   * results are returned in a newly allocated byte array.
   *

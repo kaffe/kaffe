@@ -39,6 +39,12 @@ package gnu.java.text;
 import java.text.AttributedCharacterIterator;
 import java.util.HashMap;
 
+/**
+ * This class is an implementation of a FormatBuffer without attributes.
+ * 
+ * @author Guilhem Lavaux <guilhem@kaffe.org>
+ * @date April 10, 2004
+ */
 public class StringFormatBuffer implements FormatBuffer
 {
   private StringBuffer buffer;
@@ -104,6 +110,10 @@ public class StringFormatBuffer implements FormatBuffer
     buffer.setLength(0);
   }
 
+  /**
+   * This method returns the internal {@link java.lang.StringBuffer} which 
+   * contains the string of character.
+   */
   public StringBuffer getBuffer()
   {
     return buffer;

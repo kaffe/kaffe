@@ -1,5 +1,109 @@
 2004-05-18  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/image/DataBufferDouble.java,
+        libraries/javalib/java/awt/image/DataBufferFloat.java,
+        libraries/javalib/java/awt/image/DataBufferShort.java:
+	New files, taken from GNU Classpath.
+	
+	* libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in:
+	Regenerated.
+
+        * libraries/javalib/profiles/default/coreawt.files,
+        libraries/javalib/profiles/default/moreawt.files,
+	libraries/javalib/profiles/allatonce/all.files
+	Added the new files.
+
+        * libraries/javalib/gnu/java/io/decode/KaffeDecoder.java,
+        libraries/javalib/gnu/java/io/encode/KaffeEncoder.java:
+	(KaffeDecoder) Adapted to pass encoding name to superclass constructor.
+	
+        * libraries/javalib/gnu/java/awt/Buffers.java,
+        libraries/javalib/gnu/java/io/decode/Decoder.java,
+        libraries/javalib/gnu/java/io/encode/Encoder.java,
+        libraries/javalib/gnu/java/nio/channels/FileChannelImpl.java,
+        libraries/javalib/gnu/java/nio/charset/UTF_16Decoder.java,
+        libraries/javalib/gnu/java/security/der/DERReader.java,
+        libraries/javalib/gnu/java/text/AttributedFormatBuffer.java,
+        libraries/javalib/gnu/java/text/CharacterBreakIterator.java,
+        libraries/javalib/gnu/java/text/FormatBuffer.java,
+        libraries/javalib/gnu/java/text/StringFormatBuffer.java:
+	Resynced with GNU Classpath.
+	
+	2004-04-28  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* gnu/java/text/FormatBuffer.java,
+	gnu/java/text/AttributedFormatBuffer.java,
+	gnu/java/text/StringFormatBuffer.java: New classes to implement
+	attributed iterators in java.text.
+
+	2004-04-23  Tom Tromey  <tromey@redhat.com>
+
+	* gnu/java/text/CharacterBreakIterator.java: Removed
+	unused import.
+
+	2004-04-23  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/security/der/DERReader.java: Call static methods staticly.
+
+	2004-05-02  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/nio/channels/FileChannelImpl.java (finalize): New method.
+
+	2004-04-30  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/nio/channels/FileChannelImpl.java (truncate): Only truncate
+	when size is smaller.
+
+	2004-04-23  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/nio/channels/FileChannelImpl.java
+	(SET, CUR): Unused, removed.
+
+	2004-04-13  Jeroen Frijters <jeroen@frijters.net>
+
+	* gnu/java/nio/channels/FileChannelImpl.java:
+	(FileChannelImpl(int,int)) Made package private instead of private.
+
+	2004-04-23  Tom Tromey  <tromey@redhat.com>
+
+	* gnu/java/nio/charset/UTF_16Decoder.java (put): Removed
+	unused method.
+
+	2004-05-07  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/io/decode/Decoder.java,
+	gnu/java/io/encode/Encoder.java:
+	Fixed javadocs all over.
+
+	2004-04-23  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/io/decode/Decoder.java (scheme_name): Make non-static
+	private final.
+	(scheme_description): Removed.
+	(in): Make final.
+	(getSchemeName): Make non-static.
+	(getSchemeDescription): Removed.
+	(Decoder): Make protected and add name parameter.
+	* gnu/java/io/encode/Encoder.java (scheme_description): Remove field.
+	(scheme_name): Make non-static private final.
+	(out): Make final.
+	(getSchemeName): Make non-static.
+	(getSchemeDescription): Removed.
+	(Encoder): Make protected and add parameter name to initialize
+	scheme_name.
+
+	2004-04-14  Sascha Brawer  <brawer@dandelis.ch>
+
+	* java/awt/image/DataBufferShort.java,
+	java/awt/image/DataBufferFloat.java,
+	java/awt/image/DataBufferDouble.java: New files.
+	
+	* gnu/java/awt/Buffers.java (createBuffer, createBufferFromData,
+	getData): Added support	for TYPE_SHORT, TYPE_FLOAT and TYPE_DOUBLE.
+
+2004-05-18  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/Makefile.am,
         libraries/javalib/Makefile.in:
 	Regenerated.
