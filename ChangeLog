@@ -1,3 +1,16 @@
+Sun Jul  5 15:05:25 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/clib/native/Class.c: do not report superclass for
+	  interfaces.  Do not include methods of java.lang.Object for
+	  interfaces.  Include superinterfaces properly.
+	  test/regression/ReflectInterfaces.java: new file to test above
+	  fixes.
+	
+	* libraries/clib/native/ObjectInputStream.c:
+	  libraries/clib/native/ObjectOutputStream.c: make sure that
+	  invokeObjectReader/Writer will not look in superclasses,
+	  which makes no sense.
+
 Fri Jul  3 18:33:44 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* libraries/clib/native/Class.c: don't report java.io.Serializable
