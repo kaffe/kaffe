@@ -1,5 +1,15 @@
 2004-11-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/swing/plaf/basic/BasicTextPaneUI.java:
+	Added missing file form last commit.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+2004-11-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics2D.java,
 	libraries/javalib/gnu/java/awt/peer/gtk/GtkFramePeer.java,
 	libraries/javalib/gnu/java/awt/peer/gtk/GtkToolkit.java,

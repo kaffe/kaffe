@@ -3523,6 +3523,7 @@ javax_swing_plaf_basic_SRCS = \
 	javax/swing/plaf/basic/BasicTableUI.java \
 	javax/swing/plaf/basic/BasicTextAreaUI.java \
 	javax/swing/plaf/basic/BasicTextFieldUI.java \
+	javax/swing/plaf/basic/BasicTextPaneUI.java \
 	javax/swing/plaf/basic/BasicTextUI.java \
 	javax/swing/plaf/basic/BasicToggleButtonUI.java \
 	javax/swing/plaf/basic/BasicToolBarSeparatorUI.java \
