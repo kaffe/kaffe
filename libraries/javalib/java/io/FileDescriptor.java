@@ -1,5 +1,6 @@
 /* FileDescriptor.java -- Opaque file handle class
-   Copyright (C) 1998,2003 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004
+   Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -46,6 +47,8 @@ import gnu.classpath.Configuration;
  * type.  No system specific information can be obtained from this object.
  *
  * @author Aaron M. Renn (arenn@urbanophile.com)
+ * @author Tom Tromey (tromey@cygnus.com)
+ * @date September 24, 1998 
  */
 public final class FileDescriptor
 {
@@ -54,33 +57,33 @@ public final class FileDescriptor
    * stream.  This will usually be accessed through the
    * <code>System.in</code>variable.
    */
-  public static final FileDescriptor in = new FileDescriptor ();
+  public static final FileDescriptor in = new FileDescriptor();
 
   /**
    * A <code>FileDescriptor</code> representing the system standard output
    * stream.  This will usually be accessed through the
    * <code>System.out</code>variable.
    */
-  public static final FileDescriptor out = new FileDescriptor ();
+  public static final FileDescriptor out = new FileDescriptor();
 
   /**
    * A <code>FileDescriptor</code> representing the system standard error
    * stream.  This will usually be accessed through the
    * <code>System.err</code>variable.
    */
-  public static final FileDescriptor err = new FileDescriptor ();
+  public static final FileDescriptor err = new FileDescriptor();
 
   static
     {
       if (Configuration.INIT_LOAD_LIBRARY)
         {
-          System.loadLibrary ("io");
+          System.loadLibrary("io");
         }
 
       nativeInit();
     }
 
-  // Use for seeking
+  // These are WHENCE values for seek.
   static final int SET = 0;
   static final int CUR = 1;
   static final int END = 2;
@@ -89,6 +92,7 @@ public final class FileDescriptor
   static final int READ   = 1;
   static final int WRITE  = 2;
   static final int APPEND = 4;
+
   // EXCL is used only when making a temp file.
   static final int EXCL   = 8;
   static final int SYNC   = 16;
@@ -143,11 +147,26 @@ public final class FileDescriptor
   public boolean valid()
   {
     if (nativeFd == -1L)
-      return(false);
+      return false;
 
     return nativeValid(nativeFd);
   }
 
+  /**
+   * Opens the specified file in the specified mode.  This can be done
+   * in one of the specified modes:
+   * <ul>
+   * <li>r - Read Only
+   * <li>rw - Read / Write
+   * <li>ra - Read / Write - append to end of file
+   * <li>rws - Read / Write - synchronous writes of data/metadata
+   * <li>rwd - Read / Write - synchronous writes of data.
+   *
+   * @param path Name of the file to open
+   * @param mode Mode to open
+   *
+   * @exception IOException If an error occurs.
+   */
   void open(String path, int mode) throws FileNotFoundException
   {
     // We don't want fd leakage.
@@ -165,6 +184,11 @@ public final class FileDescriptor
     nativeFd = nativeOpen(path, mode);
   }
 
+  /**
+   * Closes this specified file descriptor
+   * 
+   * @exception IOException If an error occurs 
+   */    
   synchronized void close() throws IOException
   {
     if (nativeFd == -1L)
@@ -179,6 +203,13 @@ public final class FileDescriptor
       }
   }
 
+  /**
+   * Writes a single byte to the file
+   *
+   * @param b The byte to write, encoded in the low eight bits
+   *
+   * @exception IOException If an error occurs
+   */
   void write(int b) throws IOException
   {
     if (nativeFd == -1L)
@@ -187,6 +218,15 @@ public final class FileDescriptor
     nativeWriteByte(nativeFd, (b & 0xFF));
   }
 
+  /**
+   * Writes a byte buffer to the file
+   *
+   * @param buf The byte buffer to write from
+   * @param int The offset into the buffer to start writing from
+   * @param len The number of bytes to write.
+   *
+   * @exception IOException If an error occurs
+   */
   void write(byte[] buf, int offset, int len) throws IOException
   {
     if (nativeFd == -1L)
@@ -206,14 +246,33 @@ public final class FileDescriptor
     nativeWriteBuf(nativeFd, buf, offset, len);
   }
 
+  /**
+   * Reads a single byte from the file
+   *
+   * @return The byte read, in the low eight bits on a long, or -1
+   * if end of file
+   *
+   * @exception IOException If an error occurs
+   */
   int read() throws IOException
   {
     if (nativeFd == -1L)
       throw new IOException("Invalid FileDescriptor");
 
-    return(nativeReadByte(nativeFd));
+    return nativeReadByte(nativeFd);
   }
 
+  /**
+   * Reads a buffer of  bytes from the file
+   *
+   * @param buf The buffer to read bytes into
+   * @param offset The offset into the buffer to start storing bytes
+   * @param len The number of bytes to read.
+   *
+   * @return The number of bytes read, or -1 if end of file.
+   *
+   * @exception IOException If an error occurs
+   */
   int read(byte[] buf, int offset, int len) throws IOException
   {
     if (nativeFd == -1L)
@@ -230,17 +289,38 @@ public final class FileDescriptor
 
     // Note that above ops implicitly bomb if buf == null
 
-    return(nativeReadBuf(nativeFd, buf, offset, len));
+    return nativeReadBuf(nativeFd, buf, offset, len);
   }
 
+  /**
+   * Returns the number of bytes available for reading
+   *
+   * @return The number of bytes available for reading
+   *
+   * @exception IOException If an error occurs
+   */
   int available() throws IOException
   {
     if (nativeFd == -1L)
       throw new IOException("Invalid FileDescriptor");
     
-    return(nativeAvailable(nativeFd));
+    return nativeAvailable(nativeFd);
   }
 
+  /**
+   * Method to do a "seek" operation on the file
+   * 
+   * @param offset The number of bytes to seek
+   * @param whence The position to seek from, either
+   *    SET (0) for the beginning of the file, CUR (1) for the 
+   *    current position or END (2) for the end position.
+   * @param stopAtEof <code>true</code> to ensure that there is no
+   *    seeking past the end of the file, <code>false</code> otherwise.
+   *
+   * @return The new file position, or -1 if end of file.
+   *
+   * @exception IOException If an error occurs
+   */
   long seek(long offset, int whence, boolean stopAtEof) throws IOException
   {
     if (nativeFd == -1L)
@@ -249,25 +329,47 @@ public final class FileDescriptor
     if ((whence != SET) && (whence != CUR) && (whence != END))
       throw new IllegalArgumentException("Invalid whence value: " + whence);
 
-    return(nativeSeek(nativeFd, offset, whence, stopAtEof));
+    return nativeSeek(nativeFd, offset, whence, stopAtEof);
   }
 
+  /**
+   * Returns the current position of the file pointer in the file
+   *
+   * @param fd The native file descriptor
+   *
+   * @exception IOException If an error occurs
+   */
   long getFilePointer() throws IOException
   { 
     if (nativeFd == -1L)
       throw new IOException("Invalid FileDescriptor");
 
-    return(nativeGetFilePointer(nativeFd));
+    return nativeGetFilePointer(nativeFd);
   }
 
+  /**
+   * Returns the length of the file in bytes
+   *
+   * @return The length of the file in bytes
+   *
+   * @exception IOException If an error occurs
+   */
   long getLength() throws IOException
   {
     if (nativeFd == -1L)
       throw new IOException("Invalid FileDescriptor");
 
-    return(nativeGetLength(nativeFd));
+    return nativeGetLength(nativeFd);
   }
 
+  /**
+   * Sets the length of the file to the specified number of bytes
+   * This can result in truncation or extension.
+   *
+   * @param len The new length of the file
+   *
+   * @exception IOException If an error occurs
+   */
   void setLength(long len) throws IOException
   {
     if (nativeFd == -1L)
@@ -283,7 +385,7 @@ public final class FileDescriptor
   // Don't do anything crazy with this
   long getNativeFd()
   {
-    return(nativeFd);
+    return nativeFd;
   }
 
   private void setNativeFd(long nativeFd)
@@ -305,7 +407,7 @@ public final class FileDescriptor
    */
 
   /**
-   *  This method is called in the class initializer to do any require
+   * This method is called in the class initializer to do any require
    * native library initialization.  It is also responsible for initializing
    * the in, out, and err variables.
    */
@@ -324,7 +426,7 @@ public final class FileDescriptor
    * @param path Name of the file to open
    * @param mode Mode to open
    *
-   * @returns The resulting file descriptor for the opened file, or -1
+   * @return The resulting file descriptor for the opened file, or -1
    * on failure (exception also signaled).
    *
    * @exception IOException If an error occurs.
@@ -337,7 +439,7 @@ public final class FileDescriptor
    * 
    * @param fd The native file descriptor to close
    *
-   * @returns The return code of the native close command.
+   * @return The return code of the native close command.
    *
    * @exception IOException If an error occurs 
    */    
@@ -354,7 +456,6 @@ public final class FileDescriptor
    * @exception IOException If an error occurs
    */
   private native long nativeWriteByte(long fd, int b) throws IOException;
-  // I hate name mangling.
 
   /**
    * Writes a byte buffer to the file
@@ -370,20 +471,18 @@ public final class FileDescriptor
    */
   private native long nativeWriteBuf(long fd, byte[] buf, int offset, int len)
     throws IOException;
-  // I hate name mangling.
 
   /**
-    * Reads a single byte from the file
-    *
-    * @param fd The native file descriptor to read from
-    *
-    * @return The byte read, in the low eight bits on a long, or -1
-    * if end of file
-    *
-    * @exception IOException If an error occurs
-    */
+   * Reads a single byte from the file
+   *
+   * @param fd The native file descriptor to read from
+   *
+   * @return The byte read, in the low eight bits on a long, or -1
+   * if end of file
+   *
+   * @exception IOException If an error occurs
+   */
   private native int nativeReadByte(long fd) throws IOException;
-  // I hate name mangling.
 
   /**
    * Reads a buffer of  bytes from the file
@@ -399,7 +498,6 @@ public final class FileDescriptor
    */
   private native int nativeReadBuf(long fd, byte[] buf, int offset, int len) 
     throws IOException;
-  // I hate name mangling.
 
   /**
    * Returns the number of bytes available for reading
@@ -439,7 +537,6 @@ public final class FileDescriptor
    * @exception IOException If an error occurs
    */
   private native long nativeGetFilePointer(long fd) throws IOException;
-  // Really could implement in terms of seek
 
   /**
    * Returns the length of the file in bytes
@@ -481,5 +578,4 @@ public final class FileDescriptor
    * @exception IOException If an error occurs
    */
   private native void nativeSync(long fd) throws SyncFailedException;
-
-} // class FileDescriptor
+}
