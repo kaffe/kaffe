@@ -346,7 +346,7 @@ public int lastIndexOf( String str) {
 
 public int lastIndexOf( String str, int eIdx) {
 	int ic = str.offset+str.count-1;
-	int it = offset+eIdx+ic;
+	int it = offset+eIdx+str.count-1;
 	int ma = 0;
 
 	if (it >= offset+count) {       // clip index
