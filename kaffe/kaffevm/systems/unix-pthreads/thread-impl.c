@@ -558,7 +558,7 @@ jthread_init(UNUSED int pre,
 }
 
 jthread_t
-jthread_createfirst(size_t mainThreadStackSize, UNUSED unsigned char pri, void* jlThread)
+jthread_createfirst(size_t mainThreadStackSize, UNUSED unsigned int pri, void* jlThread)
 {
   jthread_t      nt;
   int            oldCancelType;
@@ -821,7 +821,7 @@ void* tRun ( void* p )
  */
 
 jthread_t
-jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, size_t threadStackSize )
+jthread_create ( unsigned int pri, void* func, int isDaemon, void* jlThread, size_t threadStackSize )
 {
   jthread_t		cur = jthread_current();
   jthread_t		nt;

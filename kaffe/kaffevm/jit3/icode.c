@@ -4411,7 +4411,7 @@ cvt_int_short(SlotInfo* dst, SlotInfo* src)
 /*									   */
 
 void
-softcall_breakpoint()
+softcall_breakpoint(void)
 {
 	ABORT();
 }

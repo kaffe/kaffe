@@ -621,7 +621,7 @@ DBG(STATICINIT,
 		    !xProfFlag &&
 #endif
 		    1) {
-			METHOD_NATIVECODE(meth) = 0;
+			_SET_METHOD_NATIVECODE(meth, NULL);
 			KFREE(meth->c.ncode.ncode_start);
 			meth->c.ncode.ncode_start = NULL;
 			meth->c.ncode.ncode_end = NULL;

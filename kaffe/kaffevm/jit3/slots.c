@@ -100,9 +100,9 @@ initSlots(int islots)
 		basicslots[i].slot = &basicdatas[i];
 		basicdatas[i].regno = NOREG;
 		basicdatas[i].modified = 0;
-		basicdatas[i].rnext = 0;
-		basicdatas[i].rseq = 0;
-		basicdatas[i].wseq = 0;
+		basicdatas[i].rnext = NULL;
+		basicdatas[i].rseq = NULL;
+		basicdatas[i].wseq = NULL;
 		basicdatas[i].offset = SLOT2FRAMEOFFSET(&basicslots[i]);
 		basicdatas[i].global = GL_NOGLOBAL;
         }
@@ -112,9 +112,9 @@ initSlots(int islots)
 	stack_limit->slot = &stack_limit_data;
 	stack_limit_data.regno = NOREG;
 	stack_limit_data.modified = 0;
-	stack_limit_data.rnext = 0;
-	stack_limit_data.rseq = 0;
-	stack_limit_data.wseq = 0;
+	stack_limit_data.rnext = NULL;
+	stack_limit_data.rseq = NULL;
+	stack_limit_data.wseq = NULL;
 	stack_limit_data.offset = SLOT2FRAMEOFFSET(stack_limit);
 	stack_limit_data.global = GL_NOGLOBAL;
 #endif
@@ -133,14 +133,14 @@ setupSlotsForBasicBlock(void)
 
 	for (i = 0; i < maxslot; i++) {
 		sdata = slotinfo[i].slot;
-		sdata->rseq = 0;
-		sdata->wseq = 0;
+		sdata->rseq = NULL;
+		sdata->wseq = NULL;
 	}
 
 #if defined(STACK_LIMIT)
 	sdata = stack_limit->slot;
-	sdata->rseq = 0;
-	sdata->wseq = 0;
+	sdata->rseq = NULL;
+	sdata->wseq = NULL;
 #endif
 }
 
@@ -157,10 +157,10 @@ lastuse_slot(SlotInfo* data, int nr)
 
 	for (; nr > 0; nr--, data++) {
 		sdata = data->slot;
-		if (sdata->rseq != 0 && !isGlobal(sdata)) {
+		if (sdata->rseq != NULL && !isGlobal(sdata)) {
 			sdata->rseq->lastuse |= 1 << sdata->rseqslot;
 		}
-		sdata->wseq = 0;
-		sdata->rseq = 0;
+		sdata->wseq = NULL;
+		sdata->rseq = NULL;
 	}
 }

@@ -200,9 +200,16 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 		&((M)->class->vtable->method[(M)->idx]))
 
 #define	METHOD_CODE_START(M)		((M)->c.ncode.ncode_start)
-#define	SET_METHOD_NATIVECODE(M, C)	METHOD_NATIVECODE(M) = (C); \
+#define	_SET_METHOD_NATIVECODE(M, C)	do {\
+	if ((M)->idx == -1) {\
+		(M)->ncode = (C);\
+	} else { \
+		(M)->class->vtable->method[(M)->idx] = (C);\
+	} \
+} while (0)
+#define	SET_METHOD_NATIVECODE(M, C)	_SET_METHOD_NATIVECODE(M, C); \
 					(M)->accflags |= ACC_TRANSLATED
-#define	SET_METHOD_JITCODE(M, C)	METHOD_NATIVECODE(M) = (C); \
+#define	SET_METHOD_JITCODE(M, C)	_SET_METHOD_NATIVECODE(M, C); \
 					(M)->accflags |= ACC_TRANSLATED|ACC_JITTED
 
 /*

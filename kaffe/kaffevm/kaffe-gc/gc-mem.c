@@ -235,7 +235,7 @@ gc_heap_initialise(void)
 #ifndef gc_pgsize
 	gc_pgsize = getpagesize();
 	for (gc_pgbits = 0;
-	     (1 << gc_pgbits) != gc_pgsize && gc_pgbits < 64;
+	     (size_t)(1 << gc_pgbits) != gc_pgsize && gc_pgbits < 64;
 	     gc_pgbits++)
 		;
 	assert(gc_pgbits < 64);

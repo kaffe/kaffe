@@ -68,8 +68,7 @@
 
 static void sha1_block(SHA1_CTX *c, register unsigned long *p);
 
-void SHA1Init(c)
-SHA1_CTX *c;
+void SHA1Init(SHA1_CTX *c)
 	{
 	c->h0=INIT_DATA_h0;
 	c->h1=INIT_DATA_h1;
@@ -81,10 +80,7 @@ SHA1_CTX *c;
 	c->num=0;
 	}
 
-void SHA1Update(c, data, len)
-SHA1_CTX *c;
-register const unsigned char *data;
-unsigned long len;
+void SHA1Update(SHA1_CTX *c, register const unsigned char *data, unsigned long len)
 	{
 	register ULONG *p;
 	int ew,ec,sw,sc;
@@ -190,9 +186,7 @@ unsigned long len;
 	p[sw]=l;
 	}
 
-static void sha1_block(c, X)
-SHA1_CTX *c;
-register unsigned long *X;
+static void sha1_block(SHA1_CTX *c, register unsigned long *X)
 	{
 	register ULONG A,B,C,D,E,T;
 
@@ -293,9 +287,7 @@ register unsigned long *X;
 	c->h4=(c->h4+C)&0xffffffff;
 	}
 
-void SHA1Final(md, c)
-unsigned char *md;
-SHA1_CTX *c;
+void SHA1Final(unsigned char *md, SHA1_CTX *c)
 	{
 	register int i,j;
 	register ULONG l;

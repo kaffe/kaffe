@@ -209,7 +209,7 @@ getClassFromSignature(const char* sig, Hjava_lang_ClassLoader* loader, errorInfo
 	Hjava_lang_Class *cls = classFromSig(&sig, loader, einfo);
 
 	/* name must consume all characters in string */
-	if (cls != NULL && *sig == NULL) {
+	if (cls != NULL && *sig == '\0') {
 		return (cls);
 	}
 	/* 

@@ -1388,7 +1388,7 @@ jthread_init(int pre,
 }
 
 jthread_t
-jthread_createfirst(size_t mainThreadStackSize, unsigned char prio, void* jlThread)
+jthread_createfirst(size_t mainThreadStackSize, unsigned int prio, void* jlThread)
 {
         jthread *jtid; 
 
@@ -1516,7 +1516,7 @@ start_this_sucker_on_a_new_frame(void)
  * create a new jthread
  */
 jthread *
-jthread_create(unsigned char pri, void (*func)(void *), int isDaemon,
+jthread_create(unsigned int pri, void (*func)(void *), int isDaemon,
         void *jlThread, size_t threadStackSize)
 {
         KaffeNodeQueue *liveQ;

@@ -42,7 +42,7 @@ static void spill(SlotData*);
  */
 kregs reginfo[] = {
 	REGISTER_SET
-	{ /* BAD */	0, 0, 0, 0, 0, 0, 0 }
+	{ /* BAD */	NULL, 0, 0, 0, 0, 0, 0 }
 };
 
 /**
@@ -633,10 +633,10 @@ SCHK(	sanityCheck();						)
 			regi->used = 0;
 		}
 		else {
-			for (ptr = &regi->slot; *ptr != 0; ptr = &(*ptr)->rnext) {
+			for (ptr = &regi->slot; *ptr != NULL; ptr = &(*ptr)->rnext) {
 				if (*ptr == sdata) {
 					*ptr = sdata->rnext;
-					sdata->rnext = 0;
+					sdata->rnext = NULL;
 					goto found;
 				}
 			}

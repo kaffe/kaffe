@@ -120,7 +120,7 @@ valueOfCharArray(char * buf)
 	float value;
 	char* startbuf;
 	char* endbuf;
-	char* msg = "Bad float/double format";
+	const char* msg = "Bad float/double format";
 #if defined(STRTOD_m0_BROKEN)
 	int negate;
 #endif

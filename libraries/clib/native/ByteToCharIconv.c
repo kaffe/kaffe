@@ -46,9 +46,9 @@ Java_kaffe_io_ByteToCharIconv_open0 (JNIEnv* env, jobject _this, jstring enc)
 
     str = (*env)->GetStringUTFChars(env, enc, NULL);
 #ifdef WORDS_BIGENDIAN
-    cd = iconv_open ("UCS-2BE", (char *)str);
+    cd = iconv_open ("UCS-2BE", str);
 #else
-    cd = iconv_open ("UCS-2LE", (char *)str);
+    cd = iconv_open ("UCS-2LE", str);
 #endif
     (*env)->ReleaseStringUTFChars(env, enc, str);
     if (cd != (iconv_t)-1) {

@@ -37,7 +37,7 @@
  * Return prefix to prepend to library names
  */
 struct Hjava_lang_String*
-java_lang_NativeLibrary_getLibPrefix()
+java_lang_NativeLibrary_getLibPrefix(void)
 {
 	return checkPtr(stringC2Java(LIBRARYPREFIX));
 }
@@ -46,7 +46,7 @@ java_lang_NativeLibrary_getLibPrefix()
  * Return suffix to append to library names
  */
 struct Hjava_lang_String*
-java_lang_NativeLibrary_getLibSuffix()
+java_lang_NativeLibrary_getLibSuffix(void)
 {
 	return checkPtr(stringC2Java(LIBRARYSUFFIX));
 }

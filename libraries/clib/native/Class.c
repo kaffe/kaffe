@@ -583,7 +583,7 @@ static
 int
 checkParameters(Method* mth, HArrayOfObject* argtypes)
 {
-	unsigned int i;
+	ssize_t i;
 	errorInfo info;
 
 	/* The JDK doc says and experimentation shows that a null second
@@ -606,7 +606,7 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 	for (i = 0; i < ARRAY_SIZE(argtypes); i++) {
 		Hjava_lang_Class* sigclass;
 		sigclass = getClassFromSignaturePart(METHOD_ARG_TYPE(mth, i), mth->class->loader, &info);
-		if (sigclass == 0) {
+		if (sigclass == NULL) {
 			discardErrorInfo(&info);
 			return 0;
 		}
@@ -811,7 +811,7 @@ java_lang_Class_getClasses0(struct Hjava_lang_Class* clazz, jboolean inner)
 	ptr = (Hjava_lang_Class**)&unhand_array(array)->body[0];
 
 	for (i = clazz->nr_inner_classes, ic = clazz->inner_classes; i-- > 0; ic++) {
-		if (ic->inner_class == NULL || ic->outer_class == NULL) {
+		if (ic->inner_class == 0 || ic->outer_class == 0) {
 			continue;
 		}
 #if 0

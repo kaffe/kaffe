@@ -19,7 +19,7 @@
 #define	Tstore			4
 #define	Tload			5
 
-#define	NOSLOT			0
+#define	NOSLOT			NULL
 
 #define	MAXTEMPS		16
 

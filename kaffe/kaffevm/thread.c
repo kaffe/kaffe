@@ -79,7 +79,7 @@ linkNativeAndJavaThread(jthread_t thread, Hjava_lang_VMThread *jlThread)
  * the threading implementation before a thread is destroyed or reused.
  */
 void
-KaffeVM_unlinkNativeAndJavaThread()
+KaffeVM_unlinkNativeAndJavaThread(void)
 {
 	jthread_t thread = KTHREAD(current)();
 	threadData *thread_data = KTHREAD(get_data)(thread);
@@ -319,7 +319,7 @@ createDaemon(void* func, const char* nm, void *arg, int prio,
 DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	);
   
   /* Keep daemon threads as root objects */
-  vmtid = (Hjava_lang_Thread*)newObject(VMThreadClass);
+  vmtid = (Hjava_lang_VMThread*)newObject(VMThreadClass);
   assert(vmtid != NULL);
   
   name = stringC2Java(nm);
@@ -345,7 +345,7 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	);
   specialArgument[2] = KTHREAD(current)();
   
   nativeTid = 
-    KTHREAD(create)(((unsigned char)unhand(tid)->priority),
+    KTHREAD(create)((unhand(tid)->priority),
 		   startSpecialThread,
 		   true,
 		   specialArgument,
@@ -694,8 +694,8 @@ initNativeThreads(int nativestacksize)
 #else
 	stackSize = MAINSTACKSIZE;
 #endif
-	DBG(INIT, dprintf("Detected stackSize %lu\n", stackSize); );
-	KTHREAD(createfirst)(stackSize, (unsigned char)java_lang_Thread_NORM_PRIORITY, NULL);
+	DBG(INIT, dprintf("Detected stackSize %zu\n", (size_t)stackSize); );
+	KTHREAD(createfirst)((size_t)stackSize, (unsigned char)java_lang_Thread_NORM_PRIORITY, NULL);
 
 	/*
 	 * initialize some things that are absolutely necessary:

@@ -149,13 +149,13 @@ jthread_init(
  */
 jthread_t
 jthread_createfirst(size_t mainThreadStackSize,
-	unsigned char prio, void* jlThread);
+	unsigned int prio, void* jlThread);
 
 /*
  * create a thread with a given priority
  */
 jthread_t
-jthread_create(unsigned char pri, 	/* initial priority */
+jthread_create(unsigned int pri, 	/* initial priority */
 	void (*func)(void *), 		/* start function */
 	int isDaemon, 			/* is this thread a daemon? */
 	void *jlThread, 		/* cookie for this thread */

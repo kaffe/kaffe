@@ -101,13 +101,13 @@ DBG(NATIVELIB,
   return ptr;
 }
 
-static char *libraryPath = "";
+static char *libraryPath = NULL;
 
 extern JavaVM Kaffe_JavaVM;
 
 #ifdef ENABLE_BINRELOC
 static
-const char *discoverLibraryHome()
+const char *discoverLibraryHome(void)
 {
   static char libraryHome[MAXPATHLEN];
   char *entryPoint;
@@ -135,18 +135,18 @@ void
 initNative(void)
 {
 	char lib[MAXLIBPATH];
-	char* lpath;
+	const char* lpath;
 	char* nptr;
 	char* ptr;
 	unsigned int len;
 
 	DBG(INIT, dprintf("initNative()\n"); );
 
-	lpath = (char*)Kaffe_JavaVMArgs.libraryhome;
-	if (lpath == 0) {
+	lpath = (const char*)Kaffe_JavaVMArgs.libraryhome;
+	if (lpath == NULL) {
 		lpath = getenv(LIBRARYPATH);
 #ifdef ENABLE_BINRELOC
-		if (lpath == 0) {
+		if (lpath == NULL) {
 			lpath = discoverLibraryHome();
 		}
 #endif
@@ -157,7 +157,7 @@ initNative(void)
 #endif
 
 	len = 0;
-	if (lpath != 0) {
+	if (lpath != NULL) {
 		len += strlen(lpath);
 	}
 
@@ -171,7 +171,7 @@ initNative(void)
 	 */
 	libraryPath = gc_malloc(len+1, KGC_ALLOC_NATIVELIB);
 	addToCounter(&ltmem, "vmmem-libltdl", 1, GCSIZEOF(libraryPath));
-	if (lpath != 0) {
+	if (lpath != NULL) {
 		strcat(libraryPath, lpath);
 	}
 

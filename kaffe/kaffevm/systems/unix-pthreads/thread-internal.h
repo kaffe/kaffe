@@ -316,13 +316,13 @@ void jthread_init(int preemptive,                	/* preemptive scheduling */
  * Bind the main thread of the vm to a java.lang.Thread instance.
  *
  */
-jthread_t jthread_createfirst(size_t, unsigned char, void*);
+jthread_t jthread_createfirst(size_t, unsigned int, void*);
 
 /**
  * Create a new native thread.
  *
  */
-jthread_t jthread_create (unsigned char pri, void* func, int is_daemon,
+jthread_t jthread_create (unsigned int pri, void* func, int is_daemon,
 			  void* jlThread, size_t threadStackSize );
 
 

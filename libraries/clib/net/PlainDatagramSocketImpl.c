@@ -79,17 +79,7 @@ ip62str(struct in6_addr *addr)
 	int i, count;
 
 	for (count=0,i=0;i<16;i++) {
-	    char *format;
-	    
-	    if (i == 0 && addr->s6_addr[i] != 0)
-	      format = "%x";
-	    else if (addr->s6_addr[i] != 0)
-	      format = "%x:";
-	    else if (i != 0)
-	      format = ":";
-	    else
-	      format = "";
-	    count += sprintf(&addrbuf[count], format, addr->s6_addr[i]);
+	    count += sprintf(&addrbuf[count], i == 0 && addr->s6_addr[i] != 0 ? "%x" : addr->s6_addr[i] != 0 ? "%x:" : i != 0 ? ":" : "", addr->s6_addr[i]);
 	}
 	return addrbuf;
 }

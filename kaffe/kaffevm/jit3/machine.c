@@ -1375,9 +1375,9 @@ void
 initFakeCalls(void)
 {
 	*lastFake = redundantFake;
-	redundantFake = 0;
+	redundantFake = NULL;
 	fakePool = firstFake;
-	firstFake = 0;
+	firstFake = NULL;
 	lastFake = &firstFake;
 }
 
@@ -1386,7 +1386,7 @@ static
 fakeCall *
 findFakeCall(void *func)
 {
-	fakeCall *fc, *retval = 0;
+	fakeCall *fc, *retval = NULL;
 
 	for( fc = firstFake; fc && !retval; fc = fc->next )
 	{
@@ -1424,7 +1424,7 @@ newFakeCall(void* func, uintp currpc)
 	{
 		fc = fakePool;
 		fakePool = fakePool->next;
-		fc->next = 0;
+		fc->next = NULL;
 	}
 	else
 	{

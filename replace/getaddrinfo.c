@@ -212,8 +212,7 @@ static int itoa_length();
  * gai_strerror().
  */
 const char *
-gai_strerror(ecode)
-    int ecode;
+gai_strerror(int ecode)
 {
     if (ecode < 0 || ecode > EAI_SYSTEM)
 	return _("Unknown error");
@@ -225,8 +224,7 @@ gai_strerror(ecode)
  * freeaddrinfo().
  */
 void
-freeaddrinfo(ai)
-    struct addrinfo *ai;
+freeaddrinfo(struct addrinfo *ai)
 {
     struct addrinfo *next_ai;
 
@@ -245,8 +243,7 @@ freeaddrinfo(ai)
  * Return 1 if the string `s' represents an integer.
  */
 static int
-is_integer(s)
-    const char *s;
+is_integer(const char *s)
 {
     if (*s == '-' || *s == '+')
 	s++;
@@ -266,8 +263,7 @@ is_integer(s)
  * as "192.168".
  */
 static int
-is_address(s)
-    const char *s;
+is_address(const char *s)
 {
     static const char delimiters[] = {'.', '.', '.', '\0'};
     int i, j;
@@ -291,8 +287,7 @@ is_address(s)
  * sprintf(s, "%d", n).
  */
 static int
-itoa_length(n)
-    int n;
+itoa_length(int n)
 {
     int result = 1;
 
@@ -313,11 +308,7 @@ itoa_length(n)
  * getaddrinfo().
  */
 int
-getaddrinfo(nodename, servname, hints, res)
-    const char *nodename;
-    const char *servname;
-    const struct addrinfo *hints;
-    struct addrinfo **res;
+getaddrinfo(const char *nodename, const char *servname, const struct addrinfo *hints, struct addrinfo **res)
 {
     struct addrinfo *head_res = NULL;
     struct addrinfo *tail_res = NULL;
@@ -502,14 +493,7 @@ getaddrinfo(nodename, servname, hints, res)
  * getnameinfo().
  */
 int
-getnameinfo(sa, salen, node, nodelen, serv, servlen, flags)
-    const struct sockaddr *sa;
-    socklen_t UNUSED salen;
-    char *node;
-    socklen_t nodelen;
-    char *serv;
-    socklen_t servlen;
-    int flags;
+getnameinfo(const struct sockaddr *sa, socklen_t UNUSED salen, char *node, socklen_t nodelen, char *serv, socklen_t servlen, int flags)
 {
     const struct sockaddr_in *sa_in = (const struct sockaddr_in *)sa;
     struct hostent *hostent;

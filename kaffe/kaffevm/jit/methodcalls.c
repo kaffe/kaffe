@@ -160,7 +160,7 @@ engine_buildTrampoline (Method *meth, void **where, errorInfo *einfo)
 	if (methodNeedsTrampoline(meth)) {
 		/* XXX don't forget to pick those up at class gc time */
 		tramp = (methodTrampoline*)gc_malloc(sizeof(methodTrampoline), KGC_ALLOC_TRAMPOLINE);
-		if (tramp == 0) {
+		if (tramp == NULL) {
 			postOutOfMemory(einfo);
 			return (NULL);
 		}
@@ -178,15 +178,15 @@ engine_buildTrampoline (Method *meth, void **where, errorInfo *einfo)
 		if (!(CLASS_GCJ((meth)->class)
 			&& (meth->accflags & ACC_NATIVE)))
 		{
-			assert(*where == 0 ||
+			assert(*where == NULL ||
 				!!!"Cannot override trampoline anchor");
 		}
 		ret = tramp;
 	} else {
 		if (CLASS_GCJ((meth)->class)) {
-			METHOD_NATIVECODE(meth) = meth->ncode;
+			_SET_METHOD_NATIVECODE(meth, meth->ncode);
 		}
-		assert(METHOD_NATIVECODE(meth) != 0);
+		assert(METHOD_NATIVECODE(meth) != NULL);
 		ret = METHOD_NATIVECODE(meth);
 	}
 	*where = ret;

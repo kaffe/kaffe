@@ -400,14 +400,16 @@ soft_checkcast(Hjava_lang_Class* c, Hjava_lang_Object* o)
 		if (c->loader != OBJECT_CLASS(o)->loader) {
 			const char *toloader = c->loader?CLASS_CNAME(OBJECT_CLASS((Hjava_lang_Object *)c->loader)):"bootstrap";
 			const char *fromloader = OBJECT_CLASS(o)->loader?CLASS_CNAME(OBJECT_CLASS((Hjava_lang_Object *)OBJECT_CLASS(o)->loader)):"bootstrap";
-			const char *format = "can't cast `%s' (%s@%p) to `%s' (%s@%p)";
+#define _FORMAT "can't cast `%s' (%s@%p) to `%s' (%s@%p)"
 			buf = checkPtr(KMALLOC(strlen(fromtype) + 12 + strlen(fromloader)+
-				+ strlen(totype) + 12 + strlen(toloader) + strlen(format)));
-			sprintf(buf, format, fromtype, fromloader, OBJECT_CLASS(o)->loader, totype, toloader, c->loader);
+				+ strlen(totype) + 12 + strlen(toloader) + strlen(_FORMAT)));
+			sprintf(buf, _FORMAT, fromtype, fromloader, OBJECT_CLASS(o)->loader, totype, toloader, c->loader);
+#undef _FORMAT
 		} else {
-			const char* format = "can't cast `%s' to `%s'";
-			buf = checkPtr(KMALLOC(strlen(fromtype)+strlen(totype)+strlen(format)));
-			sprintf(buf, format, fromtype, totype);
+#define _FORMAT "can't cast `%s' to `%s'"
+			buf = checkPtr(KMALLOC(strlen(fromtype)+strlen(totype)+strlen(_FORMAT)));
+			sprintf(buf, _FORMAT, fromtype, totype);
+#undef _FORMAT
 		}
 
 		ccexc = ClassCastException(buf);	
@@ -585,12 +587,13 @@ soft_checkarraystore(Hjava_lang_Object* array, Hjava_lang_Object* obj)
 {
 	if (obj != NULL && soft_instanceof(CLASS_ELEMENT_TYPE(OBJECT_CLASS(array)), obj) == 0) {
 		Hjava_lang_Throwable* asexc;
-		const char* f = "can't store `%s' in `%s'";
 		const char *otype = CLASS_CNAME(OBJECT_CLASS(obj));
 		const char *atype = CLASS_CNAME(OBJECT_CLASS(array));
 		char *b;
-		b = checkPtr(KMALLOC(strlen(otype)+strlen(atype)+strlen(f)));
-		sprintf(b, f, otype, atype);
+#define _FORMAT "can't store `%s' in `%s'"
+		b = checkPtr(KMALLOC(strlen(otype)+strlen(atype)+strlen(_FORMAT)));
+		sprintf(b, _FORMAT, otype, atype);
+#undef _FORMAT
 		asexc = ArrayStoreException(b);
 		KFREE(b);
 		throwException(asexc);

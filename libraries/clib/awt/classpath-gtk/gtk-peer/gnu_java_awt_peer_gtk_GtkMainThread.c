@@ -271,7 +271,7 @@ Java_gnu_java_awt_peer_gtk_GtkMainThread_gtkMain
    See: http://mail.gnome.org/archives/gtk-i18n-list/2003-August/msg00001.html
    for details. */
 static void
-init_dpi_conversion_factor ()
+init_dpi_conversion_factor (void)
 {
   GtkSettings *settings = gtk_settings_get_default ();
   GObjectClass *klass;

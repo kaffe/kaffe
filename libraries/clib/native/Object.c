@@ -99,7 +99,7 @@ java_lang_VMObject_wait(struct Hjava_lang_Object* o, jlong timeout, UNUSED jint 
       throwException(InterruptedException);
     }
 
-DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %d\n",
+DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %lli\n",
 			cur, KTHREAD(get_data)(cur)->jlThread,
 			o, timeout); );
 
