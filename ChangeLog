@@ -1,3 +1,10 @@
+Wed Dec  9 18:41:09 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/lang/Cloneable.java
+	kaffe/kaffeh/Makefile.in, kaffe/kaffevm/baseClasses.c,
+	kaffe/kaffevm/debug.h, kaffe/Makefile.in: added consistency check
+	between Klasses.jar found at run-time and the one at compile-time.
+
 Wed Dec  9 18:44:36 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/clib/io/AudioPlayer.c: oops, config-std.h needs
