@@ -169,7 +169,7 @@ Collector* createGC(void);
     ((G)->ops->rmRef)((Collector*)(G), (addr))
 
 #if !defined(KAFFEH)
-static inline void KGC_markObject(void *g, void *gc_info, void *addr)
+static inline void KGC_markObject(void *g, void *gc_info, const void *addr)
 {
 	if (addr)
 		((Collector*) g)->ops->markObject((Collector*) g, gc_info, addr);

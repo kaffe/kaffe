@@ -1,5 +1,11 @@
 2004-12-19  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/gc.h, kaffe/kaffevm/kaffe-gc/gc-incremental.h,
+	  kaffe/kaffevm/kaffe-gc/gc-mem.c, kaffe/kaffevm/kaffe-gc/gc-refs.c:
+	  Gcc warning fixes.
+
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
 	* config/i386/jit3-i386.def, kaffe/kaffevm/baseClasses.c,
 	  kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classPool.c,
 	  kaffe/kaffevm/code-analyse.c, kaffe/kaffevm/debug.c,

@@ -20,7 +20,7 @@
 #define	MAX_HEAPSIZE	(64*1024*1024)
 #define	ALLOC_HEAPSIZE	(1024*1024)
 
-extern uintp gc_block_base;
+extern char * gc_block_base;
 
 /* ------------------------------------------------------------------------ */
 

@@ -184,7 +184,7 @@ DBG(GCWALK,
   /* Walk the referenced objects */
   for (i = 0; i < REFOBJHASHSZ; i++) {
     for (robj = refObjects.hash[i]; robj != 0; robj = robj->next) {
-      KGC_markObject(collector, NULL, (void *) robj->mem);
+      KGC_markObject(collector, NULL, robj->mem);
     }
   }
  

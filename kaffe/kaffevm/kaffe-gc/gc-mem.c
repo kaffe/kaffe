@@ -671,7 +671,7 @@ gc_large_block(size_t sz)
  */
 #define KGC_PRIM_LIST_COUNT 20
 
-uintp gc_block_base = 0;
+char * gc_block_base = NULL;
 static gc_block *gc_prim_freelist[KGC_PRIM_LIST_COUNT+1];
 
 #ifndef PROT_NONE
@@ -980,7 +980,7 @@ pagealloc(size_t size)
 	 */
 	for (;;) {
 		int missed;
-		ptr = sbrk(size);
+		ptr = sbrk((intptr_t)size);
 		if (ptr == (void*)-1) {
 			ptr = 0;
 			break;
@@ -992,7 +992,7 @@ pagealloc(size_t size)
 		DBG(GCSYSALLOC,
 		    dprintf("unaligned sbrk %p, missed %d bytes\n",
 			    ptr, missed));
-		sbrk(-size + missed);
+		sbrk((intptr_t)(-size + missed));
 	}
 	CHECK_OUT_OF_MEMORY(ptr);
 
@@ -1028,7 +1028,7 @@ pagealloc(size_t size)
 #ifdef HAVE_SBRK
 static void pagefree(uintp base UNUSED, size_t size)
 {
-	sbrk(-size);
+	sbrk((intptr_t)-size);
 }
 #else
 static void pagefree(uintp base, size_t size UNUSED)
@@ -1067,9 +1067,9 @@ gc_block_alloc(size_t size)
 	if (!gc_block_base) {
 		nblocks = (gc_heap_limit+gc_pgsize-1)>>gc_pgbits;
 
-		gc_block_base = (uintp) malloc(nblocks * sizeof(gc_block));
+		gc_block_base = malloc(nblocks * sizeof(gc_block));
 		if (!gc_block_base) return 0;
-		memset((void *)gc_block_base, 0, nblocks * sizeof(gc_block));
+		memset(gc_block_base, 0, nblocks * sizeof(gc_block));
 	}
 
 	DBG(GCSYSALLOC, dprintf("pagealloc(%ld)", (long) size));
@@ -1085,7 +1085,7 @@ gc_block_alloc(size_t size)
 	if (gc_mem2block((void *) (heap_addr + size))
 	    > ((gc_block *)gc_block_base) + nblocks
 	    || heap_addr < gc_heap_base) {
-		uintp old_blocks = gc_block_base;
+		char * old_blocks = gc_block_base;
 		int onb = nblocks;
 		int min_nb;	/* minimum size of array to hold heap_addr */
 #if defined(KAFFE_STATS)
@@ -1115,7 +1115,7 @@ gc_block_alloc(size_t size)
 			    onb, nblocks));
 
 		KTHREAD(spinon)(0);
-		gc_block_base = (uintp) realloc((void *) old_blocks,
+		gc_block_base = realloc(old_blocks,
 						nblocks * sizeof(gc_block));
 		if (!gc_block_base) {
 			/* roll back this call */
@@ -1136,7 +1136,7 @@ gc_block_alloc(size_t size)
 			int i;
 			gc_block *b = (gc_block *) gc_block_base;
 			uintp delta = gc_block_base - old_blocks;
-#define R(X) if (X) ((uintp) (X)) += delta
+#define R(X) if (X) X = X + delta
 
 			DBG(GCSYSALLOC,
 			    dprintf("relocating gc_block array\n"));
