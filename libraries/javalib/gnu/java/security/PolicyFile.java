@@ -143,7 +143,8 @@ public final class PolicyFile extends Policy
   // -------------------------------------------------------------------------
 
   private static final boolean DEBUG = true;
-  private static void debug(String msg)
+  // Package-private to avoid a trampoline.
+  static void debug(String msg)
   {
     System.err.print(">> PolicyFile: ");
     System.err.println(msg);
