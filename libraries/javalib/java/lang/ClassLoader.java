@@ -146,6 +146,12 @@ protected final Class findLoadedClass(String name) {
 
 public URL getResource(String name) {
 	try {
+	    /*
+	     * Note: if you're looking right here because kaffe crashed
+	     * at this point, there's probably a problem with exception
+	     * handling, because this is usually the place where the very
+	     * first exception is thrown after kaffe starts up.
+	     */
 		return (URL)getResources(name).nextElement();
 	} catch (IOException e) {
 	} catch (NoSuchElementException e) {
