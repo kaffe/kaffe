@@ -80,6 +80,17 @@ else
 	} >/tmp/.gdbinit.$$
 	exec "$KAFFE_DEBUG" -command /tmp/.gdbinit.$$ $KAFFE_LIBEXECDIR/@Kaffe_TRANSF@
 	rm -f /tmp/.gdbinit.$$;;
+    DDD*)
+	# Tell DDD to start gdb within the correct working directory,
+	# and set up the specified argument list
+	{
+	    echo "shell rm -f /tmp/.gdbinit.$$"
+	    echo "cd `pwd`"
+	    echo "set args $*"
+	} >/tmp/.gdbinit.$$
+        exec "$KAFFE_DEBUG" --debugger "${GDB-gdb} -command /tmp/.gdbinit.$$" \
+	  $KAFFE_LIBEXECDIR/Kaffe
+	rm -f /tmp/.gdbinit.$$;;
     "GNU Emacs"*)
 	# start gdb within GNU Emacs, move into the current working
 	# directory and set up the specified argument list
