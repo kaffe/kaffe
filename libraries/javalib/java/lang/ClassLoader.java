@@ -150,7 +150,7 @@ protected final void setSigners(Class cl, Object signers[]) {
 }
 
 protected final Class findLoadedClass(String name) {
-	return findLoadedClass0(name);
+        return (Class) loadedClasses.get(name);
 }
 
 public URL getResource(String name) {
@@ -257,7 +257,6 @@ synchronized void addNativeLibrary(NativeLibrary lib) {
 }
 
 private native Class defineClass0(String name, byte data[], int off, int len);
-private native Class findLoadedClass0(String name);
 private native void resolveClass0(Class cls);
 
 }

@@ -1,3 +1,19 @@
+Tue Aug  6 12:28:34 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* libraries/clib/native/ClassLoader.c:
+	(java_lang_ClassLoader_findLoadedClass0) removed.
+	* libraries/javalib/java/lang/ClassLoader.java:
+	(findLoadedClass) replace use of native function by Map.get().
+	(findLoadedClass0) remove prototype for native function.
+	
+	* libraries/javalib/java/security/SecureClassLoader.java:
+	(parent) removed unused field.
+	(SecureClassLoader) just call super(parent), as ClassLoader must
+	perform the same permission checks. 
+	(defineClass) create new ProtectionDomain if CodeSource is not
+	null, as the API spec says.
+	
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated.
+
 Thu Aug  1 00:12:41 CEST 2002 Robert N. Gonzalez <Robert.N.Gonzalez@williams.edu>
 
 	* kaffe/kaffevm/classMethod.h:

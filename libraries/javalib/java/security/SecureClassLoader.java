@@ -16,13 +16,8 @@
 package java.security;
 
 public class SecureClassLoader extends ClassLoader {
-	private final ClassLoader parent;
-
 	protected SecureClassLoader(ClassLoader parent) {
-		SecurityManager sm = System.getSecurityManager();
-		if (sm != null)
-			sm.checkCreateClassLoader();
-		this.parent = parent;
+		super(parent);
 	}
 
 	protected SecureClassLoader() {
@@ -31,7 +26,12 @@ public class SecureClassLoader extends ClassLoader {
 
 	protected final Class defineClass(String name, byte[] b,
 			int off, int len, CodeSource cs) {
+	    if (cs == null) {
 		return defineClass(name, b, off, len);
+	    }
+	    else {
+		return defineClass(name, b, off, len, new ProtectionDomain(cs, null));
+	    }
 	}
 
 	protected PermissionCollection getPermissions(CodeSource cs) {
