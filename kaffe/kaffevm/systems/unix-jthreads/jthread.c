@@ -2109,7 +2109,11 @@ DBG(JTHREADDETAIL,
 	for (nfd = 0, i = 0; i <= maxFd; i++) {
 		short ev = 0;
 		if (readQ[i] != 0) { 	/* FD_ISSET(i, &readsPending) */
-			ev |= POLLIN;
+			/* Check for POLLIN and POLLHUP for portability.
+			 * Some poll(2) implementations return POLLHUP
+			 * on EOF.
+			 */
+			ev |= POLLIN | POLLHUP;
 		}
 		if (writeQ[i] != 0) {   /* FD_ISSET(i, &writesPending) */
 			ev |= POLLOUT;
