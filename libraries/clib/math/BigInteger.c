@@ -12,7 +12,7 @@
 
 #if defined(HAVE_GMP_H)
 
-#include <jni.h>
+#include "java_math_BigInteger.h"
 #include <gmp.h>
 #include <stdlib.h>
 
@@ -127,13 +127,19 @@ Java_java_math_BigInteger_assignString0(JNIEnv* env, jobject r, jstring val, jin
 {
 	mpz_ptr res;
 	const jbyte* str;
+	int rc;
 
 	res = (*env)->GetObjectField(env, r, number);
 	str = (*env)->GetStringUTFChars(env, val, 0);
 
-	mpz_set_str(res, (char*)str, (int)radix);
+	rc = mpz_set_str(res, (char*)str, (int)radix);
 
 	(*env)->ReleaseStringUTFChars(env, val, str);
+	if (rc == -1) {
+		jclass nfexc = (*env)->FindClass(env, 
+			"java.lang.NumberFormatException");
+		(*env)->ThrowNew(env, nfexc, "Bad format");
+	}
 }
 
 void
@@ -207,7 +213,7 @@ Java_java_math_BigInteger_rem0(JNIEnv* env, jobject r, jobject s1, jobject s2)
 }
 
 void
-Java_java_math_BigInteger_divrem0(JNIEnv* env, jobject r1, jobject r2, jobject s1, jobject s2)
+Java_java_math_BigInteger_divrem0(JNIEnv* env, jclass cls, jobject r1, jobject r2, jobject s1, jobject s2)
 {
 	mpz_ptr res1;
 	mpz_ptr res2;
@@ -443,7 +449,7 @@ Java_java_math_BigInteger_cmp0(JNIEnv* env, jclass cls, jobject s1, jobject s2)
 }
 
 jstring
-Java_java_math_BigInteger_toString0(JNIEnv* env, jobject* s, jint base)
+Java_java_math_BigInteger_toString0(JNIEnv* env, jobject s, jint base)
 {
 	char* res;
 	mpz_srcptr src;
@@ -459,7 +465,7 @@ Java_java_math_BigInteger_toString0(JNIEnv* env, jobject* s, jint base)
 }
 
 jdouble
-Java_java_math_BigInteger_toDouble0(JNIEnv* env, jobject* s)
+Java_java_math_BigInteger_toDouble0(JNIEnv* env, jobject s)
 {
 	mpz_srcptr src;
 
@@ -470,7 +476,7 @@ Java_java_math_BigInteger_toDouble0(JNIEnv* env, jobject* s)
 
 
 jint
-Java_java_math_BigInteger_toInt0(JNIEnv* env, jobject* s)
+Java_java_math_BigInteger_toInt0(JNIEnv* env, jobject s)
 {
 	mpz_srcptr src;
 
@@ -480,7 +486,7 @@ Java_java_math_BigInteger_toInt0(JNIEnv* env, jobject* s)
 }
 
 jint
-Java_java_math_BigInteger_probablyPrime0(JNIEnv* env, jobject* s, jint prop)
+Java_java_math_BigInteger_probablyPrime0(JNIEnv* env, jobject s, jint prop)
 {
 	mpz_srcptr src;
 
@@ -490,7 +496,7 @@ Java_java_math_BigInteger_probablyPrime0(JNIEnv* env, jobject* s, jint prop)
 }
 
 jint
-Java_java_math_BigInteger_bitLength0(JNIEnv* env, jobject* s)
+Java_java_math_BigInteger_bitLength0(JNIEnv* env, jobject s)
 {
 	mpz_srcptr src;
 
@@ -500,7 +506,7 @@ Java_java_math_BigInteger_bitLength0(JNIEnv* env, jobject* s)
 }
 
 jint
-Java_java_math_BigInteger_hamDist0(JNIEnv* env, jobject* s1, jobject* s2)
+Java_java_math_BigInteger_hamDist0(JNIEnv* env, jobject s1, jobject s2)
 {
 	mpz_srcptr src1, src2;
 
