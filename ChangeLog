@@ -1,3 +1,20 @@
+2004-07-08  Dalibor Topic  <robilad@kaffe.org>
+
+        * config/mips/atomicity.h:
+	New file, taken from glibc 2.3.2.
+
+	* THIRDPARTY: Documented MIPS atomicity.h merge.
+
+        * config/Makefile.am:
+	(EXTRA_DIST) Added config/mips/atomicity.h.
+
+        * config/Makefile.in:
+	Regenerated.
+
+        * config/mips/common.h:
+	Use config/mips/atomicity.h for compare_and_swap for MIPS
+	platofrms with MIPS2 instructions.
+
 2004-07-07  Dalibor Topic  <robilad@kaffe.org>
 
         * configure.ac:

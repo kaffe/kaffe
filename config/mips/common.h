@@ -31,33 +31,17 @@
 #endif 
 
 #if defined(HAVE_MIPSII_INSTRUCTIONS)
+#include "atomicity.h"
+#endif /* defined(HAVE_MIPSII_INSTRUCTIONS) */
+
+#if defined(HAVE_MIPSII_INSTRUCTIONS)
+
 /*
  * Do an atomic compare and exchange.  The address 'A' is checked against
  * value 'O' and if they match it's exchanged with value 'N'.
  * We return '1' if the exchange is sucessful, otherwise 0.
  */
-#define COMPARE_AND_EXCHANGE(A,O,N)		\
-({						\
-	unsigned int tmp, ret;			\
- 						\
-	asm volatile(				\
-	"	.set	noreorder\n"		\
-	"	.set	mips2\n"		\
-	"1:	ll	%0, %2\n"		\
-	"	bne	%0, %3,2f\n"		\
-	"	move	%0, $0\n"		\
-	"	move	%0, %4\n"		\
-	"	sc	%0, %1\n"		\
-	"	beqz	%0, 1b\n"		\
-	"	nop\n"				\
-	"2:\n"					\
-	"	.set	mips0\n"		\
-	"	.set	reorder\n"		\
-	: "=&r" (ret), "=m" (*(A))		\
-	: "m" (*(A)), "r" (O), "r" (N)		\
-	: "memory");				\
-	ret;					\
-})
+#define COMPARE_AND_EXCHANGE(A,O,N)	(compare_and_swap((long int*) A, (long int) O, (long int) N))
 
 #else
 
