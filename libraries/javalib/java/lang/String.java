@@ -18,7 +18,7 @@ import java.util.Locale;
 import kaffe.io.ByteToCharConverter;
 import kaffe.io.CharToByteConverter;
 
-public final class String implements Serializable, Comparable {
+public final class String implements Serializable, Comparable, CharSequence {
 
 	/**
 	 * Maximum slop (extra unused chars in the char[]) that
@@ -500,6 +500,10 @@ public String substring( int sIdx, int eIdx) {
 
 	return new String( offset+sIdx, offset+eIdx, value);
 
+}
+
+public CharSequence subSequence( int sIdx, int eIdx) {
+        return substring( sIdx, eIdx);
 }
 
 public char[] toCharArray() {

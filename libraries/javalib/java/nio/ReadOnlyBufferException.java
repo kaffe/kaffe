@@ -1,4 +1,4 @@
-/* ByteOrder.java -- 
+/* ReadOnlyBufferException.java -- 
    Copyright (C) 2002 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,24 +37,16 @@ exception statement from your version. */
 
 package java.nio;
 
-
-public final class ByteOrder
+/**
+ * @author Michael Koch
+ * @since 1.4
+ */
+public class ReadOnlyBufferException extends UnsupportedOperationException
 {
-  public static final ByteOrder BIG_ENDIAN     = new ByteOrder();
-  public static final ByteOrder LITTLE_ENDIAN  = new ByteOrder();
-
-  public static ByteOrder nativeOrder()
-  {
-    return BIG_ENDIAN;
-  }
-
-  public String toString()
-  {
-    return this == BIG_ENDIAN ? "BIG_ENDIAN" : "LITTLE_ENDIAN";
-  }
-
-  // This class can only be instantiated here.
-  private ByteOrder ()
+  /**
+   * Creates the exception
+   */
+  public ReadOnlyBufferException ()
   {
   }
 }

@@ -641,8 +641,10 @@ java_nio_SRCS = \
 	java/nio/DoubleBuffer.java \
 	java/nio/FloatBuffer.java \
 	java/nio/IntBuffer.java \
+	java/nio/InvalidMarkException.java \
 	java/nio/LongBuffer.java \
 	java/nio/MappedByteBuffer.java \
+	java/nio/ReadOnlyBufferException.java \
 	java/nio/ShortBuffer.java
 java_security_SRCS = \
 	java/security/AccessControlContext.java \

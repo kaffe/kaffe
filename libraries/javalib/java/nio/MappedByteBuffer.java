@@ -42,18 +42,18 @@ public abstract class MappedByteBuffer extends ByteBuffer
 {
     private static native void sync();
 
-    public MappedByteBuffer force()
+    public final MappedByteBuffer force()
     {
 	sync();
 	return this;
     }
     
-    public boolean isLoaded()
+    public final boolean isLoaded()
     {
 	return true;
     }
     
-    public MappedByteBuffer load()
+    public final MappedByteBuffer load()
     {
 	sync();
 	return this;

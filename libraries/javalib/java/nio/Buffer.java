@@ -37,107 +37,160 @@ exception statement from your version. */
 
 package java.nio;
 
-
 public abstract class Buffer
 {
-    int cap, limit, pos, mark;
+  /** Capacity of the buffer.
+   * XXX - FIXME - should not be protected but (package) private
+   * */
+  protected int cap = 0;
+  int limit = 0;
+  int pos = 0;
+  int mark = -1;
 
-    Buffer()
-    {
-    }
+  /**
+   * Retrieves the capacity of the buffer.
+   */
+  public final int capacity ()
+  {
+    return cap;
+  }
 
-    public final int capacity()
-    {
-	return cap;
-    }
-
-    public final int capacity(int c)
-    {
-	int old = cap;
-	cap = c;
-	return old;
-    }
-
-    public final Buffer clear()
-    {
-	limit = cap;
-	mark = 0;
-	pos = 0;
-	return this;
-    }
+  /**
+   * Clears the buffer.
+   */
+  public final Buffer clear ()
+  {
+    limit = cap;
+    pos = 0;
+    mark = -1;
+    return this;
+  }
     
-    public final Buffer flip()
-    {
-	limit = pos;
-	pos = 0;
-
-	mark = 0;
-
-	return this;
-    }
+  /**
+   * Flips the buffer.
+   */
+  public final Buffer flip ()
+  {
+    limit = pos;
+    pos = 0;
+    mark = -1;
+    return this;
+  }
     
-    public final boolean hasRemaining()
-    {
-	return limit > pos;
-    }
+  /**
+   * Tells whether the buffer has remaining data to read or not.
+   */
+  public final boolean hasRemaining ()
+  {
+    return limit > pos;
+  }
 
-    public abstract  boolean isReadOnly();    
+  /**
+   * Tells whether this buffer is read only or not.
+   */
+  public abstract boolean isReadOnly ();
+
+  /**
+   * Retrieves the current limit of the buffer.
+   */
+  public final int limit ()
+  {
+    return limit;
+  }
+
+  /**
+   * Sets this buffer's limit.
+   * 
+   * @param newLimit The new limit value; must be non-negative and no larger
+   * than this buffer's capacity.
+   *
+   * @exception IllegalArgumentException If the preconditions on newLimit
+   * do not hold.
+   */
+  public final Buffer limit (int newLimit)
+  {
+    if ((newLimit < 0) || (newLimit > cap))
+      throw new IllegalArgumentException ();
+
+    if (newLimit <= mark)
+        mark = -1;
+
+    if (pos > newLimit)
+        pos = newLimit - 1;
+
+    limit = newLimit;
+    return this;
+  }
+
+  /**
+   * Sets this buffer's mark at its position.
+   */
+  public final Buffer mark ()
+  {
+    mark = pos;
+    return this;
+  }
+
+  /**
+   * Retrieves the current position of this buffer.
+   */
+  public final int position ()
+  {
+    return pos;
+  }
     
-    
-    public final int limit()
-    {
-	return limit;
-    }
+  /**
+   * Sets this buffer's position. If the mark is defined and larger than the
+   * new position then it is discarded.
+   * 
+   * @param newPosition The new position value; must be non-negative and no
+   * larger than the current limit.
+   * 
+   * @exception IllegalArgumentException If the preconditions on newPosition
+   * do not hold
+   */
+  public final Buffer position (int newPosition)
+  {
+    if ((newPosition < 0) || (newPosition > limit))
+      throw new IllegalArgumentException ();
 
-    public final Buffer limit(int newLimit)
-    {
-	if (newLimit <= mark)
-	    mark = 0;
+    if (newPosition <= mark)
+        mark = -1;
 
-	if (pos > newLimit)
-	    pos = newLimit - 1;
+    pos = newPosition;
+    return this;
+  }
 
-	limit = newLimit;
-	return this;
-    }
+  /**
+   * Returns the number of elements between the current position and the limit.
+   */
+  public final int remaining()
+  {
+    return limit - pos;
+  }
 
-    public final Buffer mark()
-    {
-	mark = pos;
-	return this;
-    }
+  /**
+   * Resets this buffer's position to the previously-marked position.
+   * 
+   * @exception InvalidMarkException If the mark has not been set.
+   */
+  public final Buffer reset()
+  {
+    if (mark == -1)
+      throw new InvalidMarkException ();
 
-    public final int position()
-    {
-	return pos;
-    }
-    
+    pos = mark;
+    return this;
+  }
 
-    public final Buffer position(int newPosition)
-    {
-	/// If the mark is defined and larger than the new 
-
-	if (newPosition <= mark)
-	    mark = 0;
-
-	pos = newPosition;
-	return this;
-    }
-
-    public final int remaining()
-    {
-	return limit - pos;
-    }
-
-    public final Buffer reset()
-    {
-	pos = mark;
-	return this;
-    }
-
-    public final Buffer rewind()
-    {
-	mark = pos = 0;
-	return this;
-    }
+  /**
+   * Rewinds this buffer. The position is set to zero and the mark
+   * is discarded.
+   */
+  public final Buffer rewind()
+  {
+    pos = 0;
+    mark = -1;
+    return this;
+  }
 }

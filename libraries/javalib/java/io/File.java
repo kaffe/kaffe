@@ -1,6 +1,8 @@
 package java.io;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Random;
 import java.util.StringTokenizer;
@@ -407,6 +409,28 @@ native private boolean setReadOnly0();
 public static File[] listRoots() {
 	// XXX FIXME: incorrect for Windows platforms, eg: { "C:", "D:" }
 	return new File[] { new File(separator) };
+}
+
+/**
+ * @since 1.4
+ */
+public URI toURI() {
+	try {
+		return new URI("file",
+			       null,
+			       (isDirectory() ?                               
+				getAbsolutePath() + separator
+				: getAbsolutePath()),
+			       null,
+			       null);
+	}
+	catch (URISyntaxException e) {
+		throw (IllegalArgumentException) 
+			new IllegalArgumentException("Couldn't convert "
+						     + toString()
+						     + " to an URI")
+			.initCause(e);
+	}
 }
 
 }

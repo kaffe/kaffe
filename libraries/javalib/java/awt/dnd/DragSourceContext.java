@@ -113,7 +113,7 @@ public class DragSourceContext
   {
   }
 
-  public void dragExit(DragSourceDragEvent e)
+  public void dragExit(DragSourceEvent e)
   {
   }
 
@@ -121,7 +121,7 @@ public class DragSourceContext
   {
   }
 
-  public void dragDropEnd(DragSourceDragEvent e)
+  public void dragDropEnd(DragSourceDropEvent e)
   {
   }
 

@@ -10,7 +10,7 @@
 
 package java.lang;
 
-public final class StringBuffer implements java.io.Serializable {
+public final class StringBuffer implements java.io.Serializable, CharSequence {
 	private static final int SPARECAPACITY = 16;
 
 	char[] buffer;				// character buffer
@@ -144,6 +144,10 @@ public synchronized String substring(int start, int end) {
 		isStringized = true;
 		return new String(start, end, buffer);
 	}
+}
+
+public CharSequence subSequence(int start, int end) {
+        return substring(start, end);
 }
 
 public void ensureCapacity(int minCapacity) {

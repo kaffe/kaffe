@@ -93,6 +93,23 @@ public static InetAddress[] getAllByName(String host) throws UnknownHostExceptio
 	return (addrs);
 }
 
+public static InetAddress getByAddress(byte[] addr) throws UnknownHostException {
+    if (addr.length != 4 && addr.length != 16) {
+	throw new UnknownHostException("bad address length: " + addr.length + " bytes");
+    }
+
+    if (addr.length == 16) {
+	throw new kaffe.util.NotImplemented("Inet6 addresses are not supported.");
+    }
+
+    int address = ((addr[0] & 0xFF) << 24)
+	+ ((addr[1] & 0xFF) << 16)
+	+ ((addr[2] & 0xFF) << 8)
+	+ (addr[3]);
+
+    return new InetAddress(null, address);
+}
+    
 public static synchronized InetAddress getByName(String host) throws UnknownHostException {
 	if (host == null || host.equals("")) {
 		return (InetAddress.getLoopback());

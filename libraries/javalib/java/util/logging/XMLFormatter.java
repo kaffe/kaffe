@@ -329,9 +329,30 @@ public class XMLFormatter
     buf.append("<?xml version=\"1.0\" encoding=\"");
 
     encoding = h.getEncoding();
+
+    /* file.encoding is a system property with the Sun JVM, indicating
+     * the platform-default file encoding. Unfortunately, the API
+     * specification for java.lang.System.getProperties() does not
+     * list this property.
+     */
     if (encoding == null)
       encoding = System.getProperty("file.encoding");
 
+    /* Since file.encoding is not listed with the API specification of
+     * java.lang.System.getProperties(), there might be some VMs that
+     * do not define this system property.  Therefore, we use UTF-8 as
+     * a reasonable default. Please note that if the platform encoding
+     * uses the same codepoints as US-ASCII for the US-ASCII character
+     * set (e.g, 65 for A), it does not matter whether we emit the
+     * wrong encoding into the XML header -- the GNU Classpath will
+     * emit XML escape sequences like &#1234; for any non-ASCII
+     * character.  Virtually all character encodings use the same code
+     * points as US-ASCII for ASCII characters.  Probably, EBCDIC is
+     * the only exception.
+     */
+    if (encoding == null)
+      encoding = "UTF-8";
+    
     /* On Windows XP localized for Swiss German (this is one of
      * my [Sascha Brawer's] test machines), the default encoding
      * has the canonical name "windows-1252". The "historical" name

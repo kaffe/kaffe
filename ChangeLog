@@ -1,3 +1,58 @@
+2002-11-21  Dalibor Topic  <robilad@yahoo.com>
+
+	* libraries/javalib/java/io/File.java: 
+	(toURI) new method.
+
+2002-11-21 Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>
+
+	* libraries/javalib/java/lang/String,
+	libraries/javalib/java/lang/StringBuffer:
+	implement CharSequence.
+	(subSequence) new method.
+	
+2002-11-21  Dalibor Topic  <robilad@yahoo.com>
+
+	* libraries/javalib/Makefile.am (java_nio_SRCS): 
+	added java/nio/InvalidMarkException.java and
+	java/nio/ReadOnlyBufferException.java .
+	* libraries/javalib/Makefile.in: regenerated.
+
+	* libraries/javalib/java/net/InetAddress.java:
+	(getByAddress) new method.
+
+	* libraries/javalib/gnu/java/nio/ByteBufferImpl.java,
+	libraries/javalib/gnu/java/nio/CharBufferImpl.java,
+	libraries/javalib/gnu/java/nio/DoubleBufferImpl.java,
+	libraries/javalib/gnu/java/nio/FloatBufferImpl.java,
+	libraries/javalib/gnu/java/nio/IntBufferImpl.java,
+	libraries/javalib/gnu/java/nio/LongBufferImpl.java,
+	libraries/javalib/gnu/java/nio/ShortBufferImpl.java,
+	libraries/javalib/java/awt/DisplayMode.java,
+	libraries/javalib/java/awt/color/ColorSpace.java,
+	libraries/javalib/java/awt/color/ICC_ColorSpace.java,
+	libraries/javalib/java/awt/color/ICC_Profile.java,
+	libraries/javalib/java/awt/dnd/DragSourceContext.java,
+	libraries/javalib/java/awt/dnd/DragSourceListener.java,
+	libraries/javalib/java/awt/font/TextHitInfo.java,
+	libraries/javalib/java/awt/geom/PathIterator.java,
+	libraries/javalib/java/net/InetSocketAddress.java,
+	libraries/javalib/java/net/SocketAddress.java,
+	libraries/javalib/java/nio/Buffer.java,
+	libraries/javalib/java/nio/ByteBuffer.java,
+	libraries/javalib/java/nio/ByteOrder.java,
+	libraries/javalib/java/nio/CharBuffer.java,
+	libraries/javalib/java/nio/DoubleBuffer.java,
+	libraries/javalib/java/nio/FloatBuffer.java,
+	libraries/javalib/java/nio/IntBuffer.java,
+	libraries/javalib/java/nio/MappedByteBuffer.java,
+	libraries/javalib/java/nio/ShortBuffer.java,
+	libraries/javalib/java/util/logging/XMLFormatter.java:
+	Synchronized with GNU Classpath.
+
+	* libraries/javalib/java/nio/InvalidMarkException.java,
+	libraries/javalib/java/nio/ReadOnlyBufferException.java:
+	new files taken from GNU Classpath.
+
 2002-11-20 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Makefile.am:
