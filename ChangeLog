@@ -8,6 +8,8 @@ Fri Mar  5 16:51:19 PST 1999  Archie Cobbs <archie@whistle.com>
 	methods to print according to spec; fix bugs converting NaN's
 	in intBitsToFloat() and longBitsToDouble().
 	* test/regression/Makefile.{am,in}, DoublePrint.java: add new test
+	* kaffe/kaffeh/support.c: when generating float/double constants
+	in header files, use full precision.
 
 Fri Mar  5 12:08:57 1999  Godmar Back  <gback@cs.utah.edu>
 
