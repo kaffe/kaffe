@@ -1,5 +1,10 @@
 2004-05-17  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/Klasses.jar.bootstrap:
+	Regenerated.
+
+2004-05-17  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/net/NetworkInterface.c:
 	(java_net_NetworkInterface_getRealNetworkInterfaces) Switched over
 	to use Vectors like in GNU Classpath.
