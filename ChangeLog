@@ -1,3 +1,17 @@
+Thu Jul 29 22:42:50 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* include/native.h: don't include file from a different directory
+	* kaffe/kaffevm/errors.h: move to include/ directory
+	* include/errors.h: new location
+	* include/Makefile.{am,in}: add errors.h
+	* kaffe/kaffevm/Makefile.{am,in}: remove errors.h
+	* libraries/clib/io/AudioPlayer.c, libraries/clib/io/File.c,
+	libraries/clib/native/Class.c, libraries/clib/native/Method.c,
+	libraries/clib/native/String.c, libraries/clib/native/UNIXProcess.c,
+	libraries/clib/native/ZipFile.c, libraries/clib/zip/Inflater.c:
+	adjust #include line for errors.h
+	* kaffe/kaffevm/jit/Makefile.in: regen
+
 Mon Jul 26 18:13:50 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/clib/awt/X/clr.c, evt.c, fnt.c, gra.c, img.c,
@@ -10,6 +24,7 @@ Mon Jul 26 18:13:50 PDT 1999  Archie Cobbs <archie@whistle.com>
 	* libraries/javalib/java/util/TreeSet.java: new file
 	* libraries/javalib/Makefile.am: add TreeSet.java
 	* */Makefile.in: regen
+	* config/config-io.h: include <sys/types.h>
 
 Mon Jul 26 17:26:37 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 
