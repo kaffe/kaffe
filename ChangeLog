@@ -1,5 +1,12 @@
 2004-10-12  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffevm/jar.c (initJarEntry, getCentralDirCount,
+	getDataJarFile, openJarFile): Cast second parameter of
+	jarSeek to off_t to fix warnings on platforms with 
+	long offset support.
+
+2004-10-12  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jar.c (jarSeek): Don't inline.
 	Fixes gcc warnings on ix86-linux.
 

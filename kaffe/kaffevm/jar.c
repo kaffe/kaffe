@@ -737,7 +737,7 @@ static int initJarEntry(jarFile *jf, jarEntry *je, char **name_strings)
 			 * record, if there is one.
 			 */
 			if( jarSeek(jf,
-				    cdr.extraFieldLength +
+				    (off_t)cdr.extraFieldLength +
 				    cdr.fileCommentLength,
 				    SEEK_CUR) > 0 )
 			{
@@ -768,7 +768,7 @@ static int getCentralDirCount(jarFile *jf, unsigned int *out_dir_size)
 	assert(out_dir_size != 0);
 	
 	/* The central directory end is at the end of the file */
-	if( (pos = jarSeek(jf, -FILE_SIZEOF_CENTRALEND, SEEK_END)) > 0 )
+	if( (pos = jarSeek(jf, (off_t)-FILE_SIZEOF_CENTRALEND, SEEK_END)) > 0 )
 	{
 		jarCentralDirectoryEnd cde;
 
@@ -957,7 +957,7 @@ uint8 *getDataJarFile(jarFile *jf, jarEntry *je)
 		jarInstantiate(jf, (uint8 *)&lh, instantiateLocalHeader);
 		/* Skip the local file name and extra fields */
 		jarSeek(jf,
-			lh.fileNameLength + lh.extraFieldLength,
+			(off_t)lh.fileNameLength + lh.extraFieldLength,
 			SEEK_CUR);
 		/* Allocate some memory and read in the file data */
 		if( (buf = (uint8 *)gc_malloc(je->compressedSize,
@@ -1121,7 +1121,7 @@ jarFile *openJarFile(char *name)
 							    PROT_READ,
 							    MAP_SHARED,
 							    retval->fd,
-							    0);
+							    (off_t)0);
 					if( retval->data == MAP_FAILED )
 					{
 						/*
