@@ -4,7 +4,28 @@
 	_POSIX_THREAD_PROCESS_SHARED must be defined with a value
 	other than -1 to be effective.
 
-2004-07-11  Dalibor Topic  <robilad@kaffe.org>,
+2004-07-11  Dalibor Topic  <robilad@kaffe.org>
+
+	* java/awt/GridBagLayout.java:
+	Resynced with GNU Classpath.
+
+	2004-06-26  David Jee  <djee@redhat.com>
+
+	* java/awt/GridBagLayout.java
+	(GetLayoutInfo): Adjust cell sizes iff parent size is not zero.
+	Make sure pos_x and pos_y are never negative.
+
+2004-07-11  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/gnu/java/nio/SelectorImpl.java:
+	Resynced with GNU Classpath.
+
+	2004-06-24  Mark Wielaard  <mark@klomp.org>
+
+        * gnu/java/nio/SelectorImpl.java (select): Call static Thread
+        interrupted() method to clear interupt flag of our Thread.
+
+2004-07-11  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/java/nio/SelectorImpl.java:
 	Resynced with GNU Classpath.
@@ -25,7 +46,7 @@
         final field.
         (sendRequest): Use new field in user-agent http agent.
 
-2004-07-11  Dalibor Topic  <robilad@kaffe.org>,
+2004-07-11  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/Makefile.am:
 	(EXTRA_DIST) Added s390/linux/sigcontextinfo.h
@@ -35,7 +56,7 @@
 
 	Reported by: Arnaud Vandyck  <avdyk@ressource-toi.org>
 
-2004-07-11  Dalibor Topic  <robilad@kaffe.org>,
+2004-07-11  Dalibor Topic  <robilad@kaffe.org>
 
         * configure.ac:
 	Added check for pthread_attr_setschedpolicy.
