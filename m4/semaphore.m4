@@ -10,6 +10,11 @@ AC_DEFUN([KAFFE_CHECK_SEMAPHORE],
 [
   AC_CHECK_HEADERS([semaphore.h])
   AC_MSG_CHECKING([for working semaphores])
+  old_LDFLAGS="$LDFLAGS"
+  old_CFLAGS="$CFLAGS"
+  LDFLAGS="$LDFLAGS $THREADLIBS $SEMAPHORE_LIB"
+  CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+
   AC_RUN_IFELSE(AC_LANG_PROGRAM(
 [
 #include <semaphore.h>
@@ -28,4 +33,6 @@ return (ret < 0) ? 1 : 0;
 	AC_MSG_RESULT(cross compiling)
   ])
 
+  LDFLAGS="$old_LDFLAGS"
+  CFLAGS="$old_CFLAGS"
 ])
