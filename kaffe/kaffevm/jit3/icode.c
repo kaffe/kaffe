@@ -1146,6 +1146,13 @@ sbc_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 }
 #endif
 
+#if defined(HAVE_sub_int)
+void
+_sub_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
+{
+	slot_slot_slot(dst, src, src2, HAVE_sub_int, Tcomplex);
+}
+
 void
 sub_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 {
@@ -1159,12 +1166,11 @@ sub_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
-		sub_int(dst, src, tmp);
+		_sub_int(dst, src, tmp);
 		slot_freetmp(tmp);
 	}
 }
 
-#if defined(HAVE_sub_int)
 void
 sub_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
@@ -1174,7 +1180,7 @@ sub_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	}
 	else
 #endif
-	slot_slot_slot(dst, src, src2, HAVE_sub_int, Tcomplex);
+	_sub_int(dst, src, src2);
 }
 #endif
 
@@ -1285,6 +1291,27 @@ mul_int_const_optimize(SlotInfo* dst, SlotInfo* src, jint val)
 }
 
 void
+_mul_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
+{
+#if defined(HAVE_mul_int)
+	slot_slot_slot(dst, src, src2, HAVE_mul_int, Tcomplex);
+#else
+	begin_func_sync();
+#  if defined(PUSHARG_FORWARDS)
+	pusharg_int(src, 0);
+	pusharg_int(src2, 1);
+#  else
+	pusharg_int(src2, 1);
+	pusharg_int(src, 0);
+#  endif
+	call_soft(soft_mul);
+	popargs();
+	end_func_sync();
+	return_int(dst);
+#endif
+}
+
+void
 mul_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 {
 	if (mul_int_const_optimize(dst, src, val) != 0) {
@@ -1300,7 +1327,7 @@ mul_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
-		mul_int(dst, src, tmp);
+		_mul_int(dst, src, tmp);
 		slot_freetmp(tmp);
 	}
 }
@@ -1313,8 +1340,7 @@ mul_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 			return;
 		}
 	}
-#if defined(HAVE_mul_int)
-#if defined(HAVE_mul_int_const)
+#if defined(HAVE_mul_int) && defined(HAVE_mul_int_const)
 	if (slot_type(src) == Tconst) {
 		mul_int_const(dst, src2, slot_value(src).i);
 	}
@@ -1323,21 +1349,7 @@ mul_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	}
 	else
 #endif
-	slot_slot_slot(dst, src, src2, HAVE_mul_int, Tcomplex);
-#else
-	begin_func_sync();
-#if defined(PUSHARG_FORWARDS)
-	pusharg_int(src, 0);
-	pusharg_int(src2, 1);
-#else
-	pusharg_int(src2, 1);
-	pusharg_int(src, 0);
-#endif
-	call_soft(soft_mul);
-	popargs();
-	end_func_sync();
-	return_int(dst);
-#endif
+	_mul_int(dst, src, src2);
 }
 
 void
@@ -1462,6 +1474,27 @@ div_int_const_optimize(SlotInfo* dst, SlotInfo* src, jint val)
 }
 
 void
+_div_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
+{
+#if defined(HAVE_div_int)
+	slot_slot_slot(dst, src, src2, HAVE_div_int, Tcomplex);
+#else
+	begin_func_sync();
+#  if defined(PUSHARG_FORWARDS)
+	pusharg_int(src, 0);
+	pusharg_int(src2, 1);
+#  else
+	pusharg_int(src2, 1);
+	pusharg_int(src, 0);
+#  endif
+	call_soft(soft_div);
+	popargs();
+	end_func_sync();
+	return_int(dst);
+#endif
+}
+
+void
 div_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 {
 	if (div_int_const_optimize(dst, src, val) != 0) {
@@ -1477,7 +1510,7 @@ div_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
-		div_int(dst, src, tmp);
+		_div_int(dst, src, tmp);
 		slot_freetmp(tmp);
 	}
 }
@@ -1490,22 +1523,7 @@ div_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 			return;
 		}
 	}
-#if defined(HAVE_div_int)
-	slot_slot_slot(dst, src, src2, HAVE_div_int, Tcomplex);
-#else
-	begin_func_sync();
-#if defined(PUSHARG_FORWARDS)
-	pusharg_int(src, 0);
-	pusharg_int(src2, 1);
-#else
-	pusharg_int(src2, 1);
-	pusharg_int(src, 0);
-#endif
-	call_soft(soft_div);
-	popargs();
-	end_func_sync();
-	return_int(dst);
-#endif
+	_div_int(dst, src, src2);
 }
 
 void
