@@ -2674,7 +2674,7 @@ Kaffe_NewObjectArray(JNIEnv* env, jsize len, jclass cls, jobject init)
 }
 
 jobject
-Kaffe_NewObjectArrayElement(JNIEnv* env, jarray arr, jsize elem)
+Kaffe_GetObjectArrayElement(JNIEnv* env, jarray arr, jsize elem)
 {
 	jobject obj;
 
@@ -4001,7 +4001,7 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	Kaffe_ReleaseStringUTFChars,
 	Kaffe_GetArrayLength,
 	Kaffe_NewObjectArray,
-	Kaffe_NewObjectArrayElement,
+	Kaffe_GetObjectArrayElement,
 	Kaffe_SetObjectArrayElement,
 	Kaffe_NewBooleanArray,
 	Kaffe_NewByteArray,

@@ -216,7 +216,7 @@ struct JNINativeInterface {
 	void	(*ReleaseStringUTFChars)	(JNIEnv*, jstring, const jbyte*);
 	jsize	(*GetArrayLength)		(JNIEnv*, jarray);
 	jarray	(*NewObjectArray)		(JNIEnv*, jsize, jclass, jobject);
-	jobject	(*NewObjectArrayElement)	(JNIEnv*, jarray, jsize);
+	jobject	(*GetObjectArrayElement)	(JNIEnv*, jarray, jsize);
 	void	(*SetObjectArrayElement)	(JNIEnv*, jarray, jsize, jobject);
 	jarray	(*NewBooleanArray)		(JNIEnv*, jsize);
 	jarray	(*NewByteArray)			(JNIEnv*, jsize);
