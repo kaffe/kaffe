@@ -120,21 +120,21 @@ private static CharToByteConverter getConverterInternal(String enc)
 	return (null);
 }
 
-public static CharToByteConverter getConverter(String enc) throws UnsupportedEncodingException
-{
+public static CharToByteConverter getConverter(String enc) throws UnsupportedEncodingException {
 	CharToByteConverter conv = getConverterInternal(enc);
-	if (conv == null) {
-		throw new UnsupportedEncodingException(enc);
+	if (conv != null) {
+		return (conv);
 	}
-	return (conv);
+	return new CharToByteIconv (enc);
 }
 
 public static CharToByteConverter getDefault() {
-	CharToByteConverter conv = getConverterInternal(encodingDefault);
-	if (conv == null) {
-		conv = new CharToByteDefault();
+	try {
+	    return getConverter(encodingDefault);
 	}
-	return (conv);
+	catch (UnsupportedEncodingException __) {
+	    return new CharToByteDefault();
+	}
 }
 
 abstract public int getNumberOfBytes ( char[] from, int fpos, int flen );

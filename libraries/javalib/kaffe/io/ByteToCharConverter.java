@@ -138,16 +138,15 @@ public static ByteToCharConverter getConverter ( String enc ) throws Unsupported
 	if (conv != null) {
 		return (conv);
 	}
-	throw new UnsupportedEncodingException(enc);
+	return new ByteToCharIconv (enc);
 }
 public static ByteToCharConverter getDefault() {
-	ByteToCharConverter conv;
-
-	conv = getConverterInternal(encodingDefault);
-	if (conv == null) {
-		conv = new ByteToCharDefault();
+	try {
+		return getConverter (encodingDefault);
 	}
-	return (conv);
+	catch (UnsupportedEncodingException __) {
+		return new ByteToCharDefault();
+	}
 }
 
 abstract public int getNumberOfChars ( byte[] from, int fpos, int flen );
