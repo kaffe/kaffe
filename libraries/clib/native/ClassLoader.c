@@ -20,6 +20,8 @@
 #include "../../../kaffe/kaffevm/object.h"
 #include "../../../kaffe/kaffevm/locks.h"
 #include "../../../kaffe/kaffevm/itypes.h"
+#include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/baseClasses.h"
 #include <native.h>
 #include "defs.h"
 
@@ -61,7 +63,13 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	 * was a different one, complain.
 	 */
 	if (name != NULL) {
-		if (!equalUtf8JavaStrings(clazz->name, name))
+		/* The name uses dots, but clazz->name uses slashes */
+		Hjava_lang_String *temp = makeReplaceJavaStringFromUtf8(
+			clazz->name->data, clazz->name->length, '/', '.'); 
+
+		if (STRING_SIZE(temp) != STRING_SIZE(name) ||
+			memcmp(STRING_DATA(temp), STRING_DATA(name), 
+				STRING_SIZE(temp)) != 0)
 			SignalError("java.lang.ClassFormatError", "Wrong name");
 	}
 
