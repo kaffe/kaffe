@@ -223,39 +223,41 @@ dnl -------------------------------------------------------------------------
 dnl Check for JIT support and add in the necessary configuration files
 dnl -------------------------------------------------------------------------
 
-dnl This function determines if our configuration supports the given engine
-SupportEngine()
-{
-	if test x"$1" = x"intrp" ; then
-		return 0
-	fi
-	if test -f $srcdir/config/$host_cpu/$host_os/${1}-md.h ; then
-	    if sed 1q < $srcdir/config/$host_cpu/$host_os/${with_engine}-md.h \
-	      | fgrep -q "Needs update, do not use" ; then
-		    return 1
-	    else
-		    return 0
-	    fi
-	else
-	    return 1
-	fi
-}
+dnl AC_KAFFE_IF_SUPPORTED_ENGINE(ENGINE, SUP_CMDS, UPDATE_CMDS, UNSUP_CMDS)
+dnl If the engine is fully supported, run SUP_CMDS.
+dnl If it needs updating, run UPDATE_CMDS.
+dnl If it is not supported at all, run UNSUP_CMDS.
+AC_DEFUN([AC_KAFFE_IF_SUPPORTED_ENGINE], [
+  if test x"$1" = x"intrp"; then
+    ifelse([$2],[],[:],[$2])
+  fi
+  if test -f "$srcdir/config/$host_cpu/$host_os/$1-md.h"; then
+    if sed 1q < "$srcdir/config/$host_cpu/$host_os/$1-md.h" |
+       fgrep "Needs update, do not use" > /dev/null; then
+      ifelse([$3],[],[:],[$3])
+    else
+      ifelse([$2],[],[:],[$2])
+    fi
+  else
+    ifelse([$4],[],[:],[$4])
+  fi
+])
 
 dnl If they request a specific engine, we must support it or else fail
 dnl Otherwise, pick the most preferable supported engine. Note that
 dnl the "intrp" engine is always supported, so we can't fail there.
 
 if test x"${want_engine}" != x""; then
-	if !SupportEngine "${want_engine}"; then
-		AC_MSG_ERROR(Configuration $host_cpu-$host_os does not support the $want_engine engine)
-	fi
+	AC_KAFFE_IF_SUPPORTED_ENGINE([${want_engine}],,
+		[AC_MSG_WARN([The $want_engine engine was not updated for $host_cpu-$host_os])], 
+		[AC_MSG_ERROR([Configuration $host_cpu-$host_os does not support the $want_engine engine])])
 	with_engine="${want_engine}"
 else
 	for engine in jit3 jit intrp; do
-		if SupportEngine "${engine}"; then
+		AC_KAFFE_IF_SUPPORTED_ENGINE([${engine}], [
 			with_engine="${engine}"
 			break;
-		fi
+		])
 	done
 fi
 

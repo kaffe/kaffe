@@ -287,7 +287,10 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 
-@AMDEP@include $(DEP_FILES)
+@AMDEP@include $(DEPDIR)/Adler32.Plo
+@AMDEP@include $(DEPDIR)/CRC32.Plo
+@AMDEP@include $(DEPDIR)/Deflater.Plo
+@AMDEP@include $(DEPDIR)/Inflater.Plo
 
 mostlyclean-depend:
 
@@ -301,16 +304,17 @@ maintainer-clean-depend:
 @AMDEP@CCDEPMODE = @CCDEPMODE@
 
 .c.o:
-@AMDEP@	source='$<' object='$@' \
-@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
-@AMDEP@	$(CCDEPMODE) $(depcomp) \
+@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(COMPILE) -c $<
 
 .c.lo:
-@AMDEP@	source='$<' object='$@' \
-@AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' \
-@AMDEP@	$(CCDEPMODE) $(depcomp) \
+@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
+@AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LTCOMPILE) -c -o $@ $<
+
 info-am:
 info: info-am
 dvi-am:

@@ -500,7 +500,40 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 
-@AMDEP@include $(DEP_FILES)
+@AMDEP@include $(DEPDIR)/baseClasses.Plo
+@AMDEP@include $(DEPDIR)/classMethod.Plo
+@AMDEP@include $(DEPDIR)/classPool.Plo
+@AMDEP@include $(DEPDIR)/code-analyse.Plo
+@AMDEP@include $(DEPDIR)/code.Plo
+@AMDEP@include $(DEPDIR)/constants.Plo
+@AMDEP@include $(DEPDIR)/debug.Plo
+@AMDEP@include $(DEPDIR)/exception.Plo
+@AMDEP@include $(DEPDIR)/external.Plo
+@AMDEP@include $(DEPDIR)/findInJar.Plo
+@AMDEP@include $(DEPDIR)/fp.Plo
+@AMDEP@include $(DEPDIR)/gc-mem.Plo
+@AMDEP@include $(DEPDIR)/gc.Plo
+@AMDEP@include $(DEPDIR)/gcFuncs.Plo
+@AMDEP@include $(DEPDIR)/gcRefs.Plo
+@AMDEP@include $(DEPDIR)/hashtab.Plo
+@AMDEP@include $(DEPDIR)/inflate.Plo
+@AMDEP@include $(DEPDIR)/itypes.Plo
+@AMDEP@include $(DEPDIR)/jar.Plo
+@AMDEP@include $(DEPDIR)/jni.Plo
+@AMDEP@include $(DEPDIR)/locks.Plo
+@AMDEP@include $(DEPDIR)/lookup.Plo
+@AMDEP@include $(DEPDIR)/md.Plo
+@AMDEP@include $(DEPDIR)/object.Plo
+@AMDEP@include $(DEPDIR)/readClass.Plo
+@AMDEP@include $(DEPDIR)/sha-1.Plo
+@AMDEP@include $(DEPDIR)/soft.Plo
+@AMDEP@include $(DEPDIR)/stackTrace.Plo
+@AMDEP@include $(DEPDIR)/stats.Plo
+@AMDEP@include $(DEPDIR)/string.Plo
+@AMDEP@include $(DEPDIR)/support.Plo
+@AMDEP@include $(DEPDIR)/thread.Plo
+@AMDEP@include $(DEPDIR)/utf8const.Plo
+@AMDEP@include $(DEPDIR)/verify.Plo
 
 mostlyclean-depend:
 
@@ -514,16 +547,17 @@ maintainer-clean-depend:
 @AMDEP@CCDEPMODE = @CCDEPMODE@
 
 .c.o:
-@AMDEP@	source='$<' object='$@' \
-@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
-@AMDEP@	$(CCDEPMODE) $(depcomp) \
+@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(COMPILE) -c $<
 
 .c.lo:
-@AMDEP@	source='$<' object='$@' \
-@AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' \
-@AMDEP@	$(CCDEPMODE) $(depcomp) \
+@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
+@AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LTCOMPILE) -c -o $@ $<
+
 info-am:
 info: info-recursive
 dvi-am:

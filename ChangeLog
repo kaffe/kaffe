@@ -1,3 +1,13 @@
+1999-08-16  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in: Rewrite SupportedEngine() as autoconf function.
+	Avoid unportable constructs such as `if ! ...', `fgrep -q' and
+	shell functions.
+	* FAQ/FAQ.automake: New automake snapshot, that fixes
+	--disable-dependency-tracking, and dependency tracking with IRIX
+	make.
+	* aclocal.m4, configure, */Makefile.in: Rebuilt.
+
 Sun Aug 15 16:16:02 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/awt/Insets.java: made toString()

@@ -364,7 +364,33 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 
-@AMDEP@include $(DEP_FILES)
+@AMDEP@include $(DEPDIR)/Application.Plo
+@AMDEP@include $(DEPDIR)/Array.Plo
+@AMDEP@include $(DEPDIR)/Arrays.Plo
+@AMDEP@include $(DEPDIR)/ByteToCharDefault.Plo
+@AMDEP@include $(DEPDIR)/CharToByteDefault.Plo
+@AMDEP@include $(DEPDIR)/Class.Plo
+@AMDEP@include $(DEPDIR)/ClassLoader.Plo
+@AMDEP@include $(DEPDIR)/Compiler.Plo
+@AMDEP@include $(DEPDIR)/Constructor.Plo
+@AMDEP@include $(DEPDIR)/DateFormat.Plo
+@AMDEP@include $(DEPDIR)/Double.Plo
+@AMDEP@include $(DEPDIR)/Field.Plo
+@AMDEP@include $(DEPDIR)/Float.Plo
+@AMDEP@include $(DEPDIR)/Math.Plo
+@AMDEP@include $(DEPDIR)/MemoryAdvice.Plo
+@AMDEP@include $(DEPDIR)/Method.Plo
+@AMDEP@include $(DEPDIR)/Object.Plo
+@AMDEP@include $(DEPDIR)/ObjectStreamClassImpl.Plo
+@AMDEP@include $(DEPDIR)/Runtime.Plo
+@AMDEP@include $(DEPDIR)/SecurityManager.Plo
+@AMDEP@include $(DEPDIR)/String.Plo
+@AMDEP@include $(DEPDIR)/System.Plo
+@AMDEP@include $(DEPDIR)/TestNative.Plo
+@AMDEP@include $(DEPDIR)/Thread.Plo
+@AMDEP@include $(DEPDIR)/Throwable.Plo
+@AMDEP@include $(DEPDIR)/UNIXProcess.Plo
+@AMDEP@include $(DEPDIR)/ZipFile.Plo
 
 mostlyclean-depend:
 
@@ -378,16 +404,17 @@ maintainer-clean-depend:
 @AMDEP@CCDEPMODE = @CCDEPMODE@
 
 .c.o:
-@AMDEP@	source='$<' object='$@' \
-@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
-@AMDEP@	$(CCDEPMODE) $(depcomp) \
+@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(COMPILE) -c $<
 
 .c.lo:
-@AMDEP@	source='$<' object='$@' \
-@AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' \
-@AMDEP@	$(CCDEPMODE) $(depcomp) \
+@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
+@AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LTCOMPILE) -c -o $@ $<
+
 info-am:
 info: info-am
 dvi-am:
