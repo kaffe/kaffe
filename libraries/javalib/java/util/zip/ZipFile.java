@@ -44,7 +44,10 @@ public class ZipFile implements ZipConstants {
 public ZipFile(String fname) throws IOException
 {
 	name = fname;
-	zip = openZipFile0(fname);
+	/* only have one thread at a time attempt to open the zip file */
+	synchronized(fname) {
+	    zip = openZipFile0(fname);
+	}
 	if (zip == null) {
 		throw new IOException("No such zip file " + fname);
 	}

@@ -1,5 +1,18 @@
 2005-01-05  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/util/zip/ZipFile.java (ZipFile):
+	Synchronize on file name before calling native method, in order to
+	avoid races between threads trying to load the same file and
+	getting confused in the jar file cache.
+
+	Reported by:  Davanum Srinivas  <davanum@gmail.com>
+	
+	* kaffe/kaffevm/jar.c (findCachedJarFile): Renamed from findJarFile.
+	(openJarFile): Use findCachedJarFile.
+	(closeJarFile, findCachedJarFile, cacheJarFile): Added debug output.
+
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2004-12-29  Jerry Quinn  <jlquinn@optonline.net>

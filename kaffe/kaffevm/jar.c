@@ -101,9 +101,8 @@ static unsigned int hashName(const char *name)
  * Find a cached jarFile object.  If the file is found, it is returned and its
  * user count is incremented.
  *
- * XXX rename findCachedJarFile()
  */
-static jarFile *findJarFile(char *name)
+static jarFile *findCachedJarFile(char *name)
 {
 	jarFile *curr, **prev, *retval = NULL;
 #if !defined(KAFFEH)
@@ -130,6 +129,8 @@ static jarFile *findJarFile(char *name)
 			/* Return this node and increment the user count */
 			retval = curr;
 			retval->users++;
+
+DBG(JARFILES,  dprintf("Found cached jar file %s, %d users\n", retval->fileName, retval->users); );
 
 			assert(retval->users >= 1);
 		}
@@ -232,6 +233,9 @@ static jarFile *cacheJarFile(jarFile *jf)
 				*prev = curr->next;
 				retval = curr;
 				retval->users++;
+
+DBG(JARFILES,  dprintf("Found cached jar file %s, %d users\n", retval->fileName, retval->users); );
+
 			}
 			else
 			{
@@ -249,6 +253,9 @@ static jarFile *cacheJarFile(jarFile *jf)
 				*prev = curr->next;
 				curr->flags &= ~JFF_CACHED;
 				dead_jar = curr;
+
+DBG(JARFILES,  dprintf("Cached jar file %s purged\n", curr->fileName); );
+
 			}
 			/*
 			 * `jf' is redundant so the number of cached files
@@ -1054,7 +1061,7 @@ jarFile *openJarFile(char *name)
 	assert(name != NULL);
 	
 	/* Look for it in the cache first */
-	if( (retval = findJarFile(name)) )
+	if( (retval = findCachedJarFile(name)) )
 	{
 		/* Check if we need to reopen the file */
 		if( (retval->fd == -1)
@@ -1191,6 +1198,8 @@ void closeJarFile(jarFile *jf)
 
 		lockStaticMutex(&jarCache.lock);
 		jf->users--;
+DBG(JARFILES,  dprintf("Closing jar file %s, users %d\n", jf->fileName, jf->users); );
+
 		if( jf->users == 0 )
 		{
 			if( jarCache.count <= JAR_FILE_CACHE_MAX )
