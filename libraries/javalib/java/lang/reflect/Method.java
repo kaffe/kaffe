@@ -32,18 +32,12 @@ public boolean equals(Object obj)
 	if ((Object)this == obj) {
 		return (true);
 	}
-	// if obj is null then they are not the same
-	if (obj == null) {
+	// if obj is null or not Method, then they are not the same
+	if (!(obj instanceof Method)) {
 		return (false);
 	}
 
-	Method mobj;
-	try {
-		mobj = (Method)obj;
-	}
-	catch (ClassCastException _) {
-		return (false);
-	}
+	Method mobj = (Method)obj;
 
 	if (clazz != mobj.clazz ||
 	    returnType != mobj.returnType ||
@@ -52,7 +46,7 @@ public boolean equals(Object obj)
 		return (false);
 	}
 
-	for (int i = 0; i < parameterTypes.length; i++) {
+	for (int i = parameterTypes.length; i-- > 0; ) {
 		if (parameterTypes[i] != mobj.parameterTypes[i]) {
 			return (false);
 		}

@@ -67,15 +67,13 @@ public Object clone() {
 }
 
 public boolean equals(Object obj) {
-	try {
+	if (obj instanceof Locale) {
 		Locale lcl = (Locale)obj;
 		if ((lang == lcl.lang || lang.equals(lcl.lang)) &&
 		    (cntry == lcl.cntry || cntry.equals(lcl.cntry)) &&
 		    (var == lcl.var || var.equals(lcl.var))) {
 			return (true);
 		}
-	}
-	catch (ClassCastException _) {
 	}
 	return (false);
 }

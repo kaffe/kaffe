@@ -166,41 +166,47 @@ public boolean endsWith( String suffix) {
 	return regionMatches( false, count-suffix.count, suffix, 0, suffix.count);
 }
 
-public boolean equals ( Object anObject) {
-	// this is one of the most frequently called methods, it has to be as
-	// efficient as possible
+// This is one of the most frequently called methods; it must be as
+// efficient as possible.
+public boolean equals (Object anObject) {
 
 	if (!(anObject instanceof String)) {
 		return (false);
 	}
+	final String that = (String)anObject;
 
-	final String other = (String)anObject;
-	if (this.count != other.count) {
+	if (this.count != that.count) {
 		return (false);
 	}
 
 	int i = this.offset;
-	int j = other.offset;
-	final int n = this.offset + this.count;
+	int j = that.offset;
+	final int n = i + this.count;
+	final char[] this_value = this.value;
+	final char[] that_value = that.value;
 	for (; i < n; i++, j++) {
-		if (this.value[i] != other.value[j] ) {
+		if (this_value[i] != that_value[j] ) {
 			return (false);
 		}
 	}
 	return (true);
 }
 
-public boolean equalsIgnoreCase (String other) {
-	if (other == null || this.count != other.count) {
+// This also should be as fast as possible
+public boolean equalsIgnoreCase (String that) {
+	if (that == null || this.count != that.count) {
 		return (false);
 	}
 
 	int i = this.offset;
-	int j = other.offset;
-	final int n = this.offset + this.count;
-
-	for (; i < n; i++, j++ ) {
-		if (value[i] != other.value[j] && Character.toUpperCase(value[i]) != Character.toUpperCase(other.value[j])) {
+	int j = that.offset;
+	final int n = i + this.count;
+	final char[] this_value = this.value;
+	final char[] that_value = that.value;
+	for (; i < n; i++, j++) {
+		if (this_value[i] != that_value[j]
+		   && Character.toUpperCase(this_value[i])
+		     != Character.toUpperCase(that_value[j])) {
 			return (false);
 		}
 	}

@@ -89,8 +89,7 @@ public final class Double extends Number {
   }
 
   public boolean equals(Object that) {
-    return (that != null
-      && that instanceof Double
+    return (that instanceof Double
       && doubleToLongBits(this.value)
 	== doubleToLongBits(((Double)that).value));
   }

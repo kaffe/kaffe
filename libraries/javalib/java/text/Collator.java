@@ -46,13 +46,11 @@ public Object clone() {
 public abstract int compare(String src, String target);
 
 public boolean equals(Object obj) {
-	try {
+	if (obj instanceof Collator) {
 		Collator other = (Collator)obj;
 		if (mode == other.mode && strength == other.strength) {
 			return (true);
 		}
-	}
-	catch (ClassCastException _) {
 	}
 	return (false);
 }

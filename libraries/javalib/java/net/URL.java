@@ -159,7 +159,7 @@ public URL(URL context, String spec) throws MalformedURLException {
 }
 
 public boolean equals(Object obj) {
-	if (obj == null || !(obj instanceof URL)) {
+	if (!(obj instanceof URL)) {
 		return (false);
 	}
 	URL that = (URL)obj;

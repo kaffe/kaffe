@@ -86,7 +86,7 @@ public boolean delete() {
 native private boolean delete0();
 
 public boolean equals(Object obj) {
-	if (obj != null && obj instanceof File) {
+	if (obj instanceof File) {
 		return (((File)obj).getPath().equals( getPath() ) );
 	}
 	else {

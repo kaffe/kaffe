@@ -7,7 +7,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  *
- * @author Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
+ * @author Edouard G. Parmelan <edouard.parmelan@quadratec.fr>
  */
 package java.util;
 
@@ -164,7 +164,7 @@ final public class BitSet
     public boolean equals(Object obj) {
 	if (obj == this)
 	    return true;
-	if ((obj == null) || !(obj instanceof BitSet))
+	if (!(obj instanceof BitSet))
 	    return false;
 
 	Object lock1, lock2;

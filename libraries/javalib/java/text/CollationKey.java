@@ -29,12 +29,10 @@ public int compareTo(CollationKey other) {
 }
 
 public boolean equals(Object obj) {
-	try {
+	if (obj instanceof CollationKey) {
 		if (compareTo((CollationKey)obj) == 0) {
 			return (true);
 		}
-	}
-	catch (ClassCastException _) {
 	}
 	return (false);
 }

@@ -71,8 +71,7 @@ public final class Character implements Serializable {
 
   public boolean equals(Object obj)
   {
-    return (obj != null)
-      && (obj instanceof Character)
+    return (obj instanceof Character)
       && (((Character) obj).value == this.value);
   }
 

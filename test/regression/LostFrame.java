@@ -2,7 +2,7 @@
  * This test makes sure we catch a null pointer exception in the frame
  * where it was thrown if we're asked to.
  *
- * @author Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
+ * @author Edouard G. Parmelan <Edouard.Parmelan@quadratec.fr>
  */
 public class LostFrame {
     static void segv() {

@@ -45,8 +45,7 @@ public double doubleValue() {
 }
 
 public boolean equals(Object obj) {
-	return (obj != null)
-	    && (obj instanceof Byte)
+	return (obj instanceof Byte)
 	    && (((Byte) obj).value == this.value);
 }
 

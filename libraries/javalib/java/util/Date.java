@@ -82,12 +82,8 @@ public boolean before(Date when) {
 }
 
 public boolean equals(Object obj) {
-	try {
+	if (obj instanceof Date) {
 		return (getTime() == ((Date)obj).getTime());
-	}
-	catch (ClassCastException _) {
-	}
-	catch (NullPointerException _) {
 	}
 	return false;
 }

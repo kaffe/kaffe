@@ -31,13 +31,11 @@ public boolean equals(Object obj)
 		return (true);
 	}
 
-	Field fobj;
-	try {
-		fobj = (Field)obj;
-	}
-	catch (ClassCastException _) {
+	if (!(obj instanceof Field)) {
 		return (false);
 	}
+
+	Field fobj = (Field)obj;
 	if (clazz == fobj.clazz && type == fobj.type && name.equals(fobj.name)) {
 		return (true);
 	}

@@ -31,18 +31,12 @@ public boolean equals(Object obj)
 		return (true);
 	}
 
-	// if obj is null then they are not the same
-	if (obj == null) {
+	// if obj is null or not Constructor then they are not the same
+	if (!(obj instanceof Constructor)) {
 		return (false);
 	}
 
-	Constructor cobj;
-	try {
-		cobj = (Constructor)obj;
-	}
-	catch (ClassCastException _) {
-		return (false);
-	}
+	Constructor cobj = (Constructor)obj;
 
 	if (clazz != cobj.clazz) {
 		return (false);
@@ -50,7 +44,7 @@ public boolean equals(Object obj)
 	if (parameterTypes.length != cobj.parameterTypes.length) {
 		return (false);
 	}   
-	for (int i = 0; i < parameterTypes.length; i++) {
+	for (int i = parameterTypes.length; i-- > 0; ) {
 		if (parameterTypes[i] != cobj.parameterTypes[i]) {
 			return (false);
 		}

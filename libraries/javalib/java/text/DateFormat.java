@@ -58,13 +58,11 @@ public Object clone() {
 }
 
 public boolean equals(Object obj) {
-	try {
+	if (obj instanceof DateFormat) {
 		DateFormat other = (DateFormat)obj;
 		if (calendar == other.calendar && format == other.format) {
 			return (true);
 		}
-	}
-	catch (ClassCastException _) {
 	}
 	return (false);
 }

@@ -44,8 +44,7 @@ public final class Float extends Number {
   }
 
   public boolean equals(Object that) {
-    return (that != null
-      && that instanceof Float
+    return (that instanceof Float
       && floatToIntBits(this.value) == floatToIntBits(((Float)that).value));
   }
 

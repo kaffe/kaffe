@@ -70,8 +70,7 @@ public double doubleValue() {
 }
 
 public boolean equals(Object obj) {
-	return (obj != null) &&
-		(obj instanceof Integer) &&
+	return (obj instanceof Integer) &&
 		(((Integer)obj).value == this.value);
 }
 

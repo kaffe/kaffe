@@ -333,7 +333,7 @@ protected void computeTime() {
 
 public boolean equals(Object obj)
 	{
-	try {
+	if (obj instanceof GregorianCalendar) {
 		GregorianCalendar cal = (GregorianCalendar)obj;
 		if (isLenient() == cal.isLenient() &&
 		    getFirstDayOfWeek() == cal.getFirstDayOfWeek() &&
@@ -342,10 +342,6 @@ public boolean equals(Object obj)
 		    getTime() == cal.getTime()) {
 			return (true);
 		}
-	}
-	catch (ClassCastException _) {
-	}
-	catch (NullPointerException __) {
 	}
 	return (false);
 }

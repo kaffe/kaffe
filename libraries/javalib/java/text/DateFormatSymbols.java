@@ -55,43 +55,43 @@ public Object clone() {
 }
 
 public boolean equals(Object obj) {
-	try {
+	if (obj instanceof DateFormatSymbols) {
 		DateFormatSymbols other = (DateFormatSymbols)obj;
 		if (!localPatternChars.equals(other.localPatternChars)) {
 			return (false);
 		}
-		for (int i = 0; i < eras.length; i++) {
+		for (int i = eras.length; i-- > 0; ) {
 			if (!eras[i].equals(other.eras[i])) {
 				return (false);
 			}
 		}
-		for (int i = 0; i < amPmStrings.length; i++) {
+		for (int i = amPmStrings.length; i-- > 0; ) {
 			if (!amPmStrings[i].equals(other.amPmStrings[i])) {
 				return (false);
 			}
 		}
-		for (int i = 0; i < months.length; i++) {
+		for (int i = months.length; i-- > 0; ) {
 			if (!months[i].equals(other.months[i])) {
 				return (false);
 			}
 		}
-		for (int i = 0; i < shortMonths.length; i++) {
+		for (int i = shortMonths.length; i-- > 0; ) {
 			if (!shortMonths[i].equals(other.shortMonths[i])) {
 				return (false);
 			}
 		}
-		for (int i = 0; i < weekdays.length; i++) {
+		for (int i = weekdays.length; i-- > 0; ) {
 			if (!weekdays[i].equals(other.weekdays[i])) {
 				return (false);
 			}
 		}
-		for (int i = 0; i < shortWeekdays.length; i++) {
+		for (int i = shortWeekdays.length; i-- > 0; ) {
 			if (!shortWeekdays[i].equals(other.shortWeekdays[i])) {
 				return (false);
 			}
 		}
-		for (int i = 0; i < zoneStrings.length; i++) {
-			for (int j = 0; j < zoneStrings[j].length; j++) {
+		for (int i = zoneStrings.length; i-- > 0; ) {
+			for (int j = zoneStrings[i].length; j-- > 0; ) {
 				if (!zoneStrings[i][j].equals(other.zoneStrings[i][j])) {
 					return (false);
 				}
@@ -99,7 +99,7 @@ public boolean equals(Object obj) {
 		}
 		return (true);
 	}
-	catch (ClassCastException _) {
+	else {
 		return (false);
 	}
 }

@@ -1,3 +1,37 @@
+Mon Jul  5 13:19:51 PDT 1999 Edouard G. Parmelan <edouard.parmelan@quadratec.fr>
+
+	* libraries/javalib/java/io/File.java
+	libraries/javalib/java/lang/reflect/Field.java
+	libraries/javalib/java/lang/reflect/Constructor.java
+	libraries/javalib/java/lang/reflect/Method.java
+	libraries/javalib/java/lang/Boolean.java
+	libraries/javalib/java/lang/Byte.java
+	libraries/javalib/java/lang/Character.java
+	libraries/javalib/java/lang/Double.java
+	libraries/javalib/java/lang/Float.java
+	libraries/javalib/java/lang/Integer.java
+	libraries/javalib/java/lang/Long.java
+	libraries/javalib/java/lang/Short.java
+	libraries/javalib/java/lang/String.java
+	libraries/javalib/java/net/URL.java
+	libraries/javalib/java/net/InetAddress.java
+	libraries/javalib/java/text/ChoiceFormat.java
+	libraries/javalib/java/text/CollationKey.java
+	libraries/javalib/java/text/Collator.java
+	libraries/javalib/java/text/DateFormat.java
+	libraries/javalib/java/text/DateFormatSymbols.java
+	libraries/javalib/java/text/DecimalFormatSymbols.java
+	libraries/javalib/java/text/MessageFormat.java
+	libraries/javalib/java/text/NumberFormat.java
+	libraries/javalib/java/text/StringCharacterIterator.java
+	libraries/javalib/java/util/BitSet.java
+	libraries/javalib/java/util/Date.java
+	libraries/javalib/java/util/GregorianCalendar.java
+	libraries/javalib/java/util/Locale.java
+	libraries/javalib/java/util/SimpleTimeZone.java
+	test/regression/LostFrame.java: optimize equals() methods
+	and a few other misc tweaks
+
 Mon Jul  5 13:10:21 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/jar/Attributes.java: remove

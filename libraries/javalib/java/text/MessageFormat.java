@@ -206,12 +206,12 @@ public Object clone() {
 }
 
 public boolean equals(Object obj) {
-	try {
+	if (obj instanceof MessageFormat) {
 		MessageFormat other = (MessageFormat)obj;
 		if (locale != other.locale) {
 			return (false);
 		}
-		for (int i = 0; i < formats.length; i++) {
+		for (int i = formats.length; i-- > 0; ) {
 			if (!formats[i].equals(other.formats[i])) {
 				return (false);
 			}
@@ -221,7 +221,7 @@ public boolean equals(Object obj) {
 		}
 		return (true);
 	}
-	catch (ClassCastException _) {
+	else {
 		return (false);
 	}
 }

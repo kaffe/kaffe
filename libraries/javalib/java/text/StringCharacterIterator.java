@@ -49,13 +49,11 @@ public char current() {
 }
 
 public boolean equals(Object obj) {
-	try {
+	if (obj instanceof StringCharacterIterator) {
 		StringCharacterIterator other = (StringCharacterIterator)obj;
 		if (text.equals(other.text) && pos == other.pos && begin == other.begin && end == other.end) {
 			return (true);
 		}
-	}
-	catch (ClassCastException _) {
 	}
 	return (false);
 }

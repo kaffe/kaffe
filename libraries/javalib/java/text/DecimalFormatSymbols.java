@@ -60,7 +60,7 @@ public Object clone() {
 }
 
 public boolean equals(Object obj) {
-	try {
+	if (obj instanceof DecimalFormatSymbols) {
 		DecimalFormatSymbols other = (DecimalFormatSymbols)obj;
 		if (digit == other.digit &&
 		    patternSeparator == other.patternSeparator &&
@@ -74,8 +74,6 @@ public boolean equals(Object obj) {
 		    nan.equals(other.nan)) {
 			return (true);
 		}
-	}
-	catch (ClassCastException _) {
 	}
 	return (false);
 }

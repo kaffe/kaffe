@@ -92,7 +92,7 @@ public Object clone()
 
 public boolean equals(Object o)
 	{
-	try {
+	if (o instanceof SimpleTimeZone) {
 		SimpleTimeZone obj = (SimpleTimeZone)o;
 		if (this.getID() == obj.getID() &&
 		    this.rawOffset == obj.rawOffset &&
@@ -107,10 +107,6 @@ public boolean equals(Object o)
 		    this.startYear == obj.startYear) {
 			return (true);
 		}
-	}
-	catch (ClassCastException _) {
-	}
-	catch (NullPointerException _) {
 	}
 	return (false);
 }

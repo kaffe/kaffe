@@ -40,13 +40,11 @@ public Object clone() {
 }
 
 public boolean equals(Object obj) {
-	try {
+	if (obj instanceof NumberFormat) {
 		NumberFormat other = (NumberFormat)obj;
 		if (grouping == other.grouping && intonly == other.intonly && maxfrac == other.maxfrac && maxint == other.maxint && minfrac == other.minfrac && minint == other.minint) {
 			return (true);
 		}
-	}
-	catch (ClassCastException _) {
 	}
 	return (false);
 }

@@ -36,8 +36,7 @@ public boolean booleanValue() {
 }
 
 public boolean equals(Object obj) {
-	return (obj != null)
-	  && (obj instanceof Boolean)
+	return (obj instanceof Boolean)
 	  && (((Boolean) obj).value == this.value);
 }
 

@@ -73,16 +73,16 @@ public Object clone() {
 }
 
 public boolean equals(Object obj) {
-	try {
+	if (obj instanceof ChoiceFormat) {
 		ChoiceFormat other = (ChoiceFormat)obj;
-		for (int i = 0; i < limits.length; i++) {
+		for (int i = limits.length; i-- > 0; ) {
 			if (limits[i] != other.limits[i] || !strings[i].equals(other.strings[i])) {
 				return (false);
 			}
 		}
 		return (true);
 	}
-	catch (ClassCastException _) {
+	else {
 		return (false);
 	}
 }

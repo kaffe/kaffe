@@ -35,8 +35,7 @@ public double doubleValue() {
 }
 
 public boolean equals(Object obj) {
-	return (obj != null) &&
-		(obj instanceof Long) &&
+	return (obj instanceof Long) &&
 		(((Long)obj).value == this.value);
 }
 

@@ -51,7 +51,7 @@ public boolean equals(Object obj) {
 	byte[] thatAddr = that.getAddress();
 	byte[] thisAddr = getAddress();
 
-	for (int pos = thisAddr.length - 1; pos >= 0; pos--) {
+	for (int pos = thisAddr.length; pos-- > 0; ) {
 		if (thisAddr[pos] != thatAddr[pos]) {
 			return (false);
 		}

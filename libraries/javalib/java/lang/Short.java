@@ -45,8 +45,7 @@ public double doubleValue()
 }
 
 public boolean equals(Object obj) {
-	return (obj != null)
-	    && (obj instanceof Short)
+	return (obj instanceof Short)
 	    && (((Short) obj).value == this.value);
 }
 
