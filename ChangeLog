@@ -1,5 +1,17 @@
 2004-11-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/image/DataBufferShort.java,
+	libraries/javalib/java/awt/image/DataBufferUShort.java:
+        Resynced with GNU Classpath.
+
+	2004-11-17  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/image/DataBufferShort.java: Fixed file header.
+        * java/awt/image/DataBufferUShort.java: Likewise.
+        (DataBufferUShort): Throw NullPointerException if dataArray is null.
+
+2004-11-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/InetAddress.java:
         Resynced with GNU Classpath.
 

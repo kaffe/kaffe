@@ -1,4 +1,5 @@
-/* Copyright (C) 2000, 2002  Free Software Foundation
+/* DataBufferUShort.java --
+   Copyright (C) 2000, 2002, 2004  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -87,10 +88,14 @@ public final class DataBufferUShort extends DataBuffer
    * 
    * @param dataArray the data bank.
    * @param size the number of elements in the data bank.
+   *
+   * @throws NullPointerException if dataArray is null
    */
   public DataBufferUShort(short[] dataArray, int size)
   {
     super(TYPE_USHORT, size, 1, 0);
+    if (dataArray == null)
+      throw new NullPointerException();
     bankData = new short[1][];
     data = dataArray;
     bankData[0] = data;
@@ -103,10 +108,14 @@ public final class DataBufferUShort extends DataBuffer
    * @param dataArray the data bank.
    * @param size the number of elements in the data bank.
    * @param offset the offset to the first element in the array.
+   *
+   * @throws NullPointerException if dataArray is null
    */
   public DataBufferUShort(short[] dataArray, int size, int offset)
   {
     super(TYPE_USHORT, size, 1, offset);
+    if (dataArray == null)
+      throw new NullPointerException();
     bankData = new short[1][];
     data = dataArray;
     bankData[0] = data;

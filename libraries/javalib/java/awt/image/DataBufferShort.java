@@ -1,4 +1,5 @@
-/* Copyright (C) 2004  Free Software Foundation
+/* DataBufferShort.java --
+   Copyright (C) 2004  Free Software Foundation
 
 This file is part of GNU Classpath.
 
