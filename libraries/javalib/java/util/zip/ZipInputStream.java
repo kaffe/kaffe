@@ -1,3 +1,4 @@
+
 /*
  * Java core library component.
  *
@@ -15,6 +16,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Integer;
+import kaffe.util.UTF8;
 import kaffe.util.zip.SwitchInflater;
 
 public class ZipInputStream extends InflaterInputStream
@@ -55,21 +57,16 @@ public class ZipInputStream extends InflaterInputStream
       // Read remainder of local header
       readFully(zheader, sigbuf.length, zheader.length - sigbuf.length);
 
-      // Read filename, assuming UTF-8 encoding
-      int nameLen = get16(zheader, LOC_FILENAMELEN);
-      byte[] nameData = new byte[2 + nameLen];
-      nameData[0] = (byte)(nameLen >> 16);
-      nameData[1] = (byte)nameLen;
-      readFully(nameData, 2, nameLen);
-      String name = new DataInputStream(
-	new ByteArrayInputStream(nameData)).readUTF();
+      // Read filename; assume UTF-8 encoding
+      byte[] nameBuf = new byte[get16(zheader, LOC_FILENAMELEN)];
+      readFully(nameBuf, 0, nameBuf.length);
 
       // Read extra field
       byte[] extra = new byte[get16(zheader, LOC_EXTRAFIELDLEN)];
       readFully(extra, 0, extra.length);
 
       // Setup new entry
-      entry = new ZipEntry(name);
+      entry = new ZipEntry(UTF8.decode(nameBuf));
       entry.version = get16(zheader, LOC_VERSIONEXTRACT);
       entry.flag    = get16(zheader, LOC_FLAGS);
 

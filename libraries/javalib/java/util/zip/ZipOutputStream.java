@@ -187,19 +187,19 @@ public void finish() throws IOException {
 		put32(ch, CEN_LCLOFFSET, (int)ze.offset);
 
 		strm.write(ch);
+		size += CEN_RECSZ;
 
 		// Write name
 		strm.write(nameBuf);
+		size += nameBuf.length;
 
 		// Write any extra stuff
-		int extra_length = 0;
 		if (ze.extra != null) {
 		    strm.write(ze.extra);
-		    extra_length = ze.extra.length;
+		    size += ze.extra.length;
 		}
 
 		count++;
-		size += CEN_RECSZ + ze.name.length() + extra_length;
 	}
 
 	// Flag error if no entries were written.
@@ -251,6 +251,10 @@ public void putNextEntry(ZipEntry ze) throws IOException
 		}
 	}
 
+	// Convert name to UTF-8 binary
+	byte[] nameBuf = (ze.name != null) ?
+	    UTF8.encode(ze.name) : new byte[0];
+
 	byte[] lh = new byte[LOC_RECSZ];
 	put32(lh, LOC_SIGNATURE, (int)LOC_HEADSIG);
 	put16(lh, LOC_VERSIONEXTRACT,
@@ -259,16 +263,17 @@ public void putNextEntry(ZipEntry ze) throws IOException
 	put16(lh, LOC_METHOD, ze.method);
 	put32(lh, LOC_TIME, ze.dosTime);
 
-	put32(lh, LOC_CRC, (int) ze.crc);
 	if (ze.method == STORED) {
-		put32(lh, LOC_COMPRESSEDSIZE, (int) ze.csize);
-		put32(lh, LOC_UNCOMPRESSEDSIZE, (int) ze.size);
+		put32(lh, LOC_CRC, (int)ze.crc);
+		put32(lh, LOC_COMPRESSEDSIZE, (int)ze.csize);
+		put32(lh, LOC_UNCOMPRESSEDSIZE, (int)ze.size);
 	} else {
+		put32(lh, LOC_CRC, 0);
 		put32(lh, LOC_COMPRESSEDSIZE, 0);
 		put32(lh, LOC_UNCOMPRESSEDSIZE, 0);
 	}
 
-	put16(lh, LOC_FILENAMELEN, ze.name == null ? 0 : ze.name.length());
+	put16(lh, LOC_FILENAMELEN, nameBuf.length);
 	put16(lh, LOC_EXTRAFIELDLEN, ze.extra == null ? 0 : ze.extra.length);
 
 	strm.write(lh);
@@ -276,12 +281,11 @@ public void putNextEntry(ZipEntry ze) throws IOException
 	ze.offset = dout;
 	dout += LOC_RECSZ;
 
-	if (ze.name != null) {
-		byte[] buf = new byte[ze.name.length()];
-		ze.name.getBytes(0, ze.name.length(), buf, 0);
-		strm.write(buf);
-		dout += ze.name.length();
-	}
+	// Write name
+	strm.write(nameBuf);
+	dout += nameBuf.length;
+
+	// Write any extra stuff
 	if (ze.extra != null) {
 		strm.write(ze.extra);
 		dout += ze.extra.length;
