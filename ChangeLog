@@ -1,3 +1,10 @@
+Mon Feb  8 19:17:13 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/Makefile.am: do not create java_lang_Cloneable.h
+	here
+	* include/Makefile.am: create it here
+	* kaffe/kaffevm/Makefile.in, include/Makefile.in: regen
+
 Mon Feb  8 18:32:40 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* config/alpha/linux/md.h (SP_OFFSET): define, as measured with

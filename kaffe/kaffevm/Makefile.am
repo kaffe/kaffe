@@ -97,15 +97,6 @@ noinst_HEADERS = \
 	gcRefs.h \
 	thread.h
 
-baseClasses.lo: java_lang_Cloneable.h
-
-java_lang_Cloneable.h: $(top_srcdir)/libraries/javalib/Klasses.jar
-	if test -x $(KAFFEH); then \
-	    $(KAFFEH) \
-		-classpath $(top_srcdir)/libraries/javalib/Klasses.jar \
-		java.lang.Cloneable; \
-	fi
-
 gc-mem.c: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
 	else :; fi

@@ -28,6 +28,7 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_Boolean.h \
 	java_lang_Byte.h \
 	java_lang_Character.h \
+	java_lang_Cloneable.h \
 	java_lang_Compiler.h \
 	java_lang_Double.h \
 	java_lang_Float.h \
