@@ -33,9 +33,9 @@ Klasses_jar_SRCS = \
 	$(java_sql_SRCS) \
 	$(java_text_SRCS) \
 	$(java_util_SRCS) \
+	$(java_util_jar_SRCS) \
 	$(java_util_mime_SRCS) \
 	$(java_util_zip_SRCS) \
-	$(java_util_jar_SRCS) \
 	$(kaffe_applet_SRCS) \
 	$(kaffe_awt_SRCS) \
 	$(kaffe_beans_editors_SRCS) \
@@ -101,6 +101,7 @@ java_awt_SRCS = \
 	java/awt/HotKeyHandler.java \
 	java/awt/IllegalComponentStateException.java \
 	java/awt/Image.java \
+	java/awt/ImageNativeProducer.java \
 	java/awt/Insets.java \
 	java/awt/ItemEvt.java \
 	java/awt/ItemSelectable.java \
@@ -495,6 +496,7 @@ java_util_SRCS = \
 	java/util/EventListener.java \
 	java/util/EventObject.java \
 	java/util/GregorianCalendar.java \
+	java/util/HashMap.java \
 	java/util/Hashtable.java \
 	java/util/Iterator.java \
 	java/util/List.java \
@@ -520,6 +522,10 @@ java_util_SRCS = \
 	java/util/TimeZone.java \
 	java/util/TooManyListenersException.java \
 	java/util/Vector.java
+java_util_jar_SRCS = \
+	java/util/jar/Attributes.java \
+	java/util/jar/JarOutputStream.java \
+	java/util/jar/Manifest.java
 java_util_mime_SRCS = \
 	java/util/mime/MimeType.java \
 	java/util/mime/MimeTypeParameterList.java \
@@ -543,10 +549,6 @@ java_util_zip_SRCS = \
 	java/util/zip/ZipFile.java \
 	java/util/zip/ZipInputStream.java \
 	java/util/zip/ZipOutputStream.java
-java_util_jar_SRCS = \
-	java/util/jar/JarOutputStream.java \
-	java/util/jar/Attributes.java \
-	java/util/jar/Manifest.java
 kaffe_applet_SRCS = \
 	kaffe/applet/AppletViewer.java \
 	kaffe/applet/AudioPlayer.java

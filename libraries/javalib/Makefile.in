@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4a from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -58,9 +58,10 @@ AUTOMAKE = @AUTOMAKE@
 AUTOHEADER = @AUTOHEADER@
 
 INSTALL = @INSTALL@
-INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
+INSTALL_STRIP_FLAG =
 transform = @program_transform_name@
 
 NORMAL_INSTALL = :
@@ -133,11 +134,11 @@ SRCDIRS = java kaffe
 
 class_DATA = $(CLASSFILE) pizza.jar
 
-Klasses_jar_SRCS =  	$(java_applet_SRCS) 	$(java_awt_SRCS) 	$(java_awt_datatransfer_SRCS) 	$(java_awt_event_SRCS) 	$(java_awt_image_SRCS) 	$(java_awt_peer_SRCS) 	$(java_awt_widgets_SRCS) 	$(java_beans_SRCS) 	$(java_io_SRCS) 	$(java_lang_SRCS) 	$(java_lang_ref_SRCS) 	$(java_lang_reflect_SRCS) 	$(java_math_SRCS) 	$(java_net_SRCS) 	$(java_sql_SRCS) 	$(java_text_SRCS) 	$(java_util_SRCS) 	$(java_util_mime_SRCS) 	$(java_util_zip_SRCS) 	$(java_util_jar_SRCS) 	$(kaffe_applet_SRCS) 	$(kaffe_awt_SRCS) 	$(kaffe_beans_editors_SRCS) 	$(kaffe_io_SRCS) 	$(kaffe_jar_SRCS) 	$(kaffe_lang_SRCS) 	$(kaffe_management_SRCS) 	$(kaffe_net_SRCS) 	$(kaffe_net_www_protocol_SRCS) 	$(kaffe_net_www_protocol_file_SRCS) 	$(kaffe_net_www_protocol_ftp_SRCS) 	$(kaffe_net_www_protocol_http_SRCS) 	$(kaffe_net_www_protocol_system_SRCS) 	$(kaffe_text_collator_SRCS) 	$(kaffe_text_dateformat_SRCS) 	$(kaffe_text_numberformat_SRCS) 	$(kaffe_util_SRCS) 	$(kaffe_util_log_SRCS) 	$(kaffe_util_zip_SRCS)
+Klasses_jar_SRCS =  	$(java_applet_SRCS) 	$(java_awt_SRCS) 	$(java_awt_datatransfer_SRCS) 	$(java_awt_event_SRCS) 	$(java_awt_image_SRCS) 	$(java_awt_peer_SRCS) 	$(java_awt_widgets_SRCS) 	$(java_beans_SRCS) 	$(java_io_SRCS) 	$(java_lang_SRCS) 	$(java_lang_ref_SRCS) 	$(java_lang_reflect_SRCS) 	$(java_math_SRCS) 	$(java_net_SRCS) 	$(java_sql_SRCS) 	$(java_text_SRCS) 	$(java_util_SRCS) 	$(java_util_jar_SRCS) 	$(java_util_mime_SRCS) 	$(java_util_zip_SRCS) 	$(kaffe_applet_SRCS) 	$(kaffe_awt_SRCS) 	$(kaffe_beans_editors_SRCS) 	$(kaffe_io_SRCS) 	$(kaffe_jar_SRCS) 	$(kaffe_lang_SRCS) 	$(kaffe_management_SRCS) 	$(kaffe_net_SRCS) 	$(kaffe_net_www_protocol_SRCS) 	$(kaffe_net_www_protocol_file_SRCS) 	$(kaffe_net_www_protocol_ftp_SRCS) 	$(kaffe_net_www_protocol_http_SRCS) 	$(kaffe_net_www_protocol_system_SRCS) 	$(kaffe_text_collator_SRCS) 	$(kaffe_text_dateformat_SRCS) 	$(kaffe_text_numberformat_SRCS) 	$(kaffe_util_SRCS) 	$(kaffe_util_log_SRCS) 	$(kaffe_util_zip_SRCS)
 
 java_applet_SRCS =  	java/applet/Applet.java 	java/applet/AppletContext.java 	java/applet/AppletStub.java 	java/applet/AudioClip.java
 
-java_awt_SRCS =  	java/awt/AWTError.java 	java/awt/AWTEvent.java 	java/awt/AWTEventMulticaster.java 	java/awt/AWTException.java 	java/awt/ActionEvt.java 	java/awt/Adjustable.java 	java/awt/AdjustmentEvt.java 	java/awt/BarMenu.java 	java/awt/BorderLayout.java 	java/awt/Canvas.java 	java/awt/CardLayout.java 	java/awt/CheckboxMenuItem.java 	java/awt/ClassAnalyzer.java 	java/awt/ClassProperties.java 	java/awt/Color.java 	java/awt/Component.java 	java/awt/ComponentEvt.java 	java/awt/Container.java 	java/awt/ContainerEvt.java 	java/awt/Cursor.java 	java/awt/Defaults.java 	java/awt/DefaultsRGB.java 	java/awt/Dialog.java 	java/awt/Dimension.java 	java/awt/Event.java 	java/awt/EventDispatchThread.java 	java/awt/EventQueue.java 	java/awt/FileDialog.java 	java/awt/FlowLayout.java 	java/awt/FocusEvt.java 	java/awt/Font.java 	java/awt/FontMetrics.java 	java/awt/Frame.java 	java/awt/Graphics.java 	java/awt/GridBagConstraints.java 	java/awt/GridBagLayout.java 	java/awt/GridLayout.java 	java/awt/HotKeyHandler.java 	java/awt/IllegalComponentStateException.java 	java/awt/Image.java 	java/awt/Insets.java 	java/awt/ItemEvt.java 	java/awt/ItemSelectable.java 	java/awt/KeyEvt.java 	java/awt/LayoutManager.java 	java/awt/LayoutManager2.java 	java/awt/MediaTracker.java 	java/awt/Menu.java 	java/awt/MenuBar.java 	java/awt/MenuComponent.java 	java/awt/MenuContainer.java 	java/awt/MenuItem.java 	java/awt/MenuShortcut.java 	java/awt/MouseEvt.java 	java/awt/NativeClipboard.java 	java/awt/NativeGraphics.java 	java/awt/NativeSelection.java 	java/awt/OpaqueComponent.java 	java/awt/PSGraphics.java 	java/awt/PSPrintJob.java 	java/awt/PaintEvent.java 	java/awt/PaintEvt.java 	java/awt/Panel.java 	java/awt/Point.java 	java/awt/Polygon.java 	java/awt/PopupMenu.java 	java/awt/PopupWindow.java 	java/awt/PrintGraphics.java 	java/awt/PrintJob.java 	java/awt/Rectangle.java 	java/awt/RepaintEvent.java 	java/awt/RootWindow.java 	java/awt/ScrollPane.java 	java/awt/Shape.java 	java/awt/ShortcutConsumer.java 	java/awt/ShortcutHandler.java 	java/awt/SystemColor.java 	java/awt/TextEvt.java 	java/awt/Toolkit.java 	java/awt/WMEvent.java 	java/awt/Window.java 	java/awt/WindowEvt.java
+java_awt_SRCS =  	java/awt/AWTError.java 	java/awt/AWTEvent.java 	java/awt/AWTEventMulticaster.java 	java/awt/AWTException.java 	java/awt/ActionEvt.java 	java/awt/Adjustable.java 	java/awt/AdjustmentEvt.java 	java/awt/BarMenu.java 	java/awt/BorderLayout.java 	java/awt/Canvas.java 	java/awt/CardLayout.java 	java/awt/CheckboxMenuItem.java 	java/awt/ClassAnalyzer.java 	java/awt/ClassProperties.java 	java/awt/Color.java 	java/awt/Component.java 	java/awt/ComponentEvt.java 	java/awt/Container.java 	java/awt/ContainerEvt.java 	java/awt/Cursor.java 	java/awt/Defaults.java 	java/awt/DefaultsRGB.java 	java/awt/Dialog.java 	java/awt/Dimension.java 	java/awt/Event.java 	java/awt/EventDispatchThread.java 	java/awt/EventQueue.java 	java/awt/FileDialog.java 	java/awt/FlowLayout.java 	java/awt/FocusEvt.java 	java/awt/Font.java 	java/awt/FontMetrics.java 	java/awt/Frame.java 	java/awt/Graphics.java 	java/awt/GridBagConstraints.java 	java/awt/GridBagLayout.java 	java/awt/GridLayout.java 	java/awt/HotKeyHandler.java 	java/awt/IllegalComponentStateException.java 	java/awt/Image.java 	java/awt/ImageNativeProducer.java 	java/awt/Insets.java 	java/awt/ItemEvt.java 	java/awt/ItemSelectable.java 	java/awt/KeyEvt.java 	java/awt/LayoutManager.java 	java/awt/LayoutManager2.java 	java/awt/MediaTracker.java 	java/awt/Menu.java 	java/awt/MenuBar.java 	java/awt/MenuComponent.java 	java/awt/MenuContainer.java 	java/awt/MenuItem.java 	java/awt/MenuShortcut.java 	java/awt/MouseEvt.java 	java/awt/NativeClipboard.java 	java/awt/NativeGraphics.java 	java/awt/NativeSelection.java 	java/awt/OpaqueComponent.java 	java/awt/PSGraphics.java 	java/awt/PSPrintJob.java 	java/awt/PaintEvent.java 	java/awt/PaintEvt.java 	java/awt/Panel.java 	java/awt/Point.java 	java/awt/Polygon.java 	java/awt/PopupMenu.java 	java/awt/PopupWindow.java 	java/awt/PrintGraphics.java 	java/awt/PrintJob.java 	java/awt/Rectangle.java 	java/awt/RepaintEvent.java 	java/awt/RootWindow.java 	java/awt/ScrollPane.java 	java/awt/Shape.java 	java/awt/ShortcutConsumer.java 	java/awt/ShortcutHandler.java 	java/awt/SystemColor.java 	java/awt/TextEvt.java 	java/awt/Toolkit.java 	java/awt/WMEvent.java 	java/awt/Window.java 	java/awt/WindowEvt.java
 
 java_awt_datatransfer_SRCS =  	java/awt/datatransfer/Clipboard.java 	java/awt/datatransfer/ClipboardOwner.java 	java/awt/datatransfer/DataFlavor.java 	java/awt/datatransfer/StringSelection.java 	java/awt/datatransfer/Transferable.java 	java/awt/datatransfer/UnsupportedFlavorException.java
 
@@ -167,13 +168,13 @@ java_sql_SRCS =  	java/sql/CallableStatement.java 	java/sql/Connection.java 	jav
 
 java_text_SRCS =  	java/text/BreakIterator.java 	java/text/CharacterIterator.java 	java/text/ChoiceFormat.java 	java/text/CollationElementIterator.java 	java/text/CollationKey.java 	java/text/Collator.java 	java/text/DateFormat.java 	java/text/DateFormatSymbols.java 	java/text/DecimalFormat.java 	java/text/DecimalFormatSymbols.java 	java/text/FieldPosition.java 	java/text/Format.java 	java/text/MessageFormat.java 	java/text/NumberFormat.java 	java/text/ParseException.java 	java/text/ParsePosition.java 	java/text/RuleBasedCollator.java 	java/text/SimpleDateFormat.java 	java/text/SimpleLineIterator.java 	java/text/SimpleSentenceIterator.java 	java/text/SimpleWordIterator.java 	java/text/StringCharacterIterator.java
 
-java_util_SRCS =  	java/util/AbstractCollection.java 	java/util/AbstractList.java 	java/util/BitSet.java 	java/util/Calendar.java 	java/util/Collection.java 	java/util/Comparator.java 	java/util/Date.java 	java/util/Dictionary.java 	java/util/EmptyStackException.java 	java/util/Enumeration.java 	java/util/EventListener.java 	java/util/EventObject.java 	java/util/GregorianCalendar.java 	java/util/Hashtable.java 	java/util/Iterator.java 	java/util/List.java 	java/util/ListIterator.java 	java/util/ListResourceBundle.java 	java/util/Locale.java 	java/util/Map.java 	java/util/MissingResourceException.java 	java/util/NoSuchElementException.java 	java/util/Observable.java 	java/util/Observer.java 	java/util/Properties.java 	java/util/PropertyResourceBundle.java 	java/util/Random.java 	java/util/ResourceBundle.java 	java/util/Set.java 	java/util/SimpleTimeZone.java 	java/util/SortedMap.java 	java/util/SortedSet.java 	java/util/Stack.java 	java/util/StringTokenizer.java 	java/util/SystemClassLoader.java 	java/util/TimeZone.java 	java/util/TooManyListenersException.java 	java/util/Vector.java
+java_util_SRCS =  	java/util/AbstractCollection.java 	java/util/AbstractList.java 	java/util/BitSet.java 	java/util/Calendar.java 	java/util/Collection.java 	java/util/Comparator.java 	java/util/Date.java 	java/util/Dictionary.java 	java/util/EmptyStackException.java 	java/util/Enumeration.java 	java/util/EventListener.java 	java/util/EventObject.java 	java/util/GregorianCalendar.java 	java/util/HashMap.java 	java/util/Hashtable.java 	java/util/Iterator.java 	java/util/List.java 	java/util/ListIterator.java 	java/util/ListResourceBundle.java 	java/util/Locale.java 	java/util/Map.java 	java/util/MissingResourceException.java 	java/util/NoSuchElementException.java 	java/util/Observable.java 	java/util/Observer.java 	java/util/Properties.java 	java/util/PropertyResourceBundle.java 	java/util/Random.java 	java/util/ResourceBundle.java 	java/util/Set.java 	java/util/SimpleTimeZone.java 	java/util/SortedMap.java 	java/util/SortedSet.java 	java/util/Stack.java 	java/util/StringTokenizer.java 	java/util/SystemClassLoader.java 	java/util/TimeZone.java 	java/util/TooManyListenersException.java 	java/util/Vector.java
+
+java_util_jar_SRCS =  	java/util/jar/Attributes.java 	java/util/jar/JarOutputStream.java 	java/util/jar/Manifest.java
 
 java_util_mime_SRCS =  	java/util/mime/MimeType.java 	java/util/mime/MimeTypeParameterList.java 	java/util/mime/MimeTypeParseException.java
 
 java_util_zip_SRCS =  	java/util/zip/Adler32.java 	java/util/zip/CRC32.java 	java/util/zip/CheckedInputStream.java 	java/util/zip/CheckedOutputStream.java 	java/util/zip/Checksum.java 	java/util/zip/DataFormatException.java 	java/util/zip/Deflater.java 	java/util/zip/DeflaterOutputStream.java 	java/util/zip/GZIPInputStream.java 	java/util/zip/GZIPOutputStream.java 	java/util/zip/Inflater.java 	java/util/zip/InflaterInputStream.java 	java/util/zip/ZipConstants.java 	java/util/zip/ZipEntry.java 	java/util/zip/ZipException.java 	java/util/zip/ZipFile.java 	java/util/zip/ZipInputStream.java 	java/util/zip/ZipOutputStream.java
-
-java_util_jar_SRCS =  	java/util/jar/JarOutputStream.java 	java/util/jar/Attributes.java 	java/util/jar/Manifest.java
 
 kaffe_applet_SRCS =  	kaffe/applet/AppletViewer.java 	kaffe/applet/AudioPlayer.java
 
@@ -230,7 +231,7 @@ DIST_COMMON =  Makefile.am Makefile.in rebuildLib.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -301,7 +302,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
@@ -330,7 +331,7 @@ uninstall: uninstall-am
 all-am: Makefile $(DATA)
 all-redirect: all-am
 install-strip:
-	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+	$(MAKE) $(AM_MAKEFLAGS) INSTALL_STRIP_FLAG=-s install
 installdirs:
 	$(mkinstalldirs)  $(DESTDIR)$(classdir)
 
