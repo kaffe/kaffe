@@ -19,6 +19,13 @@
  * chosen at run time.
  */
 
+
+#if defined(HAVE_STDARG_H)
+#include <stdarg.h>
+#endif /* defined(HAVE_STDARG_H) */
+
+#include <stdio.h>
+
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
@@ -367,7 +374,6 @@ printDebugBuffer(void)
  * When debugging, printf should use fprintf() to avoid
  * threading/blocking problems.
  */
-#include <stdarg.h> /* XXX */
 
 int
 kaffe_dprintf(const char *fmt, ...)
