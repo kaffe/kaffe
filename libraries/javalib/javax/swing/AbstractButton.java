@@ -51,7 +51,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.EventListener;
 
 import javax.accessibility.AccessibleAction;
 import javax.accessibility.AccessibleIcon;
@@ -214,23 +213,27 @@ public abstract class AbstractButton extends JComponent
   Action action;
 
   /** The button's current state. */
-  ButtonModel model;
+  protected ButtonModel model;
 
   /** The margin between the button's border and its label. */
   Insets margin;
 
-  /** a hint to the look and feel class, suggesting which character in the
+  /** A hint to the look and feel class, suggesting which character in the
    * button's label should be underlined when drawing the label. */
   int mnemonicIndex;
 
   /** Listener the button uses to receive ActionEvents from its model.  */
-  ActionListener actionListener;
+  protected ActionListener actionListener;
 
   /** Listener the button uses to receive ItemEvents from its model.  */
-  ItemListener itemListener;
+  protected ItemListener itemListener;
 
   /** Listener the button uses to receive ChangeEvents from its model.  */  
-  ChangeListener changeListener;
+  protected ChangeListener changeListener;
+
+  /** The time in miliseconds in which clicks get coalesced into a single
+   * <code>ActionEvent</code>. */
+  long multiClickThreshhold;
 
   /** Listener the button uses to receive PropertyChangeEvents from its
       Action. */
@@ -602,6 +605,18 @@ public abstract class AbstractButton extends JComponent
   }
 
   /**
+   * Returns all added <code>ActionListener</code> objects.
+   * 
+   * @return an array of listeners
+   * 
+   * @since 1.4
+   */
+  public ActionListener[] getActionListeners()
+  {
+    return (ActionListener[]) listenerList.getListeners(ActionListener.class);
+  }
+
+  /**
    * Adds an ItemListener to the button's listener list. When the button's
    * model changes state (between any of ARMED, ENABLED, PRESSED, ROLLOVER
    * or SELECTED) it fires an ItemEvent, and these listeners will be
@@ -622,6 +637,18 @@ public abstract class AbstractButton extends JComponent
   public void removeItemListener(ItemListener l)
   {
     listenerList.remove(ItemListener.class, l);
+  }
+
+  /**
+   * Returns all added <code>ItemListener</code> objects.
+   * 
+   * @return an array of listeners
+   * 
+   * @since 1.4
+   */
+  public ItemListener[] getItemListeners()
+  {
+    return (ItemListener[]) listenerList.getListeners(ItemListener.class);
   }
 
   /**
@@ -647,6 +674,18 @@ public abstract class AbstractButton extends JComponent
   }
 
   /**
+   * Returns all added <code>ChangeListener</code> objects.
+   * 
+   * @return an array of listeners
+   * 
+   * @since 1.4
+   */
+  public ChangeListener[] getChangeListeners()
+  {
+    return (ChangeListener[]) listenerList.getListeners(ChangeListener.class);
+  }
+
+  /**
    * Calls {@link ItemListener.itemStateChanged} on each ItemListener in
    * the button's listener list.
    *
@@ -655,9 +694,10 @@ public abstract class AbstractButton extends JComponent
   public void fireItemStateChanged(ItemEvent e)
   {
     e.setSource(this);
-    EventListener[] ll = listenerList.getListeners(ItemListener.class);
-    for (int i = 0; i < ll.length; i++)
-      ((ItemListener)ll[i]).itemStateChanged(e);
+    ItemListener[] listeners = getItemListeners();
+ 
+    for (int i = 0; i < listeners.length; i++)
+      listeners[i].itemStateChanged(e);
   }
 
   /**
@@ -669,9 +709,10 @@ public abstract class AbstractButton extends JComponent
   public void fireActionPerformed(ActionEvent e)
   {
     e.setSource(this);
-    EventListener[] ll = listenerList.getListeners(ActionListener.class);
-    for (int i = 0; i < ll.length; i++)
-      ((ActionListener)ll[i]).actionPerformed(e);
+    ActionListener[] listeners = getActionListeners();
+    
+    for (int i = 0; i < listeners.length; i++)
+      listeners[i].actionPerformed(e);
   }
 
   /**
@@ -683,9 +724,10 @@ public abstract class AbstractButton extends JComponent
    */
   public void fireStateChanged(ChangeEvent e)
   {
-    EventListener[] ll = listenerList.getListeners(ChangeListener.class);
-    for (int i = 0; i < ll.length; i++)
-      ((ChangeListener)ll[i]).stateChanged(changeEvent);
+    ChangeListener[] listeners = getChangeListeners();
+
+    for (int i = 0; i < listeners.length; i++)
+      listeners[i].stateChanged(changeEvent);
   }
 
   /**
@@ -1878,5 +1920,34 @@ public abstract class AbstractButton extends JComponent
    */
   public void updateUI()
   {
+  }
+
+  /**
+   * Returns the current time in milliseconds in which clicks gets coalesced
+   * into a single <code>ActionEvent</code>.
+   *
+   * @return the time in milliseconds
+   * 
+   * @since 1.4
+   */
+  public long getMultiClickThreshhold()
+  {
+    return multiClickThreshhold;
+  }
+
+  /**
+   * Sets the time in milliseconds in which clicks gets coalesced into a single
+   * <code>ActionEvent</code>.
+   *
+   * @param threshhold the time in milliseconds
+   * 
+   * @since 1.4
+   */
+  public void setMultiClickThreshhold(long threshhold)
+  {
+    if (threshhold < 0)
+      throw new IllegalArgumentException();
+
+    multiClickThreshhold = threshhold;
   }
 }

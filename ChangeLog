@@ -1,5 +1,27 @@
 2004-08-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/swing/AbstractButton.java:
+	Resynced with GNU Classpath.
+
+	2004-08-09  Michael Koch  <konqueror@gmx.de>
+
+        * javax/swing/AbstractButton.java
+        (model): Made protected.
+        (actionListener): Likewise.
+        (changeListener): Likewise.
+        (itemListener): Likewise.
+        (multiClickThreshhold): New field.
+        (getActionListeners): New method.
+        (getChangeListeners): Likewise.
+        (getItemListeners): Likewise.
+        (fireItemStateChanged): Simplified implementation.
+        (fireActionPerformed): Likewise.
+        (fireStateChanged): Likewise.
+        (getMultiClickThreshhold): New method.
+        (setMultiClickThreshhold): Likewise.
+
+2004-08-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics.java,
 	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c:
 	Resynced with GNU Classpath
