@@ -20,8 +20,8 @@
 #define	MAX_HEAPSIZE	(64*1024*1024)
 #define	ALLOC_HEAPSIZE	(1024*1024)
 
-extern size_t gc_heap_base;
-extern size_t gc_block_base;
+extern uintp gc_heap_base;
+extern uintp gc_block_base;
 extern uintp gc_heap_range;	/* last gc-able address - gc_heap_base */
 
 /* ------------------------------------------------------------------------ */

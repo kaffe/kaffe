@@ -40,8 +40,8 @@ static gc_block* gc_primitive_alloc(size_t);
 void gc_primitive_free(gc_block*);
 static void* gc_system_alloc(size_t);
 
-size_t gc_heap_base;
-size_t gc_block_base;
+uintp gc_heap_base;
+uintp gc_block_base;
 uintp gc_heap_range;
 
 typedef struct {
@@ -72,7 +72,7 @@ static gc_freelist freelist[NR_FREELISTS+1]
 	S(1000),
 	S(2016),
 	S(4040),
-	{ (gc_block *)((char*)0 - 1), 0 }
+	{ (gc_block *)-1, 0 }
 }
 #endif /* PREDEFINED_NUMBER_OF_TILES */
 ;
@@ -127,7 +127,7 @@ gc_heap_check(void)
 
 	for (i = 0; i < NR_FREELISTS; i++) {
 		gc_block* blk = freelist[i].list;
-		if (blk == 0 || blk == (gc_block*)((char*)0 - 1)) {
+		if (blk == 0 || blk == (gc_block*)-1) {
 			continue;
 		} else {
 			gc_freeobj* mem = blk->free;
@@ -762,7 +762,7 @@ gc_block *
 gc_primitive_reserve(void)
 {
 	gc_block *r = 0;
-	int size = 4 * gc_pgsize;
+	size_t size = 4 * gc_pgsize;
 	
 	while (size >= gc_pgsize && !(r = gc_primitive_alloc(size))) {
 		if (size == gc_pgsize) {
@@ -943,7 +943,7 @@ gc_block_alloc(size_t size)
 
 			R(gc_prim_freelist);
 
-			for (i = 0; freelist[i].list != (void *) -1; i++) 
+			for (i = 0; freelist[i].list != (void*)-1; i++) 
 				R(freelist[i].list);
 #undef R
 		}
