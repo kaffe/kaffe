@@ -1,3 +1,22 @@
+2005-02-05  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-02-03  Robert Schuster  <thebohemian@gmx.net>
+
+        * gnu/java/nio/charset/ISO_8859_1.java,
+        gnu/java/nio/charset/US_ASCII.java,
+        gnu/java/nio/charset/UTF_16.java,
+        gnu/java/nio/charset/UTF_16_LE.java,
+        gnu/java/nio/charset/UTF_16_BE.java,
+        gnu/java/nio/charset/UTF_8.java: Fixed canonical names
+         and aliases according to
+         "http://www.iana.org/assignments/character-sets",
+         "http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html"
+         and "http://oss.software.ibm.com/cgi-bin/icu/convexp?s=ALL".
+        * gnu/java/nio/charset/Provider.java: Made charset lookup
+         case-insensitive which fixes bug #11740.
+
 2005-02-05  Sven de Marothy  <sven@physto.se>
 
 	* java/text/SimpleDateFormat.java
