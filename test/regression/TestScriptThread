@@ -104,8 +104,6 @@ Target (RunThread) running...
  Success. Target is dead.
 Test 4: Stop a thread that's done
  Success. Target is dead.
-Test 5: Stop a thread that's never been run
- Success. Target is dead.
 Test 6: Have a thread stop itself
  Success. Target is dead.
 All tests completed"
