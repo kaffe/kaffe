@@ -220,8 +220,8 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv *env,
 	fd_set except_fds;
 	struct timeval real_time_data;
 	struct timeval *time_data = NULL;
-	char message_buf[BUF_SIZE+1];
-	
+	char * message;
+
 	/* If a legal timeout value isn't given, use NULL.
 	 * This means an infinite timeout. The specification
 	 * also says that a zero timeout should be treated
@@ -267,6 +267,9 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv *env,
 	
 	if (result < 0)
     {
+#if defined(HAVE_STRERROR_R)
+	char message_buf[BUF_SIZE+1];
+
     	if( strerror_r(errno, message_buf, BUF_SIZE) )
     	{
     		/* This would mean that message_buf was to small
@@ -276,9 +279,13 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv *env,
     			"Not enough space in message buffer.");
     		return 0;
     	}
-    	
-		JCL_ThrowException (env, "java/io/IOException", message_buf);
-		return 0;
+	message = message_buf;
+#else
+	message = strerror(errno);
+#endif
+
+	JCL_ThrowException (env, "java/io/IOException", message);
+	return 0;
     }
 
 	/* Set the file descriptors according to the values returned from select(). */
