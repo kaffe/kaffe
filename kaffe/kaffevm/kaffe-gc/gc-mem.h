@@ -20,8 +20,6 @@
 #define ALIGNMENT_OF_SIZE(S)	(S)
 #endif
 
-extern size_t gc_heap_limit;
-
 #ifdef KAFFE_VMDEBUG
 extern int gc_system_alloc_cnt;
 #endif
@@ -65,6 +63,7 @@ extern void	gc_heap_free(void*);
 
 extern void*	gc_heap_grow(size_t);
 extern size_t   gc_get_heap_total(void);
+extern size_t   gc_get_heap_limit(void);
 
 /**
  * One block of the heap managed by kaffe's gc.

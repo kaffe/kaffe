@@ -1,3 +1,16 @@
+2004-09-03  Dalibor Topic  <topic@mpiat2313>
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.h: (gc_heap_limit) Removed.
+	(gc_get_heap_limit) Added prototype.
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c (gc_get_heap_limit): New function.
+	(gc_heap_limit) Made static.
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c (gcGetHeapLimit,gcMan): 
+	Use gc_get_heap_limit().
+
+	Reported by: Michael Franz <developer.franz@verizon.net>
+	
 2004-09-03  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c: Use gc_get_heap_total.

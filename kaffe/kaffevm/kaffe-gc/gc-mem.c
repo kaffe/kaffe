@@ -106,8 +106,8 @@ static size_t max_small_object_size;
 static size_t gc_heap_allocation_size;	/* amount of memory by which to grow heap */
 static size_t gc_heap_initial_size;	/* amount of memory to initially allocate */
 static size_t gc_heap_total;		/* current size of the heap */
+static size_t gc_heap_limit;		/* maximum size to which heap should grow */
 
-size_t gc_heap_limit;		/* maximum size to which heap should grow */
 uintp gc_heap_base;
 uintp gc_heap_range;
 
@@ -1250,4 +1250,13 @@ size_t
 gc_get_heap_total(void)
 {
   return gc_heap_total;
+}
+
+/**
+ * Gets maximum size to which heap should grow.
+ */
+size_t
+gc_get_heap_limit(void)
+{
+  return gc_heap_limit;
 }

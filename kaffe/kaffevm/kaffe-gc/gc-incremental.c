@@ -561,8 +561,9 @@ DBG(GCSTAT,
 		 *
 		 * XXX: make this a run-time configurable parameter.
 		 */
-		if (gcRunning == 1 && gc_get_heap_total() < gc_heap_limit && 
-		    gcStats.allocmem * 4 < gcStats.totalmem * 1) {
+		if (gcRunning == 1 
+		    && gc_get_heap_total() < gc_get_heap_limit() 
+		    && gcStats.allocmem * 4 < gcStats.totalmem * 1) {
 DBG(GCSTAT,
 			dprintf("skipping collection since alloc/total "
 				"%dK/%dK = %.2f < 1/3\n",
@@ -1420,7 +1421,7 @@ objectSizesPrint(void)
 static uintp
 gcGetHeapLimit(Collector *gcif UNUSED)
 {
-  return gc_heap_limit;
+  return gc_get_heap_limit();
 }
 
 static uintp
