@@ -243,6 +243,7 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 
 	ncode = *(void**)((char*)cls->dtable 
 			+ DTABLE_METHODOFFSET + dtableidx * DTABLE_METHODSIZE);
+	assert(ncode);
 	return (ncode);
 
 notfound:
@@ -269,7 +270,7 @@ notfound:
 		if (meth == 0) {
 			throwError(&info);
 		}
-		return (METHOD_NATIVECODE(meth));
+		return (METHOD_INDIRECTMETHOD(meth));
 	}
 	meth = CLASS_METHODS(ifclass) + idx;
 	soft_nosuchmethod(cls, meth->name, METHOD_SIG(meth));

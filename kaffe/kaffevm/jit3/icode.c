@@ -4382,9 +4382,9 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 /* Soft calls.								   */
 /*									   */
 
-#if 0 /* Custom edition */
+#if 0 
 void
-softcall_lookupmethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
+/* Custom edition */ softcall_lookupmethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
 {
 	/* 'obj' must be written back since it will be reused */
 	begin_func_sync();
@@ -4397,7 +4397,7 @@ softcall_lookupmethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
 	pusharg_utf8_const(meth->name, 1);
 	pusharg_ref(obj, 0);
 #endif
-	call_soft(soft_lookupmethod);
+	/* Custom edition */ call_soft(soft_lookupmethod);
 	popargs();
 	end_func_sync();
 	return_ref(dst);
@@ -4405,7 +4405,7 @@ softcall_lookupmethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
 #endif
 
 void
-softcall_lookupmethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
+softcall_lookupinterfacemethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
 {
 	/* 'obj' must be written back since it will be reused */
 	begin_func_sync();

@@ -2338,7 +2338,7 @@ define_insn(INVOKEINTERFACE)
 
 		check_stack_ref(idx);
 
-		softcall_lookupmethod(tmp, method_method(), stack(idx));
+		softcall_lookupinterfacemethod(tmp, method_method(), stack(idx));
 
 		/* Push arguments & object */
 		build_call_frame(method_sig(), stack(idx), idx);
