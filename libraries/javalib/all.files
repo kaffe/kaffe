@@ -2531,12 +2531,15 @@ javax/imageio/ImageTranscoder.java
 javax/imageio/ImageTypeSpecifier.java
 javax/imageio/ImageWriteParam.java
 javax/imageio/ImageWriter.java
+javax/imageio/metadata/IIOAttr.java
 javax/imageio/metadata/IIOInvalidTreeException.java
 javax/imageio/metadata/IIOMetadataController.java
 javax/imageio/metadata/IIOMetadataFormatImpl.java
 javax/imageio/metadata/IIOMetadataFormat.java
 javax/imageio/metadata/IIOMetadata.java
 javax/imageio/metadata/IIOMetadataNode.java
+javax/imageio/metadata/IIONamedNodeMap.java
+javax/imageio/metadata/IIONodeList.java
 javax/imageio/spi/IIORegistry.java
 javax/imageio/spi/IIOServiceProvider.java
 javax/imageio/spi/ImageInputStreamSpi.java

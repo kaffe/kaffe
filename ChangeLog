@@ -1,6 +1,29 @@
 2005-01-18  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+
+	2005-01-17  Jerry Quinn  <jlquinn@optonline.net>
+
+	* javax/imageio/metadata/IIOMetadataNode.java:
+	Implemented.
+	* javax/imageio/metadata/IIOAttr.java,
+	javax/imageio/metadata/IIONamedNodeMap.java,
+	javax/imageio/metadata/IIONodeList.java:
+	New files
+
+2005-01-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-01-17  Michael Koch  <konqueror@gmx.de>
+
+	* javax/print/attribute/standard/Chromaticity.java,
+	javax/print/attribute/standard/Destination.java:
+	New files.
+	
+2005-01-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 	
 	2005-01-17  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
