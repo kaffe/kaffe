@@ -40,8 +40,7 @@ struct Hjava_lang_Float*
 java_lang_Float_valueOf(struct Hjava_lang_String* str)
 {
 	struct Hjava_lang_Float* obj;
-	obj = (struct Hjava_lang_Float*)execute_java_constructor("java.lang.Float", 0, "()V");
-	unhand(obj)->value = java_lang_Double_valueOf0(str);
+	obj = (struct Hjava_lang_Float*)execute_java_constructor("java.lang.Float", 0, "(F)V", (float)java_lang_Double_valueOf0(str));
 	return (obj);
 }
 

@@ -27,6 +27,13 @@ public class ZipEntry implements ZipConstants {
   long csize;
   long offset;
 
+  /**
+   * this constructor is for internal library use only (makeZipEntry) 
+   */
+  ZipEntry()
+  {
+  }
+
   public ZipEntry(String nm)
   {
     if (nm == null) {

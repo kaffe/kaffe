@@ -12,4 +12,9 @@ package java.lang;
 
 public class ThreadDeath extends Error {
   public ThreadDeath() {};
+
+  /**
+   * this constructor is for internal VM use only (SignalError) 
+   */
+  ThreadDeath(String s) { super(s); };
 }

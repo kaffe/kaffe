@@ -75,8 +75,7 @@ struct Hjava_lang_Double*
 java_lang_Double_valueOf(struct Hjava_lang_String* str)
 {
 	struct Hjava_lang_Double* obj;
-	obj = (struct Hjava_lang_Double*)execute_java_constructor("java.lang.Double", 0, "()V");
-	unhand(obj)->value = java_lang_Double_valueOf0(str);
+	obj = (struct Hjava_lang_Double*)execute_java_constructor("java.lang.Double", 0, "(D)V", java_lang_Double_valueOf0(str));
 	return (obj);
 }
 

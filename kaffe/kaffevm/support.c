@@ -163,7 +163,8 @@ execute_java_constructor_v(char* cname, Hjava_lang_Class* cc, char* signature, v
 		processClass(cc, CSTATE_OK);
 	}
 
-	mb = lookupClassMethod(cc, constructor_name->data, signature);
+	mb = findMethodLocal(cc, makeUtf8Const(constructor_name->data, -1), 
+				 makeUtf8Const(signature, -1));
 	if (mb == 0) {
 		throwException(NoSuchMethodError(constructor_name->data));
 	}

@@ -341,6 +341,7 @@ false
 true"
 
 runtest NullPointerTest "This is Perfect"
+runtest ConstructorTest "Success."
 
 runtest burford "Starting burford...
 Starting feeders...
