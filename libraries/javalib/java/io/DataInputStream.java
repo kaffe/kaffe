@@ -13,8 +13,6 @@ package java.io;
 import kaffe.util.UTF8;
 
 public class DataInputStream extends FilterInputStream implements DataInput {
-	/* used to determine whether to skip next '\n' */
-	private boolean skipNextLF;
 
 public DataInputStream(InputStream in) {
 	super(new PushbackInputStream(in));
@@ -41,12 +39,7 @@ public final byte readByte() throws IOException {
 	if (value == -1) {
 		throw new EOFException();
 	}
-	if (skipNextLF) {
-		skipNextLF = false;
-		if (value == '\n') {
-			value = readByte();
-		}
-	}
+
 	return ((byte)value);
 }
 
@@ -106,17 +99,11 @@ public final String readLine() throws IOException {
 				   wrapped in a PushbackInputStream. If
 				   there are bytes available for reading,
 				   we use its read() and unread() methods
-				   to skip the eventual '\n' character.
+				   to skip the eventual '\n' character after
+				   a '\r' character.
 
 				   Making sure bytes are available before
 				   reading should prevent hanging on a socket.
-
-				   The alternative method is to	set a
-				   skipNextLF flag. If the user switches to
-				   another InputStream using the underlying
-				   stream, as she might have to deal with a
-				   '\n' character that should have been
-				   skipped.
 				*/
 				if (available() > 0) {
 					final int lf = read();
@@ -124,9 +111,6 @@ public final String readLine() throws IOException {
 					if (lf != -1 && lf != '\n') {
 						((PushbackInputStream) in).unread((byte) lf);
 					}
-				}
-				else {
-					skipNextLF = true;
 				}
 
 				break;

@@ -1,3 +1,13 @@
+2003-01-09 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/io/DataInputStream.java
+	Skipping of '\n' could corrupt reading from jars.
+	Jython 2.1 wouldn't run because of it.
+	(skipNextLF) removed.
+	(readByte, readLine) removed handling of skipNextLF.
+
+	Reported  by: Vesa Kaihlavirta <vpkaihla@cc.jyu.fi>
+
 2003-01-06 Dalibor Topic <robilad@yahoo.com>
 
 	Merged in java.awt.image.renderable from GNU Classpath.
