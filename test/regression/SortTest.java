@@ -1,6 +1,5 @@
 
 import java.util.*;
-import kaffe.util.Assert;
 
 class SortTest {
 
@@ -55,13 +54,13 @@ class SortTest {
 
     // Verify sorting
     for (int i = 1; i < num; i++) {
-      Assert.that(da[i - 1] <= da[i]);
-      Assert.that(fa[i - 1] <= fa[i]);
-      Assert.that(ca[i - 1] <= ca[i]);
-      Assert.that(ia[i - 1] <= ia[i]);
-      Assert.that(la[i - 1] <= la[i]);
-      Assert.that(sa[i - 1] <= sa[i]);
-      Assert.that(((Comparable)oa[i - 1]).compareTo(oa[i]) <= 0);
+      assert(da[i - 1] <= da[i]);
+      assert(fa[i - 1] <= fa[i]);
+      assert(ca[i - 1] <= ca[i]);
+      assert(ia[i - 1] <= ia[i]);
+      assert(la[i - 1] <= la[i]);
+      assert(sa[i - 1] <= sa[i]);
+      assert(((Comparable)oa[i - 1]).compareTo(oa[i]) <= 0);
     }
 
     // Get random keys
@@ -76,31 +75,31 @@ class SortTest {
     // Verify binary search for each key
     int index;
     index = Arrays.binarySearch(da, dkey);
-    Assert.that((index >= 0) ? da[index] == dkey :
+    assert((index >= 0) ? da[index] == dkey :
       (index == -1 || da[-(index + 2)] < dkey)
 	&& (index == -num - 1 || da[-(index + 1)] > dkey));
     index = Arrays.binarySearch(fa, fkey);
-    Assert.that((index >= 0) ? fa[index] == fkey :
+    assert((index >= 0) ? fa[index] == fkey :
       (index == -1 || fa[-(index + 2)] < fkey)
 	&& (index == -num - 1 || fa[-(index + 1)] > fkey));
     index = Arrays.binarySearch(ca, ckey);
-    Assert.that((index >= 0) ? ca[index] == ckey :
+    assert((index >= 0) ? ca[index] == ckey :
       (index == -1 || ca[-(index + 2)] < ckey)
 	&& (index == -num - 1 || ca[-(index + 1)] > ckey));
     index = Arrays.binarySearch(ia, ikey);
-    Assert.that((index >= 0) ? ia[index] == ikey :
+    assert((index >= 0) ? ia[index] == ikey :
       (index == -1 || ia[-(index + 2)] < ikey)
 	&& (index == -num - 1 || ia[-(index + 1)] > ikey));
     index = Arrays.binarySearch(la, lkey);
-    Assert.that((index >= 0) ? la[index] == lkey :
+    assert((index >= 0) ? la[index] == lkey :
       (index == -1 || la[-(index + 2)] < lkey)
 	&& (index == -num - 1 || la[-(index + 1)] > lkey));
     index = Arrays.binarySearch(sa, skey);
-    Assert.that((index >= 0) ? sa[index] == skey :
+    assert((index >= 0) ? sa[index] == skey :
       (index == -1 || sa[-(index + 2)] < skey)
 	&& (index == -num - 1 || sa[-(index + 1)] > skey));
     index = Arrays.binarySearch(oa, okey);
-    Assert.that((index >= 0) ? oa[index].equals(okey) :
+    assert((index >= 0) ? oa[index].equals(okey) :
       (index == -1 || ((Comparable)oa[-(index + 2)]).compareTo(okey) < 0)
 	&& (index == -num - 1 || ((Comparable)oa[-(index + 1)]).compareTo(okey) > 0));
 
@@ -115,13 +114,19 @@ class SortTest {
       });
 
     for (int i = 1; i < num / 2; i++) {
-      Assert.that(((Integer)oa[i - 1]).compareTo((Integer)oa[i]) >= 0);
+      assert(((Integer)oa[i - 1]).compareTo((Integer)oa[i]) >= 0);
     }
     for (int i = num / 2 + 1; i < num; i++) {
-      Assert.that(((Integer)oa[i - 1]).compareTo((Integer)oa[i]) <= 0);
+      assert(((Integer)oa[i - 1]).compareTo((Integer)oa[i]) <= 0);
     }
 
     System.out.println("Success.");
+  }
+
+  public static void assert(boolean truth) {
+    if (!truth) {
+      throw new Error("assertion failure");
+    }
   }
 }
 

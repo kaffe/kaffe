@@ -72,8 +72,9 @@ public class MarkResetTest {
 	    read3 = read2;
 	  }
 	  for (int j = 0; j < read1 + read3; j++) {
-	    kaffe.util.Assert.that(
-	      (int) (tbuf[j] & 0xff) == ((count + j) & 0xff));
+	    if ((int) (tbuf[j] & 0xff) != ((count + j) & 0xff)) {
+	      throw new Error("brokenness");
+	    }
 	  }
 	  count += read1 + read3;
 	}
