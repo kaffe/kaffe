@@ -16,10 +16,34 @@ jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
 
 Klasses_jar_SRCS = \
-	$(gnu_java_awt_SRCS) \
-	$(gnu_java_nio_SRCS) \
 	$(gnu_java_util_SRCS) \
-	$(gnu_java_util_prefs_SRCS) \
+	$(java_io_SRCS) \
+	$(java_lang_SRCS) \
+	$(java_lang_ref_SRCS) \
+	$(java_lang_reflect_SRCS) \
+	$(java_math_SRCS) \
+	$(java_net_SRCS) \
+	$(java_security_SRCS) \
+	$(java_security_acl_SRCS) \
+	$(java_security_cert_SRCS) \
+	$(java_security_interfaces_SRCS) \
+	$(java_security_spec_SRCS) \
+	$(java_sql_SRCS) \
+	$(java_text_SRCS) \
+	$(java_util_SRCS) \
+	$(java_util_jar_SRCS) \
+	$(java_util_zip_SRCS) \
+	$(kaffe_io_SRCS) \
+	$(kaffe_jar_SRCS) \
+	$(kaffe_lang_SRCS) \
+	$(kaffe_management_SRCS) \
+	$(kaffe_net_SRCS) \
+	$(kaffe_security_SRCS) \
+	$(kaffe_security_provider_SRCS) \
+	$(kaffe_util_SRCS) \
+	$(kaffe_util_zip_SRCS)
+Awt_SRCS = \
+	$(gnu_java_awt_SRCS) \
 	$(java_applet_SRCS) \
 	$(java_awt_SRCS) \
 	$(java_awt_color_SRCS) \
@@ -33,51 +57,29 @@ Klasses_jar_SRCS = \
 	$(java_awt_peer_SRCS) \
 	$(java_awt_print_SRCS) \
 	$(java_awt_widgets_SRCS) \
+	$(kaffe_applet_SRCS) \
+	$(kaffe_awt_SRCS) \
+	$(kaffe_util_log_SRCS)
+Rest_SRCS = \
+	$(gnu_java_nio_SRCS) \
+	$(gnu_java_util_prefs_SRCS) \
 	$(java_beans_SRCS) \
 	$(java_beans_beancontext_SRCS) \
-	$(java_io_SRCS) \
-	$(java_lang_SRCS) \
-	$(java_lang_ref_SRCS) \
-	$(java_lang_reflect_SRCS) \
-	$(java_math_SRCS) \
-	$(java_net_SRCS) \
 	$(java_nio_SRCS) \
-	$(java_security_SRCS) \
-	$(java_security_acl_SRCS) \
-	$(java_security_cert_SRCS) \
-	$(java_security_interfaces_SRCS) \
-	$(java_security_spec_SRCS) \
-	$(java_sql_SRCS) \
-	$(java_text_SRCS) \
-	$(java_util_SRCS) \
-	$(java_util_jar_SRCS) \
 	$(java_util_logging_SRCS) \
 	$(java_util_mime_SRCS) \
 	$(java_util_prefs_SRCS) \
-	$(java_util_zip_SRCS) \
-	$(kaffe_applet_SRCS) \
-	$(kaffe_awt_SRCS) \
 	$(kaffe_beans_editors_SRCS) \
-	$(kaffe_io_SRCS) \
-	$(kaffe_jar_SRCS) \
-	$(kaffe_lang_SRCS) \
-	$(kaffe_management_SRCS) \
-	$(kaffe_net_SRCS) \
 	$(kaffe_net_www_protocol_SRCS) \
 	$(kaffe_net_www_protocol_file_SRCS) \
 	$(kaffe_net_www_protocol_ftp_SRCS) \
 	$(kaffe_net_www_protocol_http_SRCS) \
 	$(kaffe_net_www_protocol_jar_SRCS) \
 	$(kaffe_net_www_protocol_system_SRCS) \
-	$(kaffe_security_SRCS) \
-	$(kaffe_security_provider_SRCS) \
 	$(kaffe_text_collator_SRCS) \
 	$(kaffe_text_dateformat_SRCS) \
 	$(kaffe_text_numberformat_SRCS) \
-	$(kaffe_util_SRCS) \
-	$(kaffe_util_locale_SRCS) \
-	$(kaffe_util_log_SRCS) \
-	$(kaffe_util_zip_SRCS)
+	$(kaffe_util_locale_SRCS) 
 gnu_java_awt_SRCS = \
 	gnu/java/awt/BitMaskExtent.java \
 	gnu/java/awt/Buffers.java \
@@ -1214,6 +1216,7 @@ serialized_converters = \
 	kaffe/io/CharToByteKOI8_R.ser
 
 EXTRA_DIST = Klasses.jar.bootstrap $(toolslib_DATA) $(Klasses_jar_SRCS) \
+	$(Awt_SRCS) $(Rest_SRCS) \
         bootstrap.classlist \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
@@ -1235,8 +1238,12 @@ rebuildLib = ./rebuildLib
 
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS) $(Awt_SRCS) $(Rest_SRCS)
+	rm -rf $(LIBDIR)
+	mkdir $(LIBDIR)
 	$(SHELL) $(rebuildLib) $(Klasses_jar_SRCS)
+	$(SHELL) $(rebuildLib) $(Awt_SRCS)
+	$(SHELL) $(rebuildLib) $(Rest_SRCS)
 	echo timestamp > $(LIBDIR)/stamp
 
 $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist

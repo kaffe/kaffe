@@ -18,8 +18,6 @@ TOPBLD=${top_builddir-`sed -n '/^top_builddir *= */ s///p' < Makefile`}
 JIKES=@JIKES@
 # JIKES=
 
-rm -rf $LIBDIR
-mkdir $LIBDIR
 LIBDIR=`CDPATH=: && cd $LIBDIR && pwd`
 VERBOSE=
 
@@ -40,6 +38,8 @@ else
 	CPATH="${CPATH+-classpath $CPATH}"
 #	VERBOSE=${VERBOSE-"-verbose"}
 fi
+
+CLASSPATH=$CLASSPATH:$LIBDIR; export CLASSPATH
 
 cd $SRCDIR
 

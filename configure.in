@@ -948,8 +948,10 @@ memcpy memmove dnl
 mkdir dnl
 getcwd chdir getwd gettimeofday ftime time uname getuid dnl
 localtime dnl
-iconv dnl
 ])
+
+AM_ICONV
+LIBS="$LIBS $LIBICONV"
 
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
