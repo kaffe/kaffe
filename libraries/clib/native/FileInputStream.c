@@ -122,33 +122,42 @@ java_io_FileInputStream_skip(struct Hjava_io_FileInputStream* fh, jlong off)
 jint
 java_io_FileInputStream_available(struct Hjava_io_FileInputStream* fh)
 {
-	int nr;
-	int r;
+	int r, nr;
+	int fd = unhand(unhand(fh)->fd)->fd;
+	off_t cur = 0;
+
+	cur = lseek(fd, cur, SEEK_CUR);
+	if (cur != (off_t)-1) {
+		struct stat statbuf;
+		if (fstat(fd, &statbuf) != -1) {
+			return statbuf.st_size - cur;
+		}
+	}
+
+	/* If lseek or fstat fail, try another mechanism... */
 
 #if defined(HAVE_IOCTL) && defined(FIONREAD)
-	r = ioctl(unhand(unhand(fh)->fd)->fd, FIONREAD, &nr);
-	if (r < 0) {
-		nr = 0;
-	}
-#else
-	/* This uses select() to work out if we can read - but what
-	 * happens at the end of file?
-	 */
-	static struct timeval tm = { 0, 0 };
-	int fd;
-	fd_set rd;
-
-	fd = unhand(unhand(fh)->fd)->fd;
-	FD_ZERO(&rd);
-	FD_SET(fd, &rd);
-	r = select(fd+1, &rd, NULL, NULL, &tm);
-	if (r == 1) {
-		nr = 1;
-	}
-	else {
-		nr = 0;
-	}
+	r = ioctl(fd, FIONREAD, &nr);
+	if (r < 0 || nr == 0)
+		/* FIONREAD may report 0 for files for which data is
+                   available; maybe select will do... */
 #endif
+	{
+		/* This uses select() to work out if we can read - but
+		 * what happens at the end of file?  */
+		static struct timeval tm = { 0, 0 };
+		fd_set rd;
 
-	return (nr);
+		FD_ZERO(&rd);
+		FD_SET(fd, &rd);
+		r = select(fd+1, &rd, NULL, NULL, &tm);
+		if (r == 1) {
+			nr = 1;
+		}
+		else {
+			nr = 0;
+		}
+
+		return (nr);
+	}
 }
