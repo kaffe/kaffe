@@ -112,6 +112,15 @@ jthread_create(unsigned int pri, 	/* initial priority */
 	void *jlThread, 		/* cookie for this thread */
 	size_t threadStackSize);	/* stack size to be allocated */
 
+struct _exceptionFrame;
+typedef void (*exchandler_t)(struct _exceptionFrame*);
+                
+/*                                                                      
+ * Initialize handlers for null pointer accesses and div by zero        
+ */             
+void    jthread_initexceptions(exchandler_t _nullHandler,
+                               exchandler_t _floatingHandler);
+
 /*
  * set a function to be run when last non-daemon dies 
  * this is used to run the finalizer on exit.
