@@ -1,3 +1,16 @@
+2004-08-27  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/support.c: moved libffi related stuff ...
+
+	* config/sysdepCallMethod-ffi.h: ... into this new file
+
+	* kaffe/kaffevm/intrp/methodcalls.c, kaffe/kaffevm/jit/methodcalls.c:
+	include sysdepCallMethod-ffi.h if HAVE_LIBFFI is defined
+
+	* config/Makefile.am (noinst_HEADERS): added sysdepCallMethod-ffi.h
+
+	* config/Makefile.in: regenerated 
+
 2004-08-27  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure.ac: Moved AC_CONFIG_SUBDIRS to make configure

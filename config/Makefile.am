@@ -46,7 +46,8 @@ noinst_HEADERS = \
 	config-setjmp.h \
 	config-signal.h \
 	config-std.h \
-	kaffe-unix-stack.h
+	kaffe-unix-stack.h \
+	sysdepCallMethod-ffi.h
 
 EXTRA_DIST = \
 	config.alias \

@@ -11,8 +11,13 @@
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
-
+#include "config.h"
+#if defined(HAVE_LIBFFI)
+#include "sysdepCallMethod-ffi.h"
+#else
 #define NEED_sysdepCallMethod 1
+#endif
+
 #include "methodcalls.h"
 
 #define TDBG(s)
