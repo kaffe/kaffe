@@ -188,7 +188,8 @@ final native private void finalize0();
 /*
  * Called by system when thread terminates (for whatever reason)
  */
-private void finish() {
+/* Not private for now so GCJ won't optimize it away */ 
+void finish() {
 	synchronized(this) {
 		dying = true;
 		notifyAll();     // in case somebody is joining on us
