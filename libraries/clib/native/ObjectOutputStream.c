@@ -24,8 +24,6 @@
 void
 java_io_ObjectOutputStream_outputClassFields(struct Hjava_io_ObjectOutputStream* stream, struct Hjava_lang_Object* obj, struct Hjava_lang_Class* cls, HArrayOfInt* arr)
 {
-	Method* meth;
-	jvalue arg;
 	int i;
 
 #define	WRITE(FUNC,SIG,TYPE) \

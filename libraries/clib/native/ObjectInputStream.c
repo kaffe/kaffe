@@ -62,8 +62,6 @@ java_io_ObjectInputStream_loadClass0(struct Hjava_io_ObjectInputStream* stream, 
 void
 java_io_ObjectInputStream_inputClassFields(struct Hjava_io_ObjectInputStream* stream, struct Hjava_lang_Object* obj, struct Hjava_lang_Class* cls, HArrayOfInt* arr)
 {
-	Method* meth;
-	jvalue ret;
 	int i;
 
 	assert(obj != 0 || !"Attempt to read fields into null object");
@@ -130,7 +128,6 @@ jbool
 java_io_ObjectInputStream_invokeObjectReader(struct Hjava_io_ObjectInputStream* stream, struct Hjava_lang_Object* obj, struct Hjava_lang_Class* cls)
 {
 	Method* meth;
-	jvalue args;
 
 	/*
 	 * Each subclass of a Serializable object may define its own 

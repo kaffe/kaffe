@@ -193,7 +193,6 @@ java_io_ObjectStreamClass_getFields0(struct Hjava_io_ObjectStreamClass* stream, 
 	Hjava_io_ObjectStreamField* obj;
 	Field* fld;
 	char buf[256];		/* XXX FIXED SIZE BUFFER */
-	char* type;
 
 	sz = CLASS_NIFIELDS(cls);
 	cnt = 0;
