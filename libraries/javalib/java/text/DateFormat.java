@@ -173,6 +173,10 @@ public void setCalendar(Calendar cal) {
 	calendar = cal;
 }
 
+public Calendar getCalendar() {
+	return calendar;
+}
+
 public void setLenient(boolean val) {
 	lenient = val;
 }
