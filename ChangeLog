@@ -1,5 +1,26 @@
 2004-08-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/swing/AbstractSpinnerModel.java,
+	libraries/javalib/javax/swing/JSpinner.java,
+	libraries/javalib/javax/swing/SpinnerNumberModel.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicSpinnerUI.java:
+	New files. Taken from GNU Classpath.
+
+	* libraries/javalib/javax/swing/plaf/basic/BasicLookAndFeel.java:
+	Resynced with GNU Classpath.
+
+	2004-08-14  Ka-Hing Cheung  <kahing@javabsp.org>
+
+        * javax/swing/AbstractSpinnerModel.java,
+        javax/swing/JSpinner.java,
+        javax/swing/SpinnerNumberModel.java,
+        javax/swing/plaf/basic/BasicSpinnerUI.java:
+        New files.
+        * javax/swing/plaf/basic/BasicLookAndFeel.java
+        (initClassDefaults): Added defaults for BasicSpinnerUI.
+
+2004-08-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.am:
 	Add gtk_cairo_c_source_files when GTK_CAIRO is set.
 

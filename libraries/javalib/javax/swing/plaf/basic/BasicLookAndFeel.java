@@ -131,6 +131,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "SeparatorUI", "javax.swing.plaf.basic.BasicSeparatorUI",
       "SliderUI", "javax.swing.plaf.basic.BasicSliderUI",
       "SplitPaneUI", "javax.swing.plaf.basic.BasicSplitPaneUI",
+      "SpinnerUI", "javax.swing.plaf.basic.BasicSpinnerUI",
       "StandardDialogUI", "javax.swing.plaf.basic.BasicStandardDialogUI",
       "TabbedPaneUI", "javax.swing.plaf.basic.BasicTabbedPaneUI",
       "TableHeaderUI", "javax.swing.plaf.basic.BasicTableHeaderUI",

@@ -2967,6 +2967,7 @@ javax_swing_SRCS = \
 	javax/swing/AbstractCellEditor.java \
 	javax/swing/AbstractListModel.java \
 	javax/swing/AbstractSet.java \
+	javax/swing/AbstractSpinnerModel.java \
 	javax/swing/Action.java \
 	javax/swing/ActionMap.java \
 	javax/swing/BorderFactory.java \
@@ -3031,6 +3032,7 @@ javax_swing_SRCS = \
 	javax/swing/JScrollPane.java \
 	javax/swing/JSeparator.java \
 	javax/swing/JSlider.java \
+	javax/swing/JSpinner.java \
 	javax/swing/JSplitPane.java \
 	javax/swing/JTabbedPane.java \
 	javax/swing/JTable.java \
@@ -3066,6 +3068,7 @@ javax_swing_SRCS = \
 	javax/swing/SizeRequirements.java \
 	javax/swing/SizeSequence.java \
 	javax/swing/SpinnerModel.java \
+	javax/swing/SpinnerNumberModel.java \
 	javax/swing/Spring.java \
 	javax/swing/SpringLayout.java \
 	javax/swing/SwingConstants.java \
@@ -3214,6 +3217,7 @@ javax_swing_plaf_basic_SRCS = \
 	javax/swing/plaf/basic/BasicScrollPaneUI.java \
 	javax/swing/plaf/basic/BasicSeparatorUI.java \
 	javax/swing/plaf/basic/BasicSliderUI.java \
+	javax/swing/plaf/basic/BasicSpinnerUI.java \
 	javax/swing/plaf/basic/BasicSplitPaneDivider.java \
 	javax/swing/plaf/basic/BasicSplitPaneUI.java \
 	javax/swing/plaf/basic/BasicTabbedPaneUI.java \
