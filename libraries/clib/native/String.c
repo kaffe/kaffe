@@ -52,6 +52,8 @@ Java_java_lang_String_indexOf( JNIEnv* env, Hjava_lang_String* str, Hjava_lang_S
 
   if ( (n==0) || (m==0) ) return -1;
 
+  if ( offset < 0 ) offset = 0;
+
   if ( (m < 3) || (n < 128) || (m > 256) ) {
 	/*
 	 * If the pattern is too small, iterating the searched array would be
