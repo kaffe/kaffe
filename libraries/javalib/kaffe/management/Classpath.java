@@ -11,15 +11,27 @@
 
 package kaffe.management;
 
-import java.lang.String;
+import java.util.Properties;
 
 public class Classpath {
 
-static {
-	System.loadLibrary("management");
+	static {
+		System.loadLibrary("management");
+	}
+
+	public static void add(String elem) {
+
+		// Add to internal classpath
+		add0(elem);
+
+		// Add to classpath property
+		Properties p = System.getProperties();
+		String sep = p.getProperty("path.separator");
+		String cpath = p.getProperty("java.class.path");
+		p.setProperty("java.class.path", cpath + sep + elem);
+	}
+
+	public native static void add0(String elem);
+
 }
 
-public native static void add(String pathelem);
-public native static void alias(String frompkg, String topkg);
-
-}
