@@ -40,6 +40,7 @@ createImage ( int width, int height )
 int
 createShmXImage ( Toolkit* X, Image* img, int depth, int isMask )
 {
+#if defined(HAVE_LIBXEXT)
   Visual  *vis = DefaultVisual( X->dsp, DefaultScreen( X->dsp));
   XShmSegmentInfo* shmi = (XShmSegmentInfo*) AWT_MALLOC( sizeof(XShmSegmentInfo));
   XImage *xim;
@@ -89,12 +90,16 @@ createShmXImage ( Toolkit* X, Image* img, int depth, int isMask )
   }
 
   return 1;
+#else
+  return 0;
+#endif
 }
 
 
 void
 destroyShmXImage ( Toolkit* X, Image* img, int isMask )
 {
+#if defined(HAVE_LIBXEXT)
   XShmSegmentInfo *shmi;
   XImage          *xim;
 
@@ -119,6 +124,7 @@ destroyShmXImage ( Toolkit* X, Image* img, int isMask )
   /* if we have suspended shm, give it a try again */
   if ( X->shm == SUSPEND_SHM )
 	X->shm = USE_SHM;
+#endif
 }
 
 
