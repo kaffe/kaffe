@@ -109,8 +109,11 @@ final public String readLine() throws IOException {
 
 			super.mark(1);
 			data2 = super.read();
-			if (data2 != -1 && (char) (data & 0xff) != '\n')
-				super.reset();
+			if (data2 != -1 && (char) (data & 0xff) != '\n') {
+				try {
+					super.reset();
+				} catch (IOException e) { }
+			}
 			break;
 		}
 		buffer.append(ch);
