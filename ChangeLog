@@ -1,5 +1,16 @@
 2004-08-26  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* test/regression/compiler/InnerTest1_A.java,
+	test/regression/compiler/InnerTest1_B.java:
+	New test for KJC.
+
+	* test/regression/compiler/Makefile.am: Added new tests to the
+	suite.
+
+	* test/regression/compiler/Makefile.in: Regenerated.
+
+2004-08-26  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/jit/icode.c
 	(softcall_abstractmethod): Build a call to soft_abstractmethod.
 
