@@ -148,13 +148,13 @@ public final InputStream openStream() throws IOException {
 
 private void parseURL(String spec) throws MalformedURLException {
 
-	/* URL -> [<protocol>:][//<hostname>[:port]][/<file>] */
+	/* URL -> <protocol>:[//<hostname>[:port]][/<file>] */
 
 //System.out.println("Parsing URL " + spec);
 
-	int pend = spec.indexOf(':', 0);
+	int pend = spec.indexOf(':');
 	if (pend == -1) {
-		protocol = "file";
+		throw new MalformedURLException("missing protocol");
 	}
 	else {
 		protocol = spec.substring(0, pend);
