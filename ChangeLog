@@ -1,3 +1,7 @@
+Thu Feb 10 16:57:04 MST 2000  Pavel Roskin <pavel_roskin@geocities.com>
+
+	* config/config.h.in: regenerate for HAVE_LIBFFI
+
 Thu Feb 10 13:14:07 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* libraries/clib/management/Debug.c (Java_kaffe_management_Debug_enableStats): 
