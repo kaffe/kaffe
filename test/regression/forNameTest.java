@@ -4,9 +4,13 @@ class forNameTest {
 		     Class.forName("loadThis");
 		     Class c = Class.forName("loadThis", false, 
 		        new ClassLoader() {
-			  public Class loadClass(String n)
-				throws ClassNotFoundException {
-				return findSystemClass(n);
+			  public Class loadClass(String n, boolean resolve)
+				      throws ClassNotFoundException {
+				Class cl = findSystemClass(n);
+				if (resolve) {
+				      resolveClass(cl);
+				}
+				return cl;
 			  }
 		        });
 		     System.out.println("constructor not called");
