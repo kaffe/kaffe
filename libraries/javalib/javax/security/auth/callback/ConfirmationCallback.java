@@ -1,47 +1,42 @@
-package javax.security.auth.callback;
+/* ConfirmationCallback.java -- callback for confirmations.
+   Copyright (C) 2003, Free Software Foundation, Inc.
 
-// ----------------------------------------------------------------------------
-// $Id: ConfirmationCallback.java,v 1.2 2005/02/01 15:31:26 robilad Exp $
-//
-// Copyright (C) 2003, Free Software Foundation, Inc.
-//
-// This file is part of GNU Crypto.
-//
-// GNU Crypto is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2, or (at your option)
-// any later version.
-//
-// GNU Crypto is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; see the file COPYING.  If not, write to the
-//
-//    Free Software Foundation Inc.,
-//    59 Temple Place - Suite 330,
-//    Boston, MA 02111-1307
-//    USA
-//
-// Linking this library statically or dynamically with other modules is
-// making a combined work based on this library.  Thus, the terms and
-// conditions of the GNU General Public License cover the whole
-// combination.
-//
-// As a special exception, the copyright holders of this library give
-// you permission to link this library with independent modules to
-// produce an executable, regardless of the license terms of these
-// independent modules, and to copy and distribute the resulting
-// executable under terms of your choice, provided that you also meet,
-// for each linked independent module, the terms and conditions of the
-// license of that module.  An independent module is a module which is
-// not derived from or based on this library.  If you modify this
-// library, you may extend this exception to your version of the
-// library, but you are not obligated to do so.  If you do not wish to
-// do so, delete this exception statement from your version.
-// ----------------------------------------------------------------------------
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
+
+package javax.security.auth.callback;
 
 import java.io.Serializable;
 
@@ -53,7 +48,8 @@ import java.io.Serializable;
  *
  * @see CallbackHandler
  */
-public class ConfirmationCallback implements Callback, Serializable {
+public class ConfirmationCallback implements Callback, Serializable
+{
 
    // Constants and variables
    // -------------------------------------------------------------------------
@@ -147,26 +143,31 @@ public class ConfirmationCallback implements Callback, Serializable {
     * @since 1.4
     */
    private String prompt;
+
    /**
     * @serial
     * @since 1.4
     */
    private int messageType;
+
    /**
     * @serial
     * @since 1.4
     */
    private int optionType;
+
    /**
     * @serial
     * @since 1.4
     */
    private int defaultOption;
+
    /**
     * @serial
     * @since 1.4
     */
    private String[] options = null;
+
    /**
     * @serial
     * @since 1.4
@@ -196,7 +197,8 @@ public class ConfirmationCallback implements Callback, Serializable {
     * <code>optionType</code>.
     */
    public ConfirmationCallback(int messageType, int optionType, int defaultOption)
-   throws IllegalArgumentException {
+    throws IllegalArgumentException
+  {
       super();
 
       setMessageType(messageType);
@@ -227,7 +229,8 @@ public class ConfirmationCallback implements Callback, Serializable {
     * of <code>0</code>, or if <code>defaultOption</code> does not lie within
     * the array boundaries of <code>options</code>.
     */
-   public ConfirmationCallback(int messageType, String[] options, int defaultOption) {
+  public ConfirmationCallback(int messageType, String[] options, int defaultOption)
+  {
       super();
 
       setMessageType(messageType);
@@ -257,7 +260,8 @@ public class ConfirmationCallback implements Callback, Serializable {
     * not correspond to one of the options in <code>optionType</code>.
     */
    public ConfirmationCallback(String prompt, int messageType, int optionType,
-                               int defaultOption) {
+			      int defaultOption)
+  {
       super();
 
       setPrompt(prompt);
@@ -293,7 +297,8 @@ public class ConfirmationCallback implements Callback, Serializable {
     * <code>options</code>.
     */
    public ConfirmationCallback(String prompt, int messageType, String[] options,
-                               int defaultOption) {
+			      int defaultOption)
+  {
       super();
 
       setPrompt(prompt);
@@ -314,7 +319,8 @@ public class ConfirmationCallback implements Callback, Serializable {
     * @return the prompt, or <code>null</code> if this
     * <code>ConfirmationCallback</code> was instantiated without a prompt.
     */
-   public String getPrompt() {
+  public String getPrompt()
+  {
       return prompt;
    }
 
@@ -323,7 +329,8 @@ public class ConfirmationCallback implements Callback, Serializable {
     *
     * @return the message type (INFORMATION, WARNING or ERROR).
     */
-   public int getMessageType() {
+  public int getMessageType()
+  {
       return messageType;
    }
 
@@ -341,8 +348,10 @@ public class ConfirmationCallback implements Callback, Serializable {
     * <code>ConfirmationCallback</code> was instantiated with <code>options</code>
     * instead of an <code>optionType</code>.
     */
-   public int getOptionType() {
-      if (options != null) {
+  public int getOptionType()
+  {
+    if (options != null)
+      {
          return UNSPECIFIED_OPTION;
       }
       return optionType;
@@ -355,7 +364,8 @@ public class ConfirmationCallback implements Callback, Serializable {
     * <code>ConfirmationCallback</code> was instantiated with an
     * <code>optionType</code> instead of <code>options</code>.
     */
-   public String[] getOptions() {
+  public String[] getOptions()
+  {
       return options;
    }
 
@@ -369,7 +379,8 @@ public class ConfirmationCallback implements Callback, Serializable {
     * <code>options</code> array specified to the constructor of this
     * <code>ConfirmationCallback</code>.
     */
-   public int getDefaultOption() {
+  public int getDefaultOption()
+  {
       return defaultOption;
    }
 
@@ -384,10 +395,14 @@ public class ConfirmationCallback implements Callback, Serializable {
     * constructor of this <code>ConfirmationCallback</code>.
     * @see #getSelectedIndex()
     */
-   public void setSelectedIndex(int selection) {
-      if (options != null) {
+  public void setSelectedIndex(int selection)
+  {
+    if (options != null)
+      {
          setOptions(options, selection);
-      } else {
+      }
+    else
+      {
          setOptionType(optionType, selection);
       }
    }
@@ -403,12 +418,15 @@ public class ConfirmationCallback implements Callback, Serializable {
     * array specified to the constructor of this <code>ConfirmationCallback</code>.
     * @see #setSelectedIndex(int)
     */
-   public int getSelectedIndex() {
+  public int getSelectedIndex()
+  {
       return this.selection;
    }
 
-   private void setMessageType(int messageType) throws IllegalArgumentException {
-      switch (messageType) {
+  private void setMessageType(int messageType) throws IllegalArgumentException
+  {
+    switch (messageType)
+      {
       case INFORMATION:
       case WARNING:
       case ERROR: this.messageType = messageType; break;
@@ -417,11 +435,14 @@ public class ConfirmationCallback implements Callback, Serializable {
    }
 
    private void setOptionType(int optionType, int selectedOption)
-   throws IllegalArgumentException {
-      switch (optionType) {
+    throws IllegalArgumentException
+  {
+    switch (optionType)
+      {
       case YES_NO_OPTION:
          this.optionType = optionType;
-         switch (selectedOption) {
+	switch (selectedOption)
+	  {
          case YES:
          case NO: this.selection = selectedOption; break;
          default: throw new IllegalArgumentException("invalid option");
@@ -429,7 +450,8 @@ public class ConfirmationCallback implements Callback, Serializable {
          break;
       case YES_NO_CANCEL_OPTION:
          this.optionType = optionType;
-         switch (selectedOption) {
+	switch (selectedOption)
+	  {
          case YES:
          case NO:
          case CANCEL: this.selection = selectedOption; break;
@@ -438,7 +460,8 @@ public class ConfirmationCallback implements Callback, Serializable {
          break;
       case OK_CANCEL_OPTION:
          this.optionType = optionType;
-         switch (selectedOption) {
+	switch (selectedOption)
+	  {
          case OK:
          case CANCEL: this.selection = selectedOption; break;
          default: throw new IllegalArgumentException("invalid option");
@@ -450,15 +473,20 @@ public class ConfirmationCallback implements Callback, Serializable {
    }
 
    private void setOptions(String[] options, int selectedOption)
-   throws IllegalArgumentException {
-      if ((selectedOption < 0) || (selectedOption > options.length - 1)) {
+    throws IllegalArgumentException
+  {
+    if ((selectedOption < 0) || (selectedOption > options.length - 1))
+      {
          throw new IllegalArgumentException("invalid selection");
       }
-      if ((options == null) || (options.length == 0)) {
+    if ((options == null) || (options.length == 0))
+      {
          throw new IllegalArgumentException("options is null or empty");
       }
-      for (int i = 0; i < options.length; i++) {
-         if ((options[i] == null) || (options[i].length() == 0)) {
+    for (int i = 0; i < options.length; i++)
+      {
+	if ((options[i] == null) || (options[i].length() == 0))
+	  {
             throw new IllegalArgumentException("options[" + i + "] is null or empty");
          }
       }
@@ -466,8 +494,10 @@ public class ConfirmationCallback implements Callback, Serializable {
       this.selection = selectedOption;
    }
 
-   private void setPrompt(String prompt) throws IllegalArgumentException {
-      if ((prompt == null) || (prompt.length() == 0)) {
+  private void setPrompt(String prompt) throws IllegalArgumentException
+  {
+    if ((prompt == null) || (prompt.length() == 0))
+      {
          throw new IllegalArgumentException("prompt is null or empty");
       }
       this.prompt = prompt;
