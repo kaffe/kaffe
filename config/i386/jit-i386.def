@@ -368,6 +368,17 @@ define_insn(move_float_const, fmove_RxC)
 		OUT = 0xEE;
 
 		debug(("fldz\n"));
+		{
+			jvalue d;
+			d.d = val;
+
+			if ((d.j >> 63) & 1) {
+				OUT = 0xD9;
+				OUT = 0xe0;
+
+				debug(("fchs\n"));
+			}
+		}
 	}
 	else if (val == 1.0) {
 		OUT = 0xD9;
@@ -407,6 +418,17 @@ define_insn(move_double_const, fmovel_RxC)
 		OUT = 0xEE;
 
 		debug(("fldz\n"));
+		{
+			jvalue d;
+			d.d = val;
+
+			if ((d.j >> 63) & 1) {
+				OUT = 0xD9;
+				OUT = 0xe0;
+
+				debug(("fchsl\n"));
+			}
+		}
 	}
 	else if (val == 1.0) {
 		OUT = 0xD9;
@@ -551,6 +573,28 @@ define_insn(sub_double, fsubl_RRR)
 	LOUT = r2;
 
 	debug(("fsubl %d(ebp)\n", r2));
+}
+
+define_insn(neg_float, negf_RxR)
+{
+    rreg_float(2);
+    wreg_float(0);
+
+    OUT = 0xD9;
+    OUT = 0xe0;
+
+    debug(("fchs\n"));
+}
+
+define_insn(neg_double, negd_RxR)
+{
+    rreg_double(2);
+    wreg_double(0);
+
+    OUT = 0xD9;
+    OUT = 0xe0;
+
+    debug(("fchsl\n"));
 }
 
 define_insn(mul_int, mul_RRR)
