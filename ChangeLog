@@ -1,3 +1,10 @@
+2003-04-23 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/essential.files,
+	libraries/javalib/profiles/default/core.files:
+	moved java.io.SerializedPermission to essential files. It's
+	needed by ObjectStreamConstants.	
+	
 2003-04-22 Tim Stack <stack@cs.utah.edu>
 
 	* FAQ/FAQ.xdebugging:

@@ -67,6 +67,7 @@ java/io/PrintWriter.java
 java/io/PushbackInputStream.java
 java/io/Reader.java
 java/io/Serializable.java
+java/io/SerializablePermission.java
 java/io/StreamCorruptedException.java
 java/io/SyncFailedException.java
 java/io/UnsupportedEncodingException.java

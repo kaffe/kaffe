@@ -21,7 +21,6 @@ java/io/PipedWriter.java
 java/io/PushbackReader.java
 java/io/RandomAccessFile.java
 java/io/SequenceInputStream.java
-java/io/SerializablePermission.java
 java/io/StreamTokenizer.java
 java/io/StringBufferInputStream.java
 java/io/StringReader.java
