@@ -13,7 +13,7 @@ package kaffe.tools.compiler;
 import kaffe.lang.Application;
 import kaffe.lang.ApplicationException;
 
-public class Compiler_kjc extends Compiler {
+public class Compiler_pizza extends Compiler {
 
 public boolean compile(String name) {
 	Application app;
