@@ -1,3 +1,12 @@
+/*
+ * Java core library component.
+ *
+ * Copyright (c) 1997, 1998, 2000
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ */
 package java.text;
 
 import java.lang.String;
@@ -6,18 +15,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.ResourceBundle;
 import kaffe.util.DateParser;
 import kaffe.util.NotImplemented;
 
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
 public class SimpleDateFormat
   extends DateFormat
 {
@@ -26,8 +27,16 @@ public class SimpleDateFormat
 	private DateFormatSymbols syms;
 	private String pattern;
 
+private String getDefaultPattern(Locale loc)
+{
+	ResourceBundle bundle = getResources("dateformat", loc);
+	String date = ((String[])bundle.getObject("date"))[DateFormat.DEFAULT];
+	String time = ((String[])bundle.getObject("time"))[DateFormat.DEFAULT];
+	return date + " " + time;
+}
+    
 public SimpleDateFormat() {
-	this("", Locale.getDefault());
+	this(getDefaultPattern(Locale.getDefault()), Locale.getDefault());
 }
 
 public SimpleDateFormat(String pattern) {
@@ -357,15 +366,310 @@ public int hashCode() {
 	return (super.hashCode());
 }
 
+private static String NUMERIC_PATTERN = "ydhHmsSDFwWkK";
+private static int[] NUMERIC_FIELD = {
+	Calendar.MONTH,
+	Calendar.YEAR, Calendar.DAY_OF_MONTH,
+	Calendar.HOUR, Calendar.HOUR_OF_DAY,
+	Calendar.MINUTE, Calendar.SECOND, Calendar.MILLISECOND,
+	Calendar.DAY_OF_YEAR, Calendar.DAY_OF_WEEK_IN_MONTH,
+	Calendar.WEEK_OF_YEAR, Calendar.DAY_OF_WEEK_IN_MONTH,
+	Calendar.HOUR_OF_DAY, Calendar.HOUR
+};
+	
 public Date parse(String source, ParsePosition pos) {
-	try {
-		return DateParser.parse( source, syms);
+	calendar.clear();
+	numberFormat.setParseIntegerOnly(true);
+	numberFormat.setGroupingUsed(false);
+
+	pos.setErrorIndex(-1);
+
+	int startIndex = pos.getIndex();
+	int index = startIndex;
+	int endIndex = source.length();
+	boolean ambigousYear = false;
+
+	char[] patt = pattern.toCharArray();
+	for (int i = 0; i < patt.length; ) {
+		char letter = patt[i++];
+
+		if (letter == '\'') {
+			// quoted text
+			if (patt[i] == '\'') {
+				if (source.charAt(index) != '\'') {
+					pos.setIndex(startIndex);
+					pos.setErrorIndex(index);
+					return null;
+				}
+				index++;
+				i++;
+			}
+			else {
+				while ((i < patt.length) && patt[i] != '\'') {
+					if (source.charAt(index) != patt[i]) {
+						pos.setIndex(startIndex);
+						pos.setErrorIndex(index);
+						return null;
+					}
+					index++;
+					i++;
+				}
+				i++;
+			}
+		}
+		else if (((letter >= 'a') && (letter <= 'z')) ||
+			 ((letter >= 'A') && (letter <= 'Z'))) {
+			// pattern Code
+			int plen = 1;
+			int val = -1;
+			
+			// count pattern len
+			while (i < patt.length && patt[i] == letter) {
+				plen++;
+				i++;
+			}
+			
+			// skip blanks
+			for (;;) {
+				if (index >= endIndex) {
+					pos.setIndex(startIndex);
+					pos.setErrorIndex(index);
+					return null;
+				}
+				char c = source.charAt(index);
+				if ((c != ' ') && (c != '\t'))
+					break;
+				index++;
+			}
+			pos.setIndex(index);
+
+			// handle numeric values
+			if ((NUMERIC_PATTERN.indexOf(letter) != -1) ||
+			    ((letter == 'M') && (plen <= 2))) {
+				Number number;
+				if ((i < patt.length) &&
+				    (DEFAULTPATTERNCHARS.indexOf(patt[i]) != -1)) {
+					if (index + plen > endIndex) {
+						pos.setIndex(startIndex);
+						pos.setErrorIndex(index);
+						return null;
+					}
+					number = numberFormat.parse(source.substring(0, index + plen), pos);
+				}
+				else {
+					number = numberFormat.parse(source, pos);
+				}
+				if (number == null) {
+					pos.setIndex(startIndex);
+					pos.setErrorIndex(index);
+					return null;
+				}
+				val = number.intValue();
+				switch (letter) {
+				case 'y':
+					// 2 digits and only 2 digits
+					ambigousYear = (plen < 3) &&
+						(val >= 0) &&
+						(pos.getIndex() - index <= 2);
+					break;
+				case 'M':
+					val--;
+					break;
+				case 'k':
+					if (val == 24)
+						val = 0;
+					break;
+				case 'h':
+					if (val == 12)
+						val = 0;
+					break;
+				}
+				calendar.set (NUMERIC_FIELD[NUMERIC_PATTERN.indexOf(letter) + 1],
+					      val);
+				index = pos.getIndex();
+			}
+			// handle strings values
+			else {
+				switch (letter) {
+				case 'G':
+					index = parseField (source, index, Calendar.ERA, syms.eras);
+					break;
+				case 'M':
+					index = parseField (source, index, Calendar.MONTH, syms.months);
+					if (index <= 0)
+						index = parseField (source, -index, Calendar.MONTH, syms.shortMonths);
+					break;
+				case 'E':
+					index = parseField (source, index, Calendar.DAY_OF_WEEK, syms.weekdays);
+					if (index <= 0)
+						index = parseField (source, -index, Calendar.DAY_OF_WEEK, syms.shortWeekdays);
+					break;
+				case 'a':
+					index = parseField (source, index, Calendar.AM_PM, syms.amPmStrings);
+					break;
+				case 'z':
+					index = parseTimeZone (source, index, endIndex);
+					break;
+				default:
+					index = -index;
+				}
+				if (index <= 0) {
+					pos.setIndex(startIndex);
+					pos.setErrorIndex(-index);
+					return null;
+				}
+				pos.setIndex(index);
+			}
+		}
+		else {
+			// match litteral
+			if (source.charAt(index) != letter) {
+				pos.setIndex(startIndex);
+				pos.setErrorIndex(index);
+				return null;
+			}
+			index++;
+		}
 	}
-	catch ( ParseException _x) {
-		return null;
+
+	if (ambigousYear && calendar.isSet(Calendar.YEAR)) {
+		// adjust century to be within 80 years before and 20
+		// years after current time
+		int current = Calendar.getInstance().get(Calendar.YEAR);
+		int epoch = current - current % 100;
+		int year = epoch + calendar.get(Calendar.YEAR);
+		if (year > current + 20)
+			year -= 100;
+		else if (year < current - 80)
+			year += 100;
+		calendar.set (Calendar.YEAR, year);
 	}
+	
+	pos.setIndex (index);
+	return calendar.getTime();
 }
 
+private int parseField (String source, int start, int field, String[] data) {
+	int best = -1;
+	int bestLen = 0;
+	
+	for (int i = data.length; i-- > 0; ) {
+		int len = data[i].length();
+		if ((len > bestLen) &&
+		    source.regionMatches (true, start, data[i], 0, len)) {
+			best = i;
+			bestLen = len;
+		}
+	}
+
+	if (best >= 0) {
+		calendar.set (field, best);
+		return start + bestLen;
+	}
+	return -start;
+}
+
+private int parseTimeZone (String source, int start, int endIndex) {
+	// XXX better handle DST_OFFSET if tz.useDaylightTime() ?
+	calendar.set(Calendar.DST_OFFSET, 0);
+
+	if (source.regionMatches (start, "GMT", 0, 3)) {
+		int index = start + 3;
+		int sign = 0;
+
+		if (index < endIndex) {
+			switch (source.charAt(index)) {
+			case '+':
+				sign = +1;
+				break;
+			case '-':
+				sign = -1;
+			}
+		}
+		if (sign == 0) {
+			calendar.set(Calendar.ZONE_OFFSET, 0);
+			return index;
+		}
+
+		ParsePosition pos = new ParsePosition(index + 1);
+		Number num = numberFormat.parse (source, pos);
+		if (num == null)
+			return -start;
+		int offset = num.intValue();
+		if ((pos.getIndex() < endIndex) &&
+		    (source.charAt(pos.getIndex()) == ':')) {
+			// GMT+hh:mm
+			offset *= 60;
+			pos.setIndex(pos.getIndex() + 1);
+			num = numberFormat.parse (source, pos);
+			if (num == null)
+				return -start;
+			offset += num.intValue();
+		}
+		else {
+			// GMT+hh[mm]
+			if (offset < 24)
+				offset *= 60;
+			else
+				offset = (offset / 100) * 60 + offset % 100;
+		}
+		offset *= 60 * 1000;
+		if (sign == -1)
+			offset = -offset;
+		calendar.set(Calendar.ZONE_OFFSET, offset);
+		return pos.getIndex();
+	}
+
+	// search localized timezone
+	int bestZone = -1;
+	int bestLen = 0;
+	int bestType = 0;
+	for (int i = 0; i < syms.zoneStrings.length; i++) {
+		String[] zone = syms.zoneStrings[i];
+
+		for (int j = 1; j <= 4; j++) {
+			int len = zone[j].length();
+
+			if ((len > bestLen) &&
+			    source.regionMatches (true, start, zone[j], 0, len)) {
+				bestZone = i;
+				bestType = j;
+				bestLen = len;
+			}
+		}
+	}
+	if (bestZone != -1) {
+		TimeZone tz = TimeZone.getTimeZone (syms.zoneStrings[bestZone][0]);
+		calendar.set(Calendar.ZONE_OFFSET, tz.getRawOffset());
+		return start + bestLen;
+	}
+
+	// try RFC 822 +hhmm format
+	DecimalFormat rfc822 = new DecimalFormat("+####;-####");
+	rfc822.setParseIntegerOnly(true);
+	rfc822.setGroupingUsed(false);
+	ParsePosition pos = new ParsePosition (start);
+	Number num = rfc822.parse (source, pos);
+	if (num == null)
+		return -start;
+
+	int offset = num.intValue();
+	int sign = 1;
+	if (offset < 0) {
+		sign = -1;
+		offset = -offset;
+	}
+	if (offset < 24)
+		offset *= 60;
+	else
+		offset = (offset / 100) * 60 + offset % 100;
+
+	offset *= 60 * 1000;
+	if (sign == -1)
+		offset = -offset;
+	calendar.set(Calendar.ZONE_OFFSET, offset);
+	return pos.getIndex();
+}
 
 public void setDateFormatSymbols(DateFormatSymbols syms) {
 	this.syms = syms;
