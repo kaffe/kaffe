@@ -1,3 +1,9 @@
+Wed May  3 11:37:33 PDT 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/lang/Thread.java: disallow setDaemon()
+	after start()
+	* test/regression/ThreadState.java: check setDaemon() after start()
+
 Tue May  2 17:56:04 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* beos-native/syscalls.c, oskit-pthreads/syscalls.c,
