@@ -1,5 +1,9 @@
 2004-04-03  Adam Heath <doogie@debian.org>
 
+        * scripts/sort-warnings.pl: Print out the warning count per file.
+
+2004-04-03  Adam Heath <doogie@debian.org>
+
         * scripts/sort-warnings.pl:
 	  * For each file, include the count of warnings.
 	  * No longer print Param: when there are no params.

@@ -87,7 +87,7 @@ while (<>) {
 }
 print( STDERR "done loading: " . length( $text ) . "\n" );
 
-my %allfiles;
+my %file_errors;
 my %error_counts;
 my %errors;
 my $total_errors = 0;
@@ -109,7 +109,7 @@ print( STDERR "\t$type\t\t" );
 		$file =~ s,(?:(?:\.\./)+|/tmp/topic/)(include|kaffe|libraries|config)/,$1/,;
 		next if ( $file =~ m,^/, );
 		push( @{ $errors{ $type }{ $file }{ $line } }, [ grep( { defined( $_ ) } @matches ) ] );
-		$allfiles{ $file } = 1;
+		$file_errors{ $file }++;
 		$error_counts{ $type }++;
 		$count++;
 		$total_errors++;
@@ -117,10 +117,15 @@ print( STDERR "\t$type\t\t" );
 print( STDERR "$count\n" );
 	$text = $scanned . $text;
 }
-#print( STDERR join( "\n", keys( %allfiles ) ) . "\n" );
+#print( STDERR join( "\n", keys( %file_errors ) ) . "\n" );
 print( "\nTotal Errors: $total_errors\n\n" );
 
 #print( Dumper( \%errors ) );
+foreach my $file ( sort( { $file_errors{ $b } <=> $file_errors{ $a } } keys( %file_errors ) ) ) {
+	my $count = $file_errors{ $file };
+	print( "File: $count\t$file\n" );
+}
+print( "\n" );
 foreach my $type ( sort( { $error_counts{ $b } <=> $error_counts{ $a } } keys( %errors ) ) ) {
 	my $h1 = $errors{ $type };
 	print( "Type: $type\nCount: $error_counts{ $type }\n" );
