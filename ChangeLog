@@ -1,3 +1,12 @@
+2003-07-08  Mark Wielaard <mark@klomp.org>
+
+	* libraries/javalib/java/net/URL.java:
+	(getPath, getQuery) new methods.
+
+	* libraries/clib/native/System.c:
+	(java_lang_System_initProperties) set java.version to 1.3 to
+	allow Eclipse to run.
+
 2003-07-08 Helmer Kraemer <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/locks.h, kaffe/kaffevm/locks.c:

@@ -205,6 +205,16 @@ public String getFile() {
 	return (file);
 }
 
+public String getPath() {
+	int query = file.indexOf('?');
+	return query == -1 ? file : file.substring(0, query);
+}
+
+public String getQuery() {
+	int query = file.indexOf('?');
+	return query == -1 ? null : file.substring(query + 1);
+}
+
 public String getHost() {
 	return (host);
 }
