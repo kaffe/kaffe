@@ -1924,8 +1924,8 @@ jthreadedOpen(const char* path, int flags, int mode, int *out)
 		}					\
 	}
 
-#define IGNORE_EINTR()					\
-	if (errno == EINTR) {				\
+#define IGNORE_EINTR(r)					\
+	if (r == -1 && errno == EINTR) {		\
 		continue;				\
 	}
 
@@ -1956,9 +1956,9 @@ jthreadedConnect(int fd, struct sockaddr* addr, size_t len, int timeout)
 {
 	int r;
 	jlong deadline = 0;
-	int haveBlocked = 0;
+	int inProgress = 0;
 
-	intsDisable();	
+	intsDisable();
 	SET_DEADLINE(deadline, timeout)
 	for (;;) {
 		r = connect(fd, addr, len);
@@ -1966,7 +1966,7 @@ jthreadedConnect(int fd, struct sockaddr* addr, size_t len, int timeout)
 				|| errno == EINTR || errno == EISCONN)) {
 			break;	/* success or real error */
 		}
-		if (haveBlocked && r == -1 && errno == EISCONN) {
+		if (r == -1 && errno == EISCONN) {
 			/* on Solaris 2.5, connect returns EISCONN
 			   when we retry a connect attempt in
 			   background.  This might lead to false
@@ -1974,11 +1974,14 @@ jthreadedConnect(int fd, struct sockaddr* addr, size_t len, int timeout)
 			   thread tries to connect this socket and
 			   succeeds before this one is waken up.
 			   Let's just hope it doesn't happen for now.  */
-			r = 0;
+			if (inProgress) {
+				r = 0;
+			}
 			break;
-		} else
-			haveBlocked = 1;
-		IGNORE_EINTR()
+		} else if (r == -1 && errno == EINPROGRESS) {
+			inProgress = 1;
+		}
+		IGNORE_EINTR(r)
 		CALL_BLOCK_ON_FILE(fd, TH_CONNECT, timeout)
 		BREAK_IF_LATE(deadline, timeout)
 	}
@@ -2006,7 +2009,7 @@ jthreadedAccept(int fd, struct sockaddr* addr, size_t* len,
 				|| errno == EAGAIN)) {
 			break;	/* success or real error */
 		}
-		IGNORE_EINTR()
+		IGNORE_EINTR(r)
 		CALL_BLOCK_ON_FILE(fd, TH_ACCEPT, timeout)
 		BREAK_IF_LATE(deadline, timeout)
 	}
@@ -2034,7 +2037,7 @@ jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *out)
 				|| errno == EAGAIN)) {
 			break;	/* real error or success */
 		}
-		IGNORE_EINTR()
+		IGNORE_EINTR(r)
 		CALL_BLOCK_ON_FILE(fd, TH_READ, timeout)
 		BREAK_IF_LATE(deadline, timeout)
 	}
@@ -2114,7 +2117,7 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 					|| errno == EAGAIN)) {
 			break;
 		}
-		IGNORE_EINTR()
+		IGNORE_EINTR(r)
 		/* else EWOULDBLOCK or EAGAIN */
 		CALL_BLOCK_ON_FILE(fd, TH_READ, timeout)
 		BREAK_IF_LATE(deadline, timeout)
