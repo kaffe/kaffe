@@ -2473,8 +2473,23 @@ merge(errorInfo* einfo,
 	return(true);
 }
 
-
-
+/*
+ * Helper function for error reporting in verifyBasicBlock.
+ */
+static inline
+bool
+verifyErrorInVerifyBasicBlock(errorInfo* einfo,
+			      const Method* method,
+			      Hjava_lang_Class* this,
+			      const char * msg)
+{
+	if (einfo->type == 0) {
+		postExceptionMessage(einfo, JAVA_LANG(VerifyError),
+				     "in method \"%s.%s\": %s",
+				     CLASS_CNAME(this), METHOD_NAMED(method), msg);
+	}
+	return(false);
+}
 
 /*
  * verifyBasicBlock()
@@ -2521,13 +2536,6 @@ verifyBasicBlock(errorInfo* einfo,
 	 *         - those dealing with locals variables
 	 *         - those dealing with the operand stack
 	 **************************************************************************************************/
-#define VERIFY_ERROR(_MSG) \
-	if (einfo->type == 0) { \
-		postExceptionMessage(einfo, JAVA_LANG(VerifyError), \
-				     "in method \"%s.%s\": %s", \
-				     CLASS_CNAME(this), METHOD_NAMED(method), _MSG); \
-	} \
-	return(false)
 
 #define GET_IDX \
 	idx = code[pc + 1]
@@ -2540,26 +2548,26 @@ verifyBasicBlock(errorInfo* einfo,
 #define ENSURE_LOCAL_TYPE(_N, _TINFO) \
 	if (!typecheck(einfo, this, (_TINFO), &block->locals[_N])) { \
 		if (block->locals[_N].data.class == TUNSTABLE->data.class) { \
-			VERIFY_ERROR("attempt to access an unstable local variable"); \
+			return verifyErrorInVerifyBasicBlock(einfo, method, this, "attempt to access an unstable local variable"); \
 		} else { \
-			VERIFY_ERROR("attempt to access a local variable not of the correct type"); \
+			return verifyErrorInVerifyBasicBlock(einfo, method, this, "attempt to access a local variable not of the correct type"); \
 		} \
 	} 
 	
 	/* only use with TLONG and TDOUBLE */
 #define ENSURE_LOCAL_WTYPE(_N, _TINFO) \
 	if (block->locals[_N].data.class != (_TINFO)->data.class) { \
-		VERIFY_ERROR("local variable not of correct type"); \
+		return verifyErrorInVerifyBasicBlock(einfo, method, this, "local variable not of correct type"); \
 	} \
 	else if (block->locals[_N + 1].data.class != TWIDE->data.class) { \
-		VERIFY_ERROR("accessing a long or double in a local where the following local has been corrupted"); \
+		return verifyErrorInVerifyBasicBlock(einfo, method, this, "accessing a long or double in a local where the following local has been corrupted"); \
 	}
 
 	
 #define ENSURE_OPSTACK_SIZE(_N) \
 	if (block->stacksz < (_N)) { \
                 DBG(VERIFY3, dprintf("                here's the stack: \n"); printBlock(method, block, "                    "); ); \
-		VERIFY_ERROR("not enough items on stack for operation"); \
+		return verifyErrorInVerifyBasicBlock(einfo, method, this, "not enough items on stack for operation"); \
 	}
 
 #define CHECK_STACK_OVERFLOW(_N) \
@@ -2567,7 +2575,7 @@ verifyBasicBlock(errorInfo* einfo,
 		DBG(VERIFY3, dprintf("                block->stacksz: %d :: N = %d :: method->stacksz = %d\n", \
 				     block->stacksz, _N, method->stacksz); ); \
                 DBG(VERIFY3, dprintf("                here's the stack: \n"); printBlock(method, block, "                    "); ); \
-		VERIFY_ERROR("stack overflow"); \
+		return verifyErrorInVerifyBasicBlock(einfo, method, this, "stack overflow"); \
 	}
 	
 	
@@ -2613,7 +2621,7 @@ verifyBasicBlock(errorInfo* einfo,
 		    printType(OPSTACK_TOP); \
 		    dprintf(" vs. what's we wanted: "); \
 		    printType(_TINFO); dprintf("\n"); ); \
-		VERIFY_ERROR("top of opstack does not have desired type"); \
+		return verifyErrorInVerifyBasicBlock(einfo, method, this, "top of opstack does not have desired type"); \
 	}
 	
 #define OPSTACK_PEEK_T(_TINFO) \
@@ -2625,9 +2633,9 @@ verifyBasicBlock(errorInfo* einfo,
 	 */
 #define OPSTACK_WPEEK_T_BLIND(_TINFO) \
 	if (OPSTACK_TOP->data.class != TWIDE->data.class) { \
-		VERIFY_ERROR("trying to pop a wide value off operand stack where there is none"); \
+		return verifyErrorInVerifyBasicBlock(einfo, method, this, "trying to pop a wide value off operand stack where there is none"); \
 	} else if (OPSTACK_WTOP->data.class != (_TINFO)->data.class) { \
-		VERIFY_ERROR("mismatched stack types"); \
+		return verifyErrorInVerifyBasicBlock(einfo, method, this, "mismatched stack types"); \
 	}
 	
 #define OPSTACK_WPEEK_T(_TINFO) \
@@ -2800,7 +2808,7 @@ verifyBasicBlock(errorInfo* einfo,
 		ALOAD_common:
 			if (!isReference(&block->locals[idx])) {
 				DBG(VERIFY3, dprintf("%sERROR: ", indent); printType(&block->locals[idx]); dprintf("\n"); );
-				VERIFY_ERROR("aload<_n> where local variable does not contain an object reference");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aload<_n> where local variable does not contain an object reference");
 			}
 			
 			OPSTACK_PUSH(&block->locals[idx]);
@@ -2819,7 +2827,7 @@ verifyBasicBlock(errorInfo* einfo,
 			type = OPSTACK_TOP;
 			
 			if (!IS_ADDRESS(type) && !isReference(type)) {
-				VERIFY_ERROR("astore: top of stack is not a return address or reference type");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "astore: top of stack is not a return address or reference type");
 			}
 			
 			block->locals[idx] = *type;
@@ -2954,7 +2962,7 @@ verifyBasicBlock(errorInfo* einfo,
 			case TYPE_Short:   OPSTACK_PUSH(TSHORTARR);  break;
 			case TYPE_Int:     OPSTACK_PUSH(TINTARR);    break;
 			case TYPE_Long:    OPSTACK_PUSH(TLONGARR);   break;
-			default: VERIFY_ERROR("newarray of unknown type");
+			default: return verifyErrorInVerifyBasicBlock(einfo, method, this, "newarray of unknown type");
 			}
 			break;
 			
@@ -2964,7 +2972,7 @@ verifyBasicBlock(errorInfo* einfo,
 			type = OPSTACK_TOP;
 			if (!isArray(type)) {
 				DBG(VERIFY3, dprintf("%stype = ", indent); printType(type); dprintf("\n"); );
-				VERIFY_ERROR("arraylength: top of operand stack is not an array");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "arraylength: top of operand stack is not an array");
 			}
 			
 			*type = *TINT;
@@ -2986,14 +2994,14 @@ verifyBasicBlock(errorInfo* einfo,
 			ENSURE_OPSTACK_SIZE(2);
 			
 			if (OPSTACK_TOP->data.class != TINT->data.class) {
-				VERIFY_ERROR("aaload: item on top of stack is not an integer");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aaload: item on top of stack is not an integer");
 			}
 			OPSTACK_POP_BLIND;
 			
 			type = OPSTACK_TOP;
 			if (!isArray(type)) {
 				DBG(VERIFY3, dprintf("%serror: type = ", indent); printType(type); dprintf("\n"); );
-				VERIFY_ERROR("aaload: top of operand stack is not an array");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aaload: top of operand stack is not an array");
 			}
 			
 			if (type->tinfo & TINFO_NAME || type->tinfo & TINFO_SIG) {
@@ -3027,7 +3035,7 @@ verifyBasicBlock(errorInfo* einfo,
                                     dprintf("                OPSTACK_TOP: ");
                                     printType(OPSTACK_TOP);
                                     dprintf(" vs. what's we wanted: TBYTEARR or TBOOLARR"); )
-                                VERIFY_ERROR("top of opstack does not have desired type");
+                                return verifyErrorInVerifyBasicBlock(einfo, method, this, "top of opstack does not have desired type");
 			}
 
 			OPSTACK_POP_BLIND;
@@ -3042,7 +3050,7 @@ verifyBasicBlock(errorInfo* einfo,
 			ENSURE_OPSTACK_SIZE(3);
 			
 			if (OPSTACK_ITEM(2)->data.class != TINT->data.class) {
-				VERIFY_ERROR("aastore: array index is not an integer");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aastore: array index is not an integer");
 			}
 			
 			type      = OPSTACK_ITEM(1);
@@ -3056,7 +3064,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			if (!isArray(arrayType)) {
 				DBG(VERIFY3, dprintf("%serror: type = ", indent); printType(type); dprintf("\n"); );
-				VERIFY_ERROR("aastore: top of operand stack is not an array");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aastore: top of operand stack is not an array");
 			}
 			
 			if (arrayType->tinfo & TINFO_NAME || arrayType->tinfo & TINFO_SIG) {
@@ -3073,7 +3081,7 @@ verifyBasicBlock(errorInfo* einfo,
 			}
 			
 			if (!typecheck(einfo, this, arrayType, type)) {
-				VERIFY_ERROR("attempting to store incompatible type in array");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "attempting to store incompatible type in array");
 			}
 			
 			OPSTACK_POP_N_BLIND(3);
@@ -3113,7 +3121,7 @@ verifyBasicBlock(errorInfo* einfo,
 				    dprintf("                OPSTACK_TOP: ");
 				    printType(OPSTACK_TOP);
 				    dprintf(" vs. what's we wanted: TBYTEARR or TBOOLARR"); )
-				VERIFY_ERROR("top of opstack does not have desired type");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "top of opstack does not have desired type");
 			}
 			OPSTACK_POP_BLIND;
 			break;			
@@ -3268,7 +3276,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case INSTANCEOF:
 			ENSURE_OPSTACK_SIZE(1);
 			if (!isReference(OPSTACK_ITEM(1))) {
-				VERIFY_ERROR("instanceof: top of stack is not a reference type");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "instanceof: top of stack is not a reference type");
 			}
 			*OPSTACK_TOP = *TINT;
 			break;
@@ -3283,7 +3291,7 @@ verifyBasicBlock(errorInfo* einfo,
 			ENSURE_OPSTACK_SIZE(n);
 			while (n > 0) {
 				if (OPSTACK_TOP->data.class != TINT->data.class) {
-					VERIFY_ERROR("multinewarray: first <n> things on opstack must be integers");
+					return verifyErrorInVerifyBasicBlock(einfo, method, this, "multinewarray: first <n> things on opstack must be integers");
 				}
 				OPSTACK_POP_BLIND;
 				n--;
@@ -3333,7 +3341,7 @@ verifyBasicBlock(errorInfo* einfo,
 				const char* namestr = CLASS_NAMED(idx, pool);
 				
 				if (*namestr == '[') {
-					VERIFY_ERROR("new: used to create an array");
+					return verifyErrorInVerifyBasicBlock(einfo, method, this, "new: used to create an array");
 				}
 				
 				type->tinfo = TINFO_NAME;				
@@ -3362,7 +3370,7 @@ verifyBasicBlock(errorInfo* einfo,
 				type->data.class  = lookupArray(class, einfo);
 				
 				if (type->data.class == NULL) {
-					VERIFY_ERROR("anewarray: error creating array type");
+					return verifyErrorInVerifyBasicBlock(einfo, method, this, "anewarray: error creating array type");
 				}
 			} else {
 				char* namestr;
@@ -3392,7 +3400,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case GETFIELD:
 			ENSURE_OPSTACK_SIZE(1);
 			if (!checkUninit(this, OPSTACK_TOP)) {
-				VERIFY_ERROR("getfield: uninitialized type on top of operand stack");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "getfield: uninitialized type on top of operand stack");
 			}
 			
 			GET_WIDX;
@@ -3438,7 +3446,7 @@ verifyBasicBlock(errorInfo* einfo,
 				
 			default:
 				DBG(VERIFY3, dprintf("%sweird type signature: %s", indent, sig); );
-				VERIFY_ERROR("get{field/static}: unrecognized type signature");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "get{field/static}: unrecognized type signature");
 				break;
 			}
 			break;
@@ -3450,7 +3458,7 @@ verifyBasicBlock(errorInfo* einfo,
 			ENSURE_OPSTACK_SIZE(n);
 			
 			if (!checkUninit(this, OPSTACK_TOP)) {
-				VERIFY_ERROR("putfield: uninitialized type on top of operand stack");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "putfield: uninitialized type on top of operand stack");
 			}
 			
 			GET_WIDX;
@@ -3476,7 +3484,7 @@ verifyBasicBlock(errorInfo* einfo,
 				
 			default:
 				DBG(VERIFY3, dprintf("%sweird type signature: %s", indent, sig); );
-				VERIFY_ERROR("put{field/static}: unrecognized type signature");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "put{field/static}: unrecognized type signature");
 				break;
 			}
 			
@@ -3523,7 +3531,7 @@ verifyBasicBlock(errorInfo* einfo,
 				
 			default:
 				DBG(VERIFY3, dprintf("%sweird type signature: %s", indent, sig); );
-				VERIFY_ERROR("put{field/static}: unrecognized type signature");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "put{field/static}: unrecognized type signature");
 				break;
 			}
 			break;
@@ -3554,7 +3562,7 @@ verifyBasicBlock(errorInfo* einfo,
 			ENSURE_OPSTACK_SIZE(2);
 			if (!isReference(OPSTACK_TOP) ||
 			    !isReference(OPSTACK_WTOP)) {
-				VERIFY_ERROR("if_acmp* when item on top of stack is not a reference type");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "if_acmp* when item on top of stack is not a reference type");
 			}
 			OPSTACK_POP_BLIND;
 			OPSTACK_POP_BLIND;
@@ -3580,7 +3588,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case IFNULL:
 			ENSURE_OPSTACK_SIZE(1);
 			if (!isReference(OPSTACK_ITEM(1))) {
-				VERIFY_ERROR("if[non]null: thing on top of stack is not a reference");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "if[non]null: thing on top of stack is not a reference");
 			}
 			OPSTACK_POP_BLIND;
 			break;
@@ -3605,7 +3613,7 @@ verifyBasicBlock(errorInfo* einfo,
 				    printBlock(method, block, "                "); );
 				
 				/* propagate error */
-				VERIFY_ERROR("invoke* error");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "invoke* error");
 			}
 			break;
 			
@@ -3614,34 +3622,34 @@ verifyBasicBlock(errorInfo* einfo,
 			OPSTACK_PEEK_T(TINT);
 			sig = getReturnSig(method);
 			if (strlen(sig) != 1 || (*sig != 'I' && *sig != 'Z' && *sig != 'S' && *sig != 'B' && *sig != 'C')) {
-				VERIFY_ERROR("ireturn: method doesn't return an integer");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "ireturn: method doesn't return an integer");
 			}
 			break;
 		case FRETURN:
 			OPSTACK_PEEK_T(TFLOAT);
 			sig = getReturnSig(method);
 			if (strcmp(sig, "F")) {
-				VERIFY_ERROR("freturn: method doesn't return an float");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "freturn: method doesn't return an float");
 			}
 			break;
 		case LRETURN:
 			OPSTACK_WPEEK_T(TLONG);
 			sig = getReturnSig(method);
 			if (strcmp(sig, "J")) {
-				VERIFY_ERROR("lreturn: method doesn't return a long");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "lreturn: method doesn't return a long");
 			}
 			break;
 		case DRETURN:
 			OPSTACK_WPEEK_T(TDOUBLE);
 			sig = getReturnSig(method);
 			if (strcmp(sig, "D")) {
-				VERIFY_ERROR("dreturn: method doesn't return a double");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dreturn: method doesn't return a double");
 			}
 			break;
 		case RETURN:
 			sig = getReturnSig(method);
 			if (strcmp(sig, "V")) {
-				VERIFY_ERROR("return: must return something in a non-void function");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "return: must return something in a non-void function");
 			}
 			break;
 		case ARETURN:
@@ -3649,7 +3657,7 @@ verifyBasicBlock(errorInfo* einfo,
 			t->tinfo = TINFO_SIG;
 			t->data.sig  = getReturnSig(method);
 			if (!typecheck(einfo, this, t, OPSTACK_TOP)) {
-				VERIFY_ERROR("areturn: top of stack is not type compatible with method return type");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "areturn: top of stack is not type compatible with method return type");
 			}
 			break;
 			
@@ -3665,12 +3673,12 @@ verifyBasicBlock(errorInfo* einfo,
 			t->data.class = javaLangThrowable;
 			if (!typecheck(einfo, this, t, OPSTACK_TOP)) {
 				DBG(VERIFY3, dprintf("%sATHROW error: ", indent); printType(OPSTACK_TOP); dprintf ("\n"); );
-				VERIFY_ERROR("athrow: object on top of stack is not a subclass of throwable");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "athrow: object on top of stack is not a subclass of throwable");
 			}
 			
 			for (n = 0; n < method->localsz; n++) {
 				if (block->locals[n].tinfo & TINFO_UNINIT) {
-					VERIFY_ERROR("athrow: uninitialized class instance in a local variable");
+					return verifyErrorInVerifyBasicBlock(einfo, method, this, "athrow: uninitialized class instance in a local variable");
 				}
 			}
 			break;
@@ -3685,7 +3693,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case BREAKPOINT:
 		        /* for internal use only: cannot appear in a class file */
-			VERIFY_ERROR("breakpoint instruction cannot appear in classfile");
+			return verifyErrorInVerifyBasicBlock(einfo, method, this, "breakpoint instruction cannot appear in classfile");
 			break;
 			
 			
@@ -3693,7 +3701,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case MONITOREXIT:
 			ENSURE_OPSTACK_SIZE(1);
 			if(!isReference(OPSTACK_TOP)) {
-				VERIFY_ERROR("monitor*: top of stack is not an object reference");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "monitor*: top of stack is not an object reference");
 			}
 			OPSTACK_POP_BLIND;
 			break;
@@ -3702,7 +3710,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case DUP:
 			ENSURE_OPSTACK_SIZE(1);
 			if (isWide(OPSTACK_TOP)) {
-				VERIFY_ERROR("dup: on a long or double");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dup: on a long or double");
 			}
 			
 			OPSTACK_PUSH(OPSTACK_TOP);
@@ -3711,7 +3719,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case DUP_X1:
 			ENSURE_OPSTACK_SIZE(2);
 			if (isWide(OPSTACK_TOP) || isWide(OPSTACK_WTOP)) {
-				VERIFY_ERROR("dup_x1: splits up a double or long");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dup_x1: splits up a double or long");
 			}
 			
 			OPSTACK_PUSH(OPSTACK_TOP);
@@ -3723,7 +3731,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case DUP_X2:
 			ENSURE_OPSTACK_SIZE(3);
 			if (isWide(OPSTACK_TOP)) {
-				VERIFY_ERROR("cannot dup_x2 when top item on operand stack is a two byte item");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "cannot dup_x2 when top item on operand stack is a two byte item");
 			}
 			
 			OPSTACK_PUSH(OPSTACK_TOP);
@@ -3743,7 +3751,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case DUP2_X1:
 			ENSURE_OPSTACK_SIZE(2);
 			if (isWide(OPSTACK_ITEM(2))) {
-				VERIFY_ERROR("dup_x1 requires top 2 bytes on operand stack to be single bytes items");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dup_x1 requires top 2 bytes on operand stack to be single bytes items");
 			}
 			CHECK_STACK_OVERFLOW(2);
 			
@@ -3758,7 +3766,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case DUP2_X2:
 			ENSURE_OPSTACK_SIZE(4);
 			if (isWide(OPSTACK_ITEM(2)) || isWide(OPSTACK_ITEM(4))) {
-				VERIFY_ERROR("dup2_x2 where either 2nd or 4th byte is 2nd half of a 2 byte item");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dup2_x2 where either 2nd or 4th byte is 2nd half of a 2 byte item");
 			}
 			CHECK_STACK_OVERFLOW(2);
 			
@@ -3775,7 +3783,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case SWAP:
 			ENSURE_OPSTACK_SIZE(2);
 			if (isWide(OPSTACK_TOP) || isWide(OPSTACK_WTOP)) {
-				VERIFY_ERROR("cannot swap 2 bytes of a long or double");
+				return verifyErrorInVerifyBasicBlock(einfo, method, this, "cannot swap 2 bytes of a long or double");
 			}
 			
 			*type         = *OPSTACK_TOP;
@@ -3791,7 +3799,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		default:
 		        /* should never get here because of preprocessing in defineBasicBlocks() */
-			VERIFY_ERROR("unknown opcode encountered");
+			return verifyErrorInVerifyBasicBlock(einfo, method, this, "unknown opcode encountered");
 		}
 		
 		
@@ -3847,8 +3855,6 @@ verifyBasicBlock(errorInfo* einfo,
 
 #undef GET_WIDX
 #undef GET_IDX
-
-#undef VERIFY_ERROR
 }
 
 

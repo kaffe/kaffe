@@ -1,6 +1,13 @@
 2004-02-15  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+        (verifyErrorInVerifyBasicBlock): New static inline function.
+        (VERIFY_ERROR) Removed.
+        Replaced use of VERIFY_ERROR by verifyErrorInVerifyBasicBlock.
+
+2004-02-15  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (verifyErrorInMerge): New static inline function.
         (VERIFY_ERROR) Removed.
         Replaced use of VERIFY_ERROR by verifyErrorInMerge.
