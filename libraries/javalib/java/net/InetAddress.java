@@ -1,5 +1,5 @@
 /* InetAddress.java -- Class to model an Internet address
-   Copyright (C) 1998, 1999, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2002, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.net;
 
 import gnu.classpath.Configuration;
@@ -48,18 +49,17 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-
 /**
  * This class models an Internet address.  It does not have a public
  * constructor.  Instead, new instances of this objects are created
  * using the static methods getLocalHost(), getByName(), and
  * getAllByName().
- * <p>
- * This class fulfills the function of the C style functions gethostname(),
- * gethostbyname(), and gethostbyaddr().  It resolves Internet DNS names
- * into their corresponding numeric addresses and vice versa.
  *
- * @author Aaron M. Renn <arenn@urbanophile.com>
+ * <p>This class fulfills the function of the C style functions gethostname(),
+ * gethostbyname(), and gethostbyaddr().  It resolves Internet DNS names
+ * into their corresponding numeric addresses and vice versa.</p>
+ *
+ * @author Aaron M. Renn (arenn@urbanophile.com)
  * @author Per Bothner
  *
  * @specnote This class is not final since JK 1.4
@@ -77,7 +77,7 @@ public class InetAddress implements Serializable
   /**
    * The default caching period in minutes.
    */
-  private static final int DEFAULT_CACHE_PERIOD = (4 * 60);
+  private static final int DEFAULT_CACHE_PERIOD = 4 * 60;
 
   /**
    * Percentage of cache entries to purge when the table gets full.
@@ -158,11 +158,11 @@ public class InetAddress implements Serializable
 	       .intValue();
       cache_period =
 	Integer.getInteger("gnu.java.net.dns_cache_period",
-	                   DEFAULT_CACHE_PERIOD * 60 * 1000).intValue();
+		           DEFAULT_CACHE_PERIOD * 60 * 1000).intValue();
 
       cache_purge_pct =
 	Integer.getInteger("gnu.java.net.dns_cache_purge_pct",
-	                   DEFAULT_CACHE_PURGE_PCT).intValue();
+			   DEFAULT_CACHE_PURGE_PCT).intValue();
 
       // Fallback to  defaults if necessary
       if ((cache_purge_pct < 1) || (cache_purge_pct > 100))
@@ -174,15 +174,15 @@ public class InetAddress implements Serializable
 
       // precompute the ANY_IF address
       try
-        {
+	{
 	  ANY_IF = getInaddrAny();
-        }
+	}
       catch (UnknownHostException uhe)
-        {
+	{
 	  // Hmmm, make one up and hope that it works.
 	  byte[] zeros = { 0, 0, 0, 0 };
 	  ANY_IF = new Inet4Address(zeros);
-        }
+	}
     }
 
   /**
@@ -244,9 +244,9 @@ public class InetAddress implements Serializable
 
     family = 2; /* AF_INET */
     address = addr[3] & 0xff;
-    address |= ((addr[2] << 8) & 0xff00);
-    address |= ((addr[1] << 16) & 0xff0000);
-    address |= ((addr[0] << 24) & 0xff000000);
+    address |= (addr[2] << 8) & 0xff00;
+    address |= (addr[1] << 16) & 0xff0000;
+    address |= (addr[0] << 24) & 0xff000000;
   }
 
   /**
@@ -448,12 +448,18 @@ public class InetAddress implements Serializable
   {
     StringBuffer sb = new StringBuffer(40);
 
-    for (int i = 0; i < addr.length; i++)
+    int len = addr.length;
+    int i = 0;
+    
+    for ( ; ; )
       {
-	sb.append(addr[i] & 0xff);
-
-	if (i < (addr.length - 1))
-	  sb.append(".");
+        sb.append(addr[i] & 0xff);
+        i++;
+	
+        if (i == len)
+          break;
+	
+        sb.append('.');
       }
 
     return sb.toString();
@@ -620,7 +626,8 @@ public class InetAddress implements Serializable
    * default.  This method is equivalent to returning the first element in
    * the InetAddress array returned from GetAllByName.
    *
-   * @param hostname The name of the desired host, or null for the local machine.
+   * @param hostname The name of the desired host, or null for the local 
+   * loopback address.
    *
    * @return The address of the host as an InetAddress object.
    *
@@ -660,7 +667,7 @@ public class InetAddress implements Serializable
    * hostname of the local machine is supplied by default.
    *
    * @param hostname The name of the desired host, or null for the
-   * local machine.
+   * local loopback address.
    *
    * @return All addresses of the host as an array of InetAddress objects.
    *
@@ -741,23 +748,23 @@ public class InetAddress implements Serializable
     InetAddress[] addresses = null;
 
     if (cache_size == 0)
-      return (null);
+      return null;
 
     Object obj = cache.get(hostname);
     if (obj == null)
-      return (null);
+      return null;
 
     if (obj instanceof InetAddress[])
       addresses = (InetAddress[]) obj;
 
     if (addresses == null)
-      return (null);
+      return null;
 
     if (cache_period != -1)
       if ((System.currentTimeMillis() - addresses[0].lookup_time) > cache_period)
         {
 	  cache.remove(hostname);
-	  return (null);
+	  return null;
         }
 
     return addresses;
