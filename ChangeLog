@@ -4,6 +4,7 @@ Thu Feb 24 10:28:53 PST 2000  Archie Cobbs <archie@whistle.com>
 	libraries/javalib/java/util/Timer.java: add scheduledExecutionTime()
 	* libraries/javalib/java/text/SimpleSentenceIterator.java:
 	slight improvement to end-of-sentence detection
+	* ltconfig, ltmain.sh: upgrade from libtool CVS
 
 Wed Feb 23 13:02:40 CET 2000  Moses DeJong <dejong@cs.umn.edu>
 
