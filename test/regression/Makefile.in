@@ -140,6 +140,7 @@ TESTS = \
 	HelloWorldApp.java \
 	TestIntLong.java \
 	TestFloatDouble.java \
+	DoubleNeg.java \
 	DoublePrint.java \
 	DoubleComp.java \
 	ModuloTest.java \

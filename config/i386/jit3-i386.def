@@ -632,6 +632,28 @@ define_insn(sub_double, fsubl_RRR)
 	debug(("fsubl %d(ebp)\n", r2));
 }
 
+define_insn(neg_float, negf_RxR)
+{
+	rreg_float(2);
+	wreg_float(0);
+
+	OUT = 0xD9;
+	OUT = 0xe0;
+
+	debug(("fchs\n"));
+}
+
+define_insn(neg_double, negd_RxR)
+{
+	rreg_double(2);
+	wreg_double(0);
+
+	OUT = 0xD9;
+	OUT = 0xe0;
+
+	debug(("fchsl\n"));
+}
+
 define_insn(mul_int, mul_RRR)
 {
 	int r;

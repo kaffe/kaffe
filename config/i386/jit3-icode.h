@@ -75,6 +75,9 @@
 #define	HAVE_sub_double			fsubl_RRR
 #define	HAVE_mul_double			fmull_RRR
 
+#define	HAVE_neg_float			negf_RxR
+#define	HAVE_neg_double			negd_RxR
+
 #define	HAVE_add_ref			add_RRR
 
 #define	HAVE_load_int			load_RxR
@@ -207,8 +210,6 @@
 
 #undef	HAVE_cmp_long
 
-#undef	HAVE_neg_float
-#undef	HAVE_neg_double
 #undef	HAVE_rem_float
 #undef	HAVE_rem_double
 

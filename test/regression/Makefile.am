@@ -18,6 +18,7 @@ TESTS = \
 ## Test ints, longs, floats and doubles
 	TestIntLong.java \
 	TestFloatDouble.java \
+	DoubleNeg.java \
 	DoublePrint.java \
 	DoubleComp.java \
 	ModuloTest.java \
