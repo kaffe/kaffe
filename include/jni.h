@@ -64,7 +64,7 @@ struct JNINativeInterface {
 	void*	reserved4;
 	void*	reserved5;
 	void*	reserved6;
-	jclass	(*GetSuperClass)		(JNIEnv*, jclass);
+	jclass	(*GetSuperclass)		(JNIEnv*, jclass);
 	jboolean	(*IsAssignableFrom)		(JNIEnv*, jclass, jclass);
 	void*	reserved7;
 	jint	(*Throw)			(JNIEnv*, jobject);
@@ -302,7 +302,7 @@ struct JNIEnv_ {
 	jint GetVersion(void);
 	jclass DefineClass(jobject, const jbyte*, jsize);
 	jclass FindClass(const char*);
-	jclass GetSuperClass(jclass);
+	jclass GetSuperclass(jclass);
 	jboolean IsAssignableFrom(jclass, jclass);
 	jint Throw(jobject);
 	jint ThrowNew(jclass, const char*);
