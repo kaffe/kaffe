@@ -1,5 +1,26 @@
 2004-12-03  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/io/ObjectOutputStream.java,
+	libraries/javalib/java/io/ObjectStreamClass.java:
+	Resynced with GNU Classpath.
+
+	2004-12-01  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/io/ObjectOutputStream.java
+	(writeObject, callWriteMethod): Replaced reflection with accessing
+	cached info in ObjectStreamClass.
+	(getMethod): Removed.
+	* java/io/ObjectStreamClass.java
+	(findMethod): Added check to make sure the method found has the
+	right modifiers.
+	(cacheMethods): Added writeReplace and writeObject methods.
+	(setFlags): Look at new writeObjectMethod field instead of doing
+	reflection again.
+	(writeReplaceMethod): New field.
+	(writeObjectMethod): New field.
+
+2004-12-03  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/awt/classpath-gtk/classpath/Makefile.in,
 	libraries/javalib/Makefile.am,
 	libraries/javalib/Makefile.in,

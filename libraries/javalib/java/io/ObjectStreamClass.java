@@ -452,27 +452,33 @@ public class ObjectStreamClass implements Serializable
   }
 
   private Method findMethod(Method[] methods, String name, Class[] params,
-			    Class returnType)
+			    Class returnType, boolean mustBePrivate)
   {
 outer:
-    for(int i = 0; i < methods.length; i++)
+    for (int i = 0; i < methods.length; i++)
     {
-	if(methods[i].getName().equals(name) &&
-	   methods[i].getReturnType() == returnType)
+	final Method m = methods[i];
+        int mods = m.getModifiers();
+        if (Modifier.isStatic(mods)
+            || (mustBePrivate && !Modifier.isPrivate(mods)))
+        {
+            continue;
+        }
+
+	if (m.getName().equals(name)
+	   && m.getReturnType() == returnType)
 	{
-	    Class[] mp = methods[i].getParameterTypes();
-	    if(mp.length == params.length)
+	    Class[] mp = m.getParameterTypes();
+	    if (mp.length == params.length)
 	    {
-		for(int j = 0; j < mp.length; j++)
+		for (int j = 0; j < mp.length; j++)
 		{
-		    if(mp[j] != params[j])
+		    if (mp[j] != params[j])
 		    {
 			continue outer;
 		    }
 		}
-		final Method m = methods[i];
-		SetAccessibleAction setAccessible = new SetAccessibleAction(m);
-		AccessController.doPrivileged(setAccessible);
+		AccessController.doPrivileged(new SetAccessibleAction(m));
 		return m;
 	    }
 	}
@@ -485,9 +491,14 @@ outer:
     Method[] methods = forClass().getDeclaredMethods();
     readObjectMethod = findMethod(methods, "readObject",
 				  new Class[] { ObjectInputStream.class },
-				  Void.TYPE);
+				  Void.TYPE, true);
+    writeObjectMethod = findMethod(methods, "writeObject",
+                                   new Class[] { ObjectOutputStream.class },
+                                   Void.TYPE, true);
     readResolveMethod = findMethod(methods, "readResolve",
-				   new Class[0], Object.class);
+				   new Class[0], Object.class, false);
+    writeReplaceMethod = findMethod(methods, "writeReplace",
+                                    new Class[0], Object.class, false);
   }
 
   private ObjectStreamClass(Class cl)
@@ -517,20 +528,8 @@ outer:
       // only set this bit if CL is NOT Externalizable
       flags |= ObjectStreamConstants.SC_SERIALIZABLE;
 
-    try
-      {
-	Method writeMethod = cl.getDeclaredMethod("writeObject",
-						  writeMethodArgTypes);
-	int modifiers = writeMethod.getModifiers();
-
-	if (writeMethod.getReturnType() == Void.TYPE
-	    && Modifier.isPrivate(modifiers)
-	    && !Modifier.isStatic(modifiers))
-	  flags |= ObjectStreamConstants.SC_WRITE_METHOD;
-      }
-    catch(NoSuchMethodException oh_well)
-      {
-      }
+    if (writeObjectMethod != null)
+      flags |= ObjectStreamConstants.SC_WRITE_METHOD;
   }
 
 
@@ -884,6 +883,8 @@ outer:
 
   Method readObjectMethod;
   Method readResolveMethod;
+  Method writeReplaceMethod;
+  Method writeObjectMethod;
   boolean realClassIsSerializable;
   boolean realClassIsExternalizable;
   ObjectStreamField[] fieldMapping;
