@@ -1,3 +1,9 @@
+Tue Oct 13 17:57:34 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: make sure
+	SIGVTALRM based polling is always turned on to avoid getting 
+	stuck on fds that don't deliver SIGIO when they become writable.
+
 Tue Oct 13 17:28:22 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
 
 	* Fixes for NCR MP-RAS 3.x (i386/univel_svr4):

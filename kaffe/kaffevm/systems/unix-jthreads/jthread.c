@@ -826,6 +826,11 @@ jthread_init(int pre,
         talive++;
         currentJThread = jtid;
         resumeThread(jtid);
+	/* Because of the handleVtAlarm hack (poll every 20 SIGVTALRMs) 
+	 * we turn on the delivery of SIGVTALRM even if no actual time
+	 * slicing is possible because only one Java thread is running.
+	 */
+	activate_time_slicing();
         return jtid;
 }
 
@@ -922,15 +927,6 @@ jthread_create(unsigned char pri, void (*func)(void *), int daemon,
         liveThreads = jtid;
 
         talive++;       
-	/* HACK: thread 1 is the main thread,
-	 * thread 2 and 3 are the garbage collector/finalizer.
-	 * Let's assume for now the finalizer does not have to be
-	 * preempted.
-	 */
-	if (talive > 3) {
-		activate_time_slicing();
-	}
-
         if ((jtid->daemon = daemon) != 0) {
                 tdaemon++;
         }
