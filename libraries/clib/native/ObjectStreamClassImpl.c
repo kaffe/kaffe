@@ -525,7 +525,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 				int j = cls->interface_len;
 
 				for (j--; j > i; j--)
-					KFREE((char*)base[j].name);
+					KFREE(base[j].name);
 				KFREE(base);
 				postOutOfMemory(&einfo);
 				throwError(&einfo);
@@ -536,7 +536,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 		/* Free all the interface name strings */
 		i = cls->interface_len;
 		for (i--; i >= 0; i--) {
-			KFREE((char*)base[i].name);
+			KFREE(base[i].name);
 		}
 	}
 
@@ -558,7 +558,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 					int j = CLASS_NFIELDS(cls);
 
 					for (j--; j > i; j--)
-						KFREE((char*)base[j].desc);
+						KFREE(base[j].desc);
 					KFREE(base);
 					postOutOfMemory(&einfo);
 					throwError(&einfo);
@@ -570,7 +570,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 		/* free descriptors */
 		i = CLASS_NFIELDS(cls);
 		for (i--; i >= 0; i--) {
-			KFREE((char*)base[i].desc);
+			KFREE(base[i].desc);
 		}
 	}
 
@@ -602,7 +602,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 				int j = CLASS_NMETHODS(cls);
 
 				for (j--; j > i; j--)
-					KFREE((char*)base[j].desc);
+					KFREE(base[j].desc);
 				KFREE(base);
 				postOutOfMemory(&einfo);
 				throwError(&einfo);
@@ -613,7 +613,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 		/* Free all the descriptor strings */
 		i = CLASS_NMETHODS(cls);
 		for (i--; i >= 0; i--) {
-			KFREE((char*)base[i].desc);
+			KFREE(base[i].desc);
 		}
 
 		/* NB: we can't reuse the base array here because
@@ -640,7 +640,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 				int j = CLASS_NMETHODS(cls);
 
 				for (j--; j > i; j--)
-					KFREE((char*)base[j].desc);
+					KFREE(base[j].desc);
 				KFREE(base);
 				postOutOfMemory(&einfo);
 				throwError(&einfo);
@@ -651,7 +651,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 		/* Free all the descriptor strings */
 		i = CLASS_NMETHODS(cls);
 		for (i--; i >= 0; i--) {
-			KFREE((char*)base[i].desc);
+			KFREE(base[i].desc);
 		}
 	}
 	

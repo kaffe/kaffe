@@ -24,11 +24,15 @@ extern void	jfree(void*);
 #define KMALLOC(A)	jmalloc(A)
 #define KREALLOC(A, B)	jrealloc((A), (B))
 #define KCALLOC(A, B)	jmalloc((A) * (B))
-#define KFREE(p)	jfree(p)
+#define KFREE(p)	jfree((void *)(p))
 
 #ifdef DEBUG
 #undef KFREE
-#define KFREE(p)	do { jfree(p); (void*)(p) = (void*)0; } while (0)
+#define KFREE(p)	do {			\
+	void **__kfree_p = (void **)&(p);	\
+	jfree (*__kfree_p);			\
+	*__kfree_p = (void *)0;			\
+} while (0)
 #endif
 
 #endif

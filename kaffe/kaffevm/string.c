@@ -211,7 +211,7 @@ stringFree(const void *ptr)
 {
 	int iLockRoot;
 	unlockStaticMutex(&stringLock);
-	KFREE((void*)ptr);
+	KFREE(ptr);
 	lockStaticMutex(&stringLock);
 }
 

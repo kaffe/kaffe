@@ -2742,7 +2742,7 @@ Kaffe_ReleaseStringUTFChars(JNIEnv* env, jstring data, const jbyte* chars)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
-	KFREE((void*)chars);
+	KFREE(chars);
 
 	END_EXCEPTION_HANDLING();
 }
