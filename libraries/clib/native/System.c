@@ -229,6 +229,9 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	 * java.class.version   Java class version number
 	 * java.class.path      Java classpath
 	 *
+	 * java.runtime.name    Alias for java.vm.name
+	 * java.runtime.version Alias for java.vm.version
+	 *
 	 * os.name              Operating System Name
 	 * os.arch              Operating System Architecture
 	 * os.version           Operating System Version
@@ -283,6 +286,10 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	setProperty(p, "java.specification.vendor", kaffe_specification_vendor);
 	setProperty(p, "java.specification.name", kaffe_specification_name);
 	setProperty(p, "java.class.version", kaffe_class_version);
+
+	/* Undocumented properties used by some applications */
+	setProperty(p, "java.runtime.name", kaffe_vm_name);
+	setProperty(p, "java.runtime.version", kaffe_vm_version);
 
 	jhome = getenv(KAFFEHOME);
 	if (jhome == 0) {

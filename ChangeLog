@@ -1,5 +1,16 @@
 2004-09-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/native/System.c
+	(java_lang_System_initProperties) : Added 
+	java.runtime.name and java.runtime.version aliases
+	for respective java.vm.* properties, as some code
+	depends on them, despite that they are officially 
+	undocumented.
+
+	Reported by: Stephane Meslin-Weber <steph@tangency.co.uk>
+
+2004-09-15  Dalibor Topic  <robilad@kaffe.org>
+
         * libraries/javalib/logging.properties:
 	New file. Taken from GNU Classpath.
 
