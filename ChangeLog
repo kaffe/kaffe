@@ -1,5 +1,13 @@
 2004-03-15  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/classpath/Configuration.java:
+	Removed CLASSPATH_HOME. Set CLASSPATH_VERSION to a saner value.
+
+	Reported by: Holger Schurig <h.schurig@mn-logistik.de>,
+		     Steven Augart <augart@watson.ibm.com>
+
+2004-03-15  Dalibor Topic <robilad@kaffe.org>
+
         * FAQ/FAQ.automake,
         developers/autogen.sh:
 	Updated to use automake 1.8.3.

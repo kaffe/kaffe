@@ -44,19 +44,11 @@ package gnu.classpath;
 public interface Configuration
 {
   /**
-   * The value of CLASSPATH_HOME is the location that the classpath
-   * libraries and support files where installed in. It is set according to
-   * the argument for --prefix given to configure and used to set the
-   * System property gnu.classpath.home.
-   */
-  String CLASSPATH_HOME = "@prefix@";
-
-  /**
    * The release version number of GNU Classpath.
-   * It is set according to the value of 'version' in the configure[.in] file
-   * and used to set the System property gnu.classpath.version.
+   * It is set according to the release of classpath this version of kaffe
+   * is synced up with.
    */
-  String CLASSPATH_VERSION = "@VERSION@";
+  String CLASSPATH_VERSION = "classpath-0.08+cvs+kaffe-1.1.4+cvs";
 
   /**
    * The value of DEBUG is substituted according to whether the
