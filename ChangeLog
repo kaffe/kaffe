@@ -1,5 +1,22 @@
 2004-12-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/net/LineInputStream.java,
+	libraries/javalib/gnu/java/net/protocol/http/HTTPURLConnection.java:
+	Resynced with GNU Classpath.
+	
+	2004-12-06  Chris Burdess  <dog@gnu.org>
+
+	* gnu/java/net/LineInputStream.java: (read) fixed possible infinite
+	loop (inetlib bug #11200).
+
+	2004-12-06  Chris Burdess  <dog@gnu.org>
+
+	* gnu/java/net/protocol/http/HTTPURLConnection.java:
+	(getHeaderField) return null if there are less than (index+1)
+	fields.
+	
+2004-12-08  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/ObjectInputStream.java:
 	Resynced with GNU Classpath.
 	

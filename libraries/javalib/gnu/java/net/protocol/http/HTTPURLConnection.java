@@ -450,6 +450,10 @@ public class HTTPURLConnection
     int count = 1;
     do
       {
+        if (!i.hasNext())
+          {
+            return null;
+          }
         entry = (Map.Entry) i.next();
         count++;
       }

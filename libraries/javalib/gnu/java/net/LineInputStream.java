@@ -144,7 +144,7 @@ public class LineInputStream
                 while (pos > 0)
                   {
                     len = in.read(b, 0, pos);
-                    pos -= len;
+                    pos = (len == -1) ? -1 : pos - len;
                   }
                 // Return line
                 String ret = buf.toString(encoding);
