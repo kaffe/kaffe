@@ -172,9 +172,8 @@ current directory plus the Jar and Zip files it needs to run.  For the
 details of how the CLASSPATH is set up, refer to kaffe/scripts/kaffe.in.
 
 If you want to test the kaffe executable you built, type
-"make all install", cd into the test directory of your build tree,
-and type "make test".  This will run a suite of tests to check that 
-your Kaffe executable is in fact working.
+"make all install", and type "make check".  This will run a suite of 
+tests to check that your Kaffe executable is in fact working.
 
 
 Tim Wilkinson
