@@ -127,11 +127,6 @@ void
 stopThread(Hjava_lang_Thread* tid, Hjava_lang_Object* obj)
 {
 	if ((*Kaffe_ThreadInterface.currentJava)() == tid) {
-		/*
-		dprintf("STOPPING myself native %p\n", 
-			(*Kaffe_ThreadInterface.currentNative)());
-		dumpLocks();
-		*/
 		throwException((Hjava_lang_Throwable*)obj);
 	}
 	else {
