@@ -1,6 +1,22 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+
+	2005-03-11  Roman Kennke  <roman@kennke.org>
+
+	* java/awt/Compmonent.java
+	(setComponentOrientation): The variable oldOrientation is initialized
+	too early. This is fixed.
+
+	2005-03-11  Roman Kennke  <roman@kennke.org>
+
+	* java/awt/Compmonent.java
+	(setComponentOrientation): Made this property firing a
+	PropertyChangeEvent.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 	
 	2005-03-10  Andrew Haley  <aph@redhat.com>
 
