@@ -1,3 +1,8 @@
+Thu Jan 14 09:38:06 1999  Moses DeJong <dejong@cs.umn.edu>
+
+	* libraries/clib/native/Class.c: fix case where null is passed
+	as arg types in get(Declared){Constructor|Method}
+
 Wed Jan 13 20:17:36 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffeh/Makefile.am (noinst_HEADERS): header files wre not

@@ -701,6 +701,14 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 	int   i;
 	errorInfo info;
 
+	/* The JDK doc says and experimentation shows that a null second 
+	 * parameter to all get(Declared){Method|Constructor} functions
+	 * is treated like passing an empty array "new Class [] {}"
+	 */
+	if ((argtypes == NULL) && !strcmp(sig,"()V")) {
+		return (1);
+	}
+
 	sig++;	/* skip leading '(' */
 	for (i = 0; i < ARRAY_SIZE(argtypes); i++) {
 
@@ -712,7 +720,7 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 			return (0);
 	}
 	/* return false if signature was too long */
-	return (*sig == ')' ? 1 : 0);
+	return ((*sig == ')' ? 1 : 0));
 }
 
 Hjava_lang_reflect_Method*
