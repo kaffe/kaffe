@@ -38,11 +38,11 @@ exception statement from your version. */
 
 package javax.swing;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.io.Serializable;
 
 public class TransferHandler implements Serializable

@@ -45,7 +45,6 @@ import gnu.java.security.der.DERValue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

@@ -43,7 +43,6 @@ import gnu.java.security.OID;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.AccessController;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;

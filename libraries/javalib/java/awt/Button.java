@@ -47,7 +47,6 @@ import java.util.EventListener;
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleAction;
 import javax.accessibility.AccessibleContext;
-import javax.accessibility.AccessibleRelation;
 import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleValue;
 

@@ -2,6 +2,29 @@
 
 	Resynced with GNU Classpath.
 	
+	2004-12-29  Michael Koch  <konqueror@gmx.de>
+
+	* java/awt/Button.java,
+	java/lang/Runtime.java,
+	java/lang/System.java,
+	java/security/cert/X509CRLSelector.java,
+	java/security/cert/X509CertSelector.java,
+	java/util/ResourceBundle.java,
+	java/util/jar/JarFile.java,
+	javax/swing/JApplet.java,
+	javax/swing/JFormattedTextField.java,
+	javax/swing/JTree.java,
+	javax/swing/JWindow.java,
+	javax/swing/TransferHandler.java,
+	javax/swing/plaf/basic/BasicEditorPaneUI.java,
+	javax/swing/plaf/basic/BasicTextPaneUI.java
+	javax/swing/plaf/basic/BasicTreeUI.java:
+	Imports reworked.
+	
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2004-12-27  Jeroen Frijters  <jeroen@frijters.net>
 
 	* java/nio/ByteBufferImpl.java,

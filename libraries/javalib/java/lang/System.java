@@ -10,7 +10,6 @@
 
 package java.lang;
 
-import gnu.classpath.Configuration;
 import gnu.classpath.SystemProperties;
 
 import java.io.BufferedInputStream;

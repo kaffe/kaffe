@@ -48,7 +48,6 @@ import java.awt.GraphicsConfiguration;
 import java.awt.LayoutManager;
 import java.awt.Window;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
 
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
