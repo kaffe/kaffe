@@ -91,7 +91,8 @@ public synchronized int read(byte b[], int off, int len) throws IOException {
 
 public synchronized void reset() throws IOException {
 	if (pos > markpos + marklimit) {
-		throw new IOException();
+		throw new IOException("Cannot reset stream to " + markpos +
+			" from " + pos + " (marklimit=" + marklimit + ")");
 	}
 	pos = markpos;
 }
