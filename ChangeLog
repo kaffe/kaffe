@@ -1,3 +1,10 @@
+2005-03-28  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/string.c
+	(stringWalk): Mark the object lock also.
+
+	Reported by: gian paolo ciceri <gp.ciceri@acm.org>
+	
 2005-03-27  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/kaffe.def

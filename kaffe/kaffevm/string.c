@@ -490,8 +490,15 @@ stringCharArray2Java(const jchar *data, int len)
 void
 stringWalk(Collector* collector, void *gc_info, void* str, uint32 size UNUSED)
 {
+	Hjava_lang_String *objstr = (Hjava_lang_Object *)str;
+	iLock *lk;
+
         /* That's all we have to do here */
-        KGC_markObject(collector, gc_info, unhand((Hjava_lang_String*)str)->value);
+	KGC_markObject(collector, gc_info, unhand(objstr)->value);
+
+        lk = GET_HEAVYLOCK(unhand(objstr)->base.lock);
+	if (lk != NULL && KGC_getObjectIndex(collector, lk) == KGC_ALLOC_LOCK)
+	  KGC_markObject(collector, gc_info, lk);
 }
 
 /*       
