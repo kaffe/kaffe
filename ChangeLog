@@ -1,6 +1,7 @@
 Mon Jun 21 18:39:04 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/BufferedReader.java: fix several bugs
+	* test/regression/MarkResetTest.java: add a test for BufferedReader
 
 Sun Jun 13 17:42:33 1999  Godmar Back  <gback@pa.dec.com>
 
