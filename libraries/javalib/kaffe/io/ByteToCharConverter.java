@@ -117,8 +117,10 @@ private static ByteToCharConverter getConverterInternal ( String enc ) {
 		if (cls == null) {
 			if (ConverterAlias.shouldUseIconv(realenc)) {
 				ByteToCharConverter conv = getByteToCharIconv(ConverterAlias.iconvAlias(realenc));
-				cache.put(enc, (conv != null ? useIconv : noConverter));
-				return (conv);
+				if (conv != null) {
+					cache.put(enc, useIconv);
+					return (conv);
+				}
 			}
 			String enccls = encodingRoot + ".ByteToChar" + realenc;
 			cls = Class.forName(enccls);

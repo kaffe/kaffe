@@ -94,8 +94,10 @@ private static CharToByteConverter getConverterInternal(String enc)
 		if (cls == null) {
 			if (ConverterAlias.shouldUseIconv(realenc)) {
 				CharToByteConverter conv = getCharToByteIconv(ConverterAlias.iconvAlias(realenc));
-				cache.put(enc, (conv != null ? useIconv : noConverter));
-				return (conv);
+				if (conv != null) {
+					cache.put(enc, useIconv);
+					return (conv);
+				}
 			}
 			String enccls = encodingRoot + ".CharToByte" + realenc;
 			cls = Class.forName(enccls);
