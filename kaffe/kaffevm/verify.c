@@ -2615,6 +2615,17 @@ getOpstackWTop(BlockInfo* block)
 }
 
 /*
+ * Helper function for opstack access in verifyBasicBlock.
+ */
+static inline
+void
+opstackPushBlind(BlockInfo* block,
+		 const Type* type)
+{
+	block->opstack[block->stacksz++] = *(type);
+}
+
+/*
  * verifyBasicBlock()
  *   Simulates execution of a basic block by modifying its simulated operand stack and local variable array.
  */
@@ -2693,18 +2704,15 @@ verifyBasicBlock(errorInfo* einfo,
 		return checkStackOverflowErrorInVerifyBasicBlock(einfo, method, block, this, _N); \
 	}
 	
-#define OPSTACK_PUSH_BLIND(_TINFO) \
-	block->opstack[block->stacksz++] = *(_TINFO)
-	
 #define OPSTACK_PUSH(_TINFO) \
 	CHECK_STACK_OVERFLOW(1); \
-	OPSTACK_PUSH_BLIND(_TINFO)
+	opstackPushBlind(block, _TINFO)
 	
 	
 	/* only use for LONGs and DOUBLEs */
 #define OPSTACK_WPUSH_BLIND(_TINFO) \
-	OPSTACK_PUSH_BLIND(_TINFO); \
-	OPSTACK_PUSH_BLIND(TWIDE)
+	opstackPushBlind(block, _TINFO); \
+	opstackPushBlind(block, TWIDE)
 	
 #define OPSTACK_WPUSH(_T) \
 	CHECK_STACK_OVERFLOW(2); \
@@ -3272,21 +3280,21 @@ verifyBasicBlock(errorInfo* einfo,
 		case LCMP:
 			OPSTACK_WPOP_T(TLONG);
 			OPSTACK_WPOP_T(TLONG);
-			OPSTACK_PUSH_BLIND(TINT);
+			opstackPushBlind(block, TINT);
 			break;
 			
 		case FCMPG:
 		case FCMPL:
 			OPSTACK_POP_T(TFLOAT);
 			OPSTACK_POP_T(TFLOAT);
-			OPSTACK_PUSH_BLIND(TINT);
+			opstackPushBlind(block, TINT);
 			break;
 				
 		case DCMPG:
 		case DCMPL:
 			OPSTACK_WPOP_T(TDOUBLE);
 			OPSTACK_WPOP_T(TDOUBLE);
-			OPSTACK_PUSH_BLIND(TINT);
+			opstackPushBlind(block, TINT);
 			break;
 			
 			
@@ -3315,7 +3323,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case I2F:
 			OPSTACK_POP_T(TINT);
-			OPSTACK_PUSH_BLIND(TFLOAT);
+			opstackPushBlind(block, TFLOAT);
 			break;
 		case I2L:
 			OPSTACK_POP_T(TINT);
@@ -3330,7 +3338,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case F2I:
 			OPSTACK_POP_T(TFLOAT);
-			OPSTACK_PUSH_BLIND(TINT);
+			opstackPushBlind(block, TINT);
 			break;
 		case F2L:
 			OPSTACK_POP_T(TFLOAT);
@@ -3343,11 +3351,11 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case L2I:
 			OPSTACK_WPOP_T(TLONG);
-			OPSTACK_PUSH_BLIND(TINT);
+			opstackPushBlind(block, TINT);
 			break;
 		case L2F:
 			OPSTACK_WPOP_T(TLONG);
-			OPSTACK_PUSH_BLIND(TFLOAT);
+			opstackPushBlind(block, TFLOAT);
 			break;
 		case L2D:
 			OPSTACK_WPOP_T(TLONG);
@@ -3356,11 +3364,11 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case D2I:
 			OPSTACK_WPOP_T(TDOUBLE);
-			OPSTACK_PUSH_BLIND(TINT);
+			opstackPushBlind(block, TINT);
 			break;
 		case D2F:
 			OPSTACK_WPOP_T(TDOUBLE);
-			OPSTACK_PUSH_BLIND(TFLOAT);
+			opstackPushBlind(block, TFLOAT);
 			break;
 		case D2L:
 			OPSTACK_WPOP_T(TDOUBLE);
@@ -3527,10 +3535,10 @@ verifyBasicBlock(errorInfo* einfo,
 			/* TODO: we should just have a function that returns a type based on a signature */
 			switch (*sig) {
 			case 'I': case 'Z': case 'S': case 'B': case 'C':
-				OPSTACK_PUSH_BLIND(TINT);
+				opstackPushBlind(block, TINT);
 				break;
 				
-			case 'F': OPSTACK_PUSH_BLIND(TFLOAT); break;
+			case 'F': opstackPushBlind(block, TFLOAT); break;
 			case 'J': OPSTACK_WPUSH(TLONG); break;
 			case 'D': OPSTACK_WPUSH(TDOUBLE); break;
 				
@@ -3854,8 +3862,8 @@ verifyBasicBlock(errorInfo* einfo,
 			}
 			CHECK_STACK_OVERFLOW(2);
 			
-			OPSTACK_PUSH_BLIND(getOpstackItem(block, 2));
-			OPSTACK_PUSH_BLIND(getOpstackItem(block, 2));
+			opstackPushBlind(block, getOpstackItem(block, 2));
+			opstackPushBlind(block, getOpstackItem(block, 2));
 			
 			*getOpstackItem(block, 3) = *getOpstackItem(block, 5);
 			*getOpstackItem(block, 4) = *getOpstackItem(block, 1);
@@ -3869,8 +3877,8 @@ verifyBasicBlock(errorInfo* einfo,
 			}
 			CHECK_STACK_OVERFLOW(2);
 			
-			OPSTACK_PUSH_BLIND(getOpstackItem(block, 2));
-			OPSTACK_PUSH_BLIND(getOpstackItem(block, 2));
+			opstackPushBlind(block, getOpstackItem(block, 2));
+			opstackPushBlind(block, getOpstackItem(block, 2));
 			
 			*getOpstackItem(block, 3) = *getOpstackItem(block, 5);
 			*getOpstackItem(block, 4) = *getOpstackItem(block, 6);
