@@ -32004,7 +32004,7 @@ if test "${ac_cv_alignmentof_voidp+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   if test "$cross_compiling" = yes; then
-  ac_cv_alignmentof_voidp=$ac_cv_sizeof_voidp
+  ac_cv_alignmentof_voidp=$ac_cv_sizeof_void_p
 else
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */

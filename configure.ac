@@ -878,7 +878,7 @@ main() { struct { char c; void *p; } t; FILE *f;
   f=fopen ("conftestdata", "w");
   if (! f)                         exit (1);
   fprintf (f, "%d", ((char*) &t.p)-((char*) &t));
-  fclose(f); exit (0); }]])],[ac_cv_alignmentof_voidp=`cat conftestdata`],[AC_MSG_ERROR(Unexpected result)],[ac_cv_alignmentof_voidp=$ac_cv_sizeof_voidp]))
+  fclose(f); exit (0); }]])],[ac_cv_alignmentof_voidp=`cat conftestdata`],[AC_MSG_ERROR(Unexpected result)],[ac_cv_alignmentof_voidp=$ac_cv_sizeof_void_p]))
 AC_DEFINE_UNQUOTED(ALIGNMENTOF_VOIDP,$ac_cv_alignmentof_voidp, [How are pointers aligned])
 
 dnl -------------------------------------------------------------------------

@@ -9,6 +9,11 @@
 	
 2005-03-12  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Fixed typo that prevented ALIGNMENTOF_VOIDP
+	to be defined when cross-compiling.
+
+2005-03-12  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/alpha/jit.h:  Use translatorlock instead of 
 	translatorLock.
 
