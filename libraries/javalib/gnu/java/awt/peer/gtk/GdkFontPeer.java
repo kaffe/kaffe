@@ -84,7 +84,7 @@ public class GdkFontPeer extends ClasspathFontPeer
   protected void finalize ()
   {
     if (GtkToolkit.useGraphics2D ())
-      GdkGraphics2D.releasePeerGraphicResource (this);
+      GdkGraphics2D.releasePeerGraphicsResource(this);
     dispose ();
   }
 

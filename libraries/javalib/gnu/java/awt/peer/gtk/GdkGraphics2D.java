@@ -1467,7 +1467,7 @@ public class GdkGraphics2D extends Graphics2D
   // actually need to redirect some calls from the GtkFontPeer and
   // GtkFontMetrics into the drawing kit and ask cairo ourselves.
 
-  static native void releasePeerGraphicResource (GdkFontPeer f);
+  static native void releasePeerGraphicsResource(GdkFontPeer f);
   static native void getPeerTextMetrics (GdkFontPeer f, String str, double [] metrics);
   static native void getPeerFontMetrics (GdkFontPeer f, double [] metrics);
 
