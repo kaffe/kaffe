@@ -561,7 +561,7 @@ getClasspathType(const char* path)
 		return (CP_DIR);
 	}
 
-	rc = KOPEN(path, O_RDONLY, 0, &h);
+	rc = KOPEN(path, O_RDONLY|O_BINARY, 0, &h);
 	if (rc) {
 		return (CP_INVALID);
 	}

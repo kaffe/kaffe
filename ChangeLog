@@ -1,5 +1,13 @@
 2003-06-12 Dalibor Topic <robilad@yahoo.com>
 
+	* libraries/clib/io/File.c:
+	(java_io_File_createNewFile0) Always create file in binary mode.
+
+	* kaffe/kaffevm/findInJar.c:
+	(getClasspathType) Always open files in binary mode.
+
+2003-06-12 Dalibor Topic <robilad@yahoo.com>
+
 	* libraries/javalib/rebuildLib.in:
 	fixed quoting of echoed output for NetBSD.
 
