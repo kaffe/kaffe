@@ -1,2 +1,4 @@
 #! /bin/sh
-exec @prefix@/bin/java sun.security.provider.Main ${1+"$@"}
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+exec @bindir@/java sun.security.provider.Main ${1+"$@"}

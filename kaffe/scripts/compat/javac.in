@@ -1,4 +1,6 @@
 #! /bin/sh
 # We use Pizza compiler rather than Sun's.
-exec @prefix@/bin/kaffe pizza.compiler.Main ${1+"$@"}
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+exec @bindir@/kaffe pizza.compiler.Main ${1+"$@"}
 

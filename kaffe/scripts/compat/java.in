@@ -1,4 +1,6 @@
 #! /bin/sh
 # Pretend Kaffe is Java
-exec @prefix@/bin/kaffe ${1+"$@"}
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+exec @bindir@/kaffe ${1+"$@"}
 

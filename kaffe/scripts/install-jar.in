@@ -5,14 +5,16 @@
 prefix=@prefix@
 classdir=@datadir@/kaffe
 
-if test "$1" = "" ; then
+if test x"${1+set}" != x"set" ; then
 	echo "usage: install-jar <jarfile> ..."
 	exit 1
 fi
 
-for i in $*
+for i in "$@"
 do
 	echo -n "Installing $i in $classdir ... "
-	cp $i $classdir/$i
+	cp "$i" "$classdir/$i" &&
 	echo "done"
 done
+
+exit 0

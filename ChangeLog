@@ -1,3 +1,13 @@
+Tue Oct 27 04:31:35 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/scripts: use bindir instead of prefix/bin
+
+	* kaffe/scripts/kaffe.in: in the comments, refer to datadir
+	instead of prefix/share
+
+	* kaffe/scripts/install-jar.in: make it safer with regard to
+	command-line input
+
 Tue Oct 27 04:30:04 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/clib/awt/X/imgjpeg.c: must include <sys/types.h> on
