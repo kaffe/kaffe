@@ -484,6 +484,9 @@
 /* Do we have sigcontext_struct */
 #undef HAVE_STRUCT_SIGCONTEXT_STRUCT
 
+/* Define if LONG_LONG_MIN % -1ll produces an arithmetic exception */
+#undef LONG_LONG_MODULO_BROKEN
+
 /* Do we have amask instruction on alpha */
 #undef HAVE_ALPHA_ASM_AMASK
 

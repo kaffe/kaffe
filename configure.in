@@ -684,6 +684,24 @@ LIBS="$M_LIBS $LIBS"
 AC_CHECK_FUNCS(remainder remainderf fmod fmodf drem rint floor ceil finite isinf isnan strtod)
 LIBS="$KSAVE_LIBS"
 
+dnl Test whether LONG_LONG_MIN % -1ll crashes
+AC_CACHE_CHECK([whether long long modulo is broken],
+  ac_cv_long_long_modulo_broken, [dnl
+    AC_TRY_RUN([
+#include <limits.h>
+#define T long long
+#ifndef LONG_LONG_MIN
+# define LONG_LONG_MIN ((((unsigned T)(~(T)0))>>1)+1)
+#endif
+T foo(T i, T j);
+int main() { return foo(LONG_LONG_MIN, -1ll) && 1; }
+T foo(T i, T j) { return i % j; }
+], ac_cv_long_long_modulo_broken=no, ac_cv_long_long_modulo_broken=yes,
+   ac_cv_long_long_modulo_broken=cross)])
+if test x"$ac_cv_long_long_modulo_broken" = x"yes"; then
+  AC_DEFINE(LONG_LONG_MODULO_BROKEN, 1, [Define if LONG_LONG_MIN % -1ll produces an arithmetic exception])
+fi
+
 AC_CHECK_FUNCS(strerror hstrerror)
 AC_CHECK_FUNCS(fcntl ioctl)
 AC_CHECK_FUNCS(alarm setitimer)

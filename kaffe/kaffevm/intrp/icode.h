@@ -17,7 +17,13 @@
 #define	sub_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong - (f2)[0].v.tlong
 #define	mul_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong * (f2)[0].v.tlong
 #define	div_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong / (f2)[0].v.tlong
-#define	rem_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong % (f2)[0].v.tlong
+#if LONG_LONG_MODULO_BROKEN
+/* egcs 1.1.* on IRIX 6.3/mips produces an arithmetic exception for
+   LONG_LONG_MIN % -1ll.  Since anything % -1ll is 0, special-case it.  */
+# define rem_long(t, f1, f2)			(t)[0].v.tlong = (((f2)[0].v.tlong == -1) ? ((f1)[0].v.tlong % (f2)[0].v.tlong) : 0)
+#else
+# define rem_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong % (f2)[0].v.tlong
+#endif
 #define	neg_long(t, f)				(t)[0].v.tlong = -(f)[0].v.tlong
 
 #define	and_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong & (f2)[0].v.tlong

@@ -1,5 +1,10 @@
 1999-04-16  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* configure.in: Test whether we get an unexpected arithmetic
+	exception for LONG_LONG_MIN % -1ll.
+	* kaffe/kaffevm/intrp/icode.h (rem_long): Work around the bug.
+	* configure, config/config.h.in: Regenerated.
+
 	* kaffe/kaffevm/support.c (callMethodA): Add a `promoted'
 	argument, that indicates whether sub-integer types have been
 	promoted to int or not, and whether the result is to remain
