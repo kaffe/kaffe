@@ -35,15 +35,14 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.security;
 
 import gnu.java.security.action.GetPropertyAction;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.security.AccessController;
-import java.security.Provider;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -338,7 +337,7 @@ public final class Security
    */
   public static Provider[] getProviders()
   {
-    Provider array[] = new Provider[providers.size ()];
+    Provider[] array = new Provider[providers.size ()];
     providers.copyInto (array);
     return array;
   }

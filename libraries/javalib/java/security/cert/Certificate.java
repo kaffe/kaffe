@@ -1,5 +1,5 @@
 /* Certificate.java --- Certificate class
-   Copyright (C) 1999,2003 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,16 +38,15 @@ exception statement from your version. */
 
 package java.security.cert;
 
-import java.security.PublicKey;
-import java.security.NoSuchAlgorithmException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchProviderException;
-import java.security.SignatureException;
-import java.io.ObjectInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InvalidObjectException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PublicKey;
+import java.security.SignatureException;
 
 /**
  * The Certificate class is an abstract class used to manage 
@@ -116,8 +115,8 @@ public abstract class Certificate implements Serializable
 	if( getEncoded().length != x.getEncoded().length )
 	  return false;
 
-	byte b1[] = getEncoded();
-	byte b2[] = x.getEncoded();
+	byte[] b1 = getEncoded();
+	byte[] b2 = x.getEncoded();
 
 	for( int i = 0; i < b1.length; i++ )
 	  if( b1[i] != b2[i] )
