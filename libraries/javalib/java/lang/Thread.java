@@ -38,10 +38,11 @@ exception statement from your version. */
 
 package java.lang;
 
+
 /* Written using "Java Class Libraries", 2nd edition, ISBN 0-201-31002-3
  * "The Java Language Specification", ISBN 0-201-63451-1
  * plus online API docs for JDK 1.2 beta from http://www.javasoft.com.
- * Status:  Believed complete to version 1.4, with caveats. We do not 
+ * Status:  Believed complete to version 1.4, with caveats. We do not
  *          implement the deprecated (and dangerous) stop, suspend, and resume
  *          methods. Security implementation is not complete.
  */
@@ -76,7 +77,7 @@ package java.lang;
  *
  * @author Tom Tromey
  * @author John Keiser
- * @author Eric Blake <ebb9@email.byu.edu>
+ * @author Eric Blake (ebb9@email.byu.edu)
  * @see Runnable
  * @see Runtime#exit(int)
  * @see #run()
@@ -858,7 +859,7 @@ public class Thread implements Runnable
    * If you stop a Thread that has not yet started, the stop is ignored
    * (contrary to what the JDK documentation says).
    * <b>WARNING</b>This bypasses Java security, and can throw a checked
-   * exception which the call stack is unprepared to handle. Do not abuse 
+   * exception which the call stack is unprepared to handle. Do not abuse
    * this power.
    *
    * <p>This is inherently unsafe, as it can interrupt synchronized blocks and

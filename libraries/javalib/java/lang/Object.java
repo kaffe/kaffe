@@ -125,13 +125,13 @@ public class Object
    *
    * <p>The default implementation returns <code>this == o</code>.
    *
-   * @param o the Object to compare to
+   * @param obj the Object to compare to
    * @return whether this Object is semantically equal to another
    * @see #hashCode()
    */
-  public boolean equals(Object o)
+  public boolean equals(Object obj)
   {
-    return this == o;
+    return this == obj;
   }
 
   /**

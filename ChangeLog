@@ -1,5 +1,22 @@
 2004-10-15  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/lang/Object.java,
+	libraries/javalib/java/lang/Thread.java,
+	libraries/javalib/java/lang/ThreadLocal.java:
+	Resynced with GNU Classpath.
+
+	* libraries/javalib/java/lang/Void.java:
+	Replaced by implementation from GNU Classpath.
+
+	2004-10-15  Michael Koch  <konqueror@gmx.de>
+
+        * java/lang/Object.java (equals): Rename 'o' to 'obj'.
+        * java/lang/Thread.java,
+        java/lang/ThreadLocal.java, java/lang/Void.java:
+        Improved javadocs to be valid XHTML.
+
+2004-10-15  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/lang/reflect/AccessibleObject.java,
 	libraries/javalib/java/lang/reflect/ReflectPermission.java:
 	Resynced with GNU Classpath.
