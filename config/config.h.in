@@ -472,6 +472,9 @@
 /* Do we enable stats in the vm? */
 #undef KAFFE_STATS
 
+/* Enable GCJ support.  */
+#undef HAVE_GCJ_SUPPORT
+
 /* Do we have int8 */
 #undef HAVE_INT8
 

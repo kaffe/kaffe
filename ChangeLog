@@ -1,5 +1,9 @@
 1999-11-21  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
+	* configure.in (enable-gcj): Check for features of recent gcc and
+	libgcj headers.
+	* configure, */Makefile.in, config/config.h.in: Rebuild.
+
 	* config/i386/common.h (COMPARE_AND_EXCHANGE): Rework asm
 	constraints so that it compiles without optimization and with
 	older releases of gcc.

@@ -44,7 +44,6 @@ LIBS="$CTLIBS $LIBS"
 dnl Find the compiler early on in case we need to override.
 AC_PROG_CC
 AC_PROG_CXX
-AC_PROG_CXXCPP
 
 dnl If gcc is the compiler, compile with -Wall for lots of warnings
 if test "$GCC" = "yes"; then
@@ -119,9 +118,6 @@ AC_SUBST(LIBLTDL)
 ## Let users override the linker used by libtool, but default to $CC.
 CCLD=${CCLD:-'$(CC)'}
 AC_SUBST(CCLD)
-AC_SUBST(CXX)
-AC_SUBST(CXXDEPMODE)
-AC_SUBST(CXXCPP)
 
 dnl =========================================================================
 dnl Do we need underscore?
@@ -326,6 +322,8 @@ AC_ARG_WITH(profiling,[  --with-profiling        Compile with gprof(1) profiling
 AC_MSG_CHECKING(gprof(4) profiling support)
 if test x"${with_profiling}" = x"yes" ; then
 	CFLAGS="$CFLAGS -pg"
+else
+	with_profiling=no
 fi
 AC_MSG_RESULT($with_profiling)
 
@@ -659,6 +657,37 @@ fi
 dnl -------------------------------------------------------------------------
 
 dnl =========================================================================
+dnl Do we enable GCJ support
+dnl -------------------------------------------------------------------------
+
+if test "x$enable_gcj" != "xno"; then
+  enable_gcj=no # pessimist
+
+  have_recent_gcc=yes # optimist
+  AC_CHECK_FUNCS([__throw __terminate_func __get_eh_info], [],
+		 [have_recent_gcc=no])
+
+  if test "x$have_recent_gcc" = xyes; then
+    AC_LANG_SAVE
+    AC_LANG_CPLUSPLUS
+    AC_CHECK_HEADER([java/lang/Class.h],
+      [have_libgcj_headers=yes], [have_libgcj_headers=no])
+    AC_LANG_RESTORE
+
+    if test "x$have_libgcj_headers" = xyes; then
+      enable_gcj=yes
+      AC_DEFINE([HAVE_GCJ_SUPPORT], 1, [Enable GCJ support. ])
+    fi
+  fi
+fi
+
+AC_ARG_ENABLE(gcj,[  --disable-gcj           Disable GCJ support])
+AC_MSG_CHECKING([whether to enable GCJ support])
+AC_MSG_RESULT($enable_gcj)
+
+dnl -------------------------------------------------------------------------
+
+dnl =========================================================================
 dnl Checks for typedefs, structures, and compiler characteristics.
 dnl -------------------------------------------------------------------------
 
@@ -847,7 +876,6 @@ mprotect madvise dnl
 waitpid kill fork execve execvp dnl
 sync fsync dnl
 atexit on_exit vsnprintf snprintf dnl
-__throw __terminate_func __get_eh_info dnl
 ])
 
 if test "$host_cpu" = "alpha" ; then
@@ -1006,7 +1034,7 @@ dnl =========================================================================
 dnl Extract path and dir separator information from paths.h
 dnl -------------------------------------------------------------------------
 
-AC_PROG_CPP
+AC_REQUIRE([AC_PROG_CPP])
 
 AC_CACHE_CHECK([for path separator],ac_cv_kaffe_pathsep,
 [	rm -f conftest.c
