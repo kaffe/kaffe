@@ -447,7 +447,6 @@ java/util/zip/ZipEntry.java
 java/util/zip/ZipException.java
 java/util/zip/ZipFile.java
 java/util/zip/ZipInputStream.java
-java/util/zip/ZipOutputStream.java
 kaffe/io/ByteToCharConverter.java
 kaffe/io/ByteToCharDefault.java
 kaffe/io/ByteToCharIconv.java

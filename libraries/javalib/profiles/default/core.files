@@ -251,6 +251,7 @@ java/util/zip/CRC32.java
 java/util/zip/DeflaterOutputStream.java
 java/util/zip/GZIPInputStream.java
 java/util/zip/GZIPOutputStream.java
+java/util/zip/ZipOutputStream.java
 javax/security/auth/x500/X500Principal.java
 kaffe/io/AccessibleBAOStream.java
 kaffe/io/ByteToChar8859_1.java
