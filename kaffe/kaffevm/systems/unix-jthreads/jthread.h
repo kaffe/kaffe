@@ -50,11 +50,6 @@
 #define  select(A, B, C, D, E)	\
 	(*Kaffe_SystemCallInterface._select)(A,B,C,D,E)
 
-/* SunOS has on_exit only */
-#if !defined(HAVE_ATEXIT) && defined(HAVE_ON_EXIT)
-#define atexit(x)	on_exit(x, 0)
-#endif
-
 /*======== 	end of definitions that apply to Kaffe 	     	     ========*/
 
 #else	/* !KVER */
