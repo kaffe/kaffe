@@ -47,9 +47,9 @@ inline jint JNIEnv::ThrowNew(jclass a, const char* b)
 	return (functions->ThrowNew(this, a, b));
 }
 
-inline jthrowable JNIEnv::ExceptionOccured(void)
+inline jthrowable JNIEnv::ExceptionOccurred(void)
 {
-	return (functions->ExceptionOccured(this));
+	return (functions->ExceptionOccurred(this));
 }
 
 inline void JNIEnv::ExceptionDescribe(void)
