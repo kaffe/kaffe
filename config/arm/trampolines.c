@@ -46,13 +46,13 @@ asm(
 #else
 C_FUNC_NAME(arm_do_fixup_trampoline) ":				\n"
 #endif
-"	stmdb	sp!,{r0,r1,r2,r3,lr}\n
-	mov	r0,ip\n
-	bl	" C_FUNC_NAME(soft_fixup_trampoline) "		\n
-	mov	ip, r0\n
-	ldmia	sp!,{r0,r1,r2,r3,lr}\n
-	mov	pc, ip\n
-"
+"	stmdb	sp!,{r0,r1,r2,r3,lr}\n"
+"	mov	r0,ip\n"
+"	bl	" C_FUNC_NAME(soft_fixup_trampoline) "		\n"
+"	mov	ip, r0\n"
+"	ldmia	sp!,{r0,r1,r2,r3,lr}\n"
+"	mov	pc, ip\n"
+
 	END_ASM_FUNC()
 );
 
@@ -65,13 +65,13 @@ asm(
 #else
 C_FUNC_NAME(arm_do_fixup_trampoline) ":				\n"
 #endif
-"	stmdb	sp!,{r0,r1,r2,r3,lr}\n
-	mov	r0,ip\n
-	bl	" C_FUNC_NAME(soft_fixup_trampoline) " (PLT)	\n
-	mov	ip, r0\n
-	ldmia	sp!,{r0,r1,r2,r3,lr}\n
-	mov	pc, ip\n
-"
+"	stmdb	sp!,{r0,r1,r2,r3,lr}\n"
+"	mov	r0,ip\n"
+"	bl	" C_FUNC_NAME(soft_fixup_trampoline) " (PLT)	\n"
+"	mov	ip, r0\n"
+"	ldmia	sp!,{r0,r1,r2,r3,lr}\n"
+"	mov	pc, ip\n"
+
 	END_ASM_FUNC()
 );
 

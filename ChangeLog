@@ -1,3 +1,9 @@
+2003-09-18  Dalibor Topic <robilad@kaffe.org>
+
+	* config/arm/trampolines.c:
+	Fixed multi-line string compiler breakage.
+	Reported by: Arnaud Vandyck <arnaud.vandyck@ulg.ac.be>
+	
 2003-09-18  Timothy S. Stack <stack@cs.utah.edu>
 
 	* libraries/clib/net/NetworkInterface.c:
