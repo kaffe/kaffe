@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 	
+	2004-12-26  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics.java
+	(drawImage): Update image observer.
+
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2004-12-26  Graydon Hoare  <graydon@redhat.com>
 
 	* gnu/java/awt/peer/gtk/GdkGraphics2D.java:

@@ -167,8 +167,16 @@ public class GdkGraphics extends Graphics
 
     if (img instanceof GtkOffScreenImage)
       {
+        int width = img.getWidth (null);
+        int height = img.getHeight (null);
 	copyPixmap (img.getGraphics (), 
-		    x, y, img.getWidth (null), img.getHeight (null));
+		    x, y, width, height);
+
+        // FIXME: need to differentiate between SOMEBITS and FRAMEBITS.
+        if (observer != null)
+          observer.imageUpdate (img,
+                                ImageObserver.FRAMEBITS,
+                                x, y, width, height);
 	return true;
       }
 
