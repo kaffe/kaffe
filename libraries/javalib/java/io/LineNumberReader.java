@@ -10,13 +10,15 @@
 
 package java.io;
 
+import java.lang.Math;
 import java.lang.String;
+import java.lang.StringBuffer;
 
-public class LineNumberReader
-  extends BufferedReader
-{
-	private int lineno = 0;
-	private int marklineno = 0;
+public class LineNumberReader extends BufferedReader {
+	private int     lineno;
+	private int     marklineno;
+	private boolean skipnextlf;
+	private boolean markskipnextlf;
 
 public LineNumberReader(Reader in) {
 	super(in);
@@ -33,7 +35,10 @@ public int getLineNumber() {
 public void mark(int readAheadLimit) throws IOException {
 	synchronized(lock) {
 		super.mark(readAheadLimit);
+
+		// Store this LineNumberReader's state.
 		marklineno = lineno;
+		markskipnextlf = skipnextlf;
 	}
 }
 
@@ -42,33 +47,90 @@ public int read() throws IOException {
 
 	synchronized(lock) {
 		ch = super.read();
-		if (ch == -1) {
-			return (-1);
-		}
-		if (ch == '\n') {
-			lineno++;
-		}
-		else if (ch == '\r') {
-			lineno++;
-			// Handle \r\n -> \n compression
-			ch = super.read();
-			if (ch != '\n') {
-				super.pushback();
-				ch = '\n';
+		switch (ch) {
+
+		case -1 :
+		        // Do nothing on EOF.
+		        break;
+
+		case '\n': 
+		        // Skip over this line feed if
+		        // the previous character was a
+		        // carriage return.
+		        if (skipnextlf) {
+			        skipnextlf = false;
+
+				// Return next character. read()
+				// automatically takes care
+				// of line numbers and flags.
+				ch = read();
 			}
+			else {
+				lineno++;
+			}
+			break;
+
+		case '\r':
+		        // read() compresses \r and \r\n to \n.
+
+		        // If next character to be read is a \n,
+		        // skip over it. It belongs to this \r.
+		        skipnextlf = true;
+
+			// Handle compression.
+			ch = '\n';
+
+		        lineno++;			
+			break;
+
+		default:
+		        // Normal character. Next \n doesn't need to
+		        // be skipped over.
+		        skipnextlf = false;
 		}
 	}
 	return (ch);
 }
 
-public int read ( char cbuf[], int off, int len ) throws IOException {
+public int read ( char [] cbuf, int off, int len ) throws IOException {
 	int i, n, m;
 	
 	synchronized ( lock ) {
+
 		n = super.read( cbuf, off, len);
+
+		// Count lines and update flags.
 		m = off+n;
 		for ( i=off; i<m; i++ ){
-			if ( cbuf[i] == '\n' ) lineno++;
+			switch (cbuf[i]) {
+			case '\n': 
+				// Skip over this line feed if
+				// the previous character was a
+				// carriage return.
+				if (skipnextlf) {
+					skipnextlf = false;
+				}
+				else {
+					lineno++;
+				}
+				break;
+
+		        case '\r':
+				// read(char[], int, int) doesn't compress line
+				// terminators.
+
+				// If next character to be read is a \n,
+				// skip over it. It belongs to this \r.
+				skipnextlf = true;
+
+				lineno++;			
+				break;
+
+			default:
+				// Normal character. Next \n doesn't need to
+				// be skipped over.
+				skipnextlf = false;
+			}
 		}
 	}
 	
@@ -76,17 +138,56 @@ public int read ( char cbuf[], int off, int len ) throws IOException {
 }
 
 public String readLine() throws IOException {
+	StringBuffer line = new StringBuffer();
+
 	synchronized(lock) {
+		if (skipnextlf) {
+			/* If we have to skip next \n, then first
+			   read a single char to see if it is a \n.
+			   We can't use read() for that, since it 
+			   would falsely report a \r for a \n.
+			*/
+			char [] buf = new char [1];
+			if (read(buf) > 0) {
+				switch (buf[0]) {
+				case '\n':
+					// Skip over \n.
+					break;
+				case '\r':
+					// An empty line.
+					return "";
+				default:
+					/* Normal character. Append it to 
+					   the line.
+					*/
+					line.append(buf);
+				}
+			}
+		}
+
+		int    oldlineno = lineno;
 		String str = super.readLine();
-		lineno++;
-		return (str);
+
+		if (str == null) {
+			if (line.length() == 0) {
+				return null;
+			}
+		}
+		else {
+			line.append(str);
+		}
+
+		lineno = oldlineno + 1;
 	}
+
+	return line.toString();
 }
 
 public void reset() throws IOException {
 	synchronized(lock) {
 		super.reset();
 		lineno = marklineno;
+		skipnextlf = markskipnextlf;
 	}
 }
 
@@ -96,23 +197,41 @@ public void setLineNumber(int lineNumber) {
 	}
 }
 
-public long skip(long n) throws IOException {
-	long i;
+public long skip(long count) throws IOException {
+	if (count < 0) {
+		throw new IllegalArgumentException("skip() value is negative");
+	}
+
+	long skipped = 0;
+	int  buffersize;
+	final long DEFAULTSIZE = 1024L;
+
+	// We might have to skip over many characters.
+	// If that's true, don't waste memory allocating
+	// a huge junk buffer.
+	buffersize = (int) Math.min(count, DEFAULTSIZE);
+
+	char [] junk = new char[buffersize];
 
 	synchronized(lock) {
+		do {
+			// Skip characters.
+			int n = read(junk, 0,
+			    Math.min(buffersize, (int)(count - skipped)));
 
-		// Hidiously slow ....
-		for (i = 0; i < n; i++) {
-			int ch = read();
-			if (ch == -1) {
-				if (i == 0) {
-					i = -1;
-				}
+			// If we've skipped any characters, add them to
+			// the total. Otherwise stop skipping.
+			if (n > 0) {
+				skipped += n;
+			}
+			else {
 				break;
 			}
-		}
-
+		} while (count > skipped);
 	}
-	return (i);
+
+	return (skipped);
 }
 }
+
+

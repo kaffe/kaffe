@@ -12,7 +12,7 @@
 package java.io;
 
 public class BufferedReader extends Reader {
-	final private static int DEFAULTBUFFERSIZE = 8192;
+	private static final int DEFAULTBUFFERSIZE = 8192;
 	private Reader rd;
 	private char[] inbuf;
 	private int pos;	// position of next char in buffer
@@ -20,7 +20,6 @@ public class BufferedReader extends Reader {
 				//  invariant: 0 <= pos <= size <= inbuf.length
 	private boolean markset;
 	private boolean markvalid;
-	private boolean closed;
 
 public BufferedReader(Reader in) {
 	this(in, DEFAULTBUFFERSIZE);
@@ -33,10 +32,6 @@ public BufferedReader(Reader in, int sz) {
 	}
 	rd = in;
 	inbuf = new char[sz];
-	pos = 0;
-	size = 0;
-	markset = false;
-	markvalid = false;
 }
 
 /* Internal function used to check whether the
@@ -44,17 +39,16 @@ public BufferedReader(Reader in, int sz) {
    an IOException in that case.
 */
 private void checkIfStillOpen() throws IOException {
-	if (closed) {
+	if (rd == null) {
 		throw new IOException("Stream closed");
 	}
 }
 
 public void close() throws IOException {
 	synchronized(lock) {
-		if (closed) {
+		if (rd == null) {
 			return;
 		}
-		closed = true;
 
 		// Close the input reader
 		rd.close();
@@ -114,7 +108,7 @@ public int read () throws IOException {
 	return (-1);
 }
 
-public int read ( char cbuf[], int off, int len ) throws IOException {
+public int read ( char [] cbuf, int off, int len ) throws IOException {
 	if (off < 0 || off + len > cbuf.length || len < 0) {
 		throw new IndexOutOfBoundsException();
 	}
@@ -131,7 +125,7 @@ public int read ( char cbuf[], int off, int len ) throws IOException {
 		for (nread = 0; nread < len; nread += chunk) {
 			// Make sure there's something in the buffer
 			if (pos == size) {
-				// Avoid unneccesary blocking
+				// Avoid unneccessary blocking
 				if (nread > 0 && !rd.ready()) {
 					return nread;
 				}
@@ -166,7 +160,8 @@ public String readLine () throws IOException {
 		while ( true ) {
 
 			// Find next newline or carriage return
-			while (pos < size && (c = inbuf[pos]) != '\n' && c != '\r') {
+			while (pos < size
+			    && (c = inbuf[pos]) != '\n' && c != '\r') {
 				pos++;
 			}
 
@@ -174,10 +169,12 @@ public String readLine () throws IOException {
 			if (pos == size) {      // nothing found yet
 				if (pos > start) {
 					if (s == null) {
-						s = new String(inbuf, start, pos-start);
+						s = new String(inbuf,
+						    start, pos-start);
 					}
 					else {
-						s += new String(inbuf, start, pos-start);
+						s += new String(inbuf,
+						    start, pos-start);
 					}
 				}
 				if (fillOutBuffer() < 0) {
@@ -190,11 +187,18 @@ public String readLine () throws IOException {
 					s = new String(inbuf, start, pos-start);
 				}
 				else {
-					s += new String(inbuf, start, pos-start);
+					s += new String(inbuf,
+					    start, pos-start);
 				}
 				pos++;
 				if (c == '\r') {
-					if (read() != '\n' && pos > 0) {
+				        char [] buf = new char [1];
+					int     n;
+					while ((n = read(buf, 0, 1)) == 0)
+					        ;
+
+					if (n == 1
+					    && buf[0] != '\n' && pos > 0) {
 						pos--;  // skip over "\r\n"
 					}
 				}
