@@ -37,7 +37,10 @@ exception statement from your version. */
 
 package java.nio;
 
-
+/**
+ * @author Michael Koch
+ * @since 1.4
+ */
 public abstract class MappedByteBuffer extends ByteBuffer
 {
     private static native void sync();

@@ -345,6 +345,7 @@ java_awt_SRCS = \
 	java/awt/GraphicsConfigTemplate.java \
 	java/awt/GraphicsConfiguration.java \
 	java/awt/GraphicsDevice.java \
+	java/awt/GraphicsEnvironment.java \
 	java/awt/GraphicsLink.java \
 	java/awt/GradientPaint.java \
 	java/awt/GridBagConstraints.java \

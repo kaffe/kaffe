@@ -32,11 +32,11 @@ public class MidiFileFormat
 {
 	public static final int		UNKNOWN_LENGTH = -1;
 
-	private int		m_nType;
-	private float		m_fDivisionType;
-	private int		m_nResolution;
-	private int		m_nByteLength;
-	private long		m_lMicrosecondLength;
+	protected int		type;
+	protected float		divisionType;
+	protected int		resolution;
+	protected int		byteLength;
+	protected long		microsecondLength;
 
 
 
@@ -46,45 +46,45 @@ public class MidiFileFormat
 			      int nByteLength,
 			      long lMicrosecondLength)
 	{
-		m_nType = nType;
-		m_fDivisionType = fDivisionType;
-		m_nResolution = nResolution;
-		m_nByteLength = nByteLength;
-		m_lMicrosecondLength = lMicrosecondLength;
+		type = nType;
+		divisionType = fDivisionType;
+		resolution = nResolution;
+		byteLength = nByteLength;
+		microsecondLength = lMicrosecondLength;
 	}
 
 
 	public int getType()
 	{
-		return m_nType;
+		return type;
 	}
 
 
 
 	public float getDivisionType()
 	{
-		return m_fDivisionType;
+		return divisionType;
 	}
 
 
 
 	public int getResolution()
 	{
-		return m_nResolution;
+		return resolution;
 	}
 
 
 
 	public int getByteLength()
 	{
-		return m_nByteLength;
+		return byteLength;
 	}
 
 
 
 	public long getMicrosecondLength()
 	{
-		return m_lMicrosecondLength;
+		return microsecondLength;
 	}
 }
 

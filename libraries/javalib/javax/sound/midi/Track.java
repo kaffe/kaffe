@@ -34,6 +34,9 @@ import	java.util.Vector;
 
 public class Track
 {
+	// not used; only to confirm with official API
+	protected Vector	events;
+	// this is the actual store
 	private List		m_events;
 
 

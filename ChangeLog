@@ -1,3 +1,48 @@
+2003-01-12 Dalibor Topic <robilad@yahoo.com>
+	
+        * libraries/javalib/Makefile.am:
+	added java/awt/GraphicsEnvoronment.java
+
+        * libraries/javalib/Makefile.in:
+	regenerated.
+
+	* libraries/javalib/java/awt/GraphicsEnvironment.java:
+	new file from GNU Classpath.
+	
+        * libraries/javalib/java/awt/BasicStroke.java,
+        libraries/javalib/java/awt/BufferCapabilities.java,
+        libraries/javalib/java/awt/DisplayMode.java,
+        libraries/javalib/java/awt/color/CMMException.java,
+        libraries/javalib/java/awt/color/ColorSpace.java,
+        libraries/javalib/java/awt/color/ICC_Profile.java,
+        libraries/javalib/java/awt/color/ProfileDataException.java,
+        libraries/javalib/java/awt/datatransfer/FlavorMap.java,
+        libraries/javalib/java/awt/dnd/DragGestureEvent.java,
+        libraries/javalib/java/awt/dnd/DragGestureRecognizer.java,
+        libraries/javalib/java/awt/dnd/DragSource.java,
+        libraries/javalib/java/awt/dnd/DropTarget.java,
+        libraries/javalib/java/awt/geom/PathIterator.java,
+        libraries/javalib/java/nio/MappedByteBuffer.java,
+        libraries/javalib/java/nio/channels/FileChannel.java,
+        libraries/javalib/java/util/logging/LogManager.java,
+        libraries/javalib/javax/naming/InitialContext.java:
+	resynced with GNU Classpath.
+
+        * libraries/javalib/javax/sound/midi/MidiFileFormat.java,
+        libraries/javalib/javax/sound/midi/MidiUnavailableException.java,
+        libraries/javalib/javax/sound/midi/Patch.java,
+        libraries/javalib/javax/sound/midi/Sequence.java,
+        libraries/javalib/javax/sound/midi/Track.java,
+        libraries/javalib/javax/sound/sampled/AudioFormat.java,
+        libraries/javalib/javax/sound/sampled/AudioPermission.java,
+        libraries/javalib/javax/sound/sampled/FloatControl.java,
+        libraries/javalib/javax/sound/sampled/LineEvent.java,
+        libraries/javalib/javax/sound/sampled/spi/MixerProvider.java,
+        libraries/javalib/org/tritonus/sampled/convert/SampleRateConversionProvider.java,
+        libraries/javalib/org/tritonus/share/midi/TSequencer.java,
+        libraries/javalib/org/tritonus/share/sampled/mixer/TMixerProvider.java:
+	resynced with Tritonus.
+
 2003-01-11 Dalibor Topic <robilad@yahoo.com>
 
 	Merged in a few classes from GNU Classpath's implementation of

@@ -35,7 +35,7 @@ public class Patch
 
 
 
-	protected Patch(int nBank, int nProgram)
+	public Patch(int nBank, int nProgram)
 	{
 		m_nBank = nBank;
 		m_nProgram = nProgram;

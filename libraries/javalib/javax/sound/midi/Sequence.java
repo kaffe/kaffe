@@ -25,13 +25,11 @@
 
 package	javax.sound.midi;
 
-
-import	java.util.ArrayList;
 import	java.util.Iterator;
-import	java.util.List;
+import	java.util.Vector;
 
 
-
+// TODO: some synchronization now obsolete? (after change from ArrayList to Vector)
 public class Sequence
 {
 	public static final float	PPQ = 0.0F;
@@ -43,9 +41,9 @@ public class Sequence
 	private static final Track[]	EMPTY_TRACK_ARRAY = new Track[0];
 
 
-	private float		m_fDivisionType;
-	private int		m_nResolution;
-	private List		m_tracks;
+	protected float		divisionType;
+	protected int		resolution;
+	protected Vector		tracks;
 
 
 
@@ -66,14 +64,14 @@ public class Sequence
 	{
 		if (fDivisionType == PPQ || fDivisionType == SMPTE_24 || fDivisionType == SMPTE_25 || fDivisionType == SMPTE_30DROP || fDivisionType == SMPTE_30)
 		{
-			m_fDivisionType = fDivisionType;
+			divisionType = fDivisionType;
 		}
 		else
 		{
 			throw new InvalidMidiDataException("Invalid division type: " + fDivisionType);
 		}
-		m_nResolution = nResolution;
-		m_tracks = new ArrayList();
+		resolution = nResolution;
+		tracks = new Vector();
 		for (int i = 0; i < nNumTracks; i++)
 		{
 			createTrack();
@@ -84,14 +82,14 @@ public class Sequence
 
 	public float getDivisionType()
 	{
-		return m_fDivisionType;
+		return divisionType;
 	}
 
 
 
 	public int getResolution()
 	{
-		return m_nResolution;
+		return resolution;
 	}
 
 
@@ -99,9 +97,9 @@ public class Sequence
 	public Track createTrack()
 	{
 		Track	track = new Track();
-		synchronized (m_tracks)
+		synchronized (tracks)
 		{
-			m_tracks.add(track);
+			tracks.add(track);
 		}
 		return track;
 	}
@@ -109,9 +107,9 @@ public class Sequence
 
 	public boolean deleteTrack(Track track)
 	{
-		synchronized (m_tracks)
+		synchronized (tracks)
 		{
-			return m_tracks.remove(track);
+			return tracks.remove(track);
 		}
 	}
 
@@ -119,9 +117,9 @@ public class Sequence
 
 	public Track[] getTracks()
 	{
-		synchronized (m_tracks)
+		synchronized (tracks)
 		{
-			return (Track[]) m_tracks.toArray(EMPTY_TRACK_ARRAY);
+			return (Track[]) tracks.toArray(EMPTY_TRACK_ARRAY);
 		}
 	}
 
@@ -145,10 +143,10 @@ public class Sequence
 	public long getTickLength()
 	{
 		long	lLength = 0;
-		Iterator	tracks = m_tracks.iterator();
-		while (tracks.hasNext())
+		Iterator	tracksIterator = tracks.iterator();
+		while (tracksIterator.hasNext())
 		{
-			Track	track = (Track) tracks.next();
+			Track	track = (Track) tracksIterator.next();
 			lLength = Math.max(lLength, track.ticks());
 		}
 		return lLength;

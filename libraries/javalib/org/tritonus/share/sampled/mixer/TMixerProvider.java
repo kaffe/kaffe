@@ -139,7 +139,7 @@ public abstract class TMixerProvider
 	}
 
 
-
+	// $$mp 2003/01/11: TODO: this implementation may become obsolete once the overridden method in spi.MixerProvider is implemented in a way documented officially.
 	public boolean isMixerSupported(Mixer.Info info)
 	{
 		if (TDebug.TraceMixerProvider) { TDebug.out("TMixerProvider.isMixerSupported(): begin"); }

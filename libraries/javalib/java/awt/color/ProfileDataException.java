@@ -45,7 +45,7 @@ package java.awt.color;
   * @author Eric Blake <ebb9@email.byu.edu>
   * @status updated to 1.4
   */
-public class ProfileDataException extends Exception
+public class ProfileDataException extends RuntimeException
 {
   /**
    * Compatible with JDK 1.2+.

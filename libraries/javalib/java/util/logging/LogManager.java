@@ -46,6 +46,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.Enumeration;
@@ -91,11 +92,11 @@ import java.lang.ref.WeakReference;
  *     property <code>java.util.logging.config.file</code>.</li>
  *
  * <li>If the system property <code>java.util.logging.config.file</code>
- *     is not set, however, the contents of the file
- *     "{java.home}/lib/logging.properties" are passed to
+ *     is not set, however, the contents of the URL
+ *     "{gnu.classpath.home.url}/logging.properties" are passed to
  *     {@link #readConfiguration(java.io.InputStream)}.
- *     Here, "{java.home}" stands for the value of
- *     the system property <code>java.home</code>.</li>
+ *     Here, "{gnu.classpath.home.url}" stands for the value of
+ *     the system property <code>gnu.classpath.home.url</code>.</li>
  * </ol>
  *
  * @author Sascha Brawer (brawer@acm.org)
@@ -467,9 +468,10 @@ public class LogManager
    * Configures the logging framework by reading a configuration file.
    * The name and location of this file are specified by the system
    * property <code>java.util.logging.config.file</code>.  If this
-   * property is not set, the file "{java.home}/lib/logging.properties"
-   * is taken, where "{java.home}" stands for the value of the system
-   * property <code>java.home</code>.
+   * property is not set, the URL
+   * "{gnu.classpath.home.url}/logging.properties" is taken, where
+   * "{gnu.classpath.home.url}" stands for the value of the system
+   * property <code>gnu.classpath.home.url</code>.
    *
    * <p>The task of configuring the framework is then delegated to
    * {@link #readConfiguration(java.io.InputStream)}, which will
@@ -488,19 +490,19 @@ public class LogManager
     throws IOException, SecurityException
   {
     String       path;
-    String       pathSep;
     InputStream  inputStream;
 
     path = System.getProperty("java.util.logging.config.file");
     if ((path == null) || (path.length() == 0))
     {
-      pathSep = System.getProperty("file.separator");
-      path = System.getProperty("java.home")
-             + pathSep + "lib"
-	     + pathSep + "logging.properties";
+      String url = (System.getProperty("gnu.classpath.home.url")
+		    + "/logging.properties");
+      inputStream = new URL(url).openStream();
     }
-
-    inputStream = new java.io.FileInputStream(path);
+    else
+    {
+      inputStream = new java.io.FileInputStream(path);
+    }
 
     try
     {

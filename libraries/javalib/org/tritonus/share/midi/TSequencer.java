@@ -55,6 +55,8 @@ public abstract class TSequencer
 	implements	Sequencer
 {
 	private static final float	MPQ_BPM_FACTOR = 6.0E7F;
+	// This is for use in Collection.toArray(Object[]).
+	private static final SyncMode[]	EMPTY_SYNCMODE_ARRAY = new SyncMode[0];
 
 
 	private boolean		m_bRunning;
@@ -590,7 +592,7 @@ public abstract class TSequencer
 	public SyncMode[] getMasterSyncModes()
 	{
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.getMasterSyncModes(): begin"); }
-		SyncMode[]	syncModes = (SyncMode[]) m_masterSyncModes.toArray(new SyncMode[0]);
+		SyncMode[]	syncModes = (SyncMode[]) m_masterSyncModes.toArray(EMPTY_SYNCMODE_ARRAY);
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.getMasterSyncModes(): end"); }
 		return syncModes;
 	}
@@ -641,7 +643,7 @@ public abstract class TSequencer
 	public SyncMode[] getSlaveSyncModes()
 	{
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.getSlaveSyncModes(): begin"); }
-		SyncMode[]	syncModes = (SyncMode[]) m_slaveSyncModes.toArray(new SyncMode[0]);
+		SyncMode[]	syncModes = (SyncMode[]) m_slaveSyncModes.toArray(EMPTY_SYNCMODE_ARRAY);
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.getSlaveSyncModes(): end"); }
 		return syncModes;
 	}

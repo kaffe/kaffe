@@ -145,5 +145,5 @@ public abstract class FileChannel extends AbstractInterruptibleChannel
   /**
    * msync with the disk
    */
-  public abstract void force(boolean metaData);    
+  public abstract void force(boolean metaData) throws IOException;
 }

@@ -113,7 +113,7 @@ public class LineEvent
 
 
 
-		public final String toString()
+		public String toString()
 		{
 			return m_strName;
 		}

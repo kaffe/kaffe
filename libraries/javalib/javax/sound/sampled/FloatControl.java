@@ -109,7 +109,11 @@ public abstract class FloatControl
 	}
 
 
-
+	/** Set the value of the control.
+	    If subclasses need to override this method, super.setValue()
+	    should be called at the beginning of the overriding
+	    implementation.
+	*/
 	public void setValue(float fValue)
 	{
 		m_fValue = fValue;
@@ -176,6 +180,17 @@ public abstract class FloatControl
 	public int getUpdatePeriod()
 	{
 		return m_nUpdatePeriod;
+	}
+
+
+
+	public void shift(float fFrom,
+			  float fTo,
+			  int nMicroseconds)
+	{
+		/* This default implementation is required by the
+		   specification. */
+		setValue(fTo);
 	}
 
 

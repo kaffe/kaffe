@@ -62,6 +62,7 @@ import	org.tritonus.share.ArraySet;
 public class SampleRateConversionProvider
 	extends TSimpleFormatConversionProvider {
 
+	// only used as abbreviation
 	public static AudioFormat.Encoding PCM_SIGNED=AudioFormat.Encoding.PCM_SIGNED;
 	public static AudioFormat.Encoding PCM_UNSIGNED=AudioFormat.Encoding.PCM_UNSIGNED;
 
@@ -767,6 +768,14 @@ private long testOutFramesReturned=0;
 
 	}
 
+
+	/**
+	   Obviously, this class is used to be able to set the
+	   frame rate/sample rate after the AudioFormat object
+	   has been created. It assumes the PCM case where the
+	   frame rate is always in sync with the sample rate.
+	   (MP)
+	*/
 	public static class SRCAudioFormat extends AudioFormat {
 		private float sampleRate;
 		

@@ -5,7 +5,6 @@
 /*
  *  Copyright (c) 2000 by Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
  *
- *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as published
  *   by the Free Software Foundation; either version 2 of the License, or
@@ -19,43 +18,35 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
  */
 
+package javax.sound.sampled;
 
-package	javax.sound.sampled;
+import java.security.BasicPermission;
 
-/*
- *	This is not available in jdk1.1.x. Since we do not acually use
- *	this class at all, we can omit it.
+
+/** TODO:
  */
-// import	java.security.BasicPermission;
-
-
-
 public class AudioPermission
-//	extends	BasicPermission
+	extends	BasicPermission
 {
+	/** TODO:
+	 */
 	public AudioPermission(String strName)
 	{
-/*
 		super(strName);
-*/
 	}
 
 
 
+	/** TODO:
+	 */
 	public AudioPermission(String strName,
 			       String strActions)
 	{
-/*
 		super(strName,
 		      strActions);
-*/
 	}
-
-
-
 }
 
 

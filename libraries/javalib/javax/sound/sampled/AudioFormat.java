@@ -31,13 +31,13 @@ package	javax.sound.sampled;
 
 public class AudioFormat
 {
-	private Encoding	m_encoding;
-	private float		m_fSampleRate;
-	private int		m_nSampleSizeInBits;
-	private int		m_nChannels;
-	private int		m_nFrameSize;
-	private float		m_fFrameRate;
-	private boolean		m_bBigEndian;
+	protected Encoding	encoding;
+	protected float		sampleRate;
+	protected int		sampleSizeInBits;
+	protected int		channels;
+	protected int		frameSize;
+	protected float		frameRate;
+	protected boolean	bigEndian;
 
 
 
@@ -49,13 +49,13 @@ public class AudioFormat
 			   float fFrameRate,
 			   boolean bBigEndian)
 	{
-		m_encoding = encoding;
-		m_fSampleRate = fSampleRate;
-		m_nSampleSizeInBits = nSampleSizeInBits;
-		m_nChannels = nChannels;
-		m_nFrameSize = nFrameSize;
-		m_fFrameRate = fFrameRate;
-		m_bBigEndian = bBigEndian;
+		this.encoding = encoding;
+		this.sampleRate = fSampleRate;
+		this.sampleSizeInBits = nSampleSizeInBits;
+		this.channels = nChannels;
+		this.frameSize = nFrameSize;
+		this.frameRate = fFrameRate;
+		this.bigEndian = bBigEndian;
 	}
 
 
@@ -80,49 +80,49 @@ public class AudioFormat
 
 	public Encoding getEncoding()
 	{
-		return m_encoding;
+		return encoding;
 	}
 
 
 
 	public float getSampleRate()
 	{
-		return m_fSampleRate;
+		return sampleRate;
 	}
 
 
 
 	public int getSampleSizeInBits()
 	{
-		return m_nSampleSizeInBits;
+		return sampleSizeInBits;
 	}
 
 
 
 	public int getChannels()
 	{
-		return m_nChannels;
+		return channels;
 	}
 
 
 
 	public int getFrameSize()
 	{
-		return m_nFrameSize;
+		return frameSize;
 	}
 
 
 
 	public float getFrameRate()
 	{
-		return m_fFrameRate;
+		return frameRate;
 	}
 
 
 
 	public boolean isBigEndian()
 	{
-		return m_bBigEndian;
+		return bigEndian;
 	}
 
 
