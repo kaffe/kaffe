@@ -2,11 +2,11 @@
  * readClassConfig.h
  * Configure the class reader.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2001
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #ifndef __readclassconfig_h
@@ -139,6 +139,12 @@
 			else if (utf8ConstEqual(name, SourceFile_name)){ \
 				readu2(&idx, fp);			\
 				if (addSourceFile((Hjava_lang_Class*)thing, idx, einfo) == false) { return (false); } \
+			}						\
+			else if (utf8ConstEqual(name, InnerClasses_name)){ \
+				if(!addInnerClasses((Hjava_lang_Class*)thing, \
+						       len, fp, einfo)) {\
+					return (false); \
+				} \
 			}						\
 			else {						\
 				seekm(fp, len);				\

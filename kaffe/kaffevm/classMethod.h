@@ -5,8 +5,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #ifndef __classmethod_h
@@ -36,6 +36,7 @@
 #define	CSTATE_FAILED		-1
 
 struct _classEntry;
+struct _innerClass;
 struct Hjava_lang_String;
 
 #include <java_lang_ClassLoader.h>
@@ -108,6 +109,11 @@ struct Hjava_lang_Class {
 	/* array containing static data */
 	void*			static_data;
 
+	/* InnerClasses attribute */
+	short			this_index;
+	short			nr_inner_classes;
+	struct _innerClass*	inner_classes;
+
 	void*			gcjPeer;	/* only needed if GCJ_SUPPORT */
 #ifdef DEBUG
 	int			live_count;
@@ -120,7 +126,7 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 #endif
 
 /*
- * Functions for locking and waiting on *internal* class 
+ * Functions for locking and waiting on *internal* class
  * bits.  This is not for static+synchronized methods.
  * Use the centry lock, as it is convenient and available.
  */
@@ -163,8 +169,8 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 
 /*
  * Class hash entry.
- * 
- * Note that the lock on this struct is used to 
+ *
+ * Note that the lock on this struct is used to
  * synchronize internal Class object state, too.
  */
 typedef struct _classEntry {
@@ -174,6 +180,12 @@ typedef struct _classEntry {
 	struct _classEntry*	next;
         struct _iLock*          lock;
 } classEntry;
+
+typedef struct _innerClass {
+	u2			outer_class;
+	u2			inner_class;
+	u2			inner_class_accflags;
+} innerClass;
 
 typedef struct _parsed_signature {
 	Utf8Const*		signature;
@@ -192,7 +204,7 @@ typedef struct _methods {
 	u2			stacksz;
 	u2			localsz;
 	/* Only used for static/final/constructor methods */
-	nativecode*		ncode;  
+	nativecode*		ncode;
 	union {
 	  struct {
 		nativecode*	ncode_start;
@@ -364,6 +376,7 @@ void			loadStaticClass(Hjava_lang_Class**, const char*);
 Hjava_lang_Class*	setupClass(Hjava_lang_Class*, constIndex,
 				   constIndex, u2, Hjava_lang_ClassLoader*);
 bool 			addSourceFile(Hjava_lang_Class* c, int idx, errorInfo*);
+bool			addInnerClasses(Hjava_lang_Class* c, uint32 len, struct _classFile* fp, errorInfo *info);
 Method*			addMethod(Hjava_lang_Class*, struct _method_info*, errorInfo*);
 Method*			addExceptionMethod(Hjava_lang_Class*, Utf8Const*, Utf8Const*);
 void 			addMethodCode(Method*, struct _Code*);
@@ -420,5 +433,6 @@ extern Utf8Const* LineNumberTable_name;	/* "LineNumberTable" */
 extern Utf8Const* ConstantValue_name;	/* "ConstantValue" */
 extern Utf8Const* Exceptions_name;	/* "Exceptions" */
 extern Utf8Const* SourceFile_name;	/* "SourceFile" */
+extern Utf8Const* InnerClasses_name;	/* "InnerClasses" */
 
 #endif

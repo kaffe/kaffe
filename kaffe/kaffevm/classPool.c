@@ -5,8 +5,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "config.h"
@@ -55,7 +55,7 @@ lookupClassEntryInternal(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 }
 
 /*
- * Lookup an entry for a given (name, loader) pair.  
+ * Lookup an entry for a given (name, loader) pair.
  * Create one if none is found.
  */
 classEntry*
@@ -106,8 +106,8 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader,
 	*entryp = entry;
 	addToCounter(&cpemem, "vmmem-class entry pool", 1, GCSIZEOF(entry));
 
-	/* 
-	 * This reference to the utf8 name will be released if and when this 
+	/*
+	 * This reference to the utf8 name will be released if and when this
 	 * class entry is freed in destroyClassLoader.
 	 */
 	utf8ConstAddRef(entry->name);
@@ -123,7 +123,7 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader,
  * This is the old version that linearly scans the class entry pool.
  *
  * It is only used in JIT2.  JIT3 uses a faster implementation
- * in methodCache.c.  JIT2 could use that implementation too if calls 
+ * in methodCache.c.  JIT2 could use that implementation too if calls
  * to makeMethodActive are added.
  *
  * For now, let's leave this code here.  It could be used a potential
@@ -203,14 +203,14 @@ removeClassEntries(Hjava_lang_ClassLoader* loader)
 			entry = *entryp;
 			if (entry->loader == loader) {
 				/*
-				 * If class gc is turned off, no classloader 
-				 * should ever be finalized because they're all 
+				 * If class gc is turned off, no classloader
+				 * should ever be finalized because they're all
 				 * kept alive by their respective classes.
 				 */
-				assert(entry->class == 0 || 
+				assert(entry->class == 0 ||
 					Kaffe_JavaVMArgs[0].enableClassGC != 0);
 DBG(CLASSGC,
-				dprintf("removing %s l=%p/c=%p\n", 
+				dprintf("removing %s l=%p/c=%p\n",
 				    entry->name->data, loader, entry->class);
     )
 				/* release reference to name */
@@ -238,9 +238,9 @@ destroyClassLoader(Collector *c, void* _loader)
 {
 	Hjava_lang_ClassLoader* loader = _loader;
         int rmoved;
- 
+
         rmoved = removeClassEntries(loader);
-   
+
 	if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
 		dprintf("<GC: destroying classloader "
 			"@%p (%d entries removed)>\n", loader, rmoved);
@@ -281,7 +281,7 @@ statClass(Hjava_lang_Class *clazz, int *total)
 	int bytecodemem = 0, jitmem = 0;
 
 #define SIZE_IFNONZERO(x)  ((x) ? GC_getObjectSize(c, (x)) : 0)
-				
+
 	/* compute sizes of miscellaneous data */
 	/* we tally up the memory for KMALLOC'ed objects (they'll appear
 	 * under "other-fixed".) and the memory for other misc objects
@@ -301,14 +301,15 @@ statClass(Hjava_lang_Class *clazz, int *total)
 		miscfixed += SIZE_IFNONZERO(clazz->gc_layout);
 		miscfixed += SIZE_IFNONZERO(clazz->sourcefile);
 		miscfixed += SIZE_IFNONZERO(clazz->implementors);
+		miscfixed += SIZE_IFNONZERO(clazz->inner_classes);
 	}
 	if (!CLASS_IS_ARRAY(clazz) && !CLASS_IS_PRIMITIVE(clazz)) {
 		misc += SIZE_IFNONZERO(clazz->interfaces);
 	}
 
 	/* methods only if we have some */
-	if (!CLASS_IS_PRIMITIVE(clazz) && !CLASS_IS_ARRAY(clazz) 
-		&& CLASS_METHODS(clazz) != 0) 
+	if (!CLASS_IS_PRIMITIVE(clazz) && !CLASS_IS_ARRAY(clazz)
+		&& CLASS_METHODS(clazz) != 0)
 	{
 		Method *m = CLASS_METHODS(clazz);
 		int i, n = CLASS_NMETHODS(clazz);
@@ -346,7 +347,7 @@ void
 statClassPool(void)
 {
 	int total[20];
-		 
+
 	memset(total, 0, sizeof total);
 	dprintf("#DUMPING CLASSPOOL MEMORY\n");
 	dprintf("%-7s %-7s %-7s %-7s %-7s\n",

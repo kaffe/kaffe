@@ -47,7 +47,7 @@
 
 /*****************************************************************************
  * Class-related functions
- */ 
+ */
 
 /*
  * Destroy a class object.
@@ -62,7 +62,7 @@ destroyClass(Collector *collector, void* c)
 	constants* pool;
 
 DBG(CLASSGC,
-        dprintf("destroying class %s @ %p\n", 
+        dprintf("destroying class %s @ %p\n",
 		clazz->name ? clazz->name->data : "newborn", c);
    )
 	assert(!CLASS_IS_PRIMITIVE(clazz));
@@ -77,7 +77,7 @@ DBG(CLASSGC,
 	assert(clazz->state != CSTATE_COMPLETE || clazz->loader != 0);
 
 	if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0 && clazz->name) {
-		dprintf("<GC: unloading class `%s'>\n", 
+		dprintf("<GC: unloading class `%s'>\n",
 			CLASS_CNAME(clazz));
 	}
 
@@ -178,8 +178,8 @@ DBG(CLASSGC,
 			Hjava_lang_Class* iface = clazz->interfaces[i];
 
 			/* only if interface has not been freed already */
-			if (GC_getObjectIndex(collector, iface) 
-			    == GC_ALLOC_CLASSOBJECT) 
+			if (GC_getObjectIndex(collector, iface)
+			    == GC_ALLOC_CLASSOBJECT)
 			{
 				iface->implementors[clazz->impl_index] = -1;
 			}
@@ -188,7 +188,7 @@ DBG(CLASSGC,
 		/* NB: we can't just sum up the msizes of the interfaces
 		 * here because they might be destroyed simultaneously
 		 */
-		j = GC_getObjectSize(collector, clazz->itable2dtable) 
+		j = GC_getObjectSize(collector, clazz->itable2dtable)
 			/ sizeof (void*);
 		for( i = 0; i < j; i++ )
 		{
@@ -203,6 +203,7 @@ DBG(CLASSGC,
         KFREE(clazz->gc_layout);
 	KFREE(clazz->sourcefile);
 	KFREE(clazz->implementors);
+	KFREE(clazz->inner_classes);
 
         /* The interface table for array classes points to static memory */
         if (!CLASS_IS_ARRAY(clazz)) {
@@ -211,13 +212,13 @@ DBG(CLASSGC,
         utf8ConstRelease(clazz->name);
 }
 
-/*      
+/*
  * Walk the methods of a class.
- */     
-static  
-void    
+ */
+static
+void
 walkMethods(Collector* collector, Method* m, int nm)
-{               
+{
         while (nm-- > 0) {
 #if defined(TRANSLATOR) && 0
                 /* walk the block of jitted code conservatively.
@@ -253,7 +254,7 @@ walkMethods(Collector* collector, Method* m, int nm)
 /*
  * Walk a class object.
  */
-static void 
+static void
 walkClass(Collector* collector, void* base, uint32 size)
 {
         Hjava_lang_Class* class;
@@ -266,7 +267,7 @@ walkClass(Collector* collector, void* base, uint32 size)
 
 DBG(GCPRECISE,
         dprintf("walkClass `%s' state=%d\n", CLASS_CNAME(class), class->state);
-    )   
+    )
 
         if (class->state >= CSTATE_PREPARED) {
                 GC_markObject(collector, class->superclass);
@@ -306,8 +307,8 @@ DBG(GCPRECISE,
                 fld = CLASS_FIELDS(class);
                 for (n = 0; n < CLASS_NFIELDS(class); n++) {
 			/* don't mark field types that are primitive classes */
-                        if (FIELD_RESOLVED(fld) 
-				&& !CLASS_IS_PRIMITIVE(fld->type)) 
+                        if (FIELD_RESOLVED(fld)
+				&& !CLASS_IS_PRIMITIVE(fld->type))
 			{
 				if (!CLASS_GCJ(fld->type)) {
 					GC_markObject(collector, fld->type);
@@ -327,8 +328,8 @@ DBG(GCPRECISE,
                         if (FIELD_RESOLVED(fld) && FIELD_ISREF(fld)) {
 				void **faddr = (void**)FIELD_ADDRESS(fld);
 #if defined (HAVE_GCJ_SUPPORT)
-/* 1. GCJ work-around, see 
- * http://sourceware.cygnus.com/ml/java-discuss/1999-q4/msg00379.html 
+/* 1. GCJ work-around, see
+ * http://sourceware.cygnus.com/ml/java-discuss/1999-q4/msg00379.html
  */
 				if (FIELD_TYPE(fld) == StringClass) {
 					GC_markAddress(collector, *faddr);
@@ -342,7 +343,7 @@ DBG(GCPRECISE,
                         fld++;
                 }
         }
- 
+
         /* The interface table for array classes points to static memory,
          * so we must not mark it.  */
         if (!CLASS_IS_ARRAY(class)) {
@@ -362,24 +363,24 @@ DBG(GCPRECISE,
          * non-primitive classes */
         if (!CLASS_IS_PRIMITIVE(class) && !CLASS_IS_ARRAY(class) && CLASS_METHODS(class) != 0) {
                 walkMethods(collector, CLASS_METHODS(class), CLASS_NMETHODS(class));
-        }       
-        GC_markObject(collector, class->loader); 
+        }
+        GC_markObject(collector, class->loader);
 }
 
 /*****************************************************************************
- * various walk functions functions 
+ * various walk functions functions
  */
 /*
  * Walk an array object objects.
- */             
+ */
 static
-void    
+void
 walkRefArray(Collector* collector, void* base, uint32 size)
 {
-        Hjava_lang_Object* arr; 
+        Hjava_lang_Object* arr;
         int i;
         Hjava_lang_Object** ptr;
- 
+
         arr = (Hjava_lang_Object*)base;
         if (arr->dtable == 0) {                 /* see walkObject */
                 return;
@@ -394,7 +395,7 @@ walkRefArray(Collector* collector, void* base, uint32 size)
 
         for (i = ARRAY_SIZE(arr); --i>= 0; ) {
                 Hjava_lang_Object* el = *ptr++;
-		/* 
+		/*
 		 * NB: This would break if some objects (i.e. class objects)
 		 * are not gc-allocated.
 		 */
@@ -403,11 +404,11 @@ walkRefArray(Collector* collector, void* base, uint32 size)
 }
 
 /*
- * Walk an object.      
+ * Walk an object.
  */
-static                  
+static
 void
-walkObject(Collector* collector, void* base, uint32 size) 
+walkObject(Collector* collector, void* base, uint32 size)
 {
         Hjava_lang_Object *obj = (Hjava_lang_Object*)base;
         Hjava_lang_Class *clazz;
@@ -439,7 +440,7 @@ DBG(GCPRECISE,
         dprintf("walkObject `%s' ", CLASS_CNAME(clazz));
         BITMAP_DUMP(layout, nbits)
         dprintf(" (nbits=%d) %x-%x\n", nbits, base, base+size);
-    )   
+    )
 
         assert(CLASS_FSIZE(clazz) > 0);
         assert(size > 0);
@@ -490,7 +491,7 @@ static
 void
 /* ARGSUSED */
 finalizeObject(Collector* collector, void* ob)
-{ 
+{
 	extern JNIEnv Kaffe_JNIEnv;
 	JNIEnv *env = &Kaffe_JNIEnv;
 	Hjava_lang_Class* objclass;
@@ -501,14 +502,14 @@ finalizeObject(Collector* collector, void* ob)
 		/* Suppose we catch ThreadDeath inside newObject() */
 		return;
 	}
-        objclass = OBJECT_CLASS(obj);    
-        final = objclass->finalizer;               
+        objclass = OBJECT_CLASS(obj);
+        final = objclass->finalizer;
 
 	if (!final) {
 		assert(objclass->alloc_type == GC_ALLOC_JAVALOADER);
 		return;
 	}
-  
+
 	(*env)->CallVoidMethod(env, obj, final);
 	/* ignore any resulting exception */
 	(*env)->ExceptionClear(env);
@@ -547,7 +548,7 @@ describeObject(const void* mem)
 
 	case GC_ALLOC_CLASSOBJECT:
 		clazz = (Hjava_lang_Class*)mem;
-		sprintf(buf, "java.lang.Class `%s'", clazz->name ? 
+		sprintf(buf, "java.lang.Class `%s'", clazz->name ?
 			CLASS_CNAME(clazz) : "name unknown");
 		break;
 
@@ -565,9 +566,9 @@ describeObject(const void* mem)
 				GC_getObjectDescription(main_collector, mem));
 		}
 		break;
-		
+
 	/* add more? */
-		
+
 	default:
 		return ((char*)GC_getObjectDescription(main_collector, mem));
 	}
@@ -584,7 +585,7 @@ initCollector(void)
 	GC_registerGcTypeByIndex(gc, GC_ALLOC_NOWALK,
 	    0, GC_OBJECT_NORMAL, 0, "other-nowalk");
 	GC_registerGcTypeByIndex(gc, GC_ALLOC_NORMALOBJECT,
-	    walkObject, GC_OBJECT_NORMAL, 0, "obj-no-final"); 
+	    walkObject, GC_OBJECT_NORMAL, 0, "obj-no-final");
 	GC_registerGcTypeByIndex(gc, GC_ALLOC_PRIMARRAY,
 	    0, GC_OBJECT_NORMAL, 0, "prim-arrays");
 	GC_registerGcTypeByIndex(gc, GC_ALLOC_REFARRAY,
@@ -594,7 +595,7 @@ initCollector(void)
 	GC_registerGcTypeByIndex(gc, GC_ALLOC_FINALIZEOBJECT,
 	    walkObject, finalizeObject, 0, "obj-final");
 	GC_registerGcTypeByIndex(gc, GC_ALLOC_JAVALOADER,
-	    walkLoader, finalizeObject, destroyClassLoader, 
+	    walkLoader, finalizeObject, destroyClassLoader,
 	    "j.l.ClassLoader");
 
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_BYTECODE, "java-bytecode");

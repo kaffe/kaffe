@@ -5,8 +5,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "debug.h"
@@ -48,6 +48,7 @@ Utf8Const* LineNumberTable_name;
 Utf8Const* ConstantValue_name;
 Utf8Const* Exceptions_name;
 Utf8Const* SourceFile_name;
+Utf8Const* InnerClasses_name;
 
 static Hjava_lang_Class dummyClassClass;
 Hjava_lang_Class* ClassClass = &dummyClassClass;
@@ -62,9 +63,9 @@ Hjava_lang_Class* ClassLoaderClass;
 Hjava_lang_Class* javaLangVoidClass;
 Hjava_lang_Class* javaLangBooleanClass;
 Hjava_lang_Class* javaLangByteClass;
-Hjava_lang_Class* javaLangCharacterClass; 
+Hjava_lang_Class* javaLangCharacterClass;
 Hjava_lang_Class* javaLangShortClass;
-Hjava_lang_Class* javaLangIntegerClass;  
+Hjava_lang_Class* javaLangIntegerClass;
 Hjava_lang_Class* javaLangLongClass;
 Hjava_lang_Class* javaLangFloatClass;
 Hjava_lang_Class* javaLangDoubleClass;
@@ -133,11 +134,11 @@ initialiseKaffe(void)
 	}
 #endif
         threadStackSize = Kaffe_JavaVMArgs[0].nativeStackSize;
- 
+
         if (threadStackSize == 0) {
                 threadStackSize = THREADSTACKSIZE;
         }
-  
+
 	/* Initialise the (native) threading system */
 	initNativeThreads(threadStackSize);
 
@@ -163,7 +164,7 @@ initialiseKaffe(void)
 		}
 	}
 #endif
-	
+
 	/* Create the initialise and finalize names and signatures. */
 	init_name = utf8ConstNew(INIT, -1);
 	final_name = utf8ConstNew(FINAL, -1);
@@ -174,11 +175,12 @@ initialiseKaffe(void)
 	ConstantValue_name = utf8ConstNew("ConstantValue", -1);
 	Exceptions_name = utf8ConstNew("Exceptions", -1);
 	SourceFile_name = utf8ConstNew("SourceFile", -1);
+	InnerClasses_name = utf8ConstNew("InnerClasses", -1);
 
 	if (!(init_name && final_name && void_signature &&
 	      constructor_name && Code_name && LineNumberTable_name &&
 	      ConstantValue_name && Exceptions_name &&
-	      SourceFile_name)) {
+	      SourceFile_name && InnerClasses_name)) {
 		dprintf("not enough memory to run kaffe\n");
 		ABORT();
 	}
@@ -262,10 +264,10 @@ initBaseClasses(void)
 	finishTypes();
 	processClass(StringClass, CSTATE_COMPLETE, &einfo);
 
-	/* 
+	/*
 	 * To make sure we have some ground to stand on, we doublecheck
 	 * that we really got Kaffe's java.lang.Cloneable class here.
-	 * Kaffe's class has a final public static field called 
+	 * Kaffe's class has a final public static field called
 	 * "KAFFE_VERSION".
 	 */
 	utf8 = utf8ConstNew("KAFFE_VERSION", -1);
@@ -283,7 +285,7 @@ initBaseClasses(void)
 		    "java.lang.* classes from other JVM\nvendors, such as "
 		    "Sun's classes.zip, BEFORE Kaffe's Klasses.jar.\n"
 		    "It is okay to have classes.zip AFTER Klasses.jar\n\n"
-		    "The current effective classpath is `%s'\n\n", 
+		    "The current effective classpath is `%s'\n\n",
 		    realClassPath
 		);
 		EXIT(-1);
@@ -294,8 +296,8 @@ initBaseClasses(void)
 		    "\nCould not initialize Kaffe.\n"
 		    "Your Klasses.jar version is %3.2f, but this VM "
 		    "was compiled with version %3.2f\n\n"
-		    "The current effective classpath is `%s'\n\n", 
-		    *(jint*)FIELD_ADDRESS(f)/100.0, 
+		    "The current effective classpath is `%s'\n\n",
+		    *(jint*)FIELD_ADDRESS(f)/100.0,
 		    java_lang_Cloneable_KAFFE_VERSION/100.0,
 		    realClassPath
 		);
