@@ -537,9 +537,9 @@ PublicToPrivate.class: PublicToPrivate.java
 StaticToInst.class: StaticToInst.java
 	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/StaticToInst.java
 
-all-am: CompileScript $(CLASS_FILES)
+all-am: 
 
-check-am: all-am
+check-am: CompileScript $(CLASS_FILES)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

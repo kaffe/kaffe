@@ -61,9 +61,9 @@ PublicToPrivate.class: PublicToPrivate.java
 StaticToInst.class: StaticToInst.java
 	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/StaticToInst.java
 
-all-am: CompileScript $(CLASS_FILES)
+all-am: 
 
-check-am: all-am
+check-am: CompileScript $(CLASS_FILES)
 
 CLEANFILES=$(CLASS_FILES)
 

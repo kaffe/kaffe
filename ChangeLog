@@ -1,3 +1,18 @@
+2004-05-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixed cross-compilation build system problem.
+
+        * test/regression/compile_time/Makefile.am,
+        test/regression/run_time/Makefile.am:
+	(all-am): Do nothing.
+	(check-am): Depend on compile script and class files.
+
+        * test/regression/compile_time/Makefile.in,
+        test/regression/run_time/Makefile.in:
+	Regenerated.	
+
+	Reported by: Dr. H. Nikolaus Schaller <hns@computer.org>
+
 2004-05-21  Dalibor Topic  <robilad@kaffe.org>
 
         * libraries/javalib/gnu/java/beans/BeanInfoEmbryo.java,
