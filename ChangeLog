@@ -6,6 +6,7 @@
 	(parse(String, ParsePosition)) implemented
 	(parse(String)) it should throws ParseException if the previous parse
 	fails.
+	(format) fixed an ArrayOutOfBoundException.
 
 	* libraries/javalib/java/text/ChoiceFormat.java:
 	(parse) It must check the biggest choice possible, i.e. if you have

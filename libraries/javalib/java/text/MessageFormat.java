@@ -276,7 +276,7 @@ public final StringBuffer format(Object args[], StringBuffer buf, FieldPosition 
 				desc.formats[i].format(args[desc.argumentNumber[i]], temp_buf, dummy);
 			}
 		}
-	        temp_buf.append(desc.strs[strs.length - 1]);
+	        temp_buf.append(desc.strs[desc.strs.length - 1]);
 		desc = tryToApplyPattern(temp_buf.toString());
 		if (desc.argumentNumber.length == 0)
 	            hasChanged = false;
