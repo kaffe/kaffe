@@ -1,3 +1,13 @@
+2005-01-08  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/jar.c (cacheJarFile): When removing
+	an already cached file, set user count to 0 first.
+	
+2005-01-08  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/zip/ZipFile.java
+	(ZipFile): Reverted synchronisation patches.
+
 2005-01-07  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

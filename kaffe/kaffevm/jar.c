@@ -313,7 +313,11 @@ DBG(JARFILES,  dprintf("Cached jar file %s purged\n", curr->fileName); );
 	if( dead_jar )
 		collectJarFile(dead_jar);
 	else if( already_cached )
+	{
+		assert(jf->users == 1);
+		jf->users = 0;
 		collectJarFile(jf);
+	}
 
 	assert(retval != 0);
 	
