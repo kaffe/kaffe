@@ -19,6 +19,7 @@
 #define	Rfloat			0x04
 #define	Rdouble			0x08
 #define	Rref			0x10
+#define	Rsubint			0x00 /* jit3: 0x20 */
 
 /* Register flags */
 /* NB. Currently we do not support preserving values in registers across
