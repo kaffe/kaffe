@@ -53,7 +53,7 @@ public interface DirStateFactory extends StateFactory
 {
   // Inner class
 
-  class Result
+  public static class Result
   {
     private Object obj;
     private Attributes outAttrs;
