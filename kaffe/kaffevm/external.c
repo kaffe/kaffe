@@ -266,38 +266,8 @@ DBG(NATIVELIB,
 				const char *err = KaffeLib_GetError();
 
 				DBG(NATIVELIB, dprintf("Error loading %s: %s\n", path, err); );
-				
-				/* XXX Bleh, silly guessing system. */
-				if( err == 0 )
-				{
-					if (errbuf != 0)
-						strncpy(errbuf,
-							"Unknown error",
-							errsiz);
-				}
-				else if( (strstr(err, " not found") ||
-					  strstr(err, "annot open") ||
-					  strstr(err, "an't open")) )
-				{
-                                char *last_sep = strrchr (path, file_separator[0]);
-#ifdef HAVE_SNPRINTF
-                                snprintf (errbuf, errsiz, "%s: not found.\n%s",
-                                          last_sep==NULL?path:last_sep+1,
-					  err);
-#else
-                                /* possible buffer overflow problem */
-                                if(errbuf != 0)
-                                    sprintf (errbuf, "%s: not found.\n%s",
-                                          last_sep==NULL?path:last_sep+1,
-					  err);
-#endif
-				}
-				else
-				{
-					/* We'll assume its a real error. */
-					if (errbuf != 0)
-						strncpy(errbuf, err, errsiz);
-				}
+
+				strncpy(errbuf, err, errsiz);
 			
 				unlockStaticMutex(&libraryLock);
 				return -1;

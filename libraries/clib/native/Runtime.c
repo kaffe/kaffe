@@ -144,8 +144,8 @@ java_lang_Runtime_runFinalizersOnExit(jboolean on)
 
 
 /*
- * Attempt to link in a shared library. Throws an UnsatisfiedLinkError
- * if the attempt fails.
+ * Attempt to link in a shared library. Return false
+ * if the attempt fails, true otherwise.
  */
 jboolean
 java_lang_Runtime_linkLibrary(struct Hjava_lang_String *jpath, struct Hjava_lang_ClassLoader* loader)
@@ -156,19 +156,7 @@ java_lang_Runtime_linkLibrary(struct Hjava_lang_String *jpath, struct Hjava_lang
 
 	stringJava2CBuf(jpath, path, sizeof(path));
 	if (loadNativeLibrary(path, loader, errbuf, sizeof(errbuf)) < 0) {
- 		if( strstr(errbuf, ": not found") ) {
-			/* simply proceed if file was not found, java part
-			 * will throw an exception later if library could
-			 * not be found.
-			 */
-			return false;
- 		} else {
-			postExceptionMessage(&einfo, 
-					     JAVA_LANG(UnsatisfiedLinkError),
-					     "%s",
-					     errbuf);
-			throwError(&einfo);
-		}
+		return false;
 	}
 	return true;
 }
