@@ -1,3 +1,10 @@
+Fri Feb  5 19:33:33 1999  Stephen Crane  <jscrane@maths.tcd.ie>
+
+	* libraries/javalib/java/net/URLStreamHandler.java: fixed signature
+	of URLStreamHandler.openConnection().
+	* libraries/javalib/java/net/URL.java: don't connect in 
+	openConnection().
+
 Fri Feb  5 19:24:30 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/support.[ch]: added pathname2classname.

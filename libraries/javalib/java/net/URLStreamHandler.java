@@ -11,12 +11,13 @@
 package java.net;
 
 import java.lang.String;
+import java.io.IOException;
 
 abstract public class URLStreamHandler {
 
 public URLStreamHandler() {}
 
-abstract protected URLConnection openConnection(URL u);
+abstract protected URLConnection openConnection(URL u) throws IOException;
 
 protected void parseURL(URL u, String spec, int start, int limit) {
 }

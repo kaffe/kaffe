@@ -164,7 +164,7 @@ public URLConnection openConnection() throws IOException {
 			handler = getURLStreamHandler(protocol);
 		}
 		conn = handler.openConnection(this);
-		conn.connect();
+		// do not connect here
 	}
 	return (conn);
 }
