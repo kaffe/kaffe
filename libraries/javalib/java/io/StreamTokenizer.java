@@ -153,11 +153,33 @@ private int nextTokenType() throws IOException {
 		buffer.setLength( 0);
 		chr = chrRead();
 		while ( chr != cq) {
-			buffer.append((char)(chr & 0xFF));
 			if ( chr == '\\' ) {
 				chr = chrRead();
-				buffer.append((char)(chr & 0xFF));
+				switch (chr) {
+				case 'a':
+					chr = 0x7;
+					break;
+				case 'b':
+					chr = '\b';
+					break;
+				case 'f':
+					chr = 0xC;
+					break;
+				case 'n':
+					chr = '\n';
+					break;
+				case 'r':
+					chr = '\r';
+					break;
+				case 't':
+					chr = '\t';
+					break;
+				case 'v':
+					chr = 0xB;
+					break;
+				}
 			}
+			buffer.append((char)(chr & 0xFF));
 			chr = chrRead();
 			if ( chr == 256 )
 				break;

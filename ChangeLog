@@ -1,3 +1,8 @@
+Mon Oct 12 22:07:24 PDT 1998	Andrew Raymond Trick <a-trick@students.uiuc.edu>
+
+	* java.io.DataInputStream: don't append \n
+	* java.io.StreamTokenizer: handled escaped characters.
+
 Mon Oct 12 22:07:24 PDT 1998	Brendon Cahoon <cahoon@meteor.cs.umass.edu>
 
 	* object.c, soft.c: Bug fix for multinewarray - now works when

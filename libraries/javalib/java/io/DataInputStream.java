@@ -104,10 +104,7 @@ final public String readLine() throws IOException
 			}
 
 			cdata = (char)data;
-			if (cdata == '\n') {
-				buffer.append(cdata);
-			}
-			else {
+			if (cdata != '\n') {
 				/* Jump back to mark */
 				reset();
 			}
