@@ -93,6 +93,10 @@ EXTRA_DIST = \
 	developers/mauve-html-gen.pl \
 	developers/mauve-kaffe \
 	developers/mauve-results.sh \
+	developers/patch-config.sub-superh.diff \
+	developers/patch-libtool-amiga.diff \
+	developers/patch-libtool-openbsd.diff \
+	developers/patch-libtool-realloc.diff \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
 	developers/unicode.pl \

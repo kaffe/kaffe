@@ -1,3 +1,40 @@
+2003-06-06  Jim Pick  <jim@kaffe.org>
+
+	* developers/autogen.sh:
+	Second phase of upgrade - now regenerates libtool bits
+	as well.
+
+	* developers/patch-config.sub-superh.diff,
+	developers/patch-libtool-amiga.diff,
+	developers/patch-libtool-openbsd.diff,
+	developers/patch-libtool-realloc.diff:
+	Patches to apply against libtool/autoconf/automake, when
+	running developers/autogen.sh
+
+	* developers/update-class-list,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.am.in:
+	Modified update-class-list so that it regenerates
+	libraries/javalib/Makefile.am from a Makefile.am.in template
+	(instead of from Makefile.am)
+
+	* depcomp,
+	install-sh,
+	missing:
+	Updated.
+
+	* ltconfig:
+	Removed, we don't support automake 1.4 anymore.
+
+	* Makefile.am:
+	"make dist" fixes.
+
+	* Makefile.in,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+	
 2003-06-06 Dalibor Topic <robilad@yahoo.com>
 
 	* Makefile.am:

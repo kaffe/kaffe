@@ -20,6 +20,7 @@ if [ "$1" != "--override" ]; then
 
 WANTED_AUTOMAKE_VERS="1.7.5"
 WANTED_AUTOCONF_VERS="2.57"
+WANTED_LIBTOOL_VERS="1.5"
 
 ACLOCAL_VERS=`aclocal --version | 
 	sed -n 's,^aclocal (GNU automake) \(.*\)$,\1,p'`
@@ -65,19 +66,58 @@ if [ "$AUTOCONF_VERS" != "$WANTED_AUTOCONF_VERS" ]; then
 	exit 1
 fi
 
+LIBTOOLIZE_VERS=`libtoolize --version | 
+	sed -n 's,^libtoolize (GNU libtool) \(.*\)$,\1,p'`
+if [ "$LIBTOOLIZE_VERS" != "$WANTED_LIBTOOL_VERS" ]; then
+	echo "Missing or wrong version for libtoolize (from libtool)."
+	echo "We want libtool $WANTED_LIBTOOL_VERS"
+	if [ -n "$LIBTOOLIZE_VERS" ]; then
+		echo "We found libtoolize from libtool $LIBTOOLIZE_VERS"
+	fi
+	exit 1
+fi
+
 fi
 
 ( cd libraries/javalib && ../../developers/update-class-list )
 
-# Make sure we regenerate things
-rm -f configure aclocal.m4
-find . -type f -name 'Makefile.in' | grep -v libltdl | xargs rm -f
+# Delete old files to make sure we regenerate things
+# automake things
+rm -f depcomp missing config.guess config.sub install-sh
+# libtool things
+rm -f aclocal.m4 ltmain.sh libtool.m4 ltconfig
+(
+ cd libltdl
+ rm -f acinclude.m4 config-h.in configure.ac install-sh
+ rm -f ltmain.sh missing aclocal.m4 config.sub COPYING.LIB
+ rm -f ltdl.c Makefile.am mkinstalldirs config.guess configure
+ rm -f ltdl.h Makefile.in README
+)
+
+# autoconf things
+rm -f aclocal.m4 configure
+rm -f config/config.h.in
+find . -type f -name 'Makefile.in' | xargs rm -f
+
+# Now regenerate autotools
+libtoolize --automake --ltdl --copy --force
+patch -p0 < developers/patch-libtool-amiga.diff
+patch -p0 < developers/patch-libtool-openbsd.diff
+patch -p0 < developers/patch-libtool-realloc.diff
+cp libltdl/acinclude.m4 libtool.m4
 
 aclocal -I .
 autoheader -Wall
 automake --add-missing --copy -Wall || /bin/true  # ignore warnings
 autoconf -Wall
+patch < developers/patch-config.sub-superh.diff
 
-# Shouldn't we also regenerated the configure script and makefiles
-# in libltdl?  Should we be updating libtool?  - jpick
+(
+ cd libltdl
+ aclocal -I .
+ automake --add-missing --copy -Wall
+ autoconf -Wall
+ patch < ../developers/patch-config.sub-superh.diff
+)
+
 

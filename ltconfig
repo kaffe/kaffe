@@ -1,5 +1,0 @@
-#! /bin/sh
-
-exit 0
-# This empty file is a placeholder for old automake who don't know yet that
-# libtool-1.4 discontinued it.

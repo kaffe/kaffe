@@ -325,6 +325,10 @@ EXTRA_DIST = \
 	developers/mauve-html-gen.pl \
 	developers/mauve-kaffe \
 	developers/mauve-results.sh \
+	developers/patch-config.sub-superh.diff \
+	developers/patch-libtool-amiga.diff \
+	developers/patch-libtool-openbsd.diff \
+	developers/patch-libtool-realloc.diff \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
 	developers/unicode.pl \
@@ -354,7 +358,7 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = README AUTHORS ChangeLog INSTALL Makefile.am Makefile.in \
 	aclocal.m4 config.guess config.sub configure configure.in \
-	depcomp install-sh ltconfig ltmain.sh missing mkinstalldirs
+	depcomp install-sh ltmain.sh missing mkinstalldirs
 all: all-recursive
 
 .SUFFIXES:

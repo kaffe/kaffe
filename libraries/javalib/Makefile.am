@@ -14,6 +14,12 @@
 # Read FAQ/FAQ.classlibrary-compile for more information on the class library
 # build process.
 #
+# Note: Makefile.am is generated from Makefile.am.in using 
+# developers/update-class-list (called from developers/autogen.sh)
+#
+# Yes, it's slightly insane:
+#
+#   Makefile.am.in -> Makefile.am -> Makefile.in -> Makefile
 
 SRCDIRS = gnu java javax kaffe org
 
@@ -2251,6 +2257,7 @@ gnu_regexp_message_bundles = \
 	gnu/regexp/MessagesBundle.properties
 
 EXTRA_DIST = \
+	Makefile.am.in \
 	Klasses.jar.bootstrap \
         $(toolslib_DATA) \
 	META-INF \

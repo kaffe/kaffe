@@ -1,0 +1,19 @@
+More info on this patch:
+
+  http://www.kaffe.org/pipermail/kaffe/2003-May/042012.html
+  http://www.kaffe.org/pipermail/kaffe/2003-May/042387.html
+
+This should be merged upstream to libtool.
+
+
+--- libltdl/acinclude.m4.jim	2003-06-06 17:00:01.000000000 -0700
++++ libltdl/acinclude.m4	2003-06-06 17:02:46.000000000 -0700
+@@ -1474,7 +1474,7 @@
+ openbsd*)
+   version_type=sunos
+   need_lib_prefix=no
+-  need_version=no
++  need_version=yes
+   library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${shared_ext}$versuffix'
+   finish_cmds='PATH="\$PATH:/sbin" ldconfig -m $libdir'
+   shlibpath_var=LD_LIBRARY_PATH

@@ -1,0 +1,226 @@
+#
+# Java core library component.
+#
+# Copyright (c) 1997, 1998, 1999
+#      Transvirtual Technologies, Inc.  All rights reserved.
+#
+# Copyright (c) 2002, 2003
+#      Kaffe.org contributors.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file.
+#
+# Class libraries are currently part of the integrate Make cycle. 
+# Read FAQ/FAQ.classlibrary-compile for more information on the class library
+# build process.
+#
+# Note: Makefile.am is generated from Makefile.am.in using 
+# developers/update-class-list (called from developers/autogen.sh)
+#
+# Yes, it's slightly insane:
+#
+#   Makefile.am.in -> Makefile.am -> Makefile.in -> Makefile
+
+SRCDIRS = gnu java javax kaffe org
+
+## Pick source of java math implementation
+if COND_PURE_JAVA_MATH
+  JAVA_MATH_FILES = pure_java_math.files
+else
+  JAVA_MATH_FILES = native_java_math.files
+endif
+
+## taken from top level Makefile.am
+JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
+KAFFELIBRARYPATH=$(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/
+BOOTCLASSPATH=$(LIBDIR):$(srcdir)/Klasses.jar.bootstrap
+JAR=BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar
+
+jrelib_DATA = rt.jar
+toolslib_DATA = kjc.jar
+
+if HAVE_DNSJAVA
+DNSJAVA_InetAddressImpl = java/net/DNSJavaInetAddressImpl.java
+else
+DNSJAVA_InetAddressImpl =
+endif
+
+Klasses_jar_SRCS = \
+	# The following will be replaced by the
+	# developers/update-class-list script with a
+	# list of the packages and classes we want
+	# to build
+
+
+## Do not delete the previous blank line; update-class-list depends on it
+
+serialized_converters = \
+	kaffe/io/ByteToChar8859_2.ser \
+	kaffe/io/ByteToChar8859_3.ser \
+	kaffe/io/ByteToChar8859_4.ser \
+	kaffe/io/ByteToChar8859_5.ser \
+	kaffe/io/ByteToChar8859_6.ser \
+	kaffe/io/ByteToChar8859_7.ser \
+	kaffe/io/ByteToChar8859_8.ser \
+	kaffe/io/ByteToChar8859_9.ser \
+	kaffe/io/ByteToCharASCII.ser \
+	kaffe/io/ByteToCharCP037.ser \
+	kaffe/io/ByteToCharCP1026.ser \
+	kaffe/io/ByteToCharCP1046.ser \
+	kaffe/io/ByteToCharCP1250.ser \
+	kaffe/io/ByteToCharCP1251.ser \
+	kaffe/io/ByteToCharCP1252.ser \
+	kaffe/io/ByteToCharCP1253.ser \
+	kaffe/io/ByteToCharCP1254.ser \
+	kaffe/io/ByteToCharCP1255.ser \
+	kaffe/io/ByteToCharCP1256.ser \
+	kaffe/io/ByteToCharCP1257.ser \
+	kaffe/io/ByteToCharCP1258.ser \
+	kaffe/io/ByteToCharCP850.ser \
+	kaffe/io/ByteToCharCP852.ser \
+	kaffe/io/ByteToCharCP855.ser \
+	kaffe/io/ByteToCharCP857.ser \
+	kaffe/io/ByteToCharCP860.ser \
+	kaffe/io/ByteToCharCP861.ser \
+	kaffe/io/ByteToCharCP862.ser \
+	kaffe/io/ByteToCharCP863.ser \
+	kaffe/io/ByteToCharCP864.ser \
+	kaffe/io/ByteToCharCP865.ser \
+	kaffe/io/ByteToCharCP866.ser \
+	kaffe/io/ByteToCharCP868.ser \
+	kaffe/io/ByteToCharCP869.ser \
+	kaffe/io/ByteToCharCP870.ser \
+	kaffe/io/ByteToCharCP871.ser \
+	kaffe/io/ByteToCharCP875.ser \
+	kaffe/io/ByteToCharCP918.ser \
+	kaffe/io/ByteToCharKOI8_R.ser \
+	kaffe/io/CharToByte8859_2.ser \
+	kaffe/io/CharToByte8859_3.ser \
+	kaffe/io/CharToByte8859_4.ser \
+	kaffe/io/CharToByte8859_5.ser \
+	kaffe/io/CharToByte8859_6.ser \
+	kaffe/io/CharToByte8859_7.ser \
+	kaffe/io/CharToByte8859_8.ser \
+	kaffe/io/CharToByte8859_9.ser \
+	kaffe/io/CharToByteASCII.ser \
+	kaffe/io/CharToByteCP037.ser \
+	kaffe/io/CharToByteCP1026.ser \
+	kaffe/io/CharToByteCP1046.ser \
+	kaffe/io/CharToByteCP1250.ser \
+	kaffe/io/CharToByteCP1251.ser \
+	kaffe/io/CharToByteCP1252.ser \
+	kaffe/io/CharToByteCP1253.ser \
+	kaffe/io/CharToByteCP1254.ser \
+	kaffe/io/CharToByteCP1255.ser \
+	kaffe/io/CharToByteCP1256.ser \
+	kaffe/io/CharToByteCP1257.ser \
+	kaffe/io/CharToByteCP1258.ser \
+	kaffe/io/CharToByteCP850.ser \
+	kaffe/io/CharToByteCP852.ser \
+	kaffe/io/CharToByteCP855.ser \
+	kaffe/io/CharToByteCP857.ser \
+	kaffe/io/CharToByteCP860.ser \
+	kaffe/io/CharToByteCP861.ser \
+	kaffe/io/CharToByteCP862.ser \
+	kaffe/io/CharToByteCP863.ser \
+	kaffe/io/CharToByteCP864.ser \
+	kaffe/io/CharToByteCP865.ser \
+	kaffe/io/CharToByteCP866.ser \
+	kaffe/io/CharToByteCP868.ser \
+	kaffe/io/CharToByteCP869.ser \
+	kaffe/io/CharToByteCP870.ser \
+	kaffe/io/CharToByteCP871.ser \
+	kaffe/io/CharToByteCP875.ser \
+	kaffe/io/CharToByteCP918.ser \
+	kaffe/io/CharToByteKOI8_R.ser
+
+gnu_regexp_message_bundles = \
+	gnu/regexp/MessagesBundle_fr.properties \
+	gnu/regexp/MessagesBundle.properties
+
+EXTRA_DIST = \
+	Makefile.am.in \
+	Klasses.jar.bootstrap \
+        $(toolslib_DATA) \
+	META-INF \
+	gnu \
+	java \
+	javax \
+	kaffe \
+	org \
+	pure-java \
+	essential.files \
+	pure_java_math.files \
+	native_java_math.files \
+	profiles \
+        bootstrap.classlist \
+	$(OMITTED_PACKAGES_SRCS) \
+	$(serialized_converters) \
+	$(gnu_regexp_message_bundles) \
+	kaffe/io/ByteToCharEUC_JP.tbl \
+	kaffe/io/CharToByteEUC_JP.tbl 
+
+dist-hook:
+	rm -rf `find $(distdir) -name CVS`
+	rm -rf `find $(distdir) -name *~`
+
+LIBDIR = lib
+
+clean-local:
+	-rm -rf $(LIBDIR) rt.jar
+
+.PHONY: new-classes
+new-classes: $(top_srcdir)/developers/update-class-list
+	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
+
+rebuildLib = ./rebuildLib
+
+.PHONY: compile-classes classes
+## classes is provided for backward compatibility; use compile-classes
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
+	rm -rf $(LIBDIR)
+	mkdir $(LIBDIR)
+	$(SHELL) $(rebuildLib) @essential.files
+	$(SHELL) $(rebuildLib) $(DNSJAVA_InetAddressImpl)
+	$(SHELL) $(rebuildLib) @$(JAVA_MATH_FILES)
+	for i in `cat $(srcdir)/profiles/$(PROFILE)/profile` ;  do \
+		$(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i || exit $$? ; \
+	done
+	echo timestamp > $(LIBDIR)/stamp
+
+bootstrap: $(srcdir)/Klasses.jar.bootstrap rt.jar
+	if [ -f $(srcdir)/Klasses.jar.bootstrap ]; then \
+		mv -f $(srcdir)/Klasses.jar.bootstrap $(srcdir)/Klasses.jar.bootstrap.save; \
+	fi
+	(cd $(LIBDIR) && $(ZIP) -DX -r - `grep '\.class$$' $(abssrcdir)/libraries/javalib/bootstrap.classlist` \
+	) > $(srcdir)/Klasses.jar.bootstrap
+
+.PHONY: bootstrap
+$(srcdir)/Klasses.jar.bootstrap: bootstrap.classlist
+
+if HAVE_ZIP
+JAR_CMD1 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -r $$dstdir/rt.jar META-INF)
+JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
+else
+JAR_CMD1 = $(JAR) -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
+JAR_CMD2 = $(JAR) -uvf rt.jar -C $(srcdir) META-INF/
+endif
+
+.PHONY: jar-classes
+if USE_PRECOMPILED_RT_JAR
+jar-classes rt.jar:
+	cp $(PATH_TO_RT_JAR) .
+else
+jar-classes rt.jar: $(LIBDIR)/stamp
+	cp $(srcdir)/kaffe/io/ByteToCharEUC_JP.tbl $(srcdir)/kaffe/io/CharToByteEUC_JP.tbl $(LIBDIR)/kaffe/io
+	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
+	for i in $(gnu_regexp_message_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
+	rm -f rt.jar
+	$(JAR_CMD1)
+	$(JAR_CMD2)
+endif
+
+.PHONY: build-classes Klasses
+build-classes Klasses: rt.jar
+
+all-am: rebuildLib
