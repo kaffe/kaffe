@@ -25,6 +25,7 @@
 #include "soft.h"
 #include "access.h"
 #include "md.h"
+#include "exception.h"
 #include "gcj.h"
 
 /* from compat-include */
@@ -39,7 +40,15 @@ typedef struct _gcjException {
         Hjava_lang_Throwable*      	eobj;
 } gcjException;
 
+static struct frame_state *
+gcjStateForReplacement(void *pc_target, 
+		       struct frame_state *callee_state,
+		       struct frame_state *state_in);
+
 /* From libgcc2.c */
+extern frame_state * 
+	(*__frame_state_for_func)(void *, frame_state *, frame_state *);
+
 extern void (*__terminate_func)(void);
 extern void __throw(void);
 extern void **__get_eh_info(void);
@@ -114,6 +123,26 @@ _Jv_exception_info(void)
 	return (obj);
 }
 
+/* 
+ * Invoked when gcj can't find an exception handler
+ */
+void
+gcjUnhandledException(void)
+{
+	unhandledException(_Jv_exception_info());
+}
+
+static void
+gcjExceptionInit(void)
+{
+	static int inited = 0;
+	if (inited == 0) {
+		__terminate_func = gcjUnhandledException;
+		__frame_state_for_func = gcjStateForReplacement;
+		inited = 1;
+	}
+}
+
 /*
  * GCJ code wants to throw an exception.  
  */
@@ -132,6 +161,7 @@ _Jv_Throw(void* obj)
 	if (einf == 0) {
 		einf = /* XXX KMALLOC */ calloc(1, sizeof *einf);
 		*(__get_eh_info()) = einf;
+		gcjExceptionInit();
 	}
 
 	einf->eh_info.match_function = (__eh_matcher) gcjMatcher;
@@ -212,21 +242,37 @@ dumpFS(char *label, struct frame_state *s)
    frame_state' (declared in frame.h) and pass its address to STATE_IN.
    Returns NULL on failure, otherwise returns STATE_IN.  */
 
-struct frame_state *
-__external_frame_state_for(void *pc_target, void *callee_cfa, 
-			   struct frame_state *state_in)
+static struct frame_state *
+gcjStateForReplacement(void *pc_target, 
+		       struct frame_state *callee_state,
+		       struct frame_state *state_in)
 {
 	int i, n;
+	int is_trampoline = 0;
 	Method *meth;
 	struct kaffe_frame_descriptor frame_desc[FIRST_PSEUDO_REGISTER];
 	stackTraceInfo frame;
 	gcjException *einf = *(__get_eh_info());
 
+	/* First, check whether it's a JNI method */
+	if (!IS_IN_JNI_RANGE((uintp)pc_target)) {
+
+		/* otherwise, check if it's a method for which there is
+		 * DWARF2 exception information.
+		 */
+		frame_state *fs = __frame_state_for(pc_target, state_in);
+		if (fs != 0) {
+			return (fs);
+		}
+	}
+
 	frame.pc = (uintp)pc_target;
-	frame.fp = (uintp)(*(void**)(callee_cfa + CFA_SAVED_OFFSET));
+	frame.fp = (uintp)(*(void**)(callee_state->cfa + CFA_SAVED_OFFSET));
 	frame.meth = (Method*)0;  /* not known, not needed, see stackTrace.h */
 DBG(GCJ, 
-	dprintf(__FUNCTION__": unwinding pc=%p fp=%p\n", frame.pc, frame.fp);
+	dprintf(__FUNCTION__": unwinding pc=%p fp=%p ccfa=%p + %d (%s)\n", 
+		frame.pc, frame.fp, callee_state->cfa, CFA_SAVED_OFFSET,
+		(IS_IN_JNI_RANGE((uintp)pc_target) ? "JNI" : "No JNI"));
     )
 
 	/* First attempt to deliver this exception to a handler in 
@@ -242,14 +288,24 @@ DBG(GCJ,
 	meth = unwindStackFrame(&frame, einf->eobj);
 
 	if (!meth) {
-DBG(GCJ,	dprintf("%s: no jit method @pc=%p\n", pc_target);	)
-		return (0);
+		if (arch_is_trampoline_frame(pc_target)) {
+			is_trampoline = 1;
+		} else {
+DBG(GCJ,	
+			dprintf("%s: unknown pc@%p\n", __FUNCTION__, pc_target);
+)
+			return (0);
+		}
 	}
 	
 DBG(GCJ,	
-	dprintf(__FUNCTION__": %s.%s%s framesize is %d\n", 
-		CLASS_CNAME(meth->class), meth->name->data, 
-		PSIG_DATA(METHOD_PSIG(meth)), meth->framesize);
+	if (!is_trampoline) {
+		dprintf(__FUNCTION__": %s.%s%s framesize is %d, %s\n", 
+			CLASS_CNAME(meth->class), meth->name->data, 
+			PSIG_DATA(METHOD_PSIG(meth)), meth->framesize);
+	} else {
+		dprintf(__FUNCTION__": hit trampoline\n");
+	}
     )
 
 	/*
@@ -279,11 +335,15 @@ DBG(GCJ,
 	 * How many bytes did the caller have to push to invoke this method
 	 * This is the n in "addl $n, esp" after a function call on the x86
 	 */
-	state_in->args_size = PSIG_NARGS(METHOD_PSIG(meth));
-	if (!(meth->accflags & ACC_STATIC)) {
-		state_in->args_size++;
+	if (!is_trampoline) {
+		state_in->args_size = PSIG_NARGS(METHOD_PSIG(meth));
+		if (!(meth->accflags & ACC_STATIC)) {
+			state_in->args_size++;
+		}
+		state_in->args_size *= 4;
+	} else {
+		state_in->args_size = 0;	/* ??? */
 	}
-	state_in->args_size *= 4;
 
 	/*
 	 * For all callee-saved registers (including the cfa register and
@@ -293,7 +353,8 @@ DBG(GCJ,
 	 * In Kaffe with its eager strategy of saving those registers, it
 	 * will be relatively constant.
 	 */
-	arch_get_frame_description(meth->framesize, frame_desc, &n);
+	arch_get_frame_description(is_trampoline ? -1 : meth->framesize, 
+			frame_desc, &n);
 
 	for (i = 0; i < n; i++) {
 		int idx = frame_desc[i].idx;

@@ -1,9 +1,11 @@
 /* 
+ * XXX add FSF copyright information here. XXX
+ *
  * This file copies the exception handling related part from libgcc2.c
  * Specifically, the part that's compiled when -DL_eh is defined.
  * 
  * NB: This file is temporary, hopefully.  I'm lobbying for integrating
- * the "__external_frame_state_for" hook into libgcc2.c
+ * the "__frame_state_for_func" hook into libgcc2.c
  *
  * It was created from GCC's libgcc2.c by executing this command:
  *
@@ -11,8 +13,6 @@
  *	 < "$1" | sed '1d;$d' 
  *
  * I have added this header to it:
- *
- * XXX add FSF copyright information here. XXX
  */ 
 
 /* Begin of kaffe-specific configuration header */
@@ -681,19 +681,25 @@ put_return_addr (void *val, frame_state *udata)
   put_reg (udata->retaddr_column, val, udata);
 }
 
+static frame_state *
+/* ARGSUSED */
+default_frame_state_for(void *pc, frame_state *udata, frame_state *caller_udata)
+{
+  return __frame_state_for(pc, caller_udata);
+}
+
+frame_state * (*__frame_state_for_func)(void *, frame_state *, frame_state *) =
+	default_frame_state_for;
+
 /* Given the current frame UDATA and its return address PC, return the
    information about the calling frame in CALLER_UDATA.  */
 
 static void *
 next_stack_level (void *pc, frame_state *udata, frame_state *caller_udata)
 {
-  frame_state *c_udata;
-  c_udata = __frame_state_for (pc, caller_udata);
+  caller_udata = (*__frame_state_for_func) (pc, udata, caller_udata);
 
-  if (! c_udata)
-    c_udata = __external_frame_state_for(pc, udata->cfa, caller_udata);
-
-  if (! (caller_udata = c_udata))
+  if (! caller_udata)
     return 0;
 
   /* Now go back to our caller's stack frame.  If our caller's CFA register

@@ -42,7 +42,10 @@ extern "C" java::lang::Object*
 /* ARGUSED */
 _Jv_AllocObject(java::lang::Class* type, jint size)
 {
-	_Jv_InitClass(type);
+	if (type->state != JV_STATE_DONE) {
+		_Jv_InitClass(type);
+	}
+
 	assert(GCJ2KAFFE(type) != 0);
 DBG(GCJMORE, 
 	dprintf("Jv_Alloc %s, %d ", kenvGetClassName(GCJ2KAFFE(type)), size);
@@ -108,7 +111,9 @@ extern "C" JArray<java::lang::Object *> *
 _Jv_NewObjectArray(jint size, java::lang::Class* type, java::lang::Object *obj)
 {
 DBG(GCJ,dprintf("GCJ: newObjectArray %p\n", obj); )
-	_Jv_InitClass(type);
+	if (type->state != JV_STATE_DONE) {
+		_Jv_InitClass(type);
+	}
 	/* gcj wants us to init the array with obj -- why */
 	assert(obj == 0);
 	return (soft_anewarray(GCJ2KAFFE(type), size));
@@ -138,7 +143,7 @@ extern "C" jboolean
 _Jv_CheckCast(java::lang::Class* type, java::lang::Object* obj)
 {
 DBG(GCJ, dprintf("%s: %p @%p %p\n", __FUNCTION__, type, GCJ2KAFFE(type), obj);)
-	if (GCJ2KAFFE(type) == 0) {
+	if (type->state != JV_STATE_DONE) {
 		_Jv_InitClass(type);
 	}
 	assert(GCJ2KAFFE(type) != 0);
@@ -149,7 +154,7 @@ extern "C" jboolean
 _Jv_IsInstanceOf(java::lang::Object* obj, java::lang::Class* type)
 {
 DBG(GCJ, dprintf("%s: %p @%p %p\n", __FUNCTION__, type, GCJ2KAFFE(type), obj);)
-	if (GCJ2KAFFE(type) == 0) {
+	if (type->state != JV_STATE_DONE) {
 		_Jv_InitClass(type);
 	}
 	assert(GCJ2KAFFE(type) != 0);

@@ -536,8 +536,17 @@ static inline
 Method **
 tryCache(Hjava_lang_Class *kclass, const char *mname, const char *msig)
 {
-	/* XXX doublecheck how good this is */
-	int h = MHASH(kclass) ^ MHASH(mname) ^ MHASH(msig);
+	/* With this hash function, I'm getting these hit ratios:
+
+	    mpegaudio       : 181945 hits, 28 misses
+	    db              : 19297313 hits, 19 misses
+	    jack            : 14507926 hits, 40 misses
+	    jess            : 706127 hits, 139 misses
+	    compress        : 184 hits, 15 misses
+
+	 */
+
+	int h = MHASH(kclass) ^ MHASH(mname);
 	struct mCacheEntry *e = mCache + h;
 
 	if (e->kclass != kclass || e->mname != mname || e->msig != msig) {
@@ -548,6 +557,17 @@ tryCache(Hjava_lang_Class *kclass, const char *mname, const char *msig)
 	}
 	return (&(e->meth));
 }
+
+/* #define COUNT_CACHE	1 */
+
+#if COUNT_CACHE
+static long long cachehits;
+static long long cachemisses;
+void printInterfaceCacheStats() {
+	fprintf(stderr, "GCJ interface cache: %qd hits, %qd misses\n",
+		cachehits, cachemisses);
+}
+#endif
 
 void* 
 kenvFindMethod(Hjava_lang_Class *kclass, 
@@ -561,8 +581,14 @@ kenvFindMethod(Hjava_lang_Class *kclass,
 	mptr = tryCache(kclass, mname, msig);
 	meth = *mptr;
 	if (meth) {
+#if COUNT_CACHE
+		cachehits++;
+#endif
 		goto found;
 	}
+#if COUNT_CACHE
+	cachemisses++;
+#endif
 
         for (; kclass != 0; kclass = kclass->superclass) {
 
