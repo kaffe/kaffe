@@ -43,6 +43,7 @@ TESTS = \
 	burford.java \
 	IllegalInterface.java \
 	GetInterfaces.java \
+	IntfTest.java \
 	SignedShort.java \
 	CharCvt.java \
 	BadFloatTest.java \
