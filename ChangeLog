@@ -1,5 +1,56 @@
 2004-10-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/rmi/MarshalledObject.java,
+	libraries/javalib/java/rmi/Naming.java,
+	libraries/javalib/java/rmi/activation/Activatable.java,
+	libraries/javalib/java/rmi/activation/ActivationGroup.java,
+	libraries/javalib/java/rmi/activation/ActivationGroupDesc.java,
+	libraries/javalib/java/rmi/activation/ActivationInstantiator.java,
+	libraries/javalib/java/rmi/activation/ActivationMonitor.java,
+	libraries/javalib/java/rmi/activation/ActivationSystem.java,
+	libraries/javalib/java/rmi/activation/Activator.java,
+	libraries/javalib/java/rmi/registry/LocateRegistry.java,
+	libraries/javalib/java/rmi/registry/Registry.java,
+	libraries/javalib/java/rmi/server/LogStream.java,
+	libraries/javalib/java/rmi/server/ObjID.java,
+	libraries/javalib/java/rmi/server/RMIClassLoader.java,
+	libraries/javalib/java/rmi/server/RMIClientSocketFactory.java,
+	libraries/javalib/java/rmi/server/RMIServerSocketFactory.java,
+	libraries/javalib/java/rmi/server/RMISocketFactory.java,
+	libraries/javalib/java/rmi/server/RemoteCall.java,
+	libraries/javalib/java/rmi/server/RemoteServer.java,
+	libraries/javalib/java/rmi/server/ServerRef.java,
+	libraries/javalib/java/rmi/server/UID.java,
+	libraries/javalib/java/rmi/server/UnicastRemoteObject.java:
+	Resynced with GNU Classpath.
+
+	2004-10-21  Michael Koch  <konqueror@gmx.de>
+
+        * java/rmi/MarshalledObject.java,
+        java/rmi/Naming.java,
+        java/rmi/activation/Activatable.java,
+        java/rmi/activation/ActivationGroup.java,
+        java/rmi/activation/ActivationGroupDesc.java,
+        java/rmi/activation/ActivationInstantiator.java,
+        java/rmi/activation/ActivationMonitor.java,
+        java/rmi/activation/ActivationSystem.java,
+        java/rmi/activation/Activator.java,
+        java/rmi/registry/LocateRegistry.java,
+        java/rmi/registry/Registry.java,
+        java/rmi/server/LogStream.java,
+        java/rmi/server/ObjID.java,
+        java/rmi/server/RMIClientSocketFactory.java,
+        java/rmi/server/RMIServerSocketFactory.java,
+        java/rmi/server/RMISocketFactory.java,
+        java/rmi/server/RemoteCall.java,
+        java/rmi/server/RemoteServer.java,
+        java/rmi/server/ServerRef.java,
+        java/rmi/server/UID.java,
+        java/rmi/server/UnicastRemoteObject.java:
+        Import cleanup.
+
+2004-10-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/util/Collections.java,
 	libraries/javalib/java/util/Currency.java,
 	libraries/javalib/java/util/SortedMap.java,
