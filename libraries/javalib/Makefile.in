@@ -377,7 +377,11 @@ with_engine = @with_engine@
 # Only build the peerless AWT libraries if kaffe is configured to
 # build the native libraries as well.
 @COND_KAFFE_QT_AWT_TRUE@MAYBE_PEERLESS_KAFFE_AWT = awt-implementations
-SUBDIRS = . $(MAYBE_PEERLESS_KAFFE_AWT) gmp-math
+
+# Only build gmp java.math libraries if kaffe is configured
+# to build the native libraries as well.
+@COND_PURE_JAVA_MATH_FALSE@MAYBE_GMP_JAVA_MATH = gmp-math
+SUBDIRS = . $(MAYBE_PEERLESS_KAFFE_AWT) $(MAYBE_GMP_JAVA_MATH)
 SRCDIRS = com gnu java javax kaffe org
 JAVA = $(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
 KAFFELIBRARYPATH = $(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/:$(top_builddir)/libraries/clib/nio/:$(top_builddir)/libraries/clib/security/

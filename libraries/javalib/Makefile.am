@@ -31,7 +31,14 @@ MAYBE_PEERLESS_KAFFE_AWT=awt-implementations
 endif
 endif
 
-SUBDIRS = . $(MAYBE_PEERLESS_KAFFE_AWT) gmp-math
+# Only build gmp java.math libraries if kaffe is configured
+# to build the native libraries as well.
+if COND_PURE_JAVA_MATH
+else
+MAYBE_GMP_JAVA_MATH=gmp-math
+endif
+
+SUBDIRS = . $(MAYBE_PEERLESS_KAFFE_AWT) $(MAYBE_GMP_JAVA_MATH)
 
 SRCDIRS = com gnu java javax kaffe org
 

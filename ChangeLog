@@ -1,6 +1,18 @@
 2004-09-14  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/Makefile.am.in
+	Only build gmp math when native libs are 
+	built, too.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
+	Reported by: Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+2004-09-14  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/Makefile.am.in
 	(KAFFELIBRARYPATH) Add security library.
 
 	* libraries/javalib/Makefile.am,
