@@ -1066,14 +1066,17 @@ public class GdkGraphics2D extends Graphics2D
     // change all transparent pixels in the image to the 
     // specified bgcolor
             
-    if (bgcolor != null) 
+    if (cm.hasAlpha()) 
       {
+        if (bgcolor != null) 
+          for (int i = 0; i < pixels.length; i++) 
+            {
+              if (cm.getAlpha (pixels[i]) == 0) 
+                pixels[i] = bgcolor.getRGB ();	    
+            }
+      } else 
         for (int i = 0; i < pixels.length; i++) 
-          {
-            if (cm.getAlpha (pixels[i]) == 0) 
-              pixels[i] = bgcolor.getRGB ();	    
-          }
-      } 
+	  pixels[i] |= 0xFF000000;
 
     drawPixels (pixels, r.getWidth (), r.getHeight (), r.getWidth (), i2u);
     

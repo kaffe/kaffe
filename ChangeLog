@@ -1,5 +1,15 @@
 2004-12-03  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics2D.java:
+        Resynced with GNU Classpath.
+
+	2004-11-26  Sven de Marothy  <sven@physto.se>
+
+        * gnu/java/awt/peer/gtk/GdkGraphics2D.java
+        (drawRaster): Set alpha component to opaque if image has no alpha
+	
+2004-12-03  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/File.java,
 	libraries/javalib/java/io/VMFile.java:
         Resynced with GNU Classpath.
