@@ -1,5 +1,10 @@
 2003-12-04  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/text/Format.java:
+        Resynced with GNU Classpath by removing empty comment.
+
+2003-12-04  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/text/DateFormat.java:
         Resynced with GNU Classpath.
 

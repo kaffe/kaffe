@@ -156,10 +156,6 @@ public abstract class Format implements Serializable, Cloneable
    */
   public abstract Object parseObject (String str, ParsePosition pos);
 
-  /**
-   *
-   *
-   */
   public AttributedCharacterIterator formatToCharacterIterator(Object obj)
   {
     return new FormatCharacterIterator(format(obj), null, null);
