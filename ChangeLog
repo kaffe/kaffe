@@ -1,3 +1,11 @@
+2004-04-16  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/io/FileOutputStream.java
+	(FileOutputStream): Reorganized constructors. Check whether the
+	given path is a directory now.
+
+	Reported by Nektarios Papadopoulos <npapadop@inaccessnetworks.com>
+
 2004-04-16  Dalibor Topic <robilad@kaffe.org>
 
 	* config/i386/jit.h:
