@@ -1,3 +1,8 @@
+Mon Jan 31 13:55:43 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/kaffe/io/ConverterAlias.java: don't
+	convert names to upper case; add alias for 'Default'
+
 Fri Jan 28 16:13:53 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/string.c: work around fast lock bug by always
