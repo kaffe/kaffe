@@ -353,9 +353,10 @@ void getGrid( Container parent, int mode ) {
 					y1 = 0;
 				else if ( lcc.gridheight == cc.REMAINDER )
 					y1 = -1;
-				else if ( lcc.gridwidth == cc.REMAINDER ) {
+				else if ( lcc.gridwidth == cc.REMAINDER )
 					y1 += Math.max( lcc.gridheight, 1);
-				}
+				else
+					y1 = -1;
 			}
 			else {
 				y1 = cc.gridy;
