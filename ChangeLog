@@ -19,6 +19,8 @@ Mon Mar 20 17:47:56 PST 2000  Archie Cobbs <archie@whistle.com>
 	libraries/clib/native/ObjectStreamClassImpl.c,
 	libraries/clib/native/Class.c: provide the proper ClassLoader
 	to lookupClass()
+	* libraries/clib/io/File.c: "Ljava/lang/String" should be
+	"Ljava/lang/String;"
 
 Mon Mar 20 17:22:04 PST 2000  Patrick Tullmann <tullmann@cs.utah.edu>
 	* FAQ/FAQ.locks: Updated to clearly define the ksem and jmutex
