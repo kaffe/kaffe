@@ -7,12 +7,6 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file.
 
-## taken from top level Makefile.am
-JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
-KAFFELIBRARYPATH=$(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/:$(top_builddir)/libraries/clib/nio/
-BOOTCLASSPATH=$(top_builddir)/libraries/javalib/rt.jar
-JAR=BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar
-
 CLASSFILE = kaffeawt.jar
 SRCDIRS = kaffe java
 
@@ -419,11 +413,7 @@ EXTRA_DIST = \
 	$(jrelib_DATA) \
 	$(kaffeawt_jar_SRCS)
 
-if HAVE_ZIP
 JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(ZIP) -r $$dstdir/$(CLASSFILE) $(SRCDIRS))
-else
-JAR_CMD1 = $(JAR) -cvf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS)
-endif
 
 LIBDIR = lib
 

@@ -7,12 +7,6 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file.
 
-## taken from top level Makefile.am
-JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
-KAFFELIBRARYPATH=$(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/:$(top_builddir)/libraries/clib/nio/
-BOOTCLASSPATH=$(top_builddir)/libraries/javalib/rt.jar
-JAR=BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar
-
 CLASSFILE = gjdoc.jar
 SRCDIRS = com gnu
 
@@ -253,13 +247,8 @@ EXTRA_DIST = \
 	$(gjdoc_jar_SRCS) \
 	$(gjdoc_ressources)
 
-if HAVE_ZIP
 JAR_CMD1 = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new $(SRCDIRS))
 JAR_CMD2 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gjdoc_ressources))
-else
-JAR_CMD1 = $(JAR) -cf $@.new -C $(LIBDIR) $(SRCDIRS)
-JAR_CMD2 = $(JAR) -uf $@.new -C $(srcdir) $(gjdoc_ressources)
-endif
 
 LIBDIR = lib
 
@@ -279,7 +268,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(gjdoc_jar_SRCS) $(gjdoc
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	echo $(SHELL) $(rebuildLib)
-	CLASSPATH=$(Klasses_jar):$(ANTLR_JAR) BOOTCLASSPATH=$(top_srcdir)/libraries/javalib/Klasses.jar.bootstrap:$(ANTLR_JAR) $(SHELL) $(rebuildLib) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
+	CLASSPATH=$(Klasses_jar):$(ANTLR_JAR) BOOTCLASSPATH=$(top_srcdir)/libraries/javalib/rt.jar:$(ANTLR_JAR) $(SHELL) $(rebuildLib) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
 	echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes

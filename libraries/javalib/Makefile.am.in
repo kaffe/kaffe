@@ -42,12 +42,6 @@ SUBDIRS = . $(MAYBE_PEERLESS_KAFFE_AWT) $(MAYBE_GMP_JAVA_MATH)
 
 SRCDIRS = com gnu java javax kaffe org
 
-## taken from top level Makefile.am
-JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
-KAFFELIBRARYPATH=$(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/:$(top_builddir)/libraries/clib/nio/:$(top_builddir)/libraries/clib/security/:$(top_builddir)/libraries/clib/classpath/
-BOOTCLASSPATH=$(LIBDIR):$(srcdir)/Klasses.jar.bootstrap
-JAR=BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar
-
 installed_properties = \
 	logging.properties
 
@@ -209,32 +203,18 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 bootstrap: $(srcdir)/Klasses.jar.bootstrap
 $(srcdir)/Klasses.jar.bootstrap: rt.jar
 	rm -f $@.new
-if HAVE_ZIP
 	(cd $(LIBDIR) && $(ZIP) -DX -r $(CURDIR)/$@.new `grep '\.class$$' $(abssrcdir)/libraries/javalib/bootstrap.classlist`)
-else
-	$(JAR) -cf $@.new -C $(LIBDIR) `grep '\.class$$' $(abssrcdir)/libraries/javalib/bootstrap.classlist`
-endif
 	mv $@.new $@
 
 .PHONY: bootstrap
 $(srcdir)/Klasses.jar.bootstrap: bootstrap.classlist
 
-if HAVE_ZIP
 JAR_CMD1 = (cd $(srcdir) && $(ZIP) -q -r $(CURDIR)/$@.new META-INF)
 JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS))
 JAR_CMD3 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_regexp_message_bundles))
 JAR_CMD4 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(serialized_converters))
 JAR_CMD5 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_getopt_message_bundles))
 JAR_CMD6 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_resources))
-
-else
-JAR_CMD1 = $(JAR) -cf $@.new -C $(LIBDIR) $(SRCDIRS)
-JAR_CMD2 = $(JAR) -uf $@.new -C $(srcdir) META-INF/
-JAR_CMD3 = $(JAR) -uf $@.new -C $(srcdir) $(gnu_regexp_message_bundles)
-JAR_CMD4 = $(JAR) -uf $@.new -C $(srcdir) $(serialized_converters)
-JAR_CMD5 = $(JAR) -uf $@.new -C $(srcdir) $(gnu_getopt_message_bundles)
-JAR_CMD6 = $(JAR) -uf $@.new -C $(srcdir) $(classpath_resources)
-endif
 
 .PHONY: jar-classes
 if USE_PRECOMPILED_RT_JAR
