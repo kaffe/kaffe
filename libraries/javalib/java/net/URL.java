@@ -194,15 +194,7 @@ public boolean equals(Object obj) {
 	}
 	URL that = (URL)obj;
 
-	if (this.protocol.equals(that.protocol) &&
-	    this.host.equals(that.host) &&
-	    this.port == that.port &&
-	    this.file.equals(that.file) &&
-	    (this.ref == null ?
-	      (that.ref == null) : this.ref.equals(that.ref)) ) {
-		return (true);
-	}
-	return (false);
+	return handler.equals(this, that);
 }
 
 public final Object getContent() throws IOException {
@@ -248,13 +240,7 @@ public final InputStream openStream() throws IOException {
 }
 
 public boolean sameFile(URL that) {
-	if (this.protocol.equals(that.protocol) &&
-	    this.host.equals(that.host) &&
-	    this.port == that.port &&
-	    this.file.equals(that.file) ) {
-		return (true);
-	}
-	return (false);
+    return handler.sameFile(this, that);
 }
 
 protected void set(String protocol, String host, int port, String file, String ref) {

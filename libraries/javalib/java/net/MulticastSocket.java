@@ -26,6 +26,15 @@ public MulticastSocket(int port) throws IOException {
 	iface = InetAddress.getLocalHost();
 }
 
+private static void checkMulticastAddress(InetAddress addr) throws IOException {
+	if (!addr.isMulticastAddress())
+		throw new IOException("InetAddress " + addr + " is not a multicast address");
+	
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null)
+                sm.checkMulticast(addr);
+}
+
 protected void init(int port, InetAddress bindAddr) throws SocketException {
 	impl.setOption(SocketOptions.SO_REUSEADDR, new Boolean(true));
 	super.init(port, bindAddr);
@@ -47,14 +56,17 @@ public byte getTTL() throws IOException {
 }
 
 public void joinGroup(InetAddress mcastaddr) throws IOException {
+        checkMulticastAddress(mcastaddr);
 	impl.join(mcastaddr);
 }
 
 public void leaveGroup(InetAddress mcastaddr) throws IOException {
+        checkMulticastAddress(mcastaddr);
 	impl.leave(mcastaddr);
 }
 
 public synchronized void send(DatagramPacket p, byte ttl) throws IOException {
+        checkMulticastAddress(p.getAddress());
 	byte ottl = getTTL();
 	setTTL(ttl);
 	super.send(p);

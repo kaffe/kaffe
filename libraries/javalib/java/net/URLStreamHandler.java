@@ -20,6 +20,37 @@ public URLStreamHandler() {
 
 abstract protected URLConnection openConnection(URL u) throws IOException;
 
+protected boolean equals(URL url1, URL url2) {
+	return sameFile(url1, url2)
+	    && (url1.getRef() == null ?
+		(url2.getRef() == null)
+		: url1.getRef().equals(url2.getRef()));
+}
+
+protected int getDefaultPort() {
+	return -1;
+}
+
+protected InetAddress getHostAddress(URL u) {
+	final String host = u.getHost();
+
+	/* spec says to return null if host is not set.
+	 * If we called InetAddress.getByName with null,
+	 * we would get the localhost. So we need to
+	 * explicitely handle hostname == null here.
+	 */
+	if (host == null) {
+		return null;
+	}
+
+	try {
+		return InetAddress.getByName(host);
+	}
+	catch (UnknownHostException e) {
+		return null;
+	}
+}
+
 //
 // This algorithm works for most common Internet URLS, eg. http, ftp, etc.
 // This is how we parse "spec" (between start and limit):
@@ -89,6 +120,18 @@ protected void parseURL(URL u, String spec0, int start, int limit) {
 	}
 
 	setURL(u, u.getProtocol(), host, port, compressFile(file), u.getRef());
+}
+
+protected boolean sameFile(URL url1, URL url2) {
+	if (url1.getProtocol().equals(url2.getProtocol())
+	    && url1.getHost().equals(url2.getHost())
+	    && (url1.getPort() == url2.getPort()
+		|| (url1.getPort() == -1 && url2.getPort() == getDefaultPort())
+		|| (url1.getPort() == getDefaultPort() && url2.getPort() == -1))
+	    && url1.getFile().equals(url2.getFile())) {
+		return (true);
+	}
+	return (false);
 }
 
 protected void setURL(URL u, String protocol, String host, int port,

@@ -16,6 +16,10 @@ import java.net.URL;
 
 public class Handler extends URLStreamHandler {
 
+protected int getDefaultPort() {
+	return 21;
+}
+
 protected URLConnection openConnection(URL u)
 {
 	return (new FtpURLConnection(u));
