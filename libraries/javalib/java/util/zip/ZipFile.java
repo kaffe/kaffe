@@ -20,6 +20,20 @@ import kaffe.util.Ptr;
 
 public class ZipFile implements ZipConstants {
 
+
+  /**
+   * Mode flag to open a zip file for reading.
+   * From GNU Classpath.
+   */
+  public static final int OPEN_READ = 0x1;
+
+  /**
+   * Mode flag to delete a zip file after reading.
+   * From GNU Classpath.
+   */
+  public static final int OPEN_DELETE = 0x4;
+
+
 private String name;
 private Ptr zip;
 
