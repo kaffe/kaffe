@@ -1,5 +1,10 @@
 2004-04-24  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/sparc/openbsd2/md.h: Added #include <sys/time.h>
+	because sys/resource.h has an undefined struct on openbsd.
+
+2004-04-24  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* config/sparc/openbsd2/md.h,
 	kaffe/kaffevm/systems/unix-jthreads/signal.c:
 	New macro STACK_STRUCT. On OpenBSD2 define it as
