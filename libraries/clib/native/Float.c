@@ -13,9 +13,9 @@
 #include "config-mem.h"
 #include <math.h>
 #include <ctype.h>
-#include "../../../kaffe/kaffevm/gtypes.h"
-#include "../../../kaffe/kaffevm/classMethod.h"
-#include "../../../kaffe/kaffevm/fp.h"
+#include "gtypes.h"
+#include "classMethod.h"
+#include "fp.h"
 #include <native.h>
 #include "defs.h"
 #include "java_lang_Float.h"

@@ -1,3 +1,27 @@
+2004-05-21  Michael Franz  <developer.franz@verizon.net>
+
+        libraries/clib/native/Array.c,
+        libraries/clib/native/Class.c,
+        libraries/clib/native/ClassLoader.c,
+        libraries/clib/native/Constructor.c,
+        libraries/clib/native/Double.c,
+        libraries/clib/native/Field.c,
+        libraries/clib/native/Float.c,
+        libraries/clib/native/MemoryAdvice.c,
+        libraries/clib/native/Method.c,
+        libraries/clib/native/NativeLibrary.c,
+        libraries/clib/native/Object.c,
+        libraries/clib/native/PrimordialClassLoader.c,
+        libraries/clib/native/Runtime.c,
+        libraries/clib/native/String.c,
+        libraries/clib/native/System.c,
+        libraries/clib/native/TestNative.c,
+        libraries/clib/native/Thread.c,
+        libraries/clib/native/ThreadStack.c,
+        libraries/clib/native/UNIXProcess.c,
+        libraries/clib/native/ZipFile.c:
+	Cleaned up includes.
+
 2004-05-21  Dalibor Topic  <robilad@kaffe.org>
 
         kaffe/scripts/appletviewer.in,

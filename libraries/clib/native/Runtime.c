@@ -12,16 +12,16 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include "config-io.h"
-#include "../../../kaffe/kaffevm/gtypes.h"
+#include "gtypes.h"
 #include <native.h>
 #include "files.h"
 #include "defs.h"
 #include "java_io_File.h"
 #include "java_lang_Runtime.h"
-#include "../../../kaffe/kaffevm/external.h"
-#include "../../../kaffe/kaffevm/gc.h"
-#include "../../../kaffe/kaffevm/support.h"
-#include "../../../kaffe/kaffevm/stringSupport.h"
+#include "external.h"
+#include "gc.h"
+#include "support.h"
+#include "stringSupport.h"
 
 extern size_t gc_heap_limit;
 extern size_t gc_heap_total;

@@ -21,8 +21,8 @@
 #include <jsyscall.h>
 #include <native.h>
 #include <files.h>
-#include "../../../kaffe/kaffevm/gtypes.h"
-#include "../../../include/system.h"
+#include "gtypes.h"
+#include "system.h"
 #include "kaffe_lang_UNIXProcess.h"
 #include "gnu_java_nio_channels_FileChannelImpl.h"
 

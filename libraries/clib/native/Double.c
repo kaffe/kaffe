@@ -14,11 +14,11 @@
 #include "config-hacks.h"
 #include <math.h>
 #include <ctype.h>
-#include "../../../kaffe/kaffevm/classMethod.h"
-#include "../../../kaffe/kaffevm/gtypes.h"
-#include "../../../kaffe/kaffevm/locks.h"
-#include "../../../kaffe/kaffevm/stringSupport.h"
-#include "../../../kaffe/kaffevm/fp.h"
+#include "classMethod.h"
+#include "gtypes.h"
+#include "locks.h"
+#include "stringSupport.h"
+#include "fp.h"
 #include "defs.h"
 #include "files.h"
 #include "java_lang_Double.h"

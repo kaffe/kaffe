@@ -12,8 +12,8 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include "kaffe_lang_MemoryAdvice.h"
-#include "../../../kaffe/kaffevm/gtypes.h"
-#include "../../../kaffe/kaffevm/gc.h"
+#include "gtypes.h"
+#include "gc.h"
 
 void
 Java_kaffe_lang_MemoryAdvice_register0(JNIEnv* env UNUSED, jobject this UNUSED)

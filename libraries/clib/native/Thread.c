@@ -10,11 +10,11 @@
 
 #include "config.h"
 #include "config-std.h"
-#include "../../../kaffe/kaffevm/gtypes.h"
+#include "gtypes.h"
 #include "java_lang_Thread.h"
-#include "../../../kaffe/kaffevm/thread.h"
-#include "../../../kaffe/kaffevm/locks.h"
-#include "../../../kaffe/kaffevm/support.h"
+#include "thread.h"
+#include "locks.h"
+#include "support.h"
 
 struct Hjava_lang_Thread*
 java_lang_Thread_currentThread(void)

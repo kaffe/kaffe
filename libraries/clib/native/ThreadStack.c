@@ -11,18 +11,18 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include "../../../kaffe/kaffevm/gtypes.h"
-#include "../../../kaffe/kaffevm/access.h"
-#include "../../../kaffe/kaffevm/constants.h"
-#include "../../../kaffe/kaffevm/object.h"
-#include "../../../kaffe/kaffevm/classMethod.h"
-#include "../../../kaffe/kaffevm/itypes.h"
+#include "gtypes.h"
+#include "access.h"
+#include "constants.h"
+#include "object.h"
+#include "classMethod.h"
+#include "itypes.h"
 #include <native.h>
 #include "defs.h"
 #include <stdlib.h>
 #include "kaffe_lang_ThreadStack.h"
-#include "../../../kaffe/kaffevm/stackTrace.h"
-#include "../../../kaffe/kaffevm/support.h"
+#include "stackTrace.h"
+#include "support.h"
 
 HArrayOfObject* /* HArrayOfClass */
 kaffe_lang_ThreadStack_getClassStack(void)

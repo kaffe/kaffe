@@ -11,7 +11,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-std.h"
-#include "../../../kaffe/kaffevm/stringSupport.h"
+#include "stringSupport.h"
 #include "java_lang_String.h"
 
 Hjava_lang_String*
