@@ -129,6 +129,7 @@ extern void SignalErrorf(const char *, const char *, ...) __NORETURN__;
 extern void unimp(const char*) __NORETURN__;
 extern void kprintf(FILE*, const char*, ...);
 extern int addClasspath(const char*);
+extern int prependClasspath(const char*);
 
 /*
  * Macros to manipulate bit arrays.  

@@ -53,6 +53,7 @@ static void generateMangledName(char*, const char*);
 static void discoverClasspath(const char*);
 static void makeClasspath(char*);
 static classFile findClassInJar(char*, struct _errorInfo*);
+static int insertClasspath(const char* cp, int prepend);
 
 /*
  * Find the named class in a directory or JAR file.
@@ -379,15 +380,33 @@ discoverClasspath(const char* home)
 }
 
 /*
- * Add an entry in the Classpath dynamically.
+ * Append an entry in the Classpath dynamically.
  */
 int
 addClasspath(const char* cp)
 {
+	return insertClasspath(cp, 0);
+}
+
+/*
+ * Prepend an entry in the Classpath dynamically.
+ */
+int
+prependClasspath(const char* cp)
+{
+	return insertClasspath(cp, 1);
+}
+
+/*
+ * Prepend or append an entry in the Classpath dynamically.
+ */
+static int
+insertClasspath(const char* cp, int prepend)
+{
 	classpathEntry* ptr;
 	classpathEntry* lptr;
 
-PDBG(	dprintf("addClasspath(): '%s'\n", cp);				)
+PDBG(	dprintf("insertClasspath(): '%s' %spend\n", cp, prepend ? "pre" : "ap");)
 
 	lptr = 0;
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
@@ -401,13 +420,14 @@ PDBG(	dprintf("addClasspath(): '%s'\n", cp);				)
 	ptr = KMALLOC(sizeof(classpathEntry) + strlen(cp) + 1);
 	ptr->type = getClasspathType(cp);
 	ptr->path = (char*)(ptr+1);
-	ptr->next = 0;
 	strcpy(ptr->path, cp);
 
-	if (lptr == 0) {
+	if (prepend || classpath == 0) {
+		ptr->next = classpath;
 		classpath = ptr;
 	}
 	else {
+		ptr->next = 0;
 		lptr->next = ptr;
 	}
 	return(1);
