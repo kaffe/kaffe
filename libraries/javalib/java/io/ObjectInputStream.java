@@ -41,12 +41,15 @@ package java.io;
 import gnu.classpath.Configuration;
 import gnu.java.io.ObjectIdentityWrapper;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -1754,11 +1757,35 @@ public class ObjectInputStream extends InputStream
   // returns a new instance of REAL_CLASS that has been constructed
   // only to the level of CONSTRUCTOR_CLASS (a super class of REAL_CLASS)
   private Object newObject (Class real_class, Class constructor_class)
-    throws ClassNotFoundException
+    throws ClassNotFoundException, IOException
   {
     try
       {
 	Object obj = allocateObject (real_class);
+	final Class local_constructor_class = constructor_class;
+	Constructor void_constructor = (Constructor)
+	  AccessController.doPrivileged(new PrivilegedAction()
+	    {
+	      public Object run()
+	      {
+		try
+		  {
+		    return local_constructor_class.getDeclaredConstructor(new Class[0]);
+	          }
+	        catch (NoSuchMethodException e)
+	          {
+	            return null;
+		  }
+	      }
+            });
+
+	if (void_constructor == null)
+          throw new InvalidClassException(constructor_class.getName() + "; Missing no-arg constructor for class"); 
+	  
+	if (Modifier.isPrivate(void_constructor.getModifiers()))
+	  throw new InvalidClassException(constructor_class.getName() + 
+	  			          "; IllegalAccessException");
+	  
 	callConstructor (constructor_class, obj);
 	return obj;
       }

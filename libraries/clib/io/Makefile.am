@@ -8,7 +8,8 @@
 
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
-	-I$(top_srcdir)/kaffe/kaffevm/jni
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
+	-I$(top_srcdir)/libraries/clib/classpath
 
 native_LTLIBRARIES = libio.la
 
@@ -23,6 +24,7 @@ libio_la_LDFLAGS = \
 
 libio_la_SOURCES = \
 	File.c \
-	ObjectInputStream.c
+	java_io_ObjectInputStream.c \
+	java_io_VMObjectStreamClass.c
 
 CLEANFILES = so_locations
