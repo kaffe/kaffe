@@ -585,6 +585,7 @@ java_util_SRCS = \
 	java/util/TimeZone.java \
 	java/util/TooManyListenersException.java \
 	java/util/TreeMap.java \
+	java/util/TreeSet.java \
 	java/util/Vector.java
 java_util_jar_SRCS = \
 	java/util/jar/Attributes.java \
