@@ -169,6 +169,7 @@ runtest ExecTest
 runtest ProcessTest $JAVA
 runtest UDPTest
 runtest wc < $SRCDIR/wc.java
+runtest FileTest
 
 runtest finaltest
 echo_n_sp "finaltest2 ..." 1>&2
