@@ -7,6 +7,8 @@
 	libraries/javalib/Makefile.in:
         Regenerated.
 
+	Reported by: Kiyo Inaba <inaba@src.ricoh.co.jp>
+
 2003-10-04  Dalibor Topic <robilad@kaffe.org>
 
 	* WHATSNEW: Updated to reflect some of the work done
