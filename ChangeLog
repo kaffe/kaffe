@@ -1,3 +1,9 @@
+Mon Sep 27 15:35:39 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/findInJar.c kaffe/kaffevm/jni.c kaffe/kaffevm/soft.c
+	kaffe/kaffevm/stackTrace.c kaffe/kaffevm/stats.c: fix potential
+	buffer overflows
+
 Fri Sep 24 11:41:51 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/findInJar.c: rename findInJar() as findClassInJar()
