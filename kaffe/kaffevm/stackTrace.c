@@ -184,7 +184,7 @@ getStackTraceElements(struct Hjava_lang_VMThrowable* state,
 					(CLASS_SOURCEFILE(meth->class));
 				unhand(element)->lineNumber
 					= getLineNumber(meth, stack[i].pc);
-				unhand(element)->className
+				unhand(element)->declaringClass
 					= utf8Const2JavaReplace
 					(meth->class->name, '/', '.');
 				unhand(element)->methodName

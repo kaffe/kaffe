@@ -61,30 +61,6 @@ Hjava_lang_Class* ThreadGroupClass;
 static void firstStartThread(void*);
 static void runfinalizer(void);
 
-/*
- * How do I get memory?
- */
-static
-void *
-thread_malloc(size_t s)
-{
-	return gc_malloc(s, KGC_ALLOC_THREADCTX);
-}
-
-static
-void
-thread_free(void *p)
-{
-	gc_free(p);
-}
-
-static
-void *
-thread_realloc(void *p, size_t s)
-{
-	return gc_realloc(p, s, KGC_ALLOC_THREADCTX);
-}
-
 static void
 linkNativeAndJavaThread(jthread_t thread, Hjava_lang_VMThread *jlThread)
 {
@@ -169,7 +145,8 @@ startThread(Hjava_lang_VMThread* tid)
 {
 	jthread_t nativeTid;
 	struct _errorInfo info;
-	int iLockRoot;
+
+DBG(VMTHREAD, dprintf ("%p starting thread %p (vmthread %p)\n\n", jthread_current(), unhand(tid)->thread, tid); )
 
 	/* Hold the start lock while the thread is created.
 	 * This lock prevents the new thread from running until we're
@@ -195,9 +172,11 @@ startThread(Hjava_lang_VMThread* tid)
 void
 interruptThread(Hjava_lang_VMThread* tid)
 {
-	if ((jthread_t)unhand(tid)->jthreadID) {
-		jthread_interrupt((jthread_t)unhand(tid)->jthreadID);
-	}
+DBG(VMTHREAD, dprintf ("%p (%p) interrupting %p (%p)\n", jthread_current(),
+                       THREAD_DATA()->jlThread, unhand(tid)->jthreadID, tid); )
+	assert(unhand(tid)->jthreadID != NULL);
+
+	jthread_interrupt((jthread_t)unhand(tid)->jthreadID);
 }
 
 /*
@@ -293,7 +272,6 @@ startSpecialThread(void *arg)
 	void (*func)(void *);
 	void **pointer_args = (void **)arg;
 	void *argument;
-	int iLockRoot;
 	jthread_t calling_thread;
 
 	ksemInit(&THREAD_DATA()->sem);
@@ -333,7 +311,6 @@ createDaemon(void* func, const char* nm, void *arg, int prio,
   Hjava_lang_Thread* tid;
   Hjava_lang_VMThread *vmtid;
   jthread_t nativeTid;
-  int iLockRoot;
   Hjava_lang_String* name;
   void *specialArgument[3];
 
@@ -400,7 +377,6 @@ firstStartThread(void* arg)
 	jthread_t cur;
 	JNIEnv *env;
 	jmethodID runmethod;
-	int iLockRoot;
 	jthread_t calling_thread = (jthread_t) arg;
 
 	cur = jthread_current();
@@ -429,7 +405,7 @@ firstStartThread(void* arg)
 #endif
 
 DBG(VMTHREAD,	
-	dprintf("firstStartThread %p\n", tid);		
+	dprintf("%p (%p) firstStartThread\n", cur, tid);		
     )
 
 	/*
@@ -483,7 +459,7 @@ void
 exitThread(void)
 {
 DBG(VMTHREAD,	
-	dprintf("exitThread %p\n", getCurrentThread());		
+	dprintf("%p (%p) exitThread\n", jthread_current(), THREAD_DATA()->jlThread);
     )
 
 #if defined(ENABLE_JVMPI)

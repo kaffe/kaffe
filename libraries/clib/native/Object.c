@@ -24,6 +24,7 @@
 #include "java_lang_VMObject.h"
 #include "thread.h"
 #include "jvmpi_kaffe.h"
+#include "debug.h"
 
 /*
  * Return class object for this object.
@@ -89,8 +90,19 @@ java_lang_VMObject_clone(struct Hjava_lang_Cloneable* c)
  * Wait for this object to be notified.
  */
 void
-java_lang_VMObject_nativeWait(struct Hjava_lang_Object* o, jlong timeout, UNUSED jint ns)
+java_lang_VMObject_wait(struct Hjava_lang_Object* o, jlong timeout, UNUSED jint ns)
 {
+  jthread_t cur = jthread_current();
+
+  if(jthread_interrupted(cur))
+    {
+      throwException(InterruptedException);
+    }
+
+DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %d\n",
+			cur, jthread_get_data(cur)->jlThread,
+			o, timeout); )
+
 #if defined(ENABLE_JVMPI)
   if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_WAIT) )
     {
@@ -128,4 +140,9 @@ java_lang_VMObject_nativeWait(struct Hjava_lang_Object* o, jlong timeout, UNUSED
       jvmpiPostEvent(&ev);
     }
 #endif
+
+  if(jthread_interrupted(cur))
+    {
+      throwException(InterruptedException);
+    }
 }

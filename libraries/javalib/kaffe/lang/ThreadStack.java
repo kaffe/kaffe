@@ -80,10 +80,11 @@ public class ThreadStack
 		/*
 		 * if this is already the last class on the stack, we're done
 		 * this should only happen in the very beginning when main.c
-		 * calls FindClass and thus forName outside a java class.
+		 * calls FindClass and thus forName outside a java class, so
+		 * we return the AppClassLoader in this case.
 		 */
 		if (frameIdx == classStack.length) {
-			return javaPrimordial ? PrimordialClassLoader.getSingleton() : null;
+			return AppClassLoader.getSingleton();
 		}
 
 		/*

@@ -1,3 +1,53 @@
+2004-10-31  Helmer Kraemer  <hkraemer@freenet.de>
+
+	Moved complete handling of thread interruption down to jthread layer:
+	
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h
+	(THREAD_FLAGS_INTERRUPTED_READ) removed
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(suspendOnQThread): don't clear interrupted flag
+	(jthread_interrupt): set interrupted flag if a thread interrupts
+	itself; only resume threads not waiting for a mutex
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c
+	(jcondvar_wait): don't mess around with interrupted flag, it's
+	set correctly by the interrupting thread
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_interrupt): if thread is waiting for its semaphore, signal that
+	one instead of sending a signal
+	(jthread_is_interrupted, jthread_interrupted): add comments
+	(jthread_suspendall): lock thread's suspendLock before reading its
+	suspendState
+
+	* include/errors.h: added define for java.lang.InterruptedException
+	
+	* libraries/clib/native/Object.c, libraries/javalib/java/lang/VMObject.java
+	(nativeWait): removed
+	(wait): moved to native code
+
+	* libraries/clib/native/Thread.c, libraries/javalib/java/lang/VMThread.java
+	(nativeInterrupt, nativeIsInterrupted, nativeInterrupted): removed
+	(interrupt, isInterrupted, interrupted, sleep): moved to native code
+
+	Some other minor fixes:
+
+	* libraries/javalib/kaffe/lang/ThreadStack.java
+	(getCallersClassLoader): return AppClassLoader if there're no java methods
+	on the stack
+
+	* kaffe/kaffevm/jni/jni.c (tryClassForName): removed
+	(Kaffe_FindClass): simply call Class.forName and let ThreadStack find the
+	correct ClassLoader
+	
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated
+	
+	* kaffe/kaffevm/stackTrace.c (getStackTraceElements): adapted to
+	changes of field names of java.lang.StackTraceElement
+	
+	* kaffe/kaffevm/thread.c (thread_malloc, thread_free,
+	thread_realloc): removed
+	Added debug messages and removed unused variables
+	
 2004-10-30  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/xml/xpath/VariableReference.java,

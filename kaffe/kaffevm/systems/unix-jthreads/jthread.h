@@ -86,7 +86,6 @@
 #define THREAD_FLAGS_INTERRUPTED	128
 #define THREAD_FLAGS_WAIT_MUTEX		256
 #define THREAD_FLAGS_WAIT_CONDVAR	512
-#define THREAD_FLAGS_INTERRUPTED_READ   1024
 
 /*
  * This is our internal structure representing the "native" threads.

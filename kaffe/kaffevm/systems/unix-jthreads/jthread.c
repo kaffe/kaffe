@@ -941,7 +941,6 @@ DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%ld) bI %d\n",
 				if (jtid == currentJThread) {
 					reschedule();
 					if (jtid->flags & THREAD_FLAGS_INTERRUPTED) {
-						jtid->flags &= ~(THREAD_FLAGS_INTERRUPTED|THREAD_FLAGS_INTERRUPTED_READ);
 						rc = true;
 					}
 				}
@@ -1470,11 +1469,14 @@ jthread_interrupt(jthread *jtid)
 {
 	intsDisable();
 
+	/* mark thread as interrupted */
+	jtid->flags |= THREAD_FLAGS_INTERRUPTED;
+
 	/* make sure we only resume suspended threads 
-	 * (and neither dead nor runnable threads)
+	 * (and neither dead nor runnable threads) that
+	 * are not trying to acquire a mutex.
 	 */
-	if (jtid != currentJThread && jtid->status == THREAD_SUSPENDED) {
-		jtid->flags |= THREAD_FLAGS_INTERRUPTED;
+	if ((jtid->status == THREAD_SUSPENDED) && !jthread_on_mutex(jtid)) {
 		resumeThread(jtid);
 	}
 	intsRestore();
@@ -2695,11 +2697,13 @@ int jthread_is_interrupted(jthread_t jt)
 
 int jthread_interrupted(jthread_t jt)
 {
-	if (jt->flags & THREAD_FLAGS_INTERRUPTED_READ || !(jt->flags & THREAD_FLAGS_INTERRUPTED))
-		return 0;
+	if (jt->flags & THREAD_FLAGS_INTERRUPTED)
+	{
+		jt->flags &= ~THREAD_FLAGS_INTERRUPTED;
+		return 1;
+	}
 
-	jt->flags |= THREAD_FLAGS_INTERRUPTED_READ;
-	return 1;
+	return 0;
 }
 
 int jthread_on_mutex(jthread_t jt)

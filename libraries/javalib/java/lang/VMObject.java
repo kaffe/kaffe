@@ -91,23 +91,6 @@ final class VMObject
    *         lock on the Object
    * @throws InterruptedException if some other Thread interrupts this Thread
    */
-  static void wait(Object o, long ms, int ns)
-    throws IllegalMonitorStateException, InterruptedException
-  {
-    Thread current = Thread.currentThread();
-    VMThread vmt = current.vmThread;
-    
-    if (current.interrupted())
-      throw new InterruptedException();
-    
-    vmt.holder = o;
-    nativeWait(o, ms, ns);
-    vmt.holder = null;
-    
-    if (current.interrupted())
-      throw new InterruptedException();
-  }
-
-  static native void nativeWait(Object o, long ms, int ns)
-      throws IllegalMonitorStateException, InterruptedException;
+  static native void wait(Object o, long ms, int ns)
+    throws IllegalMonitorStateException, InterruptedException;
 }

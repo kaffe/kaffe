@@ -217,28 +217,11 @@ Kaffe_DefineClass(JNIEnv* env, jobject loader, const jbyte* buf, jsize len)
  */
 
 static jclass
-tryClassForName(jstring nameString)
-{
-	jvalue retval;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	/* Call Class.forName() */
-	retval = do_execute_java_class_method("java.lang.Class", NULL,
-	    "forName", "(Ljava/lang/String;)Ljava/lang/Class;", nameString);
-
-	END_EXCEPTION_HANDLING();
-
-	return retval.l;
-}
-
-static jclass
 Kaffe_FindClass(JNIEnv* env, const char* name)
 {
 	jstring nameString;
 	Utf8Const* utf8;
 	jobject retval;
-	jobject exc;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
@@ -248,42 +231,9 @@ Kaffe_FindClass(JNIEnv* env, const char* name)
 	utf8ConstRelease(utf8);
 	checkPtr(nameString);
 
-	retval = tryClassForName(nameString);
-
-	exc = thread_data->exceptObj;
-	if (exc != NULL)
-	{
-		if (soft_instanceof(javaLangClassNotFoundException, exc))
-		{
-			int iLockRoot;
-			static iStaticLock appLock = KAFFE_STATIC_LOCK_INITIALIZER;
-
-			thread_data->exceptObj = NULL;
-			if (appClassLoader == NULL)
-			{
-				lockStaticMutex(&appLock);
-				if (appClassLoader == NULL)
-					appClassLoader = do_execute_java_method(kaffeLangAppClassLoaderClass, "getSingleton", "()Ljava/lang/ClassLoader;", NULL, true).l;
-				unlockStaticMutex(&appLock);
-
-				if (thread_data->exceptObj != NULL)
-				{
-					fprintf(stderr,
-						"ERROR: The default user class loader "
-					       	APPCLASSLOADERCLASS " can not be loaded.\n"
-						"Aborting...\n");
-					ABORT();
-				}
-			}
-
-			
-			retval = do_execute_java_class_method("java.lang.Class", NULL,
-			    "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;", nameString, true, appClassLoader).l;
-			ADD_REF(retval);
-		}
-	} else {
-		ADD_REF(retval);
-	}
+	retval = do_execute_java_class_method("java.lang.Class", NULL,
+		"forName", "(Ljava/lang/String;)Ljava/lang/Class;", nameString).l;
+	ADD_REF(retval);
 
 	END_EXCEPTION_HANDLING();
 	return (retval);
@@ -1040,7 +990,7 @@ KaffeVM_Arguments Kaffe_JavaVMInitArgs = {
 	MIN_HEAPSIZE,	/* Min heap size */
 	MAX_HEAPSIZE,	/* Max heap size */
 	/*	2,	*/	/* Verify mode ... verify remote by default */
-	0,              /* Verify mode ... noverify by default */
+	0,		/* Verify mode ... noverify by default */
 	".",		/* Classpath */
 	0,		/* Bootclasspath */
 	(void*)&vfprintf,/* Vprintf */

@@ -81,13 +81,17 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
   int             status;
   struct timespec abst;
   struct timeval  now;
-  //CHECK_LOCK( cur,lk);
 
-  cur->interrupting = 0;
+  /*
+   * If a thread trying to get a heavy lock is interrupted, we may get here
+   * with the interrupted flag set (because the thread didn't get the heavy
+   * lock and has to wait again). Therefore, we must not clear the interrupted
+   * flag here.
+   */
 
   if ( timeout == NOTIMEOUT )
     {
-      /* we handle this as "wait forever"	*/
+      /* we handle this as "wait forever" */
       status = ThreadCondWait(cur, cv, mux);
     }
   else
@@ -116,7 +120,12 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 	}
     }
 
-  cur->interrupting = (status == EINTR);
-  
+  /*
+   * Since we interrupt a thread blocked on a condition variable by signaling that
+   * condition variable, we cannot set the interrupted flag based on the value of
+   * 'signal'. Therefore, we have to rely on the interrupting thread to set the
+   * flag.
+   */
+
   return (status == 0);
 }

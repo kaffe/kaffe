@@ -91,21 +91,6 @@ final class VMThread
     private Ptr jthreadID;
 
     /**
-     * Kaffe Specific: Object instance to fall asleep.
-     */
-    private Object sleeper;
-
-    /**
-     * Kaffe Specific: Object which is holding the thread.
-     */
-    Object holder;
-    
-    /**
-     * Kaffe Specific: Thread is being interrupted.
-     */ 
-    private boolean interrupting;
-    
-    /**
      * Private constructor, create VMThreads with the static create method.
      *
      * @param thread The Thread object that was just created.
@@ -325,23 +310,7 @@ final class VMThread
     /**
      * Interrupt this thread.
      */
-    void interrupt()
-    {
-      interrupting = true;
-      Object h = holder;
-      if (h != null)
-	{
-	  holder = null;
-	  synchronized(h)
-	    {
-	      h.notify();
-	    }
-	}
-      else
-	nativeInterrupt();
-    }
-
-    private native void nativeInterrupt();
+    native void interrupt();
 
     /**
      * Determine whether this Thread has been interrupted, but leave
@@ -349,12 +318,7 @@ final class VMThread
      *
      * @return whether the Thread has been interrupted
      */
-    boolean isInterrupted()
-    {
-      return interrupting || nativeIsInterrupted();
-    }
-
-    private native boolean nativeIsInterrupted();
+    native boolean isInterrupted();
 
     /**
      * Suspend this Thread.  It will not come back, ever, unless it is resumed.
@@ -396,7 +360,7 @@ final class VMThread
      *
      * @return the currently executing Thread
      */
-    native static Thread currentThread();
+    static native Thread currentThread();
 
     /**
      * Yield to another thread. The Thread will not lose any locks it holds
@@ -424,18 +388,7 @@ final class VMThread
      *         <i>interrupted status</i> will be cleared
      * @throws IllegalArgumentException if ns is invalid
      */
-    static void sleep(long ms, int ns) throws InterruptedException
-    {
-      VMThread curr = currentThread().vmThread;
-	
-      if (curr.sleeper == null)
-	curr.sleeper = new Object();
-	
-      synchronized (curr.sleeper)
-	{
-	  curr.sleeper.wait(ms, ns);
-	}
-    }
+    static native void sleep(long ms, int ns) throws InterruptedException;
 
     /**
      * Determine whether the current Thread has been interrupted, and clear
@@ -443,16 +396,7 @@ final class VMThread
      *
      * @return whether the current Thread has been interrupted
      */
-    static boolean interrupted()
-    {
-      VMThread vmt = Thread.currentThread().vmThread;
-      boolean i = nativeInterrupted() || vmt.interrupting;
-
-      vmt.interrupting = false;
-      return i;
-    }
-
-    static native boolean nativeInterrupted();
+    static native boolean interrupted();
 
     /**
      * Kaffe Specific: finalize thread

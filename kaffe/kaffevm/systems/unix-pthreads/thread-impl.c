@@ -588,18 +588,46 @@ jthread_createfirst(size_t mainThreadStackSize, UNUSED unsigned char pri, void* 
   return (nt);
 }
 
+/**
+ * Interrupt a thread.
+ * 
+ * If tid is currently blocked its interrupted flag is set
+ * and the blocking operation is canceled.
+ */
 void jthread_interrupt(jthread_t tid)
 {
+  pthread_mutex_lock(&tid->suspendLock);
+
   tid->interrupting = 1;
-  /* We need to send some signal to interrupt syscalls. */
-  pthread_kill(tid->tid, sigInterrupt);
+
+  if ((tid->blockState & (BS_CV|BS_CV_TO)) != 0)
+    {
+      pthread_cond_signal (&tid->data.sem.cv);
+    }
+  else if(tid->blockState == 0)
+    {
+      /* We need to send some signal to interrupt syscalls. */
+      pthread_kill(tid->tid, sigInterrupt);
+    }
+
+  pthread_mutex_unlock(&tid->suspendLock);
 }
 
+/**
+ * Peek at the interrupted flag of a thread.
+ *
+ * @return true iff jt was interrupted.
+ */
 int jthread_is_interrupted(jthread_t jt)
 {
   return jt->interrupting;
 }
 
+/**
+ * Read and clear the interrupted flag of a thread.
+ *
+ * @return true iff jt was interrupted.
+ */
 int jthread_interrupted(jthread_t jt)
 {
   int i = jt->interrupting;
@@ -1192,11 +1220,11 @@ jthread_suspendall (void)
 	   * signals handled by threads which are blocked on someting else
 	   * than the thread lock (which we soon release)
 	   */
+	  pthread_mutex_lock(&t->suspendLock);
 	  if ( (t != cur) && (t->suspendState == 0) && (t->active != 0) ) {
 		DBG( JTHREAD, dprintf("signal suspend: %p (susp: %d blk: %d)\n",
 				      t, t->suspendState, t->blockState))
 
-		pthread_mutex_lock(&t->suspendLock);
 		t->suspendState = SS_PENDING_SUSPEND;
 
 		if ((t->blockState & (BS_CV|BS_MUTEX|BS_CV_TO)) != 0)
@@ -1221,8 +1249,8 @@ jthread_suspendall (void)
 			sem_wait( &critSem);
 		      }
 		  }
-		pthread_mutex_unlock(&t->suspendLock);
 	  }
+	  pthread_mutex_unlock(&t->suspendLock);
 	}
 
 #else

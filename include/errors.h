@@ -107,6 +107,7 @@ extern void dumpErrorInfo(errorInfo *);
 #define ThreadDeath NEW_LANG_EXCEPTION(ThreadDeath)
 #define StackOverflowError NEW_LANG_EXCEPTION(StackOverflowError)
 #define IllegalThreadStateException NEW_LANG_EXCEPTION(IllegalThreadStateException)
+#define InterruptedException NEW_LANG_EXCEPTION(InterruptedException)
 #define	InstantiationException(M) NEW_LANG_EXCEPTION_MESSAGE(InstantiationException, M)
 
 #if !defined(KAFFEH)
