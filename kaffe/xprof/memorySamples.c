@@ -39,21 +39,21 @@
 
 /* Macros for computing branches/leaf indexes */
 #define SAMPLE_BRANCH(addr, level) \
-	((((int)addr) >> (SAMPLE_ADDRESS_BITS - (SAMPLE_BIT_COUNT * \
+	((((jword)addr) >> (SAMPLE_ADDRESS_BITS - (SAMPLE_BIT_COUNT * \
 						 ((level) + 1)))) \
 	 & SAMPLE_BIT_MASK)
-#define SAMPLE_BIN(addr) ((((int)addr) & 0xfe) >> 1)
+#define SAMPLE_BIN(addr) ((((jword)addr) & 0xfe) >> 1)
 /* Set the index for some level in a pointer value */
 #define SET_ADDR_LEVEL(addr, level, value) \
-	((void *)((((int)(addr)) & \
+	((void *)((((jword)(addr)) & \
 		   ~(SAMPLE_BIT_MASK << \
 		     (((SAMPLE_BRANCH_LEVELS) - (level)) * \
 		      SAMPLE_BIT_COUNT))) | \
-		  (((int)(value)) << \
+		  (((jword)(value)) << \
 		   (((SAMPLE_BRANCH_LEVELS) - (level)) * \
 		      SAMPLE_BIT_COUNT))))
 /* Align the address to something that's sample-able */
-#define ALIGN_ADDR(addr) ((char *)((int)((addr) + 2) & ~1))
+#define ALIGN_ADDR(addr) ((char *)((jword)((addr) + 2) & ~1))
 
 #define min(x,y) ((x < y) ? x : y)
 #define max(x,y) ((x > y) ? x : y)
