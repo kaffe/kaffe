@@ -50931,7 +50931,7 @@ _ACEOF
 
 
 if test "$ac_cv_c_compile_value_glibc" -le "2"; then
-	if "$ac_cv_c_compile_value_glibc_minor" -le "2"; then
+	if test "$ac_cv_c_compile_value_glibc_minor" -le "2"; then
 
 cat >>confdefs.h <<\_ACEOF
 #define OLD_LINUXTHREADS 1

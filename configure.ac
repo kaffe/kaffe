@@ -1508,7 +1508,7 @@ dnl ------------------------------------------------------------
 KAFFE_CHECK_GLIBC_VER
 
 if test "$ac_cv_c_compile_value_glibc" -le "2"; then
-	if "$ac_cv_c_compile_value_glibc_minor" -le "2"; then
+	if test "$ac_cv_c_compile_value_glibc_minor" -le "2"; then
 		AC_DEFINE([OLD_LINUXTHREADS],1, [Is set if the current GLIBC is using the old Linuxthreads library])
 	fi
 fi

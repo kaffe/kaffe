@@ -1,3 +1,9 @@
+2004-08-25  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Fixed small bug in libc version test.
+
+	Reported by: Luca Saiu <positron@gnu.org>
+
 2004-08-24  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* configure.ac: Configure boehm subdir. Append
