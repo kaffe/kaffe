@@ -12,6 +12,8 @@ package java.security;
 
 import java.util.Random;
 
+import kaffe.security.Engine;
+
 public class SecureRandom extends Random {
 
 static final String ENGINE_CLASS = "SecureRandom";
@@ -21,9 +23,9 @@ private final SecureRandomSpi engine;
 
 public SecureRandom() { 
 	try {
-		Security.Engine e = Security.getCryptInstance(ENGINE_CLASS);
-		provider = e.provider;
-		engine = (SecureRandomSpi)e.engine;
+		Engine e = Engine.getCryptInstance(ENGINE_CLASS);
+		provider = e.getProvider();
+		engine = (SecureRandomSpi)e.getEngine();
 	}
 	catch (NoSuchAlgorithmException e) {
 		throw new Error("no " + ENGINE_CLASS + " found");
@@ -42,14 +44,16 @@ protected SecureRandom(SecureRandomSpi engine, Provider provider) {
 
 public static SecureRandom getInstance(String alg)
 		throws NoSuchAlgorithmException {
-	Security.Engine e = Security.getCryptInstance(ENGINE_CLASS, alg);
-	return new SecureRandom((SecureRandomSpi)e.engine, e.provider);
+	Engine e = Engine.getCryptInstance(ENGINE_CLASS, alg);
+	return new SecureRandom((SecureRandomSpi)e.getEngine(),
+				e.getProvider());
 }
 
 public static SecureRandom getInstance(String alg, String prov) 
 		throws NoSuchAlgorithmException, NoSuchProviderException {
-	Security.Engine e = Security.getCryptInstance( ENGINE_CLASS, alg, prov);
-	return new SecureRandom((SecureRandomSpi)e.engine, e.provider);
+	Engine e = Engine.getCryptInstance( ENGINE_CLASS, alg, prov);
+	return new SecureRandom((SecureRandomSpi)e.getEngine(),
+				e.getProvider());
 }
 
 public final Provider getProvider() {

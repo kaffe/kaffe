@@ -39,7 +39,7 @@ public abstract class MessageDigestSpi {
 	protected abstract void engineReset();
 
 	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
+	    return super.clone();
 	}
 }
 

@@ -32,6 +32,9 @@ Klasses_jar_SRCS = \
 	$(java_math_SRCS) \
 	$(java_net_SRCS) \
 	$(java_security_SRCS) \
+	$(java_security_cert_SRCS) \
+	$(java_security_interfaces_SRCS) \
+	$(java_security_spec_SRCS) \
 	$(java_sql_SRCS) \
 	$(java_text_SRCS) \
 	$(java_util_SRCS) \
@@ -52,6 +55,7 @@ Klasses_jar_SRCS = \
 	$(kaffe_net_www_protocol_http_SRCS) \
 	$(kaffe_net_www_protocol_jar_SRCS) \
 	$(kaffe_net_www_protocol_system_SRCS) \
+	$(kaffe_security_SRCS) \
 	$(kaffe_security_provider_SRCS) \
 	$(kaffe_text_collator_SRCS) \
 	$(kaffe_text_dateformat_SRCS) \
@@ -458,6 +462,10 @@ java_security_SRCS = \
 	java/security/AccessControlContext.java \
 	java/security/AccessControlException.java \
 	java/security/AccessController.java \
+	java/security/AlgorithmParameterGenerator.java \
+	java/security/AlgorithmParameterGeneratorSpi.java \
+	java/security/AlgorithmParameters.java \
+	java/security/AlgorithmParametersSpi.java \
 	java/security/BasicPermission.java \
 	java/security/CodeSource.java \
 	java/security/DigestException.java \
@@ -471,10 +479,15 @@ java_security_SRCS = \
 	java/security/InvalidParameterException.java \
 	java/security/Key.java \
 	java/security/KeyException.java \
+	java/security/KeyFactory.java \
+	java/security/KeyFactorySpi.java \
 	java/security/KeyManagementException.java \
 	java/security/KeyPair.java \
 	java/security/KeyPairGenerator.java \
 	java/security/KeyPairGeneratorSpi.java \
+	java/security/KeyStore.java \
+	java/security/KeyStoreException.java \
+	java/security/KeyStoreSpi.java \
 	java/security/MessageDigest.java \
 	java/security/MessageDigestSpi.java \
 	java/security/NoSuchAlgorithmException.java \
@@ -497,7 +510,48 @@ java_security_SRCS = \
 	java/security/SecurityPermission.java \
 	java/security/Signature.java \
 	java/security/SignatureException.java \
-	java/security/SignatureSpi.java
+	java/security/SignatureSpi.java \
+	java/security/UnrecoverableKeyException.java
+java_security_cert_SRCS = \
+	java/security/cert/CRL.java \
+	java/security/cert/CRLException.java \
+	java/security/cert/Certificate.java \
+	java/security/cert/CertificateEncodingException.java \
+	java/security/cert/CertificateException.java \
+	java/security/cert/CertificateExpiredException.java \
+	java/security/cert/CertificateFactory.java \
+	java/security/cert/CertificateFactorySpi.java \
+	java/security/cert/CertificateNotYetValidException.java \
+	java/security/cert/CertificateParsingException.java \
+	java/security/cert/X509CRL.java \
+	java/security/cert/X509CRLEntry.java \
+	java/security/cert/X509Certificate.java \
+	java/security/cert/X509Extension.java
+java_security_interfaces_SRCS = \
+	java/security/interfaces/DSAKey.java \
+	java/security/interfaces/DSAKeyPairGenerator.java \
+	java/security/interfaces/DSAParams.java \
+	java/security/interfaces/DSAPrivateKey.java \
+	java/security/interfaces/DSAPublicKey.java \
+	java/security/interfaces/RSAKey.java \
+	java/security/interfaces/RSAPrivateCrtKey.java \
+	java/security/interfaces/RSAPrivateKey.java \
+	java/security/interfaces/RSAPublicKey.java
+java_security_spec_SRCS = \
+	java/security/spec/AlgorithmParameterSpec.java \
+	java/security/spec/DSAParameterSpec.java \
+	java/security/spec/DSAPrivateKeySpec.java \
+	java/security/spec/DSAPublicKeySpec.java \
+	java/security/spec/EncodedKeySpec.java \
+	java/security/spec/InvalidKeySpecException.java \
+	java/security/spec/InvalidParameterSpecException.java \
+	java/security/spec/KeySpec.java \
+	java/security/spec/PKCS8EncodedKeySpec.java \
+	java/security/spec/RSAKeyGenParameterSpec.java \
+	java/security/spec/RSAPrivateCrtKeySpec.java \
+	java/security/spec/RSAPrivateKeySpec.java \
+	java/security/spec/RSAPublicKeySpec.java \
+	java/security/spec/X509EncodedKeySpec.java
 java_sql_SRCS = \
 	java/sql/CallableStatement.java \
 	java/sql/Connection.java \
@@ -725,6 +779,8 @@ kaffe_net_www_protocol_jar_SRCS = \
 kaffe_net_www_protocol_system_SRCS = \
 	kaffe/net/www/protocol/system/Handler.java \
 	kaffe/net/www/protocol/system/SystemURLConnection.java
+kaffe_security_SRCS = \
+	kaffe/security/Engine.java
 kaffe_security_provider_SRCS = \
 	kaffe/security/provider/Kaffe.java \
 	kaffe/security/provider/MD2.java \

@@ -79,6 +79,7 @@ CCLD = @CCLD@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
+CONFIG_XPROFILE_MD_H = @CONFIG_XPROFILE_MD_H@
 CPP = @CPP@
 CXX = @CXX@
 DIRSEP = @DIRSEP@
@@ -142,7 +143,7 @@ SRCDIRS = java kaffe
 jrelib_DATA = $(CLASSFILE)
 toolslib_DATA = kjc.jar
 
-Klasses_jar_SRCS =  	$(java_applet_SRCS) 	$(java_awt_SRCS) 	$(java_awt_datatransfer_SRCS) 	$(java_awt_event_SRCS) 	$(java_awt_image_SRCS) 	$(java_awt_peer_SRCS) 	$(java_awt_widgets_SRCS) 	$(java_beans_SRCS) 	$(java_io_SRCS) 	$(java_lang_SRCS) 	$(java_lang_ref_SRCS) 	$(java_lang_reflect_SRCS) 	$(java_math_SRCS) 	$(java_net_SRCS) 	$(java_security_SRCS) 	$(java_sql_SRCS) 	$(java_text_SRCS) 	$(java_util_SRCS) 	$(java_util_jar_SRCS) 	$(java_util_mime_SRCS) 	$(java_util_zip_SRCS) 	$(kaffe_applet_SRCS) 	$(kaffe_awt_SRCS) 	$(kaffe_beans_editors_SRCS) 	$(kaffe_io_SRCS) 	$(kaffe_jar_SRCS) 	$(kaffe_lang_SRCS) 	$(kaffe_management_SRCS) 	$(kaffe_net_SRCS) 	$(kaffe_net_www_protocol_SRCS) 	$(kaffe_net_www_protocol_file_SRCS) 	$(kaffe_net_www_protocol_ftp_SRCS) 	$(kaffe_net_www_protocol_http_SRCS) 	$(kaffe_net_www_protocol_jar_SRCS) 	$(kaffe_net_www_protocol_system_SRCS) 	$(kaffe_security_provider_SRCS) 	$(kaffe_text_collator_SRCS) 	$(kaffe_text_dateformat_SRCS) 	$(kaffe_text_numberformat_SRCS) 	$(kaffe_util_SRCS) 	$(kaffe_util_log_SRCS) 	$(kaffe_util_zip_SRCS)
+Klasses_jar_SRCS =  	$(java_applet_SRCS) 	$(java_awt_SRCS) 	$(java_awt_datatransfer_SRCS) 	$(java_awt_event_SRCS) 	$(java_awt_image_SRCS) 	$(java_awt_peer_SRCS) 	$(java_awt_widgets_SRCS) 	$(java_beans_SRCS) 	$(java_io_SRCS) 	$(java_lang_SRCS) 	$(java_lang_ref_SRCS) 	$(java_lang_reflect_SRCS) 	$(java_math_SRCS) 	$(java_net_SRCS) 	$(java_security_SRCS) 	$(java_security_cert_SRCS)	$(java_security_interfaces_SRCS)	$(java_security_spec_SRCS)	$(java_sql_SRCS) 	$(java_text_SRCS) 	$(java_util_SRCS) 	$(java_util_jar_SRCS) 	$(java_util_mime_SRCS) 	$(java_util_zip_SRCS) 	$(kaffe_applet_SRCS) 	$(kaffe_awt_SRCS) 	$(kaffe_beans_editors_SRCS) 	$(kaffe_io_SRCS) 	$(kaffe_jar_SRCS) 	$(kaffe_lang_SRCS) 	$(kaffe_management_SRCS) 	$(kaffe_net_SRCS) 	$(kaffe_net_www_protocol_SRCS) 	$(kaffe_net_www_protocol_file_SRCS) 	$(kaffe_net_www_protocol_ftp_SRCS) 	$(kaffe_security_SRCS)	$(kaffe_net_www_protocol_http_SRCS) 	$(kaffe_net_www_protocol_jar_SRCS) 	$(kaffe_net_www_protocol_system_SRCS) 	$(kaffe_security_provider_SRCS) 	$(kaffe_text_collator_SRCS) 	$(kaffe_text_dateformat_SRCS) 	$(kaffe_text_numberformat_SRCS) 	$(kaffe_util_SRCS) 	$(kaffe_util_log_SRCS) 	$(kaffe_util_zip_SRCS)
 
 java_applet_SRCS =  	java/applet/Applet.java 	java/applet/AppletContext.java 	java/applet/AppletStub.java 	java/applet/AudioClip.java
 
@@ -172,7 +173,50 @@ java_math_SRCS =  	java/math/BigDecimal.java 	java/math/BigInteger.java
 
 java_net_SRCS =  	java/net/BindException.java 	java/net/ConnectException.java 	java/net/ContentHandler.java 	java/net/ContentHandlerFactory.java 	java/net/DatagramPacket.java 	java/net/DatagramSocket.java 	java/net/DatagramSocketImpl.java 	java/net/DatagramSocketImplFactory.java 	java/net/FileNameMap.java 	java/net/HttpURLConnection.java 	java/net/InetAddress.java 	java/net/InetAddressImpl.java 	java/net/JarURLConnection.java 	java/net/MalformedURLException.java 	java/net/MulticastSocket.java 	java/net/NetPermission.java 	java/net/NoRouteToHostException.java 	java/net/PlainDatagramSocketImpl.java 	java/net/PlainSocketImpl.java 	java/net/ProtocolException.java 	java/net/ServerSocket.java 	java/net/Socket.java 	java/net/SocketException.java 	java/net/SocketImpl.java 	java/net/SocketImplFactory.java 	java/net/SocketInputStream.java 	java/net/SocketOptions.java 	java/net/SocketOutputStream.java 	java/net/URL.java 	java/net/URLClassLoader.java 	java/net/URLConnection.java 	java/net/URLDecoder.java 	java/net/URLEncoder.java 	java/net/URLStreamHandler.java 	java/net/URLStreamHandlerFactory.java 	java/net/UnknownHostException.java 	java/net/UnknownServiceException.java
 
-java_security_SRCS =  	java/security/AccessControlContext.java 	java/security/AccessControlException.java 	java/security/AccessController.java 	java/security/BasicPermission.java 	java/security/CodeSource.java 	java/security/DigestException.java 	java/security/DigestInputStream.java 	java/security/DigestOutputStream.java 	java/security/GeneralSecurityException.java 	java/security/Guard.java 	java/security/GuardedObject.java 	java/security/InvalidAlgorithmParameterException.java 	java/security/InvalidKeyException.java 	java/security/InvalidParameterException.java 	java/security/Key.java 	java/security/KeyException.java 	java/security/KeyManagementException.java 	java/security/KeyPair.java 	java/security/KeyPairGenerator.java 	java/security/KeyPairGeneratorSpi.java 	java/security/MessageDigest.java 	java/security/MessageDigestSpi.java 	java/security/NoSuchAlgorithmException.java 	java/security/NoSuchProviderException.java 	java/security/Permission.java 	java/security/PermissionCollection.java 	java/security/Principal.java 	java/security/PrivateKey.java 	java/security/PrivilegedAction.java 	java/security/PrivilegedActionException.java 	java/security/PrivilegedExceptionAction.java 	java/security/ProtectionDomain.java 	java/security/Provider.java 	java/security/ProviderException.java 	java/security/PublicKey.java 	java/security/SecureClassLoader.java 	java/security/SecureRandom.java 	java/security/SecureRandomSpi.java 	java/security/Security.java 	java/security/SecurityPermission.java 	java/security/Signature.java 	java/security/SignatureException.java 	java/security/SignatureSpi.java
+java_security_SRCS =  	java/security/AccessControlContext.java 	java/security/AccessControlException.java 	java/security/AccessController.java 	java/security/AlgorithmParameterGenerator.java	java/security/AlgorithmParameterGeneratorSpi.java	java/security/AlgorithmParameters.java	java/security/AlgorithmParametersSpi.java	java/security/BasicPermission.java 	java/security/CodeSource.java 	java/security/DigestException.java 	java/security/DigestInputStream.java 	java/security/DigestOutputStream.java 	java/security/GeneralSecurityException.java 	java/security/Guard.java 	java/security/GuardedObject.java 	java/security/InvalidAlgorithmParameterException.java 	java/security/InvalidKeyException.java 	java/security/InvalidParameterException.java 	java/security/Key.java 	java/security/KeyException.java 	java/security/KeyFactory.java	java/security/KeyFactorySpi.java	java/security/KeyManagementException.java 	java/security/KeyPair.java 	java/security/KeyPairGenerator.java 	java/security/KeyPairGeneratorSpi.java 	java/security/KeyStore.java	java/security/KeyStoreException.java	java/security/KeyStoreSpi.java	java/security/MessageDigest.java 	java/security/MessageDigestSpi.java 	java/security/NoSuchAlgorithmException.java 	java/security/NoSuchProviderException.java 	java/security/Permission.java 	java/security/PermissionCollection.java 	java/security/Principal.java 	java/security/PrivateKey.java 	java/security/PrivilegedAction.java 	java/security/PrivilegedActionException.java 	java/security/PrivilegedExceptionAction.java 	java/security/ProtectionDomain.java 	java/security/Provider.java 	java/security/ProviderException.java 	java/security/PublicKey.java 	java/security/SecureClassLoader.java 	java/security/SecureRandom.java 	java/security/SecureRandomSpi.java 	java/security/Security.java 	java/security/SecurityPermission.java 	java/security/Signature.java 	java/security/SignatureException.java 	java/security/SignatureSpi.java		java/security/UnrecoverableKeyException.java
+
+java_security_cert_SRCS = \
+	java/security/cert/CRL.java \
+	java/security/cert/CRLException.java \
+	java/security/cert/Certificate.java \
+	java/security/cert/CertificateEncodingException.java \
+	java/security/cert/CertificateException.java \
+	java/security/cert/CertificateExpiredException.java \
+	java/security/cert/CertificateFactory.java \
+	java/security/cert/CertificateFactorySpi.java \
+	java/security/cert/CertificateNotYetValidException.java \
+	java/security/cert/CertificateParsingException.java \
+	java/security/cert/X509CRL.java \
+	java/security/cert/X509CRLEntry.java \
+	java/security/cert/X509Certificate.java \
+	java/security/cert/X509Extension.java
+
+java_security_interfaces_SRCS = \
+	java/security/interfaces/DSAKey.java \
+	java/security/interfaces/DSAKeyPairGenerator.java \
+	java/security/interfaces/DSAParams.java \
+	java/security/interfaces/DSAPrivateKey.java \
+	java/security/interfaces/DSAPublicKey.java \
+	java/security/interfaces/RSAKey.java \
+	java/security/interfaces/RSAPrivateCrtKey.java \
+	java/security/interfaces/RSAPrivateKey.java \
+	java/security/interfaces/RSAPublicKey.java
+
+java_security_spec_SRCS = \
+	java/security/spec/AlgorithmParameterSpec.java \
+	java/security/spec/DSAParameterSpec.java \
+	java/security/spec/DSAPrivateKeySpec.java \
+	java/security/spec/DSAPublicKeySpec.java \
+	java/security/spec/EncodedKeySpec.java \
+	java/security/spec/InvalidKeySpecException.java \
+	java/security/spec/InvalidParameterSpecException.java \
+	java/security/spec/KeySpec.java \
+	java/security/spec/PKCS8EncodedKeySpec.java \
+	java/security/spec/RSAKeyGenParameterSpec.java \
+	java/security/spec/RSAPrivateCrtKeySpec.java \
+	java/security/spec/RSAPrivateKeySpec.java \
+	java/security/spec/RSAPublicKeySpec.java \
+	java/security/spec/X509EncodedKeySpec.java
 
 java_sql_SRCS =  	java/sql/CallableStatement.java 	java/sql/Connection.java 	java/sql/DataTruncation.java 	java/sql/DatabaseMetaData.java 	java/sql/Date.java 	java/sql/Driver.java 	java/sql/DriverManager.java 	java/sql/DriverPropertyInfo.java 	java/sql/PreparedStatement.java 	java/sql/ResultSet.java 	java/sql/ResultSetMetaData.java 	java/sql/SQLException.java 	java/sql/SQLWarning.java 	java/sql/Statement.java 	java/sql/Time.java 	java/sql/Timestamp.java 	java/sql/Types.java
 
@@ -213,6 +257,9 @@ kaffe_net_www_protocol_http_SRCS =  	kaffe/net/www/protocol/http/Handler.java 	k
 kaffe_net_www_protocol_jar_SRCS =  	kaffe/net/www/protocol/jar/Handler.java 	kaffe/net/www/protocol/jar/JarURLConnection.java
 
 kaffe_net_www_protocol_system_SRCS =  	kaffe/net/www/protocol/system/Handler.java 	kaffe/net/www/protocol/system/SystemURLConnection.java
+
+kaffe_security_SRCS = \
+	kaffe/security/Engine.java
 
 kaffe_security_provider_SRCS =  	kaffe/security/provider/Kaffe.java 	kaffe/security/provider/MD2.java 	kaffe/security/provider/MD4.java 	kaffe/security/provider/MD5.java 	kaffe/security/provider/SHA.java 	kaffe/security/provider/SHA1PRNG.java 	kaffe/security/provider/UpdateDigest.java
 
@@ -325,20 +372,22 @@ distdir: $(DISTFILES)
 	   $(distdir)/java/lang $(distdir)/java/lang/ref \
 	   $(distdir)/java/lang/reflect $(distdir)/java/math \
 	   $(distdir)/java/net $(distdir)/java/security \
-	   $(distdir)/java/sql $(distdir)/java/text \
-	   $(distdir)/java/util $(distdir)/java/util/jar \
-	   $(distdir)/java/util/mime $(distdir)/java/util/zip \
-	   $(distdir)/kaffe/applet $(distdir)/kaffe/awt \
-	   $(distdir)/kaffe/beans/editors $(distdir)/kaffe/io \
-	   $(distdir)/kaffe/jar $(distdir)/kaffe/lang \
-	   $(distdir)/kaffe/management $(distdir)/kaffe/net \
-	   $(distdir)/kaffe/net/www/protocol \
+	   $(distdir)/java/security/cert \
+	   $(distdir)/java/security/interfaces \
+	   $(distdir)/java/security/spec $(distdir)/java/sql \
+	   $(distdir)/java/text $(distdir)/java/util \
+	   $(distdir)/java/util/jar $(distdir)/java/util/mime \
+	   $(distdir)/java/util/zip $(distdir)/kaffe/applet \
+	   $(distdir)/kaffe/awt $(distdir)/kaffe/beans/editors \
+	   $(distdir)/kaffe/io $(distdir)/kaffe/jar \
+	   $(distdir)/kaffe/lang $(distdir)/kaffe/management \
+	   $(distdir)/kaffe/net $(distdir)/kaffe/net/www/protocol \
 	   $(distdir)/kaffe/net/www/protocol/file \
 	   $(distdir)/kaffe/net/www/protocol/ftp \
 	   $(distdir)/kaffe/net/www/protocol/http \
 	   $(distdir)/kaffe/net/www/protocol/jar \
 	   $(distdir)/kaffe/net/www/protocol/system \
-	   $(distdir)/kaffe/security/provider \
+	   $(distdir)/kaffe/security $(distdir)/kaffe/security/provider \
 	   $(distdir)/kaffe/text/collator \
 	   $(distdir)/kaffe/text/dateformat \
 	   $(distdir)/kaffe/text/numberformat $(distdir)/kaffe/util \

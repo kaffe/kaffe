@@ -15,7 +15,9 @@
  
 package java.security;
 
-//import java.security.spec;
+import kaffe.security.Engine;
+
+import java.security.spec.AlgorithmParameterSpec;
 
 // See MessageDigest for a description of why this extends KeyPairGeneratorSpi
 // and the weirdness it causes.
@@ -35,20 +37,21 @@ public abstract class KeyPairGenerator extends KeyPairGeneratorSpi {
 
 	public static KeyPairGenerator getInstance(String alg)
 			throws NoSuchAlgorithmException {
-		return getInstance(Security.getCryptInstance(
+		return getInstance(Engine.getCryptInstance(
 			ENGINE_CLASS, alg));
 	}
 
 	public static KeyPairGenerator getInstance(String alg, String provider)
 			throws NoSuchAlgorithmException,
 				NoSuchProviderException {
-		return getInstance(Security.getCryptInstance(
+		return getInstance(Engine.getCryptInstance(
 			ENGINE_CLASS, alg, provider));
 	}
 
-	private static KeyPairGenerator getInstance(Security.Engine e) {
-		KeyPairGenerator k = (KeyPairGenerator)e.engine;  // weirdness
-		k.provider = e.provider;
+	private static KeyPairGenerator getInstance(Engine e) {
+		// weirdness
+		KeyPairGenerator k = (KeyPairGenerator)e.getEngine();
+		k.provider = e.getProvider();
 		return k;
 	}
 
@@ -65,7 +68,6 @@ public abstract class KeyPairGenerator extends KeyPairGeneratorSpi {
 		throw new UnsupportedOperationException();
 	}
 
-/***********
 	public void initialize(AlgorithmParameterSpec params)
 			throws InvalidAlgorithmParameterException {
 		initialize(params, new SecureRandom());
@@ -73,9 +75,10 @@ public abstract class KeyPairGenerator extends KeyPairGeneratorSpi {
 
 	// this class must be overridden by provider's class
 	public void initialize(AlgorithmParameterSpec params, SecureRandom r)
+                throws InvalidAlgorithmParameterException
+	{
 		throw new UnsupportedOperationException();
 	}
-************/
 
 	public final KeyPair genKeyPair() {
 		return /*engine.*/generateKeyPair();

@@ -15,6 +15,10 @@
  
 package java.security;
 
+import kaffe.security.Engine;
+
+import java.security.spec.AlgorithmParameterSpec;
+
 // See MessageDigest for a description of why this extends SignatureSpi
 // and the weirdness it causes.
 
@@ -33,21 +37,21 @@ public abstract class Signature extends SignatureSpi {
 
 	public static Signature getInstance(String algorithm)
 			throws NoSuchAlgorithmException {
-		return getInstance(Security.getCryptInstance(
+		return getInstance(Engine.getCryptInstance(
 			ENGINE_CLASS, algorithm));
 	}
 
 	public static Signature getInstance(String algorithm, String provider)
 			throws NoSuchAlgorithmException,
 				NoSuchProviderException {
-		return getInstance(Security.getCryptInstance(
+		return getInstance(Engine.getCryptInstance(
 			ENGINE_CLASS, algorithm, provider));
 	}
 
-	private static Signature getInstance(Security.Engine e) {
-		Signature s = (Signature)e.engine;
+	private static Signature getInstance(Engine e) {
+		Signature s = (Signature)e.getEngine();
 		s.state = UNINITIALIZED;
-		s.provider = e.provider;
+		s.provider = e.getProvider();
 		return s;
 	}
 
@@ -116,12 +120,10 @@ public abstract class Signature extends SignatureSpi {
 		/*engine.*/engineSetParameter(param, value);
 	}
 
-/*****
 	public final void setParameter(AlgorithmParameterSpec params)
-			throws InvalidAlgorithmParameterException {
-		/*engine.* /engineSetParameter(params);
+		throws InvalidAlgorithmParameterException {
+		/*engine.*/engineSetParameter(params);
 	}
-******/
 
 	public final Object getParameter(String param)
 			throws InvalidParameterException {

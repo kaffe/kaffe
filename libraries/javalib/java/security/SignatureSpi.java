@@ -15,6 +15,8 @@
 
 package java.security;
 
+import java.security.spec.AlgorithmParameterSpec;
+
 public abstract class SignatureSpi {
 	protected SecureRandom appRandom;
 
@@ -53,13 +55,11 @@ public abstract class SignatureSpi {
 	protected abstract void engineSetParameter(String param, Object value)
 			throws InvalidParameterException;
 
-/******
 	// non-abstract for backwards compatibility
 	protected void engineSetParameter(AlgorithmParameterSpec params)
-			throws InvalidAlgorithmParameterException {
+		throws InvalidAlgorithmParameterException {
 		throw new UnsupportedOperationException();
 	}
-*******/
 
 	protected abstract Object engineGetParameter(String param)
 			throws InvalidParameterException;
