@@ -1,3 +1,9 @@
+Fri Sep 01 18:10:36 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/debug.c(dbgSysInit): Since this function exists in
+	non-debuggin builds, only check for JIT_DEBUG environment variable
+	if defined(DEBUG).
+
 Wed Aug 30 12:39:04 MDT 2000  Godmar Back <gback@cs.utah.edu>
 
 	* libraries/clib/native/SystemClassLoader.c: do not process to
