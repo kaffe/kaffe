@@ -43,6 +43,33 @@
 /* Define if the X Window System is missing or not being used.  */
 #undef X_DISPLAY_MISSING
 
+/* Define if you have the int8 type. */
+#undef HAVE_INT8
+
+/* Define if you have the uint8 type. */
+#undef HAVE_UINT8
+
+/* Define if you have the int16 type. */
+#undef HAVE_INT16
+
+/* Define if you have the uint16 type. */
+#undef HAVE_UINT16
+
+/* Define if you have the int32 type. */
+#undef HAVE_INT32
+
+/* Define if you have the uint32 type. */
+#undef HAVE_UINT32
+
+/* Define if you have the int64 type. */
+#undef HAVE_INT64
+
+/* Define if you have the uint64 type. */
+#undef HAVE_UINT64
+
+/* Define if you have the bool type. */
+#undef HAVE_BOOL
+
 /* ssize_t may not be defined */
 #undef ssize_t
 
@@ -399,6 +426,9 @@
 
 /* Define if you have the z library (-lz).  */
 #undef HAVE_LIBZ
+
+/* Define if you have the <kernel/OS.h> header file.  */
+#undef HAVE_KERNEL_OS_H
 
 /* Name of package */
 #undef PACKAGE
