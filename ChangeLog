@@ -1,5 +1,10 @@
 2003-11-12 Ito Kazumitsu <kaz@maczuka.gcd.org>
 
+	kaffe/kaffevm/acces.c:
+	(checkAccess) corrected to avoid java.lang.IllegalAccessError.
+
+2003-11-12 Ito Kazumitsu <kaz@maczuka.gcd.org>
+
 	libraries/javalib/kaffe/io/ByteToCharSHIFT_JIS.java,
 	libraries/javalib/kaffe/io/ChartoByteSHIFT_JIS.java:
 	New Files.

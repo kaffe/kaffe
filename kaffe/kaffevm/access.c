@@ -118,26 +118,56 @@ int checkAccess(struct Hjava_lang_Class *context,
 	{
 		class_acc = 1;
 	}
-	else if( (target->this_inner_index >= 0) &&
-		 (target->accflags & ACC_PROTECTED) )
+	else if( target->accflags & ACC_PROTECTED )
 	{
-		/* check whether target is non private innerclass of superclass */
-		innerClass *ic = &target->inner_classes[target->this_inner_index];
+	/* check whether target is non private innerclass of superclass */
+		innerClass *ict;
+		innerClass *icc;
+		Hjava_lang_Class *outert;
+		Hjava_lang_Class *outerc;
+		errorInfo einfo;
+		ict = icc = NULL;
+		outert = outerc = NULL;
 
-		if( ic->outer_class )
+	       	if( target->this_inner_index >= 0 )
 		{
-			Hjava_lang_Class *outer;
-			errorInfo einfo;
+			ict = &target->inner_classes[target->this_inner_index];
+			if( ict->outer_class )
+			{
+				outert = getClass(ict->outer_class, target, &einfo);
+				if( outert == NULL )
+				{
+					discardErrorInfo(&einfo);
+				}
+			}
+		}
+	       	if( context->this_inner_index >= 0 )
+		{
+			icc = &context->inner_classes[context->this_inner_index];
+			if( icc->outer_class )
+			{
+				outerc = getClass(icc->outer_class, context, &einfo);
+				if( outerc == NULL )
+				{
+					discardErrorInfo(&einfo);
+				}
+			}
+		}
 
-			outer = getClass(ic->outer_class, target, &einfo);
-			if( outer != NULL )
-			{
-				class_acc = instanceof(outer, context);
+		if( outert != NULL )
+		{
+			if( instanceof(outert, context) )
+		       	{
+				class_acc = 1;
 			}
-			else
+			else if (outerc != NULL)
 			{
-				discardErrorInfo(&einfo);
+				class_acc = instanceof(outert, outerc);
 			}
+		}
+		else if( outerc != NULL )
+		{
+			class_acc = instanceof(target, outerc);
 		}
 	}
 	
