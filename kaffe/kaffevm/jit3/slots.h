@@ -1,5 +1,5 @@
 /* slots.h
- * Slots.
+ * Management of Slots.
  *
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
@@ -38,6 +38,23 @@
 #define	SR_START		4
 #define	SR_EXCEPTION		5
 
+/**
+ * used to track a function's locals, arguments and temps.
+ *
+ * regno    - jitter id of the register holding the value of this slot
+ * offset   - stack frame offset of this slot
+ * wseq     - the last sequence writing this slot (inside the basic block currently translated)
+ * rseq     - the last sequence reading this slot (inside the basic block currently translated)
+ * rseqslot - this slot is the rseqslot'th parameter of its rseq
+ * modified - flag indicating how this slot is modified (rread, rwrite or 0)
+ * rnext    - pointer to the next slot whose value is stored in the same register
+ * global   - flag indicating whether this slot contains a global value
+ *
+ * A SlotData represents both, a local variable of the execution frame as defined
+ * in the JVM Spec, second edition, §3.6.1 and an entry of the operand stack
+ * as in §3.6.2. As such, longs and doubles occupy two SlotDatas, all other
+ * types only one.
+ */
 struct SlotData {
 	uint16			regno;
 	int			offset;
@@ -49,6 +66,7 @@ struct SlotData {
 	int			global;
 };
 typedef struct SlotData SlotData;
+
 
 struct SlotInfo {
 	SlotData*		slot;
@@ -83,35 +101,76 @@ void initSlots(int);
 void setupSlotsForBasicBlock(void);
 void lastuse_slot(SlotInfo* data, int nr);
 
-/* Slot access macros */
+/**
+ * Access an entry of the operand stack.
+ *
+ * @param N index of the entry (starting with 0).
+ */
 #define	stack(N)		(&localinfo[stackno+(N)])
 #define	stack_ref		stack
 #define	stack_float		stack
 #define	stack_long		stack
 #define	stack_double		stack_long
 
+/**
+ * Read an entry of the operand stack.
+ * 
+ */
 #define	rstack			stack
 #define	rstack_ref		stack_ref
 #define	rstack_float		stack_float
 #define	rstack_double		stack_double
 #define	rstack_long		stack_long
+
+/**
+ * Write an entry of the operand stack.
+ *
+ */
 #define	wstack			stack
 #define	wstack_ref		stack_ref
 #define	wstack_float		stack_float
 #define	wstack_long		stack_long
 #define	wstack_double		stack_double
 
+/**
+ * Access a local variable of the jitted method.
+ *
+ * @param N index of the local variable.
+ */
 #define	local(N)		(&localinfo[(N)])
 #define	local_ref		local
 #define	local_float		local
 #define	local_long		local
 #define	local_double		local_long
 
+/** 
+ * Allocate a temp slot for a byte, short, int, char, ref or float.
+ * 
+ * @param N variable to which the new temp slot is assigned
+ */
 #define	slot_alloctmp(N)	(N) = &tempinfo[tmpslot];		\
 				tmpslot += 1
+
+/**
+ * Allocate a temp slot for a double or a long.
+ *
+ * @param N variable to which the new temp slot is assigned
+ */
 #define	slot_alloc2tmp(N)	(N) = &tempinfo[tmpslot];		\
 				tmpslot += 2
+
+/**
+ * Frees a temp slot that was allocated with slot_alloctmp.
+ *
+ * @param N the slot that is to be freed.
+ */
 #define	slot_freetmp(N)		lastuse_slot(N, 1)
+
+/**
+ * Frees a temp slot that was allocated with slot_alloc2tmp.
+ *
+ * @param N the temp slot that is to be freed.
+ */
 #define	slot_free2tmp(N)	lastuse_slot(N, 2)
 
 #define	slot_nowriteback(N)	/* does nothing */

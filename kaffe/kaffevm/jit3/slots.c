@@ -19,12 +19,43 @@
 #include "machine.h"
 #include "debug.h"
 
+/**
+ * number of elements in basicslots.
+ */
 int maxslot;
+
+/**
+ * array containing all slots of the method being translated.
+ */
 SlotInfo* basicslots;
+
+/**
+ * same as basicslots ???
+ */
 SlotInfo* slotinfo;
+
+/**
+ * array of locals of the method being translated.
+ *
+ * the first localsz entries correspond to the local variables as per vm spec,
+ * the last stacksz entries correspond to the entries of the operand stack
+ *
+ * The bottom of the operand stack is the last entry of this array and it
+ * grows downwards (towards smaller indices).
+ */
 SlotInfo* localinfo;
+
+/**
+ * array of temp slots being used by the generated native code.
+ */
 SlotInfo* tempinfo;
-SlotInfo stack_limit[1];	/* Used to represent the stack limit */
+
+/**
+ * the slot that contains the stack limit.
+ *
+ * only used when STACK_LIMIT is #defined by the backend. 
+ */
+SlotInfo stack_limit[1];
 
 static SlotData* basicdatas;
 static int lastnrslots = 0;
@@ -32,8 +63,10 @@ static int lastnrslots = 0;
 static SlotData stack_limit_data;
 #endif
 
-/*
- * Initiate slots.
+/**
+ * Initializes the slots for the jitted method.
+ *
+ * @param islots number of slots that are needed.
  */
 void
 initSlots(int islots)
@@ -87,8 +120,10 @@ initSlots(int islots)
 #endif
 }
 
-/*
+/**
  * Setup for the beginning of a basic block.
+ *
+ * Sets the rseq and wseq fields of all slots to 0.
  */
 void
 setupSlotsForBasicBlock(void)
@@ -109,8 +144,11 @@ setupSlotsForBasicBlock(void)
 #endif
 }
 
-/*
- * Mark a number of slots as lastuse.
+/**
+ * Record that a few slots are not used any longer. 
+ *
+ * @param data array of slots that are not used further in the basic block.
+ * @param nr   number of slots in data
  */
 void
 lastuse_slot(SlotInfo* data, int nr)

@@ -21,7 +21,7 @@
  */
 
 
-/*
+/**
  * Constant pool value types:
  *   CPint - A jint
  *   CPlong - A jlong
@@ -45,7 +45,7 @@ enum {
 	CP_max,
 };
 
-/*
+/**
  * The constpool structure is a linked list node that is used to track the
  * constants that will be placed in the block.
  *
@@ -71,7 +71,7 @@ typedef struct _constpool {
 
 #define ALLOCCONSTNR	32
 
-/*
+/**
  * These variables track the pool of constpool objects allocated by the jitter.
  * The set of valid constpool objects is the sublist between firstConst and
  * currConst, exclusive.
@@ -80,29 +80,29 @@ extern constpool* firstConst;
 extern constpool* lastConst;
 extern constpool* currConst;
 
-/* The number of active constpool objects. */
+/** The number of active constpool objects. */
 extern uint32 nConst;
 
-/*
+/**
  * Allocate a new constpool object and link it in to the global list.
  *
- * type - Type of value to store in the constpool.
- * ... - The value to store.
+ * @param type Type of value to store in the constpool.
+ * @param ...  The value to store.
  *
  * Example:
  *   newConstant(CPint, 256);
  */
 constpool* newConstant(int type, ...);
 
-/*
+/**
  * Copy the list of constant values to the given location and update the "at"
  * values in the constpool objects.
  *
- * at - The location of the constant pool for the current method.
+ * @param at The location of the constant pool for the current method.
  */
 void establishConstants(void *at);
 
-/*
+/**
  * Reset the constant pool global data structures for a new method.
  */
 void resetConstants(void);

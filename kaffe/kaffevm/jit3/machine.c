@@ -59,6 +59,9 @@
 char* engine_name = "Just-in-time v3";
 char* engine_version = KAFFEVERSION;
 
+/**
+ * top of the operand stack. localsz <= stackno < localsz+stacksz
+ */
 int stackno;
 int maxStack;
 int maxLocal;
@@ -68,6 +71,9 @@ int maxPush;
 int isStatic;
 codeinfo* codeInfo;
 
+/**
+ * index of first unused element of tempinfo (next available temp slot)
+ */
 int tmpslot;
 int argcount = 0;		/* Function call argument count */
 uint32 pc;

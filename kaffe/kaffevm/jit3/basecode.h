@@ -93,7 +93,12 @@ enum {
 #define	monitor_exit()		mon_exit(xmeth, local(0))
 
 /* -------------------------------------------------------------------- */
-/* Instruction formats */
+/* Instruction formats
+ *
+ * These functions and macros take care of properly creating and initializing
+ * a struct _sequence for the different instructions. There's one function
+ * provided for every possible instruction format. 
+ */
 
 #define	slot_const_const(dst, src, src2, func, t)			\
 	{								\

@@ -29,28 +29,39 @@
 
 static void spill(SlotData*);
 
-/*
+/**
  * Define the registers.
+ *
+ * initialized with the REGISTER_SET macro to be defined by the backend
+ *
+ * There are two ways of how registers are identified. One is the jitter id,
+ * which is an index into this array. The other one is the backend id, which
+ * is the value of the regno field of the reginfo struct.
  */
 kregs reginfo[] = {
 	REGISTER_SET
 	{ /* BAD */	0, 0, 0, 0, 0, 0 }
 };
 
-/* This is horrible but necessary at the moment.  Sometime we need to
+/**
+ * This is horrible but necessary at the moment.  Sometime we need to
  * make transient changes to the registers which we will forget in
  * a short while.  This can have a bad effect on read-once register so
  * we disable them termporaily.
  */
 int enable_readonce = Rreadonce;
 
-/* Count for each register use - gives an idea of which register is
- * to be reused.
+/**
+ * Number of register assignments done so far.
+ * 
+ * Gives an idea of which register is to be reused.
  */
 int usecnt = 0;
 
-/*
- * Initiate registers.
+/**
+ * Initialize the registers.
+ *
+ * 
  */
 void
 initRegisters(void)
@@ -66,8 +77,11 @@ initRegisters(void)
 	}
 }
 
-/*
+/**
  * Spill a slot.
+ *
+ * @param sd the slot to spill
+ * @param clean if true, sd->modified is set to 0
  */
 void
 spillAndUpdate(SlotData* sd, jboolean clean)
@@ -125,8 +139,10 @@ spill(SlotData* s)
 	}
 }
 
-/*
+/**
  * Reload a register using the correct reload function.
+ *
+ * @param s the slot that is to be reloaded
  */
 void
 reload(SlotData* s)
@@ -166,6 +182,11 @@ reload(SlotData* s)
 	}
 }
 
+/**
+ * ??
+ *
+ * @param s 
+ */
 void
 slot_kill_readonce(SlotData *s)
 {
@@ -277,9 +298,17 @@ allocRegister(int idealreg, int type)
 	return (reg);
 }
 
-/*
- * Translate a slot number into a register.
- *  Perform the necessary spills and reloads to make this happen.
+/**
+ * Assign a register to a slot. 
+ *
+ * @param slot the slot to be moved into a register.
+ * @param type type of the slot
+ * @param use  whether the slot is loaded for reading, writing or both. 
+ * @param idealreg if the slot is to be moved into a particular register,
+ *                 this is the jitter id of it (NOREG if any register is ok).
+ * @return backend id of assigned register
+ *
+ * Perform the necessary spills and reloads to make this happen.
  */
 int
 slotRegister(SlotData* slot, int type, int use, int idealreg)
@@ -432,10 +461,13 @@ SCHK(	sanityCheck();						)
 	return (regi->regno);
 }
 
-/*
+/**
  * Clobber a register.
+ *
+ * @param reg jitter id of the register to clobber.
+ *
  * This will spill the register if its inuse and give it an undefined
- *  value.
+ * value.
  */
 void
 clobberRegister(int reg)
@@ -469,9 +501,14 @@ SCHK(	sanityCheck();						)
 SCHK(	sanityCheck();						)
 }
 
-/*
+/**
  * Force a slot to correspond to a specific register.
- *  Register should have been saved elsewhere.
+ *
+ * @param slot the slot the register is to be assigned to.
+ * @param reg  the jitter id of the register that is to be assigned to the slot.
+ * @param type type of register needed.
+ *
+ * Register should have been saved elsewhere.
  */
 void
 forceRegister(SlotData* slot, int reg, int type)
@@ -515,9 +552,14 @@ DBG(REGFORCE,
 SCHK(	sanityCheck();						)
 }
 
-/*
- * Returns the absolute offset of a slot in the current frame.  If
- * the slot is in a register, it is spilled.
+/**
+ * Returns the absolute offset of a slot in the current frame.
+ *
+ * @param slot the slot whose offset is to be returned.
+ * @param type type of the slot
+ * @param use  ??? not used ???
+ *
+ * If the slot is in a register, it is spilled.
  */
 int
 slotOffset(SlotData* slot, int type, int use)
@@ -537,8 +579,12 @@ SCHK(	sanityCheck();						)
 	return (slotOffsetNoSpill(slot, type));
 }
 
-/*
+/**
  * Returns the absolute offset of a slot in the current frame.
+ *
+ * @param slot the slot whose offset is to be returned
+ * @param type type of the slot
+ * @return the offset of the slot
  */
 int
 slotOffsetNoSpill(SlotData* slot, int type)
@@ -562,6 +608,11 @@ slotOffsetNoSpill(SlotData* slot, int type)
 	return (off0);
 }
 
+/**
+ * Invalidates a slot.
+ *
+ * @param sdata the slot to invalidate
+ */
 void
 slot_invalidate(SlotData* sdata)
 {
@@ -599,9 +650,15 @@ SCHK(	sanityCheck();						)
 SCHK(	sanityCheck();						)
 }
 
-/*
- * Preload a register at the beginning of a function.  This is used to
- * load up the argument which are passed in registers.
+/**
+ * Preload a register at the beginning of a function.
+ *
+ * @param slot the slot that is to be preloaded
+ * @param type the type of the slot
+ * @param idealreg the register that should be assigned to the slot.
+ * 
+ * This is used to load up the arguments which are passed
+ * in registers.
  */
 void
 preloadRegister(SlotData* slot, int type, int idealreg)

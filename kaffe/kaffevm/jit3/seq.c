@@ -20,7 +20,7 @@ sequence* lastSeq;
 sequence* currSeq;
 sequence* activeSeq;
 
-/*
+/**
  * Reset the sequence list.
  */
 void
@@ -29,7 +29,7 @@ initSeq(void)
 	currSeq = firstSeq;
 }
 
-/*
+/**
  * Allocate a new sequence element.
  */
 sequence*

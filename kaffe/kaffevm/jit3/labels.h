@@ -12,51 +12,51 @@
 #ifndef __label_h
 #define __label_h
 
-#define	Lnull		0x00		/* Unused label */
+#define	Lnull		0x00		/** Label is unused */
 
-#define	Ltypemask	0x0F		/* Label type mask */
-#define Lquad		0x01		/* Label is 64 bits long */
-#define	Llong		0x02		/* Label is 32 bits long */
+#define	Ltypemask	0x0F		/** Label type mask */
+#define	Lquad		0x01		/** Label is 64 bits long */
+#define	Llong		0x02		/** Label is 32 bits long */
 
 /* The following are handled by the architecture. */
-#define	Lframe		0x03		/* Label is the frame size */
-#define Lnegframe	0x04		/* Label is the negative frame size */
+#define	Lframe		0x03		/** Label is the frame size */
+#define	Lnegframe	0x04		/** Label is the negative frame size */
 
-#define	Larchdepend	(Lnegframe+1)	/* First architecture dependent label */
+#define	Larchdepend	(Lnegframe+1)	/** First architecture dependent label */
 
 /* Modifications to "to"  */
-#define Ltomask		0x01F0
-#define	Lgeneral	0x0010	/* Label references general code */
-#define Lexternal	0x0020	/* Label references external routine */
-#define	Lcode		0x0030	/* Label references bytecode offset */
-#define Lconstant	0x0040	/* Label references a constpool element */
-#define	Linternal	0x0050	/* Label references internal routine */
-#define	Lepilogue	0x0060	/* Label references internal epilogue */
+#define	Ltomask		0x01F0		/** mask for values regarding 'to' */
+#define	Lgeneral	0x0010		/** Label references general code */
+#define	Lexternal	0x0020		/** Label references external routine */
+#define	Lcode		0x0030		/** Label references bytecode offset */
+#define	Lconstant	0x0040		/** Label references a constpool element */
+#define	Linternal	0x0050		/** Label references internal routine */
+#define	Lepilogue	0x0060		/** Label references internal epilogue */
 
 /* Modifications to "at" */
-#define	Latmask		0x2000
-#define	Lconstantpool	0x2000	/* Label is in contant pool */
+#define	Latmask		0x2000		/** mask for values regarding 'at' */
+#define	Lconstantpool	0x2000		/** Label is in contant pool */
 
 /* Modifications to "from" */
-#define Lfrommask	0x0E00
-#define	Labsolute	0x0200	/* Absolute value */
-#define	Lrelative	0x0400	/* Relative value to place of insertion */
-#define	Lfuncrelative	0x0800	/* Relative value to start of function */
+#define	Lfrommask	0x0E00		/** mask for values regarding 'from' */
+#define	Labsolute	0x0200		/** Absolute value */
+#define	Lrelative	0x0400		/** Relative value to place of insertion */
+#define	Lfuncrelative	0x0800		/** Relative value to start of function */
 
-#define Lrangecheck	0x1000	/* Check for overflow in the fixup */
+#define	Lrangecheck	0x1000		/** Check for overflow in the fixup */
 
-#define Lnoprofile	0x4000	/* don't profile this called label */
+#define	Lnoprofile	0x4000		/** don't profile this called label */
 
-/*
+/**
  * The label object tracks the source, destination, and insertion point for
  * unbound references made by the generated code.
  *
  * next - Link to the next label in the global list.
- * at - The code offset or constpool structure to fixup when addresses have
- *   been finalized.
- * to - The reference to bind in the future.
+ * at   - The code offset or constpool structure to fixup when addresses have
+ *        been finalized.
+ * to   - The reference to bind in the future.
  * from - The offset to use when computing a Lfuncrelative or Lrelative
- *   reference.
+ *        reference.
  * type - Holder for the above L* flags.
  * name - "Symbolic" label name.
  *
@@ -112,19 +112,19 @@ typedef struct _label_ {
 
 #define	ALLOCLABELNR	1024
 
-/*
+/**
  * Set the address of all epilogue labels used in this method.
  *
  * Note:  There can be more than one epilogue label because there can be more
  * than one "return" in a method.
  *
- * to - The address of the epilogue instructions for this method.
+ * @param to - The address of the epilogue instructions for this method.
  *
  * XXX Should be setEpilogueLabels().
  */
 void setEpilogueLabel(uintp to);
 
-/*
+/**
  * Finds and returns the last epilogue label created for this method.  This is
  * used to avoid generating noop branches on a normal return path.  For
  * example, a getter method on the x86 will generate the following code at the
@@ -147,37 +147,37 @@ void setEpilogueLabel(uintp to);
  */
 label *getLastEpilogueLabel(void);
 
-/*
+/**
  * Link all the active labels into the code.  This involves computing the
  * label addresses and fixing up the generated code with the final values
  * of the labels.  The code rewriting can be done by the library for simple
  * types like 32 or 64 bit numbers, but other types must be handled by the
  * architecture dependent code.
  *
- * codebase - The final destination for the method code.  Note: The constant
+ * @param codebase - The final destination for the method code.  Note: The constant
  *   pool, if there is one, will immediately precede this address.
  */
 void linkLabels(uintp codebase);
 
-/*
- * returns - A new label object that is linked into the global list.
+/**
+ * @return A new label object that is linked into the global list.
  */
 label* newLabel(void);
 
-/*
+/**
  * Reset the global list of labels for a new method.
  */
 void resetLabels(void);
 
-/*
+/**
  * Iterate through the method internal labels that refer to the given native
  * "pc" value.
  *
- * lptr - The iteration variable, initialize *lptr to NULL to start at the
+ * @param lptr The iteration variable, initialize *lptr to NULL to start at the
  *   beginning of the list of labels.  The value of *lptr will then be changed
  *   after subsequent calls until the end of the list is reached.
- * pc - The native PC value to search the "to" values for.
- * returns - A label matching the given "pc" or NULL if there are no more
+ * @param pc The native PC value to search the "to" values for.
+ * @return A label matching the given "pc" or NULL if there are no more
  *   internal labels found.
  */
 label *getInternalLabel(label **lptr, uintp pc);

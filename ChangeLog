@@ -1,3 +1,17 @@
+2003-05-12  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/jit3/slots.c,
+	kaffe/kaffevm/jit3/slots.h,
+	kaffe/kaffevm/jit3/seq.h,
+	kaffe/kaffevm/jit3/seq.c,
+	kaffe/kaffevm/jit3/registers.h,
+	kaffe/kaffevm/jit3/registers.c,
+	kaffe/kaffevm/jit3/basecode.h,
+	kaffe/kaffevm/jit3/constpool.h,
+	kaffe/kaffevm/jit3/labels.h,
+	kaffe/kaffevm/jit3/machine.c:
+	added some docs
+
 2003-05-11 Marc Kleine-Budde <kleine-budde@gmx.de>
 
 	* libraries/clib/net/PlainSocketImpl.c:

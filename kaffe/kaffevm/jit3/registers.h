@@ -25,9 +25,18 @@
 #define	Rreadonce		0x01
 #define	Rnosaveoncall		0x02
 
-/* Information about the state of a particular register. */
+/**
+ * Information about the state of a particular register.
+ *
+ * slot  - head of the list of slots whose values are in this register
+ * ctype - value type this register currently contains
+ * type  - all value types this register can contain
+ * flags - flags of the register
+ * used  - the last time this register was assigned to a slot
+ * regno - backend id of this register (whatever the backend wants it to be)
+ * refs  - number of slots whose values are in this register
+ */
 typedef struct _kregs {
-	/* The slot whose value is in this register. */
 	SlotData*		slot;
 	uint8			ctype;
 	uint8			type;
@@ -85,6 +94,10 @@ void	preloadRegister(SlotData*, int, int);
 #define	slowSlotOffset(S,T,U)	slotOffset(S,T,U)
 #define	_slowSlotOffset(S,T,U)	slotOffset(S,T,U)
 
+/**
+ * Macros to deal with slots of type jint.
+ *
+ */
 #define	rreg_int(i)		slotRegister(seq_slot(s, i), Rint, rread, NOREG)
 #define	wreg_int(i)		slotRegister(seq_slot(s, i), Rint, rwrite, NOREG)
 #define	rwreg_int(i)		slotRegister(seq_slot(s, i), Rint, rread|rwrite, NOREG)
@@ -92,12 +105,20 @@ void	preloadRegister(SlotData*, int, int);
 #define	wslot_int(i)		slotOffset(seq_slot(s, i), Rint, rwrite)
 #define	rreg_ideal_int(i,r)	slotRegister(seq_slot(s, i), Rint, rread, r)
 
+/**
+ * Macros to deal with slots of type ref.
+ *
+ */
 #define	rreg_ref(i)		slotRegister(seq_slot(s, i), Rref, rread, NOREG)
 #define	wreg_ref(i)		slotRegister(seq_slot(s, i), Rref, rwrite, NOREG)
 #define	rwreg_ref(i)		slotRegister(seq_slot(s, i), Rref, rread|rwrite, NOREG)
 #define	rslot_ref(i)		slotOffset(seq_slot(s, i), Rref, rread)
 #define	wslot_ref(i)		slotOffset(seq_slot(s, i), Rref, rwrite)
 
+/**
+ * Macros to deal with slots of type long.
+ *
+ */
 #define	rreg_long(i)		slotRegister(seq_slot(s, i), Rlong, rread, NOREG)
 #define	wreg_long(i)		slotRegister(seq_slot(s, i), Rlong, rwrite, NOREG)
 #define	rwreg_long(i)		slotRegister(seq_slot(s, i), Rlong, rread|rwrite, NOREG)
@@ -105,6 +126,10 @@ void	preloadRegister(SlotData*, int, int);
 #define	wslot_long(i)		slotOffset(seq_slot(s, i), Rlong, rwrite)
 #define	rreg_ideal_long(i,r)	slotRegister(seq_slot(s, i), Rlong, rread, r)
 
+/**
+ * Macros to deal with slots of type float.
+ *
+ */
 #define	rreg_float(i)		slotRegister(seq_slot(s, i), Rfloat, rread, NOREG)
 #define	wreg_float(i)		slotRegister(seq_slot(s, i), Rfloat, rwrite, NOREG)
 #define	rwreg_float(i)		slotRegister(seq_slot(s, i), Rfloat, rread|rwrite, NOREG)
@@ -112,6 +137,10 @@ void	preloadRegister(SlotData*, int, int);
 #define	wslot_float(i)		slotOffset(seq_slot(s, i), Rfloat, rwrite)
 #define	rreg_ideal_float(i,r)	slotRegister(seq_slot(s, i), Rfloat, rread, r)
 
+/**
+ * Macros to deal with slots of type double.
+ *
+ */
 #define	rreg_double(i)		slotRegister(seq_slot(s, i), Rdouble, rread, NOREG)
 #define	wreg_double(i)		slotRegister(seq_slot(s, i), Rdouble, rwrite, NOREG)
 #define	rwreg_double(i)		slotRegister(seq_slot(s, i), Rdouble, rread|rwrite, NOREG)
@@ -119,6 +148,10 @@ void	preloadRegister(SlotData*, int, int);
 #define	wslot_double(i)		slotOffset(seq_slot(s, i), Rdouble, rwrite)
 #define	rreg_ideal_double(i,r)	slotRegister(seq_slot(s, i), Rdouble, rread, r)
 
+/**
+ * Macros to deal with slots of type subint.
+ *
+ */
 #define	rreg_subint(i)		slotRegister(seq_slot(s, i), Rsubint, rread, NOREG)
 #define	wreg_subint(i)		slotRegister(seq_slot(s, i), Rsubint, rwrite, NOREG)
 #define	rwreg_subint(i)		slotRegister(seq_slot(s, i), Rsubint, rread|rwrite, NOREG)
