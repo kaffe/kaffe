@@ -35,7 +35,7 @@ end
 #handle SIGPIPE nostop noprint
 
 define pStr
-  p (char*)(($arg0).data)
+  p (char*)(($arg0).value)
 end
 
 document pStr

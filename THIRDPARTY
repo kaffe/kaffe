@@ -17,17 +17,55 @@ See license-lesser.terms for details.
 
 More information on tritonus is available from http://tritonus.org.
 
-* gjdoc
+* gjdoc, javap, gnu.classpath.tools
 
 This code has been merged in from the GNU Classpath tools project.
 Kaffe is tracking this project's CVS HEAD.
 
-Gjdoc is distributed under the GNU General Public License.
+The GNU Classpath tools project is distributed under the GNU General 
+Public License Version 2.
 
-See license.terms for the text of the GNU General Public License.
+See license.terms for the text of the GNU General Public License 
+Version 2.
 
-More information on gjdoc can be found at
+More information on gjdoc and cp-tools can be found at
 http://www.gnu.org/software/cp-tools/.
+
+* gnu.bytecode
+
+This code has been merged in from Kawa. Kaffe is tracking this 
+project's CVS HEAD.
+
+The gnu.bytecode classes are licensed under the GNU General Public 
+License Version 2 or any later version. The exact copyright notice 
+is:
+
+ "The Java classes (with related files and documentation) in these packages
+  are copyright (C) 1996-2001, 2002  Per Bothner.
+
+  These classes are distributed in the hope that they will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License [included below] for more details.
+
+  These classes are free software.  You can use and re-distribute a class
+  without restriction (in source or binary form) as long as you use a
+  version has not been modified in any way from a version released
+  by Per Bothner, Cygnus Solutions, or the Free Software Foundation.
+  (See the Kawa manual for more information.)
+  You may make and distribute a modified version, provided you follow
+  the terms of the GNU General Public License; either version 2,
+  or (at your option) any later version.  (Version 2 is included below.)
+
+  If you have questions, contact Per Bothner,
+  18651 Cynthia Avenue, Cupertino CA 95014, USA.
+  By email per@bothner.com."
+
+See license.terms for the text of the GNU General Public License
+Version 2.
+
+More information on Kawa can be found at
+http://www.gnu.org/software/kawa/.
 
 * gnu.crypto, javax.crypto, javax.security.auth, javax.security.sasl,
   org.ietf.jgss

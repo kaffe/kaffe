@@ -56,8 +56,14 @@ public Class loadClass(String name, boolean resolve)
 {
 	Class retval;
 
-	if( name.startsWith("kaffe.lang.") ||
-            name.startsWith("gnu.classpath.") )
+	/* Do not allow user level classes to access kaffe internal classes
+	 * in kaffe.lang and gnu.classpath.
+	 *
+	 * But wave gnu.classpath.tools through, those are used by cp-tools.
+	 */
+	if( name.startsWith("kaffe.lang.") 
+	    || (name.startsWith("gnu.classpath.") 
+		&& !name.startsWith("gnu.classpath.tools")))
 	{
 		throw new ClassNotFoundException(name);
 	}

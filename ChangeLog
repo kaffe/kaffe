@@ -1,3 +1,73 @@
+2005-03-03  Dalibor Topic  <robilad@kaffe.org>
+
+        * THIRDPARTY: Added gnu.bytecode and cp-tools javap.
+
+        * developers/gdbinit (pStr): fixed field name.
+
+        * kaffe/scripts/javap.in: Use gnu.classpath.javap.JavapMain.
+
+        * libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        libraries/javalib/all.files:
+	Regenerated.
+
+        * libraries/javalib/gnu/bytecode/Access.java,
+        libraries/javalib/gnu/bytecode/ArrayClassLoader.java,
+        libraries/javalib/gnu/bytecode/ArrayType.java,
+        libraries/javalib/gnu/bytecode/AttrContainer.java,
+        libraries/javalib/gnu/bytecode/Attribute.java,
+        libraries/javalib/gnu/bytecode/ClassFileInput.java,
+        libraries/javalib/gnu/bytecode/ClassType.java,
+        libraries/javalib/gnu/bytecode/ClassTypeWriter.java,
+        libraries/javalib/gnu/bytecode/CodeAttr.java,
+        libraries/javalib/gnu/bytecode/ConstantPool.java,
+        libraries/javalib/gnu/bytecode/ConstantValueAttr.java,
+        libraries/javalib/gnu/bytecode/CpoolClass.java,
+        libraries/javalib/gnu/bytecode/CpoolEntry.java,
+        libraries/javalib/gnu/bytecode/CpoolFloat.java,
+        libraries/javalib/gnu/bytecode/CpoolNameAndType.java,
+        libraries/javalib/gnu/bytecode/CpoolRef.java,
+        libraries/javalib/gnu/bytecode/CpoolString.java,
+        libraries/javalib/gnu/bytecode/CpoolUtf8.java,
+        libraries/javalib/gnu/bytecode/CpoolValue1.java,
+        libraries/javalib/gnu/bytecode/CpoolValue2.java,
+        libraries/javalib/gnu/bytecode/ExceptionsAttr.java,
+        libraries/javalib/gnu/bytecode/Field.java,
+        libraries/javalib/gnu/bytecode/Filter.java,
+        libraries/javalib/gnu/bytecode/IfState.java,
+        libraries/javalib/gnu/bytecode/InnerClassesAttr.java,
+        libraries/javalib/gnu/bytecode/Label.java,
+        libraries/javalib/gnu/bytecode/LineNumbersAttr.java,
+        libraries/javalib/gnu/bytecode/LocalVarsAttr.java,
+        libraries/javalib/gnu/bytecode/Location.java,
+        libraries/javalib/gnu/bytecode/Method.java,
+        libraries/javalib/gnu/bytecode/MiscAttr.java,
+        libraries/javalib/gnu/bytecode/ObjectType.java,
+        libraries/javalib/gnu/bytecode/PrimType.java,
+        libraries/javalib/gnu/bytecode/Scope.java,
+        libraries/javalib/gnu/bytecode/SourceDebugExtAttr.java,
+        libraries/javalib/gnu/bytecode/SourceFileAttr.java,
+        libraries/javalib/gnu/bytecode/SwitchState.java,
+        libraries/javalib/gnu/bytecode/TryState.java,
+        libraries/javalib/gnu/bytecode/Type.java,
+        libraries/javalib/gnu/bytecode/VarEnumerator.java,
+        libraries/javalib/gnu/bytecode/Variable.java,
+        libraries/javalib/gnu/bytecode/ZipArchive.java,
+        libraries/javalib/gnu/bytecode/ZipLoader.java,
+        libraries/javalib/gnu/bytecode/dump.java,
+        libraries/javalib/gnu/bytecode/package.html:
+	New files taken from gnu.bytecode from Kawa.
+
+        * libraries/javalib/gnu/classpath/tools/Util.java,
+        libraries/javalib/gnu/classpath/tools/javap/GnuByteCodeJavap.java,
+        libraries/javalib/gnu/classpath/tools/javap/Javap.java,
+        libraries/javalib/gnu/classpath/tools/javap/JavapMain.java:
+	New files taken from GNU Classpath tools project.
+
+        * libraries/javalib/kaffe/lang/PrimordialClassLoader.java:
+	Added comments, and added explicit check to allow 
+	gnu.classpath.tools.* classes to be loaded.
+
 2005-03-02  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

@@ -51,7 +51,10 @@ jrelib_DATA = \
 
 Klasses_jar_SRCS = \
 	$(com_jcraft_jzlib_SRCS) \
+	$(gnu_bytecode_SRCS) \
 	$(gnu_classpath_SRCS) \
+	$(gnu_classpath_tools_SRCS) \
+	$(gnu_classpath_tools_javap_SRCS) \
 	$(gnu_crypto_SRCS) \
 	$(gnu_crypto_assembly_SRCS) \
 	$(gnu_crypto_auth_SRCS) \
@@ -339,6 +342,51 @@ com_jcraft_jzlib_SRCS = \
 	com/jcraft/jzlib/ZOutputStream.java \
 	com/jcraft/jzlib/ZStream.java \
 	com/jcraft/jzlib/ZStreamException.java
+gnu_bytecode_SRCS = \
+	gnu/bytecode/Access.java \
+	gnu/bytecode/ArrayClassLoader.java \
+	gnu/bytecode/ArrayType.java \
+	gnu/bytecode/AttrContainer.java \
+	gnu/bytecode/Attribute.java \
+	gnu/bytecode/ClassFileInput.java \
+	gnu/bytecode/ClassType.java \
+	gnu/bytecode/ClassTypeWriter.java \
+	gnu/bytecode/CodeAttr.java \
+	gnu/bytecode/ConstantPool.java \
+	gnu/bytecode/ConstantValueAttr.java \
+	gnu/bytecode/CpoolClass.java \
+	gnu/bytecode/CpoolEntry.java \
+	gnu/bytecode/CpoolFloat.java \
+	gnu/bytecode/CpoolNameAndType.java \
+	gnu/bytecode/CpoolRef.java \
+	gnu/bytecode/CpoolString.java \
+	gnu/bytecode/CpoolUtf8.java \
+	gnu/bytecode/CpoolValue1.java \
+	gnu/bytecode/CpoolValue2.java \
+	gnu/bytecode/ExceptionsAttr.java \
+	gnu/bytecode/Field.java \
+	gnu/bytecode/Filter.java \
+	gnu/bytecode/IfState.java \
+	gnu/bytecode/InnerClassesAttr.java \
+	gnu/bytecode/Label.java \
+	gnu/bytecode/LineNumbersAttr.java \
+	gnu/bytecode/LocalVarsAttr.java \
+	gnu/bytecode/Location.java \
+	gnu/bytecode/Method.java \
+	gnu/bytecode/MiscAttr.java \
+	gnu/bytecode/ObjectType.java \
+	gnu/bytecode/PrimType.java \
+	gnu/bytecode/Scope.java \
+	gnu/bytecode/SourceDebugExtAttr.java \
+	gnu/bytecode/SourceFileAttr.java \
+	gnu/bytecode/SwitchState.java \
+	gnu/bytecode/TryState.java \
+	gnu/bytecode/Type.java \
+	gnu/bytecode/VarEnumerator.java \
+	gnu/bytecode/Variable.java \
+	gnu/bytecode/ZipArchive.java \
+	gnu/bytecode/ZipLoader.java \
+	gnu/bytecode/dump.java
 gnu_classpath_SRCS = \
 	gnu/classpath/RawData.java \
 	gnu/classpath/RawData32.java \
@@ -347,6 +395,12 @@ gnu_classpath_SRCS = \
 	gnu/classpath/ServiceProviderLoadingAction.java \
 	gnu/classpath/SystemProperties.java \
 	gnu/classpath/VMSystemProperties.java
+gnu_classpath_tools_SRCS = \
+	gnu/classpath/tools/Util.java
+gnu_classpath_tools_javap_SRCS = \
+	gnu/classpath/tools/javap/GnuByteCodeJavap.java \
+	gnu/classpath/tools/javap/Javap.java \
+	gnu/classpath/tools/javap/JavapMain.java
 gnu_crypto_SRCS = \
 	gnu/crypto/Properties.java \
 	gnu/crypto/Registry.java
