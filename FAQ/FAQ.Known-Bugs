@@ -12,22 +12,11 @@ We will note new bugs only there.
 This file is a list of known bugs, short-comings and oddities.  
 Treat it as an TODO list.   This file is divided in three sections.
 
-MISSING OR BROKEN FEATURES
+MISSING AND/OR BROKEN FEATURES
 ---------------------------------------------------------------------------
 
 * reflection: when reporting fields of a class, kaffe wrongly does not include
   public static final fields of the interfaces that this class implements.
-
-* java.io.OutputStreamWriter is not buffered like it should.
-  This can lead to many small writes where a conformant implementation
-  would do a few large writes.
-  On systems with abysmal NFS performance (such as Linux) this may lead
-  to execution times two orders of magnitude larger for applications such
-  as antlr.
-
-  Workaround:
-  + wrap the OutputStreamWriter in a BufferedWriter
-  + use a local filesystem
 
 * File.getCanonicalPath() is not properly implemented.
   This needs a native implementation.
@@ -52,8 +41,9 @@ MISSING OR BROKEN FEATURES
   relies on the GNU Multi-precision math package (GMP).  BigDecimal is
   completely incomplete (?) and will just throw exceptions when used.
 
-* The conversion of floats or doubles to strings does not conform to Sun's
-  spec.  Instead, Kaffe uses the output format provided by printf().
+* The conversion of floats or doubles to strings does not completely
+  conform to Sun's spec. Kaffe may print more digits in the mantissa
+  than required (otherwise it should be correct).
 
 * DecimalFormat is broken :  no formatting at all and decimals are cut off.
   There are problems with date & calendar.
