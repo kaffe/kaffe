@@ -59,4 +59,13 @@ sub description_text {
 	return $self->{ 'description' }->description();
 }
 
+sub get_description {
+    my $self = shift;
+    my $description = $self->description_text();
+    if ( !$description ) {
+        $description = Registry::lookup_description( $self->compiler(), $self->shortName() );
+        $description = $description->description() if ( $description );
+    }
+    return $description;
+}
 1;
