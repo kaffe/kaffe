@@ -9,12 +9,14 @@
 native_LTLIBRARIES = libnative.la
 
 IO_SRCS = \
+		ByteToCharDefault.c \
+		ByteToCharIconv.c \
+		CharToByteDefault.c \
+		CharToByteIconv.c \
 		ObjectStreamClassImpl.c
 
 LANG_SRCS = \
 		Application.c \
-		ByteToCharDefault.c \
-		CharToByteDefault.c \
 		Class.c \
 		ClassLoader.c \
 		Compiler.c \
