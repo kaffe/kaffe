@@ -1,3 +1,7 @@
+Sat Feb 13 00:48:35 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* configure.in, configure: check for right gif_lib.h version
+
 Fri Feb 12 16:42:23 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/systems/unix-jthreads/Makefile.am (EXTRA_DIST):
@@ -2887,3 +2891,5 @@ See ChangeLog.1 for earlier changes.
 Local Variables:
 add-log-time-format: current-time-string
 End:
+i
+	
