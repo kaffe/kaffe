@@ -42,7 +42,7 @@ Java_java_awt_Toolkit_graInitGraphics ( JNIEnv* env, jclass clazz,
   XRectangle     rect;
   unsigned long  valueMask = GCForeground | GCBackground | GCFont | GCFunction;
 
-  DBG( AWT_GRA, printf("initGraphics: %p (%p, %d) %d,%d  %d,%d - %d,%d  %x %x %x\n",
+  DBG( AWT_GRA, printf("initGraphics: %p (%p, %d) %d,%d  %d,%d - %d,%d  %p %x %x\n",
 				 gr, tgt,tgtType, xOff,yOff, xClip,yClip,wClip,hClip, fnt,fg,bg));
 
   if ( tgt ) {
@@ -656,7 +656,7 @@ drawAlphaImage ( Graphics* gr, Image* img,
   unsigned long dpix, spix, bgpix = 0;
   int    sr, sg, sb, dr, dg, db;
 
-  DBG( AWT_GRA, printf("drawAlphaImage: %p %p (%p, %x),  %d,%d  %d,%d  %d,%d  %x\n",
+  DBG( AWT_GRA, printf("drawAlphaImage: %p %p (%p, %p),  %d,%d  %d,%d  %d,%d  %x\n",
 				 gr, img, img->xImg, img->alpha, srcX, srcY, dstX, dstY, width, height, bgval));
 
   if ( !img ) return;
@@ -741,7 +741,7 @@ Java_java_awt_Toolkit_graDrawImage ( JNIEnv* env, jclass clazz, Graphics* gr, Im
 {
   XGCValues values;
 
-  DBG( AWT_GRA, printf("drawImage: %p %p (%p,%p,%x %d,%d) %d,%d, %d,%d, %d,%d, %x\n",
+  DBG( AWT_GRA, printf("drawImage: %p %p (%p,%p,%p %d,%d) %d,%d, %d,%d, %d,%d, %x\n",
 				 gr, img,  img->xImg,img->xMask,img->alpha,  img->width,img->height,
 				 srcX,srcY,  dstX,dstY,	 width,height, bgval));
 

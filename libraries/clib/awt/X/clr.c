@@ -608,11 +608,11 @@ initColorMapping ( JNIEnv* env, jclass clazz,  Toolkit* X )
   Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
 
   DBG( AWT_CLR, printf("X visual:\n"));
-  DBG( AWT_CLR, printf("  id:          %d\n", v->visualid));
+  DBG( AWT_CLR, printf("  id:          %ld\n", v->visualid));
   DBG( AWT_CLR, printf("  class:       %d\n", v->class));
-  DBG( AWT_CLR, printf("  red_mask     %x\n", v->red_mask));
-  DBG( AWT_CLR, printf("  green_mask   %x\n", v->green_mask));
-  DBG( AWT_CLR, printf("  blue_mask    %x\n", v->blue_mask));
+  DBG( AWT_CLR, printf("  red_mask     %lx\n", v->red_mask));
+  DBG( AWT_CLR, printf("  green_mask   %lx\n", v->green_mask));
+  DBG( AWT_CLR, printf("  blue_mask    %lx\n", v->blue_mask));
   DBG( AWT_CLR, printf("  bits_per_rgb %x\n", v->bits_per_rgb));
   DBG( AWT_CLR, printf("  map_entries  %d\n", v->map_entries));
 

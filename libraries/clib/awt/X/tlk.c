@@ -52,7 +52,7 @@ xErrorHandler ( Display *dsp, XErrorEvent *err )
   XGetErrorDatabaseText( dsp, "XRequest", key, "", buf, sizeof( buf));
 
   DBG( AWT, printf("  request:    %s\n", buf));
-  DBG( AWT, printf("  resource:   %p\n", err->resourceid));
+  DBG( AWT, printf("  resource:   %lx\n", err->resourceid));
 
   //DBG( AWT, (*JniEnv)->ThrowNew( JniEnv, AWTError, "X error occured"));
 

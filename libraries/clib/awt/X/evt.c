@@ -493,7 +493,7 @@ clientMessage ( JNIEnv* env, Toolkit* X )
   else if ( X->event.xclient.message_type == FORWARD_FOCUS ) {
 	switch ( X->event.xclient.data.l[0] ){
 	case FWD_SET:
-	  DBG( AWT_EVT, printf("FWD_SET: %x (%d) %x\n", X->event.xany.window, X->srcIdx, X->windows[X->srcIdx].owner));
+	  DBG( AWT_EVT, printf("FWD_SET: %lx (%d) %lx\n", X->event.xany.window, X->srcIdx, X->windows[X->srcIdx].owner));
 
 	  if ( (X->srcIdx != X->fwdIdx) && (X->focus == X->windows[X->srcIdx].owner) ){
 		X->fwdIdx = X->srcIdx;
@@ -506,7 +506,7 @@ clientMessage ( JNIEnv* env, Toolkit* X )
 	  }
 
 	case FWD_CLEAR:
-	  DBG( AWT_EVT, printf("FWD_CLEAR: %x (%d) %x\n", X->event.xany.window, X->srcIdx, X->windows[X->srcIdx].owner));
+	  DBG( AWT_EVT, printf("FWD_CLEAR: %lx (%d) %lx\n", X->event.xany.window, X->srcIdx, X->windows[X->srcIdx].owner));
 
 	  if ( X->fwdIdx >= 0 ) {
 		resetFocusForwarding( X);
@@ -518,7 +518,7 @@ clientMessage ( JNIEnv* env, Toolkit* X )
 	  }
 
 	case FWD_REVERT:
-	  DBG( AWT_EVT, printf("FWD_REVERT: %x\n", X->event.xany.window));
+	  DBG( AWT_EVT, printf("FWD_REVERT: %lx\n", X->event.xany.window));
 	  if ( X->event.xany.window == X->focus ) {
 		resetFocusForwarding( X);
 		return (*env)->CallStaticObjectMethod( env, FocusEvent, getFocusEvent,
@@ -720,7 +720,7 @@ Java_java_awt_Toolkit_evtGetNextEvent ( JNIEnv* env, jclass clazz )
 	}
   }
 
-  DBG( AWT_EVT, printf("..getNextEvent: %d (%s) %d, %x, %x\n",
+  DBG( AWT_EVT, printf("..getNextEvent: %d (%s) %d, %p, %lx\n",
 				 X->evtId, eventStr( X->evtId), X->srcIdx, jEvt, X->event.xany.window));
 
   return jEvt;
@@ -738,7 +738,7 @@ Java_java_awt_Toolkit_evtPeekEvent ( JNIEnv* env, jclass clazz )
 	  X->preFetched = 1;
   }
 
-  DBG( AWT_EVT, printf("..peekEvent: %s %x, %x\n", eventStr(X->evtId), jEvt, X->event.xany.window));
+  DBG( AWT_EVT, printf("..peekEvent: %s %p, %lx\n", eventStr(X->evtId), jEvt, X->event.xany.window));
   return jEvt;
 }
 
@@ -809,7 +809,7 @@ Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env, jclass clazz, Window wnd 
    */
   int i = getSourceIdx( X, wnd);
 
-  DBG( AWT_EVT, printf("registerSource( %p) -> %d\n", wnd, i));
+  DBG( AWT_EVT, printf("registerSource( %lx) -> %d\n", wnd, i));
 
   return i;
 }
@@ -829,7 +829,7 @@ Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env, jclass clazz, Window wn
   if ( X->lastWindow == wnd )
 	X->lastWindow = 0;
 
-  DBG( AWT_EVT, printf("unregisterSource( %p) -> %d\n", wnd, i));
+  DBG( AWT_EVT, printf("unregisterSource( %lx) -> %d\n", wnd, i));
 
   return i;
 }
