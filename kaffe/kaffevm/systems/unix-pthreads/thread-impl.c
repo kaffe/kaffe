@@ -22,6 +22,10 @@
 #include "debug.h"
 #include "md.h"
 
+#ifndef MAINSTACKSIZE
+#define MAINSTACKSIZE (1024*1024)
+#endif
+
 static char stat_act[]   = { ' ', 'a' };
 static char stat_susp[]  = { ' ', 's', ' ', 'r', ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
 static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', ' ' };

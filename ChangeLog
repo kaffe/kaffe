@@ -1,5 +1,9 @@
 2004-07-08  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c: Compilation fixes.
+
+2004-07-08  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* config/i386/linux/md.[ch]: Fixed use of stack base/end.
 
 	* kaffe/kaffevm/external.c
