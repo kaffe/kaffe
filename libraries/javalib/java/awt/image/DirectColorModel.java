@@ -56,6 +56,9 @@ final public int getGreenMask() {
 }
 
 static int getOffset( int mask) {
+	if (mask == 0) {
+		return (0);
+	}
 	int offs = 0;
 	for (; (mask & 1) == 0; mask >>>= 1, offs++);
 	for (; (mask & 1) != 0; mask >>>= 1, offs++);
