@@ -1,3 +1,11 @@
+Wed May  8 18:55:22 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* kaffe/xprof/xprofiler.c: removed profiling support for extra
+	symbols. It caused compile errors.
+	(extraProfiles) removed.
+	(xExtraSymbols) removed.
+	(xRecordExtras) removed.
+	(xProfileStage) removed calls to xExtraSymbols and xRecordExtras.
+
 Wed May  8 15:47:30 CEST 2002 Tim Stack <stack@cs.utah.edu>
 	* config/Makefile.am,
 	config/Makefile.in,

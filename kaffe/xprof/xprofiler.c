@@ -68,8 +68,6 @@ char *kaffe_syms_filename = "kaffe-jit-symbols.s";
 
 /* Debugging file for profiler symbols */
 struct debug_file *profiler_debug_file = 0;
-static struct xprofiler_extra *extraProfiles = 0;
-
 static int extraProfileCount = 0;
 
 /* Number of call_arc structures to preallocate */
@@ -316,43 +314,6 @@ void xProfilingOff(void)
 #endif
 }
 
-static
-void xExtraSymbols(struct gmon_file *gf)
-{
-	struct xprofiler_extra *xe;
-	char *pos;
-	
-	pos = gf->gf_high - (extraProfileCount * HISTFRACTION);
-	addDebugInfo(profiler_debug_file,
-		     DIA_FunctionSymbolS, "_jit_end_", pos, -1,
-		     DIA_DONE);
-	xe = extraProfiles;
-	while( xe )
-	{
-		addDebugInfo(profiler_debug_file,
-			     DIA_FunctionSymbolS, xe->name, pos, -1,
-			     DIA_DONE);
-		pos += (xe->sampleCount * HISTFRACTION);
-		xe = xe->next;
-	}
-}
-
-static
-void xRecordExtras(struct gmon_file *gf)
-{
-	struct xprofiler_extra *xe;
-	char *pos;
-
-	pos = gf->gf_high - (extraProfileCount * HISTFRACTION);
-	xe = extraProfiles;
-	while( xe )
-	{
-		xe->handler(gf, pos);
-		pos += (xe->sampleCount * HISTFRACTION);
-		xe = xe->next;
-	}
-}
-
 void xProfileStage(char *stage_name)
 {
 	char *low, *high, *filename;
@@ -394,8 +355,6 @@ void xProfileStage(char *stage_name)
 			/* The low/high might be aligned by writeGmonRecord */
 			low = gf->gf_low;
 			high = gf->gf_high;
-			/* Dump any extra symbols */
-			xExtraSymbols(gf);
 			walkMemorySamples(kaffe_memory_samples,
 					  low,
 					  high -
@@ -404,12 +363,8 @@ void xProfileStage(char *stage_name)
 					  profilerSampleWalker);
 			if( pgf.pgf_file )
 			{
-				/* Record extra samples */
-				xRecordExtras(pgf.pgf_file);
 				/* Dump out the call graph data */
 				writeCallGraph(kaffe_call_graph, pgf.pgf_file);
-				/* Record extra cg data */
-				xRecordExtras(pgf.pgf_file);
 				deleteGmonFile(pgf.pgf_file);
 			}
 			else
