@@ -1,3 +1,34 @@
+2000-12-02  Edouard G. Parmelan  <egp@free.fr>
+
+	* kaffe/kaffevm/stackTrace.c (buildStackTrace): Add error message
+	when allocation of stacktrace fail.
+
+	* kaffe/kaffevm/exception.c (error2Throwable): Add new return
+	parameter to know if exception was freshly created.
+	(throwError): Use throwFreshException() when possible.
+	(throwException): Direct call dispatchException to avoid rebuild
+	stacktrace in throwExternalException().
+	(throwFreshException): New optimizing function to avoid rebuild
+	stacktrace when it's not need.
+	(dispatchException): Add assert() if baseframe is null.
+
+	* kaffe/kaffevm/exception.h: Declare throwFreshException() and add
+	parameter to error2Throwable().
+
+	* kaffe/kaffevm/jni.c, kaffe/kaffevm/locks.c,
+	kaffe/kaffevm/lookup.c, kaffe/kaffevm/soft.c,
+	kaffe/kaffevm/support.c, kaffe/kaffevm/thread.c,
+	kaffe/kaffevm/intrp/machine.c, kaffe/kaffevm/jit3/machine.c,
+	libraries/clib/native/Class.c, libraries/clib/native/Method.c: Use
+	throwFreshException() when possible.
+
+	* test/regression/IndexTest.java,
+	test/regression/InvTarExcTest.java: Fix stacktrace, side effect of
+	throwFreshException().
+
+	* libraries/javalib/kaffe/io/ByteToCharEUC_JP.java: Some fixes
+	submited by Ito Kazumitsu <kaz@maczuka.gcd.org>.
+
 2000-11-30  Edouard G. Parmelan  <egp@free.fr>
 
 	* config/config-mem.h, libraries/clib/awt/X/toolkit.h: Move
