@@ -1,3 +1,69 @@
+2001-06-17  Edouard G. Parmelan  <egp@free.fr>
+
+	* kaffe/kaffevm/jni.c, kaffe/kaffevm/kaffe.def,
+	kaffe/kaffevm/jit/icode.c, kaffe/kaffevm/jit/labels.c,
+	kaffe/kaffevm/jit/labels.h, kaffe/kaffevm/jit/machine.c,
+	kaffe/kaffevm/jit3/icode.c, kaffe/kaffevm/jit3/labels.c,
+	kaffe/kaffevm/jit3/labels.h, kaffe/kaffevm/jit3/machine.c,
+	config/alpha/jit-alpha.def, config/alpha/jit-icode.h,
+	config/arm/jit-arm.def, config/arm/jit-icode.h,
+	config/arm/jit3-arm.def, config/arm/jit3-icode.h,
+	config/i386/jit-i386.def, config/i386/jit-icode.h,
+	config/i386/jit3-i386.def, config/i386/jit3-icode.h,
+	config/m68k/jit-icode.h, config/m68k/jit-m68k.def,
+	config/m68k/jit3-icode.h, config/m68k/jit3-m68k.def,
+	config/mips/jit3-icode.h, config/mips/jit3-mips.def,
+	config/sparc/jit-icode.h, config/sparc/jit-sparc.def: alway emit
+	epilogue at end of function.  ret() jump to epilogue.  Add
+	neg_float and neg_double for sparc.
+
+	* config/sparc/threads.h: bump size of stack to 48K in intrepreter
+	mode.
+
+	* developers/gdbinit: add Godmar's repeatrun gdb user function
+	modified to use previous run arguments.
+
+	* kaffe/kaffevm/stackTrace.c: add better debuging traces.
+
+	* kaffe/kaffevm/intrp/machine.c: Initialize java-stack with well
+	known values in debug mode.
+
+	* test/regression/ClassGC.java: Add magic comment to compile
+	ClassGCTest.java and ClassGCTestLater.java.
+
+	* test/regression/ThreadState.java: Add watchdog thread.
+
+	* kaffe/kaffevm/locks.c: Import TVT fix on calling jmalloc().
+
+	* config/mips/jit.h, config/mips/netbsd1/md.h,
+	config/mips/netbsd1/md.c, config/mips/netbsd1/jit-md.h,
+	config/mips/netbsd1/jit3-md.h: NetBSD MIPS port based on Dan
+	McMahill <mcmahill@mtl.mit.edu> patches send to port-pmax
+	mailing-list.
+
+	* config/m68k/netbsd1/jit3-md.h: add JIT3 to NetBSD/m68k.
+
+	* config/config.alias: New alias for sparc.  Found in Debian
+	package.
+
+	* config/i386/beos/jit3-md.h: add JIT3 to x86/BeOS.
+
+	* config/powerpc/aix/md.h, config/powerpc/aix/md.c: alternative
+	version of COMPARE_AND_EXCHANGE without GAS.
+
+	* config/powerpc/aix/config.frag: move defined from CFLAGS to
+	CPPFLAGS.  This helps configure script.
+
+	* kaffe/kaffevm/mem/gc-mem.c: include sys/mmap.h if we use
+	function mprotect().  Discover with AIX that does not have a
+	working mmap() -- as configure said.
+
+	* config/powerpc/common.h: be SMP safe.
+
+	* config/powerpc/netbsd1/config.frag, config/powerpc/netbsd1/md.c,
+	config/powerpc/netbsd1/md.h: NetBSD PowerPC port.
+	From Yong Chen <ychen@allegronetworks.com>.
+
 Fri Jun 01 13:32:02 MDT 2001  Jason Baker  <jbaker@cs.utah.edu>
 
 	* libraries/clib/native/Field.c (getFieldAddress): get() on a
@@ -11,15 +77,14 @@ Fri Jun 01 13:32:02 MDT 2001  Jason Baker  <jbaker@cs.utah.edu>
 	verification errors in mid-basic-block more gracefully.  Try to
 	improve message about invalid max_stack/max_locals.
 
-	* kaffe/kaffevm/classPool.c (walkClassPool): Walk each class once, 
+	* kaffe/kaffevm/classPool.c (walkClassPool): Walk each class once,
 	when we hit the entry for its defining loader, rather than once
 	for each initiating loader.
-	
+
 	* test/regression/ClassGC.java, test/regression/ClassGCTest.java,
-	test/regression/ClassGCTestLater.java: 
+	test/regression/ClassGCTestLater.java:
 	When we load a class from a ClassLoader, then call newInstance,
 	the class must be public.
-	
 
 2001-05-15  Edouard G. Parmelan  <egp@free.fr>
 
