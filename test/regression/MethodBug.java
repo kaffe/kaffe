@@ -1,6 +1,6 @@
 /**
  * test proper behavior of getMethod when passed null.
- * Submitted by Moses Jong <dejong@cs.umn.edu>
+ * Submitted by Moses DeJong <dejong@cs.umn.edu>
  */
 import java.lang.reflect.*;
 import java.util.*;

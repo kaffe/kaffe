@@ -1,6 +1,6 @@
 /*
  * tests that listener types are properly set and printed.
- * Submitted by Moses Jong <dejong@cs.umn.edu>
+ * Submitted by Moses DeJong <dejong@cs.umn.edu>
  */
 import java.lang.reflect.*;
 import java.beans.*;
