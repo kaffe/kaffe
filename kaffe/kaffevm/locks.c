@@ -74,7 +74,7 @@ dumpObjectLocks(void)
  */
 static
 iLock*
-getHeavyLock(iLock** lkp, iLock *heavyLock)
+getHeavyLock(iLock* volatile * lkp, iLock *heavyLock)
 {
 	iLock* old;
 	iLock* lk;
@@ -113,7 +113,7 @@ DBG(SLOWLOCKS,
 			lk = (iLock*)(((uintp)old) & (uintp)-2);
 		}
 		else {
-			if (lk == 0) {
+			if (lk == LOCKFREE) {
 				/* Release the lock before we go into malloc.
 				 * We have to reclaim the lock afterwards (at beginning
 				 * of loop)
@@ -197,7 +197,7 @@ DBG(SLOWLOCKS,
 		jthread_get_data(cur)->nextlk = lk->mux;
 		lk->mux = cur;
 		putHeavyLock(lkp, lk);
-		ksemGet(&jthread_get_data(cur)->sem, 0);
+		ksemGet(&jthread_get_data(cur)->sem, (jlong)0);
 	}
 }
 
@@ -347,7 +347,7 @@ DBG(SLOWLOCKS,
 		/* Not on list - so must have been signalled after all -
 		 * decrease the semaphore to avoid problems.
 		 */
-		ksemGet(&jthread_get_data(cur)->sem, 0);
+		ksemGet(&jthread_get_data(cur)->sem, (jlong)0);
 
 		found:;
 		putHeavyLock(lkp, lk);
