@@ -724,7 +724,8 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz, errorInfo
 
 	/* Before generating code, try to guess how much space we'll need. */
 	codeblock_size = ALLOCCODEBLOCKSZ;
-	codeblock = gc_malloc(codeblock_size + CODEBLOCKREDZONE, GC_ALLOC_JITTEMP);
+	codeblock = gc_malloc(codeblock_size + CODEBLOCKREDZONE,
+			      GC_ALLOC_JIT_CODEBLOCK);
 	if (codeblock == 0) {
 		postOutOfMemory(einfo);
 		return (false);
@@ -761,7 +762,7 @@ generateInsnSequence(errorInfo* einfo)
 			new_codeblock = gc_realloc(codeblock,
 						   codeblock_size +
 						   CODEBLOCKREDZONE,
-						   GC_ALLOC_JITTEMP);
+						   GC_ALLOC_JIT_CODEBLOCK);
 			if (new_codeblock == NULL) {
 				gc_free(codeblock);
 				codeblock = NULL;
@@ -978,7 +979,7 @@ createSpillMask(void)
 #endif
 
 	c++; /* Add null slot on the end */
-	mem = gc_malloc(c * sizeof(SlotData*), GC_ALLOC_JITCODE);
+	mem = gc_malloc(c * sizeof(SlotData*), GC_ALLOC_JIT_SLOTS);
 
 	i = maxLocal + maxStack + tmpslot;
 	c = 0;
@@ -1121,7 +1122,7 @@ setupGlobalRegisters(void)
 	}
 
 	/* Allocate an array for the slot pointers and copy them in */
-	slots = gc_malloc((1+maxLocal) * sizeof(SlotInfo*), GC_ALLOC_JITCODE);
+	slots = gc_malloc((1+maxLocal) * sizeof(SlotInfo*), GC_ALLOC_JIT_SLOTS);
 	for (j = 0; j < maxLocal; j++) {
 		slots[j] = &localinfo[j];
 	}
@@ -1212,7 +1213,7 @@ jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 		arraydims = array;
 	}
 	else {
-		arraydims = checkPtr(gc_calloc(dims+1, sizeof(int), GC_ALLOC_JITCODE));
+		arraydims = checkPtr(gc_calloc(dims+1, sizeof(int), GC_ALLOC_JITTEMP));
 	}
 
 	/* Extract the dimensions into an array */
@@ -1326,7 +1327,7 @@ newFakeCall(void* func, uintp currpc)
 	{
 		fc = GC_malloc(main_collector,
 			       sizeof(fakeCall),
-			       GC_ALLOC_JITCODE);
+			       GC_ALLOC_JIT_FAKE_CALL);
 	}
 #if defined(HAVE_branch_and_link)
 	fc->parent = findFakeCall(func);

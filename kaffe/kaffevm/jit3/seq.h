@@ -68,6 +68,11 @@ extern sequence* 		activeSeq;
 
 #define	ALLOCSEQNR		1024
 
+typedef struct _sequencechunk {
+	struct _sequencechunk *next;
+	sequence data[ALLOCSEQNR];
+} sequencechunk;
+
 #define	seq(s)			((s)->insn)
 
 /**

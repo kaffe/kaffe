@@ -63,6 +63,9 @@ char *getLabelName(label *l)
 #endif
 
 void
+objectStatsPrint(void);
+
+void
 resetLabels(void)
 {
 	currLabel = firstLabel;
@@ -242,7 +245,7 @@ newLabel(void)
 		labelchunk *lc;
 		
 		/* Allocate chunk of label elements */
-		lc = gc_malloc(sizeof(labelchunk), GC_ALLOC_JITTEMP);
+		lc = gc_malloc(sizeof(labelchunk), GC_ALLOC_JIT_LABELS);
 		assert(lc != NULL);
 
 		lc->next = labelchunks;

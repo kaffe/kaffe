@@ -57,7 +57,14 @@ typedef void (*destroy_func_t)(struct _Collector*, void*);
 #define	GC_ALLOC_JITTEMP	21
 #define	GC_ALLOC_JAVALOADER	22
 #define	GC_ALLOC_JAR	        23
-#define	GC_ALLOC_MAX_INDEX	24
+#define	GC_ALLOC_JIT_SEQ	24
+#define	GC_ALLOC_JIT_CONST	25
+#define	GC_ALLOC_JIT_ARGS	26
+#define	GC_ALLOC_JIT_FAKE_CALL	27
+#define	GC_ALLOC_JIT_SLOTS	28
+#define	GC_ALLOC_JIT_CODEBLOCK	29
+#define	GC_ALLOC_JIT_LABELS	30
+#define	GC_ALLOC_MAX_INDEX	31
 
 /*
  * Define a COM-like GC interface.

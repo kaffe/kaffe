@@ -1,3 +1,29 @@
+2003-09-19  Timothy S. Stack <stack@cs.utah.edu>
+
+	* configure.in:
+	Add the tritonus alsa and esd libraries to the list that will be
+	linked into the executable.
+
+	* kaffe/kaffevm/gc.h,
+	kaffe/kaffevm/gcFuncs.c:
+	Add separate allocation types for temporary jitter data.
+
+	* kaffe/kaffevm/jit3/constpool.c,
+	kaffe/kaffevm/jit3/icode.c,
+	kaffe/kaffevm/jit3/labels.c,
+	kaffe/kaffevm/jit3/machine.c,
+	kaffe/kaffevm/jit3/slots.c:
+	Use separate allocation types for temporary jitter data.
+
+	* kaffe/kaffevm/jit3/seq.h,
+	kaffe/kaffevm/jit3/seq.c:
+	Change allocation behavior to free large pools of memory after
+	jitting is done.
+
+	* kaffe/xprof/callGraph.c:
+	Always write out a callgraph record, even if its out of bounds,
+	otherwise, a record might not make it into gmon file.
+
 2003-09-19  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/javax/sound/midi/MetaMessage.java,

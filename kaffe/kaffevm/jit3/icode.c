@@ -4413,7 +4413,7 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 
 		args = gc_realloc(args,
 				  sizeof(struct pusharg_info) * sz_args,
-				  GC_ALLOC_JITTEMP);
+				  GC_ALLOC_JIT_ARGS);
 		if( !args )
 		{
 			/* XXX We should be a little more graceful */

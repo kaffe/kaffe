@@ -638,6 +638,13 @@ initCollector(void)
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_REF, "gc-refs");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JITTEMP, "jit-temp-data");
         GC_registerFixedTypeByIndex(gc, GC_ALLOC_JAR, "jar");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_SEQ, "jit-seq");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_CONST, "jit-const");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_ARGS, "jit-args");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_FAKE_CALL, "jit-fake-call");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_SLOTS, "jit-slots");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_CODEBLOCK, "jit-codeblock");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_LABELS, "jit-labels");
 
 	DBG(INIT, dprintf("initCollector() done\n"); )
 	return (gc);

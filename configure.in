@@ -1238,6 +1238,7 @@ no)
 *)
 	if test x"$have_alsa" = x"yes"; then
 		ALSA_DIR=alsa
+		ALSA_LIB="\$(top_builddir)/libraries/extensions/sound/alsa/libtritonusalsa.la"
 	fi
 	;;
 esac
@@ -1253,6 +1254,7 @@ no)
 *)
 	if test x"$have_esd" = x"yes" && test x"$have_esd_h" = x"yes"; then
 		ESD_DIR=esd
+		ESD_LIB="\$(top_builddir)/libraries/extensions/sound/esd/libtritonusesd.la"
 	fi
 	;;
 esac
@@ -1265,7 +1267,9 @@ AC_ARG_ENABLE(sound,[  --disable-sound         Disable javax.sound support])
 case "$enable_sound" in
 no)
 	ALSA_DIR=""
+	ALSA_LIB=""
 	ESD_DIR=""
+	ESD_LIB=""
 	;;
 *)
 	;;
@@ -1424,6 +1428,8 @@ JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/io/libio.la \
 \$(top_builddir)/libraries/clib/zip/libzip.la \
 $MATH_LIB \
+$ALSA_LIB \
+$ESD_LIB \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
 \$(top_builddir)/libraries/clib/security/libsecurity.la \
 $AWT_LIB \

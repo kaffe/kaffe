@@ -2,7 +2,7 @@
  * callGraph.c
  * Routines for tracking the call graph of jitted code
  *
- * Copyright (c) 2000, 2001 University of Utah and the Flux Group.
+ * Copyright (c) 2000, 2001, 2003 University of Utah and the Flux Group.
  * All rights reserved.
  *
  * This file is licensed under the terms of the GNU Public License.
@@ -175,18 +175,22 @@ int writeCallGraph(struct call_graph *cg, struct gmon_file *gf)
 			{
 #if defined(KAFFE_VMDEBUG)
 			    /* FIXME: add debug code like Janos VM. */
+				dprintf("Out of bounds call arc "
+					"%p -> %p : %d\n"
+					"low: %p high: %p\n",
+					ca->ca_from,
+					ca->ca_to,
+					ca->ca_count,
+					gf->gf_low,
+					gf->gf_high);
 #endif
 			}
-			else
-			{
-				retval = writeGmonRecord(
-					gf,
-					GRA_Type, GMON_TAG_CG_ARC,
-					GRA_FromPC, ca->ca_from,
-					GRA_SelfPC, ca->ca_to,
-					GRA_Count, ca->ca_count,
-					GRA_DONE);
-			}
+			retval = writeGmonRecord(gf,
+						 GRA_Type, GMON_TAG_CG_ARC,
+						 GRA_FromPC, ca->ca_from,
+						 GRA_SelfPC, ca->ca_to,
+						 GRA_Count, ca->ca_count,
+						 GRA_DONE);
 		}
 	}
 

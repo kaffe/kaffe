@@ -15,6 +15,7 @@
 #include "seq.h"
 #include "gc.h"
 
+static sequencechunk* sequencechunks;
 sequence* firstSeq;
 sequence* lastSeq;
 sequence* currSeq;
@@ -27,6 +28,18 @@ void
 initSeq(void)
 {
 	currSeq = firstSeq;
+	while( (sequencechunks != NULL) && (sequencechunks->next != NULL) )
+	{
+		sequencechunk *sc = sequencechunks;
+
+		sequencechunks = sc->next;
+		gc_free(sc);
+	}
+	if( sequencechunks != NULL )
+	{
+		lastSeq = &sequencechunks->data[ALLOCSEQNR - 1];
+		lastSeq->next = NULL;
+	}
 }
 
 /**
@@ -39,11 +52,18 @@ nextSeq(void)
 
 	ret = currSeq;
 	if (ret == 0) {
+		sequencechunk *sc;
+		
 		int i;
 		/* Allocate chunk of sequence elements */
-		ret = gc_malloc(ALLOCSEQNR * sizeof(sequence),
-				GC_ALLOC_JITTEMP);
+		sc = gc_malloc(sizeof(sequencechunk), GC_ALLOC_JIT_SEQ);
+		assert(sc != NULL);
 
+		sc->next = sequencechunks;
+		sequencechunks = sc;
+		
+		ret = &sc->data[0];
+		
 		/* Attach to current chain */
 		if (lastSeq == 0) {
 			firstSeq = ret;
@@ -51,13 +71,12 @@ nextSeq(void)
 		else {
 			lastSeq->next = ret;
 		}
-		lastSeq = &ret[ALLOCSEQNR-1];
+		lastSeq = &sc->data[ALLOCSEQNR-1];
 
 		/* Link elements into list */
 		for (i = 0; i < ALLOCSEQNR-1; i++) {
-			ret[i].next = &ret[i+1];
+			sc->data[i].next = &sc->data[i+1];
 		}
-		ret[ALLOCSEQNR-1].next = 0;
 	}
 	currSeq = ret->next;
 	ret->lastuse = 0;
