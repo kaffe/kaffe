@@ -1,3 +1,8 @@
+Fri Aug  7 16:14:05 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/javalib/java/net/ServerSocket.java: implemented 
+	constructor ServerSocket(int, int, InetAddress).
+
 Fri Aug  7 11:47:04 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
 
 	* libraries/javalib/java/io/BufferedOutputStream.java: don't call 
