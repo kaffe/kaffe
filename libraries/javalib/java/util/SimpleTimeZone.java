@@ -425,6 +425,9 @@ public class SimpleTimeZone extends TimeZone
    */
   private int checkRule(int month, int day, int dayOfWeek)
   {
+    if (month < 0 || month > 11)
+      throw new IllegalArgumentException("month out of range");
+
     int daysInMonth = getDaysInMonth(month, 1);
     if (dayOfWeek == 0)
       {
