@@ -76,8 +76,8 @@ public class Handler extends URLStreamHandler
     String host = url.getHost();
     if ((host != null) && (! host.equals("")))
       {
-        throw new IOException("ftp protocol handler not yet implemented.");
-        /*
+//        throw new IOException("ftp protocol handler not yet implemented.");
+//        /*
 	// Reset the protocol (and implicitly the handler) for this URL.
 	// Then have the URL attempt the connection again, as it will
 	// get the changed handler the next time around.
@@ -86,7 +86,7 @@ public class Handler extends URLStreamHandler
 	// Until the ftp protocol handler is written, this will cause
 	// a NullPointerException.
 	return url.openConnection();
-	*/
+//	*/
       }
 
     return new Connection(url);

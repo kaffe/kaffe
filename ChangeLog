@@ -1,5 +1,19 @@
 2004-01-12  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/inet/ftp/Handler.java:
+	New file.
+
+	* libraries/javalib/profiles/default/inet.files:
+	Added gnu/inet/ftp/Handler.java.
+
+	* libraries/javalib/gnu/java/net/protocol/file/Handler.java
+	(openConnection): Attempt to open an FTP connection if necessary.
+
+	* libraries/javalib/java/net/URL.java
+	(DEFAULT_SEARCH_PATH): Added gnu.inet.
+
+2004-01-12  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/GridBagLayout.java:
 	Replaced by implementation from GNU Classpath. 
 

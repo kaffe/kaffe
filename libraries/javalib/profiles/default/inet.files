@@ -11,6 +11,7 @@ gnu/inet/ftp/FTPException.java
 gnu/inet/ftp/FTPResponse.java
 gnu/inet/ftp/FTPURLConnection.java
 gnu/inet/ftp/FTPURLStreamHandler.java
+gnu/inet/ftp/Handler.java
 gnu/inet/ftp/PassiveModeDTP.java
 gnu/inet/ftp/StreamInputStream.java
 gnu/inet/ftp/StreamOutputStream.java
