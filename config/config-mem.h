@@ -24,6 +24,7 @@
 #include <memory.h>
 #endif
 #if defined(HAVE_MMAP)
+#include <sys/types.h>
 #include <sys/mman.h>
 #endif
 
