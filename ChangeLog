@@ -1,3 +1,9 @@
+Thu Dec  3 04:52:14 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/clib/native/Throwable.c: include stdlib.h before
+ 	native.h, otherwise jmalloc.h will define malloc, calloc and free
+ 	before config-std.h includes stdlib.h
+
 Wed Dec  2 17:03:10 1998  Jason Baker  <jbaker@cs.utah.edu>
 
 	* config/i386/common.h: work-around for gcc/PIC register trashing bug.
