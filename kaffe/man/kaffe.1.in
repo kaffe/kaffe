@@ -120,15 +120,12 @@ Kaffe is available from various sites, the primary one being
 
 There are several mailing lists for Kaffe:
 .TP 
-.I kaffe@rufus.w3.org
+.I kaffe@kaffe.org
 General Kaffe discussions
 .TP
-.I kaffe\-announce@rufus.w3.org
+.I kaffe\-announce@kaffe.org
 Kaffe related announcements
 .LP
-To subscribe to these lists send a message containing the word "subscribe"
-to
-.IR <listname>\-request@rufus.w3.org
 .SH BUGS
 See the file FAQ.Known-Bugs for an updated list.
 .SH AUTHOR

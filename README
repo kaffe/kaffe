@@ -1,11 +1,11 @@
  
-			 ==================
+			 ===================
 
-			 KAFFE OpenVM 1.0.6
+			 Kaffe (CVS Version)
 
-			 ==================
+			 ===================
 
-This is "Kaffe OpenVM", a complete virtual machine and class library
+This is "Kaffe", a complete virtual machine and class library
 set which allows the execution of Java code.  It comes with a virtual
 machine and a set of class libraries including beans, and an AWT
 graphics system.
@@ -65,21 +65,17 @@ behind recent changes.  If you wanted to update these ports feel free:
 Who can use Kaffe?
 ------------------
 
-Kaffe OpenVM is distributed under the GPL (GNU Public License).  Please
-read the license to make sure it's okay to use it in your circumstances.  If
-not, you can always contact us at Transvirtual and ask about alternatives.
+Kaffe is distributed under the GPL (GNU Public License).  Please
+read the license to make sure it's okay to use it in your circumstances.
+
 
 Where do I find new copies of Kaffe?
 ------------------------------------
 
-Kaffe is available from various sites.  The primary sites are:
+Kaffe is available from various sites.  The primary sites is:
 
-        ftp://ftp.transvirtual.com/pub/kaffe/
+        ftp://ftp.kaffe.org/pub/kaffe
 
-While Kaffe is being developed, look for daily snapshots of the latest
-version, including the most recent bug fixes, at:
-
-        ftp://ftp.transvirtual.com/pub/kaffe/kaffe-snap.tar.gz
 
 What about a web site?
 ----------------------
@@ -88,9 +84,6 @@ News about the "Open Source" Kaffe distribution can always be found at:
 
 	http://www.kaffe.org/
 
-and also at:
-
-	http://www.transvirtual.com/
 
 And mailing lists?
 ------------------
@@ -98,26 +91,21 @@ And mailing lists?
 A couple of mailing lists are available for information and discussion of
 the Kaffe project.  These lists are:
   
-        kaffe@rufus.w3.org                          - General discussions
-        kaffe-announce@rufus.w3.org                 - Announcements
+        kaffe@kaffe.org                             - General discussions
+        kaffe-announce@kaffe.org                    - Announcements
 
-These lists are archived at:
+In order to subscribe or unsubscribe, or to view the archives, please go
+to the website at:
 
-	http://rufus.w3.org/tools/Kaffe/messages/
+	http://www.kaffe.org/
 
-To subscribe to these lists send a message containing the word "subscribe"
-to either:
-        
-        kaffe-request@rufus.w3.org
-        kaffe-announce-request@rufus.w3.org
-  
-depending on what you are interested in.
 
 How do I report bugs and problems?
 ----------------------------------
 
-Go the website http://www.kaffe.org and you'll find a link to our bug-tracking
-system.  We now use Jitterbug (from those awfully nice Samba people).
+Go the website http://www.kaffe.org and you'll find information on how to
+report bugs.
+
 
 How do I compile and install kaffe?
 -----------------------------------
@@ -141,24 +129,23 @@ Note: if you downloaded a snapshot or checked out this version of kaffe
 from the CVS, you will need GNU make ("gmake") in order to build Kaffe.
 If this is a distribution, it should work with your normal make.
 
-By default, the system will install into the /usr/local hierarchy as per
-the standard GNU coding rules.  This can be changed using the --prefix
+By default, the system will install into the /usr/local/kaffe hierarchy as
+per the standard GNU coding rules.  This can be changed using the --prefix
 option to configure.  To install the binaries type "make install".
 
-To avoid conflicts with Javasoft's products, Kaffe can be reconfigured in a
-number of ways:
+Kaffe can be reconfigured in a number of ways:
 
 1. Use --program-prefix, --program-suffix or --program-transform-name
    configure option to prepend or append a string, or edit (with a sed
    command) all command names.
 2. Use the --prefix configure option to place the kaffe installation tree
-   somewhere other than /usr/local.
+   somewhere other than /usr/local/kaffe.
 
 For Windows 9x/NT it's a little different.
 
-The only 'working' port to Windows '95 uses Cygnus's GNU tools for
-Windows (available from http://sourceware.cygnus.com/cygwin - don't
-ask me how to install them!)
+The only 'working' port to Windows '95 uses Red Hat's GNU tools for
+Windows (available from http://www.cygwin.com/ - don't ask me how to 
+install them!)
 
 To configure you would type the following:
 
@@ -174,9 +161,9 @@ Running Kaffe
 
 No environment configuration is necessary to run kaffe.  However, you may 
 want to include the directory in which kaffe is installed in your path.  
-Typically, this would be /usr/local/bin:
+Typically, this would be /usr/local/kaffe/bin:
 
-        PATH=$PATH:/usr/local/bin
+        PATH=$PATH:/usr/local/kaffe/bin
 
 All necessary setup is taken care of by `kaffe' (note the lower case),
 which is actually a driver shell script for the `Kaffe' executable.
@@ -191,9 +178,8 @@ If you want to test the kaffe executable you built, type
 tests to check that your Kaffe executable is in fact working.
 
 
-The Kaffe Core Team
-<kaffe@rufus.w3.org>
+The Kaffe Team
+<kaffe@kaffe.org>
 ----
 * Java and Javasoft are registered trademark of Sun Microsystems, Inc.
-* Kaffe, and Kaffe OpenVM are registered trademarks of Transvirtual
-  Technologies, Inc.
+* Kaffe is a registered trademark of Transvirtual Technologies, Inc.
