@@ -6,3 +6,4 @@ ziptest2.zip
 .cvsignore
 *.class
 *.out
+ExceptionTest
