@@ -162,7 +162,7 @@ private boolean readKeyAndValue(PushbackInputStream in) throws IOException {
 		switch (ch) {
 			case '#':
 			case '!':
-				while ((ch = in.read()) != '\n');
+				while ((ch = in.read()) != -1 && ch != '\n');
 				continue;
 			case -1:
 				return false;
