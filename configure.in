@@ -43,7 +43,6 @@ LIBS="$CTLIBS $LIBS"
 
 dnl Find the compiler early on in case we need to override.
 AC_PROG_CC
-AC_PROG_CXX
 
 dnl If gcc is the compiler, compile with -Wall for lots of warnings
 if test "$GCC" = "yes"; then
@@ -661,6 +660,7 @@ dnl Do we enable GCJ support
 dnl -------------------------------------------------------------------------
 
 if test "x$enable_gcj" != "xno"; then
+  AC_PROG_CXX
   enable_gcj=no # pessimist
 
   have_recent_gcc=yes # optimist
@@ -685,6 +685,7 @@ fi
 AC_ARG_ENABLE(gcj,[  --disable-gcj           Disable GCJ support])
 AC_MSG_CHECKING([whether to enable GCJ support])
 AC_MSG_RESULT($enable_gcj)
+AM_CONDITIONAL(HAVE_GCJ_SUPPORT, test "$enable_gcj" = "yes")
 
 dnl -------------------------------------------------------------------------
 
