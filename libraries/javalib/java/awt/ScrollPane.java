@@ -249,7 +249,7 @@ public void focusLost ( FocusEvent e ) {
 		vScroll.setBackground( Defaults.BtnClr);
 }
 
-public Adjustable getHAdjustable () {
+public java.awt.Adjustable getHAdjustable () {
 	return hScroll;
 }
 
@@ -265,7 +265,7 @@ public int getScrollbarDisplayPolicy () {
 	return policy;
 }
 
-public Adjustable getVAdjustable () {
+public java.awt.Adjustable getVAdjustable () {
 	return vScroll;
 }
 
