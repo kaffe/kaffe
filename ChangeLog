@@ -1,3 +1,21 @@
+2004-08-04  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/nio/SelectorImpl.c: Added missing includes.
+
+	* libraries/javalib/bootstrap.classlist: Addes missing 
+	gnu/java/nio/SelectorImpl.class.
+
+        * include/Makefile.am: Generate header file for
+	gnu/java/nio/SelectorImpl.class.
+
+        * include/Makefile.in,
+        libraries/javalib/Klasses.jar.bootstrap,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in:
+	Regenerated.
+
+	Reported by: jrandom.
+
 2004-08-04  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/clib/awt/X/Makefile.am: Changed X_FLAGS into X_CFLAGS.

@@ -337,6 +337,7 @@ java/security/MessageDigestSpi.class
 gnu/java/nio/VMSelector.class
 gnu/java/nio/NIOServerSocket.class
 gnu/java/nio/channels/FileChannelImpl.class
+gnu/java/nio/SelectorImpl.class
 java/nio/channels/FileChannel.class
 java/nio/channels/spi/AbstractInterruptibleChannel.class
 java/nio/channels/spi/AbstractSelector.class

@@ -7,13 +7,15 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
- 
+
 #include "config.h"
 #include "config-std.h"
 #include "config-io.h"
 #include "files.h"
 #include "gnu_java_nio_SelectorImpl.h"
 #include "jsyscall.h"
+#include "native.h"
+#include "Arrays.h"
 
 static void checkInSelectTable(HArrayOfInt* fdArray, fd_set *set, int *num_fd)
 {
