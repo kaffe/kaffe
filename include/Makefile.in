@@ -756,7 +756,7 @@ uninstall-am: uninstall-includeHEADERS uninstall-info-am \
 	uninstall-nodist_pkgincludeHEADERS uninstall-pkgincludeHEADERS
 
 @USE_COMPAT_IFADDRS_TRUE@ifaddrs.h: ifaddrs_compat.h
-@USE_COMPAT_IFADDRS_TRUE@	$(LN_S) $< $@
+@USE_COMPAT_IFADDRS_TRUE@	$(LN_S) $(top_srcdir)/include/ifaddrs_compat.h ifaddrs.h
 
 stamp-kaffeh:
 	@test -x $(KAFFEH) || ($(MAKE_KAFFEH))

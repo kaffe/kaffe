@@ -148,7 +148,7 @@ JNI_DERIVED_HDRS = $(INSTALL_JNI_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS)
 if USE_COMPAT_IFADDRS
 ifaddrs_compat = ifaddrs.h
 ifaddrs.h: ifaddrs_compat.h
-	$(LN_S) $< $@
+	$(LN_S) $(top_srcdir)/include/ifaddrs_compat.h ifaddrs.h
 else
 ifaddrs_compat = #
 endif

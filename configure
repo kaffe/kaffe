@@ -47786,6 +47786,8 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files kaffe/scripts/compat/javadoc"
 
+          ac_config_files="$ac_config_files po/Makefile.in"
+
           ac_config_files="$ac_config_files test/Makefile"
 
           ac_config_files="$ac_config_files test/internal/Makefile"
@@ -48582,6 +48584,7 @@ do
   "kaffe/scripts/compat/javac" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/compat/javac" ;;
   "kaffe/scripts/compat/appletviewer" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/compat/appletviewer" ;;
   "kaffe/scripts/compat/javadoc" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/compat/javadoc" ;;
+  "po/Makefile.in" ) CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   "test/internal/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/internal/Makefile" ;;
   "test/regression/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/regression/Makefile" ;;

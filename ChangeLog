@@ -1,3 +1,23 @@
+2004-01-18  Dalibor Topic <robilad@kaffe.org>
+
+	* include/Makefile.am
+	[USE_COMPAT_IFADDRS]: Replaced GNU Make specific construct.
+
+	* include/Makefile.in:
+	Regenerated.
+
+	Reported by: Riccardo Mottola <zuse@libero.it>
+
+	* configure.in
+	(AC_CONFIG_FILES): Added po/Makefile.in.
+
+	* Makefile.in,
+	configure:
+	Regenerated.
+
+	Reported by: Ito Kazumitsu <kaz@maczuka.gcd.org>
+                     Matthias Pfisterer <Matthias.Pfisterer@web.de>
+
 2004-01-17  Dalibor Topic <robilad@kaffe.org>
 
 	* config/parisc/sysdepCallMethod.h:
