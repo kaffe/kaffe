@@ -1,24 +1,23 @@
+
 /*
  * Java core library component.
  *
- * Copyright (c) 1998
+ * Copyright (c) 1998, 1999
+ *      Archie L. Cobbs.  All rights reserved.
+ * Copyright (c) 1998, 1999
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
+ *
+ * Author: Archie L. Cobbs <archie@whistle.com>
  */
 
 package java.lang;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class ThreadLocal {
-
-	/*
-	 * Since you can't store null as the value in a hashtable,
-	 * we use this object to represent a value of null.
-	 */
-	private static final Object NULL_VALUE = new Object();
 
 	protected Object initialValue() {
 		return null;
@@ -33,17 +32,20 @@ public class ThreadLocal {
 	}
 
 	Object get(Thread thread) {
-		Hashtable h = thread.getThreadLocals();
-		if (!h.containsKey(this)) {
-			set(thread, initialValue());
+		HashMap map = thread.getThreadLocals();
+		synchronized (map) {
+			if (!map.containsKey(this)) {
+				set(thread, initialValue());
+			}
+			return map.get(this);
 		}
-		Object value = h.get(this);
-		return value == NULL_VALUE ? null : value;
 	}
 
 	void set(Thread thread, Object value) {
-		thread.getThreadLocals().put(this,
-			value == null ? NULL_VALUE : value);
+		HashMap map = thread.getThreadLocals();
+		synchronized (map) {
+			map.put(this, value);
+		}
 	}
 }
 

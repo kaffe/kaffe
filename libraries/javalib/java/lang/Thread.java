@@ -11,8 +11,8 @@
 package java.lang;
 
 import java.lang.Throwable;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Iterator;
 import kaffe.lang.Application;
 import kaffe.lang.ApplicationResource;
 
@@ -39,7 +39,7 @@ private kaffe.util.Ptr jnireferences;
 private Throwable stackOverflowError;
 private Throwable outOfMemoryError;
 private boolean started, dying;
-private Hashtable threadLocals;
+private HashMap threadLocals;
 private Object suspendResume;
 private Object sleeper;
 private Object holder;
@@ -99,11 +99,15 @@ public Thread(ThreadGroup group, Runnable target, String name) {
 	 * Inherit all inheritable thread-local variables from parent to child
 	 */
 	if (parent.threadLocals != null) {
-		for (Enumeration e = parent.threadLocals.keys(); e.hasMoreElements(); ) {
-			Object key = e.nextElement();
-			if (key instanceof InheritableThreadLocal) {
-				InheritableThreadLocal i = (InheritableThreadLocal) key;
-				i.set(this, i.childValue(i.get()));
+		synchronized (parent.threadLocals) {
+			Iterator i = parent.threadLocals.keySet().iterator();
+			while (i.hasNext()) {
+				try {
+					InheritableThreadLocal it =
+					    (InheritableThreadLocal)i.next();
+					it.set(this, it.childValue(it.get()));
+				} catch (ClassCastException e) {
+				}
 			}
 		}
 	}
@@ -219,9 +223,9 @@ final public ThreadGroup getThreadGroup() {
  * This method is used by java.lang.ThreadLocal. We don't
  * allocate the hashtable with each thread until we have to.
  */
-Hashtable getThreadLocals() {
+synchronized HashMap getThreadLocals() {
 	if (threadLocals == null) {
-		threadLocals = new Hashtable();
+		threadLocals = new HashMap();
 	}
 	return threadLocals;
 }
