@@ -1,3 +1,13 @@
+Wed Jul 17 03:55:58 CEST 2002 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/lang/Class.java:
+	(fullResourceName) don't remove the trailing slash from resource
+	names.
+	(getResource) use ClassLoader.getSystemResource for system
+	resources.
+	(getResourceAsStream) simplified to just use getResource and
+	URL.openStream.
+
 Mon Jul 15 10:26:12 CEST 2002 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/awt/Container.java:

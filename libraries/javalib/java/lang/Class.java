@@ -11,6 +11,7 @@
 package java.lang;
 
 import java.io.InputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -64,7 +65,7 @@ public static native Class forName(String className,
 
 private String fullResourceName(String name) {
 	if (name.charAt(0) == '/') {
-		return (name.substring(1));
+		return name;
 	}
 	String cname = getName();
 	StringBuffer buf = new StringBuffer();
@@ -291,10 +292,12 @@ native static Class getPrimitiveClass(String name);
  * resource with the specified name is found.  */
 public URL getResource(String name) {
 	ClassLoader loader = getClassLoader();
+	name = fullResourceName(name);
+
 	if (loader == null) {
-		loader = SystemClassLoader.getClassLoader();
+		return ClassLoader.getSystemResource(name);
 	}
-	return (loader.getResource(fullResourceName(name)));
+	return (loader.getResource(name));
 }
 
 /**
@@ -313,12 +316,12 @@ public URL getResource(String name) {
  *		if no resource with the specified name is found.
  */
 public InputStream getResourceAsStream(String name) {
-	ClassLoader loader = getClassLoader();
-	if (loader == null)  {
-		loader = SystemClassLoader.getClassLoader();
-	}
-	InputStream strm = loader.getResourceAsStream(fullResourceName(name));
-	return (strm);
+  	try {
+  		return (getResource(name).openStream());
+  	}
+  	catch (IOException e) {
+  		return null;
+  	}
 }
 
 native public Object[] getSigners();
