@@ -57,7 +57,8 @@ public class ConverterAlias {
      * @return alias if found, name if not.
      */
     static String alias(String name) {
-	String alternate = (String)alias.get(name.toUpperCase());
+	name = name.toUpperCase();
+	String alternate = (String)alias.get(name);
 	return alternate != null ? alternate : name;
     }
 }
