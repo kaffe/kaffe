@@ -33,7 +33,6 @@ typedef struct _stackTrace {
 #define STACKTRACEPC(S)		((S).frame->pc)
 #define STACKTRACEMETHCREATE(S)	((S).frame->meth)
 #define STACKTRACEEND(S)	((S).frame == 0 || (S).frame->meth == (Method*)1)
-#define STACKTRACEMETHPRINT(I)	((I).meth)
 
 #elif defined(TRANSLATOR)
 
@@ -55,7 +54,6 @@ typedef struct _stackTrace {
 #define STACKTRACEPC(S)		(PCFRAME((S).frame))
 #define	STACKTRACEMETHCREATE(S)	(0)
 #define	STACKTRACEEND(S)	((S).frame == 0)
-#define STACKTRACEMETHPRINT(I)	(findMethodFromPC((I).pc))
 
 #endif
 
@@ -69,5 +67,6 @@ typedef struct _stackTraceInfo {
 #define ENDOFSTACK	((struct _methods*)-1)
 
 Hjava_lang_Object*	buildStackTrace(struct _exceptionFrame*);
+Method*			stacktraceFindMethod(stackTraceInfo *);
 
 #endif

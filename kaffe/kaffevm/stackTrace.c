@@ -66,6 +66,25 @@ buildStackTrace(struct _exceptionFrame* base)
 	return ((Hjava_lang_Object*)info);
 }
 
+/*
+ * We make these exported functions because we use them in Class.c
+ */
+#if defined(TRANSLATOR)
+Method*
+stacktraceFindMethod(stackTraceInfo *info)
+{
+	return (findMethodFromPC(info->pc));
+}
+
+#elif defined(INTERPRETER)
+
+Method*
+stacktraceFindMethod(stackTraceInfo *info)
+{
+	return (info->meth);
+}
+#endif
+
 void
 printStackTrace(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
 {
@@ -87,7 +106,7 @@ printStackTrace(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
 	}
 	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
 		pc = info[i].pc;
-		meth = STACKTRACEMETHPRINT(info[i]);
+		meth = stacktraceFindMethod(&info[i]);
 		if (meth != 0) {
 			linepc = 0;
 			linenr = -1;

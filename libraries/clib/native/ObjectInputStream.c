@@ -44,6 +44,7 @@ java_io_ObjectInputStream_loadClass0(struct Hjava_io_ObjectInputStream* stream, 
         loader = 0;
         info = (stackTraceInfo*)buildStackTrace(0);
         for (i = 0; info[i].meth != ENDOFSTACK; i++) {
+		info[i].meth = stacktraceFindMethod(&info[i]);
                 if (info[i].meth != 0 && info[i].meth->class != 0) {
                         loader = info[i].meth->class->loader;
                         break;

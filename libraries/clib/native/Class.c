@@ -58,6 +58,7 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 	loader = 0;
         info = (stackTraceInfo*)buildStackTrace(0);
         for (i = 0; info[i].meth != ENDOFSTACK; i++) {
+		info[i].meth = stacktraceFindMethod(&info[i]);
                 if (info[i].meth != 0 && info[i].meth->class != 0) {
                 	loader = info[i].meth->class->loader;
 			break;
