@@ -558,6 +558,11 @@ soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 	FIXUP_TRAMPOLINE_INIT;
 	tramp = *where;
 
+DBG(MOREJIT,
+	dprintf("soft_fixup_trampoline(): meth %p, where %p\n",
+		meth, where);
+    );
+
 	/* If this class needs initializing, do it now.  */
 	if (meth->class->state < CSTATE_USABLE &&
 		processClass(meth->class, CSTATE_COMPLETE, &info) == false) {
@@ -603,6 +608,11 @@ soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 #endif
 
 TDBG(	dprintf("Calling %s:%s%s @ %p\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth), METHOD_NATIVECODE(meth));	)
+
+DBG(MOREJIT,
+	dprintf("soft_fixup_trampoline(): return %p\n",
+		METHOD_NATIVECODE(meth));
+    );
 
 	return (METHOD_NATIVECODE(meth));
 }
@@ -1047,4 +1057,5 @@ soft_debug2(void* a0, void* a1, void* a2)
 void
 soft_trace(Method* meth, void* args)
 {
+    dprintf("soft_trace: %s.%s%s\n", CLASS_CNAME(meth->class), meth->name->data, METHOD_SIGD(meth));
 }

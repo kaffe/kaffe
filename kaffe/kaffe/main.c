@@ -40,7 +40,6 @@ extern int profFlag;
 
 extern char* engine_name;
 extern char* engine_version;
-static char* java_version;
 
 #include "jni.h"
 
@@ -406,6 +405,9 @@ options(char** argv)
 		else if (strcmp(argv[i], "-verbosemem") == 0) {
 			vmargs.enableVerboseGC = 2;
 		}
+		else if (strcmp(argv[i], "-verbosecall") == 0) {
+			vmargs.enableVerboseCall = 1;
+		}
 		else if (strcmp(argv[i], "-verbose") == 0 || strcmp(argv[i], "-v") == 0) {
 			vmargs.enableVerboseClassloading = 1;
 		}
@@ -578,6 +580,7 @@ usage(void)
 	dprintf("	-v, -verbose		Be verbose\n");
 	dprintf("	-verbosejit		Print message during JIT code generation\n");
 	dprintf("	-verbosemem		Print detailed memory allocation statistics\n");
+	dprintf("	-verbosecall		Print detailed call flow information\n");
 	dprintf("	-nodeadlock		Disable deadlock detection\n");
 #if defined(KAFFE_PROFILER)
 	dprintf("	-prof			Enable profiling of Java methods\n");
