@@ -341,14 +341,14 @@ public class SimpleDateFormat extends DateFormat
   }
 
   /**
-   * This method returns the format symbol information used for parsing
-   * and formatting dates.
+   * This method returns a copy of the format symbol information used
+   * for parsing and formatting dates.
    *
-   * @return The date format symbols.
+   * @return a copy of the date format symbols.
    */
   public DateFormatSymbols getDateFormatSymbols()
   {
-    return formatData;
+    return (DateFormatSymbols) formatData.clone();
   }
 
   /**
@@ -356,9 +356,15 @@ public class SimpleDateFormat extends DateFormat
    * and formatting dates.
    *
    * @param formatData The date format symbols.
+   * @throws NullPointerException if <code>formatData</code> is null.
    */
    public void setDateFormatSymbols(DateFormatSymbols formatData)
    {
+     if (formatData == null)
+       {
+	 throw new
+	   NullPointerException("The supplied format data was null.");
+       }
      this.formatData = formatData;
    }
 
@@ -866,4 +872,19 @@ public class SimpleDateFormat extends DateFormat
     calendar.set(Calendar.YEAR, year - 80);
     set2DigitYearStart(calendar.getTime());
   }
+
+  /**
+   * Returns a copy of this instance of
+   * <code>SimpleDateFormat</code>.  The copy contains
+   * clones of the formatting symbols and the 2-digit
+   * year century start date.
+   */
+  public Object clone()
+  {
+    SimpleDateFormat clone = (SimpleDateFormat) super.clone();
+    clone.setDateFormatSymbols((DateFormatSymbols) formatData.clone());
+    clone.set2DigitYearStart((Date) defaultCenturyStart.clone());
+    return clone;
+  }
+
 }
