@@ -1,6 +1,9 @@
 /*
  * java.lang.Object.c
  *
+ * Copyright (c) 2003, 2004
+ *      The Kaffe.org's developers. All Rights reserved.
+ *
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
@@ -109,7 +112,7 @@ DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %lli\n",
       JVMPI_Event ev;
       
       ev.event_type = JVMPI_EVENT_MONITOR_WAIT;
-      if( o == getCurrentThread()->sleeper )
+      if( o == getCurrentThread()->vmThread )
 	{
 	  ev.u.monitor_wait.object = NULL;
 	}
@@ -128,7 +131,7 @@ DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %lli\n",
       JVMPI_Event ev;
       
       ev.event_type = JVMPI_EVENT_MONITOR_WAIT;
-      if( o == getCurrentThread()->sleeper )
+      if( o == getCurrentThread()->vmThread )
 	{
 	  ev.u.monitor_wait.object = NULL;
 	}
