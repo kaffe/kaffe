@@ -3138,9 +3138,9 @@ verifyBasicBlock(errorInfo* einfo,
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "cannot swap 2 bytes of a long or double");
 			}
 			
-			*type         = *getOpstackTop(block);
-			*getOpstackTop(block)  = *getOpstackWTop(block);
-			*getOpstackWTop(block) = *type;
+			tt         = *getOpstackWTop(block);
+			*getOpstackWTop(block)  = *getOpstackTop(block);
+			*getOpstackTop(block) = tt;
 			break;
 			
 			

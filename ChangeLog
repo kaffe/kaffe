@@ -1,3 +1,8 @@
+2004-04-11  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/verify.c
+	(verifyBasicBlock): Fixed a severe memory overwrite.
+
 2004-04-07  Nektarios K. Papadopoulos <npapadop@inaccessnetworks.com>
 
 	* kaffe/kaffevm/itypes.c:
