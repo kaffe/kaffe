@@ -1,3 +1,41 @@
+2000-06-19  Edouard G. Parmelan  <egp@free.fr>
+
+	* kaffe/kaffevm/jit3/icode.c kaffe/kaffevm/jit3/kaffe-jit.def
+	kaffe/kaffevm/jit3/machine.c kaffe/kaffevm/kaffe.def
+	kaffe/kaffevm/jit/machine.c kaffe/kaffevm/intrp/machine.c: create
+	macro EXPLICIT_CHECK_NULL() or function explicit_check_null() and
+	explicitly check for null object in INVOKESPECIAL call.  Close
+	PR#625.
+
+	* test/regression/NullInvoke.java test/regression/Makefile.am
+	test/regression/Makefile.in: new test case for PR#625.
+
+	* kaffe/kaffevm/jni.c (Kaffe_KNI_wrapper): Always create a
+	wrapper, it's necessary to build correct stack trace.
+
+	* kaffe/kaffevm/thread.c (getCurrentThread): Avoid too strict
+	assertion test for JIT and INTRP engines, there is no native
+	thread created when loading based classes.
+
+2000-06-18  Edouard G. Parmelan  <egp@free.fr>
+
+	* WHATSNEW: More news since release 1.0.5.
+
+	* FAQ/FAQ.libffi: closed InvTarExcTest failure.
+
+2000-06-17  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/kaffe/util/SupportDisabled.java: new class
+	used to report disabled feature in native methods.
+
+	* libraries/javalib/Makefile.am libraries/javalib/Makefile.in: add
+	kaffe.util.SupportDisabled class.
+	
+	* libraries/clib/math/BigInteger.c libraries/clib/zip/Adler32.c
+	libraries/clib/zip/Deflater.c libraries/clib/zip/Inflater.c
+	libraries/clib/security/digest.c: create dummy native methods that
+	throw kaffe.util.SupportDisabled.
+
 2000-06-16  Edouard G. Parmelan  <egp@free.fr>
 
 	* kaffe/kaffevm/support.c (callMethodA, callMethodV): With INTRP,
@@ -26,7 +64,7 @@
 
 	* libraries/javalib/kaffe/io/ConverterAlias.java: If they are not
 	aliases for encoding name, return it in uppercase.  This will
-	automaticly create aliases for Cp1250 and Co to your classes.
+	automaticly create aliases for Cp1250 and Co to our classes.
 	
 	* test/regression/FPUStack.java, test/regression/Makefile.am,
 	test/regression/Makefile.in: new testcase for PR#620.
