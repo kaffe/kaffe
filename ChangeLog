@@ -1,5 +1,48 @@
 2004-10-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/io/File.java,
+	libraries/javalib/java/sql/Timestamp.java,
+	libraries/javalib/java/text/AttributedCharacterIterator.java,
+	libraries/javalib/java/text/AttributedString.java,
+	libraries/javalib/java/util/zip/CheckedOutputStream.java,
+	libraries/javalib/java/util/zip/GZIPInputStream.java,
+	libraries/javalib/javax/crypto/Cipher.java,
+	libraries/javalib/javax/crypto/ExemptionMechanismException.java,
+	libraries/javalib/javax/crypto/SecretKey.java,
+	libraries/javalib/javax/crypto/SecretKeyFactory.java,
+	libraries/javalib/javax/naming/directory/ModificationItem.java,
+	libraries/javalib/javax/naming/directory/SearchControls.java,
+	libraries/javalib/javax/naming/event/NamingListener.java,
+	libraries/javalib/javax/naming/ldap/Control.java,
+	libraries/javalib/javax/naming/ldap/ExtendedResponse.java,
+	libraries/javalib/javax/net/ssl/SSLSocketFactory.java:
+	Resynced with GNU Classpath.
+
+	2004-10-20  Michael Koch  <konqueror@gmx.de>
+
+        * java/io/File.java:
+        Fixed @author tag to be HTML compatible.
+        * java/sql/Timestamp.java,
+        java/text/AttributedCharacterIterator.java,
+        java/text/AttributedString.java,
+        java/util/zip/CheckedOutputStream.java,
+        java/util/zip/DeflaterOutputStream.java,
+        java/util/zip/GZIPInputStream.java,
+        java/util/zip/ZipFile.java,
+        javax/crypto/Cipher.java,
+        javax/crypto/ExemptionMechanismException.java,
+        javax/crypto/SecretKey.java,
+        javax/crypto/SecretKeyFactory.java,
+        javax/naming/directory/ModificationItem.java,
+        javax/naming/directory/SearchControls.java,
+        javax/naming/event/NamingListener.java,
+        javax/naming/ldap/Control.java,
+        javax/naming/ldap/ExtendedResponse.java,
+        javax/net/ssl/SSLSocketFactory.java:
+        Reorganized imports and fixed copyright headers.
+
+2004-10-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/util/logging/ConsoleHandler.java,
 	libraries/javalib/java/util/logging/ErrorManager.java,
 	libraries/javalib/java/util/logging/FileHandler.java,

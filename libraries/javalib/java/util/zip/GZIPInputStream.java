@@ -35,11 +35,12 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.util.zip;
 
-import java.io.InputStream;
-import java.io.IOException;
 import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * This filter stream is used to decompress a "GZIP" format stream. 
@@ -197,14 +198,11 @@ public class GZIPInputStream
       eos = true;
       return;
     }
+    int magic2 = in.read();
+    if ((magic + (magic2 << 8)) != GZIP_MAGIC)
+      throw new IOException("Error in GZIP header, bad magic code");
     headCRC.update(magic);
-    if (magic != (GZIP_MAGIC & 0xff))
-      throw new IOException("Error in GZIP header, second byte doesn't match");
-    
-    magic = in.read();
-    if (magic != (GZIP_MAGIC >> 8))
-      throw new IOException("Error in GZIP header, first byte doesn't match");
-    headCRC.update(magic);
+    headCRC.update(magic2);
     
     /* 2. Check the compression type (must be 8) */
     int CM = in.read();

@@ -55,8 +55,8 @@ import java.net.URL;
  * types of path separators ("/" versus "\", for example).  It also
  * contains method useful for creating and deleting files and directories.
  *
- * @author Aaron M. Renn <arenn@urbanophile.com>
- * @author Tom Tromey <tromey@cygnus.com>
+ * @author Aaron M. Renn (arenn@urbanophile.com)
+ * @author Tom Tromey (tromey@cygnus.com)
  */
 public class File implements Serializable, Comparable
 {
