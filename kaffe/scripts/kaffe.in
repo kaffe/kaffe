@@ -33,6 +33,11 @@ PATHSEP='@PATHSEP@'
 : ${KAFFE_NATIVE_LIBRARY_DIR="@nativedir@"}
 : ${KAFFE_OLD_NATIVE_LIBRARY_DIR="$KAFFE_CLASSDIR/lib/@KAFFE_ARCHOS@"}
 
+if test x"${KAFFEHOME+set}"x != x"set"x; then
+  KAFFEHOME="@prefix@"
+fi
+export KAFFEHOME
+
 CLASSPATH="${CLASSPATH-.}"
 for f in Klasses.jar comm.jar pjava.jar servlet.jar tools.jar microsoft.jar pizza.jar; do
   if test -f "$KAFFE_CLASSDIR/$f"; then
