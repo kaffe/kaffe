@@ -73,3 +73,7 @@ Treat it as an TODO list.
   LD_LIBRARY_PATH (less likely), or a problem in the dynamic linking 
   mechanisms on this system.  Check the mailing list archive for more info.
 
+* java.util.Hashtable does not implement java.io.Serializable, but the
+  specs says it should.  This would supposedly involve marking some
+  fields transient and writing a writeObject and a readObject method.
+
