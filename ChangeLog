@@ -1,5 +1,21 @@
 2004-12-03  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics2D.java:
+        Resynced with GNU Classpath.
+
+	2004-11-28  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java: Fix typo.
+
+	2004-11-27  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java
+        Reformatted.
+        (drawRaster): Added FIXME.
+        (drawRaster): Changed to work with packed-sample models.
+
+2004-12-03  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/JList.java,
 	libraries/javalib/javax/swing/JTree.java:
         Resynced with GNU Classpath.
