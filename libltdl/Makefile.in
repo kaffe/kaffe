@@ -59,6 +59,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
+AMDEP = @AMDEP@
 AMTAR = @AMTAR@
 AS = @AS@
 CC = @CC@
@@ -345,19 +346,19 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 
-CCDEPMODE = @CCDEPMODE@
+@AMDEP@CCDEPMODE = @CCDEPMODE@
 
 .c.o:
-	source='$<' object='$@' \
-	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
-	$(CCDEPMODE) \
-	$(depcomp) $(COMPILE) -c $<
+@AMDEP@	source='$<' object='$@' \
+@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
+@AMDEP@	$(CCDEPMODE) $(depcomp) \
+	$(COMPILE) -c $<
 
 .c.lo:
-	source='$<' object='$@' \
-	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' \
-	$(CCDEPMODE) \
-	$(depcomp) $(LTCOMPILE) -c -o $@ $<
+@AMDEP@	source='$<' object='$@' \
+@AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' \
+@AMDEP@	$(CCDEPMODE) $(depcomp) \
+	$(LTCOMPILE) -c -o $@ $<
 info-am:
 info: info-am
 dvi-am:

@@ -23,8 +23,16 @@ if test $# -eq 0; then
   exit 1
 fi
 
-# Try to run requested program, and just exit if it succeeds.
-"$@" && exit 0
+run=:
+
+case "$1" in
+--run)
+  # Try to run requested program, and just exit if it succeeds.
+  run=
+  shift
+  "$@" && exit 0
+  ;;
+esac
 
 # If it does not exist, or fails to run (possibly an outdated version),
 # try to emulate it.
@@ -40,6 +48,7 @@ error status if there is no known handling for PROGRAM.
 Options:
   -h, --help      display this help and exit
   -v, --version   output version information and exit
+  --run           try to run the given command, and emulate it if it fails
 
 Supported PROGRAM values:
   aclocal      touch file \`aclocal.m4'
@@ -50,12 +59,12 @@ Supported PROGRAM values:
   flex         create \`lex.yy.c', if possible, from existing .c
   lex          create \`lex.yy.c', if possible, from existing .c
   makeinfo     touch the output file
-  gnutar       try tar, gnutar, gtar, then tar without non-portable flags
+  tar          try tar, gnutar, gtar, then tar without non-portable flags
   yacc         create \`y.tab.[ch]', if possible, from existing .[ch]"
     ;;
 
   -v|--v|--ve|--ver|--vers|--versi|--versio|--version)
-    echo "missing - GNU libit 0.0"
+    echo "missing 0.2 - GNU automake"
     ;;
 
   -*)
@@ -183,6 +192,11 @@ WARNING: \`$1' is missing on your system.  You should only need it if
 
   tar)
     shift
+    if test -n "$run"; then
+      echo 1>&2 "ERROR: \`tar' requires --run"
+      exit 1
+    fi
+
     # we have already tried tar in the generic part
     gnutar ${1+"$@"} && exit 0
     gtar ${1+"$@"} && exit 0

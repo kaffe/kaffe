@@ -26,10 +26,6 @@ if test -z "$depmode" || test -z "$source" || test -z "$object"; then
 fi
 
 depfile=${depfile-`echo "$object" | sed 's,\([^/]*\)$,.deps/\1,;s/\.\([^.]*\)$/.P\1/'`}
-# depdir=`echo "$depfile" | sed 's,/*[^/]*$,,'`
-# test -d "$depdir" || { echo "mkdir \"$depdir\"" && mkdir "$depdir"; } ||
-# test -d "$depdir" || exit 1
-
 tmpdepfile=${tmpdepfile-`echo "$depfile" | sed 's/\.\([^.]*\)$/.T\1/'`}
 
 rm -f "$tmpdepfile"
@@ -85,6 +81,10 @@ sgi)
   rm -f "$tmpdepfile"
   ;;
 
+#nosideeffect)
+  # This comment above is used by automake to tell side-effect
+  # dependency tracking mechanisms from slower ones.
+
 dashmstdout)
   # Important note: in order to support this mode, a compiler *must*
   # always write the proprocessed file to stdout, regardless of -o,
@@ -120,6 +120,79 @@ dashmstdout)
 ' < "$tmpdepfile" | \
     sed -e 's/^\\$//' -e '/^$/d' -e '/:$/d' -e 's/$/ :/' >> "$depfile"
   rm -f "$tmpdepfile"
+  ;;
+
+dashXmstdout)
+  # Important note: in order to support this mode, a compiler *must*
+  # always write the proprocessed file to stdout, regardless of -o,
+  # because we must use -o when running libtool.
+  ( IFS=" "
+    case " $* " in
+    *" --mode=compile "*) # this is libtool, let us make it quiet
+      for arg
+      do # cycle over the arguments
+        case "$arg" in
+	"--mode=compile")
+	  # insert --quiet before "--mode=compile"
+	  set fnord "$@" --quiet
+	  shift # fnord
+	  ;;
+	esac
+	set fnord "$@" "$arg"
+	shift # fnord
+	shift # "$arg"
+      done
+      ;;
+    esac
+    "$@" -xM | sed 's:^[^:]*\:[ 	]*:'"$object"'\: :' > "$tmpdepfile"
+  ) &
+  proc=$!
+  "$@"
+  stat=$?
+  wait "$proc"
+  if test "$stat" != 0; then exit $stat; fi
+  rm -f "$depfile" 
+  cat < "$tmpdepfile" > "$depfile"
+  tr ' ' '
+' < "$tmpdepfile" | \
+    sed -e 's/^\\$//' -e '/^$/d' -e '/:$/d' -e 's/$/ :/' >> "$depfile"
+  rm -f "$tmpdepfile"
+  ;;
+
+makedepend)
+  # X makedepend
+  (
+    shift
+    cleared=no
+    for arg in "$@"; do
+      case $cleared in no)
+        set ""; shift
+	cleared=yes
+      esac
+      case "$arg" in
+        -D*|-I*)
+	  set fnord "$@" "$arg"; shift;;
+	-*)
+	  ;;
+	*)
+	  set fnord "$@" "$arg"; shift;;
+      esac
+    done
+    obj_suffix="`echo $object | sed 's/^.*\././'`"
+    touch "$tmpdepfile"
+    ${MAKEDEPEND-makedepend} 2>/dev/null -o"$obj_suffix" -f"$tmpdepfile" "$@"
+  ) &
+  proc=$!
+  "$@"
+  stat=$?
+  wait "$proc"
+  if test "$stat" != 0; then exit $stat; fi
+  rm -f "$depfile" 
+  cat < "$tmpdepfile" > "$depfile"
+  tail +3 "$tmpdepfile" | tr ' ' '
+' | \
+    sed -e 's/^\\$//' -e '/^$/d' -e '/:$/d' -e 's/$/ :/' >> "$depfile"
+  rm -f "$tmpdepfile" "$tmpdepfile".bak
   ;;
 
 cpp)

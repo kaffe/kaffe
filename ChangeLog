@@ -1,3 +1,10 @@
+1999-06-01  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* FAQ/FAQ.automake: New automake snapshot, that supports disabling 
+	dependency tracking.
+	* aclocal.m4, configure, */Makefile: Rebuilt.
+	* libltdl/aclocal.m4, libltdl/configure: Rebuilt.
+
 1999-06-01  Edouard Parmelan <Edouard.Parmelan@quadratec.fr>
 
 	* libraries/javalib/kaffe/io/CharToByteConverter.java: Avoid

@@ -451,6 +451,7 @@ AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
 AM_MISSING_PROG(MAKEINFO, makeinfo, $missing_dir)
 AM_MISSING_PROG(AMTAR, tar, $missing_dir)
 AC_REQUIRE([AC_PROG_MAKE_SET])
+AC_REQUIRE([AM_DEP_TRACK])
 AC_REQUIRE([AM_SET_DEPDIR])
 ifdef([AC_PROVIDE_AC_PROG_CC], [AM_DEPENDENCIES(CC)], [
    define([AC_PROG_CC], defn([AC_PROG_CC])[AM_DEPENDENCIES(CC)])])
@@ -502,8 +503,7 @@ rm -f conftest*
 AC_MSG_RESULT(yes)])
 
 dnl AM_MISSING_PROG(NAME, PROGRAM, DIRECTORY)
-dnl The program must properly implement --version.
-AC_DEFUN(AM_MISSING_PROG, [$1=${$1-"$3/missing $2"}
+AC_DEFUN(AM_MISSING_PROG, [$1=${$1-"$3/missing --run $2"}
 AC_SUBST($1)])
 
 dnl See how the compiler implements dependency checking.
@@ -520,58 +520,48 @@ ifelse([$1],CC,[
 AC_REQUIRE([AC_PROG_CC])
 AC_REQUIRE([AC_PROG_CPP])
 depcc="$CC"
-depcpp="$CPP"
-depgcc="$GCC"],[$1],CXX,[
+depcpp="$CPP"],[$1],CXX,[
 AC_REQUIRE([AC_PROG_CXX])
 AC_REQUIRE([AC_PROG_CXXCPP])
 depcc="$CXX"
-depcpp="$CXXCPP"
-depgcc="$GXX"],[$1],OBJC,[
+depcpp="$CXXCPP"],[$1],OBJC,[
 am_cv_OBJC_dependencies_compiler_type=gcc],[
 AC_REQUIRE([AC_PROG_][$1])
 depcc="$[$1]"
-depcpp=""
-depgcc="no"])
+depcpp=""])
 AC_MSG_CHECKING([dependency style of $depcc])
 AC_CACHE_VAL(am_cv_[$1]_dependencies_compiler_type,[
-am_cv_[$1]_dependencies_compiler_type=none
-if test "$depgcc" = yes; then
-   am_cv_[$1]_dependencies_compiler_type=gcc
+if test -z "$AMDEP"; then
+  echo '#include "conftest.h"' > conftest.c
+  echo 'int i;' > conftest.h
+
+  am_cv_[$1]_dependencies_compiler_type=none
+  for depmode in `sed -n 's/^#*\([a-zA-Z0-9]*\))$/\1/p' < "$am_depcomp"`; do
+    case "$depmode" in
+    nosideeffect)
+      # after this tag, mechanisms are not by side-effect, so they'll
+      # only be used when explicitly requested
+      if test "x$enable_dependency_tracking" = xyes; then
+	continue
+      else
+	break
+      fi
+      ;;
+    none) break ;;
+    esac
+    if depmode="$depmode" \
+       source=conftest.c object=conftest.o \
+       depfile=conftest.Po tmpdepfile=conftest.TPo \
+       $SHELL $am_depcomp $depcc -c conftest.c 2>/dev/null &&
+       grep conftest.h conftest.Po > /dev/null 2>&1; then
+      am_cv_[$1]_dependencies_compiler_type="$depmode"
+      break
+    fi
+  done
+
+  rm -f conftest.*
 else
-   echo '#include "conftest.h"' > conftest.c
-   echo 'int i;' > conftest.h
-
-   dnl SGI compiler has its own method for side-effect dependency
-   dnl tracking.
-   if test "$am_cv_[$1]_dependencies_compiler_type" = none; then
-      rm -f conftest.P
-      if $depcc -c -MDupdate conftest.P conftest.c 2>/dev/null &&
-	 test -f conftest.P; then
-	 am_cv_[$1]_dependencies_compiler_type=sgi
-      fi
-   fi
-
-   if test "$am_cv_[$1]_dependencies_compiler_type" = none; then
-      # -o /dev/null avoids selecting -M for a compiler that would
-      # output dependencies to the object file
-      if test -n "`$depcc -M conftest.c -o /dev/null 2>/dev/null`"; then
-	 am_cv_[$1]_dependencies_compiler_type=dashmstdout
-      fi
-   fi
-
-   if test "$am_cv_[$1]_dependencies_compiler_type" = none; then
-      # -o /dev/null avoids selecting -E for a compiler that would
-      # output dependencies to the object file
-      if test -n "`$depcc -E conftest.c -o /dev/null 2>/dev/null`"; then
-	 am_cv_[$1]_dependencies_compiler_type=cpp
-      fi
-   fi
-
-   dnl As a last resort, see if we can run CPP and extract line
-   dnl information from the output.
-   dnl FIXME
-
-   rm -f conftest.*
+  am_cv_[$1]_dependencies_compiler_type=none
 fi
 ])
 AC_MSG_RESULT($am_cv_[$1]_dependencies_compiler_type)
@@ -591,6 +581,23 @@ fi
 AC_SUBST(DEPDIR)
 ])
 
+AC_DEFUN(AM_DEP_TRACK,[
+AC_ARG_ENABLE(dependency-tracking,
+[  --disable-dependency-tracking Speeds up one-time builds
+  --enable-dependency-tracking  Do not reject slow dependency extractors])
+if test "x$enable_dependency_tracking" = xno; then
+  AMDEP="#"
+else
+  am_depcomp="$ac_aux_dir/depcomp"
+  if test ! -f "$am_depcomp"; then
+    AMDEP="#"
+  else
+    AMDEP=
+  fi
+fi
+AC_SUBST(AMDEP)
+])
+
 dnl Generate code to set up dependency tracking.
 dnl This macro should only be invoked once -- use via AC_REQUIRE.
 dnl Usage:
@@ -602,13 +609,23 @@ dnl is enabled.  FIXME.  This creates each `.P' file that we will
 dnl need in order to bootstrap the dependency handling code.
 AC_DEFUN(AM_OUTPUT_DEPENDENCY_COMMANDS,[
 AC_OUTPUT_COMMANDS([
-find . -name Makefile -print | while read mf; do
+for mf in $CONFIG_FILES; do
+  case "$mf" in
+  Makefile) dirpart=.;;
+  */Makefile) dirpart=`echo "$mf" | sed -e 's|/[^/]*$||'`;;
+  *) continue;;
+  esac
+  grep '^DEP_FILES *= *[^ #]' < "$mf" > /dev/null || continue
   # Extract the definition of DEP_FILES from the Makefile without
   # running `make'.
-  DEPDIR=`sed -n -e '/^DEPDIR = / s///p' $mf`
+  DEPDIR=`sed -n -e '/^DEPDIR = / s///p' < "$mf"`
+  test -z "$DEPDIR" && continue
+  # When using ansi2knr, U may be empty or an underscore; expand it
+  U=`sed -n -e '/^U = / s///p' < "$mf"`
+  test -d "$dirpart/$DEPDIR" || mkdir "$dirpart/$DEPDIR"
   # We invoke sed twice because it is the simplest approach to
   # changing $(DEPDIR) to its actual value in the expansion.
-  deps="`sed -n -e '
+  for file in `sed -n -e '
     /^DEP_FILES = .*\\\\$/ {
       s/^DEP_FILES = //
       :loop
@@ -618,26 +635,14 @@ find . -name Makefile -print | while read mf; do
 	/\\\\$/ b loop
       p
     }
-    /^DEP_FILES = / s/^DEP_FILES = //p' $mf | \
-       sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g'`"
-  # If we found a definition, proceed to create all the files.
-  if test -n "$deps"; then
-    dirpart="`echo $mf | sed -e 's|/[^/]*$||'`"
-    test -d "$dirpart/$DEPDIR" || mkdir "$dirpart/$DEPDIR"
-    case "$deps" in
-    *'$U'*) # When using ansi2knr, U may be empty or an underscore; expand it
-	U=`sed -n -e '/^U = / s///p' $mf`
-	deps=`echo "$deps" | sed 's/\$U/'"$U"'/g'`
-	;;
-    esac	
-    for file in $deps; do
-      if test ! -f "$dirpart/$file"; then
-	echo "creating $dirpart/$file"
-	echo '# dummy' > "$dirpart/$file"
-      fi
-    done
-  fi
-done])])
+    /^DEP_FILES = / s/^DEP_FILES = //p' < "$mf" | \
+       sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g' -e 's/\$U/'"$U"'/g'`; do
+    test -f "$dirpart/$file" && continue
+    echo "creating $dirpart/$file"
+    echo '# dummy' > "$dirpart/$file"
+  done
+done
+])])
 
 # Like AC_CONFIG_HEADER, but automatically create stamp file.
 

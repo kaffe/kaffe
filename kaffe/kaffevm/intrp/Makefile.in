@@ -59,6 +59,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
+AMDEP = @AMDEP@
 AMTAR = @AMTAR@
 AS = @AS@
 AWT_DIR = @AWT_DIR@
@@ -175,7 +176,7 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
 GZIP_ENV = --best
 depcomp = $(SHELL) $(top_srcdir)/depcomp
-DEP_FILES =  $(DEPDIR)/machine.Plo
+DEP_FILES =  @AMDEP@ $(DEPDIR)/machine.Plo
 SOURCES = $(libengine_la_SOURCES)
 OBJECTS = $(am_libengine_la_OBJECTS)
 
@@ -268,7 +269,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 
-include $(DEP_FILES)
+@AMDEP@include $(DEP_FILES)
 
 mostlyclean-depend:
 
@@ -279,19 +280,19 @@ distclean-depend:
 
 maintainer-clean-depend:
 
-CCDEPMODE = @CCDEPMODE@
+@AMDEP@CCDEPMODE = @CCDEPMODE@
 
 .c.o:
-	source='$<' object='$@' \
-	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
-	$(CCDEPMODE) \
-	$(depcomp) $(COMPILE) -c $<
+@AMDEP@	source='$<' object='$@' \
+@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
+@AMDEP@	$(CCDEPMODE) $(depcomp) \
+	$(COMPILE) -c $<
 
 .c.lo:
-	source='$<' object='$@' \
-	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' \
-	$(CCDEPMODE) \
-	$(depcomp) $(LTCOMPILE) -c -o $@ $<
+@AMDEP@	source='$<' object='$@' \
+@AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' \
+@AMDEP@	$(CCDEPMODE) $(depcomp) \
+	$(LTCOMPILE) -c -o $@ $<
 info-am:
 info: info-am
 dvi-am:
