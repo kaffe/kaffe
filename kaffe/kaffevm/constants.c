@@ -43,18 +43,20 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 	u2 len;
 	u2 d2, d2b;
 	u4 d4, d4b;
+	u4 poolsize;
 
 	if (this->centry != 0)
 		assert(holdMutex(this->centry));
 
-	readu2(&info->size, fp);
-RDBG(	printf("constant_pool_count=%d\n", info->size);	)
+	readu2(&poolsize, fp);
+RDBG(	printf("constant_pool_count=%d\n", poolsize);	)
 
 	/* Allocate space for tags and data */
-	pool = gc_malloc((sizeof(ConstSlot) + sizeof(u1)) * info->size, GC_ALLOC_CONSTANT);
-	tags = (u1*)&pool[info->size];
+	pool = gc_malloc((sizeof(ConstSlot) + sizeof(u1)) * poolsize, GC_ALLOC_CONSTANT);
+	tags = (u1*)&pool[poolsize];
 	info->data = pool;
 	info->tags = tags;
+	info->size = poolsize;
 
 	pool[0] = 0;
 	tags[0] = CONSTANT_Unknown;
