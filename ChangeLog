@@ -1,3 +1,9 @@
+2003-09-29  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/text/SimpleDateFormat.java,
+	libraries/javalib/java/text/DateFormat.java: Synch'ed with GNU
+	Classpath.
+
 2003-09-29  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/java/util/zip/GZIPInputStream.java:
@@ -42,6 +48,7 @@
 	Added prototypes for setupExceptionHandling,
 	cleanupExceptionHandling.
 
+>>>>>>> 1.1674
 2003-09-28  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/nio/ByteBufferHelper.java: added missing
