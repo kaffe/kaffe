@@ -334,10 +334,13 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	char *locale;
 	char lang[3];
 
+#if defined(HAVE_LC_MESSAGES)
 	locale = setlocale (LC_MESSAGES, "");
 
 	tmp = strchr (locale, '_');
-
+#else
+	tmp = NULL;
+#endif
 	if (tmp != NULL) {
 		lang[2] = '\0';
 

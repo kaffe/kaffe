@@ -16,13 +16,15 @@ struct Hjava_lang_String*
 java_util_TimeZone_getDefaultTimeZoneId(void)
 {
 #ifdef HAVE_TIME_H
-	static int called_tzset = 0;
+	struct tm *tempTimeStruct;
+	time_t tempTimeArithm;
+	char *tempZoneName;
 
-	if (!called_tzset) 
-	{
-	  tzset();
-	}
-	return stringC2Java(tzname[0]);
+	tempTimeArithm = 0;
+	tempTimeStruct = localtime (&tempTimeArithm);
+	tempZoneName = tempTimeStruct->tm_zone;
+	assert(tempZoneName != NULL);
+	return stringC2Java(tempZoneName);
 #else
 	return NULL;
 #endif

@@ -353,7 +353,7 @@ int jthread_has_run(jthread_t jt);
 void 	jthread_exit_when_done(void) NONRETURNING;
 
 static inline
-bool jthread_attach_current_thread(UNUSED bool isDaemon)
+bool jthread_attach_current_thread(bool isDaemon UNUSED)
 {
 	return false;
 }

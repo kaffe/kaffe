@@ -1,3 +1,22 @@
+2004-07-16  Riccardo Mottola <rmottola@users.sf.net>
+
+	* config/powerpc/darwin/md.h:
+	Added definitions for signal handling
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h:
+	(jthread_attach_current_thread): Moved UNUSED to ease CPP work.
+	
+	* libraries/clib/native/TimeZone.c
+	(java_util_TimeZone_getDefaultTimeZoneId):
+	Changed timezone mechanism to be ANSI compliant.
+
+	* libraries/clib/native/System.c: Use setlocale only if
+	LC_MESSAGES is defined.
+
+	* configure.ac: Check for sys/signal.h.
+
+	* config/config.h.in, configure: Regenerated.
+
 2004-07-16  Jim Huang  <jserv@kaffe.org>
 
 	* libraries/javalib/java/awt/MouseEvt.java

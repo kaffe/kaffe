@@ -28,7 +28,6 @@
 #include <sys/resource.h>
 #endif
 
-
 #undef SP_OFFSET
 #define SP_OFFSET	0
 
@@ -39,9 +38,19 @@
 #define SIGNAL_PC(scp) 0
 #define STACK_POINTER(scp) ((scp)->si_addr)
 #else
-#warning Some exceptions may not work properly.
-#define SIGNAL_ARGS(sig, sc) int sig
+
 #undef HAVE_SIGALTSTACK
+#if defined(HAVE_SYS_SIGNAL_H)
+#include <sys/signal.h>
+typedef struct sigcontext sigcontext_t;
+#endif
+
+typedef struct  sigaltstack stack_t;
+#define SIGNAL_ARGS(sig, sc) int sig, sigcontext_t *sc
+#define SIGNAL_CONTEXT_POINTER(scp) sigcontext_t *scp
+#define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
+#define SIGNAL_PC(scp) ((scp)->sc_ir)
+#define STACK_POINTER(scp) ((scp)->sc_sp)
 #endif
 
 #include "kaffe-unix-stack.h"
