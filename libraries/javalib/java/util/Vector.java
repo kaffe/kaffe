@@ -42,11 +42,11 @@ public Vector(Collection c) {
 	}
 }
 
-public void addElement(Object obj) {
+public synchronized void addElement(Object obj) {
 	insertElementAt(obj, size());
 }
 
-public boolean add(Object obj) {
+public synchronized boolean add(Object obj) {
 	insertElementAt(obj, size());
 	return true;
 }

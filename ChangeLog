@@ -1,3 +1,11 @@
+2003-04-03 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/util/Vector.java:
+	(addElement, add) synchronized the methods to prevent a race
+	condition.
+
+	Reported by: Mark J Roberts <mjr@znex.org>
+	
 2003-04-03 Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>
 
 	* libraries/javalib/java/io/RandomAccessFile.java:
