@@ -1,3 +1,11 @@
+2003-06-05 Tim Stack <stack@cs.utah.edu>
+
+	* libraries/javalib/bootstrap.classlist,
+	libraries/javalib/Klasses.jar.bootstrap:
+	Added java/security/AllPermission.class,
+	java/security/PermissionCollection.class, and
+	java/security/ProtectionDomain.class.
+
 2003-06-04  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libltdl/ltdl.c

@@ -108,7 +108,10 @@ java/lang/reflect/ReflectPermission.class
 java/security/BasicPermission.class
 java/security/CodeSource.class
 java/security/Guard.class
+java/security/AllPermission.class
 java/security/Permission.class
+java/security/PermissionCollection.class
+java/security/ProtectionDomain.class
 java/security/SecureClassLoader.class
 java/text/Format.class
 java/text/MessageFormat.class
