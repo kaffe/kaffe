@@ -9,8 +9,8 @@
  * the Flux Research Group, Department of Computer Science,
  * University of Utah, http://www.cs.utah.edu/flux/
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "config.h"
@@ -85,6 +85,12 @@ main(int argc, char* argv[])
 	/* set up libtool/libltdl dlopen emulation */
 	LTDL_SET_PRELOADED_SYMBOLS();
 
+#if defined(DEBUG)
+	cp = getenv("KAFFE_VMDEBUG");
+	if (cp != 0)
+		dbgSetMaskStr(cp);
+#endif
+
 	cp = getenv(CLASSPATH1);
 	if (cp == 0) {
 		cp = getenv(CLASSPATH2);
@@ -126,7 +132,7 @@ main(int argc, char* argv[])
 		}
 	}
 #endif
-	
+
 	/* Get the class name to start with */
 	if (argv[farg] == 0) {
 		usage();
@@ -146,7 +152,7 @@ main(int argc, char* argv[])
  * During initialisation, which is invoked in JNI_CreateJavaVM, we will
  * estimate the upper end of the main stack by taking the address of a
  * local variable.  The upper end of the main stack is important since
- * it tells the conservative garbage collector the upper boundary up to 
+ * it tells the conservative garbage collector the upper boundary up to
  * which it must scan the stack (stackEnd in the thread context).
  * (Replace stackEnd with stackBase and upper with lower if your stack
  *  grows upward.)
@@ -154,17 +160,17 @@ main(int argc, char* argv[])
  * To ensure that no references will be stored on the stack above that
  * estimated point, we will allocate 1K on the stack as a safe zone.
  *
- * The old approach would have the initialisation code guess how much 
- * it must add to the address of the local variable to find the actual 
- * upper end up to which the gc must look for local variables.  
- * The problem with that approach is what if the code guesses wrong?  
+ * The old approach would have the initialisation code guess how much
+ * it must add to the address of the local variable to find the actual
+ * upper end up to which the gc must look for local variables.
+ * The problem with that approach is what if the code guesses wrong?
  * If it guesses too low, we will lose objects.  If it guesses too
  * high, however, the gc might segfault when trying to scan the stack.
  *
  * With the new approach some guessing is still involved:
  * we guess how big the safe zone should be.  If we guess too small,
- * we will lose objects.  If we guess too big, however, all we do is to 
- * waste memory on the main stack.  
+ * we will lose objects.  If we guess too big, however, all we do is to
+ * waste memory on the main stack.
  * Weighing the consequences, the new approach seems better.
  * Does anybody have a better solution?
  */
@@ -491,7 +497,7 @@ options(char** argv)
 			extern void statsSetMaskStr(char *);
                         i++;
                         if (argv[i] == 0) { /* forgot second arg */
-                                dprintf( 
+                                dprintf(
 					"Error: -vmstats option requires a "
 					"second arg.\n");
                                 exit(1);
@@ -501,10 +507,9 @@ options(char** argv)
 #endif
 #if defined(DEBUG)
                 else if (strcmp(argv[i], "-vmdebug") == 0) {
-			extern int dbgSetMaskStr(char *);
                         i++;
                         if (argv[i] == 0) { /* forgot second arg */
-                                dprintf( 
+                                dprintf(
 					"Error: -vmdebug option requires a "
 					"debug flag. Use `list' for a list.\n");
                                 exit(1);
@@ -602,10 +607,10 @@ usage(void)
 	dprintf("	-oss <size> *		Maximum java stack size\n");
         dprintf("	-jar                    Executable is a JAR\n");
 #ifdef DEBUG
-        dprintf("	-vmdebug <flag{,flag}>	Internal VM debugging.  Set flag=list for a list\n");                     
+        dprintf("	-vmdebug <flag{,flag}>	Internal VM debugging.  Set flag=list for a list\n");
 #endif
 #ifdef KAFFE_STATS
-        dprintf("	-vmstats <flag{,flag}>	Print VM statistics.  Set flag=all for all\n");                     
+        dprintf("	-vmstats <flag{,flag}>	Print VM statistics.  Set flag=all for all\n");
 #endif
 	dprintf("  * Option currently ignored.\n");
 }
