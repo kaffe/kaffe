@@ -233,7 +233,7 @@ end
 
 define gcstate
   set $ptr = (uint8*)($arg0)
-  set $gcBlock = ((gc_block*)((uintp)($arg0) & -gc_pgsize))
+  set $gcBlock = &(((gc_block *)gc_block_base)[(((uintp) ($ptr)) - gc_heap_base)/gc_pgsize])
 
   if $gcBlock->size <= 0
     printf "WARNING: block size is <= 0 (%d)\n", $gcBlock->size

@@ -1,3 +1,8 @@
+2004-03-10  Timothy S. Stack <stack@cs.utah.edu>
+
+	* developers/gdbinit:
+	Update the "gcstate" macro.
+
 2004-03-10  Casey Marshall <rsdio@metastatic.org>
 	
         * kaffe/kaffevm/jit3/icode.c:
