@@ -2,6 +2,14 @@
 
 	Resynced with GNU Classpath.
 
+	2005-01-06  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/ClassLoader.java (findClass): Fixed documentation.
+	
+2005-01-07  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-01-06  Michael Koch  <konqueror@gmx.de>
 
 	* java/util/TimeZone.java
