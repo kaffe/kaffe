@@ -12,6 +12,8 @@ Thu Sep 23 11:04:08 PDT 1999  Archie Cobbs <archie@whistle.com>
 	behavior of keys() and elements() methods.
 	* libraries/javalib/java/util/Vector.java: add missing constructor
 	* libraries/javalib/Klasses.jar: regen
+	* libraries/javalib/java/util/Properties.java: remove
+	unnecessary inner class
 
 Wed Sep 22 16:27:26 PDT 1999  Archie Cobbs <archie@whistle.com>
 
