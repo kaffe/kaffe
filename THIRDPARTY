@@ -476,12 +476,11 @@ License with a special exception:
     the GPL from your modified version.
 
 * m4/ax_cflags_gcc_option.m4, m4/ax_cflags_warn_all.m4, m4/acx_pthread.m4,
-  m4/compile_value.m4, m4/ac_prog_java.m4, m4/ac_prog_java_works.m4,
-  m4/ac_prog_javac.m4, m4/ac_prog_javac_works.m4
+  m4/compile_value.m4
 
 Autoconf macros to check for accepted warning and compiler options, pthreads 
-and compile time values, a Java runtime and a Java compiler. Taken from the 
-Autoconf Macro Archive at http://ac-archive.sourceforge.net/.
+and compile time values. Taken from the Autoconf Macro Archive at 
+http://ac-archive.sourceforge.net/.
 
 Licensed under the GNU General Public License with a special exception:
 
