@@ -499,6 +499,11 @@ handleVtAlarm(void)
 {
 	static int c;
 
+	/* We can't do anything async if ints are disabled */
+	if (intsDisabled()) {
+		return;
+	}
+
 	if (preemptive) {
 		internalYield();
 	}
