@@ -2,7 +2,7 @@
  * main.c
  * Kick off program.
  *
- * Copyright (c) 1996, 1997, 1998
+ * Copyright (c) 1996-1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -226,7 +226,7 @@ options(char** argv)
 		}
 		else if (strcmp(argv[i], "-version") == 0) {
 			fprintf(stderr, "Kaffe Virtual Machine\n");
-			fprintf(stderr, "Copyright (c) 1996, 1997, 1998\nTransvirtual Technologies, Inc.  All rights reserved\n");
+			fprintf(stderr, "Copyright (c) 1996-1999\nTransvirtual Technologies, Inc.  All rights reserved\n");
 			fprintf(stderr, "Engine: %s   Version: %s   Java Version: %s\n", engine_name, engine_version, java_version);
 			exit(0);
 		}
