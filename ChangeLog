@@ -1,7 +1,9 @@
 Tue May 18 20:16:44 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 
 	* config/i386/oskit/{md.c mkimage.sh}:  Update startup 
-
+	* kaffe/kaffevm/systems/oskit-pthreads{jthread.h pjthread.c
+	syscalls.c}: interupt socket calls with SIG_USR2.
+	
 Mon May 17 11:55:13 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/classMethod.h: fix race condition resolving fields
