@@ -1,3 +1,8 @@
+2004-11-20  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/gc-refs.[ch], kaffe/kaffevm/gc-mem.[ch]:
+	Reverted some work-in-progress patch.
+
 2004-11-20  Djordje Nikolic  <dmn@ict-tower.com>
 
 	* config/powerpc/linux/md.h:
