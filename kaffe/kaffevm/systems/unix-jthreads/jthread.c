@@ -2326,11 +2326,11 @@ static int
 jthreadedFileDescriptor(int fd)
 {
 	int r;
-#if (defined(FIOSSAIOSTAT) && !(defined(hpux) && defined(FIOASYNC))) || \
+#if (defined(FIOSSAIOSTAT) && !((defined(hpux) || defined (__hpux__)) && defined(FIOASYNC))) || \
     (defined(FIOASYNC) && !defined(linux))
 	int on = 1;
 #endif
-#if (defined(FIOSSAIOOWN) && !(defined(hpux) && defined(F_SETOWN))) || \
+#if (defined(FIOSSAIOOWN) && !((defined(hpux) || defined (__hpux__)) && defined(F_SETOWN))) || \
     defined(F_SETOWN)
 	/* cache pid to accommodate antique C libraries */
 	static int pid = -1;
@@ -2367,7 +2367,7 @@ jthreadedFileDescriptor(int fd)
 #endif
 		);
 
-#if defined(FIOSSAIOSTAT) && !(defined(hpux) && defined(FIOASYNC))
+#if defined(FIOSSAIOSTAT) && !((defined(hpux) || defined (__hpux__)) && defined(FIOASYNC))
 	r = ioctl(fd, FIOSSAIOSTAT, &on);
 	if (r < 0 && errno != ENOTTY) {
 		/* Defines ENOTTY to be an acceptable error */
@@ -2397,7 +2397,7 @@ jthreadedFileDescriptor(int fd)
 
 
 	/* Allow socket to signal this process when new data is available */
-#if defined(FIOSSAIOOWN) && !(defined(hpux) && defined(F_SETOWN))
+#if defined(FIOSSAIOOWN) && !((defined(hpux) || defined (__hpux__)) && defined(F_SETOWN))
 	r = ioctl(fd, FIOSSAIOOWN, &pid);
         if (r == -1 && errno != ENOTTY) {
 		perror("Error doing FIOSSAIOWN");

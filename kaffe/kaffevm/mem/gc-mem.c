@@ -27,9 +27,6 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#if defined(HAVE_MPROTECT) && defined(KAFFE_VMDEBUG)
-#include <sys/mman.h>
-#endif
 
 static iStaticLock	gc_heap_lock;
 
@@ -590,35 +587,18 @@ uintp gc_block_base;
 static gc_block *gc_last_block;
 static gc_block *gc_prim_freelist[GC_PRIM_LIST_COUNT+1];
 
-
-#ifndef PROT_NONE
-#define PROT_NONE 0
-#endif
-
-#if !defined(HAVE_MPROTECT) || !defined(KAFFE_VMDEBUG)
-#define mprotect(A,L,P)
-#define ALL_PROT
-#define NO_PROT
-#else
-/* In a sense, this is backwards. */
-#define ALL_PROT PROT_READ|PROT_WRITE|PROT_EXEC
-#define NO_PROT  PROT_NONE
-#endif
-
 /* Mark a primitive block as used */
 static inline void 
 gc_block_add(gc_block *b)
 {
-	b->nr = 1;
-	mprotect(GCBLOCK2BASE(b), b->size, ALL_PROT);
+  b->nr = 1;
 }
 
 /* Mark a primitive block as unused */
 static inline void 
 gc_block_rm(gc_block *b)
 {
-	b->nr = 0;
-	mprotect(GCBLOCK2BASE(b), b->size, NO_PROT);
+  b->nr = 0;
 }
 
 /* return the prim list blk belongs to */
@@ -1038,7 +1018,6 @@ gc_block_alloc(size_t size)
 	gc_heap_range = last_addr - gc_heap_base;
 	DBG(GCSYSALLOC, dprintf("%ld unused bytes in heap addr range\n",
 				(long) (gc_heap_range - gc_heap_total)));
-	mprotect((void *) heap_addr, size, NO_PROT);
 	return GCMEM2BLOCK(heap_addr);
 }
 

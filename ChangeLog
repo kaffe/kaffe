@@ -1,3 +1,48 @@
+2003-10-04  Dalibor Topic <robilad@kaffe.org>
+
+	* configure.in:
+	Don't check for mprotect.
+
+	* configure, config/config.h.in:
+	Regenerated. 
+
+	* config/Makefile.am:
+	(EXTRA_DIST) Removed unused files parisc/hpux/md.c and
+	parisc/linux/md.c
+
+	* config/Makefile.in:
+	Regenerated.
+
+	* kaffe/kaffevm/mem/gc-mem.c:
+	Don't include <sys/mman.h> as we no longer use mprotect.
+	[PROT_NONE, HAVE_MPROTECT] Sections removed.
+	(gc_block_add,  gc_block_rm, gc_block_alloc) Don't use mprotect
+	on memory allocated by sbrk. It breaks on HP-UX.
+	
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	(jthreadedFileDescriptor) check if either hpux or __hpux__ is 
+	defined. Gcc automatically defines one or the other depending 
+	on some internals of hp-ux that don't matter in this case.
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	Regenerated.
+
+2003-10-04  Helmer Kraemer <hkraemer@kaffe.org>
+
+	* config/parisc/hpux/md.h:
+	Include siginfo.h and ucontext.h.
+	(SIGNAL_ARGS, SIGNAL_CONTEXT_POINTER, 
+	GET_SIGNAL_CONTEXT_POINTER, SIGNAL_PC) New macros.
+
+	* config/parisc/linux/md.h:
+	Include signal.h and ucontext.h.
+	(SIGNAL_ARGS, SIGNAL_CONTEXT_POINTER, 
+	GET_SIGNAL_CONTEXT_POINTER, SIGNAL_PC) New macros.
+
+	* config/parisc/hpux/md.c,
+	config/parisc/linux/md.c:
+	Removed.
+
 2003-10-02  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/arm/jit.h, config/arm/riscos/md.h:

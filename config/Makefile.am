@@ -234,10 +234,8 @@ EXTRA_DIST = \
 	mips/ultrix4/md.h \
 	parisc/common.h \
 	parisc/hpux/config.frag \
-	parisc/hpux/md.c \
 	parisc/hpux/md.h \
 	parisc/linux/config.frag \
-	parisc/linux/md.c \
 	parisc/linux/md.h \
 	parisc/threads.h \
 	powerpc/aix/config.frag \
