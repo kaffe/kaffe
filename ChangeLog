@@ -2,6 +2,17 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-08  Tom Tromey  <tromey@redhat.com>
+
+        * java/net/URI.java (AUTHORITY_REGEXP): Handle case where user
+        name or port is missing.
+        (AUTHORITY_USERINFO_GROUP, AUTHORITY_HOST_GROUP,
+        AUTHORITY_PORT_GROUP): Updated.
+
+2005-02-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-08  Craig Black  <craig.black@aonix.com>
 
         * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c
