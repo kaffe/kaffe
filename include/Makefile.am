@@ -18,7 +18,7 @@ EXTRA_DIST = distclean-hack \
 # INSTALL_ means: these headers get installed,
 # NOINSTALL_ means: they don't get installed.
 # _DERIVED_ means: these headers are derived (using
-# kaffeh, from Klasses.jar.bootstrap). 
+# kaffeh, from rt.jar). 
 # _JNI_DERIVED_ means: these headers are derived using kaffeh
 # from rt.jar *and* the -jni option is
 # set, resulting in JNI-ish method names.

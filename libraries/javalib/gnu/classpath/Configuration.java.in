@@ -1,5 +1,5 @@
-/* gnu.classpath.Configuration
-   Copyright (C) 1998, 2001, 2003 Free Software Foundation, Inc.
+/* Configuration.java --
+   Copyright (C) 1998, 2001, 2003, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -49,14 +49,14 @@ public interface Configuration
    * the argument for --prefix given to configure and used to set the
    * System property gnu.classpath.home.
    */
-  String CLASSPATH_HOME = "";
+  String CLASSPATH_HOME = "@prefix@";
 
   /**
    * The release version number of GNU Classpath.
-   * It is set according to the release of classpath this version of kaffe
-   * is synced up with.
+   * It is set according to the value of 'version' in the configure[.in] file
+   * and used to set the System property gnu.classpath.version.
    */
-  String CLASSPATH_VERSION = "classpath-0.12+cvs+kaffe-1.1.4+cvs";
+  String CLASSPATH_VERSION = "@VERSION@";
 
   /**
    * The value of DEBUG is substituted according to whether the
@@ -65,7 +65,7 @@ public interface Configuration
    * code that generates debugging output - will be removed by the optimizer 
    * in a non-debug build.
    */
-  boolean DEBUG = false;
+  boolean DEBUG = @LIBDEBUG@;
 
   /**
    * The value of LOAD_LIBRARY is substituted according to whether the
@@ -77,7 +77,7 @@ public interface Configuration
    * runtimes which pre-link their native function implementations and do
    * not require additional shared libraries to be loaded.
    */
-  boolean INIT_LOAD_LIBRARY = true;
+  boolean INIT_LOAD_LIBRARY = @INIT_LOAD_LIBRARY@;
 
   /**
    * Set to true if the VM provides a native method to implement
@@ -110,4 +110,10 @@ public interface Configuration
    * Name of default AWT peer library.
    */
   String default_awt_peer_toolkit = "gnu.java.awt.peer.gtk.GtkToolkit";
+
+  /**
+   * Set to true if Cairo was found and enabled during configure,
+   * false otherwise.
+   */
+  boolean GTK_CAIRO_ENABLED = @GTK_CAIRO_ENABLED@;
 }

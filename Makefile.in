@@ -56,11 +56,12 @@ host_triplet = @host@
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/project.properties.in \
 	$(srcdir)/project.xml.in $(top_srcdir)/configure \
-	$(top_srcdir)/include/kaffe/jni_md.h.in ABOUT-NLS AUTHORS \
-	ChangeLog INSTALL TODO scripts/compile scripts/config.guess \
-	scripts/config.rpath scripts/config.sub scripts/depcomp \
-	scripts/install-sh scripts/ltmain.sh scripts/missing \
-	scripts/mkinstalldirs
+	$(top_srcdir)/include/kaffe/jni_md.h.in \
+	$(top_srcdir)/libraries/javalib/gnu/classpath/Configuration.java.in \
+	ABOUT-NLS AUTHORS ChangeLog INSTALL TODO scripts/compile \
+	scripts/config.guess scripts/config.rpath scripts/config.sub \
+	scripts/depcomp scripts/install-sh scripts/ltmain.sh \
+	scripts/missing scripts/mkinstalldirs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
@@ -89,7 +90,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jni_md.h
-CONFIG_CLEAN_FILES = project.xml project.properties
+CONFIG_CLEAN_FILES = project.xml project.properties \
+	libraries/javalib/gnu/classpath/Configuration.java
 SCRIPTS = $(noinst_SCRIPTS)
 SOURCES =
 DIST_SOURCES =
@@ -195,6 +197,7 @@ F77 = @F77@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
 GMSGFMT = @GMSGFMT@
+GTK_CAIRO_ENABLED = @GTK_CAIRO_ENABLED@
 GTK_CAIRO_FALSE = @GTK_CAIRO_FALSE@
 GTK_CAIRO_TRUE = @GTK_CAIRO_TRUE@
 GTK_CFLAGS = @GTK_CFLAGS@
@@ -213,6 +216,7 @@ HAVE_MKTEMP_TRUE = @HAVE_MKTEMP_TRUE@
 HAVE_ZIP_FALSE = @HAVE_ZIP_FALSE@
 HAVE_ZIP_TRUE = @HAVE_ZIP_TRUE@
 INCLUDED_EXTENSIONS = @INCLUDED_EXTENSIONS@
+INIT_LOAD_LIBRARY = @INIT_LOAD_LIBRARY@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -236,6 +240,7 @@ KVMBINFLAGS = @KVMBINFLAGS@
 KVMLIBFLAGS = @KVMLIBFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBADD_GMP = @LIBADD_GMP@
+LIBDEBUG = @LIBDEBUG@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
 LIBLTDL = @LIBLTDL@
@@ -593,6 +598,8 @@ project.xml: $(top_builddir)/config.status $(srcdir)/project.xml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 project.properties: $(top_builddir)/config.status $(srcdir)/project.properties.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
+libraries/javalib/gnu/classpath/Configuration.java: $(top_builddir)/config.status $(top_srcdir)/libraries/javalib/gnu/classpath/Configuration.java.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -727,7 +734,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/binreloc $(distdir)/compat-include $(distdir)/developers $(distdir)/include/kaffe $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/m4 $(distdir)/po $(distdir)/scripts $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/compiler $(distdir)/test/regression/run_time
+	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/binreloc $(distdir)/compat-include $(distdir)/developers $(distdir)/include/kaffe $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/libraries/javalib/gnu/classpath $(distdir)/m4 $(distdir)/po $(distdir)/scripts $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/compiler $(distdir)/test/regression/run_time
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

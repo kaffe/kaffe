@@ -11,7 +11,6 @@ com/jcraft/jzlib/ZInputStream.java
 com/jcraft/jzlib/ZOutputStream.java
 com/jcraft/jzlib/ZStream.java
 com/jcraft/jzlib/ZStreamException.java
-gnu/classpath/Configuration.java
 gnu/classpath/RawData.java
 gnu/classpath/RawData32.java
 gnu/classpath/RawData64.java

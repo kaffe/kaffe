@@ -1,5 +1,50 @@
 2005-02-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/classpath/Configuration.java.in: New file.
+	Taken from GNU Classpath.
+
+	* libraries/javalib/gnu/classpath/Configuration.java: Removed.
+
+	* configure.ac: Added a few configure switches from GNU Classpath,
+	needed to generate gnu/classpath/Configure.java.
+
+	* libraries/javalib/Makefile.am.in: Added generated 
+	gnu/classpath/Configure.java to compiler's parameters.
+
+	* libraries/javalib/all.files: Removed gnu/classpath/Configure.java, 
+	as it is no longer a part of the source files.
+
+	That setup is absolutely ugly, actually, because it's amazingly hard 
+	to make sure that a java compiler builds both the generated file 
+	and the normal, non-generated sources in the same time invocation,
+	without using all sorts of undocumented tricks and cheats.
+
+	But the necessity to commit this comes from GNU Classpath, as it has 
+	become mandatory in order to merge in the latest cairo detection code.
+
+	My only hope is that this split source setup will only have to hang 
+	around in Kaffe for the little remaining time till we're fully merged with 
+	Classpath.
+
+	* FAQ/FAQ.classlibrary-compile: Removed section on bootstrapping with kjc.
+
+	* include/Makefile.am,
+	libraries/javalib/rebuildLib.in,
+	libraries/javalib/awt-implementations/kaffe/Makefile.am,
+	libraries/javalib/gmp-math/Makefile.am:
+	Removed references to Klasses.jar.bootstrap.
+
+	2005-02-08  Michael Koch  <konqueror@gmx.de>
+
+        * configure.ac: Define substition variable GTK_CAIRO_ENABLED.
+        Fix handling of GTK_CAIRO conditional.
+        * gnu/classpath/Configuration.java.in (GTK_CAIRO_ENABLED):
+        New constant.
+        * gnu/java/awt/peer/gtk/GdkGraphics2D.java (static):
+        Throw error when Cairo support was not enabled during configure time.	
+
+2005-02-10  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-02-08  Michael Koch  <konqueror@gmx.de>

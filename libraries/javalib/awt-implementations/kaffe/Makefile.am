@@ -432,7 +432,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(kaffeawt_jar_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	echo $(SHELL) $(rebuildLib)
-	CLASSPATH=$(Klasses_jar) BOOTCLASSPATH=$(top_srcdir)/libraries/javalib/Klasses.jar.bootstrap $(SHELL) $(rebuildLib) $(kaffeawt_jar_SRCS)
+	CLASSPATH=$(Klasses_jar) $(SHELL) $(rebuildLib) $(kaffeawt_jar_SRCS)
 	echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes

@@ -100,30 +100,6 @@ moment.
 If you have managed to compile the class library using any version of
 gcj, please write to kaffe@kaffe.org.
 
-How does the bootstrap process work with kjc?
----------------------------------------------
-
-If you use the default Java compiler, kaffe will use the included kjc
-compiler. Kjc is written in pure java, so kaffe will need to use some
-precompiled classes inorder to be able to run kjc.
-
-These precompiled classes are in the Klasses.jar.bootstrap file. It
-also includes some classes, used by kaffeh to generate include files
-for native methods.
-
-So kaffe will compile its class library using kjc, and create the
-rt.jar file.
-
-How do I add classes to Klasses.jar.bootstrap?
-----------------------------------------------
-
-Just edit the bootstrap.classlist file. It is a list of class
-files. Each entry must to end in '.class'. You can use the '#'
-character to comment out lines.
-
-After you have compiled the class library, run 'make bootstrap' to
-update Klasses.jar.bootstrap.
-
 How do I adapt the class library to my needs?
 ---------------------------------------------
 

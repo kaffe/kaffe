@@ -1,5 +1,5 @@
-/* GdkGraphics2D.java
-   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
+/* GdkGraphics2D.java --
+   Copyright (C) 2003, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -103,6 +103,10 @@ public class GdkGraphics2D extends Graphics2D
 
   static 
   {
+    if (! Configuration.GTK_CAIRO_ENABLED)
+      throw new Error("Grahics2D not implemented. "
+		      + "Cairo was not found or disabled at configure time");
+
     if (Configuration.INIT_LOAD_LIBRARY)
       System.loadLibrary("gtkpeer");
 

@@ -13,9 +13,6 @@ if [ -z "$1" ] ; then
     exit 0
 fi
 
-# We now rebuild the class library using kjc and Klasses.jar.bootstrap 
-# JIKES=
-
 LIBDIR=`CDPATH=: && cd $LIBDIR && pwd`
 VERBOSE=
 
@@ -37,7 +34,6 @@ if [ -z "${JIKES:-}" ] ; then
 		JAVAC="$JAVA -ss 500k -mx 512M at.dms.kjc.Main"
 		VERBOSE=-v
 	fi
-	BOOTCLASSPATH=${srcdir}/Klasses.jar.bootstrap:$BOOTCLASSPATH; export BOOTCLASSPATH
 	CPATH="${CPATH+-classpath $CLASSPATH:$BOOTCLASSPATH}"
 else
 	test -f ${top_builddir}/BUILD_ENVIRONMENT && . ${top_builddir}/BUILD_ENVIRONMENT
@@ -47,7 +43,7 @@ else
 #	VERBOSE=${VERBOSE-"-verbose"}
 fi
 
-cd $srcdir
+cd ${srcdir}
 
 echo "Compiling classes from " ${1+"$@"} " using " $JAVAC $VERBOSE $JAVAC_FLAGS -d $LIBDIR $CPATH
 $JAVAC $VERBOSE $JAVAC_FLAGS -d $LIBDIR $CPATH ${1+"$@"}

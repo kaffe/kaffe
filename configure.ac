@@ -1577,13 +1577,17 @@ dnl determine whether to enable the cairo GTK Graphics2D backend
 dnl ------------------------------------------------------------
 AC_ARG_ENABLE([gtk-cairo],
               [AS_HELP_STRING(--enable-gtk-cairo,build the cairo Graphics2D implementation on GTK [default=no])],
-	              [case "${enableval}" in
-	                yes) GTK_CAIRO=yes ;;
-	                no) GTK_CAIRO=no ;;
-	                *) GTK_CAIRO=yes ;;
-	              esac],
-	      [GTK_CAIRO=no])
-AM_CONDITIONAL(GTK_CAIRO, test "x${enable_gtk_cairo}" = xyes)
+              [case "${enableval}" in
+                yes) GTK_CAIRO_ENABLED=true ;;
+                no) GTK_CAIRO_ENABLED=false ;;
+                *) GTK_CAIRO_ENABLED=true ;;
+              esac],
+              [GTK_CAIRO_ENABLED=false])
+AC_SUBST(GTK_CAIRO_ENABLED)
+if test "x${GTK_CAIRO_ENABLED}" = xtrue; then
+  AC_DEFINE(GTK_CAIRO, 1, [defined if cairo support was built in])
+fi
+AM_CONDITIONAL(GTK_CAIRO, test "x${GTK_CAIRO_ENABLED}" = xtrue)
 
 dnl -------------------------------------------------------------------------
 dnl Configure AWT engine
@@ -2060,6 +2064,42 @@ else
 fi
 AC_SUBST(KVMLIBFLAGS)
 
+dnl -----------------------------------------------------------
+dnl Enable debugging statements at compile time.  By default
+dnl these statements should be optimized out of the bytecode
+dnl produced by an optimizing Java compiler and not hinder 
+dnl performance because debugging is turned off by default.
+dnl -----------------------------------------------------------
+AC_ARG_ENABLE([classpath-debug],
+              [AS_HELP_STRING(--enable-classpath-debug,enable classpath's runtime debugging code)],
+              [case "${enableval}" in 
+                yes) 
+              	LIBDEBUG="true"
+                AC_DEFINE(DEBUG, 1, [Define to 1 if you want classpath's library runtime debugging code enabled]) 
+              	;;
+                no)   LIBDEBUG="false" ;;
+                *) 	AC_MSG_ERROR(bad value ${enableval} for --enable-classpath-debug) ;;
+              esac],
+              [LIBDEBUG="false"])
+AC_SUBST(LIBDEBUG)
+
+dnl -----------------------------------------------------------
+dnl Enable execution of all static initializer loadLibrary() 
+dnl calls at compile time.  By default most people will not
+dnl want to disable this, but some VMs (gcj) don't need or want 
+dnl them.
+dnl -----------------------------------------------------------
+AC_ARG_ENABLE([classpath-load-library],
+              [AS_HELP_STRING(--enable-classpath-load-library,enable to use JNI native methods [default=yes])],
+              [case "${enableval}" in 
+                yes) INIT_LOAD_LIBRARY="true" ;;
+                no) INIT_LOAD_LIBRARY="false" ;;
+                *) AC_MSG_ERROR(bad value ${enableval} for --enable-classpath-load-library) ;;
+              esac],
+              [INIT_LOAD_LIBRARY="true"])
+AC_SUBST(INIT_LOAD_LIBRARY)
+
+
 dnl =========================================================================
 dnl Configure Binreloc support
 dnl -------------------------------------------------------------------------
@@ -2225,6 +2265,7 @@ AC_CONFIG_FILES([kaffe/man/Makefile])
 AC_CONFIG_FILES([kaffe/scripts/Makefile])
 AC_CONFIG_FILES([kaffe/scripts/bat/Makefile])
 AC_CONFIG_FILES([kaffe/scripts/compat/Makefile])
+AC_CONFIG_FILES([libraries/javalib/gnu/classpath/Configuration.java])
 AC_CONFIG_FILES([libraries/javalib/Makefile])
 AC_CONFIG_FILES([libraries/javalib/awt-implementations/Makefile])
 AC_CONFIG_FILES([libraries/javalib/awt-implementations/kaffe/Makefile])

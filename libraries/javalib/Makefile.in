@@ -192,6 +192,7 @@ F77 = @F77@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
 GMSGFMT = @GMSGFMT@
+GTK_CAIRO_ENABLED = @GTK_CAIRO_ENABLED@
 GTK_CAIRO_FALSE = @GTK_CAIRO_FALSE@
 GTK_CAIRO_TRUE = @GTK_CAIRO_TRUE@
 GTK_CFLAGS = @GTK_CFLAGS@
@@ -210,6 +211,7 @@ HAVE_MKTEMP_TRUE = @HAVE_MKTEMP_TRUE@
 HAVE_ZIP_FALSE = @HAVE_ZIP_FALSE@
 HAVE_ZIP_TRUE = @HAVE_ZIP_TRUE@
 INCLUDED_EXTENSIONS = @INCLUDED_EXTENSIONS@
+INIT_LOAD_LIBRARY = @INIT_LOAD_LIBRARY@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -233,6 +235,7 @@ KVMBINFLAGS = @KVMBINFLAGS@
 KVMLIBFLAGS = @KVMLIBFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBADD_GMP = @LIBADD_GMP@
+LIBDEBUG = @LIBDEBUG@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
 LIBLTDL = @LIBLTDL@
@@ -691,7 +694,6 @@ com_jcraft_jzlib_SRCS = \
 	com/jcraft/jzlib/ZStreamException.java
 
 gnu_classpath_SRCS = \
-	gnu/classpath/Configuration.java \
 	gnu/classpath/RawData.java \
 	gnu/classpath/RawData32.java \
 	gnu/classpath/RawData64.java \
@@ -5770,9 +5772,9 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	if test "$(PROFILE)" = default; then \
-		$(SHELL) $(rebuildLib) @all.files; \
+		$(SHELL) $(rebuildLib) @all.files `CDPATH=: && cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
 	else \
-		$(SHELL) $(rebuildLib) @$(PROFILE); \
+		$(SHELL) $(rebuildLib) @$(PROFILE) `CDPATH=: && cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
 	fi
 	echo timestamp > $(LIBDIR)/stamp
 

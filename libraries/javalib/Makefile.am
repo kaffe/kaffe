@@ -339,7 +339,6 @@ com_jcraft_jzlib_SRCS = \
 	com/jcraft/jzlib/ZStream.java \
 	com/jcraft/jzlib/ZStreamException.java
 gnu_classpath_SRCS = \
-	gnu/classpath/Configuration.java \
 	gnu/classpath/RawData.java \
 	gnu/classpath/RawData32.java \
 	gnu/classpath/RawData64.java \
@@ -4821,9 +4820,9 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	if test "$(PROFILE)" = default; then \
-		$(SHELL) $(rebuildLib) @all.files; \
+		$(SHELL) $(rebuildLib) @all.files `CDPATH=: && cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
 	else \
-		$(SHELL) $(rebuildLib) @$(PROFILE); \
+		$(SHELL) $(rebuildLib) @$(PROFILE) `CDPATH=: && cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
 	fi
 	echo timestamp > $(LIBDIR)/stamp
 
