@@ -1,3 +1,28 @@
+2004-01-11  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/text/FormatCharacterIterator.java
+	(addAttributes): Added a new helper function.
+	(debug, dumpTable): Added debug functions.
+
+	* libraries/javalib/java/text/MessageFormat.java
+	(format): Changed ignore to fp as the parameter is not ignored.
+	(formatInternal): Likewise. Fixed attributed string output. Use the
+	new helper function 'addAttributes'.
+
+	* libraries/javalib/java/text/SimpleDateFormat.java
+	(standardChars): Added a new non documented date symbol (checked
+	against JDK 1.4).
+	(formatToCharacterIterator): Fixed error reporting.
+	(formatWithAttribute): Report the pattern character in the exception
+	message.
+
+	* libraries/javalib/java/text/DateFormatSymbols.java: Fixed copyright
+	notice.
+
+	* libraries/javalib/gnu/java/locale/LocaleInformation_en.java,
+	libraries/javalib/gnu/java/locales/LocaleInformation_nl.java: Updated
+	date symbols.
+	
 2004-01-11  Dalibor Topic <robilad@kaffe.org>
 
 	Resynced with Tritonus.org.

@@ -411,6 +411,17 @@ public class DecimalFormat extends NumberFormat
 	    && useExponentialNotation == dup.useExponentialNotation);
   }
 
+
+  /**
+   * This method is a helper function for formatters. Given a set of ranges
+   * and attributes it adds exactly one attribute for the range of characters
+   * comprised between the last entry in 'ranges' and the specified new range.
+   *
+   * @param ranges Vector containing a list of previously entered ranges for attributes.
+   * @param attributes Vector containing a list of previously entered attributes
+   * @param new_range A new range to insert in the list.
+   * @param new_attribute A new attribute to insert in the list.
+   */  
   private final void addAttribute(Vector ranges, Vector attributes,
 				  int new_range, Format.Field new_attribute)
   {

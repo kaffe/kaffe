@@ -397,16 +397,18 @@ public class MessageFormat extends Format
    * @param fp A FieldPosition object (it is ignored).
    */
   public final StringBuffer format (Object arguments[], StringBuffer appendBuf,
-				    FieldPosition ignore)
+				    FieldPosition fp)
   {
-    return formatInternal(arguments, appendBuf, ignore, null);
+    return formatInternal(arguments, appendBuf, fp, null);
   }
 
   protected final StringBuffer formatInternal (Object arguments[], StringBuffer appendBuf,
-					       FieldPosition ignore,
+					       FieldPosition fp,
 					       FormatCharacterIterator output_iterator)
   {
     appendBuf.append(leader);
+    if (output_iterator != null)
+      output_iterator.append(leader);
 
     for (int i = 0; i < elements.length; ++i)
       {
@@ -416,6 +418,10 @@ public class MessageFormat extends Format
 	AttributedCharacterIterator iterator = null;
 
 	Format formatter = null;
+
+	if (i == 0 && fp != null && fp.getFieldAttribute() == Field.ARGUMENT)
+	  fp.setBeginIndex(appendBuf.length());
+
 	if (elements[i].setFormat != null)
 	  formatter = elements[i].setFormat;
 	else if (elements[i].format != null)
@@ -432,26 +438,27 @@ public class MessageFormat extends Format
 	else
 	  appendBuf.append(thisArg);
 
+	if (i == 0 && fp != null && fp.getFieldAttribute() == Field.ARGUMENT)
+	  fp.setEndIndex(appendBuf.length());
+
 	if (formatter != null)
 	  {
 	    // Special-case ChoiceFormat.
 	    if (formatter instanceof ChoiceFormat)
 	      {
 		StringBuffer buf = new StringBuffer ();
-		formatter.format(thisArg, buf, ignore);
+		formatter.format(thisArg, buf, fp);
 		MessageFormat mf = new MessageFormat ();
 		mf.setLocale(locale);
 		mf.applyPattern(buf.toString());
-		mf.format(arguments, appendBuf, ignore);
+		mf.format(arguments, appendBuf, fp);
 	      }
 	    else
 	      {
 		if (output_iterator != null)
-		  {
-		    iterator = formatter.formatToCharacterIterator(thisArg);
-		  }
+		  iterator = formatter.formatToCharacterIterator(thisArg);
 		else
-		  formatter.format(thisArg, appendBuf, ignore);
+		  formatter.format(thisArg, appendBuf, fp);
 	      }
 
 	    elements[i].format = formatter;
@@ -464,24 +471,20 @@ public class MessageFormat extends Format
 	    
 	    hash_argument.put (MessageFormat.Field.ARGUMENT,
 			       new Integer(elements[i].argNumber));
+
 	    
 	    if (iterator != null)
 	      {
 		output_iterator.append(iterator);
-		if (position == 0)
-		  output_iterator.mergeAttributes
-		    (new HashMap[] { hash_argument},
-		     new int[] { output_iterator.getEndIndex() });
-		else 
-		  output_iterator.mergeAttributes
-		    (new HashMap[] {null, hash_argument},
-		     new int[] { position, output_iterator.getEndIndex()});
-	      } else
-	       output_iterator.append(thisArg.toString(), hash_argument);
-
+		output_iterator.addAttributes(hash_argument, position, 
+					      output_iterator.getEndIndex());
+	      }	
+	    else
+	      output_iterator.append(thisArg.toString(), hash_argument);
+	    
 	    output_iterator.append(elements[i].trailer);
 	  }
-
+	
 	appendBuf.append(elements[i].trailer);
       }
     

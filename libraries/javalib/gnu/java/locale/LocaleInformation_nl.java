@@ -126,10 +126,10 @@ private static final String[][] zoneStrings =
   * month (d), hour from 1-12 (h), hour 0-23 (H), minute (m), second (s),
   * millisecond (S), date of week (E), date of year (D),
   * day of week in month (F), week in year (w), week in month (W), am/pm (a),
-  * hour from 1-24 (k), hour from 0-11 (K), time zone (z).
+  * hour from 1-24 (k), hour from 0-11 (K), time zone (z), RFC822 time zone (Z).
   * Why would you use others?
   */
-private static final String localPatternChars = "GyMdhHmsSEDFwWakKz"; // Not a mistake!
+private static final String localPatternChars = "GyMdhHmsSEDFwWakKzZ"; // Not a mistake!
 
 /**
   * This is the DateFormat.SHORT date format

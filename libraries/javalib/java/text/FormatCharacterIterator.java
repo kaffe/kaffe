@@ -37,12 +37,13 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 package java.text;
 
+import gnu.classpath.Configuration;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Vector;
-
+import java.util.Iterator;
 
 /**
  * This class should not be put public and it is only intended to the
@@ -331,6 +332,8 @@ class FormatCharacterIterator implements AttributedCharacterIterator
     Vector new_attributes = new Vector();
     int i = 0, j = 0;
 
+    debug("merging " + attributes.length + " attrs");
+    
     while (i < this.ranges.length && j < ranges.length)
       {
 	if (this.attributes[i] != null)
@@ -388,6 +391,7 @@ class FormatCharacterIterator implements AttributedCharacterIterator
 	this.ranges[i] = ((Integer)new_ranges.elementAt (i)).intValue();
       }
     
+    dumpTable();
   }
 
   /**
@@ -466,4 +470,63 @@ class FormatCharacterIterator implements AttributedCharacterIterator
   {
     append (text, null);
   }  
+
+  /**
+   * This method adds a set of attributes to a range of character. The
+   * bounds are always inclusive. In the case many attributes have to
+   * be added it is advised to directly use {@link #mergeAttributes([Ljava.util.HashMap;[I}
+   *
+   * @param attributes Attributes to merge into the iterator.
+   * @param range_start Lower bound of the range of characters which will receive the
+   * attribute.
+   * @param range_end Upper bound of the range of characters which will receive the
+   * attribute. 
+   *
+   * @throws IllegalArgumentException if ranges are out of bounds.
+   */
+  protected void addAttributes(HashMap attributes, int range_start, int range_end)
+  {
+    if (range_start == 0)
+      mergeAttributes(new HashMap[] { attributes }, new int[] { range_end });
+    else
+      mergeAttributes(new HashMap[] { null, attributes }, new int[] { range_start, range_end });
+  }
+
+  final private void debug(String s)
+  {
+    if (Configuration.DEBUG)
+      System.out.println(s);
+  }
+
+  final private void dumpTable()
+  {
+    int start_range = 0;
+    
+    if (!Configuration.DEBUG)
+      return;
+
+    System.out.println("Dumping internal table:");
+    for (int i = 0; i < ranges.length; i++)
+      {
+	System.out.print("\t" + start_range + " => " + ranges[i] + ":");
+	if (attributes[i] == null)
+	  System.out.println("null");
+	else
+	  {
+	    Set keyset = attributes[i].keySet();
+	    if (keyset != null)
+	      {
+		Iterator keys = keyset.iterator();
+		
+		while (keys.hasNext())
+		  System.out.print(" " + keys.next());
+	      }
+	    else
+	      System.out.println("keySet null");
+	    System.out.println();
+	  }
+      }
+    System.out.println();
+    System.out.flush();
+  }
 }

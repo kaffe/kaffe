@@ -84,7 +84,7 @@ public class SimpleDateFormat extends DateFormat
   // This string is specified in the JCL.  We set it here rather than
   // do a DateFormatSymbols(Locale.US).getLocalPatternChars() since
   // someone could theoretically change those values (though unlikely).
-  private static final String standardChars = "GyMdkHmsSEDFwWahKz";
+  private static final String standardChars = "GyMdkHmsSEDFwWahKzZ";
 
   private void readObject(ObjectInputStream stream)
     throws IOException, ClassNotFoundException
@@ -521,7 +521,7 @@ public class SimpleDateFormat extends DateFormat
 	  buffer.append(zoneID);
 	  break;
 	default:
-	  throw new IllegalArgumentException("Illegal pattern character");
+	  throw new IllegalArgumentException("Illegal pattern character " + p.field);
 	}
 	if (pos != null && p.field == pos.getField())
 	  {
@@ -556,6 +556,11 @@ public class SimpleDateFormat extends DateFormat
   public AttributedCharacterIterator formatToCharacterIterator(Object date)
     throws IllegalArgumentException
   {
+    if (date == null)
+      throw new NullPointerException("null argument");
+    if (!(date instanceof Date))
+      throw new IllegalArgumentException("argument should be an instance of java.util.Date");
+
     Vector attributes = new Vector();
     Vector ranges = new Vector();
     String s = formatWithAttribute((Date)date, new StringBuffer(),
