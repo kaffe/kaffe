@@ -34,6 +34,7 @@ public class URLDecoder {
 				} else {
 					throw new Exception("invalid input");
 				}
+				pos += 2;
 			} else {
 				buf.append(ch);
 			}
