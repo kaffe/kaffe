@@ -1,6 +1,10 @@
 Wed Feb  9 11:18:38 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/Timer.java: fix bug in waking thread
+	* libraries/javalib/java/net/URL.java: handle "file://host/path"
+	URL's using the FTP protocol handler, as JDK does
+	* libraries/javalib/java/util/AbstractMap.java: add the contains()
+	method to the Collection returned by values() -> map.containsValue()
 
 Tue Feb 08 15:30:31 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
 
