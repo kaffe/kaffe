@@ -199,4 +199,16 @@ public class ZipEntry implements Cloneable, ZipConstants {
       (hour << 11) | (minute << 5) | (second >> 1);
   }
 
+  void setDosTime(int date) {
+      Calendar cal = new GregorianCalendar();
+      cal.set (((date >> 25) & 0x7F) + 1980,
+	       ((date >> 21) & 0xF) - 1,
+	       (date >> 16) & 0x1F,
+	       (date >> 11) & 0x1F,
+	       (date >> 5) & 0x3F,
+	       (date << 1) & 0x3E); 
+      time = cal.getTime().getTime();
+      dosTime = date;
+  }
+
 }
