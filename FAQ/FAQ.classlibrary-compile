@@ -5,9 +5,9 @@ How do I compile the class library?
 Cd to your build directory (the same as the source directory if you
 did ./configure), then cd to libraries/javalib.
 
-Type "make Klasses".
+Type "make".
 
-This will build the java libraries, put them in a Klasses.jar file
+This will build the java libraries, put them in a rt.jar file
 and overwrite the version in your source tree.  Type "make install"
 to install the jar file in your target prefix.
 
@@ -28,11 +28,14 @@ Kaffe extensions, type "make CLASSDIRS=all Klasses".
 How do I set the compiler?
 --------------------------
 
-The ./configure script has the --with-jikes option. Not setting it at
-all will use the included kjc Java compiler. Setting it to
---with-jikes=yes will use the jikes compiler if one can be found. You
-can also specify the absolute path to a jikes executable using
---with-jikes=/absolute-path-to/jikes.
+The ./configure script has the --with-jikes option. If you don't set
+it at all, the build system will use the compiler specified by the
+JAVAC environment variable. If no compiler is specified in JAVAC, the
+build system will use the included kjc Java compiler.
+
+Setting --with-jikes=yes will use the jikes compiler if one can
+be found. You can also specify the absolute path to a jikes executable
+using --with-jikes=/absolute-path-to/jikes.
 
 You can also use the absolute path to specify other Java
 compilers. For example, in order to use gcj to compile the class
@@ -65,10 +68,7 @@ The preferred compiler is jikes. The URL for jikes is:
   http://www10.software.ibm.com/developerworks/opensource/jikes/
 
 Please note that jikes 1.14 and 1.15 have bugs that result in a
-miscompiled Klasses.jar file. If you use jikes 1.18, you need to pass
-it the "-source 1.1" option. Jikes 1.18 generates class files for JDK
-1.4 by default, and kaffe complains about an unknown version
-number.
+miscompiled Klasses.jar file.
 
 The recommended version of jikes is 1.18.
 
@@ -80,10 +80,9 @@ The included compiler, kjc, also works. kjc is part of the Kopi project:
 
 * javac 
 
-Sun's javac compiler from JDK 1.3 and JDK 1.4 works as well. If you
-are using javac from JDK 1.4, please make sure that you specify the
--target 1.1 option. Failing to do so will result in a lot of annoying
-warning messages when you install and use the Klasses.jar file.
+Sun's javac compiler from JDK 1.3 and JDK 1.4 works as well. You have
+to add "-bootclasspath lib/" to your JAVAC_FLAGS to avoid build
+problems due to Sun's javac linking Sun's class libraries with kaffe's.
 
 No known older version of Sun's javac compiler (up through JDK 1.2)
 will compile Kaffe's classes, due to bugs that Sun has yet to fix.
@@ -91,7 +90,7 @@ will compile Kaffe's classes, due to bugs that Sun has yet to fix.
 What compilers are known not to work?
 -------------------------------------
 
-FSF's gcj doesn't work up to version 3.2.
+FSF's gcj doesn't work up to version 3.3.
 
 In order to compile the class library with gcj to bytecodes instead of
 native code, you need to pass it the "-C" flag. Unfortunately, gcj has

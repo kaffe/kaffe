@@ -72,7 +72,7 @@ Compiling the classes
 ---------------------
 
 You can compile the classes that will be included in the rt.jar archive without debugging.
-Currently (06.06.2002) the rt.jar archive is about 1054K with debugging and 916K without 
+Currently (13.08.2003) the rt.jar archive is about 2425K with debugging and 2117K without 
 debugging info in the classes.
 You can compile the classes without debugging using the compiler from SUN's or IBM's JDK 
 with the -g:none option.
@@ -80,7 +80,8 @@ Go to <KAFFE_SRC>/ibraries/javalib and do:
 export -n JAVA
 export -n JAVAC
 export -n CLASSPATH
-export JAVAC="<PATH_TO_JDK>/bin/javac -g:none"
+export JAVAC="<PATH_TO_JDK>/bin/javac"
+export JAVAC_FLAGS="-g:none -bootclasspath lib/"
 make Klasses
 
 For more details on recompiling Klasses.jar check FAQ/FAQ.classlibrary-compile.
