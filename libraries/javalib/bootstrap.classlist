@@ -1,7 +1,14 @@
 # Used when kjc runs (while compiling classes) and kaffeh (to generate headers)
 
-gnu/java/lang/CharData.class
 gnu/java/io/PlatformHelper.class
+gnu/java/lang/CharData.class
+gnu/java/lang/reflect/TypeSignature.class
+gnu/java/net/protocol/file/Handler.class
+gnu/java/net/protocol/file/Connection.class
+gnu/java/net/protocol/jar/Connection.class
+gnu/java/net/protocol/jar/Connection$JarFileCache.class
+gnu/java/net/protocol/jar/Handler.class
+gnu/java/net/URLParseError.class
 java/io/BufferedInputStream.class
 java/io/BufferedOutputStream.class
 java/io/BufferedReader.class
@@ -110,6 +117,17 @@ java/lang/reflect/Member.class
 java/lang/reflect/Method.class
 java/lang/reflect/Modifier.class
 java/lang/reflect/ReflectPermission.class
+java/net/FileNameMap.class
+java/net/JarURLConnection.class
+java/net/MalformedURLException.class
+java/net/MimeTypeMapper.class
+java/net/NetPermission.class
+java/net/URL.class
+java/net/URLClassLoader.class
+java/net/URLConnection.class
+java/net/URLStreamHandler.class
+java/net/URLStreamHandlerFactory.class
+java/security/AccessControlContext.class
 java/security/BasicPermission.class
 java/security/CodeSource.class
 java/security/cert/Certificate.class
@@ -213,21 +231,6 @@ kaffe/lang/ThreadStack.class
 kaffe/util/IntegerHashtable.class
 kaffe/util/Ptr.class
 kaffe/util/UTF8.class
-java/net/URL.class
-java/net/URLClassLoader.class
-java/net/MalformedURLException.class
-java/net/URLStreamHandlerFactory.class
-java/net/URLStreamHandler.class
-java/net/NetPermission.class
-gnu/java/net/protocol/jar/Handler.class
-gnu/java/net/protocol/file/Handler.class
-gnu/java/net/protocol/file/Connection.class
-gnu/java/net/URLParseError.class
-java/net/URLConnection.class
-gnu/java/net/protocol/jar/Connection.class
-java/net/JarURLConnection.class
-java/net/FileNameMap.class
-gnu/java/lang/reflect/TypeSignature.class
 
 # Additional classes used by -v option passed to kjc
 java/text/FieldPosition.class
