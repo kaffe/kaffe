@@ -23,6 +23,7 @@
 #if defined(HAVE_TIME_H)
 #include <time.h>
 #endif
+#include <ctype.h>
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/gtypes.h"
 #include "../../../kaffe/kaffevm/object.h"
@@ -136,6 +137,114 @@ java_lang_System_arraycopy(struct Hjava_lang_Object* src, jint srcpos, struct Hj
 }
 
 /*
+ * Initialise kaffe.net.www.protocole.http.HttpURLConnction defaults
+ * properties.
+ *
+ * http.proxyHost	Host name of HTTP proxy server
+ * http.proxyPort	Port number of HTTP proxy server
+ * http.nonProxyHosts	Avoid proxy on these hosts
+ *
+ * How these properties are undocumented in the API doc.  We know
+ * about them from www.icesoft.no's webpage.
+ */
+static void
+initProxyProperties (struct Hjava_util_Properties *prop)
+{
+	static char *http_prefix = "http://";
+	char *proxy;
+	char *start, *p;
+	char c;
+	int len;
+	
+	
+	/* Build HTTP proxy properties from $http_proxy and $no_proxy
+           environement variables */
+	proxy = getenv("http_proxy");
+	if (proxy == NULL)
+		return;
+
+	/* Check it's HTTP protocol */
+	start = proxy;
+	p = http_prefix;
+	while (*p && (tolower(*start) == *p)) {
+		start++;
+		p++;
+	}
+	if (*p != '\0')
+		return;
+	
+	/* Extract the given URL of the form
+	   http://(user(:password)?@)?hostname(:port)?(/path)?  */
+
+	/* for now, skip user and password */
+	for (p = start; *p && (*p != '/'); p++) {
+		if (*p == '@')
+			break;
+	}
+	if (*p == '@')
+		start = p + 1;
+
+	/* retreive hostname */
+	for (p = start; *p && (*p != '/'); p++) {
+		if (*p == ':')
+			break;
+	}
+	if (start == p)
+		return;
+	
+	c = *p;
+	*p = '\0';
+	setProperty(prop, "http.proxyHost", start);
+	*p = c;
+
+	if (c == ':') {
+		/* retreive port number */
+		for (start = ++p; *p && (*p != '/'); p++)
+			;
+		if (start != p) {
+			c = *p;
+			*p = '\0';
+			setProperty (prop, "http.proxyPort", start);
+			*p = c;
+		}
+	}
+
+	proxy = getenv("no_proxy");
+	if (proxy == NULL)
+		return;
+
+	/* $no_proxy, it's a list of domains separated by coma
+	   as in ".foo.org,.bar.org", translate it to
+	   format "*.foo.org|*.bar.org".  */
+	len = 0;
+	for (p = proxy; *p; p++, len++) {
+		if (*p == ',')
+			len++;
+	}
+	if (len == 0)
+	    return;
+
+	/* allocate translation buffer but ignore out of memory errors */
+	start = KMALLOC(len + 2);
+	if (start == NULL)
+		return;
+	*start = '*';
+	for (p = start + 1; *proxy; proxy++) {
+		if (*proxy == ',') {
+			*p++ = '|';
+			*p++ = '*';
+		}
+		else {
+			*p++ = *proxy;
+		}
+	}
+	*p = '\0';
+	setProperty (prop, "http.nonProxyHosts", start);
+	KFREE(start);
+}
+
+
+/*
  * Initialise system properties to their defaults.
  */
 struct Hjava_util_Properties*
@@ -153,7 +262,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 #if defined(HAVE_PWD_H)
 	struct passwd* pw;
 #endif
-
+	
 	/* Add the default properties:
 	 *
 	 * Standard:
@@ -206,6 +315,8 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	 * java.compiler        Java JIT compiler
 	 * file.encoding	Character encoding for locale
 	 * file.encoding.pkg	Character encoding package
+	 * kaffe.compiler	Default java compiler
+	 *
 	 */
 
 	setProperty(p, "java.version", kaffe_version);
@@ -318,6 +429,8 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	 */
 	setProperty(p, "kaffe.compiler", "kjc");
 
+	initProxyProperties (p);
+	
 	/* Now process user defined properties */
 	for (prop = userProperties; prop != 0; prop = prop->next) {
 		setProperty(p, prop->key, prop->value);
