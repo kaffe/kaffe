@@ -1,3 +1,7 @@
+Mon Feb  1 17:39:55 1999  Moses DeJong <dejong@cs.umn.edu>
+
+	* libraries/clib/awt/X/tlk.c: don't use "//" as comment in C
+
 Sun Jan 31 23:20:10 1999  grunwald@cm2081664196.cableco-op.com
 
 	* libraries/javalib/java/text/DateFormat.java: add missing
