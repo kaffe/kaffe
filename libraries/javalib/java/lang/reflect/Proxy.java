@@ -1340,7 +1340,7 @@ public class Proxy implements Serializable
           Object[] args = {qualName, bytecode, new Integer(0),
                            new Integer(bytecode.length),
                            /* Object.class.getProtectionDomain() */ };
-          Class clazz = (Class) m.invoke(loader, args);
+          Class clazz = (Class) m.invoke(loader != null ? loader : ClassLoader.getSystemClassLoader(), args);
           m.setAccessible(false);
 
           // Finally, initialize the m field of the proxy class, before
