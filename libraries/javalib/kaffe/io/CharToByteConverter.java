@@ -1,6 +1,9 @@
 package kaffe.io;
 
 import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.lang.String;
 import java.util.Hashtable;
 
@@ -77,13 +80,27 @@ private static CharToByteConverter getConverterInternal(String enc)
 	if (obj != null) {
 		return ((CharToByteConverter)obj);
 	}
-	String realenc = ConverterAlias.alias(enc);
+	String realenc = encodingRoot + ".CharToByte" + ConverterAlias.alias(enc);
 	try {
-		obj = Class.forName(encodingRoot + ".CharToByte" + realenc).newInstance();
+		obj = Class.forName(realenc).newInstance();
 		cache.put(enc, obj);
 		return ((CharToByteConverter)obj);
 	}
 	catch (ClassNotFoundException _) {
+		try {
+			InputStream in = ClassLoader.getSystemResourceAsStream(realenc.replace('.', '/') + ".ser");
+			if (in != null) {
+				ObjectInputStream oin = new ObjectInputStream(in);
+				obj = oin.readObject();
+				oin.close();
+				cache.put(enc, obj);
+				return ((CharToByteConverter)obj);
+			}
+		}
+		catch (IOException __) {
+		}
+		catch (ClassNotFoundException __) {
+		}
 	}
 	catch (ClassCastException _) {
 	}

@@ -12,6 +12,9 @@ package kaffe.io;
 
 import java.lang.String;
 import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import kaffe.util.Assert;
 import java.util.Hashtable;
 
@@ -91,13 +94,27 @@ private static ByteToCharConverter getConverterInternal ( String enc ) {
 	if (obj != null) {
 		return ((ByteToCharConverter)obj);
 	}
-	String realenc = ConverterAlias.alias(enc);
+	String realenc = encodingRoot + ".ByteToChar" + ConverterAlias.alias(enc);
 	try {
-		obj = Class.forName(encodingRoot + ".ByteToChar" + realenc).newInstance();
+		obj = Class.forName(realenc).newInstance();
 		cache.put(enc, obj);
 		return ((ByteToCharConverter)obj);
 	}
 	catch (ClassNotFoundException _) {
+		try {
+			InputStream in = ClassLoader.getSystemResourceAsStream(realenc.replace('.', '/') + ".ser");
+			if (in != null) {
+				ObjectInputStream oin = new ObjectInputStream(in);
+				obj = oin.readObject();
+				oin.close();
+				cache.put(enc, obj);
+				return ((ByteToCharConverter)obj);
+			}
+		}
+		catch (IOException __) {
+		}
+		catch (ClassNotFoundException __) {
+		}
 	}
 	catch (ClassCastException _) {
 	}
