@@ -72,12 +72,27 @@ public int getPort() {
 	return impl.getPort();
 }
 
+public InetAddress getLocalAddress() {
+	InetAddress localAddress;
+	try {
+		localAddress =
+			(InetAddress)impl.getOption(SocketOptions.SO_BINDADDR); 
+	} catch (Exception e) {
+		localAddress = InetAddress.anyLocalAddress;
+	}
+	return localAddress;
+}
+
 public static synchronized void setSocketImplFactory(SocketImplFactory fac) throws IOException {
 	factory=fac;
 }
 
-public void setSoLinger(int timeout) throws SocketException {
-	impl.setOption(SocketOptions.SO_LINGER, new Integer(timeout));
+public void setSoLinger(boolean on, int timeout) throws SocketException {
+	if (on) {
+		impl.setOption(SocketOptions.SO_LINGER, new Integer(timeout));
+		return;
+	}
+	impl.setOption(SocketOptions.SO_LINGER, new Boolean(on));
 }
 
 public int getSoLinger() throws SocketException {
