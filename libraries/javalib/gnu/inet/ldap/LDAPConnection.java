@@ -213,39 +213,48 @@ public class LDAPConnection
       {
         bind.append (version);
         bind.append (name);
-        bind.append (credentials);
-        // Request controls
-        BEREncoder ctls = new BEREncoder (utf8);
-        if (controls != null)
+        if (credentials != null)
           {
-            for (int i = 0; i < controls.length; i++)
-              {
-                ctls.append (controlSequence (controls[i], utf8),
-                             BERConstants.SEQUENCE);
-              }
+            bind.append (credentials);
           }
-        bind.append (ctls.toByteArray (), BERConstants.SEQUENCE);
-        // Write request
-        write (id, BIND_REQUEST, bind.toByteArray ());
-        // Read response
-        BERDecoder response = read (id);
-        BERDecoder resultSequence = response.parseSequence (BIND_RESPONSE);
-        LDAPResult result = parseResult (resultSequence);
-        if (resultSequence.available ())
-          {
-            byte[] serverCreds = resultSequence.parseOctetString ();
-            // TODO
-          }
-        // TODO response controls
-        return result;
       }
     else
       {
         bind.append (version);
         bind.append (name);
-        // TODO
-        throw new UnsupportedOperationException ("TODO");
+        // SASL credentials
+        BEREncoder saslCredentials = new BEREncoder (utf8);
+        saslCredentials.append (mechanism);
+        if (credentials != null)
+          {
+            saslCredentials.append (credentials);
+          }
+        bind.append (saslCredentials.toByteArray (), BERConstants.SEQUENCE);
       }
+    // Request controls
+    BEREncoder ctls = new BEREncoder (utf8);
+    if (controls != null)
+      {
+        for (int i = 0; i < controls.length; i++)
+          {
+            ctls.append (controlSequence (controls[i], utf8),
+                         BERConstants.SEQUENCE);
+          }
+      }
+    bind.append (ctls.toByteArray (), BERConstants.CONTEXT);
+    // Write request
+    write (id, BIND_REQUEST, bind.toByteArray ());
+    // Read response
+    BERDecoder response = read (id);
+    BERDecoder resultSequence = response.parseSequence (BIND_RESPONSE);
+    LDAPResult result = parseResult (resultSequence);
+    if (resultSequence.available ())
+      {
+        byte[] serverCreds = resultSequence.parseOctetString ();
+        // TODO
+      }
+    // TODO response controls
+    return result;
   }
 
   /**
@@ -336,13 +345,13 @@ public class LDAPConnection
           case SEARCH_RESULT:
             BERDecoder entry = response.parseSequence (code);
             String objectName = entry.parseString ();
-            BERDecoder attributeSeq = entry.parseSequence ();
+            BERDecoder attributeSeq = entry.parseSequence (0x30);
             Map attrs = new TreeMap ();
             while (attributeSeq.available ())
               {
-                BERDecoder attribute = attributeSeq.parseSequence ();
+                BERDecoder attribute = attributeSeq.parseSequence (0x30);
                 String type = attribute.parseString ();
-                BERDecoder values = attribute.parseSet ();
+                BERDecoder values = attribute.parseSet (0x31);
                 List acc = new ArrayList ();
                 while (values.available ())
                   {
@@ -381,8 +390,7 @@ public class LDAPConnection
           case SEARCH_RESULT_DONE:
             return parseResult (response.parseSequence (code));
           default:
-            throw new ProtocolException ("Unexpected response code: " +
-                                         code);
+            throw new ProtocolException ("Unexpected response: " + code);
           }
       }
     while (true);

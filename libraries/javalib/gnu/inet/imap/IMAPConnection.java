@@ -1,6 +1,6 @@
 /*
- * $Id: IMAPConnection.java,v 1.4 2004/09/21 13:43:47 robilad Exp $
- * Copyright (C) 2003 The Free Software Foundation
+ * $Id: IMAPConnection.java,v 1.5 2004/10/04 19:34:00 robilad Exp $
+ * Copyright (C) 2003,2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
  * 
@@ -47,6 +47,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -73,7 +74,7 @@ import gnu.inet.util.SaslPlain;
  * The protocol class implementing IMAP4rev1.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.4 $ $Date: 2004/09/21 13:43:47 $
+ * @version $Revision: 1.5 $ $Date: 2004/10/04 19:34:00 $
  */
 public class IMAPConnection
 implements IMAPConstants
@@ -139,6 +140,16 @@ implements IMAPConstants
    */
   private boolean ansiDebug = false;
 
+  /**
+   * Creates a new connection to the default IMAP port.
+   * @param host the name of the host to connect to
+   */
+  public IMAPConnection (String host)
+    throws UnknownHostException, IOException
+  {
+    this (host, -1, 0, 0, false, null, false);
+  }
+  
   /**
    * Creates a new connection.
    * @param host the name of the host to connect to
@@ -1820,6 +1831,522 @@ implements IMAPConstants
       }
     buffer.append (' ').append (quote (UTF7imap.encode (mailbox)));
     return invokeSimpleCommand (buffer.toString ());
+  }
+
+  /**
+   * Returns the namespaces available on the server.
+   * See RFC 2342 for details.
+   */
+  public Namespaces namespace ()
+    throws IOException
+  {
+    String tag = newTag ();
+    sendCommand (tag, NAMESPACE);
+    Namespaces namespaces = null;
+    while (true)
+      {
+        IMAPResponse response = readResponse ();
+        String id = response.getID ();
+        if (tag.equals (response.getTag ()))
+          {
+            processAlerts (response);
+            if (id == OK)
+              {
+                return namespaces;
+              }
+            else
+              {
+                throw new IMAPException (id, response.getText ());
+              }
+          }
+        else if (response.isUntagged ())
+          {
+            if (NAMESPACE.equals (response.getID ()))
+              {
+                namespaces = new Namespaces (response.getText ());
+              }
+            else
+              {
+                asyncResponses.add (response);
+              }
+          }
+        else
+          {
+            throw new IMAPException (id, response.getText ());
+          }
+      }
+  }
+
+  /**
+   * Changes the access rights on the specified mailbox such that the
+   * authentication principal is granted the specified permissions.
+   * @param mailbox the mailbox name
+   * @param principal the authentication identifier
+   * @param rights the rights to assign
+   */
+  public boolean setacl (String mailbox, String principal, int rights)
+    throws IOException
+  {
+    String command = SETACL + ' ' + quote (UTF7imap.encode (mailbox)) +
+      ' ' + UTF7imap.encode (principal) + ' ' + rightsToString (rights);
+    return invokeSimpleCommand (command);
+  }
+
+  /**
+   * Removes any access rights for the given authentication principal on the
+   * specified mailbox.
+   * @param mailbox the mailbox name
+   * @param principal the authentication identifier
+   */
+  public boolean deleteacl (String mailbox, String principal)
+    throws IOException
+  {
+    String command = DELETEACL + ' ' + quote (UTF7imap.encode (mailbox)) +
+      ' ' + UTF7imap.encode (principal);
+    return invokeSimpleCommand (command);
+  }
+
+  /**
+   * Returns the access control list for the specified mailbox.
+   * The returned rights are a logical OR of RIGHTS_* bits.
+   * @param mailbox the mailbox name
+   * @return a map of principal names to Integer rights
+   */
+  public Map getacl (String mailbox)
+    throws IOException
+  {
+    String tag = newTag ();
+    sendCommand (tag, GETACL + ' ' + quote (UTF7imap.encode (mailbox)));
+    Map ret = new TreeMap ();
+    while (true)
+      {
+        IMAPResponse response = readResponse ();
+        String id = response.getID ();
+        if (tag.equals (response.getTag ()))
+          {
+            processAlerts (response);
+            if (id == OK)
+              {
+                return ret;
+              }
+            else if (id == NO)
+              {
+                return null;
+              }
+            else
+              {
+                throw new IMAPException (id, response.getText ());
+              }
+          }
+        else if (response.isUntagged ())
+          {
+            if (ACL.equals (response.getID ()))
+              {
+                String text = response.getText ();
+                List args = parseACL (text, 1);
+                String rights = (String) args.get (2);
+                ret.put (args.get (1), new Integer (stringToRights (rights)));
+              }
+            else
+              {
+                asyncResponses.add (response);
+              }
+          }
+        else
+          {
+            throw new IMAPException (id, response.getText ());
+          }
+      }
+  }
+
+  /**
+   * Returns the rights for the given principal for the specified mailbox.
+   * The returned rights are a logical OR of RIGHTS_* bits.
+   * @param mailbox the mailbox name
+   * @param principal the authentication identity
+   */
+  public int listrights (String mailbox, String principal)
+    throws IOException
+  {
+    String tag = newTag ();
+    String command = LISTRIGHTS + ' ' + quote (UTF7imap.encode (mailbox)) +
+      ' ' + UTF7imap.encode (principal);
+    sendCommand (tag, command);
+    int ret = -1;
+    while (true)
+      {
+        IMAPResponse response = readResponse ();
+        String id = response.getID ();
+        if (tag.equals (response.getTag ()))
+          {
+            processAlerts (response);
+            if (id == OK)
+              {
+                return ret;
+              }
+            else if (id == NO)
+              {
+                return -1;
+              }
+            else
+              {
+                throw new IMAPException (id, response.getText ());
+              }
+          }
+        else if (response.isUntagged ())
+          {
+            if (LISTRIGHTS.equals (response.getID ()))
+              {
+                String text = response.getText ();
+                List args = parseACL (text, 1);
+                ret = stringToRights ((String) args.get (2));
+              }
+            else
+              {
+                asyncResponses.add (response);
+              }
+          }
+        else
+          {
+            throw new IMAPException (id, response.getText ());
+          }
+      }
+  }
+
+  /**
+   * Returns the rights for the current principal for the specified mailbox.
+   * The returned rights are a logical OR of RIGHTS_* bits.
+   * @param mailbox the mailbox name
+   */
+  public int myrights (String mailbox)
+    throws IOException
+  {
+    String tag = newTag ();
+    String command = MYRIGHTS + ' ' + quote (UTF7imap.encode (mailbox));
+    sendCommand (tag, command);
+    int ret = -1;
+    while (true)
+      {
+        IMAPResponse response = readResponse ();
+        String id = response.getID ();
+        if (tag.equals (response.getTag ()))
+          {
+            processAlerts (response);
+            if (id == OK)
+              {
+                return ret;
+              }
+            else if (id == NO)
+              {
+                return -1;
+              }
+            else
+              {
+                throw new IMAPException (id, response.getText ());
+              }
+          }
+        else if (response.isUntagged ())
+          {
+            if (MYRIGHTS.equals (response.getID ()))
+              {
+                String text = response.getText ();
+                List args = parseACL (text, 0);
+                ret = stringToRights ((String) args.get (2));
+              }
+            else
+              {
+                asyncResponses.add (response);
+              }
+          }
+        else
+          {
+            throw new IMAPException (id, response.getText ());
+          }
+      }
+  }
+
+  private String rightsToString (int rights)
+  {
+    StringBuffer buf = new StringBuffer ();
+    if ((rights & RIGHTS_LOOKUP) != 0)
+      {
+        buf.append ('l');
+      }
+    if ((rights & RIGHTS_READ) != 0)
+      {
+        buf.append ('r');
+      }
+    if ((rights & RIGHTS_SEEN) != 0)
+      {
+        buf.append ('s');
+      }
+    if ((rights & RIGHTS_WRITE) != 0)
+      {
+        buf.append ('w');
+      }
+    if ((rights & RIGHTS_INSERT) != 0)
+      {
+        buf.append ('i');
+      }
+    if ((rights & RIGHTS_POST) != 0)
+      {
+        buf.append ('p');
+      }
+    if ((rights & RIGHTS_CREATE) != 0)
+      {
+        buf.append ('c');
+      }
+    if ((rights & RIGHTS_DELETE) != 0)
+      {
+        buf.append ('d');
+      }
+    if ((rights & RIGHTS_ADMIN) != 0)
+      {
+        buf.append ('a');
+      }
+    return buf.toString ();
+  }
+
+  private int stringToRights (String text)
+  {
+    int ret = 0;
+    int len = text.length ();
+    for (int i = 0; i < len; i++)
+      {
+        switch (text.charAt (i))
+          {
+          case 'l':
+            ret |= RIGHTS_LOOKUP;
+            break;
+          case 'r':
+            ret |= RIGHTS_READ;
+            break;
+          case 's':
+            ret |= RIGHTS_SEEN;
+            break;
+          case 'w':
+            ret |= RIGHTS_WRITE;
+            break;
+          case 'i':
+            ret |= RIGHTS_INSERT;
+            break;
+          case 'p':
+            ret |= RIGHTS_POST;
+            break;
+          case 'c':
+            ret |= RIGHTS_CREATE;
+            break;
+          case 'd':
+            ret |= RIGHTS_DELETE;
+            break;
+          case 'a':
+            ret |= RIGHTS_ADMIN;
+            break;
+          }
+      }
+    return ret;
+  }
+
+  /*
+   * Parse an ACL entry into a list of 2 or 3 components: mailbox name,
+   * optional principal, and rights.
+   */
+  private List parseACL (String text, int prolog)
+  {
+    int len = text.length ();
+    boolean inQuotes = false;
+    List ret = new ArrayList ();
+    StringBuffer buf = new StringBuffer ();
+    for (int i = 0; i < len; i++)
+      {
+        char c = text.charAt (i);
+        switch (c)
+          {
+          case '"':
+            inQuotes = !inQuotes;
+            break;
+          case ' ':
+            if (inQuotes || ret.size () > prolog)
+              {
+                buf.append (c);
+              }
+            else
+              {
+                ret.add (UTF7imap.decode (buf.toString ()));
+                buf.setLength (0);
+              }
+            break;
+          default:
+            buf.append (c);
+          }
+      }
+    ret.add (buf.toString ());
+    return ret;
+  }
+
+  /**
+   * Sets the quota for the specified quota root.
+   * @param quotaRoot the quota root
+   * @param resources the list of resources and associated limits to set
+   * @return the new quota, or <code>null</code> if the operation failed
+   */
+  public Quota setquota (String quotaRoot, Quota.Resource[] resources)
+    throws IOException
+  {
+    // Create resource limits list
+    StringBuffer resourceLimits = new StringBuffer ();
+    if (resources != null)
+      {
+        for (int i = 0; i < resources.length; i++)
+          {
+            if (i > 0)
+              {
+                resourceLimits.append (' ');
+              }
+            resourceLimits.append (resources[i].toString ());
+          }
+      }
+    String tag = newTag ();
+    String command = SETQUOTA + ' ' + quote (UTF7imap.encode (quotaRoot)) +
+      ' ' + resourceLimits.toString ();
+    sendCommand (tag, command);
+    Quota ret = null;
+    while (true)
+      {
+        IMAPResponse response = readResponse ();
+        String id = response.getID ();
+        if (tag.equals (response.getTag ()))
+          {
+            processAlerts (response);
+            if (id == OK)
+              {
+                return ret;
+              }
+            else if (id == NO)
+              {
+                return null;
+              }
+            else
+              {
+                throw new IMAPException (id, response.getText ());
+              }
+          }
+        else if (response.isUntagged ())
+          {
+            if (QUOTA.equals (response.getID ()))
+              {
+                ret = new Quota (response.getText ());
+              }
+            else
+              {
+                asyncResponses.add (response);
+              }
+          }
+        else
+          {
+            throw new IMAPException (id, response.getText ());
+          }
+      }
+  }
+
+  /**
+   * Returns the specified quota root's resource usage and limits.
+   * @param quotaRoot the quota root
+   */
+  public Quota getquota (String quotaRoot)
+    throws IOException
+  {
+    String tag = newTag ();
+    String command = GETQUOTA + ' ' + quote (UTF7imap.encode (quotaRoot));
+    sendCommand (tag, command);
+    Quota ret = null;
+    while (true)
+      {
+        IMAPResponse response = readResponse ();
+        String id = response.getID ();
+        if (tag.equals (response.getTag ()))
+          {
+            processAlerts (response);
+            if (id == OK)
+              {
+                return ret;
+              }
+            else if (id == NO)
+              {
+                return null;
+              }
+            else
+              {
+                throw new IMAPException (id, response.getText ());
+              }
+          }
+        else if (response.isUntagged ())
+          {
+            if (QUOTA.equals (response.getID ()))
+              {
+                ret = new Quota (response.getText ());
+              }
+            else
+              {
+                asyncResponses.add (response);
+              }
+          }
+        else
+          {
+            throw new IMAPException (id, response.getText ());
+          }
+      }
+  }
+  
+  /**
+   * Returns the quotas for the given mailbox.
+   * @param mailbox the mailbox name
+   */
+  public Quota[] getquotaroot (String mailbox)
+    throws IOException
+  {
+    String tag = newTag ();
+    String command = GETQUOTAROOT + ' ' + quote (UTF7imap.encode (mailbox));
+    sendCommand (tag, command);
+    List acc = new ArrayList ();
+    while (true)
+      {
+        IMAPResponse response = readResponse ();
+        String id = response.getID ();
+        if (tag.equals (response.getTag ()))
+          {
+            processAlerts (response);
+            if (id == OK)
+              {
+                Quota[] ret = new Quota[acc.size ()];
+                acc.toArray (ret);
+                return ret;
+              }
+            else if (id == NO)
+              {
+                return null;
+              }
+            else
+              {
+                throw new IMAPException (id, response.getText ());
+              }
+          }
+        else if (response.isUntagged ())
+          {
+            if (QUOTA.equals (response.getID ()))
+              {
+                acc.add (new Quota (response.getText ()));
+              }
+            else
+              {
+                asyncResponses.add (response);
+              }
+          }
+        else
+          {
+            throw new IMAPException (id, response.getText ());
+          }
+      }
   }
   
   // -- Utility methods --

@@ -1,5 +1,5 @@
 /*
- * $Id: HTTPConnection.java,v 1.2 2004/08/09 14:38:05 dalibor Exp $
+ * $Id: HTTPConnection.java,v 1.3 2004/10/04 19:33:58 robilad Exp $
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -340,6 +340,8 @@ public class HTTPConnection
     Request ret = new Request (this, method, path);
     ret.setHeader ("Host", hostname);
     ret.setHeader ("User-Agent", userAgent);
+    ret.setHeader ("Accept-Encoding",
+                   "gzip;q=1.0, deflate;q=0.8, identity;q=0.6, *;q=0");
     if (cookieManager != null)
       {
         Cookie[] cookies = cookieManager.getCookies (hostname, secure, path);

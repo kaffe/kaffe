@@ -1,5 +1,5 @@
 /*
- * $Id: ChunkedInputStream.java,v 1.2 2004/08/09 14:38:05 dalibor Exp $
+ * $Id: ChunkedInputStream.java,v 1.3 2004/10/04 19:33:58 robilad Exp $
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -69,7 +69,16 @@ extends FilterInputStream
   {
     byte[] buf = new byte[1];
     int len = read (buf, 0, 1);
-    return (len == -1) ? -1 : (int) buf[0];
+    if (len == -1)
+      {
+        return -1;
+      }
+    int ret = (int) buf[0];
+    if (ret < 0)
+      {
+        ret += 0x100;
+      }
+    return ret;
   }
 
   public int read (byte[] buffer)

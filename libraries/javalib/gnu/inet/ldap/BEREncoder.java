@@ -145,11 +145,10 @@ public class BEREncoder
   {
     final int mask = 0xff800000;
     int len = 4;
-    for (int i = value;
-         ((i & mask) == 0 || (i & mask) == mask) && (len > 1);
-         i <<= 8)
+    while (((value & mask) == 0 || (value & mask) == mask) && (len > 1))
       {
         len--;
+        value <<= 8;
       }
     allocate (len + 2);
     buffer[offset++] = (byte) code;
@@ -385,7 +384,10 @@ public class BEREncoder
     throws BERException
   {
     BEREncoder sequence = new BEREncoder (utf8);
-    off = sequence.appendFilter (bytes, off);
+    while (off < bytes.length && bytes[off] == '(')
+      {
+        off = sequence.appendFilter (bytes, off);
+      }
     append (sequence.toByteArray (), code);
     return off;
   }
@@ -430,6 +432,7 @@ public class BEREncoder
             if (ei + 1 == bytes.length || bytes[ei + 2] == 0x29) // * present
               {
                 code = BERConstants.FILTER_PRESENT;
+                end--;
               }
             else
               {
@@ -452,13 +455,16 @@ public class BEREncoder
           }
           
       }
-    item.append (bytes, off, end, BERConstants.OCTET_STRING);
+    item.append (bytes, off, (end - off), BERConstants.OCTET_STRING);
     end = indexOf (bytes, (byte) 0x29, ei + 1); // )
     if (end == -1)
       {
         throw new BERException ("No terminating ')'");
       }
-    item.append (unencode (bytes, ei + 1, end));
+    if (code != BERConstants.FILTER_PRESENT)
+      {
+        item.append (unencode (bytes, ei + 1, end));
+      }
     append (item.toByteArray (), code);
     off = end;
     return off;

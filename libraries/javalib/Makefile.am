@@ -847,7 +847,9 @@ gnu_inet_imap_SRCS = \
 	gnu/inet/imap/ListEntry.java \
 	gnu/inet/imap/MailboxStatus.java \
 	gnu/inet/imap/MessageStatus.java \
+	gnu/inet/imap/Namespaces.java \
 	gnu/inet/imap/Pair.java \
+	gnu/inet/imap/Quota.java \
 	gnu/inet/imap/UTF7imap.java
 gnu_inet_ldap_SRCS = \
 	gnu/inet/ldap/AttributeValues.java \

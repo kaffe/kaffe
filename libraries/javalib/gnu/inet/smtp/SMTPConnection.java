@@ -1,5 +1,5 @@
 /*
- * $Id: SMTPConnection.java,v 1.4 2004/09/21 13:43:47 robilad Exp $
+ * $Id: SMTPConnection.java,v 1.5 2004/10/04 19:34:02 robilad Exp $
  * Copyright (C) 2003 Chris Burdess <dog@gnu.org>
  * 
  * This file is part of GNU inetlib, a library.
@@ -70,7 +70,7 @@ import gnu.inet.util.SaslPlain;
  * This implements RFC 2821.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.4 $ $Date: 2004/09/21 13:43:47 $
+ * @version $Revision: 1.5 $ $Date: 2004/10/04 19:34:02 $
  */
 public class SMTPConnection
 {
@@ -703,10 +703,12 @@ public class SMTPConnection
       }
     catch (SaslException e)
       {
+        e.printStackTrace(System.err);
         return false;             // No provider for mechanism
       }
     catch (RuntimeException e)
       {
+        e.printStackTrace(System.err);
         return false;             // No javax.security.sasl classes
       }
   }

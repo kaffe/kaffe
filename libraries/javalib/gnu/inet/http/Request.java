@@ -1,5 +1,5 @@
 /*
- * $Id: Request.java,v 1.2 2004/08/09 14:38:06 dalibor Exp $
+ * $Id: Request.java,v 1.3 2004/10/04 19:33:58 robilad Exp $
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -42,6 +42,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 import gnu.inet.http.event.RequestEvent;
 import gnu.inet.util.BASE64;
@@ -320,8 +322,13 @@ public class Request
             LineInputStream in =
               new LineInputStream (connection.getInputStream ());
             // Request line
-            String requestUri =
-              connection.isUsingProxy () ? getRequestURI () : path;
+            String requestUri = path;
+            if (connection.isUsingProxy () &&
+                !"*".equals (requestUri) &&
+                !"CONNECT".equals (method))
+              {
+                requestUri = getRequestURI ();
+              }
             String line = method + ' ' + requestUri + ' ' + version + CRLF;
             out.write (line.getBytes (US_ASCII));
             // Request headers
@@ -486,6 +493,23 @@ public class Request
     else
       {
         contentLength = response.getIntHeader ("Content-Length");
+      }
+    String contentCoding = response.getHeader ("Content-Encoding");
+    if (contentCoding != null && !"identity".equals (contentCoding))
+      {
+        if ("gzip".equals (contentCoding))
+          {
+            in = new GZIPInputStream (in);
+          }
+        else if ("deflate".equals (contentCoding))
+          {
+            in = new InflaterInputStream (in);
+          }
+        else
+          {
+            throw new ProtocolException ("Unsupported Content-Encoding: " +
+                                         contentCoding);
+          }
       }
     
     // Persistent connections are the default in HTTP/1.1

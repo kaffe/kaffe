@@ -74,17 +74,17 @@ implements SaslClient
           {
           case STATE_USERNAME:
             state = STATE_PASSWORD;
-            return username.getBytes ("US-ASCII");
+            return username.getBytes ("UTF-8");
           case STATE_PASSWORD:
             state = STATE_COMPLETE;
-            return password.getBytes ("US-ASCII");
+            return password.getBytes ("UTF-8");
           default:
             return new byte[0];
           }
       }
     catch (UnsupportedEncodingException e)
       {
-        String msg = "Username or password contains non-ASCII characters";
+        String msg = "The UTF-8 character set is not supported by the VM";
         throw new SaslException (msg, e);
       }
   }

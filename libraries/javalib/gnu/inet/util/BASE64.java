@@ -1,5 +1,5 @@
 /*
- * $Id: BASE64.java,v 1.4 2004/09/21 13:43:48 robilad Exp $
+ * $Id: BASE64.java,v 1.5 2004/10/04 19:34:03 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -31,7 +31,7 @@ package gnu.inet.util;
  * Encodes and decodes text according to the BASE64 encoding.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.4 $ $Date: 2004/09/21 13:43:48 $
+ * @version $Revision: 1.5 $ $Date: 2004/10/04 19:34:03 $
  */
 public final class BASE64
 {
@@ -101,10 +101,10 @@ public final class BASE64
             bt[ti++] = src[b3 & 0x3f];
           }
       }
-    while (ti < bt.length)
+    /*while (ti < bt.length)
       {
         bt[ti++] = 0x3d;
-      }
+      }*/
     return bt;
   }
 

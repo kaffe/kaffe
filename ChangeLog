@@ -1,5 +1,142 @@
 2004-10-04  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/inet/imap/Namespaces.java,
+	libraries/javalib/gnu/inet/imap/Quota.java:
+	New files, taken from GNU inetlib.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/gnu/inet/finger/FingerConnection.java,
+	libraries/javalib/gnu/inet/finger/FingerURLConnection.java,
+	libraries/javalib/gnu/inet/finger/Handler.java,
+	libraries/javalib/gnu/inet/ftp/ActiveModeDTP.java,
+	libraries/javalib/gnu/inet/ftp/BlockInputStream.java,
+	libraries/javalib/gnu/inet/ftp/BlockOutputStream.java,
+	libraries/javalib/gnu/inet/ftp/CompressedInputStream.java,
+	libraries/javalib/gnu/inet/ftp/CompressedOutputStream.java,
+	libraries/javalib/gnu/inet/ftp/DTP.java,
+	libraries/javalib/gnu/inet/ftp/DTPInputStream.java,
+	libraries/javalib/gnu/inet/ftp/DTPOutputStream.java,
+	libraries/javalib/gnu/inet/ftp/FTPConnection.java,
+	libraries/javalib/gnu/inet/ftp/FTPException.java,
+	libraries/javalib/gnu/inet/ftp/FTPResponse.java,
+	libraries/javalib/gnu/inet/ftp/FTPURLConnection.java,
+	libraries/javalib/gnu/inet/ftp/Handler.java,
+	libraries/javalib/gnu/inet/ftp/PassiveModeDTP.java,
+	libraries/javalib/gnu/inet/ftp/StreamInputStream.java,
+	libraries/javalib/gnu/inet/ftp/StreamOutputStream.java,
+	libraries/javalib/gnu/inet/gopher/DirectoryEntry.java,
+	libraries/javalib/gnu/inet/gopher/DirectoryListing.java,
+	libraries/javalib/gnu/inet/gopher/GopherConnection.java,
+	libraries/javalib/gnu/inet/gopher/GopherContentHandler.java,
+	libraries/javalib/gnu/inet/gopher/GopherURLConnection.java,
+	libraries/javalib/gnu/inet/gopher/Handler.java,
+	libraries/javalib/gnu/inet/http/Authenticator.java,
+	libraries/javalib/gnu/inet/http/ByteArrayRequestBodyWriter.java,
+	libraries/javalib/gnu/inet/http/ByteArrayResponseBodyReader.java,
+	libraries/javalib/gnu/inet/http/ChunkedInputStream.java,
+	libraries/javalib/gnu/inet/http/Credentials.java,
+	libraries/javalib/gnu/inet/http/HTTPConnection.java,
+	libraries/javalib/gnu/inet/http/HTTPURLConnection.java,
+	libraries/javalib/gnu/inet/http/Handler.java,
+	libraries/javalib/gnu/inet/http/Headers.java,
+	libraries/javalib/gnu/inet/http/Request.java,
+	libraries/javalib/gnu/inet/http/RequestBodyWriter.java,
+	libraries/javalib/gnu/inet/http/Response.java,
+	libraries/javalib/gnu/inet/http/ResponseBodyReader.java,
+	libraries/javalib/gnu/inet/http/ResponseHeaderHandler.java,
+	libraries/javalib/gnu/inet/http/event/ConnectionEvent.java,
+	libraries/javalib/gnu/inet/http/event/ConnectionListener.java,
+	libraries/javalib/gnu/inet/http/event/RequestEvent.java,
+	libraries/javalib/gnu/inet/http/event/RequestListener.java,
+	libraries/javalib/gnu/inet/https/Handler.java,
+	libraries/javalib/gnu/inet/imap/IMAPConnection.java,
+	libraries/javalib/gnu/inet/imap/IMAPConstants.java,
+	libraries/javalib/gnu/inet/imap/IMAPException.java,
+	libraries/javalib/gnu/inet/imap/IMAPResponse.java,
+	libraries/javalib/gnu/inet/imap/IMAPResponseTokenizer.java,
+	libraries/javalib/gnu/inet/imap/ListEntry.java,
+	libraries/javalib/gnu/inet/imap/MailboxStatus.java,
+	libraries/javalib/gnu/inet/imap/MessageStatus.java,
+	libraries/javalib/gnu/inet/imap/Pair.java,
+	libraries/javalib/gnu/inet/imap/UTF7imap.java,
+	libraries/javalib/gnu/inet/imap/package.html,
+	libraries/javalib/gnu/inet/ldap/BERDecoder.java,
+	libraries/javalib/gnu/inet/ldap/BEREncoder.java,
+	libraries/javalib/gnu/inet/ldap/LDAPConnection.java,
+	libraries/javalib/gnu/inet/nntp/ActiveTime.java,
+	libraries/javalib/gnu/inet/nntp/ActiveTimesIterator.java,
+	libraries/javalib/gnu/inet/nntp/ArticleNumberIterator.java,
+	libraries/javalib/gnu/inet/nntp/ArticleResponse.java,
+	libraries/javalib/gnu/inet/nntp/ArticleStream.java,
+	libraries/javalib/gnu/inet/nntp/FileNewsrc.java,
+	libraries/javalib/gnu/inet/nntp/Group.java,
+	libraries/javalib/gnu/inet/nntp/GroupIterator.java,
+	libraries/javalib/gnu/inet/nntp/GroupResponse.java,
+	libraries/javalib/gnu/inet/nntp/HeaderEntry.java,
+	libraries/javalib/gnu/inet/nntp/HeaderIterator.java,
+	libraries/javalib/gnu/inet/nntp/LineIterator.java,
+	libraries/javalib/gnu/inet/nntp/NNTPConnection.java,
+	libraries/javalib/gnu/inet/nntp/NNTPConstants.java,
+	libraries/javalib/gnu/inet/nntp/NNTPException.java,
+	libraries/javalib/gnu/inet/nntp/Newsrc.java,
+	libraries/javalib/gnu/inet/nntp/Overview.java,
+	libraries/javalib/gnu/inet/nntp/OverviewIterator.java,
+	libraries/javalib/gnu/inet/nntp/Pair.java,
+	libraries/javalib/gnu/inet/nntp/PairIterator.java,
+	libraries/javalib/gnu/inet/nntp/PendingData.java,
+	libraries/javalib/gnu/inet/nntp/PostStream.java,
+	libraries/javalib/gnu/inet/nntp/Range.java,
+	libraries/javalib/gnu/inet/nntp/StatusResponse.java,
+	libraries/javalib/gnu/inet/pop3/POP3Connection.java,
+	libraries/javalib/gnu/inet/smtp/Parameter.java,
+	libraries/javalib/gnu/inet/smtp/ParameterList.java,
+	libraries/javalib/gnu/inet/smtp/SMTPConnection.java,
+	libraries/javalib/gnu/inet/util/BASE64.java,
+	libraries/javalib/gnu/inet/util/CRLFInputStream.java,
+	libraries/javalib/gnu/inet/util/CRLFOutputStream.java,
+	libraries/javalib/gnu/inet/util/EmptyX509TrustManager.java,
+	libraries/javalib/gnu/inet/util/GetLocalHostAction.java,
+	libraries/javalib/gnu/inet/util/GetSystemPropertyAction.java,
+	libraries/javalib/gnu/inet/util/LineInputStream.java,
+	libraries/javalib/gnu/inet/util/Logger.java,
+	libraries/javalib/gnu/inet/util/MessageInputStream.java,
+	libraries/javalib/gnu/inet/util/MessageOutputStream.java,
+	libraries/javalib/gnu/inet/util/SaslCallbackHandler.java,
+	libraries/javalib/gnu/inet/util/SaslInputStream.java,
+	libraries/javalib/gnu/inet/util/SaslLogin.java,
+	libraries/javalib/gnu/inet/util/SaslOutputStream.java,
+	libraries/javalib/gnu/inet/util/SaslPlain.java,
+	libraries/javalib/gnu/inet/util/StderrLogger.java:
+	Resynced with GNU inetlib.
+
+	2004-10-04  Chris Burdess  <dog@bluezoo.org>
+
+        * LDAPConnection.java: LDAP anonymous binding.
+
+	2004-09-29  Chris Burdess  <dog@bluezoo.org>
+
+        * IMAPConnection.java,Quota.java: Implement IMAP ACLs and quotas.
+        * ldap: LDAP debugging.
+        * http: Implement gzip and deflate content-codings.
+
+	2004-09-28  Chris Burdess  <dog@bluezoo.org>
+
+        * IMAPConnection.java,Namespaces.java: Implement IMAP namespaces.
+
+	2004-09-26  Chris Burdess  <dog@bluezoo.org>
+
+        * BASE64.java: Revert padding characters regression.
+
+	2004-09-24  Chris Burdess  <dog@bluezoo.org>
+
+        * SaslPlain.java: Fix for authorised principal.
+
+2004-10-04  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/imageio/IIOImage.java,
 	libraries/javalib/javax/imageio/IIOParam.java,
 	libraries/javalib/javax/imageio/IIOParamController.java,

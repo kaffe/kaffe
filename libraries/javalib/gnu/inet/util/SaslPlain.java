@@ -65,17 +65,18 @@ implements SaslClient
   {
     try
       {
-        byte[] a = username.getBytes ("US-ASCII");
-        byte[] b = password.getBytes ("US-ASCII");
-        byte[] c = new byte[a.length + b.length + 1];
+        byte[] a = username.getBytes ("UTF-8");
+        byte[] b = password.getBytes ("UTF-8");
+        byte[] c = new byte[(a.length * 2) + b.length + 2];
         System.arraycopy (a, 0, c, 0, a.length);
-        System.arraycopy (b, 0, c, a.length + 1, b.length);
+        System.arraycopy (a, 0, c, a.length + 1, a.length);
+        System.arraycopy (b, 0, c, (a.length * 2) + 2, b.length);
         complete = true;
         return c;
       }
     catch (UnsupportedEncodingException e)
       {
-        String msg = "Username or password contains non-ASCII characters";
+        String msg = "Username or password contains illegal UTF-8";
         throw new SaslException (msg, e);
       }
   }

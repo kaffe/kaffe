@@ -1,6 +1,6 @@
 /*
- * $Id: IMAPConstants.java,v 1.3 2004/09/13 11:00:25 dalibor Exp $
- * Copyright (C) 2003 The Free Software Foundation
+ * $Id: IMAPConstants.java,v 1.4 2004/10/04 19:34:00 robilad Exp $
+ * Copyright (C) 2003,2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
  * 
@@ -31,7 +31,7 @@ package gnu.inet.imap;
  * IMAP4rev1 string constants.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.3 $ $Date: 2004/09/13 11:00:25 $
+ * @version $Revision: 1.4 $ $Date: 2004/10/04 19:34:00 $
  */
 public interface IMAPConstants
 {
@@ -62,6 +62,15 @@ public interface IMAPConstants
   public static final String COPY = "COPY".intern ();
   public static final String UID = "UID".intern ();
   public static final String STARTTLS = "STARTTLS".intern ();
+  public static final String NAMESPACE = "NAMESPACE".intern ();
+  public static final String SETACL = "SETACL".intern ();
+  public static final String DELETEACL = "DELETEACL".intern ();
+  public static final String GETACL = "GETACL".intern ();
+  public static final String LISTRIGHTS = "LISTRIGHTS".intern ();
+  public static final String MYRIGHTS = "MYRIGHTS".intern ();
+  public static final String SETQUOTA = "SETQUOTA".intern ();
+  public static final String GETQUOTA = "GETQUOTA".intern ();
+  public static final String GETQUOTAROOT = "GETQUOTAROOT".intern ();
 
   // Server responses
   public static final String OK = "OK".intern ();
@@ -80,6 +89,9 @@ public interface IMAPConstants
   public static final String TRYCREATE = "TRYCREATE".intern ();
   public static final String UIDVALIDITY = "UIDVALIDITY".intern ();
   public static final String UNSEEN = "UNSEEN".intern ();
+  public static final String ACL = "ACL".intern ();
+  public static final String QUOTA = "QUOTA".intern ();
+  public static final String QUOTAROOT = "QUOTAROOT".intern ();
 
   // Select responses
   public static final String FLAGS = "FLAGS".intern ();
@@ -158,6 +170,20 @@ public interface IMAPConstants
 
   // NIL
   public static final String NIL = "NIL".intern ();
+
+  // ACL rights
+  public static final int RIGHTS_LOOKUP = 0x0001;
+  public static final int RIGHTS_READ = 0x0002;
+  public static final int RIGHTS_SEEN = 0x0004;
+  public static final int RIGHTS_WRITE = 0x0008;
+  public static final int RIGHTS_INSERT = 0x0010;
+  public static final int RIGHTS_POST = 0x0020;
+  public static final int RIGHTS_CREATE = 0x0040;
+  public static final int RIGHTS_DELETE = 0x0080;
+  public static final int RIGHTS_ADMIN = 0x0100;
+
+  // Quota limits
+  public static final String STORAGE = "STORAGE";
 
   // Authentication mechanisms
   public static final String KERBEROS_V4 = "KERBEROS_V4";
