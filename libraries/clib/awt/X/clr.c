@@ -365,7 +365,7 @@ initRgb2Pseudo ( JNIEnv* env, Toolkit* X )
   Rgb2Pseudo *map;
 
   dcm = DefaultColormapOfScreen( DefaultScreenOfDisplay( X->dsp));
-  map = (Rgb2Pseudo*) jmalloc( sizeof(Rgb2Pseudo));
+  map = (Rgb2Pseudo*) KMALLOC( sizeof(Rgb2Pseudo));
   xclr.flags = DoRed | DoGreen | DoBlue;
 
   for ( i=0; i<8; i++ ){
@@ -412,7 +412,7 @@ initRgb2True ( Toolkit* X )
 	 * struct is used to compute pixelvalues from Java rgbs, i.e. the mask and shift
 	 * values are relative to the Java 8-8-8 RGB.
 	 */
-	map = (Rgb2True*) jmalloc( sizeof( Rgb2True));
+	map = (Rgb2True*) KMALLOC( sizeof( Rgb2True));
 
 	for ( iBlue=0, m=v->blue_mask; (m & 1) == 0; iBlue++, m >>= 1);
 	for ( nBlue=0; m; nBlue++, m >>= 1 );
@@ -542,7 +542,7 @@ Rgb2Direct*
 initRgb2Direct ( Toolkit* X )
 {
   Visual      *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
-  Rgb2Direct  *map = (Rgb2Direct*) jmalloc( sizeof( Rgb2Direct));
+  Rgb2Direct  *map = (Rgb2Direct*) KMALLOC( sizeof( Rgb2Direct));
   Colormap    dcm = DefaultColormapOfScreen( DefaultScreenOfDisplay( X->dsp));
   int         iBlue, nBlue, iGreen, nGreen, iRed, nRed;
   int         i, m;

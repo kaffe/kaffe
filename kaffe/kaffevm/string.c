@@ -379,8 +379,8 @@ rehashStrings(void)
 	if (strhash == NULL) {
 		strhash_size = 1024;
 		/* Note we do *not* want the GC scanning strhash,
-		   so we use gc_calloc_fixed instead of gc_malloc. */
-		strhash = gc_calloc_fixed(strhash_size, sizeof(Hjava_lang_String*));
+		   so we use KCALLOC instead of gc_malloc. */
+		strhash = KCALLOC(strhash_size, sizeof(Hjava_lang_String*));
 	}
 	else {
 		register int i;
@@ -389,7 +389,7 @@ rehashStrings(void)
 		i = strhash_size;
 		ptr = strhash + i;
 		strhash_size *= 2;
-		strhash = gc_calloc_fixed(strhash_size, sizeof (Hjava_lang_String*));
+		strhash = KCALLOC(strhash_size, sizeof (Hjava_lang_String*));
 
 		while (--i >= 0) {
 			int hash;
@@ -413,7 +413,7 @@ rehashStrings(void)
 				index = (index + step) & (strhash_size - 1);
 			}
 		}
-		gc_free_fixed(ptr); /* Old value of strhash. */
+		KFREE(ptr); /* Old value of strhash. */
 	}
 }
 
@@ -482,7 +482,7 @@ makeCString(Hjava_lang_String* js)
 {
 	char* str;
 
-	str = gc_malloc_fixed(STRING_SIZE(js) + 1);
+	str = KMALLOC(STRING_SIZE(js) + 1);
 	if (str != 0) {
 		javaString2CString(js, str, STRING_SIZE(js) + 1);
 	}
@@ -543,7 +543,7 @@ strdup(char* str)
 	if (str == NULL) {
 		return (NULL);
 	}
-	s = gc_malloc_fixed(strlen(str) + 1);
+	s = KMALLOC(strlen(str) + 1);
 	strcpy(s, str);
 	return (s);
 }

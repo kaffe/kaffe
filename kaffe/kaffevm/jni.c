@@ -2633,7 +2633,7 @@ Kaffe_GetStringUTFChars(JNIEnv* env, jstring data, jbool* copy)
 	}
 
 	count = Kaffe_GetStringUTFLength(env, data);
-	buf = gc_malloc_fixed(count+1);
+	buf = KMALLOC(count+1);
 
 	ptr = unhand(unhand((Hjava_lang_String*)data)->value)->body;
 	len = javaStringLength((Hjava_lang_String*)data);
@@ -2662,7 +2662,7 @@ Kaffe_ReleaseStringUTFChars(JNIEnv* env, jstring data, const jbyte* chars)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
-	gc_free_fixed((void*)chars);
+	KFREE((void*)chars);
 
 	END_EXCEPTION_HANDLING();
 }
@@ -2973,10 +2973,10 @@ Kaffe_ReleaseBooleanArrayElements(JNIEnv* env, jarray arr, jbool* elems, jint mo
 			break;
 		case 0:
 			memcpy(unhand((HArrayOfBoolean*)arr)->body, elems, obj_length((HArrayOfBoolean*)arr) * sizeof(jboolean));
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		case JNI_ABORT:
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		}
 	}
@@ -2995,10 +2995,10 @@ Kaffe_ReleaseByteArrayElements(JNIEnv* env, jarray arr, jbyte* elems, jint mode)
 			break;
 		case 0:
 			memcpy(unhand((HArrayOfByte*)arr)->body, elems, obj_length((HArrayOfByte*)arr) * sizeof(jbyte));
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		case JNI_ABORT:
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		}
 	}
@@ -3017,10 +3017,10 @@ Kaffe_ReleaseCharArrayElements(JNIEnv* env, jarray arr, jchar* elems, jint mode)
 			break;
 		case 0:
 			memcpy(unhand((HArrayOfChar*)arr)->body, elems, obj_length((HArrayOfChar*)arr) * sizeof(jchar));
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		case JNI_ABORT:
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		}
 	}
@@ -3039,10 +3039,10 @@ Kaffe_ReleaseShortArrayElements(JNIEnv* env, jarray arr, jshort* elems, jint mod
 			break;
 		case 0:
 			memcpy(unhand((HArrayOfShort*)arr)->body, elems, obj_length((HArrayOfShort*)arr) * sizeof(jshort));
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		case JNI_ABORT:
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		}
 	}
@@ -3061,10 +3061,10 @@ Kaffe_ReleaseIntArrayElements(JNIEnv* env, jarray arr, jint* elems, jint mode)
 			break;
 		case 0:
 			memcpy(unhand((HArrayOfInt*)arr)->body, elems, obj_length((HArrayOfInt*)arr) * sizeof(jint));
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		case JNI_ABORT:
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		}
 	}
@@ -3083,10 +3083,10 @@ Kaffe_ReleaseLongArrayElements(JNIEnv* env, jarray arr, jlong* elems, jint mode)
 			break;
 		case 0:
 			memcpy(unhand((HArrayOfLong*)arr)->body, elems, obj_length((HArrayOfLong*)arr) * sizeof(jlong));
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		case JNI_ABORT:
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		}
 	}
@@ -3105,10 +3105,10 @@ Kaffe_ReleaseFloatArrayElements(JNIEnv* env, jarray arr, jfloat* elems, jint mod
 			break;
 		case 0:
 			memcpy(unhand((HArrayOfFloat*)arr)->body, elems, obj_length((HArrayOfFloat*)arr) * sizeof(jfloat));
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		case JNI_ABORT:
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		}
 	}
@@ -3127,10 +3127,10 @@ Kaffe_ReleaseDoubleArrayElements(JNIEnv* env, jarray arr, jdouble* elems, jint m
 			break;
 		case 0:
 			memcpy(unhand((HArrayOfDouble*)arr)->body, elems, obj_length((HArrayOfDouble*)arr) * sizeof(jdouble));
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		case JNI_ABORT:
-			gc_free_fixed(elems);
+			KFREE(elems);
 			break;
 		}
 	}

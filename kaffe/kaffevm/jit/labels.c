@@ -135,7 +135,7 @@ newLabel(void)
 
 	if (ret == 0) {
 		/* Allocate chunk of label elements */
-		ret = gc_calloc_fixed(ALLOCLABELNR, sizeof(label));
+		ret = KCALLOC(ALLOCLABELNR, sizeof(label));
 
 		/* Attach to current chain */
 		if (lastLabel == 0) {

@@ -18,6 +18,12 @@ jmalloc(size_t sz)
 	return ((*Kaffe_GarbageCollectorInterface._malloc)(sz, GC_ALLOC_FIXED));
 }
 
+void*
+jrealloc(void* mem, size_t sz)
+{
+	return ((*Kaffe_GarbageCollectorInterface._realloc)(mem, sz, GC_ALLOC_FIXED));
+}
+
 void
 jfree(void* mem)
 {

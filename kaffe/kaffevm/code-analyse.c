@@ -76,7 +76,7 @@ DBG(CODEANALYSE,
 	dprintf(__FUNCTION__ " %p: %s.%s\n", THREAD_NATIVE(), 
 		meth->class->name->data, meth->name->data);
     )
-	codeInfo = gc_malloc_fixed(sizeof(codeinfo) + (meth->c.bcode.codelen * sizeof(perPCInfo)));
+	codeInfo = KMALLOC(sizeof(codeinfo) + (meth->c.bcode.codelen * sizeof(perPCInfo)));
 	*pcodeinfo = codeInfo;
 
 DBG(CODEANALYSE,

@@ -45,7 +45,6 @@
 #include "gc.h"
 #include "md.h"
 #include "lerrno.h"
-#define NOUNIXPROTOTYPES
 #include "jsyscall.h"
 
 #include "jthread.h"

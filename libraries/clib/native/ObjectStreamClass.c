@@ -82,7 +82,7 @@ java_io_ObjectStreamClass_getMethodAccess(struct Hjava_lang_Class* cls, struct H
 	}
 	assert(i < sz || !"Method not found");
 
-	gc_free_fixed(name);
+	KFREE(name);
 	return (meth->accflags & ACC_MASK);
 }
 
@@ -179,7 +179,7 @@ java_io_ObjectStreamClass_getFieldAccess(struct Hjava_lang_Class* cls, struct Hj
 	}
 	assert (i < sz || !"Field not found");
 
-	gc_free_fixed(name);
+	KFREE(name);
 	return (fld->accflags & ACC_MASK);
 }
 

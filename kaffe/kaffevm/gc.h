@@ -63,11 +63,7 @@ extern GarbageCollectorInterface Kaffe_GarbageCollectorInterface;
 
 #define	gc_malloc(A,B)		(*Kaffe_GarbageCollectorInterface._malloc)(A,B)
 #define	gc_calloc(A,B,C)	(*Kaffe_GarbageCollectorInterface._malloc)((A)*(B),C)
-#define	gc_calloc_fixed(A,B)	(*Kaffe_GarbageCollectorInterface._malloc)((A)*(B),GC_ALLOC_FIXED)
-#define	gc_malloc_fixed(A)	(*Kaffe_GarbageCollectorInterface._malloc)(A,GC_ALLOC_FIXED)
-#define	gc_realloc_fixed(A,B)	(*Kaffe_GarbageCollectorInterface._realloc)(A,B,GC_ALLOC_FIXED)
 #define	gc_free(A)		(*Kaffe_GarbageCollectorInterface._free)(A)
-#define	gc_free_fixed(A)	(*Kaffe_GarbageCollectorInterface._free)(A)
 
 #define	invokeGC()		(*Kaffe_GarbageCollectorInterface._invokeGC)()
 #define	invokeFinalizer()	(*Kaffe_GarbageCollectorInterface._invokeFinalizer)()

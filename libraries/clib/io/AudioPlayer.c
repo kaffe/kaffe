@@ -23,19 +23,19 @@ kaffe_applet_AudioPlayer_playFile( jstring jstr ) {
 	int     bRead, fin, dev;
 	void	*buf;
 
-	buf = jmalloc( bLen);
+	buf = KMALLOC( bLen);
 
 	javaString2CString( jstr, fName, sizeof(fName));
 
-	dev = open( "/dev/audio", O_WRONLY|O_BINARY, 0);
-	fin = open( fName, O_RDONLY|O_BINARY, 0);
+	dev = KOPEN( "/dev/audio", O_WRONLY|O_BINARY, 0);
+	fin = KOPEN( fName, O_RDONLY|O_BINARY, 0);
 
-	while ( (bRead = read( fin, buf, bLen )) > 0 ) {
-		write( dev, buf, bRead );
+	while ( (bRead = KREAD( fin, buf, bLen )) > 0 ) {
+		KWRITE( dev, buf, bRead );
 	}
 
-	close( dev);
-	close( fin);
-	jfree( buf);
+	KCLOSE( dev);
+	KCLOSE( fin);
+	KFREE( buf);
 }
 

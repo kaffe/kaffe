@@ -34,7 +34,6 @@
 #include "gc.h"
 #include "md.h"
 #include "lerrno.h"
-#define NOUNIXPROTOTYPES
 #include "jsyscall.h"
 
 static Hjava_lang_Thread* threadQhead[THREAD_MAXPRIO + 1];

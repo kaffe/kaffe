@@ -117,7 +117,7 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, slots* args)
 		arraydims = array;
 	}
 	else {
-		arraydims = gc_calloc_fixed(dims+1, sizeof(int));
+		arraydims = KCALLOC(dims+1, sizeof(int));
 	}
 
 	/* stack grows up, so move to the first dimension */
@@ -138,7 +138,7 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, slots* args)
 
 
 	if (arraydims != array) {
-		gc_free_fixed(arraydims);
+		KFREE(arraydims);
 	}
 
         /* Return the base object */
@@ -161,7 +161,7 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 		arraydims = array;
 	}
 	else {
-		arraydims = gc_calloc_fixed(dims+1, sizeof(int));
+		arraydims = KCALLOC(dims+1, sizeof(int));
 	}
 
 	/* Extract the dimensions into an array */
@@ -180,7 +180,7 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
         obj = newMultiArray(class, arraydims);
 
 	if (arraydims != array) {
-		gc_free_fixed(arraydims);
+		KFREE(arraydims);
 	}
 
 	/* Return the base object */
@@ -361,11 +361,11 @@ soft_checkcast(Hjava_lang_Class* c, Hjava_lang_Object* o)
 		char *fromtype = CLASS_CNAME(OBJECT_CLASS(o));
 		char *totype = CLASS_CNAME(c);
 		char *format = "can't cast `%s' to `%s'";
-		char *buf = gc_malloc_fixed(strlen(fromtype) 
+		char *buf = KMALLOC(strlen(fromtype) 
 			+ strlen(totype) + strlen(format));
 		sprintf(buf, format, fromtype, totype);
 		ccexc = ClassCastException(buf);
-		gc_free_fixed(buf);
+		KFREE(buf);
 		throwException(ccexc);
 	}
 	return (o);

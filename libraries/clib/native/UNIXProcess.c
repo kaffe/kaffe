@@ -55,20 +55,20 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 	}
 
 	/* Build arguments and environment */
-	argv = jcalloc(arglen + 1, sizeof(jbyte*));
+	argv = KCALLOC(arglen + 1, sizeof(jbyte*));
 	for (i = 0; i < arglen; i++) {
 		jstring argi;
 		const jbyte *argichars;
 
 		argi = (jstring)(*env)->GetObjectArrayElement(env, args, i);
 		argichars = (*env)->GetStringUTFChars(env, argi, NULL);
-		argv[i] = jmalloc(strlen(argichars));
+		argv[i] = KMALLOC(strlen(argichars));
 		strcpy(argv[i], argichars);
 		(*env)->ReleaseStringUTFChars(env, argi, argichars);
 	}
 
 	if (envlen > 0)
-		arge = jcalloc(envlen + 1, sizeof(jbyte*));
+		arge = KCALLOC(envlen + 1, sizeof(jbyte*));
 	else
 		arge = NULL;
 
@@ -78,23 +78,23 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 
 		envi = (jstring)(*env)->GetObjectArrayElement(env, envs, i);
 		envichars = (*env)->GetStringUTFChars(env, envi, NULL);
-		arge[i] = jmalloc(strlen(envichars));
+		arge[i] = KMALLOC(strlen(envichars));
 		strcpy(arge[i], envichars);
 		(*env)->ReleaseStringUTFChars(env, envi, envichars);
 	}
 
-	pid = forkexec(argv, arge, ioes);
+	pid = KFORKEXEC(argv, arge, ioes);
 
 	/* free before returning on error */
 	for (i = 0; i < arglen; i++) {
-		jfree(argv[i]);
+		KFREE(argv[i]);
 	}
-	jfree(argv);
+	KFREE(argv);
 
 	for (i = 0; i < envlen; i++) {
-		jfree(arge[i]);
+		KFREE(arge[i]);
 	}
-	jfree(arge);
+	KFREE(arge);
 
 	if (pid == -1) {
 		(*env)->ThrowNew(env, ioexc_class, "Fork&Exec failed");
@@ -120,7 +120,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 	}
 
 	/* Allocate somewhere to keep the child data */
-	newchild = jmalloc(sizeof(child));
+	newchild = KMALLOC(sizeof(child));
 
 	/* Note child data and add to children list */
 	newchild->proc = (*env)->NewGlobalRef(env, proc);
@@ -140,7 +140,7 @@ Java_kaffe_lang_UNIXProcess_destroy(JNIEnv* env, jobject proc)
 	jfieldID pid = (*env)->GetFieldID(env, 
 				(*env)->GetObjectClass(env, proc), 
 				"pid", "I");
-	kill((*env)->GetIntField(env, proc, pid), SIGTERM);
+	KKILL((*env)->GetIntField(env, proc, pid), SIGTERM);
 #else
 	unimp("kill() not provided");
 #endif
@@ -162,7 +162,7 @@ Java_kaffe_lang_UNIXProcess_run(JNIEnv* env, jobject _proc_dummy)
 			"notifyAll", "()V");
 
 	for (;;) {
-		npid = waitpid(-1, &status, 0);
+		npid = KWAITPID(-1, &status, 0);
 		for (pp = &children; *pp != 0; pp = &p->next) {
 			p = *pp;
 			if (p->pid == npid) {
@@ -186,7 +186,7 @@ Java_kaffe_lang_UNIXProcess_run(JNIEnv* env, jobject _proc_dummy)
 				(*env)->MonitorExit(env, p->proc);
 				(*env)->DeleteGlobalRef(env, p->proc);
 				*pp = p->next;
-				jfree(p);
+				KFREE(p);
 				break;
 			}
 		}

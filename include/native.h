@@ -84,7 +84,7 @@ extern void	addNativeMethod(char*, void*);
 extern void	classname2pathname(char*, char*);
 
 /*
- * Redirect the malloc/free functions
+ * Define KMALLOC, KFREE, etc.
  */
 #include "jmalloc.h"
 

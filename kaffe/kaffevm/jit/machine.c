@@ -456,7 +456,7 @@ initInsnSequence(int codesize, int localsz, int stacksz)
 	if (codeblock_size < ALLOCCODEBLOCKSZ) {
 		codeblock_size = ALLOCCODEBLOCKSZ;
 	}
-	codeblock = gc_malloc_fixed(codeblock_size + CODEBLOCKREDZONE);
+	codeblock = KMALLOC(codeblock_size + CODEBLOCKREDZONE);
 	CODEPC = 0;
 }
 
@@ -474,7 +474,7 @@ generateInsnSequence(codeinfo* codeInfo)
 		/* If we overrun the codeblock, reallocate and continue.  */
 		if (CODEPC >= codeblock_size) {
 			codeblock_size += ALLOCCODEBLOCKSZ;
-			codeblock = gc_realloc_fixed(codeblock, codeblock_size + CODEBLOCKREDZONE);
+			codeblock = KREALLOC(codeblock, codeblock_size + CODEBLOCKREDZONE);
 		}
 
 		/* Generate sequences */

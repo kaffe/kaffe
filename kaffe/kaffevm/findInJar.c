@@ -118,7 +118,7 @@ CDBG(	printf("Scanning for class %s\n", cname);		)
 		class = readClass(class, &hand, NULL, einfo);
 
 		if (hand.base != 0) {
-			gc_free_fixed(hand.base);
+			KFREE(hand.base);
 		}
 		return (class);
 
@@ -221,22 +221,22 @@ ZDBG(			printf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			strcat(buf, DIRSEP);
 			strcat(buf, cname);
 FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
-			fp = open(buf, O_RDONLY|O_BINARY, 0);
+			fp = KOPEN(buf, O_RDONLY|O_BINARY, 0);
 			if (fp < 0) {
 				break;
 			}
-			if (fstat(fp, &sbuf) < 0) {
-				close(fp);
+			if (KFSTAT(fp, &sbuf) < 0) {
+				KCLOSE(fp);
 				break;
 			}
 			hand.size = sbuf.st_size;
 
-			hand.base = gc_malloc_fixed(hand.size);
+			hand.base = KMALLOC(hand.size);
 			hand.buf = hand.base;
 
 			i = 0;
 			while (i < hand.size) {
-				j = read(fp, hand.buf, hand.size - i);
+				j = KREAD(fp, hand.buf, hand.size - i);
 				if (j >= 0) {
 					i += j;
 				}
@@ -246,7 +246,7 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 					break;
 				}
 			}
-			close(fp);
+			KCLOSE(fp);
 			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
 				fprintf(stderr, "Loading %s\n", cname);
 			}
@@ -340,10 +340,10 @@ initClasspath(void)
 		/* cp may reside in read-only memory, but 
 		 * makeClasspath writes to it
 		 */
-		char *writable_cp = gc_malloc_fixed(strlen(cp) + 1);
+		char *writable_cp = KMALLOC(strlen(cp) + 1);
 		strcpy(writable_cp, cp);
 		makeClasspath(writable_cp);
-		gc_free_fixed(writable_cp);
+		KFREE(writable_cp);
 	}
 	else {
 		discoverClasspath(hm);
@@ -354,7 +354,7 @@ initClasspath(void)
 		len += strlen(ptr->path) + 1;
 	}
 
-	realClassPath = gc_malloc_fixed(len);
+	realClassPath = KMALLOC(len);
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
 		if (ptr != classpath) {
 			realClassPath[strlen(realClassPath)] = PATHSEP;
@@ -449,7 +449,7 @@ PDBG(	printf("addClasspath(): '%s'\n", cp);				)
 		lptr = ptr;
 	}
 
-	ptr = gc_malloc_fixed(sizeof(classpathEntry) + strlen(cp) + 1);
+	ptr = KMALLOC(sizeof(classpathEntry) + strlen(cp) + 1);
 	ptr->type = getClasspathType(cp);
 	ptr->path = (char*)(ptr+1);
 	ptr->next = 0;
@@ -476,7 +476,7 @@ getClasspathType(char* path)
 	char buf[2];
 	struct stat sbuf;
 
-	if (stat(path, &sbuf) < 0) {
+	if (KSTAT(path, &sbuf) < 0) {
 		return (CP_INVALID);
 	}
 
@@ -484,13 +484,13 @@ getClasspathType(char* path)
 		return (CP_DIR);
 	}
 
-	h = open(path, O_RDONLY, 0);
+	h = KOPEN(path, O_RDONLY, 0);
 	if (h < 0) {
 		return (CP_INVALID);
 	}
 
-	c = read(h, buf, sizeof(buf));
-	close(h);
+	c = KREAD(h, buf, sizeof(buf));
+	KCLOSE(h);
 	if (c != sizeof(buf)) {
 		return (CP_INVALID);
 	}

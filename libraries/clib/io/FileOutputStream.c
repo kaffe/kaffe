@@ -29,7 +29,7 @@ java_io_FileOutputStream_open(struct Hjava_io_FileOutputStream* fh, struct Hjava
 
 	javaString2CString(nm, str, sizeof(str));
 
-	fd = open(str, O_WRONLY|O_CREAT|O_BINARY|O_TRUNC, 0666);
+	fd = KOPEN(str, O_WRONLY|O_CREAT|O_BINARY|O_TRUNC, 0666);
 	unhand(unhand(fh)->fd)->fd = fd;
 	if (fd < 0) {
 		SignalError("java.io.IOException", SYS_ERROR);
@@ -47,7 +47,7 @@ java_io_FileOutputStream_openAppend(struct Hjava_io_FileOutputStream* fh, struct
 
 	javaString2CString(nm, str, sizeof(str));
 
-	fd = open(str, O_WRONLY|O_CREAT|O_BINARY|O_APPEND, 0666);
+	fd = KOPEN(str, O_WRONLY|O_CREAT|O_BINARY|O_APPEND, 0666);
 	unhand(unhand(fh)->fd)->fd = fd;
 	if (fd < 0) {
 		SignalError("java.io.IOException", SYS_ERROR);
@@ -63,7 +63,7 @@ java_io_FileOutputStream_close(struct Hjava_io_FileOutputStream* fh)
 	int r;
 
 	if (unhand(unhand(fh)->fd)->fd >= 0) {
-		r = close(unhand(unhand(fh)->fd)->fd);
+		r = KCLOSE(unhand(unhand(fh)->fd)->fd);
 		unhand(unhand(fh)->fd)->fd = -1;
 		if (r < 0) {
 			SignalError("java.io.IOException", SYS_ERROR);
@@ -81,7 +81,7 @@ java_io_FileOutputStream_writeBytes(struct Hjava_io_FileOutputStream* fh, HArray
 	int r;
 
 	fd = unhand(unhand(fh)->fd)->fd;
-	r = write(fd, &unhand(byteArray)->body[start], len);
+	r = KWRITE(fd, &unhand(byteArray)->body[start], len);
 	if (r < 0) {
 		SignalError("java.io.IOException", SYS_ERROR);
 	}
@@ -98,7 +98,7 @@ java_io_FileOutputStream_write(struct Hjava_io_FileOutputStream* fh, jint byte)
 	unsigned char b = byte;
 
 	fd = unhand(unhand(fh)->fd)->fd;
-	r = write(fd, &b, 1);
+	r = KWRITE(fd, &b, 1);
 	if (r < 0) {
 		SignalError("java.io.IOException", SYS_ERROR);
 	}

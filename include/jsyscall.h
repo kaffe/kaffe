@@ -53,50 +53,49 @@ typedef struct SystemCallInterface {
 
 extern SystemCallInterface Kaffe_SystemCallInterface;
 
-#if !defined(NOUNIXPROTOTYPES)
 /*
- * Define some 'UNIX' like macros to make things simpler.
+ * Define threaded equivalent of UNIX system calls
  */
 
-#define	open(A,B,C)	(*Kaffe_SystemCallInterface._open)(A,B,C)
-#define	read(A,B,C)	(*Kaffe_SystemCallInterface._read)(A,B,C)
-#define	write(A,B,C)	(*Kaffe_SystemCallInterface._write)(A,B,C)
-#define	lseek(A,B,C)	(*Kaffe_SystemCallInterface._lseek)(A,B,C)
-#define	close(A)	(*Kaffe_SystemCallInterface._close)(A)
-#define	fstat(A,B)	(*Kaffe_SystemCallInterface._fstat)(A,B)
-#define	stat(A,B)	(*Kaffe_SystemCallInterface._stat)(A,B)
+#define	KOPEN(A,B,C)	(*Kaffe_SystemCallInterface._open)(A,B,C)
+#define	KREAD(A,B,C)	(*Kaffe_SystemCallInterface._read)(A,B,C)
+#define	KWRITE(A,B,C)	(*Kaffe_SystemCallInterface._write)(A,B,C)
+#define	KLSEEK(A,B,C)	(*Kaffe_SystemCallInterface._lseek)(A,B,C)
+#define	KCLOSE(A)	(*Kaffe_SystemCallInterface._close)(A)
+#define	KFSTAT(A,B)	(*Kaffe_SystemCallInterface._fstat)(A,B)
+#define	KSTAT(A,B)	(*Kaffe_SystemCallInterface._stat)(A,B)
 
-#define	mkdir(A,B)	(*Kaffe_SystemCallInterface._mkdir)(A,B)
-#define	rmdir(A)	(*Kaffe_SystemCallInterface._rmdir)(A)
-#define	rename(A,B)	(*Kaffe_SystemCallInterface._rename)(A,B)
-#define	remove(A)	(*Kaffe_SystemCallInterface._remove)(A)
+#define	KMKDIR(A,B)	(*Kaffe_SystemCallInterface._mkdir)(A,B)
+#define	KRMDIR(A)	(*Kaffe_SystemCallInterface._rmdir)(A)
+#define	KRENAME(A,B)	(*Kaffe_SystemCallInterface._rename)(A,B)
+#define	KREMOVE(A)	(*Kaffe_SystemCallInterface._remove)(A)
 
-#define	socket(A,B,C)	(*Kaffe_SystemCallInterface._socket)(A,B,C)
-#define	connect(A,B,C)	(*Kaffe_SystemCallInterface._connect)(A,B,C)
-#define	accept(A,B,C)	(*Kaffe_SystemCallInterface._accept)(A,B,C)
-#define	sockread(A,B,C)	(*Kaffe_SystemCallInterface._sockread)(A,B,C)
-#define	recvfrom(A,B,C,D,E,F) \
+#define	KSOCKET(A,B,C)	(*Kaffe_SystemCallInterface._socket)(A,B,C)
+#define	KCONNECT(A,B,C)	(*Kaffe_SystemCallInterface._connect)(A,B,C)
+#define	KACCEPT(A,B,C)	(*Kaffe_SystemCallInterface._accept)(A,B,C)
+#define	KSOCKREAD(A,B,C) \
+			(*Kaffe_SystemCallInterface._sockread)(A,B,C)
+#define	KRECVFROM(A,B,C,D,E,F) \
 			(*Kaffe_SystemCallInterface._recvfrom)(A,B,C,D,E,F)
-#define	sockwrite(A,B,C) \
+#define	KSOCKWRITE(A,B,C) \
 			(*Kaffe_SystemCallInterface._sockwrite)(A,B,C)
-#define	sendto(A,B,C,D,E,F) \
+#define	KSENDTO(A,B,C,D,E,F) \
 			(*Kaffe_SystemCallInterface._sendto)(A,B,C,D,E,F)
-#define	setsockopt(A,B,C,D,E) \
+#define	KSETSOCKOPT(A,B,C,D,E) \
 			(*Kaffe_SystemCallInterface._setsockopt)(A,B,C,D,E)
-#define	getsockopt(A,B,C,D,E) \
+#define	KGETSOCKOPT(A,B,C,D,E) \
 			(*Kaffe_SystemCallInterface._getsockopt)(A,B,C,D,E)
-#define	getsockname(A,B,C) \
+#define	KGETSOCKNAME(A,B,C) \
 			(*Kaffe_SystemCallInterface._getsockname)(A,B,C)
-#define	getpeername(A,B,C) \
+#define	KGETPEERNAME(A,B,C) \
 			(*Kaffe_SystemCallInterface._getpeername)(A,B,C)
 
-#define	select(A,B,C,D,E) \
+#define	KSELECT(A,B,C,D,E) \
 			(*Kaffe_SystemCallInterface._select)(A,B,C,D,E)
 
-#define	waitpid(A,B,C)	(*Kaffe_SystemCallInterface._waitpid)(A,B,C)
-#define	forkexec(A,B,C)	(*Kaffe_SystemCallInterface._forkexec)(A,B,C)
-#define	kill(A,B)	(*Kaffe_SystemCallInterface._kill)(A,B)
-
-#endif
+#define	KWAITPID(A,B,C)	(*Kaffe_SystemCallInterface._waitpid)(A,B,C)
+#define	KFORKEXEC(A,B,C) \
+			(*Kaffe_SystemCallInterface._forkexec)(A,B,C)
+#define	KKILL(A,B)	(*Kaffe_SystemCallInterface._kill)(A,B)
 
 #endif

@@ -180,8 +180,8 @@ static __inline__ char* java2CString ( JNIEnv *env, Toolkit* X, jstring jstr ) {
 
   if ( n >= X->nBuf ) {
 	if ( X->buf )
-	  jfree( X->buf);
-	X->buf = jmalloc( n+1);
+	  KFREE( X->buf);
+	X->buf = KMALLOC( n+1);
 	X->nBuf = n+1;
   }
 
@@ -198,8 +198,8 @@ static __inline__ char* jchar2CString ( Toolkit* X, jchar* jc, int len ) {
   
   if ( n > X->nBuf ) {
 	if ( X->buf )
-	  jfree( X->buf);
-	X->buf  = jmalloc( n);
+	  KFREE( X->buf);
+	X->buf  = KMALLOC( n);
 	X->nBuf = n;
   }
 
@@ -212,8 +212,8 @@ static __inline__ char* jchar2CString ( Toolkit* X, jchar* jc, int len ) {
 static __inline__ void* getBuffer ( Toolkit* X, unsigned int nBytes ) {
   if ( nBytes > X->nBuf ) {
 	if ( X->buf )
-	  jfree( X->buf);
-	X->buf  = jmalloc( nBytes);
+	  KFREE( X->buf);
+	X->buf  = KMALLOC( nBytes);
 	X->nBuf = nBytes;
   }
   return X->buf;

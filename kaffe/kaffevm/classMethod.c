@@ -1410,7 +1410,7 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 		return (entry);
 
 	/* Failed to find class entry - create a new one */
-	entry = gc_malloc_fixed(sizeof(classEntry));
+	entry = KMALLOC(sizeof(classEntry));
 	entry->name = name;
 	entry->loader = loader;
 	entry->class = 0;
@@ -1426,7 +1426,7 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 			/* Someone else added it - discard ours and return
 			   the new one. */
 			unlockStaticMutex(&classHashLock);
-			gc_free_fixed(entry);
+			KFREE(entry);
 			return (*entryp);
 		}
 	}

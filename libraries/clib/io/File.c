@@ -35,7 +35,7 @@ java_io_File_isFile0(struct Hjava_io_File* this)
 
 	javaString2CString(unhand(this)->path, str, sizeof(str));
 
-	r = stat(str, &buf);
+	r = KSTAT(str, &buf);
 	if (r == 0 && S_ISREG(buf.st_mode)) {
 		return (1);
 	}
@@ -56,7 +56,7 @@ java_io_File_isDirectory0(struct Hjava_io_File* this)
 
 	javaString2CString(unhand(this)->path, str, sizeof(str));
 
-	r = stat(str, &buf);
+	r = KSTAT(str, &buf);
 	if (r == 0 && S_ISDIR(buf.st_mode)) {
 		return (1);
 	}
@@ -77,7 +77,7 @@ java_io_File_exists0(struct Hjava_io_File* this)
 
 	javaString2CString(unhand(this)->path, str, sizeof(str));
 
-	r = stat(str, &buf);
+	r = KSTAT(str, &buf);
 	if (r < 0) {
 		return (0);
 	}
@@ -98,7 +98,7 @@ java_io_File_lastModified0(struct Hjava_io_File* this)
 
 	javaString2CString(unhand(this)->path, str, sizeof(str));
 
-	r = stat(str, &buf);
+	r = KSTAT(str, &buf);
 	if (r != 0) {
 		return ((jlong)0);
 	}
@@ -145,7 +145,7 @@ java_io_File_length0(struct Hjava_io_File* this)
 
 	javaString2CString(unhand(this)->path, str, sizeof(str));
 
-	r = stat(str, &buf);
+	r = KSTAT(str, &buf);
 	if (r != 0) {
 		return ((jlong)0);
 	}
@@ -162,7 +162,7 @@ java_io_File_mkdir0(struct Hjava_io_File* this)
 	int r;
 
 	javaString2CString(unhand(this)->path, str, sizeof(str));
-	r = mkdir(str, 0777);
+	r = KMKDIR(str, 0777);
 	return (r < 0 ? 0 : 1);
 }
 
@@ -179,7 +179,7 @@ java_io_File_renameTo0(struct Hjava_io_File* this, struct Hjava_io_File* that)
 	javaString2CString(unhand(this)->path, str, sizeof(str));
 	javaString2CString(unhand(that)->path, str2, sizeof(str2));
 
-	r = rename(str, str2);
+	r = KRENAME(str, str2);
 	return (r < 0 ? 0 : 1);
 }
 
@@ -193,7 +193,7 @@ java_io_File_delete0(struct Hjava_io_File* this)
 	int r;
 
 	javaString2CString(unhand(this)->path, str, sizeof(str));
-	r = remove(str);
+	r = KREMOVE(str);
 	return(r < 0 ? 0 : 1);
 }
 
@@ -207,7 +207,7 @@ java_io_File_rmdir0(struct Hjava_io_File* this)
 	int r;
 
 	javaString2CString(unhand(this)->path, str, sizeof(str));
-	r = rmdir(str);
+	r = KRMDIR(str);
 	return(r < 0 ? 0 : 1);
 }
 
@@ -245,7 +245,7 @@ java_io_File_list0(struct Hjava_io_File* this)
 		    strcmp("..", entry->d_name) == 0) {
 			continue;
 		}
-		mentry = jmalloc(sizeof(struct dentry) + NAMLEN(entry));
+		mentry = KMALLOC(sizeof(struct dentry) + NAMLEN(entry));
 		assert(mentry != 0);
 		strcpy(mentry->name, entry->d_name);
 		mentry->next = dirlist;
@@ -260,7 +260,7 @@ java_io_File_list0(struct Hjava_io_File* this)
 		mentry = dirlist;
 		dirlist = mentry->next;
 		unhand(array)->body[i] = (Hjava_lang_Object*)makeJavaString(mentry->name, strlen(mentry->name));
-		jfree(mentry);
+		KFREE(mentry);
 	}
 
 	return (array);

@@ -548,7 +548,7 @@ Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
 												 "(IIIIII)Ljava/awt/PaintEvent;");
 
   X->nWindows = 47;
-  X->windows = jcalloc( X->nWindows, sizeof(Window));
+  X->windows = KCALLOC( X->nWindows, sizeof(Window));
 
   if ( X->banner )
 	XUnmapWindow( X->dsp, X->banner);

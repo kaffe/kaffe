@@ -1,3 +1,38 @@
+Fri Dec 11 22:55:41 1998  Archie Cobbs <archie@whistle.com>
+
+      * config/alpha/jit-alpha.def include/jmalloc.h include/jsyscall.h
+      include/native.h kaffe/kaffeh/constants.c
+      kaffe/kaffeh/kaffeh-support.h kaffe/kaffeh/support.c
+      kaffe/kaffevm/classMethod.c kaffe/kaffevm/code-analyse.c
+      kaffe/kaffevm/code-analyse.h kaffe/kaffevm/external.c
+      kaffe/kaffevm/findInJar.c kaffe/kaffevm/gc.c kaffe/kaffevm/gc.h
+      kaffe/kaffevm/inflate.c kaffe/kaffevm/jar.c kaffe/kaffevm/jni.c
+      kaffe/kaffevm/soft.c kaffe/kaffevm/string.c kaffe/kaffevm/support.c
+      kaffe/kaffevm/support.h kaffe/kaffevm/jit/constpool.c
+      kaffe/kaffevm/jit/icode.c kaffe/kaffevm/jit/labels.c
+      kaffe/kaffevm/jit/machine.c kaffe/kaffevm/jit/seq.c
+      kaffe/kaffevm/jit/slots.c
+      kaffe/kaffevm/systems/unix-internal/internal.c
+      kaffe/kaffevm/systems/unix-internal/internalCalls.c
+      kaffe/kaffevm/systems/unix-jthreads/internal.c
+      kaffe/kaffevm/systems/unix-jthreads/jthread.h
+      libraries/clib/awt/X/clr.c libraries/clib/awt/X/evt.c
+      libraries/clib/awt/X/gra.c libraries/clib/awt/X/img.c
+      libraries/clib/awt/X/imggif.c libraries/clib/awt/X/imgpng.c
+      libraries/clib/awt/X/tlk.c libraries/clib/awt/X/toolkit.h
+      libraries/clib/io/AudioPlayer.c libraries/clib/io/File.c
+      libraries/clib/io/FileInputStream.c
+      libraries/clib/io/FileOutputStream.c
+      libraries/clib/io/RandomAccessFile.c libraries/clib/native/Array.c
+      libraries/clib/native/Class.c libraries/clib/native/ClassLoader.c
+      libraries/clib/native/ObjectInputStream.c
+      libraries/clib/native/ObjectStreamClass.c
+      libraries/clib/native/UNIXProcess.c libraries/clib/native/ZipFile.c
+      libraries/clib/net/PlainDatagramSocketImpl.c
+      libraries/clib/net/PlainSocketImpl.c libraries/clib/zip/Deflater.c
+      libraries/clib/zip/Inflater.c: replace jmalloc.h and jsyscall.h
+      macros with more intuitive names; a few other misc cleanups.
+
 Fri Dec 11 22:54:09 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/object.c, kaffe/kaffevm/mem/gc-incremental.c:

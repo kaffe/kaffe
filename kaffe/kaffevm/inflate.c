@@ -19,13 +19,7 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "inflate.h"
-
-#if !defined(KAFFEH)
 #include "gc.h"
-#else
-#define gc_malloc_fixed(S)      calloc(S, 1)
-#define gc_free_fixed(M)        free(M)
-#endif
 
 #define	WSIZE	0x8000
 
@@ -529,12 +523,12 @@ inflate_new(void)
 {
 	inflateInfo* info;
 
-	info = gc_malloc_fixed(sizeof(inflateInfo));
+	info = KMALLOC(sizeof(inflateInfo));
 	info->fixed_tl = 0;
 	info->fixed_td = 0;
 	info->fixed_bl = 0;
 	info->fixed_bd = 0;
-	info->slide = gc_malloc_fixed(WSIZE);
+	info->slide = KMALLOC(WSIZE);
 
 	return (info);
 }
@@ -609,9 +603,9 @@ inflate_free(inflateInfo* pG)
     huft_free(pG->fixed_td);
     huft_free(pG->fixed_tl);
     pG->fixed_td = pG->fixed_tl = 0;
-    gc_free_fixed(pG->slide);
+    KFREE(pG->slide);
   }
-  gc_free_fixed(pG);
+  KFREE(pG);
 
   return 0;
 }
@@ -745,7 +739,7 @@ huft_build(inflateInfo* pG, unsigned* b, unsigned n, unsigned s, uint16* d, uint
         l[h] = j;               /* set table size in stack */
 
         /* allocate and link in new table */
-        if ((q = (huft *)gc_malloc_fixed((z + 1)*sizeof(huft))) ==
+        if ((q = (huft *)KMALLOC((z + 1)*sizeof(huft))) ==
             0)
         {
           if (h)
@@ -823,7 +817,7 @@ huft_free(huft* t)
   while (p != 0)
   {
     q = (--p)->v.t;
-    gc_free_fixed(p);
+    KFREE(p);
     p = q;
   }
   return 0;

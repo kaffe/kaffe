@@ -134,10 +134,10 @@ java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
 		name = buffer;
 	}
 	else {
-		name = jmalloc (len);
+		name = KMALLOC (len);
 	}
 #else
-	c = jmalloc(sizeof(Utf8Const) + len + 1);
+	c = KMALLOC(sizeof(Utf8Const) + len + 1);
 	name = c->data;
 #endif
         javaString2CString(str, name, len+1);
@@ -145,7 +145,7 @@ java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
 #if INTERN_UTF8CONSTS
 	c = makeUtf8Const (name, len);
 	if (name != buffer) {
-		jfree(name);
+		KFREE(name);
 	}
 #else /* ! INTERN_UTF8CONSTS */
 	c->length = len;
@@ -186,7 +186,7 @@ java_lang_ClassLoader_getSystemResourceAsBytes0(struct Hjava_lang_String* str)
 
 	name = makeCString(str);
 	hand = findInJar(name, &err);
-	jfree(name);
+	KFREE(name);
 	if (hand.type == 0) {
 		return (NULL);
 	}
@@ -197,7 +197,7 @@ java_lang_ClassLoader_getSystemResourceAsBytes0(struct Hjava_lang_String* str)
 	data = (HArrayOfByte*)AllocArray(hand.size, TYPE_Byte);
 	memcpy(unhand(data)->body, hand.buf, hand.size);
 	if (hand.base != NULL) {
-		jfree(hand.base);
+		KFREE(hand.base);
 	}
 
 	return (data);
@@ -219,13 +219,13 @@ java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
                 name = buffer;
         }
         else {
-                name = jmalloc (len);
+                name = KMALLOC (len);
         }
         javaString2CString(str, name, len+1);
         classname2pathname (name, name);
         c = makeUtf8Const (name, len);
         if (name != buffer) {
-                jfree(name);
+                KFREE(name);
         }
 
         entry = lookupClassEntryInternal(c, this);

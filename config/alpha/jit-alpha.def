@@ -664,7 +664,7 @@ define_insn(prologue, prologue_xxC)
 	l = maxLocal + maxStack + maxTemp;
 	if (alpha_nslot2argoffset < l) {
 		alpha_nslot2argoffset = l;
-		alpha_slot2argoffset = gc_realloc_fixed(alpha_slot2argoffset,
+		alpha_slot2argoffset = KREALLOC(alpha_slot2argoffset,
 						        sizeof(int)*l);
 	}
 

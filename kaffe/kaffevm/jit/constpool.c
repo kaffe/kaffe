@@ -70,7 +70,7 @@ newConstant(int type, ...)
 		int i;
 
 		/* Allocate chunk of label elements */
-		c = gc_calloc_fixed(ALLOCCONSTNR, sizeof(constpool));
+		c = KCALLOC(ALLOCCONSTNR, sizeof(constpool));
 
 		/* Attach to current chain */
 		if (lastConst == 0) {

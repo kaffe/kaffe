@@ -37,7 +37,7 @@ java_io_ObjectInputStream_loadClass0(struct Hjava_io_ObjectInputStream* stream, 
 	cstr = makeCString(str);
 	classname2pathname(cstr, cstr);
 	nm = makeUtf8Const(cstr, -1);
-	jfree(cstr);
+	KFREE(cstr);
 	
 	assert(cls == 0 || !"Don't know what to do with a non-zero class");
 

@@ -731,13 +731,13 @@ addNativeMethod(char* name, void* func)
 	if (funcs_nr + 1 >= funcs_max) {
 		funcs_max += NATIVE_FUNC_INCREMENT;
 		if (native_funcs != null_funcs) {
-			native_funcs = gc_realloc_fixed(native_funcs, funcs_max * sizeof(nativeFunction));
+			native_funcs = KREALLOC(native_funcs, funcs_max * sizeof(nativeFunction));
 		}
 		else {
-			native_funcs = gc_malloc_fixed(NATIVE_FUNC_INCREMENT * sizeof(nativeFunction));
+			native_funcs = KMALLOC(NATIVE_FUNC_INCREMENT * sizeof(nativeFunction));
 		}
 	}
-	native_funcs[funcs_nr].name = gc_malloc_fixed(strlen(name) + 1);
+	native_funcs[funcs_nr].name = KMALLOC(strlen(name) + 1);
 	strcpy(native_funcs[funcs_nr].name, name);
 	native_funcs[funcs_nr].func = func;
 	funcs_nr++;

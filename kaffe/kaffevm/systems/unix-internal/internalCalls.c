@@ -26,7 +26,6 @@
 #if defined(HAVE_SYS_WAIT_H)
 #include <sys/wait.h>
 #endif
-#define NOUNIXPROTOTYPES
 #include "jsyscall.h"
 
 /*

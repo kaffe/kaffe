@@ -16,6 +16,8 @@
 #include "config-mem.h"
 #include "config-io.h"
 #include "jtypes.h"
+#include "jsyscall.h"
+#include "jmalloc.h"
 #include "constants.h"
 #include "file.h"
 #include "access.h"
@@ -47,6 +49,41 @@ extern char* translateSigType(char*, char*);
 
 static int objectDepth = -1;
 static int argpos = 0;
+
+/*
+ * We use a very simple 'fake' threads subsystem
+ */
+
+struct SystemCallInterface Kaffe_SystemCallInterface =
+{
+	(int (*)(const char*, int, int)) open,	/* avoid warning */
+        read,
+        write, 
+        lseek,
+        close,
+        fstat,
+        stat,
+
+        NULL,		/* mkdir */
+        NULL,		/* rmdir */
+        NULL,		/* rename */
+        NULL,		/* remove */
+        NULL,		/* socket */
+        NULL,		/* connect */
+        NULL,		/* accept */
+        NULL,		/* sockread */
+        NULL,		/* recvfrom */
+        NULL,		/* sockwrite */
+        NULL,		/* sendto */
+        NULL,		/* setsockopt */
+        NULL,		/* getsockopt */
+        NULL,		/* getsockname */
+        NULL,		/* getpeername */
+        NULL,		/* select */
+        NULL,		/* forkexec */
+        NULL,		/* waitpid */
+        NULL,		/* kill */
+};
 
 /*
  * Init include file.
@@ -545,15 +582,32 @@ findClass(char* nm)
 	exit(1);
 }
 
+/*
+ * The real GC malloc zeroes memory, so our malloc does also.
+ */
 void*
-gc_malloc_fixed(size_t sz)
+jmalloc(size_t sz)
 {
-        void* mem;      
+  	void	*p;
 
-        mem = malloc(sz);
-        if (mem == NULL) {
-                fprintf (stderr, "(Insufficient memory)\n");
-                exit (-1);
-        }
-        return (mem);   
+	if ((p = malloc(sz)) == NULL) {
+		fprintf(stderr, "Out of memory.\n");
+		exit(1);
+	}
+	memset(p, 0, sz);
+	return(p);
 }
+
+void*
+jrealloc(void* mem, size_t sz)
+{
+	return(realloc(mem, sz));
+}
+
+void
+jfree(void* mem)
+{
+	free(mem);
+}
+
+

@@ -29,7 +29,7 @@ java_util_zip_ZipFile_openZipFile0(Hjava_lang_String* fname)
 
 	str = makeCString(fname);
 	zip = openJarFile(str);
-	jfree(str);
+	KFREE(str);
 	return ((struct Hkaffe_util_Ptr*)zip);
 }
 
@@ -48,7 +48,7 @@ java_util_zip_ZipFile_getZipEntry0(struct Hkaffe_util_Ptr* zip, Hjava_lang_Strin
 
 	str = makeCString(zname);
 	entry = lookupJarFile((jarFile*)zip, str);
-	jfree(str);
+	KFREE(str);
 	if (entry == 0) {
 		return (0);
 	}

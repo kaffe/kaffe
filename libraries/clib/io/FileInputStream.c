@@ -28,7 +28,7 @@ java_io_FileInputStream_open(struct Hjava_io_FileInputStream* this, struct Hjava
 	int fd;
 
 	javaString2CString(name, str, sizeof(str));
-	fd = open(str, O_RDONLY|O_BINARY, 0);
+	fd = KOPEN(str, O_RDONLY|O_BINARY, 0);
 	unhand(unhand(this)->fd)->fd = fd;
 	if (fd < 0) {
 		SignalError("java.io.IOException", SYS_ERROR);
@@ -44,7 +44,7 @@ java_io_FileInputStream_close(struct Hjava_io_FileInputStream* this)
 	int r;
 
 	if (unhand(unhand(this)->fd)->fd >= 0) {
-		r = close(unhand(unhand(this)->fd)->fd);
+		r = KCLOSE(unhand(unhand(this)->fd)->fd);
 		unhand(unhand(this)->fd)->fd = -1;
 		if (r < 0) {
 			SignalError("java.io.IOException", SYS_ERROR);
@@ -60,7 +60,7 @@ java_io_FileInputStream_readBytes(struct Hjava_io_FileInputStream* fh, HArrayOfB
 {
 	jint ret;
 
-	ret = read(unhand(unhand(fh)->fd)->fd, &unhand(bytes)->body[off], len);
+	ret = KREAD(unhand(unhand(fh)->fd)->fd, &unhand(bytes)->body[off], len);
 	if (ret < 0) {
 		SignalError("java.io.IOException", SYS_ERROR);
 	}
@@ -76,7 +76,7 @@ java_io_FileInputStream_read(struct Hjava_io_FileInputStream* fh)
 	jint ret;
 	unsigned char byte;
 
-	ret = read(unhand(unhand(fh)->fd)->fd, &byte, 1);
+	ret = KREAD(unhand(unhand(fh)->fd)->fd, &byte, 1);
 	if (ret < 0) {
 		SignalError("java.io.IOException", SYS_ERROR);
 	}
@@ -94,8 +94,8 @@ java_io_FileInputStream_skip(struct Hjava_io_FileInputStream* fh, jlong off)
 	char buffer[100];
 	int count;
 
-	orig = lseek(unhand(unhand(fh)->fd)->fd, (off_t)0, 1);
-	ret = lseek(unhand(unhand(fh)->fd)->fd, jlong2off_t(off), 1);
+	orig = KLSEEK(unhand(unhand(fh)->fd)->fd, (off_t)0, 1);
+	ret = KLSEEK(unhand(unhand(fh)->fd)->fd, jlong2off_t(off), 1);
 	if (ret >= 0) {
 		return (off_t2jlong(ret-orig));
 	}
@@ -103,7 +103,7 @@ java_io_FileInputStream_skip(struct Hjava_io_FileInputStream* fh, jlong off)
 	/* Not seekable - try just reading. */
 	ret = 0;
 	while (off > 0) {
-		count = read(unhand(unhand(fh)->fd)->fd, buffer, 100);
+		count = KREAD(unhand(unhand(fh)->fd)->fd, buffer, 100);
 		if (count == 0) {	/* Reached EOF. */
 			break;
 		}
@@ -126,10 +126,10 @@ java_io_FileInputStream_available(struct Hjava_io_FileInputStream* fh)
 	int fd = unhand(unhand(fh)->fd)->fd;
 	off_t cur = 0;
 
-	cur = lseek(fd, cur, SEEK_CUR);
+	cur = KLSEEK(fd, cur, SEEK_CUR);
 	if (cur != (off_t)-1) {
 		struct stat statbuf;
-		if (fstat(fd, &statbuf) != -1) {
+		if (KFSTAT(fd, &statbuf) != -1) {
 			return (statbuf.st_size - cur);
 		}
 	}
@@ -152,7 +152,7 @@ java_io_FileInputStream_available(struct Hjava_io_FileInputStream* fh)
 
 		FD_ZERO(&rd);
 		FD_SET(fd, &rd);
-		r = select(fd+1, &rd, NULL, NULL, &tm);
+		r = KSELECT(fd+1, &rd, NULL, NULL, &tm);
 		if (r == 1) {
 			nr = 1;
 		}

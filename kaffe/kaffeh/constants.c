@@ -74,7 +74,7 @@ RDBG(		if (type != CONSTANT_Utf8) {
 					name = buffer;
 				}
 				else {
-					name = gc_malloc_fixed(len);
+					name = KMALLOC(len);
 				}
 				fread(name, len, sizeof(u1), fp);
 RDBG(				printf("%2d: Cnst %2d: utf8: %.*s\n", i, type, len, name); )
@@ -84,7 +84,7 @@ RDBG(				printf("%2d: Cnst %2d: utf8: %.*s\n", i, type, len, name); )
 				}
 #else
 				Utf8Const *m =
-				  gc_malloc_fixed(sizeof(Utf8Const) + len + 1);
+				  KMALLOC(sizeof(Utf8Const) + len + 1);
 				readm(m->data, len, sizeof(u1), fp);
 				m->data[len] = 0;
 				m->hash = (uint16)hashUtf8String (m->data,len);

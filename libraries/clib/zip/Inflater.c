@@ -118,7 +118,7 @@ java_util_zip_Inflater_end(struct Hjava_util_zip_Inflater* this)
 
 	dstream = GET_STREAM(this);
 	inflateEnd(dstream);
-	jfree(dstream);
+	KFREE(dstream);
 }
 
 void
@@ -127,7 +127,7 @@ java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jbool val)
 	int r;
 	z_stream* dstream;
 
-	dstream = jmalloc(sizeof(z_stream));
+	dstream = KMALLOC(sizeof(z_stream));
 	dstream->next_out = 0;
 	dstream->zalloc = 0;
 	dstream->zfree = 0; 

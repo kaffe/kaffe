@@ -43,15 +43,7 @@
 #include "md.h"
 #include "lerrno.h"
 #include "exception.h"
-
-/* 
- * make sure jsyscall doesn't redefine open, read, etc. 
- * XXX - this is not very clean
- */
-#define NOUNIXPROTOTYPES
 #include "jsyscall.h"
-#define  select(A, B, C, D, E)	\
-	(*Kaffe_SystemCallInterface._select)(A,B,C,D,E)
 
 /*======== 	end of definitions that apply to Kaffe 	     	     ========*/
 

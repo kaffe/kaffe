@@ -11,18 +11,17 @@
 #ifndef __kaffeh_support_h
 #define __kaffeh_support_h
 
-void initStub(void);
-void startStub(void);
+extern void initStub(void);
+extern void startStub(void);
 
-void initInclude(void);
-void startInclude(void);
-void endInclude(void);
+extern void initInclude(void);
+extern void startInclude(void);
+extern void endInclude(void);
 
-void initJniInclude(void);
-void startJniInclude(void);
-void endJniInclude(void);
+extern void initJniInclude(void);
+extern void startJniInclude(void);
+extern void endJniInclude(void);
 
-void findClass(char *nm);
-void* gc_malloc_fixed(size_t sz);
- 
+extern void findClass(char *nm);
+
 #endif

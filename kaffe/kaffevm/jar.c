@@ -15,16 +15,9 @@
 #include "config-io.h"
 #include "config-mem.h"
 #include "gtypes.h"
+#include "jsyscall.h"
 #include "inflate.h"
 #include "jar.h"
-
-#if !defined(KAFFEH)
-#include "gc.h"
-#include "jsyscall.h"
-#else
-#define	gc_malloc_fixed(S)	calloc(S, 1)
-#define	gc_free_fixed(M)	free(M)
-#endif
 
 static inline int
 jar_read(jarFile* file, char *buf, off_t len)
@@ -41,7 +34,7 @@ jar_read(jarFile* file, char *buf, off_t len)
     }
     else
 #endif
-    return read(file->fd, buf, len);
+    return KREAD(file->fd, buf, len);
 }
 
 static inline off_t
@@ -73,7 +66,7 @@ jar_lseek(jarFile* file, off_t offset, int whence)
     }
     else
 #endif
-    return lseek(file->fd, offset, whence);
+    return KLSEEK(file->fd, offset, whence);
 }
 
 /*
@@ -113,7 +106,7 @@ readCentralDirRecord(jarFile* file)
 	}
 
 	len = sizeof(jarEntry) + (head.fileNameLength + 1);
-	ret = gc_malloc_fixed(len);
+	ret = KMALLOC(len);
 
 	ret->next = 0;
 	ret->fileName = (char*)((uintp)ret + sizeof(jarEntry));
@@ -186,23 +179,23 @@ openJarFile(char* name)
 	jarEntry* curr;
 	int i;
 
-	file = gc_malloc_fixed(sizeof(jarFile));
+	file = KMALLOC(sizeof(jarFile));
 
-	file->fd = open(name, O_RDONLY, 0);
+	file->fd = KOPEN(name, O_RDONLY, 0);
 	if (file->fd == -1) {
-		gc_free_fixed(file);
+		KFREE(file);
 		return (0);
 	}
 #ifdef HAVE_MMAP
-	file->size = lseek(file->fd, 0, SEEK_END);
+	file->size = KLSEEK(file->fd, 0, SEEK_END);
 	if (file->size == -1) {
-		close(file->fd);
-		gc_free_fixed(file);
+		KCLOSE(file->fd);
+		KFREE(file);
 		return (0);
 	}
 	file->data = mmap(NULL, file->size, PROT_READ, MAP_SHARED, file->fd, 0);
 	if (file->data != (char*)-1) {
-		close(file->fd);
+		KCLOSE(file->fd);
 		file->offset = 0;
 	}
 #endif
@@ -245,10 +238,10 @@ getDataJarFile(jarFile* file, jarEntry* entry)
 		file->error = "Failed to seek into JAR file";
 		return (0);
 	}
-	buf = gc_malloc_fixed(entry->compressedSize);
+	buf = KMALLOC(entry->compressedSize);
 	if (jar_read(file, buf, entry->compressedSize) != entry->compressedSize) {
 		file->error = "Failed to read from JAR file";
-		gc_free_fixed(buf);
+		KFREE(buf);
 		return (0);
 	}
 
@@ -258,14 +251,14 @@ getDataJarFile(jarFile* file, jarEntry* entry)
 		return (buf);
 
 	case COMPRESSION_DEFLATED:
-		nbuf = gc_malloc_fixed(entry->uncompressedSize);
+		nbuf = KMALLOC(entry->uncompressedSize);
 		if (inflate_oneshot(buf, entry->compressedSize, nbuf, entry->uncompressedSize) == 0) {
-			gc_free_fixed(buf);
+			KFREE(buf);
 			return (nbuf);
 		}
 		file->error = "Decompression failed";
-		gc_free_fixed(buf);
-		gc_free_fixed(nbuf);
+		KFREE(buf);
+		KFREE(nbuf);
 		return (0);
 
 	/* These are not supported yet */
@@ -278,7 +271,7 @@ getDataJarFile(jarFile* file, jarEntry* entry)
 	case COMPRESSION_TOKENIZED:
 	default:
 		file->error = "Unsupported compression in JAR file";
-		gc_free_fixed(buf);
+		KFREE(buf);
 		return (0);
 	}
 }
@@ -291,7 +284,7 @@ closeJarFile(jarFile* file)
 
 	for (curr = file->head; curr != 0; curr = next) {
 		next = curr->next;
-		gc_free_fixed(curr);
+		KFREE(curr);
 	}
 
 #ifdef HAVE_MMAP
@@ -299,7 +292,7 @@ closeJarFile(jarFile* file)
 		munmap(file->data, file->size);
 	else
 #endif
-	close(file->fd);
-	gc_free_fixed(file);
+	KCLOSE(file->fd);
+	KFREE(file);
 }
 

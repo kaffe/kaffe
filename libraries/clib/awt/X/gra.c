@@ -69,7 +69,7 @@ Java_java_awt_Toolkit_graInitGraphics ( JNIEnv* env, jclass clazz,
 	XChangeGC( X->dsp, gr->gc, valueMask, &values);
   }
   else {
-	gr = (Graphics*) jmalloc( sizeof(Graphics));
+	gr = (Graphics*) KMALLOC( sizeof(Graphics));
 	gr->gc = XCreateGC( X->dsp, drw, valueMask, &values);
   }
 
@@ -100,7 +100,7 @@ void
 Java_java_awt_Toolkit_graFreeGraphics ( JNIEnv* env, jclass clazz, Graphics* gr )
 {
   XFreeGC( X->dsp, gr->gc);
-  jfree( gr);
+  KFREE( gr);
 }
 
 
@@ -699,8 +699,8 @@ Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz, Graphics* 
   Java_java_awt_Toolkit_graDrawImage ( env, clazz, gr, &tgt, 0, 0,
 					x0, y0, tgt.width, tgt.height, bgval);
 
-  /* since we're allocated the data with jmallo we better free it with jfree */
-  jfree( tgt.xImg->data);
+  /* since we're allocated the data with KMALLOC we better free it with KFREE */
+  KFREE( tgt.xImg->data);
   tgt.xImg->data = 0;
   XDestroyImage( tgt.xImg);
 
@@ -710,7 +710,7 @@ Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz, Graphics* 
   }
 
   if ( tgt.xMask ) {
-	jfree( tgt.xMask->data);
+	KFREE( tgt.xMask->data);
 	tgt.xMask->data = 0;
     	XDestroyImage( tgt.xMask);
   }

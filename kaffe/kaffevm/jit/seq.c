@@ -39,7 +39,7 @@ nextSeq(void)
 
 	if (ret == 0) {
 		/* Allocate chunk of sequence elements */
-		ret = gc_calloc_fixed(ALLOCSEQNR, sizeof(sequence));
+		ret = KCALLOC(ALLOCSEQNR, sizeof(sequence));
 
 		/* Attach to current chain */
 		if (lastSeq == 0) {

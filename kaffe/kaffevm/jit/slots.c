@@ -39,7 +39,7 @@ initSlots(int nrslots)
 
 	/* Make sure we have enough slots space */
 	if (nrslots > lastnrslots) {
-		basicslots = gc_realloc_fixed(basicslots, nrslots * sizeof(SlotInfo));
+		basicslots = KREALLOC(basicslots, nrslots * sizeof(SlotInfo));
 		lastnrslots = nrslots;
 	}
 	/* Set 'maxslot' to the maximum slot usable (excluding returns) */

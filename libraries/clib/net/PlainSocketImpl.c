@@ -64,7 +64,7 @@ java_net_PlainSocketImpl_socketCreate(struct Hjava_net_PlainSocketImpl* this, jb
 		type = SOCK_STREAM;
 	}
 
-	fd = socket(AF_INET, type, 0);
+	fd = KSOCKET(AF_INET, type, 0);
 	if (fd < 0) {
 		SignalError("java.io.IOException", SYS_ERROR);
 	}
@@ -90,14 +90,14 @@ java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl* this, s
 	addr.sin_addr.s_addr = htonl(unhand(daddr)->address);
 
 	fd = unhand(unhand(this)->fd)->fd;
-	r = connect(fd, (struct sockaddr*)&addr, sizeof(addr));
+	r = KCONNECT(fd, (struct sockaddr*)&addr, sizeof(addr));
 	if (r < 0) {
 		SignalError("java.io.IOException", SYS_ERROR);
 	}
 
 	/* Enter information into socket object */
 	alen = sizeof(addr);
-	r = getsockname(fd, (struct sockaddr*)&addr, &alen);
+	r = KGETSOCKNAME(fd, (struct sockaddr*)&addr, &alen);
 	if (r < 0) {
 		SignalError("java.io.IOException", SYS_ERROR);
 	}
@@ -129,7 +129,7 @@ java_net_PlainSocketImpl_socketBind(struct Hjava_net_PlainSocketImpl* this, stru
 	fd = unhand(unhand(this)->fd)->fd;
 
 	/* Allow rebinding to socket - ignore errors */
-	(void)setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
+	(void)KSETSOCKOPT(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
 	r = bind(fd, (struct sockaddr*)&addr, sizeof(addr));
 	if (r < 0) {
 		SignalError("java.io.IOException", SYS_ERROR);
@@ -139,7 +139,7 @@ java_net_PlainSocketImpl_socketBind(struct Hjava_net_PlainSocketImpl* this, stru
 	unhand(this)->address = laddr;
 	if (lport == 0) {
 		alen = sizeof(addr);
-		r = getsockname(fd, (struct sockaddr*)&addr, &alen);
+		r = KGETSOCKNAME(fd, (struct sockaddr*)&addr, &alen);
 		if (r < 0) {
 			SignalError("java.io.IOException", SYS_ERROR);
 		}
@@ -180,7 +180,7 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 	addr.sin_port = htons(unhand(sock)->localport);
 	addr.sin_addr.s_addr = htonl(unhand(unhand(sock)->address)->address);
 
-	r = accept(unhand(unhand(this)->fd)->fd, (struct sockaddr*)&addr, &alen);
+	r = KACCEPT(unhand(unhand(this)->fd)->fd, (struct sockaddr*)&addr, &alen);
 	if (r < 0) {
 		SignalError("java.io.IOException", SYS_ERROR);
 	}
@@ -188,7 +188,7 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 
 	/* Enter information into socket object */
 	alen = sizeof(addr);
-	r = getpeername(r, (struct sockaddr*)&addr, &alen);
+	r = KGETPEERNAME(r, (struct sockaddr*)&addr, &alen);
 	if (r < 0) {
 		SignalError("java.io.IOException", SYS_ERROR);
 	}
@@ -212,7 +212,7 @@ java_net_PlainSocketImpl_socketAvailable(struct Hjava_net_PlainSocketImpl* this)
 		SignalError("java.io.IOException", SYS_ERROR);
 	}
 #else
-	/* This uses select() to work out if we can read - but what
+	/* This uses KSELECT() to work out if we can read - but what
 	 * happens at the end of file?
 	 */
 	static struct timeval tm = { 0, 0 };
@@ -222,7 +222,7 @@ java_net_PlainSocketImpl_socketAvailable(struct Hjava_net_PlainSocketImpl* this)
 	fd = unhand(unhand(this)->fd)->fd;
 	FD_ZERO(&rd);
 	FD_SET(fd, &rd);
-	r = select(fd+1, &rd, NULL, NULL, &tm);
+	r = KSELECT(fd+1, &rd, NULL, NULL, &tm);
 	if (r == 1) {
 		len = 1;
 	}
@@ -242,7 +242,7 @@ java_net_PlainSocketImpl_socketClose(struct Hjava_net_PlainSocketImpl* this)
 	int r;
 
 	if (unhand(unhand(this)->fd)->fd != -1) {
-		r = close(unhand(unhand(this)->fd)->fd);
+		r = KCLOSE(unhand(unhand(this)->fd)->fd);
 		unhand(unhand(this)->fd)->fd = -1;
 		if (r < 0) {
 			SignalError("java.io.IOException", SYS_ERROR);
@@ -265,7 +265,7 @@ java_net_PlainSocketImpl_socketSetOption(struct Hjava_net_PlainSocketImpl* this,
 	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
 		if (opt == socketOptions[k].jopt) {
 			v = unhand((struct Hjava_lang_Integer*)arg)->value;
-			r = setsockopt(unhand(unhand(this)->fd)->fd,
+			r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd,
 				socketOptions[k].level, socketOptions[k].copt,
 				&v, sizeof(v));
 			if (r < 0) {
@@ -299,7 +299,7 @@ java_net_PlainSocketImpl_socketGetOption(struct Hjava_net_PlainSocketImpl* this,
 	/* Do easy cases */
 	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
 		if (opt == socketOptions[k].jopt) {
-			r = getsockopt(unhand(unhand(this)->fd)->fd,
+			r = KGETSOCKOPT(unhand(unhand(this)->fd)->fd,
 				socketOptions[k].level, socketOptions[k].copt,
 				&v, &vsize);
 			if (r < 0) {
@@ -312,7 +312,7 @@ java_net_PlainSocketImpl_socketGetOption(struct Hjava_net_PlainSocketImpl* this,
 	/* Do harder cases */
 	switch(opt) {
 	case java_net_SocketOptions_SO_BINDADDR:
-		r = getsockname(unhand(unhand(this)->fd)->fd,
+		r = KGETSOCKNAME(unhand(unhand(this)->fd)->fd,
 			(struct sockaddr*)&addr, &alen);
 		if (r < 0) {
 			SignalError("java.net.SocketException", SYS_ERROR);    
@@ -332,7 +332,7 @@ java_net_PlainSocketImpl_read(struct Hjava_net_PlainSocketImpl* this, HArrayOfBy
 {
         int r;
 
-        r = sockread(unhand(unhand(this)->fd)->fd, &unhand(buf)->body[offset], len);
+        r = KSOCKREAD(unhand(unhand(this)->fd)->fd, &unhand(buf)->body[offset], len);
         if (r < 0) {
                 SignalError("java.io.IOException", SYS_ERROR);
         }
@@ -352,7 +352,7 @@ java_net_PlainSocketImpl_write(struct Hjava_net_PlainSocketImpl* this, HArrayOfB
 
 	fd = unhand(unhand(this)->fd)->fd;
         if (fd >= 0) {
-		r = sockwrite(fd, &unhand(buf)->body[offset], len);
+		r = KSOCKWRITE(fd, &unhand(buf)->body[offset], len);
 		if (r < 0) {
 			SignalError("java.io.IOException", SYS_ERROR);
 		}

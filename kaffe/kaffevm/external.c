@@ -99,7 +99,7 @@ initNative(void)
 	/*
 	 * Build a library path from the given library path.
 	 */
-	libraryPath = gc_malloc_fixed(len+1);
+	libraryPath = KMALLOC(len+1);
 	if (lpath != 0) {
 		strcat(libraryPath, lpath);
 	}
@@ -180,7 +180,7 @@ loadNativeLibrary(char* lib)
 	}
 
 	libHandle[i].ref = 1;
-	libHandle[i].name = gc_malloc_fixed(strlen(lib) + 1);
+	libHandle[i].name = KMALLOC(strlen(lib) + 1);
 	strcpy(libHandle[i].name, lib);
 
 	return (1);
