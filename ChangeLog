@@ -2,6 +2,8 @@ Wed Aug 19 21:54:45 1998  Archie Cobbs  <archie@whistle.com>
 
 	* libraries/javalib/java/lang/Throwable.java: use toString in
 	printStackTrace.
+	* configure.in, */Makefile.in: added INSTROOT variable
+	FAQ/FAQ.install-root: new file
 
 Wed Aug 19 21:41:53 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
