@@ -73,7 +73,10 @@ Treat it as an TODO list.
   LD_LIBRARY_PATH (less likely), or a problem in the dynamic linking 
   mechanisms on this system.  Check the mailing list archive for more info.
 
-* java.util.Hashtable does not implement java.io.Serializable, but the
-  specs says it should.  This would supposedly involve marking some
-  fields transient and writing a writeObject and a readObject method.
+* Object serialization is buggy.  For the JKernel, the system goes in an
+  infinite loop.  When we use Sun's java.io.* classes, it will work fine,
+  except that non-transient floating point fields are not properly saved
+  and restored using defaultWriteObject and defaultReadObject.  More
+  investigation is needed.  (This is why java.util.Hashtable manually
+  saves and restores its loadFactor.)  This is valid as of Jul 23, 1998.
 
