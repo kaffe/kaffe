@@ -1118,7 +1118,7 @@ public class File implements Serializable, Comparable
         if (prefix.length() >= 8)
           throw new IllegalArgumentException("Prefix too long: " + prefix + "(valid length 3..7)");
 
-        int  mask = (int) (0x000000ffffFFFFL >> (long) (prefix.length() * 4));
+        long mask = 0x000000ffffFFFFL >> (prefix.length() * 4);
         do
           {
             int n = (int) (System.currentTimeMillis() & mask);

@@ -1,5 +1,15 @@
 2004-11-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/io/File.java:
+        Resynced with GNU Classpath.
+
+	2004-11-09  Tom Tromey  <tromey@redhat.com>
+
+        * java/io/File.java (directory.getName): Removed redundant cast.
+        Changed "mask" to be of type "long".
+
+2004-11-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/util/jar/JarFile.java:
         Resynced with GNU Classpath.
 
