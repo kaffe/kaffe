@@ -859,7 +859,7 @@ class Stylesheet
     if (prefix != null && (uri == null || uri.length() == 0))
       {
         uri = getNamespaceURI(prefix);
-        String localName = qName.getLocalName();
+        String localName = qName.getLocalPart();
         qName = new QName(uri, localName, prefix);
       }
     return qName;
@@ -1046,7 +1046,7 @@ class Stylesheet
     String uri = name.getNamespaceURI();
     if (XSL_NS.equals(uri) || uri == null || uri.length() == 0)
       {
-        String localName = name.getLocalName();
+        String localName = name.getLocalPart();
         if ("document".equals(localName) && (arity == 1 || arity == 2))
           {
             if (current == null)

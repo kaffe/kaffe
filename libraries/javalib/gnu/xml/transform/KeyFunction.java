@@ -111,7 +111,7 @@ final class KeyFunction
         uri = stylesheet.getNamespaceURI(prefix);
         if (uri != null && uri.length() > 0)
           {
-            String localName = keyName.getLocalName();
+            String localName = keyName.getLocalPart();
             keyName = new QName(uri, localName, prefix);
           }
       }

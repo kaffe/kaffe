@@ -87,7 +87,7 @@ final class SystemPropertyFunction
 
   Object systemProperty(QName name)
   {
-    String localName = name.getLocalName();
+    String localName = name.getLocalPart();
     String prefix = name.getPrefix();
     String uri = name.getNamespaceURI();
     if (Stylesheet.XSL_NS.equals(uri) ||

@@ -98,7 +98,7 @@ public final class NamespaceTest
       {
         return true;
       }
-    String localName = qName.getLocalName();
+    String localName = qName.getLocalPart();
     return (localName.equals(node.getLocalName()));
   }
 

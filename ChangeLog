@@ -1,5 +1,19 @@
 2004-12-04  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/xml/namespace/QName.java:
+	(getLocalName) renamed to
+	(getLocalPart) to match the specification.
+
+	* libraries/javalib/gnu/xml/transform/KeyFunction.java,
+	libraries/javalib/gnu/xml/transform/Stylesheet.java,
+	libraries/javalib/gnu/xml/transform/SystemPropertyFunction.java,
+	libraries/javalib/gnu/xml/xpath/NameTest.java,
+	libraries/javalib/gnu/xml/xpath/NamespaceTest.java,
+	libraries/javalib/gnu/xml/xpath/XPathParser.java:
+	Adapted accordingly.
+
+2004-12-04  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/Makefile.am,
 	libraries/javalib/Makefile.in,
 	libraries/javalib/all.files:

@@ -104,7 +104,7 @@ public final class NameTest
       {
         return true;
       }
-    String localName = qName.getLocalName();
+    String localName = qName.getLocalPart();
     return (localName.equals(node.getLocalName()));
   }
 

@@ -51,7 +51,7 @@ public class QName
 {
 
   private final String namespaceURI;
-  private final String localName;
+  private final String localPart;
   private final String prefix;
 
   public QName(String namespaceURI, String localPart)
@@ -74,7 +74,7 @@ public class QName
         prefix = XMLConstants.DEFAULT_NS_PREFIX;
       }
     this.namespaceURI = namespaceURI;
-    this.localName = localPart;
+    this.localPart = localPart;
     this.prefix = prefix;
   }
 
@@ -88,9 +88,9 @@ public class QName
     return namespaceURI;
   }
 
-  public String getLocalName()
+  public String getLocalPart()
   {
-    return localName;
+    return localPart;
   }
 
   public String getPrefix()
@@ -103,7 +103,7 @@ public class QName
     if (obj instanceof QName)
       {
         QName qname = (QName) obj;
-        return qname.getLocalName().equals(localName) &&
+        return qname.getLocalPart().equals(localPart) &&
           qname.getNamespaceURI().equals(namespaceURI);
       }
     return false;
@@ -128,7 +128,7 @@ public class QName
         buf.append(prefix);
         buf.append(':');
       }
-    buf.append(localName);
+    buf.append(localPart);
     return buf.toString();
   }
 
