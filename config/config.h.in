@@ -189,6 +189,9 @@
 /* Do we have ceil */
 #undef	HAVE_CEIL
 
+/* Do we have rint */
+#undef	HAVE_RINT
+
 /* Do we have isinf */
 #undef	HAVE_ISINF
 

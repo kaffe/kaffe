@@ -58,6 +58,11 @@
 #define	ceil(v)		(-floor(-(v)))
 #endif
 
+#if !defined(HAVE_RINT)
+/* As per Java Class Libraries page 927 */
+#define	rint(v)		(floor(v+0.5))
+#endif
+
 /* If we dont' have isinf() assume nothing is */
 #if !defined(HAVE_ISINF)
 #define	isinf(x)	0

@@ -7,6 +7,10 @@ Sat Dec 12 19:04:18 1998  Godmar Back  <gback@cs.utah.edu>
 	Avoid pushing back EOF because it comes back as 65535.
 	* libraries/javalib/java/lang/SecurityManager.java: added deprecated
 	inCheck variable.
+	* libraries/javalib/java/lang/reflect/Modifier.java: changed 
+	toString to print modifiers in proper order.
+	* config/config-math.h, config/config.h.in, 
+	libraries/clib/native/Math.c: check for and use rint() for Math.rint()
 
 Sat Dec 12 10:46:44 1998  Godmar Back  <gback@cs.utah.edu>
 

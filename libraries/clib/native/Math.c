@@ -90,8 +90,7 @@ java_lang_Math_floor(double v)
 double
 java_lang_Math_rint(double v)
 {
-	/* As per Java Class Libraries page 927 */
-	return (floor(v+0.5));
+	return (rint(v));
 }
 
 double
