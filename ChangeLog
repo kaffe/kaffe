@@ -1,3 +1,9 @@
+Sun Aug  9 12:06:18 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/javalib/java/net/DatagramSocket.java: modified to
+	use DatagramSocketImpl.
+	* test/regression/UDPTest.java: new file
+
 Sun Aug  9 11:02:33 1998  Juergen Sonnauer <sonic@az-online.net>
 
 	* kaffe/kaffevm/jni.c: use STRING_DATA in GetStringChars.
