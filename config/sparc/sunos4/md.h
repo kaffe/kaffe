@@ -35,5 +35,6 @@ extern int getsockopt(int, int, int, void*, int*);
 extern int getsockname(int, struct sockaddr*, int*);
 extern int getpeername(int, struct sockaddr*, int*);
 extern int select(int, fd_set*, fd_set*, fd_set*, struct timeval*);
+extern int vfprintf(FILE *, char *, va_list);
 
 #endif
