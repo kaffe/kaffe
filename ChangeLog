@@ -1,3 +1,23 @@
+2003-08-04 Kiyo Inaba <inaba@src.ricoh.co.jp>
+	
+	* config/alpha/linux/config.frag,
+	config/arm/linux/config.frag,
+	config/i386/linux/config.frag,
+	config/ia64/linux/config.frag,
+	config/m68k/linux/config.frag,
+	config/mips/linux/config.frag,
+	config/parisc/linux/config.frag,
+	config/powerpc/linux/config.frag,
+	config/s390/linux/config.frag,
+	config/sparc/linux/config.frag,
+	config/x86_64/linux/config.frag:
+	Delete 'Khost_cpu' and 'Khost_os' defined in some files.
+	'ac_cv_sizeof_int' etc. are now properly handled by 'configure'
+	even for cross compiling.
+	'ac_cv_c_char_unsigned' is now set to 'no', when cross compiling.
+	'CFLAGS' is now used only to append mandatory settings for the port.
+	Old notation of 'linux-threads' are changed to 'unix-pthreads'.
+	
 2003-08-03  Jim Pick  <jim@kaffe.org>
 
 	* README,
