@@ -18,6 +18,7 @@ public abstract class ResourceBundle {
 
 	protected ResourceBundle parent;
 	static Hashtable cache = new Hashtable();
+	private Locale locale;
 
 public ResourceBundle() {
 	parent = null;
@@ -35,111 +36,88 @@ public static final ResourceBundle getBundle(String baseName, Locale locale)
 
 public static ResourceBundle getBundle(String baseName, Locale locale,
 		ClassLoader loader) throws MissingResourceException {
-	ResourceBundle   bundle = null;
-	String           key = baseName + locale;
-	Object           val = cache.get( key);
+	String		key = baseName + locale;
+	ResourceBundle	ret = (ResourceBundle) cache.get (key);
 
-	if ( val != null ) {
-		bundle = (ResourceBundle) val;
-	}
-	else {
-		bundle = getBundleWithLocale(baseName, locale, loader);
+	if (ret == null) {
+		ResourceBundle defaultBundle = getSpecificBundle (baseName, loader);
+		if (defaultBundle != null) {
+			defaultBundle.parent = null;
+			defaultBundle.locale = new Locale ("");
+		}
+
+		ret = getBundleWithLocale(baseName, defaultBundle, locale, loader);
 
 		/* It would appear that if we fail to load a resource bundle
 		 * for a given locale, we just load the default one instead.
 		 */
-		if (bundle == null && locale != Locale.getDefault()) {
-			bundle = getBundleWithLocale(baseName,
+		if (ret == null && locale != Locale.getDefault()) {
+			ret = getBundleWithLocale(baseName, defaultBundle,
 			    Locale.getDefault(), loader);
 		}
 
-		if ( bundle != null ) {
-			cache.put( key, bundle);
+		if (ret != null)  {
+			cache.put(key, ret);
 		}
 	}
 
-	if (bundle == null) {
+	if (ret == null) {
 		throw new MissingResourceException("Can't find bundle for base name "
 		    + baseName + ",locale " + locale, "ResourceBundle", baseName);
 	}
 
-	return (bundle);
+	return (ret);
 }
 
-private static final ResourceBundle getBundleWithLocale(String baseName,
+private static final ResourceBundle getBundleWithLocale(String baseName, ResourceBundle bundle,
 		Locale locale, ClassLoader loader) {
+	ResourceBundle nbundle = null;
 
 	String lang = locale.getLanguage();
 	String cntry = locale.getCountry();
-	String var1 = locale.getVariant();
-	String var2 = null;
+	String var = locale.getVariant();
 
-	if (var1 != null) {
-		int idx = var1.lastIndexOf('_');
-		if (idx != -1) {
-			var2 = var1.substring(idx + 1);
-			var1 = var1.substring(0, idx);
-		}
-	}
-	if (lang != null) {
-		lang = lang.toLowerCase();
-	}
+	StringBuffer sb = new StringBuffer(60);
+	sb.append (baseName);
 
-	ResourceBundle bundle = null;
-
-	try {
-		ResourceBundle nbundle = getSpecificBundle(baseName, loader);
-		nbundle.setParent(bundle);
-		bundle = nbundle;
-	}
-	catch (MissingResourceException _) {
-	}
-
-	if (lang != null) {
-		try {
-			ResourceBundle nbundle = getSpecificBundle(baseName
-			    + "_" + lang, loader);
-			nbundle.setParent(bundle);
+	sb.append ('_');
+	if (lang.length()>0) {
+		sb.append (lang);
+		nbundle = getSpecificBundle(sb.toString(), loader);
+		if (nbundle != null) {
+			nbundle.parent = bundle;
+			nbundle.locale = new Locale (lang);
 			bundle = nbundle;
 		}
-		catch (MissingResourceException _) {
+	}
+
+	sb.append ('_');
+	if (cntry.length()>0) {
+		sb.append (cntry);	
+		nbundle = getSpecificBundle(sb.toString(), loader);
+		if (nbundle != null) {
+			nbundle.parent = bundle;
+			nbundle.locale = new Locale (lang, cntry);
+			bundle = nbundle;
 		}
 	}
 
-	if (lang != null && cntry != null) {
-		try {
-			ResourceBundle nbundle = getSpecificBundle(baseName
-			    + "_" + lang + "_" + cntry, loader);
-			nbundle.setParent(bundle);
+	if (var.length()>0) {
+		sb.append ('_');
+		sb.append (var);
+		nbundle = getSpecificBundle(sb.toString(), loader);
+		if (nbundle != null) {	
+			nbundle.parent = bundle;
+			nbundle.locale = new Locale (lang, cntry, var);
 			bundle = nbundle;
 		}
-		catch (MissingResourceException _) {
-		}
 	}
-
-	if (lang != null && cntry != null && var1 != null) {
-		try {
-			ResourceBundle nbundle = getSpecificBundle(baseName
-			    + "_" + lang + "_" + cntry + "_" + var1, loader);
-			nbundle.setParent(bundle);
-			bundle = nbundle;
-		}
-		catch (MissingResourceException _) {
-		}
-	}
-
-	if (lang != null && cntry != null && var1 != null && var2 != null) {
-		try {
-			ResourceBundle nbundle = getSpecificBundle(baseName
-			    + "_" + lang + "_" + cntry + "_"
-			    + var1 + "_" + var2, loader);
-			nbundle.setParent(bundle);
-			bundle = nbundle;
-		}
-		catch (MissingResourceException _) {
-		}
-	}
+	
 	return (bundle);
+}
+
+public Locale getLocale () {
+	return locale;
 }
 
 public abstract Enumeration getKeys();
@@ -161,7 +139,7 @@ public final Object getObject(String key) throws MissingResourceException {
 }
 
 private static final ResourceBundle getSpecificBundle(String baseName,
-		ClassLoader loader) throws MissingResourceException {
+		ClassLoader loader) {
 
 	// baseName = baseName.replace('.', '/');
 	if (loader == null)
@@ -191,8 +169,7 @@ private static final ResourceBundle getSpecificBundle(String baseName,
 		catch (IOException _) {
 		}
 	}
-	throw new MissingResourceException("bundle not found",
-	    "ResourceBundle", baseName);
+	return null;
 }
 
 public final String getString(String key) throws MissingResourceException {

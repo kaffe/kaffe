@@ -1,5 +1,18 @@
 2003-05-26  Helmer Kraemer  <hkraemer@freenet.de>
 
+	* libraries/javalib/java/util/ResourceBundle.java
+	(getLocale): added missing method
+	(getBundle, getBundleWithLocale): properly set locale
+	of returned bundle; tweaked to match behaviour of
+	jdk 1.4
+	
+	* kaffe/kaffevm/systems/oskit-pthreads/jthread.h: 
+	don't include thread.h; fixes compilation for oskit
+
+	Reported by: Martin Pohlack <mp26@os.inf.tu-dresden.de>
+
+2003-05-26  Helmer Kraemer  <hkraemer@freenet.de>
+
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.h: 
 	moved everything into thread-internal.h; include that
 	file.
