@@ -560,6 +560,45 @@ DBG(RESERROR,
 	return (success);
 }
 
+static int
+expandMethods(Hjava_lang_Class *cl, Method *imeth, errorInfo *einfo)
+{
+	Method *new_methods = 0;
+	int retval = 0;
+
+	if( !CLASS_IS_ABSTRACT(cl) )
+	{
+		postExceptionMessage(einfo,
+				     JAVA_LANG(ClassFormatError),
+				     "(class: %s, method: %s signature: %s) "
+				     "Abstract method in non-abstract class",
+				     cl->name->data,
+				     imeth->name->data,
+				     imeth->parsed_sig->signature->data);
+	}
+	else if( (new_methods = KREALLOC(CLASS_METHODS(cl),
+					 sizeof(Method) *
+					 (CLASS_NMETHODS(cl) + 1))) )
+	{
+		int index;
+		
+		index = CLASS_NMETHODS(cl);
+		CLASS_NMETHODS(cl) = index + 1;
+		CLASS_METHODS(cl) = new_methods;
+		utf8ConstAddRef(imeth->name);
+		utf8ConstAddRef(imeth->parsed_sig->signature);
+		new_methods[index] = *imeth;
+		new_methods[index].class = cl;
+		retval = 1;
+	}
+	else
+	{
+		gc_free(new_methods);
+		postOutOfMemory(einfo);
+	}
+	return( retval );
+}
+
 static bool
 resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
 {
@@ -642,6 +681,63 @@ resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
 	 * having walkClass attempting to walk interfaces
 	 */
 	class->total_interface_len = totalilen;
+	
+	if( !CLASS_IS_INTERFACE(class) )
+	{
+		/*
+		 * Check to make sure all the interface methods are
+		 * implemented, otherwise, we'll need to add a slot.
+		 */
+		for( i = 0; (i < class->interface_len) && success; i++ )
+		{
+			Hjava_lang_Class *iface;
+			
+			iface = class->interfaces[i];
+			for( j = 0; j < CLASS_NMETHODS(iface); j++ )
+			{
+				Hjava_lang_Class *cl;
+				int foundit = 0;
+				Method *imeth;
+				
+				imeth = &CLASS_METHODS(iface)[j];
+				/* Igore statics */
+				if( imeth->accflags & ACC_STATIC )
+					continue;
+				/* Search for the corresponding slot. */
+				for( cl = class;
+				     cl && !foundit;
+				     cl = cl->superclass )
+				{
+					for( k = 0;
+					     k < CLASS_NMETHODS(cl);
+					     k++ )
+					{
+						Method *cmeth;
+						
+						cmeth = &CLASS_METHODS(cl)[k];
+						if( (cmeth->name ==
+						     imeth->name) &&
+						    (cmeth->parsed_sig->
+						     signature ==
+						     imeth->parsed_sig->
+						     signature) )
+						{
+							foundit = 1;
+							break;
+						}
+					}
+				}
+				if( !foundit )
+				{
+					/* No impl, add a slot */
+					success = expandMethods(class,
+								imeth,
+								einfo);
+				}
+			}
+		}
+	}
+
 done:
 	return (success);
 }

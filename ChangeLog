@@ -1,3 +1,11 @@
+2003-04-08 Tim Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/classMethod.c:
+	Add expandMethods to add method slots for unimplemented interface
+	methods and modify resolveInterfaces to use it.
+	
+	Reported by: Benja Fallenstein <b.fallenstein@gmx.de>
+
 2003-04-04 Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>
 
 	* libraries/javalib/java/io/FileInputStream.java:
