@@ -1,3 +1,8 @@
+2003-10-28  Dalibor Topic <robilad@kafee.org>
+
+	* libraries/javalib/java/util/Date.java:
+	Replaced by implementation from GNU Classpath.
+
 2003-10-27  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/clib/nio, libraries/clib/nio/Makefile.am,
