@@ -349,17 +349,23 @@ public int lastIndexOf(int ch) {
 }
 
 public int lastIndexOf(int ch, int eIdx) {
-	// The spec claims that eIdx is inclusive, but Java implements
-	// it as exclusive - so do we.
-	char c = (char)ch;
+	final char c = (char)ch;
+
 	/* If the character is out of range we'll never find it */
-	if ((int)c != c) {
+	if ((int)c != ch) {
 		return (-1);
 	}
-	if ( eIdx < 0 || eIdx > count) {
-		return (-1);
+
+	/* Clip the index to be within the valid range (if non-empty) */
+	if (eIdx >= count) {
+		eIdx = count - 1;
 	}
-	for (int pos = eIdx - 1; pos >= 0; pos--) {
+	if (eIdx < 0) {
+		return(-1);
+	}
+
+	/* Search for character */
+	for (int pos = eIdx; pos >= 0; pos--) {
 		if ( value[offset+pos] == c) {
 			return (pos);
 		}
