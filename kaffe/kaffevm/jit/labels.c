@@ -86,7 +86,7 @@ KaffeJIT_linkLabels(codeinfo* codeInfo, uintp codebase)
 			dest = ((constpool*)l->to)->at;
 			break;
 		case Linternal:		/* Internal code reference */
-		/* Lepilogue is changed to Linternal in setEpilogueLabel() */
+		/* Lepilogue is changed to Linternal in KaffeJIT_setEpilogueLabel() */
 			dest = l->to + codebase;
 			break;
 		case Lcode:		/* Reference to a bytecode */

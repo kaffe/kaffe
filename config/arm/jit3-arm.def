@@ -684,7 +684,7 @@ define_insn(exception_prologue, eprologue_xxx)
 
 define_insn(epilogue, epilogue_xxx)
 {
-	setEpilogueLabel ((uintp)CODEPC);
+	KaffeJIT3_setEpilogueLabel ((uintp)CODEPC);
 
 	/* Should restore floating point state here !!! F4-F7 */
 

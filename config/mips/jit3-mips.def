@@ -384,7 +384,7 @@ define_insn(epilogue, epilogue_xxx) {
 
 	debug_name(("epilogue:\n"));
 
-	setEpilogueLabel ((uintp)CODEPC);
+	KaffeJIT3_setEpilogueLabel ((uintp)CODEPC);
 
 	/* Restore callee save regs */
 	for (i = 7; i >= 0; i--) {

@@ -1,5 +1,17 @@
 2005-01-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/arm/jit-arm.def,
+	config/arm/jit3-arm.def,
+	config/mips/jit3-mips.def,
+	config/powerpc/jit3-powerpc.def,
+	kaffe/kaffevm/jit/labels.c,
+	kaffe/kaffevm/jit3/labels.c:
+	Finished prefixing setEpilogueLabel with KaffeJIT(3).
+
+	Reported by:  Kiyo Inaba  <inaba@src.ricoh.co.jp>
+
+2005-01-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* test/regression/InnerTest.java, 
 	test/regression/TestSerialFields.java,
 	test/regression/TestSerialPersistent.java,

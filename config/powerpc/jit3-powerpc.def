@@ -312,7 +312,7 @@ define_insn(epilogue, epilogue_xxx)
 	{
 		/* The function ends with a throw, not a return. */
 	}
-	setEpilogueLabel(CODEPC);
+	KaffeJIT3_setEpilogueLabel(CODEPC);
 	
 	if( (KaffeJIT3_getFirstConst() != KaffeJIT3_getCurrConst()) ||
 	    maxLocal ||
