@@ -12,6 +12,10 @@
 #ifndef __i386_jit_h
 #define __i386_jit_h
 
+#if defined(HAVE_VALGRIND_MEMCHECK_H)
+#include <valgrind/memcheck.h>
+#endif
+
 /**/
 /* Exception handling information. */
 /**/

@@ -1,5 +1,12 @@
 2004-04-14  Dalibor Topic <robilad@kaffe.org>
 
+	* config/i386/jit.h:
+	Include valgrind/memcheck.h if it exists.
+
+	Reported by: Mark Wielaard  <mark@klomp.org>
+
+2004-04-14  Dalibor Topic <robilad@kaffe.org>
+
         * Makefile.am:
 	Added tools directory.
 
