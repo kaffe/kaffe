@@ -1,6 +1,6 @@
 # Makefile.in generated automatically by automake 1.4-p6 from Makefile.am
 
-# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1995-8, 1999, 2001, 2003 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -163,7 +163,7 @@ SIMPLE_HEALTH_CHECK =  	HelloWorldApp.class.save
 TEST_COMPILER =  	HelloWorldApp.java 
 
 
-TEST_INTS_LONGS_FLOATS_DOUBLES =  	TestIntLong.java 	TestFloatDouble.java 	DoubleCvt.java 	DoubleNeg.java 	DoubleConst.java 	DoublePrint.java 	DoubleComp.java 	ModuloTest.java 	LongNeg.java 	FPUStack.java 	divtest.java 
+TEST_INTS_LONGS_FLOATS_DOUBLES =  	TestIntLong.java 	TestFloatDouble.java 	DoubleCvt.java 	DoubleNeg.java 	DoubleConst.java 	DoublePrint.java 	DoubleComp.java 	ModuloTest.java 	LongNeg.java 	FPUStack.java 	NegativeDivideTest.java 	divtest.java 
 
 
 TEST_STRINGS =  	Str.java 	Str2.java 	InternHog.java 
