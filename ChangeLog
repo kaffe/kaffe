@@ -2,6 +2,29 @@
 
 	Resynced with GNU Classpath.
 
+	2004-12-29  Jerry Quinn  <jlquinn@optonline.net>
+
+	* java/awt/CheckboxMenuItem.java (getAccessibleContext,
+	AccessibleAWTCheckboxMenuItem): Implement.
+	* java/awt/Choice.java: Add implements declaration for Accessible.
+	* java/awt/Dialog.java (AccessibleAWTFrame, getAccessibleContext):
+	Implement.
+	* java/awt/Frame.java (AccessibleAWTFrame, getAccessibleContext):
+	Implement.
+	* java/awt/List.java: Implement AccessibleAWTList, AccessibleAWTListChild.
+	* java/awt/MenuComponent.java (accessibleContext): Make package visible.
+	* java/awt/MenuItem.java (getAccessibleContext): Implement.
+	* java/awt/Scrollbar.java (AccessibleAWTScrollbar, getAccessibleContext):
+	Implement.
+	* java/awt/ScrollPane.java (AccessibleAWTScrollPane, getAccessibleContext):
+	Implement.
+	* java/awt/Window.java (AccessibleAWTWindow): Implement.
+	(isActive, isFocused, getAccessibleContext): Implement.
+	
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2004-12-29  Michael Koch  <konqueror@gmx.de>
 
 	* javax/swing/text/TextAction.java

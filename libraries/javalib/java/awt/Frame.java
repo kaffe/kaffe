@@ -41,6 +41,11 @@ package java.awt;
 import java.awt.peer.FramePeer;
 import java.util.Vector;
 
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
+import javax.accessibility.AccessibleState;
+import javax.accessibility.AccessibleStateSet;
+
 /**
   * This class is a top-level window with a title bar and window
   * decorations.
@@ -549,4 +554,40 @@ getFrames()
   {
     return next_frame_number++;
   }
+  
+  protected class AccessibleAWTFrame extends AccessibleAWTWindow
+  {
+    public AccessibleRole getAccessibleRole()
+    {
+      return AccessibleRole.FRAME;
+    }
+    
+    public AccessibleStateSet getAccessibleState()
+    {
+      AccessibleStateSet states = super.getAccessibleStateSet();
+      if (isResizable())
+        states.add(AccessibleState.RESIZABLE);
+      if ((state & ICONIFIED) != 0)
+        states.add(AccessibleState.ICONIFIED);
+      return states;
+    }
+  }
+  
+  /**
+   * Gets the AccessibleContext associated with this <code>Frame</code>.
+   * The context is created, if necessary.
+   *
+   * @return the associated context
+   */
+  public AccessibleContext getAccessibleContext()
+  {
+    /* Create the context if this is the first request */
+    if (accessibleContext == null)
+      {
+        /* Create the context */
+        accessibleContext = new AccessibleAWTFrame();
+      }
+    return accessibleContext;
+  }
+
 }

@@ -43,6 +43,11 @@ import java.awt.event.ItemListener;
 import java.awt.peer.CheckboxMenuItemPeer;
 import java.util.EventListener;
 
+import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleAction;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleValue;
+
 /**
   * This class implements a menu item that has a checkbox on it indicating
   * the selected state of some option.
@@ -50,7 +55,8 @@ import java.util.EventListener;
   * @author Aaron M. Renn (arenn@urbanophile.com)
   * @author Tom Tromey <tromey@redhat.com>
   */
-public class CheckboxMenuItem extends MenuItem implements ItemSelectable
+public class CheckboxMenuItem extends MenuItem
+  implements ItemSelectable, Accessible
 {
 
 /*
@@ -315,5 +321,30 @@ paramString()
   {
     return (ItemListener[]) getListeners (ItemListener.class);
   }
+
+
+  protected class AccessibleAWTCheckboxMenuItem extends AccessibleAWTMenuItem
+    implements AccessibleAction, AccessibleValue
+  {
+    // I think the base class provides the necessary implementation
+  }
+  
+  /**
+   * Gets the AccessibleContext associated with this <code>List</code>.
+   * The context is created, if necessary.
+   *
+   * @return the associated context
+   */
+  public AccessibleContext getAccessibleContext()
+  {
+    /* Create the context if this is the first request */
+    if (accessibleContext == null)
+      {
+        /* Create the context */
+        accessibleContext = new AccessibleAWTCheckboxMenuItem();
+      }
+    return accessibleContext;
+  }
+
 } // class CheckboxMenuItem
 

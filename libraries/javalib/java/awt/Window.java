@@ -56,6 +56,9 @@ import java.util.Vector;
 
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
+import javax.accessibility.AccessibleState;
+import javax.accessibility.AccessibleStateSet;
 
 /**
  * This class represents a top-level window with no decorations.
@@ -84,11 +87,26 @@ public class Window extends Container implements Accessible
   private transient WindowFocusListener windowFocusListener;
   private transient WindowStateListener windowStateListener;
   private transient GraphicsConfiguration graphicsConfiguration;
-  private transient AccessibleContext accessibleContext;
 
   private transient boolean shown;
 
   private transient Component windowFocusOwner;
+  
+  protected class AccessibleAWTWindow extends AccessibleAWTContainer
+  {
+    public AccessibleRole getAccessibleRole()
+    {
+      return AccessibleRole.WINDOW;
+    }
+    
+    public AccessibleStateSet getAccessibleState()
+    {
+      AccessibleStateSet states = super.getAccessibleStateSet();
+      if (isActive())
+        states.add(AccessibleState.ACTIVE);
+      return states;
+    }
+  }
 
   /** 
    * This (package access) constructor is used by subclasses that want
@@ -672,7 +690,33 @@ public class Window extends Container implements Accessible
 	  }
       }
   }
+  
+  /**
+   * Identifies if this window is active.  The active window is a Frame or
+   * Dialog that has focus or owns the active window.
+   *  
+   * @return true if active, else false.
+   * @since 1.4
+   */
+  public boolean isActive()
+  {
+    KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager ();
+    return manager.getActiveWindow() == this;
+  }
 
+  /**
+   * Identifies if this window is focused.  A window is focused if it is the
+   * focus owner or it contains the focus owner.
+   * 
+   * @return true if focused, else false.
+   * @since 1.4
+   */
+  public boolean isFocused()
+  {
+    KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager ();
+    return manager.getFocusedWindow() == this;
+  }
+  
   /**
    * Returns the child window that has focus if this window is active.
    * This method returns <code>null</code> if this window is not active
@@ -770,11 +814,21 @@ public class Window extends Container implements Accessible
       applyResourceBundle(rb);    
   }
 
+  /**
+   * Gets the AccessibleContext associated with this <code>Window</code>.
+   * The context is created, if necessary.
+   *
+   * @return the associated context
+   */
   public AccessibleContext getAccessibleContext()
   {
-    // FIXME
-    //return null;
-    throw new Error ("Not implemented");
+    /* Create the context if this is the first request */
+    if (accessibleContext == null)
+      {
+        /* Create the context */
+        accessibleContext = new AccessibleAWTWindow();
+      }
+    return accessibleContext;
   }
 
   /** 

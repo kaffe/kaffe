@@ -47,6 +47,7 @@ import java.util.EventListener;
 
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleAction;
+import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleValue;
 
@@ -579,7 +580,21 @@ paramString()
 	  ",actionCommand=" + actionCommand + "," + super.paramString());
 }
 
-// Accessibility API not yet implemented.
-// public AccessibleContext getAccessibleContext()
+/**
+ * Gets the AccessibleContext associated with this <code>MenuItem</code>.
+ * The context is created, if necessary.
+ *
+ * @return the associated context
+ */
+public AccessibleContext getAccessibleContext()
+{
+  /* Create the context if this is the first request */
+  if (accessibleContext == null)
+    {
+      /* Create the context */
+      accessibleContext = new AccessibleAWTMenuItem();
+    }
+  return accessibleContext;
+}
 
 } // class MenuItem 

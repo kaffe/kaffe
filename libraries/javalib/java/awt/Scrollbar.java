@@ -45,6 +45,12 @@ import java.awt.peer.ScrollbarPeer;
 import java.util.EventListener;
 
 import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRelation;
+import javax.accessibility.AccessibleRole;
+import javax.accessibility.AccessibleState;
+import javax.accessibility.AccessibleStateSet;
+import javax.accessibility.AccessibleValue;
 
 /**
   * This class implements a scrollbar widget.
@@ -769,5 +775,82 @@ paramString()
   {
     return next_scrollbar_number++;
   }
+  
+  protected class AccessibleAWTScrollbar extends AccessibleAWTComponent
+  	implements AccessibleValue
+  {
+    public AccessibleRole getAccessibleRole()
+    {
+      return AccessibleRole.SCROLL_BAR;
+    }
+    
+    public AccessibleStateSet getAccessibleStateSet()
+    {
+      AccessibleStateSet states = super.getAccessibleStateSet();
+      if (getOrientation() == HORIZONTAL)
+        states.add(AccessibleState.HORIZONTAL);
+      else
+        states.add(AccessibleState.VERTICAL);
+      if (getValueIsAdjusting())
+        states.add(AccessibleState.BUSY);
+      return states;
+    }
+    
+    public AccessibleValue getAccessibleValue()
+    {
+      return this;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.accessibility.AccessibleValue#getCurrentAccessibleValue()
+     */
+    public Number getCurrentAccessibleValue()
+    {
+      return new Integer(getValue());
+    }
+
+    /* (non-Javadoc)
+     * @see javax.accessibility.AccessibleValue#setCurrentAccessibleValue(java.lang.Number)
+     */
+    public boolean setCurrentAccessibleValue(Number number)
+    {
+      setValue(number.intValue());
+      return true;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.accessibility.AccessibleValue#getMinimumAccessibleValue()
+     */
+    public Number getMinimumAccessibleValue()
+    {
+      return new Integer(getMinimum());
+    }
+
+    /* (non-Javadoc)
+     * @see javax.accessibility.AccessibleValue#getMaximumAccessibleValue()
+     */
+    public Number getMaximumAccessibleValue()
+    {
+      return new Integer(getMaximum());
+    }
+  }
+  
+  /**
+   * Gets the AccessibleContext associated with this <code>Scrollbar</code>.
+   * The context is created, if necessary.
+   *
+   * @return the associated context
+   */
+  public AccessibleContext getAccessibleContext()
+  {
+    /* Create the context if this is the first request */
+    if (accessibleContext == null)
+      {
+        /* Create the context */
+        accessibleContext = new AccessibleAWTScrollbar();
+      }
+    return accessibleContext;
+  }
+
 } // class Scrollbar 
 
