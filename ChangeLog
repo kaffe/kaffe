@@ -178,6 +178,15 @@ Tue Feb 08 15:30:31 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
 	bit of hashCode, since -Integer.MIN_VALUE is still ==
 	Integer.MIN_VALUE.
 
+Sat Feb  5 16:12:02 2000  Pavel Roskin <pavel_roskin@geocities.com>
+
+	* config/powerpc/linux/md.h: set SP_OFFSET for PPC/Linux
+
+	* configure.in: If --with-libffi is specified, check for libffi
+	and use it if found
+	* kaffe/kaffevm/support.c: If HAVE_LIBFFI is defined use
+	sysdepCallMethod implemented using libffi calls
+
 Sat Feb  5 11:51:52 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/net/URL.java: reinstate rev 1.15 fix
