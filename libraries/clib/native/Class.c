@@ -103,8 +103,16 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 		 *
 		 * When it throws which, we don't really know.  We try to be 
 		 * compatible, so we upgrade the error to an exception if it's 
-		 * (NoClassDefFoundError, this_class_name).
+		 * (NoClassDefFoundError, this_class_name), or if it's a
+		 * VerifyError.
+		 * NB: 1.2 seems to be more consistent and throws 
+		 * ClassNotFoundException in most cases.
 		 */
+		if (!strcmp(einfo.classname, "java.lang.VerifyError")) 
+		{
+			SET_LANG_EXCEPTION_MESSAGE(&einfo, 
+				ClassNotFoundException, einfo.mess)
+		} else
 		if (!strcmp(einfo.classname, "java.lang.NoClassDefFoundError"))
 		{
 			/*
