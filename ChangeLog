@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2004-01-06  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/JarURLConnection.java
+        (JarURLConnection): Initialize entryName with null if no entry
+        present, fixed off by one error.
+
+2004-01-08  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2004-01-05  Sascha Brawer  <brawer@dandelis.ch>
 
         Fix for Classpath bug #6095
