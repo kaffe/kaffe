@@ -84,6 +84,7 @@ ALWAYS_TESTS = \
 	LineNumberReaderTest.java \
 	BufferedReaderTest.java \
 	ReaderReadVoidTest.java \
+	PipeTest.java \
 ## simple test for Method.invoke
 	ReflectInvoke.java \
 ## simple test for InvocationTargetExceptions
