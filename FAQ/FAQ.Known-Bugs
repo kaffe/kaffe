@@ -4,6 +4,26 @@ Treat it as an TODO list.   This file is divided in three sections.
 MISSING OR BROKEN FEATURES
 ---------------------------------------------------------------------------
 
+* reflection: when reporting fields of a class, kaffe wrongly does not include
+  public static final fields of the interfaces that this class implements.
+
+* There's a bug in the jitter:
+
+    public class TableSwitch {
+	    public static void main(String[] args) {
+		    int i = 0x7fffffff;
+		    System.out.println("switch("+i+")");
+		    switch(i) {
+		    case -1: System.out.println("-1"); break;
+		    case 0: System.out.println("0"); break;
+		    case 1: System.out.println("1"); break;
+		    default: System.out.println("default"); break;
+		    }
+	    }
+    }
+
+  produces the wrong result.
+
 * java.net.Socket:
 
   +  getSoTimeout() 
@@ -71,6 +91,19 @@ ARCHITECTURE-SPECIFIC PROBLEMS
   mostly due to a bug in __moddi3.  FreeBSD <=2.2.8 and <=3.0 have
   the same problem, but there it's only in libc, not in libgcc, so
   we instruct configure to explicitly link with libgcc.
+
+* On some linux systems, dlopening libnative fails occasionally.
+  This leads to messages like:
+
+    Failed to locate native library "libnative" in path:
+        /tmp/k/obj/libraries/clib/native:/tmp/k/obj/libraries/clib/net:...
+
+  Even worse, sometimes dlopen opens the library, but screws up its relocation
+  information.  In this case, you may see messages like:
+
+      Internal error.
+      Please check your CLASSPATH and your installation.
+      Exception thrown was of type `java.lang.NullPointerException'
 
 
 THINGS WHERE KAFFE'S BEHAVIOR DIFFERS
