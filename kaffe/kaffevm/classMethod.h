@@ -38,9 +38,7 @@
 struct _classEntry;
 struct Hjava_lang_String;
 
-typedef struct Hjava_lang_ClassLoader {
-	int	dummy;
-} Hjava_lang_ClassLoader;
+#include <java_lang_ClassLoader.h>
 
 struct Hjava_lang_Class {
 	Hjava_lang_Object	head;		/* A class is an object too */
