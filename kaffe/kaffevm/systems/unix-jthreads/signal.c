@@ -70,7 +70,7 @@ static void
 nullException(EXCEPTIONPROTO)
 {
 	DEFINEFRAME();
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) && !defined(INTERPRETER)
 	if ((uintp) ctx->sc_err > gc_heap_base) {
 		dprintf("accessing free page %p (above %p)\n",
 			(void*) ctx->sc_err, (void *) gc_heap_base);
