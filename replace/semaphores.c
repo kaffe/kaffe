@@ -37,6 +37,7 @@
 
 #if defined(NEED_REPLACEMENT_SEMAPHORES) || !defined(HAVE_SEMAPHORE_H)
 
+#include <errno.h>
 #include "repsemaphore.h"
 
 #define REPSEM_VALUE_MAX 32767

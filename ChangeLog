@@ -1,5 +1,9 @@
 2004-11-22  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* replace/semaphores.c: Include errno.h too.
+
+2004-11-22  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h:
 	Replaced sem_t by repsem_t where needed.
 
