@@ -1,8 +1,23 @@
+2000-07-26  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/kjc.jar: upgrade to version kjc-1.4F-egp1: fix
+	incorrecte integer narrow conversion in method lookup, avoid
+	compiler failure with += on String and avoid infinite compiler
+	loop while optimizing test/regression/Preempt.java.
+
+	* kaffe/kaffevm/classMethod.c (processClass): don't discard native
+	code of <clinit> if it's throw an exception (avoid assertion
+	failure in makeMethodActive() with
+	test/regression/ExceptionInInitialize.java compiled with kjc).
+
+	* config/powerpc/linux/config.frag: don't force --without-libffi.
+	* config/Makefile.{am,in}: added powerpc/callmethod_ppc.h
+	
 Tue Jul 25 12:33:25 MDT 2000  Kevin B. Hendricks <khendricks@ivey.uwo.ca>
 
 	* acinclude.m4, aclocal.m4: added powerpc
 	* configure, config/Makefile.in: regen
-	* config/Makefile.am: added powerpc/co
+	* config/Makefile.am: added powerpc/common.h
 	* config/powerpc/callmethod_ppc.h, config/powerpc/common.h: new files
 	* config/powerpc/threads.h, config/powerpc/linux/config.frag,
 	config/powerpc/linux/md.h: some powerpc updates
