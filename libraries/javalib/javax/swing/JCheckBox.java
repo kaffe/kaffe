@@ -49,6 +49,9 @@ public class JCheckBox extends JToggleButton
 {
   private static final long serialVersionUID = -5246739313864538930L;
 
+  public static final String BORDER_PAINTED_FLAT_CHANGED_PROPERTY =
+    "borderPaintedFlat";
+  
   private boolean borderPaintedFlat;
 
   private void init()

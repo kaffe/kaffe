@@ -71,7 +71,7 @@ public class JTable extends JComponent
              ListSelectionListener, CellEditorListener, Accessible
 {
   private static final long serialVersionUID = 3876025080382781659L;
-  
+
 
   /**
    * When resizing columns, do not automatically change any columns. In this
@@ -93,7 +93,7 @@ public class JTable extends JComponent
    * n)</code>, uniformly, to provide or absorb excess space requirements.
    */
   public static final int AUTO_RESIZE_SUBSEQUENT_COLUMNS = 2;
-
+  
   /**
    * When resizing column <code>i</code> in a table of <code>n</code>
    * columns, automatically change all columns in the range <code>[0,
@@ -323,7 +323,7 @@ public class JTable extends JComponent
    * The tableHeader property.
    */
   protected JTableHeader tableHeader;
-  
+
   
   /**
    * Creates a new <code>JTable</code> instance.
@@ -433,7 +433,7 @@ public class JTable extends JComponent
   {
     return new JScrollPane(table);
   }
-
+ 
   protected TableColumnModel createDefaultColumnModel()
   {
     return new DefaultTableColumnModel();
@@ -448,7 +448,7 @@ public class JTable extends JComponent
   {
     return new DefaultListSelectionModel();
   }
-  
+
   private void createColumnsFromModel()
   {
     if (dataModel == null)
@@ -457,12 +457,12 @@ public class JTable extends JComponent
     TableColumnModel cm = createDefaultColumnModel();
 
     for (int i = 0; i < dataModel.getColumnCount(); ++i)
-  {
+      {
         cm.addColumn(new TableColumn(i));
       }
     this.setColumnModel(cm);
   }
-  
+
   // listener support 
 
   public void columnAdded (TableColumnModelEvent event)
@@ -470,13 +470,13 @@ public class JTable extends JComponent
     revalidate();
     repaint();
   }
-  
+
   public void columnMarginChanged (ChangeEvent event)
   {
     revalidate();
     repaint();
   }
- 
+
   public void columnMoved (TableColumnModelEvent event)
   {
     revalidate();
@@ -488,7 +488,7 @@ public class JTable extends JComponent
     revalidate();
     repaint();
   }
-
+  
   public void columnSelectionChanged (ListSelectionEvent event)
   {
     repaint();
@@ -508,12 +508,12 @@ public class JTable extends JComponent
   {
     repaint();
   }
-  
+
   public void valueChanged (ListSelectionEvent event)
   {
     repaint();
   }
-  
+
 
   /** 
    * Calculate the visible rectangle for a particular row and column. The
@@ -547,11 +547,11 @@ public class JTable extends JComponent
     int y = (height + y_gap) * row;
 
     for (int i = 0; i < column; ++i)
-  {
+      {        
         x += columnModel.getColumn(i).getWidth();
         x += x_gap;
-  }
-  
+      }
+
     if (includeSpacing)
       return new Rectangle(x, y, width, height);
     else
@@ -580,14 +580,14 @@ public class JTable extends JComponent
    *
    * @return The current value of the property
    */
-  public ListSelectionModel getSelectionModel ()
+  public ListSelectionModel getSelectionModel()
   {
     if (! rowSelectionAllowed)
       return null;
 
     return selectionModel;
   }
-
+  
   public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction)
   {
     if (orientation == SwingConstants.VERTICAL)
@@ -606,14 +606,14 @@ public class JTable extends JComponent
   {
     return false;
   }
-
+  
   /**
    * Get the value of the {@link #scrollableTracksViewportWidth} property.
    *
    * @return <code>true</code> unless the {@link autoResizeMode} prperty is
    * <code>AUTO_RESIZE_OFF</code>
    */
-    
+
   public boolean getScrollableTracksViewportWidth()
   {
     if (autoResizeMode == AUTO_RESIZE_OFF)
@@ -631,12 +631,12 @@ public class JTable extends JComponent
     if (orientation == SwingConstants.VERTICAL)
       return rowHeight;
     else
-  {
+      {
         int sum = 0;
         for (int i = 0; i < getColumnCount(); ++i)
           sum += columnModel.getColumn(0).getWidth();
         return getColumnCount() == 0 ? 10 : sum / getColumnCount();
-  }
+      }
   }
 
 
@@ -646,7 +646,7 @@ public class JTable extends JComponent
 
     if (editor == null)
       editor = getDefaultEditor(dataModel.getColumnClass(column));
-    
+
     return editor;
   }
 
@@ -655,7 +655,7 @@ public class JTable extends JComponent
     if (defaultEditorsByColumnClass.containsKey(columnClass))
       return (TableCellEditor) defaultEditorsByColumnClass.get(columnClass);
     else
-  {
+      {
         TableCellEditor r = new DefaultCellEditor(new JTextField());
         defaultEditorsByColumnClass.put(columnClass, r);
         return r;
@@ -696,14 +696,14 @@ public class JTable extends JComponent
     else
       return columnModel.getColumn(vc).getModelIndex();
   }
-  
+
   public int convertColumnIndexToView(int mc)
   {
     if (mc < 0)
       return mc;
     int ncols = getColumnCount();
     for (int vc = 0; vc < ncols; ++vc)
-  {
+      {
         if (columnModel.getColumn(vc).getModelIndex() == mc)
           return vc;
       }
@@ -729,7 +729,7 @@ public class JTable extends JComponent
                                                   false, // hasFocus
                                                   row, column);
   }
-  
+
 
   /**
    * Get the value of the {@link #autoCreateColumnsFromModel} property.
@@ -790,7 +790,7 @@ public class JTable extends JComponent
   {
     return getColumnSelectionAllowed() && getRowSelectionAllowed();
   }
-    
+
   /**
    * Get the value of the {@link #dataModel} property.
    *
@@ -1540,15 +1540,29 @@ public class JTable extends JComponent
     doLayout();
   }
 
-
   public String getUIClassID()
   {
     return "TableUI";
   }
 
+  /**
+   * This method returns the table's UI delegate.
+   *
+   * @return The table's UI delegate.
+   */
   public TableUI getUI()
   {
     return (TableUI) ui;
+  }
+
+  /**
+   * This method sets the table's UI delegate.
+   *
+   * @param ui The table's UI delegate.
+   */
+  public void setUI(TableUI ui)
+  {
+    super.setUI(ui);
   }
 
   public void updateUI()

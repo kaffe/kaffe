@@ -645,16 +645,28 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
   }
 
   /**
+   * Returns all registered <code>MenuListener</code> objects.
+   *
+   * @return an array of listeners
+   * 
+   * @since 1.4
+   */
+  public MenuListener[] getMenuListeners()
+  {
+    return (MenuListener[]) listenerList.getListeners(MenuListener.class);
+  }
+
+  /**
    * This method fires MenuEvents to all menu's MenuListeners. In this case
    * menuSelected() method of MenuListeners is called to indicated that the menu
    * was selected.
    */
   protected void fireMenuSelected()
   {
-    EventListener[] ll = listenerList.getListeners(MenuListener.class);
+    MenuListener[] listeners = getMenuListeners();
 
-    for (int i = 0; i < ll.length; i++)
-      ((MenuListener) ll[i]).menuSelected(menuEvent);
+    for (int index = 0; index < listeners.length; ++index)
+      listeners[index].menuSelected(menuEvent);
   }
 
   /**

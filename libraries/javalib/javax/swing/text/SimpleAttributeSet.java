@@ -45,9 +45,9 @@ import java.lang.Cloneable;
 public class SimpleAttributeSet
   implements MutableAttributeSet, Serializable, Cloneable
 {
-  Hashtable tab;
+  public static final AttributeSet EMPTY = new SimpleAttributeSet();
 
-  static AttributeSet EMPTY = new SimpleAttributeSet();
+  Hashtable tab;
 
   public SimpleAttributeSet()
   {

@@ -5,6 +5,260 @@
 
 2004-09-28  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/swing/text/PasswordView.java:
+	New file, added from GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+	
+	* libraries/javalib/gnu/regexp/RE.java,
+	libraries/javalib/gnu/regexp/RETokenLookAhead.java,
+	libraries/javalib/javax/swing/JApplet.java,
+	libraries/javalib/javax/swing/JCheckBox.java,
+	libraries/javalib/javax/swing/JFrame.java,
+	libraries/javalib/javax/swing/JMenu.java,
+	libraries/javalib/javax/swing/JPasswordField.java,
+	libraries/javalib/javax/swing/JScrollPane.java,
+	libraries/javalib/javax/swing/JTable.java,
+	libraries/javalib/javax/swing/JTree.java,
+	libraries/javalib/javax/swing/JViewport.java,
+	libraries/javalib/javax/swing/SpinnerNumberModel.java,
+	libraries/javalib/javax/swing/UIDefaults.java,
+	libraries/javalib/javax/swing/UIManager.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicArrowButton.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicPasswordFieldUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicScrollBarUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicSplitPaneDivider.java,
+	libraries/javalib/javax/swing/table/DefaultTableColumnModel.java,
+	libraries/javalib/javax/swing/table/JTableHeader.java,
+	libraries/javalib/javax/swing/table/TableColumn.java,
+	libraries/javalib/javax/swing/text/DocumentFilter.java,
+	libraries/javalib/javax/swing/text/NavigationFilter.java,
+	libraries/javalib/javax/swing/text/PlainView.java,
+	libraries/javalib/javax/swing/text/SimpleAttributeSet.java:
+	Resynced with GNU Classpath.
+
+	2004-09-26  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/SpinnerNumberModel.java
+	(SpinnerNumberModel): Implements java.io.Serializable.
+	(serialVersionUID): New field.
+	(SpinnerNumberModel): Added missing @throws tags to javadocs.
+	(getMinimum): New method.
+	(setMinimum): Likewise.
+	(getMaximum): Likewise.
+	(setMaximum): Likewise.
+	(getStepSize): Likewise.
+	(setStepSize): Likewise.
+
+	2004-09-26  Kim Ho  <kho@redhat.com>
+
+	* javax/swing/plaf/basic/BasicArrowButton.java:
+	Jalopy. Reimplement.
+	* javax/swing/plaf/basic/BasicScrollBarUI.java:
+	Jalopy.
+	(arrowIcon, upIcon, downIcon, leftIcon,
+	rightIcon): Removed.
+	(createIncreaseButton): Use BasicArrowButton.
+	(createDecreaseButton): Ditto.
+	* javax/swing/plaf/basic/BasicSplitPaneDivider.java:
+	(createRightOneTouchButton): Remove button border.
+	(createLeftOneTouchButton): Ditto.
+
+	2004-09-26  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JTree.java
+	(ANCHOR_SELECTION_PATH_PROPERTY): New static field.
+	(CELL_EDITOR_PROPERTY): Likewise.
+	(CELL_RENDERER_PROPERTY): Likewise.
+	(EDITABLE_PROPERTY): Likewise.
+	(EXPANDS_SELECTED_PATHS_PROPERTY): Likewise.
+	(INVOKES_STOP_CELL_EDITING_PROPERTY): Likewise.
+	(LARGE_MODEL_PROPERTY): Likewise.
+	(LEAD_SELECTION_PATH_PROPERTY): Likewise.
+	(ROOT_VISIBLE_PROPERTY): Likewise.
+	(ROW_HEIGHT_PROPERTY): Likewise.
+	(SCROLLS_ON_EXPAND_PROPERTY): Likewise.
+	(SELECTION_MODEL_PROPERTY): Likewise.
+	(SHOWS_ROOT_HANDLES_PROPERTY): Likewise.
+	(TOGGLE_CLICK_COUNT_PROPERTY): Likewise.
+	(TREE_MODEL_PROPERTY): Likewise.
+	(VISIBLE_ROW_COUNT_PROPERTY): Likewise.
+	(cellEditor): New field.
+	(invokesStopCellEditing): Likewise.
+	(largeModel): Likewise.
+	(rowHeight): Likewise.
+	(scrollsOnExpand): Likewise.
+	(selectionModel): Likewise.
+	(toggleClickCount): Likewise.
+	(visibleRowCount): Likewise.
+	(setShowsRootHandles): Fixed typo in method name.
+	(getCellEditor): New method.
+	(setCellEditor): Likewise.
+	(getSelectionModel): Likewise.
+	(setSelectionModel): Likewise.
+	(getVisibleRowCount): Likewise.
+	(setVisibleRowCount): Likewise.
+	(isLargeModel): Likewise.
+	(setLargeModel): Likewise.
+	(getRowHeight): Likewise.
+	(setRowHeight): Likewise.
+	(getInvokesStopCellEditing): Likewise.
+	(setInvokesStopCellEditing): Likewise.
+	(getToggleClickCount): Likewise.
+	(setToggleClickCount): Likewise.
+	(getScrollsOnExpand): Likewise.
+	(setScrollsOnExpand): Likewise.
+	* javax/swing/table/DefaultTableColumnModel.java
+	(addColumnModelListener): Fixed javadoc.
+	(removeColumnModelListener): Implemented. Fixed javadoc.
+	(getColumnModelListeners): New method.
+	* javax/swing/table/JTableHeader.java
+	(columnModel): Made protected.
+	(draggedColumn): Likewise.
+	(draggedDistance): Likewise.
+	(reorderingAllowed): Likewise.
+	(resizingAllowed): Likewise.
+	(resizingColumn): Likewise.
+	(table): Likewise.
+	(updateTableInRealTime): Likewise.
+	(createDefaultColumnModel): Renamed from
+	createDefaultTableColumnModel.
+	(setDefaultRenderer): New method.
+	* javax/swing/table/TableColumn.java
+	(getPropertyChangeListeners): New method.
+
+	2004-09-26  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JPasswordField.java:
+	Reformated. Implemented construtors.
+	* javax/swing/plaf/basic/BasicPasswordFieldUI.java
+	(create): New method.
+	* javax/swing/text/PlainView.java
+	(selectedColor): Made package-private to allow access from sub-classes
+	in same package too.
+	(unselectedColor): Likewise.
+	(font): Likewise.
+	(drawSelectedText): Make protected.
+	(drawUnselectedText): Likewise.
+	* javax/swing/text/PasswordView.java: New file.
+
+	2004-09-26  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/text/DocumentFilter.java
+	(FilterBypass): New inner class.
+	(insertString): New method.
+	(remove): Likewise.
+	(replace): Likewise.
+	* javax/swing/text/NavigationFilter.java
+	(FilterBypass): New inner class.
+	(NavigationFilter): New method.
+	(moveDot): Likewise.
+	(setDot): Likewise.
+
+	2004-09-26  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/text/SimpleAttributeSet.java
+	(EMPTY): Made public final.
+
+	2004-09-26  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/UIManager.java
+	(get): New method.
+	(getBoolean): Likewise.
+	(getBorder): Likewise.
+	(getColor): Likewise.
+	(getDimension): Likewise.
+	(getFont): Likewise.
+	(getIcon): Likewise.
+	(getInsets): Likewise.
+	(getInt): Likewise.
+	(getString): Likewise.
+
+	2004-09-26  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/UIDefaults.java
+	(removePropertyChangeListener): Made public.
+
+	2004-09-25  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JApplet.java:
+	Whitespace fixes.
+
+	2004-09-25  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JApplet.java
+	(rootPaneCheckingEnabled): Renamed from checking.
+
+	2004-09-25  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JTable.java
+	(getUI): Javadoc added.
+	(setUI): New method.
+
+	2004-09-25  Shashank Bapat  <shashankbapat@yahoo.com>
+            Mark Wielaard  <mark@klomp.org>
+
+	* gnu/regexp/RE.java (initialize): Add RETokenLookAhead support.
+	* gnu/regexp/RETokenLookAhead.java: New file.
+
+	2004-09-25  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JViewport.java
+	(getUI): New method.
+	(setUI): Likewise.
+
+	2004-09-25  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JScrollPane.java
+	(getUI): New method.
+	(setUI): Likewise.
+
+	2004-09-25  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JMenu.java
+	(getMenuListeners): New method.
+	(fireMenuSelected): Simplified.
+
+	2004-09-25  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JFrame.java
+	Re-formatted a bit and reordered some methods.
+	(rootPaneCheckingEnabled): Renamed from checking.
+	(getPreferredSize): Simplified.
+
+	2004-09-25  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JComponent.java
+	(isMaximumSizeSet): New method.
+	(isMinimumSizeSet): Likewise.
+	(isPreferredSizeSet): Likewise.
+
+	2004-09-25  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JComponent.java
+	(JComponent): Added javadoc comment.
+	(setBorder): Fire property change event.
+	(setEnabled): Likewise.
+	(setMaximumSize): Likewise.
+	(setMinimumSize): Likewise.
+	(setPreferredSize): Likewise.
+	(setOpaque): Likewise.
+
+	2004-09-25  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JCheckBox.java
+	(BORDER_PAINTED_FLAT_CHANGED_PROPERTY): New static field.
+
+	2004-09-25  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JApplet.java, javax/swing/JFrame.java:
+	Re-indented.
+
+2004-09-28  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/security/BasicPermission.java:
 	Resynced with GNU Classpath.
 

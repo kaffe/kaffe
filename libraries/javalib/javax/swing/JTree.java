@@ -50,10 +50,12 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.plaf.TreeUI;
 import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 
 public class JTree extends JComponent
@@ -61,11 +63,36 @@ public class JTree extends JComponent
 {
   private static final long serialVersionUID = 7559816092864483649L;
 
+  public static final String ANCHOR_SELECTION_PATH_PROPERTY = "anchorSelectionPath";
+  public static final String CELL_EDITOR_PROPERTY = "cellEditor";
+  public static final String CELL_RENDERER_PROPERTY = "cellRenderer";
+  public static final String EDITABLE_PROPERTY = "editable";
+  public static final String EXPANDS_SELECTED_PATHS_PROPERTY = "expandsSelectedPaths";
+  public static final String INVOKES_STOP_CELL_EDITING_PROPERTY = "invokesStopCellEditing";
+  public static final String LARGE_MODEL_PROPERTY = "largeModel";
+  public static final String LEAD_SELECTION_PATH_PROPERTY = "leadSelectionPath";
+  public static final String ROOT_VISIBLE_PROPERTY = "rootVisible";
+  public static final String ROW_HEIGHT_PROPERTY = "rowHeight";
+  public static final String SCROLLS_ON_EXPAND_PROPERTY = "scrollsOnExpand";
+  public static final String SELECTION_MODEL_PROPERTY = "selectionModel";
+  public static final String SHOWS_ROOT_HANDLES_PROPERTY = "showsRootHandles";
+  public static final String TOGGLE_CLICK_COUNT_PROPERTY = "toggleClickCount";
+  public static final String TREE_MODEL_PROPERTY = "model";
+  public static final String VISIBLE_ROW_COUNT_PROPERTY = "visibleRowCount";
+
+  protected TreeCellEditor cellEditor;
   protected TreeCellRenderer cellRenderer;
   protected boolean editable;
+  protected boolean invokesStopCellEditing;
+  protected boolean largeModel;
   protected boolean rootVisible;
+  protected int rowHeight;
+  protected boolean scrollsOnExpand;
+  protected TreeSelectionModel selectionModel;
   protected boolean showsRootHandles;
+  protected int toggleClickCount;
   protected TreeModel treeModel;
+  protected int visibleRowCount;
 
   /**
    * Creates a new <code>JTree</code> object.
@@ -456,11 +483,21 @@ public class JTree extends JComponent
     return showsRootHandles;
   }
 
-  public void setShowRootHandles(boolean flag)
+  public void setShowsRootHandles(boolean flag)
   {
     showsRootHandles = flag;
   }
 
+  public TreeCellEditor getCellEditor()
+  {
+    return cellEditor;
+  }
+
+  public void setCellEditor(TreeCellEditor editor)
+  {
+    cellEditor = editor;
+  }
+  
   public TreeCellRenderer getCellRenderer()
   {
     return cellRenderer;
@@ -469,5 +506,81 @@ public class JTree extends JComponent
   public void setCellRenderer(TreeCellRenderer newRenderer)
   {
     cellRenderer = newRenderer;
+  }
+
+  public TreeSelectionModel getSelectionModel()
+  {
+    return selectionModel;
+  }
+
+  public void setSelectionModel(TreeSelectionModel model)
+  {
+    selectionModel = model;
+  }
+
+  public int getVisibleRowCount()
+  {
+    return visibleRowCount;
+  }
+
+  public void setVisibleRowCount(int rows)
+  {
+    visibleRowCount = rows;
+  }
+
+  public boolean isLargeModel()
+  {
+    return largeModel;
+  }
+
+  public void setLargeModel(boolean large)
+  {
+    largeModel = large;
+  }
+
+  public int getRowHeight()
+  {
+    return rowHeight;
+  }
+
+  public void setRowHeight(int height)
+  {
+    rowHeight = height;
+  }
+
+  public boolean getInvokesStopCellEditing()
+  {
+    return invokesStopCellEditing;
+  }
+
+  public void setInvokesStopCellEditing(boolean invoke)
+  {
+    invokesStopCellEditing = invoke;
+  }
+
+  /**
+   * @since 1.3
+   */
+  public int getToggleClickCount()
+  {
+    return toggleClickCount;
+  }
+
+  /**
+   * @since 1.3
+   */
+  public void setToggleClickCount(int count)
+  {
+    toggleClickCount = count;
+  }
+
+  public boolean getScrollsOnExpand()
+  {
+    return scrollsOnExpand;
+  }
+
+  public void setScrollsOnExpand(boolean scroll)
+  {
+    scrollsOnExpand = scroll;
   }
 }

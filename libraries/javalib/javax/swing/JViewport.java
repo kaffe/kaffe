@@ -253,9 +253,9 @@ public class JViewport extends JComponent
       remove(0);
     if (v != null)
       {
-    add(v);
-    fireStateChanged();
-  }
+        add(v);
+        fireStateChanged();
+      }
   }
 
   public void revalidate()
@@ -305,21 +305,9 @@ public class JViewport extends JComponent
     return false;
   }
 
-  public ChangeListener[] getChangeListeners() 
-  {
-    return (ChangeListener[]) getListeners(ChangeListener.class);
-  }
-
   public void paint(Graphics g)
   {
     paintComponent(g);
-  }
-
-  void fireStateChanged()
-  {
-    ChangeListener[] listeners = getChangeListeners();
-    for (int i = 0; i < listeners.length; ++i)
-      listeners[i].stateChanged(changeEvent);
   }
 
   public void addChangeListener(ChangeListener listener)
@@ -330,6 +318,18 @@ public class JViewport extends JComponent
   public void removeChangeListener(ChangeListener listener)
   {
     listenerList.remove(ChangeListener.class, listener);
+  }
+
+  public ChangeListener[] getChangeListeners() 
+  {
+    return (ChangeListener[]) getListeners(ChangeListener.class);
+  }
+
+  protected void fireStateChanged()
+  {
+    ChangeListener[] listeners = getChangeListeners();
+    for (int i = 0; i < listeners.length; ++i)
+      listeners[i].stateChanged(changeEvent);
   }
 
   /**
@@ -349,4 +349,24 @@ public class JViewport extends JComponent
   {
     setUI((ViewportUI) UIManager.getUI(this));
   }            
+
+  /**
+   * This method returns the viewport's UI delegate.
+   *
+   * @return The viewport's UI delegate.
+   */
+  public ViewportUI getUI()
+  {
+    return (ViewportUI) ui;
+  }
+
+  /**
+   * This method sets the viewport's UI delegate.
+   *
+   * @param ui The viewport's UI delegate.
+   */
+  public void setUI(ViewportUI ui)
+  {
+    super.setUI(ui);
+  }
 }

@@ -2823,6 +2823,7 @@ javax/swing/text/Keymap.java
 javax/swing/text/LayeredHighlighter.java
 javax/swing/text/MutableAttributeSet.java
 javax/swing/text/NavigationFilter.java
+javax/swing/text/PasswordView.java
 javax/swing/text/PlainDocument.java
 javax/swing/text/PlainView.java
 javax/swing/text/Position.java

@@ -1,5 +1,5 @@
 /* TableColumn.java --
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -502,6 +502,14 @@ public class TableColumn
   public synchronized void removePropertyChangeListener(PropertyChangeListener listener)
   {
     changeSupport.removePropertyChangeListener(listener);
+  }
+
+  /**
+   * @since 1.4
+   */
+  public PropertyChangeListener[] getPropertyChangeListeners()
+  {
+    return changeSupport.getPropertyChangeListeners();
   }
 
   /**

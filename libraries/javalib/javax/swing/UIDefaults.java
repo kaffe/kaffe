@@ -477,7 +477,7 @@ public class UIDefaults extends Hashtable
     propertyChangeSupport.addPropertyChangeListener(listener);
   }
 
-  void removePropertyChangeListener(PropertyChangeListener listener)
+  public void removePropertyChangeListener(PropertyChangeListener listener)
   {
     propertyChangeSupport.removePropertyChangeListener(listener);
   }

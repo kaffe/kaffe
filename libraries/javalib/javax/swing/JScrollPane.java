@@ -593,7 +593,6 @@ public class JScrollPane
     return new JViewport();
   }
 
-
   public String getUIClassID()
   {
     return "ScrollPaneUI";
@@ -605,6 +604,25 @@ public class JScrollPane
     setUI(b);
   }  
 
+  /**
+   * This method returns the scrollpane's UI delegate.
+   *
+   * @return The scrollpane's UI delegate.
+   */
+  public ScrollPaneUI getUI()
+  {
+    return (ScrollPaneUI) ui;
+  }
+
+  /**
+   * This method sets the scrollpane's UI delegate.
+   *
+   * @param ui The scrollpane's UI delegate.
+   */
+  public void setUI(ScrollPaneUI ui)
+  {
+    super.setUI(ui);
+  }
 
   class ScrollBar 
     extends JScrollBar

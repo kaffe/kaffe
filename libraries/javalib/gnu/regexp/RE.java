@@ -1,25 +1,42 @@
-/*
- *  gnu/regexp/RE.java
- *  Copyright (C) 1998-2001 Wes Biggs
- *
- *  This library is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published
- *  by the Free Software Foundation; either version 2.1 of the License, or
- *  (at your option) any later version.
- *
- *  This library is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
+/* gnu/regexp/RE.java
+   Copyright (C) 1998-2001, 2004 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
 
 package gnu.regexp;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.PropertyResourceBundle;
@@ -70,8 +87,8 @@ class CharUnit implements Serializable {
  * <P>
  *
  * These methods all have similar argument lists.  The input can be a
- * String, a character array, a StringBuffer, a Reader or an
- * InputStream of some sort.  Note that when using a Reader or
+ * String, a character array, a StringBuffer, or an
+ * InputStream of some sort.  Note that when using an
  * InputStream, the stream read position cannot be guaranteed after
  * attempting a match (this is not a bug, but a consequence of the way
  * regular expressions work).  Using an REMatchEnumeration can
@@ -82,9 +99,9 @@ class CharUnit implements Serializable {
  * The optional index argument specifies the offset from the beginning
  * of the text at which the search should start (see the descriptions
  * of some of the execution flags for how this can affect positional
- * pattern operators).  For a Reader or InputStream, this means an
+ * pattern operators).  For an InputStream, this means an
  * offset from the current read position, so subsequent calls with the
- * same index argument on a Reader or an InputStream will not
+ * same index argument on an InputStream will not
  * necessarily access the same position on the stream, whereas
  * repeated searches at a given index in a fixed string will return
  * consistent results.
@@ -1346,8 +1363,6 @@ public class RE extends REToken {
       return new CharIndexedStringBuffer((StringBuffer) input,index);
     else if (input instanceof InputStream)
       return new CharIndexedInputStream((InputStream) input,index);
-    else if (input instanceof Reader)
-	return new CharIndexedReader((Reader) input, index);
     else if (input instanceof CharIndexed)
 	return (CharIndexed) input; // do we lose index info?
     else 

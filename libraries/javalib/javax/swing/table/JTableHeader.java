@@ -76,178 +76,222 @@ public class JTableHeader extends JComponent
       {
         throw new Error("not implemented");
       }
+      
       public void addPropertyChangeListener(PropertyChangeListener l)
       {
         throw new Error("not implemented");
       }
+      
       public boolean contains(Point p)
       {
         throw new Error("not implemented");
       }
+      
       public AccessibleAction getAccessibleAction()
       {
         throw new Error("not implemented");
       }
+      
       public Accessible getAccessibleAt(Point p)
       {
         throw new Error("not implemented");
       }
+      
       public Accessible getAccessibleChild(int i)
       {
         throw new Error("not implemented");
       }
+      
       public int getAccessibleChildrenCount()
       {
         throw new Error("not implemented");
       }
+      
       public AccessibleComponent getAccessibleComponent()
       {
         throw new Error("not implemented");
       }
+      
       public AccessibleContext getAccessibleContext()
       {
         throw new Error("not implemented");
       }
+      
       public String getAccessibleDescription()
   {
         throw new Error("not implemented");
       }
+      
       public int getAccessibleIndexInParent()
       {
         throw new Error("not implemented");
       }
+      
       public String getAccessibleName()
     {
         throw new Error("not implemented");
     }
+      
       public AccessibleRole getAccessibleRole()
       {
         throw new Error("not implemented");
       }
+      
       public AccessibleSelection getAccessibleSelection()
       {
         throw new Error("not implemented");
       }
+      
       public AccessibleStateSet getAccessibleStateSet()
       {
         throw new Error("not implemented");
       }
+      
       public AccessibleText getAccessibleText()
       {
         throw new Error("not implemented");
       }
+      
       public AccessibleValue getAccessibleValue()
       {
         throw new Error("not implemented");
       }
+      
       public Color getBackground()
       {
         throw new Error("not implemented");
       }
+      
       public Rectangle getBounds()
       {
         throw new Error("not implemented");
       }
+      
       public Cursor getCursor()
       {
         throw new Error("not implemented");
       }
+      
       public Font getFont()
       {
         throw new Error("not implemented");
       }
+      
       public FontMetrics getFontMetrics(Font f)
       {
         throw new Error("not implemented");
       }
+      
       public Color getForeground()
       {
         throw new Error("not implemented");
       }
+      
       public Locale getLocale()
       {
         throw new Error("not implemented");
       }
+      
       public Point getLocation()
       {
         throw new Error("not implemented");
       }
+      
       public Point getLocationOnScreen()
       {
         throw new Error("not implemented");
       }
+      
       public Dimension getSize()
       {
         throw new Error("not implemented");
       }
+      
       public boolean isEnabled()
       {
         throw new Error("not implemented");
       }
+      
       public boolean isFocusTraversable()
       {
         throw new Error("not implemented");
       }
+      
       public boolean isShowing()
       {
         throw new Error("not implemented");
       }
+      
       public boolean isVisible()
       {
         throw new Error("not implemented");
       }
+      
       public void removeFocusListener(FocusListener l)
       {
         throw new Error("not implemented");
       }
+      
       public void removePropertyChangeListener(PropertyChangeListener l)
       {
         throw new Error("not implemented");
       }
+      
       public void requestFocus()
       {
         throw new Error("not implemented");
       }
+      
       public void setAccessibleDescription(String s)
       {
         throw new Error("not implemented");
       }
+      
       public void setAccessibleName(String s)
       {
         throw new Error("not implemented");
       }
+      
       public void setBackground(Color c)
       {
         throw new Error("not implemented");
       }
+      
       public void setBounds(Rectangle r)
       {
         throw new Error("not implemented");
       }
+      
       public void setCursor(Cursor c)
       {
         throw new Error("not implemented");
       }
+      
       public void setEnabled(boolean b)
       {
         throw new Error("not implemented");
       }
+      
       public void setFont(Font f)
       {
         throw new Error("not implemented");
       }
+      
       public void setForeground(Color c)
       {
         throw new Error("not implemented");
       }
+      
       public void setLocation(Point p)
       {
         throw new Error("not implemented");
       }
+      
       public void setSize(Dimension d)
       {
         throw new Error("not implemented");
       }
+      
       public void setVisible(boolean b)
       {
         throw new Error("not implemented");
@@ -265,17 +309,17 @@ public class JTableHeader extends JComponent
   /**
    * The columnModel property.
    */
-  TableColumnModel columnModel;
+  protected TableColumnModel columnModel;
 
   /**
    * The draggedColumn property.
    */
-  TableColumn draggedColumn;
+  protected TableColumn draggedColumn;
 
   /**
    * The draggedDistance property.
    */
-  int draggedDistance;
+  protected int draggedDistance;
 
   /**
    * The opaque property.
@@ -285,27 +329,27 @@ public class JTableHeader extends JComponent
   /**
    * The reorderingAllowed property.
    */
-  boolean reorderingAllowed;
+  protected boolean reorderingAllowed;
 
   /**
    * The resizingAllowed property.
    */
-  boolean resizingAllowed;
+  protected boolean resizingAllowed = true;
 
   /**
    * The resizingColumn property.
    */
-  TableColumn resizingColumn;
+  protected TableColumn resizingColumn;
 
   /**
    * The table property.
    */
-  JTable table;
+  protected JTable table;
 
   /**
    * The updateTableInRealTime property.
    */
-  boolean updateTableInRealTime;
+  protected boolean updateTableInRealTime;
 
   TableCellRenderer cellRenderer; 
 
@@ -317,7 +361,7 @@ public class JTableHeader extends JComponent
   public JTableHeader(TableColumnModel cm)
   {
     accessibleContext = new AccessibleJTableHeader();
-    columnModel = cm == null ? createDefaultTableColumnModel() : cm; 
+    columnModel = cm == null ? createDefaultColumnModel() : cm; 
     draggedColumn = null;
     draggedDistance = 0;
     opaque = true;
@@ -330,11 +374,10 @@ public class JTableHeader extends JComponent
     updateUI();
   }
 
-  protected TableColumnModel createDefaultTableColumnModel()
+  protected TableColumnModel createDefaultColumnModel()
   {
     return new DefaultTableColumnModel();
   }
-
 
   /**
    * Get the value of the {@link #accessibleContext} property.
@@ -534,6 +577,11 @@ public class JTableHeader extends JComponent
   public TableCellRenderer getDefaultRenderer()
   {
     return cellRenderer;
+  }
+
+  public void setDefaultRenderer(TableCellRenderer cellRenderer)
+  {
+    this.cellRenderer = cellRenderer;
   }
 
   public Rectangle getHeaderRect(int column)

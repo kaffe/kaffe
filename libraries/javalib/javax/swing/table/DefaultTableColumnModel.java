@@ -288,7 +288,7 @@ public class DefaultTableColumnModel
 
   /**
    * addColumnModelListener
-   * @param value0 TODO
+   * @param listener the listener to add
    */
   public void addColumnModelListener(TableColumnModelListener listener)
   {
@@ -297,12 +297,21 @@ public class DefaultTableColumnModel
 
   /**
    * removeColumnModelListener
-   * @param value0 TODO
+   * @param listener the listener to remove
    */
-  public void removeColumnModelListener(TableColumnModelListener value0)
+  public void removeColumnModelListener(TableColumnModelListener listener)
   {
-    // TODO
+    listenerList.remove(TableColumnModelListener.class, listener);
   }
+
+  /**
+   * @since 1.4
+   */
+  public TableColumnModelListener[] getColumnModelListeners()
+  {
+    return (TableColumnModelListener[])
+      listenerList.getListeners(TableColumnModelListener.class);
+  }      
 
   /**
    * fireColumnAdded
