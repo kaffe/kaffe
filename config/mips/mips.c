@@ -177,7 +177,6 @@ void
 __mipsInitJit(Method* meth)
 {
 	int i;
-	int j;
 	int a;
 	const char* sig;
 

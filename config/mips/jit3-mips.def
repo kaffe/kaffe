@@ -292,7 +292,7 @@ define_insn(prologue, prologue_xxC) {
 		a++;
 	}
 
-	sig = meth->signature->data;
+	sig = meth->signature->data + 1;
 	for (j = 0; i < limit; j++) {
 		char ch = *sig;
 
