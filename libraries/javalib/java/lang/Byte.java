@@ -10,7 +10,7 @@ package java.lang;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-final public class Byte
+final public class Byte extends Number
 {
 	final public static byte MIN_VALUE = -0x80;
 	final public static byte MAX_VALUE = 0x7F;
