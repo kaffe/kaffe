@@ -12,9 +12,18 @@
    It is possible that this may be able to be turned off anyway on the
    EV5 and higher, as they require no kernel support for such things.  */
 
-#define AXP_FULL_IEEE_FP
+/* If so, use IMPLVER to detect current AXP Implementation Version:
+   0 21064 (EV4), 21064A (EV45), 21066A/21068A (LCA45)
+   1 21164 (EV5), 21164A (EV56), 21164PC (PCA56)
+   2 21264 (EV6)
 
-#define	DEBUG
+   Or AMASK bit 9: Support for precise arithmetic trap reporting in
+   hardware.  The trap PC is the same as the instruction PC after the
+   traping instruction is executed.
+
+   See alpha_have_precise_trap().  Edouard  */
+
+#define AXP_FULL_IEEE_FP
 
 #include <string.h>
 #include "classMethod.h"
@@ -26,19 +35,21 @@
 #include "gtypes.h"
 
 
-#define	REG_v0			0
+#define REG_v0			0
+#define REG_s0			9
 #define REG_fp			15
-#define	REG_a0			16
+#define REG_a0			16
 #define REG_t9			23
 #define REG_t10			24
 #define REG_t11			25
-#define	REG_ra			26
+#define REG_ra			26
 #define REG_pv			27
 #define REG_at			28
 #define REG_gp			29
 #define REG_sp			30
 #define REG_zero		31
 #define REG_f0			(32+0)
+#define REG_f1			(32+1)
 #define REG_fa0			(32+16)
 #define REG_fzero		(32+31)
 
@@ -63,12 +74,13 @@ static const char * const rnames[] = {
 	"f24", "f25", "f26", "f27", "f28", "f29", "f30", "f31"
 };
 
-#define	regname(n)	rnames[n]
-#define	fregname(n)	rnames[n]
+#define regname(n)	rnames[n]
+#define fregname(n)	rnames[n]
 #endif
 
 int *alpha_slot2argoffset;
 int alpha_nslot2argoffset;
+alpha_jit_info_t alpha_jit_info;
 
 #define alpha_s32_rangecheck(v)	((v) >= -0x80000000L && (v) < 0x80000000L)
 
@@ -114,9 +126,9 @@ int alpha_nslot2argoffset;
 
 #ifdef DEBUG
 int jit_debug;
-#define	debug(x)	(jit_debug ? printf("%lx:\t", CODEPC), printf x : 0)
+#define debug(x)	(jit_debug ? printf("%x:\t", CODEPC), printf x : 0)
 #else
-#define	debug(x)	((void)0)
+#define debug(x)	((void)0)
 #endif
 
 #define op_addl(ra, rb, rc)						\
@@ -557,6 +569,25 @@ alpha_have_bwx(void)
 	return !r;
 }
 
+static inline long
+alpha_have_precise_trap(void)
+{
+#ifdef HAVE_ALPHA_ASM_AMASK
+	long r;
+	__asm__("amask %1,%0" : "=r"(r) : "i"(1<<9));
+#else
+	/* For those whose assemblers are so far behind not to
+	   have the amask instruction.  */
+	register long r __asm__("$0");
+	__asm__(".long %1"
+		: "=r"(r)
+		: "i"((0x11 << 26) | (REG_zero << 21) | ((1<<9) << 13)
+		      | 0x1000 | (0x61 << 5) | REG_v0));
+#endif
+	return !r;
+}
+
+
 /* --------------------------------------------------------------------- */
 /* Recognize constants that go to either and or zapnot.  */
 
@@ -621,13 +652,14 @@ alpha_ldgp(int reg)
 
 define_insn(prologue, prologue_xxC)
 {
-	int r;
+	int r, N;
 	int l;
 	int sl;
 	int aspill;
-	char *sig;
+	const char *sig;
 	label* L;
 	Method* meth;
+	int rsa_size;
 
 	L = const_label(1);
 	meth = const_method(2);
@@ -639,48 +671,266 @@ define_insn(prologue, prologue_xxC)
 	}
 #endif
 
+	/* Initial stack frame looks like:
+	 *
+	 *      |  Argument above 6             |
+	 * SP-> |-------------------------------|
+	 *
+	 * Calling Standard for Alpha Systems
+	 * 3.1.2.1 Stack Frame Format
+	 *
+	 *  Figure 3-1: Fixed Size Stack Frame Format
+	 *              (PDSC_FLAGS_BASE_REG_IS_FP is 0)
+	 *  octaword-aligned
+	 *      |  Argument above 6             |
+	 *      |-------------------------------| <- PDSC_RPD_FRAME_SIZE from SP
+	 *      |  Argument home area           |
+	 *      |- - - - - - - - - - - - - - - -|
+	 *      |  Fixed temporary locations    |
+	 *      |-------------------------------|
+	 *      |  Register save area           |
+	 *      |-------------------------------| <- PDSC_RPD_RSA_OFFSET from SP
+	 *      |  Fixed temporary locations    |
+	 *      |-------------------------------| <- SP
+	 *
+	 *  Figure 3-2: Variable Size Stack Frame Format
+	 *              (PDSC_FLAGS_BASE_REG_IS_FP is 1)
+	 *  octaword-aligned
+	 *      |  Argument above 6             |
+	 *      |-------------------------------| <- PDSC_RPD_FRAME_SIZE from FP
+	 *      |  Argument home area           |
+	 *      |- - - - - - - - - - - - - - - -|
+	 *      |  Fixed temporary locations    |
+	 *      |-------------------------------|
+	 *      |  Register save area           |
+	 *      |-------------------------------| <- PDSC_RPD_RSA_OFFSET from FP
+	 *      |  Fixed temporary locations    |
+	 *      |-------------------------------| <- FP
+	 *      |  Stack temporary area         |
+	 *      |-------------------------------| <- SP
+	 *
+	 * * Fixed temporary locations are optional sections.  These locations
+	 *   might include, for exemple, register spill areas, ..., or fixed
+	 *   temporary locations.
+	 *
+	 * * The argument home area is an optionl section, it is a region of
+	 *   memory used by the called procedure for the purpose of assembling
+	 *   in contignous memory the arguments passed in registers adjacent to
+	 *   the arguments passed in memory, so that all argument can be
+	 *   addressed as a contignous array.
+	 *
+	 * * The register save area is the set of consecutive quadwords where
+	 *   the current procedure saves and restores registers.  The registers
+	 *   save area begins at the location pointed to by the frame base
+	 *   register (as indicated by PDSC_FLAGS_BASE_REG_IS_FP) added to the
+	 *   value of the content of PDSC_RPD_RSA_OFFSET.  The result must be
+	 *   a quadword-aligned address.
+	 *
+	 *   All registers saved in the variable portion of the register save
+	 *   area must have the corresponding bit set to 1 in the appropriate
+	 *   procedure descriptor register save mask.  The algorithm for
+	 *   packing saved register in the quadword-aligned register save area
+	 *   is as follows:
+	 *     . The return address is save at the lowest address of the
+	 *       register save area, offset 0.
+	 *     . All saved integer registers, as indicated by the corresponding
+	 *       bit in PDSC_RPD_IMASK being set to 1, are store, in register
+	 *       order, in consecutive quadwords beginning at offset 8 of the
+	 *       register save area.
+	 *     . All saved floating-point registers, as indicated by the
+	 *       corresponding bit in PDSC_RPD_FMASK being set to 1, are stored,
+	 *       in register-number order, in consecutive quadwords following
+	 *       the saved integer registers.
+	 *
+	 *   A standard-conforming procedure that utilizes a register save area
+	 *   must save the return address register at offset 0 in the register
+	 *   save area.  There is no corresponding bit in the register save
+	 *   mask for this register slot.
+	 *
+	 *
+	 * Applied for JIT Stack Frame:
+	 * We use a fixed-stack frame (PDSC_FLAGS_BASE_REG_IS_FP is 0) with
+	 * FP used as a virtual frame pointer to improve FRAMEOBJECT() macro.
+	 *
+	 *      |  Argument above 6             |
+	 * FP ->|-------------------------------| <- PDSC_RPD_FRAME_SIZE from SP
+	 *      |  Spill for up to 6 args       |
+	 *      |-------------------------------|
+	 *      |  Locals, temps                |
+	 *      |-------------------------------|
+	 *      |  Register save area           |
+	 *      |-------------------------------| <- PDSC_RPD_RSA_OFFSET from SP
+	 *      |  outgoing parameters past 6   |
+	 *      |-------------------------------| <- SP
+	 *
+	 *
+	 * Until we have some method of determining in the prologue which
+	 * Rnosaveoncall registers are used by a method, we will save registers
+	 * s0 to s5 and f1 to f9.  As we change FP, we must save it also.
+	 *
+	 * imask = (1 << 9) + ... + (1 << 14) + (1 << 15)
+	 * fmask = (1 << 1) + ... + (1 << 9)
+	 *
+	 * with the return address register, we save 17 registers in RSA.
+	 * ra, s0 ... s5, fp, f1 ... f9
+	 *
+	 */
+
+	/* Calling Standard for Alpha Systems
+	 * 3.2.6.1    Entry Code Sequence
+	 * Because the value of the PC defines the currently executing
+	 * procedure, all properties of the environment specified by a
+	 * procedure's descriptor must be valid before the first instruction
+	 * after the procedure prologue (as defined by PDSC_RPD_ENTRY_LENGTH)
+	 * is executed.  In addition, none of the properties specified in the
+	 * calling procedure's descriptor may be invalidated before the called
+	 * procedure becomes current. Thus, until the procedure becomes current,
+	 * all entry code must adhere to the following rules: 
+	 * . All registers specified by this standard as saved across a
+	 *   standard-conforming call must contain their original (at entry)
+	 *   contents.
+	 * . The register designated by PDSC_RPD_ENTRY_RA ($26 in a standard
+	 *   call) must contain its original (at entry) contents. This
+	 *   requirement also applies to nonstandard procedures to allow for
+	 *   proper unwinding.
+	 * . No standard calls can be made.
+	 *
+	 * These actions involve the following steps, performed in the
+	 * specified order:
+	 *
+	 * 1. Compute and load the procedure's GP value using the
+	 *    passed-in-procedure (code address) value in $27.
+	 *
+	 * 2. If stack space is allocated (PDSC_RPD_FRAME_SIZE is not 0), set
+	 *    register SP to SP - PDSC_RPD_FRAME_SIZE.
+	 *    After any necessary calculations and stack limit checks, this
+	 *    step must be completed in exactly one instruction that modifies
+	 *    SP.  This instruction must be the one specified by
+	 *    PDSC_RPD_SP_SET.
+	 *
+	 * 3. For a stack frame procedure (PDSC_FLAGS_REGISTER_FRAME is 0), do
+	 *    both of these steps.  (There is no requirement as to which step
+	 *    occurs first.) 
+	 *
+	 *    Store the registers specified by PDSC_RPD_IMASK and
+	 *    PDSC_RDP_FMASK in the register save area based on
+	 *    PDSC_RPD_RSA_OFFSET.
+	 *
+	 *    Store the return address in the register save area.
+	 *
+	 * 4. For a register frame procedure (PDSC_FLAGS_REGISTER_FRAME is 1),
+	 *    copy the return address to the register specified by
+	 *    PDSC_RPD_SAVE_RA if the value is not already there.
+	 *
+	 * 5. Execute trapb, if required. (See Section 5.1.12 for details.)
+	 *
+	 * 6. For a variable-size stack frame procedure
+	 *    (PDSC_FLAGS_BASE_REG_IS_FP is 1), copy the SP value to register
+	 *    FP.  This step must be completed in exactly one instruction that
+	 *    modifies the FP and that instruction must be the last instruction
+	 *    in the prologue.
+	 */
+
+	/* Calling Standard for Alpha Systems
+	 * 3.2.6.1    Entry Code Sequence
+	 * 1. Compute and load the procedure's GP value using the
+	 *    passed-in-procedure (code address) value in $27.  */
+
+	op_lda(REG_gp, REG_pv, 0);
+
+	/* Calling Standard for Alpha Systems
+	 * 3.2.6.1    Entry Code Sequence
+	 * 2. If stack space is allocated (PDSC_RPD_FRAME_SIZE is not 0), set
+	 *    register SP to SP - PDSC_RPD_FRAME_SIZE.
+	 *    After any necessary calculations and stack limit checks, this
+	 *    step must be completed in exactly one instruction that modifies
+	 *    SP.  This instruction must be the one specified by
+	 *    PDSC_RPD_SP_SET.  */
+
+	alpha_jit_info.sp_set = CODEPC / 4;
 	L->type = Lnegframe|Labsolute|Lgeneral;
 	L->at = (uintp)CODEPC;
 	op_lda(REG_sp, REG_sp, 0);
 
-	op_mov(REG_pv, REG_gp);
+	/* Calling Standard for Alpha Systems
+	 * 3.2.6.1    Entry Code Sequence
+	 * 3. For a stack frame procedure (PDSC_FLAGS_REGISTER_FRAME is 0), do
+	 *    both of these steps.  (There is no requirement as to which step
+	 *    occurs first.) 
+	 *
+	 *    Store the registers specified by PDSC_RPD_IMASK and
+	 *    PDSC_RDP_FMASK in the register save area based on
+	 *    PDSC_RPD_RSA_OFFSET.
+	 *
+	 *    Store the return address in the register save area.  */
 
+	/* Build Register Save mask (without ra) */
+	alpha_jit_info.imask = 0xFE00;		/* s0 to s5 and fp */
+	alpha_jit_info.fmask = 0x3FE;		/* f1 to f9 */
+
+	/* compute rsa_size for ra, s0-s5, fp, f1-f9 */
+	rsa_size = 1 + (5 - 0 + 1) + 1 + (9 - 1 + 1);
+
+	alpha_jit_info.rsa_size = rsa_size;
+
+	/* return address */
 	L = newLabel();
-	L->type = Lframe|Labsolute|Lgeneral;
+	L->type = Lrsa|Labsolute|Lgeneral;
 	L->at = (uintp)CODEPC;
-	op_stq(REG_fp, REG_sp, -SLOTSIZE);
+	op_stq(REG_ra, REG_sp, 0);
+	
+	N = 1;
 
+	/* registers s0 - s5 and fp (also know as s6) */
+	for (r = 0; r < 7; r++, N++) {
+		L = newLabel();
+		L->type = Lrsa|Labsolute|Lgeneral;
+		L->at = (uintp)CODEPC;
+		op_stq(REG_s0+r, REG_sp, SLOTSIZE * N);
+	}
+
+	/* registers f1 - f9 */
+	for (r = 0; r < 9; r++, N++) {
+		L = newLabel();
+		L->type = Lrsa|Labsolute|Lgeneral;
+		L->at = (uintp)CODEPC;
+		op_stt(REG_f1+r, REG_sp, SLOTSIZE * N);
+	}
+	    
+	/* this is the end of the prologue */
+	alpha_jit_info.entry_length = CODEPC / 4;
+
+
+	/* setup our virtual frame pointer, it's not part of the prologue.  */
 	L = newLabel();
 	L->type = Lframe|Labsolute|Lgeneral;
 	L->at = (uintp)CODEPC;
 	op_lda(REG_fp, REG_sp, 0);
-
-	L = newLabel();
-	L->type = Lframe|Labsolute|Lgeneral;
-	L->at = (uintp)CODEPC;
-	op_stq(REG_ra, REG_sp, -2*SLOTSIZE);
 
 	/* Work out which register is what and where.  */
 	l = maxLocal + maxStack + maxTemp;
 	if (alpha_nslot2argoffset < l) {
 		alpha_nslot2argoffset = l;
 		alpha_slot2argoffset = KREALLOC(alpha_slot2argoffset,
-						        sizeof(int)*l);
+						sizeof(int)*l);
 	}
 
 	/* Work out arg spill space */
 	aspill = (maxArgs < 6 ? maxArgs : 6);
 
-	/* Assign arguments, locals and temps to slots */
+	/* Assign arguments, locals and temps to slots from $fp */
 	sig = meth->signature->data;
 	for (r = 0; r < l; r++) {
 		if (r >= maxArgs) {
-			alpha_slot2argoffset[r] = -SLOTSIZE * (3+aspill+(r-maxArgs));
+		        /* locals and temps */
+			alpha_slot2argoffset[r] = -SLOTSIZE * (aspill+(r-maxArgs+1));
 		}
 		else if (r < 6) {
-			alpha_slot2argoffset[r] = -SLOTSIZE * (3+aspill-(1+r));
+		        /* register passed arguments */
+			alpha_slot2argoffset[r] = -SLOTSIZE * (aspill-r);
 		}
 		else {
+		        /* memory passed arguments */
 			alpha_slot2argoffset[r] = SLOTSIZE * (r-6);
 		}
 	}
@@ -737,9 +987,135 @@ define_insn(prologue, prologue_xxC)
 define_insn(epilogue, epilogue_xxx)
 {
 	label *l;
+	int r, N;
 
-	op_ldq(REG_ra, REG_fp, -2*SLOTSIZE);
-	op_ldq(REG_fp, REG_fp, -SLOTSIZE);
+	/* Calling Standard for Alpha Systems
+	 * 3.2.6.2.2   Exit Code Sequence Steps
+	 * When a procedure returns, the exit code must restore the caller's
+	 * context, synchronize any pending hardware exceptions, and make the
+	 * calling procedure current by returning control to it.  The following
+	 * list contains the exit code sequence steps.  The program performs
+	 * step 1, followed by steps 2 through 5 in any order, followed by
+	 * steps 6 through 8 in exact order. 
+	 *
+	 * 1. If the GP register has been modified or a call has been made,
+	 *    restore the GP register to the GOT segment pointer of the current
+	 *    procedure.
+	 *
+	 * 2. For a variable-size stack frame procedure that does not return a
+	 *    value on the top of stack (PDSC_FLAGS_BASE_REG_IS_FP is 1), copy
+	 *    FP to SP.
+	 *
+	 * 3. For a stack frame procedure (PDSC_FLAGS_REGISTER_FRAME is 0),
+	 *    reload any saved registers from the register save area as
+	 *    specified by PDSC_RPD_RSA_OFFSET.  Note that, for a variable-size
+	 *    stack frame procedure (PDSC_FLAGS_BASE_REG_IS_FP is 1), FP is not
+	 *    reloaded in this step.  For a fixed-size stack frame procedure
+	 *    (PDSC_FLAGS_BASE_REG_IS_FP is 0), $15 is reloaded if it was saved
+	 *    on entry.
+	 *
+	 * 4. Reload the register that held the return address on entry with
+	 *    the saved return address, if necessary.
+	 *
+	 *    For a stack frame procedure (PDSC_FLAGS_REGISTER_FRAME is 0),
+	 *    load the register designated by PDSC_RPD_ENTRY_RA ($26 in a
+	 *    standard call) with the return address from the register save
+	 *    area as specified by PDSC_RPD_RSA_OFFSET.
+	 *
+	 *    For a register frame procedure (PDSC_FLAGS_REGISTER_FRAME is 1),
+	 *    copy the return address from the register specified by
+	 *    PDSC_RPD_SAVE_RA to the register designated by PDSC_RPD_ENTRY_RA.
+	 *
+	 * 5. Execute trapb, if required. (See Section 5.1.12 for details.)
+	 *
+	 * 6. For a variable-size stack frame procedure
+	 *    (PDSC_FLAGS_REGISTER_FRAME is 0 and PDSC_FLAGS_BASE_REG_IS_FP is
+	 *    1), reload $15 (FP) as would be done for any other saved register.
+	 *
+	 *    After any necessary calculations, this step must be completed by
+	 *    exactly one instruction, as described in Section 3.2.6.1.
+	 *
+	 * 7. If a function value is not being returned on the stack, restore
+	 *    SP to the value it had at procedure entry by adding the value in
+	 *    PDSC_RDP_FRAME_SIZE to SP.  In some cases, the returning procedure
+	 *    leaves SP pointing to a lower stack address than it had on entry
+	 *    to the procedure, as specified in Section 4.1.7.
+	 *
+	 *    After any necessary calculations, this step must be completed by
+	 *    exactly one instruction, as described in Section 3.2.6.1.
+	 *
+	 * 8. Execute the ret $31,($n),0001 instruction, as described in
+	 *    Section 3.2.6.2.1, to return control to the calling procedure.
+	 *    In almost all cases the $n used will be $26 (the return address
+	 *    register) because its value must be restored before the call
+	 *    returns.
+	 *
+	 *    Note that the called routine does not adjust the stack to remove
+	 *    any arguments passed in memory.  This responsibility falls to the
+	 *    calling routine, which can choose to defer removal of arguments
+	 *    because of optimizations or other considerations.
+	 */
+
+
+	/* Calling Standard for Alpha Systems
+	 * 3.2.6.2.2   Exit Code Sequence Steps
+	 * 1. If the GP register has been modified or a call has been made,
+	 *    restore the GP register to the GOT segment pointer of the current
+	 *    procedure.
+	 *
+	 * NOT NEED, GP is already restored after each subroutine call.
+	 * see alpha_division(), call_ref(), call() and call_soft().  */
+
+
+	/* Calling Standard for Alpha Systems
+	 * 3.2.6.2.2   Exit Code Sequence Steps
+	 * 3. For a stack frame procedure (PDSC_FLAGS_REGISTER_FRAME is 0),
+	 *    reload any saved registers from the register save area as
+	 *    specified by PDSC_RPD_RSA_OFFSET.  Note that, for a variable-size
+	 *    stack frame procedure (PDSC_FLAGS_BASE_REG_IS_FP is 1), FP is not
+	 *    reloaded in this step.  For a fixed-size stack frame procedure
+	 *    (PDSC_FLAGS_BASE_REG_IS_FP is 0), $15 is reloaded if it was saved
+	 *    on entry.
+	 *
+	 * 4. Reload the register that held the return address on entry with
+	 *    the saved return address, if necessary.
+	 *
+	 *    For a stack frame procedure (PDSC_FLAGS_REGISTER_FRAME is 0),
+	 *    load the register designated by PDSC_RPD_ENTRY_RA ($26 in a
+	 *    standard call) with the return address from the register save
+	 *    area as specified by PDSC_RPD_RSA_OFFSET.  */
+
+	/* return address */
+	l = newLabel();
+	l->type = Lrsa|Labsolute|Lgeneral;
+	l->at = (uintp)CODEPC;
+	op_ldq(REG_ra, REG_sp, 0);
+
+	N = 1;
+
+	/* registers s0 - s5 and fp (also know as s6) */
+	for (r = 0; r < 7; r++, N++) {
+		l = newLabel();
+		l->type = Lrsa|Labsolute|Lgeneral;
+		l->at = (uintp)CODEPC;
+		op_ldq(REG_s0+r, REG_sp, SLOTSIZE * N);
+	}
+
+	/* registers f1 - f9 */
+	for (r = 0; r < 9; r++, N++) {
+		l = newLabel();
+		l->type = Lrsa|Labsolute|Lgeneral;
+		l->at = (uintp)CODEPC;
+		op_ldt(REG_f1+r, REG_sp, SLOTSIZE * N);
+	}
+
+	/* Calling Standard for Alpha Systems
+	 * 3.2.6.2.2   Exit Code Sequence Steps
+	 * 7. If a function value is not being returned on the stack, restore
+	 *    SP to the value it had at procedure entry by adding the value in
+	 *    PDSC_RDP_FRAME_SIZE to SP.  In some cases, the returning procedure
+	 *    leaves SP pointing to a lower stack address than it had on entry
+	 *    to the procedure, as specified in Section 4.1.7.  */
 
 	l = newLabel();
 	l->type = Lframe|Labsolute|Lgeneral;
@@ -751,6 +1127,8 @@ define_insn(eprologue, eprologue_xxx)
 {
 	label *l;
 
+	/* Reload GP, CALL_KAFFE_EXCEPTION() does jmp ($27) to go here
+	 * and FP set.  */
 	alpha_ldgp(REG_pv);
 
 	l = newLabel();
@@ -898,7 +1276,7 @@ alpha_move_const_32(int w, int val)
 		_l->type = Lconstant|Lrelative|Llong16x16;		\
 		op_ldah(_w, REG_gp, 0); */				\
 									\
-		_l->type = Lconstant|Lrelative|Lshort16|Lrangecheck;	\
+		_l->type = Lconstant|Lrelative|Llong16|Lrangecheck;	\
 		op(_w, REG_gp, 0);					\
 	} while (0)
 
@@ -952,27 +1330,43 @@ define_insn(move_label_const, move_RxL)
 
 define_insn(move_float_const, movef_RxC)
 {
-	double val = const_double(2);
-	int w = wreg_float(0);
+	jvalue d;
+	int w;
+	
+	d.d = const_double(2);
+	w = wreg_float(0);
 
-	if (val == 0.0) {
-		op_fmov(REG_fzero, w);
+	if (d.d == 0.0) {
+		if (((d.j >> 63) & 1) != 0) {
+			op_cpysn(REG_fzero, REG_fzero, w);
+		}
+		else {
+			op_fmov(REG_fzero, w);
+		}
 	}
 	else {
-		alpha_move_const_pool(w, NULL, CPfloat, val, op_lds);
+		alpha_move_const_pool(w, NULL, CPfloat, d.d, op_lds);
 	}
 }
 
 define_insn(move_double_const, moved_RxC)
 {
-	double val = const_double(2);
-	int w = wreg_double(0);
+	jvalue d;
+	int w;
 
-	if (val == 0.0) {
-		op_fmov(REG_fzero, w);
+	d.d = const_double(2);
+	w = wreg_double(0);
+
+	if (d.d == 0.0) {
+		if (((d.j >> 63) & 1) != 0) {
+			op_cpysn(REG_fzero, REG_fzero, w);
+		}
+		else {
+			op_fmov(REG_fzero, w);
+		}
 	}
 	else {
-		alpha_move_const_pool(w, NULL, CPdouble, val, op_ldt);
+		alpha_move_const_pool(w, NULL, CPdouble, d.d, op_ldt);
 	}
 }
 
@@ -1227,12 +1621,7 @@ define_insn(neg_float, negf_RxR)
 	int r = rreg_float(2);
 	int w = wreg_float(0);
 
-#ifndef AXP_FULL_IEEE_FP
 	op_cpysn(r, r, w);
-#else
-	op_subs_su(REG_fzero, r, w);
-	op_trapb();
-#endif
 }
 
 define_insn(neg_double, negd_RxR)
@@ -1240,12 +1629,7 @@ define_insn(neg_double, negd_RxR)
 	int r = rreg_double(2);
 	int w = wreg_double(0);
 
-#ifndef AXP_FULL_IEEE_FP
 	op_cpysn(r, r, w);
-#else
-	op_subt_su(REG_fzero, r, w);
-	op_trapb();
-#endif
 }
 
 define_insn(mul_int_const, muli_RRC)
@@ -1382,7 +1766,7 @@ define_insn(mul_double, muld_RRR)
 static void
 alpha_division(sequence *s, int type, void *fn)
 {
-	extern void alpha_do_call_div();
+	extern void alpha_do_call_div(void);
 
 	int r1 = NOREG, r2 = NOREG;
 
@@ -1443,12 +1827,7 @@ alpha_division(sequence *s, int type, void *fn)
 	clobberRegister(REG_t9);
 	clobberRegister(REG_pv);
 
-	/* Here's the special hack for Java exception handling.  */
-
-	clobberRegister(REG_v0);
-	alpha_move_const_pool(REG_pv, NULL, CPref, alpha_do_call_div, op_ldq);
-	alpha_move_const_pool(REG_v0, NULL, CPref, fn, op_ldq);
-
+	alpha_move_const_pool(REG_pv, NULL, CPref, fn, op_ldq);
 	op_jsr(REG_t9, REG_pv, 0);
 
 	alpha_ldgp(REG_t9);
@@ -1458,13 +1837,13 @@ alpha_division(sequence *s, int type, void *fn)
 
 define_insn(div_int, divi_RRR)
 {
-	extern void __divl();
+	extern void __divl(void);
 	alpha_division(s, Rint, &__divl);
 }
 
 define_insn(div_long, divl_RRR)
 {
-	extern void __divq();
+	extern void __divq(void);
 	alpha_division(s, Rlong, &__divq);
 }
 
@@ -1498,13 +1877,13 @@ define_insn(div_double, divd_RRR)
 
 define_insn(rem_int, remi_RRR)
 {
-	extern void __reml();
+	extern void __reml(void);
 	alpha_division(s, Rint, &__reml);
 }
 
 define_insn(rem_long, reml_RRR)
 {
-	extern void __remq();
+	extern void __remq(void);
 	alpha_division(s, Rlong, &__remq);
 }
 
@@ -2418,6 +2797,14 @@ define_insn(call, call_xRC)
 
 define_insn(ret, ret_xxx)
 {
+	/* Calling Standard for Alpha Systems
+	 * 3.2.6.2.2   Exit Code Sequence Steps
+	 * 8. Execute the ret $31,($n),0001 instruction, as described in
+	 *    Section 3.2.6.2.1, to return control to the calling procedure.
+	 *    In almost all cases the $n used will be $26 (the return address
+	 *    register) because its value must be restored before the call
+	 *    returns.  */
+
 	op_ret(REG_zero, REG_ra, 1);
 }
 
@@ -2694,432 +3081,13 @@ define_insn(returnarg_double, returnargd_xxR)
 
 /* --------------------------------------------------------------------- */
 
-/* Since we can't properly walk the stack in C, we can't find the current
-   Java frame for beginning the exception handling search.  So we bounce
-   to C calls through a trampoline that saves the current Java frame.  */
-
-void alpha_do_call_c();
-
 define_insn(call_soft, call_soft_xCC)
 {
         label* l = const_label(1);
         assert(const_int(2) == ba);
 
-	alpha_move_const_pool(REG_pv, NULL, CPref, &alpha_do_call_c, op_ldq);
-	alpha_move_const_pool(REG_v0, l, CPref, l->to, op_ldq);
-
+	alpha_move_const_pool(REG_pv, l, CPref, l->to, op_ldq);
 	op_jsr(REG_ra, REG_pv, 0);
 
 	alpha_ldgp(REG_ra);
-}
-
-/* Annoyingly, GCC will not let you pass parameters to asm blocks at the
-   top level.  So we put it in this function so that we can get the 
-   constants passed in.  */
-
-static void __attribute__((unused))
-silly_wrapper(void)
-{
-   asm(".align 3
-	.globl alpha_do_call_c
-alpha_do_call_c:
-	ldgp	$29,0($27)
-	subq	$30,32,$30
-	# Create the exceptionFrame structure; also our return information
-	stq	$15,8($30)
-	stq	$26,0($30)
-	# Save the exception structure in the thread context
-	lda	$2,16-%1($30)		# be prepared for null thread
-	ldq	$1,currentThread
-	beq	$1,1f
-	ldq	$2,threadContext
-	ldl	$1,%0($1)
-	s8addq	$1,$2,$2
-	ldq	$2,0($2)
-	stq	$30,%1($2)
-	# We don't want to calculate that again on the way out
-1:	stq	$2,16($30)
-	# Chain to the C code
-	mov	$0,$27
-	jsr	$26,($0),0
-	# Reset the thread context exception info
-	ldq	$1,16($30)
-	ldq	$26,0($30)
-	stq	$31,%1($1)
-	addq	$30,32,$30
-	ret"
-	: : "i"(offsetof(Hjava_lang_Thread, data[0].PrivateInfo)),
-            "i"(offsetof(ctx, exceptPtr)));
-
-   /* And another version for chaining to the division routines.  */
-
-   asm(".align 3
-	.globl alpha_do_call_div
-alpha_do_call_div:
-	ldgp	$29,0($27)
-	subq	$30,48,$30
-	# Save everything we change
-	stq	$3,32($30)
-	stq	$2,24($30)
-	stq	$1,16($30)
-	# Create the exceptionFrame structure; also our return information
-	stq	$15,8($30)
-	stq	$23,0($30)
-	# Save the exception structure in the thread context
-	lda	$2,40-%1($30)
-	ldq	$1,currentThread
-	beq	$1,1f
-	ldq	$2,threadContext
-	ldl	$1,%0($1)
-	s8addq	$1,$2,$2
-	ldq	$2,0($2)
-	stq	$30,%1($2)
-	# We don't want to calculate that again on the way out
-1:	stq	$2,40($30)
-	# Chain to the C code
-	mov	$0,$27
-	jsr	$23,($0),0
-	# Reset the thread context exception info and exit
-	ldq	$1,40($30)
-	ldq	$3,32($30)
-	ldq	$2,24($30)
-	ldq	$23,0($30)
-	stq	$31,%1($1)
-	ldq	$1,16($30)
-	addq	$30,48,$30
-	ret	$31,($23),1"
-	: : "i"(offsetof(Hjava_lang_Thread, data[0].PrivateInfo)),
-            "i"(offsetof(ctx, exceptPtr)));
-}
-
-
-/* --------------------------------------------------------------------- */
-
-/* We need to walk through the function signature in order to find out
-   the type of each argument so that we know what register to put it in.
-   Past that, we simply have to be clever about getting the arguments
-   past 6 on to the stack in the right place.
-
-   The other nifty thing we do here is save all of the call-saved regs
-   so that we don't have to do it in each frame of the generated functions.
-
-   And finally, we have to save the incoming saved Java frame information
-   so that exceptions are handled properly even if we've got a call chain
-   like c -> java -> c -> java.
-
-   NOTE!  This relies on the assumption that only ways out of an exception
-   are (1) an ABEND somewhere in the call chain below us, (2) the exception
-   is caught and processed in the jvm and we have an orderly return, or
-   (3) someone down below uses longjmp to get back to somewhere above.
-   Anything else and we'll spooge our caller's saved regs.
-
-   Also note the label "native_code_breakpoint" that is handy for stopping
-   at in the debugger.  */
-
-/* The stack frame that is built here looks like this:
- *
- *	incoming sp ->	+------------------------+
- *			| 8 saved fregs          |
- *			+------------------------+
- *			| Unused                 |
- *			+------------------------+
- *			| Saved exceptPtr        |
- *			+------------------------+
- *			| Saved &exceptPtr       |
- *			+------------------------+
- *			| Saved fp               |
- *			+------------------------+
- *			| Saved ra               |
- *	outgoing fp ->	+------------------------+
- *			| 6 saved iregs		 |
- *			+------------------------+
- *			| Java fp chain          |
- *			+------------------------+
- *			| Java ra chain          |
- *			+------------------------+
- *			| On stack arguments     |
- *	outgoing sp ->	+------------------------+
- */
-
-void alpha_do_call_kaffe(void *fn, void *regs,
-			 long n_stack_args, va_list stack_args,
-			 void **exceptPtrAddr);
-
-   asm(".text
-	.align 3
-	.globl alpha_do_call_kaffe
-	.ent alpha_do_call_kaffe
-alpha_do_call_kaffe:
-	.frame	$15,22*8,$26
-	subq	$30,22*8,$30
-	# Store all of the fp call-saved registers
-	stt	$f9,21*8($30)
-	stt	$f8,20*8($30)
-	stt	$f7,19*8($30)
-	stt	$f6,18*8($30)
-	stt	$f5,17*8($30)
-	stt	$f4,16*8($30)
-	stt	$f3,15*8($30)
-	stt	$f2,14*8($30)
-	# Store our local call-frame information
-	stq	$21,11*8($30)
-	stq	$17,10*8($30)
-	stq	$15,9*8($30)
-	stq	$26,8*8($30)
-	# Store all of the int call-saved registers
-	stq	$14,7*8($30)
-	stq	$13,6*8($30)
-	stq	$12,5*8($30)
-	stq	$11,4*8($30)
-	stq	$10,3*8($30)
-	stq	$9,2*8($30)
-	# Finalize the stack frame
-	addq	$30,8*8,$15
-	.prologue 0
-	# Make sure the new stack will be 16-byte aligned
-	subq	$30,8,$0
-	cmovlbs	$18,$0,$30
-	# Copy the arguments past six onto the current stack
-	addl	$20,$31,$20
-	addq	$19,$20,$20
-	br	1f
-0:	ldq	$1,0($20)
-	subq	$30,8,$30
-	addq	$20,8,$20
-	subq	$18,1,$18
-	stq	$1,0($30)
-1:	bgt	$18,0b
-	# Create a fake Java-like stack frame from the saved exception info
-	ldq	$1,0($21)
-	mov	$31,$2
-	mov	$31,$3
-	beq	$1,2f
-	ldq	$2,0($1)
-	ldq	$3,8($1)
-2:	stq	$1,4*8($15)
-	stq	$2,-8*8($15)
-	stq	$3,-7*8($15)
-	stq	$31,0($21)
-	# Load up the incoming argument registers
-	mov	$16,$27
-	ldq	$16,0*8($17)
-	ldq	$18,2*8($17)
-	ldq	$19,3*8($17)
-	ldq	$20,4*8($17)
-	ldq	$21,5*8($17)
-	ldt	$f16,6*8($17)
-	ldt	$f17,7*8($17)
-	ldt	$f18,8*8($17)
-	ldt	$f19,9*8($17)
-	ldt	$f20,10*8($17)
-	ldt	$f21,11*8($17)
-	ldq	$17,1*8($17)
-native_code_breakpoint:
-	jsr	$26,($27),0
-	# Reset the stack from the on-stack arguments
-	subq	$15,8*8,$30
-	# Store the outgoing result registers
-	ldq	$17,2*8($15)
-	stq	$0,0*8($17)
-	stt	$f0,6*8($17)
-	sts	$f0,7*8($17)
-	# Reset the Java exception info like we found it
-	ldq	$1,3*8($15)
-	ldq	$2,4*8($15)
-	beq	$1,3f
-	stq	$2,0($1)
-	# Load up all of the call-saved registers
-3:	ldq	$9,2*8($30)
-	ldq	$10,3*8($30)
-	ldq	$11,4*8($30)
-	ldq	$12,5*8($30)
-	ldq	$13,6*8($30)
-	ldq	$14,7*8($30)
-	ldq	$26,8*8($30)
-	ldq	$15,9*8($30)
-	ldt	$f2,14*8($30)
-	ldt	$f3,15*8($30)
-	ldt	$f4,16*8($30)
-	ldt	$f5,17*8($30)
-	ldt	$f6,18*8($30)
-	ldt	$f7,19*8($30)
-	ldt	$f8,20*8($30)
-	ldt	$f9,21*8($30)
-	addq	$30,22*8,$30
-	ret
-	.end alpha_do_call_kaffe");
-
-
-jword
-alpha_call_kaffe_method_varargs(Method *meth, Hjava_lang_Object *obj, va_list argptr)
-{
-	struct {
-		long iargs[6];
-		double fargs[6];
-	} regs;
-	const char *sig;
-	void *dummy = NULL;
-	int i;
-
-	regs.iargs[0] = (long)obj;
-
-	sig = meth->signature->data;
-	assert(*sig == '(');
-	for (i = 1, sig++; *sig != ')' ; ++i, ++sig) {
-		switch (*sig) {
-		case '[':
-			while (*++sig == '[')
-				continue;
-			if (*sig == 'L') {
-		case 'L':
-				sig = strchr(sig, ';');
-			}
-		case 'J':
-			if (i < 6)
-				regs.iargs[i] = va_arg(argptr, long);
-			break;
-
-		case 'I':
-		case 'Z':
-		case 'S':
-		case 'B':
-		case 'C':
-			if (i < 6)
-				regs.iargs[i] = va_arg(argptr, int);
-			break;
-
-		case 'F':
-			if (i < 6)
-				regs.fargs[i] = va_arg(argptr, float);
-			break;
-		case 'D':
-			if (i < 6)
-				regs.fargs[i] = va_arg(argptr, double);
-			break;
-
-		default:
-			ABORT();
-		}
-	}
-
-	alpha_do_call_kaffe(meth->ncode, &regs, i-6, argptr,
-			    (currentThread
-			     ? &TCTX(currentThread)->exceptPtr
-			     : &dummy));
-
-	switch (*++sig) {
-	case 'L':
-	case '[':
-	case 'J':
-	case 'I':
-	case 'Z':
-	case 'S':
-	case 'B':
-	case 'C':
-		return regs.iargs[0];
-	case 'F':
-		return *(unsigned int *)&regs.fargs[1];
-	case 'D':
-		return *(long *)&regs.fargs[0];
-	case 'V':
-		return 0;
-	}
-	ABORT();
-	return 0;
-}
-
-jword
-alpha_call_kaffe_static_varargs(Method *meth, va_list argptr)
-{
-	struct {
-		long iargs[6];
-		double fargs[6];
-	} regs;
-	const char *sig;
-	void *dummy = NULL;
-	int i;
-
-	sig = meth->signature->data;
-	assert(*sig == '(');
-	for (i = 0, sig++; *sig != ')' ; ++i, ++sig) {
-		switch (*sig) {
-		case '[':
-			while (*++sig == '[')
-				continue;
-			if (*sig == 'L') {
-		case 'L':
-				sig = strchr(sig, ';');
-			}
-		case 'J':
-			if (i < 6)
-				regs.iargs[i] = va_arg(argptr, long);
-			break;
-
-		case 'I':
-		case 'Z':
-		case 'S':
-		case 'B':
-		case 'C':
-			if (i < 6)
-				regs.iargs[i] = va_arg(argptr, int);
-			break;
-
-		case 'F':
-			if (i < 6)
-				regs.fargs[i] = va_arg(argptr, float);
-			break;
-		case 'D':
-			if (i < 6)
-				regs.fargs[i] = va_arg(argptr, double);
-			break;
-
-		default:
-			ABORT();
-		}
-	}
-
-	alpha_do_call_kaffe(meth->ncode, &regs, i-6, argptr,
-			    (currentThread
-			     ? &TCTX(currentThread)->exceptPtr
-			     : &dummy));
-
-	switch (*++sig) {
-	case 'L':
-	case '[':
-	case 'J':
-	case 'I':
-	case 'Z':
-	case 'S':
-	case 'B':
-	case 'C':
-		return regs.iargs[0];
-	case 'F':
-		return *(unsigned int *)&regs.fargs[1];
-	case 'D':
-		return *(long *)&regs.fargs[0];
-	case 'V':
-		return 0;
-	}
-	ABORT();
-	return 0;
-}
-
-jword
-alpha_call_kaffe_function(Method *meth, Hjava_lang_Object *obj)
-{
-	struct {
-		long iargs[6];
-		double fargs[6];
-	} regs;
-	va_list dummy;
-	void *other_dummy = NULL;
-
-	regs.iargs[0] = (long)obj;
-
-	alpha_do_call_kaffe(meth->ncode, &regs, 0, dummy,
-			    (currentThread
-			     ? &TCTX(currentThread)->exceptPtr
-			     : &other_dummy));
-
-	return regs.iargs[0];
 }
