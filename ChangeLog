@@ -1,3 +1,28 @@
+Tue Aug 15 17:07:34 PDT 2000  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/io/PushbackReader.java: Added final
+	DEFAULT_PUSHBACK_BUFFER_SIZE. Replaced buf and pos with inner class
+	PushbackBuffer.
+	(PushbackReader) Throws exception when buffer size <= 0.
+	(checkIfStillOpen) Method added. Throws IOException if reader is closed
+	(close) Release pushback buffer.
+	(mark) Method added.
+	(read) Check if reader is still open before reading.
+	(read(char[], int, int)) Checks if reader is still open before
+	reading. Checks if arguments are valid. Reduced amount of
+	synchronized code.
+	(ready) Checks if reader is still open. Simplified test expression.
+	(reset) Method added.
+	(throwMarkException) Method added. Used to throw IOException by mark
+	and reset.
+	(unread(int)) Checks if reader is closed.
+	(unread(char [], int, int)) Checks if reader is closed. Validates
+	its arguments.
+	(validArguments) Method added. Used to validate arguments by read
+	and unread methods.
+	* libraries/javalib/java/io/FilterReader.java: use underlying
+	reader as lock object
+
 Thu Aug  3 18:10:10 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/ResourceBundle.java: add missing method
