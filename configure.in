@@ -450,6 +450,15 @@ AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBRARIES)
 AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBRARIES)
 AC_CHECK_LIBRARY(gif,DGifOpenFileHandle,GIF_LIBRARIES)
 LIBS=$OLIBS
+dnl If libpng is included, we also need libz - if we don't have it then
+dnl we can't include png support.
+if test "$PNG_LIBRARIES" != "" ; then
+	if test "$ZIP_LIBRARIES" != "" ; then
+		PNG_LIBRARIES="$PNG_LIBRARIES $ZIP_LIBRARIES"
+	else
+		PNG_LIBRARIES=""
+	fi
+fi
 AC_SUBST(JPEG_LIBRARIES)
 AC_SUBST(PNG_LIBRARIES)
 AC_SUBST(GIF_LIBRARIES)

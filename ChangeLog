@@ -1,3 +1,13 @@
+Thu Oct  1 14:01:43 PDT 1998	Tim Wilkinson	<tim@transvirtual.com>
+
+	* Fixed Sparc/Linux port.
+	* Re-added kaffe.applet into class build.
+	* Fixed need for ZIP library with PNG library.
+
+Thu, 1 Oct 1998 14:02:05 +0100	Jeppe	<jso@lyngso-industri.dk>
+
+	* QNX patches.
+
 Wed Sep 30 20:24:42 1998  Pavel Roskin <pavel_roskin@geocities.com>
 
         * config/parisc/common.h: Alignment of 8-byte arguments corrected.

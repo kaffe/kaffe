@@ -51,6 +51,7 @@ CLASSES="\
  $SRCDIR/kaffe/net/www/protocol/file/*.java \
  $SRCDIR/kaffe/net/www/protocol/system/*.java \
  $SRCDIR/kaffe/util/*.java \
+ $SRCDIR/kaffe/applet/*.java \
  $SRCDIR/kaffe/text/dateformat/*.java \
  $SRCDIR/kaffe/text/numberformat/*.java \
 "
