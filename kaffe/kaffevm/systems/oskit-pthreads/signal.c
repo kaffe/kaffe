@@ -118,7 +118,6 @@ nullException(EXCEPTIONPROTO)
 
 	/* These threads are internal to pthreads and shouldn't blow up like this. */
 	assert(pthread_self() != 0);
-	// assert(pthread_self() != 1);
 
 	/* don't catch the signal if debugging exceptions */
 	if (DBGEXPR(EXCEPTION, false, true)) {
@@ -139,7 +138,6 @@ floatingException(EXCEPTIONPROTO)
 
 	/* These threads are internal to pthreads and shouldn't blow up like this. */
 	assert(pthread_self() != 0);
-	assert(pthread_self() != 1);
 
 	/* don't catch the signal if debugging exceptions */
 	if (DBGEXPR(EXCEPTION, false, true)) {

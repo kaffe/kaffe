@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 1999 The University of Utah. All rights reserved.
+ * Copyright (c) 1998-2000 The University of Utah.
+ * All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -27,8 +28,8 @@
 #define THREAD_RUNNING                  1
 #define THREAD_DYING                    2
 #define THREAD_DEAD                     3
-#define THREAD_STOPPED                  4
-#define THREAD_CONTINUE                 5
+#define THREAD_STOPPED                  4 /* XXX only used in status dump! */
+#define THREAD_CONTINUE                 5 /* XXX only used in status dump! */
 
 #define THREAD_FLAG_DONTSTOP			1
 
@@ -80,7 +81,7 @@ pthread_key_t	jthread_key;	/* key to map pthread -> jthread */
 static void
 catch_death(void)
 {
-	jthread_t tid = pthread_getspecific(jthread_key);
+	jthread_t tid = GET_JTHREAD();
 
 	if (!(tid->flags & THREAD_FLAG_DONTSTOP)) {
 		onstop();
@@ -161,8 +162,18 @@ jthread_extract_stack(jthread_t jtid, void **from, unsigned *len)
 {
 	struct pthread_state ps;
 
-	if (oskit_pthread_getstate(jtid->native_thread, &ps))
-		panic("jthread_extract_stack: tid(%d)", jtid->native_thread);
+	/*
+	 * Newborn/dead threads don't have a useful stack, and may not
+	 * have a native_thread.
+	 */
+	if ((jtid->status == THREAD_NEWBORN)
+	    || (jtid->status == THREAD_DEAD))
+		return 0;
+
+	if (oskit_pthread_getstate(jtid->native_thread, &ps)) {
+		 panic("jthread_extract_stack: oskit_pthread_getstate failed for jtid(%p)\n",
+		       jtid);
+	}
 	
 #if defined(STACK_GROWS_UP)
 #error FIXME
@@ -212,6 +223,7 @@ DBG(JTHREAD,
 	return rc;
 }       
 
+
 /*
  * See if there is enough room on the stack.
  */
@@ -220,10 +232,11 @@ jthread_stackcheck(int need)
 {
 	struct pthread_state ps;
 	int room;
+	pthread_t tid = pthread_self();
 
-	if (oskit_pthread_getstate(pthread_self(), &ps))
+	if (oskit_pthread_getstate(tid, &ps))
 		panic("jthread_stackcheck: oskit_pthread_getstate(%d)",
-		      pthread_self());
+		      (int)tid);
 	
 #if defined(STACK_GROWS_UP)
 #	error FIXME
@@ -233,7 +246,7 @@ jthread_stackcheck(int need)
 	
 DBG(JTHREAD,
 	dprintf("stackcheck(%d) need=%d base=%p size=%d sp=%p room=%d\n",
-		pthread_self(),
+		(int)pthread_self(),
 		need, ps.stackbase, ps.stacksize, ps.stackptr, room);
     )
 	return (room >= need);
@@ -397,6 +410,10 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char prio, void* jlThre
 	assert(jtid->status == THREAD_RUNNING);
 
 	jtid->jlThread = jlThread;
+	
+	/* Main thread should not yet have a jlThread associated with it. */
+	assert(pthread_getspecific(cookie_key) == NULL);
+	pthread_setspecific(cookie_key, jlThread);
 
 	/* XXX what to do with mainThreadStackSize?? */
 
@@ -420,7 +437,7 @@ jthread_atexit(void (*f)(void))
 void 
 jthread_disable_stop(void)
 {
-	jthread_t tid = pthread_getspecific(jthread_key);
+	jthread_t tid = GET_JTHREAD();
 
 	tid->flags |= THREAD_FLAG_DONTSTOP;
 }
@@ -431,7 +448,7 @@ jthread_disable_stop(void)
 void 
 jthread_enable_stop(void)
 {
-	jthread_t tid = pthread_getspecific(jthread_key);
+	jthread_t tid = GET_JTHREAD();
 
 	tid->flags &= ~THREAD_FLAG_DONTSTOP;
 	if (tid->status == THREAD_DYING) {
@@ -659,7 +676,8 @@ static void
 mark_thread_dead(void)
 {
 	jthread_t currentJThread = GET_JTHREAD();
-	assert (currentJThread->status != THREAD_DEAD);
+	assert(currentJThread);
+	assert(currentJThread->status != THREAD_DEAD);
 	currentJThread->status = THREAD_DEAD;
 
 	remove_thread(currentJThread);
@@ -672,21 +690,18 @@ mark_thread_dead(void)
 void
 jthread_exit(void)
 {
-	jthread_t currentJThread = GET_JTHREAD();
-
 DBG(JTHREAD,
-	dprintf("jthread_exit called by %d\n", currentJThread->native_thread);
+	dprintf("jthread_exit called by %d\n", GET_JTHREAD()->native_thread);
     )
 
 	mark_thread_dead();
-#ifndef newer_than_990722 
-	/* The main thread must be explicitly detached before
-	 * exitting.  Since its mutex is unitialized, detach will work,
-	 * but the idle thread will crash trying to clean up.
-	 */
+
+	/* XXX disconnect the native thread object */
+	GET_JTHREAD()->native_thread = -1;
+
 	pthread_detach(pthread_self());
-#endif
 	pthread_exit(0);
+
 	while (1)
 		assert(!"This better not return.");
 }
