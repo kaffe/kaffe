@@ -100,6 +100,7 @@ int codeblock_size;
 static int code_generated;
 static int bytecode_processed;
 static int codeperbytecode;
+static timespent jit_time;
 
 int CODEPC;
 
@@ -229,6 +230,7 @@ DBG(MOREJIT,
 
 	/* Only one in the translator at once. */
 	enterTranslator();
+	startTiming(&jit_time, "JIT");
 
 DBG(MOREJIT,
 	if (jitting) {
@@ -362,6 +364,7 @@ DBG(JIT,
 	}
 
 	jitting = 0;	/* DEBUG */
+	stopTiming(&jit_time);
 	leaveTranslator();
 done2:
 	unlockMutex(meth->class);
