@@ -362,16 +362,17 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, (*Kaffe_ThreadInterface.currentJava)());
 	}
 	else {
-		Hjava_lang_Object* sync;
+		iLock* sync;
 
 		if (meth->accflags & ACC_SYNCHRONISED) {
+			Hjava_lang_Object* syncobj;
 			if (meth->accflags & ACC_STATIC) {
-				sync = &meth->class->head;
+				syncobj = &meth->class->head;
 			}
 			else {
-				sync = (Hjava_lang_Object*)call.args[0].l;
+				syncobj = (Hjava_lang_Object*)call.args[0].l;
 			}
-			lockMutex(sync);
+			sync = lockMutex(syncobj);
 		}
 		else {
 			sync = 0;
@@ -381,7 +382,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 		sysdepCallMethod(&call);
 
 		if (sync != 0) {
-			unlockMutex(sync);
+			unlockKnownMutex(sync);
 		}
 	}
 #endif
@@ -543,16 +544,17 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, (*Kaffe_ThreadInterface.currentJava)());
 	}
 	else {
-		Hjava_lang_Object* sync;
+		iLock* sync;
 
 		if (meth->accflags & ACC_SYNCHRONISED) {
+			Hjava_lang_Object* syncobj;
 			if (meth->accflags & ACC_STATIC) {
-				sync = &meth->class->head;
+				syncobj = &meth->class->head;
 			}
 			else {
-				sync = (Hjava_lang_Object*)call.args[0].l;
+				syncobj = (Hjava_lang_Object*)call.args[0].l;
 			}
-			lockMutex(sync);
+			sync = lockMutex(syncobj);
 		}
 		else {
 			sync = 0;
@@ -562,7 +564,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		sysdepCallMethod(&call);
 
 		if (sync != 0) {
-			unlockMutex(sync);
+			unlockKnownMutex(sync);
 		}
 	}
 #endif

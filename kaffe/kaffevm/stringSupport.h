@@ -47,9 +47,13 @@ extern Hjava_lang_String* stringInternString(Hjava_lang_String*);
    called during destruction of the corresponding String object. */
 extern void		  stringUninternString(Hjava_lang_String*);
 
-/* Have the collector walk a string */
-extern void    		  walkString(void*, uint32);
-extern void    		  destroyString(void*);
+/* Have the collector walk/destroy a string */
+struct _Collector;
+extern void    		  stringWalk(struct _Collector*, void*, uint32);
+extern void    		  stringDestroy(struct _Collector*, void*);
+
+/* Initialize string support system */
+extern void		  stringInit(void);
 
 /**** UTF-8 routines ****/
 
@@ -89,5 +93,8 @@ extern int		  utf8ConstEqualJavaString(const Utf8Const*,
 
 /* Since we compute hash values at creation time, we can do this: */
 #define utf8ConstHashValue(A)	((A)->hash)
+
+/* Initialize utf8const support system */
+extern void		  utf8ConstInit(void);
 
 #endif

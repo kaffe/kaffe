@@ -34,6 +34,7 @@
 #include "thread.h"
 #include "external.h"
 #include "gc.h"
+#include "mem/gc-mem.h"
 #include "locks.h"
 #include "md.h"
 #include "exception.h"

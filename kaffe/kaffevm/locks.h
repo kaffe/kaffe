@@ -20,12 +20,12 @@
 #define	signalCond			_signalCond
 #define	broadcastCond			_broadcastCond
 #define	holdMutex			_holdMutex
+#define	unlockKnownMutex(THING)		_unlockMutexFree((THING))
 
 #define	initStaticLock(THING)		__initLock((THING), #THING)
 #define staticLockIsInitialized(THING)	((THING)->ref == -1)
 #define	lockStaticMutex(THING)		__lockMutex((THING))
 #define	unlockStaticMutex(THING)	__unlockMutex((THING))
-#define	unlockKnownMutex(THING)		__unlockMutex((THING))
 #define	waitStaticCond(THING, TIME)	__waitCond((THING), (TIME))
 #define	signalStaticCond(THING)		__signalCond((THING))
 #define	broadcastStaticCond(THING)	__broadcastCond((THING))
@@ -53,6 +53,7 @@ extern int	__holdMutex(iLock*);
 
 extern iLock*	_lockMutex(void*);
 extern void	_unlockMutex(void*);
+extern void	_unlockMutexFree(iLock*lk);
 extern int	_waitCond(void*, jlong);
 extern void	_signalCond(void*);
 extern void	_broadcastCond(void*);

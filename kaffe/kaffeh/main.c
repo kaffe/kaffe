@@ -34,6 +34,7 @@ char* directoryName = 0;
 
 static void usage(void);
 static int options(char**);
+extern void utf8ConstInit(void);
 
 /*
  * MAIN
@@ -52,6 +53,7 @@ main(int argc, char* argv[])
 		usage();
 		exit(1);
 	}
+	utf8ConstInit();
 
 	/* Process each class */
 	for (nm = argv[farg]; nm != 0; nm = argv[++farg]) {

@@ -44,32 +44,97 @@
 #define	GC_ALLOC_LOCK		18
 #define	GC_ALLOC_THREADCTX	19
 #define	GC_ALLOC_REF		20
+#define	GC_ALLOC_MAX_INDEX	21
 
-typedef struct GarbageCollectorInterface {
+/*
+ * Define a COM-like GC interface.
+ */
+struct GarbageCollectorInterface_Ops;
 
-	void*	(*_malloc)(size_t, int);
-	void*	(*_realloc)(void*, size_t, int);
-	void	(*_free)(void*);
+typedef struct _Collector {
+	struct GarbageCollectorInterface_Ops *ops;
+} Collector;
 
-	void	(*_invokeGC)(int);
-	void	(*_invokeFinalizer)(void);
+struct GarbageCollectorInterface_Ops {
 
-	void	(*_addref)(const void*);
-	bool	(*_rmref)(const void*);
+	void*   reserved1;
+	void*   reserved2;
+	void*   reserved3;
+	void*	(*malloc)(Collector *, size_t size, int type);
+	void*	(*realloc)(Collector *, void* addr, size_t size, int type);
+	void	(*free)(Collector *, void* addr);
 
-} GarbageCollectorInterface;
+	void	(*invoke)(Collector *, int mustgc);
+	void	(*invokeFinalizer)(Collector *);
+	void	(*init)(Collector *);
+	void	(*enable)(Collector *);
 
-extern GarbageCollectorInterface Kaffe_GarbageCollectorInterface;
+	void	(*markAddress)(Collector *, const void* addr);
+	void	(*markObject)(Collector *, const void* obj);
+	uint32	(*getObjectSize)(Collector *, const void* obj);
 
-#define	gc_malloc(A,B)		(*Kaffe_GarbageCollectorInterface._malloc)(A,B)
-#define	gc_calloc(A,B,C)	(*Kaffe_GarbageCollectorInterface._malloc)((A)*(B),C)
-#define	gc_free(A)		(*Kaffe_GarbageCollectorInterface._free)(A)
+	void	(*walkMemory)(Collector *, void *addr);
+	void	(*walkConservative)(Collector *, 
+			const void* addr, uint32 length);
 
-#define	invokeGC()		(*Kaffe_GarbageCollectorInterface._invokeGC)(1)
-#define	adviseGC()		(*Kaffe_GarbageCollectorInterface._invokeGC)(0)
-#define	invokeFinalizer()	(*Kaffe_GarbageCollectorInterface._invokeFinalizer)()
+	void	(*registerFixedTypeByIndex)(Collector *, 
+			int index, const char *description);
 
-#define	gc_add_ref(A)		(*Kaffe_GarbageCollectorInterface._addref)(A)
-#define	gc_rm_ref(A)		(*Kaffe_GarbageCollectorInterface._rmref)(A)
+	void 	(*registerGcTypeByIndex)(Collector *, 
+			int index,
+			walk_func_t walk, final_func_t final, 
+			destroy_func_t destroy, const char *description);
+};
+
+Collector* createGC(void (*_walkRootSet)(Collector*));
+
+/*
+ * Convenience macros
+ */
+#define GC_malloc(G, size, type)	\
+    ((G)->ops->malloc)((Collector*)(G), (size), (type))
+#define GC_realloc(G, addr, size, type)	\
+    ((G)->ops->realloc)((Collector*)(G), (addr), (size), (type))
+#define GC_free(G, addr)		\
+    ((G)->ops->free)((Collector*)(G), (addr))
+#define GC_invoke(G, mustgc)		\
+    ((G)->ops->invoke)((Collector*)(G), (mustgc))
+#define GC_invokeFinalizer(G)		\
+    ((G)->ops->invokeFinalizer)((Collector*)(G))
+#define GC_init(G)		\
+    ((G)->ops->init)((Collector*)(G))
+#define GC_enable(G)		\
+    ((G)->ops->enable)((Collector*)(G))
+#define GC_markAddress(G, addr)		\
+    ((G)->ops->markAddress)((Collector*)(G), (addr))
+#define GC_markObject(G, addr)		\
+    ((G)->ops->markObject)((Collector*)(G), (addr))
+#define GC_getObjectSize(G, obj)	\
+    ((G)->ops->getObjectSize)((Collector*)(G), (obj))
+#define GC_walkMemory(G, addr)	\
+    ((G)->ops->walkMemory)((Collector*)(G), (addr))
+#define GC_walkConservative(G, addr, len)		\
+    ((G)->ops->walkConservative)((Collector*)(G), (addr), (len))
+#define GC_registerFixedTypeByIndex(G, idx, desc)	\
+    ((G)->ops->registerFixedTypeByIndex)((Collector*)(G),   \
+				(idx), (desc))
+#define GC_registerGcTypeByIndex(G, idx, walk, final, destroy, desc)	\
+    ((G)->ops->registerGcTypeByIndex)((Collector*)(G), 	     \
+				(idx), (walk), (final), (destroy), (desc))
+					
+/*
+ * Compatibility macros to access GC functions
+ */
+extern Collector* main_collector;
+
+#define	gc_malloc(A,B)	    GC_malloc(main_collector,A,B)
+#define	gc_calloc(A,B,C)    GC_malloc(main_collector,(A)*(B),C)
+#define	gc_free(A)	    GC_free(main_collector,(A))
+
+#define	invokeGC()	    GC_invoke(main_collector,1)
+#define	adviseGC()	    GC_invoke(main_collector,0)
+#define	invokeFinalizer()   GC_invokeFinalizer(main_collector)
+
+#include "gcRefs.h"
 
 #endif

@@ -178,6 +178,7 @@ translate(Method* meth, errorInfo *einfo)
 	fieldInfo finfo;
 	Hjava_lang_Class* crinfo;
 	bool success = true;
+	iLock* lock;
 
 	nativeCodeInfo ncode;
 	codeinfo* codeInfo;
@@ -188,7 +189,7 @@ translate(Method* meth, errorInfo *einfo)
 	static Method* jitting = 0;	/* DEBUG */
 
 	/* lock class to protect the method */
-	lockMutex(meth->class);
+	lock = lockMutex(meth->class);
 	/* Must check the translation
 	 * hasn't been done by someone else once we get it.
 	 */
@@ -367,7 +368,7 @@ DBG(JIT,
 	stopTiming(&jit_time);
 	leaveTranslator();
 done2:
-	unlockMutex(meth->class);
+	unlockKnownMutex(lock);
 	return (success);
 }
 

@@ -122,6 +122,7 @@ getClass(constIndex idx, Hjava_lang_Class* this, errorInfo *einfo)
 	Utf8Const *name;
 	Hjava_lang_Class* class;
 	int tag;
+	iLock* lock;
 
 	pool = CLASS_CONSTANTS(this);
 
@@ -136,10 +137,10 @@ getClass(constIndex idx, Hjava_lang_Class* this, errorInfo *einfo)
 		 * lock and get the tag & name again just in case.  If we
 		 * have been resolved then we just return the answer.
 		 */
-		lockMutex(this->centry);
+		lock = lockMutex(this->centry);
 		tag = pool->tags[idx];
 		name = WORD2UTF(pool->data[idx]);
-		unlockMutex(this->centry);
+		unlockKnownMutex(lock);
 
 		if (tag == CONSTANT_ResolvedClass) {
 			return (CLASS_CLASS(idx, pool));
@@ -167,10 +168,10 @@ getClass(constIndex idx, Hjava_lang_Class* this, errorInfo *einfo)
 	/* Lock the class while we update the constant pool.  Someone
 	 * may have done this already but we don't care.
 	 */
-	lockMutex(this->centry);
+	lock = lockMutex(this->centry);
 	pool->data[idx] = (ConstSlot)class;
 	pool->tags[idx] = CONSTANT_ResolvedClass;
-	unlockMutex(this->centry);
+	unlockKnownMutex(lock);
 
 	return (class);
 }

@@ -250,8 +250,8 @@ gc_heap_malloc(size_t sz)
 	 * operation here so we can do the lock initialising.
 	 */
 	if (gc_heap_init == 0) {
-		gc_heap_init = 1;
 		gc_heap_initialise();
+		gc_heap_init = 1;
 	}
 
 	times = 0;
@@ -277,7 +277,7 @@ DBG(SLACKANAL,
 		if (*mptr != 0) {
 			blk = *mptr;
 			assert(blk->free != 0);
-DBG(GCALLOC,		dprintf("gc_heap_malloc: freelist %d at %p\n", sz, *mptr);)
+DBG(GCALLOC,		dprintf("gc_heap_malloc: freelist %d at %p free %p\n", sz, *mptr, blk->free);)
 		}
 		else {
 			blk = gc_small_block(nsz);
@@ -288,7 +288,7 @@ DBG(GCALLOC,		dprintf("gc_heap_malloc: freelist %d at %p\n", sz, *mptr);)
 			blk->next = *mptr;
 			*mptr = blk;
 
-DBG(GCALLOC,		dprintf("gc_heap_malloc: small block %d at %p\n", sz, *mptr);)
+DBG(GCALLOC,		dprintf("gc_heap_malloc: small block %d at %p free %p\n", sz, *mptr, blk->free);)
 		}
 
 		/* Unlink free one and return it */

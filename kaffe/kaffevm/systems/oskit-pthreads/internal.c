@@ -82,16 +82,21 @@ throwDeath(void)
 	throwException(ThreadDeath);
 }
 
+/*
+ * How do I get memory?
+ */
+static Collector* myCollector;
+
 static void *
 thread_malloc(size_t s)
 {
-	return gc_malloc(s, GC_ALLOC_THREADCTX);
+	return GC_malloc(myCollector, s, GC_ALLOC_THREADCTX);
 }
 
 static void
 thread_free(void *p)
 {
-	gc_free(p);
+	GC_free(myCollector, p);
 }
 
 static
@@ -146,7 +151,7 @@ onDeadlock(void)
 
 static
 void
-Tinit(int nativestacksize)
+Tinit(Collector* collector, int nativestacksize)
 {
 	/* Even though the underlying operating or threading system could
 	 * probably extend the main thread's stack, we must impose this 
@@ -154,6 +159,7 @@ Tinit(int nativestacksize)
 	 * catch stack overflow exceptions thrown by the main thread.
 	 */
 	threadStackSize = nativestacksize;
+	myCollector = collector;
 	mainthread = (struct Hkaffe_util_Ptr*)jthread_init(
 		DBGEXPR(JTHREADNOPREEMPT, false, true),
 		java_lang_Thread_MAX_PRIORITY+1,
@@ -298,7 +304,7 @@ TresumeThreads(void)
  */
 static
 void
-TwalkThread(Hjava_lang_Thread* tid)
+TwalkThread(Collector* collector, Hjava_lang_Thread* tid)
 {
 	void *from;
 	unsigned len;
@@ -324,7 +330,7 @@ DBG(JTHREAD,
 		dprintf("%d walking jtid %p\n", jthread_current(), jtid);
     )
 		/* and walk it if needed */
-		walkConservative(from, len);
+		GC_walkConservative(collector, from, len);
 	}
 }
 

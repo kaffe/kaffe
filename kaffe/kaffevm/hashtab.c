@@ -8,6 +8,7 @@
  */
 
 #include "config.h"
+#include "debug.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "gtypes.h"
@@ -64,7 +65,8 @@ hashInit(hashfunc_t hash, compfunc_t comp, allocfunc_t alloc, freefunc_t free)
 	tab->comp = comp;
 	tab->alloc = alloc;
 	tab->free = free;
-	return(tab);
+	/* start out with initial size */
+	return (hashResize(tab));
 }
 
 /*
@@ -265,4 +267,3 @@ hashResize(hashtab_t tab)
 	tab->size = newSize;
 	return (tab);
 }
-

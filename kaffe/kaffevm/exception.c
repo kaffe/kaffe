@@ -196,7 +196,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 			/* If not here, exit monitor if synchronised. */
 			lk = getLock(obj);
 			if (lk != 0 && lk->holder == (*Kaffe_ThreadInterface.currentNative)()) {
-				unlockMutex(obj);
+				unlockKnownMutex(lk);
 			}
 		}
 	}
@@ -233,7 +233,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 			/* If method found and synchronised, unlock the lock */
 			lk = getLock(obj);
 			if (lk != 0 && lk->holder == (*Kaffe_ThreadInterface.currentNative)()) {
-				unlockMutex(obj);
+				unlockKnownMutex(lk);
 			}
 		}
 	}

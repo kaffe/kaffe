@@ -17,17 +17,19 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "gc.h"
+#include "gc-mem.h"
 #include "locks.h"
 #include "thread.h"
 #include "errors.h"
-#include "exception.h"
-#include "external.h"
-#include "lookup.h"
-#include "soft.h"
 #include "md.h"
-#include "jni.h"
-#include "access.h"
-#include "stringSupport.h"
+
+/*
+ * Object implementing the collector interface.
+ */
+static struct CollectorImpl {
+	Collector 	collector;
+	/* XXX include static below here for encapsulation */
+} gc_obj;
 
 static gcList gclists[5];
 static const int mustfree = 4;		/* temporary list */
@@ -36,57 +38,14 @@ static const int grey = 2;
 static const int black = 1;
 static const int finalise = 0;
 
+static int gc_init = 0;
 static volatile int gcRunning = 0;
 static volatile bool finalRunning = false;
 static timespent gc_time;
 static timespent sweep_time;
+static void (*walkRootSet)(Collector*);
 
 #if defined(STATS)
-
-/* Class and object space statistics */
-static struct {
-	int	classNr;
-	int	objectNr;
-	int	stringNr;
-	int	arrayNr;
-	int	methodNr;
-	int	fieldNr;
-	int	staticNr;
-	int	dispatchNr;
-	int	bytecodeNr;
-	int	exceptionNr;
-	int	constantNr;
-	int	utf8constNr;
-	int	interfaceNr;
-	int	jitNr;
-	int	lockNr;
-	int	refNr;
-	int	threadCtxNr;
-
-	int	fixedNr;
-	int	otherNr;
-
-	int	classMem;
-	int	objectMem;
-	int	stringMem;
-	int	arrayMem;
-	int	methodMem;
-	int	fieldMem;
-	int	staticMem;
-	int	dispatchMem;
-	int	bytecodeMem;
-	int	exceptionMem;
-	int	constantMem;
-	int	utf8constMem;
-	int	interfaceMem;
-	int	jitMem;
-	int	lockMem;
-	int	refMem;
-	int	threadCtxMem;
-
-	int	fixedMem;
-	int	otherMem;
-} objectStats;
 
 static void objectStatsChange(gc_unit*, int);
 static void objectStatsPrint(void);
@@ -103,92 +62,81 @@ static void objectStatsPrint(void);
 
 #endif
 
+/* For statistics gathering, record how many objects and how 
+ * much memory was marked.
+ */
+static inline
+void record_marked(int nr_of_objects, uint32 size)
+{       
+        gcStats.markedobj += nr_of_objects;
+        gcStats.markedmem += size;
+} 
+
 static iLock gcman;
 static iLock finman;
 iLock gc_lock;			/* allocator mutex */
 
-static void gcFree(void*);
-static void finalizeObject(void*);
+static void gcFree(Collector* gcif, void* mem);
 
-void walkMemory(void*);
+/* Standard GC function sets.  We call them "allocation types" now */
+static gcFuncs gcFunctions[GC_ALLOC_MAX_INDEX];
 
-static void walkNull(void*, uint32);
-static void walkClass(void*, uint32);
-static void walkMethods(Method*, int);
-static void walkObject(void*, uint32);
-static void walkRefArray(void*, uint32);
-#define walkPrimArray walkNull
-
-/* Standard GC function sets */
-static gcFuncs gcFunctions[] = {
-  { walkString,       GC_OBJECT_NORMAL, destroyString },   /* JAVASTRING */
-  { walkNull,	      GC_OBJECT_NORMAL, 0 },  		   /* NOWALK */
-  { walkObject,	      GC_OBJECT_NORMAL, 0 },  		   /* NORMALOBJECT */
-  { walkPrimArray,    GC_OBJECT_NORMAL, 0 },  		   /* PRIMARRAY */
-  { walkRefArray,     GC_OBJECT_NORMAL, 0 },  		   /* REFARRAY */
-  { walkClass,        GC_OBJECT_NORMAL, destroyClass },    /* CLASSOBJECT */
-  { walkObject,       finalizeObject,   0 },   		   /* FINALIZEOBJECT */
-  { walkNull,	      GC_OBJECT_FIXED,  0 }, 		   /* BYTECODE */
-  { walkNull, 	      GC_OBJECT_FIXED,  0 },   		   /* EXCEPTIONTABLE */
-  { walkNull,         GC_OBJECT_FIXED,  0 },  		   /* JITCODE */
-  { walkNull,	      GC_OBJECT_FIXED,  0 },   		   /* STATICDATA */
-  { walkNull, 	      GC_OBJECT_FIXED,  0 },		   /* CONSTANT */
-  { walkNull,	      GC_OBJECT_FIXED,  0 },  		   /* FIXED */
-  { walkNull, 	      GC_OBJECT_FIXED,  0 }, 		   /* DISPATCHTABLE */
-  { walkNull, 	      GC_OBJECT_FIXED,  0 },		   /* METHOD */
-  { walkNull, 	      GC_OBJECT_FIXED,  0 },		   /* FIELD */
-  { walkNull,	      GC_OBJECT_FIXED,  0 },		   /* UTF8CONST */
-  { walkNull, 	      GC_OBJECT_FIXED,  0 },		   /* INTERFACE */
-  { walkNull,	      GC_OBJECT_FIXED,  0 },		   /* LOCK */
-  { walkNull,	      GC_OBJECT_FIXED,  0 },		   /* THREADCTX */
-  { walkNull,	      GC_OBJECT_FIXED,  0 },		   /* REF */
-};
-
-#define	REFOBJALLOCSZ	128
-#define	REFOBJHASHSZ	128
-typedef struct _refObject {
-	const void*		mem;
-	unsigned int		ref;
-	struct _refObject*	next;
-} refObject;
-typedef struct _refTable {
-	refObject*		hash[REFOBJHASHSZ];
-} refTable;
-static refTable			refObjects;
-#define	REFOBJHASH(V)		((((uintp)(V))/(2*sizeof(uintp)))%REFOBJHASHSZ)
-
-/* For statistics gathering, record how many objects and how 
- * much memory was marked.
- */
-#define RECORD_MARKED(nr_of_objects, size)	\
-        gcStats.markedobj += nr_of_objects;	\
-	gcStats.markedmem += size;
-
-struct _gcStats gcStats;
-extern size_t gc_heap_total;
-extern size_t gc_heap_limit;
-extern Hjava_lang_Class* ThreadClass;
-
-static void startGC(void);
-static void finishGC(void);
-static void markObjectDontCheck(gc_unit *unit, gc_block *info, int idx);
+/* Number of registered allocation types */
+static int nrTypes;
 
 /*
- * Initalise the Garbage Collection system.
+ * register an allocation type under a certain index
+ * NB: we could instead return a pointer to the record describing the
+ * allocation type.  This would give us more flexibility, but it wouldn't
+ * allow us to use compile-time constants.
  */
-static
-void
-initGc(void)
+static void
+registerTypeByIndex(int index, walk_func_t walk, final_func_t final,
+	destroy_func_t destroy,
+	const char *description)
 {
-	initStaticLock(&gc_lock);
-	initStaticLock(&gcman);
-	initStaticLock(&finman);
-	URESETLIST(gclists[white]);
-	URESETLIST(gclists[grey]);
-	URESETLIST(gclists[black]);
-	URESETLIST(gclists[finalise]);
-	URESETLIST(gclists[mustfree]);
+	/* once only, please */
+	assert (gcFunctions[index].description == 0);
+	/* don't exceed bounds */
+	assert (index >= 0 && 
+		index < sizeof(gcFunctions)/sizeof(gcFunctions[0]));
+	gcFunctions[index].walk = walk;
+	gcFunctions[index].final = final;
+	gcFunctions[index].destroy = destroy;
+	gcFunctions[index].description = description;
+	if (index >= nrTypes) {
+		nrTypes = index + 1;
+	}
 }
+
+/*
+ * Register a fixed allocation type.  The only reason we tell them apart
+ * is for statistical purposes.
+ */
+static void
+gcRegisterFixedTypeByIndex(Collector* gcif, 
+	int index, const char *description)
+{
+	registerTypeByIndex(index, 0, GC_OBJECT_FIXED, 0, description);
+}
+
+/*
+ * Register a allocation type that is subject to gc.  
+ */
+static void
+gcRegisterGcTypeByIndex(Collector* gcif,
+	int index, walk_func_t walk, final_func_t final,
+	destroy_func_t destroy,
+	const char *description)
+{
+	registerTypeByIndex(index, walk, final, destroy, description);
+}
+
+struct _gcStats gcStats;
+
+static void startGC(Collector *gcif);
+static void finishGC(Collector *gcif);
+static void markObjectDontCheck(gc_unit *unit, gc_block *info, int idx);
 
 /* Return true if gc_unit is pointer to an allocated object */
 static inline int
@@ -213,10 +161,10 @@ gc_heap_isobject(gc_block *info, gc_unit *unit)
 }
 
 /*
- * Mark the memory as reached if it really is an object.
+ * Mark the memory given by an address if it really is an object.
  */
-void
-markObject(void* mem)
+static void
+gcMarkAddress(Collector* gcif, const void* mem)
 {
 	gc_block* info;
 	gc_unit* unit;
@@ -234,16 +182,6 @@ markObject(void* mem)
 	}
 }
 
-#define MARK_OBJECT_PRECISE(obj) do { \
-  const void *objp = obj; \
-  if (objp) { \
-    gc_unit *unit = UTOUNIT(objp); \
-    gc_block *info = GCMEM2BLOCK(unit); \
-    int idx = GCMEM2IDX(info, unit); \
-    markObjectDontCheck(unit, info, idx); \
-  } \
-} while (0)
-
 static void
 markObjectDontCheck(gc_unit *unit, gc_block *info, int idx)
 {
@@ -260,8 +198,22 @@ markObjectDontCheck(gc_unit *unit, gc_block *info, int idx)
 	UAPPENDLIST(gclists[grey], unit);
 }
 
-void
-walkConservative(void* base, uint32 size)
+/*
+ * Mark an object.  Argument is assumed to point to a valid object.
+ */
+static void
+gcMarkObject(Collector* gcif, const void* objp)
+{
+	if (objp != 0) {
+		gc_unit *unit = UTOUNIT(objp);
+		gc_block *info = GCMEM2BLOCK(unit);
+		int idx = GCMEM2IDX(info, unit);
+		markObjectDontCheck(unit, info, idx);
+	}
+}
+
+static void
+gcWalkConservative(Collector* gcif, const void* base, uint32 size)
 {
 	int8* mem;
 
@@ -269,116 +221,41 @@ DBG(GCWALK,
 	dprintf("walkConservative: %x-%x\n", base, base+size);
     )
 
-	RECORD_MARKED(1, size)
+	record_marked(1, size);
 
 	if (size > 0) {
 		for (mem = ((int8*)base) + (size & -ALIGNMENTOF_VOIDP) - sizeof(void*); (void*)mem >= base; mem -= ALIGNMENTOF_VOIDP) {
 			void *p = *(void **)mem;
 			if (p) {
-				markObject(p);
+				gcMarkAddress(gcif, p);
 			}
 		}
 	}
 }
 
 /*
- * Walk an object.
+ * Like walkConservative, except that length is computed from the block size
+ * of the object.  Must be called with pointer to object allocated by gc.
  */
 static
-void
-walkObject(void* base, uint32 size)
+uint32
+gcGetObjectSize(Collector* gcif, const void* mem)
 {
-	Hjava_lang_Object *obj = (Hjava_lang_Object*)base;
-	Hjava_lang_Class *clazz;
-	int *layout;
-	int8* mem;
-	int i, l, nbits;
-
-	/* 
-	 * Note that there is a window after the object is allocated but
-	 * before dtable is set.  In this case, we don't have to walk anything.
-	 */
-	if (obj->dtable == 0)
-		return;
-
-	/* retrieve the layout of this object from its class */
-	clazz = obj->dtable->class;
-
-	/* class without a loader, i.e., system classes are anchored so don't
-	 * bother marking them.
-	 */
-	if (clazz->loader != 0) {
-		MARK_OBJECT_PRECISE(clazz);
-	}
-
-	layout = clazz->gc_layout;
-	nbits = CLASS_FSIZE(clazz)/ALIGNMENTOF_VOIDP;
-
-DBG(GCWALK,
-	dprintf("walkObject `%s' ", CLASS_CNAME(clazz));
-	BITMAP_DUMP(layout, nbits)
-	dprintf(" (nbits=%d) %x-%x\n", nbits, base, base+size);
-    )
-
-	assert(CLASS_FSIZE(clazz) > 0);
-	assert(size > 0);
-
-	RECORD_MARKED(1, size)
-
-	mem = (int8 *)base;
-
-	/* optimize this! */
-	while (nbits > 0) {
-		/* get next integer from bitmap */
-		l = *layout++;
-		i = 0;
-		while (i < BITMAP_BPI) {
-			/* skip the rest if no refs left */
-			if (l == 0) {	
-				mem += (BITMAP_BPI - i) * ALIGNMENTOF_VOIDP;
-				break;
-			}
-
-			if (l < 0) {
-				/* we know this pointer points to gc'ed memory
-				 * there is no need to check - go ahead and 
-				 * mark it.  Note that p may or may not point
-				 * to a "real" Java object.
-				 */
-				MARK_OBJECT_PRECISE(*(void **)mem);
-			}
-			i++;
-			l <<= 1;
-			mem += ALIGNMENTOF_VOIDP;
-		}
-		nbits -= BITMAP_BPI;
-	}
-
-	/* Special magic to handle thread objects */
-	if (soft_instanceof(ThreadClass, obj)) {
-		(*Kaffe_ThreadInterface.GcWalkThread)((Hjava_lang_Thread*)base);
-	}
-}
-
-/*
- * Walk an object which cannot reference anything.
- */
-static
-void
-walkNull(void* base, uint32 size)
-{
-	RECORD_MARKED(1, size)
+	return (GCBLOCKSIZE(GCMEM2BLOCK(UTOUNIT(mem))));
 }
 
 /*
  * Walk a bit of memory.
  */
+static
 void
-walkMemory(void* mem)
+gcWalkMemory(Collector* gcif, void* mem)
 {
 	gc_block* info;
 	int idx;
 	gc_unit* unit;
+	uint32 size;
+	walk_func_t walkf;
 
 	unit = UTOUNIT(mem);
 	info = GCMEM2BLOCK(unit);
@@ -390,197 +267,11 @@ walkMemory(void* mem)
 
 	assert(GC_GET_FUNCS(info, idx) < 
 		sizeof(gcFunctions)/sizeof(gcFunctions[0]));
-	(*gcFunctions[GC_GET_FUNCS(info, idx)].walk)(mem, GCBLOCKSIZE(info));
-}
-
-/*
- * Walk a java.lang.String object
- */
-void               
-walkString(void* str, uint32 size)
-{
-	/* That's all we have to do here */
-	MARK_OBJECT_PRECISE(unhand((Hjava_lang_String*)str)->value);
-}
-
-/*
- * Destroy a string object.
- */
-void               
-destroyString(void* obj)
-{
-	Hjava_lang_String* str = (Hjava_lang_String*)obj;
-
-	/* unintern this string if necessary */
-	if (unhand(str)->interned == true) {
-		stringUninternString(str);
-	}
-}
-
-/*
- * Walk the methods of a class.
- */
-static
-void
-walkMethods(Method* m, int nm)
-{
-	RECORD_MARKED(1, nm * sizeof(Method))		
-	while (nm-- > 0) {
-#if defined(TRANSLATOR)
-		/* walk the block of jitted code conservatively.
-		 * Is this really needed? 
-		 * XXX: this will break encapsulation later on */
-		if (METHOD_TRANSLATED(m) && (m->accflags & ACC_NATIVE) == 0) {
-			void *mem = m->c.ncode.ncode_start;
-			if (mem != 0) {
-				uint32 len;
-				len = GCBLOCKSIZE(GCMEM2BLOCK(UTOUNIT(mem)));
-				walkConservative(mem, len);
-			}
-		}
-#endif
-		MARK_OBJECT_PRECISE(m->class);
-
-		/* walk exception table in order to keep resolved catch types
-		   alive */
-		if (m->exception_table != 0) {
-			jexceptionEntry* eptr = &m->exception_table->entry[0];
-			int i;
-
-			for (i = 0; i < m->exception_table->length; i++) {
-				Hjava_lang_Class* c = eptr[i].catch_type;
-				if (c != 0 && c != UNRESOLVABLE_CATCHTYPE) {
-					MARK_OBJECT_PRECISE(c);
-				}
-			}
-		}
-
-		/* NB: need to mark ncode only if it points to a trampoline */
-		if(!METHOD_TRANSLATED(m) && (m->ncode != 0)) {
-			markObject(m->ncode);		/* XXX */
-		}
-		m++;
-	}
-}
-
-/*
- * Walk a class object.
- */
-static
-void
-walkClass(void* base, uint32 size)
-{
-	Hjava_lang_Class* class;
-	Field* fld;
-	int n;
-	constants* pool;
-	int idx;
-
-	RECORD_MARKED(1, size)
-
-	class = (Hjava_lang_Class*)base;
-
-	if (class->state >= CSTATE_PREPARED) {
-		MARK_OBJECT_PRECISE(class->superclass);
-	}
-
-	/* walk constant pool - only resolved classes and strings count */
-	pool = CLASS_CONSTANTS(class);
-	for (idx = 0; idx < pool->size; idx++) {
-		switch (pool->tags[idx]) {
-		case CONSTANT_ResolvedClass:
-			MARK_OBJECT_PRECISE(CLASS_CLASS(idx, pool));
-			break;
-		case CONSTANT_ResolvedString:
-			MARK_OBJECT_PRECISE((void*)pool->data[idx]);
-			break;
-		}
-	}
-
-	/*
-	 * NB: We suspect that walking the class pool should suffice if
-	 * we ensured that all classes referenced from this would show up
-	 * as a ResolvedClass entry in the pool.  However, this is not
-	 * currently the case: for instance, resolved field type are not
-	 * marked as resolved in the constant pool, even though they do
-	 * have an index there! XXX
-	 *
-	 * The second hypothesis is that if the class is loaded by the
-	 * system and thus anchored, then everything that we can reach from 
-	 * here is anchored as well.  If that property holds, we should be
-	 * able to just return if class->loader == null here.   XXX
-	 */
-	/* walk fields */
-	if (CLASS_FIELDS(class) != 0) {
-		RECORD_MARKED(1, CLASS_NFIELDS(class) * sizeof(Field));
-
-		/* walk all fields to keep their types alive */
-		fld = CLASS_FIELDS(class);
-		for (n = 0; n < CLASS_NFIELDS(class); n++) {
-			if (FIELD_RESOLVED(fld)) {
-				MARK_OBJECT_PRECISE(fld->type);
-			} /* else it's an Utf8Const that is not subject to gc */
-			fld++;
-		}
-
-		/* walk static fields that contain references */
-		fld = CLASS_SFIELDS(class);
-		for (n = 0; n < CLASS_NSFIELDS(class); n++) {
-			if (FIELD_RESOLVED(fld) && FIELD_ISREF(fld)) {
-				MARK_OBJECT_PRECISE(*(void**)FIELD_ADDRESS(fld));
-			}
-			fld++;
-		}
-	}
-
-	/* The interface table for array classes points to static memory,
-	 * so we must not mark it.  */
-	if (!CLASS_IS_ARRAY(class)) {
-		/* mark interfaces referenced by this class */
-		for (n = 0; n < class->total_interface_len; n++) {
-			MARK_OBJECT_PRECISE(class->interfaces[n]);
-		}
-	} else {
-		/* array classes should keep their element type alive */
-		MARK_OBJECT_PRECISE(CLASS_ELEMENT_TYPE(class));
-	} 
-
-	/* CLASS_METHODS only points to the method array for non-array and
-	 * non-primitive classes */
-	if (!CLASS_IS_PRIMITIVE(class) && !CLASS_IS_ARRAY(class) && CLASS_METHODS(class) != 0) {
-		walkMethods(CLASS_METHODS(class), CLASS_NMETHODS(class));
-	}
-	MARK_OBJECT_PRECISE(class->loader);
-}
-
-/*
- * Walk an array object objects.
- */
-static
-void
-walkRefArray(void* base, uint32 size)
-{
-	Hjava_lang_Object* arr;
-	int i;
-	Hjava_lang_Object** ptr;
-
-	RECORD_MARKED(1, size)
-
-	arr = (Hjava_lang_Object*)base;
-	if (arr->dtable == 0) {			/* see walkObject */
-		return;
-	}
-
-	ptr = OBJARRAY_DATA(arr);
-	/* mark class only if not a system class (which would be anchored
-	 * anyway.)  */
-	if (arr->dtable->class->loader != 0) {
-		MARK_OBJECT_PRECISE(arr->dtable->class);
-	}
-
-	for (i = ARRAY_SIZE(arr); --i>= 0; ) {
-		Hjava_lang_Object* el = *ptr++;
-		MARK_OBJECT_PRECISE(el);
+	size = GCBLOCKSIZE(info);
+	record_marked(1, size);
+	walkf = gcFunctions[GC_GET_FUNCS(info, idx)].walk;
+	if (walkf != 0) {
+		walkf(gcif, mem, size);
 	}
 }
 
@@ -596,7 +287,11 @@ gcMan(void* arg)
 	gc_unit* nunit;
 	gc_block* info;
 	int idx;
+	Collector *gcif = &gc_obj.collector;		/* XXX */
 
+	if (!staticLockIsInitialized(&gcman)) {
+		initStaticLock(&gcman);
+	}
 	lockStaticMutex(&gcman);
 
 	/* Wake up anyone waiting for the GC to finish every time we're done */
@@ -638,15 +333,19 @@ DBG(GCSTAT,
 		 * If we already use the maximum amount of memory, we must gc.
 		 *
 		 * Otherwise, wait until the newly allocated memory is at 
-		 * least 1/3 of the total memory in use.  Assuming that the
+		 * least 1/4 of the total memory in use.  Assuming that the
 		 * gc will collect all newly allocated memory, this would 
 		 * asymptotically converge to a memory usage of approximately
-		 * 3/2 the amount of long-lived and fixed data combined.
+		 * 4/3 the amount of long-lived and fixed data combined.
 		 *
 		 * Feel free to tweak this parameter.
+		 * NB: Boehm calls this the liveness factor, we stole the
+		 * default 1/4 setting from there.
+		 *
+		 * XXX: make this a run-time configurable parameter.
 		 */
 		if (gcRunning == 1 && gc_heap_total < gc_heap_limit && 
-		    gcStats.allocmem * 3 < gcStats.totalmem * 1) {
+		    gcStats.allocmem * 4 < gcStats.totalmem * 1) {
 DBG(GCSTAT,
 			dprintf("skipping collection since alloc/total "
 				"%dK/%dK = %.2f < 1/3\n",
@@ -656,10 +355,10 @@ DBG(GCSTAT,
     )
 			continue;
 		}
-		startGC();
+		startGC(gcif);
 
 		for (unit = gclists[grey].cnext; unit != &gclists[grey]; unit = gclists[grey].cnext) {
-			walkMemory(UTOMEM(unit));
+			gcWalkMemory(gcif, UTOMEM(unit));
 		}
 		/* Now walk any white objects which will be finalized.  They
 		 * may get reattached, so anything they reference must also
@@ -679,10 +378,10 @@ DBG(GCSTAT,
 		}
 		/* We may now have more grey objects, so walk them */
 		for (unit = gclists[grey].cnext; unit != &gclists[grey]; unit = gclists[grey].cnext) {
-			walkMemory(UTOMEM(unit));
+			gcWalkMemory(gcif, UTOMEM(unit));
 		}
 
-		finishGC();
+		finishGC(gcif);
 
 		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
 			/* print out all the info you ever wanted to know */
@@ -722,10 +421,8 @@ DBG(GCSTAT,
  */
 static
 void
-startGC(void)
+startGC(Collector *gcif)
 {
-	int i;
-	refObject* robj;
 	gc_unit* unit;
 	gc_unit* nunit;
 
@@ -741,25 +438,14 @@ startGC(void)
 	/* measure time */
 	startTiming(&gc_time, "gc-scan");
 
-	/* Walk the referenced objects */
-	for (i = 0; i < REFOBJHASHSZ; i++) {
-		for (robj = refObjects.hash[i]; robj != 0; robj = robj->next) {
-			MARK_OBJECT_PRECISE(robj->mem);
-		}
-	}
-
 	/* Walk all objects on the finalizer list */
 	for (unit = gclists[finalise].cnext;
 	     unit != &gclists[finalise]; unit = nunit) {
 		nunit = unit->cnext;
-		MARK_OBJECT_PRECISE(UTOMEM(unit));
+		gcMarkObject(gcif, UTOMEM(unit));
 	}
 
-	/* Walk the thread objects as they threading system has them
-	 * registered.  Terminating a thread will remove it from the
-	 * threading system, stopping us here from walking it.
-	 */
-	(*Kaffe_ThreadInterface.GcWalkThreads)(walkMemory);
+	(*walkRootSet)(gcif);
 }
 
 /*
@@ -770,7 +456,7 @@ startGC(void)
  */
 static
 void
-finishGC(void)
+finishGC(Collector *gcif)
 {
 	gc_unit* unit;
 	gc_block* info;
@@ -785,6 +471,8 @@ finishGC(void)
 	 * which would leave the white list unprotected.
 	 * So we move them to a 'mustfree' list from where we'll pull them
 	 * off later.
+	 *
+	 * XXX: this is so silly it hurts.  Jason has a fix.
 	 */
 	while (gclists[white].cnext != &gclists[white]) {
 		unit = gclists[white].cnext;
@@ -848,7 +536,7 @@ finishGC(void)
 	startTiming(&sweep_time, "gc-sweep");
 
 	while (gclists[mustfree].cnext != &gclists[mustfree]) {
-		void (*destroy)(void *);
+		destroy_func_t destroy;
 		unit = gclists[mustfree].cnext;
 
 		/* invoke destroy function before freeing the object */
@@ -856,7 +544,7 @@ finishGC(void)
 		idx = GCMEM2IDX(info, unit);
 		destroy = gcFunctions[GC_GET_FUNCS(info,idx)].destroy;
 		if (destroy != 0) {
-			destroy(UTOMEM(unit));
+			destroy(gcif, UTOMEM(unit));
 		}
 
 		UREMOVELIST(unit);
@@ -887,7 +575,11 @@ finaliserMan(void* arg)
 	gc_block* info;
 	gc_unit* unit;
 	int idx;
+	Collector *gcif = &gc_obj.collector;	/* XXX */
 
+	if (!staticLockIsInitialized(&finman)) {
+		initStaticLock(&finman);
+	}
 	lockStaticMutex(&finman);
 
 	for (;;) {
@@ -917,7 +609,7 @@ finaliserMan(void* arg)
 
 			/* Call finaliser */
 			unlockStaticMutex(&finman);
-			(*gcFunctions[GC_GET_FUNCS(info,idx)].final)(UTOMEM(unit));
+			(*gcFunctions[GC_GET_FUNCS(info,idx)].final)(gcif, UTOMEM(unit));
 			lockStaticMutex(&finman);
 		}
 
@@ -931,8 +623,11 @@ finaliserMan(void* arg)
  */
 static
 void
-gcInvokeGC(int mustgc)
+gcInvokeGC(Collector* gcif, int mustgc)
 {
+	if (!staticLockIsInitialized(&gcman)) {
+		initStaticLock(&gcman);
+	}
 	lockStaticMutex(&gcman);
 	if (gcRunning == 0) {
 		gcRunning = mustgc ? 2 : 1;
@@ -947,10 +642,14 @@ gcInvokeGC(int mustgc)
  */
 static
 void
-gcInvokeFinalizer(void)
+gcInvokeFinalizer(Collector* gcif)
 {
 	/* First invoke the GC */
-	invokeGC();
+	GC_invoke(gcif, 1);
+
+	if (!staticLockIsInitialized(&finman)) {
+		initStaticLock(&finman);
+	}
 
 	/* Run the finalizer (if might already be running as a result of
 	 * the GC)
@@ -975,22 +674,16 @@ void throwOutOfMemory(void) __NORETURN__;
 
 static
 void*
-gcMalloc(size_t size, int fidx)
+gcMalloc(Collector* gcif, size_t size, int fidx)
 {
-	static int gc_init = 0;
 	gc_block* info;
 	gc_unit* unit;
 	void * volatile mem;	/* needed on SGI, see comment below */
 	int i;
 	size_t bsz;
 
-	/* Initialise GC */
-	if (gc_init == 0) {
-		gc_init = 1;
-		initGc();
-	}
-
-	assert(size != 0);
+	assert(gc_init != 0);
+	assert(fidx < nrTypes && size != 0);
 	lockStaticMutex(&gc_lock);
 	unit = gc_heap_malloc(size + sizeof(gc_unit));
 
@@ -998,7 +691,7 @@ gcMalloc(size_t size, int fidx)
 	mem = UTOMEM(unit);
 	if (unit == 0) {
 		unlockStaticMutex(&gc_lock);
-		throwOutOfMemory();
+		throwOutOfMemory();		/* Big XXX */
 	}
 
 	info = GCMEM2BLOCK(mem);
@@ -1051,7 +744,7 @@ gcMalloc(size_t size, int fidx)
  */
 static
 void*
-gcRealloc(void* mem, size_t size, int fidx)
+gcRealloc(Collector* gcif, void* mem, size_t size, int fidx)
 {
 	gc_block* info;
 	int idx;
@@ -1063,7 +756,7 @@ gcRealloc(void* mem, size_t size, int fidx)
 
 	/* If nothing to realloc from, just allocate */
 	if (mem == NULL) {
-		return (gcMalloc(size, fidx));
+		return (gcMalloc(gcif, size, fidx));
 	}
 
 	lockStaticMutex(&gc_lock);
@@ -1083,9 +776,9 @@ gcRealloc(void* mem, size_t size, int fidx)
 	}
 
 	/* Allocate new memory, copy data, and free the old */
-	newmem = gcMalloc(size, fidx);
+	newmem = gcMalloc(gcif, size, fidx);
 	memcpy(newmem, mem, osize);
-	gcFree(mem);
+	gcFree(gcif, mem);
 
 	return (newmem);
 }
@@ -1095,7 +788,7 @@ gcRealloc(void* mem, size_t size, int fidx)
  */
 static
 void
-gcFree(void* mem)
+gcFree(Collector* gcif, void* mem)
 {
 	gc_block* info;
 	int idx;
@@ -1124,73 +817,37 @@ gcFree(void* mem)
 	}
 }
 
-/*
- * Add a presistent reference to an object.
- */
 static
 void
-gcAddRef(const void* mem)
+gcInit(Collector *collector)
 {
-	uint32 idx;
-	refObject* obj;
-
-	idx = REFOBJHASH(mem);
-	for (obj = refObjects.hash[idx]; obj != 0; obj = obj->next) {
-		/* Found it - just increase reference */
-		if (obj->mem == mem) {
-			obj->ref++;
-			return;
-		}
-	}
-
-	/* Not found - create a new one */
-	obj = (refObject*)gcMalloc(sizeof(refObject), GC_ALLOC_REF);
-	obj->mem = mem;
-	obj->ref = 1;
-	obj->next = refObjects.hash[idx];
-	refObjects.hash[idx] = obj;
+	initStaticLock(&gc_lock);
+	gc_init = 1;
 }
+
+/* XXX don't use these types ! */
+Hjava_lang_Thread* garbageman;
+static Hjava_lang_Thread* finalman;
 
 /*
- * Remove a persistent reference to an object.  If the count becomes
- * zero then the reference is removed.
+ * Start gc threads, which enable collection
  */
-static
-bool
-gcRmRef(const void* mem)
-{
-	uint32 idx;
-	refObject** objp;
-	refObject* obj;
-
-	idx = REFOBJHASH(mem);
-	for (objp = &refObjects.hash[idx]; *objp != 0; objp = &obj->next) {
-		obj = *objp;
-		/* Found it - just increase reference */
-		if (obj->mem == mem) {
-			obj->ref--;
-			if (obj->ref == 0) {
-				*objp = obj->next;
-				gcFree(obj);
-			}
-			return (true);
-		}
-	}
-
-	/* Not found!! */
-	return (false);
-}
-
-static
+static 
 void
-finalizeObject(void* ob)
+/* ARGSUSED */
+gcEnable(Collector* collector)
 {
-	Hjava_lang_Object* obj = (Hjava_lang_Object*)ob;
-	Hjava_lang_Class* objclass = OBJECT_CLASS(obj);
-	Method* final = objclass->finalizer;
-
-	assert(final != 0);
-	callMethodA(final, METHOD_INDIRECTMETHOD(final), obj, 0, 0);
+	/* XXX This break encapsulation 
+	 * Gets fixed once threading interface gets fixed.
+	 */
+        if (DBGEXPR(NOGC, false, true))
+        {
+                /* Start the GC daemons we need */
+                finalman = createDaemon(&finaliserMan, "finaliser", 
+				THREAD_MAXPRIO);
+                garbageman = createDaemon(&gcMan, "gc", 
+				THREAD_MAXPRIO);
+        }
 }
 
 #if defined(STATS)
@@ -1204,48 +861,13 @@ objectStatsChange(gc_unit* unit, int diff)
 {
 	gc_block* info;
 	int idx;
-	int objdiff;
-	int memdiff;
 
 	info = GCMEM2BLOCK(unit);
-	idx = GCMEM2IDX(info, unit);
-	objdiff = diff * 1;
-	memdiff = diff * GCBLOCKSIZE(info);
+	idx = GC_GET_FUNCS(info, GCMEM2IDX(info, unit));
 
-#define	CHECK_GC_TYPE(GCFUNCS,STAT)				\
-	if (GC_GET_FUNCS(info, idx) == (GCFUNCS)) {		\
-		objectStats.STAT##Nr += objdiff;		\
-		objectStats.STAT##Mem += memdiff;		\
-	} else
-
-	CHECK_GC_TYPE(GC_ALLOC_JAVASTRING, string)
-	CHECK_GC_TYPE(GC_ALLOC_FINALIZEOBJECT, object)
-	CHECK_GC_TYPE(GC_ALLOC_REFARRAY, array)
-	CHECK_GC_TYPE(GC_ALLOC_PRIMARRAY, array)
-	CHECK_GC_TYPE(GC_ALLOC_CLASSOBJECT, class)
-	CHECK_GC_TYPE(GC_ALLOC_METHOD, method)
-	CHECK_GC_TYPE(GC_ALLOC_FIELD, field)
-	CHECK_GC_TYPE(GC_ALLOC_STATICDATA, static)
-	CHECK_GC_TYPE(GC_ALLOC_DISPATCHTABLE, dispatch)
-	CHECK_GC_TYPE(GC_ALLOC_BYTECODE, bytecode)
-	CHECK_GC_TYPE(GC_ALLOC_EXCEPTIONTABLE, exception)
-	CHECK_GC_TYPE(GC_ALLOC_CONSTANT, constant)
-	CHECK_GC_TYPE(GC_ALLOC_UTF8CONST, utf8const)
-	CHECK_GC_TYPE(GC_ALLOC_INTERFACE, interface)
-	CHECK_GC_TYPE(GC_ALLOC_JITCODE, jit)
-	CHECK_GC_TYPE(GC_ALLOC_LOCK, lock)
-	CHECK_GC_TYPE(GC_ALLOC_FIXED, fixed)
-	CHECK_GC_TYPE(GC_ALLOC_REF, ref)
-	CHECK_GC_TYPE(GC_ALLOC_THREADCTX, threadCtx)
-
-	/* Else .... */
-	{
-		objectStats.otherNr += objdiff;
-		objectStats.otherMem += memdiff;
-	}
-
-#undef	CHECK_GC_TYPE
-
+	assert(idx >= 0 && idx < nrTypes);
+	gcFunctions[idx].nr += diff * 1;
+	gcFunctions[idx].mem += diff * GCBLOCKSIZE(info);
 }
 
 static void
@@ -1253,58 +875,63 @@ objectStatsPrint(void)
 {
 	int cnt = 0;
 
-#define	PRINT_GC_STAT(STAT)						    \
-	fprintf(stderr, "%14.14s: Nr %6d  Mem %6dK",			    \
-		#STAT, objectStats.STAT##Nr, objectStats.STAT##Mem / 1024); \
-	cnt++;								    \
-	if (cnt % 2 != 0) {						    \
-		fprintf(stderr, "   ");					    \
-	}								    \
-	else {								    \
-		fprintf(stderr, "\n");					    \
-	}
-
 	fprintf(stderr, "Memory statistics:\n");
 	fprintf(stderr, "------------------\n");
 
-	PRINT_GC_STAT(object);
-	PRINT_GC_STAT(string);
-	PRINT_GC_STAT(array);
-	PRINT_GC_STAT(class);
-	PRINT_GC_STAT(method);
-	PRINT_GC_STAT(field);
-	PRINT_GC_STAT(static);
-	PRINT_GC_STAT(dispatch);
-	PRINT_GC_STAT(bytecode);
-	PRINT_GC_STAT(exception);
-	PRINT_GC_STAT(constant);
-	PRINT_GC_STAT(utf8const);
-	PRINT_GC_STAT(interface);
-	PRINT_GC_STAT(jit);
-	PRINT_GC_STAT(fixed);
-	PRINT_GC_STAT(lock);
-	PRINT_GC_STAT(ref);
-	PRINT_GC_STAT(threadCtx);
-	PRINT_GC_STAT(other);
+	while (cnt < nrTypes) {
+		fprintf(stderr, "%14.14s: Nr %6d  Mem %6dK",
+			gcFunctions[cnt].description, 
+			gcFunctions[cnt].nr, 
+			gcFunctions[cnt].mem/1024);
+		if (++cnt % 2 != 0) {
+			fprintf(stderr, "   ");
+		} else {
+			fprintf(stderr, "\n");
+		}
+	}
 
 	if (cnt % 2 != 0) {
 		fprintf(stderr, "\n");
 	}
-		
-#undef	PRINT_GC_STAT
 }
 #endif
 
-GarbageCollectorInterface Kaffe_GarbageCollectorInterface = {
-
+/*
+ * vtable for object implementing the collector interface.
+ */
+static struct GarbageCollectorInterface_Ops GC_Ops = {
+	0,		/* reserved */
+	0,		/* reserved */
+	0,		/* reserved */
 	gcMalloc,
 	gcRealloc,
 	gcFree,
-
 	gcInvokeGC,
 	gcInvokeFinalizer,
-
-	gcAddRef,
-	gcRmRef,
-
+	gcInit,
+	gcEnable,
+	gcMarkAddress,
+	gcMarkObject,
+	gcGetObjectSize,
+	gcWalkMemory,
+	gcWalkConservative,
+	gcRegisterFixedTypeByIndex,
+	gcRegisterGcTypeByIndex
 };
+
+/*
+ * Initialise the Garbage Collection system.
+ */
+Collector* 
+createGC(void (*_walkRootSet)(Collector*))
+{
+	walkRootSet = _walkRootSet;
+	URESETLIST(gclists[white]);
+	URESETLIST(gclists[grey]);
+	URESETLIST(gclists[black]);
+	URESETLIST(gclists[finalise]);
+	URESETLIST(gclists[mustfree]);
+	gc_obj.collector.ops = &GC_Ops;
+	return (&gc_obj.collector);
+}
+

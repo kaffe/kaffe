@@ -501,11 +501,7 @@ registerClass(classEntry* entry)
 {
 	lockMutex(entry);
 
-	/*
-	 * It is necessary to add the entry->class to the GC in some
-	 * manner so anything it references will also be part of the GC.
-	 * however, this isn't possible right now.
-	 */
+	/* not used at this time */
 
 	unlockMutex(entry);
 }
@@ -935,6 +931,7 @@ resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 {
 	Hjava_lang_Class* clas;
 	const char* name;
+	iLock* lock;
 
 	/* Avoid locking if we can */
 	if (FIELD_RESOLVED(fld)) {
@@ -945,13 +942,13 @@ resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 	 * else may update it while we're doing this.  Once we've got the
 	 * name we don't really care.
 	 */
-	lockMutex(this->centry);
+	lock = lockMutex(this->centry);
 	if (FIELD_RESOLVED(fld)) {
-		unlockMutex(this->centry);
+		unlockKnownMutex(lock);
 		return (FIELD_TYPE(fld));
 	}
 	name = ((Utf8Const*)fld->type)->data;
-	unlockMutex(this->centry);
+	unlockKnownMutex(lock);
 
 	clas = getClassFromSignature(name, this->loader, einfo);
 
@@ -1441,8 +1438,9 @@ resolveString(constants* pool, int idx)
 {
 	Utf8Const* utf8;
 	Hjava_lang_String* str = 0;
+	iLock* lock;
 
-	lockMutex(pool);
+	lock = lockMutex(pool);
 	switch (pool->tags[idx]) {
 	case CONSTANT_String:
 		utf8 = WORD2UTF(pool->data[idx]);
@@ -1458,7 +1456,7 @@ resolveString(constants* pool, int idx)
 	default:
 		assert(!!!"Neither String nor ResolvedString?");
 	}
-	unlockMutex(pool);
+	unlockKnownMutex(lock);
 	return (str);
 }
 
@@ -1477,11 +1475,12 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 {
 	bool success = true;
 #ifdef EAGER_LOADING
+	iLock* lock;
 	int idx;
 	constants* pool;
 	Utf8Const* utf8;
 
-	lockMutex(class->centry);
+	lock = lockMutex(class->centry);
 
 	/* Scan constant pool and convert any constant strings into true
 	 * java strings.
@@ -1506,7 +1505,7 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 	}
 
 done:
-	unlockMutex(class->centry);
+	unlockKnownMutex(lock);
 #endif	/* EAGER_LOADING */
 	return (success);
 }
@@ -1723,6 +1722,7 @@ lookupArray(Hjava_lang_Class* c)
 	classEntry* centry;
 	Hjava_lang_Class* arr_class;
 	int arr_flags;
+	iLock* lock;
 
 	/* Build signature for array type */
 	if (CLASS_IS_PRIMITIVE (c)) {
@@ -1744,11 +1744,11 @@ lookupArray(Hjava_lang_Class* c)
 	}
 
 	/* Lock class entry */
-	lockMutex(centry);
+	lock = lockMutex(centry);
 
 	/* Incase someone else did it */
 	if (centry->class != 0) {
-		unlockMutex(centry);
+		unlockKnownMutex(lock);
 		goto found;
 	}
 
@@ -1781,7 +1781,7 @@ lookupArray(Hjava_lang_Class* c)
 	arr_class->state = CSTATE_COMPLETE;
 	arr_class->centry = centry;
 
-	unlockMutex(centry);
+	unlockKnownMutex(lock);
 
 	found:;
 	if (CLASS_IS_PRIMITIVE(c)) {
@@ -1822,96 +1822,17 @@ findMethodFromPC(uintp pc)
 #endif
 
 /*
- * Destroy a class object.
+ * Remove all entries from the class entry pool that belong to a given
+ * class.  Return the number of entries removed.
+ * NB: this will go in a sep file dealing with class entries some day.
  */
-void
-destroyClass(void* c)
-{
-        int i;
-	int idx;
-	Hjava_lang_Class* clazz = c;
-	constants* pool;
-
-DBG(CLASSGC,
-        dprintf("destroying class %s @ %p\n", clazz->name->data, c);
-   )
-
-	assert(!CLASS_IS_PRIMITIVE(clazz));
-	assert(clazz->loader);
-
-        /* destroy all fields */
-        if (CLASS_FIELDS(clazz) != 0) {
-                Field *f = CLASS_FIELDS(clazz);
-                for (i = 0; i < CLASS_NFIELDS(clazz); i++) {
-                        utf8ConstRelease(f->name);
-                        /* if the field was never resolved, we must release the
-                         * Utf8Const to which its type field points */
-                        if (!FIELD_RESOLVED(f)) {
-                                utf8ConstRelease((Utf8Const*)FIELD_TYPE(f));
-                        }
-			f++;
-                }
-                KFREE(CLASS_FIELDS(clazz));
-        }
-
-        /* destroy all methods, only if this class has indeed a method table */
-        if (!CLASS_IS_ARRAY(clazz) && CLASS_METHODS(clazz) != 0) {
-                Method *m = CLASS_METHODS(clazz);
-                for (i = 0; i < CLASS_NMETHODS(clazz); i++) {
-                        utf8ConstRelease(m->name);
-                        utf8ConstRelease(m->signature);
-                        KFREE(m->lines);
-                        KFREE(m->declared_exceptions);
-                        KFREE(m->exception_table);
-                        KFREE(m->c.bcode.code);	 /* aka c.ncode.ncode_start */
-			m++;
-                }
-                KFREE(CLASS_METHODS(clazz));
-        }
-
-        /* release remaining refs to utf8consts in constant pool */
-	pool = CLASS_CONSTANTS (clazz);
-	for (idx = 0; idx < pool->size; idx++) {
-		switch (pool->tags[idx]) {
-		case CONSTANT_String:	/* unresolved strings */
-		case CONSTANT_Utf8:
-			utf8ConstRelease(WORD2UTF(pool->data[idx]));
-			break;
-		}
-	}
-	/* free constant pool */
-	if (pool->data != 0) {
-		KFREE(pool->data);
-	}
-
-        /* free various other fixed things */
-        KFREE(CLASS_STATICDATA(clazz));
-        KFREE(clazz->dtable);
-        KFREE(clazz->if2itable);
-        KFREE(clazz->itable2dtable);
-        KFREE(clazz->gc_layout);
-
-        /* The interface table for array classes points to static memory */
-        if (!CLASS_IS_ARRAY(clazz)) {
-                KFREE(clazz->interfaces);
-        }
-        utf8ConstRelease(clazz->name);
-}
-
-/*
- * Finalize a classloader and remove its entries in the class entry pool.
- */
-void
-finalizeClassLoader(Hjava_lang_ClassLoader* loader)
+int
+removeClassEntries(Hjava_lang_ClassLoader* loader)
 {
 	classEntry** entryp;
 	classEntry* entry;
 	int ipool;
 	int totalent = 0;
-
-DBG(CLASSGC,
-	dprintf("Finalizing classloader @%p\n", loader);
-    )
 
         lockStaticMutex(&classHashLock);
 	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
@@ -1941,8 +1862,24 @@ DBG(CLASSGC,
 				break;
 		}
 	}
-DBG(CLASSGC,
-	dprintf("entries in class entry pool: %d\n", totalent);
-    )
         unlockStaticMutex(&classHashLock);
+	return (totalent);
+}
+
+/*
+ * Finalize a classloader and remove its entries in the class entry pool.
+ */
+void
+finalizeClassLoader(Hjava_lang_ClassLoader* loader)
+{
+        int totalent;
+ 
+DBG(CLASSGC,
+        dprintf("Finalizing classloader @%p\n", loader);
+    )
+        totalent = removeClassEntries(loader);
+   
+DBG(CLASSGC,
+        dprintf("removed entries from class entry pool: %d\n", totalent);
+    )
 }

@@ -107,6 +107,10 @@ readCentralDirRecord(jarFile* file)
 
 	len = sizeof(jarEntry) + (head.fileNameLength + 1);
 	ret = KMALLOC(len);
+DBG(JARFILES,	
+	dprintf("Entry at: %p/len=%d usize%d\n", ret, len, 
+	    head.uncompressedSize);	
+    )
 
 	ret->next = 0;
 	ret->fileName = (char*)((uintp)ret + sizeof(jarEntry));

@@ -281,6 +281,10 @@ Hjava_lang_Class*	resolveFieldType(Field*, Hjava_lang_Class*, errorInfo*);
 
 classEntry* lookupClassEntry(Utf8Const*, Hjava_lang_ClassLoader*);
 classEntry* lookupClassEntryInternal(Utf8Const*, Hjava_lang_ClassLoader*);
+int removeClassEntries(Hjava_lang_ClassLoader*);
+
+Collector* 		initCollector(void);
+
 Hjava_lang_Class*	lookupClass(const char*, errorInfo*);
 Hjava_lang_Class*	lookupArray(Hjava_lang_Class*);
 Hjava_lang_Class*	lookupObjectArrayClass(Hjava_lang_Class*);

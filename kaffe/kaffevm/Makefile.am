@@ -59,6 +59,8 @@ libkaffevm_la_SOURCES = \
 	support.c \
 	thread.c \
 	utf8const.c \
+	gcFuncs.c \
+	gcRefs.c \
 	verify.c
 
 noinst_HEADERS = \
@@ -92,6 +94,7 @@ noinst_HEADERS = \
 	stackTrace.h \
 	stringSupport.h \
 	support.h \
+	gcRefs.h \
 	thread.h
 
 baseClasses.lo: java_lang_Cloneable.h

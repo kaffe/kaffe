@@ -77,6 +77,8 @@ void initThreads(void);
 
 /*
  * Initialise the machine.
+ *
+ * XXX: fix the naming conventions at some point (initXXX vs. xxxInit)
  */
 void
 initialiseKaffe(void)
@@ -90,6 +92,10 @@ initialiseKaffe(void)
 	INIT_MD();
 #endif
 
+	/* Register allocation types with gc subsystem */
+	main_collector = initCollector();
+	GC_init(main_collector);
+
         threadStackSize = Kaffe_JavaVMArgs[0].nativeStackSize;
  
         if (threadStackSize == 0) {
@@ -97,7 +103,11 @@ initialiseKaffe(void)
         }
   
 	/* Initialise the (native) threading system */
-	(*Kaffe_ThreadInterface.init)(threadStackSize);
+	(*Kaffe_ThreadInterface.init)(main_collector, threadStackSize);
+
+	/* Initialise the string and utf8 systems */
+	stringInit();
+	utf8ConstInit();
 
 	/* Setup CLASSPATH */
 	initClasspath();
@@ -123,6 +133,9 @@ initialiseKaffe(void)
 
 	/* Init thread support */
 	initThreads();
+
+	/* Now enable collector */
+	GC_enable(main_collector);
 }
 
 /*

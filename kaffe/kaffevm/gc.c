@@ -10,22 +10,25 @@
  */
 
 /* Use the incremental garbage collector */
+/* XXX put this in a make that a separate file !!! */
 #include "mem/gc-incremental.c"
+
+Collector* main_collector;
 
 void*
 jmalloc(size_t sz)
 {
-	return ((*Kaffe_GarbageCollectorInterface._malloc)(sz, GC_ALLOC_FIXED));
+	return (GC_malloc(main_collector, sz, GC_ALLOC_FIXED));
 }
 
 void*
 jrealloc(void* mem, size_t sz)
 {
-	return ((*Kaffe_GarbageCollectorInterface._realloc)(mem, sz, GC_ALLOC_FIXED));
+	return (GC_realloc(main_collector, mem, sz, GC_ALLOC_FIXED));
 }
 
 void
 jfree(void* mem)
 {
-	(*Kaffe_GarbageCollectorInterface._free)(mem);
+	GC_free(main_collector, mem);
 }

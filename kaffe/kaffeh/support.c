@@ -52,11 +52,10 @@ extern char* translateSigType(char*, char*);
 static int objectDepth = -1;
 static int argpos = 0;
 
-static void* gcMalloc(size_t, int);
-static void* gcRealloc(void*, size_t, int);
-static void  gcFree(void*);
-static void gcAddRef(const void *);
-static bool gcRmRef(const void *);
+struct _Collector;
+static void* gcMalloc(struct _Collector*, size_t, int);
+static void* gcRealloc(struct _Collector*, void*, size_t, int);
+static void  gcFree(struct _Collector*, void*);
 
 static inline int
 binary_open(const char *file, int mode, int perm);
@@ -100,15 +99,25 @@ SystemCallInterface Kaffe_SystemCallInterface =
  * We use a very simple 'fake' garbage collector interface
  */
 
-GarbageCollectorInterface Kaffe_GarbageCollectorInterface = {
+struct GarbageCollectorInterface_Ops GC_Ops = {
+	NULL,
+	NULL,
+	NULL,
 	gcMalloc,
 	gcRealloc,
 	gcFree,
 	NULL,
 	NULL,
-	gcAddRef,
-	gcRmRef,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
 };
+
+struct _Collector c = { & GC_Ops }, *main_collector = &c;
 
 /* 
  * Ensure that files are opened in binary mode; the MS-Windows port
@@ -645,32 +654,18 @@ jfree(void* mem)
 }
 
 static void *
-gcMalloc(size_t sz, int type)
+gcMalloc(struct _Collector *collector, size_t sz, int type)
 {
 	return(jmalloc(sz));
 }
 
 static void *
-gcRealloc(void *mem, size_t sz, int type)
+gcRealloc(struct _Collector *collector, void *mem, size_t sz, int type)
 {
 	return(jrealloc(mem, sz));
 }
 
-static void  gcFree(void *mem)
+static void  gcFree(struct _Collector *collector, void *mem)
 {
 	jfree(mem);
 }
-
-
-static void
-gcAddRef(const void *v)
-{
-	return;
-}
-
-static bool
-gcRmRef(const void *v)
-{
-	return false;
-}
-

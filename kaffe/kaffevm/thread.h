@@ -44,10 +44,14 @@ void	finalizeThread(Hjava_lang_Thread*);
 char*	nameThread(Hjava_lang_Thread*);
 char*	nameNativeThread(void*);
 Hjava_lang_Thread* getCurrentThread(void);
+Hjava_lang_Thread* createDaemon(void*, const char*, int);
+extern  Hjava_lang_Class* ThreadClass;
+struct  _Collector;
 
 typedef struct ThreadInterface {
 
-	void			(*init)(int nativestacksize);
+	void			(*init)(struct _Collector* col, 
+					int nativestacksize);
 	void			(*createFirst)(Hjava_lang_Thread*);
 	void			(*create)(Hjava_lang_Thread*, void*);
 	void			(*sleep)(jlong);
@@ -64,7 +68,8 @@ typedef struct ThreadInterface {
 	void*			(*currentNative)(void);
 
 	void			(*GcWalkThreads)(void (*)(void*));
-	void			(*GcWalkThread)(Hjava_lang_Thread*);
+	void			(*GcWalkThread)(struct _Collector*, 
+						Hjava_lang_Thread*);
 	void			(*GcSuspendThreads)(void);
 	void			(*GcResumeThreads)(void);
 

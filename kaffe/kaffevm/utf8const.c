@@ -27,7 +27,7 @@
 #undef  initStaticLock
 #define initStaticLock(x)
 #undef  staticLockIsInitialized		0
-#define staticLockIsInitialized(x)	0
+#define staticLockIsInitialized(x)	1
 #undef  lockStaticMutex
 #undef  unlockStaticMutex
 #define unlockStaticMutex(x)
@@ -67,9 +67,11 @@
    : -1)
 
 /* Internal variables */
-static hashtab_t	hashTable;
 #ifndef KAFFEH				/* Yuk! */
+static hashtab_t	hashTable;
 static iLock		utf8Lock;	/* mutex on all intern operations */
+#else
+static hashtab_t	hashTable = (hashtab_t)1;
 #endif
 
 /* Internal functions */
@@ -84,6 +86,8 @@ utf8ConstNew(const char *s, int len)
 {
 	Utf8Const *utf8, *temp;
 	int32 hash;
+	Utf8Const *fake;
+	char buf[200];
 
 	/* Automatic length finder */
 	if (len < 0) {
@@ -106,38 +110,29 @@ utf8ConstNew(const char *s, int len)
 	}
 
 	/* Lock intern table */
-	if (!staticLockIsInitialized(&utf8Lock)) {
-		initStaticLock(&utf8Lock);
-	}
+	assert (staticLockIsInitialized(&utf8Lock));
 	lockStaticMutex(&utf8Lock);
 
 	/* See if string is already in the table using a "fake" Utf8Const */
-	if (hashTable != NULL) {
-		Utf8Const *fake;
-		char buf[200];
-
-		if (sizeof(Utf8Const) + len + 1 > sizeof(buf)) {
-			fake = KMALLOC(sizeof(Utf8Const) + len + 1);
-			assert(fake != NULL);		/* XXX */
-		} else {
-			fake = (Utf8Const*)buf;
-		}
-		memcpy((char *)fake->data, s, len);
-		((char *)fake->data)[len] = '\0';
-		fake->hash = hash;
-		utf8 = hashFind(hashTable, fake);
-		if (fake != (Utf8Const*)buf) {
-			KFREE(fake);
-		}
-		if (utf8 != NULL) {
-			assert(utf8->nrefs >= 1);
-			utf8->nrefs++;
-			unlockStaticMutex(&utf8Lock);
-			return(utf8);
-		}
+	assert (hashTable != NULL);
+	if (sizeof(Utf8Const) + len + 1 > sizeof(buf)) {
+		fake = KMALLOC(sizeof(Utf8Const) + len + 1);
+		assert(fake != NULL);		/* XXX */
 	} else {
-		hashTable = hashInit(utf8ConstHashValueInternal,
-			utf8ConstCompare, 0 /* alloc */, 0 /* free */); 
+		fake = (Utf8Const*)buf;
+	}
+	memcpy((char *)fake->data, s, len);
+	((char *)fake->data)[len] = '\0';
+	fake->hash = hash;
+	utf8 = hashFind(hashTable, fake);
+	if (fake != (Utf8Const*)buf) {
+		KFREE(fake);
+	}
+	if (utf8 != NULL) {
+		assert(utf8->nrefs >= 1);
+		utf8->nrefs++;
+		unlockStaticMutex(&utf8Lock);
+		return(utf8);
 	}
 
 	/* Not in table; create new Utf8Const struct */
@@ -280,3 +275,13 @@ utf8ConstEqualJavaString(const Utf8Const *utf8, const Hjava_lang_String *string)
 	}
 }
 
+/*
+ * Initialize utf8const support system
+ */
+void
+utf8ConstInit(void)
+{
+	initStaticLock(&utf8Lock);
+	hashTable = hashInit(utf8ConstHashValueInternal,
+		utf8ConstCompare, 0 /* alloc */, 0 /* free */); 
+}

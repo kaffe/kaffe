@@ -92,6 +92,12 @@ newLock(void* address)
 	iLock* lock;
 	iLock* freelock;
 
+	/* NB: we use a spinlock to quickly establish the case where
+	 * we a lock is already in the hashtable.  However, if we don't
+	 * find a lock, we must allocate one and initialize it.  Since
+	 * this operation can cause a gc and hence take indefinitely,
+	 * we must acquire a real lock then.
+	 */
 	lockHead = &lockTable[HASHLOCK(address)];
 	SPINON(lockHead->lock);
 
@@ -113,22 +119,25 @@ retry:;
 
 	/* Allocate a new lock structure if needed */
 	if (freelock == 0) {
-		/* Both of these two function calls involve allocations. 
-		 * They can block and cause a gc.  Thus, we cannot hold
-		 * the spinlock here.
-		 */
-		SPINOFF(lockHead->lock);
-		lock = gc_malloc(sizeof(iLock), GC_ALLOC_LOCK);
-		(*Kaffe_LockInterface.init)(lock);
-		SPINON(lockHead->lock);
+                /* Both of these two function calls involve allocations.
+                 * They can block and cause a gc.  Thus, we cannot hold
+                 * the spinlock here.
+                 */
+                SPINOFF(lockHead->lock);
+                lock = gc_malloc(sizeof(iLock), GC_ALLOC_LOCK);
+                (*Kaffe_LockInterface.init)(lock);
+                SPINON(lockHead->lock);
 
-		lock->next = lockHead->head;
-		lockHead->head = lock;
+                lock->next = lockHead->head;
+                lockHead->head = lock;
 
-		/* go back and see whether another thread has already
-		 * entered the entry for this address.
-		 */
-		goto retry;
+                /* Go back and see whether another thread has already
+                 * entered the entry for this address.  If so, the losing 
+		 * lock will be used to next time we need a lock.
+		 * This is hopefully cheaper than using a real lock to
+		 * we don't create locks unless we have to.
+                 */
+                goto retry;
 	}
 
 	/* Fill in the details */
@@ -291,7 +300,7 @@ DBG(VMLOCKS,	dprintf("Unlock 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);   )
 }
 
 /*
- * Release a mutex.
+ * Release a mutex by address.
  */
 void
 _unlockMutex(void* addr)
@@ -305,6 +314,16 @@ DBG(VMLOCKS,	dprintf("Unlock 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);  )
 #else
 	lk = getLock(addr);
 #endif
+	__unlockMutex(lk);
+	freeLock(lk);
+}
+
+/*
+ * Release a given mutex and free it.
+ */
+void
+_unlockMutexFree(iLock* lk)
+{
 	__unlockMutex(lk);
 	freeLock(lk);
 }

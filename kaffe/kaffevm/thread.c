@@ -42,7 +42,6 @@ Hjava_lang_ThreadGroup* standardGroup;
 
 static void firstStartThread(void*);
 static void createInitialThread(const char*);
-static Hjava_lang_Thread* createDaemon(void*, const char*, int);
 static iLock thread_start_lock;
 
 /*
@@ -79,17 +78,6 @@ initThreads(void)
 
 	/* initialize start lock */
 	initStaticLock(&thread_start_lock);
-
-	/* Breaks encapsulation */
-	if (DBGEXPR(NOGC, false, true))
-	{
-		extern void gcMan(void*);
-		extern void finaliserMan(void*);
-
-		/* Start the GC daemons we need */
-		finalman = createDaemon(&finaliserMan, "finaliser", THREAD_MAXPRIO);
-		garbageman = createDaemon(&gcMan, "gc", THREAD_MAXPRIO);
-	}
 }
 
 /*
@@ -170,7 +158,6 @@ createInitialThread(const char* nm)
 /*
  * Start a daemon thread.
  */
-static
 Hjava_lang_Thread*
 createDaemon(void* func, const char* nm, int prio)
 {

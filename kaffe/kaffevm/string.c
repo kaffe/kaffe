@@ -216,9 +216,7 @@ stringInternString(Hjava_lang_String *string)
 	Hjava_lang_String *temp;
 
 	/* Lock intern table */
-	if (!staticLockIsInitialized(&stringLock)) {
-		initStaticLock(&stringLock);
-	}
+	assert (staticLockIsInitialized(&stringLock));
 	lockStaticMutex(&stringLock);
 
 	/* See if string is already in the table */
@@ -324,9 +322,7 @@ stringCharArray2Java(const jchar *data, int len)
 	/* Lock intern table 
 	 * NB: we must not hold stringLock when we call KMALLOC/KFREE!
 	 */
-	if (!staticLockIsInitialized(&stringLock)) {
-		initStaticLock(&stringLock);
-	}
+	assert (staticLockIsInitialized(&stringLock));
 
 	/* Look for it already in the intern hash table */
 	if (hashTable != NULL) {
@@ -378,3 +374,36 @@ stringCharArray2Java(const jchar *data, int len)
 	return (stringInternString(string));
 }
 
+/*                      
+ * Walk a java.lang.String object
+ */     
+void
+stringWalk(Collector* collector, void* str, uint32 size)
+{
+        /* That's all we have to do here */
+        GC_markObject(collector, unhand((Hjava_lang_String*)str)->value);
+}
+
+/*       
+ * Destroy a string object.
+ */      
+void
+/* ARGSUSED */
+stringDestroy(Collector* collector, void* obj)
+{
+        Hjava_lang_String* str = (Hjava_lang_String*)obj;
+
+        /* unintern this string if necessary */
+        if (unhand(str)->interned == true) {
+                stringUninternString(str);
+        }       
+}
+
+/*
+ * Initialize string support system
+ */
+void
+stringInit(void)
+{
+	initStaticLock(&stringLock);
+}
