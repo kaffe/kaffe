@@ -23,14 +23,6 @@ MISSING AND/OR BROKEN FEATURES
 * Some run-time classes may not serialize or deserialize according to their
   serial forms.
 
-* java.math.* is incomplete.  java.math.BigInteger is mostly written and
-  relies on the GNU Multi-precision math package (GMP).  BigDecimal is
-  completely incomplete (?) and will just throw exceptions when used.
-
-* The conversion of floats or doubles to strings does not completely
-  conform to Sun's spec. For example, Double.toString() will display
-  the double 0x400B333333333333 as "3.3999999999999999" instead of "3.4".
-
 * DecimalFormat is broken :  no formatting at all and decimals are cut off.
   There are problems with date & calendar.
 
