@@ -21,19 +21,36 @@ else
 XPROF_HDRS =
 endif
 
-GEN_HDRS = md.h $(XPROF_HDRS) $(ENGINE_GEN_HDRS)
+GEN_HDRS = \
+	md.h \
+	callKaffeException.h \
+	$(XPROF_HDRS) \
+	$(ENGINE_GEN_HDRS)
 
-DISTCLEANFILES = $(GEN_HDRS) stamp-h01 stamp-h02 stamp-h03
+DISTCLEANFILES = \
+	$(GEN_HDRS) \
+	stamp-h01 \
+	stamp-h02 \
+	stamp-h03 \
+	stamp-h04
 
-noinst_HEADERS = $(GEN_HDRS) \
-	config-hacks.h config-io.h config-math.h config-mem.h \
-	config-net.h config-setjmp.h config-signal.h config-std.h
+noinst_HEADERS = \
+	$(GEN_HDRS) \
+	config-hacks.h \
+	config-io.h \
+	config-math.h \
+	config-mem.h \
+	config-net.h \
+	config-setjmp.h \
+	config-signal.h \
+	config-std.h
 
 EXTRA_DIST = \
 	config.alias \
 	regen-forward \
 	stamp-h1.in \
 	alpha/alpha.c \
+	alpha/callKaffeException.h \
 	alpha/common.h \
 	alpha/jit-alpha.def \
 	alpha/jit-icode.h \
@@ -53,6 +70,7 @@ EXTRA_DIST = \
 	alpha/sysdepCallMethod.h \
 	alpha/threads.h \
 	alpha/trampolines.c \
+	arm/callKaffeException.h \
 	arm/common.h \
 	arm/jit-arm.def \
 	arm/jit-icode.h \
@@ -96,6 +114,7 @@ EXTRA_DIST = \
 	i386/bsdi/jit-md.h \
 	i386/bsdi/md.c \
 	i386/bsdi/md.h \
+	i386/callKaffeException.h \
 	i386/common.h \
 	i386/cygwin32/config.frag \
 	i386/cygwin32/jit-md.h \
@@ -183,6 +202,7 @@ EXTRA_DIST = \
 	m68k/amigaos/config.frag \
 	m68k/amigaos/md.c \
 	m68k/amigaos/md.h \
+	m68k/callKaffeException.h \
 	m68k/common.h \
 	m68k/jit-icode.h \
 	m68k/jit-m68k.def \
@@ -213,6 +233,7 @@ EXTRA_DIST = \
 	m68k/sysdepCallMethod.h \
 	m68k/threads.h \
 	m68k/trampolines.c \
+	mips/callKaffeException.h \
 	mips/common.h \
 	mips/irix5/config.frag \
 	mips/irix5/md.c \
@@ -275,6 +296,7 @@ EXTRA_DIST = \
 	sparc/bsdi3/jit-md.h \
 	sparc/bsdi3/md.c \
 	sparc/bsdi3/md.h \
+	sparc/callKaffeException.h \
 	sparc/common.h \
 	sparc/jit-icode.h \
 	sparc/jit-sparc.def \
@@ -335,6 +357,12 @@ xprofile-md.h: stamp-h03
 	else :; fi
 stamp-h03: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(CONFIG_XPROFILE_MD_H) xprofile-md.h $@
+
+callKaffeException.h: stamp-h04
+	@if test ! -f $@; then rm -f stamp-h04; $(MAKE) stamp-h04; \
+	else :; fi
+stamp-h04: $(top_builddir)/config.status
+	$(SHELL) $(REGEN_FORWARD) $(CONFIG_CALLKAFFEEXCEPTION_H) callKaffeException.h $@
 
 dist-hook:
 	@for file in $(DISTCLEANFILES); do \

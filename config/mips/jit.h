@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003
+ *	Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  *
@@ -42,16 +45,6 @@ extern void __mipsGetNextFrame(struct _exceptionFrame*);
 /* Extract the object argument from given frame */
 #define FRAMEOBJECT(obj, f, einfo)					\
 	(obj) = (*(Hjava_lang_Object**)(f))
-
-/* Call the relevant exception handler (rewinding the stack as
-   necessary). */
-#define CALL_KAFFE_EXCEPTION(F, H, O)					\
-	asm volatile("	\n"						\
-"		move $2,%2 \n"						\
-"		move $fp,%0 \n"						\
-"		jr %1 \n"						\
-"		nop \n"							\
-"	" : : "r" ((F)), "r" ((H)), "r" (O) : "$2")
 
 /**/
 /* Method dispatch.  */

@@ -34,13 +34,21 @@ else
 libgcj = #
 endif
 
-libkaffevm_la_LDFLAGS = $(KVMLIBFLAGS) -export-dynamic -release $(KVER)
+libkaffevm_la_LDFLAGS = \
+	$(KVMLIBFLAGS) \
+	-export-dynamic \
+	-release $(KVER)
+
 libkaffevm_la_DEPENDENCIES = \
 	$(LIBLTDL) \
 	$(ENGINE_NAME)/libengine.la \
 	$(libgcj) \
 	systems/$(THREAD_SYSTEM)/libkthread.la
-libkaffevm_la_LIBADD = $(libkaffevm_la_DEPENDENCIES) $(VM_LIBS) $(M_LIBS)
+
+libkaffevm_la_LIBADD = \
+	$(libkaffevm_la_DEPENDENCIES) \
+	$(VM_LIBS) \
+	$(M_LIBS)
 
 libkaffevm_la_GEN_SRCS = \
 	gc-mem.c \
@@ -127,8 +135,6 @@ noinst_HEADERS = \
 	threadData.h \
 	utf8const.h \
 	verify.h
-
-$(libkaffevm_la_SOURCES): $(libkaffevm_la_GEN_SRCS)
 
 gc-mem.c: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \

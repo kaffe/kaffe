@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003
+ *     Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -45,18 +48,6 @@ extern alpha_jit_info_t alpha_jit_info;
 #define FRAMEOBJECT(obj, f, einfo)					\
 	/* rebuild alpha_slot2argoffset[0] as in jit-alpha.def */	\
 	(obj) = *((Hjava_lang_Object**)((uintp)(f) - 8))
-
-/* Call the relevant exception handler (rewinding the stack as
-   necessary). */
-#define CALL_KAFFE_EXCEPTION(frame, info, obj)				\
-	__asm__ __volatile__(						\
-		"mov %0,$15\n\t"					\
-		"mov %1,$0\n\t"						\
-		"mov %2,$27\n\t"					\
-		"jmp (%2)"						\
-		: : "r" (frame), "r" (obj), "r" (info)			\
-		: "$15", "$0", "$27")
-
 
 /**/
 /* Method dispatch.  */

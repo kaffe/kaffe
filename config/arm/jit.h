@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003
+ *	Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -71,15 +74,6 @@ typedef struct _exceptionFrame {
 } while (0)
 
 	
-/* Call the relevant exception handler (rewinding the stack as
-   necessary). */
-#define CALL_KAFFE_EXCEPTION(frame, handler, object)			\
-	asm volatile ("	\n"						\
-	"	mov r0, %0 \n"						\
-	"	mov fp, %2 \n"						\
-	"	mov pc, %1 \n"						\
-	: : "r" (object), "r" (handler), "r" (frame) : "r0")
-
 /**/
 /* Method dispatch.  */
 /**/

@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003
+ *	Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  *
@@ -40,16 +43,6 @@ typedef struct _exceptionFrame {
 /* Extract the object argument from given frame */
 #define FRAMEOBJECT(obj, f, einfo)					\
 	(obj) = *(Hjava_lang_Object**)((f) + 8)
-
-/* Call the relevant exception handler (rewinding the stack as
-   necessary). */
-#define CALL_KAFFE_EXCEPTION(frame, handler, obj)			\
-	__asm__ __volatile__(						\
-		"move%.l %1,%/d0\n\t"					\
-		"move%.l %0,%/a6\n\t"					\
-		"jmp %2@"						\
-		: : "g"(frame), "g"(obj), "a"(handler)			\
-		: "d0", "cc", "memory")
 
 /**/
 /* Method dispatch.  */
