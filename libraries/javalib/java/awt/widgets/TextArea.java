@@ -913,6 +913,14 @@ public synchronized void append( String str) {
 	tp.append( str);
 }
 
+/**
+ * @deprecated as of JDK 1.1, replaced by append(String s)
+ */
+public void appendText(String s) {
+	append(s);
+}
+
+
 protected void buildMenu() {
 	PopupMenu p = new PopupMenu();
 	p.add( new MenuItem("Cut")).setShortcut( new MenuShortcut( KeyEvent.VK_U, false) );
