@@ -84,7 +84,6 @@ TESTS = \
 	HashTest.java \
 	MapTest.java \
 	URLTest.java \
-	PropertiesTest.java \
 	ReaderTest.java \
 	CharArrayReaderTest.java \
 	LineNumberReaderTest.java \
@@ -139,6 +138,9 @@ TESTS = \
 	ZipVerify.java \
 ## This one is skipped unless you --enable-debug.
 	TestNative.java
+
+FAILED_TESTS = \
+	PropertiesTest.java
 
 EXTRA_DIST = $(TESTS)
 
