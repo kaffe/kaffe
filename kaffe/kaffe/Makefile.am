@@ -6,7 +6,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = kaffeh kaffevm xprof kaffe scripts man
+libexec_PROGRAMS = Kaffe
 
 INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kaffe/xprof
