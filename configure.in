@@ -177,6 +177,13 @@ dnl Check for JIT support and add in the necessary configuration files
 dnl -------------------------------------------------------------------------
 
 if test -f $srcdir/config/$host_cpu/$host_os/${with_engine}-md.h ; then
+    if sed 1q < $srcdir/config/$host_cpu/$host_os/${with_engine}-md.h | \
+       fgrep "Needs update, do not use" > /dev/null 2>&1 && \
+       test "x$want_engine" = x; then
+	HAVE_CONFIG_JIT_MD_H=0
+	with_engine="intrp"
+	jitsupport=
+    else
 	HAVE_CONFIG_JIT_MD_H=1
 	CONFIG_JIT_MD_H="\$(top_srcdir)/config/$host_cpu/$host_os/$with_engine-md.h"
 	AC_SUBST(CONFIG_JIT_MD_H)
@@ -186,6 +193,7 @@ if test -f $srcdir/config/$host_cpu/$host_os/${with_engine}-md.h ; then
 	AC_SUBST(KAFFEVM_ICODE_H)
 	
 	jitsupport=yes
+    fi
 else
 	HAVE_CONFIG_JIT_MD_H=0
 	with_engine="intrp"

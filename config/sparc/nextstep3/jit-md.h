@@ -1,3 +1,5 @@
+/* Needs update, do not use */
+
 /*
  * sparc/nextstep3/jit-md.h
  * NEXTSTEP SPARC JIT configuration information.

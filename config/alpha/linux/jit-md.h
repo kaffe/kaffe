@@ -1,3 +1,5 @@
+/* Needs update, do not use! */
+
 /*
  * alpha/linux/jit-md.h
  * Linux Alpha JIT configuration information.

@@ -1,3 +1,12 @@
+Fri Apr  2 08:21:03 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in: if JIT is selected as default but jit-md.h
+	contains ``Needs update, do not use'', fallback to intrp
+	* configure: regen
+	* config/alpha/osf/jit-md.h: added /* Needs update, do not use */
+	* config/alpha/linux/jit-md.h: ditto; renamed from jit-md.h.not-yet
+	* config/sparc/nextstep3/jit-md.h: ditto; renamed from jit-md.h-notyet
+	
 Fri Apr  2 07:45:23 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* config/alpha/common.h (getSingleJavaArg): remove ``optimized''

@@ -1,3 +1,5 @@
+/* Needs update, do not use */
+
 /*
  * alpha/osf/jit-md.h
  * OSF/1 Alpha JIT configuration information.
