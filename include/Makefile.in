@@ -133,7 +133,7 @@ securitydir = @securitydir@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
-KLASSES_JAR = $(top_srcdir)/libraries/javalib/Klasses.jar
+KLASSES_JAR = $(top_srcdir)/libraries/javalib/Klasses.jar.bootstrap
 
 EXTRA_DIST = distclean-hack
 

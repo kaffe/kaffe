@@ -1,3 +1,36 @@
+Fri Jul 19 12:03:13 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* Major change to build system - now rt.jar gets
+	rebuilt during make.  The large Klasses.jar that
+	was checked in is no more, it has been replaced with
+	a smaller Klasses.jar.bootstrap, which contains
+	just the classes that kjc needs to recompile the
+	rest of the classes, plus some additional classes
+	required by kaffeh.
+
+	* libraries/javalib/Klasses.jar.bootstrap: New file.
+
+	* libraries/javalib/Klasses.jar: Removed.
+	
+	* libraries/javalib/bootstrap.classlist: List of
+	classes needed for Klasses.jar.bootstrap.
+	
+	* Makefile.am: Some reordering of build process,
+	kaffe-bin must be build before we can rebuild
+	rt.jar (since it's needed to run kjc).  Also, rt.jar
+	is now in the build directory, not in the source
+	directory.
+
+	* include/Makefile.am: Use Klasses.jar.bootstrap
+	instead of Klasses.jar when running kaffeh.
+
+	* libraries/javalib/Makefile.am: Reworked it a bit,
+	no more Klasses.jar.  Added "make bootstrap" target
+	for rebuilding Klasses.jar.bootstrap.
+
+	* libraries/javalib/rebuildLib.in: Always use kjc now,
+	along with Klasses.jar.bootstrap.
+
 Thu Jul 18 11:30:43 CEST 2002 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/util/Calendar.java:

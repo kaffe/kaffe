@@ -8,7 +8,7 @@
 
 AUTOMAKE_OPTIONS = foreign 1.3e
 
-SUBDIRS = . config include libltdl libraries kaffe test
+SUBDIRS = . config include libltdl libraries/clib libraries/extensions kaffe libraries/javalib test
 
 EXTRA_DIST = \
 	ChangeLog.1 \
@@ -94,7 +94,7 @@ BUILD_ENVIRONMENT: Makefile
 		"DEBUG_ENV=$(DEBUG_ENV)" BUILD_ENVIRONMENT-make
 
 BUILD_ENVIRONMENT-make: Makefile
-	echo CLASSPATH=\$${CLASSPATH-.}\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/Klasses.jar\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/kjc.jar\; export CLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' > BUILD_ENVIRONMENT.new; \
+	echo CLASSPATH=\$${CLASSPATH-.}\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/rt.jar\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/kjc.jar\; export CLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' > BUILD_ENVIRONMENT.new; \
 	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' ' '; echo) | sed -e 's/ $$//' -e "s/ /\'$(PATHSEP)\'/g"`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT.new; \
 	echo JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT.new
 	rm -f BUILD_ENVIRONMENT

@@ -10,10 +10,9 @@
 # Class libraries are not currently part of the integrate Make cycle. 
 #
 
-CLASSFILE = rt.jar
 SRCDIRS = java kaffe
 
-jrelib_DATA = $(CLASSFILE)
+jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
 
 Klasses_jar_SRCS = \
@@ -970,7 +969,8 @@ serialized_converters = \
 	kaffe/io/CharToByteCP918.ser \
 	kaffe/io/CharToByteKOI8_R.ser
 
-EXTRA_DIST = Klasses.jar $(toolslib_DATA) $(Klasses_jar_SRCS) \
+EXTRA_DIST = Klasses.jar.bootstrap $(toolslib_DATA) $(Klasses_jar_SRCS) \
+        bootstrap.classlist \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
 	kaffe/io/ByteToCharEUC_JP.tbl \
@@ -981,7 +981,7 @@ EXTRA_DIST = Klasses.jar $(toolslib_DATA) $(Klasses_jar_SRCS) \
 LIBDIR = lib
 
 clean-local:
-	-rm -rf $(LIBDIR) $(CLASSFILE)
+	-rm -rf $(LIBDIR) rt.jar
 
 .PHONY: new-classes
 new-classes: $(top_srcdir)/developers/update-class-list
@@ -996,19 +996,28 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	@$(SHELL) $(rebuildLib) $(Klasses_jar_SRCS)
 	@echo timestamp > $(LIBDIR)/stamp
 
+$(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
+	cp kaffe/lang/unicode.idx kaffe/lang/unicode.tbl lib/kaffe/lang
+	if [ -f $(srcdir)/Klasses.jar.bootstrap ]; then \
+		mv -f $(srcdir)/Klasses.jar.bootstrap $(srcdir)/Klasses.jar.bootstrap.save; \
+	fi
+	(cd $(LIBDIR) && $(ZIP) -DX -r - `grep '\.class$$' ../bootstrap.classlist` \
+	 kaffe/lang/unicode.idx \
+	 kaffe/lang/unicode.tbl \
+	) > $(srcdir)/Klasses.jar.bootstrap
+
+.PHONY: bootstrap
+bootstrap: $(srcdir)/Klasses.jar.bootstrap
+
 .PHONY: jar-classes
-jar-classes $(LIBDIR)/Klasses.jar: $(LIBDIR)/stamp
-	rm -f $(LIBDIR)/Klasses.jar
+jar-classes rt.jar: $(LIBDIR)/stamp
 	cp $(srcdir)/kaffe/lang/unicode.idx $(srcdir)/kaffe/lang/unicode.tbl $(LIBDIR)/kaffe/lang
 	cp $(srcdir)/kaffe/io/ByteToCharEUC_JP.tbl $(srcdir)/kaffe/io/CharToByteEUC_JP.tbl $(LIBDIR)/kaffe/io
 	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
-	(cd $(LIBDIR) && $(ZIP) -DX -r Klasses.jar $(SRCDIRS))
+	rm -f rt.jar
+	(cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
 
 .PHONY: build-classes Klasses
-build-classes Klasses: $(LIBDIR)/Klasses.jar
-	rm -f $(srcdir)/Klasses.jar
-	cp $(LIBDIR)/Klasses.jar $(srcdir)/Klasses.jar
+build-classes Klasses: rt.jar
 
-$(CLASSFILE): $(srcdir)/Klasses.jar
-	cp $(srcdir)/Klasses.jar $(CLASSFILE)
 

@@ -6,7 +6,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-KLASSES_JAR = $(top_srcdir)/libraries/javalib/Klasses.jar
+KLASSES_JAR = $(top_srcdir)/libraries/javalib/Klasses.jar.bootstrap
 
 EXTRA_DIST = distclean-hack
 
