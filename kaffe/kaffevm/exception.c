@@ -9,9 +9,8 @@
  * of this file. 
  */
 
-#include "debug.h"
-
 #include "config.h"
+#include "debug.h"
 #include "config-std.h"
 #include "config-signal.h"
 #include "config-mem.h"
@@ -67,10 +66,10 @@ throwException(Hjava_lang_Throwable* eobj)
 }
 
 /*
- * Create and throw an exception resulting from an error during VM processing.
+ * Create an exception from error information.
  */
-void 
-throwError(errorInfo* einfo)
+Hjava_lang_Throwable* 
+error2Throwable(errorInfo* einfo)
 {
 	Hjava_lang_Throwable *err;
 
@@ -90,7 +89,16 @@ throwError(errorInfo* einfo)
 			    0, "(Ljava/lang/String;)V",
 			    stringC2Java(einfo->mess));
 	}
-	throwException(err);
+	return (err);
+}
+
+/*
+ * Create and throw an exception resulting from an error during VM processing.
+ */
+void 
+throwError(errorInfo* einfo)
+{
+	throwException(error2Throwable(einfo));
 }
 
 /*

@@ -1,3 +1,8 @@
+Sun Feb 28 01:02:50 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/exception.[ch], kaffe/kaffevm/jni.c:
+	added error2Throwable.
+
 Fri Feb 26 19:59:31 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: don't interrupt

@@ -203,10 +203,7 @@ Kaffe_GetVersion(JNIEnv* env)
 static void
 postError(JNIEnv* env, errorInfo* info)
 {
-	jclass errclass = Kaffe_FindClass(env, info->classname);
-	if (errclass != 0) {
-		Kaffe_ThrowNew(env, errclass, info->mess);
-	}
+	Kaffe_Throw(env, error2Throwable(info));
 }
 
 jclass
