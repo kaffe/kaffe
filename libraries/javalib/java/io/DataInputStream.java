@@ -158,7 +158,7 @@ final public String readUTF() throws IOException {
 	return readUTF(this);
 }
 
-final public static synchronized String readUTF(DataInput in) throws IOException {
+final public static String readUTF(DataInput in) throws IOException {
 	int length = in.readUnsignedShort();
 	StringBuffer buffer = new StringBuffer();
 
