@@ -52,6 +52,7 @@ static Hjava_lang_Thread* alarmList;
 static Hjava_lang_Thread* currentThread;
 static int talive;
 static int tdaemon;
+static int threadStackSize;
 
 static void addToAlarmQ(Hjava_lang_Thread*, jlong);
 static void removeFromAlarmQ(Hjava_lang_Thread*);
@@ -618,8 +619,8 @@ allocThreadCtx(Hjava_lang_Thread* tid, int stackSize)
 	void* mem;
 
 	mem = newThreadCtx(stackSize);
-	unhand(tid)->PrivateInfo = mem;
 	GC_WRITE(tid, mem);
+	unhand(tid)->PrivateInfo = mem;
 }
 
 /*
@@ -644,11 +645,14 @@ TwalkThread(Hjava_lang_Thread* tid)
 #endif
 }
 
+/*
+ * initialise native thread support
+ */
 static
 void
-TcreateFirst(Hjava_lang_Thread* tid)
+Tinit(int nativestacksize)
 {
-	ctx* c;
+	threadStackSize = nativestacksize;
 
 	/* We do our general initialisation first */
 	initStaticLock(&threadLock);
@@ -660,6 +664,17 @@ TcreateFirst(Hjava_lang_Thread* tid)
 #if defined(SIGCHLD)
 	catchSignal(SIGCHLD, childDeath);
 #endif
+	/* for the time between init and createFirst, return null when
+	 * asked what the current native thread is
+	 */
+	currentThread = NULL;
+}
+
+static
+void
+TcreateFirst(Hjava_lang_Thread* tid)
+{
+	ctx* c;
 
 	allocThreadCtx(tid, 0);
 	liveThreads = tid;
@@ -1073,6 +1088,7 @@ Tspinoffall()
  */
 ThreadInterface Kaffe_ThreadInterface = {
 
+	Tinit,
 	TcreateFirst,
 	Tcreate,
 	Tsleep,
