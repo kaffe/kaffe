@@ -48,6 +48,10 @@ KAFFELIBRARYPATH=$(top_builddir)/libraries/clib/native/:$(top_builddir)/librarie
 BOOTCLASSPATH=$(LIBDIR):$(srcdir)/Klasses.jar.bootstrap
 JAR=BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar
 
+## Workaround for bootstrap on OpenBSD where the libclasspath
+## doesn't seem to get linked in otherwise.
+LD_LIBRARY_PATH=$(top_builddir)/libraries/clib/classpath/
+
 jrelib_DATA = \
 	rt.jar \
 	logging.properties
@@ -258,4 +262,4 @@ endif
 build-classes Klasses: rt.jar
 
 all-am: rebuildLib
-export JIKES top_builddir LIBDIR srcdir
+export JIKES top_builddir LIBDIR srcdir LD_LIBRARY_PATH
