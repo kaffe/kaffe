@@ -1140,39 +1140,16 @@ if test x"$Khost_cpu" = x"alpha" ; then
   fi
 fi
 
+dnl check if va_list is an array (powerpc-linux, s390-linux)
+
+AC_TYPE_VA_LIST
+
 dnl check for different methods of copying va_lists
 dnl some platforms (s390-linux) define va_lists as arrays,
 dnl so we can't just copy them by assignment.
 
-dnl **** Check for va_copy ****
-AC_CACHE_CHECK([for va_copy], ac_cv_c_va_copy,
-  AC_TRY_LINK(
-    [#include <stdarg.h>],
-    [va_list ap1, ap2;
-    va_copy(ap1,ap2);
-    ],
-    [ac_cv_c_va_copy="yes"],
-    [ac_cv_c_va_copy="no"])
-  )
-if test "$ac_cv_c_va_copy" = "yes"
-then
-    AC_DEFINE(HAVE_VA_COPY, 1, [Define if we have va_copy])
-fi
-
-dnl **** Check for __va_copy ****
-AC_CACHE_CHECK([for __va_copy], ac_cv_c___va_copy,
-  AC_TRY_LINK(
-    [#include <stdarg.h>],
-    [va_list ap1, ap2;
-    __va_copy(ap1,ap2);
-    ],
-    [ac_cv_c___va_copy="yes"],
-    [ac_cv_c___va_copy="no"])
-  )
-if test "$ac_cv_c___va_copy" = "yes"
-then
-    AC_DEFINE(HAVE___VA_COPY, 1, [Define if we have __va_copy])
-fi
+AC_FUNC_VA_COPY
+AC_FUNC__VA_COPY
 
 dnl -------------------------------------------------------------------------
 

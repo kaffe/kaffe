@@ -40,17 +40,25 @@
  * So let's use whatever system method there is to copy va_lists, before
  * we try to copy them by assignment.
  */
-#if defined HAVE_VA_COPY
+#if defined(HAVE_VA_COPY)
 /* use va_copy */
 #  define VA_LIST_COPY(dest, src) (va_copy(dest,src))
 #else /* ! HAVE_VA_COPY */
+
 /* use __va_copy*/
-#  if defined HAVE___VA_COPY
+#  if defined(HAVE__VA_COPY)
 #    define VA_LIST_COPY(dest, src) (__va_copy(dest, src))
-#  else /* ! HAVE_VA_COPY && ! HAVE___VA_COPY */
+#  else /* ! HAVE_VA_COPY && ! HAVE__VA_COPY */
+
+/* va_list is an array, use memcpy */
+#    if defined(VA_LIST_IS_ARRAY)
+#     define VA_LIST_COPY(dest, src) (memcpy (a, b, sizeof (a)))
+#    else /* ! HAVE_VA_COPY && ! HAVE__VA_COPY && ! VA_LIST_IS_ARRAY */
+
 /* use plain assignment, then */
-#    define VA_LIST_COPY(dest, src) (dest = src)
-#  endif /* HAVE___VA_COPY*/
+#     define VA_LIST_COPY(dest, src) (dest = src)
+#    endif /* VA_LIST_IS_ARRAY */
+#  endif /* HAVE__VA_COPY */
 #endif /* HAVE_VA_COPY */
 
 #endif /* __defs_h */

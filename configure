@@ -39447,9 +39447,9 @@ _ACEOF
 fi
 
 
-echo "$as_me:$LINENO: checking for va_copy" >&5
-echo $ECHO_N "checking for va_copy... $ECHO_C" >&6
-if test "${ac_cv_c_va_copy+set}" = set; then
+echo "$as_me:$LINENO: checking if va_list is an array" >&5
+echo $ECHO_N "checking if va_list is an array... $ECHO_C" >&6
+if test "${ac_cv_type_va_list_array+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >conftest.$ac_ext <<_ACEOF
@@ -39459,13 +39459,20 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-#include <stdarg.h>
+
+#ifdef  HAVE_STDARG_H
+#   include <stdarg.h>
+#else
+#   include <varargs.h>
+#endif
+
 int
 main ()
 {
-va_list ap1, ap2;
-    va_copy(ap1,ap2);
 
+va_list a, b;
+
+a = b;
   ;
   return 0;
 }
@@ -39482,30 +39489,88 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_c_va_copy="yes"
+  ac_cv_type_va_list_array=no
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_c_va_copy="no"
+ac_cv_type_va_list_array=yes
 fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $ac_cv_type_va_list_array" >&5
+echo "${ECHO_T}$ac_cv_type_va_list_array" >&6
+if test $ac_cv_type_va_list_array = yes; then
+
+cat >>confdefs.h <<\_ACEOF
+#define VA_LIST_IS_ARRAY 1
+_ACEOF
 
 fi
-echo "$as_me:$LINENO: result: $ac_cv_c_va_copy" >&5
-echo "${ECHO_T}$ac_cv_c_va_copy" >&6
-if test "$ac_cv_c_va_copy" = "yes"
-then
+
+
+echo "$as_me:$LINENO: checking for va_copy" >&5
+echo $ECHO_N "checking for va_copy... $ECHO_C" >&6
+if test "${ac_cv_func_va_copy+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#ifdef  HAVE_STDARG_H
+#   include <stdarg.h>
+#else
+#   include <varargs.h>
+#endif
+int
+main ()
+{
+
+va_list a, b;
+
+va_copy(a, b);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_func_va_copy=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_func_va_copy=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $ac_cv_func_va_copy" >&5
+echo "${ECHO_T}$ac_cv_func_va_copy" >&6
+if test $ac_cv_func_va_copy = yes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_VA_COPY 1
 _ACEOF
 
 fi
-
 echo "$as_me:$LINENO: checking for __va_copy" >&5
 echo $ECHO_N "checking for __va_copy... $ECHO_C" >&6
-if test "${ac_cv_c___va_copy+set}" = set; then
+if test "${ac_cv_func__va_copy+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >conftest.$ac_ext <<_ACEOF
@@ -39515,13 +39580,19 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-#include <stdarg.h>
+
+#ifdef  HAVE_STDARG_H
+#   include <stdarg.h>
+#else
+#   include <varargs.h>
+#endif
 int
 main ()
 {
-va_list ap1, ap2;
-    __va_copy(ap1,ap2);
 
+va_list a, b;
+
+__va_copy(a, b);
   ;
   return 0;
 }
@@ -39538,23 +39609,21 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_c___va_copy="yes"
+  ac_cv_func__va_copy=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_c___va_copy="no"
+ac_cv_func__va_copy=no
 fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-
 fi
-echo "$as_me:$LINENO: result: $ac_cv_c___va_copy" >&5
-echo "${ECHO_T}$ac_cv_c___va_copy" >&6
-if test "$ac_cv_c___va_copy" = "yes"
-then
+echo "$as_me:$LINENO: result: $ac_cv_func__va_copy" >&5
+echo "${ECHO_T}$ac_cv_func__va_copy" >&6
+if test $ac_cv_func__va_copy = yes; then
 
 cat >>confdefs.h <<\_ACEOF
-#define HAVE___VA_COPY 1
+#define HAVE__VA_COPY 1
 _ACEOF
 
 fi

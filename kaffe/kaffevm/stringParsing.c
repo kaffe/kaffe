@@ -470,6 +470,29 @@ int parseString_private(parseErrorInfo *pe,
 	parseValue pv;
 	parseStack ps;
 
+#ifdef VA_LIST_IS_ARRAY
+	/* Use temporary copy of args on platforms where va_list
+	 * is an array.
+	 *
+	 * We sometimes need to pass the address of a va_list to
+	 * another function. C Standard mandates array types in
+	 * prototypes to be silently coerced into pointers to base
+	 * objects. If va_list is an array, this results in the
+	 * receiving function expecting a pointer to a va_list array
+	 * member, but getting a pointer to a pointer instead when
+	 * we pass &args.
+	 *
+	 * Copying the va_list into a temporary buffer, and copying
+	 * it back 'undoes' the coercion.
+	 *
+	 * A longer explanation was posted by Graeme Peterson on the
+	 * GDB mailing list on 2002-04-15.
+	 */
+
+        va_list     tmp_args;
+        VA_LIST_COPY (tmp_args, args);
+#endif
+
 	assert(subString != 0);
 
 	str = subString->data;
@@ -570,6 +593,9 @@ int parseString_private(parseErrorInfo *pe,
 			}
 			else
 			{
+#ifdef VA_LIST_IS_ARRAY
+			        VA_LIST_COPY (args, tmp_args);
+#endif
 				skipBlock(script, values,
 					  &script_pos, &values_pos, &args);
 			}
@@ -681,6 +707,10 @@ int parseString_private(parseErrorInfo *pe,
 			}
 			else
 			{
+#ifdef VA_LIST_IS_ARRAY
+			        VA_LIST_COPY (args, tmp_args);
+#endif
+
 				skipBlock(script, values,
 					  &script_pos, &values_pos, &args);
 			}
@@ -726,6 +756,10 @@ int parseString_private(parseErrorInfo *pe,
 			}
 			else
 			{
+#ifdef VA_LIST_IS_ARRAY
+			        VA_LIST_COPY (args, tmp_args);
+#endif
+
 				skipBlock(script, values,
 					  &script_pos, &values_pos, &args);
 			}

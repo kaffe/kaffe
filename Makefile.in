@@ -266,6 +266,7 @@ EXTRA_DIST = \
 	libtool.m4 \
 	sockaddrin6.m4 \
 	sockinttypes.m4 \
+	valist.m4 \
 	FAQ/FAQ.BeOS \
 	FAQ/FAQ.Known-Bugs \
 	FAQ/FAQ.amigaos \

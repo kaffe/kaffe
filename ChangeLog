@@ -1,3 +1,24 @@
+2003-06-25  Dalibor Topic <robilad@yahoo.com>
+
+	* valist.m4: new file. valist handling macros taken from GPL-d
+	Quakeforge. Thanks to Bill Currie <taniwha@quakeforge.org>.
+
+	* configure.in: removed explicit va_list checking, now uses macros
+	from valist.m4.
+
+	* Makefile.am:
+	(EXTRA_DIST) added valist.m4
+
+	* include/defs.h:
+	(VA_LIST_COPY) use memcpy if neither va_copy nor __va_copy are
+	available and va_list is an array.
+
+	* stringParsing.c:
+	(parseString_private) fix powerpc-linux comilation warnings.
+
+	Reported by: Luca Saiu <positrone@freemail.it>,
+	             Marc Kleine-Budde <kleine-budde@gmx.de>
+	
 2003-06-24  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/clib/native/ClassLoader.c:
