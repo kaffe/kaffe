@@ -201,14 +201,16 @@ private static PropertyDescriptor[] getProperties(Class startClass, Class stopCl
 
 			switch (mclasses.length) {
 			case 0:
-				if (mname.startsWith("get")) {
+				if (mname.startsWith("get")
+				    && !mname.equals("get")) {
 					mname = mname.substring(3);
 					keys.put(mname, mname);
 					if (getMethods.get(mname) == null) {
 						getMethods.put(mname, meth);
 					}
 				}
-				else if (mname.startsWith("is")) {
+				else if (mname.startsWith("is")
+				    && !mname.equals("is")) {
 					mname = mname.substring(2);
 					keys.put(mname, mname);
 					if (getMethods.get(mname) == null) {
@@ -218,14 +220,18 @@ private static PropertyDescriptor[] getProperties(Class startClass, Class stopCl
 				break;
 
 			case 1:
-				if (mname.startsWith("set")) {
+				if (mname.startsWith("set")
+				    && !mname.equals("set")
+				    && meth.getReturnType().equals(Void.TYPE)) {
 					mname = mname.substring(3);
 					keys.put(mname, mname);
 					if (setMethods.get(mname) == null) {
 						setMethods.put(mname, meth);
 					}
 				}
-				else if (mname.startsWith("get") && mclasses[0] == Integer.TYPE) {
+				else if (mname.startsWith("get")
+				    && !mname.equals("get")
+				    && mclasses[0] == Integer.TYPE) {
 					mname = mname.substring(3);
 					keys.put(mname, mname);
 					if (getIdxMethods.get(mname) == null) {
@@ -235,19 +241,25 @@ private static PropertyDescriptor[] getProperties(Class startClass, Class stopCl
 				break;
 
 			case 2:
-				if (mname.startsWith("set") && mclasses[0] == Integer.TYPE) {
+				if (mname.startsWith("set")
+				    && !mname.equals("set")
+				    && meth.getReturnType().equals(Void.TYPE)
+				    && mclasses[0] == Integer.TYPE) {
 					mname = mname.substring(3);
 					keys.put(mname, mname);
 					if (setIdxMethods.get(mname) == null) {
 						setIdxMethods.put(mname, meth);
 					}
 				}
+				break;
 			}
 
 		}
 	}
 
+
 	// Now look through set/get methods and create desciptors.
+	// Eliminate any methods that don't make sense.
 	PropertyDescriptor props[] = new PropertyDescriptor[keys.size()];
 
 	Enumeration k = keys.elements();
@@ -258,10 +270,26 @@ private static PropertyDescriptor[] getProperties(Class startClass, Class stopCl
 		Method setidx = (Method)setIdxMethods.get(key);
 		Method getidx = (Method)getIdxMethods.get(key);
 		if (setidx == null && getidx == null) {
-			props[i] = new PropertyDescriptor(decapitalize(key), get, set);
+			if (get != null && set != null) {
+				if (!set.getReturnType().equals(Void.TYPE))
+					set = null;
+				else if (!get.getReturnType().equals(
+				    set.getParameterTypes()[0]))
+					get = null;
+			}
+			props[i] = new PropertyDescriptor(
+			    decapitalize(key), get, set);
 		}
 		else {
-			props[i] = new IndexedPropertyDescriptor(decapitalize(key), get, set, getidx, setidx);
+			if (getidx != null && setidx != null) {
+				if (!setidx.getReturnType().equals(Void.TYPE))
+					setidx = null;
+				else if (!getidx.getReturnType().equals(
+				    setidx.getParameterTypes()[1]))
+					getidx = null;
+			}
+			props[i] = new IndexedPropertyDescriptor(
+			    decapitalize(key), get, set, getidx, setidx);
 		}
 	}
 
