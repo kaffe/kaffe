@@ -85,6 +85,9 @@ static {
 private System() { }
 
 public static void arraycopy(Object src, int src_position, Object dst, int dst_position, int length) {
+	if (length < 0) {
+		throw new ArrayIndexOutOfBoundsException();
+	}
 
 	if (dst instanceof Object[]) {
 		Object[] d = (Object[])dst;

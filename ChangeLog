@@ -1,3 +1,14 @@
+Tue Nov  5 11:45:14 CET 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/lang/reflect/Field.java:
+	(checkFinal) new private method.
+	(set) check if field is final before attempting to set
+	it. Improved exception message.
+
+	* libraries/javalib/java/lang/System.java:
+	(arraycopy) Throw ArrayIndexOutOfBoundsException if length is
+	negative.
+	
 Mon Nov  4 12:58:30 CET 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/kaffe/util/locale/CountryCodes.java: new

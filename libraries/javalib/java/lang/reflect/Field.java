@@ -24,7 +24,13 @@ public final class Field
 
 private Field() {
 }
-    
+
+private void checkFinal() throws IllegalAccessException {    
+	if (Modifier.isFinal(getModifiers())) {
+		throw new IllegalAccessException("trying to set final field " + toString());
+	}
+}
+
 public boolean equals(Object obj)
 	{
 	// Quick test for identity
@@ -212,6 +218,8 @@ public short getShort(Object obj) throws IllegalArgumentException, IllegalAccess
 }
 
 public void set(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException {
+	checkFinal();
+
 	if (type.isPrimitive()) {
 		if (value instanceof Boolean) {
 			setBoolean(obj, ((Boolean)value).booleanValue());
@@ -240,7 +248,7 @@ public void set(Object obj, Object value) throws IllegalArgumentException, Illeg
 	}
 	else {
 		if (!type.isInstance(value)) {
-			throw new IllegalArgumentException("field type mismatch");
+			throw new IllegalArgumentException("field type mismatch: Trying to assign a " + value.getClass().getName() + " to " + toString());
 		}
 
 		setObject0(obj, value);
