@@ -1,3 +1,7 @@
+Sun Aug  9 11:02:33 1998  Juergen Sonnauer <sonic@az-online.net>
+
+	* kaffe/kaffevm/jni.c: use STRING_DATA in GetStringChars.
+
 Fri Aug  7 16:14:05 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* kaffe/kaffeh/support.c: fixed bug where `void' return type was
