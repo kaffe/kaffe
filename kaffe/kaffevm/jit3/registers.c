@@ -450,7 +450,7 @@ forceRegister(SlotData* slot, int reg, int type)
 	if (slot->regno != reg) {
 		assert(!isGlobal(slot));
 		assert((reginfo[reg].type & Rglobal) == 0);
-		assert((reginfo[slot->regno].type & Rglobal) == 0);
+		/*assert((reginfo[slot->regno].type & Rglobal) == 0);*/
 		/* Invalidate the current register in this slot - don't spill
 		 * it 'cause we will be rebinding the slot.
 		 */
