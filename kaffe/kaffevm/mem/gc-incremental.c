@@ -1042,7 +1042,7 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 			case 2:
 				/* Grow the heap */
 				DBG (GCSYSALLOC, dprintf ("growing heap by %u bytes of type %s (%2.1f%% free)\n", 
-							  size, gcFunctions[fidx].description,
+							  (unsigned int)size, gcFunctions[fidx].description,
 							  (1.0 - (gcStats.totalmem / (double)gc_heap_total)) * 100.0); )
 				
 				gc_heap_grow(size);

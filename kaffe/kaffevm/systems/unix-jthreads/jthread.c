@@ -518,7 +518,7 @@ interrupt(SIGNAL_ARGS(sig, sc))
 	/*
 	 * Handle the signal.
 	 */
-	handleInterrupt(sig, GET_SIGNAL_CONTEXT_POINTER(sc));
+	handleInterrupt(sig, (void*)GET_SIGNAL_CONTEXT_POINTER(sc));
 
 	/*
 	 * Leave the critical section.  This may or may not cause a
@@ -862,8 +862,8 @@ suspendOnQThread(jthread* jtid, KaffeNodeQueue** queue, jlong timeout)
 	KaffeNodeQueue** ntid;
 	KaffeNodeQueue* last;
 
-DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%qd) bI %d\n", 
-	jtid, queue, timeout, blockInts); )
+DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%ld) bI %d\n",
+	jtid, queue, (long) timeout, blockInts); )
 
 	assert(timeout >= 0 || timeout == NOTIMEOUT);
 	assert(intsDisabled()); 

@@ -661,7 +661,7 @@ gc_primitive_alloc(size_t sz)
 
 	assert(sz % gc_pgsize == 0);
 
-	DBG(GCPRIM, dprintf("\ngc_primitive_alloc: got to allocate 0x%x bytes\n", sz); )
+	DBG(GCPRIM, dprintf("\ngc_primitive_alloc: got to allocate 0x%x bytes\n", (unsigned int)sz); )
 
 	/* try freelists for small primitive blocks first */
 	if (i <= GC_PRIM_LIST_COUNT) {
@@ -700,7 +700,7 @@ gc_primitive_alloc(size_t sz)
 		gc_remove_from_prim_freelist (best_fit);
 
 		DBG(GCPRIM, dprintf ("gc_primitive_alloc: found best_fit %p diff 0x%x (0x%x - 0x%x)\n",
-				     best_fit, diff, best_fit->size, sz); )
+				     best_fit, (unsigned int)diff, best_fit->size, (unsigned int)sz); )
 		assert ( diff % gc_pgsize == 0 );
 
 		if (diff > 0) {
@@ -712,7 +712,7 @@ gc_primitive_alloc(size_t sz)
 			nptr->size = diff;
 			gc_block_rm (nptr);
 
-			DBG(GCPRIM, dprintf ("gc_primitive_alloc: splitted remaining 0x%x bytes @ %p\n", diff, nptr); )
+			DBG(GCPRIM, dprintf ("gc_primitive_alloc: splitted remaining 0x%x bytes @ %p\n", (unsigned int)diff, nptr); )
 
 			DBG(GCDIAG, nptr->magic = GC_MAGIC);
 
@@ -813,7 +813,7 @@ gc_primitive_free(gc_block* mem)
 	gc_add_to_prim_freelist (mem);
 
 	DBG(GCPRIM, dprintf ("gc_primitive_free: added 0x%x bytes @ %p to freelist %u @ %p\n", mem->size, mem,
-			     gc_get_prim_freelist(mem)-&gc_prim_freelist[0], gc_get_prim_freelist(mem)); )
+			     (unsigned int)(gc_get_prim_freelist(mem)-&gc_prim_freelist[0]), gc_get_prim_freelist(mem)); )
 }
 
 /*

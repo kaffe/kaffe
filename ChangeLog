@@ -1,3 +1,19 @@
+2003-10-10  Alexander Kotelnikov <sacha@myxomop.com>
+
+	* config/alpha/alpha.c:
+	(__alpha_nextFrame) Cast sc to void *.
+
+	* kaffe/kaffevm/mem/gc-incremental.c:
+	(gcMalloc) Cast size to unsigned int.
+
+	* kaffe/kaffevm/mem/gc-mem.c:
+	(gc_primitive_alloc, gc_primitive_free) Added casts to unsigned
+	int.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	(interrupt, suspendOnQThread) Added casts to fix compiler
+	warnings.
+	
 2003-10-10  Laurent Martelli <laurent@aopsys.com>
 
 	* libraries/javalib/java/lang/reflect/Field.java:
