@@ -187,7 +187,7 @@ private int nextTokenType() throws IOException {
 
 public void ordinaryChar(int ch) {
 	lookup[ch].isAlphabetic=false;
-	lookup[ch].isStringQuote=false;;
+	lookup[ch].isStringQuote=false;
 	lookup[ch].isNumeric=false;
 	lookup[ch].isComment=false;
 	lookup[ch].isWhitespace=false;
