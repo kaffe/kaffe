@@ -5,7 +5,7 @@
  */
 
 
-/* java.beans.MethodDescriptor
+/* gnu.java.beans.editors.FontEditor
    Copyright (C) 1998 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -43,17 +43,42 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package java.beans;
+package gnu.java.beans.editors;
 
-/** ParameterDescriptor represents a single parameter to a method.
- ** As it turns out, FeatureDescriptor is sufficient to hold all
- ** the information.  Use its constructor and methods to set
- ** the appropriate values.
+import java.beans.*;
+import java.awt.Font;
+
+/**
+ ** FontEditor is a property editor for java.awt.Font.
+ **
+ ** <STRONG>To Do:</STRONG> Add custom font chooser
+ ** component.
  **
  ** @author John Keiser
- ** @since JDK1.1
- ** @version 1.1.0, 26 Jul 1998
+ ** @version 1.1.0, 29 Jul 1998
  **/
-public class ParameterDescriptor extends FeatureDescriptor {
-	
+
+public class FontEditor extends PropertyEditorSupport {
+	/** setAsText for Font calls Font.decode(). **/
+	public void setAsText(String val) throws IllegalArgumentException {
+		setValue(Font.decode(val));
+	}
+
+	/** getAsText for Font returns a value in the format
+	 ** expected by Font.decode().
+	 **/
+	public String getAsText() {
+		Font f = (Font)getValue();
+		if(f.isBold()) {
+			if(f.isItalic()) {
+				return f.getName()+"-bolditalic-"+f.getSize();
+			} else {
+				return f.getName()+"-bold-"+f.getSize();
+			}
+		} else if(f.isItalic()) {
+			return f.getName()+"-italic-"+f.getSize();
+		} else {
+			return f.getName()+"-"+f.getSize();
+		}
+	}
 }

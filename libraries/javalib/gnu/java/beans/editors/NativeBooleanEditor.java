@@ -5,8 +5,8 @@
  */
 
 
-/* java.beans.MethodDescriptor
-   Copyright (C) 1998 Free Software Foundation, Inc.
+/* gnu.java.beans.editors.NativeBooleanEditor
+   Copyright (C) 1998, 2002 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -43,17 +43,41 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package java.beans;
+package gnu.java.beans.editors;
 
-/** ParameterDescriptor represents a single parameter to a method.
- ** As it turns out, FeatureDescriptor is sufficient to hold all
- ** the information.  Use its constructor and methods to set
- ** the appropriate values.
+import java.beans.*;
+
+/**
+ ** NativeBooleanEditor is a property editor for the
+ ** boolean type.<P>
+ **
+ ** <STRONG>To Do:</STRONG> add support for a checkbox
+ ** as the custom editor.
  **
  ** @author John Keiser
- ** @since JDK1.1
- ** @version 1.1.0, 26 Jul 1998
+ ** @version 1.1.0, 29 Jul 1998
  **/
-public class ParameterDescriptor extends FeatureDescriptor {
-	
+
+public class NativeBooleanEditor extends PropertyEditorSupport {
+	String[] tags = {"true","false"};
+
+	/**
+	 * setAsText for boolean checks for true or false or t or f.
+	 * "" also means false.
+	 **/
+	public void setAsText(String val) throws IllegalArgumentException {
+		if(val.equalsIgnoreCase("true") || val.equalsIgnoreCase("t")) {
+			setValue(Boolean.TRUE);
+		} else if(val.equalsIgnoreCase("false") || val.equalsIgnoreCase("f") || val.equals("")) {
+			setValue(Boolean.FALSE);
+		} else {
+			throw new IllegalArgumentException("Value must be true, false, t, f or empty.");
+		}
+	}
+
+
+	/** getAsText for boolean calls Boolean.toString(). **/
+	public String getAsText() {
+		return getValue().toString();
+	}
 }

@@ -1,3 +1,16 @@
+gnu/java/beans/ExplicitBeanInfo.java
+gnu/java/beans/editors/FontEditor.java
+gnu/java/beans/editors/NativeFloatEditor.java
+gnu/java/beans/editors/NativeDoubleEditor.java
+gnu/java/beans/editors/NativeIntEditor.java   
+gnu/java/beans/editors/NativeBooleanEditor.java
+gnu/java/beans/editors/StringEditor.java
+gnu/java/beans/editors/NativeByteEditor.java
+gnu/java/beans/editors/NativeShortEditor.java
+gnu/java/beans/editors/NativeLongEditor.java 
+gnu/java/beans/editors/ColorEditor.java
+gnu/java/beans/IntrospectionIncubator.java
+gnu/java/beans/BeanInfoEmbryo.java
 gnu/java/io/ClassLoaderObjectInputStream.java
 gnu/java/lang/ClassHelper.java
 gnu/java/locale/Calendar.java

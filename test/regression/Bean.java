@@ -61,7 +61,7 @@ public class Bean {
   Class: class Bean
   Editor: <unknown>
   Editor: <unknown>
-  Editor: class kaffe.beans.editors.StringEditor
+  Editor: class gnu.java.beans.editors.StringEditor
   Method: public boolean java.lang.Object.equals(java.lang.Object)
   Method: public final native java.lang.Class java.lang.Object.getClass()
   Method: public final native void java.lang.Object.notify()

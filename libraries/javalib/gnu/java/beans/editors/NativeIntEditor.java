@@ -5,7 +5,7 @@
  */
 
 
-/* java.beans.MethodDescriptor
+/* gnu.java.beans.editors.NativeIntEditor
    Copyright (C) 1998 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -43,17 +43,26 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package java.beans;
+package gnu.java.beans.editors;
 
-/** ParameterDescriptor represents a single parameter to a method.
- ** As it turns out, FeatureDescriptor is sufficient to hold all
- ** the information.  Use its constructor and methods to set
- ** the appropriate values.
+import java.beans.*;
+
+/**
+ ** NativeIntEditor is a property editor for the
+ ** int type.
  **
  ** @author John Keiser
- ** @since JDK1.1
- ** @version 1.1.0, 26 Jul 1998
+ ** @version 1.1.0, 29 Jul 1998
  **/
-public class ParameterDescriptor extends FeatureDescriptor {
-	
+
+public class NativeIntEditor extends PropertyEditorSupport {
+	/** setAsText for int calls Integer.valueOf(). **/
+	public void setAsText(String val) throws IllegalArgumentException {
+		setValue(Integer.valueOf(val));
+	}
+
+	/** getAsText for int calls Integer.toString(). **/
+	public String getAsText() {
+		return getValue().toString();
+	}
 }

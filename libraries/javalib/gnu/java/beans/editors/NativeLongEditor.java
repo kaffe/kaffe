@@ -5,7 +5,7 @@
  */
 
 
-/* java.beans.MethodDescriptor
+/* gnu.java.beans.editors.NativeLongEditor
    Copyright (C) 1998 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -43,17 +43,26 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package java.beans;
+package gnu.java.beans.editors;
 
-/** ParameterDescriptor represents a single parameter to a method.
- ** As it turns out, FeatureDescriptor is sufficient to hold all
- ** the information.  Use its constructor and methods to set
- ** the appropriate values.
+import java.beans.*;
+
+/**
+ ** NativeLongEditor is a property editor for the
+ ** long type.
  **
  ** @author John Keiser
- ** @since JDK1.1
- ** @version 1.1.0, 26 Jul 1998
+ ** @version 1.1.0, 29 Jul 1998
  **/
-public class ParameterDescriptor extends FeatureDescriptor {
-	
+
+public class NativeLongEditor extends PropertyEditorSupport {
+	/** setAsText for long calls Long.valueOf(). **/
+	public void setAsText(String val) throws IllegalArgumentException {
+		setValue(Long.valueOf(val));
+	}
+
+	/** getAsText for long calls Long.toString(). **/
+	public String getAsText() {
+		return getValue().toString();
+	}
 }

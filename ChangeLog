@@ -1,3 +1,40 @@
+2003-10-09 Milos Negovanovic <milosn@bmf.bounceme.net>
+
+        * libraries/javalib/gnu/java/beans/BeanInfoEmbryo.java,
+        libraries/javalib/gnu/java/beans/ExplicitBeanInfo.java,
+        libraries/javalib/gnu/java/beans/IntrospectionIncubator.java,
+        libraries/javalib/gnu/java/beans/editors/ColorEditor.java,
+        libraries/javalib/gnu/java/beans/editors/FontEditor.java,
+        libraries/javalib/gnu/java/beans/editors/NativeBooleanEditor.java,
+        libraries/javalib/gnu/java/beans/editors/NativeByteEditor.java,
+        libraries/javalib/gnu/java/beans/editors/NativeDoubleEditor.java,
+        libraries/javalib/gnu/java/beans/editors/NativeFloatEditor.java,
+        libraries/javalib/gnu/java/beans/editors/NativeIntEditor.java,
+        libraries/javalib/gnu/java/beans/editors/NativeLongEditor.java,
+        libraries/javalib/gnu/java/beans/editors/NativeShortEditor.java,
+        libraries/javalib/gnu/java/beans/editors/StringEditor.java:
+	New classes from GNU Classpath.
+
+        * libraries/javalib/java/beans/IndexedPropertyDescriptor.java:
+	Replaced with GNU Classpath class.
+	(IndexedPropertyDescriptor) Fixed a typo.
+
+        * libraries/javalib/java/beans/ParameterDescriptor.java,
+        libraries/javalib/java/beans/PropertyChangeEvent.java,
+        libraries/javalib/java/beans/PropertyChangeSupport.java,
+        libraries/javalib/java/beans/PropertyEditorManager.java,
+        libraries/javalib/java/beans/PropertyEditorSupport.java,
+        libraries/javalib/java/beans/SimpleBeanInfo.java,
+        libraries/javalib/java/beans/VetoableChangeSupport.java:
+	Replaced with stuff from GNU Classpath.
+
+        * libraries/javalib/profiles/allatonce/all.files,
+        libraries/javalib/profiles/default/rest.files:
+	Added the new classes from GNU Classpath.
+
+        * test/regression/Bean.java:
+	Fixed regression test for new string editor class name.
+
 2003-10-12  Jim Pick  <jim@kaffe.org>
 
 	* libraries/javalib/java/util/regex/Matcher.java,
