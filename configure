@@ -6752,7 +6752,7 @@ else
 fi
 
 echo "$ac_t""$ac_cv_kaffe_dirsep" 1>&6
-DIRSEP=$ac_cv_kaffe_dirsep
+DIRSEP=`echo "$ac_cv_kaffe_dirsep" | sed 's,\\\\,\\\\\\\\,g'`
 
 
 kaffe_TRANSF=`echo kaffe | sed ${program_transform_name}`

@@ -1017,7 +1017,7 @@ AC_CACHE_CHECK([for directory separator],ac_cv_kaffe_dirsep,
 	eval ac_cv_kaffe_dirsep=`$CPP $CPPFLAGS conftest.c | sed '$p; d'`
 	rm -f conftest.c
 ])
-DIRSEP=$ac_cv_kaffe_dirsep
+DIRSEP=`echo "$ac_cv_kaffe_dirsep" | sed 's,\\\\,\\\\\\\\,g'`
 AC_SUBST(DIRSEP)
 
 dnl Set up program transform names

@@ -31,6 +31,7 @@
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"
 PATHSEP='@PATHSEP@'
+DIRSEP='@DIRSEP@'
 : ${KAFFE_LIBDIR="@libdir@"}
 : ${KAFFE_LIBEXECDIR="@libexecdir@"}
 : ${KAFFE_CLASSDIR="@datadir@/kaffe"}
@@ -51,6 +52,9 @@ done
 if test -f "$KAFFE_CLASSDIR/classes.zip"; then
   CLASSPATH="$CLASSPATH$PATHSEP$KAFFE_CLASSDIR/classes.zip"
 fi
+case "$DIRSEP" in /) ;;
+*) CLASSPATH=`echo "$CLASSPATH" | sed 's,/,'"$DIRSEP"',g'` ;;
+esac
 export CLASSPATH
 KAFFELIBRARYPATH="$KAFFE_NATIVE_LIBRARY_DIR$PATHSEP$KAFFE_LIBDIR"${KAFFELIBRARYPATH+"$PATHSEP$KAFFELIBRARYPATH"}${LD_LIBRARY_PATH+"$PATHSEP${LD_LIBRARY_PATH}"}
 if test -d "$KAFFE_OLD_NATIVE_LIBRARY_DIR"; then

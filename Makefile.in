@@ -309,7 +309,7 @@ distcheck: dist
 	GZIP=$(GZIP_ENV) gunzip -c $(distdir).tar.gz | $(AMTAR) xf -
 	mkdir $(distdir)/=build
 	mkdir $(distdir)/=inst
-	dc_install_base=`cd $(distdir)/=inst && pwd`; \
+	dc_install_base=`CDPATH=: && cd $(distdir)/=inst && pwd`; \
 	cd $(distdir)/=build \
 	  && ../configure --srcdir=.. --prefix=$$dc_install_base \
 	  && $(MAKE) $(AM_MAKEFLAGS) \
@@ -443,9 +443,11 @@ BUILD_ENVIRONMENT: Makefile
 		"DEBUG_ENV=$(DEBUG_ENV)" BUILD_ENVIRONMENT-make
 
 BUILD_ENVIRONMENT-make: Makefile
-	echo CLASSPATH=\$${CLASSPATH-.}\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/Klasses.jar\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/kjc.jar\; export CLASSPATH > BUILD_ENVIRONMENT; \
-	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' ' '; echo) | sed -e 's/ $$//' -e "s/ /\'$(PATHSEP)\'/g"`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT; \
-	echo JAVA=$(top_builddir)/kaffe/kaffe/Kaffe$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT
+	echo CLASSPATH=\$${CLASSPATH-.}\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/Klasses.jar\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/kjc.jar\; export CLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' > BUILD_ENVIRONMENT.new; \
+	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' ' '; echo) | sed -e 's/ $$//' -e "s/ /\'$(PATHSEP)\'/g"`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT.new; \
+	echo JAVA=$(top_builddir)/kaffe/kaffe/Kaffe$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT.new
+	rm -f BUILD_ENVIRONMENT
+	mv BUILD_ENVIRONMENT.new BUILD_ENVIRONMENT
 
 .PHONY: Klasses new-classes compile-classes jar-classes build-classes
 Klasses new-classes compile-classes jar-classes build-classes:

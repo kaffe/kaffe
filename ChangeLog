@@ -1,3 +1,11 @@
+1999-10-17  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* configure.in (DIRSEP): Quote backslashes on output files.
+	* Makefile.am (BUILD_ENVIRONMENT-make, CLASSPATH): Replace `/'
+	with $DIRSEP, and duplicate `\'s.
+	* kaffe/scripts/kaffe.in: Likewise.
+	* configure, Makefile.in: Rebuilt.
+
 1999-10-16  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* libraries/javalib/kaffe/lang/SystemClassLoader.java
