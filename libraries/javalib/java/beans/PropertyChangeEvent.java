@@ -23,9 +23,9 @@ public class PropertyChangeEvent extends EventObject {
   public PropertyChangeEvent(Object source, String propertyName, Object oldValue, Object newValue)
   {
     super(source);
-    propertyName = propertyName;
-    oldValue = oldValue;
-    newValue = newValue;
+    this.propertyName = propertyName;
+    this.oldValue = oldValue;
+    this.newValue = newValue;
     propagationId = null;
   }
 

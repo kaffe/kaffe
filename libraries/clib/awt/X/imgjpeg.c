@@ -9,8 +9,9 @@
  */
 
 #include "toolkit.h"
+#include "config-setjmp.h"
 
-#if defined(HAVE_JPEG_H) && defined(HAVE_LIBJPEG)
+#if defined(HAVE_JPEGLIB_H) && defined(HAVE_LIBJPEG)
 #define INCLUDE_JPEG 1
 #endif
 

@@ -76,7 +76,7 @@ abstract public class Component
 	final public static float LEFT_ALIGNMENT = (float)0.0;
 	final public static float RIGHT_ALIGNMENT = (float)1.0;
 	final static int BORDER_WIDTH = 2;
-	static Object treeLock = Toolkit.class;
+	static Object treeLock = new TreeLock();
 	static Rectangle noDeco = new Rectangle();
 	final static int IS_VISIBLE = 0x01;
 	final static int IS_VALID = 0x02;
@@ -95,6 +95,11 @@ abstract public class Component
 	final static int IS_ASYNC_UPDATED = 0x4000;
 	final static int IS_DIRTY = 0x8000;
 	final static int IS_SHOWING = IS_ADD_NOTIFIED | IS_PARENT_SHOWING | IS_VISIBLE;
+
+static class TreeLock
+{
+	// Object for locking the validation/invalidation tree.
+}
 
 /*
  * JDK serialization.
@@ -510,8 +515,6 @@ Component getToplevel () {
 }
 
 final public Object getTreeLock() {
-	// treeLock is Toolkit.class - this way we sync on all graphics
-	// output, too
 	return treeLock;
 }
 
@@ -650,7 +653,7 @@ public void invalidate () {
 	// invalidation means invalid yourself *and* all your parents (if they
 	// arent't already)
 
-//	synchronized ( treeLock ) {
+	synchronized ( treeLock ) {
 		if ( (flags & IS_VALID) != 0 ) {
 			flags &= ~IS_VALID;
 		
@@ -659,7 +662,7 @@ public void invalidate () {
 			if ( (parent.flags & IS_VALID) != 0 )
 				parent.invalidate();
 		}
-//	}
+	}
 }
 
 /**
