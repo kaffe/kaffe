@@ -179,7 +179,7 @@ SUCH DAMAGE.
 
 At the time of writing, Kaffe uses getaddrinfo 1.6.1.
 
-* Alpha, ARM, M68k, S390 and SPARC atomic compare_and_swap, Linux
+* Alpha, ARM, ia64, M68k, S390 and SPARC atomic compare_and_swap, Linux
   sigcontextinfo
 
 Taken from GNU libc 2.3.2, which is licensed under the GNU Lesser General 

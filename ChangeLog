@@ -1,5 +1,22 @@
 2004-07-03  Dalibor Topic  <robilad@kaffe.org>
 
+        * config/ia64/atomicity.h:
+	New file, taken from glibc 2.3.2.
+
+        * THIRDPARTY:
+	Added ia64 compare_and_swap.
+
+        * config/Makefile.am:
+	Added ia64/atomicity.h.
+
+        * config/Makefile.in:
+	Regenerated.
+
+        * config/ia64/common.h:
+	Use atomicity.h.
+
+2004-07-03  Dalibor Topic  <robilad@kaffe.org>
+
         * m4/compile_value.m4:
 	New file, taken from http://ac-archive.sf.net.
 

@@ -12,6 +12,8 @@
 #ifndef __ia64_common_h
 #define __ia64_common_h
 
+#include "atomicity.h"
+
 #define NEED_STACK_ALIGN
 #define STACK_ALIGN(p)  ((((unsigned long)(p)) & 15) ^ (unsigned long)(p))
 
@@ -29,10 +31,7 @@
 #include <ia64intrin.h>
 #endif
 
-/* Intel Itanium Processor-specific ABI defines
-   __sync_bool_compare_and_swap primitive (7.4.3).  */
 #undef COMPARE_AND_EXCHANGE
-#define COMPARE_AND_EXCHANGE(A, O, N) \
-	__sync_bool_compare_and_swap((A), (O), (N))
+#define COMPARE_AND_EXCHANGE(A, O, N)  (compare_and_swap((long int*) A, (long int) O, (long int) N))
 
 #endif

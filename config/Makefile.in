@@ -405,6 +405,7 @@ EXTRA_DIST = \
 	arm/threads.h \
 	arm/sysdepCallMethod.h \
 	arm/trampolines.c \
+	ia64/atomicity.h \
 	ia64/common.h \
 	ia64/linux/config.frag \
 	ia64/linux/md.c \
