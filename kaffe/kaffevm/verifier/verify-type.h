@@ -111,7 +111,7 @@ extern Type* TBOOLARR;
 extern Type* TSHORTARR;
 extern Type* TINTARR;
 extern Type* TLONGARR;
-extern Type* TFLOATARR;
+extern Type* getTFLOATARR(void);
 extern Type* getTDOUBLEARR(void);
 
 extern Type* TSTRING;

@@ -110,7 +110,12 @@ Type* TLONGARR = &verify_LONGARR;
 
 static const char* FLOATARR_SIG = "[F";
 static Type  verify_FLOATARR;
-Type* TFLOATARR = &verify_FLOATARR;
+static Type* TFLOATARR = &verify_FLOATARR;
+
+Type* getTFLOATARR(void)
+{
+  return TFLOATARR;
+}
 
 static const char* DOUBLEARR_SIG = "[D";
 static Type  verify_DOUBLEARR;

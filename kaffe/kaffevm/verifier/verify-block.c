@@ -722,7 +722,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			switch(code[pc + 1]) {
 			case TYPE_Boolean: OPSTACK_PUSH(TBOOLARR);   break;
 			case TYPE_Char:    OPSTACK_PUSH(TCHARARR);   break;
-			case TYPE_Float:   OPSTACK_PUSH(TFLOATARR);  break;
+			case TYPE_Float:   OPSTACK_PUSH(getTFLOATARR());  break;
 			case TYPE_Double:  OPSTACK_PUSH(getTDOUBLEARR()); break;
 			case TYPE_Byte:    OPSTACK_PUSH(TBYTEARR);   break;
 			case TYPE_Short:   OPSTACK_PUSH(TSHORTARR);  break;
@@ -782,7 +782,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			break;
 			
 		case IALOAD: ARRAY_LOAD(TINT,   TINTARR);   break;
-		case FALOAD: ARRAY_LOAD(TFLOAT, TFLOATARR); break;
+		case FALOAD: ARRAY_LOAD(TFLOAT, getTFLOATARR()); break;
 		case CALOAD: ARRAY_LOAD(TINT,   TCHARARR);  break;
 		case SALOAD: ARRAY_LOAD(TINT,   TSHORTARR); break;
 			
@@ -867,7 +867,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 			
 		case IASTORE: ARRAY_STORE(TINT,   TINTARR);   break;
-		case FASTORE: ARRAY_STORE(TFLOAT, TFLOATARR); break;
+		case FASTORE: ARRAY_STORE(TFLOAT, getTFLOATARR()); break;
 		case CASTORE: ARRAY_STORE(TINT,   TCHARARR);  break;
 		case SASTORE: ARRAY_STORE(TINT,   TSHORTARR); break;
 			
