@@ -1,3 +1,18 @@
+2003-08-04  Jim Pick  <jim@kaffe.org>
+
+	* include/kaffe/.cvsignore,
+	kaffe/jvmpi/.cvsignore,
+	kaffe/scripts/.cvsignore,
+	libltdl/.cvsignore,
+	libraries/clib/awt/qt/.cvsignore,
+	libraries/extensions/sound/.cvsignore,
+	libraries/extensions/sound/alsa/.cvsignore,
+	libraries/extensions/sound/common/.cvsignore,
+	libraries/extensions/sound/esd/.cvsignore,
+	replace/.cvsignore,
+	test/internal/.cvsignore:
+	Update .cvsignore file for building in-tree.
+
 2003-08-23  Jim Pick  <jim@kaffe.org>
 
 	* test/regression/TestScript.in:

@@ -1,7 +1,5 @@
-Makefile
-*.o
-*.so*
 .deps
 .libs
+Makefile
 *.lo
 *.la

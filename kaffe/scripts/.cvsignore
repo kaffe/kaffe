@@ -5,9 +5,11 @@ jar
 javac
 javadoc
 javakey
+javah
 javap
 jdb
 kaffe
+kaffeh
 kaffexprof
 kjc
 kopi
