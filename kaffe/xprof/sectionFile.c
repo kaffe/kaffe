@@ -1193,7 +1193,7 @@ struct section_file_data *createFileSection(char *section_type,
 	{
 		strcpy(new_name, section_name);
 		if( !fs->fs_handler(fs, 0, SFM_CREATE,
-				    &retval, new_name, args) )
+				    &retval, new_name, &args) )
 		{
 			KFREE(new_name);
 			retval = 0;

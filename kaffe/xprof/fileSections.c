@@ -24,6 +24,9 @@
 #include "sectionFile.h"
 #include "fileSections.h"
 
+typdef va_list *va_list_ptr;
+
+
 /* Set a value in the jit section structure by name */
 static int setJITSectionValue(struct jit_section_data *jsd,
 			      char *tag, char *value)
@@ -107,12 +110,12 @@ static int jitSectionHandler(struct file_section *fs, struct section_file *sf,
 			struct section_file_data **out_sfd;
 			struct jit_section_data *jsd;
 			char *name, *tag, *value;
-			va_list values;
+			va_list_ptr values;
 
 			/* Get the args */
 			out_sfd = va_arg(args, struct section_file_data **);
 			name = va_arg(args, char *);
-			values = va_arg(args, va_list);
+			values = va_arg(args, va_list_ptr);
 			/* Allocate the section struct and initialize it */
 			if( (jsd = (struct jit_section_data *)
 			     KMALLOC(sizeof(struct jit_section_data))) )
@@ -125,12 +128,12 @@ static int jitSectionHandler(struct file_section *fs, struct section_file *sf,
 				jsd->jsd_size = 0;
 				jsd->jsd_address = 0;
 				/* Process the rest of the args */
-				tag = va_arg(values, char *);
+				tag = va_arg((*values), char *);
 				while( tag )
 				{
-					value = va_arg(values, char *);
+					value = va_arg((*values), char *);
 					setJITSectionValue(jsd, tag, value);
-					tag = va_arg(values, char *);
+					tag = va_arg((*values), char *);
 				}
 				*out_sfd = &jsd->jsd_link;
 			}
@@ -277,12 +280,12 @@ static int libSectionHandler(struct file_section *fs, struct section_file *sf,
 			struct section_file_data **out_sfd;
 			struct lib_section_data *lsd;
 			char *name, *tag, *value;
-			va_list values;
+			va_list_ptr values;
 
 			/* Get the args */
 			out_sfd = va_arg(args, struct section_file_data **);
 			name = va_arg(args, char *);
-			values = va_arg(args, va_list);
+			values = va_arg(args, va_list_ptr);
 			/* Allocate the section struct and initialize it */
 			if( (lsd = (struct lib_section_data *)
 			     KMALLOC(sizeof(struct lib_section_data))) )
@@ -293,12 +296,12 @@ static int libSectionHandler(struct file_section *fs, struct section_file *sf,
 				lsd->lsd_link.sfd_name = name;
 				lsd->lsd_flags = 0;
 				/* Process the rest of the args */
-				tag = va_arg(values, char *);
+				tag = va_arg((*values), char *);
 				while( tag )
 				{
-					value = va_arg(values, char *);
+					value = va_arg((*values), char *);
 					setLibSectionValue(lsd, tag, value);
-					tag = va_arg(values, char *);
+					tag = va_arg((*values), char *);
 				}
 				*out_sfd = &lsd->lsd_link;
 			}
