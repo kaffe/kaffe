@@ -2,6 +2,16 @@
 
         Resynced with GNU Classpath
 
+	2004-02-06  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/datatransfer/DataFlavor.java
+        (imageFlavor): Javadoc added.
+        (javaJVMLocalObjectType): Fixed.
+
+2004-02-24  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath
+
 	2004-02-10  David Jee  <djee@redhat.com>
 
         * java/awt/GridBagLayout.java
