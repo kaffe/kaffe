@@ -83,6 +83,8 @@ What about a web site?
 
 News about the "Open Source" Kaffe distribution can always be found at:
 
+	http://www.kaffe.org/
+and
 	http://www.transvirtual.com/
 
 And mailing lists?
@@ -119,6 +121,10 @@ and configure the software appropriately.  If JIT mode is supported on your
 system it will be selected automatically, otherwise it defaults to
 interpreting mode.  Compilation should then be a simple matter of
 typing "make" in this directory.
+
+Note: if you downloaded a snapshot or checked out this version of kaffe
+from the CVS, you will need GNU make to build Kaffe.
+If this is a distribution, it should work with your normal make.
 
 By default, the system will install into the /usr/local hierarchy as per
 the standard GNU coding rules.  This can be changed using the --prefix
