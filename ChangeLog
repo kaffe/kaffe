@@ -1,5 +1,20 @@
 2004-01-18  Dalibor Topic <robilad@kaffe.org>
 
+	* po/LINGUAS,
+	po/Makevars,
+	po/POTFILES.in:
+	New files. Required to fix the build.
+
+	The problem is that gettext documentation is very lax with 
+	respect to the meaning of the words 'should' and 'must'.
+	Apparently these files *must* exist, otherwise the build
+	breaks, contrary to gettext documentation.
+
+        Reported by: Ito Kazumitsu <kaz@maczuka.gcd.org>
+                     Matthias Pfisterer <Matthias.Pfisterer@web.de>
+
+2004-01-18  Dalibor Topic <robilad@kaffe.org>
+
 	* include/Makefile.am
 	[USE_COMPAT_IFADDRS]: Replaced GNU Make specific construct.
 
