@@ -32,8 +32,8 @@ compile()
 {
 	echo ERROR > ${RESULT}
 	JAVAC_FLAGS=`cat ${1+"$@"} | sed 's/\/\/ javac flags://p;d'`
-	$VERBOSE ${JAVAC} ${JAVAC_FLAGS} -d . ${1+"$@"}
-	${JAVAC} ${JAVAC_FLAGS} -d . ${1+"$@"} >${RESULT} 2>&1
+	$VERBOSE ${JAVAC} -d . ${JAVAC_FLAGS} ${1+"$@"}
+	eval ${JAVAC} -d . ${JAVAC_FLAGS} ${1+"$@"} > ${RESULT} 2>&1
 	if echo " $JAVAC_FLAGS" | grep " -nowarn" >/dev/null; then
 		OUTPUT=`cat ${RESULT} | grep -v warning`
 	else
@@ -62,10 +62,17 @@ run()
 	    error=$?
 	fi
 	if test ! -f "$1.out"; then
-		mv "$RESULT" "$1.out"
+		if test "$error" = 0; then
+		    mv "$RESULT" "$1.out"
+		    $VERBOSE output preserved in "$1.out"
+		else
+		    $VERBOSE output preserved in "$1.fail"
+		fi
 	elif cmp -s "$RESULT" "$1.out" ; then
+	        $VERBOSE got expected output in "$1.out"
 		rm -f "$RESULT"
 	else
+	        $VERBOSE output differs from "$1.out", saving in "$1.fail"
 		error=1
 	fi
 }

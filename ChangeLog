@@ -1,3 +1,10 @@
+Sun Feb 14 01:37:04 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test/regression/TestScript.in (run): print messages about where
+	output was saved if VERBOSE is set
+	(compile): eval JAVAC command, so that `javac flags' may contain
+	$SRCDIR
+
 Sun Feb 14 01:40:55 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* test/regression/SoInterrupt.java (SoInterrupt): do not use a
