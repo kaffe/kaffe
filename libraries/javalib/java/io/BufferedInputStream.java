@@ -10,8 +10,7 @@
 
 package java.io;
 
-public class BufferedInputStream
-  extends FilterInputStream
+public class BufferedInputStream extends FilterInputStream
 {
 	protected byte[] buf;
 	protected int count;
@@ -23,7 +22,7 @@ public class BufferedInputStream
 /*
  * Code invariants:
  *
- * 1 markpos <= pos <= count <= buf.length == marklimit
+ * 1 markpos <= pos <= count <= buf.length >= marklimit
  *
  * 2 If (count - pos > 0) then markpos != -1. That is, we only keep
  *   data in the buffer if a mark is set. A mark remains set until
@@ -48,18 +47,23 @@ public synchronized int available() throws IOException {
 	return (count - pos) + in.available();
 }
 
-public synchronized void mark(int readlimit) {
-	if (readlimit > buf.length ) {			// need a bigger buffer
-		buf = new byte[readlimit];
-		pos = count = markpos = 0;
-		marklimit = readlimit;
-	} else if (readlimit > buf.length - pos) {	// shift same buffer
-		System.arraycopy(buf, pos, buf, 0, count - pos);
+public synchronized void mark(int marklimit) {
+	if (marklimit > buf.length - pos) {		// not enough room
+		byte[] newbuf;
+
+		if (marklimit <= buf.length) {
+			newbuf = buf;			// just shift buffer
+		} else {
+			newbuf = new byte[marklimit];	// need a new buffer
+		}
+		System.arraycopy(buf, pos, newbuf, 0, count - pos);
+		buf = newbuf;
 		count -= pos;
 		pos = markpos = 0;
-	} else {					// no shift needed
+	} else {
 		markpos = pos;
 	}
+	this.marklimit = marklimit;
 }
 
 public boolean markSupported() {
@@ -132,7 +136,7 @@ public synchronized void reset() throws IOException {
 
 /*
  * This version of skip() does not invalidate a mark if less
- * than readlimit total bytes are read and/or skipped.
+ * than marklimit total bytes are read and/or skipped.
  * Not sure if this is actually a requirement or not.
  */
 public synchronized long skip(long n) throws IOException {
