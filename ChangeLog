@@ -1,3 +1,10 @@
+Tue May 14 21:08:11 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* test/regression/InvTarExcTest.java:
+	commented out a call to printStackTrace, making output more
+	independant of the actual implementation of
+	java.lang.reflect.Method.
+
 Tue May 14 21:04:22 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/lang/reflect/Field.java:
