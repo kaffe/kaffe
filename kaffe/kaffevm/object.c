@@ -110,13 +110,19 @@ Hjava_lang_Object*
 newArrayChecked(Hjava_lang_Class* elclass, int count, errorInfo *info)
 {
 	Hjava_lang_Class* class = 0;
-	Hjava_lang_Object* obj;
+	Hjava_lang_Object* obj = 0;
 
 	if (CLASS_IS_PRIMITIVE(elclass) || elclass == PtrClass) {
-		obj = gc_malloc((TYPE_SIZE(elclass) * count) + ARRAY_DATA_OFFSET, GC_ALLOC_PRIMARRAY);
+		size_t total_count = (TYPE_SIZE(elclass) * count) + ARRAY_DATA_OFFSET;
+		if (total_count > count) {
+			obj = gc_malloc(total_count, GC_ALLOC_PRIMARRAY);
+		}
 	}
 	else {
-		obj = gc_malloc((PTR_TYPE_SIZE * count) + ARRAY_DATA_OFFSET, GC_ALLOC_REFARRAY);
+		size_t total_count = (PTR_TYPE_SIZE * count) + ARRAY_DATA_OFFSET;
+		if (total_count > count) {
+			obj = gc_malloc(total_count, GC_ALLOC_REFARRAY);
+		}
 	}
 	if (obj) {
 		class = lookupArray(elclass, info);

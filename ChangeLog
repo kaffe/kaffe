@@ -1,3 +1,12 @@
+Tue Apr 23 12:54:15 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* kaffe/kaffevm/object.c:
+	(newArrayChecked) Added simple checks for overflow. It fixes a
+	gnu.testlet.java.lang.reflect.Array.newInstance test. In the test
+	a too big multidimensional array was allocated in order to provoke
+	an OutOfMemoryError. Due to overflow we actually allocated
+	something but messed up the gc. Some of the following tests would
+	then eventually crash.
+
 Mon Apr 22 10:15:48 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* libraries/clib/net/PlainDatagramSocketImpl.c,
 	libraries/clib/net/PlainSocketImpl.c,
