@@ -1,8 +1,12 @@
+Mon Mar 22 17:17:27 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/support.c: fix byte order bug in callMethodA()
+	* kaffe/kaffevm/debug.c: accept lower case -vmdebug options
+
 Sun Mar 21 21:13:00 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/jit/icode.c: fix stack corruption problem with
 	floating point remainder functions
-	* kaffe/kaffevm/debug.c: accept lower case -vmdebug options
 	* kaffe/kaffevm/intrp/checks.h: match printf formats with args
 	* libraries/clib/awt/X/toolkit.h imggif.c, imgpng.c: fix warnings
 	* test/regression/GCTest.java: fix synchronized output fix
