@@ -20,9 +20,9 @@ import kaffe.lang.ApplicationResource;
 public class Thread
   implements Runnable, ApplicationResource {
 
-final public static int MIN_PRIORITY = 1;
-final public static int NORM_PRIORITY = 5;
-final public static int MAX_PRIORITY = 10;
+public final static int MIN_PRIORITY = 1;
+public final static int NORM_PRIORITY = 5;
+public final static int MAX_PRIORITY = 10;
 
 final private static RuntimePermission sccl = new RuntimePermission("setContextClassLoader");
 
@@ -219,15 +219,15 @@ private static String generateName() {
 	return new String("Thread-"+threadCount++);
 }
 
-final public String getName() {
+public final String getName() {
 	return (new String(name));
 }
 
-final public int getPriority() {
+public final int getPriority() {
 	return priority;
 }
 
-final public ThreadGroup getThreadGroup() {
+public final ThreadGroup getThreadGroup() {
 	return (group);
 }
 
@@ -266,11 +266,11 @@ public static boolean interrupted() {
 	return (i);
 }
 
-final public boolean isAlive () {
+public final boolean isAlive () {
 	return (started && !dying);
 }
 
-final public boolean isDaemon() {
+public final boolean isDaemon() {
 	return daemon;
 }
 
@@ -278,17 +278,17 @@ public boolean isInterrupted() {
 	return (interrupting);
 }
 
-final public void join() throws InterruptedException
+public final void join() throws InterruptedException
 {
 	join(0);
 }
 
-final public synchronized void join(long millis) throws InterruptedException
+public final synchronized void join(long millis) throws InterruptedException
 {
 	join(millis, 0);
 }
 
-final public synchronized void join(long millis, int nanos) throws InterruptedException
+public final synchronized void join(long millis, int nanos) throws InterruptedException
 {
 	Thread curr = currentThread();
 
@@ -313,7 +313,7 @@ final public synchronized void join(long millis, int nanos) throws InterruptedEx
 /**
  * @deprecated
  */
-final public void resume() {
+public final void resume() {
 	if (suspendResume != null) {
 		synchronized (suspendResume) {
 			suspendResume.notifyAll();
@@ -327,15 +327,18 @@ public void run() {
 	}
 }
 
-final public void setDaemon(boolean on) {
+public final synchronized void setDaemon(boolean on) {
+	if (started && !dying) {
+		throw new IllegalThreadStateException("Active Thread");
+	}
 	daemon = on;
 }
 
-final public void setName(String name) {
+public final void setName(String name) {
 	this.name = name.toCharArray();
 }
 
-final public void setPriority(int newPriority) {
+public final void setPriority(int newPriority) {
 	checkAccess();
 
 	if (newPriority < MIN_PRIORITY || newPriority > group.getMaxPriority()) {
@@ -383,14 +386,14 @@ native public void start0();
 /**
  * @deprecated
  */
-final public void stop() {
+public final void stop() {
 	stop(new ThreadDeath());
 }
 
 /**
  * @deprecated
  */
-final public synchronized void stop(Throwable o) {
+public final synchronized void stop(Throwable o) {
 	if (o == null) {
 		throw new NullPointerException();
 	}
@@ -413,7 +416,7 @@ native private void stop0(Object o);
 /**
  * @deprecated
  */
-final public void suspend() {
+public final void suspend() {
 	if (suspendResume == null) {
 		suspendResume = new Suspender();
 	}
