@@ -287,7 +287,6 @@ extern void arm_do_fixup_trampoline(void);
 	{								\
 		int shift = 0;						\
 		int val = (maxLocal + maxStack + maxTemp);	        \
-		int orig = val;                                         \
 		if (maxArgs > 4) { val -= maxArgs - 4;}                 \
 		val *= SLOTSIZE;                                        \
 		while ((val & 0xFFFFFF00) != 0) {			\
