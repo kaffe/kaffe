@@ -1,6 +1,51 @@
 2005-01-06  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+	
+	2005-01-02  Robert Schuster  <theBohemian@gmx.net>
+
+	* gnu/java/beans/decoder/AbstractContext.java,
+	gnu/java/beans/decoder/AbstractCreatableContext.java,
+	gnu/java/beans/decoder/AbstractElementHandler.java,
+	gnu/java/beans/decoder/AbstractObjectContext.java,
+	gnu/java/beans/decoder/ArrayContext.java,
+	gnu/java/beans/decoder/ArrayHandler.java,
+	gnu/java/beans/decoder/BooleanHandler.java,
+	gnu/java/beans/decoder/ByteHandler.java,
+	gnu/java/beans/decoder/CharHandler.java,
+	gnu/java/beans/decoder/ClassHandler.java,
+	gnu/java/beans/decoder/ConstructorContext.java,
+	gnu/java/beans/decoder/Context.java,
+	gnu/java/beans/decoder/DecoderContext.java,
+	gnu/java/beans/decoder/DefaultExceptionListener.java,
+	gnu/java/beans/decoder/DoubleHandler.java,
+	gnu/java/beans/decoder/DummyContext.java,
+	gnu/java/beans/decoder/DummyHandler.java,
+	gnu/java/beans/decoder/ElementHandler.java,
+	gnu/java/beans/decoder/FloatHandler.java,
+	gnu/java/beans/decoder/GrowableArrayContext.java,
+	gnu/java/beans/decoder/IndexContext.java,
+	gnu/java/beans/decoder/IntHandler.java,
+	gnu/java/beans/decoder/JavaHandler.java,
+	gnu/java/beans/decoder/LongHandler.java,
+	gnu/java/beans/decoder/MethodContext.java,
+	gnu/java/beans/decoder/MethodFinder.java,
+	gnu/java/beans/decoder/NullHandler.java,
+	gnu/java/beans/decoder/ObjectContext.java,
+	gnu/java/beans/decoder/ObjectHandler.java,
+	gnu/java/beans/decoder/PersistenceParser.java,
+	gnu/java/beans/decoder/PropertyContext.java,
+	gnu/java/beans/decoder/ShortHandler.java,
+	gnu/java/beans/decoder/SimpleHandler.java,
+	gnu/java/beans/decoder/StaticMethodContext.java,
+	gnu/java/beans/decoder/StringHandler.java,
+	gnu/java/beans/decoder/VoidHandler.java: New class
+	implementing java.beans.XMLDecoder decoding functionality.
+	* java/beans/XMLDecoder.java: New class.
+
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 
 	2005-01-02  Michael Koch  <konqueror@gmx.de>
 
