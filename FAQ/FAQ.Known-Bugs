@@ -62,3 +62,9 @@ Treat it as an TODO list.
   alignment is sizeof (jlong); apparently, some architectures require more
   specific alignments.
 
+*  Kaffe fails to work for several people under SunOS 4.1.3.  The error
+  message seems to be "Can not find native library in path".  This problem
+  is unclear: either a problem in the kaffe script that use @libdir@ and set 
+  LD_LIBRARY_PATH (less likely), or a problem in the dynamic linking 
+  mechanisms on this system.  Check the mailing list archive for more info.
+
