@@ -23,6 +23,14 @@
 #include "jthread.h"
 #include "debug.h"
 
+#ifndef STACKREDZONE
+# ifdef REDZONE
+#  define STACKREDZONE	REDZONE
+# else
+#  define STACKREDZONE	1024
+# endif
+#endif
+
 /*
  * If we don't have an atomic compare and exchange defined then make
  * one out of a simple atomic exchange (using the LOCKINPROGRESS value
@@ -104,6 +112,7 @@ DBG(SLOWLOCKS,
 		lkp, *lkp, jthread_current());
 )
  
+	lk = 0;
 	timeout = 1;
 	for (;;) {
 		/* Get the current lock and replace it with LOCKINPROGRESS to indicate
@@ -128,20 +137,29 @@ DBG(SLOWLOCKS,
 			lk = (iLock*)(((uintp)old) & (uintp)-2);
 		}
 		else {
-			/* Create a heavy lock object for others to find. */
-			lk = 0;
-			for (i = 0; i < NR_SPECIAL_LOCKS; i++) {
-				if (specialLocks[i].key == lkp) {
-					lk = &specialLocks[i].lock;
-					break;
-				}
-			}
-DBG(SLOWLOCKS,
-    			dprintf("    got %s lock\n",
-				(lk == 0) ? "new" : "special");
-)
 			if (lk == 0) {
-				lk = (iLock*)jmalloc(sizeof(iLock));
+				/* Create a heavy lock object for others to find. */
+				for (i = 0; i < NR_SPECIAL_LOCKS; i++) {
+					if (specialLocks[i].key == lkp) {
+						lk = &specialLocks[i].lock;
+						break;
+					}
+				}
+DBG(SLOWLOCKS,
+				dprintf("    got %s lock\n",
+					(lk == 0) ? "new" : "special");
+)
+				if (lk == 0) {
+					/* Release the lock before we go into malloc.
+					 * We have to reclaim the lock afterwards (at beginning
+					 * of loop)
+					 */
+					*lkp = old;
+					lk = (iLock*)jmalloc(sizeof(iLock));
+					/* if that fails we're in trouble!! */
+					assert(lk != 0);
+					continue;
+				}
 			}
 			lk->holder = (void*)old;
 			lk->mux = 0;
@@ -316,7 +334,10 @@ DBG(SLOWLOCKS,
 	holder = lk->holder;
 
 	/* I must be holding the damn thing */
-	assert(jthread_on_current_stack(holder));
+	if (!jthread_on_current_stack(holder)) {
+		putHeavyLock(lkp, holder);
+		throwException(IllegalMonitorStateException);
+	}
 
 	putHeavyLock(lkp, lk);
 	slowUnlockMutex(lkp, holder);
@@ -467,7 +488,7 @@ _lockMutex(iLock** lkp, void* where)
 			slowLockMutex(lkp, where);
 		}
 	}
-	else if (val - (uintp)where > 1024) {
+	else if ((val - (uintp)where) > (STACKREDZONE / 2)) {
 		/* XXX count this in the stats area */
 		slowLockMutex(lkp, where);
 	}
