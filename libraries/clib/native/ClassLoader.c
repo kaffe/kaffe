@@ -133,32 +133,21 @@ java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
 {
 	errorInfo info;
 	Hjava_lang_Class *clazz;
-	int len = javaStringLength(str);
-	Utf8Const* c;
-	char* name;
-#if INTERN_UTF8CONSTS
-	char buffer[100];
-	if (len <= 100) {
-		name = buffer;
-	}
-	else {
-		name = KMALLOC (len);
-	}
-#else
-	c = KMALLOC(sizeof(Utf8Const) + len + 1);
-	name = c->data;
-#endif
+        int len = javaStringLength(str);
+        Utf8Const* c;
+        char* name;
+        char buffer[100];
+
+        if (len <= 100) {
+                name = buffer;
+        }
+        else {
+                name = KMALLOC (len);
+        }
         javaString2CString(str, name, len+1);
-	classname2pathname (name, name);
-#if INTERN_UTF8CONSTS
-	c = makeUtf8Const (name, len);
-	if (name != buffer) {
-		KFREE(name);
-	}
-#else /* ! INTERN_UTF8CONSTS */
-	c->length = len;
-	c->hash = (uint16) hashUtf8String (name, len);
-#endif /* ! INTERN_UTF8CONSTS */
+        classname2pathname (name, name);
+        c = makeUtf8Const (name, len);
+
 	clazz = loadClass(c, 0, &info);
 	if (clazz == 0) {
 		/* 
@@ -171,7 +160,13 @@ java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
 			SET_LANG_EXCEPTION_MESSAGE(&info,
 				ClassNotFoundException, info.mess)
 		}
+		if (name != buffer) {
+			KFREE(name);
+		}
 		throwError(&info);
+	}
+	if (name != buffer) {
+		KFREE(name);
 	}
 
 	if (processClass(clazz, CSTATE_COMPLETE, &info) == false) {
