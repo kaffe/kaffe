@@ -42,6 +42,7 @@ import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.LayoutManager2;
 import java.io.Serializable;
 
@@ -146,8 +147,9 @@ public class BoxLayout implements LayoutManager2, Serializable
     if (parent != container)
       throw new AWTError("invalid parent");
 
-    int x = 0;
-    int y = 0;
+    Insets insets = parent.getInsets();
+    int x = insets.left + insets.right;
+    int y = insets.bottom + insets.top;
 
     Component[] children = parent.getComponents();
 
@@ -191,8 +193,9 @@ public class BoxLayout implements LayoutManager2, Serializable
     if (parent != container)
       throw new AWTError("invalid parent");
 
-    int x = 0;
-    int y = 0;
+    Insets insets = parent.getInsets();
+    int x = insets.left + insets.right;
+    int y = insets.bottom + insets.top;
 
     Component[] children = parent.getComponents();
 
@@ -235,26 +238,30 @@ public class BoxLayout implements LayoutManager2, Serializable
       throw new AWTError("invalid parent");
 
     Dimension size = parent.getSize();
-
+    Insets insets = parent.getInsets();
+    Dimension innerSize = new Dimension(size.width - insets.left
+                                        - insets.right, size.height
+                                        - insets.bottom - insets.top);
     Component[] children = parent.getComponents();
 
     if (isHorizontalIn(parent))
       {
-        int x = 0;
+        int x = insets.left;
         for (int index = 0; index < children.length; index++)
           {
             Component comp = children[index];
             Dimension sz = comp.getPreferredSize();
             int width = sz.width;
             int height = sz.height;
-            int cy = 0;
-            if (height > size.height)
+            int cy = insets.top;
+            if (height > innerSize.height)
               {
-                height = size.height;
+                height = innerSize.height;
               }
             else
               {
-                cy = (int) ((size.height - height) * comp.getAlignmentY());
+                cy = (int) ((innerSize.height - height)
+                            * comp.getAlignmentY());
               }
             
             comp.setSize(width, height);
@@ -264,21 +271,21 @@ public class BoxLayout implements LayoutManager2, Serializable
       }
     else
       {
-        int y = 0;        
+        int y = insets.top;        
         for (int index = 0; index < children.length; index++)
           {
             Component comp = children[index];
             Dimension sz = comp.getPreferredSize();
             int width = sz.width;
             int height = sz.height;
-            int cx = 0;
-            if (width > size.width)
+            int cx = insets.left;
+            if (width > innerSize.width)
               {
-                width = size.width;
+                width = innerSize.width;
               }
             else
               {
-                cx = (int) ((size.width - width) * comp.getAlignmentX());
+                cx = (int) ((innerSize.width - width) * comp.getAlignmentX());
               }
             
             comp.setSize(width, height);
@@ -352,8 +359,9 @@ public class BoxLayout implements LayoutManager2, Serializable
     if (parent != container)
       throw new AWTError("invalid parent");
 
-    int x = 0;
-    int y = 0;
+    Insets insets = parent.getInsets();
+    int x = insets.left + insets.right;
+    int y = insets.top + insets.bottom;
 
     Component[] children = parent.getComponents();
 

@@ -2,6 +2,18 @@
 
 	Resynced with GNU Classpath.
 
+	2005-03-03  Roman Kennke  <roman@ontographics.com>
+
+        * javax/swing/BoxLayout.java:
+        (preferredLayoutSize,minimumLayoutSize,maximumLayoutSize,
+        layoutContainer): Make these methods and thereby the
+        BoxLayout respect the insets (like borders) of the
+        component that is laid out.
+
+2005-03-08  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-03-03  Jeroen Frijters  <jeroen@frijters.net>
 
         * java/lang/InheritableThreadLocal.java
