@@ -22,9 +22,6 @@
 /* When to increase size of hash table */
 #define NEED_RESIZE(tab)	(4 * (tab)->count >= 3 * (tab)->size)
 
-/* Indicates a deleted pointer */
-#define DELETED			((const void *)~0L)
-
 /* Valid client-set flags */
 #define HASH_CLIENT_FLAGS	(HASH_ADD_REFS|HASH_SYNCHRONIZE)
 
@@ -44,8 +41,11 @@ struct _hashtab {
 };
 
 /* Internal functions */
-static int	hashFindSlot(hashtab_t, const void *ptr);
-static void	hashResize(hashtab_t tab);
+static int		hashFindSlot(hashtab_t, const void *ptr);
+static void		hashResize(hashtab_t tab);
+
+/* Indicates a deleted pointer */
+static const void	*DELETED = (const void *)hashInit;
 
 /*
  * Create a new hashtable
@@ -216,7 +216,9 @@ hashFindSlot(hashtab_t tab, const void *ptr)
 			return (deletedIndex >= 0) ? deletedIndex : index;
 		}
 		if (*ptr2 == DELETED) {
-			deletedIndex = index;
+			if (deletedIndex == -1) {
+				deletedIndex = index;
+			}
 		} else if (*ptr2 == ptr || (*tab->comp)(ptr, *ptr2) == 0) {
 			return(index);
 		}
