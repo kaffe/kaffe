@@ -1,3 +1,30 @@
+Mon Apr 22 10:15:48 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* libraries/clib/net/PlainDatagramSocketImpl.c,
+	libraries/clib/net/PlainSocketImpl.c,
+	libraries/javalib/java/net/MulticastSocket.java,
+	libraries/javalib/java/net/SocketOptions.java,
+	libraries/javalib/java/net/PlainDatagramSocketImpl.java:
+	Reversed changes for SO_REUSEPORT, since it's not defined in any
+	API specification. Thanks to Audeon Guillaume <AUDEONG@thmulti.com>
+	for pointing it out.
+	* libraries/javalib/java/lang/Class.java:
+	(forName) skip over native and java part of method invoke.
+	* libraries/javalib/java/lang/reflect/Method.java:
+	(invoke0) new method.
+	(invoke) partially reimplemented error-checking in Java.
+	* libraries/clib/native/Method.c:
+	(Java_java_lang_reflect_Method_invoke) renamed to
+	(Java_java_lang_reflect_Method_invoke0) and moved basic parameter
+	checks into non-native implementation part.
+	* libraries/clib/native/Constructor.c:
+	(Java_java_lang_reflect_Constructor_newInstance) use
+	Method.invoke0 instead of Method.invoke.
+	* test/regression/InvTarExcTest.java: adapted output to new
+	Method.invoke stack trace.
+	* libraries/javalib/kjc.jar: updated to latest version from kopi
+	CVS, i.e. 2.1A + a few important bugfixes.
+	* libraries/javalib/Klasses.jar: regenerated with new kjc.
+
 Wed Apr 17 22:02:42 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* libraries/javalib/java/applet/Applet.java:
 	(getAppletContext), (getAudioClip), (getCodeBase),

@@ -27,7 +27,7 @@
 
 /* XXX move in header file */
 jobject
-Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, 
+Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, 
 	jobject _obj, jobjectArray _argobj);
 
 jint
@@ -49,10 +49,10 @@ Java_java_lang_reflect_Constructor_newInstance(JNIEnv* env, jobject _this, jobje
 {
 	/* 
 	 * We fake a java.lang.reflect.Method Object so that we can call
-	 * Java_java_lang_reflect_Method_invoke from here.
+	 * Java_java_lang_reflect_Method_invoke0 from here.
 	 *
 	 * The main task Method_invoke does is converting the jobjectArray of
-	 * arguments into a jvalue * array.  Method.invoke will invoke the
+	 * arguments into a jvalue * array.  Method.invoke0 will invoke the
 	 * right JNI function when it detects that the method is a constructor
 	 */
 	Hjava_lang_reflect_Method meth[1];
@@ -66,6 +66,6 @@ Java_java_lang_reflect_Constructor_newInstance(JNIEnv* env, jobject _this, jobje
 	unhand(meth)->parameterTypes = unhand(this)->parameterTypes;
 	unhand(meth)->exceptionTypes = unhand(this)->exceptionTypes;
 
-	return Java_java_lang_reflect_Method_invoke(env, (jobject)meth, 
+	return Java_java_lang_reflect_Method_invoke0(env, (jobject)meth, 
 			(jobject)NULL, argobj);
 }

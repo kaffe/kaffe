@@ -32,7 +32,8 @@ java.lang.reflect.InvocationTargetException: java.lang.Exception: throwing inner
 	at java.lang.Throwable.<init>(Throwable.java:38)
 	at java.lang.Exception.<init>(Exception.java:24)
 	at InvTarExcTest.f(InvTarExcTest.java:6)
-	at java.lang.reflect.Method.invoke(Method.java:native)
+	at java.lang.reflect.Method.invoke0(Method.java:native)
+	at java.lang.reflect.Method.invoke(Method.java:103)
 	at InvTarExcTest.main(InvTarExcTest.java:13)
 Target is: throwing inner exception
 */

@@ -46,12 +46,15 @@ private Class() {
  * If we didn't, then we would detect java.lang.reflect.Method as the
  * calling class, and end up always using the bootstrap ClassLoader.
  * To deal with this, we skip over java.lang.reflect.Method.
+ *
+ * Since Method.invoke implementation has a java and a native part,
+ * we need to skip both.
  */
 public static Class forName(String className) throws ClassNotFoundException {
 	Class callingClass = getStackClass(1);
 	if (callingClass != null
 	    && callingClass.getName().equals("java.lang.reflect.Method"))
-		callingClass = getStackClass(2);
+		callingClass = getStackClass(3);
 	return forName(className, true,
 	    callingClass == null ? null : callingClass.getClassLoader());
 }

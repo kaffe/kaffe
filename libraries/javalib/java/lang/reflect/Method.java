@@ -82,7 +82,28 @@ public int hashCode() {
 	return (clazz.getName().hashCode() ^ name.hashCode());
 }
 
-native public Object invoke(Object obj, Object args[]) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+public Object invoke(Object obj, Object args[]) 
+	throws IllegalAccessException,
+	IllegalArgumentException,
+	InvocationTargetException {
+
+	if (obj == null && !Modifier.isStatic(getModifiers())) {
+		throw new NullPointerException("Null object pointer");
+	}
+
+	if (obj != null && !(getDeclaringClass().isInstance(obj))) {
+		throw new IllegalArgumentException("Object type doesn't match method's class");
+	}
+
+	int len = (args == null ? 0 : args.length);
+	if (len != getParameterTypes().length) {
+		throw new IllegalArgumentException("wrong number of arguments");
+	}
+
+	return invoke0(obj, args);
+}
+
+native public Object invoke0(Object obj, Object args[]) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 
 public String toString() {
 	StringBuffer str = new StringBuffer();
