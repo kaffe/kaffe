@@ -134,7 +134,9 @@ getAttr:
 			    // Get next character
 			    int c = p.read();
 			    if (c == -1) {
-				throw new EOFException();
+				if (state != ST_EOL) {
+				    throw new EOFException();
+				}
 			    }
 
 			    // Map all EOL possibilities to '\n'
@@ -144,6 +146,8 @@ getAttr:
 				    p.unread(c);
 				}
 				c = '\n';
+			    }
+			    if (c == '\n') {
 				lineno++;
 			    }
 
@@ -203,8 +207,14 @@ getAttr:
 				    break;
 				}
 				attr.putValue(nbuf.toString(), vbuf.toString());
-				p.unread(c);
 				state = ST_START;
+				if (c == -1) {
+				    // process last attributes
+				    break getAttr;
+				}
+				else {
+				    p.unread(c);
+				}
 				break;
 			    }
 			}
