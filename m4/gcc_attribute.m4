@@ -2,7 +2,7 @@ dnl CACHED_TRY_COMPILE(<description>,<cachevar>,<include>,<program>,<ifyes>,<ifn
 AC_DEFUN([CACHED_TRY_COMPILE],[
  AC_MSG_CHECKING($1)
  AC_CACHE_VAL($2,[
-  AC_TRY_COMPILE([$3],[$4],[$2=yes],[$2=no])
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[$3]], [[$4]])],[$2=yes],[$2=no])
  ])
  if test "x$$2" = xyes; then
   true

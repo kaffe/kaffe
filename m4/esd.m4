@@ -38,8 +38,7 @@ AC_ARG_ENABLE(esdtest, [  --disable-esdtest       Do not try to compile and run 
   if test "$ESD_CONFIG" = "no" ; then
     no_esd=yes
   else
-    AC_LANG_SAVE
-    AC_LANG_C
+    AC_LANG_PUSH([C])
     ESD_CFLAGS=`$ESD_CONFIG $esdconf_args --cflags`
     ESD_LIBS=`$ESD_CONFIG $esdconf_args --libs`
 
@@ -59,7 +58,7 @@ dnl Now check if the installed ESD is sufficiently new. (Also sanity
 dnl checks the results of esd-config to some extent
 dnl
       rm -f conf.esdtest
-      AC_TRY_RUN([
+      AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -113,10 +112,10 @@ int main ()
     }
 }
 
-],, no_esd=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
+]])],[],[no_esd=yes],[echo $ac_n "cross compiling; assumed OK... $ac_c"])
        CFLAGS="$ac_save_CFLAGS"
        LIBS="$ac_save_LIBS"
-       AC_LANG_RESTORE
+       AC_LANG_POP([C])
      fi
   fi
   if test "x$no_esd" = x ; then
@@ -136,13 +135,11 @@ int main ()
           echo "*** Could not run ESD test program, checking why..."
           CFLAGS="$CFLAGS $ESD_CFLAGS"
           LIBS="$LIBS $ESD_LIBS"
-          AC_LANG_SAVE
-          AC_LANG_C
-          AC_TRY_LINK([
+          AC_LANG_PUSH([C])
+          AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <stdio.h>
 #include <esd.h>
-],      [ return 0; ],
-        [ echo "*** The test program compiled, but did not run. This usually means"
+]], [[ return 0; ]])],[ echo "*** The test program compiled, but did not run. This usually means"
           echo "*** that the run-time linker is not finding ESD or finding the wrong"
           echo "*** version of ESD. If it is not finding ESD, you'll need to set your"
           echo "*** LD_LIBRARY_PATH environment variable, or edit /etc/ld.so.conf to point"
@@ -150,14 +147,13 @@ int main ()
           echo "*** is required on your system"
 	  echo "***"
           echo "*** If you have an old version installed, it is best to remove it, although"
-          echo "*** you may also be able to get things to work by modifying LD_LIBRARY_PATH"],
-        [ echo "*** The test program failed to compile or link. See the file config.log for the"
+          echo "*** you may also be able to get things to work by modifying LD_LIBRARY_PATH"],[ echo "*** The test program failed to compile or link. See the file config.log for the"
           echo "*** exact error that occured. This usually means ESD was incorrectly installed"
           echo "*** or that you have moved ESD since it was installed. In the latter case, you"
           echo "*** may want to edit the esd-config script: $ESD_CONFIG" ])
           CFLAGS="$ac_save_CFLAGS"
           LIBS="$ac_save_LIBS"
-          AC_LANG_RESTORE
+          AC_LANG_POP([C])
        fi
      fi
      ESD_CFLAGS=""

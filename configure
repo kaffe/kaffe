@@ -51474,8 +51474,6 @@ echo $ECHO_N "checking for ESD - version >= $min_esd_version... $ECHO_C" >&6
   if test "$ESD_CONFIG" = "no" ; then
     no_esd=yes
   else
-
-
     ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -51613,8 +51611,6 @@ echo "${ECHO_T}no" >&6
           echo "*** Could not run ESD test program, checking why..."
           CFLAGS="$CFLAGS $ESD_CFLAGS"
           LIBS="$LIBS $ESD_LIBS"
-
-
           ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'

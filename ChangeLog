@@ -1,5 +1,14 @@
 2004-04-06  Dalibor Topic <robilad@kaffe.org>
 
+	* configure:
+	Regenerated.
+
+	* m4/esd.m4,
+	m4/gcc_attribute.m4:
+	Fixed various automake warnings.
+
+2004-04-06  Dalibor Topic <robilad@kaffe.org>
+
 	* configure.ac:
 	Renamed --enable-pxa to --enable-xscale since pxa is an
 	XScale not the other way round.
