@@ -548,8 +548,8 @@ document dumpclasses
 end
 
 define restorelinux
-  set $th = ((jthread*)$arg0)
-  set $jbuf = $th.env.__jmpbuf
+  set $th = ((struct _jthread*)$arg0)
+  set $jbuf = $th.env[0].__jmpbuf
   echo >
   set $eip = $jbuf[5]
   echo .
