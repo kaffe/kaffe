@@ -38,6 +38,7 @@ public class ConverterAlias {
 	alias.put("IBM819",	 	"8859_1");
 	alias.put("CP819",	 	"8859_1");
 	alias.put("CSISOLATIN1",	"8859_1");
+	useIconv.put("8859_1", "Y");
 
 	alias.put("ISO_8859-2:1987",	"8859_2");
 	alias.put("ISO-IR-101",		"8859_2");
@@ -46,6 +47,7 @@ public class ConverterAlias {
 	alias.put("LATIN2",		"8859_2");
 	alias.put("L2",                 "8859_2");
 	alias.put("CSISOLATIN2",	"8859_2");
+	useIconv.put("8859_2", "Y");
 
 	alias.put("ISO_8859-3:1988",	"8859_3");
 	alias.put("ISO-IR-109",		"8859_3");
@@ -54,6 +56,7 @@ public class ConverterAlias {
 	alias.put("LATIN3",		"8859_3");
 	alias.put("L3",                 "8859_3");
 	alias.put("CSISOLATIN3",	"8859_3");
+	useIconv.put("8859_3", "Y");
 
 	alias.put("ISO_8859-4:1988",	"8859_4");
 	alias.put("ISO-IR-110",		"8859_4");
@@ -62,6 +65,7 @@ public class ConverterAlias {
 	alias.put("LATIN4",		"8859_4");
 	alias.put("L4",		        "8859_4");
 	alias.put("CSISOLATIN4",	"8859_4");
+	useIconv.put("8859_4", "Y");
 
 	alias.put("ISO_8859-5:1988",	"8859_5");
 	alias.put("ISO-IR-144",		"8859_5");
@@ -69,6 +73,7 @@ public class ConverterAlias {
 	alias.put("ISO-8859-5",		"8859_5");
 	alias.put("CYRILLIC",		"8859_5");
 	alias.put("CSISOLATINCYRILLIC",	"8859_5");
+	useIconv.put("8859_5", "Y");
 
 	alias.put("ISO_8859-6:1987",	"8859_6");
 	alias.put("ISO-IR-127",		"8859_6");
@@ -78,6 +83,7 @@ public class ConverterAlias {
 	alias.put("ASMO-708",		"8859_6");
 	alias.put("ARABIC",		"8859_6");
 	alias.put("CSISOLATINARABIC",	"8859_6");
+	useIconv.put("8859_6", "Y");
 
 	alias.put("ISO_8859-7:1987",	"8859_7");
 	alias.put("ISO-IR-126",		"8859_7");
@@ -88,6 +94,7 @@ public class ConverterAlias {
 	alias.put("GREEK",		"8859_7");
 	alias.put("GREEK8",		"8859_7");
 	alias.put("CSISOLATINGREEK",	"8859_7");
+	useIconv.put("8859_7", "Y");
 
 	alias.put("ISO_8859-8:1988",	"8859_8");
 	alias.put("ISO-IR-138",		"8859_8");
@@ -95,6 +102,7 @@ public class ConverterAlias {
 	alias.put("ISO-8859-8",		"8859_8");
 	alias.put("HEBREW",		"8859_8");
 	alias.put("CSISOLATINHEBREW",	"8859_8");
+	useIconv.put("8859_8", "Y");
 
 	alias.put("ISO_8859-9:1989",	"8859_9");
 	alias.put("ISO-IR-148",		"8859_9");
@@ -103,13 +111,17 @@ public class ConverterAlias {
 	alias.put("LATIN5",		"8859_9");
 	alias.put("L5",		        "8859_9");
 	alias.put("CSISOLATIN5",	"8859_9");
+	useIconv.put("8859_9", "Y");
 
 	alias.put("EBCDIC",		"CP1046");
+	useIconv.put("CP1046", "Y");
 
 	alias.put("UTF-8",		"UTF8");
+	useIconv.put("UTF8", "Y");
 
 	alias.put("KOI8-R",		"KOI8_R");
 	alias.put("CSKOI8R",		"KOI8_R");
+	useIconv.put("KOI8_R", "Y");
 
 	alias.put("EUCJP",              "EUC-JP");
 	alias.put("EUC_JP",             "EUC-JP");
@@ -127,6 +139,7 @@ public class ConverterAlias {
 	alias.put("IBM367",             "ASCII");
 	alias.put("CP367",	        "ASCII");
 	alias.put("CPASCII",	        "ASCII");
+	useIconv.put("ASCII", "Y");
 
 	alias.put("UNICODEBIGUNMARKED",	"UTF-16BE");
 	useIconv.put("UTF-16BE", "Y");

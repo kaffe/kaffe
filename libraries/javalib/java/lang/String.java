@@ -10,14 +10,17 @@
 
 package java.lang;
 
+import gnu.java.io.decode.Decoder;
+import gnu.java.io.EncodingManager;
+
 import java.io.ByteArrayOutputStream;
+import java.io.CharConversionException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import kaffe.io.ByteToCharConverter;
 import kaffe.io.CharToByteConverter;
 
 public final class String implements Serializable, Comparable, CharSequence {
@@ -81,14 +84,15 @@ public String(StringBuffer sb) {
 }
 
 public String(byte[] bytes) {
-	this(decodeBytes(bytes, 0,
-	      bytes.length, ByteToCharConverter.getDefault()));
+	this(bytes, 0, bytes.length);
 }
 
-public String(byte[] bytes, String enc) throws UnsupportedEncodingException {
-	this(decodeBytes(bytes, 0,
-	    bytes.length, ByteToCharConverter.getConverter(enc)));
-}
+/* taken from GNU Classpath */
+  public String(byte[] data, String encoding)
+    throws UnsupportedEncodingException
+  {
+    this(data, 0, data.length, encoding);
+  }
 
 /**
  * @deprecated
@@ -97,16 +101,52 @@ public String(byte ascii[], int hibyte) {
 	this(ascii, hibyte, 0, ascii.length);
 }
 
-public String(byte[] bytes, int offset, int length) {
-	this(decodeBytes(bytes, offset,
-	    length, ByteToCharConverter.getDefault()));
-}
+/* taken from GNU Claspath */
+  public String(byte[] data, int offset, int count)
+  {
+    if (offset < 0 || count < 0 || offset + count > data.length)
+      throw new StringIndexOutOfBoundsException();
+    try
+      {
+        // XXX Consider using java.nio here.
+        value = EncodingManager.getDecoder()
+          .convertToChars(data, offset, count);
+      }
+    catch (UnsupportedEncodingException uee)
+      {
+        throw new Error(uee);
+      }
+    catch (CharConversionException cce)
+      {
+        throw new Error(cce);
+      }
+    this.offset = 0;
+    this.count = value.length;
+  }
 
-public String(byte[] bytes, int offset, int length, String enc)
-		throws UnsupportedEncodingException {
-	this(decodeBytes(bytes, offset,
-	    length, ByteToCharConverter.getConverter(enc)));
-}
+/* taken from GNU Claspath */
+  public String(byte[] data, int offset, int count, String encoding)
+    throws UnsupportedEncodingException
+  {
+    if (offset < 0 || count < 0 || offset + count > data.length)
+      throw new StringIndexOutOfBoundsException();
+    try
+      {
+        // XXX Consider using java.nio here.
+        value = EncodingManager.getDecoder(encoding)
+          .convertToChars(data, offset, count);
+      }
+    catch (UnsupportedEncodingException uee)
+      {
+        throw new Error(uee);
+      }
+    catch (CharConversionException cce)
+      {
+        throw new Error(cce);
+      }
+    this.offset = 0;
+    this.count = value.length;
+  }
 
 /**
  * @deprecated
@@ -334,16 +374,9 @@ public int indexOf( int ch, int sIdx) {
 	return -1;
 }
 
-private static StringBuffer decodeBytes(byte[] bytes, int offset,
-		int len, ByteToCharConverter encoding) {
-	StringBuffer sbuf = new StringBuffer(len);
-	char[] out = new char[512];
-	int outlen = encoding.convert(bytes, offset, len, out, 0, out.length);
-	while (outlen > 0) {
-		sbuf.append(out, 0, outlen);
-		outlen = encoding.flush(out, 0, out.length);
-	}
-	return sbuf;
+private static char[] decodeBytes(byte[] bytes, int offset,
+		int len, Decoder decoder)  throws CharConversionException {
+	return decoder.convertToChars(bytes, offset, len);
 }
 
 public int lastIndexOf( String str) {
