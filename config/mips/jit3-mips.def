@@ -366,8 +366,6 @@ define_insn(prologue, prologue_xxC) {
 			a++;
 			break;
 		}
-
-		sig++;
 	}
 #if defined(STACK_LIMIT)
 	if (a < NR_ARGUMENTS) {

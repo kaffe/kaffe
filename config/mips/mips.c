@@ -205,7 +205,7 @@ __mipsInitJit(Method* meth)
 		a++;
 	}
 
-	for (j = 0; j < METHOD_NARGS(meth); ++j)) {
+	for (j = 0; j < METHOD_NARGS(meth); ++j) {
 		char ch = *METHOD_ARG_TYPE(meth, j);
 		if (ch == 'D' || ch == 'J') {
 			a += a % 2;
