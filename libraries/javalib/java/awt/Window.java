@@ -69,6 +69,8 @@ public void addNotify () {
 			// if we have an owner that has not been created yet, do it now
 			if ( (owner != null) && (owner.nativeData == null) )
 				owner.addNotify();
+
+			super.addNotify();
 		
 			// defer size setting as much as possible
 			if ( (width == 0) || (height == 0) )
@@ -78,8 +80,6 @@ public void addNotify () {
 				throw new AWTError( "native create failed: " + this);
 
 			AWTEvent.registerSource( this, nativeData);
-			
-			super.addNotify();
 		}
 	}
 }
