@@ -21,6 +21,7 @@ java/io/BufferedReader.class
 java/io/ByteArrayInputStream.class
 java/io/ByteArrayOutputStream.class
 java/io/DataInput.class
+java/io/DataInputStream.class
 java/io/DataOutput.class
 java/io/DataOutputStream.class
 java/io/DeleteFileHelper.class

@@ -23,7 +23,7 @@
 
 SUBDIRS = . gmp-math
 
-SRCDIRS = gnu java javax kaffe org
+SRCDIRS = com gnu java javax kaffe org
 
 ## Pick source of java math implementation
 if COND_PURE_JAVA_MATH
@@ -40,12 +40,6 @@ JAR=BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) 
 
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
-
-if HAVE_DNSJAVA
-DNSJAVA_InetAddressImpl = gnu/java/net/DNSJavaInetAddressImpl.java
-else
-DNSJAVA_InetAddressImpl =
-endif
 
 Klasses_jar_SRCS = \
 	# The following will be replaced by the

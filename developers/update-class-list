@@ -19,7 +19,6 @@ trap 'rm -f classlist omit_filter pkglist macrodef; exit 1' 1 2 15
 
 omitted_packages="\
 java/awt/win32 \
-gnu/crypto \
 "
 
 echo "WARNING: Omitted packages: $omitted_packages"
