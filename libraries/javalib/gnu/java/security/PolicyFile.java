@@ -1,5 +1,5 @@
 /* PolicyFile.java -- policy file reader.
-   Copyright (C) 2003  Casey Marshall <rsdio@metastatic.org>
+   Copyright (C) 2004  Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -133,7 +133,7 @@ import java.util.StringTokenizer;
  * <code>"java.security.policy"</code>.</li>
  * </ol>
  *
- * @author Casey Marshall (rsdio@metastatic.org)
+ * @author Casey Marshall (csm@gnu.org)
  * @see java.security.Policy
  */
 public final class PolicyFile extends Policy
