@@ -1,5 +1,9 @@
 Thu May 14 15:04:09 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
+	* test/regression/TestScript: added GCTest
+	* test/regression/GCTest.java: new file, courtesy 
+	Pat Tullmann <tullmann@cs.utah.edu>
+
 	* kaffe/kaffevm/mem/gc-incremental.c: fixed nasty race condition
 	where gc freed newborn objects.	See comment in file.
 
