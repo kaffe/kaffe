@@ -203,7 +203,7 @@ Hjava_lang_Class *findSuperMethod(Hjava_lang_Class *orig_cl, Method *meth)
 	{
 		int lpc;
 
-		for( lpc = 0; lpc < CLASS_NMETHODS(cl); lpc++ )
+		for( lpc = 0; lpc < CLASS_NMETHODS(cl) && !retval; lpc++ )
 		{
 			if( CLASS_METHODS(cl)[lpc].idx == meth->idx )
 			{

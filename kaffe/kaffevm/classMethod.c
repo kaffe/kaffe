@@ -690,9 +690,9 @@ expandMethods(Hjava_lang_Class *cl, Method *imeth, errorInfo *einfo)
 	}
 	else
 	*/
-	if( (new_methods = KREALLOC(CLASS_METHODS(cl),
-					 sizeof(Method) *
-					 (CLASS_NMETHODS(cl) + 1))) )
+	if( (new_methods = gc_realloc(CLASS_METHODS(cl),
+				      sizeof(Method) *
+				      (CLASS_NMETHODS(cl) + 1), GC_ALLOC_METHOD)) )
 	{
 		int index;
 		
@@ -1020,7 +1020,7 @@ addSourceFile(Hjava_lang_Class* c, int idx, errorInfo *einfo)
 	} else {
 		basename++;
 	}
-	c->sourcefile = KMALLOC(strlen(basename) + 1);
+	c->sourcefile = gc_malloc(strlen(basename) + 1, GC_ALLOC_CLASSMISC);
 	if (c->sourcefile != 0) {
 		strcpy(c->sourcefile, basename);
 	} else {
@@ -1055,7 +1055,7 @@ addInnerClasses(Hjava_lang_Class* c, uint32 len, classFile* fp,
 	if (! checkBufSize(fp, nr*(2*4), CLASS_CNAME(c), einfo))
 	    return false;
 
-	ic = KMALLOC(sizeof(innerClass) * nr);
+	ic = gc_malloc(sizeof(innerClass) * nr, GC_ALLOC_CLASSMISC);
 	if (!ic) {
 		postOutOfMemory(einfo);
 		return false;
@@ -1361,7 +1361,7 @@ Hjava_lang_Class *userLoadClass(classEntry *ce,
 		env,
 		(*env)->GetObjectClass(env, loader),
 		"loadClass",
-		"(Ljava/lang/String;Z)Ljava/lang/Class;")) )
+		"(Ljava/lang/String;)Ljava/lang/Class;")) )
 	{
 		jthrowable excobj;
 		
@@ -1369,8 +1369,7 @@ Hjava_lang_Class *userLoadClass(classEntry *ce,
 			(*env)->CallObjectMethod(env,
 						 loader,
 						 meth,
-						 jname,
-						 false);
+						 jname);
 		
 		/*
 		 * Check whether an exception occurred.  If one was pending,
@@ -1717,7 +1716,7 @@ resolveObjectFields(Hjava_lang_Class* class, errorInfo *einfo)
 	 * a bitmap to help the gc scan the object.  The first part is
 	 * inherited from the superclass.
 	 */
-	map = BITMAP_NEW(CLASS_FSIZE(class)/ALIGNMENTOF_VOIDP);
+	map = BITMAP_NEW(CLASS_FSIZE(class)/ALIGNMENTOF_VOIDP, GC_ALLOC_CLASSMISC);
 	if (map == 0) {
 		postOutOfMemory(einfo);
 		return (false);
@@ -1998,7 +1997,7 @@ buildTrampoline(Method *meth, void **where, errorInfo *einfo)
 
 	if (methodNeedsTrampoline(meth)) {
 		/* XXX don't forget to pick those up at class gc time */
-		tramp = (methodTrampoline*)KMALLOC(sizeof(methodTrampoline));
+		tramp = (methodTrampoline*)gc_malloc(sizeof(methodTrampoline), GC_ALLOC_TRAMPOLINE);
 		if (tramp == 0) {
 			postOutOfMemory(einfo);
 			return (0);
@@ -2192,7 +2191,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 		return (true);
 	}
 
-	class->if2itable = KMALLOC(class->total_interface_len * sizeof(short));
+	class->if2itable = gc_malloc(class->total_interface_len * sizeof(short), GC_ALLOC_CLASSMISC);
 
 	if (class->if2itable == 0) {
 		postOutOfMemory(einfo);
@@ -2206,7 +2205,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 		j += 1;		/* add one word to store interface class */
 		j += class->interfaces[i]->msize;
 	}
-	class->itable2dtable = KMALLOC(j * sizeof(void *));
+	class->itable2dtable = gc_malloc(j * sizeof(void *), GC_ALLOC_CLASSMISC);
 	if (class->itable2dtable == 0) {
 		postOutOfMemory(einfo);
 		return (false);
@@ -2385,16 +2384,16 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 			short firstnewentry;
 			if (iface->implementors == NULL) {
 				len = (i + 1) + 4; /* 4 is slack only */
-				iface->implementors = KMALLOC(len * sizeof(short));
+				iface->implementors = gc_malloc(len * sizeof(short), GC_ALLOC_CLASSMISC);
 			} else {
 				/* double in size */
 				len = iface->implementors[0] * 2;
 				if (len <= i) {
 					len = i + 4;
 				}
-				iface->implementors = KREALLOC(
+				iface->implementors = gc_realloc(
 					iface->implementors,
-					len * sizeof(short));
+					len * sizeof(short), GC_ALLOC_CLASSMISC);
 			}
 
 			if (iface->implementors == 0) {
@@ -2603,6 +2602,7 @@ lookupClassFieldLocal(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic)
 		}
 		fptr++;
 	}
+
 	return (0);
 }
 
@@ -2619,15 +2619,34 @@ lookupClassField(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic, errorInf
 		fptr = lookupClassFieldLocal(c, name, isStatic);
 		if (fptr) {
 			/* Resolve field if necessary */
-			if (resolveFieldType(fptr, clp, einfo) == 0) {
+			if (resolveFieldType(fptr, c, einfo) == 0) {
 				return (NULL);
 			}
 			return (fptr);
 		}
 	}
+
+	if (isStatic) {
+		int i = clp->total_interface_len;
+		Hjava_lang_Class **cp = &clp->interfaces[0];
+
+		while (--i >= 0) {
+			fptr = lookupClassFieldLocal (*cp, name, true);
+
+			if (fptr) {
+				if (resolveFieldType(fptr, *cp, einfo) == 0) {
+					return (NULL);
+				}
+				return (fptr);
+			}
+			cp++;
+		}	
+
+	}
+
 DBG(RESERROR,
-	dprintf("lookupClassField failed %s:%s\n",
-		clp->name->data, name->data);
+	dprintf("lookupClassField for %s failed %s:%s\n",
+		isStatic?"static":"non-static",clp->name->data, name->data);
     )
 	postExceptionMessage(einfo, JAVA_LANG(NoSuchFieldError), "%s", name->data);
 	return (0);
@@ -2788,7 +2807,7 @@ parseSignature(Utf8Const *signature, errorInfo *einfo)
 
 	nargs = countArgsInSignature(signature->data);
 	sig = (parsed_signature_t*)gc_malloc(sizeof(*sig) +
-					     nargs * sizeof(sig->ret_and_args[0]), GC_ALLOC_FIXED);
+					     nargs * sizeof(sig->ret_and_args[0]), GC_ALLOC_CLASSMISC);
 	if (sig == NULL) {
 		postOutOfMemory(einfo);
 		return (NULL);

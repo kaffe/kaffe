@@ -77,7 +77,7 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader,
 		return (entry);
 
 	/* Failed to find class entry - create a new one */
-	entry = KMALLOC(sizeof(classEntry));
+	entry = gc_malloc(sizeof(classEntry), GC_ALLOC_CLASSPOOL);
 	if (entry == 0) {
 		postOutOfMemory(einfo);
 		return (0);

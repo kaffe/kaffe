@@ -1253,7 +1253,7 @@ verifyMethod(errorInfo *einfo, Method* method)
 	 **************************************************************************************************/
 	DBG(VERIFY3, dprintf("        allocating memory for verification (codelen = %d)...\n", codelen); );
 	
-        status   = checkPtr((char*)KMALLOC(codelen * sizeof(uint32)));
+        status   = checkPtr((char*)gc_malloc(codelen * sizeof(uint32), GC_ALLOC_VERIFIER));
 	
 	// find basic blocks and allocate memory for them
 	blocks = verifyMethod3a(einfo, method, status, &numBlocks);
@@ -1940,7 +1940,7 @@ verifyMethod3a(errorInfo* einfo,
 	
 	DBG(VERIFY3, dprintf("    Verifier Pass 3a: third pass to allocate memory for basic blocks...\n"); );
 	
-	blocks = checkPtr((BlockInfo**)KMALLOC(blockCount * sizeof(BlockInfo*)));
+	blocks = checkPtr((BlockInfo**)gc_malloc(blockCount * sizeof(BlockInfo*), GC_ALLOC_VERIFIER));
 	
 	for (inABlock = true, n = 0, pc = 0; pc < codelen; pc++) {
 		if (status[pc] & START_BLOCK) {
@@ -3316,11 +3316,11 @@ verifyBasicBlock(errorInfo* einfo,
 				
 				sig = CLASS_NAMED(idx, pool);
 				if (*sig == '[') {
-					namestr = checkPtr(KMALLOC(sizeof(char) * (strlen(sig) + 2)));
+					namestr = checkPtr(gc_malloc(sizeof(char) * (strlen(sig) + 2), GC_ALLOC_VERIFIER));
 					*sigs = pushSig(*sigs, namestr);
 					sprintf(namestr, "[%s", sig);
 				} else {
-					namestr = checkPtr(KMALLOC(sizeof(char) * (strlen(sig) + 4)));
+					namestr = checkPtr(gc_malloc(sizeof(char) * (strlen(sig) + 4), GC_ALLOC_VERIFIER));
 					*sigs = pushSig(*sigs, namestr);
 					sprintf(namestr, "[L%s;", sig);
 				}
@@ -3902,7 +3902,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 	uint32 nargs                     = countSizeOfArgsInSignature(sig);
 	
 	uint32 paramIndex                = 0;
-	char* argbuf                     = checkPtr(KMALLOC(strlen(sig) * sizeof(char)));
+	char* argbuf                     = checkPtr(gc_malloc(strlen(sig) * sizeof(char), GC_ALLOC_VERIFIER));
 	
 	
 	DBG(VERIFY3, dprintf("%scalling method %s%s\n", indent, METHODREF_NAMED(idx, pool), sig); );
@@ -4164,7 +4164,7 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 	
 	// the +1 skips the initial '('
 	const char* sig = METHOD_SIGD(method) + 1;
-	char* argbuf    = checkPtr(KMALLOC((strlen(sig)+1) * sizeof(char)));
+	char* argbuf    = checkPtr(gc_malloc((strlen(sig)+1) * sizeof(char), GC_ALLOC_VERIFIER));
 	char* newsig    = NULL;
 	
 	Type* locals = block->locals;
@@ -4219,7 +4219,7 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 			
 		case '[':
 		case 'L':
-			newsig = checkPtr(KMALLOC((strlen(argbuf) + 1) * sizeof(char)));
+			newsig = checkPtr(gc_malloc((strlen(argbuf) + 1) * sizeof(char), GC_ALLOC_VERIFIER));
 			*sigs = pushSig(*sigs, newsig);
 			sprintf(newsig, "%s", argbuf);
 			locals[paramCount].tinfo = TINFO_SIG;
@@ -4281,7 +4281,7 @@ resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
 		sig = type->data.sig;
 		
 		if (*sig != '[') {
-			tmp = checkPtr(KMALLOC((strlen(sig) + 3) * sizeof(char)));
+			tmp = checkPtr(gc_malloc((strlen(sig) + 3) * sizeof(char), GC_ALLOC_VERIFIER));
 			sprintf(tmp, "L%s;", sig);
 			sig = tmp;
 		}
@@ -4653,14 +4653,14 @@ createBlock(const Method* method)
 {
 	int i;
 	
-	BlockInfo* binfo = checkPtr((BlockInfo*)KMALLOC(sizeof(BlockInfo)));
+	BlockInfo* binfo = checkPtr((BlockInfo*)gc_malloc(sizeof(BlockInfo), GC_ALLOC_VERIFIER));
 	
 	binfo->startAddr   = 0;
 	binfo->status      = IS_INSTRUCTION | START_BLOCK;  // not VISITED or CHANGED
 	
 	// allocate memory for locals
 	if (method->localsz > 0) {
-		binfo->locals = checkPtr(KMALLOC(method->localsz * sizeof(Type)));
+		binfo->locals = checkPtr(gc_malloc(method->localsz * sizeof(Type), GC_ALLOC_VERIFIER));
 		
 		for (i = 0; i < method->localsz; i++) {
 			binfo->locals[i] = *TUNSTABLE;
@@ -4673,7 +4673,7 @@ createBlock(const Method* method)
 	// allocate memory for operand stack
 	binfo->stacksz = 0;
 	if (method->stacksz > 0) {
-		binfo->opstack = checkPtr(KMALLOC(method->stacksz * sizeof(Type)));
+		binfo->opstack = checkPtr(gc_malloc(method->stacksz * sizeof(Type), GC_ALLOC_VERIFIER));
 		
 		for (i = 0; i < method->stacksz; i++) {
 			binfo->opstack[i] = *TUNSTABLE;
@@ -4763,7 +4763,7 @@ static
 SigStack*
 pushSig(SigStack* sigs, const char* sig)
 {
-	SigStack* new_sig = checkPtr(KMALLOC(sizeof(SigStack)));
+	SigStack* new_sig = checkPtr(gc_malloc(sizeof(SigStack), GC_ALLOC_VERIFIER));
 	new_sig->sig = sig;
 	new_sig->next = sigs;
 	return new_sig;
@@ -4825,7 +4825,7 @@ static
 UninitializedType*
 pushUninit(UninitializedType* uninits, const Type* type)
 {
-	UninitializedType* uninit = checkPtr(KMALLOC(sizeof(UninitializedType)));
+	UninitializedType* uninit = checkPtr(gc_malloc(sizeof(UninitializedType), GC_ALLOC_VERIFIER));
 	uninit->type = *type;
 	uninit->prev = NULL;
 	

@@ -637,7 +637,15 @@ initCollector(void)
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_THREADCTX, "thread-ctxts");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_REF, "gc-refs");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JITTEMP, "jit-temp-data");
-        GC_registerFixedTypeByIndex(gc, GC_ALLOC_JAR, "jar");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JAR, "jar");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_CODEANALYSE, "code-analyse");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_CLASSPOOL, "class-pool");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_LINENRTABLE, "linenr-table");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_DECLAREDEXC, "declared-exc");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_CLASSMISC, "class-misc");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_VERIFIER, "verifier");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_TRAMPOLINE, "trampoline");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_NATIVELIB, "native-lib");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_SEQ, "jit-seq");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_CONST, "jit-const");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_ARGS, "jit-args");

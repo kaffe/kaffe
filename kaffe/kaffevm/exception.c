@@ -253,6 +253,7 @@ throwException(Hjava_lang_Throwable* eobj)
 	if (vmstate == 0) {
 		vmstate =
 		  (Hjava_lang_VMThrowable*)newObject(javaLangVMThrowable);
+		unhand(eobj)->vmState = vmstate;
 	}
 	backtrace = buildStackTrace(0);
 	unhand(vmstate)->backtrace = backtrace;
@@ -315,7 +316,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 	/* XXX */
 	_Jv_Throw(eobj); /* no return */
 #endif
-  
+
 	/* Search down exception stack for a match */
 	DBG(ELOOKUP,
 	    dprintf ("dispatchException(): %s\n", ((Hjava_lang_Object*)eobj)->dtable->class->name->data);)
@@ -489,7 +490,6 @@ floatingException(struct _exceptionFrame *frame)
 
 	ae = (Hjava_lang_Throwable*)newObject(javaLangArithmeticException);
 	vmstate = (Hjava_lang_VMThrowable*)newObject(javaLangVMThrowable);
-	backtrace = buildStackTrace(frame);
 	backtrace = buildStackTrace(frame);
 	unhand(vmstate)->backtrace = backtrace;
 	unhand(ae)->vmState = vmstate;

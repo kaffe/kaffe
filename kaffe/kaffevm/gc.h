@@ -33,38 +33,53 @@ typedef void (*destroy_func_t)(struct _Collector*, void*);
 /*
  * Garbage collector interface.
  */
+/* allocation types for different kinds of java objects */
 #define	GC_ALLOC_JAVASTRING	0
 #define	GC_ALLOC_NOWALK		1
 #define	GC_ALLOC_NORMALOBJECT	2
 #define	GC_ALLOC_PRIMARRAY	3
 #define	GC_ALLOC_REFARRAY	4
-#define	GC_ALLOC_CLASSOBJECT	5
-#define	GC_ALLOC_FINALIZEOBJECT	6
-#define	GC_ALLOC_BYTECODE	7
-#define	GC_ALLOC_EXCEPTIONTABLE	8
-#define	GC_ALLOC_JITCODE	9
-#define	GC_ALLOC_STATICDATA	10
-#define	GC_ALLOC_CONSTANT	11
-#define	GC_ALLOC_FIXED		12
-#define	GC_ALLOC_DISPATCHTABLE	13
-#define	GC_ALLOC_METHOD		14
-#define	GC_ALLOC_FIELD		15
-#define	GC_ALLOC_UTF8CONST	16
-#define	GC_ALLOC_INTERFACE	17
-#define	GC_ALLOC_LOCK		18
-#define	GC_ALLOC_THREADCTX	19
-#define	GC_ALLOC_REF		20
-#define	GC_ALLOC_JITTEMP	21
-#define	GC_ALLOC_JAVALOADER	22
-#define	GC_ALLOC_JAR	        23
-#define	GC_ALLOC_JIT_SEQ	24
-#define	GC_ALLOC_JIT_CONST	25
-#define	GC_ALLOC_JIT_ARGS	26
-#define	GC_ALLOC_JIT_FAKE_CALL	27
-#define	GC_ALLOC_JIT_SLOTS	28
-#define	GC_ALLOC_JIT_CODEBLOCK	29
-#define	GC_ALLOC_JIT_LABELS	30
-#define	GC_ALLOC_MAX_INDEX	31
+#define	GC_ALLOC_FINALIZEOBJECT	5
+#define	GC_ALLOC_JAVALOADER     6
+
+/* allocation types related to the translator engines */
+#define	GC_ALLOC_JITCODE	7
+#define	GC_ALLOC_JITTEMP	8
+#define	GC_ALLOC_JIT_SEQ	9	
+#define	GC_ALLOC_JIT_CONST	10
+#define	GC_ALLOC_JIT_ARGS	11
+#define	GC_ALLOC_JIT_FAKE_CALL	12
+#define	GC_ALLOC_JIT_SLOTS	13
+#define	GC_ALLOC_JIT_CODEBLOCK	14
+#define	GC_ALLOC_JIT_LABELS	15
+#define	GC_ALLOC_TRAMPOLINE	16
+
+/* allocation types used for java.lang.Class and its parts */
+#define	GC_ALLOC_CLASSOBJECT	17
+#define	GC_ALLOC_BYTECODE	18
+#define	GC_ALLOC_EXCEPTIONTABLE	19
+#define	GC_ALLOC_STATICDATA	20
+#define	GC_ALLOC_CONSTANT	21
+#define	GC_ALLOC_DISPATCHTABLE  22
+#define	GC_ALLOC_METHOD         23
+#define	GC_ALLOC_FIELD          24
+#define	GC_ALLOC_INTERFACE      25
+#define	GC_ALLOC_LINENRTABLE	26
+#define	GC_ALLOC_DECLAREDEXC	27
+#define	GC_ALLOC_CLASSMISC	28
+
+/* miscelanious allocation types */
+#define	GC_ALLOC_FIXED         	29
+#define	GC_ALLOC_UTF8CONST	30
+#define	GC_ALLOC_LOCK          	31
+#define	GC_ALLOC_THREADCTX      32
+#define	GC_ALLOC_REF            33
+#define	GC_ALLOC_JAR            34
+#define	GC_ALLOC_CODEANALYSE    35
+#define	GC_ALLOC_CLASSPOOL	36
+#define	GC_ALLOC_VERIFIER	37
+#define	GC_ALLOC_NATIVELIB	38
+#define	GC_ALLOC_MAX_INDEX	39
 
 /*
  * Define a COM-like GC interface.

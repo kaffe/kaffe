@@ -54,7 +54,7 @@
 
 #ifndef LIBRARYINIT
 static inline lt_ptr_t kdlmalloc(size_t len) { 
-	void *ptr = KMALLOC(len);
+	void *ptr = gc_malloc(len, GC_ALLOC_NATIVELIB);
 	addToCounter(&ltmem, "vmmem-libltdl", 1, GCSIZEOF(ptr));
 	return (ptr);
 }
@@ -62,7 +62,7 @@ static inline lt_ptr_t kdlrealloc(lt_ptr_t ptr0, size_t len) {
 	jlong len0;
 	void *ptr;
 	len0 = (jlong)GCSIZEOF(ptr0);
-	ptr = KREALLOC(ptr0, len);
+	ptr = gc_realloc(ptr0, len, GC_ALLOC_NATIVELIB);
 	addToCounter(&ltmem, "vmmem-libltdl", 1, ((jlong)GCSIZEOF(ptr))-len0);
 	return (ptr);
 }
@@ -156,7 +156,7 @@ initNative(void)
 	/*
 	 * Build a library path from the given library path.
 	 */
-	libraryPath = KMALLOC(len+1);
+	libraryPath = gc_malloc(len+1, GC_ALLOC_NATIVELIB);
 	addToCounter(&ltmem, "vmmem-libltdl", 1, GCSIZEOF(libraryPath));
 	if (lpath != 0) {
 		strcat(libraryPath, lpath);
@@ -305,7 +305,7 @@ DBG(NATIVELIB,
 		return -1;
 	}
 
-        lib->name = KMALLOC(strlen(path)+1);
+        lib->name = gc_malloc(strlen(path)+1, GC_ALLOC_NATIVELIB);
         strcpy (lib->name, path);
 
 	lib->ref = default_refs;

@@ -147,7 +147,7 @@ typedef struct codeinfo {
 					  IS_STARTOFEXCEPTION(pc)) && \
 					  !IS_DONEVERIFY(pc))
 
-#define	ALLOCFRAME()			KMALLOC((codeInfo->stacksz+codeInfo->localsz+1) * sizeof(frameElement))
+#define	ALLOCFRAME()			gc_malloc((codeInfo->stacksz+codeInfo->localsz+1) * sizeof(frameElement), GC_ALLOC_CODEANALYSE)
 
 #define	ATTACH_NEW_BASICBLOCK(DPC)				\
 	if ((DPC) != 0 && !IS_STARTOFBASICBLOCK(DPC) &&		\

@@ -108,7 +108,9 @@ DBG(SLOWLOCKS,
 DBG(SLOWLOCKS,
     			dprintf("    got cached lock\n");
 )
-			/* XXX is it possible to leak a heavyLock here ? */
+			if (lk != heavyLock) {
+				gc_free (lk);
+			}
 
 			lk = (iLock*)(((uintp)old) & (uintp)-2);
 		}

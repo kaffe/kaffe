@@ -1,3 +1,36 @@
+2003-09-22  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/access.c: (findSuperMethod) minor tweak
+	to bail out immediately when the method is found
+	
+	* kaffe/kaffevm/classMethod.c: (userLoadClass) call
+	loadClass(String) instead of loadClass(String,boolean)
+	as per spec
+	(lookupClassField) search implemented interfaces when
+	searching for static fields; pass the class that owns
+	the field to resolveFieldType, not the class where we
+	started the search
+
+	* kaffe/kaffevm/exception.c: (throwException) when
+	allocating a new VMThrowable, we must also assign
+	it to eobj->vmState, so we don't loose stack traces
+	(floatingException) don't create the stack trace twice
+
+	* kaffe/kaffevm/lookup.c: (getField) initialise ret->class
+	with the class that owns the field, not the class that was
+	passed to getField
+
+	* kaffe/kaffevm/locks.c: (getHeavyLock) minor tweak so
+	we don't leak a heavy lock
+	
+	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classPool.c,
+	kaffe/kaffevm/code-analyse.c, kaffe/kaffevm/code-analyse.h,
+	kaffe/kaffevm/code.c, kaffe/kaffevm/external.c,
+	kaffe/kaffevm/gc.h, kaffe/kaffevm/gcFuncs.c,
+	kaffe/kaffevm/inflate.c, kaffe/kaffevm/string.c,
+	kaffe/kaffevm/support.h, kaffe/kaffevm/verify.c:
+	added several new allocation types to the gc
+
 2003-09-22  Dalibor Topic <robilad@kaffe.org>
 
 	* developers/patch-libtool-ltdl-memory-header-warning.diff:

@@ -139,7 +139,7 @@ addLineNumbers(Method* m, uint32 len, classFile* fp, errorInfo *info)
 
 	readu2(&nr, fp);
 
-	lines = KMALLOC(sizeof(lineNumbers)+sizeof(lineNumberEntry) * nr);
+	lines = gc_malloc(sizeof(lineNumbers)+sizeof(lineNumberEntry) * nr, GC_ALLOC_LINENRTABLE);
 	if (!lines) {
 		postOutOfMemory(info);
 		return false;
@@ -177,7 +177,7 @@ addCheckedExceptions(Method* m, uint32 len, classFile* fp,
 	}
 
 	m->ndeclared_exceptions = nr;
-	idx = KMALLOC(sizeof(constIndex) * nr);
+	idx = gc_malloc(sizeof(constIndex) * nr, GC_ALLOC_DECLAREDEXC);
 	if (!idx) {
 		postOutOfMemory(info);
 		return false;

@@ -288,7 +288,7 @@ DBG(FLOOKUP,	dprintf("*** getField(%s,%s,%s)\n",
 	/* XXX Should we verify that ret->signature matches field? */
 
 	ret->field = field;
-	ret->class = class;
+	ret->class = field->clazz;
 	return (true);
 }
 

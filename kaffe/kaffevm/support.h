@@ -143,8 +143,8 @@ int bitCount(int bits);
 #define BITMAP_BYTE_SIZE(b) (((b) + BITMAP_BPI - 1) / BITMAP_BPI)
 
 /* create a new bitmap for b bits */
-#define BITMAP_NEW(b)	\
-    (int *)KCALLOC(BITMAP_BYTE_SIZE(b), sizeof(int))
+#define BITMAP_NEW(b, gctype)	\
+    (int *)gc_calloc(BITMAP_BYTE_SIZE(b), sizeof(int), (gctype))
 
 /* set nth bit, counting from MSB to the right */
 #define BITMAP_SET(m, n) \
