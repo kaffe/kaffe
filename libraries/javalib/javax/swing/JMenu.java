@@ -59,11 +59,9 @@ import javax.swing.event.MenuListener;
 import javax.swing.plaf.MenuItemUI;
 
 /**
- * <p>
  * This class represents a menu that can be added to a menu bar or
  * can be a submenu in some other menu. When JMenu is selected it
  * displays JPopupMenu containing its menu items.
- * </p>
  *
  * <p>
  * JMenu's fires MenuEvents when this menu's selection changes. If this menu
@@ -71,7 +69,6 @@ import javax.swing.plaf.MenuItemUI;
  * deselected or cancelled, then fireMenuDeselectedEvent() or 
  * fireMenuCancelledEvent() is invoked, respectivelly.
  * </p>
- *
  */
 public class JMenu extends JMenuItem implements Accessible, MenuElement
 {
@@ -272,7 +269,6 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
       throw new IllegalArgumentException("index less than zero");
 
     popupMenu.insert(item, index);
-
     return item;
   }
 
@@ -786,7 +782,7 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
    */
   protected String paramString()
   {
-    return "JMenu";
+    return super.paramString();
   }
 
   public AccessibleContext getAccessibleContext()

@@ -771,7 +771,17 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
    */
   protected String paramString()
   {
-    return "JPopupMenu";
+    StringBuffer sb = new StringBuffer();
+    sb.append(super.paramString());
+    sb.append(",label=");
+    if (getLabel() != null)
+      sb.append(getLabel());
+    sb.append(",lightWeightPopupEnabled=").append(isLightWeightPopupEnabled());
+    sb.append(",margin=");
+    if (getMargin() != null)
+      sb.append(margin);
+    sb.append(",paintBorder=").append(isBorderPainted());
+    return sb.toString();
   }
 
   /**

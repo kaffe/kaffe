@@ -638,7 +638,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
    */
   protected String paramString()
   {
-    return "JMenuItem";
+    return super.paramString();
   }
 
   public AccessibleContext getAccessibleContext()

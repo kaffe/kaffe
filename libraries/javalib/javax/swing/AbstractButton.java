@@ -1847,7 +1847,39 @@ public abstract class AbstractButton extends JComponent
    */
   protected String paramString()
   {
-    return "AbstractButton";
+    StringBuffer sb = new StringBuffer();
+    sb.append(super.paramString());
+    sb.append(",defaultIcon=");
+    if (getIcon() != null)
+      sb.append(getIcon());
+    sb.append(",disabledIcon=");
+    if (getDisabledIcon() != null)
+      sb.append(getDisabledIcon());
+    sb.append(",disabledSelectedIcon=");
+    if (getDisabledSelectedIcon() != null)
+      sb.append(getDisabledSelectedIcon());
+    sb.append(",margin=");
+    if (getMargin() != null)
+      sb.append(getMargin());
+    sb.append(",paintBorder=").append(isBorderPainted());
+    sb.append(",paintFocus=").append(isFocusPainted());
+    sb.append(",pressedIcon=");
+    if (getPressedIcon() != null)
+      sb.append(getPressedIcon());
+    sb.append(",rolloverEnabled=").append(isRolloverEnabled());
+    sb.append(",rolloverIcon=");
+    if (getRolloverIcon() != null)
+      sb.append(getRolloverIcon());
+    sb.append(",rolloverSelected=");
+    if (getRolloverSelectedIcon() != null)
+      sb.append(getRolloverSelectedIcon());
+    sb.append(",selectedIcon=");
+    if (getSelectedIcon() != null)
+      sb.append(getSelectedIcon());
+    sb.append(",text=");
+    if (getText() != null)
+      sb.append(getText());
+    return sb.toString();
   }
 
   /**

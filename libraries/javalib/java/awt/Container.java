@@ -1,5 +1,5 @@
 /* Container.java -- parent container class in AWT
-   Copyright (C) 1999, 2000, 2002, 2003, 2004 Free Software Foundation
+   Copyright (C) 1999, 2000, 2002, 2003, 2004, 2005  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -1052,11 +1052,14 @@ public class Container extends Component
    */
   protected String paramString()
   {
-    String param = super.paramString();
     if (layoutMgr != null)
-      param = param + ",layout=" + layoutMgr.getClass().getName();
+      return super.paramString();
 
-    return param;
+    StringBuffer sb = new StringBuffer();
+    sb.append(super.paramString());
+    sb.append(",layout=");
+    sb.append(layoutMgr.getClass().getName());
+    return sb.toString();
   }
 
   /**

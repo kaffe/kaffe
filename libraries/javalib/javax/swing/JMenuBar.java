@@ -313,7 +313,13 @@ public class JMenuBar extends JComponent implements Accessible, MenuElement
    */
   protected String paramString()
   {
-    return "JMenuBar";
+    StringBuffer sb = new StringBuffer();
+    sb.append(super.paramString());
+    sb.append(",margin=");
+    if (getMargin() != null)
+      sb.append(getMargin());
+    sb.append(",paintBorder=").append(isBorderPainted());
+    return sb.toString();
   }
 
   /**

@@ -1541,7 +1541,23 @@ public abstract class JComponent extends Container implements Serializable
    */
   protected String paramString()
   {
-    return "JComponent";
+    StringBuffer sb = new StringBuffer();
+    sb.append(super.paramString());
+    sb.append(",alignmentX=").append(getAlignmentX());
+    sb.append(",alignmentY=").append(getAlignmentY());
+    sb.append(",border=");
+    if (getBorder() != null)
+      sb.append(getBorder());
+    sb.append(",maximumSize=");
+    if (getMaximumSize() != null)
+      sb.append(getMaximumSize());
+    sb.append(",minimumSize=");
+    if (getMinimumSize() != null)
+      sb.append(getMinimumSize());
+    sb.append(",preferredSize=");
+    if (getPreferredSize() != null)
+      sb.append(getPreferredSize());
+    return sb.toString();
   }
 
   /**
