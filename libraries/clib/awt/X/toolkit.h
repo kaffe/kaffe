@@ -12,21 +12,23 @@
 #define __toolkit_h
 
 #include "config.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <jni.h>
-#if defined(HAVE_STRING_H)
-#include <string.h>
-#endif
+#include "config-std.h"
+#include "config-mem.h"
 
 #define DBG(x,y)
 #define DBG_ACTION(x,y)
 
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <X11/extensions/XShm.h>
+
+#include <jni.h>
+
 /*******************************************************************************
- * common data structures
+ * color conversion structures
  */
 
 #define N_DIRECT 256
@@ -69,20 +71,42 @@ typedef struct _Rgb2Pseudo {
 } Rgb2Pseudo;
 
 
-typedef struct _AlphaImage {
+/*******************************************************************************
+ * image handling structures
+ */
+
+typedef struct _AlphaImage {       /* storage for full alpha channel images */
   unsigned char *buf;
   int           width, height;
 } AlphaImage;
 
+
+#define NO_SHM       0             /* we don't have MIT-Shm support in the X server */
+#define USE_SHM      1             /* we have support, use it */
+#define SUSPEND_SHM  2             /* we have support, but it ran out of space */
+
 typedef struct _Image {
-  Pixmap         pix;
-  XImage         *xImg;
-  XImage         *xMask;
-  AlphaImage     *alpha;         /* alpha channel (for alpha != 0x00 or 0xff) */
-  int            trans;          /* transparent index */
-  int            width, height;  /* we need this in case we are a pixmap */
+  Pixmap           pix;            /* pixmap for screen images */
+
+  XImage           *xImg;          /* "real" image */
+  XShmSegmentInfo  *shmiImg;       /* Shm info for shared mem real image */
+
+  XImage           *xMask;         /* mask image for reduced alpha (on/off) images */
+  XShmSegmentInfo  *shmiMask;      /* Shm info for shared mem mask image */
+
+  AlphaImage       *alpha;         /* full alpha channel (for alpha != 0x00 or 0xff) */
+
+  int              trans;          /* transparent index */
+  int              width, height;  /* we need this in case we are a pixmap */
+
+  int              latency;        /* between image flips, for "gif-movies" */
+  struct _Image    *next;          /* next movie-frame */
 } Image;
 
+
+/*******************************************************************************
+ * structure to store guessed and computed Frame/Dialog insets (titlebar, borders)
+ */
 
 typedef struct _DecoInset {
   int            left;
@@ -92,6 +116,10 @@ typedef struct _DecoInset {
   char           guess;
 } DecoInset;           
 
+
+/*******************************************************************************
+ * this is the master AWT structure (singleton object), glueing it al together
+ */
 
 typedef struct _Toolkit {
   Display        *dsp;
@@ -104,6 +132,9 @@ typedef struct _Toolkit {
   Rgb2True       *tclr;
   Rgb2Pseudo     *pclr;
   Rgb2Direct     *dclr;
+
+  int            shm;
+  int            shmThreshold;
 
   Cursor         cursors[14];
 
@@ -123,7 +154,6 @@ typedef struct _Toolkit {
 
   Window         cbdOwner;
   Window         wakeUp;
-  Window         banner;
 
   Window         newWindow;
 } Toolkit;
@@ -230,12 +260,14 @@ static __inline__ void* getBuffer ( Toolkit* X, unsigned int nBytes ) {
  * respect to our internal RGB <-> pixel conversion. All visuals not listed
  * explicitly are handled via the generic XAllocColor/XQueryColor (which might
  * slow down images considerably)
+ *
+ * NOTE: these values have to be != 0, since '0' is used to trigger color init
  */
-#define CM_PSEUDO_256   0  /* PseudoColor visual */
-#define CM_TRUE         1  /* general TrueColor visual */
-#define CM_TRUE_888     2  /* special 8-8-8 bit TrueColor visual */
-#define CM_DIRECT       3
-#define CM_GENERIC      4  /* grays, DirectColor (packed) etc. */
+#define CM_PSEUDO_256   1  /* PseudoColor visual */
+#define CM_TRUE         2  /* general TrueColor visual */
+#define CM_TRUE_888     3  /* special 8-8-8 bit TrueColor visual */
+#define CM_DIRECT       4
+#define CM_GENERIC      5  /* grays, DirectColor (packed) etc. */
 
 
 void initColorMapping ( JNIEnv* env, Toolkit* X);
@@ -345,14 +377,15 @@ rgbValues ( Toolkit* X, unsigned long pixel, int* r, int* g, int* b )
  * image functions
  */
 
-XImage* createXMaskImage ( Toolkit* X, int width, int height );
-XImage* createXImage ( Toolkit* X, int width, int height );
-AlphaImage* createAlphaImage ( Toolkit* X, int width, int height );
+Image* createImage ( int width, int height);
+void createXMaskImage ( Toolkit* X, Image* img );
+void createXImage ( Toolkit* X, Image* img );
+void createAlphaImage ( Toolkit* X, Image* img );
 void initScaledImage ( Toolkit* X, Image *tgt, Image *src,
 					   int dx0, int dy0, int dx1, int dy1,
 					   int sx0, int sy0, int sx1, int sy1 );
 int needsFullAlpha ( Toolkit* X, Image *img, double threshold );
-
+void Java_java_awt_Toolkit_imgFreeImage(JNIEnv* env, jclass clazz, Image * img);
 
 static __inline__ void
 PutAlpha ( AlphaImage* img, int col, int row, unsigned char alpha )
@@ -382,6 +415,45 @@ jobject selectionRequest ( JNIEnv* env, Toolkit* X );
  */
 
 #define XFLUSH(_X,_force)
+
+
+/*****************************************************************************************
+ * heap wrapper macros
+ */
+
+//#undef malloc
+//#undef calloc
+//#undef free
+
+static __inline__ void* _awt_malloc_wrapper ( size_t size )
+{
+  void *adr = malloc( size);
+  DBG( awt_mem, ("malloc: %d  -> %x\n", size, adr));
+  return adr;
+}
+
+static __inline__ void* _awt_calloc_wrapper ( int n, size_t size )
+{
+  void *adr = calloc( n, size);
+  DBG( awt_mem, ("calloc: %d,%d  -> %x\n", n, size, adr));
+  return adr;
+}
+
+static __inline__ void _awt_free_wrapper ( void* adr )
+{
+  DBG( awt_mem, ("free: %x\n", adr));
+  free( adr);
+}
+
+
+#define AWT_MALLOC(_n) \
+  _awt_malloc_wrapper( _n)
+
+#define AWT_CALLOC(_n,_sz) \
+  _awt_calloc_wrapper( _n, _sz)
+
+#define AWT_FREE(_adr) \
+  _awt_free_wrapper( _adr);
 
 
 #endif

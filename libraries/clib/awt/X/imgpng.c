@@ -22,9 +22,9 @@
 /* references to img.c */
 Image* createImage ( int width, int height );
 void Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img);
-XImage* createXImage ( Toolkit* X, int width, int height );
-XImage* createXMaskImage ( Toolkit* X, int width, int height );
-AlphaImage* createAlphaImage ( Toolkit* X, int width, int height );
+void createXImage ( Toolkit* X, Image* img );
+void createXMaskImage ( Toolkit* X, Image* img );
+void createAlphaImage ( Toolkit* X, Image* img );
 void reduceAlpha ( Toolkit* X, Image* img, int threshold );
 
 /* internal functions */
@@ -216,9 +216,9 @@ readPng ( png_structp png_ptr, png_infop info_ptr )
 
   /* time to create the image */
   img = createImage( info_ptr->width, info_ptr->height);
-  img->xImg = createXImage( X, img->width, img->height);
   if ( hasAlpha( png_ptr) )
-	img->alpha = createAlphaImage( X, img->width, img->height);
+	createAlphaImage( X, img);
+  createXImage( X, img);
 
   if ( info_ptr->interlace_type != 0 ) {
 #ifndef OPTIMIZE_SPACE

@@ -37,7 +37,7 @@
 /* references to img.c */
 Image* createImage ( int width, int height );
 void Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img);
-XImage* createXImage ( Toolkit* X, int width, int height );
+void createXImage ( Toolkit* X, Image* img );
 
 
 #ifdef HAVE_JPEGLIB_H
@@ -222,7 +222,7 @@ readJpeg ( struct jpeg_decompress_struct* cinfo, volatile int colors )
 
   /* it's time to create the target image */
   img = createImage( cinfo->output_width, cinfo->output_height);
-  img->xImg = createXImage( X, img->width, img->height);
+  createXImage( X, img);
 
   buffer = (*cinfo->mem->alloc_sarray)((j_common_ptr) cinfo, JPOOL_IMAGE, row_stride, 1);
 

@@ -35,67 +35,165 @@ createImage ( int width, int height )
   return img;
 }
 
-
-XImage*
-createXMaskImage ( Toolkit* X, int width, int height )
+int
+createShmXImage ( Toolkit* X, Image* img, int depth, int isMask )
 {
-  XImage  *xim;
-  int     bytes_per_line, nBytes;
-  char    *data;
   Visual  *vis = DefaultVisual( X->dsp, DefaultScreen( X->dsp));
+  XShmSegmentInfo* shmi = (XShmSegmentInfo*) AWT_MALLOC( sizeof(XShmSegmentInfo));
+  XImage *xim;
+  unsigned int    nBytes;
 
-  bytes_per_line = (width + 7) / 8;
-  nBytes = bytes_per_line * height;
+  if ( isMask ) {
+	xim = XShmCreateImage( X->dsp, vis, depth, XYBitmap, 0, shmi, img->width, img->height);
+  }
+  else {
+    xim = XShmCreateImage( X->dsp, vis, depth, ZPixmap, 0, shmi, img->width, img->height);
+  }
 
-  data = KMALLOC( nBytes);
-  memset( data, 0xff, nBytes);
+  nBytes = xim->bytes_per_line * img->height;
+  shmi->shmid = shmget( IPC_PRIVATE, nBytes, (IPC_CREAT | 0777));
 
-  xim = XCreateImage( X->dsp, vis, 1, XYBitmap, 0,
-					  data, width, height, 8, bytes_per_line );
-  return xim;
+  /*
+   * It is essential to check if shmget failed, because shared memory is usually
+   * a scarce resource
+   */
+  if ( shmi->shmid == -1 ) {
+	XShmDetach( X->dsp, shmi);
+	xim->data = 0;
+	XDestroyImage( xim);
+	AWT_FREE( shmi);
+
+	X->shm = SUSPEND_SHM;
+	return 0;
+  }
+
+  xim->data = shmi->shmaddr = shmat( shmi->shmid, 0, 0);
+  shmi->readOnly = False;
+  XShmAttach( X->dsp, shmi);
+  /*
+   * make sure it will be freed automatically once the attachment count comes
+   * down to 0 (either by explicit imgFreeImage or by process termination)
+   */
+  shmctl( shmi->shmid, IPC_RMID, 0);
+
+  if ( isMask ) {
+	memset( xim->data, 0xff, nBytes);
+	img->shmiMask = shmi;
+	img->xMask = xim;
+  }
+  else {
+	img->shmiImg = shmi;
+	img->xImg = xim;
+  }
+
+  return 1;
 }
 
 
-XImage*
-createXImage ( Toolkit* X, int width, int height )
+void
+destroyShmXImage ( Toolkit* X, Image* img, int isMask )
 {
-  XImage *xim;
+  XShmSegmentInfo *shmi;
+  XImage          *xim;
+
+  if ( isMask ) {
+	shmi = img->shmiMask;
+	xim  = img->xMask;
+	img->shmiMask = 0;
+  }
+  else {
+	shmi = img->shmiImg;
+	xim  = img->xImg;
+	img->shmiImg = 0;
+  }
+
+  XShmDetach( X->dsp, shmi);
+  xim->data = 0;
+  XDestroyImage( xim);
+  /* we created it as 'deleted', so we just have to detach here */
+  shmdt( shmi->shmaddr);
+  KFREE( shmi);
+
+  /* if we have suspended shm, give it a try again */
+  if ( X->shm == SUSPEND_SHM )
+	X->shm = USE_SHM;
+}
+
+
+
+void
+createXImage ( Toolkit* X, Image* img )
+{
   int bitmap_pad;
   int bytes_per_line;
   int bytes_per_pix;
+  unsigned int nPix;
   char *data;
   Visual *vis  = DefaultVisual( X->dsp, DefaultScreen( X->dsp));
   int    depth = DefaultDepth(  X->dsp, DefaultScreen( X->dsp));
 	
-
   if ( depth <= 8)	      bytes_per_pix = 1;
   else if ( depth <= 16)  bytes_per_pix = 2;
   else			          bytes_per_pix = 4;
 
-  bytes_per_line = bytes_per_pix * width;
+  bytes_per_line = bytes_per_pix * img->width;
   bitmap_pad = bytes_per_pix * 8;
+  nPix = img->width * img->height;
 
-  data = KCALLOC( width * height, bytes_per_pix);
+  if ( (X->shm == USE_SHM) && (nPix > X->shmThreshold) && (img->alpha == 0) ) {
+	if ( createShmXImage( X, img, depth, False) ){
+	  DBG( awt_img, ( "alloc Shm: %x %x %x (%dx%d) \n", img, img->xImg, img->shmiImg,
+					  img->width, img->height));
+	  return;
+	}
+  }
 
-  xim = XCreateImage( X->dsp, vis, depth, ZPixmap, 0,
-					  data, width, height, bitmap_pad, bytes_per_line);
-
-  return xim;
+  data = AWT_CALLOC( nPix, bytes_per_pix);
+  img->xImg = XCreateImage( X->dsp, vis, depth, ZPixmap, 0,
+							data, img->width, img->height, bitmap_pad, bytes_per_line);
+  DBG( awt_img, ( "alloc: %x %x (%dx%d)\n", img, img->xImg, img->width, img->height));
 }
 
-AlphaImage*
-createAlphaImage ( Toolkit* X, int width, int height )
+void
+createXMaskImage ( Toolkit* X, Image* img )
 {
-  int nBytes = width * height;
-  AlphaImage    *img = KMALLOC( sizeof( AlphaImage));
+  int     bytes_per_line;
+  unsigned int nBytes, nPix;
+  char    *data;
+  Visual  *vis = DefaultVisual( X->dsp, DefaultScreen( X->dsp));
 
-  img->width  = width;
-  img->height = height;
+  bytes_per_line = (img->width + 7) / 8;
+  nPix   = img->width * img->height;
+  nBytes = bytes_per_line * img->height;
 
-  img->buf = KMALLOC( nBytes);
-  memset( img->buf, 0xff, nBytes);
-  
-  return img;
+  if ( (X->shm == USE_SHM) && (nPix > X->shmThreshold) ) {
+	if ( createShmXImage( X, img, 1, True) ){
+	  DBG( awt_img, ( "alloc Shm mask: %x %x %x (%dx%d) \n", img, img->xMask, img->shmiMask,
+					  img->width, img->height));
+	  return;
+	}
+  }
+
+  data = KMALLOC( nBytes);
+  memset( data, 0xff, nBytes);
+
+  img->xMask = XCreateImage( X->dsp, vis, 1, XYBitmap, 0,
+							 data, img->width, img->height, 8, bytes_per_line );
+  DBG( awt_img, ( "alloc mask: %x %x (%dx%d)\n", img, img->xMask, img->width, img->height));
+}
+
+
+void
+createAlphaImage ( Toolkit* X, Image *img )
+{
+  int nBytes = img->width * img->height;
+
+  img->alpha = KMALLOC( sizeof( AlphaImage));
+
+  img->alpha->width  = img->width;
+  img->alpha->height = img->height;
+  img->alpha->buf = KMALLOC( nBytes);
+  memset( img->alpha->buf, 0xff, nBytes);
 }
 
 /*
@@ -160,7 +258,7 @@ reduceAlpha ( Toolkit* X, Image* img, int threshold )
   if ( !img->alpha )
 	return;
 
-  img->xMask = createXMaskImage( X, img->width, img->height);
+  createXMaskImage( X, img);
 
   for ( i=0; i<img->height; i++ ) {
 	for ( j=0; j<img->width; j++ ) {
@@ -300,7 +398,7 @@ void*
 Java_java_awt_Toolkit_imgCreateImage ( JNIEnv* env, jclass clazz, jint width, jint height )
 {
   Image *img = createImage( width, height);
-  img->xImg = createXImage( X, img->width, img->height);
+  createXImage( X, img);
   return img;
 }
 
@@ -336,7 +434,7 @@ Java_java_awt_Toolkit_imgSetIdxPels ( JNIEnv* env, jclass clazz, Image * img,
   unsigned char   curPel;
 
   if ( (trans >= 0) && !img->xMask )
-	img->xMask = createXMaskImage( X, img->width, img->height);
+	createXMaskImage( X, img);
 
   for ( row = y; row < maxRow; row++) {
     for ( col = x; col < maxCol; col++) {
@@ -351,7 +449,6 @@ Java_java_awt_Toolkit_imgSetIdxPels ( JNIEnv* env, jclass clazz, Image * img,
       }
       XPutPixel( img->xImg, col, row, pix);
     }
-    x = 0;
   }
 
   (*env)->ReleaseIntArrayElements( env, clrMap, clr, JNI_ABORT);
@@ -376,59 +473,105 @@ Java_java_awt_Toolkit_imgSetRGBPels ( JNIEnv* env, jclass clazz, Image * img,
   for ( row = y; row < maxRow; row++) {
     for ( col = x; col < maxCol; col++) {
 	  val = rgb[col + row * scan];
-	  if ( val & 0xff000000 ) {
-		pix = pixelValue( X, val);
+	  pix = pixelValue( X, val);
+	  if ( (val & 0xff000000) == 0xff000000 ) {
 		XPutPixel( img->xImg, col, row, pix);
 	  }
 	  else {
+		/*
+		 * No way to tell for now if this will be a reduced (on/off) or a
+		 * full alpha channel. We have to be prepared for the "worst", and reduce
+		 * later
+		 */
+		if ( !img->alpha )
+		  createAlphaImage( X, img);
+		PutAlpha( img->alpha, col, row, (val >> 24));
+		XPutPixel( img->xImg, col, row, pix);
+
+		/*
 		if ( !img->xMask )
-		  img->xMask = createXMaskImage( X, img->width, img->height);
+		  createXMaskImage( X, img);
 		XPutPixel( img->xMask, col, row, 0);
 		XPutPixel( img->xImg, col, row, 0);
+		*/
 	  }
     }
-    x = 0;
   }
 
   (*env)->ReleaseIntArrayElements( env, rgbPels, rgbs, JNI_ABORT);
 }
 
+void
+Java_java_awt_Toolkit_imgComplete( JNIEnv* env, jclass clazz, Image * img, jint status )
+{
+  /*
+   * Check for alpha channel reduction. Note that full alpha images aren't created
+   * with Shm (by policy), so you might loose the Shm speed factor. This method is just
+   * called for external (generic) production, since our own prod facilities usually
+   * know better if and how to do alpha support
+   */
+  if ( img->alpha &&  !needsFullAlpha( X, img, 0.0) )
+	reduceAlpha( X, img, 128);
+}
 
 void
 Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
 {
-  if ( img->pix ){
-	XFreePixmap( X->dsp, img->pix);
-	img->pix = 0;
-  }
+  Image *next, *first = img;
 
-  /*
-   * note that XDestroyImage automatically frees any non-NULL data pointer
-   * (since we explicitly allocated the data, we better free t explicitly, too)
-   */
-  if ( img->xImg ){
-	KFREE( img->xImg->data);
-	img->xImg->data = 0;
+  /* we have to be aware of image rings (GIF movies), iterate */
+  do {
+	if ( img->pix ){
+	  XFreePixmap( X->dsp, img->pix);
+	  img->pix = 0;
+	}
+	/*
+	 * note that XDestroyImage automatically frees any non-NULL data pointer
+	 * (since we explicitly allocated the data, we better free it explicitly, too)
+	 * malloc, free might be resolved
+	 */
 
-    XDestroyImage( img->xImg);
-	img->xImg = 0;
-  }
+	if ( img->xImg ){
+	  if ( img->shmiImg ) {
+		DBG( awt_img, ( "free Shm: %x %x %x (%dx%d)\n", img, img->xImg, img->shmiImg,
+						img->width, img->height));
+		destroyShmXImage( X, img, False);
+	  }
+	  else {
+		DBG( awt_img, ( "free: %x %x (%dx%d)\n", img, img->xImg, img->width, img->height));
+		AWT_FREE( img->xImg->data);
+		img->xImg->data = 0;
+		XDestroyImage( img->xImg);
+	  }
+	  img->xImg = 0;
+	}
 
-  if ( img->xMask ){
-	KFREE( img->xMask->data);
-	img->xMask->data = 0;
+	if ( img->xMask ){
+	  if ( img->shmiMask ) {
+		DBG( awt_img, ( "free Shm mask: %x %x %x (%dx%d)\n", img, img->xMask, img->shmiMask,
+						img->width, img->height));
+		destroyShmXImage( X, img, True);
+	  }
+	  else {
+		DBG( awt_img, ( "free mask: %x %x (%dx%d)\n", img, img->xMask,
+						img->width, img->height));
+		AWT_FREE( img->xMask->data);
+		img->xMask->data = 0;
+		XDestroyImage( img->xMask);
+	  }
+	  img->xMask = 0;
+	}
 
-    XDestroyImage( img->xMask);
-	img->xMask = 0;
-  }
+	if ( img->alpha ) {
+	  KFREE( img->alpha->buf);
+	  KFREE( img->alpha);
+	  img->alpha = 0;
+	}
 
-  if ( img->alpha ) {
-	KFREE( img->alpha->buf);
-	KFREE( img->alpha);
-	img->alpha = 0;
-  }
-
-  KFREE( img);
+	next = img->next;
+	KFREE( img);
+	img = next;
+  } while ( (img != 0) && (img != first) );
 }
 
 
@@ -441,9 +584,9 @@ Java_java_awt_Toolkit_imgCreateScaledImage ( JNIEnv* env, jclass clazz,
   Image *scaledImg = createImage( width, height);
 
   if ( img->xImg ) {
-	scaledImg->xImg = createXImage( X, width, height);
+	createXImage( X, scaledImg);
 	if ( img->xMask )
-	  scaledImg->xMask = createXMaskImage( X, width, height);
+	  createXMaskImage( X, scaledImg);
 
 	initScaledImage ( X, scaledImg, img,
 					  0, 0, width-1, height-1,
@@ -477,8 +620,9 @@ Java_java_awt_Toolkit_imgProduceImage ( JNIEnv* env, jclass clazz, jobject produ
 
   jobject   model     = (*env)->CallStaticObjectMethod( env, modelClazz, modelCtor);
 
-  jarray    allLines  = (*env)->NewIntArray( env, img->width * img->height);
-  jint*     pels = (*env)->GetIntArrayElements( env, allLines, &isCopy);
+  /* for JDK compat, the pixel buffer has to be large enough to hold the *complete* image */
+  jarray    pelArray  = (*env)->NewIntArray( env, img->width * img->height);
+  jint*     pels = (*env)->GetIntArrayElements( env, pelArray, &isCopy);
 
   (*env)->CallVoidMethod( env, producer, setDim, img->width, img->height);
   (*env)->CallVoidMethod( env, producer, setCM, model);
@@ -497,12 +641,13 @@ Java_java_awt_Toolkit_imgProduceImage ( JNIEnv* env, jclass clazz, jobject produ
 	}
   }
   if ( isCopy ) {
-    (*env)->ReleaseIntArrayElements( env, allLines, pels, JNI_COMMIT);
+    (*env)->ReleaseIntArrayElements( env, pelArray, pels, JNI_COMMIT);
   }
 
-  (*env)->CallVoidMethod( env, producer, setPix, 0, 0, img->width, img->height, model, allLines, 0, img->width);
+  (*env)->CallVoidMethod( env, producer, setPix, 0, 0, img->width, img->height, model, pelArray, 0, img->width);
   (*env)->CallVoidMethod( env, producer, imgCompl, 3); /* 3 = STATICIMAGEDONE */
 }
+
 
 
 /************************************************************************************
@@ -607,4 +752,22 @@ jint
 Java_java_awt_Toolkit_imgGetHeight ( JNIEnv* env, jclass clazz, Image* img)
 {
   return img->height;
+}
+
+jboolean
+Java_java_awt_Toolkit_imgIsMultiFrame ( JNIEnv* env, jclass clazz, Image* img)
+{
+  return (img->next != 0);
+}
+
+jint
+Java_java_awt_Toolkit_imgGetLatency ( JNIEnv* env, jclass clazz, Image* img)
+{
+  return img->latency;
+}
+
+void*
+Java_java_awt_Toolkit_imgGetNextFrame ( JNIEnv* env, jclass clazz, Image* img )
+{
+  return img->next;   /* next in the ring */
 }

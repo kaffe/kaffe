@@ -247,7 +247,7 @@ initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
   memset( *mp, 0, 8*8*8);
 
   /* get the java.awt.DefaultsRGB.RgbRequests field */
-  if ( (clazz = (*env)->FindClass( env, "java/awt/DefaultsRGB")) ){
+  if ( (clazz = (*env)->FindClass( env, "java/awt/Defaults")) ){
 	if ( (fid = (*env)->GetStaticFieldID( env, clazz, "RgbRequests", "[I")) ){
 	  if ( (rgbRequests = (*env)->GetStaticObjectField( env, clazz, fid)) ){
 		jrgbs = (*env)->GetIntArrayElements( env, rgbRequests, &isCopy);
@@ -391,7 +391,7 @@ Rgb2True*
 initRgb2True ( Toolkit* X )
 {
   Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
-  unsigned m;
+  unsigned int m;
   int      nRed, nGreen, nBlue;
   int      iRed, iGreen, iBlue;
   int      n;
@@ -619,8 +619,6 @@ initColorMapping ( JNIEnv* env, Toolkit* X )
   DBG( awt_clr, ("  bits_per_rgb %x\n", v->bits_per_rgb));
   DBG( awt_clr, ("  map_entries  %d\n", v->map_entries));
 
-  X->colorMode = CM_GENERIC;
-
   /* check for directly supported color modes / visuals */
   switch ( v->class ) {
   case DirectColor:
@@ -632,6 +630,8 @@ initColorMapping ( JNIEnv* env, Toolkit* X )
   case PseudoColor:  
 	X->pclr = initRgb2Pseudo( env, X); 
 	break;
+  default:
+	X->colorMode = CM_GENERIC;
   }
 
   DBG( awt_clr, ("colorMode: %d\n", X->colorMode));
@@ -645,7 +645,16 @@ initColorMapping ( JNIEnv* env, Toolkit* X )
 jint
 Java_java_awt_Toolkit_clrGetPixelValue ( JNIEnv* env, jclass clazz, jint rgb )
 {
-  jint pix = pixelValue( X, rgb);
+  jint pix;
+
+  /*
+   * We do this deferred to avoid class init problems with Defaults<->Color
+   * (the notorious DefaultsRGB workaround)
+   */
+  if ( !X->colorMode )
+	initColorMapping( env, X);
+
+  pix = pixelValue( X, rgb);
   DBG( awt_clr, ("clrGetPixelValue: %8x -> %x (%d)\n", rgb, pix, pix));
 
   return pix;
@@ -699,7 +708,7 @@ Java_java_awt_Toolkit_clrSetSystemColors ( JNIEnv* env, jclass clazz, jarray sys
 jlong
 Java_java_awt_Toolkit_clrBright ( JNIEnv* env, jclass clazz, jint rgb )
 {
-  unsigned r, g, b;
+  unsigned int r, g, b;
   jint     modRgb, modPix;
 
   r = JRED( rgb);
@@ -723,7 +732,7 @@ Java_java_awt_Toolkit_clrBright ( JNIEnv* env, jclass clazz, jint rgb )
 jlong
 Java_java_awt_Toolkit_clrDark ( JNIEnv* env, jclass clazz, jint rgb )
 {
-  unsigned r, g, b;
+  unsigned int r, g, b;
   jint     modRgb, modPix;
 
   r = JRED( rgb);

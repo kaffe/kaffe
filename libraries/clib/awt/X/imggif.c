@@ -19,12 +19,6 @@
 #include "gif_lib.h"
 #endif
 
-/* references to img.c */
-Image* createImage ( int width, int height );
-void Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img);
-XImage* createXImage ( Toolkit* X, int width, int height );
-XImage* createXMaskImage ( Toolkit* X, int width, int height );
-
 /**************************************************************************************
  * internal functions
  */
@@ -67,8 +61,8 @@ writeRow ( Image* img, GifPixelType* rowBuf, GifColorType* cm, int row )
 Image*
 readGif ( GifFileType *gf )
 {
-  Image           *img = 0;
-  int             i, extCode, width, height, row, cmapSize;
+  Image           *firstImg = 0, *img;
+  int             i, extCode, width, height, row, col, cmapSize, nFrames = 0;
   GifRecordType   rec;
   GifByteType     *ext;
   ColorMapObject  *cmap;
@@ -76,7 +70,6 @@ readGif ( GifFileType *gf )
   GifPixelType    *rowBuf = (GifPixelType*) KMALLOC( gf->SWidth * sizeof( GifPixelType) );
 
   img = createImage( gf->SWidth, gf->SHeight);
-  img->xImg = createXImage( X, gf->SWidth, gf->SHeight);
 
   do {
 	CHECK( DGifGetRecordType( gf, &rec));
@@ -92,6 +85,24 @@ readGif ( GifFileType *gf )
 	  clrs     = cmap->Colors;
       cmapSize = cmap->ColorCount;
 
+	  /*
+	   * create our image objects and keep track of frames 
+	   */
+	  if ( !firstImg ) {     /* this is the first (maybe only) frame */
+		firstImg = img;
+	  }
+	  else {                 /* this is a subsequent gif-movie frame, link it in */
+		img->next = createImage( gf->SWidth, gf->SHeight);
+		if ( !img->latency )
+		  img->latency = 100;  /* default */
+		img = img->next;
+	  }
+	  nFrames++;
+	  createXImage( X, img);
+
+	  /*
+	   * start reading in the image data
+	   */
 	  if ( gf->Image.Interlace ) {
 		/* Need to perform 4 passes on the images: */
 		for ( i = 0; i < 4; i++ ) {
@@ -119,7 +130,7 @@ readGif ( GifFileType *gf )
 	  if ( extCode == 0xf9 ) {   /* graphics extension */
 		if ( ext[1] & 1 ) {      /* transparent index following */
 		  img->trans = ext[4];
-		  img->xMask = createXMaskImage( X, img->width, img->height);
+		  createXMaskImage( X, img);
 		}
 	  }
 
@@ -136,7 +147,11 @@ readGif ( GifFileType *gf )
 	}
   } while ( rec != TERMINATE_RECORD_TYPE );
 
-  return img;
+  if ( firstImg && (img != firstImg) ){
+	img->next = firstImg;   /* link it together (as a ring) */
+  }
+
+  return firstImg;
 }
 
 /**************************************************************************************
@@ -148,6 +163,23 @@ typedef struct {
   unsigned char *p;
   long          remain;
 } BufferSource;
+
+int
+readGifBuffer ( GifFileType *gf, GifByteType* buf, int length )
+{
+  BufferSource *psource = (BufferSource*)gf->UserData;
+
+  if ( psource && (psource->remain >= length) ) {
+	memcpy( buf, psource->p, length);
+	psource->p += length;
+	psource->remain -= length;
+
+	return length;
+  }
+  else {
+	return 0;
+  }
+}
 
 #endif /* HAVE_GIF_LIB_H */
 
@@ -181,6 +213,7 @@ readGifData ( unsigned char* buf, long len )
   Image          *img = 0;
 #if defined(HAVE_GIF_LIB_H)
 
+#ifndef DIST_gif
   /*
    * we don't have a enhanced GIF lib (capable of alternate input methods), backup
    * to a plain old temp file
@@ -195,6 +228,18 @@ readGifData ( unsigned char* buf, long len )
   img = readGifFile( tmpFile);
   fclose( tmpFile);
   remove( tmp);
+#else
+  bufSrc.buf = bufSrc.p = buf;
+  bufSrc.remain = len;
+
+  if ( !(gf = DGifOpen( &bufSrc, readGifBuffer)) )
+	return 0;
+
+  img = readGif( gf);
+
+  DGifCloseFile( gf);
+  
+#endif /* DIST_gif */
 #endif /* HAVE_GIF_LIB_H */
 
   return img;

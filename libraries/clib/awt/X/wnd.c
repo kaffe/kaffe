@@ -273,13 +273,27 @@ Java_java_awt_Toolkit_wndSetDialogInsets ( JNIEnv* env, jclass clazz,
 
 void
 Java_java_awt_Toolkit_wndSetBounds ( JNIEnv* env, jclass clazz, void* wnd,
-									 jint x, jint y, jint width, jint height )
+									 jint x, jint y, jint width, jint height,
+									 jboolean isResizable )
 {
   DBG( awt_wnd, ("setBounds: %x %d,%d,%d,%d\n", wnd, x, y, width, height));
 
   if ( width < 0 )  width = 1;
   if ( height < 0 ) height = 1;
   XMoveResizeWindow( X->dsp, (Window)wnd, x, y, width, height);
+
+  /*
+   * Our perspective of 'isResizable' is somewhat relaxed: we just disable
+   * "user-resizing" (like it is stated in the spec), i.e. a program is
+   * allowed to do setBounds on non-resizable Frames/Dialogs. This makes
+   * initial decoration size compensation easy, but it requires that we update
+   * the "lock" after a resize operation
+   */
+  if ( !isResizable ) {
+	Java_java_awt_Toolkit_wndSetResizable( env, clazz,
+										   (void*)wnd, False, x, y, width, height);
+
+  }
 }
 
 void
@@ -303,17 +317,18 @@ Java_java_awt_Toolkit_wndSetVisible ( JNIEnv* env, jclass clazz, void* wnd, jboo
   Window owner = 0;
   DBG( awt_wnd, ("setVisible: %x %d\n", wnd, showIt));
 
+  XGetTransientForHint( X->dsp, (Window)wnd, &owner);
+
   if ( showIt ){
 	XMapWindow( X->dsp, (Window)wnd);
 	XSync( X->dsp, False);
 
-	/*
-	 * This is a fix for some WindowManagers with focus problems of decorated
-     * transients (e.g. AfterStep). The decoration of the transient has to be
-	 * explicitly focused in order to activate the Dialog.
-	 */
-	XGetTransientForHint( X->dsp, (Window)wnd, &owner);
 	if ( owner ) {
+	  /*
+	   * This is a fix for some WindowManagers with focus problems of decorated
+	   * transients (e.g. AfterStep). The decoration of the transient has to be
+	   * explicitly focused in order to activate the Dialog.
+	   */
 	  Window   rWnd, pWnd, *cWnds = 0;
 	  int      nChilds;
 
@@ -322,8 +337,21 @@ Java_java_awt_Toolkit_wndSetVisible ( JNIEnv* env, jclass clazz, void* wnd, jboo
 	  XSetInputFocus( X->dsp, pWnd, RevertToNone, CurrentTime);
 	}
   }
-  else
-	XUnmapWindow( X->dsp, (Window)wnd);
+  else {
+	if ( owner ) {
+	  /*
+	   * Hiding a transient? Not a good idea! This is a WM bug workaround for a
+	   * very obscurure attempt of some apps to work around non-resizable Dialogs
+	   * (they show(), getPreferredSize(), hide(), setSize() and show() again)
+	   */
+	  XSetTransientForHint( X->dsp, (Window)wnd, 0);
+	  XUnmapWindow( X->dsp, (Window)wnd);
+	  XSync( X->dsp, False);
+	}
+	else {
+	  XUnmapWindow( X->dsp, (Window)wnd);
+	}
+  }
 }
 
 

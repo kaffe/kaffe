@@ -126,7 +126,7 @@ native_LTLIBRARIES = libnative.la
 IO_SRCS =  		ObjectStreamClassImpl.c
 
 
-LANG_SRCS =  		ClassLoader.c 		Class.c 		Compiler.c 		Double.c 		Float.c 		Math.c 		Object.c 		Runtime.c 		SecurityManager.c 		String.c 		System.c 		Thread.c 		Throwable.c 		UNIXProcess.c 		CharToByteDefault.c 		ByteToCharDefault.c 		ZipFile.c
+LANG_SRCS =  		ClassLoader.c 		Class.c 		Compiler.c 		Double.c 		Float.c 		Math.c 		Object.c 		Runtime.c 		SecurityManager.c 		String.c 		System.c 		Thread.c 		Throwable.c 		UNIXProcess.c 		CharToByteDefault.c 		ByteToCharDefault.c 		ZipFile.c 		MemoryAdvice.c
 
 
 REFLECT_SRCS =  		Array.c 		Constructor.c 		Field.c 		Method.c
@@ -160,7 +160,8 @@ libnative_la_OBJECTS =  ObjectStreamClassImpl.lo ClassLoader.lo Class.lo \
 Compiler.lo Double.lo Float.lo Math.lo Object.lo Runtime.lo \
 SecurityManager.lo String.lo System.lo Thread.lo Throwable.lo \
 UNIXProcess.lo CharToByteDefault.lo ByteToCharDefault.lo ZipFile.lo \
-Array.lo Constructor.lo Field.lo Method.lo DateFormat.lo TestNative.lo
+MemoryAdvice.lo Array.lo Constructor.lo Field.lo Method.lo \
+DateFormat.lo TestNative.lo
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -176,10 +177,11 @@ GZIP_ENV = --best
 DEP_FILES =  .deps/Array.P .deps/ByteToCharDefault.P \
 .deps/CharToByteDefault.P .deps/Class.P .deps/ClassLoader.P \
 .deps/Compiler.P .deps/Constructor.P .deps/DateFormat.P .deps/Double.P \
-.deps/Field.P .deps/Float.P .deps/Math.P .deps/Method.P .deps/Object.P \
-.deps/ObjectStreamClassImpl.P .deps/Runtime.P .deps/SecurityManager.P \
-.deps/String.P .deps/System.P .deps/TestNative.P .deps/Thread.P \
-.deps/Throwable.P .deps/UNIXProcess.P .deps/ZipFile.P
+.deps/Field.P .deps/Float.P .deps/Math.P .deps/MemoryAdvice.P \
+.deps/Method.P .deps/Object.P .deps/ObjectStreamClassImpl.P \
+.deps/Runtime.P .deps/SecurityManager.P .deps/String.P .deps/System.P \
+.deps/TestNative.P .deps/Thread.P .deps/Throwable.P .deps/UNIXProcess.P \
+.deps/ZipFile.P
 SOURCES = $(libnative_la_SOURCES)
 OBJECTS = $(libnative_la_OBJECTS)
 

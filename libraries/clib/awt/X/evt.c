@@ -42,8 +42,9 @@ __inline__ int getSourceIdx ( Toolkit* X, Window w )
 		return X->srcIdx;
 	  }
 	  
-	  if ( X->windows[i] == 0 )
+	  if ( X->windows[i] == 0 ){
 		return -1;
+	  }
 	}
 	return -1;
   }
@@ -65,31 +66,33 @@ int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
 	while ( X->pending <= 0 ) {
 	  XFlush( X->dsp);
 	  if ( (X->pending = XEventsQueued( X->dsp, QueuedAlready)) == 0 ) {
-		if ( !X->wakeUp )
-		  return 0;
 
 		/* give up the lock on the Toolkit class, or we probably end up in a deadlock */
 		X->blocking = 1;
 		(*env)->MonitorExit( env, clazz);
 		jthreadedBlockEAGAIN( ConnectionNumber( X->dsp));
+
 		/*
 		 * getting here just means we got input, it doesn't mean we have events. It also
 		 * doesn't mean there currently is no other thread doing X requests
 		 */
 		(*env)->MonitorEnter( env, clazz);
+
 		X->blocking = 0;
 		X->pending = XEventsQueued( X->dsp, QueuedAfterReading);
 	  }
 	}
   }
   else {                         /* this is from a peekEvent */
-	if ( X->blocking )           /* nothing to expect, there is a pending getNextEvent */
+	if ( X->blocking ){          /* nothing to expect, there is a pending getNextEvent */
 	  return 0;
+	}
 
 	if ( X->pending <= 0 ) {
 	  XFlush( X->dsp);
-	  if ( (X->pending = XEventsQueued( X->dsp, QueuedAlready)) == 0 )
+	  if ( (X->pending = XEventsQueued( X->dsp, QueuedAlready)) == 0 ){
 		return 0;
+	  }
 	}
   }
 #else
@@ -137,6 +140,7 @@ jclass     FocusEvent;
 jclass     WindowEvent;
 jclass     KeyEvent;
 jclass     PaintEvent;
+jclass     WMEvent;
 
 jmethodID  getComponentEvent;
 jmethodID  getMouseEvent;
@@ -144,6 +148,7 @@ jmethodID  getFocusEvent;
 jmethodID  getWindowEvent;
 jmethodID  getKeyEvent;
 jmethodID  getPaintEvent;
+jmethodID  getWMEvent;
 
 #define    COMPONENT_RESIZED    101
 
@@ -162,9 +167,12 @@ jmethodID  getPaintEvent;
 #define    MOUSE_EXITED         505
 
 #define    PAINT                800
+#define    UPDATE               801
 
 #define    FOCUS_GAINED        1004
 #define    FOCUS_LOST          1005
+
+#define    WM_KILLED           1905
 
 #if defined(DEBUG)
 static char *eventStr ( int evtId )
@@ -187,9 +195,13 @@ static char *eventStr ( int evtId )
   case MOUSE_EXITED: return "MouseExited";
 
   case PAINT: return "Paint";
+  case UPDATE: return "Update";
 	
   case FOCUS_GAINED: return "FocusGained";
   case FOCUS_LOST: return "FocusLost";
+
+  case WM_KILLED: return "WMKilled";
+
   default: return "<unknown>";
   }
 };
@@ -232,7 +244,38 @@ keyNotify ( JNIEnv* env, Toolkit* X )
   }
   else {
 	keyChar = (unsigned char)X->buf[0];
-	keyCode = keyChar & ~0x20;
+	if (keyChar >= 'a' && keyChar <= 'z') {
+		keyCode = keyChar & ~0x20;
+	}
+	else {
+		/* This should be table driven in some way */
+		switch (keyChar) {
+		case '~': keyCode = '`'; break;	/* Doesn't work */
+		case '!': keyCode = '1'; break;
+		case '@': keyCode = '2'; break;
+		case '#': keyCode = '3'; break;
+		case '$': keyCode = '4'; break;
+		case '%': keyCode = '5'; break;
+		case '^': keyCode = '6'; break;
+		case '&': keyCode = '7'; break;
+		case '*': keyCode = '8'; break;
+		case '(': keyCode = '9'; break;
+		case ')': keyCode = '0'; break;
+		case '_': keyCode = '-'; break;
+		case '+': keyCode = '='; break;
+		case '{': keyCode = '['; break;
+		case '}': keyCode = ']'; break;
+		case '|': keyCode = '\\'; break;
+		case ':': keyCode = ';'; break;
+		case '"': keyCode = '\''; break; /* Doesn't work */
+		case '<': keyCode = ','; break;
+		case '>': keyCode = '.'; break;
+		case '?': keyCode = '/'; break;
+		default:
+			keyCode = keyChar;
+			break;
+		}
+	}
   }
 
   X->evtId = (X->event.xany.type == KeyPress)? KEY_PRESSED : KEY_RELEASED;
@@ -259,8 +302,8 @@ jobject
 motionNotify ( JNIEnv* env, Toolkit* X )
 {
   return (*env)->CallStaticObjectMethod( env, MouseEvent, getMouseEvent,
-											  X->srcIdx, (X->evtId = MOUSE_MOVED),
-											  0, X->event.xmotion.x, X->event.xmotion.y);
+										 X->srcIdx, (X->evtId = MOUSE_MOVED),
+										 0, X->event.xmotion.x, X->event.xmotion.y);
 }
 
 
@@ -326,7 +369,7 @@ expose ( JNIEnv* env, Toolkit* X )
   }
 
   return (*env)->CallStaticObjectMethod( env, PaintEvent, getPaintEvent,
-										 X->srcIdx, (X->evtId = PAINT),
+										 X->srcIdx, (X->evtId = UPDATE),
 										 x, y, w, h);
 }
 
@@ -334,8 +377,13 @@ expose ( JNIEnv* env, Toolkit* X )
 jobject
 destroyNotify ( JNIEnv* env, Toolkit* X )
 {
-  return (*env)->CallStaticObjectMethod( env, WindowEvent, getWindowEvent,
-										 X->srcIdx, (X->evtId = WINDOW_CLOSED));
+  /*
+   * We should get this just for windows which have been destroyed from an
+   * external client, since removeNotify() calls evtUnregisterSource() (i.e.
+   * removes windows properly from the dispatch table)
+   */
+  return (*env)->CallStaticObjectMethod( env, WMEvent, getWMEvent,
+										 X->srcIdx, (X->evtId = WM_KILLED));
 }
 
 
@@ -423,8 +471,9 @@ reparentNotify ( JNIEnv* env, Toolkit* X )
   int       left, top, right, bottom;
   int       x, y, w, h, bw, d;
   int       xc, yc, wc, hc;
-  int       dw, dh;
   DecoInset *in = NULL;
+  XSizeHints wmHints;
+  long      supHints;
 
   if ( X->frameInsets.guess || X->dialogInsets.guess ) {
 	window = X->event.xreparent.window;
@@ -443,7 +492,7 @@ reparentNotify ( JNIEnv* env, Toolkit* X )
 	  if ( (left != in->left) || (top != in->top) ||
 		   (right != in->right) || (bottom != in->bottom) ){
 		clazz = (*env)->FindClass( env, "java/awt/Dialog");
-		setDecoInsets = (*env)->GetStaticMethodID( env, clazz, "setDecoInsets","(IIII)V");
+		setDecoInsets = (*env)->GetStaticMethodID( env, clazz, "setDecoInsets","(IIIII)V");
 	  }
 	  in->guess = 0;
 	}
@@ -452,18 +501,18 @@ reparentNotify ( JNIEnv* env, Toolkit* X )
 	  if ( (left != in->left) || (top != in->top) ||
 		   (right != in->right) || (bottom != in->bottom) ){
 		clazz = (*env)->FindClass( env, "java/awt/Frame");
-		setDecoInsets = (*env)->GetStaticMethodID( env, clazz, "setDecoInsets","(IIII)V");
+		setDecoInsets = (*env)->GetStaticMethodID( env, clazz, "setDecoInsets","(IIIII)V");
 	  }
 	  in->guess = 0;
 	}
 
 	if ( clazz ) {
-	  dw = (left + right) - (in->left + in->right);
-	  dh = (top + bottom) - (in->top + in->bottom);
+	  wc -= (left + right) - (in->left + in->right);
+	  hc -= (top + bottom) - (in->top + in->bottom);
 
 	  XCheckTypedWindowEvent( X->dsp, window, ConfigureNotify, &X->event);
 	  XCheckTypedWindowEvent( X->dsp, window, Expose, &X->event);
-	  XResizeWindow( X->dsp, window, wc + dw, hc + dh);
+	  XResizeWindow( X->dsp, window, wc, hc);
 
 	  in->left = left;
 	  in->top = top;
@@ -471,7 +520,15 @@ reparentNotify ( JNIEnv* env, Toolkit* X )
 	  in->bottom = bottom;
 
 	  (*env)->CallStaticVoidMethod( env, clazz, setDecoInsets, 
-		in->top, in->left, in->bottom, in->right);
+									in->top, in->left, in->bottom, in->right, X->srcIdx);
+
+	  /* check if this was a resize locked window (which has to be locked again) */
+	  XGetWMNormalHints( X->dsp, window, &wmHints, &supHints);
+	  if ( wmHints.min_width == wmHints.max_width ){
+		wmHints.min_width = wmHints.max_width = wc;
+		wmHints.min_height = wmHints.max_height = hc;
+		XSetWMNormalHints( X->dsp, window, &wmHints);
+	  }
 	}
   }
 
@@ -532,7 +589,8 @@ Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
   FocusEvent     = (*env)->FindClass( env, "java/awt/FocusEvt");
   WindowEvent    = (*env)->FindClass( env, "java/awt/WindowEvt");
   KeyEvent       = (*env)->FindClass( env, "java/awt/KeyEvt");
-  PaintEvent     = (*env)->FindClass( env, "java/awt/PaintEvent");
+  PaintEvent     = (*env)->FindClass( env, "java/awt/PaintEvt");
+  WMEvent        = (*env)->FindClass( env, "java/awt/WMEvent");
 
   getComponentEvent = (*env)->GetStaticMethodID( env, ComponentEvent, "getEvent", 
 												 "(IIIIII)Ljava/awt/ComponentEvt;");
@@ -545,15 +603,25 @@ Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
   getKeyEvent       = (*env)->GetStaticMethodID( env, KeyEvent, "getEvent",
 												 "(IIIII)Ljava/awt/KeyEvt;");
   getPaintEvent     = (*env)->GetStaticMethodID( env, PaintEvent, "getEvent",
-												 "(IIIIII)Ljava/awt/PaintEvent;");
+												 "(IIIIII)Ljava/awt/PaintEvt;");
+  getWMEvent        = (*env)->GetStaticMethodID( env, WMEvent, "getEvent",
+												 "(II)Ljava/awt/WMEvent;");
 
   X->nWindows = 47;
   X->windows = KCALLOC( X->nWindows, sizeof(Window));
 
-  if ( X->banner )
-	XUnmapWindow( X->dsp, X->banner);
-
 #if defined(UNIX_JTHREADS)
+  /*
+   * we need a target for evtWakeup(), which is used to unblock nextEvent() in
+   * case we post a event to the localqueue
+   */
+  mask = CWEventMask;
+  attrs.override_redirect = True;
+  attrs.event_mask = StructureNotifyMask;
+
+  X->wakeUp = XCreateWindow( X->dsp, X->root, -1000, -1000, 1, 1, 0, CopyFromParent,
+							   InputOutput, CopyFromParent, mask, &attrs);
+
   /*
    * make X connection non-blocking (to get SIGIOs)
    * NOTE: this requires all Xlib calls doing IO via the X conn to be synced! In addition,
@@ -643,17 +711,6 @@ Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz )
   DBG( awt_evt, ("evtWakeup\n"));
   DBG_ACTION( awt, XSynchronize( X->dsp, False));
 
-  if ( !X->wakeUp ) {
-	unsigned long mask = CWEventMask;
-	XSetWindowAttributes attrs;
-
-	attrs.override_redirect = True;
-	attrs.event_mask = StructureNotifyMask;
-
-	X->wakeUp = XCreateWindow( X->dsp, X->root, -1000, -1000, 1, 1, 0, CopyFromParent,
-							   InputOutput, CopyFromParent, mask, &attrs);
-  }
-
   event.xclient.type = ClientMessage; 
   event.xclient.message_type = WAKEUP;
   event.xclient.format = 8;
@@ -696,6 +753,9 @@ Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env, jclass clazz, void* wnd
 
   if ( i >= 0 )
 	X->windows[i] = -1;
+
+  if ( X->lastWindow == (Window) wnd )
+	X->lastWindow = 0;
 
   return i;
 }

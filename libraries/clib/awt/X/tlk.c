@@ -8,12 +8,13 @@
  * of this file. 
  */
 
+
 #define MAIN
 
 #include "toolkit.h"
 
 
-/********************************************************************************
+/*******************************************************************************
  * auxiliary functions
  */
 
@@ -71,20 +72,8 @@ Java_java_awt_Toolkit_tlkVersion ( JNIEnv* env, jclass clazz )
 }
 
 
-/*
- * we do this native because of two reasons: (1) this should appear as fast as
- * possible (without being deferred by potential lengthy Java inits), (2) in
- * native window systems we can't draw to the "root-window" from within Java
- */
-Window
-displayBanner ( JNIEnv* env, jclass clazz, jstring banner )
-{
-  return 0;
-}
-
-
 void
-Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name, jstring banner )
+Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
 {
   char    *dspName;
 
@@ -113,9 +102,21 @@ DBG( awt, ("synchronize X\n"));
 DBG_ACTION(awt, XSynchronize( X->dsp, True));
 
   X->root   = DefaultRootWindow( X->dsp);
-  X->banner = displayBanner( env, clazz, banner);
 
-  initColorMapping( env, X);
+  /*
+   * We just can use XShm in case we don't run remote, and we better don't rely on
+   * XShmQueryExtension to make this distinction
+   */
+  if ( (dspName[0] == ':') || (strncmp( "localhost", dspName, 9) == 0) ) {
+	if ( XShmQueryExtension( X->dsp) ){
+	  X->shm =  USE_SHM;
+	  /*
+	   * threshold shouldn't be much smaller than page size, since this is
+	   * usually the smallest amount of sharable memory, anyway
+	   */
+	  X->shmThreshold = 4096;
+	}
+  }
 
   WM_PROTOCOLS     = XInternAtom( X->dsp, "WM_PROTOCOLS", False);
   WM_DELETE_WINDOW = XInternAtom( X->dsp, "WM_DELETE_WINDOW", False);
@@ -131,6 +132,11 @@ Java_java_awt_Toolkit_tlkTerminate ( JNIEnv* env, jclass clazz )
   if ( X->cbdOwner ) {
 	XDestroyWindow( X->dsp, X->cbdOwner);
 	X->cbdOwner = 0;
+  }
+
+  if ( X->wakeUp ) {
+	XDestroyWindow( X->dsp, X->wakeUp);
+	X->wakeUp = 0;
   }
 
   if ( X->dsp ){
@@ -234,4 +240,9 @@ void
 Java_java_awt_Toolkit_tlkBeep ( JNIEnv* env, jclass clazz )
 {
   XBell( X->dsp, 100);
+}
+
+void
+Java_java_awt_Toolkit_tlkDisplayBanner ( JNIEnv* env, jclass clazz, jstring banner )
+{
 }

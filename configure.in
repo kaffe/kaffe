@@ -409,6 +409,7 @@ if test x"$no_x" = x"yes"; then
 else
   OLIBS=$LIBS
   LIBS="$ZIP_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
+  AC_CHECK_LIBRARY(Xext,XShmQueryExtension,X_LIBS)
   AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
   AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
   AC_CHECK_LIBRARY(gif,DGifOpenFileHandle,GIF_LIBS)

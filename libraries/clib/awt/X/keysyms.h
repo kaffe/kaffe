@@ -30,7 +30,7 @@ signed char FKeyCode [256] = {
 -'\b',               /* BACK_SPACE      XK_BackSpace       0xFF08  back space, back char  */
 -'\t',               /* TAB             XK_Tab             0xFF09                         */
 -'\n',               /* ENTER           XK_Linefeed        0xFF0A  Linefeed, LF           */
-0x0c,               /* CLEAR           XK_Clear           0xFF0B                         */
+0x0c,                /* CLEAR           XK_Clear           0xFF0B                         */
 0,
 -'\n',               /* ENTER           XK_Return          0xFF0D  Return, enter          */
 0,
@@ -51,7 +51,7 @@ signed char FKeyCode [256] = {
 0,
 0,
 0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,                       /* 0xFF20 */
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  /* 0xFF20 */
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  /* 0xFF30               0..9, A..Z have 3rd byte == 0  */
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  /* 0xFF40                 -> overlaps (Z = 0x5a)       */
 0x24,               /* HOME            XK_Home            0xFF50                         */
@@ -102,7 +102,7 @@ signed char FKeyCode [256] = {
 0,
 0x1f,               /* MODECHANGE      XK_Mode_switch, script_switch    0xFF7E  Character set switch   */
 0x90,               /* NUM_LOCK        XK_Num_Lock        0xFF7F                         */
-0x20,               /* SPACE           XK_KP_Space        0xFF80  space                  */
+-' ',               /* SPACE           XK_KP_Space        0xFF80  space                  */
 0,
 0,
 0,
