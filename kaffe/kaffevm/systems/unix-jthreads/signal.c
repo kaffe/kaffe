@@ -38,6 +38,7 @@
 
 static void nullException(SIGNAL_ARGS(sig, sc));
 static void floatingException(EXCEPTIONPROTO);
+static void ignoreSignal(int sig);
 
 static exchandler_t nullHandler;
 static exchandler_t floatingHandler;
@@ -280,7 +281,7 @@ clearSignal(int sig)
 /*
  * Ignore the given signal.
  */
-void
+static void
 ignoreSignal(int sig)
 {
 	registerSignalHandler(sig, SIG_IGN, false);

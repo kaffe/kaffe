@@ -1,3 +1,14 @@
+2004-12-29  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/jsignal.h,
+	kaffe/kaffevm/systems/unix-jthreads/jsignal.h,
+	kaffe/kaffevm/systems/unix-pthreads/signal.c,
+	kaffe/kaffevm/systems/unix-jthreads/signal.c:
+	Made ignoreSignal private to signal.c. This symbol may conflict
+	with Ch.
+
+	Reported by Kabileshkumar Cheetancheri <cgkabilesh@yahoo.com>
+	
 2004-12-27  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* test/regression/ProhibitedClass.java: Changed the output to be less
