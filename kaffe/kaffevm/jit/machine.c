@@ -447,8 +447,8 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	}
 	codebase = methblock + constlen;
 	/* align entry point if so desired */
-	if (align != 0 && (unsigned int)codebase % align != 0) {
-		int pad = (align - (unsigned int)codebase % align);
+	if (align != 0 && (unsigned long)codebase % align != 0) {
+		int pad = (align - (unsigned long)codebase % align);
 		/* assert the allocator indeed returned 8 bytes aligned addrs */
 		assert(pad <= align - 8);	
 		codebase = (char*)codebase + pad;
