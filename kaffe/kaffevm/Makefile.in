@@ -236,6 +236,7 @@ noinst_HEADERS = \
 	itypes.h \
 	jar.h \
 	jnirefs.h \
+	ksem.h \
 	lerrno.h \
 	locks.h \
 	lookup.h \
