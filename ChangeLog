@@ -1,3 +1,8 @@
+2004-10-22  Noa Resare  <noa@resare.com>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	Move KaffeVM_unlinkNativeAndJavaThread() to after KGC_rmRef()
+
 2004-10-22  Eric Anholt  <eta@lclark.edu>
 
 	* libraries/clib/native/Double.c,

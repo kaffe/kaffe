@@ -732,8 +732,6 @@ void* tRun ( void* p )
 
 	unprotectThreadList(cur);
 
-	/* we are done using locks now. ok to destroy ksem */
-	KaffeVM_unlinkNativeAndJavaThread();
 
 	if ( nCached >= MAX_CACHED_THREADS ){
 	  break;
@@ -919,6 +917,7 @@ void tDispose ( jthread_t nt )
 {
   /* Remove the static reference so the thread context may be freed. */
   KGC_rmRef(threadCollector, nt);
+  KaffeVM_unlinkNativeAndJavaThread();
 
   pthread_detach( nt->tid);
   pthread_mutex_destroy (&nt->suspendLock);
