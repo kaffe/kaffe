@@ -221,16 +221,6 @@ public void setDate(int date) {
 /**
  * @deprecated
  */
-private void setDay(int day) {
-	Calendar cal = Calendar.getInstance();
-	cal.setTime(this);
-	cal.set(Calendar.DAY_OF_WEEK, day);
-	time = cal.getTime().getTime();
-}
-
-/**
- * @deprecated
- */
 public void setHours(int hours) {
 	Calendar cal = Calendar.getInstance();
 	cal.setTime(this);

@@ -17,11 +17,6 @@ public final class Double extends Number implements Comparable {
   private static final long MANTISSA_MASK	= 0x000fffffffffffffL;
   private static final long NAN_BITS		= 0x7ff8000000000000L;
 
-  private static final long POSITIVE_INFINITY_BITS = 0x7ff0000000000000L;
-  private static final long NEGATIVE_INFINITY_BITS = 0xfff0000000000000L;
-  private static final long MIN_VALUE_BITS	= 0x0000000000000001L;
-  private static final long MAX_VALUE_BITS	= 0x7fefffffffffffffL;
-
   // Jacks requires that theses constants are _compile time_ constants.
   // test-case DoubleConst will check that are correctly compiled.
   public static final double POSITIVE_INFINITY	= 1.0d / 0.0d;

@@ -31,7 +31,6 @@ public class Deflater {
   private int len;
   private int level;
   private int strategy;
-  private boolean setParams;
   private boolean finish;
   private boolean finished;
 
@@ -42,7 +41,6 @@ public class Deflater {
     len = 0;
     off = 0;
     strategy = DEFLATED;
-    setParams = false;
     finish = false;
     finished = false;
     init(nowrap);

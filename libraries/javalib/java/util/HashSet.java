@@ -18,7 +18,7 @@ package java.util;
 import java.io.Serializable;
 
 public class HashSet extends AbstractSet
-		implements Set, Cloneable, Serializable {
+		implements Cloneable, Serializable {
 	private static final float DEFAULT_LOADFACTOR = 0.75f;
 	private HashMap map;
 

@@ -6,7 +6,6 @@ import java.awt.datatransfer.Transferable;
 
 public class ObjectSelection
   extends ExportTransferable
-  implements Transferable, ClipboardOwner
 {
 	static DataFlavor[] objectFlavors;
 	static FlavorConverter[] objectConverters;

@@ -17,11 +17,6 @@ public final class Float extends Number implements Comparable {
   private static final int MANTISSA_MASK	= 0x007fffff;
   private static final int NAN_BITS		= 0x7fc00000;
 
-  private static final int POSITIVE_INFINITY_BITS = 0x7f800000;
-  private static final int NEGATIVE_INFINITY_BITS = 0xff800000;
-  private static final int MIN_VALUE_BITS	= 0x00000001;
-  private static final int MAX_VALUE_BITS	= 0x7f7fffff;
-
   // Jacks requires that theses constants are _compile time_ constants.
   // test-case DoubleConst will check that are correctly compiled.
   public static final float POSITIVE_INFINITY	= 1.0f / 0.0f;

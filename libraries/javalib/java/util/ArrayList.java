@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 
 public class ArrayList extends AbstractList
-		implements List, Cloneable, Serializable {
+		implements Cloneable, Serializable {
 
 	private static final int DEFAULT_CAPACITY = 32;
 	private boolean fixed;		// means that size must remain fixed

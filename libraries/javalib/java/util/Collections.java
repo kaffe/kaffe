@@ -389,14 +389,14 @@ public class Collections {
 	}
 
 	private static class SyncSet extends SyncCollection
-			implements Set, Serializable {
+			implements Set {
 		SyncSet(Set s) {
 			super(s);
 		}
 	}
 
 	private static class SyncSortedSet extends SyncSet
-			implements SortedSet, Serializable {
+			implements SortedSet {
 		SyncSortedSet(SortedSet s) {
 			super(s);
 		}
@@ -422,7 +422,7 @@ public class Collections {
 	}
 
 	private static class SyncList extends SyncCollection
-			implements List, Serializable {
+			implements List {
 		SyncList(List l) {
 			super(l);
 		}
@@ -509,7 +509,7 @@ public class Collections {
 	}
 
 	private static class SyncSortedMap extends SyncMap
-			implements SortedMap, Serializable {
+			implements SortedMap {
 		SyncSortedMap(SortedMap m) {
 			super(m);
 		}
@@ -590,14 +590,14 @@ public class Collections {
 	}
 
 	private static class UMSet extends UMCollection
-			implements Set, Serializable {
+			implements Set {
 		UMSet(Set s) {
 			super(s);
 		}
 	}
 
 	private static class UMSortedSet extends UMSet
-			implements SortedSet, Serializable {
+			implements SortedSet {
 		UMSortedSet(SortedSet s) {
 			super(s);
 		}
@@ -625,7 +625,7 @@ public class Collections {
 	}
 
 	public static class UMList extends UMCollection
-			implements List, Serializable {
+			implements List {
 		UMList(List l) {
 			super(l);
 		}
@@ -714,7 +714,7 @@ public class Collections {
 	}
 
 	private static class UMSortedMap extends UMMap
-			implements SortedMap, Serializable {
+			implements SortedMap {
 		UMSortedMap(SortedMap m) {
 			super(m);
 		}

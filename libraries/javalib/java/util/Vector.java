@@ -13,7 +13,7 @@ package java.util;
 import java.io.Serializable;
 
 public class Vector extends AbstractList
-		implements List, Cloneable, Serializable {
+		implements Cloneable, Serializable {
 
 private static final long serialVersionUID = -2767605614048989439L;
 

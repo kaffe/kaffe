@@ -34,7 +34,6 @@ private boolean CPlusPlusComments;
 private boolean toLower;
 private StringBuffer buffer = new StringBuffer();
 private boolean endOfFile;
-private boolean EOLPushedBack;
 private int lineNumber = 1;
 
 /**

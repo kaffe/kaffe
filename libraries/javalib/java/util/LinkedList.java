@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 
 public class LinkedList extends AbstractSequentialList
-		implements List, Cloneable, Serializable {
+		implements Cloneable, Serializable {
 	Elem head = null;
 	Elem tail = null;
 	int length = 0;

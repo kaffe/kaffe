@@ -21,7 +21,7 @@ import java.io.Serializable;
 // where each bucket points to a singly linked list of Entry's (see below).
 
 public class HashMap extends AbstractMap
-		implements Map, Cloneable, Serializable {
+		implements Cloneable, Serializable {
 	private static final int DEFAULT_CAPACITY = 11;
 	private static final float DEFAULT_LOADFACTOR = 0.75f;
 	float loadFactor;

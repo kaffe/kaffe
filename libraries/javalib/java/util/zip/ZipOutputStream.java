@@ -33,7 +33,6 @@ private ZipEntry curr;
 private Vector dir;
 private OutputStream strm;
 private int dout;
-private int eout;
 private CRC32 crc;
 
 class Storer

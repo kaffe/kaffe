@@ -1,3 +1,22 @@
+Sun Dec  2 19:32:53 PST 2001  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/awt/datatransfer/StringSelection.java
+	libraries/javalib/java/io/StreamTokenizer.java
+	libraries/javalib/java/lang/Double.java
+	libraries/javalib/java/lang/Float.java
+	libraries/javalib/java/security/BasicPermission.java
+	libraries/javalib/java/util/ArrayList.java
+	libraries/javalib/java/util/Collections.java
+	libraries/javalib/java/util/Date.java
+	libraries/javalib/java/util/HashMap.java
+	libraries/javalib/java/util/HashSet.java
+	libraries/javalib/java/util/LinkedList.java
+	libraries/javalib/java/util/Vector.java
+	libraries/javalib/java/util/zip/Deflater.java
+	libraries/javalib/java/util/zip/ZipOutputStream.java
+	kaffe/awt/ObjectSelection.java:
+	more pedantic fixes: remove unnecessary interfaces, variables, methods
+
 Sat Nov 24 14:31:18 PST 2001  Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>
 
 	* libraries/javalib/java/util/TimeZone.java: fixes to getTimeZone()
