@@ -1,3 +1,11 @@
+2004-01-19  Alexander Boettcher <ab764283@os.inf.tu-dresden.de>
+
+	* libraries/clib/net/PlainDatagramSocketImpl.c
+	(gnu_java_net_PlainDatagramSocketImpl_socketSetOption)
+	[!IP_MULTICAST_IF]: Moved a curly brace to matching part 
+	of the function to fix build on systems where 
+	IP_MULTICAST_IF is not defined.
+
 2004-01-19  Dalibor Topic <robilad@kaffe.org>
 
 	* include/Makefile.am

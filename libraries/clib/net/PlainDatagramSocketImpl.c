@@ -454,11 +454,11 @@ gnu_java_net_PlainDatagramSocketImpl_socketSetOption(struct Hgnu_java_net_PlainD
 				SignalError("java.net.SocketException",
 					    SYS_ERROR(r));
 			}
+		}
 #else
 			SignalError("java.net.SocketException",
 				    "IP_MULTICAST_IF is not supported");
 #endif
-		}
 		break;
 
 	case java_net_SocketOptions_SO_BINDADDR:
