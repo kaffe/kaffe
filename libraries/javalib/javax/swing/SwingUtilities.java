@@ -441,7 +441,7 @@ public class SwingUtilities implements SwingConstants
                                destination);
 
     return new MouseEvent(destination, sourceEvent.getID(),
-                          sourceEvent.getWhen(), sourceEvent.getModifiers(),
+                          sourceEvent.getWhen(), sourceEvent.getModifiersEx(),
                           newpt.x, newpt.y, sourceEvent.getClickCount(),
                           sourceEvent.isPopupTrigger(), sourceEvent.getButton());
   }
@@ -863,7 +863,7 @@ public class SwingUtilities implements SwingConstants
    */
   public static boolean isLeftMouseButton(MouseEvent event)
   {
-    return ((event.getModifiers() & InputEvent.BUTTON1_DOWN_MASK)
+    return ((event.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK)
 	     == InputEvent.BUTTON1_DOWN_MASK);
   }
 
@@ -876,7 +876,7 @@ public class SwingUtilities implements SwingConstants
    */
   public static boolean isMiddleMouseButton(MouseEvent event)
   {
-    return ((event.getModifiers() & InputEvent.BUTTON2_DOWN_MASK)
+    return ((event.getModifiersEx() & InputEvent.BUTTON2_DOWN_MASK)
 	     == InputEvent.BUTTON2_DOWN_MASK);
   }
 
@@ -889,7 +889,7 @@ public class SwingUtilities implements SwingConstants
    */
   public static boolean isRightMouseButton(MouseEvent event)
   {
-    return ((event.getModifiers() & InputEvent.BUTTON3_DOWN_MASK)
+    return ((event.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK)
 	     == InputEvent.BUTTON3_DOWN_MASK);
   }
   

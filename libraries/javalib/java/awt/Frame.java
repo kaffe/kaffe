@@ -197,9 +197,9 @@ private String title = "";
    */
   private boolean undecorated = false;
 
-/*
+  /*
    * The number used to generate the name returned by getName.
- */
+   */
   private static transient long next_frame_number = 0;
 
 /**
@@ -408,13 +408,13 @@ public void removeNotify()
   super.removeNotify();
 }
 
-/**
-  * Returns a debugging string describing this window.
-  *
-  * @return A debugging string describing this window.
-  */
+  /**
+   * Returns a debugging string describing this window.
+   *
+   * @return A debugging string describing this window.
+   */
   protected String paramString ()
-{
+  {
     String title = getTitle ();
 
     String resizable = "";
@@ -442,7 +442,7 @@ public void removeNotify()
       }
 
     return super.paramString () + ",title=" + title + resizable + state;
-}
+  }
 
 public static Frame[]
 getFrames()

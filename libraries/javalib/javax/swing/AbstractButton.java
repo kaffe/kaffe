@@ -731,10 +731,10 @@ public abstract class AbstractButton extends JComponent
 
     if (old != mne)
       {
-    getModel().setMnemonic(mne);
+	getModel().setMnemonic(mne);
 
 	if (text != null && ! text.equals(""))
-      {
+	  {
 	    // Since lower case char = upper case char for 
 	    // mnemonic, we will convert both text and mnemonic 
 	    // to upper case before checking if mnemonic character occurs
@@ -744,9 +744,9 @@ public abstract class AbstractButton extends JComponent
 	    setDisplayedMnemonicIndex(upperCaseText.indexOf(upperCaseMne));
 	  }
 
-        firePropertyChange(MNEMONIC_CHANGED_PROPERTY, old, mne);
-        revalidate();
-        repaint();
+	firePropertyChange(MNEMONIC_CHANGED_PROPERTY, old, mne);
+	revalidate();
+	repaint();
       }
   }
 
@@ -1153,9 +1153,9 @@ public abstract class AbstractButton extends JComponent
     if (t != old)
       {
         firePropertyChange(TEXT_CHANGED_PROPERTY, old, t);
-    revalidate();
-    repaint();
-  }
+        revalidate();
+        repaint();
+      }
   }
 
   /**
@@ -1441,7 +1441,7 @@ public abstract class AbstractButton extends JComponent
 
         // Set actionCommand to button's text by default if it is not specified
         if (actionCommand != null)
-        setActionCommand((String)(a.getValue(Action.ACTION_COMMAND_KEY)));
+	   setActionCommand((String)(a.getValue(Action.ACTION_COMMAND_KEY)));
 	 else
 	   setActionCommand(getText());
       }

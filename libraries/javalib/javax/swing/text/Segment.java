@@ -1,4 +1,4 @@
-/* Segment.java -- 
+/* Segment.java --
    Copyright (C) 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -43,6 +43,8 @@ import java.text.CharacterIterator;
 public class Segment
   implements Cloneable, CharacterIterator
 {
+  private boolean partialReturn;
+  
   public char[] array;
   public int count;
   public int offset;
@@ -57,71 +59,87 @@ public class Segment
     this.offset = offset;
     this.count = count;
   }
-    
-    public Object clone()
-    {
+  
+  public Object clone()
+  {
     try
       {
-	    return super.clone();
-	}
+	return super.clone();
+      }
     catch (CloneNotSupportedException e)
       {
 	return null;
-    }
+      }
   }
-    
-    public char current()
-    {
-	return array[getIndex()];
-    }
 
-    public char first()
-    {
-	offset = getBeginIndex();
-	return array[offset];
-    }
-    
-    public int getBeginIndex()
-    {
-	return offset;
-    }
-    
-    public int getEndIndex()
-    {
-	return offset + count;
-    }
+  public char current()
+  {
+    return array[getIndex()];
+  }
 
-    public int getIndex()
-    {
-	return offset;
-    }
+  public char first()
+  {
+    offset = getBeginIndex();
+    return array[offset];
+  }
 
-    public char last()
-    {
-	offset = getEndIndex() - 1;
-	return array[offset];
-    }
+  public int getBeginIndex()
+  {
+    return offset;
+  }
 
-    public char next()
-    {
-	offset++;
-	return array[offset];
-    }
+  public int getEndIndex()
+  {
+    return offset + count;
+  }
 
-    public char previous()
-    {
-	offset--;
-	return array[offset];
-    }
+  public int getIndex()
+  {
+    return offset;
+  }
 
-    public char setIndex(int position)
-    {
-	offset = position;
-	return array[offset];
-    }
+  public char last()
+  {
+    offset = getEndIndex() - 1;
+    return array[offset];
+  }
 
-    public String toString()
-    {
-	return new String(array, offset, count);
-    }
+  public char next()
+  {
+    offset++;
+    return array[offset];
+  }
+
+  public char previous()
+  {
+    offset--;
+    return array[offset];
+  }
+
+  public char setIndex(int position)
+  {
+    offset = position;
+    return array[offset];
+  }
+
+  public String toString()
+  {
+    return new String(array, offset, count);
+  }
+
+  /**
+   * @since 1.4
+   */
+  public void setPartialReturn(boolean p)
+  {
+    partialReturn = p;
+  }
+  
+  /**
+   * @since 1.4
+   */
+  public boolean isPartialReturn()
+  {
+    return partialReturn;
+  }
 }

@@ -222,7 +222,7 @@ public class KeyStroke implements Serializable
 
 		// Get Event ID
 		eventID = event.getID();
-		eventMod = event.getModifiers();
+		eventMod = event.getModifiersEx();
 
 		// Check for KEY_TYPED event
 		if (eventID == KeyEvent.KEY_TYPED) {

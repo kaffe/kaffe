@@ -229,11 +229,11 @@ public class BasicPopupMenuUI extends PopupMenuUI
 
   /**
   * This method returns the minimum size of the JPopupMenu.
-   *
+  *
   * @param c The JComponent to find a size for.
-   *
+  *
   * @return The minimum size.
-   */
+  */
   public Dimension getMinimumSize(JComponent c)
   {
     return null;

@@ -1,5 +1,5 @@
 /* StubDelegateImpl.java -- 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -41,10 +41,17 @@ package gnu.javax.rmi.CORBA;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+//import org.omg.CORBA.portable.Delegate;
+//import org.omg.CORBA.portable.InputStream;
+//import org.omg.CORBA.portable.OutputStream;
+//import org.omg.CORBA_2_3.portable.ObjectImpl;
+//import org.omg.CORBA.portable.ObjectImpl;
+//import org.omg.CORBA.BAD_OPERATION;
+//import org.omg.CORBA.ORB;
 import java.rmi.RemoteException;
-
 import javax.rmi.CORBA.Stub;
 import javax.rmi.CORBA.StubDelegate;
+import javax.rmi.CORBA.Tie;
 
 public class StubDelegateImpl
   implements StubDelegate

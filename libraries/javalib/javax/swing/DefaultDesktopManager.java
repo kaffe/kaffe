@@ -84,7 +84,7 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
   private transient Container pane;
 
   /**
-   * An array of Rectangles that holds the bounds of the JDesktopIcons in the 
+   * An array of Rectangles that holds the bounds of the JDesktopIcons in the
    * JDesktopPane when looking for where to place a new icon.
    */
   private transient Rectangle[] iconRects;

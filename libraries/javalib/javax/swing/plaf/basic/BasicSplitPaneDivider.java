@@ -156,7 +156,7 @@ public class BasicSplitPaneDivider extends Container
   /** Keeps track of where the divider should be placed when using one touch expand
    * buttons. */
   private transient int currentDividerLocation = 1;
-
+  
   private transient Border tmpBorder = new Border()
   {
     public Insets getBorderInsets(Component c)

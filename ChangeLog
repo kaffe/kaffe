@@ -1,3 +1,392 @@
+2004-08-07  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2004-08-06  Tom Tromey  <tromey@redhat.com>
+
+	* java/net/DatagramSocket.java: Fixed typo.
+
+	* java/awt/image/Kernel.java (clone): Use super.clone().
+
+	2004-08-02  Bryce McKinlay  <mckinlay@redhat.com>
+
+	* java/sql/Timestamp.java (valueOf): Synchronize access to dateFormat.
+
+	2004-07-31  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/table/DefaultTableColumnModel.java
+	(serialVersionUID): Made private.
+	(listenerList): Initialize.
+	(changeEvent): Initialize.
+	* javax/swing/table/JTableHeader.java
+	(JTableHeader): New constructors.
+	(createDefaultColumnModel): New method.
+	* javax/swing/table/TableColumn.java
+	(setHeaderRenderer): Simplified code.
+	(setCellRenderer): Likewise.
+	(setWidth): Likewise.
+
+	2004-07-31  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/text/AbstractDocument.java: Reindent.
+	* javax/swing/text/AttributeSet.java: Reindent.
+	* javax/swing/text/DefaultEditorKit.java: Reindent.
+	* javax/swing/text/EditorKit.java: Reindent.
+	* javax/swing/text/Position.java: Reindent.
+	* javax/swing/text/StyledEditorKit.java: Reindent.
+	* javax/swing/text/TextAction.java: Reindent.
+	* javax/swing/text/ViewFactory.java: Reindent.
+
+	2004-07-31  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JFormattedTextField.java
+	(JFormattedTextField): Implemented.
+	* javax/swing/text/DefaultEditorKit.java
+	(BeepAction): New inner class.
+	* javax/swing/text/Segment.java
+	(partialReturn): New field.
+	(setPartialReturn): New method.
+	(isPartialReturn): Likewise.
+	* javax/swing/text/View.java
+	(createFragment): Fixed typo.
+	(getStartOffset): New method.
+	(getEndOffset): Likewise.
+
+	2004-07-31  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/plaf/basic/BasicArrowButton.java: Reindent.
+	* javax/swing/plaf/basic/BasicCheckBoxMenuItemUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicInternalFrameUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicLabelUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicListUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicMenuItemUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicMenuUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicOptionPaneUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicPopupMenuUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicRadioButtonMenuItemUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicRootPaneUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicScrollBarUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicScrollPaneUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicSliderUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicSplitPaneDivider.java: Reindent.
+	* javax/swing/plaf/basic/BasicTabbedPaneUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicTextUI.java: Reindent.
+	* javax/swing/plaf/basic/BasicToolBarUI.java: Reindent.
+
+	2004-07-31  Roman Kennke  <roman@ontographics.com>
+
+	* javax/swing/Box.java:
+	(createGlue): Implemented
+	(createHorizontalGlue): Implemented
+	(createHorizontalStrut): Implemented
+	(createVerticalGlue): Implemented
+	(createVerticalStrut): Implemented
+
+	2004-07-31  Roman Kennke  <roman@ontographics.com>
+
+	* javax/swing/BoxLayout.java: Reimplement.
+
+	2004-07-31  Mark Wielaard  <mark@klomp.org>
+
+	* java/awt/Component.java: Reindent.
+	* java/awt/im/InputContext.java: Reindent.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c:
+	Reindent.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkListPeer.c: Reindent.
+
+	2004-07-31  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GtkTextFieldPeer.java (create): Use tf
+	variable in setEditable call.
+
+	* gnu/java/awt/peer/gtk/GtkTextFieldPeer.java,
+	jni/gtk-peer/gnu_java_awt_peer_gtk_GtkTextFieldPeer.c
+	(gtkWidgetSetBackground): New method.
+	(gtkWidgetSetForeground): Likewise.
+	(create): Set peer's editable state based on awtComponent's.
+
+	2004-07-31  David Jee  <djee@redhat.com>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c
+	(gtkWidgetGetPreferredDimensions): For widgets extending GtkWindow,
+	use their default sizes rather than their natural requisitions.
+
+	2004-07-31  Mark Wielaard  <mark@klomp.org>
+
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GtkChoicePeer.c
+	(gtkWidgetSetSensitive): Removed.
+	(gtkWidgetSetParent): Removed.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c
+	(gtkWidgetSetSensitive): New method.
+	(gtkWidgetSetParent): Likewise.
+	Remove all set methods.
+
+	2004-07-31  David Jee  <djee@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GtkChoicePeer.java
+	(GtkChoicePeer): Do not automatically select first item.
+	(getHistory): Remove.
+	(nativeGetSelected): New method.
+	(nativeRemoveAll): New method.
+	(add): Use nativeGetSelected() instead of getHistory().
+	(remove): Likewise.
+	(removeAll): Call nativeRemoveAll().
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GtkChoicePeer.c
+	(create): Migrate to GtkComboBox.
+	(append): Likewise.
+	(nativeAdd): Likewise.
+	(nativeRemove): Likewise.
+	(select): Likewise.
+	(nativeRemoveAll): New method.
+	(nativeGetSelected): New method.
+	(selection_changed): New method.
+	(getHistory): Remove.
+	(item_activate): Remove.
+	(item_removed): Remove.
+	(connect_choice_item_selectable_hook): Remove.
+
+	2004-07-31  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* java/awt/Component.java: Document AWT 1.0 event handler
+	methods.
+
+	2004-07-31  David Jee  <djee@redhat.com>
+
+	* java/awt/DefaultKeyboardFocusManager.java
+	(postProcessKeyEvent): Only activate MenuShortcuts on KEY_PRESSED
+	event.  Fix shift modifier checking.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuPeer.c
+	(accel_attach): Remove.
+	(setupAccelGroup): Remove calls to accel_attach.
+
+	2004-07-31  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	PR AWT/16040
+	* gnu/java/awt/peer/gtk/GtkButtonPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+	jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c: Likewise.
+	* gnu/java/awt/peer/gtk/GtkListPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkTextFieldPeer.java: Likewise.
+	* java/awt/AWTKeyStroke.java: Remove old modifier masks.
+	* java/awt/Component.java: Replace old modifier masks with new
+	ones.
+	* java/awt/Container.java: Call getModifiersEx, not
+	getModifiers.
+	* java/awt/DefaultKeyboardFocusManager.java: Likewise.  Remove
+	old modifier masks.
+	* javax/swing/JMenuItem.java: Replace old button masks with new
+	ones.
+	* javax/swing/KeyStroke.java: Call getModifiersEx, not
+	getModifiers.
+	* javax/swing/SwingUtilities.java: Likewise.
+	* javax/swing/plaf/basic/BasicButtonListener.java: Likewise.
+	* javax/swing/plaf/basic/BasicInternalFrameUI.java: Likewise.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c: Replace old
+	mask macros with new ones.
+	* native/jni/gtk-peer/gtkpeer.h: Replace old button and modifier mask
+	macros with new ones representing new masks.
+
+	2004-07-31  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/awt/EmbeddedWindow.java: Reindent.
+	* gnu/java/awt/image/ImageDecoder.java: Reindent.
+	* gnu/java/awt/peer/gtk/GtkComponentPeer.java: Reindent.
+	* gnu/java/awt/peer/gtk/GtkFileDialogPeer.java: Reindent.
+	* java/awt/DefaultKeyboardFocusManager.java: Reindent.
+	* java/awt/Frame.java: Reindent.
+	* javax/swing/JCheckBox.java: Reindent.
+	* javax/swing/JCheckBoxMenuItem.java: Reindent.
+	* javax/swing/UIDefaults.java: Reindent.
+	* javax/swing/UIManager.java: Reindent.
+
+	2004-07-31  Kim Ho  <kho@redhat.com>
+
+	* java/awt/Container.java:
+	(acquireComponentForMouseEvent): Respect
+	the event mask when looking for candidate.
+	* javax/swing/JComponent.java:
+	Remove toolTip field.
+	(createToolTip): Create a tooltip on demand.
+	(setToolTipText): Register with the ToolTipManager.
+	(getToolTipText(MouseEvent)): Return getToolTipText().
+	* javax/swing/JToolTip.java: Implement.
+	* javax/swing/Timer.java: Jalopy.
+	(restart): Call stop, then start.
+	(stop): Interrupt the timer rather than wait for
+	the timer to come to a stop naturally.
+	* javax/swing/ToolTipManager.java: Implement.
+	* javax/swing/plaf/basic/BasicLookAndFeel.java:
+	Change ToolTip.background color.
+	* javax/swing/plaf/basic/BasicToolTipUI.java:
+	Implement.
+
+	2004-07-31  Mark Wielaard  <mark@klomp.org>
+
+	* native/jni/gtk-peer/gthread-jni.c: Define MIN_, MAX_ and NORM_
+	PRIORITY when not already defined in header file.
+
+	2004-07-30  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/AbstractButton.java: Reformat.
+	* javax/swing/ActionMap.java: Likewise.
+	* javax/swing/ComponentInputMap.java: Likewise.
+	* javax/swing/DefaultDesktopManager.java: Likewise.
+	* javax/swing/ImageIcon.java: Likewise.
+	* javax/swing/InputMap.java: Likewise.
+	* javax/swing/JButton.java: Likewise.
+	* javax/swing/JEditorPane.java: Likewise.
+	* javax/swing/JInternalFrame.java: Likewise.
+	* javax/swing/JMenu.java: Likewise.
+	* javax/swing/JMenuBar.java: Likewise.
+	* javax/swing/JMenuItem.java: Likewise.
+	* javax/swing/JOptionPane.java: Likewise.
+	* javax/swing/JPopupMenu.java: Likewise.
+	* javax/swing/JRootPane.java: Likewise.
+	* javax/swing/JScrollPane.java: Likewise.
+	* javax/swing/JTable.java: Likewise.
+	* javax/swing/JTextField.java: Likewise.
+	* javax/swing/JToolBar.java: Likewise.
+	* javax/swing/MenuSelectionManager.java: Likewise.
+	* javax/swing/RepaintManager.java: Likewise.
+	* javax/swing/ScrollPaneLayout.java: Likewise.
+	* javax/swing/UIManager.java: Likewise.
+	* javax/swing/ViewportLayout.java: Likewise.
+
+	2004-07-30  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GtkArg.java: Remove file.
+	* gnu/java/awt/peer/gtk/GtkArgList.java: Remove file.
+
+	* gnu/java/awt/peer/gtk/GtkButtonPeer.java,
+	native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c
+	(create(String)): New method.
+	(create): Call new create method.
+	(getArgs): Remove method.
+	* gnu/java/awt/peer/gtk/GtkCheckboxPeer.java,
+	native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkCheckboxPeer.c 
+	(nativeCreate): Rename to create.
+	(gtkSetLabel): Rename to gtkButtonSetLabel.
+	(gtkToggleButtonSetActive): New method.
+	(create): Call gtkToggleButtonSetActive and gtkButtonSetLabel.
+	(setState): Replace set call with gtkToggleButtonSetActive.
+	(setLabel): Replace gtkSetLabel call with gtkButtonSetLabel.
+	(getArgs): Remove method.
+	* gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+	native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c
+	(gtkWidgetSetSensitive): New method.
+	(gtkWidgetSetParent): Likewise.
+	(GtkComponentPeer): Call setParent, setComponentBounds and
+	setVisibleAndEnabled.
+	(setParent): New method.
+	(setComponentBounds): New method.
+	(setVisibleAndEnabled): New method.
+	(setEnabled): Call gtkWidgetSetSensitive.
+	(getArgs): Remove method.
+	Remove all set methods.
+	* gnu/java/awt/peer/gtk/GtkDialogPeer.java (create): Call
+	gtkWindowSetModal, setTitle and setResizable.
+	(getArgs): Remove method.
+	* gnu/java/awt/peer/gtk/GtkFileDialogPeer.java
+	(setComponentBounds): New method.
+	* gnu/java/awt/peer/gtk/GtkFramePeer.java (setResizable):
+	Replace set call with gtkWindowSetResizable.
+	(getArgs): Remove method.
+	(create): Call setTitle and setResizable.
+	* gnu/java/awt/peer/gtk/GtkWindowPeer.java,
+	native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+	(gtkWindowSetTitle): New method.
+	(gtkWindowSetResizable): New method.
+	(gtkWindowSetModal): New method.
+	(setParent): New method.
+	(setVisibleAndEnabled): New method.
+	(getArgs): Remove method.
+	(setTitle): Call gtkWindowSetTitle.
+	(setResizable): Call gtkWindowSetResizable.
+	* native/jni/gtk-peer/gtkpeer.h [DEBUG_LOCKING]: New define to turn on
+	and off locking instrumentation.
+
+	2004-07-30  Craig Black  <craig.black@aonix.com>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics.java 
+	(drawRoundRect): Implemented.
+	(fillRoundRect): Implemented.
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java 
+	(drawRoundRect): Reimplemented to match GdkGraphics.
+	(fillRoundRect): Reimplemented to match GdkGraphics.
+
+	2004-07-30  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics.java,
+	native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c
+	(initState(GtkComponentPeer)): Don't return array of colour
+	values.
+	(GdkGraphics(int,int)): Set default font to size 12.
+	(GdkGraphics(GtkComponentPeer)): Set graphics colour to
+	component's foreground colour.
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java,
+	native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c
+	(initState(GtkComponentPeer)): Don't return array of colour
+	values.
+	(GdkGraphics2D(GtkComponentPeer)): Set foreground and background
+	colours to component's colours.
+	(current_colors_of_widget): Remove function.
+	* gnu/java/awt/peer/gtk/GtkOffScreenImage.java (getGraphics):
+	Return a new graphics object.
+	* java/awt/Font.java (toString): Fix format.
+	* java/awt/Graphics.java (toString): Likewise.
+
+	2004-07-30  Bryce McKinlay  <mckinlay@redhat.com>
+
+	* gnu/java/awt/ClasspathToolkit.java (createImageProducer): New.
+	Default implementation.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java (createImageProducer): New.
+	Implement using GdkPixbufDecoder.
+
+	2004-07-29  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/util/Collection.java, java/util/List.java,
+	java/util/Map.java, java/util/Set.java,
+	java/util/SortedMap.java, java/util/SortedSet.java:
+	Added additional exceptions to documentation.
+
+	2004-07-29  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/awt/EmbeddedWindow.java
+	(addNotify): Use AccessController to allow execution of privileged
+	code.
+
+	2004-07-28  Tom Tromey  <tromey@redhat.com>
+
+	* gnu/java/awt/peer/GLightweightPeer.java,
+	gnu/java/awt/peer/gtk/GdkGraphics2D.java,
+	gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+	gnu/javax/rmi/CORBA/StubDelegateImpl.java,
+	javax/swing/JScrollPane.java: Removed
+	redundant imports.
+
+	2004-07-28  Bryce McKinlay  <mckinlay@redhat.com>
+
+	* gnu/java/security/action/GetPropertyAction.java (setParameters):
+	Renamed from 'setName'. New 2-argument form with default value.
+	(run): Pass default 'value' parameter to System.getProperty().
+	* gnu/java/security/action/SetAccessibleAction.java: Fix javadoc
+	typos.
+	* gnu/java/net/protocol/http/Connection.java: Use 'setParameters'
+	not 'setName'.
+
+	2004-07-28  Mark Wielaard  <mark@klomp.org>
+
+	* vm/reference/java/io/VMFile.java (toCanonicalForm): Made
+	static.
+
+	2004-07-27  Jeroen Frijters  <jeroen@frijters.net>
+
+	* vm/reference/java/io/VMFile.java (toCanonicalForm): New method.
+
+	2004-07-26  Archie Cobbs  <archie@dellroad.org>
+
+	* native/jni/gtk-peer/gthread-jni.c: don't #include nonexistent files
+
 2004-08-05  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/javalib/kjc.jar: Regenerated.

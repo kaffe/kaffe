@@ -42,6 +42,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.accessibility.AccessibleStateSet;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;

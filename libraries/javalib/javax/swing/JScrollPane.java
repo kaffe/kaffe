@@ -41,7 +41,6 @@ package javax.swing;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.LayoutManager;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Point;
@@ -498,7 +497,7 @@ public class JScrollPane
                       || vsb.getMaximum() != vs.height
                       || vsb.getValue() != vr.y
                       || vsb.getVisibleAmount() != vr.height))
-                  vsb.setValue(vr.y, vr.height, 0, vs.height);
+                vsb.setValue(vr.y, vr.height, 0, vs.height);
 
               if (hsb != null
                   && (hsb.getMinimum() != 0

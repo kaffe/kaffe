@@ -218,13 +218,29 @@ exception statement from your version. */
 /* Global data				     				*/
 /************************************************************************/
 
+#if defined HAVE_STDINT_H
 #include <stdint.h>		/* provides intptr_t */
+#elif defined HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
 #include <stdarg.h>		/* va_list */
 #include "gthread-jni.h"
 #include <assert.h>		/* assert() */
 
 /* For Java thread priority constants. */
-#include "gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h"
+#include <gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h>
+
+/* Since not all JNI header generators actually define constants we
+ define them here explicitly. */
+#ifndef gnu_java_awt_peer_gtk_GThreadNativeMethodRunner_MIN_PRIORITY
+#define gnu_java_awt_peer_gtk_GThreadNativeMethodRunner_MIN_PRIORITY 1
+#endif
+#ifndef gnu_java_awt_peer_gtk_GThreadNativeMethodRunner_NORM_PRIORITY
+#define gnu_java_awt_peer_gtk_GThreadNativeMethodRunner_NORM_PRIORITY 5
+#endif
+#ifndef gnu_java_awt_peer_gtk_GThreadNativeMethodRunner_MAX_PRIORITY
+#define gnu_java_awt_peer_gtk_GThreadNativeMethodRunner_MAX_PRIORITY 10
+#endif
 
 /*  The VM handle.  This is set in
     Java_gnu_java_awt_peer_gtk_GtkMainThread_gtkInit */

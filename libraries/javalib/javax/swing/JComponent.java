@@ -192,22 +192,12 @@ public abstract class JComponent extends Container implements Serializable
   Border border;
 
   /** 
-   * A tooltip associated with this component. 
-   * 
-   * @see #setToolTip
-   * @see #getToolTip
-   * @see #toolTipText
-   */
-  JToolTip toolTip;
-
-  /** 
-   * The text to show in the tooltip associated with this component. 
+   * The text to show in the tooltip associated with this component.
    * 
    * @see #setToolTipText
    * @see #getToolTipText
-   * @see #toolTip
    */
-  String toolTipText;
+   String toolTipText;
 
   /** 
    * <p>Whether to double buffer this component when painting. This flag
@@ -1113,11 +1103,9 @@ public abstract class JComponent extends Container implements Serializable
    */
   public JToolTip createToolTip()
   {
-    if (toolTip == null)
-      {
-	toolTip = new JToolTip();
+	JToolTip toolTip = new JToolTip();
+	toolTip.setComponent(this);
 	toolTip.setTipText(toolTipText);
-      }
     
     return toolTip;
   }
@@ -1145,7 +1133,22 @@ public abstract class JComponent extends Container implements Serializable
    */
   public void setToolTipText(String text)
   {
+    if (text == null)
+    {
+      ToolTipManager.sharedInstance().unregisterComponent(this);
+      toolTipText = null;
+      return;
+    }
+		
+    // XXX: The tip text doesn't get updated unless you set it to null
+    // and then to something not-null. This is consistent with the behaviour
+    // of Sun's ToolTipManager.
+			
+    String oldText = toolTipText;
     toolTipText = text;
+		
+    if (oldText == null)
+      ToolTipManager.sharedInstance().registerComponent(this);
   }
 
   /**
@@ -1172,7 +1175,7 @@ public abstract class JComponent extends Container implements Serializable
    */
   public String getToolTipText(MouseEvent event)
   {
-    return toolTipText;
+    return getToolTipText();
   }
 
   /**

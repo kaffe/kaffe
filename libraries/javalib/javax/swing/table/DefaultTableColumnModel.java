@@ -1,5 +1,5 @@
 /* DefaultTableColumnModel.java --
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -61,320 +61,325 @@ public class DefaultTableColumnModel
   implements TableColumnModel, PropertyChangeListener, ListSelectionListener,
              Serializable
 {
-  static final long serialVersionUID = 6580012493508960512L;
+  private static final long serialVersionUID = 6580012493508960512L;
 
-	/**
-	 * tableColumns
-	 */
-	protected Vector tableColumns;
+  /**
+   * tableColumns
+   */
+  protected Vector tableColumns;
 
-	/**
-	 * selectionModel
-	 */
-	protected ListSelectionModel selectionModel;
+  /**
+   * selectionModel
+   */
+  protected ListSelectionModel selectionModel;
 
-	/**
-	 * columnMargin
-	 */
-	protected int columnMargin;
+  /**
+   * columnMargin
+   */
+  protected int columnMargin;
 
-	/**
-	 * listenerList
-	 */
-	protected EventListenerList listenerList;
+  /**
+   * listenerList
+   */
+  protected EventListenerList listenerList = new EventListenerList();
 
-	/**
-	 * changeEvent
-	 */
-	protected transient ChangeEvent changeEvent;
+  /**
+   * changeEvent
+   */
+  protected transient ChangeEvent changeEvent = new ChangeEvent(this);
 
-	/**
-	 * columnSelectionAllowed
-	 */
-	protected boolean columnSelectionAllowed;
+  /**
+   * columnSelectionAllowed
+   */
+  protected boolean columnSelectionAllowed;
 
-	/**
-	 * totalColumnWidth
-	 */
-	protected int totalColumnWidth;
+  /**
+   * totalColumnWidth
+   */
+  protected int totalColumnWidth;
 
-	/**
-	 * Constructor DefaultTableColumnModel
-	 */
+  /**
+   * Constructor DefaultTableColumnModel
+   */
   public DefaultTableColumnModel()
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * addColumn
-	 * @param value0 TODO
-	 */
+  /**
+   * addColumn
+   * @param value0 TODO
+   */
   public void addColumn(TableColumn value0)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * removeColumn
-	 * @param value0 TODO
-	 */
+  /**
+   * removeColumn
+   * @param value0 TODO
+   */
   public void removeColumn(TableColumn value0)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * moveColumn
-	 * @param value0 TODO
-	 * @param value1 TODO
-	 */
+  /**
+   * moveColumn
+   * @param value0 TODO
+   * @param value1 TODO
+   */
   public void moveColumn(int value0, int value1)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * setColumnMargin
-	 * @param value0 TODO
-	 */
+  /**
+   * setColumnMargin
+   * @param value0 TODO
+   */
   public void setColumnMargin(int value0)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * getColumnCount
+  /**
+   * getColumnCount
    * @return int
-	 */
+   */
   public int getColumnCount()
   {
-		return 0; // TODO
+    return 0; // TODO
   }
 
-	/**
-	 * getColumns
+  /**
+   * getColumns
    * @return Enumeration
-	 */
+   */
   public Enumeration getColumns()
   {
-		return null; // TODO
+    return null; // TODO
   }
 
-	/**
-	 * getColumnIndex
-	 * @param value0 TODO
+  /**
+   * getColumnIndex
+   * @param value0 TODO
    * @return int
-	 */
+   */
   public int getColumnIndex(Object value0)
   {
-		return 0; // TODO
+    return 0; // TODO
   }
 
-	/**
-	 * getColumn
-	 * @param value0 TODO
+  /**
+   * getColumn
+   * @param value0 TODO
    * @return TableColumn
-	 */
+   */
   public TableColumn getColumn(int value0)
   {
-		return null; // TODO
+    return null; // TODO
   }
 
-	/**
-	 * getColumnMargin
+  /**
+   * getColumnMargin
    * @return int
-	 */
+   */
   public int getColumnMargin()
   {
-		return 0; // TODO
+    return 0; // TODO
   }
 
-	/**
-	 * getColumnIndexAtX
-	 * @param value0 TODO
+  /**
+   * getColumnIndexAtX
+   * @param value0 TODO
    * @return int
-	 */
+   */
   public int getColumnIndexAtX(int value0)
   {
-		return 0; // TODO
+    return 0; // TODO
   }
 
-	/**
-	 * getTotalColumnWidth
+  /**
+   * getTotalColumnWidth
    * @return int
-	 */
+   */
   public int getTotalColumnWidth()
   {
-		return 0; // TODO
+    return 0; // TODO
   }
 
-	/**
-	 * setSelectionModel
-	 * @param value0 TODO
-	 */
-  public void setSelectionModel(ListSelectionModel value0)
+  /**
+   * setSelectionModel
+   * @param model TODO
+   * @exception IllegalArgumentException if model is null
+   */
+  public void setSelectionModel(ListSelectionModel model)
   {
-		// TODO
+    if (model == null)
+      throw new IllegalArgumentException();
+    
+    selectionModel = model;
+    selectionModel.addListSelectionListener(this);
   }
 
-	/**
-	 * getSelectionModel
+  /**
+   * getSelectionModel
    * @return ListSelectionModel
-	 */
+   */
   public ListSelectionModel getSelectionModel()
   {
-		return null; // TODO
+    return selectionModel;
   }
 
-	/**
-	 * setColumnSelectionAllowed
-	 * @param value0 TODO
-	 */
+  /**
+   * setColumnSelectionAllowed
+   * @param value0 TODO
+   */
   public void setColumnSelectionAllowed(boolean value0)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * getColumnSelectionAllowed
+  /**
+   * getColumnSelectionAllowed
    * @return boolean
-	 */
+   */
   public boolean getColumnSelectionAllowed()
   {
-		return false; // TODO
+    return false; // TODO
   }
 
-	/**
-	 * getSelectedColumns
+  /**
+   * getSelectedColumns
    * @return int[]
-	 */
+   */
   public int[] getSelectedColumns()
   {
-		return null; // TODO
+    return null; // TODO
   }
 
-	/**
-	 * getSelectedColumnCount
+  /**
+   * getSelectedColumnCount
    * @return int
-	 */
+   */
   public int getSelectedColumnCount()
   {
-		return 0; // TODO
+    return 0; // TODO
   }
 
-	/**
-	 * addColumnModelListener
-	 * @param value0 TODO
-	 */
+  /**
+   * addColumnModelListener
+   * @param value0 TODO
+   */
   public void addColumnModelListener(TableColumnModelListener value0)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * removeColumnModelListener
-	 * @param value0 TODO
-	 */
+  /**
+   * removeColumnModelListener
+   * @param value0 TODO
+   */
   public void removeColumnModelListener(TableColumnModelListener value0)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * fireColumnAdded
-	 * @param value0 TODO
-	 */
+  /**
+   * fireColumnAdded
+   * @param value0 TODO
+   */
   protected void fireColumnAdded(TableColumnModelEvent value0)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * fireColumnRemoved
-	 * @param value0 TODO
-	 */
+  /**
+   * fireColumnRemoved
+   * @param value0 TODO
+   */
   protected void fireColumnRemoved(TableColumnModelEvent value0)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * fireColumnMoved
-	 * @param value0 TODO
-	 */
+  /**
+   * fireColumnMoved
+   * @param value0 TODO
+   */
   protected void fireColumnMoved(TableColumnModelEvent value0)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * fireColumnSelectionChanged
-	 * @param value0 TODO
-	 */
+  /**
+   * fireColumnSelectionChanged
+   * @param value0 TODO
+   */
   protected void fireColumnSelectionChanged(ListSelectionEvent value0)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * fireColumnMarginChanged
-	 */
+  /**
+   * fireColumnMarginChanged
+   */
   protected void fireColumnMarginChanged()
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * getListeners
-	 * @param value0 TODO
+  /**
+   * getListeners
+   * @param value0 TODO
    * @return EventListener[]
-	 */
+   */
   public EventListener[] getListeners(Class value0)
   {
-		return null; // TODO
+    return null; // TODO
   }
 
-	/**
-	 * propertyChange
-	 * @param value0 TODO
-	 */
+  /**
+   * propertyChange
+   * @param value0 TODO
+   */
   public void propertyChange(PropertyChangeEvent value0)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * valueChanged
-	 * @param value0 TODO
-	 */
+  /**
+   * valueChanged
+   * @param value0 TODO
+   */
   public void valueChanged(ListSelectionEvent value0)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * createSelectionModel
+  /**
+   * createSelectionModel
    * @return ListSelectionModel
-	 */
+   */
   protected ListSelectionModel createSelectionModel()
   {
-		return null; // TODO
+    return null; // TODO
   }
 
-	/**
-	 * recalcWidthCache
-	 */
+  /**
+   * recalcWidthCache
+   */
   protected void recalcWidthCache()
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * invalidateWidthCache
-	 */
+  /**
+   * invalidateWidthCache
+   */
   private void invalidateWidthCache()
   {
-		// TODO
+    // TODO
   }
 }

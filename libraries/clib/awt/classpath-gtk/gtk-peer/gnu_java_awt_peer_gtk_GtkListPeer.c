@@ -1,5 +1,5 @@
-/* gtklistpeer.c -- Native implementation of GtkListPeer
-   Copyright (C) 1998, 1999, 2004 Free Software Foundation, Inc.
+/* GtkListPeer.c -- implements GtkListPeer's native methods
+   Copyright (C) 1998, 1999, 2003, 2004 Free Software Foundation, Inc.
 
    This file is part of GNU Classpath.
 

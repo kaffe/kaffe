@@ -534,18 +534,18 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
 
   /** The Icon that points up. */
   private static Icon upIcon = new arrowIcon(new Polygon(new int[] { 2, 5, 8 },
-                                                            new int[] { 7, 3, 7 },
-                                                            3));
+                                                         new int[] { 7, 3, 7 },
+                                                         3));
 
   /** The Icon that points down. */
   private static Icon downIcon = new arrowIcon(new Polygon(new int[] { 2, 5, 8 },
-                                                              new int[] { 3, 7, 3 },
-                                                              3));
+                                                           new int[] { 3, 7, 3 },
+                                                           3));
 
   /** The Icon that points left. */
   private static Icon leftIcon = new arrowIcon(new Polygon(new int[] { 7, 3, 7 },
-                                                              new int[] { 2, 5, 8 },
-                                                              3));
+                                                           new int[] { 2, 5, 8 },
+                                                           3));
 
   /** The Icon that points right. */
   private static Icon rightIcon = new arrowIcon(new Polygon(new int[] { 3, 7, 3},
@@ -602,7 +602,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
   {
     if (incrButton == null)
       {
-      incrButton = new JButton();
+        incrButton = new JButton();      
         incrButton.setMargin(new Insets(0,0,0,0));
         incrButton.setHorizontalAlignment(SwingConstants.CENTER);
         incrButton.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -630,7 +630,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
   {
     if (decrButton == null)
       {
-      decrButton = new JButton();
+        decrButton = new JButton();
         decrButton.setMargin(new Insets(0,0,0,0));
         decrButton.setHorizontalAlignment(SwingConstants.CENTER);
         decrButton.setHorizontalTextPosition(SwingConstants.CENTER);

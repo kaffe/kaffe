@@ -191,4 +191,23 @@ final class VMFile
 	
 	return path.substring(pos + File.separator.length());
   }
+
+  /**
+   * This method returns a canonical representation of the pathname of
+   * the given path.  The actual form of the canonical representation is
+   * different.  On the GNU system, the canonical form differs from the
+   * absolute form in that all relative file references to "." and ".."
+   * are resolved and removed.
+   * <p>
+   * Note that this method, unlike the other methods which return path
+   * names, can throw an IOException.  This is because native method 
+   * might be required in order to resolve the canonical path
+   *
+   * @exception IOException If an error occurs
+   */
+  public static String toCanonicalForm(String path) throws IOException
+  {
+	// FIXME: this only works on UNIX
+	return PlatformHelper.toCanonicalForm(path);
+  }
 }

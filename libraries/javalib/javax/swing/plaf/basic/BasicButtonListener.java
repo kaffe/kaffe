@@ -105,7 +105,7 @@ public class BasicButtonListener
       {
         AbstractButton button = (AbstractButton) e.getSource();
         ButtonModel model = button.getModel();
-        if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0)
+        if ((e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0)
           {
             // It is important that these transitions happen in this order.
             model.setArmed(true);
@@ -128,7 +128,7 @@ public class BasicButtonListener
       {
         AbstractButton button = (AbstractButton) e.getSource();
         ButtonModel model = button.getModel();
-        if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0)
+        if ((e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0)
           {
             // It is important that these transitions happen in this order.
             model.setPressed(false);
@@ -156,7 +156,7 @@ public class BasicButtonListener
           model.setRollover(true);
         
         if (model.isPressed() 
-            && (e.getModifiers() & InputEvent.BUTTON1_MASK) != 0)
+            && (e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0)
           model.setArmed(true);
         else
           model.setArmed(false);

@@ -42,6 +42,7 @@ import java.awt.AWTEvent;
 import java.awt.Dialog;
 import java.awt.FileDialog;
 import java.awt.Graphics;
+import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.awt.peer.FileDialogPeer;
 import java.io.FilenameFilter;
@@ -81,6 +82,20 @@ public class GtkFileDialogPeer extends GtkDialogPeer implements FileDialogPeer
     super (fd);
   }
 
+  void setComponentBounds ()
+  {
+    if (awtComponent.getHeight () == 0
+        && awtComponent.getWidth () == 0)
+      {
+        int[] dims = new int[2];
+        gtkWidgetGetPreferredDimensions (dims);
+        ((GtkFileDialogPeer) this).setBoundsCallback ((Window) awtComponent,
+                                                      awtComponent.getX (),
+                                                      awtComponent.getY (),
+                                                      dims[0], dims[1]);
+      }
+  }
+
   public void setFile (String fileName)
   {
     /* If nothing changed do nothing.  This usually happens because
@@ -99,7 +114,7 @@ public class GtkFileDialogPeer extends GtkDialogPeer implements FileDialogPeer
 
     // GtkFileChooser requires absolute filenames. If the given filename
     // is not absolute, let's construct it based on current directory.
-        currentFile = fileName;
+    currentFile = fileName;
     if (fileName.indexOf(FS) == 0)
       {
         nativeSetFile (fileName);

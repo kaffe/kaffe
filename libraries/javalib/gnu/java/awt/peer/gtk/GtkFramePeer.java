@@ -115,10 +115,9 @@ public class GtkFramePeer extends GtkWindowPeer
     setSize (awtComponent.getWidth() - insets.left - insets.right,
              awtComponent.getHeight() - insets.top - insets.bottom
              + menuBarHeight);
-    set ("allow_shrink", resizable);
-    set ("allow_grow", resizable);
-  }  
-  
+    gtkWindowSetResizable (resizable);
+  }
+
   protected void postInsetsChangedEvent (int top, int left,
 					 int bottom, int right)
   {
@@ -137,19 +136,13 @@ public class GtkFramePeer extends GtkWindowPeer
   {
     // Create a normal decorated window.
     create (GDK_WINDOW_TYPE_HINT_NORMAL, true);
-    setMenuBar(((Frame) awtComponent).getMenuBar());
-    awtComponent.setForeground(java.awt.SystemColor.windowText);
-  }
 
-  public void getArgs (Component component, GtkArgList args)
-  {
-    super.getArgs (component, args);
+    Frame frame = (Frame) awtComponent;
 
-    Frame frame = (Frame) component;
+    setMenuBar (frame.getMenuBar ());
 
-    args.add ("title", frame.getTitle ());
-    args.add ("allow_shrink", frame.isResizable ());
-    args.add ("allow_grow", frame.isResizable ());
+    setTitle (frame.getTitle ());
+    setResizable (frame.isResizable ());
   }
 
   public void setIconImage (Image image) 

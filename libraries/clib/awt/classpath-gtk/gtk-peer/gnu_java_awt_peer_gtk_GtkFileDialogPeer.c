@@ -41,8 +41,8 @@ exception statement from your version. */
 #include "gnu_java_awt_peer_gtk_GtkFileDialogPeer.h"
 
 static void handle_response (GtkDialog *dialog,
-                           gint responseId,
-                           jobject peer_obj);
+                             gint responseId,
+                             jobject peer_obj);
 
 /*
  * Make a new file selection dialog
@@ -114,7 +114,7 @@ Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_connectSignals
   g_signal_connect (G_OBJECT (GTK_DIALOG (ptr)),
                     "response", 
 		    GTK_SIGNAL_FUNC (handle_response), *gref);
-		    
+
   gdk_threads_leave ();
 
   /* Connect the superclass signals.  */
@@ -129,7 +129,7 @@ Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_nativeGetDirectory
   const char *str;
 
   ptr = NSA_GET_PTR (env, obj);
-    
+
   gdk_threads_enter ();
 
   str = gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER(ptr));
@@ -158,7 +158,7 @@ gboolean filenameFilterCallback (const GtkFileFilterInfo *filter_info,
                                              "(Ljava/lang/String;)Z");
 
   filename = (*gdk_env)->NewStringUTF(gdk_env, filter_info->filename);
-  
+
   gdk_threads_leave();
   accepted = (*gdk_env)->CallBooleanMethod(gdk_env, obj, id, filename);
   gdk_threads_enter();
@@ -169,7 +169,7 @@ gboolean filenameFilterCallback (const GtkFileFilterInfo *filter_info,
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_nativeSetFilenameFilter
     (JNIEnv *env, jobject obj, jobject filter_obj)
-    {
+{
   void *ptr;
   GtkFileFilter *filter;
 
@@ -187,8 +187,8 @@ Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_nativeSetFilenameFilter
   gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(ptr), filter);
 
   gdk_threads_leave ();
-    }
-    
+}
+
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_nativeSetDirectory
     (JNIEnv *env, jobject obj, jstring directory)
@@ -217,7 +217,7 @@ Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_nativeSetFile
   ptr = NSA_GET_PTR (env, obj);
     
   str = (*env)->GetStringUTFChars (env, filename, 0);
-
+     
   gdk_threads_enter ();
   gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (ptr), str);
   gdk_threads_leave ();
@@ -228,7 +228,7 @@ Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_nativeSetFile
 static void
 handle_response (GtkDialog *dialog __attribute__((unused)),
                  gint responseId,
-	                jobject peer_obj)
+                 jobject peer_obj)
 {
   static int isDisposeIDSet = 0;
   static int isIDSet = 0;
@@ -245,26 +245,26 @@ handle_response (GtkDialog *dialog __attribute__((unused)),
       && responseId != GTK_RESPONSE_OK
       && responseId != GTK_RESPONSE_CANCEL)
     return;
-  
+
   ptr = NSA_GET_PTR (gdk_env, peer_obj);
-  
+
   if (responseId == GTK_RESPONSE_DELETE_EVENT)
   {
     if (!isDisposeIDSet)
-    {
-      jclass cx = (*gdk_env)->GetObjectClass (gdk_env, peer_obj);
+      {
+        jclass cx = (*gdk_env)->GetObjectClass (gdk_env, peer_obj);
         disposeID = (*gdk_env)->GetMethodID (gdk_env, cx, "gtkDisposeFileDialog", "()V");
         isDisposeIDSet = 1;
-    }
-    
-  gdk_threads_leave ();
+      }
   
+    gdk_threads_leave ();
+
     /* We can dispose of the dialog now (and unblock show) */
     (*gdk_env)->CallVoidMethod (gdk_env, peer_obj, disposeID);
 
-  gdk_threads_enter ();
+    gdk_threads_enter ();
     return;
-}
+  }
 
   if (responseId == GTK_RESPONSE_OK) {
     fileName = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (GTK_WIDGET (ptr)));
@@ -272,18 +272,18 @@ handle_response (GtkDialog *dialog __attribute__((unused)),
   } else if (responseId == GTK_RESPONSE_CANCEL) {
     str_fileName = NULL;
   }
-  
+
   if (!isIDSet)
     {
       jclass cx = (*gdk_env)->GetObjectClass (gdk_env, peer_obj);
       hideID = (*gdk_env)->GetMethodID (gdk_env, cx, "gtkHideFileDialog", "()V");
       gtkSetFilenameID = (*gdk_env)->GetMethodID (gdk_env, cx,
-                                   "gtkSetFilename", "(Ljava/lang/String;)V");
+                                   "gtkSetFilename", "(Ljava.lang.String;)V");
       isIDSet = 1;
     }
     
   gdk_threads_leave ();
-
+  
   /* Set the Java object field 'file' with this value. */
   (*gdk_env)->CallVoidMethod (gdk_env, peer_obj, gtkSetFilenameID, str_fileName);
 

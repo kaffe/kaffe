@@ -57,91 +57,91 @@ public abstract class View implements SwingConstants
   private Element elt;
   private View parent;
 
-    /** 
+  /**
    * Creates a new <code>View</code> instance.
    *
    * @param elem an <code>Element</code> value
-     */
-    public View(Element elem)
-    {
-	elt = elem;
-    }
+   */
+  public View(Element elem)
+  {
+    elt = elem;
+  }
 
   public abstract void paint(Graphics g, Shape s);
 
   public void setParent(View a)
-    {
+  {
     parent = a;
-    }
-
+  }
+    
   public View getParent()
-    {
+  {
     return parent;
-    }
+  }
     
   public void setSize(int w, int h)
-    {
+  {
     width = w;
     height = h;
-    }
-    
+  }
+
   public Container getContainer()
-    {
+  {
     return parent != null ? parent.getContainer() : null;
-    }	   
-    
+  }
+  
   public Document getDocument()
-    {
+  {
     return getElement().getDocument();
-    }
-	
+  }
+    
   public Element getElement()
-    {
+  {
     return elt;
-    }
+  }
 
   public abstract float getPreferredSpan(int axis);
   
   public float getAlignment(int axis)
-    {
+  {
     return 0.5f;
-    }
-    
+  }
+
   public AttributeSet getAttributes()
-    {
+  {
     return elt.getAttributes();
-    }
-    
+  }
+  
   public boolean isVisible()
-    {
+  {
     return true;
-    }
+  }
 
   public int getViewCount()
-    {
+  {
     return 0;
-    }
-    
+  }
+  
   public View getView(int index)
-    {
+  {
     return null;
-    }
+  }
 
   public ViewFactory getViewFactory()
-    {
+  {
     return parent != null ? parent.getViewFactory() : null;
   }
 
   public void replace(int offset, int length, View[] views)
-	    {
+  {
     // Default implementation does nothing.
   }
 
   public void insert(int offset, View view)
-		{
+  {
     View[] array = { view };
     replace(offset, 1, array);
-		}
+  }
 
   public void append(View view)
   {
@@ -152,7 +152,7 @@ public abstract class View implements SwingConstants
   public void removeAll()
   {
     replace(0, getViewCount(), null); 
-	    }
+  }
 
   public void remove(int index)
   {
@@ -161,8 +161,18 @@ public abstract class View implements SwingConstants
 
   public View createFragment(int p0, int p1)
   {
-    // The default implementation doesnt support fragmentation.
+    // The default implementation doesn't support fragmentation.
     return this;
-    }
+  }
+
+  public int getStartOffset()
+  {
+    return elt.getStartOffset();
+  }
+
+  public int getEndOffset()
+  {
+    return elt.getEndOffset();
+  }
 }
 

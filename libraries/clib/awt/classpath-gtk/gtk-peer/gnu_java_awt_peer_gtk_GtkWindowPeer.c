@@ -104,7 +104,6 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_create
   insets = (*env)->GetIntArrayElements (env, jinsets, 0);
   insets[0] = insets[1] = insets[2] = insets[3] = 0;
 
-  /* Create global reference and save it for future use */
   NSA_SET_GLOBAL_REF (env, obj);
 
   gdk_threads_enter ();
@@ -160,6 +159,56 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_create
   (*env)->ReleaseIntArrayElements (env, jinsets, insets, 0);
 
   NSA_SET_PTR (env, obj, window_widget);
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkWindowPeer_gtkWindowSetTitle
+  (JNIEnv *env, jobject obj, jstring title)
+{
+  const char *c_title;
+  void *ptr;
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  c_title = (*env)->GetStringUTFChars (env, title, NULL);
+
+  gdk_threads_enter ();
+
+  gtk_window_set_title (GTK_WINDOW (ptr), c_title);
+
+  gdk_threads_leave ();
+
+  (*env)->ReleaseStringUTFChars (env, title, c_title);
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkWindowPeer_gtkWindowSetResizable
+  (JNIEnv *env, jobject obj, jboolean resizable)
+{
+  void *ptr;
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  gdk_threads_enter ();
+
+  gtk_window_set_policy (GTK_WINDOW (ptr), resizable, resizable, FALSE);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkWindowPeer_gtkWindowSetModal
+  (JNIEnv *env, jobject obj, jboolean modal)
+{
+  void *ptr;
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  gdk_threads_enter ();
+
+  gtk_window_set_modal (GTK_WINDOW (ptr), modal);
+
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL

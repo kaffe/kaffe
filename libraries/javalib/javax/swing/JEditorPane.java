@@ -221,7 +221,7 @@ public class JEditorPane extends JTextComponent
   }
 
   /**
-   * Establishes the default bindings of type to classname.  
+   * Establishes the default bindings of type to classname.
    */
   public static void registerEditorKitForContentType(String type,
                                                      String classname,

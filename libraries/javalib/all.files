@@ -539,8 +539,6 @@ gnu/java/awt/peer/gtk/GdkGraphics.java
 gnu/java/awt/peer/gtk/GdkPixbufDecoder.java
 gnu/java/awt/peer/gtk/GThreadMutex.java
 gnu/java/awt/peer/gtk/GThreadNativeMethodRunner.java
-gnu/java/awt/peer/gtk/GtkArg.java
-gnu/java/awt/peer/gtk/GtkArgList.java
 gnu/java/awt/peer/gtk/GtkButtonPeer.java
 gnu/java/awt/peer/gtk/GtkCanvasPeer.java
 gnu/java/awt/peer/gtk/GtkCheckboxGroupPeer.java
@@ -575,8 +573,6 @@ gnu/java/awt/peer/gtk/GtkTextComponentPeer.java
 gnu/java/awt/peer/gtk/GtkTextFieldPeer.java
 gnu/java/awt/peer/gtk/GtkToolkit.java
 gnu/java/awt/peer/gtk/GtkWindowPeer.java
-gnu/java/awt/peer/gtk/TestAWT.java
-gnu/java/awt/peer/gtk/Test.java
 gnu/java/beans/BeanInfoEmbryo.java
 gnu/java/beans/editors/ColorEditor.java
 gnu/java/beans/editors/FontEditor.java
@@ -820,6 +816,7 @@ gnu/java/rmi/server/UnicastRemoteCall.java
 gnu/java/rmi/server/UnicastRemoteStub.java
 gnu/java/rmi/server/UnicastServer.java
 gnu/java/rmi/server/UnicastServerRef.java
+gnu/java/security/action/GetPropertyAction.java
 gnu/java/security/action/SetAccessibleAction.java
 gnu/java/security/der/BitString.java
 gnu/java/security/der/DEREncodingException.java
@@ -1526,8 +1523,8 @@ java/lang/VerifyError.java
 java/lang/VirtualMachineError.java
 java/lang/VMObject.java
 java/lang/VMSecurityManager.java
-java/lang/VMThrowable.java
 java/lang/VMThread.java
+java/lang/VMThrowable.java
 java/lang/Void.java
 java/math/BigDecimal.java
 java/math/BigInteger.java
@@ -2584,7 +2581,6 @@ javax/swing/JCheckBoxMenuItem.java
 javax/swing/JColorChooser.java
 javax/swing/JComboBox.java
 javax/swing/JComponent.java
-javax/swing/JLayeredPane.java
 javax/swing/JDesktopPane.java
 javax/swing/JDialog.java
 javax/swing/JEditorPane.java
@@ -2593,6 +2589,7 @@ javax/swing/JFormattedTextField.java
 javax/swing/JFrame.java
 javax/swing/JInternalFrame.java
 javax/swing/JLabel.java
+javax/swing/JLayeredPane.java
 javax/swing/JList.java
 javax/swing/JMenuBar.java
 javax/swing/JMenuItem.java
@@ -2669,6 +2666,7 @@ javax/swing/plaf/basic/BasicTextUI.java
 javax/swing/plaf/basic/BasicToggleButtonUI.java
 javax/swing/plaf/basic/BasicToolBarSeparatorUI.java
 javax/swing/plaf/basic/BasicToolBarUI.java
+javax/swing/plaf/basic/BasicToolTipUI.java
 javax/swing/plaf/basic/BasicTreeUI.java
 javax/swing/plaf/basic/BasicViewportUI.java
 javax/swing/plaf/BorderUIResource.java

@@ -1162,8 +1162,7 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
    * This is a helper class that implements UIResource so it is not added as a
    * tab when an object of this class is added to the JTabbedPane.
    */
-  private static class ScrollingButton extends BasicArrowButton
-    implements UIResource
+  private class ScrollingButton extends BasicArrowButton implements UIResource
   {
     /**
      * Creates a ScrollingButton given the direction.

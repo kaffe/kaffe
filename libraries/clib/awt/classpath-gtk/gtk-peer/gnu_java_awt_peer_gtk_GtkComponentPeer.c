@@ -473,6 +473,63 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetCursor
 }
 
 JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetParent
+  (JNIEnv *env, jobject obj, jobject parent)
+{
+  void *ptr;
+  void *parent_ptr;
+  GtkWidget *widget;
+  GtkWidget *parent_widget;
+
+  ptr = NSA_GET_PTR (env, obj);
+  parent_ptr = NSA_GET_PTR (env, parent);
+
+  gdk_threads_enter ();
+
+  widget = GTK_WIDGET (ptr);
+  parent_widget = GTK_WIDGET (parent_ptr);
+
+  if (GTK_IS_WINDOW (parent_widget))
+    {
+      GList *children = gtk_container_children 
+        (GTK_CONTAINER (GTK_BIN (parent_widget)->child));
+
+      if (GTK_IS_MENU_BAR (children->data))
+	gtk_layout_put (GTK_LAYOUT (children->next->data), widget, 0, 0);
+      else
+	gtk_layout_put (GTK_LAYOUT (children->data), widget, 0, 0);
+    }
+  else
+    if (GTK_IS_SCROLLED_WINDOW (parent_widget))
+      {
+        gtk_scrolled_window_add_with_viewport 
+          (GTK_SCROLLED_WINDOW (parent_widget), widget);
+        gtk_viewport_set_shadow_type (GTK_VIEWPORT (widget->parent), 
+                                      GTK_SHADOW_NONE);
+
+      }
+    else
+      gtk_layout_put (GTK_LAYOUT (parent_widget), widget, 0, 0);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetSensitive
+  (JNIEnv *env, jobject obj, jboolean sensitive)
+{
+  void *ptr;
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  gdk_threads_enter ();
+
+  gtk_widget_set_sensitive (GTK_WIDGET (ptr), sensitive);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetRequestFocus
   (JNIEnv *env, jobject obj)
 {
@@ -525,11 +582,11 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetDispatchKeyEvent
   event->key.send_event = 0;
   event->key.time = (guint32) when;
 
-  if (mods & AWT_SHIFT_MASK)
+  if (mods & AWT_SHIFT_DOWN_MASK)
     event->key.state |= GDK_SHIFT_MASK;
-  if (mods & AWT_CTRL_MASK)
+  if (mods & AWT_CTRL_DOWN_MASK)
     event->key.state |= GDK_CONTROL_MASK;
-  if (mods & AWT_ALT_MASK)
+  if (mods & AWT_ALT_DOWN_MASK)
     event->key.state |= GDK_MOD1_MASK;
 
   /* This hack is needed because the AWT has no notion of num lock.
@@ -680,19 +737,33 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetPreferredDimensions
 
   gdk_threads_enter ();
 
-  /* Save the widget's current size request. */
-  gtk_widget_size_request (GTK_WIDGET (ptr), &current_req);
+  /* Widgets that extend GtkWindow such as GtkFileChooserDialog may have
+     a default size.  These values seem more useful then the natural
+     requisition values, particularly for GtkFileChooserDialog. */
+  if (GTK_IS_WINDOW (ptr))
+    {
+      gint width, height;
+      gtk_window_get_default_size (GTK_WINDOW (ptr), &width, &height);
 
-  /* Get the widget's "natural" size request. */
-  gtk_widget_set_size_request (GTK_WIDGET (ptr), -1, -1);
-  gtk_widget_size_request (GTK_WIDGET (ptr), &natural_req);
+      dims[0] = width;
+      dims[1] = height;
+    }
+  else
+    {
+      /* Save the widget's current size request. */
+      gtk_widget_size_request (GTK_WIDGET (ptr), &current_req);
 
-  /* Reset the widget's size request. */
-  gtk_widget_set_size_request (GTK_WIDGET (ptr),
-			       current_req.width, current_req.height);
+      /* Get the widget's "natural" size request. */
+      gtk_widget_set_size_request (GTK_WIDGET (ptr), -1, -1);
+      gtk_widget_size_request (GTK_WIDGET (ptr), &natural_req);
 
-  dims[0] = natural_req.width;
-  dims[1] = natural_req.height;
+      /* Reset the widget's size request. */
+      gtk_widget_set_size_request (GTK_WIDGET (ptr),
+			           current_req.width, current_req.height);
+
+      dims[0] = natural_req.width;
+      dims[1] = natural_req.height;
+    }
 
   gdk_threads_leave ();
 
@@ -911,45 +982,6 @@ find_gtk_layout (GtkWidget *parent)
   return NULL;
 }
 
-#define WIDGET_CLASS(w)  GTK_WIDGET_CLASS (GTK_OBJECT (w)->klass)
-
-void
-set_parent (GtkWidget *widget, GtkContainer *parent)
-{
-  if (GTK_IS_WINDOW (parent))
-    {
-      GList *children = gtk_container_children 
-	                  (GTK_CONTAINER (GTK_BIN (parent)->child));
-
-      if (GTK_IS_MENU_BAR (children->data))
-	gtk_layout_put (GTK_LAYOUT (children->next->data), widget, 0, 0);
-      else /* GTK_IS_LAYOUT (children->data) */
-	gtk_layout_put (GTK_LAYOUT (children->data), widget, 0, 0);
-    }
-  else
-    if (GTK_IS_SCROLLED_WINDOW (parent))
-      {
-/*  	if (WIDGET_CLASS (widget)->set_scroll_adjustments_signal) */
-/*  	  gtk_container_add (GTK_CONTAINER (parent), widget); */
-/*  	else */
-/*  	  { */
-	    gtk_scrolled_window_add_with_viewport 
-	      (GTK_SCROLLED_WINDOW (parent), widget);
-	    gtk_viewport_set_shadow_type (GTK_VIEWPORT (widget->parent), 
-					  GTK_SHADOW_NONE);
-/*  	  } */
-
-      }
-/*        gtk_layout_put  */
-/*  	(GTK_LAYOUT (GTK_BIN (parent)->child), widget, 0, 0); */
-
-/*      if (GTK_IS_SCROLLED_WINDOW (parent)) */
-/*        gtk_layout_put  */
-/*  	(GTK_LAYOUT (GTK_BIN (GTK_BIN (parent)->child)->child), widget, 0, 0); */
-    else
-      gtk_layout_put (GTK_LAYOUT (parent), widget, 0, 0);
-}
-
 JNIEXPORT jboolean JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkComponentPeer_isEnabled 
   (JNIEnv *env, jobject obj)
@@ -979,105 +1011,6 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_modalHasGrab
   gdk_threads_leave ();
 
   return retval;
-}
-
-JNIEXPORT void JNICALL 
-Java_gnu_java_awt_peer_gtk_GtkComponentPeer_set__Ljava_lang_String_2Ljava_lang_String_2
-  (JNIEnv *env, jobject obj, jstring jname, jstring jvalue)
-{
-  const char *name;
-  const char *value;
-  void *ptr;
-
-  ptr = NSA_GET_PTR (env, obj);
-  name = (*env)->GetStringUTFChars (env, jname, NULL);
-  value = (*env)->GetStringUTFChars (env, jvalue, NULL);
-
-  gdk_threads_enter();
-  g_object_set(ptr, name, value, NULL);
-  gdk_threads_leave();
-
-  (*env)->ReleaseStringUTFChars (env, jname, name);
-  (*env)->ReleaseStringUTFChars (env, jvalue, value);
-}
-
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkComponentPeer_set__Ljava_lang_String_2Z
-  (JNIEnv *env, jobject obj, jstring jname, jboolean value)
-{
-  const char *name;
-  void *ptr;
-
-  ptr = NSA_GET_PTR (env, obj);
-
-  name = (*env)->GetStringUTFChars (env, jname, NULL);
-
-  gdk_threads_enter();
-  g_object_set(ptr, name, value, NULL);
-  gdk_threads_leave();
-
-  (*env)->ReleaseStringUTFChars (env, jname, name);
-}
-
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkComponentPeer_set__Ljava_lang_String_2I
-  (JNIEnv *env, jobject obj, jstring jname, jint value)
-{
-  const char *name;
-  void *ptr;
-
-  ptr = NSA_GET_PTR (env, obj);
-  name = (*env)->GetStringUTFChars (env, jname, NULL);
-
-  gdk_threads_enter();                          
-  g_object_set(ptr, name, value, NULL);
-  gdk_threads_leave();
-
-  (*env)->ReleaseStringUTFChars (env, jname, name);
-}
-
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkComponentPeer_set__Ljava_lang_String_2F
-  (JNIEnv *env, jobject obj, jstring jname, jfloat value)
-{
-  const char *name;
-  void *ptr;
-
-  ptr = NSA_GET_PTR (env, obj);
-  name = (*env)->GetStringUTFChars (env, jname, NULL);
-
-  gdk_threads_enter();                          
-  g_object_set(ptr, name, value, NULL);
-  gdk_threads_leave();
-
-  (*env)->ReleaseStringUTFChars (env, jname, name);
-}
-
-JNIEXPORT void JNICALL 
-Java_gnu_java_awt_peer_gtk_GtkComponentPeer_set__Ljava_lang_String_2Ljava_lang_Object_2
-  (JNIEnv *env, jobject obj1, jstring jname, jobject obj2)
-{
-  const char *name;
-  void *ptr1, *ptr2;
-
-  ptr1 = NSA_GET_PTR (env, obj1);
-  ptr2 = NSA_GET_PTR (env, obj2);
-  
-  name = (*env)->GetStringUTFChars (env, jname, NULL);
-
-  /* special case to catch where we need to set the parent */
-  if (!strcmp (name, "parent"))
-    {
-      gdk_threads_enter ();
-      set_parent (GTK_WIDGET (ptr1), GTK_CONTAINER (ptr2));
-      gdk_threads_leave ();
-
-      (*env)->ReleaseStringUTFChars (env, jname, name);
-      return;
-    }
-
-  gdk_threads_enter();                          
-  g_object_set(ptr1, name, ptr2, NULL);
-  gdk_threads_leave();
-
-  (*env)->ReleaseStringUTFChars (env, jname, name);
 }
 
 static gboolean

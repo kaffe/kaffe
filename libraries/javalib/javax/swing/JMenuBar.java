@@ -1,4 +1,4 @@
-/* JMenuBar.java -- 
+/* JMenuBar.java --
    Copyright (C) 2002, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -83,7 +83,7 @@ public class JMenuBar extends JComponent implements Accessible, MenuElement
 
   /** Fired in a PropertyChangeEvent when the "model" changes. */
   public static final String MODEL_CHANGED_PROPERTY = "model";
-  
+
   /** Fired in a PropertyChangeEvent when the "margin" changes. */
   public static final String MARGIN_CHANGED_PROPERTY = "margin";
   private static final long serialVersionUID = -8191026883931977036L;
@@ -311,7 +311,7 @@ public class JMenuBar extends JComponent implements Accessible, MenuElement
    * This method does nothing by default. This method is need for the
    * MenuElement interface to be implemented.
    *
-   * @param isIncluded true if menuBar is included in the selection 
+   * @param isIncluded true if menuBar is included in the selection
    * and false otherwise
    */
   public void menuSelectionChanged(boolean isIncluded)
@@ -320,7 +320,7 @@ public class JMenuBar extends JComponent implements Accessible, MenuElement
   }
 
   /**
-   * Paints border of the menu bar, if its borderPainted property is set to 
+   * Paints border of the menu bar, if its borderPainted property is set to
    * true.
    *
    * @param g The graphics context with which to paint the border

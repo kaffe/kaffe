@@ -1863,8 +1863,9 @@ class LightweightDispatcher implements Serializable
       {
         candidate =
           SwingUtilities.getDeepestComponentAt(parent, p.x, p.y);
-        if (candidate == null)
+        if (candidate == null || (candidate.eventMask & me.getID()) == 0)
         {
+          candidate = null;
           p = SwingUtilities.convertPoint(parent, p.x, p.y, parent.parent);
           parent = parent.parent;
         }
@@ -1887,7 +1888,7 @@ class LightweightDispatcher implements Serializable
         MouseEvent exited = new MouseEvent (lastComponentEntered, 
                                             MouseEvent.MOUSE_EXITED,
                                             me.getWhen (), 
-                                            me.getModifiers (), 
+                                            me.getModifiersEx (), 
                                             tp.x, tp.y,
                                             me.getClickCount (),
                                             me.isPopupTrigger (),
@@ -1911,7 +1912,7 @@ class LightweightDispatcher implements Serializable
             MouseEvent entered = new MouseEvent (lastComponentEntered, 
                                                  MouseEvent.MOUSE_ENTERED,
                                                  me.getWhen (), 
-                                                 me.getModifiers (), 
+                                                 me.getModifiersEx (), 
                                                  cp.x, cp.y,
                                                  me.getClickCount (),
                                                  me.isPopupTrigger (),

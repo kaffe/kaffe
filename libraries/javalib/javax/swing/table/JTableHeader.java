@@ -60,4 +60,21 @@ public class JTableHeader extends JComponent
   protected TableColumn resizingColumn;
   protected JTable table;
   protected boolean updateTableInRealTime;
+
+  public JTableHeader()
+  {
+    this(null);
+  }
+
+  public JTableHeader(TableColumnModel cm)
+  {
+    super();
+
+    this.columnModel = cm == null ? createDefaultColumnModel() : cm;
+  }
+
+  protected TableColumnModel createDefaultColumnModel()
+  {
+    return new DefaultTableColumnModel();
+  }
 }

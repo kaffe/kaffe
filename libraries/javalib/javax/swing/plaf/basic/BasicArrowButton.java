@@ -171,7 +171,7 @@ public class BasicArrowButton extends JButton implements SwingConstants
 
   /** The top and left edges of the button. */
   private transient Color highlight = Color.BLACK;
-
+  
   /** The border around the ArrowButton. */
   private transient Border tmpBorder = new Border()
   {

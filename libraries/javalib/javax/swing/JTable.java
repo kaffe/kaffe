@@ -41,8 +41,8 @@ package javax.swing;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.util.Vector;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.accessibility.Accessible;
 import javax.swing.event.CellEditorListener;
@@ -72,7 +72,7 @@ public class JTable extends JComponent
   public static final int AUTO_RESIZE_NEXT_COLUMN = 1;
   public static final int AUTO_RESIZE_OFF = 0;
   public static final int AUTO_RESIZE_SUBSEQUENT_COLUMNS = 2;
-  
+
   protected boolean autoCreateColumnsFromModel;
   protected int autoResizeMode;
   protected TableCellEditor cellEditor;

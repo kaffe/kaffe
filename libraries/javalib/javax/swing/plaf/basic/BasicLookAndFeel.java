@@ -881,7 +881,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "ToolBar.font", new FontUIResource("Dialog", Font.PLAIN, 12),
       "ToolBar.foreground", new ColorUIResource(Color.black),
       "ToolBar.separatorSize", new DimensionUIResource(20, 20),
-      "ToolTip.background", new ColorUIResource(Color.white),
+      "ToolTip.background", new ColorUIResource(122, 178, 241),
       "ToolTip.border", new BorderUIResource.LineBorderUIResource(Color.lightGray),
       "ToolTip.font", new FontUIResource("SansSerif", Font.PLAIN, 12),
       "ToolTip.foreground", new ColorUIResource(Color.black),

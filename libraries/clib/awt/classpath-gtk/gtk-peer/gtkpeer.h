@@ -118,14 +118,14 @@ struct graphics
 
 #define SYNTHETIC_EVENT_MASK (1 << 10)
 
-#define AWT_SHIFT_MASK   (1 << 0)
-#define AWT_CTRL_MASK    (1 << 1)
-#define AWT_META_MASK    (1 << 2)
-#define AWT_ALT_MASK     (1 << 3)
+#define AWT_SHIFT_DOWN_MASK   (1 << 6)
+#define AWT_CTRL_DOWN_MASK    (1 << 7)
+#define AWT_META_DOWN_MASK    (1 << 8)
+#define AWT_ALT_DOWN_MASK     (1 << 9)
 
-#define AWT_BUTTON1_MASK (1 << 4)
-#define AWT_BUTTON2_MASK AWT_ALT_MASK
-#define AWT_BUTTON3_MASK AWT_META_MASK
+#define AWT_BUTTON1_DOWN_MASK (1 << 10)
+#define AWT_BUTTON2_DOWN_MASK (1 << 11)
+#define AWT_BUTTON3_DOWN_MASK (1 << 12)
 
 #define MULTI_CLICK_TIME   250
 /* as opposed to a MULTI_PASS_TIME :) */
@@ -458,5 +458,20 @@ struct item_event_hook_info
   jobject peer_obj;
   const char *label;
 };
+
+#define DEBUG_LOCKING 0
+
+#if DEBUG_LOCKING
+#define gdk_threads_enter()                       \
+{                                                 \
+  g_print ("lock: %s, %d\n", __FILE__, __LINE__); \
+  gdk_threads_enter ();                           \
+}
+#define gdk_threads_leave()                         \
+{                                                   \
+  g_print ("unlock: %s, %d\n", __FILE__, __LINE__); \
+  gdk_threads_leave ();                             \
+}
+#endif
 
 #endif /* __GTKPEER_H */

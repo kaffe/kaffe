@@ -179,12 +179,12 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
   }
 
   /**
-   * Adds given menu item to the popup menu
-   *
-   * @param item menu item to add to the popup menu
-   *
-   * @return menu item that was added to the popup menu
-   */
+  * Adds given menu item to the popup menu
+  *
+  * @param item menu item to add to the popup menu
+  *
+  * @return menu item that was added to the popup menu
+  */
   public JMenuItem add(JMenuItem item)
   {
     this.insert(item, -1);
@@ -463,7 +463,7 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
     if (label != this.label)
       {
 	String oldLabel = this.label;
-    this.label = label;
+	this.label = label;
 	firePropertyChange(LABEL_CHANGED_PROPERTY, oldLabel, label);
       }
   }
@@ -621,11 +621,11 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
 	      {
 		// Subtract insets of the top-level container if popup menu's
 		// top-left corner is inside it.
-		    Insets insets = rootContainer.getInsets();
-		    popup.show(popupLocation.x - insets.left,
-		               popupLocation.y - insets.top, size.width,
-		               size.height);
-		  }
+		Insets insets = rootContainer.getInsets();
+		popup.show(popupLocation.x - insets.left,
+		           popupLocation.y - insets.top, size.width,
+		           size.height);
+	      }
 	  }
 	else
 	  {

@@ -94,15 +94,13 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics_initState__II
 
 /* copy the native state of the peer (GtkWidget *) to the native state
    of the graphics object */
-JNIEXPORT jintArray JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics_initState__Lgnu_java_awt_peer_gtk_GtkComponentPeer_2
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics_initState__Lgnu_java_awt_peer_gtk_GtkComponentPeer_2
   (JNIEnv *env, jobject obj, jobject peer)
 {
   struct graphics *g = (struct graphics *) malloc (sizeof (struct graphics));
   void *ptr;
   GtkWidget *widget;
   GdkColor color;
-  jintArray array;
-  jint *rgb;
 
   ptr = NSA_GET_PTR (env, peer);
   g->x_offset = g->y_offset = 0;
@@ -133,16 +131,7 @@ JNIEXPORT jintArray JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics_initState__Lg
 
   gdk_threads_leave ();
 
-  array = (*env)->NewIntArray (env, 3);
-  rgb = (*env)->GetIntArrayElements (env, array, NULL);
-  rgb[0] = color.red >> 8;
-  rgb[1] = color.green >> 8;
-  rgb[2] = color.blue >> 8;
-  (*env)->ReleaseIntArrayElements (env, array, rgb, 0);
-
   NSA_SET_PTR (env, obj, g);
-
-  return array;
 }
 
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics_dispose

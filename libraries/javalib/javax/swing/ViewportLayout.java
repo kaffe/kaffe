@@ -67,7 +67,7 @@ public class ViewportLayout implements LayoutManager, Serializable
   {
     JViewport vp = (JViewport)parent;
     Component view = vp.getView();
-      return view.getPreferredSize();
+    return view.getPreferredSize();
   }
   public Dimension minimumLayoutSize(Container parent) 
   {

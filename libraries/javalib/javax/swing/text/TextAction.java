@@ -44,46 +44,46 @@ import javax.swing.Action;
 
 /**
  * TextAction
- * @author	Andrew Selkirk
+ * @author Andrew Selkirk
  */
 public abstract class TextAction extends AbstractAction
 {
-	/**
-	 * Constructor TextAction
-	 * @param name TODO
-	 */
+  /**
+   * Constructor TextAction
+   * @param name TODO
+   */
   public TextAction(String name)
   {
-		// TODO
+    // TODO
   }
 
-	/**
-	 * getTextComponent
-	 * @param event TODO
+  /**
+   * getTextComponent
+   * @param event TODO
    * @return JTextComponent
-	 */
+   */
   protected final JTextComponent getTextComponent(ActionEvent event)
   {
-		return null; // TODO
+    return null; // TODO
   }
 
-	/**
-	 * augmentList
-	 * @param list1 TODO
-	 * @param list2 TODO
+  /**
+   * augmentList
+   * @param list1 TODO
+   * @param list2 TODO
    * @return Action[]
-	 */
+   */
   public static final Action[] augmentList(Action[] list1, Action[] list2)
   {
-		return null; // TODO
+    return null; // TODO
   }
 
-	/**
-	 * getFocusedComponent
+  /**
+   * getFocusedComponent
    * @return JTextComponent
-	 */
+   */
   protected final JTextComponent getFocusedComponent()
   {
-		return null; // TODO
+    return null; // TODO
   }
 }

@@ -1,5 +1,5 @@
-/* GtkArg.java
-   Copyright (C) 1999 Free Software Foundation, Inc.
+/* GetPropertyAction.java
+   Copyright (C) 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,27 +35,55 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+package gnu.java.security.action;
 
-package gnu.java.awt.peer.gtk;
+import java.security.PrivilegedAction;
 
-public class GtkArg
+/**
+ * PrivilegedAction implementation that calls System.getProperty() with
+ * the property name passed to its constructor.
+ *
+ * Example of use:
+ * <code>
+ * GetPropertyAction action = new GetPropertyAction("http.proxyPort");
+ * String port = AccessController.doPrivileged(action);
+ * </code>
+ */
+public class GetPropertyAction implements PrivilegedAction
 {
   String name;
-  Object value;
+  String value = null;
 
-  public GtkArg (String name, Object value)
+  public GetPropertyAction()
   {
-    this.name = name;
-    this.value = value;
+  }
+  
+  public GetPropertyAction(String propName)
+  {
+    setParameters(propName);
   }
 
-  public String getName ()
+  public GetPropertyAction(String propName, String defaultValue)
   {
-    return name;
+    setParameters(propName, defaultValue);
+  }
+  
+  public Object run()
+  {
+    return System.getProperty(name, value);
+  }
+  
+  public GetPropertyAction setParameters(String propName)
+  {
+    this.name = propName;
+    this.value = null;
+    return this;
   }
 
-  public Object getValue ()
+  public GetPropertyAction setParameters(String propName, String defaultValue)
   {
-    return value;
+    this.name = propName;
+    this.value = defaultValue;
+    return this;
   }
 }

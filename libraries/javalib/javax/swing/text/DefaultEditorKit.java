@@ -1,4 +1,4 @@
-/* DefaultEditorKit.java -- 
+/* DefaultEditorKit.java --
    Copyright (C) 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package javax.swing.text;
 
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -48,7 +50,22 @@ import javax.swing.JEditorPane;
 
 public class DefaultEditorKit extends EditorKit
 {
+  public static class BeepAction
+    extends TextAction
+  {
+    public BeepAction()
+    {
+      super(beepAction);
+    }
+
+    public void actionPerformed(ActionEvent event)
+    {
+      Toolkit.getDefaultToolkit().beep();
+    }
+  }
+
   private static final long serialVersionUID = 9017245433028523428L;
+  
   public static final String backwardAction = "caret-backward";
   public static final String beepAction = "beep";
   public static final String beginAction = "caret-begin";
@@ -108,55 +125,55 @@ public class DefaultEditorKit extends EditorKit
    * Called when the kit is being removed from the JEditorPane.
    */
   public void deinstall(JEditorPane c)
-    {
-    }
+  {
+  }
 
   public void install(JEditorPane c)
-    {
-    }
+  {
+  }
 
   public Caret createCaret()
-    {
-	return null;
-    }
+  {
+    return null;
+  }
 
   public Document createDefaultDocument()
-    {
-        return new PlainDocument();
-    }
+  {
+    return new PlainDocument();
+  }
 
   public Action[] getActions()
-    {
-	return null;
-    }
+  {
+    return null;
+  }
 
   public String getContentType()
-    {
-	return "text/plain";
-    }
-    
+  {
+    return "text/plain";
+  }
+  
   public ViewFactory getViewFactory()
-    {
-	return null;
-    }
+  {
+    return null;
+  }
 
   public void read(InputStream in, Document doc, int pos)
     throws BadLocationException, IOException
-    {
-    }
+  {
+  }
 
   public void read(Reader in, Document doc, int pos)
     throws BadLocationException, IOException
-    {
-    }
+  {
+  }
 
   public void write(OutputStream out, Document doc, int pos, int len)
     throws BadLocationException, IOException
-    {
-    }
+  {
+  }
 
   public void write(Writer out, Document doc, int pos, int len)
     throws BadLocationException, IOException
-    {
-    }
+  {
+  }
 }

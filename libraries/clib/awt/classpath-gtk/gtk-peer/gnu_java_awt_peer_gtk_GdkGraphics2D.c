@@ -443,41 +443,12 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics2D_gdkDrawDrawable
   gdk_threads_leave();
 }
 
-static jintArray
-current_colors_of_widget (GtkWidget *widget, JNIEnv *env)
-{
-  GdkColor color;
-  jintArray array;
-  jint *rgb;
-
-  g_assert (widget != NULL);
-  g_assert (env != NULL);
-
-  color = widget->style->fg[GTK_STATE_NORMAL];
-  array = (*env)->NewIntArray (env, 6);
-
-  rgb = (*env)->GetIntArrayElements (env, array, NULL);
-  rgb[0] = color.red >> 8;
-  rgb[1] = color.green >> 8;
-  rgb[2] = color.blue >> 8;
-
-  color = widget->style->bg[GTK_STATE_NORMAL];
-  rgb[3] = color.red >> 8;
-  rgb[4] = color.green >> 8;
-  rgb[5] = color.blue >> 8;
-
-  (*env)->ReleaseIntArrayElements (env, array, rgb, 0);
-  
-  return array;
-}
-
-JNIEXPORT jintArray JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics2D_initState__Lgnu_java_awt_peer_gtk_GtkComponentPeer_2
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics2D_initState__Lgnu_java_awt_peer_gtk_GtkComponentPeer_2
   (JNIEnv *env, jobject obj, jobject peer)
 {
   struct graphics2d *gr = NULL;
   GtkWidget *widget = NULL;
   void *ptr = NULL;
-  jintArray color;
 
   gdk_threads_enter();
   if (peer_is_disposed(env, obj)) { gdk_threads_leave(); return; }
@@ -504,11 +475,8 @@ JNIEXPORT jintArray JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics2D_initState__
   else
     init_graphics2d_as_pixbuf (gr);
 
-  color = current_colors_of_widget (widget, env);
-
   NSA_SET_G2D_PTR (env, obj, gr);
   gdk_threads_leave();
-  return color;
 }
 
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics2D_dispose
