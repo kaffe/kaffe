@@ -22,6 +22,8 @@ abstract public class TimeZone implements Serializable, Cloneable {
 	private static TimeZone defaultTimeZone = null;
 	private static HashMap zones = new HashMap();
 
+	private static boolean zonesLoaded = false;
+
 	private static String[] zoneDirs = {
 		"/usr/share/zoneinfo",
 		"/usr/share/lib/zoneinfo",
@@ -31,7 +33,7 @@ abstract public class TimeZone implements Serializable, Cloneable {
 	private String timezoneID = null;
 
 // Load the system timezones
-static {
+private static void loadTimeZones() {
 
 	// Install some standard SimpleTimeZones
 	addSimple(-11*60*60*1000, "MIT");
@@ -75,6 +77,9 @@ static {
 		if (dir.isDirectory())
 			addZoneFiles(null, dir);
 	}
+
+	// Done
+	zonesLoaded = true;
 }
 
 private static void addSimple(int rawOffset, String id) {
@@ -132,10 +137,14 @@ public Object clone() {
 }
 
 public static synchronized String[] getAvailableIDs() {
+	if (!zonesLoaded)
+		loadTimeZones();
 	return (String[])zones.keySet().toArray(new String[zones.size()]);
 }
 
 public static synchronized String[] getAvailableIDs(int rawOffset) {
+	if (!zonesLoaded)
+		loadTimeZones();
 	HashSet ids = new HashSet();
 	for (Iterator i = zones.entrySet().iterator(); i.hasNext(); ) {
 		Map.Entry ent = (Map.Entry)i.next();
@@ -172,6 +181,8 @@ abstract public int getOffset(int era, int year, int month, int day, int dayOfWe
 abstract public int getRawOffset();
 
 public static synchronized TimeZone getTimeZone(String ID) {
+	if (!zonesLoaded)
+		loadTimeZones();
 	return (TimeZone)zones.get(ID);
 }
 

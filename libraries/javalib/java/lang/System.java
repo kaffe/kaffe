@@ -75,12 +75,8 @@ static {
 		err = new PrintStream(new BufferedOutputStream(new kaffe.io.StdErrorStream(), 128), true);
 	}
 
-	// Initiate the default timezone implementation, default calendar implementation,
-	// and system class loader
-	try
-	{
-		Class.forName("java.util.SimpleTimeZone");
-		Class.forName("java.util.GregorianCalendar");
+	// Initialize the system class loader
+	try {
 		Class.forName("kaffe.lang.SystemClassLoader");
 	}
 	catch (ClassNotFoundException _)
