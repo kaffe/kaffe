@@ -4582,7 +4582,7 @@ JavaVMInitArgs Kaffe_JavaVMInitArgs = {
 	/*	2,	*/	/* Verify mode ... verify remote by default */
 	0,              /* Verify mode ... noverify by default */
 	".",		/* Classpath */
-	".",		/* Bootclasspath */
+	0,		/* Bootclasspath */
 	(void*)&vfprintf,/* Vprintf */
 	(void*)&exit,	/* Exit */
 	(void*)&abort,	/* Abort */

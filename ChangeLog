@@ -1,3 +1,25 @@
+2004-06-17  Julian Scheid  <julian@sektor37.de>
+
+	* configure.ac,	
+	Makefile.am, 
+	kaffe/kaffevm/Makefile.am:
+	Merged BinReloc: http://www.autopackage.org/docs/binreloc/
+	
+	* Makefile.am:
+	Inserted kaffe/kaffevm into SUBDIRS to make sure libkaffevm.la is built
+	before libnative.la.
+
+	* libraries/clib/native/Makefile.am:
+	Added libkaffevm.la to libnative_la_DEPENDENCIES.
+
+	* kaffe/kaffevm/findInJar.c:
+	(initClasspath) If both bootclasspath and classhome are NULL, use
+	discoverClassHome() to find Kaffe .jar files.
+	(discoverClassHome) Added.
+
+	* kaffe/kaffevm/jni.c:
+	Changed initial bootclasspath in Kaffe_JavaVMInitArgs to NULL.
+
 2004-06-17  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/essential.files: Added

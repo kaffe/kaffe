@@ -1,0 +1,37 @@
+Short description
+-----------------
+BinReloc is a Linux library for creating relocatable applications and
+libraries.
+
+
+The problem
+-----------
+The Autopackage project (http://autopackage.org) supports relocation. This
+means that a package can be installed to any location, like how Win32
+installers let you choose a directory.
+However, most applications are not relocatable. The paths where in they
+search for data files are usually hardcoded at compile time.
+
+On Win32, applications and libraries are easily relocatable because
+argv[0] is always a full path to the executable. For libraries, the
+DllMain() DLL initialization function provides a unique DLL handle. One
+can use that handle to obtain the DLL's full path.
+
+On Linux however, no easy mechanisms exist. argv[0] is not a full path,
+but equals what the user typed at the command prompt.
+For executables, you can still find your full location by resolving the
+symlink /proc/self/exe, but that won't work for libraries.
+
+
+The solution
+------------
+This is why BinReloc is created. BinReloc provides an easy-to-use API
+that uses all kinds of dynamic linker and kernel magic to find out the
+full path of your executable or library. BinReloc is meant to be
+statically included in your project and adds no non-system dependancies.
+
+BinReloc is the successor of libprefixdb, Autopackage's previous solution
+to the relocation problem. BinReloc is more automatic and easier to use.
+
+
+Please go to http://autopackage.org/docs/binreloc/ for a complete guide.

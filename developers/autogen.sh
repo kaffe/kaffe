@@ -117,7 +117,7 @@ cp libltdl/acinclude.m4 m4/libtool.m4
 ##gettextize -c -f --intl
 
 autopoint -f
-aclocal -I m4 
+aclocal -I m4
 autoheader -Wall
 automake --add-missing --force-missing --copy -Wall || true  # ignore warnings
 autoconf -Wall

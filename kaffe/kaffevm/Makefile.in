@@ -53,15 +53,16 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/alsa.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
-	$(top_srcdir)/m4/esd.m4 $(top_srcdir)/m4/gcc_attribute.m4 \
-	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gnu-crypto.m4 \
-	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/herrno.m4 \
-	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
-	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
-	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
-	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
-	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/esd.m4 \
+	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/gettext.m4 \
+	$(top_srcdir)/m4/gnu-crypto.m4 $(top_srcdir)/m4/gwqt.m4 \
+	$(top_srcdir)/m4/herrno.m4 $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/libxml.m4 \
+	$(top_srcdir)/m4/libxslt.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
@@ -86,7 +87,7 @@ am_libkaffevm_la_OBJECTS = access.lo baseClasses.lo classMethod.lo \
 	readClass.lo soft.lo stackTrace.lo stats.lo string.lo \
 	stringParsing.lo support.lo thread.lo utf8const.lo gcFuncs.lo \
 	gcRefs.lo verify.lo verify2.lo verify-block.lo verify-debug.lo \
-	verify-sigstack.lo verify-type.lo verify-uninit.lo
+	verify-sigstack.lo verify-type.lo verify-uninit.lo prefix.lo
 am__objects_1 = gc-mem.lo md.lo
 nodist_libkaffevm_la_OBJECTS = $(am__objects_1)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
@@ -110,9 +111,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/ksem.Plo ./$(DEPDIR)/locks.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/lookup.Plo ./$(DEPDIR)/md.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/methodCache.Plo ./$(DEPDIR)/object.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/readClass.Plo ./$(DEPDIR)/soft.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/stackTrace.Plo ./$(DEPDIR)/stats.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/string.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/prefix.Plo ./$(DEPDIR)/readClass.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/soft.Plo ./$(DEPDIR)/stackTrace.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/stats.Plo ./$(DEPDIR)/string.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/stringParsing.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/support.Plo ./$(DEPDIR)/thread.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/utf8const.Plo \
@@ -156,6 +157,7 @@ AWK = @AWK@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 BCEL_JAR = @BCEL_JAR@
+BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CCLD = @CCLD@
@@ -465,7 +467,8 @@ libkaffevm_la_SOURCES = \
 	verify-debug.c \
 	verify-sigstack.c \
 	verify-type.c \
-	verify-uninit.c
+	verify-uninit.c \
+	../../binreloc/prefix.c
 
 noinst_HEADERS = \
 	access.h \
@@ -513,7 +516,8 @@ noinst_HEADERS = \
 	verify-sigstack.h \
 	verify-type.h \
 	verify-uninit.h \
-	verify-errors.h
+	verify-errors.h \
+	../../binreloc/prefix.h
 
 CLEANFILES = so_locations
 DISTCLEANFILES = gc-mem.c md.c stamp-h01 stamp-h02
@@ -614,6 +618,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/methodCache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/object.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prefix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/readClass.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/soft.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stackTrace.Plo@am__quote@
@@ -654,6 +659,30 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+prefix.o: ../../binreloc/prefix.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT prefix.o -MD -MP -MF "$(DEPDIR)/prefix.Tpo" -c -o prefix.o `test -f '../../binreloc/prefix.c' || echo '$(srcdir)/'`../../binreloc/prefix.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/prefix.Tpo" "$(DEPDIR)/prefix.Po"; else rm -f "$(DEPDIR)/prefix.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../../binreloc/prefix.c' object='prefix.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/prefix.Po' tmpdepfile='$(DEPDIR)/prefix.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o prefix.o `test -f '../../binreloc/prefix.c' || echo '$(srcdir)/'`../../binreloc/prefix.c
+
+prefix.obj: ../../binreloc/prefix.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT prefix.obj -MD -MP -MF "$(DEPDIR)/prefix.Tpo" -c -o prefix.obj `if test -f '../../binreloc/prefix.c'; then $(CYGPATH_W) '../../binreloc/prefix.c'; else $(CYGPATH_W) '$(srcdir)/../../binreloc/prefix.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/prefix.Tpo" "$(DEPDIR)/prefix.Po"; else rm -f "$(DEPDIR)/prefix.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../../binreloc/prefix.c' object='prefix.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/prefix.Po' tmpdepfile='$(DEPDIR)/prefix.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o prefix.obj `if test -f '../../binreloc/prefix.c'; then $(CYGPATH_W) '../../binreloc/prefix.c'; else $(CYGPATH_W) '$(srcdir)/../../binreloc/prefix.c'; fi`
+
+prefix.lo: ../../binreloc/prefix.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT prefix.lo -MD -MP -MF "$(DEPDIR)/prefix.Tpo" -c -o prefix.lo `test -f '../../binreloc/prefix.c' || echo '$(srcdir)/'`../../binreloc/prefix.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/prefix.Tpo" "$(DEPDIR)/prefix.Plo"; else rm -f "$(DEPDIR)/prefix.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../../binreloc/prefix.c' object='prefix.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/prefix.Plo' tmpdepfile='$(DEPDIR)/prefix.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o prefix.lo `test -f '../../binreloc/prefix.c' || echo '$(srcdir)/'`../../binreloc/prefix.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -786,7 +815,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/mem $(distdir)/systems/win32
+	$(mkdir_p) $(distdir)/../../binreloc $(distdir)/mem $(distdir)/systems/win32
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

@@ -1,0 +1,71 @@
+2004-04-13  Hongli Lai <h.lai@chello.nl>
+	* Guard prefix.[ch] with 'extern "C"'.
+
+2004-04-??  Hongli Lai <h.lai@chello.nl>
+	* Forgot what date I modified this stuff. :/
+	* Made it easier to add your own namespace to BinReloc functions.
+	* Make the code C++ compliant.
+
+2004-02-19  Mike Hearn  <mike@linux.littlegreen>
+	* Makefile: bump version
+
+2004-02-15  Mike Hearn  <mike@linux.littlegreen>
+	* USAGE: Replace string manipulation with DATADIR() macro, much simpler
+
+2004-02-10  Hongli Lai <h.lai@chello.nl>
+
+	* Removed dladdr() dependancy.
+	* Removed support for _DYNAMIC because it doesn't always
+	  return an absolute path.
+
+2003-09-28  Mike Hearn <mike@theoretic.com>
+	* Bump version to 1.1, we can't release 0.9 after 1.0
+
+2003-09-05  Hognli Lai  <h.lai@chelo.nl>
+
+	* Rename *_BR macros to BR_*.
+	* New function: br_extract_dir().
+	* Wrote fallback function that uses _DYNAMIC.
+	* Updated README and USAGE about portability and API.
+
+2003-09-04  Hongli Lai  <h.lai@chello.nl>
+
+	* Added 'dist' target to Makefile.
+	* Added *_BR macros to prefix.h.
+	* Restructured prefix.c.
+	* Remove glibc check from test.c; doesn't work on newer glibc
+	  systems.
+
+2003-08-31  Hongli Lai  <h.lai@chello.nl>
+
+	* Moved code from prefix.c to prefix.h and made them static.
+	* Added libtest.c and made test.c link to libtest.
+	* Add USAGE.
+	* Move code from header back to source.
+	* Add more macros.
+
+2003-08-29  Hongli Lai  <h.lai@chello.nl>
+
+	* Further cleanup. Documentation updates. Removed some redundant
+	  functions.
+
+2003-08-29  Hongli Lai  <h.lai@chello.nl>
+
+	* Rewritten README.
+	* Big cleanup of prefix.c and prefix.h. Added inline documentation.
+	* More tests in test.c.
+	* Replace compile script with Makefile.
+
+2003-08-29  Mike Hearn  <mike@theoretic.com>
+
+	* prefix.c: removed bogus comments garbage, added LIBDIR macro as
+	well as DATADIR
+
+	* prefix.c: removed static declaration, created new
+	_thread_local_store function based on pthreads. If pthreads are
+	not used, the prefix macros will not be thread safe.
+
+	* prefix.c: made functions static, removed _thread_local_store
+
+	* CVS/: Initial import
+

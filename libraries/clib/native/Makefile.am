@@ -63,7 +63,11 @@ libnative_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libnative_la_LIBADD = $(M_LIBS) $(LTLIBICONV)
+libnative_la_DEPENDENCIES = \
+	../../../kaffe/kaffevm/libkaffevm.la
+
+libnative_la_LIBADD = $(M_LIBS) $(LTLIBICONV) \
+	$(libnative_la_DEPENDENCIES)
 
 libnative_la_SOURCES = $(IO_SRCS) $(LANG_SRCS) $(REFLECT_SRCS) $(SECURITY_SRCS) $(TEXT_SRCS) $(TEST_SRCS) $(UTIL_SRCS)
 

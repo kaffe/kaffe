@@ -871,6 +871,8 @@ if test x$with_threads = xunix-pthreads ; then
 	KAFFE_LIB_SOLARIS_PTHREAD
 
 	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
+ else
+        CPPFLAGS="$CPPFLAGS -DBR_PTHREADS=0"
 fi
 
 AC_SUBST(VM_LIBS)
@@ -1806,6 +1808,13 @@ fi
 AC_SUBST(KVMLIBFLAGS)
 
 dnl =========================================================================
+dnl Configure Binreloc support
+dnl -------------------------------------------------------------------------
+
+AM_BINRELOC
+CFLAGS="$CFLAGS \$(BINRELOC_CFLAGS)"
+
+dnl =========================================================================
 dnl Set up for local build of kaffeh when cross-compiling
 dnl -------------------------------------------------------------------------
 
@@ -1900,7 +1909,7 @@ AC_SUBST(kaffeh_TRANSF)
 AC_SUBST(kaffebin_TRANSF)
 
 dnl These are not to be used during configuration, only during build.
-CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
+CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/binreloc -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
 LIBS="$LIBS $LTLIBS"
 
 dnl Avoid GNU Make $(filter-out -pg,@CFLAGS@) in kaffe/xprof/Makefile.am

@@ -99,7 +99,8 @@ libkaffevm_la_SOURCES = \
 	verify-debug.c \
 	verify-sigstack.c \
 	verify-type.c \
-	verify-uninit.c
+	verify-uninit.c \
+	../../binreloc/prefix.c
 
 noinst_HEADERS = \
 	access.h \
@@ -147,7 +148,8 @@ noinst_HEADERS = \
 	verify-sigstack.h \
 	verify-type.h \
 	verify-uninit.h \
-	verify-errors.h
+	verify-errors.h \
+	../../binreloc/prefix.h
 
 gc-mem.c: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
