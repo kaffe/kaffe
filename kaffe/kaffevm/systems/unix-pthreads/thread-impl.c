@@ -172,6 +172,7 @@ static void (*thread_free)(void*);
  */
 
 
+#if defined(KAFFE_VMDEBUG)
 /*
  * dump a thread list, marking the supposed to be current thread
  */
@@ -199,6 +200,7 @@ tDumpList ( jthread_t cur, jthread_t list )
 		t->stackMin, t->stackCur, t->stackMax);
   }
 }
+#endif /* defined(KAFFE_VMDEBUG) */
 
 /*
  * dump the state of the threading system
