@@ -19,6 +19,7 @@ import kaffe.awt.SerializerConverter;
 
 public class StringSelection
   extends ExportTransferable
+  implements Transferable, ClipboardOwner
 {
 	static DataFlavor[] stringFlavors;
 	static FlavorConverter[] stringConverters;

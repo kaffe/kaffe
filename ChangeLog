@@ -1,3 +1,8 @@
+Thu Jul  4 03:42:57 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/awt/datatransfer/StringSelection.java:
+	didn't implement Transferable and ClipboardOwner.
+
 Thu Jul  4 03:38:44 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/awt/image/ImageFilter.java:
