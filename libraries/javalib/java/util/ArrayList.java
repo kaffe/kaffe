@@ -34,7 +34,6 @@ public class ArrayList extends AbstractList
 	public ArrayList(Collection c) {
 		final Iterator i = c.iterator();
 		a = new Object[(c.size() * 11) / 10];
-		off = 0;
 		int count;
 		for (count = 0; i.hasNext(); count++) {
 		      a[count] = i.next();
@@ -47,14 +46,11 @@ public class ArrayList extends AbstractList
 		    throw new IllegalArgumentException("initialCapacity < 0");
 		}
 		a = new Object[initialCapacity];
-		off = 0;
-		len = 0;
 	}
 
 	// Used by Arrays.asList()
 	ArrayList(Object[] a) {
 		this.a = a;
-		off = 0;
 		len = a.length;
 		fixed = true;
 	}
