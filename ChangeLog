@@ -1,3 +1,8 @@
+2004-07-30  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/kaffe.def (GETSTATIC): treat static final fields of
+	initialized classes as constants
+
 2004-07-30  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/java/lang/Thread.java: Reverted to original file from
