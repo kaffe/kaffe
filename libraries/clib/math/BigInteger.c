@@ -9,10 +9,10 @@
  */
 
 #include "config.h"
+#include "java_math_BigInteger.h"
 
 #if defined(HAVE_GMP_H)
 
-#include "java_math_BigInteger.h"
 #include <gmp.h>
 #include <stdlib.h>
 
@@ -519,5 +519,11 @@ Java_java_math_BigInteger_hamDist0(JNIEnv* env, jobject s1, jobject s2)
 #else
 
 /* We should put some dummies in here */
+void
+Java_java_math_BigInteger_initialize0(JNIEnv* env, jclass cls)
+{
+	jclass sd = (*env)->FindClass(env, "kaffe.util.SupportDisabled");
+	(*env)->ThrowNew(env, sd, "GNU gmp was not found by Kaffe configure script");
+}
 
 #endif

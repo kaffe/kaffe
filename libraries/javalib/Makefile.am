@@ -745,6 +745,7 @@ kaffe_util_SRCS = \
 	kaffe/util/NotImplemented.java \
 	kaffe/util/NotImplementedReport.java \
 	kaffe/util/Ptr.java \
+	kaffe/util/SupportDisabled.java \
 	kaffe/util/Timer.java \
 	kaffe/util/TimerClient.java \
 	kaffe/util/UNIXTimeZone.java \

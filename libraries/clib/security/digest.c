@@ -31,6 +31,16 @@
 #include "kaffe_security_provider_MD5.h"
 #include "kaffe_security_provider_SHA.h"
 
+#if (!defined(HAVE_MD2INIT) || !defined(HAVE_MD4INIT)) && !defined(HAVE_LIBMD)
+static void 
+supportDisabled (JNIEnv* env)
+{
+	jclass sd = (*env)->FindClass(env, "kaffe.util.SupportDisabled");
+	(*env)->ThrowNew(env, sd,
+			 "libmd was not found by Kaffe configure script");
+}
+#endif
+
 /**************************** MD2 ***********************************/
 
 #if defined(HAVE_MD2INIT) || defined(HAVE_LIBMD)
@@ -134,7 +144,30 @@ Java_kaffe_security_provider_MD2_Final(JNIEnv *env, jobject this,
 	(*env)->ReleaseByteArrayElements(env, buf, bufBytes, JNI_ABORT);
 }
 
+#else
+
+void JNICALL
+Java_kaffe_security_provider_MD2_Init(JNIEnv *env, jobject this)
+{
+	supportDisabled(env);
+}
+
+void JNICALL
+Java_kaffe_security_provider_MD2_Update(JNIEnv *env, jobject this,
+	jbyteArray buf, jint off, jint len)
+{
+	supportDisabled(env);
+}
+
+void JNICALL
+Java_kaffe_security_provider_MD2_Final(JNIEnv *env, jobject this,
+	jbyteArray buf, jint off)
+{
+	supportDisabled(env);
+}
+
 #endif	/* defined(HAVE_MD2INIT) || defined(HAVE_LIBMD) */
+
 
 /**************************** MD4 ***********************************/
 
@@ -239,7 +272,30 @@ Java_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this,
 	(*env)->ReleaseByteArrayElements(env, buf, bufBytes, JNI_ABORT);
 }
 
+#else
+
+void JNICALL
+Java_kaffe_security_provider_MD4_Init(JNIEnv *env, jobject this)
+{
+	supportDisabled(env);
+}
+
+void JNICALL
+Java_kaffe_security_provider_MD4_Update(JNIEnv *env, jobject this,
+	jbyteArray buf, jint off, jint len)
+{
+	supportDisabled(env);
+}
+
+void JNICALL
+Java_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this,
+	jbyteArray buf, jint off)
+{
+	supportDisabled(env);
+}
+
 #endif	/* defined(HAVE_MD4INIT) || defined(HAVE_LIBMD) */
+
 
 /**************************** MD5 ***********************************/
 
