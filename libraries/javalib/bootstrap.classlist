@@ -1,6 +1,7 @@
 # Used when kjc runs (while compiling classes) and kaffeh (to generate headers)
 
 gnu/java/lang/CharData.class
+gnu/java/io/PlatformHelper.class
 java/io/BufferedInputStream.class
 java/io/BufferedOutputStream.class
 java/io/BufferedReader.class
@@ -110,6 +111,7 @@ java/lang/reflect/Modifier.class
 java/lang/reflect/ReflectPermission.class
 java/security/BasicPermission.class
 java/security/CodeSource.class
+java/security/cert/Certificate.class
 java/security/Guard.class
 java/security/AllPermission.class
 java/security/Permission.class
@@ -178,6 +180,9 @@ java/util/TimeZone.class
 java/util/Vector.class
 java/util/Vector$1.class
 java/util/jar/JarFile.class
+java/util/jar/Manifest.class
+java/util/jar/Attributes.class
+java/util/jar/Attributes$Name.class
 java/util/zip/ZipConstants.class
 java/util/zip/ZipEntry.class
 java/util/zip/ZipException.class
@@ -197,6 +202,7 @@ kaffe/lang/AppClassLoader$Source.class
 kaffe/lang/AppClassLoader$DirSource.class
 kaffe/lang/AppClassLoader$JarSource.class
 kaffe/lang/MemoryAdvice.class
+kaffe/lang/PackageHelper.class
 kaffe/lang/PrimordialClassLoader.class
 kaffe/lang/ThreadStack.class
 kaffe/util/IntegerHashtable.class

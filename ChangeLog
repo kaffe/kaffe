@@ -1,5 +1,23 @@
 2003-08-30  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/javalib/bootstrap.classlist: updated to be able to run
+	KJC.
+
+	* libraries/javalib/essential.files: Added NIO classes, socket
+	classes, and some IO classes.
+
+	* libraries/javalib/profiles/default/nio.files: removed.
+
+	* libraries/javalib/profiles/default/core.files: removed classes
+	already mentioned in essential.files
+
+	* libraries/javalib/profiles/allatone/all.files:
+	regenerated.
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated.
+
+2003-08-30  Guilhem Lavaux <guilhem@kaffe.org>
+
 	IO/net subsystem merging from Classpath. KJC's compile fix for next
 	check in.
 
