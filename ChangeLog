@@ -1,3 +1,15 @@
+2004-12-14  Michael Koch  <konqueror@gmx.de>
+
+	* libraries/javalib/javax/swing/JTree.java
+	(collapsePath): New method.
+	(collapseRow): Likewise.
+	(expandPath): Likewise.
+	(expandRow): Likewise.
+	(checkExpandParents): Likewise.
+	(doExpandParents): Likewise.
+	(setExpandedState): Likewise.
+	(makeVisible): Likewise.
+
 2004-12-13  Adam Heath  <doogie@brainfood.com>
 
 	* configure, configure.ac, scripts/GCCWarning.pm:

@@ -1051,6 +1051,43 @@ public class JTree extends JComponent
     
     return 0;
   }
+  
+  public void collapsePath(TreePath path)
+  {
+    setExpandedState(path, false);
+  }
+  
+  public void collapseRow(int row)
+  {
+    if (row < 0 || row >= getRowCount())
+      return;
+
+    TreePath path = getPathForRow(row);
+
+    if (path != null)
+      collapsePath(path);
+  }
+
+  public void expandPath(TreePath path)
+  {
+    // Don't expand if last path component is a leaf node.
+    if ((path == null)
+        || (treeModel.isLeaf(path.getLastPathComponent())))
+      return;
+
+    setExpandedState(path, true);
+  }
+  
+  public void expandRow(int row)
+  {
+    if (row < 0 || row >= getRowCount())
+      return;
+
+    TreePath path = getPathForRow(row);
+
+    if (path != null)
+      expandPath(path);
+  }
 
   public boolean isCollapsed(TreePath path)
   {
@@ -1243,6 +1280,51 @@ public class JTree extends JComponent
     return null;
   }
 
+  private void checkExpandParents(TreePath path)
+    throws ExpandVetoException
+  {
+    TreePath parent = path.getParentPath();
+
+    if (parent != null)
+      checkExpandParents(parent);
+
+    fireTreeWillExpand(path);
+  }
+
+  private void doExpandParents(TreePath path, boolean state)
+  {
+    TreePath parent = path.getParentPath();
+
+    if (isExpanded(parent))
+      return;
+    
+    if (parent != null)
+      doExpandParents(parent, false);
+
+    nodeStates.put(path, state ? EXPANDED : COLLAPSED);
+  }
+  
+  protected void setExpandedState(TreePath path, boolean state)
+  {
+    if (path == null)
+      return;
+
+    TreePath parent = path.getParentPath();
+
+    try
+      {
+	while (parent != null)
+	  checkExpandParents(parent);
+      }
+    catch (ExpandVetoException e)
+      {
+	// Expansion vetoed.
+	return;
+      }
+
+    doExpandParents(path, state);
+  }
+
   protected void clearToggledPaths()
   {
     nodeStates.clear();
@@ -1286,6 +1368,14 @@ public class JTree extends JComponent
       return true; // Is root node.
 
     return isExpanded(parent);
+  }
+
+  public void makeVisible(TreePath path)
+  {
+    if (path == null)
+      return;
+
+    expandPath(path.getParentPath());
   }
 
   public boolean isPathEditable(TreePath path)
