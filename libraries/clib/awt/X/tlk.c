@@ -82,8 +82,7 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
 {
   char    *dspName;
 
-  X->nBuf = 128;
-  X->buf = AWT_MALLOC( X->nBuf);
+  getBuffer(X, 128);
 
   JniEnv = env;
   AWTError = (*env)->FindClass( env, "java/awt/AWTError");

@@ -217,8 +217,8 @@ static __inline__ char* java2CString ( JNIEnv *env, Toolkit* X, jstring jstr ) {
 
   if ( n >= X->nBuf ) {
 	if ( X->buf )
-	  free( X->buf);
-	X->buf = malloc( n+1);
+	  KFREE( X->buf);
+	X->buf = KMALLOC( n+1);
 	X->nBuf = n+1;
   }
 
@@ -235,8 +235,8 @@ static __inline__ char* jchar2CString ( Toolkit* X, jchar* jc, int len ) {
   
   if ( n > X->nBuf ) {
 	if ( X->buf )
-	  free( X->buf);
-	X->buf  = malloc( n);
+	  KFREE( X->buf);
+	X->buf  = KMALLOC( n);
 	X->nBuf = n;
   }
 
@@ -249,8 +249,8 @@ static __inline__ char* jchar2CString ( Toolkit* X, jchar* jc, int len ) {
 static __inline__ void* getBuffer ( Toolkit* X, unsigned int nBytes ) {
   if ( nBytes > X->nBuf ) {
 	if ( X->buf )
-	  free( X->buf);
-	X->buf  = malloc( nBytes);
+	  KFREE( X->buf);
+	X->buf  = KMALLOC( nBytes);
 	X->nBuf = nBytes;
   }
   return X->buf;
@@ -457,7 +457,7 @@ static __inline__ void* _awt_malloc_wrapper ( size_t size )
 {
   void *adr;
   enterUnsafeRegion();
-  adr = KMALLOC( size);
+  adr = malloc( size);
   leaveUnsafeRegion();
   DBG( awt_mem, ("malloc: %d  -> %x\n", size, adr));
   return adr;
@@ -467,7 +467,7 @@ static __inline__ void* _awt_calloc_wrapper ( int n, size_t size )
 {
   void *adr;
   enterUnsafeRegion();
-  adr = KCALLOC( n, size);
+  adr = calloc( n, size);
   leaveUnsafeRegion();
   DBG( awt_mem, ("calloc: %d,%d  -> %x\n", n, size, adr));
   return adr;
@@ -477,7 +477,7 @@ static __inline__ void _awt_free_wrapper ( void* adr )
 {
   DBG( awt_mem, ("free: %x\n", adr));
   enterUnsafeRegion();
-  KFREE( adr);
+  free( adr);
   leaveUnsafeRegion();
 }
 
