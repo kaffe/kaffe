@@ -22,6 +22,7 @@
 #include "Constructor.h"
 #include "Method.h"
 #include <native.h>
+#include <jni.h>
 #include "defs.h"
 
 jint
@@ -38,11 +39,13 @@ java_lang_reflect_Constructor_getModifiers(struct Hjava_lang_reflect_Constructor
 	return (clazz->methods[slot].accflags & ACC_MASK);
 }
 
-struct Hjava_lang_Object*
-java_lang_reflect_Constructor_newInstance(struct Hjava_lang_reflect_Constructor* this, HArrayOfObject* argobj)
+jobject
+Java_java_lang_reflect_Constructor_newInstance(JNIEnv* env, jobject _this, jarray argobj)
 {
 	Hjava_lang_Object* obj;
 	Hjava_lang_reflect_Method meth[1];
+
+	Hjava_lang_reflect_Constructor* this = (Hjava_lang_reflect_Constructor*)_this;
 
 	obj = newObject(unhand(this)->clazz);
 
@@ -53,7 +56,7 @@ java_lang_reflect_Constructor_newInstance(struct Hjava_lang_reflect_Constructor*
 	unhand(meth)->parameterTypes = unhand(this)->parameterTypes;
 	unhand(meth)->exceptionTypes = unhand(this)->exceptionTypes;
 
-	java_lang_reflect_Method_invoke(meth, obj, argobj);
+	Java_java_lang_reflect_Method_invoke(env, (jobject)meth, (jobject)obj, argobj);
 
-	return (obj);
+	return ((jobject)obj);
 }
