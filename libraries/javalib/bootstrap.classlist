@@ -17,6 +17,7 @@ gnu/java/net/protocol/jar/Connection.class
 gnu/java/net/protocol/jar/Connection$JarFileCache.class
 gnu/java/net/protocol/jar/Handler.class
 gnu/java/net/URLParseError.class
+gnu/java/security/OID.class
 gnu/java/text/FormatCharacterIterator.class
 gnu/java/text/FormatBuffer.class
 gnu/java/text/AttributedFormatBuffer.class
@@ -248,6 +249,9 @@ java/util/PropertyResourceBundle.class
 java/util/Random.class
 java/util/RandomAccess.class
 java/util/ResourceBundle.class
+java/util/ResourceBundle$1.class
+java/util/ResourceBundle$BundleKey.class
+java/util/ResourceBundle$Security.class
 java/util/Set.class
 java/util/SimpleTimeZone.class
 java/util/Stack.class
