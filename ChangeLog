@@ -1,3 +1,8 @@
+Wed Feb 16 12:09:23 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/zip/ZipInputStream.java:
+	fix yet another bug 
+
 Tue Feb 15 12:15:00 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* FAQ/FAQ.libtool: add URL for libtool homepage
