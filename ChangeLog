@@ -10,6 +10,16 @@
 
 2004-04-27  Dalibor Topic  <robilad@kaffe.org>
 
+	* tools/gjdoc/javalib/Makefile.am:
+	Fix build when zip is not available.
+
+	* tools/gjdoc/javalib/Makefile.in:
+	Regenerated.
+
+	Reported by: Guilhem Lavaux <guilhem@kaffe.org>
+
+2004-04-27  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/file.c:
 	New file.
 
