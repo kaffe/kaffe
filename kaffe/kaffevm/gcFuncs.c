@@ -77,6 +77,12 @@ DBG(CLASSGC,
 	 */
 	assert(clazz->state != CSTATE_COMPLETE || clazz->loader != 0);
 
+	/* Clear class reference in classPool.  Don't clear loader,
+	 * finalizeClassLoader() needs it to release classEntry struct.  */
+	if (clazz->centry != NULL) {
+		clazz->centry->class = NULL;
+	}
+
 	if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0 && clazz->name) {
 		fprintf(stderr, "<GC: unloading class `%s'>\n", 
 			CLASS_CNAME(clazz));
@@ -201,6 +207,10 @@ walkClass(Collector* collector, void* base, uint32 size)
         int idx;
 
         class = (Hjava_lang_Class*)base;
+
+DBG(GCPRECISE,
+        dprintf("walkClass `%s' state=%d\n", CLASS_CNAME(class), class->state);
+    )   
 
         if (class->state >= CSTATE_PREPARED) {
                 GC_markObject(collector, class->superclass);
