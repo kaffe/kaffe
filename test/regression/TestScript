@@ -723,6 +723,9 @@ Now loading java.math.BigDecimal
 Success 1.
 Success 2."
 
+runtest InitTest "Success 1.
+Success 2."
+
 runtest ProcessClassTest "A Segv java.lang.NullPointerException
 B First java.lang.ExceptionInInitializerError
 C Second java.lang.NoClassDefFoundError: DontExist
