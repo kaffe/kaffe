@@ -6,7 +6,7 @@
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * of this file.
  */
 
 #ifndef __jsyscall_h
@@ -46,7 +46,7 @@
  * Thread-safe variants of several POSIXy calls.
  *
  * Output values, where given, are returned by reference as the last parameter.
- * All functions return zero on success, otherwise a non-zero value is 
+ * All functions return zero on success, otherwise a non-zero value is
  * returned which corresponds to errno.
  */
 typedef struct SystemCallInterface {
@@ -85,7 +85,7 @@ typedef struct SystemCallInterface {
 	int	(*_gethostbyname)(const char *, struct hostent **);
 	int	(*_gethostbyaddr)(const char *, size_t, int, struct hostent **);
 
-	int	(*_select)(int, fd_set *, fd_set *, fd_set *, struct timeval *, 
+	int	(*_select)(int, fd_set *, fd_set *, fd_set *, struct timeval *,
 		int*);
 	int	(*_forkexec)(char **, char **, int[4], int*, const char *);
 	int	(*_waitpid)(int, int *, int, int *);

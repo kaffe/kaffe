@@ -1,5 +1,9 @@
 2005-03-27  Gerrit P. Haase <gp@familiehaase.de>
 
+	* include/jsyscall.h: Whitespace cleanups.
+
+2005-03-27  Gerrit P. Haase <gp@familiehaase.de>
+
 	* config/config-std.h: Removed whitespace from copyright header.
 	Don't include windows specific headers on Cygwin.
 
