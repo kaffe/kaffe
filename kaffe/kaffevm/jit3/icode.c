@@ -70,10 +70,11 @@ static void _call_soft(void *routine, int profiled);
 /*									   */
 
 #if defined(HAVE_spill_int)
+void HAVE_spill_int(sequence*);
+
 void
 spill_int(SlotData* src)
 {
-	void HAVE_spill_int(sequence*);
 	sequence s;
 	seq_dst(&s) = src;
 	seq_value(&s, 1) = slotOffsetNoSpill(src, Rint);
@@ -82,10 +83,11 @@ spill_int(SlotData* src)
 #endif
 
 #if defined(HAVE_reload_int)
+void HAVE_reload_int(sequence*);
+
 void
 reload_int(SlotData* dst)
 {
-	void HAVE_reload_int(sequence*);
 	sequence s;
 	seq_dst(&s) = dst;
 	seq_value(&s, 1) = slotOffsetNoSpill(dst, Rint);
@@ -94,10 +96,11 @@ reload_int(SlotData* dst)
 #endif
 
 #if defined(HAVE_spill_ref)
+void HAVE_spill_ref(sequence*);
+
 void
 spill_ref(SlotData* src)
 {
-	void HAVE_spill_ref(sequence*);
 	sequence s;
 	seq_dst(&s) = src;
 	seq_value(&s, 1) = slotOffsetNoSpill(src, Rref);
@@ -106,10 +109,11 @@ spill_ref(SlotData* src)
 #endif
 
 #if defined(HAVE_reload_ref)
+void HAVE_reload_ref(sequence*);
+
 void
 reload_ref(SlotData* dst)
 {
-	void HAVE_reload_ref(sequence*);
 	sequence s;
 	seq_dst(&s) = dst;
 	seq_value(&s, 1) = slotOffsetNoSpill(dst, Rref);
@@ -118,10 +122,11 @@ reload_ref(SlotData* dst)
 #endif
 
 #if defined(HAVE_spill_long)
+void HAVE_spill_long(sequence*);
+
 void
 spill_long(SlotData* src)
 {
-	void HAVE_spill_long(sequence*);
 	sequence s;
 	seq_dst(&s) = src;
 	seq_value(&s, 1) = slotOffsetNoSpill(src, Rlong);
@@ -130,10 +135,11 @@ spill_long(SlotData* src)
 #endif
 
 #if defined(HAVE_reload_long)
+void HAVE_reload_long(sequence*);
+
 void
 reload_long(SlotData* dst)
 {
-	void HAVE_reload_long(sequence*);
 	sequence s;
 	seq_dst(&s) = dst;
 	seq_value(&s, 1) = slotOffsetNoSpill(dst, Rlong);
@@ -142,10 +148,11 @@ reload_long(SlotData* dst)
 #endif
 
 #if defined(HAVE_spill_float)
+void HAVE_spill_float(sequence*);
+
 void
 spill_float(SlotData* src)
 {
-	void HAVE_spill_float(sequence*);
 	sequence s;
 	seq_dst(&s) = src;
 	seq_value(&s, 1) = slotOffsetNoSpill(src, Rfloat);
@@ -154,10 +161,11 @@ spill_float(SlotData* src)
 #endif
 
 #if defined(HAVE_reload_float)
+void HAVE_reload_float(sequence*);
+
 void
 reload_float(SlotData* dst)
 {
-	void HAVE_reload_float(sequence*);
 	sequence s;
 	seq_dst(&s) = dst;
 	seq_value(&s, 1) = slotOffsetNoSpill(dst, Rfloat);
@@ -166,10 +174,11 @@ reload_float(SlotData* dst)
 #endif
 
 #if defined(HAVE_spill_double)
+void HAVE_spill_double(sequence*);
+
 void
 spill_double(SlotData* src)
 {
-	void HAVE_spill_double(sequence*);
 	sequence s;
 	seq_dst(&s) = src;
 	seq_value(&s, 1) = slotOffsetNoSpill(src, Rdouble);
@@ -178,10 +187,11 @@ spill_double(SlotData* src)
 #endif
 
 #if defined(HAVE_reload_double)
+void HAVE_reload_double(sequence*);
+
 void
 reload_double(SlotData* dst)
 {
-	void HAVE_reload_double(sequence*);
 	sequence s;
 	seq_dst(&s) = dst;
 	seq_value(&s, 1) = slotOffsetNoSpill(dst, Rdouble);

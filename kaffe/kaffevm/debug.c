@@ -37,6 +37,10 @@
 /* Default debugging mask to use (if debug is enabled) */
 #define DEFAULT_DEBUG_MASK	DBG_NONE
 
+#if defined(TRANSLATOR)
+extern int jit_debug;
+#endif /* defined(TRANSLATOR) */
+
 static char *debugBuffer;
 static int bufferBegin = 0;
 static int bufferSz = 16 * 1024;
@@ -293,7 +297,6 @@ dbgSetMaskStr(const char *orig_mask_str)
 
 	if (kaffevmDebugMask & DBG_JIT) {
 #if defined(TRANSLATOR)
-		extern int jit_debug;
 		jit_debug = 1;
 #else
 		dprintf(
@@ -343,7 +346,6 @@ debugSysInit(void)
 	once = 1;
 #if defined(TRANSLATOR) && defined(KAFFE_VMDEBUG)
 	{
-		extern int jit_debug;
 		if (getenv("JIT_DEBUG"))
 			jit_debug = 1;
 	}

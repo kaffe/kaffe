@@ -48,6 +48,8 @@
 #include <unixlib/local.h>
 #endif
 
+extern void Kaffe_KNI_wrapper(Method* xmeth, void* func);
+
 #ifndef STUB_PREFIX
 #define STUB_PREFIX ""
 #define STUB_PREFIX_LEN 0
@@ -435,7 +437,6 @@ DBG(NATIVELIB,
 	func = loadNativeLibrarySym(stub);
 	if (func != 0) {
 		/* Fill it in */
-		extern void Kaffe_KNI_wrapper(Method* xmeth, void* func);
 		Kaffe_KNI_wrapper(m, func);
 		return (true);
 	}

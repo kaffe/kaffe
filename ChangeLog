@@ -1,5 +1,14 @@
 2004-03-25  Dalibor Topic <robilad@kaffe.org>
 
+        * config/i386/jit3-i386.def,
+        kaffe/kaffevm/baseClasses.c,
+        kaffe/kaffevm/debug.c,
+        kaffe/kaffevm/external.c,
+        kaffe/kaffevm/jit3/icode.c:
+	Fixed various nested-extern warnings.
+
+2004-03-25  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c
 	(jcondvar_wait): Renamed stat to status to fix a compiler
 	warning and clarify code.

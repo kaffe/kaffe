@@ -97,6 +97,8 @@ void initClasspath(void);
 void initNative(void);
 void initThreads(void);
 
+extern JavaVMInitArgs Kaffe_JavaVMArgs[];
+
 /*
  * Initialise the machine.
  *
@@ -106,7 +108,6 @@ void
 initialiseKaffe(void)
 {
         /* Set default thread stack size if not set */
-        extern JavaVMInitArgs Kaffe_JavaVMArgs[];
 	int threadStackSize;
 
 	/* Machine specific initialisation first */
