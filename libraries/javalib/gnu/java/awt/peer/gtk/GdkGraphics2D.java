@@ -215,9 +215,7 @@ public class GdkGraphics2D extends Graphics2D
   GdkGraphics2D(GtkComponentPeer component)
   {
     this.component = component;
-
-    setFont(new Font("SansSerif", Font.PLAIN, 12));
-
+    
     if (component.isRealized())
       initComponentGraphics2D();
     else
@@ -234,6 +232,7 @@ public class GdkGraphics2D extends Graphics2D
     setTransform(new AffineTransform());
     setStroke(new BasicStroke());
     setRenderingHints(getDefaultHints());
+    setFont(new Font("SansSerif", Font.PLAIN, 12));
 
     stateStack = new Stack();
   }
@@ -1326,58 +1325,54 @@ public class GdkGraphics2D extends Graphics2D
   }
 
   // these are the most accelerated painting paths
-  native void cairoDrawGdkGlyphVector(GdkFontPeer f, GdkGlyphVector gv,
-                                      float x, float y);
+  native void cairoDrawGlyphVector(GdkFontPeer font, 
+                                   float x, float y, int n, 
+                                   int[] codes, float[] positions);
 
-  native void cairoDrawGdkTextLayout(GdkFontPeer f, GdkTextLayout gl, float x,
-                                     float y);
-
-  native void cairoDrawString(GdkFontPeer f, String str, float x, float y);
+  native void cairoDrawGdkTextLayout(GdkTextLayout gl, 
+                                     float x, float y);
 
   GdkFontPeer getFontPeer()
   {
     return (GdkFontPeer) getFont().getPeer();
   }
 
-  public void drawGdkGlyphVector(GdkGlyphVector gv, float x, float y)
-  {
-    cairoDrawGdkGlyphVector(getFontPeer(), gv, x, y);
-    updateBufferedImage();
-  }
-
   public void drawGdkTextLayout(GdkTextLayout gl, float x, float y)
   {
-    cairoDrawGdkTextLayout(getFontPeer(), gl, x, y);
-    updateBufferedImage();
+    cairoDrawGdkTextLayout (gl, x, y);
+    updateBufferedImage ();
   }
 
   public void drawString(String str, float x, float y)
   {
-    cairoDrawString(getFontPeer(), str, x, y);
-    updateBufferedImage();
+    drawGlyphVector(getFont().createGlyphVector(null, str), x, y);
+    updateBufferedImage ();
   }
 
   public void drawString(String str, int x, int y)
   {
-    drawString(str, (float) x, (float) y);
+    drawString (str, (float) x, (float) y);
   }
 
   public void drawString(AttributedCharacterIterator ci, int x, int y)
   {
-    drawString(ci, (float) x, (float) y);
+    drawString (ci, (float) x, (float) y);
   }
 
   public void drawGlyphVector(GlyphVector gv, float x, float y)
   {
-    if (gv instanceof GdkGlyphVector)
-      drawGdkGlyphVector((GdkGlyphVector) gv, x, y);
-    else
-      throw new java.lang.UnsupportedOperationException();
+    int n = gv.getNumGlyphs ();
+    int[] codes = gv.getGlyphCodes (0, n, null);
+    float[] positions = gv.getGlyphPositions (0, n, null);
+    
+    setFont (gv.getFont ());
+    cairoDrawGlyphVector (getFontPeer(), x, y, n, codes, positions);
+    updateBufferedImage ();
   }
 
   public void drawString(AttributedCharacterIterator ci, float x, float y)
   {
-    GlyphVector gv = font.createGlyphVector(getFontRenderContext(), ci);
+    GlyphVector gv = getFont().createGlyphVector(getFontRenderContext(), ci);
     drawGlyphVector(gv, x, y);
   }
 
@@ -1416,6 +1411,8 @@ public class GdkGraphics2D extends Graphics2D
 
   public Font getFont()
   {
+    if (font == null)
+      return new Font("SansSerif", Font.PLAIN, 12);
     return font;
   }
 
@@ -1425,16 +1422,9 @@ public class GdkGraphics2D extends Graphics2D
 
   static native void releasePeerGraphicsResource(GdkFontPeer f);
 
-  static native void getPeerTextMetrics(GdkFontPeer f, String str,
-                                        double[] metrics);
-
-  static native void getPeerFontMetrics(GdkFontPeer f, double[] metrics);
-
   public FontMetrics getFontMetrics()
   {
-    // the reason we go via the toolkit here is to try to get
-    // a cached object. the toolkit keeps such a cache.
-    return Toolkit.getDefaultToolkit().getFontMetrics(font);
+    return getFontMetrics(getFont());
   }
 
   public FontMetrics getFontMetrics(Font f)
@@ -1457,7 +1447,7 @@ public class GdkGraphics2D extends Graphics2D
   public String toString()
   {
     return  (getClass().getName()
-             + "[font=" + font.toString()
+             + "[font=" + getFont().toString()
              + ",color=" + fg.toString()
 	     + "]");
   }

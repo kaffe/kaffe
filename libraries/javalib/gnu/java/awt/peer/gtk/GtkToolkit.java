@@ -348,15 +348,18 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
   public FontMetrics getFontMetrics (Font font) 
   {
-    if (metricsCache.containsKey(font))
-      return (FontMetrics) metricsCache.get(font);
-    else
+    synchronized (metricsCache)
       {
-        FontMetrics m;
-        m = new GdkFontMetrics (font);
+        if (metricsCache.containsKey(font))
+          return (FontMetrics) metricsCache.get(font);
+      }
+
+    FontMetrics m = new GdkFontMetrics (font);
+    synchronized (metricsCache)
+      {
         metricsCache.put(font, m);
-        return m;
-      }    
+      }
+    return m;
   }
 
   public Image getImage (String filename) 
@@ -632,11 +635,18 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     throw new Error("not implemented");
   }
 
+  public Rectangle getBounds()
+  {
+    int[] dims = new int[2];
+    getScreenSizeDimensions(dims);
+    return new Rectangle(0, 0, dims[0], dims[1]);
+  }
+  
   // ClasspathToolkit methods
 
   public GraphicsEnvironment getLocalGraphicsEnvironment()
   {
-    return new GdkGraphicsEnvironment();
+    return new GdkGraphicsEnvironment(this);
   }
 
   public Font createFont(int format, InputStream stream)

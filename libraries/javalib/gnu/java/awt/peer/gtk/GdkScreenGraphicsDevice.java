@@ -43,9 +43,17 @@ import java.awt.GraphicsConfiguration;
 
 public class GdkScreenGraphicsDevice extends GraphicsDevice
 {
-  public GdkScreenGraphicsDevice ()
+  GdkGraphicsEnvironment env;
+
+  public GtkToolkit getToolkit()
   {
+    return env.getToolkit();
+  }
+
+  public GdkScreenGraphicsDevice (GdkGraphicsEnvironment e)
+  {    
     super ();
+    env = e;
   }
 
   public int getType ()
@@ -62,12 +70,13 @@ public class GdkScreenGraphicsDevice extends GraphicsDevice
   public GraphicsConfiguration[] getConfigurations ()
   {
     // FIXME: query X for the list of possible configurations
-    return null;
+    return new GraphicsConfiguration [] { new GdkGraphicsConfiguration(this) };
   }
 
   public GraphicsConfiguration getDefaultConfiguration ()
   {
+    
     // FIXME: query X for default configuration
-    return null;
+    return new GdkGraphicsConfiguration(this);
   }
 }

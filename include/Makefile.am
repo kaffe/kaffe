@@ -150,9 +150,7 @@ LIBXMLJ_JNI_HDRS = \
 	gnu_xml_libxmlj_transform_GnomeTransformerFactory.h
 
 LIBGTKPEER_JNI_HDRS = \
-	gnu_java_awt_peer_gtk_GdkFontMetrics.h \
 	gnu_java_awt_peer_gtk_GdkFontPeer.h \
-	gnu_java_awt_peer_gtk_GdkGlyphVector.h \
 	gnu_java_awt_peer_gtk_GdkGraphics.h \
 	gnu_java_awt_peer_gtk_GdkGraphics2D.h \
 	gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.h \

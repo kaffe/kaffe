@@ -557,6 +557,7 @@ gnu/java/awt/peer/gtk/GdkFontPeer.java
 gnu/java/awt/peer/gtk/GdkGlyphVector.java
 gnu/java/awt/peer/gtk/GdkGraphics.java
 gnu/java/awt/peer/gtk/GdkGraphics2D.java
+gnu/java/awt/peer/gtk/GdkGraphicsConfiguration.java
 gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java
 gnu/java/awt/peer/gtk/GdkPixbufDecoder.java
 gnu/java/awt/peer/gtk/GdkRobotPeer.java

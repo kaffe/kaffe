@@ -78,11 +78,9 @@ LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =  \
 	$(top_builddir)/libraries/clib/classpath/libclasspath.la
 am__libgtkpeer_la_SOURCES_DIST =  \
-	gnu_java_awt_peer_gtk_GdkGlyphVector.c \
 	gnu_java_awt_peer_gtk_GdkGraphics2D.c gdkfont.h \
 	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c \
 	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h \
-	gnu_java_awt_peer_gtk_GdkFontMetrics.c \
 	gnu_java_awt_peer_gtk_GdkFontPeer.c \
 	gnu_java_awt_peer_gtk_GdkGraphics.c \
 	gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c \
@@ -119,11 +117,9 @@ am__libgtkpeer_la_SOURCES_DIST =  \
 	gnu_java_awt_peer_gtk_GtkToolkit.c \
 	gnu_java_awt_peer_gtk_GtkWindowPeer.c gthread-jni.c \
 	gthread-jni.h gtkpeer.h
-@GTK_CAIRO_TRUE@am__objects_1 = libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGlyphVector.lo \
-@GTK_CAIRO_TRUE@	libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics2D.lo
+@GTK_CAIRO_TRUE@am__objects_1 = libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics2D.lo
 am_libgtkpeer_la_OBJECTS = $(am__objects_1) \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.lo \
-	libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontMetrics.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.lo \
@@ -455,7 +451,6 @@ native_LTLIBRARIES = libgtkpeer.la
 
 # Gtk/Cairo JNI sources.
 @GTK_CAIRO_TRUE@gtk_cairo_c_source_files = \
-@GTK_CAIRO_TRUE@	gnu_java_awt_peer_gtk_GdkGlyphVector.c \
 @GTK_CAIRO_TRUE@	gnu_java_awt_peer_gtk_GdkGraphics2D.c
 
 libgtkpeer_la_SOURCES = \
@@ -463,7 +458,6 @@ libgtkpeer_la_SOURCES = \
 	gdkfont.h \
 	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c \
 	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h \
-	gnu_java_awt_peer_gtk_GdkFontMetrics.c \
 	gnu_java_awt_peer_gtk_GdkFontPeer.c \
 	gnu_java_awt_peer_gtk_GdkGraphics.c \
 	gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c \
@@ -598,9 +592,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontMetrics.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontPeer.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGlyphVector.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics2D.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.Plo@am__quote@
@@ -659,13 +651,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGlyphVector.lo: gnu_java_awt_peer_gtk_GdkGlyphVector.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGlyphVector.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGlyphVector.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGlyphVector.lo `test -f 'gnu_java_awt_peer_gtk_GdkGlyphVector.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GdkGlyphVector.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGlyphVector.Tpo" "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGlyphVector.Plo"; else rm -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGlyphVector.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_awt_peer_gtk_GdkGlyphVector.c' object='libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGlyphVector.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGlyphVector.lo `test -f 'gnu_java_awt_peer_gtk_GdkGlyphVector.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GdkGlyphVector.c
-
 libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics2D.lo: gnu_java_awt_peer_gtk_GdkGraphics2D.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics2D.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics2D.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics2D.lo `test -f 'gnu_java_awt_peer_gtk_GdkGraphics2D.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GdkGraphics2D.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics2D.Tpo" "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics2D.Plo"; else rm -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics2D.Tpo"; exit 1; fi
@@ -679,13 +664,6 @@ libgtkpeer_la-gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.lo: gnu_java_awt_p
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c' object='libgtkpeer_la-gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.lo `test -f 'gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c
-
-libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontMetrics.lo: gnu_java_awt_peer_gtk_GdkFontMetrics.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontMetrics.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontMetrics.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontMetrics.lo `test -f 'gnu_java_awt_peer_gtk_GdkFontMetrics.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GdkFontMetrics.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontMetrics.Tpo" "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontMetrics.Plo"; else rm -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontMetrics.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_awt_peer_gtk_GdkFontMetrics.c' object='libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontMetrics.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontMetrics.lo `test -f 'gnu_java_awt_peer_gtk_GdkFontMetrics.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GdkFontMetrics.c
 
 libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontPeer.lo: gnu_java_awt_peer_gtk_GdkFontPeer.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontPeer.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontPeer.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GdkFontPeer.lo `test -f 'gnu_java_awt_peer_gtk_GdkFontPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GdkFontPeer.c; \

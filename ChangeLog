@@ -1,6 +1,71 @@
 2005-02-14  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+	
+	2005-02-12  Graydon Hoare  <graydon@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GdkGraphicsConfiguration.java: Add.
+
+	2005-02-12  Graydon Hoare  <graydon@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GdkFontPeer.java
+	(getGlyphVector):
+	(getFontMetrics):
+	(getTextMetrics): New native methods.
+	* gnu/java/awt/peer/gtk/GdkFontMetrics.java: Remove native parts.
+	* gnu/java/awt/peer/gtk/GdkGlyphVector.java: Likewise.
+	* gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java: 
+	Hold reference to GtkToolkit.
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java
+	(cairoSetFont):
+	(cairoDrawGdkTextLayout):
+	(cairoDrawString): 
+	(getPeerTextMetrics):
+	(getPeerFontMetrics): Remove.
+	(setFont): Don't call cairoSetFont.
+	(cairoDrawGlyphVector): Accept font peer argument.
+	(drawGlyphVector): Pass font peer to cairoDrawGlyphVector.
+	* gnu/java/awt/peer/gtk/GdkPixbufDecoder.java:
+	(finalize): Call finish from here.
+	(produce): Not from here.
+	* gnu/java/awt/peer/gtk/GdkScreenGraphicsDevice.java:
+	Hold reference to GdkGraphicsEnvironment.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java:
+	(getFontMetrics): Change locking.
+	(getBounds): New method.
+	(getLocalGraphicsEnvironment): Pass reference to this.
+
+	* include/Makefile.am: Remove entries for GdkFontMetrics, GdkGlyphVector.
+	* include/gnu_java_awt_peer_gtk_GdkFontMetrics.h: Remove.
+	* include/gnu_java_awt_peer_gtk_GdkFontPeer.h: Regenerate.
+	* include/gnu_java_awt_peer_gtk_GdkGlyphVector.h: Remove.
+	* include/gnu_java_awt_peer_gtk_GdkGraphics2D.h: Regenerate.
+
+	* native/jni/gtk-peer/Makefile.am
+	Remove entries for GdkFontMetrics, GdkGlyphVector.
+	* native/jni/gtk-peer/gdkfont.h: Add #defines, remove struct glyphvec.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c
+	(ensure_metrics_cairo):
+	(Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoSetFont):
+	(Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoDrawString):
+	(Java_gnu_java_awt_peer_gtk_GdkGraphics2D_getPeerFontMetrics):
+	(Java_gnu_java_awt_peer_gtk_GdkGraphics2D_getPeerTextMetrics):
+	(metrics_cairo):
+	(metrics_surface): Remove.
+	(Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoDrawGlyphVector):
+	Pass and install font peer.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c:
+	Release GDK lock while performing upcalls.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontMetrics.c: Remove.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c
+	(Java_gnu_java_awt_peer_gtk_GdkFontPeer_getGlyphVector):
+	(Java_gnu_java_awt_peer_gtk_GdkFontPeer_getFontMetrics): 
+	(Java_gnu_java_awt_peer_gtk_GdkFontPeer_getTextMetrics): New methods.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGlyphVector.c: Remove.
+	
+2005-02-14  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 
 	2005-02-11  Craig Black  <craig.black@aonix.com>
 

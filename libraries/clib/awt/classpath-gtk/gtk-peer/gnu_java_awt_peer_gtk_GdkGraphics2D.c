@@ -942,13 +942,13 @@ install_font_peer(cairo_t *cr,
       if (debug) printf ("install_font_peer made new cairo font for '%s' at %f\n", 
 			 face->family_name,
 			 (pango_font_description_get_size (pfont->desc) / 
-			  (double)PANGO_SCALE) * (96.0 / 72.0));
+			  (double)PANGO_SCALE));
     
       cairo_set_font (cr, ft); 
       cairo_font_destroy (ft);
       cairo_scale_font (cr, 
 			(pango_font_description_get_size (pfont->desc) / 
-			 (double)PANGO_SCALE) * (96.0 / 72.0));
+			 (double)PANGO_SCALE));
       ft = cairo_current_font (cr);
       pfont->graphics_resource = ft;
     }
@@ -957,20 +957,6 @@ install_font_peer(cairo_t *cr,
       if (debug) printf ("install_font_peer reused existing font resource\n");
       ft = (cairo_font_t *) pfont->graphics_resource;
       cairo_set_font (cr, ft);       
-    }
-}
-
-static cairo_t *metrics_cairo = NULL;
-static cairo_surface_t *metrics_surface = NULL;
-
-static void
-ensure_metrics_cairo()
-{
-  if (metrics_cairo == NULL)
-    {
-      metrics_cairo = cairo_create ();
-      metrics_surface = cairo_image_surface_create (CAIRO_FORMAT_A8, 1, 1);
-      cairo_set_target_surface (metrics_cairo, metrics_surface);
     }
 }
 
@@ -991,78 +977,6 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_releasePeerGraphicsResource
       cairo_font_destroy ((cairo_font_t *) pfont->graphics_resource);
       pfont->graphics_resource = NULL;
     }
-  gdk_threads_leave();
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GdkGraphics2D_getPeerTextMetrics
-   (JNIEnv *env, jclass clazz __attribute__ ((unused)), jobject java_font, jstring str, jdoubleArray java_metrics)
-{
-  struct peerfont *pfont = NULL;
-  const char *cstr = NULL;
-  jdouble *native_metrics = NULL;
-  cairo_text_extents_t extents;
-
-  g_assert(java_font != NULL);
-  gdk_threads_enter();
-
-  pfont = (struct peerfont *)NSA_GET_FONT_PTR (env, java_font);
-  g_assert (pfont != NULL);
-
-  ensure_metrics_cairo();
-  install_font_peer (metrics_cairo, pfont, 0);
-
-  cstr = (*env)->GetStringUTFChars (env, str, NULL);
-  g_assert(cstr != NULL);
-  cairo_text_extents (metrics_cairo, (unsigned char *) cstr, &extents);
-
-  native_metrics = (*env)->GetDoubleArrayElements (env, java_metrics, NULL);
-  g_assert (native_metrics != NULL);
-
-  native_metrics[TEXT_METRICS_X_BEARING] = extents.x_bearing;
-  native_metrics[TEXT_METRICS_Y_BEARING] = extents.y_bearing;
-  native_metrics[TEXT_METRICS_WIDTH] = extents.width;
-  native_metrics[TEXT_METRICS_HEIGHT] = extents.height;
-  native_metrics[TEXT_METRICS_X_ADVANCE] = extents.x_advance;
-  native_metrics[TEXT_METRICS_Y_ADVANCE] = extents.y_advance;
-	 
-  (*env)->ReleaseStringUTFChars (env, str, cstr);  
-  (*env)->ReleaseDoubleArrayElements (env, java_metrics, native_metrics, 0);
-  gdk_threads_leave();
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GdkGraphics2D_getPeerFontMetrics
-   (JNIEnv *env, jclass clazz __attribute__ ((unused)), jobject java_font, jdoubleArray java_metrics)
-{
-  struct peerfont *pfont = NULL;
-  jdouble *native_metrics = NULL;
-  cairo_font_extents_t extents;
-
-  g_assert(java_font != NULL);
-
-  gdk_threads_enter();
-
-  pfont = (struct peerfont *)NSA_GET_FONT_PTR (env, java_font);
-  g_assert (pfont != NULL);
-
-  ensure_metrics_cairo();
-  install_font_peer (metrics_cairo, pfont, 0);
-
-  cairo_current_font_extents (metrics_cairo, &extents); 
-
-  native_metrics = (*env)->GetDoubleArrayElements (env, java_metrics, NULL);
-  g_assert (native_metrics != NULL);
-
-  native_metrics[FONT_METRICS_ASCENT] = extents.ascent;
-  native_metrics[FONT_METRICS_MAX_ASCENT] = extents.ascent;
-  native_metrics[FONT_METRICS_DESCENT] = extents.descent;
-  if (native_metrics[FONT_METRICS_DESCENT] < 0)
-    native_metrics[FONT_METRICS_DESCENT] = - native_metrics[FONT_METRICS_DESCENT];
-  native_metrics[FONT_METRICS_MAX_DESCENT] = native_metrics[FONT_METRICS_DESCENT];
-  native_metrics[FONT_METRICS_MAX_ADVANCE] = extents.max_x_advance;
-
-  (*env)->ReleaseDoubleArrayElements (env, java_metrics, native_metrics, 0);
   gdk_threads_leave();
 }
 
@@ -1122,128 +1036,65 @@ paint_glyph_run(JNIEnv *env,
     }
 }
 
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoDrawString
-  (JNIEnv *env, jobject obj, jobject font, jstring str, float x, float y)
-{
-  struct graphics2d *gr = NULL;
-  const char *cstr = NULL;
-  struct peerfont *pfont = NULL;
-
-  /*
-  cairo_glyph_t *glyphs = NULL;
-  gint n_glyphs = 0;
-  PangoLayoutRun *run = NULL;
-  PangoLayoutIter *iter = NULL;
-  */
-
-  g_assert(obj != NULL);
-  g_assert(font != NULL);
-  g_assert(str != NULL);
-
-  gdk_threads_enter ();
-  if (peer_is_disposed(env, obj)) { gdk_threads_leave(); return; }
-
-  gr = (struct graphics2d *) NSA_GET_G2D_PTR (env, obj);
-  g_assert(gr != NULL);
-
-  pfont = (struct peerfont *) NSA_GET_FONT_PTR (env, font);
-  g_assert (pfont != NULL);
-
-  cstr = (*env)->GetStringUTFChars (env, str, NULL);
-  g_assert(cstr != NULL);
-
-  if (gr->debug) printf ("painting string '%s' at (%f,%f)\n", cstr, x, y);
-
-  /* For now we let cairo do the glyph conversion; eventually this
-   * ought to be unified with pango, but it is impossible to get
-   * pango and cairo to agree on metrics at the moment, so we either
-   * have to use "all cairo" metrics (the string-based APIs) or 
-   * "all pango" metrics (the glyph-vector based APIs). 
-   */
-
-  install_font_peer (gr->cr, pfont, gr->debug);
-  cairo_move_to (gr->cr, x, y);
-  cairo_show_text (gr->cr, (unsigned char *) cstr);
-  
-  /*
-    
-  pango_layout_set_text (gr->pango_layout, cstr, -1);
-
-  iter = pango_layout_get_iter (gr->pango_layout);
-  g_assert(iter != NULL);
-
-  cairo_translate (gr->cr, x, y);
-
-  do 
-    {
-      run = pango_layout_iter_get_run (iter);
-      if (run != NULL)
-	paint_glyph_run (gr, &glyphs, &n_glyphs, run);
-    } 
-  while (pango_layout_iter_next_run (iter));
-  
-  if (glyphs != NULL)
-    g_free (glyphs);
-
-  cairo_translate (gr->cr, -x, -y);
-  
-  pango_layout_iter_free (iter);
-
-  */
-
-  gdk_threads_leave ();
-
-  (*env)->ReleaseStringUTFChars (env, str, cstr);
-}
-
 
 JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoDrawGdkGlyphVector
-   (JNIEnv *env, jobject self, jobject font, jobject java_vec, jfloat x, jfloat y)
+Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoDrawGlyphVector
+   (JNIEnv *env, jobject self, 
+    jobject font,
+    jfloat x, jfloat y, jint n,
+    jintArray java_codes,
+    jfloatArray java_positions)
 {
   
   struct graphics2d *gr = NULL;
   struct peerfont *pfont = NULL;
-  struct glyphvec *gv = NULL;
-  PangoLayoutRun *run = NULL;
   cairo_glyph_t *glyphs = NULL;
-  gint n_glyphs = 0;
+  int *native_codes;
+  float *native_positions;
+  jint i = 0;
 
   g_assert (self != NULL);
-  g_assert (java_vec != NULL);
+  g_assert (java_codes != NULL);
+  g_assert (java_positions != NULL);
 
   gdk_threads_enter ();
   if (peer_is_disposed(env, self)) { gdk_threads_leave(); return; }
 
   gr = (struct graphics2d *)NSA_GET_G2D_PTR (env, self);
-  gv = (struct glyphvec *)NSA_GET_GV_PTR (env, java_vec);
-  pfont = (struct peerfont *) NSA_GET_FONT_PTR (env, font);
-
   g_assert (gr != NULL);
-  g_assert (gv != NULL);
+
+  pfont = (struct peerfont *)NSA_GET_FONT_PTR (env, font);
   g_assert (pfont != NULL);
 
-  if (gr->debug) printf ("painting pango glyph vector\n");
+  install_font_peer(gr->cr, pfont, gr->debug);
 
-  install_font_peer (gr->cr, pfont, gr->debug);
-  cairo_translate (gr->cr, x, y);
+  glyphs = malloc( sizeof(cairo_glyph_t) * n);
+  g_assert (glyphs != NULL);
 
-  /* nb. PangoLayoutRun is a typedef for PangoGlyphItem. */
-  run = (PangoLayoutRun *) gv->glyphitems;
-  if (run != NULL)
-    paint_glyph_run (env, gr, &glyphs, &n_glyphs, run);
+  native_codes = (*env)->GetIntArrayElements (env, java_codes, NULL);
+  native_positions = (*env)->GetFloatArrayElements (env, java_positions, NULL);
+  
+  for (i = 0; i < n; ++i)
+    {
+      glyphs[i].index = native_codes[i];
+      glyphs[i].x = x + native_positions[ 2*i ];
+      glyphs[i].y = y + native_positions[ 2*i + 1];
+    }
 
-  if (glyphs != NULL)
-    g_free (glyphs);
+  (*env)->ReleaseFloatArrayElements (env, java_positions, native_positions, 0);
+  (*env)->ReleaseIntArrayElements (env, java_codes, native_codes, 0);
 
-  cairo_translate (gr->cr, -x, -y);
+  begin_drawing_operation (env, gr);  
+  cairo_show_glyphs (gr->cr, glyphs, n);
+  end_drawing_operation (env, gr);
+
   gdk_threads_leave ();  
+  free(glyphs);
 }
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoDrawGdkTextLayout
-   (JNIEnv *env, jobject self, jobject font, jobject java_layout, jfloat x, jfloat y)
+   (JNIEnv *env, jobject self, jobject java_layout, jfloat x, jfloat y)
 {
   /* 
    * FIXME: Some day we expect either cairo or pango will know how to make
@@ -1251,7 +1102,6 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoDrawGdkTextLayout
    */
 
   struct graphics2d *gr = NULL;
-  struct peerfont *pfont = NULL;
   struct textlayout *tl = NULL;
   PangoLayoutIter *i = NULL;
   PangoLayoutRun *run = NULL;
@@ -1263,12 +1113,10 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoDrawGdkTextLayout
 
   gr = (struct graphics2d *)NSA_GET_G2D_PTR (env, self);
   tl = (struct textlayout *)NSA_GET_TEXT_LAYOUT_PTR (env, java_layout);
-  pfont = (struct peerfont *) NSA_GET_FONT_PTR (env, font);
 
   g_assert (gr != NULL);
   g_assert (tl != NULL);
   g_assert (tl->pango_layout != NULL);
-  g_assert (pfont != NULL);
 
   if (gr->debug) printf ("painting pango layout\n");
 
@@ -1278,7 +1126,6 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoDrawGdkTextLayout
   i = pango_layout_get_iter (tl->pango_layout);
   g_assert (i != NULL);
 
-  install_font_peer (gr->cr, pfont, gr->debug);
   cairo_translate (gr->cr, x, y);
 
   do 

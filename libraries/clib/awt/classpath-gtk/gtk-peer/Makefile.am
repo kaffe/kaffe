@@ -3,7 +3,6 @@ native_LTLIBRARIES = libgtkpeer.la
 # Gtk/Cairo JNI sources.
 if GTK_CAIRO
 gtk_cairo_c_source_files = \
-	gnu_java_awt_peer_gtk_GdkGlyphVector.c \
 	gnu_java_awt_peer_gtk_GdkGraphics2D.c
 endif
 
@@ -12,7 +11,6 @@ libgtkpeer_la_SOURCES = \
 	gdkfont.h \
 	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c \
 	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h \
-	gnu_java_awt_peer_gtk_GdkFontMetrics.c \
 	gnu_java_awt_peer_gtk_GdkFontPeer.c \
 	gnu_java_awt_peer_gtk_GdkGraphics.c \
 	gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c \

@@ -81,6 +81,9 @@ public class GdkFontPeer extends ClasspathFontPeer
   private native void dispose ();
   private native void setFont (String family, int style, int size, boolean useGraphics2D);
 
+  native void getFontMetrics(double [] metrics);
+  native void getTextMetrics(String str, double [] metrics);
+
   protected void finalize ()
   {
     if (GtkToolkit.useGraphics2D ())
@@ -158,26 +161,33 @@ public class GdkFontPeer extends ClasspathFontPeer
 
   public boolean canDisplay (Font font, char c)
   {
-    throw new UnsupportedOperationException ();
+    // FIXME: inquire with pango
+    return true;
   }
 
   public int canDisplayUpTo (Font font, CharacterIterator i, int start, int limit)
   {
-    throw new UnsupportedOperationException ();
+    // FIXME: inquire with pango
+    return -1;
   }
+  
+  private native GdkGlyphVector getGlyphVector(String txt, 
+                                               Font f, 
+                                               FontRenderContext ctx);
 
   public GlyphVector createGlyphVector (Font font, 
                                         FontRenderContext ctx, 
                                         CharacterIterator i)
   {
-    return new GdkGlyphVector(font, this, ctx, buildString (i));
+    return getGlyphVector(buildString (i), font, ctx);
   }
 
   public GlyphVector createGlyphVector (Font font, 
                                         FontRenderContext ctx, 
                                         int[] glyphCodes)
   {
-    return new GdkGlyphVector (font, this, ctx, glyphCodes);
+    return null;
+    //    return new GdkGlyphVector (font, this, ctx, glyphCodes);
   }
 
   public byte getBaselineFor (Font font, char c)
@@ -259,7 +269,8 @@ public class GdkFontPeer extends ClasspathFontPeer
   public Rectangle2D getStringBounds (Font font, CharacterIterator ci, 
                                       int begin, int limit, FontRenderContext frc)
   {
-    throw new UnsupportedOperationException ();
+    GdkGlyphVector gv = getGlyphVector(buildString (ci, begin, limit), font, frc);
+    return gv.getVisualBounds();
   }
 
   public boolean hasUniformLineMetrics (Font font)
