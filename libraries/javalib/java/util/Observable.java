@@ -1,128 +1,72 @@
-package java.util;
-
 
 /*
  * Java core library component.
  *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 1999
+ *	Archie L. Cobbs.  All rights reserved.
+ * Copyright (c) 1999
+ *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
+ *
+ * Author: Archie L. Cobbs <archie@whistle.com>
  */
-public class Observable
-{
-	Observer client;
-	boolean hasChanged;
 
-public Observable() {
-}
+package java.util;
 
-public synchronized void addObserver ( Observer newClient ) {
-	ObservableClient oc;
+public class Observable {
+	private final List observers;
+	private boolean changed;
 
-	if ( client == null ) {       // this is the first one (standard case)
-		client = newClient;
+	public Observable() {
+		observers = new ArrayList();
+		changed = false;
 	}
-	else {
-		if ( client == newClient )  // are you kidding? we don't add twice
-			return;
 
-		if ( client instanceof ObservableClient ){ // third and subsequent clients
-			for ( oc = (ObservableClient)client; oc.next != null; oc = oc.next );
-			oc.next = new ObservableClient( newClient);
-		}
-		else {                      // second client, open a list
-			oc = new ObservableClient( client);
-			oc.next = new ObservableClient( newClient);
-			client = oc;
+	public synchronized void addObserver(Observer o) {
+		observers.add(o);
+	}
+
+	public synchronized void deleteObserver(Observer o) {
+		int index = observers.indexOf(o);
+		if (index != -1) {
+			observers.remove(index);
 		}
 	}
-}
 
-protected void clearChanged(){
-	hasChanged = false;
-}
-
-public synchronized int countObservers(){
-	ObservableClient oc;
-	int n;
-	
-	if ( client == null ) return 0;
-	
-	if ( client instanceof ObservableClient ) {
-		for ( oc=(ObservableClient)client, n=1; oc.next != null; oc = oc.next, n++ );
-		return n;
+	public void notifyObservers() {
+		notifyObservers(null);
 	}
-	else {
-		return 1;
-	}
-}
 
-public synchronized void deleteObserver ( Observer oldClient ) {
-	ObservableClient oc;
-	
-	if ( client != null ) {
-		if ( client instanceof ObservableClient ) {
-			oc = (ObservableClient)client;
-			
-			if ( (oc.client == oldClient) && (oc.next == null ) ){
-				client = null;
+	public synchronized void notifyObservers(Object arg) {
+		if (changed) {
+			for (Iterator i = observers.listIterator();
+			    i.hasNext(); ) {
+				((Observer)i.next()).update(this, arg);
 			}
-			else {
-				for ( ;oc.next != null; oc = oc.next ){
-					if ( oc.next.client == oldClient ){
-						oc.next = oc.next.next;
-						break;
-					}
-				}
-			}
+			clearChanged();
 		}
-		else {
-			if ( client == oldClient )
-				client = null;
-		}
+	}
+
+	public synchronized void deleteObservers() {
+		observers.clear();
+	}
+
+	protected void setChanged() {
+		changed = true;
+	}
+
+	protected void clearChanged() {
+		changed = false;
+	}
+
+	public boolean hasChanged() {
+		return changed;
+	}
+
+	public synchronized int countObservers() {
+		return observers.size();
 	}
 }
 
-public synchronized void deleteObservers(){
-	client = null;
-}
-
-public boolean hasChanged(){
-	return hasChanged;
-}
-
-public void notifyObservers () {
-	notifyObservers( null);
-}
-
-public synchronized void notifyObservers ( Object arg ) {
-	if ( hasChanged && (client != null) ) {
-		client.update( this, arg);
-		hasChanged = false;
-	}
-}
-
-protected void setChanged () {
-	hasChanged = true;
-}
-}
-
-class ObservableClient
-  implements Observer
-{
-	Observer client;
-	ObservableClient next;
-
-ObservableClient ( Observer client ) {
-	this.client = client;
-}
-
-public void update ( Observable server, Object arg ) {
-	ObservableClient oc;
-	
-	for ( oc = this; oc != null; oc = oc.next )
-		oc.client.update( server, arg);
-}
-}
