@@ -68,6 +68,7 @@ Method: public static java.lang.String java.lang.System.getProperty(java.lang.St
 Method: public static java.lang.String java.lang.System.getProperty(java.lang.String,java.lang.String)
 Method: public static java.lang.String java.lang.System.getenv(java.lang.String)
 Method: public static java.lang.String java.lang.System.mapLibraryName(java.lang.String)
+Method: public static java.lang.String java.lang.System.setProperty(java.lang.String,java.lang.String)
 Method: public static java.util.Properties java.lang.System.getProperties()
 Method: public static native int java.lang.System.identityHashCode(java.lang.Object)
 Method: public static native long java.lang.System.currentTimeMillis()
