@@ -87,9 +87,7 @@
     { java_net_SocketOptions_SO_TIMEOUT, "SO_TIMEOUT" },
     { java_net_SocketOptions_IP_MULTICAST_IF, "IP_MULTICAST_IF" }
   };
-#endif /* KAFFE_VMDEBUG */
 
-#ifdef KAFFE_VMDEBUG
 static char *
 ip2str(jint addr) 
 {
@@ -126,7 +124,7 @@ ip62str(struct in6_addr *addr)
 	}
 	return addrbuf;
 }
-#endif /* KAFFE_VMDEBUG */
+#endif /* defined(KAFFE_VMDEBUG) && !defined(NDEBUG) */
 
 /*
  * Create a stream or datagram socket.
