@@ -83,9 +83,8 @@ char* dlerror(void);
 #define	LIBRARYFUNCTION(FUNC, SYM)					\
 	{								\
 		shl_t all_libs = 0;					\
-		if (!shl_findsym(&all_libs,SYM,TYPE_PROCEDURE,&FUNC))	\
+		if (shl_findsym(&all_libs,SYM,TYPE_PROCEDURE,&FUNC))	\
 			FUNC = 0;					\
-		}							\
 	}
 #define	LIBRARYHANDLE	shl_t
 #define	LIBRARYERROR()	"No specific error support"
