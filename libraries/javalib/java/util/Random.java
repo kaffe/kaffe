@@ -12,80 +12,110 @@ package java.util;
 
 import java.lang.System;
 
-public class Random
+/**
+ * This is implemented as described on pages 646 and up in the JLS
+ * by Gosling, Steel, and Joy.  It says "Java must use all the algorithms
+ * shown here for the class Random, for the sake of absolute portability
+ * of Java code."
+ */
+public class Random implements java.io.Serializable
 {
-	private long seed;
-	final private long p1 = 3141592653L;
-	final private long p2 = 2718281829L;
-	final private long mod = 34359738368L;
+	protected long seed;
+	protected boolean haveNextNextGaussian;
+	protected double nextNextGaussian;
 
-public Random()
-	{
+	final private long p1 = 0x5DEECE66DL;
+	final private long p2 = 0xBL;
+	final private long mask = ((1L << 48) - 1);
+
+public Random() {
 	this(System.currentTimeMillis());
 }
 
-public Random(long seed)
-	{
-	this.seed = seed;
+public Random(long seed) {
+	/* To call a non-final method from a constructor is bad programming 
+	 * practice.  However, we must do it because the JLS says so.
+	 */
+	setSeed(seed);
 }
 
-public long next()
-	{
-	seed = ((p1 * seed) + p2) % mod;
-	return (seed);
+protected int next(int bits) {
+	seed = ((p1 * seed) + p2) & mask;
+	return ((int)(seed >>> (48 - bits)));
 }
 
-public void nextBytes(byte[] bytes)
-	{
-	for (int i = 0; i < bytes.length; i++) {
-		bytes[i] = (byte)next();
-	}
+public void nextBytes(byte[] bytes) {
+	try {
+		for (int i = 0; i < bytes.length; i += 4) {
+			int next = next(32);
+			bytes[i + 0] = (byte)(next);
+			bytes[i + 1] = (byte)(next >> 8);
+			bytes[i + 2] = (byte)(next >> 16);
+			bytes[i + 3] = (byte)(next >> 24);
+		}
+	} catch (ArrayIndexOutOfBoundsException _) { }
 }
 
 public double nextDouble() {
-	return ((((double)next()/(double)mod)) + 1) / 2;
-//	return ((double)next()/(double)mod);
+	return ((((long)next(26) << 27) + next(27)) / (double)(1L << 53));
+}
+
+public boolean nextBoolean() {
+	return (next(1) != 0);
 }
 
 public float nextFloat() {
-	return ((((float)next()/(float)mod)) + 1) / 2;
-//	return ((float)next()/(float)mod);
+	return (next(24) / ((float)(1 << 24)));
 }
 
-public double nextGaussian()
-	{
-	/* Generate Normally distributed coords from Uniform vars */
-	/* From: "The Art Of Computer Programming" Knuth. Vol 2. Pg 117 */
+public double nextGaussian() {
+	if (haveNextNextGaussian) {
+		haveNextNextGaussian = false;
+		return nextNextGaussian;
+	} else {
+		double s;
+		double v1, v2;
 
-	/* Since we only need one coord, the other isn't calculated */
-	double s;
-	double v1, v2;
+		do {
+			v1 = (nextDouble()*2.0)-1.0;
+			v2 = (nextDouble()*2.0)-1.0;
 
-	do {
-		v1=(nextDouble()*2.0)-1.0;
-		v2=(nextDouble()*2.0)-1.0;
+			s = v1*v1+v2*v2;
+		} while (s>=1);
 
-		s=v1*v1+v2*v2;
+		double norm = Math.sqrt(-2 * Math.log(s)/s);
+		nextNextGaussian = v2 * norm;
+		haveNextNextGaussian = true;
+		return (v1 * norm);
 	}
-	while (s>=1);
-
-	double lnS=Math.log(s)/Math.log(Math.E);
-
-	return (v1*Math.sqrt((-2.0*lnS)/s));
 }
 
-public int nextInt()
-	{
-	return ((int)next());
+public int nextInt() {
+	return (next(32));
 }
 
-public long nextLong()
-	{
-	return (next());
+public int nextInt(int n) {     
+	if (n <= 0) {
+		throw new IllegalArgumentException("n must be positive: " + n);
+	}
+
+	if ((n & -n) == n)  {
+		return ((int)((n * (long)next(31)) >> 31));
+	}
+	int bits, val;
+	do {
+		bits = next(31);
+		val = bits % n;
+	} while (bits - val + (n-1) < 0);     
+	return (val); 
 }
 
-public void setSeed(long seed)
-	{
-	this.seed = seed;
+public long nextLong() {
+	return (((long)next(32) << 32) + next(32));
+}
+
+synchronized public void setSeed(long seed) {
+    this.seed = (seed ^ p1) & mask;
+    haveNextNextGaussian = false;
 }
 }
