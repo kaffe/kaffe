@@ -41,8 +41,8 @@
 #define	cvt_long_int(t, f)			(t)[0].v.tint = (f)[0].v.tlong
 #define	cvt_long_float(t, f)			(t)[0].v.tfloat = (f)[0].v.tlong
 #define	cvt_long_double(t, f)			(t)[0].v.tdouble = (f)[0].v.tlong
-#define	cvt_float_long(t, f)			(t)[0].v.tlong = floor((f)[0].v.tfloat)
-#define	cvt_double_long(t, f)			(t)[0].v.tlong = floor((f)[0].v.tdouble)
+#define	cvt_float_long(t, f)			(t)[0].v.tlong = soft_cvtfl((f)[0].v.tfloat)
+#define	cvt_double_long(t, f)			(t)[0].v.tlong = soft_cvtdl((f)[0].v.tdouble)
 
 #define	move_int_const(t, c)			(t)[0].v.tint = (c)
 #define	move_ref_const(t, c)			(t)[0].v.taddr = (void*)(c)
@@ -272,9 +272,9 @@
 
 #define	cvt_int_float(t, f)			(t)[0].v.tfloat = (f)[0].v.tint
 #define	cvt_int_double(t, f)			(t)[0].v.tdouble = (f)[0].v.tint
-#define	cvt_float_int(t, f)			(t)[0].v.tint = floor((f)[0].v.tfloat)
+#define	cvt_float_int(t, f)			(t)[0].v.tint = soft_cvtfi((f)[0].v.tfloat)
 #define	cvt_float_double(t, f)			(t)[0].v.tdouble = (f)[0].v.tfloat
-#define	cvt_double_int(t, f)			(t)[0].v.tint = floor((f)[0].v.tdouble)
+#define	cvt_double_int(t, f)			(t)[0].v.tint = soft_cvtdi((f)[0].v.tdouble)
 #define	cvt_double_float(t, f)			(t)[0].v.tfloat = (f)[0].v.tdouble
 
 #define	softcall_lookupinterfacemethod(r, n, t)	(r)[0].v.taddr = soft_lookupinterfacemethod((t)[0].v.taddr, (n)->class, (n)->idx)
