@@ -428,20 +428,6 @@ Autoconf/automake macros taken from ALSA CVS.  Licensed under the GPL/LGPL.
 
 Autoconf macros taken from GNOME ESounD CVS. Licensed under the GPL/LGPL.
 
-* libraries/javalib/kjc.jar
-
-Kopi Java Compiler 2.1B with kaffe specific patches and bugfixes. Kjc is
-part of the Kopi project from DMS. It is licensed under the GNU General
-Public License. See license.terms for details.
-
-More information on the Kopi project is available from 
-http://www.dms.at/kopi/index.html.
-
-The sources for the original kjc 2.1B compiler are available from DMS at 
-the above URL. Patches from kaffe developers to kjc are available in the 
-kaffe-extras repository of the kaffe.org CVS server. A CVS module dedicated to
-KJC is available on the kaffe.org CVS server.
-
 * m4/ac_prog_antlr.m4
 
 Autoconf macro taken from Gjdoc CVS HEAD. 
