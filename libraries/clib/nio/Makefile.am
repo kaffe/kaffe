@@ -24,8 +24,7 @@ libnio_la_LDFLAGS = \
 libnio_la_SOURCES = \
 	java_nio_VMDirectByteBuffer.c \
 	SelectorImpl.c \
-	FileChannelImpl.c \
-	Channels.c
+	FileChannelImpl.c
 
 libnio_la_DEPENDENCIES = \
         $(top_builddir)/libraries/clib/classpath/libclasspath.la

@@ -1,5 +1,5 @@
 /* Channels.java --
-   Copyright (C) 2002, 2003, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,16 +35,12 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.nio.channels;
 
-import gnu.java.nio.ChannelInputStream;
-import gnu.java.nio.ChannelOutputStream;
 import gnu.java.nio.InputStreamChannel;
 import gnu.java.nio.OutputStreamChannel;
-import gnu.java.nio.channels.FileChannelImpl;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -62,16 +58,17 @@ public final class Channels
   /**
    * This class isn't intended to be instantiated.
    */
-  private Channels() {}
+  private Channels()
+  {
+    // Do nothing here.
+  }
 
   /**
    * Constructs a stream that reads bytes from the given channel.
    */
   public static InputStream newInputStream(ReadableByteChannel ch)
   {
-    if (ch instanceof FileChannelImpl)
-      return newInputStream((FileChannelImpl) ch);
-    return new ChannelInputStream(ch);
+    return VMChannels.newInputStream(ch);
   }
 
   /**
@@ -79,14 +76,8 @@ public final class Channels
    */
   public static OutputStream newOutputStream(WritableByteChannel ch)
   {
-    if (ch instanceof FileChannelImpl)
-      return newOutputStream((FileChannelImpl) ch);
-    return new ChannelOutputStream(ch);
+    return VMChannels.newOutputStream(ch);
   }
-
-  static native FileInputStream newInputStream(FileChannelImpl ch);
-
-  static native FileOutputStream newOutputStream(FileChannelImpl ch);
 
   /**
    * Constructs a channel that reads bytes from the given stream.

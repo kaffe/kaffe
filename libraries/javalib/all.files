@@ -2050,6 +2050,7 @@ java/nio/channels/ServerSocketChannel.java
 java/nio/channels/SocketChannel.java
 java/nio/channels/UnresolvedAddressException.java
 java/nio/channels/UnsupportedAddressTypeException.java
+java/nio/channels/VMChannels.java
 java/nio/channels/WritableByteChannel.java
 java/nio/channels/spi/AbstractInterruptibleChannel.java
 java/nio/channels/spi/AbstractSelectableChannel.java

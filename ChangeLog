@@ -4,6 +4,26 @@
 	
 	2005-01-12  Michael Koch  <konqueror@gmx.de>
 
+	* java/nio/channels/Channels.java
+	(newInputStream(ReadableByteChannel)):
+	Call VMChannels.newInputStream(ReadableByteChannel).
+	(newOutputStream(WritableByteChannel):
+	Call VMChannels.newOutputStream(WritableByteChannel).
+	(newInputStream(FileChannelImpl)): Removed.
+	(newOutputStream(FileChannelImpl)): Likewise.
+	* vm/reference/java/nio/channels/VMChannels.java: Nw file.
+	* native/jni/java-nio/Makefile.am:
+	* native/jni/java-nio/java_nio_channels_Channels.c,
+	include/java_nio_channels_Channels.h: Removed.
+	* include/Makefile.am: Don't generate java_nio_channels_Channels.h.
+	Removed java_nio_channels_Channels.c.
+	
+2005-01-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-01-12  Michael Koch  <konqueror@gmx.de>
+
 	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
 	(Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetVisible):
 	Removed setting of gdk_env.

@@ -2518,6 +2518,7 @@ java_nio_channels_SRCS = \
 	java/nio/channels/SocketChannel.java \
 	java/nio/channels/UnresolvedAddressException.java \
 	java/nio/channels/UnsupportedAddressTypeException.java \
+	java/nio/channels/VMChannels.java \
 	java/nio/channels/WritableByteChannel.java
 java_nio_channels_spi_SRCS = \
 	java/nio/channels/spi/AbstractInterruptibleChannel.java \
