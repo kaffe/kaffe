@@ -399,7 +399,7 @@ void java_io_FileDescriptor_nativeSetLength(struct Hjava_io_FileDescriptor* this
     off_t cur;
     off_t oldPosition;
     char data = 0;
-    int ret;
+    ssize_t ret;
 
     /* Save the old file position */
     rc = KLSEEK(nativeFd, SEEK_CUR, 0, &oldPosition);
