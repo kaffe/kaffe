@@ -850,6 +850,7 @@ public class SimpleDateFormat extends DateFormat
 		  {
 		    found_zone = true;
 		    saw_timezone = true;
+		    calendar.set(Calendar.DST_OFFSET, 0);
 		    offset = simpleOffset.intValue();
 		  }
 		else
