@@ -730,6 +730,7 @@ kaffe_text_numberformat_SRCS = \
 	kaffe/text/numberformat/locale_en_US.java
 kaffe_util_SRCS = \
 	kaffe/util/Assert.java \
+	kaffe/util/Base64.java \
 	kaffe/util/DateParser.java \
 	kaffe/util/DateScanner.java \
 	kaffe/util/Deprecated.java \
