@@ -36,6 +36,13 @@ public StringCharacterIterator(String text, int begin, int end, int pos) {
 	this.end = end;
 }
 
+/** taken from GNU classpath. Needed for AttributedStringIterator */
+  StringCharacterIterator (StringCharacterIterator sci, int begin, int end)
+  {
+    this (sci.text, begin, end, begin);
+  }
+
+
 void setText(String text) {
 	this.text = text;
 	this.pos = 0;

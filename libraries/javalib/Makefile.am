@@ -16,6 +16,10 @@ jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
 
 Klasses_jar_SRCS = \
+	$(gnu_java_awt_SRCS) \
+	$(gnu_java_nio_SRCS) \
+	$(gnu_java_util_SRCS) \
+	$(gnu_java_util_prefs_SRCS) \
 	$(java_applet_SRCS) \
 	$(java_awt_SRCS) \
 	$(java_awt_color_SRCS) \
@@ -47,10 +51,10 @@ Klasses_jar_SRCS = \
 	$(java_text_SRCS) \
 	$(java_util_SRCS) \
 	$(java_util_jar_SRCS) \
+	$(java_util_logging_SRCS) \
 	$(java_util_mime_SRCS) \
+	$(java_util_prefs_SRCS) \
 	$(java_util_zip_SRCS) \
-	$(gnu_java_awt_SRCS) \
-	$(gnu_java_nio_SRCS) \
 	$(kaffe_applet_SRCS) \
 	$(kaffe_awt_SRCS) \
 	$(kaffe_beans_editors_SRCS) \
@@ -74,6 +78,26 @@ Klasses_jar_SRCS = \
 	$(kaffe_util_locale_SRCS) \
 	$(kaffe_util_log_SRCS) \
 	$(kaffe_util_zip_SRCS)
+gnu_java_awt_SRCS = \
+	gnu/java/awt/BitMaskExtent.java \
+	gnu/java/awt/Buffers.java \
+	gnu/java/awt/EventModifier.java
+gnu_java_nio_SRCS = \
+	gnu/java/nio/ByteBufferImpl.java \
+	gnu/java/nio/CharBufferImpl.java \
+	gnu/java/nio/DoubleBufferImpl.java \
+	gnu/java/nio/FloatBufferImpl.java \
+	gnu/java/nio/IntBufferImpl.java \
+	gnu/java/nio/LongBufferImpl.java \
+	gnu/java/nio/ShortBufferImpl.java
+gnu_java_util_SRCS = \
+	gnu/java/util/EmptyEnumeration.java
+gnu_java_util_prefs_SRCS = \
+	gnu/java/util/prefs/FileBasedFactory.java \
+	gnu/java/util/prefs/MemoryBasedFactory.java \
+	gnu/java/util/prefs/MemoryBasedPreferences.java \
+	gnu/java/util/prefs/NodeReader.java \
+	gnu/java/util/prefs/NodeWriter.java
 java_applet_SRCS = \
 	java/applet/Applet.java \
 	java/applet/AppletContext.java \
@@ -142,6 +166,8 @@ java_awt_SRCS = \
 	java/awt/OpaqueComponent.java \
 	java/awt/PSGraphics.java \
 	java/awt/PSPrintJob.java \
+	java/awt/Paint.java \
+	java/awt/PaintContext.java \
 	java/awt/PaintEvt.java \
 	java/awt/Panel.java \
 	java/awt/Point.java \
@@ -151,6 +177,7 @@ java_awt_SRCS = \
 	java/awt/PrintGraphics.java \
 	java/awt/PrintJob.java \
 	java/awt/Rectangle.java \
+	java/awt/RenderingHints.java \
 	java/awt/RootWindow.java \
 	java/awt/ScrollPane.java \
 	java/awt/Shape.java \
@@ -159,6 +186,7 @@ java_awt_SRCS = \
 	java/awt/SystemColor.java \
 	java/awt/TextEvt.java \
 	java/awt/Toolkit.java \
+	java/awt/Transparency.java \
 	java/awt/WMEvent.java \
 	java/awt/Window.java \
 	java/awt/WindowEvt.java
@@ -257,7 +285,12 @@ java_awt_geom_SRCS = \
 java_awt_image_SRCS = \
 	java/awt/image/AreaAveragingScaleFilter.java \
 	java/awt/image/ColorModel.java \
+	java/awt/image/ComponentSampleModel.java \
 	java/awt/image/CropImageFilter.java \
+	java/awt/image/DataBuffer.java \
+	java/awt/image/DataBufferByte.java \
+	java/awt/image/DataBufferInt.java \
+	java/awt/image/DataBufferUShort.java \
 	java/awt/image/DirectColorModel.java \
 	java/awt/image/FilteredImageSource.java \
 	java/awt/image/ImageConsumer.java \
@@ -268,7 +301,11 @@ java_awt_image_SRCS = \
 	java/awt/image/MemoryImageSource.java \
 	java/awt/image/PixelGrabber.java \
 	java/awt/image/RGBImageFilter.java \
-	java/awt/image/ReplicateScaleFilter.java
+	java/awt/image/Raster.java \
+	java/awt/image/ReplicateScaleFilter.java \
+	java/awt/image/SampleModel.java \
+	java/awt/image/SinglePixelPackedSampleModel.java \
+	java/awt/image/WritableRaster.java
 java_awt_peer_SRCS = \
 	java/awt/peer/ActiveEvent.java \
 	java/awt/peer/ComponentPeer.java \
@@ -302,12 +339,14 @@ java_awt_widgets_SRCS = \
 	java/awt/widgets/TextCursor.java \
 	java/awt/widgets/TextField.java
 java_beans_SRCS = \
+	java/beans/AppletInitializer.java \
 	java/beans/BeanDescriptor.java \
 	java/beans/BeanInfo.java \
 	java/beans/Beans.java \
 	java/beans/Customizer.java \
 	java/beans/DesignMode.java \
 	java/beans/EventSetDescriptor.java \
+	java/beans/ExceptionListener.java \
 	java/beans/FeatureDescriptor.java \
 	java/beans/GenericBeanInfo.java \
 	java/beans/IndexedPropertyDescriptor.java \
@@ -317,6 +356,7 @@ java_beans_SRCS = \
 	java/beans/ParameterDescriptor.java \
 	java/beans/PropertyChangeEvent.java \
 	java/beans/PropertyChangeListener.java \
+	java/beans/PropertyChangeListenerProxy.java \
 	java/beans/PropertyChangeSupport.java \
 	java/beans/PropertyDescriptor.java \
 	java/beans/PropertyEditor.java \
@@ -325,6 +365,7 @@ java_beans_SRCS = \
 	java/beans/PropertyVetoException.java \
 	java/beans/SimpleBeanInfo.java \
 	java/beans/VetoableChangeListener.java \
+	java/beans/VetoableChangeListenerProxy.java \
 	java/beans/VetoableChangeSupport.java \
 	java/beans/Visibility.java
 java_beans_beancontext_SRCS = \
@@ -427,8 +468,8 @@ java_lang_SRCS = \
 	java/lang/AssertionError.java \
 	java/lang/Boolean.java \
 	java/lang/Byte.java \
-	java/lang/Character.java \
 	java/lang/CharSequence.java \
+	java/lang/Character.java \
 	java/lang/Class.java \
 	java/lang/ClassCastException.java \
 	java/lang/ClassCircularityError.java \
@@ -485,6 +526,7 @@ java_lang_SRCS = \
 	java/lang/Short.java \
 	java/lang/StackOverflowError.java \
 	java/lang/StackTraceElement.java \
+	java/lang/StrictMath.java \
 	java/lang/String.java \
 	java/lang/StringBuffer.java \
 	java/lang/StringIndexOutOfBoundsException.java \
@@ -524,6 +566,7 @@ java_math_SRCS = \
 	java/math/BigDecimal.java \
 	java/math/BigInteger.java
 java_net_SRCS = \
+	java/net/Authenticator.java \
 	java/net/BindException.java \
 	java/net/ConnectException.java \
 	java/net/ContentHandler.java \
@@ -536,16 +579,20 @@ java_net_SRCS = \
 	java/net/HttpURLConnection.java \
 	java/net/InetAddress.java \
 	java/net/InetAddressImpl.java \
+	java/net/InetSocketAddress.java \
 	java/net/JarURLConnection.java \
 	java/net/MalformedURLException.java \
 	java/net/MulticastSocket.java \
 	java/net/NetPermission.java \
 	java/net/NoRouteToHostException.java \
+	java/net/PasswordAuthentication.java \
 	java/net/PlainDatagramSocketImpl.java \
 	java/net/PlainSocketImpl.java \
+	java/net/PortUnreachableException.java \
 	java/net/ProtocolException.java \
 	java/net/ServerSocket.java \
 	java/net/Socket.java \
+	java/net/SocketAddress.java \
 	java/net/SocketException.java \
 	java/net/SocketImpl.java \
 	java/net/SocketImplFactory.java \
@@ -553,6 +600,9 @@ java_net_SRCS = \
 	java/net/SocketOptions.java \
 	java/net/SocketOutputStream.java \
 	java/net/SocketPermission.java \
+	java/net/SocketTimeoutException.java \
+	java/net/URI.java \
+	java/net/URISyntaxException.java \
 	java/net/URL.java \
 	java/net/URLClassLoader.java \
 	java/net/URLConnection.java \
@@ -581,12 +631,14 @@ java_security_SRCS = \
 	java/security/AlgorithmParameterGeneratorSpi.java \
 	java/security/AlgorithmParameters.java \
 	java/security/AlgorithmParametersSpi.java \
+	java/security/AllPermission.java \
 	java/security/BasicPermission.java \
 	java/security/Certificate.java \
 	java/security/CodeSource.java \
 	java/security/DigestException.java \
 	java/security/DigestInputStream.java \
 	java/security/DigestOutputStream.java \
+	java/security/DomainCombiner.java \
 	java/security/GeneralSecurityException.java \
 	java/security/Guard.java \
 	java/security/GuardedObject.java \
@@ -629,8 +681,10 @@ java_security_SRCS = \
 	java/security/Signature.java \
 	java/security/SignatureException.java \
 	java/security/SignatureSpi.java \
+	java/security/SignedObject.java \
 	java/security/Signer.java \
-	java/security/UnrecoverableKeyException.java
+	java/security/UnrecoverableKeyException.java \
+	java/security/UnresolvedPermission.java
 java_security_acl_SRCS = \
 	java/security/acl/Acl.java \
 	java/security/acl/AclEntry.java \
@@ -643,6 +697,7 @@ java_security_acl_SRCS = \
 java_security_cert_SRCS = \
 	java/security/cert/CRL.java \
 	java/security/cert/CRLException.java \
+	java/security/cert/CertStoreException.java \
 	java/security/cert/Certificate.java \
 	java/security/cert/CertificateEncodingException.java \
 	java/security/cert/CertificateException.java \
@@ -651,7 +706,6 @@ java_security_cert_SRCS = \
 	java/security/cert/CertificateFactorySpi.java \
 	java/security/cert/CertificateNotYetValidException.java \
 	java/security/cert/CertificateParsingException.java \
-	java/security/cert/CertStoreException.java \
 	java/security/cert/X509CRL.java \
 	java/security/cert/X509CRLEntry.java \
 	java/security/cert/X509Certificate.java \
@@ -683,6 +737,7 @@ java_security_spec_SRCS = \
 	java/security/spec/X509EncodedKeySpec.java
 java_sql_SRCS = \
 	java/sql/Array.java \
+	java/sql/BatchUpdateException.java \
 	java/sql/Blob.java \
 	java/sql/CallableStatement.java \
 	java/sql/Clob.java \
@@ -693,18 +748,28 @@ java_sql_SRCS = \
 	java/sql/Driver.java \
 	java/sql/DriverManager.java \
 	java/sql/DriverPropertyInfo.java \
+	java/sql/ParameterMetaData.java \
 	java/sql/PreparedStatement.java \
+	java/sql/Ref.java \
 	java/sql/ResultSet.java \
 	java/sql/ResultSetMetaData.java \
+	java/sql/SQLData.java \
 	java/sql/SQLException.java \
+	java/sql/SQLInput.java \
+	java/sql/SQLOutput.java \
+	java/sql/SQLPermission.java \
 	java/sql/SQLWarning.java \
+	java/sql/Savepoint.java \
 	java/sql/Statement.java \
+	java/sql/Struct.java \
 	java/sql/Time.java \
 	java/sql/Timestamp.java \
 	java/sql/Types.java
 java_text_SRCS = \
 	java/text/Annotation.java \
 	java/text/AttributedCharacterIterator.java \
+	java/text/AttributedString.java \
+	java/text/AttributedStringIterator.java \
 	java/text/BreakIterator.java \
 	java/text/CharacterIterator.java \
 	java/text/ChoiceFormat.java \
@@ -749,6 +814,7 @@ java_util_SRCS = \
 	java/util/EmptyStackException.java \
 	java/util/Enumeration.java \
 	java/util/EventListener.java \
+	java/util/EventListenerProxy.java \
 	java/util/EventObject.java \
 	java/util/GregorianCalendar.java \
 	java/util/HashMap.java \
@@ -767,6 +833,8 @@ java_util_SRCS = \
 	java/util/Observable.java \
 	java/util/Observer.java \
 	java/util/Properties.java \
+	java/util/PropertyPermission.java \
+	java/util/PropertyPermissionCollection.java \
 	java/util/PropertyResourceBundle.java \
 	java/util/Random.java \
 	java/util/ResourceBundle.java \
@@ -792,10 +860,36 @@ java_util_jar_SRCS = \
 	java/util/jar/JarInputStream.java \
 	java/util/jar/JarOutputStream.java \
 	java/util/jar/Manifest.java
+java_util_logging_SRCS = \
+	java/util/logging/ConsoleHandler.java \
+	java/util/logging/ErrorManager.java \
+	java/util/logging/FileHandler.java \
+	java/util/logging/Filter.java \
+	java/util/logging/Formatter.java \
+	java/util/logging/Handler.java \
+	java/util/logging/Level.java \
+	java/util/logging/LogManager.java \
+	java/util/logging/LogRecord.java \
+	java/util/logging/Logger.java \
+	java/util/logging/LoggingPermission.java \
+	java/util/logging/MemoryHandler.java \
+	java/util/logging/SimpleFormatter.java \
+	java/util/logging/StreamHandler.java \
+	java/util/logging/XMLFormatter.java
 java_util_mime_SRCS = \
 	java/util/mime/MimeType.java \
 	java/util/mime/MimeTypeParameterList.java \
 	java/util/mime/MimeTypeParseException.java
+java_util_prefs_SRCS = \
+	java/util/prefs/AbstractPreferences.java \
+	java/util/prefs/BackingStoreException.java \
+	java/util/prefs/InvalidPreferencesFormatException.java \
+	java/util/prefs/NodeChangeEvent.java \
+	java/util/prefs/NodeChangeListener.java \
+	java/util/prefs/PreferenceChangeEvent.java \
+	java/util/prefs/PreferenceChangeListener.java \
+	java/util/prefs/Preferences.java \
+	java/util/prefs/PreferencesFactory.java
 java_util_zip_SRCS = \
 	java/util/zip/Adler32.java \
 	java/util/zip/CRC32.java \
@@ -815,16 +909,6 @@ java_util_zip_SRCS = \
 	java/util/zip/ZipFile.java \
 	java/util/zip/ZipInputStream.java \
 	java/util/zip/ZipOutputStream.java
-gnu_java_awt_SRCS = \
-	gnu/java/awt/EventModifier.java
-gnu_java_nio_SRCS = \
-	gnu/java/nio/ByteBufferImpl.java \
-	gnu/java/nio/CharBufferImpl.java \
-	gnu/java/nio/DoubleBufferImpl.java \
-	gnu/java/nio/FloatBufferImpl.java \
-	gnu/java/nio/IntBufferImpl.java \
-	gnu/java/nio/LongBufferImpl.java \
-	gnu/java/nio/ShortBufferImpl.java
 kaffe_applet_SRCS = \
 	kaffe/applet/AppletTag.java \
 	kaffe/applet/AppletViewer.java \
@@ -1015,143 +1099,6 @@ java_awt_win32_SRCS = \
 	java/awt/win32/WMEvent.java \
 	java/awt/win32/Window.java
 
-kaffe_jar_SRCS = \
-	kaffe/jar/ExecJar.java \
-	kaffe/jar/ExecJarName.java
-kaffe_lang_SRCS = \
-	kaffe/lang/Application.java \
-	kaffe/lang/ApplicationException.java \
-	kaffe/lang/ApplicationResource.java \
-	kaffe/lang/ClassPathReader.java \
-	kaffe/lang/DummyClassLoader.java \
-	kaffe/lang/MemoryAdvice.java \
-	kaffe/lang/MemoryAdviceCallback.java \
-	kaffe/lang/PackageHelper.java \
-	kaffe/lang/ResourceReader.java \
-	kaffe/lang/SystemClassLoader.java \
-	kaffe/lang/UNIXProcess.java
-kaffe_management_SRCS = \
-	kaffe/management/Classpath.java \
-	kaffe/management/Debug.java \
-	kaffe/management/JIT.java \
-	kaffe/management/XProfiler.java
-kaffe_net_SRCS = \
-	kaffe/net/DefaultDatagramSocketImplFactory.java \
-	kaffe/net/DefaultFileNameMap.java \
-	kaffe/net/DefaultSocketImplFactory.java \
-	kaffe/net/DefaultStreamMap.java \
-	kaffe/net/DefaultURLStreamHandlerFactory.java \
-	kaffe/net/StreamMap.java
-kaffe_net_www_protocol_SRCS = \
-	kaffe/net/www/protocol/BasicURLConnection.java
-kaffe_net_www_protocol_file_SRCS = \
-	kaffe/net/www/protocol/file/FileURLConnection.java \
-	kaffe/net/www/protocol/file/Handler.java
-kaffe_net_www_protocol_ftp_SRCS = \
-	kaffe/net/www/protocol/ftp/FtpURLConnection.java \
-	kaffe/net/www/protocol/ftp/Handler.java
-kaffe_net_www_protocol_http_SRCS = \
-	kaffe/net/www/protocol/http/Handler.java \
-	kaffe/net/www/protocol/http/HttpURLConnection.java
-kaffe_net_www_protocol_jar_SRCS = \
-	kaffe/net/www/protocol/jar/Handler.java \
-	kaffe/net/www/protocol/jar/JarURLConnection.java
-kaffe_net_www_protocol_system_SRCS = \
-	kaffe/net/www/protocol/system/Handler.java \
-	kaffe/net/www/protocol/system/SystemURLConnection.java
-kaffe_security_SRCS = \
-	kaffe/security/Engine.java
-kaffe_security_provider_SRCS = \
-	kaffe/security/provider/Kaffe.java \
-	kaffe/security/provider/MD2.java \
-	kaffe/security/provider/MD4.java \
-	kaffe/security/provider/MD5.java \
-	kaffe/security/provider/SHA.java \
-	kaffe/security/provider/SHA1PRNG.java \
-	kaffe/security/provider/UpdateDigest.java
-kaffe_text_collator_SRCS = \
-	kaffe/text/collator/locale.java \
-	kaffe/text/collator/locale_en_US.java
-kaffe_text_dateformat_SRCS = \
-	kaffe/text/dateformat/locale.java \
-	kaffe/text/dateformat/locale_en_US.java
-kaffe_text_numberformat_SRCS = \
-	kaffe/text/numberformat/locale.java \
-	kaffe/text/numberformat/locale_en_US.java
-kaffe_util_SRCS = \
-	kaffe/util/Assert.java \
-	kaffe/util/Base64.java \
-	kaffe/util/DateParser.java \
-	kaffe/util/DateScanner.java \
-	kaffe/util/Deprecated.java \
-	kaffe/util/DoubleLinkedObject.java \
-	kaffe/util/IdentityHashtable.java \
-	kaffe/util/IntegerHashtable.java \
-	kaffe/util/IntegerIntegerHashtable.java \
-	kaffe/util/LongHashtable.java \
-	kaffe/util/NotImplemented.java \
-	kaffe/util/NotImplementedReport.java \
-	kaffe/util/Ptr.java \
-	kaffe/util/SupportDisabled.java \
-	kaffe/util/Timer.java \
-	kaffe/util/TimerClient.java \
-	kaffe/util/UNIXTimeZone.java \
-	kaffe/util/UTF8.java \
-	kaffe/util/VectorSnapshot.java
-kaffe_util_locale_SRCS = \
-	kaffe/util/locale/Country.java \
-	kaffe/util/locale/Country_de.java \
-	kaffe/util/locale/Country_en.java \
-	kaffe/util/locale/Country_fr.java \
-	kaffe/util/locale/Country_it.java \
-	kaffe/util/locale/Country_ja.java \
-	kaffe/util/locale/Country_ko.java \
-	kaffe/util/locale/Country_zh.java \
-	kaffe/util/locale/Language.java \
-	kaffe/util/locale/Language_de.java \
-	kaffe/util/locale/Language_en.java \
-	kaffe/util/locale/Language_fr.java \
-	kaffe/util/locale/Language_it.java \
-	kaffe/util/locale/Language_ja.java \
-	kaffe/util/locale/Language_ko.java \
-	kaffe/util/locale/Language_zh.java
-kaffe_util_log_SRCS = \
-	kaffe/util/log/LogClient.java \
-	kaffe/util/log/LogStream.java \
-	kaffe/util/log/SimpleLogViewer.java
-kaffe_util_zip_SRCS = \
-	kaffe/util/zip/SwitchInflater.java
-OMITTED_PACKAGES_SRCS = \
-	$(java_awt_win32_SRCS)
-java_awt_win32_SRCS = \
-	java/awt/win32/ActionEvt.java \
-	java/awt/win32/Button.java \
-	java/awt/win32/Canvas.java \
-	java/awt/win32/Checkbox.java \
-	java/awt/win32/CheckboxMenuItem.java \
-	java/awt/win32/Choice.java \
-	java/awt/win32/Defaults.java \
-	java/awt/win32/FileDialog.java \
-	java/awt/win32/Frame.java \
-	java/awt/win32/Label.java \
-	java/awt/win32/List.java \
-	java/awt/win32/Menu.java \
-	java/awt/win32/MenuBar.java \
-	java/awt/win32/MenuItem.java \
-	java/awt/win32/NativeComponent.java \
-	java/awt/win32/NativeContainer.java \
-	java/awt/win32/NativeGraphics.java \
-	java/awt/win32/Panel.java \
-	java/awt/win32/PopupMenu.java \
-	java/awt/win32/ScrollPane.java \
-	java/awt/win32/Scrollbar.java \
-	java/awt/win32/SystemColor.java \
-	java/awt/win32/TextArea.java \
-	java/awt/win32/TextComponent.java \
-	java/awt/win32/TextField.java \
-	java/awt/win32/Toolkit.java \
-	java/awt/win32/WMEvent.java \
-	java/awt/win32/Window.java
 
 ## Do not delete the previous blank line; update-class-list depends on it
 

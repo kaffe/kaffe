@@ -23,4 +23,15 @@ public Exception () {
 public Exception (String s) {
 	super(s);
 }
+
+/** since 1.4 */
+public Exception(Throwable cause) {
+	super (cause == null ? null : cause.getMessage(), cause);
 }
+
+/** since 1.4 */
+public Exception(String mess, Throwable cause) {
+	super(mess, cause);
+}
+}
+

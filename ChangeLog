@@ -1,3 +1,119 @@
+Mon Nov 11 11:34:41 CET 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	added new files and packages from GNU Classpath.
+
+	* libraries/javalib/gnu/java/awt/BitMaskExtent.java,
+	libraries/javalib/gnu/java/awt/Buffers.java: new files. Taken from
+	GNU Classpath.
+
+	* libraries/javalib/gnu/java/util/EmptyEnumeration.java:
+	new file. Taken from GNU Classpath.
+
+	* libraries/javalib/gnu/java/util/prefs/FileBasedFactory.java,
+	libraries/javalib/gnu/java/util/prefs/MemoryBasedFactory.java,
+	libraries/javalib/gnu/java/util/prefs/MemoryBasedPreferences.java,
+	libraries/javalib/gnu/java/util/prefs/NodeReader.java,
+	libraries/javalib/gnu/java/util/prefs/NodeWriter.java:
+	new files. Taken from GNU Classpath.
+
+	* libraries/javalib/java/awt/Paint.java,
+	libraries/javalib/java/awt/PaintContext.java,
+	libraries/javalib/java/awt/RenderingHints.java,
+	libraries/javalib/java/awt/Transparency.java:
+	new files. Taken from GNU Classpath.
+
+	* libraries/javalib/java/awt/image/ComponentSampleModel.java,
+	libraries/javalib/java/awt/image/DataBuffer.java,
+	libraries/javalib/java/awt/image/DataBufferByte.java,
+	libraries/javalib/java/awt/image/DataBufferInt.java,
+	libraries/javalib/java/awt/image/DataBufferUShort.java,
+	libraries/javalib/java/awt/image/Raster.java,
+	libraries/javalib/java/awt/image/SampleModel.java,
+	libraries/javalib/java/awt/image/SinglePixelPackedSampleModel.java,
+	libraries/javalib/java/awt/image/WritableRaster.java:
+	new files. Taken from GNU Classpath.
+
+	* libraries/javalib/java/beans/AppletInitializer.java,
+	libraries/javalib/java/beans/ExceptionListener.java,
+	libraries/javalib/java/beans/PropertyChangeListenerProxy.java,
+	libraries/javalib/java/beans/VetoableChangeListenerProxy.java:
+	new files. Taken from GNU Classpath.
+
+	* libraries/javalib/java/net/Authenticator.java,
+	libraries/javalib/java/net/InetSocketAddress.java,
+	libraries/javalib/java/net/PasswordAuthentication.java,
+	libraries/javalib/java/net/PortUnreachableException.java,
+	libraries/javalib/java/net/SocketAddress.java,
+	libraries/javalib/java/net/SocketTimeoutException.java,
+	libraries/javalib/java/net/URI.java,
+	libraries/javalib/java/net/URISyntaxException.java:
+	new files. Taken from GNU Classpath.
+
+	* libraries/javalib/java/lang/Exception.java:
+	(Exception) added constructors taking a cause as an argument.
+
+	* libraries/javalib/java/lang/StrictMath.java:
+	new file. Taken from GNU Classpath. Removed runtime assertions.
+
+	* libraries/javalib/java/security/AllPermission.java,
+	libraries/javalib/java/security/DomainCombiner.java,
+	libraries/javalib/java/security/SignedObject.java,
+	libraries/javalib/java/security/UnresolvedPermission.java:
+	new files. Taken from GNU Classpath.
+	
+	* libraries/javalib/java/sql/BatchUpdateException.java,
+	libraries/javalib/java/sql/ParameterMetaData.java,
+	libraries/javalib/java/sql/Ref.java,
+	libraries/javalib/java/sql/SQLData.java,
+	libraries/javalib/java/sql/SQLInput.java,
+	libraries/javalib/java/sql/SQLOutput.java,
+	libraries/javalib/java/sql/SQLPermission.java,
+	libraries/javalib/java/sql/Savepoint.java,
+	libraries/javalib/java/sql/Struct.java:
+	new files. Taken from GNU Classpath.	
+
+	* libraries/javalib/java/text/AttributedString.java, 
+	libraries/javalib/java/text/AttributedStringIterator.java:
+	new files. Taken from GNU Classpath.
+
+	* libraries/javalib/java/text/StringCharacterIterator.java:
+	(StringCharacterIterator) new package internal constructor used by
+	AttributedStringIterator.
+
+	* libraries/javalib/java/util/EventListenerProxy.java,
+	libraries/javalib/java/util/PropertyPermission.java,
+	libraries/javalib/java/util/PropertyPermissionCollection.java:
+	new files. Taken from GNU Classpath.
+
+	* libraries/javalib/java/util/logging/ConsoleHandler.java,
+	libraries/javalib/java/util/logging/ErrorManager.java,
+	libraries/javalib/java/util/logging/FileHandler.java,
+	libraries/javalib/java/util/logging/Filter.java,
+	libraries/javalib/java/util/logging/Formatter.java,
+	libraries/javalib/java/util/logging/Handler.java,
+	libraries/javalib/java/util/logging/Level.java,
+	libraries/javalib/java/util/logging/LogManager.java,
+	libraries/javalib/java/util/logging/LogRecord.java,
+	libraries/javalib/java/util/logging/Logger.java,
+	libraries/javalib/java/util/logging/LoggingPermission.java,
+	libraries/javalib/java/util/logging/MemoryHandler.java,
+	libraries/javalib/java/util/logging/SimpleFormatter.java,
+	libraries/javalib/java/util/logging/StreamHandler.java,
+	libraries/javalib/java/util/logging/XMLFormatter.java:
+	Imported java.util.logging implementation from GNU Classpath.	
+
+	* libraries/javalib/java/util/prefs/AbstractPreferences.java,
+	libraries/javalib/java/util/prefs/BackingStoreException.java,
+	libraries/javalib/java/util/prefs/InvalidPreferencesFormatException.java,
+	libraries/javalib/java/util/prefs/NodeChangeEvent.java,
+	libraries/javalib/java/util/prefs/NodeChangeListener.java,
+	libraries/javalib/java/util/prefs/PreferenceChangeEvent.java,
+	libraries/javalib/java/util/prefs/PreferenceChangeListener.java,
+	libraries/javalib/java/util/prefs/Preferences.java,
+	libraries/javalib/java/util/prefs/PreferencesFactory.java:
+	Imported java.util.prefs implementation from GNU Classpath.
+	
 Sat Nov  9 21:21:10 CET 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* kaffe/kaffevm/jar.c:
