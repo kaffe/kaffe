@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-02-18  Sven de Marothy <sven@physto.se>
+
+	* java/util/TimeZone.java,
+	(getDefaultDisplayName): Don't print zero offsets.
+	
+2005-02-19  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-02-18  Robert Schuster <thebohemian@gmx.net>
 
 	* java/nio/charset/Charset.java (forName): Throws
