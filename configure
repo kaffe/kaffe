@@ -22228,8 +22228,8 @@ echo "${ECHO_T}no" >&6
 fi
 
 if test  x"$MKTEMP" = x"" ; then
-   { echo "$as_me:$LINENO: WARNING: Warning: mktemp not found. You need mktemp to be able to debug kaffe." >&5
-echo "$as_me: WARNING: Warning: mktemp not found. You need mktemp to be able to debug kaffe." >&2;}
+   { echo "$as_me:$LINENO: WARNING: mktemp not found. You need mktemp to be able to debug kaffe." >&5
+echo "$as_me: WARNING: mktemp not found. You need mktemp to be able to debug kaffe." >&2;}
 fi
 # Extract the first word of "jasmin", so it can be a program name with args.
 set dummy jasmin; ac_word=$2
@@ -46362,6 +46362,8 @@ fi
 
 
 
+if test x$with_threads = xunix-pthreads ; then
+
 alsa_save_CFLAGS="$CFLAGS"
 alsa_save_LDFLAGS="$LDFLAGS"
 alsa_save_LIBS="$LIBS"
@@ -46627,6 +46629,17 @@ fi
 
 
 
+
+CFLAGS=$alsa_save_CFLAGS
+LDFLAGS=$alsa_save_LDFLAGS
+LIBS=$alsa_save_LIBS
+
+else
+
+   { echo "$as_me:$LINENO: WARNING: Not searching for ALSA - only available with pthreads." >&5
+echo "$as_me: WARNING: Not searching for ALSA - only available with pthreads." >&2;}
+
+fi
 
 
 # Check whether --with-esd-prefix or --without-esd-prefix was given.

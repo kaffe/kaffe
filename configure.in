@@ -571,7 +571,7 @@ AC_PROG_MAKE_SET
 AC_CHECK_PROG(ZIP, zip, zip)
 AC_CHECK_PROG(MKTEMP, mktemp, mktemp)
 if test  x"$MKTEMP" = x"" ; then
-   AC_MSG_WARN([Warning: mktemp not found. You need mktemp to be able to debug kaffe.])
+   AC_MSG_WARN([mktemp not found. You need mktemp to be able to debug kaffe.])
 fi
 AC_CHECK_PROG(JASMIN, jasmin, jasmin)
 
@@ -1321,10 +1321,23 @@ dnl -------------------------------------------------------------------------
 
 dnl Check for alsa
 
+if test x$with_threads = xunix-pthreads ; then
+
 AM_PATH_ALSA(1.0.1,
-	     ,
-	     [AC_MSG_RESULT([Useable version of ALSA not found.])]
+ 	     ,
+ 	     [AC_MSG_RESULT([Useable version of ALSA not found.])]
 )
+
+dnl alsa.m4 adds stuff to these variables we don't want, so revert
+CFLAGS=$alsa_save_CFLAGS
+LDFLAGS=$alsa_save_LDFLAGS
+LIBS=$alsa_save_LIBS
+
+else
+
+   AC_MSG_WARN([Not searching for ALSA - only available with pthreads.])
+
+fi
 
 AM_PATH_ESD([0.2.1],
 	    [esd_found=yes],
