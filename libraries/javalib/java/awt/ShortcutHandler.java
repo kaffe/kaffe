@@ -159,7 +159,7 @@ static boolean handle( KeyEvent e) {
 			cc += 64;
 	}
 	
-	if ( cc >= codeTable.length )
+	if ( cc < 0 || cc >= codeTable.length )
 		return false;
 
 	MenuShortcut ms;		
