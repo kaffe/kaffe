@@ -23,8 +23,6 @@ import java.util.jar.*;
 
 public class ExecJar {
 
-private final static String MAIN = "Main-Class:";
-
 public static void main(String[] args)
 {
 	// Get JAR file
