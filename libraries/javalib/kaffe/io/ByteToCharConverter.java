@@ -125,8 +125,7 @@ private static ByteToCharConverter getConverterInternal ( String enc ) {
 					}
 				}
 			}
-			realenc = encodingRoot + ".CharToByte" + realenc;
-			String realenc = encodingRoot + ".ByteToChar" + realenc;
+			realenc = encodingRoot + ".ByteToChar" + realenc;
 			cls = Class.forName(realenc);
 			cache.put(enc, cls);
 		}
