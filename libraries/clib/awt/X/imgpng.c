@@ -160,12 +160,12 @@ readInterlacedData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Ima
 Image*
 readPng ( png_structp png_ptr, png_infop info_ptr )
 {
-  Image          *img = 0;
+  Image          *volatile img = 0;
   double         screen_gamma = 1.2, file_gamma;
   int            i, number_passes;
   int            row_bytes;
-  png_bytepp     rows = 0;
-  png_bytep      data = 0;
+  png_bytepp     volatile rows = 0;
+  png_bytep      volatile data = 0;
 
   if ( setjmp(png_ptr->jmpbuf) ) {
 	if ( img )

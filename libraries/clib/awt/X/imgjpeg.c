@@ -209,7 +209,6 @@ METHODDEF(void)
 skip_file_source ( j_decompress_ptr cinfo, long num_bytes )
 {
   filesrc_ptr src = (filesrc_ptr) cinfo->src;
-  int         n;
 
   if ( num_bytes < src->pub.bytes_in_buffer ){
 	src->pub.next_input_byte += num_bytes;

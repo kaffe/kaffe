@@ -42,7 +42,7 @@ Java_java_awt_Toolkit_graInitGraphics ( JNIEnv* env, jclass clazz,
   XRectangle     rect;
   unsigned long  valueMask = GCForeground | GCBackground | GCFont | GCFunction;
 
-  DBG( awt_gra, ("initGraphics: %x (%x, %d) %d,%d  %d,%d - %d,%d  %x %x %x\n",
+  DBG( AWT_GRA, printf("initGraphics: %p (%p, %d) %d,%d  %d,%d - %d,%d  %x %x %x\n",
 				 gr, tgt,tgtType, xOff,yOff, xClip,yClip,wClip,hClip, fnt,fg,bg));
 
   if ( tgt ) {
@@ -75,7 +75,7 @@ Java_java_awt_Toolkit_graInitGraphics ( JNIEnv* env, jclass clazz,
 	gr = (Graphics*) AWT_MALLOC( sizeof(Graphics));
 	gr->gc = XCreateGC( X->dsp, drw, valueMask, &values);
 
-	DBG( awt_gra, (" ->gr: %x (%x)\n", gr, gr->gc));
+	DBG( AWT_GRA, printf(" ->gr: %p (%p)\n", gr, gr->gc));
   }
 
   rect.x      = xClip; 
@@ -104,7 +104,7 @@ Java_java_awt_Toolkit_graInitGraphics ( JNIEnv* env, jclass clazz,
 void
 Java_java_awt_Toolkit_graFreeGraphics ( JNIEnv* env, jclass clazz, Graphics* gr )
 {
-  DBG( awt_gra, ("freeGraphics: %x\n", gr));
+  DBG( AWT_GRA, printf("freeGraphics: %p\n", gr));
 
   XFreeGC( X->dsp, gr->gc);
   AWT_FREE( gr);
@@ -116,7 +116,7 @@ Java_java_awt_Toolkit_graCopyArea ( JNIEnv* env, jclass clazz, Graphics* gr,
 									jint x, jint y, jint width, jint height,
 									jint xDelta, jint yDelta )
 {
-  DBG( awt_gra, ("copyArea: %x, %d,%d-%d,%d  %d,%d\n", gr, x,y,width,height, xDelta,yDelta));
+  DBG( AWT_GRA, printf("copyArea: %p, %d,%d-%d,%d  %d,%d\n", gr, x,y,width,height, xDelta,yDelta));
 
   /* some X servers act alleric on that (careless bitblt, again) */
   if ( (width < 0) || (height < 0) )
@@ -132,7 +132,7 @@ void
 Java_java_awt_Toolkit_graClearRect ( JNIEnv* env, jclass clazz, Graphics* gr,
 									 jint x, jint y, jint width, jint height )
 {
-  DBG( awt_gra, ("clearRect: %x, %d,%d-%d,%d\n", gr, x,y,width,height));
+  DBG( AWT_GRA, printf("clearRect: %p, %d,%d-%d,%d\n", gr, x,y,width,height));
 
   XSetForeground( X->dsp, gr->gc, gr->bg);
   XFillRectangle( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, width, height);
@@ -155,7 +155,7 @@ Java_java_awt_Toolkit_graDrawBytes ( JNIEnv* env, jclass clazz, Graphics* gr,
   jb = (*env)->GetByteArrayElements( env, jBytes, &isCopy);
   jbo = jb + offset;
 
-  DBG( awt_gra, ("drawBytes: %x, %x,%d,%d  \"%s\"  %d,%d\n", gr,
+  DBG( AWT_GRA, printf("drawBytes: %p, %p,%d,%d  \"%s\"  %d,%d\n", gr,
 				 jBytes,offset,len, jb, x,y));
 
   if ( offset+len > n )
@@ -183,7 +183,7 @@ Java_java_awt_Toolkit_graDrawChars ( JNIEnv* env, jclass clazz, Graphics* gr,
   jc = (*env)->GetCharArrayElements( env, jChars, &isCopy);
   jco = jc + offset;
 
-  DBG( awt_gra, ("drawChars: %x, %x,%d,%d  \"%s\"  %d,%d\n", gr, jChars,offset,len,
+  DBG( AWT_GRA, printf("drawChars: %p, %p,%d,%d  \"%s\"  %d,%d\n", gr, jChars,offset,len,
 				 jchar2CString(X,jco,len), x,y));
 
   if ( offset+len > n )
@@ -213,7 +213,7 @@ Java_java_awt_Toolkit_graDrawString ( JNIEnv* env, jclass clazz,
   const jchar  *jc;
   XChar2b      *b;
 
-  DBG( awt_gra, ("drawString: %x  \"%s\"  %d,%d\n", gr, java2CString(env,X,str), x,y));
+  DBG( AWT_GRA, printf("drawString: %p  \"%s\"  %d,%d\n", gr, java2CString(env,X,str), x,y));
 
   if ( !str ) return;
 
@@ -239,7 +239,7 @@ void
 Java_java_awt_Toolkit_graDrawLine ( JNIEnv* env, jclass clazz, Graphics* gr,
 									jint x1, jint y1, jint x2, jint y2 )
 {
-  DBG( awt_gra, ("drawLine: %x, %d,%d - %d,%d\n", gr, x1,y1, x2,y2));
+  DBG( AWT_GRA, printf("drawLine: %p, %d,%d - %d,%d\n", gr, x1,y1, x2,y2));
 
   if ( (x1==x2) && (y1==y2) ) {  /* swing gimmick */
 	XDrawPoint( X->dsp, gr->drw, gr->gc, x1 +gr->x0, y1 +gr->y0);
@@ -256,7 +256,7 @@ Java_java_awt_Toolkit_graDrawArc ( JNIEnv* env, jclass clazz, Graphics* gr,
 								   jint x, jint y, jint width, jint height,
 								   jint startAngle, jint arcAngle )
 {
-  DBG( awt_gra, ("drawArc: %x, %d,%d-%d,%d  %d,%d\n", gr,
+  DBG( AWT_GRA, printf("drawArc: %p, %d,%d-%d,%d  %d,%d\n", gr,
 				 x,y,width,height, startAngle,arcAngle));
 
   XDrawArc( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, width, height,
@@ -270,7 +270,7 @@ Java_java_awt_Toolkit_graFillArc ( JNIEnv* env, jclass clazz, Graphics* gr,
 								   jint x, jint y, jint width, jint height,
 								   jint startAngle, jint arcAngle )
 {
-  DBG( awt_gra, ("fillArc: %x, %d,%d-%d,%d  %d,%d\n", gr,
+  DBG( AWT_GRA, printf("fillArc: %p, %d,%d-%d,%d  %d,%d\n", gr,
 				 x,y,width,height, startAngle, arcAngle));
 
   XFillArc( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, width, height,
@@ -283,7 +283,7 @@ void
 Java_java_awt_Toolkit_graDrawOval ( JNIEnv* env, jclass clazz, Graphics* gr,
 									jint x, jint y, jint width, jint height )
 {
-  DBG( awt_gra, ("drawOval: %x, %d,%d - %d,%d\n", gr, x,y,width,height));
+  DBG( AWT_GRA, printf("drawOval: %p, %d,%d - %d,%d\n", gr, x,y,width,height));
 
   XDrawArc( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, width, height, 0, 23040);
   XFLUSH( X, False);
@@ -294,7 +294,7 @@ void
 Java_java_awt_Toolkit_graFillOval ( JNIEnv* env, jclass clazz, Graphics* gr,
 									jint x, jint y, jint width, jint height )
 {
-  DBG( awt_gra, ("fillOval: %x, %d,%d - %d,%d\n", gr, x,y,width,height));
+  DBG( AWT_GRA, printf("fillOval: %p, %d,%d - %d,%d\n", gr, x,y,width,height));
 
   XFillArc( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, width, height, 0, 23040);
   XFLUSH( X, False);
@@ -334,7 +334,7 @@ Java_java_awt_Toolkit_graDrawPolygon ( JNIEnv* env, jclass clazz, Graphics* gr,
   int n;
   XPoint   *p;
 
-  DBG( awt_gra, ("drawPolygon: %x, %x,%x  %d\n", gr, xPoints, yPoints, nPoints));
+  DBG( AWT_GRA, printf("drawPolygon: %p, %p,%p  %d\n", gr, xPoints, yPoints, nPoints));
 
   if ( !xPoints || !yPoints ) return;
 
@@ -358,7 +358,7 @@ Java_java_awt_Toolkit_graDrawPolyline ( JNIEnv* env, jclass clazz, Graphics* gr,
 {
   XPoint   *p;
 
-  DBG( awt_gra, ("drawPolyline: %x, %x,%x  %d\n", gr, xPoints, yPoints, nPoints));
+  DBG( AWT_GRA, printf("drawPolyline: %p, %p,%p  %d\n", gr, xPoints, yPoints, nPoints));
 
   if ( !xPoints || !yPoints ) return;
 
@@ -374,7 +374,7 @@ Java_java_awt_Toolkit_graFillPolygon ( JNIEnv* env, jclass clazz, Graphics* gr,
 {
   XPoint   *p;
 
-  DBG( awt_gra, ("fillPolygon: %x, %x,%x  %d\n", gr, xPoints, yPoints, nPoints));
+  DBG( AWT_GRA, printf("fillPolygon: %p, %p,%p  %d\n", gr, xPoints, yPoints, nPoints));
 
   if ( !xPoints || !yPoints ) return;
 
@@ -388,7 +388,7 @@ void
 Java_java_awt_Toolkit_graDrawRect ( JNIEnv* env, jclass clazz, Graphics* gr,
 									jint x, jint y, jint width, jint height )
 {
-  DBG( awt_gra, ("drawRect: %x, %d,%d - %d,%d\n", gr, x,y,width,height));
+  DBG( AWT_GRA, printf("drawRect: %p, %d,%d - %d,%d\n", gr, x,y,width,height));
 
   if ( (width >= 0) && (height >= 0) )
 	XDrawRectangle( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, width, height);
@@ -400,7 +400,7 @@ void
 Java_java_awt_Toolkit_graFillRect ( JNIEnv* env, jclass clazz, Graphics* gr,
 									jint x, jint y, jint width, jint height )
 {
-  DBG( awt_gra, ("fillRect: %x, %d,%d - %d,%d\n", gr, x,y,width,height));
+  DBG( AWT_GRA, printf("fillRect: %p, %d,%d - %d,%d\n", gr, x,y,width,height));
 
   if ( (width >= 0) && (height >= 0) ) {
 	if ( width == 1 ) {   /* some swing gimmicks */
@@ -428,7 +428,7 @@ Java_java_awt_Toolkit_graDrawRoundRect ( JNIEnv* env, jclass clazz, Graphics* gr
 {
   int x1, x2, y1, y2, a, b;
 
-  DBG( awt_gra, ("drawRoundRect: %x, %d,%d - %d,%d  %d,%d\n", gr,
+  DBG( AWT_GRA, printf("drawRoundRect: %p, %d,%d - %d,%d  %d,%d\n", gr,
 				 x,y,width,height, wArc, hArc));
   
   x += gr->x0;  y += gr->y0;
@@ -462,7 +462,7 @@ Java_java_awt_Toolkit_graFillRoundRect ( JNIEnv* env, jclass clazz, Graphics* gr
 {
   int x1, x2, y1, y2, a, b;
 
-  DBG( awt_gra, ("fillRoundRect: %x, %d,%d - %d,%d  %d,%d\n", gr,
+  DBG( AWT_GRA, printf("fillRoundRect: %p, %d,%d - %d,%d  %d,%d\n", gr,
 				 x,y,width,height, wArc, hArc));
   
   x += gr->x0;  y += gr->y0;
@@ -500,7 +500,7 @@ Java_java_awt_Toolkit_graDraw3DRect ( JNIEnv* env, jclass clazz, Graphics* gr,
   int      bright, dark;
   int      xw, yh;
 
-  DBG( awt_gra, ("draw3DRect: %x, %d,%d - %d,%d  %d %x\n", gr,
+  DBG( AWT_GRA, printf("draw3DRect: %p, %d,%d - %d,%d  %d %x\n", gr,
 				 x,y,width,height, raised, rgb));
 
   /* we should use the same mechanism like ordinary Graphics brighter()/darker() here */
@@ -529,7 +529,7 @@ Java_java_awt_Toolkit_graFill3DRect ( JNIEnv* env, jclass clazz, Graphics* gr,
 									  jint x, jint y, jint width, jint height,
 									  jboolean raised, jint rgb )
 {
-  DBG( awt_gra, ("fill3DRect: %x, %d,%d - %d,%d  %d %x\n", gr,
+  DBG( AWT_GRA, printf("fill3DRect: %p, %d,%d - %d,%d  %d %x\n", gr,
 				 x,y,width,height, raised, rgb));
 
   XFillRectangle( X->dsp, gr->drw, gr->gc, x+gr->x0+1, y+gr->y0+1, width-2, height-2);
@@ -552,7 +552,7 @@ Java_java_awt_Toolkit_graSetClip ( JNIEnv* env, jclass clazz, Graphics* gr,
 {
   XRectangle rect;
 
-  DBG( awt_gra, ("setClip: %x, %d,%d - %d,%d\n", gr, xClip, yClip, wClip, hClip));
+  DBG( AWT_GRA, printf("setClip: %p, %d,%d - %d,%d\n", gr, xClip, yClip, wClip, hClip));
 
   rect.x      = xClip;
   rect.y      = yClip;
@@ -564,7 +564,7 @@ Java_java_awt_Toolkit_graSetClip ( JNIEnv* env, jclass clazz, Graphics* gr,
 void
 Java_java_awt_Toolkit_graSetColor ( JNIEnv* env, jclass clazz, Graphics* gr, jint clr )
 {
-  DBG( awt_gra, ("setColor: %x, %x\n", gr, clr));
+  DBG( AWT_GRA, printf("setColor: %p, %x\n", gr, clr));
 
   gr->fg = clr;
 
@@ -577,7 +577,7 @@ Java_java_awt_Toolkit_graSetColor ( JNIEnv* env, jclass clazz, Graphics* gr, jin
 void
 Java_java_awt_Toolkit_graSetBackColor ( JNIEnv* env, jclass clazz, Graphics* gr, jint clr )
 {
-  DBG( awt_gra, ("setBackColor: %x, %x\n", gr, clr));
+  DBG( AWT_GRA, printf("setBackColor: %p, %x\n", gr, clr));
 
   gr->bg = clr;
   XSetBackground( X->dsp, gr->gc, clr);
@@ -586,7 +586,7 @@ Java_java_awt_Toolkit_graSetBackColor ( JNIEnv* env, jclass clazz, Graphics* gr,
 void
 Java_java_awt_Toolkit_graSetFont ( JNIEnv* env, jclass clazz, Graphics* gr, jobject fnt )
 {
-  DBG( awt_gra, ("setFont: %x, %x\n", gr, fnt));
+  DBG( AWT_GRA, printf("setFont: %p, %p\n", gr, fnt));
 
   XSetFont( X->dsp, gr->gc, ((XFontStruct*)fnt)->fid);
 }
@@ -594,7 +594,7 @@ Java_java_awt_Toolkit_graSetFont ( JNIEnv* env, jclass clazz, Graphics* gr, jobj
 void
 Java_java_awt_Toolkit_graSetOffset ( JNIEnv* env, jclass clazz, Graphics* gr, jint xOff, jint yOff )
 {
-  DBG( awt_gra, ("setOffset: %x, %d,%d\n", gr, xOff, yOff));
+  DBG( AWT_GRA, printf("setOffset: %p, %d,%d\n", gr, xOff, yOff));
 
   gr->x0 = xOff;
   gr->y0 = yOff;
@@ -603,7 +603,7 @@ Java_java_awt_Toolkit_graSetOffset ( JNIEnv* env, jclass clazz, Graphics* gr, ji
 void
 Java_java_awt_Toolkit_graSetPaintMode ( JNIEnv* env, jclass clazz, Graphics* gr )
 {
-  DBG( awt_gra, ("setPaintMode: %x\n", gr));
+  DBG( AWT_GRA, printf("setPaintMode: %p\n", gr));
 
   gr->xor = 0;
   XSetForeground( X->dsp, gr->gc, gr->fg);
@@ -613,7 +613,7 @@ Java_java_awt_Toolkit_graSetPaintMode ( JNIEnv* env, jclass clazz, Graphics* gr 
 void
 Java_java_awt_Toolkit_graSetXORMode ( JNIEnv* env, jclass clazz, Graphics* gr, jint xorClr )
 {
-  DBG( awt_gra, ("setXORMode: %x, %x\n", gr, xorClr));
+  DBG( AWT_GRA, printf("setXORMode: %p, %x\n", gr, xorClr));
 
   gr->xor = 1;
   gr->xclr = xorClr;
@@ -624,7 +624,7 @@ Java_java_awt_Toolkit_graSetXORMode ( JNIEnv* env, jclass clazz, Graphics* gr, j
 void
 Java_java_awt_Toolkit_graSetVisible ( JNIEnv* env, jclass clazz, Graphics* gr, jint isVisible )
 {
-  DBG( awt_gra, ("setVisble: %x  %d\n", gr, isVisible));
+  DBG( AWT_GRA, printf("setVisble: %p  %d\n", gr, isVisible));
 
   /*
    * This is rather a hack to "defuse" a Graphics object, but we don't want to
@@ -656,7 +656,7 @@ drawAlphaImage ( Graphics* gr, Image* img,
   unsigned long dpix, spix, bgpix = 0;
   int    sr, sg, sb, dr, dg, db;
 
-  DBG( awt_gra, ("drawAlphaImage: %x %x (%x, %x),  %d,%d  %d,%d  %d,%d  %x\n",
+  DBG( AWT_GRA, printf("drawAlphaImage: %p %p (%p, %x),  %d,%d  %d,%d  %d,%d  %x\n",
 				 gr, img, img->xImg, img->alpha, srcX, srcY, dstX, dstY, width, height, bgval));
 
   if ( !img ) return;
@@ -741,7 +741,7 @@ Java_java_awt_Toolkit_graDrawImage ( JNIEnv* env, jclass clazz, Graphics* gr, Im
 {
   XGCValues values;
 
-  DBG( awt_gra, ("drawImage: %x %x (%x,%x,%x %d,%d) %d,%d, %d,%d, %d,%d, %x\n",
+  DBG( AWT_GRA, printf("drawImage: %p %p (%p,%p,%x %d,%d) %d,%d, %d,%d, %d,%d, %x\n",
 				 gr, img,  img->xImg,img->xMask,img->alpha,  img->width,img->height,
 				 srcX,srcY,  dstX,dstY,	 width,height, bgval));
 
@@ -828,7 +828,7 @@ Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz, Graphics* 
   Image      *tgt;
   int        tmpXImg = (img->xImg == NULL);
 
-  DBG( awt_gra, ("drawImageScaled: %x %x (%x), %d,%d,%d,%d, %d,%d,%d,%d, %x\n",
+  DBG( AWT_GRA, printf("drawImageScaled: %p %p (%p), %d,%d,%d,%d, %d,%d,%d,%d, %x\n",
 				 gr, img, img->xImg, dx0, dy0, dx1, dy1, sx0, sy0, sx1, sy1, bgval));
 
   if ( !img ) return;

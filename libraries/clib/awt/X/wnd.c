@@ -118,7 +118,7 @@ Java_java_awt_Toolkit_wndSetTitle ( JNIEnv* env, jclass clazz, void* wnd, jstrin
   if ( jTitle ) {
 	buf = java2CString( env, X, jTitle);
 
-	DBG( awt_wnd, ("setTitle: %x, \"%s\"\n", wnd, buf));
+	DBG( AWT_WND, printf("setTitle: %p, \"%s\"\n", wnd, buf));
 	XStoreName( X->dsp, (Window)wnd, buf);
   }
 }
@@ -130,7 +130,7 @@ Java_java_awt_Toolkit_wndSetResizable ( JNIEnv* env, jclass clazz, void* wnd, jb
 {
   XSizeHints hints;
 
-  DBG( awt_wnd, ("setResizable: %x, %d, %d,%d,%d,%d\n", wnd, isResizable, x,y,width,height));
+  DBG( AWT_WND, printf("setResizable: %p, %d, %d,%d,%d,%d\n", wnd, isResizable, x,y,width,height));
 
   if ( !isResizable ) {
 	hints.min_width  = hints.max_width = width;
@@ -177,11 +177,11 @@ createWindow ( JNIEnv* env, jclass clazz, Window parent, Window owner, jstring j
   if ( width <= 0 )  width = 1;
   if ( height <= 0 ) height = 1;
 
-  DBG( awt_wnd, ("XCreateWindow %d,%d,%d,%d\n", x, y, width, height));
+  DBG( AWT_WND, printf("XCreateWindow %d,%d,%d,%d\n", x, y, width, height));
   wnd = XCreateWindow( X->dsp, parent, x, y, width, height, 0,
 					   CopyFromParent, InputOutput, CopyFromParent,
 					   valueMask, &attributes);
-  DBG( awt_wnd, (" -> %x\n", wnd));
+  DBG( AWT_WND, printf(" -> %p\n", wnd));
 
   if ( wnd ) {
 	i=0;
@@ -228,7 +228,7 @@ registerSource ( Toolkit* X, Window wnd, Window owner, int flags)
 	return i;
   }
   else {
-	DBG( awt_evt, ("window table out of space: %d", X->nWindows));
+	DBG( AWT_EVT, printf("window table out of space: %d", X->nWindows));
 	return -1;
   }
 }
@@ -242,7 +242,7 @@ Java_java_awt_Toolkit_wndCreateFrame ( JNIEnv* env, jclass clazz, jstring jTitle
   Window w = createWindow( env, clazz, DefaultRootWindow( X->dsp), 0, jTitle,
 							   x, y, width, height,
 							   jCursor, clrBack, isResizable);
-  DBG( awt_wnd, ("createFrame( %p, %d,%d,%d,%d,..) -> %x\n", jTitle,x,y,width,height, w));
+  DBG( AWT_WND, printf("createFrame( %p, %d,%d,%d,%d,..) -> %p\n", jTitle,x,y,width,height, w));
 
   if ( w )
 	registerSource( X, w, 0, WND_FRAME);
@@ -260,7 +260,7 @@ Java_java_awt_Toolkit_wndCreateWindow ( JNIEnv* env, jclass clazz, void* owner,
   Window w = createWindow( env, clazz, X->root, (Window)owner, NULL,
 							   x, y, width, height,
 							   jCursor, clrBack, JNI_TRUE);
-  DBG( awt_wnd, ("createWindow( %p, %d,%d,%d,%d,..) -> %x\n", owner,x,y,width,height, w));
+  DBG( AWT_WND, printf("createWindow( %p, %d,%d,%d,%d,..) -> %p\n", owner,x,y,width,height, w));
 
   if ( w )
 	registerSource( X, w, (Window)owner, WND_WINDOW);
@@ -277,7 +277,7 @@ Java_java_awt_Toolkit_wndCreateDialog ( JNIEnv* env, jclass clazz, void* owner, 
   Window w = createWindow( env, clazz, DefaultRootWindow( X->dsp), (Window)owner, jTitle,
 							   x, y, width, height,
 							   jCursor, clrBack, isResizable);
-  DBG( awt_wnd, ("createDialog( %p,%p, %d,%d,%d,%d,..) -> %x\n", owner,jTitle,x,y,width,height));
+  DBG( AWT_WND, printf("createDialog( %p,%p, %d,%d,%d,%d,..) -> %p\n", owner,jTitle,x,y,width,height));
 
   if ( w )
 	registerSource( X, w, (Window)owner, WND_DIALOG);
@@ -291,7 +291,7 @@ Java_java_awt_Toolkit_wndDestroyWindow ( JNIEnv* env, jclass clazz, Window wnd )
 {
   int i = getSourceIdx( X, wnd);
 
-  DBG( awt_wnd, ("destroy window: %x (%d)\n", wnd, i));
+  DBG( AWT_WND, printf("destroy window: %p (%d)\n", wnd, i));
 
   if ( (i >= 0) && !(X->windows[i].flags & WND_DESTROYED) ) {
 	if ( wnd == X->focusFwd ) {
@@ -322,10 +322,9 @@ Java_java_awt_Toolkit_wndDestroyWindow ( JNIEnv* env, jclass clazz, Window wnd )
 void
 Java_java_awt_Toolkit_wndRequestFocus ( JNIEnv* env, jclass clazz, Window wnd )
 {
-  XEvent  event;
   int     i = getSourceIdx( X, wnd);
 
-  DBG( awt_wnd, ("request focus: %x (%d)\n", wnd, i));
+  DBG( AWT_WND, printf("request focus: %p (%d)\n", wnd, i));
 
   if ( (i < 0) || (X->windows[i].flags & WND_DESTROYED) )
 	return;
@@ -410,7 +409,7 @@ Java_java_awt_Toolkit_wndSetBounds ( JNIEnv* env, jclass clazz, void* wnd,
 									 jint x, jint y, jint width, jint height,
 									 jboolean isResizable )
 {
-  DBG( awt_wnd, ("setBounds: %x %d,%d,%d,%d\n", wnd, x, y, width, height));
+  DBG( AWT_WND, printf("setBounds: %p %d,%d,%d,%d\n", wnd, x, y, width, height));
 
   if ( width < 0 )  width = 1;
   if ( height < 0 ) height = 1;
@@ -434,7 +433,7 @@ void
 Java_java_awt_Toolkit_wndRepaint ( JNIEnv* env, jclass clazz, Window wnd,
 								   jint x, jint y, jint width, jint height )
 {
-  DBG( awt_wnd, ("wndRepaint: %x %d,%d,%d,%d\n", wnd, x, y, width, height));
+  DBG( AWT_WND, printf("wndRepaint: %p %d,%d,%d,%d\n", wnd, x, y, width, height));
 
   XClearArea( X->dsp, wnd, x, y, width, height, True);
 }
@@ -451,7 +450,7 @@ Java_java_awt_Toolkit_wndSetVisible ( JNIEnv* env, jclass clazz, Window wnd, jbo
   int     i = getSourceIdx( X, wnd);
   Window  owner;
 
-  DBG( awt_wnd, ("setVisible: %x (%d) %d\n", wnd, i, showIt));
+  DBG( AWT_WND, printf("setVisible: %p (%d) %d\n", wnd, i, showIt));
 
   if ( (i < 0) || (X->windows[i].flags & WND_DESTROYED) )
 	return;
@@ -486,7 +485,7 @@ Java_java_awt_Toolkit_wndSetVisible ( JNIEnv* env, jclass clazz, Window wnd, jbo
 void
 Java_java_awt_Toolkit_wndToBack ( JNIEnv* env, jclass clazz, void* wnd )
 {
-  DBG( awt_wnd, ("toBack: %x\n", wnd));
+  DBG( AWT_WND, printf("toBack: %p\n", wnd));
   XLowerWindow( X->dsp, (Window)wnd);
 }
 
@@ -494,7 +493,7 @@ Java_java_awt_Toolkit_wndToBack ( JNIEnv* env, jclass clazz, void* wnd )
 void
 Java_java_awt_Toolkit_wndToFront ( JNIEnv* env, jclass clazz, void* wnd )
 {
-  DBG( awt_wnd, ("toFront: %x\n", wnd));
+  DBG( AWT_WND, printf("toFront: %p\n", wnd));
   XRaiseWindow( X->dsp, (Window)wnd);
 }
 
@@ -502,6 +501,6 @@ Java_java_awt_Toolkit_wndToFront ( JNIEnv* env, jclass clazz, void* wnd )
 void
 Java_java_awt_Toolkit_wndSetCursor ( JNIEnv* env, jclass clazz, void* wnd, jint jCursor )
 {
-  DBG( awt_wnd, ("setCursor: %x, %d\n", wnd, jCursor));
+  DBG( AWT_WND, printf("setCursor: %p, %d\n", wnd, jCursor));
   XDefineCursor( X->dsp, (Window)wnd, getCursor( jCursor));
 }

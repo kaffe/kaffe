@@ -46,15 +46,15 @@ xErrorHandler ( Display *dsp, XErrorEvent *err )
   sprintf( key, "%d", err->error_code);
   XGetErrorDatabaseText( dsp, "XProtoError", key, "", buf, sizeof( buf));
 
-  DBG( awt,("X error:      %s\n", buf));
+  DBG( AWT, printf("X error:      %s\n", buf));
 
   sprintf( key, "%d", err->request_code);
   XGetErrorDatabaseText( dsp, "XRequest", key, "", buf, sizeof( buf));
 
-  DBG( awt, ("  request:    %s\n", buf));
-  DBG( awt, ("  resource:   %X\n", err->resourceid));
+  DBG( AWT, printf("  request:    %s\n", buf));
+  DBG( AWT, printf("  resource:   %p\n", err->resourceid));
 
-  //DBG_ACTION( awt, (*JniEnv)->ThrowNew( JniEnv, AWTError, "X error occured"));
+  //DBG( AWT, (*JniEnv)->ThrowNew( JniEnv, AWTError, "X error occured"));
 
   return 0;
 }
@@ -98,12 +98,12 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
   }
 
   if ( !(X->dsp = XOpenDisplay( dspName)) ) {
-	DBG( awt, ("XOpenDisplay failed: %s\n", dspName));
+	DBG( AWT, printf("XOpenDisplay failed: %s\n", dspName));
 	return JNI_FALSE;
   }
 
-  DBG( awt, ("synchronize X\n"));
-  //DBG_ACTION(awt, XSynchronize( X->dsp, True));
+  DBG( AWT, printf("synchronize X\n"));
+  //DBG( AWT, XSynchronize( X->dsp, True));
 
   X->nWindows = 47;
   X->windows = AWT_CALLOC( X->nWindows, sizeof(WindowRec));

@@ -92,7 +92,7 @@ Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec, ji
     for ( i=i0; !fs && (i != i1); i += di ) {
       for ( k=0;  !fs && (k < NDSIZE); k++ ) {
         sprintf( buf, spec, weight[i], slant[j], size + dsize[k]);
-        DBG( awt_fnt, ("look up font: %s\n", buf));
+        DBG( AWT_FNT, printf("look up font: %s\n", buf));
         fs = XLoadQueryFont( X->dsp, buf);
       }
     }
@@ -104,7 +104,7 @@ Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec, ji
   }
 
   if ( ! fs ){
-	DBG(awt,("cannot load font: %s (backup to %s)\n", buf, backupFont));
+	DBG( AWT, printf("cannot load font: %s (backup to %s)\n", buf, backupFont));
 	if ( !(fs = XLoadQueryFont( X->dsp, backupFont)) ) {
 	  fprintf( stderr, "font panic, no default font!\n");
 	}

@@ -147,7 +147,7 @@ createXImage ( Toolkit* X, Image* img )
 #ifdef HAVE_LIBXEXT
   if ( (X->shm == USE_SHM) && (nPix > X->shmThreshold) && (img->alpha == 0) ) {
 	if ( createShmXImage( X, img, depth, False) ){
-	  DBG( awt_img, ( "alloc Shm: %x %x %x (%dx%d) \n", img, img->xImg, img->shmiImg,
+	  DBG( AWT_IMG, printf("alloc Shm: %p %p %p (%dx%d) \n", img, img->xImg, img->shmiImg,
 					  img->width, img->height));
 	  return;
 	}
@@ -157,7 +157,7 @@ createXImage ( Toolkit* X, Image* img )
   data = AWT_CALLOC( nPix, bytes_per_pix);
   img->xImg = XCreateImage( X->dsp, vis, depth, ZPixmap, 0,
 							data, img->width, img->height, bitmap_pad, bytes_per_line);
-  DBG( awt_img, ( "alloc: %x %x (%dx%d)\n", img, img->xImg, img->width, img->height));
+  DBG( AWT_IMG, printf( "alloc: %p %p (%dx%d)\n", img, img->xImg, img->width, img->height));
 }
 
 void
@@ -175,7 +175,7 @@ createXMaskImage ( Toolkit* X, Image* img )
 #ifdef HAVE_LIBXEXT
   if ( (X->shm == USE_SHM) && (nPix > X->shmThreshold) ) {
 	if ( createShmXImage( X, img, 1, True) ){
-	  DBG( awt_img, ( "alloc Shm mask: %x %x %x (%dx%d) \n", img, img->xMask, img->shmiMask,
+	  DBG( AWT_IMG, printf( "alloc Shm mask: %p %p %p (%dx%d) \n", img, img->xMask, img->shmiMask,
 					  img->width, img->height));
 	  return;
 	}
@@ -187,7 +187,7 @@ createXMaskImage ( Toolkit* X, Image* img )
 
   img->xMask = XCreateImage( X->dsp, vis, 1, XYBitmap, 0,
 							 data, img->width, img->height, 8, bytes_per_line );
-  DBG( awt_img, ( "alloc mask: %x %x (%dx%d)\n", img, img->xMask, img->width, img->height));
+  DBG( AWT_IMG, printf( "alloc mask: %p %p (%dx%d)\n", img, img->xMask, img->width, img->height));
 }
 
 
@@ -543,13 +543,13 @@ Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
 	if ( img->xImg ){
 #ifdef HAVE_LIBXEXT
 	  if ( img->shmiImg ) {
-		DBG( awt_img, ( "free Shm: %x %x %x (%dx%d)\n", img, img->xImg, img->shmiImg,
+		DBG( AWT_IMG, printf( "free Shm: %p %p %p (%dx%d)\n", img, img->xImg, img->shmiImg,
 						img->width, img->height));
 		destroyShmXImage( X, img, False);
 	  }
 	  else {
 #endif
-		DBG( awt_img, ( "free: %x %x (%dx%d)\n", img, img->xImg, img->width, img->height));
+		DBG( AWT_IMG, printf( "free: %p %p (%dx%d)\n", img, img->xImg, img->width, img->height));
 		AWT_FREE( img->xImg->data);
 		img->xImg->data = 0;
 		XDestroyImage( img->xImg);
@@ -562,13 +562,13 @@ Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
 	if ( img->xMask ){
 #ifdef HAVE_LIBXEXT
 	  if ( img->shmiMask ) {
-		DBG( awt_img, ( "free Shm mask: %x %x %x (%dx%d)\n", img, img->xMask, img->shmiMask,
+		DBG( AWT_IMG, printf( "free Shm mask: %p %p %p (%dx%d)\n", img, img->xMask, img->shmiMask,
 						img->width, img->height));
 		destroyShmXImage( X, img, True);
 	  }
 	  else {
 #endif
-		DBG( awt_img, ( "free mask: %x %x (%dx%d)\n", img, img->xMask,
+		DBG( AWT_IMG, printf( "free mask: %p %p (%dx%d)\n", img, img->xMask,
 						img->width, img->height));
 		AWT_FREE( img->xMask->data);
 		img->xMask->data = 0;
@@ -775,7 +775,6 @@ Java_java_awt_Toolkit_imgCreateFromData ( JNIEnv* env, jclass clazz,
 void*
 Java_java_awt_Toolkit_imgSetFrame ( JNIEnv* env, jclass clazz, Image* img, int frameNo )
 {
-  int i;
   Image *imgCur = img;
 
   if ( !img->next )

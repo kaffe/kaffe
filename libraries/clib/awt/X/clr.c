@@ -400,7 +400,7 @@ initRgb2True (JNIEnv* env, jclass clazz,  Toolkit* X )
 	 * a 0,0 TrueColor conversion, but (esp. for image manipulations) we can save a lot
 	 * of computation by a special TrueColor mode
 	 */
-	DBG( awt_clr, ("AWT color mode: CM_TRUE_888\n"));
+	DBG( AWT_CLR, printf("AWT color mode: CM_TRUE_888\n"));
 	X->colorMode = CM_TRUE_888;
   }
   else {
@@ -450,10 +450,10 @@ initRgb2True (JNIEnv* env, jclass clazz,  Toolkit* X )
 
 	X->colorMode = CM_TRUE;
 
-	DBG( awt_clr, ("AWT color mode: CM_TRUE\n"));
-	DBG( awt_clr, ("    red:   %8x, %d\n", map->redMask, map->redShift));
-	DBG( awt_clr, ("    green: %8x, %d\n", map->greenMask, map->greenShift));
-	DBG( awt_clr, ("    blue:  %8x, %d\n", map->blueMask, map->blueShift));
+	DBG( AWT_CLR, printf("AWT color mode: CM_TRUE\n"));
+	DBG( AWT_CLR, printf("    red:   %8x, %d\n", map->redMask, map->redShift));
+	DBG( AWT_CLR, printf("    green: %8x, %d\n", map->greenMask, map->greenShift));
+	DBG( AWT_CLR, printf("    blue:  %8x, %d\n", map->blueMask, map->blueShift));
   }
 
   return map;
@@ -607,14 +607,14 @@ initColorMapping ( JNIEnv* env, jclass clazz,  Toolkit* X )
 {
   Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
 
-  DBG( awt_clr, ("X visual:\n"));
-  DBG( awt_clr, ("  id:          %d\n", v->visualid));
-  DBG( awt_clr, ("  class:       %d\n", v->class));
-  DBG( awt_clr, ("  red_mask     %x\n", v->red_mask));
-  DBG( awt_clr, ("  green_mask   %x\n", v->green_mask));
-  DBG( awt_clr, ("  blue_mask    %x\n", v->blue_mask));
-  DBG( awt_clr, ("  bits_per_rgb %x\n", v->bits_per_rgb));
-  DBG( awt_clr, ("  map_entries  %d\n", v->map_entries));
+  DBG( AWT_CLR, printf("X visual:\n"));
+  DBG( AWT_CLR, printf("  id:          %d\n", v->visualid));
+  DBG( AWT_CLR, printf("  class:       %d\n", v->class));
+  DBG( AWT_CLR, printf("  red_mask     %x\n", v->red_mask));
+  DBG( AWT_CLR, printf("  green_mask   %x\n", v->green_mask));
+  DBG( AWT_CLR, printf("  blue_mask    %x\n", v->blue_mask));
+  DBG( AWT_CLR, printf("  bits_per_rgb %x\n", v->bits_per_rgb));
+  DBG( AWT_CLR, printf("  map_entries  %d\n", v->map_entries));
 
   /* check for directly supported color modes / visuals */
   switch ( v->class ) {
@@ -631,7 +631,7 @@ initColorMapping ( JNIEnv* env, jclass clazz,  Toolkit* X )
 	X->colorMode = CM_GENERIC;
   }
 
-  DBG( awt_clr, ("colorMode: %d\n", X->colorMode));
+  DBG( AWT_CLR, printf("colorMode: %d\n", X->colorMode));
 }
 
 
@@ -652,7 +652,7 @@ Java_java_awt_Toolkit_clrGetPixelValue ( JNIEnv* env, jclass clazz, jint rgb )
 	initColorMapping( env, clazz, X);
 
   pix = pixelValue( X, rgb);
-  DBG( awt_clr, ("clrGetPixelValue: %8x -> %x (%d)\n", rgb, pix, pix));
+  DBG( AWT_CLR, printf("clrGetPixelValue: %8x -> %x (%d)\n", rgb, pix, pix));
 
   return pix;
 }
@@ -753,7 +753,6 @@ Java_java_awt_Toolkit_clrGetColorModel ( JNIEnv* env, jclass clazz )
   jclass     cmClazz;
   jmethodID  cmCtorId;
   Visual     *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
-  jint       rm, gm, bm;
 
   if ( !X->colorMode )
 	initColorMapping( env, clazz, X);

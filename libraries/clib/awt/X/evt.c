@@ -153,7 +153,7 @@ jmethodID  getWMEvent;
 
 #define    WM_KILLED           1905
 
-//#if defined(DEBUG)
+#if defined(DEBUG)
 static char *eventStr ( int evtId )
 {
   switch (evtId) {
@@ -184,7 +184,7 @@ static char *eventStr ( int evtId )
   default: return "<unknown>";
   }
 };
-//#endif
+#endif
 
 jobject
 skip ( JNIEnv* env, Toolkit* X )
@@ -493,7 +493,7 @@ clientMessage ( JNIEnv* env, Toolkit* X )
   else if ( X->event.xclient.message_type == FORWARD_FOCUS ) {
 	switch ( X->event.xclient.data.l[0] ){
 	case FWD_SET:
-	  DBG( awt_evt, ("FWD_SET: %x (%d) %x\n", X->event.xany.window, X->srcIdx, X->windows[X->srcIdx].owner));
+	  DBG( AWT_EVT, printf("FWD_SET: %x (%d) %x\n", X->event.xany.window, X->srcIdx, X->windows[X->srcIdx].owner));
 
 	  if ( (X->srcIdx != X->fwdIdx) && (X->focus == X->windows[X->srcIdx].owner) ){
 		X->fwdIdx = X->srcIdx;
@@ -506,7 +506,7 @@ clientMessage ( JNIEnv* env, Toolkit* X )
 	  }
 
 	case FWD_CLEAR:
-	  DBG( awt_evt, ("FWD_CLEAR: %x (%d) %x\n", X->event.xany.window, X->srcIdx, X->windows[X->srcIdx].owner));
+	  DBG( AWT_EVT, printf("FWD_CLEAR: %x (%d) %x\n", X->event.xany.window, X->srcIdx, X->windows[X->srcIdx].owner));
 
 	  if ( X->fwdIdx >= 0 ) {
 		resetFocusForwarding( X);
@@ -518,7 +518,7 @@ clientMessage ( JNIEnv* env, Toolkit* X )
 	  }
 
 	case FWD_REVERT:
-	  DBG( awt_evt, ("FWD_REVERT: %x\n", X->event.xany.window));
+	  DBG( AWT_EVT, printf("FWD_REVERT: %x\n", X->event.xany.window));
 	  if ( X->event.xany.window == X->focus ) {
 		resetFocusForwarding( X);
 		return (*env)->CallStaticObjectMethod( env, FocusEvent, getFocusEvent,
@@ -532,7 +532,7 @@ clientMessage ( JNIEnv* env, Toolkit* X )
 jobject
 reparentNotify ( JNIEnv* env, Toolkit* X )
 {
-  Window    window, parent, root, owner;
+  Window    window, parent, root;
   jclass    clazz = 0;
   jmethodID setDecoInsets = 0;
   int       left, top, right, bottom;
@@ -650,9 +650,10 @@ jobject
 Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
 {
   jclass Component;
-  int r;
+#if defined(UNIX_JTHREADS)
   unsigned long mask;
   XSetWindowAttributes attrs;
+#endif
 
   ComponentEvent = (*env)->FindClass( env, "java/awt/ComponentEvt");
   MouseEvent     = (*env)->FindClass( env, "java/awt/MouseEvt");
@@ -708,7 +709,7 @@ Java_java_awt_Toolkit_evtGetNextEvent ( JNIEnv* env, jclass clazz )
 {
   jobject jEvt = NULL;
 
-  DBG( awt_evt, ("getNextEvent..\n"));
+  DBG( AWT_EVT, printf("getNextEvent..\n"));
 
   while ( nextEvent( env, clazz, X, True) &&
 		  ((getSourceIdx( X, X->event.xany.window) >= 0) || 
@@ -719,7 +720,7 @@ Java_java_awt_Toolkit_evtGetNextEvent ( JNIEnv* env, jclass clazz )
 	}
   }
 
-  DBG( awt_evt, ("..getNextEvent: %d (%s) %d, %x, %x\n",
+  DBG( AWT_EVT, printf("..getNextEvent: %d (%s) %d, %x, %x\n",
 				 X->evtId, eventStr( X->evtId), X->srcIdx, jEvt, X->event.xany.window));
 
   return jEvt;
@@ -730,14 +731,14 @@ Java_java_awt_Toolkit_evtPeekEvent ( JNIEnv* env, jclass clazz )
 {
   jobject jEvt = NULL;
 
-  DBG( awt_evt, ("peekEvent..\n"));
+  DBG( AWT_EVT, printf("peekEvent..\n"));
 
   if ( nextEvent( env, clazz, X, False) && ((getSourceIdx( X, X->event.xany.window) >= 0)) ) {
 	if ( (jEvt = (processEvent[X->event.xany.type])( env, X)) )
 	  X->preFetched = 1;
   }
 
-  DBG( awt_evt, ("..peekEvent: %s %x, %x\n", eventStr(X->evtId), jEvt, X->event.xany.window));
+  DBG( AWT_EVT, printf("..peekEvent: %s %x, %x\n", eventStr(X->evtId), jEvt, X->event.xany.window));
   return jEvt;
 }
 
@@ -775,8 +776,8 @@ Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz )
 {
   XEvent event;
 
-  DBG( awt_evt, ("evtWakeup\n"));
-  //DBG_ACTION( awt, XSynchronize( X->dsp, False));
+  DBG( AWT_EVT, printf("evtWakeup\n"));
+  //DBG( AWT, XSynchronize( X->dsp, False));
 
   event.xclient.type = ClientMessage; 
   event.xclient.message_type = WAKEUP;
@@ -786,7 +787,7 @@ Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz )
   XSendEvent( X->dsp, X->wakeUp, False, 0, &event);
   XFlush( X->dsp);
 
-  //DBG_ACTION( awt, XSynchronize( X->dsp, True));
+  //DBG( AWT, XSynchronize( X->dsp, True));
 }
 
 /*
@@ -808,7 +809,7 @@ Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env, jclass clazz, Window wnd 
    */
   int i = getSourceIdx( X, wnd);
 
-  DBG( awt_evt, ("registerSource( %x) -> %d\n", wnd, i));
+  DBG( AWT_EVT, printf("registerSource( %p) -> %d\n", wnd, i));
 
   return i;
 }
@@ -828,7 +829,7 @@ Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env, jclass clazz, Window wn
   if ( X->lastWindow == wnd )
 	X->lastWindow = 0;
 
-  DBG( awt_evt, ("unregisterSource( %x) -> %d\n", wnd, i));
+  DBG( AWT_EVT, printf("unregisterSource( %p) -> %d\n", wnd, i));
 
   return i;
 }

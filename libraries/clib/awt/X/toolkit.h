@@ -29,6 +29,10 @@
 #include <native.h>
 #include "../../../../kaffe/kaffevm/debug.h"
 
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#endif
+
 /*******************************************************************************
  * color conversion structures
  */
@@ -234,7 +238,7 @@ static __inline__ void* _awt_malloc_wrapper ( size_t size )
   enterUnsafeRegion();
   adr = malloc( size);
   leaveUnsafeRegion();
-  DBG( awt_mem, ("malloc: %d  -> %x\n", size, adr));
+  DBG( AWT_MEM, printf("malloc: %ld  -> %p\n", (unsigned long) size, adr));
   return adr;
 }
 
@@ -244,13 +248,13 @@ static __inline__ void* _awt_calloc_wrapper ( int n, size_t size )
   enterUnsafeRegion();
   adr = calloc( n, size);
   leaveUnsafeRegion();
-  DBG( awt_mem, ("calloc: %d,%d  -> %x\n", n, size, adr));
+  DBG( AWT_MEM, printf("calloc: %ld,%ld  -> %p\n", (unsigned long) n, (unsigned long) size, adr));
   return adr;
 }
 
 static __inline__ void _awt_free_wrapper ( void* adr )
 {
-  DBG( awt_mem, ("free: %x\n", adr));
+  DBG( AWT_MEM, printf("free: %p\n", adr));
   enterUnsafeRegion();
   free( adr);
   leaveUnsafeRegion();
@@ -338,6 +342,7 @@ static __inline__ void* getBuffer ( Toolkit* X, unsigned int nBytes ) {
 #define CM_DIRECT       4
 #define CM_GENERIC      5  /* grays, DirectColor (packed) etc. */
 
+int needsFullAlpha ( Toolkit* X, Image *img, double threshold );
 
 void initColorMapping ( JNIEnv* env, jclass clazz, Toolkit* X);
 jlong Java_java_awt_Toolkit_clrBright ( JNIEnv* env, jclass clazz, jint rgb );
