@@ -1,5 +1,10 @@
 2004-07-30  Helmer Kraemer  <hkraemer@freenet.de>
 
+	* kaffe/kaffevm/jit3/registers.c (move_register): fixed passing of
+	register ids to the backend
+
+2004-07-30  Helmer Kraemer  <hkraemer@freenet.de>
+
 	* kaffe/kaffevm/kaffe.def (GETSTATIC): treat static final fields of
 	initialized classes as constants
 

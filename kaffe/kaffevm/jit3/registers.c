@@ -42,7 +42,7 @@ static void spill(SlotData*);
  */
 kregs reginfo[] = {
 	REGISTER_SET
-	{ /* BAD */	0, 0, 0, 0, 0, 0 }
+	{ /* BAD */	0, 0, 0, 0, 0, 0, 0 }
 };
 
 /**
@@ -210,35 +210,35 @@ move_register(int toreg, int fromreg)
 {
 #if defined(HAVE_move_register_long)
 	if (reginfo[toreg].type & Rlong) {
-		HAVE_move_register_long(toreg, fromreg);
+		HAVE_move_register_long(reginfo[toreg].regno, reginfo[fromreg].regno);
 		return (1);
 	}
 	else
 #endif
 #if defined(HAVE_move_register_int)
 	if (reginfo[toreg].type & (Rint|Rsubint)) {
-		HAVE_move_register_int(toreg, fromreg);
+		HAVE_move_register_int(reginfo[toreg].regno, reginfo[fromreg].regno);
 		return (1);
 	}
 	else
 #endif
 #if defined(HAVE_move_register_ref)
 	if (reginfo[toreg].type & Rref) {
-		HAVE_move_register_ref(toreg, fromreg);
+		HAVE_move_register_ref(reginfo[toreg].regno, reginfo[fromreg].regno);
 		return (1);
 	}
 	else
 #endif
 #if defined(HAVE_move_register_double)
 	if (reginfo[toreg].type & Rdouble) {
-		HAVE_move_register_double(toreg, fromreg);
+		HAVE_move_register_double(reginfo[toreg].regno, reginfo[fromreg].regno);
 		return (1);
 	}
 	else
 #endif
 #if defined(HAVE_move_register_float)
 	if (reginfo[toreg].type & Rfloat) {
-		HAVE_move_register_float(toreg, fromreg);
+		HAVE_move_register_float(reginfo[toreg].regno, reginfo[fromreg].regno);
 		return (1);
 	}
 	else
