@@ -43,11 +43,11 @@ public String(String other) {
 
 public String (StringBuffer sb) {
 
-	count = sb.used;
-	value = sb.buffer;
-
 	// mark this StringBuffer so that it knows we are using it
 	sb.isStringized = true; 
+
+	count = sb.used;
+	value = sb.buffer;
 }
 
 public String( byte[] bytes) {
