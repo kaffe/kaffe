@@ -107,7 +107,7 @@ public abstract class TAudioOutputStream
 	{
 		if (TDebug.TraceAudioOutputStream)
 		{
-			TDebug.out("TAudioOUtputStream.write(): wanted length: " + nLength);
+			TDebug.out("TAudioOutputStream.write(): wanted length: " + nLength);
 		}
 		if (! m_bHeaderWritten)
 		{

@@ -161,7 +161,7 @@ typedef struct codeinfo {
 		FRAME(pc) = ALLOCFRAME();			\
 		if (!FRAME(pc)) {				\
 			meth->accflags &= ~ACC_VERIFIED;	\
-			tidyVerifyMethod(&codeInfo);		\
+			tidyAnalyzeMethod(&codeInfo);		\
 			postOutOfMemory(einfo);			\
 			return false;				\
 		}						\
@@ -252,8 +252,8 @@ typedef struct codeinfo {
 					LCL(L).used = 1
 
 struct _methods;
-bool verifyMethod(struct _methods*, codeinfo**, errorInfo*);
-void tidyVerifyMethod(codeinfo**);
+bool analyzeMethod(struct _methods*, codeinfo**, errorInfo*);
+void tidyAnalyzeMethod(codeinfo**);
 
 extern const uint8 insnLen[];
 

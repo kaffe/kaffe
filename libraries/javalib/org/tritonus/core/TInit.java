@@ -22,250 +22,46 @@
  *
  */
 
-
 package	org.tritonus.core;
 
+import java.util.Iterator;
 
-import	java.util.Iterator;
-
-import	javax.sound.midi.spi.MidiDeviceProvider;
-import	javax.sound.midi.spi.MidiFileReader;
-import	javax.sound.midi.spi.MidiFileWriter;
-import	javax.sound.midi.spi.SoundbankReader;
-
-import	javax.sound.sampled.spi.AudioFileWriter;
-import	javax.sound.sampled.spi.AudioFileReader;
-import	javax.sound.sampled.spi.FormatConversionProvider;
-import	javax.sound.sampled.spi.MixerProvider;
-
-import	org.tritonus.core.TMidiConfig;
-import	org.tritonus.core.TAudioConfig;
-import	org.tritonus.core.Service;
-import	org.tritonus.share.TDebug;
+import org.tritonus.core.Service;
+import org.tritonus.share.TDebug;
 
 
 
+/** Helper methods for provider registration.
+ */
 public class TInit
 {
-	private static interface ProviderRegistrationAction
+	/** Constructor to prevent instantiation.
+	 */
+	private TInit()
 	{
-		public void register(Object provider)
-			throws	Exception;
 	}
 
 
 
-	public static void registerMidiDeviceProviders()
-	{
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): begin");
-		}
-		ProviderRegistrationAction	action = null;
-		action = new ProviderRegistrationAction()
-			{
-				public void register(Object obj)
-					throws	Exception
-					{
-						MidiDeviceProvider	midiDeviceProvider = (MidiDeviceProvider) obj;
-						TMidiConfig.addMidiDeviceProvider(midiDeviceProvider);
-					}
-			};
-		registerClasses(MidiDeviceProvider.class, action);
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): end");
-		}
-	}
+	/** Register all service providers of a certain type.
+	    This method retrieves instances of all service providers of
+	    the type given as providerClass. It registers them by
+	    calling action with the provider instance as actual parameter.
 
+	    @param providerClass Type of the service providers that should
+	    be registered. For instance, this could be the class object for
+	    javax.sound.sampled.spi.MixerProvider. However, the mechanism
+	    is not restricted to the Java Sound types of service providers.
 
-	
-	public static void registerMidiFileReaders()
-	{
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): begin");
-		}
-		ProviderRegistrationAction	action = null;
-		action = new ProviderRegistrationAction()
-			{
-				public void register(Object obj)
-					throws	Exception
-					{
-						MidiFileReader	provider = (MidiFileReader) obj;
-						TMidiConfig.addMidiFileReader(provider);
-					}
-			};
-		registerClasses(MidiFileReader.class, action);
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): end");
-		}
-	}
-
-
-
-	public static void registerMidiFileWriters()
-	{
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): begin");
-		}
-		ProviderRegistrationAction	action = null;
-		action = new ProviderRegistrationAction()
-			{
-				public void register(Object obj)
-					throws	Exception
-					{
-						MidiFileWriter	provider = (MidiFileWriter) obj;
-						TMidiConfig.addMidiFileWriter(provider);
-					}
-			};
-		registerClasses(MidiFileWriter.class, action);
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): end");
-		}
-	}
-
-
-
-	public static void registerSoundbankReaders()
-	{
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): begin");
-		}
-		ProviderRegistrationAction	action = null;
-		action = new ProviderRegistrationAction()
-			{
-				public void register(Object obj)
-					throws	Exception
-					{
-						SoundbankReader	provider = (SoundbankReader) obj;
-						TMidiConfig.addSoundbankReader(provider);
-					}
-			};
-		registerClasses(SoundbankReader.class, action);
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): end");
-		}
-	}
-
-
-
-	public static void registerAudioFileReaders()
-	{
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): begin");
-		}
-		ProviderRegistrationAction	action = null;
-		action = new ProviderRegistrationAction()
-			{
-				public void register(Object obj)
-					throws	Exception
-					{
-						AudioFileReader	provider = (AudioFileReader) obj;
-						TAudioConfig.addAudioFileReader(provider);
-					}
-			};
-		registerClasses(AudioFileReader.class, action);
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): end");
-		}
-	}
-
-
-
-	public static void registerAudioFileWriters()
-	{
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): begin");
-		}
-		ProviderRegistrationAction	action = null;
-		action = new ProviderRegistrationAction()
-			{
-				public void register(Object obj)
-					throws	Exception
-					{
-						AudioFileWriter	provider = (AudioFileWriter) obj;
-						TAudioConfig.addAudioFileWriter(provider);
-					}
-			};
-		registerClasses(AudioFileWriter.class, action);
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): end");
-		}
-	}
-
-
-
-	public static void registerFormatConversionProviders()
-	{
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): begin");
-		}
-		ProviderRegistrationAction	action = null;
-		action = new ProviderRegistrationAction()
-			{
-				public void register(Object obj)
-					throws	Exception
-					{
-						FormatConversionProvider	provider = (FormatConversionProvider) obj;
-						TAudioConfig.addFormatConversionProvider(provider);
-					}
-			};
-		registerClasses(FormatConversionProvider.class, action);
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): end");
-		}
-	}
-
-
-
-	public static void registerMixerProviders()
-	{
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): begin");
-		}
-		ProviderRegistrationAction	action = null;
-		action = new ProviderRegistrationAction()
-			{
-				public void register(Object obj)
-					throws	Exception
-					{
-						MixerProvider	provider = (MixerProvider) obj;
-						TAudioConfig.addMixerProvider(provider);
-					}
-			};
-		registerClasses(MixerProvider.class, action);
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerMidiDeviceProviders(): end");
-		}
-	}
-
-
-
-	private static void registerClasses(Class providerClass,
+	    @param action A ProviderRegistrationAction that should to be
+	    called to register the service providers. Typically, this is
+	    something like adding the provider to a collection, but in
+	    theorie, could be anything.
+	*/
+	public static void registerClasses(Class providerClass,
 					    ProviderRegistrationAction action)
 	{
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerClasses(): begin" );
-		}
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerClasses(): registering for: " + providerClass);
-		}
+		if (TDebug.TraceInit) { TDebug.out("TInit.registerClasses(): registering for: " + providerClass); }
 		Iterator	providers = Service.providers(providerClass);
 		if (providers != null)
 		{
@@ -278,20 +74,26 @@ public class TInit
 				}
 				catch (Throwable e)
 				{
-					if (TDebug.TraceInit || TDebug.TraceAllExceptions)
-					{
-						TDebug.out(e);
-					}
+					if (TDebug.TraceInit || TDebug.TraceAllExceptions) { TDebug.out(e); }
 				}
 			}
 		}
-		if (TDebug.TraceInit)
-		{
-			TDebug.out("TInit.registerClasses(): end");
-		}
 	}
 
+
+
+	/** Action to be taken on registration of a provider.
+	    Strategy objects of this type has to be passed to
+	    {@link #registerClasses registerClasses}. The implementation
+	    is called for each provider that has to be registered.
+	 */
+	public static interface ProviderRegistrationAction
+	{
+		public void register(Object provider)
+			throws Exception;
+	}
 }
+
 
 
 /*** TInit.java ***/

@@ -91,6 +91,10 @@ public class AuAudioOutputStream extends TAudioOutputStream {
 		AudioFormat		format = getFormat();
 		long			lLength = getLength();
 		TDataOutputStream	dos = getDataOutputStream();
+		if (TDebug.TraceAudioOutputStream) {
+		    TDebug.out("AuAudioOutputStream.writeHeader(): AudioFormat: " + format);
+		    TDebug.out("AuAudioOutputStream.writeHeader(): length: " + lLength);
+		}
 
 		dos.writeInt(AuTool.AU_HEADER_MAGIC);
 		dos.writeInt(AuTool.DATA_OFFSET+getTextLength(description));

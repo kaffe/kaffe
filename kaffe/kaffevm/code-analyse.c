@@ -53,12 +53,12 @@ const uint8 insnLen[256] = {
 };
 
 static void mergeFrame(codeinfo*, int, int, frameElement*, Method*);
-static bool verifyBasicBlock(codeinfo*, Method*, int32, errorInfo*);
+static bool analyzeBasicBlock(codeinfo*, Method*, int32, errorInfo*);
 static void updateLocals(codeinfo*, int32, frameElement*);
-static bool verifyCatchClause(jexceptionEntry*, Hjava_lang_Class*, errorInfo*);
+static bool analyzeCatchClause(jexceptionEntry*, Hjava_lang_Class*, errorInfo*);
 
 bool
-verifyMethod(Method* meth, codeinfo **pcodeinfo, errorInfo *einfo)
+analyzeMethod(Method* meth, codeinfo **pcodeinfo, errorInfo *einfo)
 {
 	int32 pc;
 	int32 tabpc;
@@ -268,7 +268,7 @@ DBG(CODEANALYSE,
 			entry = &(meth->exception_table->entry[lcl]);
 			
 			/* Verify catch clause exception has valid type. */
-			succ = verifyCatchClause(entry, meth->class, einfo);
+			succ = analyzeCatchClause(entry, meth->class, einfo);
 			if (succ == false) {
 				return false;
 			}
@@ -340,11 +340,11 @@ DBG(CODEANALYSE,
 		for (bcurr = bhead; bcurr != NULL; bcurr = bcurr->nextBB) {
 			pc = bcurr - codeInfo->perPC;
 			if (IS_NEEDVERIFY(pc)) {
-				failed = verifyBasicBlock(codeInfo, meth, 
+				failed = analyzeBasicBlock(codeInfo, meth, 
 							    pc, einfo);
 
 				if (failed) {
-					tidyVerifyMethod(pcodeinfo);
+					tidyAnalyzeMethod(pcodeinfo);
 					return (false);
 				}
 				rerun = true;
@@ -368,7 +368,7 @@ DBG(CODEANALYSE,
 
 static
 bool
-verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
+analyzeBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 {
 	int32 tabpc;
 	int32 idx;
@@ -2035,7 +2035,7 @@ mergeFrame(codeinfo* codeInfo, int pc, int sp, frameElement* from, Method* meth)
  * Tidy up after verfication data has been finished with.
  */
 void
-tidyVerifyMethod(codeinfo** codeInfo)
+tidyAnalyzeMethod(codeinfo** codeInfo)
 {
 	int pc;
 
@@ -2100,7 +2100,7 @@ updateLocals(codeinfo* codeInfo, int32 pc, frameElement* frame)
  * (e.g. a stack overflow).
  */
 static bool
-verifyCatchClause(jexceptionEntry* eptr, Hjava_lang_Class* class, errorInfo *einfo)
+analyzeCatchClause(jexceptionEntry* eptr, Hjava_lang_Class* class, errorInfo *einfo)
 {
 	if( eptr->catch_idx == 0 ) {
 		/* A finally clause... */

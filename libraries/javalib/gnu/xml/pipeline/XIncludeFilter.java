@@ -1,6 +1,6 @@
 /*
- * $Id: XIncludeFilter.java,v 1.1 2002/12/03 01:27:58 dalibor Exp $
- * Copyright (C) 2001 David Brownell
+ * $Id: XIncludeFilter.java,v 1.2 2003/02/06 21:35:08 dalibor Exp $
+ * Copyright (C) 2001-2002 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -50,7 +50,7 @@ import gnu.xml.util.Resolver;
 
 
 
-// $Id: XIncludeFilter.java,v 1.1 2002/12/03 01:27:58 dalibor Exp $
+// $Id: XIncludeFilter.java,v 1.2 2003/02/06 21:35:08 dalibor Exp $
 
 /**
  * Filter to process an XPointer-free subset of
@@ -58,29 +58,40 @@ import gnu.xml.util.Resolver;
  * use as a kind of replacement for parsed general entities.
  * XInclude works much like the <code>#include</code> of C/C++ but
  * works for XML documents as well as unparsed text files.
- * Restrictions from the 16-May-2001 draft of XInclude are as follows:
+ * Restrictions from the 17-Sept-2002 CR draft of XInclude are as follows:
  *
  * <ul>
  *
- * <li> URIs must not include fragment identifiers.  XInclude (current WDs)
- * specifies the use of XPointer, which is a high overhead non-streaming API.
+ * <li> URIs must not include fragment identifiers.
+ * The CR specifies support for XPointer <em>element()</em> fragment IDs,
+ * which is not currently implemented here.
+ *
+ * <li> <em>xi:fallback</em> handling of resource errors is not
+ * currently supported.
  *
  * <li> DTDs are not supported in included files, since the SAX DTD events
- * must have completely preceded any included file.  Also, the XInclude draft
- * is incomplete in that area, because it doesn't say how it expects to
- * "merge" DTD portions of the infoset with conflicting declarations.
+ * must have completely preceded any included file. 
+ * The CR explicitly allows the DTD related portions of the infoset to
+ * grow as an effect of including XML documents.
+ *
+ * <li> <em>xml:base</em> fixup isn't done.
  *
  * </ul>
  *
  * <p> XML documents that are included will normally be processed using
  * the default SAX namespace rules, meaning that prefix information may
  * be discarded.  This may be changed with {@link #setSavingPrefixes
- * setSavingPrefixes()}.
+ * setSavingPrefixes()}.  <em>You are strongly advised to do this.</em>
+ *
+ * <p> Note that XInclude allows highly incompatible implementations, which
+ * are specialized to handle application-specific infoset extensions.  Some
+ * such implementations can be implemented by subclassing this one, but
+ * they may only be substituted in applications at "user option".
  *
  * <p>TBD: "IURI" handling.
  *
  * @author David Brownell
- * @version $Date: 2002/12/03 01:27:58 $
+ * @version $Date: 2003/02/06 21:35:08 $
  */
 public class XIncludeFilter extends EventFilter implements Locator
 {
@@ -296,12 +307,17 @@ public class XIncludeFilter extends EventFilter implements Locator
 	    }
 	}
 
-	if ("http://www.w3.org/2001/XInclude".equals (uri)
-		&& "include".equals (localName)) {
+	if (!"http://www.w3.org/2001/XInclude".equals (uri)) {
+	    super.startElement (uri, localName, qName, atts);
+	    return;
+	}
+
+	if ("include".equals (localName)) {
 	    String	href = atts.getValue ("href");
 	    String	parse = atts.getValue ("parse");
 	    String	encoding = atts.getValue ("encoding");
 	    URL		url = (URL) uris.peek ();
+	    SAXParseException	x = null;
 
 	    if (href == null)
 		fatal (new SAXParseException (
@@ -313,23 +329,38 @@ public class XIncludeFilter extends EventFilter implements Locator
 		    locator));
 
 	    if (parse == null || "xml".equals (parse))
-		xinclude (url, href);
+		x = xinclude (url, href);
 	    else if ("text".equals (parse))
-		readText (url, href, encoding);
-	    else {
-		ErrorHandler	eh = getErrorHandler ();
-
-		if (eh != null)
-		    eh.error (new SAXParseException (
-			"unknown XInclude parsing rule: " + parse,
-			locator));
+		x = readText (url, href, encoding);
+	    else
+		fatal (new SAXParseException (
+		    "unknown XInclude parsing mode: " + parse,
+		    locator));
+	    if (x == null) {
+		// strip out all child content
+		ignoreCount++;
+		return;
 	    }
 
-	    // strip out all included content
-	    ignoreCount++;
+	    // FIXME the 17-Sept-2002 CR of XInclude says we "must"
+	    // use xi:fallback elements to handle resource errors,
+	    // if they exist.
+	    fatal (x);
 
-	} else
+	} else if ("fallback".equals (localName)) {
+	    fatal (new SAXParseException (
+		"illegal top level XInclude 'fallback' element",
+		locator));
+	} else {
+	    ErrorHandler	eh = getErrorHandler ();
+
+	    // CR doesn't say this is an error
+	    if (eh != null)
+		eh.warning (new SAXParseException (
+		    "unrecognized toplevel XInclude element: " + localName,
+		    locator));
 	    super.startElement (uri, localName, qName, atts);
+	}
     }
 
     public void endElement (String uri, String localName, String qName)
@@ -462,7 +493,7 @@ public class XIncludeFilter extends EventFilter implements Locator
 
     // <xi:include parse='xml' ...>
     // relative to the base URI passed
-    private void xinclude (URL url, String href)
+    private SAXParseException xinclude (URL url, String href)
     throws SAXException
     {
 	XMLReader	helper;
@@ -492,9 +523,9 @@ public class XIncludeFilter extends EventFilter implements Locator
 	    inclusions.addElement (href);
 	    uris.push (url);
 	    helper.parse (new InputSource (href));
+	    return null;
 	} catch (java.io.IOException e) {
-// FIXME: maybe nonfatal
-	    fatal (new SAXParseException (href, locator, e));
+	    return new SAXParseException (href, locator, e);
 	} finally {
 	    pop (href);
 	    locator = savedLocator;
@@ -503,7 +534,7 @@ public class XIncludeFilter extends EventFilter implements Locator
 
     // <xi:include parse='text' ...>
     // relative to the base URI passed
-    private void readText (URL url, String href, String encoding)
+    private SAXParseException readText (URL url, String href, String encoding)
     throws SAXException
     {
 	InputStream	in = null;
@@ -532,11 +563,11 @@ public class XIncludeFilter extends EventFilter implements Locator
 	    while ((count = reader.read (buf, 0, buf.length)) != -1)
 		super.characters (buf, 0, count);
 	    in.close ();
+	    return null;
 	} catch (IOException e) {
-// FIXME: maybe nonfatal
-	    fatal (new SAXParseException (
+	    return new SAXParseException (
 		"can't XInclude text",
-		locator, e));
+		locator, e);
 	}
     }
 }

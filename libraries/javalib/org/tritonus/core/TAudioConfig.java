@@ -38,9 +38,11 @@ import	javax.sound.sampled.spi.MixerProvider;
 
 import	org.tritonus.share.TDebug;
 import	org.tritonus.share.ArraySet;
+import	org.tritonus.core.TInit.ProviderRegistrationAction;
 
 
-
+/** TODO:
+ */
 public class TAudioConfig
 {
 	private static Set		sm_audioFileWriters = null;
@@ -50,6 +52,82 @@ public class TAudioConfig
 
 	private static Mixer.Info	sm_defaultMixerInfo;
 
+
+
+	/** Constructor to prevent instantiation.
+	 */
+	private TAudioConfig()
+	{
+	}
+
+	private static void registerAudioFileReaders()
+	{
+		ProviderRegistrationAction	action = null;
+		action = new ProviderRegistrationAction()
+			{
+				public void register(Object obj)
+					throws	Exception
+					{
+						AudioFileReader	provider = (AudioFileReader) obj;
+						TAudioConfig.addAudioFileReader(provider);
+					}
+			};
+		TInit.registerClasses(AudioFileReader.class, action);
+	}
+
+
+
+	private static void registerAudioFileWriters()
+	{
+		ProviderRegistrationAction	action = null;
+		action = new ProviderRegistrationAction()
+			{
+				public void register(Object obj)
+					throws	Exception
+					{
+						AudioFileWriter	provider = (AudioFileWriter) obj;
+						TAudioConfig.addAudioFileWriter(provider);
+					}
+			};
+		TInit.registerClasses(AudioFileWriter.class, action);
+	}
+
+
+
+	private static void registerFormatConversionProviders()
+	{
+		ProviderRegistrationAction	action = null;
+		action = new ProviderRegistrationAction()
+			{
+				public void register(Object obj)
+					throws	Exception
+					{
+						FormatConversionProvider	provider = (FormatConversionProvider) obj;
+						TAudioConfig.addFormatConversionProvider(provider);
+					}
+			};
+		TInit.registerClasses(FormatConversionProvider.class, action);
+	}
+
+
+
+	private static void registerMixerProviders()
+	{
+		ProviderRegistrationAction	action = null;
+		action = new ProviderRegistrationAction()
+			{
+				public void register(Object obj)
+					throws	Exception
+					{
+						MixerProvider	provider = (MixerProvider) obj;
+						TAudioConfig.addMixerProvider(provider);
+					}
+			};
+		TInit.registerClasses(MixerProvider.class, action);
+	}
+
+
+	////////////////////////////////////////////////////////////////
 
 
 	public static synchronized void addAudioFileReader(AudioFileReader provider)
@@ -78,7 +156,7 @@ public class TAudioConfig
 		if (sm_audioFileReaders == null)
 		{
 			sm_audioFileReaders = new ArraySet();
-			TInit.registerAudioFileReaders();
+			registerAudioFileReaders();
 		}
 		return sm_audioFileReaders;
 	}
@@ -111,7 +189,7 @@ public class TAudioConfig
 		if (sm_audioFileWriters == null)
 		{
 			sm_audioFileWriters = new ArraySet();
-			TInit.registerAudioFileWriters();
+			registerAudioFileWriters();
 		}
 		return sm_audioFileWriters;
 	}
@@ -144,7 +222,7 @@ public class TAudioConfig
 		if (sm_formatConversionProviders == null)
 		{
 			sm_formatConversionProviders = new ArraySet();
-			TInit.registerFormatConversionProviders();
+			registerFormatConversionProviders();
 		}
 		return sm_formatConversionProviders;
 	}
@@ -176,7 +254,7 @@ public class TAudioConfig
 		if (sm_mixerProviders == null)
 		{
 			sm_mixerProviders = new ArraySet();
-			TInit.registerMixerProviders();
+			registerMixerProviders();
 		}
 		return sm_mixerProviders;
 	}

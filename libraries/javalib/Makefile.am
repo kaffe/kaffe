@@ -16,6 +16,7 @@ SRCDIRS = gnu java javax kaffe org
 JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
 KAFFELIBRARYPATH=$(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/
 CLASSPATH=$(LIBDIR):$(srcdir)/Klasses.jar.bootstrap
+JAR=CLASSPATH=$(CLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar
 
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
@@ -2273,8 +2274,8 @@ jar-classes rt.jar: $(LIBDIR)/stamp
 	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	for i in $(gnu_regexp_message_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	rm -f rt.jar
-	CLASSPATH=$(CLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
-	CLASSPATH=$(CLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar -uvf rt.jar $(srcdir)/META-INF
+	$(JAR) -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
+	$(JAR) -uvf rt.jar -C $(srcdir) META-INF/
 
 .PHONY: build-classes Klasses
 build-classes Klasses: rt.jar

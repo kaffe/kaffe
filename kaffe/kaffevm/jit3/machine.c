@@ -161,7 +161,7 @@ translate(Method* xmeth, errorInfo* einfo)
 	}
 
 	/* Scan the code and determine the basic blocks */
-	success = verifyMethod(xmeth, &mycodeInfo, einfo);
+	success = analyzeMethod(xmeth, &mycodeInfo, einfo);
 	if (success == false) {
 		goto done3;
 	}
@@ -360,7 +360,7 @@ SCHK(			sanityCheck();				)
 	installMethodCode(0, xmeth, &ncode);
 
 done:;
-	tidyVerifyMethod(&codeInfo);
+	tidyAnalyzeMethod(&codeInfo);
 
 	reinvoke = false;
 

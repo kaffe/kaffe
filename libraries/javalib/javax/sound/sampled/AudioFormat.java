@@ -133,7 +133,7 @@ public class AudioFormat
 	//when at least one is NOT_SPECIFIED.
 	// support for NOT_SPECIFIED should be consistent in JavaSound...
 	// As a "workaround" I implemented it like this in TFormatConversionProvider
-	private boolean doMatch(int i1, int i2)
+	private static boolean doMatch(int i1, int i2)
 	{
 		return i1 == AudioSystem.NOT_SPECIFIED
 			|| i2 == AudioSystem.NOT_SPECIFIED
@@ -142,7 +142,7 @@ public class AudioFormat
 
 
 
-	private boolean doMatch(float f1, float f2)
+	private static boolean doMatch(float f1, float f2)
 	{
 		return f1 == AudioSystem.NOT_SPECIFIED
 			|| f2 == AudioSystem.NOT_SPECIFIED

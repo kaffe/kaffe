@@ -49,6 +49,11 @@ import java.io.Serializable;
 public abstract class SocketAddress implements Serializable
 {
   /**
+   * Compatible with JDK 1.4+
+   */
+  static final long serialVersionUID = 5215720748342549866L;
+
+  /**
    * Initializes the socket address.
    */
   public SocketAddress()

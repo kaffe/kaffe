@@ -1,3 +1,53 @@
+2003-02-06 Robert N. Gonzalez <Robert.N.Gonzalez@williams.edu>
+	
+	* kaffe/kaffevm/code-analyse.h,
+	kaffe/kaffevm/code-analyse.c:
+	(verifyBasicBlock, tidyVerifyMethod, verifyCatchClause) renamed to
+	(analyzeBasicBlock, tidyAnalyzeMethod, analyzeCatchClause).
+	
+	* kaffe/kaffevm/intrp/machine.c
+	kaffe/kaffevm/jit/machine.c
+	kaffe/kaffevm/jit3/machine.c
+	Adapted to use new funtion names.
+	
+2003-02-06 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Makefile.am:
+	(JAR) new variable.
+
+	* libraries/javalib/java/awt/geom/Dimension2D.java,
+	libraries/javalib/java/awt/geom/Line2D.java,
+	libraries/javalib/java/awt/geom/QuadCurve2D.java,
+	libraries/javalib/java/awt/geom/GeneralPath.java,
+	libraries/javalib/java/awt/color/ColorSpace.java,
+	libraries/javalib/java/awt/color/ICC_ColorSpace.java,
+	libraries/javalib/java/awt/image/ColorModel.java,
+	libraries/javalib/java/net/SocketAddress.java,
+	libraries/javalib/java/net/InetSocketAddress.java,
+	pure-java/math/java/math/BigDecimal.java:
+	Resynced with GNU Classpath.
+
+	* libraries/javalib/gnu/xml/aelfred2/SAXDriver.java,
+	libraries/javalib/gnu/xml/pipeline/XIncludeFilter.java,
+	libraries/javalib/javax/xml/parsers/ClassStuff.java:
+	Resynced with GNU JAXP.
+
+	* libraries/javalib/javax/sound/sampled/AudioFormat.java,
+	libraries/javalib/org/tritonus/core/TAudioConfig.java,
+	libraries/javalib/org/tritonus/core/TInit.java,
+	libraries/javalib/org/tritonus/core/TMidiConfig.java,
+	libraries/javalib/org/tritonus/sampled/file/AuAudioOutputStream.java,
+	libraries/javalib/org/tritonus/share/sampled/convert/TAsynchronousFilteredAudioInputStream.java,
+	libraries/javalib/org/tritonus/share/sampled/file/TAudioOutputStream.java,
+	libraries/javalib/org/tritonus/share/sampled/mixer/TClip.java,
+	libraries/javalib/org/tritonus/share/sampled/mixer/TSoftClip.java:
+	Resynced with Tritonus.
+	
+2003-02-06 Timothy S Stack <stack@cs.utah.edu>
+
+	* libraries/javalib/Makefile.am:
+	Always use -C $(srcdir) as jar parameter to get paths right.
+	
 2003-02-06 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Makefile.am:
@@ -37,7 +87,7 @@
 	* libraries/javalib/Makefile.in:
 	regenerated.
 	
-2003-01-02 Timothy S Stack <stack@cs.utah.edu>
+2003-02-02 Timothy S Stack <stack@cs.utah.edu>
 
 	* Makefile.am, 
 	config/Makefile.am,

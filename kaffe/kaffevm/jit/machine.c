@@ -241,7 +241,7 @@ DBG(MOREJIT,
 	}
 
 	/* Scan the code and determine the basic blocks */
-	success = verifyMethod(meth, &codeInfo, einfo);
+	success = analyzeMethod(meth, &codeInfo, einfo);
 	if (success == false) {
 		goto done3;
 	}
@@ -395,7 +395,7 @@ DBG(JIT,	dprintf("pc = %d, npc = %d\n", pc, npc);	)
 	installMethodCode(codeInfo, meth, &ncode);
 
 done:
-	tidyVerifyMethod(&codeInfo);
+	tidyAnalyzeMethod(&codeInfo);
 
 DBG(JIT,
 	dprintf("Translated %s.%s%s (%s) %p\n", meth->class->name->data, 
