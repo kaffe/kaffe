@@ -37,20 +37,35 @@ exception statement from your version. */
 
 package gnu.java.rmi.server;
 
-import java.io.ObjectInputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.ObjID;
-import java.rmi.server.RMIServerSocketFactory;
-import java.rmi.server.RemoteRef;
-import java.rmi.server.RemoteServer;
 import java.rmi.server.RemoteStub;
-import java.rmi.server.ServerNotActiveException;
+import java.rmi.server.ObjID;
 import java.rmi.server.ServerRef;
+import java.rmi.server.RemoteServer;
+import java.rmi.server.RemoteRef;
+import java.rmi.server.ServerNotActiveException;
+import java.rmi.server.RMIClientSocketFactory;
+import java.rmi.server.RMIServerSocketFactory;
+import java.rmi.server.UID;
 import java.rmi.server.Skeleton;
+import java.rmi.server.RemoteCall;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.Thread;
+import java.lang.Exception;
+import java.io.IOException;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Hashtable;
 
 public class UnicastServerRef
@@ -269,7 +284,16 @@ public Object incomingMessageCall(UnicastConnection conn, int method, long hash)
 		try{
 		    ret = meth.invoke(myself, args);
 		}catch(InvocationTargetException e){
-		    throw (Exception)(e.getTargetException());
+                    Throwable cause = e.getTargetException();
+                    if (cause instanceof Exception) {
+                        throw (Exception)cause;
+                    }
+                    else if (cause instanceof Error) {
+                        throw (Error)cause;
+                    }
+                    else {
+                        throw new Error("The remote method threw a java.lang.Throwable that is neither java.lang.Exception nor java.lang.Error.", e);
+                    }
 		}
 		return ret;
 	}

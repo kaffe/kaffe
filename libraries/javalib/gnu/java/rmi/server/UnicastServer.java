@@ -37,18 +37,23 @@ exception statement from your version. */
 
 package gnu.java.rmi.server;
 
-import gnu.java.rmi.dgc.DGCImpl;
-
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.rmi.NoSuchObjectException;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
-import java.rmi.server.ObjID;
-import java.rmi.server.UID;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Hashtable;
+import java.net.UnknownHostException;
+import java.rmi.Remote;
+import java.rmi.ServerError;
+import java.rmi.server.ObjID;
+import java.rmi.server.UnicastRemoteObject;
+import java.rmi.server.UID;
+import java.rmi.server.RemoteRef;
+import java.rmi.RemoteException;
+import java.rmi.NoSuchObjectException;
+import gnu.java.rmi.dgc.DGCImpl;
 
 public class UnicastServer
 	implements ProtocolConstants {
@@ -132,6 +137,10 @@ private static void incomingMessageCall(UnicastConnection conn) throws IOExcepti
 			returnval = e;
 			returncode = RETURN_NACK;
 		}
+                catch (Error e) {
+			returnval = new ServerError ("An Error is thrown while processing the invocation on the server", e);
+			returncode = RETURN_NACK;
+                }
 	}
 	else {
 		returnval = new NoSuchObjectException("");
