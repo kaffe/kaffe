@@ -171,11 +171,12 @@ java_lang_Class_newInstance(struct Hjava_lang_Class* this)
  *
  * Note that the specs demands to return null if the class object is an
  * interface or the class object representing java.lang.Object.
- * That is, we're asked to NOT report superinterfaces for interfaces.
  *
- * NB: Since the class file (wrongly?) says that ALL interfaces extend 
- * java.lang.Object, our superclass pointer will ALWAYS point to ObjectClass,
- * thus the necessity for the extra test.  See also getMethods0.
+ * That is, we're asked to NOT report superinterfaces for interfaces.
+ * That would be impossible anyway since the spec says that the super_class
+ * attribute in a class file describing an interface must point to
+ * java.lang.Object.  An interface is considered to "implement" its
+ * superinterface(s).  See also getInterfaceMethods0.
  */
 struct Hjava_lang_Class*
 java_lang_Class_getSuperclass(struct Hjava_lang_Class* this)
@@ -450,7 +451,7 @@ makeField(struct Hjava_lang_Class* clazz, int slot)
  
 /*
  * count the number of methods in a class that are not constructors.
- * If declared is not set, count only public methods
+ * If declared is not set, count only public methods.
  */
 static int
 countMethods(struct Hjava_lang_Class* clas, jint declared)
@@ -487,12 +488,17 @@ addMethods(struct Hjava_lang_Class* clas, jint declared,
 }
 
 /*
- * reflect all methods implemented by an interface or one of its 
- * super interfaces.
+ * Reflect all methods implemented by an interface or one of its 
+ * superinterfaces.
  *
- * Note that we do not reach the super interface via superclass--the
- * compiler will compile a construct "interface A extends B" as 
- * "interface A implements B", hence we look in interfaces.
+ * Note that we do not reach the "superinterface" via the superclass pointer.
+ * See the VM Spec, which says:
+ *
+ *   "The implements clause in a [interface] class declaration lists the 
+ *    names of interfaces that are direct superinterfaces of the [interface]
+ *    class being declared."
+ *
+ * Hence we must look at the interfaces list for superinterfaces.
  */
 static
 HArrayOfObject*
