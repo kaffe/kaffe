@@ -5,6 +5,7 @@ Thu May 11 15:11:22 PDT 2000  Archie Cobbs <archie@whistle.com>
 	* kaffe/kaffe/main.c: display inner exception when we catch an
 	ExceptionInInitializerError
 	* libraries/javalib/java/lang/ExceptionInInitializerError: simplify
+	* libraries/javalib/kaffe/io/ConverterAlias.java: add "8859_1" aliases
 
 Wed May 10 17:02:37 MDT 2000 Patrick A Tullmann  <tullmann@cs.utah.edu>
 
