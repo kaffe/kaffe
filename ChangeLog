@@ -1,5 +1,14 @@
 2004-02-02  Dalibor Topic <robilad@kaffe.org>
 
+        Resynced with GNU Classpath.
+
+	2004-01-21  Jeroen Frijters  <jeroen@frijters.net>
+
+        * gnu/java/io/PlatformHelper.java (isRootDirectory): Fixed, by
+        delegating to beginWithRootPathPrefix.
+
+2004-02-02  Dalibor Topic <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2004-01-25  Michael Koch  <konqueror@gmx.de>

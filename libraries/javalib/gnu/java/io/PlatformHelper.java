@@ -92,18 +92,8 @@ public class PlatformHelper
    */
   public static final boolean isRootDirectory(String path)
   {
-    if (path.equals("/") || path.equals("\\"))
-      return true;
-    
-    if(!isWindows)
-      return false;
-    
-    if (path.length() > 2
-        && path.length() <= 3
-        && Character.isLetter(path.charAt(0)))
-      return true;
-    
-    return false;
+    int len = path.length();
+    return len > 0 && beginWithRootPathPrefix(path) == len;
   }
 
   /**
