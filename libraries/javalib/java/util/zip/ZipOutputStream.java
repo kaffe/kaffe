@@ -20,7 +20,10 @@ import kaffe.util.UTF8;
 
 public class ZipOutputStream extends DeflaterOutputStream
 	implements ZipConstants {
- 
+
+  public static final int STORED = Deflater.NO_COMPRESSION;
+  public static final int DEFLATED = Deflater.DEFLATED;
+
 private static final int ZIPVER_1_0 = 0x000a;
 private static final int ZIPVER_2_0 = 0x0014;
 
