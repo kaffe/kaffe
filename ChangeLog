@@ -1,3 +1,23 @@
+Wed Mar  3 00:06:45 PST 1999  Aaron Place <beavis@ihug.co.nz>
+
+	* libraries/javalib/java/lang: Class, ClassLoader, Long,
+	NullSecurityManager, ProcessInputStream, Runtime,
+	SecurityManager, String, ThreadGroup: changed various
+	methods and classes to be non-public, non-final etc
+
+	* libraries/javalib/java/lang/reflect: Array, Compiler,
+	Constructor.java, Field.java, Method.java, Package: provide
+	private constructor and make final
+
+	* libraries/javalib/java/lang/reflect/InvocationTargetException.java:
+	changed public InvocationTargetException() to protected,
+	changed InvocationTargetException(String) to
+	InvocationTargetException(Throwable,String)
+
+	* libraries/javalib/kaffe/net/www/protocol/system/
+	SystemURLConnection.java: use ClassLoader.getSystemResourceAsStream
+	instead of getSystemResourceAsBytes0, which is not public
+
 Mon Mar  1 23:46:22 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/mem/gc-incremental.c,
