@@ -28,10 +28,10 @@ thread_dummy(char *s, ...)
  * We return '1' if the exchange is sucessful, otherwise 0.
  */
 int __aix_cmpxchg(void **A, void *O, void *N) {
-	int tmp, ret = 0;
+	int tmp, ret;
 
 	asm volatile(
-	"	eieio\n"
+	"	li	%1,0\n"
 	"L..cax1:	lwarx	%0,0,%3\n"
 	"	cmpw	0,%0,%4\n"
 	"	bne	L..cax2\n"

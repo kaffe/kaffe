@@ -30,13 +30,16 @@
  * Do an atomic compare and exchange.  The address 'A' is checked against
  * value 'O' and if they match it's exchanged with value 'N'.
  * We return '1' if the exchange is sucessful, otherwise 0.
+ *
+ * If you change this, don't forget to change not inlined version in
+ * aix/md.c and netbsd1/md.c
  */
 #define COMPARE_AND_EXCHANGE(A,O,N)		\
 ({						\
-	int tmp, ret = 0;			\
+	int tmp, ret;				\
 						\
 	asm volatile(				\
-	"	eieio\n"			\
+	"	li	%1,0\n"			\
 	"1:	lwarx	%0,0,%3\n"		\
 	"	cmpw	0,%0,%4\n"		\
 	"	bne	2f\n"			\
