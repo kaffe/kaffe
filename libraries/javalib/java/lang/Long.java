@@ -144,9 +144,9 @@ private static String toUnsignedString(long i, int bits) {
 	}
 
 	StringBuffer buf = new StringBuffer();
-	long radix = 1 << bits, mask = radix-1;
+	int radix = 1 << bits, mask = radix-1;
 	while (i != 0) {
-		char digit = Character.forDigit((int)(i & mask), (int)radix);
+		char digit = Character.forDigit(((int)i) & mask, radix);
 		i >>>= bits;
 		buf.append(digit);
 	}
