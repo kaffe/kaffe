@@ -283,7 +283,7 @@ public String toString() {
  */
 static Class getStackClass(int frame) {
 	Class[] classStack = System.getSecurityManager().getClassContext();
-	frame += 2;
+	frame += 3;
 	if (frame >= 0 && frame < classStack.length)
 		return classStack[frame];
 	return null;
