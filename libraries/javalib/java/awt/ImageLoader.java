@@ -45,6 +45,9 @@ public synchronized void imageComplete ( int status ) {
 		// give native layer a chance to do alpha channel reduction
 		if ( !(img.producer instanceof ImageNativeProducer) )
 			Toolkit.imgComplete( img.nativeData, status);
+		img.stateChange( s, 0, 0, img.width, img.height);
+		img.producer.removeConsumer( this);	
+		img = null; 	// we are done with it, prevent memory leaks
 	}
 	else if ( status == SINGLEFRAMEDONE ) {
 		s = ImageObserver.FRAMEBITS;
@@ -52,20 +55,26 @@ public synchronized void imageComplete ( int status ) {
 		// This is a (indefinite) movie production - move it out of the way (in its own thread)
 		// so that we can go on with useful work. Note that if our producer was a ImageNativeProducer,
 		// the whole external image has been read in already (no IO required, anymore)
-		new ImageFrameLoader( img);
+
+		if ( img.producer instanceof ImageNativeProducer ) {
+		  new ImageFrameLoader( img);
+		  img.stateChange( s, 0, 0, img.width, img.height);
+		  img.producer.removeConsumer( this);	
+		  img = null; 	// we are done with it, prevent memory leaks
+		}
+		else {
+		  img.stateChange( s, 0, 0, img.width, img.height);
+		}
 	}
 	else {
 		if ( (status & IMAGEERROR) != 0 )       s |= ImageObserver.ERROR;
 		if ( (status & IMAGEABORTED) != 0 )     s |= ImageObserver.ABORT;
+		img.stateChange( s, 0, 0, img.width, img.height);
+		img.producer.removeConsumer( this);	
+		img = null; 	// we are done with it, prevent memory leaks
 	}
 
-	img.stateChange( s, 0, 0, img.width, img.height);
 
-	// this has to be called *after* a optional ImageFrameLoader went into action, since
-	// the producer might decide to stop if it doesn't have another consumer
-	img.producer.removeConsumer( this);
-	
-	img = null; 	// we are done with it, prevent memory leaks
 	if ( this == asyncLoader )
 		notify();     // in case we had an async producer
 }

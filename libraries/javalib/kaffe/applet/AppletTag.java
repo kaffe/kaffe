@@ -260,7 +260,8 @@ public static AppletTag[] parseForApplets(InputStream is) throws IOException
     int ttype;
 
     st.lowerCaseMode( true);
-    st.ordinaryChar('/');
+    st.wordChars('/', '/');
+    st.wordChars(':', ':');
 
     while ( (ttype = st.nextToken()) != st.TT_EOF ) {
         if ( ttype == '<' ) {

@@ -1,3 +1,17 @@
+2003-10-27  Ross Martin <hacker@ross.interwrx.com>
+
+	* libraries/javalib/java/awt/ImageLoader.java:
+	(imageComplete) Do not start a new ImageFrameLoader
+	for Image streams that an ImageFrameLoader can't
+	handle, but ImageLoader handles fine.
+
+	* libraries/javalib/kaffe/applet/AppletTag.java:
+	(parseParam) Treat ':' and '/' as normal alphabetic
+	characters. This is necessary to get it to treat 
+	"http://xxx.yyy.zzz" as being a single token in its 
+	parser, which is necessary for correct parsing of web
+	addresses. 	
+
 2003-10-27  Dalibor Topic <robilad@kafe.org>
 
 	* libraries/javalib/java/util/jar/Attributes.java,
