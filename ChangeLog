@@ -1,3 +1,15 @@
+Thu Feb 24 10:28:53 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/TimerTask.java,
+	libraries/javalib/java/util/Timer.java: add scheduledExecutionTime()
+
+Wed Feb 23 13:02:40 CET 2000  Moses DeJong <dejong@cs.umn.edu>
+
+        * test/regression/BeanBug.java, test/regression/MethodBug.java:
+	fixed spelling of author's name
+	* libraries/extensions/tools/javalib/kaffe/tools/jar/Jar.java:
+	fixed writing of directory entries to a jar file.
+
 Wed Feb 23 09:46:26 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/kaffe/util/UTF8.java: add new decode() methods
