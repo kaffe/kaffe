@@ -139,7 +139,7 @@ public synchronized String substring(int start, int end) {
 	if (start < 0 || end > used || length < 0)
 		throw new StringIndexOutOfBoundsException();
 	if (buffer.length - length > String.STRINGBUFFER_SLOP)
-		return new String(buffer, start, end);
+		return new String(buffer, start, length);
 	else {
 		isStringized = true;
 		return new String(start, end, buffer);
