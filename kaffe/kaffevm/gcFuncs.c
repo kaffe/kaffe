@@ -174,11 +174,11 @@ DBG(CLASSGC,
         KFREE(clazz->if2itable);
 	if( clazz->itable2dtable )
 	{
-		j = 0;
-		for( i = 0; i < clazz->total_interface_len; i++ )
-		{
-			j += clazz->interfaces[i]->msize + 1;
-		}
+		/* NB: we can't just sum up the msizes of the interfaces
+		 * here because they might be destroyed simultaneously
+		 */
+		j = GC_getObjectSize(collector, clazz->itable2dtable) 
+			/ sizeof (void*);
 		for( i = 0; i < j; i++ )
 		{
 			if (GC_getObjectIndex(collector,
