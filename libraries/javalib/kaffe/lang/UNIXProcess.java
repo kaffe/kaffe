@@ -71,6 +71,9 @@ public UNIXProcess(String argv[], String arge[]) {
 native public void destroy();
 
 public int exitValue() {
+
+	if (isalive) 
+		throw new IllegalThreadStateException();
 	return exit_code;
 }
 
