@@ -47,7 +47,6 @@ java_lang_reflect_Constructor_getModifiers(struct Hjava_lang_reflect_Constructor
 jobject
 Java_java_lang_reflect_Constructor_newInstance(JNIEnv* env, jobject _this, jarray argobj)
 {
-	Hjava_lang_Object* obj;
 	/* 
 	 * We fake a java.lang.reflect.Method Object so that we can call
 	 * Java_java_lang_reflect_Method_invoke from here.
@@ -67,5 +66,6 @@ Java_java_lang_reflect_Constructor_newInstance(JNIEnv* env, jobject _this, jarra
 	unhand(meth)->parameterTypes = unhand(this)->parameterTypes;
 	unhand(meth)->exceptionTypes = unhand(this)->exceptionTypes;
 
-	return Java_java_lang_reflect_Method_invoke(env, (jobject)meth, (jobject)obj, argobj);
+	return Java_java_lang_reflect_Method_invoke(env, (jobject)meth, 
+			(jobject)NULL, argobj);
 }
