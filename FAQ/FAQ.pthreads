@@ -16,6 +16,8 @@ Limitation
 
 * Certain I/O operations cannot be interrupted.
 
+* We do not support asynchronous exceptions via Thread.stop()
+
 SMP support
 -----------
 
