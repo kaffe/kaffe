@@ -102,3 +102,24 @@ addLineNumbers(Method* m, uint32 len, classFile* fp)
 	GC_WRITE(m, lines);
 	m->lines = lines;
 }
+
+/*
+ * Read in (checked) exceptions declared for a method
+ */
+void    
+addCheckedExceptions(struct _methods* m, uint32 len, classFile* fp)
+{
+	int i;
+	u2 nr;
+	constIndex *idx;
+
+	readu2(&nr, fp);
+	m->ndeclared_exceptions = nr;
+	idx = gc_malloc(sizeof(constIndex) * nr, GC_ALLOC_NOWALK);
+	GC_WRITE(m, idx);
+	m->declared_exceptions = idx;
+
+	for (i = 0; i < nr; i++) {
+		readu2(idx + i, fp);
+	}
+}

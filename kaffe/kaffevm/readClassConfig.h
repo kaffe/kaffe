@@ -118,6 +118,9 @@
 				readu2(&idx, fp);			\
 				setFieldValue((Field*)thing, idx);	\
 			}						\
+			else if (equalUtf8Consts(name, Exceptions_name)){ \
+				addCheckedExceptions((Method*)thing, len, fp);\
+			}						\
 			else {						\
 				seekm(fp, len);				\
 			}						\

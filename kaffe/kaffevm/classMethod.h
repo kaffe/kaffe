@@ -134,6 +134,8 @@ typedef struct _methods {
 	Hjava_lang_Class*	class;
 	struct _lineNumbers*	lines;
 	struct _jexception*	exception_table;
+	u2			ndeclared_exceptions;
+	constIndex*		declared_exceptions;
 } methods;
 
 typedef struct _dispatchTable {
@@ -282,5 +284,6 @@ extern Utf8Const* void_signature;	/* "()V" */
 extern Utf8Const* Code_name;		/* "Code" */
 extern Utf8Const* LineNumberTable_name;	/* "LineNumberTable" */
 extern Utf8Const* ConstantValue_name;	/* "ConstantValue" */
+extern Utf8Const* Exceptions_name;	/* "Exceptions" */
 
 #endif

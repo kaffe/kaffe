@@ -36,6 +36,7 @@ Utf8Const* constructor_name;
 Utf8Const* Code_name;
 Utf8Const* LineNumberTable_name;
 Utf8Const* ConstantValue_name;
+Utf8Const* Exceptions_name;
 
 static Hjava_lang_Class dummyClassClass;
 Hjava_lang_Class* ClassClass = &dummyClassClass;
@@ -98,6 +99,7 @@ initialiseKaffe(void)
 	Code_name = makeUtf8ConstFixed("Code", -1);
 	LineNumberTable_name = makeUtf8ConstFixed("LineNumberTable", -1);
 	ConstantValue_name = makeUtf8ConstFixed("ConstantValue", -1);
+	Exceptions_name = makeUtf8ConstFixed("Exceptions", -1);
 
 	/* Read in base classes */
 	initBaseClasses();

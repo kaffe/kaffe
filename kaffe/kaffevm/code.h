@@ -40,5 +40,6 @@ struct _classFile;
 
 void	addCode(struct _methods*, uint32, struct _classFile*);
 void	addLineNumbers(struct _methods*, uint32, struct _classFile*);
+void	addCheckedExceptions(struct _methods*, uint32, struct _classFile*);
 
 #endif
