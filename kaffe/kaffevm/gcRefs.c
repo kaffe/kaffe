@@ -146,7 +146,7 @@ liveThreadWalker(void *tid)
 {
   Collector *c = running_collector;
 
-  GC_walkMemory(c, tid);
+  GC_markObject(c, tid);
   TwalkThread(c, (Hjava_lang_Thread *)tid);
 }
 
@@ -168,7 +168,7 @@ DBG(GCWALK,
         /* Walk the referenced objects */
         for (i = 0; i < REFOBJHASHSZ; i++) {
                 for (robj = refObjects.hash[i]; robj != 0; robj = robj->next) {
-                        GC_markObject(collector, robj->mem);
+                        GC_markObject(collector, (void *) robj->mem);
                 }
         }
 
