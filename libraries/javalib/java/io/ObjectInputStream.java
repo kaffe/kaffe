@@ -1946,24 +1946,24 @@ public class ObjectInputStream extends InputStream
 	System.loadLibrary ("io");
       }
   }
+
+  // used to keep a prioritized list of object validators
+  private static final class ValidatorAndPriority implements Comparable
+  {
+    int priority;
+    ObjectInputValidation validator;
+
+    ValidatorAndPriority (ObjectInputValidation validator, int priority)
+    {
+      this.priority = priority;
+      this.validator = validator;
+    }
+
+    public int compareTo (Object o)
+    {
+      ValidatorAndPriority vap = (ValidatorAndPriority)o;
+      return this.priority - vap.priority;
+    }
+  }
 }
 
-
-// used to keep a prioritized list of object validators
-class ValidatorAndPriority implements Comparable
-{
-  int priority;
-  ObjectInputValidation validator;
-
-  ValidatorAndPriority (ObjectInputValidation validator, int priority)
-  {
-    this.priority = priority;
-    this.validator = validator;
-  }
-
-  public int compareTo (Object o)
-  {
-    ValidatorAndPriority vap = (ValidatorAndPriority)o;
-    return this.priority - vap.priority;
-  }
-}

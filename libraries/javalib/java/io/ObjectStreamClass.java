@@ -897,34 +897,33 @@ outer:
   // but it will avoid showing up as a discrepancy when comparing SUIDs.
   private static final long serialVersionUID = -6120832682080437368L;
 
-}
 
-
-// interfaces are compared only by name
-class InterfaceComparator implements Comparator
-{
-  public int compare(Object o1, Object o2)
+  // interfaces are compared only by name
+  private static final class InterfaceComparator implements Comparator
   {
-    return ((Class) o1).getName().compareTo(((Class) o2).getName());
+    public int compare(Object o1, Object o2)
+    {
+      return ((Class) o1).getName().compareTo(((Class) o2).getName());
+    }
   }
-}
 
 
-// Members (Methods and Constructors) are compared first by name,
-// conflicts are resolved by comparing type signatures
-class MemberComparator implements Comparator
-{
-  public int compare(Object o1, Object o2)
+  // Members (Methods and Constructors) are compared first by name,
+  // conflicts are resolved by comparing type signatures
+  private static final class MemberComparator implements Comparator
   {
-    Member m1 = (Member) o1;
-    Member m2 = (Member) o2;
+    public int compare(Object o1, Object o2)
+    {
+      Member m1 = (Member) o1;
+      Member m2 = (Member) o2;
 
-    int comp = m1.getName().compareTo(m2.getName());
+      int comp = m1.getName().compareTo(m2.getName());
 
-    if (comp == 0)
-      return TypeSignature.getEncodingOfMember(m1).
-	compareTo(TypeSignature.getEncodingOfMember(m2));
-    else
-      return comp;
+      if (comp == 0)
+        return TypeSignature.getEncodingOfMember(m1).
+	  compareTo(TypeSignature.getEncodingOfMember(m2));
+      else
+        return comp;
+    }
   }
 }

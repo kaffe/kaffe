@@ -1052,11 +1052,3 @@ public class SecurityManager
       }
   }
 } // class SecurityManager
-
-// XXX This class is unnecessary.
-class SecurityContext {
-	Class[] classes;
-	SecurityContext(Class[] classes) {
-		this.classes = classes;
-	}
-}

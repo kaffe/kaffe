@@ -144,14 +144,15 @@ public static double toRadians(double angdeg) {
 	return(angdeg * PI / 180);
 }
 
+    /**
+     * This is here we we only init the random number generator when we
+     * actually use it.
+     */
+    private static final class MathRandom {
+	
+	static Random random = new Random();
+	
+    }
+
 }
 
-/**
- * This is here we we only init the random number generator when we
- * actually use it.
- */
-class MathRandom {
-
-static Random random = new Random();
-
-}
