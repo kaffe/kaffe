@@ -88,6 +88,25 @@ final public synchronized void copyInto ( Object anArray[] ) {
 	System.arraycopy( elementData, 0, anArray, 0, elementCount);
 }
 
+public synchronized Object[] toArray() {
+    Object objs[] = new Object[elementCount];
+    copyInto(objs);
+    return objs;
+}
+
+public synchronized Object[] toArray( Object anArray[] ) {
+    if (anArray.length < elementCount) {
+	anArray = (Object[])java.lang.reflect.Array.newInstance(
+		anArray.getClass().getComponentType(),
+		elementCount);
+    }
+    copyInto(anArray);
+    for (int i = anArray.length; i-- > elementCount; ) {
+	anArray[i] = null;
+    }
+    return anArray;
+}
+
 final public synchronized Object elementAt ( int index ) {
   // required because we might have a large enough, pre-allocated, empty element
   // array that doesn't give us (physical) access errors
