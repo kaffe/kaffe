@@ -39,6 +39,7 @@ TESTS = \
 	TestCasts.java \
 	Alias.java \
 	NullPointerTest.java \
+	TableSwitch.java \
 	LostFrame.java \
 	ConstructorTest.java \
 	burford.java \

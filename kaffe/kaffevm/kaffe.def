@@ -1720,20 +1720,20 @@ define_insn(TABLESWITCH)
 
 	end_sub_block();
 	cbranch_int_const_lt(stack(0), low, reference_label(TABLESWITCH, 8));
+	cbranch_int_const_le(stack(0), high, reference_label(TABLESWITCH, 7));
+
+	start_sub_block();
+	set_label(TABLESWITCH, 8);
+	move_int_const(stack(0), low-3); /* Position at default entry */
+	end_sub_block();
+
+	start_sub_block();
+	set_label(TABLESWITCH, 7);
 	if (low != 0) {
 		start_sub_block();
 		sub_int_const(stack(0), stack(0), low);
 		end_sub_block();
 	}
-	cbranch_int_const_le(stack(0), high-low, reference_label(TABLESWITCH, 7));
-
-	start_sub_block();
-	set_label(TABLESWITCH, 8);
-	move_int_const(stack(0), -3); /* Position at default entry */
-	end_sub_block();
-
-	start_sub_block();
-	set_label(TABLESWITCH, 7);
 	lshl_int_const(stack(0), stack(0), switchtable_shift);
 	move_label_const(tmp2, reference_table_label(9));
 	add_ref(stack(0), tmp2, stack(0));
