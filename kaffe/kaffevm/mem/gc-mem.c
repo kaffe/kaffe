@@ -30,7 +30,9 @@
 
 extern iLock* gc_lock;
 
+#if defined(KAFFE_STATS)
 static counter gcpages;
+#endif
 static gc_block* gc_small_block(size_t);
 static gc_block* gc_large_block(size_t);
 
@@ -880,7 +882,9 @@ gc_block_alloc(size_t size)
 		uintp old_blocks = gc_block_base;
 		int onb = nblocks;
 		int min_nb;	/* minimum size of array to hold heap_addr */
+#if defined(KAFFE_STATS)
 		static timespent growtime;
+#endif
 
 		startTiming(&growtime, "gctime-blockrealloc");
 		/* Pick a new size for the gc_block array.  Remember,
