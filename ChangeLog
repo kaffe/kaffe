@@ -1,3 +1,11 @@
+2003-02-08 Dalibor Topic <robilad@yahoo.com>
+
+	* FAQ/FAQ.requiredlibraries:
+	Updated information for AWT and sound. Sorted libraries into
+	groups. Updated broken links.
+
+	Reported by: Calvin Kaiwen <cal_kaiwen@hotmail.com>
+	
 2003-02-07 Helmer Kraemer  <hkraemer@freenet.de>
 
 	* configure.in:
