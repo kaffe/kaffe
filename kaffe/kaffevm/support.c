@@ -792,10 +792,11 @@ print_time_spent(void)
 		tot_usage.ru_stime.tv_sec, tot_usage.ru_stime.tv_usec);
 }
 
-/* Disable interrupts and start timing some portion of JVM activity.
+/* Start timing some portion of JVM activity.
  * If we are called for the first time, install the exit function
  * to print timings.  If we are called for the first time on a counter,
  * initialize it and add it to the list of all counters.
+ * Caller is responsible for synchronization.
  */
 void
 startTiming(timespent *counter, char *name)
@@ -835,8 +836,8 @@ startTiming(timespent *counter, char *name)
 	(D).tv_sec += (S).tv_sec;		\
 }
 
-/* End a timing run.  Adjust total time for this counter and enable
- * interrupts.
+/*
+ * End a timing run.  Adjust total time for this counter.
  */
 void
 stopTiming(timespent *counter)
