@@ -1,5 +1,5 @@
 /*
- * java.lang.UNIXProcess.c
+ * kaffe.lang.UNIXProcess.c
  *
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
@@ -8,159 +8,140 @@
  * of this file. 
  */
 
-#define	DBG(s)
+/* Note: this file uses JNI throughout. */
 
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "config-io.h"
 #include "config-signal.h"
-#include "files.h"
-#include "FileDescriptor.h"
-#include "UNIXProcess.h"
-#include "../../../kaffe/kaffevm/support.h"
-#include "../../../kaffe/kaffevm/gtypes.h"
+#include <jni.h>
 #include <jsyscall.h>
 #include <native.h>
+#include "UNIXProcess.h"
 
 typedef struct _child {
-	Hkaffe_lang_UNIXProcess* proc;
-	int			pid;
+	jobject 		proc;
+	jint			pid;
 	struct _child*		next;
 } child;
 static child* children;
 
 jint
-kaffe_lang_UNIXProcess_forkAndExec(Hkaffe_lang_UNIXProcess* this, HArrayOfObject* args, HArrayOfObject* envs)
+Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, jarray envs)
 {
-	int pid;
-	int in[2];
-	int out[2];
-	int err[2];
-	int sync[2];
+	jint pid;
 	char** argv;
 	char** arge;
-	int i;
-	char* path;
+	child* newchild;
+	jint ioes[4];
 	int arglen;
 	int envlen;
-	char b[1];
-	child* newchild;
+	int i;
+	jclass ioexc_class = (*env)->FindClass(env, "java.io.IOException");
+	jclass proc_class, fd_class;
+	jfieldID fd_field[4];
+	/* the names given to the stream in Java */
+	const char *fd_names[] = { "stdin_fd", 
+				  "stdout_fd", 
+				  "stderr_fd", 
+				  "sync_fd"};
 
-	arglen = (args ? obj_length(args) : 0);
-	envlen = (envs ? obj_length(envs) : 0);
-
-DBG(	printf("args %d envs %d\n", arglen, envlen); fflush(stdout);	)
+	arglen = (args ? (*env)->GetArrayLength(env, args) : 0);
+	envlen = (envs ? (*env)->GetArrayLength(env, envs) : 0);
 
 	if (arglen < 1) {
-		SignalError("java.io.IOException", "No such file");
+		(*env)->ThrowNew(env, ioexc_class, "No such file");
+		return -1;
 	}
 
-	path = makeCString((struct Hjava_lang_String*)unhand(args)->body[0]);
-	/* Check program exists and we can execute it */
-        i = access(path, X_OK);
-	if (i < 0) {
-		free(path);
-		SignalError("java.io.IOException", SYS_ERROR);
+	/* Build arguments and environment */
+	argv = calloc(arglen + 1, sizeof(jbyte*));
+	for (i = 0; i < arglen; i++) {
+		jstring argi;
+		const jbyte *argichars;
+
+		argi = (jstring)(*env)->GetObjectArrayElement(env, args, i);
+		argichars = (*env)->GetStringUTFChars(env, argi, NULL);
+		argv[i] = malloc(strlen(argichars));
+		strcpy(argv[i], argichars);
+		(*env)->ReleaseStringUTFChars(env, argi, argichars);
+	}
+
+	if (envlen > 0)
+		arge = calloc(envlen + 1, sizeof(jbyte*));
+	else
+		arge = NULL;
+
+	for (i = 0; i < envlen; i++) {
+		jstring envi;
+		const jbyte *envichars;
+
+		envi = (jstring)(*env)->GetObjectArrayElement(env, arge, i);
+		envichars = (*env)->GetStringUTFChars(env, envi, NULL);
+		arge[i] = malloc(strlen(envichars));
+		strcpy(arge[i], envichars);
+		(*env)->ReleaseStringUTFChars(env, envi, envichars);
+	}
+
+	pid = forkexec(argv, arge, ioes);
+
+	/* free before returning on error */
+	for (i = 0; i < arglen; i++) {
+		free(argv[i]);
+	}
+	free(argv);
+
+	for (i = 0; i < envlen; i++) {
+		free(arge[i]);
+	}
+	free(arge);
+
+	if (pid == -1) {
+		(*env)->ThrowNew(env, ioexc_class, "Fork&Exec failed");
+		return (-1);
+	}
+
+	/* get kaffe.lang.UNIXProcess class */
+	proc_class = (*env)->GetObjectClass(env, proc);
+
+	/*
+	 * Note: even though it is likely that `pfd_field' and `fd_field'
+	 * will be identical throughout the loop, this code does not assume
+	 * that.  Hence, it will work even when used with reloaded classes.
+	 */
+	for (i = 0; i < 4; i++) {
+		jfieldID pfd_field = (*env)->GetFieldID(env, proc_class, 
+			    fd_names[i], "java.io.FileDescriptor");
+		jobject fdi = (*env)->GetObjectField(env, proc, pfd_field);
+		jfieldID fd_field = (*env)->GetFieldID(env, 
+					(*env)->GetObjectClass(env, fdi), 
+					"fd", "I");
+		(*env)->SetIntField(env, fdi, fd_field, ioes[i]);
 	}
 
 	/* Allocate somewhere to keep the child data */
 	newchild = malloc(sizeof(child));
 
-	/* Create the pipes to communicate with the child */
-	pipe(in);
-	pipe(out);
-	pipe(err);
-	pipe(sync);
+	/* Note child data and add to children list */
+	newchild->proc = (*env)->NewGlobalRef(env, proc);
+	newchild->pid = pid;
 
-#if defined(HAVE_FORK)
-	pid = fork();
-#else
-	unimp("fork() not provided");
-#endif
-	switch (pid) {
-	case 0:
-		/* Child */
-		dup2(in[0], 0);
-		dup2(out[1], 1);
-		dup2(err[1], 2);
+	/* XXX protect this list! */
+	newchild->next = children;
+	children = newchild;
 
-		/* What is sync about anyhow?  Well my current guess is that
-		 * the parent writes a single byte to it when it's ready to
-		 * proceed.  So here I wait until I get it before doing
-		 * anything.
-		 */
-		read(sync[0], b, sizeof(b));
-
-		close(in[0]);
-		close(in[1]);
-		close(out[0]);
-		close(out[1]);
-		close(err[0]);
-		close(err[1]);
-		close(sync[0]);
-		close(sync[1]);
-		break;
-
-	case -1:
-		/* Error */
-		close(in[0]);
-		close(in[1]);
-		close(out[0]);
-		close(out[1]);
-		close(err[0]);
-		close(err[1]);
-		close(sync[0]);
-		close(sync[1]);
-		free(newchild);
-		SignalError("java.io.IOException", "Fork failed");
-		return (-1);
-
-	default:
-		/* Parent */
-		unhand(unhand(this)->stdin_fd)->fd = fixfd(in[1]);
-		unhand(unhand(this)->stdout_fd)->fd = fixfd(out[0]);
-		unhand(unhand(this)->stderr_fd)->fd = fixfd(err[0]);
-		unhand(unhand(this)->sync_fd)->fd = fixfd(sync[1]);
-		close(in[0]);
-		close(out[1]);
-		close(err[1]);
-		close(sync[0]);
-
-		/* Note child data and add to children list */
-		newchild->proc = this;
-		newchild->pid = pid;
-		newchild->next = children;
-		children = newchild;
-
-		return (pid);
-	}
-
-	/* Child: execute new program ... */
-
-	/* Build arguments and environment */
-	argv = calloc(arglen + 1, sizeof(char*));
-	arge = calloc(envlen + 1, sizeof(char*));
-	for (i = 0; i < arglen; i++) {
-		argv[i] = makeCString((struct Hjava_lang_String*)unhand(args)->body[i]);
-	}
-	for (i = 0; i < envlen; i++) {
-		arge[i] = makeCString((struct Hjava_lang_String*)unhand(envs)->body[i]);
-	}
-	/* Execute program */
-#if defined(HAVE_EXECVE)
-	execve(path, argv, arge);
-#else
-	unimp("execve() not provided");
-#endif
-	EXIT(-1);
+	return pid;
 }
 
-void
-kaffe_lang_UNIXProcess_destroy(Hkaffe_lang_UNIXProcess* this)
+void 
+Java_kaffe_lang_UNIXProcess_destroy(JNIEnv* env, jobject proc)
 {
 #if defined(HAVE_KILL)
-	kill(unhand(this)->pid, SIGTERM);
+	jfieldID pid = (*env)->GetFieldID(env, 
+				(*env)->GetObjectClass(env, proc), 
+				"pid", "I");
+	kill((*env)->GetIntField(env, proc, pid), SIGTERM);
 #else
 	unimp("kill() not provided");
 #endif
@@ -170,24 +151,41 @@ kaffe_lang_UNIXProcess_destroy(Hkaffe_lang_UNIXProcess* this)
  * Demon thread.  This runs waiting for children to die and wakes anyone
  * interested in them.
  */
-void
-kaffe_lang_UNIXProcess_run(Hkaffe_lang_UNIXProcess* this)
+void 
+Java_kaffe_lang_UNIXProcess_run(JNIEnv* env, jobject _proc_dummy)
 {
 	int npid;
 	int status;
 	child* p;
 	child** pp;
+	jmethodID notify_method = (*env)->GetMethodID(env, 
+			(*env)->FindClass(env, "java.lang.Object"),
+			"notifyAll", "()V");
 
 	for (;;) {
 		npid = waitpid(-1, &status, 0);
 		for (pp = &children; *pp != 0; pp = &p->next) {
 			p = *pp;
 			if (p->pid == npid) {
-				_lockMutex(p->proc);
-				unhand(p->proc)->isalive = 0;
-				unhand(p->proc)->exit_code = status;
-				_broadcastCond(p->proc);
-				_unlockMutex(p->proc);
+				jclass proc_class = (*env)->GetObjectClass(
+						env, p->proc);
+				jfieldID isalive_field = 
+					(*env)->GetFieldID(env, proc_class,
+					"isalive", "B");
+				jfieldID exit_code_field = 
+					(*env)->GetFieldID(env, proc_class,
+					"exit_code", "I");
+
+				(*env)->MonitorEnter(env, p->proc);
+				(*env)->SetBooleanField(env, p->proc, 
+						isalive_field, 0 /* false */);
+				(*env)->SetIntField(env, p->proc, 
+						exit_code_field, status);
+
+				(*env)->CallVoidMethod(env, 
+					p->proc, notify_method);
+				(*env)->MonitorExit(env, p->proc);
+				(*env)->DeleteGlobalRef(env, p->proc);
 				*pp = p->next;
 				free(p);
 				break;
@@ -196,8 +194,3 @@ kaffe_lang_UNIXProcess_run(Hkaffe_lang_UNIXProcess* this)
 	}
 }
 
-void
-kaffe_lang_UNIXProcess_notifyReaders(Hkaffe_lang_UNIXProcess* this)
-{
-	unimp("kaffe.lang.UNIXProcess:notifyReaders not implemented");
-}
