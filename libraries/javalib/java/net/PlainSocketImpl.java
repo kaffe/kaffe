@@ -125,6 +125,8 @@ protected synchronized int getReceiveBufferSize() throws SocketException {
 
 public void setOption(int option, Object data) throws SocketException {
 	final boolean disable = (data instanceof Boolean) && !((Boolean) data).booleanValue();
+	int timo;
+
 	if (disable) {
 		data = new Integer(0);			// the common case
 	}
@@ -138,7 +140,11 @@ public void setOption(int option, Object data) throws SocketException {
 		data = new Integer(disable ? 0 : 1);
 		break;
 	case SO_TIMEOUT:
-		timeout = ((Integer)data).intValue();
+		timo = ((Integer)data).intValue();
+		if (timo < 0) {
+			throw new IllegalArgumentException("timeout < 0");
+		}
+		this.timeout = timo;
 		return;
 
 	case SO_BINDADDR:
