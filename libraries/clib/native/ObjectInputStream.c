@@ -16,6 +16,7 @@
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/lookup.h"
+#include "../../../kaffe/kaffevm/stackTrace.h"
 #include <native.h>
 #include "defs.h"
 #include "files.h"
@@ -28,13 +29,17 @@ java_io_ObjectInputStream_loadClass0(struct Hjava_io_ObjectInputStream* stream, 
 	Hjava_lang_Class* clazz;
 	char* cstr;
 	Utf8Const* nm;
+	int depth;
 
 	cstr = makeCString(str);
 	classname2pathname(cstr, cstr);
 	nm = makeUtf8Const(cstr, -1);
 	free(cstr);
 	
-	clazz = loadClass(nm, 0);
+	assert(cls == 0 || !"Don't know what to do with a non-zero class");
+	clazz = getClassWithLoader(&depth);
+	clazz = ((cstr[0] == '[') ? loadArray : loadClass)
+		    (nm, depth == -1 ? 0 : clazz->loader);	
 
 	return (clazz);
 }
@@ -45,6 +50,8 @@ java_io_ObjectInputStream_inputClassFields(struct Hjava_io_ObjectInputStream* st
 	Method* meth;
 	jvalue ret;
 	int i;
+
+	assert(obj != 0 || !"Attempt to read fields into null object");
 
 #define	READ(FUNC,SIG,TYPE) \
 	((jvalue*)(unhand(arr)->body[i+1] + (uintp)obj))->TYPE = \
