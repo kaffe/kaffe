@@ -2,6 +2,18 @@
 
 	Resynced with GNU Classpath.
 
+	2004-03-20  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/nio/PipeImpl.java
+        (SourceChannelImpl): Made final.
+        (read): Implemented.
+        (SinkChannelImpl): Made final.
+        (write): Implemented.
+
+2004-03-21  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2004-03-19  Michael Koch  <konqueror@gmx.de>
 
         * java/net/HttpURLConnection.java:
