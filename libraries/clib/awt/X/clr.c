@@ -19,7 +19,7 @@
  * auxiliary functions
  */
 
-__inline__ int
+static __inline__ int
 xclrEquals ( XColor* pc, int r, int g, int b )
 {
   return ((pc->red == r) && (pc->green == g) && (pc->blue == b));
@@ -30,7 +30,7 @@ xclrEquals ( XColor* pc, int r, int g, int b )
  * this is a rather crude color difference - a HSV difference might be
  * more ergonomical, but also much more expensive
  */
-__inline__ double
+static __inline__ double
 colorDiff ( int r1, int g1, int b1, int r2, int g2, int b2 )
 {
   int dr,dg, db;
@@ -92,7 +92,7 @@ unsigned char rgb8 [] = { 0, 36, 73, 109, 146, 182, 219, 255 };
  * its result to set cells in m->pix while other empty cells are still waiting to
  * be served.
  */
-unsigned char
+static unsigned char
 nearestColor ( Rgb2Pseudo* m, int pi, int pj, int pk, int dist )
 {
   int i, j, k, i0, i1, j0, j1, k0, k1;
@@ -140,7 +140,7 @@ typedef struct _Mismatch {
 } Mismatch;
 
 
-void
+static void
 fillUpColorCube ( Rgb2Pseudo* map, Colormap cm, int nAvail, unsigned long *pixels,
 				  unsigned char (*mp) [8][8][8] )
 {
@@ -222,7 +222,7 @@ fillUpColorCube ( Rgb2Pseudo* map, Colormap cm, int nAvail, unsigned long *pixel
 
 #define MAX_REQUESTS 16
 
-void
+static void
 initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
 {
   jclass   clazz;
@@ -354,7 +354,7 @@ initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
 
 
 
-Rgb2Pseudo*
+static Rgb2Pseudo*
 initRgb2Pseudo ( JNIEnv* env, jclass clazz, Toolkit* X )
 {
   Colormap dcm;
@@ -384,7 +384,7 @@ initRgb2Pseudo ( JNIEnv* env, jclass clazz, Toolkit* X )
  * TrueColor (RGB) visual
  */
 
-Rgb2True*
+static Rgb2True*
 initRgb2True (JNIEnv* env, jclass clazz,  Toolkit* X )
 {
   Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
@@ -476,7 +476,7 @@ initRgb2True (JNIEnv* env, jclass clazz,  Toolkit* X )
  * with a 0-value)
  */
 
-void fillUpPartMap ( unsigned char* pix, unsigned char* val )
+static void fillUpPartMap ( unsigned char* pix, unsigned char* val )
 {
   int i, j, k, i2;
 
@@ -508,7 +508,7 @@ void fillUpPartMap ( unsigned char* pix, unsigned char* val )
   }
 }
 
-void setPartMapFromDMap ( Toolkit *X, Colormap dcm,
+static void setPartMapFromDMap ( Toolkit *X, Colormap dcm,
 						  int component, int nIdx, int idxShift,
 						  unsigned char* pix, unsigned char* val )
 {
@@ -536,7 +536,7 @@ void setPartMapFromDMap ( Toolkit *X, Colormap dcm,
   }
 }
 
-Rgb2Direct*
+static Rgb2Direct*
 initRgb2Direct ( JNIEnv* env, jclass clazz, Toolkit* X )
 {
   Visual      *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));

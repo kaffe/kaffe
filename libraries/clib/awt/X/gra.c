@@ -645,7 +645,7 @@ Java_java_awt_Toolkit_graSetVisible ( JNIEnv* env, jclass clazz, Graphics* gr, j
  * image rendering
  */
 
-void
+static void
 drawAlphaImage ( Graphics* gr, Image* img,
 				 jint srcX, jint srcY, jint dstX, jint dstY,
 				 jint width, jint height, jint bgval )

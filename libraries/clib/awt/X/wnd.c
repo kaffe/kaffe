@@ -46,6 +46,7 @@ long PopupEvents = ExposureMask |
  * corresponding Java FocusEvents.
  */
 
+/* also used in evt.c */
 void 
 forwardFocus ( int cmd, Window wnd )
 {
@@ -60,7 +61,7 @@ forwardFocus ( int cmd, Window wnd )
   XSendEvent( X->dsp, wnd, False, StdEvents, &event);
 }
 
-void 
+static void 
 retryFocus ( Window wnd, Window owner, int count )
 {
   XEvent event;
@@ -76,7 +77,7 @@ retryFocus ( Window wnd, Window owner, int count )
   XSync( X->dsp, False);
 }
 
-Cursor
+static Cursor
 getCursor ( jint jCursor )
 {
   Cursor cursor;
@@ -146,7 +147,7 @@ Java_java_awt_Toolkit_wndSetResizable ( JNIEnv* env, jclass clazz, void* wnd, jb
 }
 
 
-Window
+static Window
 createWindow ( JNIEnv* env, jclass clazz, Window parent, Window owner, jstring jTitle,
 			   jint x, jint y, jint width, jint height,
 			   jint jCursor, jint clrBack, jboolean isResizable )
@@ -216,7 +217,7 @@ createWindow ( JNIEnv* env, jclass clazz, Window parent, Window owner, jstring j
  * be used in other places (like inset detection and mapping) as well, to avoid
  * costly round-trips or additional state passed in from the Java side
  */
-int
+static int
 registerSource ( Toolkit* X, Window wnd, Window owner, int flags)
 {
   int i = getFreeSourceIdx( X, wnd);

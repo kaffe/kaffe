@@ -96,7 +96,7 @@ gc_rm_ref(const void* mem)
  * The best way to fix this is not to use walkThreads at all.
  */
 static Collector *running_collector;	
-void
+static void
 walkMemory(void *mem)
 {
 	GC_walkMemory(running_collector, mem);

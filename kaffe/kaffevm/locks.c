@@ -157,7 +157,7 @@ putHeavyLock(iLock** lkp, iLock* lk)
  * Slowly lock a mutex.  We get the heavy lock and lock that instead.
  * If we can't lock it we suspend until we can.
  */
-void
+static void
 slowLockMutex(iLock** lkp, void* where)
 {
 	iLock* lk;
@@ -195,7 +195,7 @@ LDBG(	printf("Slow lock\n");						)
  * so they can claim the lock.  If no one is waiting we revert the lock to
  * a fast thin lock.
  */
-void
+static void
 slowUnlockMutex(iLock** lkp, void* where)
 {
 	iLock* lk;

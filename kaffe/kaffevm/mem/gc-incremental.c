@@ -383,7 +383,7 @@ DBG(GCWALK,
  * until it's finished incrementally, then tidying up before starting
  * another one.
  */
-void
+static void
 gcMan(void* arg)
 {
 	gc_unit* unit;
@@ -704,7 +704,7 @@ startFinalizer(void)
  * the objects in turn.  An object is only finalised once after which
  * it is deleted.
  */
-void
+static void
 finaliserMan(void* arg)
 {
 	gc_block* info;
@@ -902,6 +902,7 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 	return (mem);
 }
 
+static
 Hjava_lang_Throwable *
 gcThrowOOM(Collector *gcif)
 {

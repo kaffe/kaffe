@@ -120,7 +120,7 @@ printslack(void)
 /*
  * check whether the heap is still in a consistent state
  */
-void
+static void
 gc_heap_check(void)
 {
 	int i; 

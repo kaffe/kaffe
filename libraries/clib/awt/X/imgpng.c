@@ -37,7 +37,7 @@ void reduceAlpha ( Toolkit* X, Image* img, int threshold );
  * auxiliary funtions
  */
 
-__inline__ int
+static __inline__ int
 hasAlpha ( png_structp png_ptr )
 {
   return  (png_ptr->color_type == PNG_COLOR_TYPE_GRAY_ALPHA ||
@@ -45,7 +45,7 @@ hasAlpha ( png_structp png_ptr )
 
 }
 
-__inline__ jint
+static __inline__ jint
 readARGB ( unsigned char** p, int hasAlpha )
 {
   jint argb;
@@ -65,7 +65,7 @@ readARGB ( unsigned char** p, int hasAlpha )
 }
 
 
-__inline__ void
+static __inline__ void
 setPixel ( Image* img, unsigned long argb, int row, int col )
 {
   if ( img->alpha ){
@@ -76,7 +76,7 @@ setPixel ( Image* img, unsigned long argb, int row, int col )
 }
 
 
-void
+static void
 readRowData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Image *img )
 {
   int            i, j;
@@ -93,7 +93,7 @@ readRowData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Image *img
   }
 }
 
-void
+static void
 readImageData ( png_structp png_ptr, png_infop info_ptr, png_bytepp rows, Image *img )
 {
   int            i, j;
@@ -110,7 +110,7 @@ readImageData ( png_structp png_ptr, png_infop info_ptr, png_bytepp rows, Image 
   }
 }
 
-void
+static void
 readbackRow ( Image *img, unsigned char* rowBuf, int row )
 {
   int            i;
@@ -136,7 +136,7 @@ readbackRow ( Image *img, unsigned char* rowBuf, int row )
  * memory for the WHOLE image in ARGB pels (but ADAM7 seems to require
  * neighbor rows, too)
  */
-void
+static void
 readInterlacedData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Image *img )
 {
   int   i, j, pass;
@@ -160,7 +160,7 @@ readInterlacedData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Ima
 }
 
 
-Image*
+static Image*
 readPng ( png_structp png_ptr, png_infop info_ptr )
 {
   Image          *volatile img = 0;
@@ -265,7 +265,7 @@ typedef struct {
   long          remain;
 } BufferSource;
 
-void 
+static void 
 bufferRead ( png_structp png_ptr, png_bytep data, png_size_t length )
 {
   BufferSource *psource = png_get_io_ptr( png_ptr);
@@ -289,7 +289,7 @@ typedef struct {
   int fd;
 } FileSource;
 
-void fileRead ( png_structp png_ptr, png_bytep data, png_size_t length )
+static void fileRead ( png_structp png_ptr, png_bytep data, png_size_t length )
 {
   FileSource *psource = png_get_io_ptr( png_ptr);
   int        n = AWT_READ( psource->fd, data, length);

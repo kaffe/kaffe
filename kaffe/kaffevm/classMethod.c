@@ -2040,7 +2040,7 @@ done:
 /*
  * Lookup a named field.  Do not search super classes. Do not resolve the field.
  */
-Field*
+static Field*
 lookupClassFieldLocal(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic)
 {
 	Field* fptr;

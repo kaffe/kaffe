@@ -30,7 +30,7 @@ static int iJumps[] = { 8, 8, 4, 2 };
  */
 
 #if defined(INCLUDE_GIF)
-void
+static void
 writeRow ( Image* img, GifPixelType* rowBuf, GifColorType* cm, int row )
 {
   int             idx, col;
@@ -60,7 +60,7 @@ writeRow ( Image* img, GifPixelType* rowBuf, GifColorType* cm, int row )
   }
 
 
-Image*
+static Image*
 readGif ( GifFileType *gf )
 {
   Image*          firstImg = 0;
@@ -199,7 +199,7 @@ typedef struct {
   long          remain;
 } BufferSource;
 
-int
+static int
 readGifBuffer ( GifFileType *gf, GifByteType* buf, int length )
 {
   BufferSource *psource = (BufferSource*)gf->UserData;
@@ -224,7 +224,7 @@ typedef struct {
   int fd;
 } FileSource;
 
-int
+static int
 readGifFileSource( GifFileType *gf, GifByteType* buf, int length )
 {
   FileSource *psource = (FileSource*)gf->UserData;

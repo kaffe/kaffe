@@ -94,7 +94,7 @@ selectionRequest ( JNIEnv* env, Toolkit* X )
  *    0 if the owner cannot prvide the requested format
  *    length of *pData otherwise
  */
-int
+static int
 getRawData ( Toolkit* X, Atom target, unsigned char** pData )
 {
   int              i, format;

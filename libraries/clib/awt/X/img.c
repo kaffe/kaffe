@@ -37,7 +37,7 @@ createImage ( int width, int height )
   return img;
 }
 
-int
+static int
 createShmXImage ( Toolkit* X, Image* img, int depth, int isMask )
 {
 #if defined(HAVE_LIBXEXT)
@@ -96,7 +96,7 @@ createShmXImage ( Toolkit* X, Image* img, int depth, int isMask )
 }
 
 
-void
+static void
 destroyShmXImage ( Toolkit* X, Image* img, int isMask )
 {
 #if defined(HAVE_LIBXEXT)
@@ -231,7 +231,7 @@ needsFullAlpha ( Toolkit* X, Image *img, double threshold )
   return 0;
 }
 
-void
+static void
 countAlphas ( Image *img, int* noAlpha, int* partAlpha, int* fullAlpha )
 {
   int i, j, a;
@@ -258,6 +258,7 @@ countAlphas ( Image *img, int* noAlpha, int* partAlpha, int* fullAlpha )
  * A full alpha image channel is way slower than using a mask bitmap (= 0 / 0xff alpha).
  * This function provides a simple alpha-to-mask translation
  */
+/* also used in imgpng */
 void
 reduceAlpha ( Toolkit* X, Image* img, int threshold )
 {
@@ -284,7 +285,7 @@ reduceAlpha ( Toolkit* X, Image* img, int threshold )
 }
 
 
-__inline__ int
+static __inline__ int
 interpolate ( int ul, int ur, int ll, int lr, double dx, double dy )
 {
   double u = ul + (double)(ur - ul) * dx;
@@ -293,7 +294,7 @@ interpolate ( int ul, int ur, int ll, int lr, double dx, double dy )
   return (int) (u + (l - u) * dy  + 0.5);
 }
 
-unsigned int
+static unsigned int
 getScaledAlpha ( Toolkit* X, Image* img, int x, int y, double dx, double dy )
 {
   int   ul, ur, ll, lr, a;
@@ -312,7 +313,7 @@ getScaledAlpha ( Toolkit* X, Image* img, int x, int y, double dx, double dy )
   return 0xff;
 }
 
-long
+static long
 getScaledPixel ( Toolkit* X, Image* img, int x, int y, double dx, double dy )
 {
   unsigned long  ul, ur, ll, lr;
@@ -687,7 +688,7 @@ Java_java_awt_Toolkit_imgProduceImage ( JNIEnv* env, jclass clazz, jobject produ
 
 Image *unknownImage = 0;  /* fill in some default image here */
 
-int imageFormat ( unsigned char* sig ) {
+static int imageFormat ( unsigned char* sig ) {
   if ( (sig[0] == 'G') && (sig[1] == 'I') && (sig[2] == 'F') )
 	return SIG_GIF;
 

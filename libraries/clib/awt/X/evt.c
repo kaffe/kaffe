@@ -33,7 +33,7 @@ void forwardFocus ( int cmd, Window wnd );  /* from wnd.c */
  *
  */
 
-int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
+static int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
 {
   if ( X->preFetched )
 	return 1;
@@ -123,7 +123,7 @@ int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
  *         1       2       4       8      32   : X
  */
 
-__inline__ int keyMod ( int keyState )
+static __inline__ int keyMod ( int keyState )
 {
   int mod = 0;
   if ( keyState & 3 ) mod |= 1; /* shift or lock */
@@ -207,14 +207,14 @@ static char *eventStr ( int evtId )
 };
 #endif
 
-jobject
+static jobject
 skip ( JNIEnv* env, Toolkit* X )
 {
   return NULL;
 }
 
 
-jobject
+static jobject
 keyNotify ( JNIEnv* env, Toolkit* X )
 {
   KeySym          keysym;
@@ -271,7 +271,7 @@ keyNotify ( JNIEnv* env, Toolkit* X )
 }
 
 
-jobject
+static jobject
 buttonNotify ( JNIEnv* env, Toolkit* X )
 {
   if ( X->event.xany.type == ButtonPress ) {
@@ -291,7 +291,7 @@ buttonNotify ( JNIEnv* env, Toolkit* X )
 }
 
 
-jobject
+static jobject
 motionNotify ( JNIEnv* env, Toolkit* X )
 {
   return (*env)->CallStaticObjectMethod( env, MouseEvent, getMouseEvent,
@@ -300,7 +300,7 @@ motionNotify ( JNIEnv* env, Toolkit* X )
 }
 
 
-jobject
+static jobject
 mouseNotify ( JNIEnv* env, Toolkit* X )
 {
   X->evtId = (X->event.xany.type == EnterNotify) ? MOUSE_ENTERED : MOUSE_EXITED;
@@ -311,7 +311,7 @@ mouseNotify ( JNIEnv* env, Toolkit* X )
 }
 
 
-jobject
+static jobject
 focusNotify ( JNIEnv* env, Toolkit* X )
 {
   int et = X->event.xany.type;
@@ -357,7 +357,7 @@ focusNotify ( JNIEnv* env, Toolkit* X )
 }
 
 
-jobject
+static jobject
 expose ( JNIEnv* env, Toolkit* X )
 {
   Window  wnd = X->event.xany.window;
@@ -395,7 +395,7 @@ expose ( JNIEnv* env, Toolkit* X )
 }
 
 
-jobject
+static jobject
 destroyNotify ( JNIEnv* env, Toolkit* X )
 {
   /*
@@ -410,7 +410,7 @@ destroyNotify ( JNIEnv* env, Toolkit* X )
 }
 
 
-jobject
+static jobject
 mapNotify ( JNIEnv* env, Toolkit* X )
 {
   int id = 0;
@@ -439,7 +439,7 @@ mapNotify ( JNIEnv* env, Toolkit* X )
 }
 
 
-jobject
+static jobject
 configureNotify ( JNIEnv* env, Toolkit* X )
 {
   Window  child;
@@ -471,7 +471,7 @@ configureNotify ( JNIEnv* env, Toolkit* X )
 }
 
 
-jobject
+static jobject
 clientMessage ( JNIEnv* env, Toolkit* X )
 {
   if ( X->windows[X->srcIdx].flags & WND_DESTROYED ){
@@ -550,7 +550,7 @@ clientMessage ( JNIEnv* env, Toolkit* X )
   return 0;
 }
 
-jobject
+static jobject
 reparentNotify ( JNIEnv* env, Toolkit* X )
 {
   Window    window, parent, root;

@@ -14,12 +14,11 @@
 #include "toolkit.h"
 #include "tlkprops.h"
 
-
 /********************************************************************************
  * auxiliary functions
  */
 
-int
+static int
 xErrorHandler ( Display *dsp, XErrorEvent *err )
 {
   char buf[128];
