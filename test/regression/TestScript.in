@@ -44,13 +44,13 @@ compile()
 {
 	FILES=`echo $* | awk -v SRCDIR=$SRCDIR '{ for (i = 1; i <= NF; i++) printf "%s/%s.java ", SRCDIR, $i }'`
 	echo ERROR > ${RESULT}
-	if test "$2" = "deprecated" ; then
+	if test "$DEPRECATED" = "yes" ; then
 		NOWARN="-nowarn"
 	else
 		NOWARN=""
 	fi
 	${JAVAC} ${NOWARN} -d ${DESTDIR} ${FILES} >${RESULT} 2>&1
-	if test "$2" = "deprecated" ; then
+	if test "$DEPRECATED" = "yes" ; then
 		OUTPUT=`cat ${RESULT} | grep -v warning`
 	else
 		OUTPUT=`cat ${RESULT}`
@@ -94,8 +94,10 @@ runtest()
 	error=0
 	echo_n_sp "$1 ..." 1>&2
 	if test "x$2" = "xdeprecated"; then
-		compile $1 deprecated
+		DEPRECATED="yes"
+		compile $1
 	elif test "x$2" != "xnocompile"; then
+		DEPRECATED="no"
 		compile $1
 	fi
 	if test $error = 0 ; then
