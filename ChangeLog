@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2003-12-26  Fernando Nasser  <fnasser@redhat.com>
+
+        * java/awt/datatransfer/DataFlavor.java (getParameter):
+        Fix off-by-one error which was clipping off the first character of a
+        parameter value.
+
+2004-01-03  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2003-12-25  Guilhem Lavaux <guilhem@kaffe.org>
 
         * gnu/java/net/protocol/jar/Handler.java
