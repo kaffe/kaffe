@@ -1,3 +1,7 @@
+Sun Jul 19 23:46:30 1998  Rick Greer <rick@sandpiper.com>
+
+	* config/alpha/common.h: system-dependent stuff for alpha/linux
+
 Sun Jul 19 23:28:02 1998  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* config/m68k/netbsd1/config.frag|md.h: system/configuration stuff
