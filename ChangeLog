@@ -1,5 +1,13 @@
 2004-09-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/kaffe-gc/gc-mem.h (ASSERT_ONBLOCK): 
+	Removed.
+	
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c (ASSERT_ONBLOCK): 
+	Moved over here.
+
+2004-09-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/kaffe-gc/gc-mem.h (KGC_OBJECT_SIZE): 
 	Removed.
 	

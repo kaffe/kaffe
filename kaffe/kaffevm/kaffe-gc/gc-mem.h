@@ -146,6 +146,4 @@ extern void	gc_primitive_free(gc_block* mem);
  */
 #define GCMEM2BLOCK(M)		(KGC_BLOCKS + ( ( ((uintp) (M)) - gc_heap_base) >> gc_pgbits))
 
-#define ASSERT_ONBLOCK(OBJ, BLK) assert(GCMEM2BLOCK(OBJ) == BLK)
-
 #endif

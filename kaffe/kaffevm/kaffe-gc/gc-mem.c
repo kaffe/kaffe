@@ -139,6 +139,8 @@ int gc_system_alloc_cnt;
  */
 #define	KGC_OBJECT_SIZE(M)	GCMEM2BLOCK(M)->size
 
+#define ASSERT_ONBLOCK(OBJ, BLK) assert(GCMEM2BLOCK(OBJ) == BLK)
+
 #if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 /* Magic constant used to mark blocks under gc's management */
 static const uint32 gc_magic = 0xD0DECADE;
