@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 	
 	/* Register allocation types with gc subsystem */
 	main_collector = initCollector();
-	GC_init(main_collector);
+	KGC_init(main_collector);
 
 	/* Initialise the (native) threading system */
 	initNativeThreads(threadStackSize);

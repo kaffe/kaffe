@@ -1,3 +1,12 @@
+2004-07-27  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* test/internal/jit_stub.c (main): GC_init has become KGC_init
+
+	* test/internal/ControlFlowMethods.java (int_exception,
+	int_exception0, int_exception1, int_exception2, int_exception3):
+	new tests to check that local variables are properly saved on the
+	stack when an exception is thrown
+
 2004-07-26  Dalibor Topic  <robilad@kaffe.org>
 
         * libraries/javalib/gnu/java/nio/VMPipe.java,
