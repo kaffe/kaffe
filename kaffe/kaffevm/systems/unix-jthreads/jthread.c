@@ -2186,7 +2186,7 @@ retry:
 			processSignals();
 		}
 	}
-	if ((r < 0 && errno == EINTR) && !sleep) 
+	if ((r < 0 && errno == EINTR) && !canSleep) 
 		goto retry;
 
 	if (r <= 0)
