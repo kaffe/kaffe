@@ -70,6 +70,8 @@ static bool resolveStaticFields(Hjava_lang_Class*, errorInfo *einfo);
 static bool resolveConstants(Hjava_lang_Class*, errorInfo *einfo);
 static bool resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo);
 
+
+
 #if !defined(ALIGNMENT_OF_SIZE)
 #define	ALIGNMENT_OF_SIZE(S)	(S)
 #endif
@@ -109,7 +111,7 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 	 * we've got to work out.
 	 */
 
-	lockMutex(&class->head);
+	lockClass(class);
 
 DBG(RESERROR,
 	/* show calls to processClass when debugging resolution errors */
@@ -145,7 +147,7 @@ retry:
 				goto done;
 			} else {
 				while (class->state == CSTATE_DOING_PREPARE) {
-					waitCond(&class->head, 0);
+					waitOnClass(class);
 					goto retry;
 				}
 			}
@@ -171,7 +173,7 @@ retry:
 			 * upcall to a classloader, we must release the
 			 * classLock here.
 			 */
-			unlockMutex(&class->head);
+			unlockClass(class);
 #if defined(HAVE_GCJ_SUPPORT)
 			if (CLASS_GCJ(class)) {
 				class->superclass 
@@ -185,7 +187,7 @@ retry:
 #if defined(HAVE_GCJ_SUPPORT)
 			}
 #endif
-			lockMutex(&class->head);
+			lockClass(class);
 			if (class->superclass == 0) {
 				success = false;
 				goto done;
@@ -262,7 +264,7 @@ retry:
 		SET_CLASS_STATE(CSTATE_PREPARED);
 	}
 
-	assert(class == ObjectClass || class->superclass != 0);
+	assert((class == ObjectClass) || (class->superclass != NULL));
 
 	DO_CLASS_STATE(CSTATE_LINKED) {
 
@@ -335,7 +337,7 @@ retry:
 				goto done;
 			} else {
 				while (class->state == CSTATE_DOING_SUPER) {
-					waitCond(&class->head, 0);
+					waitOnClass(class);
 					goto retry;
 				}
 			}
@@ -387,10 +389,10 @@ retry:
 			 * might call out into the superclass's initializer 
 			 * here!
 			 */
-			unlockMutex(&class->head);
+			unlockClass(class);
 			success = processClass(class->superclass, 
 					     CSTATE_COMPLETE, einfo);
-			lockMutex(&class->head);
+			lockClass(class);
 			if (success == false) {
 				if (class->superclass->state == CSTATE_INIT_FAILED)
 					SET_CLASS_STATE(CSTATE_INIT_FAILED);
@@ -431,7 +433,7 @@ DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
 				goto done;
 			} else {
 				while (class->state == CSTATE_DOING_INIT) {
-					waitCond(&class->head, 0);
+					waitOnClass(class);
 					goto retry;
 				}
 			}
@@ -441,7 +443,7 @@ DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
 		class->processingThread = THREAD_NATIVE();
 
 		/* give classLock up for the duration of this call */
-		unlockMutex(&class->head);
+		unlockClass(class);
 
 		/* we use JNI to catch possible exceptions, except
 		 * during initialization, when JNI doesn't work yet.
@@ -464,7 +466,7 @@ DBG(STATICINIT,
 			callMethodA(meth, METHOD_INDIRECTMETHOD(meth), 0, 0, 0, 1);
 		}
 
-		lockMutex(&class->head);
+		lockClass(class);
 
 		if (exc != 0) {
 			/* this is special-cased in throwError */
@@ -510,8 +512,8 @@ done:
 	}
 
 	/* wake up any waiting threads */
-	broadcastCond(&class->head);
-	unlockMutex(&class->head);
+	broadcastOnClass(class);
+	unlockClass(class);
 
 DBG(RESERROR,
 	for (i = 0; i < depth; dprintf("  ", i++));
@@ -549,7 +551,7 @@ resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
 	}
 	for (i = 0; i < class->interface_len; i++) {
 		uintp iface = (uintp)class->interfaces[i];
-		unlockMutex(&class->head);
+		unlockClass(class);
 
 #if defined(HAVE_GCJ_SUPPORT)
 		if (CLASS_GCJ(class)) {
@@ -562,7 +564,7 @@ resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
 #endif /* HAVE_GCJ_SUPPORT */
 
 		class->interfaces[i] = nclass;
-		lockMutex(&class->head);
+		lockClass(class);
 		if (class->interfaces[i] == 0) {
 			success = false;
 			goto done;
@@ -1135,13 +1137,13 @@ resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 	 * else may update it while we're doing this.  Once we've got the
 	 * name we don't really care.
 	 */
-	lockMutex(this->centry);
+	lockClass(this);
 	if (FIELD_RESOLVED(fld)) {
-		unlockMutex(this->centry);
+		unlockClass(this);
 		return (FIELD_TYPE(fld));
 	}
 	name = ((Utf8Const*)fld->type)->data;
-	unlockMutex(this->centry);
+	unlockClass(this);
 
 	clas = getClassFromSignature(name, this->loader, einfo);
 
@@ -1959,7 +1961,7 @@ resolveString(Hjava_lang_Class* clazz, int idx, errorInfo *info)
 
 	pool = CLASS_CONSTANTS(clazz);
 
-	lockMutex(&clazz->head);
+	lockClass(clazz);
 	switch (pool->tags[idx]) {
 	case CONSTANT_String:
 		utf8 = WORD2UTF(pool->data[idx]);
@@ -1980,7 +1982,7 @@ resolveString(Hjava_lang_Class* clazz, int idx, errorInfo *info)
 	default:
 		assert(!!!"Neither String nor ResolvedString?");
 	}
-	unlockMutex(&clazz->head);
+	unlockClass(clazz);
 	return (str);
 }
 
@@ -2004,7 +2006,7 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 	constants* pool;
 	Utf8Const* utf8;
 
-	lockMutex(class->centry);
+	lockClass(class);
 
 	/* Scan constant pool and convert any constant strings into true
 	 * java strings.
@@ -2030,7 +2032,7 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 	}
 
 done:
-	unlockMutex(this->centry);
+	unlockClass(this);
 #endif	/* EAGER_LOADING */
 	return (success);
 }
@@ -2340,7 +2342,9 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	}
 	centry->class = arr_class;
 	/*
-	 * See JDC Bug: 4208179
+	 * See JDC Bug: 4208179. The story is that the Spec leaves the
+	 * flags "unspecified" and the JDK actually sets them.... most
+	 * of the time.
 	 */
 	arr_flags = ACC_ABSTRACT | ACC_FINAL;
 	if (c->accflags & ACC_PUBLIC) {

@@ -117,6 +117,17 @@ struct Hjava_lang_Class {
 typedef struct Hjava_lang_Class Hjava_lang_Class;
 #endif
 
+/*
+ * Functions for locking and waiting on *internal* class 
+ * bits.  This is not for static+synchronized methods.
+ * Use the centry lock, as it is convenient and available.
+ */
+#define lockClass(C) lockMutex(((C)->centry))
+#define unlockClass(C) unlockMutex(((C)->centry))
+#define waitOnClass(C) waitCond(((C)->centry), 0)
+#define signalOnClass(C) signalCond(((C)->centry))
+#define broadcastOnClass(C) broadcastCond(((C)->centry))
+
 #define METHOD_TRANSLATED(M)		((M)->accflags & ACC_TRANSLATED)
 #define METHOD_JITTED(M)		((M)->accflags & ACC_JITTED)
 
@@ -150,6 +161,9 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 
 /*
  * Class hash entry.
+ * 
+ * Note that the lock on this struct is used to 
+ * synchronize internal Class object state, too.
  */
 typedef struct _classEntry {
 	Utf8Const*		name;
