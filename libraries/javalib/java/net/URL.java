@@ -33,7 +33,7 @@ final public class URL
 public URL(String spec) throws MalformedURLException {
 	int fstart;
 
-	/* URL -> <protocol>:[//<hostname>[:port]]/<file> */
+	/* URL -> [<protocol>:][//<hostname>[:port]][/<file>] */
 
 //System.out.println("Parsing URL " + spec);
 
@@ -56,7 +56,18 @@ public URL(String spec) throws MalformedURLException {
 				host = spec.substring(hstart, hend);
 				int postart = hend+1;
 				int poend = spec.indexOf('/', postart);
-				port = Integer.parseInt(spec.substring(postart, poend));
+				if (poend == -1) {
+					poend = spec.length();
+				}
+// XXX Should we do this?  	try {
+					port = Integer.parseInt(
+					    spec.substring(postart, poend));
+			//	} catch (NumberFormatException e) {
+			//		throw new MalformedURLException(
+			//		    "bad port \""
+			//		    + spec.substring(postart, poend)
+			//		    + "\"");
+			//	}
 				fstart = spec.indexOf( '/', hstart);
 			}
 			else {
@@ -99,6 +110,9 @@ public URL(String protocol, String host, String file) throws MalformedURLExcepti
 }
 
 public URL(String protocol, String host, int port, String file) throws MalformedURLException {
+	if (protocol == null || host == null || file == null) {
+		throw new NullPointerException();
+	}
 	this.protocol = protocol;
 	this.host = host;
 	this.file = file;
