@@ -1818,7 +1818,11 @@ jthreadedFileDescriptor(int fd)
 		perror("FIOSSAIOSTAT");
  		return (r);
 	}
-#elif defined(FIOASYNC)
+#elif defined(FIOASYNC) && !defined(linux)
+	/* Don't do this on Linux because Linux (at least up to 2.2.1) doesn't
+	 * know what FIOASYNC means.  It thinks FIOASYNC == O_SYNC. I kid you
+	 * not.  You can imagine what that means. ;-)
+	 */
 	/* 
 	 * This ioctl fails for so many systems on so many occasions.
 	 * Reasons include ENXIO, ENOTTY, EINVAL(?)
