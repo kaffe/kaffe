@@ -130,7 +130,7 @@ nativedir = @nativedir@
 with_engine = @with_engine@
 
 CLASSFILE = microsoft.jar
-SRCDIRS = kaffe
+SRCDIRS = com
 
 class_DATA = $(CLASSFILE)
 

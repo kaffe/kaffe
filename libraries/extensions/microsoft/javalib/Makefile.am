@@ -11,7 +11,7 @@
 #
 
 CLASSFILE = microsoft.jar
-SRCDIRS = kaffe
+SRCDIRS = com
 
 class_DATA = $(CLASSFILE)
 
