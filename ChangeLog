@@ -1,3 +1,21 @@
+2004-11-08  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/gnu/java/nio/charset/ISO_8859_1.java,
+	libraries/javalib/gnu/java/nio/charset/UTF_8.java,
+	libraries/javalib/gnu/java/nio/charset/US_ASCII.java:
+        Resynced with GNU Classpath.
+
+	2004-11-06  Tom Tromey  <tromey@redhat.com>
+
+        * gnu/java/nio/charset/ISO_8859_1.java (Decoder): Now
+        package-private.
+        (Encoder): Likewise.
+        * gnu/java/nio/charset/UTF_8.java (Decoder): Now package-private.
+        (Encoder): Likewise.
+        * gnu/java/nio/charset/US_ASCII.java (Decoder): Now
+        package-private.
+        (Encoder): Likewise.
+
 2004-11-07  Robert Schuster <thebohemian@gmx.net>
 
 	Fixed regression:
