@@ -1,4 +1,4 @@
-AC_INIT(kaffe, 1.1.x-cvs, kaffe@kaffe.org)
+AC_INIT([kaffe],[1.1.x-cvs],[kaffe@kaffe.org])
 AC_CONFIG_SRCDIR([kaffe])
 AM_INIT_AUTOMAKE(kaffe, 1.1.x-cvs)
 
@@ -484,7 +484,7 @@ dnl Set install root directory which prefixes all install target dirs
 dnl -------------------------------------------------------------------------
 
 if test x"$with_installroot" != x""; then
-    AC_MSG_ERROR([--with-installroot is deprecated, use \`make install DESTDIR=...'])
+    AC_MSG_ERROR([--with-installroot is deprecated, use `make install DESTDIR=...'])
 fi
 
 dnl =========================================================================
@@ -1036,8 +1036,7 @@ AC_CHECK_FUNC( finite,[has_finite=1;AC_DEFINE(HAVE_FINITE, 1, finite)], has_fini
 dnl check for macro isnan in math
 if test $has_isnan = 0; then
   AC_MSG_CHECKING(for macro isnan)
-  AC_TRY_LINK( [#include <math.h>],  { int foo; foo = isnan(0); },
-              has_isnan=1, has_isnan=0 )
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <math.h>]], [[{ int foo; foo = isnan(0); }]])],[has_isnan=1],[has_isnan=0 ])
   if test $has_isnan = 1; then
     AC_MSG_RESULT(yes)
     AC_DEFINE(HAVE_ISNAN, 1, isnan)
@@ -1049,8 +1048,7 @@ fi
 dnl check for macro isinf in math
 if test $has_isinf = 0; then
   AC_MSG_CHECKING(for macro isinf)
-  AC_TRY_LINK( [#include <math.h>],  { int foo; foo = isinf(0); },
-              has_isinf=1, has_isinf=0 )
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <math.h>]], [[{ int foo; foo = isinf(0); }]])],[has_isinf=1],[has_isinf=0 ])
   if test $has_isinf = 1; then
     AC_MSG_RESULT(yes)
     AC_DEFINE(HAVE_ISINF, 1, isinf)
@@ -1062,8 +1060,7 @@ fi
 dnl check for macro finite in math
 if test $has_finite = 0; then
   AC_MSG_CHECKING(for macro finite)
-  AC_TRY_LINK( [#include <math.h>],  { int foo; foo = finite(0); },
-              has_finite=1, has_finite=0 )
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <math.h>]], [[{ int foo; foo = finite(0); }]])],[has_finite=1],[has_finite=0 ])
   if test $has_finite = 1; then
     AC_MSG_RESULT(yes)
     AC_DEFINE(HAVE_FINITE, 1, finite)

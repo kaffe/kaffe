@@ -22,9 +22,7 @@ java/awt/FocusTraversalPolicy.java
 java/awt/FontFormatException.java
 java/awt/geom/Arc2D.java
 java/awt/geom/Area.java
-java/awt/geom/CubicCurve2D.java
 java/awt/geom/Ellipse2D.java
-java/awt/geom/QuadCurve2D.java
 java/awt/geom/RoundRectangle2D.java
 java/awt/GradientPaint.java
 java/awt/GridBagConstraints.java
