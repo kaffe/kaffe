@@ -39,7 +39,7 @@ public synchronized void write(int b) throws IOException {
 }
 
 final public void writeBoolean(boolean v) throws IOException {
-	if (v==true) writeByte(1); else writeByte(0);
+	if (v) writeByte(1); else writeByte(0);
 }
 
 final public void writeByte(int v) throws IOException {
@@ -47,7 +47,7 @@ final public void writeByte(int v) throws IOException {
 }
 
 final public void writeBytes(String s) throws IOException {
-	char[] c = s.toCharArray();
+	final char[] c = s.toCharArray();
 	byte[] b = new byte[c.length];
 	for (int pos = 0; pos < c.length; pos++)
 		b[pos] = (byte)(c[pos] & 0xFF);
@@ -83,8 +83,8 @@ final public void writeInt(int v) throws IOException {
 }
 
 final public void writeLong(long v) throws IOException {
-	int hiInt=(int )(v >> 32);
-	int loInt=(int )(v & 0xFFFFFFFF);
+	final int hiInt=(int )(v >> 32);
+	final int loInt=(int )(v & 0xFFFFFFFF);
 
 	writeInt(hiInt);
 	writeInt(loInt);
@@ -95,7 +95,7 @@ final public void writeShort(int v) throws IOException {
 }
 
 final public void writeUTF(String str) throws IOException {
-	byte[] data = UTF8.encode(str);
+	final byte[] data = UTF8.encode(str);
 	if (data.length > 0xffff) {
 		throw new UTFDataFormatException("String too long");
 	}

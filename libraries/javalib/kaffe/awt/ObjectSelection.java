@@ -1,8 +1,6 @@
 package kaffe.awt;
 
-import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
 
 public class ObjectSelection
   extends ExportTransferable

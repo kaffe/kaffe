@@ -22,7 +22,7 @@ public String getContentTypeFor(InputStream in) {
 	int b2;
 	int b3;
 	try {
-		if (in.markSupported() == false) {
+		if (!in.markSupported()) {
 			return (null);
 		}
 		in.mark(4);

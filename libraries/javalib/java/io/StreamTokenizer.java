@@ -26,13 +26,13 @@ private PushbackReader pushIn;
 private BufferedReader bufferedIn;
 private Reader rawIn;
 private TableEntry lookup[] = new TableEntry[256];
-private TableEntry ordinary = new TableEntry();
+private final TableEntry ordinary = new TableEntry();
 private boolean pushBack;
 private boolean EOLSignificant;
 private boolean CComments;
 private boolean CPlusPlusComments;
 private boolean toLower;
-private StringBuffer buffer = new StringBuffer();
+private final StringBuffer buffer = new StringBuffer();
 private boolean endOfFile;
 private int lineNumber = 1;
 
@@ -90,7 +90,7 @@ public void lowerCaseMode(boolean fl) {
 }
 
 public int nextToken() throws IOException {
-	if (pushBack == true) {
+	if (pushBack) {
 		/* Do nothing */
 		pushBack = false;
 	}
@@ -565,11 +565,11 @@ private TableEntry lookup(int letter) {
 
 class TableEntry {
 
-private boolean isNumeric = false;
-private boolean isWhitespace = false;
-private boolean isAlphabetic = false;
-private boolean isStringQuote = false;
-private boolean isComment = false;
+private boolean isNumeric;
+private boolean isWhitespace;
+private boolean isAlphabetic;
+private boolean isStringQuote;
+private boolean isComment;
 
 }
 

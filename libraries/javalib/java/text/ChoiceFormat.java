@@ -16,8 +16,8 @@ public class ChoiceFormat extends NumberFormat {
 
 private double[] limits;
 private String[] strings;
-private String pattern = null;
-private Hashtable patternNames = null;
+private String pattern;
+private Hashtable patternNames;
     
 public ChoiceFormat(String patt) {
 	applyPattern(patt);
@@ -151,7 +151,7 @@ public final static double previousDouble(double d) {
 }
 
 public static double nextDouble(double d, boolean next) {
-	if (next == true) {
+	if (next) {
 		return (nextDouble(d));
 	}
 	else {

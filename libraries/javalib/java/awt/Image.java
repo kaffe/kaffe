@@ -365,7 +365,7 @@ synchronized void stateChange(int flags, int x, int y, int w, int h) {
 	// Addison-Wesley documentation, but is what is says in the JDK javadoc documentation.	
 	if ( observers instanceof ImageObserver ){
 		obs = (ImageObserver) observers;
-		if ( obs.imageUpdate( this, flags, x, y, w, h) == false ) {
+		if ( !obs.imageUpdate( this, flags, x, y, w, h)) {
 			observers = null;
 		}
 	}
@@ -374,7 +374,7 @@ synchronized void stateChange(int flags, int x, int y, int w, int h) {
 		// to notify *all* elements regardless of any removals
 		for ( Enumeration e=VectorSnapshot.getCached( (Vector)observers); e.hasMoreElements(); ) {
 			obs = (ImageObserver) e.nextElement();
-			if ( obs.imageUpdate( this, flags, x, y, w, h) == false )
+			if ( !obs.imageUpdate( this, flags, x, y, w, h))
 				removeObserver( obs);
 		}
 	}

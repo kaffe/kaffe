@@ -59,11 +59,11 @@ public void reset() throws IOException {
 }
 
 public long skip(long n) throws IOException {
-	char[] buf = new char[1024];
+	final char[] buf = new char[1024];
 	int skipped = 0;
 
 	while (n > 0) {
-		int r = read(buf, 0, buf.length < n ? buf.length : (int)n);
+		final int r = read(buf, 0, buf.length < n ? buf.length : (int)n);
 		if (r < 0)
 			break;
 		n -= r;

@@ -23,7 +23,7 @@ import kaffe.util.IdentityHashtable;
 
 public class ObjectOutputStreamImpl extends DataOutputStream {
 
-private boolean buffering = false;
+private boolean buffering;
 
 private ObjectOutputStream parent;
 

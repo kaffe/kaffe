@@ -40,7 +40,7 @@ public int read(byte b[], int off, int len) throws IOException {
 	}
 	else {
 		for (int pos=off; pos<off+len; pos++) {
-			int data=read();
+			final int data=read();
 			if (data==-1) {
 				if (pos-off==0) return -1; else return pos-off;
 			}
@@ -56,11 +56,11 @@ public synchronized void reset() throws IOException {
 }
 
 public long skip(long n) throws IOException {
-	byte[] buf = new byte[1024];
+	final byte[] buf = new byte[1024];
 	int skipped = 0;
 
 	while (n > 0) {
-		int r = read(buf, 0, buf.length < n ? buf.length : (int)n);
+		final int r = read(buf, 0, buf.length < n ? buf.length : (int)n);
 		if (r < 0)
 			break;
 		n -= r;

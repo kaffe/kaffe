@@ -21,7 +21,7 @@ public class AWTEvent
   extends EventObject
 {
 	protected int id;
-	protected boolean consumed = false;
+	protected boolean consumed;
 	protected AWTEvent next;
 	final private static long serialVersionUID = -1825314779160409405L;
 	final public static int COMPONENT_EVENT_MASK = 0x01;
@@ -44,7 +44,7 @@ public class AWTEvent
 	protected static int inputModifier;
 	protected static boolean accelHint;
 	protected static Component[] sources;
-	static int nSources;
+	private static int nSources;
 	protected static Object evtLock = new Object();
 	protected static RootWindow root;
 	protected static Component nativeSource;

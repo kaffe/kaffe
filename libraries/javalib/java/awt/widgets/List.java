@@ -31,7 +31,7 @@ public class List
 	ItemListener iListener;
 	ItemPane ip = new ItemPane();
 	Vector selections = new Vector( 1);
-	boolean multipleMode = false;
+	boolean multipleMode;
 	boolean selMouse;
 	int sel = -1;
 	BitSet multiSel;

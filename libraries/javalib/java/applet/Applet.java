@@ -20,7 +20,7 @@ public class Applet
   extends Panel
 {
 	private static final long serialVersionUID = -5836846270535785031L;
-	AppletStub stub;
+	private AppletStub stub;
 
 public Applet() {
 }
@@ -40,7 +40,7 @@ public String getAppletInfo() {
 }
 
 public AudioClip getAudioClip( URL url) {
-	AppletContext ac = getAppletContext();
+	final AppletContext ac = getAppletContext();
 	if ( ac != null) {
 		return ac.getAudioClip( url);
 	}
@@ -71,7 +71,7 @@ public URL getDocumentBase() {
 }
 
 public Image getImage( URL url) {
-	AppletContext ac = getAppletContext();
+	final AppletContext ac = getAppletContext();
 	if ( ac != null) {
 		return (ac.getImage( url));
 	}
@@ -117,7 +117,7 @@ final public static AudioClip newAudioClip( URL url) {
 }
 
 public void play( URL url){
-	AudioClip ac = getAudioClip( url);
+	final AudioClip ac = getAudioClip( url);
 	if ( ac != null) {
 		ac.play();	
 	}
@@ -147,7 +147,7 @@ final public void setStub( AppletStub stub) {
 }
 
 public void showStatus( String msg) {
-	AppletContext ac = getAppletContext();
+	final AppletContext ac = getAppletContext();
 	if ( ac != null) {
 		ac.showStatus( msg);
 	}
@@ -159,3 +159,5 @@ public void start() {
 public void stop() {
 }
 }
+
+

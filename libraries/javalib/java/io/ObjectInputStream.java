@@ -43,7 +43,7 @@ abstract public ObjectStreamClass getObjectStreamClass();
 }
 
 private ObjectInputStreamImpl in;
-private boolean enableResolve = false;
+private boolean enableResolve;
 
 private Object currentObject;
 private ObjectStreamClass currentStreamClass;
@@ -67,7 +67,7 @@ public void close() throws IOException
 
 protected boolean enableResolveObject(boolean enable) throws SecurityException
 {
-	boolean old = enableResolve;
+	final boolean old = enableResolve;
 	enableResolve = enable;
 	return (old);
 }

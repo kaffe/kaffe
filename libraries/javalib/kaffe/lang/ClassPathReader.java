@@ -6,14 +6,20 @@ package kaffe.lang;
  *
  * @author Godmar Back (gback@cs.utah.edu)
  */
-import java.util.*;
-import java.util.zip.*;
-import java.io.*;
+import java.util.Hashtable;
+import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.IOException;
 
 public
 class ClassPathReader implements ResourceReader
 {
-    public static boolean debug = false;
+    public static boolean debug;
     void log(String msg)
     {
 	if (debug) {

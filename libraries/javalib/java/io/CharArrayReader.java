@@ -86,7 +86,7 @@ public class CharArrayReader extends Reader {
        }
 
        if (pos < count) {
-	   int cnt = Math.min(len, count - pos);
+	   final int cnt = Math.min(len, count - pos);
 	   System.arraycopy(buf, pos, b, off, cnt);
 	   pos += cnt;
 	   return (cnt);

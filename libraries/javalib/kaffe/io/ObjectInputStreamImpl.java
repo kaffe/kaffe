@@ -28,7 +28,7 @@ static private ObjectStreamClassImpl defaultClassDesc = new ObjectStreamClassImp
 private byte[] buffer = new byte[255];
 private int pos;
 private int len;
-private boolean buffering = false;
+private boolean buffering;
 
 private static int firstKey = 0x007e0000;
 private Vector objectReferences = new Vector();

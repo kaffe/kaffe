@@ -62,7 +62,7 @@ public class Inflater {
 
   public synchronized boolean needsInput()
   {
-    if (len == 0 && finished == false) {
+    if (len == 0 && !finished) {
       return (true);
     }
     else {

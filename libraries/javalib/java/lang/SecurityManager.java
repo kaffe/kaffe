@@ -158,7 +158,7 @@ public void checkWrite(String file) {
 protected int classDepth(String name) {
 	Class[] classes = getClassContext();
 	for (int i = 0; i < classes.length; i++) {
-		if (name.equals(classes[i].getName()) == true) {
+		if (name.equals(classes[i].getName())) {
 			return (i);
 		}
 	}

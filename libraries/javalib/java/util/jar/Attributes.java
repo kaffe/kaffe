@@ -12,7 +12,10 @@
 
 package java.util.jar;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class Attributes implements Map, Cloneable {
     protected Map map;

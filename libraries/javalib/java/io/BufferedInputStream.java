@@ -17,8 +17,8 @@ public class BufferedInputStream extends FilterInputStream
 	protected int pos;
 	protected int markpos;
 	protected int marklimit;
-	private byte[] single = new byte[1];
-	final private static int DEFAULTBUFFER = 2048;
+	private final byte[] single = new byte[1];
+	private static final int DEFAULTBUFFER = 2048;
 
 /*
  * Invariant:

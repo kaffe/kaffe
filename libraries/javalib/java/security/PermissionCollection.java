@@ -18,7 +18,7 @@ package java.security;
 import java.util.Enumeration;
 
 public abstract class PermissionCollection {
-	private boolean readOnly = false;
+	private boolean readOnly;
 
 	public PermissionCollection() {
 	}

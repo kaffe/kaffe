@@ -49,12 +49,12 @@ protected void deflate() throws IOException {
 	do {
 		int r = def.deflate(buf, 0, buf.length);
 		super.write(buf, 0, r);
-	} while (def.needsInput() == false);
+	} while (!def.needsInput());
 }
 
 public void finish() throws IOException {
 	def.finish();
-	while (def.finished() == false) {
+	while (!def.finished()) {
 		deflate();
 	}
 }

@@ -15,13 +15,13 @@ public class InvalidClassException
 {
 
 private static final long serialVersionUID = -4333316296251054416L;
+private static final String SEPARATOR = "; ";
 
 public String classname;
 
 public InvalidClassException(String s)
 	{
 	super(s);
-	classname = null;
 }
 
 public InvalidClassException(String c, String s)
@@ -33,7 +33,7 @@ public InvalidClassException(String c, String s)
 public String getMessage()
 	{
 	if (classname != null) {
-		return (classname + super.getMessage());
+	        return (classname + SEPARATOR + super.getMessage());
 	}
 	else {
 		return (super.getMessage());

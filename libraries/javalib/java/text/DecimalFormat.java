@@ -177,21 +177,21 @@ public void applyPattern(String pattern) {
 	for (int i = formatstart; i < formatend; i++) {
 		switch (patt[i]) {
 		case '0':
-			if (hashcount > 0 && dec == true) {
+			if (hashcount > 0 && dec) {
 				// throw new ParseException("", i);
 				return;
 			}
 			zerocount++;
 			break;
 		case '#':
-			if (zerocount > 0 && dec == false) {
+			if (zerocount > 0 && !dec) {
 				// throw new ParseException("", i);
 				return;
 			}
 			hashcount++;
 			break;
 		case '.':
-			if (dec == true) {
+			if (dec) {
 				// throw new ParseException("", i);
 				return;
 			}
@@ -222,7 +222,7 @@ public void applyPattern(String pattern) {
 		}
 	}
 
-	if (dec == true) {
+	if (dec) {
 		intonly = false;
 		minfrac = zerocount;
 		maxfrac = minfrac + hashcount;
@@ -260,13 +260,13 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 
 	int count = 0;
 	for (int i = endpos - 1; i >= startpos && count < maxint; i--, count++) {
-		if (grouping == true && count % groupsize == 0 && count > 0) {
+		if (grouping && count % groupsize == 0 && count > 0) {
 			buf.append(syms.groupSeparator);
 		}
 		buf.append((char)(val[i] - '0' + syms.zeroDigit));
 	}
 	for (; count < minint; count++) {
-		if (grouping == true && count % groupsize == 0) {
+		if (grouping && count % groupsize == 0) {
 			buf.append(syms.groupSeparator);
 		}
 		buf.append(syms.zeroDigit);
@@ -292,7 +292,7 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 	}
 	buf.setLength(0);
 
-	if (intonly == false) {
+	if (!intonly) {
 
 		count = 0;
 
@@ -318,7 +318,7 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 		buf.append(positivesuffix);
 	}
 
-	if (decsepshown == true || (intonly == false && (decpos != -1 || minfrac > 0))) {
+	if (decsepshown || (!intonly && (decpos != -1 || minfrac > 0))) {
 		app.append(syms.decimalSeparator);
 	}
 

@@ -49,7 +49,7 @@ public int read() throws IOException {
 
 public int read ( char cbuf[], int off, int len ) throws IOException {
 	int i;
-	int m = off+len;
+	final int m = off+len;
 	synchronized(lock) {
 		for (i = off; i < m && pos < buf.length; i++, pos++ ) {
 			cbuf[i] = buf[pos];

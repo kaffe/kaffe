@@ -194,7 +194,7 @@ public void drawChars ( char data[], int offset, int length, int x, int y ){
 
 public boolean drawImage (Image img, int x, int y, Color bgcolor, ImageObserver observer) {
 	// if the image isn't loaded yet, start production and return false
-	if ( Image.loadImage( img, -1, -1, observer) == false ) {
+	if ( !Image.loadImage( img, -1, -1, observer)) {
 		return (false);
 	}
 	else {
@@ -204,7 +204,7 @@ public boolean drawImage (Image img, int x, int y, Color bgcolor, ImageObserver 
 }
 
 public boolean drawImage ( Image img, int x, int y, ImageObserver observer) {
-	if ( Image.loadImage( img, -1, -1, observer) == false ) {
+	if ( !Image.loadImage( img, -1, -1, observer)) {
 		return (false);
 	}
 	else {
@@ -217,7 +217,7 @@ public boolean drawImage ( Image img, int x, int y, int width, int height, Color
 
 	// Load image if it's not loaded - we don't scale because we
 	// can do this while drawing.
-	if ( Image.loadImage( img, -1, -1, observer) == false) {
+	if ( !Image.loadImage( img, -1, -1, observer)) {
 		return (false);
 	}
 
@@ -255,7 +255,7 @@ public boolean drawImage ( Image img,
 
 	// Load image if it's not loaded - we don't scale because we
 	// can do this while drawing.
-	if (Image.loadImage( img, -1, -1, observer) == false) {
+	if (!Image.loadImage( img, -1, -1, observer)) {
 		return (false);
 	}
 

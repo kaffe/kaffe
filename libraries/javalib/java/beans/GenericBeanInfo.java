@@ -14,13 +14,13 @@ import java.awt.Image;
 
 class GenericBeanInfo extends SimpleBeanInfo {
 
-private BeanDescriptor bean;
-private PropertyDescriptor[] properties;
-private MethodDescriptor[] methods;
-private EventSetDescriptor[] events;
-private int defaultEvent;
-private int defaultProperty;
-private BeanInfo target;
+private final BeanDescriptor bean;
+private final PropertyDescriptor[] properties;
+private final MethodDescriptor[] methods;
+private final EventSetDescriptor[] events;
+private final int defaultEvent;
+private final int defaultProperty;
+private final BeanInfo target;
 
 public GenericBeanInfo(BeanDescriptor bean, PropertyDescriptor[] properties, MethodDescriptor[] methods, EventSetDescriptor[] events, int defaultEvent, int defaultProperty, BeanInfo target) {
 	this.bean = bean;

@@ -24,7 +24,7 @@ public class GregorianCalendar
 	final private static int DAYSPERWEEK = 7;
 	final private static int EPOCH_WDAY = Calendar.THURSDAY - Calendar.SUNDAY;
 	final private static int EPOCH_YEAR = 1970;
-	private Calendar dateChange = null;
+	private Calendar dateChange;
 
 static {
 	// Initialize the day that time switched from Julian

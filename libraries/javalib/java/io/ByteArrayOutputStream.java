@@ -28,7 +28,7 @@ public ByteArrayOutputStream(int size) {
 
 private void ensureCapacity ( int size ) {
 	if ( size > buf.length ) {
-		byte oldBuf[] = buf;
+		final byte oldBuf[] = buf;
 		buf = new byte[size + 32];
 		System.arraycopy( oldBuf, 0, buf, 0, oldBuf.length);
 	}
@@ -43,7 +43,7 @@ public int size() {
 }
 
 public synchronized byte[] toByteArray() {
-	byte result[] = new byte[count];
+	final byte result[] = new byte[count];
 	System.arraycopy(buf, 0, result, 0, count);
 	return (result);
 }
@@ -57,8 +57,8 @@ private String toString ( ByteToCharConverter encoding ) {
 	// String (just internally) without any temporary buffer. Otherwise,
 	// the buffer should be a least static
 
-	int     n = encoding.getNumberOfChars( buf, 0, count);
-	char[]  cBuf = new char[n];
+	final int     n = encoding.getNumberOfChars( buf, 0, count);
+	final char[]  cBuf = new char[n];
 	
 	encoding.convert( buf, 0, count, cBuf, 0, cBuf.length);
 	return new String( cBuf);

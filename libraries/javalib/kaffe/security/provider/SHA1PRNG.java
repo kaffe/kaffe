@@ -14,7 +14,7 @@
 
 package kaffe.security.provider;
 
-import java.security.*;
+import java.security.SecureRandomSpi;
 import java.util.Random;
 
 public class SHA1PRNG extends SecureRandomSpi {

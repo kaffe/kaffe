@@ -16,8 +16,8 @@ import kaffe.lang.SystemClassLoader;
  */
 public class Beans
 {
-	private static boolean designtime = false;
-	private static boolean guiavailable = false;
+	private static boolean designtime;
+	private static boolean guiavailable;
 
 public Beans() {
 }
@@ -31,7 +31,7 @@ public static Object instantiate(ClassLoader cld, String beanName) throws IOExce
 		cld = SystemClassLoader.getClassLoader();
 	}
 
-	InputStream in = cld.getResourceAsStream(beanName.replace('.', '/') + ".ser");
+	final InputStream in = cld.getResourceAsStream(beanName.replace('.', '/') + ".ser");
 
 	Object obj;
 	if (in != null) {

@@ -5,14 +5,14 @@ import java.util.Hashtable;
 
 class ClassAnalyzer
 {
-	static Hashtable dict = new Hashtable();
-	static Class[] sig_AWTEvent = new Class[] { AWTEvent.class };
-	static Class[] sig_Event = new Class[] { Event.class };
-	static Class[] sig_Event_Object = new Class[] { Event.class, Object.class };
-	static Class[] sig_Event_int = new Class[] { Event.class, Integer.TYPE };
-	static Class[] sig_Event_int_int = new Class[] { Event.class, Integer.TYPE, Integer.TYPE };
-	static Class[] sig_none = new Class[] {};
-	static String[] oldEventMethodName = {
+	private static Hashtable dict = new Hashtable();
+	private static Class[] sig_AWTEvent = new Class[] { AWTEvent.class };
+	private static Class[] sig_Event = new Class[] { Event.class };
+	private static Class[] sig_Event_Object = new Class[] { Event.class, Object.class };
+	private static Class[] sig_Event_int = new Class[] { Event.class, Integer.TYPE };
+	private static Class[] sig_Event_int_int = new Class[] { Event.class, Integer.TYPE, Integer.TYPE };
+	private static Class[] sig_none = new Class[] {};
+	private static String[] oldEventMethodName = {
 	"handleEvent",
 	"action",
 	"keyDown",
@@ -27,7 +27,7 @@ class ClassAnalyzer
 	"mouseDrag",
 	"postEvent"
 };
-	static Class[][] oldEventMethodSig = {
+	private static Class[][] oldEventMethodSig = {
 	sig_Event,
 	sig_Event_Object,
 	sig_Event_int,

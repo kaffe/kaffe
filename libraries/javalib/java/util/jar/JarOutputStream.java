@@ -12,8 +12,10 @@
 
 package java.util.jar;
 
-import java.io.*;
-import java.util.zip.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class JarOutputStream extends ZipOutputStream {
 

@@ -32,7 +32,7 @@ public FileInputStream(FileDescriptor fdObj) {
 }
 
 public FileInputStream(String name) throws FileNotFoundException {
-	SecurityManager sm = System.getSecurityManager();
+	final SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkRead(name);
 	try {

@@ -5,7 +5,7 @@ import java.awt.event.AdjustmentEvent;
 class AdjustmentEvt
   extends AdjustmentEvent
 {
-	static AdjustmentEvt cache;
+	private static AdjustmentEvt cache;
 
 AdjustmentEvt ( Adjustable src, int evtId, int adjType, int adjVal ) {
 	super( src, evtId, adjType, adjVal);

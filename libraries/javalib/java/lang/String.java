@@ -34,8 +34,8 @@ public final class String implements Serializable, Comparable {
 	final char[] value;
 	final int offset;
 	final int count;
-	boolean interned;
-	int hash;
+	private boolean interned;
+	private int hash;
 
 	/* This is what Sun's JDK1.1 "serialver java.lang.String" spits out */
 	private static final long serialVersionUID = -6849794470754667710L;
@@ -463,7 +463,7 @@ public String replace(char oldChar, char newChar) {
 		}
 	}
 
-	if (replaced == false) {
+	if (!replaced) {
 		return (this);
 	}
 	else {

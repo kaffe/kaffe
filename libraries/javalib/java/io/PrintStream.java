@@ -15,7 +15,7 @@ public class PrintStream
 {
 	final private static char[] newline = System.getProperty("line.separator").toCharArray();
 	final private boolean autoFlush;
-	private boolean error = false;
+	private boolean error;
 
 public PrintStream(OutputStream out) {
 	super(out);

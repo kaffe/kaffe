@@ -55,7 +55,7 @@ public class AccessibleObject
     private static void setAccessible0(AccessibleObject obj, boolean accessible)
 	throws SecurityException
     {
-	if (accessible == true && obj instanceof Constructor) {
+	if (accessible && obj instanceof Constructor) {
 	    // JKD1.3 enforce check to not changes java.lang.Class
 	    // constructors
 	    if (((Constructor)obj).getDeclaringClass() == Class.class) {

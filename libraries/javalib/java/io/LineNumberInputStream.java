@@ -13,9 +13,9 @@ package java.io;
 public class LineNumberInputStream
   extends FilterInputStream
 {
-	private int lineNo = 0;
+	private int lineNo;
 	private int markLineNo;
-	private boolean pushedBack = false;
+	private boolean pushedBack;
 	private int pushBack;
 
 public LineNumberInputStream(InputStream in) {
@@ -25,7 +25,7 @@ public LineNumberInputStream(InputStream in) {
 public int available() throws IOException {
 	int sup=super.available();
 
-	if (pushedBack==true) sup++;
+	if (pushedBack) sup++;
 
 	/* Code according to Sun's SPEC */
 	//    return sup/2;
@@ -65,7 +65,7 @@ public int read() throws IOException {
 
 	if (chr=='\r') {
 		/* Read ahead */
-		int next=pushBackRead();
+		final int next=pushBackRead();
 		if (next=='\n') chr=next; else pushBack(next);
 	}
 
@@ -75,7 +75,7 @@ public int read() throws IOException {
 
 public int read(byte b[], int off, int len) throws IOException {
 	for (int pos=off; pos<off+len; pos++) {
-		int data=read();
+		final int data=read();
 		if (data==-1) {
 			if (pos-off==0) return -1; else return pos-off;
 		}
@@ -95,7 +95,7 @@ public void setLineNumber(int lineNumber) {
 }
 
 public long skip(long n) throws IOException {
-	byte junk[]=new byte[(int )n];
+	final byte junk[]=new byte[(int )n];
 
 	return (long)read(junk, 0, junk.length);
 }

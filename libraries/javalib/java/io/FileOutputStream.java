@@ -27,7 +27,7 @@ public FileOutputStream(File file) throws IOException
 
 public FileOutputStream(FileDescriptor fdObj)
 	{
-	SecurityManager sm = System.getSecurityManager();
+	final SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkWrite(fdObj);
 	fd = fdObj;
@@ -40,10 +40,10 @@ public FileOutputStream(String name) throws FileNotFoundException
 
 public FileOutputStream(String name, boolean append) throws FileNotFoundException
 {
-	SecurityManager sm = System.getSecurityManager();
+	final SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkWrite(name);
-	if (append == false) {
+	if (!append) {
 		open(name);
 	}
 	else {

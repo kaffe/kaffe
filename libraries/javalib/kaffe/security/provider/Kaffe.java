@@ -15,7 +15,9 @@
 
 package kaffe.security.provider;
 
-import java.security.*;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.Provider;
 
 public final class Kaffe extends Provider {
 	private static final String INFO = "Kaffe security provider";

@@ -21,8 +21,8 @@ public class DataFlavor implements Externalizable
 	String type;
 	String name;
 	Class repClass;
-	public static DataFlavor plainTextFlavor = null;
-	public static DataFlavor stringFlavor = null;
+	public static DataFlavor plainTextFlavor;
+	public static DataFlavor stringFlavor;
 	static Class defaultRepClass;
 	static String defaultMimeType;
 	private static final long serialVersionUID = 8367026044764648243L;

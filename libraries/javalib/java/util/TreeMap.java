@@ -29,9 +29,9 @@ public class TreeMap extends AbstractMap
 	private final Node NIL;
 	private final Comparator c;
 	private Node insertionPoint;		// used by find() method
-	private int modCount = 0;
+	private int modCount;
 	private Node root;
-	private int size = 0;
+	private int size;
 
 	// Tree nodes look like this
 	private class Node implements Cloneable, Map.Entry {
@@ -490,8 +490,8 @@ public class TreeMap extends AbstractMap
 	// A sorted iterator over all the Node's in this tree.
 	// This iterator is "fail-fast".
 	private class NodeIterator implements Iterator {
-		private Node node = null;
-		private Node prev = null;
+		private Node node;
+		private Node prev;
 		private int modCount;
 
 		NodeIterator() {

@@ -15,8 +15,6 @@
 
 package java.security;
 
-import java.io.Serializable;
-
 public abstract class BasicPermission extends Permission {
 
 	public BasicPermission(String name) {

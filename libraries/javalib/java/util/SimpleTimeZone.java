@@ -76,7 +76,7 @@ public int getOffset(int era, int year, int month, int day, int dayOfWeek, int m
 	if (year < startYear || era == GregorianCalendar.BC) {
 		return (offset);
 	}
-	if (useDaylight == false) {
+	if (!useDaylight) {
 		return (offset);
 	}
 
@@ -182,7 +182,7 @@ public synchronized int hashCode()
 
 public boolean inDaylightTime(Date date)
 	{
-	if (useDaylight == false) {
+	if (!useDaylight) {
 		return (false);
 	}
 

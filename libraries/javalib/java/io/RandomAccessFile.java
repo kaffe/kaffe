@@ -13,7 +13,7 @@ package java.io;
 import kaffe.util.UTF8;
 
 public class RandomAccessFile implements DataOutput, DataInput {
-	private FileDescriptor fd = new FileDescriptor();
+	private final FileDescriptor fd = new FileDescriptor();
 
 static {
 	System.loadLibrary("io");
@@ -29,7 +29,7 @@ public RandomAccessFile(String name, String mode) throws FileNotFoundException {
 	else if (mode.equalsIgnoreCase("rw")) writable=true;
 	else throw new IllegalArgumentException();
 
-	SecurityManager sm = System.getSecurityManager();
+	final SecurityManager sm = System.getSecurityManager();
 	if (sm != null) {
 		sm.checkRead(name);
 		if (writable) {
@@ -61,7 +61,7 @@ public int read(byte b[]) throws IOException {
 public int read(byte b[], int off, int len) throws IOException {
 	int total = 0;
 	while (total < len) {
-		int got = readBytes(b, off + total, len - total);
+		final int got = readBytes(b, off + total, len - total);
 		if (got == -1) {
 			break;
 		}
@@ -78,7 +78,7 @@ final public boolean readBoolean() throws IOException {
 }
 
 final public byte readByte() throws IOException {
-	int value = read();
+	final int value = read();
 	if (value == -1) {
 		throw new EOFException();
 	}
@@ -88,8 +88,8 @@ final public byte readByte() throws IOException {
 native private int readBytes(byte bytes[], int off, int len);
 
 final public char readChar() throws IOException {
-	int b1=readUnsignedByte();
-	int b2=readUnsignedByte();
+	final int b1=readUnsignedByte();
+	final int b2=readUnsignedByte();
 
 	return (char )((b1 << 8) | b2);
 }
@@ -196,7 +196,7 @@ public void write(byte b[], int off, int len) throws IOException {
 native public void write(int b) throws IOException;
 
 final public void writeBoolean(boolean v) throws IOException {
-	if (v==true) writeByte(1); else writeByte(0);
+	if (v) writeByte(1); else writeByte(0);
 }
 
 final public void writeByte(int v) throws IOException {

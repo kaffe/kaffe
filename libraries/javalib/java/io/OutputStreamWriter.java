@@ -15,12 +15,12 @@ public class OutputStreamWriter
   extends Writer
 {
 	private final static int BUFDEFAULT = 1024;
-	private final static int MINMARGIN = 32;
+	private static final int MINMARGIN = 32;
 	private OutputStream strm;
 	private CharToByteConverter encoding;
-	private byte[] outbuf = new byte[BUFDEFAULT];
+	private final byte[] outbuf = new byte[BUFDEFAULT];
 	private int buflen;
-	private boolean closed = false;
+	private boolean closed;
 
 public OutputStreamWriter(OutputStream out) {
 	strm = out;
@@ -35,7 +35,7 @@ public OutputStreamWriter(OutputStream out, String enc) throws UnsupportedEncodi
 
 public void close() throws IOException
 {
-	if (closed == false) {
+	if (!closed) {
 		flush();
 		strm.close();
 		strm = null;
@@ -46,7 +46,7 @@ public void close() throws IOException
 public void flush() throws IOException
 {
 	synchronized (lock) {
-		if (closed == true) {
+		if (closed) {
 			throw new IOException("stream closed");
 		}
 		if (buflen > 0) {

@@ -17,8 +17,8 @@ public class CheckboxMenuItem
   extends MenuItem
   implements ItemSelectable
 {
-	boolean isChecked;
-	ItemListener iListener;
+	private boolean isChecked;
+	private ItemListener iListener;
 	final private static long serialVersionUID = 6190621106981774043L;
 
 public CheckboxMenuItem () {

@@ -219,11 +219,11 @@ class Defaults
 /**
  * If set to 'true', non-focused TextAreas keep their cursor displayed (in inactive color)
  */
-	static boolean ShowInactiveCursor = false;
+	static boolean ShowInactiveCursor;
 /**
  * If set to 'true', ScrollBars can get focus
  */
-	static boolean FocusScrolls = false;
+	static boolean FocusScrolls;
 /**
  * Default TextField background color
  */
@@ -276,7 +276,7 @@ class Defaults
  * If set to 'true', fly-over items will be drawn with an inset border
  * (outset otherwise)
  */
-	static boolean ListFlyOverInset = false;
+	static boolean ListFlyOverInset;
 /**
  * Default Label text color
  */
@@ -288,7 +288,7 @@ class Defaults
 /**
  * If set to 'true', Label text will be drawn carved (with right-down highlight)
  */
-	static boolean LabelTxtCarved = false;
+	static boolean LabelTxtCarved;
 /**
  * Default background color for Buttons
  */

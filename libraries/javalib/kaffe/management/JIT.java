@@ -23,7 +23,14 @@ package kaffe.management;
  * classes and methods on demand.
  */
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.PrintStream;
 
 public class JIT implements Runnable {
     /**

@@ -109,7 +109,7 @@ public class Timer {
 			}
 		};
 		private SortedSet tasks = new TreeSet(TCOMP);
-		private boolean canceled = false;
+		private boolean canceled;
 
 		// Schedule a task
 		public synchronized void schedule(TimerTask task, Timer timer,
@@ -158,7 +158,7 @@ public class Timer {
 		public synchronized boolean unschedule(TimerTask task) {
 			boolean removed;
 
-			if ((removed = tasks.remove(task)) == true) {
+			if ((removed = tasks.remove(task))) {
 				task.timer = null;
 				task.changed = true;
 			}

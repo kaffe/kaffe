@@ -70,7 +70,7 @@ public void mark(int readAheadLimit) throws IOException {
 	synchronized(lock) {
 		checkIfStillOpen();
 
-		char[] oldbuf = inbuf;
+		final char[] oldbuf = inbuf;
 
 		// Allocate bigger buffer if necessary
 		if (readAheadLimit > inbuf.length) {

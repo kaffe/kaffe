@@ -15,10 +15,10 @@ import kaffe.io.ByteToCharConverter;
 public class InputStreamReader
   extends Reader
 {
-	final private static int BUFDEFAULT = 128;
+	private static final int BUFDEFAULT = 128;
 	private ByteToCharConverter encoding;
 	private InputStream strm;
-	private byte[] inbuf = new byte[BUFDEFAULT];
+	private final byte[] inbuf = new byte[BUFDEFAULT];
 
 public InputStreamReader(InputStream in) {
 	strm = in;
@@ -47,9 +47,9 @@ public int read ( char cbuf[], int off, int len ) throws IOException {
 	synchronized ( lock ) {
 		while (len > outlen) {
 			// First we retreive anything left in the converter
-			int inpos = encoding.withdraw(inbuf, 0, inbuf.length);
+			final int inpos = encoding.withdraw(inbuf, 0, inbuf.length);
 			int n = len - outlen;
-			int m = inbuf.length - inpos;
+			final int m = inbuf.length - inpos;
 			if (n > m) {
 				n = m;
 			}

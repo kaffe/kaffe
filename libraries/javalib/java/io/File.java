@@ -24,10 +24,10 @@ public class File implements Serializable, Comparable {
 	public final static String separator = System.getProperty("file.separator");
 	public final static char separatorChar = separator.charAt(0);
 	public final static String pathSeparator = System.getProperty("path.separator");
-	public final static char pathSeparatorChar = pathSeparator.charAt(0);
+	public static final char pathSeparatorChar = pathSeparator.charAt(0);
 
-	private final static Random random = new Random();
-	private String path;
+	private static final Random random = new Random();
+	private final String path;
 
 static {
 	System.loadLibrary("io");
@@ -48,7 +48,7 @@ public File(String path, String name) {
 	   this.path = separatorChar + name;
 	}
 	else {
-		char last = path.charAt(path.length() - 1);
+		final char last = path.charAt(path.length() - 1);
 
 		if (last != separatorChar) {
 			this.path = path + separatorChar + name;
@@ -83,13 +83,13 @@ public boolean canWrite() {
 native private boolean canWrite0();
 
 private void checkReadAccess() {
-	SecurityManager sm = System.getSecurityManager();
+	final SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkRead(getPath());
 }
 
 private void checkWriteAccess() {
-	SecurityManager sm = System.getSecurityManager();
+	final SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkWrite(getPath());
 }
@@ -336,7 +336,7 @@ public boolean mkdirs() {
 		String parentString = getParent();
 		if (parentString != null) {
 			File parent = new File(parentString);
-			if (parent.mkdirs() == false) {
+			if (!parent.mkdirs()) {
 				return (false);
 			}
 		}

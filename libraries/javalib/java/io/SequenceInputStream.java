@@ -15,9 +15,9 @@ import java.util.Vector;
 public class SequenceInputStream
   extends InputStream
 {
-	Vector streams = new Vector();
-	int currentStreamIdx;
-	InputStream currentStream;
+	private Vector streams = new Vector();
+	private int currentStreamIdx;
+	private InputStream currentStream;
 
 public SequenceInputStream(Enumeration e) {
 	while (e.hasMoreElements()) {
@@ -55,7 +55,7 @@ public int read() throws IOException {
 		return -1;
 	}
 	for (;;) {
-		int data = currentStream.read();
+		final int data = currentStream.read();
 		if (data != -1) {
 			return (data);
 		}
@@ -73,7 +73,7 @@ public int read(byte buf[], int pos, int len) throws IOException {
 		return -1;
 	}
 	for (;;) {
-		int nr = currentStream.read(buf, pos, len);
+		final int nr = currentStream.read(buf, pos, len);
 		if (nr != -1) {
 			return (nr);
 		}

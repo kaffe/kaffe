@@ -1,3 +1,99 @@
+Thu Jan  3 21:05:45 PST 2002  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/io/InvalidClassException.java:
+	Added separator in output of getMessage().
+	* libraries/javalib/java/applet/Applet.java
+	libraries/javalib/java/awt/AWTEvent.java
+	libraries/javalib/java/awt/ActionEvt.java
+	libraries/javalib/java/awt/AdjustmentEvt.java
+	libraries/javalib/java/awt/BarMenu.java
+	libraries/javalib/java/awt/CheckboxMenuItem.java
+	libraries/javalib/java/awt/ClassAnalyzer.java
+	libraries/javalib/java/awt/Defaults.java
+	libraries/javalib/java/awt/GridBagConstraints.java
+	libraries/javalib/java/awt/Image.java
+	libraries/javalib/java/awt/NativeGraphics.java
+	libraries/javalib/java/awt/Window.java
+	libraries/javalib/java/awt/datatransfer/DataFlavor.java
+	libraries/javalib/java/awt/widgets/List.java
+	libraries/javalib/java/awt/win32/Defaults.java
+	libraries/javalib/java/beans/Beans.java
+	libraries/javalib/java/beans/EventSetDescriptor.java
+	libraries/javalib/java/beans/GenericBeanInfo.java
+	libraries/javalib/java/io/BufferedInputStream.java
+	libraries/javalib/java/io/BufferedReader.java
+	libraries/javalib/java/io/ByteArrayInputStream.java
+	libraries/javalib/java/io/ByteArrayOutputStream.java
+	libraries/javalib/java/io/CharArrayReader.java
+	libraries/javalib/java/io/CharArrayWriter.java
+	libraries/javalib/java/io/DataInputStream.java
+	libraries/javalib/java/io/DataOutputStream.java
+	libraries/javalib/java/io/File.java
+	libraries/javalib/java/io/FileInputStream.java
+	libraries/javalib/java/io/FileOutputStream.java
+	libraries/javalib/java/io/InputStream.java
+	libraries/javalib/java/io/InputStreamReader.java
+	libraries/javalib/java/io/InvalidClassException.java
+	libraries/javalib/java/io/LineNumberInputStream.java
+	libraries/javalib/java/io/ObjectInputStream.java
+	libraries/javalib/java/io/ObjectOutputStream.java
+	libraries/javalib/java/io/ObjectStreamClass.java
+	libraries/javalib/java/io/OutputStreamWriter.java
+	libraries/javalib/java/io/PipedInputStream.java
+	libraries/javalib/java/io/PipedReader.java
+	libraries/javalib/java/io/PrintStream.java
+	libraries/javalib/java/io/PushbackInputStream.java
+	libraries/javalib/java/io/RandomAccessFile.java
+	libraries/javalib/java/io/Reader.java
+	libraries/javalib/java/io/SequenceInputStream.java
+	libraries/javalib/java/io/StreamTokenizer.java
+	libraries/javalib/java/io/StringBufferInputStream.java
+	libraries/javalib/java/io/StringReader.java
+	libraries/javalib/java/lang/Runtime.java
+	libraries/javalib/java/lang/SecurityManager.java
+	libraries/javalib/java/lang/String.java
+	libraries/javalib/java/lang/ThreadGroup.java
+	libraries/javalib/java/lang/Throwable.java
+	libraries/javalib/java/lang/reflect/AccessibleObject.java
+	libraries/javalib/java/net/JarURLConnection.java
+	libraries/javalib/java/net/URLConnection.java
+	libraries/javalib/java/security/BasicPermission.java
+	libraries/javalib/java/security/PermissionCollection.java
+	libraries/javalib/java/text/ChoiceFormat.java
+	libraries/javalib/java/text/DecimalFormat.java
+	libraries/javalib/java/util/Calendar.java
+	libraries/javalib/java/util/Date.java
+	libraries/javalib/java/util/GregorianCalendar.java
+	libraries/javalib/java/util/SimpleTimeZone.java
+	libraries/javalib/java/util/TimeZone.java
+	libraries/javalib/java/util/Timer.java
+	libraries/javalib/java/util/TreeMap.java
+	libraries/javalib/java/util/jar/Attributes.java
+	libraries/javalib/java/util/jar/JarOutputStream.java
+	libraries/javalib/java/util/jar/Manifest.java
+	libraries/javalib/java/util/zip/DeflaterOutputStream.java
+	libraries/javalib/java/util/zip/GZIPInputStream.java
+	libraries/javalib/java/util/zip/Inflater.java
+	libraries/javalib/java/util/zip/ZipInputStream.java
+	libraries/javalib/kaffe/applet/AppletViewer.java
+	libraries/javalib/kaffe/awt/ObjectSelection.java
+	libraries/javalib/kaffe/io/ObjectInputStreamImpl.java
+	libraries/javalib/kaffe/io/ObjectOutputStreamImpl.java
+	libraries/javalib/kaffe/jar/ExecJar.java
+	libraries/javalib/kaffe/jar/ExecJarName.java
+	libraries/javalib/kaffe/lang/Application.java
+	libraries/javalib/kaffe/lang/ClassPathReader.java
+	libraries/javalib/kaffe/lang/MemoryAdvice.java
+	libraries/javalib/kaffe/lang/UNIXProcess.java
+	libraries/javalib/kaffe/management/JIT.java
+	libraries/javalib/kaffe/net/DefaultStreamMap.java
+	libraries/javalib/kaffe/net/www/protocol/http/HttpURLConnection.java
+	libraries/javalib/kaffe/security/provider/Kaffe.java
+	libraries/javalib/kaffe/security/provider/SHA1PRNG.java
+	libraries/javalib/kaffe/security/provider/UpdateDigest.java
+	libraries/javalib/kaffe/util/zip/SwitchInflater.java:
+	more pedantic fixes
+
 Sun Dec  2 19:32:53 PST 2001  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/awt/datatransfer/StringSelection.java

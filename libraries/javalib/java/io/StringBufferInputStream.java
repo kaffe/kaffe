@@ -38,7 +38,7 @@ public synchronized int read() {
 
 public synchronized int read(byte b[], int off, int len) {
 	for (int pos=off; pos<off+len; pos++) {
-		int data=read();
+		final int data=read();
 		if (data==-1) {
 			if (pos-off==0) return -1; else return pos-off;
 		}
@@ -52,7 +52,7 @@ public synchronized void reset() {
 }
 
 public synchronized long skip(long n) {
-	long skipped=Math.min(available(), n);
+	final long skipped=Math.min(available(), n);
 
 	pos=pos+(int )skipped;
 

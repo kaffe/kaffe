@@ -106,7 +106,7 @@ public int read(byte[] buf, int off, int len) throws IOException {
 		crc.update(buf, off, total);
 	}
 	else if (total == -1) {
-		if (eos == false) {
+		if (!eos) {
 			eos = true;
 			// Skip the tail on the GZIP
 			ignoreBytes(8);

@@ -171,7 +171,7 @@ public ComponentPeer getPeer () {
 
 final public String getWarningString() {
 	SecurityManager sm = System.getSecurityManager();
-	if (sm != null && sm.checkTopLevelWindow(this) == true) {
+	if (sm != null && sm.checkTopLevelWindow(this)) {
 		return (null);
 	}
 	return (System.getProperty("awt.appletWarning"));

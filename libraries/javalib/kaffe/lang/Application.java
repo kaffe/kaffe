@@ -199,7 +199,7 @@ public synchronized void remove(ApplicationResource res) {
 }
 
 private static synchronized void setupSystemIO() {
-	if (sysio == true) {
+	if (sysio) {
 		return;
 	}
 	try {

@@ -42,7 +42,7 @@ public class CharArrayWriter extends Writer {
 
       // Check we have room and if not reallocate.
       if (count + len > buf.length) {
-        char[] oldbuf = buf;
+        final char[] oldbuf = buf;
         buf = new char[count + len + DEFAULTBUFFERSPILL];
         System.arraycopy(oldbuf, 0, buf, 0, count);
       }
@@ -72,7 +72,7 @@ public class CharArrayWriter extends Writer {
   public char[] toCharArray()
   {
     /* note that the spec asks us to "Return a copy of the input data." */
-    char result[] = new char[count];
+    final char result[] = new char[count];
     System.arraycopy(buf, 0, result, 0, count);
     return result;
   }

@@ -4,7 +4,7 @@ package java.awt;
 class ActionEvt
   extends java.awt.event.ActionEvent
 {
-	static ActionEvt cache;
+	private static ActionEvt cache;
 
 ActionEvt ( Object src, int evtId, String cmd, int mod ) {
 	super( src, evtId, cmd, mod);

@@ -20,11 +20,11 @@ public class BarMenu
   extends Component
   implements ShortcutConsumer
 {
-	static int Dx = 5;
-	Menu selection;
+	private static int Dx = 5;
+	private Menu selection;
 	MenuBar mb;
-	PopupMenu current;
-	WindowAdapter wa;
+	private PopupMenu current;
+	private WindowAdapter wa;
 
 public BarMenu ( MenuBar mb) {
 	this.mb = mb;

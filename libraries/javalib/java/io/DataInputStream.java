@@ -31,7 +31,7 @@ public final boolean readBoolean() throws IOException {
 }
 
 public final byte readByte() throws IOException {
-	int value = read();
+	final int value = read();
 	if (value == -1) {
 		throw new EOFException();
 	}
@@ -65,7 +65,7 @@ public final void readFully(byte b[], int off, int len) throws IOException {
 	}
 	int total = 0;
 	while (total < len) {
-		int got = read(b, off + total, len - total);
+		final int got = read(b, off + total, len - total);
 		if (got == -1) {
 			throw new EOFException();
 		}
@@ -77,7 +77,7 @@ public final int readInt() throws IOException {
 	int v1 = read() << 24;
 	v1 |= read() << 16;
 	v1 |= read() << 8;
-	int v2 = read();
+	final int v2 = read();
 	if (v2 == -1) {
 		throw new EOFException();
 	}
@@ -125,7 +125,7 @@ public final String readLine() throws IOException {
 		}
 		buffer.append(ch);
 	}
-	if (eof == true && buffer.length() == 0) {
+	if (eof && buffer.length() == 0) {
 		return (null);
 	}
 	return (buffer.toString());

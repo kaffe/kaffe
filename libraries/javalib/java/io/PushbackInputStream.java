@@ -47,7 +47,7 @@ public int read(byte cbuf[], int off, int len) throws IOException {
 		cnt++;
 	}
 	if (len > 0) {
-		int r = super.read(cbuf, off, len);
+		final int r = super.read(cbuf, off, len);
 		if (r == -1) {
 			if (cnt == 0) {
 				cnt = -1;

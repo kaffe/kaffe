@@ -14,9 +14,9 @@ import java.lang.reflect.Method;
 public class EventSetDescriptor
   extends FeatureDescriptor
 {
-	private Class sourceClass;
-	private String eventSetName;
-	private Class listenerType;
+	private final Class sourceClass;
+	private final String eventSetName;
+	private final Class listenerType;
 	private MethodDescriptor[] listenerMethods;
 	private Method addListenerMethod;
 	private Method removeListenerMethod;
@@ -29,16 +29,16 @@ public EventSetDescriptor(Class sourceClass, String eventSetName, Class listener
 	this.eventSetName = eventSetName;
 	this.listenerType = listenerType;
 
-	String esname = capitalize(eventSetName);
-	String addListenerMethodName = "add"+esname+"Listener";
-	String removeListenerMethodName = "remove"+esname+"Listener";
+	final String esname = capitalize(eventSetName);
+	final String addListenerMethodName = "add"+esname+"Listener";
+	final String removeListenerMethodName = "remove"+esname+"Listener";
 
 	listenerMethods = new MethodDescriptor[1];
 
 	// Get the methods on this interface and search out the listener names
 	Method meths[] = listenerType.getDeclaredMethods();
 	for (int i = 0; i < meths.length; i++) {
-		String mname = meths[i].getName();
+		final String mname = meths[i].getName();
 		if (mname.equals(listenerMethodName)) {
 			listenerMethods[0] = new MethodDescriptor(meths[i]);
 		}
@@ -58,10 +58,10 @@ public EventSetDescriptor(Class sourceClass, String eventSetName, Class listener
 	this.listenerType = listenerType;
 
 	// Get the methods on this interface and search out the listener names
-	Method meths[] = listenerType.getDeclaredMethods();
+	final Method meths[] = listenerType.getDeclaredMethods();
 	listenerMethods = new MethodDescriptor[listenerMethodNames.length];
 	for (int i = 0; i < meths.length; i++) {
-		String mname = meths[i].getName();
+		final String mname = meths[i].getName();
 		for (int j = 0; j < listenerMethodNames.length; j++) {
 			if (mname.equals(listenerMethodNames[j])) {
 				listenerMethods[j] = new MethodDescriptor(meths[i]);

@@ -25,15 +25,15 @@ abstract public class URLConnection
 	private static FileNameMap fileNameMap = new DefaultFileNameMap();
 	private static StreamMap streamMap = new DefaultStreamMap();
 	protected boolean allowUserInteraction = defaultAllowUserInteraction;
-	protected boolean connected = false;
+	protected boolean connected;
 	protected boolean doInput = true;
-	protected boolean doOutput = false;
-	protected long ifModifiedSince = 0;
+	protected boolean doOutput;
+	protected long ifModifiedSince;
 	protected URL url;
 	protected boolean useCaches = defaultUseCaches;
-	private static ContentHandlerFactory factory = null;
-	private static boolean defaultAllowUserInteraction = false;
-	private static boolean defaultUseCaches = false;
+	private static ContentHandlerFactory factory;
+	private static boolean defaultAllowUserInteraction;
+	private static boolean defaultUseCaches;
 
 protected URLConnection (URL url) {
 	this.url = url;

@@ -14,7 +14,7 @@ public class ByteArrayInputStream
   extends InputStream
 {
 	protected byte[] buf;
-	protected int pos = 0;
+	protected int pos;
 	protected int count;
 	protected int mark;
 	private int off;
@@ -65,7 +65,7 @@ public synchronized int read(byte b[], int offset, int len)
 		return (-1);
 	}
 
-	int toRead = Math.min(available(), len);
+	final int toRead = Math.min(available(), len);
 	System.arraycopy(buf, off+pos, b, offset, toRead);
 	pos += toRead;
 
@@ -79,7 +79,7 @@ public synchronized void reset()
 
 public synchronized long skip(long n)
 	{
-	long toSkip = Math.min(n, available());
+	final long toSkip = Math.min(n, available());
 	pos += (int)toSkip;
 
 	return (toSkip);

@@ -84,7 +84,7 @@ public void exit(int status) {
 		sm.checkExit(status);
 	// Handle application extensions - if this thread is part of an
 	// application then we exit that rather than the whole thing.
-	if (kaffe.lang.Application.exit(status) == false) {
+	if (!kaffe.lang.Application.exit(status)) {
 		exitInternal(status);
 	}
 	// kaffe.lang.Application.exit does not destroy the thread

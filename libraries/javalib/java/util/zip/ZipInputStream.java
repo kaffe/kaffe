@@ -24,7 +24,7 @@ public class ZipInputStream extends InflaterInputStream
   private byte dheader[] = new byte[DATA_RECSZ];
   private boolean gotSig;
   private SwitchInflater sinf;
-  private ZipEntry entry = null;
+  private ZipEntry entry;
 
   public ZipInputStream(InputStream in) {
     super(in, new SwitchInflater(true, true));

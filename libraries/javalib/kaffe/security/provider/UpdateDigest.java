@@ -15,7 +15,8 @@
 
 package kaffe.security.provider;
 
-import java.security.*;
+import java.security.DigestException;
+import java.security.MessageDigest;
 
 // See java.security.MessageDigest for explanation of why this class
 // extends MessageDigest instead of MessageDigestSpi.

@@ -14,7 +14,7 @@ package kaffe.jar;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.jar.*;
+import java.util.jar.JarFile;
 import kaffe.management.Classpath;
 
 public class ExecJarName {

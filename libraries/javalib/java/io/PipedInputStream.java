@@ -20,8 +20,8 @@ public class PipedInputStream
 	PipedOutputStream src = null;
 	final protected static int PIPE_SIZE = 512;
 	protected byte[] buffer = new byte[PIPE_SIZE];
-	protected int out = 0;
-	protected int in = 0;
+	protected int out;
+	protected int in;
 	private boolean closed = true;
         private boolean finished = true;
 
@@ -78,7 +78,7 @@ public synchronized int read() throws IOException {
 	}
 
 	/* Should be Ok now */
-	byte result = buffer[out];
+	final byte result = buffer[out];
 	out = (out + 1) % PIPE_SIZE;
 
 	this.notifyAll();

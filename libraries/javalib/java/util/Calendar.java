@@ -127,10 +127,10 @@ public Object clone()
 
 protected void complete()
 {
-	if (isTimeSet == false) {
+	if (!isTimeSet) {
 		computeTime();
 	}
-	if (areFieldsSet == false) {
+	if (!areFieldsSet) {
 		computeFields();
 	}
 }
@@ -197,7 +197,7 @@ final public Date getTime()
 
 protected long getTimeInMillis()
 {
-	if (isTimeSet == false) {
+	if (!isTimeSet) {
 		computeTime();
 	}
 	return (time);

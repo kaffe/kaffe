@@ -48,7 +48,7 @@ public class AppletViewer
   extends Frame
   implements ActionListener, WindowListener
 {
-    public static boolean debug = false;
+    public static boolean debug;
     static boolean showMenuBar = true;
     static boolean showStatusBar = true;
 
@@ -454,7 +454,7 @@ public static URLConnection openAppletURLConnection(String loc)
 
 void setMenus () {
 	// user said -nomenu
-	if (showMenuBar == false) {
+	if (!showMenuBar) {
 		return;
 	}
 	MenuBar mb = new MenuBar();

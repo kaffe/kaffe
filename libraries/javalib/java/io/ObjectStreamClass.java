@@ -23,7 +23,7 @@ private static final long serialVersionUID = -6120832682080437368L;
 
 public static SerializationFactory factory = new DefaultSerializationFactory();
 
-private static Hashtable streamClasses = new Hashtable();
+private static final Hashtable streamClasses = new Hashtable();
 
 protected String name;
 protected Class clazz;

@@ -16,11 +16,11 @@ public class ThreadGroup
 	private ThreadGroup parent;
 	private String name;
 	private int maxPriority;
-	private boolean destroyed = false;
-	private boolean daemon = false;
-	private int nthreads = 0;
+	private boolean destroyed;
+	private boolean daemon;
+	private int nthreads;
 	private Thread[] threads = new Thread[0];
-	private int ngroups = 0;
+	private int ngroups;
 	private ThreadGroup[] groups = new ThreadGroup[0];
 
 private ThreadGroup() {

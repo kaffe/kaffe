@@ -36,7 +36,7 @@ public class SwitchInflater extends Inflater {
 
   public synchronized boolean needsInput()
   {
-    if (stored == true) {
+    if (stored) {
       return (len > 0 ? false : true);
     }
     else {
@@ -46,7 +46,7 @@ public class SwitchInflater extends Inflater {
 
   public synchronized boolean finished()
   {
-    if (stored == true) {
+    if (stored) {
       return (maxlen > 0 ? false : true);
     }
     else {
@@ -55,7 +55,7 @@ public class SwitchInflater extends Inflater {
   }
 
   public synchronized int inflate(byte b[], int o, int l) throws DataFormatException {
-	if (stored == true) {
+	if (stored) {
 		if (l >= maxlen) {
 			l = maxlen;
 		}

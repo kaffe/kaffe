@@ -39,7 +39,7 @@ abstract public void write(ObjectOutput out) throws IOException;
 }
 
 private ObjectOutputStreamImpl out;
-private boolean enableReplace = false;
+private boolean enableReplace;
 
 private Object currentObject;
 private ObjectStreamClass currentStreamClass;
@@ -67,7 +67,7 @@ public void close() throws IOException {
 }
 
 protected boolean enableReplaceObject(boolean enable) throws SecurityException {
-	boolean old = enableReplace;
+	final boolean old = enableReplace;
 	enableReplace = enable;
 	return (old);
 }

@@ -31,7 +31,7 @@ private int lo_orange;
 private int hi_red;
 private int lo_red;
 
-private Vector callbacks = null;
+private Vector callbacks;
 
 public MemoryAdvice() {
 	this(50, 75, 90, 40, 65, 80);

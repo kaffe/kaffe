@@ -36,12 +36,12 @@ public class GridBagConstraints
 	public int gridy = RELATIVE;
 	public int gridwidth = 1;
 	public int gridheight = 1;
-	public double weightx = 0;
-	public double weighty = 0;
+	public double weightx;
+	public double weighty;
 	public int anchor = CENTER;
 	public int fill = NONE;
-	public int ipadx = 0;
-	public int ipady = 0;
+	public int ipadx;
+	public int ipady;
 	public Insets insets = new Insets( 0, 0, 0, 0);
 
 public GridBagConstraints() {

@@ -26,7 +26,7 @@ public class HttpURLConnection
 
 private static String proxyHost;
 private static int proxyPort = -1;
-private static boolean useProxy = false;
+private static boolean useProxy;
 
 // store header fields as (key, value) pairs
 private Vector headerFields = new Vector(0);
@@ -170,7 +170,7 @@ public void connect() throws IOException {
 
 		// Handle redirection
 		String location = getHeaderField("Location");
-		if (redir == false || responseCode < HTTP_MULT_CHOICE || responseCode > HTTP_USE_PROXY || location == null) {
+		if (!redir || responseCode < HTTP_MULT_CHOICE || responseCode > HTTP_USE_PROXY || location == null) {
 			break;
 		}
 		url = new URL(location);

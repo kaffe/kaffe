@@ -18,7 +18,7 @@ import kaffe.util.UNIXTimeZone;
 
 abstract public class TimeZone implements Serializable, Cloneable {
 	private static final long serialVersionUID = 3581463369166924961L;
-	private static TimeZone defaultTimeZone = null;
+	private static TimeZone defaultTimeZone;
 
 	/**
 	 * zones maps timezone IDs (of type String) to either
@@ -30,7 +30,7 @@ abstract public class TimeZone implements Serializable, Cloneable {
 	 */
 	private static HashMap zones = new HashMap();
 
-	private static boolean zonesLoaded = false;
+	private static boolean zonesLoaded;
 
 	private static String[] zoneDirs = {
 		"/usr/share/zoneinfo",
@@ -38,7 +38,7 @@ abstract public class TimeZone implements Serializable, Cloneable {
 		// XXX others to try??
 	};
 
-	private String timezoneID = null;
+	private String timezoneID;
 
 // Load the system timezones
 private static void loadTimeZones() {
