@@ -11,9 +11,10 @@ import java.lang.String;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class InterruptedIOException
-  extends IOException
+public class InterruptedIOException extends IOException
 {
+	public int bytesTransferred;
+
 public InterruptedIOException () {
 	super();
 }
