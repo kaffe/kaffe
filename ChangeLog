@@ -1,3 +1,9 @@
+2003-08-14  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/kjc.jar: New KJC with fixed protected field
+	access control. Moreover some basic cleanup in the variable
+	propagation.
+
 2003-08-13  Rob Gonzalez <rob@kaffe.org>
 
 	* kaffe/kaffevm/verify.c
