@@ -1,0 +1,32 @@
+Building kaffe on HP-UX
+=======================
+
+Author: Dalibor Topic <robilad@kaffe.org>
+
+Building on parisc
+------------------
+This document describes the things that should be considered when
+you're building kaffe on a parsic-hpux platform. It hasn't been
+ported yet to 
+
+Requirements
+------------
+* A current gcc . I used gcc 3.3.1. Make sure it's not broken,
+i.e. it doesn't break when compiling programs that include
+system include files. Otherwise the configure script will break.
+See http://www.kaffe.org/pipermail/kaffe/2003-September/043871.html
+for more information on the problems.
+
+That was the case on the TestDrive parisc-hpux machine, so I had
+to build my own gcc. Start out by building your own bintuils, and
+then rebuild gcc with the fresh binutils. I used binutils 2.14.
+
+Limitations
+-----------
+On parisc-hpux, only static builds seem to be possible at the moment.
+So you need to configure kaffe with --disable-shared.
+
+You'll also need GNU make, as HP-UX's make breaks trying to build 
+kaffe. I used GNU make 3.80.
+
+
