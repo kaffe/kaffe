@@ -1,5 +1,5 @@
 /*
- * $Id: SMTPConnection.java,v 1.3 2004/09/13 11:00:28 dalibor Exp $
+ * $Id: SMTPConnection.java,v 1.4 2004/09/21 13:43:47 robilad Exp $
  * Copyright (C) 2003 Chris Burdess <dog@gnu.org>
  * 
  * This file is part of GNU inetlib, a library.
@@ -59,15 +59,18 @@ import gnu.inet.util.LineInputStream;
 import gnu.inet.util.Logger;
 import gnu.inet.util.MessageOutputStream;
 import gnu.inet.util.SaslCallbackHandler;
+import gnu.inet.util.SaslCramMD5;
 import gnu.inet.util.SaslInputStream;
+import gnu.inet.util.SaslLogin;
 import gnu.inet.util.SaslOutputStream;
+import gnu.inet.util.SaslPlain;
 
 /**
  * An SMTP client.
  * This implements RFC 2821.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.3 $ $Date: 2004/09/13 11:00:28 $
+ * @version $Revision: 1.4 $ $Date: 2004/09/21 13:43:47 $
  */
 public class SMTPConnection
 {
@@ -607,7 +610,23 @@ public class SMTPConnection
                                  p, ch);
         if (sasl == null)
           {
-            return false;
+            // Fall back to home-grown SASL clients
+            if ("LOGIN".equalsIgnoreCase (mechanism))
+              {
+                sasl = new SaslLogin (username, password);
+              }
+            else if ("PLAIN".equalsIgnoreCase (mechanism))
+              {
+                sasl = new SaslPlain (username, password);
+              }
+            else if ("CRAM-MD5".equalsIgnoreCase (mechanism))
+              {
+                sasl = new SaslCramMD5 (username, password);
+              }
+            else
+              {
+                return false;
+              }
           }
         
         StringBuffer cmd = new StringBuffer (AUTH);
@@ -617,7 +636,14 @@ public class SMTPConnection
           {
             cmd.append (' ');
             byte[] init = sasl.evaluateChallenge (new byte[0]);
-            cmd.append (new String (init, "US-ASCII"));
+            if (init.length == 0)
+              {
+                cmd.append ('=');
+              }
+            else
+              {
+                cmd.append (new String (BASE64.encode (init), "US-ASCII"));
+              }
           }
         send (cmd.toString ());
         while (true)
@@ -634,6 +660,12 @@ public class SMTPConnection
                     out.write (r1);
                     out.write (0x0d);
                     out.flush ();
+                    if (debug)
+                      {
+                        Logger logger = Logger.getInstance ();
+                        logger.log ("smtp", "> " +
+                                    new String (r1, "US-ASCII"));
+                      }
                   }
                 catch (SaslException e)
                   {
@@ -641,6 +673,11 @@ public class SMTPConnection
                     out.write (0x2a);
                     out.write (0x0d);
                     out.flush ();
+                    if (debug)
+                      {
+                        Logger logger = Logger.getInstance ();
+                        logger.log ("smtp", "> *");
+                      }
                   }
                 break;
               case 235:

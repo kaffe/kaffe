@@ -1,5 +1,5 @@
 /*
- * $Id: BASE64.java,v 1.3 2004/09/13 11:00:28 dalibor Exp $
+ * $Id: BASE64.java,v 1.4 2004/09/21 13:43:48 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -31,7 +31,7 @@ package gnu.inet.util;
  * Encodes and decodes text according to the BASE64 encoding.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.3 $ $Date: 2004/09/13 11:00:28 $
+ * @version $Revision: 1.4 $ $Date: 2004/09/21 13:43:48 $
  */
 public final class BASE64
 {
@@ -48,21 +48,21 @@ public final class BASE64
 
   private static final byte[] dst;
   static
-    {
-      dst = new byte[0x100];
-      for (int i = 0x0; i < 0xff; i++)
-        {
-          dst[i] = -1;
-        }
-      for (int i = 0; i < src.length; i++)
-        {
-          dst[src[i]] = (byte) i;
-        }
-    }
+  {
+    dst = new byte[0x100];
+    for (int i = 0x0; i < 0xff; i++)
+      {
+        dst[i] = -1;
+      }
+    for (int i = 0; i < src.length; i++)
+      {
+        dst[src[i]] = (byte) i;
+      }
+  }
 
   private BASE64 ()
-    {
-    }
+  {
+  }
 
   /**
    * Encode the specified byte array using the BASE64 algorithm.
@@ -70,39 +70,43 @@ public final class BASE64
    * @param bs the source byte array
    */
   public static byte[] encode (byte[] bs)
-    {
-      int si = 0, ti = 0;         // source/target array indices
-      byte[] bt = new byte[((bs.length + 2) * 4) / 3];     // target byte array
-      for (; si < bs.length; si += 3)
-        {
-          int buflen = bs.length - si;
-          if (buflen == 1)
-            {
-              byte b = bs[si];
-              int i = 0;
-              boolean flag = false;
-              bt[ti++] = src[b >>> 2 & 0x3f];
-              bt[ti++] = src[(b << 4 & 0x30) + (i >>> 4 & 0xf)];
-            }
-          else if (buflen == 2)
-            {
-              byte b1 = bs[si], b2 = bs[si + 1];
-              int i = 0;
-              bt[ti++] = src[b1 >>> 2 & 0x3f];
-              bt[ti++] = src[(b1 << 4 & 0x30) + (b2 >>> 4 & 0xf)];
-              bt[ti++] = src[(b2 << 2 & 0x3c) + (i >>> 6 & 0x3)];
-            }
-          else
-            {
-              byte b1 = bs[si], b2 = bs[si + 1], b3 = bs[si + 2];
-              bt[ti++] = src[b1 >>> 2 & 0x3f];
-              bt[ti++] = src[(b1 << 4 & 0x30) + (b2 >>> 4 & 0xf)];
-              bt[ti++] = src[(b2 << 2 & 0x3c) + (b3 >>> 6 & 0x3)];
-              bt[ti++] = src[b3 & 0x3f];
-            }
-        }
-      return bt;
-    }
+  {
+    int si = 0, ti = 0;         // source/target array indices
+    byte[] bt = new byte[((bs.length + 2) * 4) / 3];     // target byte array
+    for (; si < bs.length; si += 3)
+      {
+        int buflen = bs.length - si;
+        if (buflen == 1)
+          {
+            byte b = bs[si];
+            int i = 0;
+            boolean flag = false;
+            bt[ti++] = src[b >>> 2 & 0x3f];
+            bt[ti++] = src[(b << 4 & 0x30) + (i >>> 4 & 0xf)];
+          }
+        else if (buflen == 2)
+          {
+            byte b1 = bs[si], b2 = bs[si + 1];
+            int i = 0;
+            bt[ti++] = src[b1 >>> 2 & 0x3f];
+            bt[ti++] = src[(b1 << 4 & 0x30) + (b2 >>> 4 & 0xf)];
+            bt[ti++] = src[(b2 << 2 & 0x3c) + (i >>> 6 & 0x3)];
+          }
+        else
+          {
+            byte b1 = bs[si], b2 = bs[si + 1], b3 = bs[si + 2];
+            bt[ti++] = src[b1 >>> 2 & 0x3f];
+            bt[ti++] = src[(b1 << 4 & 0x30) + (b2 >>> 4 & 0xf)];
+            bt[ti++] = src[(b2 << 2 & 0x3c) + (b3 >>> 6 & 0x3)];
+            bt[ti++] = src[b3 & 0x3f];
+          }
+      }
+    while (ti < bt.length)
+      {
+        bt[ti++] = 0x3d;
+      }
+    return bt;
+  }
 
   /**
    * Decode the specified byte array using the BASE64 algorithm.
@@ -110,64 +114,64 @@ public final class BASE64
    * @param bs the source byte array
    */
   public static byte[] decode(byte[] bs)
-    {
-      int srclen = bs.length;
-      while (srclen > 0 && bs[srclen - 1] == 0x3d)
-        {
-          srclen--; /* strip padding character */
-        }
-      byte[] buffer = new byte[srclen];
-      int buflen = 0;
-      int si = 0;
-      int len = srclen - si;
-      while (len > 0)
-        {
-          byte b0 = dst[bs[si++] & 0xff];
-          byte b2 = dst[bs[si++] & 0xff];
-          buffer[buflen++] = (byte) (b0 << 2 & 0xfc | b2 >>> 4 & 0x3);
-          if (len > 2)
-            {
-              b0 = b2;
-              b2 = dst[bs[si++] & 0xff];
-              buffer[buflen++] = (byte) (b0 << 4 & 0xf0 | b2 >>> 2 & 0xf);
-              if (len > 3)
-                {
-                  b0 = b2;
-                  b2 = dst[bs[si++] & 0xff];
-                  buffer[buflen++] = (byte) (b0 << 6 & 0xc0 | b2 & 0x3f);
-                }
-            }
-          len = srclen - si;
-        }
-      byte[] bt = new byte[buflen];
-      System.arraycopy (buffer, 0, bt, 0, buflen);
-      return bt;
-    }
-
+  {
+    int srclen = bs.length;
+    while (srclen > 0 && bs[srclen - 1] == 0x3d)
+      {
+        srclen--; /* strip padding character */
+      }
+    byte[] buffer = new byte[srclen];
+    int buflen = 0;
+    int si = 0;
+    int len = srclen - si;
+    while (len > 0)
+      {
+        byte b0 = dst[bs[si++] & 0xff];
+        byte b2 = dst[bs[si++] & 0xff];
+        buffer[buflen++] = (byte) (b0 << 2 & 0xfc | b2 >>> 4 & 0x3);
+        if (len > 2)
+          {
+            b0 = b2;
+            b2 = dst[bs[si++] & 0xff];
+            buffer[buflen++] = (byte) (b0 << 4 & 0xf0 | b2 >>> 2 & 0xf);
+            if (len > 3)
+              {
+                b0 = b2;
+                b2 = dst[bs[si++] & 0xff];
+                buffer[buflen++] = (byte) (b0 << 6 & 0xc0 | b2 & 0x3f);
+              }
+          }
+        len = srclen - si;
+      }
+    byte[] bt = new byte[buflen];
+    System.arraycopy (buffer, 0, bt, 0, buflen);
+    return bt;
+  }
+  
   public static void main (String[] args)
-    {
-      boolean decode = false;
-      for (int i = 0; i < args.length; i++)
-        {
-          if (args[i].equals ("-d"))
-            {
-              decode = true;
-            }
-          else
-            {
-              try
-                {
-                  byte[] in = args[i].getBytes ("US-ASCII");
-                  byte[] out = decode ? decode (in) : encode (in);
-                  System.out.println (args[i] + " = " +
-                                      new String (out, "US-ASCII"));
-                }
-              catch (java.io.UnsupportedEncodingException e)
-                {
-                  e.printStackTrace (System.err);
-                }
-            }
-        }
-    }
-
+  {
+    boolean decode = false;
+    for (int i = 0; i < args.length; i++)
+      {
+        if (args[i].equals ("-d"))
+          {
+            decode = true;
+          }
+        else
+          {
+            try
+              {
+                byte[] in = args[i].getBytes ("US-ASCII");
+                byte[] out = decode ? decode (in) : encode (in);
+                System.out.println (args[i] + " = " +
+                                    new String (out, "US-ASCII"));
+              }
+            catch (java.io.UnsupportedEncodingException e)
+              {
+                e.printStackTrace (System.err);
+              }
+          }
+      }
+  }
+  
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: SaslCallbackHandler.java,v 1.3 2004/09/13 11:00:28 dalibor Exp $
+ * $Id: SaslCallbackHandler.java,v 1.5 2004/10/04 19:34:03 robilad Exp $
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -39,7 +39,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
  * A callback handler that can manage username and password callbacks.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.3 $ $Date: 2004/09/13 11:00:28 $
+ * @version $Revision: 1.5 $ $Date: 2004/10/04 19:34:03 $
  */
 public final class SaslCallbackHandler implements CallbackHandler
 {
@@ -68,7 +68,7 @@ public final class SaslCallbackHandler implements CallbackHandler
   /**
    * Handle callbacks.
    */
-  public void handle (Callback[]callbacks)
+  public void handle (Callback[] callbacks)
     throws IOException, UnsupportedCallbackException
     {
       for (int i = 0; i < callbacks.length; i++)

@@ -1,5 +1,5 @@
 /*
- * $Id: IMAPConnection.java,v 1.3 2004/09/13 11:00:25 dalibor Exp $
+ * $Id: IMAPConnection.java,v 1.4 2004/09/21 13:43:47 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -63,14 +63,17 @@ import gnu.inet.util.CRLFOutputStream;
 import gnu.inet.util.EmptyX509TrustManager;
 import gnu.inet.util.Logger;
 import gnu.inet.util.SaslCallbackHandler;
+import gnu.inet.util.SaslCramMD5;
 import gnu.inet.util.SaslInputStream;
+import gnu.inet.util.SaslLogin;
 import gnu.inet.util.SaslOutputStream;
+import gnu.inet.util.SaslPlain;
 
 /**
  * The protocol class implementing IMAP4rev1.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.3 $ $Date: 2004/09/13 11:00:25 $
+ * @version $Revision: 1.4 $ $Date: 2004/09/21 13:43:47 $
  */
 public class IMAPConnection
 implements IMAPConstants
@@ -656,28 +659,38 @@ implements IMAPConstants
         Properties p = new Properties ();
         p.put ("gnu.crypto.sasl.username", username);
         p.put ("gnu.crypto.sasl.password", password);
-        SaslClient sasl = Sasl.createSaslClient (m, null, "smtp",
+        SaslClient sasl = Sasl.createSaslClient (m, null, "imap",
                                                  socket.getInetAddress ().
                                                  getHostName (), p, ch);
         if (sasl == null)
           {
-            if (debug)
+            // Fall back to home-grown SASL clients
+            if ("LOGIN".equalsIgnoreCase (mechanism))
               {
-                Logger logger = Logger.getInstance ();
-                logger.log("imap", mechanism + " not available");
+                sasl = new SaslLogin (username, password);
               }
-            return false;
+            else if ("PLAIN".equalsIgnoreCase (mechanism))
+              {
+                sasl = new SaslPlain (username, password);
+              }
+            else if ("CRAM-MD5".equalsIgnoreCase (mechanism))
+              {
+                sasl = new SaslCramMD5 (username, password);
+              }
+            else
+              {
+                if (debug)
+                  {
+                    Logger logger = Logger.getInstance ();
+                    logger.log("imap", mechanism + " not available");
+                  }
+                return false;
+              }
           }
         
         StringBuffer cmd = new StringBuffer (AUTHENTICATE);
         cmd.append (' ');
         cmd.append (mechanism);
-        if (sasl.hasInitialResponse ())
-          {
-            cmd.append (' ');
-            byte[] init = sasl.evaluateChallenge (new byte[0]);
-            cmd.append (new String (init, US_ASCII));
-          }
         String tag = newTag ();
         sendCommand (tag, cmd.toString ());
         while (true)
@@ -725,6 +738,11 @@ implements IMAPConstants
                     out.write (r1);
                     out.writeln ();
                     out.flush ();
+                    if (debug)
+                      {
+                        Logger logger = Logger.getInstance ();
+                        logger.log ("imap", "> " + new String (r1, US_ASCII));
+                      }
                   }
                 catch (SaslException e)
                   {
@@ -732,6 +750,11 @@ implements IMAPConstants
                     out.write (0x2a);
                     out.writeln ();
                     out.flush ();
+                    if (debug)
+                      {
+                        Logger logger = Logger.getInstance ();
+                        logger.log ("imap", "> *");
+                      }
                   }
               }
             else
