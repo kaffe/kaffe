@@ -290,17 +290,35 @@ beos_native_sockclose(int f)
 static int
 beos_native_gethostbyname(const char*n, struct hostent**out)
 {
+	int rc = 0;
+
 	/* XXX gethostbyname is not thread-safe! */
 	*out = gethostbyname(n);
-	return (*out == 0) ? h_errno : 0;
+	if (*out == 0) {
+		rc = h_errno;
+		if (rc == 0) {
+			*out = (void*)-1;
+			rc = errno;
+		}
+	}
+	return (rc);
 }
 
 static int
 beos_native_gethostbyaddr(const char*n, int a, int b, struct hostent**out)
 {
+	int rc = 0;
+
 	/* XXX gethostbyaddr is not thread-safe! */
 	*out = gethostbyaddr(n, a, b);
-	return (*out == 0) ? h_errno : 0;
+	if (*out == 0) {
+		rc = h_errno;
+		if (rc == 0) {
+			*out = (void*)-1;
+			rc = errno;
+		}
+	}
+	return (rc);
 }
 
 static int

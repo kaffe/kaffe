@@ -65,8 +65,13 @@ java_net_InetAddressImpl_lookupHostAddr(struct Hjava_net_InetAddressImpl* none, 
 
 	rc = KGETHOSTBYNAME(name, &ent);
 	if (rc) {
-		SignalErrorf("java.net.UnknownHostException", "%s: %s",
-			SYS_HERROR(rc), name);
+		if (ent == (void *)-1) {
+			SignalError("java.io.IOException", SYS_ERROR(rc));
+		}
+		else {
+			SignalErrorf("java.net.UnknownHostException", "%s: %s",
+				     SYS_HERROR(rc), name);
+		}
 	}
 	return (ntohl(*(jint*)ent->h_addr_list[0]));
 }
@@ -88,8 +93,13 @@ java_net_InetAddressImpl_lookupAllHostAddr(struct Hjava_net_InetAddressImpl* non
 
 	rc = KGETHOSTBYNAME(name, &ent);
 	if (rc) {
-		SignalErrorf("java.net.UnknownHostException", "%s: %s",
-			SYS_HERROR(rc), name);
+		if (ent == (void *)-1) {
+			SignalError("java.io.IOException", SYS_ERROR(rc));
+		}
+		else {
+			SignalErrorf("java.net.UnknownHostException", "%s: %s",
+				     SYS_HERROR(rc), name);
+		}
 	}
 
 	for (alength = 0; ent->h_addr_list[alength]; alength++)

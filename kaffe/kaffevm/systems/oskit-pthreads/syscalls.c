@@ -249,15 +249,33 @@ oskit_pthread_getpeername(int a, struct sockaddr* b, int* c)
 static int
 oskit_pthread_gethostbyname(const char*n, struct hostent**out)
 {
+	int rc = 0;
+
 	*out = gethostbyname(n);
-	return (*out == 0) ? h_errno : 0;
+	if (*out == 0) {
+		rc = h_errno;
+		if (rc == 0) {
+			*out = (void*)-1;
+			rc = errno;
+		}
+	}
+	return (rc);
 }
 
 static int
 oskit_pthread_gethostbyaddr(const char*n, int a, int b, struct hostent**out)
 {
+	int rc = 0;
+
 	*out = gethostbyaddr(n, a, b);
-	return (*out == 0) ? h_errno : 0;
+	if (*out == 0) {
+		rc = h_errno;
+		if (rc == 0) {
+			*out = (void*)-1;
+			rc = errno;
+		}
+	}
+	return (rc);
 }
 
 static int

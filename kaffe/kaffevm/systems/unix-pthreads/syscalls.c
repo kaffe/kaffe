@@ -314,6 +314,10 @@ jthreadedGetHostByName(const char *host, struct hostent** out)
 	*out = gethostbyname(host);
 	if (*out == 0) {
 		rc = h_errno;
+		if (rc == 0) {
+			*out = (void*)-1;
+			rc = errno;
+		}
 	}
 	return (rc);
 }
@@ -327,6 +331,10 @@ jthreadedGetHostByAddr(const char *host, int l, int t, struct hostent** out)
 	*out = gethostbyaddr(host, l, t);
 	if (*out == 0) {
 		rc = h_errno;
+		if (rc == 0) {
+			*out = (void*)-1;
+			rc = errno;
+		}
 	}
 	return (rc);
 }
