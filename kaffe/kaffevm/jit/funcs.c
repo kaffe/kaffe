@@ -8,6 +8,7 @@
  */
 
 #include "config.h"
+#include "debug.h"
 #include "config-std.h"
 #include "gtypes.h"
 #include "seq.h"
