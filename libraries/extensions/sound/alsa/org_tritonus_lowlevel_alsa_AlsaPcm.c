@@ -26,7 +26,7 @@
 #include "org_tritonus_lowlevel_alsa_AlsaPcm.h"
 
 
-// referring to methods in ..AlsaPcm_*.cc
+// referring to methods in ..AlsaPcm_*.c
 snd_pcm_hw_params_t*
 getHWParamsNativeHandle(JNIEnv *env, jobject obj);
 snd_pcm_format_mask_t*
@@ -235,7 +235,8 @@ Java_org_tritonus_lowlevel_alsa_AlsaPcm_setHWParamsRateNear
 	if (debug_flag) { fprintf(debug_file, "Java_org_tritonus_lowlevel_alsa_AlsaPcm_setHWParamsRateNear(): begin\n"); }
 	handle = getHandle(env, obj);
 	hwParams = getHWParamsNativeHandle(env, objHwParams);
-	nReturn = snd_pcm_hw_params_set_rate_near(handle, hwParams, nRate, 0);
+	nReturn = snd_pcm_hw_params_set_rate_near(handle, hwParams,
+											  (unsigned int*)&nRate, 0);
 	if (debug_flag) { fprintf(debug_file, "Java_org_tritonus_lowlevel_alsa_AlsaPcm_setHWParamsRateNear(): end\n"); }
 	return nReturn;
 }
@@ -258,7 +259,8 @@ Java_org_tritonus_lowlevel_alsa_AlsaPcm_setHWParamsBufferTimeNear
 	if (debug_flag) { fprintf(debug_file, "Java_org_tritonus_lowlevel_alsa_AlsaPcm_setHWParamsBufferTimeNear(): begin\n"); }
 	handle = getHandle(env, obj);
 	hwParams = getHWParamsNativeHandle(env, objHwParams);
-	nReturn = snd_pcm_hw_params_set_buffer_time_near(handle, hwParams, nBufferTime, 0);
+	nReturn = snd_pcm_hw_params_set_buffer_time_near(handle, hwParams,
+													 (unsigned int*) &nBufferTime, 0);
 	if (debug_flag) { fprintf(debug_file, "Java_org_tritonus_lowlevel_alsa_AlsaPcm_setHWParamsBufferTimeNear(): end\n"); }
 	return nReturn;
 }
@@ -281,7 +283,8 @@ Java_org_tritonus_lowlevel_alsa_AlsaPcm_setHWParamsPeriodTimeNear
 	if (debug_flag) { fprintf(debug_file, "Java_org_tritonus_lowlevel_alsa_AlsaPcm_setHWParamsPeriodTimeNear(): begin\n"); }
 	handle = getHandle(env, obj);
 	hwParams = getHWParamsNativeHandle(env, objHwParams);
-	nReturn = snd_pcm_hw_params_set_period_time_near(handle, hwParams, nPeriodTime, 0);
+	nReturn = snd_pcm_hw_params_set_period_time_near(handle, hwParams,
+													 (unsigned int*) &nPeriodTime, 0);
 	if (debug_flag) { fprintf(debug_file, "Java_org_tritonus_lowlevel_alsa_AlsaPcm_setHWParamsPeriodTimeNear(): end\n"); }
 	return nReturn;
 }

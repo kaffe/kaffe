@@ -25,15 +25,15 @@
 
 package	javax.sound.sampled;
 
-import	java.io.Serializable;
-import	java.util.EventObject;
+import java.util.EventObject;
 
 
 
 public class LineEvent
-	extends	EventObject
-// implements	Serializable
+extends EventObject
 {
+	static final long serialVersionUID = -1274246333383880410L;
+
 	private Type	m_type;
 	private long	m_lPosition;
 

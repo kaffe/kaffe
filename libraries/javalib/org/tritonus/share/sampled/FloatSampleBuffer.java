@@ -561,7 +561,7 @@ public class FloatSampleBuffer {
 	/** 
 	 * Mix up of 1 channel to n channels.<br>
 	 * It copies the first channel to all newly created channels.
-	 * @param targetChannels: the number of channels that this sample buffer
+	 * @param targetChannelCount the number of channels that this sample buffer
 	 *                        will have after expanding. NOT the number of 
 	 *                        channels to add !
 	 * @exception IllegalArgumentException if this buffer does not have one 

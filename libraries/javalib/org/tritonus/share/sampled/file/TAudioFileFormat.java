@@ -22,12 +22,14 @@
  *
  */
 
+package org.tritonus.share.sampled.file;
 
-package	org.tritonus.share.sampled.file;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-
-import	javax.sound.sampled.AudioFileFormat;
-import	javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
 
 
 
@@ -42,13 +44,61 @@ import	javax.sound.sampled.AudioFormat;
 public class TAudioFileFormat
 	extends	AudioFileFormat
 {
+	private Map	m_properties;
+	private Map	m_unmodifiableProperties;
+
+
 	/*
 	 *	Note that the order of the arguments is different from
 	 *	the one in AudioFileFormat.
 	 */
-	public TAudioFileFormat(Type type, AudioFormat audioFormat, int nLengthInFrames, int nLengthInBytes)
+	public TAudioFileFormat(Type type,
+							AudioFormat audioFormat,
+							int nLengthInFrames,
+							int nLengthInBytes)
 	{
-		super(type, nLengthInBytes, audioFormat, nLengthInFrames);
+		super(type,
+			  nLengthInBytes,
+			  audioFormat,
+			  nLengthInFrames);
+	}
+
+
+	public TAudioFileFormat(Type type,
+							AudioFormat audioFormat,
+							int nLengthInFrames,
+							int nLengthInBytes,
+							Map properties)
+	{
+		super(type,
+			  nLengthInBytes,
+			  audioFormat,
+			  nLengthInFrames);
+		initMaps(properties);
+	}
+
+
+	private void initMaps(Map properties)
+	{
+		/* Here, we make a shallow copy of the map. It's unclear if this
+		   is sufficient (of if a deep copy should be made).
+		*/
+		m_properties = new HashMap();
+		m_properties.putAll(properties);
+		m_unmodifiableProperties = Collections.unmodifiableMap(m_properties);
+	}
+
+
+	public Map properties()
+	{
+		return m_unmodifiableProperties;
+	}
+
+
+
+	protected void setProperty(String key, Object value)
+	{
+		m_properties.put(key, value);
 	}
 }
 

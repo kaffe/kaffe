@@ -48,7 +48,7 @@ import	org.tritonus.share.TCircularBuffer;
     @author Matthias Pfisterer
 */
 public abstract class TAsynchronousFilteredAudioInputStream
-	extends AudioInputStream
+	extends TAudioInputStream
 	implements TCircularBuffer.Trigger
 {
 	private static final int	DEFAULT_BUFFER_SIZE = 327670;

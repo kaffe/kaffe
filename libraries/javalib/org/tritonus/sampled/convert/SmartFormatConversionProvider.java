@@ -37,6 +37,29 @@ import	javax.sound.sampled.spi.FormatConversionProvider;
 import	org.tritonus.share.sampled.convert.TFormatConversionProvider;
 
 
+// Name suggested by Florian: MetaFormatConversionProvider
+/* Additinal explanation:
+> Ich hab mal kurz in den SmartConverter reingeguckt, warum machst Du das mit den
+> Threads ? In Rekursion wird doch nicht ein neuer Thread benutzt ? Und sonst
+> koennte man das doch mit synchronized bzw. einem echten lock machen ?
+
+Bei der Rekursion bezu"glich der selben Konvertersuche befindet man sich
+im gleichen Thread; diese Eigenschaft nutze ich ja gerade aus. Es kann
+aber das Anwendungsprogramm von mehreren Threads aus gleichzeitig einen
+Konverter anfordern. Diese Aufrufe gehen alle in das gleiche SmartF.C.P.
+Objekt (es gibt nur eins). Die Methoden des Konverters (das gilt fu"r
+alle) mu"ssen also reentrant sein. Die Alternative wa"re ein globaler
+Lock. Das halte ich aber fu"r nicht akzeptabel. Bei meiner Soundmachine
+zum Beispiel wu"rde das zu Problemen fu"hren: da ist es no"tig, da? beim
+Abspielen mehrere Kana"le on the fly konvertiert wird. Ein globaler Lock
+wu"rde zu Verzo"gerungen im Abspielen fu"hren. Die "einfache" Variante der
+Rekursionserkennung (ohne Beru"cksichtigung von Threads) braucht nur ein
+einfaches Flag, das gesetzt wird, wenn keine Rekursion mehr stattfinden
+soll. Dieses Flag wird bei meiner Implementierung mit der Hashtabelle
+realisiert; sie simuliert ein thread-lokales Verhalten dieses Flags.
+Alles klar? Ich seh' ein, man braucht zwei Knoten im Hirn, um das zu
+verstehen...
+*/
 
 /**	"Smart" formatConversionProvider.
  *	This FormatConversionProvider tries to find combinations of other

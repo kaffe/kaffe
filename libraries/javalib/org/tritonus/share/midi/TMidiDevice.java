@@ -56,6 +56,7 @@ public abstract class TMidiDevice
 	 */
 	private boolean			m_bOpen;
 
+	// TODO: rename to UseReceiver/UseTransmitter
 	/**	Whether to handle input from the physical port
 		and to allow Transmitters.
 	 */

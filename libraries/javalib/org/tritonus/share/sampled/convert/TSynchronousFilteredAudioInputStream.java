@@ -46,7 +46,7 @@ import	org.tritonus.share.sampled.AudioUtils;
  * @author Florian Bomers
  */
 public abstract class TSynchronousFilteredAudioInputStream
-	extends AudioInputStream {
+	extends TAudioInputStream {
 
 	private AudioInputStream originalStream;
 	private AudioFormat originalFormat;

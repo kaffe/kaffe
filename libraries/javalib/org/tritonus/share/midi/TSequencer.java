@@ -222,7 +222,7 @@ public abstract class TSequencer
 		{@link javax.sound.midi.Sequencer#startRecording startRecording}
 		and {@link javax.sound.midi.Sequencer#stop stopRecording}.
 
-		@throw IllegalStateException if the <code>Sequencer</code> is not open
+		@throws IllegalStateException if the <code>Sequencer</code> is not open
 	 */
 	protected void checkOpen()
 	{
@@ -796,6 +796,29 @@ public abstract class TSequencer
 	protected boolean isTrackEnabled(int nTrack)
 	{
 		return m_enabledBitSet.get(nTrack);
+	}
+
+
+
+	/** Sets the preloading intervall.
+		This is the time span between preloading events to an internal
+		queue and playing them. This intervall should be kept constant
+		by the implementation. However, this cannot be guaranteed.
+	*/
+	public void setLatency(int nMilliseconds)
+	{
+	}
+
+
+
+	/** Get the preloading intervall.
+
+	@return the preloading intervall in milliseconds, or -1 if the sequencer
+	doesn't repond to changes in the <code>Sequence</code> at all.
+	*/
+	public int getLatency()
+	{
+		return -1;
 	}
 }
 

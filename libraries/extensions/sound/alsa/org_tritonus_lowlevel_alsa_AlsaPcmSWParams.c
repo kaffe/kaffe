@@ -20,11 +20,6 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-/* The following is required on ALSA 1.0.x and doesn't have any effect
- * on ALSA 0.9.x
- */
-#define ALSA_PCM_OLD_SW_PARAMS_API 1
-
 #include "common.h"
 #include "org_tritonus_lowlevel_alsa_AlsaPcmSWParams.h"
 
@@ -130,11 +125,12 @@ Java_org_tritonus_lowlevel_alsa_AlsaPcmSWParams_getTStampMode
 (JNIEnv *env, jobject obj)
 {
 	snd_pcm_sw_params_t*	handle;
-	int			nReturn;
+	snd_pcm_tstamp_t	nValue;
+	int					nReturn;
 
 	handle = getHandle(env, obj);
-	nReturn = snd_pcm_sw_params_get_tstamp_mode(handle);
-	return nReturn;
+	nReturn = snd_pcm_sw_params_get_tstamp_mode(handle, &nValue);
+	return nValue;
 }
 
 
@@ -149,11 +145,12 @@ Java_org_tritonus_lowlevel_alsa_AlsaPcmSWParams_getSleepMin
 (JNIEnv *env, jobject obj)
 {
 	snd_pcm_sw_params_t*	handle;
+	unsigned int	nValue;
 	int			nReturn;
 
 	handle = getHandle(env, obj);
-	nReturn = snd_pcm_sw_params_get_sleep_min(handle);
-	return nReturn;
+	nReturn = snd_pcm_sw_params_get_sleep_min(handle, &nValue);
+	return nValue;
 }
 
 
@@ -168,11 +165,12 @@ Java_org_tritonus_lowlevel_alsa_AlsaPcmSWParams_getAvailMin
 (JNIEnv *env, jobject obj)
 {
 	snd_pcm_sw_params_t*	handle;
-	int			nReturn;
+	snd_pcm_uframes_t	nValue;
+	int					nReturn;
 
 	handle = getHandle(env, obj);
-	nReturn = snd_pcm_sw_params_get_avail_min(handle);
-	return nReturn;
+	nReturn = snd_pcm_sw_params_get_avail_min(handle, &nValue);
+	return nValue;
 }
 
 
@@ -187,11 +185,12 @@ Java_org_tritonus_lowlevel_alsa_AlsaPcmSWParams_getXferAlign
 (JNIEnv *env, jobject obj)
 {
 	snd_pcm_sw_params_t*	handle;
-	int			nReturn;
+	snd_pcm_uframes_t	nValue;
+	int					nReturn;
 
 	handle = getHandle(env, obj);
-	nReturn = snd_pcm_sw_params_get_xfer_align(handle);
-	return nReturn;
+	nReturn = snd_pcm_sw_params_get_xfer_align(handle, &nValue);
+	return nValue;
 }
 
 
@@ -207,11 +206,12 @@ Java_org_tritonus_lowlevel_alsa_AlsaPcmSWParams_getStartThreshold
 (JNIEnv *env, jobject obj)
 {
 	snd_pcm_sw_params_t*	handle;
-	int			nReturn;
+	snd_pcm_uframes_t	nValue;
+	int					nReturn;
 
 	handle = getHandle(env, obj);
-	nReturn = snd_pcm_sw_params_get_start_threshold(handle);
-	return nReturn;
+	nReturn = snd_pcm_sw_params_get_start_threshold(handle, &nValue);
+	return nValue;
 }
 
 
@@ -226,11 +226,12 @@ Java_org_tritonus_lowlevel_alsa_AlsaPcmSWParams_getStopThreshold
 (JNIEnv *env, jobject obj)
 {
 	snd_pcm_sw_params_t*	handle;
-	int			nReturn;
+	snd_pcm_uframes_t	nValue;
+	int					nReturn;
 
 	handle = getHandle(env, obj);
-	nReturn = snd_pcm_sw_params_get_stop_threshold(handle);
-	return nReturn;
+	nReturn = snd_pcm_sw_params_get_stop_threshold(handle, &nValue);
+	return nValue;
 }
 
 
@@ -244,11 +245,12 @@ Java_org_tritonus_lowlevel_alsa_AlsaPcmSWParams_getSilenceThreshold
 (JNIEnv *env, jobject obj)
 {
 	snd_pcm_sw_params_t*	handle;
-	int			nReturn;
+	snd_pcm_uframes_t	nValue;
+	int					nReturn;
 
 	handle = getHandle(env, obj);
-	nReturn = snd_pcm_sw_params_get_silence_threshold(handle);
-	return nReturn;
+	nReturn = snd_pcm_sw_params_get_silence_threshold(handle, &nValue);
+	return nValue;
 }
 
 
@@ -263,11 +265,12 @@ Java_org_tritonus_lowlevel_alsa_AlsaPcmSWParams_getSilenceSize
 (JNIEnv *env, jobject obj)
 {
 	snd_pcm_sw_params_t*	handle;
-	int			nReturn;
+	snd_pcm_uframes_t	nValue;
+	int					nReturn;
 
 	handle = getHandle(env, obj);
-	nReturn = snd_pcm_sw_params_get_silence_size(handle);
-	return nReturn;
+	nReturn = snd_pcm_sw_params_get_silence_size(handle, &nValue);
+	return nValue;
 }
 
 

@@ -54,7 +54,8 @@ import	org.tritonus.share.midi.TSequencer;
 
 
 public class AlsaSequencer
-	extends		TSequencer
+// TODO: derive from TPreloadingSequencer
+extends TSequencer
 {
 	/**	The syncronization modes the sequencer can sync to.
 	 */

@@ -1,4 +1,60 @@
+2004-01-10  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with Tritonus.org.
+
+	Reported by: Matthias Pfisterer <Matthias.Pfisterer@web.de>
+
+	2004-01-05 12:18  pfisterer
+
+        * src/lib/alsa/: org_tritonus_lowlevel_alsa_AlsaPcm.c,
+          org_tritonus_lowlevel_alsa_AlsaPcmHWParams.c,
+          org_tritonus_lowlevel_alsa_AlsaPcmSWParams.c: adapted to ALSA 1.0
+          API
+
+	2003-12-17 10:03  pfisterer
+
+        * src/javax/sound/sampled/LineEvent.java: made serialVersionUID
+          compatible to Sun JDK 1.4
+
+	2004-01-05 12:14  pfisterer
+
+        * src/org/tritonus/midi/device/alsa/AlsaSequencer.java: added
+          comment
+
+	2004-01-05 12:13  pfisterer
+
+        *
+          src/org/tritonus/sampled/convert/SmartFormatConversionProvider.java:
+          added documentation
+
+	2004-01-08 15:48  pfisterer
+
+        * src/org/tritonus/share/midi/TMidiDevice.java: added comment
+
+	2004-01-05 12:09  pfisterer
+
+        * src/org/tritonus/share/midi/: TPreloadingSequencer.java,
+          TSequencer.java: attempt to clearify ple-loading behaviour
+
+	2004-01-05 12:12  pfisterer
+
+        * src/org/tritonus/share/sampled/FloatSampleBuffer.java: fixed
+          documentation
+
+	2004-01-05 12:07  pfisterer
+
+        * src/org/tritonus/share/sampled/convert/:
+          TAsynchronousFilteredAudioInputStream.java,
+          TAudioInputStream.java,
+          TSynchronousFilteredAudioInputStream.java: implemented properties
+
+	2004-01-05 12:03  pfisterer
+
+        * src/org/tritonus/share/sampled/file/TAudioFileFormat.java:
+          implemented properties
+
 2004-01-10  Milos Negovanovic <milosn@xtra.co.nz>
+
 	* kaffe/scripts/kaffe.in:
 	Add support for cgdb(vi based curses frontend for gdb).
 
