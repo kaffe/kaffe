@@ -1,2 +1,2 @@
 #! /bin/sh
-exec java sun.security.provider.Main $@
+exec java sun.security.provider.Main "$@"

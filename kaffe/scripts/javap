@@ -1,2 +1,2 @@
 #! /bin/sh
-exec java sun.tools.javap.JavaP $@
+exec java sun.tools.javap.JavaP "$@"

@@ -1,3 +1,3 @@
 #! /bin/sh
 # Script to run Sun's documenter
-exec java sun.tools.javadoc.Main $@
+exec java sun.tools.javadoc.Main "$@"
