@@ -537,6 +537,9 @@ public final class Main {
       List customOptions=new LinkedList();
 
 
+      rootDoc = new RootDocImpl();
+      reporter = rootDoc.getReporter();
+
       //--- Iterate over all options given on the command line
 
       for (Iterator it = arguments.iterator(); it.hasNext(); ) {
@@ -556,29 +559,33 @@ public final class Main {
 	 }
 
 	 //--- Otherwise the option is recognized as a standard option.
-	 //         If the option requires more arguments than given on the
-	 //         command line, issue a fatal error
-
-	 else if (!it.hasNext()) {
-	    reporter.printFatal("Missing value for option "+arg+".");
-	 }
-
-	 //--- The option is recognized as standard option, and all
-	 //         required arguments are supplied. Create a new String
+	 //         if all required arguments are supplied. Create a new String
 	 //         array for the option and its arguments, and store it
 	 //         in the options array.
-
-	 //         FIXME: this does not deal well with omitted arguments
-	 //         like such '-sourcepath -private': this would lead
-	 //         to '-private' being silently accepted as an argument
-	 //         to '-sourcepath'.
 
 	 else {
 	    String[] option=new String[optlen];
 	    option[0] = arg;
-	    for (int j=1; j<optlen; ++j)
-	       option[j] = (String)it.next();
-	    options.add(option);
+	    boolean optargs_ok = true;
+	    for (int j=1; j<optlen && optargs_ok; ++j) {
+	 	if (it.hasNext()) {
+	 		option[j] = (String)it.next();
+			if (option[j].startsWith("-")) {
+				optargs_ok = false;
+			}
+		}
+		else {
+			optargs_ok = false;
+		}
+	    }
+	    if (optargs_ok)
+	    	options.add(option);
+	    else {
+	 	//         If the option requires more arguments than given on the
+	 	//         command line, issue a fatal error
+
+	    	reporter.printFatal("Missing value for option "+arg+".");
+	    }
 	 }
       }
 
@@ -587,9 +594,6 @@ public final class Main {
       String[][] optionArr=(String[][])options.toArray(new String[options.size()][0]);
 
       //--- Validate all options and issue warnings/errors
-
-      rootDoc = new RootDocImpl();
-      reporter = rootDoc.getReporter();
       
       if (validOptions(optionArr, rootDoc)) {
 

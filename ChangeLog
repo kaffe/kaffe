@@ -1,3 +1,8 @@
+2004-04-18  Nektarios Papadopoulos <npapadop@inaccessnetworks.com>
+
+	* tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/Main.java:
+	Fixed -help option.
+
 2004-04-18  Dalibor Topic <robilad@kaffe.org>
 
 	* config/m68k/openbsd2/jit.h:
