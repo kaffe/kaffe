@@ -184,7 +184,9 @@ define_insn(prologue, prologue_xxx)
 {
 	label* l;
 
-	debug(("Method: %s\n", globalMethod->name->data));
+	if (profFlag) {
+		debug(("Method: %s\n", globalMethod->name->data));
+	}
 #if defined(KAFFE_XPROFILER)
 	if (xProfFlag)
 	{

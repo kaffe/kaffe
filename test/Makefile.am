@@ -6,10 +6,13 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = regression
+if HAVE_JIKES
+INTERNAL_TEST = internal
+endif
 
-DIST_SUBDIRS = regression
+SUBDIRS = $(INTERNAL_TEST) regression
 
+DIST_SUBDIRS = internal regression
 
 EXTRA_DIST = \
 	awt/Calc/Calc.java \

@@ -1,3 +1,40 @@
+2003-04-25 Tim Stack <stack@cs.utah.edu>
+
+	* configure.in:
+	Add test/internal/Makefile as an output file.
+
+	* FAQ/FAQ.debugging:
+	Add a blurb about the test/internal directory.
+
+	* config/i386/jit3-i386.def:
+	Wrap profiling debugging message in an 'if(profFlag)'.
+
+	* kaffe/kaffevm/stringParsing.c,
+	kaffe/kaffevm/stringParsing.h:
+	Added string parsing utility function from the JanosVM.
+
+	* test/Makefile.am:
+	Add the 'internal' directory to the list of SUBDIRS, but only if
+	HAVE_JIKES is true.
+
+	* test/internal/ConstMathMethods.java,
+	test/internal/ConstMethods.java,
+	test/internal/ControlFlowMethods.java,
+	test/internal/Makefile.am,
+	test/internal/MethodOptimizations.java,
+	test/internal/ObjectFields.java,
+	test/internal/ParameterizedBitwiseMethods.java,
+	test/internal/ParameterizedLogicalMethods.java,
+	test/internal/ParameterizedMathMethods.java,
+	test/internal/ParameterizedMethods.java,
+	test/internal/PrimitiveArrays.java,
+	test/internal/StaticFields.java,
+	test/internal/StaticMethodCall.java,
+	test/internal/TypeConversion.java,
+	test/internal/jitBasic.c,
+	test/internal/jit_stub.c:
+	Basic tests for the jitter.
+	
 2003-04-24 Dalibor Topic <robilad@yahoo.com>
 
 	* configure.in:

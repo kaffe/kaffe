@@ -47,6 +47,29 @@ symbols in backtraces in GDB. If you're going to debug Kaffe on a
 regular basis, you should always include the xdebugging support.
 
 
+Internal Tests
+==============
+
+Internal tests are kept in the test/internal directory and are used to
+do very basic checking of the VM.  If you are doing a port, you will
+want to start here since the tests are less demanding than the full
+regression tests.  In general, the tests are written in C, link
+directly to the VM libraries, check results internally, and exit when
+they first encounter a problem.
+
+Currently, there is only one test, jitBasic, which does basic testing
+of the jitter.  For example, the tests range from simple checking of
+functions returning constants to creating objects and accessing their
+fields.  These tests are ideal for those doing a port of the jitter,
+and were in fact used to assist the development of the PowerPC port.
+Note that the test relies on Java classes, Jikes is required to do the
+compilation, we do not currently distribute precompiled versions.
+
+jitBasic environment variables:
+
+	TEST_CLASSES - The classes to test against.
+
+
 Regression Tests
 ================
 

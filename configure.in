@@ -1615,6 +1615,7 @@ kaffe/scripts/compat/javac \
 kaffe/scripts/compat/appletviewer \
 kaffe/scripts/compat/javadoc \
 test/Makefile \
+test/internal/Makefile \
 test/regression/Makefile \
 test/regression/TestScript \
 ])
