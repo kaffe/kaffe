@@ -27,6 +27,7 @@ Tue Mar 28 15:02:57 PST 2000  Archie Cobbs <archie@whistle.com>
 	* libraries/javalib/java/lang/Runtime.java,
 	libraries/javalib/java/lang/System.java: use getStackClass(1)
 	instead of getCallingClass()
+	* libraries/javalib/kaffe/jar/ExecJar.java: remove unused variable
 
 Wed Mar 22 17:46:57 PST 2000  Archie Cobbs <archie@whistle.com>
 
