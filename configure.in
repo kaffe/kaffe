@@ -576,7 +576,7 @@ dnl Checks for libraries for vm library.
 dnl Include work around FreeBSD modulo bug.
 
 case "$Khost_os" in
-freebsd2|netbsd1|oskit)
+freebsd2|oskit)
 	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBS);;
 esac
 
@@ -1200,7 +1200,7 @@ AC_CACHE_CHECK([for path separator],ac_cv_kaffe_pathsep,
 [	rm -f conftest.c
 	cat ${srcdir}/include/system.h > conftest.c
 	echo path_separator >> conftest.c
-	eval ac_cv_kaffe_pathsep=`$CPP $CPPFLAGS conftest.c | sed '$p; d'`
+	eval ac_cv_kaffe_pathsep=`$CPP $CPPFLAGS conftest.c 2>/dev/null| sed '$p; d'`
 	rm -f conftest.c
 ])
 PATHSEP=$ac_cv_kaffe_pathsep
@@ -1210,7 +1210,7 @@ AC_CACHE_CHECK([for directory separator],ac_cv_kaffe_dirsep,
 [	rm -f conftest.c
 	cat ${srcdir}/include/system.h > conftest.c
 	echo file_separator >> conftest.c
-	eval ac_cv_kaffe_dirsep=`$CPP $CPPFLAGS conftest.c | sed '$p; d'`
+	eval ac_cv_kaffe_dirsep=`$CPP $CPPFLAGS conftest.c 2>/dev/null| sed '$p; d'`
 	rm -f conftest.c
 ])
 DIRSEP=`echo "$ac_cv_kaffe_dirsep" | sed 's,\\\\,\\\\\\\\,g'`
