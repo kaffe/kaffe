@@ -253,8 +253,9 @@ define_insn(spill_int, spill_Rxx)
 
 define_insn(spill_float, fspill_Rxx)
 {
-	int r = sreg_float(0);
 	int o = const_int(1);
+
+	sreg_float(0);
 
 	OUT = 0xD9;
 	OUT = 0x98|REG_ebp;
@@ -265,8 +266,9 @@ define_insn(spill_float, fspill_Rxx)
 
 define_insn(spill_double, fspilll_Rxx)
 {
-	int r = sreg_double(0);
 	int o = const_int(1);
+
+	sreg_double(0);
 
 	OUT = 0xDD;
 	OUT = 0x98|REG_ebp;
@@ -289,8 +291,9 @@ define_insn(reload_int, reload_Rxx)
 
 define_insn(reload_float, freload_Rxx)
 {
-	int w = lreg_float(0);
 	int o = const_int(1);
+
+	lreg_float(0);
 
 	OUT = 0xD9;
 	OUT = 0x80|REG_ebp;
@@ -301,8 +304,9 @@ define_insn(reload_float, freload_Rxx)
 
 define_insn(reload_double, freloadl_Rxx)
 {
-	int w = lreg_double(0);
 	int o = const_int(1);
+
+	lreg_double(0);
 
 	OUT = 0xDD;
 	OUT = 0x80|REG_ebp;
@@ -351,7 +355,8 @@ define_insn(move_int, move_RxR)
 define_insn(move_float_const, fmove_RxC)
 {
 	double val = const_float(2);
-	int w = wreg_float(0);
+
+	wreg_float(0);
 
 	if (val == 0.0) {
 		OUT = 0xD9;
@@ -376,7 +381,7 @@ define_insn(move_float, fmove_RxR)
 	int ow = wslot_float(0);
 
 	if (or != ow) {
-		int w = wreg_float(0);
+		wreg_float(0);
 
 		OUT = 0xD9;
 		OUT = 0x80|REG_ebp;
@@ -389,7 +394,8 @@ define_insn(move_float, fmove_RxR)
 define_insn(move_double_const, fmovel_RxC)
 {
 	double val = const_double(2);
-	int w = wreg_double(0);
+
+	wreg_double(0);
 
 	if (val == 0.0) {
 		OUT = 0xD9;
@@ -414,7 +420,7 @@ define_insn(move_double, fmovel_RxR)
 	int ow = wslot_double(0);
 
 	if (or != ow) {
-		int w = wreg_double(0);
+		wreg_double(0);
 
 		OUT = 0xDD;
 		OUT = 0x80|REG_ebp;
@@ -459,8 +465,9 @@ define_insn(adc_int, adc_RRR)
 define_insn(add_float, fadd_RRR)
 {
 	int r2 = rslot_float(2);	/* Get r2 into memory */
-	int r1 = rreg_float(1);		/* Load r1 into the register stack */
-	int w = wreg_float(0);		/* Result will be in register stack */
+
+	rreg_float(1);			/* Load r1 into the register stack */
+	wreg_float(0);			/* Result will be in register stack */
 
 	OUT = 0xD8;
 	OUT = 0x80|REG_ebp;
@@ -472,8 +479,9 @@ define_insn(add_float, fadd_RRR)
 define_insn(add_double, faddl_RRR)
 {
 	int r2 = rslot_double(2);	/* Get r2 into memory */
-	int r1 = rreg_double(1);	/* Load r1 into the register stack */
-	int w = wreg_double(0);		/* Result will be in register stack */
+
+	rreg_double(1);			/* Load r1 into the register stack */
+	wreg_double(0);			/* Result will be in register stack */
 
 	OUT = 0xDC;
 	OUT = 0x80|REG_ebp;
@@ -515,8 +523,9 @@ define_insn(sbc_int, sbc_RRR)
 define_insn(sub_float, fsub_RRR)
 {
 	int r2 = rslot_float(2);	/* Get r2 into memory */
-	int r1 = rreg_float(1);		/* Load r1 into the register stack */
-	int w = wreg_float(0);		/* Result will be in register stack */
+
+	rreg_float(1);			/* Load r1 into the register stack */
+	wreg_float(0);			/* Result will be in register stack */
 
 	OUT = 0xD8;
 	OUT = 0xA0|REG_ebp;
@@ -528,8 +537,9 @@ define_insn(sub_float, fsub_RRR)
 define_insn(sub_double, fsubl_RRR)
 {
 	int r2 = rslot_double(2);	/* Get r2 into memory */
-	int r1 = rreg_double(1);	/* Load r1 into the register stack */
-	int w = wreg_double(0);		/* Result will be in register stack */
+
+	rreg_double(1);			/* Load r1 into the register stack */
+	wreg_double(0);			/* Result will be in register stack */
 
 	OUT = 0xDC;
 	OUT = 0xA0|REG_ebp;
@@ -558,8 +568,9 @@ define_insn(mul_int, mul_RRR)
 define_insn(mul_float, fmul_RRR)
 {
 	int r2 = rslot_float(2);	/* Get r2 into memory */
-	int r1 = rreg_float(1);		/* Load r1 into the register stack */
-	int w = wreg_float(0);		/* Result will be in register stack */
+
+	rreg_float(1);			/* Load r1 into the register stack */
+	wreg_float(0);			/* Result will be in register stack */
 
 	OUT = 0xD8;
 	OUT = 0x88|REG_ebp;
@@ -571,8 +582,9 @@ define_insn(mul_float, fmul_RRR)
 define_insn(mul_double, fmull_RRR)
 {
 	int r2 = rslot_double(2);	/* Get r2 into memory */
-	int r1 = rreg_double(1);	/* Load r1 into the register stack */
-	int w = wreg_double(0);		/* Result will be in register stack */
+
+	rreg_double(1);			/* Load r1 into the register stack */
+	wreg_double(0);			/* Result will be in register stack */
 
 	OUT = 0xDC;
 	OUT = 0x88|REG_ebp;
@@ -616,8 +628,9 @@ define_insn(div_int, div_RRR)
 define_insn(div_float, fdiv_RRR)
 {
 	int r2 = rslot_float(2);	/* Get r2 into memory */
-	int r1 = rreg_float(1);		/* Load r1 into the register stack */
-	int w = wreg_float(0);		/* Result will be in register stack */
+
+	rreg_float(1);			/* Load r1 into the register stack */
+	wreg_float(0);			/* Result will be in register stack */
 
 	OUT = 0xD8;
 	OUT = 0xB0|REG_ebp;
@@ -629,8 +642,9 @@ define_insn(div_float, fdiv_RRR)
 define_insn(div_double, fdivl_RRR)
 {
 	int r2 = rslot_double(2);	/* Get r2 into memory */
-	int r1 = rreg_double(1);	/* Load r1 into the register stack */
-	int w = wreg_double(0);		/* Result will be in register stack */
+
+	rreg_double(1);			/* Load r1 into the register stack */
+	wreg_double(0);			/* Result will be in register stack */
 
 	OUT = 0xDC;
 	OUT = 0xB0|REG_ebp;
@@ -803,7 +817,8 @@ define_insn(load_int, load_RxR)
 define_insn(load_float, fload_RxR)
 {
 	int r = rreg_int(2);
-	int w = wreg_float(0);
+
+	wreg_float(0);
 
 	OUT = 0xD9;
 	OUT = 0x00|r;
@@ -814,7 +829,8 @@ define_insn(load_float, fload_RxR)
 define_insn(load_double, floadl_RxR)
 {
 	int r = rreg_int(2);
-	int w = wreg_double(0);
+
+	wreg_double(0);
 
 	OUT = 0xDD;
 	OUT = 0x00|r;
@@ -838,8 +854,9 @@ define_insn(store_int, store_xRR)
 
 define_insn(store_float, fstore_RxR)
 {
-	int r = rreg_float(2);
 	int w = rreg_int(1);
+
+	rreg_float(2);
 
 	OUT = 0xD9;
 	OUT = 0x18|w;
@@ -849,8 +866,9 @@ define_insn(store_float, fstore_RxR)
 
 define_insn(store_double, fstorel_RxR)
 {
-	int r = rreg_double(2);
 	int w = rreg_int(1);
+
+	rreg_double(2);
 
 	OUT = 0xDD;
 	OUT = 0x18|w;
@@ -876,7 +894,8 @@ define_insn(cmp_int, cmp_xRR)
 define_insn(cvt_int_float, cvtif_RxR)
 {
 	int r = rslot_int(2);
-	int w = wreg_float(0);
+
+	wreg_float(0);
 
 	OUT = 0xDB;
 	OUT = 0x80|REG_ebp;
@@ -888,7 +907,8 @@ define_insn(cvt_int_float, cvtif_RxR)
 define_insn(cvt_int_double, cvtid_RxR)
 {
 	int r = rslot_int(2);
-	int w = wreg_double(0);
+
+	wreg_double(0);
 
 	OUT = 0xDB;
 	OUT = 0x80|REG_ebp;
@@ -900,7 +920,8 @@ define_insn(cvt_int_double, cvtid_RxR)
 define_insn(cvt_long_float, cvtlf_RxR)
 {
 	int r = rslot_long(2);
-	int w = wreg_float(0);
+
+	wreg_float(0);
 
 	OUT = 0xDF;
 	OUT = 0xA8|REG_ebp;
@@ -912,7 +933,8 @@ define_insn(cvt_long_float, cvtlf_RxR)
 define_insn(cvt_long_double, cvtld_RxR)
 {
 	int r = rslot_long(2);
-	int w = wreg_double(0);
+
+	wreg_double(0);
 
 	OUT = 0xDF;
 	OUT = 0xA8|REG_ebp;
@@ -924,7 +946,8 @@ define_insn(cvt_long_double, cvtld_RxR)
 define_insn(cvt_float_double, cvtfd_RxR)
 {
 	int o = rslot_float(2);
-	int w = wreg_double(0);
+
+	wreg_double(0);
 
 	OUT = 0xD9;
 	OUT = 0x80|REG_ebp;
@@ -936,7 +959,8 @@ define_insn(cvt_float_double, cvtfd_RxR)
 define_insn(cvt_double_float, cvtdf_RxR)
 {
 	int o = rslot_double(2);
-	int w = wreg_float(0);
+
+	wreg_float(0);
 
 	OUT = 0xDD;
 	OUT = 0x80|REG_ebp;
