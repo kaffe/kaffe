@@ -8,6 +8,7 @@ Wed Feb 24 04:25:47 1999  Moses DeJong <dejong@cs.umn.edu>
 	* libraries/javalib/java/util/zip/ZipConstants.java
 	(DATA_SIGNATURE, DATA_CRC, DATA_COMPRESSEDSIZE,
 	DATA_UNCOMPRESSEDSIZE): new
+	* libraries/javalib/java/util/zip/ZipOutputStream.java:
 	(Storer.Storer): explicitly initialize total, off and len
 	(closeEntry): write extended local header for deflated files
 	(putNextEntry): write ze.flag only after seting it to ze.method
