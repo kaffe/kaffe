@@ -425,11 +425,15 @@ public Object newInstance() throws InstantiationException, IllegalAccessExceptio
 		throw (RuntimeException) e.getTargetException();
 	    }
 	    else {
-		throw new InstantiationException(e.getTargetException().getMessage());
+		InstantiationException ie = new InstantiationException(e.getTargetException().getMessage());
+		ie.initCause(e);
+		throw ie;
 	    }
 	}
 	catch (NoSuchMethodException e) {
-	    throw new InstantiationException(e.getMessage());
+	    InstantiationException ie = new InstantiationException(e.getMessage());
+	    ie.initCause(e);
+	    throw ie;
 	}
     }
 }

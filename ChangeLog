@@ -1,5 +1,10 @@
 2005-02-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/lang/Class.java (newInstance): 
+	Improved exception messages.
+
+2005-02-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/net/PlainSocketImpl.c (gnu_java_net_PlainSocketImpl_socketAccept): 
 	Improved debug code.
 
