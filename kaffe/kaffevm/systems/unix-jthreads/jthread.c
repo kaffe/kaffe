@@ -1747,7 +1747,6 @@ DBG(JTHREADDETAIL,
 		short ev = 0;
 		if (readQ[i] != 0) { 	/* FD_ISSET(i, &readsPending) */
 			ev |= POLLIN;
-			assert(FD_ISSET(i, &readsPending));
 		}
 		if (writeQ[i] != 0) {   /* FD_ISSET(i, &writesPending) */
 			ev |= POLLOUT;

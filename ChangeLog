@@ -1,3 +1,10 @@
+2003-02-26 Matthew Toseland <toad@amphibian.dyndns.org>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	(handleIO) removed bogus assert that caused Freenet to crash.
+
+	Suggested by: Godmar Back <gback@cs.utah.edu>
+	
 2003-02-26 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/kaffe/lang/UNIXProcess.java:
