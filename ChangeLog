@@ -4,6 +4,16 @@
 	
 	2005-01-20  Michael Koch  <konqueror@gmx.de>
 
+	* java/awt/print/PrinterJob.java
+	(pageDialog): Throws java.awt.HeadlessException.
+	(printDialog): Likewise.
+
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-01-20  Michael Koch  <konqueror@gmx.de>
+
 	* javax/print/attribute/standard/Chromaticity.java
 	(serialVersionUID): Fixed value.
 	* javax/print/attribute/standard/Destination.java
