@@ -186,7 +186,8 @@ NOINSTALL_DERIVED_HDRS = \
 	java_util_zip_ZipEntry.h \
 	kaffe_io_ObjectStreamClassImpl.h \
 	kaffe_lang_SystemClassLoader.h \
-	kaffe_lang_UNIXProcess.h
+	kaffe_lang_UNIXProcess.h \
+	kaffe_management_Classpath.h
 
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
