@@ -1,5 +1,51 @@
 2005-03-08  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-03-02  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/awt/color/package.html,
+        gnu/java/awt/image/package.html,
+        gnu/java/awt/package.html,
+        gnu/java/awt/peer/package.html,
+        gnu/java/beans/decoder/package.html,
+        gnu/java/beans/editors/package.html,
+        gnu/java/beans/package.html,
+        gnu/java/io/decode/package.html,
+        gnu/java/io/encode/package.html,
+        gnu/java/io/package.html,
+        gnu/java/lang/package.html,
+        gnu/java/lang/reflect/package.html,
+        gnu/java/locale/package.html,
+        gnu/java/math/package.html,
+        gnu/java/net/package.html,
+        gnu/java/net/protocol/file/package.html,
+        gnu/java/net/protocol/http/event/package.html,
+        gnu/java/net/protocol/jar/package.html,
+        gnu/java/nio/channels/package.html,
+        gnu/java/nio/charset/package.html,
+        gnu/java/nio/package.html,
+        gnu/java/rmi/dgc/package.html,
+        gnu/java/rmi/package.html,
+        gnu/java/rmi/registry/package.html,
+        gnu/java/rmi/server/package.html,
+        gnu/java/security/action/package.html,
+        gnu/java/security/ber/package.html,
+        gnu/java/security/der/package.html,
+        gnu/java/security/package.html,
+        gnu/java/security/pkcs/package.html,
+        gnu/java/security/provider/package.html,
+        gnu/java/security/util/package.html,
+        gnu/java/security/x509/ext/package.html,
+        gnu/java/security/x509/package.html,
+        gnu/java/text/package.html,
+        gnu/java/util/package.html,
+        gnu/java/util/prefs/package.html,
+        java/lang/annotation/package.html:
+        New files.
+
+2005-03-08  Dalibor Topic  <robilad@kaffe.org>
+
         * kaffe/scripts/serialver.in:
 	Use gnu.classpath.tools.serialver.SerialVer.
 
