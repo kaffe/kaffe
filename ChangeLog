@@ -1,3 +1,8 @@
+2003-04-10 Herve Roussain <roussain@univ-ubs.fr>
+
+	* libraries/javalib/java/lang/ThreadGroup.java:
+	(parentOf) rewritten to match specification.
+	
 2003-04-09 Tim Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.c:

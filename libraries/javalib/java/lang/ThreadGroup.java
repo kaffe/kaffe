@@ -242,7 +242,12 @@ private void list(int tabulation) {
 }
 
 final public boolean parentOf(ThreadGroup g) {
-	return ((parent == g) || (parentOf(g.getParent())));
+	if (g == null) {
+	    return false;
+	}
+	else {
+	    return (this == g) || parentOf(g.getParent());
+	}
 }
 
 private void printGroups(int tabulation) {
