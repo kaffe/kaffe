@@ -6238,7 +6238,7 @@ if eval "test \"`echo '$''{'ac_cv_alignmentof_voidp'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   if test "$cross_compiling" = yes; then
-  ac_cv_alignmentof_voidp=1
+  ac_cv_alignmentof_voidp=$ac_cv_sizeof_voidp
 else
   cat > conftest.$ac_ext <<EOF
 #line 6245 "configure"
@@ -6258,7 +6258,7 @@ else
   echo "configure: failed program was:" >&5
   cat conftest.$ac_ext >&5
   rm -fr conftest*
-  ac_cv_alignmentof_voidp=1
+  { echo "configure: error: Unexpected result" 1>&2; exit 1; }
 fi
 rm -fr conftest*
 fi
