@@ -1,5 +1,14 @@
 2004-03-09  Dalibor Topic <robilad@kaffe.org>
 
+	Merged in a fix from NetBSD, PR pkg/22437.
+
+	2003-09-16  Jonathan Perkin <jonathan@perkin.org.uk>
+
+	* config/alpha/trampolines.c:
+	Fixed string concatenation.
+
+2004-03-09  Dalibor Topic <robilad@kaffe.org>
+
 	* config/s390/sysdepCallMethod.h:
 	Fixed typo. Fixes a bug in Debian's BTS:
 	#227745: kaffe FTBFS on buildd for s390.
