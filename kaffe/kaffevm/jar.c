@@ -221,14 +221,22 @@ openJarFile(char* name)
 		file->offset = 0;
 	}
 #endif
-	addToCounter(&jarmem, "vmmem-jar files", 1, GCSIZEOF(file));
 	i = findFirstCentralDirRecord(file);
 	file->count = i;
 	if (i > 0) {
 		curr = readCentralDirRecord(file);
+		if (curr == 0) {
+			KFREE(file);
+			return (0);
+		}
+		addToCounter(&jarmem, "vmmem-jar files", 1, GCSIZEOF(file));
 		file->head = curr;
 		for (i--; i > 0; i--) {
 			curr->next = readCentralDirRecord(file);
+			if (curr->next == 0) {
+				closeJarFile(file);
+				return (0);
+			}
 			curr = curr->next;
 		}
 	}

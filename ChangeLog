@@ -1,5 +1,7 @@
 Mon May 10 14:30:33 1999  Godmar Back  <gback@cs.utah.edu>
 
+	* kaffe/kaffevm/jar.c: fixed read openJarFile to not ignore the
+	return code of readCentralDirRecord.
 	* libraries/clib/native/System.c,
 	libraries/javalib/java/lang/System.java: made System.in/out/err
 	final as required.
