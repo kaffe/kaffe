@@ -52,7 +52,6 @@ class NativeGraphics
  * component changes visibility and/or location/size.
  */
 	Component target;
-	GraphicsLink link;
 	NativeGraphics next;
 	static NativeGraphics cache;
 	static Object lock = new Object();
@@ -103,10 +102,6 @@ public Graphics create () {
 	if ( xClr != null )
 		g.setXORMode( xClr);
 
-	if ( target != null ){
-		target.linkGraphics( g);
-	}
-
 	return g;
 }
 
@@ -131,11 +126,7 @@ public Graphics create ( int x, int y, int width, int height ) {
 							
 	if ( xClr != null )
 		g.setXORMode( xClr);
-
-	if ( target != null ){
-		target.linkGraphics( g);
-	}
-
+		
 	return g;
 }
 
@@ -150,26 +141,17 @@ public void dispose () {
 		return;
 	}
 
-	if ( target != null ) {
-		// make sure we don't get a interspersed updateLinkedGraphics()
-		synchronized ( target ) {
-			xClr = null;
-			font = null;
-			fgClr = null;
-			bgClr = null;
-
-			target.unlinkGraphics( this);
-			target = null;
-		}
-	}
-	else {
+	synchronized ( lock ) {
 		xClr = null;
 		font = null;
 		fgClr = null;
 		bgClr = null;
-	}
 
-	synchronized ( lock ) {
+		if ( target != null ){
+			target.unlinkGraphics( this);
+			target = null;
+		}
+
 		next = cache;
 		cache = this;
 	}
@@ -196,7 +178,7 @@ public void drawChars ( char data[], int offset, int length, int x, int y ){
 
 public boolean drawImage (Image img, int x, int y, Color bgcolor, ImageObserver observer) {
 	// if the image isn't loaded yet, start production and return false
-	if ( Image.loadImage( img, -1, -1, observer) == false ) {
+	if ( img.loadImage(-1, -1, observer) == false ) {
 		return (false);
 	}
 	else {
@@ -206,7 +188,7 @@ public boolean drawImage (Image img, int x, int y, Color bgcolor, ImageObserver 
 }
 
 public boolean drawImage ( Image img, int x, int y, ImageObserver observer) {
-	if ( Image.loadImage( img, -1, -1, observer) == false ) {
+	if ( img.loadImage(-1, -1, observer) == false ) {
 		return (false);
 	}
 	else {
@@ -219,7 +201,7 @@ public boolean drawImage ( Image img, int x, int y, int width, int height, Color
 
 	// Load image if it's not loaded - we don't scale because we
 	// can do this while drawing.
-	if ( Image.loadImage( img, -1, -1, observer) == false) {
+	if (img.loadImage(-1, -1, observer) == false) {
 		return (false);
 	}
 
@@ -257,7 +239,7 @@ public boolean drawImage ( Image img,
 
 	// Load image if it's not loaded - we don't scale because we
 	// can do this while drawing.
-	if (Image.loadImage( img, -1, -1, observer) == false) {
+	if (img.loadImage(-1, -1, observer) == false) {
 		return (false);
 	}
 
@@ -434,7 +416,8 @@ static NativeGraphics getClippedGraphics ( NativeGraphics g, Component c,
 	}
 
 	while ( true ) {
-		if ( c.parent == null ) {
+		Ptr cnd = c.getNativeData();
+		if ( cnd != null ) {
 			if ( (Toolkit.flags & Toolkit.EXTERNAL_DECO) != 0 ) {
 				// compensate the artificial Frame decoration offsets (NOT insets)
 				// note that this requires the graphics offset to be private
@@ -443,7 +426,7 @@ static NativeGraphics getClippedGraphics ( NativeGraphics g, Component c,
 			}
 
 			if ( g == null ){
-				return getGraphics( c, ((Window)c).nativeData, TGT_TYPE_WINDOW,
+				return getGraphics( c, cnd, TGT_TYPE_WINDOW,
 				                    xOff, yOff,
 				                    xClip, yClip, wClip, hClip,
 				                    fg, bg, fnt, blank);
@@ -547,17 +530,15 @@ static NativeGraphics getGraphics ( Object target, Ptr tgtData, int tgtType,
 	g.yClip  = yClip;
 	g.wClip  = wClip;
 	g.hClip = hClip;
-	g.font     = fnt;
-	g.fgClr    = fg;
-	g.bgClr    = bg;
-
-if ( fg == null ){ Thread.currentThread().dumpStack();}
+	g.font     = (fnt != null) ? fnt : Defaults.WndFont;
+	g.fgClr    = (fg != null) ? fg : Defaults.WndForeground;
+	g.bgClr    = (bg != null) ? bg : Defaults.WndBackground;
 
 	g.nativeData = Toolkit.graInitGraphics( g.nativeData, tgtData, tgtType,
 	                                        xOffset, yOffset,
 	                                        xClip, yClip, wClip, hClip,
-	                                        fnt.nativeData,
-	                                        fg.nativeValue, bg.nativeValue,
+	                                        g.font.nativeData,
+	                                        g.fgClr.nativeValue, g.bgClr.nativeValue,
 	                                        blank);
 	return g;
 }
@@ -565,7 +546,6 @@ if ( fg == null ){ Thread.currentThread().dumpStack();}
 void paintChild ( Component c, boolean isUpdate ) {
 	// needs to be here because we are the only one knowing about the clip fields
 	// (a generic version would have to use the dreadful getClipBounds())
-
 	int xw = c.x + c.width;
 	int yh = c.y + c.height;
 	int cxw = xClip + wClip;
@@ -622,7 +602,6 @@ void paintChild ( Component c, boolean isUpdate ) {
 void setBackColor ( Color clr ){
 	if ( (clr != null) && (clr != bgClr) ) {
 		bgClr = clr;
-		
 		Toolkit.graSetBackColor( nativeData, bgClr.nativeValue);
 	}
 }
@@ -710,10 +689,8 @@ public void setXORMode ( Color newXorClr ) {
 }
 
 public String toString() {
-	return  getClass().getName() +
-	           ' ' + hashCode() + 
-	           " [" + xOffset + ',' + yOffset +
-	           " clip:" + xClip+','+yClip+' '+wClip+','+hClip + ']';
+	return getClass().getName() + " [" + xOffset + ',' + yOffset +
+	                     " clip:" + xClip+','+yClip+' '+wClip+','+hClip + ']';
 }
 
 public void translate ( int x, int y ) {

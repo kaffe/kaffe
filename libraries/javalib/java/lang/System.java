@@ -50,11 +50,14 @@ static {
 	if (sin != null) {
 		try {
 			props.load(sin);
-		} catch (IOException e) {
-		} finally {
+		}
+		catch (IOException e) {
+		}
+		finally {
 			try {
 				sin.close();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 			}
 		}
 	}
@@ -72,11 +75,13 @@ static {
 		err = new PrintStream(new BufferedOutputStream(new kaffe.io.StdErrorStream(), 128), true);
 	}
 
-	// Initiate the default timezone implementation & default calendar implementation.  
+	// Initiate the default timezone implementation, default calendar implementation,
+	// and system class loader
 	try
 	{
 		Class.forName("java.util.SimpleTimeZone");
 		Class.forName("java.util.GregorianCalendar");
+		Class.forName("kaffe.lang.SystemClassLoader");
 	}
 	catch (ClassNotFoundException _)
 	{
@@ -149,24 +154,26 @@ public static void runFinalizersOnExit(boolean value) {
 	Runtime.getRuntime().runFinalizersOnExit(value);
 }
 
-native private static void setIn0(InputStream in);
-native private static void setOut0(PrintStream out);
-native private static void setErr0(PrintStream err);
-
 public static void setErr(PrintStream err) {
 	// XXX call security manager for RuntimePermission("SetIO")
 	setErr0(err);
 }
+
+native private static void setErr0(PrintStream err);
 
 public static void setIn(InputStream in) {
 	// XXX call security manager for RuntimePermission("SetIO")
 	setIn0(in);
 }
 
+native private static void setIn0(InputStream in);
+
 public static void setOut(PrintStream out) {
 	// XXX call security manager for RuntimePermission("SetIO")
 	setOut0(out);
 }
+
+native private static void setOut0(PrintStream out);
 
 public static void setProperties(Properties prps) {
 	checkPropertyAccess();

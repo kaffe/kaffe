@@ -16,6 +16,7 @@
 package java.util;
 
 import java.io.Serializable;
+import java.lang.Comparable;
 
 public class Collections {
 

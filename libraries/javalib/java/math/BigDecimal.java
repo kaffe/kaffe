@@ -10,6 +10,8 @@
 
 package java.math;
 
+import java.lang.Comparable;
+
 public class BigDecimal extends Number implements Comparable {
 
 private static final long serialVersionUID = 6108874887143696463L;

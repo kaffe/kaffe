@@ -1,26 +1,15 @@
-/**
- * Font - class to access native Fonts suitable for rendering text
- *
- * Copyright (c) 1998
- *   Transvirtual Technologies Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- *
- * @author P.C.Mehlitz
- */
-
 package java.awt;
 
 import java.awt.peer.FontPeer;
-import java.util.Hashtable;
 import java.io.Serializable;
+import java.util.Hashtable;
 import kaffe.util.Ptr;
 
 /**
  * XXX: implement serial form! 
  */
-public class Font implements Serializable
+public class Font
+  implements Serializable
 {
 	Ptr nativeData;
 	protected String name;
@@ -29,7 +18,7 @@ public class Font implements Serializable
 	final public static int PLAIN = 0;
 	final public static int BOLD = 1;
 	final public static int ITALIC = 2;
-	private static final long serialVersionUID = -4206021311591459213L;
+	final private static long serialVersionUID = -4206021311591459213L;
 
 public Font ( String fntName, int fntStyle, int fntSize ) {
 	Object v;
@@ -46,6 +35,7 @@ public Font ( String fntName, int fntStyle, int fntSize ) {
 	 * search string so we can do simple pointer checks (since string
 	 * constants are interned by default).
 	 */
+
 	name = name.intern();
 	if (name == "Default") {
 		spec = Defaults.FsDefault;
@@ -75,7 +65,7 @@ public Font ( String fntName, int fntStyle, int fntSize ) {
 		spec = Defaults.FsSerif;
 	}
 	else if (name == "Courier") {
-		spec = Defaults.FsSerif;
+		spec = Defaults.FsMonospaced;
 	}
 	else {
 		spec = name;
@@ -96,12 +86,15 @@ public static Font decode ( String fntSpec ) {
 	char     c;
 	
 	name = fntSpec;
-	
+
 	if ( (i = fntSpec.indexOf( '-')) >= 0 ) {  // format : <name>[-<style>[-<size>]]
 		name = fntSpec.substring( 0, i);
 		
 		i++;
-		if ( fntSpec.regionMatches( true, i, "bold-", 0, 5) ){
+		if ( fntSpec.regionMatches( true, i, "plain-", 0, 6) ){
+			l = 6;
+		}
+		else if ( fntSpec.regionMatches( true, i, "bold-", 0, 5) ){
 			style = BOLD;
 			l = 5;
 		}
@@ -115,7 +108,7 @@ public static Font decode ( String fntSpec ) {
 		}
 
 		if ( l > 0 ) {
-			i += 11;
+			i += l;
 			size = 0;
 			for ( n = fntSpec.length(); i < n; i++ ) {
 				c = fntSpec.charAt( i);
@@ -128,8 +121,26 @@ public static Font decode ( String fntSpec ) {
 	}
 	
 	fnt = new Font( name, style, size);
-	
 	return fnt;
+}
+
+String encode () {
+	String s;
+	
+	if ( style == PLAIN ){
+		s = "-plain-";
+	}
+	else if ( style == ITALIC ){
+		s = "-italic-";
+	}
+	else if ( style == BOLD ) {
+		s = "-bold-";
+	}
+	else {
+		s = "-bolditalic-";
+	}
+	
+	return (name + s + size);
 }
 
 public boolean equals ( Object o ) {
@@ -162,7 +173,7 @@ public static Font getFont ( String key ) {
 
 public static Font getFont ( String key, Font defFont ) {
 	String fSpec;
-	
+
 	if ( (fSpec = System.getProperty( key)) != null )
 		return decode( fSpec);
 
@@ -183,10 +194,6 @@ public int getSize() {
 
 public int getStyle() {
 	return style;
-}
-
-public int hashCode () {
-	return (name.hashCode() ^ style ^ size);
 }
 
 public boolean isBold () {

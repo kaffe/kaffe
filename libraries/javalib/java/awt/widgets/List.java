@@ -135,6 +135,19 @@ void letterNav( char c, boolean acc) {
 	}
 }
 
+int maxRowWidth() {
+	int rs = rows.size();
+	int iw, mw = 0;
+	
+	for ( int i=0; i<rs; i++ ) {
+		iw = fm.stringWidth( (String)rows.elementAt( i) );
+		if ( iw > mw )
+			mw = iw;
+	}
+	
+	return mw;
+}
+
 public void mouseClicked( MouseEvent e) {
 	if ( e.getClickCount() == 1) {
 		int idx = getRowIdx( e.getY() );
@@ -264,13 +277,6 @@ void updateFlyOver( int newIdx) {
 	if ( (newIdx > -1) && (newIdx < rs) )
 		repaintItem( newIdx);
 }
-
-void updateHScroll( String as) {
-	int len = fm.stringWidth( as);
-	if ( (hScroll != null) && (hScroll.getMaximum() < len) ) {
-		hScroll.setMaximum( len);
-	}
-}
 }
 
 public List () {
@@ -290,8 +296,8 @@ public List ( int rows, boolean multipleMode) {
 	setBackground( Defaults.ListBgClr);
 	setFont( Defaults.ListFont);
 
-	add( ip.vScroll = new Scrollbar( Scrollbar.VERTICAL));
-	add( ip.hScroll = new Scrollbar( Scrollbar.HORIZONTAL));
+	add( ip.vScroll = new Scrollbar( Scrollbar.VERTICAL,0,0,0,0));
+	add( ip.hScroll = new Scrollbar( Scrollbar.HORIZONTAL,0,0,0,0));
 	add( ip);
 
 	ip.setListeners();
@@ -319,8 +325,7 @@ void addElement ( String item, int index) {
 	else
 		ip.rows.insertElementAt( item, index);
 
-	ip.updateHScroll( item);
-	ip.updateVScroll();
+	ip.updateScrolls();
 	
 	if ( isShowing() )
 		ip.repaint();
@@ -353,7 +358,7 @@ public synchronized void clear() {
 
 	ip.rows.removeAllElements();
 	ip.first = 0;
-	ip.updateVScroll();
+	ip.updateScrolls();
 	ip.repaint();
 }
 
@@ -718,7 +723,7 @@ void removeElement ( int index) {
 		deselectElement( index, false, true);
 		ip.rows.removeElementAt( index);
 	
-		ip.updateVScroll();
+		ip.updateScrolls();
 		ip.repaintRows( index, ip.getVisibleRows() );	
 	}
 	catch ( Exception e) {}
@@ -741,6 +746,7 @@ public synchronized void replaceItem ( String newValue, int index) {
 	try {
 		Object o = ip.rows.elementAt( index);
 		ip.rows.setElementAt( newValue, index);
+		ip.updateHScroll();
 		ip.repaintRows( index, 1);
 	}
 	catch ( Exception e) {
@@ -806,11 +812,6 @@ public void setBackground ( Color c) {
 	ip.setBackground( c);
 }
 
-public void setBounds ( int x, int y, int width, int height) {
-	super.setBounds( x, y, width, height);
-	ip.updateVScroll();
-}
-
 public void setEnabled ( boolean isEnabled ) {
 	super.setEnabled( isEnabled);
 
@@ -820,7 +821,7 @@ public void setEnabled ( boolean isEnabled ) {
 public void setFont ( Font fnt) {
 	super.setFont( fnt);
 	ip.setFont( fnt);
-	ip.updateVScroll();
+	ip.updateScrolls();
 }
 
 public void setForeground ( Color c) {

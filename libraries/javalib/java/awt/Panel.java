@@ -33,11 +33,18 @@ ClassProperties getClassProperties () {
 }
 
 public Graphics getGraphics () {
-	Graphics g = super.getGraphics();
-	if ( g != null )
-		g.setTarget( this);
-	
-	return g;
+	if ( (flags & IS_ADD_NOTIFIED) != 0 ){
+		NativeGraphics g = NativeGraphics.getClippedGraphics( null, this,
+		                                                      0, 0, 0, 0,
+		                                                      width, height, false);
+		if ( g != null )
+			linkGraphics( g);
+
+		return g;
+	}
+	else {
+		return null;
+	}
 }
 
 public boolean isFocusTraversable () {

@@ -44,13 +44,17 @@ protected void dispatch () {
 			// if source is already visible, we wait for the subsequent
 			// expose (fake repaint by temp changing visibility)
 			if ( (src.flags & Component.IS_VISIBLE) != 0 ) {
+				// The 'parentShowing' jitter is a waz to prevent superfluous
+				// redraws and resident Graphics updates. Note that the final
+				// propagateParentShowing has to be called with a "false" parameter
+				// (to make sure it forces the required updates)
 				src.flags &= ~Component.IS_PARENT_SHOWING;
-				src.propagateParentShowing();
+				src.propagateParentShowing( true);
 
 				src.validate();
 
 				src.flags |= Component.IS_PARENT_SHOWING;
-				src.propagateParentShowing();
+				src.propagateParentShowing( false);
 			}
 			else {
 				src.validate();

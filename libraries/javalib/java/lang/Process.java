@@ -13,19 +13,16 @@ import java.io.OutputStream;
  * of this file.
  */
 abstract public class Process
-  extends Object
-{
-public Process() {}
+	extends Object {
+
+public Process() {
+}
 
 abstract public void destroy();
-
 abstract public int exitValue();
-
 abstract public InputStream getErrorStream();
-
 abstract public InputStream getInputStream();
-
 abstract public OutputStream getOutputStream();
-
 abstract public int waitFor() throws InterruptedException;
+
 }

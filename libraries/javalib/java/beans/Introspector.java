@@ -280,8 +280,7 @@ private static BeanInfo loadBeanInfo(Class beanClass)
 	return (null);
 }
 
-private static BeanInfo loadNamedBean(String bname)
-	{
+private static BeanInfo loadNamedBean(String bname) {
 	try {
 		return ((BeanInfo)Class.forName(bname).newInstance());
 	}

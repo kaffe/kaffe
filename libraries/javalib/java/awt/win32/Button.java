@@ -40,13 +40,13 @@ public void addActionListener ( ActionListener a) {
 
 public void addNotify() {
 	if ( nativeData == null ) {
-
-		if ( Toolkit.switchToCreateThread( this, WMEvent.WM_CREATE) )
-			return;
-
-		nativeData = Toolkit.btnCreatePushbutton( getParentData(), label);
+		Toolkit.createNative(this);
 		super.addNotify();
 	}			
+}
+
+void createNative() {
+	nativeData = Toolkit.btnCreatePushbutton( getParentData(), label);
 }
 
 public String getActionCommand () {

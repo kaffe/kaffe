@@ -16,11 +16,11 @@ protected void dispatch () {
 
 	if ( id == WINDOW_ICONIFIED ) {
 		src.flags &= ~Component.IS_PARENT_SHOWING;
-		src.propagateParentShowing();
+		src.propagateParentShowing( false);
 	}
 	else if ( id == WINDOW_DEICONIFIED ) {
 		src.flags |= Component.IS_PARENT_SHOWING;
-		src.propagateParentShowing();
+		src.propagateParentShowing( false);
 	}
 
 	src.process( this);

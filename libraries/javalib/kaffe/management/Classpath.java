@@ -33,5 +33,11 @@ public class Classpath {
 
 	public native static void add0(String elem);
 
+/**
+ * Print out the classpath.
+ */
+public static void main(String[] args) {
+	System.out.println(System.getProperty("java.class.path"));
 }
 
+}

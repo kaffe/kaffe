@@ -14,20 +14,19 @@ import java.lang.Class;
 import java.lang.String;
 
 public final class Method
-  implements Member
-{
-	private Class clazz;
-	private int slot;
-	private String name;
-	private Class returnType;
-	private Class[] parameterTypes;
-	private Class[] exceptionTypes;
+	implements Member {
+
+private Class clazz;
+private int slot;
+private String name;
+private Class returnType;
+private Class[] parameterTypes;
+private Class[] exceptionTypes;
 
 private Method() {
 }
     
-public boolean equals(Object obj)
-	{
+public boolean equals(Object obj) {
 	// Catch the simple case where they're really the same
 	if ((Object)this == obj) {
 		return (true);
@@ -55,42 +54,35 @@ public boolean equals(Object obj)
 	return (true);
 }
 
-public Class getDeclaringClass()
-	{
+public Class getDeclaringClass() {
 	return (clazz);
 }
 
-public Class[] getExceptionTypes()
-	{
+public Class[] getExceptionTypes() {
 	return (exceptionTypes);
 }
 
 native public int getModifiers();
 
-public String getName()
-	{
+public String getName() {
 	return (name);
 }
 
-public Class[] getParameterTypes()
-	{
+public Class[] getParameterTypes() {
 	return (parameterTypes);
 }
 
-public Class getReturnType()
-	{
+public Class getReturnType() {
 	return (returnType);
 }
 
-public int hashCode()
-	{
+public int hashCode() {
 	return (clazz.getName().hashCode() ^ name.hashCode());
 }
 
 native public Object invoke(Object obj, Object args[]) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 
-public String toString()
-	{
+public String toString() {
 	StringBuffer str = new StringBuffer();
 	int mod = getModifiers();
 
@@ -167,4 +159,5 @@ static String getPrettyName(Class cls) {
 		cls = cls.getComponentType();
 	}
 }
+
 }

@@ -1,3 +1,7 @@
+Mon Oct 11 19:17:49 PDT 1999 Transvirtual Technologies <info@transvirtual.com>
+
+	* Merge of custom sources.
+
 1999-10-11  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* Pre-parse method signatures into array of indices into the

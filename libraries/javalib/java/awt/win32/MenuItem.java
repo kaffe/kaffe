@@ -27,7 +27,6 @@ public class MenuItem
 	ActionListener aListener;
 	String aCmd;
 	int eventMask;
-	static MenuItem separator = new MenuItem( "-");
 
 public MenuItem() {
 	this( null, null);
@@ -49,19 +48,19 @@ public synchronized void addActionListener( ActionListener l) {
 }
 
 public void addNotify() {
-        if ( ( flags & IS_ADD_NOTIFIED) == 0) {
-                if ( (parent != null) && ( parent instanceof Menu) ) {
-                        Menu m = (Menu)parent;
-                        Toolkit.menuInsertItem( m.nativeData, nativeData, label, -1, this);
-                        if ( ! isEnabled() ) {
-                                Toolkit.menuEnableItem( m.nativeData, this, false);
-                                }
-        	}
-                if ( shortcut != null ) {
-                        ShortcutHandler.addShortcut( shortcut, owner, this);
-                }
-                flags |= IS_ADD_NOTIFIED;
-        }
+	if ( ( flags & IS_ADD_NOTIFIED) == 0) {
+		if ( (parent != null) && ( parent instanceof Menu) ) {
+			Menu m = (Menu)parent;
+			Toolkit.menuInsertItem( m.nativeData, nativeData, label, -1, this);
+			if ( ! isEnabled() ) {
+				Toolkit.menuEnableItem( m.nativeData, this, false);
+			}
+		}
+		if ( shortcut != null ) {
+			ShortcutHandler.addShortcut( shortcut, owner, this);
+		}
+		flags |= IS_ADD_NOTIFIED;
+	}
 }
 
 Vector addShortcuts( Vector v) {
@@ -129,7 +128,7 @@ public void handleShortcut ( MenuShortcut ms) {
 	int mods = (ms != null) ? ms.mods : 0;
 	if ( (aListener != null) ||
 	     ((eventMask & (AWTEvent.ACTION_EVENT_MASK|AWTEvent.DISABLED_MASK))
-	                                                 == AWTEvent.ACTION_EVENT_MASK) ||
+		 == AWTEvent.ACTION_EVENT_MASK) ||
 	     ((flags & IS_OLD_EVENT) > 0) ) {
 		Toolkit.eventQueue.postEvent( ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
 		                                                  getActionCommand(), mods));
@@ -144,7 +143,7 @@ public void handleShortcut ( MenuShortcut ms) {
 		Menu m = (Menu)mp;
 		if ( (m.aListener != null) ||
 		     ((m.eventMask & (AWTEvent.ACTION_EVENT_MASK|AWTEvent.DISABLED_MASK))
-		                                                   == AWTEvent.ACTION_EVENT_MASK) ) {
+			 == AWTEvent.ACTION_EVENT_MASK) ) {
 			Toolkit.eventQueue.postEvent( ActionEvt.getEvent( m, ActionEvent.ACTION_PERFORMED,
 			                                                  getActionCommand(), mods));
 			return;
@@ -158,7 +157,7 @@ public boolean isEnabled() {
 }
 
 public boolean isSeparator() {
-	return (separator == this);
+	return ((label == null) || (label.startsWith( "-")));
 }
 
 public String paramString() {
@@ -168,17 +167,17 @@ public String paramString() {
 void process ( ActionEvent e ) {
 	if ( (aListener != null) ||
 	     ((eventMask & (AWTEvent.ACTION_EVENT_MASK|AWTEvent.DISABLED_MASK))
-	                            == AWTEvent.ACTION_EVENT_MASK) ){
+		 == AWTEvent.ACTION_EVENT_MASK) ){
 		processEvent( e);
 	}
-	
-        else if ( (flags & IS_OLD_EVENT) > 0 ) {
-                postEvent( Event.getEvent( e));
-        }
 
-        else if ( (parent != null) && (parent instanceof Menu) ) {
-                ((Menu)parent).process( e);
-        }
+	else if ( (flags & IS_OLD_EVENT) > 0 ) {
+		postEvent( Event.getEvent( e));
+	}
+
+	else if ( (parent != null) && (parent instanceof Menu) ) {
+		((Menu)parent).process( e);
+	}
 
 }
 
@@ -205,7 +204,7 @@ public synchronized void removeActionListener( ActionListener l) {
 public void removeNotify() {
 	if ( (flags & IS_ADD_NOTIFIED) > 0 ) {
 		if ( shortcut != null )
-				ShortcutHandler.removeFromOwner( owner, shortcut);
+			ShortcutHandler.removeFromOwner( owner, shortcut);
 		flags &= ~IS_ADD_NOTIFIED;
 		owner = null;
 		parent = null;
@@ -226,8 +225,8 @@ public synchronized void setEnabled ( boolean isEnabled ) {
 		Ptr p = ((Menu)parent).nativeData;
 		if ( p != null ) {
 			Toolkit.menuEnableItem( p, this, isEnabled);
-                	}
-        	}
+		}
+	}
 
 }
 
@@ -238,7 +237,7 @@ public synchronized void setLabel( String label) {
 public void setShortcut( MenuShortcut s) {
 	//has to be cloned due to existing links
 	MenuShortcut ms = ( s != null) ? new MenuShortcut( s) : null;
-	
+
 	if ((flags & IS_ADD_NOTIFIED) > 0 ) {
 		if ( shortcut != null ) {
 			ShortcutHandler.removeFromOwner( owner, shortcut);

@@ -2,9 +2,10 @@ package kaffe.text.dateformat;
 
 import java.util.ListResourceBundle;
 
-public class locale_en_US extends ListResourceBundle {
-
-private Object[][] contents = {
+public class locale_en_US
+  extends ListResourceBundle
+{
+	private Object[][] contents = {
 
 	/*
 	 * Time/Date formats
@@ -40,5 +41,4 @@ private Object[][] contents = {
 public Object[][] getContents() {
 	return (contents);
 }
-
 }

@@ -58,6 +58,7 @@ void popUpAt( int x, int y, int width, int height) {
 	int is = items.size();
 
 	setBounds( x, y, width, height);
+	list.setFont( Choice.this.font);
 
 	for ( int i=0; i<is; i++)
 		list.add( (String)items.elementAt( i));
@@ -68,7 +69,7 @@ void popUpAt( int x, int y, int width, int height) {
 	prompter.list.requestFocus();
 }
 
-protected void process ( WindowEvent e ) {
+void process ( WindowEvent e ) {
 	super.process( e);
 
 	if ( e.id == WindowEvent.WINDOW_DEACTIVATED )
@@ -363,5 +364,10 @@ public void setEnabled ( boolean isEnabled ) {
 	super.setEnabled( isEnabled);
 
 	entry.setEnabled( isEnabled);
+}
+
+public void setFont ( Font fnt) {
+	super.setFont( fnt);
+	entry.setFont( fnt);
 }
 }

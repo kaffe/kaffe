@@ -240,7 +240,7 @@ public void interrupt() {
 		}
 	}
 	else {
-		// I consider this a hack - TIM 9/14/99
+		/* Can't to it in java - so ask the system to try */
 		interrupt0();
 	}
 }
@@ -383,6 +383,9 @@ final public void stop() {
  * @deprecated
  */
 final public synchronized void stop(Throwable o) {
+	if (o == null) {
+		throw new NullPointerException();
+	}
 	death = o;
 	Object h = holder;
 	if (h != null) {
@@ -392,7 +395,7 @@ final public synchronized void stop(Throwable o) {
 		}
 	}
 	else {
-		// I consider this a hack - TIM 9/14/99
+		/* Can't do it in Java so ask the system to try */
 		stop0(o);
 	}
 }

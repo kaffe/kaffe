@@ -30,21 +30,13 @@ public Canvas() {
  */
 public void addNotify() {
 	if ( nativeData == null ) {
-
-		if ( Toolkit.switchToCreateThread( this, WMEvent.WM_CREATE) )
-			return;
-
-		nativeData = Toolkit.widgetCreateWidget( getParentData());
+		Toolkit.createNative(this);
 		super.addNotify();
 	}
 }
 
-public Graphics getGraphics () {
-	Graphics g = super.getGraphics();
-	if ( g != null )
-		g.setTarget( this);
-
-	return g;
+void createNative() {
+	nativeData = Toolkit.widgetCreateWidget( getParentData());
 }
 
 public boolean isFocusTraversable () {

@@ -53,11 +53,7 @@ public TextArea( int rows, int cols) {
 
 public void addNotify() {
 	if ( nativeData == null ) {
-
-		if ( Toolkit.switchToCreateThread( this, WMEvent.WM_CREATE) )
-			return;
-
-		nativeData = Toolkit.editCreateArea( getParentData(), text, scrolls);
+		Toolkit.createNative(this);
 		super.addNotify();
 	}
 }
@@ -65,6 +61,10 @@ public void addNotify() {
 public void append( String text) {
 	if ( nativeData != null )
 		Toolkit.editAppend( nativeData, text);
+}
+
+void createNative() {
+	nativeData = Toolkit.editCreateArea( getParentData(), text, scrolls);
 }
 
 public int getColumns() {
@@ -83,7 +83,7 @@ public Dimension getPreferredSize() {
 	return getPreferredSize( Math.max( cols, 5), Math.max( rows, 5));
 }
 
-public Dimension getPreferredSize( int rows, int cols) {
+public Dimension getPreferredSize( int cols, int rows) {
 	FontMetrics fm = getFontMetrics( getFont() );
 	int cx = cols * fm.charWidth('x');
 	int cy = rows * fm.getHeight();

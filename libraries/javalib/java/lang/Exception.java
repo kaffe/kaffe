@@ -11,8 +11,11 @@ package java.lang;
  * of this file.
  */
 public class Exception
-  extends Throwable
+	extends Throwable
 {
+
+public static final long serialVersionUID = -3387516993124229948l;
+
 public Exception () {
 	super();
 }

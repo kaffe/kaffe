@@ -759,7 +759,6 @@ Java_java_awt_Toolkit_clrGetColorModel ( JNIEnv* env, jclass clazz )
 
   switch ( v->class ) {
   case DirectColor:
-
 	break;
 
   case TrueColor:

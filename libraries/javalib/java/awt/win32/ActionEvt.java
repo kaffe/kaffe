@@ -2,6 +2,16 @@ package java.awt;
 
 import java.awt.event.ActionEvent;
 
+/**
+ * class ActionEvt -
+ *
+ * Copyright (c) 1999
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ */
+
 class ActionEvt
   extends java.awt.event.ActionEvent
 {
@@ -28,12 +38,12 @@ static synchronized ActionEvt getEvent ( Object source, int id, String cmd, int 
 		ActionEvt e = cache;
 		cache = (ActionEvt)e.next;
 		e.next = null;
-		
+
 		e.source = source;
 		e.id = id;
 		e.cmd = cmd;
 		e.mods = mods;
-		
+
 		return e;
 	}	
 }
@@ -64,17 +74,19 @@ static synchronized ActionEvt getEvent ( int srcIdx, String cmd, int mods){
 		Toolkit.eventQueue.postEvent( e);
 	}
 
-        return e;
+	return e;
 }
 
 static synchronized ActionEvt getMenuEvent ( MenuItem source){
 	// This is exclusively called by the native event emitter
+	// resolved because MenuItems are no registered awt sources
+	// ( not reachable by source index )
 
-        ActionEvt   e;
-        String ac = source.getActionCommand();
+	ActionEvt   e;
+	String ac = source.getActionCommand();
 
 	if ( cache == null ){
-                e = new ActionEvt( source, ACTION_PERFORMED, ac, 0 );
+		e = new ActionEvt( source, ACTION_PERFORMED, ac, 0 );
 	}
 	else {
 		e = cache;
@@ -83,8 +95,8 @@ static synchronized ActionEvt getMenuEvent ( MenuItem source){
 
 		e.source = source;
 		e.id = ACTION_PERFORMED;
-                e.cmd = ac;
-                e.mods = 0;
+		e.cmd = ac;
+		e.mods = 0;
 	}
 
 	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
@@ -93,7 +105,7 @@ static synchronized ActionEvt getMenuEvent ( MenuItem source){
 		Toolkit.eventQueue.postEvent( e);
 	}
 
-        return e;
+	return e;
 }
 
 protected void recycle () {

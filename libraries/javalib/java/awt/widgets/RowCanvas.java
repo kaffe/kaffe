@@ -21,7 +21,7 @@ import java.util.Vector;
  */
 class RowCanvas
   extends Component
-  implements AdjustmentListener, FocusListener, ComponentListener
+  implements AdjustmentListener, FocusListener
 {
 	Scrollbar hScroll;
 	Scrollbar vScroll;
@@ -39,9 +39,6 @@ public void addNotify() {
 	
 	if ( rgr == null ) {
 		setResGraphics();
-		
-		for ( Component c = this; c != null; c = c.parent )
-			c.addComponentListener( this);
 	}
 }
 
@@ -65,28 +62,6 @@ public void adjustmentValueChanged( AdjustmentEvent e) {
 		}
 	}
 
-}
-
-public void componentHidden ( ComponentEvent evt ) {
-	if ( rgr != null ) {
-		// PM targeting rgr would be more clean
-		rgr.componentHidden( evt);
-	}
-}
-
-public void componentMoved ( ComponentEvent evt ) {
-	setResGraphics();
-}
-
-public void componentResized ( ComponentEvent evt ) {
-	setResGraphics();
-}
-
-public void componentShown ( ComponentEvent evt ) {
-	if ( rgr != null ) {
-	  // PM targeting rgr would be more clean
-		rgr.componentShown( evt);
-	}
 }
 
 public void focusGained( FocusEvent e) {
@@ -174,7 +149,9 @@ void innerLayout() {
 		hScroll.setBounds( 0, h-sbd, vVis ? w-sbd : w, sbd);
 	}
 	
-	updateVScroll();
+	updateScrolls();
+//	updateVScroll();
+//	updateHScroll();
 	
 	if ( initVis > -1 ) {
 		makeVisible( initVis);
@@ -214,6 +191,10 @@ void makeVisible ( int row) {
 	}
 }
 
+int maxRowWidth() {
+	return 0;
+}
+
 void paintBorder () {
   // not nice to resolve this, but our getGraphics() is more expensive
 
@@ -222,6 +203,26 @@ void paintBorder () {
 		paintBorder( g);
 		g.dispose();
 	}
+}
+
+void propagateReshape () {
+	if ( rgr != null ){
+		updateLinkedGraphics();
+		
+		// we have our own clipping, which we have to take care of
+		rgr.setClip( BORDER_WIDTH, BORDER_WIDTH,
+		             width - 2*BORDER_WIDTH, height - 2*BORDER_WIDTH);
+	}
+}
+
+void rearrange() {
+	Graphics g = parent.getGraphics();
+	if ( g != null ) {
+		g.setColor( parent.bgClr );
+		g.fillRect( 0, 0, parent.width, parent.height);
+		g.dispose();
+	}
+	innerLayout();
 }
 
 void redirectFocusEvent( FocusEvent e) {
@@ -261,10 +262,7 @@ void redirectMouseEvent( MouseEvent e) {
 public void removeNotify() {
 	super.removeNotify();
 
-	if ( rgr != null ) {
-		for ( Component c = this; c != null; c = c.parent )
-			c.removeComponentListener( this);
-	
+	if ( rgr != null ) {	
 		rgr.dispose();
 		rgr = null;
 	}
@@ -317,12 +315,11 @@ void setListeners() {
 }
 
 void setResGraphics () {
-	// Hmm, we don't use NativeGraphics.setTarget here, because it adds
-	// significant overhead (complete parent chain listening), and we can
-	// listen to the relevant events explicitly
-	rgr = NativeGraphics.getClippedGraphics( rgr, this, 0, 0,
+	rgr = NativeGraphics.getClippedGraphics( null, this, 0, 0,
                                            BORDER_WIDTH, BORDER_WIDTH,
 		                                       width - 2*BORDER_WIDTH, height - 2*BORDER_WIDTH, false);
+	if ( rgr != null )
+		linkGraphics( rgr);
 }
 
 void shiftVertical ( int rows, boolean updScroll) {
@@ -362,26 +359,49 @@ public void update ( Graphics g ){
 	paint( g);
 }
 
-void updateVScroll() {
-	boolean v1 = false, v2 = false;
+boolean updateHScroll() {
+	if ( hScroll == null )
+		return false;
+
+	boolean	v1 = hScroll.isSliderShowing();
+	int mw = maxRowWidth() + 2*(BORDER_WIDTH+1);
+	int cv = hScroll.getValue();
 	
-	if ( vScroll != null ) {
-		v1 = vScroll.isSliderShowing();
-		int vr = getVisibleRows();
-		// assumes that we are already all set and don't need adjustment notifies anymore
-		vScroll.setValues( first, vr, 0, rows.size(), false );
-		v2 = vScroll.isSliderShowing();
-	}
+	// entire contents going to be visible ( reset to left )
+	if ( v1 && (mw <= width) )
+		cv = 0;
+		
+	// notify only on left reset
+	hScroll.setValues( cv, width, 0, mw, (v1 && (cv==0)) );
 	
-	if (v1 != v2 ){
-		Graphics g = parent.getGraphics();
-		if ( g != null ) {
-			g.setColor( parent.bgClr );
-			g.fillRect( 0, 0, parent.width, parent.height);
-			g.dispose();
-		}
-		innerLayout();
+	return ( v1 != hScroll.isSliderShowing() );
+}
+
+void updateScrolls() {
+	boolean dv1 = updateVScroll();
+	boolean dv2 = updateHScroll();
+	
+	if ( dv1 || dv2 ) {
+		rearrange();
 	}
+}
+
+boolean updateVScroll() {
+	if ( vScroll == null )
+		return false;
+		
+	boolean	v1 = vScroll.isSliderShowing();
+	int rs = rows.size();
+	int vr = getVisibleRows();
+
+	//entire contents going to be visible ( reset to top )
+	if ( v1 && (vr >= rs) )
+		first = 0;
+		
+	//no need to notify ( first already adjusted )
+	vScroll.setValues( first, vr, 0, rs, false );
+	
+	return ( v1 != vScroll.isSliderShowing() );
 }
 
 void vPosChange( int steps) {

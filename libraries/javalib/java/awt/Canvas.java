@@ -23,25 +23,23 @@ public Canvas() {
 	flags |= IS_ASYNC_UPDATED;
 }
 
-/**
- * Sun's version of this class apparently has this method. So we put
- * one here so applets compiled against kaffe's version of this class
- * will call the right method when they do super.addNotify().
- */
-public void addNotify() {
-	super.addNotify();
-}
-
 ClassProperties getClassProperties () {
 	return ClassAnalyzer.analyzeAll( getClass(), true);
 }
 
 public Graphics getGraphics () {
-	Graphics g = super.getGraphics();
-	if ( g != null )
-		g.setTarget( this);
-	
-	return g;
+	if ( (flags & IS_ADD_NOTIFIED) != 0 ){
+		NativeGraphics g = NativeGraphics.getClippedGraphics( null, this,
+		                                                      0, 0, 0, 0,
+		                                                      width, height, false);
+		if ( g != null )
+			linkGraphics( g);
+
+		return g;
+	}
+	else {
+		return null;
+	}
 }
 
 public boolean isFocusTraversable () {

@@ -35,9 +35,11 @@ public void addImage(Image image, int id)
 
 public synchronized void addImage(Image image, int id, int w, int h)
 {
-	MediaTrackerEntry entry = new MediaTrackerEntry(image, id, w, h);
-	entry.next = images;
-	images = entry;
+	if ( image != null ) {
+		MediaTrackerEntry entry = new MediaTrackerEntry(image, id, w, h);
+		entry.next = images;
+		images = entry;
+	}
 }
 
 public boolean checkAll()

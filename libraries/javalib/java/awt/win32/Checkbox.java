@@ -49,18 +49,18 @@ public void addItemListener( ItemListener l) {
 
 public void addNotify() {
 	if ( nativeData == null ) {
-
-		if ( Toolkit.switchToCreateThread( this, WMEvent.WM_CREATE) )
-			return;
-
-		if ( group != null ) {
-			nativeData = Toolkit.btnCreateRadiobutton( getParentData(), label );
-		}
-		else {
-			nativeData = Toolkit.btnCreateCheckbox( getParentData(), label);
-		}
+		Toolkit.createNative(this);
 		Toolkit.btnSetCheck( nativeData, state);
 		super.addNotify();
+	}
+}
+
+void createNative() {
+	if ( group != null ) {
+		nativeData = Toolkit.btnCreateRadiobutton( getParentData(), label );
+	}
+	else {
+		nativeData = Toolkit.btnCreateCheckbox( getParentData(), label);
 	}
 }
 

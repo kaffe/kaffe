@@ -98,6 +98,7 @@ java_awt_SRCS = \
 	java/awt/FontMetrics.java \
 	java/awt/Frame.java \
 	java/awt/Graphics.java \
+	java/awt/GraphicsLink.java \
 	java/awt/GridBagConstraints.java \
 	java/awt/GridBagLayout.java \
 	java/awt/GridLayout.java \
@@ -663,7 +664,8 @@ kaffe_lang_SRCS = \
 	kaffe/lang/SystemClassLoader.java \
 	kaffe/lang/UNIXProcess.java
 kaffe_management_SRCS = \
-	kaffe/management/Classpath.java
+	kaffe/management/Classpath.java \
+	kaffe/management/JIT.java
 kaffe_net_SRCS = \
 	kaffe/net/DefaultDatagramSocketImplFactory.java \
 	kaffe/net/DefaultFileNameMap.java \

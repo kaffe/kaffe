@@ -145,6 +145,21 @@ void clearDefGrid() {
 	}
 }
 
+Component componentAt( Container parent, int x, int y) {
+	int nc = parent.getComponentCount();
+	for ( int i=0; i<nc; i++ ) {
+		Component c = parent.getComponent( i);
+		GridBagConstraints gbc = lookupConstraints( c);
+		if ( gbc.gridx <= x && gbc.gridy <= y &&
+			gbc.gridx + gbc.gridwidth > x &&
+			gbc.gridy + gbc.gridheight > y ) {
+			return c;
+		}
+	}
+
+	return null;
+}
+
 void dump() {
 	if ( (columnWidths == null) || (rowHeights == null ) ){
 		return;
@@ -255,10 +270,15 @@ void fillGrid( Container parent, int mxr, int myr, int mode ) {
 		rowWeights[di] = Math.max( rowWeights[di] ,cc.weighty);
 	}
 
+	/* first call of getComponentExt() / getPreferredSize() could
+	*  scramble the defGrid array ( cascaded GridBagLayouts ).
+	*  Use the (updated) Constraints!!!
+	*/
 	for ( x=0; x<maxX; x++) {
 		if ( columnWidths[x] == 0 ) {
 			for ( y=0; y<maxY; y++ ) {
-				Component c = defGrid[x][y];
+				Component c = componentAt( parent, x, y);
+//				Component c = defGrid[x][y];
 				if ( c != null ) {
 					cc = lookupConstraints( c);
 					getComponentExt( c, cc, mode, cd);
@@ -272,7 +292,8 @@ void fillGrid( Container parent, int mxr, int myr, int mode ) {
 	for ( y=0; y<maxY; y++) {
 		if ( rowHeights[y] == 0 ) {
 			for ( x=0; x<maxX; x++ ) {
-				Component c = defGrid[x][y];
+				Component c = componentAt(parent, x, y);
+//				Component c = defGrid[x][y];
 				if ( c != null ) {
 					cc = lookupConstraints( c);
 					getComponentExt( c, cc, mode, cd);
@@ -599,10 +620,7 @@ public Dimension minimumLayoutSize( Container parent) {
 }
 
 public Dimension preferredLayoutSize( Container parent) {
-	// Don't use the insets field directly, since getInsets() might be resolved (e.g. in
-	// swing popups). Remember BorderLayout isVisible? It's spelled c o n s i s t e n c y
 	Insets in = parent.getInsets();
-
 	getGrid( parent, PREFERREDSIZE);
 	return new Dimension( sumWidths()+in.left+in.right, sumHeights()+in.top+in.bottom );
 }

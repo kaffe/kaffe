@@ -12,8 +12,11 @@ import java.lang.String;
  * of this file.
  */
 public class IOException
-  extends Exception
+	  extends Exception
 {
+
+public static final long serialVersionUID = 7818375828146090155l;
+
 public IOException () {
 	super();
 }

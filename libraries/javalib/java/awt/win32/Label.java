@@ -36,14 +36,14 @@ public Label( String label, int align) {
 
 public void addNotify() {
 	if ( nativeData == null ) {
-
-		if ( Toolkit.switchToCreateThread( this, WMEvent.WM_CREATE) )
-			return;
-
-		nativeData = Toolkit.lblCreateLabel( getParentData(), label);
+		Toolkit.createNative(this);
 		super.addNotify();
 		Toolkit.lblSetJustify( nativeData, align );
 	}
+}
+
+void createNative() {
+	nativeData = Toolkit.lblCreateLabel( getParentData(), label);
 }
 
 public int getAlignment() {

@@ -49,14 +49,14 @@ public void addActionListener( ActionListener l) {
 
 public void addNotify() {
 	if ( nativeData == null ) {
-
-		if ( Toolkit.switchToCreateThread( this, WMEvent.WM_CREATE) )
-			return;
-
-		nativeData = Toolkit.editCreateField( getParentData(), text);
+		Toolkit.createNative(this);
 		Toolkit.editSetEchoChar( nativeData, echoChar);
 		super.addNotify();
 	}
+}
+
+void createNative() {
+	nativeData = Toolkit.editCreateField( getParentData(), text);
 }
 
 public boolean echoCharIsSet() {
@@ -72,7 +72,7 @@ public char getEchoChar() {
 }
 
 public Dimension getMinimumSize() {
-	return getMinimumSize( Math.max( cols, 3));
+	return getMinimumSize( (cols > 0) ? cols : 2);
 }
 
 public Dimension getMinimumSize( int cols) {
@@ -80,12 +80,12 @@ public Dimension getMinimumSize( int cols) {
 }
 
 public Dimension getPreferredSize() {
-	return getPreferredSize( Math.max( cols, 3));
+	return getPreferredSize( (cols > 0) ? cols+1 : 2);
 }
 
 public Dimension getPreferredSize( int cols) {
 	FontMetrics fm = getFontMetrics( getFont() );
-	return new Dimension( cols * fm.charWidth( 'x'), fm.getHeight() + 8);
+	return new Dimension( cols * fm.charWidth( 'X') + 8, fm.getHeight() + 8);
 }
 
 protected String paramString() {

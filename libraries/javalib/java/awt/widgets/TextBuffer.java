@@ -123,6 +123,12 @@ public String getString( int start, int len){
 	return null;
 }
 
+public int getWidth(){
+	int x0 = getPos( 0);
+	int x1 = getPos( len);
+	return x1 - x0;
+}
+
 public int getWidth( int sIdx, int eIdx){
 	int x0 = getPos( sIdx);
 	int x1 = getPos( eIdx);

@@ -8,17 +8,20 @@
  * of this file. 
  */
 
-#define __config_setjmp_h /* png.h doesn't like us including setjmp.h */
-
-#include "toolkit.h"
+#include "config.h"
 
 #if defined(HAVE_PNG_H) && defined(HAVE_LIBPNG) && defined(HAVE_LIBZ)
 #define INCLUDE_PNG 1
 #endif
 
+#if !defined(INCLUDE_PNG)
+#include "toolkit.h"
+#endif
+
 #if defined(INCLUDE_PNG)
 
 #include "png.h"
+#include "toolkit.h"
 
 
 /* references to img.c */

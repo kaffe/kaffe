@@ -242,7 +242,7 @@ void processMouse ( MouseEvent e ) {
 			break;
 	}
 
-	super.process( e);
+	super.processMouse( e);
 }
 
 public void removeActionListener ( ActionListener a) {

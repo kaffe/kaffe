@@ -19,15 +19,23 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#ifdef HAVE_LIBXEXT
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <X11/extensions/XShm.h>
-#endif
 
 #include <jni.h>
-#include <native.h>
+
+#include "../../../../kaffe/kaffevm/gtypes.h"
+#include "../../../../kaffe/kaffevm/gc.h"
+#include "../../../../kaffe/kaffevm/thread.h"
 #include "../../../../kaffe/kaffevm/debug.h"
+
+#define	DBG_ACTION(A,B)
+
+/* no idea why gcc complains about this not being found no matter if
+ * unistd.h or string.h are included
+ */
+extern void swab(const void *from, void *to, size_t n);
 
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
@@ -86,7 +94,6 @@ typedef struct _AlphaImage {       /* storage for full alpha channel images */
   int           width, height;
 } AlphaImage;
 
-
 #define NO_SHM       0             /* we don't have MIT-Shm support in the X server */
 #define USE_SHM      1             /* we have support, use it */
 #define SUSPEND_SHM  2             /* we have support, but it ran out of space */
@@ -95,14 +102,10 @@ typedef struct _Image {
   Pixmap           pix;            /* pixmap for screen images */
 
   XImage           *xImg;          /* "real" image */
-#ifdef HAVE_LIBXEXT
   XShmSegmentInfo  *shmiImg;       /* Shm info for shared mem real image */
-#endif
 
   XImage           *xMask;         /* mask image for reduced alpha (on/off) images */
-#ifdef HAVE_LIBXEXT
   XShmSegmentInfo  *shmiMask;      /* Shm info for shared mem mask image */
-#endif
 
   AlphaImage       *alpha;         /* full alpha channel (for alpha != 0x00 or 0xff) */
 
@@ -172,6 +175,7 @@ typedef struct _Toolkit {
   char           blocking;
   int            pending;
   int            evtId;
+  fd_set         rfds;           /* used to select-check availability of X input (pthreads) */
 
   Window         lastWindow;
   int            srcIdx;
@@ -259,6 +263,7 @@ static __inline__ void _awt_free_wrapper ( void* adr )
   free( adr);
   leaveUnsafeRegion();
 }
+
 
 #define AWT_MALLOC(_n) \
   _awt_malloc_wrapper( _n)
@@ -472,6 +477,7 @@ rgbValues ( Toolkit* X, unsigned long pixel, int* r, int* g, int* b )
  * image functions
  */
 
+int needsFullAlpha(Toolkit*, Image*, double);
 Image* createImage ( int width, int height);
 void createXMaskImage ( Toolkit* X, Image* img );
 void createXImage ( Toolkit* X, Image* img );
@@ -522,7 +528,6 @@ jobject selectionRequest ( JNIEnv* env, Toolkit* X );
 #define AWT_SETPOS(_fd,_off)          lseek(_fd, _off, SEEK_CUR)
 #define AWT_READ(_fd,_buf,_count)     read(_fd,_buf,_count)
 #define AWT_CLOSE(_fd)                close(_fd)
-
 
 
 /*****************************************************************************************
@@ -609,5 +614,6 @@ static __inline__ void resetFocusForwarding ( Toolkit* X )
  * focus events (generated from clientMessages.
  */
 
+#define	USE_POLLING_AWT	1
 
 #endif

@@ -1,3 +1,6 @@
+package java.awt;
+
+
 /**
  * WMEvent - 
  *
@@ -9,66 +12,59 @@
  *
  * @author P. Mehlitz
  */
-
-package java.awt;
-
-
 class WMEvent
   extends AWTEvent
 {
 	final static int WM_CREATE = 1901;
 	final static int WM_DESTROY = 1902;
 	final static int WM_DISPATCH_MODAL = 1903;
-	final static int WM_SHOW = 1904;
-	final static int WM_KILLED = 1905;
+	final static int WM_KILLED = 1904;
 	static WMEvent cache;
 
-WMEvent ( Window source, int id ) {
+WMEvent ( Component source, int id ) {
 	super( source, id);
 }
 
 protected void dispatch () {
 
-	Window w = (Window) source;
+	Component w = (Component) source;
 
 	switch ( id ) {
 		
 	case WM_CREATE:
-		w.addNotify();
-		synchronized (this) { this.notifyAll(); }
-		break;
-		
-	case WM_DESTROY:
-		w.removeNotify();
-		synchronized (this) { this.notifyAll(); }
-		break;
-		
-	case WM_DISPATCH_MODAL:
-System.out.println( "run");
-		Toolkit.eventThread.run( w);
+		w.createNative();
 		synchronized (this) {
-System.out.println( "notify");
-		  this.notifyAll();
+			this.notifyAll();
 		}
 		break;
 		
-	case WM_SHOW:
-		// make the window visible *before* waking up any waiters!
-		Toolkit.eventThread.show( w);
-		synchronized (this) { this.notifyAll(); }
+	case WM_DESTROY:
+		w.destroyNative();
+		synchronized (this) {
+			this.notifyAll();
+		}
 		break;
-	
+		
+	case WM_DISPATCH_MODAL:
+		Toolkit.eventThread.run( w);
+		synchronized (this) {
+			// we need to flag if our client (EventDispatchThread.run) needs to wait
+			consumed = true;
+		  this.notifyAll();
+		}
+		break;
+			
 	case WM_KILLED:
 		// we got an external kill on one of our windows, clean up so
-		// that we don't get danglingwindows
-		w.cleanUp();
+		// that we don't get dangling windows
+		w.cleanUpNative();
 		break;	
 	}
 	
 	recycle();
 }
 
-static synchronized WMEvent getEvent ( Window source, int id ) {
+static synchronized WMEvent getEvent ( Component source, int id ) {
 	if ( cache == null ){
 		return new WMEvent( source, id);
 	}

@@ -56,6 +56,7 @@ public class Image
 	final static int BLOCK_FRAMELOADER = 1 << 11;
 	final static int IS_ANIMATION = 1 << 12;
 	final public static Object UndefinedProperty = ImageLoader.class;
+	static Image unknownImage;
 
 Image ( File file ) {
 	producer = new ImageNativeProducer( this, file);
@@ -139,7 +140,7 @@ synchronized int checkImage ( int w, int h, ImageObserver obs, boolean load ){
 			addObserver( obs);
 	}
 	else if ( load && ((flags & PRODUCING) == 0) ) {
-		loadImage( w, h, obs);
+		loadImage( this, w, h, obs);
 	}
 
 	return (flags & MASK);
@@ -189,7 +190,7 @@ public synchronized int getHeight ( ImageObserver observer ) {
 		return height;
 	}
 	else {
-		loadImage(-1, -1, observer);
+		loadImage( this, -1, -1, observer);
 		return (-1);
 	}
 }
@@ -199,7 +200,7 @@ public Object getProperty ( String name, ImageObserver observer ) {
 		if ( (flags & (ImageObserver.FRAMEBITS | ImageObserver.ALLBITS)) != 0 )
 			return UndefinedProperty;
 		else if ( (flags & PRODUCING) == 0 )
-			loadImage( -1, -1, observer);
+			loadImage( this, -1, -1, observer);
 
 		return null;
 	}
@@ -213,9 +214,36 @@ public Object getProperty ( String name, ImageObserver observer ) {
 }
 
 public Image getScaledInstance (int width, int height, int hints) {
-	if (nativeData == null || width <= 0 || height <= 0 || (flags & SCREEN) != 0 || (flags & ImageObserver.ALLBITS) == 0) {
-		return (null);
+
+	if ( (flags & (ImageObserver.ERROR|ImageObserver.FRAMEBITS)) == 0 ){
+		MediaTracker mt = new MediaTracker( null);
+		mt.addImage( this, 0);
+		try {
+			mt.waitForID( 0);
+		}
+		catch ( InterruptedException x ){
+			return null;
+		}
 	}
+
+	if ( (flags & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0 ){
+		return null;
+	}
+
+	if ( (width < 0) && (height < 0) ){
+		throw new AWTError( "illegal image scaling request: , w: "
+		                        + width + ", h: " + height);
+	}
+
+	// a negative value is computed from the other dimension and
+	// a constant aspect ratio
+	if ( width < 0 ){
+		width = (int) (((float)height / this.height) * this.width);
+	}
+	else if ( height < 0 ){
+		height = (int) (((float)width / this.width) * this.height);
+	}
+
 	return (new Image(this, width, height));
 }
 
@@ -226,46 +254,74 @@ public ImageProducer getSource () {
 	return producer;
 }
 
+static Image getUnknownImage (){
+	if ( unknownImage == null ){
+		int d = Toolkit.screenSize.height / 64;
+
+		unknownImage = new Image( d, d);
+
+		Graphics g = unknownImage.getGraphics();
+		if ( g != null ){
+			g.setColor( Color.white);
+			g.fillRect( 0, 0, d, d);
+			g.setColor( Color.red);
+			g.draw3DRect( 0, 0, d, d, false);
+			
+			g.dispose();
+		}
+	}
+	
+	return unknownImage;
+}
+
 public synchronized int getWidth ( ImageObserver observer ) {
 	if ( (flags & ImageObserver.WIDTH) != 0 ) {
 		return (width);
 	}
 	else {
-		loadImage(-1, -1, observer);
+		loadImage( this, -1, -1, observer);
 		return (-1);
 	}
 }
 
-synchronized boolean loadImage ( int w, int h, ImageObserver obs ) {
-	// it's (partly?) loaded already
-	if ( (flags & (ImageObserver.FRAMEBITS|ImageObserver.ALLBITS)) != 0 ){
-		if ( ((w > 0) || (h > 0)) && (w != width) && (h != height) ) {
-		        // but do we have to scale it? 
-			scale( w, h);
+static boolean loadImage ( Image img, int w, int h, ImageObserver obs ) {
+
+	// a last safeguard against careless apps which don't handle
+	// failed image loads
+	if ( img != null ){	
+		synchronized ( img ) {
+			// it's (partly?) loaded already
+			if ( (img.flags & (ImageObserver.FRAMEBITS|ImageObserver.ALLBITS)) != 0 ){
+				if ( ((w > 0) || (h > 0)) && (w != img.width) && (h != img.height) ) {
+					// but do we have to scale it? 
+					img.scale( w, h);
+				}
+				if ( (img.flags & ImageObserver.FRAMEBITS) != 0 ) {
+					img.addObserver( obs);
+				}
+				return (true);
+			}
+			// we ultimately failed
+			else if ( (img.flags & ImageObserver.ABORT) != 0 ) {
+				return (false);
+			}
+			// there's work ahead, kick it off
+			else if ( (img.flags & PRODUCING) == 0 ) {
+				img.flags |= PRODUCING;
+				if ( obs != null ) {
+					img.addObserver( obs);
+				}
+				/*
+				 * We now load the image data synchronously - it's not clear
+				 * that's what you should actually do but it fixes a problem
+				 * with the Citrix ICA client. (Tim 1/18/99)
+				 */
+				ImageLoader.loadSync( img);
+				return (true);
+			}
 		}
-		if ( (flags & ImageObserver.FRAMEBITS) != 0 ) {
-			addObserver( obs);
-		}
-		return (true);
 	}
-	// we ultimately failed
-	else if ( (flags & ImageObserver.ABORT) != 0 ) {
-		return (false);
-	}
-        // there's work ahead, kick it off
-	else if ( (flags & PRODUCING) == 0 ) {
-		flags |= PRODUCING;
-		if ( obs != null ) {
-			addObserver( obs);
-		}
-		/*
-		 * We now load the image data synchronously - it's not clear
-		 * that's what you should actually do but it fixes a problem
-		 * with the Citrix ICA client. (Tim 1/18/99)
-		 */
-		ImageLoader.loadSync( this);
-		return (true);
-	}
+	
 	return (false);
 }
 
@@ -611,7 +667,7 @@ public void setPixels ( int x, int y, int w, int h,
 	else {
 		System.out.println("Unhandled colorModel: " + model.getClass());
 	}
-	
+
 	Toolkit.imgSetRGBPels( img.nativeData, x, y, w, h, pixels, offset, scansize);
 	img.stateChange( ImageObserver.SOMEBITS, x, y, w, h);
 }

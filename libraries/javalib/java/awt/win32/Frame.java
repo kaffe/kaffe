@@ -54,7 +54,7 @@ public Frame ( String title ) {
 	this( null, title);
 }
 
-Ptr createNativeWindow () {
+void createNative() {
 	// This is the terminal class addNotify() part. DANGER: ptr isn't a real object
 	int u = x;
 	int v = y;
@@ -75,8 +75,9 @@ Ptr createNativeWindow () {
 		h -= deco.height;
 	}
 
-	return Toolkit.wndCreateFrame( title, u, v, w, h,
-	                               cursor.type, bgClr.nativeValue, ((flags & IS_RESIZABLE) != 0));
+	nativeData = Toolkit.wndCreateFrame( title, u, v, w, h,
+	             		                 cursor.type, bgClr.nativeValue,
+										 ((flags & IS_RESIZABLE) != 0));
 }
 
 void finishAddNotify() {
@@ -112,18 +113,6 @@ public String getTitle() {
 
 public boolean isResizable () {
 	return ((flags & IS_RESIZABLE) != 0);
-}
-
-public void paint ( Graphics g ) {
-	for ( int i=nChildren-1; i>=0; i-- ) {
-		Component c = children[i];
-
-		if ( c instanceof NativeComponent ) 
-			continue;
-
-		if ( (c.flags & IS_VISIBLE) != 0) 
-			g.paintChild( c, (flags & IS_IN_UPDATE) != 0);
-	}
 }
 
 /**
@@ -217,17 +206,5 @@ public void setTitle ( String newTitle ) {
 
 	if ( nativeData != null )
 		Toolkit.wndSetTitle( nativeData, newTitle);
-}
-
-public void update ( Graphics g ) {
-	int w = width - deco.width;
-	int h = height - (insets.top + insets.bottom);
-
-	flags |= IS_IN_UPDATE;
-
-	g.clearRect( deco.x, insets.top, w, h);
-	paint( g);
-
-	flags &= ~IS_IN_UPDATE;
 }
 }

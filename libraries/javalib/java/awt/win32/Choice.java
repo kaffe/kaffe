@@ -38,14 +38,14 @@ public void addItemListener( ItemListener l) {
 
 public void addNotify() {
 	if ( nativeData == null ) {
-
-		if ( Toolkit.switchToCreateThread( this, WMEvent.WM_CREATE) )
-			return;
-
-		nativeData = Toolkit.choiceCreateChoice(getParentData());
+		Toolkit.createNative(this);
 		super.addNotify();
 		updateItems();
 	}
+}
+
+void createNative() {
+	nativeData = Toolkit.choiceCreateChoice(getParentData());
 }
 
 public String getItem( int idx) {

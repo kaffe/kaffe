@@ -49,7 +49,7 @@ public boolean isEnqueued() {
 }
 
 public boolean enqueue() {
-	if (isEnqueued()) {
+	if (que == null || isEnqueued()) {
 		return (false);
 	}
 	que.enqueue(this);

@@ -1,18 +1,3 @@
-/**
- * Toolkit - used to be an abstract factory for peers, but since we don't have
- * peers, it is just a simple anchor for central mechanisms (like System-
- * EventQueue etc.) and a wrapper for all native methods. Of course, it is a
- * singleton.
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
- *
- * @author P.C.Mehlitz
- */
-
 package java.awt;
 
 import java.awt.ImageNativeProducer;
@@ -38,6 +23,20 @@ import kaffe.util.Ptr;
 import kaffe.util.log.LogClient;
 import kaffe.util.log.LogStream;
 
+/**
+ * Toolkit - used to be an abstract factory for peers, but since we don't have
+ * peers, it is just a simple anchor for central mechanisms (like System-
+ * EventQueue etc.) and a wrapper for all native methods. Of course, it is a
+ * singleton.
+ *
+ * Copyright (c) 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ *
+ * @author P.C.Mehlitz
+ */
 class FlushThread
   extends Thread
 {
@@ -74,18 +73,18 @@ NativeCollector () {
 }
 
 public void run () {
-  // this does not return until the we shut down the system, since it
-  // consititutes the native dispatcher loop. Don't be confused about
+	// this does not return until the we shut down the system, since it
+	// consititutes the native dispatcher loop. Don't be confused about
 	// tlkInit being a sync method. It gives up the lock in the native
 	// layer before falling into its dispatcher loop
 
-  try {
+	try {
 		if ( !Toolkit.tlkInit( System.getProperty( "awt.display")) ) {
 			throw new AWTError( "native layer init failed");
 		}
-  } catch ( Throwable x ) {
+	} catch ( Throwable x ) {
 		x.printStackTrace();
-  }
+	}
 }
 }
 
@@ -187,6 +186,55 @@ ComponentPeer createLightweight ( Component c ) {
 	return lightweightPeer;
 }
 
+static void createNative ( Component c ) {
+	WMEvent e = null;
+
+	synchronized ( Toolkit.class ) {
+		// even if this could be done in a central location, we defer this
+		// as much as possible because it might involve polling (for non-threaded
+		// AWTs), slowing down the startup time
+		if ( eventThread == null ) {
+			startDispatch();
+		}
+	}
+
+	// do we need some kind of a context switch ?
+	if ( (flags & IS_DISPATCH_EXCLUSIVE) != 0 ){
+		if ( (flags & NATIVE_DISPATCHER_LOOP) != 0 ){
+			if ( Thread.currentThread() != collectorThread ){
+				// this is beyond our capabilities (there is no Java message entry we can call
+				// in the native collector), we have to revert to some native mechanism
+				e =  WMEvent.getEvent( c, WMEvent.WM_CREATE);
+				evtSendWMEvent( e);
+			}
+		}
+		else {
+			if ( Thread.currentThread() != eventThread ){
+				// we can force the context switch by ourselves, no need to go native
+				e =  WMEvent.getEvent( c, WMEvent.WM_CREATE);
+				eventQueue.postEvent( e);
+			}
+		}
+			
+		// Ok, we have a request out there, wait for it to be served
+		if ( e != null ) {
+			// we should check for nativeData because the event might
+			// already be processed (depending on the thread system)
+			while ( c.getNativeData() == null ) {
+				synchronized ( e ) {
+					try { e.wait(); } catch ( InterruptedException x ) {}
+				} 
+			}
+				
+			return;
+		}
+	}
+	else {
+		// no need to switch threads, go native right away
+		c.createNative();
+	}
+}
+
 protected WindowPeer createWindow ( Window w ) {
 	// WARNING! this is just a dummy to enable checks like
 	// "..getPeer() != null.. or ..peer instanceof LightweightPeer..
@@ -196,6 +244,46 @@ protected WindowPeer createWindow ( Window w ) {
 	// method gets official (1.2?)
 
 	return windowPeer;
+}
+
+static void destroyNative ( Component c ) {
+	WMEvent e = null;
+
+	// do we need some kind of a context switch ?
+	if ( (flags & IS_DISPATCH_EXCLUSIVE) != 0 ){
+		if ( (flags & NATIVE_DISPATCHER_LOOP) != 0 ){
+			if ( Thread.currentThread() != collectorThread ){
+				// this is beyond our capabilities (there is no Java message entry we can call
+				// in the native collector), we have to revert to some native mechanism
+				e =  WMEvent.getEvent( c, WMEvent.WM_DESTROY);
+				evtSendWMEvent( e);
+			}
+		}
+		else {
+			if ( Thread.currentThread() != eventThread ){
+				// we can force the context switch by ourselves, no need to go native
+				e =  WMEvent.getEvent( c, WMEvent.WM_DESTROY);
+				eventQueue.postEvent( e);
+			}
+		}
+			
+		// Ok, we have a request out there, wait for it to be served
+		if ( e != null ) {
+			// we should check for nativeData because the event might
+			// already be processed (depending on the thread system)
+			while ( c.getNativeData() != null ) {
+				synchronized ( e ) {
+					try { e.wait(); } catch ( InterruptedException x ) {}
+				} 
+			}
+				
+			return;
+		}
+	}
+	else {
+		// no need to switch threads, go native right away
+		c.destroyNative();
+	}
 }
 
 native static synchronized AWTEvent evtGetNextEvent ();
@@ -278,8 +366,9 @@ public Image getImage ( String filename ) {
 	
 	// Hmm, that's a inconsistency with getImage(URL). The doc isn't very
 	// helpful, here (class doc says nothing, book tells us it should return
-	// null in case it's not there - but that is not known a priori for URLs)
-	return (f.exists()) ? new Image( f) : null;
+	// null in case it's not there - but that is not known a priori for URLs).
+	// JDK never returns a null object, so we don't do, either
+	return (f.exists()) ? new Image( f) : Image.getUnknownImage();
 }
 
 public Image getImage ( URL url ) {
@@ -458,7 +547,7 @@ protected void loadSystemColors ( int[] sysColors ) {
 }
 
 public boolean prepareImage ( Image image, int width, int height, ImageObserver observer ) {
-	return (image.loadImage( width, height, observer));
+	return (Image.loadImage( image, width, height, observer));
 }
 
 static void redirectStreams () {
@@ -505,53 +594,6 @@ static synchronized void stopDispatch () {
 		flushThread.stopFlushing();
 		flushThread = null;
 	}
-}
-
-static boolean switchToCreateThread ( Window c ) {
-	// this probably has to be abstracted away from Window, in order to
-	// enable reation of native widgets outside of their parents addNotify context
-	// (but that involves EventDispatchThread and WMEvent, too)
-	WMEvent e = null;
-
-	synchronized ( Toolkit.class ) {
-		// even if this could be done in a central location, we defer this
-		// as much as possible because it might involve polling (for non-threaded
-		// AWTs), slowing down the startup time
-		if ( eventThread == null ) {
-			startDispatch();
-		}
-	}
-
-	if ( (flags & IS_DISPATCH_EXCLUSIVE) != 0 ){
-		if ( (flags & NATIVE_DISPATCHER_LOOP) != 0 ){
-			if ( Thread.currentThread() != collectorThread ){
-				// this is beyond our capabilities (there is no Java message entry we can call
-				// in the native collector), we have to revert to some native mechanism
-				e =  WMEvent.getEvent( c, WMEvent.WM_CREATE);
-				evtSendWMEvent( e);
-			}
-		}
-		else {
-			if ( Thread.currentThread() != eventThread ){
-				// we can force the context switch by ourselves, no need to go native
-				e =  WMEvent.getEvent( c, WMEvent.WM_CREATE);
-				eventQueue.postEvent( e);
-			}
-		}
-			
-		// Ok, we have a request out there, wait for it to be served
-		if ( e != null ) {
-			while ( c.nativeData == null ) {
-				synchronized ( e ) {
-					try { e.wait(); } catch ( InterruptedException x ) {}
-				} 
-			}
-				
-			return true;  // flag that we had a context switch
-		}
-	}
-
-	return false;     // no context switch required
 }
 
 public void sync () {

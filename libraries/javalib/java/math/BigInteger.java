@@ -14,6 +14,7 @@ import java.util.Random;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
+import java.lang.Comparable;
 import kaffe.util.Ptr;
 
 public class BigInteger extends Number implements Comparable {

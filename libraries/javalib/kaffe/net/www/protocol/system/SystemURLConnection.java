@@ -47,9 +47,9 @@ public void connect() throws IOException
 
 public InputStream getInputStream() throws IOException
 {
-	if ( data == null )
-		throw new FileNotFoundException();
-
+	if (data == null) {
+		throw new FileNotFoundException(url.getFile());
+	}
 	return data;
 }
 }

@@ -80,7 +80,7 @@ public void run () {
 		if ( !Toolkit.tlkInit( System.getProperty( "awt.display")) ) {
 			throw new AWTError( "native layer init failed");
 		}
-	} catch ( Exception x ) {
+	} catch ( Throwable x ) {
 		x.printStackTrace();
 	}
 }
@@ -110,6 +110,15 @@ public class Toolkit
 static {
 	System.loadLibrary( "awt");
 	flags = tlkProperties();
+	
+	// hack to please swings default look and feel init
+	// ( no utsname support for System.c , so default is 'Unknown' )
+	
+	Properties p = System.getProperties();
+	String osn = p.getProperty( "os.name");
+	if ( (osn == null) || !(osn.startsWith("Windows"))) {
+		p.put( "os.name", "Windows" );
+	}
 
 	if ( (flags & NATIVE_DISPATCHER_LOOP) == 0 ) {
 		if ( !tlkInit( System.getProperty( "awt.display")) ) {
@@ -194,6 +203,8 @@ native static synchronized void cmnDestroyWindow ( Ptr wndData );
 
 native static synchronized Dimension cmnGetPreferredSize ( Ptr data);
 
+native static synchronized void cmnInvalidate ( Ptr data, int x, int y, int w, int h );
+
 native static synchronized void cmnSetBackground ( Ptr data, int clr );
 
 native static synchronized void cmnSetBounds ( Ptr data, int x, int y, int w, int h);
@@ -231,6 +242,56 @@ ComponentPeer createLightweight ( Component c ) {
 	return lightweightPeer;
 }
 
+static void createNative ( Component c ) {
+	WMEvent e = null;
+
+	synchronized ( Toolkit.class ) {
+		// even if this could be done in a central location, we defer this
+		// as much as possible because it might involve polling (for non-threaded
+		// AWTs), slowing down the startup time
+		if ( eventThread == null ) {
+			startDispatch();
+		}
+	}
+
+	// do we need some kind of a context switch ?
+	if ( (flags & IS_DISPATCH_EXCLUSIVE) != 0 ){
+		if ( (flags & NATIVE_DISPATCHER_LOOP) != 0 ){
+			if ( Thread.currentThread() != collectorThread ){
+				// this is beyond our capabilities (there is no Java message entry we can call
+				// in the native collector), we have to revert to some native mechanism
+				e =  WMEvent.getEvent( c, WMEvent.WM_CREATE);
+				evtSendWMEvent( e);
+			}
+		}
+		else {
+			if ( Thread.currentThread() != eventThread ){
+				// we can force the context switch by ourselves, no need to go native
+				e =  WMEvent.getEvent( c, WMEvent.WM_CREATE);
+				eventQueue.postEvent( e);
+			}
+		}
+			
+		// Ok, we have a request out there, wait for it to be served
+		if ( e != null ) {
+			// we should check for nativeData because the event might
+			// already be processed (depending on the thread system)
+			while ( c.getNativeData() == null ) {
+				synchronized ( e ) {
+					try { e.wait(); } 
+					catch ( InterruptedException x ) {}
+				} 
+			}
+				
+			return;
+		}
+	}
+	else {
+		// no need to switch threads, go native right away
+		c.createNative();
+	}
+}
+
 protected WindowPeer createWindow ( Window w ) {
 	// WARNING! this is just a dummy to enable checks like
 	// "..getPeer() != null.. or ..peer instanceof LightweightPeer..
@@ -240,6 +301,46 @@ protected WindowPeer createWindow ( Window w ) {
 	// method gets official (1.2?)
 
 	return windowPeer;
+}
+
+static void destroyNative ( Component c ) {
+	WMEvent e = null;
+
+	// do we need some kind of a context switch ?
+	if ( (flags & IS_DISPATCH_EXCLUSIVE) != 0 ){
+		if ( (flags & NATIVE_DISPATCHER_LOOP) != 0 ){
+			if ( Thread.currentThread() != collectorThread ){
+				// this is beyond our capabilities (there is no Java message entry we can call
+				// in the native collector), we have to revert to some native mechanism
+				e =  WMEvent.getEvent( c, WMEvent.WM_DESTROY);
+				evtSendWMEvent( e);
+			}
+		}
+		else {
+			if ( Thread.currentThread() != eventThread ){
+				// we can force the context switch by ourselves, no need to go native
+				e =  WMEvent.getEvent( c, WMEvent.WM_DESTROY);
+				eventQueue.postEvent( e);
+			}
+		}
+			
+		// Ok, we have a request out there, wait for it to be served
+		if ( e != null ) {
+			// we should check for nativeData because the event might
+			// already be processed (depending on the thread system)
+			while ( c.getNativeData() != null ) {
+				synchronized ( e ) {
+					try { e.wait(); } catch ( InterruptedException x ) {}
+				} 
+			}
+				
+			return;
+		}
+	}
+	else {
+		// no need to switch threads, go native right away
+		c.destroyNative();
+	}
 }
 
 native static synchronized void editAppend( Ptr data, String txt);
@@ -365,6 +466,15 @@ public int getMenuShortcutKeyMask() {
 	return InputEvent.CTRL_MASK;
 }
 
+static Ptr getNativeData( Component c) {
+	if ( c instanceof NativeComponent )
+		return ( (NativeComponent)c).nativeData;
+	else if ( c instanceof NativeContainer )
+		return ( (NativeContainer)c).nativeData;
+	else
+		return null;
+}
+
 public PrintJob getPrintJob ( Frame frame, String jobtitle, Properties props ) {
 	return new PSPrintJob( frame, jobtitle, props);
 }
@@ -388,7 +498,7 @@ public EventQueue getSystemEventQueue () {
 	return eventQueue;
 }
 
-native static synchronized void graAddClip ( Ptr grData, int xClip, int yClip, int wClip, int hClip );
+native static synchronized void graCleanUpGraphics ( Ptr grData );
 
 native static synchronized void graClearRect ( Ptr grData, int x, int y, int width, int height );
 
@@ -461,15 +571,6 @@ native static synchronized void graSetPaintMode ( Ptr grData );
 native static synchronized void graSetVisible ( Ptr grData, boolean isVisible );
 
 native static synchronized void graSetXORMode ( Ptr grData, int xClr );
-
-static boolean hasNativeData( Component c) {
-	if ( c instanceof NativeComponent )
-		return ( (NativeComponent)c).nativeData != null;
-	else if ( c instanceof NativeContainer )
-		return ( (NativeContainer)c).nativeData != null;
-	else
-		return false;
-}
 
 native static synchronized void imgComplete ( Ptr imgData, int status );
 
@@ -599,7 +700,7 @@ native static synchronized void menuInsertItem( Ptr data, Ptr subMenu, String it
 native static synchronized void menuRemoveItem( Ptr data, MenuComponent mc );
 
 public boolean prepareImage ( Image image, int width, int height, ImageObserver observer ) {
-	return (image.loadImage( width, height, observer));
+	return (Image.loadImage( image, width, height, observer));
 }
 
 static void redirectStreams () {
@@ -658,50 +759,6 @@ static synchronized void stopDispatch () {
 		flushThread.stopFlushing();
 		flushThread = null;
 	}
-}
-
-static boolean switchToCreateThread ( Component c, int wmEvtId ) {
-	// this probably has to be abstracted away from Window, in order to
-	// enable reation of native widgets outside of their parents addNotify context
-	// (but that involves EventDispatchThread and WMEvent, too)
-	WMEvent e = null;
-	
-	// even if this could be done in a central location, we defer this
-	// as much as possible because it might involve polling (for non-threaded
-	// AWTs), slowing down the startup time
-	if ( eventThread == null ) {
-		startDispatch();
-	}
-
-	if ( (flags & IS_DISPATCH_EXCLUSIVE) != 0 ){
-		if ( (flags & NATIVE_DISPATCHER_LOOP) != 0 ){
-			if ( Thread.currentThread() != collectorThread ){
-				// this is beyond our capabilities (there is no Java message entry we can call
-				// in the native collector), we have to revert to some native mechanism
-				e =  WMEvent.getEvent( c, wmEvtId);
-				evtSendWMEvent( e);
-			}
-		}
-		else {
-			if ( Thread.currentThread() != eventThread ){
-				// we can force the context switch by ourselves, no need to go native
-				e =  WMEvent.getEvent( c, wmEvtId);
-				eventQueue.postEvent( e);
-			}
-		}
-
-		// Ok, we have a request out there, wait for it to be served
-		if ( e != null ) {
-			while ( ! hasNativeData( c) ) {
-				synchronized ( e ) {
-					try { e.wait(); } catch ( InterruptedException x ) {}
-				} 
-			}
-			return true;  // flag that we had a context switch
-		}
-	}
-
-	return false;     // no context switch required
 }
 
 public void sync () {

@@ -69,7 +69,7 @@ Java_java_awt_Toolkit_tlkProperties ( JNIEnv* env, jclass clazz )
 {
   jint    props = TLK_EXTERNAL_DECO;
 
-#if defined(USE_THREADED_AWT)
+#if !defined(USE_POLLING_AWT)
   props |= TLK_IS_BLOCKING;
   props |= TLK_NEEDS_FLUSH;
 #endif
@@ -102,8 +102,12 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
 	return JNI_FALSE;
   }
 
-  DBG( AWT, printf("synchronize X\n"));
-  //DBG( AWT, XSynchronize( X->dsp, True));
+#if !defined (USE_POLLING_AWT)
+  XInitThreads();
+#endif
+
+  DBG( awt, ("synchronize X\n"));
+  DBG_ACTION(awt, XSynchronize( X->dsp, True));
 
   X->nWindows = 47;
   X->windows = AWT_CALLOC( X->nWindows, sizeof(WindowRec));
@@ -115,7 +119,6 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
    * We just can use XShm in case we don't run remote, and we better don't rely on
    * XShmQueryExtension to make this distinction
    */
-#ifdef HAVE_LIBXEXT
   if ( (dspName[0] == ':') || (strncmp( "localhost", dspName, 9) == 0) ) {
 	if ( XShmQueryExtension( X->dsp) ){
 	  X->shm =  USE_SHM;
@@ -126,7 +129,6 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
 	  X->shmThreshold = 4096;
 	}
   }
-#endif
 
   WM_PROTOCOLS     = XInternAtom( X->dsp, "WM_PROTOCOLS", False);
   WM_DELETE_WINDOW = XInternAtom( X->dsp, "WM_DELETE_WINDOW", False);

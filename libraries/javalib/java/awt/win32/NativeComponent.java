@@ -24,40 +24,42 @@ protected NativeComponent() {
 }
 
 public void addNotify () {
-	if ( nativeData != null ) {
-		super.addNotify();
+	if ( nativeData == null ) {
+		throw new AWTError( "native create failed: " + this);
+	}
 
-		AWTEvent.registerSource( this, nativeData);
-		setNativeBounds( x, y, width, height);
+	// enable mapping of native events to Java Components
+	AWTEvent.registerSource( this, nativeData);
+	
+	setNativeBounds( x, y, width, height);
+	super.addNotify();
+
+	//native components are created visible
+	if ( (flags & IS_VISIBLE) == 0 )
+		Toolkit.cmnSetVisible( nativeData, false);
+
+	initAttribs();
 		
-		//native components are created visible
-		if ( (flags & IS_VISIBLE) == 0 )
-			Toolkit.cmnSetVisible( nativeData, false);
+	Toolkit.cmnSetBackground( nativeData, bgClr.nativeValue);
+	Toolkit.cmnSetForeground( nativeData, fgClr.nativeValue);
+	Toolkit.cmnSetFont( nativeData, font.nativeData);
+	Toolkit.cmnSetCursor( nativeData, cursor.type);		
+}
 
-		//
-		// THIS IS HACKED UP TO DEAL WITH MISSING VALUES!!!
-		// FIX PROPERLY - TIM
-		//
-		Color clr = getBackground();
-		if (clr == null) {
-			clr = Defaults.WndBackground;
-		}
-		Toolkit.cmnSetBackground( nativeData, clr.nativeValue);
-		clr = getForeground();
-		if (clr == null) {
-			clr = Defaults.WndForeground;
-		}
-		Toolkit.cmnSetForeground( nativeData, clr.nativeValue);
-		Font fnt = getFont();
-		if (fnt == null) {
-			fnt = Defaults.WndFont;
-		}
-		Toolkit.cmnSetFont( nativeData, fnt.nativeData);
-		Cursor cur = cursor;
-		if (cur == null) {
-			cur = Cursor.defaultCursor;
-		}
-		Toolkit.cmnSetCursor( nativeData, cur.type);
+void cleanUpNative () {
+	if ( nativeData != null ) {
+		AWTEvent.unregisterSource( this, nativeData);
+		nativeData = null;
+	}
+}
+
+void createNative () {
+}
+
+void destroyNative () {
+	if ( nativeData != null ) {
+		Toolkit.cmnDestroyWindow( nativeData);
+		cleanUpNative();
 	}
 }
 
@@ -73,6 +75,10 @@ public Graphics getGraphics () {
 		return null;
 }
 
+Ptr getNativeData() {
+	return nativeData;
+}
+
 Ptr getParentData() {
 	for ( Container c=parent; c != null; c=c.parent) {
 		if ( c instanceof NativeContainer ) {
@@ -80,6 +86,33 @@ Ptr getParentData() {
 		}
 	}
 	return null;
+}
+
+public void hide ()  {
+	if ( (flags & IS_VISIBLE) != 0 ) {
+		super.hide();
+
+		if ( nativeData != null ){
+			Toolkit.cmnSetVisible( nativeData, false);
+		}
+	}
+}
+
+void initAttribs() {
+	boolean pv;
+	
+	if ( bgClr == null ) {
+		pv = ( (parent != null) && (parent.bgClr != null) );
+		setBackground( pv ? parent.bgClr : Defaults.WndBackground);
+	}
+	if ( fgClr == null ) {
+		pv = ( (parent != null) && (parent.fgClr != null) );
+		setForeground( pv ? parent.fgClr : Defaults.WndForeground);
+	}
+	if ( font == null ) {
+		pv = ( (parent != null) && (parent.font != null) );
+		setFont( pv ? parent.font : Defaults.WndFont);
+	}
 }
 
 void paintBorder ( Graphics g, int left, int top, int right, int bottom ) {
@@ -92,33 +125,14 @@ void processMouse( MouseEvent e) {
 	super.processMouse( e);
 }
 
-void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
-	// used by native paints
-	Graphics g = NativeGraphics.getGraphics( null, nativeData, NativeGraphics.TGT_TYPE_WINDOW, 0,0,
-	                                         ux, uy, uw, uh, fgClr, bgClr, font, false);
-
-	if ( g != null ){
-		if ( id == PaintEvent.UPDATE )
-			update( g);
-		else
-			paint( g);
-		g.dispose();
-	}
-
-}
-
 public void removeNotify () {
 	if ( nativeData != null ) {
-		AWTEvent.unregisterSource( this, nativeData);
-		
 		// generally components are destroyed native
 		// via parent destruction. To prevent further event
 		// emmitting ( esp. Paint events ) for unregistered compoments
 		// ensure native destruction for dedicated component removes
-		Toolkit.cmnDestroyWindow( nativeData);
-		
-		nativeData = null;
 		super.removeNotify();
+		Toolkit.destroyNative(this);
 	}
 }
 
@@ -146,8 +160,10 @@ public void setBackground ( Color clr ) {
 }
 
 public void setCursor ( Cursor cursor ) {
-	this.cursor = cursor;
-	setNativeCursor( cursor);
+	if ( cursor != null ) {
+		this.cursor = cursor;
+		setNativeCursor( cursor);
+	}
 }
 
 public void setEnabled ( boolean isEnabled ) {
@@ -191,20 +207,24 @@ void setNativeBounds ( int x, int y, int width, int height ) {
 }
 
 void setNativeCursor ( Cursor cursor ) {
-	if ( nativeData != null ) {
+	if ( (nativeData != null) && ((flags & IS_ADD_NOTIFIED) != 0)) {
 		Toolkit.cmnSetCursor( nativeData, cursor.type);
 	}
 }
 
-public void setVisible ( boolean showIt ) {
-	if ( showIt != isVisible() ) {
-		super.setVisible( showIt);
-		if ( nativeData != null )
-			Toolkit.cmnSetVisible( nativeData, showIt);
+public void show ()  {
+	if ( (flags & IS_VISIBLE) == 0 ) {
+		super.show();
+
+		if ( nativeData != null ){
+			Toolkit.cmnSetVisible( nativeData, true);
+		}
 	}
 }
 
 public void update ( Graphics g) {
+	flags |= IS_IN_UPDATE;
 	paint( g);
+	flags &= ~IS_IN_UPDATE;
 }
 }

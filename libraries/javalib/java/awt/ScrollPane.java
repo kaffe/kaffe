@@ -209,7 +209,7 @@ public Adjustable getHAdjustable () {
 	return hScroll;
 }
 
-public int getHSrollbarHeight () {
+public int getHScrollbarHeight () {
 	return (hScroll == null) ? 0 : Defaults.ScrollbarWidth;
 }
 

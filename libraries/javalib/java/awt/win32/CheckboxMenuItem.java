@@ -1,8 +1,9 @@
 package java.awt;
 
-import kaffe.util.Ptr;
+import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import kaffe.util.Ptr;
 
 /**
  * class CheckboxMenuItem -
@@ -14,7 +15,6 @@ import java.awt.event.ItemListener;
  * of this file.
  *
  */
-
 public class CheckboxMenuItem
   extends MenuItem
   implements ItemSelectable
@@ -33,7 +33,6 @@ public CheckboxMenuItem ( String label ) {
 
 public CheckboxMenuItem ( String label, boolean isChecked ) {
 	super( label);
-
 	this.isChecked = isChecked;
 }
 
@@ -41,9 +40,15 @@ public void addItemListener( ItemListener newListener) {
 	iListener = AWTEventMulticaster.add( iListener, newListener);
 }
 
+public void addNotify() {
+	super.addNotify();
+	if ( isChecked )
+		setState( isChecked );
+}
+
 public Object[] getSelectedObjects () {
 	// ItemSelectable interface
-	
+
 	if ( isChecked ) {
 		Object[] selItems = new Object[1];
 		selItems[0] = getLabel();
@@ -66,7 +71,7 @@ public void handleShortcut( MenuShortcut ms) {
 	if ( (iListener != null) ||
 	     ( ((eventMask & AWTEvent.ITEM_EVENT_MASK) != 0) || ((flags & IS_OLD_EVENT) > 0) ) ) {
 		Toolkit.eventQueue.postEvent( ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, getLabel(),
-                                      isChecked ? ItemEvent.SELECTED : ItemEvent.DESELECTED ));
+		                                                isChecked ? ItemEvent.SELECTED : ItemEvent.DESELECTED ));
 	}
 }
 
@@ -74,10 +79,18 @@ public String paramString() {
 	return super.paramString() + ", " + (isChecked ? "checked" : "unchecked");
 }
 
+void process ( ActionEvent ae ) {
+	setState( !isChecked );
+	ItemEvt ie = ItemEvt.getEvent( this, ItemEvt.ITEM_STATE_CHANGED, 
+					label, isChecked ? ItemEvt.SELECTED : ItemEvt.DESELECTED );
+	Toolkit.eventQueue.postEvent( ie);
+	super.process( ae);
+}
+
 void process ( ItemEvent ie ) {
 	if ( (iListener != null) ||
 	     ((eventMask & (AWTEvent.ITEM_EVENT_MASK|AWTEvent.DISABLED_MASK))
-	                            == AWTEvent.ITEM_EVENT_MASK) ){
+		 == AWTEvent.ITEM_EVENT_MASK) ){
 		processEvent( ie);
 	}
 }
@@ -109,11 +122,11 @@ public synchronized void setState ( boolean isChecked ) {
 	this.isChecked = isChecked;
 
 	if ( (parent != null) && (parent instanceof Menu) ) {
-                	Ptr p = ((Menu)parent).nativeData;
-                	if ( p != null ) {
-                        		Toolkit.menuCheckItem( p, this, isChecked);
-                	}
-        	}
+		Ptr p = ((Menu)parent).nativeData;
+		if ( p != null ) {
+			Toolkit.menuCheckItem( p, this, isChecked);
+		}
+	}
 
 }
 }

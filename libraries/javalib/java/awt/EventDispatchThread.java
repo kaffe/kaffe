@@ -56,7 +56,7 @@ public void run () {
 	}
 }
 
-void run ( Window modalWindow ) {
+void run ( Component modalWindow ) {
 	AWTEvent e;
 
 	// check if we are outside of the dispatcher thread (to prevent 
@@ -64,8 +64,10 @@ void run ( Window modalWindow ) {
 	if ( Thread.currentThread() != Toolkit.eventThread ) {
 		e = WMEvent.getEvent( modalWindow, WMEvent.WM_DISPATCH_MODAL);
 		Toolkit.eventQueue.postEvent( e);
-		synchronized ( e ) { // no need to loop, nobody else knows 'e'
-			try { e.wait(); } catch ( InterruptedException x ) {}
+		synchronized ( e ) {
+			while ( !e.consumed ) {
+				try { e.wait(); } catch ( InterruptedException x ) {}
+			}
 		}
 	}
 	else {
@@ -90,51 +92,6 @@ void run ( Window modalWindow ) {
 				}
 				else {
 					sx.printStackTrace( System.err);
-				}
-			}
-			catch ( Throwable x ) {
-				x.printStackTrace( System.err);
-			}
-		}
-	}
-}
-
-void show ( Window window ) {
-	AWTEvent e;
-	Object   src;
-
-	// check if we are outside of the dispatcher thread (to prevent 
-	// race conditions)
-	if ( Thread.currentThread() != Toolkit.eventThread ) {
-		e = WMEvent.getEvent( window, WMEvent.WM_SHOW);
-		Toolkit.eventQueue.postEvent( e);
-
-		synchronized ( e ) { // no need to loop, nobody else knows 'e'
-			try { e.wait(); } catch ( InterruptedException x ) {}
-		}
-	}
-	else {
-		// this has to be done here to make sure we are in the right thread
-		// (otherwise there is a good chance that we get a paint in the dispatcher
-		// thread before we start to wait for it)
-		Toolkit.wndSetVisible( window.nativeData, true);
-
-		while ( !stop ) {
-			// the inner loop protects us from being disrupted by
-			// an exception (we should continue to dispatch as long as possible)
-			try {
-				while ( !stop ) {			
-					if ( (e = queue.getNextEvent()) != null ){
-						src = AWTEvent.getSource( e);
-						e.dispatch();
-						
-						if ( (e.id == PaintEvent.PAINT ||
-						      e.id == WindowEvent.WINDOW_CLOSED ||
-						      e.id == ComponentEvent.COMPONENT_HIDDEN)
-						     && (src == window)  ){
-							return;
-						}
-					}
 				}
 			}
 			catch ( Throwable x ) {

@@ -10,23 +10,22 @@
 
 package java.net;
 
-import java.lang.String;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Hashtable;
-import java.util.Date;
+import java.lang.String;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Date;
+import java.util.Hashtable;
 import kaffe.net.DefaultFileNameMap;
-import kaffe.net.StreamMap;
 import kaffe.net.DefaultStreamMap;
+import kaffe.net.StreamMap;
 
 abstract public class URLConnection
 {
 	private static FileNameMap fileNameMap = new DefaultFileNameMap();
 	private static StreamMap streamMap = new DefaultStreamMap();
-
 	protected boolean allowUserInteraction = defaultAllowUserInteraction;
 	protected boolean connected = false;
 	protected boolean doInput = true;
@@ -34,7 +33,6 @@ abstract public class URLConnection
 	protected long ifModifiedSince = 0;
 	protected URL url;
 	protected boolean useCaches = defaultUseCaches;
-
 	private static ContentHandlerFactory factory = null;
 	private static boolean defaultAllowUserInteraction = false;
 	private static boolean defaultUseCaches = false;
@@ -96,7 +94,7 @@ public long getExpiration() {
 public static FileNameMap getFileNameMap() {
 	return (fileNameMap);
 }
-    
+
 public String getHeaderField(String name) {
 	return (null);
 }
@@ -105,30 +103,37 @@ public String getHeaderField(int n) {
 	return (null);
 }
 
-public String getHeaderFieldKey(int n) {
-	return (null);
-}
-
-
 public long getHeaderFieldDate(String name, long def) {
 	String date = getHeaderField(name);
-	try {
-		Date d = DateFormat.getDateInstance().parse(name);
-		return (d.getTime());
+	
+	if ( date != null ) {
+		try {
+			Date d = DateFormat.getDateInstance().parse(name);
+			return (d.getTime());
+		}
+		catch (ParseException _) {
+		}
 	}
-	catch (ParseException _) {
-		return (def);
-	}
+
+	return (def);
 }
 
 public int getHeaderFieldInt(String name, int def) {
 	String val = getHeaderField(name);
-	try {
-		return (Integer.parseInt(val));
+
+	if ( val != null ) {
+		try {
+			return (Integer.parseInt(val));
+		}
+		catch (NumberFormatException _) {
+		}
 	}
-	catch (NumberFormatException _) {
-	}
+	
 	return (def);
+}
+
+public String getHeaderFieldKey(int n) {
+	return (null);
 }
 
 public long getIfModifiedSince() {
@@ -213,7 +218,7 @@ public void setDoOutput(boolean dooutput) {
 public static void setFileNameMap(FileNameMap filenameMap) {
         fileNameMap = filenameMap;
 }
-    
+
 public void setIfModifiedSince(long ifmodifiedsince) {
 	ifModifiedSince = ifmodifiedsince;
 }
@@ -228,5 +233,4 @@ public void setUseCaches(boolean usecaches) {
 public String toString() {
 	return (getClass().toString() + " " + url);
 }
-
 }

@@ -36,7 +36,7 @@ class Defaults
  * If set to 'true', the last Window that is closed will automatically
  * call a System.exit()
  */
-	static boolean AutoStop = false;
+	static boolean AutoStop = true;
 /**
  * Upper bound (in ms) between mouse button press events which will be
  * considered as a 'click' (will increase the MouseEvent clickCount)
@@ -84,7 +84,7 @@ class Defaults
 /**
  * Pixel height of MenuBars
  */
-	static int MenuBarHeight = 21;
+	static int MenuBarHeight;
 	static int ScrollbarWidth = 14;
 /**
  * Frame decoration extends (titlebar, size-borders) in pixels. For native windowing
@@ -414,14 +414,26 @@ static {
 		FsZapfDingbats = "helv%d%s%s.fnt";
 	}
 	else if ( version.startsWith( "X") ) {
-		//FsDefault = "-b&h-lucida-%s-%s-*-*-%d-*-*-*-*-*-*-*";
-		FsDefault = "-adobe-helvetica-%s-%s-*-*-%d-*-*-*-*-*-*-*";
-		FsMonospaced = "-adobe-courier-%s-%s-*-*-%d-*-*-*-*-*-*-*";
-		FsSansSerif = "-adobe-helvetica-%s-%s-*-*-%d-*-*-*-*-*-*-*";
-		FsSerif = "-adobe-times-%s-%s-*-*-%d-*-*-*-*-*-*-*";
-		FsDialog = "-misc-fixed-%s-%s-*-*-%d-*-*-*-*-*-*-*";
-		FsDialogInput = "-b&h-lucidatypewriter-%s-%s-*-*-%d-*-*-*-*-*-*-*";
-		FsZapfDingbats = "-adobe-new century schoolbook-%s-%s-*-*-%d-*-*-*-*-*-*-*";
+		// This is another heuristic - large screens usually don't get along
+		// with the 75dpi fonts (too small). Unfortunately, the computed
+		// XResolution is often close to 100 dpi for 1024x768 screens (laptops),
+		// but we definitely want to use the 75 dpi fonts, there. It seems to be the
+		// best compromise to base this on the ScreenWidth (instead of the computed
+		// dpi). Anyway, what we definitely don't want to do is to mix 75 and 100 dpi
+		// fonts, since this might end up in discontinuities of X fonts (depending
+		// on the X fontserver settings, which are all too often broken). That's why
+		// we explicitly specify the value, here
+	  int res = (ScreenWidth > 1024) ? 100 : 75; 
+		String fntCat = Integer.toString(res) + '-' + res + "-*-*-*-*";
+
+		//FsDefault = "-b&h-lucida-%s-%s-*-*-*-%d-" + fntCat;
+		FsDefault = "-adobe-helvetica-%s-%s-*-*-*-%d-"  + fntCat;
+		FsMonospaced = "-adobe-courier-%s-%s-*-*-*-%d-" + fntCat;
+		FsSansSerif = "-adobe-helvetica-%s-%s-*-*-*-%d-" + fntCat;
+		FsSerif = "-adobe-times-%s-%s-*-*-*-%d-" + fntCat;
+		FsDialog = "-misc-fixed-%s-%s-*-*-*-%d-" + fntCat;
+		FsDialogInput = "-b&h-lucidatypewriter-%s-%s-*-*-*-%d-" + fntCat;
+		FsZapfDingbats = "-adobe-new century schoolbook-%s-%s-*-*-*-%d-" + fntCat;
 	}
 	else {
 		// no idea, we have to leave it for the native layer
@@ -434,16 +446,22 @@ static {
 		FsZapfDingbats = "ZapfDingbats";
 	}
 
-	WndFont = new Font( "Default", Font.BOLD, 12);
-	MenuFont = new Font( "Default", Font.BOLD, 11);
-	TextFont = new Font( "Default", Font.BOLD, 12);
-	TextAreaFont = new Font( "Dialog", Font.BOLD, 12);
-	TextFieldFont = new Font( "Default", Font.BOLD, 12);
-	ListFont = new Font( "Default", Font.BOLD, 12);
-	LabelFont = new Font( "Default", Font.BOLD, 11);
-	BtnFont = new Font( "Default", Font.BOLD, 11);
+	WndFont = new Font( "Default", Font.BOLD, 10);
+	MenuFont = new Font( "Default", Font.BOLD, 10);
+	TextFont = new Font( "Default", Font.BOLD, 10);
+	TextAreaFont = new Font( "Monospaced", Font.PLAIN, 12);
+	TextFieldFont = new Font( "Default", Font.BOLD, 10);
+	ListFont = new Font( "Default", Font.BOLD, 10);
+	LabelFont = new Font( "Default", Font.PLAIN, 10);
+	BtnFont = new Font( "Default", Font.BOLD, 10);
 	
 	WndFontMetrics = Toolkit.getDefaultToolkit().getFontMetrics( WndFont);
+	
+	if ( MenuBarHeight == 0 ){
+	  // we assume this is something like the "system font", which is a synonym
+	  // for the TitlebarHeight (alternatively, we could use the MenuFont itself)
+		MenuBarHeight = WndFontMetrics.getHeight() + 8;
+	}
 
 	beep = System.getProperty("awt.beep", "beep.wav");
 

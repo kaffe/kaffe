@@ -68,7 +68,7 @@ public void addNotify() {
 }
 
 public void addSeparator() {
-	insert( MenuItem.separator, -1);
+	insert( new MenuItem( "-"), -1);
 }
 
 Vector addShortcuts ( Vector v) {
@@ -136,7 +136,7 @@ public void insert( String label, int idx) {
 }
 
 public void insertSeparator( int idx) {
-	insert( MenuItem.separator, idx);
+	insert( new MenuItem("-"), idx);
 }
 
 public boolean isTearOff() {

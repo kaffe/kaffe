@@ -25,7 +25,7 @@ import java.awt.event.MouseMotionListener;
  */
 public class TextField
   extends TextComponent
-  implements MouseMotionListener, KeyListener, FocusListener, MouseListener, ComponentListener
+  implements MouseMotionListener, KeyListener, FocusListener, MouseListener
 {
 	final private static long serialVersionUID = -2966288784432217853L;
 	char echoChar;
@@ -77,11 +77,9 @@ public void addActionListener ( ActionListener al) {
 
 public void addNotify () {
 	super.addNotify();
+	
 	if ( rgr == null ) {
 		setResGraphics();
-		
-		for ( Component c = parent; c != null; c = c.parent )
-			c.addComponentListener( this);
 	}
 }
 
@@ -100,20 +98,6 @@ protected void buildMenu() {
 	p.addActionListener( this);
 	
 	add( p);
-}
-
-public void componentHidden ( ComponentEvent evt ) {
-}
-
-public void componentMoved ( ComponentEvent evt ) {
-	setResGraphics();
-}
-
-public void componentResized ( ComponentEvent evt ) {
-	setResGraphics();
-}
-
-public void componentShown ( ComponentEvent evt ) {
 }
 
 public void deleteSelection() {
@@ -427,16 +411,6 @@ void notifyAction(){
 	}
 }
 
-void process ( ActionEvent e ) {
-	if ( (aListener != null) || ((eventMask & (AWTEvent.ACTION_EVENT_MASK|AWTEvent.DISABLED_MASK)) == AWTEvent.ACTION_EVENT_MASK) ){
-		processEvent( e);
-	}
-
-	if ( (flags & IS_OLD_EVENT) > 0 ) {
-		postEvent( Event.getEvent( e));
-	}
-}
-
 public void paint( Graphics g) {
 	int d = BORDER_WIDTH;
 	paintBorder( g);
@@ -470,9 +444,29 @@ public Dimension preferredSize(int cols) {
 	return (getMinimumSize(cols));
 }
 
+void process ( ActionEvent e ) {
+	if ( (aListener != null) || ((eventMask & (AWTEvent.ACTION_EVENT_MASK|AWTEvent.DISABLED_MASK)) == AWTEvent.ACTION_EVENT_MASK) ){
+		processEvent( e);
+	}
+
+	if ( (flags & IS_OLD_EVENT) > 0 ) {
+		postEvent( Event.getEvent( e));
+	}
+}
+
 protected void processActionEvent ( ActionEvent e) {
 	if ( aListener != null )
 		aListener.actionPerformed( e);
+}
+
+void propagateReshape () {
+	if ( rgr != null ){
+		updateLinkedGraphics();
+
+		// we have our own clipping, which we have to take care of
+		rgr.setClip( BORDER_WIDTH, BORDER_WIDTH,
+		             width - 2*BORDER_WIDTH, height - 2*BORDER_WIDTH);
+	}
 }
 
 public void removeActionListener( ActionListener al) {
@@ -483,9 +477,6 @@ public void removeNotify () {
 	super.removeNotify();
 
 	if ( rgr != null ) {
-		for ( Component c = parent; c != null; c = c.parent )
-			c.removeComponentListener( this);
-
 		rgr.dispose();
 		rgr = null;
 	}
@@ -570,8 +561,6 @@ void resetSelIdxs( int idx) {
 
 public void reshape( int x, int y, int w, int h) {
 	super.reshape( x, y, w, h);
-	
-	setResGraphics();
 
 	int fh = fm.getHeight();
 	tCursor.setPos( (height - fh)/2, fh);
@@ -637,8 +626,10 @@ public void setFont( Font f) {
 
 void setResGraphics () {
 	rgr = NativeGraphics.getClippedGraphics( rgr, this, 0, 0,
-					   BORDER_WIDTH, BORDER_WIDTH,
+					                                 BORDER_WIDTH, BORDER_WIDTH,
 		                                       width - 2*BORDER_WIDTH, height - 2*BORDER_WIDTH, false);
+	if ( rgr != null )
+		linkGraphics( rgr);
 }
 
 public void setSelectionEnd( int end) {

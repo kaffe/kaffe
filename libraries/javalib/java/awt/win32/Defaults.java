@@ -379,7 +379,9 @@ class Defaults
  */
 	static int MemImageSrcThreshold = Integer.MAX_VALUE;
 	static int RecycleEvents = 0;
-	static String KeyFilterClass = "java.awt.DefKeyFilter";
+	static String banner;
+	static String beep;
+	static String UserInitClass = setStringValue( "awt.UserInitClass", null);
 
 static {
 	// these are the computed values
@@ -449,7 +451,79 @@ static {
 	
 	WndFontMetrics = Toolkit.getDefaultToolkit().getFontMetrics( WndFont);
 
-	String banner = System.getProperty( "banner", "banner.gif");
-	Toolkit.tlkDisplayBanner(banner);
+	beep = System.getProperty("awt.beep", "beep.wav");
+
+	// Display startup banner, if any
+	if ( (banner = System.getProperty("awt.banner", "banner.gif")) != null ){
+		Toolkit.tlkDisplayBanner(banner);
+	}
+	
+	if ( UserInitClass != null ) {
+		try {
+			Class asc = Class.forName( UserInitClass);
+		}
+		catch ( Exception x ) {
+			System.err.println( "UserInitClass not initialized: " + x);
+		}
+	}
+}
+
+static boolean setBooleanValue ( String propKey, boolean defValue ) {
+	boolean    val;
+	
+	String s = System.getProperty( propKey);
+	if ( s != null ) {
+		val = s.equalsIgnoreCase( "true");
+	}
+	else {	
+		val = defValue;
+	}
+		
+	return val;
+}
+
+static Color setColorValue ( String propKey, Color defValue ) {
+	Color    val = defValue;
+	
+	String s = System.getProperty( propKey);
+	if ( s != null ) {
+		try {
+			val = new Color( Integer.parseInt( s, 16));
+		}
+		catch ( NumberFormatException x ) {
+			System.err.println( "malformed awt property: " + propKey);
+		}
+		s = null;
+	}
+		
+	return val;
+}
+
+static int setIntValue ( String propKey, int defValue ) {
+	int    val = defValue;
+	
+	String s = System.getProperty( propKey);
+	if ( s != null ) {
+		try {
+			val = Integer.parseInt( s);
+		}
+		catch ( NumberFormatException x ) {
+			System.err.println( "malformed awt property: " + propKey);
+		}
+		s = null;
+	}
+		
+	return val;
+}
+
+static String setStringValue ( String propKey, String defValue ) {
+	// we could do this directly via System.getProperty(key,def), but just
+	// for Strings, and we want more types
+	
+	String val = System.getProperty( propKey);
+	if ( val == null )
+		val = defValue;
+
+	return val;
 }
 }

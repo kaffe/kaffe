@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import kaffe.net.www.protocol.BasicURLConnection;
@@ -39,8 +38,10 @@ public void connect() throws IOException {
 		// we are on a DOS-like filesystem, replace URL slashes
 		fn = fn.replace( '/', File.separatorChar);
 	}
-	
-	file = new BufferedInputStream(new FileInputStream( fn));
+
+	File fl = new File(fn);
+	setHeaderField("content-length", Long.toString(fl.length()));
+	file = new BufferedInputStream(new FileInputStream( fl));
 }
 
 public InputStream getInputStream() throws IOException {

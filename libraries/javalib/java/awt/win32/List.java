@@ -81,17 +81,17 @@ public synchronized void addItemListener ( ItemListener l) {
 
 public void addNotify() {
 	if ( nativeData == null ) {
-
-		if ( Toolkit.switchToCreateThread( this, WMEvent.WM_CREATE) )
-			return;
-
-		nativeData = Toolkit.lstCreateList( getParentData(), multipleMode);
+		Toolkit.createNative(this);
 		super.addNotify();
 		setItems();
 		if ( selection > -1 ) {
 			Toolkit.lstSelectItem( nativeData, selection);
 		}
 	}
+}
+
+void createNative() {
+	nativeData = Toolkit.lstCreateList( getParentData(), multipleMode);
 }
 
 public synchronized void delItem ( int index) {

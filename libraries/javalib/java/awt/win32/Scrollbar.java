@@ -47,14 +47,14 @@ public synchronized void addAdjustmentListener( AdjustmentListener al) {
 
 public void addNotify() {
 	if ( nativeData == null ) {
-
-		if ( Toolkit.switchToCreateThread( this, WMEvent.WM_CREATE) )
-			return;
-
-		nativeData = Toolkit.scrollCreateScrollbar( getParentData(), ori == VERTICAL);
+		Toolkit.createNative(this);
 		super.addNotify();
 		Toolkit.scrollSetValues( nativeData, val, min, max, vis);
 	}
+}
+
+void createNative() {
+	nativeData = Toolkit.scrollCreateScrollbar( getParentData(), ori == VERTICAL);
 }
 
 public int getBlockIncrement() {
@@ -212,7 +212,7 @@ public synchronized void setValues( int value, int visible, int min, int max) {
 	this.vis = visible;
 	this.blockInc = visible;
 
-	if ( nativeData != null ) {
+	if ( ((flags & IS_ADD_NOTIFIED) != 0) && (nativeData != null) ) {
 		Toolkit.scrollSetValues( nativeData, value, min, max, visible);
 	}
 }

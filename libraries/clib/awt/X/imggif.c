@@ -63,7 +63,8 @@ writeRow ( Image* img, GifPixelType* rowBuf, GifColorType* cm, int row )
 Image*
 readGif ( GifFileType *gf )
 {
-  Image           *firstImg = 0, *img;
+  Image*          firstImg = 0;
+  Image*	  img = 0;
   int             i, extCode, width, height, row, cmapSize;
   int             trans = -1, nFrames = 0, delay = 0;
   GifRecordType   rec;
@@ -107,6 +108,12 @@ readGif ( GifFileType *gf )
 		createXMaskImage( X, img);
 		trans = -1;
 	  }
+
+	  /*
+	   * Some browsers seem to assume minimal values, and some animations
+	   * seem to rely on this. But there's no safe guess, so we
+	   * skip it completely
+	   */
 /*
 	  if ( delay == 0 )
 		delay = 1000;
@@ -152,7 +159,7 @@ readGif ( GifFileType *gf )
 	  if ( extCode == 0xf9 ) {   /* graphics extension */
 		/*
 		 * extension record with transparency spec are preceeding description records
-		 * (which create new Images), so just cache the tranp index, here
+		 * (which create new Images), so just cache the transp index, here
 		 */
 		if ( ext[1] & 1 ) {      /* transparent index following */
 		  trans = ext[4];

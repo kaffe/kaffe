@@ -71,6 +71,13 @@ abstract public class Component
 	PopupMenu popup;
 	Rectangle deco = noDeco;
 	int flags = IS_VISIBLE;
+/**
+ * linkedGraphs is a list of WeakReferences to NativeGraphics
+ * objects, which is used to keep track of resident Graphics objects
+ * for native-like Components (which we have to update in case
+ * of a visibility or position change). See GraphicsLink for details
+ */
+	GraphicsLink linkedGraphs;
 	final public static float TOP_ALIGNMENT = (float)0.0;
 	final public static float CENTER_ALIGNMENT = (float)0.5;
 	final public static float BOTTOM_ALIGNMENT = (float)1.0;
@@ -96,6 +103,7 @@ abstract public class Component
 	final static int IS_ASYNC_UPDATED = 0x4000;
 	final static int IS_DIRTY = 0x8000;
 	final static int IS_MOUSE_AWARE = 0x10000;
+	final static int IS_TEMP_HIDDEN = 0x20000;
 	final static int IS_SHOWING = IS_ADD_NOTIFIED | IS_PARENT_SHOWING | IS_VISIBLE;
 
 static class TreeLock
@@ -243,7 +251,7 @@ public void addMouseMotionListener ( MouseMotionListener newListener ) {
 public void addNotify () {
 	if ( (flags & IS_ADD_NOTIFIED) == 0 ) {
 		flags |= IS_ADD_NOTIFIED;
-	
+
 		ClassProperties props = getClassProperties();
 		if ( props.isNativeLike ){
 			flags |= IS_NATIVE_LIKE;
@@ -298,6 +306,10 @@ void checkMouseAware () {
 	}
 }
 
+void cleanUpNative () {
+	// nothing native, all lightweight
+}
+
 public boolean contains ( Point pt ) {
 	return contains( pt.x, pt.y);
 }
@@ -314,11 +326,19 @@ public Image createImage ( int width, int height ) {
 	return new Image( width, height);
 }
 
+void createNative () {
+	// nothing native, all lightweight
+}
+
 /**
  * @deprecated
  */
 final public void deliverEvent(Event evt) {
 	postEvent(evt);
+}
+
+void destroyNative () {
+	// nothing native, all lightweight
 }
 
 /**
@@ -490,6 +510,10 @@ public String getName () {
 	return (name == null) ? getClass().getName() : name;
 }
 
+Ptr getNativeData () {
+	return null;  // no nativeData, all lightweight
+}
+
 public Container getParent() {
 	return parent;
 }
@@ -587,14 +611,13 @@ public void hide () {
 				parent.invalidate();
 		}
 		
-	  // sync because it might be used to control Graphics visibility
-	  // CAUTION: this might cause incompatibilities in ill-behaving apps
-	  // (doing explicit sync on show/hide/reshape), but otherwise we would have
-	  // to implement a completely redundant mechanism for Graphics updates
 		if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
-			AWTEvent.sendEvent(  ComponentEvt.getEvent( this,
-			                            ComponentEvent.COMPONENT_HIDDEN), true);
+			Toolkit.eventQueue.postEvent( ComponentEvt.getEvent( this,
+			                                  ComponentEvent.COMPONENT_HIDDEN));
 		}
+		
+		if ( linkedGraphs != null )
+			updateLinkedGraphics();
 	}
 }
 
@@ -718,6 +741,54 @@ public boolean keyUp(Event evt, int key) {
  * @deprecated, use doLayout()
  */
 public void layout() {
+}
+
+synchronized void linkGraphics ( NativeGraphics g ) {
+	GraphicsLink li, last, next; 
+
+	// do some cleanup as we go
+	for ( li = linkedGraphs, last = null; li != null; ){
+		if ( li.get() == null ){
+			// recycle this one, its Graphics has been collected
+			if ( last == null ){
+				linkedGraphs = li.next;
+			}
+			else {
+				last.next = li.next;
+			}
+			
+			next = li.next;
+			li = next;
+		}
+		else {
+			last = li;
+			li = li.next;
+		}
+	}
+	
+	// References are immutable, i.e. we can't cache them for later re-use.
+	// Since we cache Graphics objects, the best we can do is to use GraphicsLinks
+	// objects exclusively (sort of per-Graphics cache)
+	if ( g.link == null ){
+		li = new GraphicsLink( g);
+		g.link = li;
+	}
+	else {
+		li = g.link;
+	}
+	
+	// set the target/link state (we don't want to use common Graphics objects
+	// with all that fuzz which is just needed for linked Graphicses)
+	li.xOffset   = g.xOffset;
+	li.yOffset   = g.yOffset;
+	li.next      = linkedGraphs;
+	li.width     = width;
+	li.height    = height;
+	li.isVisible = ((flags & IS_SHOWING) == IS_SHOWING);
+
+	g.target = this;
+	
+	linkedGraphs = li;
 }
 
 /**
@@ -891,7 +962,7 @@ public boolean prepareImage ( Image image, ImageObserver obs ){
 }
 
 public boolean prepareImage ( Image image, int width, int height, ImageObserver obs ) {
-	return (image.loadImage( width, height, obs));
+	return (Image.loadImage( image, width, height, obs));
 }
 
 public void print ( Graphics g ) {
@@ -1198,8 +1269,35 @@ void propagateFont ( Font fnt ) {
 	font = fnt;
 }
 
-void propagateParentShowing () {
+void propagateParentShowing ( boolean isTemporary) {
 	// no kids, we don't have to propagate anything
+	
+	// but we might have resident Graphics which have to be notified
+	if ( !isTemporary ) {
+		if ( linkedGraphs != null )
+			updateLinkedGraphics();
+	}
+}
+
+void propagateReshape () {
+	// no kids, we don't have to propagate anything
+	
+	// but we might have resident Graphics which have to be notified
+	if ( linkedGraphs != null )
+		updateLinkedGraphics();
+}
+
+void propagateTempEnabled ( boolean isEnabled ) {
+	if ( isEnabled) {
+		if ( (eventMask & AWTEvent.TEMP_DISABLED_MASK) != 0 ) 
+			eventMask &= ~(AWTEvent.DISABLED_MASK | AWTEvent.TEMP_DISABLED_MASK);
+	}
+	else {
+		if ( (eventMask & AWTEvent.DISABLED_MASK) == 0 )
+			eventMask |= (AWTEvent.DISABLED_MASK | AWTEvent.TEMP_DISABLED_MASK);
+	}
+	
+	checkMouseAware();
 }
 
 public void remove( MenuComponent mc) {
@@ -1357,27 +1455,26 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 			
 				x = xNew; y = yNew; width = wNew; height = hNew;
 				invalidate();
-				// this has to be done before issuing any PaintEvent (by repaint), since
-				// we might have some resident Graphics objects listening
+				
 				if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
-					AWTEvent.sendEvent( ComponentEvt.getEvent( this, id), false);
+					Toolkit.eventQueue.postEvent( ComponentEvt.getEvent( this, id));
 				}
+				propagateReshape();
 
 				// Redrawing the parent does not happen automatically, we can do it here
 				// (regardless of IS_LAYOUTING) since we have repaint - solicitation, anyway
 				parent.repaint( x0, y0, (x1-x0), (y1-y0));
-				
+
 				return;
 			}
 		}
 		x = xNew; y = yNew; width = wNew; height = hNew;
 		invalidate();
 
-		// be aware of that this is curently used to update resident nativelike Graphics
-		// objects (widgets, Panels, Canvases, ..)
 		if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
-			AWTEvent.sendEvent( ComponentEvt.getEvent( this, id), false);
+			Toolkit.eventQueue.postEvent( ComponentEvt.getEvent( this, id));
 		}
+		propagateReshape();
 	}
 }
 
@@ -1533,19 +1630,6 @@ public void setSize ( int newWidth, int newHeight ) {
 	resize( newWidth, newHeight);
 }
 
-void setTempEnabled ( boolean isEnabled ) {
-	if ( isEnabled) {
-		if ( (eventMask & AWTEvent.TEMP_DISABLED_MASK) != 0 ) 
-			eventMask &= ~(AWTEvent.DISABLED_MASK | AWTEvent.TEMP_DISABLED_MASK);
-	}
-	else {
-		if ( (eventMask & AWTEvent.DISABLED_MASK) == 0 )
-			eventMask |= (AWTEvent.DISABLED_MASK | AWTEvent.TEMP_DISABLED_MASK);
-	}
-	
-	checkMouseAware();
-}
-
 public void setVisible ( boolean b ) {
 	show( b);
 }
@@ -1556,6 +1640,7 @@ public void show () {
 
 	if ( (flags & IS_VISIBLE) == 0 ) {
 		flags |= IS_VISIBLE;
+		flags &= ~IS_TEMP_HIDDEN;
 
 	  // if we are a toplevel, the native window manager will take care
 	  // of repainting
@@ -1570,12 +1655,14 @@ public void show () {
 				parent.invalidate();
 		}
 
-	  // sync because it might be used to control Graphics visibility
-	  // (see hide, reshape)
 		if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
-			AWTEvent.sendEvent( ComponentEvt.getEvent( this,
-				                         ComponentEvent.COMPONENT_SHOWN), true);
+			Toolkit.eventQueue.postEvent( ComponentEvt.getEvent( this,
+				                                    ComponentEvent.COMPONENT_SHOWN));
 		}
+
+		// update any resident graphics objects		
+		if ( linkedGraphs != null )
+			updateLinkedGraphics();
 	}
 }
 
@@ -1660,9 +1747,57 @@ PopupMenu triggerPopup ( int x, int y ) {
 	return null;
 }
 
+synchronized void unlinkGraphics ( NativeGraphics g ) {
+	GraphicsLink li, last, next;
+	Object       lg;
+
+	// do some cleanup as we go
+	for ( li = linkedGraphs, last = null; li != null; ){
+		if ( ((lg = li.get()) == null) || (lg == g ) ){
+			// recycle this one, its Graphics has been collected or disposed
+			if ( last == null ){
+				linkedGraphs = li.next;
+			}
+			else {
+				last.next = li.next;
+			}
+			
+			next = li.next;
+			li = next;
+		}
+		else {
+			last = li;
+			li = li.next;
+		}
+	}
+}
+
 public void update ( Graphics g ) {
 	g.clearRect( 0, 0, width, height);
 	paint( g);
+}
+
+synchronized void updateLinkedGraphics () {
+	GraphicsLink li, last, next;
+
+	for ( li = linkedGraphs, last = null; li != null; ){
+		if ( !li.updateGraphics( this) ){
+			// recycle this one on-the-fly, its Graphics has been collected
+			if ( last == null ){
+				linkedGraphs = li.next;
+			}
+			else {
+				last.next = li.next;
+			}
+
+			next = li.next;
+			li = next;
+		}
+		else {
+			last = li;
+			li = li.next;
+		}
+	}
 }
 
 public void validate () {

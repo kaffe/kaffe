@@ -287,28 +287,31 @@ jscan_to_img( Image * img, JSAMPROW buf, struct jpeg_decompress_struct * cinfo)
  */
 
 Image*
-readJpeg ( struct jpeg_decompress_struct* cinfo, volatile int colors )
+readJpeg ( struct jpeg_decompress_struct* cinfo, int colors )
 {
   struct error_mgr jerr;
   JSAMPARRAY buffer;
-  Image      *volatile img = 0;
+  Image*     img = 0;
   int        row_stride;
 
   cinfo->err = jpeg_std_error(&jerr.pub);
   jerr.pub.error_exit = error_exit;
 
   if ( setjmp(jerr.setjmp_buffer)) {
-	if ( img )
-	  Java_java_awt_Toolkit_imgFreeImage( 0, 0, img);
+    if ( img ) {
+      Java_java_awt_Toolkit_imgFreeImage( 0, 0, img);
+    }
     return 0;
   }
 
   jpeg_read_header( cinfo, TRUE);
 
-  if ( colors < 8 )
+  if ( colors < 8 ) {
     colors = 8;
-  else if ( colors > 256 )
+  }
+  else if ( colors > 256 ) {
     colors = 256;
+  }
 
   cinfo->desired_number_of_colors = colors;
   cinfo->quantize_colors = TRUE;

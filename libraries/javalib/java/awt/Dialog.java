@@ -53,7 +53,7 @@ public Dialog ( Frame owner, boolean isModal ) {
 	this( owner, null, isModal);
 }
 
-Ptr createNativeWindow () {
+void createNative () {
 	// This is the terminal class addNotify() part. DANGER: ptr isn't a real object
 	int u = x;
 	int v = y;
@@ -72,7 +72,7 @@ Ptr createNativeWindow () {
 		h -= deco.height;
 	}
 
-	return Toolkit.wndCreateDialog( owner.nativeData, title, u, v, w, h,
+	nativeData = Toolkit.wndCreateDialog( owner.nativeData, title, u, v, w, h,
 	                               cursor.type, bgClr.nativeValue, ((flags & IS_RESIZABLE) != 0));
 }
 

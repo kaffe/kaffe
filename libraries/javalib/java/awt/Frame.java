@@ -1,8 +1,8 @@
 package java.awt;
 
+import java.awt.Cursor;
 import java.awt.event.InputEvent;
 import java.awt.event.WindowEvent;
-import java.awt.Cursor;
 import java.util.Enumeration;
 import kaffe.util.Ptr;
 
@@ -27,21 +27,19 @@ public class Frame
 	static Insets menuFrameInsets;
 	static Rectangle frameDeco;
 	final private static long serialVersionUID = 2673458971256075116L;
-
-	public static final int CROSSHAIR_CURSOR = Cursor.CROSSHAIR_CURSOR;
-	public static final int DEFAULT_CURSOR = Cursor.DEFAULT_CURSOR;
-	public static final int HAND_CURSOR = Cursor.HAND_CURSOR;
-	public static final int TEXT_CURSOR = Cursor.TEXT_CURSOR;
-	public static final int WAIT_CURSOR = Cursor.WAIT_CURSOR;
-	public static final int E_RESIZE_CURSOR = Cursor.E_RESIZE_CURSOR;
-	public static final int N_RESIZE_CURSOR = Cursor.N_RESIZE_CURSOR;
-	public static final int NE_RESIZE_CURSOR = Cursor.NE_RESIZE_CURSOR;
-	public static final int NW_RESIZE_CURSOR = Cursor.NW_RESIZE_CURSOR;
-	public static final int S_RESIZE_CURSOR = Cursor.S_RESIZE_CURSOR;
-	public static final int SE_RESIZE_CURSOR = Cursor.SE_RESIZE_CURSOR;
-	public static final int SW_RESIZE_CURSOR = Cursor.SW_RESIZE_CURSOR;
-	public static final int W_RESIZE_CURSOR = Cursor.W_RESIZE_CURSOR;
-
+	final public static int CROSSHAIR_CURSOR = Cursor.CROSSHAIR_CURSOR;
+	final public static int DEFAULT_CURSOR = Cursor.DEFAULT_CURSOR;
+	final public static int HAND_CURSOR = Cursor.HAND_CURSOR;
+	final public static int TEXT_CURSOR = Cursor.TEXT_CURSOR;
+	final public static int WAIT_CURSOR = Cursor.WAIT_CURSOR;
+	final public static int E_RESIZE_CURSOR = Cursor.E_RESIZE_CURSOR;
+	final public static int N_RESIZE_CURSOR = Cursor.N_RESIZE_CURSOR;
+	final public static int NE_RESIZE_CURSOR = Cursor.NE_RESIZE_CURSOR;
+	final public static int NW_RESIZE_CURSOR = Cursor.NW_RESIZE_CURSOR;
+	final public static int S_RESIZE_CURSOR = Cursor.S_RESIZE_CURSOR;
+	final public static int SE_RESIZE_CURSOR = Cursor.SE_RESIZE_CURSOR;
+	final public static int SW_RESIZE_CURSOR = Cursor.SW_RESIZE_CURSOR;
+	final public static int W_RESIZE_CURSOR = Cursor.W_RESIZE_CURSOR;
 
 static {
 	// these are just the guesses (to be overwritten by a subsequent
@@ -82,7 +80,7 @@ public int countComponents() {
 	return nChildren-1;
 }
 
-Ptr createNativeWindow () {
+void createNative () {
 	// This is the terminal class addNotify() part. DANGER: ptr isn't a real object
 	int u = x;
 	int v = y;
@@ -103,7 +101,7 @@ Ptr createNativeWindow () {
 		h -= deco.height;
 	}
 
-	return Toolkit.wndCreateFrame( title, u, v, w, h,
+	nativeData = Toolkit.wndCreateFrame( title, u, v, w, h,
 	                               cursor.type, bgClr.nativeValue, ((flags & IS_RESIZABLE) != 0));
 }
 

@@ -12,15 +12,14 @@ import java.lang.String;
  * of this file.
  */
 public class StreamCorruptedException
-  extends ObjectStreamException
-{
-public StreamCorruptedException()
-	{
+	extends ObjectStreamException {
+
+public StreamCorruptedException() {
 	super();
 }
 
-public StreamCorruptedException(String s)
-	{
+public StreamCorruptedException(String s) {
 	super(s);
 }
+
 }

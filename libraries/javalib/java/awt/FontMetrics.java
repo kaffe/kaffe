@@ -15,13 +15,11 @@ package java.awt;
 import java.util.Hashtable;
 import kaffe.util.Ptr;
 
-public class FontMetrics implements java.io.Serializable
+public class FontMetrics
+  implements java.io.Serializable
 {
 	transient Ptr nativeData;
-	/** @serial The actual Font from which the font metrics are 
-	 * created.  This cannot be null.
-	 */
-	protected Font font;
+	protected String fontSpec;
 	transient int height;
 	transient int descent;
 	transient int ascent;
@@ -32,12 +30,12 @@ public class FontMetrics implements java.io.Serializable
 	transient int fixedWidth;
 	transient int[] widths;
 	transient boolean isWideFont;
-	transient static Hashtable cache = new Hashtable();
-	private static final long serialVersionUID = 1681126225205050147L;
+	static transient Hashtable cache = new Hashtable();
+	final private static long serialVersionUID = 1681126225205050147L;
 
-FontMetrics ( Font fnt ) {
-	font = fnt;
-	
+FontMetrics ( Font font ) {
+	fontSpec = font.encode();
+
 	nativeData = Toolkit.fntInitFontMetrics( font.nativeData);	
 	
 	height     = Toolkit.fntGetHeight( nativeData);
@@ -48,7 +46,8 @@ FontMetrics ( Font fnt ) {
 	maxAscent  = Toolkit.fntGetMaxAscent( nativeData);
 	maxAdvance = Toolkit.fntGetMaxAdvance( nativeData);
 	fixedWidth = Toolkit.fntGetFixedWidth( nativeData);
-	widths     = Toolkit.fntGetWidths( nativeData);
+
+	// we defer the widths init because it is rarely used and quite expensive
 
 	isWideFont = Toolkit.fntIsWideFont( nativeData);
 }
@@ -59,6 +58,9 @@ public int bytesWidth ( byte data[], int off, int len ) {
   }
 	else if ( !isWideFont ) {
 		int i, w, n=off+len;
+		if ( widths == null ) {
+			widths = Toolkit.fntGetWidths( nativeData);
+		}
 		try {
 			for ( i=off, w=0; i<n; i++ )
 				w += widths[data[i]];
@@ -74,8 +76,12 @@ public int bytesWidth ( byte data[], int off, int len ) {
 public int charWidth ( char c ) {
 	if ( fixedWidth != 0 )
 		return fixedWidth;
-	else if ( c < 256 )
+	else if ( c < 256 ){
+		if ( widths == null ) {
+			widths = Toolkit.fntGetWidths( nativeData);
+		}
 		return widths[c];
+	}
 	else
 		return Toolkit.fntCharWidth( nativeData, c);
 }
@@ -90,6 +96,9 @@ public int charsWidth ( char data[], int off, int len ) {
   }
 	else if ( !isWideFont ) {
 		int i, w, n=off+len;
+		if ( widths == null ) {
+			widths = Toolkit.fntGetWidths( nativeData);
+		}
 		try {
 			for ( i=off, w=0; i<n; i++ )
 				w += widths[data[i]];
@@ -119,17 +128,18 @@ public int getDescent() {
 }
 
 public Font getFont() {
-	return font;
+	return Font.decode( fontSpec);
 }
 
 static FontMetrics getFontMetrics ( Font font ) {
-	FontMetrics metrics = (FontMetrics) cache.get( font);
-	
+	String key = font.encode();
+	FontMetrics metrics = (FontMetrics) cache.get( key);
+
 	if ( metrics == null ) {
 		metrics = new FontMetrics( font);
-		cache.put( font, metrics);
+		cache.put( key, metrics);
 	}
-	
+
 	return metrics;
 }
 
@@ -161,6 +171,10 @@ public int getMaxDescent() {
 }
 
 public int[] getWidths () {
+	if ( widths == null ) {
+		widths = Toolkit.fntGetWidths( nativeData);
+	}
+
 	return widths;
 }
 
@@ -170,9 +184,6 @@ public int stringWidth ( String s ) {
 
 public String toString () {
 	return getClass().getName() +
-	       " [" + font + 
-	        ',' + ascent +
-	        ',' + descent +
-	        ',' + height + ']';
+	       " [" + fontSpec + ']';
 }
 }

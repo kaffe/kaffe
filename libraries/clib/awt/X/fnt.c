@@ -9,8 +9,6 @@
  */
 
 
-#include <X11/Xlib.h>
-#include <string.h>
 #include "toolkit.h"
 
 /*******************************************************************************
@@ -41,7 +39,7 @@ char* slant[] = { "r", "i", "o" };
 /*
  * these are finally the size offsets we want to try
  */
-int dsize[] = { 0, 1, -1, 2, -2, 3, -3, 4, -4 };
+int dsize[] = { 0, 10, -10, 20, -20, 30, -30, 40, -40 };
 #define NDSIZE 9
 
 /*
@@ -52,7 +50,7 @@ int dsize[] = { 0, 1, -1, 2, -2, 3, -3, 4, -4 };
  * (1) foundry, family, encoding and everything EXCEPT of weight,slant,size
  *     are specified in java.awt.Defaults FontSpec strings, which are used
  *     as simple C format specifications
- *     (e.g."-adobe-helvetica-%s-%s-*-*-%d-*-*-*-*-*-*-*")
+ *     (e.g."-adobe-helvetica-%s-%s-*-*-*-%d-*-*-*-*-*-*")
  * (2) since both BOLD and ITALIC map to more than one XFLD attribute value
  *     (e.g. ITALIC-> "o", "i"), and many fonts are not available in all
  *     sizes, we have to make up a sequence of alternate specs to search
@@ -67,12 +65,15 @@ int dsize[] = { 0, 1, -1, 2, -2, 3, -3, 4, -4 };
  */
 
 void*
-Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec, jint style, jint size )
+Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec,
+                                    jint style, jint size )
 {
   int  i, j, k, i0, i1, j0, j1, di, dj;
   char buf[160];
   char *spec = java2CString( env, X, jSpec);
   XFontStruct* fs = 0;
+
+	size *= 10;  /* convert into X pointsizes */
 
   if ( style & 0x1 ) { /* we have a Font.BOLD request */
     i0 = NWEIGHT - 1; i1 = -1; di = -1;

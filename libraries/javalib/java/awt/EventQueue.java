@@ -17,6 +17,12 @@ public class EventQueue
 	AWTEvent localQueue;
 	AWTEvent localEnd;
 
+static {
+	// force static init of AWTEvent (need that for native event system
+	// initialization)
+	Class c = AWTEvent.class;
+}
+
 public EventQueue () {
 }
 

@@ -16,7 +16,7 @@ import java.lang.System;
 final public class Locale
   implements Cloneable, Serializable
 {
-	private static final long serialVersionUID = 9149081749638150636L;
+	final private static long serialVersionUID = 9149081749638150636L;
 	final public static Locale ENGLISH = new Locale("en", null);
 	final public static Locale FRENCH = new Locale("fr", null);
 	final public static Locale GERMAN = new Locale("de", null);
@@ -55,9 +55,22 @@ public Locale(String language, String country) {
 }
 
 public Locale(String language, String country, String variant) {
-	lang = (language != null) ? language.toLowerCase(): "";
-	cntry = (country != null) ? country.toUpperCase() : "";
+/*
+	lang = (language != null) ? language : "";
+	cntry = (country != null) ? country : "";
 	var = (variant != null) ? variant : "";
+*/
+
+	if ( (language != null) && (language.length() > 0) ){
+		lang = language;
+	}
+	if ( (country != null) && (country.length() > 0) ){
+		cntry = country;
+	}
+	if ( (variant != null) && (variant.length() > 0) ){
+		var = variant;
+	}
+
 	hashcode = super.hashCode();
 }
 
@@ -157,17 +170,13 @@ final public String toString() {
 
 	if ( hasLang ) {
 		buf.append(lang);
-		if ( hasCntry ) {
-			buf.append("_");
-		}
 	}
 	if ( hasCntry ) {
+		buf.append( '_');
 		buf.append(cntry);
-		if ( hasVar ) {
-			buf.append("_");
-		}
 	}
 	if ( hasVar) {
+		buf.append( '_');
 		buf.append(var);
 	}
 

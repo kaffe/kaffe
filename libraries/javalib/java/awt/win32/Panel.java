@@ -22,21 +22,13 @@ public Panel() {
 }
 
 public Panel( LayoutManager layout) {
-	// Panels usually get their own update events, not being updated
-	// sync within their parents
-	flags |= IS_ASYNC_UPDATED | IS_BG_COLORED;
-
-	bgClr = Defaults.WndBackground;
 	setLayout( layout);
 }
 
 public void addNotify() {
 	if ( nativeData == null ) {
+		Toolkit.createNative(this);
 
-		if ( Toolkit.switchToCreateThread( this, WMEvent.WM_CREATE) )
-			return;
-
-		nativeData = Toolkit.widgetCreateWidget( getParentData() );
 		//native widgets are created visible
 		if ( (flags & IS_VISIBLE) == 0 ) {
 			Toolkit.cmnSetVisible( nativeData, false);
@@ -45,11 +37,8 @@ public void addNotify() {
 	}
 }
 
-public Graphics getGraphics () {
-	Graphics g = super.getGraphics();
-	if ( g != null )
-		g.setTarget( this);
-	return g;
+void createNative() {
+	nativeData = Toolkit.widgetCreateWidget( getParentData() );
 }
 
 public boolean isFocusTraversable () {

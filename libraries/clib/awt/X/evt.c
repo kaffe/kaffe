@@ -14,13 +14,17 @@
 #include "toolkit.h"
 #include "keysyms.h"
 
-#if defined(USE_THREADED_AWT)
+
+#if !defined (USE_POLLING_AWT)
 #include "jsyscall.h"
 #include "../../../../kaffe/kaffevm/locks.h"
+
+#if defined(UNIX_JTHREADS)
 void jthreadedBlockEAGAIN(int fd);   /* move to SysCallInterface ? */
 int jthreadedFileDescriptor(int fd);
-extern void* currentJThread;
 #endif
+
+#endif /* !USE_POLLING_AWT */
 
 void forwardFocus ( int cmd, Window wnd );  /* from wnd.c */
 
@@ -31,10 +35,12 @@ void forwardFocus ( int cmd, Window wnd );  /* from wnd.c */
 
 int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
 {
+  int stat;
+
   if ( X->preFetched )
 	return 1;
 
-#if defined(USE_THREADED_AWT) && !defined(SUN_AWT_FIX)
+#if !defined(USE_POLLING_AWT) && !defined(SUN_AWT_FIX)
   /*
    * We can't use QueuedAfterFlush since it seems to rely on blocked IO. At least
    * XFree86-3.3.2 subsequently hangs in _XFlushInt. This is the weak point of
@@ -51,7 +57,21 @@ int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
 		 * inside of the same stack frame, we have to backup to some VM specific
 		 * functionality, here.
 		 */
+#if defined (UNIX_JTHREADS)
 		UNBLOCK_EXECUTE( clazz, (jthreadedBlockEAGAIN( ConnectionNumber( X->dsp))));
+
+#elif defined (UNIX_PTHREADS)
+		/*
+		 * Even with pthreads, don't simply do a XNextEvent, because we most probably
+		 * would get "unexpected async replies" X errors when doing roundtrips (e.g.
+		 * direct or indirect XSyncs) from other threads while still being blocked in
+		 * XNextEvent, here. The only thing done outside the Toolkit lock should be
+		 * to check availability of X input
+		 */
+		do {
+		  UNBLOCK_EXECUTE( clazz, (stat =select( ConnectionNumber(X->dsp)+1, &X->rfds, NULL,NULL,NULL)));
+		}  while ( stat != 1 );
+#endif
 
 		/*
 		 * getting here just means we got input, it doesn't mean we have events. It also
@@ -74,7 +94,7 @@ int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
 	  }
 	}
   }
-#else
+#else /* USE_POLLING_AWT */
   /*
    * We need to use this one for Solaris.  We have problems trying to unblock the
    * AWT thread off the X server connection.
@@ -83,14 +103,13 @@ int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
 	if ( (X->pending = XEventsQueued( X->dsp, QueuedAfterFlush)) == 0 )
 	  return 0;
   }
-#endif
+#endif /* !USE_POLLING_AWT */
 
   XNextEvent( X->dsp, &X->event);
   X->pending--;
 
   return 1;
 }
-
 
 
 /* X-to-Java key modifier mapping
@@ -650,10 +669,13 @@ jobject
 Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
 {
   jclass Component;
-#if defined(UNIX_JTHREADS)
   unsigned long mask;
   XSetWindowAttributes attrs;
-#endif
+
+  if ( ComponentEvent != NULL ){
+	DBG( awt_evt, ("evtInit called twice\n"));
+	return NULL;
+  }
 
   ComponentEvent = (*env)->FindClass( env, "java/awt/ComponentEvt");
   MouseEvent     = (*env)->FindClass( env, "java/awt/MouseEvt");
@@ -678,7 +700,7 @@ Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
   getWMEvent        = (*env)->GetStaticMethodID( env, WMEvent, "getEvent",
 												 "(II)Ljava/awt/WMEvent;");
 
-#if defined(UNIX_JTHREADS)
+#if !defined(USE_POLLING_AWT)
   /*
    * we need a target for evtWakeup(), which is used to unblock nextEvent() in
    * case we post a event to the localqueue
@@ -696,8 +718,14 @@ Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
    * no Xlib function doing blocked reads on the connection should be called without
    * ensuring that there is input available.
    */
+#if defined (UNIX_JTHREADS)
   jthreadedFileDescriptor( ConnectionNumber(X->dsp));
+#elif defined (UNIX_PTHREADS)
+  FD_ZERO( &X->rfds);
+  FD_SET( ConnectionNumber(X->dsp), &X->rfds);
 #endif
+
+#endif /* !USE_POLLING_AWT */
 
   Component = (*env)->FindClass( env, "java/awt/Component");
   return (*env)->NewObjectArray( env, X->nWindows, Component, NULL);
@@ -776,8 +804,8 @@ Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz )
 {
   XEvent event;
 
-  DBG( AWT_EVT, printf("evtWakeup\n"));
-  //DBG( AWT, XSynchronize( X->dsp, False));
+  DBG( awt_evt, ("evtWakeup\n"));
+  DBG_ACTION( awt, XSynchronize( X->dsp, False));
 
   event.xclient.type = ClientMessage; 
   event.xclient.message_type = WAKEUP;
@@ -787,7 +815,7 @@ Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz )
   XSendEvent( X->dsp, X->wakeUp, False, 0, &event);
   XFlush( X->dsp);
 
-  //DBG( AWT, XSynchronize( X->dsp, True));
+  DBG_ACTION( awt, XSynchronize( X->dsp, True));
 }
 
 /*

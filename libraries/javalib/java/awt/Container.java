@@ -115,7 +115,7 @@ protected void addImpl(Component child, Object constraints, int index ) {
 		// inherit parent attributes (if not overriden by child)
 		if ( (flags & (IS_PARENT_SHOWING | IS_VISIBLE)) == (IS_PARENT_SHOWING | IS_VISIBLE) ){
 			child.flags |= IS_PARENT_SHOWING;
-			child.propagateParentShowing();
+			child.propagateParentShowing( false);
 		}
 		if ( (child.flags & IS_BG_COLORED) == 0 )
 			child.propagateBgClr( bgClr);
@@ -330,7 +330,7 @@ public void hide () {
 			
 			c.flags &= ~IS_PARENT_SHOWING;
 			if ( (c.flags & IS_VISIBLE) != 0 )
-				c.propagateParentShowing();
+				c.propagateParentShowing( false);
 		}
 	}
 
@@ -382,15 +382,13 @@ public void layout() {
 	// another slow-downer: the async validation of swing forces us to sync on treeLock
 	synchronized ( treeLock ) {
 
-//		swing books need layout anyway ( even without children )!!!
-//		if ( (layoutm != null) && (nChildren > 0) && ((flags & IS_LAYOUTING) == 0) ) {
+    // swing books need layout even without children
 		if ( (layoutm != null) && ((flags & IS_LAYOUTING) == 0) ) {
 			flags |= IS_LAYOUTING;
 			layoutm.layoutContainer( this);
 			flags &= ~IS_LAYOUTING;
 		}
 	}
-
 }
 
 /**
@@ -552,29 +550,45 @@ void propagateFont ( Font fnt ) {
 	}
 }
 
-void propagateParentShowing () {
+void propagateParentShowing ( boolean isTemporary ) {
 	if ( (flags & IS_VISIBLE) == 0 ) // nothing to do, we are a visibility leaf
 		return;
 
 	if ( (flags & IS_PARENT_SHOWING) != 0 ) {
 		for ( int i=0; i<nChildren; i++ ){
 			children[i].flags |= IS_PARENT_SHOWING;
-			children[i].propagateParentShowing();
+			children[i].propagateParentShowing( isTemporary);
 		}
 	}
 	else {
 		for ( int i=0; i<nChildren; i++ ){
 			children[i].flags &= ~IS_PARENT_SHOWING;
-			children[i].propagateParentShowing();
+			children[i].propagateParentShowing( isTemporary);
 		}
+	}
+	
+	if ( !isTemporary ) {
+		// notify resident Graphics objects
+		if ( linkedGraphs != null )
+			updateLinkedGraphics();
 	}
 }
 
+void propagateReshape () {
+	for ( int i=0; i<nChildren; i++ ){
+		children[i].propagateReshape();
+	}
+	
+	// notify resident Graphics objects
+	if ( linkedGraphs != null )
+		updateLinkedGraphics();
+}
+
 void propagateTempEnabled ( boolean isEnabled ) {
-	setTempEnabled ( isEnabled );
+	super.propagateTempEnabled ( isEnabled );
 
 	for ( int i=0; i<nChildren; i++ ){
-		children[i].setTempEnabled( isEnabled);
+		children[i].propagateTempEnabled( isEnabled);
 	}
 }
 
@@ -623,7 +637,7 @@ public void remove ( int index ) {
 			invalidate();
 
 		c.flags &= ~IS_PARENT_SHOWING;
-		c.propagateParentShowing();
+		c.propagateParentShowing( false);
 
 		// Like in addImpl, this wouldn't be required in case we are subsequently
 		// validated, again. However, native widgets cause a repaint regardless
@@ -683,7 +697,7 @@ public void show () {
 			
 			c.flags |= IS_PARENT_SHOWING;
 			if ( (c.flags & IS_VISIBLE) != 0 )
-				c.propagateParentShowing();
+				c.propagateParentShowing( false);
 		}
 	}
 	

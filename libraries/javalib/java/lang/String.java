@@ -577,7 +577,7 @@ protected void finalize() throws Throwable {
 	super.finalize();
 }
 
-final native public static synchronized String intern0(String str);
+final native public static synchronized void unintern0(String str);
 */
 
 }

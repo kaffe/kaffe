@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.String;
 import java.util.Random;
 import java.util.Vector;
+import java.lang.Comparable;
 
 /*
  * Java core library component.
@@ -35,25 +36,31 @@ public File(File dir, String name) {
 }
 
 public File(String path, String name) {
-	if (name == null)
+	if (name == null) {
 	    throw new NullPointerException();
-	if (path == null)
+	}
+	if (path == null) {
 	   this.path = name;
-	else if (path.length() == 0)
+	}
+	else if (path.length() == 0) {
 	   this.path = separatorChar + name;
+	}
 	else {
 		char last = path.charAt(path.length() - 1);
 
-		if (last != separatorChar)
+		if (last != separatorChar) {
 			this.path = path + separatorChar + name;
-		else
+		}
+		else {
 			this.path = path + name;
+		}
 	}
 }
 
 public File(String path) {
-	if (path == null)
+	if (path == null) {
 		throw new NullPointerException();
+	}
 	this.path = path;
 }
 

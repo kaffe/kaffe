@@ -48,25 +48,13 @@ public void addNotify () {
 	if ( nativeData != null )  // don't do it twice
 		return;
 
-	// TOP HALF - Some native windowing systems require windows to be created in
-	// the thread that does the native event loop. Check if we have to force a
-	// context switch. If so, we can assume the bottom half to be already executed
-	// in that thread
-	if ( Toolkit.switchToCreateThread( this, WMEvent.WM_CREATE) )
-		return;
-
-	// BOTTOM HALF - we are now in a appropriate thread to do all involved native
-	// initialization and related internal housekeeping
-
 	// if we have an owner that has not been created yet, do it now
 	if ( (owner != null) && (owner.nativeData == null) )
 		owner.addNotify();
 
-	// finally, we can go native and create whatever is required to bring us to life
-	if ( (nativeData = createNativeWindow()) == null ){
-		throw new AWTError( "native create failed: " + this);
-	}
-
+	// create the native object (this might involve a thread switch)
+	Toolkit.createNative( this);
+	
 	// addNotify childs and set flags. Be aware of that childs might be native, too
 	// (i.e. need a native parent before they can be addNotified by themselves)
 	super.addNotify();
@@ -80,15 +68,8 @@ public void addWindowListener ( WindowListener newListener ) {
 	wndListener = AWTEventMulticaster.add( wndListener, newListener);
 }
 
-void cleanUp () {
-	if ( nativeData != null ) {
-		AWTEvent.unregisterSource( this, nativeData);
-		nativeData = null;
-	}
-}
-
-Ptr createNativeWindow () {
-	return Toolkit.wndCreateWindow( (owner != null) ? owner.nativeData : null,
+void createNative () {
+	nativeData = Toolkit.wndCreateWindow( (owner != null) ? owner.nativeData : null,
 	                                x, y, width, height,
 	                                cursor.type, bgClr.nativeValue);
 }
@@ -120,10 +101,6 @@ void finishAddNotify () {
  */
 public void freeResource() {
 	dispose();
-}
-
-ClassProperties getClassProperties () {
-	return ClassAnalyzer.analyzeAll( getClass(), true);
 }
 
 public Component getFocusOwner () {
@@ -202,6 +179,7 @@ void process ( FocusEvent event ) {
 			}
 		}
 	}
+
 }
 
 void process ( WindowEvent e ) {
@@ -254,12 +232,13 @@ public void removeNotify () {
 			                                       FocusEvent.FOCUS_LOST, false), true);
 		}
 
+		super.removeNotify();
+
 		if ( (wndListener != null) || (eventMask & AWTEvent.WINDOW_EVENT_MASK) != 0 ){
 			AWTEvent.sendEvent( WindowEvt.getEvent( this,
 			                                        WindowEvent.WINDOW_CLOSED), false);
 		}
 
-		super.removeNotify();
 	}
 }
 
@@ -321,16 +300,6 @@ public void show() {
 	}
 	else {
 		super.show();
-
-		// Some apps carelessly start to draw (or do other display related things)
-		// immediately after a show(), which is usually not called from the
-		// event dispatcher thread. If we don't wait until the window is mapped, this
-		// output is lost. But if we do, we might get into trouble with things like
-		// swing (with its show->removeNotify->show jitter for popups). Since it isn't
-		// specified, and the JDK does not provide reliable sync, we skip it for now
-		// (local dispatching should be kept to a minimum)
-		//Toolkit.eventThread.show( this);
-		Toolkit.wndSetVisible( nativeData, true);
 
 		// the spec says that WINDOW_OPENED is delivered the first time a Window
 		// is shown, and JDK sends this after it got shown, so this is the place

@@ -76,7 +76,7 @@ synchronized void append ( String s ) {
 	
 	nNew = rows.size() - 1;
 	makeVisible( nNew);
-	updateVScroll();
+	updateScrolls();
 	
 	repaintRows( nOld, nNew - nOld);
 
@@ -95,7 +95,7 @@ void backspace() {
 		tb1.append( tb);
 		rows.removeElement( tb);
 		repaint();
-		updateVScroll();
+		updateScrolls();
 	}
 }
 
@@ -256,8 +256,8 @@ void del() {
 		TextBuffer tb1 = (TextBuffer)rows.elementAt( tCursor.yindex+1);
 		tb.append( tb1);
 		rows.removeElement( tb1);
+		updateScrolls();
 		repaint();
-		updateVScroll();
 	}
 }
 
@@ -273,6 +273,8 @@ void deleteSel() {
 	if ( ps.y == pe.y ) {
 		tb.remove( ps.x, pe.x - ps.x);
 		setCursorPos( ps.x, ps.y, true, true);
+		if ( updateHScroll() )
+			rearrange();
 		return;
 	}
 
@@ -287,7 +289,7 @@ void deleteSel() {
 		rows.removeElementAt( ps.y + af);
 		
 	setCursorPos( ps.x, ps.y, false, true);
-	updateVScroll();
+	updateScrolls();
 	repaint();
 }
 
@@ -410,7 +412,7 @@ void insert( String s, boolean keepCursor) {
 		setCursorPos( tb.len, tCursor.yindex + lns.length - 1, false, false);
 	tb.append( le);
 
-	updateVScroll();
+	updateScrolls();
 	repaint();
 }
 
@@ -458,7 +460,6 @@ public void keyPressed( KeyEvent e) {
 		// check for keyListeners first, it's a rare case
 		redirectKeyEvent( e);
 	}
-
 	int code = e.getKeyCode();
 	int mods = e.getModifiers();
 	boolean sh = e.isShiftDown();
@@ -564,6 +565,19 @@ public void keyTyped( KeyEvent e) {
 	e.consumed = true;
 }
 
+int maxRowWidth() {
+	int rs = rows.size();
+	int iw, mw = 0;
+	
+	for ( int i=0; i<rs; i++ ) {
+		iw = ((TextBuffer)rows.elementAt( i)).getWidth();
+		if ( iw > mw )
+			mw = iw;
+	}
+	
+	return mw;
+}
+
 public void mouseClicked( MouseEvent e) {
 	if ( parent.mouseListener != null ){
 		// no need to retarget, already done by mousePressed
@@ -638,7 +652,7 @@ void newline() {
 	TextBuffer tbNew = insertLine( s, tCursor.yindex+1);
 	tbNew.copyLevelFrom( tb);
 
-	updateVScroll();
+	updateScrolls();
 	
 	setCursorPos( tbNew.getLevel(), tCursor.yindex+1, true, true);
 	repaintRows( tCursor.yindex-1, getVisibleRows() );
@@ -819,7 +833,7 @@ synchronized void setContents( String s) {
 	for ( int i=0; i<sa.length; i++)
 		insertLine( sa[i], i);
 	setCursorPos( 0, 0, false, true);
-	updateVScroll();
+	updateScrolls();
 	repaint();
 }
 
@@ -850,11 +864,12 @@ void setCursorPos( int x, int y, boolean repaint, boolean resetSel) {
 		resetSel( false);
 
 	if ( width > 0) {
-
 		int dx = 10;
 		if ( (x > lastX) && (xPos - xOffs > width -dx) ){
 			xOffs = width - xPos - dx;
 			if (hScroll != null) {
+				if ( updateHScroll() )
+					rearrange();
 				hScroll.setValue( -xOffs);
 			}
 			repaint();
@@ -862,6 +877,8 @@ void setCursorPos( int x, int y, boolean repaint, boolean resetSel) {
 		else if ( xPos + xOffs < xOffsInit ) {
 			xOffs = -xPos + xOffsInit;
 			if (hScroll != null) {
+				if ( updateHScroll() )
+					rearrange();
 				hScroll.setValue( -xOffs);
 			}
 			repaint();
@@ -940,12 +957,12 @@ public TextArea( String text, int rows, int cols, int scrolls) {
 	setFont( Defaults.TextAreaFont);
 
 	if (scrolls == SCROLLBARS_VERTICAL_ONLY || scrolls == SCROLLBARS_BOTH) {
-		tp.vScroll = new Scrollbar( Scrollbar.VERTICAL);
+		tp.vScroll = new Scrollbar( Scrollbar.VERTICAL,0,0,0,0);
 		add( tp.vScroll);
 	}
 	if (scrolls == SCROLLBARS_HORIZONTAL_ONLY || scrolls == SCROLLBARS_BOTH) {
-		tp.hScroll = new Scrollbar( Scrollbar.HORIZONTAL);
-		tp.hScroll.setValues( 0, 5 * tabWidth, 0,  100 * tp.fm.charWidth( 'x'));
+		tp.hScroll = new Scrollbar( Scrollbar.HORIZONTAL,0,0,0,0);
+//		tp.hScroll.setValues( 0, 5 * tabWidth, 0,  100 * tp.fm.charWidth( 'x'));
 		tp.hScroll.setUnitIncrement( tp.fm.charWidth( 'x'));
 		add( tp.hScroll);
 	}

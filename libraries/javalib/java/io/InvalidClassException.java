@@ -14,7 +14,10 @@ import java.lang.String;
 public class InvalidClassException
   extends ObjectStreamException
 {
-	public String classname;
+
+public static final long serialVersionUID = -4333316296251054416L;
+
+public String classname;
 
 public InvalidClassException(String s)
 	{

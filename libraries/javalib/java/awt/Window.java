@@ -48,23 +48,15 @@ public Window ( Frame owner ) {
 public void addNotify () {
 	if ( nativeData != null )  // don't do it twice
 		return;
-
-	// TOP HALF - Some native windowing systems require windows to be created in
-	// the thread that does the native event loop. Check if we have to force a
-	// context switch. If so, we can assume the bottom half to be already executed
-	// in that thread
-	if ( Toolkit.switchToCreateThread( this) )
-		return;
 	
-	// BOTTOM HALF - we are now in a appropriate thread to do all involved native
-	// initialization and related internal housekeeping
-
 	// if we have an owner that has not been created yet, do it now
 	if ( (owner != null) && (owner.nativeData == null) )
 		owner.addNotify();
 
-	// finally, we can go native and create whatever is required to bring us to life
-	if ( (nativeData = createNativeWindow()) == null ){
+	// create the native object (this might involve a thread switch)
+	Toolkit.createNative( this);
+	
+	if ( nativeData == null ){
 		throw new AWTError( "native create failed: " + this);
 	}
 
@@ -91,17 +83,23 @@ public void addWindowListener ( WindowListener newListener ) {
 	wndListener = AWTEventMulticaster.add( wndListener, newListener);
 }
 
-void cleanUp () {
+void cleanUpNative () {
 	if ( nativeData != null ) {
 		AWTEvent.unregisterSource( this, nativeData);
 		nativeData = null;
 	}
 }
 
-Ptr createNativeWindow () {
-	return Toolkit.wndCreateWindow( (owner != null) ? owner.nativeData : null,
+void createNative () {
+	nativeData = Toolkit.wndCreateWindow( (owner != null) ? owner.nativeData : null,
 	                                x, y, width, height,
 	                                cursor.type, bgClr.nativeValue);
+}
+
+void destroyNative () {
+	Toolkit.wndDestroyWindow( nativeData);
+	
+	cleanUpNative();
 }
 
 public void dispose () {
@@ -157,6 +155,10 @@ public Graphics getGraphics () {
 	else {
 		return null;
 	}
+}
+
+Ptr getNativeData () {
+	return nativeData;
 }
 
 public Container getParent () {
@@ -245,46 +247,26 @@ public void removeNotify () {
 		// use this rather than nativeData, because the sync FOCUS_LOST might get us recursive
     flags &= ~IS_ADD_NOTIFIED;
 
-		// Some native windowing systems require windows to be destroyed from
-		// the thread which created them. Even though this should be ensured
-		// by calling removeNotify via the WindowEvt.dispatch(), it is more safe
-		// to check (since this is a public method)
-		if ( ((Toolkit.flags & Toolkit.IS_DISPATCH_EXCLUSIVE) != 0) &&
-		     (Thread.currentThread() != Toolkit.eventThread) ){
-			WMEvent e = WMEvent.getEvent( this, WMEvent.WM_DESTROY);
-			Toolkit.eventQueue.postEvent( e);
-			while ( nativeData != null ) {
-				try { e.wait(); } catch ( InterruptedException x ) {}
-			}
+		// if there are resident Graphics objects used in respond to a focusLost,
+		// we might get problems because of an already deleted window - we better
+		// simulate sync what has to be processed anyway (this error typically shows
+		// up in a KaffeServer context)
+		if ( (AWTEvent.activeWindow == this) && (AWTEvent.keyTgt != null) ){
+			AWTEvent.sendEvent( FocusEvt.getEvent( AWTEvent.keyTgt,
+			                                       FocusEvent.FOCUS_LOST, false), true);
 		}
-		else {
-			// This is all very optimistic, since we send a lot of events out
-			// in hope that the native window system really cuts our native part
-			// down. However, we have to, since this seems to be done sync in
-			// the JDK, and at least swing uses a lot of on-the-fly
-			// (even "temporary") removeNotifies (for popups)
+
+		super.removeNotify();
 		
-			// if there are resident Graphics objects used in respond to a focusLost,
-			// we might get problems because of an already deleted window - we better
-			// simulate sync what has to be processed anyway (this error typically shows
-			// up in a KaffeServer context)
-			if ( (AWTEvent.activeWindow == this) && (AWTEvent.keyTgt != null) ){
-				AWTEvent.sendEvent( FocusEvt.getEvent( AWTEvent.keyTgt,
-				                                       FocusEvent.FOCUS_LOST, false), true);
-			}
+		// this might cause a context switch, since we have to do it sync
+		// (to prevent double-destroys for things like the swing popup
+		// removeNotify jitter)
+		Toolkit.destroyNative( this);
 
-			super.removeNotify();
-			Toolkit.wndDestroyWindow( nativeData);
-			cleanUp();
-			
-			if ( (wndListener != null) || (eventMask & AWTEvent.WINDOW_EVENT_MASK) != 0 ){
-				AWTEvent.sendEvent( WindowEvt.getEvent( this,
-							                        WindowEvent.WINDOW_CLOSED), false);
-			}
+		if ( (wndListener != null) || (eventMask & AWTEvent.WINDOW_EVENT_MASK) != 0 ){
+			AWTEvent.sendEvent( WindowEvt.getEvent( this,
+						                        WindowEvent.WINDOW_CLOSED), false);
 		}
-
-		// use this rather than nativeData, because the sync FOCUS_LOST might get us recursive
-                // flags &= ~IS_ADD_NOTIFIED;
 	}
 }
 
@@ -390,7 +372,6 @@ public void show() {
 		// swing (with its show->removeNotify->show jitter for popups). Since it isn't
 		// specified, and the JDK does not provide reliable sync, we skip it for now
 		// (local dispatching should be kept to a minimum)
-		//Toolkit.eventThread.show( this);
 		Toolkit.wndSetVisible( nativeData, true);
 
 		// the spec says that WINDOW_OPENED is delivered the first time a Window
