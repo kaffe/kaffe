@@ -32,12 +32,10 @@ functionality. Esd provides support for sampled functionality only. In
 practice, this means that you won't be able to use MIDI on platforms
 other than Linux.
 
-You can specifically turn sound backends on or off. The connfigure
+You can specifically turn sound backends on or off. The configure
 script provides the options
---with-alsa:  for turning ALSA support on/off, and
---with-esd:   for turning Esd support on/off.
-
-Each option is on by default.
+--without-alsa:  for turning ALSA support off, and
+--without-esd:   for turning Esd support off.
 
 You can also turn off sound support completely, by using
 --disable-sound.

@@ -232,9 +232,9 @@ ac_help="$ac_help
 ac_help="$ac_help
   --with-qtdir=DIR        Qt installation directory [default=$QTDIR]"
 ac_help="$ac_help
-  --with-alsa             Use ALSA for sound [default=yes]"
+  --without-alsa          Don't use ALSA for sound [default is to use it if present]"
 ac_help="$ac_help
-  --with-esd              Use esd for sound [default=yes]"
+  --without-esd           Don't use esd for sound [default is to use it if present]"
 ac_help="$ac_help
   --disable-sound         Disable javax.sound support"
 
@@ -12752,7 +12752,7 @@ if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
 else
   echo "$ac_t""no" 1>&6
 have_alsa=no;
-	echo "$ac_t""Information: ALSA not" 1>&6
+	echo "$ac_t""Information: ALSA not found" 1>&6
 fi
 
 
@@ -12813,9 +12813,7 @@ case $with_alsa in
 no)
 	;;
 *)
-	if test "$have_alsa" = "no"; then
-		{ echo "configure: error: Configuration 'with-alsa' not supported - missing alsa support" 1>&2; exit 1; }
-	else
+	if test "$have_alsa" = "yes"; then
 		ALSA_DIR=alsa
 	fi
 	;;
@@ -12833,9 +12831,7 @@ case $with_esd in
 no)
 	;;
 *)
-	if test "$have_esd" = "no"; then
-		{ echo "configure: error: Configuration 'with-esd' not supported - missing esd support" 1>&2; exit 1; }
-	else
+	if test "$have_esd" = "yes"; then
 		ESD_DIR=esd
 	fi
 	;;
@@ -12911,7 +12907,7 @@ if test "$cross_compiling" = yes; then
   # Extract the first word of "kaffeh", so it can be a program name with args.
 set dummy kaffeh; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:12915: checking for $ac_word" >&5
+echo "configure:12911: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_KAFFEH'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -12986,7 +12982,7 @@ EOF
 
 
 echo $ac_n "checking how to run the C preprocessor""... $ac_c" 1>&6
-echo "configure:12990: checking how to run the C preprocessor" >&5
+echo "configure:12986: checking how to run the C preprocessor" >&5
 # On Suns, sometimes $CPP names a directory.
 if test -n "$CPP" && test -d "$CPP"; then
   CPP=
@@ -13001,13 +12997,13 @@ else
   # On the NeXT, cc -E runs the code through the compiler's parser,
   # not just through cpp.
   cat > conftest.$ac_ext <<EOF
-#line 13005 "configure"
+#line 13001 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:13011: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:13007: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -13018,13 +13014,13 @@ else
   rm -rf conftest*
   CPP="${CC-cc} -E -traditional-cpp"
   cat > conftest.$ac_ext <<EOF
-#line 13022 "configure"
+#line 13018 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:13028: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:13024: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -13035,13 +13031,13 @@ else
   rm -rf conftest*
   CPP="${CC-cc} -nologo -E"
   cat > conftest.$ac_ext <<EOF
-#line 13039 "configure"
+#line 13035 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:13045: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:13041: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -13067,7 +13063,7 @@ echo "$ac_t""$CPP" 1>&6
 
 
 echo $ac_n "checking for path separator""... $ac_c" 1>&6
-echo "configure:13071: checking for path separator" >&5
+echo "configure:13067: checking for path separator" >&5
 if eval "test \"`echo '$''{'ac_cv_kaffe_pathsep'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -13084,7 +13080,7 @@ PATHSEP=$ac_cv_kaffe_pathsep
 
 
 echo $ac_n "checking for directory separator""... $ac_c" 1>&6
-echo "configure:13088: checking for directory separator" >&5
+echo "configure:13084: checking for directory separator" >&5
 if eval "test \"`echo '$''{'ac_cv_kaffe_dirsep'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else

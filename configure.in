@@ -1208,7 +1208,7 @@ AC_CHECK_LIB(
 	[have_alsa=yes;
 	AC_MSG_RESULT(Information: ALSA found)],
 	[have_alsa=no;
-	AC_MSG_RESULT(Information: ALSA not)],
+	AC_MSG_RESULT(Information: ALSA not found)],
 )
 
 dnl Check for esd
@@ -1225,15 +1225,13 @@ AC_CHECK_LIB(
 dnl Use alsa
 dnl default is yes, if present.
 
-AC_ARG_WITH(alsa,[  --with-alsa             Use ALSA for sound [default=yes]])
+AC_ARG_WITH(alsa,[  --without-alsa          Don't use ALSA for sound [default is to use it if present]])
 
 case $with_alsa in
 no)
 	;;
 *)
-	if test "$have_alsa" = "no"; then
-		AC_MSG_ERROR([Configuration 'with-alsa' not supported - missing alsa support])
-	else
+	if test "$have_alsa" = "yes"; then
 		ALSA_DIR=alsa
 	fi
 	;;
@@ -1242,15 +1240,13 @@ esac
 dnl Use esd
 dnl default is yes, if present.
 
-AC_ARG_WITH(esd,[  --with-esd              Use esd for sound [default=yes]])
+AC_ARG_WITH(esd,[  --without-esd           Don't use esd for sound [default is to use it if present]])
 
 case $with_esd in
 no)
 	;;
 *)
-	if test "$have_esd" = "no"; then
-		AC_MSG_ERROR([Configuration 'with-esd' not supported - missing esd support])
-	else
+	if test "$have_esd" = "yes"; then
 		ESD_DIR=esd
 	fi
 	;;

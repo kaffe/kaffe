@@ -1,4 +1,15 @@
-2003-01-12 Dalibor Topic <robilad@yahoo.com>
+2003-01-14 Dalibor Topic <robilad@yahoo.com>
+
+	* configure.in:
+	Fixed configuration script bug. It would terminate if ALSA or Esd
+	was not found.
+	(--with-alsa, --with-esd) removed, replaced by
+	(--without-alsa, --without-esd) new options.
+
+        * FAQ/FAQ.sound:
+	Updated for new build options.
+
+2003-01-13 Dalibor Topic <robilad@yahoo.com>
 	
         * FAQ/FAQ.sound:
 	Updated for new build options.
