@@ -206,8 +206,8 @@ public class Timer {
 
 				// Service expired timers
 				while (true) {
-					long now = System.currentTimeMillis();
 					TimerTask task;
+					Timer timer;
 
 					// Get next expiring task
 					try {
@@ -215,11 +215,13 @@ public class Timer {
 					} catch (NoSuchElementException e) {
 						break;
 					}
-					if (task.time > now) {
+					if (task.time
+					    > System.currentTimeMillis()) {
 						break;
 					}
 
 					// Run task and reschedule it as needed
+					timer = task.timer;
 					if (task.period == -1) {
 						tasks.remove(task);
 						task.timer = null;
@@ -237,9 +239,9 @@ public class Timer {
 						}
 						task.time += task.period;
 						unschedule(task);
-						schedule(task, task.timer,
-							task.time, task.period,
-							task.fixedRate);
+						schedule(task, timer,
+						    task.time, task.period,
+						    task.fixedRate);
 					}
 				}
 			}
