@@ -21,26 +21,54 @@ bool verify2(Hjava_lang_Class* class, errorInfo *einfo);
 /**********************************************************
  * Pass 3
  **********************************************************/
+struct unitialized_types_double_list;
+struct type_info;
+
 typedef struct type_info
 {
-	Hjava_lang_Class* type;
 	uint32 tinfo;
+	
+	union {
+		const char* name;
+		const char* sig;
+		Hjava_lang_Class* class;
+		struct unitialized_types_double_list* uninit;
+	} data;
 } Type;
 
 // status flags for opstack/local info arrays
 //
-//   CLASS_SIGSTR means that the type is really a (const char*) representing the class' type signature
-//   CLASS_NAMESTR means that the type is really a (const char*) representing the class' name
+//   TINFO_CLASS   Type.data.class
+//   TINFO_NAMESTR Type.data.name represents the class' fully qualified name
+//   TINFO_SIGSTR  Type.data.sig  represents the class' fully qualified type signature
 //   UNINIT        is a class instance created by NEW that has yet to be initialized.
 //                 the type is really an (UninitializedType*), so that dups, moves, etc. ensure that whatever
 //                 copies of the type are around are all initialized when the <init>() is called.
 //   UNINIT_SUPER  reserved for the self-reference in a constructor method.  when the receiver of a call to <init>()
 //                 is of type UNINIT_SUPER, then the <init>() referenced may be in the current class of in its
 //                 superclass.
-#define CLASS_SIGSTR       1
-#define CLASS_NAMESTR      2
+#define TINFO_CLASS        0
+#define TINFO_SIGSTR       1
+#define TINFO_NAMESTR      2
 #define UNINIT             4
 #define UNINIT_SUPER       12
+
+
+
+/*
+ * holds the list of uninitialized items.  that way, if we DUP some uninitialized
+ * reference, put it into a local variable, dup it again, etc, all will point to
+ * one item in this list, so when we <init> any of those we can init them all! :)
+ *
+ * doubly linked list to allow for easy removal of types
+ */
+typedef struct unitialized_types_double_list
+{
+	struct type_info type;
+	
+	struct unitialized_types_double_list* prev;
+	struct unitialized_types_double_list* next;
+} UninitializedType;
 
 
 
@@ -90,22 +118,6 @@ typedef struct sig_stack
 	const char* sig;
 	struct sig_stack* next;
 } SigStack;
-
-
-/*
- * holds the list of uninitialized items.  that way, if we DUP some uninitialized
- * reference, put it into a local variable, dup it again, etc, all will point to
- * one item in this list, so when we <init> any of those we can init them all! :)
- *
- * doubly linked list to allow for easy removal of types
- */
-typedef struct unitialized_types_double_list
-{
-	Type type;
-	
-	struct unitialized_types_double_list* prev;
-	struct unitialized_types_double_list* next;
-} UninitializedType;
 
 
 
