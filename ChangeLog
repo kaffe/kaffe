@@ -1,5 +1,24 @@
 2003-06-30  Rob Gonzalez <rob@kaffe.org>
 
+	The second of a serious of small checkins that will
+	integrate the verifier into kaffe.
+	
+	First, -verifyremote is now the default option when
+	running kaffe.  You can still run kaffe with -noverify
+	to skip verification.
+	
+	Second, pass 3a (checking of static constraints in bytecode)
+	has been added.
+	
+	* kaffe/kaffevm/jni.c
+	Default value for verifyMode is set to 2 (verifyremote).
+	
+	* kaffe/kaffevm/verify.c
+	Pass 3a verification added.  Lots of code.  Probably bugs,
+	but it doesn't break any regression tests.
+
+2003-06-30  Rob Gonzalez <rob@kaffe.org>
+
 	Many of the regression tests were failing when jikes 1.18
 	was used to compile them due to extraneous warnings produced
 	by the compiler and unrelated to the success of kaffe.

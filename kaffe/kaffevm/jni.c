@@ -4385,7 +4385,7 @@ JavaVMInitArgs Kaffe_JavaVMInitArgs = {
 	0,		/* Java stack size */
 	MIN_HEAPSIZE,	/* Min heap size */
 	MAX_HEAPSIZE,	/* Max heap size */
-	0,		/* Verify mode */
+	2,		/* Verify mode ... verify remote by default */
 	".",		/* Classpath */
 	".",		/* Bootclasspath */
 	(void*)&vfprintf,/* Vprintf */
