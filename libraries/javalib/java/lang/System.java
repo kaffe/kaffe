@@ -45,6 +45,8 @@ static {
 	err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);	
 }
 
+private System() { }
+
 native public static void arraycopy(Object src, int src_position, Object dst, int dst_position, int length);
 
 private static void checkPropertyAccess() {
