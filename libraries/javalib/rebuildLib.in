@@ -26,18 +26,19 @@ JIKES="@JIKES@"
 LIBDIR=`CDPATH=: && cd $LIBDIR && pwd`
 VERBOSE=
 
-if [ -z `echo $SRCDIR | egrep '^/.*'` ]; then
+ISSRCDIR=`echo $SRCDIR | egrep '^/.*'`
+if [ -z "${ISSRCDIR:-}" ]; then
 	SRCDIR="`pwd`/$SRCDIR"
 fi
 
-if [ -z "$JIKES" ] ; then
-	if [ -z "$JAVA" ]; then
+if [ -z "${JIKES:-}" ] ; then
+	if [ -z "${JAVA:-}" ]; then
 		test -f ${TOPBLD}/BUILD_ENVIRONMENT &&
 		. ${TOPBLD}/BUILD_ENVIRONMENT
 		BOOTCLASSPATH=${BOOTCLASSPATH}:${CLASSPATH}:${LIBDIR}; export BOOTCLASSPATH
 		JAVA="$JAVA -verbosegc"
 	fi
-	if [ -z "$JAVAC" ]; then
+	if [ -z "${JAVAC:-}" ]; then
 # Kaffe needs more than 64 M of memory to compile all of the
 # class library at once using kjc. Set maximal memory to 256 M
 # to be on the safe side. Actual usage is around 80M.
