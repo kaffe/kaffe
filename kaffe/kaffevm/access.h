@@ -5,12 +5,17 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2004
+ *	Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
 
 #ifndef __access_h
 #define __access_h
+
+#include "gtypes.h"
 
 #define	ACC_PUBLIC		0x0001
 #define	ACC_PRIVATE		0x0002
