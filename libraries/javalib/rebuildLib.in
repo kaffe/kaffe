@@ -25,6 +25,10 @@ JIKES=@JIKES@
 LIBDIR=`CDPATH=: && cd $LIBDIR && pwd`
 VERBOSE=
 
+if [ -z `echo $SRCDIR | egrep '^/.*'` ]; then
+	SRCDIR="`pwd`/$SRCDIR"
+fi
+
 if [ -z "$JIKES" ] ; then
 	if [ -z "$JAVA" ]; then
 		test -f ${TOPBLD}/BUILD_ENVIRONMENT &&

@@ -1,5 +1,11 @@
 2003-08-30  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/javalib/rebuildLib.in: Check if SRCDIR represents an
+	absolute path. If it is not the case concatenant a `pwd` just in front
+	of it.
+
+2003-08-30  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/bootstrap.classlist: updated to be able to run
 	KJC.
 
