@@ -436,6 +436,7 @@ public final class Locale implements Serializable, Cloneable
    */
   public String getISO3Language()
   {
+    // We know all strings are interned so we can use '==' for better performance.
     if (language == "")
       return "";
     int index
@@ -472,6 +473,7 @@ public final class Locale implements Serializable, Cloneable
    */
   public String getISO3Country()
   {
+    // We know all strings are interned so we can use '==' for better performance.
     if (country == "")
       return "";
     int index
