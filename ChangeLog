@@ -1,5 +1,13 @@
 2005-02-05  Dalibor Topic  <robilad@kaffe.org>
 
+	Attempt to fix up the FreeeBSD x86 tinderbox build.
+
+	* kaffe/kaffevm/Makefile.am (libkaffevm_la_CFLAGS,
+	libkaffevm_la_LDFLAGS): Added PTHREAD_CFLAGS and 
+	PTHREAD_LIBS.
+
+2005-02-05  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-02-04  Chris Burdess  <dog@gnu.org>

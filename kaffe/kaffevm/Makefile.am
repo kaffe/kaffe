@@ -45,9 +45,12 @@ libgcj = #
 endif
 
 libkaffevm_la_CFLAGS = \
-	$(CFLAGS_PG)
+	$(CFLAGS_PG) \
+	$(PTHREAD_CFLAGS)
 
 libkaffevm_la_LDFLAGS = \
+        $(PTHREAD_LIBS) \
+        $(SEMAPHORE_LIB) \
 	$(KVMLIBFLAGS) \
 	-export-dynamic \
 	-release $(PACKAGE_VERSION)
