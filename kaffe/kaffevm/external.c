@@ -68,14 +68,7 @@ static inline void kdlfree(lt_ptr_t ptr) {
 #endif
 
 #ifndef LIBRARYERROR
-#define LIBRARYERROR() (getLibraryError())
-static inline const char *getLibraryError(void) {
-/* Ignore file not found errors */
-	const char *err = lt_dlerror();
-	if (strcmp(err, "file not found") == 0)
-		err = 0;
-	return err;
-}
+#define LIBRARYERROR() lt_dlerror()
 #endif
 
 static struct {
@@ -166,7 +159,7 @@ initNative(void)
 		strcat(lib, NATIVELIBRARY);
 		strcat(lib, LIBRARYSUFFIX);
 
-		if (loadNativeLibrary(lib) == 1) {
+		if (loadNativeLibrary(lib, NULL, 0) == 1) {
 			return;
 		}
 	}
@@ -178,7 +171,7 @@ initNative(void)
 }
 
 int
-loadNativeLibrary(char* lib)
+loadNativeLibrary(char* lib, char *errbuf, size_t errsiz)
 {
 	int i;
 
@@ -195,6 +188,10 @@ loadNativeLibrary(char* lib)
 			return (1);
 		}
 	}
+	if (errbuf != 0) {
+		strncpy(errbuf, "Too many open libraries", errsiz);
+		errbuf[errsiz - 1] = '\0';
+	}
 	return (0);
 
 	/* Open the library */
@@ -203,6 +200,10 @@ loadNativeLibrary(char* lib)
 #if 0
 	/* If this file doesn't exist, ignore it */
 	if (access(lib, R_OK) != 0) {
+		if (errbuf != 0) {
+			strncpy(errbuf, SYS_ERROR(errno), errsiz);
+			errbuf[errsiz - 1] = '\0';
+		}
 		return (0);
 	}
 #endif
@@ -215,13 +216,13 @@ loadNativeLibrary(char* lib)
 
 	if (libHandle[i].desc == 0) {
 		const char *err = LIBRARYERROR();
-		/* If the file doesn't exist, our lt_dlerror wrapper
-                   will return NULL.  Since we don't want to print
-                   file not found multiple times, we'll ignore this
-                   particular error, and print only other kinds of
-                   errors. */
-		if (err) {
-			fprintf(stderr, "Library load failed: %s\n", err);
+
+		if (err == 0) {
+			err = "Unknown error";
+		}
+		if (errbuf != 0) {
+			strncpy(errbuf, err, errsiz);
+			errbuf[errsiz - 1] = '\0';
 		}
 		return (0);
 	}

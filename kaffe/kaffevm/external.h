@@ -26,7 +26,7 @@ struct _methods;
 struct _errorInfo;
 
 void	initNative(void);
-int	loadNativeLibrary(char*);
+int	loadNativeLibrary(char*, char*, size_t);
 void*	loadNativeLibrarySym(char*);
 bool	native(struct _methods*, struct _errorInfo*);
 void	addNativeFunc(char*, void*);

@@ -126,31 +126,37 @@ private void initPaths() {
 native private String  initializeLinkerInternal();
 
 public synchronized void load(String filename) {
-	if (loadInternal(filename) == false) {
-		throw new UnsatisfiedLinkError(filename);
+	String errmsg = loadInternal(filename);
+
+	if (errmsg != null) {
+		throw new UnsatisfiedLinkError(filename + ": " + errmsg);
 	}
 }
 
-native private boolean loadFileInternal(String filename);
+native private String loadFileInternal(String filename);
 
-private boolean loadInternal(String filename) {
+private String loadInternal(String filename) {
 	System.getSecurityManager().checkLink(filename);
 	return loadFileInternal(filename);
 }
 
 public synchronized void loadLibrary(String libname) {
 	if ( paths != null ) {
+		String errmsg = "No directories for shared libraries defined";
+
 		/* Try library for each path */
-		for (int path = 0; path < paths.length; path++) {
-			if (loadInternal(buildLibName(paths[path], libname)) == true) {
+		for (int i = 0; i < paths.length; i++) {
+			errmsg = loadInternal(buildLibName(paths[i], libname));
+			if (errmsg == null) {
 				return;
 			}
 		}
 
 		/* Not found */
-		throw new UnsatisfiedLinkError(libname);
+		throw new UnsatisfiedLinkError(libname + ": " + errmsg);
 	}
 	// otherwise we don't have external libraries at all
+	// should we still throw an exception?
 }
 
 int getMemoryAdvice() {
