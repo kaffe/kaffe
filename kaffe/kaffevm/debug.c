@@ -77,6 +77,7 @@ static struct debug_opts
 	D(SLACKANAL,   "Print internal fragmentation statistics."),
 	D(ASYNCSTDIO, "Make stdio fds asynchronous despite debugging."),
 	D(CATCHOUTOFMEM, "Catch recursive out of memory exceptions."),
+	D(JARFILES, "Debug reading JAR files in jar.c."),
 
 	/* an example of how to define combinations */
 	{ "thread", DBG_JTHREAD|DBG_VMLOCKS|DBG_VMCONDS, 

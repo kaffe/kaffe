@@ -47,6 +47,7 @@
 # define DBG_GCSTAT		DBG_BIT(14) 
 # define DBG_ASYNCSTDIO		DBG_BIT(15) 
 # define DBG_CATCHOUTOFMEM	DBG_BIT(16) 
+# define DBG_JARFILES		DBG_BIT(17) 
 
 /* let's reserve 50-63 for temporary uses */
 # define DBG_SLACKANAL		DBG_BIT(50) 
@@ -94,7 +95,7 @@
  */
 # define DBGGDBBREAK() { ((void)0); }
 
-#else 
+#elif !defined(KAFFEH) 
 /* --- Debugging is enabled --- */
 
 #include "jtypes.h"
@@ -127,7 +128,17 @@ void dbgSetMaskStr(char *mask_str);
 
 /* Do something that would cause GDB to gain control. */
 # define DBGGDBBREAK() { (*(int*)0) = 42; }
-		
+
+#else	/* !defined(KAFFEH) */
+
+/* --- give some simple macros for debugging kaffeh */
+
+# define DBG(mask, statement)		statement
+# define DBGEXPR(mask, expr, default) 	expr
+# define DBGIF(statement)  statement
+/* we don't link with debug.o, so make dprintf a simple printf */
+# define dprintf	printf
+
 #endif /* defined(NDEBUG) || !defined(DEBUG) */
 
 #endif /* __kaffevm_debug_h */
