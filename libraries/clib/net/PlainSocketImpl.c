@@ -242,7 +242,7 @@ java_net_PlainSocketImpl_socketClose(struct Hjava_net_PlainSocketImpl* this)
 	int r;
 
 	if (unhand(unhand(this)->fd)->fd != -1) {
-		r = KCLOSE(unhand(unhand(this)->fd)->fd);
+		r = KSOCKCLOSE(unhand(unhand(this)->fd)->fd);
 		unhand(unhand(this)->fd)->fd = -1;
 		if (r < 0) {
 			SignalError("java.io.IOException", SYS_ERROR);
