@@ -60,15 +60,21 @@ static inline void sysdepCallMethod(callMethodInfo *call) {
   case 1:
     r0 = call->args[0].i;
   case 0:
+#ifdef __SOFTFP__
     asm volatile ("mov lr, pc\n"
-"                    mov pc, %3\n"
+"                  mov pc, %2\n"
                   : "=r" (r0), "=r" (r1)
-#ifndef __SOFTFP__
-		                        , "=f" (f0)
-#endif
                   : "r" (call->function),
                     "0" (r0), "1" (r1), "r" (r2), "r" (r3)
                   : "ip", "lr");
+#else
+    asm volatile ("mov lr, pc\n"
+"                    mov pc, %3\n"
+                  : "=r" (r0), "=r" (r1), "=f" (f0)
+                  : "r" (call->function),
+                    "0" (r0), "1" (r1), "r" (r2), "r" (r3)
+                  : "ip", "lr");
+#endif
     switch (call->rettype)
     {
     case 'V':
