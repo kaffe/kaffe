@@ -61,7 +61,7 @@ public boolean equals(Object obj) {
 				if (thisAddr[pos]!=thatAddr[pos]) return false;
 			}
 
-			return (getHostName()==((InetAddress)obj).getHostName());
+			return (getHostName().equals(((InetAddress)obj).getHostName()));
 		}
 	}
 
