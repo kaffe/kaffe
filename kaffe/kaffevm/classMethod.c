@@ -1308,6 +1308,28 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 	return (success);
 }
 
+/*
+ * Lookup an entry for a given (name, loader) pair.
+ * Return null if none is found.
+ */
+classEntry*
+lookupClassEntryInternal(Utf8Const* name, Hjava_lang_ClassLoader* loader)
+{
+	classEntry* entry;
+
+	entry = classEntryPool[hashClassName(name) & (CLASSHASHSZ-1)];
+	for (; entry != 0; entry = entry->next) {
+		if (equalUtf8Consts(name, entry->name) && loader == entry->loader) {
+			return (entry);
+		}
+	}
+	return (0);
+}
+
+/*
+ * Lookup an entry for a given (name, loader) pair.  
+ * Create one if none is found.
+ */
 classEntry*
 lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 {
@@ -1319,12 +1341,9 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 		initStaticLock(&classHashLock);
         }
 
-	entry = classEntryPool[hashClassName(name) & (CLASSHASHSZ-1)];
-	for (; entry != 0; entry = entry->next) {
-		if (equalUtf8Consts(name, entry->name) && loader == entry->loader) {
-			return (entry);
-		}
-	}
+	entry = lookupClassEntryInternal(name, loader);
+	if (entry != 0)
+		return (entry);
 
 	/* Failed to find class entry - create a new one */
 	entry = gc_malloc_fixed(sizeof(classEntry));

@@ -27,4 +27,7 @@ typedef struct _classFile {
 #define	readm(b,l,s,f)	(memcpy(b, f->buf, (l)*(s)), f->buf += (l)*(s))
 #define	seekm(f,l)	(f->buf += (l))
 
+struct _errorInfo;
+classFile findInJar(char*, struct _errorInfo*);
+
 #endif

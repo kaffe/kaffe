@@ -26,18 +26,6 @@
 #include <native.h>
 #include "defs.h"
 
-extern classFile findInJar(char*, errorInfo*);
-
-
-/*
- * Initialise this class loader.
- */
-void
-java_lang_ClassLoader_init(struct Hjava_lang_ClassLoader* this)
-{
-	/* Does nothing */
-}
-
 /*
  * Translate an array of bytes into a class.
  */
@@ -240,6 +228,10 @@ java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
                 free(name);
         }
 
-        entry = lookupClassEntry(c, this);
-        return (entry->class);
+        entry = lookupClassEntryInternal(c, this);
+	if (entry != 0) {
+		return (entry->class);
+	} else {
+		return (0);
+	}
 }

@@ -63,7 +63,6 @@ static classpathEntry* classpath;
 char* realClassPath;
 
 void initClasspath(void);
-classFile findInJar(char*, errorInfo*);
 
 static int getClasspathType(char*);
 static void generateMangledName(char*, char*);

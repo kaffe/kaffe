@@ -1,3 +1,11 @@
+Tue Dec  8 11:58:47 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/file.h, kaffe/kaffevm/findInJar.c
+	libraries/clib/native/ClassLoader.c: fixed missing declaration of
+	findInJar, removed unused init function from ClassLoader.c
+	Avoid creating empty class entries in findLoadedClass0.
+	* kaffe/kaffevm/classMethod.c: added lookupClassEntryInternal.
+
 Tue Dec  8 09:55:42 PST 1998 Transvirtual Technologies <info@transvirtual.com>
 
         * Version 1.0.b3 of Kaffe OpenVM released.
