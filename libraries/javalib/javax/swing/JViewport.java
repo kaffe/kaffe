@@ -45,11 +45,9 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-import javax.accessibility.Accessible;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ViewportUI;
-
 
 /**
  *  
@@ -214,11 +212,17 @@ public class JViewport extends JComponent
                          getExtentSize());
   }
 
+  /**
+   * @deprecated 1.4
+   */
   public boolean isBackingStoreEnabled()
   {
     return scrollMode == BACKINGSTORE_SCROLL_MODE;
   }
 
+  /**
+   * @deprecated 1.4
+   */
   public void setBackingStoreEnabled(boolean b)
   {
     if (b && scrollMode != BACKINGSTORE_SCROLL_MODE)

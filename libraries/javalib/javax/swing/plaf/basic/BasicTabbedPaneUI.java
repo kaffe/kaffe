@@ -28,7 +28,7 @@ permission to link this library with independent modules to produce an
 executable, regardless of the license terms of these independent
 modules, and to copy and distribute the resulting executable under
 terms of your choice, provided that you also meet, for each linked
-independent module, the terms and conditions of7 the license of that
+independent module, the terms and conditions of the license of that
 module.  An independent module is a module which is not derived from
 or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
@@ -56,6 +56,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -173,7 +174,7 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
   /**
    * This class handles PropertyChangeEvents fired from the JTabbedPane.
    */
-  protected class PropertyChangeHandler implements PropertyChangeListener
+  public class PropertyChangeHandler implements PropertyChangeListener
   {
     /**
      * This method is called whenever one of the properties of the JTabbedPane
@@ -1101,7 +1102,7 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
   /**
    * This class handles ChangeEvents from the JTabbedPane.
    */
-  protected class TabSelectionHandler implements ChangeListener
+  public class TabSelectionHandler implements ChangeListener
   {
     /**
      * This method is called whenever a ChangeEvent is fired from the
@@ -1261,16 +1262,32 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
   /** This array keeps track of which tabs are in which run. See above. */
   protected int[] tabRuns;
 
-  /** Deprecated. This is the keystroke for moving down. */
+  /**
+   * This is the keystroke for moving down.
+   *
+   * @deprecated 1.3
+   */
   protected KeyStroke downKey;
 
-  /** Deprecated. This is the keystroke for moving left. */
+  /**
+   * This is the keystroke for moving left.
+   *
+   * @deprecated 1.3
+   */
   protected KeyStroke leftKey;
 
-  /** Deprecated. This is the keystroke for moving right. */
+  /**
+   * This is the keystroke for moving right.
+   *
+   * @deprecated 1.3
+   */
   protected KeyStroke rightKey;
 
-  /** Deprecated. This is the keystroke for moving up. */
+  /**
+   * This is the keystroke for moving up.
+   *
+   * @deprecated 1.3
+   */
   protected KeyStroke upKey;
 
   /** The listener that listens for focus events. */

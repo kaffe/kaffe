@@ -1,3 +1,74 @@
+2004-10-24  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/javax/swing/AbstractButton.java,
+	libraries/javalib/javax/swing/FocusManager.java,
+	libraries/javalib/javax/swing/JComponent.java,
+	libraries/javalib/javax/swing/JDesktopPane.java,
+	libraries/javalib/javax/swing/JInternalFrame.java,
+	libraries/javalib/javax/swing/JViewport.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicDesktopPaneUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicInternalFrameUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicSplitPaneUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTabbedPaneUI.java:
+	Resynced with GNU Classpath.
+
+	2004-10-22  Michael Koch  <konqueror@gmx.de>
+
+        * javax/swing/AbstractButton.java
+        (getLabel): Added @deprecated tag.
+        (setLabel): Likewise.
+        * javax/swing/FocusManager.java
+        (disableSwingFocusManager): Likewise.
+        (isFocusManagerEnabled): Likewise.
+        * javax/swing/JComponent.java
+        (isManagingFocus): Added version to @deprecated tag.
+        (getNextFocusableComponent): Moved @deprecated tag to bottom of
+        javadoc.
+        (getConditionForKeyStroke): Likewise.
+        (getActionForKeyStroke): Likewise.
+        * javax/swing/JDesktopPane.java
+        (LIVE_DRAG_MODE): Added @specnote tag.
+        (OUTLINE_DRAG_MODE): Likewise.
+        * javax/swing/JInternalFrame.java
+        (MENU_BAR_PROPERTY): Fixed value.
+        (getMenuBar): Added @deprecated tag.
+        (setMenuBar): Likewise.
+        * javax/swing/JViewport.java
+        (isBackingStoreEnabled): Likewise.
+        (setBackingStoreEnabled): Likewise.
+        * javax/swing/plaf/basic/BasicDesktopPaneUI.java
+        (closeKey): Likewise.
+        (maximizeKey): Likewise.
+        (minimizeKey): Likewise.
+        (navigateKey): Likewise.
+        (navigateKey2): Likewise.
+        * javax/swing/plaf/basic/BasicInternalFrameUI.java
+        (openMenuKey): Likewise.
+        * javax/swing/plaf/basic/BasicSplitPaneUI.java
+        (keyboardDownRightListener): Likewise.
+        (keyboardEndListener): Likewise.
+        (keyboardHomeListener): Likewise.
+        (keyboardResizeToggleListener): Likewise.
+        (keyboardUpLeftListener): Likewise.
+        (dividerResizeToggleKey): Likewise.
+        (downKey): Likewise.
+        (endKey): Likewise.
+        (homeKey): Likewise.
+        (leftKey): Likewise.
+        (rightKey): Likewise.
+        (upKey): Likewise.
+        (createKeyboardUpLeftListener): Likewise.
+        (createKeyboardDownRightListener): Likewise.
+        (createKeyboardHomeListener): Likewise.
+        (createKeyboardEndListener): Likewise.
+        (createKeyboardResizeToggleListener): Likewise.
+        (getDividerBorderSize): Likewise.
+        * javax/swing/plaf/basic/BasicTabbedPaneUI.java
+        (downKey): Likewise.
+        (leftKey): Likewise.
+        (rightKey): Likewise.
+        (upKey): Likewise.
+
 2004-10-23  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/net/NetworkInterface.java:
