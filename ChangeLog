@@ -1,4 +1,9 @@
 2004-01-10  Mark Wielaard  <mark@klomp.org>
+                                                                                
+        * kaffe/kaffeh/support.c (kaffeh_findClass): Close jar file and
+	continue when getDataJarFile(0 returns NULL.
+
+2004-01-10  Mark Wielaard  <mark@klomp.org>
 
         * java/util/regex/Matcher.java (find): Check whether or not we are
 	stuck at the same position after a successful match and bump position

@@ -911,6 +911,10 @@ kaffeh_findClass(const char* nm)
 			}
 
 			buf = getDataJarFile(jfile, jentry);
+                        if (buf == NULL) {
+				closeJarFile(jfile);
+				continue;
+                        }
 
 			classFileInit(&hand, buf, jentry->uncompressedSize, CP_ZIPFILE);
 
