@@ -157,7 +157,6 @@ liveThreadWalker(void *tid)
 void
 gc_walk_refs(Collector* collector)
 {
-	extern void liveThreadWalker(void*); /* do we need two files here? */
         int i;
 	refObject* robj;
 
