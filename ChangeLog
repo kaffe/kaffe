@@ -1,5 +1,10 @@
 2004-10-22  Eric Anholt  <eta@lclark.edu>
 
+	* kaffe/kaffevm/verifier/verify3a.c:
+	Added missing includes.
+
+2004-10-22  Eric Anholt  <eta@lclark.edu>
+
 	* kaffe/kaffevm/support.h (replacechar): It's defined only 
 	statically, so removed from public header.
 

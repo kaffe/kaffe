@@ -21,6 +21,8 @@
 #include "errors.h"
 #include "debug.h"
 #include "gc.h"
+#include "lookup.h"
+#include "soft.h"
 
 #include "verify.h"
 #include "verify-block.h"
