@@ -16,6 +16,9 @@ test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn"}
 overallerror=0
 error=0
 
+KAFFEHOME="@prefix@"
+export KAFFEHOME
+
 if test -n "${VERBOSE+set}"; then
   VERBOSE=echo
 else
