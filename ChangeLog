@@ -6,10 +6,6 @@ Sun Dec 13 14:47:44 1998  Godmar Back  <gback@cs.utah.edu>
 	NullPointerException resulting from calls to Integer.parseInt.
 	* libraries/javalib/kaffe/io/ByteToCharConverter.java: ignore 
 	"file.encoding.pkg" property for now.  See comment there.
-	* libraries/javalib/java/lang/ClassLoader.java: fixed implementation of
-	findLoadedClass, added loadClassVM again. 
-	libraries/clib/native/ClassLoader.c: removed findLoadedClass0.
-	* kaffe/kaffevm/classMethod.c: changed outcall to loadClassVM
 	* kaffe/kaffevm/lookup.c: avoid throwing exceptions if catch classes
 	could not be resolved.
 	* libraries/javalib/java/io/BufferedInputStream.java: throw more
