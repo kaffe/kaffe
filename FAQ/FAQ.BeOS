@@ -19,7 +19,7 @@ as there is a known problem with building shared libs on R4 (yes, I
 realize that the fix is documented in the R4 release notes, but I'll
 let someone else muck with the Makefiles accordingly).
 
-As of 24 March 1999, Kaffe has not been built or tested with AWT at all.
+As of 26 March 1999, Kaffe has not been built or tested with AWT at all.
 Also, the following entry points in the jthread interface have yet to be
 implemented:
 
@@ -45,14 +45,11 @@ fork() instead of the recommended technique that uses load_image().
 The gethostbyname() and gethostbyaddr() wrappers in beos-native/syscalls.c
 are not thread-safe.
 
-The test 'GCTest' gets stuck when running from within the TestScript
+The test 'GCTest' gets stuck when executed from within the TestScript
 on a machine with 32MB of memory; it passes, though, when run from the
 command line.
 
-The following tests in the regression test suite currently fail:
-
-	BeanBug:		requires AWT
-	SoTimeout:		SO_TIMEOUT socket option unsupported in R4
+The BeanBug test in the regression test suite fails because it requires AWT.
 
 REFERENCES
 ==========
@@ -68,3 +65,4 @@ REV HISTORY
 22 Mar 99 -- Fixed socket read/write in beos-native/syscalls.c, redid
 		thread cancellation (i.e., stoppage)
 24 Mar 99 -- Fixed forkexec; ProcessTest now passes
+26 Mar 99 -- Implemented most socket timeouts; SoTimeout now passes

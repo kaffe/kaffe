@@ -1,3 +1,9 @@
+Fri Mar 26 18:25:19 1999  Alan L. Batongbacal <alanlb@access.rrinc.com>
+
+	* FAQ/FAQ.BeOS: removed SoTimeout from list of failed tests
+	* kaffe/kaffevm/systems/beos-native/syscalls.c: implemented timeout
+	  for socket accept/read/recvfrom; worked around BeOS listen(sock,0) bug
+
 Fri Mar 26 14:17:46 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/fp.c, fp.h: move definitions into header file

@@ -109,17 +109,17 @@ beos_native_remove(const char *p)
 }
 
 static int
-beos_native_socket(int a, int b, int c, int *outfd)
+beos_native_socket(int a, int b, int c, int *outsock)
 {
-        *outfd = socket(a, b, c); 
-	return (*outfd < 0) ? errno : 0;
+        *outsock = socket(a, b, c); 
+	return (*outsock < 0) ? errno : 0;
 }
 
 static int
-beos_native_connect(int fd, struct sockaddr* addr, size_t len, int timeout)
+beos_native_connect(int sock, struct sockaddr* addr, size_t len, int timeout)
 {
 	/* XXX implement timeout */
-        int r = connect(fd, addr, len);
+        int r = connect(sock, addr, len);
         /* annul EISCONN error --- is this really necessary or is this
 	 * a java.net bug? 
 	 */
@@ -130,38 +130,83 @@ beos_native_connect(int fd, struct sockaddr* addr, size_t len, int timeout)
 }
 
 static int
-beos_native_bind(int fd, struct sockaddr* addr, size_t len)
+beos_native_bind(int sock, struct sockaddr* addr, size_t len)
 {
-        return (bind(fd, addr, len) < 0) ? errno : 0;
+        return (bind(sock, addr, len) < 0) ? errno : 0;
 }
 
 static int
-beos_native_listen(int fd, int n)
+beos_native_listen(int sock, int n)
 {
-        return (listen(fd, n) < 0) ? errno : 0;
+	/* BUGFIX: BeOS doesn't default to 5 conns ala Unix if n == 0 */
+	if (0 == n) n = 5;
+
+        return (listen(sock, n) < 0) ? errno : 0;
 }
 
 static int
-beos_native_accept(int fd, struct sockaddr* a, size_t *l, int timeout, 
-	int* outfd)
+beos_native_accept(int sock, struct sockaddr* a, size_t *l, int timeout, 
+	int* outsock)
 {
-	/* XXX implement timeout!!! */
-	int cli_size = *l;
-	*outfd = accept(fd, a, &cli_size);
+	int cli_size;
+
+	if (timeout > 0) {
+		struct timeval tv;
+		struct fd_set fds;
+		int rc;
+
+		tv.tv_sec = timeout / 1000;
+		tv.tv_usec = (timeout % 1000) * 1000L;
+
+		FD_ZERO(&fds);
+		FD_SET(sock, &fds);
+
+		rc = select(sock+1, &fds, NULL, NULL, &tv);
+		if (rc < 0) {
+			return errno;
+		}
+		else if (0 == rc) {
+			errno = EINTR;
+			return errno;
+		}
+	}
+
+	cli_size = *l;
+	*outsock = accept(sock, a, &cli_size);
 	*l = cli_size;
-	return (*outfd < 0) ? errno : 0;
+	return (*outsock < 0) ? errno : 0;
 }
 
 static int
-beos_native_sock_read(int f, void* b, size_t l, int timeout, ssize_t *out)
+beos_native_sock_read(int sock, void* b, size_t l, int timeout, ssize_t *out)
 {
-	/* XXX implement timeout!!! */
-	*out = recv(f, b, l, 0);
+	if (timeout > 0) {
+		struct timeval tv;
+		struct fd_set fds;
+		int rc;
+
+		tv.tv_sec = timeout / 1000;
+		tv.tv_usec = (timeout % 1000) * 1000L;
+
+		FD_ZERO(&fds);
+		FD_SET(sock, &fds);
+
+		rc = select(sock+1, &fds, NULL, NULL, &tv);
+		if (rc < 0) {
+			return errno;
+		}
+		else if (0 == rc) {
+			errno = EINTR;
+			return errno;
+		}
+	}
+
+	*out = recv(sock, b, l, 0);
 	return (*out < 0) ? errno : 0;
 }
 
 static int
-beos_native_recvfrom(int a, void* b, size_t c, int d, struct sockaddr* e, 
+beos_native_recvfrom(int sock, void* b, size_t c, int d, struct sockaddr* e, 
 	int* f, int timeout, ssize_t *out)
 {
 	if (d & MSG_PEEK) {
@@ -169,8 +214,28 @@ beos_native_recvfrom(int a, void* b, size_t c, int d, struct sockaddr* e,
 		*out = errno;
 	}
 	else {
-		/* XXX implement timeout!!! */
-		*out = recvfrom(a, b, c, d, e, f);
+		if (timeout > 0) {
+			struct timeval tv;
+			struct fd_set fds;
+			int rc;
+
+			tv.tv_sec = timeout / 1000;
+			tv.tv_usec = (timeout % 1000) * 1000L;
+
+			FD_ZERO(&fds);
+			FD_SET(sock, &fds);
+
+			rc = select(sock+1, &fds, NULL, NULL, &tv);
+			if (rc < 0) {
+				return errno;
+			}
+			else if (0 == rc) {
+				errno = EINTR;
+				return errno;
+			}
+		}
+
+		*out = recvfrom(sock, b, c, d, e, f);
 	}
 	return (*out < 0) ? errno : 0;
 }
