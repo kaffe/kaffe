@@ -296,7 +296,16 @@ walkRefArray(Collector* collector, void* base, uint32 size)
 
         for (i = ARRAY_SIZE(arr); --i>= 0; ) {
                 Hjava_lang_Object* el = *ptr++;
-                GC_markObject(collector, el);
+		/* XXX.  This sucks.
+		 * Now that some class objects are static and can't be
+		 * walked precisely with GC_markObject, problems just keep
+		 * popping up.  For instance, if a class object is stored
+		 * in a [Ljava/lang/Class array (which is a ref array), we
+		 * can't just mark it here without a test.
+		 *
+		 * We really need to fix or special case this. 
+		 */
+                GC_markAddress(collector, el);
         }
 }
 
