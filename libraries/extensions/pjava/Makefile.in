@@ -45,7 +45,8 @@ host_triplet = @host@
 subdir = libraries/extensions/pjava
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/acx_pthread.m4 \
+	$(top_srcdir)/m4/alsa.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/esd.m4 $(top_srcdir)/m4/gcc_attribute.m4 \
 	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gnu-crypto.m4 \
@@ -220,6 +221,9 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PATH_TO_RT_JAR = @PATH_TO_RT_JAR@
 POSUB = @POSUB@
 PROFILE = @PROFILE@
+PTHREAD_CC = @PTHREAD_CC@
+PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
+PTHREAD_LIBS = @PTHREAD_LIBS@
 QEMBED = @QEMBED@
 QT_CXXFLAGS = @QT_CXXFLAGS@
 QT_GUILINK = @QT_GUILINK@
@@ -269,6 +273,7 @@ ac_ct_F77 = @ac_ct_F77@
 ac_ct_OBJDUMP = @ac_ct_OBJDUMP@
 ac_ct_RANLIB = @ac_ct_RANLIB@
 ac_ct_STRIP = @ac_ct_STRIP@
+acx_pthread_config = @acx_pthread_config@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@

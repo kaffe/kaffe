@@ -850,6 +850,19 @@ freebsd2|oskit)
 	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBS);;
 esac
 
+dnl Check for thread libraries
+if test x$with_threads = xunix-pthreads ; then
+	ACX_PTHREAD([THREADLIBS="$PTHREAD_LIBS "
+		     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+                     CC="$PTHREAD_CC"])
+
+	if test -z "$THREADLIBS"; then
+		AC_MSG_ERROR([Missing library libpthread, read FAQ/FAQ.pthreads])
+	fi
+
+	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
+fi
+
 AC_SUBST(VM_LIBS)
 
 dnl Check for libraries for native library.
@@ -891,15 +904,6 @@ if test $ac_cv_func_MD5Init = no; then
 fi
 SECURITY_LIBS="$CTLIBS $SECURITY_LIBS"
 AC_SUBST(SECURITY_LIBS)
-
-dnl Check for thread libraries
-if test x$with_threads = xunix-pthreads ; then
-	AC_CHECK_LIBRARY(pthread,pthread_create,VM_LIBS)
-
-	if test $ac_cv_lib_pthread_pthread_create = no; then
-		AC_MSG_ERROR([Missing library libpthread, read FAQ/FAQ.pthreads])
-	fi
-fi
 
 dnl Checks for libraries for X related libraries.
 AC_PATH_XTRA
