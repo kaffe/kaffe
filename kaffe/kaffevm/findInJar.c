@@ -258,7 +258,7 @@ FDBG(			dprintf("Opening java file %s for %s\n", buf, cname); )
 	hand.type = CP_INVALID;
 	/* cut off the ".class" suffix for the exception msg */
 	cname[strlen(cname) - strlen(".class")] = '\0';
-	postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError), cname);
+	postNoClassDefFoundError(einfo, cname);
 
 	done:;
 	unlockStaticMutex(&jarlock);

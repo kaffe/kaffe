@@ -170,6 +170,34 @@ postExceptionMessage(errorInfo *einfo,
 }
 
 /*
+ * post a NoClassDefFoundError - we handle this specially since it might
+ * not be a fatal error (depending no where it's generated).
+ */
+void
+postNoClassDefFoundError(errorInfo* einfo, const char* cname)
+{
+	postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError), cname);
+	einfo->type |= KERR_NO_CLASS_FOUND;
+}
+
+/*
+ * Check whether we threw a NoClassFoundError and if we did clear it.
+ * We need this in code-analyse.c to avoid throwing errors when we can't find
+ * classes but to terminate when we get real errors.
+ */
+int
+checkNoClassDefFoundError(errorInfo* einfo)
+{
+	if (einfo->type & KERR_NO_CLASS_FOUND) {
+		discardErrorInfo(einfo);
+		return (1);
+	}
+	else {
+		return (0);
+	}
+}
+
+/*
  * dump error info to stderr
  */
 void
