@@ -1,5 +1,12 @@
 2003-08-03  Timothy S. Stack <stack@cs.utah.edu>
 
+	* kaffe/kaffevm/jni.c:
+	Change startJNICall to return the current thread's JNIEnv pointer
+	and change Kaffe_wrapper to pass this pointer to the native
+	function.
+	
+2003-08-03  Timothy S. Stack <stack@cs.utah.edu>
+
 	* kaffe/xprof/Makefile.am,
 	test/internal/Makefile.am:
 	Add $(top_builddir)/include to the include paths.

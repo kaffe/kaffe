@@ -167,7 +167,7 @@ extern JavaVM Kaffe_JavaVM;
 
 static void Kaffe_JNI_wrapper(Method*, void*);
 #if defined(TRANSLATOR)
-static void startJNIcall(void);
+static void *startJNIcall(void);
 static void finishJNIcall(void);
 static void Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI);
 #endif
@@ -3677,7 +3677,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	errorInfo info;
 	int count;
 	nativeCodeInfo ncode;
-	SlotInfo* tmp;
+	SlotInfo* tmp = 0;
 	bool success = true;
 	int j;
 	int an;
@@ -3718,9 +3718,11 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 
 	if (use_JNI) {
 		/* Start a JNI call */
+		slot_alloctmp(tmp);
 		begin_func_sync();
 		call_soft(startJNIcall);
 		end_func_sync();
+		return_ref(tmp);
 
 #if defined(NEED_JNIREFS)
 		{
@@ -3762,7 +3764,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 
 	if (use_JNI) {
 		/* Push the JNI info */
-		pusharg_ref_const((void*)THREAD_JNIENV(), 0);
+		pusharg_ref(tmp, 0);
 
 		/* If static, push the class, else push the object */
 		if (METHOD_IS_STATIC(xmeth)) {
@@ -3872,7 +3874,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 		}
 
 		/* Push the JNI info */
-		pusharg_ref_const((void*)THREAD_JNIENV(), 0);
+		pusharg_ref(tmp, 0);
 	}
 	else {
 		/* If static, nothing, else push the object */
@@ -3887,6 +3889,11 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	end_sub_block();
 	call_soft(func);
 	popargs();
+
+	if (use_JNI) {
+		slot_freetmp(tmp);
+	}
+	
 	start_sub_block();
 
 	/* Determine return type */
@@ -4052,7 +4059,7 @@ Kaffe_KNI_wrapper(Method* xmeth, void* func)
 #endif /* INTERPRETER */
 
 #if defined(TRANSLATOR)
-static void
+static void*
 startJNIcall(void)
 {
 #if defined(NEED_JNIREFS)
@@ -4064,6 +4071,7 @@ startJNIcall(void)
 #endif
 	/* No pending exception when we enter JNI routine */
 	unhand(getCurrentThread())->exceptObj = 0;
+	return( THREAD_JNIENV() );
 }
 
 static void
