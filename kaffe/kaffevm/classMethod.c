@@ -1557,9 +1557,12 @@ DBG(VMCLASSLOADER,
 		(*class) = centry->data.cl = clazz;
 	}
 	unlockMutex(centry);
-
+	
+	if (!(*class))
+		(*class) = centry->data.cl;
+	
 	if (processClass(centry->data.cl, CSTATE_LINKED, &info) == true) {
-		assert(centry->state = NMS_DONE);
+		assert(centry->state == NMS_DONE);
 		return;
 	}
 

@@ -874,8 +874,32 @@ static const uint8 insnLen[256] = {
 //
 // types for type checking (pass 3b)
 //
-const Type  verify_UNSTABLE = { (Hjava_lang_Class*)1, 0 };
-const Type* TUNSTABLE       = &verify_UNSTABLE;
+static const Type  verify_UNSTABLE = { (Hjava_lang_Class*)1, 0 };
+static const Type* TUNSTABLE       = &verify_UNSTABLE;
+
+// TODO: remove completely
+static Type  verify_VOID   = { NULL, 0 };
+static Type* TVOID         = &verify_VOID;
+
+static Type  verify_INT    = { NULL, 0 };
+static Type* TINT          = &verify_INT;
+       
+static Type  verify_FLOAT  = { NULL, 0 };
+static Type* TFLOAT        = &verify_FLOAT;
+       
+static Type  verify_LONG   = { NULL, 0 };
+static Type* TLONG         = &verify_LONG;
+       
+static Type  verify_DOUBLE = { NULL, 0 };
+static Type* TDOUBLE       = &verify_DOUBLE;
+
+// used for the second space of LONGs and DOUBLEs
+// in local variables or on the operand stack
+const Type  _WIDE         = { (Hjava_lang_Class*)5, 0 };
+const Type* TWIDE        = &_WIDE;
+#define IS_WIDE(_TINFO)         ((_TINFO)->type == TWIDE->type)
+
+
 
 // returnAddress type
 const Type  verify_ADDR = { (Hjava_lang_Class*)2, 0 };
@@ -885,58 +909,52 @@ const Type* TADDR       = &verify_ADDR;
 const Type  verify_NULL = { (Hjava_lang_Class*)3, 0 };
 const Type* TNULL       = &verify_NULL;
 
-Type  verify_OBJ    = { NULL, 0 };
-Type* TOBJ          = &verify_OBJ;
 
-Type  verify_STRING = { NULL, 0 };
-Type* TSTRING       = &verify_STRING;
+static const char* OBJECT_SIG  = "Ljava/lang/Object;";
+static Type  verify_OBJ;
+static Type* TOBJ          = &verify_OBJ;
 
-Type  verify_VOID   = { NULL, 0 };
-Type* TVOID         = &verify_VOID;
-
-Type  verify_INT    = { NULL, 0 };
-Type* TINT          = &verify_INT;
-
-Type  verify_FLOAT  = { NULL, 0 };
-Type* TFLOAT        = &verify_FLOAT;
-
-Type  verify_LONG   = { NULL, 0 };
-Type* TLONG         = &verify_LONG;
-
-Type  verify_DOUBLE = { NULL, 0 };
-Type* TDOUBLE       = &verify_DOUBLE;
-
-// used for the second space of LONGs and DOUBLEs
-// in local variables or on the operand stack
-const Type  _WIDE         = { (Hjava_lang_Class*)5, 0 };
-const Type* TWIDE        = &_WIDE;
-#define IS_WIDE(_TINFO)         ((_TINFO)->type == TWIDE->type)
+static const char* OBJARR_SIG = "[Ljava/lang/Object;";
+static Type  verify_OBJARR;
+static Type* TOBJARR          = &verify_OBJARR;
 
 
-Type  verify_CHARARR   = { NULL, 0 };
-Type* TCHARARR         = &verify_CHARARR;
-		      		      		      
-Type  verify_BYTEARR   = { NULL, 0 };
-Type* TBYTEARR         = &verify_BYTEARR;
-Type* TBOOLARR         = &verify_BYTEARR;
-		      		      		      
-Type  verify_SHORTARR  = { NULL, 0 };
-Type* TSHORTARR        = &verify_SHORTARR;
-		      		      		      
-Type  verify_INTARR    = { NULL, 0 };
-Type* TINTARR          = &verify_INTARR;
-		      		      		      
-Type  verify_LONGARR   = { NULL, 0 };
-Type* TLONGARR         = &verify_LONGARR;
-		      		      		      
-Type  verify_FLOATARR  = { NULL, 0 };
-Type* TFLOATARR        = &verify_FLOATARR;
+static const char* STRING_SIG = "Ljava/lang/String;";
+static Type  verify_STRING;
+static Type* TSTRING       = &verify_STRING;
 
-Type  verify_DOUBLEARR = { NULL, 0 };
-Type* TDOUBLEARR       = &verify_DOUBLEARR;
 
-Type  verify_OBJARR    = { NULL, 0 };
-Type* TOBJARR          = &verify_OBJARR;
+static const char* CHARARR_SIG = "[C";
+static Type  verify_CHARARR;
+static Type* TCHARARR         = &verify_CHARARR;
+
+static const char* BYTEARR_SIG = "[B";
+static Type  verify_BYTEARR;
+static Type* TBYTEARR         = &verify_BYTEARR;
+
+static const char* BOOLARR_SIG = "[Z";
+static Type  verify_BOOLARR;
+static Type* TBOOLARR         = &verify_BOOLARR;
+
+static const char* SHORTARR_SIG = "[S";
+static Type  verify_SHORTARR;
+static Type* TSHORTARR        = &verify_SHORTARR;
+
+static const char* INTARR_SIG = "[I";
+static Type  verify_INTARR;
+static Type* TINTARR          = &verify_INTARR;
+
+static const char* LONGARR_SIG = "[J";
+static Type  verify_LONGARR;
+static Type* TLONGARR         = &verify_LONGARR;
+
+static const char* FLOATARR_SIG = "[F";
+static Type  verify_FLOATARR;
+static Type* TFLOATARR        = &verify_FLOATARR;
+
+static const char* DOUBLEARR_SIG = "[D";
+static Type  verify_DOUBLEARR;
+static Type* TDOUBLEARR       = &verify_DOUBLEARR;
 
 
 #define IS_PRIMITIVE_TYPE(_TINFO) ((_TINFO)->type == TINT->type  || (_TINFO)->type == TFLOAT->type || \
@@ -948,14 +966,6 @@ Type* TOBJARR          = &verify_OBJARR;
 	    ((_TINFO)->type) == TLONGARR->type  || \
             ((_TINFO)->type) == TFLOATARR->type || ((_TINFO)->type) == TDOUBLEARR->type)
 
-// for IS_ARRAY we need to make sure that CLASS_IS_ARRAY is passed something legitimate...
-#define IS_ARRAY(_TINFO) \
-           (((_TINFO)->type) && \
-	    (((_TINFO)->type) != TUNSTABLE->type) && \
-	    (((_TINFO)->type) != TADDR->type) && \
-	    (((_TINFO)->type) != TNULL->type) && \
-	    (((_TINFO)->type) != TWIDE->type) && \
-	    CLASS_IS_ARRAY((_TINFO)->type))
 
 
 /***********************************************************************************
@@ -1009,7 +1019,8 @@ static bool               loadInitialArgs(const Method* method, errorInfo* einfo
 					  BlockInfo* block, SigStack** sigs, UninitializedType** uninits);
 
 static bool               isReference(const Type* type);
-static bool               sameType(const Type* t1, const Type* t2);
+static bool               isArray(const Type* type);
+static bool               sameType(Type* t1, Type* t2);
 static void               resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type);
 
 static bool               mergeTypes(errorInfo*, Hjava_lang_Class* this,
@@ -1032,23 +1043,46 @@ static bool               checkMethodCall(errorInfo* einfo, const Method* method
  * Initialize Type structures needed for verification
  */
 void
-initVerifierTypes(void)
+initVerifierPrimTypes(void)
 {
 	TOBJ->type    = ObjectClass;
-	TSTRING->type = StringClass;
 	TINT->type    = intClass;
 	TLONG->type   = longClass;
 	TFLOAT->type  = floatClass;
 	TDOUBLE->type = doubleClass;
 	
-	TCHARARR->type   = charArrClass;
-	TBYTEARR->type   = byteArrClass;
-	TSHORTARR->type  = shortArrClass;
-	TINTARR->type    = intArrClass;
-	TLONGARR->type   = longArrClass;
-	TFLOATARR->type  = floatArrClass;
-	TDOUBLEARR->type = doubleArrClass;
-	TOBJARR->type    = objectArrClass;
+	TOBJ->type = (Hjava_lang_Class*)OBJECT_SIG;
+	TOBJ->tinfo = CLASS_SIGSTR;
+	
+	TOBJARR->type = (Hjava_lang_Class*)OBJARR_SIG;
+	TOBJARR->tinfo = CLASS_SIGSTR;
+	
+	TSTRING->type = (Hjava_lang_Class*)STRING_SIG;
+	TSTRING->tinfo = CLASS_SIGSTR;
+	
+	TCHARARR->type = (Hjava_lang_Class*)CHARARR_SIG;
+	TCHARARR->tinfo = CLASS_SIGSTR;
+	
+	TBYTEARR->type = (Hjava_lang_Class*)BYTEARR_SIG;
+	TBYTEARR->tinfo = CLASS_SIGSTR;
+	
+	TBOOLARR->type = (Hjava_lang_Class*)BOOLARR_SIG;
+	TBOOLARR->tinfo = CLASS_SIGSTR;
+	
+	TSHORTARR->type = (Hjava_lang_Class*)SHORTARR_SIG;
+	TSHORTARR->tinfo = CLASS_SIGSTR;
+	
+	TINTARR->type = (Hjava_lang_Class*)INTARR_SIG;
+	TINTARR->tinfo = CLASS_SIGSTR;
+	
+	TLONGARR->type = (Hjava_lang_Class*)LONGARR_SIG;
+	TLONGARR->tinfo = CLASS_SIGSTR;
+	
+	TFLOATARR->type = (Hjava_lang_Class*)FLOATARR_SIG;
+	TFLOATARR->tinfo = CLASS_SIGSTR;
+	
+	TDOUBLEARR->type = (Hjava_lang_Class*)DOUBLEARR_SIG;
+	TDOUBLEARR->tinfo = CLASS_SIGSTR;
 }
 
 
@@ -2623,7 +2657,11 @@ verifyBasicBlock(errorInfo* einfo,
 			case CONSTANT_Integer: OPSTACK_PUSH(TINT);    break;
 			case CONSTANT_Float:   OPSTACK_PUSH(TFLOAT);  break;
 			case CONSTANT_ResolvedString:
-			case CONSTANT_String:  OPSTACK_PUSH(TSTRING); break;
+			case CONSTANT_String:
+				// we do this because we might be loading a class before
+				// loading String
+				OPSTACK_PUSH_INFO((Hjava_lang_Class*)STRING_SIG, CLASS_SIGSTR);
+				break;
 			}
 			break;
 			
@@ -2823,18 +2861,13 @@ verifyBasicBlock(errorInfo* einfo,
 		case ARRAYLENGTH:
 			ENSURE_OPSTACK_SIZE(1);
 			
-			type = OPSTACK_ITEM(1);
-			if (type->tinfo & CLASS_SIGSTR || type->tinfo & CLASS_NAMESTR) {
-				sig = (const char*)type->type;
-				if (*sig != '[') {
-					VERIFY_ERROR("arraylength on something that is not an array");
-				}
-			} else if (type->tinfo || !IS_ARRAY(type)) {
-				VERIFY_ERROR("arraylength on something that is not an array");
+			type = OPSTACK_TOP;
+			if (!isArray(type)) {
+				DBG(VERIFY3, dprintf("%stype = ", indent); printType(type); dprintf("\n"); );
+				VERIFY_ERROR("arraylength: top of operand stack is not an array");
 			}
 			
-			OPSTACK_POP_BLIND;
-			OPSTACK_PUSH_BLIND(TINT);
+			*type = *TINT;
 			break;
 			
 			
@@ -2858,26 +2891,22 @@ verifyBasicBlock(errorInfo* einfo,
 			OPSTACK_POP_BLIND;
 			
 			type = OPSTACK_TOP;
+			if (!isArray(type)) {
+				DBG(VERIFY3, dprintf("%serror: type = ", indent); printType(type); dprintf("\n"); );
+				VERIFY_ERROR("aaload: top of operand stack is not an array");
+			}
+			
 			if (type->tinfo & CLASS_NAMESTR || type->tinfo & CLASS_SIGSTR) {
 				sig = (char*)type->type;
-				
-				if (*sig != '[') {
-					DBG(VERIFY3, dprintf("aaload: thing on opstack that is not an array: %s\n", sig); );
-					VERIFY_ERROR("aaload: thing on opstack is not an array");
-				}
-				
 				sig++;
 				type->type = (Hjava_lang_Class*)sig;
+				type->tinfo = CLASS_SIGSTR;
 			}
-			else {
-				if (type->tinfo || !IS_ARRAY(type)) {
-					VERIFY_ERROR("aaload: type that is not an array");
-				}
-				
+			else if (type->type != TNULL->type) {
 				type->type = (Hjava_lang_Class*)(CLASS_CNAME(type->type) + 1);
+				type->tinfo = CLASS_SIGSTR;
 			}
-			type->tinfo = CLASS_SIGSTR;
-			DBG(VERIFY3, dprintf("                array type: "); printType(type); dprintf("\n"); );
+			DBG(VERIFY3, dprintf("%sarray type: ", indent); printType(type); dprintf("\n"); );
 			break;
 			
 		case IALOAD: ARRAY_LOAD(TINT,   TINTARR);   break;
@@ -2910,26 +2939,24 @@ verifyBasicBlock(errorInfo* einfo,
 			    dprintf("\n");
 			    );
 			
+			if (!isArray(arrayType)) {
+				DBG(VERIFY3, dprintf("%serror: type = ", indent); printType(type); dprintf("\n"); );
+				VERIFY_ERROR("aastore: top of operand stack is not an array");
+			}
+			
 			if (arrayType->tinfo & CLASS_NAMESTR || arrayType->tinfo & CLASS_SIGSTR) {
 				sig = (const char*)arrayType->type;
-				if (*sig != '[') {
-					VERIFY_ERROR("aastore: into something that is not an array");
-				}
-				
 				sig++;
 				arrayType->type = (Hjava_lang_Class*)(sig);
 				arrayType->tinfo = CLASS_SIGSTR;
-			} else if (arrayType->tinfo || !IS_ARRAY(arrayType)) {
-				VERIFY_ERROR("aastore: into something that is not an array");
-			} else {
+			}
+			else {
 				if (arrayType->type == TOBJARR->type) {
 					*arrayType = *TOBJ;
-				} else {
+				} else if (arrayType->type != TNULL->type) {
 					arrayType->type = (Hjava_lang_Class*)(CLASS_CNAME(arrayType->type) + 1);
 					arrayType->tinfo = CLASS_SIGSTR;
 				}
-				
-				
 			}
 			
 			if (!typecheck(einfo, this, arrayType, type)) {
@@ -3281,7 +3308,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			
 		case PUTFIELD:
-			if (OPSTACK_TOP->type == TWIDE->type) n = 3;
+			if (IS_WIDE(OPSTACK_TOP)) n = 3;
 			else                      n = 2;
 			ENSURE_OPSTACK_SIZE(n);
 			
@@ -3486,6 +3513,9 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case ATHROW:
 			ENSURE_OPSTACK_SIZE(1);
+			if (!javaLangThrowable) {
+				loadStaticClass(&javaLangThrowable, "java/lang/Throwable");
+			}
 			t->type = javaLangThrowable;
 			t->tinfo = 0;
 			if (!typecheck(einfo, this, t, OPSTACK_TOP)) {
@@ -4303,6 +4333,35 @@ isReference(const Type* type)
 		 !IS_ADDRESS(type));
 }
 
+/*
+ * isArray()
+ *     returns whether the Type is an array Type
+ */
+static
+bool
+isArray(const Type* type)
+{
+	const char* sig;
+	Hjava_lang_Class* cl;
+	
+	if (!isReference(type))
+		return false;
+	
+	if (type->tinfo & CLASS_NAMESTR || type->tinfo & CLASS_SIGSTR) {
+		sig = (char*)type->type;
+		
+		return (*sig == '[');
+	}
+	else if (type->tinfo) {
+		return false;
+	}
+	else {
+		cl = type->type;
+		return (cl == TNULL->type ||
+			*(cl->name->data) == '[');
+	}
+}
+
 
 /*
  * sameType()
@@ -4310,7 +4369,7 @@ isReference(const Type* type)
  */
 static
 bool
-sameType(const Type* t1, const Type* t2) {
+sameType(Type* t1, Type* t2) {
 	const char* sig1 = NULL;
 	const char* sig2 = NULL;
 	uint32 len1, len2;
@@ -4349,11 +4408,16 @@ sameType(const Type* t1, const Type* t2) {
 			len2 = strlen(sig2);
 			
 			sig2++;
-			return ((len1 + 2 == len2) && !strncmp(sig1, sig2, len1));
+			if ((len1 + 2 != len2) || strncmp(sig1, sig2, len1))
+				return false;
 		}
 		else {
-			return (!strcmp(sig1, CLASS_CNAME(t2->type)));
+			if (strcmp(sig1, CLASS_CNAME(t2->type)))
+				return false;
 		}
+		
+		*t1 = *t2;
+		return true;
 	}
 	else if (t1->tinfo & CLASS_SIGSTR) {
 		sig1 = (const char*)t1->type;
@@ -4363,15 +4427,30 @@ sameType(const Type* t1, const Type* t2) {
 		}
 		else if (t2->tinfo & CLASS_NAMESTR) {
 			sig2 = (const char*)t2->type;
+			
+			len1 = strlen(sig1);
+			len2 = strlen(sig2);
+			sig1++;
+			
+			if ((len1 != len2 + 2) || strncmp(sig1, sig2, len2))
+				return false;
+			
+			*t2 = *t1;
+			return true;
 		}
 		else {
 			sig2 = CLASS_CNAME(t2->type);
+			
+			len1 = strlen(sig1);
+			len2 = strlen(sig2);
+			sig1++;
+			
+			if ((len1 != len2 + 2) || strncmp(sig1, sig2, len2))
+				return false;
+			
+			*t1 = *t2;
+			return true;
 		}
-		
-		len1 = strlen(sig1);
-		len2 = strlen(sig2);
-		sig1++;
-		return ((len1 == len2 + 2) && !strncmp(sig1, sig2, len2));
 	}
 	else {
 		sig1 = CLASS_CNAME(t1->type);
@@ -4382,16 +4461,26 @@ sameType(const Type* t1, const Type* t2) {
 			len1 = strlen(sig1);
 			len2 = strlen(sig2);
 			sig2++;
-			return ((len1 + 2 == len2) && !strncmp(sig1, sig2, len1));
+			if ((len1 + 2 != len2) || strncmp(sig1, sig2, len1))
+				return false;
+			
+			*t2 = *t1;
+			return true;
 		}
 		else if (t2->tinfo & CLASS_NAMESTR) {
 			sig2 = (const char*)t2->type;
+			
+			if (strcmp(sig1, sig2))
+				return false;
+			
+			*t2 = *t1;
+			return true;
 		}
 		else {
+			// we should never get here
 			sig2 = CLASS_CNAME(t2->type);
+			return (!strcmp(sig1, sig2));
 		}
-		
-		return (!strcmp(sig1, sig2));
 	}
 }
 
@@ -4414,7 +4503,11 @@ typecheck(errorInfo* einfo, Hjava_lang_Class* this, Type* t1, Type* t2)
 	else if (!isReference(t1) || !isReference(t2)) {
 		return false;
 	}
-	
+	else if (sameType(t1, TOBJ)) {
+		return true;
+	}
+
+
 	resolveType(einfo, this, t1);
 	resolveType(einfo, this, t2);
 	

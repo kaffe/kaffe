@@ -244,27 +244,28 @@ abortWithEarlyClassFailure(errorInfo* einfo)
 void
 initBaseClasses(void)
 {
-	errorInfo einfo;
+        errorInfo einfo;
 
-	/* Primitive types */
-	initTypes();
+        /* Primitive types */
+        initTypes();
+	initVerifierPrimTypes();
 
-	DBG(INIT, dprintf("initBaseClasses()\n"); )
+        DBG(INIT, dprintf("initBaseClasses()\n"); )
 
-	/* The base types */
-	loadStaticClass(&ObjectClass, OBJECTCLASS);
-	loadStaticClass(&SerialClass, SERIALCLASS);
-	loadStaticClass(&CloneClass, CLONECLASS);
-	loadStaticClass(&ClassClass, CLASSCLASS);
-	loadStaticClass(&StringClass, STRINGCLASS);
-	loadStaticClass(&SystemClass, SYSTEMCLASS);
-
-	/* We must to a little cross tidying */
-	ObjectClass->head.dtable = ClassClass->dtable;
-	SerialClass->head.dtable = ClassClass->dtable;
-	CloneClass->head.dtable = ClassClass->dtable;
-	ClassClass->head.dtable = ClassClass->dtable;
-
+        /* The base types */
+        loadStaticClass(&ObjectClass, OBJECTCLASS);
+        loadStaticClass(&SerialClass, SERIALCLASS);
+        loadStaticClass(&CloneClass, CLONECLASS);
+        loadStaticClass(&ClassClass, CLASSCLASS);
+        loadStaticClass(&StringClass, STRINGCLASS);
+        loadStaticClass(&SystemClass, SYSTEMCLASS);
+	
+        /* We must to a little cross tidying */
+        ObjectClass->head.dtable = ClassClass->dtable;
+        SerialClass->head.dtable = ClassClass->dtable;
+        CloneClass->head.dtable = ClassClass->dtable;
+        ClassClass->head.dtable = ClassClass->dtable;
+	
 	/* Basic types classes */
 	loadStaticClass(&javaLangVoidClass, "java/lang/Void");
 	loadStaticClass(&javaLangBooleanClass, "java/lang/Boolean");
@@ -295,12 +296,6 @@ initBaseClasses(void)
 
 	/* Fixup primitive types */
 	finishTypes();
-	
-	/* Initialize array types supported by the instruction set */
-	initArrayClasses(&einfo);
-	
-	/* Initialize basic type structures in the verifier */
-	initVerifierTypes();
 	
 	if (!processClass(StringClass, CSTATE_COMPLETE, &einfo))
 		abortWithEarlyClassFailure(&einfo);

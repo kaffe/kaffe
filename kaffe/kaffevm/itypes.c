@@ -31,15 +31,6 @@ Hjava_lang_Class* byteClass;
 Hjava_lang_Class* shortClass;     
 Hjava_lang_Class* voidClass;
 
-Hjava_lang_Class* intArrClass;
-Hjava_lang_Class* byteArrClass;
-Hjava_lang_Class* charArrClass;
-Hjava_lang_Class* shortArrClass;
-Hjava_lang_Class* longArrClass;
-Hjava_lang_Class* floatArrClass;
-Hjava_lang_Class* doubleArrClass;
-Hjava_lang_Class* objectArrClass;
-
 Hjava_lang_Class* types[MAXTYPES];
 
 static
@@ -145,26 +136,6 @@ finishTypes(void)
 	voidClass->head.dtable = ClassClass->dtable;
 
 	DBG(INIT, dprintf("finishTypes() done\n"); )
-}
-
-/*
- * Initialize the array classes.
- */
-void 
-initArrayClasses(errorInfo *einfo)
-{
-	DBG(INIT, dprintf("initArrayClasses()\n"); );
-	
-	intArrClass    = lookupArray(intClass, einfo);
-	byteArrClass   = lookupArray(byteClass, einfo);
-	charArrClass   = lookupArray(charClass, einfo);
-	shortArrClass  = lookupArray(shortClass, einfo);
-	longArrClass   = lookupArray(longClass, einfo);
-	floatArrClass  = lookupArray(floatClass, einfo);
-	doubleArrClass = lookupArray(doubleClass, einfo);
-	objectArrClass = lookupArray(ObjectClass, einfo);
-	
-	DBG(INIT, dprintf("initArrayClasses() done\n"); );
 }
 
 static

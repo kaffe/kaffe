@@ -109,7 +109,7 @@ typedef struct unitialized_types_double_list
 
 
 
-void initVerifierTypes(void);
+void initVerifierPrimTypes(void);
 bool verify3(Hjava_lang_Class* class, errorInfo *einfo);
 
 
