@@ -40,8 +40,13 @@ class DoublePrint {
     for (int k = 0; k < dcases.length; k++) {
       System.out.println("  " + dcases[k]);
     }
-    System.out.println("  0.0/0.0 = " + (dmeth() / dmeth()));
-
+    try {
+	System.out.println("  0.0/0.0 = " + (dmeth() / dmeth()));
+    }
+    catch (ArithmeticException ae) {
+	System.out.println("  0.0/0.0 = " + ae);
+    }
+    
     System.out.println();
 
     System.out.println("Float values:");
@@ -52,7 +57,12 @@ class DoublePrint {
     for (int k = 0; k < fcases.length; k++) {
       System.out.println("  " + fcases[k]);
     }
-    System.out.println("  0.0/0.0 = " + (dmeth() / dmeth()));
+    try {
+	System.out.println("  0.0/0.0 = " + (fmeth() / fmeth()));
+    }
+    catch (ArithmeticException ae) {
+	System.out.println("  0.0/0.0 = " + ae);
+    }
   }
 
   public static double dmeth() {
