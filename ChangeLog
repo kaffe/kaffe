@@ -1,3 +1,15 @@
+Mon Jul 12 14:40:41 PDT 1999 Edouard G. Parmelan <edouard.parmelan@quadratec.fr>
+
+	* kaffe/kaffevm/external.c kaffe/kaffevm/jni.c: Add profiling
+	of native methods that use KNI.  It also allow KNI to honor
+	ACC_SYNCHRONIZED flag.
+	* kaffe/kaffevm/jit/machine.c: don't reset ncode_end of
+	native's wrapper.
+	* kaffe/kaffevm/code-analyse.h: Add stacksize check.
+	* kaffe/kaffevm/stackTrace.c: new case for native methods.
+	* test/regression/InvTarExcTest.java: fix output of native
+	stack trace.
+
 Sat Jul 10 17:42:52 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/String.java: optimize regionMatches()

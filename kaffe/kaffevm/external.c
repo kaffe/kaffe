@@ -283,7 +283,8 @@ DBG(LIBTOOL,
 	func = loadNativeLibrarySym(stub);
 	if (func != 0) {
 		/* Fill it in */
-		SET_METHOD_NATIVECODE(m, func);
+		extern void Kaffe_KNI_wrapper(Method* xmeth, void* func);
+		Kaffe_KNI_wrapper(m, func);
 		return (true);
 	}
 

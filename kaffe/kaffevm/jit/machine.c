@@ -227,7 +227,8 @@ DBG(MOREJIT,
 		}
 		KAFFEJIT_TO_NATIVE(meth);
 		/* Note that this is a real function not a trampoline.  */
-		meth->c.ncode.ncode_end = METHOD_NATIVECODE(meth);
+		if (meth->c.ncode.ncode_end == 0)
+			meth->c.ncode.ncode_end = METHOD_NATIVECODE(meth);
 		goto done2;
 	}
 

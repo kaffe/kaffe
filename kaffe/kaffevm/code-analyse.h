@@ -95,8 +95,16 @@ typedef struct codeinfo {
 					SET_NEWFRAME(PC); \
 					FLAGS(PC) |= FLAG_STARTOFBASICBLOCK
 
-#define	SET_STACKPOINTER(PC, SP)	STACKPOINTER(PC) = (SP); \
-					FLAGS(PC) |= FLAG_STACKPOINTERSET
+#define	SET_STACKPOINTER(PC, SP)	do { \
+	if ((FLAGS(PC) & FLAG_STACKPOINTERSET) && STACKPOINTER(PC) != (SP)) { \
+		failed = true; \
+		DBG(CODEANALYSE, \
+			dprintf("sp size change at pc %d: %d != %d\n", (PC), STACKPOINTER(PC), (SP)); \
+		   ) \
+	} \
+	STACKPOINTER(PC) = (SP); \
+	FLAGS(PC) |= FLAG_STACKPOINTERSET; \
+} while(0)
 
 #if defined(TRANSLATOR)
 #define	SET_INSNPC(P, V)		codeInfo->perPC[(P)].nativePC = (V)

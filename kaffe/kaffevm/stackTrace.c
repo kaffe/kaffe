@@ -132,11 +132,19 @@ printStackTrace(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
 			}
 			pathname2classname(CLASS_CNAME(meth->class), class_dot_name);
 			if (linenr == -1) {
-				sprintf(buf, "\tat %.80s.%.80s(%s:line unknown, pc %p)",
-					class_dot_name,
-					meth->name->data, 
-					CLASS_SOURCEFILE(meth->class),
-					(void*)pc);
+				if (meth->accflags & ACC_NATIVE) {
+					sprintf(buf, "\tat %.80s.%.80s(%s:native)",
+						class_dot_name,
+						meth->name->data, 
+						CLASS_SOURCEFILE(meth->class));
+				}
+				else {
+					sprintf(buf, "\tat %.80s.%.80s(%s:line unknown, pc %p)",
+						class_dot_name,
+						meth->name->data, 
+						CLASS_SOURCEFILE(meth->class),
+						(void*)pc);
+				}
 			}
 			else {
 				sprintf(buf, "\tat %.80s.%.80s(%s:%d)",

@@ -132,6 +132,7 @@ static void Kaffe_JNI_wrapper(Method*, void*);
 #if defined(TRANSLATOR)
 static void startJNIcall(void);
 static void finishJNIcall(void);
+static void Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI);
 #endif
 
 void Kaffe_JNIExceptionHandler(void);
@@ -3586,11 +3587,11 @@ strcatJNI(char* to, const char* from)
 
 #if defined(TRANSLATOR)
 /*
- * Wrap up a native function in a calling wrapper.
+ * Wrap up a native function in a calling wrapper, with JNI or KNI.
  */
 static
 void
-Kaffe_JNI_wrapper(Method* xmeth, void* func)
+Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 {
 	errorInfo info;
 	char buf[100];
@@ -3600,6 +3601,7 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	nativeCodeInfo ncode;
 	SlotInfo* tmp;
 	bool success = true;
+	int arg0;
 
 	/* Convert the signature into a simple string of types, and
 	 * count the size of the arguments too.
@@ -3657,45 +3659,57 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	start_basic_block();
 	prologue(xmeth);
 
-	/* Start a JNI call */
-	prepare_function_call();
-	call_soft(startJNIcall);
-	fixup_function_call();
+	if (use_JNI) {
+		/* Start a JNI call */
+		prepare_function_call();
+		call_soft(startJNIcall);
+		fixup_function_call();
 
 #if defined(NEED_JNIREFS)
-	{
-		int j;
-		int jcount;
+		{
+			int j;
+			int jcount;
 
-		/* Make the necesary JNI ref calls first */
-		if (!METHOD_IS_STATIC(xmeth)) {
-			pusharg_ref(local(0), 0);
-			end_sub_block();
-			call_soft(addJNIref);
-			popargs();
-		}
-		j = i;
-		jcount = count;
-		while (j > 0) {
-			j--;
-			jcount--;
-			if (buf[j] == '[' || buf[j] == 'L') {
-				pusharg_ref(local(jcount), 0);
+			/* Make the necesary JNI ref calls first */
+			if (!METHOD_IS_STATIC(xmeth)) {
+				pusharg_ref(local(0), 0);
 				end_sub_block();
 				call_soft(addJNIref);
 				popargs();
 			}
-			if (buf[j] == 'J' || buf[j] == 'D') {
+			j = i;
+			jcount = count;
+			while (j > 0) {
+				j--;
 				jcount--;
+				if (buf[j] == '[' || buf[j] == 'L') {
+					pusharg_ref(local(jcount), 0);
+					end_sub_block();
+					call_soft(addJNIref);
+					popargs();
+				}
+				if (buf[j] == 'J' || buf[j] == 'D') {
+					jcount--;
+				}
 			}
+			start_sub_block();
 		}
-		start_sub_block();
-	}
 #endif
+	}
 
 	/* Add synchronisation if necessary */
 	if (xmeth->accflags & ACC_SYNCHRONISED) {
 		mon_enter(xmeth, local(0));
+	}
+
+	/* Add extra arguments */
+	if (use_JNI) {
+		/* JNIEnv, class or JNIEnv, this */
+		arg0 = 1 + isStatic;
+	}
+	else {
+		/* no extra arguments for KNI */
+		arg0 = 0;
 	}
 
 	/* Push the specified arguments */
@@ -3705,39 +3719,47 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 		switch (buf[i]) {
 		case '[':
 		case 'L':
-			pusharg_ref(local(count), count+1+isStatic);
+			pusharg_ref(local(count), count+arg0);
 			break;
 		case 'I':
 		case 'Z':
 		case 'S':
 		case 'B':
 		case 'C':
-			pusharg_int(local(count), count+1+isStatic);
+			pusharg_int(local(count), count+arg0);
 			break;
 		case 'F':
-			pusharg_float(local(count), count+1+isStatic);
+			pusharg_float(local(count), count+arg0);
 			break;
 		case 'J':
 			count--;
-			pusharg_long(local(count), count+1+isStatic);
+			pusharg_long(local(count), count+arg0);
 			break;
 		case 'D':
 			count--;
-			pusharg_double(local(count), count+1+isStatic);
+			pusharg_double(local(count), count+arg0);
 			break;
 		}
 	}
 
-	/* If static, push the class, else push the object */
-	if (METHOD_IS_STATIC(xmeth)) {
-		pusharg_ref_const(xmeth->class, 1);
+	if (use_JNI) {
+		/* If static, push the class, else push the object */
+		if (METHOD_IS_STATIC(xmeth)) {
+			pusharg_ref_const(xmeth->class, 1);
+		}
+		else {
+			pusharg_ref(local(0), 1);
+		}
+
+		/* Push the JNI info */
+		pusharg_ref_const((void*)&Kaffe_JNIEnv, 0);
 	}
 	else {
-		pusharg_ref(local(0), 1);
+		/* If static, nothing, else push the object */
+		if (!METHOD_IS_STATIC(xmeth)) {
+			pusharg_ref(local(0), 0);
+		}
 	}
-
-	/* Push the JNI info */
-	pusharg_ref_const((void*)&Kaffe_JNIEnv, 0);
 
 	/* Make the call */
 	end_sub_block();
@@ -3755,9 +3777,11 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 		if (xmeth->accflags & ACC_SYNCHRONISED) {
 			mon_exit(xmeth, local(0));
 		}
-		end_sub_block();
-		call_soft(finishJNIcall);
-		start_sub_block();
+		if (use_JNI) {
+			end_sub_block();
+			call_soft(finishJNIcall);
+			start_sub_block();
+		}
 		returnarg_ref(tmp);
 		break;
 	case 'I':
@@ -3771,9 +3795,11 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 		if (xmeth->accflags & ACC_SYNCHRONISED) {
 			mon_exit(xmeth, local(0));
 		}
-		end_sub_block();
-		call_soft(finishJNIcall);
-		start_sub_block();
+		if (use_JNI) {
+			end_sub_block();
+			call_soft(finishJNIcall);
+			start_sub_block();
+		}
 		returnarg_int(tmp);
 		break;
 	case 'F':
@@ -3783,9 +3809,11 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 		if (xmeth->accflags & ACC_SYNCHRONISED) {
 			mon_exit(xmeth, local(0));
 		}
-		end_sub_block();
-		call_soft(finishJNIcall);
-		start_sub_block();
+		if (use_JNI) {
+			end_sub_block();
+			call_soft(finishJNIcall);
+			start_sub_block();
+		}
 		returnarg_float(tmp);
 		break;
 	case 'J':
@@ -3795,9 +3823,11 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 		if (xmeth->accflags & ACC_SYNCHRONISED) {
 			mon_exit(xmeth, local(0));
 		}
-		end_sub_block();
-		call_soft(finishJNIcall);
-		start_sub_block();
+		if (use_JNI) {
+			end_sub_block();
+			call_soft(finishJNIcall);
+			start_sub_block();
+		}
 		returnarg_long(tmp);
 		break;
 	case 'D':
@@ -3807,9 +3837,11 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 		if (xmeth->accflags & ACC_SYNCHRONISED) {
 			mon_exit(xmeth, local(0));
 		}
-		end_sub_block();
-		call_soft(finishJNIcall);
-		start_sub_block();
+		if (use_JNI) {
+			end_sub_block();
+			call_soft(finishJNIcall);
+			start_sub_block();
+		}
 		returnarg_double(tmp);
 		break;
 	case 'V':
@@ -3817,7 +3849,8 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 		if (xmeth->accflags & ACC_SYNCHRONISED) {
 			mon_exit(xmeth, local(0));
 		}
-		call_soft(finishJNIcall);
+		if (use_JNI)
+			call_soft(finishJNIcall);
 		break;
 	}
 
@@ -3840,7 +3873,8 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	assert(xmeth->exception_table == 0);
 	installMethodCode(0, xmeth, &ncode);
 
-	xmeth->accflags |= ACC_JNI;
+	if (use_JNI)
+		xmeth->accflags |= ACC_JNI;
 
 done:
 #if defined(KAFFE_PROFILER)
@@ -3858,6 +3892,27 @@ done:
 		throwError(&info);
 	}
 }
+static
+void
+Kaffe_JNI_wrapper(Method* xmeth, void* func)
+{
+	Kaffe_wrapper(xmeth, func, true);
+}
+
+void
+Kaffe_KNI_wrapper(Method* xmeth, void* func)
+{
+	    if ((xmeth->accflags & ACC_SYNCHRONISED)
+#if defined(KAFFE_PROFILER)
+	    || profFlag
+#endif
+	       ) {
+		    Kaffe_wrapper(xmeth, func, false);
+	    }
+	    else {
+		    SET_METHOD_NATIVECODE(xmeth, func);
+	    }
+}
 #endif
 #if defined(INTERPRETER)
 /*
@@ -3870,6 +3925,11 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 {
 	SET_METHOD_NATIVECODE(xmeth, func);
 	xmeth->accflags |= ACC_JNI;
+}
+void
+Kaffe_KNI_wrapper(Method* xmeth, void* func)
+{
+	SET_METHOD_NATIVECODE(xmeth, func);
 }
 #endif /* INTERPRETER */
 
