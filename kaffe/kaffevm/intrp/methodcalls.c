@@ -97,11 +97,11 @@ engine_callMethod (callMethodInfo *call)
 			if (func == NULL) {
 				throwError(&einfo);
 			}
-			METHOD_CODE_START(meth) = func;
+			setMethodCodeStart(meth, func);
 			meth->accflags |= ACC_TRANSLATED;
 		}
 
-		call->function = METHOD_CODE_START(meth);
+		call->function = getMethodCodeStart(meth);
 
 		if (meth->accflags & ACC_JNI)
 		{

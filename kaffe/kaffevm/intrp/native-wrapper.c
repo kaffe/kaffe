@@ -20,5 +20,5 @@
 void
 engine_create_wrapper (Method *meth, void *func)
 {
-	METHOD_CODE_START(meth) = func;
+	setMethodCodeStart(meth, func);
 }

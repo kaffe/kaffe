@@ -1,5 +1,19 @@
 2005-02-16  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/classMethod.h: (METHOD_CODE_START) 
+	Removed macro.
+
+	* kaffe/kaffevm/classMethod.c (setMethodCodeStart) 
+	(getMethodCodeStart): New functions.
+
+	* kaffe/kaffevm/methodCache.c (makeMethodInactive) 
+	(makeMethodActive),
+	kaffe/kaffevm/intrp/methodcalls.c (engine_callMethod),
+	kaffe/kaffevm/intrp/native-wrapper.c (engine_create_wrapper): 
+	Use new functions for setting and getting metthod code.
+
+2005-02-16  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/support.c (lookupClassMethod): 
 	Split assert and clarified.
 

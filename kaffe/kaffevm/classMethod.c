@@ -1965,6 +1965,30 @@ getInheritedMethodIndex(Hjava_lang_Class *super, Method *meth)
 	return (false);
 }
 
+/**
+ * Get start of native code of a method
+ *
+ * @param method a method
+ * @return pointer to start of code
+ */
+struct _jitCodeHeader*
+getMethodCodeStart(Method * method) 
+{
+  return method->c.ncode.ncode_start;
+}
+
+/**
+ * Set start of native code of a method
+ *
+ * @param method a method
+ * @param start pointer to start of code
+ */
+void
+setMethodCodeStart(Method * method, struct _jitCodeHeader* start)
+{
+  method->c.ncode.ncode_start = start;
+}
+
 static
 bool
 buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)

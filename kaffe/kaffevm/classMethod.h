@@ -208,7 +208,22 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 		(void*)&((M)->ncode) : \
 		&((M)->class->vtable->method[(M)->idx]))
 
-#define	METHOD_CODE_START(M)		((M)->c.ncode.ncode_start)
+/**
+ * Get start of native code of a method
+ *
+ * @param method a method
+ * @return pointer to start of code
+ */
+struct _jitCodeHeader* getMethodCodeStart(Method * method);
+
+/**
+ * Set start of native code of a method
+ *
+ * @param method a method
+ * @param start pointer to start of code
+ */
+void setMethodCodeStart(Method * method, struct _jitCodeHeader* start);
+
 #define	_SET_METHOD_NATIVECODE(M, C)	do {\
 	if ((M)->idx == -1) {\
 		(M)->ncode = (C);\

@@ -97,7 +97,7 @@ makeMethodActive(Method* meth)
 {
 	unsigned int idx;
 	methCacheEntry *entry;
-	void *pc_key = METHOD_CODE_START(meth);
+	void *pc_key = getMethodCodeStart(meth);
 
 #if defined(DUMPMETHODCACHESTATS)
 	static int f = 0;
@@ -133,7 +133,7 @@ void
 makeMethodInactive(Method* meth)
 {
 	methCacheEntry **entry;
-	void *pc_key = METHOD_CODE_START(meth);
+	void *pc_key = getMethodCodeStart(meth);
 
 	entry = &methCacheTable.hash[METHCACHEHASH(pc_key)]; 
 
