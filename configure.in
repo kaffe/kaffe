@@ -304,7 +304,7 @@ dnl =========================================================================
 dnl Allow selection of debugging mechanisms
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(debug,[  --enable-debug          Enable run-time debugging machinery
+AC_ARG_ENABLE(debug,[  --enable-debug          Enable run-time debugging machinery
   --disable-debug         Disable assertion checking (but not -g)])
 case "$enable_debug" in
 "") ;;
@@ -1124,6 +1124,7 @@ kaffe/scripts/jar \
 kaffe/scripts/javap \
 kaffe/scripts/jdb \
 kaffe/scripts/kjc \
+kaffe/scripts/kopi \
 kaffe/scripts/javadoc \
 kaffe/scripts/appletviewer \
 kaffe/scripts/rmic \
