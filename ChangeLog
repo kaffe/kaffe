@@ -1,3 +1,9 @@
+Tue Dec 15 16:11:24 1998  Archie Cobbs <archie@whistle.com>
+
+	* configure, configure.in: use -lgcc on FreeBSD platform
+	as a better workaround for the modulo bug.
+	* kaffe/kaffevm/soft.c: remove previous (slower) workaround.
+
 Tue Dec 15 14:11:32 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.h: made state signed char cause we

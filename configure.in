@@ -436,6 +436,7 @@ AC_CHECK_LIBRARY(gmp,mpz_abs,STD_LIBRARIES)
 AC_SUBST(STD_LIBRARIES)
 
 dnl Checks for libraries for vm library.
+dnl Include work around FreeBSD modulo bug.
 
 if test "$dynamic_libraries" = "yes" ; then
 	dnl Don't bother with dynamic loaders if we're using static linking
@@ -446,6 +447,9 @@ if test "$dynamic_libraries" = "yes" ; then
 			AC_CHECK_LIBRARY(dld,dld_init,VM_LIBRARIES)
 		fi
 	fi
+fi
+if test "$host_os" = "freebsd2" ; then
+	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBRARIES)
 fi
 AC_SUBST(VM_LIBRARIES)
 

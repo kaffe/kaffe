@@ -594,16 +594,7 @@ soft_ldiv(jlong v1, jlong v2)
 jlong
 soft_lrem(jlong v1, jlong v2)
 {
-	jlong r = v1 % v2;
-	/* Java requires sgn(r) == sgn(v1).
-	 * FreeBSD <= 2.2.8 and <= 3.0 screw up here, and since we care
-	 * so much about FreeBSD, we fix it up for them.
-	 * XXX: add #ifdef LREM_BROKEN
-	 */
-	if ((v1 < 0L && r >= 0L) || (v1 >= 0L && r < 0L)) {
-		r = -r;
-	}
-	return (r);
+	return (v1 % v2);
 }
 
 jfloat
