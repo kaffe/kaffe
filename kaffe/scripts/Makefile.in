@@ -21,7 +21,7 @@ SCRIPTFILES_PIZZA=\
 
 SCRIPTFILES_SUN=\
 		appletviewer jar javac javadoc javakey javap jdb \
-		native2ascii report-kaffe-bug rmic rmiregistry serialver \
+		native2ascii report-kaffe-bug rmic rmiregistry serialver
 
 SCRIPTFILES_COMPAT=\
 		appletviewer java javac javadoc
