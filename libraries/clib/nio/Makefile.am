@@ -17,6 +17,7 @@ libnio_la_CFLAGS = \
 
 libnio_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe|gnu)_"
@@ -30,6 +31,7 @@ libnio_la_DEPENDENCIES = \
         $(top_builddir)/libraries/clib/classpath/libclasspath.la
 
 libnio_la_LIBADD = \
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
 	$(libnio_la_DEPENDENCIES)
 
 CLEANFILES = so_locations

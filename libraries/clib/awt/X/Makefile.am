@@ -18,11 +18,12 @@ libxawt_la_CFLAGS = \
 
 libxawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libxawt_la_LIBADD = $(AWT_LIBS)
+libxawt_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(AWT_LIBS)
 
 libxawt_la_SOURCES = \
 	tlk.c \

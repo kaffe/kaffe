@@ -15,11 +15,12 @@ libzip_la_CFLAGS = \
 
 libzip_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libzip_la_LIBADD = $(ZIP_LIBS)
+libzip_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(ZIP_LIBS)
 
 libzip_la_SOURCES = \
 	Adler32.c \

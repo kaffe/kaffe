@@ -17,9 +17,12 @@ libmanagement_la_CFLAGS = \
 
 libmanagement_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
+
+libmanagement_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la
 
 libmanagement_la_SOURCES = \
 	Classpath.c \

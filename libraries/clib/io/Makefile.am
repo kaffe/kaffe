@@ -18,9 +18,12 @@ libio_la_CFLAGS = \
 
 libio_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
+
+libio_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la
 
 libio_la_SOURCES = \
 	File.c \

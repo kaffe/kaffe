@@ -91,7 +91,9 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libnanoxawt_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libnanoxawt_la_DEPENDENCIES =  \
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(am__DEPENDENCIES_1)
 am_libnanoxawt_la_OBJECTS = libnanoxawt_la-event.lo \
 	libnanoxawt_la-handler.lo libnanoxawt_la-color.lo \
 	libnanoxawt_la-font.lo libnanoxawt_la-window.lo \
@@ -401,11 +403,12 @@ libnanoxawt_la_CFLAGS = \
 
 libnanoxawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libnanoxawt_la_LIBADD = $(AWT_LIBS)
+libnanoxawt_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(AWT_LIBS)
 libnanoxawt_la_SOURCES = \
 	event.c \
 	handler.c \

@@ -17,6 +17,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$
 native_LTLIBRARIES = libkaffexprof.la
 
 libkaffexprof_la_LDFLAGS = \
+	-no-undefined \
 	-export-dynamic \
 	-release $(PACKAGE_VERSION)
 

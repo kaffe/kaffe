@@ -64,6 +64,7 @@ libnative_la_CFLAGS = \
 
 libnative_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
@@ -72,7 +73,10 @@ libnative_la_DEPENDENCIES = \
 	../../../kaffe/kaffevm/libkaffevm.la \
         $(top_builddir)/libraries/clib/classpath/libclasspath.la
 
-libnative_la_LIBADD = $(M_LIBS) $(LTLIBICONV) \
+libnative_la_LIBADD = \
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(M_LIBS) \
+	$(LTLIBICONV) \
 	$(libnative_la_DEPENDENCIES)
 
 libnative_la_SOURCES = \

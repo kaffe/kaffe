@@ -85,7 +85,9 @@ am__installdirs = "$(DESTDIR)$(nativedir)" "$(DESTDIR)$(securitydir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libsecurity_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libsecurity_la_DEPENDENCIES =  \
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(am__DEPENDENCIES_1)
 am__objects_1 = libsecurity_la-digest.lo libsecurity_la-kaffe_md5.lo \
 	libsecurity_la-sha-1.lo
 am_libsecurity_la_OBJECTS = $(am__objects_1)
@@ -404,11 +406,12 @@ libsecurity_la_CFLAGS = \
 
 libsecurity_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libsecurity_la_LIBADD = $(SECURITY_LIBS)
+libsecurity_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(SECURITY_LIBS)
 libsecurity_la_SOURCES = $(SECURITY_SRCS)
 CLEANFILES = so_locations
 all: all-am

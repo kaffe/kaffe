@@ -48,7 +48,7 @@ kaffe_bin_SOURCES = \
 LIBKAFFEVM = \
 	$(libxprof) \
 	$(libjvmpi) \
-	../kaffevm/libkaffevm.la
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la
 
 kaffe_bin_LDFLAGS = \
 	$(KVMBINFLAGS) \

@@ -84,7 +84,7 @@ am__DEPENDENCIES_1 =
 @NEED_LIBXPROF_TRUE@am__DEPENDENCIES_2 = ../xprof/libkaffexprof.la
 @ENABLE_JVMPI_TRUE@am__DEPENDENCIES_3 = ../jvmpi/libkaffejvmpi.la
 am__DEPENDENCIES_4 = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_3) \
-	../kaffevm/libkaffevm.la
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -401,7 +401,7 @@ kaffe_bin_SOURCES = \
 LIBKAFFEVM = \
 	$(libxprof) \
 	$(libjvmpi) \
-	../kaffevm/libkaffevm.la
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la
 
 kaffe_bin_LDFLAGS = \
 	$(KVMBINFLAGS) \

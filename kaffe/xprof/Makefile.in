@@ -390,6 +390,7 @@ with_engine = @with_engine@
 AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/kaffevm -I$(top_builddir)/include
 native_LTLIBRARIES = libkaffexprof.la
 libkaffexprof_la_LDFLAGS = \
+	-no-undefined \
 	-export-dynamic \
 	-release $(PACKAGE_VERSION)
 

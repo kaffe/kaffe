@@ -29,11 +29,12 @@ libsecurity_la_CFLAGS = \
 
 libsecurity_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libsecurity_la_LIBADD = $(SECURITY_LIBS)
+libsecurity_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(SECURITY_LIBS)
 
 libsecurity_la_SOURCES = $(SECURITY_SRCS)
 

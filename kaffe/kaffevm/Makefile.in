@@ -455,6 +455,7 @@ libkaffevm_la_LDFLAGS = \
         $(PTHREAD_LIBS) \
         $(SEMAPHORE_LIB) \
 	$(KVMLIBFLAGS) \
+	-no-undefined \
 	-export-dynamic \
 	-release $(PACKAGE_VERSION)
 

@@ -23,11 +23,12 @@ libnanoxawt_la_CFLAGS = \
 
 libnanoxawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libnanoxawt_la_LIBADD = $(AWT_LIBS)
+libnanoxawt_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(AWT_LIBS)
 
 libnanoxawt_la_SOURCES = \
 	event.c \

@@ -84,7 +84,8 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libzip_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libzip_la_DEPENDENCIES = $(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(am__DEPENDENCIES_1)
 am_libzip_la_OBJECTS = libzip_la-Adler32.lo libzip_la-CRC32.lo \
 	libzip_la-Deflater.lo libzip_la-Inflater.lo
 libzip_la_OBJECTS = $(am_libzip_la_OBJECTS)
@@ -386,11 +387,12 @@ libzip_la_CFLAGS = \
 
 libzip_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libzip_la_LIBADD = $(ZIP_LIBS)
+libzip_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(ZIP_LIBS)
 libzip_la_SOURCES = \
 	Adler32.c \
 	CRC32.c \

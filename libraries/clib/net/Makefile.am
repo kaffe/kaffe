@@ -18,11 +18,16 @@ libnet_la_CFLAGS = \
 
 libnet_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe|gnu)_"
 
-libnet_la_LIBADD = $(NET_LIBS)  $(top_builddir)/replace/libreplace.la
+libnet_la_LIBADD = \
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(NET_LIBS)  \
+	$(top_builddir)/replace/libreplace.la \
+	$(LTLIBINTL)
 
 libnet_la_SOURCES = \
 	InetAddressImpl.c \

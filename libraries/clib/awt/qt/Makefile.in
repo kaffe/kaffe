@@ -90,7 +90,9 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libqtawt_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+libqtawt_la_DEPENDENCIES =  \
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libqtawt_la_OBJECTS = libqtawt_la-tlk.lo libqtawt_la-wnd.lo \
 	libqtawt_la-evt.lo libqtawt_la-gra.lo libqtawt_la-fnt.lo \
 	libqtawt_la-clr.lo libqtawt_la-img.lo libqtawt_la-cbd.lo
@@ -402,11 +404,12 @@ libqtawt_la_CXXFLAGS = \
 
 libqtawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libqtawt_la_LIBADD = $(AWT_LIBS) $(QT_LDADD)
+libqtawt_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(AWT_LIBS) $(QT_LDADD)
 libqtawt_la_MOC = \
 	evt.moc.cc
 

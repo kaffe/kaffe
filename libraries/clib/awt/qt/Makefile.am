@@ -25,11 +25,12 @@ libqtawt_la_CXXFLAGS = \
 
 libqtawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libqtawt_la_LIBADD = $(AWT_LIBS) $(QT_LDADD)
+libqtawt_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(AWT_LIBS) $(QT_LDADD)
 
 libqtawt_la_MOC = \
 	evt.moc.cc

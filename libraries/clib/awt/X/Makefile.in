@@ -86,7 +86,8 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libxawt_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libxawt_la_DEPENDENCIES = $(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(am__DEPENDENCIES_1)
 am_libxawt_la_OBJECTS = libxawt_la-tlk.lo libxawt_la-wnd.lo \
 	libxawt_la-evt.lo libxawt_la-gra.lo libxawt_la-fnt.lo \
 	libxawt_la-clr.lo libxawt_la-img.lo libxawt_la-imggif.lo \
@@ -395,11 +396,12 @@ libxawt_la_CFLAGS = \
 
 libxawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libxawt_la_LIBADD = $(AWT_LIBS)
+libxawt_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(AWT_LIBS)
 libxawt_la_SOURCES = \
 	tlk.c \
 	wnd.c \

@@ -1,3 +1,23 @@
+2005-03-31  Gerrit P. Haase <gp@familiehaase.de>
+
+        * kaffe/jvmpi/Makefile.am,
+        kaffe/kaffe/Makefile.am,
+        kaffe/kaffevm/Makefile.am,
+        kaffe/xprof/Makefile.am,
+        libraries/clib/awt/X/Makefile.am,
+        libraries/clib/awt/nano-X/Makefile.am,
+        libraries/clib/awt/qt/Makefile.am,
+        libraries/clib/io/Makefile.am,
+        libraries/clib/management/Makefile.am,
+        libraries/clib/math/Makefile.am,
+        libraries/clib/native/Makefile.am,
+        libraries/clib/net/Makefile.am,
+        libraries/clib/nio/Makefile.am,
+        libraries/clib/security/Makefile.am,
+        libraries/clib/zip/Makefile.am:
+	(*_LDFLAGS) Added -no-undefined.
+	(*_DEPENDENCIES) Added libkaffevm.
+
 2005-03-29  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/clib/nio/gnu_java_nio_VMSelector.c

@@ -84,8 +84,9 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libnet_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/replace/libreplace.la
+libnet_la_DEPENDENCIES = $(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(am__DEPENDENCIES_1) $(top_builddir)/replace/libreplace.la \
+	$(am__DEPENDENCIES_1)
 am_libnet_la_OBJECTS = libnet_la-InetAddressImpl.lo \
 	libnet_la-NetworkInterface.lo \
 	libnet_la-PlainDatagramSocketImpl.lo \
@@ -393,11 +394,17 @@ libnet_la_CFLAGS = \
 
 libnet_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe|gnu)_"
 
-libnet_la_LIBADD = $(NET_LIBS)  $(top_builddir)/replace/libreplace.la
+libnet_la_LIBADD = \
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(NET_LIBS)  \
+	$(top_builddir)/replace/libreplace.la \
+	$(LTLIBINTL)
+
 libnet_la_SOURCES = \
 	InetAddressImpl.c \
 	NetworkInterface.c \

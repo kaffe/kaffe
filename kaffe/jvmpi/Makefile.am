@@ -7,6 +7,7 @@ libkaffejvmpi_la_CFLAGS = \
 	$(CFLAGS_PG)
 
 libkaffejvmpi_la_LDFLAGS = \
+	-no-undefined \
 	-export-dynamic \
 	-release $(PACKAGE_VERSION)
 
