@@ -1,3 +1,8 @@
+2004-10-09  Noa Resare  <noa@resare.com>
+
+	* libraries/javalib/java/lang/String.java:
+	removed wrapping of UnsupportedEncodingException in Error
+
 2004-10-10  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/xml/dom/DomXPathExpression.java,
