@@ -84,17 +84,17 @@ dnl Look for the configuration information
 dnl -------------------------------------------------------------------------
 
 known=no
-orig_host_cpu=$host_cpu
-orig_host_os=$host_os
+Khost_cpu=$host_cpu
+Khost_os=$host_os
 if test -f $srcdir/config/config.alias ; then
 	. $srcdir/config/config.alias
 fi
-if test -f $srcdir/config/$host_cpu/$host_os/config.frag ; then
+if test -f $srcdir/config/$Khost_cpu/$Khost_os/config.frag ; then
 	known=yes
-	. $srcdir/config/$host_cpu/$host_os/config.frag
+	. $srcdir/config/$Khost_cpu/$Khost_os/config.frag
 fi
 if test "$known" = "no" ; then
-	AC_MSG_ERROR(Configuration $host_cpu-$host_os not supported)
+	AC_MSG_ERROR(Configuration $Khost_cpu-$Khost_os not supported)
 fi
 
 dnl =========================================================================
@@ -165,7 +165,7 @@ dnl Start of default configurations
 dnl -------------------------------------------------------------------------
 
 dnl What kind of system are we using?
-case $host_os in
+case $Khost_os in
 win32*)
 	SYSTEM=win32 ;;
 *)
@@ -190,8 +190,8 @@ dnl Set the base set of platform-dependent files
 dnl One-liners with #include directives will be created in the Makefiles
 dnl -------------------------------------------------------------------------
 
-CONFIG_MD_H="\$(srcdir)/$host_cpu/$host_os/md.h"
-KAFFEVM_MD_C="\$(top_srcdir)/config/$host_cpu/$host_os/md.c"
+CONFIG_MD_H="\$(srcdir)/$Khost_cpu/$Khost_os/md.h"
+KAFFEVM_MD_C="\$(top_srcdir)/config/$Khost_cpu/$Khost_os/md.c"
 AC_SUBST(CONFIG_MD_H)
 AC_SUBST(KAFFEVM_MD_C)
 
@@ -201,13 +201,13 @@ dnl =========================================================================
 dnl Look for configuration specific Makefile fragement and include it
 dnl -------------------------------------------------------------------------
 
-if test -f $srcdir/config/$host_cpu/$host_os/Make.frag ; then
-	cpu_os_frag=$srcdir/config/$host_cpu/$host_os/Make.frag
+if test -f $srcdir/config/$Khost_cpu/$Khost_os/Make.frag ; then
+	cpu_os_frag=$srcdir/config/$Khost_cpu/$Khost_os/Make.frag
 else
 	cpu_os_frag=/dev/null
 fi
-if test -f $srcdir/config/$host_cpu/Make.frag ; then
-	cpu_frag=$srcdir/config/$host_cpu/Make.frag
+if test -f $srcdir/config/$Khost_cpu/Make.frag ; then
+	cpu_frag=$srcdir/config/$Khost_cpu/Make.frag
 else
 	cpu_frag=/dev/null
 fi
@@ -245,8 +245,8 @@ AC_DEFUN([AC_KAFFE_IF_SUPPORTED_ENGINE], [
   if test x"$1" = x"intrp"; then
     ifelse([$2],[],[:],[$2])
   else
-    if test -f "$srcdir/config/$host_cpu/$1-$host_cpu.def"; then
-      if sed 1q < "$srcdir/config/$host_cpu/$host_os/$1-md.h" |
+    if test -f "$srcdir/config/$Khost_cpu/$1-$Khost_cpu.def"; then
+      if sed 1q < "$srcdir/config/$Khost_cpu/$Khost_os/$1-md.h" |
 	 fgrep "Needs update, do not use" > /dev/null; then
 	ifelse([$3],[],[:],[$3])
       else
@@ -264,8 +264,8 @@ dnl the "intrp" engine is always supported, so we can't fail there.
 
 if test x"${want_engine}" != x""; then
 	AC_KAFFE_IF_SUPPORTED_ENGINE([${want_engine}],,
-		[AC_MSG_WARN([The $want_engine engine was not updated for $host_cpu-$host_os])], 
-		[AC_MSG_ERROR([Configuration $host_cpu-$host_os does not support the $want_engine engine])])
+		[AC_MSG_WARN([The $want_engine engine was not updated for $Khost_cpu-$Khost_os])], 
+		[AC_MSG_ERROR([Configuration $Khost_cpu-$Khost_os does not support the $want_engine engine])])
 	with_engine="${want_engine}"
 else
 	for engine in jit3 jit intrp; do
@@ -278,11 +278,11 @@ fi
 
 if test x"$with_engine" != x"intrp" ; then
     HAVE_CONFIG_JIT_MD_H=1
-    CONFIG_JIT_MD_H="\$(top_srcdir)/config/$host_cpu/$host_os/$with_engine-md.h"
+    CONFIG_JIT_MD_H="\$(top_srcdir)/config/$Khost_cpu/$Khost_os/$with_engine-md.h"
     AC_SUBST(CONFIG_JIT_MD_H)
-    KAFFEVM_JIT_DEF="\$(top_srcdir)/config/$host_cpu/$with_engine-$host_cpu.def"
+    KAFFEVM_JIT_DEF="\$(top_srcdir)/config/$Khost_cpu/$with_engine-$Khost_cpu.def"
     AC_SUBST(KAFFEVM_JIT_DEF)
-    KAFFEVM_ICODE_H="\$(top_srcdir)/config/$host_cpu/$with_engine-icode.h"
+    KAFFEVM_ICODE_H="\$(top_srcdir)/config/$Khost_cpu/$with_engine-icode.h"
     AC_SUBST(KAFFEVM_ICODE_H)
 else
     HAVE_CONFIG_JIT_MD_H=0
@@ -348,7 +348,7 @@ if test x"$with_threads" = x"" ; then
 	with_threads=unix-jthreads
 fi
 if test ! -d $srcdir/kaffe/kaffevm/systems/${with_threads} ; then
-	AC_MSG_ERROR(Configuration $host_cpu-$host_os does not support $with_threads threads)
+	AC_MSG_ERROR(Configuration $Khost_cpu-$Khost_os does not support $with_threads threads)
 fi
 THREAD_SYSTEM=$with_threads
 AC_MSG_RESULT($THREAD_SYSTEM)
@@ -363,8 +363,8 @@ dnl -------------------------------------------------------------------------
 KAFFEVM_TRAMPOLINES_C=
 if test "$with_engine" != "intrp" ; then
 	AC_MSG_CHECKING(for trampolines)
-	if test -f $srcdir/config/$host_cpu/trampolines.c ; then
-		KAFFEVM_TRAMPOLINES_C="\$(top_srcdir)/config/$host_cpu/trampolines.c"
+	if test -f $srcdir/config/$Khost_cpu/trampolines.c ; then
+		KAFFEVM_TRAMPOLINES_C="\$(top_srcdir)/config/$Khost_cpu/trampolines.c"
 		AC_SUBST(KAFFEVM_TRAMPOLINES_C)
 		AC_MSG_RESULT(yes)
 	else
@@ -389,8 +389,6 @@ dnl -------------------------------------------------------------------------
 AC_SUBST(KVER)
 AC_SUBST(JAVA_LIBS)
 AC_SUBST(with_engine)
-AC_SUBST(host_cpu)
-AC_SUBST(host_os)
 AC_SUBST(THREAD_SYSTEM)
 AC_DEFINE_UNQUOTED(KAFFEVERSION, "$KVER", [Kaffe version number])
 if test "$program_prefix" = "NONE" ; then
@@ -399,7 +397,7 @@ else
 	KPREFIX=$program_prefix
 fi
 AC_SUBST(KPREFIX)
-KAFFE_ARCHOS="$host_cpu-$host_os"
+KAFFE_ARCHOS="$Khost_cpu-$Khost_os"
 AC_DEFINE_UNQUOTED(ARCHOS, "$KAFFE_ARCHOS", [Define the version we're compiling for])
 AC_SUBST(KAFFE_ARCHOS)
 
@@ -519,7 +517,7 @@ AC_SUBST(M_LIBS)
 dnl Checks for libraries for vm library.
 dnl Include work around FreeBSD modulo bug.
 
-case "$host_os" in
+case "$Khost_os" in
 freebsd2|netbsd1|oskit)
 	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBS);;
 esac
@@ -880,7 +878,7 @@ sync fsync dnl
 atexit on_exit vsnprintf snprintf dnl
 ])
 
-if test "$host_cpu" = "alpha" ; then
+if test "$Khost_cpu" = "alpha" ; then
   AC_CACHE_CHECK([for alpha support of amask instruction],
     ac_cv_alpha_asm_amask,
   [AC_TRY_COMPILE(, [ long r; __asm__("amask 1,%0" : "=r"(r)); return !r; ],

@@ -1,5 +1,5 @@
 #
 # Sparc/NetBSD1 configuration
 #
-host_cpu=sparc
-host_os=netbsd1
+Khost_cpu=sparc
+Khost_os=netbsd1

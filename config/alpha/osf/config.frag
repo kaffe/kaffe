@@ -1,7 +1,7 @@
 #
 # Alpha/OSF configuration
 #
-host_cpu=alpha
-host_os=osf
+Khost_cpu=alpha
+Khost_os=osf
 CFLAGS="$CFLAGS -mieee"
 LIBS="$LIBS -lexc"

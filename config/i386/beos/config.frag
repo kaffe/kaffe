@@ -1,8 +1,8 @@
 #
 # i386/BeOS configuration
 #
-host_cpu=i386
-host_os=beos
+Khost_cpu=i386
+Khost_os=beos
 with_threads=beos-native
 
 ac_cv_typedef_int8=yes

@@ -1,5 +1,5 @@
 #
 # Alpha/Netbsd1 configuration
 #
-host_cpu=alpha
-host_os=netbsd1
+Khost_cpu=alpha
+Khost_os=netbsd1

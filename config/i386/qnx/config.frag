@@ -1,6 +1,6 @@
 #
 # i386/QNX configuration
 #
-host_cpu=i386
-host_os=qnx
+Khost_cpu=i386
+Khost_os=qnx
 CFLAGS="-O -fno-pack-struct"

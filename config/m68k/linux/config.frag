@@ -1,8 +1,8 @@
 #
 # m68k/Linux configuration.
 #
-host_cpu=m68k
-host_os=linux
+Khost_cpu=m68k
+Khost_os=linux
 CFLAGS="-g -fno-omit-frame-pointer"
 #CFLAGS="-g -O -fno-omit-frame-pointer"
 if [ "$cross_compiling" = yes ]; then

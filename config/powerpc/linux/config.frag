@@ -1,6 +1,6 @@
 #
 # PowerPC/Linux configuration
 #
-host_cpu=powerpc
-host_os=linux
+Khost_cpu=powerpc
+Khost_os=linux
 CFLAGS="-g -fsigned-char"

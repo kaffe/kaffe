@@ -1,5 +1,5 @@
 #
 # i386/Netbsd1 configuration
 #
-host_cpu=i386
-host_os=netbsd1
+Khost_cpu=i386
+Khost_os=netbsd1

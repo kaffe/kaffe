@@ -1,6 +1,6 @@
 #
 # Alpha/Linux configuration
 #
-host_cpu=alpha
-host_os=linux
+Khost_cpu=alpha
+Khost_os=linux
 CFLAGS="$CFLAGS -mieee"

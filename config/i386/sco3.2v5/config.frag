@@ -1,5 +1,5 @@
 #
 # i386/SCO3 configuration
 #
-host_cpu=i386
-host_os=sco3.2v5
+Khost_cpu=i386
+Khost_os=sco3.2v5

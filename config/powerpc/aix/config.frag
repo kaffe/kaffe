@@ -1,6 +1,6 @@
 #
 # PowerPC/AIX configuration
 #
-host_cpu=powerpc
-host_os=aix
+Khost_cpu=powerpc
+Khost_os=aix
 CFLAGS="-g -fsigned-char -DAIX -Dunix"

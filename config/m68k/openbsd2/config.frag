@@ -1,5 +1,5 @@
 #
 # m68k/Openbsd2 configuration.
 #
-host_cpu=m68k
-host_os=openbsd2
+Khost_cpu=m68k
+Khost_os=openbsd2

@@ -1,5 +1,5 @@
 #
 # i386/Freebsd configuration
 #
-host_cpu=i386
-host_os=freebsd2
+Khost_cpu=i386
+Khost_os=freebsd2

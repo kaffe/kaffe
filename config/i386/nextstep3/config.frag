@@ -1,8 +1,8 @@
 #
 # i386/Nextstep3 configuration
 #
-host_cpu=i386
-host_os=nextstep3
+Khost_cpu=i386
+Khost_os=nextstep3
 CFLAGS="-g -seglinkedit -all_load"
 LIBSHARE=-r
 LIBEXT=.o

@@ -1,5 +1,5 @@
 #
 # Sparc/Sunos4 configuration
 #
-host_cpu=sparc
-host_os=bsdi3
+Khost_cpu=sparc
+Khost_os=bsdi3

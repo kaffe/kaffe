@@ -1,5 +1,5 @@
 #
 # Sparc/Linux configuration
 #
-host_cpu=sparc
-host_os=linux
+Khost_cpu=sparc
+Khost_os=linux

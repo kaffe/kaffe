@@ -1,6 +1,6 @@
 #
 # PowerPC/Machten configuration.
 #
-host_cpu=powerpc
-host_os=machten
+Khost_cpu=powerpc
+Khost_os=machten
 CFLAGS="-g -fsigned-char"

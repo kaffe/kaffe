@@ -1,6 +1,6 @@
 #
 # m68k/Amiga configuration.
 #
-host_cpu=m68k
-host_os=amigaos
+Khost_cpu=m68k
+Khost_os=amigaos
 CFLAGS="-g -O2 -fno-omit-frame-pointer"

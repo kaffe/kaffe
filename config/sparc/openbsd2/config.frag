@@ -1,5 +1,5 @@
 #
 # sparc/openbsd2 configuration
 #
-host_cpu=sparc
-host_os=openbsd2
+Khost_cpu=sparc
+Khost_os=openbsd2

@@ -2,37 +2,37 @@
 # Perform name aliasing.
 #
 
-case "$host_cpu" in
+case "$Khost_cpu" in
 
-hppa*)		host_cpu=parisc ;;
-i[3456]86)	host_cpu=i386 ;;
-sa110)		host_cpu=arm ;;
-arm32)		host_cpu=arm ;;
-armv4l)		host_cpu=arm ;;
-mipsel)		host_cpu=mips ;;
-alpha*)		host_cpu=alpha ;;
+hppa*)		Khost_cpu=parisc ;;
+i[3456]86)	Khost_cpu=i386 ;;
+sa110)		Khost_cpu=arm ;;
+arm32)		Khost_cpu=arm ;;
+armv4l)		Khost_cpu=arm ;;
+mipsel)		Khost_cpu=mips ;;
+alpha*)		Khost_cpu=alpha ;;
 
 esac
 
-case "$host_os" in
+case "$Khost_os" in
 
-aix*)		host_os=aix ;;
-aux*)		host_os=a-ux ;;
-bsdi3*)		host_os=bsdi3 ;;
-bsdi*)		host_os=bsdi ;;
-cygwin*)	host_os=cygwin32 ;;
-freebsd*)	host_os=freebsd2 ;;
-hpux*)		host_os=hpux ;;
-irix*)		host_os=irix5 ;;
-linux*)		host_os=linux ;;
-machten*)	host_os=machten ;;
-netbsd*)	host_os=netbsd1 ;;
-openbsd*)	host_os=openbsd2 ;;
-osf*)		host_os=osf ;;
-qnx4.*)		host_os=qnx ;;
-solaris2*)	host_os=solaris2 ;;
-sunos4*)	host_os=sunos4 ;;
-sysv*)		host_os=univel_svr4 ;;
-ultrix4*)	host_os=ultrix4 ;;
+aix*)		Khost_os=aix ;;
+aux*)		Khost_os=a-ux ;;
+bsdi3*)		Khost_os=bsdi3 ;;
+bsdi*)		Khost_os=bsdi ;;
+cygwin*)	Khost_os=cygwin32 ;;
+freebsd*)	Khost_os=freebsd2 ;;
+hpux*)		Khost_os=hpux ;;
+irix*)		Khost_os=irix5 ;;
+linux*)		Khost_os=linux ;;
+machten*)	Khost_os=machten ;;
+netbsd*)	Khost_os=netbsd1 ;;
+openbsd*)	Khost_os=openbsd2 ;;
+osf*)		Khost_os=osf ;;
+qnx4.*)		Khost_os=qnx ;;
+solaris2*)	Khost_os=solaris2 ;;
+sunos4*)	Khost_os=sunos4 ;;
+sysv*)		Khost_os=univel_svr4 ;;
+ultrix4*)	Khost_os=ultrix4 ;;
 
 esac

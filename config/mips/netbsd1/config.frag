@@ -1,5 +1,5 @@
 #
 # Mips/Netbsd configuration.
 #
-host_cpu=mips
-host_os=netbsd1
+Khost_cpu=mips
+Khost_os=netbsd1

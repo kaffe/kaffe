@@ -1,5 +1,5 @@
 #
 # Sparc/Nextstep3 configuration
 #
-host_cpu=sparc
-host_os=nextstep3
+Khost_cpu=sparc
+Khost_os=nextstep3

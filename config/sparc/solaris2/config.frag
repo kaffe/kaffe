@@ -1,5 +1,5 @@
 #
 # Sparc/Solaris2 configuration
 #
-host_cpu=sparc
-host_os=solaris2
+Khost_cpu=sparc
+Khost_os=solaris2

@@ -1,5 +1,5 @@
 #
 # i386/BSDI configuration
 #
-host_cpu=i386
-host_os=bsdi
+Khost_cpu=i386
+Khost_os=bsdi

@@ -1,5 +1,5 @@
 #
 # i386/Solaris2 configuration
 #
-host_cpu=i386
-host_os=solaris2
+Khost_cpu=i386
+Khost_os=solaris2
