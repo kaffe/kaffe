@@ -584,7 +584,7 @@ kaffe_lang_SRCS = \
 	kaffe/lang/MemoryAdvice.java \
 	kaffe/lang/MemoryAdviceCallback.java \
 	kaffe/lang/SystemClassLoader.java \
-	kaffe/lang/UNIXProcess.java
+	kaffe/lang/UNIXProcess.java \
 	kaffe/lang/DummyClassLoader.java
 kaffe_management_SRCS = \
 	kaffe/management/Classpath.java
@@ -630,7 +630,7 @@ kaffe_util_SRCS = \
 	kaffe/util/VectorSnapshot.java
 kaffe_util_log_SRCS = \
 	kaffe/util/log/LogClient.java \
-	kaffe/util/log/LogStream.java
+	kaffe/util/log/LogStream.java \
 	kaffe/util/log/SimpleLogViewer.java
 kaffe_util_zip_SRCS = \
 	kaffe/util/zip/SwitchInflater.java
