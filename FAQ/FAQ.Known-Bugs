@@ -42,10 +42,13 @@ Treat it as an TODO list.
   relies on the GNU Multi-precision math package (GMP).  BigDecimal is
   completely incomplete (?) and will just throw exceptions when used.
 
-* There are problems with String.intern().  Specifically, if a string
-  is scheduled for finalization, and another string with the same value
-  is interned, the latter won't be interned after the first one uninterned
-  itself in the finalizer.
+* There is a problem with String.intern().  Specifically, if an interned string
+  is scheduled for finalization, but is then reattached through the finalizer
+  of a related object, and another string with the same value is interned, 
+  then the second string will have a different interned value.  This means
+  that calling a.intern() gives a different result depending on when
+  it's called.  This seems like a very obscure problem.  It should be fixed
+  once 1.2 references are implemented.
 
 * If an exception, such as NoSuchField or NoSuchMethod is thrown in the 
   verifier, the system bails.
