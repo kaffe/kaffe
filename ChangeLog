@@ -1,5 +1,18 @@
 2004-11-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/geom/Arc2D.java:
+        Resynced with GNU Classpath.
+
+	2004-11-17  Sven de Marothy  <sven@physto.se>
+
+        * java/awt/geom/Arc2D.java,
+        (setAngleStart): Corrected (wrong sign on atan2 y parameter)
+        (setAngles): Likewise
+        (containsAngle): Return false on zero extent, don't include final angle
+        (contains): Treat OPEN-type arcs like CHORD ones, not as PIE ones.
+
+2004-11-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/geom/AffineTransform.java:
         Resynced with GNU Classpath.
 

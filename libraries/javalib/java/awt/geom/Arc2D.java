@@ -327,7 +327,7 @@ public abstract class Arc2D extends RectangularShape
     // Normalize.
     double x = p.getX() - (getX() + getWidth() / 2);
     double y = p.getY() - (getY() + getHeight() / 2);
-    setAngleStart(Math.toDegrees(Math.atan2(y, x)));
+    setAngleStart(Math.toDegrees(Math.atan2(-y, x)));
   }
 
   /**
@@ -352,8 +352,8 @@ public abstract class Arc2D extends RectangularShape
     y1 = y1 - (my + mh / 2);
     x2 = x2 - (mx + mw / 2);
     y2 = y2 - (my + mh / 2);
-    double start = Math.toDegrees(Math.atan2(y1, x1));
-    double extent = Math.toDegrees(Math.atan2(y2, x2)) - start;
+    double start = Math.toDegrees(Math.atan2(-y1, x1));
+    double extent = Math.toDegrees(Math.atan2(-y2, x2)) - start;
     if (extent < 0)
       extent += 360;
     setAngleStart(start);
@@ -469,6 +469,9 @@ public abstract class Arc2D extends RectangularShape
     double extent = getAngleExtent();
     double end = start + extent;
 
+    if (extent == 0)
+      return false;
+
     if (extent >= 360 || extent <= -360)
       return true;
 
@@ -490,7 +493,7 @@ public abstract class Arc2D extends RectangularShape
     while (a < start)
       a += 360;
 
-    return a >= start && a <= end;
+    return a >= start && a < end; // starting angle included, ending angle not
   }
 
   /**
@@ -498,7 +501,7 @@ public abstract class Arc2D extends RectangularShape
    * is empty, then this will return false.
    *
    * The area considered 'inside' an arc of type OPEN is the same as the
-   * area inside an equivalent filled PIE-type arc. The area considered
+   * area inside an equivalent filled CHORD-type arc. The area considered
    * 'inside' a CHORD-type arc is the same as the filled area.
    *
    * @param x the x coordinate to test
@@ -521,7 +524,7 @@ public abstract class Arc2D extends RectangularShape
       return false;
 
     double angle = Math.toDegrees(Math.atan2(-dy, dx));
-    if (getArcType() != CHORD)
+    if (getArcType() == PIE)
       return containsAngle(angle);
 
     double a1 = Math.toRadians(getAngleStart());
