@@ -35,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package javax.swing;
 
 import java.awt.Dimension;
@@ -49,7 +50,6 @@ import javax.accessibility.AccessibleStateSet;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
-
 
 public class JTextField extends JTextComponent
   implements SwingConstants
@@ -272,19 +272,10 @@ public class JTextField extends JTextComponent
 
   public Dimension getPreferredSize()
   {
-    Dimension size;
-    FontMetrics fm = getFontMetrics(getFont());
-    int fontHeight = fm.getMaxAscent() + fm.getMaxDescent();
-    int columnWidth = fm.charWidth('m');
-    
+    Dimension size = super.getPreferredSize();
+
     if (columns != 0)
-      {
-	size = new Dimension(columns * columnWidth + 4, fontHeight + 4);
-      }
-    else
-      {
-	size = new Dimension(10, 10);
-      }
+      size.width = columns * getColumnWidth();
 
     return size;
   }
