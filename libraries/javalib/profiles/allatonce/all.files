@@ -25,9 +25,9 @@ gnu/inet/util/LineInputStream.java
 gnu/java/awt/BitMaskExtent.java
 gnu/java/awt/Buffers.java
 gnu/java/awt/ComponentDataBlitOp.java
-gnu/java/awt/EventModifier.java
 gnu/java/awt/EmbeddedWindow.java
 gnu/java/awt/EmbeddedWindowSupport.java
+gnu/java/awt/EventModifier.java
 gnu/java/awt/peer/EmbeddedWindowPeer.java
 gnu/java/beans/BeanInfoEmbryo.java
 gnu/java/beans/editors/ColorEditor.java
@@ -708,6 +708,7 @@ java/beans/Customizer.java
 java/beans/DesignMode.java
 java/beans/EventSetDescriptor.java
 java/beans/ExceptionListener.java
+java/beans/Expression.java
 java/beans/FeatureDescriptor.java
 java/beans/GenericBeanInfo.java
 java/beans/IndexedPropertyDescriptor.java
@@ -725,6 +726,7 @@ java/beans/PropertyEditorManager.java
 java/beans/PropertyEditorSupport.java
 java/beans/PropertyVetoException.java
 java/beans/SimpleBeanInfo.java
+java/beans/Statement.java
 java/beans/VetoableChangeListener.java
 java/beans/VetoableChangeListenerProxy.java
 java/beans/VetoableChangeSupport.java

@@ -1040,6 +1040,7 @@ java_beans_SRCS = \
 	java/beans/DesignMode.java \
 	java/beans/EventSetDescriptor.java \
 	java/beans/ExceptionListener.java \
+	java/beans/Expression.java \
 	java/beans/FeatureDescriptor.java \
 	java/beans/GenericBeanInfo.java \
 	java/beans/IndexedPropertyDescriptor.java \
@@ -1057,6 +1058,7 @@ java_beans_SRCS = \
 	java/beans/PropertyEditorSupport.java \
 	java/beans/PropertyVetoException.java \
 	java/beans/SimpleBeanInfo.java \
+	java/beans/Statement.java \
 	java/beans/VetoableChangeListener.java \
 	java/beans/VetoableChangeListenerProxy.java \
 	java/beans/VetoableChangeSupport.java \

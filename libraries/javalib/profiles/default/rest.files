@@ -191,6 +191,7 @@ java/beans/PropertyEditorSupport.java
 java/beans/PropertyChangeEvent.java
 java/beans/BeanInfo.java
 java/beans/BeanDescriptor.java
+java/beans/Expression.java
 java/beans/FeatureDescriptor.java
 java/beans/VetoableChangeSupport.java
 java/beans/AppletInitializer.java
@@ -213,6 +214,7 @@ java/beans/ExceptionListener.java
 java/beans/PropertyChangeListenerProxy.java
 java/beans/GenericBeanInfo.java
 java/beans/Customizer.java
+java/beans/Statement.java
 java/util/logging/LogRecord.java
 java/util/logging/Logger.java
 java/util/logging/SimpleFormatter.java
