@@ -12,6 +12,7 @@ libmanagement_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols
 libmanagement_la_SOURCES = \
 	Classpath.c \
 	JIT.c \
-	Debug.c
+	Debug.c \
+	XProfiler.c
 
 CLEANFILES = so_locations

@@ -140,7 +140,8 @@ libmanagement_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols
 libmanagement_la_SOURCES = \
 	Classpath.c \
 	JIT.c \
-	Debug.c
+	Debug.c \
+	XProfiler.c
 
 
 CLEANFILES = so_locations
@@ -160,7 +161,7 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libmanagement_la_LIBADD = 
-am_libmanagement_la_OBJECTS =  Classpath.lo JIT.lo Debug.lo
+am_libmanagement_la_OBJECTS =  Classpath.lo JIT.lo Debug.lo XProfiler.lo
 libmanagement_la_OBJECTS =  $(am_libmanagement_la_OBJECTS)
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -175,7 +176,7 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 GZIP_ENV = --best
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 DEP_FILES =  @AMDEP@ $(DEPDIR)/Classpath.Plo $(DEPDIR)/Debug.Plo \
-$(DEPDIR)/JIT.Plo
+$(DEPDIR)/JIT.Plo $(DEPDIR)/XProfiler.Plo
 SOURCES = $(libmanagement_la_SOURCES)
 OBJECTS = $(am_libmanagement_la_OBJECTS)
 
@@ -289,6 +290,7 @@ distdir: $(DISTFILES)
 @AMDEP@include $(DEPDIR)/Classpath.Plo
 @AMDEP@include $(DEPDIR)/Debug.Plo
 @AMDEP@include $(DEPDIR)/JIT.Plo
+@AMDEP@include $(DEPDIR)/XProfiler.Plo
 
 mostlyclean-depend:
 
