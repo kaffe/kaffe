@@ -30,26 +30,6 @@ extern size_t gc_heap_total;
 extern jboolean runFinalizerOnExit;
 
 /*
- * Load in a library file.
- * Returns null if successful, otherwise an error message.
- */
-struct Hjava_lang_String*
-java_lang_Runtime_loadFileInternal(struct Hjava_lang_Runtime* this, struct Hjava_lang_String* s1)
-{
-	char lib[MAXPATHLEN];
-	char errmsg[128];
-	int r;
-
-	stringJava2CBuf(s1, lib, sizeof(lib));
-	r = loadNativeLibrary(lib, errmsg, sizeof(errmsg));
-	if (r) {
-		return 0;
-	}
-
-	return (checkPtr(stringC2Java(errmsg)));
-}
-
-/*
  * Exit this VM
  */
 void
