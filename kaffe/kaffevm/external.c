@@ -9,9 +9,8 @@
  * of this file. 
  */
 
-#define	DBG(s)
-
 #include "config.h"
+#include "debug.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "config-io.h"
@@ -29,6 +28,7 @@
 #include "support.h"
 #include "md.h"
 #include "system.h"
+#include "jthread.h"
 #include "ltdl.h"
 
 #ifndef STUB_PREFIX
@@ -207,7 +207,7 @@ loadNativeLibrary(char* lib)
                    particular error, and print only other kinds of
                    errors. */
 		if (err) {
-			printf("Library load failed: %s\n", err);
+			fprintf(stderr, "Library load failed: %s\n", err);
 		}
 		return (0);
 	}
@@ -258,8 +258,11 @@ native(Method* m, errorInfo *einfo)
 	strcat(stub, m->name->data);
 	strcat(stub, STUB_POSTFIX);
 
-DBG(	printf("Method = %s.%s%s\n", m->class->name->data, m->name->data, m->signature->data);)
-DBG(	printf("Native stub = '%s'\n", stub);fflush(stdout);		)
+DBG(LIBTOOL,	
+	dprintf("Method = %s.%s%s\n", m->class->name->data, 
+		m->name->data, m->signature->data);
+	dprintf("Native stub = '%s'\n", stub);
+    )
 
 	/* Find the native method */
 	func = loadNativeLibrarySym(stub);
@@ -274,8 +277,9 @@ DBG(	printf("Native stub = '%s'\n", stub);fflush(stdout);		)
                 return (true);
         }
 
-DBG(	fprintf(stderr, "Failed to locate native function:\n\t%s.%s%s\n", m->class->name->data, m->name->data, m->signature->data);
-	fflush(stderr); )
+DBG(LIBTOOL,
+	dprintf(stderr, "Failed to locate native function:\n\t%s.%s%s\n", m->class->name->data, m->name->data, m->signature->data);
+    )
 	SET_METHOD_NATIVECODE(m, (void*)error_stub);
 
 	/* construct nice error message */
