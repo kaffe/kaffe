@@ -649,9 +649,20 @@ newSerialObject(Hjava_lang_Class* clazz, Hjava_lang_Object* obj)
 
 static
 int
-compare(const void* one, const void* two)
+compare(const void* o, const void* t)
 {
-	return (strcmp((*(Field**)one)->name->data, (*(Field**)two)->name->data));
+	Field* one = *(Field**)o;
+	Field* two = *(Field**)t;
+
+	if (FIELD_ISREF(one)) {
+		if (!FIELD_ISREF(two)) {
+			return (1);
+		}
+	}
+	else if (FIELD_ISREF(two)) {
+		return (-1);
+	}
+	return (strcmp(one->name->data, two->name->data));
 }
 
 static
@@ -705,12 +716,7 @@ getFields(struct Hkaffe_io_ObjectStreamClassImpl* cls)
 		cnt++;
 	}
 
-	/* Sort the array - but only if it's standard and we're not using
-	 * the inner class compatibility system.
-	 */
-	if (offset == 0) {
-		qsort(unhand_array(array)->body, cnt, sizeof(void*), compare);
-	}
+	qsort(unhand_array(array)->body, cnt, sizeof(void*), compare);
 
 	return (array);
 }
