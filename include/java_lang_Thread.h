@@ -27,6 +27,7 @@ typedef struct Classjava_lang_Thread {
   struct Hkaffe_util_Ptr* jnireferences;
   jbool dying;
   struct Hjava_util_Hashtable* threadLocals;
+  struct Hjava_lang_Object* suspendResume;
 } Classjava_lang_Thread;
 HandleTo(java_lang_Thread);
 

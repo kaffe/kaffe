@@ -12,7 +12,6 @@ package java.lang;
 
 import java.util.Hashtable;
 import java.util.Enumeration;
-import kaffe.util.Deprecated;
 
 public class Thread implements Runnable {
   public final static int MIN_PRIORITY = 1;
@@ -35,6 +34,7 @@ public class Thread implements Runnable {
   private kaffe.util.Ptr jnireferences;
   private boolean dying;
   private Hashtable threadLocals;
+  private Object suspendResume;
 
   public native int countStackFrames();
   public static native Thread currentThread();
@@ -156,7 +156,7 @@ public class Thread implements Runnable {
    */
   public final void stop()
   {
-    throw new Deprecated();
+    stop(new ThreadDeath());
   }
 
   /**
@@ -164,7 +164,7 @@ public class Thread implements Runnable {
    */
   public final synchronized void stop(Throwable o)
   {
-    throw new Deprecated();
+    stop0(o);
   }
 
   public void interrupt()
@@ -199,7 +199,16 @@ public class Thread implements Runnable {
    */
   public final void suspend()
   {
-    throw new Deprecated();
+    if (suspendResume == null) {
+      suspendResume = new Object();
+    }
+    synchronized(suspendResume) {
+      try {
+	suspendResume.wait();
+      }
+      catch (InterruptedException _) {
+      }
+    }
   }
 
   /**
@@ -207,7 +216,11 @@ public class Thread implements Runnable {
    */
   public final void resume()
   {
-    throw new Deprecated();
+    if (suspendResume != null) {
+      synchronized(suspendResume) {
+	suspendResume.notifyAll();
+      }
+    }
   }
   
   public final void setPriority(int newPriority)
@@ -316,5 +329,6 @@ public class Thread implements Runnable {
   private static native void sleep0(long millis);
   private native void interrupt0();
   private native void destroy0();
+  private native void stop0(Object o);
 }
 
