@@ -41,3 +41,8 @@ public class DoubleBug {
 	    System.out.println("valid floating-point number PASS");
     }
 }
+
+/* Expected Output:
+valid floating-point number PASS
+valid floating-point number PASS
+*/

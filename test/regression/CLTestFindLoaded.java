@@ -113,3 +113,8 @@ public class CLTestFindLoaded extends ClassLoader
 	t2.join();
     }
 }
+
+/* Expected Output:
+Success.
+Success.
+*/

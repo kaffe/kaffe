@@ -20,3 +20,7 @@ public class MarkResetTest {
     }
 }
 
+
+/* Expected Output:
+Success.
+*/

@@ -11,3 +11,7 @@ class BadFloatTest {
         System.out.println(x + " " + y);
     }   
 }
+
+/* Expected Output:
+1.2345 9.8765
+*/

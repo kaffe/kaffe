@@ -7,3 +7,7 @@ class Str {
 	}
 }
 
+
+/* Expected Output:
+12abcd34567890
+*/

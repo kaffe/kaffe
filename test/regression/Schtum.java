@@ -16,3 +16,7 @@ public class Schtum {
         }
     }
 }
+
+/* Expected Output:
+Okay
+*/

@@ -32,3 +32,15 @@ public class ReflectInterfaces
 			System.out.println(m[i].toString());
 	}
 }
+
+/* Expected Output:
+null
+all methods
+public abstract void ReflectInterfaces$If2.if2MethodNP()
+public abstract void ReflectInterfaces$If2.if2Method()
+public abstract void ReflectInterfaces$If1.if1MethodNP()
+public abstract void ReflectInterfaces$If1.if1Method()
+declared methods
+public abstract void ReflectInterfaces$If2.if2MethodNP()
+public abstract void ReflectInterfaces$If2.if2Method()
+*/

@@ -7,3 +7,7 @@ public class finaltest {
     java.lang.System.out.println (finaltest2.PI);
   }
 }
+
+/* Expected Output:
+3.1415926536
+*/

@@ -72,3 +72,9 @@ public class Alias {
 	}
 };
 
+
+/* Expected Output:
+Tam: 106
+rect1=(1, 1)-(1, 1) rect2=(1, 1)-(1, 1)
+rect1=(3, 3)-(3, 3) rect2=(3, 3)-(3, 3)
+*/

@@ -24,3 +24,10 @@ public class InvTarExcTest
 	}
     }
 }
+
+/* Expected Output:
+Caught itexception: null
+java.lang.reflect.InvocationTargetException
+	at InvTarExcTest.main(InvTarExcTest.java:13)
+Target is: throwing inner exception
+*/

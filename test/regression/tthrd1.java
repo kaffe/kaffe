@@ -24,3 +24,9 @@ public class tthrd1
       System.err.println("main end");
     }
 }
+
+/* Expected Output:
+main start
+true 1
+main end
+*/

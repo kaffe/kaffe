@@ -6,3 +6,7 @@ class Str2 {
 	}
 }
 
+
+/* Expected Output:
+12
+*/

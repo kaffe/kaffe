@@ -100,3 +100,7 @@ public class CLTestJLock extends ClassLoader
 	}.start();
     }
 }
+
+/* Expected Output:
+Success.
+*/

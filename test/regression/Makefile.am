@@ -6,154 +6,100 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-TESTS = TestScript TestScriptThread
+SETUP_ENVIRONMENT = eval `sed 's/;.*//' < $(top_builddir)/BUILD_ENVIRONMENT`
 
-SETUP_ENVIRONMENT = . $(top_builddir)/BUILD_ENVIRONMENT
+TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript
 
-TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT); $(SHELL)
-# The $(SHELL) above assumes that all tests are shell-scripts
-# which saves us from having to ensure that they are executable
-
-EXTRA_DIST = \
-	BadFloatTest.java \
-	BadFloatTest.out \
-	Bean.java \
-	Bean.out \
-	BeanBug.java \
-	BeanBug.out \
-	BitSetTest.java \
-	BitSetTest.out \
-	CLTest.java \
-	CLTest.out \
-	CLTestConc.java \
-	CLTestConc.out \
-	CLTestConc_run.java \
-	CLTestFindLoaded.java \
-	CLTestFindLoaded.out \
-	CLTestJLock.java \
-	CLTestJLock.out \
-	CLTestLie.java \
-	CLTestLie.out \
-	CatchDeath.java \
-	CatchDeath.out \
-	CharCvt.java \
-	CharCvt.out \
-	ClassGC.java \
-	ClassGC.out \
-	ClassGCTest.java \
-	ClassGCTestLater.java \
-	ConstructorTest.java \
-	ConstructorTest.out \
-	DeadThread.java \
-	DeadThread.out \
-	DoubleBug.java \
-	DoubleBug.out \
-	ExceptionInInitializerTest.java \
-	ExceptionInInitializerTest.out \
-	ExceptionTest.java \
-	ExceptionTestClassLoader.java \
-	ExceptionTestClassLoader.out \
-	ExceptionTestClassLoader2.java \
-	ExceptionTestClassLoader2.out \
-	ExecTest.java \
-	ExecTest.out \
-	FindSystemClass.java \
-	FindSystemClass.out \
-	GCTest.java \
-	GCTest.out \
-	GetInterfaces.java \
-	GetInterfaces.out \
-	HashtableTest1.java \
-	HashtableTest1.out \
-	Hello.java \
+TESTS = \
+## Simple health check
 	HelloWorldApp.class.save \
+## Now test the compiler
 	HelloWorldApp.java \
-	HelloWorldApp.out \
-	IllegalInterface.java \
-	IllegalInterface.out \
-	IndexTest.java \
-	IndexTest.out \
-	InitTest.java \
-	InitTest.out \
-	InternHog.java \
-	InternHog.out \
-	InvTarExcTest.java \
-	InvTarExcTest.out \
-	KaffeVerifyBug.java \
-	KaffeVerifyBug.out \
-	LostFrame.java \
-	LostFrame.out \
-	MarkResetTest.java \
-	MarkResetTest.out \
-	MethodBug.java \
-	MethodBug.out \
-	ModuloTest.java \
-	ModuloTest.out \
-	NullPointerTest.java \
-	NullPointerTest.out \
-	Overflow.java \
-	Overflow.out \
-	ProcessClassInst.java \
-	ProcessClassInst.out \
-	ProcessClassLockTest.java \
-	ProcessClassLockTest.out \
-	ProcessClassStop.java \
-	ProcessClassStop.out \
-	ProcessClassTest.java \
-	ProcessClassTest.out \
-	ProcessTest.java \
-	ProcessTest.out \
-	Reflect.java \
-	Reflect.out \
-	ReflectInterfaces.java \
-	ReflectInterfaces.out \
-	ReflectInvoke.java \
-	ReflectInvoke.out \
-	Schtum.java \
-	Schtum.out \
-	SignedShort.java \
-	SignedShort.out \
-	StackDump.java \
-	StackDump.out \
-	Str.java \
-	Str.out \
-	Str2.java \
-	Str2.out \
-	TestFloatDouble.java \
-	TestFloatDouble.out \
+## Test ints, longs, floats and doubles
 	TestIntLong.java \
-	TestIntLong.out \
-	TestNative.java \
-	TestSerializable.java \
-	TestSerializable.out \
-	TestUnlock.java \
-	TestUnlock.out \
+	TestFloatDouble.java \
+	ModuloTest.java \
+## Test strings
+	Str.java \
+	Str2.java \
+	InternHog.java \
+## Test exceptions
+	IndexTest.java \
+	StackDump.java \
+## Test threads
+	tname.java \
+	ttest.java \
 	ThreadInterrupt.java \
-	ThreadInterrupt.out \
-	ThreadLocalTest.java \
-	ThreadLocalTest.out \
-	ThreadStop.java \
-	ThreadStop.out \
-	UDPTest.java \
-	UDPTest.out \
 	UncaughtException.java \
-	UncaughtException.out \
+## Misc tests
+	ReflectInterfaces.java \
+	TestSerializable.java \
+	Alias.java \
+	NullPointerTest.java \
+	LostFrame.java \
+	ConstructorTest.java \
 	burford.java \
-	burford.out \
+	IllegalInterface.java \
+	GetInterfaces.java \
+	SignedShort.java \
+	CharCvt.java \
+	BadFloatTest.java \
+	ProcessTest.java \
+	UDPTest.java \
+	SoTimeout.java \
+	wc.java \
+	FileTest.java \
 	finaltest.java \
-	finaltest.out \
 	finaltest2.java \
 	forNameTest.java \
-	forNameTest.out \
-	tname.java \
-	tname.out \
-	ttest.java \
-	ttest.out \
+	KaffeVerifyBug.java \
+	Schtum.java \
+	Reflect.java \
+	MethodBug.java \
+	Bean.java \
+## simple test for Method.invoke
+	ReflectInvoke.java \
+## simple test for InvocationTargetExceptions
+	InvTarExcTest.java \
+## tests for ClassLoader
+	CLTest.java \
+	CLTestConc.java \
+	CLTestJLock.java \
+	CLTestLie.java \
+	CLTestFindLoaded.java \
+	ExceptionTest.java \
+	ExceptionTestClassLoader.java \
+	ExceptionTestClassLoader2.java \
+	ClassGC.java \
+	GCTest.java \
+	ThreadLocalTest.java \
+	BeanBug.java \
+	BitSetTest.java \
+	ExceptionInInitializerTest.java \
+	InitTest.java \
+	ProcessClassTest.java \
+	ProcessClassInst.java \
+	ProcessClassStop.java \
+	FindSystemClass.java \
+	ProcessClassLockTest.java \
+	DoubleBug.java \
+	Overflow.java \
+	TestUnlock.java \
+	MarkResetTest.java \
+	HashtableTest1.java \
+	ReflectMultiArray.java \
+	ExecTest.java \
+## FIXME: ignore next 2
+## Test catching our own death
+	CatchDeath.java \
+## Test various ways of stopping threads
+	ThreadStop.java \
+	DeadThread.java \
 	tthrd1.java \
-	tthrd1.out \
-	wc.java \
-	wc.out
+## Test interrupting I/O
+## This is kind of tricky, and Sun doesn't support it.
+	SoInterrupt.java
 
-CLEANFILES = *.class *.fail
+CLEANFILES = *.class *.fail *.out
 
-check-TESTS: clean
+check-TESTS: clean TestScript

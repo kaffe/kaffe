@@ -30,3 +30,7 @@ public class KaffeVerifyBug
         return a;
     }
 }
+
+/* Expected Output:
+okay
+*/

@@ -27,3 +27,8 @@ public class DeadThread
       }
     }
 }
+
+/* Expected Output:
+1 true
+true 1
+*/

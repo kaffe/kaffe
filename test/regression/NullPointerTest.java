@@ -36,3 +36,7 @@ public class NullPointerTest {
     }
 }
 
+
+/* Expected Output:
+This is Perfect
+*/

@@ -28,3 +28,8 @@ public class UncaughtException {
 	}
     }
 }
+
+/* Expected Output:
+Success 1.
+Success 3.
+*/

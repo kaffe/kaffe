@@ -27,6 +27,8 @@ public class ExceptionTest {
       System.out.println( foo( i ) );
     }
   }
+  public static void main(String[] argv) {}
 }
 
-
+/* Expected Output:
+*/

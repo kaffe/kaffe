@@ -28,3 +28,7 @@ public class LostFrame {
 	test();
     }
 }
+
+/* Expected Output:
+PASS
+*/

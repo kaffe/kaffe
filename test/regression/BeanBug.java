@@ -28,3 +28,25 @@ public class BeanBug {
         }
     }
 }
+
+// Sort output
+/* Expected Output:
+interface java.awt.event.ActionListener
+interface java.awt.event.ComponentListener
+interface java.awt.event.FocusListener
+interface java.awt.event.KeyListener
+interface java.awt.event.MouseListener
+interface java.awt.event.MouseMotionListener
+public void java.awt.Button.addActionListener(java.awt.event.ActionListener)
+public void java.awt.Button.removeActionListener(java.awt.event.ActionListener)
+public void java.awt.Component.addComponentListener(java.awt.event.ComponentListener)
+public void java.awt.Component.addFocusListener(java.awt.event.FocusListener)
+public void java.awt.Component.addKeyListener(java.awt.event.KeyListener)
+public void java.awt.Component.addMouseListener(java.awt.event.MouseListener)
+public void java.awt.Component.addMouseMotionListener(java.awt.event.MouseMotionListener)
+public void java.awt.Component.removeComponentListener(java.awt.event.ComponentListener)
+public void java.awt.Component.removeFocusListener(java.awt.event.FocusListener)
+public void java.awt.Component.removeKeyListener(java.awt.event.KeyListener)
+public void java.awt.Component.removeMouseListener(java.awt.event.MouseListener)
+public void java.awt.Component.removeMouseMotionListener(java.awt.event.MouseMotionListener)
+*/

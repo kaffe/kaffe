@@ -23,3 +23,10 @@ public class MethodBug {
     public void m() {}
     public MethodBug() {}
 }
+
+/* Expected Output:
+m is public void MethodBug.m()
+m is public void MethodBug.m()
+c is public MethodBug()
+c is public MethodBug()
+*/

@@ -96,3 +96,9 @@ public class ProcessClassInst
 	System.exit(0);
     }
 }
+
+/* Expected Output:
+tan java.lang.NoClassDefFoundError: Base
+m2 a base
+t2 a base
+*/

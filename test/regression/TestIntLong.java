@@ -36,3 +36,8 @@ class TestIntLong {
 		System.out.println("Results "+s);
 	}
 }
+
+/* Expected Output:
+Some mathmatical tests
+Results Good
+*/

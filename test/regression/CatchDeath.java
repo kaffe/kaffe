@@ -67,3 +67,10 @@ class CatchSyncWaitDeath implements Runnable
     }
 }
 
+
+// javac flags: -nowarn
+/* Expected Output:
+Caught java.lang.ThreadDeath
+Caught java.lang.ThreadDeath
+Caught java.lang.ThreadDeath
+*/

@@ -4,3 +4,7 @@ class HelloWorldApp {
 	}
 }
 
+
+/* Expected Output:
+Hello World!
+*/

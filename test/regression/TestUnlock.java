@@ -48,3 +48,7 @@ public class TestUnlock {
 	System.exit(0);
     }
 }
+
+/* Expected Output:
+Success.
+*/

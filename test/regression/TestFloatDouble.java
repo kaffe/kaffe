@@ -32,3 +32,9 @@ class TestFloatDouble {
 		System.out.println("Results "+s);
 	}
 }
+
+// Skip run
+/* Expected Output:
+Some mathmatical tests
+Results Good
+*/

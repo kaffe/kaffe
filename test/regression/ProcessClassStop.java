@@ -93,3 +93,10 @@ public class ProcessClassStop
 	System.exit(0);
     }
 }
+
+// javac flags: -nowarn
+/* Expected Output:
+tan java.lang.NoClassDefFoundError: Base
+m2 a base
+t2 a base
+*/

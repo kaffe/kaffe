@@ -11,6 +11,14 @@ import java.io.FileInputStream;
 
 public class CLTest extends ClassLoader
 {
+    public static class Hello
+    {
+	public Hello()
+	{
+	    System.out.println("Hello World");
+	}
+    }
+
     protected synchronized Class loadClass(String name, boolean resolve)
 	throws ClassNotFoundException
     {
@@ -58,7 +66,7 @@ public class CLTest extends ClassLoader
 
 	CLTest mcl = new CLTest();
 	Class a = null;
-	byte [] cb = readin("Hello.class");
+	byte [] cb = readin("CLTest$Hello.class");
 
 	try {
 	    a = mcl.doit3(cb);
@@ -101,3 +109,17 @@ public class CLTest extends ClassLoader
 	System.out.println("Done.");
     }
 }
+
+// javac flags: -nowarn
+/* Expected Output:
+Load returned class -CLTest$Hello-
+Trying to create new instance
+Hello World
+Trying same file under different name
+Duplicate name
+Trying file with wrong name
+Wrong name
+Now second load attempt for a
+Duplicate name
+Done.
+*/

@@ -77,3 +77,10 @@ public class burford implements Runnable {
     private Object v_mutex = new Object();
     private int v_counter = 0;
 }
+
+/* Expected Output:
+Starting burford...
+Starting feeders...
+Feeders completed...
+burford awakened -- result = 100
+*/

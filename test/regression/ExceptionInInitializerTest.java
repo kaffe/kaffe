@@ -98,3 +98,11 @@ public class ExceptionInInitializerTest
 	System.out.println("Failed, exception wasn't caught");
     }
 }
+
+/* Expected Output:
+Static initializer test
+Running static initializer of Throw
+Now loading java.math.BigDecimal
+Success 1.
+Success 2.
+*/

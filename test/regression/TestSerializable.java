@@ -24,3 +24,14 @@ public class TestSerializable
 	System.out.println(s.isAssignableFrom((new boolean[0]).getClass()));
     }
 }
+
+/* Expected Output:
+0
+1041
+true
+true
+false
+true
+false
+true
+*/

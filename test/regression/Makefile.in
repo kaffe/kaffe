@@ -121,22 +121,18 @@ host_os = @host_os@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
-TESTS = TestScript TestScriptThread
+SETUP_ENVIRONMENT = eval `sed 's/;.*//' < $(top_builddir)/BUILD_ENVIRONMENT`
 
-SETUP_ENVIRONMENT = . $(top_builddir)/BUILD_ENVIRONMENT
+TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript
 
-TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT); $(SHELL)
-# The $(SHELL) above assumes that all tests are shell-scripts
-# which saves us from having to ensure that they are executable
-
-EXTRA_DIST =  	BadFloatTest.java 	BadFloatTest.out 	Bean.java 	Bean.out 	BeanBug.java 	BeanBug.out 	BitSetTest.java 	BitSetTest.out 	CLTest.java 	CLTest.out 	CLTestConc.java 	CLTestConc.out 	CLTestConc_run.java 	CLTestFindLoaded.java 	CLTestFindLoaded.out 	CLTestJLock.java 	CLTestJLock.out 	CLTestLie.java 	CLTestLie.out 	CatchDeath.java 	CatchDeath.out 	CharCvt.java 	CharCvt.out 	ClassGC.java 	ClassGC.out 	ClassGCTest.java 	ClassGCTestLater.java 	ConstructorTest.java 	ConstructorTest.out 	DeadThread.java 	DeadThread.out 	DoubleBug.java 	DoubleBug.out 	ExceptionInInitializerTest.java 	ExceptionInInitializerTest.out 	ExceptionTest.java 	ExceptionTestClassLoader.java 	ExceptionTestClassLoader.out 	ExceptionTestClassLoader2.java 	ExceptionTestClassLoader2.out 	ExecTest.java 	ExecTest.out 	FindSystemClass.java 	FindSystemClass.out 	GCTest.java 	GCTest.out 	GetInterfaces.java 	GetInterfaces.out 	HashtableTest1.java 	HashtableTest1.out 	Hello.java 	HelloWorldApp.class.save 	HelloWorldApp.java 	HelloWorldApp.out 	IllegalInterface.java 	IllegalInterface.out 	IndexTest.java 	IndexTest.out 	InitTest.java 	InitTest.out 	InternHog.java 	InternHog.out 	InvTarExcTest.java 	InvTarExcTest.out 	KaffeVerifyBug.java 	KaffeVerifyBug.out 	LostFrame.java 	LostFrame.out 	MarkResetTest.java 	MarkResetTest.out 	MethodBug.java 	MethodBug.out 	ModuloTest.java 	ModuloTest.out 	NullPointerTest.java 	NullPointerTest.out 	Overflow.java 	Overflow.out 	ProcessClassInst.java 	ProcessClassInst.out 	ProcessClassLockTest.java 	ProcessClassLockTest.out 	ProcessClassStop.java 	ProcessClassStop.out 	ProcessClassTest.java 	ProcessClassTest.out 	ProcessTest.java 	ProcessTest.out 	Reflect.java 	Reflect.out 	ReflectInterfaces.java 	ReflectInterfaces.out 	ReflectInvoke.java 	ReflectInvoke.out 	Schtum.java 	Schtum.out 	SignedShort.java 	SignedShort.out 	StackDump.java 	StackDump.out 	Str.java 	Str.out 	Str2.java 	Str2.out 	TestFloatDouble.java 	TestFloatDouble.out 	TestIntLong.java 	TestIntLong.out 	TestNative.java 	TestSerializable.java 	TestSerializable.out 	TestUnlock.java 	TestUnlock.out 	ThreadInterrupt.java 	ThreadInterrupt.out 	ThreadLocalTest.java 	ThreadLocalTest.out 	ThreadStop.java 	ThreadStop.out 	UDPTest.java 	UDPTest.out 	UncaughtException.java 	UncaughtException.out 	burford.java 	burford.out 	finaltest.java 	finaltest.out 	finaltest2.java 	forNameTest.java 	forNameTest.out 	tname.java 	tname.out 	ttest.java 	ttest.out 	tthrd1.java 	tthrd1.out 	wc.java 	wc.out
+TESTS =  	HelloWorldApp.class.save 	HelloWorldApp.java 	TestIntLong.java 	TestFloatDouble.java 	ModuloTest.java 	Str.java 	Str2.java 	InternHog.java 	IndexTest.java 	StackDump.java 	tname.java 	ttest.java 	ThreadInterrupt.java 	UncaughtException.java 	ReflectInterfaces.java 	TestSerializable.java 	Alias.java 	NullPointerTest.java 	LostFrame.java 	ConstructorTest.java 	burford.java 	IllegalInterface.java 	GetInterfaces.java 	SignedShort.java 	CharCvt.java 	BadFloatTest.java 	ProcessTest.java 	UDPTest.java 	SoTimeout.java 	wc.java 	FileTest.java 	finaltest.java 	finaltest2.java 	forNameTest.java 	KaffeVerifyBug.java 	Schtum.java 	Reflect.java 	MethodBug.java 	Bean.java 	ReflectInvoke.java 	InvTarExcTest.java 	CLTest.java 	CLTestConc.java 	CLTestJLock.java 	CLTestLie.java 	CLTestFindLoaded.java 	ExceptionTest.java 	ExceptionTestClassLoader.java 	ExceptionTestClassLoader2.java 	ClassGC.java 	GCTest.java 	ThreadLocalTest.java 	BeanBug.java 	BitSetTest.java 	ExceptionInInitializerTest.java 	InitTest.java 	ProcessClassTest.java 	ProcessClassInst.java 	ProcessClassStop.java 	FindSystemClass.java 	ProcessClassLockTest.java 	DoubleBug.java 	Overflow.java 	TestUnlock.java 	MarkResetTest.java 	HashtableTest1.java 	ReflectMultiArray.java 	ExecTest.java 	CatchDeath.java 	ThreadStop.java 	DeadThread.java 	tthrd1.java 	SoInterrupt.java
 
 
-CLEANFILES = *.class *.fail
+CLEANFILES = *.class *.fail *.out
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
-CONFIG_CLEAN_FILES =  TestScript TestScriptThread
-DIST_COMMON =  Makefile.am Makefile.in TestScript.in TestScriptThread.in
+CONFIG_CLEAN_FILES =  TestScript
+DIST_COMMON =  Makefile.am Makefile.in TestScript.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -153,8 +149,6 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 TestScript: $(top_builddir)/config.status TestScript.in
-	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-TestScriptThread: $(top_builddir)/config.status TestScriptThread.in
 	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 tags: TAGS
 TAGS:
@@ -269,7 +263,7 @@ distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
 
-check-TESTS: clean
+check-TESTS: clean TestScript
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -22,3 +22,9 @@ class GetInterfaces {
 	}
     }
 }
+
+/* Expected Output:
+Hello world!
+interface0: if0
+interface1: if1
+*/

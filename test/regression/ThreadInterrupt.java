@@ -134,3 +134,13 @@ public class ThreadInterrupt {
     }
 }
 
+
+/* Expected Output:
+Success 0a.
+Success 0b.
+Success 1.
+Success 2.
+Success 3.
+Success 4.
+Success 5.
+*/

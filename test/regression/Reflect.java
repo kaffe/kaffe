@@ -51,3 +51,38 @@ public class Reflect {
     return s.substring(0, i) + s.substring(i + 6);
   }
 }
+
+/* Expected Output:
+Method: public static native int java.lang.System.identityHashCode(java.lang.Object)
+Method: public static native void java.lang.System.arraycopy(java.lang.Object,int,java.lang.Object,int,int)
+Method: public static native long java.lang.System.currentTimeMillis()
+Method: public static void java.lang.System.setSecurityManager(java.lang.SecurityManager)
+Method: public static void java.lang.System.setProperties(java.util.Properties)
+Method: public static void java.lang.System.setOut(java.io.PrintStream)
+Method: public static void java.lang.System.setIn(java.io.InputStream)
+Method: public static void java.lang.System.setErr(java.io.PrintStream)
+Method: public static void java.lang.System.runFinalizersOnExit(boolean)
+Method: public static void java.lang.System.runFinalization()
+Method: public static void java.lang.System.loadLibrary(java.lang.String)
+Method: public static void java.lang.System.load(java.lang.String)
+Method: public static java.lang.String java.lang.System.getenv(java.lang.String)
+Method: public static java.lang.SecurityManager java.lang.System.getSecurityManager()
+Method: public static java.lang.String java.lang.System.getProperty(java.lang.String,java.lang.String)
+Method: public static java.lang.String java.lang.System.getProperty(java.lang.String)
+Method: public static java.util.Properties java.lang.System.getProperties()
+Method: public static void java.lang.System.gc()
+Method: public static void java.lang.System.exit(int)
+Method: public void java.lang.Object.wait(long,int) throws java.lang.InterruptedException
+Method: public void java.lang.Object.wait(long) throws java.lang.InterruptedException
+Method: public void java.lang.Object.wait() throws java.lang.InterruptedException
+Method: public java.lang.String java.lang.Object.toString()
+Method: public native void java.lang.Object.notifyAll()
+Method: public native void java.lang.Object.notify()
+Method: public native int java.lang.Object.hashCode()
+Method: public native java.lang.Class java.lang.Object.getClass()
+Method: public boolean java.lang.Object.equals(java.lang.Object)
+Constructor: public java.lang.System()
+Field: public static java.io.PrintStream java.lang.System.err
+Field: public static java.io.PrintStream java.lang.System.out
+Field: public static java.io.InputStream java.lang.System.in
+*/

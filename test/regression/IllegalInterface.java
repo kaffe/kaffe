@@ -13,3 +13,7 @@ try {
 }
     }
 }
+
+/* Expected Output:
+Exception caught: java.lang.InstantiationException: Illegalif
+*/

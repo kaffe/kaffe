@@ -778,5 +778,4 @@ kaffe/scripts/compat/javadoc \
 test/Makefile \
 test/regression/Makefile \
 test/regression/TestScript \
-test/regression/TestScriptThread \
 )

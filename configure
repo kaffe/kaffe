@@ -7101,7 +7101,6 @@ kaffe/scripts/compat/javadoc \
 test/Makefile \
 test/regression/Makefile \
 test/regression/TestScript \
-test/regression/TestScriptThread \
  config/config.h include/jtypes.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
@@ -7309,7 +7308,6 @@ kaffe/scripts/compat/javadoc \
 test/Makefile \
 test/regression/Makefile \
 test/regression/TestScript \
-test/regression/TestScriptThread \
 "}
 EOF
 cat >> $CONFIG_STATUS <<\EOF

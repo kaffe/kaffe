@@ -68,3 +68,8 @@ class Class4
 		InitTest.passed = false;
 	}
 }
+
+/* Expected Output:
+Success 1.
+Success 2.
+*/

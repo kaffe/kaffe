@@ -4,3 +4,7 @@ class tname {
 	}
 }
 
+
+/* Expected Output:
+Hello, my name is main
+*/

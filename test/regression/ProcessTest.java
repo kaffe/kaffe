@@ -51,3 +51,8 @@ public class ProcessTest {
 	}
     }
 }
+
+// java args: ProcessTest $JAVA
+/* Expected Output:
+ProcessTest: Success.
+*/

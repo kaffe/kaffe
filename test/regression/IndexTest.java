@@ -14,3 +14,15 @@ class IndexTest {
 	}
 }
 
+
+/* Expected Output:
+0
+1
+2
+3
+4
+5
+Catch
+java.lang.ArrayIndexOutOfBoundsException
+	at IndexTest.main(IndexTest.java:7)
+*/

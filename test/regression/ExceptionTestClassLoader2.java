@@ -79,3 +79,10 @@ public class ExceptionTestClassLoader2 extends ClassLoader {
 
 
 
+
+/* Expected Output:
+Success 1.
+Success 2.
+Success 3.
+Success 4.
+*/

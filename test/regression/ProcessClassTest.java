@@ -96,3 +96,14 @@ class Third {
 	    return new String("fail");
     }
 }
+
+/* Expected Output:
+A Segv java.lang.NullPointerException
+B First java.lang.ExceptionInInitializerError
+C Second java.lang.NoClassDefFoundError: DontExist
+D Third java.lang.ExceptionInInitializerError
+E Segv java.lang.NullPointerException
+F First java.lang.NoClassDefFoundError: First
+G Second java.lang.NoClassDefFoundError: Second
+H Third java.lang.NoClassDefFoundError: Third
+*/

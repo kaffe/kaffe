@@ -10,33 +10,31 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-: ${RESULT=/tmp/kaffer.$$} ${CHECK=/tmp/kaffec.$$}
 : ${JAVA=kaffe} ${SRCDIR=@srcdir@} ${PATHSEP='@PATHSEP@'}
 test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn"}
 : ${JAVAC=${JIKES-"$JAVA pizza.compiler.Main"}" -classpath .$PATHSEP$SRCDIR$PATHSEP$SRCDIR/../../libraries/javalib/Klasses.jar$PATHSEP$CLASSPATH"}
 overallerror=0
 error=0
 
-cd `echo $0 | sed -e 's,^[^/]*$,.,' -e 's,/[^/]*$,,'`
+if test -n "${VERBOSE+set}"; then
+  VERBOSE=echo
+else
+  VERBOSE=:
+fi
 
-trap "rm -f $RESULT $CHECK; exit 1" 1 2 15
+$VERBOSE $0 ${1+"$@"}
 
-echo_n_sp ()
-{
-	echo ${1+"$@"} | tr '\012' ' '
+mybasename () {
+    echo "$1" | sed 's%.*/%%'
 }
 
 compile()
 {
-	FILES=`for f in ${1+"$@"}; do echo $SRCDIR/$f.java; done`
 	echo ERROR > ${RESULT}
-	if test "$DEPRECATED" = "yes" ; then
-		NOWARN="-nowarn"
-	else
-		NOWARN=""
-	fi
-	${JAVAC} ${NOWARN} -d . ${FILES} >${RESULT} 2>&1
-	if test "$DEPRECATED" = "yes" ; then
+	JAVAC_FLAGS=`cat ${1+"$@"} | sed 's/\/\/ javac flags://p;d'`
+	$VERBOSE ${JAVAC} ${JAVAC_FLAGS} -d . ${1+"$@"}
+	${JAVAC} ${JAVAC_FLAGS} -d . ${1+"$@"} >${RESULT} 2>&1
+	if echo " $JAVAC_FLAGS" | grep " -nowarn" >/dev/null; then
 		OUTPUT=`cat ${RESULT} | grep -v warning`
 	else
 		OUTPUT=`cat ${RESULT}`
@@ -54,67 +52,46 @@ compile()
 #
 run()
 {
-	echo ERROR > $RESULT
+	RESULT="$1.fail"
+	$VERBOSE $JAVA $*
 	if test "x$SORT" = "xyes"; then
 	    $JAVA $* 2>&1 | sort > $RESULT
+	    error=$?
 	else
-	    $JAVA $* > $RESULT 2>&1
+	    $JAVA $* > "$RESULT" 2>&1
+	    error=$?
 	fi
-	if cmp -s $RESULT $SRCDIR/$1.out ; then
-		:
+	if test ! -f "$1.out"; then
+		mv "$RESULT" "$1.out"
+	elif cmp -s "$RESULT" "$1.out" ; then
+		rm -f "$RESULT"
 	else
-		cp $RESULT $1.fail
 		error=1
 	fi
-	rm -f $RESULT
 }
 
-#
-# options
-# 	-deprecated:	use -nowarn
-#	-sort:		sort output
-#	-nocompile:	don't compile, just run
-#
 runtest()
 {
-	SORT="no";
-	DEPRECATED="no";
-	NOCOMPILE="no";
-	while [ $# -gt 0 ]; do
-	    case "$1" in
-	      -sort)
-		SORT="yes"
-		shift
-		;;
-	      -nocompile)
-		NOCOMPILE="yes"
-		shift
-		;;
-	      -deprecated)
-		DEPRECATED="yes"
-		shift
-		;;
-	      *)
-		break
-		;;
-	    esac
-	done
 	error=0
-	echo_n_sp "$1 ..." 1>&2
-	if test "x$NOCOMPILE" != "xyes"; then
-		compile $1
+	basename=`mybasename "$1" | sed 's/\.java$//'`
+	RESULT=$basename.fail
+	compile ${1+"$@"}
+	if grep '// [Ss]kip [Rr]un' < "$1" > /dev/null; then
+	    overallerror=77 # skipped
+	elif test $error = 0 ; then
+	    if grep '// [Ss]ort [Oo]utput' < "$1" >/dev/null; then
+		SORT="yes"
+	    else
+		SORT="no"
+	    fi
+	    sed '/^\/\* [Ee]xpected [Oo]utput:/,/\*\//p; d' < "$1" |
+	      sed '1d;$d' > $basename.out
+	    JAVA_FLAGS=`sed 's/\/\/ java args://p;d' < "$1"`
+	    test -n "$JAVA_FLAGS" || JAVA_FLAGS='$basename'
+	    eval run $JAVA_FLAGS
 	fi
-	if test $error = 0 ; then
-		run $*
-	fi
-	# reset global (ugh) variables
-	SORT="no";
-	DEPRECATED="no";
-	if test $error = 0 ; then
-		echo "passed" 1>&2
-	else
-		echo "failed: output saved to $1.fail" 1>&2
-		overallerror=1
+	if test $error != 0 ; then
+	    overallerror=1
 	fi
 }
 
@@ -124,130 +101,24 @@ ignoretest()
 	echo "$1 ... ignored" 1>&2
 }
 
-# Simple health check
-cp $SRCDIR/HelloWorldApp.class.save HelloWorldApp.class
-run HelloWorldApp
-
-# Now test the compiler
-rm -f HelloWorldApp.class
-runtest HelloWorldApp
-
-# Test ints, longs, floats and doubles
-runtest TestIntLong
-ignoretest TestFloatDouble
-runtest ModuloTest
-
-# Test strings
-runtest Str
-runtest Str2
-runtest InternHog
-
-# Test exceptions
-runtest IndexTest
-runtest StackDump
-
-# Test threads
-runtest tname
-runtest ttest
-runtest ThreadInterrupt
-runtest UncaughtException
-
-# Misc tests
-runtest ReflectInterfaces
-runtest TestSerializable
-runtest Alias
-runtest NullPointerTest
-runtest LostFrame
-runtest ConstructorTest
-runtest burford
-runtest IllegalInterface
-runtest GetInterfaces
-runtest DeadThread
-runtest SignedShort
-runtest CharCvt
-runtest BadFloatTest
-runtest ExecTest
-runtest ProcessTest $JAVA
-runtest UDPTest
-runtest SoTimeout
-runtest wc < $SRCDIR/wc.java
-runtest FileTest
-
-runtest finaltest
-echo_n_sp "finaltest2 ..." 1>&2
-compile finaltest2
-if test $error = 0 ; then
-	run finaltest
-fi
-if test $error = 0 ; then
-	echo "passed" 1>&2
-else
-	overallerror=1
-fi
-
-runtest forNameTest
-runtest KaffeVerifyBug
-runtest Schtum
-runtest tthrd1
-runtest Reflect 
-runtest MethodBug
-runtest Bean
-
-#
-# simple test for Method.invoke
-#
-runtest ReflectInvoke
-
-#
-# simple test for InvocationTargetExceptions
-#
-runtest InvTarExcTest
-
-#
-# tests for ClassLoader
-# this test must be compiled with 'nowarn' because it uses a
-# deprecated API (defineClass with 3 params)
-#
-
-# compile the example class
-compile Hello
-
-runtest -deprecated CLTest
-
-compile CLTestConc_run
-runtest -deprecated CLTestConc
-runtest CLTestJLock
-runtest CLTestLie
-runtest CLTestFindLoaded
-
-compile ExceptionTest
-runtest ExceptionTestClassLoader
-runtest ExceptionTestClassLoader2
-
-# Garbage collection tests
-compile ClassGC ClassGCTest ClassGCTestLater
-runtest -nocompile ClassGC
-
-# These tests must have their output sorted, because they're multi-threaded.
-runtest -sort GCTest
-runtest -sort ThreadLocalTest
-
-# This one is sorted cause it the order of its output is not defined by the spec
-runtest -sort BeanBug
-
-runtest BitSetTest 
-runtest ExceptionInInitializerTest
-runtest InitTest
-runtest ProcessClassTest
-runtest ProcessClassInst
-runtest -deprecated ProcessClassStop
-runtest FindSystemClass
-runtest ProcessClassLockTest
-runtest DoubleBug
-runtest Overflow
-runtest TestUnlock
-runtest MarkResetTest
-runtest HashtableTest1
+for src in ${1+"$@"}; do
+    $VERBOSE testing $src
+    case "$src" in
+    *.class.save)
+	cp "$src" `mybasename "$src" | sed 's/\.save$//'`
+	run `mybasename "$src" | sed 's/\.class\.save$//'`
+	;;
+    *.class)
+	run `mybasename "$src" | sed 's/\.class$//'`
+	;;
+    *.java)
+	runtest "$src"
+	;;
+    *)
+	run "$src"
+	;;
+    esac
+done
 
 # All done okay
 exit $overallerror

@@ -29,3 +29,8 @@ public class ReflectInvoke {
     }
   }
 }
+
+/* Expected Output:
+2
+8
+*/

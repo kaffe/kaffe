@@ -30,3 +30,8 @@ public class CharCvt
 	print_as_int(make_a_short(-1));
     }
 }
+
+/* Expected Output:
+65535
+-1
+*/

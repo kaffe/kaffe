@@ -64,3 +64,7 @@ public class UDPTest {
 	new Thread(new UDPReceive()).start();
     }
 }
+
+/* Expected Output:
+UDPTest: Success.
+*/

@@ -61,3 +61,7 @@ public class ProcessClassLockTest
 	}.start();
     }
 }
+
+/* Expected Output:
+java.lang.ClassNotFoundException: this_class_does_not_exist
+*/

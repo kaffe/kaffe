@@ -6,3 +6,7 @@ public class SignedShort
 		System.out.println(arr[0]);
 	}
 }
+
+/* Expected Output:
+-1
+*/

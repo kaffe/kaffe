@@ -1,3 +1,23 @@
+Fri Feb 12 10:33:54 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test/regression/TestScript.in: rework so as to accept list of
+	tests from command line
+	* test/regression/TestScriptThread.in: deleted, no longer used
+	* configure.in: do not generate test/regression/TestScriptThread
+	* test/regression/*.java: moved expected outputs into java
+	sources, as comments; compiler and runtime flags, as well as some
+	other directives, are also specified as comments in the sources
+	* test/regression/*.out: delete
+	* test/regression/Makefile.am (TESTS): set to list of pre-compiled
+	classes and sources to test; it could be split in multiple
+	variables, with different classes of tests, but it wouldn't help
+	much...  The good news is that now we can run:
+	make check TESTS="foo.java bar.java HelloWorldApp.class.save"
+	(SETUP_ENVIRONMENT): do not source BUILD_ENVIRONMENT multiple
+	times, otherwise the environment grows too much
+	(TESTS_ENVIRONMENT): run TestScript for each test
+	* configure, test/regression/Makefile.in: regen
+
 Fri Feb 12 09:50:37 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/clib/native/Array.c

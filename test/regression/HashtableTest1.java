@@ -26,3 +26,7 @@ public class HashtableTest1 {
             System.out.println("Failure: --- " + n);
     }
 }
+
+/* Expected Output:
+Success.
+*/

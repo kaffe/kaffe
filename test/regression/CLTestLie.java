@@ -66,3 +66,7 @@ public class CLTestLie extends ClassLoader
     }
 }
 
+
+/* Expected Output:
+Success.
+*/

@@ -4,6 +4,7 @@
  * @author Godmar Back <gback@cs.utah.edu>
  */
 import java.io.*;
+import java.lang.reflect.*;
 
 public class ClassGC extends ClassLoader {
 
@@ -76,3 +77,42 @@ public class ClassGC extends ClassLoader {
     }
     public static boolean gotOne;
 }
+
+class ClassGCTest
+{
+	public static class HObject {
+		protected void finalize() throws Throwable {
+			if (!ClassGC.gotOne) {
+				ClassGC.gotOne = true;
+				System.out.println("Success.");
+			}
+		}
+	}
+
+	public static Object f = new HObject();
+}
+
+class ClassGCTestLater
+{
+    public ClassGCTestLater() throws Exception
+    {
+	Class c = ClassGCTest.class;
+	String s = c.getName();
+	if (!s.equals("ClassGCTest"))
+	    System.out.println("Failure: name is " + s);
+	/* I think getConstructor should be enough, since we're in the
+           same package, but it fails :-(  -oliva */
+	Constructor cc = c.getDeclaredConstructor(new Class [] {});
+	if (!cc.toString().equals("ClassGCTest()"))
+	    System.out.println("Failure: name is " + cc.toString());
+	if (!cc.newInstance(new Object[] {}).
+		toString().startsWith("ClassGCTest")) {
+	    System.out.println("Failure newInstance.");
+	}
+    }
+}
+
+
+/* Expected Output:
+Success.
+*/

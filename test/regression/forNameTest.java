@@ -25,3 +25,7 @@ class loadThis {
 	      System.out.println("constructor called");
       }
 }
+
+/* Expected Output:
+constructor called
+*/

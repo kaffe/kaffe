@@ -23,3 +23,8 @@ public class FindSystemClass {
 	m.invoke(null, null);
     }
 }
+
+/* Expected Output:
+findSystemClass initializes me.
+staticMethod invoked.
+*/

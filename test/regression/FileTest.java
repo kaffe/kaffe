@@ -65,3 +65,15 @@ File "file2" does not exist
 
 *************/
 
+
+/* Expected Output:
+Directory "/tmp" does exist
+Directory "/" does exist
+Directory "/tmp" does exist
+File "" does not exist
+File "/NotExist2" does not exist
+File "NotExist2" does not exist
+caught 1
+caught 2
+File "NotExist2" does not exist
+*/
