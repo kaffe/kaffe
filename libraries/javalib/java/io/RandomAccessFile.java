@@ -132,10 +132,9 @@ final public String readLine() throws IOException {
 		if (ch == '\r') {	// Check for '\r\n'
 			final int data2 = read();
 			final char ch2 = (char) (data & 0xff);
-			final long posn = getFilePointer();
 
 			if (data2 != -1 && ch2 != '\n')
-				seek(posn);	// Restore byte for next line
+				seek(getFilePointer() - 1);
 			break;
 		}
 		buffer.append(ch);

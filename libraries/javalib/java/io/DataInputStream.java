@@ -79,48 +79,43 @@ final public int readInt() throws IOException {
 	return temp;
 }
 
-final public String readLine() throws IOException
-{
-	StringBuffer buffer = new StringBuffer();
+final public String readLine() throws IOException {
+	final StringBuffer buffer = new StringBuffer();
+	int nread = 0;
 
-	for (;;) {
-		int data = super.read();
+	while (true) {
+		final int data = super.read();
+		final char ch = (char) (data & 0xff);
 
-		if (data == -1) {
+		if (data == -1)
 			break;
-		}
+		nread++;
 
-		char cdata = (char)data;
-		if (cdata == '\n') {
+		if (ch == '\n')
 			break;
-		}
-		if (cdata == '\r') {
-			/* Check for "\r\n" */
+
+		if (ch == '\r') {	// Check for '\r\n'
+			int data2;
+
+		    // Note that we don't know whether the InputStream
+		    // implements mark() and reset(), but we're using
+		    // them anyway. If they don't, then characters
+		    // after a lone '\r' will be elided from the input
+		    // (ie, this is a bug). We could override mark()
+		    // and reset() to always provide at least a
+		    // one-character buffer, but then we'd violate
+		    // the spec, which says to inherit these from
+		    // FilterInputStream...
+
 			super.mark(1);
-			data = super.read();
-
-			if (data == -1) {
-				break;
-			}
-
-			cdata = (char)data;
-			if (cdata != '\n') {
-				/* Jump back to mark */
-				reset();
-			}
+			data2 = super.read();
+			if (data2 != -1 && (char) (data & 0xff) != '\n')
+				super.reset();
 			break;
 		}
-		else {
-			buffer.append(cdata);
-		}
+		buffer.append(ch);
 	}
-
-	if (buffer.length() == 0) {
-		return (null);
-	}
-	else {
-		return (buffer.toString());
-	}
+	return (nread == 0) ? null : buffer.toString();
 }
 
 final public long readLong() throws IOException {
