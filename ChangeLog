@@ -1,3 +1,11 @@
+2003-10-12  Jim Pick  <jim@kaffe.org>
+
+	* libraries/javalib/java/util/regex/Matcher.java,
+	libraries/javalib/java/util/regex/Pattern.java,
+	libraries/javalib/java/util/regex/PatternSyntaxException.java:
+	Return original string when Pattern.split(regex) does
+	not match.  Convert from DOS to Unix line endings.
+
 2003-10-11  Timothy S. Stack <stack@cs.utah.edu>
 
 	* config/i386/jit3-i386.def:

@@ -110,6 +110,9 @@ public final class Pattern implements Serializable {
 		list.addElement(text);
 	    }
 	}
+	if (list.size() == 0) {
+		list.addElement(input.toString());
+	}
 	String[] output = new String [list.size()];
 	list.copyInto(output);
 	return output;
