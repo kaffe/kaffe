@@ -1,3 +1,8 @@
+Mon Jun  7 12:43:54 PDT 1999  Pavel Roskin <pavel_roskin@geocities.com>
+
+	* libraries/javalib/rebuildLib.in: Don't use the existing
+	Klasses.jar when compliling java classes with jikes.
+
 Mon Jun  7 12:39:00 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/net/URL.java: No NullPointerException
