@@ -126,6 +126,23 @@ final class VMFile
   static synchronized native boolean canWrite(String path);
 
   /**
+   * This methods checks if a directory can be written to.
+   */
+  static boolean canWriteDirectory(File dir)
+  {
+    try
+      {
+        String filename = IS_DOS_8_3 ? "tst" : "test-dir-write";
+        File test = File.createTempFile(filename, null, dir);
+        return (test != null && test.delete());
+      }
+    catch (IOException ioe)
+      {
+        return false;
+      }
+  }
+
+  /**
    * This native method checks file permissions for reading
    */
   static synchronized native boolean canRead(String path);

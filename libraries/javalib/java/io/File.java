@@ -144,25 +144,10 @@ public class File implements Serializable, Comparable
     if (! VMFile.exists(path))
       return false;
 
-    if (!VMFile.isDirectory(path))
-      return VMFile.canWrite(path);
+    if (VMFile.isDirectory(path))
+      return VMFile.canWriteDirectory(this);
     else
-      try
-        {
-          /* If the separator is '\' a DOS-style-filesystem is assumed
-             and a short name is used, otherwise use a long name.
-             WARNING: some implementation of DOS-style-filesystems also
-             accept '/' as separator. In that case the following code
-             will fail.
-          */
-          String filename = (separatorChar!='\\')?"test-dir-write":"tst";
-  	  File test = createTempFile(filename, null, this);
-  	  return (test != null && test.delete());
-        }
-      catch (IOException ioe)
-        {
-  	  return false;
-        }
+      return VMFile.canWrite(path);
   }
 
   /**
