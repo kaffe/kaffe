@@ -1,3 +1,14 @@
+Wed Jan 13 19:06:34 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* FAQ/FAQ.libtool: --disable-shared works now
+	* ltconfig, ltmain.sh: update from libtool; improvements for
+	Solaris and sysv*-ncr inter-library dependencies, -R support and
+	--disable-{static,shared} with convenience libraries
+
+	* kaffe/kaffevm/Makefile.am (noinst_HEADERS): header files were
+	not included in the distribution
+	* kaffe/kaffevm/Makefile.in: regen
+
 Wed Jan 13 17:27:47 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/intrp/Makefile.in: regen

@@ -1332,7 +1332,7 @@ if test -z "$NM"; then
   /* | [A-Za-z]:[/\\]*) ;; # Let the user override the test with a path.
   *)
     IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-    for ac_dir in /usr/ucb /usr/ccs/bin $PATH /bin; do
+    for ac_dir in $PATH /usr/ucb /usr/ccs/bin /bin; do
       test -z "$ac_dir" && ac_dir=.
       if test -f $ac_dir/nm; then
 	# Check to see if the nm accepts a BSD-compat flag.
@@ -1733,11 +1733,16 @@ sco3.2v5*)
 
 solaris*)
   version_type=linux
+  need_lib_prefix=no
+  need_version=no
   library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
   soname_spec='${libname}${release}.so$major'
   shlibpath_var=LD_LIBRARY_PATH
   # ldd complains unless libraries are executable
   postinstall_cmds='chmod +x $lib'
+  deplibs_check_method="file_magic ELF [0-9][0-9]-bit [LM]SB dynamic lib"
+  file_magic_command="file"
+  sys_lib_search_path="/lib /usr/lib /usr/local/lib `echo $LD_LIBRARY_PATH | sed -e 's/:/ /g'`"
   ;;
 
 sunos4*)
@@ -1752,6 +1757,11 @@ sysv4.2uw2* | sysv4.3*)
   library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
   soname_spec='${libname}${release}.so$major'
   shlibpath_var=LD_LIBRARY_PATH
+  case "$host_vendor" in
+    ncr)
+      deplibs_check_method='pass_all'
+      ;;
+  esac
   ;;
 
 uts4*)

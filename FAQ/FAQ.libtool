@@ -52,5 +52,5 @@ build a shared library, and one without PIC for static libraries.
 
 If you do use static libraries but you don't care about this extra
 overhead, you may use the flag --disable-static at configure time.
-Don't use --disable-shared because this won't be handle correctly yet,
-use --with-staticlib instead.
+Also, --disable-shared is almost equivalent to --with-staticlib, but
+usually much faster.

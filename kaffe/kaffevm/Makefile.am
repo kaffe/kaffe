@@ -60,6 +60,38 @@ libkaffevm_la_SOURCES = \
 	utf8const.c \
 	verify.c
 
+noinst_HEADERS = \
+	access.h \
+	baseClasses.h \
+	bytecode.h \
+	classMethod.h \
+	code-analyse.h \
+	code.h \
+	constants.h \
+	debug.h \
+	errors.h \
+	exception.h \
+	external.h \
+	file.h \
+	gc.h \
+	gtypes.h \
+	hashtab.h \
+	inflate.h \
+	itypes.h \
+	jar.h \
+	jnirefs.h \
+	locks.h \
+	lookup.h \
+	object.h \
+	readClass.h \
+	readClassConfig.h \
+	slib.h \
+	soft.h \
+	stackTrace.h \
+	stringSupport.h \
+	support.h \
+	thread.h
+
 baseClasses.lo: java_lang_Cloneable.h
 
 java_lang_Cloneable.h: $(top_srcdir)/libraries/javalib/Klasses.jar

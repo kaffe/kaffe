@@ -939,10 +939,10 @@ compiler."
 	if test -n "$dependency_libs"; then
 	  # Extract -R from dependency_libs
 	  temp_deplibs=
-	  for arg in $dependency_libs; do
-	    case "$arg" in
-	    -R*) xrpath="$xrpath "`echo "X$arg" | $Xsed -e 's/^-R//'`;;
-	    *) temp_deplibs="$temp_deplibs $arg";;
+	  for dep in $dependency_libs; do
+	    case "$dep" in
+	    -R*) xrpath="$xrpath "`echo "X$dep" | $Xsed -e 's/^-R//'`;;
+	    *) temp_deplibs="$temp_deplibs $dep";;
 	    esac
 	  done
 	  dependency_libs="$temp_deplibs"
@@ -1288,11 +1288,13 @@ compiler."
 
       oldlibs=
       if test -z "$rpath"; then
-	# Building a libtool convenience library.
-	libext=al
-	oldlibs="$output_objdir/$libname.$libext $oldlibs"
-	build_libtool_libs=convenience
-	build_old_libs=yes
+	if test "$build_libtool_libs" = yes; then
+	  # Building a libtool convenience library.
+	  libext=al
+	  oldlibs="$output_objdir/$libname.$libext $oldlibs"
+	  build_libtool_libs=convenience
+	  build_old_libs=yes
+	fi
 	dependency_libs="$deplibs"
 
 	if test -n "$vinfo"; then
@@ -1576,7 +1578,7 @@ EOF
 	  ;;
 	file_magic* | file_regex)
 	  set dummy $deplibs_check_method
-	  file_magic_regex="`expr \"$deplibs_check_method\" : \"$2\(.*\)\"`"
+	  file_magic_regex="`expr \"$deplibs_check_method\" : \"$2 \(.*\)\"`"
 	  for a_deplib in $deplibs; do
 	    name="`expr $a_deplib : '-l\(.*\)'`"
 	    # If $name is empty we are operating on a -L argument.

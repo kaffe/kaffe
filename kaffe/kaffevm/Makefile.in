@@ -131,6 +131,9 @@ libkaffevm_la_LIBADD =  	$(top_builddir)/libltdl/libltdl.la 	$(ENGINE_NAME)/libe
 
 libkaffevm_la_SOURCES =  	baseClasses.c 	classMethod.c 	code-analyse.c 	code.c 	constants.c 	debug.c 	exception.c 	external.c 	findInJar.c 	gc-mem.c 	gc.c 	hashtab.c 	inflate.c 	itypes.c 	jar.c 	jni.c 	locks.c 	lookup.c 	md.c 	object.c 	readClass.c 	soft.c 	stackTrace.c 	string.c 	support.c 	thread.c 	utf8const.c 	verify.c
 
+
+noinst_HEADERS =  	access.h 	baseClasses.h 	bytecode.h 	classMethod.h 	code-analyse.h 	code.h 	constants.h 	debug.h 	errors.h 	exception.h 	external.h 	file.h 	gc.h 	gtypes.h 	hashtab.h 	inflate.h 	itypes.h 	jar.h 	jnirefs.h 	locks.h 	lookup.h 	object.h 	readClass.h 	readClassConfig.h 	slib.h 	soft.h 	stackTrace.h 	stringSupport.h 	support.h 	thread.h
+
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -157,6 +160,8 @@ COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CF
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+HEADERS =  $(noinst_HEADERS)
+
 DIST_COMMON =  Makefile.am Makefile.in
 
 
@@ -416,7 +421,7 @@ install-am: all-am
 install: install-recursive
 uninstall-am: uninstall-libLTLIBRARIES
 uninstall: uninstall-recursive
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 all-redirect: all-recursive
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
