@@ -1,3 +1,7 @@
+Fri Apr 28 12:37:09 PDT 2000  Archie Cobbs <archie@whistle.com>
+
+	* developers/README.unicode: add email about input file
+
 Thu Apr 20 18:35:52 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/Date.java: add missing clone() method
