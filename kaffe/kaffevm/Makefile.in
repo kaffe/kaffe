@@ -157,7 +157,7 @@ EXTRA_DIST = \
 	systems/win32/winthread.h
 
 
-INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS)
+INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/xprof
 
 lib_LTLIBRARIES = libkaffevm.la
 @HAVE_GCJ_SUPPORT_TRUE@libgcj = @HAVE_GCJ_SUPPORT_TRUE@gcj/libgcj.la

@@ -1,0 +1,99 @@
+
+Documentation about the information feedback infrastructure
+By the University of Utah Flux Group <http://www.cs.utah.edu/flux>,
+Mar 22, 2000
+
+Introduction
+------------
+
+The information feedback infrastructure is a simple system that
+provides a path for kaffe to feed information back into itself.  For
+example, previous runs of java code can provide information about what
+methods are used so that in the future we can JIT these methods early
+on to reduce call latency.  The current system doesn't do much beyond
+the previous example, but, more information and analysis can be added
+to do more tricks.
+
+
+Configure
+---------
+
+The feedback infrastructure can be turned on at configure time with
+the --enable-feedback flag.  Currently, the only feedback code
+available is to record JIT'ed methods and loaded libraries and then
+JIT/load them at startup time.
+
+
+Usage
+-----
+
+To pass kaffe a feedback file use the command line option `-Xfeedback'
+and pass it the name of the file used to store feedback information.
+If the file doesn't exist it will be created, otherwise Kaffe will
+read in the previous information and store it in its internal data
+structures.
+
+File Format:
+
+  Normally, the feedback file is only manipulated by Kaffe, but its
+  just text so it can be manipulated between runs.  A typical file is
+  broken into several sections by special directives that signal the
+  start and end of a section.  Heres an examples:
+
+  %begin jit-code java/util/StringTokenizer/hasMoreTokens()Z
+	precompile true
+	size 108
+	address 0x8311248
+  %end
+
+  Every directive starts with a `%' at the beginning of the line
+  followed by the name of the directive and the arguments, so the
+  first line starts a new section of type `jit-code' and name
+  `java/util/StringTokenizer/hasMoreTokens()Z'.  Following the begin
+  directive is a series of attributes and values for this section,
+  finally the section is terminated by the `%end' directive.  The only
+  other directive is `%include' which will include and parse another,
+  similarly formatted file.  Comments can also be added using the `#'
+  character followed by whatever text you please, the comment will run
+  until the end of the line.
+
+
+Implementation
+--------------
+
+Added files:
+
+  xprof/feedback.*: Primary interface for feedback code.
+
+  xprof/sectionFile.*: Management functions for a flat file that is split
+    into sections.  Feedback uses this module to store and read any
+    interesting bits of information for use between runs.  The
+    functions try to keep the file pristine so that the user can edit
+    it, add comments, etc... without it constantly changing.
+
+  xprof/fileSections.*: This contains the implementations for the sections
+    held by the file.  The functions are responsible for processing
+    the values given in the file and building the internal structures.
+
+Modified Files:
+
+  kaffe/main.c:	Added `-Xfeedback' command line option which specifies
+    the feedback file to use.
+
+  kaffevm/jit3/machine.c: Added feedback call to record methods that
+    have been JIT'ed.
+
+  external.c: Added feedback call to record loaded dynamic libraries
+
+Control Flow:
+
+  If `-Xfeedback' is specified on the command line then Kaffe will
+  build a section file structure and synchronize it with whatever file
+  was specified.  As the system runs it can add/modify interesting
+  information within the section file structures.  Finally, at exit
+  the feedback will be synchronized with the internal structures and
+  the file is ready to be used on the next run.
+
+Future:
+
+  Add more feedback information and make better use of it...

@@ -34,6 +34,10 @@
 #include "md.h"
 #include "java_lang_Cloneable.h"
 #include "gcj/gcj.h"
+#include "xprofiler.h"
+#include "feedback.h"
+#include "debugFile.h"
+#include "fileSections.h"
 
 Utf8Const* init_name;
 Utf8Const* final_name;
@@ -107,6 +111,24 @@ initialiseKaffe(void)
 	main_collector = initCollector();
 	GC_init(main_collector);
 
+#if defined(KAFFE_XPROFILER)
+	/* Start up the profiler here so we can cover init stuff */
+	if( xProfFlag )
+	{
+		if( !enableXProfiling() )
+		{
+			fprintf(stderr,
+				"Unable to initialize cross "
+				"language profiling\n");
+		}
+	}
+#endif
+#if defined(KAFFE_XDEBUGGING)
+	if( machine_debug_filename )
+	{
+		machine_debug_file = createDebugFile(machine_debug_filename);
+	}
+#endif
         threadStackSize = Kaffe_JavaVMArgs[0].nativeStackSize;
  
         if (threadStackSize == 0) {
@@ -126,6 +148,19 @@ initialiseKaffe(void)
 	/* Init native support */
 	initNative();
 
+#if defined(KAFFE_FEEDBACK)
+	/* Install any file sections used by feedback */
+	installFileSections();
+	if( feedback_filename )
+	{
+		if( feedbackFile(feedback_filename) )
+		{
+			syncFeedback();
+			processFeedback();
+		}
+	}
+#endif
+	
 	/* Create the initialise and finalize names and signatures. */
 	init_name = utf8ConstNew(INIT, -1);
 	final_name = utf8ConstNew(FINAL, -1);

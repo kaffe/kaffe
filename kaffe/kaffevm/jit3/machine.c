@@ -4,6 +4,10 @@
  * Copyright (c) 1996-1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Cross-language profiling changes contributed by
+ * the Flux Research Group, Department of Computer Science,
+ * University of Utah, http://www.cs.utah.edu/flux/
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -46,6 +50,11 @@
 #include "itypes.h"
 #include "methodCache.h"
 #include "support.h"
+#include "xprofiler.h"
+#include "feedback.h"
+#include "debugFile.h"
+#include "fileSections.h"
+#include "mangle.h"
 
 char* engine_name = "Just-in-time v3";
 char* engine_version = KAFFEVERSION;
@@ -158,6 +167,10 @@ translate(Method* xmeth, errorInfo* einfo)
 		goto done3;
 	}
 
+#if defined(KAFFE_FEEDBACK)
+	if( kaffe_feedback_file )
+		lockMutex(kaffe_feedback_file);
+#endif
 	/* Only one in the translator at once. Must check the translation
 	 * hasn't been done by someone else once we get it.
 	 */
@@ -301,8 +314,12 @@ DBG(JIT,                dprintf("unreachable basic block pc [%d:%d]\n", pc, npc 
 		switch (base[pc]) {
 		default:
 			printf("Unknown bytecode %d\n", base[pc]);
-			unlockMutex(xmeth->class->centry);
 			leaveTranslator();
+#if defined(KAFFE_FEEDBACK)
+			if( kaffe_feedback_file )
+				unlockMutex(kaffe_feedback_file);
+#endif
+			unlockMutex(xmeth->class->centry);
 			postException(einfo, JAVA_LANG(VerifyError));
                         success = false;
 			break;
@@ -369,6 +386,10 @@ DBG( vm_jit_translate, ("Translating %s.%s%s (%s) %p\n",
 	}
 
 	leaveTranslator();
+#if defined(KAFFE_FEEDBACK)
+	if( kaffe_feedback_file )
+		unlockMutex(kaffe_feedback_file);
+#endif
 done3:;
 	unlockMutex(xmeth->class->centry);
 
@@ -449,7 +470,13 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 	uint32 i;
 	bool res;
 	jexceptionEntry* e;
-
+#if defined(KAFFE_XPROFILER) || defined(KAFFE_XDEBUGGING)
+	struct mangled_method *mm = 0;
+#endif
+#if defined(KAFFE_FEEDBACK)
+	char *sym = 0;
+#endif
+	
 	/* Work out new estimate of code per bytecode */
 	code_generated += code->memlen;
 	bytecode_processed += METHOD_BYTECODE_LEN(meth);
@@ -466,6 +493,44 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 	meth->c.ncode.ncode_start = code->mem;
 	meth->c.ncode.ncode_end = (void*)((uintp)code->code + code->codelen);
 
+#if defined(KAFFE_FEEDBACK)
+	if( kaffe_feedback_file && !meth->class->loader )
+	{
+		sym = KMALLOC(strlen(CLASS_CNAME(meth->class)) +
+			      1 + /* '/' */
+			      strlen(meth->name->data) +
+			      strlen(METHOD_SIGD(meth)) +
+			      1);
+		sprintf(sym,
+			"%s/%s%s",
+			CLASS_CNAME(meth->class),
+			meth->name->data,
+			METHOD_SIGD(meth));
+		feedbackJITMethod(sym, code->code, code->codelen, true);
+		KFREE(sym);
+	}
+#endif
+#if defined(KAFFE_XPROFILER) || defined(KAFFE_XDEBUGGING)
+	if( (
+#if defined(KAFFE_XPROFILER)
+	     xProfFlag ||
+#else
+	     0 ||
+#endif
+#if defined(KAFFE_XDEBUGGING)
+	     machine_debug_file) &&
+#else
+	     0) &&
+#endif
+		(mm = createMangledMethod()) )
+	{
+		mangleMethod(mm, meth);
+	}
+#endif
+#if defined(KAFFE_XPROFILER)
+	profileFunction(mm, code->code, code->codelen);
+#endif
+	
 	/* Flush code out of cache */
 #if defined(FLUSH_DCACHE)
 	FLUSH_DCACHE(code->code, (void*)((uintp)code->code + code->codelen));
@@ -483,10 +548,74 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 
 	/* Translate line numbers table */
 	if (meth->lines != 0) {
+#if defined(KAFFE_XDEBUGGING)
+		struct debug_file *df = machine_debug_file;
+
+		if( df )
+		{
+			/* Mark the start of this source file */
+			addDebugInfo(df,
+				     DIA_SourceFile,
+				     meth->class->sourcefile, code->code,
+				     DIA_Function,
+				     meth, mm, meth->lines->entry[0].line_nr,
+				     code->code, code->codelen,
+				     DIA_DONE);
+		}
+#endif
 		for (i = 0; i < meth->lines->length; i++) {
 			meth->lines->entry[i].start_pc = getInsnPC(meth->lines->entry[i].start_pc) + (uintp)code->code;
+#if defined(KAFFE_XDEBUGGING)
+			if( df )
+			{
+				/* Add line debugging */
+				addDebugInfo(df,
+					     DIA_SourceLine,
+					     meth->lines->entry[i].line_nr,
+					     meth->lines->entry[i].start_pc -
+					     (uintp)code->code,
+					     DIA_DONE);
+			}
+#endif
 		}
+#if defined(KAFFE_XDEBUGGING)
+		if( df )
+		{
+			/*
+			 * Mark the end of the function.  This needs to be here
+			 * so that gdb doesn't get confused about the range of
+			 * the function since that will be determined by the
+			 * next debugging information that is added.
+			 */
+			addDebugInfo(df,
+				     DIA_EndFunction,
+				     code->code + code->codelen,
+				     DIA_DONE);
+		}
+#endif
 	}
+	else
+	{
+#if defined(KAFFE_XDEBUGGING)
+		/*
+		 * No line debugging, but we'd like a symbol to show up anyways
+		 */
+		if( machine_debug_file )
+		{
+			addDebugInfo(machine_debug_file,
+				     DIA_SourceFile, meth->class->sourcefile,
+				     code->code,
+				     DIA_Function, meth, mm, 0,
+				     code->code, code->codelen,
+				     DIA_EndFunction,
+				     code->code + code->codelen,
+				     DIA_DONE);
+		}
+#endif
+	}
+#if defined(KAFFE_XPROFILER) || defined(KAFFE_XDEBUGGING)
+	deleteMangledMethod(mm);
+#endif
 	res = makeMethodActive(meth);
 	assert(res == true);
 

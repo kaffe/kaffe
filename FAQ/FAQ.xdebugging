@@ -1,0 +1,113 @@
+
+Documentation about cross language debugging support for Kaffe's JIT
+By the University of Utah Flux Group <http://www.cs.utah.edu/flux>,
+Mar 22, 2000
+
+Introduction
+------------
+
+The cross language debugging support is basically an offshoot of the
+xprofiler code.  Since the profiler already generated symbols for the
+JIT'ed code it seemed easy enough to also generate `.stabs' debugging
+information for gdb.  The result allows the gdb to report the file and
+line number of the current location in the code, however, the
+implementation has several limitations:
+
+  - Only line number debugging information is generated, variable
+    locations and types aren't handled yet.
+
+  - The debugging information is generated at runtime, so you need to
+    process the assembler output and manually load the symbol file
+    into gdb.  This can turn into a real hassle and makes its harder
+    to do other things (e.g. breakpoints).
+
+  - The java symbol names are mangled and only seem to be deciphered by
+    gdb 4.18, and even then it doesn't always work.
+
+  - You have to manually add the source directories since I can't
+    figure out where to get them from the class structure.
+
+  - JNI stubs, and other bits of code don't have debugging information
+    attached, so no useful information can be reported.  Although,
+    this shouldn't be very hard to add.
+
+  - There may be some problems with backtracing not working properly,
+    i don't know why though...
+
+Configure
+---------
+
+The xdebugging code can be enabled by using the --enable-xdebugging
+flag when running configure.  This will add a command line option for
+specifying the debugging output file and enable code for translating
+java debugging information to assembler `.stabs' directives.
+
+
+Usage
+-----
+
+The xdebugging output isn't generated unless the `-Xxdebug_file' flag
+is specified on the command line.  The flag takes one argument, the
+name of the generated assembler file.  The generated file will have
+symbols for JIT'ed functions and whatever line debugging information
+that was taken from the java debugging information.
+
+Example:
+
+  > setenv KAFFE_DEBUG gdb
+  > java -Xxdebug_file HelloWorld.s HelloWorld
+
+  Copyright 1998 Free Software Foundation, Inc.
+  GDB is free software, covered by the GNU General Public License, and you are
+  welcome to change it and/or distribute copies of it under certain conditions.
+  Type "show copying" to see the conditions.
+  There is absolutely no warranty for GDB.  Type "show warranty" for details.
+  This GDB was configured as "i386-redhat-linux".
+  (gdb)
+
+  <something goes horribly horribly wrong>
+
+  [From another terminal]
+  > as HelloWorld.s -o HelloWorld.o
+
+  [Back in gdb terminal]
+  (gdb) add-symbol-file HelloWorld.o 0
+  add symbol table from file "nm.o" at text_addr = 0x0?
+  (y or n) y
+  (gdb) bt
+
+  #0 0x8008329 in HelloWorld.main() at HelloWorld.java:12 
+  ...
+
+
+Implementation
+--------------
+
+Added Files:
+
+  xprof/debugFile.*: Does the majority of the work in generating the
+    assembler file with the debugging symbols.
+
+  xprof/mangle.*: Mangles the java method names into a gnu style
+    format.
+
+Modified Files:
+
+  kaffe/main.c: Added `-Xxdebug_file' command line arg
+
+  kaffevm/jit3/machine.c: Added code to generate debugging information
+    for JIT'ed methods that had java debugging information.
+
+Control Flow:
+
+  When the jitter finishes processing a method and installs it, it
+  will convert the java line debugging information from byte code
+  references to native code references.  The xdebugging code simply
+  takes these converted references and uses debugFile functions to
+  generate the assembler directives.
+
+Future:
+
+  Add more debugging information, types and variable locations.
+
+  Automate the process of getting the information into gdb.

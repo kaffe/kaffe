@@ -226,7 +226,6 @@ allocRegister(int idealreg, int type)
 			regi = &reginfo[creg];
 			if ((regi->type & (Rglobal|Reserved)) == 0
 			    && (regi->type & type) == type
-			    && (regi->type & type) == type
 			    && regi->used < used) {
 				used = regi->used;
 				reg = creg;

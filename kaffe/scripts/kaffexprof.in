@@ -1,0 +1,29 @@
+#! /bin/sh
+
+#
+# Driver script for running gprof over kaffe generated gmon.out and
+# symbol file.
+#
+# Only useful when Kaffe is configured with --enable-xprofiling, and
+# run with -Xxprof.
+#
+# Look at FAQ/FAQ.xprofiler for more information
+#
+
+AS="${AS-as}"
+LD="${LD-ld}"
+GPROF="${GPROF-gprof}"
+AWK="${AWK-awk}"
+NM="${NM-nm}"
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+
+if test -f "$1.s"; then
+    $NM -n @libexecdir@/@Kaffe_TRANSF@ | $AWK -f @bindir@/nm2as.awk | cat - $1.s | $AS - -o $1
+    $GPROF $1 $2
+else
+    echo "Can't find assembler file $1.s"
+fi
+
+#eof

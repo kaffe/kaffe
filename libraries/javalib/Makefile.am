@@ -688,7 +688,8 @@ kaffe_lang_SRCS = \
 kaffe_management_SRCS = \
 	kaffe/management/Classpath.java \
 	kaffe/management/Debug.java \
-	kaffe/management/JIT.java
+	kaffe/management/JIT.java \
+	kaffe/management/XProfiler.java
 kaffe_net_SRCS = \
 	kaffe/net/DefaultDatagramSocketImplFactory.java \
 	kaffe/net/DefaultFileNameMap.java \

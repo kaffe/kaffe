@@ -32,6 +32,7 @@
 #include "jsignal.h"
 #include "stats.h"
 #include "ltdl.h"
+#include "feedback.h"
 
 #ifndef STUB_PREFIX
 #define STUB_PREFIX ""
@@ -173,13 +174,22 @@ initNative(void)
 	EXIT(1);
 }
 
+int
+loadNativeLibrary(char* lib, char *errbuf, size_t errsiz)
+{
+	int retval;
+
+	retval = loadNativeLibrary2(lib, 1, errbuf, errsiz);
+	return( retval );
+}
+
 /*
  * Link in a native library. If successful, returns an index >= 0 that
  * can be passed to unloadNativeLibrary(). Otherwise, returns -1 and
  * fills errbuf (if not NULL) with the error message. Assumes synchronization.
  */
 int
-loadNativeLibrary(char* path, char *errbuf, size_t errsiz)
+loadNativeLibrary2(char* path, int default_refs, char *errbuf, size_t errsiz)
 {
 	struct _libHandle *lib;
 	int index;
@@ -242,7 +252,7 @@ DBG(NATIVELIB,
 		return -1;
 	}
 
-	lib->ref = 1;
+	lib->ref = default_refs;
 	lib->name = KMALLOC(strlen(path) + 1);
 	addToCounter(&ltmem, "vmmem-libltdl", 1, GCSIZEOF(lib->name));
 	strcpy(lib->name, path);
@@ -252,6 +262,9 @@ DBG(NATIVELIB,
 	    "\tLOAD desc=%p index=%d ++ref=%d\n",
 	    lib->name, lib->desc, index, lib->ref);
     )
+#if defined(KAFFE_FEEDBACK)
+	feedbackLibrary(path, true);
+#endif
 
 	return index;
 }

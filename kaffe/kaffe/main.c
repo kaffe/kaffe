@@ -5,6 +5,10 @@
  * Copyright (c) 1996-2000
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Cross-language profiling changes contributed by
+ * the Flux Research Group, Department of Computer Science,
+ * University of Utah, http://www.cs.utah.edu/flux/
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -23,10 +27,19 @@
 #include "md.h"
 #include "ltdl.h"
 #include "version.h"
+#include "debugFile.h"
+#include "xprofiler.h"
+#include "fileSections.h"
+#include "feedback.h"
+#include "methodCache.h"
 
 #if defined(KAFFE_PROFILER)
 extern int profFlag;
 #endif
+
+extern char* engine_name;
+extern char* engine_version;
+static char* java_version;
 
 #include "jni.h"
 
@@ -101,6 +114,19 @@ main(int argc, char* argv[])
 	farg = options(argv);
 	argc = argc - farg;
 
+#if defined(KAFFE_XPROFILER)
+	if( xProfFlag )
+	{
+		if( !enableXCallGraph() )
+		{
+			fprintf(stderr,
+				"Unable to initialize cross "
+				"language profiling\n");
+			xProfFlag = 0;
+		}
+	}
+#endif
+	
 	/* Get the class name to start with */
 	if (argv[farg] == 0) {
 		usage();
@@ -391,6 +417,69 @@ options(char** argv)
 			vmargs.enableClassGC = 0;
 		}
 #endif
+#if defined(KAFFE_XPROFILER)
+		else if (strcmp(argv[i], "-Xxprof") == 0) {
+			xProfFlag = 1;
+			vmargs.enableClassGC = 0;
+		}
+		else if (strcmp(argv[i], "-Xxprof_syms") == 0) {
+			i++;
+			if (argv[i] == 0) {
+				fprintf(stderr,
+					"Error: -Xxprof_syms option requires "
+					"a file name.\n");
+			}
+			else if( !profileSymbolFile(argv[i]) )
+			{
+				fprintf(stderr,
+					"Unable to create profiler symbol "
+					"file %s.\n",
+					argv[i]);
+			}
+		}
+		else if (strcmp(argv[i], "-Xxprof_gmon") == 0) {
+			i++;
+			if (argv[i] == 0) {
+				fprintf(stderr,
+					"Error: -Xxprof_gmon option requires "
+					"a file name.\n");
+			}
+			else if (!profileGmonFile(argv[i]))
+			{
+				fprintf(stderr,
+					"Unable to create gmon file %s.\n",
+					argv[i]);
+			}
+		}
+#endif
+#if defined(KAFFE_XDEBUGGING)
+		else if (strcmp(argv[i], "-Xxdebug_file") == 0) {
+			i++;
+			if (argv[i] == 0) {
+				fprintf(stderr,
+					"Error: -Xxdebug_file option requires "
+					"a file name.\n");
+			}
+			else
+			{
+				machine_debug_filename = argv[i];
+			}
+		}
+#endif
+#if defined(KAFFE_FEEDBACK)
+		else if (strcmp(argv[i], "-Xfeedback") == 0) {
+			i++;
+			if (argv[i] == 0) {
+				fprintf(stderr,
+					"Error: -Xfeedback option requires a "
+					"file name.\n");
+			}
+			else
+			{
+				feedback_filename = argv[i];
+			}
+		}
+#endif
 		else if (strcmp(argv[i], "-nodeadlock") == 0) {
 			deadlockDetection = 0;
 		}
@@ -436,6 +525,12 @@ options(char** argv)
 			}
 			prop->key = &argv[i][2];
 			prop->value = &argv[i][sz];
+		}
+		else if (argv[i][1] == 'X') {
+			fprintf(stderr,
+				"Error: Unrecognized JVM specific option "
+				"`%s'.\n",
+				argv[i]);
 		}
 		/* The following options are not supported and will be
 		 * ignored for compatibility purposes.
@@ -485,6 +580,17 @@ usage(void)
 	fprintf(stderr, "	-nodeadlock		Disable deadlock detection\n");
 #if defined(KAFFE_PROFILER)
 	fprintf(stderr, "	-prof			Enable profiling of Java methods\n");
+#endif
+#if defined(KAFFE_XPROFILER)
+	fprintf(stderr, "	-Xxprof			Enable cross language profiling\n");
+	fprintf(stderr, "	-Xxprof_syms <file>	Name of the profiling symbols file [Default: kaffe-jit-symbols.s]\n");
+	fprintf(stderr, "	-Xxprof_gmon <file>	Base name for gmon files [Default: xgmon.out]\n");
+#endif
+#if defined(KAFFE_XDEBUGGING)
+	fprintf(stderr, "	-Xxdebug_file <file>	Name of the debugging symbols file\n");
+#endif
+#if defined(KAFFE_FEEDBACK)
+	fprintf(stderr, "	-Xfeedback <file>	The file name to write feedback data too\n");
 #endif
 	fprintf(stderr, "	-debug * 		Trace method calls\n");
 	fprintf(stderr, "	-noasyncgc *		Do not garbage collect asynchronously\n");

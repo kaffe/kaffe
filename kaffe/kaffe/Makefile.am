@@ -6,13 +6,14 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-libexec_PROGRAMS = Kaffe
+SUBDIRS = kaffeh kaffevm xprof kaffe scripts man
 
-INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl
+INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
+	-I$(top_srcdir)/kaffe/xprof
 
 Kaffe_SOURCES = main.c version.c
 
-LIBKAFFEVM = ../kaffevm/libkaffevm.la
+LIBKAFFEVM = ../kaffevm/libkaffevm.la ../xprof/libkaffexprof.la
 
 Kaffe_LDFLAGS = -export-dynamic
 Kaffe_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS)

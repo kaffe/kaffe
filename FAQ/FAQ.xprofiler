@@ -1,0 +1,271 @@
+
+Documentation about cross language profiling for Kaffe's JIT
+By the University of Utah Flux Group <http://www.cs.utah.edu/flux>,
+Mar 22, 2000
+
+Introduction
+------------
+
+The cross language profiling facilities in Kaffe allow it to generate
+profiling data which covers the native C VM code and the JIT'ed code.
+Basically, it works just like regular C/UNIX profiling except we have
+to generate the function symbols for JIT'ed code at runtime so that
+gprof can tell where things are.  The system also provides some additional
+functionality:
+
+  - Profiling can be turned on and off from java and C easily
+
+  - Profiled code doesn't have to be contiguous, the system can
+    monitor scattered code and generate separate gmon files for
+    segments that are not "close" to each other.
+
+  - Profiling can be done in stages to separate different modes in
+    program execution.  For example, the profiling data accumulated
+    during the intialization of kaffe and the java program can be
+    separated out from the real work done by the program.
+
+The system doesn't replace the previous profiling work, rather we
+feel it is complementary since it is nowhere near as accurate as the
+instruction counter timing.
+
+
+Configure
+---------
+
+The xprofiler is a configure time option that is turned on by the
+--enable-xprofiling flag.  The --with-staticvm and --with-staticlib
+flags also needs to be used, otherwise the C code in the shared
+library won't be monitored.  (On FreeBSD, for example, all the dynamic
+library code will show up as "<hicore>" in the profile.)  Also, the
+--with-profiling flag needs to be specified in order to get call graph
+data for the C VM code.  Currently, it has only been tested with jit3
+on FreeBSD and Linux on x86 machines, hopefully, more platforms can be
+tested/supported in the future.
+
+
+Usage
+-----
+
+To turn profiling on at runtime simply add the `-Xxprof' flag to the
+command line.  Once the program has finished it will generate two
+files, by default, kaffe-jit-symbols.s and xgmon.out.  The first file,
+kaffe-jit-symbols.s, is an assembler file which defines the symbols
+for any of the JIT generated code.  The second file, xgmon.out, is a
+GNU gprof file with time samples covering the Kaffe and JIT code.
+Call graph data is also generated for the JIT code, but call graph
+data for the C code in Kaffe is only included if the
+`--with-profiling' flag was passed to configure.  Unfortunately, you
+can't pass these files directly to gprof for analysis, first you need
+to process the assembler file and link it to the Kaffe executable to
+get a symbol table that gprof can examine.  In order to make this a
+little easier there is a kaffexprof script which will take care of
+these steps automatically.  Unfortunately, the current gprof versions
+don't support java name mangling so resulting output is sometimes C++,
+otherwise its just the mangled name.
+
+Profiling command line args:
+
+  -Xxprof: Turns on xprofiling with the default filenames.  (Note: We
+     also turn off class GC since we can't have jit memory moving
+     around or changing since gprof will attribute time and calls
+     incorrectly if new code is put in the same place.)
+
+  -Xxprof_syms <file>: Specify a different file name for the generated
+     assembler file that contains the profiler symbols.  (Default:
+     "kaffe-jit-symbols.s")
+
+  -Xxprof_gmon <file>: Specify a different base name for the generated
+     gmon files.  Its actually possible for more than one gmon file to
+     be produced, either by the java program using multiple profile
+     stages or there were files produced for code chunks that were
+     very far apart.  If there were multiple stages then the name of
+     the gmon file is <file> with the name of the stage appended to
+     it.  If extra files are from distant discontiguous regions than
+     the first file is named <file> and covers the first chunk of
+     memory, the rest of the files include the starting address for
+     the sample space appended to the name. (Default: "xgmon.out")
+
+
+Example usage (first without kaffexprof):
+
+  java -Xxprof HelloWorld
+  as kaffe-jit-symbols.s -o kaffe-jit-symbols.o
+  ld /usr/local/libexec/Kaffe kaffe-jit-symbols.o -o kaffe-jit-symbols
+  gprof kaffe-jit-symbols xgmon.out
+
+ or:
+
+  java -Xxprof HelloWorld
+  kaffexprof kaffe-jit-symbols xgmon.out
+
+NOTE: GNU gprof is required.  BSD gprofs will give an error like:
+	gprof: no room for 2147483642 sample pc's 
+
+
+Java Interface:
+
+  A simple java interface to the profiler is provided by the
+  kaffe.management.XProfiler class.  This class provides three
+  functions for turning profiling accounting on and off, and starting
+  a new profiling stage:
+
+  on() - Turn on profile accounting, basically, just record any data
+	 from the monitors.  (This is the default)
+  off() - Turn off profile accounting.  Any functions that are JIT'ed
+	 after this call will have monitors attached, its just that
+	 nothing is recorded during this time.
+  stage(String name) - Start a new stage, the given name is used to
+	 name the previous stage.  This causes the current profiling
+	 data to be output to a gmon file with `.name' appened to the
+	 base gmon file name.  Once the data has been written out
+	 the internal counters are reset to zero and profiling for
+	 the new stage continues.
+
+
+Implementation
+--------------
+
+Added Files:
+
+  xprof/xprofiler.*: The primary interface to the profiler.  Kaffe
+    code should use these functions which then get routed to the
+    actual implementations below.
+
+  xprof/gmonFile.*: Support code for writing gmon files
+
+  xprof/mangle.*: Support code for mangling the method name into a gnu
+    style format.
+
+  xprof/callGraph.*: Support code for tracking call arcs.  Its
+    works similarly to mcount and other gmon code.
+
+  xprof/memorySamples.*: Support code for tracking how often
+    the PC is at an address during the sampling period.  It works
+    by building a tree that covers all "observed" areas of memory.
+    The tree is structured so that it can be walked by splitting the
+    sampled address into chunks and then indexing each branch in the
+    tree by the chunk value and then repeating for the next
+    chunk/level in the tree.  Its not as fast as a flat array, but
+    its more flexible and doesn't eat a lot of memory.
+
+  xprof/debugFile.*: Support code for generating assembler files
+    with symbol information.  Unfortunately, the symbols are mangled
+    since the assembler doesn't like the funky java method names and
+    signatures.
+
+  xprof/gmon_out.h: This was lifted from gprof, we just need it for
+    the structures that define the file format.
+
+  scripts/kaffexprof.in: Shell script that takes the base name for the
+    generated assembler file and the gmon file and then builds a
+    usable executable with all the symbols and runs gprof.
+
+  scripts/nm2as.awk: This is used by kaffexprof to produce an
+    assembler file with symbols corresponding to the ones in the
+    object file that is specified.  We use this to get around problems
+    when trying to link Kaffe with the generated JIT symbol files,
+    basically LD would move some symbols around and screw up the
+    output.  With this hack we get all the symbols in the right place.
+
+Modified Files:
+
+  config/i386/jit3-i386.def: Modified prologue to call mcount like
+    function in xprofiler.
+
+  config/i386/*/md.h: Added defines for signal handler prototypes and
+    macro to get the PC out of the sigcontext.
+
+  kaffevm/systems/unix-jthreads/jthread.c: Added code to Turn off the
+    profile timer initially set up and just use the time slicing timer
+    used for threads.  Added code to the interrupt handler to report
+    the PC seen in the interrupt.
+
+  kaffevm/jit3/machine.c: Added calls to xprofiler to inform it of new
+    JIT'ed code and symbols.
+
+  kaffe/main.c: Added new command line args and their handlers.
+
+  kaffevm/classMethod.c: Added test to stop the free'ing of JIT'ed
+    class initializer code so that the generated symbols would
+    still be valid.
+
+Control Flow:
+
+  The profiler is started immediately after the JVM is initialized,
+  unfortunately, we have to wait this long since the code allocates
+  memory using the GC.  However, if `--with-profiling' flag is
+  specified in configure, we can copy out the profiling data collected
+  during initialization into our own sample counters, so we don't lose
+  the information.  Depending on the threading system used, a PC
+  sampler needs to be installed which samples the PC at 10ms
+  intervals.  The samples are recorded using the memorySamples code
+  and any JIT'ed code is added to the set of "observed" memory
+  regions, which is initially just the kaffe code and libraries.
+  Any PCs that fall out of the "observed" region are recorded as
+  misses and attributed to the "_unaccounted_" symbol (Unobserved
+  regions can most likely be attributed to dynamically loaded
+  libraries).  Call graph data is accumulated by placing a call to the
+  profileArcHit function in the prologue of every JIT'ed function.
+  All of this data is then written out by an atexit() function or when
+  theres a transition to a new stage.
+
+System dependencies:
+
+  A call to profileArcHit needs to be added to the prologue of JIT'ed
+  methods.
+
+  For unix-jthreads:
+  
+    - SIGNAL_ARGS(sig, sc) needs to be defined to specify the
+      arguments of the prototype for a signal handler.
+
+    - SIGNAL_CONTEXT_POINTER(sc) needs to be defined to something that
+      can be used in a parameter list or declaration to define a
+      pointer to a signal context pointer (struct sigcontext,
+      siginfo_t, whatever)
+
+    - GET_SIGNAL_CONTEXT_POINTER(sc) needs to be defined to return a
+      pointer to the signal context
+
+    - SIGNAL_PC(sc) needs to be defined to return the PC value from the
+      given signal context
+
+    - _KAFFE_OVERRIDE_MCOUNT_DEF needs to be defined in order to override
+      the libc `mcount'.  This doesn't need to be defined, its only useful
+      if `--with-profiling' is specified and you care about getting call
+      data about native functions.  The standard `mcount' won't work properly
+      with native interfaces since the return caller address will be in the
+      heap and not in the text section as it expects, so the calls are
+      ignored.
+
+    - _KAFFE_OVERRIDE_MCOUNT needs to be defined if MCOUNT_DEF is a static
+      inline and this function is used to call it.
+
+  An appropriate PC sampler needs to be installed.  Initially, the
+  ITIMER_PROF timer was installed and always running, but this was
+  caused problems with unix-jthreads.  It turned out that the
+  time-slicing interrupt would occur at almost the same time as the PC
+  sampler, resulting in the majority of the samples being in the
+  time-slicing code, instead of the more interesting java code.  The
+  solution was simply to incorporate sampling the PC into the time
+  slicing code.  Of course, systems that don't use unix-jthreads or
+  have unforseen quirks will need to find their own way to take samples.
+
+  The debugFile code generates an assembler file with a number of
+  directives in it, if a non GNU assembler is being used then these
+  will probably need to be changed.  However, the file doesn't contain
+  any assembly instructions so it should be somewhat independent of
+  the architecture.
+
+  None of this has been tested on a 64 bit system...
+
+Future:
+
+  Possibly add support for profiling the interpreter, unfortunately,
+  it isn't clear how to do this effectively...
+
+  Profile shared libraries, the current system can support this, the
+  only problem is that its hard to determine the upper and lower bound
+  of the libraries text segment in order to do monitoring.
+
+  Support for more platforms.

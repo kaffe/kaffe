@@ -171,6 +171,22 @@ dumpActiveMethods(jobject printstream, jobject loader)
 	}
 }
 
+void
+walkActiveMethods(void *arg, void (*walker)(void *arg, Method *meth))
+{
+	int i;
+
+	for(i = 0; i < METHCACHEHASHSZ; i++) {
+		methCacheEntry *entry = methCacheTable.hash[i];
+		while (entry) {
+			if (entry->meth->class != 0) {
+				walker(arg, entry->meth);
+			}
+			entry = entry->next;
+		}
+	}
+}
+
 #if defined(DUMPMETHODCACHESTATS)
 /*
  * A function to dump the length of the lists in the method cache

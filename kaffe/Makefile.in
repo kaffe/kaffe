@@ -134,7 +134,7 @@ with_engine = @with_engine@
 # of this file. 
 
 
-SUBDIRS = kaffeh kaffevm kaffe scripts man
+SUBDIRS = kaffeh kaffevm xprof kaffe scripts man
 subdir = kaffe
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config/config.h ../include/jtypes.h

@@ -136,11 +136,13 @@ with_engine = @with_engine@
 
 libexec_PROGRAMS = Kaffe
 
-INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl
+INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
+	-I$(top_srcdir)/kaffe/xprof
+
 
 Kaffe_SOURCES = main.c version.c
 
-LIBKAFFEVM = ../kaffevm/libkaffevm.la
+LIBKAFFEVM = ../kaffevm/libkaffevm.la ../xprof/libkaffexprof.la
 
 Kaffe_LDFLAGS = -export-dynamic
 Kaffe_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS)

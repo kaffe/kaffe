@@ -46,6 +46,7 @@
 #include "basecode.h"
 #include "icode.h"
 #include "machine.h"
+#include "feedback.h"
 #endif
 
 /*
@@ -3632,6 +3633,10 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	count = sizeofSigMethod(xmeth, false);
 	count += 1 - isStatic;
 
+#if defined(KAFFE_FEEDBACK)
+	if( kaffe_feedback_file )
+		lockMutex(kaffe_feedback_file);
+#endif
 	/* Construct a wrapper to call the JNI method with the correct
 	 * arguments.
 	 */
@@ -3951,6 +3956,10 @@ done:
 #endif
 
 	leaveTranslator();
+#if defined(KAFFE_FEEDBACK)
+	if( kaffe_feedback_file )
+		unlockMutex(kaffe_feedback_file);
+#endif
 	if (!success) {
 		throwError(&info);
 	}

@@ -42,6 +42,7 @@
 #include "jni.h"
 #include "methodCache.h"
 #include "gcj/gcj.h"
+#include "xprofiler.h"
 
 #if 0
 #define	METHOD_TRUE_NCODE(METH)			(METH)->c.ncode.ncode_start
@@ -496,10 +497,15 @@ DBG(STATICINIT,
 		makeMethodInactive(meth);
 #endif
 #endif
-		METHOD_NATIVECODE(meth) = 0;
-		KFREE(meth->c.ncode.ncode_start);
-		meth->c.ncode.ncode_start = 0;
-		meth->c.ncode.ncode_end = 0;
+#if defined(KAFFE_XPROFILER)
+		if( !xProfFlag )
+#endif
+		{
+			METHOD_NATIVECODE(meth) = 0;
+			KFREE(meth->c.ncode.ncode_start);
+			meth->c.ncode.ncode_start = 0;
+			meth->c.ncode.ncode_end = 0;
+		}
 	}
 
 done:

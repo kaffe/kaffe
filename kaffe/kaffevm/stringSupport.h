@@ -122,4 +122,31 @@ extern int		  utf8ConstEqualJavaString(const Utf8Const*,
 /* Initialize utf8const support system */
 extern void		  utf8ConstInit(void);
 
+/*
+ * Extract a character from a Java-style Utf8 string.
+ * PTR points to the current UTF-8 byte; END points to the end of the string.
+ * PTR is incremented to point after the character that gets returns.
+ * On an error, -1 is returned and PTR is no longer valid.
+ */
+#define UTF8_GET(PTR, END)						\
+  ((PTR) >= (END)							\
+     ? -1								\
+   : (PTR)[0] == 0							\
+     ? (PTR)++, -1							\
+   : ((PTR)[0]&0x80) == 0						\
+     ? *(PTR)++								\
+   : ((PTR)+2)<=(END)							\
+       && ((PTR)[0]&0xE0) == 0xC0					\
+       && ((PTR)[1]&0xC0) == 0x80					\
+       && ((PTR)+=2, 1)							\
+     ? (((PTR)[-2] & 0x1F) << 6) + ((PTR)[-1] & 0x3F)			\
+   : ((PTR)+3)<=(END)							\
+       && ((PTR)[0] & 0xF0) == 0xE0					\
+       && ((PTR)[1] & 0xC0) == 0x80					\
+       && ((PTR)[2] & 0xC0) == 0x80					\
+       && ((PTR)+=3, 1)							\
+     ? (((PTR)[-3]&0x1F) << 12)						\
+       + (((PTR)[-2]&0x3F) << 6) + ((PTR)[-1]&0x3F)			\
+   : -1)
+
 #endif

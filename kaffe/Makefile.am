@@ -6,4 +6,4 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = kaffeh kaffevm kaffe scripts man
+SUBDIRS = kaffeh kaffevm xprof kaffe scripts man

@@ -16,6 +16,7 @@
 
 #include "jthread.h"
 #include "jsignal.h"
+#include "xprofiler.h"
 
 
 /* Flags used for threading I/O calls */
@@ -122,12 +123,32 @@ static int  min_priority;		/* minimum supported priority */
 
 jthread* currentJThread;
 
+/* The arguments to a signal handler */
+#ifndef SIGNAL_ARGS
+#define SIGNAL_ARGS(sig, sc) int sig
+#endif
+
+/* Get a signal context pointer from signal arguments */
+#ifndef GET_SIGNAL_CONTEXT_POINTER
+#define GET_SIGNAL_CONTEXT_POINTER(x) 0
+#endif
+
+/* A signal context pointer type, used in parameter lists/declarations */
+#ifndef SIGNAL_CONTEXT_POINTER
+#define SIGNAL_CONTEXT_POINTER(x) void *##x
+#endif
+
+/* Get the PC from a signal context pointer */
+#ifndef SIGNAL_PC
+#define SIGNAL_PC(scp) 0
+#endif
+
 /*
  * Function declarations.
  * Again, keep these static to ensure encapsulation.
  */
-static void handleInterrupt(int sig);
-static void interrupt(int sig);
+static void handleInterrupt(int sig, SIGNAL_CONTEXT_POINTER(sc));
+static void interrupt(SIGNAL_ARGS(sig, sc));
 static void childDeath(void);
 static void handleIO(int);
 static void killThread(jthread *jtid);
@@ -292,7 +313,7 @@ processSignals(void)
 	for (i = 1; i < NSIG; i++) {
 		if (pendingSig[i]) {
 			pendingSig[i] = 0;
-			handleInterrupt(i);
+			handleInterrupt(i, 0);
 		}
 	}
 	sigPending = 0;
@@ -357,7 +378,7 @@ jthread_unsuspendall(void)
  * be running with all signals blocked.
  */
 static void
-interrupt(int sig)
+interrupt(SIGNAL_ARGS(sig, sc))
 {
 	/*
 	 * If ints are blocked, this might indicate an inconsistent state of
@@ -375,6 +396,20 @@ interrupt(int sig)
 		char c;
 		pendingSig[sig] = 1;
 		sigPending = 1;
+		
+#if defined(KAFFE_XPROFILER)
+		/*
+		 * Since the regular handler won't run with the sig context we
+		 * need to do the hit here
+		 */
+		if( sig == SIGVTALRM )
+		{
+			SIGNAL_CONTEXT_POINTER(scp) =
+				GET_SIGNAL_CONTEXT_POINTER(sc);
+				
+			profileHit((char *)SIGNAL_PC(scp));
+		}
+#endif
 		/*
 		 * There is a race condition in handleIO() between
 		 * zeroing blockints and going into select().
@@ -443,7 +478,7 @@ interrupt(int sig)
 	/*
 	 * Handle the signal.
 	 */
-	handleInterrupt(sig);
+	handleInterrupt(sig, GET_SIGNAL_CONTEXT_POINTER(sc));
 
 	/*
 	 * Leave the critical section.  This may or may not cause a
@@ -461,10 +496,14 @@ interrupt(int sig)
  * priority.
  */
 static void 
-handleVtAlarm(void)
+handleVtAlarm(int sig, SIGNAL_CONTEXT_POINTER(sc))
 {
 	static int c;
 
+#if defined(KAFFE_XPROFILER)
+	if( sc )
+		profileHit((char *)SIGNAL_PC(sc));
+#endif
 	if (preemptive) {
 		internalYield();
 	}
@@ -593,7 +632,7 @@ jthread_dumpthreadinfo(jthread_t tid)
  * result of intsRestore.
  */
 static void 
-handleInterrupt(int sig)
+handleInterrupt(int sig, SIGNAL_CONTEXT_POINTER(sc))
 {
 	switch(sig) {
 	case SIGALRM:
@@ -606,7 +645,7 @@ handleInterrupt(int sig)
 
 #if defined(SIGVTALRM)
 	case SIGVTALRM:
-		handleVtAlarm();
+		handleVtAlarm(sig, sc);
 		break;
 #endif
 
@@ -1044,6 +1083,13 @@ jthread_init(int pre,
         talive++;
         currentJThread = jtid;
         resumeThread(jtid);
+#if defined(KAFFE_XPROFILER)
+	/*
+	 * The profiler is started at program startup, we take over from here
+	 * on out so we disable whatever one was installed
+	 */
+	disableProfileTimer();
+#endif
 	/* Because of the handleVtAlarm hack (poll every 20 SIGVTALRMs) 
 	 * we turn on the delivery of SIGVTALRM even if no actual time
 	 * slicing is possible because only one Java thread is running.

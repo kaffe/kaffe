@@ -22,9 +22,16 @@ else
 SCRIPTFILES_COMPAT=appletviewer javac javadoc
 endif
 
+if ENABLE_XPROF
+SCRIPTFILES_XPROF=kaffexprof nm2as.awk
+else
+SCRIPTFILES_XPROF=
+endif
+
 PSCRIPTFILES=	install-jar kaffe
 
 bin_SCRIPTS = $(SCRIPTFILES_KJC) $(SCRIPTFILES_SUN) \
-	$(SCRIPTFILES_COMPAT) $(PSCRIPTFILES)
+	$(SCRIPTFILES_COMPAT) $(PSCRIPTFILES) \
+	$(SCRIPTFILES_XPROF)
 
 include $(top_srcdir)/include/distclean-hack

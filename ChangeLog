@@ -1,3 +1,35 @@
+Tue May 23 11:21:08 MDT 2000  Timothy Stack <stack@cs.utah.edu>
+
+	* FAQ/FAQ.feedback, FAQ/FAQ.xdebugging, FAQ/FAQ.xprofiler,
+	kaffe/scripts/nm2as.awk, kaffe/scripts/kaffexprof.in,
+	libraries/clib/management/XProfiler.c, kaffe/xprof/*,
+	libraries/javalib/kaffe/management/XProfiler.java: Added as part
+	of the cross-language profiling support for Kaffe.
+	* configure.in: Added --enable-xprofiling, --enable-xdebugging,
+	--enable-feedback options, plus new scripts.
+	* */Makefile.am: Add the kaffe/xprof to INCLUDES in most Makefile.ams.
+	* config/i386/{freebsd2,linux}/md.h: Add accessor macros for
+	signal handler state.
+	* config/i386/jit3-i386.def: Add preamble for JIT'd, profiled
+	methods.
+	* kaffe/kaffe/main.c: Add 5 new -X options for xprofiling, feedback 
+	and xdebugging.
+	* kaffe/kaffevm/baseClasses.c: initialize profiling, if enabled
+	* kaffe/kaffevm/classMethod.c: don't drop class initializers if profiling.
+	* kaffe/kaffevm/external.[ch]: Add loadNativeLibrary2() to allow 
+	feedback code to pre-load native libraries.
+	* kaffe/kaffevm/jni.c: serialize JIT+record if recording info to
+	feedback file.
+	* kaffe/kaffevm/methodCache.[ch]: Add walkActiveMethods()
+	* kaffe/kaffevm/{stringSupport.h,utf8const.c}: move UTF8_GET()
+	macro to stringSupport.h from utf8const.c.
+	* kaffe/kaffevm/jit3/machine.c: Support for xprofiling, xdebugging 
+	and feedback.
+	* kaffe/kaffevm/jit3/registers.c: fix a typo
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: use vtAlarm to
+	record profile hits, if profiling.
+	* configure, */Makefile.in, Klasses.jar: regenerated
+	
 Mon May 22 17:18:45 PDT 2000  Timothy Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/gcFuncs.c: fix bug GC'ing interface methods

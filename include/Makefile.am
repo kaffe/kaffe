@@ -83,6 +83,7 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	kaffe_lang_UNIXProcess.h \
 	kaffe_management_JIT.h \
 	kaffe_management_Debug.h \
+	kaffe_management_XProfiler.h \
 	kaffe_security_provider_MD2.h \
 	kaffe_security_provider_MD4.h \
 	kaffe_security_provider_MD5.h \

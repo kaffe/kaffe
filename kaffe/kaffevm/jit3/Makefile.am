@@ -8,7 +8,7 @@
 
 @engine_frag@
 
-INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENGINE_DEFS)
+INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/xprof
 
 noinst_LTLIBRARIES = libengine.la
 

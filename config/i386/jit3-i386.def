@@ -4,6 +4,10 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Cross-language profiling changes contributed by
+ * the Flux Research Group, Department of Computer Science,
+ * University of Utah, http://www.cs.utah.edu/flux/
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -11,6 +15,7 @@
 #include "debug.h"
 #include "classMethod.h"
 #include "md.h"
+#include "xprofiler.h"
 
 #if defined(TRACE_METHOD_END) && defined(__GNUC__)
 asm(".globl tStore\ntStore:	.long 0,0");
@@ -178,6 +183,48 @@ define_insn(nop, nop)
 define_insn(prologue, prologue_xxx)
 {
 	label* l;
+
+#if defined(KAFFE_XPROFILER)
+	if (xProfFlag)
+	{
+		/* Store the pointer to this function in eax */
+		OUT = 0xB8|REG_eax;
+		l = (label*)newLabel();
+		l->type = Llong|Linternal|Labsolute;
+		l->to = 0;
+		l->at = (uintp)CODEPC;
+		LOUT = 0;
+		debug(("movl #?,eax\n"));
+
+		/* Push second arg to profileArcHit */
+		OUT = 0x50|REG_eax;
+		debug(("pushl eax\n"));
+
+		/* Get return address from the stack */
+		OUT = 0x8B;
+		OUT = (REG_eax<<3)|0x44;
+		OUT = 0x24;
+		OUT = 0x04;
+		debug(("movl eax,4(esp)\n"));
+
+		/* Push first arg to profileArcHit */
+		OUT = 0x50|REG_eax;
+		debug(("pushl eax\n"));
+		/* Load the address to profileArcHit */
+		OUT = 0xB8|REG_eax;
+		LOUT = (int)profileArcHit;
+		debug(("movl profileArcHit,eax\n"));
+		/* Make the call */
+		OUT = 0xFF;
+		OUT = 0xD0|REG_eax;
+		debug(("call profileArcHit\n"));
+		/* Pop the args off */
+		OUT = 0x58|REG_eax;
+		debug(("popl eax\n"));
+		OUT = 0x58|REG_eax;
+		debug(("popl eax\n"));
+	}
+#endif
 
 	OUT = 0x50|REG_ebp;
 	OUT = 0x89;
