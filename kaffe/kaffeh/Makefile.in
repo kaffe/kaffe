@@ -82,6 +82,7 @@ inflate.d:	$(srcdir)/../kaffevm/inflate.c
 		$(DEPTOOL) $(ALL_CFLAGS) $< > $@
 
 depend:		$(DEPENDS)
+		touch $(HEADERFILES)
 		rm -f .depend
 		cat $(DEPENDS) > .depend
 
