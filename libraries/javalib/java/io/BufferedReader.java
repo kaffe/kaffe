@@ -1,3 +1,4 @@
+
 /*
  * Java core library component.
  *
@@ -10,11 +11,7 @@
 
 package java.io;
 
-import java.lang.String;
-
-public class BufferedReader
-  extends Reader
-{
+public class BufferedReader extends Reader {
 	final private static int DEFAULTBUFFERSIZE = 8192;
 	private Reader rd;
 	private char[] inbuf;
@@ -22,25 +19,63 @@ public class BufferedReader
 	private int size;	// total length of valid chars in buffer
 				//  invariant: 0 <= pos <= size <= inbuf.length
 	private boolean markset;
+	private boolean markvalid;
+	private boolean closed;
 
 public BufferedReader(Reader in) {
 	this(in, DEFAULTBUFFERSIZE);
 }
 
 public BufferedReader(Reader in, int sz) {
+	super(in);
+	if (sz <= 0) {
+		throw new IllegalArgumentException("Buffer size <= 0");
+	}
 	rd = in;
 	inbuf = new char[sz];
 	pos = 0;
 	size = 0;
 	markset = false;
+	markvalid = false;
+}
+
+/* Internal function used to check whether the
+   BufferedReader has been closed already, throws
+   an IOException in that case.
+*/
+private void checkIfStillOpen() throws IOException {
+	if (closed) {
+		throw new IOException("Stream closed");
+	}
 }
 
 public void close() throws IOException {
-	rd.close();
+	synchronized(lock) {
+		if (closed) {
+			return;
+		}
+		closed = true;
+
+		// Close the input reader
+		rd.close();
+
+		// Release the buffer
+		inbuf = null;
+
+		// Release the input reader (lock is a reference too)
+		rd = null;
+		lock = this;
+	}
 }
 
 public void mark(int readAheadLimit) throws IOException {
+	if (readAheadLimit < 0) {
+		throw (new IllegalArgumentException("Read-ahead limit < 0"));
+	}
+
 	synchronized(lock) {
+		checkIfStillOpen();
+
 		char[] oldbuf = inbuf;
 
 		// Allocate bigger buffer if necessary
@@ -53,11 +88,12 @@ public void mark(int readAheadLimit) throws IOException {
 		size -= pos;
 		pos = 0;
 		markset = true;
+		markvalid = true;
 	}
 }
 
 public boolean markSupported() {
-	return (true);
+	return true;
 }
 
 //Used in java.io.BufferedLineReader
@@ -69,6 +105,8 @@ void pushback() {
 
 public int read () throws IOException {
 	synchronized (lock) {
+		checkIfStillOpen();
+
 		if (pos < size || fillOutBuffer() > 0) {
 			return (inbuf[pos++]);
 		}
@@ -77,11 +115,17 @@ public int read () throws IOException {
 }
 
 public int read ( char cbuf[], int off, int len ) throws IOException {
+	if (off < 0 || off + len > cbuf.length || len < 0) {
+		throw new IndexOutOfBoundsException();
+	}
 	synchronized(lock) {
+		checkIfStillOpen();
+
 		// Do read directly in this case, according to JDK 1.2 docs
 		if (pos == size && !markset && len >= inbuf.length) {
 			return rd.read(cbuf, off, len);
 		}
+
 		int nread;	
 		int chunk;
 		for (nread = 0; nread < len; nread += chunk) {
@@ -111,11 +155,14 @@ public int read ( char cbuf[], int off, int len ) throws IOException {
 }
 
 public String readLine () throws IOException {
-	int     start = pos;
 	char    c = ' ';    // silly javac, complains about initialization
 	String  s = null;
 
 	synchronized ( lock ) {
+		checkIfStillOpen();
+
+		int start = pos;
+
 		while ( true ) {
 
 			// Find next newline or carriage return
@@ -133,7 +180,7 @@ public String readLine () throws IOException {
 						s += new String(inbuf, start, pos-start);
 					}
 				}
-				if (fillOutBuffer() <= 0) {
+				if (fillOutBuffer() < 0) {
 					return (s);
 				}
 				start = 0;
@@ -159,6 +206,8 @@ public String readLine () throws IOException {
 
 public boolean ready() throws IOException {
 	synchronized(lock) {
+		checkIfStillOpen();
+
 		return (pos < size || rd.ready());
 	}
 }
@@ -173,7 +222,7 @@ private int fillOutBuffer () throws IOException {
 
 		if (markset) {
 			if (pos == inbuf.length) {	// mark overflow
-				markset = false;
+				markvalid = false;
 				pos = 0;
 			}
 		} else {
@@ -182,7 +231,7 @@ private int fillOutBuffer () throws IOException {
 
 		n = rd.read(inbuf, pos, inbuf.length - pos);
 
-		if (n > 0) {
+		if (n >= 0) {
 			size = pos + n;
 			return (n);
 		}
@@ -195,15 +244,25 @@ private int fillOutBuffer () throws IOException {
 
 public void reset() throws IOException {
 	synchronized(lock) {
+		checkIfStillOpen();
+
 		if (!markset) {
-			throw new IOException("invalid mark");
+			throw new IOException("Stream not marked");
+		}
+		else if (!markvalid) {
+			throw new IOException("Mark invalid");
 		}
 		pos = 0;
 	}
 }
 
 public long skip(long n) throws IOException {
-        synchronized(lock) {
+	if (n < 0) {
+		throw new IllegalArgumentException("skip value is negative");
+	}
+	synchronized(lock) {
+		checkIfStillOpen();
+
 		long bufskip;
 
 		// Skip from within the buffer first
@@ -221,7 +280,7 @@ public long skip(long n) throws IOException {
 		// Reset buffer and skip what remains directly
 		pos = 0;
 		size = 0;
-		markset = false;
+		markvalid = false;
 		return bufskip + rd.skip(n - bufskip);
 	}
 }
