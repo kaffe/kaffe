@@ -35,6 +35,11 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+/* <sys/types.h> needs to be included on OSX before <sys/select.h> */
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif
+
 #include <sys/select.h>
 #include <sys/time.h>
 
