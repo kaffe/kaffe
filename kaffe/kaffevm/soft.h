@@ -29,7 +29,9 @@ jint	soft_instanceof(struct Hjava_lang_Class*, struct Hjava_lang_Object*);
 void	soft_athrow(struct Hjava_lang_Object*);
 void	soft_badarrayindex(void);
 void	soft_nullpointer(void);
+void	soft_divzero(void);
 void	soft_nosuchmethod(struct Hjava_lang_Class*, Utf8Const*, Utf8Const*);
+void	soft_nosuchfield(Utf8Const*, Utf8Const*);
 void	soft_checkarraystore(struct Hjava_lang_Object*, struct Hjava_lang_Object*);
 void	soft_addreference(void*, void*);
 
@@ -77,5 +79,9 @@ jfloat	soft_cvtdf(jdouble);
 jint instanceof(struct Hjava_lang_Class*, struct Hjava_lang_Class*);
 jint instanceof_class(struct Hjava_lang_Class*, struct Hjava_lang_Class*);
 jint instanceof_array(struct Hjava_lang_Class*, struct Hjava_lang_Class*);
+
+void	soft_debug1(void*, void*, void*);
+void	soft_debug2(void*, void*, void*);
+void	soft_trace(Method*, void*);
 
 #endif

@@ -457,15 +457,40 @@ soft_nullpointer(void)
 }
 
 /*
+ * soft_divzero.
+ */
+soft_divzero(void)
+{
+	throwException(ArithmeticException);
+}
+
+/*
  * soft_nosuchmethod.
  */
 void            
 soft_nosuchmethod(Hjava_lang_Class* c, Utf8Const* n, Utf8Const* s)
 {
-	char buf[200];	/* FIXME: unchecked buffer */
-	sprintf(buf, "%s.%s%s", CLASS_CNAME(c), n->data, s->data);
+	char buf[200];
+	strncpy(buf, CLASS_CNAME(c), sizeof(buf));
+	strncat(buf, ".", sizeof(buf));
+	strncat(buf, n->data, sizeof(buf));
+	strncat(buf, s->data, sizeof(buf));
 	throwException(NoSuchMethodError(buf));
 }
+
+/*
+ * soft_nosuchfield.
+ */
+void
+soft_nosuchfield(Utf8Const* c, Utf8Const* n)
+{
+	char buf[200];
+	strncpy(buf, c->data, sizeof(buf));
+	strncat(buf, ".", sizeof(buf));
+	strncat(buf, n->data, sizeof(buf));
+	throwException(NoSuchFieldError(buf));
+}
+
 
 /*
  * soft_initialise_class.
@@ -818,4 +843,19 @@ soft_cvtdi(jdouble v)
 	else {
 		return ((jint)floor(v));
 	}
+}
+
+void
+soft_debug1(void* a0, void* a1, void* a2)
+{
+}
+
+void
+soft_debug2(void* a0, void* a1, void* a2)
+{
+}
+
+void
+soft_trace(Method* meth, void* args)
+{
 }

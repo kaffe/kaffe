@@ -1,0 +1,484 @@
+/* registers.c
+ * Manage the machine registers.
+ *
+ * Copyright (c) 1996, 1997
+ *	Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ */
+
+#include "config.h"
+#include "config-std.h"
+#include "config-mem.h"
+#include "gtypes.h"
+#include "bytecode.h"
+#include "slots.h"
+#include "md.h"
+#include "registers.h"
+#include "seq.h"
+#include "icode.h"
+#include "labels.h"
+#include "codeproto.h"
+#include "gc.h"
+
+extern int maxArgs;
+extern int maxLocal;
+extern int maxStack;
+extern int maxTemp;
+extern int isStatic;
+
+static void spill(SlotData*);
+
+/*
+ * Define the registers.
+ */
+kregs reginfo[] = {
+	REGISTER_SET
+	{ /* BAD */	0, 0, 0, 0, 0, 0 }
+};
+
+/* This is horrible but necessary at the moment.  Sometime we need to
+ * make transient changes to the registers which we will forget in 
+ * a short while.  This can have a bad effect on read-once register so
+ * we disable them termporaily.
+ */
+int enable_readonce = Rreadonce;
+
+/* Count for each register use - gives an idea of which register is
+ * to be reused.
+ */
+int usecnt = 0;
+
+/*
+ * Initiate registers.
+ */
+void
+initRegisters(void)
+{
+	int i;
+
+	/* Free all registers */
+	for (i = 0; i < MAXREG; i++) {
+		reginfo[i].slot = NOSLOT;
+		reginfo[i].used = 0;
+		reginfo[i].refs = 0;
+		reginfo[i].type &= ~Rglobal;
+	}
+}
+
+/*
+ * Spill a slot.
+ */
+void
+spillAndUpdate(SlotData* sd, jboolean clean)
+{
+	if (sd->modified != 0) {
+		spill(sd);
+		if (clean) {
+			sd->modified = 0;
+		}
+	}
+	if ((reginfo[sd->regno].flags & enable_readonce) != 0) {
+		slot_invalidate(sd);
+	}
+}
+
+/*
+ * Spill a register using the correct spill function.
+ */
+static
+void
+spill(SlotData* s)
+{
+#if defined(HAVE_spill_long)
+	if (reginfo[s->regno].ctype & Rlong) {
+		spill_long(s);
+	}
+	else
+#endif
+#if defined(HAVE_spill_int)
+	if (reginfo[s->regno].ctype & Rint) {
+		spill_int(s);
+	}
+	else
+#endif
+#if defined(HAVE_spill_ref)
+	if (reginfo[s->regno].ctype & Rref) {
+		spill_ref(s);
+	}
+	else
+#endif
+#if defined(HAVE_spill_double)
+	if (reginfo[s->regno].ctype & Rdouble) {
+		spill_double(s);
+	}
+	else
+#endif
+#if defined(HAVE_spill_float)
+	if (reginfo[s->regno].ctype & Rfloat) {
+		spill_float(s);
+	}
+	else
+#endif
+	{
+		ABORT();
+	}
+}
+
+/*
+ * Reload a register using the correct reload function.
+ */
+void
+reload(SlotData* s)
+{
+#if defined(HAVE_reload_long)
+	if (reginfo[s->regno].ctype & Rlong) {
+		reload_long(s);
+	}
+	else
+#endif
+#if defined(HAVE_reload_int)
+	if (reginfo[s->regno].ctype & Rint) {
+		reload_int(s);
+	}
+	else
+#endif
+#if defined(HAVE_reload_ref)
+	if (reginfo[s->regno].ctype & Rref) {
+		reload_ref(s);
+	}
+	else
+#endif
+#if defined(HAVE_reload_double)
+	if (reginfo[s->regno].ctype & Rdouble) {
+		reload_double(s);
+	}
+	else
+#endif
+#if defined(HAVE_reload_float)
+	if (reginfo[s->regno].ctype & Rfloat) {
+		reload_float(s);
+	}
+	else
+#endif
+	{
+		ABORT();
+	}
+}
+
+static
+int
+allocRegister(int idealreg, int type)
+{
+	int reg;
+	uint32 used;
+	int creg;
+	kregs* regi;
+
+	reg = idealreg;
+	if (reg == NOREG) {
+		/* Allocate a register - pick the the least recently used */
+		used = 0xFFFFFFFF;
+		for (creg = 0; creg < MAXREG; creg++) {
+			regi = &reginfo[creg];
+			if ((regi->type & (Rglobal|Reserved)) == 0
+			    && (regi->type & type) == type
+			    && (regi->type & type) == type
+			    && regi->used < used) {
+				used = regi->used;
+				reg = creg;
+			}
+		}
+	}
+
+	assert(reg != NOREG);
+
+	return (reg);
+}
+
+/*
+ * Translate a slot number into a register.
+ *  Perform the necessary spills and reloads to make this happen.
+ */
+int
+slotRegister(SlotData* slot, int type, int use, int idealreg)
+{
+	int reg;
+	kregs* regi;
+
+	sanityCheck();
+
+	reg = slot->regno;
+	regi = &reginfo[reg];
+
+	/* Do global register stuff before anything else */
+	if (isGlobal(slot)) {
+		assert(reg == idealreg || idealreg == NOREG);
+		assert((regi->type & type) != 0);
+		/* If we're reading or the register is only in my use
+		 * then we can use it directly.
+		 */
+		if (use == rread || regi->refs == 1) {
+			/* Nothing to do */
+		}
+		/* We're writing to a shared global - we must make it
+		 * unshared.
+		 */
+		else {
+			/* Simple - just clobber the register to
+			 * force the shares back to memory.
+			 */
+			clobberRegister(reg);
+		}
+		slot->modified |= use;
+		return (reg);
+	}
+
+	/* If we're reading and this is the right type or register then
+	 * use it.
+	 */
+	if ((reg == idealreg || idealreg == NOREG) && use == rread && (regi->type & type) != 0) {
+		regi->ctype = regi->type & type;
+	}
+	/* If we're writing and we're not sharing this register and it's
+	 * the right type then use it.
+	 */
+	else if ((reg == idealreg || idealreg == NOREG) && regi->refs == 1 && (regi->type & type) != 0) {
+		regi->ctype = regi->type & type;
+	}
+	/* Otherwise reallocate */
+	else {
+		/* Get a register and clobber what it for reuse */
+		reg = allocRegister(idealreg, type);
+		clobberRegister(reg);
+
+		sanityCheck();
+
+		/* If we're modifying this slot, clear the modified bits
+		 * so when we clobber it, it won't get written back.
+		 */
+		if (use == rwrite) {
+			slot[0].modified = 0;
+			if (type == Rlong || type == Rdouble) {
+				slot[1].modified = 0;
+			}
+		}
+
+#if 0
+		/* Clobber any register associate with the slot - it must
+		 * be the wrong type.
+		 */
+		clobberRegister(slot[0].regno);
+		if (type == Rlong || type == Rdouble) {
+			clobberRegister(slot[1].regno);
+		}
+#endif
+		/*
+		 * Spill anything which might be in the slot if its
+		 * dirty.  Then invalidate the slot so we can reuse.
+		 */
+		if (slot[0].regno != NOREG) {
+			if (slot[0].modified != 0) {
+				spill(&slot[0]);
+			}
+			slot_invalidate(&slot[0]);
+		}
+		if (type == Rlong || type == Rdouble) {
+			if (slot[1].regno != NOREG) {
+				if (slot[1].modified != 0) {
+					spill(&slot[1]);
+				}
+				slot_invalidate(&slot[1]);
+			}
+		}
+
+		sanityCheck();
+
+		/* Setup the new slot/register mapping and delete old one */
+		regi = &reginfo[reg];
+		assert(regi->slot == 0);
+		regi->slot = slot;
+		regi->ctype = regi->type & type;
+		assert(regi->ctype != 0);
+		regi->refs = 1;
+		slot->regno = reg;
+
+		/* Reload a slot if we are not writing to it */
+		if ((use & rread) != 0) {
+			assert((reginfo[reg].type & Rglobal) == 0);
+			reload(slot);
+		}
+		slot->modified = 0;
+	}
+
+	/* Mark as used */
+	slot->modified |= use;
+	regi->used = ++usecnt;
+
+	/* If register is destroyed by reading, then destroy it */
+	if ((use & rread) && (regi->flags & enable_readonce)) {
+		assert(!isGlobal(slot));
+		slot_invalidate(slot);
+	}
+
+	sanityCheck();
+
+	/* Return register */
+	return (regi->regno);
+}
+
+/*
+ * Clobber a register.
+ * This will spill the register if its inuse and give it an undefined
+ *  value.
+ */
+void
+clobberRegister(int reg)
+{
+	SlotData* pslot;
+	SlotData* nslot;
+	kregs* regi;
+
+	sanityCheck();
+
+	if (reg != NOREG) {
+		regi = &reginfo[reg];
+		pslot = regi->slot;
+		while (pslot != NOSLOT) {
+			assert(pslot->regno == reg);
+			if ((pslot->modified & rwrite) != 0 || (regi->flags & enable_readonce)) {
+				spill(pslot);
+				pslot->modified = 0;
+			}
+			nslot = pslot->rnext;
+			if (!isGlobal(pslot)) {
+				slot_invalidate(pslot);
+			}
+			pslot = nslot;
+		}
+
+		/* Fake a used counter to this doesn't get recycled quickly */
+		regi->used = ++usecnt;
+	}
+
+	sanityCheck();
+}
+
+/*
+ * Force a slot to correspond to a specific register.
+ *  Register should have been saved elsewhere.
+ */
+void
+forceRegister(SlotData* slot, int reg, int type)
+{
+	kregs* regi;
+
+	sanityCheck();
+
+	if (slot->regno != reg) {
+		assert(!isGlobal(slot));
+		assert((reginfo[reg].type & Rglobal) == 0);
+		assert((reginfo[slot->regno].type & Rglobal) == 0);
+		/* Invalidate the current register in this slot - don't spill
+		 * it 'cause we will be rebinding the slot.
+		 */
+		slot_invalidate(slot);
+
+		/* Clobber the register we are about to reassign - this
+		 * may already be free (or have been clobbered before).
+		 */
+		clobberRegister(reg);
+	}
+
+	/* Setup the slot with the desirable register */
+	regi = &reginfo[reg];
+	slot->regno = reg;
+	slot->modified = rwrite;
+	regi->slot = slot;
+	regi->used = ++usecnt;
+	regi->refs = 1;
+
+	regi->ctype = regi->type & type;
+	assert(regi->ctype != 0);
+
+	/* Finally, we assume the copy is done elsewhere */
+
+	sanityCheck();
+}
+
+/*
+ * Returns the absolute offset of a slot in the current frame.  If
+ * the slot is in a register, it is spilled.
+ */
+int
+slotOffset(SlotData* slot, int type, int use)
+{
+	sanityCheck();
+
+	/* If slot is in a register, clobber the register to force it back
+	 * into memory.
+ 	 */
+	clobberRegister(slot[0].regno);
+	if (type == Rlong || type == Rdouble) {
+		clobberRegister(slot[1].regno);
+	}
+
+	sanityCheck();
+
+	return (slot[0].offset);
+}
+
+void
+slot_invalidate(SlotData* sdata)
+{
+	kregs* regi;
+	SlotData** ptr;
+	int reg;
+
+	sanityCheck();
+
+	reg = sdata->regno;
+
+	if (reg != NOREG) {
+		regi = &reginfo[reg];
+		if (regi->refs == 1) {
+			regi->slot = NOSLOT;
+			regi->used = 0;
+		}
+		else {
+			for (ptr = &regi->slot; *ptr != 0; ptr = &(*ptr)->rnext) {
+				if (*ptr == sdata) {
+					*ptr = sdata->rnext;
+					sdata->rnext = 0;
+					goto found;
+				}
+			}
+			assert("slot_invalidate: slot not found on register" == 0);
+
+			found:;
+		}
+		regi->refs--;
+		sdata->regno = NOREG;
+	}
+	sdata->modified = 0;
+
+	sanityCheck();
+}
+
+void
+sanityCheck(void)
+{
+	int i;
+	int c;
+	SlotData* s;
+
+	for (i = 0; i < MAXREG; i++) {
+		c = 0;
+		for (s = reginfo[i].slot; s != NOSLOT; s = s->rnext) {
+			assert(s->regno == i);
+			c++;
+		}
+		assert(reginfo[i].refs == c);
+	}
+}

@@ -1,0 +1,60 @@
+# Makefile.in for kaffevm JIT3 compiler
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+@engine_frag@
+
+INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENGINE_DEFS)
+
+noinst_LTLIBRARIES = libengine.la
+
+libengine_la_LDFLAGS = $(KVMLIBFLAGS)
+libengine_la_SOURCES = \
+	basecode.c \
+	constpool.c \
+	funcs.c \
+	icode.c \
+	labels.c \
+	machine.c \
+	registers.c \
+	seq.c \
+	slots.c
+
+EXTRA_DIST = \
+	Makefile.frag \
+	basecode.h \
+	checks.h \
+	codeproto.h \
+	constpool.h \
+	labels.h \
+	machine.h \
+	registers.h \
+	seq.h \
+	slots.h
+
+DISTCLEANFILES = icode.h jit.def trampolines.c
+
+basecode.lo icode.lo machine.lo registers.lo: icode.h
+funcs.lo: jit.def trampolines.c
+
+icode.h: stamp-h01
+	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
+	else :; fi
+stamp-h01: $(top_builddir)/config.status
+	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_ICODE_H) icode.h $@
+
+jit.def: stamp-h02
+	@if test ! -f $@; then rm -f stamp-h02; $(MAKE) stamp-h02; \
+	else :; fi
+stamp-h02: $(top_builddir)/config.status
+	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_JIT_DEF) jit.def $@
+
+trampolines.c: stamp-h03
+	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h03; \
+	else :; fi
+stamp-h03: $(top_builddir)/config.status
+	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_C) trampolines.c $@

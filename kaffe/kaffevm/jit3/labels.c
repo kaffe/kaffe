@@ -21,13 +21,16 @@
 #include "gc.h"
 #include "md.h"
 #include "support.h"
-#include "errors.h"
-#include "machine.h"
-#include "stats.h"
 
 label* firstLabel;
 label* lastLabel;
 label* currLabel;
+
+extern int maxPush;
+extern int maxLocal;
+extern int maxArgs;
+extern int maxStack;
+extern int maxTemp;
 
 void
 resetLabels(void)
@@ -44,7 +47,7 @@ resetLabels(void)
 void
 linkLabels(codeinfo* codeInfo, uintp codebase)
 {
-	long dest = 0;
+	long dest;
 	int* place;
 	label* l;
 
@@ -103,7 +106,7 @@ linkLabels(codeinfo* codeInfo, uintp codebase)
 
 		default:
 		unhandled:
-			printf("Label type 0x%x not supported (%p).\n", l->type, l);
+			kprintf("Label type 0x%x not supported (%p).\n", l->type, l);
 			ABORT();
 		}
 #if 0
@@ -133,9 +136,7 @@ newLabel(void)
 
 	if (ret == 0) {
 		/* Allocate chunk of label elements */
-		ret = KCALLOC(ALLOCLABELNR, sizeof(label));
-		addToCounter(&jitmem, "jitmem-temp", 1, 
-			ALLOCLABELNR * sizeof(label));
+		ret = gc_calloc_fixed(ALLOCLABELNR, sizeof(label));
 
 		/* Attach to current chain */
 		if (lastLabel == 0) {

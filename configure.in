@@ -960,6 +960,7 @@ libraries/Makefile \
 kaffe/kaffevm/Makefile \
 kaffe/kaffevm/intrp/Makefile \
 kaffe/kaffevm/jit/Makefile \
+kaffe/kaffevm/jit3/Makefile \
 kaffe/kaffevm/gcj/Makefile \
 kaffe/kaffevm/systems/Makefile \
 kaffe/kaffevm/systems/unix-jthreads/Makefile \
