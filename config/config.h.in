@@ -1,4 +1,4 @@
-/* config/config.h.in.  Generated from configure.in by autoheader.  */
+/* config/config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* How are pointers aligned */
 #undef ALIGNMENTOF_VOIDP
