@@ -35,7 +35,8 @@ readCentralDirRecord(jarFile* file)
 	INITREADS();
 	jarCentralDirectoryRecord head;
 	jarEntry* ret;
-	int len;
+	int len, extra;
+	off_t pos;
 
 	head.signature = READ32(file->fp);
 	head.versionMade = READ16(file->fp);
@@ -76,12 +77,15 @@ readCentralDirRecord(jarFile* file)
 DBG(JARFILES,	
 	dprintf("Central record filename: %s\n", ret->fileName);	)
 
-	ret->dataPos = head.relativeLocalHeaderOffset + SIZEOFLOCALHEADER + head.fileNameLength + head.extraFieldLength;
-	/* HACK HACK HACK */
-	if (head.extraFieldLength != 0) {
-		ret->dataPos += 4;
-	}
+	/* Compute file data location using local header info */
+	pos = lseek(file->fp, (off_t)0, SEEK_CUR);
+	(void)lseek(file->fp, (off_t)(head.relativeLocalHeaderOffset + 28), SEEK_SET);
+	extra = READ16(file->fp);
+	ret->dataPos = head.relativeLocalHeaderOffset
+		+ SIZEOFLOCALHEADER + head.fileNameLength + extra;
 
+	/* Jump back to original central directory position */
+	(void)lseek(file->fp, pos, SEEK_SET);
 	return (ret);
 }
 
