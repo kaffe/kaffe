@@ -1,22 +1,22 @@
  
 			 ==================
 
-			 KAFFE OpenVM 1.0.5
+			 KAFFE OpenVM 1.0.6
 
 			 ==================
 
-This is of "Kaffe OpenVM", a complete virtual machine and class library
-set which allows the execution of Java code without any code from Javasoft.
-It comes with a virtual machine and a set of class libraries including beans,
-and the all important AWT graphics system.
+This is "Kaffe OpenVM", a complete virtual machine and class library
+set which allows the execution of Java code.  It comes with a virtual
+machine and a set of class libraries including beans, and an AWT
+graphics system.
 
 Why use Kaffe?
 --------------
 
 Because Kaffe is distributed under the terms of the GNU Public License
-which means the source code is free for you to download, modify and use.
-It's also demonstratably faster on many application compared with that
-latest VM's from Sun, IBM or Microsoft.
+which means the source code is free for you to download, modify and
+use.  It's also demonstratably faster on many applications compared
+with the latest VM's from Sun, IBM or Microsoft.
 
 What systems does Kaffe support?
 -------------------------------
