@@ -2,7 +2,6 @@
 // http://www.saxproject.org
 // Written by David Megginson
 // NO WARRANTY!  This class is in the public domain.
-// $Id: DefaultHandler.java,v 1.1 2002/12/02 15:04:24 dalibor Exp $
 
 package org.xml.sax.helpers;
 

@@ -1,5 +1,4 @@
 /*
- * $Id: DomNode.java,v 1.1 2002/12/03 01:27:56 dalibor Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -32,8 +31,6 @@ import org.w3c.dom.events.*;
 import org.w3c.dom.traversal.*;
 
 
-// $Id: DomNode.java,v 1.1 2002/12/03 01:27:56 dalibor Exp $
-
 /**
  * <p> "Node", "EventTarget", and "DocumentEvent" implementation.
  * This provides most of the core DOM functionality; only more
@@ -64,7 +61,6 @@ import org.w3c.dom.traversal.*;
  * do not have namespace URIs.
  *
  * @author David Brownell
- * @version $Date: 2002/12/03 01:27:56 $
  */
 public abstract class DomNode
     implements Node, NodeList, EventTarget, DocumentEvent, Cloneable

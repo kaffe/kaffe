@@ -3,7 +3,6 @@
 // Written by Edwin Goei, edwingo@apache.org
 // and by David Brownell, dbrownell@users.sourceforge.net
 // NO WARRANTY!  This class is in the Public Domain.
-// $Id: NewInstance.java,v 1.1 2002/12/02 15:04:26 dalibor Exp $
 
 package org.xml.sax.helpers;
 

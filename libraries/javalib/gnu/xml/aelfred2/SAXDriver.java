@@ -1,5 +1,4 @@
 /*
- * $Id: SAXDriver.java,v 1.5 2003/11/06 22:53:43 kaz Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -66,8 +65,6 @@ import org.xml.sax.ext.*;
 import org.xml.sax.helpers.NamespaceSupport;
 
 
-// $Id: SAXDriver.java,v 1.5 2003/11/06 22:53:43 kaz Exp $
-
 /**
  * An enhanced SAX2 version of Microstar's &AElig;lfred XML parser.
  * The enhancements primarily relate to significant improvements in
@@ -123,7 +120,6 @@ import org.xml.sax.helpers.NamespaceSupport;
  *
  * @author Written by David Megginson (version 1.2a from Microstar)
  * @author Updated by David Brownell &lt;dbrownell@users.sourceforge.net&gt;
- * @version $Date: 2003/11/06 22:53:43 $
  * @see org.xml.sax.Parser
  */
 final public class SAXDriver

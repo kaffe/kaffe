@@ -1,5 +1,4 @@
 /*
- * $Id: DomPI.java,v 1.1 2002/12/03 01:27:56 dalibor Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -30,8 +29,6 @@ package gnu.xml.dom;
 import org.w3c.dom.*;
 
 
-// $Id: DomPI.java,v 1.1 2002/12/03 01:27:56 dalibor Exp $
-
 /**
  * <p> "ProcessingInstruction" (PI) implementation.
  * This is a non-core DOM class, supporting the "XML" feature. </p>
@@ -48,7 +45,6 @@ import org.w3c.dom.*;
  * @see DomNotation
  *
  * @author David Brownell 
- * @version $Date: 2002/12/03 01:27:56 $
  */
 public class DomPI extends DomNode implements ProcessingInstruction
 {

@@ -1,7 +1,6 @@
 // Locator2.java - extended Locator
 // http://www.saxproject.org
 // Public Domain: no warranty.
-// $Id: Locator2.java,v 1.1 2002/12/02 15:04:15 dalibor Exp $
 
 package org.xml.sax.ext;
 

@@ -1,5 +1,4 @@
 /*
- * $Id: Resolver.java,v 1.1 2002/12/03 01:27:59 dalibor Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -35,8 +34,6 @@ import java.util.Hashtable;
 import org.xml.sax.*;
 
 
-// $Id: Resolver.java,v 1.1 2002/12/03 01:27:59 dalibor Exp $
-
 /**
  * Utility implementation of a SAX resolver, which can be used to improve
  * network utilization of SAX based XML components.  It does this by
@@ -44,8 +41,6 @@ import org.xml.sax.*;
  * SAX parsers <em>should</em> use such local caches when possible.
  *
  * @see XCat
- *
- * @version $Date: 2002/12/03 01:27:59 $
  */
 public class Resolver implements EntityResolver, Cloneable
 {

@@ -1,7 +1,6 @@
 // Attributes2.java - extended Attributes
 // http://www.saxproject.org
 // Public Domain: no warranty.
-// $Id: Attributes2.java,v 1.2 2003/11/13 12:48:23 dalibor Exp $
 
 package org.xml.sax.ext;
 

@@ -1,7 +1,6 @@
 // SAX exception class.
 // http://www.saxproject.org
 // No warranty; no copyright -- use this as you will.
-// $Id: SAXParseException.java,v 1.1 2002/12/02 15:04:08 dalibor Exp $
 
 package org.xml.sax;
 

@@ -1,5 +1,4 @@
 /*
- * $Id: DomComment.java,v 1.1 2002/12/03 01:27:56 dalibor Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -30,8 +29,6 @@ package gnu.xml.dom;
 import org.w3c.dom.*;
 
 
-// $Id: DomComment.java,v 1.1 2002/12/03 01:27:56 dalibor Exp $
-
 /**
  * <p> "Comment" implementation.
  * Comments hold data intended for direct consumption by people;
@@ -41,7 +38,6 @@ import org.w3c.dom.*;
  * those comments at some point in the processing pipeline. </p>
  *
  * @author David Brownell
- * @version $Date: 2002/12/03 01:27:56 $
  */
 public class DomComment extends DomCharacterData implements Comment
 {

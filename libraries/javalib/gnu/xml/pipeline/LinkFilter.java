@@ -1,5 +1,4 @@
 /*
- * $Id: LinkFilter.java,v 1.1 2002/12/03 01:27:57 dalibor Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -37,8 +36,6 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 
-// $Id: LinkFilter.java,v 1.1 2002/12/03 01:27:57 dalibor Exp $
-
 /**
  * Pipeline filter to remember XHTML links found in a document,
  * so they can later be crawled.  Fragments are not counted, and duplicates
@@ -54,7 +51,6 @@ import org.xml.sax.SAXException;
  * a stack of base URIs.  Similarly, recognize/support XLink data.
  *
  * @author David Brownell
- * @version $Date: 2002/12/03 01:27:57 $
  */
 public class LinkFilter extends EventFilter
 {

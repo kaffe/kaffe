@@ -2,7 +2,6 @@
 // http://www.saxproject.org
 // Written by David Megginson
 // This class is in the Public Domain.  NO WARRANTY!
-// $Id: NamespaceSupport.java,v 1.1 2002/12/02 15:04:25 dalibor Exp $
 
 package org.xml.sax.helpers;
 

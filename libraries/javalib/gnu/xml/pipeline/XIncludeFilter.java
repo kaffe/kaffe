@@ -1,5 +1,4 @@
 /*
- * $Id: XIncludeFilter.java,v 1.3 2003/11/13 12:48:22 dalibor Exp $
  * Copyright (C) 2001-2002 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -50,8 +49,6 @@ import gnu.xml.util.Resolver;
 
 
 
-// $Id: XIncludeFilter.java,v 1.3 2003/11/13 12:48:22 dalibor Exp $
-
 /**
  * Filter to process an XPointer-free subset of
  * <a href="http://www.w3.org/TR/xinclude">XInclude</a>, supporting its
@@ -91,7 +88,6 @@ import gnu.xml.util.Resolver;
  * <p>TBD: "IURI" handling.
  *
  * @author David Brownell
- * @version $Date: 2003/11/13 12:48:22 $
  */
 public class XIncludeFilter extends EventFilter implements Locator
 {

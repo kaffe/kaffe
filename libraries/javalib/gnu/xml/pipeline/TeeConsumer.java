@@ -1,5 +1,4 @@
 /*
- * $Id: TeeConsumer.java,v 1.1 2002/12/03 01:27:57 dalibor Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -52,7 +51,6 @@ import org.xml.sax.ext.*;
  * the endDocument callback, which signals state cleanup).
  *
  * @author David Brownell
- * @version $Date: 2002/12/03 01:27:57 $
  */
 final public class TeeConsumer
 	implements EventConsumer,

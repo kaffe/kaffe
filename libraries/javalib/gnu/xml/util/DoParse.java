@@ -1,5 +1,4 @@
 /*
- * $Id: DoParse.java,v 1.1 2002/12/03 01:27:59 dalibor Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -50,8 +49,6 @@ import gnu.xml.pipeline.XIncludeFilter;
 import gnu.xml.pipeline.XsltFilter;
 
 
-// $Id: DoParse.java,v 1.1 2002/12/03 01:27:59 dalibor Exp $
-
 /**
  * This class provides a driver which may be invoked from the command line
  * to process a document using a SAX2 parser and a specified XML processing
@@ -91,7 +88,6 @@ import gnu.xml.pipeline.XsltFilter;
  * @see gnu.xml.pipeline.PipelineFactory
  *
  * @author David Brownell
- * @version $Date: 2002/12/03 01:27:59 $
  */
 final public class DoParse
 {

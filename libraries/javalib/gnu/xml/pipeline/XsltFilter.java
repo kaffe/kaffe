@@ -1,5 +1,4 @@
 /*
- * $Id: XsltFilter.java,v 1.1 2002/12/03 01:27:58 dalibor Exp $
  * Copyright (C) 2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -52,7 +51,6 @@ import org.xml.sax.ext.LexicalHandler;
  * @see TransformerFactory
  *
  * @author David Brownell
- * @version $Date: 2002/12/03 01:27:58 $
  */
 final public class XsltFilter extends EventFilter
 {

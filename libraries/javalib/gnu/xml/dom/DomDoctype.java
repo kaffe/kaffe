@@ -1,5 +1,4 @@
 /*
- * $Id: DomDoctype.java,v 1.1 2002/12/03 01:27:56 dalibor Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -32,8 +31,6 @@ import org.w3c.dom.*;
 import java.util.Hashtable;
 
 
-// $Id: DomDoctype.java,v 1.1 2002/12/03 01:27:56 dalibor Exp $
-
 /**
  * <p> "DocumentType" implementation (with no extensions for supporting
  * any document typing information).  This is a non-core DOM class,
@@ -61,7 +58,6 @@ import java.util.Hashtable;
  * @see DomNotation
  *
  * @author David Brownell 
- * @version $Date: 2002/12/03 01:27:56 $
  */
 public class DomDoctype extends DomExtern implements DocumentType
 {

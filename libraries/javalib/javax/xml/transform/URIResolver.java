@@ -1,5 +1,4 @@
 /*
- * $Id: URIResolver.java,v 1.1 2002/12/02 15:01:59 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * 
  * This file is part of GNU JAXP, a library.

@@ -1,5 +1,4 @@
 /*
- * $Id: DomCharacterData.java,v 1.1 2002/12/03 01:27:56 dalibor Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -31,15 +30,12 @@ import org.w3c.dom.*;
 import org.w3c.dom.events.MutationEvent;
 
 
-// $Id: DomCharacterData.java,v 1.1 2002/12/03 01:27:56 dalibor Exp $
-
 /**
  * <p> Abstract "CharacterData" implementation.  This
  * facilitates reusing code in classes implementing subtypes of that DOM
  * interface (Text, Comment, CDATASection).  </p>
  *
  * @author David Brownell
- * @version $Date: 2002/12/03 01:27:56 $
  */
 public abstract class DomCharacterData extends DomNode
     implements CharacterData

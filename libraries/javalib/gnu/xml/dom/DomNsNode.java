@@ -1,5 +1,4 @@
 /*
- * $Id: DomNsNode.java,v 1.1 2002/12/03 01:27:56 dalibor Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -30,14 +29,11 @@ package gnu.xml.dom;
 import org.w3c.dom.*;
 
 
-// $Id: DomNsNode.java,v 1.1 2002/12/03 01:27:56 dalibor Exp $
-
 /**
  * <p> Abstract implemention of namespace support.  This facilitates
  * sharing code for attribute and element nodes.
  *
  * @author David Brownell 
- * @version $Date: 2002/12/03 01:27:56 $
  */
 public abstract class DomNsNode extends DomNode
 {

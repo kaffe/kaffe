@@ -1,5 +1,4 @@
 /*
- * $Id: XmlParser.java,v 1.4 2003/11/06 22:53:43 kaz Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -69,8 +68,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
-// $Id: XmlParser.java,v 1.4 2003/11/06 22:53:43 kaz Exp $
-
 /**
  * Parse XML documents and return parse events through call-backs.
  * Use the <code>SAXDriver</code> class as your entry point, as all
@@ -79,7 +76,6 @@ import org.xml.sax.SAXException;
  * @author Written by David Megginson &lt;dmeggins@microstar.com&gt;
  *	(version 1.2a with bugfixes)
  * @author Updated by David Brownell &lt;dbrownell@users.sourceforge.net&gt;
- * @version $Date: 2003/11/06 22:53:43 $
  * @see SAXDriver
  */
 final class XmlParser

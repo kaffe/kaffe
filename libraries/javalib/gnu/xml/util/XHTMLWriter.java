@@ -1,5 +1,4 @@
 /*
- * $Id: XHTMLWriter.java,v 1.1 2002/12/03 01:27:59 dalibor Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -45,7 +44,6 @@ import java.io.Writer;
  * data loss.
  *
  * @author David Brownell
- * @version $Date: 2002/12/03 01:27:59 $
  */
 public class XHTMLWriter extends XMLWriter
 {

@@ -1,5 +1,4 @@
 /*
- * $Id: CallFilter.java,v 1.1 2002/12/03 01:27:57 dalibor Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -37,8 +36,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import gnu.xml.util.Resolver;
 import gnu.xml.util.XMLWriter;
 
-
-// $Id: CallFilter.java,v 1.1 2002/12/03 01:27:57 dalibor Exp $
 
 /**
  * Input is sent as an XML request to given URI, and the output of this
@@ -81,7 +78,6 @@ import gnu.xml.util.XMLWriter;
  * @see XmlServlet
  *
  * @author David Brownell
- * @version $Date: 2002/12/03 01:27:57 $
  */
 final public class CallFilter implements EventConsumer
 {
