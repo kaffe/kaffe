@@ -1,3 +1,12 @@
+Mon Jan 25 03:00:37 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* ltconfig, ltmain.sh, acinclude.m4: updated from libtool; support 
+	for FreeBSD4 and minor bugfixes
+	* aclocal.m4, configure: regen
+	* libltdl/ltdl.c, libltdl/acinclude.m4: updated from libtool, to
+ 	fix memory leak problem
+	* libltdl/aclocal.m4, libltdl/configure: regen
+
 Thu Jan 21 03:13:39 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* ltconfig, ltmain.sh: updated from libtool

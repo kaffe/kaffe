@@ -981,7 +981,7 @@ lt_dlopen (filename)
 	const char *filename;
 {
 	lt_dlhandle handle = 0;
-	char *dir = 0;
+	char *dir = 0, *name = 0;
 	const char *basename, *ext;
 	const char *saved_error = last_error;
 	
@@ -1004,7 +1004,6 @@ lt_dlopen (filename)
 		char	*dlname = 0, *old_name = 0;
 		char	*libdir = 0, *deplibs = 0;
 		char	tmp[LTDL_FILENAME_MAX];
-		char	*name;
 		FILE	*file;
 		int	i;
 		/* if we can't find the installed flag, it is probably an
@@ -1044,8 +1043,6 @@ lt_dlopen (filename)
 #endif
 		}
 		if (!file) {
-		clean_up_name:
-			free(name);
 			goto clean_up_dir;
 		}
 		while (!feof(file)) {
@@ -1086,6 +1083,7 @@ lt_dlopen (filename)
 			last_error = memory_error;
 			goto clean_up_vars;
 		}
+		handle->usage = 0;
 		if (deplibs && load_deplibs(handle, deplibs)) {
 		clean_up_handle:
 			free(handle);
@@ -1110,7 +1108,6 @@ lt_dlopen (filename)
 					dlname, old_name))
 				goto clean_up_deplibs;
 		}
-		handle->name = name;
 	clean_up_vars:
 		if (dlname)
 			free(dlname);
@@ -1121,7 +1118,7 @@ lt_dlopen (filename)
 		if (deplibs)
 			free(deplibs);
 		if (!handle)
-			goto clean_up_name;
+			goto clean_up_dir;
 	} else {
 		/* try to append libtool library extension */
 		char *newfilename = malloc(strlen(filename)+4);
@@ -1142,6 +1139,7 @@ lt_dlopen (filename)
 			last_error = memory_error;
 			goto clean_up_dir;
 		}
+		handle->usage = 0;
 		if (tryall_dlopen(&handle, filename)
 		    && (dir
 			|| (find_library(&handle, basename, usr_search_path)
@@ -1181,16 +1179,21 @@ lt_dlopen (filename)
 			}
 #endif
 		}
-		handle->name = 0;
 	}
-	handle->usage = 1;
-	handle->next = handles;
-	handles = handle;
+	if (!handle->usage) {
+		handle->usage = 1;
+		handle->next = handles;
+		handles = handle;
+		handle->name = name;
+		name = 0;
+	}
  restore_error:
 	last_error = saved_error;
  clean_up_dir:
 	if (dir)
 		free(dir);
+	if (name)
+		free(name);
 	return handle;
 }
 

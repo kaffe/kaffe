@@ -50,6 +50,7 @@ modename="$progname"
 PROGRAM=ltmain.sh
 PACKAGE=libtool
 VERSION=1.2e
+TIMESTAMP=" (1.222 1999/01/24 20:43:44)"
 
 default_mode=
 help="Try \`$progname --help' for more information."
@@ -134,7 +135,7 @@ do
     ;;
 
   --version)
-    echo "$PROGRAM (GNU $PACKAGE) $VERSION"
+    echo "$PROGRAM (GNU $PACKAGE) $VERSION$TIMESTAMP"
     exit 0
     ;;
 
@@ -428,7 +429,7 @@ compiler."
       fbsd_hideous_sh_bug=$base_compile
 
       # All platforms use -DPIC, to notify preprocessed assembler code.
-      command="$base_compile$pic_flag -DPIC $srcfile"
+      command="$base_compile $pic_flag -DPIC $srcfile"
       if test "$build_old_libs" = yes; then
         lo_libobj="$libobj"
 	dir=`$echo "X$libobj" | $Xsed -e 's%/[^/]*$%%'`
@@ -672,6 +673,7 @@ compiler."
     export_symbols=
     generated=
     hardcode_libdirs=
+    finalize_hardcode_libdirs=
     libobjs=
     link_against_libtool_libs=
     ltlibs=
@@ -685,6 +687,7 @@ compiler."
     xrpath=
     perm_rpath=
     temp_rpath=
+    finalize_rpath=
     vinfo=
 
     # We need to know -static, to get the right output filenames.
@@ -1058,6 +1061,21 @@ compiler."
 
 	  # This is the magic to use -rpath.
 	  if test -n "$hardcode_libdir_flag_spec"; then
+	    saved_libdir="$libdir"
+	    libdir="$dir"
+
+	    # We need an absolute path.
+	    case "$libdir" in
+	    /* | [A-Za-z]:[/\\]*) ;;
+	    *)
+	      absdir=`cd "$libdir" && pwd`
+	      if test -z "$absdir"; then
+		$echo "$modename: cannot determine absolute directory name of \`$libdir'" 1>&2
+	      else
+		libdir="$absdir"
+	      fi
+	      ;;
+	    esac
 	    if test -n "$hardcode_libdir_separator"; then
 	      if test -z "$hardcode_libdirs"; then
 		# Put the magic libdir with the hardcode flag.
@@ -1080,13 +1098,53 @@ compiler."
 	      eval flag=\"$hardcode_libdir_flag_spec\"
 
 	      compile_command="$compile_command $flag"
+	    fi
+
+	    libdir="$saved_libdir"
+	    if test -n "$hardcode_libdir_separator"; then
+	      if test -z "$finalize_hardcode_libdirs"; then
+		# Put the magic libdir with the hardcode flag.
+		finalize_hardcode_libdirs="$libdir"
+		libdir="@HARDCODE_LIBDIRS@"
+	      else
+		# Just accumulate the unique libdirs.
+		case "$hardcode_libdir_separator$finalize_hardcode_libdirs$hardcode_libdir_separator" in
+		*"$hardcode_libdir_separator$libdir$hardcode_libdir_separator"*)
+		  ;;
+		*)
+		  finalize_hardcode_libdirs="$finalize_hardcode_libdirs$hardcode_libdir_separator$libdir"
+		  ;;
+		esac
+		libdir=
+	      fi
+	    fi
+
+	    if test -n "$libdir"; then
+	      eval flag=\"$hardcode_libdir_flag_spec\"
+
 	      finalize_command="$finalize_command $flag"
 	    fi
+	    # libdir is also use after "$hardcode_action" case
+	    libdir="$saved_libdir"
 	  elif test -n "$runpath_var"; then
 	    # Do the same for the permanent run path.
+	    case "$dir" in
+	    /* | [A-Za-z]:[/\\]*) absdir="$dir";;
+	    *)
+	      absdir=`cd "$dir" && pwd`
+	      if test -z "$absdir"; then
+		$echo "$modename: cannot determine absolute directory name of \`$dir'" 1>&2
+		absdir="$dir"
+	      fi
+	      ;;
+	    esac
 	    case "$perm_rpath " in
+	    *" $absdir "*) ;;
+	    *) perm_rpath="$perm_rpath $absdir" ;;
+	    esac
+	    case "$finalize_perm_rpath " in
 	    *" $libdir "*) ;;
-	    *) perm_rpath="$perm_rpath $libdir" ;;
+	    *) finalize_perm_rpath="$finalize_perm_rpath $libdir" ;;
 	    esac
 	  fi
 
@@ -1331,14 +1389,11 @@ compiler."
 	exit 1
       fi
 
-      # If the following section is uncommented, then it is impossible to
-      # link with ltlibrary deplibs...
-      
       # How the heck are we supposed to write a wrapper for a shared library?
-      #if test -n "$link_against_libtool_libs"; then
-      #	 $echo "$modename: error: cannot link shared libraries into libtool libraries" 1>&2
-      #	 exit 1
-      #fi
+      if test -n "$link_against_libtool_libs"; then
+      	 $echo "$modename: error: cannot link shared libraries into libtool libraries" 1>&2
+      	 exit 1
+      fi
 
       if test -n "$dlfiles$dlprefiles"; then
 	$echo "$modename: warning: \`-dlopen' is ignored for libtool libraries" 1>&2
@@ -1719,7 +1774,12 @@ EOF
 	    fi
 	  done # Gone through all deplibs.
 	  ;;
-	none | unknown | *) newdeplibs=""; droppeddeps=yes ;;
+	none | unknown | *) newdeplibs="";
+	  if $echo "X$deplibs" | $Xsed -e 's/ -lc$//' -e 's/[ 	]//g' \
+	     | grep . >/dev/null; then
+	    droppeddeps=yes
+	  fi
+	  ;;
 	esac
 	versuffix=$versuffix_save
 	major=$major_save
@@ -1942,6 +2002,7 @@ EOF
 	# If the user specified any rpath flags, then add them.
 	for libdir in $rpath $xrpath; do
 	  if test -n "$hardcode_libdir_flag_spec"; then
+	    saved_libdir="$libdir"
 	    if test -n "$hardcode_libdir_separator"; then
 	      if test -z "$hardcode_libdirs"; then
 		# Put the magic libdir with the hardcode flag.
@@ -1964,12 +2025,40 @@ EOF
 	      eval flag=\"$hardcode_libdir_flag_spec\"
 
 	      compile_command="$compile_command $flag"
+	    fi
+
+	    libdir="$saved_libdir"
+	    if test -n "$hardcode_libdir_separator"; then
+	      if test -z "$finalize_hardcode_libdirs"; then
+		# Put the magic libdir with the hardcode flag.
+		finalize_hardcode_libdirs="$libdir"
+		libdir="@HARDCODE_LIBDIRS@"
+	      else
+		# Just accumulate the unique libdirs.
+		case "$hardcode_libdir_separator$finalize_hardcode_libdirs$hardcode_libdir_separator" in
+		*"$hardcode_libdir_separator$libdir$hardcode_libdir_separator"*)
+		  ;;
+		*)
+		  finalize_hardcode_libdirs="$finalize_hardcode_libdirs$hardcode_libdir_separator$libdir"
+		  ;;
+		esac
+		libdir=
+	      fi
+	    fi
+
+	    if test -n "$libdir"; then
+	      eval flag=\"$hardcode_libdir_flag_spec\"
+
 	      finalize_command="$finalize_command $flag"
 	    fi
 	  elif test -n "$runpath_var"; then
 	    case "$perm_rpath " in
 	    *" $libdir "*) ;;
 	    *) perm_rpath="$perm_rpath $libdir" ;;
+	    esac
+	    case "$finalize_perm_rpath " in
+	    *" $libdir "*) ;;
+	    *) finalize_perm_rpath="$finalize_perm_rpath $libdir" ;;
 	    esac
 	  fi
 	done
@@ -1978,7 +2067,7 @@ EOF
       # Substitute the hardcoded libdirs into the compile commands.
       if test -n "$hardcode_libdir_separator"; then
 	compile_command=`$echo "X$compile_command" | $Xsed -e "s%@HARDCODE_LIBDIRS@%$hardcode_libdirs%g"`
-	finalize_command=`$echo "X$finalize_command" | $Xsed -e "s%@HARDCODE_LIBDIRS@%$hardcode_libdirs%g"`
+	finalize_command=`$echo "X$finalize_command" | $Xsed -e "s%@HARDCODE_LIBDIRS@%$finalize_hardcode_libdirs%g"`
       fi
 
       output_objdir=`$echo "X$output" | $Xsed -e 's%/[^/]*$%%'`
@@ -2029,7 +2118,7 @@ EOF
 
 	  $echo > "$objdir/$dlsyms" "\
 /* $dlsyms - symbol resolution table for \`$outputname' dlsym emulation. */
-/* Generated by $PROGRAM - GNU $PACKAGE $VERSION */
+/* Generated by $PROGRAM - GNU $PACKAGE $VERSION$TIMESTAMP */
 
 #ifdef __cplusplus
 extern \"C\" {
@@ -2201,14 +2290,23 @@ static const void *lt_preloaded_setup() {
 	finalize_command="$shlibpath_var=\"$finalize_shlibpath\$$shlibpath_var\" $finalize_command"
       fi
 
-      if test -n "$runpath_var" && test -n "$perm_rpath"; then
-	# We should set the runpath_var.
-	rpath=
-	for dir in $perm_rpath; do
-	  rpath="$rpath$dir:"
-	done
-	compile_command="$runpath_var=\"$rpath\$$runpath_var\" $compile_command"
-	finalize_command="$runpath_var=\"$rpath\$$runpath_var\" $finalize_command"
+      if test -n "$runpath_var"; then
+        if test -n "$perm_rpath"; then
+	  # We should set the runpath_var.
+	  rpath=
+	  for dir in $perm_rpath; do
+	    rpath="$rpath$dir:"
+	  done
+	  compile_command="$runpath_var=\"$rpath\$$runpath_var\" $compile_command"
+	fi
+        if test -n "$finalize_perm_rpath"; then
+	  # We should set the runpath_var.
+	  rpath=
+	  for dir in $finalize_perm_rpath; do
+	    rpath="$rpath$dir:"
+	  done
+	  finalize_command="$runpath_var=\"$rpath\$$runpath_var\" $finalize_command"
+	fi
       fi
 
       if test "$hardcode_action" = relink; then
@@ -2251,7 +2349,7 @@ static const void *lt_preloaded_setup() {
 #! $SHELL
 
 # $output - temporary wrapper script for $objdir/$outputname
-# Generated by $PROGRAM - GNU $PACKAGE $VERSION
+# Generated by $PROGRAM - GNU $PACKAGE $VERSION$TIMESTAMP
 #
 # The $output program cannot be directly executed until all the libtool
 # libraries that it depends on are installed.
@@ -2261,7 +2359,7 @@ static const void *lt_preloaded_setup() {
 
 # Sed substitution that helps us do robust quoting.  It backslashifies
 # metacharacters that are still active within double-quoted strings.
-Xsed='sed -e s/^X//'
+Xsed='sed -e 1s/^X//'
 sed_quote_subst='$sed_quote_subst'
 
 # The HP-UX ksh and POSIX shell print the target directory to stdout
@@ -2455,7 +2553,7 @@ fi\
       if test -z "$run"; then
 	$echo > $output "\
 # $output - a libtool library file
-# Generated by $PROGRAM - GNU $PACKAGE $VERSION
+# Generated by $PROGRAM - GNU $PACKAGE $VERSION$TIMESTAMP
 
 # The name that we can dlopen(3).
 dlname='$dlname'

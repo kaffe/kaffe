@@ -160,6 +160,7 @@ progname=`$echo "X$0" | $Xsed -e 's%^.*/%%'`
 PROGRAM=ltconfig
 PACKAGE=libtool
 VERSION=1.2e
+TIMESTAMP=" (1.222 1999/01/24 20:43:44)"
 ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.c 1>&5'
 ac_link='${CC-cc} -o conftest $CFLAGS $CPPFLAGS $LDFLAGS conftest.c $LIBS 1>&5'
 rm="rm -f"
@@ -262,7 +263,7 @@ EOM
   --output | -o) prev=ofile ;;
   --output=*) ofile="$optarg" ;;
 
-  --version) echo "$PROGRAM (GNU $PACKAGE) $VERSION"; exit 0 ;;
+  --version) echo "$PROGRAM (GNU $PACKAGE) $VERSION$TIMESTAMP"; exit 0 ;;
 
   --with-gcc) with_gcc=yes ;;
   --with-gnu-ld) with_gnu_ld=yes ;;
@@ -537,7 +538,7 @@ if test "$with_gcc" != yes || test -z "$CC"; then
   # Now see if the compiler is really GCC.
   with_gcc=no
   echo $ac_n "checking whether we are using GNU C... $ac_c" 1>&6
-  echo "$progname:540: checking whether we are using GNU C" >&5
+  echo "$progname:541: checking whether we are using GNU C" >&5
 
   $rm conftest.c
   cat > conftest.c <<EOF
@@ -545,7 +546,7 @@ if test "$with_gcc" != yes || test -z "$CC"; then
   yes;
 #endif
 EOF
-  if { ac_try='${CC-cc} -E conftest.c'; { (eval echo $progname:548: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
+  if { ac_try='${CC-cc} -E conftest.c'; { (eval echo $progname:549: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
     with_gcc=yes
   fi
   $rm conftest.c
@@ -559,8 +560,8 @@ compiler="$2"
 echo $ac_n "checking for object suffix... $ac_c" 1>&6
 $rm conftest*
 echo 'int i = 1;' > conftest.c
-echo "$progname:562: checking for object suffix" >& 5
-if { (eval echo $progname:563: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; }; then
+echo "$progname:563: checking for object suffix" >& 5
+if { (eval echo $progname:564: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; }; then
   # Append any warnings to the config.log.
   cat conftest.err 1>&5
 
@@ -690,8 +691,8 @@ if test -n "$pic_flag"; then
   echo "int some_variable = 0;" > conftest.c
   save_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS $pic_flag -DPIC"
-  echo "$progname:693: checking if $compiler PIC flag $pic_flag works" >&5
-  if { (eval echo $progname:694: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.$objext; then
+  echo "$progname:694: checking if $compiler PIC flag $pic_flag works" >&5
+  if { (eval echo $progname:695: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.$objext; then
     # Append any warnings to the config.log.
     cat conftest.err 1>&5
     
@@ -733,8 +734,8 @@ $rm conftest*
 echo "int some_variable = 0;" > conftest.c
 save_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -c -o conftest2.o"
-echo "$progname:736: checking if $compiler supports -c -o file.o" >&5
-if { (eval echo $progname:737: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest2.o; then
+echo "$progname:737: checking if $compiler supports -c -o file.o" >&5
+if { (eval echo $progname:738: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest2.o; then
 
   # The compiler can only warn and ignore the option if not recognized
   # So say no if there are warnings
@@ -761,8 +762,8 @@ if test x"$compiler_c_o" = x"yes"; then
   echo "int some_variable = 0;" > conftest.c
   save_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS -c -o conftest.lo"
-  echo "$progname:764: checking if $compiler supports -c -o file.lo" >&5
-if { (eval echo $progname:765: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.lo; then
+  echo "$progname:765: checking if $compiler supports -c -o file.lo" >&5
+if { (eval echo $progname:766: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.lo; then
 
     # The compiler can only warn and ignore the option if not recognized
     # So say no if there are warnings
@@ -813,8 +814,8 @@ if test "$with_gcc" = yes; then
   echo "int some_variable = 0;" > conftest.c
   save_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS -fno-rtti -fno-exceptions -c conftest.c"
-  echo "$progname:816: checking if $compiler supports -fno-rtti -fno-exceptions" >&5
-  if { (eval echo $progname:817: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.o; then
+  echo "$progname:817: checking if $compiler supports -fno-rtti -fno-exceptions" >&5
+  if { (eval echo $progname:818: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.o; then
 
     # The compiler can only warn and ignore the option if not recognized
     # So say no if there are warnings
@@ -857,8 +858,8 @@ $rm conftest*
 echo 'main(){return(0);}' > conftest.c
 save_LDFLAGS="$LDFLAGS"
 LDFLAGS="$LDFLAGS $link_static_flag"
-echo "$progname:860: checking if $compiler static flag $link_static_flag works" >&5
-if { (eval echo $progname:861: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+echo "$progname:861: checking if $compiler static flag $link_static_flag works" >&5
+if { (eval echo $progname:862: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
   echo "$ac_t$link_static_flag" 1>&6
 else
   echo "$ac_t"none 1>&6
@@ -890,7 +891,7 @@ if test -z "$LD"; then
   if test "$with_gcc" = yes; then
     # Check if gcc -print-prog-name=ld gives a path.
     echo $ac_n "checking for ld used by GCC... $ac_c" 1>&6
-    echo "$progname:893: checking for ld used by GCC" >&5
+    echo "$progname:894: checking for ld used by GCC" >&5
     ac_prog=`($CC -print-prog-name=ld) 2>&5`
     case "$ac_prog" in
     # Accept absolute paths.
@@ -944,10 +945,10 @@ if test -z "$LD"; then
     esac
   elif test "$with_gnu_ld" = yes; then
     echo $ac_n "checking for GNU ld... $ac_c" 1>&6
-    echo "$progname:947: checking for GNU ld" >&5
+    echo "$progname:948: checking for GNU ld" >&5
   else
     echo $ac_n "checking for non-GNU ld""... $ac_c" 1>&6
-    echo "$progname:950: checking for non-GNU ld" >&5
+    echo "$progname:951: checking for non-GNU ld" >&5
   fi
 
   if test -z "$LD"; then
@@ -1145,7 +1146,7 @@ else
       fi
       archive_cmds='$CC -shared ${wl}-bnoentry -o $objdir/$soname $libobjs $deplibs'
     else
-      archive_cmds='$NM $libobjs | $global_symbol_pipe | sed '\''s/.* //'\' | sort | uniq' > $lib.exp        else cat $export_symbols > $lib.exp~
+      archive_cmds='$NM $libobjs | $global_symbol_pipe | sed '\''s/.* //'\' | sort | uniq' > $lib.exp~
       $CC -o $objdir/$soname $libobjs $deplibs ${wl}-bE:$lib.exp ${wl}-bM:SRE ${wl}-bnoentry'
       archive_sym_cmds='$CC -o $objdir/$soname $libobjs $deplibs ${wl}-bE:$export_symbols ${wl}-bM:SRE ${wl}-bnoentry'
       hardcode_direct=yes
@@ -1214,6 +1215,11 @@ else
     fi
     ;;
 
+  freebsd1*)
+    ld_shlibs=no
+    can_build_shared=no
+    ;;
+
   # FreeBSD 2.2.[012] allows us to include c++rt0.o to get C++ constructor
   # support.  Future versions do this automatically, but an explicit c++rt0.o
   # does not break anything, and helps significantly (at the cost of a little
@@ -1234,8 +1240,8 @@ else
     hardcode_shlibpath_var=no
     ;;
 
-  # FreeBSD 3, at last, uses gcc -shared to do shared libraries.
-  freebsd3*)
+  # FreeBSD 3 and greater uses gcc -shared to do shared libraries.
+  freebsd*)
     archive_cmds='$CC -shared -o $lib $libobjs $deplibs'
     hardcode_libdir_flag_spec='-R$libdir'
     hardcode_direct=yes
@@ -1406,7 +1412,7 @@ echo $ac_n "checking command to parse $NM output... $ac_c" 1>&6
 # [They come from Ultrix.  What could be older than Ultrix?!! ;)]
 
 # Character class describing NM global symbol codes.
-symcode='[BCDEGRSTU]'
+symcode='[BCDEGRST]'
 
 # Regexp to match symbols that can be accessed directly from C.
 sympat='\([_A-Za-z][_A-Za-z0-9]*\)'
@@ -1417,29 +1423,23 @@ symxfrm='\1 \1'
 # Define system-specific variables.
 case "$host_os" in
 aix*)
-  symcode='[BCDTU]'
+  symcode='[BCDT]'
+  ;;
+cygwin32* | mingw32*)
+  symcode='[ABCDGISTW]'
   ;;
 irix*)
-  # Cannot use undefined symbols on IRIX because inlined functions mess us up.
   symcode='[BCDEGRST]'
   ;;
 solaris*)
-  symcode='[BDTU]'
+  symcode='[BDT]'
   ;;
 esac
 
 # If we're using GNU nm, then use its standard symbol codes.
 if $NM -V 2>&1 | egrep '(GNU|with BFD)' > /dev/null; then
-  symcode='[ABCDGISTUW]'
-fi
-
-case "$host_os" in
-cygwin32* | mingw32*)
-  # We do not want undefined symbols on cygwin32.  The user must
-  # arrange to define them via -l arguments.
   symcode='[ABCDGISTW]'
-  ;;
-esac
+fi
 
 # Try without a prefix undercore, then with it.
 for ac_symprfx in "" "_"; do
@@ -1669,7 +1669,11 @@ cygwin32* | mingw32*)
   shlibpath_var=PATH
   ;;
 
-freebsd2* | freebsd3*)
+freebsd1*)
+  dynamic_linker=no
+  ;;
+  
+freebsd*)
   objformat=`test -x /usr/bin/objformat && /usr/bin/objformat || echo aout`
   version_type=freebsd-$objformat
   case "$version_type" in
@@ -1939,7 +1943,7 @@ case "$ltmain" in
 #! $SHELL
 
 # `$echo "$ofile" | sed 's%^.*/%%'` - Provide generalized library-building support services.
-# Generated automatically by $PROGRAM (GNU $PACKAGE $VERSION)
+# Generated automatically by $PROGRAM (GNU $PACKAGE $VERSION$TIMESTAMP)
 # NOTE: Changes made to this file will be lost: look at ltconfig or ltmain.sh.
 #
 # Copyright (C) 1996-1999 Free Software Foundation, Inc.
@@ -1990,7 +1994,7 @@ EOF
   $rm "$cfgfile"
   cat <<EOF > "$cfgfile"
 # `$echo "$cfgfile" | sed 's%^.*/%%'` - Libtool configuration file.
-# Generated automatically by $PROGRAM (GNU $PACKAGE $VERSION)
+# Generated automatically by $PROGRAM (GNU $PACKAGE $VERSION$TIMESTAMP)
 EOF
   ;;
 esac
@@ -2007,7 +2011,7 @@ cat <<EOF >> "$cfgfile"
 # debugging $progname, is in ./config.log if it exists.
 
 # The version of $progname that generated this script.
-LTCONFIG_VERSION=$VERSION
+LTCONFIG_VERSION="$VERSION"
 
 # Shell to use when invoking shell scripts.
 SHELL=$LTSHELL
