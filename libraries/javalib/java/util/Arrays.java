@@ -123,10 +123,9 @@ public class Arrays {
 	int base = 0;
 	for (int lim = a.length; lim != 0; lim >>= 1) {
 		final int index = base + (lim >> 1);
-		final int diff = key - a[index];
-		if (diff == 0) {
+		if (key == a[index]) {
 			return(index);
-		} else if (diff > 0) {
+		} else if (key > a[index]) {
 			base = index + 1;
 			lim--;
 		}
@@ -138,10 +137,9 @@ public class Arrays {
 	int base = 0;
 	for (int lim = a.length; lim != 0; lim >>= 1) {
 		final int index = base + (lim >> 1);
-		final int diff = (int)key - (int)a[index];
-		if (diff == 0) {
+		if (key == a[index]) {
 			return(index);
-		} else if (diff > 0) {
+		} else if (key > a[index]) {
 			base = index + 1;
 			lim--;
 		}
@@ -150,13 +148,14 @@ public class Arrays {
   }
 
   public static int binarySearch(double[] a, double key) {
+	final long keyBits = Double.doubleToLongBits(key);
 	int base = 0;
 	for (int lim = a.length; lim != 0; lim >>= 1) {
 		final int index = base + (lim >> 1);
-		final double diff = key - a[index];
-		if (diff == 0.0) {
+		final long elemBits = Double.doubleToLongBits(a[index]);
+		if (keyBits == elemBits) {
 			return(index);
-		} else if (diff > 0.0) {
+		} else if (keyBits > elemBits) {
 			base = index + 1;
 			lim--;
 		}
@@ -165,13 +164,14 @@ public class Arrays {
   }
 
   public static int binarySearch(float[] a, float key) {
+	final int keyBits = Float.floatToIntBits(key);
 	int base = 0;
 	for (int lim = a.length; lim != 0; lim >>= 1) {
 		final int index = base + (lim >> 1);
-		final float diff = key - a[index];
-		if (diff == 0.0f) {
+		final int elemBits = Float.floatToIntBits(a[index]);
+		if (keyBits == elemBits) {
 			return(index);
-		} else if (diff > 0.0f) {
+		} else if (keyBits > elemBits) {
 			base = index + 1;
 			lim--;
 		}
@@ -183,10 +183,9 @@ public class Arrays {
 	int base = 0;
 	for (int lim = a.length; lim != 0; lim >>= 1) {
 		final int index = base + (lim >> 1);
-		final int diff = key - a[index];
-		if (diff == 0) {
+		if (key == a[index]) {
 			return(index);
-		} else if (diff > 0) {
+		} else if (key > a[index]) {
 			base = index + 1;
 			lim--;
 		}
@@ -198,10 +197,9 @@ public class Arrays {
 	int base = 0;
 	for (int lim = a.length; lim != 0; lim >>= 1) {
 		final int index = base + (lim >> 1);
-		final int diff = (int)key - (int)a[index];
-		if (diff == 0) {
+		if (key == a[index]) {
 			return(index);
-		} else if (diff > 0) {
+		} else if (key > a[index]) {
 			base = index + 1;
 			lim--;
 		}
@@ -213,10 +211,9 @@ public class Arrays {
 	int base = 0;
 	for (int lim = a.length; lim != 0; lim >>= 1) {
 		final int index = base + (lim >> 1);
-		final long diff = key - a[index];
-		if (diff == 0L) {
+		if (key == a[index]) {
 			return(index);
-		} else if (diff > 0L) {
+		} else if (key > a[index]) {
 			base = index + 1;
 			lim--;
 		}
