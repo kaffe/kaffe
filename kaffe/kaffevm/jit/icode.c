@@ -3525,7 +3525,7 @@ softcall_abstractmethod(Utf8Const* cls, Utf8Const* name)
 	prepare_function_call();
 	pusharg_utf8_const(name, 1);
 	pusharg_utf8_const(cls, 0);
-	call_soft(soft_incompatibleclasschange);
+	call_soft(soft_abstractmethod);
 	popargs();
 	fixup_function_call();
 }
