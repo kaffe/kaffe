@@ -417,16 +417,17 @@ dnl Allow selection of debugging mechanisms
 dnl -------------------------------------------------------------------------
 
 AC_ARG_ENABLE([debug],
-	      AS_HELP_STRING([--enable-debug],
-			     [Enable run-time debugging machinery @<:@default=yes@:>@]))
-
-AC_MSG_CHECKING([whether to enable run-time debugging machinery])
-
+	      AS_HELP_STRING([--disable-debug],
+			     [Disable run-time debugging machinery. It is enabled by default.]),
+[
 case "$enable_debug" in
 no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 *) CPPFLAGS="$CPPFLAGS -DKAFFE_VMDEBUG";;
 esac
+],
+	[enable_debug="yes"])
 
+AC_MSG_CHECKING([whether to enable run-time debugging machinery])
 AC_MSG_RESULT($enable_debug)
 
 dnl =========================================================================
@@ -452,7 +453,7 @@ dnl -------------------------------------------------------------------------
 
 AC_ARG_ENABLE([jvmpi],
               AS_HELP_STRING([--enable-jvmpi],
-                             [Enable JVMPI @<:@default=no@:>@]),
+                             [Enable JVMPI. It is disabled by default.]),
 [
 case "$enable_jvmpi" in
 no) ;;

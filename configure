@@ -1069,9 +1069,9 @@ Optional Features:
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --disable-nls           do not use Native Language Support
   --disable-rpath         do not hardcode runtime library paths
-  --enable-debug          Enable run-time debugging machinery
-                          [default=yes]
-  --enable-jvmpi          Enable JVMPI [default=no]
+  --disable-debug         Disable run-time debugging machinery. It is enabled
+                          by default.
+  --enable-jvmpi          Enable JVMPI. It is disabled by default.
   --enable-xprofiling     Enable profiling for C and jitted code
   --enable-xdebugging     Enable debugging symbol generation for jitted code
   --enable-feedback       Enable generation of feedback data
@@ -26242,16 +26242,17 @@ engine_frag=$srcdir/kaffe/kaffevm/$with_engine/Makefile.frag
 if test "${enable_debug+set}" = set; then
   enableval="$enable_debug"
 
-fi;
-
-echo "$as_me:$LINENO: checking whether to enable run-time debugging machinery" >&5
-echo $ECHO_N "checking whether to enable run-time debugging machinery... $ECHO_C" >&6
-
 case "$enable_debug" in
 no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 *) CPPFLAGS="$CPPFLAGS -DKAFFE_VMDEBUG";;
 esac
 
+else
+  enable_debug="yes"
+fi;
+
+echo "$as_me:$LINENO: checking whether to enable run-time debugging machinery" >&5
+echo $ECHO_N "checking whether to enable run-time debugging machinery... $ECHO_C" >&6
 echo "$as_me:$LINENO: result: $enable_debug" >&5
 echo "${ECHO_T}$enable_debug" >&6
 

@@ -1,5 +1,12 @@
 2004-05-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Improved descriptions for debugging and JVMPI
+	switches.
+
+	* configure: Regenerated.
+
+2004-05-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Added 'checking' messages for debugging, bcel and
 	jvmpi. Improved JVMPI checking to use AC_ARG_ENABLE's features to
 	handle given and not given arguments.
