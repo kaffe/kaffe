@@ -1,3 +1,13 @@
+Thu Apr  6 10:59:39 PDT 2000  Mo DeJong <mdejong@cygnus.com>
+
+	* test/regression/Str.java: add more exhaustive StringBuffer tests
+
+Thu Apr  6 10:59:38 PDT 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/lang/StringBuffer.java,
+	libraries/javalib/java/lang/String.java: fix more bugs and
+	add missing methods
+
 Wed Apr  5 10:02:29 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/String.java: fix race condition
