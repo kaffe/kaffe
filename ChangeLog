@@ -4,6 +4,26 @@
 
 	2004-02-12  Michael Koch  <konqueror@gmx.de>
 
+        * java/net/Socket.java
+        (setTcpNoDelay): Use Boolean.valueOf() instead of creating a new
+        Boolean object.
+        (setSoLinger): Likewise.
+        (setOOBInline): Likewise.
+        (setKeepAlive): Likewise.
+        (setReuseAddress): Likewise.
+
+	2004-02-06  Mohan Embar  <gnustuff@thisiscool.com>
+
+        * java/net/Socket.java (connect): Don't throw an
+        IllegalBlockingModeException if we have a non-blocking
+        channel which initiated this connect operation.
+ 
+2004-02-24  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath
+
+	2004-02-12  Michael Koch  <konqueror@gmx.de>
+
         * java/net/ServerSocket.java
         (setReuseAddress): Use Boolean.valueOf() instead of creating a new
         Boolean object.
