@@ -1,3 +1,13 @@
+2005-01-27  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+	
+	2005-01-27  Graydon Hoare  <graydon@redhat.com>
+
+	* java/awt/dnd/DropTarget.java
+	(addDropTargetListener): Despite documentation, do not throw.
+	* javax/swing/JComponent.java: Set a default DropTarget.
+
 2005-01-29  Dalibor Topic  <robilad@kaffe.org>
 
 	* include/Makefile.am (NOINSTALL_JNI_DERIVED_HDRS): Only create

@@ -211,9 +211,10 @@ public class DropTarget
   public void addDropTargetListener (DropTargetListener dtl)
     throws TooManyListenersException
   {
-    if (dtl != null)
-      throw new TooManyListenersException ();
-    
+    // Sun's JDK does not, despite documentation, throw any sort of
+    // exception here when you install an additional DropTargetListener.
+    // So to be compatible, we do the same thing.
+
     dropTargetListener = dtl;
   }
 
