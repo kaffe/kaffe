@@ -38,13 +38,18 @@
 /* Flags to hashInit() */
 #define HASH_ADD_REFS		0x0001	/* gc_add_ref() for each pointer */
 #define HASH_SYNCHRONIZE	0x0002	/* make hash table thread-safe */
+#define HASH_REENTRANT		0x0004	/* make hash table reenterable 
+					   during alloc/free */
 
 struct _hashtab;
 typedef struct _hashtab	*hashtab_t;
 typedef int		(*hashfunc_t)(const void *ptr1);
 typedef int		(*compfunc_t)(const void *ptr1, const void *ptr2);
+typedef void*		(*allocfunc_t)(size_t);
+typedef void		(*freefunc_t)(const void *ptr);
 
-extern hashtab_t	hashInit(hashfunc_t, compfunc_t, int);
+extern hashtab_t	hashInit(hashfunc_t, compfunc_t, 
+				 allocfunc_t, freefunc_t, int);
 extern void*		hashAdd(hashtab_t, const void*);
 extern void		hashRemove(hashtab_t, const void*);
 extern void*		hashFind(hashtab_t, const void*);

@@ -182,6 +182,31 @@ utf8Const2JavaReplace(const Utf8Const *utf8, jchar from_ch, jchar to_ch)
 }
 
 /*
+ * Define functions used by the string hashtable to resize itself.
+ * The problem is that we may block in KCALLOC/KFREE and the gc may kick
+ * in.  The collector, however, must be able to call stringUninternString
+ * while destroying strings.  If we held the lock while this is happening,
+ * we would deadlock.
+ */
+static void*
+stringAlloc(size_t sz)
+{
+	void* p;
+	unlockStaticMutex(&stringLock);
+	p = KCALLOC(1, sz);
+	lockStaticMutex(&stringLock);
+	return (p);
+}
+
+static void
+stringFree(const void *ptr)
+{
+	unlockStaticMutex(&stringLock);
+	KFREE((void*)ptr);
+	lockStaticMutex(&stringLock);
+}
+
+/*
  * Return the interned version of a String object.
  * May or may not be the same String.
  */
@@ -205,7 +230,7 @@ stringInternString(Hjava_lang_String *string)
 			return(string2);
 		}
 	} else {
-		hashTable = hashInit(stringHashValue, stringCompare, 0);
+		hashTable = hashInit(stringHashValue, stringCompare, stringAlloc, stringFree, 0);
 	}
 
 	/* Not in table, so add it */
@@ -219,7 +244,7 @@ stringInternString(Hjava_lang_String *string)
 }
 
 /*
- * Called by String finalizer to remove an interned string
+ * Called by String destructor to remove an interned string
  * from the hash table.
  */
 void
@@ -293,14 +318,15 @@ stringCompare(const void *v1, const void *v2)
 Hjava_lang_String*
 stringCharArray2Java(const jchar *data, int len)
 {
-	Hjava_lang_String *string, *temp;
+	Hjava_lang_String *string;
 	HArrayOfChar *ary;
 
-	/* Lock intern table */
+	/* Lock intern table 
+	 * NB: we must not hold stringLock when we call KMALLOC/KFREE!
+	 */
 	if (!staticLockIsInitialized(&stringLock)) {
 		initStaticLock(&stringLock);
 	}
-	lockStaticMutex(&stringLock);
 
 	/* Look for it already in the intern hash table */
 	if (hashTable != NULL) {
@@ -325,12 +351,14 @@ stringCharArray2Java(const jchar *data, int len)
 		unhand(&fakeString)->count = len;
 
 		/* Return existing copy of this string, if any */
+		lockStaticMutex(&stringLock);
 		string = hashFind(hashTable, &fakeString);
+		unlockStaticMutex(&stringLock);
+
 		if (fakeAry != (HArrayOfChar*)buf) {
 			KFREE(fakeAry);
 		}
 		if (string != NULL) {
-			unlockStaticMutex(&stringLock);
 			return(string);
 		}
 	}
@@ -343,9 +371,10 @@ stringCharArray2Java(const jchar *data, int len)
 	unhand(string)->count = len;
 
 	/* Intern and return string */
-	temp = stringInternString(string);
-	assert(temp == string);
-	unlockStaticMutex(&stringLock);
-	return(string);
+	/* NB: the string returned might not be the string we created,
+	 * but we don't care if we lose the race.  The string created by the
+	 * loser will be picked up by the gc.
+	 */
+	return (stringInternString(string));
 }
 

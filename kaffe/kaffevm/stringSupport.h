@@ -44,8 +44,12 @@ extern HArrayOfChar*	  stringC2CharArray(const char*);
 extern Hjava_lang_String* stringInternString(Hjava_lang_String*);
 
 /* Remove the String object from the intern table. This should only be
-   called during finalization of the corresponding String object. */
+   called during destruction of the corresponding String object. */
 extern void		  stringUninternString(Hjava_lang_String*);
+
+/* Have the collector walk a string */
+extern void    		  walkString(void*, uint32);
+extern void    		  destroyString(void*);
 
 /**** UTF-8 routines ****/
 

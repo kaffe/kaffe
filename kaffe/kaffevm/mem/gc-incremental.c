@@ -28,6 +28,7 @@
 #include "md.h"
 #include "jni.h"
 #include "access.h"
+#include "stringSupport.h"
 
 static gcList gclists[5];
 static int mustfree = 4;		/* temporary list */
@@ -36,7 +37,7 @@ static int grey = 2;
 static int black = 1;
 static int finalise = 0;
 
-static bool gcRunning = false;
+static int gcRunning = 0;
 static bool finalRunning = false;
 static timespent gc_time;
 static timespent sweep_time;
@@ -47,6 +48,7 @@ static timespent sweep_time;
 static struct {
 	int	classNr;
 	int	objectNr;
+	int	stringNr;
 	int	arrayNr;
 	int	methodNr;
 	int	fieldNr;
@@ -67,6 +69,7 @@ static struct {
 
 	int	classMem;
 	int	objectMem;
+	int	stringMem;
 	int	arrayMem;
 	int	methodMem;
 	int	fieldMem;
@@ -129,7 +132,7 @@ static void walkRefArray(void*, uint32);
 
 /* Standard GC function sets */
 static gcFuncs gcFunctions[] = {
-  { walkConservative, GC_OBJECT_NORMAL, 0 },  		   /* NORMAL */
+  { walkString,       GC_OBJECT_NORMAL, destroyString },   /* JAVASTRING */
   { walkNull,	      GC_OBJECT_NORMAL, 0 },  		   /* NOWALK */
   { walkObject,	      GC_OBJECT_NORMAL, 0 },  		   /* NORMALOBJECT */
   { walkPrimArray,    GC_OBJECT_NORMAL, 0 },  		   /* PRIMARRAY */
@@ -380,6 +383,30 @@ walkMemory(void* mem)
 }
 
 /*
+ * Walk a java.lang.String object
+ */
+void               
+walkString(void* str, uint32 size)
+{
+	/* That's all we have to do here */
+	MARK_OBJECT_PRECISE(unhand((Hjava_lang_String*)str)->value);
+}
+
+/*
+ * Destroy a string object.
+ */
+void               
+destroyString(void* obj)
+{
+	Hjava_lang_String* str = (Hjava_lang_String*)obj;
+
+	/* unintern this string if necessary */
+	if (unhand(str)->interned == true) {
+		stringUninternString(str);
+	}
+}
+
+/*
  * Walk the methods of a class.
  */
 static
@@ -563,19 +590,22 @@ gcMan(void* arg)
 	/* Wake up anyone waiting for the GC to finish every time we're done */
 	for(;; broadcastStaticCond(&gcman)) {
 
-		gcRunning = false;
-		waitStaticCond(&gcman, 0);
-		assert(gcRunning == true);
-
-		/*
-		 * Let's try to define some heuristics for when we skip a 
-		 * collection.
+		gcRunning = 0;
+		while (gcRunning == 0) {
+			waitStaticCond(&gcman, 0);
+		}
+		assert(gcRunning > 0);
+		/* 
+		 * gcRunning will either be 1 or 2.  If it's 1, we can apply
+		 * some heuristics for when we skip a collection.
+		 * If it's 2, we must collect.  See gcInvokeGC.
 		 */
+
 		/* First, since multiple thread can wake us up without 
 		 * coordinating with each other, we must make sure that we
 		 * don't collect multiple times in a row.
 		 */
-                if (gcStats.allocmem == 0) {
+                if (gcRunning == 1 && gcStats.allocmem == 0) {
 			/* XXX: If an application runs out of memory, it may be 
 			 * possible that an outofmemory error was raised and the
 			 * application in turn dropped some references.  Then
@@ -604,7 +634,7 @@ DBG(GCSTAT,
 		 *
 		 * Feel free to tweak this parameter.
 		 */
-		if (gc_heap_total < gc_heap_limit && 
+		if (gcRunning == 1 && gc_heap_total < gc_heap_limit && 
 		    gcStats.allocmem * 3 < gcStats.totalmem * 1) {
 DBG(GCSTAT,
 			dprintf("skipping collection since alloc/total "
@@ -885,11 +915,11 @@ finaliserMan(void* arg)
  */
 static
 void
-gcInvokeGC(void)
+gcInvokeGC(int mustgc)
 {
 	lockStaticMutex(&gcman);
-	if (gcRunning == false) {
-		gcRunning = true;
+	if (gcRunning == 0) {
+		gcRunning = mustgc ? 2 : 1;
 		signalStaticCond(&gcman);
 	}
 	waitStaticCond(&gcman, 0);
@@ -1174,7 +1204,7 @@ objectStatsChange(gc_unit* unit, int diff)
 		objectStats.STAT##Mem += memdiff;		\
 	} else
 
-	CHECK_GC_TYPE(GC_ALLOC_NORMAL, object)
+	CHECK_GC_TYPE(GC_ALLOC_JAVASTRING, string)
 	CHECK_GC_TYPE(GC_ALLOC_FINALIZEOBJECT, object)
 	CHECK_GC_TYPE(GC_ALLOC_REFARRAY, array)
 	CHECK_GC_TYPE(GC_ALLOC_PRIMARRAY, array)
@@ -1224,6 +1254,7 @@ objectStatsPrint(void)
 	fprintf(stderr, "------------------\n");
 
 	PRINT_GC_STAT(object);
+	PRINT_GC_STAT(string);
 	PRINT_GC_STAT(array);
 	PRINT_GC_STAT(class);
 	PRINT_GC_STAT(method);

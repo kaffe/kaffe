@@ -47,7 +47,12 @@ newObject(Hjava_lang_Class* class)
 	int type;
 
 	if (class->finalizer == 0) {
-		type = GC_ALLOC_NORMALOBJECT;
+		/* Treat strings specially because they're so frequent */
+		if (class != StringClass) {
+			type = GC_ALLOC_NORMALOBJECT;
+		} else {
+			type = GC_ALLOC_JAVASTRING;
+		}
 	} else {
 		type = GC_ALLOC_FINALIZEOBJECT; 
 	}

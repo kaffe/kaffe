@@ -10,6 +10,9 @@
 
 package java.lang;
 
+/* NB: The garbage collector knows about strings and will automatically
+ * unintern them if they are freed.
+ */
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.Serializable;
@@ -189,13 +192,6 @@ public boolean equalsIgnoreCase (String other) {
 		}
 	}
 	return (true);
-}
-
-protected void finalize() throws Throwable {
-	if (interned) {
-		unintern0(this);
-	}
-	super.finalize();
 }
 
 public byte[] getBytes() {
@@ -521,6 +517,5 @@ final public String intern() {
 }
 
 final native static public synchronized String intern0(String str);
-final native static private synchronized void unintern0(String str);
 
 }

@@ -336,7 +336,7 @@ DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %d at %p\n", sz, mem);	)
 			 * hold this lock.
 			 */
 			unlockStaticMutex(&gc_lock);
-			invokeGC();
+			adviseGC();
 			lockStaticMutex(&gc_lock);
 		}
 		break;

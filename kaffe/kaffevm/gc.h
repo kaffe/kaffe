@@ -23,7 +23,7 @@
 /*
  * Garbage collector interface.
  */
-#define	GC_ALLOC_NORMAL		0
+#define	GC_ALLOC_JAVASTRING	0
 #define	GC_ALLOC_NOWALK		1
 #define	GC_ALLOC_NORMALOBJECT	2
 #define	GC_ALLOC_PRIMARRAY	3
@@ -51,7 +51,7 @@ typedef struct GarbageCollectorInterface {
 	void*	(*_realloc)(void*, size_t, int);
 	void	(*_free)(void*);
 
-	void	(*_invokeGC)(void);
+	void	(*_invokeGC)(int);
 	void	(*_invokeFinalizer)(void);
 
 	void	(*_addref)(const void*);
@@ -65,7 +65,8 @@ extern GarbageCollectorInterface Kaffe_GarbageCollectorInterface;
 #define	gc_calloc(A,B,C)	(*Kaffe_GarbageCollectorInterface._malloc)((A)*(B),C)
 #define	gc_free(A)		(*Kaffe_GarbageCollectorInterface._free)(A)
 
-#define	invokeGC()		(*Kaffe_GarbageCollectorInterface._invokeGC)()
+#define	invokeGC()		(*Kaffe_GarbageCollectorInterface._invokeGC)(1)
+#define	adviseGC()		(*Kaffe_GarbageCollectorInterface._invokeGC)(0)
 #define	invokeFinalizer()	(*Kaffe_GarbageCollectorInterface._invokeFinalizer)()
 
 #define	gc_add_ref(A)		(*Kaffe_GarbageCollectorInterface._addref)(A)

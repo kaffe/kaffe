@@ -23,7 +23,7 @@
 #define NEED_RESIZE(tab)	(4 * (tab)->count >= 3 * (tab)->size)
 
 /* Valid client-set flags */
-#define HASH_CLIENT_FLAGS	(HASH_ADD_REFS|HASH_SYNCHRONIZE)
+#define HASH_CLIENT_FLAGS	(HASH_ADD_REFS|HASH_SYNCHRONIZE|HASH_REENTRANT)
 
 /* Generate step from hash. Note that "step" must always be
    relatively prime to tab->size. */
@@ -38,6 +38,8 @@ struct _hashtab {
 	iLock		lock;	/* Mutex for synchronizing threads */
 	compfunc_t	comp;	/* Comparison function */
 	hashfunc_t	hash;	/* Hash function */
+	allocfunc_t	alloc;	/* Allocation function */
+	freefunc_t	free;	/* Free function */
 };
 
 /* Internal functions */
@@ -51,16 +53,23 @@ static const void	*const DELETED = (const void *)&DELETED;
  * Create a new hashtable
  */
 hashtab_t
-hashInit(hashfunc_t hash, compfunc_t comp, int flags)
+hashInit(hashfunc_t hash, compfunc_t comp, allocfunc_t alloc, freefunc_t free, int flags)
 {
 	hashtab_t tab;
 
-	if ((tab = KMALLOC(sizeof(*tab))) == NULL) {
+	/* Use specified alloc function if one is given, fall back to KFREE */
+	if (alloc == 0) {
+		tab = KCALLOC(1, sizeof(*tab));
+	} else {
+		tab = alloc(sizeof(*tab));
+	}
+	if (tab == 0) {
 		assert(!"hashInit out of memory"); /* XXX OutOfMemoryError? */
 	}
-	memset(tab, 0, sizeof(*tab));
 	tab->hash = hash;
 	tab->comp = comp;
+	tab->alloc = alloc;
+	tab->free = free;
 	tab->flags = (flags & HASH_CLIENT_FLAGS);
 	if (tab->flags & HASH_SYNCHRONIZE) {
 		initStaticLock(&tab->lock);
@@ -90,8 +99,13 @@ hashDestroy(hashtab_t tab)
 
 	/* Nuke the table */
 	/* XXX should free the lock here */
-	KFREE(tab->list);
-	KFREE(tab);
+	if (tab->free) {
+		tab->free(tab->list);
+		tab->free(tab);
+	} else {
+		KFREE(tab->list);
+		KFREE(tab);
+	}
 }
 
 /*
@@ -246,10 +260,31 @@ hashResize(hashtab_t tab)
 	int index;
 
 	/* Get a bigger list */
-	if ((newList = KMALLOC(newSize * sizeof(*newList))) == NULL) {
+	if (tab->alloc) {
+		newList = tab->alloc(newSize * sizeof(*newList));
+	} else {
+		newList = KCALLOC(newSize, sizeof(*newList));
+	}
+
+	/* If the hashtable is reentrant, it is possible that the table
+	 * no longer needs resizing.  This could happen if the CALLOC
+	 * caused a garbage collection which uninterned a lot of strings,
+	 * for instance.
+	 */
+	if (tab->flags & HASH_REENTRANT) {
+		if (!NEED_RESIZE(tab)) {
+			if (tab->free) {
+				tab->free(newList);
+			} else {
+				KFREE(newList);
+			}
+			return;
+		}
+	}
+
+	if (newList == NULL) {
 		assert(!"hashResize out of memory"); /* XXX OutOfMemoryError? */
 	}
-	memset(newList, 0, newSize * sizeof(*newList));
 
 	/* Rehash old list contents into new list */
 	for (index = tab->size - 1; index >= 0; index--) {
@@ -268,7 +303,11 @@ hashResize(hashtab_t tab)
 	}
 
 	/* Update table */
-	KFREE(tab->list);
+	if (tab->free) {
+		tab->free(tab->list);
+	} else {
+		KFREE(tab->list);
+	}
 	tab->list = newList;
 	tab->size = newSize;
 }

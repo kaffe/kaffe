@@ -19,9 +19,3 @@ java_lang_String_intern0(Hjava_lang_String* str)
 {
 	return(stringInternString(str));
 }
-
-void
-java_lang_String_unintern0(Hjava_lang_String* str)
-{
-	stringUninternString(str);
-}
