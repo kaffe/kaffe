@@ -84,7 +84,8 @@ typedef struct _exceptionFrame {
 	((f) = *(exceptionFrame*)__builtin_frame_address(0))
 
 /* Extract the object argument from given frame */
-#define FRAMEOBJECT(f) 		(*(Hjava_lang_Object**)((f)->retfp + 8))
+#define FRAMEOBJECT(obj, f, einfo)					\
+	(obj) = *(Hjava_lang_Object**)((f) + 8)
 
 /* Call the relevant exception handler (rewinding the stack as
    necessary). */
