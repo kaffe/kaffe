@@ -81,7 +81,7 @@ public void eolIsSignificant(boolean flag) {
 }
 
 public int lineno() {
-	return (lineIn.getLineNumber());
+	return (lineIn.getLineNumber() + 1);
 }
 
 public void lowerCaseMode(boolean fl) {
@@ -349,16 +349,19 @@ public void slashStarComments(boolean flag) {
 
 public String toString() {
 	if (ttype == TT_EOF) {
-		return ("EOF");
+		return ("Token[EOF], line "+lineno());
 	}
 	else if (ttype == TT_EOL) {
-		return ("EOL");
+		return ("Token[EOL], line "+lineno());
 	}
 	else if (ttype == TT_NUMBER) {
 		return ("Token[n="+nval+"], line "+lineno());
 	}
+	else if (ttype == TT_WORD) {
+	        return ("Token["+sval+"], line "+lineno());
+	}
 	else {
-		return ("Token[s="+sval+"], line "+lineno());
+	        return ("Token[\'"+ (char) ttype +"\'], line "+lineno());
 	}
 }
 
