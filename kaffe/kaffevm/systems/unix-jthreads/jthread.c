@@ -1472,6 +1472,9 @@ jthreadedFileDescriptor(int fd)
 	int r, on = 1;
 	int pid = getpid();
 
+	if (fd == -1)
+		return (fd);
+
 	/* Make non-blocking */
 	if ((r = fcntl(fd, F_GETFL, 0)) < 0) {
 		perror("F_GETFL");
