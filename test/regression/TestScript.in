@@ -50,16 +50,15 @@ compile()
 }
 
 #
-# second arg:
-#	sort:		sort output
+# Run a test, optionally sorted
 #
 run()
 {
 	echo ERROR > $RESULT
-	if test "x$2" = "xsort"; then
-	    $JAVA $1 2>&1 | sort > $RESULT
+	if test "x$SORT" = "xyes"; then
+	    $JAVA $* 2>&1 | sort > $RESULT
 	else
-	    $JAVA $1 > $RESULT 2>&1
+	    $JAVA $* > $RESULT 2>&1
 	fi
 	if cmp -s $RESULT $SRCDIR/$1.out ; then
 		:
@@ -71,24 +70,46 @@ run()
 }
 
 #
-# second arg:
-# 	deprecated:	use -nowarn
-#	sort:		sort output
+# options
+# 	-deprecated:	use -nowarn
+#	-sort:		sort output
+#	-nocompile:	don't compile, just run
 #
 runtest()
 {
+	SORT="no";
+	DEPRECATED="no";
+	NOCOMPILE="no";
+	while [ $# -gt 0 ]; do
+	    case "$1" in
+	      -sort)
+		SORT="yes"
+		shift
+		;;
+	      -nocompile)
+		NOCOMPILE="yes"
+		shift
+		;;
+	      -deprecated)
+		DEPRECATED="yes"
+		shift
+		;;
+	      *)
+		break
+		;;
+	    esac
+	done
 	error=0
 	echo_n_sp "$1 ..." 1>&2
-	if test "x$2" = "xdeprecated"; then
-		DEPRECATED="yes"
-		compile $1
-	elif test "x$2" != "xnocompile"; then
-		DEPRECATED="no"
+	if test "x$NOCOMPILE" != "xyes"; then
 		compile $1
 	fi
 	if test $error = 0 ; then
-		run $1 $2
+		run $*
 	fi
+	# reset global (ugh) variables
+	SORT="no";
+	DEPRECATED="no";
 	if test $error = 0 ; then
 		echo "passed" 1>&2
 	else
@@ -147,6 +168,7 @@ runtest BadFloatTest
 runtest ExecTest
 runtest ProcessTest
 runtest UDPTest
+runtest wc < $SRCDIR/wc.java
 
 runtest finaltest
 echo_n_sp "finaltest2 ..." 1>&2
@@ -186,10 +208,10 @@ runtest InvTarExcTest
 # compile the example class
 compile Hello
 
-runtest CLTest deprecated
+runtest -deprecated CLTest
 
 compile CLTestConc_run
-runtest CLTestConc deprecated
+runtest -deprecated CLTestConc
 runtest CLTestJLock
 runtest CLTestLie
 runtest CLTestFindLoaded
@@ -200,18 +222,18 @@ runtest ExceptionTestClassLoader2
 
 # Garbage collection tests
 compile ClassGC ClassGCTest ClassGCTestLater
-runtest ClassGC nocompile
+runtest -nocompile ClassGC
 
 # These tests must have their output sorted, because they're multi-threaded.
-runtest GCTest sort
-runtest ThreadLocalTest sort
+runtest -sort GCTest
+runtest -sort ThreadLocalTest
 
 runtest BitSetTest 
 runtest ExceptionInInitializerTest
 runtest InitTest
 runtest ProcessClassTest
 runtest ProcessClassInst
-runtest ProcessClassStop deprecated
+runtest -deprecated ProcessClassStop
 runtest FindSystemClass
 runtest ProcessClassLockTest
 runtest DoubleBug
