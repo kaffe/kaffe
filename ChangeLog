@@ -13,7 +13,7 @@
 	* kaffe/kaffevm/verify.c:
 	(resolveType) Initialize tmp before use.
 	
-2003-09-09  Ito Kazumitsu <kaz@maczuka.gcd.org>
+2003-09-11  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* test/regression/InetAddressTest.java:
 	check whether InetAddress.getByName returns IPv6 address.
