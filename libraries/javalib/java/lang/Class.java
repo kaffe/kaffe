@@ -16,23 +16,22 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.SystemClassLoader;
 
 final public class Class
 {
 
-private static ClassLoader systemLoader = new SystemClassLoader();
-
 native public static Class forName(String className) throws ClassNotFoundException;
 
+/**
+ * Determines the class loader for the class. 
+ *
+ * @returns 	the class loader that created the class or interface 
+ *		represented by this object, or null if the class was not 
+ *		created by a class loader. 
+ * @see 	java.lang.ClassLoader 
+ */
 public ClassLoader getClassLoader() {
-	ClassLoader loader = getClassLoader0();
-	if (loader != null) {
-		return (loader);
-	}
-	else {
-		return (systemLoader);
-	}
+	return getClassLoader0();
 }
 
 native private ClassLoader getClassLoader0();
