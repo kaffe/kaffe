@@ -72,12 +72,18 @@ jmethodID setCursorID;
 
 JavaVM *java_vm;
 
+union env_union
+{
+  void *void_env;
+  JNIEnv *jni_env;
+};
+
 JNIEnv *
 gdk_env()
 {
-  JNIEnv *tmp;
-  g_assert((*java_vm)->GetEnv(java_vm, (void **)&tmp, JNI_VERSION_1_2) == JNI_OK);
-  return tmp;
+  union env_union tmp;
+  g_assert((*java_vm)->GetEnv(java_vm, &tmp.void_env, JNI_VERSION_1_2) == JNI_OK);
+  return tmp.jni_env;
 }
 
 
