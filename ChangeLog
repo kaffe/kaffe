@@ -1,3 +1,8 @@
+Thu Jan 28 14:56:24 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/zip/GZIPInputStream.java:
+	fix bug handling gzip input that includes the file name
+
 Thu Jan 28 19:04:56 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffeh/Makefile.am (kaffe-build): this is now a phony

@@ -15,11 +15,21 @@ import java.io.IOException;
 
 public class GZIPInputStream extends InflaterInputStream {
 
-public final static int GZIP_MAGIC = 0x8b1f;
-
 protected CRC32 crc;
 protected boolean eos;
 private InputStream strm;
+
+public static final int GZIP_MAGIC		= 0x1f8b;
+public static final int OLD_GZIP_MAGIC		= 0x1f9e;
+
+public static final int GZIP_FLAG_ASCII_FLAG	= 0x01;	// probably ascii text
+public static final int GZIP_FLAG_CONTINUATION	= 0x02;	// continuation of
+							//  multi-part gzip file
+public static final int GZIP_FLAG_EXTRA_FIELD	= 0x04;	// extra field present
+public static final int GZIP_FLAG_ORIG_NAME	= 0x08;	// file name present
+public static final int GZIP_FLAG_COMMENT	= 0x10;	// file comment present
+public static final int GZIP_FLAG_ENCRYPTED	= 0x20;	// file is encrypted
+public static final int GZIP_FLAG_RESERVED	= 0xc0;	// must be zero
 
 public GZIPInputStream(InputStream in) throws IOException {
 	this(in, 512);
@@ -32,31 +42,43 @@ public GZIPInputStream(InputStream in, int readsize) throws IOException {
 	eos = false;
 
         /* Check GZIP header */
-        checkByte(31);  // GZIP identifier
-        checkByte(139); //  "
-        checkByte(8);   // Deflating
-	int flags = strm.read();
-	if ((flags & 4) != 0) {
+        checkBytes(new int[] { GZIP_MAGIC >> 8, OLD_GZIP_MAGIC >> 8 });
+        checkBytes(new int[] { GZIP_MAGIC & 0xff, OLD_GZIP_MAGIC & 0xff });
+        checkBytes(new int[] { Deflater.DEFLATED });
+
+	/* Get flags byte */
+	int flags = checkBytes(null);
+
+	/* Skip time stamp, extra flags, and O/S fields */
+        ignoreBytes(6);
+
+	/* Check flags */
+	if ((flags & GZIP_FLAG_CONTINUATION) != 0) {	// skip multi-part #
+		ignoreBytes(2);
+	}
+	if ((flags & GZIP_FLAG_EXTRA_FIELD) != 0) {	// skip extra fields
 		int len = strm.read();
 		len |= strm.read() << 8;
 		ignoreBytes(len);
 	}
-	if ((flags & 8) != 0) {
+	if ((flags & GZIP_FLAG_ORIG_NAME) != 0) {	// skip name
 		ignoreString();
 	}
-	if ((flags & 16) != 0) {
+	if ((flags & GZIP_FLAG_COMMENT) != 0) {		// skip comment
 		ignoreString();
 	}
-	if ((flags & 2) != 0) {
-		ignoreBytes(2);	// CRC16
-	}
-        ignoreBytes(6); // Time stamp, compression and OS
 }
 
-private void checkByte(int v) throws IOException {
-	if (strm.read() != v) {
-		throw new IOException("bad GZIP stream");
+private int checkBytes(int[] v) throws IOException {
+	int i, x = strm.read();
+	if (v != null) {
+		for (i = 0; i < v.length && x != v[i]; i++)
+			;
+		if (i == v.length) {
+			throw new IOException("invalid GZIP stream");
+		}
 	}
+	return x;
 }
 
 private void ignoreBytes(int nr) throws IOException {
@@ -66,8 +88,12 @@ private void ignoreBytes(int nr) throws IOException {
 }
 
 private void ignoreString() throws IOException {
-	while(strm.read() != 0)
-		;
+	int x;
+	while ((x = strm.read()) != 0) {
+		if (x == -1) {
+			throw new IOException("premature GZIP end-of-file");
+		}
+	}
 }
 
 public void close() throws IOException {
