@@ -9,8 +9,19 @@ import java.net.ServerSocket;
 
 public class ThreadInterrupt {
     public static void main(String av[]) throws Exception {
+	Thread watchdog = new Thread() {
+	    public void run() {
+		try {
+		    Thread.sleep(180 * 1000); // 3 minutes should be sufficient
+		} catch (InterruptedException _) { }
+		System.out.println("Failure! Watchdog timed out.");
+		System.exit(-1);
+	    }
+	};
+	watchdog.start();
+
 	Thread t;
-	t = new Thread() {
+	t = new Thread("Interrupt-in-wait") {
 	    public void run() {
 		synchronized(this) {
 		    try {
@@ -28,7 +39,7 @@ public class ThreadInterrupt {
 	    }
 	};
 	ssij(t);
-	t = new Thread() {
+	t = new Thread("Interrupt-in-sleep") {
 	    public void run() {
 		try {
 		    Thread.sleep(5000);
@@ -44,7 +55,7 @@ public class ThreadInterrupt {
 	    }
 	};
 	ssij(t);
-	t = new Thread() {
+	t = new Thread("Test-interrupt-post catch") {
 	    public void run() {
 		synchronized (this) {
 		    try {
@@ -90,16 +101,6 @@ public class ThreadInterrupt {
 	    System.out.println("Success 3.");
 	}
 	t.join();
-	Thread watchdog = new Thread() {
-	    public void run() {
-		try {
-		    Thread.sleep(3000);
-		} catch (InterruptedException _) { }
-		System.out.println("Failure 4/5.:   Time out.");
-		System.exit(-1);
-	    }
-	};
-	watchdog.start();
 
 	Thread me = Thread.currentThread();
 	me.interrupt();
