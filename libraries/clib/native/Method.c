@@ -329,7 +329,7 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 		robj = execute_java_constructor(0, javaLangLongClass, "(J)V", ret.j);
 		break;
 	case 'F':
-		robj = execute_java_constructor(0, javaLangFloatClass, "(F)V", ret.f);
+		robj = execute_java_constructor(0, javaLangFloatClass, "(D)V", (jdouble)ret.f);
 		break;
 	case 'D':
 		robj = execute_java_constructor(0, javaLangDoubleClass, "(D)V", ret.d);

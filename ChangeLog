@@ -1,3 +1,10 @@
+Mon Jan 25 12:25:05 1999  Maxim Kizub <max@immsp.kiev.ua>
+
+	* libraries/clib/native/Float.c, Array.c, Field.c, Method.c:
+	don't call new Float(float x) constructor from C because in
+	C float elipsis args are promoted to double; instead use the
+	new Float(double d) constructor.
+
 Mon Jan 25 12:23:28 1999  Moses DeJong <dejong@cs.umn.edu>
 
 	* libraries/javalib/java/lang/Character.java: fix several
