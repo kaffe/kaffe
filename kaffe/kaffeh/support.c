@@ -22,6 +22,7 @@
 #include "gc.h"
 #include "constants.h"
 #include "file.h"
+#include "files.h"
 #include "access.h"
 #include "readClassConfig.h"
 #include "readClass.h"
@@ -58,7 +59,28 @@ static void* gcRealloc(struct _Collector*, void*, size_t, int);
 static void  gcFree(struct _Collector*, void*);
 
 static inline int
-binary_open(const char *file, int mode, int perm);
+binary_open(const char *file, int mode, int perm, int *);
+
+static int 
+kread(int fd, void *buf, size_t len, ssize_t *out)
+{
+	*out = read(fd, buf, len);
+	return (*out == -1) ? errno : 0;
+}
+
+static int 
+kwrite(int fd, const void *buf, size_t len, ssize_t *out)
+{
+	*out = write(fd, buf, len);
+	return (*out == -1) ? errno : 0;
+}
+
+static int
+klseek(int fd, off_t off, int whence, off_t *out)
+{
+	*out = lseek(fd, off, whence);
+	return (*out == -1) ? errno : 0;
+}
 
 /*
  * We use a very simple 'fake' threads subsystem
@@ -67,9 +89,9 @@ binary_open(const char *file, int mode, int perm);
 SystemCallInterface Kaffe_SystemCallInterface =
 {
 	binary_open,
-        read,
-        write, 
-        lseek,
+        kread,
+        kwrite, 
+        klseek,
         close,
         fstat,
         stat,
@@ -80,6 +102,8 @@ SystemCallInterface Kaffe_SystemCallInterface =
         NULL,		/* remove */
         NULL,		/* socket */
         NULL,		/* connect */
+        NULL,		/* bind */
+        NULL,		/* listen */
         NULL,		/* accept */
         NULL,		/* sockread */
         NULL,		/* recvfrom */
@@ -89,6 +113,9 @@ SystemCallInterface Kaffe_SystemCallInterface =
         NULL,		/* getsockopt */
         NULL,		/* getsockname */
         NULL,		/* getpeername */
+        NULL,		/* sockclose */
+        NULL,		/* gethostbyname */
+        NULL,		/* gethostbyaddr */
         NULL,		/* select */
         NULL,		/* forkexec */
         NULL,		/* waitpid */
@@ -124,8 +151,9 @@ struct _Collector c = { & GC_Ops }, *main_collector = &c;
  * depends on this.
  */
 static inline int
-binary_open(const char *file, int mode, int perm) {
-  return open(file, mode | O_BINARY, perm);
+binary_open(const char *file, int mode, int perm, int *out) {
+  *out = open(file, mode | O_BINARY, perm);
+  return *out == -1 ? errno : 0;
 }
 
 /*
