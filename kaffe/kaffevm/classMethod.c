@@ -2324,6 +2324,11 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 
 	/* Build signature for array type */
 	if (CLASS_IS_PRIMITIVE (c)) {
+		if (c == voidClass) {
+			postException(einfo, JAVA_LANG(VerifyError));
+			return (0);
+		}
+
 		arr_class = CLASS_ARRAY_CACHE(c);
 		if (arr_class) {
 			return (arr_class);
@@ -2346,7 +2351,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 
 	if (!arr_name) {
 		postOutOfMemory(einfo);
-		return 0;
+		return (0);
 	}
 	centry = lookupClassEntry(arr_name, c->loader, einfo);
 	if (centry == 0) {
