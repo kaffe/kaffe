@@ -21,6 +21,7 @@ import kaffe.net.DefaultURLStreamHandlerFactory;
 
 public final class URL implements Serializable {
 	private final static long serialVersionUID = -7627629688361524110L;
+	private final static String HANDLER_PROP = "java.protocol.handler.pkgs";
 	private static URLStreamHandlerFactory defaultFactory =
 		new DefaultURLStreamHandlerFactory();
 	private static URLStreamHandlerFactory factory;
@@ -45,26 +46,19 @@ public URL(String protocol, String host, int port, String file)
 
 public URL(String protocol, String host, int port, String file,
 		URLStreamHandler handler) throws MalformedURLException {
-
-	// Check null pointers
 	if (protocol == null || host == null || file == null) {
 		throw new NullPointerException();
 	}
-
-	// Check handler
-	if (handler != null) {
-		System.getSecurityManager().checkPermission(
-		    new NetPermission("specifyStreamHandler"));
-	} else {
-		handler = getDefaultHandler(protocol);
-	}
-
-	this.handler = handler;
-	handler.setURL(this, protocol, host, port, file, "");
+	setHandler(protocol, handler);
+	this.handler.setURL(this, protocol, host, port, file, "");
 }
 
 public URL(String spec) throws MalformedURLException {
 	this(null, spec);
+}
+
+public URL(URL context, String spec) throws MalformedURLException {
+	this(context, spec, null);
 }
 
 //
@@ -79,7 +73,8 @@ public URL(String spec) throws MalformedURLException {
 // with any inherited context. This is because different protocols have
 // different rules for how a relative URL is interpreted with context.
 //
-public URL(URL context, String spec) throws MalformedURLException {
+public URL(URL context, String spec, URLStreamHandler handler)
+		throws MalformedURLException {
 	int firstColon = spec.indexOf(':');
 	int firstSlash = spec.indexOf('/');
 	int lastHash = spec.lastIndexOf('#');
@@ -112,21 +107,30 @@ public URL(URL context, String spec) throws MalformedURLException {
 		ref = spec.substring(lastHash + 1);
 	}
 
-	// Get default handler and use it to parse the rest, within
+	// Use handler to parse the rest, within
 	//   the context defined for this URL so far
-	handler = getDefaultHandler(protocol);
-	handler.parseURL(this, spec, firstColon + 1,
+	setHandler(protocol, handler);
+	this.handler.parseURL(this, spec, firstColon + 1,
 	    lastHash != -1 ? lastHash : spec.length());
 }
 
-private static URLStreamHandler getDefaultHandler(String protocol)
+// Check the supplied handler if any, otherwise compute default handler
+private void setHandler(String protocol, URLStreamHandler handler)
 		throws MalformedURLException {
-	URLStreamHandler handler;
+
+	// User-supplied handler?
+	if (handler != null) {
+		System.getSecurityManager().checkPermission(
+		    new NetPermission("specifyStreamHandler"));
+		this.handler = handler;
+		return;
+	}
 
 	// Have we already determined the default handler for this protocol?
 	handler = (URLStreamHandler) defaultHandlers.get(protocol);
 	if (handler != null) {
-		return handler;
+		this.handler = handler;
+		return;
 	}
 
 	// Try handler factory previously specified, if any
@@ -134,13 +138,13 @@ private static URLStreamHandler getDefaultHandler(String protocol)
 		handler = factory.createURLStreamHandler(protocol);
 		if (handler != null) {
 			defaultHandlers.put(protocol, handler);
-			return handler;
+			this.handler = handler;
+			return;
 		}
 	}
 
-	// Try factories specified in java.protocol.handler.pkgs property
-	String faclist = System.getProperties()
-		.getProperty("java.protocol.handler.pkgs");
+	// Try factories specified in "java.protocol.handler.pkgs" property
+	String faclist = System.getProperties().getProperty(HANDLER_PROP);
 	if (faclist != null) {
 		for (StringTokenizer s = new StringTokenizer(faclist, "|");
 		    s.hasMoreTokens(); ) {
@@ -149,7 +153,8 @@ private static URLStreamHandler getDefaultHandler(String protocol)
 				    s.nextToken() + "." + protocol + ".Handler"
 				    ).newInstance();
 				defaultHandlers.put(protocol, handler);
-				return handler;
+				this.handler = handler;
+				return;
 			} catch (ClassNotFoundException e) {
 			} catch (IllegalAccessException e) {
 			} catch (InstantiationException e) {
@@ -162,9 +167,11 @@ private static URLStreamHandler getDefaultHandler(String protocol)
 	handler = defaultFactory.createURLStreamHandler(protocol);
 	if (handler != null) {
 		defaultHandlers.put(protocol, handler);
-		return handler;
+		this.handler = handler;
+		return;
 	}
 
+	// None found
 	throw new MalformedURLException("unknown protocol: " + protocol);
 }
 
@@ -174,7 +181,7 @@ public boolean equals(Object obj) {
 	}
 	URL that = (URL)obj;
 
-	if (this.protocol.equals( that.protocol) &&
+	if (this.protocol.equals(that.protocol) &&
 	    this.host.equals(that.host) &&
 	    this.port == that.port &&
 	    this.file.equals(that.file) &&
