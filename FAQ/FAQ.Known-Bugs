@@ -6,8 +6,6 @@ Treat it as an TODO list.
      getSoTimeout() 
      setSoTimeout(int) 	are not implemented.
 
-* Thread.interrupt() is not implemented properly.
-
 * Add some architecture-specific stack pointer alignment macro.  Currently,
   alignment is sizeof (jlong); apparently, some architectures require more
   specific alignments.
@@ -31,13 +29,6 @@ Treat it as an TODO list.
   Note that some of our classes currently report Sun's serialVersionUIDs,
   even though they're incompatible.
 
-* Object serialization is buggy.  For the JKernel, the system goes in an
-  infinite loop.  When we use Sun's java.io.* classes, it will work fine,
-  except that non-transient floating point fields are not properly saved
-  and restored using defaultWriteObject and defaultReadObject.  Weird. More
-  investigation is needed.  (This is why java.util.Hashtable manually
-  saves and restores its loadFactor.)  This is valid as of Jul 23, 1998.
-
 * Kaffe does not currently provide its own implementation of RMI.
 
 * java.math.* is incomplete.  java.math.BigInteger is mostly written and
@@ -60,9 +51,6 @@ Treat it as an TODO list.
   cygwin32 gcc compiler, we do know that people are trying to compile it
   with compilers such as Visual C++.  Jongwon Kim <freefish@chollian.net>
   reports that FIELD_OFFSET in classMethod.h conflicts with winnt.h.
-
-* kaffe.util.Timer has several problems.  Peter has a fix in the pipeline
-  that will come in with the next awt release.
 
 * JNI incompatibilities pointed out by Johannes Deisenhofer 
   <joe@dillingen.baynet.de>:
