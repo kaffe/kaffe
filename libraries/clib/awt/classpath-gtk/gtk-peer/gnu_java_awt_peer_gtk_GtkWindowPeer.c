@@ -44,6 +44,8 @@ exception statement from your version. */
 #include <gdk/gdkx.h>
 #include <X11/Xatom.h>
 
+struct state_table *native_pixbufdecoder_state_table;
+
 /* FIXME: we're currently seeing the double-activation that occurs
    with metacity and GTK.  See
    http://bugzilla.gnome.org/show_bug.cgi?id=140977 for details. */
@@ -69,8 +71,8 @@ static void window_active_state_change_cb (GtkWidget *widget,
                                            GParamSpec *pspec,
                                            jobject peer);
 static void window_focus_state_change_cb (GtkWidget *widget,
-                                                    GParamSpec *pspec,
-                                                    jobject peer);
+                                          GParamSpec *pspec,
+                                          jobject peer);
 static gboolean window_focus_in_cb (GtkWidget * widget,
                                     GdkEventFocus *event,
                                     jobject peer);
@@ -275,7 +277,7 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_connectSignals
   layout = find_layout (GTK_WINDOW (ptr));
 
   g_signal_connect (G_OBJECT (layout), "event",
-		    G_CALLBACK (pre_event_handler), *gref);
+                    G_CALLBACK (pre_event_handler), *gref);
 
   /* Connect signals for window event support. */
   g_signal_connect (G_OBJECT (ptr), "delete-event",
@@ -518,21 +520,87 @@ JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkFramePeer_gtkLayoutSetVisible
   (JNIEnv *env, jobject obj, jboolean visible)
 {
-  void* ptr;
-  GtkLayout* layout;
+  void *ptr;
+  GtkLayout *layout;
 
   ptr = NSA_GET_PTR (env, obj);
 
   gdk_threads_enter ();
 
   layout = find_layout (GTK_WINDOW (ptr));
-  
+
   if (visible)
     gtk_widget_show (GTK_WIDGET (layout));
   else
     gtk_widget_hide (GTK_WIDGET (layout));
 
   gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkFramePeer_nativeSetIconImageFromDecoder
+  (JNIEnv *env, jobject obj, jobject decoder)
+{
+  void *ptr;
+  GdkPixbufLoader *loader = NULL;
+  GdkPixbuf *pixbuf = NULL;
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  loader = get_state (env, decoder, native_pixbufdecoder_state_table);
+  g_assert (loader != NULL);
+
+  gdk_threads_enter ();
+
+  pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+  g_assert (pixbuf != NULL);
+
+  gtk_window_set_icon (GTK_WINDOW (ptr), pixbuf);
+
+  gdk_threads_leave ();
+}
+
+void free_pixbuf_data (guchar *pixels, gpointer data __attribute__((unused)))
+{
+  free(pixels);
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkFramePeer_nativeSetIconImageFromData
+  (JNIEnv *env, jobject obj, jintArray pixelArray, jint width, jint height)
+{
+  void *ptr;
+  GdkPixbuf *pixbuf;
+  jint *pixels;
+  int pixels_length, i;
+  guchar *data;
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  pixels = (*env)->GetIntArrayElements (env, pixelArray, 0);
+  pixels_length = (*env)->GetArrayLength (env, pixelArray);
+
+  data = malloc (sizeof (guchar) * pixels_length);
+  for (i = 0; i < pixels_length; i++)
+    data[i] = (guchar) pixels[i];
+
+  gdk_threads_enter ();
+
+  pixbuf = gdk_pixbuf_new_from_data (data,
+                                     GDK_COLORSPACE_RGB,
+                                     TRUE,
+                                     8,
+                                     width,
+                                     height,
+                                     width*4,
+                                     free_pixbuf_data,
+                                     NULL);
+
+  gtk_window_set_icon (GTK_WINDOW (ptr), pixbuf);
+
+  gdk_threads_leave ();
+
+  (*env)->ReleaseIntArrayElements(env, pixelArray, pixels, 0);
 }
 
 static void
@@ -636,9 +704,9 @@ property_notify_predicate (Display *xdisplay __attribute__((unused)),
   if (event->xany.type == PropertyNotify
       && event->xany.window == *window
       && event->xproperty.atom == extents_atom)
-        return True;
+    return True;
   else
-  return False;
+    return False;
 }
 
 static void
@@ -675,40 +743,40 @@ window_show_cb (GtkWidget *widget __attribute__((unused)),
 
 static void
 window_active_state_change_cb (GtkWidget *widget,
-                                        GParamSpec *pspec,
-                                        jobject peer)
+                               GParamSpec *pspec,
+                               jobject peer)
 {
   /* FIXME: not sure if this is needed or not. */
 #if 0
-      if (GTK_WINDOW (widget)->is_active)
-        (*gdk_env)->CallVoidMethod (gdk_env, peer,
-                                    postWindowEventID,
-                                    (jint) AWT_WINDOW_GAINED_FOCUS,
-                                    (jobject) NULL, (jint) 0);
-      else
-        (*gdk_env)->CallVoidMethod (gdk_env, peer,
-                                    postWindowEventID,
-                                    (jint) AWT_WINDOW_DEACTIVATED,
-                                    (jobject) NULL, (jint) 0);
+  if (GTK_WINDOW (widget)->is_active)
+    (*gdk_env)->CallVoidMethod (gdk_env, peer,
+                                postWindowEventID,
+                                (jint) AWT_WINDOW_GAINED_FOCUS,
+                                (jobject) NULL, (jint) 0);
+  else
+    (*gdk_env)->CallVoidMethod (gdk_env, peer,
+                                postWindowEventID,
+                                (jint) AWT_WINDOW_DEACTIVATED,
+                                (jobject) NULL, (jint) 0);
 #endif
-    }
+}
 
 static void
 window_focus_state_change_cb (GtkWidget *widget,
                               GParamSpec *pspec,
                               jobject peer)
-    {
-      if (GTK_WINDOW (widget)->has_toplevel_focus)
-        (*gdk_env)->CallVoidMethod (gdk_env, peer,
-                                    postWindowEventID,
-                                    (jint) AWT_WINDOW_ACTIVATED,
-                                    (jobject) NULL, (jint) 0);
-      else
-        (*gdk_env)->CallVoidMethod (gdk_env, peer,
-                                    postWindowEventID,
+{
+  if (GTK_WINDOW (widget)->has_toplevel_focus)
+    (*gdk_env)->CallVoidMethod (gdk_env, peer,
+                                postWindowEventID,
+                                (jint) AWT_WINDOW_ACTIVATED,
+                                (jobject) NULL, (jint) 0);
+  else
+    (*gdk_env)->CallVoidMethod (gdk_env, peer,
+                                postWindowEventID,
                                 (jint) AWT_WINDOW_DEACTIVATED,
-                                    (jobject) NULL, (jint) 0);
-    }
+                                (jobject) NULL, (jint) 0);
+}
 
 static gboolean
 window_focus_in_cb (GtkWidget * widget,
