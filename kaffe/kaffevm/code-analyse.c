@@ -261,7 +261,7 @@ DBG(CODEANALYSE,
 	/* Setup exception info. */
 	sp = meth->localsz + meth->stacksz - 1;
 	if (meth->exception_table != 0) {
-		for (lcl = 0; lcl < meth->exception_table->length; lcl++) {
+		for (lcl = 0; lcl < (int32)meth->exception_table->length; lcl++) {
 			bool succ;
 			jexceptionEntry *entry;
 			
@@ -428,9 +428,9 @@ analyzeBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 		 * the handler.
 		 */
 		if (meth->exception_table != 0) {
-			for (idx = 0; idx < meth->exception_table->length; idx++) {
-				if (pc >= meth->exception_table->entry[idx].start_pc && pc < meth->exception_table->entry[idx].end_pc) {
-					FRAMEMERGE_LOCALS(meth->exception_table->entry[idx].handler_pc);
+			for (idx = 0; idx < (int32)meth->exception_table->length; idx++) {
+				if (pc >= (int32)meth->exception_table->entry[idx].start_pc && pc < (int32)meth->exception_table->entry[idx].end_pc) {
+					FRAMEMERGE_LOCALS((int32)(meth->exception_table->entry[idx].handler_pc));
 				}
 			}
 		}
@@ -1396,8 +1396,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case GETSTATIC:
 			if (getField(WORD(pc+1), meth->class, true, &finfo, einfo) == 0) {
 				if (!checkNoClassDefFoundError(einfo)) {
-					failed = true;
-					goto done;
+					goto done_fail;
 				}
 			}
 			switch (finfo.signature->data[0]){
@@ -1438,8 +1437,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case PUTSTATIC:
 			if (getField(WORD(pc+1), meth->class, true, &finfo, einfo) == 0) {
 				if (!checkNoClassDefFoundError(einfo)) {
-					failed = true;
-					goto done;
+					goto done_fail;
 				}
 			}
 			switch (finfo.signature->data[0]){
@@ -1479,8 +1477,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case GETFIELD:
 			if (getField(WORD(pc+1), meth->class, false, &finfo, einfo) == 0) {
-				failed = true;
-				goto done;
+				goto done_fail;
 			}
 			STACKIN(0, TOBJ);
 			if (!FIELD_ISPRIM(finfo.field)) {
@@ -1516,8 +1513,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case PUTFIELD:
 			if (getField(WORD(pc+1), meth->class, false, &finfo, einfo) == 0) {
-				failed = true;
-				goto done;
+				goto done_fail;
 			}
 			if (!FIELD_ISPRIM(finfo.field)) {
 				STACKIN(0, TOBJ);
@@ -1562,8 +1558,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case INVOKESPECIAL:
 			if (getMethodSignatureClass(WORD(pc+1), meth->class, true, false, &call, einfo) == false) {
 				if (!checkNoClassDefFoundError(einfo) || call.signature == 0) {
-					failed = true;
-					goto done;
+					goto done_fail;
 				}
 			}
 
@@ -1665,8 +1660,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case INVOKEINTERFACE:
 			if (getMethodSignatureClass(WORD(pc+1), meth->class, true, false, &call, einfo) == false) {
 				if (!checkNoClassDefFoundError(einfo) || call.signature == 0) {
-					failed = true;
-					goto done;
+					goto done_fail;
 				}
 			}
 
@@ -1767,8 +1761,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case INVOKESTATIC:
 			if (getMethodSignatureClass(WORD(pc+1), meth->class, true, false, &call, einfo) == false) {
 				if (!checkNoClassDefFoundError(einfo) || call.signature == 0) {
-					failed = true;
-					goto done;
+					goto done_fail;
 				}
 			}
 
@@ -1867,8 +1860,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case NEW:
 			if (getClass(WORD(pc+1), meth->class, einfo) == 0) {
 				if (!checkNoClassDefFoundError(einfo)) {
-					failed = true;
-					goto done;
+					goto done_fail;
 				}
 			}
 			STKPUSH(1);
@@ -1885,8 +1877,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case ANEWARRAY:
 			if (getClass(WORD(pc+1), meth->class, einfo) == 0) {
 				if (!checkNoClassDefFoundError(einfo)) {
-					failed = true;
-					goto done;
+					goto done_fail;
 				}
 			}
 			STACKIN(0, TINT);
@@ -1897,8 +1888,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case MULTIANEWARRAY:
 			if (getClass(WORD(pc+1), meth->class, einfo) == 0) {
 				if (!checkNoClassDefFoundError(einfo)) {
-					failed = true;
-					goto done;
+					goto done_fail;
 				}
 			}
 			for (idx = INSN(pc+3) - 1; idx >= 0; idx--) {
@@ -1924,8 +1914,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case CHECKCAST:
 			if (getClass(WORD(pc+1), meth->class, einfo) == 0) {
 				if (!checkNoClassDefFoundError(einfo)) {
-					failed = true;
-					goto done;
+					goto done_fail;
 				}
 			}
 			STACKIN(0, TOBJ);
@@ -1936,8 +1925,6 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case INSTANCEOF:
 			if (getClass(WORD(pc+1), meth->class, einfo) == 0) {
 				if (!checkNoClassDefFoundError(einfo)) {
-					failed = true;
-					goto done;
 				}
 			}
 			STACKIN(0, TOBJ);
@@ -1989,6 +1976,10 @@ done:
 	KFREE(activeFrame);
 
 	return (failed);
+
+done_fail:
+	failed = true;
+	goto done;
 }
 
 /*

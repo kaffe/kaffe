@@ -1,3 +1,11 @@
+2004-04-07  Nektarios K. Papadopoulos <npapadop@inaccessnetworks.com>
+
+	* kaffe/kaffevm/stackTrace.c:
+	Added missing prototypes.
+
+	* kaffe/kaffevm/code-analyse.c:
+	fixed several 'unreachable-code' and a few 'sign-compare' warnings.
+
 2004-04-06  Dalibor Topic <robilad@kaffe.org>
 
 	* configure:
