@@ -293,7 +293,12 @@ public class ObjectInputStream extends InputStream
 		  obj.readExternal(this);
 		  
 		  if (read_from_blocks)
-		    setBlockDataMode(oldmode);
+                    {
+		      setBlockDataMode(oldmode);
+                      if (!oldmode)
+			if (this.realInputStream.readByte() != TC_ENDBLOCKDATA)
+			    throw new IOException("No end of block data seen for class with readExternal (ObjectInputStream) method.");
+                    }
 		  
 		  ret_val = processResolution(osc, obj, handle);
 		  break;
