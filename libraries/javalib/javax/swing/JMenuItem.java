@@ -1,5 +1,5 @@
 /* JMenuItem.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -60,9 +60,7 @@ import javax.swing.event.MenuKeyEvent;
 import javax.swing.event.MenuKeyListener;
 import javax.swing.plaf.MenuItemUI;
 
-
 /**
- * <p>
  * JMenuItem represents element in the menu. It inherits most of
  * its functionality from AbstractButton, however its behavior somewhat
  * varies from it. JMenuItem fire different kinds of events.
@@ -71,15 +69,11 @@ import javax.swing.plaf.MenuItemUI;
  * fired when menu item is selected. In addition to this events menuItem also
  * fire MenuDragMouseEvent and MenuKeyEvents when mouse is dragged over
  * the menu item or associated key with menu item is invoked respectively.
- * </p>
  */
 public class JMenuItem extends AbstractButton implements Accessible,
                                                          MenuElement
 {
   private static final long serialVersionUID = -1681004643499461044L;
-
-  /** name for the UI delegate for this menuItem. */
-  private static final String uiClassID = "MenuItemUI";
 
   /** Combination of keyboard keys that can be used to activate this menu item */
   private KeyStroke accelerator;
@@ -212,7 +206,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
    */
   public String getUIClassID()
   {
-    return uiClassID;
+    return "MenuItemUI";
   }
 
   /**

@@ -53,6 +53,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.EventListener;
 
 import javax.accessibility.Accessible;
@@ -91,9 +92,6 @@ import javax.swing.plaf.PopupMenuUI;
 public class JPopupMenu extends JComponent implements Accessible, MenuElement
 {
   private static final long serialVersionUID = -8336996630009646009L;
-
-  /** name for the UI delegate for this menuItem. */
-  private static final String uiClassID = "PopupMenuUI";
 
   /* indicates if popup's menu border should be painted*/
   private boolean borderPainted = true;
@@ -144,11 +142,7 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
    */
   public JPopupMenu()
   {
-    updateUI();
-
-    lightWeightPopupEnabled = DefaultLightWeightPopupEnabled;
-    selectionModel = new DefaultSingleSelectionModel();
-    super.setVisible(false);
+    this(null);
   }
 
   /**
@@ -158,7 +152,11 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
    */
   public JPopupMenu(String label)
   {
+    lightWeightPopupEnabled = getDefaultLightWeightPopupEnabled();
     setLabel(label);
+    setSelectionModel(new DefaultSingleSelectionModel());
+    super.setVisible(false);
+    updateUI();
   }
 
   private void readObject(ObjectInputStream stream)
@@ -821,19 +819,22 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
   }
 
   /**
-   * Return subcomonents of this popup menu.
+   * Return subcomonents of this popup menu. This method returns only
+   * components that implement the <code>MenuElement</code> interface.
    *
-   * @return Array containing menuItem's of belonging to this popup menu.
+   * @return array of menu items belonging to this popup menu
    */
   public MenuElement[] getSubElements()
   {
     Component[] items = getComponents();
-    MenuElement[] subElements = new MenuElement[items.length];
+    ArrayList subElements = new ArrayList();
 
     for (int i = 0; i < items.length; i++)
-      subElements[i] = (MenuElement) items[i];
+      if (items[i] instanceof MenuElement)
+	subElements.add(items[i]);
 
-    return subElements;
+    return (MenuElement[])
+      subElements.toArray(new MenuElement[subElements.size()]);
   }
 
   /**
@@ -1019,14 +1020,6 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
     {
       this.setBounds(x, y, width, height);
       this.show();
-    }
-
-    /**
-     * Hides JWindow with menu item's from the screen.
-     */
-    public void hide()
-    {
-      super.hide();
     }
   }
 

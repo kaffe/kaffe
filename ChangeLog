@@ -4,6 +4,29 @@
 	
 	2005-01-28  Michael Koch  <konqueror@gmx.de>
 
+	* javax/swing/JMenu.java
+	(uiClassID): Removed.
+	(JMenu): Set invoker on popup menu.
+	(getUIClassID): Return id directly.
+	(getItemCount): Simply return getMenuComponentCount().
+	Fixed javadoc.
+	(isTopLevelMenu): Simplified.
+	* javax/swing/JMenuItem.java
+	(uiClassID): Removed.
+	(getUIClassID): Return id directly.
+	* javax/swing/JPopupMenu.java
+	(uiClassID): Removed.
+	(JPopupMenu): Always initialize correctly.
+	(getSubElements): Only return components implementing MenuElement
+	interface.
+	(HeavyWeightPopup.hide): Removed.
+	
+2005-01-29  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+	
+	2005-01-28  Michael Koch  <konqueror@gmx.de>
+
 	* java/util/jar/Attributes.java
 	(CREATED_BY, JAVA_BEAN, MAGIC): Removed.
 
