@@ -1,5 +1,10 @@
 2005-04-03  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/clib/nio/gnu_java_nio_VMSelector.c
+	(select0): Fixed typo.
+
+2005-04-03  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
 	(jthreadedSelect): Prepare dummy sets in case one of the parameter
 	is NULL.

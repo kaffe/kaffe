@@ -269,9 +269,9 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv *env,
 	
 	if (result < 0)
     {
+	int errcode = -result;
 #if defined(HAVE_STRERROR_R)
 	char message_buf[BUF_SIZE+1];
-	int errcode = -result;
 
     	if( strerror_r(errcode, message_buf, BUF_SIZE) )
     	{
