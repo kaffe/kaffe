@@ -48,7 +48,7 @@ public class CLTest extends ClassLoader
      */
     Class doit3(byte [] cb) throws Exception
     {
-	return defineClass(cb, 0, cb.length);
+	return defineClass(null, cb, 0, cb.length);
     }
 
     public static void main(String []av) throws Exception
