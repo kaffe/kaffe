@@ -670,7 +670,11 @@ else
   AC_CHECK_LIBRARY(Xext,XShmQueryExtension,X_PRE_LIBS)
   OCPPFLAGS=$CPPFLAGS
   CPPFLAGS="$CPPFLAGS $X_CFLAGS"
-  AC_CHECK_HEADERS(sys/ipc.h sys/shm.h X11/extensions/XShm.h)
+  AC_CHECK_HEADERS([sys/ipc.h])
+  AC_CHECK_HEADERS([sys/shm.h])
+  AC_CHECK_HEADERS([X11/extensions/XShm.h], [], [],
+   [[#include <X11/Xlib.h>
+   ]])
   CPPFLAGS=$OCPPFLAGS	
   LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $OLIBS"
   AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
