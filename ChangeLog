@@ -1,5 +1,6 @@
 Tue Sep 21 11:40:36 PDT 1999  Archie Cobbs <archie@whistle.com>
 
+	* libraries/javalib/java/lang/ClassLoader.java: fix bug in loadClass()
 	* kaffe/libraries/clib/native/UNIXProcess.c: remove unused variable
 	* libraries/javalib/java/lang/System.java,
 	libraries/clib/native/System.c: add debug() and debugE() routines
@@ -8,7 +9,7 @@ Tue Sep 21 11:40:36 PDT 1999  Archie Cobbs <archie@whistle.com>
 	Class.getResource() would fail if executed from within "kaffe -jar".
 	* libraries/javalib/java/util/Properties.java: add setProperty()
 	* include/Makefile.am: generate kaffe_management_Classpath.h
-	* include/Makefile.in: regen
+	* include/Makefile.in, libraries/javalib/Klasses.jar: regen
 	* libraries/javalib/java/io/File.java: have File.deleteOnExit()
 	do nothing instead of throwing an exception, so other code that
 	needs to call it can go ahead and do so without breaking.
