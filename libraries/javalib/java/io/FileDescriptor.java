@@ -16,7 +16,11 @@ public final class FileDescriptor {
   public static final FileDescriptor out=initSystemFD(new FileDescriptor(), 1);
   public static final FileDescriptor err=initSystemFD(new FileDescriptor(), 2);
 
-  private int fd;
+  /*
+   * Valid file descriptors have values greater than or equal to 0 
+   * therefore initialize fd to -1
+   */
+  private int fd = -1;
 
   static {
         System.loadLibrary("io");

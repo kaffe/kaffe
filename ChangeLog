@@ -1,3 +1,8 @@
+Sun May 23 12:52:28 1999  Ted Stockwell <tws@rims.com>
+
+	* libraries/javalib/java/io/FileDescriptor.java: initialize fd to
+	-1 to avoid closing fd 0 in finalizers.
+
 Fri May 21 10:06:50 1999  Ted Stockwell <tws@rims.com>
 
 	* config/i386/bsdi/md.[ch]: Fixes for BSDI 2.1's threading.  
