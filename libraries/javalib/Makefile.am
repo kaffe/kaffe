@@ -84,7 +84,6 @@ java_awt_SRCS = \
 	java/awt/ContainerEvt.java \
 	java/awt/Cursor.java \
 	java/awt/Defaults.java \
-	java/awt/DefaultsRGB.java \
 	java/awt/Dialog.java \
 	java/awt/Dimension.java \
 	java/awt/Event.java \
@@ -100,7 +99,6 @@ java_awt_SRCS = \
 	java/awt/GridBagConstraints.java \
 	java/awt/GridBagLayout.java \
 	java/awt/GridLayout.java \
-	java/awt/HotKeyHandler.java \
 	java/awt/IllegalComponentStateException.java \
 	java/awt/Image.java \
 	java/awt/Insets.java \
@@ -123,7 +121,6 @@ java_awt_SRCS = \
 	java/awt/OpaqueComponent.java \
 	java/awt/PSGraphics.java \
 	java/awt/PSPrintJob.java \
-	java/awt/PaintEvent.java \
 	java/awt/PaintEvt.java \
 	java/awt/Panel.java \
 	java/awt/Point.java \
@@ -133,7 +130,6 @@ java_awt_SRCS = \
 	java/awt/PrintGraphics.java \
 	java/awt/PrintJob.java \
 	java/awt/Rectangle.java \
-	java/awt/RepaintEvent.java \
 	java/awt/RootWindow.java \
 	java/awt/ScrollPane.java \
 	java/awt/Shape.java \
