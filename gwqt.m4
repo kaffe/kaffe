@@ -125,7 +125,7 @@ if test x$QT_IS_EMBEDDED = xyes ; then
 	AC_MSG_CHECKING([Qtopia])
 	if test "x`ls $QTDIR/lib/libqpe.* 2> /dev/null`" != x ; then
 		QT_CXXFLAGS="$QT_CXXFLAGS -DQPE"
-		QT_LIB="-lqpe -lqtopia $QT_LIB"
+		QT_LIB="-lqpe -lqtopia -lm $QT_LIB"
 		AC_MSG_RESULT([found])
 	else
 		AC_MSG_RESULT([not found])

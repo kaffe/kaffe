@@ -1,3 +1,10 @@
+2003-06-22  Dalibor Topic <robilad@yahoo.com>
+
+	* gwqt.m4:
+	Link to math library when linking with QPE.
+
+	Reported by:  Sankalpa Gamwarige <sgamwarige@sri.crossvue.com>
+
 2003-06-22  Rob Gonzalez <rgonzale@wso.williams.edu>
 
 	* kaffe/man/kaffe.1.in:
