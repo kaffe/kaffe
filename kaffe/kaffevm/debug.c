@@ -71,9 +71,9 @@ dbgSetMask(debugmask_t mask)
  */
 static struct debug_opts
 {
-	char *name;
+	const char *name;
 	debugmask_t mask;
-	char *desc;
+	const char *desc;
 } debug_opts[] =
 {
 	/* XXX Clean these names up, re-order them and make them consistent. */

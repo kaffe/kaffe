@@ -78,7 +78,7 @@ typedef struct VmExceptHandler {
 		struct
 		{
 			/* Frame address for JNI entry function. */
-			uintp	        		fp;
+			void *	        		fp;
 		} jni;
 		/*
 		 * The intrp bits are only valid if meth != 0 && meth

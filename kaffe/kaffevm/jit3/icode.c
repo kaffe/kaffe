@@ -34,6 +34,7 @@
 #include "jthread.h"
 #include "support.h"
 #include "code-analyse.h"
+#include "funcs.h"
 
 #if defined(HAVE_branch_and_link)
 #define blink 0x8000000
@@ -70,7 +71,6 @@ static void _call_soft(void *routine, int profiled);
 /*									   */
 
 #if defined(HAVE_spill_int)
-void HAVE_spill_int(sequence*);
 
 void
 spill_int(SlotData* src)
@@ -83,7 +83,6 @@ spill_int(SlotData* src)
 #endif
 
 #if defined(HAVE_reload_int)
-void HAVE_reload_int(sequence*);
 
 void
 reload_int(SlotData* dst)
@@ -120,7 +119,6 @@ reload_ref(SlotData* dst)
 #endif
 
 #if defined(HAVE_spill_long)
-void HAVE_spill_long(sequence*);
 
 void
 spill_long(SlotData* src)
@@ -133,7 +131,6 @@ spill_long(SlotData* src)
 #endif
 
 #if defined(HAVE_reload_long)
-void HAVE_reload_long(sequence*);
 
 void
 reload_long(SlotData* dst)
@@ -146,7 +143,6 @@ reload_long(SlotData* dst)
 #endif
 
 #if defined(HAVE_spill_float)
-void HAVE_spill_float(sequence*);
 
 void
 spill_float(SlotData* src)
@@ -159,7 +155,6 @@ spill_float(SlotData* src)
 #endif
 
 #if defined(HAVE_reload_float)
-void HAVE_reload_float(sequence*);
 
 void
 reload_float(SlotData* dst)
@@ -172,7 +167,6 @@ reload_float(SlotData* dst)
 #endif
 
 #if defined(HAVE_spill_double)
-void HAVE_spill_double(sequence*);
 
 void
 spill_double(SlotData* src)
@@ -185,7 +179,6 @@ spill_double(SlotData* src)
 #endif
 
 #if defined(HAVE_reload_double)
-void HAVE_reload_double(sequence*);
 
 void
 reload_double(SlotData* dst)
@@ -480,14 +473,14 @@ mark_all_writes(void)
 void
 _start_sub_block(void)
 {
-	_slot_const_const(0, (jword)createSpillMask(), SR_SUBBASIC, doReload, Tnull);
+	slot_const_const(0, (jword)createSpillMask(), SR_SUBBASIC, doReload, Tnull);
 	setupSlotsForBasicBlock();
 }
 
 void
 _start_basic_block(void)
 {
-	_slot_const_const(0, (jword)createSpillMask(), SR_BASIC, doReload, Tnull);
+	slot_const_const(0, (jword)createSpillMask(), SR_BASIC, doReload, Tnull);
 	setupSlotsForBasicBlock();
 }
 
@@ -495,26 +488,26 @@ void
 _end_sub_block(void)
 {
 	mark_all_writes();
-	_slot_const_const(0, (jword)createSpillMask(), SR_SUBBASIC, doSpill, Tnull);
+	slot_const_const(0, (jword)createSpillMask(), SR_SUBBASIC, doSpill, Tnull);
 }
 
 void
 _end_basic_block(void)
 {
 	mark_all_writes();
-	_slot_const_const(0, (jword)createSpillMask(), SR_BASIC, doSpill, Tnull);
+	slot_const_const(0, (jword)createSpillMask(), SR_BASIC, doSpill, Tnull);
 }
 
 void
 _syncRegisters(uintp stk UNUSED, uintp temp UNUSED)
 {
-	_slot_const_const(0, (jword)createSpillMask(), SR_SYNC, doSpill, Tnull);
+	slot_const_const(0, (jword)createSpillMask(), SR_SYNC, doSpill, Tnull);
 }
 
 void
 _start_instruction(uintp pc)
 {
-	_slot_const_const(0, 0, pc, startInsn, Tnull);
+	slot_const_const(0, 0, pc, startInsn, Tnull);
 }
 
 void
@@ -537,7 +530,7 @@ void
 begin_sync(void)
 {
 	assert(lastSpill == 0);
-	_slot_const_const(0, 0, SR_BASIC, doSpill, Tnull);
+	slot_const_const(0, 0, SR_BASIC, doSpill, Tnull);
 	lastSpill = activeSeq;
 }
 
@@ -555,7 +548,7 @@ void
 begin_func_sync(void)
 {
 	assert(lastSpill == 0);
-	_slot_const_const(0, 0, SR_FUNCTION, doSpill, Tnull);
+	slot_const_const(0, 0, SR_FUNCTION, doSpill, Tnull);
 	lastSpill = activeSeq;
 
 	/* If we might throw and catch and exception we better make everything
@@ -580,7 +573,7 @@ end_func_sync(void)
 	lastSpill = 0;
 
 	/* Create a reload and save the slots to reload */
-	_slot_const_const(0, (jword)mask, SR_FUNCTION, doReload, Tnull);
+	slot_const_const(0, (jword)mask, SR_FUNCTION, doReload, Tnull);
 }
 
 

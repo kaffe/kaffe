@@ -118,7 +118,7 @@ slot_value(SlotInfo* data)
 }
 
 void
-_slot_const_const(SlotInfo* dst, jword s1, jword s2, ifunc f, int type)
+slot_const_const(SlotInfo* dst, jword s1, jword s2, ifunc f, int type)
 {
 	sequence* seq = nextSeq();
 
@@ -135,7 +135,7 @@ _slot_const_const(SlotInfo* dst, jword s1, jword s2, ifunc f, int type)
 }
 
 void
-_slot_slot_const(SlotInfo* dst, SlotInfo* s1, jword s2, ifunc f, int type)
+slot_slot_const(SlotInfo* dst, SlotInfo* s1, jword s2, ifunc f, int type)
 {
 	sequence* seq;
 #if defined(TWO_OPERAND)
@@ -166,7 +166,7 @@ _slot_slot_const(SlotInfo* dst, SlotInfo* s1, jword s2, ifunc f, int type)
 }
 
 void
-_slot_slot_fconst(SlotInfo* dst, SlotInfo* s1, float s2, ifunc f, int type)
+slot_slot_fconst(SlotInfo* dst, SlotInfo* s1, float s2, ifunc f, int type)
 {
 	sequence* seq = nextSeq();
 
@@ -179,7 +179,7 @@ _slot_slot_fconst(SlotInfo* dst, SlotInfo* s1, float s2, ifunc f, int type)
 }
 
 void
-_slot_slot_slot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
+slot_slot_slot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 {
 	sequence* seq;
 #if defined(TWO_OPERAND)
@@ -223,7 +223,7 @@ _slot_slot_slot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 }
 
 void
-_lslot_lslot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
+lslot_lslot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 {
 	sequence* seq;
 #if defined(TWO_OPERAND)
@@ -260,7 +260,7 @@ _lslot_lslot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 }
 
 void
-_lslot_lslot_slot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
+lslot_lslot_slot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 {
 	sequence* seq;
 #if defined(TWO_OPERAND)
@@ -297,7 +297,7 @@ _lslot_lslot_slot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 }
 
 void
-_slot_slot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
+slot_slot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 {
 	sequence* seq;
 #if defined(TWO_OPERAND)
@@ -334,7 +334,7 @@ _slot_slot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 }
 
 void
-_slot_lslot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
+slot_lslot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 {
 	sequence* seq;
 
@@ -353,7 +353,7 @@ _slot_lslot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 }
 
 void
-_lslot_lslot_const(SlotInfo* dst, SlotInfo* s1, jword s2, ifunc f, int type)
+lslot_lslot_const(SlotInfo* dst, SlotInfo* s1, jword s2, ifunc f, int type)
 {
 	sequence* seq = nextSeq();
 
@@ -366,7 +366,7 @@ _lslot_lslot_const(SlotInfo* dst, SlotInfo* s1, jword s2, ifunc f, int type)
 }
 
 void
-_lslot_lslot_lconst(SlotInfo* dst, SlotInfo* s1, jlong s2, ifunc f, int type)
+lslot_lslot_lconst(SlotInfo* dst, SlotInfo* s1, jlong s2, ifunc f, int type)
 {
 	sequence* seq = nextSeq();
 
@@ -379,7 +379,7 @@ _lslot_lslot_lconst(SlotInfo* dst, SlotInfo* s1, jlong s2, ifunc f, int type)
 }
 
 void
-_lslot_slot_const(SlotInfo* dst, SlotInfo* s1, jword s2, ifunc f, int type)
+lslot_slot_const(SlotInfo* dst, SlotInfo* s1, jword s2, ifunc f, int type)
 {
 	sequence* seq = nextSeq();
 
@@ -396,7 +396,7 @@ _lslot_slot_const(SlotInfo* dst, SlotInfo* s1, jword s2, ifunc f, int type)
 }
 
 void
-_lslot_slot_lconst(SlotInfo* dst, SlotInfo* s1, jlong s2, ifunc f, int type)
+lslot_slot_lconst(SlotInfo* dst, SlotInfo* s1, jlong s2, ifunc f, int type)
 {
 	sequence* seq = nextSeq();
 
@@ -409,7 +409,7 @@ _lslot_slot_lconst(SlotInfo* dst, SlotInfo* s1, jlong s2, ifunc f, int type)
 }
 
 void
-_lslot_slot_fconst(SlotInfo* dst, SlotInfo* s1, double s2, ifunc f, int type)
+lslot_slot_fconst(SlotInfo* dst, SlotInfo* s1, double s2, ifunc f, int type)
 {
 	sequence* seq = nextSeq();
 
@@ -422,7 +422,7 @@ _lslot_slot_fconst(SlotInfo* dst, SlotInfo* s1, double s2, ifunc f, int type)
 }
 
 void
-_slot_slot_slot_const_const(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2,
+slot_slot_slot_const_const(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2,
 			    jword s3, jword s4, ifunc f,
 			    int type)
 {
@@ -444,7 +444,7 @@ _slot_slot_slot_const_const(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2,
 }
 
 void
-_slot_slot_const_const_const(SlotInfo* dst, SlotInfo* s1, jword s2,
+slot_slot_const_const_const(SlotInfo* dst, SlotInfo* s1, jword s2,
 			     jword s3, jword s4, ifunc f,
 			     int type)
 {

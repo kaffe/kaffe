@@ -100,113 +100,22 @@ enum {
  * provided for every possible instruction format. 
  */
 
-#define	slot_const_const(dst, src, src2, func, t)			\
-	{								\
-		void func(sequence*);					\
-		_slot_const_const((dst), (src), (src2), (func), (t));	\
-	}
-void _slot_const_const(SlotInfo*, jword, jword, ifunc, int);
-
-#define	slot_slot_const(dst, src, src2, func, t)			\
-	{								\
-		void func(sequence*);					\
-		_slot_slot_const((dst), (src), (src2), (func), (t));	\
-	}
-void _slot_slot_const(SlotInfo*, SlotInfo*, jword, ifunc, int);
-
-#define	slot_slot_fconst(dst, src, src2, func, t)			\
-	{								\
-		void func(sequence*);					\
-		_slot_slot_fconst((dst), (src), (src2), (func), (t));	\
-	}
-void _slot_slot_fconst(SlotInfo*, SlotInfo*, float, ifunc, int);
-
-#define	slot_slot_slot(dst, src, src2, func, t)				\
-	{								\
-		void func(sequence*);					\
-		_slot_slot_slot((dst), (src), (src2), (func), (t));	\
-	}
-void _slot_slot_slot(SlotInfo*, SlotInfo*, SlotInfo*, ifunc, int);
-
-#define	lslot_lslot_const(dst, src, src2, func, t)			\
-	{								\
-		void func(sequence*);					\
-		_lslot_lslot_const((dst), (src), (src2), (func), (t));	\
-	}
-void _lslot_lslot_const(SlotInfo*, SlotInfo*, jword, ifunc, int);
-
-#define	lslot_lslot_lconst(dst, src, src2, func, t)			\
-	{								\
-		void func(sequence*);					\
-		_lslot_lslot_lconst((dst), (src), (src2), (func), (t));	\
-	}
-void _lslot_lslot_lconst(SlotInfo*, SlotInfo*, jlong, ifunc, int);
-
-#define	lslot_slot_const(dst, src, src2, func, t)			\
-	{								\
-		void func(sequence*);					\
-		_lslot_slot_const((dst), (src), (src2), (func), (t));	\
-	}
-void _lslot_slot_const(SlotInfo*, SlotInfo*, jword, ifunc, int);
-
-#define	lslot_slot_lconst(dst, src, src2, func, t)			\
-	{								\
-		void func(sequence*);					\
-		_lslot_slot_lconst((dst), (src), (src2), (func), (t));	\
-	}
-void _lslot_slot_lconst(SlotInfo*, SlotInfo*, jlong, ifunc, int);
-
-#define	lslot_slot_fconst(dst, src, src2, func, t)			\
-	{								\
-		void func(sequence*);					\
-		_lslot_slot_fconst((dst), (src), (src2), (func), (t));	\
-	}
-void _lslot_slot_fconst(SlotInfo*, SlotInfo*, double, ifunc, int);
-
-#define	lslot_lslot_lslot(dst, src, src2, func, t)			\
-	{								\
-		void func(sequence*);					\
-		_lslot_lslot_lslot((dst), (src), (src2), (func), (t));	\
-	}
-void _lslot_lslot_lslot(SlotInfo*, SlotInfo*, SlotInfo*, ifunc, int);
-
-#define	lslot_lslot_slot(dst, src, src2, func, t)			\
-	{								\
-		void func(sequence*);					\
-		_lslot_lslot_slot((dst), (src), (src2), (func), (t));	\
-	}
-void _lslot_lslot_slot(SlotInfo*, SlotInfo*, SlotInfo*, ifunc, int);
-
-#define	slot_slot_lslot(dst, src, src2, func, t)			\
-	{								\
-		void func(sequence*);					\
-		_slot_slot_lslot((dst), (src), (src2), (func), (t));	\
-	}
-void _slot_slot_lslot(SlotInfo*, SlotInfo*, SlotInfo*, ifunc, int);
-
-#define	slot_lslot_lslot(dst, src, src2, func, t)			\
-	{								\
-		void func(sequence*);					\
-		_slot_lslot_lslot((dst), (src), (src2), (func), (t));	\
-	}
-void _slot_lslot_lslot(SlotInfo*, SlotInfo*, SlotInfo*, ifunc, int);
-
-#define	slot_slot_slot_const_const(dst, src, src2, src3, src4, func, t)	\
-	{								\
-		void func(sequence*);					\
-		_slot_slot_slot_const_const((dst), (src), (src2),	\
-					    (src3), (src4), (func), (t)); \
-	}
-void _slot_slot_slot_const_const(SlotInfo*, SlotInfo*, SlotInfo*,
+void slot_const_const(SlotInfo*, jword, jword, ifunc, int);
+void slot_slot_const(SlotInfo*, SlotInfo*, jword, ifunc, int);
+void slot_slot_fconst(SlotInfo*, SlotInfo*, float, ifunc, int);
+void slot_slot_slot(SlotInfo*, SlotInfo*, SlotInfo*, ifunc, int);
+void lslot_lslot_const(SlotInfo*, SlotInfo*, jword, ifunc, int);
+void lslot_lslot_lconst(SlotInfo*, SlotInfo*, jlong, ifunc, int);
+void lslot_slot_const(SlotInfo*, SlotInfo*, jword, ifunc, int);
+void lslot_slot_lconst(SlotInfo*, SlotInfo*, jlong, ifunc, int);
+void lslot_slot_fconst(SlotInfo*, SlotInfo*, double, ifunc, int);
+void lslot_lslot_lslot(SlotInfo*, SlotInfo*, SlotInfo*, ifunc, int);
+void lslot_lslot_slot(SlotInfo*, SlotInfo*, SlotInfo*, ifunc, int);
+void slot_slot_lslot(SlotInfo*, SlotInfo*, SlotInfo*, ifunc, int);
+void slot_lslot_lslot(SlotInfo*, SlotInfo*, SlotInfo*, ifunc, int);
+void slot_slot_slot_const_const(SlotInfo*, SlotInfo*, SlotInfo*,
 				 jword, jword, ifunc, int);
-
-#define	slot_slot_const_const_const(dst, src, src2, src3, src4, func, t) \
-	{								\
-		void func(sequence*);					\
-		_slot_slot_const_const_const((dst), (src), (src2),	\
-					     (src3), (src4), (func), (t)); \
-	}
-void _slot_slot_const_const_const(SlotInfo*, SlotInfo*, jword,
+void slot_slot_const_const_const(SlotInfo*, SlotInfo*, jword,
 				  jword, jword, ifunc, int);
 
 /* -------------------------------------------------------------------- */

@@ -1,3 +1,11 @@
+2004-04-04  Adam Heath <doogie@debian.org>
+
+	* kaffe/kaffevm/debug.c: Fix const casting.
+	* kaffe/kaffevm/exception.h: Fixed warnings that I caused when I
+	  last checked this in.
+	* kaffe/kaffevm/jit3/{{basecode,funcs}.[ch],icode.c}: Fix a bunch
+	  of nested extern/duplicate definition warnings.
+
 2004-04-03  Adam Heath <doogie@debian.org>
 
         * scripts/sort-warnings.pl: Print out the warning count per file.
