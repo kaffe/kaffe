@@ -2,6 +2,7 @@ package java.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -18,11 +19,11 @@ import java.lang.System;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class Properties
-  extends Hashtable
+public class Properties extends Hashtable
 {
 	private static final long serialVersionUID = 4112578634029874840L;
 	protected Properties defaults;
+	private StringBuffer key, value;
 
 public Properties() {
 	this(null);
@@ -32,23 +33,46 @@ public Properties(Properties defaults) {
 	this.defaults=defaults;
 }
 
-private String escape(String str) {
-	/* Escape line separators */
-	StringBuffer sb=new StringBuffer();
-	for (int pos=0; pos<str.length(); pos++) {
-		char ch=str.charAt(pos);
+private static String escape(String str, boolean isKey) {
+	StringBuffer sb = new StringBuffer();
+	for (int pos = 0; pos < str.length(); pos++) {
+		char ch = str.charAt(pos);
 		switch (ch) {
+		case '!':
+		case '#':
+			if (pos == 0)
+				sb.append("\\");
+			sb.append(ch);
+			break;
+		case ':':
+		case '=':
+		case ' ':
+			if (!isKey) {
+				sb.append(ch);
+				break;
+			}			// fall through
 		case '\\':
-			sb.append("\\\\");
+			sb.append("\\" + ch);
 			break;
 		case '\n':
 			sb.append("\\n");
+			break;
+		case '\t':
+			sb.append("\\t");
 			break;
 		case '\r':
 			sb.append("\\r");
 			break;
 		default:
-			sb.append(ch);
+			if (ch > 0x7e) {
+				sb.append("\\\\u");
+				sb.append(Character.forDigit((ch >> 12) & 0xf, 16));
+				sb.append(Character.forDigit((ch >> 8) & 0xf, 16));
+				sb.append(Character.forDigit((ch >> 4) & 0xf, 16));
+				sb.append(Character.forDigit(ch & 0xf, 16));
+			} else
+				sb.append(ch);
+			break;
 		}
 	}
 
@@ -90,97 +114,197 @@ public void list(PrintWriter out) {
 	}
 }
 
-public synchronized void load(InputStream in) throws IOException {
-
-	for (;;) {
-		int index;
-		String line = readLine(in);
-
-		if (line == null) {
-			break;
-		}
-		int len = line.length();
-		if ( (len == 0) || line.charAt(0) == '#') {
-			// Skip empty and commented lines.
-		}
-		else if ((index = line.indexOf('=')) > 0) {
-			String key = line.substring(0, index).trim();
-			String value = line.substring(index+1).trim();
-			put(key, value);
-		}
-		else {
-			// be more deliberate, don't ignore all subsequent entries
-			System.err.println("malformed property: " + line);
-		}
-	}
-}
-
 public Enumeration propertyNames() {
-	Vector result=new Vector();
+	final Vector result = new Vector();
 
-	Enumeration mainKeys=keys();
-	while (mainKeys.hasMoreElements()) {
-		result.addElement(mainKeys.nextElement());
+	// Add main properties
+	for (Enumeration e = keys(); e.hasMoreElements(); ) {
+		result.addElement(e.nextElement());
 	}
 
-	if (defaults!=null) {
-		Enumeration defKeys=defaults.keys();    
-		Object def;
-		while (defKeys.hasMoreElements()) {
-			def=defKeys.nextElement();
-			if (!result.contains(def)) result.addElement(def);
+	// Add non-overridden default properties
+	if (defaults != null) {
+		for (Enumeration e = defaults.keys(); e.hasMoreElements(); ) {
+			Object def = e.nextElement();
+			if (!result.contains(def))
+				result.addElement(def);
 		}
 	}
 
-	return new PropertyEnumeration(result);
+	// Return enumeration of vector
+	return new Enumeration() {
+		private int posn = 0;
+		public boolean hasMoreElements() {
+			return (posn < result.size());
+		}
+		public Object nextElement() {
+			if (posn == result.size())
+				throw new NoSuchElementException();
+			return result.elementAt(posn++);
+		}
+	};
 }
 
-private String readLine(InputStream in) throws IOException
-{
-	boolean EOF = false;
-	boolean EOL = false;
-	StringBuffer buffer = new StringBuffer();
+public synchronized void load(InputStream in) throws IOException {
+	PushbackInputStream pin = new PushbackInputStream(in, 16);
 
-	while (!EOL) {
-		int chr = in.read();
-		switch (chr) {
-		case '\n':
-		case '\r':
-			EOL = true;
-			break;
-		case '\\':
-			switch (chr=in.read()) {
-			case 'n':
-				buffer.append('\n');
-				break;
-			case 'r':
-				buffer.append('\r');
-				break;
-			case '\\':
-				buffer.append('\\');
-				break;
+	while (readKeyAndValue(pin)) {
+		put(key.toString(), value.toString());
+	}
+	key = null;
+	value = null;
+	//pin.close(); ??
+}
+
+private boolean readKeyAndValue(PushbackInputStream in) throws IOException {
+	int ch;
+
+	while (true) {
+		// Eat initial white space
+		while ((ch = in.read()) != -1 && ch <= ' ');
+
+		// Skip comments
+		switch (ch) {
+			case '#':
+			case '!':
+				while ((ch = in.read()) != '\n');
+				continue;
+			case -1:
+				return false;
+		}
+
+		// Initialize
+		this.key = new StringBuffer();
+		this.value = new StringBuffer();
+
+		// Read in key
+getKey:		while (true) {
+			switch (ch) {
+			case '=':
+			case ':':
+				break getKey;
+			case '\r':
+				switch ((ch = in.read())) {
+				case '\n':
+					break;
+				case -1:
+					return true;
+				default:
+					in.unread(ch);
+					break getKey;
+				}				// fall through
+			case -1:
 			case '\n':
-			case '\r': // Continuation
-				break;
+				return true;
 			default:
-				buffer.append( '\\');
-				buffer.append( chr);
+				if (ch <= ' ')
+					break getKey;
+				in.unread(ch);
+				key.append((char) getEscapedChar(in));
 			}
-			break;
-		case -1:
-			EOL = true;
-			EOF = true;
-			break;
-		default:
-			buffer.append((char)chr);
+			ch = in.read();
+		}
+
+		// Eat white space before value
+		while ((ch = in.read()) <= ' ') {
+			if (ch == -1 || ch == '\n')
+				return true;
+		}
+
+		// Read in value
+		while (true) {
+			switch (ch) {
+			case '\r':
+				switch ((ch = in.read())) {
+				case -1:
+					value.append('\r');	// fall through
+				case '\n':
+					return true;
+				default:
+					in.unread(ch);
+					value.append('\r');
+					break;
+				}
+				break;
+			case -1:
+			case '\n':
+				return true;
+			default:
+				in.unread(ch);
+				value.append((char) getEscapedChar(in));
+				break;
+			}
+			ch = in.read();
 		}
 	}
+}
 
-	if ( (buffer.length() == 0) && EOF) {
-		return (null);
-	}
-	else {
-		return (buffer.toString().trim());
+// Get next char, respecting backslash escape codes and end-of-line stuff
+private static int getEscapedChar(PushbackInputStream in) throws IOException {
+	int ch;
+	switch ((ch = in.read())) {
+	case '\\':
+		switch ((ch = in.read())) {
+		case '\r':
+			switch ((ch = in.read())) {
+			default:
+				in.unread(ch);		// fall through
+			case -1:
+				in.unread('\r');
+				return '\\';
+			case '\n':
+				break;
+			}				// fall through
+		case '\n':
+			while ((ch = in.read()) != -1 && ch <= ' ');
+			return ch;
+		case 'n':
+			return '\n';
+		case 'r':
+			return '\r';
+		case 't':
+			return '\t';
+		case '\\':
+			switch ((ch = in.read())) {
+			case 'u':
+				int[] dig = new int[4];
+				int n;
+			    getUnicode:
+				{
+					int dval, cval = 0;
+					for (n = 0; n < 4; ) {
+						if ((dig[n] = in.read()) == -1)
+							break getUnicode;
+						if ((dval = Character.digit(
+						    (char) dig[n++], 16)) == -1)
+							break getUnicode;
+						cval = (cval << 4) | dval;
+					}
+					return cval;
+				}
+				while (n > 0)
+				    in.unread(dig[--n]);	// fall through
+			default:
+				in.unread(ch);
+				return '\\';
+			}
+
+		case -1:
+			return '\\';
+		default:
+			return ch;
+		}
+	case '\r':
+		switch ((ch = in.read())) {
+		default:
+			in.unread(ch);		// fall through
+		case -1:
+			return '\r';
+		case '\n':
+			break;
+		}				// fall through
+	default:
+		return ch;
 	}
 }
 
@@ -200,37 +324,17 @@ public synchronized void store(OutputStream out, String header) throws IOExcepti
 // NB: use a PrintWriter here to get platform-specific line separator
 private synchronized void save(PrintWriter out, String header) throws IOException {
 	if (header != null) {
-		out.println("# " + escape(header));
+		out.println("# " + escape(header, false));
 	}
 
 	Enumeration keys = propertyNames();
 
 	while (keys.hasMoreElements()) {
 		String key=(String)keys.nextElement();
-		out.println(escape(key) + "=" + escape(getProperty(key)));
+		out.println(escape(key, true)
+			+ "=" + escape(getProperty(key), false));
 	}
 	out.flush();	// shouldn't be necessary
 }
 }
 
-class PropertyEnumeration
-  implements Enumeration
-{
-	private Vector vector;
-	private int posn;
-
-public PropertyEnumeration(Vector vectorToUse) {
-	vector=vectorToUse;
-	posn=0;
-}
-
-public boolean hasMoreElements() {
-	return (posn<vector.size());
-}
-
-public Object nextElement() {
-	if (posn==vector.size()) throw new NoSuchElementException();
-
-	return vector.elementAt(posn++);
-}
-}
