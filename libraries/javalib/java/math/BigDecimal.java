@@ -195,7 +195,7 @@ public class BigDecimal extends Number implements Comparable {
 	}
 
 	int sign = a.signum() * b.signum();
-	// half rounding study (r / b) <=> .5 aka r * .5 <=> b
+	// half rounding study (r / b) <=> .5 aka r * 2 <=> b
 	int half = r.abs().multiply(BigInteger.valueOf(2)).compareTo(b.abs());
 	switch (roundingMode) {
 	case ROUND_CEILING:
@@ -222,9 +222,15 @@ public class BigDecimal extends Number implements Comparable {
 	    throw new ArithmeticException("Rounding necessary");
 	}
 
-	return new BigDecimal((roundingMode == ROUND_UP)
-			      ? q.add(BigInteger.ONE) : q,
-			      newScale);
+	if (roundingMode == ROUND_UP)
+	  q = q.abs().add(BigInteger.ONE);
+	else
+	  q = q.abs();
+    
+	if (sign > 0)
+	  return new BigDecimal(q, newScale);
+	else
+	  return new BigDecimal(q.negate(), newScale);
     }
 
     public BigDecimal divide(BigDecimal val, int roundingMode) {
