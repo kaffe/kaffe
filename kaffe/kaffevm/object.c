@@ -5,8 +5,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #define	ADBG(s)
@@ -45,7 +45,7 @@ newObjectChecked(Hjava_lang_Class* class, errorInfo *info)
 	    obj->dtable = class->dtable;
 	}
 DBG(NEWOBJECT,
-	dprintf("newObject %x class %s\n", obj,
+	dprintf("newObject %p class %s\n", obj,
 		(class ? class->name->data : "<none>"));
     )
         return (obj);
@@ -97,7 +97,7 @@ newClass(void)
 	cls->head.dtable = ClassClass->dtable;
 done:
 DBG(NEWOBJECT,
-	dprintf("newClass @%p\n", cls);					
+	dprintf("newClass @%p\n", cls);
     )
 
         return (cls);
@@ -128,6 +128,10 @@ newArrayChecked(Hjava_lang_Class* elclass, int count, errorInfo *info)
 		obj->dtable = class->dtable;
 		ARRAY_SIZE(obj) = count;
 	}
+DBG(NEWOBJECT,
+	dprintf("newArray %p class %s count %d\n", obj,
+		(class ? class->name->data : "<none>"), count);
+    )
 	return (obj);
 }
 
@@ -161,7 +165,7 @@ newMultiArrayChecked(Hjava_lang_Class* clazz, int* dims, errorInfo *einfo)
 	if (!obj) {
 	    return NULL;
 	}
-	
+
 	if (dims[1] >= 0) {
 		array = OBJARRAY_DATA(obj);
 		for (i = 0; i < dims[0]; i++) {

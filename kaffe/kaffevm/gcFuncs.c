@@ -439,7 +439,7 @@ walkObject(Collector* collector, void* base, uint32 size)
 DBG(GCPRECISE,
         dprintf("walkObject `%s' ", CLASS_CNAME(clazz));
         BITMAP_DUMP(layout, nbits)
-        dprintf(" (nbits=%d) %x-%x\n", nbits, base, base+size);
+        dprintf(" (nbits=%d) %p-%p\n", nbits, base, base+size);
     )
 
         assert(CLASS_FSIZE(clazz) > 0);

@@ -5,8 +5,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "debug.h"
@@ -54,8 +54,8 @@ soft_new(Hjava_lang_Class* c)
 		goto bad;
 	}
 
-DBG(NEWINSTR,	
-	dprintf("New object of type %s (%d,%x)\n", 
+DBG(NEWINSTR,
+	dprintf("New object of type %s (%d,%p)\n",
 		c->name->data, c->bfsize, obj); )
 
 	return (obj);
@@ -82,8 +82,8 @@ soft_newarray(jint type, jint size)
 		throwError(&info);
 	}
 
-DBG(NEWINSTR,	
-	dprintf("New array of %s [%d] (%x)\n", 
+DBG(NEWINSTR,
+	dprintf("New array of %s [%d] (%p)\n",
 		TYPE_CLASS(type)->name->data, size, obj); )
 
 	return (obj);
@@ -107,8 +107,8 @@ soft_anewarray(Hjava_lang_Class* elclass, jint size)
 		throwError(&info);
 	}
 
-DBG(NEWINSTR,	
-	dprintf("New array object [%d] of %s (%x)\n", size,
+DBG(NEWINSTR,
+	dprintf("New array object [%d] of %s (%p)\n", size,
 		elclass->name->data, obj); )
 	return (obj);
 }
@@ -159,7 +159,7 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, slots* args)
 	if (!obj) {
 		throwError(&einfo);
 	}
-	
+
         /* Return the base object */
 	return (obj);
 }
@@ -261,7 +261,7 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 	/* skip word at the beginning of itable2dtable */
 	ncode = cls->itable2dtable[implementors[i] + idx + 1];
 
-	/* This means this class does not implement this interface method 
+	/* This means this class does not implement this interface method
 	 * at all.  This is something we detect at the time the interface
 	 * dispatch table is built.  To avoid this test, we could instead
 	 * point at a nosuchmethod routine there.  However, we would have
@@ -277,8 +277,8 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 
 notfound:
 	/*
-	 * Compilers following the latest version of the JLS emit a 
-	 * INVOKEINTERFACE instruction for methods that aren't defined in 
+	 * Compilers following the latest version of the JLS emit a
+	 * INVOKEINTERFACE instruction for methods that aren't defined in
 	 * an interface, but inherited from Object.
 	 *
 	 * In this case, the JVM must
@@ -289,12 +289,12 @@ notfound:
 	 * followed by an INVOKEVIRTUAL.
 	 *
 	 * For now, we simply detect the case where an object method is called
-	 * and find it by hand using its (name, signature). 
+	 * and find it by hand using its (name, signature).
 	 */
 	if (ifclass == ObjectClass) {
 		Method* objm = CLASS_METHODS(ifclass) + idx;
 		errorInfo info;
-		
+
 		meth = findMethod(cls, objm->name, METHOD_SIG(objm), &info);
 		if (meth == 0) {
 			throwError(&info);
@@ -415,15 +415,15 @@ void*
 soft_checkcast(Hjava_lang_Class* c, Hjava_lang_Object* o)
 {
 	if (o != 0 && !instanceof(c, OBJECT_CLASS(o))) {
-		/* 
-		 * Let's be a bit more informative as to why the class 
+		/*
+		 * Let's be a bit more informative as to why the class
 		 * cast exception happened.
 		 */
 		Hjava_lang_Throwable* ccexc;
 		const char *fromtype = CLASS_CNAME(OBJECT_CLASS(o));
 		const char *totype = CLASS_CNAME(c);
 		char *format = "can't cast `%s' to `%s'";
-		char *buf = checkPtr(KMALLOC(strlen(fromtype) 
+		char *buf = checkPtr(KMALLOC(strlen(fromtype)
 			+ strlen(totype) + strlen(format)));
 		sprintf(buf, format, fromtype, totype);
 		ccexc = ClassCastException(buf);
@@ -447,8 +447,8 @@ soft_athrow(Hjava_lang_Object* o)
 		/* NB: This will keep the stacktrace that was built
 		 * when the exception was constructed.
 		 * If you wanted a new stacktrace corresponding to the
-		 * site where the exception is thrown, you'd use 
-		 * `throwException' instead.  However, this would slow down 
+		 * site where the exception is thrown, you'd use
+		 * `throwException' instead.  However, this would slow down
 		 * exceptions because two stacktrace have to be constructed.
 		 */
 		throwExternalException((Hjava_lang_Throwable*)o);
@@ -494,7 +494,7 @@ soft_stackoverflow(void)
 /*
  * soft_nosuchclass.
  */
-void            
+void
 soft_nosuchclass(Utf8Const* c)
 {
 	char buf[256];
@@ -506,7 +506,7 @@ soft_nosuchclass(Utf8Const* c)
 /*
  * soft_nosuchmethod.
  */
-void            
+void
 soft_nosuchmethod(Hjava_lang_Class* c, Utf8Const* n, Utf8Const* s)
 {
 	char buf[256];
@@ -571,7 +571,7 @@ soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 		}
 	}
 
-	/* Update the origin of this trampoline --- this could be a 
+	/* Update the origin of this trampoline --- this could be a
 	 * dispatch table, interface dispatch table, or a gcj trampoline
 	 *
 	 * This is rather tricky.  We may jump through the same trampoline
@@ -602,7 +602,7 @@ soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 	}
 #endif
 
-TDBG(	dprintf("Calling %s:%s%s @ 0x%x\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth), METHOD_NATIVECODE(meth));	)
+TDBG(	dprintf("Calling %s:%s%s @ %p\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth), METHOD_NATIVECODE(meth));	)
 
 	return (METHOD_NATIVECODE(meth));
 }

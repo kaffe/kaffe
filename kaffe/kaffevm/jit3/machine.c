@@ -8,8 +8,8 @@
  * the Flux Research Group, Department of Computer Science,
  * University of Utah, http://www.cs.utah.edu/flux/
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #define SCHK(s) s
@@ -180,7 +180,7 @@ translate(Method* xmeth, errorInfo* einfo)
 	}
 
 DBG(MOREJIT,
-    dprintf("callinfo = 0x%x\n", &cinfo);
+    dprintf("callinfo = %p\n", &cinfo);
     )
 
 #if defined(KAFFE_PROFILER)
@@ -201,11 +201,11 @@ DBG(MOREJIT,
 #endif
 
 	codeInfo = mycodeInfo;
-	
+
 	/* Handle null calls specially */
 	if (METHOD_BYTECODE_LEN(xmeth) == 1 && METHOD_BYTECODE_CODE(xmeth)[0] == RETURN) {
 		/* 'nc' is a Workaround for KFREE ? : bug in gcc 2.7.2 */
-		void *nc = METHOD_NATIVECODE(xmeth); 
+		void *nc = METHOD_NATIVECODE(xmeth);
 		KFREE(nc);
 		SET_METHOD_NATIVECODE(xmeth, (nativecode*)nullCall);
 		goto done;
@@ -483,7 +483,7 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 #if defined(KAFFE_FEEDBACK)
 	char *sym = 0;
 #endif
-	
+
 	/* Work out new estimate of code per bytecode */
 	code_generated += code->memlen;
 	bytecode_processed += METHOD_BYTECODE_LEN(meth);
@@ -494,7 +494,7 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 	if (bytecode_processed > 0) {
 		codeperbytecode = code_generated / bytecode_processed;
 	}
-	
+
 	GC_WRITE(meth, code->mem);
 	{
 		/* Workaround for KFREE() ? : bug on gcc 2.7.2 */
@@ -544,7 +544,7 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 #if defined(KAFFE_XPROFILER)
 	profileFunction(mm, code->code, code->codelen);
 #endif
-	
+
 	/* Flush code out of cache */
 #if defined(FLUSH_DCACHE)
 	FLUSH_DCACHE(code->code, (void*)((uintp)code->code + code->codelen));
@@ -648,7 +648,7 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz, errorInfo
 	/* Clear various counters */
 	tmpslot = 0;
 	maxTemp = 0;
-	maxPush = 0;  
+	maxPush = 0;
 	stackno = localsz + stacksz;
 	npc = 0;
 
@@ -974,7 +974,7 @@ sortSlots(const void* s1, const void* s2)
 {
 	localUse* lcluse1;
 	localUse* lcluse2;
-	
+
 	lcluse1 = &codeInfo->localuse[*((SlotInfo**)s1) - localinfo];
 	lcluse2 = &codeInfo->localuse[*((SlotInfo**)s2) - localinfo];
 
@@ -1159,7 +1159,7 @@ jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 	if (!obj) {
 		throwError(&einfo);
 	}
-	
+
 	/* Return the base object */
 	return (obj);
 }

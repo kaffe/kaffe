@@ -5,8 +5,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "config.h"
@@ -57,7 +57,7 @@ static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, except
 /*
  * Create an exception from error information.
  */
-Hjava_lang_Throwable* 
+Hjava_lang_Throwable*
 error2Throwable(errorInfo* einfo)
 {
 	Hjava_lang_Throwable *err = 0;
@@ -69,7 +69,7 @@ error2Throwable(errorInfo* einfo)
 				    einfo->classname, 0, 0, "()V");
 		} else {
 			err = (Hjava_lang_Throwable*)execute_java_constructor(
-				    einfo->classname, 
+				    einfo->classname,
 				    0, 0, "(Ljava/lang/String;)V",
 				    checkPtr(stringC2Java(einfo->mess)));
 		}
@@ -102,7 +102,7 @@ error2Throwable(errorInfo* einfo)
 /*
  * post out-of-memory condition
  */
-void 
+void
 postOutOfMemory(errorInfo *einfo)
 {
 	memset(einfo, 0, sizeof(*einfo));
@@ -112,7 +112,7 @@ postOutOfMemory(errorInfo *einfo)
 /*
  * post a simple exception using its full name without a message
  */
-void 
+void
 postException(errorInfo *einfo, const char *name)
 {
 	einfo->type = KERR_EXCEPTION;
@@ -121,7 +121,7 @@ postException(errorInfo *einfo, const char *name)
 	einfo->throwable = 0;
 }
 
-void 
+void
 vpostExceptionMessage(errorInfo *einfo,
 	const char * fullname, const char * fmt, va_list args)
 {
@@ -149,7 +149,7 @@ vpostExceptionMessage(errorInfo *einfo,
 /*
  * post a longer exception with a message using full name
  */
-void 
+void
 postExceptionMessage(errorInfo *einfo,
 	const char * fullname, const char * fmt, ...)
 {
@@ -200,7 +200,7 @@ dumpErrorInfo(errorInfo *einfo)
 /*
  * discard the errorinfo, freeing a message if necessary
  */
-void 
+void
 discardErrorInfo(errorInfo *einfo)
 {
 	if (einfo->type & KERR_FREE_MESSAGE) {
@@ -212,13 +212,13 @@ discardErrorInfo(errorInfo *einfo)
 /*
  * Create and throw an exception resulting from an error during VM processing.
  */
-void 
+void
 throwError(errorInfo* einfo)
 {
 	Hjava_lang_Throwable* eobj = error2Throwable (einfo);
 	throwException(eobj);
 }
- 
+
 /*
  * Throw an exception with backtrace recomputed.
  *
@@ -306,7 +306,7 @@ nextFrame(void* fm)
 
 #if defined(TRANSLATOR)
 
-/* 
+/*
  * Perform all necessary actions to unwind one stack frame
  * and to deliver an exception if a handler exists
  *
@@ -324,7 +324,7 @@ unwindStackFrame(stackTraceInfo* frame, Hjava_lang_Throwable *eobj)
 	Hjava_lang_Class* class;
 	Hjava_lang_Thread* ct;
 	exceptionInfo einfo;
-	
+
 	ct = getCurrentThread();
 	class = OBJECT_CLASS(&eobj->base);
 
@@ -335,8 +335,8 @@ unwindStackFrame(stackTraceInfo* frame, Hjava_lang_Throwable *eobj)
 	}
 
 	/* Find the sync. object */
-	if (einfo.method == 0 
-		|| (einfo.method->accflags & ACC_SYNCHRONISED) == 0) 
+	if (einfo.method == 0
+		|| (einfo.method->accflags & ACC_SYNCHRONISED) == 0)
 	{
 		obj = 0;
 	}
@@ -379,8 +379,8 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 
 #if defined(INTS_DISABLED)
 	/*
-	 * We should never try to dispatch an exception while interrupts are 
-	 * disabled.  If the threading system provides a means to do so, 
+	 * We should never try to dispatch an exception while interrupts are
+	 * disabled.  If the threading system provides a means to do so,
 	 * check that we don't attempt to do it anyway.
 	 */
 	assert(!INTS_DISABLED());
@@ -393,13 +393,13 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 #if defined (HAVE_GCJ_SUPPORT)
 	/* XXX */
 	_Jv_Throw(eobj);
-	/* no return */	
+	/* no return */
 #endif
 
 	/* Search down exception stack for a match */
 DBG(ELOOKUP,
 	dprintf ("dispatchException(): %s\n", ((Hjava_lang_Object*)eobj)->dtable->class->name->data);)
-    
+
 #if defined(INTERPRETER)
 	{
 		Hjava_lang_Object* obj;
@@ -446,7 +446,7 @@ DBG(ELOOKUP,
 		stackTraceInfo* frame;
 
 		assert (baseframe != NULL);
-		
+
 		for (frame = baseframe; frame->meth != ENDOFSTACK; frame++) {
 			unwindStackFrame(frame, eobj);
 		}
@@ -504,8 +504,8 @@ unhandledException(Hjava_lang_Throwable *eobj)
 void
 initExceptions(void)
 {
-DBG(INIT,	
-	dprintf("initExceptions()\n");			
+DBG(INIT,
+	dprintf("initExceptions()\n");
     )
 	/* Catch signals we need to convert to exceptions */
 	jthread_initexceptions(nullException, floatingException);
@@ -521,7 +521,7 @@ nullException(struct _exceptionFrame *frame)
 
 	npe = (Hjava_lang_Throwable*)newObject(javaLangNullPointerException);
 	unhand(npe)->backtrace = buildStackTrace(frame);
-#if defined(HAVE_GCJ_SUPPORT) 
+#if defined(HAVE_GCJ_SUPPORT)
 	FAKE_THROW_FRAME();
 #endif /* defined(HAVE_GCJ_SUPPORT) */
 	dispatchException(npe, (stackTraceInfo*)unhand(npe)->backtrace);
@@ -537,7 +537,7 @@ floatingException(struct _exceptionFrame *frame)
 
 	ae = (Hjava_lang_Throwable*)newObject(javaLangArithmeticException);
 	unhand(ae)->backtrace = buildStackTrace(frame);
-#if defined(HAVE_GCJ_SUPPORT) 
+#if defined(HAVE_GCJ_SUPPORT)
 	FAKE_THROW_FRAME();
 #endif /* defined(HAVE_GCJ_SUPPORT) */
 	dispatchException(ae, (stackTraceInfo*)unhand(ae)->backtrace);
@@ -588,7 +588,7 @@ findExceptionBlockInMethod(uintp pc, Hjava_lang_Class* class, Method* ptr, excep
 	if (ptr->exception_table == 0) {
 		return (false);
 	}
-DBG(ELOOKUP,	
+DBG(ELOOKUP,
 	dprintf("Nr of exceptions = %d\n", ptr->exception_table->length); )
 
 	for (i = 0; i < ptr->exception_table->length; i++) {
@@ -596,11 +596,11 @@ DBG(ELOOKUP,
 		uintp end_pc = eptr[i].end_pc;
 		uintp handler_pc = eptr[i].handler_pc;
 
-DBG(ELOOKUP,	dprintf("Exceptions %x (%x-%x)\n", pc, start_pc, end_pc); )
+DBG(ELOOKUP,	dprintf("Exceptions %p (%p-%p)\n", pc, start_pc, end_pc); )
 		if (pc < start_pc || pc > end_pc) {
 			continue;
 		}
-DBG(ELOOKUP,	dprintf("Found exception 0x%x\n", handler_pc); )
+DBG(ELOOKUP,	dprintf("Found exception %p\n", handler_pc); )
 
 		/* Found exception - is it right type */
 		if (eptr[i].catch_idx == 0) {
@@ -620,11 +620,11 @@ DBG(ELOOKUP,	dprintf("Found exception 0x%x\n", handler_pc); )
 			 */
 			errorInfo info;
 			eptr[i].catch_type = getClass(eptr[i].catch_idx, ptr->class, &info);
-			/* 
+			/*
 			 * If we could not resolve the catch class, then we
 			 * must a) record that fact to guard against possible
-			 * recursive attempts to load it and b) throw the error 
-			 * resulting from that failure and forget about the 
+			 * recursive attempts to load it and b) throw the error
+			 * resulting from that failure and forget about the
 			 * current exception.
 			 */
 			if (eptr[i].catch_type == NULL) {

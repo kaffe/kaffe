@@ -4,8 +4,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "config.h"
@@ -36,7 +36,7 @@ kregs reginfo[] = {
 };
 
 /* This is horrible but necessary at the moment.  Sometime we need to
- * make transient changes to the registers which we will forget in 
+ * make transient changes to the registers which we will forget in
  * a short while.  This can have a bad effect on read-once register so
  * we disable them termporaily.
  */
@@ -479,7 +479,7 @@ forceRegister(SlotData* slot, int reg, int type)
 	regi->refs = 1;
 
 DBG(REGFORCE,
-    dprintf ("forceRegister() set forced %d %x\n", reg, slot);
+    dprintf ("forceRegister() set forced %d %p\n", reg, slot);
     )
 
 	regi->ctype = regi->type & type;
