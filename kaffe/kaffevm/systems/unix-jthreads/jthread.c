@@ -601,9 +601,14 @@ jthread_dumpthreadinfo(jthread_t tid)
 		if (isOnList(waitForList, tid)) {
 			fprintf(stderr, ": waiting for children");
 		}
+#if 0
+		/* XXX FIXME: alarmList uses nextalarm, but isOnList iterates
+		 * using nextQ
+		 */
 		if (isOnList(alarmList, tid)) {
 			fprintf(stderr, ": sleeping");
 		}
+#endif
 		for (i = 0; i < FD_SETSIZE; i++) {
 			if (isOnList(readQ[i], tid)) {
 				fprintf(stderr, ": reading from fd %d ", i);
