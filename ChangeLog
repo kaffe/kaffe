@@ -1,3 +1,13 @@
+Thu Feb  4 10:34:34 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libltdl/ltdl.c (find_module): initialize filename if dir is NULL 
+	Reported by Godmar Back <gback@cs.utah.edu>
+
+Thu Feb  4 10:34:34 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libltdl/ltdl.c (lt_dlopenext): missing space for terminator when
+	allocating memory for shlib_ext
+
 Wed Feb  3 20:48:51 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/baseClasses.c, kaffe/kaffevm/classMethod.[ch],

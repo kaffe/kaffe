@@ -840,6 +840,8 @@ find_module (handle, dir, libdir, dlname, old_name, installed)
 			}
 			if (dir)
 				strcpy(filename, dir);
+			else
+				*filename = 0;
 			strcat(filename, objdir);
 			strcat(filename, dlname);
 
@@ -857,6 +859,8 @@ find_module (handle, dir, libdir, dlname, old_name, installed)
 				       + strlen(dlname) + 1);
 			if (dir)
 				strcpy(filename, dir);
+			else
+				*filename = 0;
 			strcat(filename, dlname);
 			ret = tryall_dlopen(handle, filename) == 0;
 			free(filename);
@@ -1240,7 +1244,7 @@ lt_dlopenext (filename)
 	/* try "filename.EXT" */
 	if (strlen(shlib_ext) > 3) {
 		free(tmp);
-		tmp = (char*) malloc(len + strlen(shlib_ext));
+		tmp = (char*) malloc(len + strlen(shlib_ext) + 1);
 		if (!tmp) {
 			last_error = memory_error;
 			return 0;
