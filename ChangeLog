@@ -1,3 +1,17 @@
+Wed Oct 13 16:51:46 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/extensions/tools/javalib/kaffe/tools/jar/Jar.java:
+	implement proper handling of manifest; don't zip up directories
+	* libraries/javalib/java/util/jar/JarOutputStream.java: fix
+	broken handling of manifest
+	* libraries/javalib/Makefile.{am,in}: add zip -DX flags
+	* libraries/javalib/java/util/ArrayList.java,
+	libraries/javalib/java/util/HashMap.java,
+	libraries/javalib/java/util/HashSet.java,
+	libraries/javalib/java/util/LinkedList.java,
+	libraries/javalib/java/util/TreeMap.java,
+	libraries/javalib/java/util/TreeSet.java: fix bug in clone()
+
 Wed Oct 13 11:07:40 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* Makefile.am, Makefile.in, configure, configure.in,
@@ -15,8 +29,7 @@ Wed Oct 13 11:07:40 PDT 1999  Archie Cobbs <archie@whistle.com>
 	* libraries/extensions/tools/javalib/kaffe/tools/compiler/
 	Compiler_kjc.java, libraries/javalib/kjc.jar, kaffe/scripts/kjc.in:
 	new files
-	* libraries/extensions/tools/javalib/kaffe/tools/compiler/
-	Compiler_pizza.java, kaffe/scripts/pizza.in, kaffe/scripts/pizzadoc.in,
+	* kaffe/scripts/pizza.in, kaffe/scripts/pizzadoc.in,
 	libraries/javalib/pizza.jar: removed files
 	* libraries/clib/security/Makefile.am,
 	libraries/clib/security/Makefile.in, libraries/clib/security/digest.c:
