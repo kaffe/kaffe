@@ -668,9 +668,9 @@ extern jint Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env, jclass claz
 extern void* Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec, jint style, jint size );
 
 #ifdef KAFFE_I18N
-#define KAFFE_FONT_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, XOC xoc, ## args )
+#define KAFFE_FONT_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, XOC xoc , ## args )
 #else
-#define KAFFE_FONT_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, XFontStruct* fs, ## args )
+#define KAFFE_FONT_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, XFontStruct* fs , ## args )
 #endif
 
 extern KAFFE_FONT_FUNC_DECL( void, Java_java_awt_Toolkit_fntFreeFont );
