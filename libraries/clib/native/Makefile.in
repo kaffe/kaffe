@@ -99,7 +99,7 @@ external_wrappers.h: external_wrappers.h.debug $(SOURCES)
 		cat $(srcdir)/external_wrappers.h.debug >> external_wrappers.h
 
 .SUFFIXES: .d
- 
+
 .c.d: 
 		$(DEPTOOL) $(ALL_CFLAGS) $< > $@
 
@@ -121,7 +121,7 @@ derived-files:
 
 depend:		external_wrappers.h $(DEPENDS)
 		rm -f .depend
-		cat $(DEPENDS) > .depend
+		sed 's/\$$/$$$$/' $(DEPENDS) > .depend
 
 lib.exp:
 		$(DLLTOOL) --def $(srcdir)/$(LIBNAME).def --output-exp lib.exp --output-lib $(LIBNAME).a --dllname $(LLIB)

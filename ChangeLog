@@ -1,3 +1,8 @@
+Sat Dec 12 09:24:42 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/clib/native/Makefile.in (depend): duplicate `$'s in
+	filenames, otherwise `make' will get confused
+
 Sat Dec 12 06:27:25 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/javalib/java/lang/Thread.java (Finalizer): new private 
