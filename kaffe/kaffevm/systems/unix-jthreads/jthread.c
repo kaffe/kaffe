@@ -405,7 +405,7 @@ interrupt(int sig)
 	 * but the wouldlosewakeup flag is set.  This is the case before
 	 * we go in select/poll.
 	 */
-	if (intsDisabled() /* || wouldlosewakeup */) {
+	if (intsDisabled() || wouldlosewakeup) {
 		char c;
 		pendingSig[sig] = 1;
 		sigPending = 1;
@@ -1667,12 +1667,9 @@ retry:
 	r = poll(pollarray, nfd, sleep ? -1 : 0);
 #else
 	r = select(maxFd+1, &rd, &wr, 0, sleep ? 0 : &zero);
-
-	/* Reset wouldlosewakeup here */
-	if (wouldlosewakeup) {
-		wouldlosewakeup = 0; 
-	}
 #endif
+	/* Reset wouldlosewakeup here */
+	wouldlosewakeup = 0; 
 
 	if (sleep) {
 		int can_read_from_pipe = 0;
