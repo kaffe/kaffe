@@ -915,7 +915,7 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 		reserve = gc_primitive_reserve();
 	}
 
-	/* It is not safe to allocate java objects the the first time
+	/* It is not safe to allocate java objects the first time
 	 * gcMalloc is called, but it should be safe after gcEnable
 	 * has been called.
 	 */
@@ -931,7 +931,7 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 	if (!outOfMem && outOfMem_allocator
 	    && outOfMem_allocator == jthread_current()) { 
 		outOfMem = OOM_ALLOCATING;
-		outOfMem = OutOfMemoryError;
+		outOfMem = OutOfMemoryError; /* implicit allocation */
 		outOfMem_allocator = 0;
 		gc_add_ref(outOfMem);
 	}
@@ -963,7 +963,7 @@ gcThrowOOM(Collector *gcif)
 		reserve = 0;
 		if (!ret || ret == OOM_ALLOCATING) {
 			unlockStaticMutex(&gc_lock);
-			ret = OutOfMemoryError;
+			ret = OutOfMemoryError; /* implicit allocation */
 			lockStaticMutex(&gc_lock);
 		}
 	}
