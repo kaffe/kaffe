@@ -259,7 +259,7 @@ markObjectDontCheck(gc_unit *unit, gc_block *info, uintp idx)
 DBG(GCWALK,	
 	dprintf("  marking @%p: %s\n", UTOMEM(unit),
 			describeObject(UTOMEM(unit)));
-    )
+    );
 
 	DBG(GCSTAT,
 	    switch (KGC_GET_FUNCS(info, idx)) {
@@ -329,7 +329,7 @@ KaffeGC_WalkConservative(Collector* gcif, const void* base, uint32 size)
 DBG(GCWALK,	
 	dprintf("scanning %d bytes conservatively from %p-%p\n", 
 		size, base, ((const char *)base) + size);
-    )
+    );
 
 	record_marked(1, size);
 
@@ -467,7 +467,7 @@ KaffeGC_WalkMemory(Collector* gcif, void* mem)
 DBG(GCWALK,	
 		dprintf("walking %d bytes @%p: %s\n", size, mem, 
 			describeObject(mem));
-    )
+    );
 		walkf(gcif, NULL, mem, size);
 	}
 }
@@ -539,7 +539,7 @@ gcMan(void* arg)
 			 */
 DBG(GCSTAT,
 			dprintf("skipping collection cause allocmem==0...\n");
-    )
+    );
 			goto gcend;
                 }
 
@@ -570,7 +570,7 @@ DBG(GCSTAT,
 				gcStats.allocmem/1024, 
 				gcStats.totalmem/1024,
 				gcStats.allocmem/(double)gcStats.totalmem);
-    )
+    );
 			goto gcend;
 		}
 
@@ -1061,7 +1061,7 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 				/* Grow the heap */
 				DBG (GCSYSALLOC, dprintf ("growing heap by %u bytes of type %s (%2.1f%% free)\n", 
 							  (unsigned int)size, gcFunctions[fidx].description,
-							  (1.0 - (gcStats.totalmem / (double)gc_get_heap_total())) * 100.0); )
+							  (1.0 - (gcStats.totalmem / (double)gc_get_heap_total())) * 100.0); );
 				
 				gc_heap_grow(size);
 				break;

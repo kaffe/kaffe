@@ -221,7 +221,7 @@ translate(Method* xmeth, errorInfo* einfo)
 
 DBG(MOREJIT,
     dprintf("callinfo = %p\n", &cinfo);
-    )
+    );
 
 #if defined(KAFFE_PROFILER)
 	if (profFlag) {
@@ -271,7 +271,7 @@ DBG(MOREJIT,
 		dprintf(" L%d: %2d", i, codeInfo->localuse[i].use);
 	}
 	dprintf("\n");
-)
+);
 
 	base = (bytecode*)METHOD_BYTECODE_CODE(xmeth);
 	len = METHOD_BYTECODE_LEN(xmeth);
@@ -317,7 +317,7 @@ DBG(MOREJIT,
                         while (npc < len && !IS_STARTOFBASICBLOCK(npc) && !IS_STARTOFEXCEPTION(npc)) {
                                 npc = npc + insnLen[base[npc]];
                         }
-DBG(JIT,                dprintf("unreachable basic block pc [%d:%d]\n", pc, npc - 1);   )
+DBG(JIT,                dprintf("unreachable basic block pc [%d:%d]\n", pc, npc - 1);   );
                         if (IS_STARTOFBASICBLOCK(npc)) {
                                 end_basic_block();
                                 start_basic_block();
@@ -409,7 +409,7 @@ DBG(MOREJIT,
 	    xmeth->name->data,
 	    METHOD_SIGD(xmeth),
 	    isStatic ? "static" : "normal", METHOD_NATIVECODE(xmeth));
-    )
+    );
 	
 	if (Kaffe_JavaVMArgs.enableVerboseJIT) {
 		tme = currentTime();

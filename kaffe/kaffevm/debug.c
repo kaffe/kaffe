@@ -337,7 +337,7 @@ debugExitHook(void)
 	 * this is a hook for catching exits from GDB.
 	 * make this dependent on the selection of this option
 	 */
-	DBG(BREAKONEXIT, DBGGDBBREAK())
+	DBG(BREAKONEXIT, DBGGDBBREAK());
 }
 
 /*

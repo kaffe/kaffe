@@ -149,7 +149,7 @@ DBG(RESERROR,
 	dprintf("%p entering process class %s %d->%d\n",
 		KTHREAD(current)(), class->name->data,
 		class->state, tostate);
-    )
+    );
 
 retry:
 	/* If the initialization of that class failed once before, don't
@@ -526,7 +526,7 @@ retry:
 		}
 
 DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
-			CLASS_FSIZE(class)); 	)
+			CLASS_FSIZE(class)); 	);
 		meth = findMethodLocal(class, init_name, void_signature);
 		if (meth == NULL) {
 			SET_CLASS_STATE(CSTATE_COMPLETE);
@@ -559,7 +559,7 @@ DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
 		if (jniworking) {
 DBG(STATICINIT,
 			dprintf("using JNI\n");
-)
+);
 			(*env)->ExceptionClear(env);
 			(*env)->CallStaticVoidMethodA(env, class, (jmethodID)meth, NULL);
 			exc = (*env)->ExceptionOccurred(env);
@@ -567,7 +567,7 @@ DBG(STATICINIT,
 		} else {
 DBG(STATICINIT,
 			dprintf("using callMethodA\n");
-    )
+    );
 			callMethodA(meth, METHOD_NATIVECODE(meth), NULL, NULL, NULL, 1);
 		}
 
@@ -653,7 +653,7 @@ DBG(RESERROR,
 	dprintf("%p leaving process class %s -> %s\n",
 		KTHREAD(current)(), class->name->data,
 		success ? "success" : "failure");
-    )
+    );
 	return (success);
 }
 
@@ -1118,7 +1118,7 @@ addMethod(Hjava_lang_Class* c,
 	nc = name_index;
 	if (pool->tags[nc] != CONSTANT_Utf8) {
 		/* XXX fill in einfo! */
-DBG(RESERROR,	dprintf("addMethod: no method name.\n");		)
+DBG(RESERROR,	dprintf("addMethod: no method name.\n");		);
 		postExceptionMessage(einfo,
 				     JAVA_LANG(ClassFormatError),
 				     "No method name");
@@ -1127,7 +1127,7 @@ DBG(RESERROR,	dprintf("addMethod: no method name.\n");		)
 	sc = signature_index;
 	if (pool->tags[sc] != CONSTANT_Utf8) {
 		/* XXX fill in einfo! */
-DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	)
+DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	);
 		postExceptionMessage(einfo,
 				     JAVA_LANG(ClassFormatError),
 				     "No signature for method: %s",
@@ -1147,7 +1147,7 @@ DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	)
 
 DBG(CLASSFILE,
 	dprintf("Adding method %s:%s%s (%x)\n", c->name->data, name->data, signature->data, access_flags);
-    )
+    );
 
 	mt = &CLASS_METHODS(c)[CLASS_NMETHODS(c)];
 	utf8ConstAssign(mt->name, name);
@@ -1191,7 +1191,7 @@ addField(Hjava_lang_Class* c,
 
 	nc = name_index;
 	if (pool->tags[nc] != CONSTANT_Utf8) {
-DBG(RESERROR,	dprintf("addField: no field name.\n");			)
+DBG(RESERROR,	dprintf("addField: no field name.\n");			);
 		postExceptionMessage(einfo,
 				     JAVA_LANG(ClassFormatError),
 				     "No field name");
@@ -1211,11 +1211,11 @@ DBG(RESERROR,	dprintf("addField: no field name.\n");			)
 DBG(CLASSFILE,
 	dprintf("Adding field %s:%s\n",
 		CLASS_CNAME(c), CLASS_CONST_UTF8(c, nc)->data);
-    )
+    );
 
 	sc = signature_index;
 	if (pool->tags[sc] != CONSTANT_Utf8) {
-DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
+DBG(RESERROR,	dprintf("addField: no signature name.\n");		);
 		postExceptionMessage(einfo,
 				     JAVA_LANG(ClassFormatError),
 				     "No signature name for field: %s",
@@ -1451,7 +1451,7 @@ DBG(VMCLASSLOADER,
 	dprintf("Calling user-defined class loader %s - loadClass(%s)\n",
 		CLASS_CNAME(OBJECT_CLASS(&loader->base)),
 		ce->name->data);
-)
+);
 
 					/* Use a user defined loader. */
 					retval = userLoadClass(ce,
@@ -1464,7 +1464,7 @@ DBG(VMCLASSLOADER,
 	/* Announce when VM calls class loaders.. */
 	dprintf("Calling internal class loader for %s\n",
 		ce->name->data);
-)
+);
 
 					/* Use the primordial loader. */
 					retval = findClass(ce, einfo);
@@ -1558,7 +1558,7 @@ DBG(VMCLASSLOADER,
 	/* Announce when VM calls class loaders.. */
 	dprintf("Calling internal class loader for startup class %s\n",
 		name);
-)
+);
 
 		clazz = findClass(centry, &info);
 		if (clazz == 0) {
@@ -1750,7 +1750,7 @@ resolveObjectFields(Hjava_lang_Class* class, errorInfo *einfo)
 
 DBG(GCPRECISE,
 	dprintf("GCLayout for %s:\n", CLASS_CNAME(class));
-    )
+    );
 
 	/* Now work out the gc layout */
 	fld = CLASS_IFIELDS(class);
@@ -1782,7 +1782,7 @@ DBG(GCPRECISE,
 		dprintf(" offset=%3d nbits=%2d ", offset, nbits);
 		BITMAP_DUMP(map, nbits+1)
 		dprintf(" fsize=%3d (%s)\n", fsize, fld->name->data);
-    )
+    );
 		offset += fsize;
 	}
 	return (true);
@@ -2546,7 +2546,7 @@ lookupClassField(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic, errorInf
 DBG(RESERROR,
 	dprintf("lookupClassField for %s failed %s:%s\n",
 		isStatic?"static":"non-static",clp->name->data, name->data);
-    )
+    );
 	postExceptionMessage(einfo, JAVA_LANG(NoSuchFieldError), "%s", name->data);
 	return (NULL);
 }

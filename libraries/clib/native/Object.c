@@ -101,7 +101,7 @@ java_lang_VMObject_wait(struct Hjava_lang_Object* o, jlong timeout, UNUSED jint 
 
 DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %d\n",
 			cur, KTHREAD(get_data)(cur)->jlThread,
-			o, timeout); )
+			o, timeout); );
 
 #if defined(ENABLE_JVMPI)
   if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_WAIT) )

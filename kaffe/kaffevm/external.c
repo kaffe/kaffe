@@ -93,7 +93,7 @@ DBG(NATIVELIB,
         	i,
         	lt_dlgetinfo(libHandle[i].desc) == NULL ? "unknown" : lt_dlgetinfo(libHandle[i].desc)->name);
     }
-)
+);
 
     ++i;
   }
@@ -140,7 +140,7 @@ initNative(void)
 	char* ptr;
 	unsigned int len;
 
-	DBG(INIT, dprintf("initNative()\n"); )
+	DBG(INIT, dprintf("initNative()\n"); );
 
 	lpath = (char*)Kaffe_JavaVMArgs.libraryhome;
 	if (lpath == 0) {
@@ -180,7 +180,7 @@ initNative(void)
 	strcat (libraryPath, JNI_LIBRARY_PATH);
 #endif
 
-	DBG(INIT, dprintf("got lpath %s and libraryPath %s\n", lpath, libraryPath); )
+	DBG(INIT, dprintf("got lpath %s and libraryPath %s\n", lpath, libraryPath); );
 
 	KaffeLib_Init();
 
@@ -204,10 +204,10 @@ initNative(void)
 		strcat(lib, NATIVELIBRARY);
 		strcat(lib, LIBRARYSUFFIX);
 
-	       	DBG(INIT, dprintf("trying to load %s\n", lib); )
+	       	DBG(INIT, dprintf("trying to load %s\n", lib); );
 
 		if (loadNativeLibrary(lib, NULL, 0) >= 0) {
-			DBG(INIT, dprintf("initNative() done\n"); )
+			DBG(INIT, dprintf("initNative() done\n"); );
 			return;
 		}
 	}
@@ -254,13 +254,13 @@ DBG(NATIVELIB,
 			dprintf("Native lib %s\n"
 			    "\tLOAD desc=%p index=%d ++ref=%d\n",
 			    lib->name, lib->desc, libIndex, lib->ref);
-    )
+    );
 			return libIndex;
 		}
 	}
 	if (errbuf != 0) {
 		assert(errsiz > 0);
-		DBG(NATIVELIB, dprintf("Too many open libraries\n"); )
+		DBG(NATIVELIB, dprintf("Too many open libraries\n"); );
 		strncpy(errbuf, "Too many open libraries", errsiz);
 		errbuf[errsiz - 1] = '\0';
 	}
@@ -290,7 +290,7 @@ DBG(NATIVELIB,
 			{
 				const char *err = KaffeLib_GetError();
 
-				DBG(NATIVELIB, dprintf("Error loading %s: %s\n", path, err); )
+				DBG(NATIVELIB, dprintf("Error loading %s: %s\n", path, err); );
 				
 				/* XXX Bleh, silly guessing system. */
 				if( err == 0 )
@@ -340,7 +340,7 @@ DBG(NATIVELIB,
 	dprintf("Native lib %s\n"
 	    "\tLOAD desc=%p index=%d ++ref=%d\n",
 	    lib->name, lib->desc, libIndex, lib->ref);
-    )
+    );
 #if defined(KAFFE_FEEDBACK)
 	feedbackLibrary(path, true);
 #endif
@@ -372,7 +372,7 @@ DBG(NATIVELIB,
 	dprintf("Native lib %s\n"
 	    "\tUNLOAD desc=%p index=%d --ref=%d\n",
 	    lib->name, lib->desc, libIndex, lib->ref - 1);
-    )
+    );
 
 	assert(lib->desc != 0);
 	assert(lib->ref > 0);
@@ -413,7 +413,7 @@ DBG(NATIVELIB,
         	i,
 		libHandle[i].name);
     }
-)
+);
 
     ++i;
   }
@@ -535,7 +535,7 @@ DBG(NATIVELIB,
 	dprintf("Method = %s.%s%s\n", m->class->name->data, 
 		m->name->data, METHOD_SIGD(m));
 	dprintf("Native stub = '%s'\n", stub);
-    )
+    );
 
 	/* Find the native method */
 	func = loadNativeLibrarySym(stub);
@@ -552,7 +552,7 @@ DBG(NATIVELIB,
 DBG(NATIVELIB,
 	dprintf("Failed to locate native function:\n\t%s.%s%s\n",
 		m->class->name->data, m->name->data, METHOD_SIGD(m));
-    )
+    );
 	postExceptionMessage(einfo, JAVA_LANG(UnsatisfiedLinkError),
 		"Failed to locate native function:\t%s.%s%s",
 		m->class->name->data, m->name->data, METHOD_SIGD(m));

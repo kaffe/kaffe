@@ -107,7 +107,7 @@ gnu_java_net_PlainDatagramSocketImpl_datagramSocketCreate(struct Hgnu_java_net_P
 
 DBG(NATIVENET,
 	dprintf("datagram_create(%p)\n", obj);
-)
+);
 
 	rc = KSOCKET(AF_INET, SOCK_DGRAM, 0, &fd);
 	if (rc) {
@@ -117,7 +117,7 @@ DBG(NATIVENET,
 
 DBG(NATIVENET,
 	dprintf("datagram_create(%p) -> fd=%d\n", obj, fd);
-)
+);
 
 #if defined(SOL_SOCKET) && defined(SO_BROADCAST)
 	/* On some systems broadcasting is off by default - enable it here */
@@ -157,7 +157,7 @@ gnu_java_net_PlainDatagramSocketImpl_bind(struct Hgnu_java_net_PlainDatagramSock
 DBG(NATIVENET,
 	dprintf("datagram_bind4(%p, %s, %d)\n", 
 		obj, ip2str(addr.addr4.sin_addr.s_addr), port);
-)
+);
 
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
 	} else if (obj_length(unhand(laddr)->addr) == 16) {
@@ -175,7 +175,7 @@ DBG(NATIVENET,
 DBG(NATIVENET,
 	dprintf("datagram_bind6(%p, %s, %d)\n", 
 		obj, ip62str(&addr.addr6.sin6_addr), port);
-)		
+);		
 #endif /* defined(HAVE_STRUCT_SOCKADDR_IN6) */
 
 	} else {
@@ -210,7 +210,7 @@ DBG(NATIVENET,
 DBG(NATIVENET,
 	dprintf("  datagram_bind(%p, %s, -) -> (localPort: %d)\n",
 		obj, ip2str(addr.addr4.sin_addr.s_addr), port);
-)
+);
 }
 
 void
@@ -224,7 +224,7 @@ gnu_java_net_PlainDatagramSocketImpl_send0(struct Hgnu_java_net_PlainDatagramSoc
 DBG(NATIVENET,
 	dprintf("datagram_send(%p, %p [%d bytes])\n",
 		obj, pkt, unhand(pkt)->length);
-)
+);
 
         memset(&addr, 0, sizeof(addr));
         if (obj_length(unhand(unhand(pkt)->address)->addr) == 4) {
@@ -242,7 +242,7 @@ DBG(NATIVENET,
 	dprintf("  datagram_send() to %s:%d\n",
 		ip2str(ntohl(addr.addr4.sin_addr.s_addr)),
 		unhand(pkt)->port);
-)
+);
 
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
 	} else if (obj_length(unhand(unhand(pkt)->address)->addr) == 16) {
@@ -261,7 +261,7 @@ DBG(NATIVENET,
 	dprintf("  datagram_send() to %s / %d\n",
 		ip62str(&addr.addr6.sin6_addr),
 		unhand(pkt)->port);
-)
+);
 #endif /* defined(HAVE_STRUCT_SOCKADDR_IN6) */
 
         } else {
@@ -274,7 +274,7 @@ DBG(NATIVENET,
 
 DBG(NATIVENET,
 	dprintf("  datagram_send() -> rc=%d bsent=%ld\n", rc, (long) bsent);
-)
+);
 
 	if (rc) {
 		SignalError("java.net.SocketException", SYS_ERROR(rc));
@@ -328,7 +328,7 @@ gnu_java_net_PlainDatagramSocketImpl_receive0(struct Hgnu_java_net_PlainDatagram
 DBG(NATIVENET,
 	dprintf("datagram_receive(%p, %p [%d bytes])\n",
 		obj, pkt, unhand(pkt)->length);
-)
+);
 
 	/* Which port am I receiving from */
 	addr.addr4.sin_port = htons(unhand(obj)->localPort);
@@ -402,7 +402,7 @@ DBG(NATIVENET,
 	dprintf("  datagram_receive(%p, %p) -> from %s:%d; brecv=%ld\n",
 		obj, pkt, ip2str(ntohl(addr.addr4.sin_addr.s_addr)),
 		ntohs(addr.addr4.sin_port), (long) r);
-)
+);
 }
 
 /*
@@ -415,7 +415,7 @@ gnu_java_net_PlainDatagramSocketImpl_datagramSocketClose(struct Hgnu_java_net_Pl
 
 DBG(NATIVENET,
 	dprintf("datagram_close(%p)\n", obj);
-)
+);
 
 	if (unhand(obj)->native_fd != -1) {
 		r = KSOCKCLOSE(unhand(obj)->native_fd);
@@ -565,7 +565,7 @@ gnu_java_net_PlainDatagramSocketImpl_join(struct Hgnu_java_net_PlainDatagramSock
 DBG(NATIVENET,
 	dprintf("datagram_join (%p, %p) => %s\n",
 		obj, laddr, ip2str(ipm.imr_interface.s_addr));
-   )
+   );
 
 	r = KSETSOCKOPT(unhand(obj)->native_fd,
 		IPPROTO_IP, IP_ADD_MEMBERSHIP, &ipm, sizeof(ipm));
@@ -603,7 +603,7 @@ gnu_java_net_PlainDatagramSocketImpl_leave(struct Hgnu_java_net_PlainDatagramSoc
 DBG(NATIVENET,
 	dprintf("datagram_leave (%p, %p) => %s\n",
 		obj, laddr, ip2str(ipm.imr_interface.s_addr));
-   )
+   );
 
 	r = KSETSOCKOPT(unhand(obj)->native_fd,
 		IPPROTO_IP, IP_DROP_MEMBERSHIP, &ipm, sizeof(ipm));
@@ -639,7 +639,7 @@ gnu_java_net_PlainDatagramSocketImpl_joinGroup(struct Hgnu_java_net_PlainDatagra
 DBG(NATIVENET,
 	dprintf("  datagram_joinGroup(%p, %p, %p) -> join %s\n",
 		obj, jsa, jni, ip2str(ipm.imr_multiaddr.s_addr));
-   )
+   );
 
 	if( jni && obj_length(unhand(unhand(jni)->inetAddresses)->elementData) != 0)
 	{

@@ -160,7 +160,7 @@ gnu_java_net_PlainSocketImpl_socketCreate(struct Hgnu_java_net_PlainSocketImpl* 
 
 	DBG(NATIVENET,
 	    dprintf("socketCreate(%p, %s)\n", this, stream ? "stream" : "datagram");
-	    )
+	    );
 
 	rc = KSOCKET(AF_INET, type, 0, &fd);
 	if (rc) {
@@ -171,7 +171,7 @@ gnu_java_net_PlainSocketImpl_socketCreate(struct Hgnu_java_net_PlainSocketImpl* 
 	DBG(NATIVENET,
 	    dprintf("socketCreate(%p, %s) -> fd=%d\n", 
 		    this, stream ? "stream" : "datagram", fd);
-	    )
+	    );
 
 	unhand(this)->native_fd = fd;
 	unhand(this)->native_fd = fd;
@@ -224,7 +224,7 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 	DBG(NATIVENET,
 	    dprintf("socketConnect(%p, %s, %d, %d)\n", 
 		    this, ip2str(addr.addr4.sin_addr.s_addr), dport, timeout);
-	    )
+	    );
 
 	fd = (int)unhand(this)->native_fd;
 	r = KCONNECT(fd, (struct sockaddr*)&addr, alen, timeout);
@@ -256,7 +256,7 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 		    this, ip2str(addr.addr4.sin_addr.s_addr), dport,
 		    ntohs(addr.addr4.sin_port)
 		    );
-	    )
+	    );
 
 	unhand(this)->address = daddr;
 	unhand(this)->port = dport;
@@ -280,7 +280,7 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 	DBG(NATIVENET,
 	    dprintf("socketBind(%p, %s, %d)\n", 
 		    this, ip2str(unhand(laddr)->address), lport);
-	    )
+	    );
 
 	memset(&addr, 0, sizeof(addr));
 	if (obj_length(unhand(laddr)->addr) == IPV4_ADDRESS_SIZE) {
@@ -371,7 +371,7 @@ gnu_java_net_PlainSocketImpl_socketListen(struct Hgnu_java_net_PlainSocketImpl* 
 
 	DBG(NATIVENET,
 	    dprintf("socketListen(%p, count=%d)\n", this, count);
-	    )
+	    );
 
 	r = KLISTEN((int)unhand(this)->native_fd, count);
 	if (r) {
@@ -412,7 +412,7 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 	DBG(NATIVENET,
 	    dprintf("socketAccept(%p, localport=%d, addr=%s)\n", 
 		    this, ntohs(addr.sin_port), ip2str(addr.sin_addr.s_addr));
-	    )
+	    );
 
 	alen = sizeof(addr);
 	do {
@@ -486,7 +486,7 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 	DBG(NATIVENET,
 	    dprintf("socketAccept(%p, localport=-, addr=-) -> (sock: %p; addr: %s; port:%d)\n", 
 		    this, sock, ip2str(addr.sin_addr.s_addr), ntohs(addr.sin_port));
-	    )
+	    );
 }
 
 /*
@@ -506,7 +506,7 @@ gnu_java_net_PlainSocketImpl_socketAvailable(struct Hgnu_java_net_PlainSocketImp
 
 	DBG(NATIVENET,
 	    dprintf("socketAvailable(%p)\n", this);
-	    )
+	    );
 	fd = (int)unhand(this)->native_fd;
 
 #if defined(HAVE_IOCTL) && defined(FIONREAD)
@@ -537,7 +537,7 @@ gnu_java_net_PlainSocketImpl_socketAvailable(struct Hgnu_java_net_PlainSocketImp
 
 	DBG(NATIVENET,
 	    dprintf("socketAvailable(%p) -> %d\n", this, len);
-	    )
+	    );
 
 	return (len);
 }
@@ -552,7 +552,7 @@ gnu_java_net_PlainSocketImpl_socketClose(struct Hgnu_java_net_PlainSocketImpl* t
 
 	DBG(NATIVENET,
 	    dprintf("socketClose(%p)\n", this);
-	    )
+	    );
 
 	if (unhand(this)->native_fd != -1) {
 		r = KSOCKCLOSE((int)unhand(this)->native_fd);
@@ -577,7 +577,7 @@ gnu_java_net_PlainSocketImpl_socketSetOption(struct Hgnu_java_net_PlainSocketImp
 		    if (optionNames[k].opt == opt)
 			    optstr = optionNames[k].name;
 	    dprintf("socketSetOption(%p, %s, arg=%p)\n", this, optstr, arg);
-	    )
+	    );
 
 	/* Do easy cases */
 	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
@@ -637,7 +637,7 @@ gnu_java_net_PlainSocketImpl_socketGetOption(struct Hgnu_java_net_PlainSocketImp
 		    if (optionNames[k].opt == opt)
 			    optstr = optionNames[k].name;
 	    dprintf("socketGetOption(%p, %s)\n", this, optstr);
-	    )
+	    );
 
 	/* Do easy cases */
 	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
@@ -650,7 +650,7 @@ gnu_java_net_PlainSocketImpl_socketGetOption(struct Hgnu_java_net_PlainSocketImp
 			}
 			DBG(NATIVENET,
 			    dprintf("socketGetOption(%p, -) -> %d\n", this, v);
-			    )
+			    );
 			return v;
 		}
 	}
@@ -672,7 +672,7 @@ gnu_java_net_PlainSocketImpl_socketGetOption(struct Hgnu_java_net_PlainSocketImp
 	} 
 	DBG(NATIVENET,
 	    dprintf("socketGetOption(%p, -) -> %d\n", this, r);
-	    )
+	    );
 	return (r);
 }
 
@@ -687,7 +687,7 @@ gnu_java_net_PlainSocketImpl_socketRead(struct Hgnu_java_net_PlainSocketImpl* th
 	DBG(NATIVENET,
 	    dprintf("socket_read(%p, %p, %d, %d)\n", 
 		    this, buf, offset, len);
-	    )
+	    );
 
 	fd = (int)unhand(this)->native_fd;
 	if (fd < 0) {
@@ -732,7 +732,7 @@ gnu_java_net_PlainSocketImpl_socketWrite(struct Hgnu_java_net_PlainSocketImpl* t
 	DBG(NATIVENET,
 	    dprintf("socket_write(%p, %p, %d, %d)\n", 
 		    this, buf, offset, len);
-	    )
+	    );
 
 	fd = (int)unhand(this)->native_fd;
 	if (fd >= 0) {

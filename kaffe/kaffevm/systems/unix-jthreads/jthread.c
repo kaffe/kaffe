@@ -762,7 +762,7 @@ resumeThread(jthread* jtid)
 {
 	KaffeNodeQueue** ntid;
 
-DBG(JTHREAD,	dprintf("resumeThread %p\n", jtid);	)
+DBG(JTHREAD,	dprintf("resumeThread %p\n", jtid);	);
 	intsDisable();
 
 	if (jtid->status != THREAD_RUNNING) {
@@ -820,7 +820,7 @@ DBG(JTHREAD,	dprintf("resumeThread %p\n", jtid);	)
 			threadQtail[jtid->priority] = queue;
 		}
 	} else {
-DBG(JTHREAD,		dprintf("Re-resuming %p\n", jtid); )
+DBG(JTHREAD,		dprintf("Re-resuming %p\n", jtid); );
 	}
 	intsRestore();
 }
@@ -897,7 +897,7 @@ suspendOnQThread(jthread* jtid, KaffeNodeQueue** queue, long timeout)
 	KaffeNodeQueue* last;
 
 DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%ld) bI %d\n",
-	jtid, queue, timeout, blockInts); )
+	jtid, queue, timeout, blockInts); );
 
 	assert(timeout >= 0 || timeout == NOTIMEOUT);
 	assert(intsDisabled()); 
@@ -950,7 +950,7 @@ DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%ld) bI %d\n",
 		}
 	} else {
 	DBG(JTHREAD,
-		dprintf("Re-suspending %p on %p\n", jtid, *queue); )
+		dprintf("Re-suspending %p on %p\n", jtid, *queue); );
 	}
 	return (rc);
 }
@@ -973,7 +973,7 @@ killThread(jthread *tid)
 		(*destructor1)(tid->localData.jlThread);
 
 DBG(JTHREAD,	
-	dprintf("killThread %p kills %p\n", currentJThread, tid); )
+	dprintf("killThread %p kills %p\n", currentJThread, tid); );
 
 	if (tid->status != THREAD_DEAD) {
 
@@ -1062,7 +1062,7 @@ newThreadCtx(size_t stackSize)
 
 DBG(JTHREAD,
 	dprintf("allocating new thread, stack base %p-%p\n", 
-	    ct->stackBase, ct->stackEnd); )
+	    ct->stackBase, ct->stackEnd); );
 
 	return (ct);
 }
@@ -1563,7 +1563,7 @@ jthread_create(unsigned char pri, void (*func)(void *), int isDaemon,
                 tdaemon++;
         }
 DBG(JTHREAD,
-	dprintf("creating thread %p, daemon=%d\n", jtid, isDaemon); )
+	dprintf("creating thread %p, daemon=%d\n", jtid, isDaemon); );
 	jmutex_unlock(&threadLock);
 
         assert(func != 0); 
@@ -1678,7 +1678,7 @@ DBG(JTHREADDETAIL,
                (long)((char *) currentJThread->stackEnd - (char *) currentJThread->stackBase),
                bp,
                (rc ? "yes" : "no"));
-    )
+    );
 
         return rc;
 }
@@ -1909,7 +1909,7 @@ jthread_exit(void)
 	KaffeNodeQueue *liveQ;
 
 DBG(JTHREAD,
-	dprintf("jthread_exit %p\n", currentJThread);		)
+	dprintf("jthread_exit %p\n", currentJThread);		);
 
 	jthread_disable_stop();
 	jmutex_lock(&threadLock);
@@ -1929,7 +1929,7 @@ DBG(JTHREAD,
 	/* If we only have daemons left, then we should exit. */
 	if (talive == tdaemon) {
 DBG(JTHREAD,
-	dprintf("all done, closing shop\n");	)
+	dprintf("all done, closing shop\n");	);
 		if (runOnExit != 0) {
 		    runOnExit();
 		}
@@ -2011,7 +2011,7 @@ reschedule(void)
 					currentJThread->startUsed = ct;
 				}
 DBG(JTHREADDETAIL,
-dprintf("switch from %p to %p\n", lastThread, currentJThread); )
+dprintf("switch from %p to %p\n", lastThread, currentJThread); );
 
 				/* save and restore floating point state */
 #if defined(SAVE_FP)
@@ -2155,7 +2155,7 @@ handleIO(int canSleep)
 	assert(intsDisabled());
 
 DBG(JTHREADDETAIL,
-	dprintf("handleIO(sleep=%d)\n", canSleep);		)
+	dprintf("handleIO(sleep=%d)\n", canSleep);		);
 
 #if USE_POLL
 	/* Build pollarray from fd_sets.
@@ -2223,7 +2223,7 @@ retry:
 		} else {
 			maxWait = firstAlarm - curTime;
 		}
-		DBG(JTHREADDETAIL, dprintf("handleIO(sleep=%d) maxWait=%d\n", canSleep, maxWait); )
+		DBG(JTHREADDETAIL, dprintf("handleIO(sleep=%d) maxWait=%d\n", canSleep, maxWait); );
 	}
 
 #if USE_POLL
@@ -2275,7 +2275,7 @@ retry:
 		return;
 
 DBG(JTHREADDETAIL,
-	dprintf("Select returns %d\n", r);			)
+	dprintf("Select returns %d\n", r);			);
 
 #if USE_POLL
 	for (i = 0; r > 0 && i < nfd; i++) {
@@ -2337,7 +2337,7 @@ blockOnFile(int fd, int op, int timeout)
 {
 	int rc = false;
 DBG(JTHREAD,
-	dprintf("blockOnFile(%d,%s)\n", fd, op == TH_READ ? "r":"w"); )
+	dprintf("blockOnFile(%d,%s)\n", fd, op == TH_READ ? "r":"w"); );
 
 	assert(intsDisabled());
 	BLOCKED_ON_EXTERNAL(currentJThread);
@@ -2375,7 +2375,7 @@ void
 jmutex_lock(jmutex *lock)
 {
 DBG(JTHREAD,
-	dprintf("jmutex_lock(%p)\n", lock); )
+	dprintf("jmutex_lock(%p)\n", lock); );
 	intsDisable();
 	jthread_current()->flags |= THREAD_FLAGS_WAIT_MUTEX;
 	while (lock->holder != NULL)
@@ -2390,7 +2390,7 @@ void
 jmutex_unlock(jmutex *lock)
 {
 DBG(JTHREAD,
-	dprintf("jmutex_unlock(%p)\n", lock); )
+	dprintf("jmutex_unlock(%p)\n", lock); );
 	intsDisable();
 	lock->holder = NULL;
 	if (lock->waiting != 0) {
@@ -2603,7 +2603,7 @@ jthreadedFileDescriptor(int fd)
 	/* On some systems, this will flag an error if fd is not a socket */
 	r = fcntl(fd, F_SETOWN, pid);
 	if (r < 0) {
-		DBG(JTHREAD, perror("F_SETOWN"); )
+		DBG(JTHREAD, perror("F_SETOWN"); );
 	}
 #endif
 	return (fd);
@@ -3065,7 +3065,7 @@ jthreadedWaitpid(int wpid, int* status, int options, int *outpid)
 	int ret = 0;
 
 DBG(JTHREAD,
-	dprintf("waitpid %d current=%p\n", wpid, currentJThread); )
+	dprintf("waitpid %d current=%p\n", wpid, currentJThread); );
 
 	intsDisable();
 	for (;;) {
@@ -3149,7 +3149,7 @@ DBG(JTHREAD,
 			dprintf(", `%s'", *d++);
 		dprintf("]\n");
 	}
-    )
+    );
 	/* Create the pipes to communicate with the child */
 	/* Make sure fds get closed if we can't create all pipes */
 	for (nfd = 0; nfd < 8; nfd += 2) {

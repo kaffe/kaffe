@@ -62,7 +62,7 @@ soft_new(Hjava_lang_Class* c)
 
 DBG(NEWINSTR,
 	dprintf("New object of type %s (%d,%p)\n",
-		c->name->data, CLASS_FSIZE(c), obj); )
+		c->name->data, CLASS_FSIZE(c), obj); );
 
 	return (obj);
 bad:
@@ -90,7 +90,7 @@ soft_newarray(jint type, jint size)
 
 DBG(NEWINSTR,
 	dprintf("New array of %s [%d] (%p)\n",
-		TYPE_CLASS(type)->name->data, size, obj); )
+		TYPE_CLASS(type)->name->data, size, obj); );
 
 	return (obj);
 }
@@ -115,7 +115,7 @@ soft_anewarray(Hjava_lang_Class* elclass, jint size)
 
 DBG(NEWINSTR,
 	dprintf("New array object [%d] of %s (%p)\n", size,
-		elclass->name->data, obj); )
+		elclass->name->data, obj); );
 	return (obj);
 }
 

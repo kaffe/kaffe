@@ -544,7 +544,7 @@ SCHK(	sanityCheck();						)
 
 DBG(REGFORCE,
     dprintf ("forceRegister() set forced %d %p\n", reg, slot);
-    )
+    );
 
 	regi->ctype = regi->type & type;
 	assert(regi->ctype != 0);

@@ -329,7 +329,7 @@ gc_heap_initialise(void)
 
 DBG(SLACKANAL,
 	atexit(printslack);
-    )
+    );
 
 #undef	OBJSIZE
 
@@ -363,11 +363,11 @@ DBG(SLACKANAL,
 		totalslack += (freelist[sztable[sz].list].sz - sz);
 		totalsmallobjs++;
 	}
-    )
+    );
 
 DBG(GCDIAG, 
 	gc_heap_check();
-    )
+    );
 
 	if (KGC_SMALL_OBJECT(sz)) {
 
@@ -381,7 +381,7 @@ DBG(GCDIAG,
 			blk = *mptr;
 			assert(blk->free != 0);
 DBG(GCALLOC,		dprintf("gc_heap_malloc: freelist %ld at %p free %p\n", 
-				(long) sz, *mptr, blk->free);)
+				(long) sz, *mptr, blk->free););
 		}
 		else {
 			blk = gc_small_block(nsz);
@@ -392,7 +392,7 @@ DBG(GCALLOC,		dprintf("gc_heap_malloc: freelist %ld at %p free %p\n",
 			*mptr = blk;
 
 DBG(GCALLOC,		dprintf("gc_heap_malloc: small block %ld at %p free %p\n", 
-				(long) sz, *mptr, blk->free);)
+				(long) sz, *mptr, blk->free););
 		}
 
 		/* Unlink free one and return it */
@@ -426,7 +426,7 @@ DBG(GCALLOC,		dprintf("gc_heap_malloc: small block %ld at %p free %p\n",
 		mem = GCBLOCK2FREE(blk, 0);
 		KGC_SET_STATE(blk, 0, KGC_STATE_NORMAL);
 DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %ld at %p\n", 
-			(long) sz, mem);	)
+			(long) sz, mem);	);
 		blk->avail--;
 		assert(blk->avail == 0);
 	}
@@ -466,7 +466,7 @@ gc_heap_free(void* mem)
 	KGC_SET_COLOUR(info, idx, KGC_COLOUR_FREE);
 
 DBG(GCFREE,
-	dprintf("gc_heap_free: memory %p size %d\n", mem, info->size);	)
+	dprintf("gc_heap_free: memory %p size %d\n", mem, info->size);	);
 
 	lockStaticMutex(&gc_heap_lock);
 
@@ -529,7 +529,7 @@ DBG(GCFREE,
 
 DBG(GCDIAG,
 	gc_heap_check();
-    )
+    );
 
 }
 
@@ -581,7 +581,7 @@ DBG(SLACKANAL,
 	int slack = ((char *)info) 
 		+ gc_pgsize - (char *)(GCBLOCK2MEM(info, nr));
 	totalslack += slack;
-    )
+    );
 	return (info);
 }
 
@@ -609,7 +609,7 @@ gc_large_block(size_t sz)
 	/* number of pages allocated for block */
 	block_count = msz >> gc_pgbits;
 	
-	DBG(GCPRIM, dprintf ("large block covers %x pages\n", block_count); )
+	DBG(GCPRIM, dprintf ("large block covers %x pages\n", block_count); );
 
 	/* Setup the meta-data for the block */
 	DBG(GCDIAG, gc_set_magic_marker(info));
@@ -780,7 +780,7 @@ gc_primitive_alloc(size_t sz)
 
 	assert(sz % gc_pgsize == 0);
 
-	DBG(GCPRIM, dprintf("\ngc_primitive_alloc: got to allocate 0x%x bytes\n", (unsigned int)sz); )
+	DBG(GCPRIM, dprintf("\ngc_primitive_alloc: got to allocate 0x%x bytes\n", (unsigned int)sz); );
 
 	/* try freelists for small primitive blocks first */
 	if (i <= KGC_PRIM_LIST_COUNT) {
@@ -819,7 +819,7 @@ gc_primitive_alloc(size_t sz)
 		gc_remove_from_prim_freelist (best_fit);
 
 		DBG(GCPRIM, dprintf ("gc_primitive_alloc: found best_fit %p diff 0x%x (0x%x - 0x%x)\n",
-				     best_fit, (unsigned int)diff, best_fit->size, (unsigned int)sz); )
+				     best_fit, (unsigned int)diff, best_fit->size, (unsigned int)sz); );
 		assert ( diff % gc_pgsize == 0 );
 
 		if (diff > 0) {
@@ -831,7 +831,7 @@ gc_primitive_alloc(size_t sz)
 			nptr->size = diff;
 			gc_block_rm (nptr);
 
-			DBG(GCPRIM, dprintf ("gc_primitive_alloc: splitted remaining 0x%x bytes @ %p\n", (unsigned int)diff, nptr); )
+			DBG(GCPRIM, dprintf ("gc_primitive_alloc: splitted remaining 0x%x bytes @ %p\n", (unsigned int)diff, nptr); );
 
 			DBG(GCDIAG, gc_set_magic_marker(nptr));
 
@@ -851,11 +851,11 @@ gc_primitive_alloc(size_t sz)
 			gc_add_to_prim_freelist (nptr);
 		}
 
-DBG(GCPRIM,	dprintf("gc_primitive_alloc: 0x%x bytes from freelist @ %p\n", best_fit->size, best_fit); )
+DBG(GCPRIM,	dprintf("gc_primitive_alloc: 0x%x bytes from freelist @ %p\n", best_fit->size, best_fit); );
 		gc_block_add(best_fit);
 		return (best_fit);
 	}
-DBG(GCPRIM,	dprintf("gc_primitive_alloc: no suitable block found!\n"); )
+DBG(GCPRIM,	dprintf("gc_primitive_alloc: no suitable block found!\n"); );
 
 	/* Nothing found on free list */
 	return (0);
@@ -901,7 +901,7 @@ gc_primitive_free(gc_block* mem)
 	/* Remove from object hash */
 	gc_block_rm(mem);
 
-	DBG(GCPRIM, dprintf ("\ngc_primitive_free: freeing block %p (%x bytes, %x)\n", mem, mem->size, mem->size >> gc_pgbits); )
+	DBG(GCPRIM, dprintf ("\ngc_primitive_free: freeing block %p (%x bytes, %x)\n", mem, mem->size, mem->size >> gc_pgbits); );
 
 	/*
 	 * Test whether this block is mergable with its successor.
@@ -913,7 +913,7 @@ gc_primitive_free(gc_block* mem)
 	if ((blk != NULL) &&
 	    !GCBLOCKINUSE(blk) &&
 	    gc_block_end(mem)==blk) {
-		DBG(GCPRIM, dprintf ("gc_primitive_free: merging %p with its successor (%p, %u)\n", mem, blk, blk->size);)
+		DBG(GCPRIM, dprintf ("gc_primitive_free: merging %p with its successor (%p, %u)\n", mem, blk, blk->size););
 
 		gc_remove_from_prim_freelist(blk);
 
@@ -924,7 +924,7 @@ gc_primitive_free(gc_block* mem)
 	if ((blk != NULL) &&
 	    !GCBLOCKINUSE(blk) &&
 	    gc_block_end(blk)==mem) {
-		DBG(GCPRIM, dprintf ("gc_primitive_free: merging %p with its predecessor (%p, %u)\n", mem, blk, blk->size); )
+		DBG(GCPRIM, dprintf ("gc_primitive_free: merging %p with its predecessor (%p, %u)\n", mem, blk, blk->size); );
 
 		gc_remove_from_prim_freelist(blk);
 		  
@@ -936,7 +936,7 @@ gc_primitive_free(gc_block* mem)
 	gc_add_to_prim_freelist (mem);
 
 	DBG(GCPRIM, dprintf ("gc_primitive_free: added 0x%x bytes @ %p to freelist %u @ %p\n", mem->size, mem,
-			     (unsigned int)(gc_get_prim_freelist(mem)-&gc_prim_freelist[0]), gc_get_prim_freelist(mem)); )
+			     (unsigned int)(gc_get_prim_freelist(mem)-&gc_prim_freelist[0]), gc_get_prim_freelist(mem)); );
 }
 
 /*
@@ -1216,7 +1216,7 @@ gc_heap_grow(size_t sz)
 	blk = gc_block_alloc(sz);
 
 	DBG(GCSYSALLOC,
-	    dprintf("gc_system_alloc: %ld byte at %p\n", (long) sz, blk); )
+	    dprintf("gc_system_alloc: %ld byte at %p\n", (long) sz, blk); );
 
 	if (blk == 0) {
 		unlockStaticMutex(&gc_heap_lock);

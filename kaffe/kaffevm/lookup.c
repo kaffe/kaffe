@@ -60,7 +60,7 @@ getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool shouldLoadC
 	pool = CLASS_CONSTANTS(this);
 	if (pool->tags[idx] != CONSTANT_Methodref &&
 	    pool->tags[idx] != CONSTANT_InterfaceMethodref) {
-DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
+DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	);
 		/* shouldn't that be ClassFormatError or something? */
 		postExceptionMessage(einfo, JAVA_LANG(NoSuchMethodError),
 			"method name unknown, tag = %d", pool->tags[idx]);
@@ -140,7 +140,7 @@ DBG(MLOOKUP,
 	if (shouldLoadClass) 
 		dprintf("getMethodSignatureClass(%s,%s,%s) -> %s\n",
 			call->class->name->data, name->data, sig->data, 
-			(call->method ? "success" : "failure"));	)
+			(call->method ? "success" : "failure"));	);
 	return (true);
 }
 
@@ -256,7 +256,7 @@ getField(constIndex idx, Hjava_lang_Class* this, bool isStaticField, fieldInfo* 
 	
 	pool = CLASS_CONSTANTS(this);
 	if (pool->tags[idx] != CONSTANT_Fieldref) {
-DBG(RESERROR,	dprintf("No Fieldref found\n");				)
+DBG(RESERROR,	dprintf("No Fieldref found\n");				);
 		postExceptionMessage(einfo, JAVA_LANG(NoSuchFieldError),
 			"tag was %d", pool->tags[idx]);
 		return (false);
@@ -279,7 +279,7 @@ DBG(FLOOKUP,	dprintf("*** getField(%s,%s,%s)\n",
 		class->name->data, 
 		WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)])->data, 
 		WORD2UTF(pool->data[NAMEANDTYPE_SIGNATURE(ni, pool)])->data);
-    )
+    );
 
 	field = lookupClassField(class, WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]), isStaticField, einfo);
 	if (field == 0) {
@@ -320,7 +320,7 @@ findMethodLocal(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature)
 		if (utf8ConstEqual (name, mptr->name) && utf8ConstEqual (signature, METHOD_SIG(mptr))) {
 DBG(MLOOKUP,
 			dprintf("findMethodLocal(%s,%s,%s) -> %p\n",
-				class->name->data, name->data, signature->data, mptr); )
+				class->name->data, name->data, signature->data, mptr); );
 
 			return (mptr);
 		}
@@ -328,7 +328,7 @@ DBG(MLOOKUP,
 
 DBG(MLOOKUP,
 	dprintf("findMethodLocal(%s,%s,%s) -> NOT FOUND\n",
-		class->name->data, name->data, signature->data); )
+		class->name->data, name->data, signature->data); );
 
 	return NULL;
 }

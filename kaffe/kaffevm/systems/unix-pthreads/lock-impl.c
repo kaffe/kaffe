@@ -36,7 +36,7 @@ clearBlockState(jthread_t cur, unsigned int newState)
   cur->blockState &= ~newState;
   if (cur->suspendState == SS_SUSPENDED)
     {
-      DBG(JTHREADDETAIL, dprintf("Changing blockstate of %p to %d while in suspend, block again\n",  cur, newState))
+      DBG(JTHREADDETAIL, dprintf("Changing blockstate of %p to %d while in suspend, block again\n",  cur, newState));
 
       KaffePThread_WaitForResume(true);
     }

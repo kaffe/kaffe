@@ -182,7 +182,7 @@ initialiseKaffe(void)
 #endif
 
 	/* Create the initialise and finalize names and signatures. */
-	DBG(INIT, dprintf("create names and signatures\n"); )
+	DBG(INIT, dprintf("create names and signatures\n"); );
 
 	init_name = utf8ConstNew("<clinit>", -1);
 	final_name = utf8ConstNew("finalize", -1);
@@ -204,7 +204,7 @@ initialiseKaffe(void)
 		ABORT();
 	}
 
-	DBG(INIT, dprintf("done\n"); )
+	DBG(INIT, dprintf("done\n"); );
 
 #if defined(HAVE_GCJ_SUPPORT)
 	/* Init GCJ support */
@@ -265,7 +265,7 @@ initBaseClasses(void)
         initTypes();
 	initVerifierPrimTypes();
 
-        DBG(INIT, dprintf("initBaseClasses()\n"); )
+        DBG(INIT, dprintf("initBaseClasses()\n"); );
 
         /* The base types */
         loadStaticClass(&ObjectClass, OBJECTCLASS);
@@ -308,7 +308,7 @@ initBaseClasses(void)
 	loadStaticClass(&javaLangStackOverflowError, "java/lang/StackOverflowError");
 	loadStaticClass(&javaIoIOException, "java/io/IOException");
 
-	DBG(INIT, dprintf("initBaseClasses() done\n"); )
+	DBG(INIT, dprintf("initBaseClasses() done\n"); );
 
 	/* Fixup primitive types */
 	finishTypes();

@@ -1,3 +1,26 @@
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
+	* config/i386/jit3-i386.def, kaffe/kaffevm/baseClasses.c,
+	  kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classPool.c,
+	  kaffe/kaffevm/code-analyse.c, kaffe/kaffevm/debug.c,
+	  kaffe/kaffevm/debug.h, kaffe/kaffevm/exception.c,
+	  kaffe/kaffevm/external.c, kaffe/kaffevm/findInJar.c,
+	  kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/itypes.c,
+	  kaffe/kaffevm/jit3/machine.c, kaffe/kaffevm/jit3/registers.c,
+	  kaffe/kaffevm/kaffe-gc/gc-incremental.c,
+	  kaffe/kaffevm/kaffe-gc/gc-mem.c, kaffe/kaffevm/kaffe-gc/gc-refs.c,
+	  kaffe/kaffevm/locks.c, kaffe/kaffevm/lookup.c,
+	  kaffe/kaffevm/object.c, kaffe/kaffevm/soft.c,
+	  kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	  kaffe/kaffevm/systems/unix-pthreads/lock-impl.c,
+	  kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	  kaffe/kaffevm/thread.c, kaffe/kaffevm/utf8const.c,
+	  kaffe/kaffevm/verifier/verify-block.c, libraries/clib/native/Object.c,
+	  libraries/clib/native/Thread.c,
+	  libraries/clib/net/PlainDatagramSocketImpl.c,
+	  libraries/clib/net/PlainSocketImpl.c:
+	  Make the DBG macro a proper statement, using do { ... } while(0).
+
 2004-12-18  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/mips/irix5/jit3-md.h: Fixed a path.

@@ -88,7 +88,7 @@ void java_lang_VMThread_sleep(jlong timeout, UNUSED jint ns)
     }
 
 DBG(VMTHREAD, dprintf ("%p (%p) sleeping for %d\n", cur,
-			KTHREAD(get_data)(cur)->jlThread, timeout); )
+			KTHREAD(get_data)(cur)->jlThread, timeout); );
 
   /*
    * Using the semaphore of this thread for sleeping is safe, since

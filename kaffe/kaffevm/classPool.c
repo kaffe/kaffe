@@ -214,7 +214,7 @@ removeClassEntries(Hjava_lang_ClassLoader* loader)
 DBG(CLASSGC,
 				dprintf("removing %s l=%p/c=%p\n",
 				    entry->name->data, loader, entry->data.cl);
-    )
+    );
 				/* release reference to name */
 				utf8ConstRelease(entry->name);
 				(*entryp) = entry->next;

@@ -103,7 +103,7 @@ findClass(classEntry* centry, errorInfo *einfo)
 		}
 DBG(GCJ,	dprintf(__FUNCTION__": adding class %s to pool@%p\n",
 			cname, centry);
-    )
+    );
 		class->centry = centry;
 		assert(CLASS_GCJ(class));
 		return (class);
@@ -112,7 +112,7 @@ DBG(GCJ,	dprintf(__FUNCTION__": adding class %s to pool@%p\n",
 
 	/* Look for the class */
 DBG(CLASSLOOKUP,
-	dprintf("Scanning for class %s\n", cname);		)
+	dprintf("Scanning for class %s\n", cname);		);
 
 	buf = checkPtr(KMALLOC(strlen(cname) + 8));
 	sprintf(buf, "%s.class", cname);
@@ -199,14 +199,14 @@ DBG(CLASSLOOKUP,  dprintf("Scanning for element %s\n", cname); );
 	lockStaticMutex(&jarlock);
 
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
-DBG(CLASSLOOKUP,dprintf("Processing classpath entry '%s'\n", ptr->path); )
+DBG(CLASSLOOKUP,dprintf("Processing classpath entry '%s'\n", ptr->path); );
 		switch (ptr->type) {
 		case CP_ZIPFILE:
 		{
 			jarEntry* entry;
 			const char* data;
 
-DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
+DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); );
 			if (ptr->u.jar == 0) {
 				ptr->u.jar = openJarFile(ptr->path);
 				if (ptr->u.jar == 0) {
@@ -252,7 +252,7 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			    + strlen(file_separator) + strlen(cname) + 1));
 			sprintf(buf, "%s%s%s",
 			    ptr->path, file_separator, cname);
-DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); )
+DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); );
 			rc = KOPEN(buf, O_RDONLY|O_BINARY, 0, &fp);
 			KFREE(buf);
 			/* if we can't open the file, we keep looking */
@@ -350,7 +350,7 @@ initClasspath(void)
 	size_t len;
 	classpathEntry* ptr;
 
-	DBG(INIT, dprintf("initClasspath()\n"); )
+	DBG(INIT, dprintf("initClasspath()\n"); );
 
 	cp = (char*)Kaffe_JavaVMArgs.bootClasspath;
 	hm = (char*)Kaffe_JavaVMArgs.classhome;
@@ -395,7 +395,7 @@ initClasspath(void)
 	
 	realClassPath = (char *)Kaffe_JavaVMArgs.classpath;
 
-	DBG(INIT, dprintf("initClasspath() done, got %s\n", realBootClassPath); )
+	DBG(INIT, dprintf("initClasspath() done, got %s\n", realBootClassPath); );
 }
 
 void
@@ -423,7 +423,7 @@ makeClasspath(char* cp)
 	char* end;
 
 DBG(INITCLASSPATH,
-    	dprintf("initClasspath(): '%s'\n", cp); )
+    	dprintf("initClasspath(): '%s'\n", cp); );
 
 	for (;;) {
 		end = strstr(cp, path_separator);
@@ -514,7 +514,7 @@ insertClasspath(const char* cp, int prepend)
 #endif
 
 DBG(INITCLASSPATH,
-	dprintf("insertClasspath(): '%s' %spend\n", cp, prepend ? "pre" : "ap"); )
+	dprintf("insertClasspath(): '%s' %spend\n", cp, prepend ? "pre" : "ap"); );
 
 	if (*cp == '\0')
 		return (0);
@@ -739,7 +739,7 @@ handleManifestClassPath (classpathEntry *ptr)
 		newEntry->type = getClasspathType (newEntry->path);
 		if ((newEntry->type != CP_INVALID) &&
 		    !isEntryInClasspath (newEntry->path)) {
-DBG(CLASSLOOKUP,	dprintf("Entry '%s' added to classpath\n", newEntry->path); )
+DBG(CLASSLOOKUP,	dprintf("Entry '%s' added to classpath\n", newEntry->path); );
 			newEntry->next = ptr->next;
 			ptr->next = newEntry;
 		}

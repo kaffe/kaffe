@@ -59,7 +59,7 @@ analyzeMethod(Method* meth, codeinfo **pcodeinfo, errorInfo *einfo)
 DBG(CODEANALYSE,
 	dprintf("%s %p: %s.%s\n", __FUNCTION__, THREAD_NATIVE(), 
 		meth->class->name->data, meth->name->data);
-    )
+    );
 
 	if( meth->c.bcode.code == 0 )
 	{
@@ -102,7 +102,7 @@ DBG(CODEANALYSE,
 
 DBG(CODEANALYSE,
 	dprintf("%s %p: codeInfo = %p\n", __FUNCTION__, THREAD_NATIVE(), codeInfo);	
-    )
+    );
 
 	/* Allocate code info. block */
 	codeInfo->localsz = meth->localsz;
@@ -2026,7 +2026,7 @@ tidyAnalyzeMethod(codeinfo** codeInfo)
 DBG(CODEANALYSE,
 	dprintf("%s %p: clearing codeInfo %p\n",__FUNCTION__, 
 		THREAD_NATIVE(), codeInfo);
-    )
+    );
 }
 
 static

@@ -123,7 +123,7 @@ TwalkThread(Collector* collector, jthread_t jtid)
   if (jtid == KTHREAD(current)()) {
     DBG(JTHREAD,
 	dprintf("%p NOT walking jtid %p\n", KTHREAD(current)(), jtid);
-	)   
+	); 
       return;
   }
         

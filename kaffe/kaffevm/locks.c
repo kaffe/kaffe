@@ -83,7 +83,7 @@ getHeavyLock(iLock* volatile * lkp, iLock *heavyLock)
 DBG(SLOWLOCKS,
     	dprintf("  getHeavyLock(**lkp=%p, *lk=%p, th=%p)\n",
 		lkp, *lkp, KTHREAD(current)());
-)
+);
  
 	lk = heavyLock;
 	timeout = 1;
@@ -105,7 +105,7 @@ DBG(SLOWLOCKS,
 		if ((((uintp)old) & 1) == 1) {
 DBG(SLOWLOCKS,
     			dprintf("    got cached lock\n");
-)
+);
 			if (lk != heavyLock) {
 				gc_free (lk);
 			}
@@ -127,7 +127,7 @@ DBG(SLOWLOCKS,
 DBG(SLOWLOCKS,
 			dprintf("    got %s lock\n",
 				(lk != heavyLock) ? "new" : "special");
-)
+);
 			lk->holder = (void*)old;
 			lk->mux = 0;
 			lk->cv = 0;
@@ -149,7 +149,7 @@ putHeavyLock(iLock** lkp, iLock* lk)
 DBG(SLOWLOCKS,
 	dprintf("  putHeavyLock(**lkp=%p, *lk=%p, th=%p)\n", 
 		lkp, lk, KTHREAD(current)());
-)
+);
 
 	if (lk == LOCKFREE) {
 		*lkp = LOCKFREE;
@@ -172,7 +172,7 @@ slowLockMutex(iLock** lkp, void* where, iLock *heavyLock)
 DBG(SLOWLOCKS,
     	dprintf("slowLockMutex(**lkp=%p, where=%p, th=%p)\n",
 	       lkp, where, KTHREAD(current)());
-)
+);
 	KTHREAD(disable_stop)(); /* protect the heavy lock, and its queues */
 
 	for (;;) {
@@ -215,7 +215,7 @@ slowUnlockMutex(iLock** lkp, void* where, iLock *heavyLock)
 DBG(SLOWLOCKS,
     	dprintf("slowUnlockMutex(**lkp=%p, where=%p, th=%p)\n",
 	       lkp, where, KTHREAD(current)());
-)
+);
 	KTHREAD(disable_stop)(); /* protect the heavy lock, and its queues */
 	lk = getHeavyLock(lkp, heavyLock);
 
@@ -271,7 +271,7 @@ locks_internal_slowUnlockMutexIfHeld(iLock** lkp, void* where, iLock *heavyLock)
 DBG(SLOWLOCKS,
     	dprintf("slowUnlockMutexIfHeld(**lkp=%p, where=%p, th=%p)\n",
 	       lkp, where, KTHREAD(current)());
-)
+);
 	holder = *lkp;
 
 	/* nothing to do if the lock is free */
@@ -309,7 +309,7 @@ locks_internal_waitCond(iLock** lkp, jlong timeout, iLock *heavyLock)
 DBG(SLOWLOCKS,
     	dprintf("_waitCond(**lkp=%p, timeout=%ld, th=%p)\n",
 	       lkp, (long)timeout, KTHREAD(current)());
-)
+);
 
 	lk = getHeavyLock(lkp, heavyLock);
 	holder = lk->holder;
@@ -367,7 +367,7 @@ locks_internal_signalCond(iLock** lkp, iLock *heavyLock)
 DBG(SLOWLOCKS,
     	dprintf("_signalCond(**lkp=%p, th=%p)\n",
 	       lkp, KTHREAD(current)());
-)
+);
 
 	lk = getHeavyLock(lkp, heavyLock);
 
@@ -396,7 +396,7 @@ locks_internal_broadcastCond(iLock** lkp, iLock *heavyLock)
 DBG(SLOWLOCKS,
     	dprintf("_broadcastCond(**lkp=%p, th=%p)\n",
 	       lkp, KTHREAD(current)());
-)
+);
 
 	lk = getHeavyLock(lkp, heavyLock);
 

@@ -67,7 +67,7 @@ newObjectChecked(Hjava_lang_Class* class, errorInfo *info)
 DBG(NEWOBJECT,
 	dprintf("newObject %p class %s\n", obj,
 		(class ? class->name->data : "<none>"));
-    )
+    );
         return (obj);
 }
 /*
@@ -118,7 +118,7 @@ newClass(void)
 done:
 DBG(NEWOBJECT,
 	dprintf("newClass @%p\n", cls);
-    )
+    );
 
         return (cls);
 }
@@ -172,7 +172,7 @@ newArrayChecked(Hjava_lang_Class* elclass, jsize count, errorInfo *info)
 DBG(NEWOBJECT,
 	dprintf("newArray %p class %s count %d\n", obj,
 		(class ? class->name->data : "<none>"), count);
-    )
+    );
 	return (obj);
 }
 

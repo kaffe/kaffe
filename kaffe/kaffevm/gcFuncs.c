@@ -64,7 +64,7 @@ destroyClass(Collector *collector, void* c)
 DBG(CLASSGC,
         dprintf("destroying class %s @ %p\n",
 		clazz->name ? clazz->name->data : "newborn", c);
-   )
+   );
 	assert(!CLASS_IS_PRIMITIVE(clazz)); 
 
 	/* NB: Make sure that we don't unload fully loaded classes without
@@ -278,7 +278,7 @@ walkClass(Collector* collector, void *gc_info, void* base, uint32 size UNUSED)
 
 DBG(GCPRECISE,
         dprintf("walkClass `%s' state=%d\n", CLASS_CNAME(class), class->state);
-    )
+    );
 
         if (class->state >= CSTATE_PREPARED) {
                 KGC_markObject(collector, gc_info, class->superclass);
@@ -451,7 +451,7 @@ DBG(GCPRECISE,
         dprintf("walkObject `%s' ", CLASS_CNAME(clazz));
         BITMAP_DUMP(layout, nbits)
         dprintf(" (nbits=%d) %p-%p\n", nbits, base, ((char *)base) + size);
-    )
+    );
 
         assert(CLASS_FSIZE(clazz) > 0);
         assert(size > 0);
@@ -590,7 +590,7 @@ initCollector(void)
 {
 	Collector *gc = createGC();
 
-	DBG(INIT, dprintf("initCollector()\n"); )
+	DBG(INIT, dprintf("initCollector()\n"); );
 
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_JAVASTRING,
 	    stringWalk, KGC_OBJECT_NORMAL, stringDestroy, "j.l.String");
@@ -645,6 +645,6 @@ initCollector(void)
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_CODEBLOCK, "jit-codeblock");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_LABELS, "jit-labels");
 
-	DBG(INIT, dprintf("initCollector() done\n"); )
+	DBG(INIT, dprintf("initCollector() done\n"); );
 	return (gc);
 }

@@ -141,14 +141,14 @@ typedef long long int   debugmask_t;
  *	if debugging is enabled, resolve to statement.
  *	shortcut for #if KAFFE_VMDEBUG ... #endif
  */
-# define DBGIF(statement) { ((void)0); }
+# define DBGIF(statement) do { ((void)0); } while (0)
 
 /*
  * DBG:
  * 	if debugging is disabled, resolves to nothing.
  *	if debugging is enabled, statement is executed if mask matches.
  */
-# define DBG(mask, statement) { ((void)0); }
+# define DBG(mask, statement) do { ((void)0); } while (0)
 
 /*
  * DBGEXPR:
@@ -169,7 +169,7 @@ typedef long long int   debugmask_t;
  * 	insert if you want gdb to gain control.
  * 	causes an exception in debugging mode.
  */
-# define DBGGDBBREAK() { ((void)0); }
+# define DBGGDBBREAK() do { ((void)0); } while (0)
 
 #else
 /* --- Debugging is enabled --- */
@@ -177,21 +177,21 @@ typedef long long int   debugmask_t;
 /* Defines what debugging output is seen. Needs to be 64-bit. */
 extern debugmask_t kaffevmDebugMask;
 
-# define DBGIF(statement)  statement
+# define DBGIF(statement)  do { statement; } while (0)
 
 /* Debug macros that are selected with the above flags. */
 
-# define DBG(mask, statement) {			\
+# define DBG(mask, statement) do {			\
 	if ((DBG_##mask)&(kaffevmDebugMask)) {	\
 		statement;			\
 	}					\
-	}
+	} while (0)
 
 # define DBGEXPR(mask, expr, default)			\
 	(((DBG_##mask)&(kaffevmDebugMask))?(expr):(default))
 
 /* Do something that would cause GDB to gain control. */
-# define DBGGDBBREAK() { (*(int*)0) = 42; }
+# define DBGGDBBREAK() do { (*(int*)0) = 42; } while (0)
 
 #endif /* defined(NDEBUG) || !defined(KAFFE_VMDEBUG) */
 

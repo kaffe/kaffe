@@ -274,7 +274,7 @@ tDump (void)
 	unprotectThreadList(cur);
 
 	dprintf("====================== end thread dump =======================\n");
-  })
+  });
 }
 
 /*
@@ -310,7 +310,7 @@ void* tWatchdogRun (void* p)
 	}
 
 	if ( !life ) {
-	  DBG( JTHREAD, dprintf("deadlock\n"))
+	  DBG( JTHREAD, dprintf("deadlock\n"));
 	  tDump();
 	  ABORT();
 	}
@@ -534,7 +534,7 @@ jthread_init(UNUSED int pre,
         void (*_onstop)(void) UNUSED,
         void (*_ondeadlock)(void) UNUSED)
 {
-  DBG(JTHREAD, dprintf("initialized\n"))
+  DBG(JTHREAD, dprintf("initialized\n"));
 
   threadCollector = thread_collector;
   threadDestructor = destructor;
@@ -554,7 +554,7 @@ jthread_init(UNUSED int pre,
 
   tSetupFirstNative();
 
-  DBG( JTHREAD, tStartDeadlockWatchdog() )
+  DBG( JTHREAD, tStartDeadlockWatchdog() );
 }
 
 jthread_t
@@ -582,7 +582,7 @@ jthread_createfirst(size_t mainThreadStackSize, UNUSED unsigned char pri, void* 
    */
   detectStackBoundaries(nt, mainThreadStackSize);
 
-  DBG( JTHREAD, TMSG_SHORT( "create first ", nt))
+  DBG( JTHREAD, TMSG_SHORT( "create first ", nt));
 
   /* init our cv and mux fields for locking */
   tInitLock( nt);
@@ -736,14 +736,14 @@ void* tRun ( void* p )
   repsem_post( &cur->sem);
 
   while ( 1 ) {
-	DBG( JTHREAD, TMSG_LONG( "calling user func of: ", cur))
+	DBG( JTHREAD, TMSG_LONG( "calling user func of: ", cur));
 
 
 	/* Now call our thread function, which happens to be firstStartThread(),
 	 * which will call TExit before it returns */
 	cur->func(cur->data.jlThread);
 
-	DBG( JTHREAD, TMSG_LONG( "exiting user func of: ", cur))
+	DBG( JTHREAD, TMSG_LONG( "exiting user func of: ", cur));
 
 	if (threadDestructor)
 	  threadDestructor(cur->data.jlThread);
@@ -769,7 +769,7 @@ void* tRun ( void* p )
 	  cur->next = cache;
 	  cache = cur;
 
-	  DBG( JTHREAD, TMSG_SHORT( "cached thread ", cur))
+	  DBG( JTHREAD, TMSG_SHORT( "cached thread ", cur));
 	}
 
 	pendingExits--;
@@ -789,7 +789,7 @@ void* tRun ( void* p )
 	 * we have already been moved back to the activeThreads list by
 	 * Tcreate (saves us a lock)
 	 */
-	DBG( JTHREAD, TMSG_SHORT( "reused thread ", cur))
+	DBG( JTHREAD, TMSG_SHORT( "reused thread ", cur));
   }
 
   tDispose( cur);
@@ -873,7 +873,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	pthread_setschedparam( nt->tid, SCHEDULE_POLICY, &sp);
 #endif
 
-	DBG( JTHREAD, TMSG_SHORT( "create recycled ", nt))
+	DBG( JTHREAD, TMSG_SHORT( "create recycled ", nt));
 
 	/* resurrect it */
 	nt->active = 1;
@@ -906,7 +906,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	nt->status = THREAD_RUNNING;
 	pthread_mutex_init(&nt->suspendLock, NULL);
 	
-	DBG( JTHREAD, TMSG_SHORT( "create new ", nt))
+	DBG( JTHREAD, TMSG_SHORT( "create new ", nt));
 
 	/* init our cv and mux fields for locking */
 	tInitLock( nt);
@@ -1003,14 +1003,14 @@ jthread_exit ( void )
    */
   cur->active = 0;
 
-  DBG( JTHREAD, TMSG_SHORT( "exit ", cur))
-  DBG( JTHREAD, dprintf("exit with %d non daemons (%x)\n", nonDaemons, cur->daemon))
+  DBG( JTHREAD, TMSG_SHORT( "exit ", cur));
+  DBG( JTHREAD, dprintf("exit with %d non daemons (%x)\n", nonDaemons, cur->daemon));
 
   if ( !cur->daemon ) {
 	/* the last non daemon should shut down the process */
 	protectThreadList(cur);
 	if ( --nonDaemons == 0 ) {
-	  DBG( JTHREAD, dprintf("exit on last nonDaemon\n"))
+	  DBG( JTHREAD, dprintf("exit on last nonDaemon\n"));
 	  if (runOnExit != NULL) {
 	    unprotectThreadList(cur);
 	    runOnExit();
@@ -1097,7 +1097,7 @@ jthread_exit ( void )
 void
 jthread_destroy (UNUSED jthread_t cur)
 {
-  DBG( JTHREAD, TMSG_SHORT( "finalize ", cur))
+  DBG( JTHREAD, TMSG_SHORT( "finalize ", cur));
 }
 
 
@@ -1171,7 +1171,7 @@ void KaffePThread_WaitForResume(int releaseMutex)
   while( cur->suspendState == SS_SUSPENDED )
     sigwait( &suspendSet, &s);
   
-  DBG( JTHREADDETAIL, dprintf("sigwait return: %p\n", cur))
+  DBG( JTHREADDETAIL, dprintf("sigwait return: %p\n", cur));
     
   cur->stackCur     = 0;
   cur->suspendState = 0;
@@ -1199,7 +1199,7 @@ suspend_signal_handler ( UNUSED int sig )
 {
   volatile jthread_t   cur = jthread_current();
 
-  DBG( JTHREAD, dprintf("suspend signal handler: %p\n", cur))
+  DBG( JTHREAD, dprintf("suspend signal handler: %p\n", cur));
 
   /* signals are global things and might come from everywhere, anytime */
   if ( !cur || !cur->active )
@@ -1255,7 +1255,7 @@ jthread_suspendall (void)
   protectThreadList(cur);
 
   DBG( JTHREAD, dprintf("enter crit section[%d] from: %p [tid:%4ld, java:%p)\n",
-			critSection, cur, cur->tid, cur->data.jlThread))
+			critSection, cur, cur->tid, cur->data.jlThread));
 
   if ( ++critSection == 1 ){
 
@@ -1269,7 +1269,7 @@ jthread_suspendall (void)
 	  pthread_mutex_lock(&t->suspendLock);
 	  if ( (t != cur) && (t->suspendState == 0) && (t->active != 0) ) {
 		DBG( JTHREAD, dprintf("signal suspend: %p (susp: %d blk: %d)\n",
-				      t, t->suspendState, t->blockState))
+				      t, t->suspendState, t->blockState));
 
 		t->suspendState = SS_PENDING_SUSPEND;
 
@@ -1316,7 +1316,7 @@ jthread_suspendall (void)
 
   unprotectThreadList(cur);
 
-  DBG( JTHREAD, dprintf("critical section (%d) established\n", critSection))
+  DBG( JTHREAD, dprintf("critical section (%d) established\n", critSection));
 }
 
 
@@ -1347,23 +1347,23 @@ jthread_unsuspendall (void)
 	    {
 	      
 	      DBG( JTHREAD, dprintf("signal resume: %p (sus: %d blk: %d)\n",
-				    t, t->suspendState, t->blockState))
+				    t, t->suspendState, t->blockState));
 
 	      t->suspendState = SS_PENDING_RESUME;
 	      if ((t->blockState & (BS_CV|BS_CV_TO|BS_MUTEX)) == 0)
 		{
-		  DBG (JTHREADDETAIL, dprintf("  sending sigResume\n"))
+		  DBG (JTHREADDETAIL, dprintf("  sending sigResume\n"));
 		  status = pthread_kill( t->tid, sigResume);
 		  if ( status )
 		    {
-		      DBG( JTHREAD, dprintf("error sending RESUME signal to %p: %d\n", t, status))
+		      DBG( JTHREAD, dprintf("error sending RESUME signal to %p: %d\n", t, status));
 		    }		  
 		  /* ack wait workaround, see jthread_suspendall remarks */
 		  repsem_wait( &critSem);
 		}
 	      else
 		{
-		  DBG (JTHREADDETAIL, dprintf("  clearing suspendState\n"))
+		  DBG (JTHREADDETAIL, dprintf("  clearing suspendState\n"));
 		  t->suspendState = 0;
 		}
 	    }
@@ -1384,7 +1384,7 @@ jthread_unsuspendall (void)
 	unprotectThreadList(cur);
   }
 
-  DBG( JTHREAD, dprintf("exit crit section (%d)\n", critSection))
+  DBG( JTHREAD, dprintf("exit crit section (%d)\n", critSection));
 }
 
 
@@ -1412,7 +1412,7 @@ jthread_walkLiveThreads (void(*func)(jthread_t,void*), void *private)
   jthread_t t;
   jthread_t cur = jthread_current();
 
-  DBG( JTHREAD, dprintf("start walking threads\n"))
+  DBG( JTHREAD, dprintf("start walking threads\n"));
 
   protectThreadList(cur);
   for ( t = activeThreads; t != NULL; t = t->next) {
@@ -1420,7 +1420,7 @@ jthread_walkLiveThreads (void(*func)(jthread_t,void*), void *private)
   }
   unprotectThreadList(cur);
 
-  DBG( JTHREAD, dprintf("end walking threads\n"))
+  DBG( JTHREAD, dprintf("end walking threads\n"));
 }
 
 void
@@ -1514,14 +1514,14 @@ bool jthread_on_current_stack(void* p)
 DBG(JTHREADDETAIL, dprintf("on current stack: base=%p size=%ld bp=%p",
                         nt->stackMin,
                         (long)((char *)nt->stackMax - (char *)nt->stackMin),
-                        p); )
+                        p); );
 
   if (nt == 0 || (p > nt->stackMin && p < nt->stackMax)) {
-DBG(JTHREADDETAIL, dprintf(" yes\n"); )
+DBG(JTHREADDETAIL, dprintf(" yes\n"); );
         return (true);
   }
   else {
-DBG(JTHREADDETAIL, dprintf(" no\n"); )
+DBG(JTHREADDETAIL, dprintf(" no\n"); );
         return (false);
   }
 }

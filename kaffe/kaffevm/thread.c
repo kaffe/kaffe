@@ -97,7 +97,7 @@ initThreads(void)
 {
 	errorInfo info;
 
-	DBG(INIT, dprintf("initThreads()\n"); )
+	DBG(INIT, dprintf("initThreads()\n"); );
 
 	/* Get a handle on the thread and thread group classes */
 	ThreadClass = lookupClass(THREADCLASS, NULL, &info);
@@ -110,7 +110,7 @@ initThreads(void)
 	/* Allocate a thread to be the main thread */
 	attachFakedThreadInstance("main", false);
 
-	DBG(INIT, dprintf("initThreads() done\n"); )
+	DBG(INIT, dprintf("initThreads() done\n"); );
 }
 
 
@@ -146,7 +146,7 @@ startThread(Hjava_lang_VMThread* tid)
 	jthread_t nativeTid;
 	struct _errorInfo info;
 
-DBG(VMTHREAD, dprintf ("%p starting thread %p (vmthread %p)\n\n", KTHREAD(current)(), unhand(tid)->thread, tid); )
+DBG(VMTHREAD, dprintf ("%p starting thread %p (vmthread %p)\n\n", KTHREAD(current)(), unhand(tid)->thread, tid); );
 
 	/* Hold the start lock while the thread is created.
 	 * This lock prevents the new thread from running until we're
@@ -173,7 +173,7 @@ void
 interruptThread(Hjava_lang_VMThread* tid)
 {
 DBG(VMTHREAD, dprintf ("%p (%p) interrupting %p (%p)\n", KTHREAD(current)(),
-                       THREAD_DATA()->jlThread, unhand(tid)->jthreadID, tid); )
+                       THREAD_DATA()->jlThread, unhand(tid)->jthreadID, tid); );
 	assert(unhand(tid)->jthreadID != NULL);
 
 	KTHREAD(interrupt)((jthread_t)unhand(tid)->jthreadID);
@@ -210,7 +210,7 @@ attachFakedThreadInstance(const char* nm, int isDaemon)
 	jvalue retval;
 	int i;
 
-	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)\n", nm); )
+	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)\n", nm); );
 
 	/* Allocate a thread to be the main thread */
 	tid = (Hjava_lang_Thread*)newObject(ThreadClass);
@@ -260,7 +260,7 @@ attachFakedThreadInstance(const char* nm, int isDaemon)
 	/* Attach thread to threadGroup */
 	do_execute_java_method(NULL, unhand(tid)->group, "addThread", "(Ljava/lang/Thread;)V", 0, 0, tid);
 
-	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)=%p done\n", nm, tid); )
+	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)=%p done\n", nm, tid); );
 }
 
 /*
@@ -316,7 +316,7 @@ createDaemon(void* func, const char* nm, void *arg, int prio,
   void *specialArgument[3];
   jvalue retval;
 
-DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
+DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	);
   
   /* Keep daemon threads as root objects */
   vmtid = (Hjava_lang_Thread*)newObject(VMThreadClass);
@@ -408,7 +408,7 @@ firstStartThread(void* arg)
 
 DBG(VMTHREAD,	
 	dprintf("%p (%p) firstStartThread\n", cur, tid);		
-    )
+    );
 
 	/*
 	 * We use JNI here to make sure the stack is unrolled when we get
@@ -462,7 +462,7 @@ exitThread(void)
 {
 DBG(VMTHREAD,	
 	dprintf("%p (%p) exitThread\n", KTHREAD(current)(), THREAD_DATA()->jlThread);
-    )
+    );
 
 #if defined(ENABLE_JVMPI)
 	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_THREAD_END) )
@@ -559,7 +559,7 @@ static
 void
 runfinalizer(void)
 {
-	DBG (VMTHREAD, dprintf ("shutting down %p\n", THREAD_DATA()->jlThread); )
+	DBG (VMTHREAD, dprintf ("shutting down %p\n", THREAD_DATA()->jlThread); );
 
 	if (THREAD_DATA()->jlThread == 0) {
 		/* if the thread executing the shutdown hooks doesn't have a
@@ -641,7 +641,7 @@ initNativeThreads(int nativestacksize)
 	threadData *thread_data;
 	rlim_t stackSize;
 
-	DBG(INIT, dprintf("initNativeThreads(0x%x)\n", nativestacksize); )
+	DBG(INIT, dprintf("initNativeThreads(0x%x)\n", nativestacksize); );
 
 	/* Even though the underlying operating or threading system could
 	 * probably extend the main thread's stack, we must impose this 
@@ -694,7 +694,7 @@ initNativeThreads(int nativestacksize)
 #else
 	stackSize = MAINSTACKSIZE;
 #endif
-	DBG(INIT, dprintf("Detected stackSize %lu\n", stackSize); )
+	DBG(INIT, dprintf("Detected stackSize %lu\n", stackSize); );
 	KTHREAD(createfirst)(stackSize, (unsigned char)java_lang_Thread_NORM_PRIORITY, 0);
 
 	/*
@@ -708,5 +708,5 @@ initNativeThreads(int nativestacksize)
 
 	thread_data->jniEnv = &Kaffe_JNINativeInterface;
 
-	DBG(INIT, dprintf("initNativeThreads(0x%x) done\n", nativestacksize); )
+	DBG(INIT, dprintf("initNativeThreads(0x%x) done\n", nativestacksize); );
 }

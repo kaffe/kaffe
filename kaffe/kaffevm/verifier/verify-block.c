@@ -800,7 +800,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
                                 DBG(VERIFY3,
                                     dprintf("                OPSTACK_TOP: ");
                                     printType(getOpstackTop(block));
-                                    dprintf(" vs. what's we wanted: TBYTEARR or TBOOLARR"); )
+                                    dprintf(" vs. what's we wanted: TBYTEARR or TBOOLARR"); );
                                 return verifyError(v, "top of opstack does not have desired type");
 			}
 
@@ -886,7 +886,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				DBG(VERIFY3,
 				    dprintf("                OPSTACK_TOP: ");
 				    printType(getOpstackTop(block));
-				    dprintf(" vs. what's we wanted: TBYTEARR or TBOOLARR"); )
+				    dprintf(" vs. what's we wanted: TBYTEARR or TBOOLARR"); );
 				return verifyError(v, "top of opstack does not have desired type");
 			}
 			opstackPopBlind(block);
