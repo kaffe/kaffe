@@ -1,3 +1,13 @@
+2005-02-23  Dalibor Topic  <robilad@kaffe.org>
+
+	* test/regression/SecureRandomTest.java (SecureRandomTest): 
+	Improved error message slightly.
+
+	* libraries/javalib/gnu/java/security/provider/SHA1PRNG.java 
+	(SEED_SIZE, DATA_SIZE): new constants.  Use them instead of
+	magic numbers.
+	(SHA1PRNG) Added documentation.
+
 2005-02-22  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

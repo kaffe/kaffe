@@ -52,7 +52,18 @@ public class SHA1PRNG extends SecureRandomSpi implements Serializable
   int seedpos;
   int datapos;
   private boolean seeded = false; // set to true when we seed this
+  /**
+   * The size of seed.
+   */
+  private static final int SEED_SIZE = 20;
+  /**
+   * The size of data.
+   */
+  private static final int DATA_SIZE = 40;
 
+  /**
+   * Create a new SHA-1 pseudo-random number generator.
+   */
   public SHA1PRNG()
   {
     try {
@@ -63,17 +74,17 @@ public class SHA1PRNG extends SecureRandomSpi implements Serializable
       throw new InternalError ("no SHA implementation found");
     }
 
-    seed = new byte[20];
+    seed = new byte[SEED_SIZE];
     seedpos = 0;
-    data = new byte[40];
-    datapos = 20;  // try to force hashing a first block
+    data = new byte[DATA_SIZE];
+    datapos = SEED_SIZE;  // try to force hashing a first block
   }
 
   public void engineSetSeed(byte[] seed)
   {
     for(int i = 0; i < seed.length; i++)
-      this.seed[seedpos++ % 20] ^= seed[i];
-    seedpos %= 20;
+      this.seed[seedpos++ % SEED_SIZE] ^= seed[i];
+    seedpos %= SEED_SIZE;
 
   }
 
@@ -83,7 +94,7 @@ public class SHA1PRNG extends SecureRandomSpi implements Serializable
     int loc = 0;
     while (loc < bytes.length)
       {
-	int copy = Math.min (bytes.length - loc, 20 - datapos);
+	int copy = Math.min (bytes.length - loc, SEED_SIZE - datapos);
 
 	if (copy > 0)
 	  {
@@ -94,9 +105,9 @@ public class SHA1PRNG extends SecureRandomSpi implements Serializable
 	else
 	  {
 	    // No data ready for copying, so refill our buffer.
-	    System.arraycopy( seed, 0, data, 20, 20);
+	    System.arraycopy( seed, 0, data, SEED_SIZE, SEED_SIZE);
 	    byte[] digestdata = digest.digest( data );
-	    System.arraycopy( digestdata, 0, data, 0, 20);
+	    System.arraycopy( digestdata, 0, data, 0, SEED_SIZE);
 	    datapos = 0;
 	  }
       }
@@ -117,7 +128,7 @@ public class SHA1PRNG extends SecureRandomSpi implements Serializable
         new Random(0L).nextBytes(seed);
 
         byte[] digestdata = digest.digest(data);
-        System.arraycopy(digestdata, 0, data, 0, 20);
+        System.arraycopy(digestdata, 0, data, 0, SEED_SIZE);
 
         seeded = true;
       }

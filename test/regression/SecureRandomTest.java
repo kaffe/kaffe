@@ -48,8 +48,9 @@ class SecureRandomTest
 	    }
 	    if( match )
 	    {
-		throw new Error("The \"secure\" random isn't! "
-				+ toPlainString(data, Integer.MAX_VALUE));
+		throw new Error("The \"secure\" random isn't! : lpc=  " + lpc 
+				+ " lpc2 = " + lpc2 
+				+ " data = " + toPlainString(data, Integer.MAX_VALUE));
 	    }
 	}
     }
