@@ -15,7 +15,7 @@
  */
 
 #define DBG(s)		
-#define SDBG(s)
+#define SDBG(s)	
 
 #include "jthread.h"
 
@@ -36,6 +36,8 @@
 #define THREAD_FLAGS_KILLED             2
 #define THREAD_FLAGS_ALARM              4
 #define THREAD_FLAGS_USERSUSPEND        8
+#define THREAD_FLAGS_DONTSTOP        	16
+#define THREAD_FLAGS_DYING        	32
 
 /*
  * Variables.
@@ -105,6 +107,8 @@ static void killThread(jthread *jtid);
 static void resumeThread(jthread* jtid);
 static void reschedule(void);
 static void restore_fds();
+static void restore_fds_and_exit();
+static void die();
 
 /*
  * macros to set and extract stack pointer from jmp_buf
@@ -698,6 +702,13 @@ jthread_init(int pre,
 	assert(2 == jthreadedFileDescriptor(2));
 #endif
 	atexit(restore_fds);
+	/*
+	 * On some systems, it is essential that we put the fds back
+	 * in their non-blocking state
+	 */
+	catchSignal(SIGINT, restore_fds_and_exit);
+	catchSignal(SIGHUP, restore_fds_and_exit);
+	catchSignal(SIGTERM, restore_fds_and_exit);
 
 	preemptive = pre;
 	max_priority = maxpr;
@@ -757,18 +768,60 @@ jthread_atexit(void (*f)())
 	runOnExit = f;
 }
 
+/*
+ * disallow cancellation
+ */
+void 
+jthread_disable_stop()
+{
+	intsDisable();
+	currentJThread->flags |= THREAD_FLAGS_DONTSTOP;
+	intsRestore();
+}
+
+/*
+ * reallow cancellation and stop if cancellation pending
+ */
+void 
+jthread_enable_stop()
+{
+	intsDisable();
+	currentJThread->flags &= ~THREAD_FLAGS_DONTSTOP;
+	if ((currentJThread->flags & THREAD_FLAGS_KILLED) != 0 && 
+		blockInts == 1) 
+	{
+		die();
+	}
+	intsRestore();
+}
+
+/*
+ * interrupt a thread
+ */
+void
+jthread_interrupt(jthread *jtid)
+{
+	resumeThread(jtid);	/* XXX */
+}
+
+static void 
+die()
+{
+	currentJThread->flags &= ~THREAD_FLAGS_KILLED;
+	currentJThread->flags |= THREAD_FLAGS_DYING;
+	assert(blockInts == 1);
+	blockInts = 0;
+	/* this is used to throw a ThreadDeath exception */
+	onstop();
+	assert(!"Rescheduling dead thread");
+}
+
 static void
 start_this_sucker_on_a_new_frame()
 {
 	/* I might be dying already */
 	if ((currentJThread->flags & THREAD_FLAGS_KILLED) != 0)
-	{
-		currentJThread->flags &= ~THREAD_FLAGS_KILLED;
-		blockInts = 0;
-		/* this is used to throw a ThreadDeath exception */
-		onstop();
-		assert(!"Rescheduling dead thread");
-	}
+		die();
 
 	/* all threads start with interrupts turned off */
 	intsRestore();
@@ -878,12 +931,19 @@ jthread_sleep(jlong time)
         intsRestore();
 }
 
+/* 
+ * Check whether a thread is alive.
+ *
+ * Note that threads executing their onstop function are not alive.
+ */
 int
 jthread_alive(jthread *jtid)
 {
         int status = true;
         intsDisable();
-        if (jtid == 0 || jtid->status == THREAD_DEAD)
+        if (jtid == 0 || 
+		(jtid->flags & (THREAD_FLAGS_KILLED | THREAD_FLAGS_DYING)) != 0 
+		|| jtid->status == THREAD_DEAD)
                 status = false;
         intsRestore();
         return status;
@@ -951,6 +1011,12 @@ jthread_stop(jthread *jtid)
 {
         jtid->flags |= THREAD_FLAGS_KILLED;
 	intsDisable();
+
+	/* if it's us, die */
+	if (jtid == jthread_current() && 
+		(jtid->flags & THREAD_FLAGS_DONTSTOP) != 0 && blockInts == 1)
+		die();
+
         resumeThread(jtid);
 	intsRestore();
 }
@@ -1028,6 +1094,7 @@ reschedule(void)
 
 	/* A reschedule in a non-blocked context is half way to hell */
 	assert(intsDisabled());
+
 	b = blockInts;
 
 	for (;;) {
@@ -1061,21 +1128,15 @@ DBG( fprintf(stderr, "switch from %p to %p\n", lastThread, currentJThread); )
 					/* Restore ints */
 					blockInts = b;
 
+					assert(currentJThread == lastThread);
+
 					/* I might be dying */
-					if ((lastThread->flags & 
+					if ((currentJThread->flags & 
 						THREAD_FLAGS_KILLED) != 0 && 
+					    (currentJThread->flags & 
+						THREAD_FLAGS_DONTSTOP) == 0 &&
 					    blockInts == 1) 
-					{
-						lastThread->flags &= 
-							~THREAD_FLAGS_KILLED;
-						blockInts = 0;
-						/* this is used to throw a
-						 * ThreadDeath exception
-						 */
-						onstop();
-						assert("Rescheduling "
-							"dead thread" == 0);
-					}
+						die();
 				}
 				/* Now kill the schedule */
 				needReschedule = false;
@@ -1258,7 +1319,7 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 	while (lock->holder != NULL) {
 		suspendOnQThread(current, &lock->waiting, NOTIMEOUT);
 	}
-	lock->holder = current;			
+	lock->holder = current;
 	intsRestore();
 }
 
@@ -1333,8 +1394,11 @@ jthreadedFileDescriptor(int fd)
 		return (r);
 
 #elif defined(FIOASYNC)
-	if ((r = ioctl(fd, FIOASYNC, &on)) < 0)
-		return (r);
+	/* 
+	 * On some systems, this will not work if a terminal fd is redirected.
+	 * (Solaris sets errno to ENXIO in this case.
+	 */
+	ioctl(fd, FIOASYNC, &on);
 #endif
 
 #if !(defined(O_ASYNC) || defined(FIOASYNC) ||  \
@@ -1366,6 +1430,16 @@ restore_fds()
 	/* clear non-blocking flag for file descriptor stdin, stdout, stderr */
 	for (i = 0; i < 3; i++)
 	    fcntl(i, F_SETFL, fcntl(i, F_GETFL, 0) & ~O_NONBLOCK);
+}
+
+static void
+restore_fds_and_exit()
+{
+	restore_fds();
+	/* technically, we should restore the original handler and rethrow
+	 * the signal.
+	 */
+	exit(-1);		/* XXX */
 }
 
 /*

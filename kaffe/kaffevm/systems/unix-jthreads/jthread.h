@@ -37,6 +37,7 @@
 #include "jtypes.h"
 #include "gtypes.h"
 #include "thread.h"
+#include "support.h"
 #include "md.h"
 #include "lerrno.h"
 /* 
@@ -198,8 +199,10 @@ typedef struct _jthread {
 	 */
 	void*				jlThread;
 	jmp_buf				env;
+#if 0
 	/* for alignment (Gcc extension) */
 	double				align[0];
+#endif
 } jthread;
 
 #define GET_COOKIE(jtid)	((jtid)->jlThread)
@@ -294,6 +297,11 @@ int 	jthread_alive(jthread *jtid);
 void 	jthread_stop(jthread *jtid);
 
 /*
+ * interrupt this thread
+ */
+void 	jthread_interrupt(jthread *jtid);
+
+/*
  * have the current thread exit
  */
 void 	jthread_exit();
@@ -308,6 +316,17 @@ int 	jthread_on_current_stack(void *bp);
  * determine the "interesting" stack range a conservative gc must walk
  */
 void jthread_extract_stack(jthread *jtid, void **from, unsigned *len);
+
+/*
+ * Disallow cancellation for current thread
+ */
+void jthread_disable_stop();
+
+/*
+ * Reallow cancellation for current thread
+ * If a cancellation is pending, the stop method will be called
+ */
+void jthread_enable_stop();
 
 /*
  * functions to disable and restore interrupts

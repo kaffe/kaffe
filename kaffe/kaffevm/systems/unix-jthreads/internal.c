@@ -286,8 +286,19 @@ static
 void
 Lwait(iLock* lk, jlong timeout)
 {
+	int count;
+	/*
+	 * We must reacquire the Java lock before we're ready to die
+	 */
+	jthread_disable_stop();
+	count = lk->count;
+	lk->count = 0;
 	jcondvar_wait(lk->cv, lk->mux, timeout);
 	lk->holder = TcurrentNative();
+	lk->count = count;
+
+	/* now it's safe to start dying */ 
+	jthread_enable_stop();
 }
  
 static  
