@@ -705,12 +705,7 @@ AC_ARG_WITH([rt_jar],
 
 case "$with_rt_jar" in
 "")
-	if test -f $abssrcdir/libraries/javalib/rt-precompiled.jar; then
-		use_rt_jar=true
-		PATH_TO_RT_JAR=$abssrcdir/libraries/javalib/rt-precompiled.jar
-	else
-		use_rt_jar=false
-	fi 
+	use_rt_jar=false
 	;;
 "no" )
 	use_rt_jar=false

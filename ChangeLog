@@ -1,3 +1,26 @@
+2005-02-08  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixed make distcheck. Removed remaining jar files from tarball.
+
+	N.B. We should ship kaffe-1.1.5-rt.jar separately for people that
+	can't build it on their boxes (ps2linux). Not shipping the 
+	prebuilt jar files reduces the size of the tarball by about 
+	7M, down to 9M.
+
+	* Makefile.am (dist-hook): Removed support for precompiled rt.jar.
+	
+	* configure.ac: Adapted accordingly.
+
+	* libraries/javalib/awt-implementations/kaffe/Makefile.am,
+	libraries/javalib/gmp-math/Makefile.am (EXTRA_DIST): Don't
+	put the compiled JAR file into the distribution tarball.
+	(clean-local): Remove compiled classes and JAR files.
+
+	* test/internal/Makefile.am,
+	test/regression/Makefile.am,
+	test/regression/compiler/Makefile.am:
+	(CLEANFILES): Added missing files.
+
 2005-02-07  Dalibor Topic  <robilad@kaffe.org>
 
 	* test/awt/Calc/Calc.java,

@@ -318,7 +318,16 @@ EXTRA_DIST = $(ALWAYS_TESTS) \
 	$(BCEL_TESTS_DIST) \
 	TestGnuCrypto.java
 
-CLEANFILES = *.class *.fail *.out core *.core ExceptionTest ziptest1.zip \
-	ziptest2.zip frozen_serial
+CLEANFILES = \
+	*.class \
+	*.fail \
+	*.out \
+	core \
+	*.core \
+	ExceptionTest \
+	ziptest1.zip \
+	ziptest2.zip \
+	frozen_serial \
+	serializedFoos.bin
 
 all-am: TestScript

@@ -769,9 +769,6 @@ distdir: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
-	$(MAKE) $(AM_MAKEFLAGS) \
-	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
-	  dist-hook
 	-find $(distdir) -type d ! -perm -777 -exec chmod a+rwx {} \; -o \
 	  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
 	  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
@@ -955,8 +952,8 @@ uninstall-info: uninstall-info-recursive
 .PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am am--refresh check \
 	check-am check-local clean clean-generic clean-libtool \
 	clean-recursive ctags ctags-recursive dist dist-all dist-bzip2 \
-	dist-gzip dist-hook dist-shar dist-tarZ dist-zip distcheck \
-	distclean distclean-generic distclean-hdr distclean-libtool \
+	dist-gzip dist-shar dist-tarZ dist-zip distcheck distclean \
+	distclean-generic distclean-hdr distclean-libtool \
 	distclean-recursive distclean-tags distcleancheck distdir \
 	distuninstallcheck dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
@@ -999,16 +996,6 @@ Klasses new-classes compile-classes jar-classes build-classes:
 	    (cd $$f && $(MAKE) $@); \
 	  done; \
 	fi
-
-# Build rt-precompiled.jar and add it to dist
-dist-hook:
-	rm -rf build-dist
-	mkdir build-dist
-	(cd build-dist && \
-	 ../$(distdir)/configure --with-extensions=comm,microsoft,pjava,servlet,sound && \
-	 make && \
-	 cp libraries/javalib/rt.jar ../$(distdir)/libraries/javalib/rt-precompiled.jar \
-	)
 
 # Build HTML docs (requires maven and maven-sddocbook-plugin)
 docs-docbook-html:

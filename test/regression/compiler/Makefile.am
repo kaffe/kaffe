@@ -29,7 +29,7 @@ InnerTest1_A.class InnerTest1_B.class: InnerTest1_A.java InnerTest1_B.java
 
 check-am: CompileScript $(CLASS_FILES)
 
-CLEANFILES=$(CLASS_FILES)
+CLEANFILES=$(CLASS_FILES) InnerTest1_*.class
 
 EXTRA_DIST = \
 	VarInit.java \

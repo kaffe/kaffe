@@ -21,15 +21,14 @@ java_math_SRCS = \
 ## Do not delete the previous blank line; update-class-list depends on it
 
 EXTRA_DIST = \
-	$(jrelib_DATA) \
 	$(gmpjavamath_jar_SRCS)
 
 JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(ZIP) -r $$dstdir/$(CLASSFILE) $(SRCDIRS))
 
 LIBDIR = lib
 
-clean-hook:
-	rm -rf $(LIBDIR)
+clean-local:
+	rm -rf $(LIBDIR) $(CLASSFILE)
 
 .PHONY: new-classes
 new-classes: $(top_srcdir)/developers/update-class-list

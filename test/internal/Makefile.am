@@ -157,4 +157,11 @@ EXTRA_DIST = \
 	Exceptions.java \
 	java/lang/System.java
 
-CLEANFILES = *.fail *.out core *.core *.class
+CLEANFILES = \
+	*.fail \
+	*.out \
+	core \
+	*.core \
+	*.class \
+	$(nodist_GEN_SRCS) \
+	java/lang/System.class
