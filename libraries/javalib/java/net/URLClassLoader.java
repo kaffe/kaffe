@@ -35,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.net;
 
 import java.io.ByteArrayOutputStream;
@@ -58,7 +59,6 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-
 
 /**
  * A secure class loader that can load classes and resources from
@@ -656,11 +656,12 @@ public class URLClassLoader extends SecureClassLoader
 	if (loader == null)
 	  {
 	    String file = newUrl.getFile();
+	    String protocol = newUrl.getProtocol();
 
 	    // Check that it is not a directory
 	    if (! (file.endsWith("/") || file.endsWith(File.separator)))
 	      loader = new JarURLLoader(this, newUrl);
-	    else if ("file".equals(newUrl.getProtocol()))
+	    else if ("file".equals(protocol))
 	      loader = new FileURLLoader(this, newUrl);
 	    else
 	      loader = new RemoteURLLoader(this, newUrl);
@@ -811,14 +812,18 @@ public class URLClassLoader extends SecureClassLoader
 	// And finally construct the class!
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null && securityContext != null)
-	  return (Class) AccessController.doPrivileged(new PrivilegedAction()
-	      {
-		public Object run()
+	  {
+	    return (Class)AccessController.doPrivileged
+	      (new PrivilegedAction()
 		{
-		  return defineClass(className, classData, 0,
-		                     classData.length, source);
-		}
-	      }, securityContext);
+		  public Object run()
+		  {
+		    return defineClass(className, classData,
+				       0, classData.length,
+				       source);
+		  }
+		}, securityContext);
+	  }
 	else
 	  return defineClass(className, classData, 0, classData.length, source);
       }
@@ -955,13 +960,17 @@ public class URLClassLoader extends SecureClassLoader
 
 	// If the file end in / it must be an directory.
 	if (file.endsWith("/") || file.endsWith(File.separator))
-	  // Grant permission to read everything in that directory and
-	  // all subdirectories.
-	  permissions.add(new FilePermission(file + "-", "read"));
+	  {
+	    // Grant permission to read everything in that directory and
+	    // all subdirectories.
+	    permissions.add(new FilePermission(file + "-", "read"));
+	  }
 	else
-	  // It is a 'normal' file.
-	  // Grant permission to access that file.
-	  permissions.add(new FilePermission(file, "read"));
+	  {
+	    // It is a 'normal' file.
+	    // Grant permission to access that file.
+	    permissions.add(new FilePermission(file, "read"));
+	  }
       }
     else
       {
