@@ -38,8 +38,8 @@ ac_help="$ac_help
 ac_help="$ac_help
   --with-engine=ENGINE    Force use given execution engine (intrp, jit, or jit3)"
 ac_help="$ac_help
-  --enable-debug            Enable run-time debugging machinery
-  --disable-debug           Disable assertion checking (but not -g)"
+  --enable-debug          Enable run-time debugging machinery
+  --disable-debug         Disable assertion checking (but not -g)"
 ac_help="$ac_help
   --without-suncompat     Don't include Sun compatibility scripts"
 ac_help="$ac_help
@@ -47,7 +47,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --with-x                use the X Window System"
 ac_help="$ac_help
-  --with-stats           Gather statistics on vm execution"
+  --with-stats            Gather statistics on vm execution"
 
 # Initialize some variables set by options.
 # The variables have the same names as the options, with

@@ -1,5 +1,8 @@
 1999-08-15  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* configure.in (help): Align.
+	* configure: Regen.
+
 	* FAQ/FAQ.depend: Update instructions for dependency tracking.
 
 Fri Aug 13 12:16:21 PDT 1999  Archie Cobbs <archie@whistle.com>

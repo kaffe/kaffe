@@ -287,8 +287,8 @@ dnl =========================================================================
 dnl Allow selection of debugging mechanisms
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(debug,[  --enable-debug            Enable run-time debugging machinery
-  --disable-debug           Disable assertion checking (but not -g)])
+AC_ARG_WITH(debug,[  --enable-debug          Enable run-time debugging machinery
+  --disable-debug         Disable assertion checking (but not -g)])
 case "$enable_debug" in
 "") ;;
 no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
@@ -603,7 +603,7 @@ dnl =========================================================================
 dnl Do we build a vm that collects statistics?
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(stats,[  --with-stats           Gather statistics on vm execution])
+AC_ARG_WITH(stats,[  --with-stats            Gather statistics on vm execution])
 
 if test "$with_stats" = "yes" ; then
 	if test $have_rusage = "no" ; then
