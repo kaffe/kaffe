@@ -1,0 +1,3 @@
+#! /bin/sh
+# Script to run Appletviewer
+exec java sun.applet.AppletViewer "$@"

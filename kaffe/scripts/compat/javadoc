@@ -1,0 +1,3 @@
+#! /bin/sh
+# We use Pizza rather than Sun's
+exec kaffe pizza.compiler.Main -pizzadoc "$@"

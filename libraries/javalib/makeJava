@@ -1,0 +1,53 @@
+#! /bin/sh
+#
+# Simple little script which builds the .class files which are older
+# than the .java files.
+#
+# usage: makeJava [-srcdir path] [-dstdir path] java files ....
+#
+# Copyright (c) 1997, 1998
+#      Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file.
+#
+
+if test "$JAVAC" = "" ; then
+	JAVAC="javac"
+fi
+
+srcdir=.
+dstdir=.
+
+if test "$*" = "" ; then
+	echo "usage: makeJava [-srcdir path] [-dstdir path] java files ...."
+	exit 1
+fi
+if test "$1" = "-srcdir" ; then
+	srcdir=$2
+	shift
+	shift
+fi
+if test "$1" = "-dstdir" ; then
+	dstdir=$2
+	shift
+	shift
+fi
+
+for file in $*
+do
+	b=`echo $file | sed s/\\.java//`
+	jf=$b.java
+	cf=$b.class
+	docompile=0
+	if test ! -f $dstdir/$cf ; then
+		docompile=1
+	elif test $dstdir/$cf -ot $srcdir/$jf ; then
+		docompile=1
+	fi
+	if test "$docompile" = "1" ; then
+		echo -n "Compiling $jf ... "
+		$JAVAC -classpath $dstdir:$srcdir:.:$CLASSPATH:./Klasses.jar -d $dstdir $srcdir/$jf || exit 1
+		echo "done"
+	fi
+done
