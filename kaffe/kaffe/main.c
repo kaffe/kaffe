@@ -233,13 +233,17 @@ options(char** argv)
 			}
 			vmargs.classpath = argv[i];
 		}
-		else if (strcmp(argv[i], "-ss") == 0) {
-			i++;
-			if (argv[i] == 0) {
-				fprintf(stderr, "Error: No stack size found for -ss option.\n");
-				exit(1);
+		else if (strncmp(argv[i], "-ss", 3) == 0) {
+			if (argv[i][3] == 0) {
+				i++;
+				if (argv[i] == 0) {
+					fprintf(stderr, "Error: No stack size found for -ss option.\n");
+					exit(1);
+				}
+				sz = parseSize(argv[i]);
+			} else {
+				sz = parseSize(&argv[i][3]);
 			}
-			sz = parseSize(argv[i]);
 			if (sz < THREADSTACKSIZE) {
 				fprintf(stderr, "Warning: Attempt to set stack size smaller than %d - ignored.\n", THREADSTACKSIZE);
 			}
@@ -247,21 +251,41 @@ options(char** argv)
 				vmargs.nativeStackSize = sz;
 			}
 		}
-		else if (strcmp(argv[i], "-mx") == 0) {
-			i++;
-			if (argv[i] == 0) {
-				fprintf(stderr, "Error: No heap size found for -mx option.\n");
-				exit(1);
+		else if (strncmp(argv[i], "-mx", 3) == 0) {
+			if (argv[i][3] == 0) {
+				i++;
+				if (argv[i] == 0) {
+					fprintf(stderr, "Error: No heap size found for -mx option.\n");
+					exit(1);
+				}
+				vmargs.maxHeapSize = parseSize(argv[i]);
+			} else {
+				vmargs.maxHeapSize = parseSize(&argv[i][3]);
 			}
-			vmargs.maxHeapSize = parseSize(argv[i]);
 		}
-		else if (strcmp(argv[i], "-ms") == 0) {
-			i++;
-			if (argv[i] == 0) {
-				fprintf(stderr, "Error: No heap size found for -ms option.\n");
-				exit(1);
+		else if (strncmp(argv[i], "-ms", 3) == 0) {
+			if (argv[i][3] == 0) {
+				i++;
+				if (argv[i] == 0) {
+					fprintf(stderr, "Error: No heap size found for -ms option.\n");
+					exit(1);
+				}
+				vmargs.minHeapSize = parseSize(argv[i]);
+			} else {
+				vmargs.minHeapSize = parseSize(&argv[i][3]);
 			}
-			vmargs.allocHeapSize = parseSize(argv[i]);
+		}
+		else if (strncmp(argv[i], "-as", 3) == 0) {
+			if (argv[i][3] == 0) {
+				i++;
+				if (argv[i] == 0) {
+					fprintf(stderr, "Error: No heap size found for -as option.\n");
+					exit(1);
+				}
+				vmargs.allocHeapSize = parseSize(argv[i]);
+			} else {
+				vmargs.allocHeapSize = parseSize(&argv[i][3]);
+			}
 		}
 		else if (strcmp(argv[i], "-verify") == 0) {
 			vmargs.verifyMode = 3;
@@ -324,8 +348,7 @@ options(char** argv)
 		   strcmp(argv[i], "-checksource") == 0 ||
 		   strcmp(argv[i], "-prof") == 0) {
 		}
-		else if (strcmp(argv[i], "-ms") == 0 ||
-		   strcmp(argv[i], "-oss") == 0) {
+		else if (strcmp(argv[i], "-oss") == 0) {
 			i++;
 		}
 		else {
@@ -351,6 +374,7 @@ usage(void)
 	fprintf(stderr, "	-ss <size>		Maximum native stack size\n");
 	fprintf(stderr, "	-mx <size> 		Maximum heap size\n");
 	fprintf(stderr, "	-ms <size> 		Initial heap size\n");
+	fprintf(stderr, "	-as <size> 		Heap increment\n");
 	fprintf(stderr, "	-classpath <path>	Set classpath\n");
 	fprintf(stderr, "	-verify *		Verify all bytecode\n");
 	fprintf(stderr, "	-verifyremote *		Verify bytecode loaded from network\n");
@@ -366,7 +390,7 @@ usage(void)
 	fprintf(stderr, "	-oss <size> *		Maximum java stack size\n");
         fprintf(stderr, "	-jar                    Executable is a JAR\n");
 #ifdef DEBUG
-        fprintf(stderr, "	-vmdebug <flag{,flag}>	Internal VM debugging. Set flag=list for a list\n");                     
+        fprintf(stderr, "	-vmdebug <flag{,flag}>	Internal VM debugging.  Set flag=list for a list\n");                     
 #endif
 	fprintf(stderr, "	-prof *			?\n");
 	fprintf(stderr, "  * Option currently ignored.\n");

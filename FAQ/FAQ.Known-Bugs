@@ -50,7 +50,8 @@ ARCHITECTURE-SPECIFIC PROBLEMS
   kaffe binary on the system on which it was compiled, that is, don't run
   Linux 2.0 binaries on 2.1 or vice versa.  The test LostFrame in 
   test/regression (and possibly others) should fail if you're affected
-  by this problem.
+  by this problem.  We would really appreciate a mechanism that would
+  allow us to detect and handle different libc versions at run-time.
 
 * On netbsd1.3/arm32, the % operator for long data types is broken.
   This means that the sign of such an operation may come out wrong.
@@ -62,9 +63,6 @@ ARCHITECTURE-SPECIFIC PROBLEMS
 
 THINGS WHERE KAFFE'S BEHAVIOR DIFFERS
 ---------------------------------------------------------------------------
-
-* java.util.Random produces different results than Sun's.  While the basic
-  algorithm is the same, Kaffe uses different multipliers and modulos.
 
 * There is a problem with String.intern().  Specifically, if an interned string
   is scheduled for finalization, but is then reattached through the finalizer
@@ -99,11 +97,6 @@ MISCELLANEOUS & TODO
 
   Note kaffe's jni.h doesn't even define these array types as of yet.
 
-* The -mx and other options that take a numeric argument behave different
-  than Sun's.  Kaffe wants a space, Sun doesn't.
-  Example:	Kaffe:	-mx 32m  Sun:  -mx32m
-  Pointed out by David Tucker <dbtucker@acm.jhu.edu> on Sat, 21 Nov 1998
-
 * The call to `native' in external.c is unprotected in the interpreter.
   In the jitter, this call is protected by locking the class.
 
@@ -111,7 +104,8 @@ MISCELLANEOUS & TODO
   threads attempting the call other methods may be blocked until the
   verification succeeds.  This could lead to deadlock.
   
-* OutOfMemoryErrors are not handled properly.
+* OutOfMemoryErrors are not handled properly.  Don't even try to write 
+  applications that attempt catch and recover from them.
 
 * Stopping threads at inopportune times may corrupt the VM.
 

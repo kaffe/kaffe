@@ -71,9 +71,10 @@ static int max_freelist;
 gc_block* gc_prim_freelist;
 static size_t max_small_object_size;
 
-size_t gc_heap_total;
-size_t gc_heap_allocation_size;
-size_t gc_heap_limit;
+size_t gc_heap_total;		/* current size of the heap */
+size_t gc_heap_allocation_size;	/* amount of memory by which to grow heap */
+size_t gc_heap_initial_size;	/* amount of memory to initially allocate */
+size_t gc_heap_limit;		/* maximum size to which heap should grow */
 
 #ifndef gc_pgsize
 size_t gc_pgsize;
@@ -119,10 +120,14 @@ gc_heap_initialise(void)
 #endif
 
 	gc_heap_allocation_size = Kaffe_JavaVMArgs[0].allocHeapSize;
+	gc_heap_initial_size = Kaffe_JavaVMArgs[0].minHeapSize;
 	gc_heap_limit = Kaffe_JavaVMArgs[0].maxHeapSize;
 
-	if (gc_heap_allocation_size > gc_heap_limit) {
-		gc_heap_limit = gc_heap_allocation_size;
+	if (gc_heap_initial_size > gc_heap_limit) {
+		fprintf(stderr, 
+		    "Initial heap size (%dK) > Maximum heap size (%dK)\n",
+		    gc_heap_initial_size/1024, gc_heap_limit/1024);
+		EXIT(-1);
 	}
 
 #ifndef PREDEFINED_NUMBER_OF_TILES
@@ -207,6 +212,9 @@ DBG(SLACKANAL,
 	gc_heap_allocation_size = ROUNDUPPAGESIZE(gc_heap_allocation_size);
 
 	gc_block_init();
+
+	/* allocate heap of initial size from system */
+	gc_system_alloc(gc_heap_initial_size);
 }
 
 /*
@@ -338,18 +346,7 @@ DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %d at %p\n", sz, mem);	)
 		if (nsz < gc_heap_allocation_size) {
 			nsz = gc_heap_allocation_size;
 		}
-		blk = gc_system_alloc(nsz);
-		if (blk != 0) {
-			/* Place block into the freelist for subsequent use */
-			DBG(GCDIAG, blk->magic = GC_MAGIC);
-			blk->size = nsz;
-
-			/* Attach block to object hash */
-			gc_block_add(blk);
-
-			/* Free block into the system */
-			gc_primitive_free(blk);
-		}
+		gc_system_alloc(nsz);
 		break;
 
 	default:
@@ -667,7 +664,7 @@ static
 void*
 gc_system_alloc(size_t sz)
 {
-	void* mem;
+	gc_block* blk;
 
 	assert(sz % gc_pgsize == 0);
 
@@ -682,11 +679,25 @@ gc_system_alloc(size_t sz)
 	gc_system_alloc_cnt++;
 #endif
 
-	mem = gc_block_alloc(sz);
+	blk = gc_block_alloc(sz);
 	gc_heap_total += sz;
 	
 DBG(GCSYSALLOC,
-	dprintf("gc_system_alloc: %d byte at %p\n", sz, mem);		)
+	dprintf("gc_system_alloc: %d byte at %p\n", sz, blk);		)
 
-	return (mem);
+	if (blk == 0) {
+		return (0);
+	}
+
+	/* Place block into the freelist for subsequent use */
+	DBG(GCDIAG, blk->magic = GC_MAGIC);
+	blk->size = sz;
+
+	/* Attach block to object hash */
+	gc_block_add(blk);
+
+	/* Free block into the system */
+	gc_primitive_free(blk);
+
+	return (blk);
 }
