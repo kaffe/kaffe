@@ -39,75 +39,146 @@ public static final ResourceBundle getBundle(String baseName, Locale locale)
 public static ResourceBundle getBundle(String baseName, Locale locale,
 		ClassLoader loader) throws MissingResourceException {
 	
-	ResourceBundle defaultBundle = getSpecificBundle (baseName, loader);
-	if (defaultBundle != null) {
-		defaultBundle.parent = null;
-		defaultBundle.locale = new Locale ("");
-	}
+  List names = generateCandidateBundleNames(baseName, locale);
+  Iterator iter = names.iterator();
 
-	ResourceBundle ret = getBundleWithLocale(baseName, defaultBundle, locale, loader);
+  while (iter.hasNext()) {
+    String name = (String) iter.next();
 
-	/* It would appear that if we fail to load a resource bundle
-	 * for a given locale, we just load the default one instead.
-	 */
-	if (ret==defaultBundle && locale != Locale.getDefault()) {
-		ret = getBundleWithLocale(baseName, defaultBundle,
-		    Locale.getDefault(), loader);
-	}
+    ResourceBundle bundle = getFromCache(name, loader);
+    if (bundle == null) {
+      bundle = instantiate(name, loader);
+    }
 
-	if (ret == null) {
-		throw new MissingResourceException("Can't find bundle for base name "
-		    + baseName + ",locale " + locale, "ResourceBundle", baseName);
-	}
+    if (bundle != null) {
+      putInCache(name, loader, bundle);
+      instantiateParentChain(bundle, name, loader);
+      return bundle;
+    }
+  }
 
-	return (ret);
+  throw new MissingResourceException("BaseName: " + baseName + " Locale: " + locale + " ClassLoader : " + loader, "ResourceBundle", baseName);
 }
 
-private static final ResourceBundle getBundleWithLocale(String baseName, ResourceBundle bundle,
-		Locale locale, ClassLoader loader) {
-	ResourceBundle nbundle = null;
 
-	String lang = locale.getLanguage();
-	String cntry = locale.getCountry();
-	String var = locale.getVariant();
+  private static ResourceBundle getFromCache(String name, ClassLoader loader) {
+    
+    return (ResourceBundle)cache.get (loader + name);
+  }
 
-	StringBuffer sb = new StringBuffer(60);
-	sb.append (baseName);
+  private static void putInCache(String name, ClassLoader loader, ResourceBundle bundle) {
 
-	sb.append ('_');
-	if (lang.length()>0) {
-		sb.append (lang);
-		nbundle = getSpecificBundle(sb.toString(), loader);
-		if (nbundle != null) {
-			nbundle.parent = bundle;
-			nbundle.locale = new Locale (lang);
-			bundle = nbundle;
-		}
-	}
+    cache.put (loader + name, bundle);
+  }
 
-	sb.append ('_');
-	if (cntry.length()>0) {
-		sb.append (cntry);	
-		nbundle = getSpecificBundle(sb.toString(), loader);
-		if (nbundle != null) {
-			nbundle.parent = bundle;
-			nbundle.locale = new Locale (lang, cntry);
-			bundle = nbundle;
-		}
-	}
+  private static void instantiateParentChain(ResourceBundle bundle, String name, ClassLoader loader) {
 
-	if (var.length()>0) {
-		sb.append ('_');
-		sb.append (var);
-		nbundle = getSpecificBundle(sb.toString(), loader);
-		if (nbundle != null) {	
-			nbundle.parent = bundle;
-			nbundle.locale = new Locale (lang, cntry, var);
-			bundle = nbundle;
-		}
-	}
-	
-	return (bundle);
+    int last_underscore = name.lastIndexOf('_');
+    if (last_underscore != -1) {
+      String parent_name = name.substring(0, last_underscore);
+      ResourceBundle parent = instantiate(parent_name, loader);
+      bundle.setParent(parent);
+      if (parent != null && parent.parent == null) {
+	instantiateParentChain(parent, parent_name, loader);
+      }
+    }
+  }
+  
+  private static ResourceBundle loadProperties(String name, ClassLoader loader) {
+    InputStream strm;
+    strm = loader.getResourceAsStream(name.replace('.', '/')
+				      + ".properties");
+    if (strm != null) {
+      try {
+	return (new PropertyResourceBundle(strm));
+      }
+      catch (IOException e) {
+	e.printStackTrace();
+      }
+    }
+    
+    return null;
+  }
+  
+  private static ResourceBundle loadClass(String name, ClassLoader loader) {
+    try {
+      Class cls = Class.forName(name.replace('/', '.'), true, loader);
+      /* 
+       * Only call newInstance if the cast to resource bundle 
+       * will indeed succeed.
+       */
+      if (ResourceBundle.class.isAssignableFrom(cls)) {
+	return ((ResourceBundle)cls.newInstance());
+      }
+    }
+    catch (ClassNotFoundException e) {
+      // ignore
+    }
+    catch (LinkageError e) {
+      e.printStackTrace();
+    }
+    catch (IllegalAccessException e) {
+      e.printStackTrace();
+    }
+    catch (InstantiationException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
+private static ResourceBundle instantiate(String name, ClassLoader loader) {
+
+  ResourceBundle bundle = loadClass(name, loader);
+  if (bundle != null) {
+    return bundle;
+  }
+
+  bundle = loadProperties(name, loader);
+  return bundle;
+}
+
+private static List generateCandidateBundleNames(String baseName, Locale locale) {
+  
+  String language1 = locale.getLanguage();
+  String country1 = locale.getCountry();
+  String variant1 = locale.getVariant();
+
+  Locale default_locale = Locale.getDefault();
+
+  String language2 = default_locale.getLanguage();
+  String country2 = default_locale.getCountry();
+  String variant2 = default_locale.getVariant();
+ 
+  List names = new ArrayList();
+
+  if (variant1.length() != 0) {
+    names.add(baseName + '_' + language1 + '_' + country1 + '_' + variant1);
+  }
+
+  if (country1.length() != 0) {
+    names.add(baseName + '_' + language1 + '_' + country1);
+  }
+
+  if (language1.length() != 0) {
+    names.add(baseName + '_' + language1);
+  }
+
+  if (variant2.length() != 0) {
+    names.add(baseName + '_' + language2 + '_' + country2 + '_' + variant2);
+  }
+
+  if (country2.length() != 0) {
+    names.add(baseName + '_' + language2 + '_' + country2);
+  }
+
+  if (language2.length() != 0) {
+    names.add(baseName + '_' + language2);
+  }
+
+  names.add(baseName);
+
+  return names;
 }
 
 public Locale getLocale () {
@@ -124,54 +195,13 @@ public final Object getObject(String key) throws MissingResourceException {
 		}
 	}
 	catch (MissingResourceException e) {
+	  e.printStackTrace();
 	}
 	if (parent == null) {
 		throw new MissingResourceException("resource not found",
 		    this.getClass().toString(), key);
 	}
 	return (parent.getObject(key));
-}
-
-private static final ResourceBundle getSpecificBundle(String baseName,
-		ClassLoader loader) {
-
-	ResourceBundle ret = (ResourceBundle)cache.get (loader + baseName);
-	if (ret != null) {
-		return ret;
-	}
- 
-	try {
-		Class cls = Class.forName(baseName, true, loader);
-		/* 
-		 * Only call newInstance if the cast to resource bundle 
-		 * will indeed succeed.
-		 */
-		if (ResourceBundle.class.isAssignableFrom(cls)) {
-			ret = ((ResourceBundle)cls.newInstance());
-		}
-	}
-	catch (Exception _) {
-	}
-
-	// Okay, failed to load bundle - attempt to load properties as bundle.
-	if (ret == null) {
-		InputStream strm;
-		strm = loader.getResourceAsStream(baseName.replace('.', '/')
-	    		+ ".properties");
-		if (strm != null) {
-			try {
-				ret = (new PropertyResourceBundle(strm));
-			}
-			catch (IOException _) {
-			}
-		}
-	}
-
-	if (ret!=null) {
-		cache.put (baseName, ret);
-	}
-
-	return ret;
 }
 
 public final String getString(String key) throws MissingResourceException {
