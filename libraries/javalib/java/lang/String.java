@@ -27,7 +27,7 @@ public final class String implements Serializable, Comparable {
 	 * extra buffer space is maintained for short strings that
 	 * were created from StringBuffer objects.
 	 */
-	private static final int STRINGBUFFER_SLOP = 32;
+	static final int STRINGBUFFER_SLOP = 32;
 
 	// Note: value, offset, and count are not private, because
 	// StringBuffer uses them for faster access
@@ -129,15 +129,15 @@ public String( char other[]) {
 }
 
 public String( char other[], int offset, int count) {
+	if (count < 0)
+		throw new StringIndexOutOfBoundsException();
 	value = new char[count];
 	this.offset = 0;
 	this.count = count;    
-
-	if ( count > 0)
-		System.arraycopy( other, offset, value, 0, count);
+	System.arraycopy( other, offset, value, 0, count);
 }
 
-private String( int sIdx, int eIdx, char[] val) {
+String(int sIdx, int eIdx, char[] val) {
 	value  = val;
 	offset = sIdx;
 	count  = eIdx - sIdx;

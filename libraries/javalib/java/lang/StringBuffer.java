@@ -92,15 +92,46 @@ public int capacity() {
 }
 
 public synchronized char charAt(int index) {
-	checkIndex(index);
+	if (index >= used)
+		throw new StringIndexOutOfBoundsException();
 	return buffer[index];
 }
 
-private synchronized void checkIndex(int index)
-		throws StringIndexOutOfBoundsException {
-	if (index < 0 || index >= used) {
-		throw new StringIndexOutOfBoundsException(
-		    "index = " + index + ", used = " + used);
+public synchronized StringBuffer deleteCharAt(int index) {
+	if (index < 0 || index >= used)
+		throw new StringIndexOutOfBoundsException();
+	System.arraycopy(buffer, index + 1, buffer, index, --used - index);
+	return this;
+}
+
+public synchronized StringBuffer delete(int start, int end) {
+	if (end > used)
+		end = used;
+	if (start < 0 || start > end)
+		throw new StringIndexOutOfBoundsException();
+	System.arraycopy(buffer, end, buffer, start, used - end);
+	used -= end - start;
+	return this;
+}
+
+public synchronized StringBuffer replace(int start, int end, String str) {
+	return delete(start, end).insert(start, str);
+}
+
+public synchronized String substring(int start) {
+	return substring(start, used);
+}
+
+public synchronized String substring(int start, int end) {
+	int length = end - start;
+
+	if (start < 0 || end > used || length < 0)
+		throw new StringIndexOutOfBoundsException();
+	if (buffer.length - length > String.STRINGBUFFER_SLOP)
+		return new String(buffer, start, end);
+	else {
+		isStringized = true;
+		return new String(start, end, buffer);
 	}
 }
 
@@ -137,8 +168,8 @@ private boolean ensureCapacity(int minCapacity, boolean forceNew) {
 
 public synchronized void getChars(int srcBegin, int srcEnd,
 		char dst[], int dstBegin) {
-	checkIndex(srcBegin);
-	checkIndex(srcEnd - 1);
+	if (srcEnd > used)
+		throw new StringIndexOutOfBoundsException();
 	System.arraycopy(buffer, srcBegin, dst, dstBegin, srcEnd - srcBegin);
 }
 
@@ -167,7 +198,9 @@ public StringBuffer insert(int offset, char[] str) {
 
 public synchronized StringBuffer insert(int index, char[] str,
 		int offset, int len) {
-	checkIndex(index);
+	if (index < 0 || index > used) {
+		throw new StringIndexOutOfBoundsException();
+	}
 	if (offset < 0 || len < 0 || offset + len > str.length) {
 		throw new StringIndexOutOfBoundsException();
 	}
@@ -217,7 +250,8 @@ public synchronized StringBuffer reverse() {
 }
 
 public synchronized void setCharAt(int index, char ch) {
-	checkIndex(index);
+	if (index < 0 || index >= used)
+		throw new StringIndexOutOfBoundsException();
 	if (isStringized)				// optimization
 		ensureCapacity(used, true);
 	buffer[index] = ch;
