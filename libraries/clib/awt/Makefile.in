@@ -83,7 +83,6 @@ clean:
 
 distclean:	clean
 		rm -f Makefile .dir-stamp .depend
-		rmdir X
 
 install:
 		test -d $(INSTROOT)$(nativedir) || $(MKDIR) $(INSTROOT)$(nativedir)

@@ -9,11 +9,12 @@ Fri Aug 28 10:57:38 1998  Archie Cobbs <archie@whistle.com>
 	kaffe/kaffevm/systems/unix-*/internal.c,
 	kaffe/kaffevm/systems/unix-jthreads/jthread.*,
 	libraries/clib/awt/X/*, libraries/clib/math/BigInteger.h,
-	libraries/clib/native/Compiler.h, libraries/clib/native/System.h,
+	libraries/clib/native/Compiler.h, libraries/clib/native/System.h:
 	minor fixes to eliminate gcc compiler warnings
 	* configure.in: add -Wstrict-prototypes to gcc flags
 	* kaffe/kaffeh/support.c: for static methods taking no arguments,
 	generate protypes as "method(void)" instead of "method()".
+	* libraries/clib/awt/Makefile.in: fix breakage for "make distclean"
 
 Fri Aug 28 09:49:20 1998  Godmar Back  <gback@cs.utah.edu>
 
