@@ -21,18 +21,20 @@ extern void readslot(sequence*, int, SlotInfo*, int);
 /* -------------------------------------------------------------------- */
 /* Branches */
 
-#define	ba			0	/* Always */
-#define	beq			1	/* Equal */
-#define	blt			2	/* Less than */
-#define	ble			3	/* Less than or equal */
-#define	bgt			4	/* Greater than */
-#define	bge			5	/* Greater than or equal */
-#define	bne			6	/* Not equal */
-#define	bn			7	/* Never */
-#define	bindirect		8	/* Indirect */
-#define	bult			9	/* Unsigned less than */
-#define	buge			10	/* Unsigned greater than or equal */
-#define	bugt			11	/* Unsigned greater than */
+enum {
+	ba			= 0,	/* Always */
+	beq			= 1,	/* Equal */
+	blt			= 2,	/* Less than */
+	ble			= 3,	/* Less than or equal */
+	bgt			= 4,	/* Greater than */
+	bge			= 5,	/* Greater than or equal */
+	bne			= 6,	/* Not equal */
+	bn			= 7,	/* Never */
+	bindirect		= 8,	/* Indirect */
+	bult			= 9,	/* Unsigned less than */
+	buge			= 10,	/* Unsigned greater than or equal */
+	bugt			= 11,	/* Unsigned greater than */
+};
 
 #define branch_a(l)			branch(l, ba)
 
