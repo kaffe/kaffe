@@ -58,7 +58,7 @@ buildStackTrace(struct _exceptionFrame* base)
 	    dprintf("STACKTRACEINIT(trace, %p, %p, orig);\n", base, base); );
 	STACKTRACEINIT(trace, base, base, orig);
 	cnt = 0;
-	while(STACKTRACEFRAME(trace) && jthread_on_current_stack ((void *)STACKTRACEFP(trace))) {
+	while(STACKTRACEFRAME(trace) && KTHREAD(on_current_stack) ((void *)STACKTRACEFP(trace))) {
 		cnt++;
 		STACKTRACESTEP(trace);
 	}
@@ -77,7 +77,7 @@ buildStackTrace(struct _exceptionFrame* base)
 	    dprintf("STACKTRACEINIT(trace, &orig, %p, orig);\n", base); );
 	STACKTRACEINIT(trace, &orig, base, orig);
 
-	while (STACKTRACEFRAME(trace) && jthread_on_current_stack ((void *)STACKTRACEFP(trace))) {
+	while (STACKTRACEFRAME(trace) && KTHREAD(on_current_stack) ((void *)STACKTRACEFP(trace))) {
 		info[cnt].pc = STACKTRACEPC(trace);
 		info[cnt].fp = STACKTRACEFP(trace);
 		info[cnt].meth = stacktraceFindMethod (info[cnt].fp, info[cnt].pc);

@@ -9,6 +9,7 @@
  */
 
 #include "ksem.h"
+#include "support.h"
 
 #ifndef THREAD_SYSTEM_HAS_KSEM
 
@@ -17,7 +18,7 @@
  * by the threading system when a new thread is allocated.
  */
 void
-ksemInit(Ksem* sem)
+ksem_init(Ksem* sem)
 {
 	assert(sem != NULL);
 	
@@ -39,7 +40,7 @@ ksemInit(Ksem* sem)
  * we timed-out in wait and semaphore still wasn't available.
  */
 jboolean
-ksemGet(Ksem* volatile sem, jlong timeout)
+ksem_get(Ksem* volatile sem, jlong timeout)
 {
 	jboolean r;
 
@@ -50,10 +51,10 @@ ksemGet(Ksem* volatile sem, jlong timeout)
 	if (timeout == 0)
 		timeout = NOTIMEOUT;
 
-	jmutex_lock(&sem->mux);
+	KMUTEX(lock)(&sem->mux);
 	/* If no stored wakeups, then sleep. */
 	if (sem->count == 0) {
-	  (void)jcondvar_wait(&sem->cv, &sem->mux, timeout);
+	  (void)KCONDVAR(wait)(&sem->cv, &sem->mux, timeout);
 	}
 
 	/* Use a stored wakeup if available. */
@@ -66,7 +67,7 @@ ksemGet(Ksem* volatile sem, jlong timeout)
 		r = false;
 	}
 	assert(sem->count == 0);
-	jmutex_unlock(&sem->mux);
+	KMUTEX(unlock)(&sem->mux);
 	return (r);
 }
 
@@ -75,21 +76,21 @@ ksemGet(Ksem* volatile sem, jlong timeout)
  * on the cv (if any).
  */
 void
-ksemPut(Ksem* volatile sem)
+ksem_put(Ksem* volatile sem)
 {
 	assert(sem != NULL);
-	jmutex_lock(&sem->mux);
+	KMUTEX(lock)(&sem->mux);
         sem->count = 1;
-	jcondvar_signal(&sem->cv, &sem->mux);
-	jmutex_unlock(&sem->mux);
+	KCONDVAR(signal)(&sem->cv, &sem->mux);
+	KMUTEX(unlock)(&sem->mux);
 }
 
 void
-ksemDestroy(Ksem* sem)
+ksem_destroy(Ksem* sem)
 {
 	assert(sem != NULL);
-	jmutex_destroy(&(sem->mux));
-	jcondvar_destroy(&(sem->cv));
+	KMUTEX(destroy)(&(sem->mux));
+	KCONDVAR(destroy)(&(sem->cv));
 }
 
 #endif

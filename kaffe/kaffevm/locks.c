@@ -82,7 +82,7 @@ getHeavyLock(iLock* volatile * lkp, iLock *heavyLock)
 
 DBG(SLOWLOCKS,
     	dprintf("  getHeavyLock(**lkp=%p, *lk=%p, th=%p)\n",
-		lkp, *lkp, jthread_current());
+		lkp, *lkp, KTHREAD(current)());
 )
  
 	lk = heavyLock;
@@ -95,7 +95,7 @@ DBG(SLOWLOCKS,
 		if (old == LOCKINPROGRESS || !COMPARE_AND_EXCHANGE(lkp, old, LOCKINPROGRESS)) {
 			/* Someone else put the lock in LOCKINPROGRESS state */
 			backoffcount++;
-			ksemGet(&THREAD_DATA()->sem, timeout);
+			KSEM(get)(&THREAD_DATA()->sem, timeout);
 			/* Back off */
 			timeout = (timeout << 1)|timeout;
 			continue;
@@ -148,7 +148,7 @@ putHeavyLock(iLock** lkp, iLock* lk)
 
 DBG(SLOWLOCKS,
 	dprintf("  putHeavyLock(**lkp=%p, *lk=%p, th=%p)\n", 
-		lkp, lk, jthread_current());
+		lkp, lk, KTHREAD(current)());
 )
 
 	if (lk == LOCKFREE) {
@@ -167,21 +167,21 @@ static void
 slowLockMutex(iLock** lkp, void* where, iLock *heavyLock)
 {
 	iLock* lk;
-	jthread_t cur = jthread_current ();
+	jthread_t cur = KTHREAD(current) ();
 
 DBG(SLOWLOCKS,
     	dprintf("slowLockMutex(**lkp=%p, where=%p, th=%p)\n",
-	       lkp, where, jthread_current());
+	       lkp, where, KTHREAD(current)());
 )
-	jthread_disable_stop(); /* protect the heavy lock, and its queues */
+	KTHREAD(disable_stop)(); /* protect the heavy lock, and its queues */
 
 	for (;;) {
 		lk = getHeavyLock(lkp, heavyLock);
 
 		/* If I hold the heavy lock then just keep on going */
-		if (jthread_on_current_stack(lk->holder)) {
+		if (KTHREAD(on_current_stack)(lk->holder)) {
 			putHeavyLock(lkp, lk);
-			jthread_enable_stop();
+			KTHREAD(enable_stop)();
 			return;
 		}
 
@@ -189,15 +189,15 @@ DBG(SLOWLOCKS,
 		if (lk->holder == 0) {
 			lk->holder = where;
 			putHeavyLock(lkp, lk);
-			jthread_enable_stop();
+			KTHREAD(enable_stop)();
 			return;
 		}
 
 		/* Otherwise wait for holder to release it */
-		jthread_get_data(cur)->nextlk = lk->mux;
+		KTHREAD(get_data)(cur)->nextlk = lk->mux;
 		lk->mux = cur;
 		putHeavyLock(lkp, lk);
-		ksemGet(&jthread_get_data(cur)->sem, (jlong)0);
+		KSEM(get)(&KTHREAD(get_data)(cur)->sem, (jlong)0);
 	}
 }
 
@@ -214,15 +214,15 @@ slowUnlockMutex(iLock** lkp, void* where, iLock *heavyLock)
 
 DBG(SLOWLOCKS,
     	dprintf("slowUnlockMutex(**lkp=%p, where=%p, th=%p)\n",
-	       lkp, where, jthread_current());
+	       lkp, where, KTHREAD(current)());
 )
-	jthread_disable_stop(); /* protect the heavy lock, and its queues */
+	KTHREAD(disable_stop)(); /* protect the heavy lock, and its queues */
 	lk = getHeavyLock(lkp, heavyLock);
 
 	/* Only the lock holder can be doing an unlock */
-	if (!jthread_on_current_stack(lk->holder)) {
+	if (!KTHREAD(on_current_stack)(lk->holder)) {
 		putHeavyLock(lkp, lk);
-		jthread_enable_stop();
+		KTHREAD(enable_stop)();
 		throwException(IllegalMonitorStateException);
 	}
 
@@ -233,7 +233,7 @@ DBG(SLOWLOCKS,
 	if (lk->holder > where) {
 #endif
 		putHeavyLock(lkp, lk);
-		jthread_enable_stop();
+		KTHREAD(enable_stop)();
 		return;
 	}
 
@@ -242,11 +242,11 @@ DBG(SLOWLOCKS,
 	 */
 	if (lk->mux != 0) {
 		tid = lk->mux;
-		lk->mux = jthread_get_data(tid)->nextlk;
-		jthread_get_data(tid)->nextlk = 0;
+		lk->mux = KTHREAD(get_data)(tid)->nextlk;
+		KTHREAD(get_data)(tid)->nextlk = 0;
 		lk->holder = 0;
 		putHeavyLock(lkp, lk);
-		ksemPut(&jthread_get_data(tid)->sem);
+		KSEM(put)(&KTHREAD(get_data)(tid)->sem);
 	}
 	/* If someone's waiting to be signaled keep the heavy in place */
 	else if (lk->cv != 0) {
@@ -259,7 +259,7 @@ DBG(SLOWLOCKS,
 		}
 		putHeavyLock(lkp, LOCKFREE);
 	}
-	jthread_enable_stop();
+	KTHREAD(enable_stop)();
 }
 
 void
@@ -270,7 +270,7 @@ locks_internal_slowUnlockMutexIfHeld(iLock** lkp, void* where, iLock *heavyLock)
 
 DBG(SLOWLOCKS,
     	dprintf("slowUnlockMutexIfHeld(**lkp=%p, where=%p, th=%p)\n",
-	       lkp, where, jthread_current());
+	       lkp, where, KTHREAD(current)());
 )
 	holder = *lkp;
 
@@ -282,7 +282,7 @@ DBG(SLOWLOCKS,
 	/* if it's a thin lock and this thread owns it,
 	 * try to free it the easy way
 	 */
-	if (jthread_on_current_stack(holder) &&
+	if (KTHREAD(on_current_stack)(holder) &&
 	    COMPARE_AND_EXCHANGE(lkp, holder, LOCKFREE)) {
 		return;
 	}
@@ -292,7 +292,7 @@ DBG(SLOWLOCKS,
 	holder = lk->holder;
 	putHeavyLock(lkp, lk);
 
-	if (jthread_on_current_stack(holder)) {
+	if (KTHREAD(on_current_stack)(holder)) {
 		slowUnlockMutex(lkp, where, heavyLock);
 	}
 }
@@ -302,29 +302,29 @@ locks_internal_waitCond(iLock** lkp, jlong timeout, iLock *heavyLock)
 {
 	iLock* lk;
 	void* holder;
-	jthread_t cur = jthread_current();
+	jthread_t cur = KTHREAD(current)();
 	jthread_t *ptr;
 	jboolean r;
 
 DBG(SLOWLOCKS,
     	dprintf("_waitCond(**lkp=%p, timeout=%ld, th=%p)\n",
-	       lkp, (long)timeout, jthread_current());
+	       lkp, (long)timeout, KTHREAD(current)());
 )
 
 	lk = getHeavyLock(lkp, heavyLock);
 	holder = lk->holder;
 
 	/* I must be holding the damn thing */
-	if (!jthread_on_current_stack(holder)) {
+	if (!KTHREAD(on_current_stack)(holder)) {
 		putHeavyLock(lkp, holder);
 		throwException(IllegalMonitorStateException);
 	}
 
-	jthread_get_data(cur)->nextlk = lk->cv;
+	KTHREAD(get_data)(cur)->nextlk = lk->cv;
 	lk->cv = cur;
 	putHeavyLock(lkp, lk);
 	slowUnlockMutex(lkp, holder, heavyLock);
-	r = ksemGet(&jthread_get_data(cur)->sem, timeout);
+	r = KSEM(get)(&KTHREAD(get_data)(cur)->sem, timeout);
 
 	/* Timeout */
 	if (r == false) {
@@ -332,22 +332,22 @@ DBG(SLOWLOCKS,
 		/* Remove myself from CV or MUX queue - if I'm * not on either
 		 * then I should wait on myself to remove any pending signal.
 		 */
-		for (ptr = &lk->cv; *ptr != 0; ptr = &jthread_get_data(*ptr)->nextlk) {
+		for (ptr = &lk->cv; *ptr != 0; ptr = &KTHREAD(get_data)(*ptr)->nextlk) {
 			if ((*ptr) == cur) {
-				*ptr = jthread_get_data(cur)->nextlk;
+				*ptr = KTHREAD(get_data)(cur)->nextlk;
 				goto found;
 			}
 		}
-		for (ptr = &lk->mux; *ptr != 0; ptr = &jthread_get_data(*ptr)->nextlk) {
+		for (ptr = &lk->mux; *ptr != 0; ptr = &KTHREAD(get_data)(*ptr)->nextlk) {
 			if ((*ptr) == cur) {
-				*ptr = jthread_get_data(cur)->nextlk;
+				*ptr = KTHREAD(get_data)(cur)->nextlk;
 				goto found;
 			}
 		}
 		/* Not on list - so must have been signalled after all -
 		 * decrease the semaphore to avoid problems.
 		 */
-		ksemGet(&jthread_get_data(cur)->sem, (jlong)0);
+		KSEM(get)(&KTHREAD(get_data)(cur)->sem, (jlong)0);
 
 		found:;
 		putHeavyLock(lkp, lk);
@@ -366,12 +366,12 @@ locks_internal_signalCond(iLock** lkp, iLock *heavyLock)
 
 DBG(SLOWLOCKS,
     	dprintf("_signalCond(**lkp=%p, th=%p)\n",
-	       lkp, jthread_current());
+	       lkp, KTHREAD(current)());
 )
 
 	lk = getHeavyLock(lkp, heavyLock);
 
-	if (!jthread_on_current_stack(lk->holder)) {
+	if (!KTHREAD(on_current_stack)(lk->holder)) {
 		putHeavyLock(lkp, lk);
 		throwException(IllegalMonitorStateException);
 	}
@@ -379,8 +379,8 @@ DBG(SLOWLOCKS,
 	/* Move one CV's onto the MUX */
 	tid = lk->cv;
 	if (tid != 0) {
-		lk->cv = jthread_get_data(tid)->nextlk;
-		jthread_get_data(tid)->nextlk = lk->mux;
+		lk->cv = KTHREAD(get_data)(tid)->nextlk;
+		KTHREAD(get_data)(tid)->nextlk = lk->mux;
 		lk->mux = tid;
 	}
 
@@ -395,12 +395,12 @@ locks_internal_broadcastCond(iLock** lkp, iLock *heavyLock)
 
 DBG(SLOWLOCKS,
     	dprintf("_broadcastCond(**lkp=%p, th=%p)\n",
-	       lkp, jthread_current());
+	       lkp, KTHREAD(current)());
 )
 
 	lk = getHeavyLock(lkp, heavyLock);
 
-	if (!jthread_on_current_stack(lk->holder)) {
+	if (!KTHREAD(on_current_stack)(lk->holder)) {
 		putHeavyLock(lkp, lk);
 		throwException(IllegalMonitorStateException);
 	}
@@ -408,8 +408,8 @@ DBG(SLOWLOCKS,
 	/* Move all the CV's onto the MUX */
 	while (lk->cv != 0) {
 		tid = lk->cv;
-		lk->cv = jthread_get_data(tid)->nextlk;
-		jthread_get_data(tid)->nextlk = lk->mux;
+		lk->cv = KTHREAD(get_data)(tid)->nextlk;
+		KTHREAD(get_data)(tid)->nextlk = lk->mux;
 		lk->mux = tid;
 	}
 
@@ -433,7 +433,7 @@ locks_internal_lockMutex(iLock** lkp, void* where, iLock *heavyLock)
 			slowLockMutex(lkp, where, heavyLock);
 		}
 	}
-	else if (!jthread_on_current_stack((void *)val)) {
+	else if (!KTHREAD(on_current_stack)((void *)val)) {
 		/* XXX count this in the stats area */
 		slowLockMutex(lkp, where, heavyLock);
 	}

@@ -146,7 +146,7 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
 	 (retryCount > 0) )
     {
       unlockStaticMutex(&nsLock);
-      jthread_sleep(1 * 1000);
+      KTHREAD(sleep)(1 * 1000);
       lockStaticMutex(&nsLock);
       retryCount -= 1;
     }
@@ -429,7 +429,7 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
 	 (retryCount > 0) )
     {
       unlockStaticMutex(&nsLock);
-      jthread_sleep(1 * 1000);
+      KTHREAD(sleep)(1 * 1000);
       lockStaticMutex(&nsLock);
       retryCount -= 1;
     }

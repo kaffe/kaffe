@@ -16,6 +16,12 @@
 #include "gtypes.h"
 #include <stdarg.h>
 
+#define KTHREAD(function)	jthread_ ## function
+#define KSIGNAL(function)	jsignal_ ## function
+#define KSEM(function)		ksem_ ## function
+#define KMUTEX(function)	jmutex_ ## function
+#define KCONDVAR(function)	jcondvar_ ## function
+
 /* For user defined properties */
 typedef struct _userProperty {
         char*                   key;

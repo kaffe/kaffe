@@ -195,7 +195,7 @@ void jvmpiFillThreadStart(JVMPI_Event *ev, struct Hjava_lang_Thread *tid)
 	ev->u.thread_start.parent_name = NULL;
 	ev->u.thread_start.thread_id = tid;
 	ev->u.thread_start.thread_env_id =
-		&jthread_get_data((jthread_t)tid->PrivateInfo)->jniEnv;
+		&KTHREAD(get_data)((jthread_t)tid->PrivateInfo)->jniEnv;
 }
 
 void jvmpiFillClassLoad(JVMPI_Event *ev, struct Hjava_lang_Class *cl)
@@ -345,14 +345,14 @@ static void jvmpiGetCallTrace(JVMPI_CallTrace *trace, jint depth)
 	assert(depth > 0);
 
 	trace->num_frames = 0;
-	if( (jt = jthread_from_data((threadData *)trace->env_id,
+	if( (jt = KTHREAD(from_data)((threadData *)trace->env_id,
 				    &jvmpi_data)) != NULL )
 	{
 		sti = (stackTraceInfo *)
-			buildStackTrace(jt == jthread_current() ?
+			buildStackTrace(jt == KTHREAD(current)() ?
 					NULL :
-					&jthread_get_data(jt)->topFrame);
-		jthread_resume(jt, &jvmpi_data);
+					&KTHREAD(get_data)(jt)->topFrame);
+		KTHREAD(resume)(jt, &jvmpi_data);
 	}
 	if( sti != NULL )
 	{
@@ -404,7 +404,7 @@ static jlong jvmpiGetCurrentThreadCpuTime(void)
 {
 	jlong retval;
 
-	retval = jthread_get_usage(jthread_current());
+	retval = KTHREAD(get_usage)(KTHREAD(current)());
 	return( retval );
 }
 
@@ -425,11 +425,11 @@ static void *jvmpiGetThreadLocalStorage(JNIEnv *env_id)
 
 	assert(env_id != NULL);
 	
-	if( (jt = jthread_from_data((threadData *)env_id,
+	if( (jt = KTHREAD(from_data)((threadData *)env_id,
 				    &jvmpi_data)) != NULL )
 	{
-		retval = jthread_get_data(jt)->jvmpiData;
-		jthread_resume(jt, &jvmpi_data);
+		retval = KTHREAD(get_data)(jt)->jvmpiData;
+		KTHREAD(resume)(jt, &jvmpi_data);
 	}
 	return( retval );
 }
@@ -441,11 +441,11 @@ static jobjectID jvmpiGetThreadObject(JNIEnv *env_id)
 
 	assert(env_id != NULL);
 	
-	if( (jt = jthread_from_data((threadData *)env_id,
+	if( (jt = KTHREAD(from_data)((threadData *)env_id,
 				    &jvmpi_data)) != NULL )
 	{
-		retval = jthread_get_data(jt)->jlThread;
-		jthread_resume(jt, &jvmpi_data);
+		retval = KTHREAD(get_data)(jt)->jlThread;
+		KTHREAD(resume)(jt, &jvmpi_data);
 	}
 	return( retval );
 }
@@ -457,20 +457,20 @@ static jint jvmpiGetThreadStatus(JNIEnv *env_id)
 
 	assert(env_id != NULL);
 
-	if( (jt = jthread_from_data((threadData *)env_id,
+	if( (jt = KTHREAD(from_data)((threadData *)env_id,
 				    &jvmpi_data)) != NULL )
 	{
-		if( jthread_on_mutex(jt) )
+		if( KTHREAD(on_mutex)(jt) )
 		{
 			retval = JVMPI_THREAD_MONITOR_WAIT;
 		}
-		else if( jthread_on_condvar(jt) )
+		else if( KTHREAD(on_condvar)(jt) )
 		{
 			retval = JVMPI_THREAD_CONDVAR_WAIT;
 		}
 		else
 		{
-			switch( jthread_get_status(jt) )
+			switch( KTHREAD(get_status)(jt) )
 			{
 			case THREAD_RUNNING:
 				retval = JVMPI_THREAD_RUNNABLE;
@@ -481,11 +481,11 @@ static jint jvmpiGetThreadStatus(JNIEnv *env_id)
 				break;
 			}
 		}
-		if( jthread_is_interrupted(jt) )
+		if( KTHREAD(is_interrupted)(jt) )
 		{
 			retval |= JVMPI_THREAD_INTERRUPTED;
 		}
-		jthread_resume(jt, &jvmpi_data);
+		KTHREAD(resume)(jt, &jvmpi_data);
 	}
 	else
 	{
@@ -516,8 +516,8 @@ static void jvmpiRawMonitorDestroy(JVMPI_RawMonitor lock_id)
 {
 	if( lock_id != NULL )
 	{
-		jmutex_destroy(&lock_id->mux);
-		jcondvar_destroy(&lock_id->cv);
+		KMUTEX(destroy)(&lock_id->mux);
+		KCONDVAR(destroy)(&lock_id->cv);
 		jfree(lock_id);
 	}
 }
@@ -526,28 +526,28 @@ static void jvmpiRawMonitorEnter(JVMPI_RawMonitor lock_id)
 {
 	assert(lock_id != NULL);
 	
-	jmutex_lock(&lock_id->mux);
+	KMUTEX(lock)(&lock_id->mux);
 }
 
 static void jvmpiRawMonitorExit(JVMPI_RawMonitor lock_id)
 {
 	assert(lock_id != NULL);
 	
-	jmutex_unlock(&lock_id->mux);
+	KMUTEX(unlock)(&lock_id->mux);
 }
 
 static void jvmpiRawMonitorNotifyAll(JVMPI_RawMonitor lock_id)
 {
 	assert(lock_id != NULL);
 	
-	jcondvar_broadcast(&lock_id->cv, &lock_id->mux);
+	KCONDVAR(broadcast)(&lock_id->cv, &lock_id->mux);
 }
 
 static void jvmpiRawMonitorWait(JVMPI_RawMonitor lock_id, jlong ms)
 {
 	assert(lock_id != NULL);
 	
-	jcondvar_wait(&lock_id->cv, &lock_id->mux, ms);
+	KCONDVAR(wait)(&lock_id->cv, &lock_id->mux, ms);
 }
 
 static jint jvmpiRequestEvent(jint event_type, void *arg)
@@ -619,10 +619,10 @@ static void jvmpiResumeThread(JNIEnv *env)
 
 	assert(env != NULL);
 
-	if( (jt = jthread_from_data((threadData *)env, &jvmpi_data)) != NULL )
+	if( (jt = KTHREAD(from_data)((threadData *)env, &jvmpi_data)) != NULL )
 	{
-		jthread_resume(jt, &jvmpi_data);
-		jthread_resume(jt, &jvmpi_data);
+		KTHREAD(resume)(jt, &jvmpi_data);
+		KTHREAD(resume)(jt, &jvmpi_data);
 	}
 }
 
@@ -649,11 +649,11 @@ static void jvmpiSetThreadLocalStorage(JNIEnv *env_id, void *ptr)
 
 	assert(env_id != NULL);
 	
-	if( (jt = jthread_from_data((threadData *)env_id,
+	if( (jt = KTHREAD(from_data)((threadData *)env_id,
 				    &jvmpi_data)) != NULL )
 	{
-		jthread_get_data(jt)->jvmpiData = ptr;
-		jthread_resume(jt, &jvmpi_data);
+		KTHREAD(get_data)(jt)->jvmpiData = ptr;
+		KTHREAD(resume)(jt, &jvmpi_data);
 	}
 }
 
@@ -661,8 +661,8 @@ static void jvmpiSuspendThread(JNIEnv *env_id)
 {
 	jthread_t jt;
 
-	jt = jthread_from_data((threadData *)env_id, &jvmpi_data);
-	jthread_clear_run(jt);
+	jt = KTHREAD(from_data)((threadData *)env_id, &jvmpi_data);
+	KTHREAD(clear_run)(jt);
 }
 
 static void jvmpiSuspendThreadList(jint reqCount, JNIEnv **reqList, jint *results)
@@ -686,10 +686,10 @@ static jboolean jvmpiThreadHasRun(JNIEnv *env)
 	jboolean retval = JNI_FALSE;
 	jthread_t jt;
 
-	if( (jt = jthread_from_data((threadData *)env, &jvmpi_data)) != NULL )
+	if( (jt = KTHREAD(from_data)((threadData *)env, &jvmpi_data)) != NULL )
 	{
-		retval = jthread_has_run(jt);
-		jthread_resume(jt, &jvmpi_data);
+		retval = KTHREAD(has_run)(jt);
+		KTHREAD(resume)(jt, &jvmpi_data);
 	}
 	return( retval );
 }

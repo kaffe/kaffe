@@ -148,9 +148,9 @@ checkStackOverflow(void)
 	/* XXX fix this.  
 	 * We should not have to access current just to do the stack check
 	 */
-	threadData *thread_data = jthread_get_data(jthread_current());
+	threadData *thread_data = KTHREAD(get_data)(KTHREAD(current)());
 
-	if (jthread_stackcheck(thread_data->needOnStack)) {
+	if (KTHREAD(stackcheck)(thread_data->needOnStack)) {
 		return;
 	}
 	

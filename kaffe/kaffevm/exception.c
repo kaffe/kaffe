@@ -457,7 +457,7 @@ DBG(INIT,
 	dprintf("initExceptions()\n");
     )
 	/* Catch signals we need to convert to exceptions */
-	jthread_initexceptions(nullException, floatingException, stackOverflowException);
+	KTHREAD(initexceptions)(nullException, floatingException, stackOverflowException);
 }
 
 /*

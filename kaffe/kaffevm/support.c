@@ -466,7 +466,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 #if defined(STACK_LIMIT)
 	call.calltype[i] = 'L';
 	call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-	call.args[i].l = jthread_stacklimit();
+	call.args[i].l = KTHREAD(stacklimit)();
 	s += PTR_TYPE_SIZE / SIZEOF_INT;
 	i++;
 #endif
@@ -597,7 +597,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 #if defined(STACK_LIMIT)
 	call.calltype[i] = 'L';
 	call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-	call.args[i].l = jthread_stacklimit();
+	call.args[i].l = KTHREAD(stacklimit)();
 	s += PTR_TYPE_SIZE / SIZEOF_INT;
 	i++;
 #endif
@@ -904,13 +904,13 @@ kprintf(FILE* out, const char* mess, ...)
 void 
 enterUnsafeRegion(void)
 {
-	jthread_spinon(0);
+	KTHREAD(spinon)(0);
 }
 
 void 
 leaveUnsafeRegion(void)
 {
-	jthread_spinoff(0);
+	KTHREAD(spinoff)(0);
 }
 
 /* XXX Ick */

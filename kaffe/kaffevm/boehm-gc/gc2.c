@@ -208,7 +208,7 @@ KaffeGC_InvokeGC(Collector* gcif UNUSED, int mustgc)
   int iLockRoot;
 
   while (gcRunning < 0)
-    jthread_yield();
+    KTHREAD(yield)();
   
   lockStaticMutex(&gcman_lock);
 

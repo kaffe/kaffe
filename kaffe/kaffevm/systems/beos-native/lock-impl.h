@@ -9,17 +9,17 @@ typedef struct Ksem {
 	sem_id sem;
 } Ksem;
 
-static inline void ksemInit(struct Ksem* sem)
+static inline void ksem_init(struct Ksem* sem)
 {
 	sem->sem = create_sem(0, "Ksem");
 }
 
-static inline void ksemPut(struct Ksem* sem)
+static inline void ksem_put(struct Ksem* sem)
 {
 	release_sem(sem->sem);
 }
 
-static inline jboolean ksemGet(struct Ksem* sem, jlong timeout)
+static inline jboolean ksem_get(struct Ksem* sem, jlong timeout)
 {
 	status_t rc = B_OK;
 	bigtime_t timeoutAt = timeout*1000L + system_time();
@@ -35,7 +35,7 @@ static inline jboolean ksemGet(struct Ksem* sem, jlong timeout)
 	return (B_OK == rc) ? true : false;
 }
 
-static inline void ksemDestroy(struct Ksem* sem)
+static inline void ksem_destroy(struct Ksem* sem)
 {
 	delete_sem(sem->sem);
 }

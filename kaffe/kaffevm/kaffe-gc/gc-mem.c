@@ -1114,7 +1114,7 @@ gc_block_alloc(size_t size)
 		    dprintf("growing block array from %d to %d elements\n",
 			    onb, nblocks));
 
-		jthread_spinon(0);
+		KTHREAD(spinon)(0);
 		gc_block_base = (uintp) realloc((void *) old_blocks,
 						nblocks * sizeof(gc_block));
 		if (!gc_block_base) {
@@ -1122,7 +1122,7 @@ gc_block_alloc(size_t size)
 			pagefree(heap_addr, size);
 			gc_block_base = old_blocks;
 			nblocks = onb;
-			jthread_spinoff(0);
+			KTHREAD(spinoff)(0);
 			return 0;
 		}
 
@@ -1159,7 +1159,7 @@ gc_block_alloc(size_t size)
 				R(freelist[i].list);
 #undef R
 		}
-		jthread_spinoff(0);
+		KTHREAD(spinoff)(0);
 		stopTiming(&growtime);
 	}
 	n_live += size_pg;

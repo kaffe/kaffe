@@ -967,7 +967,7 @@ gcInvokeGC(Collector* gcif UNUSED, int mustgc)
 	int iLockRoot;
 
 	while (gcRunning < 0)
-		jthread_yield();
+		KTHREAD(yield)();
 
 	lockStaticMutex(&gcman);
 	if (gcRunning == 0) {
@@ -1139,16 +1139,16 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 	 * has been called.
 	 */
 	if (garbageman && !outOfMem && !outOfMem_allocator) {
-		outOfMem_allocator = jthread_current();
+		outOfMem_allocator = KTHREAD(current)();
 	}
 
 	unlockStaticMutex(&gc_lock);
 
-	/* jthread_current() will be null in some window before we
+	/* KTHREAD(current)() will be null in some window before we
 	 * should try allocating java objects
 	 */
 	if (!outOfMem && outOfMem_allocator
-	    && outOfMem_allocator == jthread_current()) { 
+	    && outOfMem_allocator == KTHREAD(current)()) { 
 		outOfMem = OOM_ALLOCATING;
 		outOfMem = OutOfMemoryError; /* implicit allocation */
 		outOfMem_allocator = 0;

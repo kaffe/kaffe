@@ -92,15 +92,15 @@ java_lang_VMObject_clone(struct Hjava_lang_Cloneable* c)
 void
 java_lang_VMObject_wait(struct Hjava_lang_Object* o, jlong timeout, UNUSED jint ns)
 {
-  jthread_t cur = jthread_current();
+  jthread_t cur = KTHREAD(current)();
 
-  if(jthread_interrupted(cur))
+  if(KTHREAD(interrupted)(cur))
     {
       throwException(InterruptedException);
     }
 
 DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %d\n",
-			cur, jthread_get_data(cur)->jlThread,
+			cur, KTHREAD(get_data)(cur)->jlThread,
 			o, timeout); )
 
 #if defined(ENABLE_JVMPI)
@@ -141,7 +141,7 @@ DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %d\n",
     }
 #endif
 
-  if(jthread_interrupted(cur))
+  if(KTHREAD(interrupted)(cur))
     {
       throwException(InterruptedException);
     }

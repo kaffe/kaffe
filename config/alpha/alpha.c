@@ -84,7 +84,7 @@ __alpha_nextFrame (exceptionFrame *frame)
 	    dprintf ("nextFrame  pc %p sp %p fp %p\n", pc, (int *) sp, (int *) fp); );
     }
 
-    if (!jthread_on_current_stack((void*)sp)) {
+    if (!KTHREAD(on_current_stack)((void*)sp)) {
 	return NULL;
     }
 

@@ -331,7 +331,7 @@ int classMappingSearch(classEntry *ce,
 	jthread_t jt;
 	int iLockRoot;
 
-	jt = jthread_current();
+	jt = KTHREAD(current)();
 	while( !done )
 	{
 		lockMutex(ce);
@@ -404,7 +404,7 @@ int classMappingLoad(classEntry *ce,
 	int iLockRoot;
 
 	*out_cl = 0;
-	jt = jthread_current();
+	jt = KTHREAD(current)();
 	while( !done )
 	{
 		lockMutex(ce);

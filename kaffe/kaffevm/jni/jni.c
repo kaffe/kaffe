@@ -645,8 +645,8 @@ Kaffe_DestroyJavaVM(JavaVM* vm UNUSED)
 static jint
 Kaffe_AttachCurrentThread(JavaVM* vm UNUSED, void** penv, JavaVMAttachArgs* args UNUSED)
 {
-	if (jthread_attach_current_thread (false)) {
-		ksemInit(&THREAD_DATA()->sem);
+	if (KTHREAD(attach_current_thread) (false)) {
+		KSEM(init)(&THREAD_DATA()->sem);
 		attachFakedThreadInstance ("test attach", false);
 		*penv = THREAD_JNIENV();
 		return 0;
@@ -657,8 +657,8 @@ Kaffe_AttachCurrentThread(JavaVM* vm UNUSED, void** penv, JavaVMAttachArgs* args
 static jint
 Kaffe_AttrachCurrentThreadAsDaemon(JavaVM* vm UNUSED, void** penv, JavaVMAttachArgs* args UNUSED)
 {
-	if (jthread_attach_current_thread (true)) {
-		ksemInit(&THREAD_DATA()->sem);
+	if (KTHREAD(attach_current_thread) (true)) {
+		KSEM(init)(&THREAD_DATA()->sem);
 		attachFakedThreadInstance ("daemon attach", true);
 		*penv = THREAD_JNIENV();
 	        return 0;

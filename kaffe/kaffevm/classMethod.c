@@ -147,7 +147,7 @@ DBG(RESERROR,
 	depth++;
 	for (i = 0; i < depth; dprintf("  "), i++);
 	dprintf("%p entering process class %s %d->%d\n",
-		jthread_current(), class->name->data,
+		KTHREAD(current)(), class->name->data,
 		class->state, tostate);
     )
 
@@ -651,7 +651,7 @@ DBG(RESERROR,
 	for (i = 0; i < depth; dprintf("  "), i++);
 	depth--;
 	dprintf("%p leaving process class %s -> %s\n",
-		jthread_current(), class->name->data,
+		KTHREAD(current)(), class->name->data,
 		success ? "success" : "failure");
     )
 	return (success);

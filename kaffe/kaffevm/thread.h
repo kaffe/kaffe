@@ -57,11 +57,11 @@ struct  _Collector;
 
 extern	jbool deadlockDetection;
 
-#define THREAD_NATIVE()         ((void*)jthread_current())
+#define THREAD_NATIVE()         ((void*)KTHREAD(current)())
 
-#define THREAD_JNIENV()         (&jthread_get_data(jthread_current())->jniEnv)
+#define THREAD_JNIENV()         (&KTHREAD(get_data)(KTHREAD(current)())->jniEnv)
 
-#define THREAD_DATA()		(jthread_get_data(jthread_current()))
+#define THREAD_DATA()		(KTHREAD(get_data)(KTHREAD(current)()))
 
 #if !defined(KAFFEH)
 /*

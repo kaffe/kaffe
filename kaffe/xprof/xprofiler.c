@@ -328,7 +328,7 @@ void xProfileStage(char *stage_name)
 	low = kaffe_memory_samples->ms_low;
 	high = kaffe_memory_samples->ms_high +
 		(extraProfileCount * HISTFRACTION);
-	jthread_suspendall();
+	KTHREAD(suspendall)();
 	len = strlen(kaffe_gmon_filename) +
 		(stage_name ? strlen(stage_name) + 1 : 0) +
 		1;
@@ -392,7 +392,7 @@ void xProfileStage(char *stage_name)
 	}
 	resetCallGraph(kaffe_call_graph);
 	xProfilingOn();
-	jthread_unsuspendall();
+	KTHREAD(unsuspendall)();
 }
 
 int profileGmonFile(char *name)

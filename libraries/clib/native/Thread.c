@@ -69,30 +69,30 @@ java_lang_VMThread_finalize(struct Hjava_lang_VMThread* this)
 
 jboolean java_lang_VMThread_interrupted(void)
 {
-  return jthread_interrupted(jthread_current());
+  return KTHREAD(interrupted)(KTHREAD(current)());
 }
 
 jboolean java_lang_VMThread_isInterrupted(Hjava_lang_VMThread *this)
 {
-  return jthread_is_interrupted((jthread_t)unhand(this)->jthreadID);
+  return KTHREAD(is_interrupted)((jthread_t)unhand(this)->jthreadID);
 }
 
 
 void java_lang_VMThread_sleep(jlong timeout, UNUSED jint ns)
 {
-  jthread_t	cur = jthread_current();
+  jthread_t	cur = KTHREAD(current)();
 
-  if(jthread_interrupted(cur))
+  if(KTHREAD(interrupted)(cur))
     {
       throwException(InterruptedException);
     }
 
 DBG(VMTHREAD, dprintf ("%p (%p) sleeping for %d\n", cur,
-			jthread_get_data(cur)->jlThread, timeout); )
+			KTHREAD(get_data)(cur)->jlThread, timeout); )
 
   /*
    * Using the semaphore of this thread for sleeping is safe, since
-   * there are only two reasons for another thread to invoke ksemPut
+   * there are only two reasons for another thread to invoke KSEM(put)
    * on this semaphore:
    *
    *     - it releases a lock this thread is waiting for, or
@@ -103,9 +103,9 @@ DBG(VMTHREAD, dprintf ("%p (%p) sleeping for %d\n", cur,
    * be able to interrupt a thread waiting for its semaphore anyway,
    * this thread can still be interrupted.
    */
-  ksemGet(&jthread_get_data(cur)->sem, timeout);
+  KSEM(get)(&KTHREAD(get_data)(cur)->sem, timeout);
 
-  if(jthread_interrupted(cur))
+  if(KTHREAD(interrupted)(cur))
     {
       throwException(InterruptedException);
     }

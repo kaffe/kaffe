@@ -476,10 +476,10 @@ soft_stackoverflow(void)
 	errorInfo einfo;
 	
 	/* XXX Dear lord this sucks! */
-	jthread_relaxstack(1);
+	KTHREAD(relaxstack)(1);
 	th = (Hjava_lang_Throwable *)
 		newObjectChecked(javaLangStackOverflowError, &einfo);
-	jthread_relaxstack(0);
+	KTHREAD(relaxstack)(0);
 	throwException(th);
 }
 

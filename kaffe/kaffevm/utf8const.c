@@ -53,7 +53,7 @@ static int *utfLockRoot;
 
 static inline void do_lockUTF(int *where)
 {
-	jthread_disable_stop();
+	KTHREAD(disable_stop)();
 	locks_internal_lockMutex(&utf8Lock.lock, where, &utf8Lock.heavyLock);
 	DBGIF(assert(utfLockRoot == NULL));
 	utfLockRoot = where;
@@ -64,7 +64,7 @@ static inline void do_unlockUTF(int *where)
 	DBGIF(assert(utfLockRoot != NULL));
 	DBGIF(utfLockRoot = NULL);
 	locks_internal_unlockMutex(&utf8Lock.lock, where, &utf8Lock.heavyLock);
-	jthread_enable_stop();
+	KTHREAD(enable_stop)();
 }
 
 /* convenience macros which assume the iLockRoot local variable */

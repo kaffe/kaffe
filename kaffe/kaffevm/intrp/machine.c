@@ -108,7 +108,7 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 	errorInfo einfo;
 
 	/* implement stack overflow check */
-	if (jthread_stackcheck(thread_data->needOnStack) == false) {
+	if (KTHREAD(stackcheck)(thread_data->needOnStack) == false) {
 		if (thread_data->needOnStack == STACK_LOW) {
 			dprintf(
 			    "Panic: unhandled StackOverflowError()\n");

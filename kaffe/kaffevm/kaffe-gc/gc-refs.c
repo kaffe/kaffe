@@ -120,9 +120,9 @@ TwalkThread(Collector* collector, jthread_t jtid)
    * we hence don't have valid sp information.  In addition, there's
    * absolutely no reason why we should walk it at all.
    */
-  if (jtid == jthread_current()) {
+  if (jtid == KTHREAD(current)()) {
     DBG(JTHREAD,
-	dprintf("%p NOT walking jtid %p\n", jthread_current(), jtid);
+	dprintf("%p NOT walking jtid %p\n", KTHREAD(current)(), jtid);
 	)   
       return;
   }
@@ -131,9 +131,9 @@ TwalkThread(Collector* collector, jthread_t jtid)
    * If the thread is too young, the threading system will return
    * 0 from extract_stack.  In that case, we don't have walk anything.
    */
-  if (jthread_extract_stack(jtid, &from, &len)) {
+  if (KTHREAD(extract_stack)(jtid, &from, &len)) {
     DBG(JTHREAD|DBG_GCWALK,
-	dprintf("walking stack of `%s' thread\n", nameThread(jthread_get_data(jtid)->jlThread));
+	dprintf("walking stack of `%s' thread\n", nameThread(KTHREAD(get_data)(jtid)->jlThread));
 	);
     /* and walk it if needed */
     KaffeGC_WalkConservative(collector, from, len);
@@ -153,7 +153,7 @@ static void
 liveThreadWalker(jthread_t tid, void *private)
 {
   Collector *c = (Collector *)private;
-  threadData *thread_data = jthread_get_data(tid);
+  threadData *thread_data = KTHREAD(get_data)(tid);
   Hjava_lang_VMThread *thread = (Hjava_lang_VMThread *)thread_data->jlThread;
 
   KGC_markObject(c, NULL, unhand(thread)->thread);
@@ -197,7 +197,7 @@ DBG(GCWALK,
   * registered.  Terminating a thread will remove it from the
   * threading system, and then we won't walk it here anymore
   */
- jthread_walkLiveThreads(liveThreadWalker, collector);
+ KTHREAD(walkLiveThreads)(liveThreadWalker, collector);
  DBG(GCWALK,
      dprintf("Following references now...\n");
      );

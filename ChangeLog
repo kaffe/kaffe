@@ -1,3 +1,30 @@
+2004-12-16  Adam Heath  <doogieg@brainfood.com>
+
+	* config/alpha/alpha.c, config/mips/common.h, config/mips/mips.c
+	  config/parisc/common.h, config/sh/common.h,
+	  kaffe/jvmpi/jvmpi_kaffe.c, kaffe/kaffevm/classMethod.c,
+	  kaffe/kaffevm/classPool.c, kaffe/kaffevm/exception.c,
+	  kaffe/kaffevm/ksem.c, kaffe/kaffevm/ksem.h,
+	  kaffe/kaffevm/locks.c, kaffe/kaffevm/locks.h,
+	  kaffe/kaffevm/soft.c, kaffe/kaffevm/stackTrace.c,
+	  kaffe/kaffevm/support.c, kaffe/kaffevm/support.h,
+	  kaffe/kaffevm/thread.c, kaffe/kaffevm/thread.h,
+	  kaffe/kaffevm/utf8const.c, kaffe/kaffevm/boehm-gc/gc2.c,
+	  kaffe/kaffevm/intrp/machine.c,
+	  kaffe/kaffevm/intrp/stackTrace-impl.h,
+	  kaffe/kaffevm/jit/machine.c, kaffe/kaffevm/jni/jni.c,
+	  kaffe/kaffevm/kaffe-gc/gc-incremental.c,
+	  kaffe/kaffevm/kaffe-gc/gc-incremental.h,
+	  kaffe/kaffevm/kaffe-gc/gc-mem.c,
+	  kaffe/kaffevm/kaffe-gc/gc-refs.c,
+	  kaffe/kaffevm/systems/beos-native/lock-impl.h,
+	  kaffe/xprof/xprofiler.c, libraries/clib/native/Object.c,
+	  libraries/clib/native/Thread.c,
+	  libraries/clib/net/InetAddressImpl.c,
+	  libraries/clib/net/PlainSocketImpl.c:
+	  Implement macro wrappers around methods implemented by the
+	  threading subsystem: KTHREAD, KSIGNAL, KSEM, KMUTEX, KCONDVAR.
+
 2004-12-16  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/org/xml/sax/AttributeList.java,

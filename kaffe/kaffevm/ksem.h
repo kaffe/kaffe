@@ -39,10 +39,10 @@ struct Ksem;
  */
 #ifndef THREAD_SYSTEM_HAS_KSEM
 
- extern void ksemInit(struct Ksem* sem);
- extern void ksemPut(struct Ksem* sem);
- extern jboolean ksemGet(struct Ksem* sem, jlong timeout);
- extern void ksemDestroy(struct Ksem* sem);
+ extern void ksem_init(struct Ksem* sem);
+ extern void ksem_put(struct Ksem* sem);
+ extern jboolean ksem_get(struct Ksem* sem, jlong timeout);
+ extern void ksem_destroy(struct Ksem* sem);
 
 /*
  * Present POSIX mutex+condvar as a binary semaphore.

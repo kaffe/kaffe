@@ -64,7 +64,7 @@ static void runfinalizer(void);
 static void
 linkNativeAndJavaThread(jthread_t thread, Hjava_lang_VMThread *jlThread)
 {
-	threadData *thread_data = jthread_get_data(thread);
+	threadData *thread_data = KTHREAD(get_data)(thread);
 
 	thread_data->jlThread = jlThread;
 	unhand (jlThread)->jthreadID = (struct Hkaffe_util_Ptr *)thread;
@@ -81,12 +81,12 @@ linkNativeAndJavaThread(jthread_t thread, Hjava_lang_VMThread *jlThread)
 void
 KaffeVM_unlinkNativeAndJavaThread()
 {
-	jthread_t thread = jthread_current();
-	threadData *thread_data = jthread_get_data(thread);
+	jthread_t thread = KTHREAD(current)();
+	threadData *thread_data = KTHREAD(get_data)(thread);
 
 	thread_data->jniEnv = 0;
 
-	ksemDestroy (&thread_data->sem);
+	KSEM(destroy) (&thread_data->sem);
 }
 
 /*
@@ -123,7 +123,7 @@ createThread(Hjava_lang_VMThread* vmtid, void (*func)(void *), void *arg,
 	Hjava_lang_Thread* tid = unhand(vmtid)->thread;
 
 	nativeThread = 
-	  jthread_create(((unsigned char)unhand(tid)->priority),
+	  KTHREAD(create)(((unsigned char)unhand(tid)->priority),
 			 func,
 			 unhand(tid)->daemon,
 			 arg,
@@ -146,7 +146,7 @@ startThread(Hjava_lang_VMThread* tid)
 	jthread_t nativeTid;
 	struct _errorInfo info;
 
-DBG(VMTHREAD, dprintf ("%p starting thread %p (vmthread %p)\n\n", jthread_current(), unhand(tid)->thread, tid); )
+DBG(VMTHREAD, dprintf ("%p starting thread %p (vmthread %p)\n\n", KTHREAD(current)(), unhand(tid)->thread, tid); )
 
 	/* Hold the start lock while the thread is created.
 	 * This lock prevents the new thread from running until we're
@@ -154,16 +154,16 @@ DBG(VMTHREAD, dprintf ("%p starting thread %p (vmthread %p)\n\n", jthread_curren
 	 * See also firstStartThread.
 	 */
 	nativeTid = createThread(tid, &firstStartThread,
-				 jthread_current(),
+				 KTHREAD(current)(),
 				 threadStackSize, &info);
 	if (nativeTid == NULL) {
 		throwError(&info);
 	}
-	ksemGet(&THREAD_DATA()->sem, (jlong)0);
+	KSEM(get)(&THREAD_DATA()->sem, (jlong)0);
 
 	linkNativeAndJavaThread (nativeTid, tid);
 
-	ksemPut(&jthread_get_data(nativeTid)->sem);
+	KSEM(put)(&KTHREAD(get_data)(nativeTid)->sem);
 }
 
 /*
@@ -172,11 +172,11 @@ DBG(VMTHREAD, dprintf ("%p starting thread %p (vmthread %p)\n\n", jthread_curren
 void
 interruptThread(Hjava_lang_VMThread* tid)
 {
-DBG(VMTHREAD, dprintf ("%p (%p) interrupting %p (%p)\n", jthread_current(),
+DBG(VMTHREAD, dprintf ("%p (%p) interrupting %p (%p)\n", KTHREAD(current)(),
                        THREAD_DATA()->jlThread, unhand(tid)->jthreadID, tid); )
 	assert(unhand(tid)->jthreadID != NULL);
 
-	jthread_interrupt((jthread_t)unhand(tid)->jthreadID);
+	KTHREAD(interrupt)((jthread_t)unhand(tid)->jthreadID);
 }
 
 /*
@@ -195,7 +195,7 @@ stopThread(Hjava_lang_VMThread* tid, Hjava_lang_Object* obj)
 		 * construct a new ThreadDeath exception when it dies.
 		 */
 		if ((jthread_t)unhand(tid)->jthreadID)
-			jthread_stop((jthread_t)unhand(tid)->jthreadID);
+			KTHREAD(stop)((jthread_t)unhand(tid)->jthreadID);
 	}
 }
 
@@ -244,12 +244,12 @@ attachFakedThreadInstance(const char* nm, int isDaemon)
 				   tid);
 
 	/* set Java thread associated with main thread */
-	linkNativeAndJavaThread (jthread_current(), unhand(tid)->vmThread);
+	linkNativeAndJavaThread (KTHREAD(current)(), unhand(tid)->vmThread);
 
         /*
 	 * set context class loader of primordial thread to app classloader
 	 * must not be done earlier, since getCurrentThread() won't work
-         * before the jthread_createfirst and the jthreadID assignment
+         * before the KTHREAD(createfirst) and the jthreadID assignment
 	 */
 	  do_execute_java_class_method (&retval, "kaffe/lang/AppClassLoader",
 					NULL,
@@ -275,7 +275,7 @@ startSpecialThread(void *arg)
 	void *argument;
 	jthread_t calling_thread;
 
-	ksemInit(&THREAD_DATA()->sem);
+	KSEM(init)(&THREAD_DATA()->sem);
 
 	/* We save the value before the lock so we are sure
 	 * pointer_args is still a valid pointer on the stack.
@@ -285,11 +285,11 @@ startSpecialThread(void *arg)
 	calling_thread = (jthread_t) pointer_args[2];
 
 	/* Thread started and arguments retrieved. */
-	ksemPut(&jthread_get_data(calling_thread)->sem);
+	KSEM(put)(&KTHREAD(get_data)(calling_thread)->sem);
 	/* We have now to wait the parent to synchronize the data
 	 * and link the thread to the Java VM.
 	 */
-	ksemGet(&THREAD_DATA()->sem, (jlong)0);
+	KSEM(get)(&THREAD_DATA()->sem, (jlong)0);
 
 	THREAD_DATA()->exceptObj = NULL;
 
@@ -342,10 +342,10 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
   
   specialArgument[0] = func;
   specialArgument[1] = arg;
-  specialArgument[2] = jthread_current();
+  specialArgument[2] = KTHREAD(current)();
   
   nativeTid = 
-    jthread_create(((unsigned char)unhand(tid)->priority),
+    KTHREAD(create)(((unsigned char)unhand(tid)->priority),
 		   startSpecialThread,
 		   true,
 		   specialArgument,
@@ -356,14 +356,14 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
     return 0;
   }
 
-  jthread_get_data(nativeTid)->exceptPtr = NULL;
-  jthread_get_data(nativeTid)->exceptObj = NULL;
+  KTHREAD(get_data)(nativeTid)->exceptPtr = NULL;
+  KTHREAD(get_data)(nativeTid)->exceptObj = NULL;
 
-  ksemGet(&THREAD_DATA()->sem, (jlong)0);
+  KSEM(get)(&THREAD_DATA()->sem, (jlong)0);
   
   linkNativeAndJavaThread (nativeTid, vmtid);
 
-  ksemPut(&jthread_get_data(nativeTid)->sem);
+  KSEM(put)(&KTHREAD(get_data)(nativeTid)->sem);
   
   return (tid);
 }
@@ -381,17 +381,17 @@ firstStartThread(void* arg)
 	jmethodID runmethod;
 	jthread_t calling_thread = (jthread_t) arg;
 
-	cur = jthread_current();
+	cur = KTHREAD(current)();
 
-	ksemInit(&jthread_get_data(cur)->sem);
+	KSEM(init)(&KTHREAD(get_data)(cur)->sem);
 
 	/* We acknowledge the parent thread that this thread has been started. */
-	ksemPut(&jthread_get_data(calling_thread)->sem);
+	KSEM(put)(&KTHREAD(get_data)(calling_thread)->sem);
 	/* Now we must wait the parent to link the thread to the Java VM. */
-	ksemGet(&jthread_get_data(cur)->sem, (jlong)0);
+	KSEM(get)(&KTHREAD(get_data)(cur)->sem, (jlong)0);
  
-	tid = (Hjava_lang_VMThread *)(jthread_get_data(cur)->jlThread);
-	env = &jthread_get_data(cur)->jniEnv;
+	tid = (Hjava_lang_VMThread *)(KTHREAD(get_data)(cur)->jlThread);
+	env = &KTHREAD(get_data)(cur)->jniEnv;
 
 #if defined(ENABLE_JVMPI)
 	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_THREAD_START) )
@@ -435,7 +435,7 @@ DBG(VMTHREAD,
 void
 yieldThread(void)
 {
-	jthread_yield();
+	KTHREAD(yield)();
 }
 
 /*
@@ -451,7 +451,7 @@ setPriorityThread(Hjava_lang_VMThread* tid, int prio)
 	if (unhand(tid)->jthreadID == 0)
 	        return;
 
-	jthread_setpriority((jthread_t)unhand(tid)->jthreadID, prio);
+	KTHREAD(setpriority)((jthread_t)unhand(tid)->jthreadID, prio);
 }
 
 /*
@@ -461,7 +461,7 @@ void
 exitThread(void)
 {
 DBG(VMTHREAD,	
-	dprintf("%p (%p) exitThread\n", jthread_current(), THREAD_DATA()->jlThread);
+	dprintf("%p (%p) exitThread\n", KTHREAD(current)(), THREAD_DATA()->jlThread);
     )
 
 #if defined(ENABLE_JVMPI)
@@ -482,7 +482,7 @@ DBG(VMTHREAD,
 	 * KaffeVM_unlinkNativeAndJavaThread() before killing or
 	 * reusing the thread.
 	 */
-	jthread_exit();
+	KTHREAD(exit)();
 }
 
 /*
@@ -518,7 +518,7 @@ finalizeThread(Hjava_lang_VMThread* tid)
 	jthread_t jtid = (jthread_t)unhand(tid)->jthreadID;
 
 	if (jtid != NULL) {
-		jthread_destroy(jtid);
+		KTHREAD(destroy)(jtid);
 	}
 }
 
@@ -593,9 +593,9 @@ runfinalizer(void)
 static void
 dumpJavaThread(jthread_t thread, UNUSED void *p)
 {
-	Hjava_lang_VMThread *tid = (Hjava_lang_VMThread *)jthread_get_data(thread)->jlThread;
+	Hjava_lang_VMThread *tid = (Hjava_lang_VMThread *)KTHREAD(get_data)(thread)->jlThread;
 	dprintf("`%s' ", nameThread(tid));
-	jthread_dumpthreadinfo(thread);
+	KTHREAD(dumpthreadinfo)(thread);
 	dprintf("\n");
 }
 
@@ -603,7 +603,7 @@ static void
 dumpThreads(void)
 {
 	dprintf("Dumping live threads:\n");
-	jthread_walkLiveThreads(dumpJavaThread, NULL);
+	KTHREAD(walkLiveThreads)(dumpJavaThread, NULL);
 }
 
 /*
@@ -613,7 +613,7 @@ char*
 nameNativeThread(void* native_data)
 {
 	return nameThread((Hjava_lang_VMThread*)
-		jthread_get_data((jthread_t)native_data)->jlThread);
+		KTHREAD(get_data)((jthread_t)native_data)->jlThread);
 }
 
 /*
@@ -649,7 +649,7 @@ initNativeThreads(int nativestacksize)
 	 * catch stack overflow exceptions thrown by the main thread.
 	 */
 	threadStackSize = nativestacksize;
-	jthread_init(
+	KTHREAD(init)(
 		DBGEXPR(JTHREADNOPREEMPT, false, true),
 		java_lang_Thread_MAX_PRIORITY+1,
 		java_lang_Thread_MIN_PRIORITY,
@@ -658,12 +658,12 @@ initNativeThreads(int nativestacksize)
 		throwDeath,
 		onDeadlock);
 
-	jthread_atexit(runfinalizer);
+	KTHREAD(atexit)(runfinalizer);
 
 	/*
-	 * Doing jthread_createfirst as early as possible has several advantages:
+	 * Doing KTHREAD(createfirst) as early as possible has several advantages:
 	 *
-	 * 	- we can rely on a working jthread_current() and jthread_get_data()
+	 * 	- we can rely on a working KTHREAD(current)() and KTHREAD(get_data)()
 	 *	  everywhere else in the vm, no need to specialcase anything
 	 *
 	 *	- catching exceptions during the initialisation is easier now
@@ -695,7 +695,7 @@ initNativeThreads(int nativestacksize)
 	stackSize = MAINSTACKSIZE;
 #endif
 	DBG(INIT, dprintf("Detected stackSize %lu\n", stackSize); )
-	jthread_createfirst(stackSize, (unsigned char)java_lang_Thread_NORM_PRIORITY, 0);
+	KTHREAD(createfirst)(stackSize, (unsigned char)java_lang_Thread_NORM_PRIORITY, 0);
 
 	/*
 	 * initialize some things that are absolutely necessary:
@@ -704,7 +704,7 @@ initNativeThreads(int nativestacksize)
          */
 	thread_data = THREAD_DATA(); 
 
-	ksemInit(&thread_data->sem);
+	KSEM(init)(&thread_data->sem);
 
 	thread_data->jniEnv = &Kaffe_JNINativeInterface;
 

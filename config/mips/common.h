@@ -53,13 +53,13 @@
 #define COMPARE_AND_EXCHANGE(A,O,N)		\
 ({						\
     int ret = 0;				\
-    jthread_suspendall();			\
+    KTHREAD(suspendall)();			\
 						\
     if (*(A) == (O)) {				\
 	*(A) = (N);				\
 	ret = 1;				\
     }						\
-    jthread_unsuspendall();			\
+    KTHREAD(unsuspendall)();			\
     ret;					\
 })
 

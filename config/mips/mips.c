@@ -89,7 +89,7 @@ here:;
 	}
 #endif
 
-	if (!jthread_on_current_stack(fp)) {
+	if (!KTHREAD(on_current_stack)(fp)) {
 		pfp = 0;
 		ppc = 0;
 		goto end;

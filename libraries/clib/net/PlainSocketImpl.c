@@ -757,7 +757,7 @@ gnu_java_net_PlainSocketImpl_setBlocking(struct Hgnu_java_net_PlainSocketImpl* t
 		return;
 	
 	unhand(this)->blocking = true;
-	jthread_set_blocking((int)unhand(this)->native_fd, blocking);
+	KTHREAD(set_blocking)((int)unhand(this)->native_fd, blocking);
 }
 
 void

@@ -101,8 +101,8 @@ typedef	gc_unit			gcList;
 
 /* ------------------------------------------------------------------------ */
 
-#define	STOPWORLD()		jthread_suspendall()
-#define	RESUMEWORLD()		jthread_unsuspendall()
+#define	STOPWORLD()		KTHREAD(suspendall)()
+#define	RESUMEWORLD()		KTHREAD(unsuspendall)()
 
 void KaffeGC_WalkConservative(Collector* gcif, const void* base, uint32 size);
 void KaffeGC_WalkMemory(Collector* gcif, void* mem);
