@@ -23,4 +23,29 @@
 
 #endif /* NEED_sysdepCallMethod */
 
+/*
+ * Do an atomic compare and exchange.  The address 'A' is checked against  
+ * value 'O' and if they match it's exchanged with value 'N'.
+ * We return '1' if the exchange is sucessful, otherwise 0.
+ */
+#define COMPARE_AND_EXCHANGE(A,O,N)			\
+({							\
+	unsigned long tmp;				\
+	int ret;					\
+							\
+	asm volatile(					\
+	"1:	ldq_l %0,%5\n"				\
+	"	cmpeq %0,%3,%1\n"			\
+	"	cmovne %1,%4,%0\n"			\
+	"	stq_c %0,%2\n"				\
+	"	beq %0,2f\n"				\
+	"	br 3f\n"				\
+	"2:	br 1b\n"				\
+	"3:\n"						\
+	: "=&r"(tmp), "=&r"(ret), "=m"(*(A))		\
+	: "r"(O), "r"(N), "m"(*(A)) : "memory");	\
+							\
+	ret;						\
+})
+
 #endif
