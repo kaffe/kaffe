@@ -1,3 +1,11 @@
+2003-10-30  Helmer Kraemer  <hkraemer@freenet.de>
+            Dalibor Topic <robilad@kaffe.org>
+	
+	* kaffe/kaffevm/kaffe.def:
+	(define_insn(INVOKEVIRTUAL), define_insn(INVOKESTATIC),
+	define_insn(INVOKESPECIAL)) Added missing casts to 
+	(void (*) (void)) to fix warnings on powerpc-darwin.
+	
 2003-10-30  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/clib/net/PlainDatagramSocketImpl.c:

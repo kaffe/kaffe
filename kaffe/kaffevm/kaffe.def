@@ -2694,7 +2694,7 @@ define_insn(INVOKEVIRTUAL)
 
 		if( !is_virtual &&
 		    METHOD_TRANSLATED(method_method()) &&
-		    (METHOD_NATIVECODE(method_method()) == soft_null_call) )
+		    ( (void (*) (void)) (METHOD_NATIVECODE(method_method())) == soft_null_call) )
 		{
 			idx += 1;
 			pop(idx);
@@ -2812,7 +2812,7 @@ define_insn(INVOKESPECIAL)
 		check_stack_ref(idx);
 
 		if( METHOD_TRANSLATED(method_method()) &&
-		    (METHOD_NATIVECODE(method_method()) == soft_null_call) )
+		    ( (void (*) (void)) (METHOD_NATIVECODE(method_method())) == soft_null_call) )
 		{
 			idx += 1;
 			pop(idx);
@@ -2884,7 +2884,7 @@ define_insn(INVOKESTATIC)
 		idx = method_nargs();
 
 		if( METHOD_TRANSLATED(method_method()) &&
-		    (METHOD_NATIVECODE(method_method()) == soft_null_call) )
+		    ( (void (*) (void)) (METHOD_NATIVECODE(method_method())) == soft_null_call) )
 		{
 			pop(idx);
 		}
