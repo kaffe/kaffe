@@ -121,7 +121,7 @@ do_execute_java_method_v(void* obj, const char* method_name, const char* signatu
 	jvalue retval;
 	errorInfo info;
 
-	if (obj == 0) {
+	if (obj == 0 && (! isStaticCall || ! mb)) {
 		throwException(NullPointerException);
 	}
 

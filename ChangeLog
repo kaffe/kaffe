@@ -1,3 +1,8 @@
+2001-04-01  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* kaffe/kaffevm/support.c (do_execute_java_method_v): Don't fail
+	on already-resolved static calls.
+
 Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/code.c (addCheckedExceptions): 
