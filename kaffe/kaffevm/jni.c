@@ -107,7 +107,7 @@ uintp Kaffe_JNI_estart;
 uintp Kaffe_JNI_eend;
 
 extern int java_major_version;
-extern int java_minor_verison;
+extern int java_minor_version;
 extern struct JNINativeInterface Kaffe_JNINativeInterface;
 extern JavaVMInitArgs Kaffe_JavaVMInitArgs;
 extern JavaVM Kaffe_JavaVM;
@@ -126,11 +126,11 @@ jint Kaffe_GetVersion(JNIEnv*);
 jint
 JNI_GetDefaultJavaVMInitArgs(JavaVMInitArgs* args)
 {
-	if (args->version != ((java_major_version << 16) | java_minor_verison)) {
+	if (args->version != ((java_major_version << 16) | java_minor_version)) {
 		return (-1);
 	}
 	memcpy(args, &Kaffe_JavaVMInitArgs, sizeof(JavaVMInitArgs));
-	args->version = (java_major_version << 16) | java_minor_verison;
+	args->version = (java_major_version << 16) | java_minor_version;
 	return (0);
 }
 
@@ -139,7 +139,7 @@ JNI_CreateJavaVM(JavaVM** vm, JNIEnv** env, JavaVMInitArgs* args)
 {
 	static int doneinit = 0;
 
-	if (args->version != ((java_major_version << 16) | java_minor_verison)) {
+	if (args->version != ((java_major_version << 16) | java_minor_version)) {
 		return (-1);
 	}
 
@@ -181,7 +181,7 @@ JNI_GetCreatedJavaVMs(JavaVM** vm, jsize buflen, jsize* nvm)
 jint
 Kaffe_GetVersion(JNIEnv* env)
 {
-	return ((java_major_version << 16) | java_minor_verison);
+	return ((java_major_version << 16) | java_minor_version);
 }
 
 jclass
