@@ -38,8 +38,8 @@ exception statement from your version. */
 
 package java.awt.event;
 
-import java.awt.AWTEvent;
 import java.awt.ActiveEvent;
+import java.awt.AWTEvent;
 import java.awt.EventQueue;
 
 /**
@@ -189,8 +189,13 @@ public class InvocationEvent extends AWTEvent implements ActiveEvent
         }
     else
       runnable.run();
-    if (notifier != null)
-      notifier.notifyAll();
+
+    Object o = notifier;
+    if (o != null)
+      synchronized(o)
+	{
+	  o.notifyAll();
+	}
   }
 
   /**

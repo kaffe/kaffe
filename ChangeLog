@@ -6,7 +6,17 @@
 
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>
 
-	* java/awt/GridBagLayout.java:
+	* libraries/javalib/java/awt/event/InvocationEvent.java:
+	Resynced with GNU Classpath.
+
+	2004-07-01  Mark Wielaard  <mark@klomp.org>
+
+        * java/awt/event/InvocationEvent.java (dispatch): Synchronize
+        on notifier object before calling notifyAll().
+
+2004-07-11  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/awt/GridBagLayout.java:
 	Resynced with GNU Classpath.
 
 	2004-06-26  David Jee  <djee@redhat.com>
