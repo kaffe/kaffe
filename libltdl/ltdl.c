@@ -1203,16 +1203,17 @@ lt_dlopen (filename)
 		handle->depcount = 0;
 		handle->deplibs = 0;
 		newhandle = handle;
-		if (tryall_dlopen(&handle, filename)
+		if (tryall_dlopen(&newhandle, filename)
 		    && (!dir
-			|| (!find_file(basename, user_search_path, 0, &handle)
+			|| (!find_file(basename, user_search_path,
+					  0, &newhandle)
 			    && !find_file(basename,
 					  getenv("LTDL_LIBRARY_PATH"),
-					  0, &handle)
+					  0, &newhandle)
 #ifdef LTDL_SHLIBPATH_VAR
 			    && !find_file(basename,
 					  getenv(LTDL_SHLIBPATH_VAR),
-					  0, &handle)
+					  0, &newhandle)
 #endif
 				))) {
 			lt_dlfree(handle);
