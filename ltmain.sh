@@ -50,7 +50,7 @@ modename="$progname"
 PROGRAM=ltmain.sh
 PACKAGE=libtool
 VERSION=1.2e
-TIMESTAMP=" (1.380 1999/03/14 08:00:03)"
+TIMESTAMP=" (1.381 1999/03/14 10:56:17)"
 
 default_mode=
 help="Try \`$progname --help' for more information."
@@ -1868,8 +1868,9 @@ EOF
 	  done # Gone through all deplibs.
 	  ;;
 	none | unknown | *) newdeplibs=""
-	  if $echo "X$deplibs" | $Xsed -e 's/ -lc$//' -e 's/[ 	]//g' \
-	     | grep . >/dev/null; then
+	  if $echo "X $deplibs" |
+	     $Xsed -e 's/ -lc$//' -e 's/ -[LR][^ ]*//g' -e 's/[ 	]//g' |
+	     grep . >/dev/null; then
 	    echo
 	    if test "X$deplibs_check_method" = "Xnone"; then
 	      echo "*** Warning: inter-library dependencies are not supported in this platform."
