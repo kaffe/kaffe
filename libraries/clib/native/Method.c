@@ -69,7 +69,7 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 	if (argobj != 0 && obj_length(argobj) > 0) {
 		body = (Hjava_lang_Object**)unhand(argobj)->body;
 		for (i = obj_length(argobj) - 1; i >= 0; i--) {
-			a = OBJECT_CLASS(body[i]);
+			a = body[i] ? OBJECT_CLASS(body[i]) : 0;
 			if (a == javaLangLongClass) {
 				args[i].j = unhand((Hjava_lang_Long*)body[i])->value;
 			}
