@@ -1,11 +1,12 @@
 package java.io;
 
-import java.io.Serializable;
-import java.lang.String;
-import java.util.Random;
-import java.util.Vector;
 import java.lang.Comparable;
+import java.lang.String;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Random;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 /*
  * Java core library component.
@@ -110,9 +111,8 @@ public static File createTempFile(String prefix, String suffix, File dir)
 		File f = new File(dir, prefix
 		    + Integer.toHexString(
 			random.nextInt(0x100000)).toUpperCase() + suffix);
-		if (!f.exists()) {
+		if (f.createNewFile())
 			return f;
-		}
 	}
 }
 
@@ -168,11 +168,11 @@ public String getCanonicalPath() throws IOException {
         for (int i = 0; i < len; i++) {
                 String str = tok.nextToken();
                 if (str.equals("..")) {
-                        j--;
-                }
-                else {
-                        array[j] = str;
-                        j++;
+			if (j > 0)
+				j--;
+                } else if (!str.equals(".")) {
+			array[j] = str;
+			j++;
                 }
         }
 
@@ -339,4 +339,54 @@ native private boolean renameTo0(File that);
 public String toString() {
 	return path;
 }
+
+public URL toURL() throws MalformedURLException {
+	return new URL("file", "",
+	    isDirectory() ? getAbsolutePath() + separator : getAbsolutePath());
+}
+
+public boolean isHidden() {
+	checkReadAccess();
+	return getName().startsWith(".");
+}
+
+public File getAbsoluteFile() {
+	return new File(getAbsolutePath());
+}
+
+public File getParentFile() {
+	String p = getParent();
+	return (p == null) ? null : new File(p);
+}
+
+public File getCanonicalFile() throws IOException {
+	return new File(getCanonicalPath());
+}
+
+public boolean createNewFile() throws IOException {
+	checkWriteAccess();
+	return createNewFile0();
+}
+
+native private boolean createNewFile0() throws IOException;
+
+public boolean setLastModified(long time) {
+	checkWriteAccess();
+	return setLastModified0(time);
+}
+
+native private boolean setLastModified0(long time);
+
+public boolean setReadOnly() {
+	checkWriteAccess();
+	return setReadOnly0();
+}
+
+native private boolean setReadOnly0();
+
+public static File[] listRoots() {
+	// XXX FIXME: incorrect for Windows platforms, eg: { "C:", "D:" }
+	return new File[] { new File(separator) };
+}
+
 }
