@@ -23,6 +23,25 @@ Fri Jul 14 16:14:39 PDT 2000  Dalibor Topic <robilad@yahoo.com>
 	Fixed count. If skip length < 0, it behaves as if skip
 	length == 0. Uses Math.min to determine number of
 	characters to skip.
+	* libraries/javalib/java/io/BufferedReader.java: fixed typos.
+	Removed closed field.
+	(BufferedReader) removed unnecessary field initialization.
+	(checkIfStillOpen) Adapted test.  (close) Adapted test.
+	(read) fixed typos.
+	(readLine) improved its usability for LineNumberReader.readLine().
+	* libraries/javalib/java/io/LineNumberReader.java: removed
+	unnecessary field initialization. Added new fields skipnextlf and
+	markskipnextf to handle skipping of \n after \r. The order of read()
+	statements no longer matters.  (mark) store skipnextlf.
+	(read) doesn't block anymore after \r until next char is read.
+	(read(char[],int,int)) doesn't block anymore after \r until next
+	char is read. Made it count \r as line terminators and handle
+	\r\n properly.
+	(readLine) skips over first \n, if it belongs to previous \r. Always
+	increases line count by one. If super.readLine() returns null,
+	doesn't increase line count.  (reset) restore skipnextlf.
+	(skip) Use a buffer for skipping, improves speed. Throws an exception 
+	if skip count is negative.
 	* test/regression/CharArrayReaderTest.java: new test
 	* test/regression/Makefile.{in,am}: add new test
 
