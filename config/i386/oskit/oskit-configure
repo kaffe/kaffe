@@ -146,7 +146,7 @@ if test ! -x $KAFFEH ; then
     exit 1
 fi
 
-exec sh -x $SRCDIR/configure \
+exec $SRCDIR/configure \
         $OSKIT_CONFIG_ARGS \
 	$PASSTHROUGH
 
