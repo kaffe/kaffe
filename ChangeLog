@@ -11,6 +11,63 @@
 	
 2004-12-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/xml/dom/DomAttr.java,
+	libraries/javalib/gnu/xml/dom/DomCharacterData.java,
+	libraries/javalib/gnu/xml/dom/DomDoctype.java,
+	libraries/javalib/gnu/xml/dom/DomDocument.java,
+	libraries/javalib/gnu/xml/dom/DomEntity.java,
+	libraries/javalib/gnu/xml/dom/DomEntityReference.java,
+	libraries/javalib/gnu/xml/dom/DomExtern.java,
+	libraries/javalib/gnu/xml/dom/DomImpl.java,
+	libraries/javalib/gnu/xml/dom/DomNamedNodeMap.java,
+	libraries/javalib/gnu/xml/dom/DomNode.java,
+	libraries/javalib/gnu/xml/dom/DomNotation.java,
+	libraries/javalib/gnu/xml/dom/ls/ReaderInputStream.java,
+	libraries/javalib/gnu/xml/dom/ls/SAXEventSink.java,
+	libraries/javalib/gnu/xml/libxmlj/dom/GnomeDocumentBuilder.java,
+	libraries/javalib/gnu/xml/libxmlj/transform/GnomeTransformer.java,
+	libraries/javalib/gnu/xml/libxmlj/transform/GnomeTransformerFactory.java,
+	libraries/javalib/gnu/xml/libxmlj/transform/TransformTest.java,
+	libraries/javalib/gnu/xml/transform/TransformerImpl.java,
+	libraries/javalib/gnu/xml/transform/XSLComparator.java,
+	libraries/javalib/gnu/xml/transform/XSLURIResolver.java,
+	libraries/javalib/gnu/xml/xpath/XPathParser.y,
+	libraries/javalib/javax/xml/namespace/QName.java,
+	libraries/javalib/javax/xml/transform/TransformerFactory.java:
+	Resynced with GNU JAXP.
+
+	2004-12-07  Chris Burdess  <dog@gnu.org>
+
+        * dom: Minor DOM Level 3 Core conformance improvements.
+
+	2004-12-07  Mark Wielaard  <mark@klomp.org>
+
+        * ReaderInputStream.java: Mark and reset implementation.
+
+	2004-12-06  Chris Burdess  <dog@gnu.org>
+
+        * dom: Minor DOM Level 3 Core conformance improvements.
+
+	2004-12-06  Mark Wielaard  <mark@klomp.org>
+
+        * TransformerImpl.java: Use StreamResult's Writer if no byte stream
+        is present.
+
+	2004-12-05  Chris Burdess  <dog@gnu.org>
+
+        * TransformerImpl.java,XSLURIResolver.java: Permit identity
+        transforms with target nodes and null system IDs.
+
+	2004-12-04  Dalibor Topic  <robilad@kaffe.org>
+
+        * ElementAvailableFunction.java,FunctionAvailableFunction.java,
+        KeyFunction.java,SortKey.java,Stylesheet.java,
+        SystemPropertyFunction.java,TransformerImpl.java,XSLComparator.java,
+        NameTest.java,NamespaceTest.java,XPathParser.java,QName.java:
+        Corrected QName.getLocalName to getLocalPart. Fixed missing imports.
+
+2004-12-08  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/net/protocol/http/HTTPURLConnection.java: 
 	Resynced with GNU Classpath.
 	

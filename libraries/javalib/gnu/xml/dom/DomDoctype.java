@@ -281,6 +281,15 @@ public class DomDoctype
   {
     return subset;
   }
+
+  /**
+   * The base URI of a DocumentType is always <code>null</code>.
+   * See the Infoset Mapping, appendix C.
+   */
+  public final String getBaseURI()
+  {
+    return null;
+  }
     
   /**
    * Sets the internal "readonly" flag so the node and its associated
@@ -414,5 +423,33 @@ public class DomDoctype
     // TODO notations
     return true;
   }
+  
+  /**
+   * Shallow clone of the doctype, except that associated
+   * entities and notations are (deep) cloned.
+   */
+  public Object clone()
+  {
+    DomDoctype node = (DomDoctype) super.clone();
+
+    if (entities != null)
+      {
+        node.entities = new DomNamedNodeMap(node, Node.ENTITY_NODE);
+        for (DomNode ctx = entities.first; ctx != null; ctx = ctx.next)
+          {
+            node.entities.setNamedItem(ctx.cloneNode(true));
+          }
+      }
+    if (notations != null)
+      {
+        node.notations = new DomNamedNodeMap(node, Node.NOTATION_NODE);
+        for (DomNode ctx = notations.first; ctx != null; ctx = ctx.next)
+          {
+            node.notations.setNamedItem(ctx.cloneNode(true));
+          }
+      }
+    return node;
+  }
+
 
 }

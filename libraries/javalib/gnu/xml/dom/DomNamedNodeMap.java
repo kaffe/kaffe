@@ -115,6 +115,10 @@ public class DomNamedNodeMap
    */
   public Node getNamedItemNS(String namespaceURI, String localName)
   {
+    if ("".equals(namespaceURI))
+      {
+        namespaceURI = null;
+      }
     for (DomNode ctx = first; ctx != null; ctx = ctx.next)
       {
         String name = ctx.getLocalName();
@@ -122,6 +126,10 @@ public class DomNamedNodeMap
             (localName != null && localName.equals(name)))
           {
             String uri = ctx.getNamespaceURI();
+            if ("".equals(uri))
+              {
+                uri = null;
+              }
             if ((namespaceURI == null && uri == null) ||
                 (namespaceURI != null && namespaceURI.equals(uri)))
               {
@@ -182,7 +190,7 @@ public class DomNamedNodeMap
         node.depth = owner.depth + 1;
       }
     
-    String nodeName = ns ? null : node.getNodeName();
+    String nodeName = node.getNodeName();
     String localName = ns ? node.getLocalName() : null;
     String namespaceURI = ns ? node.getNamespaceURI() : null;
     if ("".equals(namespaceURI))

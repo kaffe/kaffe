@@ -53,6 +53,7 @@ public class QName
   private final String namespaceURI;
   private final String localPart;
   private final String prefix;
+  private final String qName;
 
   public QName(String namespaceURI, String localPart)
   {
@@ -76,6 +77,21 @@ public class QName
     this.namespaceURI = namespaceURI;
     this.localPart = localPart;
     this.prefix = prefix;
+    
+    StringBuffer buf = new StringBuffer();
+    if (namespaceURI != null && namespaceURI.length() > 0)
+      {
+        buf.append('{');
+        buf.append(namespaceURI);
+        buf.append('}');
+      }
+    if (prefix != null && prefix.length() > 0)
+      {
+        buf.append(prefix);
+        buf.append(':');
+      }
+    buf.append(localPart);
+    qName = buf.toString();
   }
 
   public QName(String localPart)
@@ -111,25 +127,12 @@ public class QName
 
   public final int hashCode()
   {
-    return toString().hashCode();
+    return qName.hashCode();
   }
 
   public String toString()
   {
-    StringBuffer buf = new StringBuffer();
-    if (namespaceURI != null && namespaceURI.length() > 0)
-      {
-        buf.append('{');
-        buf.append(namespaceURI);
-        buf.append('}');
-      }
-    if (prefix != null && prefix.length() > 0)
-      {
-        buf.append(prefix);
-        buf.append(':');
-      }
-    buf.append(localPart);
-    return buf.toString();
+    return qName;
   }
 
   public static QName valueOf(String qNameAsString)

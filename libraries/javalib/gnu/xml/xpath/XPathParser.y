@@ -71,7 +71,7 @@ public class XPathParser
         if (prefix != null && (uri == null || uri.length() == 0))
           {
             uri = namespaceContext.getNamespaceURI(prefix);
-            String localName = qName.getLocalName();
+            String localName = qName.getLocalPart();
             qName = new QName(uri, localName, prefix);
           }
       }

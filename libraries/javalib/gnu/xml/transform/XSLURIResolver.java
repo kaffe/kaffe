@@ -41,6 +41,7 @@ package gnu.xml.transform;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -54,9 +55,11 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import gnu.xml.dom.ls.ReaderInputStream;
 
 /**
  * URI resolver for XSLT.
@@ -118,35 +121,54 @@ class XSLURIResolver
     try
       {
         URL url = resolveURL(systemId, base, href);
-        systemId = url.toString();
-        Node node = (Node) nodeCache.get(systemId);
-        // Is the resource up to date?
-        URLConnection conn = url.openConnection();
-        Long llm = (Long) lastModifiedCache.get(systemId);
-        if (llm != null)
+        Node node = null;
+        InputStream in = null;
+        if (source instanceof StreamSource)
           {
-            lastLastModified = llm.longValue();
-            conn.setIfModifiedSince(lastLastModified);
+            StreamSource ss = (StreamSource) source;
+            in = ss.getInputStream();
+            if (in == null)
+              {
+                Reader reader = ss.getReader();
+                if (reader != null)
+                  {
+                    in = new ReaderInputStream(reader);
+                  }
+              }
           }
-        conn.connect();
-        lastModified = conn.getLastModified();
-        if (node != null && 
-            lastModified > 0L &&
-            lastModified <= lastLastModified)
+        if (in == null && url != null)
           {
-            // Resource unchanged
+            systemId = url.toString();
+            node = (Node) nodeCache.get(systemId);
+            // Is the resource up to date?
+            URLConnection conn = url.openConnection();
+            Long llm = (Long) lastModifiedCache.get(systemId);
+            if (llm != null)
+              {
+                lastLastModified = llm.longValue();
+                conn.setIfModifiedSince(lastLastModified);
+              }
+            conn.connect();
+            lastModified = conn.getLastModified();
+            if (node != null && 
+                lastModified > 0L &&
+                lastModified <= lastLastModified)
+              {
+                // Resource unchanged
+                return new DOMSource(node, systemId);
+              }
+            else
+              {
+                // Resource new or modified
+                in = conn.getInputStream();
+                nodeCache.put(systemId, node);
+                lastModifiedCache.put(systemId, new Long(lastModified));
+              }
           }
-        else
-          {
-            // Resource new or modified
-            InputStream in = conn.getInputStream();
-            InputSource input = new InputSource(in);
-            input.setSystemId(systemId);
-            DocumentBuilder builder = getDocumentBuilder();
-            node = builder.parse(input);
-            nodeCache.put(systemId, node);
-            lastModifiedCache.put(systemId, new Long(lastModified));
-          }
+        InputSource input = new InputSource(in);
+        input.setSystemId(systemId);
+        DocumentBuilder builder = getDocumentBuilder();
+        node = builder.parse(input);
         return new DOMSource(node, systemId);
       }
     catch (IOException e)
@@ -183,7 +205,7 @@ class XSLURIResolver
                 URL baseURL = new URL(base);
                 url = new URL(baseURL, href);
               }
-            else
+            else if (href != null)
               {
                 url = new URL(href);
               }
@@ -208,11 +230,11 @@ class XSLURIResolver
             File baseFile = new File(base);
             file = new File(baseFile, href);
           }
-        else
+        else if (href != null)
           {
             file = new File(href);
           }
-        return file.toURL();
+        return (file == null) ? null : file.toURL();
       }
   }
   

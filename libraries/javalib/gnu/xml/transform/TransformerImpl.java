@@ -43,10 +43,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.UnknownServiceException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -74,6 +76,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import gnu.xml.dom.DomDoctype;
 import gnu.xml.dom.DomDocument;
+import gnu.xml.dom.ls.WriterOutputStream;
 import gnu.xml.xpath.Expr;
 import gnu.xml.xpath.Root;
 
@@ -151,18 +154,18 @@ class TransformerImpl
           }
       }
     boolean created = false;
-    if (parent == null)
-      {
-        // Create a new document to hold the result
-        DomDocument resultDoc = new DomDocument();
-        resultDoc.setBuilding(true);
-        resultDoc.setCheckWellformedness(false);
-        parent = resultDoc;
-        created = true;
-      }
     // Transformation
     if (stylesheet != null)
       {
+        if (parent == null)
+          {
+            // Create a new document to hold the result
+            DomDocument resultDoc = new DomDocument();
+            resultDoc.setBuilding(true);
+            resultDoc.setCheckWellformedness(false);
+            parent = resultDoc;
+            created = true;
+          }
         // Make a copy of the source node, and strip it
         context = context.cloneNode(true);
         strip(context);
@@ -193,13 +196,43 @@ class TransformerImpl
       {
         // Identity transform
         Node clone = context.cloneNode(true);
-        if (nextSibling != null)
+        if (context.getNodeType() != Node.DOCUMENT_NODE)
           {
-            parent.insertBefore(clone, nextSibling);
+            Document resultDoc;
+            if (parent == null)
+              {
+                // Create a new document to hold the result
+                DomDocument rd = new DomDocument();
+                rd.setBuilding(true);
+                rd.setCheckWellformedness(false);
+                parent = resultDoc = rd;
+                created = true;
+              }
+            else
+              {
+                resultDoc = (parent instanceof Document) ?
+                  (Document) parent :
+                  parent.getOwnerDocument();
+              }
+            Document sourceDoc = context.getOwnerDocument();
+            if (sourceDoc != resultDoc)
+              {
+                clone = resultDoc.adoptNode(clone);
+              }
+            if (nextSibling != null)
+              {
+                parent.insertBefore(clone, nextSibling);
+              }
+            else
+              {
+                parent.appendChild(clone);
+              }
           }
         else
           {
-            parent.appendChild(clone);
+            // Cannot append document to another tree
+            parent = clone;
+            created = true;
           }
       }
     String method = outputProperties.getProperty(OutputKeys.METHOD);
@@ -288,7 +321,9 @@ class TransformerImpl
       {
         if (created)
           {
-            ((DOMResult) outputTarget).setNode(parent);
+            DOMResult dr = (DOMResult) outputTarget;
+            dr.setNode(parent);
+            dr.setNextSibling(null);
           }
       }
     else if (outputTarget instanceof StreamResult)
@@ -410,6 +445,14 @@ class TransformerImpl
         out = sr.getOutputStream();
         if (out == null)
           {
+            Writer writer = sr.getWriter();
+            if (writer != null)
+              {
+                out = new WriterOutputStream(writer);
+              }
+          }
+        if (out == null)
+          {
             String systemId = sr.getSystemId();
             try
               {
@@ -431,7 +474,11 @@ class TransformerImpl
         out = new BufferedOutputStream(out);
         StreamSerializer serializer =
           new StreamSerializer(outputMethod, encoding, null);
-        serializer.setCdataSectionElements(stylesheet.outputCdataSectionElements);
+        if (stylesheet != null)
+          {
+            Collection celem = stylesheet.outputCdataSectionElements;
+            serializer.setCdataSectionElements(celem);
+          }
         serializer.serialize(node, out);
         out.flush();
       }

@@ -89,5 +89,16 @@ public class DomNotation
     makeReadonly();
   }
   
+  /**
+   * The base URI of an external entity is its system ID.
+   * The base URI of an internal entity is the parent document's base URI.
+   * @since DOM Level 3 Core
+   */
+  public String getBaseURI()
+  {
+    String systemId = getSystemId();
+    return (systemId == null) ? owner.getBaseURI() : systemId;
+  }
+  
 }
 

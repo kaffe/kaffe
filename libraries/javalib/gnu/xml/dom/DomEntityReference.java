@@ -38,6 +38,8 @@
 
 package gnu.xml.dom;
 
+import org.w3c.dom.DocumentType;
+import org.w3c.dom.Entity;
 import org.w3c.dom.EntityReference;
 
 /**
@@ -98,12 +100,32 @@ public class DomEntityReference
   }
   
   /**
-   * <b>DOM L1</b>
    * Returns the name of the referenced entity.
+   * @since DOM Level 1 Core
    */
-  final public String getNodeName()
+  public final String getNodeName()
   {
     return name;
+  }
+
+  /**
+   * The base URI of an entity reference is the base URI where the entity
+   * declaration occurs.
+   * @since DOM Level 3 Core
+   */
+  public final String getBaseURI()
+  {
+    DocumentType doctype = owner.getDoctype();
+    if (doctype == null)
+      {
+        return null;
+      }
+    Entity entity = (Entity) doctype.getEntities().getNamedItem(name);
+    if (entity == null)
+      {
+        return null;
+      }
+    return entity.getBaseURI();
   }
 
 }

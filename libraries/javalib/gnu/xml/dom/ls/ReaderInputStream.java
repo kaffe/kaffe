@@ -1,6 +1,6 @@
 /*
  * ReaderInputStream.java
- * Copyright (C) 1999,2000,2001 The Free Software Foundation
+ * Copyright (C) 1999, 2000, 2001, 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -46,6 +46,7 @@ import java.io.Reader;
  * Character stream wrapper.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
+ * @author <a href='mailto:mark@klomp.org'>Mark Wielaard</a>
  */
 public class ReaderInputStream
   extends InputStream
@@ -54,10 +55,17 @@ public class ReaderInputStream
   private Reader reader;
   private String encoding;
 
+  // Holds extra spillover data if necessary
+  private byte extra[];
+  private int pos;
+
+  private byte extra_marked[];
+  private int pos_marked;
+
   public ReaderInputStream(Reader reader)
   {
     this.reader = reader;
-    encoding = "UTF-8";
+    this.encoding = "UTF-8";
   }
 
   void setEncoding(String encoding)
@@ -68,6 +76,16 @@ public class ReaderInputStream
   public int read()
     throws IOException
   {
+    if (extra != null)
+      {
+        int result = extra[pos];
+        pos++;
+        if (pos >= extra.length)
+          {
+            extra = null;
+          }
+        return result;
+      }
     return reader.read();
   }
 
@@ -80,14 +98,46 @@ public class ReaderInputStream
   public int read(byte[] b, int off, int len)
     throws IOException
   {
-    int l = len - off;
-    char[] c = new char[l];
-    l = reader.read(c, 0, l);
+    if (len == 0)
+      {
+        return 0;
+      }
+
+    if (extra != null)
+      {
+        int available = extra.length - pos;
+        int l = available < len ? available : len;
+        System.arraycopy(extra, 0, b, off, l);
+        pos += l;
+        if (pos >= extra.length)
+          {
+            extra = null;
+          }
+        return l;
+      }
+
+    char[] c = new char[len];
+    int l = reader.read(c, 0, len);
+    if (l == -1)
+      {
+        return -1;
+      }
+
     String s = new String(c, 0, l);
     byte[] d = s.getBytes(encoding);
-    // FIXME d.length may be > len
-    System.arraycopy(d, 0, b, off, d.length);
-    return d.length;
+    
+    int available = d.length;
+    int more = d.length - len;
+    if (more > 0)
+      {
+        extra = new byte[more];
+        pos = 0;
+        System.arraycopy(d, len, extra, 0, more);
+        available -= more;
+      }
+       
+    System.arraycopy(d, 0, b, off, available);
+    return available;
   }
 
   public void close()
@@ -103,29 +153,86 @@ public class ReaderInputStream
 
   public void mark(int limit)
   {
+    if (extra != null)
+      {
+        extra_marked = new byte[extra.length];
+        System.arraycopy(extra, 0, extra_marked, 0, extra.length);
+        pos_marked = pos;
+      }
+    else
+      {
+        extra_marked = null;
+      }
+
     try
       {
+        // Note that this might be a bit more than asked for.
+        // Because we might also have the extra_marked bytes.
+        // That is fine (and necessary for reset() to work).
         reader.mark(limit);
       }
-    catch (IOException e)
+    catch (IOException ioe)
       {
-        throw new RuntimeException(e.getMessage());
+        throw new RuntimeException(ioe);
       }
   }
 
   public void reset()
     throws IOException
   {
+    extra = extra_marked;
+    pos = pos_marked;
+    extra_marked = null;
+
     reader.reset();
   }
 
   public long skip(long n)
     throws IOException
   {
-    return reader.skip(n);
+    long done = 0;
+    if (extra != null)
+      {
+        int available = extra.length - pos;
+        done = available < n ? available : n;
+        pos += done;
+        if (pos >= extra.length)
+          {
+            extra = null;
+          }
+      }
+
+    n -= done;
+    if (n > 0)
+      {
+        return reader.skip(n) + done;
+      }
+    else
+      {
+        return done;
+      }
   }
 
-  // TODO available
+  /**
+   *  Returns conservative number of bytes available without blocking.
+   *  Actual number of bytes that can be read without blocking might
+   *  be (much) bigger.
+   */
+  public int available()
+    throws IOException
+  {
+    if (extra != null)
+      {
+        return pos - extra.length;
+      }
+
+    return reader.ready() ? 1 : 0;
+  }
+
+  public String toString()
+  {
+    return getClass().getName() + "[" + reader + ", " + encoding + "]";
+  }
   
 }
 

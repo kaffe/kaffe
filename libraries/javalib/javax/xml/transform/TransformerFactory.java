@@ -49,7 +49,7 @@ import java.util.Properties;
 /**
  * Factory for obtaining transformation contexts.
  *
- * @author <a href='mailro:dog@gnu.org'>Chris Burdess</a>
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public abstract class TransformerFactory
 {

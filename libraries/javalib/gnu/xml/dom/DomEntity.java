@@ -96,12 +96,12 @@ public class DomEntity
                       String systemId,
                       String notation)
   {
-	super(ENTITY_NODE, owner, name, publicId, systemId);
+    super(ENTITY_NODE, owner, name, publicId, systemId);
     this.notation = notation;
 
-	// NOTE:  if notation == null, this is a parsed entity
-	// which could reasonably be given child nodes ...
-	makeReadonly();
+    // NOTE:  if notation == null, this is a parsed entity
+    // which could reasonably be given child nodes ...
+    makeReadonly();
   }
 
   /**
@@ -132,5 +132,17 @@ public class DomEntity
     // TODO
     return null;
   }
+
+  /**
+   * The base URI of an external entity is its system ID.
+   * The base URI of an internal entity is the parent document's base URI.
+   * @since DOM Level 3 Core
+   */
+  public String getBaseURI()
+  {
+    String systemId = getSystemId();
+    return (systemId == null) ? owner.getBaseURI() : systemId;
+  }
   
 }
+

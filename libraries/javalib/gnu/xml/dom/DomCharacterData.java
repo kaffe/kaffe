@@ -281,6 +281,15 @@ public abstract class DomCharacterData
       }
   }
 
+  /**
+   * The base URI for character data is <code>null</code>.
+   * @since DOM Level 3 Core
+   */
+  public final String getBaseURI()
+  {
+    return null;
+  }
+
   private void mutating(String newValue)
   {
     if (!reportMutations)

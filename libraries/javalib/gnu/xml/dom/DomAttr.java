@@ -296,6 +296,14 @@ public class DomAttr
   }
 
   /**
+   * The base URI of an Attr is always <code>null</code>.
+   */
+  public final String getBaseURI()
+  {
+    return null;
+  }
+    
+  /**
    * Shallow clone of the attribute, breaking all ties with any
    * elements.
    */

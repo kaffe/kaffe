@@ -179,51 +179,48 @@ public class GnomeDocumentBuilder
 
   // -- DOMImplementation --
 
-  public boolean hasFeature(String feature, String version)
+  public boolean hasFeature(String name, String version)
   {
-    if ("XML".equalsIgnoreCase(feature))
+    if (name.length() == 0)
       {
-        return ("3.0".equals(version) ||
-                "2.0".equals(version) ||
+        return false;
+      }
+    name = name.toLowerCase();
+    if (name.charAt(0) == '+')
+      {
+        name = name.substring(1);
+      }
+    
+    if ("xml".equals(name) || "core".equals(name))
+      {
+        return (version == null ||
+                "".equals(version) ||
                 "1.0".equals(version) ||
-                version == null);
+                "2.0".equals(version) ||
+                "3.0".equals(version));
+      
       }
-    if ("HTML".equalsIgnoreCase (feature))
+    else if ("ls".equals(name) || "ls-async".equals(name))
       {
-        return false; // TODO
+        // TODO
+        /*
+        return (version == null ||
+                "".equals(version) ||
+                "3.0".equals(version));
+                */
+        return false;
       }
-    if ("Core".equalsIgnoreCase (feature))
+    else if ("traversal".equals(name))
       {
-        return ("3.0".equals (version) ||
-                "2.0".equals (version) ||
-                "1.0".equals (version) ||
-                version == null);
+        return (version == null ||
+                "".equals(version) ||
+		"2.0".equals(version));
       }
-    if ("Stylesheets".equalsIgnoreCase (feature))
+    else if ("xpath".equals(name))
       {
-        return false; // TODO
-      }
-    if ("CSS".equalsIgnoreCase (feature))
-      {
-        return false; // TODO
-      }
-    if ("CSS2".equalsIgnoreCase (feature))
-      {
-        return false; // TODO
-      }
-    if ("XPath".equalsIgnoreCase (feature))
-      {
-        return ("3.0".equals (version) ||
-                version ==  null);
-      }
-    if ("Traversal".equalsIgnoreCase (feature))
-      {
-        return ("2.0".equals (version) ||
-                version ==  null);
-      }
-    if ("Range".equalsIgnoreCase (feature))
-      {
-        return false; // TODO
+        return (version == null ||
+                "".equals(version) ||
+                "3.0".equals(version));
       }
     return false;
   }
@@ -232,7 +229,10 @@ public class GnomeDocumentBuilder
 
   public Object getFeature(String feature, String version)
   {
-    // TODO
+    if (hasFeature(feature, version))
+      {
+        return this;
+      }
     return null;
   }
   

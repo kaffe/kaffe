@@ -56,9 +56,9 @@ public abstract class DomExtern
   extends DomNode
 {
  
-  private String name;
-  private String publicId;
-  private String systemId;
+  private final String name;
+  private final String publicId;
+  private final String systemId;
   
   /**
    * Constructs a node associated with the specified document,
@@ -86,7 +86,7 @@ public abstract class DomExtern
    * <b>DOM L1</b>
    * Returns the SYSTEM identifier associated with this object, if any.
    */
-  final public String getSystemId()
+  public final String getSystemId()
   {
     return systemId;
   }
@@ -95,7 +95,7 @@ public abstract class DomExtern
    * <b>DOM L1</b>
    * Returns the PUBLIC identifier associated with this object, if any.
    */
-  final public String getPublicId()
+  public final String getPublicId()
   {
     return publicId;
   }
@@ -104,7 +104,12 @@ public abstract class DomExtern
    * <b>DOM L1</b>
    * Returns the object's name.
    */
-  final public String getNodeName()
+  public final String getNodeName()
+  {
+    return name;
+  }
+
+  public final String getLocalName()
   {
     return name;
   }

@@ -432,7 +432,7 @@ public class DomDocument
               }
             break;
           default:
-            if (c != ':' && c != '_' && c < 0x02bb && c > 0x02c1 &&
+            if (c != ':' && c != '_' && (c < 0x02bb || c > 0x02c1) &&
                 c != 0x0559 && c != 0x06e5 && c != 0x06e6)
               {
                 throw new DomEx(DomEx.INVALID_CHARACTER_ERR, name, null, c);
@@ -495,7 +495,7 @@ public class DomDocument
                 break;
               default:
                 if (c != '-' && c != '.' && c != ':' && c != '_' &&
-                    c != 0x0387 && c < 0x02bb && c > 0x02c1 &&
+                    c != 0x0387 && (c < 0x02bb || c > 0x02c1) &&
                     c != 0x0559 && c != 0x06e5 && c != 0x06e6 && c != 0x00b7)
                   {
                     throw new DomEx(DomEx.INVALID_CHARACTER_ERR, name, null, c);
@@ -836,22 +836,21 @@ public class DomDocument
    */
   public EntityReference createEntityReference(String name)
   {
-    DomEntityReference retval;
-    
-    if (checkingCharacters)
+    DomEntityReference ret = new DomEntityReference(this, name);
+    DocumentType doctype = getDoctype();
+    if (doctype != null)
       {
-        checkName(name, "1.1".equals(version));
+        DomEntity ent = (DomEntity) doctype.getEntities().getNamedItem(name);
+        if (ent != null)
+          {
+            for (DomNode ctx = ent.first; ctx != null; ctx = ctx.next)
+              {
+                ret.appendChild(ctx.cloneNode(true));
+              }
+          }
       }
-    retval = new DomEntityReference(this, name);
-    //
-    // If we have such an entity, it's allowed that one arrange that
-    // the children of this reference be "the same as" (in an undefined
-    // sense of "same", clearly not identity) the children of the entity.
-    // That can be immediate or deferred.  It's also allowed that nothing
-    // be done -- we take that option here.
-    //
-    retval.makeReadonly();
-    return retval;
+    ret.makeReadonly();
+    return ret;
   }
 
   /**
@@ -1076,12 +1075,12 @@ public class DomDocument
 
   public void setXmlVersion(String xmlVersion)
   {
-    if (version == null)
+    if (xmlVersion == null)
       {
-        version = "1.0";
+        xmlVersion = "1.0";
       }
-    if ("1.0".equals(version) ||
-        "1.1".equals(version))
+    if ("1.0".equals(xmlVersion) ||
+        "1.1".equals(xmlVersion))
       {
         version = xmlVersion;
       }
@@ -1121,6 +1120,8 @@ public class DomDocument
 
   public String getBaseURI()
   {
+    return getDocumentURI();
+    /*
     Node root = getDocumentElement();
     if (root != null)
       {
@@ -1132,6 +1133,7 @@ public class DomDocument
           }
       }
     return systemId;
+    */
   }
   
   public String getDocumentURI()
@@ -1181,7 +1183,10 @@ public class DomDocument
 
   public void normalizeDocument()
   {
+    boolean save = building;
+    building = true;
     normalizeNode(this);
+    building = save;
   }
 
   void normalizeNode(DomNode node)
