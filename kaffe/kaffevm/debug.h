@@ -48,7 +48,7 @@
 # define DBG_EXCEPTION		DBG_BIT(4) 
 # define DBG_JTHREAD		DBG_BIT(5) 
 # define DBG_JTHREADDETAIL	DBG_BIT(6) 
-/* 7 is free */
+# define DBG_STACKTRACE		DBG_BIT(7)
 # define DBG_BREAKONEXIT	DBG_BIT(8) 
 # define DBG_INIT		DBG_BIT(9) 
 # define DBG_GCPRIM		DBG_BIT(10) 

@@ -14,6 +14,7 @@
 #include "config-signal.h"
 #include "config-mem.h"
 #include "config-setjmp.h"
+#include "debug.h"
 #include "jtypes.h"
 #include "access.h"
 #include "object.h"
@@ -42,6 +43,8 @@ buildStackTrace(struct _exceptionFrame* base)
 	struct _exceptionFrame orig;
 
 	(void) orig;			/* avoid compiler warning in intrp */
+	DBG(STACKTRACE,
+	    dprintf("STACKTRACEINIT(trace, base, base, orig);\n"); );
 	STACKTRACEINIT(trace, base, base, orig);
 	cnt = 0;
 	while(!STACKTRACEEND(trace)) {
@@ -55,6 +58,8 @@ buildStackTrace(struct _exceptionFrame* base)
 
 	cnt = 0;
 
+	DBG(STACKTRACE,
+	    dprintf("STACKTRACEINIT(trace, &orig, base, orig);\n"); );
 	STACKTRACEINIT(trace, &orig, base, orig);
 
 	for(; !STACKTRACEEND(trace); STACKTRACESTEP(trace)) {

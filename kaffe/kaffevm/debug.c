@@ -69,6 +69,7 @@ static struct debug_opts
 	D(JTHREADDETAIL,  "Show jthread operations (more detail)"),
 	D(JTHREADNOPREEMPT,  "Disable preemption in--jthreads only"),
 	D(EXCEPTION, "Debug exceptions, don't catch traps"),
+	D(STACKTRACE, "Debug stack trace inspection"),
 	D(INIT,     "Show initialization steps."),
 	D(BREAKONEXIT, "Cause an exception before exiting. (Useful under GDB)"),
 	D(GCPRIM,   "Debug gc_primitive_*"),
