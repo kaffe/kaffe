@@ -1,5 +1,11 @@
 2004-03-21  Dalibor Topic <robilad@kaffe.org>
 
+	* config/sparc/netbsd1/jit-md.h:
+	(FLUSH_DCACHE): Removed. Use the common sparc
+	cache flush routine.
+
+2004-03-21  Dalibor Topic <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2004-03-20  Jeroen Frijters  <jeroen@frijters.net>

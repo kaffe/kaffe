@@ -17,16 +17,6 @@
 /**/
 #include "sparc/jit.h"
 
-#undef	FLUSH_DCACHE
-#define FLUSH_DCACHE(beg, end)						\
-	do {								\
-		int *_p = (int *)(beg), *_e = (int *)(end);		\
-		while (_p < _e) {					\
-			asm volatile("iflush %0+0" : : "r"(_p++));	\
-		}							\
-	} while (0)
-
-
 /**/
 /* Extra exception handling information. */
 /**/
