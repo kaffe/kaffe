@@ -657,6 +657,8 @@ define_insn(exception_prologue, eprologue_xxx)
 
 define_insn(epilogue, epilogue_xxx)
 {
+	setEpilogueLabel ((uintp)CODEPC);
+
 	/* Should restore floating point state here !!! F4-F7 */
 
 	debug((DBOUT,"maxStack = %d, maxLocal = %d, maxTemp = %d\n", maxStack, maxLocal, maxTemp));
@@ -1512,12 +1514,6 @@ define_insn(branch_indirect, branch_indirect_xRC)
 	assert(const_int(2) == ba);
 	op_mov(PC, r);
 	debug((DBOUT,"branch_indirect [r%d]\n", r));
-}
-
-define_insn(ret, ret_xxx)
-{
-	/* Does nothing - all done in epilogue */
-	debug((DBOUT,"ret\n"));
 }
 
 define_insn(push_int, push_xRC)

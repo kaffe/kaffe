@@ -2116,7 +2116,6 @@ define_insn(IRETURN)
 
 	monitor_exit();
 	returnarg_int(rstack(0));
-	end_function();
 	ret();
 }
 
@@ -2128,7 +2127,6 @@ define_insn(LRETURN)
 
 	monitor_exit();
 	returnarg_long(rstack_long(0));
-	end_function();
 	ret();
 }
 
@@ -2140,7 +2138,6 @@ define_insn(FRETURN)
 
 	monitor_exit();
 	returnarg_float(rstack_float(0));
-	end_function();
 	ret();
 }
 
@@ -2152,7 +2149,6 @@ define_insn(DRETURN)
 
 	monitor_exit();
 	returnarg_double(rstack_double(0));
-	end_function();
 	ret();
 }
 
@@ -2164,7 +2160,6 @@ define_insn(ARETURN)
 
 	monitor_exit();
 	returnarg_ref(rstack_ref(0));
-	end_function();
 	ret();
 }
 
@@ -2173,7 +2168,6 @@ define_insn(RETURN)
 	trace_jcode (("return\n"));
 
 	monitor_exit();
-	end_function();
 	ret();
 }
 

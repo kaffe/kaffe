@@ -384,7 +384,7 @@ DBG(JIT,	dprintf("pc = %d, npc = %d\n", pc, npc);	)
 		generateInsnSequence(codeInfo);
 	}
 
-	finish_function();
+	end_function();
 
 	assert(maxTemp < MAXTEMPS);
 

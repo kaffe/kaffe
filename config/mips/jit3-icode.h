@@ -116,7 +116,6 @@
 #undef	HAVE_call_ref
 #endif
 #define	HAVE_call			call_xRC
-#define	HAVE_ret			ret_xxx
 #define	HAVE_return_int			return_Rxx
 #define	HAVE_return_long		returnl_Rxx
 #define	HAVE_return_float		freturn_Rxx

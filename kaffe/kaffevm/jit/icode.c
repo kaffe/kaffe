@@ -224,8 +224,18 @@ epilogue(void)
 }
 
 void
-finish_function(void)
+ret(void)
 {
+	label *l;
+	
+	l = newLabel();
+	l->at = 0;
+	l->to = 0;
+	l->from = 0;
+
+	/* Jump to epilogue */
+	l->type = Lepilogue;
+	branch (l, ba);
 }
 
 
@@ -2614,14 +2624,6 @@ call_soft(void *routine)
 #endif
 }
 
-
-#if defined(HAVE_ret)
-void
-ret(void)
-{
-	slot_slot_slot(0, 0, 0, HAVE_ret, Tnull);
-}
-#endif
 
 #if defined(HAVE_return_int)
 void

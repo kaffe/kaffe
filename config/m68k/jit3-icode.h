@@ -74,7 +74,6 @@
 #define HAVE_call_ref			call_xCC
 #define HAVE_call			call_xRC
 
-#define HAVE_ret			ret_xxx
 #define HAVE_return_int			returni_Rxx
 #define HAVE_return_long		returnl_Rxx
 

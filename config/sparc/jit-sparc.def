@@ -140,6 +140,8 @@ define_insn(prologue, prologue_xLC)
 
 define_insn(epilogue, epilogue_xxx)
 {
+	setEpilogueLabel ((uintp)CODEPC);
+
 	insn_RRC(2, 0x38, REG_g0, REG_i7, 8);
 	insn_RRR(0x3D, REG_g0, REG_g0, REG_g0);
 
@@ -497,6 +499,28 @@ define_insn(div_double, fdivl_RRR)
 	finsn_RRR(0x4E, w, r1, r2);
 
 	debug(("fdivd %s,%s,%s\n", fregname(r1), fregname(r2), fregname(w)));
+}
+
+define_insn(neg_float, fneg_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_float(0);
+
+	finsn_RRR(5, w, 0, r);
+	debug(("fnegs %s,%s\n", fregname(r), fregname(w)));
+}
+
+define_insn(neg_double, fnegl_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_double(0);
+
+	finsn_RRR(5, w, 0, r);
+	debug(("fnegs %s,%s\n", fregname(r), fregname(w)));
+	if (r != w) {
+		finsn_RRR(1, w+1, 0, r+1);
+		debug(("fmovs %s,%s\n", fregname(r+1), fregname(w+1)));
+	}
 }
 
 /* --------------------------------------------------------------------- */
@@ -988,10 +1012,6 @@ define_insn(call, call_xRC)
 	debug(("jmpl [%s],o7\n", regname(r)));
 
 	NOP();
-}
-
-define_insn(ret, ret_xxx)
-{
 }
 
 define_insn(push_int, push_xRC)

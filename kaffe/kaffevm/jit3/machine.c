@@ -351,7 +351,7 @@ SCHK(			sanityCheck();				)
 		}
 	}
 
-	finish_function();
+	end_function();
 	makeFakeCalls();
 
 	assert(maxTemp < MAXTEMPS);

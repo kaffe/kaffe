@@ -26,9 +26,10 @@
 #define Ltomask		0x1F0
 #define	Lgeneral	0x010	/* Label references general code */
 #define Lexternal	0x020	/* Label references external routine */
-#define	Lcode		0x040	/* Label references bytecode offset */
-#define Lconstant	0x080	/* Label references a constpool element */
-#define	Linternal	0x100	/* Label references internal routine */
+#define	Lcode		0x030	/* Label references bytecode offset */
+#define Lconstant	0x040	/* Label references a constpool element */
+#define	Linternal	0x050	/* Label references internal routine */
+#define	Lepilogue	0x060	/* Label references internal epilogue */
 
 /* Modifications to "from" */
 #define Lfrommask	0x600
@@ -50,6 +51,7 @@ typedef struct _label_ {
 #define	ALLOCLABELNR	1024
 
 struct codeinfo;
+void setEpilogueLabel(uintp);
 void linkLabels(struct codeinfo*, uintp);
 label* newLabel(void);
 void resetLabels(void);

@@ -66,6 +66,9 @@
 #define	HAVE_mul_double			fmull_RRR
 #define	HAVE_div_double			fdivl_RRR
 
+#define	HAVE_neg_float			fneg_RxR
+#define	HAVE_neg_double			fnegl_RxR
+
 #define	HAVE_add_ref			add_RRR
 
 #define	HAVE_load_int			load_RxR
@@ -91,7 +94,6 @@
 #define	HAVE_branch_indirect		branch_indirect_xRC
 #define	HAVE_call_ref			call_xCC
 #define	HAVE_call			call_xRC
-#define	HAVE_ret			ret_xxx
 #define	HAVE_return_int			return_Rxx
 #define	HAVE_return_long		returnl_Rxx
 #define	HAVE_return_float		freturn_Rxx
@@ -195,8 +197,6 @@
 
 #undef	HAVE_cmp_long
 
-#undef	HAVE_neg_float
-#undef	HAVE_neg_double
 #undef	HAVE_rem_float
 #undef	HAVE_rem_double
 

@@ -296,6 +296,8 @@ define_insn(exception_prologue, eprologue_xLx)
 
 define_insn(epilogue, epilogue_xxx)
 {
+	setEpilogueLabel((uintp)CODEPC);
+	
 	/* If this method uses IEEE, restore it */
 	if (used_ieee_division == true && 0) {
 #if 0
@@ -334,6 +336,10 @@ define_insn(epilogue, epilogue_xxx)
 	debug(("popl edi\n"));
 	debug(("movl ebp,esp\n"));
 	debug(("popl ebp\n"));
+
+	OUT = 0xC3;
+
+	debug(("ret\n"));
 }
 
 /* --------------------------------------------------------------------- */
@@ -1369,13 +1375,6 @@ define_insn(call_indirect_const, call_ind_xCC)
 		profiler_end(globalMethod->totalChildrenClicks, 1);
 	}
 #endif
-}
-
-define_insn(ret, ret_xxx)
-{
-	OUT = 0xC3;
-
-	debug(("ret\n"));
 }
 
 define_insn(push_int, push_xRC)

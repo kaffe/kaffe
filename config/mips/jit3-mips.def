@@ -380,6 +380,8 @@ define_insn(epilogue, epilogue_xxx) {
 
 	debug_name(("epilogue:\n"));
 
+	setEpilogueLabel ((uintp)CODEPC);
+
 	/* Restore callee save regs */
 	for (i = 7; i >= 0; i--) {
 		ldst_RRC(_LW, REG_s0+i, REG_fp, -SLOTSIZE*(5+i)); 
@@ -1808,11 +1810,6 @@ define_insn(call, call_xRC) {
         ldst_RRC(_LW, REG_gp, REG_fp, -16); /* restore $gp */
         debug(("	lw	gp,-16(fp)\n"));
 #endif
-}
-
-define_insn(ret, ret_xxx) {
-	debug_name(("ret:\n"));
-
 }
 
 define_insn(push_int, push_xRC) {

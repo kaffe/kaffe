@@ -26,9 +26,10 @@
 #define Ltomask		0x01F0
 #define	Lgeneral	0x0010	/* Label references general code */
 #define Lexternal	0x0020	/* Label references external routine */
-#define	Lcode		0x0040	/* Label references bytecode offset */
-#define Lconstant	0x0080	/* Label references a constpool element */
-#define	Linternal	0x0100	/* Label references internal routine */
+#define	Lcode		0x0030	/* Label references bytecode offset */
+#define Lconstant	0x0040	/* Label references a constpool element */
+#define	Linternal	0x0050	/* Label references internal routine */
+#define	Lepilogue	0x0060	/* Label references internal epilogue */
 
 /* Modifications to "at" */
 #define	Latmask		0x2000
@@ -54,6 +55,7 @@ typedef struct _label_ {
 
 #define	ALLOCLABELNR	1024
 
+void setEpilogueLabel(uintp);
 void linkLabels(uintp);
 label* newLabel(void);
 void resetLabels(void);

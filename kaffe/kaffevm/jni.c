@@ -3922,7 +3922,6 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	}
 
 	end_function();
-	ret();
 
 	/* Generate the code */
 	if (tmpslot > maxTemp) {

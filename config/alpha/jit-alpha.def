@@ -1026,6 +1026,8 @@ define_insn(epilogue, epilogue_xxx)
 	label *l;
 	int r, N;
 
+	setEpilogueLabel ((uintp)CODEPC);
+
 	/* Calling Standard for Alpha Systems
 	 * 3.2.6.2.2   Exit Code Sequence Steps
 	 * When a procedure returns, the exit code must restore the caller's
@@ -1158,6 +1160,16 @@ define_insn(epilogue, epilogue_xxx)
 	l->type = Lframe|Labsolute|Lgeneral;
 	l->at = (uintp)CODEPC;
 	op_lda(REG_sp, REG_sp, 0);
+
+	/* Calling Standard for Alpha Systems
+	 * 3.2.6.2.2   Exit Code Sequence Steps
+	 * 8. Execute the ret $31,($n),0001 instruction, as described in
+	 *    Section 3.2.6.2.1, to return control to the calling procedure.
+	 *    In almost all cases the $n used will be $26 (the return address
+	 *    register) because its value must be restored before the call
+	 *    returns.  */
+
+	op_ret(REG_zero, REG_ra, 1);
 }
 
 define_insn(eprologue, eprologue_xxx)
@@ -2930,19 +2942,6 @@ define_insn(call, call_xRC)
 
 	op_jsr(REG_ra, r, 0);
 	alpha_ldgp(REG_ra);
-}
-
-define_insn(ret, ret_xxx)
-{
-	/* Calling Standard for Alpha Systems
-	 * 3.2.6.2.2   Exit Code Sequence Steps
-	 * 8. Execute the ret $31,($n),0001 instruction, as described in
-	 *    Section 3.2.6.2.1, to return control to the calling procedure.
-	 *    In almost all cases the $n used will be $26 (the return address
-	 *    register) because its value must be restored before the call
-	 *    returns.  */
-
-	op_ret(REG_zero, REG_ra, 1);
 }
 
 static void

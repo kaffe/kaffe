@@ -165,7 +165,6 @@ __moveable_constant_rangecheck(int val)
 
 #define	HAVE_call			call_xRC
 #define	HAVE_branch_indirect		branch_indirect_xRC
-#define	HAVE_ret			ret_xxx
 #define	HAVE_return_int			return_Rxx
 #define	HAVE_return_long		returnl_Rxx
 #define	HAVE_return_ref			return_Rxx

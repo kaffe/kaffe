@@ -37,6 +37,23 @@ resetLabels(void)
 
 
 /*
+ * Set epilogue label destination.
+ */
+void
+setEpilogueLabel(uintp to)
+{
+	label* l;
+
+	for (l = firstLabel; l != currLabel; l = l->next) {
+		if ((l->type & Ltomask) == Lepilogue) {
+			l->type = Linternal | (l->type & ~Ltomask);
+			l->to = to;
+		}
+	}
+}
+
+
+/*
  * Link labels.
  * This function uses the saved label information to link the new code
  * fragment into the program.
@@ -64,6 +81,7 @@ linkLabels(codeinfo* codeInfo, uintp codebase)
 			dest = ((constpool*)l->to)->at;
 			break;
 		case Linternal:		/* Internal code reference */
+		/* Lepilogue is changed to Linternal in setEpilogueLabel() */
 			dest = l->to + codebase;
 			break;
 		case Lcode:		/* Reference to a bytecode */
