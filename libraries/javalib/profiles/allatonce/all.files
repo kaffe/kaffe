@@ -821,7 +821,6 @@ java/util/prefs/PreferenceChangeEvent.java
 java/util/prefs/PreferenceChangeListener.java
 java/util/prefs/PreferencesFactory.java
 java/util/prefs/Preferences.java
-java/util/RandomAccess.java
 java/util/Stack.java
 java/util/StringTokenizer.java
 java/util/Timer.java
