@@ -35,20 +35,8 @@ Hjava_lang_Object*
 newObjectChecked(Hjava_lang_Class* class, errorInfo *info)
 {
 	Hjava_lang_Object* obj;
-	int type;
 
-	if (class->finalizer == 0) {
-		/* Treat strings specially because they're so frequent */
-		if (class != StringClass) {
-			type = GC_ALLOC_NORMALOBJECT;
-		} else {
-			type = GC_ALLOC_JAVASTRING;
-		}
-	} else {
-		type = GC_ALLOC_FINALIZEOBJECT; 
-	}
-
-	obj = gc_malloc(CLASS_FSIZE(class), type);
+	obj = gc_malloc(CLASS_FSIZE(class), class->alloc_type);
 
 	if (!obj) {
 		postOutOfMemory(info);

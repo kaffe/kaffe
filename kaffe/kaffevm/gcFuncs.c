@@ -78,12 +78,6 @@ DBG(CLASSGC,
 	 */
 	assert(clazz->state != CSTATE_COMPLETE || clazz->loader != 0);
 
-	/* Clear class reference in classPool.  Don't clear loader,
-	 * finalizeClassLoader() needs it to release classEntry struct.  */
-	if (clazz->centry != NULL) {
-		clazz->centry->class = NULL;
-	}
-
 	if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0 && clazz->name) {
 		dprintf("<GC: unloading class `%s'>\n", 
 			CLASS_CNAME(clazz));
@@ -472,6 +466,17 @@ DBG(GCPRECISE,
         }
 }
 
+/*
+ * Walk a loader object.
+ */
+static
+void
+walkLoader(Collector* collector, void* base, uint32 size)
+{
+        walkObject(collector, base, size);
+        walkClassEntries(collector, (Hjava_lang_ClassLoader*)base);
+}
+
 static
 void
 /* ARGSUSED */
@@ -489,8 +494,12 @@ finalizeObject(Collector* collector, void* ob)
 	}
         objclass = OBJECT_CLASS(obj);    
         final = objclass->finalizer;               
+
+	if (!final) {
+		assert(objclass->alloc_type == GC_ALLOC_JAVALOADER);
+		return;
+	}
   
-        assert(final != 0);
 	(*env)->CallVoidMethod(env, obj, final);
 	/* ignore any resulting exception */
 	(*env)->ExceptionClear(env);
@@ -533,6 +542,7 @@ describeObject(const void* mem)
 			CLASS_CNAME(clazz) : "name unknown");
 		break;
 
+	case GC_ALLOC_JAVALOADER:
 	case GC_ALLOC_NORMALOBJECT:
 	case GC_ALLOC_FINALIZEOBJECT:
 	case GC_ALLOC_REFARRAY:
@@ -574,6 +584,9 @@ initCollector(void)
 	    walkClass, GC_OBJECT_NORMAL, destroyClass, "j.l.Class");
 	GC_registerGcTypeByIndex(gc, GC_ALLOC_FINALIZEOBJECT,
 	    walkObject, finalizeObject, 0, "obj-final");
+	GC_registerGcTypeByIndex(gc, GC_ALLOC_JAVALOADER,
+	    walkLoader, finalizeObject, destroyClassLoader, 
+	    "j.l.ClassLoader");
 
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_BYTECODE, "java-bytecode");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_EXCEPTIONTABLE, "exc-table");

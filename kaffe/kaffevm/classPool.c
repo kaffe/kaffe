@@ -108,7 +108,7 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader,
 
 	/* 
 	 * This reference to the utf8 name will be released if and when this 
-	 * class entry is freed in finalizeClassLoader.
+	 * class entry is freed in destroyClassLoader.
 	 */
 	utf8ConstAddRef(entry->name);
 
@@ -163,6 +163,23 @@ findMethodFromPC(uintp pc)
 }
 #endif
 
+void
+walkClassEntries(Collector *collector, Hjava_lang_ClassLoader* loader)
+{
+        classEntry* entry;
+        int ipool;
+
+        for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
+                for (entry = classEntryPool[ipool]; entry != NULL;
+                     entry = entry->next)
+                {
+                        if (entry->loader == loader) {
+                                GC_markObject(collector, entry->class);
+                        }
+                }
+        }
+}
+
 /*
  * Remove all entries from the class entry pool that belong to a given
  * class.  Return the number of entries removed.
@@ -216,18 +233,18 @@ DBG(CLASSGC,
  * Finalize a classloader and remove its entries in the class entry pool.
  */
 void
-finalizeClassLoader(Hjava_lang_ClassLoader* loader)
+/* ARGSUSED */
+destroyClassLoader(Collector *c, void* _loader)
 {
+	Hjava_lang_ClassLoader* loader = _loader;
         int rmoved;
  
-DBG(CLASSGC,
-        dprintf("Finalizing classloader @%p\n", loader);
-    )
         rmoved = removeClassEntries(loader);
    
-DBG(CLASSGC,
-        dprintf("removed entries from class entry pool: %d\n", rmoved);
-    )
+	if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
+		dprintf("<GC: destroying classloader "
+			"@%p (%d entries removed)>\n", loader, rmoved);
+   	}
 }
 
 /*
@@ -242,11 +259,6 @@ checkClass(Hjava_lang_Class *c, Hjava_lang_ClassLoader *loader)
 	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
 		entry = classEntryPool[ipool];
 		for (; entry != NULL; entry = entry->next) {
-			/* we may be leaking classPool entries because
-			 * finalizers are never run.  Running
-			 * finalizers can be hard, since we need to
-			 * know what process a class came from.
-			 */
 			if (entry->class == c && entry->loader != loader) {
 				dprintf("class %s@%p ",
 					describeObject(c), c);

@@ -40,6 +40,7 @@
 #include "locks.h"
 #include "md.h"
 #include "jni.h"
+#include "soft.h"
 #include "methodCache.h"
 #include "gcj/gcj.h"
 #include "xprofiler.h"
@@ -77,6 +78,23 @@ static bool resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo);
 #if !defined(ALIGNMENT_OF_SIZE)
 #define	ALIGNMENT_OF_SIZE(S)	(S)
 #endif
+
+/* set a class's alloc_type field */
+void
+determineAllocType(Hjava_lang_Class *class)
+{
+        if (StringClass != 0 && instanceof(StringClass, class)) {
+                class->alloc_type = GC_ALLOC_JAVASTRING;
+        } else
+        if (ClassLoaderClass != 0 && instanceof(ClassLoaderClass, class)) {
+                class->alloc_type = GC_ALLOC_JAVALOADER;
+        } else
+        if (class->finalizer != 0) {
+                class->alloc_type = GC_ALLOC_FINALIZEOBJECT;
+        } else {
+                class->alloc_type = GC_ALLOC_NORMALOBJECT;
+        }
+}
 
 /*
  * Process all the stage of a classes initialisation.  We can provide
@@ -383,6 +401,8 @@ retry:
 		} else {
 			class->finalizer = meth;
 		}
+
+		determineAllocType(class);
 
 		if (class->superclass != NULL) {
 			class->processingThread = THREAD_NATIVE();

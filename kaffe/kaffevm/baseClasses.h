@@ -35,6 +35,7 @@ extern struct Hjava_lang_Class*	SystemClass;
 extern struct Hjava_lang_Class*	SerialClass;
 extern struct Hjava_lang_Class*	CloneClass;
 extern struct Hjava_lang_Class* PtrClass;
+extern struct Hjava_lang_Class* ClassLoaderClass;
 
 extern struct Hjava_lang_Class*	javaLangVoidClass;
 extern struct Hjava_lang_Class*	javaLangBooleanClass;

@@ -1,3 +1,12 @@
+Fri Oct 27 19:27:23 MDT 2000  Godmar Back <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/baseClasses.[ch], kaffe/kaffevm/classMethod.[ch],
+	kaffe/kaffevm/classPool.c, kaffe/kaffevm/gc.h,
+	kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/object.c,
+	test/regression/CLTestDelegate.java:
+	fix CLTestDelegate.  This is at least how I think it ought 
+	to be.
+
 2000-10-26  Edouard G. Parmelan  <egp@free.fr>
 
 	* test/regression/TestScript.in: Auto save core file.

@@ -57,6 +57,7 @@ Hjava_lang_Class* SystemClass;
 Hjava_lang_Class* SerialClass;
 Hjava_lang_Class* CloneClass;
 Hjava_lang_Class* PtrClass;
+Hjava_lang_Class* ClassLoaderClass;
 
 Hjava_lang_Class* javaLangVoidClass;
 Hjava_lang_Class* javaLangBooleanClass;
@@ -79,6 +80,7 @@ Hjava_lang_Class* javaIoIOException;
 #define SYSTEMCLASS "java/lang/System"
 #define	SERIALCLASS "java/io/Serializable"
 #define	CLONECLASS  "java/lang/Cloneable"
+#define	LOADERCLASS "java/lang/ClassLoader"
 #define PTRCLASS    "kaffe/util/Ptr"
 
 #define	INIT			"<clinit>"
@@ -247,6 +249,7 @@ initBaseClasses(void)
 	loadStaticClass(&javaLangFloatClass, "java/lang/Float");
 	loadStaticClass(&javaLangDoubleClass, "java/lang/Double");
 	loadStaticClass(&PtrClass, PTRCLASS);
+	loadStaticClass(&ClassLoaderClass, LOADERCLASS);
 
 	/* Exception handling types */
 	loadStaticClass(&javaLangThrowable, "java/lang/Throwable");

@@ -103,6 +103,7 @@ struct Hjava_lang_Class {
 	signed char		state;
 	void*			processingThread;
 	Method*			finalizer;
+	int			alloc_type;	/* allocation type */
 
 	/* array containing static data */
 	void*			static_data;
@@ -377,6 +378,7 @@ classEntry*		lookupClassEntry(Utf8Const*, Hjava_lang_ClassLoader*,
 classEntry*		lookupClassEntryInternal(Utf8Const*,
 				Hjava_lang_ClassLoader*);
 int			removeClassEntries(Hjava_lang_ClassLoader*);
+void 			walkClassEntries(Collector *collector, Hjava_lang_ClassLoader*);
 
 Collector* 		initCollector(void);
 
@@ -403,7 +405,7 @@ parsed_signature_t*	parseSignature(Utf8Const *, errorInfo*);
 void			finishFields(Hjava_lang_Class*);
 Method*			findMethodFromPC(uintp);
 
-void			finalizeClassLoader(Hjava_lang_ClassLoader* loader);
+void			destroyClassLoader(Collector *, void *);
 struct Hjava_lang_String* resolveString(Hjava_lang_Class* clazz, int idx,
 					errorInfo *einfo);
 
