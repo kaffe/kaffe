@@ -41,7 +41,6 @@ package javax.net.ssl;
 
 import java.security.KeyStore;
 import java.security.Security;
-
 import javax.net.ServerSocketFactory;
 
 /**

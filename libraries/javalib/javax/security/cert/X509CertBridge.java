@@ -40,12 +40,14 @@ version.  */
 package javax.security.cert;
 
 import java.math.BigInteger;
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.Principal;
 import java.security.PublicKey;
+import java.security.Principal;
 import java.security.SignatureException;
+
 import java.util.Date;
 
 /**

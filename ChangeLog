@@ -1,3 +1,24 @@
+2004-06-03  Dalibor Topic  <robilad@kaffe.org>
+
+        libraries/javalib/javax/net/ServerSocketFactory.java,
+        libraries/javalib/javax/net/SocketFactory.java,
+        libraries/javalib/javax/net/VanillaServerSocketFactory.java,
+        libraries/javalib/javax/net/VanillaSocketFactory.java,
+        libraries/javalib/javax/net/ssl/Engine.java,
+        libraries/javalib/javax/net/ssl/HandshakeCompletedEvent.java,
+        libraries/javalib/javax/net/ssl/KeyManagerFactory.java,
+        libraries/javalib/javax/net/ssl/SSLContext.java,
+        libraries/javalib/javax/net/ssl/SSLServerSocket.java,
+        libraries/javalib/javax/net/ssl/SSLServerSocketFactory.java,
+        libraries/javalib/javax/net/ssl/SSLSession.java,
+        libraries/javalib/javax/net/ssl/SSLSocketFactory.java,
+        libraries/javalib/javax/net/ssl/TrustManagerFactory.java,
+        libraries/javalib/javax/net/ssl/X509KeyManager.java,
+        libraries/javalib/javax/security/cert/Certificate.java,
+        libraries/javalib/javax/security/cert/X509CertBridge.java,
+        libraries/javalib/javax/security/cert/X509Certificate.java:
+	Resynced with Jessie CVS. 
+
 2004-06-03  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/text/RuleBasedCollator.java:

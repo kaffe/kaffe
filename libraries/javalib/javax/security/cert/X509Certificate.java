@@ -41,9 +41,14 @@ package javax.security.cert;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.IOException;
+
 import java.math.BigInteger;
+
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.cert.CertificateFactory;
+
 import java.util.Date;
 
 /**
