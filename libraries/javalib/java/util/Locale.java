@@ -275,7 +275,7 @@ public final class Locale implements Serializable, Cloneable
       {
         language = convertLanguage(language).intern();
         country = country.toUpperCase().intern();
-        variant = variant.toUpperCase().intern();
+        variant = variant.intern();
       }
     this.language = language;
     this.country = country;

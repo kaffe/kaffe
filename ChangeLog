@@ -1,5 +1,16 @@
 2005-01-05  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/util/Locale.java:
+	Resynced with GNU Classpath.
+
+	2004-12-24  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug libgcj/18014.
+	* java/util/Locale.java (Locale(String, String, String)):
+	Don't uppercase variant.
+	
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/text/PasswordView.java:
 	Resynced with GNU Classpath.
 	
