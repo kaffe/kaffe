@@ -1955,10 +1955,10 @@ public class BasicSliderUI extends SliderUI
       }
 
     g.setColor(Color.WHITE);
-    g.drawPolygon(bright);
+    g.drawPolyline(bright.xpoints, bright.ypoints, bright.npoints);
 
     g.setColor(Color.BLACK);
-    g.drawPolygon(dark);
+    g.drawPolyline(dark.xpoints, dark.ypoints, dark.npoints);
 
     g.setColor(Color.GRAY);
     g.fillPolygon(all);

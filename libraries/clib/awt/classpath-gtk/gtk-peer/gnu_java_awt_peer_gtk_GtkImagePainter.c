@@ -40,8 +40,6 @@ exception statement from your version. */
 #include <libart_lgpl/art_misc.h>
 #include <libart_lgpl/art_rgb_affine.h>
 
-#define SWAPU32(w) \
-  (((w) << 24) | (((w) & 0xff00) << 8) | (((w) >> 8) & 0xff00) | ((w) >> 24))
 
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkImagePainter_drawPixels
 (JNIEnv *env, jobject obj __attribute__((unused)), jobject gc_obj,

@@ -1122,3 +1122,23 @@ connect_awt_hook (JNIEnv *env, jobject peer_obj, int nwindows, ...)
   va_end (ap);
 }
 
+/*
+ * Attach a Java object that is backed by widget.  This callback is
+ * called after the widget's window has been realized.  That way, we
+ * can be sure that widget->window is non-NULL, and so can have data
+ * connected to it.
+ */
+void connect_awt_hook_cb (GtkWidget *widget, jobject peer)
+{
+  void *ptr;
+
+  ptr = NSA_GET_PTR (gdk_env, peer);
+
+  connect_awt_hook (gdk_env, peer, 1, GTK_WIDGET (ptr)->window);
+
+  gdk_threads_leave ();
+
+  (*gdk_env)->CallVoidMethod (gdk_env, peer, setCursorID);
+
+  gdk_threads_enter ();
+}

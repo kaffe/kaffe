@@ -455,9 +455,9 @@ public class BasicGraphicsUtils
 
     drawUnderline = (underlinedIndex >= 0) && (underlinedIndex < textLength);
 
-    // XXX - FIXME we now always use this fall-back since TextLayout is
-    // almost completely not implemented.
-    if (!(g instanceof Graphics2D) || true)
+    // FIXME: unfortunately pango and cairo can't agree on metrics
+    // so for the time being we continue to *not* use TextLayouts.
+    if (true || !(g instanceof Graphics2D))
     {
       /* Fall-back. This is likely to produce garbage for any text
        * containing right-to-left (Hebrew or Arabic) characters, even

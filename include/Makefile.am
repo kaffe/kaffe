@@ -185,13 +185,13 @@ LIBXMLJ_JNI_HDRS = \
 	gnu_xml_libxmlj_transform_GnomeTransformerFactory.h
 
 LIBGTKPEER_JNI_HDRS = \
-	gnu_java_awt_peer_gtk_GdkClasspathFontPeer.h \
-	gnu_java_awt_peer_gtk_GdkClasspathFontPeerMetrics.h \
 	gnu_java_awt_peer_gtk_GdkFontMetrics.h \
+	gnu_java_awt_peer_gtk_GdkFontPeer.h \
 	gnu_java_awt_peer_gtk_GdkGlyphVector.h \
 	gnu_java_awt_peer_gtk_GdkGraphics.h \
 	gnu_java_awt_peer_gtk_GdkGraphics2D.h \
 	gnu_java_awt_peer_gtk_GdkPixbufDecoder.h \
+	gnu_java_awt_peer_gtk_GdkTextLayout.h \
 	gnu_java_awt_peer_gtk_GtkButtonPeer.h \
 	gnu_java_awt_peer_gtk_GtkCanvasPeer.h \
 	gnu_java_awt_peer_gtk_GtkCheckboxGroupPeer.h \

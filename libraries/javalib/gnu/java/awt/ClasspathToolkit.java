@@ -47,6 +47,7 @@ import java.awt.FontMetrics;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
+import java.awt.font.FontRenderContext;
 import java.awt.image.ColorModel;
 import java.awt.image.ImageProducer;
 import java.io.File;
@@ -54,10 +55,12 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.AttributedString;
 import java.util.HashMap;
 import java.util.Map;
 
 import gnu.java.awt.peer.ClasspathFontPeer;
+import gnu.java.awt.peer.ClasspathTextLayoutPeer;
 
 
 /**
@@ -170,6 +173,9 @@ public abstract class ClasspathToolkit
    */
 
   public abstract ClasspathFontPeer getClasspathFontPeer (String name, Map attrs); 
+
+  public abstract ClasspathTextLayoutPeer 
+  getClasspathTextLayoutPeer (AttributedString str, FontRenderContext frc); 
 
 
   /** 

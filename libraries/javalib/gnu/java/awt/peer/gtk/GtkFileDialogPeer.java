@@ -57,7 +57,6 @@ public class GtkFileDialogPeer extends GtkDialogPeer implements FileDialogPeer
   private FilenameFilter filter;
 
   native void create (GtkContainerPeer parent);
-  native void connectJObject ();
   native void connectSignals ();
   native void nativeSetFile (String file);
   native public String nativeGetDirectory();

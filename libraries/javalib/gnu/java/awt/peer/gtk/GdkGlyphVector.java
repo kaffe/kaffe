@@ -78,7 +78,7 @@ public class GdkGlyphVector extends GlyphVector
   private Font font;
   private FontRenderContext ctx;
     
-  private native void initState (GdkClasspathFontPeer peer, FontRenderContext ctx);
+  private native void initState (GdkFontPeer peer, FontRenderContext ctx);
   private native void setChars (String s);
   private native void setGlyphCodes (int codes[]);
   private native void dispose ();
@@ -117,7 +117,7 @@ public class GdkGlyphVector extends GlyphVector
    */
 
 
-  public GdkGlyphVector (Font f, GdkClasspathFontPeer peer, FontRenderContext c, String s)
+  public GdkGlyphVector (Font f, GdkFontPeer peer, FontRenderContext c, String s)
   {
     font = f;
     ctx = c;
@@ -125,7 +125,7 @@ public class GdkGlyphVector extends GlyphVector
     setChars (s);
   }
 
-  public GdkGlyphVector (Font f, GdkClasspathFontPeer peer, FontRenderContext c, int codes[])
+  public GdkGlyphVector (Font f, GdkFontPeer peer, FontRenderContext c, int codes[])
   {
     font = f;
     ctx = c;

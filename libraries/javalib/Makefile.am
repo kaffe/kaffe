@@ -924,19 +924,20 @@ gnu_java_awt_image_SRCS = \
 	gnu/java/awt/image/XBMDecoder.java
 gnu_java_awt_peer_SRCS = \
 	gnu/java/awt/peer/ClasspathFontPeer.java \
+	gnu/java/awt/peer/ClasspathTextLayoutPeer.java \
 	gnu/java/awt/peer/EmbeddedWindowPeer.java \
 	gnu/java/awt/peer/GLightweightPeer.java
 gnu_java_awt_peer_gtk_SRCS = \
 	gnu/java/awt/peer/gtk/GThreadMutex.java \
 	gnu/java/awt/peer/gtk/GThreadNativeMethodRunner.java \
-	gnu/java/awt/peer/gtk/GdkClasspathFontPeer.java \
-	gnu/java/awt/peer/gtk/GdkClasspathFontPeerMetrics.java \
 	gnu/java/awt/peer/gtk/GdkFontMetrics.java \
+	gnu/java/awt/peer/gtk/GdkFontPeer.java \
 	gnu/java/awt/peer/gtk/GdkGlyphVector.java \
 	gnu/java/awt/peer/gtk/GdkGraphics.java \
 	gnu/java/awt/peer/gtk/GdkGraphics2D.java \
 	gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java \
 	gnu/java/awt/peer/gtk/GdkPixbufDecoder.java \
+	gnu/java/awt/peer/gtk/GdkTextLayout.java \
 	gnu/java/awt/peer/gtk/GtkButtonPeer.java \
 	gnu/java/awt/peer/gtk/GtkCanvasPeer.java \
 	gnu/java/awt/peer/gtk/GtkCheckboxGroupPeer.java \

@@ -1,5 +1,450 @@
 2004-10-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* m4/ac_c_bigendian_cross.m4:
+	New file, taken from ac-archive.sf.net.
+
+	* configure.ac:
+	Call AC_C_BIGENDIAN_CROSS for cross-compilation.
+
+	* include/Makefile.am:
+	(LIBGTKPEER_JNI_HDRS) Added gnu_java_awt_peer_gtk_GdkFontPeer.h
+	and gnu_java_awt_peer_gtk_GdkTextLayout.h. Removed 
+	gnu_java_awt_peer_gtk_GdkClasspathFontPeer.h and
+	gnu_java_awt_peer_gtk_GdkClasspathFontPeerMetrics.c.
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c
+	libraries/javalib/gnu/java/awt/peer/ClasspathTextLayoutPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkFontPeer.java, 
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkTextLayout.java:
+	New files, taken from GNU Classpath.
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkClasspathFontPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkClasspathFontPeerMetrics.c:
+	Removed.
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.am:
+	(gtk_cairo_c_source_files) Removed gnu_java_awt_peer_gtk_GdkClasspathFontPeer.c and
+	gnu_java_awt_peer_gtk_GdkClasspathFontPeerMetrics.c.
+	(libgtkpeer_la_SOURCES) Added gnu_java_awt_peer_gtk_GdkFontPeer.c
+	and gnu_java_awt_peer_gtk_GdkTextLayout.c.
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gdkfont.h,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkFontMetrics.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkImagePainter.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkListPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMainThread.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkPanelPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkScrollBarPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gtkpeer.h,
+	libraries/javalib/gnu/java/awt/ClasspathToolkit.java,
+	libraries/javalib/gnu/java/awt/peer/ClasspathFontPeer.java,
+	libraries/javalib/gnu/java/awt/peer/ClasspathTextLayoutPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkClasspathFontPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkClasspathFontPeerMetrics.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkFontMetrics.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkFontPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkGlyphVector.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics2D.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkTextLayout.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkButtonPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkContainerPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkFileDialogPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkListPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkPanelPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkScrollbarPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkTextAreaPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkTextFieldPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkToolkit.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkWindowPeer.java,
+	libraries/javalib/gnu/java/rmi/server/UnicastConnectionManager.java,
+	libraries/javalib/java/awt/Component.java,
+	libraries/javalib/java/awt/Container.java,
+	libraries/javalib/java/awt/Font.java,
+	libraries/javalib/java/awt/KeyboardFocusManager.java,
+	libraries/javalib/java/awt/font/TextLayout.java,
+	libraries/javalib/java/util/Calendar.java,
+	libraries/javalib/java/util/GregorianCalendar.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicGraphicsUtils.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicSliderUI.java,
+	libraries/javalib/javax/swing/text/Utilities.java:
+	Resynced with GNU Classpath.
+
+	* Makefile.in,
+	aclocal.m4,
+	configure,
+	config/Makefile.in,
+	config/config.h.in,
+	include/Makefile.in,
+	kaffe/Makefile.in,
+	kaffe/jvmpi/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	kaffe/kaffeh/Makefile.in,
+	kaffe/kaffevm/Makefile.in,
+	kaffe/kaffevm/boehm-gc/Makefile.in,
+	kaffe/kaffevm/gcj/Makefile.in,
+	kaffe/kaffevm/intrp/Makefile.in,
+	kaffe/kaffevm/jit/Makefile.in,
+	kaffe/kaffevm/jit3/Makefile.in,
+	kaffe/kaffevm/jni/Makefile.in,
+	kaffe/kaffevm/kaffe-gc/Makefile.in,
+	kaffe/kaffevm/systems/Makefile.in,
+	kaffe/kaffevm/systems/beos-native/Makefile.in,
+	kaffe/kaffevm/systems/oskit-pthreads/Makefile.in,
+	kaffe/kaffevm/systems/unix-jthreads/Makefile.in,
+	kaffe/kaffevm/systems/unix-pthreads/Makefile.in,
+	kaffe/kaffevm/verifier/Makefile.in,
+	kaffe/man/Makefile.in,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/bat/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	kaffe/xprof/Makefile.in,
+	libraries/Makefile.in,
+	libraries/clib/Makefile.in,
+	libraries/clib/awt/Makefile.in,
+	libraries/clib/awt/X/Makefile.in,
+	libraries/clib/awt/classpath-gtk/Makefile.in,
+	libraries/clib/awt/classpath-gtk/classpath/Makefile.in,
+	libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.in,
+	libraries/clib/awt/classpath-gtk/resource/Makefile.in,
+	libraries/clib/awt/qt/Makefile.in,
+	libraries/clib/io/Makefile.in,
+	libraries/clib/libxmlj/Makefile.in,
+	libraries/clib/management/Makefile.in,
+	libraries/clib/math/Makefile.in,
+	libraries/clib/native/Makefile.in,
+	libraries/clib/net/Makefile.in,
+	libraries/clib/nio/Makefile.in,
+	libraries/clib/security/Makefile.in,
+	libraries/clib/sound/Makefile.in,
+	libraries/clib/sound/alsa/Makefile.in,
+	libraries/clib/sound/common/Makefile.in,
+	libraries/clib/sound/esd/Makefile.in,
+	libraries/clib/zip/Makefile.in,
+	libraries/extensions/Makefile.in,
+	libraries/extensions/comm/Makefile.in,
+	libraries/extensions/comm/javalib/Makefile.in,
+	libraries/extensions/microsoft/Makefile.in,
+	libraries/extensions/microsoft/clib/Makefile.in,
+	libraries/extensions/microsoft/javalib/Makefile.in,
+	libraries/extensions/pjava/Makefile.in,
+	libraries/extensions/pjava/javalib/Makefile.in,
+	libraries/extensions/servlet/Makefile.in,
+	libraries/extensions/servlet/javalib/Makefile.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files,
+	libraries/javalib/awt-implementations/Makefile.in,
+	libraries/javalib/awt-implementations/kaffe/Makefile.in,
+	libraries/javalib/gmp-math/Makefile.in,
+	replace/Makefile.in,
+	test/Makefile.in,
+	test/internal/Makefile.in,
+	test/jni/Makefile.in,
+	test/regression/Makefile.in,
+	test/regression/compile_time/Makefile.in,
+	test/regression/compiler/Makefile.in,
+	test/regression/run_time/Makefile.in,
+	tools/Makefile.in,
+	tools/gjdoc/Makefile.in,
+	tools/gjdoc/javalib/Makefile.in:
+	Regenerated.
+
+	2004-10-09  Mark Wielaard  <mark@klomp.org>
+
+        * native/jni/gtk-peer/gdkfont.h: Include gtkpeer.h not gtkcairopeer.h.
+
+	2004-10-09  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/rmi/server/UnicastConnectionManager.java:
+        Fix file header.
+
+	2004-10-09  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * javax/swing/JList.java (init): Revert accidental commit.
+
+	2004-10-08  Bryce McKinlay  <mckinlay@redhat.com>
+
+        * java/util/Calendar.java (set): Invalidate DST_OFFSET
+        field as a DST boundary may have been crossed.
+        * java/util/GregorianCalendar.java (add): Throw
+        IllegalArgumentException on attempt to add to DST_OFFSET or
+        ZONE_OFFSET fields. Update javadoc.
+
+	2004-10-09  Michael Koch  <konqueror@gmx.de>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkClasspathFontPeer.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkClasspathFontPeerMetrics.c:
+        Removed.
+        * native/jni/gtk-peer/Makefile.am: Removed files.
+
+	2004-10-09  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/awt/peer/gtk/GdkFontMetrics.java,
+        gnu/java/awt/peer/gtk/GdkGraphics.java,
+        gnu/java/awt/peer/gtk/GdkGraphics2D.java,
+        gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java,
+        gnu/java/awt/peer/gtk/GtkToolkit.java,
+        java/awt/font/TextLayout.java,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontMetrics.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c,
+        native/jni/gtk-peer/gtkpeer.h:
+        Merged whitespace stuff with java-gui-branch.
+
+	2004-10-09  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GtkContainerPeer.java (endValidate):
+        Don't call setParentAndBounds on GtkWindowPeers.
+
+	2004-10-09  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/awt/Component.java (static): Don't set default keyboard
+        focus manager.
+        * java/awt/KeyboardFocusManager.java
+        (getCurrentKeyboardFocusManager): If current keyboard focus
+        manager is null set a default.
+
+	2004-10-09  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GtkButtonPeer.java,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c
+        (gtkWidgetSetBackground): New method.
+        (block_expose_events_cb): New function.
+        (connectSignals): Block the AWT's expose event processing on
+        button press and release.
+        (gtkSetLabel): Set text on proper widget.
+        (gtkWidgetModifyFont): Modify font on proper widget.
+        (gtkWidgetSetBackground): Set normal, active and prelight
+        colours.
+        (gtkWidgetSetForeground): Set forground colour of proper widget.
+        (gtkActivate): Activate the correct widget.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c (clearRect):
+        Only clear rectangle if the backing component is not an event
+        box.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMainThread.c
+        (beginNativeRepaintID): New variable.
+        (endNativeRepaintID): Likewise.
+        (gtkInit): Initialize new fields with method IDs.
+        * jni/gtk-peer/gtkpeer.h (beginNativeRepaintID): Declare extern.
+        (endNativeRepaintID): Likewise.
+
+	2004-10-09  Michael Koch  <konqueror@gmx.de>
+
+        * include/gnu_java_awt_peer_gtk_GtkButtonPeer.h: Regenerated.
+
+	2004-10-09  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GdkGraphics.java,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c (GdkGraphics):
+        Call initComponentGraphics or connectSignals depending on
+        component's realization status.
+        (realize_cb): New function.
+        (initComponentGraphics): New method.
+        (connectSignals): New method.
+        (clipRect): Return immediately if component is not realized.
+        (setClip): Likewise.
+        (translate): Likewise.
+        (drawImage variants): Return false immediately if component is
+        not realized.
+        * gnu/java/awt/peer/gtk/GdkGraphics2D.java,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c
+        (connectSignals): New method.
+        (GdkGraphics2D): Call initComponentGraphics2D or connectSignals
+        depending on component's realization status.  Move other
+        initialization calls to ...
+        (initComponentGraphics2D): New method.
+        (realize_cb): New function.
+        (cairoSetMatrix): Return immediately if gr is NULL.
+        (cairoNewPath): Likewise.
+        (cairoRectangle): Likewise.
+        (cairoClip): Likewise.
+        * gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c
+        (gtkWidgetRepaintArea): Remove method.
+        (isRealized): New method.
+        (GtkComponentPeer): Move setParent, connectJObject and setCursor
+        calls to setParentAndBounds.  Call setParentAndBounds.
+        (setParentAndBounds): New method.
+        (setComponentBounds): Return immediately if bounds are all zero.
+        (repaint): Remove call to gtkWidgetRepaintArea.  Return
+        immediately if requested paint region is 0x0.
+        (setCursor): New method.
+        (gtkWidgetSetParent): Only set widget's parent if its parent is
+        currently NULL.
+        (setNativeBounds): Only set widget's bounds if it has a parent.
+        (connectSignals): Don't call gtk_widget_realize.  Connect
+        "realize" signal to connect_awt_hook_cb handler.
+        * gnu/java/awt/peer/gtk/GtkContainerPeer.java (isValidating):
+        New field.
+        (beginValidate): Set isValidating true.
+        (endValidate): Set parents and bounds for children first, then
+        for this.  Set isValidating false.
+        * gnu/java/awt/peer/gtk/GtkFileDialogPeer.java,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c
+        (connectJObject): Remove method.
+        (connectSignals): Don't call gtk_widget_realize.
+        * gnu/java/awt/peer/gtk/GtkListPeer.java,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GtkListPeer.c
+        (connectJObject): Remove method.
+        (connectSignals): Don't call gtk_widget_realize.
+        * gnu/java/awt/peer/gtk/GtkPanelPeer.java,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GtkPanelPeer.c
+        (connectJObject): Remove method.
+        * gnu/java/awt/peer/gtk/GtkScrollbarPeer.java,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GtkScrollBarPeer.c
+        (connectJObject): Remove method.
+        * gnu/java/awt/peer/gtk/GtkWindowPeer.java,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+        (create): Don't call gtk_widget_realize.
+        (connectJObject): Remove method.
+        (connectSignals): Don't call gtk_widget_realize.  Connect
+        "realize" signal to connect_awt_hook_cb handler.
+        (nativeSetBounds): Don't attempt to move GDK window if it is
+        NULL.
+        * java/awt/Container.java (addImpl): Don't call comp.addNotify
+        if peer is not null.
+        (validateTree): Create peers for all children before calling
+        doLayout.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c
+        (connectSignals): Don't call gtk_widget_realize.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c
+        (connect_awt_hook_cb): New function.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMainThread.c
+        (initComponentGraphicsID): New variable.
+        (initComponentGraphics2DID): Likewise.
+        (setCursorID): Likewise.
+        (gtkInit): Initialize new fields with method IDs.
+        * jni/gtk-peer/gtkpeer.h (initComponentGraphicsID): Declare
+        extern.
+        (initComponentGraphics2DID): Declare extern.
+        (setCursorID): Likewise.
+        (connect_awt_hook_cb): Declare function.
+
+	2004-10-09  Graydon Hoare  <graydon@redhat.com>
+
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c
+        (install_font_peer): Minor bug fixes to track cairo font
+        semantics.
+
+	2004-10-08  Graydon Hoare  <graydon@redhat.com>
+
+        * gnu/java/awt/ClasspathToolkit.java
+        (getClasspathTextLayoutPeer) Add.
+        * gnu/java/awt/peer/ClasspathFontPeer.java
+        (copyStyleToAttrs)
+        (copySizeToAttrs): Make public.
+        * gnu/java/awt/peer/ClasspathTextLayoutPeer.java: New file.
+        * gnu/java/awt/peer/gtk/GdkClasspathFontPeer.java: Remove.
+        * gnu/java/awt/peer/gtk/GdkClasspathFontPeerMetrics.java: Remove.
+        * gnu/java/awt/peer/gtk/GdkFontMetrics.java: Rewrite.
+        * gnu/java/awt/peer/gtk/GdkFontPeer.java: New file.
+        * gnu/java/awt/peer/gtk/GdkGlyphVector.java: Adjust type names.
+        * gnu/java/awt/peer/gtk/GdkGraphics.java
+        (getFontPeer): New function.
+        (drawString): Pass font peer to native side.
+        * gnu/java/awt/peer/gtk/GdkGraphics2D.java
+        (cairoSetFont)
+        (cairoShowGlyphs)
+        (PainterThread): Remove.
+        (GdkGraphics2D): Set hints during construction.
+        (shifted)
+        (walkPath)
+        (draw)
+        (setRenderingHint)
+        (setRenderingHints): Reimplement normalization logic.
+        (getDefaultHints)
+        (updateBufferedImage)
+        (isBufferedImageGraphics)
+        (updateImagePixels)
+        (drawImage): Make final.
+        (drawImage): Always paint synchronously.
+        (drawString)
+        (drawGlyphVector): Rewrite.
+        (releasePeerGraphicResource)
+        (getPeerTextMetrics)
+        (getPeerFontMetrics)
+        (drawGdkGlyphVector)
+        (drawGdkTextLayout)
+        (cairoDrawGdkGlyphVector)
+        (cairoDrawGdkTextLayout)
+        (cairoDrawString)
+        (getFontPeer): New functions.
+        * gnu/java/awt/peer/gtk/GdkTextLayout.java: New file.
+        * gnu/java/awt/peer/gtk/GtkComponentPeer.java
+        (getFontMetrics): Get metrics via toolkit, to hit cache.
+        * gnu/java/awt/peer/gtk/GtkTextAreaPeer.java: Use getFontMetrics.
+        * gnu/java/awt/peer/gtk/GtkTextFieldPeer.java: Likewise.
+        * gnu/java/awt/peer/gtk/GtkToolkit.java (LRUCache): New class.
+        (fontCache)
+        (metricsCache)
+        (imageCache): New members.
+        (getFontMetrics)
+        (getImage)
+        (getClasspathFontPeer): Use caches.
+        (getFontPeer): Route through getClasspathFontPeer.
+        * java/awt/Font.java (attrsToMap): Remove, adjust ctors.
+        * java/awt/font/TextLayout.java: Implement in terms of peer.
+        * javax/swing/plaf/basic/BasicSliderUI.java
+        (paintThumb): Use polyline rather than polygon.
+        * javax/swing/plaf/basic/BasicGraphicsUtils.java:
+        Update comment but, alas, still do not switch to using TextLayouts.
+        * javax/swing/text/Utilities.java (drawTabbedText):
+        Draw text run-at-a-time, not char-at-a-time.
+        * jni/gtk-peer/gdkfont.h: Publicize some of the font interface, add
+        layout table.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GdkClasspathFontPeer.c:
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GdkClasspathFontPeerMetrics.c:
+        Remove files.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontMetrics.c: Rewrite to
+        incorporate brains of old GdkClasspathFontPeerMetrics.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c: Rewrite to
+        incorporate brains of old GdkClasspathFontPeer.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c: New file.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c
+        (drawString): Rewrite to use persistent layout in peer font.
+        Comment out extraneous gdk_flush calls.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c
+        (metrics_cairo)
+        (metrics_surface): New static variables.
+        (paint_glyph_run)
+        (install_font_peer): New helper functions.
+        (releasePeerGraphicResource)
+        (getPeerTextMetrics)
+        (getPeerFontMetrics)
+        (cairoDrawGdkTextLayout)
+        (cairoDrawGdkGlyphVector): New native methods.
+        (cairoDrawString): Rewrite, leaving layout-based version
+        commented out for the time being.
+        * jni/gtk-peer/gtkpeer.h (graphics): Add fields for pango stuff.
+
+	2004-10-08 Andreas Tobler <a.tobler@schweiz.ch>
+
+        * configure.ac: Introduce AC_C_BIGENDIAN_CROSS for WORDS_BIGENDIAN.
+        * native/jni/gtk-peer/gtkpeer.h (SWAPU32): Introduce macro to swap pixels.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImagePainter.c: Moved SWAPU32
+        macro to gtkpeer.h.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c
+        (Java_gnu_java_awt_peer_gtk_GdkGraphics2D_getImagePixels): Convert
+        pixels from  0xBBGGRRAA to 0xAARRGGBB only on Little Endian
+        architectures.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c
+        (area_updated): Likewise.
+
+2004-10-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/JScrollBar.java,
 	libraries/javalib/javax/swing/JScrollPane.java,
 	libraries/javalib/javax/swing/JTree.java:

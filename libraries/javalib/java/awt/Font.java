@@ -234,7 +234,11 @@ private static final long serialVersionUID = -4206021311591459213L;
         size = tokenval;
     }
 
-    return getFontFromToolkit (name, attrsToMap (style, size));
+    HashMap attrs = new HashMap();
+    ClasspathFontPeer.copyStyleToAttrs (style, attrs);
+    ClasspathFontPeer.copySizeToAttrs (size, attrs);
+
+    return getFontFromToolkit (name, attrs);
 }
 
   /* These methods delegate to the toolkit. */
@@ -242,23 +246,6 @@ private static final long serialVersionUID = -4206021311591459213L;
   protected static ClasspathToolkit tk ()
   {
     return (ClasspathToolkit)(Toolkit.getDefaultToolkit ());
-  }
-
-  protected static Map attrsToMap(int style, int size)
-  {
-    Map attrs = new HashMap();
-    attrs.put (TextAttribute.SIZE, new Float ((float)size));
-    
-    if ((style & BOLD) == BOLD)
-      attrs.put (TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
-    else
-      attrs.put (TextAttribute.WEIGHT, TextAttribute.WEIGHT_REGULAR);
-
-    if ((style & ITALIC) == ITALIC)
-      attrs.put (TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE);
-    else
-      attrs.put (TextAttribute.POSTURE, TextAttribute.POSTURE_REGULAR);
-    return attrs;
   }
 
   /* Every factory method in Font should eventually call this. */
@@ -325,7 +312,10 @@ private static final long serialVersionUID = -4206021311591459213L;
 
   public Font (String name, int style, int size)
   {
-    this.peer = getPeerFromToolkit (name, attrsToMap (style, size));
+    HashMap attrs = new HashMap();
+    ClasspathFontPeer.copyStyleToAttrs (style, attrs);
+    ClasspathFontPeer.copySizeToAttrs (size, attrs);
+    this.peer = getPeerFromToolkit (name, attrs);
   }
 
   public Font (Map attrs)

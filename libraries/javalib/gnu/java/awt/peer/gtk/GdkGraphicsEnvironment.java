@@ -51,7 +51,7 @@ public class GdkGraphicsEnvironment extends GraphicsEnvironment
 {
   public GdkGraphicsEnvironment ()
   {
-  	super();
+    super();
   }
 
   public GraphicsDevice[] getScreenDevices ()

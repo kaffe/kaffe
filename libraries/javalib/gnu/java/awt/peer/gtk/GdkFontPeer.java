@@ -1,5 +1,5 @@
-/* GdkClasspathFontPeer.java -- backend implementation for Font object
-   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
+/* GdkFontPeer.java -- Implements FontPeer with GTK+
+   Copyright (C) 1999, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -37,35 +37,26 @@ exception statement from your version. */
 
 
 package gnu.java.awt.peer.gtk;
-
+import java.awt.peer.FontPeer;
+import java.awt.*;
+import java.awt.geom.*;
+import java.awt.font.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.MissingResourceException;
+import java.text.CharacterIterator;
+import java.text.AttributedCharacterIterator;
+import java.text.StringCharacterIterator;
 import gnu.classpath.Configuration;
 import gnu.java.awt.peer.ClasspathFontPeer;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.font.GlyphVector;
-import java.awt.font.FontRenderContext;
-import java.awt.font.LineMetrics;
-import java.awt.font.TextAttribute;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.text.AttributedCharacterIterator;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-/**
- * This class represents a windowing system font using the Pango
- * unicode/glyph/font library and the Cairo rendering library.
- *
- * @author Graydon Hoare (graydon@redhat.com)
- */
-public class GdkClasspathFontPeer extends ClasspathFontPeer
+public class GdkFontPeer extends ClasspathFontPeer
 {
+
+  native static void initStaticState ();
+  private final int native_state = GtkGenericPeer.getUniqueInteger ();
+  private static ResourceBundle bundle;
   
   static 
   {
@@ -74,26 +65,26 @@ public class GdkClasspathFontPeer extends ClasspathFontPeer
         System.loadLibrary("gtkpeer");
       }
 
-    if (GtkToolkit.useGraphics2D ())
-      initStaticState ();
+    initStaticState ();
+
+    try
+      {
+	bundle = ResourceBundle.getBundle ("gnu.java.awt.peer.gtk.font");
+      }
+    catch (Throwable ignored)
+      {
+	bundle = null;
+      }
   }
-  native static void initStaticState ();
-  private final int native_state = GtkGenericPeer.getUniqueInteger ();
-
-
-  /* Instance Variables */
 
   private native void initState ();
   private native void dispose ();
-  private native void setFont (String family, int style, int size);
-
-  protected void sync ()
-  {
-    this.setFont (this.familyName, this.style, (int)this.size);
-  }
+  private native void setFont (String family, int style, int size, boolean useGraphics2D);
 
   protected void finalize ()
   {
+    if (GtkToolkit.useGraphics2D ())
+      GdkGraphics2D.releasePeerGraphicResource (this);
     dispose ();
   }
 
@@ -133,20 +124,28 @@ public class GdkClasspathFontPeer extends ClasspathFontPeer
 
   /* Public API */
 
-  public GdkClasspathFontPeer (String name, int style, int size)
+  public GdkFontPeer (String name, int style)
+  {
+    // All fonts get a default size of 12 if size is not specified.
+    this(name, style, 12);
+  }
+
+  public GdkFontPeer (String name, int style, int size)
   {  
     super(name, style, size);    
     initState ();
-    setFont (this.familyName, this.style, (int)this.size);
+    setFont (this.familyName, this.style, (int)this.size, 
+             GtkToolkit.useGraphics2D());
   }
 
-  public GdkClasspathFontPeer (String name, Map attributes)
+  public GdkFontPeer (String name, Map attributes)
   {
     super(name, attributes);
     initState ();
-    setFont (this.familyName, this.style, (int)this.size);
+    setFont (this.familyName, this.style, (int)this.size,
+             GtkToolkit.useGraphics2D());
   }
-
+  
   public String getSubFamilyName(Font font, Locale locale)
   {
     return null;
@@ -231,7 +230,6 @@ public class GdkClasspathFontPeer extends ClasspathFontPeer
 
   }
 
-
   public LineMetrics getLineMetrics (Font font, CharacterIterator ci, 
                                      int begin, int limit, FontRenderContext rc)
   {
@@ -291,8 +289,7 @@ public class GdkClasspathFontPeer extends ClasspathFontPeer
 
   public FontMetrics getFontMetrics (Font font)
   {
-    return new GdkClasspathFontPeerMetrics (font);
+    return new GdkFontMetrics (font);
   }
 
 }
-

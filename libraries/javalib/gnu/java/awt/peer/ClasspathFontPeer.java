@@ -160,7 +160,7 @@ public abstract class ClasspathFontPeer
     return name;
   }
 
-  protected static void copyStyleToAttrs (int style, Map attrs)
+  public static void copyStyleToAttrs (int style, Map attrs)
   {
     if ((style & Font.BOLD) == Font.BOLD)
       attrs.put (TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
@@ -179,7 +179,7 @@ public abstract class ClasspathFontPeer
       attrs.put (TextAttribute.FAMILY, fam);
   }
   
-  protected static void copySizeToAttrs (float size, Map attrs)
+  public static void copySizeToAttrs (float size, Map attrs)
   {
     attrs.put (TextAttribute.SIZE, new Float (size));
   }

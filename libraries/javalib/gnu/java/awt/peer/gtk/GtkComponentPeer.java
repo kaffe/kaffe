@@ -99,7 +99,8 @@ public class GtkComponentPeer extends GtkGenericPeer
   native void gtkWidgetRequestFocus ();
   native void gtkWidgetDispatchKeyEvent (int id, long when, int mods,
                                          int keyCode, int keyLocation);
-  native void gtkWidgetRepaintArea(int x, int y, int width, int height);
+
+  native boolean isRealized ();
 
   void create ()
   {
@@ -117,9 +118,6 @@ public class GtkComponentPeer extends GtkGenericPeer
 
     create ();
 
-    setParent ();
-
-    connectJObject ();
     connectSignals ();
 
     if (awtComponent.getForeground () != null)
@@ -129,7 +127,19 @@ public class GtkComponentPeer extends GtkGenericPeer
     if (awtComponent.getFont() != null)
       setFont(awtComponent.getFont());
 
-    setCursor (awtComponent.getCursor ());
+    Component parent = awtComponent.getParent ();
+
+    // Only set our parent on the GTK side if our parent on the AWT
+    // side is not showing.  Otherwise the gtk peer will be shown
+    // before we've had a chance to position and size it properly.
+    if (awtComponent instanceof Window
+        || (parent != null && ! parent.isShowing ()))
+      setParentAndBounds ();
+  }
+
+  void setParentAndBounds ()
+  {
+    setParent ();
 
     setComponentBounds ();
 
@@ -171,6 +181,11 @@ public class GtkComponentPeer extends GtkGenericPeer
   void setComponentBounds ()
   {
     Rectangle bounds = awtComponent.getBounds ();
+
+    if (bounds.x == 0 && bounds.y == 0
+        && bounds.width == 0 && bounds.height == 0)
+      return;
+
     setBounds (bounds.x, bounds.y, bounds.width, bounds.height);
   }
 
@@ -224,7 +239,7 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   public FontMetrics getFontMetrics (Font font)
   {
-    return new GdkFontMetrics (font);
+    return getToolkit().getFontMetrics(font);
   }
 
   public Graphics getGraphics ()
@@ -365,9 +380,9 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   public void repaint (long tm, int x, int y, int width, int height)
   {
-    beginNativeRepaint ();
-    gtkWidgetRepaintArea (x, y, width, height);
-    endNativeRepaint ();
+    if (x == 0 && y == 0 && width == 0 && height == 0)
+      return;
+
     q.postEvent (new PaintEvent (awtComponent, PaintEvent.UPDATE,
                                  new Rectangle (x, y, width, height)));
   }
@@ -434,6 +449,11 @@ public class GtkComponentPeer extends GtkGenericPeer
       }
     else
       setNativeBounds (x, y, width, height);
+  }
+
+  void setCursor ()
+  {
+    setCursor (awtComponent.getCursor ());
   }
 
   public void setCursor (Cursor cursor) 

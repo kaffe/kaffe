@@ -6,6 +6,9 @@
 /* Define the version we're compiling for */
 #undef ARCHOS
 
+/* 1234 = LIL_ENDIAN, 4321 = BIGENDIAN */
+#undef BYTEORDER
+
 /* __GLIBC__ */
 #undef COMPILE_VALUE_GLIBC
 

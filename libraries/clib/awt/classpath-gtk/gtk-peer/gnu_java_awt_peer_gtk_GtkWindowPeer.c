@@ -123,7 +123,6 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_create
   gtk_container_add (GTK_CONTAINER (window_widget), fixed);
 
   gtk_widget_show (fixed);
-  gtk_widget_realize (window_widget);
 
   if (decorated)
     window_get_frame_extents (window_widget, &top, &left, &bottom, &right);
@@ -224,23 +223,6 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetVisible
 }
 
 JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkWindowPeer_connectJObject
-  (JNIEnv *env, jobject obj)
-{
-  void *ptr;
-
-  ptr = NSA_GET_PTR (env, obj);
-
-  gdk_threads_enter ();
-
-  gtk_widget_realize (GTK_WIDGET (ptr));
-
-  connect_awt_hook (env, obj, 1, GTK_WIDGET (ptr)->window);
-
-  gdk_threads_leave ();
-}
-
-JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkWindowPeer_connectSignals
   (JNIEnv *env, jobject obj)
 {
@@ -251,8 +233,6 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_connectSignals
   gref = NSA_GET_GLOBAL_REF (env, obj);
 
   gdk_threads_enter ();
-
-  gtk_widget_realize (GTK_WIDGET (ptr));
 
   g_signal_connect (G_OBJECT (ptr), "event",
                     G_CALLBACK (pre_event_handler), *gref);
@@ -283,6 +263,9 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_connectSignals
 
   g_signal_connect (G_OBJECT (ptr), "property-notify-event",
 		    G_CALLBACK (window_property_changed_cb), *gref);
+
+  g_signal_connect_after (G_OBJECT (ptr), "realize",
+                          G_CALLBACK (connect_awt_hook_cb), *gref);
 
   gdk_threads_leave ();
 }
@@ -356,6 +339,7 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetBounds
   height = (height < 1) ? 1 : height;
 
   gdk_threads_enter ();
+
   gtk_window_move (GTK_WINDOW(ptr), x, y);
   /* The call to gdk_window_move is needed in addition to the call to
      gtk_window_move.  If gdk_window_move isn't called, then the
@@ -369,7 +353,8 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetBounds
 
      Instead of being at the position set by setLocation, the window
      is reshown at the position to which it was moved manually. */
-  gdk_window_move (GTK_WIDGET (ptr)->window, x, y);
+  if (GTK_WIDGET (ptr)->window != NULL)
+    gdk_window_move (GTK_WIDGET (ptr)->window, x, y);
 
   /* Need to change the widget's request size. */
   gtk_widget_set_size_request (GTK_WIDGET(ptr), width, height);

@@ -106,7 +106,6 @@ public class GtkWindowPeer extends GtkContainerPeer
   {
   }
 
-  native void connectJObject ();
   native void connectSignals ();
 
   public GtkWindowPeer (Window window)

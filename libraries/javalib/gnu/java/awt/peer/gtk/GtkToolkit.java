@@ -42,6 +42,7 @@ import gnu.classpath.Configuration;
 import gnu.java.awt.EmbeddedWindow;
 import gnu.java.awt.EmbeddedWindowSupport;
 import gnu.java.awt.peer.ClasspathFontPeer;
+import gnu.java.awt.peer.ClasspathTextLayoutPeer;
 import gnu.java.awt.peer.EmbeddedWindowPeer;
 import gnu.java.awt.peer.gtk.GdkPixbufDecoder;
 
@@ -49,6 +50,7 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.peer.DragSourceContextPeer;
+import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.awt.im.InputMethodHighlight;
 import java.awt.image.BufferedImage;
@@ -58,6 +60,8 @@ import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 import java.awt.peer.*;
 import java.net.URL;
+import java.text.AttributedString;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -302,22 +306,59 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 			   "SansSerif" });
   }
 
+  private class LRUCache extends java.util.LinkedHashMap
+  {    
+    int max_entries;
+    public LRUCache(int max)
+    {
+      super(max, 0.75f, true);
+      max_entries = max;
+    }
+    protected boolean removeEldestEntry(Map.Entry eldest)
+    {
+      return size() > max_entries;
+    }
+  }
+
+  private LRUCache fontCache = new LRUCache(50);
+  private LRUCache metricsCache = new LRUCache(50);
+  private LRUCache imageCache = new LRUCache(50);
+
   public FontMetrics getFontMetrics (Font font) 
   {
-    if (useGraphics2D())
-      return new GdkClasspathFontPeerMetrics (font);
+    if (metricsCache.containsKey(font))
+      return (FontMetrics) metricsCache.get(font);
     else
-      return new GdkFontMetrics (font);
+      {
+        FontMetrics m;
+        m = new GdkFontMetrics (font);
+        metricsCache.put(font, m);
+        return m;
+      }    
   }
 
   public Image getImage (String filename) 
   {
-    return createImage (filename);
+    if (imageCache.containsKey(filename))
+      return (Image) imageCache.get(filename);
+    else
+      {
+        Image im = createImage(filename);
+        imageCache.put(filename, im);
+        return im;
+      }
   }
 
   public Image getImage (URL url) 
   {
-    return createImage (url);
+    if (imageCache.containsKey(url))
+      return (Image) imageCache.get(url);
+    else
+      {
+        Image im = createImage(url);
+        imageCache.put(url, im);
+        return im;
+      }
   }
 
   public PrintJob getPrintJob (Frame frame, String jobtitle, Properties props) 
@@ -508,8 +549,10 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
    */
   private FontPeer getFontPeer (String name, int style, int size) 
   {
-    GtkFontPeer fp = new GtkFontPeer (name, style, size);
-    return fp;
+    Map attrs = new HashMap ();
+    ClasspathFontPeer.copyStyleToAttrs (style, attrs);
+    ClasspathFontPeer.copySizeToAttrs (size, attrs);
+    return getClasspathFontPeer (name, attrs);
   }
 
   /**
@@ -520,38 +563,26 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
   public ClasspathFontPeer getClasspathFontPeer (String name, Map attrs)
   {
-    if (useGraphics2D())
-      return new GdkClasspathFontPeer (name, attrs);
+    Map keyMap = new HashMap (attrs);
+    // We don't know what kind of "name" the user requested (logical, face,
+    // family), and we don't actually *need* to know here. The worst case
+    // involves failure to consolidate fonts with the same backend in our
+    // cache. This is harmless.
+    keyMap.put ("GtkToolkit.RequestedFontName", name);
+    if (fontCache.containsKey (keyMap))
+      return (ClasspathFontPeer) fontCache.get (keyMap);
     else
       {
-        // Default values
-        int size = 12;
-        int style = Font.PLAIN;
-        if (name == null)
-          name = "Default";
-
-        if (attrs.containsKey (TextAttribute.WEIGHT))
-          {
-            Float weight = (Float) attrs.get (TextAttribute.WEIGHT);
-            if (weight.floatValue () >= TextAttribute.WEIGHT_BOLD.floatValue ())
-              style += Font.BOLD;
-          }
-        
-        if (attrs.containsKey (TextAttribute.POSTURE))
-          {
-            Float posture = (Float) attrs.get (TextAttribute.POSTURE);
-            if (posture.floatValue () >= TextAttribute.POSTURE_OBLIQUE.floatValue ())
-              style += Font.ITALIC;
-          }
-        
-        if (attrs.containsKey (TextAttribute.SIZE))
-          {
-            Float fsize = (Float) attrs.get (TextAttribute.SIZE);
-            size = fsize.intValue();
-          }
- 
-        return (ClasspathFontPeer) this.getFontPeer (name, style, size);
+        ClasspathFontPeer newPeer = new GdkFontPeer (name, attrs);
+        fontCache.put (keyMap, newPeer);
+        return newPeer;
       }
+  }
+
+  public ClasspathTextLayoutPeer getClasspathTextLayoutPeer (AttributedString str, 
+                                                             FontRenderContext frc)
+  {
+    return new GdkTextLayout(str, frc);
   }
 
   protected EventQueue getSystemEventQueueImpl() 

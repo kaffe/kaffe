@@ -576,8 +576,6 @@ public abstract class Component
   {
     incrementalDraw = Boolean.getBoolean ("awt.image.incrementalDraw");
     redrawRate = Long.getLong ("awt.image.redrawrate");
-    // Set the default KeyboardFocusManager.
-    KeyboardFocusManager.setCurrentKeyboardFocusManager (null);
   }
 
   // Public and protected API.

@@ -262,6 +262,10 @@ public abstract class KeyboardFocusManager
   public static KeyboardFocusManager getCurrentKeyboardFocusManager ()
   {
     ThreadGroup currentGroup = Thread.currentThread ().getThreadGroup ();
+
+    if (currentKeyboardFocusManagers.get (currentGroup) == null)
+      setCurrentKeyboardFocusManager (null);
+
     return (KeyboardFocusManager) currentKeyboardFocusManagers.get (currentGroup);
   }
 
