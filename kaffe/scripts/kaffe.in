@@ -91,14 +91,7 @@ fi
 if test x"${KAFFE_DEBUG+set}"x != x"set"x; then
     exec $KAFFE_JREBINDIR/@kaffebin_TRANSF@ ${1+"$@"}
 else
-    UNIQ=1
-    while test -z "$KAFFE_DEBUG_TEMPFILE"; do
-	KAFFE_DEBUG_TEMPFILE="/tmp/kaffedbg.$$.$UNIQ"
-	if test -e $KAFFE_DEBUG_TEMPFILE; then
-	    KAFFE_DEBUG_TEMPFILE=""
-	fi
-	UNIQ=`expr $UNIQ + 1`
-    done
+    KAFFE_DEBUG_TEMPFILE=`@MKTEMP@ /tmp/kaffe.XXXXXX` || exit 1
 
     case `"$KAFFE_DEBUG" --version </dev/null 2>/dev/null` in
     *"GDB"* | *"GNU gdb"*)

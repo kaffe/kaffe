@@ -1,5 +1,16 @@
 2003-05-29  Dalibor Topic <robilad@yahoo.com>
 
+	* configure.in:
+	Added check for mktemp.
+
+	* kaffe/scripts/kaffe.in:
+	use MKTEMP.
+
+	* FAQ/FAQ.requiredlibraries:
+	Added information on mktemp.
+
+2003-05-29  Dalibor Topic <robilad@yahoo.com>
+
 	* libraries/javalib/Makefile.in:
 	regenerated.
 	

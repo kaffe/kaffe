@@ -490,9 +490,11 @@ dnl -------------------------------------------------------------------------
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_CHECK_PROG(ZIP, zip, zip)
+AC_CHECK_PROG(MKTEMP, mktemp, mktemp)
 
 AM_CONDITIONAL(HAVE_ZIP, test x"$ZIP" != x"")
 AM_CONDITIONAL(HAVE_JIKES, test x"$JIKES" != x"")
+AM_CONDITIONAL(HAVE_MKTEMP, test x"$MKTEMP" != x"")
 
 dnl If symlink is overridden then don't bother with the test.
 if test x"$LN_S" = x"" ; then

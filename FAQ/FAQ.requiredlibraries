@@ -140,6 +140,12 @@ libiconv:
     available at:
     http://www.gnu.org/software/libiconv/
 
+Other tools
+-----------
 
+If you want to debug kaffe, you need to have mktemp installed, in
+order to allow creation of safe temporary files.
 
-
+mktemp:
+    A utility to create safe temporary files. Available at
+    http://www.mktemp.org .
