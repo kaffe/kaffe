@@ -92,14 +92,14 @@ public boolean addAll(Collection c) {
 }
 
 public boolean removeAll(Collection c) {
-  Iterator it = c.iterator();
   boolean status = false;
-  while (it.hasNext()) {
-    if (remove(it.next())) {
+  for (Iterator i = iterator(); i.hasNext(); ) {
+    if (c.contains(i.next())) {
+      i.remove();
       status = true;
     }
   }
-  return (status);
+  return status;
 }
 
 public boolean retainAll(Collection c) {
