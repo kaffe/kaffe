@@ -39,7 +39,9 @@ libnanoxawt_la_SOURCES = \
 	graphics.c \
 	image.c \
 	clipboard.c \
-	toolkit.c 
+	toolkit.c \
+	awt_const.h \
+	keymap.h
 
 noinst_HEADERS = \
 	toolkit.h 

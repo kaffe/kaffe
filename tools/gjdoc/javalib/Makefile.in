@@ -596,7 +596,10 @@ gjdoc_ressources = \
 
 EXTRA_DIST = \
 	$(gjdoc_jar_SRCS) \
-	$(gjdoc_ressources)
+	$(gjdoc_ressources) \
+	dtd/gjdoc-alphaindex.dtd \
+	gnu/classpath/tools/doclets/xmldoclet/doctranslet/package.html \
+	gnu/classpath/tools/gjdoc/expr/java-expression.g
 
 JAR_CMD1 = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new $(SRCDIRS))
 JAR_CMD2 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gjdoc_ressources))

@@ -5716,7 +5716,8 @@ EXTRA_DIST = \
 	META-INF \
 	all.files \
 	$(OMITTED_PACKAGES_SRCS) \
-	$(installed_properties)
+	$(installed_properties) \
+	profiles/default/jaxp.files
 
 LIBDIR = lib
 rebuildLib = ./rebuildLib
@@ -5922,6 +5923,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
+	$(mkdir_p) $(distdir)/profiles/default
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

@@ -49,7 +49,8 @@ libgtkpeer_la_SOURCES = \
 	gthread-jni.c \
 	gthread-jni.h \
 	gtk_jawt.c \
-	gtkpeer.h
+	gtkpeer.h \
+	gtkcairopeer.h
 
 libgtkpeer_la_CFLAGS = \
 	$(CFLAGS_PG)

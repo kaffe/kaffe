@@ -264,6 +264,8 @@ EXTRA_DIST = \
 	mips/callKaffeException.h \
 	mips/common.h \
 	mips/irix5/config.frag \
+	mips/irix5/jit-md.h \
+	mips/irix5/jit3-md.h \
 	mips/irix5/md.c \
 	mips/irix5/md.h \
 	mips/jit.h \
@@ -305,7 +307,9 @@ EXTRA_DIST = \
 	powerpc/darwin/md.c \
 	powerpc/darwin/md.h \
 	powerpc/darwin/jit3-md.h \
+	powerpc/jit-labels.h \
 	powerpc/linux/config.frag \
+	powerpc/linux/jit3-md.h \
 	powerpc/linux/md.c \
 	powerpc/linux/md.h \
 	powerpc/linux/sigcontextinfo.h \

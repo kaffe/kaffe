@@ -307,6 +307,8 @@ SUBDIRS = doc include
 
 # :FIXME: why do we distribute this one???
 #
+
+# Distribute extra files with Kaffe, just in case they are needed
 EXTRA_DIST = alpha_mach_dep.S mips_sgi_mach_dep.s sparc_mach_dep.S \
 	README.QUICK BCC_MAKEFILE NT_MAKEFILE NT_THREADS_MAKEFILE \
 	OS2_MAKEFILE PCR-Makefile digimars.mak EMX_MAKEFILE \
@@ -320,7 +322,9 @@ EXTRA_DIST = alpha_mach_dep.S mips_sgi_mach_dep.s sparc_mach_dep.S \
 	tests/leak_test.c tests/thread_leak_test.c cord/cordbscs.c \
 	cord/cordtest.c cord/de.c cord/de_win.c cord/de_win.ICO \
 	cord/cordprnt.c cord/cordxtra.c cord/de_cmds.h cord/de_win.h \
-	cord/de_win.RC libtool.m4
+	cord/de_win.RC libtool.m4 Makefile.dist \
+	NT_STATIC_THREADS_MAKEFILE configure.in gcc_support.c \
+	tests/middle.c
 @CPLUSPLUS_FALSE@extra = 
 @CPLUSPLUS_TRUE@extra = libgccpp.la
 @GC_CONVENIENCE_TRUE@noinst_LTLIBRARIES = libgc.la $(extra) 

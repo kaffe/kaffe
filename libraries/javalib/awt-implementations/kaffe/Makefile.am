@@ -410,7 +410,50 @@ kaffe_util_log_SRCS = \
 ## Do not delete the previous blank line; update-class-list depends on it
 
 EXTRA_DIST = \
-	$(kaffeawt_jar_SRCS)
+	$(kaffeawt_jar_SRCS) \
+	java/applet/package.html \
+	java/awt/color/package.html \
+	java/awt/datatransfer/package.html \
+	java/awt/dnd/package.html \
+	java/awt/dnd/peer/package.html \
+	java/awt/event/package.html \
+	java/awt/font/package.html \
+	java/awt/geom/package.html \
+	java/awt/im/package.html \
+	java/awt/image/package.html \
+	java/awt/image/renderable/package.html \
+	java/awt/package.html \
+	java/awt/peer/package.html \
+	java/awt/print/package.html \
+	java/awt/win32/ActionEvt.java \
+	java/awt/win32/Button.java \
+	java/awt/win32/Canvas.java \
+	java/awt/win32/Checkbox.java \
+	java/awt/win32/CheckboxMenuItem.java \
+	java/awt/win32/Choice.java \
+	java/awt/win32/Defaults.java \
+	java/awt/win32/FileDialog.java \
+	java/awt/win32/Frame.java \
+	java/awt/win32/Label.java \
+	java/awt/win32/List.java \
+	java/awt/win32/Menu.java \
+	java/awt/win32/MenuBar.java \
+	java/awt/win32/MenuItem.java \
+	java/awt/win32/NativeComponent.java \
+	java/awt/win32/NativeContainer.java \
+	java/awt/win32/NativeGraphics.java \
+	java/awt/win32/Panel.java \
+	java/awt/win32/PopupMenu.java \
+	java/awt/win32/ScrollPane.java \
+	java/awt/win32/Scrollbar.java \
+	java/awt/win32/SystemColor.java \
+	java/awt/win32/TextArea.java \
+	java/awt/win32/TextComponent.java \
+	java/awt/win32/TextField.java \
+	java/awt/win32/Toolkit.java \
+	java/awt/win32/WMEvent.java \
+	java/awt/win32/Window.java \
+	update-class-list
 
 JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(ZIP) -r $$dstdir/$(CLASSFILE) $(SRCDIRS))
 

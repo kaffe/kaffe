@@ -35,3 +35,5 @@ libkaffegc_la_DEPENDENCIES = \
         $(top_builddir)/kaffe/kaffevm/systems/$(THREAD_SYSTEM)/libkthread.la
 
 noinst_HEADERS= gc-mem.h gc-incremental.h gc-refs.h
+
+EXTRA_DIST = Makefile.frag

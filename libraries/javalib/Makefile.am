@@ -5074,7 +5074,8 @@ EXTRA_DIST = \
 	META-INF \
 	all.files \
 	$(OMITTED_PACKAGES_SRCS) \
-	$(installed_properties)
+	$(installed_properties) \
+	profiles/default/jaxp.files
 
 LIBDIR = lib
 

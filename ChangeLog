@@ -1,5 +1,38 @@
 2005-04-05  Jim Pick  <jim@kaffe.org>
 
+        (On Release 1.1.5 Branch)
+	
+	* Makefile.am,
+	config/Makefile.am,
+	kaffe/kaffevm/boehm-gc/Makefile.am,
+	kaffe/kaffevm/boehm-gc/boehm/Makefile.am,
+	kaffe/kaffevm/boehm-gc/boehm/include/Makefile.am,
+	kaffe/kaffevm/kaffe-gc/Makefile.am,
+	libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.am,
+	libraries/clib/awt/nano-X/Makefile.am,
+	libraries/javalib/Makefile.am.in,
+	libraries/javalib/awt-implementations/kaffe/Makefile.am,
+	tools/gjdoc/javalib/Makefile.am:
+	Add extra files that were missing from "make dist".
+
+	* libraries/clib/io/AudioPlayer.c: Obsolete, removed.
+
+	* Makefile.in,
+	config/Makefile.in,
+	kaffe/kaffevm/boehm-gc/Makefile.in,
+	kaffe/kaffevm/boehm-gc/boehm/Makefile.in,
+	kaffe/kaffevm/boehm-gc/boehm/include/Makefile.in,
+	kaffe/kaffevm/kaffe-gc/Makefile.in,
+	libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.in,
+	libraries/clib/awt/nano-X/Makefile.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/awt-implementations/kaffe/Makefile.in,
+	tools/gjdoc/javalib/Makefile.in:
+	Regenerated.
+	
+2005-04-05  Jim Pick  <jim@kaffe.org>
+
 	* New branch Release_1_1_5_Branch.  (removed old one)
 	* RELEASE-NOTES: Add dedication, tell people not to use
 	1.0.7.

@@ -185,3 +185,13 @@ EXTRA_DIST += libtool.m4
 # it will not remove dest if building fails
 .S.s:
 	if $(CPP) $< >$@ ; then :; else rm -f $@; fi
+
+# Distribute extra files with Kaffe, just in case they are needed
+
+EXTRA_DIST += \
+	Makefile.dist \
+	NT_STATIC_THREADS_MAKEFILE \
+	configure.in \
+	gcc_support.c \
+	tests/middle.c
+

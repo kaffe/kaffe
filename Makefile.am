@@ -48,6 +48,13 @@ EXTRA_DIST = \
 	ChangeLog.7 \
 	ChangeLog.8 \
 	ChangeLog.9 \
+	ChangeLog.10 \
+	ChangeLog.11 \
+	ChangeLog.12 \
+	ChangeLog.13 \
+	ChangeLog.14 \
+	ChangeLog.15 \
+	ChangeLog.16 \
 	THIRDPARTY \
 	WHATSNEW \
 	RELEASE-NOTES \
@@ -93,6 +100,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.profiler \
 	FAQ/FAQ.ps2linux \
 	FAQ/FAQ.pthreads \
+	FAQ/FAQ.references \
 	FAQ/FAQ.requiredlibraries \
 	FAQ/FAQ.sound \
 	FAQ/FAQ.staticnative \
@@ -112,7 +120,15 @@ EXTRA_DIST = \
 	binreloc/prefix.h \
 	binreloc/README \
 	binreloc/test.c \
+	docs/html/fdl.html \
+	docs/html/index.html \
+	docs/html/port-kaffe.html \
+	docs/src/docbook/port-kaffe/fdl.xml \
+	docs/src/docbook/port-kaffe/jit-icode.c \
+	docs/src/docbook/port-kaffe/port-kaffe.xml \
+	developers/boehm-with-kaffe.patch \
 	developers/check-classpath-merge-status \
+	developers/check-classpath-unmerged \
 	developers/Encode.java \
 	developers/EncodeEUC_JP.java \
 	developers/FullTest.sh \
@@ -134,13 +150,42 @@ EXTRA_DIST = \
 	developers/mauve-kaffe \
 	developers/mauve-results.sh \
 	developers/mnemonicizer.awk \
+	developers/patch-libtool-openbsd33.diff \
 	developers/patch-libtool-quote-sys_search_path.diff \
 	developers/resync-classpath.sh \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
 	developers/unicode.pl \
 	developers/update-class-list \
-	developers/utf8munge.pl
+	developers/utf8munge.pl \
+	m4/ChangeLog \
+	m4/codeset.m4 \
+	m4/glibc21.m4 \
+	m4/intdiv0.m4 \
+	m4/intmax.m4 \
+	m4/inttypes-pri.m4 \
+	m4/inttypes.m4 \
+	m4/inttypes_h.m4 \
+	m4/isc-posix.m4 \
+	m4/longdouble.m4 \
+	m4/longlong.m4 \
+	m4/printf-posix.m4 \
+	m4/signed.m4 \
+	m4/size_max.m4 \
+	m4/stdint_h.m4 \
+	m4/uintmax_t.m4 \
+	m4/ulonglong.m4 \
+	m4/wchar_t.m4 \
+	m4/wint_t.m4 \
+	m4/xsize.m4 \
+	po/Makevars.template \
+	scripts/GCCWarning.pm \
+	scripts/JikesWarning.pm \
+	scripts/LogWarning.pm \
+	scripts/Registry.pm \
+	scripts/SparseWarning.pm \
+	scripts/WarningDescription.pm \
+	scripts/sort-warnings.pl
 
 CLEANFILES = BUILD_ENVIRONMENT
 
