@@ -23,6 +23,7 @@ Tue Oct 12 10:29:41 PDT 1999  Archie Cobbs <archie@whistle.com>
 	libraries/javalib/java/util/Timer.java: new classes
 	* libraries/javalib/Makefile.*: add new classes
 	* configure{.in}: add --with-profiling option (doesn't fully work)
+	* kaffe/kaffevm/thread.[ch], kaffe/kaffe/main.c: add -nodeadlock flag
 	* libraries/javalib/Klasses.jar: regen
 
 Mon Oct 11 19:17:49 PDT 1999 Transvirtual Technologies <info@transvirtual.com>
