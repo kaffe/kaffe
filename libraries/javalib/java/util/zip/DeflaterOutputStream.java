@@ -60,6 +60,8 @@ public void finish() throws IOException {
 }
 
 public void write(byte b[], int off, int len) throws IOException {
+	if (off < 0 || len < 0 || off + len > b.length)
+		throw new IndexOutOfBoundsException();
 	def.setInput(b, off, len);
 	deflate();
 }
