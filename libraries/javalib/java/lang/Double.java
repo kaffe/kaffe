@@ -151,4 +151,11 @@ public final class Double extends Number {
     return (new Double(valueOf0(s)));
   }
 
+  public static double parseDouble(String s) throws NumberFormatException {
+    if (s == null) {
+      throw new NullPointerException();
+    }
+    return valueOf0(s);
+  }
+
 }
