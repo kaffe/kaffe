@@ -1,5 +1,14 @@
 2004-07-17  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* configure.ac: Added a new test to check whether tm_zone exists in
+	struct tm.
+
+	* config/config.h.in, configure: Regenerated.
+
+	* kaffe/kaffevm/jit/labels.c: Move '*/' to make gcc happy.
+
+2004-07-17  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/java/text/CollationElementIterator.java:
 	Use ArrayList instead of Vector.
 	

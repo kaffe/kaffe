@@ -219,8 +219,8 @@ getInternalLabel(label **lptr, uintp pc)
 				*lptr = curr->next;
 				retval = curr;
 			}
-			break;
 		  */
+			break;
 		}
 		curr = curr->next;
 	}
