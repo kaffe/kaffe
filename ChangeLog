@@ -1,3 +1,7 @@
+2004-09-11  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/m68k/openbsd2/md.h: Fixed a typo in sysdepCallMethod.
+
 2004-09-10  Dalibor Topic  <topic@mpiat2313>
 
 	* libraries/javalib/java/lang/System.java (getenv): Implemented

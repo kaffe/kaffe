@@ -47,7 +47,7 @@
 #endif
 
 #define	sysdepCallMethod(CALL)					  \
-	asm volatile (						\n\
+	asm volatile (						\
 	"1:							\n"\
 	"	cmpl	#0,%0					\n"\
 	"	beq	3f					\n"\
