@@ -208,12 +208,14 @@ extern
 # endif /* defined(DEBUG_KAFFEH) */
 
 /* Kaffeh doesn't link with debug.o, so make dprintf a simple printf */
+# undef dprintf
 # define dprintf	printf
 
 #endif /* defined(NDEBUG) || !defined(DEBUG) */
 
 
 /* XXX: change dprintf to kaffe_dprintf and get rid of the macro */
+#undef dprintf
 #define dprintf       kaffe_dprintf
 
 int kaffe_dprintf(const char *fmt, ...);
