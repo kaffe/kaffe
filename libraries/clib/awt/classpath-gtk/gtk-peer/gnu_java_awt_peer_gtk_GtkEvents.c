@@ -883,7 +883,7 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
   switch (event->type)
     {
     case GDK_BUTTON_PRESS:
-      (*gdk_env)->CallVoidMethod (gdk_env, peer,
+      (*gdk_env())->CallVoidMethod (gdk_env(), peer,
                                   postMouseEventID,
 				  AWT_MOUSE_PRESSED, 
 				  (jlong)event->button.time,
@@ -900,7 +900,7 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
       {
 	int width, height;
 
-	(*gdk_env)->CallVoidMethod (gdk_env, peer,
+	(*gdk_env())->CallVoidMethod (gdk_env(), peer,
 				    postMouseEventID,
 				    AWT_MOUSE_RELEASED, 
 				    (jlong)event->button.time,
@@ -921,7 +921,7 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
 	    && event->button.x <= width 
 	    && event->button.y <= height)
           {
-	    (*gdk_env)->CallVoidMethod (gdk_env, peer,
+	    (*gdk_env())->CallVoidMethod (gdk_env(), peer,
 				        postMouseEventID,
 				        AWT_MOUSE_CLICKED, 
 				        (jlong)event->button.time,
@@ -941,7 +941,7 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
 				 | GDK_BUTTON4_MASK
 				 | GDK_BUTTON5_MASK))
 	{
-	  (*gdk_env)->CallVoidMethod (gdk_env, peer,
+	  (*gdk_env())->CallVoidMethod (gdk_env(), peer,
 			              postMouseEventID,
 				      AWT_MOUSE_DRAGGED,
 				      (jlong)event->motion.time,
@@ -953,7 +953,7 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
 	  hasBeenDragged = TRUE;
 	}
       else
-        (*gdk_env)->CallVoidMethod (gdk_env, peer, postMouseEventID,
+        (*gdk_env())->CallVoidMethod (gdk_env(), peer, postMouseEventID,
 				    AWT_MOUSE_MOVED,
 				    (jlong)event->motion.time,
 				    state_to_awt_mods (event->motion.state),
@@ -966,7 +966,7 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
       /* We are not interested in enter events that are due to
          grab/ungrab and not to actually crossing boundaries */
       if (event->crossing.mode == GDK_CROSSING_NORMAL)
-        (*gdk_env)->CallVoidMethod (gdk_env, peer, postMouseEventID,
+        (*gdk_env())->CallVoidMethod (gdk_env(), peer, postMouseEventID,
 				    AWT_MOUSE_ENTERED, 
 				    (jlong)event->crossing.time,
 				    state_to_awt_mods_with_button_states (event->crossing.state), 
@@ -979,7 +979,7 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
       /* We are not interested in leave events that are due to
          grab/ungrab and not to actually crossing boundaries */
       if (event->crossing.mode == GDK_CROSSING_NORMAL)
-	(*gdk_env)->CallVoidMethod (gdk_env, peer,
+	(*gdk_env())->CallVoidMethod (gdk_env(), peer,
 				    postMouseEventID,
 				    AWT_MOUSE_EXITED, 
 				    (jlong)event->crossing.time,
@@ -1001,7 +1001,7 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
 	       returns. */
 	    gdk_threads_leave ();
 
- 	    (*gdk_env)->CallVoidMethod (gdk_env, peer,
+ 	    (*gdk_env())->CallVoidMethod (gdk_env(), peer,
 					postConfigureEventID,
 					(jint) event->configure.x,
 					(jint) event->configure.y,
@@ -1012,7 +1012,7 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
       }
       break;
     case GDK_EXPOSE:
-      (*gdk_env)->CallVoidMethod (gdk_env, peer,
+      (*gdk_env())->CallVoidMethod (gdk_env(), peer,
                                   postExposeEventID,
                                   (jint)event->expose.area.x,
                                   (jint)event->expose.area.y,
@@ -1021,7 +1021,7 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
       break;
 
     case GDK_FOCUS_CHANGE:
-      (*gdk_env)->CallVoidMethod (gdk_env, peer,
+      (*gdk_env())->CallVoidMethod (gdk_env(), peer,
 				  postFocusEventID,
 				  (jint) (event->focus_change.in) ?
 				  AWT_FOCUS_GAINED : AWT_FOCUS_LOST,
@@ -1033,7 +1033,7 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
             /*            GdkEventKey *keyevent = (GdkEventKey *) event; */
             /*            g_printerr ("key press event: sent: %d  time: %d  state: %d  keyval: %d  length: %d  string: %s  hardware_keycode: %d  group: %d\n", keyevent->send_event, keyevent->time, keyevent->state, keyevent->keyval, keyevent->length, keyevent->string, keyevent->hardware_keycode, keyevent->group); */
 
-            (*gdk_env)->CallVoidMethod (gdk_env, peer,
+            (*gdk_env())->CallVoidMethod (gdk_env(), peer,
                                         postKeyEventID,
                                         (jint) AWT_KEY_PRESSED,
                                         (jlong) event->key.time,
@@ -1054,7 +1054,7 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
     case GDK_KEY_RELEASE:
       if (GTK_IS_WINDOW (widget))
         {
-            (*gdk_env)->CallVoidMethod (gdk_env, peer,
+            (*gdk_env())->CallVoidMethod (gdk_env(), peer,
                                         postKeyEventID,
                                         (jint) AWT_KEY_RELEASED,
                                         (jlong) event->key.time,
@@ -1135,13 +1135,13 @@ void connect_awt_hook_cb (GtkWidget *widget __attribute__((unused)),
 {
   void *ptr;
 
-  ptr = NSA_GET_PTR (gdk_env, peer);
+  ptr = NSA_GET_PTR (gdk_env(), peer);
 
-  connect_awt_hook (gdk_env, peer, 1, GTK_WIDGET (ptr)->window);
+  connect_awt_hook (gdk_env(), peer, 1, GTK_WIDGET (ptr)->window);
 
   gdk_threads_leave ();
 
-  (*gdk_env)->CallVoidMethod (gdk_env, peer, setCursorID);
+  (*gdk_env())->CallVoidMethod (gdk_env(), peer, setCursorID);
 
   gdk_threads_enter ();
 }

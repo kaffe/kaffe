@@ -70,7 +70,16 @@ jmethodID initComponentGraphicsID;
 jmethodID initComponentGraphics2DID;
 jmethodID setCursorID;
 
-JNIEnv *gdk_env;
+JavaVM *java_vm;
+
+JNIEnv *
+gdk_env()
+{
+  JNIEnv *tmp;
+  g_assert((*java_vm)->GetEnv(java_vm, (void **)&tmp, JNI_VERSION_1_2) == JNI_OK);
+  return tmp;
+}
+
 
 GtkWindowGroup *global_gtk_window_group;
 
@@ -109,7 +118,8 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env,
   gtkgenericpeer = (*env)->FindClass(env, "gnu/java/awt/peer/gtk/GtkGenericPeer");
 
   NSA_INIT (env, gtkgenericpeer);
-  gdk_env = env;
+
+  g_assert((*env)->GetJavaVM(env, &java_vm) == 0);
 
   /* GTK requires a program's argc and argv variables, and requires that they
      be valid.   Set it up. */

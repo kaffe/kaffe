@@ -195,8 +195,8 @@ void selection_changed (GtkComboBox *combobox, jobject peer)
 
       gdk_threads_leave ();
 
-      label = (*gdk_env)->NewStringUTF (gdk_env, selected);
-      (*gdk_env)->CallVoidMethod (gdk_env, peer,
+      label = (*gdk_env())->NewStringUTF (gdk_env(), selected);
+      (*gdk_env())->CallVoidMethod (gdk_env(), peer,
 			          choicePostItemEventID,
 			          label,
 			          (jint) AWT_ITEM_SELECTED);

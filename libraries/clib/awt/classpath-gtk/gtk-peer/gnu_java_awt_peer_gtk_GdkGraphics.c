@@ -680,7 +680,7 @@ static void realize_cb (GtkWidget *widget __attribute__ ((unused)),
 {
   gdk_threads_leave ();
 
-  (*gdk_env)->CallVoidMethod (gdk_env, peer, initComponentGraphicsID);
+  (*gdk_env())->CallVoidMethod (gdk_env(), peer, initComponentGraphicsID);
 
   gdk_threads_enter ();
 }

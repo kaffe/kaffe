@@ -498,12 +498,12 @@ item_highlighted (GtkTreeSelection *selection __attribute__((unused)),
       row = indices ? indices[0] : -1;
 
       if (!path_currently_selected)
-        (*gdk_env)->CallVoidMethod (gdk_env, peer,
+        (*gdk_env())->CallVoidMethod (gdk_env(), peer,
                                     postListItemEventID,
                                     row,
                                     (jint) AWT_ITEM_SELECTED);
       else
-        (*gdk_env)->CallVoidMethod (gdk_env, peer,
+        (*gdk_env())->CallVoidMethod (gdk_env(), peer,
                                     postListItemEventID,
                                     row,
                                     (jint) AWT_ITEM_DESELECTED);

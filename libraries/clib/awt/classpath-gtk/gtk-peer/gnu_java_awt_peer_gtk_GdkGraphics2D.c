@@ -360,7 +360,7 @@ realize_cb (GtkWidget *widget __attribute__ ((unused)), jobject peer)
 {
   gdk_threads_leave ();
 
-  (*gdk_env)->CallVoidMethod (gdk_env, peer, initComponentGraphics2DID);
+  (*gdk_env())->CallVoidMethod (gdk_env(), peer, initComponentGraphics2DID);
 
   gdk_threads_enter ();
 }

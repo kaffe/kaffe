@@ -464,7 +464,8 @@ extern jmethodID setCursorID;
 extern jmethodID syncAttrsID;
 extern jclass gdkColor;
 extern jmethodID gdkColorID;
-extern JNIEnv *gdk_env;
+
+JNIEnv *gdk_env();
 
 extern double dpi_conversion_factor;
 

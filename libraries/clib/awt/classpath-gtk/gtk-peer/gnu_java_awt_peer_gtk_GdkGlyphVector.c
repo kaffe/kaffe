@@ -266,7 +266,7 @@ Java_gnu_java_awt_peer_gtk_GdkGlyphVector_setChars
   g_assert (vec->desc != NULL);
   g_assert (vec->ctx != NULL);
   
-  len = (*gdk_env)->GetStringUTFLength (env, chars);
+  len = (*gdk_env())->GetStringUTFLength (env, chars);
   str = (gchar *)(*env)->GetStringUTFChars (env, chars, NULL);
   g_assert (str != NULL);
 
