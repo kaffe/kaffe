@@ -1,7 +1,7 @@
 /*
  * java.lang.System.c
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -193,9 +193,9 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	}
 	setProperty(p, "java.class.path", cpath);
 
-	setProperty(p, "file.separator", file_seperator);
-	setProperty(p, "path.separator", path_seperator);
-	setProperty(p, "line.separator", line_seperator);
+	setProperty(p, "file.separator", file_separator);
+	setProperty(p, "path.separator", path_separator);
+	setProperty(p, "line.separator", line_separator);
 
 #if defined(HAVE_GETCWD)
 	dir = getcwd(cwdpath, MAXPATHLEN);

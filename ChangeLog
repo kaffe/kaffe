@@ -1,3 +1,17 @@
+Tue Jan  5 10:31:41 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/paths.h: removed; it's duplicated in
+	include/system.h
+	* include/system.h (file_seperator, path_seperator,
+	line_seperator): fixed spelling
+	* libraries/clib/native/System.c: ditto
+	* libraries/clib/io/File.c: ditto
+	* kaffe/kaffevm/external.c: use system.h instead of paths.h
+	* kaffe/kaffevm/findInJar.c: ditto
+	* configure.in: extract pathsep and dirsep from system.h
+	* kaffe/scripts/kaffe.in (PATHSEP): use it to define CLASSPATH,
+	KAFFELIBRARYPATH and LD_LIBRARY_PATH
+
 Tue Jan  5 07:27:32 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffeh/support.c (binary_open): new function that adds

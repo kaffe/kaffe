@@ -816,6 +816,26 @@ dnl -------------------------------------------------------------------------
 kaffehome=`eval echo $datadir`/kaffe
 AC_DEFINE_UNQUOTED(DEFAULT_KAFFEHOME, "$kaffehome")
 
+AC_CACHE_CHECK([for path separator],ac_cv_kaffe_pathsep,
+[	rm -f conftest.c
+	cat ${srcdir}/include/system.h > conftest.c
+	echo path_separator >> conftest.c
+	eval ac_cv_kaffe_pathsep=`$CPP $CPPFLAGS conftest.c | sed '$p; d'`
+	rm -f conftest.c
+])
+PATHSEP=$ac_cv_kaffe_pathsep
+AC_SUBST(PATHSEP)
+
+AC_CACHE_CHECK([for directory separator],ac_cv_kaffe_dirsep, 
+[	rm -f conftest.c
+	cat ${srcdir}/include/system.h > conftest.c
+	echo file_separator >> conftest.c
+	eval ac_cv_kaffe_dirsep=`$CPP $CPPFLAGS conftest.c | sed '$p; d'`
+	rm -f conftest.c
+])
+DIRSEP=$ac_cv_kaffe_dirsep
+AC_SUBST(DIRSEP)
+
 AC_CONFIG_HEADER(config/config.h include/jtypes.h)
 AC_OUTPUT($output)
 

@@ -1,7 +1,7 @@
 /*
  * java.io.File.c
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -287,7 +287,7 @@ java_io_File_isAbsolute(struct Hjava_io_File* this)
 
 	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 
-	if (str[0] == file_seperator[0]) {
+	if (str[0] == file_separator[0]) {
 		return (1);
 	}
 	else {

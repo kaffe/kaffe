@@ -2,7 +2,7 @@
  * findInJar.c
  * Search the CLASSPATH for the given class or property name.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -23,7 +23,7 @@
 #include "file.h"
 #include "exception.h"
 #include "readClass.h"
-#include "paths.h"
+#include "system.h"
 #include "errors.h"
 #include "lerrno.h"
 #include "locks.h"
@@ -216,7 +216,7 @@ ZDBG(			printf("Opening JAR file %s for %s\n", ptr->path, cname); )
 
 		case CP_DIR:
 			strcpy(buf, ptr->path);
-			strcat(buf, DIRSEP);
+			strcat(buf, file_separator);
 			strcat(buf, cname);
 FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 			fp = KOPEN(buf, O_RDONLY|O_BINARY, 0);
@@ -355,7 +355,7 @@ initClasspath(void)
 	realClassPath = KMALLOC(len);
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
 		if (ptr != classpath) {
-			realClassPath[strlen(realClassPath)] = PATHSEP;
+			strcat(realClassPath, path_separator);
 		}
 		strcat(realClassPath, ptr->path);
 	}
@@ -374,7 +374,8 @@ makeClasspath(char* cp)
 PDBG(	printf("initClasspath(): '%s'\n", cp);				)
 
 	for (;;) {
-		end = strchr(cp, PATHSEP);
+		/* FIXME: requires path_separator to have length 1 */
+		end = strchr(cp, path_separator[0]);
 		if (end != 0) {
 			*end = 0;
 			addClasspath(cp);

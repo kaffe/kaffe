@@ -25,7 +25,7 @@
 #include "errors.h"
 #include "exception.h"
 #include "slib.h"
-#include "paths.h"
+#include "system.h"
 #include "support.h"
 #include "md.h"
 #if defined(NO_SHARED_LIBRARIES)
@@ -108,7 +108,8 @@ initNative(void)
 
 	/* Find the default library */
 	for (ptr = libraryPath; ptr != 0; ptr = nptr) {
-		nptr = strchr(ptr, PATHSEP);
+		/* FIXME: requires path_separator to have length 1 */
+		nptr = strchr(ptr, path_separator[0]);
 		if (nptr == 0) {
 			strcpy(lib, ptr);
 		}
@@ -121,7 +122,7 @@ initNative(void)
 			lib[nptr-ptr] = 0;
 			nptr++;
 		}
-		strcat(lib, DIRSEP);
+		strcat(lib, file_separator);
 		strcat(lib, NATIVELIBRARY);
 		strcat(lib, LIBRARYSUFFIX);
 
