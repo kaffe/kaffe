@@ -676,21 +676,72 @@ public abstract class Calendar implements Serializable, Cloneable
    */
   public void set(int field, int value)
   {
+    if (isTimeSet)
+      for (int i = 0; i < FIELD_COUNT; i++)
+	isSet[i] = false;
     isTimeSet = false;
     fields[field] = value;
     isSet[field] = true;
+
+    // The five valid date patterns, in order of validity
+    // 1  YEAR + MONTH + DAY_OF_MONTH
+    // 2  YEAR + MONTH + WEEK_OF_MONTH + DAY_OF_WEEK
+    // 3  YEAR + MONTH + DAY_OF_WEEK_IN_MONTH + DAY_OF_WEEK
+    // 4  YEAR + DAY_OF_YEAR
+    // 5  YEAR + DAY_OF_WEEK + WEEK_OF_YEAR
     switch (field)
       {
-      case YEAR:
-      case MONTH:
-      case DATE:
-	isSet[WEEK_OF_YEAR] = false;
+      case MONTH: // pattern 1,2 or 3
 	isSet[DAY_OF_YEAR] = false;
-	isSet[WEEK_OF_MONTH] = false;
+	isSet[WEEK_OF_YEAR] = false;
+	break;
+      case DAY_OF_MONTH: // pattern 1
+	isSet[YEAR] = true;
+	isSet[MONTH] = true;
+	isSet[WEEK_OF_MONTH] = true;
 	isSet[DAY_OF_WEEK] = false;
+	isSet[DAY_OF_WEEK_IN_MONTH] = false;
+	isSet[DAY_OF_YEAR] = false;
+	isSet[WEEK_OF_YEAR] = false;
+	break;
+      case WEEK_OF_MONTH: // pattern 2
+	isSet[YEAR] = true;
+	isSet[MONTH] = true;
+	isSet[DAY_OF_WEEK] = true;
+	isSet[DAY_OF_MONTH] = false;
+	isSet[DAY_OF_WEEK_IN_MONTH] = false;
+	isSet[DAY_OF_YEAR] = false;
+	isSet[WEEK_OF_YEAR] = false;
+	break;
+      case DAY_OF_WEEK_IN_MONTH: // pattern 3
+	isSet[YEAR] = true;
+	isSet[MONTH] = true;
+	isSet[DAY_OF_WEEK] = true;
+	isSet[DAY_OF_YEAR] = false;
+	isSet[DAY_OF_MONTH] = false;
+	isSet[WEEK_OF_MONTH] = false;
+	isSet[WEEK_OF_YEAR] = false;
+	break;
+      case DAY_OF_YEAR: // pattern 4
+	isSet[YEAR] = true;
+	isSet[MONTH] = false;
+	isSet[WEEK_OF_MONTH] = false;
+	isSet[DAY_OF_MONTH] = false;
+	isSet[DAY_OF_WEEK] = false;
+	isSet[WEEK_OF_YEAR] = false;
+	isSet[DAY_OF_WEEK_IN_MONTH] = false;
+	break;
+      case WEEK_OF_YEAR: // pattern 5
+	isSet[YEAR] = true;
+	isSet[DAY_OF_WEEK] = true;
+	isSet[MONTH] = false;
+	isSet[DAY_OF_MONTH] = false;
+	isSet[WEEK_OF_MONTH] = false;
+	isSet[DAY_OF_YEAR] = false;
 	isSet[DAY_OF_WEEK_IN_MONTH] = false;
 	break;
       case AM_PM:
+	isSet[HOUR] = true;
 	isSet[HOUR_OF_DAY] = false;
 	break;
       case HOUR_OF_DAY:
@@ -698,6 +749,7 @@ public abstract class Calendar implements Serializable, Cloneable
 	isSet[HOUR] = false;
 	break;
       case HOUR:
+	isSet[AM_PM] = true;
 	isSet[HOUR_OF_DAY] = false;
 	break;
       case DST_OFFSET:
@@ -775,11 +827,23 @@ public abstract class Calendar implements Serializable, Cloneable
   {
     isTimeSet = false;
     areFieldsSet = false;
-    for (int i = 0; i < FIELD_COUNT; i++)
-      {
-	isSet[i] = false;
-	fields[i] = 0;
-      }
+
+    int hour = fields[ZONE_OFFSET] / (60 * 60 * 1000);
+    int minute = (fields[ZONE_OFFSET] - 60 * 60 * 1000 * hour) / (60 * 1000);
+    int seconds = (fields[ZONE_OFFSET] - 60 * 60 * 1000 * hour
+                  - 60 * 1000 * minute) / 1000;
+    int millis = fields[ZONE_OFFSET] - 60 * 60 * 1000 * hour
+                 - 60 * 1000 * minute - seconds * 1000;
+    int[] tempFields = 
+                       {
+                         1, 1970, JANUARY, 1, 1, 1, 1, THURSDAY, 1, AM, hour,
+                         hour, minute, seconds, millis, fields[ZONE_OFFSET],
+                         fields[DST_OFFSET]
+                       };
+    fields = tempFields;
+    for (int i = 0; i < FIELD_COUNT - 2; i++)
+      isSet[i] = false;
+    isSet[ZONE_OFFSET] = isSet[DST_OFFSET] = true;
   }
 
   /**

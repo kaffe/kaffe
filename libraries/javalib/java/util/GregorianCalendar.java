@@ -182,20 +182,6 @@ public class GregorianCalendar extends Calendar
   private static final int EPOCH_DAYS = 719162;
 
   /**
-   * Retrieves the resource bundle.  The resources should be loaded
-   * via this method only. Iff an application uses this method, the
-   * resourcebundle is required.
-   *
-   * @param locale the locale in use for this calendar.
-   * @return A resource bundle for the calendar for the specified locale.
-   */
-  private static ResourceBundle getBundle(Locale locale)
-  {
-    return ResourceBundle.getBundle(bundleName, locale,
-                                    ClassLoader.getSystemClassLoader());
-  }
-
-  /**
    * Constructs a new GregorianCalender representing the current
    * time, using the default time zone and the default locale.
    */
@@ -250,7 +236,9 @@ public class GregorianCalendar extends Calendar
   private GregorianCalendar(TimeZone zone, Locale locale, boolean unused)
   {
     super(zone, locale);
-    ResourceBundle rb = getBundle(locale);
+    ResourceBundle rb = ResourceBundle.getBundle(bundleName, locale,
+                                                 ClassLoader
+                                                 .getSystemClassLoader());
     gregorianCutover = ((Date) rb.getObject("gregorianCutOver")).getTime();
   }
 
@@ -376,103 +364,25 @@ public class GregorianCalendar extends Calendar
   }
 
   /**
-   * <p>
-   * Calculate the dayOfYear from the fields array.
-   * The relativeDays is used, to account for weeks that begin before
-   * the Gregorian change and end after it.
-   * </p>
-   * <p>
-   * We return two values.  The first is used to determine, if we
-   * should use the Gregorian calendar or the Julian calendar, in order
-   * to handle the change year. The second is a relative day after the given
-   * day.  This is necessary for week calculation in the year in
-   * which the Gregorian change occurs.
-   * </p>
-   *
-   * @param year the year, negative for BC.
-   * @return an array of two integer values, the first containing a reference
-   * day in the current year, the second a relative count since this reference
-   * day.
+   * Returns the day of the week for the first day of a given month (0..11)
    */
-  private int[] getDayOfYear(int year)
+  private int getFirstDayOfMonth(int year, int month)
   {
-    if (isSet[MONTH])
-      {
-	int dayOfYear;
-	if (fields[MONTH] > FEBRUARY)
-	  {
-	    // The months after February are regular:
-	    // 9 is an offset found by try and error.
-	    dayOfYear = (fields[MONTH] * (31 + 30 + 31 + 30 + 31) - 9) / 5;
-	    if (isLeapYear(year))
-	      dayOfYear++;
-	  }
-	else
-	  dayOfYear = 31 * fields[MONTH];
+    int[] dayCount = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
+    int dayOfYear = dayCount[month] + 1;
 
-	if (isSet[DAY_OF_MONTH])
-	  return new int[] { dayOfYear + fields[DAY_OF_MONTH], 0 };
-	if (isSet[WEEK_OF_MONTH] && isSet[DAY_OF_WEEK])
-	  {
-	    // the weekday of the first day in that month is:
-	    int weekday = getWeekDay(year, ++dayOfYear);
+    if (month > 1)
+      if (isLeapYear(year))
+	dayOfYear++;
 
-	    return new int[]
-	           {
-	             dayOfYear,
-	             // the day of week in the first week
-	    // (weeks starting on sunday) is:
-	    fields[DAY_OF_WEEK] - weekday
-	             + // Now jump to the right week and correct the possible
-	    // error made by assuming sunday is the first week day.
-	    7 * (fields[WEEK_OF_MONTH]
-	             + (fields[DAY_OF_WEEK] < getFirstDayOfWeek() ? 0 : -1)
-	             + (weekday < getFirstDayOfWeek() ? -1 : 0))
-	           };
-	  }
-	if (isSet[DAY_OF_WEEK] && isSet[DAY_OF_WEEK_IN_MONTH])
-	  {
-	    // the weekday of the first day in that month is:
-	    int weekday = getWeekDay(year, ++dayOfYear);
-	    return new int[]
-	           {
-	             dayOfYear,
-	             fields[DAY_OF_WEEK] - weekday
-	             + 7 * (fields[DAY_OF_WEEK_IN_MONTH]
-	             + (fields[DAY_OF_WEEK] < weekday ? 0 : -1))
-	           };
-	  }
-      }
+    boolean greg = isGregorian(year, dayOfYear);
+    int day = (int) getLinearDay(year, dayOfYear, greg);
 
-    // MONTH + something did not succeed.
-    if (isSet[DAY_OF_YEAR])
-      return new int[] { 0, fields[DAY_OF_YEAR] };
-
-    if (isSet[DAY_OF_WEEK] && isSet[WEEK_OF_YEAR])
-      {
-	int dayOfYear = getMinimalDaysInFirstWeek();
-
-	// the weekday of the day, that begins the first week 
-	// in that year is:
-	int weekday = getWeekDay(year, dayOfYear);
-
-	return new int[]
-	       {
-	         dayOfYear,
-	         
-	// the day of week in the first week
-	// (weeks starting on sunday) is:
-	fields[DAY_OF_WEEK] - weekday
-	         // Now jump to the right week and correct the possible
-	// error made by assuming sunday is the first week day.
-	         + 7 * (fields[WEEK_OF_YEAR]
-	         + (fields[DAY_OF_WEEK] < getFirstDayOfWeek() ? 0 : -1)
-	         + (weekday < getFirstDayOfWeek() ? -1 : 0))
-	       };
-      }
-
-    // As last resort return Jan, 1st.
-    return new int[] { 1, 0 };
+    // The epoch was a thursday.
+    int weekday = (day + THURSDAY) % 7;
+    if (weekday <= 0)
+      weekday += 7;
+    return weekday;
   }
 
   /**
@@ -490,6 +400,90 @@ public class GregorianCalendar extends Calendar
   }
 
   /**
+   * Check set fields for validity, without leniency.
+   *
+   * @throws IllegalArgumentException if a field is invalid
+   */
+  private void nonLeniencyCheck() throws IllegalArgumentException
+  {
+    int[] month_days = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+    int year = fields[YEAR];
+    int month = fields[MONTH];
+    int leap = isLeapYear(year) ? 1 : 0;
+
+    if (isSet[ERA] && fields[ERA] != AD && fields[ERA] != BC)
+      throw new IllegalArgumentException("Illegal ERA.");
+    if (isSet[YEAR] && fields[YEAR] < 1)
+      throw new IllegalArgumentException("Illegal YEAR.");
+    if (isSet[MONTH] && (month < 0 || month > 11))
+      throw new IllegalArgumentException("Illegal MONTH.");
+    if (isSet[WEEK_OF_YEAR])
+      {
+	int daysInYear = 365 + leap;
+	daysInYear += (getFirstDayOfMonth(year, 0) - 1); // pad first week
+	int last = getFirstDayOfMonth(year, 11) + 4;
+	if (last > 7)
+	  last -= 7;
+	daysInYear += 7 - last;
+	int weeks = daysInYear / 7;
+	if (fields[WEEK_OF_YEAR] < 1 || fields[WEEK_OF_YEAR] > weeks)
+	  throw new IllegalArgumentException("Illegal WEEK_OF_YEAR.");
+      }
+
+    if (isSet[WEEK_OF_MONTH])
+      {
+	int weeks = (month == 1 && leap == 0) ? 4 : 5;
+	if (fields[WEEK_OF_MONTH] < 1 || fields[WEEK_OF_MONTH] > weeks)
+	  throw new IllegalArgumentException("Illegal WEEK_OF_MONTH.");
+      }
+
+    if (isSet[DAY_OF_MONTH])
+      if (fields[DAY_OF_MONTH] < 1
+          || fields[DAY_OF_MONTH] > month_days[month]
+          + ((month == 1) ? leap : 0))
+	throw new IllegalArgumentException("Illegal DAY_OF_MONTH.");
+
+    if (isSet[DAY_OF_YEAR]
+        && (fields[DAY_OF_YEAR] < 1 || fields[DAY_OF_YEAR] > 365 + leap))
+      throw new IllegalArgumentException("Illegal DAY_OF_YEAR.");
+
+    if (isSet[DAY_OF_WEEK]
+        && (fields[DAY_OF_WEEK] < 1 || fields[DAY_OF_WEEK] > 7))
+      throw new IllegalArgumentException("Illegal DAY_OF_WEEK.");
+
+    if (isSet[DAY_OF_WEEK_IN_MONTH])
+      {
+	int weeks = (month == 1 && leap == 0) ? 4 : 5;
+	if (fields[DAY_OF_WEEK_IN_MONTH] < -weeks
+	    || fields[DAY_OF_WEEK_IN_MONTH] > weeks)
+	  throw new IllegalArgumentException("Illegal DAY_OF_WEEK_IN_MONTH.");
+      }
+
+    if (isSet[AM_PM] && fields[AM_PM] != AM && fields[AM_PM] != PM)
+      throw new IllegalArgumentException("Illegal AM_PM.");
+    if (isSet[HOUR] && (fields[HOUR] < 0 || fields[HOUR] > 12))
+      throw new IllegalArgumentException("Illegal HOUR.");
+    if (isSet[HOUR_OF_DAY]
+        && (fields[HOUR_OF_DAY] < 0 || fields[HOUR_OF_DAY] > 23))
+      throw new IllegalArgumentException("Illegal HOUR_OF_DAY.");
+    if (isSet[MINUTE] && (fields[MINUTE] < 0 || fields[MINUTE] > 59))
+      throw new IllegalArgumentException("Illegal MINUTE.");
+    if (isSet[SECOND] && (fields[SECOND] < 0 || fields[SECOND] > 59))
+      throw new IllegalArgumentException("Illegal SECOND.");
+    if (isSet[MILLISECOND]
+        && (fields[MILLISECOND] < 0 || fields[MILLISECOND] > 999))
+      throw new IllegalArgumentException("Illegal MILLISECOND.");
+    if (isSet[ZONE_OFFSET]
+        && (fields[ZONE_OFFSET] < -12 * 60 * 60 * 1000L
+        || fields[ZONE_OFFSET] > 12 * 60 * 60 * 1000L))
+      throw new IllegalArgumentException("Illegal ZONE_OFFSET.");
+    if (isSet[DST_OFFSET]
+        && (fields[DST_OFFSET] < -12 * 60 * 60 * 1000L
+        || fields[DST_OFFSET] > 12 * 60 * 60 * 1000L))
+      throw new IllegalArgumentException("Illegal DST_OFFSET.");
+  }
+
+  /**
    * Converts the time field values (<code>fields</code>) to
    * milliseconds since the epoch UTC (<code>time</code>).
    *
@@ -499,20 +493,73 @@ public class GregorianCalendar extends Calendar
   protected synchronized void computeTime()
   {
     int millisInDay = 0;
-    int era = isSet[ERA] ? fields[ERA] : AD;
-    int year = isSet[YEAR] ? fields[YEAR] : 1970;
-    int month = isSet[MONTH] ? fields[MONTH] : 0;
-    int day = isSet[DAY_OF_MONTH] ? fields[DAY_OF_MONTH] : 1;
-    int minute = isSet[MINUTE] ? fields[MINUTE] : 0;
-    int second = isSet[SECOND] ? fields[SECOND] : 0;
-    int millis = isSet[MILLISECOND] ? fields[MILLISECOND] : 0;
+    int era = fields[ERA];
+    int year = fields[YEAR];
+    int month = fields[MONTH];
+    int day = fields[DAY_OF_MONTH];
+
+    int minute = fields[MINUTE];
+    int second = fields[SECOND];
+    int millis = fields[MILLISECOND];
     int[] month_days = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
     int[] dayCount = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
     int hour = 0;
 
+    if (! isLenient())
+      nonLeniencyCheck();
+
+    if (! isSet[MONTH])
+      {
+	// 5: YEAR + DAY_OF_WEEK + WEEK_OF_YEAR
+	if (isSet[DAY_OF_WEEK] || isSet[WEEK_OF_YEAR])
+	  {
+	    int first = getFirstDayOfMonth(year, 0);
+	    int offs;
+	    if ((8 - first) >= getMinimalDaysInFirstWeek())
+	      // start counting on first week
+	      offs = 1;
+	    else
+	      offs = 1 + (8 - first);
+
+	    month = 0;
+	    day = offs + 7 * (fields[WEEK_OF_YEAR] - 1);
+	    day += fields[DAY_OF_WEEK] - first;
+	  }
+	else
+	  {
+	    // 4:  YEAR + DAY_OF_YEAR
+	    month = 0;
+	    day = fields[DAY_OF_YEAR];
+	  }
+      }
+    else
+      {
+	if (isSet[DAY_OF_WEEK])
+	  {
+	    int first = getFirstDayOfMonth(year, month);
+
+	    // 3: YEAR + MONTH + DAY_OF_WEEK_IN_MONTH + DAY_OF_WEEK
+	    if (isSet[DAY_OF_WEEK_IN_MONTH])
+	      {
+		int offs = fields[DAY_OF_WEEK] - first;
+		if (offs < 0)
+		  offs += 7;
+		day = 1 + 7 * (fields[DAY_OF_WEEK_IN_MONTH] - 1);
+		day += offs;
+	      }
+	    else
+	      { // 2: YEAR + MONTH + WEEK_OF_MONTH + DAY_OF_WEEK
+		day = 1 + 7 * (fields[WEEK_OF_MONTH] - 1);
+		day += fields[DAY_OF_WEEK] - first;
+	      }
+	  }
+
+	// 1:  YEAR + MONTH + DAY_OF_MONTH
+      }
     if (era == BC && year > 0)
       year = 1 - year;
 
+    // rest of code assumes day/month/year set
     // should negative BC years be AD?
     // get the hour (but no check for validity)
     if (isSet[HOUR_OF_DAY])
@@ -528,71 +575,50 @@ public class GregorianCalendar extends Calendar
 	  hour = 0;
       }
 
-    if (isLenient())
+    // Read the era,year,month,day fields and convert as appropriate.
+    // Calculate number of milliseconds into the day
+    // This takes care of both h, m, s, ms over/underflows.
+    long allMillis = (((hour * 60L) + minute) * 60L + second) * 1000L + millis;
+    day += allMillis / (24 * 60 * 60 * 1000L);
+    millisInDay = (int) (allMillis % (24 * 60 * 60 * 1000L));
+
+    if (month < 0)
       {
-	// Read the era,year,month,day fields and convert as appropriate.
-	// Calculate number of milliseconds into the day
-	// This takes care of both h, m, s, ms over/underflows.
-	long allMillis = (((hour * 60L) + minute) * 60L + second) * 1000L
-	                 + millis;
-	day += allMillis / (24 * 60 * 60 * 1000L);
-	millisInDay = (int) (allMillis % (24 * 60 * 60 * 1000L));
-
-	if (isSet[MONTH])
+	year += (int) month / 12;
+	month = month % 12;
+	if (month < 0)
 	  {
-	    if (month < 0)
-	      {
-		year += (int) month / 12;
-		month = month % 12;
-		if (month < 0)
-		  {
-		    month += 12;
-		    year--;
-		  }
-	      }
-	    if (month > 11)
-	      {
-		year += (month / 12);
-		month = month % 12;
-	      }
-	  }
-
-	if (isSet[DAY_OF_MONTH])
-	  {
-	    month_days[1] = isLeapYear(year) ? 29 : 28;
-
-	    while (day <= 0)
-	      {
-		if (month == 0)
-		  {
-		    year--;
-		    month_days[1] = isLeapYear(year) ? 29 : 28;
-		  }
-		month = (month + 11) % 12;
-		day += month_days[month];
-	      }
-	    while (day > month_days[month])
-	      {
-		day -= (month_days[month]);
-		month = (month + 1) % 12;
-		if (month == 0)
-		  {
-		    year++;
-		    month_days[1] = isLeapYear(year) ? 29 : 28;
-		  }
-	      }
+	    month += 12;
+	    year--;
 	  }
       }
-    else
+    if (month > 11)
       {
-	// non-lenient
-	if (month < 0 || month > 11 || hour < 0 || hour >= 24 || minute < 0
-	    || minute > 59 || second < 0 || second > 59 || millis < 0
-	    || millis >= 1000)
-	  throw new IllegalArgumentException();
-	if (day < 1 || day > month_days[month])
-	  throw new IllegalArgumentException();
-	millisInDay = (((hour * 60) + minute) * 60 + second) * 1000 + millis;
+	year += (month / 12);
+	month = month % 12;
+      }
+
+    month_days[1] = isLeapYear(year) ? 29 : 28;
+
+    while (day <= 0)
+      {
+	if (month == 0)
+	  {
+	    year--;
+	    month_days[1] = isLeapYear(year) ? 29 : 28;
+	  }
+	month = (month + 11) % 12;
+	day += month_days[month];
+      }
+    while (day > month_days[month])
+      {
+	day -= (month_days[month]);
+	month = (month + 1) % 12;
+	if (month == 0)
+	  {
+	    year++;
+	    month_days[1] = isLeapYear(year) ? 29 : 28;
+	  }
       }
 
     // ok, by here we have valid day,month,year,era and millisinday
@@ -612,24 +638,19 @@ public class GregorianCalendar extends Calendar
 
     time = relativeDay * (24 * 60 * 60 * 1000L) + millisInDay;
 
-    TimeZone zone = getTimeZone();
-    int rawOffset = isSet[ZONE_OFFSET] ? fields[ZONE_OFFSET]
-                                       : zone.getRawOffset();
-
     // the epoch was a Thursday.
     int weekday = (int) (relativeDay + THURSDAY) % 7;
     if (weekday <= 0)
       weekday += 7;
     fields[DAY_OF_WEEK] = weekday;
 
-    int dstOffset = isSet[DST_OFFSET] ? fields[DST_OFFSET]
-                                      : (zone.getOffset((year < 1) ? BC : AD,
-                                                        (year < 1) ? 1 - year
-                                                                   : year,
-                                                        month, day, weekday,
-                                                        millisInDay)
-                                      - zone.getRawOffset());
+    TimeZone zone = getTimeZone();
+    int rawOffset = zone.getRawOffset();
+    int dstOffset = zone.getOffset((year < 1) ? BC : AD,
+                                   (year < 1) ? 1 - year : year, month, day,
+                                   weekday, millisInDay) - zone.getRawOffset();
     time -= (rawOffset + dstOffset);
+
     isTimeSet = true;
   }
 

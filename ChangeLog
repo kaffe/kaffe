@@ -1,5 +1,47 @@
 2005-02-03  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+	
+	2005-02-02  Sven de Marothy  <sven@physto.se>
+
+	* java/util/Calendar.java 
+	(set) Invalidate all fields on first call to set().
+
+	2005-02-02  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/text/SimpleDateFormat.java
+	Lots of documentation updates.
+	(readObject(java.io.ObjectInputStream)): Wraps
+	IllegalArgumentException as specified.
+	(compileFormat(String)): Uses standardChars
+	rather than the local pattern characters.
+	Throws IllegalArgumentException rather than
+	storing a -1 field.
+	(toString()): Extended to include all variables
+	in a better format.
+	(translateLocalizedPattern(String, String, String)):
+	Renamed to better define the use of this method.
+
+	2005-02-01  Sven de Marothy  <sven@physto.se>
+	
+	* java/util/GregorianCalendar.java
+        (computeTime): Fixed handling of time zones.
+
+	2005-02-01  Sven de Marothy  <sven@physto.se>
+	
+	* java/util/Calendar.java
+        (clear): Set values to Epoch instead of zero.
+        (set): Set isSet to the relevant field pattern instead of just the
+	field.
+        * java/util/GregorianCalendar.java
+        (getBundle): Removed.
+        (getDayOfYear): Removed.
+        (getFirstDayOfMonth): New private method.
+        (nonLeniencyCheck): New private method.
+        (computeTime): Correct handling of insufficient data.
+	
+2005-02-03  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Abort if zip can't be found.
 
 2005-02-03  Dalibor Topic  <robilad@kaffe.org>

@@ -45,6 +45,7 @@ import gnu.java.text.FormatBuffer;
 import gnu.java.text.FormatCharacterIterator;
 import gnu.java.text.StringFormatBuffer;
 
+import java.io.InvalidObjectException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
@@ -68,14 +69,12 @@ public class SimpleDateFormat extends DateFormat
    * This class is used by <code>SimpleDateFormat</code> as a
    * compiled representation of a format string.  The field
    * ID, size, and character used are stored for each sequence
-   * of pattern characters or invalid characters in the format
-   * pattern.
+   * of pattern characters.
    */
   private class CompiledField
   {
     /**
      * The ID of the field within the local pattern characters,
-     * or -1 if the sequence is invalid.
      */
     private int field;
 
@@ -106,8 +105,7 @@ public class SimpleDateFormat extends DateFormat
 
     /**
      * Retrieves the ID of the field relative to
-     * the local pattern characters, or -1 if
-     * the sequence is invalid.
+     * the local pattern characters.
      */
     public int getField()
     {
@@ -154,12 +152,81 @@ public class SimpleDateFormat extends DateFormat
     }
   }
 
+  /**
+   * A list of <code>CompiledField</code>s,
+   * representing the compiled version of the pattern.
+   *
+   * @see CompiledField
+   * @serial Ignored.
+   */
   private transient ArrayList tokens;
+
+  /**
+   * The localised data used in formatting,
+   * such as the day and month names in the local
+   * language, and the localized pattern characters.
+   *
+   * @see DateFormatSymbols
+   * @serial The localisation data.  May not be null.
+   */
   private DateFormatSymbols formatData;  // formatData
+
+  /**
+   * The date representing the start of the century
+   * used for interpreting two digit years.  For
+   * example, 24/10/2004 would cause two digit
+   * years to be interpreted as representing
+   * the years between 2004 and 2104.
+   *
+   * @see get2DigitYearStart()
+   * @see set2DigitYearStart(java.util.Date)
+   * @see Date
+   * @serial The start date of the century for parsing two digit years.
+   *         May not be null.
+   */
   private Date defaultCenturyStart;
+
+  /**
+   * The year at which interpretation of two
+   * digit years starts.
+   *
+   * @see get2DigitYearStart()
+   * @see set2DigitYearStart(java.util.Date)
+   * @serial Ignored.
+   */
   private transient int defaultCentury;
+
+  /**
+   * The non-localized pattern string.  This
+   * only ever contains the pattern characters
+   * stored in standardChars.  Localized patterns
+   * are translated to this form.
+   *
+   * @see applyPattern(String)
+   * @see applyLocalizedPattern(String)
+   * @see toPattern()
+   * @see toLocalizedPattern()
+   * @serial The non-localized pattern string.  May not be null.
+   */
   private String pattern;
+
+  /**
+   * The version of serialized data used by this class.
+   * Version 0 only includes the pattern and formatting
+   * data.  Version 1 adds the start date for interpreting
+   * two digit years.
+   *
+   * @serial This specifies the version of the data being serialized.
+   *         Version 0 (or no version) specifies just <code>pattern</code>
+   *         and <code>formatData</code>.  Version 1 adds
+   *         the <code>defaultCenturyStart</code>.  This implementation
+   *         always writes out version 1 data.
+   */
   private int serialVersionOnStream = 1; // 0 indicates JDK1.1.3 or earlier
+
+  /**
+   * For compatability.
+   */
   private static final long serialVersionUID = 4774881970558875024L;
 
   // This string is specified in the root of the CLDR.  We set it here
@@ -167,6 +234,20 @@ public class SimpleDateFormat extends DateFormat
   // since someone could theoretically change those values (though unlikely).
   private static final String standardChars = "GyMdkHmsSEDFwWahKzYeugAZ";
 
+  /**
+   * Reads the serialized version of this object.
+   * If the serialized data is only version 0,
+   * then the date for the start of the century
+   * for interpreting two digit years is computed.
+   * The pattern is parsed and compiled following the process
+   * of reading in the serialized data.
+   *
+   * @param stream the object stream to read the data from.
+   * @throws IOException if an I/O error occurs.
+   * @throws ClassNotFoundException if the class of the serialized data
+   *         could not be found.
+   * @throws InvalidObjectException if the pattern is invalid.
+   */ 
   private void readObject(ObjectInputStream stream)
     throws IOException, ClassNotFoundException
   {
@@ -182,9 +263,25 @@ public class SimpleDateFormat extends DateFormat
 
     // Set up items normally taken care of by the constructor.
     tokens = new ArrayList();
-    compileFormat(pattern);
+    try
+      {
+	compileFormat(pattern);
+      }
+    catch (IllegalArgumentException e)
+      {
+	throw new InvalidObjectException("The stream pattern was invalid.");
+      }
   }
 
+  /**
+   * Compiles the supplied non-localized pattern into a form
+   * from which formatting and parsing can be performed.
+   * This also detects errors in the pattern, which will
+   * be raised on later use of the compiled data.
+   *
+   * @param pattern the non-localized pattern to compile.
+   * @throws IllegalArgumentException if the pattern is invalid.
+   */
   private void compileFormat(String pattern) 
   {
     // Any alphabetical characters are treated as pattern characters
@@ -197,20 +294,21 @@ public class SimpleDateFormat extends DateFormat
 
     for (int i=0; i<pattern.length(); i++) {
       thisChar = pattern.charAt(i);
-      field = formatData.getLocalPatternChars().indexOf(thisChar);
+      field = standardChars.indexOf(thisChar);
       if (field == -1) {
 	current = null;
 	if ((thisChar >= 'A' && thisChar <= 'Z')
 	    || (thisChar >= 'a' && thisChar <= 'z')) {
-	  // Not a valid letter
-	  tokens.add(new CompiledField(-1,0,thisChar));
+ 	  // Not a valid letter
+	  throw new IllegalArgumentException("Invalid letter " + thisChar +
+					     "encountered at character " + i
+					     + ".");
 	} else if (thisChar == '\'') {
 	  // Quoted text section; skip to next single quote
 	  pos = pattern.indexOf('\'',i+1);
 	  if (pos == -1) {
-	    // This ought to be an exception, but spec does not
-	    // let us throw one.
-	    tokens.add(new CompiledField(-1,0,thisChar));
+	    throw new IllegalArgumentException("Quotes starting at character "
+					       + i + " not closed.");
 	  }
 	  if ((pos+1 < pattern.length()) && (pattern.charAt(pos+1) == '\'')) {
 	    tokens.add(pattern.substring(i+1,pos+1));
@@ -234,13 +332,31 @@ public class SimpleDateFormat extends DateFormat
     }
   }
 
+  /**
+   * Returns a string representation of this
+   * class.
+   *
+   * @return a string representation of the <code>SimpleDateFormat</code>
+   *         instance.
+   */
   public String toString() 
   {
-    StringBuffer output = new StringBuffer();
-    Iterator i = tokens.iterator();
-    while (i.hasNext()) {
-      output.append(i.next().toString());
-    }
+    StringBuilder output = new StringBuilder(getClass().getName());
+    output.append("[tokens=");
+    output.append(tokens);
+    output.append(", formatData=");
+    output.append(formatData);
+    output.append(", defaultCenturyStart=");
+    output.append(defaultCenturyStart);
+    output.append(", defaultCentury=");
+    output.append(defaultCentury);
+    output.append(", pattern=");
+    output.append(pattern);
+    output.append(", serialVersionOnStream=");
+    output.append(serialVersionOnStream);
+    output.append(", standardChars=");
+    output.append(standardChars);
+    output.append("]");
     return output.toString();
   }
 
@@ -271,8 +387,12 @@ public class SimpleDateFormat extends DateFormat
   }
   
   /**
-   * Creates a date formatter using the specified pattern, with the default
-   * DateFormatSymbols for the default locale.
+   * Creates a date formatter using the specified non-localized pattern,
+   * with the default DateFormatSymbols for the default locale.
+   *
+   * @param pattern the pattern to use.
+   * @throws NullPointerException if the pattern is null.
+   * @throws IllegalArgumentException if the pattern is invalid.
    */
   public SimpleDateFormat(String pattern) 
   {
@@ -280,8 +400,13 @@ public class SimpleDateFormat extends DateFormat
   }
 
   /**
-   * Creates a date formatter using the specified pattern, with the default
-   * DateFormatSymbols for the given locale.
+   * Creates a date formatter using the specified non-localized pattern,
+   * with the default DateFormatSymbols for the given locale.
+   *
+   * @param pattern the non-localized pattern to use.
+   * @param locale the locale to use for the formatting symbols.
+   * @throws NullPointerException if the pattern is null.
+   * @throws IllegalArgumentException if the pattern is invalid.
    */
   public SimpleDateFormat(String pattern, Locale locale) 
   {
@@ -299,8 +424,14 @@ public class SimpleDateFormat extends DateFormat
   }
 
   /**
-   * Creates a date formatter using the specified pattern. The
-   * specified DateFormatSymbols will be used when formatting.
+   * Creates a date formatter using the specified non-localized
+   * pattern. The specified DateFormatSymbols will be used when
+   * formatting.
+   *
+   * @param pattern the non-localized pattern to use.
+   * @param formatData the formatting symbols to use.
+   * @throws NullPointerException if the pattern is null.
+   * @throws IllegalArgumentException if the pattern is invalid.
    */
   public SimpleDateFormat(String pattern, DateFormatSymbols formatData)
   {
@@ -316,9 +447,6 @@ public class SimpleDateFormat extends DateFormat
     numberFormat.setParseIntegerOnly (true);
     numberFormat.setMaximumFractionDigits (0);
   }
-
-  // What is the difference between localized and unlocalized?  The
-  // docs don't say.
 
   /**
    * This method returns a string with the formatting pattern being used
@@ -340,7 +468,7 @@ public class SimpleDateFormat extends DateFormat
   public String toLocalizedPattern()
   {
     String localChars = formatData.getLocalPatternChars();
-    return applyLocalizedPattern (pattern, standardChars, localChars);
+    return translateLocalizedPattern(pattern, standardChars, localChars);
   }
 
   /**
@@ -348,6 +476,8 @@ public class SimpleDateFormat extends DateFormat
    * object.  This string is not localized.
    *
    * @param pattern The new format pattern.
+   * @throws NullPointerException if the pattern is null.
+   * @throws IllegalArgumentException if the pattern is invalid.
    */
   public void applyPattern(String pattern)
   {
@@ -361,16 +491,34 @@ public class SimpleDateFormat extends DateFormat
    * object.  This string is localized.
    *
    * @param pattern The new format pattern.
+   * @throws NullPointerException if the pattern is null.
+   * @throws IllegalArgumentException if the pattern is invalid.
    */
   public void applyLocalizedPattern(String pattern)
   {
     String localChars = formatData.getLocalPatternChars();
-    pattern = applyLocalizedPattern (pattern, localChars, standardChars);
+    pattern = translateLocalizedPattern(pattern, localChars, standardChars);
     applyPattern(pattern);
   }
 
-  private String applyLocalizedPattern(String pattern,
-				       String oldChars, String newChars)
+  /**
+   * Translates either from or to a localized variant of the pattern
+   * string.  For example, in the German locale, 't' (for 'tag') is
+   * used instead of 'd' (for 'date').  This method translates
+   * a localized pattern (such as 'ttt') to a non-localized pattern
+   * (such as 'ddd'), or vice versa.  Non-localized patterns use
+   * a standard set of characters, which match those of the U.S. English
+   * locale.
+   *
+   * @param pattern the pattern to translate.
+   * @param oldChars the old set of characters (used in the pattern).
+   * @param newChars the new set of characters (which will be used in the
+   *                 pattern).
+   * @return a version of the pattern using the characters in
+   *         <code>newChars</code>.
+   */
+  private String translateLocalizedPattern(String pattern,
+					   String oldChars, String newChars)
   {
     int len = pattern.length();
     StringBuffer buf = new StringBuffer(len);
