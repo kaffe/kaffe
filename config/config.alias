@@ -7,6 +7,7 @@ case "$Khost_cpu" in
 hppa*)		Khost_cpu=parisc ;;
 i[3456]86)	Khost_cpu=i386 ;;
 sa110)		Khost_cpu=arm ;;
+amd64)		Khost_cpu=x86_64 ;;
 arm32)		Khost_cpu=arm ;;
 armv*[lb])	Khost_cpu=arm ;;
 mipsel)		Khost_cpu=mips ;;
