@@ -1313,7 +1313,6 @@ Hjava_lang_Class *userLoadClass(classEntry *ce,
 				errorInfo *einfo)
 {
 	Hjava_lang_Class *retval = NULL;
-	JNIEnv *env = THREAD_JNIENV();
 	Hjava_lang_String *jname;
 	jthrowable excpending;
 	Method *meth;
