@@ -1,3 +1,9 @@
+2003-05-17 Benja Fallenstein <b.fallenstein@gmx.de>
+
+	* libraries/javalib/java/awt/event/MouseEvent.java:
+	(MOUSE_WHEEL) new constant.
+	(MOUSE_LAST) increased to make space for MOUSE_WHEEL.
+
 2003-05-15 Tim Stack <stack@cs.utah.edu>
 
 	* configure,

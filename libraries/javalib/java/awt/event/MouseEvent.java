@@ -22,7 +22,7 @@ public class MouseEvent
 	protected int clickCount;
 	protected boolean isPopupTrigger;
 	final public static int MOUSE_FIRST = 500;
-	final public static int MOUSE_LAST = 506;
+	final public static int MOUSE_LAST = 507;
 	final public static int MOUSE_CLICKED = MOUSE_FIRST;
 	final public static int MOUSE_PRESSED = MOUSE_FIRST + 1;
 	final public static int MOUSE_RELEASED = MOUSE_FIRST + 2;
@@ -30,6 +30,7 @@ public class MouseEvent
 	final public static int MOUSE_ENTERED = MOUSE_FIRST + 4;
 	final public static int MOUSE_EXITED = MOUSE_FIRST + 5;
 	final public static int MOUSE_DRAGGED = MOUSE_FIRST + 6;
+	final public static int MOUSE_WHEEL = MOUSE_FIRST + 7;
 
 	private static final String [] MOUSE_EVENTS = {
 		"MOUSE_CLICKED",
