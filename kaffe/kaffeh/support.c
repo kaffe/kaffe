@@ -866,7 +866,11 @@ kaffeh_findClass(const char* nm)
 				continue;
 			}
 
-			classFileInit(&hand, buf, (size_t)sbuf.st_size, CP_DIR);
+			classFileInit(&hand,
+				      buf,
+				      buf,
+				      (size_t)sbuf.st_size,
+				      CP_DIR);
 
 			objectDepth++;
 			/* savepool = constant_pool; */
@@ -909,7 +913,11 @@ kaffeh_findClass(const char* nm)
 				continue;
                         }
 
-			classFileInit(&hand, buf, jentry->uncompressedSize, CP_ZIPFILE);
+			classFileInit(&hand,
+				      buf,
+				      buf,
+				      jentry->uncompressedSize,
+				      CP_ZIPFILE);
 
 			objectDepth++;
 			/* savepool = constant_pool; */

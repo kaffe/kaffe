@@ -73,7 +73,7 @@ static struct _libHandle {
 } libHandle[MAXLIBS];
 
 static iStaticLock	libraryLock = KAFFE_STATIC_LOCK_INITIALIZER; /* mutex on all intern operations */
-static const char *libraryPath = NULL;
+static char *libraryPath = NULL;
 
 extern JavaVM Kaffe_JavaVM;
 

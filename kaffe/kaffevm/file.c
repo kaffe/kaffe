@@ -27,11 +27,16 @@
  * Init a a classFile struct to point to the given buffer.
  */
 void 
-classFileInit(classFile* cf, const unsigned char* buf, size_t len, ClassFileType cft)
+classFileInit(classFile* cf,
+	      unsigned char* mem,
+	      const unsigned char* buf,
+	      size_t len,
+	      ClassFileType cft)
 {
 	assert (((buf == NULL) && (len == 0))
 		 || ((buf != NULL) && (len != 0)));
 
+	cf->mem = mem;
 	cf->base = cf->cur = buf;
 	cf->size = len;
 	cf->type = cft;

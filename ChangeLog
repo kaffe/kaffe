@@ -1,5 +1,22 @@
 2004-12-21  Timothy S. Stack  <stack@cs.utah.edu>
 
+	* kaffe/kaffeh/support.c, kaffe/kaffevm/file.h,
+	kaffe/kaffevm/file.c, kaffe/kaffevm/jni/jni.c,
+	libraries/clib/native/ClassLoader.c:
+	Be really pedantic about handling const variables and slots in the
+	classFile struct.
+	
+	* kaffe/kaffevm/findInJar.c:
+	Revert a couple changes from 1.63.
+
+	* kaffe/kaffevm/external.c:
+	Remove const from libraryPath variable.
+
+	* kaffe/kaffevm/jit3/machine.c:
+	Add const to engine_name variable.
+
+2004-12-21  Timothy S. Stack  <stack@cs.utah.edu>
+
 	* kaffe/kaffevm/jit/machine.h, kaffe/kaffevm/jit/machine.c:
 	Add jitCodeHeader support.
 

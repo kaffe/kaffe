@@ -44,7 +44,11 @@ java_lang_VMClassLoader_defineClass(struct Hjava_lang_ClassLoader* this, struct 
 	{
 		SignalError("java.lang.ClassFormatError", "truncated class");
 	}
-	classFileInit(&hand, &unhand_array(data)->body[offset], (unsigned) length, CP_BYTEARRAY);
+	classFileInit(&hand,
+		      NULL,
+		      &unhand_array(data)->body[offset],
+		      (unsigned) length,
+		      CP_BYTEARRAY);
 
 	clazz = newClass();
 	if (clazz == 0) {

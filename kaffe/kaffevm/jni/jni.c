@@ -193,7 +193,7 @@ Kaffe_DefineClass(JNIEnv* env, const char *name, jobject loader, const jbyte* bu
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	classFileInit(&hand, buf, len, CP_BYTEARRAY);
+	classFileInit(&hand, NULL, buf, (size_t)len, CP_BYTEARRAY);
 
 	cls = newClass();
 	if (cls == 0) {

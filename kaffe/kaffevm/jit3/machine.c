@@ -61,7 +61,7 @@
 #include "kaffe_jni.h"
 #include "native-wrapper.h"
 
-char* engine_name = "Just-in-time v3";
+const char* engine_name = "Just-in-time v3";
 
 /**
  * top of the operand stack. localsz <= stackno < localsz+stacksz

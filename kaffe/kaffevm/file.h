@@ -31,6 +31,7 @@ typedef enum ClassFileType {
 } ClassFileType;
  
 typedef struct classFile {
+	unsigned char* mem;
 	const unsigned char* base;
 	const unsigned char* cur;
 	size_t	        size;
@@ -41,6 +42,7 @@ typedef struct classFile {
  * Init a a classFile struct to point to the given buffer.
  */
 extern void classFileInit(classFile* cf,
+			  unsigned char* mem,
 			  const unsigned char* buf,
 			  size_t len,
 			  ClassFileType cft);

@@ -136,6 +136,7 @@ DBG(CLASSLOOKUP,
 		class = newClass();
 		if (class == NULL) {
 			postOutOfMemory(einfo);
+			KFREE(hand.mem);
 			return (NULL);
 		}
 
@@ -150,6 +151,7 @@ DBG(CLASSLOOKUP,
 					-(jlong)GCSIZEOF(hand.base));
 			}
 #endif
+			KFREE(hand.mem);
 		}
 		return (class);
 
@@ -202,7 +204,7 @@ DBG(CLASSLOOKUP,dprintf("Processing classpath entry '%s'\n", ptr->path); );
 		case CP_ZIPFILE:
 		{
 			jarEntry* entry;
-			const char* data;
+			char* data;
 
 DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); );
 			if (ptr->u.jar == 0) {
@@ -229,7 +231,11 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); );
 				goto done;
 			}
 
-			classFileInit(hand, data, entry->uncompressedSize, CP_ZIPFILE);
+			classFileInit(hand,
+				      data,
+				      data,
+				      entry->uncompressedSize,
+				      CP_ZIPFILE);
 
 			if (Kaffe_JavaVMArgs.enableVerboseClassloading) {
 				dprintf("Loading %s(%s)", cname, ptr->path);
@@ -304,7 +310,11 @@ DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); );
 				}
 			}
 
-			classFileInit(hand, data, (unsigned)sbuf.st_size, CP_DIR);
+			classFileInit(hand,
+				      data,
+				      data,
+				      (unsigned)sbuf.st_size,
+				      CP_DIR);
 
 			KCLOSE(fp);
 			if (Kaffe_JavaVMArgs.enableVerboseClassloading) {
