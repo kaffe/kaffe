@@ -17,6 +17,9 @@ Wed Feb  9 11:18:38 PST 2000  Archie Cobbs <archie@whistle.com>
 	URL's using the FTP protocol handler, as JDK does
 	* libraries/javalib/java/util/AbstractMap.java: add the contains()
 	method to the Collection returned by values() -> map.containsValue()
+	* libraries/javalib/kaffe/lang/UNIXProcess.java,
+	libraries/clib/native/UNIXProcess.c: add new methods sendSignal()
+	and getPID()
 
 Tue Feb 08 15:30:31 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
 
