@@ -279,8 +279,9 @@ public final class Security {
 
 		// Instantiate class
 		try {
+			ClassLoader cl = ClassLoader.getSystemClassLoader();
 			return new Engine(p, alg,
-				Class.forName(name).newInstance());
+				cl.loadClass(name).newInstance());
 		} catch (ClassNotFoundException e) {
 			throw new NoSuchAlgorithmException("class "
 				+ name + " not found");
