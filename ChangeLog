@@ -1,3 +1,14 @@
+Fri Apr 30 22:40:15 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* java/net/{Plain}DatagramSocketImpl.java: add new methods
+	getTimeToLive() and setTimeToLive()
+	* java/net/DatagramPacket.java: simplify getAddress()
+	* java/net/DatagramSocket.java: add connect() and disconnect()
+	methods and some missing security checks
+	* libraries/clib/net/PlainDatagramSocketImpl.c: set hostName
+	for received packets
+	* ibraries/clib/awt/X/imgjpeg.c: eliminate compiler warnings
+
 Fri Apr 30 16:20:28 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/clib/net/PlainDatagramSocketImpl.c: zero out hostname
