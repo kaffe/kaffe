@@ -303,17 +303,22 @@ statClass(Hjava_lang_Class *clazz, int *total)
 	 * under "other-fixed".) and the memory for other misc objects
 	 */
 	misc += SIZE_IFNONZERO(clazz);		/* myself */
-	misc += SIZE_IFNONZERO(clazz->dtable);
-	misc += SIZE_IFNONZERO(CLASS_CONSTANTS(clazz)->data);
-	misc += SIZE_IFNONZERO(CLASS_FIELDS(clazz));
-	misc += SIZE_IFNONZERO(CLASS_STATICDATA(clazz));
+	if (!CLASS_IS_PRIMITIVE(clazz)) {
+		/* For primitives, dtable is -1 and methods is the
+		 * class of the corresponding array
+		 */
+		misc += SIZE_IFNONZERO(clazz->dtable);
+		misc += SIZE_IFNONZERO(CLASS_CONSTANTS(clazz)->data);
+		misc += SIZE_IFNONZERO(CLASS_FIELDS(clazz));
+		misc += SIZE_IFNONZERO(CLASS_STATICDATA(clazz));
 
-	miscfixed += SIZE_IFNONZERO(clazz->if2itable);
-	miscfixed += SIZE_IFNONZERO(clazz->itable2dtable);
-	miscfixed += SIZE_IFNONZERO(clazz->gc_layout);
-	miscfixed += SIZE_IFNONZERO(clazz->sourcefile);
-	miscfixed += SIZE_IFNONZERO(clazz->implementors);
-	if (!CLASS_IS_ARRAY(clazz)) {
+		miscfixed += SIZE_IFNONZERO(clazz->if2itable);
+		miscfixed += SIZE_IFNONZERO(clazz->itable2dtable);
+		miscfixed += SIZE_IFNONZERO(clazz->gc_layout);
+		miscfixed += SIZE_IFNONZERO(clazz->sourcefile);
+		miscfixed += SIZE_IFNONZERO(clazz->implementors);
+	}
+	if (!CLASS_IS_ARRAY(clazz) && !CLASS_IS_PRIMITIVE(clazz)) {
 		misc += SIZE_IFNONZERO(clazz->interfaces);
 	}
 
@@ -325,6 +330,7 @@ statClass(Hjava_lang_Class *clazz, int *total)
 		int i, n = CLASS_NMETHODS(clazz);
 		misc += SIZE_IFNONZERO(CLASS_METHODS(clazz));
 		for (i = 0; i < n; m++, i++) {
+			miscfixed += SIZE_IFNONZERO(m->parsed_sig);
 			miscfixed += SIZE_IFNONZERO(m->lines);
 			miscfixed += SIZE_IFNONZERO(m->declared_exceptions);
 			misc += SIZE_IFNONZERO(m->exception_table);
