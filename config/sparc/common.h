@@ -45,12 +45,12 @@
   case 2:								\
     o1 = (CALL)->args[1].i;						\
   case 1:								\
+    o0 = (CALL)->args[0].i;						\
   case 0:								\
     asm ("call %2,0\n							\
-          ld %3, %0\n"							\
+          nop\n"							\
 	: "=r" (o0), "=r" (o1)						\
 	: "r" ((CALL)->function),					\
-	  "m" ((CALL)->args?(CALL)->args[0].i:0),			\
 	  "0" (o0), "1" (o1), "r" (o2), "r" (o3), "r" (o4), "r" (o5)	\
 	: "g1", "g2", "g3", "g4", "o7", "cc"				\
 	);								\
