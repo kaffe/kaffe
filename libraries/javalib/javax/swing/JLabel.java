@@ -385,7 +385,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
    */
   public void setDisplayedMnemonic(char mnemonic)
   {
-    setDisplayedMnemonic((int) mnemonic);
+    setDisplayedMnemonic((int) Character.toUpperCase(mnemonic));
   }
 
   /**
@@ -399,7 +399,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
   }
 
   /**
-   * This method sets which character in the text will be  the underlined
+   * This method sets which character in the text will be the underlined
    * character. If the given index is -1, then this indicates  that there is
    * no mnemonic. If the index is less than -1 or if the index is equal to
    * the length, this method will throw an IllegalArgumentException.
@@ -410,19 +410,22 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
    *         length.
    */
   public void setDisplayedMnemonicIndex(int newIndex)
-                                 throws IllegalArgumentException
+    throws IllegalArgumentException
   {
     if (newIndex < -1 || (text != null && newIndex >= text.length()))
       throw new IllegalArgumentException();
 
-    if (text == null || text.charAt(newIndex) != displayedMnemonic)
+    if (newIndex == -1
+        || text == null
+	|| text.charAt(newIndex) != displayedMnemonic)
       newIndex = -1;
 
     if (newIndex != displayedMnemonicIndex)
       {
-	firePropertyChange(DISPLAYED_MNEMONIC_INDEX_CHANGED_PROPERTY,
-	                   displayedMnemonicIndex, newIndex);
+	int oldIndex = displayedMnemonicIndex;
 	displayedMnemonicIndex = newIndex;
+	firePropertyChange(DISPLAYED_MNEMONIC_INDEX_CHANGED_PROPERTY,
+	                   oldIndex, newIndex);
       }
   }
 

@@ -1,5 +1,17 @@
 2004-12-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/swing/JLabel.java:
+	Resynced with GNU Classpath.
+	
+	2004-12-21  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JLabel.java
+	(setDisplayedMnemonicIndex): Handle index == -1 and fire
+	PropertyChangeEvent after property got set to the new index.
+	(setDisplayedMnemonic): Use only upper case characters.
+	
+2004-12-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/JApplet.java,
 	libraries/javalib/javax/swing/JInternalFrame.java,
 	libraries/javalib/javax/swing/JWindow.java:
