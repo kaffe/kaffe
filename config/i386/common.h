@@ -22,6 +22,10 @@
  *  This function is mandatory for both JIT and Interpreter (since stubs
  *  have now been deprecated).
  */
+/* Jason <jbaker@cs.utah.edu> notes that we must not use %ebx because it's
+ * used for shared lib support on ELF systems (Linux, FreeBSD3.0) and gcc
+ * will not save it before it uses it again, despite what we say in asm().
+ */
 #define	sysdepCallMethod(CALL)						\
 	asm volatile ("							\n\
 1:									\n\
@@ -38,22 +42,22 @@
 		jmp 1b							\n\
 3:									\n\
 		call *%3						\n\
-		movl %5,%%ebx						\n\
+		movl %5,%%edi						\n\
 		movb %4,%%cl						\n\
 		cmpb $0x46,%%cl						\n\
 		jne 4f							\n\
-		fstps (%%ebx)						\n\
+		fstps (%%edi)						\n\
 		jmp 6f							\n\
 4:									\n\
 		cmpb $0x44,%%cl						\n\
 		jne 5f							\n\
-		fstpl (%%ebx)						\n\
+		fstpl (%%edi)						\n\
 		jmp 6f							\n\
 5:									\n\
-		movl %%eax,(%%ebx)					\n\
+		movl %%eax,(%%edi)					\n\
 		cmpb $0x4a,%%cl						\n\
 		jne 6f							\n\
-		movl %%edx,4(%%ebx)					\n\
+		movl %%edx,4(%%edi)					\n\
 6:									\n\
 	" :								\
 	  : "r" ((CALL)->nrargs),					\
