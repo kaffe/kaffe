@@ -175,7 +175,7 @@ java_lang_Runtime_traceMethodCalls(struct Hjava_lang_Runtime* this, jbool on)
  * Inform the runtime that it must run the finalizer when it exits.
  */
 void
-java_lang_Runtime_runFinalizersOnExit0(jbool on)
+java_lang_Runtime_runFinalizersOnExit(jbool on)
 {
 	runFinalizerOnExit = on;
 }
