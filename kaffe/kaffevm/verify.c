@@ -305,6 +305,15 @@ printConstantPool(const Hjava_lang_Class* class)
 #endif /* !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG)) */
 
 
+/* Helper function for pool errors */
+static inline
+bool
+poolError(Hjava_lang_Class* class, errorInfo *einfo)
+{
+	postExceptionMessage(einfo, JAVA_LANG(ClassFormatError), "malformed constant pool in class \"%s\"", CLASS_CNAME(class));
+	return (false);
+}
+
 /*
  * Verify pass 2:  Check the internal consistency of the class file
  *  but do not check the bytecode.  If at any point we find an error in the
@@ -515,11 +524,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 	 * under Transvirtual, though even this has been modified.
 	 *********************************************************/
 	/* error message for step 3 */
-#define POOLERROR \
-	postExceptionMessage(einfo, JAVA_LANG(ClassFormatError), "malformed constant pool in class \"%s\"", CLASS_CNAME(class)); \
-	return (false)
-	
-	
+		
 	pool = CLASS_CONSTANTS(class);
 	
         /* Constant pool loaded - check it's integrity. */
@@ -530,19 +535,19 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 		case CONSTANT_InterfaceMethodref:
 			tag = CONST_TAG(FIELDREF_CLASS(idx, pool), pool);
 			if (tag != CONSTANT_Class && tag != CONSTANT_ResolvedClass) {
-				POOLERROR;
+				return poolError(class, einfo);
 			}
 			if (CONST_TAG(FIELDREF_NAMEANDTYPE(idx, pool), pool) != CONSTANT_NameAndType) {
-				POOLERROR;
+				return poolError(class, einfo);
 			}
 			break;
 			
 		case CONSTANT_NameAndType:
 			if (CONST_TAG(NAMEANDTYPE_NAME(idx, pool), pool) != CONSTANT_Utf8) {
-				POOLERROR;
+				return poolError(class, einfo);
 			}
 			if (CONST_TAG(NAMEANDTYPE_SIGNATURE(idx, pool), pool) != CONSTANT_Utf8) {
-				POOLERROR;
+				return poolError(class, einfo);
 			}
 			break;
 			
@@ -572,11 +577,11 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 			
 		default:
 		        /* undefined tag */
-			POOLERROR;
+			return poolError(class, einfo);
 			break;
 		}
 	}
-#undef POOLERROR	
+
 	DBG(VERIFY2, printConstantPool(class));
 
 	
