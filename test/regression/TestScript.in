@@ -46,7 +46,7 @@ compile()
 	$VERBOSE ${JAVAC} -d . ${JAVAC_FLAGS} ${1+"$@"}
 	eval ${JAVAC} -d . ${JAVAC_FLAGS} ${1+"$@"} > ${RESULT} 2>&1
 	if echo " $JAVAC_FLAGS" | grep " -nowarn" >/dev/null; then
-		OUTPUT=`cat ${RESULT} | grep -v warning`
+		OUTPUT=`cat ${RESULT} | sed '/warning/d; /caution/d'`
 	else
 		OUTPUT=`cat ${RESULT}`
 	fi
