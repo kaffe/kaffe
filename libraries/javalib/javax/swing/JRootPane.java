@@ -35,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package javax.swing;
 
 import java.awt.BorderLayout;
@@ -44,9 +45,9 @@ import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.awt.LayoutManager2;
 import java.io.Serializable;
+
 import javax.accessibility.AccessibleRole;
 import javax.swing.plaf.RootPaneUI;
-
 
 /**
  * This class is where JComponents are added to. Unlike awt where you could
@@ -481,7 +482,7 @@ public class JRootPane extends JComponent
    *
    * @return DOCUMENT ME!
    */
-  protected JComponent createContentPane()
+  protected Container createContentPane()
   {
     JPanel p = new JPanel();
     p.setName(this.getName() + ".contentPane");

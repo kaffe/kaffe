@@ -35,19 +35,17 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package javax.swing.text;
 
 import java.awt.AWTEvent;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.InputMethodListener;
 import java.awt.event.KeyEvent;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -58,7 +56,6 @@ import javax.accessibility.AccessibleStateSet;
 import javax.accessibility.AccessibleText;
 import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.Icon;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JViewport;
@@ -72,7 +69,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.plaf.InputMapUIResource;
 import javax.swing.plaf.TextUI;
-
 
 public abstract class JTextComponent extends JComponent
   implements Scrollable, Accessible
@@ -629,7 +625,7 @@ public abstract class JTextComponent extends JComponent
    * @see #setKeymap()
    * @see #keymap
    */
-  Keymap getKeymap() 
+  public Keymap getKeymap() 
   {
     return keymap;
   }

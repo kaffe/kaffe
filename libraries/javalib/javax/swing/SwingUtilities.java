@@ -35,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package javax.swing;
 
 import java.applet.Applet;
@@ -56,9 +57,9 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
+
 import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.plaf.InputMapUIResource;
-
 
 /**
  * This class contains a number of static utility functions which are

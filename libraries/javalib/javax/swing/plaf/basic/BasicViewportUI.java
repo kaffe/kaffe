@@ -1,4 +1,4 @@
-/* BasicViewportUI.java
+/* BasicViewportUI.java --
    Copyright (C) 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -45,6 +45,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.ImageObserver;
+
 import javax.swing.JComponent;
 import javax.swing.JViewport;
 import javax.swing.ViewportLayout;

@@ -35,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package javax.swing.plaf.basic;
 
 import java.awt.Color;
@@ -58,7 +59,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.EventListener;
+
 import javax.accessibility.Accessible;
 import javax.swing.CellRendererPane;
 import javax.swing.ComboBoxEditor;
@@ -66,21 +67,14 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
-import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 import javax.swing.plaf.ComboBoxUI;
 import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.basic.BasicComboPopup;
-import javax.swing.plaf.basic.BasicGraphicsUtils;
-
 
 /**
  * UI Delegate for JComboBox

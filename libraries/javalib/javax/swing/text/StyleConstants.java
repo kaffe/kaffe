@@ -35,16 +35,55 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package javax.swing.text;
 
 import java.awt.Color;
 import java.awt.Component;
+
 import javax.swing.Icon;
 
 public class StyleConstants
 {
+  public static final int ALIGN_LEFT = 0;
+  public static final int ALIGN_CENTER = 1;
+  public static final int ALIGN_RIGHT = 2;
+  public static final int ALIGN_JUSTIFIED = 3;
+
+  public static final Object Background = CharacterConstants.Background;
+  public static final Object BidiLevel = CharacterConstants.BidiLevel;
+  public static final Object Bold = CharacterConstants.Bold;
+  public static final Object ComponentAttribute = CharacterConstants.ComponentAttribute;
+  public static final Object FontFamily = CharacterConstants.Family;
+  public static final Object FontSize = CharacterConstants.Size;
+  public static final Object Foreground = CharacterConstants.Foreground;
+  public static final Object IconAttribute = CharacterConstants.IconAttribute;
+  public static final Object Italic = CharacterConstants.Italic;
+  public static final Object StrikeThrough = CharacterConstants.StrikeThrough;
+  public static final Object Subscript = CharacterConstants.Subscript;
+  public static final Object Superscript = CharacterConstants.Superscript;
+  public static final Object Underline = CharacterConstants.Underline;
+
+  public static final Object Alignment = ParagraphConstants.Alignment;
+  public static final Object FirstLineIndent = ParagraphConstants.FirstLineIndent;
+  public static final Object LeftIndent = ParagraphConstants.LeftIndent;
+  public static final Object LineSpacing = ParagraphConstants.LineSpacing;
+  public static final Object Orientation = ParagraphConstants.Orientation;
+  public static final Object RightIndent = ParagraphConstants.RightIndent;
+  public static final Object SpaceAbove = ParagraphConstants.SpaceAbove;
+  public static final Object SpaceBelow = ParagraphConstants.SpaceBelow;
+  public static final Object TabSet = ParagraphConstants.TabSet;
+
+  public static final String ComponentElementName = "component";
+  public static final String IconElementName = "icon";
+
+  public static final Object ComposedTextAttribute = new StyleConstants("composed text");
+  public static final Object ModelAttribute = new StyleConstants("model");
+  public static final Object NameAttribute = new StyleConstants("name");
+  public static final Object ResolveAttribute = new StyleConstants("resolver");
 
   String keyname;
+  
   private StyleConstants(String k) 
   {
     keyname = k;
@@ -54,43 +93,6 @@ public class StyleConstants
   {
     return keyname;
   }
-
-  public static int ALIGN_CENTER;
-  public static int ALIGN_JUSTIFIED;
-  public static int ALIGN_LEFT;
-  public static int ALIGN_RIGHT;
-
-  public static Object Background = CharacterConstants.Background;
-  public static Object BidiLevel = CharacterConstants.BidiLevel;
-  public static Object Bold = CharacterConstants.Bold;
-  public static Object ComponentAttribute = CharacterConstants.ComponentAttribute;
-  public static Object FontFamily = CharacterConstants.Family;
-  public static Object FontSize = CharacterConstants.Size;
-  public static Object Foreground = CharacterConstants.Foreground;
-  public static Object IconAttribute = CharacterConstants.IconAttribute;
-  public static Object Italic = CharacterConstants.Italic;
-  public static Object StrikeThrough = CharacterConstants.StrikeThrough;
-  public static Object Subscript = CharacterConstants.Subscript;
-  public static Object Superscript = CharacterConstants.Superscript;
-  public static Object Underline = CharacterConstants.Underline;
-
-  public static Object Alignment = ParagraphConstants.Alignment;
-  public static Object FirstLineIndent = ParagraphConstants.FirstLineIndent;
-  public static Object LeftIndent = ParagraphConstants.LeftIndent;
-  public static Object LineSpacing = ParagraphConstants.LineSpacing;
-  public static Object Orientation = ParagraphConstants.Orientation;
-  public static Object RightIndent = ParagraphConstants.RightIndent;
-  public static Object SpaceAbove = ParagraphConstants.SpaceAbove;
-  public static Object SpaceBelow = ParagraphConstants.SpaceBelow;
-  public static Object TabSet = ParagraphConstants.TabSet;
-
-  public static String ComponentElementName = new String("component");
-  public static String IconElementName = new String("icon");
-
-  public static Object ComposedTextAttribute = new StyleConstants("composed text");
-  public static Object ModelAttribute = new StyleConstants("model");
-  public static Object NameAttribute = new StyleConstants("name");
-  public static Object ResolveAttribute = new StyleConstants("resolver");
 
   public static int getAlignment(AttributeSet a)
   {

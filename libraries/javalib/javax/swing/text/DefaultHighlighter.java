@@ -44,10 +44,6 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.Vector;
 
-import javax.swing.text.JTextComponent;
-import javax.swing.text.View;
-
-
 public class DefaultHighlighter extends LayeredHighlighter
 {
   public static class DefaultHighlightPainter

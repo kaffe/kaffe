@@ -1,5 +1,5 @@
 /* DefaultTreeCellRenderer.java --
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -44,6 +44,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTree;

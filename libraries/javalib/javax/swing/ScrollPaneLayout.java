@@ -43,9 +43,10 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
-import java.awt.Rectangle;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.io.Serializable;
+
 import javax.swing.border.Border;
 
 /**

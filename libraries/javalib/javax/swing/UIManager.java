@@ -45,6 +45,7 @@ import java.awt.Insets;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.Locale;
+
 import javax.swing.border.Border;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;

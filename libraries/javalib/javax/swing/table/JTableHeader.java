@@ -1,4 +1,4 @@
-/* JTableHeader.java
+/* JTableHeader.java --
    Copyright (C) 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package javax.swing.table;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -47,7 +45,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.beans.PropertyChangeEvent;
+import java.awt.event.FocusListener;
 import java.beans.PropertyChangeListener;
 import java.util.Locale;
 
@@ -55,9 +53,9 @@ import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleAction;
 import javax.accessibility.AccessibleComponent;
 import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleSelection;
 import javax.accessibility.AccessibleStateSet;
-import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleText;
 import javax.accessibility.AccessibleValue;
 import javax.swing.JComponent;

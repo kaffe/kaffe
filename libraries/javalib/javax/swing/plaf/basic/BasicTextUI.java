@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -56,7 +55,6 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
-import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.TextUI;
 import javax.swing.plaf.UIResource;
 import javax.swing.text.BadLocationException;
@@ -70,7 +68,6 @@ import javax.swing.text.Element;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Keymap;
-import javax.swing.text.PlainDocument;
 import javax.swing.text.PlainView;
 import javax.swing.text.Position;
 import javax.swing.text.View;

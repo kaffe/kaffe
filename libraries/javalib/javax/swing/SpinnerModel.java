@@ -1,5 +1,5 @@
 /* SpinnerModel.java -- 
-   Copyright (C) 2003 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -45,7 +45,6 @@ import javax.swing.event.ChangeListener;
  */
 public interface SpinnerModel
 {
-
   /**
    * Sets the current value of the model to that specified.
    * Implementations can choose to refuse to accept the value
@@ -68,7 +67,7 @@ public interface SpinnerModel
    *
    * @return The current value.
    */
-  public Object getValue();
+  Object getValue();
 
   /**
    * Returns the next value from the model.  If the model is bounded,
@@ -78,7 +77,7 @@ public interface SpinnerModel
    * @return The next value, or null if there are no more values
    *         to retrieve.
    */
-  public Object getNextValue();
+  Object getNextValue();
 
   /**
    * Returns the previous value from the model.  If the model is
@@ -88,7 +87,7 @@ public interface SpinnerModel
    * @return The previous value, or null if there are no more
    *         values to retrieve.
    */
-  public Object getPreviousValue();
+  Object getPreviousValue();
 
   /**
    * Adds a <code>ChangeListener</code> to the list of registered

@@ -7,6 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
+
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -34,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package javax.swing.plaf.basic;
 
 import java.awt.Color;
@@ -52,6 +54,7 @@ import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
@@ -64,10 +67,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.UIManager;
 import javax.swing.UIDefaults;
-
+import javax.swing.UIManager;
 
 /**
  * This class acts as a titlebar for JInternalFrames.
@@ -77,7 +78,7 @@ public class BasicInternalFrameTitlePane extends JComponent
   /**
    * The Action responsible for closing the JInternalFrame.
    */
-  protected class CloseAction extends AbstractAction
+  public class CloseAction extends AbstractAction
   {
     /**
      * This method is called when something closes the JInternalFrame.
@@ -102,7 +103,7 @@ public class BasicInternalFrameTitlePane extends JComponent
   /**
    * This Action is responsible for iconifying the JInternalFrame.
    */
-  protected class IconifyAction extends AbstractAction
+  public class IconifyAction extends AbstractAction
   {
     /**
      * This method is called when the user wants to iconify the
@@ -128,7 +129,7 @@ public class BasicInternalFrameTitlePane extends JComponent
   /**
    * This Action is responsible for maximizing the JInternalFrame.
    */
-  protected class MaximizeAction extends AbstractAction
+  public class MaximizeAction extends AbstractAction
   {
     /**
      * This method is called when the user wants to maximize the
@@ -154,7 +155,7 @@ public class BasicInternalFrameTitlePane extends JComponent
   /**
    * This Action is responsible for dragging the JInternalFrame.
    */
-  protected class MoveAction extends AbstractAction
+  public class MoveAction extends AbstractAction
   {
     /**
      * This method is called when the user wants to drag the JInternalFrame.
@@ -171,7 +172,7 @@ public class BasicInternalFrameTitlePane extends JComponent
    * This Action is responsible for restoring the JInternalFrame. Restoring
    * the JInternalFrame is the same as setting the maximum property to false.
    */
-  protected class RestoreAction extends AbstractAction
+  public class RestoreAction extends AbstractAction
   {
     /**
      * This method is called when the user wants to restore the
@@ -197,7 +198,7 @@ public class BasicInternalFrameTitlePane extends JComponent
   /**
    * This action is responsible for sizing the JInternalFrame.
    */
-  protected class SizeAction extends AbstractAction
+  public class SizeAction extends AbstractAction
   {
     /**
      * This method is called when the user wants to resize the JInternalFrame.
@@ -236,7 +237,7 @@ public class BasicInternalFrameTitlePane extends JComponent
    * This class acts as the MenuBar for the TitlePane. Clicking on the Frame
    * Icon in the top left corner will activate it.
    */
-  protected class SystemMenuBar extends JMenuBar
+  public class SystemMenuBar extends JMenuBar
   {
     /**
      * This method returns true if it can receive focus.

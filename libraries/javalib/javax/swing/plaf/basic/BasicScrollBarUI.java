@@ -1,4 +1,4 @@
-/* BasicScrollBarUI.java
+/* BasicScrollBarUI.java --
    Copyright (C) 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -35,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package javax.swing.plaf.basic;
 
 import java.awt.Color;
@@ -54,8 +55,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
 import javax.swing.BoundedRangeModel;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JScrollBar;
@@ -68,7 +69,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.ScrollBarUI;
-
 
 /**
  * The Basic Look and Feel UI delegate for JScrollBar.
@@ -405,10 +405,10 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
   protected JButton incrButton;
 
   /** The dimensions of the maximum thumb size. */
-  protected static Dimension maximumThumbSize;
+  protected Dimension maximumThumbSize;
 
   /** The dimensions of the minimum thumb size. */
-  protected static Dimension minimumThumbSize;
+  protected Dimension minimumThumbSize;
 
   /** The color of the thumb. */
   protected Color thumbColor;

@@ -1,5 +1,5 @@
 /* DefaultTreeModel.java --
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -43,6 +43,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.EventListener;
+
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TreeModelListener;
 
