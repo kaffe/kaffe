@@ -36,6 +36,10 @@
 #include "access.h"
 #include "gcj/gcj.h"
 
+/* Handle Manifest Class-Path attribute.  It will be better to handle that
+   in a ClassLoader.  */
+#define HANDLE_MANIFEST_CLASSPATH	1
+
 #define KLASSES_JAR	"Klasses.jar"
 
 classpathEntry* classpath;
@@ -52,6 +56,12 @@ static void discoverClasspath(const char*);
 static void makeClasspath(char*);
 static classFile findClassInJar(char*, struct _errorInfo*);
 static int insertClasspath(const char* cp, int prepend);
+
+#if defined(HANDLE_MANIFEST_CLASSPATH)
+static int isEntryInClasspath(const char*);
+static uint8* getManifestMainAttribute(jarFile*, char*);
+static void handleManifestClassPath (classpathEntry *);
+#endif
 
 /*
  * Find the named class in a directory or JAR file.
@@ -182,6 +192,7 @@ DBG(CLASSLOOKUP,
 	lockStaticMutex(&jarlock);
 
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
+DBG(CLASSLOOKUP,dprintf("Processing classpath entry '%s'\n", ptr->path); )
 		hand.type = ptr->type;
 		switch (ptr->type) {
 		case CP_ZIPFILE:
@@ -191,6 +202,10 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
 				if (ptr->u.jar == 0) {
 					break;
 				}
+#if defined(HANDLE_MANIFEST_CLASSPATH)
+				/* handle Manifest Class-Path attribute */
+				handleManifestClassPath (ptr);
+#endif
 			}
 
 			entry = lookupJarFile(ptr->u.jar, cname);
@@ -329,7 +344,7 @@ initClasspath(void)
 		realClassPath = "";
 		return;
 	}
-	
+
 	realClassPath = KMALLOC(len);
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
 		if (ptr != classpath) {
@@ -523,3 +538,175 @@ getClasspathType(const char* path)
 
 	return (CP_INVALID);
 }
+
+#if defined(HANDLE_MANIFEST_CLASSPATH)
+
+/*
+ * Check whether a classpath entry is already in classpath
+ */
+static int
+isEntryInClasspath(const char *path)
+{
+	classpathEntry *ptr;
+
+	for(ptr = classpath; ptr != 0; ptr = ptr->next) {
+		if(!strcmp(ptr->path, path))
+			return 1;
+	}
+	return 0;
+}
+
+
+static uint8*
+getManifestMainAttribute(jarFile* file, char* attrName)
+{
+	jarEntry* mf;
+	uint8* mfdata;
+	uint8* attrEntry;
+	uint8* ret;
+	int i, posAttrValue;
+
+	/* Locate manifest entry in jar */
+	mf = lookupJarFile(file, "META-INF/MANIFEST.MF");
+	if (mf == 0)
+		return (0);
+
+	/* Read it */
+	mfdata = getDataJarFile(file, mf);
+	if (mfdata == 0)
+		return (0);
+
+	/* Look for the desired entry */
+	attrEntry = mfdata;
+	for (i = 0; i < mf->uncompressedSize; ++i) {
+		/* Sun's jar, even under Linux, insists on terminating
+		   newlines with newline *and* carriage return */
+		if (mfdata[i] == '\n' || mfdata[i] == '\r') {
+			mfdata[i] = '\0';
+			/* Ecco! this line begins with the attribute's name */
+			if (strstr(attrEntry, attrName)) {
+				/* Skip 'attrName:' */
+				posAttrValue = strlen(attrName) + 1;
+				attrEntry += posAttrValue;
+
+				/* Skip initial whitespace */
+				while (*attrEntry == ' ' || *attrEntry == '\t')
+					++attrEntry;
+
+				/* Now look for end of string. */
+				while (i < mf->uncompressedSize && attrEntry[i] != 0xd)
+					++i;
+
+				attrEntry[i] = '\0';
+
+				/* OK, allocate memory for the result and return */
+				ret = KMALLOC(strlen(attrEntry) + 1);
+				strcpy(ret, attrEntry);
+				KFREE(mfdata);
+				return ret;
+			}
+			attrEntry = mfdata + i + 1;
+		}
+	}
+	KFREE(mfdata);
+	return (0);
+}
+
+
+/* Partially Handle Manifest Class-Path attribute.  It will be better to
+   handle that in a ClassLoader.  */
+static void
+handleManifestClassPath (classpathEntry *ptr)
+{
+	char *mfclasspath0,  *mfclasspath;
+	char *pathname;
+
+	classpathEntry* newEntry;
+	int i, last_one;
+
+	/* See if there's a Class-Path attribute in the Manifest and have a
+	   look there */
+	mfclasspath0 = getManifestMainAttribute(ptr->u.jar, "Class-Path");
+	if (mfclasspath0 == 0)
+		return;
+	mfclasspath = mfclasspath0;
+
+	DBG(CLASSLOOKUP,
+	    dprintf("%s: Manifest 'Class-Path' attribute is '%s'\n",
+		    ptr->path, mfclasspath);
+	    );
+
+	last_one = 0;
+	pathname = mfclasspath;
+	while (*mfclasspath) {
+		while (*mfclasspath != ' ' &&
+		       *mfclasspath != '\t' &&
+		       *mfclasspath != '\0')
+			++mfclasspath;
+
+		if(*mfclasspath == '\0')
+			last_one = 1;
+		else
+			*mfclasspath = '\0';
+
+		/* Insert manifest classpath entries */
+
+		newEntry = KMALLOC(sizeof(classpathEntry));
+		newEntry->u.jar = 0;
+
+		/* Manifest classpath entries can be either absolute or
+		   relative to the location of the jar file. */
+		if (pathname[0] != file_separator[0]) {
+			char *dir;
+			int len;
+
+			/* Path is relative. First, get the directory of
+			   the jar file */
+			len = strlen(ptr->path);
+			while (len > 0 && ptr->path[len - 1] != file_separator[0])
+				len--;
+
+			if (len != 0) {
+				newEntry->path = KMALLOC(len + strlen(file_separator) + strlen(pathname));
+				strncpy (newEntry->path, ptr->path, len - 1);
+				sprintf (newEntry->path + len - 1, "%s%s",
+					 file_separator, pathname);
+			}
+			else {
+				newEntry->path = KMALLOC(strlen(pathname) + 1);
+				strcpy (newEntry->path, pathname);
+			}
+		}
+		else {
+			/* Path is absolute */
+			newEntry->path = KMALLOC(strlen(pathname) + 1);
+			strcpy (newEntry->path, pathname);
+		}
+
+		/* Check if newEntry is a valid classpath element add it to
+                   classpath if it wasn't already there. */
+		newEntry->type = getClasspathType (newEntry->path);
+		if ((newEntry->type != CP_INVALID) &&
+		    !isEntryInClasspath (newEntry->path)) {
+DBG(CLASSLOOKUP,	dprintf("Entry '%s' added to classpath\n", newEntry->path); )
+			newEntry->next = ptr->next;
+			ptr->next = newEntry;
+		}
+		else {
+			KFREE(newEntry->path);
+			KFREE(newEntry);
+		}
+
+		/* Go to the following classpath element */
+		if (!last_one) {
+			/* Skip '\0' inserted at the blank space */
+			++mfclasspath;
+			pathname = mfclasspath;
+		}
+		else {
+			break;
+		}
+	}
+	KFREE(mfclasspath0);
+}
+#endif
