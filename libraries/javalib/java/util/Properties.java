@@ -260,9 +260,10 @@ private static int getEscapedChar(PushbackInputStream in) throws IOException {
 			case '\n':
 				break;
 			}				// fall through
-		case '\n':
+		case '\n':				// line continuation
 			while ((ch = in.read()) != -1 && ch <= ' ');
-			return ch;
+			in.unread(ch);
+			return getEscapedChar(in);
 		case 'n':
 			return '\n';
 		case 'r':
