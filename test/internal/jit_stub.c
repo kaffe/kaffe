@@ -98,12 +98,12 @@ int main(int argc, char *argv[])
 	INIT_MD();
 #endif
 
+	Kaffe_JavaVMArgs[0] = vmargs;
+	threadStackSize = Kaffe_JavaVMArgs[0].nativeStackSize;
+	
 	/* Register allocation types with gc subsystem */
 	main_collector = initCollector();
 	GC_init(main_collector);
-
-	Kaffe_JavaVMArgs[0] = vmargs;
-        threadStackSize = Kaffe_JavaVMArgs[0].nativeStackSize;
 
 	/* Initialise the (native) threading system */
 	initNativeThreads(threadStackSize);

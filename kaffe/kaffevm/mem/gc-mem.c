@@ -1070,6 +1070,7 @@ gc_heap_grow(size_t sz)
 	lockStaticMutex(&gc_heap_lock);
 
 	if (gc_heap_total == gc_heap_limit) {
+		unlockStaticMutex(&gc_heap_lock);
 		return (0);
 	} else if (gc_heap_total + sz > gc_heap_limit) {
 		/* take as much memory as we can */
@@ -1087,6 +1088,7 @@ gc_heap_grow(size_t sz)
 	    dprintf("gc_system_alloc: %ld byte at %p\n", (long) sz, blk); )
 
 	if (blk == 0) {
+		unlockStaticMutex(&gc_heap_lock);
 		return (0);
 	}
 

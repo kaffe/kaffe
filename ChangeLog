@@ -1,3 +1,11 @@
+2003-09-29  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/mem/gc-mem.c: (gc_heap_grow) don't forget
+	to unlock the gc_heap_lock if we bail out early
+
+	* test/internal/jit_stub.c: (main) initialise Kaffe_JavaVMArgs[0]
+	before initialising the collector
+	
 2003-09-29  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/text/SimpleDateFormat.java,
@@ -48,7 +56,6 @@
 	Added prototypes for setupExceptionHandling,
 	cleanupExceptionHandling.
 
->>>>>>> 1.1674
 2003-09-28  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/nio/ByteBufferHelper.java: added missing
