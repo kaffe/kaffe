@@ -1,3 +1,16 @@
+2004-07-08  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/clib/native/System.c (java_lang_System_initProperties): 
+	don't free prop->value, since it's in the same string as prop->key
+
+	* libraries/clib/io/ObjectInputStream.c (getFieldAddress): new function
+	(java_io_VMObjectStreamClass_setBooleanNative, java_io_VMObjectStreamClass_setByteNative,
+	java_io_VMObjectStreamClass_setCharNative,  java_io_VMObjectStreamClass_setShortNative,
+	java_io_VMObjectStreamClass_setIntNative, java_io_VMObjectStreamClass_setLongNative,
+	java_io_VMObjectStreamClass_setFloatNative, java_io_VMObjectStreamClass_setDoubleNative,
+	java_io_VMObjectStreamClass_setObjectNative): don't use java_lang_reflect_Field_*
+	methods for setting the field, since they're in another libtool module
+	
 2004-07-08  Dalibor Topic  <robilad@kaffe.org>
 	    Yoshiharu Oba  <ooba@gk.avkk.yamaha.co.jp>
 

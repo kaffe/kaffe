@@ -373,7 +373,6 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 		userProperty *nextProperty = prop->next;
 
 		free(prop->key);
-		free(prop->value);
 		free(prop);
 		prop = nextProperty;
 	}

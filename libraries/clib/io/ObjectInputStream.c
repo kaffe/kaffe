@@ -83,13 +83,22 @@ java_io_VMObjectStreamClass_hasClassInitializer(struct Hjava_lang_Class* clazz)
 	return (meth != NULL);		
 }
 
+static void*
+getFieldAddress (struct Hjava_lang_reflect_Field* sfield, struct Hjava_lang_Object *obj)
+{
+	if (unhand(sfield)->slot < CLASS_NSFIELDS(OBJECT_CLASS(obj))) {
+		SignalError ("java.lang.IllegalArgumentException", "");
+	}
+
+	return (void *)((uintp)obj + FIELD_BOFFSET(CLASS_FIELDS(OBJECT_CLASS(obj)) + unhand(sfield)->slot));
+}
 
 void java_io_VMObjectStreamClass_setBooleanNative
                 (struct Hjava_lang_reflect_Field* sfield,
 		 struct Hjava_lang_Object* obj,
 		 jboolean value)
 {
-  java_lang_reflect_Field_setBoolean0(sfield, obj, value);
+	*(jboolean *)getFieldAddress (sfield, obj) = value;
 }
 
 void java_io_VMObjectStreamClass_setByteNative
@@ -97,7 +106,7 @@ void java_io_VMObjectStreamClass_setByteNative
 		 struct Hjava_lang_Object* obj,
 		 jbyte value)
 {
-  java_lang_reflect_Field_setByte0(sfield, obj, value);
+	*(jbyte *)getFieldAddress (sfield, obj) = value;
 }
 
 void java_io_VMObjectStreamClass_setCharNative
@@ -105,7 +114,7 @@ void java_io_VMObjectStreamClass_setCharNative
 		 struct Hjava_lang_Object* obj,
 		 jchar value)
 {
-  java_lang_reflect_Field_setChar0(sfield, obj, value);
+	*(jchar *)getFieldAddress (sfield, obj) = value;
 }
 
 void java_io_VMObjectStreamClass_setShortNative
@@ -113,7 +122,7 @@ void java_io_VMObjectStreamClass_setShortNative
 		 struct Hjava_lang_Object* obj,
 		 jshort value)
 {
-  java_lang_reflect_Field_setShort0(sfield, obj, value);
+	*(jshort *)getFieldAddress (sfield, obj) = value;
 }
 
 void java_io_VMObjectStreamClass_setIntNative
@@ -121,7 +130,7 @@ void java_io_VMObjectStreamClass_setIntNative
 		 struct Hjava_lang_Object* obj,
 		 jint value)
 {
-  java_lang_reflect_Field_setInt0(sfield, obj, value);
+	*(jint *)getFieldAddress (sfield, obj) = value;
 }
 
 void java_io_VMObjectStreamClass_setLongNative
@@ -129,7 +138,7 @@ void java_io_VMObjectStreamClass_setLongNative
 		 struct Hjava_lang_Object* obj,
 		 jlong value)
 {
-  java_lang_reflect_Field_setLong0(sfield, obj, value);
+	*(jlong *)getFieldAddress (sfield, obj) = value;
 }
 
 void java_io_VMObjectStreamClass_setFloatNative
@@ -137,7 +146,7 @@ void java_io_VMObjectStreamClass_setFloatNative
 		 struct Hjava_lang_Object* obj,
 		 jfloat value)
 {
-  java_lang_reflect_Field_setFloat0(sfield, obj, value);
+	*(jfloat *)getFieldAddress (sfield, obj) = value;
 }
 
 void java_io_VMObjectStreamClass_setDoubleNative
@@ -145,7 +154,7 @@ void java_io_VMObjectStreamClass_setDoubleNative
 		 struct Hjava_lang_Object* obj,
 		 jdouble value)
 {
-  java_lang_reflect_Field_setDouble0(sfield, obj, value);
+	*(jdouble *)getFieldAddress (sfield, obj) = value;
 }
 
 void java_io_VMObjectStreamClass_setObjectNative
@@ -153,5 +162,5 @@ void java_io_VMObjectStreamClass_setObjectNative
 		 struct Hjava_lang_Object* obj, 
 		 struct Hjava_lang_Object* value)
 {
-  java_lang_reflect_Field_setObject0(sfield, obj, value);
+	*(struct Hjava_lang_Object **)getFieldAddress (sfield, obj) = value;
 }
