@@ -35,6 +35,8 @@
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/exception.h"
 
+#include "dummyin6.h"
+
 /*
  * Supported socket options
  */
