@@ -1,5 +1,17 @@
 2003-09-01  Jim Pick  <jim@kaffe.org>
 
+	* include/kaffe/jmalloc.h:
+	Avoid KFREE() related "type punning" warnings in gcc 3.x
+	when compiling using --with-vmdebug.
+
+	This revert's egp's changes which were to "Avoid casting in
+	call to KFREE().".  I didn't understand why that was an
+	issue (or even why we're zeroing out the pointers, in the
+	first place, I assume it's got something to do with some
+	gc interaction).
+	
+2003-09-01  Jim Pick  <jim@kaffe.org>
+
 	* configure.in:
 	Check for stdarg.h (needed by valist.m4 varargs
 	checks, otherwise varargs.h is used, which fails

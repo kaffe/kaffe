@@ -29,11 +29,11 @@ extern void	jfree(void* ptr);
 #define KFREE(p)	jfree((void *)(p))
 
 #ifdef KAFFE_VMDEBUG
+/* Does anybody know why we are doing this? */
 #undef KFREE
 #define KFREE(p)	do {			\
-	void **__kfree_p = (void **)&(p);	\
-	jfree (*__kfree_p);			\
-	*__kfree_p = (void *)0;			\
+	jfree ((void *)p);			\
+	p = (void *)0;				\
 } while (0)
 #endif
 
