@@ -17,6 +17,94 @@
 /* for debugging */
 #if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 
+const char* indent  = "                ";
+const char* indent2 = "                        ";
+
+uint32
+printConstantPoolEntry(const Hjava_lang_Class* class, uint32 idx)
+{
+	const constants* pool = CLASS_CONSTANTS(class);
+	
+	switch (pool->tags[idx]) {
+	case CONSTANT_Utf8:
+		DBG(VERIFY2, dprintf("   UTF8: %s", CONST_UTF2CHAR(idx, pool)) );
+		break;
+			
+			
+	case CONSTANT_Long:
+	case CONSTANT_Double:
+		idx++;
+	case CONSTANT_Integer:
+	case CONSTANT_Float:
+		DBG(VERIFY2, dprintf("   NUMERICAL"); );
+		break;
+			
+			
+	case CONSTANT_ResolvedString:
+	case CONSTANT_ResolvedClass:
+		DBG(VERIFY2, dprintf("   RESOLVED: %s",
+				     ((Hjava_lang_Class*)pool->data[idx])->name->data); );
+		break;
+			
+			
+			
+	case CONSTANT_Class:
+		DBG(VERIFY2, dprintf("   UNRESOLVED CLASS: %s", CLASS_NAMED(idx, pool)); );
+		break;
+			
+	case CONSTANT_String:
+		DBG(VERIFY2, dprintf("   STRING: %s", CONST_STRING_NAMED(idx, pool)); );
+		break;
+			
+			
+			
+	case CONSTANT_Fieldref:
+		DBG(VERIFY2, dprintf("   FIELDREF: %s  --type--  %s",
+				     FIELDREF_NAMED(idx, pool), FIELDREF_SIGD(idx, pool)); );
+		break;
+			
+	case CONSTANT_Methodref:
+		DBG(VERIFY2, dprintf("   METHODREF: %s  --type--  %s",
+				     METHODREF_NAMED(idx, pool), METHODREF_SIGD(idx, pool)); );
+		break;
+			
+			
+	case CONSTANT_InterfaceMethodref:
+		DBG(VERIFY2, dprintf("   INTERFACEMETHODREF: %s  --type--  %s",
+				     INTERFACEMETHODREF_NAMED(idx, pool), INTERFACEMETHODREF_SIGD(idx, pool)); );
+		break;
+			
+			
+	case CONSTANT_NameAndType:
+		DBG(VERIFY2, dprintf("   NAMEANDTYPE: %s  --and--  %s",
+				     NAMEANDTYPE_NAMED(idx, pool), NAMEANDTYPE_SIGD(idx, pool)); );
+		break;
+			
+	default:
+		DBG(VERIFY2, dprintf("   *** UNRECOGNIZED CONSTANT POOL ENTRY in class %s *** ",
+				     CLASS_CNAME(class)); );
+	}
+	
+	return idx;
+}
+
+void
+printConstantPool(const Hjava_lang_Class* class)
+{
+	uint32 idx;
+	const constants *pool = CLASS_CONSTANTS(class);
+	
+	DBG(VERIFY2, dprintf("    CONSTANT POOL FOR %s\n", class->name->data); );
+	
+	for (idx = 1; idx < pool->size; idx++) {
+		DBG(VERIFY2, dprintf("      %d", idx); );
+		
+		idx = printConstantPoolEntry(class, idx);
+		
+		DBG(VERIFY2, dprintf("\n"); );
+	}
+}
+
 /*
  * printInstruction()
  *     prints out a string representation of the instruction.

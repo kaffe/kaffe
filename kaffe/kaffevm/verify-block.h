@@ -14,7 +14,7 @@
 #define VERIFY_BLOCK_H
 
 #include "gtypes.h"
-#include "verify.h"
+#include "verify-type.h"
 
 /*
  * basic block header information

@@ -80,8 +80,8 @@ am_libkaffevm_la_OBJECTS = access.lo baseClasses.lo classMethod.lo \
 	locks.lo lookup.lo object.lo readClass.lo sha-1.lo soft.lo \
 	stackTrace.lo stats.lo string.lo stringParsing.lo support.lo \
 	thread.lo utf8const.lo gcFuncs.lo gcRefs.lo verify.lo \
-	verify-block.lo verify-debug.lo verify-sigstack.lo \
-	verify-uninit.lo
+	verify2.lo verify-block.lo verify-debug.lo verify-sigstack.lo \
+	verify-type.lo verify-uninit.lo
 am__objects_1 = gc-mem.lo md.lo
 nodist_libkaffevm_la_OBJECTS = $(am__objects_1)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
@@ -113,8 +113,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/verify-block.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/verify-debug.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/verify-sigstack.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/verify-type.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/verify-uninit.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/verify.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/verify.Plo ./$(DEPDIR)/verify2.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -439,9 +440,11 @@ libkaffevm_la_SOURCES = \
 	gcFuncs.c \
 	gcRefs.c \
 	verify.c \
+	verify2.c \
 	verify-block.c \
 	verify-debug.c \
 	verify-sigstack.c \
+	verify-type.c \
 	verify-uninit.c
 
 noinst_HEADERS = \
@@ -488,6 +491,7 @@ noinst_HEADERS = \
 	verify-block.h \
 	verify-debug.h \
 	verify-sigstack.h \
+	verify-type.h \
 	verify-uninit.h
 
 CLEANFILES = so_locations
@@ -600,8 +604,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify-block.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify-debug.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify-sigstack.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify-type.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify-uninit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify2.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

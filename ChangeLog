@@ -1,3 +1,38 @@
+2004-03-05  Dalibor Topic <robilad@kaffe.org>
+
+        kaffe/kaffevm/verify-type.c,
+        kaffe/kaffevm/verify-type.h,
+        kaffe/kaffevm/verify2.c:
+	New files.
+
+        kaffe/kaffevm/Makefile.am:
+        (libkaffevm_la_SOURCES): Added verify-type.c, verify2.c.
+        (noinst_HEADERS): Added verify-type.h.
+
+        * kaffe/kaffevm/Makefile.in:
+	Regenerated.
+
+        * kaffe/kaffevm/baseClasses.c,
+        kaffe/kaffevm/verify-block.h,
+        kaffe/kaffevm/verify-uninit.h:
+	Include verify-type.h.
+
+        * kaffe/kaffevm/verify-debug.c,
+	kaffe/kaffevm/verify-debug.h:
+	(printConstantPoolEntry, printConstantPool) New functions.
+	(indent, indent2) New fields.
+
+        * kaffe/kaffevm/verify.c,
+        kaffe/kaffevm/verify.h,
+	(printConstantPoolEntry, printConstantPool, indent, indent2)
+	Moved over to kaffe/kaffevm/verify-debug.c and 
+	kaffe/kaffevm/verify-debug.h.
+	(checkField, checkConstructor, checkMethodStaticConstraints,
+	checkAbstractMethod, isMethodVoid, verify2) Moved over to 
+	kaffe/kaffevm/verify2.c.
+	Moved over handling of types to kaffe/kaffevm/verify-type.c
+	and kaffe/kaffevm/verify-type.h.
+
 2004-03-02  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify-block.c,

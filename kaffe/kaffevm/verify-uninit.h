@@ -13,7 +13,7 @@
 #if !defined(VERIFY_UNINIT_H)
 #define VERIFY_UNINIT_H
 
-#include "verify.h"
+#include "verify-type.h"
 #include "verify-block.h"
 
 /*

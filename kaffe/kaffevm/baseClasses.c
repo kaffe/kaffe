@@ -38,7 +38,7 @@
 #include "feedback.h"
 #include "debugFile.h"
 #include "fileSections.h"
-#include "verify.h"
+#include "verify-type.h"
 
 Utf8Const* init_name;
 Utf8Const* final_name;

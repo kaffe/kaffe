@@ -18,6 +18,11 @@
 #include "verify-block.h"
 
 #if defined(KAFFE_VMDEBUG)
+extern const char* indent;
+extern const char* indent2;
+
+extern uint32 printConstantPoolEntry(const Hjava_lang_Class* class, uint32 idx);
+extern void printConstantPool(const Hjava_lang_Class* class);
 extern void printInstruction(const int opcode);
 extern void printType(const Type*);
 extern void printBlock(const Method* method, const BlockInfo* binfo, const char* indent);
