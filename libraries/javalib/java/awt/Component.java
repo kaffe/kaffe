@@ -128,6 +128,13 @@ public int checkImage ( Image image, int width, int height, ImageObserver obs ) 
 	return Image.checkImage( image, width, height, obs, false);
 }
 
+/**
+ * @deprecated
+ */
+public boolean inside(int x, int y) {
+	return (contains(x, y));
+}
+
 public boolean contains ( Point pt ) {
 	return contains( pt.x, pt.y);
 }
