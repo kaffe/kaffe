@@ -57,5 +57,9 @@ abstract class AbstractMapEntry implements Map.Entry {
 		return (key == null ? 0 : key.hashCode())
 		    ^ (value == null ? 0 : value.hashCode());
 	}
+
+	public String toString() {
+		return getKey() + "=" + getValue();
+	}
 }
 
