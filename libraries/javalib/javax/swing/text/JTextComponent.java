@@ -650,6 +650,7 @@ public abstract class JTextComponent extends JComponent
   private static DefaultTransferHandler defaultTransferHandler;
   private static Hashtable keymaps = new Hashtable();
   private Keymap keymap;
+  private char focusAccelerator = '\0';
   
   /**
    * Get a Keymap from the global keymap table, by name.
@@ -1494,5 +1495,20 @@ public abstract class JTextComponent extends JComponent
     ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED,
 					action.getValue(Action.NAME).toString());
     action.actionPerformed(event);
+  }
+
+  public void setFocusAccelerator(char newKey)
+  {
+    if (focusAccelerator == newKey)
+      return;
+
+    char oldKey = focusAccelerator;
+    focusAccelerator = newKey;
+    firePropertyChange(FOCUS_ACCELERATOR_KEY, oldKey, newKey);
+  }
+  
+  public char getFocusAccelerator()
+  {
+    return focusAccelerator;
   }
 }
