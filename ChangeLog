@@ -1,5 +1,10 @@
 2004-04-03  Adam Heath <doogie@debian.org>
 
+	* config/i386/jit3-i386.def, kaffe/kaffevm/jit3/funcs.c:
+	  Fix 641 'use of compound as lvalue is deprecated' warnings.
+
+2004-04-03  Adam Heath <doogie@debian.org>
+
 	* kaffe/kaffevm/jni.c: Fix shadowed declaration warnings.
 
 2004-04-03  Adam Heath <doogie@debian.org>

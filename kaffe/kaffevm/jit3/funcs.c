@@ -48,18 +48,18 @@ void printCodeLabels(void)
 	}
 }
 #undef OUT
-#define	OUT	(DBGEXPR(JIT,(void)printCodeLabels(),0),codeblock[CODEPC++])
-#define	BOUT	(DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint8*)&codeblock[CODEPC++])
-#define	WOUT	(DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint16*)&codeblock[(CODEPC += 2) - 2])
-#define	LOUT	(DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint32*)&codeblock[(CODEPC += 4) - 4])
-#define	QOUT	(DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint64*)&codeblock[(CODEPC += 8) - 8])
+#define	OUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),0),codeblock[CODEPC] = v; CODEPC++; } while (0)
+#define	BOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint8*)&codeblock[CODEPC] = v; CODEPC++; } while (0)
+#define	WOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint16*)&codeblock[CODEPC] = v; CODEPC += 2; } while (0)
+#define	LOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint32*)&codeblock[CODEPC] = v; CODEPC += 4; } while (0)
+#define	QOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint64*)&codeblock[CODEPC] = v; CODEPC += 8; } while (0)
 #else
 #undef OUT
-#define	OUT	(codeblock[CODEPC++])
-#define	BOUT	(*(uint8*)&codeblock[CODEPC++])
-#define	WOUT	(*(uint16*)&codeblock[(CODEPC += 2) - 2])
-#define	LOUT	(*(uint32*)&codeblock[(CODEPC += 4) - 4])
-#define	QOUT	(*(uint64*)&codeblock[(CODEPC += 8) - 8])
+#define	OUT(v)	do { codeblock[CODEPC] = v; CODEPC++; } while (0)
+#define	BOUT(v)	do { *(uint8*)&codeblock[CODEPC] = v; CODEPC++; } while (0)
+#define	WOUT(v)	do { *(uint16*)&codeblock[CODEPC] = v; CODEPC += 2; } while (0)
+#define	LOUT(v)	do { *(uint32*)&codeblock[CODEPC] = v; CODEPC += 4; } while (0)
+#define	QOUT(v)	do { *(uint64*)&codeblock[CODEPC] = v; CODEPC += 8; } while (0)
 #endif
 
 #include "jit.def"
