@@ -133,24 +133,17 @@ public class ZipInputStream extends InflaterInputStream
 
 	  // Read CRC
 	  int data_crc = get32(dheader, DATA_CRC);
-	  if (data_crc == 0) {
-	      throw new IOException("CRC of 0 is not valid in a DATA header");
-	  }
 	  entry.setCrc(data_crc & 0xffffffffL);
 
 	  // Read compressed size
 	  int data_csize = get32(dheader, DATA_COMPRESSEDSIZE);
-	  if (data_csize == 0) {
-	      throw new IOException(
-		"COMPRESSEDSIZE of 0 is not valid in a DATA header");
-	  }
 	  entry.setCompressedSize(data_csize & 0xffffffffL);
 
 	  // Read uncompressed size
 	  int data_size = get32(dheader, DATA_UNCOMPRESSEDSIZE);
-	  if (data_size == 0) {
+	  if (data_crc == 0 && data_size != 0) {
 	      throw new IOException(
-		"UNCOMPRESSEDSIZE os 0 is not valid in a DATA header");
+		"CRC error: data_crc=0, data_csize=" + data_csize + ",data_size=" + data_size);
 	  }
 	  entry.setSize(data_size & 0xffffffffL);
 
