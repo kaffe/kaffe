@@ -209,8 +209,8 @@ public final Object readObject() throws OptionalDataException, ClassNotFoundExce
 					throw new StreamCorruptedException("expected class desc");
 				}
 				currObject = allocateNewObject(currStreamClass.clazz, null);
-				Integer key = new Integer(++nextKey);
-				objectsDone.put(key, currObject);
+				Integer key1 = new Integer(++nextKey);
+				objectsDone.put(key1, currObject);
 				if ((currStreamClass.method & ObjectStreamConstants.SC_EXTERNALIZABLE) != 0) {
                                         try {
                                                 ((Externalizable)currObject).readExternal(this);
@@ -242,8 +242,8 @@ public final Object readObject() throws OptionalDataException, ClassNotFoundExce
 			case ObjectStreamConstants.TC_CLASSDESC:
 				ObjectStreamClass cls = new ObjectStreamClass();
 				currObject = (Object)cls;
-				Integer key = new Integer(++nextKey);
-				objectsDone.put(key, currObject);
+				Integer key2 = new Integer(++nextKey);
+				objectsDone.put(key2, currObject);
 				invokeObjectReader(currObject, ObjectStreamClass.class);
 				cls.clazz = resolveClass(cls);
 				cls.buildFieldsAndOffset();
@@ -251,8 +251,8 @@ public final Object readObject() throws OptionalDataException, ClassNotFoundExce
 
 			case ObjectStreamConstants.TC_STRING:
 				currObject = readUTF();
-				Integer key = new Integer(++nextKey);
-				objectsDone.put(key, currObject);
+				Integer key3 = new Integer(++nextKey);
+				objectsDone.put(key3, currObject);
 				break;
 
 			case ObjectStreamConstants.TC_RESET:
