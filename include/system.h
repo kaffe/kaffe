@@ -17,7 +17,7 @@
 #define	kaffe_vendor_url	"http://www.transvirtual.com"
 #define	kaffe_class_version	"1"
 
-#if defined(unix)
+#if defined(unix) || defined(__BEOS__)
 #define	file_separator		"/"
 #define	path_separator		":"
 #define	line_separator		"\n"
