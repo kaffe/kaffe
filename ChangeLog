@@ -2,6 +2,14 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-09  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/Scrollbar.java: Reformatted.
+
+2005-02-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-08  Tom Tromey  <tromey@redhat.com>
 
         * java/net/URI.java (AUTHORITY_REGEXP): Handle case where user
