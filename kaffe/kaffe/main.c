@@ -105,7 +105,7 @@ main(int argc, char* argv[])
 	/* Initialise */
 	JNI_CreateJavaVM(&vm, &env, &vmargs);
 
-	main2(env, argv, farg, argc);
+	return (main2(env, argv, farg, argc));
 }
 
 /*
@@ -141,7 +141,7 @@ main(int argc, char* argv[])
 /*
  * MAIN, part II
  */
-int
+static int
 main2(JNIEnv* env, char *argv[], int farg, int argc)
 {
 	char gc_safe_zone[1024];
@@ -189,6 +189,7 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 	handleErrors();
 
 	(*vm)->DetachCurrentThread(vm);
+	return (0);
 }
 
 static
