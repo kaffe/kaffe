@@ -1,3 +1,10 @@
+2004-04-17  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/external.c:
+	(LIBRARYINIT) Don't bend libtool memory management functions
+	anymore over to kaffe's gc. The lt_dlmalloc/free/realloc 
+	interfaces are deprecated in libtool's CVS now.
+
 2004-04-16  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jni.c, include/jni.h
