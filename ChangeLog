@@ -1,3 +1,8 @@
+Wed Jun 09 14:47:52 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
+
+        * config/i386/oskit/kaffe-patches removed: it hasn't been
+        necessary since we started using automake
+
 Mon Jun  7 12:53:20 PDT 1999  Jiro KANAYAMA <majiro@distribution.co.jp>
 
 	* libraries/javalib/java/util/Date.java: tweaks to to{GMT}String()
