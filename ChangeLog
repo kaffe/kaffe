@@ -1,3 +1,21 @@
+2004-10-30  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/awt/image/ColorConvertOp.java:
+	New file taken from GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/java/awt/image/ColorModel.java:
+	Resynced with GNU Classpath.
+
+	2004-10-29  Jerry Quinn  <jlquinn@optonline.net>
+
+        * java/awt/image/ColorConvertOp.java: New class.
+        * java/awt/image/ColorModel.java (cloneColorModel): New method.
+
 2004-10-29  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/java/awt/peer/gtk/GtkComponentPeer.java,
