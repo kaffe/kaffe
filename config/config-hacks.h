@@ -48,7 +48,7 @@
 #endif
 
 /* Hack to configure AIX */
-#if defined(AIX)
+#if defined(_AIX)
 #define  HAVE_SYS_SELECT_H 1
 #endif
 
