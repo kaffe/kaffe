@@ -528,7 +528,7 @@ isMimeTypeEqual(String mimeType)
  * @return <code>true</code> if the flavor's MIME type is equal to this 
  * object's MIME type, <code>false</code> otherwise.
  */
-public boolean
+public final boolean
 isMimeTypeEqual(DataFlavor flavor)
 {
   return(isMimeTypeEqual(flavor.getMimeType()));

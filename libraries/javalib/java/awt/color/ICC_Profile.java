@@ -174,7 +174,6 @@ public class ICC_Profile implements Serializable
   public static final int icSigMeasurementTag = 0x6D656173; // 'meas' 
   public static final int icSigMediaBlackPointTag = 0x626B7074; // 'bkpt' 
   public static final int icSigMediaWhitePointTag = 0x77747074; // 'wtpt' 
-  public static final int icSigNamedColorTag = 0x6E636f6C; // ''ncol'  
   public static final int icSigNamedColor2Tag = 0x6E636C32; // 'ncl2' 
   public static final int icSigOutputResponseTag = 0x72657370; // 'resp' 
   public static final int icSigPreview0Tag = 0x70726530; // 'pre0' 

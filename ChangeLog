@@ -1,3 +1,20 @@
+2004-11-29  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/awt/color/ICC_Profile.java,
+	libraries/javalib/java/awt/datatransfer/DataFlavor.java,
+	libraries/javalib/java/awt/image/AffineTransformOp.java:
+	Resynced with GNU Classpath.
+
+	2004-11-21  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/color/ICC_Profile.java
+        (icSigNamedColorTag): Removed.
+        * java/awt/datatransfer/DataFlavor.java
+        (isMimeTypeEqual): Made final.
+        * java/awt/image/AffineTransformOp.java:
+        Reworked javadocs.
+        (TYPE_BICUBIC): Added @since tag.
+
 2004-11-28  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure: Regenerated.

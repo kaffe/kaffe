@@ -51,13 +51,17 @@ import java.util.Arrays;
  * This class performs affine transformation between two images or 
  * rasters in 2 dimensions. 
  *
- * @author Olga Rodimina <rodimina@redhat.com> 
+ * @author Olga Rodimina (rodimina@redhat.com) 
  */
- 
 public class AffineTransformOp implements BufferedImageOp, RasterOp
 {
     public static final int TYPE_NEAREST_NEIGHBOR = 1;
+    
     public static final int TYPE_BILINEAR = 2;
+    
+    /**
+     * @since 1.5.0
+     */
     public static final int TYPE_BICUBIC = 3;
 
     private AffineTransform transform;
@@ -348,7 +352,8 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
       return transform.transform (srcPt, dstPt);
     }
 
-    /** Returns rendering hints that are used during transformation.
+    /**
+     * Returns rendering hints that are used during transformation.
      *
      * @return rendering hints
      */
@@ -357,7 +362,8 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
       return hints;
     }
 
-    /** Returns transform used in transformation between source and destination
+    /**
+     * Returns transform used in transformation between source and destination
      * image.
      *
      * @return transform
