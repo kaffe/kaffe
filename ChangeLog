@@ -1,5 +1,14 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-03-11  Robert Schuster  <thebohemian@gmx.net>
+
+        * java/beans/EventHandler.java: Reworked documentation.
+        (invoke): Fixed behavior to match spec.
+
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/external.c,
 	kaffe/kaffevm/jni/jni-base.c:
 	Replaced use of Kaffe_JavaVM by KaffeJNI_GetKaffeVM.
