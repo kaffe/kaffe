@@ -1,5 +1,10 @@
 2005-01-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* config/sparc/jit-alpha.def: Renamed setEpilogueLabel to
+	KaffeJIT_setEpilogueLabel.
+
+2005-01-01  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/javalib/gnu/classpath/VMSystemProperties.java
 	(preInit): Check if LOCALE is null.
 

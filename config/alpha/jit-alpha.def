@@ -1026,7 +1026,7 @@ define_insn(epilogue, epilogue_xxx)
 	label *l;
 	int r, N;
 
-	setEpilogueLabel ((uintp)CODEPC);
+	KaffeJIT_setEpilogueLabel ((uintp)CODEPC);
 
 	/* Calling Standard for Alpha Systems
 	 * 3.2.6.2.2   Exit Code Sequence Steps
