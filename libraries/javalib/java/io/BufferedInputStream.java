@@ -41,7 +41,7 @@ private void fill() {
 	marklimit = 0;
 	pos = 0;
 	try {
-		count = super.read(buf);
+		count = super.read(buf, 0, buf.length);
 	} catch (IOException e) {
 		count = -1;
 	}
