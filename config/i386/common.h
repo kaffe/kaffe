@@ -62,7 +62,9 @@ static inline void sysdepCallMethod(callMethodInfo *call) {
 #endif /* NEED_sysdepCallMethod */
 
 
+#if defined(__GNUC__)
 #define KAFFE_PROFILER 1
+#endif
 
 #if defined(KAFFE_PROFILER)
 
