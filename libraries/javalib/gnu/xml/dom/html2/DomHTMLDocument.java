@@ -44,7 +44,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -139,11 +141,33 @@ public class DomHTMLDocument
     ELEMENT_CLASSES = Collections.unmodifiableMap(map);
   }
 
+  private static Set HTML_NS_URIS;
+  static
+  {
+    Set set = new HashSet();
+    set.add("http://www.w3.org/TR/html4/strict");
+    set.add("http://www.w3.org/TR/html4/loose");
+    set.add("http://www.w3.org/TR/html4/frameset");
+    set.add("http://www.w3.org/1999/xhtml");
+    set.add("http://www.w3.org/TR/xhtml1/strict");
+    set.add("http://www.w3.org/TR/xhtml1/loose");
+    set.add("http://www.w3.org/TR/xhtml1/frameset");
+    HTML_NS_URIS = Collections.unmodifiableSet(set);
+  }
+
+  /**
+   * Convenience constructor.
+   */
+  public DomHTMLDocument()
+  {
+    this(new DomHTMLImpl());
+  }
+
   /**
    * Constructor.
-   * This is called by the implementation.
+   * This is called by the DOMImplementation.
    */
-  protected DomHTMLDocument(DomHTMLImpl impl)
+  public DomHTMLDocument(DomHTMLImpl impl)
   {
     super(impl);
   }
@@ -366,6 +390,11 @@ public class DomHTMLDocument
 
   public Element createElementNS(String uri, String qName)
   {
+    /* If a non-HTML element, use the default implementation. */
+    if (uri != null && !HTML_NS_URIS.contains(uri))
+      {
+        return super.createElementNS(uri, qName);
+      }
     String localName = qName.toLowerCase();
     int ci = qName.indexOf(':');
     if (ci != -1)
@@ -373,13 +402,14 @@ public class DomHTMLDocument
         localName = qName.substring(ci + 1);
       }
     Class t = (Class) ELEMENT_CLASSES.get(localName);
+    /* If a non-HTML element, use the default implementation. */
     if (t == null)
       {
         return super.createElementNS(uri, qName);
       }
     try
       {
-        Constructor c = t.getConstructor(ELEMENT_PT);
+        Constructor c = t.getDeclaredConstructor(ELEMENT_PT);
         Object[] args = new Object[] { this, uri, qName };
         return (Element) c.newInstance(args);
       }
