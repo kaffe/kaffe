@@ -171,18 +171,15 @@ public class DefaultKeyboardFocusManager extends KeyboardFocusManager
 
         if (e.id == FocusEvent.FOCUS_GAINED)
           {
-            if (((FocusEvent) e).isTemporary ())
-              setGlobalFocusOwner (target);
-            else
-              setGlobalPermanentFocusOwner (target);
-          }
-        else if (e.id == FocusEvent.FOCUS_LOST)
-          {
-            // We need to set the window's focus owner here; we can't
-            // set it when the window loses focus because by that time
-            // the previous focus owner has already lost focus
-            // (FOCUS_LOST events are delivered before
-            // WINDOW_LOST_FOCUS events).
+            if (! (target instanceof Window))
+              {
+                if (((FocusEvent) e).isTemporary ())
+                  setGlobalFocusOwner (target);
+                else
+                  setGlobalPermanentFocusOwner (target);
+              }
+
+            // Keep track of this window's focus owner.
 
             // Find the target Component's top-level ancestor.
             Container parent = target.getParent ();
@@ -195,9 +192,12 @@ public class DefaultKeyboardFocusManager extends KeyboardFocusManager
               (Window) target : (Window) parent;
 
             Component focusOwner = getFocusOwner ();
-            if (focusOwner != null)
+            if (focusOwner != null
+                && ! (focusOwner instanceof Window))
               toplevel.setFocusOwner (focusOwner);
-
+          }
+        else if (e.id == FocusEvent.FOCUS_LOST)
+          {
             if (((FocusEvent) e).isTemporary ())
               setGlobalFocusOwner (null);
             else
