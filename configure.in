@@ -740,6 +740,19 @@ AM_CONDITIONAL(HAVE_GCJ_SUPPORT, test "$enable_gcj" = "yes")
 dnl -------------------------------------------------------------------------
 
 dnl =========================================================================
+dnl Do we disable MIPS LL/SC (MIPS II instructions)
+dnl -------------------------------------------------------------------------
+
+AC_ARG_ENABLE(mips2, [  --disable-mips2         Disable MIPS II instructions])
+AC_MSG_CHECKING([whether to enable MIPS II instructions])
+if test "x$enable_mips2" != "xno"; then
+    AC_DEFINE([HAVE_MIPSII_INSTRUCTIONS], 1, [Enable MIPS II instructions])
+fi
+AC_MSG_RESULT($enable_mips2)
+
+dnl -------------------------------------------------------------------------
+
+dnl =========================================================================
 dnl Checks for typedefs, structures, and compiler characteristics.
 dnl -------------------------------------------------------------------------
 
