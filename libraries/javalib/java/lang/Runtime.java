@@ -88,6 +88,10 @@ public void exit(int status) {
 	Thread.currentThread().destroy();
 }
 
+public void halt(int status) {
+	exitInternal(status);
+}
+
 native private void exitInternal(int status);
 
 native public long freeMemory();
@@ -152,6 +156,17 @@ int getMemoryAdvice() {
 
 int waitForMemoryAdvice(int level) throws InterruptedException {
 	return (advice.waitForOtherColor(level));
+}
+
+public void addShutdownHook(Thread hook) {
+	// XXX implement me
+	throw new kaffe.util.NotImplemented(
+	    getClass().getName() + ".addShutdownHook()");
+}
+
+public boolean removeShutdownHook(Thread hook) {
+	// XXX implement me
+	return false;
 }
 
 native public void runFinalization();
