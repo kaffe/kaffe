@@ -15,6 +15,7 @@ EXTRA_DIST = \
 	ChangeLog.2 \
 	ChangeLog.3 \
 	WHATSNEW \
+	RELEASE-NOTES \
 	license.terms \
 	license-lesser.terms \
 	FAQ/FAQ.BeOS \

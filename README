@@ -117,6 +117,10 @@ For UNIX it couldn't be simpler:
   $ make
   $ make install
 
+Before compiling for your platform, you might want to check the
+RELEASE-NOTES file to see if it has been tested with this release, and
+whether or not there are any problems that other people have seen.
+
 The virtual machine comes complete with the interpreter, stub generator,
 and supporting native libraries.  Compilation is controlled using the
 GNU autoconf program.  To generate the necessary makefiles
