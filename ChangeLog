@@ -1,3 +1,8 @@
+Mon Aug 24 19:01:23 1998  Tim Wilkinson <tim@transvirtual.com>
+
+	* kaffe/kaffevm/intrp/icode.h: fixed cvt_int_char. 
+	test/regression/CharCvt.java:  added testcase for that.
+
 Thu Aug 20 00:22:02 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* config/alpha/trampolines.c: remove extra trailing #endif
