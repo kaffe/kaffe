@@ -55,7 +55,7 @@ typedef uint64 profiler_click_t;
 
 #endif
 
-
+#include "gccbuiltin.h"
 #include "atomic.h"
 #include "katomic.h"
 #include "generic/comparexch.h"

@@ -24,6 +24,7 @@
 #ifndef __m68k_common_h
 #define __m68k_common_h
 
+#include "gccbuiltin.h"
 #include "atomic.h"
 #include "katomic.h"
 #include "generic/comparexch.h"

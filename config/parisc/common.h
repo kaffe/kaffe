@@ -20,6 +20,7 @@
 #define NEED_STACK_ALIGN
 #define STACK_ALIGN(p)  ((((unsigned long)(p)) & 15) ^ (unsigned long)(p))
 
+#include "gccbuiltin.h"
 #include "generic/genatomic.h"
 #include "katomic.h"
 #include "generic/comparexch.h"

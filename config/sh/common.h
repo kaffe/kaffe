@@ -20,6 +20,7 @@
 
 #include <stddef.h>
 
+#include "gccbuiltin.h"
 #include "generic/genatomic.h"
 #include "katomic.h"
 #include "generic/comparexch.h"

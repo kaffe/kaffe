@@ -29,6 +29,7 @@
 #include <ia64intrin.h>
 #endif
 
+#include "gccbuiltin.h"
 #include "atomic.h"
 #include "katomic.h"
 #include "generic/comparexch.h"

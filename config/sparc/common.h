@@ -14,6 +14,8 @@
 #ifndef __sparc_common_h
 #define __sparc_common_h
 
+#include "gccbuiltin.h"
+
 /* Include the right compare_and_swap definition */
 #if defined(__sparcv9)
 #include "atomic-sparc32v9.h"

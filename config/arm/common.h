@@ -20,6 +20,7 @@
 /* The arm never aligns to more than a 4 byte boundary. */
 #define	ALIGNMENT_OF_SIZE(S)	((S) < 4 ? (S) : 4)
 
+#include "gccbuiltin.h"
 #include "katomic.h"
 #include "generic/genatomic.h"
 #include "generic/comparexch.h"

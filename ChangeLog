@@ -1,3 +1,21 @@
+2005-04-01  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/arm/common.h,
+	config/i386/common.h,
+	config/ia64/common.h,
+	config/m68k/common.h,
+	config/mips/common.h,
+	config/parisc/common.h,
+	config/powerpc/common.h,
+	config/s390/common.h,
+	config/sh/common.h,
+	config/sparc/common.h,
+	config/x86_64/common.h:
+	Include gccbuiltin.h.
+
+	Reported by:  gian paolo ciceri <gp.ciceri@acm.org>,
+		      Riccardo Mottola <zuse@libero.it>
+
 2005-04-01  gian paolo ciceri <gp.ciceri@acm.org>
 
 	* config/katomic.h (__atomic_val_bysize, __atomic_bool_bysize): 
