@@ -54,7 +54,7 @@ import javax.swing.event.ListDataListener;
  */
 public abstract class AbstractListModel implements ListModel, Serializable
 {
-  static final long serialVersionUID = -3285184064379168730L;
+  private static final long serialVersionUID = -3285184064379168730L;
 
   /** List of ListDataListeners called for each change to the list. */
   protected EventListenerList listenerList;

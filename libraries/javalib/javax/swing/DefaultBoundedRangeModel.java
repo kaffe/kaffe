@@ -59,7 +59,7 @@ public class DefaultBoundedRangeModel
    * The identifier of this class in object serialization. Verified
    * using the serialver tool of Sun J2SE 1.4.1_01.
    */
-  static final long serialVersionUID = 5034068491295259790L;
+  private static final long serialVersionUID = 5034068491295259790L;
 
 
   /**

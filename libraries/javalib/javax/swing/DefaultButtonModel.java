@@ -71,7 +71,7 @@ import javax.swing.event.EventListenerList;
 public class DefaultButtonModel implements ButtonModel, Serializable
 {
   /** DOCUMENT ME! */
-  static final long serialVersionUID = -5342609566534980231L;
+  private static final long serialVersionUID = -5342609566534980231L;
 
   /**
    * Indicates that the button is <em>partially</em> committed to being

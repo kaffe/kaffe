@@ -114,7 +114,7 @@ public class JSlider extends JComponent implements SwingConstants, Accessible,
                                                    MenuContainer, Serializable
 {
   /** DOCUMENT ME! */
-  static final long serialVersionUID = -1441275936141218479L;
+  private static final long serialVersionUID = -1441275936141218479L;
 
   /**
    * DOCUMENT ME!

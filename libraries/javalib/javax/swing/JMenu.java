@@ -75,7 +75,7 @@ import javax.swing.plaf.MenuItemUI;
  */
 public class JMenu extends JMenuItem implements Accessible, MenuElement
 {
-  static final long serialVersionUID = 4227225638931828014L;
+  private static final long serialVersionUID = 4227225638931828014L;
 
   /** name for the UI delegate for this menu. */
   private static final String uiClassID = "MenuUI";

@@ -55,7 +55,7 @@ import javax.swing.event.SwingPropertyChangeSupport;
 public abstract class AbstractAction
   implements Action, Cloneable, Serializable
 {
-  static final long serialVersionUID = -6803159439231523484L;
+  private static final long serialVersionUID = -6803159439231523484L;
 
   /**
    * enabled

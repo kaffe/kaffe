@@ -56,7 +56,7 @@ import javax.swing.JInternalFrame.JDesktopIcon;
 public class DefaultDesktopManager implements DesktopManager, Serializable
 {
   /** DOCUMENT ME! */
-  static final long serialVersionUID = 4657624909838017887L;
+  private static final long serialVersionUID = 4657624909838017887L;
 
   /** The property change event fired when the wasIcon property changes. */
   static final String WAS_ICON_ONCE_PROPERTY = "wasIconOnce";

@@ -4,6 +4,29 @@
 
 	2004-12-27  Michael Koch  <konqueror@gmx.de>
 
+	* javax/swing/AbstractAction.java,
+	javax/swing/AbstractCellEditor.java,
+	javax/swing/AbstractListModel.java,
+	javax/swing/DefaultBoundedRangeModel.java,
+	javax/swing/DefaultButtonModel.java,
+	javax/swing/DefaultCellEditor.java,
+	javax/swing/DefaultComboBoxModel.java,
+	javax/swing/DefaultDesktopManager.java,
+	javax/swing/JMenu.java,
+	javax/swing/JSlider.java,
+	javax/swing/KeyStroke.java,
+	javax/swing/OverlayLayout.java,
+	javax/swing/ScrollPaneLayout.java,
+	javax/swing/SizeRequirements.java,
+	javax/swing/ViewportLayout.java:
+	Made serialVersionUID private.
+	
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-12-27  Michael Koch  <konqueror@gmx.de>
+
 	* javax/imageio/metadata/IIOInvalidTreeException.java:
 	Use org.w3c.dom.Node instead of java.lang.Object.
 	(serialVersionUID): New field.

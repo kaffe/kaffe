@@ -45,8 +45,10 @@ public class KeyStroke
   extends AWTKeyStroke
   implements Serializable
 {
-  static final long serialVersionUID = -9060180771037902530L;
-  private KeyStroke() {
+  private static final long serialVersionUID = -9060180771037902530L;
+  
+  private KeyStroke()
+  {
   }
   
   protected KeyStroke(char keyChar, int keyCode, int modifiers,

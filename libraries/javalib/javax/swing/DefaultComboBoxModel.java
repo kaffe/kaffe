@@ -56,7 +56,7 @@ import java.util.Vector;
 public class DefaultComboBoxModel extends AbstractListModel
   implements MutableComboBoxModel, Serializable
 {
-  static final long serialVersionUID = 6698657703676921904L;
+  private static final long serialVersionUID = 6698657703676921904L;
 
   /**
    * List containing items in the combo box

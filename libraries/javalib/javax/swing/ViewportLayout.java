@@ -52,7 +52,7 @@ import java.io.Serializable;
  */
 public class ViewportLayout implements LayoutManager, Serializable
 {
-  static final long serialVersionUID = -788225906076097229L;
+  private static final long serialVersionUID = -788225906076097229L;
 
   public ViewportLayout() 
   {
