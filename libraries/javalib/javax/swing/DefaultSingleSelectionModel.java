@@ -79,7 +79,7 @@ public class DefaultSingleSelectionModel
 
   /**
    * getSelectedIndex
-   * @returns int
+   * @return int
    */
   public int getSelectedIndex ()
   {
@@ -113,7 +113,7 @@ public class DefaultSingleSelectionModel
 
   /**
    * isSelected
-   * @returns boolean
+   * @return boolean
    */
   public boolean isSelected ()
   {
@@ -122,7 +122,8 @@ public class DefaultSingleSelectionModel
 
   /**
    * addChangeListener
-   * @param listener TODO
+   *
+   * @param listener the listener to add
    */
   public void addChangeListener (ChangeListener listener)
   {
@@ -131,7 +132,8 @@ public class DefaultSingleSelectionModel
 
   /**
    * removeChangeListener
-   * @param listener TODO
+   *
+   * @param listener the listener to remove
    */
   public void removeChangeListener (ChangeListener listener)
   {
@@ -161,8 +163,12 @@ public class DefaultSingleSelectionModel
 
   /**
    * getListeners
-   * @param listenerClass TODO
-   * @returns EventListener[]
+   *
+   * @param listenerClass the type fo listener
+   *
+   * @return an array of listeners
+   *
+   * @since 1.3
    */
   public EventListener[] getListeners (Class listenerClass)
   {
@@ -171,6 +177,8 @@ public class DefaultSingleSelectionModel
 
   /**
    * getChangeListeners
+   *
+   * @since 1.4
    */
   public ChangeListener[] getChangeListeners ()
   {
