@@ -170,13 +170,6 @@ TcurrentJava(void)
 	return GET_COOKIE();
 }
 
-static
-void*
-TcurrentNative(void)
-{
-	return (jthread_current());
-}
-
 static          
 void
 TwalkThreads(void)
@@ -271,7 +264,7 @@ void
 Llock(iLock* lk)
 {
 	jmutex_lock(lk->mux);
-	lk->holder = TcurrentNative();
+	lk->holder = jthread_current();
 }
 
 static  
@@ -294,7 +287,7 @@ Lwait(iLock* lk, jlong timeout)
 	count = lk->count;
 	lk->count = 0;
 	jcondvar_wait(lk->cv, lk->mux, timeout);
-	lk->holder = TcurrentNative();
+	lk->holder = jthread_current();
 	lk->count = count;
 
 	/* now it's safe to start dying */ 
@@ -369,7 +362,7 @@ ThreadInterface Kaffe_ThreadInterface = {
         Tframes,
         Tfinalize,
         TcurrentJava,
-	TcurrentNative,
+	jthread_current,
         TwalkThreads,
         TwalkThread,
         TnextFrame,
