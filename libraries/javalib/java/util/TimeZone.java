@@ -134,7 +134,10 @@ public static synchronized String[] getAvailableIDs() {
 
 private static TimeZone loadTimeZone(String ID) {
 	Object tzo = zones.get(ID);
-	if (tzo == null || tzo instanceof TimeZone) {
+	if (tzo == null) {
+		return getCustomTimeZone(ID);
+        }
+	if (tzo instanceof TimeZone) {
 		return ((TimeZone)tzo);
 	}
 	if (!(tzo instanceof File)) {
@@ -153,6 +156,37 @@ private static TimeZone loadTimeZone(String ID) {
 		tz = getTimeZone("GMT");
 		zones.put(ID, tz);
 	}
+	return (tz);
+}
+
+private static TimeZone getCustomTimeZone(String ID) {
+	TimeZone tz = getTimeZone("GMT");
+	if (ID.startsWith("GMT")) {
+		try {
+			String sign = ID.substring(3,4);
+			String hh;
+			String mm;
+			int i = ID.indexOf(":");
+			if (i >= 0) {
+				hh = ID.substring(4,i);
+				mm = ID.substring(i+1);
+			}
+			else {
+				hh = ID.substring(4,6);
+				mm = ID.substring(6,8);
+			}
+			int hhi = Integer.parseInt(hh);
+			int mmi = Integer.parseInt(mm);
+			int rawOffset = (hhi * 60 + mmi) * 60 * 1000;
+			if (sign.equals("+")) {
+				tz = new SimpleTimeZone(rawOffset, ID);
+			}
+			else if (sign.equals("-")) {
+				tz = new SimpleTimeZone(- rawOffset, ID);
+			}
+		} catch (Exception e) {}
+	}
+	zones.put(ID, tz);
 	return (tz);
 }
 
