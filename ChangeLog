@@ -1,3 +1,79 @@
+2004-06-22  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* configure.ac: Use AM_LCMESSAGES to check for LC_MESSAGES in
+	locale.h. jni module added.
+
+	* THIRDPARTY: Added a note concerning the kjc module in the CVS.
+
+	* WHATSNEW: Updated some news message for kaffe-1.1.5 (or .6).
+
+	* kaffe/kaffevm/jni.c,
+	kaffe/kaffevm/jni_i.h,
+	kaffe/kaffevm/jnirefs.h:
+	Removed. Moved into their own directory.
+
+	* kaffe/kaffevm/jni/jni.c,
+	kaffe/kaffevm/jni/jni_i.h,
+	kaffe/kaffevm/jni/jnirefs.h,
+	kaffe/kaffevm/jni/Makefile.am,
+	kaffe/kaffevm/jni/.cvsignore:
+	New files.
+
+	* kaffe/kaffe/main.c: Only call setlocale if
+	HAVE_LCMESSAGES is set.
+
+	* kaffe/kaffe/Makefile.am,
+	kaffe/kaffeh/Makefile.am,
+	kaffe/kaffevm/Makefile.am,
+	kaffe/kaffevm/intrp/Makefile.am,
+	kaffe/kaffevm/jit/Makefile.am,
+	kaffe/kaffevm/jit3/Makefile.am,
+	kaffe/kaffevm/systems/beos-native/Makefile.am,
+	kaffe/kaffevm/systems/oskit-pthreads/Makefile.am,
+	kaffe/kaffevm/systems/unix-jthreads/Makefile.am,
+	kaffe/kaffevm/systems/unix-pthreads/Makefile.am,
+	kaffe/kaffevm/verifier/Makefile.am,
+	libraries/clib/awt/X/Makefile.am,
+	libraries/clib/io/Makefile.am,
+	libraries/clib/management/Makefile.am,
+	libraries/clib/native/Makefile.am,
+	libraries/clib/net/Makefile.am,
+	libraries/clib/nio/Makefile.am,
+	libraries/clib/security/Makefile.am:
+	Include JNI subdirectory in the search path.
+
+	* config/config.h.in,
+	aclocal.m4,
+	kaffe/kaffevm/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	kaffe/kaffeh/Makefile.in,
+	kaffe/kaffevm/Makefile.in,
+	kaffe/kaffevm/intrp/Makefile.in,
+	kaffe/kaffevm/jit/Makefile.in,
+	kaffe/kaffevm/jit3/Makefile.in,
+	kaffe/kaffevm/systems/beos-native/Makefile.in,
+	kaffe/kaffevm/systems/oskit-pthreads/Makefile.in,
+	kaffe/kaffevm/systems/unix-jthreads/Makefile.in,
+	kaffe/kaffevm/systems/unix-pthreads/Makefile.in,
+	kaffe/kaffevm/verifier/Makefile.in,
+	libraries/clib/awt/X/Makefile.in,
+	libraries/clib/io/Makefile.in,
+	libraries/clib/management/Makefile.in,
+	libraries/clib/native/Makefile.in,
+	libraries/clib/net/Makefile.in,
+	libraries/clib/nio/Makefile.in,
+	libraries/clib/security/Makefile.in,
+	configure:
+	Regenerated.
+
+	* developers/patch-include-Makefile.diff:
+	New workaround patch for automake include/Makefile.
+
+	* developers/autogen.sh: Apply patch-include-Makefile.diff
+
+	* include/Makefile.in: Removed an extra generated include from
+	the distributed archive.
+
 2004-06-22  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/config-std.h:

@@ -9,8 +9,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = $(ENGINE_NAME) systems gcj verifier
-DIST_SUBDIRS = intrp jit jit3 systems gcj verifier
+SUBDIRS = $(ENGINE_NAME) systems gcj verifier jni
+DIST_SUBDIRS = intrp jit jit3 systems gcj verifier jni
 
 EXTRA_DIST = \
 	kaffe.def \
@@ -25,13 +25,15 @@ EXTRA_DIST = \
 @engine_frag@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	$(ENGINE_INCLUDES) \
 	-I$(top_srcdir)/libltdl \
 	$(ENGINE_DEFS) \
 	-I$(top_srcdir)/kaffe/jvmpi \
 	-I$(top_srcdir)/kaffe/xprof \
 	-I$(top_builddir)/include \
-	-I$(top_srcdir)/kaffe/kaffevm/verifier
+	-I$(top_srcdir)/kaffe/kaffevm/verifier \
+	-I$(top_srcdir)/kaffe/kaffevm/jni
 
 native_LTLIBRARIES = libkaffevm.la
 
@@ -55,7 +57,8 @@ libkaffevm_la_DEPENDENCIES = \
 	$(ENGINE_NAME)/libengine.la \
 	$(libgcj) \
 	systems/$(THREAD_SYSTEM)/libkthread.la \
-	verifier/libkaffeverifier.la
+	verifier/libkaffeverifier.la \
+	jni/libkaffejni.la
 
 libkaffevm_la_LIBADD = \
 	$(libkaffevm_la_DEPENDENCIES) \
@@ -89,7 +92,6 @@ libkaffevm_la_SOURCES = \
 	inflate.c \
 	itypes.c \
 	jar.c \
-	jni.c \
 	ksem.c \
 	locks.c \
 	lookup.c \
@@ -128,8 +130,6 @@ noinst_HEADERS = \
 	inflate.h \
 	itypes.h \
 	jar.h \
-	jni_i.h \
-	jnirefs.h \
 	ksem.h \
 	lerrno.h \
 	locks.h \

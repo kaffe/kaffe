@@ -1,0 +1,16 @@
+Index: include/Makefile.in
+===================================================================
+RCS  /cvs/kaffe/kaffe/include/Makefile.in,v
+retrieving revision 1.162
+diff -u -r1.162 Makefile.in
+--- include/Makefile.in 19 Jun 2004 21:13:54 -0000      1.162
++++ include/Makefile.in 22 Jun 2004 15:27:49 -0000
+@@ -79,7 +79,7 @@
+ am__installdirs = "$(DESTDIR)$(includedir)" "$(DESTDIR)$(pkgincludedir)" "$(DESTDIR)$(pkgincludedir)"
+ includeHEADERS_INSTALL = $(INSTALL_HEADER)
+ nodist_pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
+-am__noinst_HEADERS_DIST = ifaddrs_compat.h ifaddrs.h defs.h dummyin6.h \
++am__noinst_HEADERS_DIST = ifaddrs_compat.h defs.h dummyin6.h \
+        files.h getaddrinfo.h gettext.h nets.h system.h Arrays.h \
+        errors.h jsyscall.h native.h
+ pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)

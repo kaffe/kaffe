@@ -255,6 +255,8 @@ KAFFE_LOCALEDIR="${datadir}/locale"
 eval KAFFE_LOCALEPATH=$KAFFE_LOCALEDIR
 AC_DEFINE_UNQUOTED(KAFFE_LOCALEDIR, "$KAFFE_LOCALEPATH", [Full path to the directory containing kaffe's locales])
 
+AM_LC_MESSAGES
+
 dnl =========================================================================
 dnl Do we need underscore?
 dnl -------------------------------------------------------------------------
@@ -1941,6 +1943,7 @@ AC_CONFIG_FILES([kaffe/kaffevm/systems/oskit-pthreads/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/systems/beos-native/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/systems/unix-pthreads/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/verifier/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/jni/Makefile])
 AC_CONFIG_FILES([kaffe/kaffe/Makefile])
 AC_CONFIG_FILES([kaffe/kaffeh/Makefile])
 AC_CONFIG_FILES([kaffe/xprof/Makefile])

@@ -43,6 +43,9 @@
 #else
 #define _(T) (T)
 #endif
+#if defined(HAVE_LC_MESSAGES)
+#include <locale.h>
+#endif
 
 #if defined(KAFFE_PROFILER)
 extern int profFlag;
@@ -80,9 +83,11 @@ main(int argc, char* argv[])
 	int farg;
 	const char* cp;
 
-#if defined(HAVE_GETTEXT)
+#if defined(HAVE_LC_MESSAGES)
 	setlocale(LC_MESSAGES, "");
 	setlocale(LC_CTYPE, "");
+#endif
+#if defined(HAVE_GETTEXT)
 	bindtextdomain(PACKAGE, KAFFE_LOCALEDIR);
 	textdomain(PACKAGE);
 #endif

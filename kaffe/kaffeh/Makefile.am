@@ -6,7 +6,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH -I$(top_builddir)/include
+AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH \
+	      -I$(top_builddir)/include -I$(top_srcdir)/kaffe/kaffevm/jni
 
 bin_PROGRAMS = kaffeh
 

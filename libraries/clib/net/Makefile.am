@@ -8,7 +8,10 @@
 
 native_LTLIBRARIES = libnet.la
 
-AM_CPPFLAGS = -I$(top_srcdir)/kaffe -I$(top_builddir)/include
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/kaffe \
+	-I$(top_builddir)/include \
+	-I$(top_srcdir)/kaffe/kaffevm/jni
 
 libnet_la_LDFLAGS = \
 	$(KLIBFLAGS) \

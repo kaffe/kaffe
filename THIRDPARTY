@@ -264,7 +264,8 @@ http://www.dms.at/kopi/index.html.
 
 The sources for the original kjc 2.1B compiler are available from DMS at 
 the above URL. Patches from kaffe developers to kjc are available in the 
-kaffe-extras repository of the kaffe.org CVS server.
+kaffe-extras repository of the kaffe.org CVS server. A CVS module dedicated to
+KJC is available on the kaffe.org CVS server.
 
 * m4/ax_cflags_gcc_option.m4, m4/ax_cflags_warn_all.m4, m4/acx_pthread.m4
 

@@ -10,6 +10,7 @@
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	-I.. \
 	-I$(srcdir)/.. \
 	$(ENGINE_DEFS) \

@@ -14,16 +14,16 @@
 
 @SET_MAKE@
 
-# Makefile.in for kaffeh - kaffe native code stub generator.
+# Makefile.am for the JNI - a Java(tm) compatible virtual machine.
 #
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
+# Copyright (c) 2004
+#	Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
 
-SOURCES = $(kaffeh_SOURCES) $(nodist_kaffeh_SOURCES)
+SOURCES = $(libkaffejni_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -31,7 +31,7 @@ VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = ../..
+top_builddir = ../../..
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = @INSTALL@
 install_sh_DATA = $(install_sh) -c -m 644
@@ -46,8 +46,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-bin_PROGRAMS = kaffeh$(EXEEXT)
-subdir = kaffe/kaffeh
+subdir = kaffe/kaffevm/jni
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -58,12 +57,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/gnu-crypto.m4 $(top_srcdir)/m4/gwqt.m4 \
 	$(top_srcdir)/m4/herrno.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/libxml.m4 \
-	$(top_srcdir)/m4/libxslt.m4 $(top_srcdir)/m4/nls.m4 \
-	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lcmessage.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
@@ -73,26 +72,14 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)"
-binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
-PROGRAMS = $(bin_PROGRAMS)
-am_kaffeh_OBJECTS = main.$(OBJEXT) mem.$(OBJEXT) sigs.$(OBJEXT) \
-	support.$(OBJEXT)
-am__objects_1 = constants.$(OBJEXT) debug.$(OBJEXT) file.$(OBJEXT) \
-	inflate.$(OBJEXT) jar.$(OBJEXT) readClass.$(OBJEXT) \
-	utf8const.$(OBJEXT)
-nodist_kaffeh_OBJECTS = $(am__objects_1)
-kaffeh_OBJECTS = $(am_kaffeh_OBJECTS) $(nodist_kaffeh_OBJECTS)
-kaffeh_LDADD = $(LDADD)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libkaffejni_la_LIBADD =
+am_libkaffejni_la_OBJECTS = jni.lo
+libkaffejni_la_OBJECTS = $(am_libkaffejni_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/constants.Po ./$(DEPDIR)/debug.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/file.Po ./$(DEPDIR)/inflate.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/jar.Po ./$(DEPDIR)/main.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/mem.Po ./$(DEPDIR)/readClass.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/sigs.Po ./$(DEPDIR)/support.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/utf8const.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/jni.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -100,8 +87,8 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
 	$(AM_CFLAGS) $(CFLAGS)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(kaffeh_SOURCES) $(nodist_kaffeh_SOURCES)
-DIST_SOURCES = $(kaffeh_SOURCES)
+SOURCES = $(libkaffejni_la_SOURCES)
+DIST_SOURCES = $(libkaffejni_la_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -350,31 +337,30 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH \
-	      -I$(top_builddir)/include -I$(top_srcdir)/kaffe/kaffevm/jni
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
+	$(ENGINE_INCLUDES) \
+	-I$(top_srcdir)/libltdl \
+	$(ENGINE_DEFS) \
+	-I$(top_srcdir)/kaffe/jvmpi \
+	-I$(top_srcdir)/kaffe/xprof \
+	-I$(top_builddir)/include \
+	-I$(top_srcdir)/kaffe/kaffevm \
+	-I$(top_srcdir)/kaffe/kaffevm/verifier \
+	-I$(top_srcdir)/kaffe/kaffevm/jni
 
-GEN_SRCS = \
-	constants.c \
-	debug.c \
-	file.c \
-	inflate.c \
-	jar.c \
-	readClass.c \
-	utf8const.c
+noinst_LTLIBRARIES = libkaffejni.la
+libkaffejni_la_LDFLAGS = \
+	$(KVMLIBFLAGS) \
+	-export-dynamic \
+	-release $(PACKAGE_VERSION)
 
-DISTCLEANFILES = $(GEN_SRCS)
-kaffeh_SOURCES = \
-	main.c \
-	mem.c \
-	sigs.c \
-	support.c
+libkaffejni_la_SOURCES = \
+	jni.c
 
-nodist_kaffeh_SOURCES = $(GEN_SRCS)
 noinst_HEADERS = \
-	kaffeh-support.h \
-	java_lang_ClassLoader.h \
-	java_lang_Object.h \
-	java_lang_String.h
+	jni_i.h \
+	jnirefs.h
 
 all: all-am
 
@@ -389,9 +375,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  kaffe/kaffeh/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  kaffe/kaffevm/jni/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  kaffe/kaffeh/Makefile
+	  $(AUTOMAKE) --gnu  kaffe/kaffevm/jni/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -409,37 +395,17 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-binPROGRAMS: $(bin_PROGRAMS)
-	@$(NORMAL_INSTALL)
-	test -z "$(bindir)" || $(mkdir_p) "$(DESTDIR)$(bindir)"
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
-	  if test -f $$p \
-	     || test -f $$p1 \
-	  ; then \
-	    f=`echo "$$p1" | sed 's,^.*/,,;$(transform);s/$$/$(EXEEXT)/'`; \
-	   echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(binPROGRAMS_INSTALL) '$$p' '$(DESTDIR)$(bindir)/$$f'"; \
-	   $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(binPROGRAMS_INSTALL) "$$p" "$(DESTDIR)$(bindir)/$$f" || exit 1; \
-	  else :; fi; \
-	done
 
-uninstall-binPROGRAMS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  f=`echo "$$p" | sed 's,^.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
-	  echo " rm -f '$(DESTDIR)$(bindir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(bindir)/$$f"; \
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" != "$$p" || dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
 	done
-
-clean-binPROGRAMS:
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
-	  echo " rm -f $$p $$f"; \
-	  rm -f $$p $$f ; \
-	done
-kaffeh$(EXEEXT): $(kaffeh_OBJECTS) $(kaffeh_DEPENDENCIES) 
-	@rm -f kaffeh$(EXEEXT)
-	$(LINK) $(kaffeh_LDFLAGS) $(kaffeh_OBJECTS) $(kaffeh_LDADD) $(LIBS)
+libkaffejni.la: $(libkaffejni_la_OBJECTS) $(libkaffejni_la_DEPENDENCIES) 
+	$(LINK)  $(libkaffejni_la_LDFLAGS) $(libkaffejni_la_OBJECTS) $(libkaffejni_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -447,17 +413,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/constants.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debug.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inflate.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jar.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mem.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/readClass.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sigs.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/support.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utf8const.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jni.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -570,11 +526,8 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
-	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -595,14 +548,14 @@ clean-generic:
 
 distclean-generic:
 	-rm -f $(CONFIG_CLEAN_FILES)
-	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -622,7 +575,7 @@ info-am:
 
 install-data-am:
 
-install-exec-am: install-binPROGRAMS
+install-exec-am:
 
 install-info: install-info-am
 
@@ -648,23 +601,22 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-info-am
+uninstall-am: uninstall-info-am
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-libtool ctags distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-data install-data-am install-exec \
+.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
+	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-exec \
 	install-exec-am install-info install-info-am install-man \
 	install-strip installcheck installcheck-am installdirs \
 	maintainer-clean maintainer-clean-generic mostlyclean \
 	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
 	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-info-am
+	uninstall-info-am
 
 
-$(GEN_SRCS):
-	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@
+@engine_frag@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

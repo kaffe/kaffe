@@ -9,7 +9,9 @@
 native_LTLIBRARIES = libawt.la
 
 AM_CFLAGS = @CFLAGS@ @X_CFLAGS@
-AM_CPPFLAGS = -I$(top_builddir)/include
+AM_CPPFLAGS = \
+	-I$(top_builddir)/include \
+	-I$(top_srcdir)/kaffe/kaffevm/jni
 
 libawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \

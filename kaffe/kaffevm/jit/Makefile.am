@@ -8,7 +8,13 @@
 
 @engine_frag@
 
-AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENGINE_DEFS) -I$(top_builddir)/include
+AM_CPPFLAGS = \
+	      -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
+	      -I$(top_srcdir)/kaffe/kaffevm/jni \
+	      -I.. \
+	      -I$(srcdir)/.. \
+	      $(ENGINE_DEFS) \
+	      -I$(top_builddir)/include
 
 noinst_LTLIBRARIES = libengine.la
 

@@ -136,4 +136,5 @@ autoconf -Wall
  patch < ../developers/patch-config.sub-superh.diff
  touch config-h.in
 ) 	 
- 
+
+patch < developers/patch-include-Makefile.diff

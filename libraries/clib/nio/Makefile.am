@@ -5,7 +5,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-AM_CPPFLAGS = -I$(top_builddir)/include
+AM_CPPFLAGS = -I$(top_builddir)/include -I$(top_srcdir)/kaffe/kaffevm/jni
 native_LTLIBRARIES = libnio.la
 
 libnio_la_LDFLAGS = \

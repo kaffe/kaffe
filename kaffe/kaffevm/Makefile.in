@@ -82,15 +82,15 @@ am__DEPENDENCIES_1 =
 @HAVE_GCJ_SUPPORT_TRUE@am__DEPENDENCIES_2 = gcj/libgcj.la
 am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(ENGINE_NAME)/libengine.la \
 	$(am__DEPENDENCIES_2) systems/$(THREAD_SYSTEM)/libkthread.la \
-	verifier/libkaffeverifier.la
+	verifier/libkaffeverifier.la jni/libkaffejni.la
 am_libkaffevm_la_OBJECTS = access.lo baseClasses.lo classMethod.lo \
 	classPool.lo methodCache.lo code-analyse.lo code.lo \
 	constants.lo debug.lo exception.lo external.lo file.lo \
 	findInJar.lo fp.lo gc.lo hashtab.lo inflate.lo itypes.lo \
-	jar.lo jni.lo ksem.lo locks.lo lookup.lo object.lo \
-	readClass.lo soft.lo stackTrace.lo stats.lo string.lo \
-	stringParsing.lo support.lo thread.lo utf8const.lo gcFuncs.lo \
-	gcRefs.lo prefix.lo
+	jar.lo ksem.lo locks.lo lookup.lo object.lo readClass.lo \
+	soft.lo stackTrace.lo stats.lo string.lo stringParsing.lo \
+	support.lo thread.lo utf8const.lo gcFuncs.lo gcRefs.lo \
+	prefix.lo
 am__objects_1 = gc-mem.lo md.lo
 nodist_libkaffevm_la_OBJECTS = $(am__objects_1)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
@@ -110,13 +110,13 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/gc.Plo ./$(DEPDIR)/gcFuncs.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/gcRefs.Plo ./$(DEPDIR)/hashtab.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/inflate.Plo ./$(DEPDIR)/itypes.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/jar.Plo ./$(DEPDIR)/jni.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ksem.Plo ./$(DEPDIR)/locks.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/lookup.Plo ./$(DEPDIR)/md.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/methodCache.Plo ./$(DEPDIR)/object.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/prefix.Plo ./$(DEPDIR)/readClass.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/soft.Plo ./$(DEPDIR)/stackTrace.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/stats.Plo ./$(DEPDIR)/string.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/jar.Plo ./$(DEPDIR)/ksem.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/locks.Plo ./$(DEPDIR)/lookup.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/md.Plo ./$(DEPDIR)/methodCache.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/object.Plo ./$(DEPDIR)/prefix.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/readClass.Plo ./$(DEPDIR)/soft.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/stackTrace.Plo ./$(DEPDIR)/stats.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/string.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/stringParsing.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/support.Plo ./$(DEPDIR)/thread.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/utf8const.Plo
@@ -383,8 +383,8 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-SUBDIRS = $(ENGINE_NAME) systems gcj verifier
-DIST_SUBDIRS = intrp jit jit3 systems gcj verifier
+SUBDIRS = $(ENGINE_NAME) systems gcj verifier jni
+DIST_SUBDIRS = intrp jit jit3 systems gcj verifier jni
 EXTRA_DIST = \
 	kaffe.def \
 	mem/gc-incremental.c \
@@ -397,13 +397,15 @@ EXTRA_DIST = \
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	$(ENGINE_INCLUDES) \
 	-I$(top_srcdir)/libltdl \
 	$(ENGINE_DEFS) \
 	-I$(top_srcdir)/kaffe/jvmpi \
 	-I$(top_srcdir)/kaffe/xprof \
 	-I$(top_builddir)/include \
-	-I$(top_srcdir)/kaffe/kaffevm/verifier
+	-I$(top_srcdir)/kaffe/kaffevm/verifier \
+	-I$(top_srcdir)/kaffe/kaffevm/jni
 
 native_LTLIBRARIES = libkaffevm.la
 @HAVE_GCJ_SUPPORT_FALSE@libgcj = #
@@ -418,7 +420,8 @@ libkaffevm_la_DEPENDENCIES = \
 	$(ENGINE_NAME)/libengine.la \
 	$(libgcj) \
 	systems/$(THREAD_SYSTEM)/libkthread.la \
-	verifier/libkaffeverifier.la
+	verifier/libkaffeverifier.la \
+	jni/libkaffejni.la
 
 libkaffevm_la_LIBADD = \
 	$(libkaffevm_la_DEPENDENCIES) \
@@ -452,7 +455,6 @@ libkaffevm_la_SOURCES = \
 	inflate.c \
 	itypes.c \
 	jar.c \
-	jni.c \
 	ksem.c \
 	locks.c \
 	lookup.c \
@@ -491,8 +493,6 @@ noinst_HEADERS = \
 	inflate.h \
 	itypes.h \
 	jar.h \
-	jni_i.h \
-	jnirefs.h \
 	ksem.h \
 	lerrno.h \
 	locks.h \
@@ -604,7 +604,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inflate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/itypes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jar.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jni.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ksem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/locks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lookup.Plo@am__quote@

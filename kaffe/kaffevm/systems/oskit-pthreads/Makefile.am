@@ -17,6 +17,7 @@ EXTRA_DIST = Makefile.frag jsignal.h jthread.h lock-impl.h thread-impl.h
 
 AM_CPPFLAGS = \
 	-I$(srcdir) -I../.. -I$(srcdir)/../.. \
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	-I$(top_builddir)/config -I$(top_srcdir)/config \
 	-I$(top_builddir)/include -I$(top_srcdir)/include \
 	-I$(top_builddir)/include \

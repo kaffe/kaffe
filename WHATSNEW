@@ -1,6 +1,18 @@
 What's New in CVS
 ------------------------------------------------------
 
+What's New in Kaffe 1.1.5
+------------------------------------------------------
+
+* Better stack pointer / stack size handling.
+* JNI direct invocation fixes.
+* Added some internationalization support to kaffe's
+executable (fr, zh_TW).
+* Fixes for NetBSD, OpenBSD.
+* Resynced with latest GNU Classpath, GNU JAXP.
+* Compiler warning fixes.
+* Verifier moved to its own directory.
+
 What's New in Kaffe 1.1.3
 ------------------------------------------------------
 * More merges from GNU Classpath:
