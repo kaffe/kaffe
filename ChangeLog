@@ -1,4 +1,9 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c: 
+	(activeThreadsLock) Made static.
+
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 	
 	* config/arm/jit-arm.def:
 	Replace use of idealReg by KaffeVM_jitSetIdealReg.

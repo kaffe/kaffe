@@ -133,7 +133,7 @@ static jthread_t	activeThreads;
  * concurrently with some other threads. This prevents some bug that may appear 
  * when a thread die, is created or is being walked.
  */
-pthread_mutex_t		activeThreadsLock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t		activeThreadsLock = PTHREAD_MUTEX_INITIALIZER;
 
 /** This mutex lock protects calls into non-reentrant system services.
  */
