@@ -1,3 +1,8 @@
+2003-08-16  Jim Pick  <jim@kaffe.org>
+
+	* test/regression/TestScript.in:
+	Remove -noverify, since it's turned on globally now.
+
 2003-08-16  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/gnu/java/text/BaseBreakIterator.java,
