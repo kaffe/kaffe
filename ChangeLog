@@ -1,3 +1,13 @@
+Thu Jan  6 14:19:49 PST 2000  Patrick Tullmann <tullmann@cs.utah.edu>
+
+	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classMethod.h,
+	kaffe/kaffevm/lookup.c: Fix race condition in
+	classMethod.c:resolveStrings(), and cleanup class locking with 
+	an explicit lockClass() macro.
+	* test/regression/ClassDeadLock.java: new test
+	* test/regression/Makefile.am: add new test
+	* test/regression/Makefile.in: regen
+
 Wed Jan  5 12:51:02 PST 2000  Dalibor Topic <dtopic@socs.uts.edu.au>
 
 	* libraries/javalib/java/io/StreamTokenizer.java: fix several
