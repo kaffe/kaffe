@@ -5,7 +5,7 @@
  */
 
 
-/* java.beans.MethodDescriptor
+/* gnu.java.io.ClassLoaderObjectInputStream
    Copyright (C) 1998 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -43,53 +43,35 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package java.beans;
+package gnu.java.io;
 
-import java.lang.reflect.*;
+import java.io.*;
 
-/** MethodDescriptor describes information about a JavaBeans method.
- ** It's a fairly straightforward class (at least something in this
- ** package is straightforward!).
- **
- ** @author John Keiser
- ** @since JDK1.1
- ** @version 1.1.0, 26 Jul 1998
- **/
-public class MethodDescriptor extends FeatureDescriptor {
-	private Method m;
-	private ParameterDescriptor[] parameterDescriptors;
+/**
+ * ClassLoaderObjectInputStream is ObjectInputStream, with
+ * the ability to use a specific ClassLoader.
+ *
+ * @author Geoff Berry
+ * @version 1.1.0, 29 Jul 1998
+ */
 
-	/** Create a new MethodDescriptor.
-	 ** This method sets the name to the name of the method (Method.getName()).
-	 ** @param m the method it will represent.
-	 **/
-	public MethodDescriptor(Method m) {
-		setName(m.getName());
-		this.m = m;
+public class ClassLoaderObjectInputStream extends ObjectInputStream {
+	ClassLoader myClassLoader;
+
+	/** Create the new ClassLoaderObjectInputStream.
+	 * @param in the InputStream to read the Objects from.
+	 * @param myClassLoader the ClassLoader to load classes
+	 *        with.
+	 */
+	public ClassLoaderObjectInputStream(InputStream in, ClassLoader myClassLoader) throws IOException,StreamCorruptedException {
+		super(in);
+		this.myClassLoader = myClassLoader;
 	}
 
-	/** Create a new MethodDescriptor.
-	 ** This method sets the name to the name of the method (Method.getName()).
-	 ** @param m the method it will represent.
-	 ** @param parameterDescriptors descriptions of the parameters (especially names).
-	 **/
-	public MethodDescriptor(Method m, ParameterDescriptor[] parameterDescriptors) {
-		setName(m.getName());
-		this.m = m;
-		this.parameterDescriptors = parameterDescriptors;
-	}
-
-	/** Get the parameter descriptors from this method.
-	 ** Since MethodDescriptor has no way of determining what
-	 ** the parameter names were, this defaults to null.
-	 **/
-	public ParameterDescriptor[] getParameterDescriptors() {
-		return parameterDescriptors;
-	}
-
-	/** Get the method this MethodDescriptor represents. **/
-	public Method getMethod() {
-		return m;
+	/** Overriden method to use the loadClass() method from
+	 * the ClassLoader.
+	 */
+	public Class resolveClass(String name) throws IOException, ClassNotFoundException {
+		return myClassLoader.loadClass(name);
 	}
 }
-

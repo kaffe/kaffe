@@ -1,3 +1,23 @@
+2003-10-09 Milos Negovanovic <milosn@bmf.bounceme.net>
+	* libraries/javalib/gnu/java/io/ClassLoaderObjectInputStream.java,
+	libraries/javalib/gnu/java/lang/ClassHelper.java:
+	New files from GNU Classpath.
+
+	* libraries/javalib/java/beans/BeanDescriptor.java,
+	libraries/javalib/java/beans/Beans.java,
+	libraries/javalib/java/beans/EventSetDescriptor.java,
+	libraries/javalib/java/beans/FeatureDescriptor.java,
+	libraries/javalib/java/beans/MethodDescriptor.java,
+	libraries/javalib/java/beans/PropertyDescriptor.java:
+	Replaced by implementations from GNU Classpath.
+
+2003-10-09  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/rest.files:
+	Added gnu/java/io/ClassLoaderObjectInputStream.java and
+	gnu/java/lang/ClassHelper.java.
+
 2003-10-06  Jim Pick  <jim@kaffe.org>
 
 	* libraries/javalib/kaffe/util/zip/SwitchInflater.java:

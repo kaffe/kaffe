@@ -1,3 +1,5 @@
+gnu/java/io/ClassLoaderObjectInputStream.java
+gnu/java/lang/ClassHelper.java
 gnu/java/locale/Calendar.java
 gnu/java/locale/Calendar_de.java
 gnu/java/locale/Calendar_en.java
