@@ -109,6 +109,10 @@ gc_heap_initialise(void)
 	gc_heap_allocation_size = Kaffe_JavaVMArgs[0].allocHeapSize;
 	gc_heap_limit = Kaffe_JavaVMArgs[0].maxHeapSize;
 
+	if (gc_heap_allocation_size > gc_heap_limit) {
+		gc_heap_limit = gc_heap_allocation_size;
+	}
+
 #ifndef PREDEFINED_NUMBER_OF_TILES
     {
 	int i;
