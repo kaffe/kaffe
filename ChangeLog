@@ -1,3 +1,16 @@
+2004-07-18  Dalibor Topic  <robilad@kaffe.org>
+
+        * configure.ac:
+	Use AC_CHECK_MEMBERS to check for struct tm.tm_zone.
+
+        * configure,
+        config/config.h.in:
+	Regenerated.
+
+        * libraries/clib/native/TimeZone.c:
+	(java_util_TimeZone_getDefaultTimeZoneId) Use 
+	HAVE_STRUCT_TM_TM_ZONE in guard condition.
+
 2004-07-18  Jim Huang  <jserv@kaffe.org>
 
 	* po/zh_TW.po:

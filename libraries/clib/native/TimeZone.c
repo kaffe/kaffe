@@ -24,17 +24,17 @@ struct Hjava_lang_String*
 java_util_TimeZone_getDefaultTimeZoneId(void)
 {
 	        char *tempZoneName = NULL;
-#ifdef HAVE_DECLARED_TM_ZONE
+#if defined(HAVE_STRUCT_TM_TM_ZONE)
 	        struct tm *tempTimeStruct;
 	        time_t tempTimeArithm;
 
 	        tempTimeArithm = 0;
 	        tempTimeStruct = localtime (&tempTimeArithm);
 	        tempZoneName = tempTimeStruct->tm_zone;
-#else
+#else /* ! defined(HAVE_STRUCT_TM_TM_ZONE) */
 	        tzset();
 	        tempZoneName = tzname[0];  /* read above for this external symbol */
-#endif
+#endif /* defined(HAVE_STRUCT_TM_TM_ZONE) */
 	        assert(tempZoneName != NULL);
 	        return stringC2Java(tempZoneName);
 }

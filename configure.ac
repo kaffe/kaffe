@@ -1351,6 +1351,13 @@ AC_CHECK_MEMBERS([struct sockaddr_in6.sin6_flowinfo, struct sockaddr_in6.sin6_sc
 #endif
 ])
 
+dnl some Solaris systems don't have a tm_zone member in struct tm.
+AC_CHECK_MEMBERS([struct tm.tm_zone],,,[
+#if defined(HAVE_TIME_H)
+#include <time.h>
+#endif
+])
+
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
 AC_CHECK_FUNCS([remainder remainderf fmod fmodf drem])
@@ -1491,25 +1498,6 @@ AC_FUNC_VA_COPY
 AC_FUNC__VA_COPY
 
 dnl -------------------------------------------------------------------------
-
-dnl =========================================================================
-dnl Work out if struct tm contains tm_zone
-dnl -------------------------------------------------------------------------
-AC_CACHE_CHECK([for declaration of tm_zone in struct tm],
-  ac_cv_declared_tm_zone,
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_TIME_H
-#include <time.h>
-#endif
-]], [[ struct tm conftime; conftime.tm_zone = NULL; ]])],
-    [ac_cv_declared_tm_zone=yes],
-    [ac_cv_declared_tm_zone=no])
-])
-
-if test x"$ac_cv_declared_tm_zone" = x"yes"; then
-   AC_DEFINE(HAVE_DECLARED_TM_ZONE, 1, [Is tm_zone declared in struct tm ?])
-fi
-
 
 dnl =========================================================================
 dnl Work out if select is declared
