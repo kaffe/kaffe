@@ -129,7 +129,7 @@ public class HashMap extends AbstractMap
 	public Object put(Object key, Object val) {
 
 		// See if key already exists
-		int bucket = bucket(key);
+		int bucket = bucket(key, table.length);
 		Entry e = find(key, bucket);
 		if (e != null) {
 			Object old = e.val;
@@ -151,7 +151,7 @@ public class HashMap extends AbstractMap
 				}
 			}
 			table = newtab;
-			bucket = bucket(key);
+			bucket = bucket(key, table.length);
 		}
 
 		// Create and add new entry
@@ -164,7 +164,7 @@ public class HashMap extends AbstractMap
 	}
 
 	public Object remove(Object key) {
-		int bucket = bucket(key);
+		int bucket = bucket(key, table.length);
 		Entry first = table[bucket];
 		if (first == null) {
 			return null;
@@ -220,110 +220,25 @@ public class HashMap extends AbstractMap
 				newent = newent.next;
 			}
 		}
+		newmap.modCount = 0;
+		newmap.size = size;
 		return newmap;
 	}
 
-	public Set keySet() {
-		return new AbstractSet() {
-			public int size() {
-				return HashMap.this.size;
-			}
-			public boolean contains(Object o) {
-				return containsKey(o);
-			}
-			public boolean remove(Object o) {
-				int beforeSize = size;
-				HashMap.this.remove(o);
-				return size != beforeSize;
-			}
-			public void clear() {
-				HashMap.this.clear();
-			}
-			public Iterator iterator() {
-				return new Iterator() {
-					private Iterator i = new EntryIterator();
-					public boolean hasNext() {
-						return i.hasNext();
-					}
-					public Object next() {
-						return ((Entry)i.next()).key;
-					}
-					public void remove() {
-						i.remove();
-					}
-				};
-			}
-		};
-	}
-
-	public Collection values() {
-		return new AbstractCollection() {
-			public int size() {
-				return HashMap.this.size;
-			}
-			public void clear() {
-				HashMap.this.clear();
-			}
-			public Iterator iterator() {
-				return new Iterator() {
-					Iterator ei = new EntryIterator();
-					public boolean hasNext() {
-						return ei.hasNext();
-					}
-					public Object next() {
-						return ((Entry)ei.next()).val;
-					}
-					public void remove() {
-						ei.remove();
-					}
-				};
-			}
-		};
-	}
-
 	public Set entrySet() {
-		return new AbstractSet() {
-			public int size() {
-				return HashMap.this.size;
-			}
-			public boolean contains(Object o) {
-				if (!(o instanceof Map.Entry)) {
-					return false;
-				}
-				return find((Map.Entry)o) != null;
-			}
-			public boolean remove(Object o) {
-				if (!(o instanceof Map.Entry)) {
-					return false;
-				}
-				Entry ent = find((Map.Entry)o);
-				if (ent == null) {
-					return false;
-				}
-				HashMap.this.remove(ent.key);
-				return true;
-			}
-			public void clear() {
-				HashMap.this.clear();
-			}
+		return new AbstractMapEntrySet(this) {
 			public Iterator iterator() {
 				return new EntryIterator();
 			}
-			private Entry find(Map.Entry oent) {
+			protected Map.Entry find(Map.Entry oent) {
 				Entry myent = HashMap.this.find(oent.getKey());
-				if (myent != null
-				  && (myent.val == null ?
-				    oent.getValue() == null :
-				    myent.val.equals(oent.getValue()))) {
-					return myent;
-				}
-				return null;
+				return oent.equals(myent) ? myent : null;
 			}
 		};
 	}
 
 	private Entry find(Object key) {
-		return find(key, bucket(key));
+		return find(key, bucket(key, table.length));
 	}
 
 	private Entry find(Object key, int bucket) {
@@ -335,15 +250,15 @@ public class HashMap extends AbstractMap
 		return null;
 	}
 
-	private int bucket(Object key) {
-		return ((key == null) ? 0 : key.hashCode()) % table.length;
+	private final static int bucket(Object key, int length) {
+		int hash = (key == null) ? 0 : key.hashCode();
+		if (hash < 0) {
+			hash = -hash;
+		}
+		return hash % length;
 	}
 
-	private int bucket(Object key, int length) {
-		return ((key == null) ? 0 : key.hashCode()) % length;
-	}
-
-	// An iterator over all the Map.Entry's in this hashtable.
+	// An iterator over all the Entry's in this hashtable.
 	// This iterator is "fail-fast".
 	private class EntryIterator implements Iterator {
 		private int bucket;
@@ -384,11 +299,8 @@ public class HashMap extends AbstractMap
 			if (prev == null) {
 				throw new IllegalStateException();
 			}
-			int beforeModCount = HashMap.this.modCount;
 			HashMap.this.remove(prev.key);
-			if (beforeModCount != HashMap.this.modCount) {
-				modCount++;
-			}
+			modCount++;
 			prev = null;
 		}
 
