@@ -47,7 +47,8 @@ jint	soft_div(jint, jint);
 jint	soft_rem(jint, jint);
 
 #if defined(INTERPRETER)
-void*	soft_multianewarray(struct Hjava_lang_Class*, jint, slots*);
+struct _slots;
+void*	soft_multianewarray(struct Hjava_lang_Class*, jint, struct _slots*);
 #endif
 
 #if defined(TRANSLATOR)

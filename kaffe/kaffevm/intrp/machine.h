@@ -104,7 +104,8 @@
 #endif
 
 struct _methods;
+struct _slots;
 struct Hjava_lang_Thread;
-void virtualMachine(struct _methods*, slots*, slots*, struct Hjava_lang_Thread*);
+void virtualMachine(struct _methods*, struct _slots*, struct _slots*, struct Hjava_lang_Thread*);
 
 #endif

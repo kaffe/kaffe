@@ -40,8 +40,9 @@ public class TruncatedClass
 			catch (Throwable th)
 			{
 				System.out.println("Unexpected error loading " +name+ ": " +th);
-				this.error = th;
-				return;
+				System.exit(11);
+				// this.error = th;
+				// return;
 			}
 			System.out.println("Succesfully loaded " +name+ ": " +this);
 		}
@@ -57,7 +58,10 @@ public class TruncatedClass
 		for (int i = 0; i < len; i++)
 		{
 			if (a[i] != b[i])
-				throw new Error("VM changed byte array!!! " + msg);
+			{
+				System.out.println("ERROR: VM changed byte array!!! " + msg);
+				System.exit(11);
+			}
 		}
 	}
 
@@ -109,6 +113,7 @@ public class TruncatedClass
 	{
 		String codeClassname = "TruncatedClass";
 		String codeFilename = "./" +codeClassname+ ".class";
+		int rc = 0;
 
 		File codeFile = new File(codeFilename);
 
@@ -118,7 +123,10 @@ public class TruncatedClass
 
 		int len = codeStream.read(originalBytes);
 		if (len == -1)
-			throw new IOException("Failed to read " +codeFile);
+		{
+			System.out.println("Failed to read " +codeFile);
+			System.exit(2);
+		}
 			
 		int buf = 60;
 		byte[] tmpBytes = new byte[len + buf];
@@ -143,23 +151,18 @@ public class TruncatedClass
 			l = new Loader(codeClassname, tmpBytes, 0, truncatedLen);
 			
 			if (l.error() == null)
+			{
 				System.out.println("Unexpected success! truncatedLen=" + truncatedLen);
+				rc = 1;
+				
+			}
 			else
 				showIfNew("  ..(" +truncatedLen+ ")", l.error());
 
 			diffBytes("truncatedLen=" + truncatedLen,
 				  tmpBytes, originalBytes, len + buf);
 		}
-		
-		System.out.println("Trying ugly names loads....");
-		l = new Loader(codeClassname + ".", tmpBytes, 0, len);
-		l = new Loader(codeClassname + ".class", tmpBytes, 0, len);
-		l = new Loader(codeClassname + "x", tmpBytes, 0, len);
-		l = new Loader(codeClassname + "/", tmpBytes, 0, len);
-		l = new Loader(codeClassname + "/class", tmpBytes, 0, len);
-		l = new Loader("." + codeClassname, tmpBytes, 0, len);
-		l = new Loader("x." + codeClassname, tmpBytes, 0, len);
-		l = new Loader("./" + codeClassname, tmpBytes, 0, len);
-		l = new Loader("x/" + codeClassname, tmpBytes, 0, len);
+
+		System.exit(rc);
 	}
 }

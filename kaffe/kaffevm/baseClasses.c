@@ -187,7 +187,10 @@ initialiseKaffe(void)
 	gcjInit();
 #endif
 
-	/* Read in base classes */
+	/*
+	 * Read in base classes.  No thread context at this point, so
+	 * errors here are really hard to detect cleanly.
+	 */
 	initBaseClasses();
 
 #if defined(HAVE_GCJ_SUPPORT)
@@ -207,6 +210,23 @@ initialiseKaffe(void)
 	/* Now enable collector */
 	GC_enable(main_collector);
 }
+
+void
+abortWithEarlyClassFailure(errorInfo* einfo)
+{
+	dprintf("\n"
+		"Failure loading and/or initializing a critical class.\n"
+		"This failure occured too early in the VM startup, and is\n"
+		"indicative of bug in the initialization, or a insufficient\n"
+		"stack space or heap space to complete initialization.\n");
+
+	/* XXX print einfo. */
+	dprintf("*einfo: type=%d;\n\tclassname=`%s';\n\tmess=`%s'\n",
+		einfo->type, einfo->classname, einfo->mess);
+
+	EXIT(-1);
+}
+
 
 /*
  * We need to use certain classes in the internal machine so we better
@@ -257,7 +277,9 @@ initBaseClasses(void)
 
 	/* Fixup primitive types */
 	finishTypes();
-	processClass(StringClass, CSTATE_COMPLETE, &einfo);
+
+	if (!processClass(StringClass, CSTATE_COMPLETE, &einfo))
+		abortWithEarlyClassFailure(&einfo);
 }
 
 static void

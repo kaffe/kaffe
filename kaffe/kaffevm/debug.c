@@ -159,7 +159,7 @@ static struct debug_opts
 
 static void debugToBuffer(int size);
 static void debugSysInit(void);
-void printDebugBuffer(void);
+static void printDebugBuffer(void);
 
 #define NELEMS(a)	(sizeof (a) / sizeof(a[0]))
 
@@ -288,7 +288,6 @@ dbgSetMaskStr(const char *orig_mask_str)
 	free(mask_str);
 	return 1;
 }
-#endif
 
 static char *debugBuffer;
 static int bufferBegin = 0;
@@ -341,13 +340,8 @@ debugSysInit(void)
 	atexit(debugExitHook);
 }
 
-/*
- * When debugging, printf should use fprintf() to avoid
- * threading/blocking problems.
- */
-#include <stdarg.h> /* XXX */
 
-void
+static void
 printDebugBuffer(void)
 {
 	int i = 0;
@@ -362,6 +356,12 @@ printDebugBuffer(void)
 	while(i < end)
 		putc(debugBuffer[i++], stdout);
 }
+
+/*
+ * When debugging, printf should use fprintf() to avoid
+ * threading/blocking problems.
+ */
+#include <stdarg.h> /* XXX */
 
 int
 kaffe_dprintf(const char *fmt, ...)
@@ -411,3 +411,5 @@ kaffe_dprintf(const char *fmt, ...)
 
 	return n;
 }
+
+#endif /* DEBUG */

@@ -42,4 +42,17 @@
 #define	slot_nowriteback(s)	/* Does nothing for interpreter */
 #define	slot_nowriteback2(s)	/* Does nothing for interpreter */
 
+/* NB. This should match jvalue and eventually be replaced by it */
+typedef struct _slots {
+        union {
+                jint            tint;
+                jword           tword;
+                jlong           tlong;
+                jfloat          tfloat;
+                jdouble         tdouble;
+                void*           taddr;
+                char*           tstr;
+        } v;
+} slots;
+
 #endif
