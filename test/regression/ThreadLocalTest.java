@@ -1,8 +1,6 @@
 
 public class ThreadLocalTest {
 
-  private static int threadNum;
-
   private static ThreadLocal tl = new ThreadLocal() {
     protected Object initialValue() {
       return " TL initial";
@@ -19,44 +17,36 @@ public class ThreadLocalTest {
   };
 
   private static class TestThread extends Thread {
-    private int num;
-    private int delay;
     private boolean spawn;
-    public TestThread(int delay, boolean spawn) {
-      super("" + ++threadNum);
-      this.num = threadNum;
-      this.delay = delay;
+    public TestThread(boolean spawn, String name) {
+      super(name);
       this.spawn = spawn;
+      //System.out.println("\tThread " + getName() + " created");
     }
     public void run() {
       for (int k = 0; k < 4; k++) {
 
-	try {
-	  sleep(delay);
-	} catch (InterruptedException e) {}
+	System.out.println(getName()+ " I" +k+ "\t TL: "
+	  + ThreadLocalTest.tl.get());
+	System.out.println(getName()+ " I" +k+ "\tITL: "
+	  + ThreadLocalTest.itl.get());
 
-	System.out.println("Thread " + getName() + " interation " + k + ":");
-	System.out.println("\t TL: " + ThreadLocalTest.tl.get());
-	System.out.println("\tITL: " + ThreadLocalTest.itl.get());
-
-	if (spawn && k == num) {
-	  TestThread t1 = new TestThread(delay, false);
-	  System.out.println("\tCreating new thread " + t1.getName());
+	if (spawn && (k & 1) == 1) {
+	  TestThread t1 = new TestThread(false, getName() + "x");
 	  t1.start();
-	  TestThread t2 = new TestThread(delay, false);
-	  System.out.println("\tCreating new thread " + t2.getName());
+	  TestThread t2 = new TestThread(false, getName() + "y");
 	  t2.start();
 	}
 
-	tl.set(tl.get() + " changed by " + num + " at k == " + k);
-	itl.set(((k & 1) == 0) ? null : ("set by " + num + " at k == " + k));
+	tl.set(tl.get() + " changed by " + getName() + " at k == " + k);
+	itl.set(((k & 1) == 0) ? null : ("set by " + getName() + " at k == " + k));
       }
     }
   }
 
   public static void main(String[] args) {
-    new TestThread(500, true).start();
-    new TestThread(550, true).start();
+    new TestThread(true, "x").start();
+    new TestThread(true, "y").start();
   }
 }
 
