@@ -49,7 +49,7 @@ final public FileDescriptor getFD() throws IOException {
 	return fd;
 }
 
-native private void open(String name);
+native private void open(String name) throws IOException;
 
 native public int read() throws IOException;
 
