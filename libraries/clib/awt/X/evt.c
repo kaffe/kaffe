@@ -419,12 +419,12 @@ reparentNotify ( JNIEnv* env, Toolkit* X )
 {
   Window    window, parent, root, owner;
   jclass    clazz = 0;
-  jmethodID setDecoInsets;
+  jmethodID setDecoInsets = NULL;
   int       left, top, right, bottom;
   int       x, y, w, h, bw, d;
   int       xc, yc, wc, hc;
   int       dw, dh;
-  DecoInset *in;
+  DecoInset *in = NULL;
 
   if ( X->frameInsets.guess || X->dialogInsets.guess ) {
 	window = X->event.xreparent.window;
@@ -471,7 +471,7 @@ reparentNotify ( JNIEnv* env, Toolkit* X )
 	  in->bottom = bottom;
 
 	  (*env)->CallStaticVoidMethod( env, clazz, setDecoInsets, 
-									in->top, in->left, in->bottom, in->right);
+		in->top, in->left, in->bottom, in->right);
 	}
   }
 
@@ -526,7 +526,6 @@ jobject
 Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
 {
   jclass Component;
-  int r;
 
   ComponentEvent = (*env)->FindClass( env, "java/awt/ComponentEvt");
   MouseEvent     = (*env)->FindClass( env, "java/awt/MouseEvt");

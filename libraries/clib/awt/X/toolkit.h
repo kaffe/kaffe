@@ -11,6 +11,8 @@
 #ifndef __toolkit_h
 #define __toolkit_h
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <X11/Xlib.h>
@@ -19,8 +21,6 @@
 #if defined(HAVE_STRING_H)
 #include <string.h>
 #endif
-
-#include "config.h"
 
 #define DBG(x,y)
 #define DBG_ACTION(x,y)
@@ -351,6 +351,7 @@ AlphaImage* createAlphaImage ( Toolkit* X, int width, int height );
 void initScaledImage ( Toolkit* X, Image *tgt, Image *src,
 					   int dx0, int dy0, int dx1, int dy1,
 					   int sx0, int sy0, int sx1, int sy1 );
+int needsFullAlpha ( Toolkit* X, Image *img, double threshold );
 
 
 static __inline__ void

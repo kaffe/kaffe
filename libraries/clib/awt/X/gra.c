@@ -556,7 +556,7 @@ drawAlphaImage ( Graphics* gr, Image* img,
 {
   XImage *dstImg;
   int    i, j, si, sj, alpha;
-  unsigned long dpix, spix, bgpix;
+  unsigned long dpix, spix, bgpix = 0;
   int    sr, sg, sb, dr, dg, db;
 
   dstImg = XGetImage( X->dsp, gr->drw, dstX, dstY, width, height, 0xffffffff, ZPixmap);

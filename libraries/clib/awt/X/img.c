@@ -210,7 +210,7 @@ long
 getScaledPixel ( Toolkit* X, Image* img, int x, int y, double dx, double dy )
 {
   unsigned long  ul, ur, ll, lr;
-  int            ulR, urR, llR, lrR, ulG, urG, llG, lrG, ulB, urB, llB, lrB, r, g, b, a;
+  int            ulR, urR, llR, lrR, ulG, urG, llG, lrG, ulB, urB, llB, lrB, r, g, b;
   int            xi = (dx) ? x+1 : x;
   int            yi = (dy) ? y+1 : y;
 

@@ -15,10 +15,6 @@
 #include "gif_lib.h"
 #endif
 
-
-static int iOffset[] = { 0, 4, 2, 1 };
-static int iJumps[] = { 8, 8, 4, 2 };
-
 /* references to img.c */
 Image* createImage ( int width, int height );
 void Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img);
@@ -30,6 +26,10 @@ XImage* createXMaskImage ( Toolkit* X, int width, int height );
  */
 
 #if defined(HAVE_GIF_LIB_H)
+
+static int iOffset[] = { 0, 4, 2, 1 };
+static int iJumps[] = { 8, 8, 4, 2 };
+
 void
 writeRow ( Image* img, GifPixelType* rowBuf, GifColorType* cm, int row )
 {

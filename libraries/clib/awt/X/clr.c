@@ -543,7 +543,7 @@ initRgb2Direct ( Toolkit* X )
   Rgb2Direct  *map = (Rgb2Direct*) malloc( sizeof( Rgb2Direct));
   Colormap    dcm = DefaultColormapOfScreen( DefaultScreenOfDisplay( X->dsp));
   int         iBlue, nBlue, iGreen, nGreen, iRed, nRed;
-  int         i, n, m;
+  int         i, m;
 
   for ( i=0; i<N_DIRECT; i++ ) {
 	map->bluePix[i] = map->greenPix[i] = map->redPix[i] = 0;
