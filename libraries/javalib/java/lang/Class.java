@@ -38,7 +38,7 @@ static Class getCallingClass() {
 	return getCallingClass0();
 }
 
-native static Class getCallingClass0();
+private static native Class getCallingClass0();
 
 public static Class forName(String className) throws ClassNotFoundException {
 	return forName(className, true, getCallingClass().getClassLoader());
