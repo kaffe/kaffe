@@ -1,9 +1,23 @@
-Sun Jul 07 12:29:51 PDT 2002  Jim Pick  <jim@kaffe.org>
+Fri Jul 12 14:32:13 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
-        From: Alexander Popov <s_popov@prosyst.bg>
-	
-	* FAQ/FAQ.embedded: New documentation for placing Kaffe on
-	embedded devices.
+	* libraries/javalib/java/awt/Component.java:
+	Removed unnecessary cast for alignment constants.
+	(getColorModel), (list) new methods.
+
+	* libraries/javalib/java/awt/Container.java:
+	(list), (paintComponents) new methods.
+
+	* libraries/javalib/java/awt/MenuComponent.java:
+	(processEvent) new method.
+
+	* libraries/javalib/java/awt/image/PixelGrabber.java:
+	(status) new method.
+
+	* libraries/javalib/java/awt/widgets/Choice.java:
+	(countItems) new method.
+
+	* libraries/javalib/java/awt/widgets/List.java:
+	(getMinimumSize), (getPreferredSize) new methods.
 
 Sat Jul  6 01:19:11 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 

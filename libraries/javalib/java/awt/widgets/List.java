@@ -459,8 +459,16 @@ public synchronized String[] getItems () {
 	return si;
 }
 
+public Dimension getMinimumSize(int rows) {
+        return minimumSize(rows);
+}
+
 public int getRows () {
 	return ip.rows.size();
+}
+
+public Dimension getPreferredSize(int rows) {
+        return preferredSize(rows);
 }
 
 public synchronized int getSelectedIndex () {

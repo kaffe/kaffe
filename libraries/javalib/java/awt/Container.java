@@ -3,6 +3,8 @@ package java.awt;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.awt.event.PaintEvent;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 /**
  * Container - abstract base for all Components capable of having children
@@ -390,6 +392,19 @@ public void layout() {
 	}
 }
 
+public void list(PrintStream out, int indent) {
+    list(new PrintWriter(out), indent);
+}
+
+public void list(PrintWriter out, int indent) {
+    super.list(out, indent);
+
+    Component[] comps = getComponents();
+    for (int i = comps.length - 1; i > 0; --i) {
+	comps[i].list(out, indent + 2);
+    }
+}
+
 /**
  * @deprecated, use getComponentAt().
  */
@@ -460,6 +475,14 @@ public void paint ( Graphics g ) {
 		if ( (c.flags & IS_VISIBLE) != 0 ) {
 			g.paintChild( c, (flags & IS_IN_UPDATE) != 0);
 		}
+	}
+}
+
+public void paintComponents(Graphics gc) {
+	Component[] comps = getComponents();
+
+	for (int i = comps.length; i > 0; --i) {
+		comps[i].paintAll(gc);
 	}
 }
 

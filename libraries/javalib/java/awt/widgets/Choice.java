@@ -120,6 +120,10 @@ void closePrompt( boolean resetFocus) {
 	}
 }
 
+public int countItems() {
+        return getItemCount();
+}
+
 public void doLayout () {
 	int d = BORDER_WIDTH;
 	entry.setBounds( 0, 0, width-BTN_WIDTH-2*d, height);

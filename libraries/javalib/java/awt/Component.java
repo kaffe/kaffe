@@ -16,9 +16,12 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.PaintEvent;
 import java.awt.event.TextEvent;
 import java.awt.event.WindowEvent;
+import java.awt.image.ColorModel;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 import java.awt.peer.ComponentPeer;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Vector;
@@ -67,11 +70,11 @@ abstract public class Component
  * of a visibility or position change). See GraphicsLink for details
  */
 	GraphicsLink linkedGraphs;
-	final public static float TOP_ALIGNMENT = (float)0.0;
-	final public static float CENTER_ALIGNMENT = (float)0.5;
-	final public static float BOTTOM_ALIGNMENT = (float)1.0;
-	final public static float LEFT_ALIGNMENT = (float)0.0;
-	final public static float RIGHT_ALIGNMENT = (float)1.0;
+	final public static float TOP_ALIGNMENT = 0.0f;
+	final public static float CENTER_ALIGNMENT = 0.5f;
+	final public static float BOTTOM_ALIGNMENT = 1.0f;
+	final public static float LEFT_ALIGNMENT = 0.0f;
+	final public static float RIGHT_ALIGNMENT = 1.0f;
 	final static int BORDER_WIDTH = 2;
 	static Object treeLock = new TreeLock();
 	static Rectangle noDeco = new Rectangle();
@@ -425,6 +428,10 @@ ClassProperties getClassProperties () {
 	// direct Component / Container derived classes can't use old events
 	// (they had no protected ctor in 1.0.2)
 	return ClassAnalyzer.analyzeProcessEvent( getClass(), false);
+}
+
+public ColorModel getColorModel() {
+  	return Toolkit.getDefaultToolkit().getColorModel();
 }
 
 public Component getComponentAt ( Point pt ) {
@@ -786,6 +793,30 @@ synchronized void linkGraphics ( NativeGraphics g ) {
 	g.target = this;
 	
 	linkedGraphs = li;
+}
+
+
+public void list() {
+    list(System.out);
+}
+
+public void list(PrintStream out) {
+    list(out, 0);
+}
+
+public void list(PrintStream out, int indent) {
+    list (new PrintWriter(out), indent);
+}
+
+public void list(PrintWriter out) {
+    list (out, 0);
+}
+
+public void list(PrintWriter out, int indent) {
+    for (int i = indent; i > 0; --i) {
+	out.println(' ');
+    }
+    out.print(toString());
 }
 
 /**

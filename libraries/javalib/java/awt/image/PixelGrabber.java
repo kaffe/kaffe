@@ -201,4 +201,8 @@ public synchronized void startGrabbing () {
 		producer.startProduction( this);
 	}
 }
+
+public int status() {
+        return getStatus();
+}
 }

@@ -78,6 +78,10 @@ public boolean postEvent ( Event evt ) {
 	return ret;
 }
 
+protected void processEvent(AWTEvent evt) {
+        return;
+}
+
 protected void propagateOldEvents ( boolean isOldEventClient ) {
 	if ( isOldEventClient )
 		flags |= IS_OLD_EVENT;
