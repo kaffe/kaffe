@@ -1,3 +1,9 @@
+Thu Jul  4 02:41:04 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/awt/Event.java:
+	(Event) pass given Object arg to main constructor instead of
+	passing null.
+
 Thu Jul  4 02:26:08 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/beans/BeanDescriptor.java:

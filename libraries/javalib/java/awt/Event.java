@@ -101,7 +101,7 @@ public class Event implements java.io.Serializable
 	final public static int EVENT_FLAG_ALL = 0x1F;
 
 public Event(Object target, int id, Object arg) {
-	this(target, 0, id, 0, 0, 0, 0, null);
+	this(target, 0, id, 0, 0, 0, 0, arg);
 }
 
 public Event(Object target, long when, int id, int x, int y, int key, int modifiers) {
