@@ -17,6 +17,7 @@
 #include "../../../kaffe/kaffevm/gtypes.h"
 #include "../../../kaffe/kaffevm/locks.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
+#include "../../../kaffe/kaffevm/fp.h"
 #include "defs.h"
 #include "files.h"
 #include "java_lang_Double.h"
@@ -156,19 +157,7 @@ java_lang_Double_valueOf(struct Hjava_lang_String* str)
 jlong
 java_lang_Double_doubleToLongBits(jdouble val)
 {
-	jvalue d;
-	d.d = val;
-
-#if defined(DOUBLE_ORDER_OPPOSITE)
-	{
-		/* swap low and high word */
-		uint32 r = *(uint32*)&d.j;
-		uint32 *s = (uint32*)&d.j + 1;
-		d.i = *s;
-		*s = r;
-	}
-#endif
-	return d.j;
+	return(doubleToLong(val));
 }
 
 /*
@@ -177,25 +166,6 @@ java_lang_Double_doubleToLongBits(jdouble val)
 jdouble
 java_lang_Double_longBitsToDouble(jlong val)
 {
-	static const jlong expMask = 0x7ff0000000000000LL; /* "LL" gcc-ism */
-	static const jlong manMask = 0x000fffffffffffffLL;
-	static const jlong NaNBits = 0x7ff8000000000000LL;
-	jvalue d;
-
-	/* Force all possible NaN values into the canonical NaN value */
-	if ((val & expMask) == expMask && (val & manMask) != 0)
-		val = NaNBits;
-
-	/* Convert value */
-	d.j = val;
-#if defined(DOUBLE_ORDER_OPPOSITE)
-	{
-		/* swap low and high word */
-		uint32 r = *(uint32*)&d.j;
-		uint32 *s = (uint32*)&d.j + 1;
-		d.i = *s;
-		*s = r;
-	}
-#endif
-	return d.d;
+	return(longToDouble(val));
 }
+

@@ -140,10 +140,10 @@ libkaffevm_la_LIBADD =  	$(top_builddir)/libltdl/libltdl.la 	$(ENGINE_NAME)/libe
 libkaffevm_la_GEN_SRCS =  	gc-mem.c 	md.c
 
 
-libkaffevm_la_SOURCES =  	$(libkaffevm_la_GEN_SRCS) 	baseClasses.c 	classMethod.c 	code-analyse.c 	code.c 	constants.c 	debug.c 	exception.c 	external.c 	findInJar.c 	gc.c 	hashtab.c 	inflate.c 	itypes.c 	jar.c 	jni.c 	locks.c 	lookup.c 	object.c 	readClass.c 	soft.c 	stackTrace.c 	string.c 	support.c 	thread.c 	utf8const.c 	gcFuncs.c 	gcRefs.c 	verify.c
+libkaffevm_la_SOURCES =  	$(libkaffevm_la_GEN_SRCS) 	baseClasses.c 	classMethod.c 	code-analyse.c 	code.c 	constants.c 	debug.c 	exception.c 	external.c 	findInJar.c 	fp.c 	gc.c 	hashtab.c 	inflate.c 	itypes.c 	jar.c 	jni.c 	locks.c 	lookup.c 	object.c 	readClass.c 	soft.c 	stackTrace.c 	string.c 	support.c 	thread.c 	utf8const.c 	gcFuncs.c 	gcRefs.c 	verify.c
 
 
-noinst_HEADERS =  	access.h 	baseClasses.h 	bytecode.h 	classMethod.h 	classpath.h 	code-analyse.h 	code.h 	constants.h 	debug.h 	errors.h 	exception.h 	external.h 	file.h 	gc.h 	gtypes.h 	hashtab.h 	inflate.h 	itypes.h 	jar.h 	jnirefs.h 	lerrno.h 	locks.h 	lookup.h 	object.h 	readClass.h 	readClassConfig.h 	slib.h 	soft.h 	stackTrace.h 	stringSupport.h 	support.h 	gcRefs.h 	thread.h
+noinst_HEADERS =  	access.h 	baseClasses.h 	bytecode.h 	classMethod.h 	classpath.h 	code-analyse.h 	code.h 	constants.h 	debug.h 	errors.h 	exception.h 	external.h 	file.h 	fp.h 	gc.h 	gtypes.h 	hashtab.h 	inflate.h 	itypes.h 	jar.h 	jnirefs.h 	lerrno.h 	locks.h 	lookup.h 	object.h 	readClass.h 	readClassConfig.h 	slib.h 	soft.h 	stackTrace.h 	stringSupport.h 	support.h 	gcRefs.h 	thread.h
 
 
 CLEANFILES = so_locations
@@ -167,7 +167,7 @@ $(ENGINE_NAME)/libengine.la gcj/libgcj.la \
 systems/$(THREAD_SYSTEM)/libkthread.la
 libkaffevm_la_OBJECTS =  gc-mem.lo md.lo baseClasses.lo classMethod.lo \
 code-analyse.lo code.lo constants.lo debug.lo exception.lo external.lo \
-findInJar.lo gc.lo hashtab.lo inflate.lo itypes.lo jar.lo jni.lo \
+findInJar.lo fp.lo gc.lo hashtab.lo inflate.lo itypes.lo jar.lo jni.lo \
 locks.lo lookup.lo object.lo readClass.lo soft.lo stackTrace.lo \
 string.lo support.lo thread.lo utf8const.lo gcFuncs.lo gcRefs.lo \
 verify.lo
@@ -187,12 +187,12 @@ TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/baseClasses.P .deps/classMethod.P \
 .deps/code-analyse.P .deps/code.P .deps/constants.P .deps/debug.P \
-.deps/exception.P .deps/external.P .deps/findInJar.P .deps/gc-mem.P \
-.deps/gc.P .deps/gcFuncs.P .deps/gcRefs.P .deps/hashtab.P \
-.deps/inflate.P .deps/itypes.P .deps/jar.P .deps/jni.P .deps/locks.P \
-.deps/lookup.P .deps/md.P .deps/object.P .deps/readClass.P .deps/soft.P \
-.deps/stackTrace.P .deps/string.P .deps/support.P .deps/thread.P \
-.deps/utf8const.P .deps/verify.P
+.deps/exception.P .deps/external.P .deps/findInJar.P .deps/fp.P \
+.deps/gc-mem.P .deps/gc.P .deps/gcFuncs.P .deps/gcRefs.P \
+.deps/hashtab.P .deps/inflate.P .deps/itypes.P .deps/jar.P .deps/jni.P \
+.deps/locks.P .deps/lookup.P .deps/md.P .deps/object.P \
+.deps/readClass.P .deps/soft.P .deps/stackTrace.P .deps/string.P \
+.deps/support.P .deps/thread.P .deps/utf8const.P .deps/verify.P
 SOURCES = $(libkaffevm_la_SOURCES)
 OBJECTS = $(libkaffevm_la_OBJECTS)
 

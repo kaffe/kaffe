@@ -19,6 +19,7 @@ TESTS = \
 	TestIntLong.java \
 	TestFloatDouble.java \
 	DoublePrint.java \
+	DoubleComp.java \
 	ModuloTest.java \
 ## Test strings
 	Str.java \

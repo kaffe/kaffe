@@ -87,10 +87,6 @@ MISSING OR BROKEN FEATURES
       concurrently manipulating those objects, resulting in erratic behavior 
       or deadlock.
 
-* Kaffe computes 0.0/0.0 incorrectly. The result should be NaN, but
-  kaffe generates -Infinity. This leads the DoublePrint test to fail.
-  It is not known whether this is i386 specific or more general.
-
 ARCHITECTURE-SPECIFIC PROBLEMS
 ---------------------------------------------------------------------------
 

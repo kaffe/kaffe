@@ -132,7 +132,7 @@ libawt_la_LIBADD = $(AWT_LIBS)
 libawt_la_SOURCES =  	tlk.c 	wnd.c 	evt.c 	gra.c 	fnt.c 	clr.c 	img.c 	imggif.c 	imgjpeg.c 	imgpng.c 	cbd.c
 
 
-noinst_HEADERS =  	keysyms.h 	toolkit.h
+noinst_HEADERS =  	keysyms.h 	toolkit.h 	tlkprops.h
 
 
 CLEANFILES = so_locations

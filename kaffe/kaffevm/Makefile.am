@@ -48,6 +48,7 @@ libkaffevm_la_SOURCES = \
 	exception.c \
 	external.c \
 	findInJar.c \
+	fp.c \
 	gc.c \
 	hashtab.c \
 	inflate.c \
@@ -82,6 +83,7 @@ noinst_HEADERS = \
 	exception.h \
 	external.h \
 	file.h \
+	fp.h \
 	gc.h \
 	gtypes.h \
 	hashtab.h \

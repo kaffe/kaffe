@@ -14,6 +14,7 @@
 #include <math.h>
 #include "../../../kaffe/kaffevm/gtypes.h"
 #include "../../../kaffe/kaffevm/classMethod.h"
+#include "../../../kaffe/kaffevm/fp.h"
 #include <native.h>
 #include "defs.h"
 #include "java_lang_Float.h"
@@ -36,9 +37,7 @@ java_lang_Float_valueOf(struct Hjava_lang_String* str)
 jint
 java_lang_Float_floatToIntBits(jfloat val)
 {
-        jvalue d;
-	d.f = val;
-	return d.i;
+	return floatToInt(val);
 }
 
 /*
@@ -47,16 +46,5 @@ java_lang_Float_floatToIntBits(jfloat val)
 float
 java_lang_Float_intBitsToFloat(jint val)
 {
-	static const jint expMask = 0x7f800000;
-	static const jint manMask = 0x007fffff;
-	static const jint NaNBits = 0x7fc00000;
-	jvalue d;
-
-	/* Force all possible NaN values into the canonical NaN value */
-	if ((val & expMask) == expMask && (val & manMask) != 0)
-		val = NaNBits;
-
-	/* Convert value */
-	d.i = val;
-	return d.f;
+	return intToFloat(val);
 }

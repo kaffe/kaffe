@@ -177,11 +177,11 @@ kaffe_awt_SRCS =  	kaffe/awt/ExportTransferable.java 	kaffe/awt/FlavorConverter.
 
 kaffe_beans_editors_SRCS =  	kaffe/beans/editors/BooleanEditor.java 	kaffe/beans/editors/ByteEditor.java 	kaffe/beans/editors/DoubleEditor.java 	kaffe/beans/editors/FloatEditor.java 	kaffe/beans/editors/IntegerEditor.java 	kaffe/beans/editors/LongEditor.java 	kaffe/beans/editors/ShortEditor.java 	kaffe/beans/editors/StringEditor.java
 
-kaffe_io_SRCS =  	kaffe/io/AccessibleBAOStream.java 	kaffe/io/ByteToChar8859_1.java 	kaffe/io/ByteToCharConverter.java 	kaffe/io/ByteToCharDefault.java 	kaffe/io/CharToByte8859_1.java 	kaffe/io/CharToByteConverter.java 	kaffe/io/CharToByteDefault.java 	kaffe/io/ClassLoaderObjectInputStream.java 	kaffe/io/ConverterAlias.java 	kaffe/io/DefaultSerializationFactory.java 	kaffe/io/ObjectInputStreamImpl.java 	kaffe/io/ObjectOutputStreamImpl.java 	kaffe/io/ObjectStreamClassImpl.java 	kaffe/io/SerializationFactory.java 	kaffe/io/TmpFile.java
+kaffe_io_SRCS =  	kaffe/io/AccessibleBAOStream.java 	kaffe/io/ByteToChar8859_1.java 	kaffe/io/ByteToCharConverter.java 	kaffe/io/ByteToCharDefault.java 	kaffe/io/CharToByte8859_1.java 	kaffe/io/CharToByteConverter.java 	kaffe/io/CharToByteDefault.java 	kaffe/io/ClassLoaderObjectInputStream.java 	kaffe/io/ConverterAlias.java 	kaffe/io/DefaultSerializationFactory.java 	kaffe/io/ObjectInputStreamImpl.java 	kaffe/io/ObjectOutputStreamImpl.java 	kaffe/io/ObjectStreamClassImpl.java 	kaffe/io/SerializationFactory.java 	kaffe/io/TmpFile.java 	kaffe/io/NullOutputStream.java
 
 kaffe_jar_SRCS =  	kaffe/jar/ExecJar.java 	kaffe/jar/ExecJarName.java
 
-kaffe_lang_SRCS =  	kaffe/lang/MemoryAdvice.java 	kaffe/lang/MemoryAdviceCallback.java 	kaffe/lang/SystemClassLoader.java 	kaffe/lang/UNIXProcess.java
+kaffe_lang_SRCS =  	kaffe/lang/MemoryAdvice.java 	kaffe/lang/MemoryAdviceCallback.java 	kaffe/lang/SystemClassLoader.java 	kaffe/lang/UNIXProcess.java 	kaffe/lang/DummyClassLoader.java
 
 kaffe_management_SRCS =  	kaffe/management/Classpath.java
 
@@ -203,7 +203,7 @@ kaffe_text_numberformat_SRCS =  	kaffe/text/numberformat/locale.java 	kaffe/text
 
 kaffe_util_SRCS =  	kaffe/util/Assert.java 	kaffe/util/DateParser.java 	kaffe/util/DateScanner.java 	kaffe/util/Deprecated.java 	kaffe/util/DoubleLinkedObject.java 	kaffe/util/IdentityHashtable.java 	kaffe/util/NotImplemented.java 	kaffe/util/NotImplementedReport.java 	kaffe/util/Ptr.java 	kaffe/util/Timer.java 	kaffe/util/TimerClient.java 	kaffe/util/VectorSnapshot.java
 
-kaffe_util_log_SRCS =  	kaffe/util/log/LogClient.java 	kaffe/util/log/LogStream.java
+kaffe_util_log_SRCS =  	kaffe/util/log/LogClient.java 	kaffe/util/log/LogStream.java 	kaffe/util/log/SimpleLogViewer.java
 
 kaffe_util_zip_SRCS =  	kaffe/util/zip/SwitchInflater.java
 

@@ -35,6 +35,7 @@
 #include "baseClasses.h"
 #include "itypes.h"
 #include "machine.h"
+#include "fp.h"
 
 /*
  * soft_new
@@ -636,33 +637,13 @@ soft_lrem(jlong v1, jlong v2)
 jfloat
 soft_fdiv(jfloat v1, jfloat v2)
 {
-	jfloat k = 1e300;
-
-	if (v2 == 0.0) {
-		if (v1 > 0) {
-			return (k*k);
-		}
-		else {
-			return (-k*k);
-		}
-	}
-	return (v1 / v2);
+	return floatDivide(v1, v2);
 }
 
 jdouble
 soft_fdivl(jdouble v1, jdouble v2)
 {
-	jdouble k = 1e300;
-
-	if (v2 == 0.0) {
-		if (v1 > 0) {
-			return (k*k);
-		}
-		else {
-			return (-k*k);
-		}
-	}
-	return (v1 / v2);
+	return doubleDivide(v1, v2);
 }
 
 jfloat
