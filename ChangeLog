@@ -1,3 +1,8 @@
+Mon Jul  5 13:10:21 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/jar/Attributes.java: remove
+	'throws' declarations for runtime exceptions
+
 Sun Jul  4 16:47:55 PDT 1999 Edouard G. Parmelan <edouard.parmelan@quadratec.fr>
 
 	* configure.in: Check if strtod("-0.0") returns -0.0 or +0.0.
