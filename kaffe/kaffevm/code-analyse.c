@@ -373,7 +373,7 @@ verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 	activeFrame = ALLOCFRAME();
 	if (activeFrame == 0) {
 		postOutOfMemory(einfo);
-		return false;
+		return true;
 	}
 
 	SET_DONEVERIFY(pc);
