@@ -543,3 +543,11 @@ at the notice in config.guess or ltmain.sh.)
 This is version 6.3alpha1 of a conservative garbage collector for C and C++.
 
 
+* gnu.getopt
+
+This code has been merged from GNU Getopt 1.0.9
+
+Licensed under the GNU General Public License. See licence.terms for more 
+details. 
+
+Homepage: http://www.urbanophile.com/arenn/hacking/

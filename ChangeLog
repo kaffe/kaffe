@@ -1,3 +1,7 @@
+2004-07-25  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* THIRDPARTY: Added an entry for GNU Getopt.
+
 2004-07-24  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/gnu/getopt/MessagesBundle_de.properties,
