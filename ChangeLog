@@ -2,6 +2,21 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-27  Chris Burdess  <dog@gnu.org>
+
+        * gnu/xml/aelfred2/JAXPFactory.java,
+          gnu/xml/aelfred2/SAXDriver.java,
+          gnu/xml/aelfred2/XmlParser.java,
+          gnu/xml/aelfred2/XmlReader.java: Applied GNU Classpath source code
+        formatting conventions. Replaced arrays of Object with struct-like
+        classes for easier maintainability. Made SAXDriver.stringInterning
+        package private to allow access from XmlParser inside the loop without
+        a method call overhead.
+
+2005-03-02  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-27  Roman Kennke  <roman@ontographics.com>
 
         * javax/swing/plaf/basic/BasicListUI:
