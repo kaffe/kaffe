@@ -1,7 +1,7 @@
 /* machine.c
  * Translate the Kaffe instruction set to the native one.
  *
- * Copyright (c) 1996-1999
+ * Copyright (c) 1996-1999, 2003
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * Cross-language profiling changes contributed by
@@ -106,6 +106,16 @@ struct {
 } jitStats;
 
 static jboolean generateInsnSequence(errorInfo*);
+
+/**
+ * Look for exception handlers that enclose the given PC in the given method.
+ * If a match is found, it will set the appropriate willcatch flags.
+ *
+ * @param meth The method that may contain an exception handler.
+ * @param pc The location within the method to look for a handler.
+ */
+static void checkCaughtExceptions(Method* meth, int pc);
+
 static void initFakeCalls(void);
 static void makeFakeCalls(void);
 static void relinkFakeCalls(void);
@@ -245,26 +255,6 @@ DBG(MOREJIT,
 	base = (bytecode*)METHOD_BYTECODE_CODE(xmeth);
 	len = METHOD_BYTECODE_LEN(xmeth);
 
-	willcatch.ANY = false;
-	willcatch.BADARRAYINDEX = false;
-
-	/* Deterimine various exception conditions */
-	if (xmeth->exception_table != 0) {
-		willCatch(ANY);
-		for (i = 0; i < (int)xmeth->exception_table->length; i++) {
-			Hjava_lang_Class* etype;
-			etype = xmeth->exception_table->entry[i].catch_type;
-			if (etype == 0) {
-				willCatch(BADARRAYINDEX);
-			}
-			else {
-				if (instanceof(javaLangArrayIndexOutOfBoundsException, etype)) {
-					willCatch(BADARRAYINDEX);
-				}
-			}
-		}
-	}
-
 	/*
 	 * Initialise the translator.
 	 */
@@ -314,6 +304,9 @@ DBG(JIT,                dprintf("unreachable basic block pc [%d:%d]\n", pc, npc 
                         }
                         continue;
                 }
+
+		/* Determine various exception conditions */
+		checkCaughtExceptions(xmeth, pc);
 
 		start_instruction();
 
@@ -790,6 +783,17 @@ SCHK(		sanityCheck();					);
 				if ((m & 1) != 0) {
 					assert(!isGlobal(t->u[i].slot));
 					slot_kill_readonce(t->u[i].slot);
+					/*
+					 * If this sequence is in an exception
+					 * handler we need to spill the slot
+					 * in case its used in a subsequent
+					 * basic block.
+					 */
+					if( t->jflags.ANY )
+					{
+						spillAndUpdate(t->u[i].slot,
+							       true);
+					}
 					slot_invalidate(t->u[i].slot);
 				}
 			}
@@ -800,6 +804,48 @@ SCHK(		sanityCheck();					);
 	initSeq();
 
 	return (true);
+}
+
+/*
+ * check what synchronous exceptions are caught for a given instruction
+ */
+static
+void 
+checkCaughtExceptions(Method* meth, int pc)
+{
+	int i;
+
+	willcatch.ANY = false;
+	willcatch.BADARRAYINDEX = false;
+	willcatch.NULLPOINTER = false;
+
+	if (meth->exception_table == 0) 
+		return;
+
+	/* Determine various exception conditions */
+	for (i = 0; i < meth->exception_table->length; i++) {
+		Hjava_lang_Class* etype;
+
+		/* include only if exception handler range matches pc */
+		if (meth->exception_table->entry[i].start_pc > pc ||
+		    meth->exception_table->entry[i].end_pc <= pc)
+			continue;
+
+		willCatch(ANY);
+		etype = meth->exception_table->entry[i].catch_type;
+		if (etype == 0) {
+			willCatch(BADARRAYINDEX);
+			willCatch(NULLPOINTER);
+		}
+		else {
+			if (instanceof(javaLangArrayIndexOutOfBoundsException, etype)) {
+				willCatch(BADARRAYINDEX);
+			}
+			if (instanceof(javaLangNullPointerException, etype)) {
+				willCatch(NULLPOINTER);
+			}
+		}
+	}
 }
 
 /*
@@ -848,7 +894,7 @@ SCHK(	sanityCheck();						)
 				break;
 
 			case SR_FUNCTION:
-				if (calleeSave(sd->regno) == 0 || canCatch(ANY) != 0) {
+				if (calleeSave(sd->regno) == 0 || s->jflags.ANY != 0) {
 					spillAndUpdate(sd, true);
 				}
 				break;

@@ -1,7 +1,7 @@
 /* seq.h
  * Pseudo instruction sequences.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2003
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -10,6 +10,8 @@
 
 #ifndef __seq_hh
 #define __seq_hh
+
+#include "machine.h"
 
 struct _sequence;
 struct _label_;
@@ -46,6 +48,7 @@ typedef struct _sequence {
 	uint8			type;
 	uint8			refed;
 	uint32			lastuse;
+	jitflags		jflags;
 	struct _sequence*	next;
 } sequence;
 

@@ -1,3 +1,17 @@
+2003-11-02  Timothy S. Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/jit3/machine.c:
+	Merge checkCaughtException stuff from jit1, so that we only
+	generate extra spill code if an instruction is actually in an
+	exception handler.  Also, be sure to spill dead slots within an
+	exception handler, otherwise subsequent basic blocks might read a
+	bogus value.
+
+	* kaffe/kaffevm/jit3/seq.h,
+	kaffe/kaffevm/jit3/seq.c:
+	Store the current willcatch flags in the sequence structure so
+	they can be referenced later.
+	
 2003-11-02  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* librairies/clib/zip/Deflater.c: Readded DBG macro.

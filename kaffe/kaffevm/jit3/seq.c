@@ -1,7 +1,7 @@
 /* seq.c
  * Pseudo instruction sequences.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2003
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -81,6 +81,7 @@ nextSeq(void)
 	currSeq = ret->next;
 	ret->lastuse = 0;
 	ret->refed = 1;
+	ret->jflags = willcatch;
 	activeSeq = ret;
 	return (ret);
 }
