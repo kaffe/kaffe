@@ -1,3 +1,8 @@
+1999-04-18  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/javalib/java/lang/reflect/Method.java (equals): Must
+	also compare name and return type.
+
 Fri Apr 16 11:48:54 EDT 1999  Pavel Roskin <pavel_roskin@geocities.com>
 
 	* libraries/javalib/java/net/URL.java: fix equals() when ref == null

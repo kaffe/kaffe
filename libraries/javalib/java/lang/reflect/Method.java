@@ -45,17 +45,19 @@ public boolean equals(Object obj)
 		return (false);
 	}
 
-	if (clazz != mobj.clazz) {
+	if (clazz != mobj.clazz ||
+	    returnType != mobj.returnType ||
+	    parameterTypes.length != mobj.parameterTypes.length ||
+	    ! name.equals(mobj.name)) {
 		return (false);
 	}
-	if (parameterTypes.length != mobj.parameterTypes.length) {
-		return (false);
-	}
+
 	for (int i = 0; i < parameterTypes.length; i++) {
 		if (parameterTypes[i] != mobj.parameterTypes[i]) {
 			return (false);
 		}
 	}
+
 	return (true);
 }
 
