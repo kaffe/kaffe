@@ -106,7 +106,7 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
 #define KAFFE_JNI_SETEXCEPTFP(ebufp) {				\
 	exceptionFrame currentFrameInfo;			\
 	FIRSTFRAME(currentFrameInfo, 0);			\
-	vmExcept_setJNIFrame(ebufp, FPFRAME(&currentFrameInfo));\
+	vmExcept_setJNIFrame(ebufp, (uintp) FPFRAME(&currentFrameInfo));\
 	}
 #else
 /*

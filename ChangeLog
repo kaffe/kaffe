@@ -1,3 +1,25 @@
+2003-07-27  Dalibor Topic <robilad@kaffe.org>,
+	    Helmer Kraemer <hkraemer@freenet.de>
+
+	Fixes for compiler warnings on alpha-linux.
+
+	* config/alpha/alpha.c:
+	(__alpha_ra) use uintp instead of int*.
+	(__alpha_nextFrame) use uintp instead of char*.
+
+	* config/alpha/linux/jit-md.h:
+	(_exceptionFrame)  use uintp instead of char*.
+	(__alpha_ra) use uintp instead of int*.
+
+	* kaffe/kaffevm/classMethod.h:
+	(methods.idx) changed type to long.
+
+	* kaffe/kaffevm/jni.c:
+	(KAFFE_JNI_SETEXCEPTFP) added a cast to uintp.
+
+	* kaffe/kaffevm/jit/icode.c:
+	(softcall_lookupinterfacemethod) removed unnecessary cast to int.
+
 2003-07-27  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* config.rpath: Added to solve the dependence of "lib-link.m4" on it.

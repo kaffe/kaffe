@@ -64,12 +64,12 @@
 
 /* Structure of exception frame on stack */
 typedef struct _exceptionFrame {
-	char *pc;
-	char *sp;
-	char *fp;
+	uintp pc;
+	uintp sp;
+	uintp fp;
 } exceptionFrame;
 
-int __alpha_ra (int *pc);
+int __alpha_ra (uintp pc);
 exceptionFrame *__alpha_nextFrame (exceptionFrame *frame);
 
 /* Extract PC, FP and SP from the given frame */

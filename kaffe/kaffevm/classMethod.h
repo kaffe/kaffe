@@ -241,7 +241,7 @@ typedef struct _methods {
 	Utf8Const*		name;
 	parsed_signature_t*	parsed_sig;
 	accessFlags		accflags;
-	short			idx;	/* Index into class->dtable */
+	long			idx;	/* Index into class->dtable */
 	u2			stacksz;
 	u2			localsz;
 	/* Only used for static/final/constructor methods */

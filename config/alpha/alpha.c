@@ -19,12 +19,12 @@
 /* return register number that contains return address if function at
    pc is a frame-less procedure.  Else return -1. */
 int
-__alpha_ra (int *pc)
+__alpha_ra (uintp pc)
 {
     int *p;
     int reg;
 
-    for (p = pc; ; p++) {
+    for (p = (int *)pc; ; p++) {
 	if ((*p & ~(0x1F << 16)) == 0x6be08001) {
 	    /* ret $31,($REG),1 */
 	    reg = (*p >> 16) & 0x1F;
@@ -55,8 +55,8 @@ exceptionFrame *
 __alpha_nextFrame (exceptionFrame *frame)
 {
     int *pc;
-    char *sp;
-    char *fp;
+    uintp sp;
+    uintp fp;
 
     int *p;
     int reg;
@@ -74,14 +74,14 @@ __alpha_nextFrame (exceptionFrame *frame)
 	asm volatile ("mov $15,%0" : "=r"(fp));
 
 	DBG(STACKTRACE,
-	    dprintf ("firstFrame pc %p sp %p fp %p\n", pc, sp, fp); );
+	    dprintf ("firstFrame pc %p sp %p fp %p\n", pc, (int *) sp, (int *) fp); );
     }
     else {
 	pc = (int *)frame->pc;
 	sp = frame->sp;
 	fp = frame->fp;
 	DBG(STACKTRACE,
-	    dprintf ("nextFrame  pc %p sp %p fp %p\n", pc, sp, fp); );
+	    dprintf ("nextFrame  pc %p sp %p fp %p\n", pc, (int *) sp, (int *) fp); );
     }
 
     if (!jthread_on_current_stack(sp)) {
@@ -256,7 +256,7 @@ __alpha_nextFrame (exceptionFrame *frame)
 
 	    DBG(STACKTRACE,
 		dprintf ("stq $%d,%d($sp) at %p\n", reg, low, p); );
-	    frame->pc = (char*) *(long *) (sp + low);
+	    frame->pc = (uintp) *(long *) (sp + low);
 	    continue;
 	}
 
@@ -266,7 +266,7 @@ __alpha_nextFrame (exceptionFrame *frame)
 
 	    DBG(STACKTRACE,
 		dprintf ("stq $fp,%d($sp) at %p\n", low, p); );
-	    frame->fp = (char*) *(long *) (sp + low);
+	    frame->fp = (uintp) *(long *) (sp + low);
 	    continue;
 	}
     }
@@ -285,7 +285,7 @@ __alpha_nextFrame (exceptionFrame *frame)
 
 	    DBG(STACKTRACE,
 		dprintf ("ldq $%d,%d($sp) at %p\n", reg, low, p); );
-	    frame->pc = (char*) *(long *) (sp + low);
+	    frame->pc = (uintp) *(long *) (sp + low);
 	    use_fp = 1;
 	    continue;
 	}
@@ -296,7 +296,7 @@ __alpha_nextFrame (exceptionFrame *frame)
 
 	    DBG(STACKTRACE,
 		dprintf ("ldq $fp,%d($sp) at %p\n", low, p); );
-	    frame->fp = (char*) *(long *) (sp + low);
+	    frame->fp = (uintp) *(long *) (sp + low);
 	    continue;
 	}
     }
