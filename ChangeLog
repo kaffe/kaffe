@@ -1,3 +1,7 @@
+Sat May 15 14:14:46 1999  Jason Baker  <jbaker@cs.utah.edu>
+
+	* object.c: Allocate arrays of kaffe.util.Ptr as primative arrays.
+
 Wed May 12 17:36:23 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/stats.c: eliminate compiler warning
