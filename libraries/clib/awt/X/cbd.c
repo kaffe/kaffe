@@ -39,7 +39,7 @@ jobject
 selectionRequest ( JNIEnv* env, Toolkit* tk )
 {
   XEvent     e;
-  char       *mime;
+  const char *mime;
   jstring    jMimeType;
   jbyteArray jData;
   jbyte      *data;
@@ -188,7 +188,7 @@ Java_java_awt_Toolkit_cbdGetContents ( JNIEnv* env, jclass clazz UNUSED, ClipBoa
 {
   int             ret;
   unsigned char   *data = 0;
-  char            *mime = 0;
+  const char      *mime = 0;
   jbyteArray      jdata;
   jstring         jMimeType;
 

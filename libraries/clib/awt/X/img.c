@@ -38,19 +38,19 @@ createImage ( int width, int height )
 }
 
 static int
-createShmXImage ( Toolkit* X, Image* img, int depth, int isMask )
+createShmXImage ( Toolkit* tk, Image* img, int depth, int isMask )
 {
 #if defined(USE_XSHM_EXTENSION)
-  Visual  *vis = DefaultVisual( X->dsp, DefaultScreen( X->dsp));
+  Visual  *vis = DefaultVisual( tk->dsp, DefaultScreen( tk->dsp));
   XShmSegmentInfo* shmi = (XShmSegmentInfo*) AWT_MALLOC( sizeof(XShmSegmentInfo));
   XImage *xim;
   unsigned int    nBytes;
 
   if ( isMask ) {
-	xim = XShmCreateImage( X->dsp, vis, depth, XYBitmap, 0, shmi, img->width, img->height);
+	xim = XShmCreateImage( tk->dsp, vis, depth, XYBitmap, 0, shmi, img->width, img->height);
   }
   else {
-    xim = XShmCreateImage( X->dsp, vis, depth, ZPixmap, 0, shmi, img->width, img->height);
+    xim = XShmCreateImage( tk->dsp, vis, depth, ZPixmap, 0, shmi, img->width, img->height);
   }
 
   nBytes = xim->bytes_per_line * img->height;
@@ -61,18 +61,18 @@ createShmXImage ( Toolkit* X, Image* img, int depth, int isMask )
    * a scarce resource
    */
   if ( shmi->shmid == -1 ) {
-	XShmDetach( X->dsp, shmi);
+	XShmDetach( tk->dsp, shmi);
 	xim->data = 0;
 	XDestroyImage( xim);
 	AWT_FREE( shmi);
 
-	X->shm = SUSPEND_SHM;
+	tk->shm = SUSPEND_SHM;
 	return 0;
   }
 
   xim->data = shmi->shmaddr = shmat( shmi->shmid, 0, 0);
   shmi->readOnly = False;
-  XShmAttach( X->dsp, shmi);
+  XShmAttach( tk->dsp, shmi);
   /*
    * make sure it will be freed automatically once the attachment count comes
    * down to 0 (either by explicit imgFreeImage or by process termination)
@@ -97,7 +97,7 @@ createShmXImage ( Toolkit* X, Image* img, int depth, int isMask )
 
 
 static void
-destroyShmXImage ( Toolkit* X, Image* img, int isMask )
+destroyShmXImage ( Toolkit* tk, Image* img, int isMask )
 {
 #if defined(USE_XSHM_EXTENSION)
   XShmSegmentInfo *shmi;
@@ -114,7 +114,7 @@ destroyShmXImage ( Toolkit* X, Image* img, int isMask )
 	img->shmiImg = 0;
   }
 
-  XShmDetach( X->dsp, shmi);
+  XShmDetach( tk->dsp, shmi);
   xim->data = 0;
   XDestroyImage( xim);
   /* we created it as 'deleted', so we just have to detach here */
@@ -122,23 +122,23 @@ destroyShmXImage ( Toolkit* X, Image* img, int isMask )
   AWT_FREE( shmi);
 
   /* if we have suspended shm, give it a try again */
-  if ( X->shm == SUSPEND_SHM )
-	X->shm = USE_SHM;
+  if ( tk->shm == SUSPEND_SHM )
+	tk->shm = USE_SHM;
 #endif
 }
 
 
 
 void
-createXImage ( Toolkit* X, Image* img )
+createXImage ( Toolkit* tk, Image* img )
 {
   int bitmap_pad;
   int bytes_per_line;
   int bytes_per_pix;
   unsigned int nPix;
   char *data;
-  Visual *vis  = DefaultVisual( X->dsp, DefaultScreen( X->dsp));
-  int    depth = DefaultDepth(  X->dsp, DefaultScreen( X->dsp));
+  Visual *vis  = DefaultVisual( tk->dsp, DefaultScreen( tk->dsp));
+  int    depth = DefaultDepth(  tk->dsp, DefaultScreen( tk->dsp));
 	
   if ( depth <= 8)	      bytes_per_pix = 1;
   else if ( depth <= 16)  bytes_per_pix = 2;
@@ -148,8 +148,8 @@ createXImage ( Toolkit* X, Image* img )
   bitmap_pad = bytes_per_pix * 8;
   nPix = img->width * img->height;
 
-  if ( (X->shm == USE_SHM) && (nPix > X->shmThreshold) && (img->alpha == 0) ) {
-	if ( createShmXImage( X, img, depth, False) ){
+  if ( (tk->shm == USE_SHM) && (nPix > tk->shmThreshold) && (img->alpha == 0) ) {
+	if ( createShmXImage( tk, img, depth, False) ){
 	  DBG( AWT_IMG, printf("alloc Shm: %p %p %p (%dx%d) \n", img, img->xImg, img->shmiImg,
 					  img->width, img->height));
 	  return;
@@ -157,25 +157,25 @@ createXImage ( Toolkit* X, Image* img )
   }
 
   data = AWT_CALLOC( nPix, bytes_per_pix);
-  img->xImg = XCreateImage( X->dsp, vis, depth, ZPixmap, 0,
+  img->xImg = XCreateImage( tk->dsp, vis, depth, ZPixmap, 0,
 							data, img->width, img->height, bitmap_pad, bytes_per_line);
   DBG( AWT_IMG, printf( "alloc: %p %p (%dx%d)\n", img, img->xImg, img->width, img->height));
 }
 
 void
-createXMaskImage ( Toolkit* X, Image* img )
+createXMaskImage ( Toolkit* tk, Image* img )
 {
   int     bytes_per_line;
   unsigned int nBytes, nPix;
   char    *data;
-  Visual  *vis = DefaultVisual( X->dsp, DefaultScreen( X->dsp));
+  Visual  *vis = DefaultVisual( tk->dsp, DefaultScreen( tk->dsp));
 
   bytes_per_line = (img->width + 7) / 8;
   nPix   = img->width * img->height;
   nBytes = bytes_per_line * img->height;
 
-  if ( (X->shm == USE_SHM) && (nPix > X->shmThreshold) ) {
-	if ( createShmXImage( X, img, 1, True) ){
+  if ( (tk->shm == USE_SHM) && (nPix > tk->shmThreshold) ) {
+	if ( createShmXImage( tk, img, 1, True) ){
 	  DBG( AWT_IMG, printf( "alloc Shm mask: %p %p %p (%dx%d) \n", img, img->xMask, img->shmiMask,
 					  img->width, img->height));
 	  return;
@@ -185,14 +185,14 @@ createXMaskImage ( Toolkit* X, Image* img )
   data = AWT_MALLOC( nBytes);
   memset( data, 0xff, nBytes);
 
-  img->xMask = XCreateImage( X->dsp, vis, 1, XYBitmap, 0,
+  img->xMask = XCreateImage( tk->dsp, vis, 1, XYBitmap, 0,
 							 data, img->width, img->height, 8, bytes_per_line );
   DBG( AWT_IMG, printf( "alloc mask: %p %p (%dx%d)\n", img, img->xMask, img->width, img->height));
 }
 
 
 void
-createAlphaImage ( Toolkit* X, Image *img )
+createAlphaImage ( Toolkit* tk, Image *img )
 {
   int nBytes = img->width * img->height;
 
@@ -209,7 +209,7 @@ createAlphaImage ( Toolkit* X, Image *img )
  * each pel, or if a mask bitmap (alpha 0x00 / 0xff) will be sufficient
  */
 int
-needsFullAlpha ( Toolkit* X, Image *img, double threshold )
+needsFullAlpha ( Toolkit* tk, Image *img, double threshold )
 {
   int i, j, a;
   int n = 0, max;
@@ -237,14 +237,14 @@ needsFullAlpha ( Toolkit* X, Image *img, double threshold )
  */
 /* also used in imgpng */
 void
-reduceAlpha ( Toolkit* X, Image* img, int threshold )
+reduceAlpha ( Toolkit* tk, Image* img, int threshold )
 {
   int i, j, a;
 
   if ( !img->alpha )
 	return;
 
-  createXMaskImage( X, img);
+  createXMaskImage( tk, img);
 
   for ( i=0; i<img->height; i++ ) {
 	for ( j=0; j<img->width; j++ ) {
@@ -272,7 +272,7 @@ interpolate ( int ul, int ur, int ll, int lr, double dx, double dy )
 }
 
 static unsigned int
-getScaledAlpha ( Toolkit* X, Image* img, int x, int y, double dx, double dy )
+getScaledAlpha ( Toolkit* tk, Image* img, int x, int y, double dx, double dy )
 {
   int   ul, ur, ll, lr, a;
   int   xi = (dx) ? x+1 : x;
@@ -291,7 +291,7 @@ getScaledAlpha ( Toolkit* X, Image* img, int x, int y, double dx, double dy )
 }
 
 static long
-getScaledPixel ( Toolkit* X, Image* img, int x, int y, double dx, double dy )
+getScaledPixel ( Toolkit* tk, Image* img, int x, int y, double dx, double dy )
 {
   unsigned long  ul, ur, ll, lr;
   int            ulR, urR, llR, lrR, ulG, urG, llG, lrG, ulB, urB, llB, lrB, r, g, b;
@@ -315,26 +315,26 @@ getScaledPixel ( Toolkit* X, Image* img, int x, int y, double dx, double dy )
 
 
   if ( (ul == ur) && (ll == ul) && (lr == ll) ) {
-	rgbValues( X, ul, &r, &g, &b);
+	rgbValues( tk, ul, &r, &g, &b);
   }
   else {
-	rgbValues( X, ul, &ulR, &ulG, &ulB);
-	rgbValues( X, ur, &urR, &urG, &urB);
-	rgbValues( X, ll, &llR, &llG, &llB);
-	rgbValues( X, lr, &lrR, &lrG, &lrB);
+	rgbValues( tk, ul, &ulR, &ulG, &ulB);
+	rgbValues( tk, ur, &urR, &urG, &urB);
+	rgbValues( tk, ll, &llR, &llG, &llB);
+	rgbValues( tk, lr, &lrR, &lrG, &lrB);
 
 	r = interpolate( ulR, urR, llR, lrR, dx, dy);
 	g = interpolate( ulG, urG, llG, lrG, dx, dy);
 	b = interpolate( ulB, urB, llB, lrB, dx, dy);
   }
 
-  return pixelValue( X, (r << 16) | (g << 8) | b);
+  return pixelValue( tk, (r << 16) | (g << 8) | b);
 }
 
 
 
 void
-initScaledImage ( Toolkit* X, Image *tgt, Image *src,
+initScaledImage ( Toolkit* tk, Image *tgt, Image *src,
 				  int dx0, int dy0, int dx1, int dy1,
 				  int sx0, int sy0, int sx1, int sy1 )
 {
@@ -361,10 +361,10 @@ initScaledImage ( Toolkit* X, Image *tgt, Image *src,
 	  sx = (int) sX;
 	  sxDelta = (sx < (sx1-1)) ? sX - sx : 0;
 
-	  if ( (c = getScaledPixel( X, src, sx, sy, sxDelta, syDelta)) != -1 ){
+	  if ( (c = getScaledPixel( tk, src, sx, sy, sxDelta, syDelta)) != -1 ){
   		XPutPixel( tgt->xImg, dx, dy, c);
 		if ( src->alpha )
-		  PutAlpha( tgt->alpha, dx, dy, getScaledAlpha( X, src, sx, sy, sxDelta, syDelta));
+		  PutAlpha( tgt->alpha, dx, dy, getScaledAlpha( tk, src, sx, sy, sxDelta, syDelta));
 	  }
 	  else {
 		XPutPixel( tgt->xMask, dx, dy, 0);

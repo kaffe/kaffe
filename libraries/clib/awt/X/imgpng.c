@@ -25,7 +25,7 @@
 
 
 /* references to img.c */
-void reduceAlpha ( Toolkit* X, Image* img, int threshold );
+void reduceAlpha ( Toolkit* tk, Image* img, int threshold );
 
 
 /**************************************************************************************
@@ -41,7 +41,7 @@ hasAlpha ( png_structp png_ptr )
 }
 
 static inline jint
-readARGB ( unsigned char** p, int hasAlpha )
+readARGB ( unsigned char** p, int isAlpha )
 {
   jint argb;
 
@@ -51,7 +51,7 @@ readARGB ( unsigned char** p, int hasAlpha )
   argb <<= 8;
   argb += *(*p)++;
 
-  if ( hasAlpha ) {
+  if ( isAlpha ) {
 	argb <<= 8; 
 	argb += *(*p)++;
   }

@@ -68,7 +68,7 @@ xErrorHandler ( Display *dsp, XErrorEvent *err )
  */
 
 jint 
-Java_java_awt_Toolkit_tlkProperties ( JNIEnv* env, jclass clazz )
+Java_java_awt_Toolkit_tlkProperties ( JNIEnv* env UNUSED, jclass clazz UNUSED )
 {
   jint    props = TLK_EXTERNAL_DECO;
 
@@ -81,9 +81,9 @@ Java_java_awt_Toolkit_tlkProperties ( JNIEnv* env, jclass clazz )
 }
 
 jboolean
-Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
+Java_java_awt_Toolkit_tlkInit ( JNIEnv* env UNUSED, jclass clazz UNUSED, jstring name )
 {
-  char    *dspName;
+  const char    *dspName;
 
 #ifdef KAFFE_I18N
   /* for X Output Method */
@@ -122,7 +122,7 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
   DBG_ACTION(awt, XSynchronize( X->dsp, True));
 
   X->nWindows = 47;
-  X->windows = AWT_CALLOC( X->nWindows, sizeof(WindowRec));
+  X->windows = AWT_CALLOC( (size_t)X->nWindows, sizeof(WindowRec));
 
   X->root   = DefaultRootWindow( X->dsp);
   X->fwdIdx = -1;
@@ -179,7 +179,7 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
 }
 
 void
-Java_java_awt_Toolkit_tlkTerminate ( JNIEnv* env, jclass clazz )
+Java_java_awt_Toolkit_tlkTerminate ( JNIEnv* env UNUSED, jclass clazz UNUSED )
 {
   if ( X->cbdOwner ) {
 	XDestroyWindow( X->dsp, X->cbdOwner);
@@ -200,13 +200,13 @@ Java_java_awt_Toolkit_tlkTerminate ( JNIEnv* env, jclass clazz )
 
 
 jstring
-Java_java_awt_Toolkit_tlkVersion ( JNIEnv* env, jclass clazz )
+Java_java_awt_Toolkit_tlkVersion ( JNIEnv* env UNUSED, jclass clazz UNUSED )
 {
   return (*env)->NewStringUTF( env, "X-1.0");
 }
 
 jint
-Java_java_awt_Toolkit_tlkGetResolution ( JNIEnv* env, jclass clazz )
+Java_java_awt_Toolkit_tlkGetResolution ( JNIEnv* env UNUSED, jclass clazz UNUSED )
 {
   /*
    * This is just a guess since WidthMMOfScreen most probably isn't exact.
@@ -217,19 +217,19 @@ Java_java_awt_Toolkit_tlkGetResolution ( JNIEnv* env, jclass clazz )
 }
 
 jint
-Java_java_awt_Toolkit_tlkGetScreenHeight ( JNIEnv* env, jclass clazz )
+Java_java_awt_Toolkit_tlkGetScreenHeight ( JNIEnv* env UNUSED, jclass clazz UNUSED )
 {
   return DisplayHeight( X->dsp, DefaultScreen( X->dsp));
 }
 
 jint
-Java_java_awt_Toolkit_tlkGetScreenWidth ( JNIEnv* env, jclass clazz )
+Java_java_awt_Toolkit_tlkGetScreenWidth ( JNIEnv* env UNUSED, jclass clazz UNUSED )
 {
   return DisplayWidth( X->dsp, DefaultScreen( X->dsp));
 }
 
 void
-Java_java_awt_Toolkit_tlkSync ( JNIEnv* env, jclass clazz )
+Java_java_awt_Toolkit_tlkSync ( JNIEnv* env UNUSED, jclass clazz UNUSED )
 {
   /*
    * this one flushes the request buffer and waits until all reqs have been processed
@@ -239,7 +239,7 @@ Java_java_awt_Toolkit_tlkSync ( JNIEnv* env, jclass clazz )
 }
 
 void
-Java_java_awt_Toolkit_tlkFlush ( JNIEnv* env, jclass clazz )
+Java_java_awt_Toolkit_tlkFlush ( JNIEnv* env UNUSED, jclass clazz UNUSED )
 {
   /* simply flush request buffer (mainly for background threads and blocked AWT) */
   XFlush( X->dsp);
@@ -247,12 +247,12 @@ Java_java_awt_Toolkit_tlkFlush ( JNIEnv* env, jclass clazz )
 
 
 void
-Java_java_awt_Toolkit_tlkBeep ( JNIEnv* env, jclass clazz )
+Java_java_awt_Toolkit_tlkBeep ( JNIEnv* env UNUSED, jclass clazz UNUSED )
 {
   XBell( X->dsp, 100);
 }
 
 void
-Java_java_awt_Toolkit_tlkDisplayBanner ( JNIEnv* env, jclass clazz, jstring banner )
+Java_java_awt_Toolkit_tlkDisplayBanner ( JNIEnv* env UNUSED, jclass clazz UNUSED, jstring banner UNUSED )
 {
 }

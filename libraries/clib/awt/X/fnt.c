@@ -19,13 +19,13 @@
  * this is our ultima ratio in case everything else fails, at least this
  * one should be on every X fontlist
  */
-char* backupFont = "fixed";
+const char* backupFont = "fixed";
 
 /*
  * these are (hopefully) the most usual XFLD font weight names, ordered
  * in our preferred lookup sequence (from PLAIN to BOLD)
  */
-char* weight[] = { "medium", "normal", "regular", "thin", "light",
+const char* weight[] = { "medium", "normal", "regular", "thin", "light",
                    "black", "demibold", "heavy", "extrabold", "extrablack", "bold" };
 #define NWEIGHT 11
 
@@ -33,7 +33,7 @@ char* weight[] = { "medium", "normal", "regular", "thin", "light",
  * these are (more confident) the XFLD slant names, ordered in our
  * preferred lookup sequence (from PLAIN to ITALIC)
  */
-char* slant[] = { "r", "i", "o" };
+const char* slant[] = { "r", "i", "o" };
 #define NSLANT 3
 
 /*
@@ -65,7 +65,7 @@ int dsize[] = { 0, 10, -10, 20, -20, 30, -30, 40, -40 };
  */
 
 #ifdef KAFFE_I18N
-static XOC create_xoc(Toolkit *X,char *font_name)
+static XOC create_xoc(Toolkit *tk, const char *font_name)
 {
   XOC xoc;
   int i;
@@ -73,7 +73,7 @@ static XOC create_xoc(Toolkit *X,char *font_name)
   int missing_count;
   char *def_string;
 
-  xoc = XCreateOC(X->xom,
+  xoc = XCreateOC(tk->xom,
 		XNBaseFontName, font_name,
 		NULL);
   if (xoc) {
@@ -96,7 +96,7 @@ static XOC create_xoc(Toolkit *X,char *font_name)
 #endif
 
 void*
-Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec,
+Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz UNUSED, jstring jSpec,
                                     jint style, jint size )
 {
   int  i, j, k, i0, i1, j0, j1, di, dj;
@@ -174,7 +174,7 @@ Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec,
 
 #ifdef KAFFE_I18N
 void
-Java_java_awt_Toolkit_fntFreeFont ( JNIEnv* env, jclass clazz, XOC xoc )
+Java_java_awt_Toolkit_fntFreeFont ( JNIEnv* env UNUSED, jclass clazz UNUSED, XOC xoc )
 {
   XDestroyOC(xoc);
 }

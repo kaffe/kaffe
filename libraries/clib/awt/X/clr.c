@@ -223,7 +223,7 @@ fillUpColorCube ( Rgb2Pseudo* map, Colormap cm, int nAvail, unsigned long *pixel
 #define MAX_REQUESTS 16
 
 static void
-initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
+initColormap ( JNIEnv* env, Toolkit* tk, Colormap cm, Rgb2Pseudo* map )
 {
   jclass   clazz;
   jfieldID fid;
@@ -235,7 +235,7 @@ initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
   jint     req[MAX_REQUESTS];
   unsigned long  planeMasks[1];
   int      n, i, j, k, l, m, pix;
-  Visual   *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
+  Visual   *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( tk->dsp));
   XColor   xclr;
   int      r, g, b;
   char     blackSeen = 0;
@@ -265,7 +265,7 @@ initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
    * in even worse results
    */
   for ( n= 10; n; n-- ) {
-	if ( XAllocColorCells( X->dsp, cm, False, planeMasks, 0, pixels, n) )
+	if ( XAllocColorCells( tk->dsp, cm, False, planeMasks, 0, pixels, n) )
 	  break;
   }
 
@@ -275,13 +275,13 @@ initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
   /* mark all of our cells (so that we don't rely on their current values) */
   for ( i=0; i<n; i++ ){
 	xclr.pixel = pixels[i];
-	XStoreColor( X->dsp, cm, &xclr);
+	XStoreColor( tk->dsp, cm, &xclr);
   }
 
   /* check which of our rgb requests are already in the colormap */
   for ( l=0; l<v->map_entries; l++ ) {
 	xclr.pixel = l;
-	XQueryColor( X->dsp, cm, &xclr);
+	XQueryColor( tk->dsp, cm, &xclr);
 	r = xclr.red >> 8;
 	g = xclr.green >> 8;
 	b = xclr.blue >> 8;
@@ -355,14 +355,14 @@ initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
 
 
 static Rgb2Pseudo*
-initRgb2Pseudo ( JNIEnv* env, jclass clazz UNUSED, Toolkit* X )
+initRgb2Pseudo ( JNIEnv* env, jclass clazz UNUSED, Toolkit* tk )
 {
   Colormap dcm;
   int i, j, k;
   XColor xclr;
   Rgb2Pseudo *map;
 
-  dcm = DefaultColormapOfScreen( DefaultScreenOfDisplay( X->dsp));
+  dcm = DefaultColormapOfScreen( DefaultScreenOfDisplay( tk->dsp));
   map = (Rgb2Pseudo*) AWT_MALLOC( sizeof(Rgb2Pseudo));
   xclr.flags = DoRed | DoGreen | DoBlue;
 
@@ -373,8 +373,8 @@ initRgb2Pseudo ( JNIEnv* env, jclass clazz UNUSED, Toolkit* X )
 	}
   }
 
-  initColormap( env, X, dcm, map);
-  X->colorMode = CM_PSEUDO_256;
+  initColormap( env, tk, dcm, map);
+  tk->colorMode = CM_PSEUDO_256;
 
   return map;
 }
@@ -385,9 +385,9 @@ initRgb2Pseudo ( JNIEnv* env, jclass clazz UNUSED, Toolkit* X )
  */
 
 static Rgb2True*
-initRgb2True (JNIEnv* env UNUSED, jclass clazz UNUSED,  Toolkit* X )
+initRgb2True (JNIEnv* env UNUSED, jclass clazz UNUSED,  Toolkit* tk )
 {
-  Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
+  Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( tk->dsp));
   unsigned int m;
   int      nRed, nGreen, nBlue;
   int      iRed, iGreen, iBlue;
@@ -537,11 +537,11 @@ static void setPartMapFromDMap ( Toolkit *X, Colormap dcm,
 }
 
 static Rgb2Direct*
-initRgb2Direct ( JNIEnv* env UNUSED, jclass clazz UNUSED, Toolkit* X )
+initRgb2Direct ( JNIEnv* env UNUSED, jclass clazz UNUSED, Toolkit* tk )
 {
-  Visual      *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
+  Visual      *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( tk->dsp));
   Rgb2Direct  *map = (Rgb2Direct*) AWT_MALLOC( sizeof( Rgb2Direct));
-  Colormap    dcm = DefaultColormapOfScreen( DefaultScreenOfDisplay( X->dsp));
+  Colormap    dcm = DefaultColormapOfScreen( DefaultScreenOfDisplay( tk->dsp));
   int         iBlue, nBlue, iGreen, nGreen, iRed, nRed;
   int         i, m;
 
@@ -571,9 +571,9 @@ initRgb2Direct ( JNIEnv* env UNUSED, jclass clazz UNUSED, Toolkit* X )
   /*
    * phase 1: start to populate our component maps (R/G/B -> index) from dcm
    */
-  setPartMapFromDMap( X, dcm, 0, map->nRed, map->redShift, map->redPix, map->red);
-  setPartMapFromDMap( X, dcm, 1, map->nGreen, map->greenShift, map->greenPix, map->green);
-  setPartMapFromDMap( X, dcm, 2, map->nBlue, map->blueShift, map->bluePix, map->blue);
+  setPartMapFromDMap( tk, dcm, 0, map->nRed, map->redShift, map->redPix, map->red);
+  setPartMapFromDMap( tk, dcm, 1, map->nGreen, map->greenShift, map->greenPix, map->green);
+  setPartMapFromDMap( tk, dcm, 2, map->nBlue, map->blueShift, map->bluePix, map->blue);
 
   /*
    * phase 2: fill up missing entries
@@ -592,7 +592,7 @@ initRgb2Direct ( JNIEnv* env UNUSED, jclass clazz UNUSED, Toolkit* X )
   }
 #endif
 
-  X->colorMode = CM_DIRECT;
+  tk->colorMode = CM_DIRECT;
 
   return map;
 }
@@ -603,9 +603,9 @@ initRgb2Direct ( JNIEnv* env UNUSED, jclass clazz UNUSED, Toolkit* X )
  */
 
 void
-initColorMapping ( JNIEnv* env, jclass clazz,  Toolkit* X )
+initColorMapping ( JNIEnv* env, jclass clazz,  Toolkit* tk )
 {
-  Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
+  Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( tk->dsp));
 
   DBG( AWT_CLR, printf("X visual:\n"));
   DBG( AWT_CLR, printf("  id:          %ld\n", v->visualid));
@@ -619,19 +619,19 @@ initColorMapping ( JNIEnv* env, jclass clazz,  Toolkit* X )
   /* check for directly supported color modes / visuals */
   switch ( v->class ) {
   case DirectColor:
-	X->dclr = initRgb2Direct( env, clazz, X);
+	X->dclr = initRgb2Direct( env, clazz, tk);
 	break;
   case TrueColor:
-	X->tclr = initRgb2True( env, clazz, X);
+	X->tclr = initRgb2True( env, clazz, tk);
 	break;
   case PseudoColor:  
-	X->pclr = initRgb2Pseudo( env, clazz, X); 
+	X->pclr = initRgb2Pseudo( env, clazz, tk); 
 	break;
   default:
 	X->colorMode = CM_GENERIC;
   }
 
-  DBG( AWT_CLR, printf("colorMode: %d\n", X->colorMode));
+  DBG( AWT_CLR, printf("colorMode: %d\n", tk->colorMode));
 }
 
 
