@@ -7,6 +7,9 @@ import java.io.*;
 import java.lang.reflect.*;
 
 public class ClassGC extends ClassLoader {
+    // Make sure our helper classers are compiled from the test script
+    static Class imp1 = ClassGCTest.class;
+    static Class imp2 = ClassGCTestLater.class;
 
     /*
      * read a .class file
@@ -78,61 +81,6 @@ public class ClassGC extends ClassLoader {
     public static boolean gotOneForF;
     public static boolean gotOneForG;
 }
-
-class ClassGCTest
-{
-	public static class HObject {
-		protected void finalize() throws Throwable {
-			if (!ClassGC.gotOneForF) {
-				ClassGC.gotOneForF = true;
-				System.out.println("Success.");
-			}
-		}
-	}
-
-	public static Object f = new HObject();
-
-	/* Make sure interfaces are GC'd also */
-	public interface HInterface {
-		void func();
-	}
-
-	public static class HImplementor implements HInterface {
-		public void func()
-		{
-		}
-
-		protected void finalize() throws Throwable {
-			if (!ClassGC.gotOneForG) {
-				ClassGC.gotOneForG = true;
-				System.out.println("Success.");
-			}
-		}
-	}
-
-	public static Object g = new HImplementor();
-}
-
-class ClassGCTestLater
-{
-    public ClassGCTestLater() throws Exception
-    {
-	Class c = ClassGCTest.class;
-	String s = c.getName();
-	if (!s.equals("ClassGCTest"))
-	    System.out.println("Failure: name is " + s);
-	/* I think getConstructor should be enough, since we're in the
-           same package, but it fails :-(  -oliva */
-	Constructor cc = c.getDeclaredConstructor(new Class [] {});
-	if (!cc.toString().equals("ClassGCTest()"))
-	    System.out.println("Failure: name is " + cc.toString());
-	if (!cc.newInstance(new Object[] {}).
-		toString().startsWith("ClassGCTest")) {
-	    System.out.println("Failure newInstance.");
-	}
-    }
-}
-
 
 /* Expected Output:
 Success.
