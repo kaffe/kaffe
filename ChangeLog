@@ -1,3 +1,13 @@
+2003-08-19  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/text/RuleBasedCollator.java:
+	implemented full rule parsing (near full reimplementation).
+	updated documentation.
+
+	* libraries/javalib/java/text/CollationElementIterator.java:
+	implemented full behaviour. getMaxExpansion is still missing
+	as its functionality is not clear for the moment.
+	
 2003-08-18  Dalibor Topic <robilad@kaffe.org>
 
 	Merged in GNU Classpath's RMI implementation.

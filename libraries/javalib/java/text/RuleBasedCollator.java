@@ -39,6 +39,9 @@ exception statement from your version. */
 package java.text;
 
 import java.util.Vector;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Comparator;
 
 /* Written using "Java Class Libraries", 2nd edition, plus online
  * API docs for JDK 1.2 from http://www.javasoft.com.
@@ -60,7 +63,10 @@ import java.util.Vector;
  * <li> Reset: '&amp;' : <text>
  * </ul>
  * The modifier character indicates that accents sort backward as is the
- * case with French.  The relational operators specify how the text 
+ * case with French.  The modifier applies to all rules <b>after</b>
+ * the modifier but before the next primary sequence. If placed at the end
+ * of the sequence if applies to all unknown accented character.
+ * The relational operators specify how the text 
  * argument relates to the previous term.  The relation characters have
  * the following meanings:
  * <ul>
@@ -111,6 +117,9 @@ import java.util.Vector;
  * anywhere in the previous rule string segment so the rule following the
  * reset rule cannot be inserted.
  * <p>
+ * "&lt; a &amp; A @ &lt e &amp; E &lt f&amp; F" - This sequence is equivalent to the following
+ * "&lt; a &amp; A &lt E &amp; e &lt f &amp; F".
+ * <p>
  * For a description of the various comparison strength types, see the
  * documentation for the <code>Collator</code> class.
  * <p>
@@ -132,7 +141,8 @@ import java.util.Vector;
  *
  * @author Aaron M. Renn <arenn@urbanophile.com>
  * @author Tom Tromey <tromey@cygnus.com>
- * @date March 25, 1999
+ * @author Guilhem Lavaux <guilhem@kaffe.org>
+ * @date August 17, 2003
  */
 public class RuleBasedCollator extends Collator
 {
@@ -142,16 +152,327 @@ public class RuleBasedCollator extends Collator
     int primary;
     short secondary;
     short tertiary;
+    short equality;
+    boolean ignore;
+    String expansion;
 
-    CollationElement(String char_seq, int primary, short secondary, short tertiary)
+    CollationElement(String char_seq, int primary, short secondary, short tertiary,
+		     short equality, String expansion)
     {
       this.char_seq = char_seq;
       this.primary = primary;
       this.secondary = secondary;
       this.tertiary = tertiary;
+      this.equality = equality;
+      this.ignore = false;
+      this.expansion = expansion;
     }
- 
+
+    CollationElement(String char_seq)
+    {
+      this.char_seq = char_seq;
+      this.ignore = true;
+    }
+
+    final int getValue()
+    {
+      return (primary << 16) + (secondary << 8) + tertiary;
+    }
+
   } // inner class CollationElement
+
+  class CollationBlock
+  {
+    int value;
+    String textBlock;
+  }
+
+  class CollationSorter
+  {
+    static final int GREATERP = 0;
+    static final int GREATERS = 1;
+    static final int GREATERT = 2;
+    static final int EQUAL = 3;
+    static final int RESET = 4;
+    static final int IGNORE = 5;
+    static final int INVERSE_SECONDARY = 6;
+    static final int NEW_SEQUENCE = 7; /* For expansion */
+
+    int comparisonType;
+    String textElement;
+    int hashText;
+    int offset;
+
+    String expansionOrdering;
+  }
+
+  static int findPrefixLength(String prefix, String s)
+  {
+    int i;
+
+    for (i=0;i<prefix.length() && i < s.length();i++)
+      {
+	if (prefix.charAt(i) != s.charAt(i))
+	  return i;
+      }
+    return i;
+  }
+
+  void mergeRules(int offset, String starter, Vector main, Vector patch)
+    throws ParseException 
+  {
+    Enumeration elements = main.elements();
+    int insertion_point = -1;
+    int max_length = 0;
+    
+    /* We must check that no rules conflict with another already present. If it
+     * is the case delete the old rule. 
+     */
+    
+    /* For the moment good old O(N^2) algorithm.
+     */
+    for (int i=0;i<patch.size();i++)
+      {
+	int j = 0;
+	
+	while (j < main.size())
+	  {
+	    CollationSorter rule1 = (CollationSorter)patch.elementAt(i);
+	    CollationSorter rule2 = (CollationSorter)main.elementAt(j);
+	    
+	    if (rule1.textElement.equals(rule2.textElement))
+	      main.removeElementAt(j);
+	    else
+	      j++;
+	  }
+      }
+
+    // Find the insertion point... O(N)
+    for (int i=0;i<main.size();i++)
+      {
+	CollationSorter sorter = (CollationSorter)main.elementAt(i);
+	int length = findPrefixLength(starter, sorter.textElement);
+		
+	if (length > max_length)
+	  {
+	    max_length = length;
+	    insertion_point = i+1;
+	  }
+      }
+
+    if (insertion_point < 0)
+      throw new ParseException("no insertion point found for " + starter, offset);
+
+    if (max_length < starter.length())
+      {
+	/*
+	 * We need to expand the first entry. It must be sorted
+	 * like if it was the reference key itself (like the spec
+	 * said. So the first entry is special: the element is
+	 * replaced by the specified text element for the sorting.
+	 * This text replace the old one for comparisons. However
+	 * to preserve the behaviour we replace the first key (corresponding
+	 * to the found prefix) by a new code rightly ordered in the
+	 * sequence. The rest of the subsequence must be appended
+	 * to the end of the sequence.
+	 */
+	CollationSorter sorter = (CollationSorter)patch.elementAt(0);
+	CollationSorter expansionPrefix = (CollationSorter)main.elementAt(insertion_point-1);
+	
+	sorter.expansionOrdering = starter.substring(max_length); // Skip the first good prefix element
+	
+	main.insertElementAt(sorter, insertion_point);
+	
+	/*
+	 * This is a new set of rules. Append to the list.
+	 */
+	patch.removeElementAt(0);
+	insertion_point = main.size();
+      }
+
+    // Now insert all elements of patch at the insertion point.
+    for (int i=0;i<patch.size();i++)
+      main.insertElementAt(patch.elementAt(i), i+insertion_point);
+
+  }
+
+  int subParseString(boolean stop_on_reset, Vector v, int base_offset, String rules) throws ParseException
+  {
+    boolean ignoreChars = (base_offset == 0);
+    int operator = -1;
+    StringBuffer sb = new StringBuffer("");
+    boolean doubleQuote = false;
+    boolean eatingChars = false;
+    boolean nextIsModifier = false;
+    boolean isModifier = false;
+    int i;
+    
+main_parse_loop:
+    for (i=0;i<rules.length();i++)
+      {
+	char c = rules.charAt(i);
+	int type = -1;
+	
+	if (!eatingChars &&
+	    ((c >= 0x09 && c <= 0x0D) || (c == 0x20)))
+	      continue;
+
+	isModifier = nextIsModifier;
+	nextIsModifier = false;
+
+	if (eatingChars && c != '\'')
+	  {
+	    doubleQuote = false;
+	    sb.append(c);
+	    continue;
+	  }
+	if (doubleQuote && eatingChars)
+	  {
+	    sb.append(c);
+	    doubleQuote = false;
+	    continue;
+	  }
+
+	switch (c) {
+	case '<':
+	  ignoreChars = false;
+	  type = CollationSorter.GREATERP;
+	  break;
+	case ';':
+	  if (!ignoreChars)
+	    type = CollationSorter.GREATERS;
+	  else
+	    type = CollationSorter.IGNORE;
+	  break;
+	case ',':
+	  if (!ignoreChars)
+	    type = CollationSorter.GREATERT;
+	  else
+	    type = CollationSorter.IGNORE;
+	  break;
+	case '=':
+	  if (!ignoreChars)
+	    type = CollationSorter.EQUAL;
+	  else
+	    type = CollationSorter.IGNORE;
+	  break;
+	case '\'':
+	  eatingChars = !eatingChars;
+	  doubleQuote = true;
+	  break;
+	case '@':
+	  if (ignoreChars)
+	    throw new ParseException("comparison list has not yet been started. You may only use"
+				     + "(<,;=&)", i+base_offset);
+	  // Inverse the order of secondaries from now on.
+	  nextIsModifier = true;
+	  type = CollationSorter.INVERSE_SECONDARY;
+	  break;
+	case '&':
+	  type = CollationSorter.RESET;
+	  if (stop_on_reset)
+	    break main_parse_loop;
+	  break;
+	default:
+	  if (operator < 0)
+	    throw new ParseException("operator missing at " + (i+base_offset), i+base_offset);
+	  if (!eatingChars &&
+	      ((c >= 0x21 && c <= 0x2F) || (c >= 0x3A && c <= 0x40) || (c >= 0x5B && c <= 0x60) ||
+	       (c >= 0x7B && c <= 0x7E)))
+	    throw new ParseException("unquoted punctuation character '"+c+"'", i+base_offset);
+
+	  //type = ignoreChars ? CollationSorter.IGNORE : -1;
+	  sb.append(c);
+	  break;
+	}
+
+	if (type  < 0)
+	  continue;
+
+	if (operator < 0)
+	  {
+	    operator = type;
+	    continue;
+	  }
+
+	if (sb.length() == 0 && !isModifier)
+	  throw new ParseException("text element empty at " + (i+base_offset), i+base_offset);
+
+	if (operator == CollationSorter.RESET)
+	  {
+	    /* Reposition in the sorting list at the position
+	     * indicated by the text element.
+	     */
+	    String subrules = rules.substring(i);
+	    Vector sorted_rules = new Vector();
+	    int idx;
+
+	    // Parse the subrules but do not iterate through all
+	    // sublist. This is the priviledge of the first call.
+	    idx = subParseString(true, sorted_rules, base_offset+i, subrules);
+    
+	    // Merge new parsed rules into the list.
+	    mergeRules(base_offset+i, sb.toString(), v, sorted_rules);
+	    sb.setLength(0);
+	    
+	    // Reset state to none.
+	    operator = -1;
+	    type = -1;
+	    // We have found a new subrule at 'idx' but it has not been parsed.
+	    if (idx >= 0)
+	      {
+		i += idx-1;
+		continue main_parse_loop;
+	      }
+	    else
+		// No more rules.
+		break main_parse_loop;
+	  }
+
+	CollationSorter sorter = new CollationSorter();
+	
+	sorter.comparisonType = operator;
+	sorter.textElement = sb.toString();
+	sorter.hashText = sorter.textElement.hashCode();
+	sorter.offset = base_offset+rules.length();
+	sb.setLength(0);
+
+	v.add(sorter);
+	operator = type;
+      }
+
+    if (operator >= 0)
+      {
+	CollationSorter sorter = new CollationSorter();
+	int pos = rules.length() + base_offset;
+
+	if ((sb.length() != 0 && nextIsModifier) ||
+	    (sb.length() == 0 && !nextIsModifier && !eatingChars))
+	  throw new ParseException("text element empty at " + pos, pos);
+
+	sorter.comparisonType = operator;
+	sorter.textElement = sb.toString();
+ 	sorter.hashText = sorter.textElement.hashCode();
+	sorter.offset = base_offset+pos;
+	v.add(sorter);
+      }
+
+    if (i == rules.length())
+      return -1;
+    else
+      return i;
+  }
+
+  private Vector parseString(String rules) throws ParseException
+  {
+    Vector v = new Vector();
+
+    // result of the first subParseString is not certain (may be -1 or a positive integer). But we
+    // do not care.
+    subParseString(false, v, 0, rules);
+    
+    return v;
+  }
 
   /**
    * This the the original rule string.
@@ -162,6 +483,117 @@ public class RuleBasedCollator extends Collator
    * This is the table of collation element values
    */
   private Object[] ce_table;
+
+  /**
+   * Quick-prefix finder.
+   */
+  HashMap prefix_tree;
+
+  /**
+   * This is the value of the last sequence entered into
+   * <code>ce_table</code>. It is used to compute the
+   * ordering value of unspecified character.
+   */
+  private int last_primary_value;
+
+  private void buildCollationVector(Vector parsedElements) throws ParseException
+  {
+    int primary_seq = 0;
+    short secondary_seq = 0;
+    short tertiary_seq = 0;
+    short equality_seq = 0;
+    boolean inverseComparisons = false;
+    final boolean DECREASING = false;
+    final boolean INCREASING = true;
+    boolean secondaryType = INCREASING;
+    Vector v = new Vector();
+
+    // elts is completely sorted.
+element_loop:
+    for (int i=0;i<parsedElements.size();i++)
+      {
+	CollationSorter elt = (CollationSorter)parsedElements.elementAt(i);
+	boolean ignoreChar = false;
+
+	switch (elt.comparisonType)
+	  {
+	  case CollationSorter.GREATERP:
+	    primary_seq++;
+	    if (inverseComparisons)
+	      {
+		secondary_seq = Short.MAX_VALUE;
+		secondaryType = DECREASING;
+	      }
+	    else
+	      {
+		secondary_seq = 0;
+		secondaryType = INCREASING;
+	      }
+	    tertiary_seq = 0;
+	    equality_seq = 0;
+	    inverseComparisons = false;
+	    break;
+	  case CollationSorter.GREATERS:
+	    if (secondaryType == DECREASING)
+	      secondary_seq--;
+	    else
+	      secondary_seq++;
+	    tertiary_seq = 0;
+	    equality_seq = 0;
+	    break;
+	  case CollationSorter.INVERSE_SECONDARY:
+	    inverseComparisons = true;
+	    continue element_loop;
+	  case CollationSorter.GREATERT:
+	    tertiary_seq++;
+	    equality_seq = 0;
+	    break;
+	  case CollationSorter.IGNORE:
+	    ignoreChar = true;
+	  case CollationSorter.EQUAL:
+	    equality_seq++;
+	    break;
+	  case CollationSorter.RESET:
+	    throw new ParseException("Invalid reached state 'RESET'. Internal error", elt.offset);
+	  default:
+	    throw new ParseException("Invalid unknown state '"+elt.comparisonType+"'", elt.offset);
+	  }
+
+	CollationElement e;
+
+	if (!ignoreChar)
+	  {
+	    e = new CollationElement(elt.textElement, primary_seq,
+				     secondary_seq, tertiary_seq,
+				     equality_seq, elt.expansionOrdering);
+	  }
+	else
+	  e = new CollationElement(elt.textElement);
+
+	v.add(e);
+      }
+    
+    ce_table = v.toArray();
+
+    last_primary_value = primary_seq+1;
+  }
+
+  /**
+   * Build a tree where all keys are the texts of collation elements and data is
+   * the collation element itself. The tree is used when extracting all prefix
+   * for a given text.
+   */
+  private void buildPrefixAccess()
+  {
+    prefix_tree = new HashMap();
+
+    for (int i=0;i<ce_table.length;i++)
+      {
+	CollationElement e = (CollationElement)ce_table[i];
+
+	prefix_tree.put(e.char_seq, e);
+      }
+  }
 
   /**
    * This method initializes a new instance of <code>RuleBasedCollator</code>
@@ -179,117 +611,10 @@ public class RuleBasedCollator extends Collator
     this.rules = rules;
 
     if (rules.equals(""))
-      throw new IllegalArgumentException("Empty rule set");
+      throw new ParseException("Empty rule set", 0);
 
-    Vector v = new Vector();
-    boolean ignore_chars = true;
-    int primary_seq = 0;
-    short secondary_seq = 0;
-    short tertiary_seq = 0;
-    StringBuffer sb = new StringBuffer("");
-    for (int i = 0; i < rules.length(); i++)
-      {
-        char c = rules.charAt(i);
-
-        // Check if it is a whitespace character
-        if (((c >= 0x09) && (c <= 0x0D)) || (c == 0x20))
-          continue;
-
-        // Primary difference
-        if (c == '<')
-          {
-            ignore_chars = false;
-            CollationElement e = new CollationElement(sb.toString(), primary_seq,
-                                                      secondary_seq,
-                                                      tertiary_seq);
-            secondary_seq = 0;
-            tertiary_seq = 0;
-            ++primary_seq;
-
-            v.add(e);
-            sb.setLength(0);
-            continue;
-          }
-
-        // Secondary difference
-        if (c == ';')
-          {
-            if (primary_seq == 0)
-              throw new ParseException(rules, i);
-
-            CollationElement e = new CollationElement(sb.toString(), primary_seq,
-                                                      secondary_seq,
-                                                      tertiary_seq);
-            ++secondary_seq;
-            tertiary_seq = 0;
-
-            v.add(e);
-            sb.setLength(0);
-            continue;
-          }
-
-        // Tertiary difference
-        if (c == ',')
-          {
-            if (primary_seq == 0)
-              throw new ParseException(rules, i);
-
-            CollationElement e = new CollationElement(sb.toString(), primary_seq,
-                                                      secondary_seq,
-                                                      tertiary_seq);
-            ++tertiary_seq;
-
-            v.add(e);
-            sb.setLength(0);
-            continue;
-          }
-
-        // Is equal to
-        if (c == '=')
-          {
-            if (primary_seq == 0)
-              throw new ParseException(rules, i);
-
-            CollationElement e = new CollationElement(sb.toString(), primary_seq,
-                                                      secondary_seq,
-                                                      tertiary_seq);
-            v.add(e);
-            sb.setLength(0);
-            continue;
-          }
-
-        // Sort accents backwards
-        if (c == '@')
-          {
-            throw new ParseException("French style accents not implemented yet", 0);
-          }
-
-        // Reset command
-        if (c == '&')
-          {
-            throw new ParseException("Reset not implemented yet", 0);
-          }
-
-        // See if we are still reading characters to skip
-        if (ignore_chars == true)
-          {
-            CollationElement e = new CollationElement(c + "", 0, (short)0, 
-                                                      (short)0);
-            v.add(e);
-            continue;
-          }
-
-        sb.append(c);
-      }
-
-    if (sb.length() > 0)
-      {
-	CollationElement e = new CollationElement (sb.toString(), primary_seq,
-						   secondary_seq, tertiary_seq);
-	v.add (e);
-      }
-
-    ce_table = v.toArray();
+    buildCollationVector(parseString(rules));
+    buildPrefixAccess();
   }
 
   /**
@@ -303,28 +628,9 @@ public class RuleBasedCollator extends Collator
     return(rules);
   }
 
-  /**
-   * This method calculates the collation element value for the specified
-   * character(s).
-   */
-  int getCollationElementValue(String str)
+  CollationElement getDefaultElement(char c)
   {
-    CollationElement e = null;
-
-    // The table is sorted.  Change to a binary search later.
-    for (int i = 0; i < ce_table.length; i++) 
-      if (((CollationElement)ce_table[i]).char_seq.equals(str))
-        {
-          e = (CollationElement)ce_table[i];
-          break;
-        }
-
-    if (e == null)
-      e = new CollationElement(str, 0xFFFF, (short)0xFF, (short)0xFF);
-
-    int retval = (e.primary << 16) + (e.secondary << 8) + e.tertiary;
-
-    return(retval);
+    return new CollationElement (""+c, last_primary_value + c, (short)0, (short)0, (short) 0, null);
   }
 
   /**
@@ -384,21 +690,40 @@ public class RuleBasedCollator extends Collator
 
     for(;;)
       {
-        int ord1 = cei1.next(); 
-        int ord2 = cei2.next(); 
-  
-        // Check for end of string
-        if (ord1 == CollationElementIterator.NULLORDER)
-          if (ord2 == CollationElementIterator.NULLORDER)
-            return(0);
-          else
-            return(-1);
-        else if (ord2 == CollationElementIterator.NULLORDER)
-          return(1);
+        CollationElement ord1block = cei1.nextBlock(); 
+        CollationElement ord2block = cei2.nextBlock(); 
+	int ord1;
+	int ord2;
 
-        // We know chars are totally equal, so skip
+	// Hehehe. What we would do not to use if.
+	try
+	  {
+	    ord1 = ord1block.getValue();
+	  }
+	catch (NullPointerException _)
+	  {
+	    if (ord2block == null)
+	      return 0;
+	    return -1;
+	  }
+
+	try
+	  {
+	    ord2 = ord2block.getValue();
+	  }
+	catch (NullPointerException _)
+	  {
+	    return 1;
+	  }
+	
+       // We know chars are totally equal, so skip
         if (ord1 == ord2)
-          continue;
+	  {
+	    if (getStrength() == IDENTICAL)
+	      if (!ord1block.char_seq.equals(ord2block.char_seq))
+		return ord1block.char_seq.compareTo(ord2block.char_seq);
+	    continue;
+	  }
 
         // Check for primary strength differences
         int prim1 = cei1.primaryOrder(ord1); 
@@ -424,12 +749,17 @@ public class RuleBasedCollator extends Collator
 
         // Check for tertiary differences
         int tert1 = cei1.tertiaryOrder(ord1);
-        int tert2 = cei2.tertiaryOrder(ord1);
+        int tert2 = cei2.tertiaryOrder(ord2);
 
         if (tert1 < tert2)
           return(-1);
         else if (tert1 > tert2)
           return(1);
+	else if (getStrength() == TERTIARY)
+	  continue;
+
+	// Apparently JDK does this (at least for my test case).
+	return ord1block.char_seq.compareTo(ord2block.char_seq);    
       }
   }
 
