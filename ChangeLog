@@ -1,3 +1,28 @@
+2004-12-20  Adam Heath  <doogie@brainfood.com>
+
+	* libltdl/ltdl.c:
+	  Dalibor's last checkin included an older version of this file by
+	  mistake, reverting.
+
+2004-12-20  Adam Heath  <doogie@brainfood.com>
+
+	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classMethod.h
+	  kaffe/kaffevm/itypes.c, kaffe/kaffevm/kaffe.def,
+	  kaffe/kaffevm/soft.c, kaffe/kaffevm/thread.c,
+	  kaffe/kaffevm/jit/methodcalls.c, kaffe/kaffevm/jit3/icode.c,
+	  kaffe/kaffevm/jit3/machine.c, kaffe/kaffevm/jit3/registers.c,
+	  kaffe/kaffevm/jit3/slots.c, kaffe/kaffevm/jit3/slots.h,
+	  kaffe/kaffevm/kaffe-gc/gc-mem.c,
+	  kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	  kaffe/kaffevm/systems/unix-pthreads/thread-internal.h,
+	  libraries/clib/native/ByteToCharIconv.c,
+	  libraries/clib/native/CharToByteIconv.c,
+	  libraries/clib/native/Class.c, libraries/clib/native/Float.c,
+	  libraries/clib/native/Object.c, libraries/clib/native/System.c,
+	  libraries/clib/net/PlainDatagramSocketImpl.c,
+	  replace/getaddrinfo.c:
+	  Various gcc and sparse fixes all over the board.
+
 2004-12-21  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/util/Currency.java:
