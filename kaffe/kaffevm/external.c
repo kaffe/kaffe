@@ -31,6 +31,7 @@
 #include "jthread.h"
 #include "jsignal.h"
 #include "stats.h"
+#define LT_NON_POSIX_NAMESPACE
 #include "ltdl.h"
 #include "feedback.h"
 
