@@ -51,7 +51,6 @@ private kaffe.util.Ptr sem;
 private Thread nextlk;
 private Throwable death;
 private int needOnStack;
-private int noStopCount = 0;
 private ClassLoader context;
 
 private static class Sleeper {

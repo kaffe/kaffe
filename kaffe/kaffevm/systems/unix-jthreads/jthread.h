@@ -84,6 +84,7 @@ typedef struct _jthread {
 	unsigned char			flags;
 	void				(*func)(void *);
 	int				daemon;
+	int				stopCounter;
 
 	/* this one is simply thread specific data, or a cookie -
 	 * used to hold the current Java thread

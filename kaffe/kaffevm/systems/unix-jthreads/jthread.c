@@ -170,6 +170,11 @@ static void intsRestore(void);
 #define GET_FP(E)       (((void**)(E))[FP_OFFSET])
 #define SET_FP(E, V)    ((void**)(E))[FP_OFFSET] = (V)
 
+/* Set the base pointer in a jmp_buf if we can (only a convenience) */
+#if defined(BP_OFFSET)
+#define SET_BP(E, V)    ((void**)(E))[BP_OFFSET] = (V)
+#endif
+
 /* amount of stack space to be duplicated at stack creation time */
 #if !defined(STACK_COPY)
 #define STACK_COPY      (32*4)
@@ -1151,6 +1156,12 @@ jthread_disable_stop(void)
 	if (currentJThread) {
 		intsDisable();
 		currentJThread->flags |= THREAD_FLAGS_DONTSTOP;
+		currentJThread->stopCounter++;
+		assert(currentJThread->stopCounter > 0);
+
+		/* XXX Shouldn't recurse that much... ever... hopefully. */
+		assert(currentJThread->stopCounter < 10);  
+
 		intsRestore();
 	}
 }
@@ -1163,10 +1174,16 @@ jthread_enable_stop(void)
 {
 	if (currentJThread) {
 		intsDisable();
-		currentJThread->flags &= ~THREAD_FLAGS_DONTSTOP;
-		if ((currentJThread->flags & THREAD_FLAGS_KILLED) != 0) {
-			die();
+		if (--currentJThread->stopCounter == 0) {
+			currentJThread->flags &= ~THREAD_FLAGS_DONTSTOP;
+			if ((currentJThread->flags & THREAD_FLAGS_KILLED) != 0
+			   && ((currentJThread->flags & THREAD_FLAGS_EXITING) 
+			   	== 0))
+			{
+				die();
+			}
 		}
+		assert(currentJThread->stopCounter >= 0);
 		intsRestore();
 	}
 }
@@ -1204,14 +1221,16 @@ die(void)
 static void
 start_this_sucker_on_a_new_frame(void)
 {
+	/* all threads start with interrupts turned off */
+	blockInts = 1;
+
 	/* I might be dying already */
 	if ((currentJThread->flags & THREAD_FLAGS_KILLED) != 0) {
 		die();
 	}
 
-	/* all threads start with interrupts turned off */
-	blockInts = 1;
 	intsRestore();
+	assert(currentJThread->stopCounter == 0);
 	currentJThread->func(currentJThread->jlThread);
 	jthread_exit(); 
 }
@@ -1227,10 +1246,18 @@ jthread_create(unsigned char pri, void (*func)(void *), int daemon,
 	jthread *jtid; 
 	void	*oldstack, *newstack;
 
+	/*
+	 * Disable stop to protect the threadLock lock, and prevent
+	 * the system from losing a new thread context (before the new
+	 * thread is queued up).
+	 */
+	jthread_disable_stop();
+
 	jmutex_lock(&threadLock);
         jtid = newThreadCtx(threadStackSize);
 	if (!jtid) {
 		jmutex_unlock(&threadLock);
+		jthread_enable_stop();
 		return 0;
 	}
         jtid->priority = pri;
@@ -1285,12 +1312,23 @@ DBG(JTHREAD,
 
 	SET_SP(jtid->env, newstack);
 
+#if defined(SET_BP)
+	/*
+	 * Clear the base pointer in the new thread's stack.
+	 * Nice for debugging, but not strictly necessary.
+	 */
+	SET_BP(jtid->env, 0);
+#endif
+
+
 #if defined(FP_OFFSET)
 	/* needed for: IRIX */
 	SET_FP(jtid->env, newstack + ((void *)GET_FP(jtid->env) - oldstack));
 #endif
 
         resumeThread(jtid);
+	jthread_enable_stop();
+
         return jtid;
 }
 
@@ -1444,6 +1482,7 @@ jthread_exit(void)
 DBG(JTHREAD,
 	dprintf("jthread_exit %x\n", currentJThread);		)
 
+	jthread_disable_stop();
 	jmutex_lock(&threadLock);
 
 	talive--;
@@ -1455,6 +1494,8 @@ DBG(JTHREAD,
 	currentJThread->flags |= THREAD_FLAGS_EXITING;
 
 	jmutex_unlock(&threadLock);
+	jthread_enable_stop();
+
 	/* we disable interrupts while we go out to prevent a reschedule
 	 * in killThread()
 	 */

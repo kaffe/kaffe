@@ -22,18 +22,10 @@
 #include "stringSupport.h"
 #include "stats.h"
 
-/* For kaffeh, don't use the hash table or locks. Instead, just make these
-   function calls into macros in such a way as to avoid compiler warnings.
-   Yuk! */
+/* For kaffeh, don't use the hash table. Instead, just make these
+   function calls into macros in such a way as to avoid compiler
+   warnings.  Yuk! */
 #ifdef KAFFEH
-#undef  initStaticLock
-#define initStaticLock(x)
-#undef  staticLockIsInitialized		0
-#define staticLockIsInitialized(x)	1
-#undef  lockStaticMutex
-#undef  unlockStaticMutex
-#define unlockStaticMutex(x)
-#define lockStaticMutex(x)
 #define hashInit(a,b,c,d)	((hashtab_t)((u_int)utf8ConstCompare \
 					+ (u_int)utf8ConstHashValueInternal))
 #define hashAdd(t, x)		(x)
@@ -46,45 +38,78 @@
 static hashtab_t	hashTable;
 static iLock*		utf8Lock;	/* mutex on all intern operations */
 
+/*
+ * Used to keep track of the current utf8Lock holder's stack
+ * frame on which they first took the lock.  Protected by
+ * that lock.  Need to keep track of this so that a thread can
+ * drop and re-acquire the lock.
+ *
+ * Also used by debugging code to assert that the utf8Lock is never
+ * recursively acquired.
+ */
 static int *utfLockRoot;
 
-static inline void lockUTF(int *where)
+static inline void do_lockUTF(int *where)
 {
+	jthread_disable_stop();
 	_lockMutex(&utf8Lock, where);
+	DBGIF(assert(utfLockRoot == NULL));
 	utfLockRoot = where;
 }
 
-#define lockUTF()   lockUTF(&iLockRoot)
-#define unlockUTF() _unlockMutex(&utf8Lock, &iLockRoot)
+static inline void do_unlockUTF(int *where)
+{
+	DBGIF(assert(utfLockRoot != NULL));
+	DBGIF(utfLockRoot = NULL);
+	_unlockMutex(&utf8Lock, where);
+	jthread_enable_stop();
+}
+
+/* convenience macros which assume the iLockRoot local variable */
+#define lockUTF()   do_lockUTF(&iLockRoot)
+#define unlockUTF() do_unlockUTF(&iLockRoot)
 
 static inline void *UTFmalloc(size_t size)
 {
 	void *ret;
-	int *myRoot = utfLockRoot;
-	
+	int *myRoot;
+
+	DBGIF(assert(utfLockRoot != NULL));
+	myRoot = utfLockRoot;
+	DBGIF(utfLockRoot = NULL);
 	_unlockMutex(&utf8Lock, myRoot);
+
 	ret = gc_malloc(size, GC_ALLOC_UTF8CONST);
+
 	_lockMutex(&utf8Lock, myRoot);
+	DBGIF(assert(utfLockRoot == NULL));
 	utfLockRoot = myRoot;
+
 	return ret;
 }
 
 static inline void UTFfree(const void *mem)
 {
-	int *myRoot = utfLockRoot;
+	int *myRoot;
 
+	DBGIF(assert(utfLockRoot != NULL));
+	myRoot = utfLockRoot;
+	DBGIF(utfLockRoot = NULL);
 	_unlockMutex(&utf8Lock, myRoot);
+
 	jfree((void *)mem);
+
 	_lockMutex(&utf8Lock, myRoot);
+	DBGIF(assert(utfLockRoot == NULL));
 	utfLockRoot = myRoot;
 }
-#else
+#else /* KAFFEH replacements: */
 static hashtab_t	hashTable = (hashtab_t)1;
 
 #define lockUTF()
 #define unlockUTF() 
 #define UTFmalloc(size) malloc(size)
-#define UTFfree(size)   free(size)
+#define UTFfree(ptr)   free(ptr)
 #endif
 
 /* Internal functions */
@@ -147,7 +172,7 @@ utf8ConstNew(const char *s, int len)
 	if (utf8 != NULL) {
 		assert(utf8->nrefs >= 1);
 		utf8->nrefs++;
-		unlockStaticMutex(&utf8Lock);
+		unlockUTF();
 		if (fake != (Utf8Const*)buf) {
 			jfree(fake);
 		}
@@ -159,7 +184,7 @@ utf8ConstNew(const char *s, int len)
 	if ((char *) fake == buf) {
 		utf8 = UTFmalloc(sizeof(Utf8Const) + len + 1);
 		if (!utf8) {
-			unlockStaticMutex(&utf8Lock);
+			unlockUTF();
 			return 0;
 		}
 		memcpy((char *) utf8->data, s, len);
@@ -174,12 +199,12 @@ utf8ConstNew(const char *s, int len)
 	/* Add to hash table */
 	temp = hashAdd(hashTable, utf8);
 	if (!temp) {
-		unlockStaticMutex(&utf8Lock);
+		unlockUTF();
 		jfree(utf8);
 		return 0;
 	}
 	assert(temp == utf8);
-	unlockStaticMutex(&utf8Lock);
+	unlockUTF();
 	return(utf8);
 }
 
@@ -192,11 +217,10 @@ utf8ConstAddRef(Utf8Const *utf8)
 #if !defined(KAFFEH)
 	int iLockRoot;
 #endif
-
-	lockStaticMutex(&utf8Lock);
+	lockUTF();
 	assert(utf8->nrefs >= 1);
 	utf8->nrefs++;
-	unlockStaticMutex(&utf8Lock);
+	unlockUTF();
 }
 
 /*
@@ -208,7 +232,6 @@ utf8ConstRelease(Utf8Const *utf8)
 #if !defined(KAFFEH)
 	int iLockRoot;
 #endif
-
 	/* NB: we ignore zero utf8s here in order to not having to do it at
 	 * the call sites, such as when destroying half-processed class 
 	 * objects because of error conditions.
@@ -216,13 +239,13 @@ utf8ConstRelease(Utf8Const *utf8)
 	if (utf8 == 0) {
 		return;
 	}
-	lockStaticMutex(&utf8Lock);
+	lockUTF();
 	assert(utf8->nrefs >= 1);
 	if (--utf8->nrefs == 0) {
 		hitCounter(&utf8release, "utf8-release");
 		hashRemove(hashTable, utf8);
 	}
-	unlockStaticMutex(&utf8Lock);
+	unlockUTF();
 	if (utf8->nrefs == 0)
 		jfree(utf8);
 }
@@ -376,7 +399,13 @@ utf8ConstEqualJavaString(const Utf8Const *utf8, const Hjava_lang_String *string)
 void
 utf8ConstInit(void)
 {
+#if !defined(KAFFEH)
+	int iLockRoot;
+#endif
+	
+	lockUTF();
 	hashTable = hashInit(utf8ConstHashValueInternal,
 		utf8ConstCompare, UTFmalloc, UTFfree);
 	assert(hashTable);
+	unlockUTF();
 }

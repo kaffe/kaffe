@@ -22,6 +22,12 @@
 #define	SP_OFFSET	2
 
 /*
+ * Redefine the base pointer offset in a jmpbuf.
+ */
+#undef  BP_OFFSET
+#define BP_OFFSET	3
+
+/*
  * FreeBSD does not save the floating point registers in the signal
  * context, so we must do it ourselves.
  */

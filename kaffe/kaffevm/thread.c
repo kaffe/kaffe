@@ -217,37 +217,6 @@ stopThread(Hjava_lang_Thread* tid, Hjava_lang_Object* obj)
 	}
 }
 
-void
-dontStopThread(void)
-{
-	/* We get a main jthread before java.lang.Thread is even
-	   loaded, so we must check both */
-	if (jthread_current() && getCurrentThread()) {
-		Hjava_lang_Thread *tid = getCurrentThread();
-
-		if (!unhand(tid)->noStopCount) {
-			jthread_disable_stop();
-		}
-		unhand(tid)->noStopCount++;
-	}
-}
-
-void
-canStopThread(void)
-{
-	/* We get a main jthread before java.lang.Thread is even
-	   loaded, so we must check both */
-	if (jthread_current() && getCurrentThread()) {
-		Hjava_lang_Thread *tid = getCurrentThread();
-	
-		assert(unhand(tid)->noStopCount > 0);
-		unhand(tid)->noStopCount--;
-		if (!unhand(tid)->noStopCount) {
-			jthread_enable_stop();
-		}
-	}
-}
-
 /*
  * Create the initial thread with a given name.
  *  We should only ever call this once.

@@ -247,6 +247,7 @@ stringAlloc(size_t sz)
 	void* p;
 	int *myRoot = stringLockRoot;
 
+	/* XXX assumes stringLock isn't acquired recursively (which it isn't) */
 	_unlockMutex(&stringLock, myRoot);
 	p = KCALLOC(1, sz);
 	_lockMutex(&stringLock, myRoot);
@@ -259,6 +260,7 @@ stringFree(const void *ptr)
 {
 	int *myRoot = stringLockRoot;
 
+	/* XXX assumes stringLock isn't acquired recursively (which it isn't) */
 	_unlockMutex(&stringLock, myRoot);
 	KFREE(ptr);
 	_lockMutex(&stringLock, myRoot);

@@ -70,7 +70,7 @@ ksemInit(Ksem* sem)
  * Returns true if the semaphore was acquired, returns false if
  * we timed-out in wait and semaphore still wasn't available.
  *
- * XXX spurious wakeups are not handled here.  Should they be?
+ * Spurious wakeups are not handled here.
  */
 static inline jboolean
 ksemGet(Ksem* sem, jlong timeout)
@@ -93,10 +93,10 @@ ksemGet(Ksem* sem, jlong timeout)
 		r = true;
 	}
 	else {
-		/* Still no stored wakeup means we waited and timeout. */
-		assert(sem->count == 0);
+		/* Still no stored wakeup means we waited and timedout. */
 		r = false;
 	}
+	assert(sem->count == 0);
 	jmutex_unlock(&sem->mux);
 	return (r);
 }
@@ -109,6 +109,7 @@ static inline void
 ksemPut(Ksem* sem)
 {
 	jmutex_lock(&sem->mux);
+	/*assert((sem->count == 0) || (sem->count == 1));*/
 	assert(sem->count == 0);
         sem->count = 1;
 	jcondvar_signal(&sem->cv, &sem->mux);

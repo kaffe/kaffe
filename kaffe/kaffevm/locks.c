@@ -187,6 +187,7 @@ DBG(SLOWLOCKS,
     	dprintf("slowLockMutex(**lkp=%p, where=%p, th=%p)\n",
 	       lkp, where, jthread_current());
 )
+	jthread_disable_stop(); /* protect the heavy lock, and its queues */
 
 	for (;;) {
 		lk = getHeavyLock(lkp);
@@ -194,6 +195,7 @@ DBG(SLOWLOCKS,
 		/* If I hold the heavy lock then just keep on going */
 		if (jthread_on_current_stack(lk->holder)) {
 			putHeavyLock(lkp, lk);
+			jthread_enable_stop();
 			return;
 		}
 
@@ -201,6 +203,7 @@ DBG(SLOWLOCKS,
 		if (lk->holder == 0) {
 			lk->holder = where;
 			putHeavyLock(lkp, lk);
+			jthread_enable_stop();
 			return;
 		}
 
@@ -229,18 +232,20 @@ DBG(SLOWLOCKS,
     	dprintf("slowUnlockMutex(**lkp=%p, where=%p, th=%p)\n",
 	       lkp, where, jthread_current());
 )
-
+	jthread_disable_stop(); /* protect the heavy lock, and its queues */
 	lk = getHeavyLock(lkp);
 
 	/* Only the lock holder can be doing an unlock */
 	if (!jthread_on_current_stack(lk->holder)) {
 		putHeavyLock(lkp, lk);
+		jthread_enable_stop();
 		throwException(IllegalMonitorStateException);
 	}
 
 	/* If holder isn't where we are now then this isn't the final unlock */
 	if (lk->holder > where) {
 		putHeavyLock(lkp, lk);
+		jthread_enable_stop();
 		return;
 	}
 
@@ -272,6 +277,7 @@ DBG(SLOWLOCKS,
 		}
 		putHeavyLock(lkp, LOCKFREE);
 	}
+	jthread_enable_stop();
 }
 
 void

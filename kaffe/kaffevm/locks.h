@@ -13,20 +13,24 @@
 #ifndef __locks_h
 #define __locks_h
 
+#ifndef KAFFEH
+#include "jthread.h"
+#endif
+
 #include "md.h"
 
 struct _iLock;
 
 #define	LOCKOBJECT			struct _iLock**
-#define	lockMutex(O)			_lockMutex(&(O)->lock, &iLockRoot)
-#define	unlockMutex(O)			_unlockMutex(&(O)->lock, &iLockRoot)
+#define	lockMutex(O)			(jthread_disable_stop(), _lockMutex(&(O)->lock, &iLockRoot))
+#define	unlockMutex(O)			_unlockMutex(&(O)->lock, &iLockRoot); jthread_enable_stop()
 #define	waitCond(O,T)			_waitCond(&(O)->lock, (T))
 #define	signalCond(O)			_signalCond(&(O)->lock)
 #define	broadcastCond(O)		_broadcastCond(&(O)->lock)
 #define	holdMutex(O)			_holdMutex(&(O)->lock)
 
-#define	lockStaticMutex(THING)		_lockMutex((THING), &iLockRoot)
-#define	unlockStaticMutex(THING)	_unlockMutex((THING), &iLockRoot)
+#define	lockStaticMutex(THING)		(jthread_disable_stop(), _lockMutex((THING), &iLockRoot))
+#define	unlockStaticMutex(THING)	_unlockMutex((THING), &iLockRoot); jthread_enable_stop()
 #define	waitStaticCond(THING, TIME)	_waitCond((THING), (TIME))
 #define	signalStaticCond(THING)		_signalCond((THING))
 #define	broadcastStaticCond(THING)	_broadcastCond((THING))

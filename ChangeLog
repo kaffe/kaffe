@@ -2,8 +2,32 @@ Tue Jun 20 21:59:44 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
 	* developers/gdbinit: Add three macros for tweaking the
 	kaffevmDebugMask from GDB, factor out the thread platform from the 
-	bt 
+	bt threads, and add 'pobject' and 'pobjecttype'.
+	
+	* config/i386/freebsd2/md.h,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c:  Add SET_BP macro
+	to clear the base pointer in a new thread's jmpbuf.  Cleans up
+	backtraces in GDB.  Defined a BP_OFFSET for FreeBSD.
+	
+	* kaffe/kaffevm/locks.h, kaffe/kaffevm/utf8const.c,
+ 	kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+ 	kaffe/kaffevm/systems/unix-jthreads/jthread.h: Support for
+ 	disabling and re-enabling Thread.stop to protect various internal
+ 	data structures.  Covers all internal locks. utf8const lock gets
+ 	special attention and some additional cleanup thrown in free.
+  	Allows recursive disables.
+	
+	* kaffe/kaffevm/string.c: two comments
+	
+	* kaffe/kaffevm/thread.c, libraries/javalib/java/lang/Thread.java: 
+	Remove old, unused support for disable/enable stop.
+	
+	* kaffe/kaffevm/ksem.h: remove erroneous assert(), cleanup other
+ 	asserts.
 
+	* kaffe/libraries/javalib/Klasses.jar: Rebuilt with Jikes.
+	Includes many of Edouard's fixes.
+	
 2000-06-20  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/javalib/java/text/SimpleDateFormat.java (format): use
