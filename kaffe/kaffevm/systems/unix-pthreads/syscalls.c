@@ -473,7 +473,11 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 	/* absolute time at which time out is reached */
 	int r=-1, ret;	
 	ret = waitForTimeout(fd,timeout);
-	if (ret > 0) {
+
+	/* If result is 0, we had a timeout. 
+	 * If it's not, let's try to accept.
+	 */
+	if (ret != 0) {
 		r = accept(fd,addr,len);
 		SET_RETURN_OUT(r, out, r)
 		return (r);
