@@ -25,7 +25,7 @@
 #include "java_io_ObjectOutputStream.h"
 #include "kaffe_io_ObjectStreamClassImpl.h"
 
-extern jobject Kaffe_NewObject(JNIEnv*, jclass, jmethodID, ...);   /* XXX */
+#include <jni.h>
 
 static Hjava_lang_Object* newSerialObject(Hjava_lang_Class*,Hjava_lang_Object*);
 static HArrayOfObject* getFields(struct Hkaffe_io_ObjectStreamClassImpl*);
@@ -723,8 +723,9 @@ newSerialObject(Hjava_lang_Class* clazz, Hjava_lang_Object* obj)
 	n = CLASS_NMETHODS(clazz);
 	for (mptr = CLASS_METHODS(clazz); --n >= 0; ++mptr) {
 		if (utf8ConstEqual(mptr->name, constructor_name) && !utf8ConstEqual(METHOD_SIG(mptr), void_signature)) {
-			/* XXX !!! */
-			return ((Hjava_lang_Object*)Kaffe_NewObject(0, clazz, (jmethodID)mptr, obj));
+			extern JNIEnv Kaffe_JNIEnv;
+			JNIEnv *env = &Kaffe_JNIEnv;
+			return ((Hjava_lang_Object*)(*env)->NewObject(env, clazz, (jmethodID)mptr, obj));
 		}
 	}
 
