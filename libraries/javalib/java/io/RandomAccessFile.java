@@ -55,10 +55,14 @@ native private void open(String name, boolean rw);
 native public int read() throws IOException;
 
 public int read(byte b[]) throws IOException {
-	return read(b, 0, b.length);
+	return _read(b, 0, b.length);
 }
 
 public int read(byte b[], int off, int len) throws IOException {
+	return _read(b, off, len);
+}
+
+private int _read(byte b[], int off, int len) throws IOException {
 	int total = 0;
 	while (total < len) {
 		final int got = readBytes(b, off + total, len - total);
