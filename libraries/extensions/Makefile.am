@@ -6,4 +6,4 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = comm pjava servlet tools
+SUBDIRS = comm pjava servlet tools microsoft
