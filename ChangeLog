@@ -1,3 +1,15 @@
+Sat Oct 19 18:18:45 CEST 2002 Jukka Santala <jsantala@tml.hut.fi>
+	* libraries/javalib/rebuildLib.in:
+	If you take a look at rebuildLib(.in), you'll see it changes to
+	the classlib source-directory before starting to build it. This is
+	a problem, because SRCDIR environment variable will contain a
+	relative path. If you're building the source-tree somewhere else
+	than into the original source-tree (As is recommended for the GNU
+	tools, and in any case often desirable ex. when cross-compiling
+	for several platforms) this relative path will obviously point
+	into wrong directory. Luckily, since we've already changed to said
+	directory, no path name is neccessary.
+
 Sat Oct 19 17:54:24 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* libraries/javalib/java/lang/System.java:
 	(arraycopy) improved performance a little bit.

@@ -42,4 +42,4 @@ fi
 cd $SRCDIR
 
 echo "Compiling classes ..."
-CLASSPATH=$SRCDIR/Klasses.jar.bootstrap:$CLASSPATH $JAVAC $VERBOSE -d $LIBDIR $CPATH ${1+"$@"}
+CLASSPATH=./Klasses.jar.bootstrap:$CLASSPATH $JAVAC $VERBOSE -d $LIBDIR $CPATH ${1+"$@"}
