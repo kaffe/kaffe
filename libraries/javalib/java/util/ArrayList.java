@@ -93,6 +93,7 @@ public class ArrayList extends AbstractList
 		System.arraycopy(a, off, newa, 0, len);
 		modCount++;
 		a = newa;
+		off = 0;
 	}
 
 	public int size() {
