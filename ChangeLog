@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-25  Sven de Marothy  <sven@physto.se>
+
+        * java/net/InetAddress.java
+        (toString): Don't print empty hostnames.
+        Fixes bug #11956
+
+2005-03-02  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-24  Audrius Meskauskas  <audriusa@bluewin.ch>
 
         * javax/swing/Timer.java (constructor): assigning initialDelay

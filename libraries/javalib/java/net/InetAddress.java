@@ -1,5 +1,5 @@
 /* InetAddress.java -- Class to model an Internet address
-   Copyright (C) 1998, 1999, 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -554,7 +554,7 @@ public class InetAddress implements Serializable
   public String toString()
   {
     String addr = getHostAddress();
-    String host = (hostName != null) ? hostName : addr;
+    String host = (hostName != null) ? hostName : "";
     return host + "/" + addr;
   }
 
