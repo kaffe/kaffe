@@ -84,11 +84,19 @@ AC_CHECK_FUNCS(strdup strchr strrchr index rindex)
 
 AC_CACHE_CHECK([whether libtool supports -dlopen/-dlpreopen],
        libltdl_cv_preloaded_symbols, [dnl
-  if grep '^global_symbol_pipe=..*$' ./libtool >/dev/null; then
-    libltdl_cv_preloaded_symbols=yes
-  else
-    libltdl_cv_preloaded_symbols=no
-  fi
+  (
+    rm -f conftest
+    ./libtool --config > conftest
+    . ./conftest
+    rm -f conftest
+    if test -n "$global_symbol_pipe"; then
+      echo yes > conftest
+    else
+      echo no > conftest
+    fi
+  )
+  libltdl_cv_preloaded_symbols=`cat conftest`
+  rm -f conftest
 ])
 if test x"$libltdl_cv_preloaded_symbols" = x"yes"; then
   AC_DEFINE(HAVE_PRELOADED_SYMBOLS)

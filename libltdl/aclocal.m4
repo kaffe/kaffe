@@ -11,7 +11,7 @@ dnl even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 dnl PARTICULAR PURPOSE.
 
 
-# serial 30 AC_PROG_LIBTOOL
+# serial 31 AC_PROG_LIBTOOL
 AC_DEFUN(AC_PROG_LIBTOOL,
 [AC_PREREQ(2.12.2)dnl
 AC_REQUIRE([AC_ENABLE_SHARED])dnl
@@ -371,7 +371,7 @@ for ac_symprfx in "" "_"; do
   # Write the raw and C identifiers.
   # Unlike in ltconfig.in, we need $ac_symprfx before $ac_symxfrm here,
   # otherwise AC_SYS_SYMBOL_UNDERSCORE will always be false
-  ac_cv_sys_global_symbol_pipe="sed -n -e 's/^.* $ac_symcode $ac_symprfx$ac_sympat$/$ac_symprfx$ac_symxfrm/p'"
+  ac_cv_sys_global_symbol_pipe="sed -n -e 's/^.*[ 	]$ac_symcode[ 	][ 	]*$ac_symprfx$ac_sympat$/$ac_symprfx$ac_symxfrm/p'"
 
   # Check to see that the pipe works correctly.
   ac_pipe_works=no

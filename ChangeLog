@@ -1,3 +1,14 @@
+Fri Feb  5 16:34:46 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* ltmain.sh: update from libtool; cygwin32 was renamed to cygwin
+	* ltconfig: ditto
+	* acinclude.m4: update from libtool; be more tolerant when parsing 
+	the output of nm; it should help on HP/UX
+	* ltconfig: ditto
+	* libltdl/configure.in: fix check for dlpreopen support
+	* aclocal.m4, libltdl/aclocal.m4: regen
+	* configure, libltdl/configure: regen
+
 Fri Feb  5 09:09:36 1999  Aaron Place <beavis@ihug.co.nz>
 
 	* config/i386/oskit/md.c, kaffe/kaffevm/systems/beos-native/bjthread.c,
