@@ -736,7 +736,9 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 
 	pthread_attr_init( &nt->attr);
 	pthread_attr_setschedparam( &nt->attr, &sp);
+#if defined(HAVE_PTHREAD_ATTR_SETSCHEDPOLICY)
 	pthread_attr_setschedpolicy( &nt->attr, SCHEDULE_POLICY);
+#endif /* defined(HAVE_PTHREAD_ATTR_SETSCHEDPOLICY) */
 	pthread_attr_setstacksize( &nt->attr, threadStackSize);
 
 	nt->data.jlThread       = jlThread;

@@ -1,4 +1,19 @@
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>,
+
+        * configure.ac:
+	Added check for pthread_attr_setschedpolicy.
+
+        * kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	Only use pthread_attr_setschedpolicy if it exists on
+	the system.
+
+        * configure,
+        config/config.h.in:
+	Regenerated.
+
+	Reported by: Riccardo Mottola  <zuse@libero.it>
+
+2004-07-11  Dalibor Topic  <robilad@kaffe.org>,
 	    Helmer Kraemer  <hkraemer@freenet.de>
 
         * kaffe/kaffevm/jit3/funcs.h:

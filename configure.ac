@@ -1256,6 +1256,9 @@ AM_ICONV
 AC_CHECK_FUNCS([sched_get_priority_max])
 AC_CHECK_FUNCS([sched_get_priority_min])
 
+# pthread_attr_setschedpolicy in not implemented on NetBSD <= 1.6
+AC_CHECK_FUNCS([pthread_attr_setschedpolicy])
+
 dnl getifaddrs replacement for linux
 AC_REPLACE_FUNCS([getifaddrs])
 AC_CHECK_HEADERS(ifaddrs.h,use_compat_ifaddrs="no",use_compat_ifaddrs="yes")
