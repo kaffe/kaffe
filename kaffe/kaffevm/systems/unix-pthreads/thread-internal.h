@@ -86,10 +86,10 @@ jthread_t jthread_current(void)
 /**
  * Attaches the calling thread to the vm.
  *
- * @param daemon wether the thread is to be treated as a daemon thread
+ * @param is_daemon wether the thread is to be treated as a daemon thread
  *
  */
-bool jthread_attach_current_thread (bool daemon);
+bool jthread_attach_current_thread (bool is_daemon);
 
 void jthread_sleep (jlong timeout);
 
@@ -337,7 +337,7 @@ jthread_t jthread_createfirst(size_t, unsigned char, void*);
  * Create a new native thread.
  *
  */
-jthread_t jthread_create (unsigned char pri, void* func, int daemon,
+jthread_t jthread_create (unsigned char pri, void* func, int is_daemon,
 			  void* jlThread, size_t threadStackSize );
 
 

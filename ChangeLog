@@ -1,5 +1,11 @@
 2004-03-24  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h
+	(jthread_attach_current_thread): Renamed daemon to is_daemon
+	to fix compiler warnings.
+
+2004-03-24  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/gc.h:
 	(GarbageCollectorInterface_Ops) Renamed index to gc_index 
 	to fix compiler warnings.
