@@ -35,6 +35,10 @@ public DatagramSocket(int port, InetAddress bindAddr) throws SocketException {
 	}
 	impl = factory.createDatagramSocketImpl();
 	impl.create();
+	init(port, bindAddr);
+}
+
+protected void init(int port, InetAddress bindAddr) throws SocketException {
 	impl.bind(port, bindAddr);
 }
 
