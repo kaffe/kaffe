@@ -321,7 +321,7 @@ public class BufferedInputStream extends FilterInputStream
   public synchronized long skip(long n) throws IOException
   {
     if (buf == null)
-	throw new IOException("Stream closed.");
+      throw new IOException("Stream closed.");
 
     final long origN = n;
 
@@ -347,7 +347,7 @@ public class BufferedInputStream extends FilterInputStream
   private boolean refill() throws IOException
   {
     if (buf == null)
-	throw new IOException("Stream closed.");
+      throw new IOException("Stream closed.");
 
     if (markpos == -1 || count - markpos >= marklimit)
       {
@@ -371,7 +371,7 @@ public class BufferedInputStream extends FilterInputStream
     int numread = super.read(buf, count, bufferSize);
 
     if (numread <= 0)	// EOF
-	return false;
+      return false;
 
     count += numread;
     return true;
