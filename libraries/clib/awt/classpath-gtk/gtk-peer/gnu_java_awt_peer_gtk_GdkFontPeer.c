@@ -114,6 +114,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontPeer_setFont
   struct peerfont *pfont = NULL;
   char const *family_name = NULL;
   enum java_awt_font_style style;
+  PangoFT2FontMap *ft2_map;
 
   gdk_threads_enter ();
   style = (enum java_awt_font_style) style_int;
@@ -148,7 +149,10 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontPeer_setFont
   if (useGraphics2D)
     {
       if (pfont->ctx == NULL)
-	pfont->ctx = pango_ft2_font_map_create_context (pango_ft2_font_map_for_display ());  
+	{
+	  ft2_map = PANGO_FT2_FONT_MAP(pango_ft2_font_map_for_display ());
+	  pfont->ctx = pango_ft2_font_map_create_context (ft2_map);
+	}
     }
   else
     {

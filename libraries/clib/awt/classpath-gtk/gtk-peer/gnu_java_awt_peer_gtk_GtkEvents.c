@@ -827,14 +827,16 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
   static guint button_number = -1;
   static jint click_count = 1;
   static int hasBeenDragged;
+  union widget_union w;
 
   /* If it is not a focus change event, the widget must be realized already.
      If not, ignore the event (Gtk+ will do the same). */
   if (!(event->type == GDK_FOCUS_CHANGE || GTK_WIDGET_REALIZED(widget)))
     return FALSE;
-    
+
   /* Do not handle propagated events.  AWT has its own propagation rules */
-  gdk_window_get_user_data (event->any.window, (void **) &event_widget);
+  w.widget = &event_widget;
+  gdk_window_get_user_data (event->any.window, w.void_widget);
   if (event_widget != widget)
     return FALSE;
 
@@ -1128,7 +1130,8 @@ connect_awt_hook (JNIEnv *env, jobject peer_obj, int nwindows, ...)
  * can be sure that widget->window is non-NULL, and so can have data
  * connected to it.
  */
-void connect_awt_hook_cb (GtkWidget *widget, jobject peer)
+void connect_awt_hook_cb (GtkWidget *widget __attribute__((unused)),
+			  jobject peer)
 {
   void *ptr;
 

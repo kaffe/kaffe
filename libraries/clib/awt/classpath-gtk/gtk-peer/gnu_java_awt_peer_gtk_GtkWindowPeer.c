@@ -1,5 +1,5 @@
 /* gtkwindowpeer.c -- Native implementation of GtkWindowPeer
-   Copyright (C) 1998, 1999, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -80,6 +80,19 @@ static jint window_get_new_state (GtkWidget *widget);
 static gboolean window_property_changed_cb (GtkWidget *widget,
 					    GdkEventProperty *event,
 					    jobject peer);
+
+/* Union used for type punning. */
+union extents_union
+{
+  guchar **gu_extents;
+  unsigned long **extents;
+};
+
+union atom_list_union
+{
+  guchar **gu_extents;
+  Atom **atom_list;
+};
 
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkWindowPeer_create 
@@ -370,6 +383,7 @@ window_get_frame_extents (GtkWidget *window,
                           int *top, int *left, int *bottom, int *right)
 {
   unsigned long *extents = NULL;
+  union extents_union gu_ex;
 
   /* Guess frame extents in case _NET_FRAME_EXTENTS is not
      supported. */
@@ -383,6 +397,7 @@ window_get_frame_extents (GtkWidget *window,
   request_frame_extents (window);
 
   /* Attempt to retrieve window's frame extents. */
+  gu_ex.extents = &extents;
   if (gdk_property_get (window->window,
                         gdk_atom_intern ("_NET_FRAME_EXTENTS", FALSE),
                         gdk_atom_intern ("CARDINAL", FALSE),
@@ -392,7 +407,7 @@ window_get_frame_extents (GtkWidget *window,
                         NULL,
                         NULL,
                         NULL,
-                        (guchar **)&extents))
+                        gu_ex.gu_extents))
     {
       *left = extents [0];
       *right = extents [1];
@@ -413,7 +428,9 @@ request_frame_extents (GtkWidget *window)
 
   /* Check if the current window manager supports
      _NET_REQUEST_FRAME_EXTENTS. */
-  if (gdk_net_wm_supports (request_extents))
+  /* FIXME: The window->window != NULL check is a workaround for bug
+     http://bugzilla.gnome.org/show_bug.cgi?id=17952. */
+  if (gdk_net_wm_supports (request_extents) && window->window != NULL)
     {
       GdkDisplay *display = gtk_widget_get_display (window);
       Display *xdisplay = GDK_DISPLAY_XDISPLAY (display);
@@ -504,11 +521,12 @@ window_show_cb (GtkWidget *widget __attribute__((unused)),
 }
 
 static void
-window_active_state_change_cb (GtkWidget *widget,
-                               GParamSpec *pspec,
-                               jobject peer)
+window_active_state_change_cb (GtkWidget *widget __attribute__((unused)),
+			       GParamSpec *pspec __attribute__((unused)),
+			       jobject peer __attribute__((unused)))
 {
   /* FIXME: not sure if this is needed or not. */
+  /* Remove the unused attributes if you fix the below.  */
 #if 0
   if (GTK_WINDOW (widget)->is_active)
     (*gdk_env)->CallVoidMethod (gdk_env, peer,
@@ -525,8 +543,8 @@ window_active_state_change_cb (GtkWidget *widget,
 
 static void
 window_focus_state_change_cb (GtkWidget *widget,
-                              GParamSpec *pspec,
-                              jobject peer)
+			      GParamSpec *pspec __attribute__((unused)),
+			      jobject peer)
 {
   if (GTK_WINDOW (widget)->has_toplevel_focus)
     (*gdk_env)->CallVoidMethod (gdk_env, peer,
@@ -541,9 +559,9 @@ window_focus_state_change_cb (GtkWidget *widget,
 }
 
 static gboolean
-window_focus_in_cb (GtkWidget * widget,
-                   GdkEventFocus *event,
-                   jobject peer)
+window_focus_in_cb (GtkWidget * widget  __attribute__((unused)),
+		    GdkEventFocus *event  __attribute__((unused)),
+		    jobject peer)
 {
   (*gdk_env)->CallVoidMethod (gdk_env, peer,
                               postWindowEventID,
@@ -555,9 +573,9 @@ window_focus_in_cb (GtkWidget * widget,
 }
 
 static gboolean
-window_focus_out_cb (GtkWidget * widget,
-                    GdkEventFocus *event,
-                    jobject peer)
+window_focus_out_cb (GtkWidget * widget __attribute__((unused)),
+		     GdkEventFocus *event __attribute__((unused)),
+		     jobject peer)
 {
   (*gdk_env)->CallVoidMethod (gdk_env, peer,
                               postWindowEventID,
@@ -623,12 +641,15 @@ window_get_new_state (GtkWidget *widget)
   gulong atom_count;
   gulong bytes_after;
   Atom *atom_list = NULL;
+  union atom_list_union alu;
   gulong i;
 
-  XGetWindowProperty (GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (widget->window),
+  alu.atom_list = &atom_list;
+  XGetWindowProperty (GDK_DISPLAY_XDISPLAY (display), 
+		      GDK_WINDOW_XID (widget->window),
 		      gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_STATE"),
 		      0, G_MAXLONG, False, XA_ATOM, &type, &format, &atom_count,
-		      &bytes_after, (guchar **)&atom_list);
+		      &bytes_after, alu.gu_extents);
 
   if (type != None)
     {
@@ -657,6 +678,7 @@ window_property_changed_cb (GtkWidget *widget __attribute__((unused)),
                             jobject peer)
 {
   unsigned long *extents;
+  union extents_union gu_ex;
 
   static int id_set = 0;
   static jmethodID postInsetsChangedEventID;
@@ -671,7 +693,7 @@ window_property_changed_cb (GtkWidget *widget __attribute__((unused)),
 						      "(IIII)V");
       id_set = 1;
     }
-
+  gu_ex.extents = &extents;
   if (gdk_atom_intern ("_NET_FRAME_EXTENTS", FALSE) == event->atom
       && gdk_property_get (event->window,
                            gdk_atom_intern ("_NET_FRAME_EXTENTS", FALSE),
@@ -682,7 +704,7 @@ window_property_changed_cb (GtkWidget *widget __attribute__((unused)),
                            NULL,
                            NULL,
                            NULL,
-                           (guchar **)&extents))
+                           gu_ex.gu_extents))
     (*gdk_env)->CallVoidMethod (gdk_env, peer,
 				postInsetsChangedEventID,
 				(jint) extents[2],  /* top */

@@ -65,7 +65,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkTextLayout_initState
   gdk_threads_leave ();
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGlyphVector_setText
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkTextLayout_setText
   (JNIEnv *env, jobject self, jstring text)
 {
   struct textlayout *tl;

@@ -156,7 +156,7 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_gtkFixedSetVisible
 }
 
 JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkFramePeer_nativeSetIconImage
+Java_gnu_java_awt_peer_gtk_GtkFramePeer_nativeSetIconImageFromDecoder
   (JNIEnv *env, jobject obj, jobject decoder)
 {
   void *ptr;

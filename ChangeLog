@@ -1,10 +1,69 @@
 2004-10-27  Dalibor Topic  <robilad@kaffe.org>
 
-	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c,
-	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkFontMetrics.c,
-	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGlyphVector.c,
-	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c:
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkChoicePeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkClipboard.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMainThread.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkTextAreaPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gtkpeer.h:
 	Resynced with GNU Classpath.
+
+	2004-10-27  Mark Wielaard  <mark@klomp.org>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c
+        (Java_gnu_java_awt_peer_gtk_GdkTextLayout_setText): Installed and
+        and renamed from Java_gnu_java_awt_peer_gtk_GdkGlyphVector_setText.
+
+	2004-10-26  Mark Wielaard  <mark@klomp.org>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c
+        (Java_gnu_java_awt_peer_gtk_GdkGlyphVector_setText): Removed.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMainThread.c
+        (init_dpi_conversion_factor): Correct prototype.
+
+	2004-10-26  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c
+        (nativeSetIconImage): Rename to nativeSetIconImageFromDecoder.
+
+	2004-10-26  Andreas Tobler  <a.tobler@schweiz.ch>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c
+        (Java_gnu_java_awt_peer_gtk_GThreadNativeMethodRunner_nativeRun):
+        Fix pointer warning.
+
+	2004-10-26  Andreas Tobler  <a.tobler@schweiz.ch>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c
+        (Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_nativeSetFilenameFilter):
+        Fix pointer warning.
+
+        * native/jni/gtk-peer/gtkpeer.h: Introduce widget_union to fix type
+        punned warnings.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c
+        (Java_gnu_java_awt_peer_gtk_GdkGraphics_clearRect): Use widget_union
+        to fix type punned pointer warning.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c
+        (pre_event_handler): Likewise.
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+        (window_get_new_state): Introduce unions to fix warnings as above.
+        (window_property_changed_cb): Likewise.
+        (window_active_state_change_cb): Mark unused variables unused.
+        (window_focus_state_change_cb): Likewise.
+        (window_focus_in_cb): Likewise.
+        (window_focus_out_cb): Likewise.
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c
+        (Java_gnu_java_awt_peer_gtk_GdkFontPeer_setFont): Convert
+        PangoFontMap correctly with PANGO_FT2FONT_MAP macro.
 
 	2004-10-26  Andreas Tobler  <a.tobler@schweiz.ch>
 
@@ -38,6 +97,38 @@
 
         * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGlyphVector.c
         (seek_glyphstring_idx): Fix a C90 warning.
+
+2004-10-27  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkFontMetrics.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGlyphVector.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c:
+	Resynced with GNU Classpath.
+
+	2004-10-26  Andreas Tobler  <a.tobler@schweiz.ch>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c
+        (Java_gnu_java_awt_peer_gtk_GThreadNativeMethodRunner_nativeRun):
+        Mark unused arguments unused.
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGlyphVector.c
+        (Java_gnu_java_awt_peer_gtk_GdkGlyphVector_initState),
+        (Java_gnu_java_awt_peer_gtk_GdkGlyphVector_setGlyphCodes),
+        (Java_gnu_java_awt_peer_gtk_GdkGlyphVector_glyphCharIndex),
+        (Java_gnu_java_awt_peer_gtk_GdkGlyphVector_glyphIsHorizontal):
+        Likewise.
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontMetrics.c
+        (Java_gnu_java_awt_peer_gtk_GdkFontMetrics_getPeerFontMetrics),
+        (Java_gnu_java_awt_peer_gtk_GdkFontMetrics_getPeerTextMetrics):
+        Likewise.
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c
+        (Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_nativeSetFilenameFilter):
+        Likewise.
+        (filenameFilterCallback): Remove unused var.
+        (handle_response): Declare str_fileName and remove last else statement.
 
 2004-10-27  Dalibor Topic  <robilad@kaffe.org>
 

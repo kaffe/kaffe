@@ -279,7 +279,7 @@ JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkButtonPeer_setNativeBounds
   (JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height)
 {
-  GtkWidget *widget;
+  GtkWidget *widget, *child;
   void *ptr;
 
   ptr = NSA_GET_PTR (env, obj);
@@ -292,17 +292,17 @@ Java_gnu_java_awt_peer_gtk_GtkButtonPeer_setNativeBounds
      widget's natural size. */
   width = width < 0 ? 0 : width;
   height = height < 0 ? 0 : height;
+  child = gtk_bin_get_child (GTK_BIN (widget));
 
   if (!(width == 0 && height == 0))
     {
       /* Set the event box's size request... */
       gtk_widget_set_size_request (widget, width, height);
       /* ...and the button's size request... */
-      gtk_widget_set_size_request (gtk_bin_get_child (GTK_BIN (widget)),
-                                   width, height);
+      gtk_widget_set_size_request (child, width, height);
       /* ...and the label's size request. */
-      gtk_widget_set_size_request (gtk_bin_get_child (gtk_bin_get_child (GTK_BIN (widget))),
-                                                      width, height);
+      gtk_widget_set_size_request (gtk_bin_get_child (GTK_BIN (child)), width,
+						      height);
       if (widget->parent != NULL)
         gtk_fixed_move (GTK_FIXED (widget->parent), widget, x, y);
     }

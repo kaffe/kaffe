@@ -486,6 +486,13 @@ struct item_event_hook_info
   const char *label;
 };
 
+/* Union used for type punning. */
+union widget_union
+{
+  void **void_widget;
+  GtkWidget **widget;
+};
+
 #define DEBUG_LOCKING 0
 
 #if DEBUG_LOCKING

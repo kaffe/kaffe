@@ -130,7 +130,6 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_connectSignals
   (JNIEnv *env, jobject obj, jobject peer)
 {
   void *ptr;
-  jobject *gref;
 
   ptr = NSA_GET_PTR (env, peer);
 
@@ -420,13 +419,15 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics_clearRect
   struct graphics *g;
   GdkGCValues saved;
   GtkWidget *widget;
+  union widget_union w;
 
   g = (struct graphics *) NSA_GET_PTR (env, obj);
 
   gdk_threads_enter ();
   if (GDK_IS_WINDOW (g->drawable))
     {
-      gdk_window_get_user_data (GDK_WINDOW (g->drawable), (void **) &widget);
+      w.widget = &widget;
+      gdk_window_get_user_data (GDK_WINDOW (g->drawable), w.void_widget);
       if (widget == NULL || !GTK_IS_EVENT_BOX (widget))
         gdk_window_clear_area ((GdkWindow *) g->drawable,
                                x + g->x_offset, y + g->y_offset,
@@ -642,7 +643,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics_setClipRectangle
   gdk_threads_leave ();
 }
 
-static void realize_cb (GtkWidget *widget, jobject peer)
+static void realize_cb (GtkWidget *widget __attribute__ ((unused)), 
+			jobject peer)
 {
   gdk_threads_leave ();
 

@@ -99,14 +99,17 @@ area_updated (GdkPixbufLoader *loader,
   JNIEnv *env;
   union env_union e;
   jint stride_bytes, stride_pixels, n_channels, n_pixels;
-  int i;
   jintArray jpixels;  
   jint *java_pixels;
   guchar *gdk_pixels;
 
   GdkPixbuf *pixbuf_no_alpha = NULL;
   GdkPixbuf *pixbuf = NULL;
-  
+
+#ifndef WORDS_BIGENDIAN
+  int i;
+#endif
+
   pixbuf_no_alpha = gdk_pixbuf_loader_get_pixbuf (loader);
   if (pixbuf_no_alpha == NULL)
     return;
