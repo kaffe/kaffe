@@ -626,7 +626,10 @@ kaffe_io_SRCS = \
 	kaffe/io/ObjectOutputStreamImpl.java \
 	kaffe/io/ObjectStreamClassImpl.java \
 	kaffe/io/SerializationFactory.java \
-	kaffe/io/TmpFile.java
+	kaffe/io/TmpFile.java \
+	kaffe/io/StdInputStream.java \
+	kaffe/io/StdOutputStream.java \
+	kaffe/io/StdErrorStream.java
 kaffe_jar_SRCS = \
 	kaffe/jar/ExecJar.java \
 	kaffe/jar/ExecJarName.java

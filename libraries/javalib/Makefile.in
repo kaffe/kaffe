@@ -185,7 +185,7 @@ kaffe_awt_SRCS =  	kaffe/awt/ExportTransferable.java 	kaffe/awt/FlavorConverter.
 
 kaffe_beans_editors_SRCS =  	kaffe/beans/editors/BooleanEditor.java 	kaffe/beans/editors/ByteEditor.java 	kaffe/beans/editors/DoubleEditor.java 	kaffe/beans/editors/FloatEditor.java 	kaffe/beans/editors/IntegerEditor.java 	kaffe/beans/editors/LongEditor.java 	kaffe/beans/editors/ShortEditor.java 	kaffe/beans/editors/StringEditor.java
 
-kaffe_io_SRCS =  	kaffe/io/AccessibleBAOStream.java 	kaffe/io/ByteToChar8859_1.java 	kaffe/io/ByteToCharConverter.java 	kaffe/io/ByteToCharDefault.java 	kaffe/io/CharToByte8859_1.java 	kaffe/io/CharToByteConverter.java 	kaffe/io/CharToByteDefault.java 	kaffe/io/ClassLoaderObjectInputStream.java 	kaffe/io/ConverterAlias.java 	kaffe/io/DefaultSerializationFactory.java 	kaffe/io/NullOutputStream.java 	kaffe/io/ObjectInputStreamImpl.java 	kaffe/io/ObjectOutputStreamImpl.java 	kaffe/io/ObjectStreamClassImpl.java 	kaffe/io/SerializationFactory.java 	kaffe/io/TmpFile.java
+kaffe_io_SRCS =  	kaffe/io/AccessibleBAOStream.java 	kaffe/io/ByteToChar8859_1.java 	kaffe/io/ByteToCharConverter.java 	kaffe/io/ByteToCharDefault.java 	kaffe/io/CharToByte8859_1.java 	kaffe/io/CharToByteConverter.java 	kaffe/io/CharToByteDefault.java 	kaffe/io/ClassLoaderObjectInputStream.java 	kaffe/io/ConverterAlias.java 	kaffe/io/DefaultSerializationFactory.java 	kaffe/io/NullOutputStream.java 	kaffe/io/ObjectInputStreamImpl.java 	kaffe/io/ObjectOutputStreamImpl.java 	kaffe/io/ObjectStreamClassImpl.java 	kaffe/io/SerializationFactory.java 	kaffe/io/TmpFile.java 	kaffe/io/StdInputStream.java 	kaffe/io/StdOutputStream.java 	kaffe/io/StdErrorStream.java
 
 kaffe_jar_SRCS =  	kaffe/jar/ExecJar.java 	kaffe/jar/ExecJarName.java
 

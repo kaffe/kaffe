@@ -1,0 +1,28 @@
+/*
+ * Java core library component.
+ *
+ * Copyright (c) 1997, 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ */
+
+package kaffe.io;
+
+import java.io.OutputStream;
+import java.io.IOException;
+
+public class StdOutputStream
+  extends OutputStream {
+
+static {
+        System.loadLibrary("io");
+}
+
+public StdOutputStream() {
+}
+
+native public void write(int b) throws IOException;
+
+}
