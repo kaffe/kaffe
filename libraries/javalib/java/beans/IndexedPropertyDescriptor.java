@@ -50,7 +50,9 @@ public IndexedPropertyDescriptor(String propertyName, Method getter, Method sett
 	super(propertyName, getter, setter);
 	idxgetter = indexedGetter;
 	idxsetter = indexedSetter;
-	idxrettype = idxgetter.getReturnType();
+	/* idxgetter may be null if property is write-only */
+	if (idxgetter != null)
+		idxrettype = idxgetter.getReturnType();
 }
 
 public Class getIndexedPropertyType()

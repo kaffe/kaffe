@@ -1,3 +1,9 @@
+Fri Dec  4 13:51:58 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/beans/Introspector.java:
+	libraries/javalib/java/beans/IndexedPropertyDescriptor.java:
+	small fixes for mauve.
+
 Thu Dec  3 22:58:25 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/lang/StringBuffer.java: redid setLength
