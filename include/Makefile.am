@@ -77,7 +77,9 @@ INSTALL_JNI_DERIVED_HDRS =
 NOINSTALL_JNI_DERIVED_HDRS = \
 	java_math_BigInteger.h \
 	kaffe_io_ByteToCharDefault.h \
+	kaffe_io_ByteToCharIconv.h \
 	kaffe_io_CharToByteDefault.h \
+	kaffe_io_CharToByteIconv.h \
 	kaffe_lang_Application.h \
 	kaffe_lang_MemoryAdvice.h \
 	kaffe_lang_UNIXProcess.h \
