@@ -2,6 +2,8 @@ Sat Jul 10 17:42:52 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/String.java: optimize regionMatches()
 	* kaffe/kaffe/kaffevm/jit/machine.c: align profiling output columns
+	* libraries/javalib/java/net/URLStreamHandler.java: PR net/116: avoid
+	NullPointerException in toExternalForm() if host is null.
 
 Sat Jul 10 16:53:19 PDT 1999 Edouard G. Parmelan <edouard.parmelan@quadratec.fr>
 
