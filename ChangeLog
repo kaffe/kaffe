@@ -1,5 +1,14 @@
 2004-11-26  Dalibor Topic  <robilad@kaffe.org>
 
+	*  libraries/javalib/java/util/Timer.java:
+        Resynced with GNU Classpath.
+
+	2004-11-17  Michael Koch  <konqueror@gmx.de>
+
+        * java/util/Timer.java (DEFAULT_SIZE): Made static.
+
+2004-11-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/image/AffineTransformOp.java,
 	libraries/javalib/java/awt/image/ColorConvertOp.java,
 	libraries/javalib/java/awt/image/LookupOp.java,
