@@ -1,3 +1,21 @@
+Fri Dec 18 08:56:10 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/mem/gc-incremental.c: rename MARK_OBJECT to
+	MARK_OBJECT_PRECISE to make clear that it marks objects precisely
+	without invoking gc_heap_isobject.
+
+Fri Dec 18 08:45:05 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
+
+	* kaffe/kaffevm/readClassConfig.h: avoid allocating zero-length
+	Method arrays.
+	* kaffe/kaffevm/mem/gc-incremental.c: detect attempts to allocate
+	zero-sized objects.
+
+Fri Dec 18 08:43:05 1998  Leigh Stoller  <stoller@cs.utah.edu>
+
+	* kaffe/kaffevm/mem/gc-mem.c: fixed race condition where gc_heap_total
+	was incremented prematurely.  (This was only relevant for gcblock=mmap.)
+
 Fri Dec 18 01:29:10 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/mem/gc-incremental.c (walkPrimArray): defined to 
