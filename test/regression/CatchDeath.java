@@ -1,14 +1,19 @@
 public class CatchDeath implements Runnable
 {
+    boolean alwaysTrue()	{ return (true); }
+
     public void run()
     {
 	try {
-	    while (true)
+	    while (alwaysTrue())
 		Thread.yield();
+	    System.out.println("CatchDeath should not be here");
 	} catch(Error o) {
-	    System.out.println("Caught " + o);
+	    System.out.println("CD Caught " + o);
+	    System.out.flush();
 	    throw o;
 	}
+	System.out.println("Ditto, CatchDeath should not be here");
     }
 
     public static void main(String av[]) throws Exception
@@ -27,24 +32,28 @@ public class CatchDeath implements Runnable
 	    }
 	    Thread.sleep(500);
 	}
-	// This makes the test pass, but we don't know why it should..
-	// System.out.flush();
+	System.out.flush();
     }
 }
 
 class CatchSyncDeath implements Runnable
 {
+    boolean alwaysTrue()        { return (true); }
+
     public void run()
     {
 	try {
 	    synchronized(this) {
-		while (true)
+		while (alwaysTrue())
 		    Thread.yield();
 	    }
+	    System.out.println("CatchSyncDeath should not be here");
 	} catch(Error o) {
-	    System.out.println("Caught " + o);
+	    System.out.println("CSD Caught " + o);
+	    System.out.flush();
 	    throw o;
 	}
+	System.out.println("Ditto, CatchSyncDeath should not be here");
     }
 }
 
@@ -62,7 +71,8 @@ class CatchSyncWaitDeath implements Runnable
 	    }
 	    System.out.println("CatchSyncWaitDeath should not be here");
 	} catch(Error o) {
-	    System.out.println("Caught " + o);
+	    System.out.println("CSWD Caught " + o);
+	    System.out.flush();
 	    throw o;
 	}
 	System.out.println("Ditto, CatchSyncWaitDeath should not be here");
@@ -72,7 +82,7 @@ class CatchSyncWaitDeath implements Runnable
 
 // javac flags: -nowarn
 /* Expected Output:
-Caught java.lang.ThreadDeath
-Caught java.lang.ThreadDeath
-Caught java.lang.ThreadDeath
+CD Caught java.lang.ThreadDeath
+CSD Caught java.lang.ThreadDeath
+CSWD Caught java.lang.ThreadDeath
 */
