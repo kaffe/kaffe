@@ -1,5 +1,15 @@
 2005-02-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/exception.c (vmExcept_isJNIFrame,
+	vmExcept_JNIContains, vmExcept_setJNIFrame,
+	vmExcept_jumpToHandler, vmExcept_setSyncObj,
+	vmExcept_getSyncObj, vmExcept_setPC,
+	vmExcept_getPC): Moved over here from 
+	kaffe/kaffevm/exception.h, and made static when 
+	appropriate.
+
+2005-02-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/native/java_lang_ref_Reference.c
 	(Java_java_lang_ref_Reference_create):
 	Removed unused variables.

@@ -73,6 +73,75 @@ static void dispatchException(Hjava_lang_Throwable*, stackTraceInfo*) NONRETURNI
 
 static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, uintp*);
 
+bool
+vmExcept_isJNIFrame(VmExceptHandler* eh)
+{
+	assert(eh);
+	return (eh->meth == VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
+}
+
+static bool
+vmExcept_JNIContains(VmExceptHandler* eh, uintp fp)
+{
+	assert(eh);
+	assert(eh->meth == VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
+	assert(fp);
+
+	return (eh->frame.jni.fp == fp);
+}
+
+void 
+vmExcept_setJNIFrame(VmExceptHandler* eh, uintp fp)
+{
+	assert(eh);
+	assert(fp != 0);
+
+	eh->meth = VMEXCEPTHANDLER_KAFFEJNI_HANDLER;
+	eh->frame.jni.fp = fp;
+}
+
+static void
+vmExcept_jumpToHandler(VmExceptHandler* frame)
+{
+	JTHREAD_LONGJMP(frame->jbuf, 1);
+}
+
+void 
+vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj)
+{
+	assert(eh);
+	assert(eh->meth != 0);
+	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
+	eh->frame.intrp.syncobj = syncobj;
+}
+
+static struct Hjava_lang_Object*
+vmExcept_getSyncObj(VmExceptHandler* eh)
+{
+	assert(eh);
+	assert(eh->meth != 0);
+	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
+	return eh->frame.intrp.syncobj;
+}
+
+void 
+vmExcept_setPC(volatile VmExceptHandler* eh, u4 pc)
+{
+	assert(eh);
+	assert(eh->meth != 0);
+	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
+	eh->frame.intrp.pc = pc;
+}
+
+u4 
+vmExcept_getPC(const VmExceptHandler* eh)
+{
+	assert(eh);
+	assert(eh->meth != 0);
+	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
+	return eh->frame.intrp.pc;
+}
+
 /*
  * Create an exception from error information.
  */

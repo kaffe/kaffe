@@ -105,89 +105,11 @@ void unhandledException(struct Hjava_lang_Throwable *eobj) NONRETURNING;
 
 extern void initExceptions(void);
 
-static inline bool
-vmExcept_isJNIFrame(VmExceptHandler* eh)
-{
-	assert(eh);
-	return (eh->meth == VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
-}
-
-static inline bool
-vmExcept_JNIContains(VmExceptHandler* eh, uintp fp)
-{
-	assert(eh);
-	assert(eh->meth == VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
-	assert(fp);
-
-	return (eh->frame.jni.fp == fp);
-}
-
-static inline void 
-vmExcept_setJNIFrame(VmExceptHandler* eh, uintp fp)
-{
-	assert(eh);
-	assert(fp != 0);
-
-	eh->meth = VMEXCEPTHANDLER_KAFFEJNI_HANDLER;
-	eh->frame.jni.fp = fp;
-}
-
-static inline void
-vmExcept_jumpToHandler(VmExceptHandler* frame)
-{
-	JTHREAD_LONGJMP(frame->jbuf, 1);
-}
-
-static inline void 
-vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj)
-{
-	assert(eh);
-	assert(eh->meth != 0);
-	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
-	eh->frame.intrp.syncobj = syncobj;
-}
-
-static inline struct Hjava_lang_Object*
-vmExcept_getSyncObj(VmExceptHandler* eh)
-{
-	assert(eh);
-	assert(eh->meth != 0);
-	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
-	return eh->frame.intrp.syncobj;
-}
-
-static inline void 
-vmExcept_setMeth(VmExceptHandler* eh, struct _methods* meth)
-{
-	assert(eh);
-	assert(meth);
-	eh->meth = meth;
-}
-
-static inline struct _methods* 
-vmExcept_getMeth(VmExceptHandler* eh)
-{
-	assert(eh);
-	return eh->meth;
-}
-
-static inline void 
-vmExcept_setPC(volatile VmExceptHandler* eh, u4 pc)
-{
-	assert(eh);
-	assert(eh->meth != 0);
-	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
-	eh->frame.intrp.pc = pc;
-}
-
-static inline u4 
-vmExcept_getPC(const VmExceptHandler* eh)
-{
-	assert(eh);
-	assert(eh->meth != 0);
-	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
-	return eh->frame.intrp.pc;
-}
+bool vmExcept_isJNIFrame(VmExceptHandler* eh);
+void vmExcept_setJNIFrame(VmExceptHandler* eh, uintp fp);
+void vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj);
+void vmExcept_setPC(volatile VmExceptHandler* eh, u4 pc);
+u4 vmExcept_getPC(const VmExceptHandler* eh);
 
 #endif
 
