@@ -1,5 +1,11 @@
 2003-06-12 Dalibor Topic <robilad@yahoo.com>
 
+	* developers/autogen.sh:
+	Don't apply developers/getaddrinfo-socketinttypes-glibc2.diff,
+	simply use the patched up version.
+	
+2003-06-12 Dalibor Topic <robilad@yahoo.com>
+
 	Linux 2.0.x IPv6 support compilation fixes.
 
 	* aclocal.m4, config/config.h.in,
