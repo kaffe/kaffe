@@ -128,3 +128,18 @@ MISCELLANEOUS & TODO
   eternally to check maximum length of command line arguments. This is a
   bug of autoconf, and current workaround is to be patient (drinking coffe
   or going to bed) or use 'bash' rather than 'sh' distributed with the os.
+  (This was fixed in latest configure versions, so newer kaffe will configure faster.
+  Also note that running configure with -C will cache most reaults and help
+  reconfiguring on old machines)
+  
+* on some platforms GNU make may mysteriously fail when building java classes
+  from rt.jar. The reason is a too restrticted shell limit as probably make tries
+  to open too many file descriptors. Unlimit your shell (unlimit/limit in csh and
+  ulimit in bash). Known to be affected are darwin 5.x and 6.x standard limits.
+
+* on some platforms when the user has already spawned many processes "make check"
+  may fail due to insufficient system resources. Good ways to work this around
+  are stopping unneded processes, restarting the computer, logging out and in
+  again or once again unlimit your shell limits to the maximum allowed.
+  In case of problems try a combination of the above, unlimiting with a fresh and
+  idle system.
