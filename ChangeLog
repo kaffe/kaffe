@@ -1,3 +1,21 @@
+2003-05-26  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.h: 
+	moved everything into thread-internal.h; include that
+	file.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h: 
+	now contains all definitions of the unix-pthreads thread
+	system, even some docs. 
+	
+	* kaffe/kaffevm/systems/unix-pthreads/jthread.h: 
+	include thread-internal.h to fix compilation errors.
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.h,
+	kaffe/kaffevm/systems/unix-pthreads/lock-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	cleaned up and adapted to modified structure
+	
 2003-05-26 Dan MacMahill <mcmahill@mtl.mit.edu>
 
 	* kaffe/kaffevm/exception.c,

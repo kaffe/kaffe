@@ -17,9 +17,7 @@
 /* bring in thread-impl stuff by means of threads.h, to prevent us
  * from subsequently overloading the more specific macros by the generic ones
  */ 
-#include "thread.h"
-
-#include "thread-internal.h"
+#include "jthread.h"
 
 typedef pthread_mutex_t jmutex;
 typedef pthread_cond_t jcondvar;
@@ -61,7 +59,7 @@ static inline
 void
 jmutex_lock( jmutex* lk )
 {
-  nativeThread  *cur = GET_CURRENT_THREAD(&cur);
+  jthread_t cur = jthread_current ();
 
   cur->stackCur  = (void*)&cur;
   cur->blockState |= BS_MUTEX;

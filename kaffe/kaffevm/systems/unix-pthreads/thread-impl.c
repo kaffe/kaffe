@@ -8,50 +8,38 @@
  * of this file.
  */
 
-#include <pthread.h>
-#include <semaphore.h>
-#include <sched.h>
-
 #include "config.h"
 #include "config-std.h"
 #include "config-signal.h"
 
-#include "java_lang_Throwable.h"
-#include "gtypes.h"
-#include "thread.h"
-#include "gc.h"
-#include "jni.h"
 #include "locks.h"
-
-#define	DBG(X,Y)
-
-/* these are required for handling exceptions */
-#include "exception.h"
-
-#if defined(INTERPRETER)
-#define DEFINEFRAME()           /* Does nothing */
-#define EXCEPTIONPROTO          int sig
-#define EXCEPTIONFRAME(f, c)    /* Does nothing */
-#define EXCEPTIONFRAMEPTR       0
-#elif defined(TRANSLATOR)
-#define DEFINEFRAME()           exceptionFrame frame
-#define EXCEPTIONFRAMEPTR       &frame
-#endif /* TRANSLATOR */
-
-/* Some systems need special setups for the exception handling */
-#if !defined(EXCEPTIONSTART)
-#define EXCEPTIONSTART()
-#endif
-#if !defined(EXCEPTIONEND)
-#define EXCEPTIONEND()
-#endif
+#include "thread-impl.h"
+#include "debug.h"
 
 #if defined(KAFFE_VMDEBUG)
-char stat_act[]   = { ' ', 'a' };
-char stat_susp[]  = { ' ', 's', ' ', 'r', ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
-char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', ' ' };
-#endif
+static char stat_act[]   = { ' ', 'a' };
+static char stat_susp[]  = { ' ', 's', ' ', 'r', ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
+static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', ' ' };
 
+
+#define TMSG_SHORT(_msg,_nt)     \
+   dprintf(_msg" %p [tid:%4ld, java:%p]\n", \
+    _nt, _nt->tid, _nt->jlThread)
+
+#define TMSG_LONG(_msg,_nt)      \
+   dprintf(_msg" %p [tid:%4ld, java:%p], stack [%p..%p..%p], state: %c%c%c\n",         \
+        _nt, _nt->tid, _nt->jlThread, _nt->stackMin, _nt->stackCur, _nt->stackMax,  \
+        stat_act[_nt->active], stat_susp[_nt->suspendState], stat_block[_nt->blockState])
+
+#define CHECK_CURRENT_THREAD(_nt)                                          \
+  if ( ((uintp) &_nt < (uintp) _nt->stackMin) ||           \
+       ((uintp) &_nt > (uintp) _nt->stackMax) ) {          \
+    printf( "?? inconsistent current thread: %x [tid: %d, java: %x]\n",    \
+                    _nt, _nt->tid, _nt->jlThread);                                   \
+    tDump();                                                               \
+  }
+
+#endif /* KAFFE_VMDEBUG */
 
 /***********************************************************************
  * typedefs & defines
@@ -111,77 +99,144 @@ char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', ' ' };
  */
 
 /* We keep a list of all active threads, so that we can enumerate them */
-nativeThread     *activeThreads;
+static jthread_t	activeThreads;
 
 /* We don't throw away threads when their user func terminates, but suspend
  * and cache them for later re-use */
-nativeThread     *cache;
+static jthread_t	cache;
 
 /* The notorious first thread, which has to be handled differently because
  * it isn't created explicitly */
-nativeThread     *firstThread;
+static jthread_t	firstThread;
 
 /* Number of active non-daemon threads (the last terminating nonDaemon
  * causes the process to shut down */
-int              nonDaemons;
+static int		nonDaemons;
 
 /* Number of system threads (either running (activeThreads) or
  * blocked (cache). We need this to implement our own barrier, since
  * many kernel thread systems don't behave graceful on exceeding their limit */
-int              nSysThreads;
+static int		nSysThreads;
 
 /* number of currently cached threads */
-int              nCached;
+static int		nCached;
 
 /* map the Java priority levels to whatever the pthreads impl gives us */
-int              priorities[java_lang_Thread_MAX_PRIORITY];
+static int		*priorities;
 
 /* thread-specific-data key to retrieve 'nativeData' */
-pthread_key_t    ntKey;
+pthread_key_t		ntKey;
 
 /* our lock to protect list manipulation/iteration */
-static iLock*    tLock;
+static iLock		*tLock;
 
 /* a hint to avoid unnecessary pthread_creates (with pending exits) */
-volatile int     pendingExits;
+static volatile int	pendingExits;
 
 /* level of critical sections (0 = none) */
-int              critSection;
+static int		critSection;
 
 /* helper semaphore to signal completion of critical section enter/exit */
-sem_t            critSem;
+static sem_t		critSem;
 
-sigset_t         suspendSet;
+static sigset_t		suspendSet;
 
 /* an optional deadlock watchdog thread (not in the activeThread list),
- * activated by KAFFE_VMDEBUG topic vm_thread */
-pthread_t        deadlockWatchdog;
+ * activated by KAFFE_VMDEBUG topic JTHREAD */
+#ifdef KAFFE_VMDEBUG
+static pthread_t	deadlockWatchdog;
+#endif /* KAFFE_VMDEBUG */
 
-
-void suspend_signal_handler ( int sig );
-void resume_signal_handler ( int sig );
-static void tDispose ( nativeThread* nt );
+static void suspend_signal_handler ( int sig );
+static void resume_signal_handler ( int sig );
+static void tDispose ( jthread_t nt );
 
 static void* (*thread_malloc)(size_t);
 static void (*thread_free)(void*);
 
-extern void nullException(int);
+#define TLOCK(_nt) do { \
+   (_nt)->blockState |= BS_THREAD; \
+   lockStaticMutex (&tLock); \
+} while(0)
 
-#define LOCKSLOT  int iLockRoot
-#define TLOCK(_nt) do {            \
-  (_nt)->blockState |= BS_THREAD;  \
-  lockStaticMutex(&tLock);         \
-} while (0)
-
-#define TUNLOCK(_nt) do {          \
-  unlockStaticMutex(&tLock);       \
+#define TUNLOCK(_nt) do { \
+   unlockStaticMutex (&tLock); \
   (_nt)->blockState &= ~BS_THREAD; \
-} while (0)
-
+} while(0)
 
 /***********************************************************************
  * internal functions
  */
+
+
+/*
+ * dump a thread list, marking the supposed to be current thread
+ */
+void
+tDumpList ( jthread_t cur, jthread_t list )
+{
+  int		i;
+  char		a1, a2, a3;
+  jthread_t	t;
+
+  for ( t=list, i=0; t; t=t->next, i++ ){
+	/* the supposed to be current thread? */
+	a1 = (t == cur) ? '*' : ' ';
+	/* the current thread from a stack point-of view? */
+	a2 = (((uintp)&i > (uintp)t->stackMin) &&
+		  ((uintp)&i < (uintp)t->stackMax)) ? 'S' : ' ';
+	/* the first one? */
+	a3 = (t == firstThread) ? '1' : ' ';
+
+	dprintf("%4d: %c%c%c %c%c%c   %p [tid: %4ld, java: %p]  "
+		"stack: [%p..%p..%p]\n",
+		i, a1, a2, a3,
+		stat_act[t->active], stat_susp[t->suspendState], stat_block[t->blockState],
+		t, t->tid, t->jlThread,
+		t->stackMin, t->stackCur, t->stackMax);
+  }
+}
+
+/*
+ * dump the state of the threading system
+ */
+void
+tDump (void)
+{
+  DBG(JTHREAD, {
+	jthread_t	cur = jthread_current();
+	void		*lock   = tLock;
+	void		*holder = tLock->holder;
+	void		*mux    = tLock->mux;
+	//void		*muxNat = tLock->mux ? unhand(tLock->mux)->PrivateInfo : 0;
+	void		*cv     = tLock->cv;
+	//void		*cvNat  = tLock->cv ? unhand(tLock->cv)->PrivateInfo : 0;
+	int		iLockRoot;	
+
+	TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
+
+	dprintf("\n======================== thread dump =========================\n");
+
+	dprintf("state:  nonDaemons: %d, critSection: %d\n",
+					 nonDaemons, critSection);
+	/*
+	dprintf("tLock:       %p [holder: %p, mux: %p (native: %p), cv: %p (native: %p)]\n",
+					 lock, holder, mux, muxNat, cv, cvNat);
+	*/
+	dprintf("tLock:	      %p [holder: %p, mux: %p, cv: %p]\n",
+				lock, holder, mux, cv);
+
+	dprintf("active threads:\n");
+	tDumpList( cur, activeThreads);
+
+	dprintf("\ncached threads:\n");
+	tDumpList( cur, cache);
+
+	dprintf("====================== end thread dump =======================\n");
+
+	TUNLOCK( cur); /* ------------------------------------------------------ tLock */
+  })
+}
 
 /*
  * On demand debug signal to dump the current thread state(s) (requested
@@ -193,77 +248,11 @@ dump_signal_handler ( int sig )
   tDump();
 }
 
-/*
- * dump a thread list, marking the supposed to be current thread
- */
-void
-tDumpList ( nativeThread *cur, nativeThread* list )
-{
-  int             i;
-  char            a1, a2, a3;
-  nativeThread    *t;
-
-  for ( t=list, i=0; t; t=t->next, i++ ){
-	/* the supposed to be current thread? */
-	a1 = (t == cur) ? '*' : ' ';
-	/* the current thread from a stack point-of view? */
-	a2 = (((uintp)&i > (uintp)t->stackMin) &&
-		  ((uintp)&i < (uintp)t->stackMax)) ? 'S' : ' ';
-	/* the first one? */
-	a3 = (t == firstThread) ? '1' : ' ';
-
-	DBG( vm_thread, ("%4d: %c%c%c %c%c%c   %p [tid: %4d, java: %p]  "
-					 "stack: [%p..%p..%p]\n",
-					 i, a1, a2, a3,
-					 stat_act[t->active], stat_susp[t->suspendState], stat_block[t->blockState],
-					 t, t->tid, t->thread,
-					 t->stackMin, t->stackCur, t->stackMax));
-  }
-}
-
-/*
- * dump the state of the threading system
- */
-void
-tDump (void)
-{
-  DBG_ACTION( vm_thread, {
-	nativeThread     *cur = pthread_getspecific( ntKey);
-	void             *lock   = tLock;
-	void             *holder = tLock->holder;
-	void             *mux    = tLock->mux;
-	void             *muxNat = tLock->mux ? unhand(tLock->mux)->PrivateInfo : 0;
-	void             *cv     = tLock->cv;
-	void             *cvNat  = tLock->cv ? unhand(tLock->cv)->PrivateInfo : 0;
-
-	TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
-
-	DBG( vm_thread,("\n======================== thread dump =========================\n"));
-
-	DBG( vm_thread, ("state:  nonDaemons: %d, critSection: %d\n",
-					 nonDaemons, critSection));
-
-	DBG( vm_thread, ("tLock:       %p [holder: %p, mux: %p (native: %p), cv: %p (native: %p)]\n",
-					 lock, holder, mux, muxNat, cv, cvNat));
-
-	DBG( vm_thread, ("active threads:\n"));
-	tDumpList( cur, activeThreads);
-
-	DBG( vm_thread, ("\ncached threads:\n"));
-	tDumpList( cur, cache);
-
-	DBG( vm_thread, ("====================== end thread dump =======================\n"));
-
-	TUNLOCK( cur); /* ------------------------------------------------------ tLock */
-  });
-}
-
-
+#ifdef KAFFE_VMDEBUG
 static
-void*
-tWatchdogRun (void* p)
+void* tWatchdogRun (void* p)
 {
-  nativeThread *t;
+  jthread_t t;
   int life;
 
   while ( nonDaemons ) {
@@ -281,7 +270,7 @@ tWatchdogRun (void* p)
 	}
 
 	if ( !life ) {
-	  DBG( vm_thread, ("deadlock\n"));
+	  DBG( JTHREAD, dprintf("deadlock\n"))
 	  tDump();
 	  ABORT();
 	}
@@ -292,8 +281,7 @@ tWatchdogRun (void* p)
   return 0;
 }
 
-void
-tStartDeadlockWatchdog (void)
+void tStartDeadlockWatchdog (void)
 {
   pthread_attr_t attr;
   struct sched_param sp;
@@ -306,7 +294,7 @@ tStartDeadlockWatchdog (void)
 
   pthread_create( &deadlockWatchdog, &attr, tWatchdogRun, 0);
 }
-
+#endif /* KAFFE_VMDEBUG */
 
 
 /***********************************************************************
@@ -319,7 +307,7 @@ tStartDeadlockWatchdog (void)
 void
 tInitSignalHandlers (void)
 {
-  struct sigaction sigSuspend, sigResume, sigSegv, sigDump;
+  struct sigaction sigSuspend, sigResume, sigDump;
   unsigned int flags = 0;
 
 #if defined(SA_RESTART)
@@ -351,17 +339,6 @@ tInitSignalHandlers (void)
   sigemptyset( &sigDump.sa_mask);
   sigaction( SIG_DUMP, &sigDump, NULL);
 #endif
-
-  sigSegv.sa_flags = flags;
-#if defined(SA_SIGINFO)
-  sigSegv.sa_flags |= SA_SIGINFO;
-#endif
-#if defined(SA_NOMASK)
-  sigSegv.sa_flags |= SA_NOMASK;
-#endif
-  sigSegv.sa_handler = (void(*)(int)) nullException;
-  sigemptyset( &sigSegv.sa_mask);
-  sigaction( SIGSEGV, &sigSegv, NULL);
 }
 
 /*
@@ -369,20 +346,18 @@ tInitSignalHandlers (void)
  * are implementation dependent)
  */
 static
-void
-tMapPriorities (void)
+void tMapPriorities (int npr)
 {
-  int     d, min, max, n, i;
+  int     d, min, max, i;
   float   r;
 
   min = sched_get_priority_min( SCHEDULE_POLICY);
   max = sched_get_priority_max( SCHEDULE_POLICY);
 
   d = max - min;
-  n = sizeof(priorities) / sizeof(priorities[0]);
-  r = (float)d / (float)n;
+  r = (float)d / (float)npr;
 
-  for ( i=0; i<n; i++ ) {
+  for ( i=0; i<npr; i++ ) {
 	priorities[i] = (int)(i*r + 0.5) + min;
   }
 }
@@ -393,7 +368,7 @@ tMapPriorities (void)
  */
 static
 void
-tInitLock ( nativeThread* nt )
+tInitLock ( jthread_t nt )
 {
   /* init a non-shared (process-exclusive) semaphore with value '0' */
   sem_init( &nt->sem, 0, 0);
@@ -407,12 +382,12 @@ static
 void
 tSetupFirstNative(void)
 {
-  nativeThread* nt;
+  jthread_t nt;
 
   /*
    * We need to have a native thread context available as soon as possible.
    */
-  nt = thread_malloc( sizeof(nativeThread));
+  nt = thread_malloc( sizeof(struct _nativeThread));
   nt->tid = pthread_self();
   pthread_setspecific( ntKey, nt);
   nt->stackMin  = (void*)0;
@@ -432,7 +407,7 @@ jthread_init(int pre,
         void (*_onstop)(void),
         void (*_ondeadlock)(void))
 {
-  DBG( vm_thread, ("initialized\n"));
+  DBG(JTHREAD, dprintf("initialized\n"))
 
   thread_malloc = _allocator;
   thread_free = _deallocator;
@@ -440,7 +415,9 @@ jthread_init(int pre,
   pthread_key_create( &ntKey, NULL);
   sem_init( &critSem, 0, 0);
 
-  tMapPriorities();
+  priorities = (int *)_allocator ((maxpr+1) * sizeof(int));
+
+  tMapPriorities(maxpr+1);
   tInitSignalHandlers();
 
   sigfillset( &suspendSet);
@@ -448,28 +425,27 @@ jthread_init(int pre,
 
   tSetupFirstNative();
 
-  DBG_ACTION( vm_thread, { tStartDeadlockWatchdog(); });
+  DBG( JTHREAD, tStartDeadlockWatchdog() )
 }
 
-nativeThread*
+jthread_t
 jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThread)
 {
-  Hjava_lang_Thread* thread;
-  nativeThread* nt;
+  jthread_t      nt;
   int            oldCancelType;
 
-  thread = (Hjava_lang_Thread*)jlThread;
-  nt = GET_CURRENT_THREAD( &nt );
+  nt = jthread_current();
 
   /* we can't use nt->attr, because it wasn't used to create this thread */
   pthread_attr_init( &nt->attr);
 
   nt->tid    = pthread_self();
-  nt->thread = thread;
+  nt->jlThread = jlThread;
   nt->suspendState = 0;
   nt->active = 1;
   nt->func   = NULL;
   nt->next   = NULL;
+  nt->daemon = false;
 
   /* Get stack boundaries. Note that this is just an approximation
    * which should cover all gc-relevant stack locations
@@ -482,7 +458,7 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
   nt->stackMin  = (void*) ((uintp) nt->stackMax - mainThreadStackSize);
 #endif
 
-  DBG( vm_thread, TMSG_SHORT( "create first ", nt));
+  DBG( JTHREAD, TMSG_SHORT( "create first ", nt))
 
   /* init our cv and mux fields for locking */
   tInitLock( nt);
@@ -492,7 +468,6 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
    * data straight away
    */
   pthread_setspecific( ntKey, nt);
-  unhand(thread)->PrivateInfo = (struct Hkaffe_util_Ptr*)nt;
   pthread_setcanceltype( PTHREAD_CANCEL_ASYNCHRONOUS, &oldCancelType);
 
   /* if we aren't the first one, we are in trouble */
@@ -513,14 +488,13 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
  * the recycle looping than Texit (would be strange to loop in there)
  */
 static
-void*
-tRun ( void* p )
+void* tRun ( void* p )
 {
-  nativeThread     *cur = (nativeThread*)p;
-  nativeThread     *t;
-  size_t           ss;
-  int              oldCancelType;
-  int		   iLockRoot;
+  jthread_t	cur = (jthread_t)p;
+  jthread_t	t;
+  size_t	ss;
+  int		oldCancelType;
+  int		iLockRoot;
 
   /* get the stack boundaries */
   pthread_attr_getstacksize( &cur->attr, &ss);
@@ -543,13 +517,13 @@ tRun ( void* p )
   sem_post( &cur->sem);
 
   while ( 1 ) {
-	DBG( vm_thread, TMSG_LONG( "calling user func of: ", cur));
+	DBG( JTHREAD, TMSG_LONG( "calling user func of: ", cur))
 
 	/* Now call our thread function, which happens to be firstStartThread(),
 	 * which will call TExit before it returns */
-	cur->func(cur->thread);
+	cur->func(cur->jlThread);
 
-	DBG( vm_thread, TMSG_LONG( "exiting user func of: ", cur));
+	DBG( JTHREAD, TMSG_LONG( "exiting user func of: ", cur))
 
 	TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
 
@@ -564,8 +538,7 @@ tRun ( void* p )
 	}
 
 	/* unlink Java and native thread */
-	unhand(cur->thread)->PrivateInfo = 0;
-	cur->thread = 0;
+	cur->jlThread = 0;
 	cur->suspendState = 0;
 
 	/* link into cache list (if still within limit) */
@@ -573,7 +546,7 @@ tRun ( void* p )
 	  cur->next = cache;
 	  cache = cur;
 
-	  DBG( vm_thread, TMSG_SHORT( "cached thread ", cur));
+	  DBG( JTHREAD, TMSG_SHORT( "cached thread ", cur))
 	}
 
 	pendingExits--;
@@ -592,7 +565,7 @@ tRun ( void* p )
 	 * we have already been moved back to the activeThreads list by
 	 * Tcreate (saves us a lock)
 	 */
-	DBG( vm_thread, TMSG_SHORT( "reused thread ", cur));
+	DBG( JTHREAD, TMSG_SHORT( "reused thread ", cur))
   }
 
   tDispose( cur);
@@ -623,14 +596,13 @@ tRun ( void* p )
  *           Kaffe_ThreadInterface.exit == Texit
  */
 
-nativeThread*
+jthread_t
 jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size_t threadStackSize )
 {
-  nativeThread         *cur = GET_CURRENT_THREAD( &self);
-  nativeThread         *nt;
-  struct sched_param   sp;
-  Hjava_lang_Thread*   thread = (Hjava_lang_Thread*)jlThread;
-  int		       iLockRoot;
+  jthread_t		cur = jthread_current();
+  jthread_t		nt;
+  struct sched_param	sp;
+  int			iLockRoot;
 
   /* if we are the first one, it's seriously broken */
   assert( activeThreads != 0 );
@@ -646,8 +618,9 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 	  sched_yield();
   }
 
-  sp.sched_priority = priorities[unhand(thread)->priority];
-  if ( !unhand(thread)->daemon )
+  sp.sched_priority = priorities[pri];
+ 
+  if ( !daemon ) 
 	nonDaemons++;
 
   if ( cache ) {
@@ -661,14 +634,14 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 	nt->next = activeThreads;
 	activeThreads = nt;
 
-	nt->thread = thread;
+	nt->jlThread = jlThread;
+	nt->daemon = daemon;
 	nt->func = func;
 	nt->stackCur = 0;
-	unhand(thread)->PrivateInfo = (struct Hkaffe_util_Ptr*)nt;
 
 	pthread_setschedparam( nt->tid, SCHEDULE_POLICY, &sp);
 
-	DBG( vm_thread, TMSG_SHORT( "create recycled ", nt));
+	DBG( JTHREAD, TMSG_SHORT( "create recycled ", nt))
 
 	/* resurrect it */
 	nt->active = 1;
@@ -679,27 +652,25 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
   else {
 	if ( nSysThreads++ > MAX_SYS_THREADS ){
 	  // bail out, we exceeded our physical thread limit
-	  DBG( vm_thread, ( "too many threads (%d)\n", nSysThreads));
+	  DBG( JTHREAD, dprintf( "too many threads (%d)\n", nSysThreads))
 	  return (0);
 	}
 
-	nt = thread_malloc( sizeof(nativeThread) );
+	nt = thread_malloc( sizeof(struct _nativeThread) );
 
 	pthread_attr_init( &nt->attr);
 	pthread_attr_setschedparam( &nt->attr, &sp);
 	pthread_attr_setschedpolicy( &nt->attr, SCHEDULE_POLICY);
 	pthread_attr_setstacksize( &nt->attr, threadStackSize);
 
-	nt->thread       = thread;
+	nt->jlThread       = jlThread;
 	nt->func         = func;
 	nt->suspendState = 0;
 	nt->stackMin     = 0;
 	nt->stackMax     = 0;
 	nt->stackCur     = 0;
 
-	unhand(thread)->PrivateInfo = (struct Hkaffe_util_Ptr*)nt;
-
-	DBG( vm_thread, TMSG_SHORT( "create new ", nt));
+	DBG( JTHREAD, TMSG_SHORT( "create new ", nt))
 
 	/* init our cv and mux fields for locking */
 	tInitLock( nt);
@@ -740,8 +711,7 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
  * is not cached
  */
 static
-void
-tDispose ( nativeThread* nt )
+void tDispose ( jthread_t nt )
 {
   pthread_detach( nt->tid);
 
@@ -757,11 +727,9 @@ tDispose ( nativeThread* nt )
 void
 jthread_exit ( void )
 {
-  Hjava_lang_Thread    *thread = tCurrentJava();
-  nativeThread         *cur = NATIVE_THREAD( thread);
-  nativeThread         *t;
-  int		       iLockRoot;
-
+  jthread_t	cur = jthread_current();
+  jthread_t	t;
+  int		iLockRoot;
   /*
    * We are leaving the thread user func, which means we are not
    * subject to GC, anymore (has to be marked here because the first thread
@@ -769,14 +737,15 @@ jthread_exit ( void )
    */
   cur->active = 0;
 
-  DBG( vm_thread, TMSG_SHORT( "exit ", cur));
+  DBG( JTHREAD, TMSG_SHORT( "exit ", cur))
+  DBG( JTHREAD, dprintf("exit with %d non daemons (%x)\n", nonDaemons, cur->daemon))
 
-  if ( !unhand(thread)->daemon ){
+  if ( !cur->daemon ) {
 	/* the last non daemon should shut down the process */
 	if ( --nonDaemons == 0 ) {
 	  TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
 
-	  DBG( vm_thread, ("exit on last nonDaemon\n"));
+	  DBG( JTHREAD, dprintf("exit on last nonDaemon\n"))
 
 	  /*
 	   * be a nice citizen, try to cancel all other threads before we
@@ -847,11 +816,9 @@ jthread_exit ( void )
  * Thread is being finalized - free any held resource.
  */
 void
-jthread_destroy (nativeThread* cur)
+jthread_destroy (jthread_t cur)
 {
-  DBG_ACTION( vm_thread, {
-	DBG( vm_thread, TMSG_SHORT( "finalize ", cur));
-  });
+  DBG( JTHREAD, TMSG_SHORT( "finalize ", cur))
 }
 
 
@@ -864,15 +831,15 @@ jthread_destroy (nativeThread* cur)
  * called directly, we can assume that 'prio' is within [MIN_PRIORITY..MAX_PRIORITY]
  */
 void
-jthread_setpriority (nativeThread* cur, jint prio)
+jthread_setpriority (jthread_t cur, jint prio)
 {
   struct sched_param   sp;
 
   if ( cur ) {
 	sp.sched_priority = priorities[prio];
 
-	DBG( vm_thread, ("set priority: %p [tid: %d, java: %x) to %d (%d)\n",
-					 cur, cur->tid, cur->thread, prio, priorities[prio]));
+	DBG( JTHREAD, dprintf("set priority: %p [tid: %4ld, java: %p) to %d (%d)\n",
+			      cur, cur->tid, cur->jlThread, prio, priorities[prio]))
 	pthread_setschedparam( cur->tid, SCHEDULE_POLICY, &sp);
   }
 }
@@ -893,9 +860,9 @@ jthread_setpriority (nativeThread* cur, jint prio)
 void
 suspend_signal_handler ( int sig )
 {
-  nativeThread  *cur = GET_CURRENT_THREAD(&cur);
+  jthread_t   cur = jthread_current();
 
-  DBG( vm_thread_sig, ("suspend signal handler: %p\n", cur));
+  DBG( JTHREADDETAIL, dprintf("suspend signal handler: %p\n", cur))
 
   /* signals are global things and might come from everywhere, anytime */
   if ( !cur || !cur->active )
@@ -913,7 +880,7 @@ suspend_signal_handler ( int sig )
 	/* freeze until we get a subsequent SIG_RESUME */
 	sigsuspend( &suspendSet);
 
-	DBG( vm_thread_sig, ("sigsuspend return: %p\n", cur));
+	DBG( JTHREADDETAIL, dprintf("sigsuspend return: %p\n", cur))
 
 	cur->stackCur     = 0;
 	cur->suspendState = 0;
@@ -946,17 +913,18 @@ resume_signal_handler ( int sig )
 void
 jthread_suspendall (void)
 {
-  int           stat;
-  nativeThread  *cur = GET_CURRENT_THREAD( &cur);
-  nativeThread  *t;
+  int		stat;
+  jthread_t	cur = jthread_current();
+  jthread_t	t;
   int		iLockRoot;
+ 
   //int           nSuspends;
 
   /* don't allow any new thread to be created or recycled until this is done */
   TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
 
-  DBG( vm_thread, ("enter crit section[%d] from: %p [tid:%d, java:%p)\n",
-				   critSection, cur, cur->tid, cur->thread));
+  DBG( JTHREAD, dprintf("enter crit section[%d] from: %p [tid:%4ld, java:%p)\n",
+			critSection, cur, cur->tid, cur->jlThread))
 
   if ( ++critSection == 1 ){
 	//nSuspends = 0;
@@ -968,12 +936,12 @@ jthread_suspendall (void)
 	   * than the thread lock (which we soon release)
 	   */
 	  if ( (t != cur) && (t->suspendState == 0) && (t->active) ) {
-		DBG( vm_thread_sig, ("signal suspend: %p (susp: %d blk: %d)\n",
-							 t, t->suspendState, t->blockState));
+		DBG( JTHREADDETAIL, dprintf("signal suspend: %p (susp: %d blk: %d)\n",
+					    t, t->suspendState, t->blockState))
 		t->suspendState = SS_PENDING_SUSPEND;
 
 		if ( (stat = pthread_kill( t->tid, SIG_SUSPEND)) ){
-		  DBG( vm_thread, ("error sending SUSPEND signal to %p: %d\n", t, stat));
+		  DBG( JTHREAD, dprintf("error sending SUSPEND signal to %p: %d\n", t, stat))
 		}
 		else {
 		  //nSuspends++;
@@ -998,7 +966,7 @@ jthread_suspendall (void)
 
   TUNLOCK( cur); /* ------------------------------------------------------ tLock */
 
-  DBG( vm_thread, ( "critical section (%d) established\n", critSection))
+  DBG( JTHREAD, dprintf("critical section (%d) established\n", critSection))
 }
 
 
@@ -1009,9 +977,9 @@ jthread_suspendall (void)
 void
 jthread_unsuspendall (void)
 {
-  nativeThread  *cur = GET_CURRENT_THREAD( &cur);
-  nativeThread *t;
-  int          stat;
+  jthread_t	cur = jthread_current();
+  jthread_t	t;
+  int		stat;
   int		iLockRoot;
   //int          nResumes;
 
@@ -1030,13 +998,13 @@ jthread_unsuspendall (void)
 	  if ( t->suspendState & (SS_PENDING_SUSPEND | SS_SUSPENDED) ){
 		//nResumes++;
 
-		DBG( vm_thread, ("signal resume: %p (sus: %d blk: %d)\n",
-						 t, t->suspendState, t->blockState));
+		DBG( JTHREAD, dprintf("signal resume: %p (sus: %d blk: %d)\n",
+				      t, t->suspendState, t->blockState))
 
 		t->suspendState = SS_PENDING_RESUME;
 		stat = pthread_kill( t->tid, SIG_RESUME);
 		if ( stat ) {
-		  DBG( vm_thread, ("error sending RESUME signal to %p: %d\n", t, stat));
+		  DBG( JTHREAD, dprintf("error sending RESUME signal to %p: %d\n", t, stat))
 		}
 
 		/* ack wait workaround, see TentercritSect remarks */
@@ -1055,7 +1023,7 @@ jthread_unsuspendall (void)
 	TUNLOCK( cur); /*----------------------------------------------------- tLock */
   }
 
-  DBG( vm_thread, ("exit crit section (%d)\n", critSection));
+  DBG( JTHREAD, dprintf("exit crit section (%d)\n", critSection))
 }
 
 
@@ -1080,15 +1048,15 @@ jthread_unsuspendall (void)
 void
 jthread_walkLiveThreads (void(*func)(void*))
 {
-  nativeThread *t;
+  jthread_t t;
 
-  DBG( vm_thread, ("start walking threads\n"));
+  DBG( JTHREAD, dprintf("start walking threads\n"))
 
   for ( t = activeThreads; t != NULL; t = t->next) {
-	func((void*)t->thread);
+	func(t->jlThread);
   }
 
-  DBG( vm_thread, ("end walking threads\n"));
+  DBG( JTHREAD, dprintf("end walking threads\n"))
 }
 
 #if 0
@@ -1145,9 +1113,6 @@ TwalkThread ( Hjava_lang_Thread* thread )
 	tDump();
 	ABORT();
   }
-
-  markObject( unhand(thread)->jnireferences);
-  markObject( unhand(thread)->exceptObj);
 
 #if defined(STACK_GROWS_UP)
   base = nt->stackMin;

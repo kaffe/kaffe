@@ -8,13 +8,9 @@
  * of this file.
  */
 
-#include <pthread.h>
-
 #include "config.h"
 #include "config-std.h"
-#include "gtypes.h"
 
-#include "thread.h"
 #include "lock-impl.h"
 
 /*
@@ -24,7 +20,7 @@
 jboolean
 jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 {
-  nativeThread    *cur = GET_CURRENT_THREAD(&cur);
+  jthread_t cur = jthread_current();
   int             stat;
   struct timespec abst;
   struct timeval  now;
@@ -44,7 +40,12 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 	gettimeofday( &now, 0);
 	abst.tv_sec = now.tv_sec + (timeout / 1000);
 	abst.tv_nsec = (now.tv_usec * 1000) + (timeout % 1000) * 1000000;
- 
+
+        if (abst.tv_nsec > 1000000000) {
+                abst.tv_sec  += 1;
+                abst.tv_nsec -= 1000000000;
+        }
+
 	cur->blockState |= BS_CV_TO;
 	stat = pthread_cond_timedwait( cv, mux, &abst);
 	cur->blockState &= ~BS_CV_TO;

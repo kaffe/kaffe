@@ -14,8 +14,26 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-#include "java_lang_Thread.h"
+#include "gtypes.h"
 
+#if !defined(STACKREDZONE)
+#define STACKREDZONE    8192
+#endif
+
+/* suspend states (these are exclusive) */
+typedef enum {
+  SS_PENDING_SUSPEND =  0x01,  /* suspend signal has been sent, but not handled */
+  SS_SUSPENDED       =  0x02,  /* suspend signal has been handled */
+  SS_PENDING_RESUME  =  0x04   /* resume signal  has been sent */
+} suspend_state_t;
+
+/* blocking states (might be accumulative) */
+typedef enum {
+  BS_THREAD          =  0x01,  /* blocked on tLock (thread system internal) */
+  BS_MUTEX           =  0x02,  /* blocked on a external mutex lock */
+  BS_CV              =  0x04,  /* blocked on a external convar wait */
+  BS_CV_TO           =  0x08   /* blocked on a external convar timeout wait */
+} block_state_t;
 
 /*
  * 'nativeThread' is our link between native and Java thread objects.
@@ -28,15 +46,18 @@ typedef struct _nativeThread {
   pthread_attr_t        attr;
 
   /* this is our Java Thread object */
-  Hjava_lang_Thread     *thread;
+  void			*jlThread;
+
+  /* wether this is a daemon thread */
+  int			daemon;
 
   /* convars and mutexes aren't useful in signal handlers, semaphores are */
   sem_t                 sem;
 
   /* the following fields hold our extensions */
   int                   active;         /* are we in our user thread function 'func'? */
-  int                   suspendState;   /* are we suspended for a critSection?  */
-  int                   blockState;     /* are we in a Lwait or Llock (can handle signals)? */
+  suspend_state_t       suspendState;   /* are we suspended for a critSection?  */
+  block_state_t         blockState;     /* are we in a Lwait or Llock (can handle signals)? */
 
   void                  (*func)(void*);  /* this kicks off the user thread func */
   void                  *stackMin;
@@ -44,64 +65,309 @@ typedef struct _nativeThread {
   void                  *stackMax;
 
   struct _nativeThread  *next;
-} nativeThread;
-
-typedef nativeThread*	jthread_t;
-
-/* suspend states (these are exclusive) */
-#define SS_PENDING_SUSPEND   0x01  /* suspend signal has been sent, but not handled */
-#define SS_SUSPENDED         0x02  /* suspend signal has been handled */
-#define SS_PENDING_RESUME    0x04  /* resume signal  has been sent */
-
-
-/* blocking states (might be accumulative) */
-#define BS_THREAD            0x01  /* blocked on tLock (thread system internal) */
-#define BS_MUTEX             0x02  /* blocked on a external mutex lock */
-#define BS_CV                0x04  /* blocked on a external convar wait */
-#define BS_CV_TO             0x08  /* blocked on a external convar timeout wait */
-
+} *jthread_t;
 
 extern pthread_key_t   ntKey;
-extern nativeThread    *activeThreads;
 
-extern void tDump (void);
+/**
+ * Returns the current native thread.
+ *
+ */
+static inline          
+jthread_t jthread_current(void)      
+{
+  return (jthread_t)pthread_getspecific(ntKey);
+}
 
+/**
+ * Disable stopping the calling thread.
+ *
+ * Needed to avoid stopping a thread while it holds a lock.
+ */
+static inline
+void jthread_disable_stop(void)
+{
+}
+
+/**
+ * Enable stopping the calling thread.
+ *
+ * Needed to avoid stopping a thread while it holds a lock.
+ */
+static inline
+void jthread_enable_stop(void)
+{
+}
+
+/** 
+ * Stop a thread.
+ * 
+ * @param tid the thread to stop.
+ */
+static inline
+void jthread_stop(jthread_t tid)
+{
+}
+
+/**
+ * Interrupt a thread.
+ * 
+ * @param tid the thread to interrupt
+ */
+static inline
+void jthread_interrupt(jthread_t tid)
+{
+}
+
+/**
+ * Register a function to be called when the vm exits.
+ * 
+ * @param func the func to execute.
+ */
+static inline
+void jthread_atexit(void* func)
+{
+}
+
+/**
+ * Dump some information about a thread to stderr.
+ *
+ * @param tid the thread whose info is to be dumped.
+ */
+static inline
+void jthread_dumpthreadinfo(jthread_t tid)
+{
+}
+
+/**
+ * Return the java.lang.Thread instance attached to a thread
+ *
+ * @param tid the native thread whose corresponding java thread
+ *            is to be returned.
+ * @return the java.lang.Thread instance.
+ */
+static inline
+void* jthread_getcookie(jthread_t tid)
+{
+        return (tid->jlThread);
+}
+
+/**
+ * Test whether an address is on the stack of the calling thread.
+ *
+ * @param p the address to check
+ *
+ * @return true if address is on the stack
+ *
+ * Needed for locking and for exception handling.
+ */
+static inline
+bool jthread_on_current_stack(void* p)
+{
+  jthread_t nt = jthread_current();
+  if (nt == 0 || (p > nt->stackMin && p < nt->stackMax)) {
+	return (true);
+  }
+  else {
+	return (false);
+  }
+}
+
+/**
+ * Check for room on stack.
+ *
+ * @param left number of bytes that are needed
+ *
+ * @return true if @left bytes are free, otherwise false 
+ *
+ * Needed by intrp in order to implement stack overflow checking.
+ */
+static inline
+bool jthread_stackcheck(int left)
+{
+	int rc;
+#if defined(STACK_GROWS_UP)
+        rc = jthread_on_current_stack((char*)&rc + left);
+#else
+        rc = jthread_on_current_stack((char*)&rc - left);
+#endif
+	return (rc);
+}
+
+/**
+ * Extract the range of the stack that's in use.
+ * 
+ * @param tid the thread whose stack is to be examined
+ * @param from storage for the address of the start address
+ * @param len storage for the size of the used range
+ *
+ * @return true if successful, otherwise false
+ *
+ * Needed by the garbage collector.
+ */
+static inline
+bool jthread_extract_stack(jthread_t tid, void** from, unsigned* len)
+{
+  if (tid->active == 0) {
+    return false;
+  }
+  assert(tid->suspendState == SS_SUSPENDED);
+#if defined(STACK_GROWS_UP)
+  *from = tid->stackMin;
+  *len = tid->stackCur - tid->stackMin;
+#else
+  *from = tid->stackCur;
+  *len = tid->stackMax - tid->stackCur;
+#endif
+  return true;
+}
+
+/**
+ * Returns the upper bound of the stack of the calling thread.
+ *
+ * Needed by support.c in order to implement stack overflow checking. 
+ */
+static inline
+void* jthread_stacklimit(void)
+{
+  jthread_t nt = jthread_current();
+#if defined(STACK_GROWS_UP)
+  return (nt->stackMax - STACKREDZONE);
+#else
+  return (nt->stackMin + STACKREDZONE);
+#endif
+}
 
 /*
- * This should really be as fast as possible (and a VM-public compile time
- * interface)
+ * Get the current stack limit.
+ * Adapted from kaffe/kaffevm/systems/unix-jthreads/jthread.h
  */
-#define GET_CURRENT_THREAD(_stackadr) \
-  (nativeThread*) pthread_getspecific( ntKey)
+static inline 
+void jthread_relaxstack(int yes)
+{
+	if( yes )
+	{
+#if defined(STACK_GROWS_UP)
+		jthread_current()->stackMax += STACKREDZONE;
+#else
+		jthread_current()->stackMin -= STACKREDZONE;
+#endif
+	}
+	else
+	{
+#if defined(STACK_GROWS_UP)
+		jthread_current()->stackMax -= STACKREDZONE;
+#else
+		jthread_current()->stackMin += STACKREDZONE;
+#endif
+	}
+}
 
-#define NATIVE_THREAD(_jthread) \
-  ((nativeThread*) unhand(_jthread)->PrivateInfo)
+/**
+ * yield.
+ *
+ */
+static inline
+void jthread_yield (void)
+{
+  sched_yield();
+}
+
+/**
+ * Acquire a spin lock.
+ *
+ */
+static inline
+void jthread_spinon(int dummy)
+{
+}
+
+/**
+ * Release a spin lock.
+ *
+ */
+static inline
+void jthread_spinoff(int dummy)
+{
+}
+
+struct _exceptionFrame;
+typedef void (*exchandler_t)(struct _exceptionFrame*);
+
+/**
+ * Initialize handlers for null pointer accesses and div by zero        
+ *
+ */             
+void jthread_initexceptions(exchandler_t _nullHandler,
+			    exchandler_t _floatingHandler);
+
+/**
+ * Initialize the thread subsystem.
+ *
+ */
+void jthread_init(int preemptive,                 /* preemptive scheduling */
+		  int maxpr,                      /* maximum priority */
+		  int minpr,                      /* minimum priority */
+		  void *(*_allocator)(size_t),    /* memory allocator */
+		  void (*_deallocator)(void*),    /* memory deallocator */
+		  void (*_destructor1)(void*),    /* called when a thread exits */
+		  void (*_onstop)(void),          /* called when a thread is stopped */
+		  void (*_ondeadlock)(void));     /* called when we detect deadlock */
 
 
-/* debugging and log helpers */
-#if defined (KAFFE_VMDEBUG)
+/**
+ * Bind the main thread of the vm to a java.lang.Thread instance.
+ *
+ */
+jthread_t jthread_createfirst(size_t, unsigned char, void*);
 
-extern char stat_act[];
-extern char stat_susp[];
-extern char stat_block[];
+/**
+ * Create a new native thread.
+ *
+ */
+jthread_t jthread_create (unsigned char pri, void* func, int daemon,
+			  void* jlThread, size_t threadStackSize );
 
-#define TMSG_SHORT(_msg,_nt)     \
-   (_msg" %p [tid:%d, java:%p]\n", \
-    _nt, _nt->tid, _nt->thread)
 
-#define TMSG_LONG(_msg,_nt)      \
-   (_msg" %p [tid:%d, java:%p], stack [%p..%p..%p], state: %c%c%c\n",         \
-	_nt, _nt->tid, _nt->thread, _nt->stackMin, _nt->stackCur, _nt->stackMax,  \
-	stat_act[_nt->active], stat_susp[_nt->suspendState], stat_block[_nt->blockState])
+/**
+ * Set the priority of a native thread.
+ *
+ */
+void jthread_setpriority (jthread_t thread, jint prio);
 
-#define CHECK_CURRENT_THREAD(_nt)                                          \
-  if ( ((uintp) &_nt < (uintp) _nt->stackMin) ||           \
-       ((uintp) &_nt > (uintp) _nt->stackMax) ) {          \
-    printf( "?? inconsistent current thread: %x [tid: %d, java: %x]\n",    \
-	  	    _nt, _nt->tid, _nt->thread);                                   \
-    tDump();                                                               \
-  }
+/**
+ * Called by thread.c when a thread is finished. 
+ * 
+ */
+void jthread_exit ( void );
 
-#endif /* KAFFE_VMDEBUG */
+/**
+ * Destroys the a native thread.
+ *
+ * @param thread the thread to destroy.
+ *
+ * Called when finalizing a java.lang.Thread instance.
+ */
+void jthread_destroy (jthread_t thread);
+
+/**
+ * Suspends all threads but the calling one. 
+ *
+ * Currently needed by the garbage collector.
+ */
+void jthread_suspendall (void);
+
+/**
+ * Unsuspends all threads but the calling one. 
+ *
+ * Currently needed by the garbage collector.
+ */
+void jthread_unsuspendall (void);
+
+/**
+ * Call a function once for each active thread.
+ *
+ */
+void jthread_walkLiveThreads (void(*)(void*));
 
 #endif /* __thread_impl_h */
