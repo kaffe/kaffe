@@ -1,5 +1,10 @@
 2004-12-18  Adam Heath  <doogieg@brainfood.com>
 
+	* kaffe/kaffe/main.c, kaffe/kaffevm/debug.c, kaffe/kaffevm/debug.c:
+	  Add -debug-fd option, to specify where debug output should go.
+
+2004-12-18  Adam Heath  <doogieg@brainfood.com>
+
 	* configure.ac, configure:
 	  The processing of --disable-debug had the CPPFLAGS block only
 	  running when --disable-debug is specified.  It never ran in the

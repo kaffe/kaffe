@@ -821,6 +821,22 @@ options(char** argv, int argc)
 				exit(1);
                 }
 #endif
+                else if (strcmp(argv[i], "-debug-fd") == 0) {
+			char *end;
+                        i++;
+                        if (argv[i] == 0) { /* forgot second arg */
+                                fprintf(stderr, 
+					_("Error: -debug-fd an open descriptor.\n"));
+                                exit(1);
+                        }
+			kaffe_dprintf_fd = strtol(argv[i], &end, 10);
+			fprintf(stderr, "fd=%i end=%s\n", kaffe_dprintf_fd, end);
+			if (end != 0 && *end != '\0') {
+				fprintf(stderr,
+					_("Error: -debug-fd requires an integer.\n"));
+				exit(1);
+			}
+                }
 		else if (argv[i][1] ==  'D') {
 			/* Set a property */
 			char *propStr = strdup(&argv[i][2]);
@@ -909,6 +925,7 @@ usage(void)
 #ifdef KAFFE_VMDEBUG
         fprintf(stderr, _("	-vmdebug <flag{,flag}>	 Internal VM debugging.  Set flag=list for a list\n"));
 #endif
+        fprintf(stderr, _("	-debug-fd <descriptor>	 Descriptor to send debug info to\n"));
 #ifdef KAFFE_STATS
         fprintf(stderr, _("	-vmstats <flag{,flag}>	 Print VM statistics.  Set flag=all for all\n"));
 #endif

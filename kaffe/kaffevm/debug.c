@@ -49,6 +49,7 @@ static char *debugBuffer;
 static size_t bufferBegin = 0;
 static size_t bufferSz = 16 * 1024;
 static int bufferOutput = 0;
+int kaffe_dprintf_fd = 2;
 
 #if defined(NDEBUG) || !defined(KAFFE_VMDEBUG)
 /* --- Debugging is NOT enabled --- */
@@ -420,7 +421,7 @@ kaffe_dprintf(const char *fmt, ...)
 		 */
 		max = 0;
 		while (max < n) {
-                        rc = KWRITE(2,
+                        rc = KWRITE(kaffe_dprintf_fd,
                                        debugBuffer + max,
                                        (size_t)n - max,&w);
 
