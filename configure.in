@@ -310,6 +310,18 @@ no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 esac
 
 dnl =========================================================================
+dnl Allow enabling of profiling
+dnl -------------------------------------------------------------------------
+
+AC_ARG_WITH(profiling,[  --with-profiling        Compile with gprof(1) profiling support])
+
+AC_MSG_CHECKING(gprof(4) profiling support)
+if test x"${with_profiling}" = x"yes" ; then
+	CFLAGS="$CFLAGS -pg"
+fi
+AC_MSG_RESULT($with_profiling)
+
+dnl =========================================================================
 dnl Do we include our Sun compatibility scripts?
 dnl -------------------------------------------------------------------------
 
