@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.*;
 
 public class MarkResetTest {
     public static void main(String av[]) throws Exception {
@@ -39,6 +40,44 @@ public class MarkResetTest {
         } else {
             System.out.println("Failure " + r);
         }
+
+	// More rigourous test of BufferedInputStream
+	BufferedInputStream bis = new BufferedInputStream(
+	  new InputStream() {
+	    private static int count = 0;
+	    public int read() {
+	      return count++ & 0xff;
+	    }
+	  });
+	final int BUFSIZE = 64;			// must be power of 2!
+	Random rand = new Random(12345678);
+	int count = 0;
+	for (int i = 0; i < 100; i++) {
+	  byte[] tbuf = new byte[BUFSIZE];
+	  int read1 = rand.nextInt() & (BUFSIZE - 1);
+	  int read2 = rand.nextInt() & (BUFSIZE - 1);
+	  int read3 = rand.nextInt() & (BUFSIZE - 1);
+	  int mark = rand.nextInt() & (BUFSIZE - 1);
+	  read1 = bis.read(tbuf, 0, read1);
+	  bis.mark(mark);
+	  if (read1 + read2 > tbuf.length)
+	    read2 = tbuf.length - read1;
+	  read2 = bis.read(tbuf, read1, read2);
+	  if (read2 <= mark) {
+	    bis.reset();
+	    if (read1 + read3 > tbuf.length)
+	      read3 = tbuf.length - read1;
+	    read3 = bis.read(tbuf, read1, read3);
+	  } else {
+	    read3 = read2;
+	  }
+	  for (int j = 0; j < read1 + read3; j++) {
+	    kaffe.util.Assert.that(
+	      (int) (tbuf[j] & 0xff) == ((count + j) & 0xff));
+	  }
+	  count += read1 + read3;
+	}
+	System.out.println("Success.");
     }
 }
 
@@ -54,5 +93,6 @@ read 789
 read 89A
 read 9AB
 read ABC
+Success.
 Success.
 */
