@@ -1,5 +1,30 @@
 2004-10-04  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/net/URLConnection.java,
+	libraries/javalib/java/text/MessageFormat.java,
+	libraries/javalib/javax/crypto/MacSpi.java:
+        Resynced with GNU Classpath.
+
+	2004-09-28  Tom Tromey  <tromey@redhat.com>
+
+        * java/text/MessageFormat.java (Field): Constructor now
+        protected.
+
+        * java/net/URLConnection.java (setFileNameMap): Now synchronized.
+
+        * javax/crypto/MacSpi.java: Fixed typo.
+
+	2004-09-28  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/URLConnection.java:
+        Reformatted.
+        (getContent): Make sure we are connected. Moved code to get content
+        handler to getContentHandler() method for easier merging with libgcj's
+        version.
+        (getContentHandler): New method.
+
+2004-10-04  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/URLClassLoader.java:
 	Resynced with GNU Classpath.
 

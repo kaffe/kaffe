@@ -35,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.net;
 
 import java.io.IOException;
@@ -48,7 +49,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
-
 
 /**
  * Written using on-line Java Platform 1.2 API Specification, as well
@@ -84,8 +84,8 @@ import java.util.Map;
  * by the actual content handlers as described in the description of that
  * method.
  *
- * @author Aaron M. Renn <arenn@urbanophile.com>
- * @author Warren Levy <warrenl@cygnus.com>
+ * @author Aaron M. Renn (arenn@urbanophile.com)
+ * @author Warren Levy (warrenl@cygnus.com)
  */
 public abstract class URLConnection
 {
@@ -160,13 +160,12 @@ public abstract class URLConnection
    * This is the URL associated with this connection
    */
   protected URL url;
-
   private static SimpleDateFormat[] dateFormats;
   private static boolean dateformats_initialized;
 
   /* Cached ParsePosition, used when parsing dates. */
   private ParsePosition position;
- 
+
   /**
    * Creates a URL connection to a given URL. A real connection is not made.
    * Use #connect to do this.
@@ -363,7 +362,7 @@ public abstract class URLConnection
   {
     if (! dateformats_initialized)
       initializeDateFormats();
-    
+
     if (position == null)
       position = new ParsePosition(0);
 
@@ -409,12 +408,10 @@ public abstract class URLConnection
    * the object and particular content hander loaded.  Most text type
    * content handlers will return a subclass of
    * <code>InputStream</code>.  Images usually return a class that
-   * implements <code>ImageProducer<code>.  There is not guarantee
+   * implements <code>ImageProducer</code>.  There is not guarantee
    * what type of object will be returned, however.
-
-<p>
-
-   * This class first determines the MIME type of the content, then
+   *
+   * <p>This class first determines the MIME type of the content, then
    * creates a ContentHandler object to process the input.  If the
    * <code>ContentHandlerFactory</code> is set, then that object is
    * called to load a content handler, otherwise a class called
@@ -424,7 +421,7 @@ public abstract class URLConnection
    * <code>getInputStream()</code>.  Note that the default
    * implementation of <code>getInputStream()</code> throws a
    * <code>UnknownServiceException</code> so subclasses are encouraged
-   * to override this method.
+   * to override this method.</p>
    *
    * @exception IOException If an error with the connection occurs.
    * @exception UnknownServiceException If the protocol does not support the
@@ -432,47 +429,18 @@ public abstract class URLConnection
    */
   public Object getContent() throws IOException
   {
-    //  connect();
+    if (!connected)
+      connect();
+
+    // FIXME: Doc indicates that other criteria should be applied as
+    // heuristics to determine the true content type, e.g. see 
+    // guessContentTypeFromName() and guessContentTypeFromStream methods
+    // as well as FileNameMap class & fileNameMap field & get/set methods.
     String type = getContentType();
-
-    // First try the factory
-    ContentHandler ch = null;
-
-    if (factory != null)
-      ch = factory.createContentHandler(type);
+    ContentHandler ch = getContentHandler(type);
 
     if (ch != null)
       return ch.getContent(this);
-
-    // Then try our default class
-    try
-      {
-	String typeClass = type.replace('/', '.');
-	
-	// deal with "Content-Type: text/html; charset=ISO-8859-1"
-	int parameterBegin = typeClass.indexOf(';');
-	if (parameterBegin >= 1)
-	  typeClass = typeClass.substring(0, parameterBegin);
-
-	Class cls = Class.forName("gnu.java.net.content." + typeClass);
-
-	Object obj = cls.newInstance();
-
-	if (obj instanceof ContentHandler)
-	  {
-	    ch = (ContentHandler) obj;
-	    return ch.getContent(this);
-	  }
-      }
-    catch (ClassNotFoundException e)
-      {
-      }
-    catch (InstantiationException e)
-      {
-      }
-    catch (IllegalAccessException e)
-      {
-      }
 
     return getInputStream();
   }
@@ -940,7 +908,7 @@ public abstract class URLConnection
   public static String guessContentTypeFromStream(InputStream is)
     throws IOException
   {
-    return ("application/octet-stream");
+    return "application/octet-stream";
   }
 
   /**
@@ -971,9 +939,9 @@ public abstract class URLConnection
    *
    * @since 1.2
    */
-  public static void setFileNameMap(FileNameMap map)
+  public static synchronized void setFileNameMap(FileNameMap map)
   {
-    // Throw an exception if an extant security mgr precludes
+    // Throw an exception if an extant security manager precludes
     // setting the factory.
     SecurityManager s = System.getSecurityManager();
     if (s != null)
@@ -982,6 +950,53 @@ public abstract class URLConnection
     fileNameMap = map;
   }
 
+  private ContentHandler getContentHandler(String contentType)
+  {
+    // No content type so just handle it as the default.
+    if (contentType == null || contentType.equals(""))
+      return null;
+
+    ContentHandler handler = null;
+
+    // If a non-default factory has been set, use it.
+    if (factory != null)
+      handler = factory.createContentHandler(contentType);
+
+    // Then try our default class.
+    try
+      {
+	String typeClass = contentType.replace('/', '.');
+
+	// Deal with "Content-Type: text/html; charset=ISO-8859-1".
+	int parameterBegin = typeClass.indexOf(';');
+	if (parameterBegin >= 1)
+	  typeClass = typeClass.substring(0, parameterBegin);
+
+	Class cls = Class.forName("gnu.java.net.content." + typeClass);
+	Object obj = cls.newInstance();
+
+	if (obj instanceof ContentHandler)
+	  {
+	    handler = (ContentHandler) obj;
+	    return handler;
+	  }
+      }
+    catch (ClassNotFoundException e)
+      {
+	// Ignore.
+      }
+    catch (InstantiationException e)
+      {
+	// Ignore.
+      }
+    catch (IllegalAccessException e)
+      {
+	// Ignore.
+      }
+
+    return handler;
+  }
+  
   // We don't put these in a static initializer, because it creates problems
   // with initializer co-dependency: SimpleDateFormat's constructors eventually 
   // depend on URLConnection (via the java.text.*Symbols classes).
