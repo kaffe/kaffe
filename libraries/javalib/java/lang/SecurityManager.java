@@ -1027,13 +1027,15 @@ public class SecurityManager
                         String permission)
   {
     if (packageName == null)
-	throw new NullPointerException();
+      throw new NullPointerException();
 
-    String list = (String)AccessController.doPrivileged(new PrivilegedAction() {
-	public Object run() {
-	    return Security.getProperty(restriction);
+    String list = (String)AccessController.doPrivileged(new PrivilegedAction()
+      {
+	public Object run()
+        {
+	  return Security.getProperty(restriction);
 	}
-    });
+      });
 
     if (list == null || list.equals(""))
       return;
@@ -1051,4 +1053,4 @@ public class SecurityManager
 	  }
       }
   }
-} // class SecurityManager
+}

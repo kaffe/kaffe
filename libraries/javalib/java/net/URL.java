@@ -1,5 +1,5 @@
 /* URL.java -- Uniform Resource Locator Class
-   Copyright (C) 1998, 1999, 2000, 2002, 2003, 2004
+   Copyright (C) 1998, 1999, 2000, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -882,7 +882,8 @@ public final class URL implements Serializable
 	  {
 	    systemClassLoader = (ClassLoader) AccessController.doPrivileged
 	      (new PrivilegedAction() {
-		  public Object run() {
+		  public Object run()
+	          {
 		    return ClassLoader.getSystemClassLoader();
 		  }
 		});
@@ -904,7 +905,10 @@ public final class URL implements Serializable
               {
                 throw death;
               }
-	    catch (Throwable t) { /* ignored */ }
+	    catch (Throwable t)
+	      {
+		// Ignored.
+	      }
 	  }
 	 while (ph == null && pkgPrefix.hasMoreTokens());
       }
