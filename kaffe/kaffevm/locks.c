@@ -63,6 +63,8 @@ static struct {
 	{ &gc_lock,	{ 0, 0, 0 } },
 	{ &gcman,	{ 0, 0, 0 } },
 	{ &finman,	{ 0, 0, 0 } },
+	{ &stringLock,	{ 0, 0, 0 } },
+	{ &utf8Lock,	{ 0, 0, 0 } },
 };
 #define	NR_SPECIAL_LOCKS	(sizeof(specialLocks)/sizeof(specialLocks[0]))
 

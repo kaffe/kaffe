@@ -23,7 +23,7 @@
 
 /* Internal variables */
 static hashtab_t	hashTable;	/* intern hash table */
-static iLock*		stringLock;	/* mutex on all intern operations */
+iLock* stringLock;		        /* mutex on all intern operations */
 static int *            stringLockRoot;	/* the string lock is not a monitor */
 
 /* Internal functions */

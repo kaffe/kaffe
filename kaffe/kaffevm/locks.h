@@ -86,4 +86,7 @@ extern void	dumpLocks(void);
 		_acquireLock(&((Hjava_lang_Object*)(OBJ))->lock, st); \
 	}
 
+extern struct _iLock* stringLock;
+extern struct _iLock* utf8Lock;
+
 #endif
