@@ -1,3 +1,25 @@
+2004-05-30  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/util/ZipInputStream.java
+	(getNextEntry): Reopen the byte stream.
+	(closeEntry): Close the byte stream.
+	(close): Close completely the byte stream.
+
+	* libraries/javalib/java/util/Inflater.java:
+	(inflate0): Made private.
+
+	* libraries/javalib/java/util/InflaterInputStream.java:
+	(read): Check whether the stream is closed.
+	(skip): Improved exception message.
+
+	* libraries/clib/nio/FileChannelImpl.c
+	(Java_gnu_java_nio_channels_FileChannelImpl_read__): Fixed
+	one byte reading. We have to use 'uint8' for the reading and
+	then cast it to jint.
+	(Java_gnu_java_nio_channels_FileChannelImpl_write__I): Fixed
+	one byte writing. We have to cast jint to uint8 and then write
+	this byte.
+
 2004-05-29  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* configure.ac: Check for mprotect. If the host is an HPUX disable

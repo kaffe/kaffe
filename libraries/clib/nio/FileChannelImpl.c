@@ -390,7 +390,7 @@ jint JNICALL
 Java_gnu_java_nio_channels_FileChannelImpl_read__(JNIEnv *env, jobject filechannel)
 {
   int rc;
-  jbyte one_byte;
+  uint8 one_byte;
   int nativeFd = (int)getFD(env, filechannel);
   int ret;
 
@@ -445,10 +445,11 @@ Java_gnu_java_nio_channels_FileChannelImpl_write__I(JNIEnv *env, jobject filecha
 {
   int rc;
   int nativeFd = (int)getFD(env, filechannel);
+  uint8 real_byte = byte;
   int ret;
 
   do {
-    rc = KWRITE(nativeFd, &byte, 1, &ret);
+    rc = KWRITE(nativeFd, &real_byte, 1, &ret);
     if (rc != 0 && rc != EINTR)
       {
 	throwIOException(env, rc);

@@ -150,7 +150,7 @@ public class InflaterInputStream extends FilterInputStream
   {
     if (in == null)
       throw new ZipException ("InflaterInputStream is closed");
-    
+
     len = in.read(buf, 0, buf.length);
 
     if (len < 0)
@@ -183,6 +183,9 @@ public class InflaterInputStream extends FilterInputStream
    */
   public int read(byte[] b, int off, int len) throws IOException
   {
+    if (in == null)
+      throw new ZipException ("InflaterInputStream is closed");
+
     if (len == 0)
       return 0;
 
@@ -220,7 +223,7 @@ public class InflaterInputStream extends FilterInputStream
   public long skip(long n) throws IOException
   {
     if (n < 0)
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("Argument must be positive");
 
     if (n == 0)
       return 0;

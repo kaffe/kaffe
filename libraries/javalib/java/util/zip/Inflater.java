@@ -100,7 +100,7 @@ public class Inflater {
   }
 
   public native synchronized void setDictionary(byte b[], int off, int len);
-  public native synchronized int inflate0(byte b[], int off, int len) throws DataFormatException;
+  private native synchronized int inflate0(byte b[], int off, int len) throws DataFormatException;
   public native synchronized int getAdler();
   public native synchronized int getTotalIn();
   public native synchronized int getTotalOut();

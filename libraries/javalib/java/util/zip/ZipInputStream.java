@@ -41,6 +41,9 @@ public class ZipInputStream extends InflaterInputStream
 
     synchronized (this) {
 
+      // First, open the stream.
+      sinf.setLength(Integer.MAX_VALUE);
+
       // Read next signature
       int sig = readSig();
       switch (sig) {
@@ -149,6 +152,9 @@ public class ZipInputStream extends InflaterInputStream
 	  // + ", meth=" + entry.method + ", size=" + entry.size
 	  // + ", csize=" + entry.csize + ", crc=" + entry.crc);
 	}
+	
+	// Close the input stream for the rest of the world.
+	sinf.setLength(0);
       } finally {
 	entry = null;
       }
@@ -166,6 +172,9 @@ public class ZipInputStream extends InflaterInputStream
   public void close() throws IOException {
     closeEntry();
     super.close();
+    // Now completely close the byte stream. There may be some
+    // bytes left in the buffer.
+    sinf.setInput(null, 0, 0);
   }
 
   private int get16(byte[] buf, int base) {
