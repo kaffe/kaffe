@@ -275,6 +275,8 @@ DBG(GCWALK,
 			    if (c)
 				    c->live_count++;
 		    }
+	    default: {
+	    }
 	    }});
 	    
 
@@ -637,7 +639,7 @@ DBG(GCSTAT,
 			gcStats.totalobj,
 			gcStats.totalobj-gcStats.freedobj,
 			(1.0 - ((gcStats.totalmem-gcStats.freedmem)/
-				(double)gc_get_heap_total())) * 100.0,
+				gc_get_heap_total())) * 100.0,
 			gcStats.allocmem/1024,
 			gcStats.allocobj,
 			gcStats.markedmem/1024, 
@@ -1061,7 +1063,7 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 				/* Grow the heap */
 				DBG (GCSYSALLOC, dprintf ("growing heap by %u bytes of type %s (%2.1f%% free)\n", 
 							  (unsigned int)size, gcFunctions[fidx].description,
-							  (1.0 - (gcStats.totalmem / (double)gc_get_heap_total())) * 100.0); );
+							  (1.0 - (gcStats.totalmem / gc_get_heap_total())) * 100.0); );
 				
 				gc_heap_grow(size);
 				break;
@@ -1480,7 +1482,7 @@ static struct GarbageCollectorInterface_Ops KGC_Ops = {
  * Initialise the Garbage Collection system.
  */
 Collector* 
-createGC()
+createGC(void)
 {
 	URESETLIST(gclists[nofin_white]);
 	URESETLIST(gclists[fin_white]);
