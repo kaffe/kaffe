@@ -14,13 +14,6 @@
 #ifndef __gc_mem_h
 #define	__gc_mem_h
 
-/*
- * Default values for initial and maximum heap size and heap increment.
- */
-#define	MIN_HEAPSIZE	(5*1024*1024)
-#define	MAX_HEAPSIZE	(64*1024*1024)
-#define	ALLOC_HEAPSIZE	(1024*1024)
-
 #ifndef gc_pgsize
 extern size_t gc_pgsize;
 extern int gc_pgbits;
@@ -58,10 +51,6 @@ extern void*	gc_heap_malloc(size_t);
 extern void	gc_heap_free(void*);
 
 #define	GC_OBJECT_SIZE(M)	GCMEM2BLOCK(M)->size
-
-extern size_t gc_heap_base;
-extern size_t gc_block_base;
-extern uintp gc_heap_range;	/* last gc-able address - gc_heap_base */
 
 typedef struct _gc_block {
 #ifdef DEBUG
