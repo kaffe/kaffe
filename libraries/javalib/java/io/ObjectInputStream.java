@@ -1,5 +1,6 @@
 /* ObjectInputStream.java -- Class used to read serialized objects
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2005
+   Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -536,8 +537,14 @@ public class ObjectInputStream extends InputStream
     // find the first non-serializable, non-abstract
     // class in clazz's inheritance hierarchy
     Class first_nonserial = clazz.getSuperclass();
-    while (Serializable.class.isAssignableFrom(first_nonserial)
-	|| Modifier.isAbstract(first_nonserial.getModifiers()))
+    // Maybe it is a primitive class, those don't have a super class,
+    // or Object itself.  Otherwise we can keep getting the superclass
+    // till we hit the Object class, or some other non-serializable class.
+    if (first_nonserial == null)
+      first_nonserial = clazz;
+    else
+      while (Serializable.class.isAssignableFrom(first_nonserial)
+	     || Modifier.isAbstract(first_nonserial.getModifiers()))
 	first_nonserial = first_nonserial.getSuperclass();
 
     final Class local_constructor_class = first_nonserial;
@@ -567,7 +574,7 @@ public class ObjectInputStream extends InputStream
     osc.realClassIsExternalizable = Externalizable.class.isAssignableFrom(clazz);
 
     ObjectStreamField[] stream_fields = osc.fields;
-    ObjectStreamField[] real_fields = ObjectStreamClass.lookup(clazz).fields;
+    ObjectStreamField[] real_fields = ObjectStreamClass.lookupForClassObject(clazz).fields;
     ObjectStreamField[] fieldmapping = new ObjectStreamField[2 * Math.max(stream_fields.length, real_fields.length)];
 
     int stream_idx = 0;
@@ -733,7 +740,37 @@ public class ObjectInputStream extends InputStream
   protected Class resolveClass(ObjectStreamClass osc)
     throws ClassNotFoundException, IOException
   {
-    return Class.forName(osc.getName(), true, currentLoader());
+    try
+      {
+	return Class.forName(osc.getName(), true, currentLoader());
+      }
+    catch (ClassNotFoundException cnfe)
+      {
+	// Maybe it was an primitive class?
+	String name = osc.getName();
+	if (name.equals("void"))
+	  return Void.TYPE;
+	if (name.equals("boolean"))
+	  return Boolean.TYPE;
+	if (name.equals("byte"))
+	  return Byte.TYPE;
+	if (name.equals("short"))
+	  return Short.TYPE;
+	if (name.equals("char"))
+	  return Character.TYPE;
+	if (name.equals("int"))
+	  return Integer.TYPE;
+	if (name.equals("long"))
+	  return Long.TYPE;
+	if (name.equals("float"))
+	  return Float.TYPE;
+	if (name.equals("double"))
+	  return Double.TYPE;
+	if (name.equals("void"))
+	  return Void.TYPE;
+
+	throw cnfe;
+      }
   }
 
   /**
@@ -766,8 +803,10 @@ public class ObjectInputStream extends InputStream
    */
   private ObjectStreamClass lookupClass(Class clazz)
   {
-    ObjectStreamClass oclazz;
+    if (clazz == null)
+      return null;
 
+    ObjectStreamClass oclazz;
     oclazz = (ObjectStreamClass)classLookupTable.get(clazz);
     if (oclazz == null)
       return ObjectStreamClass.lookup(clazz);

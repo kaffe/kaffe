@@ -2,6 +2,49 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-01-19  Graydon Hoare  <graydon@redhat.com>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGlyphVector.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkCheckboxPeer.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkChoicePeer.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkClipboard.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkListPeer.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuItemPeer.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkScrollBarPeer.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkTextComponentPeer.c:
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c:
+	Rewrite uses of extern variable to be function calls.
+	* native/jni/gtk-peer/gtkpeer.h (gdk_env): Change declaration to
+	function, from extern variable.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c
+	(gdk_env): Remove variable, add new function.
+	(java_vm): Add new variable.
+	(Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit): Initialize
+	java_vm rather than old gdk_env variable.
+	
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-01-18  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #11618.
+	* java/io/ObjectInputStream.java (readClassDescriptor): Handle classes
+	without a super class and us ObjectStreamClass.lookupForClassObject().
+	(resolveClass): Check for primitive types.
+	(lookupClass): Return null when argument is null.
+
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-01-19  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
 	Merge of java.lang.Appendable to HEAD from
