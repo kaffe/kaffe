@@ -172,24 +172,6 @@ engine_frag=$srcdir/kaffe/kaffevm/$with_engine/Makefile.frag
 
 AC_CHECK_FUNCS(getpagesize)
 
-dnl -------------------------------------------------------------------------
-dnl Choose a gc_block allocation scheme
-dnl -------------------------------------------------------------------------
-
-AC_ARG_WITH(gcblock, [  --with-gcblock=(hash|mmap)	Choose gc_block allocation])
-
-dnl default to new scheme
-if test x"$with_gcblock" != x"hash"; then
-	with_gcblock=mmap
-fi
-
-AC_MSG_CHECKING(garbage collection heap layout)
-link_from="$link_from kaffe/kaffevm/mem/gc-block-${with_gcblock}.c"
-link_from="$link_from kaffe/kaffevm/mem/gc-block-${with_gcblock}.h"
-link_to="$link_to kaffe/kaffevm/mem/gc-block.c"
-link_to="$link_to kaffe/kaffevm/mem/gc-block.h"
-AC_MSG_RESULT($with_gcblock)
-
 dnl =========================================================================
 
 AC_MSG_CHECKING(library type)

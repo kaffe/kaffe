@@ -17,7 +17,6 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "gc.h"
-#include "mem/gc-block.h"
 #include "locks.h"
 #include "thread.h"
 #include "errors.h"
@@ -197,6 +196,28 @@ initGc(void)
 	URESETLIST(gclists[black]);
 	URESETLIST(gclists[finalise]);
 	URESETLIST(gclists[mustfree]);
+}
+
+/* Return true if gc_unit is pointer to an allocated object */
+static inline int
+gc_heap_isobject(gc_block *info, gc_unit *unit)
+{
+	uintp p = (uintp) UTOMEM(unit) - gc_heap_base;
+	int idx;
+
+	if (!(p & (MEMALIGN - 1)) && p < gc_heap_range && info->inuse) {
+		/* Make sure 'unit' refers to the beginning of an
+		 * object.  We do this by making sure it is correctly
+		 * aligned within the block.
+		 */
+		idx = GCMEM2IDX(info, unit);
+		if (idx < info->nr && GCBLOCK2MEM(info, idx) == unit
+		    && (GC_GET_COLOUR(info, idx) & GC_COLOUR_INUSE) ==
+		    GC_COLOUR_INUSE) {
+			return 1;
+		}
+	}
+	return 0;
 }
 
 /*

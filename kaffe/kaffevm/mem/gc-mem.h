@@ -27,13 +27,6 @@ extern size_t gc_heap_total;
 extern size_t gc_heap_allocation_size;
 extern size_t gc_heap_limit;
 
-typedef struct {
-	struct _gc_block* list;
-	uint16		sz;
-} gc_freelist;
-
-extern gc_freelist freelist[];
-
 #ifdef DEBUG
 extern int gc_system_alloc_cnt;
 #endif
@@ -100,6 +93,51 @@ extern void*	gc_heap_malloc(size_t);
 extern void	gc_heap_free(void*);
 
 #define	GC_OBJECT_SIZE(M)	GCMEM2BLOCK(M)->size
+
+extern size_t gc_heap_base;
+extern size_t gc_block_base;
+extern uintp gc_heap_range;	/* last gc-able address - gc_heap_base */
+
+typedef struct _gc_block {
+#ifdef DEBUG
+	uint32			magic;	/* Magic number */
+#endif
+	struct _gc_freeobj*	free;	/* Next free sub-block */
+	struct _gc_block*	next;	/* Next block in prim/small freelist */
+	struct _gc_block*	nfree;	/* Next block on sub-freelist */
+	uint32			inuse;	/* Is block allocated? */
+	uint32			size;	/* Size of objects in this block */
+	uint16			nr;	/* Nr of objects in block */
+	uint16			avail;	/* Nr of objects available in block */
+	uint8*			funcs;	/* Function for objects */
+	uint8*			state;	/* Colour & state of objects */
+	uint8*			data;	/* Address of first object in */
+} gc_block;
+
+/* ------------------------------------------------------------------------ */
+
+#define	GC_MAGIC		0xD0DECADE
+#define GCBLOCK_LIVE		((gc_block *) -1) /* block->next when alloced*/
+#define GC_BLOCKS		((gc_block *) gc_block_base)
+
+#define	GCBLOCK2STATE(B, N)	(&(B)->state[(N)])
+#define	GCBLOCK2MEM(B, N)	((gc_unit*)(&(B)->data[(N)*(B)->size]))
+#define	GCBLOCK2FREE(B, N)	((gc_freeobj*)GCBLOCK2MEM(B, N))
+#define	GCBLOCKSIZE(B)		(B)->size
+
+#define	GCMEM2FREE(M)		((gc_freeobj*)(M))
+#define	GCMEM2IDX(B, M)		(((uint8*)(M) - (B)->data) / (B)->size)
+#define GCMEM2BLOCK(M)		(GC_BLOCKS + ((((uintp) M) - gc_heap_base) \
+					      >> gc_pgbits))
+/* find first usable address in block */ 
+#define GCBLOCK2BASE(B)	(((char *)gc_heap_base)		\
+			 + gc_pgsize * ((B) - GC_BLOCKS))
+
+
+/* This is OK, gc_prim_(alloc|free) never assume GCBLOCKEND is really
+   a valid block */
+#define GCBLOCKEND(B)		((B) + (((B)->size+gc_pgsize-1)>>gc_pgbits))
+#define GCBLOCK_OVH		0
 
 #define ASSERT_ONBLOCK(OBJ, BLK) assert(GCMEM2BLOCK(OBJ) == BLK)
 

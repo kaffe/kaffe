@@ -54,7 +54,6 @@ COMMON=\
 		itypes$(OBJEXT) \
 		gc$(OBJEXT) \
 		gc-mem$(OBJEXT) \
-		gc-block$(OBJEXT) \
 		thread$(OBJEXT) \
 		locks$(OBJEXT) \
 		support$(OBJEXT) \
