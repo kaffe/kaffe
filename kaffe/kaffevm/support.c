@@ -28,7 +28,7 @@
 #include "exception.h"
 #include "slots.h"
 #include "support.h"
-#ifndef HAVE_LIBFFI
+#if !defined(HAVE_LIBFFI)
 # define NEED_sysdepCallMethod 1
 #endif /* HAVE_LIBFFI */
 #include "classMethod.h"
@@ -57,7 +57,7 @@ static nativeFunction null_funcs[1];
 nativeFunction* native_funcs = null_funcs;
 #endif
 
-#ifdef HAVE_LIBFFI
+#if defined(HAVE_LIBFFI)
 #include <ffi.h>
 static inline ffi_type *j2ffi(char type)
 {
@@ -358,16 +358,16 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
    unless explicitly overridden.  It implies NO_HOLES, unless
    explicitly defined otherwise.  */
 #if defined(PROMOTE_TO_64bits)
-# ifndef PROMOTE_jint2jlong
+# if !defined(PROMOTE_jint2jlong)
 #  define PROMOTE_jint2jlong 1
 # endif
-# ifndef PROMOTE_jfloat2jdouble
+# if !defined(PROMOTE_jfloat2jdouble)
 #  define PROMOTE_jfloat2jdouble 1
 # endif
 /* NO_HOLES causes all types to occupy only one slot in callargs, but
    not affecting their callsizes, that can still be used to
    distinguish among types.  */
-# ifndef NO_HOLES
+# if !defined(NO_HOLES)
 #  define NO_HOLES 1
 # endif
 #endif
@@ -413,6 +413,15 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
 #else
 # define ENSURE_ALIGN64(DO) do {} while (0)
 #endif
+
+/* Finally, make sure that undefined symbols are defined as 0 */
+#if ! defined(PROMOTE_jfloat2jdouble)
+#define PROMOTE_jfloat2jdouble	0
+#endif /* ! defined(PROMOTE_jfloat2jdouble) */ 
+
+#if ! defined(NO_HOLES)
+#define NO_HOLES	0
+#endif /*  ! defined(NO_HOLES) */
 
 /**
  * Generic routine to call a native or Java method (array style).
@@ -521,9 +530,9 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 		case 'F':
 			call.callsize[i] = 1;
 			in[i].PROM_f = args[j].f;
-#if PROMOTE_jfloat2jdouble
-			call.calltype[i] = 'D';
-#endif
+			if (PROMOTE_jfloat2jdouble) {
+				call.calltype[i] = 'D';
+			}
 			break;
 		case 'I':
 		use_int:
@@ -538,13 +547,13 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 			if (promoted) { /* compensate for the second array element by incrementing args */
 			  args++;
 			}
-#if ! NO_HOLES
-			s += call.callsize[i];
-			in[i+1].i = (&in[i].i)[1];
-			i++; 
-			call.calltype[i] = 0;
-			call.callsize[i] = 0;
-#endif
+			if (! NO_HOLES) {
+				s += call.callsize[i];
+				in[i+1].i = (&in[i].i)[1];
+				i++; 
+				call.calltype[i] = 0;
+				call.callsize[i] = 0;
+			}
 			break;
 		case '[':
 			call.calltype[i] = 'L';
@@ -767,9 +776,9 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		case 'F':
 			call.callsize[i] = 1;
 			in[i].PROM_f = (jfloat)va_arg(args, jdouble);
-#if PROMOTE_jfloat2jdouble
-			call.calltype[i] = 'D';
-#endif
+			if (PROMOTE_jfloat2jdouble) {
+				call.calltype[i] = 'D';
+			}
 			break;
 		case 'D':
 			call.callsize[i] = 2;
@@ -781,12 +790,12 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 			ENSURE_ALIGN64({});
 			in[i].j = va_arg(args, jlong);
 		second_word:
-#if ! NO_HOLES
-			s += call.callsize[i];
-			in[i+1].i = (&in[i].i)[1];
-			i++;
-			call.callsize[i] = 0;
-#endif
+			if(! NO_HOLES) {
+				s += call.callsize[i];
+				in[i+1].i = (&in[i].i)[1];
+				i++;
+				call.callsize[i] = 0;
+			}
 			break;
 		case '[':
 			call.calltype[i] = 'L';

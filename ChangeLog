@@ -1,3 +1,12 @@
+2004-07-10  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/support.c:
+	Fixed broken '#if defined' tests for NO_HOLES, 
+	PROMOTE_jfloat2jdouble in order to fix make check
+	failures on x86_64-linux.
+
+	Reported by: Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
+		
 2004-07-10  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* Makefile.am (kaffe-build-order): don't use -C option since it's
