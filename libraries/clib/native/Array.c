@@ -419,7 +419,7 @@ java_lang_reflect_Array_set(struct Hjava_lang_Object* obj, jint elem, struct Hja
 	if (!CLASS_IS_ARRAY(OBJECT_CLASS(obj)))
 		SignalError("java.lang.IllegalArgumentException", "");
 
-	if (!IS_PRIMITIVE_TYPE(CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj)))) {
+	if (!CLASS_IS_PRIMITIVE(CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj)))) {
 		HArrayOfObject *arr = (HArrayOfObject *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -427,7 +427,7 @@ java_lang_reflect_Array_set(struct Hjava_lang_Object* obj, jint elem, struct Hja
 		if (val == NULL || soft_instanceof(CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj)), val)) {
 			unhand(arr)->body[elem] = val;
 		} else {
-			signalError("java.lang.IllegalArgumentException", "");
+			SignalError("java.lang.IllegalArgumentException", "");
 		}
 		return;
 	}
