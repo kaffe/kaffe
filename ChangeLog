@@ -1,3 +1,8 @@
+Wed Mar 24 22:37:42 PST 1999  YAMAGUCHI Yuji <yamag@distribution.co.jp>
+
+	* libraries/javalib/java/net/URL.java: set URLStreamHandler
+	in constructors
+
 Wed Mar 24 23:12:19 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/util/Properties.java: flush outputstream
