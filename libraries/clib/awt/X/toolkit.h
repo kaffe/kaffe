@@ -19,13 +19,14 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#if defined(HAVE_LIBXEXT) && defined(HAVE_SYS_IPC_H) && defined(HAVE_SYS_SHM_H) && defined(HAVE_X11_EXTENSIONS_XSHM_H)
-#define USE_XSHM_EXTENSION 1
+// #if defined(HAVE_LIBXEXT) && defined(HAVE_SYS_IPC_H) && defined(HAVE_SYS_SHM_H) && defined(HAVE_X11_EXTENSIONS_XSHM_H)
+// #define USE_XSHM_EXTENSION 1
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#if defined(HAVE_LIBXEXT)
 #include <X11/extensions/XShm.h>
 #else
-#undef USE_XSHM_EXTENSION
+// #undef USE_XSHM_EXTENSION
 #define	XShmGetImage(A,B,C,D,E,F)		0
 #define	XShmPutImage(A,B,C,D,E,F,G,H,I,J,K)	0
 #define	XShmSegmentInfo				void
@@ -43,6 +44,8 @@
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
+
+#define KAFFE_I18N	1 /* make Kaffe to be able to support i18n */
 
 /*******************************************************************************
  * color conversion structures
@@ -191,6 +194,9 @@ typedef struct _Toolkit {
   Window         focus;     /* this is the real focus, if it is in our process */
   Window         focusFwd;  /* this might be a (owned) window we forward the focus to */
   int            fwdIdx;    /* cached index of the focus forward window */
+#ifdef KAFFE_I18N
+  XOM            xom;       /* X Output Method */
+#endif  
 } Toolkit;
 
 
@@ -330,6 +336,21 @@ static inline void* getBuffer ( Toolkit* X, unsigned int nBytes ) {
   return X->buf;
 }
 
+#ifdef KAFFE_I18N
+static inline wchar_t* jchar2wchar( const jchar *jc, int len ) {
+  int i;
+  wchar_t *wch = (wchar_t *)malloc(sizeof(wchar_t)*len);
+  for( i=0; i < len; i++ ) wch[i] = jc[i];
+  return wch;
+}
+
+static inline wchar_t* jbyte2wchar( jbyte *jc, int len ) {
+  int i;
+  wchar_t *wch = (wchar_t *)malloc(sizeof(wchar_t)*(len));
+  for( i=0; i < len; i++ ) wch[i] = jc[i];
+  return wch;
+}
+#endif
 
 /*****************************************************************************************
  * color functions & defines

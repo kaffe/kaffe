@@ -1,3 +1,13 @@
+2004-03-05  Jim Huang <jimchyun@ccns.ncku.edu.tw>
+	* libraries/clib/awt/X/tlk.c
+	* libraries/clib/awt/X/toolkit.h:
+	Support XOM (X Output Method) for i18n context drawing.
+
+	* libraries/clib/awt/X/fnt.c:
+	Add switch to Replace X11 fonts declared in XFontStruct * with 
+	struct XOC, and modify the font-related functions accordingly.
+	With the i18n patch, Xlib AWT backend would render i18n message.
+
 2004-03-05  Dalibor Topic <robilad@kaffe.org>
 
         kaffe/kaffevm/verify-type.c,

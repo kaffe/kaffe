@@ -13,6 +13,9 @@
 typedef struct {
   GC        gc;
   Drawable  drw;
+#ifdef KAFFE_I18N
+  XOC       oc;
+#endif  
   int       fg;
   int       bg;
   char      xor;
@@ -40,7 +43,11 @@ Java_java_awt_Toolkit_graInitGraphics ( JNIEnv* env, jclass clazz,
   Drawable       drw;
   XGCValues      values;
   XRectangle     rect;
+#ifdef KAFFE_I18N
+  unsigned long  valueMask = GCForeground | GCBackground | GCFunction;
+#else  
   unsigned long  valueMask = GCForeground | GCBackground | GCFont | GCFunction;
+#endif  
 
   DBG( AWT_GRA, printf("initGraphics: %p (%p, %d) %d,%d  %d,%d - %d,%d  %p %x %x\n",
 				 gr, tgt,tgtType, xOff,yOff, xClip,yClip,wClip,hClip, fnt,fg,bg));
@@ -65,7 +72,9 @@ Java_java_awt_Toolkit_graInitGraphics ( JNIEnv* env, jclass clazz,
 
   values.foreground = fg;
   values.background = bg;
+#ifndef KAFFE_I18N /* !KAFFE_I18N */ 
   values.font       = ((XFontStruct*)fnt)->fid;
+#endif  
   values.function   = GXcopy;
   
   if ( gr ) {
@@ -90,6 +99,9 @@ Java_java_awt_Toolkit_graInitGraphics ( JNIEnv* env, jclass clazz,
   gr->x0   = xOff;
   gr->y0   = yOff;
   gr->xor  = 0;
+#ifdef KAFFE_I18N
+  gr->oc   = fnt;
+#endif  
 
   if ( blank ) {
 	XSetForeground( X->dsp, gr->gc, gr->bg);
@@ -148,6 +160,9 @@ Java_java_awt_Toolkit_graDrawBytes ( JNIEnv* env, jclass clazz,
   jboolean isCopy;
   int      n;
   jbyte    *jb, *jbo;
+#ifdef KAFFE_I18N
+  wchar_t *wch;
+#endif  
 
   if ( !jBytes ) return;
 
@@ -161,7 +176,13 @@ Java_java_awt_Toolkit_graDrawBytes ( JNIEnv* env, jclass clazz,
   if ( offset+len > n )
 	len = n - offset;
 
+#ifdef KAFFE_I18N
+  wch = jbyte2wchar( jbo, len );
+  XwcDrawString( X->dsp, gr->drw, gr->oc, gr->gc, x+gr->x0, y+gr->y0, wch,len);
+  free((void*) wch);  
+#else  
   XDrawString( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, jbo, len);
+#endif  
 
   (*env)->ReleaseByteArrayElements( env, jBytes, jb, JNI_ABORT);
   XFLUSH( X, False);
@@ -175,7 +196,11 @@ Java_java_awt_Toolkit_graDrawChars ( JNIEnv* env, jclass clazz,
   jboolean isCopy;
   int      n;
   jchar    *jc, *jco;
+#ifdef KAFFE_I18N
+  wchar_t *wch;  
+#else  
   XChar2b  *b;
+#endif  
 
   if ( !jChars ) return;
 
@@ -189,6 +214,12 @@ Java_java_awt_Toolkit_graDrawChars ( JNIEnv* env, jclass clazz,
   if ( offset+len > n )
 	len = n - offset;
 
+#ifdef KAFFE_I18N
+  wch = jchar2wchar( jco, len );  
+  XwcDrawString( X->dsp, gr->drw, gr->oc, gr->gc, x+gr->x0, y+gr->y0, wch,len);
+  free((void*) wch);
+#else /* !KAFFE_I18N */
+	 
 #ifndef WORDS_BIGENDIAN
   n = sizeof(XChar2b)*len;
   b = (XChar2b*) getBuffer( X, n);
@@ -197,7 +228,8 @@ Java_java_awt_Toolkit_graDrawChars ( JNIEnv* env, jclass clazz,
   b = (XChar2b*) jco;
 #endif
 
-  XDrawString16( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, b, len);  
+  XDrawString16( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, b, len);
+#endif  
 
   (*env)->ReleaseCharArrayElements( env, jChars, jc, JNI_ABORT);
   XFLUSH( X, False);
@@ -210,11 +242,21 @@ Java_java_awt_Toolkit_graDrawString ( JNIEnv* env, jclass clazz,
 {
   jboolean     isCopy;
   int          len;
+
+#ifndef KAFFE_I18N
+  
 #ifndef WORDS_BIGENDIAN
   int n;
 #endif
+
+#endif
+  
   const jchar  *jc;
+#ifdef KAFFE_I18N
+  wchar_t *wch;  
+#else  
   XChar2b      *b;
+#endif  
 
   DBG( AWT_GRA, printf("drawString: %p  \"%s\"  %d,%d\n", gr, java2CString(env,X,str), x,y));
 
@@ -223,6 +265,12 @@ Java_java_awt_Toolkit_graDrawString ( JNIEnv* env, jclass clazz,
   len = (*env)->GetStringLength( env, str);
   jc = (*env)->GetStringChars( env, str, &isCopy);
 
+#ifdef KAFFE_I18N
+  wch = jchar2wchar( jc, len );
+  XwcDrawString( X->dsp, gr->drw, gr->oc, gr->gc, x+gr->x0, y+gr->y0, wch,len);
+  free( (void *)wch );  
+#else /* !KAFFE_I18N */
+  
 #ifndef WORDS_BIGENDIAN
   n = sizeof(XChar2b)*len;
   b = (XChar2b*) getBuffer( X, n);
@@ -232,7 +280,8 @@ Java_java_awt_Toolkit_graDrawString ( JNIEnv* env, jclass clazz,
 #endif
 
   XDrawString16( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, b, len);  
-
+#endif
+  
   (*env)->ReleaseStringChars( env, str, jc);
   XFLUSH( X, False);
 }
@@ -590,8 +639,11 @@ void
 Java_java_awt_Toolkit_graSetFont ( JNIEnv* env, jclass clazz, Graphics* gr, jobject fnt )
 {
   DBG( AWT_GRA, printf("setFont: %p, %p\n", gr, fnt));
-
+#ifdef KAFFE_I18N
+  gr->oc=(XOC)fnt;  
+#else
   XSetFont( X->dsp, gr->gc, ((XFontStruct*)fnt)->fid);
+#endif  
 }
 
 void

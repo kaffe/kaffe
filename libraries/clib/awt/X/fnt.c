@@ -64,6 +64,37 @@ int dsize[] = { 0, 10, -10, 20, -20, 30, -30, 40, -40 };
  * adapts the AWT to your X installation/preferences. Don't lament, modify it!
  */
 
+#ifdef KAFFE_I18N
+XOC create_xoc(Toolkit *X,char *font_name)
+{
+  XOC xoc;
+  int i;
+  char **missing_list;
+  int missing_count;
+  char *def_string;
+
+  xoc = XCreateOC(X->xom,
+		XNBaseFontName, font_name,
+		NULL);
+  if (xoc) {
+    XGetOCValues(xoc,
+		XNMissingCharSet, &missing_count,
+		XNRequiredCharSet, &missing_list,
+		XNDefaultString, &def_string,
+		NULL);
+    if( missing_count!=0 ){
+      DBG( AWT, fprintf(stderr, "missing list exists at %s.\n" ,font_name) );
+      for (i = 0; i < missing_count; i++) {
+        DBG( AWT, fprintf(stderr, "missing list[%d]: %s\n", i, missing_list[i]) );
+      }
+    }
+  } else {
+    DBG( AWT, fprintf(stderr, "XCreateOC error at %s.\n" ,font_name) );
+  }
+  return xoc;		    
+}
+#endif
+
 void*
 Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec,
                                     jint style, jint size )
@@ -71,7 +102,11 @@ Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec,
   int  i, j, k, i0, i1, j0, j1, di, dj;
   char buf[160];
   char *spec = java2CString( env, X, jSpec);
+#ifdef KAFFE_I18N
+  XOC xoc = NULL;
+#else  
   XFontStruct* fs = 0;
+#endif  
 
 	size *= 10;  /* convert into X pointsizes */
 
@@ -89,16 +124,38 @@ Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec,
     j0 = 0; j1 = NSLANT; dj = 1;
   }
 
+#ifdef KAFFE_I18N
+  for ( j=j0; (xoc == NULL) && (j != j1); j += dj ) {
+    for ( i=i0; (xoc == NULL) && (i != i1); i += di ) {
+      for ( k=0;  (xoc == NULL) && (k < NDSIZE); k++ ) {
+#else	      
   for ( j=j0; !fs && (j != j1); j += dj ) {
     for ( i=i0; !fs && (i != i1); i += di ) {
       for ( k=0;  !fs && (k < NDSIZE); k++ ) {
+#endif	      
         sprintf( buf, spec, weight[i], slant[j], size + dsize[k]);
         DBG( AWT_FNT, printf("look up font: %s\n", buf));
+#ifdef KAFFE_I18N
+        xoc = create_xoc( X, buf);
+#else	
         fs = XLoadQueryFont( X->dsp, buf);
+#endif	
       }
     }
   }
 
+#ifdef KAFFE_I18N
+  if ( ! xoc ){
+    xoc = create_xoc( X, spec);
+  }
+  if ( ! xoc ){
+        if ( !(xoc = create_xoc( X, backupFont)) ) {
+	  fprintf( stderr, "font panic, no default font!\n");
+	}
+  }
+
+  return (void*) xoc;
+#else  
   if ( ! fs ){
     /* now we are getting desperate, try the spec directly (without vars) */
     fs = XLoadQueryFont( X->dsp, spec);
@@ -112,18 +169,99 @@ Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec,
   }
 
   return (void*) fs;
+#endif  
 }
 
+#ifdef KAFFE_I18N
+void
+Java_java_awt_Toolkit_fntFreeFont ( JNIEnv* env, jclass clazz, XOC xoc )
+{
+  XDestroyOC(xoc);
+}
+#else
 void
 Java_java_awt_Toolkit_fntFreeFont ( JNIEnv* env, jclass clazz, XFontStruct* fs )
 {
   XFreeFont( X->dsp, fs);
 }
-
+#endif
 
 /*******************************************************************************
  * FontMetrics support
  */
+
+#ifdef KAFFE_I18N
+void *
+Java_java_awt_Toolkit_fntInitFontMetrics ( JNIEnv* env, jclass clazz, void* xoc )
+{
+  return xoc;
+}
+
+void
+Java_java_awt_Toolkit_fntFreeFontMetrics ( JNIEnv* env, jclass clazz, XOC xoc )
+{
+}
+
+jint
+Java_java_awt_Toolkit_fntGetAscent ( JNIEnv* env, jclass clazz, XOC xoc )
+{
+  return -XExtentsOfFontSet(xoc)->max_logical_extent.y;	
+}
+
+jint
+Java_java_awt_Toolkit_fntGetDescent ( JNIEnv* env, jclass clazz, XOC xoc )
+{
+  XFontSetExtents *xfse=XExtentsOfFontSet(xoc);
+  return xfse->max_logical_extent.height-(-xfse->max_logical_extent.y);
+}
+
+jint
+Java_java_awt_Toolkit_fntGetFixedWidth ( JNIEnv* env, jclass clazz, XOC xoc )
+{
+  XFontSetExtents *xfse=XExtentsOfFontSet(xoc);
+  return ( xfse->max_logical_extent.width == xfse->max_ink_extent.width ) ?
+	  xfse->max_logical_extent.width : 0;
+}
+
+jint
+Java_java_awt_Toolkit_fntGetHeight ( JNIEnv* env, jclass clazz, XOC xoc )
+{
+  return XExtentsOfFontSet(xoc)->max_logical_extent.height;
+}
+
+jint
+Java_java_awt_Toolkit_fntGetLeading ( JNIEnv* env, jclass clazz, XOC xoc )
+{
+  return 0;  /* no leading (interline spacing) for X fonts */
+}
+
+jint
+Java_java_awt_Toolkit_fntGetMaxAdvance ( JNIEnv* env, jclass clazz, XOC xoc )
+{
+  return XExtentsOfFontSet(xoc)->max_logical_extent.width;
+}
+
+jint
+Java_java_awt_Toolkit_fntGetMaxAscent ( JNIEnv* env, jclass clazz, XOC xoc )
+{
+  XFontSetExtents *xfse=XExtentsOfFontSet(xoc);
+  return -xfse->max_logical_extent.y;
+}
+
+jint
+Java_java_awt_Toolkit_fntGetMaxDescent ( JNIEnv* env, jclass clazz, XOC xoc )
+{
+  XFontSetExtents *xfse=XExtentsOfFontSet(xoc);
+  return xfse->max_logical_extent.height-(-xfse->max_logical_extent.y);
+}
+
+jboolean
+Java_java_awt_Toolkit_fntIsWideFont ( JNIEnv* env, jclass clazz, XOC xoc )
+{
+  return 2; /* We assume that wide font is double-wide. */
+}
+
+#else
 
 void*
 Java_java_awt_Toolkit_fntInitFontMetrics ( JNIEnv* env, jclass clazz, void* fs )
@@ -191,18 +329,44 @@ Java_java_awt_Toolkit_fntIsWideFont ( JNIEnv* env, jclass clazz, XFontStruct* fs
   return (fs->min_byte1 | fs->max_byte1);
 }
 
+#endif
+
 jobject
+#ifdef KAFFE_I18N
+Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XOC xoc )
+#else
 Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XFontStruct* fs )
+#endif	
 {
   int       n = 256;
   jintArray widths;
   jint      *jw;
   jboolean isCopy;
+#ifdef KAFFE_I18N
+  register  int i;
+  XRectangle ink_array, logical_array;
+  XRectangle overall_ink, overall_logical;
+  wchar_t wch;
+  int num;
+#else  
   register  int i, j;
+#endif  
 
   widths = (*env)->NewIntArray( env, 256);
   jw = (*env)->GetIntArrayElements( env, widths, &isCopy);
 
+#ifdef KAFFE_I18N
+  for( i = 0; i < 256; i++ ) {
+    wch = i;
+    if (!XwcTextPerCharExtents(
+	 xoc ,&wch ,1 ,&ink_array, &logical_array, 1,
+         &num,&overall_ink, &overall_logical )){
+      DBG( AWT, fprintf(stderr, __FILE__ "(%d)"
+        "):" "XwcTextPerCharExtents Error\n",__LINE__ ));
+    }
+    jw[i] = overall_logical.width;
+  }
+#else  
   if ( fs->max_char_or_byte2 < n ) n = fs->max_char_or_byte2;
 
   if ( fs->min_bounds.width == fs->max_bounds.width ) {
@@ -213,7 +377,7 @@ Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XFontStruct* fs 
 	for ( i=fs->min_char_or_byte2, j=0; i < n; i++, j++ )
 	  jw[i] = fs->per_char[j].width;
   }
-
+#endif
   (*env)->ReleaseIntArrayElements( env, widths, jw, 0);
 
   return widths;
@@ -221,44 +385,118 @@ Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XFontStruct* fs 
 
 
 jint
+#ifdef KAFFE_I18N
+Java_java_awt_Toolkit_fntBytesWidth ( JNIEnv* env, jclass clazz,
+        XOC xoc, jbyteArray jBytes, jint off, jint len )
+#else
 Java_java_awt_Toolkit_fntBytesWidth ( JNIEnv* env, jclass clazz,
 	XFontStruct* fs, jbyteArray jBytes, jint off, jint len )
+#endif
 {
   jboolean  isCopy;
   jbyte    *jb = (*env)->GetByteArrayElements( env, jBytes, &isCopy);
   int       n = (*env)->GetArrayLength( env, jBytes);
   int       w;
+#ifdef KAFFE_I18N
+  wchar_t   *wch;
+  XRectangle *ink_array, *logical_array;
+  XRectangle overall_ink, overall_logical;
+  int num;
+#endif
 
   if ( off+len > n ) len = n - off;
 
+#ifdef KAFFE_I18N
+  wch = jbyte2wchar( jb + off, len );
+  ink_array = (XRectangle *)malloc(sizeof(XRectangle)*len);
+  logical_array = (XRectangle *)malloc(sizeof(XRectangle)*len);
+  if(!XwcTextPerCharExtents(xoc ,wch ,len ,ink_array,logical_array, len,
+      &num,&overall_ink ,&overall_logical)){
+    DBG( AWT, fprintf(stderr, __FILE__ "(%d)"
+         "):" "XwcTextPerCharExtents Error\n",__LINE__ ));
+  }
+  free( (void *)logical_array );
+  free( (void *)ink_array );
+  free( (void *)wch );
+#else  
   w = XTextWidth( fs, jb+off, len);
-
+#endif
+  
   (*env)->ReleaseByteArrayElements( env, jBytes, jb, JNI_ABORT);
+  
+#ifdef KAFFE_I18N
+  return overall_logical.width;
+#else  
   return w;
+#endif  
 }
 
 jint
+#ifdef KAFFE_I18N
+Java_java_awt_Toolkit_fntCharWidth ( JNIEnv* env, jclass clazz, 
+	XOC xoc, jchar jChar )
+#else	
 Java_java_awt_Toolkit_fntCharWidth ( JNIEnv* env, jclass clazz, XFontStruct* fs, jchar jChar )
+#endif	
 {
+#ifdef KAFFE_I18N
+  wchar_t wch;
+  XRectangle ink_array, logical_array;
+  XRectangle overall_ink, overall_logical;
+  int num;
+
+  wch = jChar;
+  if(!XwcTextPerCharExtents(xoc ,&wch ,1 ,&ink_array, &logical_array,
+	1, &num, &overall_ink, &overall_logical)){
+    DBG( AWT, fprintf(stderr, __FILE__ "(%d)"
+         "):" "XwcTextPerCharExtents Error\n",__LINE__ ));			
+  }
+  return overall_logical.width;     
+	
+#else /* !KAFFE_I18N */
+	
 #ifndef WORDS_BIGENDIAN
   jChar = (jChar << 8) | (jChar >> 8);
 #endif
 
   return XTextWidth16( fs, (XChar2b*)&jChar, 1);
+#endif  
 }
 
 jint
+#ifdef KAFFE_I18N
 Java_java_awt_Toolkit_fntCharsWidth ( JNIEnv* env, jclass clazz,
+	XOC xoc, jcharArray jChars, jint off, jint len )
+#else
+Java_java_awt_Toolkit_fntCharsWidth ( JNIEnv* env, jclass clazz,		
 	XFontStruct* fs, jcharArray jChars, jint off, jint len )
+#endif
 {
   jboolean  isCopy;
   jchar    *jc = (*env)->GetCharArrayElements( env, jChars, &isCopy);
   int      n = (*env)->GetArrayLength( env, jChars);
+#ifdef KAFFE_I18N
+  wchar_t  *wch;
+  XRectangle *ink_array, *logical_array;
+  XRectangle overall_ink, overall_logical;
+  int num;
+#else  
   XChar2b  *b;
   int      w;
+#endif
 
   if ( off+len > n ) len = n - off;
 
+#ifdef KAFFE_I18N
+  wch = jchar2wchar( jc + off, len );
+  ink_array = (XRectangle *)malloc(sizeof(XRectangle)*len);
+  logical_array = (XRectangle *)malloc(sizeof(XRectangle)*len);
+  if(!XwcTextPerCharExtents(xoc ,wch ,len ,ink_array,logical_array, len,
+	&num,&overall_ink ,&overall_logical)){
+    DBG( AWT, fprintf(stderr, __FILE__ "(%d)"
+         "):" "XwcTextPerCharExtents Error\n",__LINE__ ));			    }
+#else /* !KAFFE_I18N */
+  
 #ifndef WORDS_BIGENDIAN
   n = sizeof(XChar2b)*len;
   b = (XChar2b*) getBuffer( X, n);
@@ -267,18 +505,53 @@ Java_java_awt_Toolkit_fntCharsWidth ( JNIEnv* env, jclass clazz,
   b = (XChar2b*) (jc + off);
 #endif
 
+#endif
+ 
+#ifdef KAFFE_I18N
+  free( (void *)logical_array );
+  free( (void *)ink_array );
+  free( (void *)wch );
+#else  
   w = XTextWidth16( fs, b, len);
-
+#endif
+  
   (*env)->ReleaseCharArrayElements( env, jChars, jc, JNI_ABORT);
+#ifdef KAFFE_I18N
+  return overall_logical.width;
+#else  
   return w;
+#endif  
 }
 
 jint
+#ifdef KAFFE_I18N
+Java_java_awt_Toolkit_fntStringWidth ( JNIEnv* env, jclass clazz, 
+	XOC xoc, jstring jStr )
+#else
 Java_java_awt_Toolkit_fntStringWidth ( JNIEnv* env, jclass clazz, XFontStruct* fs, jstring jStr )
+#endif	
 {
   jboolean isCopy;
   const jchar    *jc = (*env)->GetStringChars( env, jStr, &isCopy);
   int      len = (*env)->GetStringLength( env, jStr);
+#ifdef KAFFE_I18N
+  wchar_t  *wch;
+  XRectangle *ink_array, *logical_array;
+  XRectangle overall_ink, overall_logical;
+  int num=len;
+
+  wch = jchar2wchar( jc, len );
+  ink_array = (XRectangle *)malloc(sizeof(XRectangle)*len);
+  logical_array = (XRectangle *)malloc(sizeof(XRectangle)*len);
+  if(!XwcTextPerCharExtents(xoc ,wch ,len ,ink_array,logical_array, len,
+	&num,&overall_ink ,&overall_logical)){
+    DBG( AWT, fprintf(stderr, __FILE__ "(%d)"
+         "):" "XwcTextPerCharExtents Error\n",__LINE__ ));
+  }
+  free( (void *)logical_array );
+  free( (void *)ink_array );
+  free( (void *)wch );
+#else /* !KAFFE_I18N */  
   int      w;
 #ifndef WORDS_BIGENDIAN
   int      n;
@@ -294,7 +567,12 @@ Java_java_awt_Toolkit_fntStringWidth ( JNIEnv* env, jclass clazz, XFontStruct* f
 #endif
 
   w = XTextWidth16( fs, b, len);
+#endif /* !KAFFE_I18N */  
 
   (*env)->ReleaseStringChars( env, jStr, jc);
+#ifdef KAFFE_I18N
+  return overall_logical.width;  
+#else  
   return w;
+#endif  
 }

@@ -14,6 +14,10 @@
 #include "toolkit.h"
 #include "tlkprops.h"
 
+#ifdef KAFFE_I18N
+#include "locale.h"
+#endif
+
 /********************************************************************************
  * auxiliary functions
  */
@@ -81,6 +85,15 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
 {
   char    *dspName;
 
+#ifdef KAFFE_I18N
+  /* for X Output Method */
+  int i;
+  Bool direction;
+  Bool contextdrawing;
+  XOMCharSetList cslist;
+  XOMOrientation orientation;
+#endif
+  
   getBuffer(X, 128);
 
   JniEnv = env;
@@ -114,7 +127,8 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
   X->root   = DefaultRootWindow( X->dsp);
   X->fwdIdx = -1;
 
-#if defined(USE_XSHM_EXTENSION)
+// #if defined(USE_XSHM_EXTENSION)
+#if defined(HAVE_LIBXEXT) && defined(KAFFE_I18N)  
   /*
    * We just can use XShm in case we don't run remote, and we better don't rely on
    * XShmQueryExtension to make this distinction
@@ -139,6 +153,28 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
   RETRY_FOCUS      = XInternAtom( X->dsp, "RETRY_FOCUS", False);
   FORWARD_FOCUS    = XInternAtom( X->dsp, "FORWARD_FOCUS", False);
 
+#ifdef KAFFE_I18N
+  /* Open  X Output Method */
+  setlocale(LC_ALL ,"");
+  
+  X->xom = XOpenOM(X->dsp, NULL, NULL, NULL);
+  if (X->xom) {
+    DBG( AWT, printf("locale of XOM: %s\n", XLocaleOfOM(X->xom)));
+    XGetOMValues(X->xom,
+		XNRequiredCharSet, &cslist,
+		XNQueryOrientation, &orientation,
+	        XNDirectionalDependentDrawing, &direction,
+	        XNContextualDrawing, &contextdrawing,
+	        NULL);
+     /* We could create fontset list from these. */
+    for (i = 0; i < cslist.charset_count; i++) {
+      DBG( AWT, printf("needed charset[%d]: %s\n", i, cslist.charset_list[i]));
+    }
+  } else {
+    DBG( AWT, fprintf(stderr ,"XOpenOM error\n") );
+  }
+#endif
+    
   return JNI_TRUE;
 }
 
