@@ -487,7 +487,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			 **************************************************************/
 			/* pushes NULL onto the stack, which matches any object */
 		case ACONST_NULL:
-			OPSTACK_PUSH(TNULL);
+			OPSTACK_PUSH(getTNULL());
 			break;
 			
 			/* iconst_<n> pushes n onto the stack */
@@ -774,7 +774,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				type->tinfo = TINFO_SIG;
 				(type->data.sig)++;
 			}
-			else if (type->data.class != TNULL->data.class) {
+			else if (!isNull(type)) {
 				type->tinfo = TINFO_SIG;
 				type->data.sig = CLASS_CNAME(type->data.class) + 1;
 			}
@@ -840,7 +840,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			else {
 				if (arrayType->data.class == getTOBJARR()->data.class) {
 					*arrayType = *getTOBJ();
-				} else if (arrayType->data.class != TNULL->data.class) {
+				} else if (!isNull(arrayType)) {
 					arrayType->tinfo = TINFO_SIG;
 					arrayType->data.sig = CLASS_CNAME(arrayType->data.class) + 1;
 				}

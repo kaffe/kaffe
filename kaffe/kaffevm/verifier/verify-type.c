@@ -59,7 +59,12 @@ isWide(const Type * t)
 }
 
 static Type  verify_NULL;
-Type* TNULL = &verify_NULL;
+static Type* TNULL = &verify_NULL;
+
+Type* getTNULL(void)
+{
+  return TNULL;
+}
 
 bool
 isNull(const Type * t)

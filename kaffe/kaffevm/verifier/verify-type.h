@@ -99,7 +99,7 @@ extern Type* TINT;
 extern Type* TFLOAT;
 extern Type* TLONG;
 extern Type* TDOUBLE;
-extern Type* TNULL;
+extern Type* getTNULL(void);
 extern Type* TWIDE;
 
 extern Type* getTOBJ(void);

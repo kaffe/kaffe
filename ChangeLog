@@ -1,6 +1,19 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/verifier/verify-type.c
+	(TNULL): Made static. 
+	(getTNULL) Added.
+
+	* kaffe/kaffevm/verifier/verify-type.h: 
+	(TNULL) Removed prototype.
+	(getTNULL) Added prototype.
+
+	* kaffe/kaffevm/verifier/verify-block.c:
+	Replaced use of TNULL by getTNULL and isNull.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/verifier/verify-type.c
 	(TOBJARR): Made static. 
 	(getTOBJARR) Added.
 
