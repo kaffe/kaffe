@@ -113,7 +113,7 @@ private String( int sIdx, int eIdx, char[] val) {
 
 public char charAt ( int index ) {
 	if (( index < 0) || ( index >= count))
-		throw new StringIndexOutOfBoundsException();
+		throw new StringIndexOutOfBoundsException("index = "+index+", length="+count);
 
 	return value[offset+index];
 }
@@ -174,6 +174,9 @@ public boolean endsWith( String suffix) {
 // efficient as possible.
 public boolean equals (Object anObject) {
 
+	if (anObject == this) {
+		return (true);
+	}
 	if (!(anObject instanceof String)) {
 		return (false);
 	}
@@ -270,33 +273,7 @@ public int indexOf( String str) {
 	return indexOf( str, 0);
 }
 
-public int indexOf( String str, int sIdx) {
-	int it  = offset+sIdx;
-	int ic  = str.offset;
-	int ma  = 0;
-
-	if ( str.count > count-sIdx )
-		return -1;
-
-	if ( str.count == 0 )
-		return (sIdx < 0) ? 0 : (sIdx < count) ? sIdx : count;
-
-	for ( ; it<value.length; it++){
-		if ( value[it] == str.value[ic] ){
-			if (++ma == str.count)
-				return ( it-ma-offset+1);
-			ic++;
-		}
-		else if ( ma > 0) {
-			//	it -= ma;
-			it--;
-			ma  = 0;
-			ic  = str.offset;
-		}
-	}
-
-	return -1;
-}
+native public int indexOf( String str, int sIdx);
 
 public int indexOf( int ch) {
 	return indexOf( ch, 0);
@@ -344,8 +321,9 @@ public int lastIndexOf( String str, int eIdx) {
 		it = offset+count-1;
 	}
 
-	if (str.count == 0)
+	if (str.count == 0) {
 		return (eIdx < 0) ? -1 : (eIdx < count) ? eIdx : count;
+	}
 
 	for ( ; it>=offset; it--) {
 		if ( value[it] == str.value[ic] ) {
@@ -435,6 +413,10 @@ public boolean regionMatches( int toffset, String other, int ooffset, int len) {
 }
 
 public String replace(char oldChar, char newChar) {
+	if (oldChar == newChar) {
+		return (this);
+	}
+
 	char buf[] = new char[count];
 	boolean replaced = false;
 
@@ -572,5 +554,16 @@ public String intern() {
 }
 
 private native static synchronized String intern0(String str);
+
+/* Custom only ....
+protected void finalize() throws Throwable {
+	if (interned == true) {
+		unintern0(this);
+	}
+	super.finalize();
+}
+
+final native public static synchronized String intern0(String str);
+*/
 
 }

@@ -27,3 +27,65 @@ java_lang_String_intern0(Hjava_lang_String* str)
 	}
 	return ret;
 }
+
+
+jint
+Java_java_lang_String_indexOf( JNIEnv* env, Hjava_lang_String* str, Hjava_lang_String* pat, jint offset )
+{
+  jchar *a;
+  jchar *p;
+
+  int   n;
+  int   m;
+  int   m2;
+  jint  i, k;
+  unsigned char  bs[256];
+  int *ibs;
+
+  if ( !pat || !str ) return -1;
+
+  a = &(unhand_array(unhand(str)->value)->body[unhand(str)->offset]);
+  n = unhand(str)->count;
+
+  p = &(unhand_array(unhand(pat)->value)->body[unhand(pat)->offset]);
+  m = unhand(pat)->count;
+  m2 = m * 2;
+
+  if ( (n==0) || (m==0) ) return -1;
+
+  if ( (m < 3) || (n < 128) || (m > 256) ) {
+	/*
+	 * If the pattern is too small, iterating the searched array would be
+	 * cheaper than to set up the badmatch table, or the pattern length exceeds
+	 * what we can store in the badmatch table, we revert to plain old brute force
+	 */
+	k = n - m+1;
+	for ( i=offset; i<k; i++ ) {
+	  if ( memcmp( &a[i], p, m2) == 0 )
+		return i;		
+	}
+  }
+  else {
+	/*
+	 * Otherwise we use the Quick search variant of Boyer-Moore for 
+	 * O(n/m) lookup. Note that the (char) cast in the badmatch table access
+	 * is the justification for turning this into a native method
+	 */
+
+	/* set up the badmatch table */
+	k = (m << 24) | (m<<16) | (m<<8) | m;
+	for ( i=0, ibs = (int*)bs; i<64; i++ )
+	  ibs[i] = k; /* the default jump: m */
+	for ( i=0; i<m; i++ )
+	  bs[ (unsigned char)p[i] ] = m-i;
+
+	k= n - m+1;
+	for ( i=offset; i <= k; ) {
+	  if ( memcmp( &a[i], p, m2) == 0 )
+		return i;
+	  i += bs[ (unsigned char)a[i+m] ];
+	}
+  }
+
+  return -1;
+}
