@@ -127,6 +127,7 @@ Klasses_jar_SRCS = \
 	$(gnu_java_rmi_rmic_SRCS) \
 	$(gnu_java_rmi_server_SRCS) \
 	$(gnu_java_security_SRCS) \
+	$(gnu_java_security_action_SRCS) \
 	$(gnu_java_security_der_SRCS) \
 	$(gnu_java_security_provider_SRCS) \
 	$(gnu_java_security_x509_SRCS) \
@@ -1156,7 +1157,8 @@ gnu_java_nio_SRCS = \
 	gnu/java/nio/ServerSocketChannelImpl.java \
 	gnu/java/nio/ServerSocketChannelSelectionKey.java \
 	gnu/java/nio/SocketChannelImpl.java \
-	gnu/java/nio/SocketChannelSelectionKey.java
+	gnu/java/nio/SocketChannelSelectionKey.java \
+	gnu/java/nio/VMPipe.java
 gnu_java_nio_channels_SRCS = \
 	gnu/java/nio/channels/FileChannelImpl.java
 gnu_java_nio_charset_SRCS = \
@@ -1209,6 +1211,8 @@ gnu_java_security_SRCS = \
 	gnu/java/security/Engine.java \
 	gnu/java/security/OID.java \
 	gnu/java/security/PolicyFile.java
+gnu_java_security_action_SRCS = \
+	gnu/java/security/action/SetAccessibleAction.java
 gnu_java_security_der_SRCS = \
 	gnu/java/security/der/BitString.java \
 	gnu/java/security/der/DEREncodingException.java \

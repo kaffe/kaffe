@@ -319,12 +319,9 @@ public class File implements Serializable, Comparable
     if (directory == null)
       dirpath = "";
     else if (directory.getPath() == "")
-      dirpath = PlatformHelper.isWindows ? "\\" : "/";
+      dirpath = "/";
     else
       dirpath = directory.getPath();
-
-    if (name == null)
-      throw new NullPointerException("filename is null");
 
     if (PlatformHelper.isRootDirectory(dirpath)
 	|| dirpath.equals(""))

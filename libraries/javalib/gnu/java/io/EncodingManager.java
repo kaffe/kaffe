@@ -38,17 +38,17 @@ exception statement from your version. */
 
 package gnu.java.io;
 
-import gnu.java.io.decode.Decoder;
-import gnu.java.io.decode.KaffeDecoder;
-import gnu.java.io.encode.Encoder;
-import gnu.java.io.encode.KaffeEncoder;
-
+import java.lang.reflect.Constructor;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Hashtable;
+import java.util.StringTokenizer;
+import gnu.java.io.decode.Decoder;
+import gnu.java.io.encode.Encoder;
 
-// gnu.java.io.EncodingManager that works with kaffe
+
+import java.io.FileOutputStream;
 
 /**
   * This class is used to create new instances of Decoders for a specified
@@ -57,8 +57,7 @@ import java.util.Hashtable;
   *
   * @version 0.0
   *
-  * @author Aaron M. Renn (arenn@urbanophile.com),
-  * Ito Kazumitsu (kaz@maczuka.gcd.org)
+  * @author Aaron M. Renn (arenn@urbanophile.com)
   */
 public class EncodingManager
 {
@@ -70,9 +69,24 @@ public class EncodingManager
  */
 
 /**
+  * This is the encoding class search path
+  */
+private static String encoding_path;
+
+/**
   * This is the system default character encoding
   */
-private static String default_encoding = "Default";
+private static String default_encoding;
+
+/**
+  * This is the <code>Constructor</code> for the default <code>Decoder</code>
+  */
+private static Constructor default_decoder_cons;
+
+/**
+  * This is the <code>Constructor</code> for the default <code>Encoder</code>
+  */
+private static Constructor default_encoder_cons;
 
 /**
   * This is the default instance of the default <code>Decoder</code>, put
@@ -87,9 +101,19 @@ private static Decoder default_decoder_instance;
 private static Encoder default_encoder_instance;
 
 /**
+  * This is our hash table of previously loaded <code>Decoder</code> classes
+  */
+private static Hashtable decoder_cons;
+
+/**
   * This is hash table of cached instances of <code>Decoder</code> objects
   */
 private static Hashtable decoder_instances;
+
+/**
+  * This is our hash table of previously loaded <code>Encoder</code> classes
+  */
+private static Hashtable encoder_cons;
 
 /**
   * This is hash table of cached instances of <code>Encoder</code> objects
@@ -97,32 +121,48 @@ private static Hashtable decoder_instances;
 private static Hashtable encoder_instances;
 
 
-/*
 static 
 {
   // Initialize hashtables
+  decoder_cons = new Hashtable();
+  encoder_cons = new Hashtable();
   decoder_instances = new Hashtable();
   encoder_instances = new Hashtable();
 
+  // Find the system default decoder search path
+  encoding_path = System.getProperty("file.encoding.pkg");
+  if (encoding_path == null)
+    encoding_path = "gnu.java.io";
+  else
+    encoding_path = encoding_path + ":gnu.java.io";
+
   // Find the system default encoding name
-  // String default_encoding = System.getProperty("file.encoding","8859_1");
-  // I am not sure whether System has already been initialized.
-  String default_encoding = "Default";
+  String default_encoding = System.getProperty("file.encoding","8859_1");
 
   // Load the class
   try
     {
       // First the Decoder side
+      default_decoder_cons = findDecoderConstructor(default_encoding, true);
+
+      Object[] objs = new Object[1];
+      objs[0] = null;
 
       default_decoder_instance = 
-            new KaffeDecoder(null, default_encoding);
+            (Decoder)default_decoder_cons.newInstance(objs);
         
       // Now the Encoder side
+      default_encoder_cons = findEncoderConstructor(default_encoding, true);
+
+      objs = new Object[1];
+      objs[0] = null;
 
       default_encoder_instance = 
-            new KaffeEncoder(null, default_encoding);
+            (Encoder)default_encoder_cons.newInstance(objs);
         
       // Add items to the hashtable;
+      decoder_cons.put(default_encoding, default_decoder_cons);
+      encoder_cons.put(default_encoding, default_encoder_cons);
       decoder_instances.put(default_encoding, default_decoder_instance);
       encoder_instances.put(default_encoding, default_encoder_instance);
     }
@@ -131,8 +171,7 @@ static
       throw new Error("Cannot load system default encoding '" + 
                      default_encoding + "': " + e.getMessage());
     }
-}
-*/  
+}  
 
 /*************************************************************************/
 
@@ -140,6 +179,90 @@ static
  * Class Methods
  */
 
+/**
+  * This method loads a <code>Decoder</code> class for the given
+  * encoding name.
+  *
+  * @exception UnsupportedEncodingException If a <code>Decoder</code> for this encoding cannot be found.
+  */
+private static Constructor
+findDecoderConstructor(String encoding, boolean cache) 
+                             throws UnsupportedEncodingException
+{
+  // First check for an aliased encoding name
+  String alias = System.getProperty("gnu.java.io.encoding_scheme_alias." + 
+                                    encoding);
+  if (alias != null)
+    encoding = alias;
+
+  StringTokenizer st = new StringTokenizer(encoding_path, ":");
+
+  while (st.hasMoreTokens())
+    {
+      String classname = st.nextToken() + ".decode.Decoder" + encoding;
+      try
+        {
+          Class cls = Class.forName(classname);
+
+          Class[] params = new Class[1];
+          params[0] = InputStream.class;
+
+          Constructor cons = cls.getConstructor(params);
+
+          if (cache)
+            decoder_cons.put(encoding, cons);            
+
+          return(cons);
+        }
+      catch(Exception e) { ; }
+    }
+
+  throw new UnsupportedEncodingException(encoding);
+}
+       
+/*************************************************************************/
+
+/**
+  * This method loads an <code>Encoder</code> class for the given
+  * encoding name.
+  *
+  * @exception UnsupportedEncodingException If a <code>Encoder</code> for this encoding cannot be found.
+  */
+private static Constructor
+findEncoderConstructor(String encoding, boolean cache) 
+                             throws UnsupportedEncodingException
+{
+  // First check for an aliased encoding name
+  String alias = System.getProperty("gnu.java.io.encoding_scheme_alias." + 
+                                    encoding);
+  if (alias != null)
+    encoding = alias;
+
+  StringTokenizer st = new StringTokenizer(encoding_path, ":");
+
+  while (st.hasMoreTokens())
+    {
+      String classname = st.nextToken() + ".encode.Encoder" + encoding;
+      try
+        {
+          Class cls = Class.forName(classname);
+
+          Class[] params = new Class[1];
+          params[0] = OutputStream.class;
+
+          Constructor cons = cls.getConstructor(params);
+
+          if (cache)
+            encoder_cons.put(encoding, cons);            
+
+          return(cons);
+        }
+      catch(Exception e) { ; }
+    }
+
+  throw new UnsupportedEncodingException(encoding);
+}
+       
 /*************************************************************************/
 
 /**
@@ -151,11 +274,9 @@ static
   * @return An instance of the default <code>Decoder</code>.
   */
 public static Decoder
-getDecoder() throws UnsupportedEncodingException
+getDecoder()
 {
-  // return(default_decoder_instance);
-  // return(new KaffeDecoder(null, default_encoding));
-  return(new KaffeDecoder(null, "Default"));
+  return(default_decoder_instance);
 }
 
 /*************************************************************************/
@@ -202,7 +323,6 @@ getDecoder(String encoding) throws UnsupportedEncodingException
 public static Decoder
 getDecoder(String encoding, boolean cache) throws UnsupportedEncodingException
 {
-  if (decoder_instances == null) decoder_instances = new Hashtable();
   Decoder dec = (Decoder)decoder_instances.get(encoding);
   if (dec != null)
     return(dec);
@@ -227,15 +347,20 @@ getDecoder(String encoding, boolean cache) throws UnsupportedEncodingException
 public static Decoder
 getDecoder(InputStream in)
 {
+  Object[] params = new Object[1];
+  params[0] = in;
+
+  Decoder dec = null;
   try
     {
-      // return(getDecoder(in, default_encoding, false));
-      return(getDecoder(in, "Default", false));
+      dec = (Decoder)default_decoder_cons.newInstance(params);
     }
   catch(Exception e)
     {
       throw new Error("Unexpected problems with default decoder");
     }
+
+  return(dec);
 }
 
 /*************************************************************************/
@@ -269,7 +394,7 @@ getDecoder(InputStream in, String encoding) throws UnsupportedEncodingException
   *
   * @param in The <code>InputStream</code> to read from
   * @param encoding The name of the character encoding scheme to use
-  * @param cache <code>true</code> to cache the returned <code>Decoder</code>, <code>false</code> otherwise.  Actually, not used.
+  * @param cache <code>true</code> to cache the returned <code>Decoder</code>, <code>false</code> otherwise.
   *
   * @exception UnsupportedEncodingException If a <code>Decoder</code> for this encoding cannot be found
   */
@@ -277,10 +402,14 @@ public static Decoder
 getDecoder(InputStream in, String encoding, boolean cache) 
                               throws UnsupportedEncodingException
 {
+  Constructor cons = findDecoderConstructor(encoding, cache);
+  Object[] params = new Object[1];
+  params[0] = in;
+
   Decoder dec = null;
   try
     {
-      dec = new KaffeDecoder(in, encoding);
+      dec = (Decoder)cons.newInstance(params); 
     }
   catch(Exception e)
     {
@@ -303,8 +432,7 @@ getDecoder(InputStream in, String encoding, boolean cache)
 public static Encoder
 getEncoder()
 {
-  // return(default_encoder_instance);
-  return(new KaffeEncoder(null, "Default"));
+  return(default_encoder_instance);
 }
 
 /*************************************************************************/
@@ -351,7 +479,6 @@ getEncoder(String encoding) throws UnsupportedEncodingException
 public static Encoder
 getEncoder(String encoding, boolean cache) throws UnsupportedEncodingException
 {
-  if (encoder_instances == null) encoder_instances = new Hashtable();
   Encoder enc = (Encoder)encoder_instances.get(encoding);
   if (enc != null)
     return(enc);
@@ -376,15 +503,17 @@ getEncoder(String encoding, boolean cache) throws UnsupportedEncodingException
 public static Encoder
 getEncoder(OutputStream out)
 {
+  Object[] params = new Object[1];
+  params[0] = out;
+
   Encoder enc = null;
   try
     {
-      // enc = getEncoder(out, default_encoding, false);
-      enc = getEncoder(out, "Default", false);
+      enc = (Encoder)default_encoder_cons.newInstance(params);
     }
   catch(Exception e)
     {
-      throw new Error("Unexpected problems with default encoder");
+      throw new Error("Unexpected problems with default decoder");
     }
 
   return(enc);
@@ -421,7 +550,7 @@ getEncoder(OutputStream in, String encoding) throws UnsupportedEncodingException
   *
   * @param in The <code>OutputStream</code> to read from
   * @param encoding The name of the character encoding scheme to use
-  * @param cache <code>true</code> to cache the returned <code>Encoder</code>, <code>false</code> otherwise. Actually, not used.
+  * @param cache <code>true</code> to cache the returned <code>Encoder</code>, <code>false</code> otherwise.
   *
   * @exception UnsupportedEncodingException If a <code>Decoder</code> for this encoding cannot be found
   */
@@ -429,10 +558,14 @@ public static Encoder
 getEncoder(OutputStream out, String encoding, boolean cache) 
                               throws UnsupportedEncodingException
 {
+  Constructor cons = findEncoderConstructor(encoding, cache);
+  Object[] params = new Object[1];
+  params[0] = out;
+
   Encoder enc = null;
   try
     {
-      enc = new KaffeEncoder(out, encoding); 
+      enc = (Encoder)cons.newInstance(params); 
     }
   catch(Exception e)
     {

@@ -1,5 +1,5 @@
-/* ByteOrder.java -- 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* SetAccessibleAction.java
+   Copyright (C) 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,39 +35,43 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+package gnu.java.security.action;
 
-package java.nio;
-
-import gnu.classpath.Configuration;
+import java.lang.reflect.AccessibleObject;
+import java.security.PrivilegedAction;
 
 /**
- * @author Michael Koch
- * @since 1.4
+ * PrivilagedAction implementation that calls setAccessible(true) on the 
+ * AccessibleObject passed to its constructor.
+ *
+ * Example of use:
+ * <code>
+ * Field dataField = cl.getDeclaredField("data");
+ * AccessController.doPrivilaged(new SetAccessibleAction(dataField));
+ * </code>
  */
-public final class ByteOrder
+public class SetAccessibleAction implements PrivilegedAction
 {
-  public static final ByteOrder BIG_ENDIAN = new ByteOrder();
-  public static final ByteOrder LITTLE_ENDIAN  = new ByteOrder();
-
-  /**
-   * Returns the native byte order of the platform currently running.
-   */
-  public static ByteOrder nativeOrder()
+  AccessibleObject member;
+  
+  public SetAccessibleAction()
   {
-    return (System.getProperty ("gnu.cpu.endian").equals("big")
-            ? BIG_ENDIAN : LITTLE_ENDIAN);
   }
-
-  /**
-   * Returns a string representation of the byte order.
-   */
-  public String toString()
+  
+  public SetAccessibleAction(AccessibleObject member)
   {
-    return this == BIG_ENDIAN ? "BIG_ENDIAN" : "LITTLE_ENDIAN";
+    this.member = member;
   }
-
-  // This class can only be instantiated here.
-  private ByteOrder()
+  
+  public Object run()
   {
+    member.setAccessible(true);
+    return null;
+  }
+  
+  public SetAccessibleAction setMember(AccessibleObject member)
+  {
+    this.member = member;
+    return this;
   }
 }

@@ -38,9 +38,9 @@ exception statement from your version. */
 
 package gnu.java.net.content.text;
 
-import java.io.IOException;
 import java.net.ContentHandler;
 import java.net.URLConnection;
+import java.io.IOException;
 
 /**
   * This class is the ContentHandler for the text/plain MIME type.  It

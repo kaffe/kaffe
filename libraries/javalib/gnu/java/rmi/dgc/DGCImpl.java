@@ -37,14 +37,15 @@ exception statement from your version. */
 
 package gnu.java.rmi.dgc;
 
-import gnu.java.rmi.server.UnicastServerRef;
-
-import java.rmi.RemoteException;
 import java.rmi.dgc.DGC;
 import java.rmi.dgc.Lease;
 import java.rmi.dgc.VMID;
 import java.rmi.server.ObjID;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.rmi.server.RMISocketFactory;
+import gnu.java.rmi.server.UnicastServerRef;
+
 import java.util.Hashtable;
 
 /**

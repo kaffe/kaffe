@@ -787,6 +787,7 @@ gnu/java/nio/ServerSocketChannelImpl.java
 gnu/java/nio/ServerSocketChannelSelectionKey.java
 gnu/java/nio/SocketChannelImpl.java
 gnu/java/nio/SocketChannelSelectionKey.java
+gnu/java/nio/VMPipe.java
 gnu/java/rmi/dgc/DGCImpl.java
 gnu/java/rmi/dgc/DGCImpl_Skel.java
 gnu/java/rmi/dgc/DGCImpl_Stub.java
@@ -818,6 +819,7 @@ gnu/java/rmi/server/UnicastRemoteCall.java
 gnu/java/rmi/server/UnicastRemoteStub.java
 gnu/java/rmi/server/UnicastServer.java
 gnu/java/rmi/server/UnicastServerRef.java
+gnu/java/security/action/SetAccessibleAction.java
 gnu/java/security/der/BitString.java
 gnu/java/security/der/DEREncodingException.java
 gnu/java/security/der/DER.java

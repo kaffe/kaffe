@@ -134,6 +134,9 @@ public class ObjectInputStream extends InputStream
     this.isDeserializing = true;
 
     byte marker = this.realInputStream.readByte();
+
+    depth += 2;
+
     if(dump) dumpElement("MARKER: 0x" + Integer.toHexString(marker) + " ");
 
     try
@@ -151,9 +154,9 @@ public class ObjectInputStream extends InputStream
 	  case TC_BLOCKDATALONG:
 	    {
 	      if (marker == TC_BLOCKDATALONG)
-		if(dump) dumpElementln("BLOCKDATALONG");
+		{ if(dump) dumpElementln("BLOCKDATALONG"); }
 	      else
-		if(dump) dumpElementln("BLOCKDATA");
+		{ if(dump) dumpElementln("BLOCKDATA"); }
 	      readNextBlock(marker);
 	      throw new StreamCorruptedException("Unexpected blockData");
 	    }
@@ -329,10 +332,10 @@ public class ObjectInputStream extends InputStream
 			      ("No end of block data seen for class with readObject (ObjectInputStream) method.");
 			  if(dump) dumpElementln("yes");
 			}
-		      catch (EOFException e)
-			{
-			  if(dump) dumpElementln("no, got EOFException");
-			}
+// 		      catch (EOFException e)
+// 			{
+// 			  if(dump) dumpElementln("no, got EOFException");
+// 			}
 		      catch (IOException e)
 			{
 			  if(dump) dumpElementln("no, got IOException");
@@ -347,6 +350,7 @@ public class ObjectInputStream extends InputStream
 	      this.currentObject = null;
 	      this.currentObjectStreamClass = null;
 	      ret_val = processResolution(osc, obj, handle);
+		  
 	      break;
 	    }
 
@@ -374,6 +378,8 @@ public class ObjectInputStream extends InputStream
 	setBlockDataMode(old_mode);
 	
 	this.isDeserializing = was_deserializing;
+	
+	depth -= 2;
 	
 	if (! was_deserializing)
 	  {
@@ -1838,6 +1844,9 @@ public class ObjectInputStream extends InputStream
 
   private static boolean dump = false && Configuration.DEBUG;
 
+  // The nesting depth for debugging output
+  private int depth = 0;
+
   private void dumpElement (String msg)
   {
     System.out.print(msg);
@@ -1846,6 +1855,9 @@ public class ObjectInputStream extends InputStream
   private void dumpElementln (String msg)
   {
     System.out.println(msg);
+    for (int i = 0; i < depth; i++)
+      System.out.print (" ");
+    System.out.print (Thread.currentThread() + ": ");
   }
 
   static

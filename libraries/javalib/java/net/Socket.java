@@ -311,8 +311,7 @@ public class Socket
     // that default.  JDK 1.2 doc infers not to do a bind.
   }
 
-  // This has to be accessible from java.net.ServerSocket.
-  SocketImpl getImpl() throws SocketException
+  private SocketImpl getImpl() throws SocketException
   {
     try
       {
@@ -488,6 +487,9 @@ public class Socket
    */
   public InetAddress getLocalAddress()
   {
+    if (! isBound())
+      return null;
+
     InetAddress addr = null;
 
     try
@@ -523,12 +525,11 @@ public class Socket
   public int getPort()
   {
     if (! isConnected())
-      return 0;
+      return -1;
 
     try
       {
-	if (getImpl() != null)
-	  return getImpl().getPort();
+	return getImpl().getPort();
       }
     catch (SocketException e)
       {
@@ -1155,6 +1156,9 @@ public class Socket
    */
   public void setReuseAddress(boolean reuseAddress) throws SocketException
   {
+    if (isClosed())
+      throw new SocketException("socket is closed");
+
     getImpl().setOption(SocketOptions.SO_REUSEADDR,
                         Boolean.valueOf(reuseAddress));
   }
@@ -1217,6 +1221,9 @@ public class Socket
   {
     try
       {
+	if (getImpl() == null)
+	  return false;
+
 	return getImpl().getInetAddress() != null;
       }
     catch (SocketException e)

@@ -38,17 +38,18 @@ exception statement from your version. */
 
 package java.io;
 
-import gnu.classpath.Configuration;
-import gnu.java.io.ObjectIdentityWrapper;
-import gnu.java.lang.reflect.TypeSignature;
-
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
+import java.lang.reflect.InvocationTargetException;
 import java.security.PrivilegedAction;
+import java.security.AccessController;
 import java.util.Hashtable;
+
+import gnu.java.io.ObjectIdentityWrapper;
+import gnu.java.lang.reflect.TypeSignature;
+import gnu.java.security.action.SetAccessibleAction;
+import gnu.classpath.Configuration;
 
 /**
  * An <code>ObjectOutputStream</code> can be used to write objects
@@ -144,6 +145,13 @@ public class ObjectOutputStream extends OutputStream
     protocolVersion = defaultProtocolVersion;
     useSubclassMethod = false;
     writeStreamHeader();
+
+    if (Configuration.DEBUG)
+      {
+	String val = System.getProperty("gcj.dumpobjects");
+	if (val != null && !val.equals(""))
+	  dump = true;
+      }
   }
 
   /**
@@ -172,9 +180,17 @@ public class ObjectOutputStream extends OutputStream
   {
     if (useSubclassMethod)
       {
+	if (dump)
+	  dumpElementln ("WRITE OVERRIDE: " + obj);
+	  
 	writeObjectOverride(obj);
 	return;
       }
+
+    if (dump)
+      dumpElementln ("WRITE: " + obj);
+    
+    depth += 2;    
 
     boolean was_serializing = isSerializing;
     boolean old_mode = setBlockDataMode(false);
@@ -329,13 +345,21 @@ public class ObjectOutputStream extends OutputStream
 		    fieldsAlreadyWritten = false;
 		    if (currentObjectStreamClass.hasWriteMethod())
 		      {
+			if (dump)
+			  dumpElementln ("WRITE METHOD CALLED FOR: " + obj);
 			setBlockDataMode(true);
 			callWriteMethod(obj, currentObjectStreamClass);
 			setBlockDataMode(false);
 			realOutput.writeByte(TC_ENDBLOCKDATA);
+			if (dump)
+			  dumpElementln ("WRITE ENDBLOCKDATA FOR: " + obj);
 		      }
 		    else
+		      {
+			if (dump)
+			  dumpElementln ("WRITE FIELDS CALLED FOR: " + obj);
 		      writeFields(obj, currentObjectStreamClass);
+		  }
 		  }
 
 		currentObject = null;
@@ -360,12 +384,22 @@ public class ObjectOutputStream extends OutputStream
 	setBlockDataMode(false);
 	try
 	  {
+	    if (Configuration.DEBUG)
+	      {
+		e.printStackTrace(System.out);
+	      }
 	    writeObject(e);
 	  }
 	catch (IOException ioe)
 	  {
-	    throw new StreamCorruptedException
-	      ("Exception " + ioe + " thrown while exception was being written to stream.");
+	    StreamCorruptedException ex = 
+	      new StreamCorruptedException
+	      (ioe + " thrown while exception was being written to stream.");
+	    if (Configuration.DEBUG)
+	      {
+		ex.printStackTrace(System.out);
+	      }
+	    throw ex;
 	  }
 
 	reset (true);
@@ -375,6 +409,10 @@ public class ObjectOutputStream extends OutputStream
       {
 	isSerializing = was_serializing;
 	setBlockDataMode(old_mode);
+	depth -= 2;
+
+	if (dump)
+	  dumpElementln ("END: " + obj);
       }
   }
 
@@ -1171,6 +1209,9 @@ public class ObjectOutputStream extends OutputStream
 	field_name = fields[i].getName();
 	type = fields[i].getType();
 
+	if (dump)
+	  dumpElementln ("WRITE FIELD: " + field_name + " type=" + type);
+
 	if (type == Boolean.TYPE)
 	  realOutput.writeBoolean(getBooleanField(obj, osc.forClass(), field_name));
 	else if (type == Byte.TYPE)
@@ -1474,20 +1515,14 @@ public class ObjectOutputStream extends OutputStream
       }    
   }
 
-  private static Field getField (Class klass, String name)
+  private Field getField (Class klass, String name)
     throws java.io.InvalidClassException
   {
     try
       {
 	final Field f = klass.getDeclaredField(name);
-	AccessController.doPrivileged(new PrivilegedAction()
-	  {
-	    public Object run()
-	    {
-	      f.setAccessible(true);
-	      return null;
-	    }
-	  });
+	setAccessible.setMember(f);
+	AccessController.doPrivileged(setAccessible);
 	return f;
       }
     catch (java.lang.NoSuchFieldException e)
@@ -1497,19 +1532,21 @@ public class ObjectOutputStream extends OutputStream
       }
   }
 
-  private static Method getMethod (Class klass, String name, Class[] args)
+  private Method getMethod (Class klass, String name, Class[] args)
     throws java.lang.NoSuchMethodException
   {
     final Method m = klass.getDeclaredMethod(name, args);
-    AccessController.doPrivileged(new PrivilegedAction()
-      {
-	public Object run()
-	{
-	  m.setAccessible(true);
-	  return null;
-	}
-      });
+    setAccessible.setMember(m);
+    AccessController.doPrivileged(setAccessible);
     return m;
+  }
+
+  private void dumpElementln (String msg)
+  {
+    for (int i = 0; i < depth; i++)
+      System.out.print (" ");
+    System.out.print (Thread.currentThread() + ": ");
+    System.out.println(msg);
   }
 
   // this value comes from 1.2 spec, but is used in 1.1 as well
@@ -1533,6 +1570,13 @@ public class ObjectOutputStream extends OutputStream
   private Hashtable OIDLookupTable;
   private int protocolVersion;
   private boolean useSubclassMethod;
+  private SetAccessibleAction setAccessible = new SetAccessibleAction();
+
+  // The nesting depth for debugging output
+  private int depth = 0;
+
+  // Set if we're generating debugging dumps
+  private boolean dump = false;
 
   static
   {

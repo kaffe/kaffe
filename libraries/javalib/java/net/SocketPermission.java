@@ -156,7 +156,7 @@ public final class SocketPermission extends Permission implements Serializable
 
     if (((SocketPermission) obj).hostport.equals(hostport))
       if (((SocketPermission) obj).actions.equals(actions))
-        return (true);
+	return (true);
 
     return (false);
   }
@@ -190,26 +190,26 @@ public final class SocketPermission extends Permission implements Serializable
 
     if (actions.indexOf("connect") != -1)
       {
-        sb.append("connect");
-        found = true;
+	sb.append("connect");
+	found = true;
       }
 
     if (actions.indexOf("listen") != -1)
       if (found)
-        sb.append(",listen");
+	sb.append(",listen");
       else
         {
-          sb.append("listen");
-          found = true;
+	  sb.append("listen");
+	  found = true;
         }
 
     if (actions.indexOf("accept") != -1)
       if (found)
-        sb.append(",accept");
+	sb.append(",accept");
       else
         {
-          sb.append("accept");
-          found = true;
+	  sb.append("accept");
+	  found = true;
         }
 
     if (found)
@@ -236,7 +236,7 @@ public final class SocketPermission extends Permission implements Serializable
   /**
    * Returns true if the permission object passed it is implied by the
    * this permission.  This will be true if:
-   *
+   * 
    * <ul>
    * <li>The argument is of type <code>SocketPermission</code></li>
    * <li>The actions list of the argument are in this object's actions</li>
@@ -245,7 +245,7 @@ public final class SocketPermission extends Permission implements Serializable
    * </ul>
    *
    * <p>The argument's hostname will be a subset of this object's hostname if:</p>
-   *
+   * 
    * <ul>
    * <li>The argument's hostname or IP address is equal to this object's.</li>
    * <li>The argument's canonical hostname is equal to this object's.</li>
@@ -294,60 +294,60 @@ public final class SocketPermission extends Permission implements Serializable
     // Get ours
     if (hostport.indexOf(":") == -1)
       {
-        ourfirstport = 0;
-        ourlastport = 65535;
+	ourfirstport = 0;
+	ourlastport = 65535;
       }
     else
       {
-        // FIXME:  Needs bulletproofing.
-        // This will dump if hostport if all sorts of bad data was passed to
-        // the constructor
-        String range = hostport.substring(hostport.indexOf(":") + 1);
-        if (range.startsWith("-"))
-          ourfirstport = 0;
-        else if (range.indexOf("-") == -1)
-          ourfirstport = Integer.parseInt(range);
-        else
-          ourfirstport =
-            Integer.parseInt(range.substring(0, range.indexOf("-")));
+	// FIXME:  Needs bulletproofing.
+	// This will dump if hostport if all sorts of bad data was passed to
+	// the constructor
+	String range = hostport.substring(hostport.indexOf(":") + 1);
+	if (range.startsWith("-"))
+	  ourfirstport = 0;
+	else if (range.indexOf("-") == -1)
+	  ourfirstport = Integer.parseInt(range);
+	else
+	  ourfirstport =
+	    Integer.parseInt(range.substring(0, range.indexOf("-")));
 
-        if (range.endsWith("-"))
-          ourlastport = 65535;
-        else if (range.indexOf("-") == -1)
-          ourlastport = Integer.parseInt(range);
-        else
-          ourlastport =
-            Integer.parseInt(range.substring(range.indexOf("-") + 1,
-                                             range.length()));
+	if (range.endsWith("-"))
+	  ourlastport = 65535;
+	else if (range.indexOf("-") == -1)
+	  ourlastport = Integer.parseInt(range);
+	else
+	  ourlastport =
+	    Integer.parseInt(range.substring(range.indexOf("-") + 1,
+	                                     range.length()));
       }
 
     // Get theirs
     if (p.hostport.indexOf(":") == -1)
       {
-        theirfirstport = 0;
-        ourlastport = 65535;
+	theirfirstport = 0;
+	ourlastport = 65535;
       }
     else
       {
-        // This will dump if hostport if all sorts of bad data was passed to
-        // the constructor
-        String range = p.hostport.substring(hostport.indexOf(":") + 1);
-        if (range.startsWith("-"))
-          theirfirstport = 0;
-        else if (range.indexOf("-") == -1)
-          theirfirstport = Integer.parseInt(range);
-        else
-          theirfirstport =
-            Integer.parseInt(range.substring(0, range.indexOf("-")));
+	// This will dump if hostport if all sorts of bad data was passed to
+	// the constructor
+	String range = p.hostport.substring(hostport.indexOf(":") + 1);
+	if (range.startsWith("-"))
+	  theirfirstport = 0;
+	else if (range.indexOf("-") == -1)
+	  theirfirstport = Integer.parseInt(range);
+	else
+	  theirfirstport =
+	    Integer.parseInt(range.substring(0, range.indexOf("-")));
 
-        if (range.endsWith("-"))
-          theirlastport = 65535;
-        else if (range.indexOf("-") == -1)
-          theirlastport = Integer.parseInt(range);
-        else
-          theirlastport =
-            Integer.parseInt(range.substring(range.indexOf("-") + 1,
-                                             range.length()));
+	if (range.endsWith("-"))
+	  theirlastport = 65535;
+	else if (range.indexOf("-") == -1)
+	  theirlastport = Integer.parseInt(range);
+	else
+	  theirlastport =
+	    Integer.parseInt(range.substring(range.indexOf("-") + 1,
+	                                     range.length()));
       }
 
     // Now check them
@@ -383,17 +383,17 @@ public final class SocketPermission extends Permission implements Serializable
     String theircanonical = null;
     try
       {
-        ourcanonical = InetAddress.getByName(ourhost).getHostName();
-        theircanonical = InetAddress.getByName(theirhost).getHostName();
+	ourcanonical = InetAddress.getByName(ourhost).getHostName();
+	theircanonical = InetAddress.getByName(theirhost).getHostName();
       }
     catch (UnknownHostException e)
       {
-        // Who didn't resolve?  Just assume current address is canonical enough
-        // Is this ok to do?
-        if (ourcanonical == null)
-          ourcanonical = ourhost;
-        if (theircanonical == null)
-          theircanonical = theirhost;
+	// Who didn't resolve?  Just assume current address is canonical enough
+	// Is this ok to do?
+	if (ourcanonical == null)
+	  ourcanonical = ourhost;
+	if (theircanonical == null)
+	  theircanonical = theirhost;
       }
 
     if (ourcanonical.equals(theircanonical))
@@ -402,9 +402,9 @@ public final class SocketPermission extends Permission implements Serializable
     // Well, last chance.  Try for a wildcard
     if (ourhost.indexOf("*.") != -1)
       {
-        String wild_domain = ourhost.substring(ourhost.indexOf("*" + 1));
-        if (theircanonical.endsWith(wild_domain))
-          return (true);
+	String wild_domain = ourhost.substring(ourhost.indexOf("*" + 1));
+	if (theircanonical.endsWith(wild_domain))
+	  return (true);
       }
 
     // Didn't make it

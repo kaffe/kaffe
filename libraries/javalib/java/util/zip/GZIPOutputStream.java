@@ -61,8 +61,8 @@ public class GZIPOutputStream extends DeflaterOutputStream
    */
   protected CRC32 crc;
 
-  /* Creates a GZIPOutputStream with the default buffer size
-   *
+  /**
+   * Creates a GZIPOutputStream with the default buffer size
    *
    * @param out The stream to read data (to be compressed) from 
    * 
@@ -81,7 +81,6 @@ public class GZIPOutputStream extends DeflaterOutputStream
   public GZIPOutputStream(OutputStream out, int size) throws IOException
   {
     super(out, new Deflater(Deflater.DEFAULT_COMPRESSION, true), size);
-    
     crc = new CRC32();
     int mod_time = (int) (System.currentTimeMillis() / 1000L);
     byte[] gzipHeader =
@@ -110,15 +109,16 @@ public class GZIPOutputStream extends DeflaterOutputStream
     out.write(gzipHeader);
     //    System.err.println("wrote GZIP header (" + gzipHeader.length + " bytes )");
   }
-  
+
   public synchronized void write(byte[] buf, int off, int len)
     throws IOException
   {
     super.write(buf, off, len);
     crc.update(buf, off, len);
   }
-  
-  /** Writes remaining compressed output data to the output stream
+
+  /**
+   * Writes remaining compressed output data to the output stream
    * and closes it.
    */
   public void close() throws IOException

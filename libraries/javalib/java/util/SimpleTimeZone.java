@@ -559,8 +559,6 @@ public class SimpleTimeZone extends TimeZone
    * getOffset is undefined. For the parameters see the ten-argument
    * constructor above.
    *
-   * @param rawOffset The time offset from GMT.
-   * @param id  The identifier of this time zone.
    * @param month The end month of daylight savings.
    * @param day A day in month, or a day of week in month.
    * @param dayOfWeek A day of week, when daylight savings ends.

@@ -1,5 +1,5 @@
-/* ByteOrder.java -- 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* VMPipe.java -- Reference implementation for VM hooks used by PipeImpl
+   Copyright (C) 2004 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -35,39 +35,33 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+package gnu.java.nio;
 
-package java.nio;
-
+import java.io.IOException;
+import java.nio.channels.spi.SelectorProvider;
 import gnu.classpath.Configuration;
 
 /**
- * @author Michael Koch
- * @since 1.4
+ * This class contains the native methods for gnu.java.nio.PipeImpl
+ * As such, it needs help from the VM.
+ *
+ * @author Patrik Reali
  */
-public final class ByteOrder
+final class VMPipe
 {
-  public static final ByteOrder BIG_ENDIAN = new ByteOrder();
-  public static final ByteOrder LITTLE_ENDIAN  = new ByteOrder();
 
-  /**
-   * Returns the native byte order of the platform currently running.
-   */
-  public static ByteOrder nativeOrder()
+  static
   {
-    return (System.getProperty ("gnu.cpu.endian").equals("big")
-            ? BIG_ENDIAN : LITTLE_ENDIAN);
+    // load the shared library needed for native methods.
+    if (Configuration.INIT_LOAD_LIBRARY)
+      {
+        System.loadLibrary ("javanio");
+      }
   }
 
-  /**
-   * Returns a string representation of the byte order.
-   */
-  public String toString()
-  {
-    return this == BIG_ENDIAN ? "BIG_ENDIAN" : "LITTLE_ENDIAN";
-  }
-
-  // This class can only be instantiated here.
-  private ByteOrder()
-  {
-  }
+  static void init(PipeImpl self, SelectorProvider provider)
+    throws IOException
+	{
+		throw new IOException("gnu.java.nio.VMPipe.init(): not implemented");
+	}
 }

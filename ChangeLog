@@ -1,5 +1,186 @@
 2004-07-26  Dalibor Topic  <robilad@kaffe.org>
 
+        * libraries/javalib/gnu/java/nio/VMPipe.java,
+        libraries/javalib/gnu/java/security/action/SetAccessibleAction.java:
+	New files. Taken from GNU Classpath.
+
+        * libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        libraries/javalib/all.files:
+	Regenerated.
+
+        * libraries/javalib/gnu/java/awt/ComponentDataBlitOp.java,
+        libraries/javalib/gnu/java/awt/peer/gtk/GtkMenuPeer.java,
+        libraries/javalib/gnu/java/io/EncodingManager.java,
+        libraries/javalib/gnu/java/math/MPN.java,
+        libraries/javalib/gnu/java/net/content/text/plain.java,
+        libraries/javalib/gnu/java/net/protocol/file/Connection.java,
+        libraries/javalib/gnu/java/net/protocol/http/Connection.java,
+        libraries/javalib/gnu/java/net/protocol/jar/Connection.java,
+        libraries/javalib/gnu/java/net/protocol/jar/Handler.java,
+        libraries/javalib/gnu/java/nio/FileLockImpl.java,
+        libraries/javalib/gnu/java/nio/PipeImpl.java,
+        libraries/javalib/gnu/java/nio/SocketChannelImpl.java,
+        libraries/javalib/gnu/java/rmi/dgc/DGCImpl.java,
+        libraries/javalib/gnu/java/rmi/rmic/CompilerProcess.java,
+        libraries/javalib/gnu/java/rmi/rmic/RMIC.java,
+        libraries/javalib/gnu/java/security/Engine.java,
+        libraries/javalib/java/applet/Applet.java,
+        libraries/javalib/java/io/BufferedWriter.java,
+        libraries/javalib/java/io/File.java,
+        libraries/javalib/java/io/FilterWriter.java,
+        libraries/javalib/java/io/ObjectInputStream.java,
+        libraries/javalib/java/io/ObjectOutputStream.java,
+        libraries/javalib/java/io/ObjectStreamClass.java,
+        libraries/javalib/java/io/PrintWriter.java,
+        libraries/javalib/java/math/BigDecimal.java,
+        libraries/javalib/java/net/DatagramSocket.java,
+        libraries/javalib/java/net/Socket.java,
+        libraries/javalib/java/net/SocketPermission.java,
+        libraries/javalib/java/net/URL.java,
+        libraries/javalib/java/net/URLConnection.java,
+        libraries/javalib/java/nio/ByteOrder.java,
+        libraries/javalib/java/nio/charset/CharsetDecoder.java,
+        libraries/javalib/java/sql/Timestamp.java,
+        libraries/javalib/java/util/SimpleTimeZone.java,
+        libraries/javalib/java/util/zip/GZIPOutputStream.java:
+	Resynced with GNU Classpath.
+
+	2004-07-16  Michael Koch  <konqueror@gmx.de>
+
+        * java/util/zip/GZIPOutputStream.java:
+        Fixed javadocs.
+
+	2004-07-15  Bryce McKinlay  <mckinlay@redhat.com>
+
+        PR libgcj/16574
+        * java/sql/Timestamp.java (dateFormat): Renamed from sdf.
+        (decimalFormat): New static variable.
+        (sbuf): Likewise.
+        (getTime): New. Override Date.getTime().
+        (toString): Synchronize. Use decimalFormat to format nanos value
+        correctly. Truncate extra zeros.
+        (before): Compare getNanos() only if getTime() is equal.
+        (after): Likewise.
+
+	2004-07-15  Michael Koch  <konqueror@gmx.de>
+
+        * java/nio/charset/CharsetDecoder.java
+        (decode): Fix for bug #9177: Reset state before flipping.
+
+	2004-07-16  Michael Koch  <konqueror@gmx.de>
+
+        * java/nio/ByteOrder.java
+        (static): Removed. Not needed.
+        Thanks to Patrick Reali for noticing.
+
+	2004-07-21  Bryce McKinlay  <mckinlay@redhat.com>
+
+        * java/net/URLConnection.java (position): New field.
+        (dateFormat1, dateFormat2, dateFormat3): Removed.
+        (dateFormats): New field.
+        (getHeaderFieldDate): Use new dateFormats array. Re-use parsePosition
+        each time instead of re-allocating.
+        (initializeDateFormats): Initialize 'dateFormats'.
+
+	2004-07-16  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/net/URL.java (URL(String,String,int,String,URLStreamHandler):
+        Don't set authority if host isn't specified.
+
+	2004-07-20  Bryce McKinlay  <mckinlay@redhat.com>
+
+        * java/net/Socket.java (getImpl): Now private. Remove comment.
+
+	2004-07-17  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/DatagramSocket.java
+        (getLocalAddress): Check if socket is bound or not.
+        * java/net/Socket.java
+        (getLocalAddrss): Check if socket is bound or not.
+        (getPort): Return -1 when not connected. Dont check getImpl() for
+        null.
+        (setReuseAddress): Check if socket is closed.
+        (isConnected): Check if getImpl() returns null.
+
+	2004-07-20  Bryce McKinlay  <mckinlay@redhat.com>
+
+        * java/io/BufferedWriter.java (BufferedWriter): Use existing lock
+        of chained Writer when calling super-constructor.
+        * java/io/FilterWriter.java (FilterWriter): Likewise.
+        * java/io/PrintWriter.java (PrintWriter): Likewise.
+
+	2004-06-26  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/applet/Applet.java: Revert changes from 2004-04-29,
+        2004-03-15 and 2004-03-14.
+
+	2004-07-20  Patrik Reali  <reali@acm.org>
+
+        * gnu/java/nio/PipeImpl.java,
+        vm/reference/gnu/java/nio/VMPipe.java,
+        vm/reference/gnu/java/nio/VMPipeImpl.java: VMPipeImpl renamed to VMPipe
+
+	2004-07-20  Patrik Reali  <reali@acm.org>
+
+        * gnu/java/nio/PipeImpl.java,
+        vm/reference/gnu/java/nio/VMPipeImpl.java: native method init moved
+        from gnu.java.nio.PipeImpl to gnu.java.nio.VMPipeImpl
+
+	2004-04-23  Tom Tromey  <tromey@redhat.com>
+
+        * java/math/BigDecimal.java (divide): Removed unused variable.
+        * gnu/java/nio/SocketChannelImpl.java: Cleaned up imports.
+        * gnu/java/nio/FileLockImpl.java: Cleaned up imports.
+
+	2004-07-23  Mark Wielaard  <mark@klomp.org>
+
+        * gnu/java/net/protocol/http/Connection.java (static): Get httpAgent
+        from system property inside AccessController.doPrivileged() call.
+        (proxyPort): Made package private.
+        (proxyInUse): Likewise.
+        (proxyHost): Likewise.
+        (userAgent): Likewise.
+
+	2004-07-23  Bryce McKinlay  <mckinlay@redhat.com>
+
+        * gnu/java/net/protocol/http/Connection.java: Use GetPropertyAction
+        for privileged getProperty calls.
+        * java/io/ObjectOutputStream.java (getField): No longer static. Use
+        SetAccessibleAction instead of anonymous class for doPrivileged call.
+        (getMethod): Likewise.
+        (setAccessible): New field. PrivilegedAction object to use when
+        calling setAccessible.
+        * java/io/ObjectStreamClass.java (calculateOffsets): Use
+        SetAccessibleAction instead of anonymous class for diPrivileged call.
+        (setFields): Likewise.
+        (getClassUID): Likewise.
+        (findMethod): Likewise.
+        * gnu/java/security/action/SetAccessibleAction.java: New class.
+
+	2004-07-25 Dalibor Topic <robilad@kaffe.org>
+
+        * gnu/java/awt/ComponentDataBlitOp.java,
+        Cleaned up imports.
+
+	2003-07-09  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/awt/peer/gtk/GtkMenuPeer.java:
+        Reworked import statements.
+
+	2004-06-07  Archie Cobbs  <archie@dellroad.org>
+
+        * gnu/java/io/EncodingManager.java, java/util/ResourceBundle.java:
+        Replace ``Class.forName("Foo")'' with ``Foo.class''.
+
+	2004-05-07  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/math/MPN.java,
+        gnu/java/rmi/rmic/CompilerProcess.java:
+        Fixed javadocs all over.
+
+2004-07-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* test/regression/BeanBug.java: Adapted expected output
 	for Classpath's AWT.
 
