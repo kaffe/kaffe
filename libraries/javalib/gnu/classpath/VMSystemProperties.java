@@ -89,7 +89,7 @@ class VMSystemProperties
 
       // Set the static, os-independant properties first.
 
-      properties.setProperty("java.version", "1.4");
+      properties.setProperty("java.version", "1.4.2");
       properties.setProperty("java.vendor", "Kaffe.org project");
       properties.setProperty("java.vendor.url", "http://www.kaffe.org");
       properties.setProperty("java.vendor.url.bug", "http://www.kaffe.org");
@@ -136,7 +136,12 @@ class VMSystemProperties
       final String OS_NAME = getOsName();
       properties.setProperty("os.name", OS_NAME);
 
-      final String OS_ARCH = getOsArch();
+      String OS_ARCH = getOsArch();
+
+      // Unify x86 OS_ARCH for jogl
+      if (OS_ARCH.startsWith("i") && OS_ARCH.endsWith("86"))
+        OS_ARCH = "i386";
+
       properties.setProperty("os.arch", OS_ARCH);
 
       final String OS_VERSION = getOsVersion();

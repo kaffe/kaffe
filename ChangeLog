@@ -1,3 +1,9 @@
+2005-02-21  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/gnu/classpath/VMSystemProperties.java:
+	Set java.version to 1.4.2 for jEdit.
+	Set os.arch to i386 for jogl.
+
 2005-02-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/s390/sysdepCallMethod.h: Added missing semi-colon
