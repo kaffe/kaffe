@@ -1,3 +1,13 @@
+Fri Mar 26 14:17:46 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/fp.c, fp.h: move definitions into header file
+	* libraries/javalib/java/lang/Double.java, Float.java,
+	libraries/clib/native/Double.c: fix problem where toString()
+	was printing the wrong number of digits of precision
+	* test/regression/DoublePrint.java: update to reflect corrected output
+	* FAQ/FAQ.Known-Bugs: update
+	* libraries/javalib/java/io/PrintStream.java: fix compile problem
+
 Fri Mar 26 12:10:02 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/kaffe.def: fix bug in DASTORE instruction
