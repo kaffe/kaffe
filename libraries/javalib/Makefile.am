@@ -653,12 +653,16 @@ kaffe_io_SRCS = \
 	kaffe/io/ByteToChar8859_1.java \
 	kaffe/io/ByteToCharConverter.java \
 	kaffe/io/ByteToCharDefault.java \
+	kaffe/io/ByteToCharEUC_JP.java \
 	kaffe/io/ByteToCharHashBased.java \
+	kaffe/io/ByteToCharIconv.java \
 	kaffe/io/ByteToCharUTF8.java \
 	kaffe/io/CharToByte8859_1.java \
 	kaffe/io/CharToByteConverter.java \
 	kaffe/io/CharToByteDefault.java \
+	kaffe/io/CharToByteEUC_JP.java \
 	kaffe/io/CharToByteHashBased.java \
+	kaffe/io/CharToByteIconv.java \
 	kaffe/io/CharToByteUTF8.java \
 	kaffe/io/ClassLoaderObjectInputStream.java \
 	kaffe/io/ConverterAlias.java \
@@ -799,7 +803,6 @@ serialized_converters = \
 	kaffe/io/ByteToCharCP871.ser \
 	kaffe/io/ByteToCharCP875.ser \
 	kaffe/io/ByteToCharCP918.ser \
-	kaffe/io/ByteToCharEUC_JP.ser \
 	kaffe/io/ByteToCharKOI8_R.ser \
 	kaffe/io/CharToByte8859_2.ser \
 	kaffe/io/CharToByte8859_3.ser \
@@ -839,7 +842,6 @@ serialized_converters = \
 	kaffe/io/CharToByteCP871.ser \
 	kaffe/io/CharToByteCP875.ser \
 	kaffe/io/CharToByteCP918.ser \
-	kaffe/io/CharToByteEUC_JP.ser \
 	kaffe/io/CharToByteCP861.ser \
 	kaffe/io/CharToByteCP862.ser \
 	kaffe/io/CharToByteCP863.ser \
@@ -852,11 +854,12 @@ serialized_converters = \
 	kaffe/io/CharToByteCP871.ser \
 	kaffe/io/CharToByteCP875.ser \
 	kaffe/io/CharToByteCP918.ser \
-	kaffe/io/CharToByteEUC_JP.ser \
 	kaffe/io/CharToByteKOI8_R.ser
 
 EXTRA_DIST = $(class_DATA) $(Klasses_jar_SRCS) \
 	$(serialized_converters) \
+	kaffe/io/ByteToCharEUC_JP.tbl \
+	kaffe/io/CharToByteEUC_JP.tbl \
 	kaffe/lang/unicode.idx \
 	kaffe/lang/unicode.tbl
 
@@ -882,6 +885,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 jar-classes $(LIBDIR)/Klasses.jar: $(LIBDIR)/stamp
 	rm -f $(LIBDIR)/$(CLASSFILE)
 	cp $(srcdir)/kaffe/lang/unicode.idx $(srcdir)/kaffe/lang/unicode.tbl $(LIBDIR)/kaffe/lang
+	cp $(srcdir)/kaffe/io/ByteToCharEUC_JP.tbl $(srcdir)/kaffe/io/CharToByteEUC_JP.tbl $(LIBDIR)/kaffe/io
 	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	(cd $(LIBDIR) && $(ZIP) -DX -r $(CLASSFILE) $(SRCDIRS))
 
