@@ -54,7 +54,26 @@ typedef jint jsize;
 #ifdef __cplusplus
 }
 #endif
-  
+
+/* 
+ * Before jni.h is #included within a typical JVM, the source code should 
+ * #define _JNI_VM_INTERNAL_TYPES_DEFINED and provide the real declarations
+ * for 'jobject', 'jfieldID', 'jMethodID' and other implementation types.
+ * If _JNI_VM_INTERNAL_TYPES_DEFINED is not defined, the following 
+ * declares the old versions of the types.
+ */
+#ifndef _JNI_VM_INTERNAL_TYPES_DEFINED
+/*
+typedef void *jobject;
+typedef void *jfieldID;
+typedef void *jmethodID;
+*/
+struct _jfieldID;
+struct _jmethodID;
+typedef struct _jfieldID *jfieldID;
+typedef struct _jmethodID *jmethodID;
+#endif 
+   
 #ifdef __cplusplus
   
 class _jobject {};
@@ -92,25 +111,7 @@ typedef struct _Jv_JavaVM JavaVM;
 
 #else /* __cplusplus */
 
-/* 
- * Before jni.h is #included within a typical JVM, the source code should 
- * #define _JNI_VM_INTERNAL_TYPES_DEFINED and provide the real declarations
- * for 'jobject', 'jfieldID', 'jMethodID' and other implementation types.
- * If _JNI_VM_INTERNAL_TYPES_DEFINED is not defined, the following 
- * declares the old versions of the types.
- */
-#ifndef _JNI_VM_INTERNAL_TYPES_DEFINED
-/*
-typedef void *jobject;
-typedef void *jfieldID;
-typedef void *jmethodID;
-*/
-struct _jfieldID;
-struct _jmethodID;
-typedef struct _jfieldID *jfieldID;
-typedef struct _jmethodID *jmethodID;
-#endif 
-  
+ 
 typedef void *jobject;
 typedef jobject jclass;
 typedef jobject jstring;
@@ -467,6 +468,7 @@ struct JNINativeInterface
 };
 
 #ifdef __cplusplus
+} /* Extern "C" */
 
 struct _Jv_JNIEnv
 {
