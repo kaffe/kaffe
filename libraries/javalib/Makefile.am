@@ -53,6 +53,8 @@ Klasses_jar_SRCS = \
 	$(gnu_java_beans_SRCS) \
 	$(gnu_java_beans_editors_SRCS) \
 	$(gnu_java_io_SRCS) \
+	$(gnu_java_io_decode_SRCS) \
+	$(gnu_java_io_encode_SRCS) \
 	$(gnu_java_lang_SRCS) \
 	$(gnu_java_lang_reflect_SRCS) \
 	$(gnu_java_locale_SRCS) \
@@ -242,9 +244,16 @@ gnu_java_beans_editors_SRCS = \
 gnu_java_io_SRCS = \
 	gnu/java/io/ASN1ParsingException.java \
 	gnu/java/io/ClassLoaderObjectInputStream.java \
+	gnu/java/io/EncodingManager.java \
 	gnu/java/io/NullOutputStream.java \
 	gnu/java/io/ObjectIdentityWrapper.java \
 	gnu/java/io/PlatformHelper.java
+gnu_java_io_decode_SRCS = \
+	gnu/java/io/decode/Decoder.java \
+	gnu/java/io/decode/KaffeDecoder.java
+gnu_java_io_encode_SRCS = \
+	gnu/java/io/encode/Encoder.java \
+	gnu/java/io/encode/KaffeEncoder.java
 gnu_java_lang_SRCS = \
 	gnu/java/lang/ArrayHelper.java \
 	gnu/java/lang/CharData.java \

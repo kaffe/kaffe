@@ -177,7 +177,7 @@ AC_SUBST(CCLD)
 # Configure gettext (needed for libiconv scripts)
 # ===========================================================================
 
-AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT()
 AM_GNU_GETTEXT_VERSION(0.13.1)
 
 dnl =========================================================================
@@ -1760,6 +1760,7 @@ AC_CONFIG_FILES([kaffe/scripts/compat/java])
 AC_CONFIG_FILES([kaffe/scripts/compat/javac])
 AC_CONFIG_FILES([kaffe/scripts/compat/appletviewer])
 AC_CONFIG_FILES([kaffe/scripts/compat/javadoc])
+AC_CONFIG_FILES([intl/Makefile])
 AC_CONFIG_FILES([po/Makefile.in])
 AC_CONFIG_FILES([test/Makefile])
 AC_CONFIG_FILES([test/internal/Makefile])
