@@ -13,6 +13,7 @@
 #include <native.h>
 #include "../../../kaffe/kaffevm/gtypes.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 
 /*
  * Add a JAR/ZIP to the classpath.
@@ -22,7 +23,7 @@ kaffe_management_Classpath_add(struct Hjava_lang_String* str)
 {
 	char buf[1024];
 
-	javaString2CString(str, buf, sizeof(buf));
+	stringJava2CBuf(str, buf, sizeof(buf));
 
 	addClasspath(buf);
 }

@@ -18,6 +18,7 @@
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 #include "../../../kaffe/kaffevm/errors.h"
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../kaffe/kaffevm/stackTrace.h"
@@ -47,7 +48,7 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
         int i;
 
 	/* Get string and convert '.' to '/' */
-	javaString2CString(str, buf, sizeof(buf));
+	stringJava2CBuf(str, buf, sizeof(buf));
 	classname2pathname(buf, buf);
 
 	/*
@@ -82,7 +83,7 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 	 * array names (those starting with an [), and this is what calling
 	 * loadArray does.
 	 */
-	utf8buf = makeUtf8Const (buf, strlen(buf));
+	utf8buf = utf8ConstNew(buf, strlen(buf));
 	if (buf[0] == '[') {
 		clazz = loadArray(utf8buf, loader, &einfo);
 	}
@@ -170,29 +171,7 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 struct Hjava_lang_String*
 java_lang_Class_getName(struct Hjava_lang_Class* c)
 {
-	char buffer[100];
-	struct Hjava_lang_String* str;
-	int len;
-	char* name;
-	int i;
-	char* ptr;
-	char ch;
-
-	len = c->name->length;
-	name = len > 100 ? (char*)KMALLOC(len) : buffer;
-	ptr = c->name->data;
-	for (i = 0; i < len; i++) {
-		ch = *ptr++;
-		if (ch == '/') {
-			ch = '.';
-		}
-		name[i] = ch;
-	}
-	str = makeJavaString(name, len);
-	if (name != buffer) {
-		KFREE (name);
-	}
-	return (str);
+	return(stringUtf82JavaReplace(c->name, '/', '.'));
 }
 
 /*
@@ -365,7 +344,7 @@ makeParameters(Method* meth)
 {
 	int i;
 	int len;
-	char* sig;
+	const char* sig;
 	HArrayOfObject* array;
 	Hjava_lang_Class* clazz;
 	errorInfo info;
@@ -400,7 +379,7 @@ static
 Hjava_lang_Class*
 makeReturn(Method* meth)
 {
-	char* sig;
+	const char* sig;
 	errorInfo info;
 	Hjava_lang_Class* clazz;
 
@@ -476,8 +455,7 @@ makeMethod(struct Hjava_lang_Class* clazz, int slot)
 
 	unhand(meth)->clazz = clazz;
 	unhand(meth)->slot = slot;
-	unhand(meth)->name = makeReplaceJavaStringFromUtf8(
-		mth->name->data, mth->name->length, 0, 0);
+	unhand(meth)->name = stringUtf82Java(mth->name);
 	unhand(meth)->parameterTypes = makeParameters(mth);
 	unhand(meth)->exceptionTypes = makeExceptions(mth);
 	unhand(meth)->returnType = makeReturn(mth);
@@ -501,8 +479,7 @@ makeField(struct Hjava_lang_Class* clazz, int slot)
 	if (unhand(field)->type == 0) {
 		throwError(&info);
 	}
-	unhand(field)->name = makeReplaceJavaStringFromUtf8(
-		fld->name->data, fld->name->length, 0, 0);
+	unhand(field)->name = stringUtf82Java(fld->name);
 	return (field);
 }
  
@@ -717,7 +694,7 @@ static
 int
 checkParameters(Method* mth, HArrayOfObject* argtypes)
 {
-	char *sig = mth->signature->data;
+	const char *sig = mth->signature->data;
 	int   i;
 	errorInfo info;
 
@@ -747,7 +724,7 @@ java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_Stri
 		int i;
 		for (i = 0;  i < n;  ++mth, ++i) {
 			if (((mth->accflags & ACC_PUBLIC) || declared)
-			    && equalUtf8JavaStrings (mth->name, name)) {
+			    && utf8ConstEqualJavaString(mth->name, name)) {
 				if (checkParameters(mth, arr))
 					return (makeMethod(clas, i));
 			}
@@ -793,7 +770,7 @@ java_lang_Class_getField0(struct Hjava_lang_Class* clazz, struct Hjava_lang_Stri
 		int i;
 		for (i = 0;  i < n;  ++fld, ++i) {
 			if (((fld->accflags & ACC_PUBLIC) || declared)
-			    && equalUtf8JavaStrings (fld->name, name)) {
+			    && utf8ConstEqualJavaString(fld->name, name)) {
 				return makeField(clas, i);
 			}
 		}

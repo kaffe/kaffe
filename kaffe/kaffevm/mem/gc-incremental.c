@@ -28,6 +28,7 @@
 #include "md.h"
 #include "jni.h"
 #include "access.h"
+#include "stringSupport.h"
 
 static gcList gclists[5];
 static int mustfree = 4;		/* temporary list */
@@ -116,6 +117,7 @@ int gc_mode = GC_DISABLED;	/* GC will be enabled after the first
 static void gcFree(void*);
 
 static void finalizeObject(void*);
+static void finalizeUtf8Const(void*);
 
 void walkMemory(void*);
 
@@ -185,7 +187,7 @@ static gcFuncs gcFunctions[] = {
 	{ walkNull,	    finalizeBytecode },	/* GC_ALLOC_BYTECODE */
 	{ walkConservative, finalizeEtable   },	/* GC_ALLOC_EXCEPTIONTABLE */
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_CONSTANT */
-	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_UTF8CONST */
+	{ walkNull,	    finalizeUtf8Const },/* GC_ALLOC_UTF8CONST */
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_INTERFACE */
 	{ walkConservative, finalizeJitcode  },	/* GC_ALLOC_JITCODE */
 	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_LOCK */
@@ -196,7 +198,7 @@ static gcFuncs gcFunctions[] = {
 #define	REFOBJALLOCSZ	128
 #define	REFOBJHASHSZ	128
 typedef struct _refObject {
-	void*			mem;
+	const void*		mem;
 	unsigned int		ref;
 	struct _refObject*	next;
 } refObject;
@@ -259,7 +261,7 @@ markObject(void* mem)
 }
 
 #define MARK_OBJECT_PRECISE(obj) do { \
-  void *objp = obj; \
+  const void *objp = obj; \
   if (objp) { \
     gc_unit *unit = UTOUNIT(objp); \
     gc_block *info = GCMEM2BLOCK(unit); \
@@ -1011,7 +1013,7 @@ gcFree(void* mem)
  */
 static
 void
-gcAddRef(void* mem)
+gcAddRef(const void* mem)
 {
 	uint32 idx;
 	refObject* obj;
@@ -1039,7 +1041,7 @@ gcAddRef(void* mem)
  */
 static
 bool
-gcRmRef(void* mem)
+gcRmRef(const void* mem)
 {
 	uint32 idx;
 	refObject** objp;
@@ -1073,6 +1075,13 @@ finalizeObject(void* ob)
 
 	assert(final != 0);
 	callMethodA(final, METHOD_INDIRECTMETHOD(final), obj, 0, 0);
+}
+
+static
+void
+finalizeUtf8Const(void* ptr)
+{
+	utf8ConstDestroy((Utf8Const*) ptr);
 }
 
 #if defined(STATS)

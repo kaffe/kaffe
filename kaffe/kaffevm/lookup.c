@@ -24,6 +24,7 @@
 #include "exception.h"
 #include "thread.h"
 #include "baseClasses.h"
+#include "stringSupport.h"
 #include "machine.h"
 #include "locks.h"
 #include "soft.h"
@@ -79,7 +80,7 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
 		assert(class->state >= CSTATE_LINKED);
 
                 if (isSpecial == true) {
-                        if (!equalUtf8Consts(name, constructor_name) && class !=
+                        if (!utf8ConstEqual(name, constructor_name) && class !=
  this && instanceof(class, this)) {
                                 class = this->superclass;
                         }
@@ -227,7 +228,7 @@ findMethodLocal(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature)
 	 */
 	n = CLASS_NMETHODS(class);
 	for (mptr = CLASS_METHODS(class); --n >= 0; ++mptr) {
-		if (equalUtf8Consts (name, mptr->name) && equalUtf8Consts (signature, mptr->signature)) {
+		if (utf8ConstEqual (name, mptr->name) && utf8ConstEqual (signature, mptr->signature)) {
 			if ((mptr->accflags & ACC_ABSTRACT) != 0) {
 				SET_METHOD_NATIVECODE(mptr, (void*)throwAbstractMethodError);
 				mptr->accflags |= ACC_NATIVE;

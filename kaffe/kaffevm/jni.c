@@ -27,6 +27,7 @@
 #include "native.h"
 #include "file.h"
 #include "baseClasses.h"
+#include "stringSupport.h"
 #include "readClass.h"
 #include "access.h"
 #include "lookup.h"
@@ -300,7 +301,7 @@ Kaffe_ThrowNew(JNIEnv* env, jclass cls, const char* mess)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	eobj = execute_java_constructor(NULL, cls, "(Ljava/lang/String;)V", makeJavaString((char*)mess, strlen(mess)));
+	eobj = execute_java_constructor(NULL, cls, "(Ljava/lang/String;)V", stringC2Java((char*)mess));
 
 	unhand(getCurrentThread())->exceptObj = (struct Hjava_lang_Throwable*)eobj;
 
@@ -1565,7 +1566,7 @@ Kaffe_GetFieldID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 	Field* fld;
 	errorInfo info;
 
-	fld = lookupClassField((Hjava_lang_Class*)cls, makeUtf8Const((char*)name, -1), false, &info);
+	fld = lookupClassField((Hjava_lang_Class*)cls, utf8ConstNew((char*)name, -1), false, &info);
 	if (fld == NULL) {
 		postError(env, &info);
 	}
@@ -2315,7 +2316,7 @@ Kaffe_GetStaticFieldID(JNIEnv* env, jclass cls, const char* name, const char* si
 	Field* fld;
 	errorInfo info;
 
-	fld = lookupClassField((Hjava_lang_Class*)cls, makeUtf8Const((char*)name, -1), true, &info);
+	fld = lookupClassField((Hjava_lang_Class*)cls, utf8ConstNew((char*)name, -1), true, &info);
 	if (fld == NULL) {
 		postError(env, &info);
 	}
@@ -2580,8 +2581,7 @@ Kaffe_NewStringUTF(JNIEnv* env, const char* data)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	str = makeReplaceJavaStringFromUtf8((unsigned char*)data,
-		strlen(data), 0, 0);
+	str = stringUtf82Java(utf8ConstNew(data, strlen(data)));
 
 	END_EXCEPTION_HANDLING();
 	return (str);
@@ -3439,7 +3439,7 @@ Kaffe_DetachCurrentThread(JavaVM* vm)
 
 static
 void
-strcatJNI(char* to, char* from)
+strcatJNI(char* to, const char* from)
 {
 	char* ptr;
 
@@ -3487,7 +3487,7 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 {
 	char buf[100];
 	int i;
-	char* str;
+	const char* str;
 	int count;
 	nativeCodeInfo ncode;
 	SlotInfo* tmp;

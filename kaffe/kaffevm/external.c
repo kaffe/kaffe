@@ -203,6 +203,7 @@ bool
 native(Method* m, errorInfo *einfo)
 {
 	char stub[MAXSTUBLEN];
+	const char* s;
 	char* ptr;
 	int i;
 	void* func;
@@ -210,13 +211,13 @@ native(Method* m, errorInfo *einfo)
 
 	/* Construct the stub name */
 	strcpy(stub, STUB_PREFIX);
-	ptr = m->class->name->data;
-	for (i = STUB_PREFIX_LEN; *ptr != 0; ptr++, i++) {
-		if (*ptr == '/') {
+	s = m->class->name->data;
+	for (i = STUB_PREFIX_LEN; *s != 0; s++, i++) {
+		if (*s == '/') {
 			stub[i] = '_';
 		}
 		else {
-			stub[i] = *ptr;
+			stub[i] = *s;
 		}
 	}
 	stub[i] = '_';

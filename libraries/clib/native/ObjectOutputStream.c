@@ -15,6 +15,7 @@
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/lookup.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 #include <native.h>
 #include "defs.h"
 #include "files.h"
@@ -76,8 +77,8 @@ java_io_ObjectOutputStream_invokeObjectWriter(struct Hjava_io_ObjectOutputStream
 	 * ObjectInputStream.invokeObjectReader  
 	 */
 	meth = findMethodLocal(cls, 
-		makeUtf8Const("writeObject", -1), 
-		makeUtf8Const("(Ljava/io/ObjectOutputStream;)V", -1));
+		utf8ConstNew("writeObject", -1), 
+		utf8ConstNew("(Ljava/io/ObjectOutputStream;)V", -1));
 
 	if (meth != 0) {
 		do_execute_java_method(obj, 0, 0, meth, 0, stream);

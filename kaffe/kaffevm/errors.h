@@ -30,11 +30,11 @@ typedef struct _errorInfo {
 
 #define SET_LANG_EXCEPTION_MESSAGE(ep, NAME, MESS) { \
   (ep)->classname = "java.lang." #NAME; \
-  (ep)->mess = MESS; }
+  (ep)->mess = (void*)MESS; }
 
 #define SET_IO_EXCEPTION_MESSAGE(ep, NAME, MESS) { \
   (ep)->classname = "java.io." #NAME; \
-  (ep)->mess = MESS; }
+  (ep)->mess = (void*)MESS; }
 
 #define NEW_LANG_EXCEPTION(NAME) \
   (struct Hjava_lang_Throwable*)execute_java_constructor("java.lang." #NAME, \
@@ -42,7 +42,7 @@ typedef struct _errorInfo {
 
 #define NEW_LANG_EXCEPTION_MESSAGE(NAME, MESS) \
   (struct Hjava_lang_Throwable*)execute_java_constructor("java.lang." #NAME, \
-	0, "(Ljava/lang/String;)V", makeJavaString(MESS, strlen(MESS)))
+	0, "(Ljava/lang/String;)V", stringC2Java(MESS))
 
 #define NEW_IO_EXCEPTION(NAME) \
   (struct Hjava_lang_Throwable*)execute_java_constructor("java.io." #NAME, \
@@ -50,7 +50,7 @@ typedef struct _errorInfo {
 
 #define NEW_IO_EXCEPTION_MESSAGE(NAME, MESS) \
   (struct Hjava_lang_Throwable*)execute_java_constructor("java.io." #NAME, \
-	0, "(Ljava/lang/String;)V", makeJavaString(MESS, strlen(MESS)))
+	0, "(Ljava/lang/String;)V", stringC2Java(MESS))
 
 #define NoSuchMethodError(M) NEW_LANG_EXCEPTION_MESSAGE(NoSuchMethodError, M)
 #define ClassFormatError NEW_LANG_EXCEPTION(ClassFormatError)

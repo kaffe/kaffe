@@ -33,8 +33,8 @@ OBJECT=\
 		support$(OBJEXT) \
 		main$(OBJEXT) \
 		jar$(OBJEXT) \
+		utf8const$(OBJEXT) \
 		inflate$(OBJEXT) \
-		util$(OBJEXT) \
 		readClass$(OBJEXT)
 
 DEPENDS=       $(OBJECT:@OBJEXT@=.d)
@@ -76,6 +76,9 @@ jar.d:		$(srcdir)/../kaffevm/jar.c
 		$(DEPTOOL) $(ALL_CFLAGS) $< > $@
 
 inflate.d:	$(srcdir)/../kaffevm/inflate.c
+		$(DEPTOOL) $(ALL_CFLAGS) $< > $@
+
+utf8const.d:	$(srcdir)/../kaffevm/utf8const.c
 		$(DEPTOOL) $(ALL_CFLAGS) $< > $@
 
 .c.d:

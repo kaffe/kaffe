@@ -14,7 +14,11 @@
 
 #include <stdio.h>
 
+#if !defined(__DEFINED_CLASS)
+#define __DEFINED_CLASS
 typedef struct Hjava_lang_Class Hjava_lang_Class;
+#endif
+
 typedef struct _methods methods;
 typedef struct _errorInfo errorInfo;
 

@@ -16,6 +16,7 @@
 #include "jtypes.h"
 #include "itypes.h"
 #include "baseClasses.h"
+#include "stringSupport.h"
 #include "object.h"
 
 Hjava_lang_Class* intClass;
@@ -28,7 +29,6 @@ Hjava_lang_Class* byteClass;
 Hjava_lang_Class* shortClass;     
 Hjava_lang_Class* voidClass;
 
-extern Utf8Const* makeUtf8Const(char*, int);
 extern gcFuncs gcClassObject;
 
 Hjava_lang_Class* types[MAXTYPES];
@@ -41,7 +41,7 @@ initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 	gc_add_ref(clazz);
 
 	clazz->dtable = _PRIMITIVE_DTABLE;
-	clazz->name = makeUtf8Const(name, -1);
+	clazz->name = utf8ConstNew(name, -1);
 	CLASS_PRIM_SIG(clazz) = sig;
 	TYPE_PRIM_SIZE(clazz) = len;
 }
@@ -90,16 +90,16 @@ finishTypes(void)
 }
 
 Hjava_lang_Class*
-getClassFromSignature(char* sig, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
+getClassFromSignature(const char* sig, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
 	return (classFromSig(&sig, loader, einfo));
 }
 
 Hjava_lang_Class*
-classFromSig(char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
+classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
-	char* start;
-	char* end;
+	const char* start;
+	const char* end;
 
 	switch (*(*strp)++) {
 	case 'V': return (voidClass);
@@ -120,7 +120,7 @@ classFromSig(char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 		if (*end != 0) {
 			(*strp)++;
 		}
-		return (loadClass(makeUtf8Const(start, end-start), loader, einfo));
+		return (loadClass(utf8ConstNew(start, end-start), loader, einfo));
 	default:
 		return (NULL);
 	}

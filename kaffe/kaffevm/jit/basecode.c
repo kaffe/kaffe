@@ -23,8 +23,6 @@
 #define	ASSIGNSLOT(D, S)	(D).s.slot = (S); \
 				if ((S) != 0) (S)->info = SI_SLOT
 
-extern void nop(sequence*);
-
 void
 _slot_const_const(SlotInfo* dst, jword s1, jword s2, ifunc f, int type)
 {

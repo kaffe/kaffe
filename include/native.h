@@ -64,24 +64,25 @@ typedef	Hjava_lang_String	HString;
 /*
  * Function used for Kaffe Native Interface (KNI).
  */
-extern jvalue	do_execute_java_method(void*, char*, char*, Method*, int, ...);
-extern jvalue	do_execute_java_class_method(char*, char*, char*, ...);
-extern HObject*	execute_java_constructor(char*, HClass*, char*, ...);
+extern jvalue	do_execute_java_method(void*, const char*, const char*, Method*, int, ...);
+extern jvalue	do_execute_java_class_method(const char*, const char*, const char*, ...);
+extern HObject*	execute_java_constructor(const char*, HClass*, const char*, ...);
 
-extern char*	javaString2CString(HString*, char*, int);
-extern char*	makeCString(HString*);
-extern HString*	makeJavaString(char*, int);
-extern int	equalUtf8JavaStrings(Utf8Const*, HString*);
+extern char*	stringJava2CBuf(const HString*, char*, int);
+extern char*	stringJava2C(const HString*);
+extern HString*	stringC2Java(const char*);
 
-extern void	SignalError(char*, char*) __NORETURN__;
+extern int	utf8ConstEqualJavaString(const Utf8Const*, const HString*);
 
-extern HObject*	AllocObject(char*);
+extern void	SignalError(const char*, const char*) __NORETURN__;
+
+extern HObject*	AllocObject(const char*);
 extern HObject*	AllocArray(int, int);
-extern HObject*	AllocObjectArray(int, char*);
+extern HObject*	AllocObjectArray(int, const char*);
 
-extern void	addNativeMethod(char*, void*);
+extern void	addNativeMethod(const char*, void*);
 
-extern void	classname2pathname(char*, char*);
+extern void	classname2pathname(const char*, char*);
 
 /*
  * Define KMALLOC, KFREE, etc.

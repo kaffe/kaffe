@@ -17,6 +17,8 @@
 #include "FileInputStream.h"
 #include "FileDescriptor.h"
 #include "jsyscall.h"
+#include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 
 /*
  * Open a file for input.
@@ -27,7 +29,7 @@ java_io_FileInputStream_open(struct Hjava_io_FileInputStream* this, struct Hjava
 	char str[MAXPATHLEN];
 	int fd;
 
-	javaString2CString(name, str, sizeof(str));
+	stringJava2CBuf(name, str, sizeof(str));
 	fd = KOPEN(str, O_RDONLY|O_BINARY, 0);
 	unhand(unhand(this)->fd)->fd = fd;
 	if (fd < 0) {

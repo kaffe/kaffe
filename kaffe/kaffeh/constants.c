@@ -17,6 +17,7 @@
 #include "file.h"
 #include "itypes.h"
 #include "constants.h"
+#include "stringSupport.h"
 #include "kaffeh-support.h"
 
 constants* constant_pool;
@@ -67,29 +68,14 @@ RDBG(		if (type != CONSTANT_Utf8) {
 		case CONSTANT_Utf8:
 			readu2(&len, fp);
 			{
-#if INTERN_UTF8CONSTS
-				char buffer[100];
-				char* name;
-				if (len <= 100) {
-					name = buffer;
-				}
-				else {
-					name = KMALLOC(len);
-				}
-				fread(name, len, sizeof(u1), fp);
-RDBG(				printf("%2d: Cnst %2d: utf8: %.*s\n", i, type, len, name); )
-				pool[i] = (jword)&(makeUtf8Const (name, len)->data);
-				if (name != buffer) {
-					free (name);
-				}
-#else
-				Utf8Const *m =
-				  KMALLOC(sizeof(Utf8Const) + len + 1);
-				readm(m->data, len, sizeof(u1), fp);
-				m->data[len] = 0;
-				m->hash = (uint16)hashUtf8String (m->data,len);
-				pool[i] = (jword)&(m->data);
-#endif
+				Utf8Const *utf8;
+				char *buf;
+
+				buf = KMALLOC(len);
+				readm(buf, len, sizeof(u1), fp);
+				utf8 = utf8ConstNew(buf, len);
+				KFREE(buf);
+				pool[i] = (jword) &(utf8->data);
 			}
 			break;
 

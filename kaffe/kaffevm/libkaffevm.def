@@ -2,9 +2,9 @@ EXPORTS
 AllocObjectArray
 AllocObject
 AllocArray
-javaString2CString
-makeCString
-makeJavaString
+stringJava2CBuf
+stringJava2C
+stringC2Java
 execute_java_constructor
 do_execute_java_class_method
 do_execute_java_method

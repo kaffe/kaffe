@@ -14,6 +14,7 @@
 #include "config-mem.h"
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 #include "../../../kaffe/kaffevm/lookup.h"
 #include "../../../kaffe/kaffevm/access.h"
 #include <native.h>
@@ -46,7 +47,7 @@ java_io_ObjectStreamClass_getMethodSignatures(struct Hjava_lang_Class* cls)
 		strcpy(buf, meth->name->data);
 		strcat(buf, " ");
 		strcat(buf, meth->signature->data);
-		unhand(ss)->body[i] = (Hjava_lang_Object*)makeJavaString(buf, strlen(buf));
+		unhand(ss)->body[i] = (Hjava_lang_Object*)stringC2Java(buf);
 	}
 	return (ss);
 }
@@ -65,7 +66,7 @@ java_io_ObjectStreamClass_getMethodAccess(struct Hjava_lang_Class* cls, struct H
 	 * we returned in getMethodSignatures.  We will find the name of the
 	 * method before the space and the signature after the space
 	 */
-	name = sig = makeCString(str);
+	name = sig = stringJava2C(str);
 
 	/* replace " " with '0' */
 	while (*sig != ' ')
@@ -99,7 +100,7 @@ java_io_ObjectStreamClass_getMethodAccess(struct Hjava_lang_Class* cls, struct H
 static char
 convertFieldTypeToString(Field* fld, char *buf)
 {
-	char* type;
+	const char* type;
 
 	if (CLASS_IS_PRIMITIVE(FIELD_TYPE(fld))) {
 		buf[0] = CLASS_PRIM_SIG(FIELD_TYPE(fld));
@@ -139,7 +140,7 @@ java_io_ObjectStreamClass_getFieldSignatures(struct Hjava_lang_Class* cls)
 		strcpy(buf, fld->name->data);
 		strcat(buf, " ");
 		convertFieldTypeToString(fld, buf + strlen(buf));
-		unhand(ss)->body[i] = (Hjava_lang_Object*)makeJavaString(buf, strlen(buf));
+		unhand(ss)->body[i] = (Hjava_lang_Object*)stringC2Java(buf);
 	}
 	return (ss);
 }
@@ -158,7 +159,7 @@ java_io_ObjectStreamClass_getFieldAccess(struct Hjava_lang_Class* cls, struct Hj
 	 * we returned in getFieldSignatures.  We will find the name of the
 	 * field before the space and its signature after the space
 	 */
-	name = sig = makeCString(str);
+	name = sig = stringJava2C(str);
 
 	/* replace " " with '0' */
 	while (*sig != ' ')
@@ -213,13 +214,13 @@ java_io_ObjectStreamClass_getFields0(struct Hjava_io_ObjectStreamClass* stream, 
 
 		unhand(sf)->body[i] = AllocObject("java/io/ObjectStreamField");
 		obj = (Hjava_io_ObjectStreamField*)unhand(sf)->body[i];
-		unhand(obj)->name = Utf8Const2JavaString(fld->name);
+		unhand(obj)->name = stringUtf82Java(fld->name);
 		unhand(obj)->offset = FIELD_OFFSET(fld);
 		unhand(obj)->type = convertFieldTypeToString(fld, buf);
 
 		/* set typeString if not primitive */
 		if (!CLASS_IS_PRIMITIVE(FIELD_TYPE(fld))) {
-			unhand(obj)->typeString = makeJavaString(buf, strlen(buf));
+			unhand(obj)->typeString = stringC2Java(buf);
 		}
 		i++;
 	}
@@ -232,7 +233,7 @@ java_io_ObjectStreamClass_getSerialVersionUID(struct Hjava_lang_Class* cls)
 	Field* fld;
 	errorInfo info;
 
-	fld = lookupClassField(cls, makeUtf8Const("serialVersionUID" , -1), true, &info);
+	fld = lookupClassField(cls, utf8ConstNew("serialVersionUID" , -1), true, &info);
 	/* NB: lookupClassField should only fail if there is no
 	 * serialVersionUID field.  */
 	if (fld == 0) {
@@ -251,8 +252,8 @@ java_io_ObjectStreamClass_hasWriteObject(struct Hjava_lang_Class* class)
 	 * Note that we do not use findMethod because that would resolve
 	 * the constants in this class, which is not necessary.
 	 */
-	name = makeUtf8Const("writeObject", -1);
-	signature = makeUtf8Const("(Ljava/io/ObjectOutputStream;)V", -1);
+	name = utf8ConstNew("writeObject", -1);
+	signature = utf8ConstNew("(Ljava/io/ObjectOutputStream;)V", -1);
 
         for (; class != 0; class = class->superclass) {
                 Method* mptr = findMethodLocal(class, name, signature);

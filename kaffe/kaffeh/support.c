@@ -18,6 +18,8 @@
 #include "jtypes.h"
 #include "jsyscall.h"
 #include "jmalloc.h"
+#include "gtypes.h"
+#include "gc.h"
 #include "constants.h"
 #include "file.h"
 #include "access.h"
@@ -50,11 +52,17 @@ extern char* translateSigType(char*, char*);
 static int objectDepth = -1;
 static int argpos = 0;
 
+static void* gcMalloc(size_t, int);
+static void* gcRealloc(void*, size_t, int);
+static void  gcFree(void*);
+static void gcAddRef(const void *);
+static bool gcRmRef(const void *);
+
 /*
  * We use a very simple 'fake' threads subsystem
  */
 
-struct SystemCallInterface Kaffe_SystemCallInterface =
+SystemCallInterface Kaffe_SystemCallInterface =
 {
 	(int (*)(const char*, int, int)) open,	/* avoid warning */
         read,
@@ -83,6 +91,20 @@ struct SystemCallInterface Kaffe_SystemCallInterface =
         NULL,		/* forkexec */
         NULL,		/* waitpid */
         NULL,		/* kill */
+};
+
+/*
+ * We use a very simple 'fake' garbage collector interface
+ */
+
+GarbageCollectorInterface Kaffe_GarbageCollectorInterface = {
+	gcMalloc,
+	gcRealloc,
+	gcFree,
+	NULL,
+	NULL,
+	gcAddRef,
+	gcRmRef,
 };
 
 /*
@@ -610,4 +632,33 @@ jfree(void* mem)
 	free(mem);
 }
 
+static void *
+gcMalloc(size_t sz, int type)
+{
+	return(jmalloc(sz));
+}
+
+static void *
+gcRealloc(void *mem, size_t sz, int type)
+{
+	return(jrealloc(mem, sz));
+}
+
+static void  gcFree(void *mem)
+{
+	jfree(mem);
+}
+
+
+static void
+gcAddRef(const void *v)
+{
+	return;
+}
+
+static bool
+gcRmRef(const void *v)
+{
+	return false;
+}
 

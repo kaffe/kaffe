@@ -19,6 +19,8 @@
 #include "RandomAccessFile.h"
 #include "FileDescriptor.h"
 #include "jsyscall.h"
+#include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 
 /*
  * Open a file for random access.
@@ -29,7 +31,7 @@ java_io_RandomAccessFile_open(struct Hjava_io_RandomAccessFile* this, struct Hja
 	int fd;
 	char str[MAXPATHLEN];
 
-	javaString2CString(name, str, sizeof(str));
+	stringJava2CBuf(name, str, sizeof(str));
 
 	fd = KOPEN(str, (rw == 0 ? O_RDONLY : O_RDWR|O_CREAT)|O_BINARY, 0666);
 	unhand(unhand(this)->fd)->fd = fd;

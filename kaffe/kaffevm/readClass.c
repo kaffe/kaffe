@@ -21,6 +21,7 @@
 #include "object.h"
 #include <constants.h>			/* Ugh! */
 #include <readClassConfig.h>		/* Ugh! */
+#include <stringSupport.h>		/* Ugh! */
 #include "readClass.h"
 
 Hjava_lang_Class*

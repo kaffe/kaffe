@@ -22,6 +22,7 @@
 #include "file.h"
 #include "readClass.h"
 #include "baseClasses.h"
+#include "stringSupport.h"
 #include "thread.h"
 #include "itypes.h"
 #include "bytecode.h"
@@ -487,23 +488,6 @@ DBG(RESERROR,	dprintf("setupClass: not a class.\n");			)
 	return (cl);
 }
 
-#if INTERN_UTF8CONSTS
-static
-int
-hashClassName(Utf8Const *name)
-{
-	int len = (name->length+1) >> 1;  /* Number of shorts */
-	uint16 *ptr = (uint16*) name->data;
-	int hash = len;
-	while (--len >= 0) {
-		hash = (hash << 1) ^ *ptr++;
-	}
-	return (hash);
-}
-#else
-#define hashClassName(NAME) ((NAME)->hash)
-#endif
-
 /*
  * Take a prepared class and register it with the class pool.
  */
@@ -573,8 +557,8 @@ DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	)
 #ifdef DEBUG
 	/* Search down class for method name - don't allow duplicates */
 	for (ni = CLASS_NMETHODS(c), mt = CLASS_METHODS(c); --ni >= 0; ) {
-		assert(! equalUtf8Consts (name, mt->name)
-		       || ! equalUtf8Consts (signature, mt->signature));
+		assert(! utf8ConstEqual (name, mt->name)
+		       || ! utf8ConstEqual (signature, mt->signature));
 	}
 #endif
 
@@ -594,7 +578,7 @@ DBG(CLASSFILE,
 	mt->idx = -1;
 
 	/* Mark constructors as such */
-	if (equalUtf8Consts (name, constructor_name)) {
+	if (utf8ConstEqual (name, constructor_name)) {
 		mt->accflags |= ACC_CONSTRUCTOR;
 	}
 
@@ -609,7 +593,7 @@ addField(Hjava_lang_Class* c, field_info* f)
 	Field* ft;
 	constants* pool;
 	int index;
-	char* sig;
+	const char* sig;
 
 	pool = CLASS_CONSTANTS (c);
 
@@ -744,9 +728,7 @@ loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 DBG(VMCLASSLOADER,		
 			dprintf("classLoader: loading %s\n", name->data); 
     )
-			str = makeReplaceJavaStringFromUtf8(name->data, 
-							    name->length, 
-							    '/', '.');
+			str = stringUtf82JavaReplace(name, '/', '.');
 			/* If an exception is already pending, for instance
 			 * because we're resolving one that has occurred,
 			 * save it and clear it for the upcall.
@@ -881,7 +863,7 @@ loadStaticClass(Hjava_lang_Class** class, char* name)
 	errorInfo info;
 	classEntry* centry;
 
-        centry = lookupClassEntry(makeUtf8Const(name, -1), 0);
+        centry = lookupClassEntry(utf8ConstNew(name, -1), 0);
 	lockMutex(centry);
 	if (centry->class == 0) {
 		clazz = findClass(centry, &info);
@@ -908,11 +890,11 @@ bad:
  * Look a class up by name.
  */
 Hjava_lang_Class*
-lookupClass(char* name, errorInfo *einfo)
+lookupClass(const char* name, errorInfo *einfo)
 {
 	Hjava_lang_Class* class;
 
-	class = loadClass(makeUtf8Const(name, -1), NULL, einfo);
+	class = loadClass(utf8ConstNew(name, -1), NULL, einfo);
 	if (class != 0) {
 		if (processClass(class, CSTATE_COMPLETE, einfo) == true) {
 			return (class);
@@ -928,7 +910,7 @@ Hjava_lang_Class*
 resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 {
 	Hjava_lang_Class* clas;
-	char* name;
+	const char* name;
 
 	/* Avoid locking if we can */
 	if (FIELD_RESOLVED(fld)) {
@@ -1174,7 +1156,7 @@ resolveStaticFields(Hjava_lang_Class* class)
 				break;
 
 			case CONSTANT_String:
-				pool->data[idx] = (ConstSlot)Utf8Const2JavaString(WORD2UTF(pool->data[idx]));
+				pool->data[idx] = (ConstSlot)stringUtf82Java(WORD2UTF(pool->data[idx]));
 				pool->tags[idx] = CONSTANT_ResolvedString;
 				/* ... fall through ... */
 			case CONSTANT_ResolvedString:
@@ -1216,7 +1198,7 @@ buildDispatchTable(Hjava_lang_Class* class)
 		}
 #endif
 		if ((meth->accflags & ACC_STATIC)
-		    || equalUtf8Consts(meth->name, constructor_name)) {
+		    || utf8ConstEqual(meth->name, constructor_name)) {
 			meth->idx = -1;
 			continue;
 		}
@@ -1227,8 +1209,8 @@ buildDispatchTable(Hjava_lang_Class* class)
 			int j = CLASS_NMETHODS(super);
 			Method* mt = CLASS_METHODS(super);
 			for (; --j >= 0;  ++mt) {
-				if (equalUtf8Consts (mt->name, meth->name)
-				    && equalUtf8Consts (mt->signature,
+				if (utf8ConstEqual (mt->name, meth->name)
+				    && utf8ConstEqual (mt->signature,
 							meth->signature)) {
 					meth->idx = mt->idx;
 					goto foundmatch;
@@ -1341,9 +1323,9 @@ buildDispatchTable(Hjava_lang_Class* class)
 				int k = CLASS_NMETHODS(ncl);
 				mt = CLASS_METHODS(ncl);
 				for (; --k >= 0;  ++mt) {
-					if (equalUtf8Consts (mt->name, 
+					if (utf8ConstEqual (mt->name, 
 							     meth->name)
-					    && equalUtf8Consts (mt->signature,
+					    && utf8ConstEqual (mt->signature,
 							meth->signature)) 
 					{
 						idx = mt->idx;
@@ -1404,7 +1386,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class)
 			meth->idx = -1;
 #if defined(TRANSLATOR)
 			/* Handle <clinit> */
-			if (equalUtf8Consts(meth->name, init_name) && 
+			if (utf8ConstEqual(meth->name, init_name) && 
 				METHOD_NEEDS_TRAMPOLINE(meth)) 
 			{
 				methodTrampoline* tramp = (methodTrampoline*)gc_malloc(sizeof(methodTrampoline), GC_ALLOC_DISPATCHTABLE);
@@ -1443,7 +1425,7 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 	for (idx = 0; idx < pool->size; idx++) {
 		switch (pool->tags[idx]) {
 		case CONSTANT_String:
-			pool->data[idx] = (ConstSlot)Utf8Const2JavaString(WORD2UTF(pool->data[idx]));
+			pool->data[idx] = (ConstSlot)stringUtf82Java(WORD2UTF(pool->data[idx]));
 			pool->tags[idx] = CONSTANT_ResolvedString;
 			break;
 
@@ -1479,9 +1461,9 @@ lookupClassEntryInternal(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 {
 	classEntry* entry;
 
-	entry = classEntryPool[hashClassName(name) & (CLASSHASHSZ-1)];
+	entry = classEntryPool[utf8ConstHashValue(name) & (CLASSHASHSZ-1)];
 	for (; entry != 0; entry = entry->next) {
-		if (equalUtf8Consts(name, entry->name) && loader == entry->loader) {
+		if (utf8ConstEqual(name, entry->name) && loader == entry->loader) {
 			return (entry);
 		}
 	}
@@ -1517,9 +1499,9 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 	   there) */
         lockStaticMutex(&classHashLock);
 
-	entryp = &classEntryPool[hashClassName(name) & (CLASSHASHSZ-1)];
+	entryp = &classEntryPool[utf8ConstHashValue(name) & (CLASSHASHSZ-1)];
 	for (; *entryp != 0; entryp = &(*entryp)->next) {
-		if (equalUtf8Consts(name, (*entryp)->name) && loader == (*entryp)->loader) {
+		if (utf8ConstEqual(name, (*entryp)->name) && loader == (*entryp)->loader) {
 			/* Someone else added it - discard ours and return
 			   the new one. */
 			unlockStaticMutex(&classHashLock);
@@ -1558,7 +1540,7 @@ lookupClassField(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic, errorInf
 		n = CLASS_NIFIELDS(clp);
 	}
 	while (--n >= 0) {
-		if (equalUtf8Consts (name, fptr->name)) {
+		if (utf8ConstEqual (name, fptr->name)) {
 			/* Resolve field if necessary */
 			if (resolveFieldType(fptr, clp, einfo) == 0) {
 				return (NULL);
@@ -1580,7 +1562,7 @@ DBG(RESERROR,
  * method signature.
  */
 void
-countInsAndOuts(char* str, short* ins, short* outs, char* outtype)
+countInsAndOuts(const char* str, short* ins, short* outs, char* outtype)
 {
 	*ins = sizeofSig(&str, false);
 	*outtype = str[0];
@@ -1591,7 +1573,7 @@ countInsAndOuts(char* str, short* ins, short* outs, char* outtype)
  * Calculate size of data item based on signature.
  */
 int
-sizeofSig(char** strp, bool want_wide_refs)
+sizeofSig(const char** strp, bool want_wide_refs)
 {
 	int count;
 	int c;
@@ -1610,10 +1592,10 @@ sizeofSig(char** strp, bool want_wide_refs)
  * Calculate size (in words) of a signature item.
  */
 int
-sizeofSigItem(char** strp, bool want_wide_refs)
+sizeofSigItem(const char** strp, bool want_wide_refs)
 {
 	int count;
-	char* str;
+	const char* str;
 
 	for (str = *strp; ; str++) {
 		switch (*str) {
@@ -1689,10 +1671,10 @@ lookupArray(Hjava_lang_Class* c)
 		sprintf (sig, "[%c", CLASS_PRIM_SIG(c));
 	}
 	else {
-		char* cname = CLASS_CNAME (c);
+		const char* cname = CLASS_CNAME (c);
 		sprintf (sig, cname[0] == '[' ? "[%s" : "[L%s;", cname);
 	}
-	arr_name = makeUtf8Const(sig, -1);
+	arr_name = utf8ConstNew(sig, -1);
 	centry = lookupClassEntry(arr_name, c->loader);
 
 	if (centry->class != 0) {

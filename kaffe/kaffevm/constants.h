@@ -82,49 +82,6 @@ typedef struct _constants {
 	ConstSlot*	data;
 } constants;
 
-#if INTERN_UTF8CONSTS
-#define equalUtf8Consts(A, B) ((A)==(B))
-#else /* !INTERN_UTF8CONSTS */
-#ifdef __GNUC__
-inline
-#endif
-static
-int equalUtf8Consts (register Utf8Const* a, register Utf8Const *b)
-{
-  register int len;
-  register uint16 *aptr, *bptr;
-  if (a == b)
-    return 1;
-  if (a->hash != b->hash)
-    return 0;
-  len = a->length;
-  if (b->length != len)
-    return 0;
-  aptr = (uint16 *)a->data;
-  bptr = (uint16 *)b->data;
-  len = (len + 1) >> 1;
-  while (--len >= 0)
-    if (*aptr++ != *bptr++)
-      return 0;
-  return 1;
-}
-#endif /* !INTERN_UTF8CONSTS */
-
-/* Extract a character from a Java-style Utf8 string.
- * PTR points to the current character.
- * LIMIT points to the end of the Utf8 string.
- * PTR is incremented to point after the character thta gets returns.
- * On an error, -1 is returned. */
-#define UTF8_GET(PTR, LIMIT) \
-  ((PTR) >= (LIMIT) ? -1 \
-   : *(PTR) < 128 ? *(PTR)++ \
-   : (*(PTR)&0xE0) == 0xC0 && ((PTR)+=2)<=(LIMIT) && ((PTR)[-1]&0xC0) == 0x80 \
-   ? (((PTR)[-2] & 0x1F) << 6) + ((PTR)[-1] & 0x3F) \
-   : (*(PTR) & 0xF0) == 0xE0 && ((PTR) += 3) <= (LIMIT) \
-   && ((PTR)[-2] & 0xC0) == 0x80 && ((PTR)[-1] & 0xC0) == 0x80 \
-   ? (((PTR)[-3]&0x1F) << 12) + (((PTR)[-2]&0x3F) << 6) + ((PTR)[-1]&0x3F) \
-   : ((PTR)++, -1))
-
 /*
  * Macros to take constant pools apart.
  */

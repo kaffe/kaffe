@@ -109,17 +109,17 @@
 		readu4(&len, fp);					\
 		if (CLASS_CONST_TAG(this, idx) == CONSTANT_Utf8) {	\
 			name = WORD2UTF(CLASS_CONST_DATA (this, idx));	\
-			if (equalUtf8Consts(name, Code_name)) {		\
+			if (utf8ConstEqual(name, Code_name)) {		\
 				addCode((Method*)thing, len, fp);	\
 			}						\
-			else if (equalUtf8Consts(name, LineNumberTable_name)){ \
+			else if (utf8ConstEqual(name, LineNumberTable_name)){ \
 				addLineNumbers((Method*)thing, len, fp);\
 			}						\
-			else if (equalUtf8Consts(name, ConstantValue_name)){ \
+			else if (utf8ConstEqual(name, ConstantValue_name)){ \
 				readu2(&idx, fp);			\
 				setFieldValue((Field*)thing, idx);	\
 			}						\
-			else if (equalUtf8Consts(name, Exceptions_name)){ \
+			else if (utf8ConstEqual(name, Exceptions_name)){ \
 				addCheckedExceptions((Method*)thing, len, fp);\
 			}						\
 			else {						\

@@ -22,6 +22,7 @@
 #include "../../../kaffe/kaffevm/external.h"
 #include "../../../kaffe/kaffevm/gc.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 
 #define	LIBRARY_PREFIX	"/lib"
 
@@ -40,7 +41,7 @@ java_lang_Runtime_initializeLinkerInternal(struct Hjava_lang_Runtime* this)
 #if defined(NO_SHARED_LIBRARIES)
 	return (0);
 #else
-	return (makeJavaString(libraryPath, strlen(libraryPath)));
+	return (stringC2Java(libraryPath));
 #endif
 }
 
@@ -58,15 +59,15 @@ java_lang_Runtime_buildLibName(struct Hjava_lang_Runtime* this, struct Hjava_lan
 	 * it doesn't fit into the buffer, it will truncate the path
 	 * silently.
 	 */
-	javaString2CString(s1, str, sizeof(str));
+	stringJava2CBuf(s1, str, sizeof(str));
 	strncpy(lib, str, MAXLIBPATH-1);
 	strncat(lib, LIBRARY_PREFIX, MAXLIBPATH-1);
-	javaString2CString(s2, str, sizeof(str));
+	stringJava2CBuf(s2, str, sizeof(str));
 	strncat(lib, str, MAXLIBPATH-1);
 	strncat(lib, LIBRARYSUFFIX, MAXLIBPATH-1);
 	lib[MAXLIBPATH-1] = 0;
 
-	return (makeJavaString(lib, strlen(lib)));
+	return (stringC2Java(lib));
 }
 
 /*
@@ -78,7 +79,7 @@ java_lang_Runtime_loadFileInternal(struct Hjava_lang_Runtime* this, struct Hjava
 	char lib[MAXPATHLEN];
 	int r;
 
-	javaString2CString(s1, lib, sizeof(lib));
+	stringJava2CBuf(s1, lib, sizeof(lib));
 	r = loadNativeLibrary(lib);
 
 	return (r);

@@ -65,9 +65,9 @@ char* realClassPath;
 
 void initClasspath(void);
 
-static int getClasspathType(char*);
-static void generateMangledName(char*, char*);
-static void discoverClasspath(char*);
+static int getClasspathType(const char*);
+static void generateMangledName(char*, const char*);
+static void discoverClasspath(const char*);
 static void makeClasspath(char*);
 
 /*
@@ -79,7 +79,7 @@ findClass(classEntry* centry, errorInfo *einfo)
 {
 	char buf[MAXBUF];
 	classFile hand;
-	char* cname;
+	const char* cname;
 	Hjava_lang_Class* class = 0;
 
 	cname = centry->name->data;
@@ -287,11 +287,11 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
  */
 static
 void
-generateMangledName(char* buf, char* cname)
+generateMangledName(char* buf, const char* cname)
 {
 	int qualifications;
-	char* ptr;
-	char* start;
+	const char* ptr;
+	const char* start;
 	int j;
 
 	qualifications = 0;
@@ -393,7 +393,7 @@ PDBG(	printf("initClasspath(): '%s'\n", cp);				)
  */
 static
 void
-discoverClasspath(char* home)
+discoverClasspath(const char* home)
 {
 	DIR* dir;
 	struct dirent* entry;
@@ -431,7 +431,7 @@ discoverClasspath(char* home)
  * Add an entry in the Classpath dynamically.
  */
 int
-addClasspath(char* cp)
+addClasspath(const char* cp)
 {
 	classpathEntry* ptr;
 	classpathEntry* lptr;
@@ -467,7 +467,7 @@ PDBG(	printf("addClasspath(): '%s'\n", cp);				)
  */
 static
 int
-getClasspathType(char* path)
+getClasspathType(const char* path)
 {
 	int h;
 	int c;

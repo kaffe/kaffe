@@ -32,7 +32,7 @@
 struct Hjava_lang_Thread;
 
 typedef struct _iLock {
-	void*			address;
+	const void*		address;
 	struct _iLock*		next;
 	int			ref;
 	void*			holder;

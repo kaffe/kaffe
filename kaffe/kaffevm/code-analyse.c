@@ -60,7 +60,7 @@ verifyMethod(Method* meth, codeinfo **pcodeinfo, errorInfo *einfo)
 	int32 idx;
 	int32 sp;
 	int32 lcl;
-	char* sig;
+	const char* sig;
 	perPCInfo* bhead;
 	perPCInfo* btail;
 	perPCInfo* bcurr;
@@ -350,7 +350,7 @@ verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 	callInfo call;
 	fieldInfo finfo;
 	Hjava_lang_Class* type;
-	char* sig;
+	const char* sig;
 	Hjava_lang_Class* class;
 	frameElement* activeFrame;
 	bool wide;

@@ -21,6 +21,7 @@
 #include "constants.h"
 #include "errors.h"
 #include "baseClasses.h"
+#include "stringSupport.h"
 #include "thread.h"
 #include "lookup.h"
 #include "slots.h"
@@ -105,14 +106,14 @@ initialiseKaffe(void)
 	initNative();
 
 	/* Create the initialise and finalize names and signatures. */
-	init_name = makeUtf8ConstFixed(INIT, -1);
-	final_name = makeUtf8ConstFixed(FINAL, -1);
-	void_signature = makeUtf8ConstFixed(VOIDSIG, -1);
-	constructor_name = makeUtf8ConstFixed(CONSTRUCTOR_NAME, -1);
-	Code_name = makeUtf8ConstFixed("Code", -1);
-	LineNumberTable_name = makeUtf8ConstFixed("LineNumberTable", -1);
-	ConstantValue_name = makeUtf8ConstFixed("ConstantValue", -1);
-	Exceptions_name = makeUtf8ConstFixed("Exceptions", -1);
+	init_name = utf8ConstNewFixed(INIT, -1);
+	final_name = utf8ConstNewFixed(FINAL, -1);
+	void_signature = utf8ConstNewFixed(VOIDSIG, -1);
+	constructor_name = utf8ConstNewFixed(CONSTRUCTOR_NAME, -1);
+	Code_name = utf8ConstNewFixed("Code", -1);
+	LineNumberTable_name = utf8ConstNewFixed("LineNumberTable", -1);
+	ConstantValue_name = utf8ConstNewFixed("ConstantValue", -1);
+	Exceptions_name = utf8ConstNewFixed("Exceptions", -1);
 
 	/* Read in base classes */
 	initBaseClasses();
@@ -177,7 +178,7 @@ initBaseClasses(void)
 	 * "KAFFE_VERSION".
 	 */
 	f = lookupClassField(CloneClass, 
-		makeUtf8Const("KAFFE_VERSION", -1), true, &einfo);
+		utf8ConstNew("KAFFE_VERSION", -1), true, &einfo);
 	if (f == 0) {
 		fprintf(stderr,
 		    "\nCould not initialize Kaffe.\n"

@@ -182,7 +182,7 @@ void
 __initLock(iLock* lk, const char *lkname)
 {
 	lk->ref = -1;
-	lk->address = (void*)lkname;
+	lk->address = lkname;
 	lk->next = staticLocks;
 	staticLocks = lk;
 	(*Kaffe_LockInterface.init)(lk);

@@ -62,7 +62,7 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 	int i;
 	int j;
 	int len;
-	char* sig;
+	const char* sig;
 	char rettype;
 
 	/* Bit of a hack this */

@@ -28,7 +28,7 @@ extern void	jfree(void*);
 
 #ifdef DEBUG
 #undef KFREE
-#define KFREE(p)	do { jfree(p); (p) = (void*)0; } while (0)
+#define KFREE(p)	do { jfree(p); (void*)(p) = (void*)0; } while (0)
 #endif
 
 #endif

@@ -1,3 +1,48 @@
+Mon Dec 21 23:30:26 1998  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/hashtab.c kaffe/kaffevm/hashtab.h
+	kaffe/kaffevm/string.c kaffe/kaffevm/stringSupport.h
+	kaffe/kaffevm/utf8const.c: New files for interning
+	* include/jmalloc.h include/native.h kaffe/kaffeh/Makefile.in
+	kaffe/kaffeh/constants.c kaffe/kaffeh/constants.h
+	kaffe/kaffeh/readClassConfig.h kaffe/kaffeh/support.c
+	kaffe/kaffevm/Makefile.in kaffe/kaffevm/baseClasses.c
+	kaffe/kaffevm/baseClasses.h kaffe/kaffevm/classMethod.c
+	kaffe/kaffevm/classMethod.h kaffe/kaffevm/code-analyse.c
+	kaffe/kaffevm/constants.c kaffe/kaffevm/constants.h
+	kaffe/kaffevm/errors.h kaffe/kaffevm/exception.c
+	kaffe/kaffevm/external.c kaffe/kaffevm/findInJar.c kaffe/kaffevm/gc.h
+	kaffe/kaffevm/gtypes.h kaffe/kaffevm/itypes.c
+	kaffe/kaffevm/jit/basecode.c kaffe/kaffevm/jit/icode.c
+	kaffe/kaffevm/jit/machine.c kaffe/kaffevm/jni.c
+	kaffe/kaffevm/libkaffevm.def kaffe/kaffevm/locks.c
+	kaffe/kaffevm/locks.h kaffe/kaffevm/lookup.c
+	kaffe/kaffevm/mem/gc-incremental.c kaffe/kaffevm/readClass.c
+	kaffe/kaffevm/readClassConfig.h kaffe/kaffevm/soft.c
+	kaffe/kaffevm/support.c kaffe/kaffevm/support.h kaffe/kaffevm/thread.c
+	libraries/clib/io/AudioPlayer.c libraries/clib/io/File.c
+	libraries/clib/io/FileInputStream.c
+	libraries/clib/io/FileOutputStream.c
+	libraries/clib/io/RandomAccessFile.c
+	libraries/clib/management/Classpath.c libraries/clib/native/Class.c
+	libraries/clib/native/ClassLoader.c libraries/clib/native/DateFormat.c
+	libraries/clib/native/Double.c libraries/clib/native/Float.c
+	libraries/clib/native/Method.c
+	libraries/clib/native/ObjectInputStream.c
+	libraries/clib/native/ObjectOutputStream.c
+	libraries/clib/native/ObjectStreamClass.c
+	libraries/clib/native/Runtime.c libraries/clib/native/String.c
+	libraries/clib/native/ZipFile.c libraries/clib/net/InetAddressImpl.c
+	test/regression/InternHog.java:
+	Merge in revamped Utf8Const and string handling:
+	  - Intern all UTF-8 constants
+	  - Overhaul interning of String objects
+	  - Add generic intern hashtable library to support interning
+	  - Changed a zillon 'char *' to 'const char *'
+	  - Consolidated string-related declarations into new header
+	    file "stringSupport.h"
+	  - Give string and utf8 functions more consistent names
+
 Tue Dec 22 00:16:58 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/code-analyse.c: initialize native pcs with -1.

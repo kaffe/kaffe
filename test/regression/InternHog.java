@@ -3,6 +3,8 @@ public class InternHog {
 	public static void main(String[] args) {
 		int x = 0;
 		try {
+			if ((Integer.toString(0) + "aa").intern() != "0aa")
+				throw new Exception("intern inequality");
 			while (x < MAX_NUM)
 				Integer.toString(x++).intern();
 			System.out.println("Success.");

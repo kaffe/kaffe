@@ -21,6 +21,7 @@
 #include "../../../kaffe/kaffevm/locks.h"
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "../../../kaffe/kaffevm/exception.h"
 #include <native.h>
@@ -58,8 +59,8 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	 */
 	if (name != NULL) {
 		/* The name uses dots, but clazz->name uses slashes */
-		Hjava_lang_String *temp = makeReplaceJavaStringFromUtf8(
-			clazz->name->data, clazz->name->length, '/', '.'); 
+		Hjava_lang_String *temp =
+			stringUtf82JavaReplace(clazz->name, '/', '.'); 
 
 		if (STRING_SIZE(temp) != STRING_SIZE(name) ||
 			memcmp(STRING_DATA(temp), STRING_DATA(name), 
@@ -144,9 +145,9 @@ java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
         else {
                 name = KMALLOC (len);
         }
-        javaString2CString(str, name, len+1);
-        classname2pathname (name, name);
-        c = makeUtf8Const (name, len);
+        stringJava2CBuf(str, name, len+1);
+        classname2pathname(name, name);
+        c = utf8ConstNew(name, len);
 
 	clazz = loadClass(c, 0, &info);
 	if (clazz == 0) {
@@ -187,7 +188,7 @@ java_lang_ClassLoader_getSystemResourceAsBytes0(struct Hjava_lang_String* str)
 	HArrayOfByte* data;
 	errorInfo err;
 
-	name = makeCString(str);
+	name = stringJava2C(str);
 	hand = findInJar(name, &err);
 	KFREE(name);
 	if (hand.type == 0) {
@@ -228,9 +229,9 @@ java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
         else {
                 name = KMALLOC (len);
         }
-        javaString2CString(str, name, len+1);
-        classname2pathname (name, name);
-        c = makeUtf8Const (name, len);
+        stringJava2CBuf(str, name, len+1);
+        classname2pathname(name, name);
+        c = utf8ConstNew(name, len);
         if (name != buffer) {
                 KFREE(name);
         }

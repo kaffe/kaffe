@@ -169,7 +169,7 @@ translate(Method* meth, errorInfo *einfo)
 	SlotInfo* tmp;
 	SlotInfo* tmp2;
 	SlotInfo* mtable;
-	char* str;
+	const char* str;
 
 	bytecode* base;
 	int len;

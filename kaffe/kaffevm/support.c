@@ -22,6 +22,7 @@
 #include "object.h"
 #include "constants.h"
 #include "baseClasses.h"
+#include "stringSupport.h"
 #include "lookup.h"
 #include "exception.h"
 #include "slots.h"
@@ -56,7 +57,7 @@ extern struct JNIEnv_ Kaffe_JNIEnv;
  * Call a Java method from native code.
  */
 jvalue
-do_execute_java_method_v(void* obj, char* method_name, char* signature, Method* mb, int isStaticCall, va_list argptr)
+do_execute_java_method_v(void* obj, const char* method_name, const char* signature, Method* mb, int isStaticCall, va_list argptr)
 {
 	jvalue retval;
 	errorInfo info;
@@ -86,7 +87,7 @@ do_execute_java_method_v(void* obj, char* method_name, char* signature, Method* 
 }
 
 jvalue
-do_execute_java_method(void* obj, char* method_name, char* signature, Method* mb, int isStaticCall, ...)
+do_execute_java_method(void* obj, const char* method_name, const char* signature, Method* mb, int isStaticCall, ...)
 {
 	va_list argptr;
 	jvalue retval;
@@ -102,7 +103,7 @@ do_execute_java_method(void* obj, char* method_name, char* signature, Method* mb
  * Call a Java static method on a class from native code.
  */
 jvalue
-do_execute_java_class_method_v(char* cname, char* method_name, char* signature, va_list argptr)
+do_execute_java_class_method_v(const char* cname, const char* method_name, const char* signature, va_list argptr)
 {
 	Method* mb = 0;
 	jvalue retval;
@@ -134,7 +135,7 @@ do_execute_java_class_method_v(char* cname, char* method_name, char* signature, 
 }
 
 jvalue
-do_execute_java_class_method(char* cname, char* method_name, char* signature, ...)
+do_execute_java_class_method(const char* cname, const char* method_name, const char* signature, ...)
 {
 	va_list argptr;
 	jvalue retval;
@@ -150,7 +151,7 @@ do_execute_java_class_method(char* cname, char* method_name, char* signature, ..
  * Allocate an object and execute the constructor.
  */
 Hjava_lang_Object*
-execute_java_constructor_v(char* cname, Hjava_lang_Class* cc, char* signature, va_list argptr)
+execute_java_constructor_v(const char* cname, Hjava_lang_Class* cc, const char* signature, va_list argptr)
 {
 	Hjava_lang_Object* obj;
 	Method* mb;
@@ -177,8 +178,8 @@ execute_java_constructor_v(char* cname, Hjava_lang_Class* cc, char* signature, v
 		}
 	}
 
-	mb = findMethodLocal(cc, makeUtf8Const(constructor_name->data, -1), 
-				 makeUtf8Const(signature, -1));
+	mb = findMethodLocal(cc, utf8ConstNew(constructor_name->data, -1), 
+				 utf8ConstNew(signature, -1));
 	if (mb == 0) {
 		throwException(NoSuchMethodError(constructor_name->data));
 	}
@@ -193,7 +194,7 @@ execute_java_constructor_v(char* cname, Hjava_lang_Class* cc, char* signature, v
 }
 
 Hjava_lang_Object*
-execute_java_constructor(char* cname, Hjava_lang_Class* cc, char* signature, ...)
+execute_java_constructor(const char* cname, Hjava_lang_Class* cc, const char* signature, ...)
 {
 	va_list argptr;
 	Hjava_lang_Object* obj;
@@ -211,7 +212,7 @@ execute_java_constructor(char* cname, Hjava_lang_Class* cc, char* signature, ...
 void
 callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 {
-	char* sig;
+	const char* sig;
 	int i;
 	int s;
 	/* XXX call.callsize and call.calltype arrays are statically sized 
@@ -390,7 +391,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 void
 callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 {
-	char* sig;
+	const char* sig;
 	int i;
 	int s;
 	/* XXX call.callsize and call.calltype arrays are statically sized 
@@ -569,16 +570,16 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
  * Lookup a method given class, name and signature.
  */
 Method*
-lookupClassMethod(Hjava_lang_Class* cls, char* name, char* sig, errorInfo *einfo)
+lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, errorInfo *einfo)
 {
-	return (findMethod(cls, makeUtf8Const(name,-1), makeUtf8Const(sig,-1), einfo));
+	return (findMethod(cls, utf8ConstNew(name,-1), utf8ConstNew(sig,-1), einfo));
 }
 
 /*
  * Lookup a method given object, name and signature.
  */
 Method*
-lookupObjectMethod(Hjava_lang_Object* obj, char* name, char* sig, errorInfo *einfo)
+lookupObjectMethod(Hjava_lang_Object* obj, const char* name, const char* sig, errorInfo *einfo)
 {
 	return (lookupClassMethod(OBJECT_CLASS(obj), name, sig, einfo));
 }
@@ -587,12 +588,12 @@ lookupObjectMethod(Hjava_lang_Object* obj, char* name, char* sig, errorInfo *ein
  * Signal an error by creating the object and throwing the exception.
  */
 void
-SignalError(char* cname, char* str)
+SignalError(const char* cname, const char* str)
 {
 	Hjava_lang_Throwable* obj;
 
 	obj = (Hjava_lang_Throwable*)execute_java_constructor(cname,
-		0, ERROR_SIGNATURE, makeJavaString(str, strlen(str)));
+		0, ERROR_SIGNATURE, stringC2Java(str));
 	throwException(obj);
 }
 
@@ -600,7 +601,7 @@ SignalError(char* cname, char* str)
  * Convert a class name to a path name.
  */
 void
-classname2pathname(char* from, char* to)
+classname2pathname(const char* from, char* to)
 {
 	int i;
 
@@ -649,8 +650,8 @@ setProperty(void* properties, char* key, char* value)
 	Hjava_lang_String* jkey;
 	Hjava_lang_String* jvalue;
 
-	jkey = makeJavaString(key, strlen(key));
-	jvalue = makeJavaString(value, strlen(value));
+	jkey = stringC2Java(key);
+	jvalue = stringC2Java(value);
 
 	do_execute_java_method(properties, "put",
 		"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
@@ -661,7 +662,7 @@ setProperty(void* properties, char* key, char* value)
  * Allocate a new object of the given class name.
  */
 Hjava_lang_Object*
-AllocObject(char* classname)
+AllocObject(const char* classname)
 {
 	errorInfo info;
 	Hjava_lang_Class* clazz = lookupClass(classname, &info);
@@ -685,7 +686,7 @@ AllocArray(int len, int type)
  * Allocate a new array of the given size and class name.
  */
 Hjava_lang_Object*
-AllocObjectArray(int sz, char* classname)
+AllocObjectArray(int sz, const char* classname)
 {
 	Hjava_lang_Class *elclass;
 	errorInfo info;
@@ -705,7 +706,7 @@ AllocObjectArray(int sz, char* classname)
  * Used to generate exception for unimplemented features.
  */
 void
-unimp(char* mess)
+unimp(const char* mess)
 {
 	SignalError("java.lang.InternalError", mess);
 }
@@ -728,7 +729,7 @@ kprintf(FILE* out, const char* mess, ...)
  * Register an user function statically linked in the binary.
  */
 void
-addNativeMethod(char* name, void* func)
+addNativeMethod(const char* name, void* func)
 {
 	static int funcs_nr = 0;
 	static int funcs_max = 0;

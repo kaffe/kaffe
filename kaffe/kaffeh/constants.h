@@ -51,22 +51,4 @@ struct _errorInfo;
 
 bool readConstantPool(struct Hjava_lang_Class*, struct _classFile*, struct _errorInfo*);
 
-/* Extract a character from a Java-style Utf8 string.
- * PTR points to the current character.
- * LIMIT points to the end of the Utf8 string.
- * PTR is incremented to point after the character thta gets returns.
- * On an error, -1 is returned. */
-#define UTF8_GET(PTR, LIMIT) \
-  ((PTR) >= (LIMIT) ? -1 \
-   : *(PTR) < 128 ? *(PTR)++ \
-   : (*(PTR)&0xE0) == 0xC0 && ((PTR)+=2)<=(LIMIT) && ((PTR)[-1]&0xC0) == 0x80 \
-   ? (((PTR)[-2] & 0x1F) << 6) + ((PTR)[-1] & 0x3F) \
-   : (*(PTR) & 0xF0) == 0xE0 && ((PTR) += 3) <= (LIMIT) \
-   && ((PTR)[-2] & 0xC0) == 0x80 && ((PTR)[-1] & 0xC0) == 0x80 \
-   ? (((PTR)[-3]&0x1F) << 12) + (((PTR)[-2]&0x3F) << 6) + ((PTR)[-1]&0x3F) \
-   : ((PTR)++, -1))
-
-extern Utf8Const* makeUtf8Const (char*, int);
-extern int32 hashUtf8String(char*, int);
-
 #endif

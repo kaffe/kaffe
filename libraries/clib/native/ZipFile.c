@@ -27,7 +27,7 @@ java_util_zip_ZipFile_openZipFile0(Hjava_lang_String* fname)
 	jarFile* zip;
 	char* str;
 
-	str = makeCString(fname);
+	str = stringJava2C(fname);
 	zip = openJarFile(str);
 	KFREE(str);
 	return ((struct Hkaffe_util_Ptr*)zip);
@@ -46,7 +46,7 @@ java_util_zip_ZipFile_getZipEntry0(struct Hkaffe_util_Ptr* zip, Hjava_lang_Strin
 	char* str;
 	Hjava_util_zip_ZipEntry* zentry;
 
-	str = makeCString(zname);
+	str = stringJava2C(zname);
 	entry = lookupJarFile((jarFile*)zip, str);
 	KFREE(str);
 	if (entry == 0) {
@@ -105,7 +105,7 @@ makeZipEntry(jarEntry* entry)
 	Hjava_util_zip_ZipEntry* zentry;
 
 	zentry = (Hjava_util_zip_ZipEntry*)execute_java_constructor("java.util.zip.ZipEntry", 0, "()V");
-	unhand(zentry)->name = makeJavaString(entry->fileName, strlen(entry->fileName));
+	unhand(zentry)->name = stringC2Java(entry->fileName);
 	unhand(zentry)->crc = 0;
 	unhand(zentry)->size = entry->uncompressedSize;
 	unhand(zentry)->method = entry->compressionMethod;

@@ -17,6 +17,8 @@
 #include "FileOutputStream.h"
 #include "FileDescriptor.h"
 #include "jsyscall.h"
+#include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 
 /*
  * Open a file for output.
@@ -27,7 +29,7 @@ java_io_FileOutputStream_open(struct Hjava_io_FileOutputStream* fh, struct Hjava
 	int fd;
 	char str[MAXPATHLEN];
 
-	javaString2CString(nm, str, sizeof(str));
+	stringJava2CBuf(nm, str, sizeof(str));
 
 	fd = KOPEN(str, O_WRONLY|O_CREAT|O_BINARY|O_TRUNC, 0666);
 	unhand(unhand(fh)->fd)->fd = fd;
@@ -45,7 +47,7 @@ java_io_FileOutputStream_openAppend(struct Hjava_io_FileOutputStream* fh, struct
 	int fd;
 	char str[MAXPATHLEN];
 
-	javaString2CString(nm, str, sizeof(str));
+	stringJava2CBuf(nm, str, sizeof(str));
 
 	fd = KOPEN(str, O_WRONLY|O_CREAT|O_BINARY|O_APPEND, 0666);
 	unhand(unhand(fh)->fd)->fd = fd;

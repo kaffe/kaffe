@@ -15,6 +15,7 @@
 #include "defs.h"
 #include "jsyscall.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 
 void
 kaffe_applet_AudioPlayer_playFile( jstring jstr ) {
@@ -25,7 +26,7 @@ kaffe_applet_AudioPlayer_playFile( jstring jstr ) {
 
 	buf = KMALLOC( bLen);
 
-	javaString2CString( jstr, fName, sizeof(fName));
+	stringJava2CBuf( jstr, fName, sizeof(fName));
 
 	dev = KOPEN( "/dev/audio", O_WRONLY|O_BINARY, 0);
 	fin = KOPEN( fName, O_RDONLY|O_BINARY, 0);

@@ -17,6 +17,7 @@
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/lookup.h"
 #include "../../../kaffe/kaffevm/stackTrace.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 #include <native.h>
 #include "defs.h"
 #include "files.h"
@@ -34,9 +35,9 @@ java_io_ObjectInputStream_loadClass0(struct Hjava_io_ObjectInputStream* stream, 
 	stackTraceInfo* info;
 	errorInfo einfo;
 
-	cstr = makeCString(str);
+	cstr = stringJava2C(str);
 	classname2pathname(cstr, cstr);
-	nm = makeUtf8Const(cstr, -1);
+	nm = utf8ConstNew(cstr, -1);
 	KFREE(cstr);
 	
 	assert(cls == 0 || !"Don't know what to do with a non-zero class");
@@ -141,8 +142,8 @@ java_io_ObjectInputStream_invokeObjectReader(struct Hjava_io_ObjectInputStream* 
 	 * supertypes or subtypes. 
 	 */
 	meth = findMethodLocal(cls, 
-		makeUtf8Const("readObject", -1), 
-		makeUtf8Const("(Ljava/io/ObjectInputStream;)V", -1));
+		utf8ConstNew("readObject", -1), 
+		utf8ConstNew("(Ljava/io/ObjectInputStream;)V", -1));
 
 	if (meth != 0) {
 		do_execute_java_method(obj, 0, 0, meth, 0, stream);

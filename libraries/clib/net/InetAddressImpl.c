@@ -17,6 +17,7 @@
 #include "../../../kaffe/kaffevm/object.h"
 #include <native.h>
 #include "../../../kaffe/kaffevm/itypes.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 #include "InetAddress.h"
 #include "InetAddressImpl.h"
 #include "nets.h"
@@ -34,7 +35,7 @@ java_net_InetAddressImpl_getLocalHostName(struct Hjava_net_InetAddressImpl* none
 	if (gethostname(hostname, HOSTNMSZ-1) < 0) {
 		strcpy("localhost", hostname);
 	}
-	return (makeJavaString(hostname, strlen(hostname)));
+	return (stringC2Java(hostname));
 }
 
 /*
@@ -57,7 +58,7 @@ java_net_InetAddressImpl_lookupHostAddr(struct Hjava_net_InetAddressImpl* none, 
 	char name[MAXHOSTNAME];
 	struct hostent* ent;
 
-	javaString2CString(str, name, sizeof(name));
+	stringJava2CBuf(str, name, sizeof(name));
 
 	ent = gethostbyname(name);
 	if (ent == 0) {
@@ -78,7 +79,7 @@ java_net_InetAddressImpl_lookupAllHostAddr(struct Hjava_net_InetAddressImpl* non
 	int i;
 	int alength;
 
-	javaString2CString(str, name, sizeof(name));
+	stringJava2CBuf(str, name, sizeof(name));
 
 	ent = gethostbyname(name);
 	if (ent == 0) {
@@ -113,7 +114,7 @@ java_net_InetAddressImpl_getHostByAddr(struct Hjava_net_InetAddressImpl* none, j
 		SignalError("java.net.UnknownHostException", SYS_HERROR);
 	}
 
-	return (makeJavaString((char*)ent->h_name, strlen(ent->h_name)));
+	return (stringC2Java((char*)ent->h_name));
 }
 
 /*

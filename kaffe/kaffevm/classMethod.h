@@ -273,29 +273,25 @@ Hjava_lang_Class*	resolveFieldType(Field*, Hjava_lang_Class*, errorInfo*);
 
 classEntry* lookupClassEntry(Utf8Const*, Hjava_lang_ClassLoader*);
 classEntry* lookupClassEntryInternal(Utf8Const*, Hjava_lang_ClassLoader*);
-Hjava_lang_Class*	lookupClass(char*, errorInfo*);
+Hjava_lang_Class*	lookupClass(const char*, errorInfo*);
 Hjava_lang_Class*	lookupArray(Hjava_lang_Class*);
 Hjava_lang_Class*	lookupObjectArrayClass(Hjava_lang_Class*);
 Field*			lookupClassField(Hjava_lang_Class*, Utf8Const*, bool, errorInfo *einfo);
 
 Hjava_lang_Class*	getClass(constIndex, Hjava_lang_Class*, errorInfo *einfo);
 
-void			countInsAndOuts(char*, short*, short*, char*);
-int			sizeofSig(char**, bool);
-int			sizeofSigItem(char**, bool);
+void			countInsAndOuts(const char*, short*, short*, char*);
+int			sizeofSig(const char**, bool);
+int			sizeofSigItem(const char**, bool);
 void			establishMethod(Method*);
-Hjava_lang_Class*	classFromSig(char**, Hjava_lang_ClassLoader*, errorInfo*);
-Hjava_lang_Class*	getClassFromSignature(char*, Hjava_lang_ClassLoader*, errorInfo*);
+Hjava_lang_Class*	classFromSig(const char**, Hjava_lang_ClassLoader*, errorInfo*);
+Hjava_lang_Class*	getClassFromSignature(const char*, Hjava_lang_ClassLoader*, errorInfo*);
 
 void			finishFields(Hjava_lang_Class*);
 Method*			findMethodFromPC(uintp);
 
 void			finalizeClassLoader(Hjava_lang_ClassLoader* loader);
 void			registerClass(classEntry* entry);
-
-Utf8Const*		makeUtf8ConstFixed(char*, int);
-Utf8Const*		makeUtf8Const(char*, int);
-int32			hashUtf8String(char*, int);
 
 extern Utf8Const* init_name;		/* "<clinit>" */
 extern Utf8Const* constructor_name;	/* "<init>" */

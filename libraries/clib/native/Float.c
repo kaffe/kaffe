@@ -27,7 +27,7 @@ java_lang_Float_toString(jfloat val)
 	char str[MAXNUMLEN];
 
 	sprintf(str, "%g", val);
-	return (makeJavaString(str, strlen(str)));
+	return (stringC2Java(str));
 }
 
 struct Hjava_lang_Double;

@@ -40,6 +40,8 @@ LIB=		$(LIBNAME)$(LIBEXT).$(KVER)
 LLIB=		$(LIBNAME)$(LIBEXT)
 
 COMMON=\
+		hashtab$(OBJEXT) \
+		utf8const$(OBJEXT) \
 		code$(OBJEXT) \
 		lookup$(OBJEXT) \
 		external$(OBJEXT) \

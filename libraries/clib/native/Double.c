@@ -16,6 +16,7 @@
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/gtypes.h"
 #include "../../../kaffe/kaffevm/locks.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 #include "defs.h"
 #include "Double.h"
 #include <native.h>
@@ -29,7 +30,7 @@ java_lang_Double_toString(jdouble val)
 	char str[MAXNUMLEN];
 
 	sprintf(str, "%.11g", val);
-	return (makeJavaString(str, strlen(str)));
+	return (stringC2Java(str));
 }
 
 /*
@@ -42,7 +43,7 @@ java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 	char buf[MAXNUMLEN];
 	char* endbuf;
 
-	javaString2CString(str, buf, sizeof(buf));
+	stringJava2CBuf(str, buf, sizeof(buf));
 
 #if defined(HAVE_STRTOD)
 	value = strtod(buf, &endbuf);

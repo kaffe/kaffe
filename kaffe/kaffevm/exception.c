@@ -97,7 +97,7 @@ throwError(errorInfo* einfo)
 		err = (Hjava_lang_Throwable*)execute_java_constructor(
 			    einfo->classname, 
 			    0, "(Ljava/lang/String;)V",
-			    makeJavaString(einfo->mess, strlen(einfo->mess)));
+			    stringC2Java(einfo->mess));
 	}
 	throwException(err);
 }
@@ -135,7 +135,7 @@ static
 void
 dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 {
-	char* cname;
+	const char* cname;
 	Hjava_lang_Class* class;
 	Hjava_lang_Object* obj;
 	iLock* lk;

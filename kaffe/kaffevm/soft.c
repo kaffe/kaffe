@@ -386,8 +386,8 @@ soft_checkcast(Hjava_lang_Class* c, Hjava_lang_Object* o)
 		 * cast exception happened.
 		 */
 		Hjava_lang_Throwable* ccexc;
-		char *fromtype = CLASS_CNAME(OBJECT_CLASS(o));
-		char *totype = CLASS_CNAME(c);
+		const char *fromtype = CLASS_CNAME(OBJECT_CLASS(o));
+		const char *totype = CLASS_CNAME(c);
 		char *format = "can't cast `%s' to `%s'";
 		char *buf = KMALLOC(strlen(fromtype) 
 			+ strlen(totype) + strlen(format));

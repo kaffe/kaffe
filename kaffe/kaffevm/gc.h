@@ -54,8 +54,8 @@ typedef struct GarbageCollectorInterface {
 	void	(*_invokeGC)(void);
 	void	(*_invokeFinalizer)(void);
 
-	void	(*_addref)(void*);
-	bool	(*_rmref)(void*);
+	void	(*_addref)(const void*);
+	bool	(*_rmref)(const void*);
 
 } GarbageCollectorInterface;
 

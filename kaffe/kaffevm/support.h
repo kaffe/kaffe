@@ -106,33 +106,27 @@ struct Hjava_lang_Throwable;
 
 extern void		setProperty(void*, char*, char*);
 extern char*		getEngine(void);
-extern void		classname2pathname(char*, char*);
-extern struct Hjava_lang_Object* makeJavaCharArray(char*, int);
-extern struct Hjava_lang_String* makeJavaString(char*, int);
-extern char*		javaString2CString(struct Hjava_lang_String*, char*, int);
-extern char*		makeCString(struct Hjava_lang_String*);
-extern struct Hjava_lang_String* makeReplaceJavaStringFromUtf8(unsigned char*, int, int, int);
-extern jvalue		do_execute_java_method(void*, char*, char*, struct _methods*, int, ...);
-extern jvalue		do_execute_java_method_v(void*, char*, char*, struct _methods*, int, va_list);
-extern jvalue		do_execute_java_class_method(char*, char*, char*, ...);
-extern jvalue		do_execute_java_class_method_v(char*, char*, char*, va_list);
+extern void		classname2pathname(const char*, char*);
+extern jvalue		do_execute_java_method(void*, const char*, const char*, struct _methods*, int, ...);
+extern jvalue		do_execute_java_method_v(void*, const char*, const char*, struct _methods*, int, va_list);
+extern jvalue		do_execute_java_class_method(const char*, const char*, const char*, ...);
+extern jvalue		do_execute_java_class_method_v(const char*, const char*, const char*, va_list);
 
-extern struct Hjava_lang_Object* execute_java_constructor(char*, struct Hjava_lang_Class*, char*, ...);
-extern struct Hjava_lang_Object* execute_java_constructor_v(char*, struct Hjava_lang_Class*, char*, va_list);
+extern struct Hjava_lang_Object* execute_java_constructor(const char*, struct Hjava_lang_Class*, const char*, ...);
+extern struct Hjava_lang_Object* execute_java_constructor_v(const char*, struct Hjava_lang_Class*, const char*, va_list);
 extern jlong		currentTime(void);
-extern void		addNativeMethod(char*, void*);
+extern void		addNativeMethod(const char*, void*);
 
 extern void	callMethodA(struct _methods*, void*, void*, jvalue*, jvalue*);
 extern void	callMethodV(struct _methods*, void*, void*, va_list, jvalue*);
-extern struct _methods*	lookupClassMethod(struct Hjava_lang_Class*, char*, char*, struct _errorInfo*);
-extern struct _methods*	lookupObjectMethod(struct Hjava_lang_Object*, char*, char*, struct _errorInfo*);
+extern struct _methods*	lookupClassMethod(struct Hjava_lang_Class*, const char*, const char*, struct _errorInfo*);
+extern struct _methods*	lookupObjectMethod(struct Hjava_lang_Object*, const char*, const char*, struct _errorInfo*);
 
 struct _strconst;
-extern void SignalError(char *, char *) __NORETURN__;
-extern void unimp(char*) __NORETURN__;
-extern struct Hjava_lang_String* Utf8Const2JavaString(struct _strconst*);
+extern void SignalError(const char *, const char *) __NORETURN__;
+extern void unimp(const char*) __NORETURN__;
 extern void kprintf(FILE*, const char*, ...);
-extern int addClasspath(char*);
+extern int addClasspath(const char*);
 
 /*
  * Macros to manipulate bit arrays.  

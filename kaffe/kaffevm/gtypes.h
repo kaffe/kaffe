@@ -96,18 +96,9 @@ struct _methodTable;
 struct _dispatchTable;
 struct _jexception;
 
-/* If INTERN_UTF8CONSTS is 1, then all Utf8Const objects are interned in
- * a hashtable, thus you can compare them with ==.
- */
-#define INTERN_UTF8CONSTS	0
-
 struct _strconst {
-#if !INTERN_UTF8CONSTS
-	/* If we're not interning, store hash for fast comparisons. */
-	uint16			hash;
-#endif
-	uint16			length;
-	char			data[1]; /* In Utf8 format, with final '\0'. */
+	int32		hash;		/* Hash code (zero if uninitialized) */
+	const char	data[1];	/* In Utf8 format, with final '\0' */
 };
 
 #define	SHIFT_jchar		1

@@ -23,6 +23,7 @@
 #include "errors.h"
 #include "classMethod.h"
 #include "baseClasses.h"
+#include "stringSupport.h"
 #include "lookup.h"
 #include "thread.h"
 #include "locks.h"
@@ -40,8 +41,8 @@ Hjava_lang_Thread* finalman;
 Hjava_lang_ThreadGroup* standardGroup;
 
 static void firstStartThread(void*);
-static void createInitialThread(char*);
-static Hjava_lang_Thread* createDaemon(void*, char*, int);
+static void createInitialThread(const char*);
+static Hjava_lang_Thread* createDaemon(void*, const char*, int);
 static iLock thread_start_lock;
 
 /*
@@ -63,7 +64,7 @@ initThreads(void)
 
 	assert(standardGroup != 0);
 	unhand(standardGroup)->parent = 0;
-	unhand(standardGroup)->name = makeJavaString("main", 4);
+	unhand(standardGroup)->name = stringC2Java("main");
 	unhand(standardGroup)->maxPriority = java_lang_Thread_MAX_PRIORITY;
 	unhand(standardGroup)->destroyed = 0;
 	unhand(standardGroup)->daemon = 0;
@@ -145,7 +146,7 @@ stopThread(Hjava_lang_Thread* tid, Hjava_lang_Object* obj)
  */
 static
 void
-createInitialThread(char* nm)
+createInitialThread(const char* nm)
 {
 	Hjava_lang_Thread* tid;
 
@@ -153,7 +154,7 @@ createInitialThread(char* nm)
 	tid = (Hjava_lang_Thread*)newObject(ThreadClass);
 	assert(tid != 0);
 
-	unhand(tid)->name = (HArrayOfChar*)makeJavaCharArray(nm, strlen(nm));
+	unhand(tid)->name = stringC2CharArray(nm);
 	unhand(tid)->priority = java_lang_Thread_NORM_PRIORITY;
 	unhand(tid)->threadQ = 0;
 	unhand(tid)->daemon = 0;
@@ -172,7 +173,7 @@ createInitialThread(char* nm)
  */
 static
 Hjava_lang_Thread*
-createDaemon(void* func, char* nm, int prio)
+createDaemon(void* func, const char* nm, int prio)
 {
 	Hjava_lang_Thread* tid;
 
@@ -182,7 +183,7 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 	tid = (Hjava_lang_Thread*)newObject(ThreadClass);
 	assert(tid != 0);
 
-	unhand(tid)->name = (HArrayOfChar*)makeJavaCharArray(nm, strlen(nm));
+	unhand(tid)->name = stringC2CharArray(nm);
 	unhand(tid)->priority = prio;
 	unhand(tid)->threadQ = 0;
 	unhand(tid)->daemon = 1;

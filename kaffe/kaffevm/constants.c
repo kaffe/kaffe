@@ -24,6 +24,7 @@
 #include "errors.h"
 #include "file.h"
 #include "exception.h"
+#include "stringSupport.h"
 #include "locks.h"
 
 /*
@@ -66,7 +67,7 @@ RDBG(		printf("Constant type %d\n", type);			)
 		switch (type) {
 		case CONSTANT_Utf8:
 			readu2(&len, fp);
-			pool[i] = (ConstSlot) makeUtf8Const (fp->buf, len);
+			pool[i] = (ConstSlot) utf8ConstNew (fp->buf, len);
 			fp->buf += len;
 			break;
 		case CONSTANT_Class:

@@ -22,6 +22,7 @@
 #include "../../../include/system.h"
 #include "File.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 
 /*
  * Is named item a file?
@@ -33,7 +34,7 @@ java_io_File_isFile0(struct Hjava_io_File* this)
 	char str[MAXPATHLEN];
 	int r;
 
-	javaString2CString(unhand(this)->path, str, sizeof(str));
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 
 	r = KSTAT(str, &buf);
 	if (r == 0 && S_ISREG(buf.st_mode)) {
@@ -54,7 +55,7 @@ java_io_File_isDirectory0(struct Hjava_io_File* this)
 	char str[MAXPATHLEN];
 	int r;
 
-	javaString2CString(unhand(this)->path, str, sizeof(str));
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 
 	r = KSTAT(str, &buf);
 	if (r == 0 && S_ISDIR(buf.st_mode)) {
@@ -75,7 +76,7 @@ java_io_File_exists0(struct Hjava_io_File* this)
 	char str[MAXPATHLEN];
 	int r;
 
-	javaString2CString(unhand(this)->path, str, sizeof(str));
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 
 	r = KSTAT(str, &buf);
 	if (r < 0) {
@@ -96,7 +97,7 @@ java_io_File_lastModified0(struct Hjava_io_File* this)
 	char str[MAXPATHLEN];
 	int r;
 
-	javaString2CString(unhand(this)->path, str, sizeof(str));
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 
 	r = KSTAT(str, &buf);
 	if (r != 0) {
@@ -114,7 +115,7 @@ java_io_File_canWrite0(struct Hjava_io_File* this)
 	char str[MAXPATHLEN];
 	int r;
 
-	javaString2CString(unhand(this)->path, str, sizeof(str));
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 	r = access(str, W_OK);
 	return (r < 0 ? 0 : 1);
 }
@@ -128,7 +129,7 @@ java_io_File_canRead0(struct Hjava_io_File* this)
 	char str[MAXPATHLEN];
 	int r;
 
-	javaString2CString(unhand(this)->path, str, sizeof(str));
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 	r = access(str, R_OK);
 	return (r < 0 ? 0 : 1);
 }
@@ -143,7 +144,7 @@ java_io_File_length0(struct Hjava_io_File* this)
 	char str[MAXPATHLEN];
 	int r;
 
-	javaString2CString(unhand(this)->path, str, sizeof(str));
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 
 	r = KSTAT(str, &buf);
 	if (r != 0) {
@@ -161,7 +162,7 @@ java_io_File_mkdir0(struct Hjava_io_File* this)
 	char str[MAXPATHLEN];
 	int r;
 
-	javaString2CString(unhand(this)->path, str, sizeof(str));
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 	r = KMKDIR(str, 0777);
 	return (r < 0 ? 0 : 1);
 }
@@ -176,8 +177,8 @@ java_io_File_renameTo0(struct Hjava_io_File* this, struct Hjava_io_File* that)
 	char str2[MAXPATHLEN];
 	int r;
 
-	javaString2CString(unhand(this)->path, str, sizeof(str));
-	javaString2CString(unhand(that)->path, str2, sizeof(str2));
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
+	stringJava2CBuf(unhand(that)->path, str2, sizeof(str2));
 
 	r = KRENAME(str, str2);
 	return (r < 0 ? 0 : 1);
@@ -192,7 +193,7 @@ java_io_File_delete0(struct Hjava_io_File* this)
 	char str[MAXPATHLEN];
 	int r;
 
-	javaString2CString(unhand(this)->path, str, sizeof(str));
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 	r = KREMOVE(str);
 	return(r < 0 ? 0 : 1);
 }
@@ -206,7 +207,7 @@ java_io_File_rmdir0(struct Hjava_io_File* this)
 	char str[MAXPATHLEN];
 	int r;
 
-	javaString2CString(unhand(this)->path, str, sizeof(str));
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 	r = KRMDIR(str);
 	return(r < 0 ? 0 : 1);
 }
@@ -230,7 +231,7 @@ java_io_File_list0(struct Hjava_io_File* this)
 	int count;
 	int i;
 
-	javaString2CString(unhand(this)->path, path, sizeof(path));
+	stringJava2CBuf(unhand(this)->path, path, sizeof(path));
 
 	dir = opendir(path);
 	if (dir == 0) {
@@ -259,7 +260,7 @@ java_io_File_list0(struct Hjava_io_File* this)
 	for (i = 0; i < count; i++) {
 		mentry = dirlist;
 		dirlist = mentry->next;
-		unhand(array)->body[i] = (Hjava_lang_Object*)makeJavaString(mentry->name, strlen(mentry->name));
+		unhand(array)->body[i] = (Hjava_lang_Object*)stringC2Java(mentry->name);
 		KFREE(mentry);
 	}
 
@@ -284,7 +285,7 @@ java_io_File_isAbsolute(struct Hjava_io_File* this)
 {
 	char str[2];
 
-	javaString2CString(unhand(this)->path, str, sizeof(str));
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 
 	if (str[0] == file_seperator[0]) {
 		return (1);
