@@ -20,31 +20,8 @@ public DataOutputStream(OutputStream out) {
 	super(out);
 }
 
-private byte[] charToUTF(char chr) {
-	byte result[];
-
-	if (chr >= '\u0001' && chr <= '\u007F') {
-		/* Single byte */
-		result = new byte[1];
-		result[0] = (byte)chr;
-	}
-	else if ((chr >= '\u0080' && chr <= '\u07FF') | chr == '\u0000') {
-		result = new byte[2];
-		result[0] = (byte)(((chr & 0x07C0) >> 6) | 0xC0);
-		result[1] = (byte)((chr & 0x003F) | 0x80);
-	}
-	else {
-		result = new byte[3];
-		result[0] = (byte)(((chr & 0xF000) >> 12) | 0xE0);
-		result[1] = (byte)(((chr & 0x0FC0) >> 6) | 0x80);
-		result[2] = (byte)((chr & 0x003F) | 0x80);
-	}
-
-	return (result);
-}
-
 public void flush() throws IOException {
-	super.flush();
+	out.flush();
 }
 
 final public int size() {
@@ -52,13 +29,12 @@ final public int size() {
 }
 
 public synchronized void write(byte b[], int off, int len) throws IOException {
-	super.write(b, off, len);
-
-	written = written+len;
+	out.write(b, off, len);
+	written += len;
 }
 
 public synchronized void write(int b) throws IOException {
-	super.write(b);
+	out.write(b);
 	written++;		
 }
 
@@ -67,14 +43,15 @@ final public void writeBoolean(boolean v) throws IOException {
 }
 
 final public void writeByte(int v) throws IOException {
-	super.write(v);
-	written++;
+	write(v);
 }
 
 final public void writeBytes(String s) throws IOException {
-	for (int pos=0; pos<s.length(); pos++) {
-		writeByte(s.charAt(pos) & 0xFF);
-	}
+	char[] c = s.toCharArray();
+	byte[] b = new byte[c.length];
+	for (int pos = 0; pos < c.length; pos++)
+		b[pos] = (byte)(c[pos] & 0xFF);
+	write(b, 0, b.length);
 }
 
 final public void writeChar(int v) throws IOException {
@@ -97,12 +74,12 @@ final public void writeFloat(float v) throws IOException {
 }
 
 final public void writeInt(int v) throws IOException {
-	int mask=0xFF000000;
+	byte b[] = new byte[4];
+	int i, shift;
 
-	for (int pos=3; pos>=0; pos--) {
-		writeByte((v & mask) >> (pos*8));
-		mask = mask >> 8;
-	}
+	for (i = 0, shift = 24; i < 4; i++, shift -= 8)
+		b[i] = (byte)(0xFF & (v >> shift));
+	write(b, 0, 4);
 }
 
 final public void writeLong(long v) throws IOException {
@@ -117,21 +94,33 @@ final public void writeShort(int v) throws IOException {
 	writeChar(v);
 }
 
-final public synchronized void writeUTF(String str) throws IOException {
-	int len=0;
+final public void writeUTF(String str) throws IOException {
+	char c[] = str.toCharArray();
+	ByteArrayOutputStream b = new ByteArrayOutputStream(c.length);
+	for (int i = 0; i < c.length; i++) {
+		char chr = c[i];
 
-	/* Calculate length first, yes inefficient I know */
-	for (int pos=0; pos<str.length(); pos++) {
-		len=len+charToUTF(str.charAt(pos)).length;
+		if (chr >= '\u0001' && chr <= '\u007F')
+			b.write(chr);
+		else if (chr <= '\u07FF') {
+			b.write(0xC0 | (0x3F & (chr >> 6)));
+			b.write(0x80 | (0x3F & chr));
+		}
+		else {
+			b.write(0xE0 | (0x0F & (chr >> 12)));
+			b.write(0x80 | (0x3F & (chr >>  6)));
+			b.write(0x80 | (0x3F & chr));
+		}
 	}
+	c = null;
+	byte result[] = b.toByteArray();
 
-	/* Write it out */
-	writeShort(len);
+	if (result.length > 65535)
+		throw new UTFDataFormatException("String too long");
 
-	/* Now write the same arrays out for real */
-	for (int pos=0; pos<str.length(); pos++) {
-		byte conv[]=charToUTF(str.charAt(pos));
-		write(conv, 0, conv.length);
+	synchronized(this) {
+		writeShort(result.length);
+		write(result, 0, result.length);
 	}
 }
 }

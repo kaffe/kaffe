@@ -33,29 +33,6 @@ public RandomAccessFile(String name, String mode) throws IOException {
 	open(name, writable);
 }
 
-private byte[] charToUTF(char chr) {
-	byte result[];
-
-	if ((chr>='\u0001') && (chr<='\u007F')) {
-		/* Single byte */
-		result=new byte[1];
-		result[0]=(byte )(chr & 0x00EF);
-	}
-	else if (((chr>='\u0080') && (chr<='\u07FF')) | (chr=='\u0000')) {
-		result=new byte[2];
-		result[0]=(byte )(((chr & 0x07C0) >> 6) | 0xC0);
-		result[1]=(byte )((chr & 0x003F) | 0xF0);
-	}
-	else {
-		result=new byte[3];
-		result[0]=(byte )(((chr & 0xF000) >> 12) | 0xE0);
-		result[1]=(byte )(((chr & 0x0FC0) >> 6) | 0xF0);
-		result[2]=(byte )((chr & 0x003F) | 0xF0);
-	}
-
-	return result;
-}
-
 native public void close() throws IOException;
 
 final public FileDescriptor getFD() throws IOException {
@@ -201,7 +178,7 @@ final public String readUTF() throws IOException {
 				/* Valid 2 byte string '110' */
 				byte data2=readByte();
 
-				if ((data2 & 0xC0) == 0xF0) {
+				if ((data2 & 0xC0) == 0x80) {
 					/* Valid 2nd byte */
 					char toAdd=(char )((((int )(data & 0x1F)) << 6) + (data2 & 0x3F));
 					buffer.append(toAdd);
@@ -212,11 +189,11 @@ final public String readUTF() throws IOException {
 				/* Valid 3 byte string '1110' */
 				byte data2=readByte();
 
-				if ((data2 & 0xC0) == 0xF0) {
+				if ((data2 & 0xC0) == 0x80) {
 					/* Valid 2nd byte */
 					byte data3=readByte();
 
-					if ((data3 & 0xC0) == 0xF0) {
+					if ((data3 & 0xC0) == 0x80) {
 						/* Valid 3rd byte */
 						char toAdd=(char )((((int )(data & 0x0F)) << 12) + (((int )(data2 & 0x3F)) << 6)+ (data3 & 0x3F));
 						buffer.append(toAdd);
@@ -281,7 +258,7 @@ final public void writeBytes(String s) throws IOException {
 	for (int pos = 0; pos < c.length; pos++) {
 		b[pos] = (byte)(c[pos] & 0xFF);
 	}
-	writeBytes(b, 0, b.length);
+	write(b, 0, b.length);
 }
 
 native private void writeBytes(byte bytes[], int off, int len);
@@ -306,12 +283,12 @@ final public void writeFloat(float v) throws IOException {
 }
 
 final public void writeInt(int v) throws IOException {
-	int mask=0xFF000000;
+	byte b[] = new byte[4];
+	int i, shift;
 
-	for (int pos=3; pos>=0; pos--) {
-		writeByte((v & mask) >> (pos*8));
-		mask = mask >> 8;
-	}
+	for (i = 0, shift = 24; i < 4; i++, shift -= 8)
+		b[i] = (byte)(0xFF & (v >> shift));
+	write(b, 0, 4);
 }
 
 final public void writeLong(long v) throws IOException {
@@ -327,20 +304,32 @@ final public void writeShort(int v) throws IOException {
 }
 
 final public void writeUTF(String str) throws IOException {
-	int len=0;
+	char c[] = str.toCharArray();
+	ByteArrayOutputStream b = new ByteArrayOutputStream(c.length);
+	for (int i = 0; i < c.length; i++) {
+		char chr = c[i];
 
-	/* Calculate length first, yes inefficient I know */
-	for (int pos=0; pos<str.length(); pos++) {
-		len=len+charToUTF(str.charAt(pos)).length;
+		if (chr >= '\u0001' && chr <= '\u007F')
+			b.write(chr);
+		else if (chr <= '\u07FF') {
+			b.write(0xC0 | (0x3F & (chr >> 6)));
+			b.write(0x80 | (0x3F & chr));
+		}
+		else {
+			b.write(0xE0 | (0x0F & (chr >> 12)));
+			b.write(0x80 | (0x3F & (chr >>  6)));
+			b.write(0x80 | (0x3F & chr));
+		}
 	}
+	c = null;
+	byte result[] = b.toByteArray();
 
-	/* Write it out */
-	writeShort(len);
+	if (result.length > 65535)
+		throw new UTFDataFormatException("String too long");
 
-	/* Now write the same arrays out for real */
-	for (int pos=0; pos<str.length(); pos++) {
-		byte conv[]=charToUTF(str.charAt(pos));
-		write(conv, 0, conv.length);
+	synchronized(this) {
+		writeShort(result.length);
+		write(result, 0, result.length);
 	}
 }
 }
