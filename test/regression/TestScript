@@ -420,5 +420,31 @@ runtest Bean "BeanDescriptor:
   Property: type class [Ljava.lang.String;, read public java.lang.String[] Bean.getArray(), write public void Bean.setArray(java.lang.String[]), idx read public java.lang.String Bean.getArray(int), idx write public void Bean.setArray(int,java.lang.String)
   Editor: <unknown>"
 
+#
+# simple test for ClassLoader
+# this test must be compiled with 'nowarn' because it uses a
+# deprecated API (defineClass with 3 params)
+#
+OLDJAVAC=$JAVAC
+JAVAC="$OLDJAVAC -nowarn"
+
+# compile the example class
+compile Hello
+
+runtest CLTest "Load returned class -Hello-
+Trying to create new instance
+Hello World
+Trying same file under different name
+Duplicate name
+Trying file with wrong name
+Wrong name
+Now second load attempt for a
+Duplicate name
+Done."
+
+# restore JAVAC
+JAVAC=$OLDJAVAC
+
+# end of CLTest test
 # All done okay
 exit $overallerror
