@@ -1,0 +1,26 @@
+
+How do I compile the class library?
+-----------------------------------
+
+Cd to your build directory (the same as the source directory if you
+did ./configure), then cd to libraries/javalib.
+
+Type "make Klasses".
+This will build the java libraries, put them in a Klasses.jar file
+and overwrite the version in your source tree.  Type make install
+to install the jar file in your target prefix.
+
+Why doesn't it work for me?
+---------------------------
+
+Because at this point only two compilers can compile them.
+
+They are jikes Version 0.47 and according to Peter javac from JDK 1.1.5
+
+The following compilers are known not to work:
+
+    all versions of pizza and gjc
+    javac from JDK 2
+    javac from JDK 1.1.7
+
+jikes is available from http://www.ibm.com/research/jikes
