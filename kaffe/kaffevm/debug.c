@@ -108,6 +108,7 @@ static struct debug_opts
 	D(NOCLASSGC, 	"Disable class garbage collection."),
 	D(NEWOBJECT, 	"Show when new objects are allocated."),
 	D(FINALIZE, 	"Debug finalization."),
+	D(LIBTOOL, 	"Debug libtool stuff."),
 
 	/* you can define combinations too */
 	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP, 
