@@ -74,7 +74,7 @@ soft_newarray(jint type, jint size)
 	errorInfo info;
 
 	if (size < 0) {
-		throwFreshException(NegativeArraySizeException);
+		throwException(NegativeArraySizeException);
 	}
 
 	obj = newArrayChecked(TYPE_CLASS(type), size, &info);
@@ -99,7 +99,7 @@ soft_anewarray(Hjava_lang_Class* elclass, jint size)
 	errorInfo info;
 
 	if (size < 0) {
-		throwFreshException(NegativeArraySizeException);
+		throwException(NegativeArraySizeException);
 	}
 
 	obj = newArrayChecked(elclass, size, &info);
@@ -142,7 +142,7 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, slots* args)
         for (i = 0; i < dims; i++) {
 		arg = args[i].v.tint;
                 if (arg < 0) {
-                        throwFreshException(NegativeArraySizeException);
+                        throwException(NegativeArraySizeException);
 		}
                 arraydims[i] = arg;
         }
@@ -184,7 +184,7 @@ soft_vmultianewarray(Hjava_lang_Class* class, jint dims, va_list ap)
 			if (arraydims != array) {
 				KFREE(arraydims);
 			}
-                        throwFreshException(NegativeArraySizeException);
+                        throwException(NegativeArraySizeException);
 		}
 		arraydims[i] = arg;
 	}
@@ -418,7 +418,7 @@ soft_checkcast(Hjava_lang_Class* c, Hjava_lang_Object* o)
 		sprintf(buf, format, fromtype, totype);
 		ccexc = ClassCastException(buf);
 		KFREE(buf);
-		throwFreshException(ccexc);
+		throwException(ccexc);
 	}
 	return (o);
 }
@@ -451,7 +451,7 @@ soft_athrow(Hjava_lang_Object* o)
 void
 soft_badarrayindex(void)
 {
-	throwFreshException(ArrayIndexOutOfBoundsException);
+	throwException(ArrayIndexOutOfBoundsException);
 }
 
 /*
@@ -460,7 +460,7 @@ soft_badarrayindex(void)
 void
 soft_nullpointer(void)
 {
-	throwFreshException(NullPointerException);
+	throwException(NullPointerException);
 }
 
 /*
@@ -469,7 +469,7 @@ soft_nullpointer(void)
 void
 soft_divzero(void)
 {
-	throwFreshException(ArithmeticException);
+	throwException(ArithmeticException);
 }
 
 /*
@@ -490,7 +490,7 @@ soft_nosuchclass(Utf8Const* c)
 	char buf[256];
 
 	sprintf(buf, "%.80s", c->data);
-	throwFreshException(NoClassDefFoundError(buf));
+	throwException(NoClassDefFoundError(buf));
 }
 
 /*
@@ -502,7 +502,7 @@ soft_nosuchmethod(Hjava_lang_Class* c, Utf8Const* n, Utf8Const* s)
 	char buf[256];
 
 	sprintf(buf, "%.80s.%.80s%.80s", CLASS_CNAME(c), n->data, s->data);
-	throwFreshException(NoSuchMethodError(buf));
+	throwException(NoSuchMethodError(buf));
 }
 
 /*
@@ -514,7 +514,7 @@ soft_nosuchfield(Utf8Const* c, Utf8Const* n)
 	char buf[256];
 
 	sprintf(buf, "%.100s.%.100s", c->data, n->data);
-	throwFreshException(NoSuchFieldError(buf));
+	throwException(NoSuchFieldError(buf));
 }
 
 /*
@@ -605,7 +605,7 @@ void
 soft_checkarraystore(Hjava_lang_Object* array, Hjava_lang_Object* obj)
 {
 	if (obj != 0 && soft_instanceof(CLASS_ELEMENT_TYPE(OBJECT_CLASS(array)), obj) == 0) {
-		throwFreshException(ArrayStoreException);
+		throwException(ArrayStoreException);
 	}
 }
 

@@ -122,7 +122,7 @@ do_execute_java_method_v(void* obj, const char* method_name, const char* signatu
 	errorInfo info;
 
 	if (obj == 0) {
-		throwFreshException(NullPointerException);
+		throwException(NullPointerException);
 	}
 
 	if (mb == 0) {
@@ -140,10 +140,10 @@ do_execute_java_method_v(void* obj, const char* method_name, const char* signatu
 		throwError(&info);
 	}
 	else if (isStaticCall && (mb->accflags & ACC_STATIC) == 0) {
-		throwFreshException(NoSuchMethodError(method_name));
+		throwException(NoSuchMethodError(method_name));
 	}
 	else if (!isStaticCall && (mb->accflags & ACC_STATIC) != 0) {
-		throwFreshException(NoSuchMethodError(method_name));
+		throwException(NoSuchMethodError(method_name));
 	}
 
 	callMethodV(mb, METHOD_INDIRECTMETHOD(mb), obj, argptr, &retval);
@@ -196,7 +196,7 @@ do_execute_java_class_method_v(const char* cname,
 
 	/* Method must be static to invoke it here */
 	if ((mb->accflags & ACC_STATIC) == 0) {
-		throwFreshException(NoSuchMethodError(method_name));
+		throwException(NoSuchMethodError(method_name));
 	}
 
 	/* Make the call */
@@ -247,7 +247,7 @@ execute_java_constructor_v(const char* cname, Hjava_lang_ClassLoader* loader,
 
 	/* We cannot construct interfaces or abstract classes */
 	if (CLASS_IS_INTERFACE(cc) || CLASS_IS_ABSTRACT(cc)) {
-		throwFreshException(InstantiationException(cc->name->data));
+		throwException(InstantiationException(cc->name->data));
 	}
 
 	if (cc->state < CSTATE_USABLE) {
@@ -260,7 +260,7 @@ execute_java_constructor_v(const char* cname, Hjava_lang_ClassLoader* loader,
 	mb = findMethodLocal(cc, constructor_name, sig);
 	utf8ConstRelease(sig);
 	if (mb == 0) {
-		throwFreshException(NoSuchMethodError(constructor_name->data));
+		throwException(NoSuchMethodError(constructor_name->data));
 	}
 
 	obj = newObject(cc);
@@ -823,7 +823,7 @@ SignalError(const char* cname, const char* str)
 		obj = (Hjava_lang_Throwable*)execute_java_constructor(cname,
 			0, 0, ERROR_SIGNATURE, checkPtr(stringC2Java(str)));
 	}
-	throwFreshException(obj);
+	throwException(obj);
 }
 
 /*
@@ -957,7 +957,7 @@ AllocObjectArray(int sz, const char* classname, Hjava_lang_ClassLoader* loader)
 	errorInfo info;
 
 	if (sz < 0) {
-		throwFreshException(NegativeArraySizeException);
+		throwException(NegativeArraySizeException);
 	}
         elclass = getClassFromSignature(classname, loader, &info);
 	if (elclass == 0) {

@@ -1138,7 +1138,7 @@ jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 	for (i = 0; i < dims; i++) {
 		arg = va_arg(ap, jint);
 		if (arg < 0) {
-                        throwFreshException(NegativeArraySizeException);
+                        throwException(NegativeArraySizeException);
 		}
 		arraydims[i] = arg;
 	}
