@@ -1,3 +1,29 @@
+2004-09-20  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/thread.c
+	(startSpecialThread, createDaemon): Better synchronisation with
+	waitStaticCond and signalStaticCond.
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c
+	(setBlockState, clearBlockState): New functions to handle the
+	blockState variable.
+	(ThreadCondWait): Handles infinite wait for conditions.
+	(jmutex_lock, jcondvar_wait): Updated to use the new helper functions.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(incrPointer): New helper function to fix some warnings in
+	jthread_relaxstack.
+	(KaffePThread_WaitForResume): New helper function to sleep a
+	little more if the thread is still in suspend state.
+	(jthread_unsuspendall, jthread_suspendall): Now we take care of
+	already blocked thread in mutexes or conditions.
+	(jthread_create): Initialize suspendLock.
+	(tDispose): Destroy suspendLock.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.h
+	(jthread_t): New field suspendLock.
+	(KaffePThread_WaitForResume, detectStackBoundaries): Added prototypes.
+	
 2004-09-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/awt/classpath-gtk/classpath/Makefile.am:

@@ -55,6 +55,9 @@ typedef struct _jthread {
   pthread_t             tid;
   pthread_attr_t        attr;
 
+  /* To release the lock */
+  pthread_mutex_t       suspendLock;
+
   /* wether this is a daemon thread */
   int			daemon;
   int                   interrupting;
@@ -420,5 +423,9 @@ jlong jthread_get_usage(UNUSED jthread_t jt)
 int jthread_is_interrupted(jthread_t jt);
 
 int jthread_interrupted(jthread_t jt);
+
+void KaffePThread_WaitForResume(int releaseMutex);
+
+void detectStackBoundaries(jthread_t jtid, int mainThreadStackSize);
 
 #endif /* __thread_impl_h */

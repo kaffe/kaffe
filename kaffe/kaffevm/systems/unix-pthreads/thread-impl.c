@@ -821,7 +821,8 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	nt->stackMax     = 0;
 	nt->stackCur     = 0;
 	nt->daemon	 = isDaemon;
-
+	pthread_mutex_init(&nt->suspendLock, NULL);
+	
 	DBG( JTHREAD, TMSG_SHORT( "create new ", nt))
 
 	/* init our cv and mux fields for locking */
@@ -888,6 +889,7 @@ static
 void tDispose ( jthread_t nt )
 {
   pthread_detach( nt->tid);
+  pthread_mutex_destroy (&nt->suspendLock);
 
   sem_destroy( &nt->sem);
 
@@ -1035,6 +1037,36 @@ jthread_setpriority (jthread_t cur, jint prio)
  * the suspend/resume mechanism
  */
 
+void KaffePThread_WaitForResume(int releaseMutex)
+{
+  volatile jthread_t cur = jthread_current();
+  int s;
+  sigset_t oldset;
+
+  if (releaseMutex)
+    {
+      pthread_sigmask(SIG_SETMASK, &suspendSet, &oldset);
+      pthread_mutex_unlock(&cur->suspendLock);
+    }
+
+  /* freeze until we get a subsequent sigResume */
+  while( cur->suspendState == SS_SUSPENDED )
+    sigwait( &suspendSet, &s);
+  
+  DBG( JTHREADDETAIL, dprintf("sigwait return: %p\n", cur))
+    
+  cur->stackCur     = 0;
+  cur->suspendState = 0;
+  
+  /* notify the critSect owner we are leaving the handler */
+  sem_post( &critSem);
+
+  if (releaseMutex)
+    {
+      pthread_sigmask(SIG_SETMASK, &oldset, NULL);
+    }
+}
+
 /*
  * The suspend signal handler, which we need to implement critical sections.
  * It is used for two purposes: (a) to block all active threads which might
@@ -1049,7 +1081,7 @@ suspend_signal_handler ( UNUSED int sig )
 {
   volatile jthread_t   cur = jthread_current();
 
-  DBG( JTHREADDETAIL, dprintf("suspend signal handler: %p\n", cur))
+  DBG( JTHREAD, dprintf("suspend signal handler: %p\n", cur))
 
   /* signals are global things and might come from everywhere, anytime */
   if ( !cur || !cur->active )
@@ -1057,7 +1089,6 @@ suspend_signal_handler ( UNUSED int sig )
 
   if ( cur->suspendState == SS_PENDING_SUSPEND ){
 	JTHREAD_JMPBUF env;
-	int s;
 
 	/*
 	 * Note: We're not gonna do a longjmp to this place, we just want
@@ -1072,17 +1103,7 @@ suspend_signal_handler ( UNUSED int sig )
 	/* notify the critSect owner that we are now suspending in the handler */
 	sem_post( &critSem);
 
-	/* freeze until we get a subsequent sigResume */
-	while( cur->suspendState == SS_SUSPENDED )
-		sigwait( &suspendSet, &s);
-
-	DBG( JTHREADDETAIL, dprintf("sigwait return: %p\n", cur))
-
-	cur->stackCur     = 0;
-	cur->suspendState = 0;
-
-	/* notify the critSect owner we are leaving the handler */
-	sem_post( &critSem);
+	KaffePThread_WaitForResume(false);
   }
 }
 
@@ -1095,7 +1116,6 @@ resume_signal_handler ( UNUSED int sig )
 {
   /* we don't do anything, here - all the action is in the suspend handler */
 }
-
 
 /*
  * Temporarily suspend all threads but the current one. This is
@@ -1111,7 +1131,7 @@ jthread_suspendall (void)
 {
   int		status;
   jthread_t	cur = jthread_current();
-  jthread_t	t;
+  volatile jthread_t	t;
   int		iLockRoot;
  
   /* don't allow any new thread to be created or recycled until this is done */
@@ -1129,21 +1149,36 @@ jthread_suspendall (void)
 	   * signals handled by threads which are blocked on someting else
 	   * than the thread lock (which we soon release)
 	   */
-	  if ( (t != cur) && (t->suspendState == 0) && (t->active) ) {
-		DBG( JTHREADDETAIL, dprintf("signal suspend: %p (susp: %d blk: %d)\n",
-					    t, t->suspendState, t->blockState))
+	  if ( (t != cur) && (t->suspendState == 0) && (t->active != 0) ) {
+		DBG( JTHREAD, dprintf("signal suspend: %p (susp: %d blk: %d)\n",
+				      t, t->suspendState, t->blockState))
+
+		pthread_mutex_lock(&t->suspendLock);
 		t->suspendState = SS_PENDING_SUSPEND;
 
-		if ( (status = pthread_kill( t->tid, sigSuspend)) ){
-		  DBG( JTHREAD, dprintf("error sending SUSPEND signal to %p: %d\n", t, status))
-		}
-		else {
-		  /* BAD: Empirical workaround for lost signals (with accumulative syncing)
-		   * It shouldn't be necessary (posix sems are accumulative), and it
-		   * is bad, performancewise (at least n*2 context switches per suspend)
-		   * but it works more reliably on linux 2.2.x */
-		  sem_wait( &critSem);
-		}
+		if ((t->blockState & (BS_CV|BS_MUTEX|BS_CV_TO)) != 0)
+		  {
+		    /* The thread is already stopped.
+		     */
+		    assert(t->stackCur != NULL);
+		    t->suspendState = SS_SUSPENDED;
+		  }
+		else
+		  {
+		    if ((status = pthread_kill( t->tid, sigSuspend)) != 0)
+		      {
+			DBG( JTHREAD, dprintf("error sending SUSPEND signal to %p: %d\n", t, status));
+		      }
+		    else
+		      {
+			/* BAD: Empirical workaround for lost signals (with accumulative syncing)
+			 * It shouldn't be necessary (posix sems are accumulative), and it
+			 * is bad, performancewise (at least n*2 context switches per suspend)
+			 * but it works more reliably on linux 2.2.x */
+			sem_wait( &critSem);
+		      }
+		  }
+		pthread_mutex_unlock(&t->suspendLock);
 	  }
 	}
 
@@ -1191,39 +1226,43 @@ jthread_unsuspendall (void)
 
 #if !defined(KAFFE_BOEHM_GC)
 	for ( t=activeThreads; t; t = t->next ){
-	  if ( t->suspendState & (SS_PENDING_SUSPEND | SS_SUSPENDED) ){
+	  pthread_mutex_lock(&t->suspendLock);
+	  if ( (t->suspendState & (SS_PENDING_SUSPEND | SS_SUSPENDED)) != 0 )
+	    {
+	      
+	      DBG( JTHREAD, dprintf("signal resume: %p (sus: %d blk: %d)\n",
+				    t, t->suspendState, t->blockState))
 
-		DBG( JTHREAD, dprintf("signal resume: %p (sus: %d blk: %d)\n",
-				      t, t->suspendState, t->blockState))
-
-		t->suspendState = SS_PENDING_RESUME;
-		status = pthread_kill( t->tid, sigResume);
-		if ( status ) {
-		  DBG( JTHREAD, dprintf("error sending RESUME signal to %p: %d\n", t, status))
+	      t->suspendState = SS_PENDING_RESUME;
+	      if ((t->blockState & (BS_CV|BS_CV_TO|BS_MUTEX)) == 0)
+		{
+		  DBG (JTHREADDETAIL, dprintf("  sending sigResume\n"))
+		  status = pthread_kill( t->tid, sigResume);
+		  if ( status )
+		    {
+		      DBG( JTHREAD, dprintf("error sending RESUME signal to %p: %d\n", t, status))
+		    }		  
+		  /* ack wait workaround, see TentercritSect remarks */
+		  sem_wait( &critSem);
 		}
-
-		/* ack wait workaround, see TentercritSect remarks */
-		sem_wait( &critSem);
-	  }
+	      else
+		{
+		  DBG (JTHREADDETAIL, dprintf("  clearing suspendState\n"))
+		  t->suspendState = 0;
+		}
+	    }
+	  pthread_mutex_unlock(&t->suspendLock);
 	}
 
 #else
 	for ( t=activeThreads; t; t = t->next ){
 	  if ( t->suspendState & (SS_PENDING_SUSPEND | SS_SUSPENDED) ){
-		t->suspendState = SS_PENDING_RESUME;
+		t->suspendState = 0;
 	  }
 	}
 
 	GC_start_world();
 
-#endif
-
-#ifdef NEVER
-	/* wait until all signals we've sent out have been handled */
-	while ( nResumes ){
-	  sem_wait( &critSem);
-	  nResumes--;
-	}
 #endif
 
 	TUNLOCK( cur); /*----------------------------------------------------- tLock */
@@ -1300,22 +1339,28 @@ jthread_set_blocking (int fd, int blocking)
  * Get the current stack limit.
  * Adapted from kaffe/kaffevm/systems/unix-jthreads/jthread.h
  */
+
+static inline void incrPointer(void **p, int inc)
+{
+  *p = (void *)((uintp)*p + inc);
+}
+
 void jthread_relaxstack(int yes)
 {
   if( yes )
     {
 #if defined(STACK_GROWS_UP)
-      (uintp)jthread_current()->stackMax += STACKREDZONE;
+      incrPointer(&jthread_current()->stackMax, STACKREDZONE);
 #else
-      (uintp)jthread_current()->stackMin -= STACKREDZONE;
+      incrPointer(&jthread_current()->stackMin, -STACKREDZONE);
 #endif
     }
   else
     {
 #if defined(STACK_GROWS_UP)
-      (uintp)jthread_current()->stackMax -= STACKREDZONE;
+      incrPointer(&jthread_current()->stackMax, -STACKREDZONE);
 #else
-      (uintp)jthread_current()->stackMin += STACKREDZONE;
+      incrPointer(&jthread_current()->stackMin, STACKREDZONE);
 #endif
     }
 }

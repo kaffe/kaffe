@@ -285,6 +285,7 @@ startSpecialThread(void *arg UNUSED)
 	ksemInit(&THREAD_DATA()->sem);
 
 	lockStaticMutex(&thread_start_lock);
+	signalStaticCond(&thread_start_lock);
 	unlockStaticMutex(&thread_start_lock);
 
 	func = (void *)THREAD_DATA()->exceptPtr;
@@ -347,6 +348,8 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
   
   jthread_get_data(nativeTid)->exceptPtr = func;
   jthread_get_data(nativeTid)->exceptObj = arg;
+
+  waitStaticCond(&thread_start_lock, (jlong)0);
   
   unlockStaticMutex(&thread_start_lock);
   
