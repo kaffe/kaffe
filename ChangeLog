@@ -1,3 +1,28 @@
+2004-08-15  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/security/DummyMessageDigest.java:
+	New file. Taken from GNU Classpath.
+
+	* libraries/javalib/java/security/MessageDigest.java,
+	libraries/javalib/java/security/SignatureSpi.java:
+	Replaced by implementation from GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/gnu/crypto/pki/provider/DSASignature.java:
+	Resynced with GNU Crypto.
+
+	2004-08-12  Casey Marshall <csm@gnu.org>
+
+        * source/gnu/crypto/pki/provider/DSASignature.java
+        (<init>): initialize `digest' here.
+        (init): removed initialization of `digest', and remove unnecessary
+        catches.
+        Reported by Dalibor Topic <robilad@kaffe.org>
+
 2004-08-15  Mark Wielaard  <mark@klomp.org>
 
 	* libraries/javalib/kaffe/tools/jar/Jar.java

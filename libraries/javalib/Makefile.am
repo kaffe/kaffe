@@ -2174,6 +2174,7 @@ java_security_SRCS = \
 	java/security/DigestInputStream.java \
 	java/security/DigestOutputStream.java \
 	java/security/DomainCombiner.java \
+	java/security/DummyMessageDigest.java \
 	java/security/GeneralSecurityException.java \
 	java/security/Guard.java \
 	java/security/GuardedObject.java \

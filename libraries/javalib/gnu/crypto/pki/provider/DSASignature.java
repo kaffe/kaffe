@@ -75,23 +75,13 @@ public class DSASignature extends SignatureSpi
   private DSAPrivateKey privateKey;
   private MessageDigest digest = null;
 
-  public DSASignature()
+  public DSASignature() throws NoSuchAlgorithmException
   {
+    digest = MessageDigest.getInstance("SHA-160");
   }
 
   private void init()
   {
-    if (digest == null)
-      {
-        try
-          {
-            digest = MessageDigest.getInstance("SHA-160");
-          }
-        catch (NoSuchAlgorithmException nsae)
-          {
-            throw new Error(nsae);
-          }
-      }
     digest.reset();
   }
 
@@ -264,19 +254,5 @@ public class DSASignature extends SignatureSpi
     throws InvalidParameterException
   {
     throw new InvalidParameterException();
-  }
-
-  public Object clone() throws CloneNotSupportedException
-  {
-    return new DSASignature(this);
-  }
-
-  private DSASignature(DSASignature copy) throws CloneNotSupportedException
-  {
-    this();
-    this.publicKey = copy.publicKey;
-    this.privateKey = copy.privateKey;
-    if (copy.digest != null)
-      this.digest = (MessageDigest) copy.digest.clone();
   }
 }
