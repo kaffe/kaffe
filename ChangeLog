@@ -1,5 +1,10 @@
 2004-12-11  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/jit3/icode.c:
+	  Some -Wtraditional fixes.
+
+2004-12-11  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/exception.c,
 	  kaffe/kaffevm/hashtab.c, kaffe/kaffevm/lookup.c,
 	  kaffe/kaffevm/jit3/labels.c, kaffe/kaffevm/jit3/machine.c,

@@ -2557,7 +2557,7 @@ void
 load_offset_scaled_int(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_int(dst, src, slot_value(idx)->i * sizeof(jint) + offset);
+		load_offset_int(dst, src, (jint)(slot_value(idx)->i * sizeof(jint) + offset));
 	}
 	else
 #if defined(HAVE_load_offset_scaled_int)
@@ -2578,7 +2578,7 @@ void
 load_offset_scaled_ref(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_ref(dst, src, slot_value(idx)->i * sizeof(jref) + offset);
+		load_offset_ref(dst, src, (jint)(slot_value(idx)->i * sizeof(jref) + offset));
 	}
 	else
 #if defined(HAVE_load_offset_scaled_ref)
@@ -2599,7 +2599,7 @@ void
 load_offset_scaled_long(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_long(dst, src, slot_value(idx)->i * sizeof(jlong) + offset);
+		load_offset_long(dst, src, (jint)(slot_value(idx)->i * sizeof(jlong) + offset));
 	}
 	else
 #if defined(HAVE_load_offset_scaled_long)
@@ -2620,7 +2620,7 @@ void
 load_offset_scaled_float(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_float(dst, src, slot_value(idx)->i * sizeof(jfloat) + offset);
+		load_offset_float(dst, src, (jint)(slot_value(idx)->i * sizeof(jfloat) + offset));
 	}
 	else
 #if defined(HAVE_load_offset_scaled_float)
@@ -2641,7 +2641,7 @@ void
 load_offset_scaled_double(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_double(dst, src, slot_value(idx)->i * sizeof(jdouble) + offset);
+		load_offset_double(dst, src, (jint)(slot_value(idx)->i * sizeof(jdouble) + offset));
 	}
 	else
 #if defined(HAVE_load_offset_scaled_double)
@@ -2662,7 +2662,7 @@ void
 load_offset_scaled_byte(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_byte(dst, src, slot_value(idx)->i * sizeof(jbyte) + offset);
+		load_offset_byte(dst, src, (jint)(slot_value(idx)->i * sizeof(jbyte) + offset));
 	}
 	else
 #if defined(HAVE_load_offset_scaled_byte)
@@ -2682,7 +2682,7 @@ void
 load_offset_scaled_char(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_char(dst, src, slot_value(idx)->i * sizeof(jchar) + offset);
+		load_offset_char(dst, src, (jint)(slot_value(idx)->i * sizeof(jchar) + offset));
 	}
 	else
 #if defined(HAVE_load_offset_scaled_char)
@@ -2703,7 +2703,7 @@ void
 load_offset_scaled_short(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_short(dst, src, slot_value(idx)->i * sizeof(jshort) + offset);
+		load_offset_short(dst, src, (jint)(slot_value(idx)->i * sizeof(jshort) + offset));
 	}
 	else
 #if defined(HAVE_load_offset_scaled_short)
@@ -3161,7 +3161,7 @@ void
 store_offset_scaled_int(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_int(dst, slot_value(idx)->i * sizeof(jint) + offset, src);
+		store_offset_int(dst, (jint)(slot_value(idx)->i * sizeof(jint) + offset), src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_int)
@@ -3182,7 +3182,7 @@ void
 store_offset_scaled_ref(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_ref(dst, slot_value(idx)->i * sizeof(jref) + offset, src);
+		store_offset_ref(dst, (jint)(slot_value(idx)->i * sizeof(jref) + offset), src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_ref)
@@ -3203,7 +3203,7 @@ void
 store_offset_scaled_long(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_long(dst, slot_value(idx)->i * sizeof(jlong) + offset, src);
+		store_offset_long(dst, (jint)(slot_value(idx)->i * sizeof(jlong) + offset), src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_long)
@@ -3224,7 +3224,7 @@ void
 store_offset_scaled_float(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_float(dst, slot_value(idx)->i * sizeof(jfloat) + offset, src);
+		store_offset_float(dst, (jint)(slot_value(idx)->i * sizeof(jfloat) + offset), src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_float)
@@ -3245,7 +3245,7 @@ void
 store_offset_scaled_double(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_double(dst, slot_value(idx)->i * sizeof(jdouble) + offset, src);
+		store_offset_double(dst, (jint)(slot_value(idx)->i * sizeof(jdouble) + offset), src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_double)
@@ -3266,7 +3266,7 @@ void
 store_offset_scaled_byte(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_byte(dst, slot_value(idx)->i * sizeof(jbyte) + offset, src);
+		store_offset_byte(dst, (jint)(slot_value(idx)->i * sizeof(jbyte) + offset), src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_byte)
@@ -3300,7 +3300,7 @@ void
 store_offset_scaled_char(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_char(dst, slot_value(idx)->i * sizeof(jchar) + offset, src);
+		store_offset_char(dst, (jint)(slot_value(idx)->i * sizeof(jchar) + offset), src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_char)
@@ -3321,7 +3321,7 @@ void
 store_offset_scaled_short(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_short(dst, slot_value(idx)->i * sizeof(jshort) + offset, src);
+		store_offset_short(dst, (jint)(slot_value(idx)->i * sizeof(jshort) + offset), src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_short)
