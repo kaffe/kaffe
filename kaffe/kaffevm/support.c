@@ -215,10 +215,30 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 	i = 0;
 	s = 0;
 
+#if defined(INTERPRETER)
+	/* Insert the JNI environment */
+	if (meth->accflags & ACC_JNI) {
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+		call.calltype[i] = 'L';
+		in[i].l = (void*)&Kaffe_JNIEnv;
+		s += call.callsize[i];
+		i++;
+		args--; /* because args[i] would be off by one */
+	}
+
+	/* If method is static we must insert the class as an argument */
+	if (meth->accflags & ACC_STATIC) {
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+		s += call.callsize[i];
+		call.calltype[i] = 'L';
+		in[i].l = meth->class;
+		i++;
+		args--; /* because args[i] would be off by one */
+	}
+#endif
 
 	/* If this method isn't static, we must insert the object as
-	 * the first argument.  To do this we copy down the argument
-	 * array and stick the object at the beginning.
+	 * an argument.
  	 */
 	if ((meth->accflags & ACC_STATIC) == 0) {
 		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
@@ -360,6 +380,26 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	sig = meth->signature->data;
 	i = 0;
 	s = 0;
+
+#if defined(INTERPRETER)
+	/* Insert the JNI environment */
+	if (meth->accflags & ACC_JNI) {
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+		call.calltype[i] = 'L';
+		in[i].l = (void*)&Kaffe_JNIEnv;
+		s += call.callsize[i];
+		i++;
+	}
+
+	/* If method is static we must insert the class as an argument */
+	if (meth->accflags & ACC_STATIC) {
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+		s += call.callsize[i];
+		call.calltype[i] = 'L';
+		in[i].l = meth->class;
+		i++;
+	}
+#endif
 
 	/* If this method isn't static, we must insert the object as
 	 * the first argument and get the function code.
