@@ -2,6 +2,19 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-01-21  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/text/DefaultEditorKit.java
+	(read): Added '\n' after each line.
+	* javax/swing/text/PlainView.java
+	(modelToView): Update metrics.
+	(drawLine): Use offsets from element.
+	(paint): Update metrics. Draw all lines.
+
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-01-20  Michael Koch  <konqueror@gmx.de>
 
 	* java/awt/print/PrinterJob.java

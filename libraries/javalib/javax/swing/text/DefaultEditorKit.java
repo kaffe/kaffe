@@ -375,7 +375,10 @@ public class DefaultEditorKit extends EditorKit
     StringBuffer content = new StringBuffer();
 
     while ((line = reader.readLine()) != null)
-      content.append(line);
+      {
+	content.append(line);
+	content.append("\n");
+      }
     
     document.insertString(offset, content.toString(),
 			  SimpleAttributeSet.EMPTY);
