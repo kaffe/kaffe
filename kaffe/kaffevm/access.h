@@ -23,6 +23,7 @@
 #define	ACC_NATIVE		0x0100
 #define	ACC_INTERFACE		0x0200
 #define	ACC_ABSTRACT		0x0400
+#define	ACC_STRICT		0x0800
 
 #define	ACC_MASK		0x07FF
 

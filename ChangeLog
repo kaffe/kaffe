@@ -1,3 +1,20 @@
+2003-06-27  Rob Gonzalez <rob@kaffe.org>
+
+	The following files were updated to provide additional macro
+	support for accessing internal kaffe data in classes and methods.
+	The new macros will be used extensively in pass 2 verification.
+	
+	* kaffe/kaffevm/access.h
+	Added ACC_STRICT macro.
+
+	* kaffe/kaffevm/constants.h
+	Enhanced macro set for picking apart a class's constant pool.
+	i.e. added METHODREF_SIGNATURE(...) and others.
+
+	* kaffe/kaffevm/classMethod.h
+	Enhanced macro set for checking a method's flags.
+	i.e. added METHOD_IS_PROTECTED(...) and others.
+
 2003-06-26  Motoyuki Kasahara <m-kasahr@sra.co.jp>
 
 	* configure.in:

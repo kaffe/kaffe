@@ -47,20 +47,46 @@ typedef struct _constants {
 	ConstSlot*	data;
 } constants;
 
+
+
 /*
  * Macros to take constant pools apart.  XX prefix with CONST_
  */
-#define	METHODREF_CLASS(idx, pool)		((uint16)pool->data[idx])
-#define	METHODREF_NAMEANDTYPE(idx, pool)	((uint16)(pool->data[idx]>>16))
-#define	CLASS_NAME(idx, pool)			((uint16)pool->data[idx])
-#define	FIELDREF_CLASS(idx, pool)		METHODREF_CLASS(idx, pool)
-#define	FIELDREF_NAMEANDTYPE(idx, pool)		METHODREF_NAMEANDTYPE(idx, pool)
-#define	NAMEANDTYPE_NAME(idx, pool)		METHODREF_CLASS(idx, pool)
-#define	NAMEANDTYPE_SIGNATURE(idx, pool)	METHODREF_NAMEANDTYPE(idx, pool)
-#define	STRING_NAME(idx, pool)			CLASS_NAME(idx, pool)
-#define	CONST_TAG(idx, pool)			((idx) > 0 && (idx) < pool->size ?  pool->tags[idx] : CONSTANT_Unknown)
+#define CONST_TAG(idx, pool)                            (((idx) > 0 && (idx) < pool->size) ?  pool->tags[idx] : CONSTANT_Unknown)
 
-#define CLASS_CLASS(idx, pool)			((Hjava_lang_Class*)pool->data[idx])
+#define CLASS_NAME(idx, pool)                           ((uint16)pool->data[idx])
+#define CONST_STRING_NAME(idx, pool)                    CLASS_NAME(idx, pool)
+
+#define CLASS_CLASS(idx, pool)                          ((Hjava_lang_Class*)pool->data[idx])
+
+
+#define FIELDREF_CLASS(idx, pool)                       ((uint16)pool->data[idx])
+#define METHODREF_CLASS(idx, pool)                      FIELDREF_CLASS(idx, pool)
+#define INTERFACEMETHODREF_CLASS(idx, pool)             FIELDREF_CLASS(idx, pool)
+
+#define FIELDREF_NAMEANDTYPE(idx, pool)                 ((uint16)(pool->data[idx] >> 16))
+#define METHODREF_NAMEANDTYPE(idx, pool)                FIELDREF_NAMEANDTYPE(idx, pool)
+#define INTERFACEMETHODREF_NAMEANDTYPE(idx, pool)       FIELDREF_NAMEANDTYPE(idx, pool)
+
+
+#define NAMEANDTYPE_NAME(idx, pool)                     ((uint16)pool->data[idx])
+#define NAMEANDTYPE_SIGNATURE(idx, pool)                ((uint16)(pool->data[idx] >> 16))
+
+
+#define FIELDREF_NAME(idx, pool)                        NAMEANDTYPE_NAME(FIELDREF_NAMEANDTYPE(idx, pool), pool)
+#define FIELDREF_TYPE(idx, pool)                        FIELDREF_SIGNATURE(idx, pool)
+#define METHODREF_NAME(idx, pool)                       FIELDREF_NAME(idx, pool)
+#define METHODREF_TYPE(idx, pool)                       FIELDREF_TYPE(idx, pool)
+#define INTERFACEMETHODREF_NAME(idx, pool)              FIELDREF_NAME(idx, pool)
+
+#define FIELDREF_SIGNATURE(idx, pool)                   NAMEANDTYPE_SIGNATURE(FIELDREF_NAMEANDTYPE(idx, pool), pool)
+#define METHODREF_SIGNATURE(idx, pool)                  FIELDREF_SIGNATURE(idx, pool)
+#define INTERFACEMETHODREF_SIGNATURE(idx, pool)         FIELDREF_SIGNATURE(idx, pool)
+
+
+#define CONST_UTF2CHAR(idx, pool)                       ((pool->data[idx] != 0) ? (((Utf8Const*)pool->data[idx])->data) : "")
+
+
 
 struct classFile;
 struct _errorInfo;
