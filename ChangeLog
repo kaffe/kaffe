@@ -1,3 +1,9 @@
+Mon Jun 15 12:33:25 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/findInJar.c (classpath): dynamically grow.
+	* kaffe/kaffevm/support.c (callMethodA): do not assume args
+	  is MAXMARGS long.
+
 Sat Jun  6 17:52:14 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* libraries/clib/native/Method.c: used JNI to implement 
