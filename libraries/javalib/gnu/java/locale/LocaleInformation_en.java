@@ -241,7 +241,6 @@ public class LocaleInformation_en extends ListResourceBundle
     { "eras", eras },
     { "shortDateFormat", "M/d/yy" },
     { "mediumDateFormat", "MMM d, yyyy" },
-    { "localPatternChars", "GyMdkHmsSEDFwWahKz" },
     { "longDateFormat", "MMMM d, yyyy" },
     { "fullDateFormat", "EEEE, MMMM d, yyyy" },
     { "shortTimeFormat", "h:mm a" },

@@ -1,5 +1,38 @@
 2005-01-24  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-01-23  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * gnu/java/locale/LocaleInformation.java:
+        Extended localPatternChars string to match root.xml.
+        * gnu/java/locale/LocaleInformation_en.java:
+        Removed invalid localPatternChars string.
+        * gnu/java/locale/LocaleInformation_nl.java:
+        Likewise.
+        * java/text/DateFormat.java:
+        Documented pattern character offset constants and
+        added new ones.
+        (Field): Added new static fields for new pattern chars.
+        * java/text/SimpleDateFormat.java:
+        (CompiledField): Changed name of FieldSizePair class
+        to CompiledField after adding the character as an
+        attribute.  Changed fields to private and added
+        accessors to give encapsulation.
+        (CompiledField.CompiledField(int,int,char)): Extended
+        with character field.
+        (CompiledField.getField()): New accessor method.
+        (CompiledField.getSize()): New acceessor method.
+        (CompiledField.getCharacter()): New accessor method.
+        (CompiledField.toString()): Added primarily for debugging.
+        (standardChars): Now uses extended 24 character sequence.
+        (compileFormat(String)): Changed to use CompiledField.
+        (formatWithAttribute(java.util.Date, gnu.java.text.FormatBuffer,
+        java.text.FieldPosition)): Changed to use CompiledField.
+        New handler for RFC 822 timezones added.
+
+2005-01-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* test/internal/Makefile.am (EXTRA_DIST): Added System.java.
 	Small fix for make distcheck.
 

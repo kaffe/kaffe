@@ -113,7 +113,7 @@ public class LocaleInformation extends ListResourceBundle
   
   private static final Object[][] contents =
   {
-    { "localPatternChars", "GyMdkHmsSEDFwWahKz" },
+    { "localPatternChars", "GyMdkHmsSEDFwWahKzYeugAZ" },
     { "currencySymbols", currencySymbols },
     { "decimalSeparator", "." },
     { "groupingSeparator", "," },

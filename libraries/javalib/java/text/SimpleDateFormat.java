@@ -64,18 +64,93 @@ import java.util.regex.Pattern;
  */
 public class SimpleDateFormat extends DateFormat 
 {
-  /** A pair class used by SimpleDateFormat as a compiled representation
-   *  of a format string.
+  /** 
+   * This class is used by <code>SimpleDateFormat</code> as a
+   * compiled representation of a format string.  The field
+   * ID, size, and character used are stored for each sequence
+   * of pattern characters or invalid characters in the format
+   * pattern.
    */
-  private class FieldSizePair 
+  private class CompiledField
   {
-    public int field;
-    public int size;
+    /**
+     * The ID of the field within the local pattern characters,
+     * or -1 if the sequence is invalid.
+     */
+    private int field;
 
-    /** Constructs a pair with the given field and size values */
-    public FieldSizePair(int f, int s) {
+    /**
+     * The size of the character sequence.
+     */
+    private int size;
+
+    /**
+     * The character used.
+     */
+    private char character;
+
+    /** 
+     * Constructs a compiled field using the
+     * the given field ID, size and character
+     * values.
+     *
+     * @param f the field ID.
+     * @param s the size of the field.
+     * @param c the character used.
+     */
+    public CompiledField(int f, int s, char c) {
       field = f;
       size = s;
+      character = c;
+    }
+
+    /**
+     * Retrieves the ID of the field relative to
+     * the local pattern characters, or -1 if
+     * the sequence is invalid.
+     */
+    public int getField()
+    {
+      return field;
+    }
+
+    /**
+     * Retrieves the size of the character sequence.
+     */
+    public int getSize()
+    {
+      return size;
+    }
+
+    /**
+     * Retrieves the character used in the sequence.
+     */
+    public char getCharacter()
+    {
+      return character;
+    }
+
+    /**
+     * Returns a <code>String</code> representation
+     * of the compiled field, primarily for debugging
+     * purposes.
+     *
+     * @return a <code>String</code> representation.
+     */
+    public String toString()
+    {
+      StringBuilder builder;
+
+      builder = new StringBuilder(getClass().getName());
+      builder.append("[field=");
+      builder.append(field);
+      builder.append(", size=");
+      builder.append(size);
+      builder.append(", character=");
+      builder.append(character);
+      builder.append("]");
+
+      return builder.toString();
     }
   }
 
@@ -87,10 +162,10 @@ public class SimpleDateFormat extends DateFormat
   private int serialVersionOnStream = 1; // 0 indicates JDK1.1.3 or earlier
   private static final long serialVersionUID = 4774881970558875024L;
 
-  // This string is specified in the JCL.  We set it here rather than
-  // do a DateFormatSymbols(Locale.US).getLocalPatternChars() since
-  // someone could theoretically change those values (though unlikely).
-  private static final String standardChars = "GyMdkHmsSEDFwWahKzZ";
+  // This string is specified in the root of the CLDR.  We set it here
+  // rather than doing a DateFormatSymbols(Locale.US).getLocalPatternChars()
+  // since someone could theoretically change those values (though unlikely).
+  private static final String standardChars = "GyMdkHmsSEDFwWahKzYeugAZ";
 
   private void readObject(ObjectInputStream stream)
     throws IOException, ClassNotFoundException
@@ -118,7 +193,7 @@ public class SimpleDateFormat extends DateFormat
     char thisChar;
     int pos;
     int field;
-    FieldSizePair current = null;
+    CompiledField current = null;
 
     for (int i=0; i<pattern.length(); i++) {
       thisChar = pattern.charAt(i);
@@ -128,14 +203,14 @@ public class SimpleDateFormat extends DateFormat
 	if ((thisChar >= 'A' && thisChar <= 'Z')
 	    || (thisChar >= 'a' && thisChar <= 'z')) {
 	  // Not a valid letter
-	  tokens.add(new FieldSizePair(-1,0));
+	  tokens.add(new CompiledField(-1,0,thisChar));
 	} else if (thisChar == '\'') {
 	  // Quoted text section; skip to next single quote
 	  pos = pattern.indexOf('\'',i+1);
 	  if (pos == -1) {
 	    // This ought to be an exception, but spec does not
 	    // let us throw one.
-	    tokens.add(new FieldSizePair(-1,0));
+	    tokens.add(new CompiledField(-1,0,thisChar));
 	  }
 	  if ((pos+1 < pattern.length()) && (pattern.charAt(pos+1) == '\'')) {
 	    tokens.add(pattern.substring(i+1,pos+1));
@@ -152,7 +227,7 @@ public class SimpleDateFormat extends DateFormat
 	if ((current != null) && (field == current.field)) {
 	  current.size++;
 	} else {
-	  current = new FieldSizePair(field,1);
+	  current = new CompiledField(field,1,thisChar);
 	  tokens.add(current);
 	}
       }
@@ -439,12 +514,12 @@ public class SimpleDateFormat extends DateFormat
     while (iter.hasNext())
       {
 	Object o = iter.next();
-	if (o instanceof FieldSizePair)
+	if (o instanceof CompiledField)
 	  {
-	    FieldSizePair p = (FieldSizePair) o;
+	    CompiledField cf = (CompiledField) o;
 	    int beginIndex = buffer.length();
 	    
-	    switch (p.field)
+	    switch (cf.getField())
 	      {
 	      case ERA_FIELD:
 		buffer.append (formatData.eras[calendar.get (Calendar.ERA)], DateFormat.Field.ERA);
@@ -453,75 +528,75 @@ public class SimpleDateFormat extends DateFormat
 		// If we have two digits, then we truncate.  Otherwise, we
 		// use the size of the pattern, and zero pad.
 		buffer.setDefaultAttribute (DateFormat.Field.YEAR);
-		if (p.size == 2)
+		if (cf.getSize() == 2)
 		  {
 		    temp = String.valueOf (calendar.get (Calendar.YEAR));
 		    buffer.append (temp.substring (temp.length() - 2));
 		  }
 		else
-		  withLeadingZeros (calendar.get (Calendar.YEAR), p.size, buffer);
+		  withLeadingZeros (calendar.get (Calendar.YEAR), cf.getSize(), buffer);
 		break;
 	      case MONTH_FIELD:
 		buffer.setDefaultAttribute (DateFormat.Field.MONTH);
-		if (p.size < 3)
-		  withLeadingZeros (calendar.get (Calendar.MONTH) + 1, p.size, buffer);
-		else if (p.size < 4)
+		if (cf.getSize() < 3)
+		  withLeadingZeros (calendar.get (Calendar.MONTH) + 1, cf.getSize(), buffer);
+		else if (cf.getSize() < 4)
 		  buffer.append (formatData.shortMonths[calendar.get (Calendar.MONTH)]);
 		else
 		  buffer.append (formatData.months[calendar.get (Calendar.MONTH)]);
 		break;
 	      case DATE_FIELD:
 		buffer.setDefaultAttribute (DateFormat.Field.DAY_OF_MONTH);
-		withLeadingZeros (calendar.get (Calendar.DATE), p.size, buffer);
+		withLeadingZeros (calendar.get (Calendar.DATE), cf.getSize(), buffer);
 		break;
 	      case HOUR_OF_DAY1_FIELD: // 1-24
 		buffer.setDefaultAttribute(DateFormat.Field.HOUR_OF_DAY1);
 		withLeadingZeros ( ((calendar.get (Calendar.HOUR_OF_DAY) + 23) % 24) + 1, 
-				   p.size, buffer);
+				   cf.getSize(), buffer);
 		break;
 	      case HOUR_OF_DAY0_FIELD: // 0-23
 		buffer.setDefaultAttribute (DateFormat.Field.HOUR_OF_DAY0);
-		withLeadingZeros (calendar.get (Calendar.HOUR_OF_DAY), p.size, buffer);
+		withLeadingZeros (calendar.get (Calendar.HOUR_OF_DAY), cf.getSize(), buffer);
 		break;
 	      case MINUTE_FIELD:
 		buffer.setDefaultAttribute (DateFormat.Field.MINUTE);
 		withLeadingZeros (calendar.get (Calendar.MINUTE),
-				  p.size, buffer);
+				  cf.getSize(), buffer);
 		break;
 	      case SECOND_FIELD:
 		buffer.setDefaultAttribute (DateFormat.Field.SECOND);
 		withLeadingZeros(calendar.get (Calendar.SECOND), 
-				 p.size, buffer);
+				 cf.getSize(), buffer);
 		break;
 	      case MILLISECOND_FIELD:
 		buffer.setDefaultAttribute (DateFormat.Field.MILLISECOND);
-		withLeadingZeros (calendar.get (Calendar.MILLISECOND), p.size, buffer);
+		withLeadingZeros (calendar.get (Calendar.MILLISECOND), cf.getSize(), buffer);
 		break;
 	      case DAY_OF_WEEK_FIELD:
 		buffer.setDefaultAttribute (DateFormat.Field.DAY_OF_WEEK);
-		if (p.size < 4)
+		if (cf.getSize() < 4)
 		  buffer.append (formatData.shortWeekdays[calendar.get (Calendar.DAY_OF_WEEK)]);
 		else
 		  buffer.append (formatData.weekdays[calendar.get (Calendar.DAY_OF_WEEK)]);
 		break;
 	      case DAY_OF_YEAR_FIELD:
 		buffer.setDefaultAttribute (DateFormat.Field.DAY_OF_YEAR);
-		withLeadingZeros (calendar.get (Calendar.DAY_OF_YEAR), p.size, buffer);
+		withLeadingZeros (calendar.get (Calendar.DAY_OF_YEAR), cf.getSize(), buffer);
 		break;
 	      case DAY_OF_WEEK_IN_MONTH_FIELD:
 		buffer.setDefaultAttribute (DateFormat.Field.DAY_OF_WEEK_IN_MONTH);
 		withLeadingZeros (calendar.get (Calendar.DAY_OF_WEEK_IN_MONTH), 
-				 p.size, buffer);
+				 cf.getSize(), buffer);
 		break;
 	      case WEEK_OF_YEAR_FIELD:
 		buffer.setDefaultAttribute (DateFormat.Field.WEEK_OF_YEAR);
 		withLeadingZeros (calendar.get (Calendar.WEEK_OF_YEAR),
-				  p.size, buffer);
+				  cf.getSize(), buffer);
 		break;
 	      case WEEK_OF_MONTH_FIELD:
 		buffer.setDefaultAttribute (DateFormat.Field.WEEK_OF_MONTH);
 		withLeadingZeros (calendar.get (Calendar.WEEK_OF_MONTH),
-				  p.size, buffer);
+				  cf.getSize(), buffer);
 		break;
 	      case AM_PM_FIELD:
 		buffer.setDefaultAttribute (DateFormat.Field.AM_PM);
@@ -529,25 +604,39 @@ public class SimpleDateFormat extends DateFormat
 		break;
 	      case HOUR1_FIELD: // 1-12
 		buffer.setDefaultAttribute (DateFormat.Field.HOUR1);
-		withLeadingZeros (((calendar.get (Calendar.HOUR) + 11) % 12) + 1, p.size, buffer);
+		withLeadingZeros (((calendar.get (Calendar.HOUR) + 11) % 12) + 1,
+				  cf.getSize(), buffer);
 		break;
 	      case HOUR0_FIELD: // 0-11
 		buffer.setDefaultAttribute (DateFormat.Field.HOUR0);
-		withLeadingZeros (calendar.get (Calendar.HOUR), p.size, buffer);
+		withLeadingZeros (calendar.get (Calendar.HOUR), cf.getSize(), buffer);
 		break;
 	      case TIMEZONE_FIELD:
 		buffer.setDefaultAttribute (DateFormat.Field.TIME_ZONE);
 		TimeZone zone = calendar.getTimeZone();
 		boolean isDST = calendar.get (Calendar.DST_OFFSET) != 0;
 		// FIXME: XXX: This should be a localized time zone.
-		String zoneID = zone.getDisplayName (isDST, p.size > 3 ? TimeZone.LONG : TimeZone.SHORT);
+		String zoneID = zone.getDisplayName
+		  (isDST, cf.getSize() > 3 ? TimeZone.LONG : TimeZone.SHORT);
 		buffer.append (zoneID);
 		break;
+	      case RFC822_TIMEZONE_FIELD:
+		buffer.setDefaultAttribute(DateFormat.Field.RFC822_TIME_ZONE);
+		int pureMinutes = (calendar.get(Calendar.ZONE_OFFSET) +
+				   calendar.get(Calendar.DST_OFFSET)) / (1000 * 60);
+		String sign = (pureMinutes < 0) ? "-" : "+";	  
+		int hours = pureMinutes / 60;
+		int minutes = pureMinutes % 60;
+		buffer.append(sign);
+		withLeadingZeros(hours, 2, buffer);
+		withLeadingZeros(minutes, 2, buffer);
+		break;
 	      default:
-		throw new IllegalArgumentException ("Illegal pattern character " + p.field);
+		throw new IllegalArgumentException ("Illegal pattern character " +
+						    cf.getCharacter());
 	      }
 	    if (pos != null && (buffer.getDefaultAttribute() == pos.getFieldAttribute()
-				|| p.field == pos.getField()))
+				|| cf.getField() == pos.getField()))
 	      {
 		pos.setBeginIndex(beginIndex);
 		pos.setEndIndex(buffer.length());

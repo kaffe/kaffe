@@ -224,7 +224,6 @@ public class LocaleInformation_nl extends ListResourceBundle
   private static final Object[][] contents =
   {
     { "collation_rules", collation_rules },
-    { "localPatternChars", "GyMdhHmsSEDFwWakKz" },
     { "decimalSeparator", "," },
     { "groupingSeparator", "." },
     { "currenciesDisplayName", currenciesDisplayName },
