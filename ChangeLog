@@ -1,3 +1,8 @@
+Thu Nov  7 19:52:53 CET 2002 Herve Roussain <roussain@univ-ubs.fr>
+
+	* kaffe/scripts/compat/javac.in: fixed the script to not append an empty
+	-classpath option when you don't use it.
+
 Thu Nov  7 19:32:53 CET 2002 Mark J Roberts <mjr@znex.org>
 
 	* libraries/javalib/java/util/GregorianCalendar.java:

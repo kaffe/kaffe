@@ -21,8 +21,8 @@ if [ "x$classpath" != "x" ]; then
     if [ $? -eq 1 ]; then
         classpath=${lib_path}/rt.jar:${classpath}
     fi
+    args="${args} -classpath $classpath"
 fi
-args="${args} -classpath $classpath"
 
 exec @bindir@/@kaffe_TRANSF@ at.dms.kjc.Main $args
 
