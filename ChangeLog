@@ -1,5 +1,17 @@
 2003-08-28  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/m68k/a-ux/jit-md.h, config/m68k/netbsd1/jit-md.h,
+	config/m68k/linux/jit-md.h, config/m68k/openbsd2/jit-md.h,
+	config/m68k/a-ux/md.h, config/m68k/netbsd1/md.h,
+	config/m68k/linux/md.h, config/m68k/openbsd2/md.h:
+	Defined SIGNAL_ARGS using informations from EXCEPTIONPROTO.
+	Redefined EXCEPTIONPROTO as SIGNAL_ARGS(sig, ctx)
+	Moved some code from jit-md.h to md.h and defined
+	SIGNAL_CONTEXT_POINTER, GET_SIGNAL_CONTEXT_POINTER, SIGNAL_PC
+	wherever possible.
+
+2003-08-28  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* config/sparc/bsdi3/md.h, config/sparc/linux/md.h,
 	config/sparc/netbsd1/md.h, config/sparc/nextstep3/md.h,
 	config/sparc/openbsd2/md.h, config/sparc/solaris2/md.h,

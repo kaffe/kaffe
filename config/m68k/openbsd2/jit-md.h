@@ -29,8 +29,7 @@
 /**/
 #include <signal.h>
 
-#define	EXCEPTIONPROTO							\
-	int sig, siginfo_t* code, struct sigcontext *ctx
+#define	EXCEPTIONPROTO SIGNAL_ARGS(sig, ctx)
 
 /* Get the first exception frame from a signal handler */
 #define	EXCEPTIONFRAME(f, c)						\
