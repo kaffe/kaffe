@@ -1,0 +1,70 @@
+
+How to upgrade KJC into Kaffe.
+By Edouard G. Parmelan <egp@free.fr>, Aug 28, 2001
+
+This process will help you to test new version of Kjc before include it in
+Kaffe.
+
+
+Your checkout tree of Kaffe is noted SRC and your build tree is noted
+BUILD.  Both tree can be the same.
+
+Download latest version of Kjc from http://www.dms.at/kopi.  Use
+kjc-suite-VERSION-bin.jar as it contains kjc and dis, ikjc, ksm.
+
+
+- Update kjc.jar
+
+  Replace SRC/libraries/javalib/kjc.jar with downloaded file
+  kjc-suite-VERSION-bin.jar.
+
+- Configure Kaffe
+
+    BUILD$ SRC/configure --enable-debug
+
+- Cancel Jikes detection to build Klasses.jar
+
+  Edit file BUILD/libraries/javalib/rebuildLib and replace line
+      
+      JIKES=jikes
+
+  by
+
+      JIKES=
+
+- Cancel Jikes detection to run regression tests
+
+  Edit file BUILD/test/regression/TestScript and replace line
+
+      test -z "jikes" || : ${JIKES="jikes -nowarn"}
+
+  by
+
+      test -z "" || : ${JIKES="jikes -nowarn"}
+
+
+- Build Kaffe with official Klasses.jar
+
+    BUILD$ make
+
+- Run regression test with official Klasses.jar and new version of KJC.
+  All tests must pass.  
+
+    BUILD$ cd test/regression; make check
+
+- Rebuild Klasses.jar with new version of KJC.  Klasses.jar must build
+  without errors.
+
+    BUILD$ cd libraries/javalib; make build-classes
+
+- Run regression tests with newly compiled Klasses.jar and new version of KJC.
+  All tests must pass.  
+
+    BUILD$ cd test/regression; make check
+
+You may now commit kjc.jar with comment: "updated with
+kjc-suite-VERSION-bin.jar".
+
+--
+Edouard G. Parmelan
+http://egp.free.fr
