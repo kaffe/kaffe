@@ -394,7 +394,7 @@ Component getToplevel () {
 final public Object getTreeLock() {
 	// this way, we sync with all graphic output, too
 	// (which is important for no-native WMs)
-	return Toolkit.singleton;
+	return Toolkit.class;
 }
 
 /**
