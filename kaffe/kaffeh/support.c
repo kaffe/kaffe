@@ -844,7 +844,7 @@ kaffeh_findClass(const char* nm)
 		else if (S_ISDIR(sbuf.st_mode)) {
 			Hjava_lang_Class tmpClass;
 			classFile hand;
-			char* buf;
+			unsigned char* buf;
 
 			strcat(superName, "/");
 			strcat(superName, nm);
@@ -891,7 +891,7 @@ kaffeh_findClass(const char* nm)
 			return;
 		}
 		else {
-			char *buf;
+			unsigned char *buf;
 			classFile hand;
 			Hjava_lang_Class tmpClass;
 			
