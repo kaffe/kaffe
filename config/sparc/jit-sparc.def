@@ -8,12 +8,11 @@
  * of this file. 
  */
 
-#undef	DEBUG
-
 #ifdef DEBUG
-#define	debug(x)	printf##x
+int jit_debug;
+#define debug(x)        (jit_debug ? dprintf("%x:\t", CODEPC), dprintf x : 0)
 #else
-#define	debug(x)
+#define debug(x)
 #endif
 
 #include "classMethod.h"
