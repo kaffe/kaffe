@@ -74,15 +74,20 @@ public void write(char cbuf[], int off, int len) throws IOException
 	}
 
 	synchronized (lock) {
-		while (len > 0) {
+		if (len > 0) {
 			int outlen = encoding.convert(cbuf, off, len,
 				outbuf, buflen, outbuf.length - buflen);
-			buflen += outlen;
-			if (outlen == 0 || outbuf.length - buflen < MINMARGIN) {
+			if (outlen == 0) {
 				flush();
+				outlen = encoding.flush(outbuf, buflen, outbuf.length - buflen);
 			}
-			off += outlen;
-			len -= outlen;
+			while (outlen > 0) {
+				buflen += outlen;
+				if (outbuf.length - buflen < MINMARGIN) {
+					flush();
+				}
+				outlen = encoding.flush(outbuf, buflen, outbuf.length - buflen);
+			}
 		}
 	}
 }
