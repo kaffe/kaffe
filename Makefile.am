@@ -26,8 +26,5 @@ EXTRA_DIST = license.terms WHATSNEW \
 	FAQ/FAQ.timing \
 	FAQ/FAQ.win32
 
-# needed for autoheader to find acconfig.h within config
-AUTOHEADER = @AUTOHEADER@ --localdir config
-
 depend:
 	@echo `make depend' is no longer needed

@@ -23,9 +23,12 @@ ifelse($#, 4, [$4) $1=$3
 esac])
 
 TEST_VERSION(ACLOCAL, 1.3e|1.4, "$missing_dir/missing aclocal")
-TEST_VERSION(AUTOCONF, 2.12.2|2.1[34]*, "$missing_dir/missing autoconf")
+TEST_VERSION(AUTOCONF, 2.12.2|2.13|2.14, "$missing_dir/missing autoconf")
 TEST_VERSION(AUTOMAKE, 1.3e|1.4, "$missing_dir/missing automake")
-TEST_VERSION(AUTOHEADER, 2.12.2|2.1[34]*, "$missing_dir/missing autoheader")
+TEST_VERSION(AUTOHEADER, 2.12.2|2.13|2.14, "$missing_dir/missing autoheader")
+
+dnl needed for autoheader to find acconfig.h
+AUTOHEADER="$AUTOHEADER --localdir config"
 
 dnl Setup version number.
 KVER=$VERSION
@@ -403,28 +406,31 @@ AC_SUBST(MATH_LIBS)
 
 dnl Checks for libraries for X related libraries.
 AC_PATH_XTRA
-AC_CHECK_LIBRARY(ipc,shmat,X_LIBS)
+if test x"$no_x" = x"yes"; then
+  AWT_LIBS=
+else
+  X_LIBS="$X_LIBS $X_PRE_LIBS -lX11"
 
-OLIBS=$LIBS
-LIBS="$LIBS $X_LIBS"
-AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
-AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
-AC_CHECK_LIBRARY(gif,DGifOpenFileHandle,GIF_LIBS)
-LIBS=$OLIBS
-dnl If libpng is included, we also need libz - if we don't have it then
-dnl we can't include png support.
-if test "$PNG_LIBS" != "" ; then
+  AC_CHECK_LIBRARY(ipc,shmat,X_EXTRA_LIBS)
+
+  OLIBS=$LIBS
+  LIBS="$X_LIBS $X_EXTRA_LIBS $LIBS"
+  AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
+  AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
+  AC_CHECK_LIBRARY(gif,DGifOpenFileHandle,GIF_LIBS)
+  LIBS=$OLIBS
+  dnl If libpng is included, we also need libz - if we don't have it then
+  dnl we can't include png support.
+  if test "$PNG_LIBS" != "" ; then
 	if test "$ZIP_LIBS" != "" ; then
 		PNG_LIBS="$PNG_LIBS $ZIP_LIBS"
 	else
 		PNG_LIBS=""
 	fi
+  fi
+  AWT_LIBS="$JPEG_LIBS $PNG_LIBS $GIF_LIBS $X_LIBS $X_EXTRA_LIBS"
+  AC_SUBST(AWT_LIBS)
 fi
-AC_SUBST(JPEG_LIBS)
-AC_SUBST(PNG_LIBS)
-AC_SUBST(GIF_LIBS)
-AWT_LIBS="$X_LIBS $JPEG_LIBS $PNG_LIBS $GIF_LIBS"
-AC_SUBST(AWT_LIBS)
 
 dnl -------------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.3e from Makefile.am
+# Makefile.in generated automatically by automake 1.4 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -78,11 +78,9 @@ DIRSEP = @DIRSEP@
 DLLTOOL = @DLLTOOL@
 ENGINE_NAME = @ENGINE_NAME@
 EXEEXT = @EXEEXT@
-GIF_LIBS = @GIF_LIBS@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
 JAVA_LIBS = @JAVA_LIBS@
 JIKES = @JIKES@
-JPEG_LIBS = @JPEG_LIBS@
 KAFFEH_FOR_HOST = @KAFFEH_FOR_HOST@
 KAFFEVM_ICODE_H = @KAFFEVM_ICODE_H@
 KAFFEVM_JIT_DEF = @KAFFEVM_JIT_DEF@
@@ -103,7 +101,6 @@ NET_LIBS = @NET_LIBS@
 NM = @NM@
 PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
-PNG_LIBS = @PNG_LIBS@
 RANLIB = @RANLIB@
 REGEN_FORWARD = @REGEN_FORWARD@
 THREAD_DIR = @THREAD_DIR@
@@ -279,9 +276,9 @@ mostlyclean-depend:
 clean-depend:
 
 distclean-depend:
+	-rm -rf .deps
 
 maintainer-clean-depend:
-	-rm -rf .deps
 
 %.o: %.c
 	@echo '$(COMPILE) -c $<'; \

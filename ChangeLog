@@ -1,3 +1,13 @@
+Mon Jan 11 08:04:55 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in, libltdl/configure.in (TEST_VERSION): was not
+ 	accepting autoconf 2.13
+	* configure.in (X_LIBS): add $X_PRE_LIBS -lX11 unless $no_x
+	(AWT_LIBS): add $X_EXTRA_LIBS unless $no_x
+	(AUTOHEADER): add --localdir to AUTOHEADER here,
+	* Makefile.am, config/Makefile.am: not here.
+	* */configure, */aclocal.m4, */Makefile.in, */stamp-h?.in: regen
+
 Mon Jan 11 04:35:47 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* ltconfig: updated from libtool

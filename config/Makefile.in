@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.3e from Makefile.am
+# Makefile.in generated automatically by automake 1.4 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -51,6 +51,7 @@ top_builddir = ..
 ACLOCAL = @ACLOCAL@
 AUTOCONF = @AUTOCONF@
 AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
 
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
@@ -77,11 +78,9 @@ DIRSEP = @DIRSEP@
 DLLTOOL = @DLLTOOL@
 ENGINE_NAME = @ENGINE_NAME@
 EXEEXT = @EXEEXT@
-GIF_LIBS = @GIF_LIBS@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
 JAVA_LIBS = @JAVA_LIBS@
 JIKES = @JIKES@
-JPEG_LIBS = @JPEG_LIBS@
 KAFFEH_FOR_HOST = @KAFFEH_FOR_HOST@
 KAFFEVM_ICODE_H = @KAFFEVM_ICODE_H@
 KAFFEVM_JIT_DEF = @KAFFEVM_JIT_DEF@
@@ -102,7 +101,6 @@ NET_LIBS = @NET_LIBS@
 NM = @NM@
 PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
-PNG_LIBS = @PNG_LIBS@
 RANLIB = @RANLIB@
 REGEN_FORWARD = @REGEN_FORWARD@
 THREAD_DIR = @THREAD_DIR@
@@ -126,9 +124,6 @@ noinst_HEADERS = config-hacks.h config-io.h config-math.h config-mem.h 	config-n
 
 EXTRA_DIST = config.alias 	alpha/jit-alpha.def 	alpha/common.h 	alpha/linux/jit-md.h.not-yet 	alpha/linux/config.frag 	alpha/linux/md.c 	alpha/linux/md.h 	alpha/osf/config.frag 	alpha/osf/jit-md.h 	alpha/osf/md.c 	alpha/osf/md.h 	alpha/jit-icode.h 	alpha/jit.h 	alpha/threads.h 	alpha/trampolines.c 	alpha/netbsd1/config.frag 	alpha/netbsd1/md.c 	alpha/netbsd1/md.h 	arm/linux/config.frag 	arm/linux/md.c 	arm/linux/md.h 	arm/common.h 	arm/threads.h 	arm/netbsd1/config.frag 	arm/netbsd1/md.c 	arm/netbsd1/md.h 	i386/jit-i386.def 	i386/common.h 	i386/bsdi/config.frag 	i386/bsdi/jit-md.h 	i386/bsdi/md.c 	i386/bsdi/md.h 	i386/qnx/config.frag 	i386/qnx/jit-md.h 	i386/qnx/md.c 	i386/qnx/md.h 	i386/jit-icode.h 	i386/jit.h 	i386/threads.h 	i386/trampolines.c 	i386/dgux/config.frag 	i386/dgux/jit-md.h 	i386/dgux/md.c 	i386/dgux/md.h 	i386/freebsd2/config.frag 	i386/freebsd2/jit-md.h 	i386/freebsd2/md.c 	i386/freebsd2/md.h 	i386/linux/config.frag 	i386/linux/jit-md.h 	i386/linux/md.c 	i386/linux/md.h 	i386/netbsd1/config.frag 	i386/netbsd1/jit-md.h 	i386/netbsd1/md.c 	i386/netbsd1/md.h 	i386/nextstep3/config.frag 	i386/nextstep3/jit-md.h 	i386/nextstep3/md.c 	i386/nextstep3/md.h 	i386/openbsd2/config.frag 	i386/openbsd2/jit-md.h 	i386/openbsd2/md.c 	i386/openbsd2/md.h 	i386/sco3.2v5/config.frag 	i386/sco3.2v5/jit-md.h 	i386/sco3.2v5/md.c 	i386/sco3.2v5/md.h 	i386/solaris2/config.frag 	i386/solaris2/jit-md.h 	i386/solaris2/md.c 	i386/solaris2/md.h 	i386/univel_svr4/config.frag 	i386/univel_svr4/jit-md.h 	i386/univel_svr4/md.c 	i386/univel_svr4/md.h 	i386/cygwin32/config.frag 	i386/cygwin32/jit-md.h 	i386/cygwin32/md.c 	i386/cygwin32/md.h 	i386/oskit/config.frag 	i386/oskit/README 	i386/oskit/config-oskit-unix.sh 	i386/oskit/config-oskit.sh 	i386/oskit/jit-md.h 	i386/oskit/kaffe-patches 	i386/oskit/kaffe_classpath 	i386/oskit/md.c 	i386/oskit/md.h 	i386/oskit/mkimage.sh 	i386/oskit/oskit-patches-0.96 	m68k/jit-icode.h 	m68k/common.h 	m68k/a-ux/config.frag 	m68k/a-ux/jit-md.h 	m68k/a-ux/md.c 	m68k/a-ux/md.h 	m68k/jit-m68k.def 	m68k/jit.h 	m68k/threads.h 	m68k/amigaos/REPORT.amiga 	m68k/amigaos/config.frag 	m68k/amigaos/md.c 	m68k/amigaos/md.h 	m68k/linux/config.frag 	m68k/linux/README 	m68k/linux/md.c 	m68k/linux/md.h 	m68k/netbsd1/config.frag 	m68k/netbsd1/jit-md.h 	m68k/netbsd1/jit.h 	m68k/netbsd1/md.c 	m68k/netbsd1/md.h 	m68k/nextstep3/config.frag 	m68k/nextstep3/md.c 	m68k/nextstep3/md.h 	m68k/openbsd2/config.frag 	m68k/openbsd2/jit-md.h 	m68k/openbsd2/jit.h 	m68k/openbsd2/md.c 	m68k/openbsd2/md.h 	m68k/sunos4/config.frag 	m68k/sunos4/md.c 	m68k/sunos4/md.h 	m68k/trampolines.c 	mips/irix5/config.frag 	mips/irix5/md.c 	mips/irix5/md.h 	mips/common.h 	mips/mips.c 	mips/threads.h 	mips/netbsd1/config.frag 	mips/netbsd1/md.c 	mips/netbsd1/md.h 	mips/linux/config.frag 	mips/linux/md.c 	mips/linux/md.h 	mips/ultrix4/Make.frag 	mips/ultrix4/config.frag 	mips/ultrix4/md.c 	mips/ultrix4/md.h 	parisc/hpux/config.frag 	parisc/hpux/md.c 	parisc/hpux/md.h 	parisc/threads.h 	parisc/common.h 	powerpc/aix/config.frag 	powerpc/aix/md.c 	powerpc/aix/md.h 	powerpc/threads.h 	powerpc/linux/config.frag 	powerpc/linux/md.c 	powerpc/linux/md.h 	powerpc/machten/config.frag 	powerpc/machten/md.c 	powerpc/machten/md.h 	sparc/jit-icode.h 	sparc/common.h 	sparc/bsdi3/config.frag 	sparc/bsdi3/jit-md.h 	sparc/bsdi3/md.c 	sparc/bsdi3/md.h 	sparc/jit-sparc.def 	sparc/jit.h 	sparc/threads.h 	sparc/trampolines.c 	sparc/linux/config.frag 	sparc/linux/jit-md.h 	sparc/linux/md.c 	sparc/linux/md.h 	sparc/netbsd1/config.frag 	sparc/netbsd1/jit-md.h 	sparc/netbsd1/md.c 	sparc/netbsd1/md.h 	sparc/nextstep3/jit-md.h-notyet 	sparc/nextstep3/config.frag 	sparc/nextstep3/md.c 	sparc/nextstep3/md.h 	sparc/openbsd2/config.frag 	sparc/openbsd2/jit-md.h 	sparc/openbsd2/md.c 	sparc/openbsd2/md.h 	sparc/solaris2/config.frag 	sparc/solaris2/jit-md.h 	sparc/solaris2/md.c 	sparc/solaris2/md.h 	sparc/sunos4/config.frag 	sparc/sunos4/jit-md.h 	sparc/sunos4/md.c 	sparc/sunos4/md.h 	sparc/uxpds/config.frag 	sparc/uxpds/jit-md.h 	sparc/uxpds/md.c 	sparc/uxpds/md.h
 
-
-# needed for autoheader to find acconfig.h within config
-AUTOHEADER = @AUTOHEADER@ --localdir config
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h ../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -161,7 +156,7 @@ config.h: stamp-h1
 	@if test ! -f $@; then \
 		rm -f stamp-h1; \
 		$(MAKE) stamp-h1; \
-	fi
+	else :; fi
 stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	cd $(top_builddir) \
 	  && CONFIG_FILES= CONFIG_HEADERS=config/config.h \
@@ -172,7 +167,7 @@ $(srcdir)/config.h.in: $(srcdir)/stamp-h1.in
 	@if test ! -f $@; then \
 		rm -f $(srcdir)/stamp-h1.in; \
 		$(MAKE) $(srcdir)/stamp-h1.in; \
-	fi
+	else :; fi
 $(srcdir)/stamp-h1.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) acconfig.h
 	cd $(top_srcdir) && $(AUTOHEADER)
 	@(date || ls -l $(srcdir)/config.h.in || echo timestamp) \

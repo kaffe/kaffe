@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.3e from Makefile.am
+# Makefile.in generated automatically by automake 1.4 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -51,6 +51,7 @@ top_builddir = .
 ACLOCAL = @ACLOCAL@
 AUTOCONF = @AUTOCONF@
 AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
 
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
@@ -77,11 +78,9 @@ DIRSEP = @DIRSEP@
 DLLTOOL = @DLLTOOL@
 ENGINE_NAME = @ENGINE_NAME@
 EXEEXT = @EXEEXT@
-GIF_LIBS = @GIF_LIBS@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
 JAVA_LIBS = @JAVA_LIBS@
 JIKES = @JIKES@
-JPEG_LIBS = @JPEG_LIBS@
 KAFFEH_FOR_HOST = @KAFFEH_FOR_HOST@
 KAFFEVM_ICODE_H = @KAFFEVM_ICODE_H@
 KAFFEVM_JIT_DEF = @KAFFEVM_JIT_DEF@
@@ -102,7 +101,6 @@ NET_LIBS = @NET_LIBS@
 NM = @NM@
 PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
-PNG_LIBS = @PNG_LIBS@
 RANLIB = @RANLIB@
 REGEN_FORWARD = @REGEN_FORWARD@
 THREAD_DIR = @THREAD_DIR@
@@ -123,9 +121,6 @@ SUBDIRS = config include libltdl libraries kaffe test
 
 EXTRA_DIST = license.terms WHATSNEW 	FAQ/FAQ.Known-Bugs 	FAQ/FAQ.amigaos 	FAQ/FAQ.automake 	FAQ/FAQ.awt 	FAQ/FAQ.class-states 	FAQ/FAQ.depend 	FAQ/FAQ.gcblock 	FAQ/FAQ.gcstrategy 	FAQ/FAQ.install-root 	FAQ/FAQ.libtool 	FAQ/FAQ.linux 	FAQ/FAQ.nativemethods 	FAQ/FAQ.timing 	FAQ/FAQ.win32
 
-
-# needed for autoheader to find acconfig.h within config
-AUTOHEADER = @AUTOHEADER@ --localdir config
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ./config/config.h ./include/jtypes.h
@@ -161,7 +156,7 @@ config/config.h: config/stamp-h1
 	@if test ! -f $@; then \
 		rm -f config/stamp-h1; \
 		$(MAKE) config/stamp-h1; \
-	fi
+	else :; fi
 config/stamp-h1: $(srcdir)/config/config.h.in $(top_builddir)/config.status
 	cd $(top_builddir) \
 	  && CONFIG_FILES= CONFIG_HEADERS=config/config.h \
@@ -172,7 +167,7 @@ $(srcdir)/config/config.h.in: $(srcdir)/config/stamp-h1.in
 	@if test ! -f $@; then \
 		rm -f $(srcdir)/config/stamp-h1.in; \
 		$(MAKE) $(srcdir)/config/stamp-h1.in; \
-	fi
+	else :; fi
 $(srcdir)/config/stamp-h1.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOHEADER)
 	@(date || ls -l $(srcdir)/config/config.h.in || echo timestamp) \
@@ -182,7 +177,7 @@ include/jtypes.h: include/stamp-h2
 	@if test ! -f $@; then \
 		rm -f include/stamp-h2; \
 		$(MAKE) include/stamp-h2; \
-	fi
+	else :; fi
 include/stamp-h2: $(srcdir)/include/jtypes.h.in $(top_builddir)/config.status
 	cd $(top_builddir) \
 	  && CONFIG_FILES= CONFIG_HEADERS=include/jtypes.h \
@@ -193,7 +188,7 @@ $(srcdir)/include/jtypes.h.in: $(srcdir)/include/stamp-h2.in
 	@if test ! -f $@; then \
 		rm -f $(srcdir)/include/stamp-h2.in; \
 		$(MAKE) $(srcdir)/include/stamp-h2.in; \
-	fi
+	else :; fi
 $(srcdir)/include/stamp-h2.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOHEADER)
 	@(date || ls -l $(srcdir)/include/jtypes.h.in || echo timestamp) \
