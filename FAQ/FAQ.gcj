@@ -1,3 +1,10 @@
+Update Mar 20:
+The gcj is currently unlikely to work.  GCJ's CVS is in such an unstable
+state that it's impossible to follow them.
+Tasks to be done: update eh.c and get rid of interface hacks since
+the new gcj uses kaffe's interface dispatch scheme as well.
+
+--------------------------------
 
 Documentation about the Kaffe/GCJ integration.
 By Godmar Back <gback@cs.utah.edu>, Nov 29, 1999
@@ -135,10 +142,12 @@ using the -w option to turn off warnings, or else gcj will warn you about
 unreachable bytecode jikes generates in almost every file.
 I've been using -O3.  I believe that more options need to be specified
 in order to get full inlining of private methods. (-finline-functions?)
+There have been some problems with inlining that the gcj crew
+addresses.
 
-~/kaffe/developers/GCJ.note.1 contains a list of files that you mustn't
-compile with optimizations turned on.  See the URLs in this file as to
-why.
+There have been some other problems which have been addressed in
+gcj versions more recent than Dec 14 (see developers/GCJ.notes.1)
+
 
 
 Note that fixup currently patches up all external symbols.  For this
