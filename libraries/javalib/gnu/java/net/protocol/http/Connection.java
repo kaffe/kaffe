@@ -389,7 +389,8 @@ public final class Connection extends HttpURLConnection
   }
 
   /**
-   * Returns on OutputStream for writing to this connection.
+   * Returns on OutputStream for writing to this connection. This method
+   * implicitely changes request method to <code>POST</code>.
    *
    * @return An OutputStream for this connection.
    *
@@ -408,6 +409,9 @@ public final class Connection extends HttpURLConnection
     if (bufferedOutputStream == null)
       bufferedOutputStream = new ByteArrayOutputStream (256); //default is too small
     
+    // Force POST request method.
+    setRequestMethod("POST");
+
     return bufferedOutputStream;
   }
 
