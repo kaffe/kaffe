@@ -1,3 +1,8 @@
+Tue Aug 22 10:36:30 MDT 2000  Godmar Back <gback@cs.utah.edu>
+
+	* libraries/javalib/java/util/TimeZone.java: load UNIXTimeZone
+	objects lazily.
+
 Tue Aug 15 17:07:34 PDT 2000  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/io/PushbackReader.java: Added final

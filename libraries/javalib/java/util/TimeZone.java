@@ -19,6 +19,15 @@ import kaffe.util.UNIXTimeZone;
 abstract public class TimeZone implements Serializable, Cloneable {
 	private static final long serialVersionUID = 3581463369166924961L;
 	private static TimeZone defaultTimeZone = null;
+
+	/**
+	 * zones maps timezone IDs (of type String) to either
+	 * TimeZone objects or to File objects.
+	 * File objects are converted to TimeZone objects
+	 * on the first access.  This is done transparently in 
+	 * the loadTimeZone(String ID) method.
+	 * @see loadTimeZone
+	 */
 	private static HashMap zones = new HashMap();
 
 	private static boolean zonesLoaded = false;
@@ -99,11 +108,7 @@ private static void addZoneFiles(String prefix, File dir) {
 		String filePrefix = (prefix == null) ?
 		    files[i] : prefix + "/" + files[i];
 		if (file.isFile()) {
-			try {
-				zones.put(filePrefix,
-				    new UNIXTimeZone(filePrefix, file));
-			} catch (IOException e) {
-			}
+			zones.put(filePrefix, file);
 		} else if (file.isDirectory()) {
 			addZoneFiles(filePrefix, file);
 		}
@@ -127,13 +132,37 @@ public static synchronized String[] getAvailableIDs() {
 	return (String[])zones.keySet().toArray(new String[zones.size()]);
 }
 
+private static TimeZone loadTimeZone(String ID) {
+	Object tzo = zones.get(ID);
+	if (tzo == null || tzo instanceof TimeZone) {
+		return ((TimeZone)tzo);
+	}
+	if (!(tzo instanceof File)) {
+		throw new InternalError("found " + tzo + " in zones map");
+	}
+	File file = (File)tzo;
+	TimeZone tz = null;
+
+	try {
+		tz = new UNIXTimeZone(ID, file);
+		zones.put(ID, tz);
+	} catch (IOException e) {
+		/* If file cannot parsed properly, simply fall back to GMT
+		 * timezone.  This is what the getTimeZone() API doc demands.
+		 */
+		tz = getTimeZone("GMT");
+		zones.put(ID, tz);
+	}
+	return (tz);
+}
+
 public static synchronized String[] getAvailableIDs(int rawOffset) {
 	if (!zonesLoaded)
 		loadTimeZones();
 	HashSet ids = new HashSet();
 	for (Iterator i = zones.entrySet().iterator(); i.hasNext(); ) {
 		Map.Entry ent = (Map.Entry)i.next();
-		TimeZone tz = (TimeZone)ent.getValue();
+		TimeZone tz = loadTimeZone((String)ent.getKey());
 		if (tz.getRawOffset() == rawOffset)
 			ids.add(ent.getKey());
 	}
@@ -168,7 +197,7 @@ abstract public int getRawOffset();
 public static synchronized TimeZone getTimeZone(String ID) {
 	if (!zonesLoaded)
 		loadTimeZones();
-	return (TimeZone)zones.get(ID);
+	return (loadTimeZone(ID));
 }
 
 abstract public boolean inDaylightTime(Date date);
