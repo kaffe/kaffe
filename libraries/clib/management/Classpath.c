@@ -11,9 +11,9 @@
 #include "config.h"
 #include "config-std.h"
 #include <native.h>
-#include "../../../kaffe/kaffevm/gtypes.h"
-#include "../../../kaffe/kaffevm/support.h"
-#include "../../../kaffe/kaffevm/stringSupport.h"
+#include "gtypes.h"
+#include "support.h"
+#include "stringSupport.h"
 #include "kaffe_management_Classpath.h"
 
 /*

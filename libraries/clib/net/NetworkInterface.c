@@ -24,7 +24,7 @@
 #include "support.h"
 #include <arpa/inet.h>
 #include <jsyscall.h>
-#include "../../../kaffe/kaffevm/debug.h"
+#include "debug.h"
 
 #include <ifaddrs.h>
 

@@ -14,10 +14,10 @@
  */
 
 #include "config.h"
-#include "../../../kaffe/kaffevm/gtypes.h"
+#include "gtypes.h"
 #include "../../../kaffe/xprof/xprofiler.h"
 #include "kaffe_management_XProfiler.h"
-#include "../../../kaffe/kaffevm/stringSupport.h"
+#include "stringSupport.h"
 #include <native.h>
 
 void Java_kaffe_management_XProfiler_on(JNIEnv *env UNUSED, jclass clazz UNUSED)

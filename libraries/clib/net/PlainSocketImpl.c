@@ -23,10 +23,10 @@
 #include "nets.h"
 #include <jsyscall.h>
 #include <jthread.h>
-#include "../../../kaffe/kaffevm/debug.h"
-#include "../../../kaffe/kaffevm/object.h"
-#include "../../../kaffe/kaffevm/itypes.h"
-#include "../../../kaffe/kaffevm/exception.h"
+#include "debug.h"
+#include "object.h"
+#include "itypes.h"
+#include "exception.h"
 
 #include "dummyin6.h"
 

@@ -15,8 +15,8 @@
 #include "defs.h"
 #include "jsyscall.h"
 #include "kaffe_applet_AudioPlayer.h"
-#include "../../../kaffe/kaffevm/support.h"
-#include "../../../kaffe/kaffevm/stringSupport.h"
+#include "support.h"
+#include "stringSupport.h"
 
 void
 kaffe_applet_AudioPlayer_playFile(struct Hjava_lang_String* jstr)

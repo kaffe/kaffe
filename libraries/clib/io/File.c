@@ -26,8 +26,8 @@
 #include "files.h"
 #include "../../../include/system.h"
 #include "java_io_VMFile.h"
-#include "../../../kaffe/kaffevm/support.h"
-#include "../../../kaffe/kaffevm/stringSupport.h"
+#include "support.h"
+#include "stringSupport.h"
 
 /*
  * Is named item a file?

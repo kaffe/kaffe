@@ -14,12 +14,12 @@
 #include "config-net.h"
 #include "config-io.h"
 #include <arpa/inet.h>
-#include "../../../kaffe/kaffevm/gtypes.h"
-#include "../../../kaffe/kaffevm/object.h"
+#include "gtypes.h"
+#include "object.h"
 #include <native.h>
-#include "../../../kaffe/kaffevm/itypes.h"
-#include "../../../kaffe/kaffevm/stringSupport.h"
-#include "../../../kaffe/kaffevm/support.h"
+#include "itypes.h"
+#include "stringSupport.h"
+#include "support.h"
 #include "java_net_InetAddress.h"
 #include "gnu_java_net_SysInetAddressImpl.h"
 #include "nets.h"

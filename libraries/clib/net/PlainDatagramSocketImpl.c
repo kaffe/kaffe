@@ -30,9 +30,9 @@
 #include "nets.h"
 #include <jsyscall.h>
 #include "Arrays.h"
-#include "../../../kaffe/kaffevm/debug.h"
-#include "../../../kaffe/kaffevm/itypes.h"
-#include "../../../kaffe/kaffevm/exception.h"
+#include "debug.h"
+#include "itypes.h"
+#include "exception.h"
 
 #include "dummyin6.h"
 

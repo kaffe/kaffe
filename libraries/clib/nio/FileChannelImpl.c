@@ -14,9 +14,9 @@
 #include "defs.h"
 #include "jsyscall.h"
 #include "jni.h"
-#include "../../../kaffe/kaffevm/classMethod.h"
-#include "../../../kaffe/kaffevm/utf8const.h"
-#include "../../../kaffe/kaffevm/support.h"
+#include "classMethod.h"
+#include "utf8const.h"
+#include "support.h"
 
 #include "gnu_java_nio_channels_FileChannelImpl.h"
 #include "java_nio_MappedByteBufferImpl.h"

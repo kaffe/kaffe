@@ -13,7 +13,7 @@
 #include "config-mem.h"
 #include <native.h>
 #include "java_util_zip_Adler32.h"
-#include "../../../kaffe/kaffevm/gtypes.h"
+#include "gtypes.h"
 
 #if defined(HAVE_LIBZ) && defined(HAVE_ZLIB_H)
 

@@ -14,12 +14,12 @@
 #include "config-std.h"
 #include "../../../kaffe/kaffevm/gtypes.h"
 #include "kaffe_management_JIT.h"
-#include "../../../kaffe/kaffevm/classMethod.h"
-#include "../../../kaffe/kaffevm/lookup.h"
-#include "../../../kaffe/kaffevm/support.h"
-#include "../../../kaffe/kaffevm/debug.h"
-#include "../../../kaffe/kaffevm/stringSupport.h"
-#include "../../../kaffe/kaffevm/methodCache.h"
+#include "classMethod.h"
+#include "lookup.h"
+#include "support.h"
+#include "debug.h"
+#include "stringSupport.h"
+#include "methodCache.h"
 
 /* XXX Temporary for now until we define interface header file that
  * declares "translate"

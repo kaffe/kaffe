@@ -1,3 +1,24 @@
+2004-05-27  Michael Franz  <developer.franz@verizon.net>
+
+	libraries/clib/awt/X/evt.c,
+	libraries/clib/awt/X/toolkit.h,
+	libraries/clib/io/AudioPlayer.c,
+	libraries/clib/io/File.c,
+	libraries/clib/io/ObjectInputStream.c,
+	libraries/clib/management/Classpath.c,
+	libraries/clib/management/Debug.c,
+	libraries/clib/management/JIT.c,
+	libraries/clib/management/XProfiler.c,
+	libraries/clib/net/InetAddressImpl.c,
+	libraries/clib/net/NetworkInterface.c,
+	libraries/clib/net/PlainDatagramSocketImpl.c,
+	libraries/clib/net/PlainSocketImpl.c,
+	libraries/clib/nio/FileChannelImpl.c,
+	libraries/clib/security/digest.c,
+	libraries/clib/zip/Adler32.c,
+	libraries/clib/zip/CRC32.c:
+	Cleaned up includes.
+
 2004-05-27  Dalibor Topic  <robilad@kaffe.org>
 
         * libraries/javalib/java/nio/ByteBufferImpl.java,

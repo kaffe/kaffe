@@ -19,7 +19,7 @@
 
 #if !defined (USE_POLLING_AWT)
 #include "jsyscall.h"
-#include "../../../../kaffe/kaffevm/locks.h"
+#include "locks.h"
 
 #if defined(UNIX_JTHREADS)
 void jthreadedBlockEAGAIN(int fd);   /* move to SysCallInterface ? */

@@ -34,10 +34,10 @@
 
 #include <jni.h>
 
-#include "../../../../kaffe/kaffevm/gtypes.h"
-#include "../../../../kaffe/kaffevm/gc.h"
-#include "../../../../kaffe/kaffevm/thread.h"
-#include "../../../../kaffe/kaffevm/debug.h"
+#include "gtypes.h"
+#include "gc.h"
+#include "thread.h"
+#include "debug.h"
 
 #define	DBG_ACTION(A,B)
 

@@ -13,7 +13,7 @@
 #include "config-mem.h"
 #include <native.h>
 #include "java_util_zip_CRC32.h"
-#include "../../../kaffe/kaffevm/gtypes.h"
+#include "gtypes.h"
 
 /*
  * Table of CRC-32's of all single-byte values.

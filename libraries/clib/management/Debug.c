@@ -1,9 +1,9 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include "../../../kaffe/kaffevm/gtypes.h"
+#include "gtypes.h"
 #include "kaffe_management_Debug.h"
-#include "../../../kaffe/kaffevm/debug.h"
+#include "debug.h"
 
 void
 Java_kaffe_management_Debug_enable
