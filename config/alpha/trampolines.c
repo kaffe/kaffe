@@ -2,11 +2,14 @@
  * alpha/trampolines.c
  * Alpha trampolines codes for various occasions.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1999, 2000, 2001
+ *	Edouard G. Parmelan.  All rights reserved.
+ *
+ * Copyright (c) 1996, 1997, 1999, 2000, 2001
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #if defined(TRAMPOLINE_FUNCTION)
@@ -14,7 +17,7 @@
  * If we have an explit function defined then use that.
  */
 TRAMPOLINE_FUNCTION()
- 
+
 #else
 /*
  * Otherwise we'll try to construct one.
@@ -90,7 +93,10 @@ asm(
 	lda    	$30,14*8($30)		# release stack		\n\
 								\n\
 	# Jump to translated method				\n\
-	jmp	$31,($27),0					\n"
+	jmp	$31,($27),0					\n\
+								\n\
+	# for __alpha_nextFrame()				\n\
+	ret	$31,($26),1					\n"
     	END_ASM_FUNC(alpha_do_fixup_trampoline)
 );
 
