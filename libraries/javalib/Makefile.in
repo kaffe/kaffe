@@ -6077,20 +6077,32 @@ new-classes: $(top_srcdir)/developers/update-class-list
 	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
 
 .PHONY: compile-classes classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
-	rm -rf $(LIBDIR)
-	mkdir $(LIBDIR)
-	if test "$(PROFILE)" = default; then \
-		$(SHELL) $(rebuildLib) @all.files `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
-	else \
-		$(SHELL) $(rebuildLib) @$(PROFILE) `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
-	fi
-	echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes
 @USE_PRECOMPILED_RT_JAR_TRUE@jar-classes: rt.jar
 @USE_PRECOMPILED_RT_JAR_TRUE@rt.jar: $(PATH_TO_RT_JAR)
 @USE_PRECOMPILED_RT_JAR_TRUE@	cp $< $@
+
+@USE_PRECOMPILED_RT_JAR_TRUE@compile-tools-classes $(LIBDIR)/stamp: $(rebuildLib) $(gnu_bytecode_SRCS) $(gnu_classpath_tools_javap_SRCS)
+@USE_PRECOMPILED_RT_JAR_TRUE@	rm -rf $(LIBDIR)
+@USE_PRECOMPILED_RT_JAR_TRUE@	mkdir $(LIBDIR)
+@USE_PRECOMPILED_RT_JAR_TRUE@	$(SHELL) $(rebuildLib) $(gnu_bytecode_SRCS) $(gnu_classpath_tools_javap_SRCS) `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java
+@USE_PRECOMPILED_RT_JAR_TRUE@	echo timestamp > $(LIBDIR)/stamp
+
+@USE_PRECOMPILED_RT_JAR_TRUE@tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
+@USE_PRECOMPILED_RT_JAR_TRUE@	rm -f tools.jar
+@USE_PRECOMPILED_RT_JAR_TRUE@	$(JAR_CMD7)
+@USE_PRECOMPILED_RT_JAR_TRUE@	mv $@.new $@
+@USE_PRECOMPILED_RT_JAR_FALSE@compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
+@USE_PRECOMPILED_RT_JAR_FALSE@	rm -rf $(LIBDIR)
+@USE_PRECOMPILED_RT_JAR_FALSE@	mkdir $(LIBDIR)
+@USE_PRECOMPILED_RT_JAR_FALSE@	if test "$(PROFILE)" = default; then \
+@USE_PRECOMPILED_RT_JAR_FALSE@		$(SHELL) $(rebuildLib) @all.files `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
+@USE_PRECOMPILED_RT_JAR_FALSE@	else \
+@USE_PRECOMPILED_RT_JAR_FALSE@		$(SHELL) $(rebuildLib) @$(PROFILE) `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
+@USE_PRECOMPILED_RT_JAR_FALSE@	fi
+@USE_PRECOMPILED_RT_JAR_FALSE@	echo timestamp > $(LIBDIR)/stamp
+
 @USE_PRECOMPILED_RT_JAR_FALSE@jar-classes: rt.jar
 @USE_PRECOMPILED_RT_JAR_FALSE@rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 @USE_PRECOMPILED_RT_JAR_FALSE@	rm -f rt.jar
@@ -6104,10 +6116,10 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 
 # Put gnu.bytecode into tools.jar to avoid problems
 # with applications using their own version of it.
-tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
-	rm -f tools.jar
-	$(JAR_CMD7)
-	mv $@.new $@
+@USE_PRECOMPILED_RT_JAR_FALSE@tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
+@USE_PRECOMPILED_RT_JAR_FALSE@	rm -f tools.jar
+@USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD7)
+@USE_PRECOMPILED_RT_JAR_FALSE@	mv $@.new $@
 
 .PHONY: build-classes Klasses
 build-classes Klasses: rt.jar

@@ -5095,16 +5095,6 @@ new-classes: $(top_srcdir)/developers/update-class-list
 rebuildLib = ./rebuildLib
 
 .PHONY: compile-classes classes
-## classes is provided for backward compatibility; use compile-classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
-	rm -rf $(LIBDIR)
-	mkdir $(LIBDIR)
-	if test "$(PROFILE)" = default; then \
-		$(SHELL) $(rebuildLib) @all.files `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
-	else \
-		$(SHELL) $(rebuildLib) @$(PROFILE) `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
-	fi
-	echo timestamp > $(LIBDIR)/stamp
 
 JAR_CMD1 = (cd $(srcdir) && $(ZIP) -q -r $(CURDIR)/$@.new META-INF)
 JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS) -x gnu/bytecode/*.class -x gnu/classpath/tools/javap/*.class)
@@ -5119,7 +5109,29 @@ if USE_PRECOMPILED_RT_JAR
 jar-classes: rt.jar
 rt.jar: $(PATH_TO_RT_JAR)
 	cp $< $@
+
+compile-tools-classes $(LIBDIR)/stamp: $(rebuildLib) $(gnu_bytecode_SRCS) $(gnu_classpath_tools_javap_SRCS)
+	rm -rf $(LIBDIR)
+	mkdir $(LIBDIR)
+	$(SHELL) $(rebuildLib) $(gnu_bytecode_SRCS) $(gnu_classpath_tools_javap_SRCS) `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java
+	echo timestamp > $(LIBDIR)/stamp
+
+tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
+	rm -f tools.jar
+	$(JAR_CMD7)
+	mv $@.new $@
 else
+## classes is provided for backward compatibility; use compile-classes
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
+	rm -rf $(LIBDIR)
+	mkdir $(LIBDIR)
+	if test "$(PROFILE)" = default; then \
+		$(SHELL) $(rebuildLib) @all.files `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
+	else \
+		$(SHELL) $(rebuildLib) @$(PROFILE) `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
+	fi
+	echo timestamp > $(LIBDIR)/stamp
+
 jar-classes: rt.jar
 rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 	rm -f rt.jar
@@ -5130,7 +5142,6 @@ rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 	$(JAR_CMD5)
 	$(JAR_CMD6)
 	mv $@.new $@
-endif
 
 # Put gnu.bytecode into tools.jar to avoid problems
 # with applications using their own version of it.
@@ -5138,6 +5149,7 @@ tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
 	rm -f tools.jar
 	$(JAR_CMD7)
 	mv $@.new $@
+endif
 
 .PHONY: build-classes Klasses
 build-classes Klasses: rt.jar
