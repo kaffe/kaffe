@@ -15,6 +15,8 @@ extern int argcount;
 
 extern int slot_type(SlotInfo*);
 extern jvalue slot_value(SlotInfo*);
+extern void writeslot(sequence*, int, SlotInfo*, int);
+extern void readslot(sequence*, int, SlotInfo*, int);
 
 /* -------------------------------------------------------------------- */
 /* Branches */
@@ -73,20 +75,20 @@ extern jvalue slot_value(SlotInfo*);
 /* Basic blocks and instructions */
 
 #define	start_instruction()	_start_instruction(pc)
-#define	start_function()	prologue(meth)
+#define	start_function()	prologue(xmeth)
 #define	start_basic_block()	_start_basic_block()
 #define	end_basic_block()	_end_basic_block()
 #define	start_sub_block()	_start_sub_block()
 #define	end_sub_block()		_end_sub_block()
-#define	end_function()		epilogue()
+#define	end_function()		epilogue(xmeth)
 #define	start_exception_block()	_start_exception_block(stackno)
 #define	sync_registers()	_syncRegisters(stackno, tmpslot)
 
 /* -------------------------------------------------------------------- */
 /* Conditional monitors */
 
-#define	monitor_enter()		mon_enter(meth, local(0))
-#define	monitor_exit()		mon_exit(meth, local(0))
+#define	monitor_enter()		mon_enter(xmeth, local(0))
+#define	monitor_exit()		mon_exit(xmeth, local(0))
 
 /* -------------------------------------------------------------------- */
 /* Instruction formats */

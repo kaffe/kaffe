@@ -23,17 +23,22 @@
 #define	Larchdepend	(Lnegframe+1)	/* First architecture dependent label */
 
 /* Modifications to "to"  */
-#define Ltomask		0x1F0
-#define	Lgeneral	0x010	/* Label references general code */
-#define Lexternal	0x020	/* Label references external routine */
-#define	Lcode		0x040	/* Label references bytecode offset */
-#define Lconstant	0x080	/* Label references a constpool element */
-#define	Linternal	0x100	/* Label references internal routine */
+#define Ltomask		0x01F0
+#define	Lgeneral	0x0010	/* Label references general code */
+#define Lexternal	0x0020	/* Label references external routine */
+#define	Lcode		0x0040	/* Label references bytecode offset */
+#define Lconstant	0x0080	/* Label references a constpool element */
+#define	Linternal	0x0100	/* Label references internal routine */
+
+/* Modifications to "at" */
+#define	Latmask		0x2000
+#define	Lconstantpool	0x2000	/* Label is in contant pool */
 
 /* Modifications to "from" */
-#define Lfrommask	0x600
-#define	Labsolute	0x200	/* Absolute value */
-#define	Lrelative	0x400	/* Relative value to place of insertion */
+#define Lfrommask	0x0E00
+#define	Labsolute	0x0200	/* Absolute value */
+#define	Lrelative	0x0400	/* Relative value to place of insertion */
+#define	Lfuncrelative	0x0800	/* Relative value to start of function */
 
 #define Lrangecheck	0x1000	/* Check for overflow in the fixup */
 
@@ -47,8 +52,7 @@ typedef struct _label_ {
 
 #define	ALLOCLABELNR	1024
 
-struct codeinfo;
-void linkLabels(struct codeinfo*, uintp);
+void linkLabels(uintp);
 label* newLabel(void);
 void resetLabels(void);
 

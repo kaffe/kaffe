@@ -47,8 +47,8 @@ initSlots(int islots)
 
 	/* Make sure we have enough slots space */
 	if (nrslots > lastnrslots) {
-		basicslots = KREALLOC(basicslots, nrslots * sizeof(SlotInfo));
-		basicdatas = KREALLOC(basicdatas, nrslots * sizeof(SlotData));
+		basicslots = jrealloc(basicslots, nrslots * sizeof(SlotInfo));
+		basicdatas = jrealloc(basicdatas, nrslots * sizeof(SlotData));
 		lastnrslots = nrslots;
 	}
 	/* Set 'maxslot' to the maximum slot usable (excluding returns) */

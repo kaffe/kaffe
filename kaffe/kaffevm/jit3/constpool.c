@@ -17,6 +17,7 @@
 
 #include <stdarg.h>
 
+#define	gc_calloc_fixed(A,B)	jmalloc((A)*(B))
 
 constpool* firstConst;
 constpool* lastConst;
@@ -58,19 +59,24 @@ newConstant(int type, ...)
 	}
 	va_end(arg);
 
-	/* Find out if we've allocated this constant (or its bit
-	   equivalent) before, and if so, reuse it.  */
-	for (c = firstConst; c != currConst; c = c->next) {
-		if (memcmp(&c->val, &val, sizeof(val)) == 0) {
-			return (c);
+	if (type != CPlabel) {
+		/* Find out if we've allocated this constant (or its bit
+		   equivalent) before, and if so, reuse it.  */
+		for (c = firstConst; c != currConst; c = c->next) {
+			if (memcmp(&c->val, &val, sizeof(val)) == 0) {
+				return (c);
+			}
 		}
+	}
+	else {
+		c = currConst;
 	}
 
 	if (!c) {
 		int i;
 
 		/* Allocate chunk of label elements */
-		c = KCALLOC(ALLOCCONSTNR, sizeof(constpool));
+		c = gc_calloc_fixed(ALLOCCONSTNR, sizeof(constpool));
 
 		/* Attach to current chain */
 		if (lastConst == 0) {
@@ -88,6 +94,7 @@ newConstant(int type, ...)
 		c[ALLOCCONSTNR-1].next = NULL;
 	}
 
+	c->type = type;
 	c->val = val;
 	currConst = c->next;
 	nConst++;

@@ -20,7 +20,6 @@
 #include "labels.h"
 #include "codeproto.h"
 
-static
 void
 writeslot(sequence* seq, int slot, SlotInfo* data, int len)
 {
@@ -62,7 +61,6 @@ writeslot(sequence* seq, int slot, SlotInfo* data, int len)
 	assert(sdata->rseq == 0 || sdata->rseq == seq);
 }
 
-static
 void
 readslot(sequence* seq, int slot, SlotInfo* data, int len)
 {

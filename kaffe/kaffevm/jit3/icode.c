@@ -31,6 +31,12 @@
 #include "machine.h"
 #include "codeproto.h"
 
+/*
+ * This flag can turn off array bounds checking.
+ *  - for experimental purposes only.
+ */
+int noArrayBoundsChecks = 0;
+
 #if defined(WORDS_BIGENDIAN)
 #define	LSLOT(_s)	((_s)+1)
 #define	HSLOT(_s)	(_s)
@@ -67,6 +73,10 @@ sequence* lastSpill;
 #define	MAXLABTAB	64
 label* labtab[MAXLABTAB];
 
+/* Custom edition */
+#define	lockObject	lockJavaMutex
+#define	unlockObject	unlockJavaMutex
+
 
 /* ----------------------------------------------------------------------- */
 /* Register loads and spills.						   */
@@ -79,7 +89,7 @@ spill_int(SlotData* src)
 	void HAVE_spill_int(sequence*);
 	sequence s;
 	seq_dst(&s) = src;
-	seq_value(&s, 1) = src->offset;
+	seq_value(&s, 1) = slotOffsetNoSpill(src, Rint);
 	HAVE_spill_int(&s);
 }
 #endif
@@ -91,7 +101,7 @@ reload_int(SlotData* dst)
 	void HAVE_reload_int(sequence*);
 	sequence s;
 	seq_dst(&s) = dst;
-	seq_value(&s, 1) = dst->offset;
+	seq_value(&s, 1) = slotOffsetNoSpill(dst, Rint);
 	HAVE_reload_int(&s);
 }
 #endif
@@ -103,7 +113,7 @@ spill_ref(SlotData* src)
 	void HAVE_spill_ref(sequence*);
 	sequence s;
 	seq_dst(&s) = src;
-	seq_value(&s, 1) = src->offset;
+	seq_value(&s, 1) = slotOffsetNoSpill(src, Rref);
 	HAVE_spill_ref(&s);
 }
 #endif
@@ -115,7 +125,7 @@ reload_ref(SlotData* dst)
 	void HAVE_reload_ref(sequence*);
 	sequence s;
 	seq_dst(&s) = dst;
-	seq_value(&s, 1) = dst->offset;
+	seq_value(&s, 1) = slotOffsetNoSpill(dst, Rref);
 	HAVE_reload_ref(&s);
 }
 #endif
@@ -127,7 +137,7 @@ spill_long(SlotData* src)
 	void HAVE_spill_long(sequence*);
 	sequence s;
 	seq_dst(&s) = src;
-	seq_value(&s, 1) = src->offset;
+	seq_value(&s, 1) = slotOffsetNoSpill(src, Rlong);
 	HAVE_spill_long(&s);
 }
 #endif
@@ -139,7 +149,7 @@ reload_long(SlotData* dst)
 	void HAVE_reload_long(sequence*);
 	sequence s;
 	seq_dst(&s) = dst;
-	seq_value(&s, 1) = dst->offset;
+	seq_value(&s, 1) = slotOffsetNoSpill(dst, Rlong);
 	HAVE_reload_long(&s);
 }
 #endif
@@ -151,7 +161,7 @@ spill_float(SlotData* src)
 	void HAVE_spill_float(sequence*);
 	sequence s;
 	seq_dst(&s) = src;
-	seq_value(&s, 1) = src->offset;
+	seq_value(&s, 1) = slotOffsetNoSpill(src, Rfloat);
 	HAVE_spill_float(&s);
 }
 #endif
@@ -163,7 +173,7 @@ reload_float(SlotData* dst)
 	void HAVE_reload_float(sequence*);
 	sequence s;
 	seq_dst(&s) = dst;
-	seq_value(&s, 1) = dst->offset;
+	seq_value(&s, 1) = slotOffsetNoSpill(dst, Rfloat);
 	HAVE_reload_float(&s);
 }
 #endif
@@ -175,7 +185,7 @@ spill_double(SlotData* src)
 	void HAVE_spill_double(sequence*);
 	sequence s;
 	seq_dst(&s) = src;
-	seq_value(&s, 1) = src->offset;
+	seq_value(&s, 1) = slotOffsetNoSpill(src, Rdouble);
 	HAVE_spill_double(&s);
 }
 #endif
@@ -187,7 +197,7 @@ reload_double(SlotData* dst)
 	void HAVE_reload_double(sequence*);
 	sequence s;
 	seq_dst(&s) = dst;
-	seq_value(&s, 1) = dst->offset;
+	seq_value(&s, 1) = slotOffsetNoSpill(dst, Rdouble);
 	HAVE_reload_double(&s);
 }
 #endif
@@ -219,6 +229,7 @@ prologue(Method* meth)
 
 	setupSlotsForBasicBlock();
 	setupGlobalRegisters();
+	setupArgumentRegisters();
 
 	/* Emit prologue code */
 	slot_const_const(0, (jword)l, (jword)meth, HAVE_prologue, Tnull);
@@ -228,8 +239,22 @@ prologue(Method* meth)
 void
 check_stack_limit(void)
 {
-#if defined(HAVE_check_stack_limit)
-	label* l = newLabel();
+#if defined(HAVE_check_stack_limit_constpool)
+	label* l;
+	constpool* c;
+
+	l = newLabel();
+	c = newConstant(CPref, soft_stackoverflow);
+	l->type = Lexternal;
+	l->at = 0;
+	l->to = (uintp)c;
+	l->from = 0;
+
+	slot_slot_const(0, stack_limit, (jword)l, HAVE_check_stack_limit_constpool, Tnull);
+#elif defined(HAVE_check_stack_limit)
+	label* l;
+
+	l = newLabel();
 	l->type = Lexternal;
 	l->at = 0;
 	l->to = (uintp)soft_stackoverflow;
@@ -256,7 +281,7 @@ exception_prologue(void)
 }
 
 void
-epilogue(void)
+epilogue(Method* meth)
 {
 	label* l;
 
@@ -265,6 +290,14 @@ epilogue(void)
 	l->at = 0;
 	l->to = 0;
 	l->from = 0;
+#if defined(TRACE_METHOD_END)
+	if (Kaffe_JavaVMArgs[0].enableVerboseCall != 0) {
+                begin_func_sync();
+                call_soft(soft_end); 
+                popargs();
+                end_func_sync();
+        }
+#endif
 
 	slot_const_const(0, (jword)l, 0, HAVE_epilogue, Tnull);
 }
@@ -282,29 +315,29 @@ finish_function(void)
 void
 mon_enter(methods* meth, SlotInfo* obj)
 {
-#if defined(HAVE_mon_enter)
-	label* l;
-#endif
-
 	/* Emit monitor entry if required */
 	if ((meth->accflags & ACC_SYNCHRONISED) == 0) {
 		return;
 	}
 #if defined(HAVE_mon_enter)
-	begin_func_sync();
-	l = newLabel();
-	l->type = Lexternal;
-	l->at = 0;
-	l->to = (uintp)slowLockObject;
-	l->from = 0;
-	if (METHOD_IS_STATIC(meth) == 0) {
-		meth = 0;
+	{
+		label* l;
+
+		begin_func_sync();
+		l = newLabel();
+		l->type = Lexternal;
+		l->at = 0;
+		l->to = (uintp)slowLockObject;
+		l->from = 0;
+		if (METHOD_IS_STATIC(meth) == 0) {
+			meth = 0;
+		}
+		else {
+			obj = 0;
+		}
+		slot_slot_slot_const_const(0, 0, obj, (jword)meth, (jword)l, HAVE_mon_enter, Tnull);
+		end_func_sync();
 	}
-	else {
-		obj = 0;
-	}
-	slot_slot_slot_const_const(0, 0, obj, (jword)meth, (jword)l, HAVE_mon_enter, Tnull);
-	end_func_sync();
 #else
 	begin_func_sync();
 	if ((meth->accflags & ACC_STATIC) != 0) {
@@ -313,7 +346,7 @@ mon_enter(methods* meth, SlotInfo* obj)
 	else {
 		pusharg_ref(obj, 0);
 	}
-	call_soft(lockJavaMutex);
+	call_soft(lockObject);
 	popargs();
 	end_func_sync();
 #endif
@@ -322,29 +355,29 @@ mon_enter(methods* meth, SlotInfo* obj)
 void
 mon_exit(methods* meth, SlotInfo* obj)
 {
-#if defined(HAVE_mon_exit)
-	label* l;
-#endif
-
 	/* Emit monitor entry if required */
 	if ((meth->accflags & ACC_SYNCHRONISED) == 0) {
 		return;
 	}
 #if defined(HAVE_mon_exit)
-	begin_func_sync();
-	l = newLabel();
-	l->type = Lexternal;
-	l->at = 0;
-	l->to = (uintp)slowUnlockObject;
-	l->from = 0;
-	if (METHOD_IS_STATIC(meth) == 0) {
-		meth = 0;
+	{
+		label* l;
+
+		begin_func_sync();
+		l = newLabel();
+		l->type = Lexternal;
+		l->at = 0;
+		l->to = (uintp)slowUnlockObject;
+		l->from = 0;
+		if (METHOD_IS_STATIC(meth) == 0) {
+			meth = 0;
+		}
+		else {
+			obj = 0;
+		}
+		slot_slot_slot_const_const(0, 0, obj, (jword)meth, (jword)l, HAVE_mon_exit, Tnull);
+		end_func_sync();
 	}
-	else {
-		obj = 0;
-	}
-	slot_slot_slot_const_const(0, 0, obj, (jword)meth, (jword)l, HAVE_mon_exit, Tnull);
-	end_func_sync();
 #else
 	begin_func_sync();
 	if (METHOD_IS_STATIC(meth) != 0) {
@@ -353,7 +386,7 @@ mon_exit(methods* meth, SlotInfo* obj)
 	else {
 		pusharg_ref(obj, 0);
 	}
-	call_soft(unlockJavaMutex);
+	call_soft(unlockObject);
 	popargs();
 	end_func_sync();
 #endif
@@ -373,7 +406,7 @@ softcall_monitorenter(SlotInfo* mon)
 	slot_slot_slot_const_const(0, 0, mon, 0, (jword)l, HAVE_mon_enter, Tnull);
 #else
 	pusharg_ref(mon, 0);
-	call_soft(lockJavaMutex);
+	call_soft(lockObject);
 	popargs();
 #endif
 }
@@ -392,7 +425,7 @@ softcall_monitorexit(SlotInfo* mon)
 	slot_slot_slot_const_const(0, 0, mon, 0, (jword)l, HAVE_mon_exit, Tnull);
 #else
 	pusharg_ref(mon, 0);
-	call_soft(unlockJavaMutex);
+	call_soft(unlockObject);
 	popargs();
 #endif
 }
@@ -539,7 +572,6 @@ move_int_const(SlotInfo* dst, jint val)
 	{
 		constpool *c;
 		label* l;
-		SlotInfo* tmp;
 
 		c = newConstant(CPint, val);
 		l = newLabel();
@@ -548,10 +580,17 @@ move_int_const(SlotInfo* dst, jint val)
 		l->to = (uintp)c;
 		l->from = 0;
 
-		slot_alloctmp(tmp);
-		move_label_const(tmp, l);
-		load_int(dst, tmp);
-		slot_freetmp(tmp);
+#if defined(HAVE_load_constpool_int)
+		slot_slot_const(dst, 0, (jword)l, HAVE_load_constpool_int, Tnull);
+#else
+		{
+			SlotInfo* tmp;
+			slot_alloctmp(tmp);
+			move_label_const(tmp, l);
+			load_int(dst, tmp);
+			slot_freetmp(tmp);
+		}
+#endif
 	}
 }
 
@@ -567,7 +606,6 @@ move_ref_const(SlotInfo* dst, void *val)
 	{
 		constpool *c;
 		label* l;
-		SlotInfo* tmp;
 
 		c = newConstant(CPref, val);
 		l = newLabel();
@@ -576,10 +614,17 @@ move_ref_const(SlotInfo* dst, void *val)
 		l->to = (uintp)c;
 		l->from = 0;
 
-		slot_alloctmp(tmp);
-		move_label_const(tmp, l);
-		load_ref(dst, tmp);
-		slot_freetmp(tmp);
+#if defined(HAVE_load_constpool_ref)
+		slot_slot_const(dst, 0, (jword)l, HAVE_load_constpool_ref, Tnull);
+#else
+		{
+			SlotInfo* tmp;
+			slot_alloctmp(tmp);
+			move_label_const(tmp, l);
+			load_ref(dst, tmp);
+			slot_freetmp(tmp);
+		}
+#endif
 	}
 }
 
@@ -600,10 +645,15 @@ move_string_const(SlotInfo* dst, void *val)
 	l->to = (uintp)c;
 	l->from = 0;
 
+#if defined(HAVE_load_constpool_ref)
+	slot_slot_const(dst, 0, (jword)l, HAVE_load_constpool_ref, Tnull);
+#else
 	slot_alloctmp(tmp);
 	move_label_const(tmp, l);
 	load_ref(dst, tmp);
 	slot_freetmp(tmp);
+#endif
+
 #endif
 }
 
@@ -626,10 +676,15 @@ move_long_const(SlotInfo* dst, jlong val)
 		l->to = (uintp)c;
 		l->from = 0;
 
+
+#if defined(HAVE_load_constpool_long)
+		slot_slot_const(dst, 0, (jword)l, HAVE_load_constpool_long, Tnull);
+#else
 		slot_alloctmp(tmp);
 		move_label_const(tmp, l);
 		load_long(dst, tmp);
 		slot_freetmp(tmp);
+#endif
 	}
 #else
 	move_int_const(LSLOT(dst), (jint)(val & 0xFFFFFFFF));
@@ -649,7 +704,6 @@ move_float_const(SlotInfo* dst, float val)
 	{
 		constpool *c;
 		label* l;
-		SlotInfo* tmp;
 
 		c = newConstant(CPfloat, val);
 		l = newLabel();
@@ -658,10 +712,17 @@ move_float_const(SlotInfo* dst, float val)
 		l->to = (uintp)c;
 		l->from = 0;
 
-		slot_alloctmp(tmp);
-		move_label_const(tmp, l);
-		load_float(dst, tmp);
-		slot_freetmp(tmp);
+#if defined(HAVE_load_constpool_float)
+		slot_slot_const(dst, 0, (jword)l, HAVE_load_constpool_float, Tnull);
+#else
+		{
+			SlotInfo* tmp;
+			slot_alloctmp(tmp);
+			move_label_const(tmp, l);
+			load_float(dst, tmp);
+			slot_freetmp(tmp);
+		}
+#endif
 	}
 }
 
@@ -677,7 +738,6 @@ move_double_const(SlotInfo* dst, jdouble val)
 	{
 		constpool *c;
 		label* l;
-		SlotInfo* tmp;
 
 		c = newConstant(CPdouble, val);
 		l = newLabel();
@@ -686,10 +746,17 @@ move_double_const(SlotInfo* dst, jdouble val)
 		l->to = (uintp)c;
 		l->from = 0;
 
-		slot_alloctmp(tmp);
-		move_label_const(tmp, l);
-		load_double(dst, tmp);
-		slot_freetmp(tmp);
+#if defined(HAVE_load_constpool_double)
+		slot_slot_const(dst, 0, (jword)l, HAVE_load_constpool_double, Tnull);
+#else
+		{
+			SlotInfo* tmp;
+			slot_alloctmp(tmp);
+			move_label_const(tmp, l);
+			load_double(dst, tmp);
+			slot_freetmp(tmp);
+		}
+#endif
 	}
 }
 
@@ -822,6 +889,13 @@ adc_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 }
 #endif
 
+#if defined(HAVE_add_int)
+void
+_add_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
+{
+	slot_slot_slot(dst, src, src2, HAVE_add_int, Tcomm);
+}
+
 void
 add_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 {
@@ -835,12 +909,11 @@ add_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
-		add_int(dst, src, tmp);
+		_add_int(dst, src, tmp);
 		slot_freetmp(tmp);
 	}
 }
 
-#if defined(HAVE_add_int)
 void
 add_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
@@ -858,17 +931,16 @@ add_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	}
 	else
 #endif
-	slot_slot_slot(dst, src, src2, HAVE_add_int, Tcomm);
+	_add_int(dst, src, src2);
 }
 #endif
 
 #if defined(HAVE_add_ref)
 void
-add_ref(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
+_add_ref(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 	slot_slot_slot(dst, src, src2, HAVE_add_ref, Tcomm);
 }
-#endif
 
 void
 add_ref_const(SlotInfo* dst, SlotInfo* src, jint val)
@@ -883,10 +955,17 @@ add_ref_const(SlotInfo* dst, SlotInfo* src, jint val)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
-		add_ref(dst, src, tmp);
+		_add_ref(dst, src, tmp);
 		slot_freetmp(tmp);
 	}
 }
+
+void
+add_ref(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
+{
+	_add_ref(dst, src, src2);
+}
+#endif
 
 #if defined(HAVE_set_lt_int)
 void
@@ -898,7 +977,7 @@ set_lt_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 
 #if defined(HAVE_set_lt_int_const)
 void
-slt_ref_const(SlotInfo* dst, SlotInfo* src, jint val)
+set_lt_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 {
 	slot_slot_const(dst, src, val, HAVE_set_lt_int_const, Tcomplex);
 }
@@ -1482,7 +1561,7 @@ neg_long(SlotInfo* dst, SlotInfo* src)
 
 	slot_freetmp(zero);
 	slot_freetmp(carry);
-else
+#else
 	ABORT();
 #endif
 }
@@ -1520,25 +1599,36 @@ neg_double(SlotInfo* dst, SlotInfo* src)
 /* Logical operators - and, or, etc.					   */
 /*									   */
 
+#if defined(HAVE_and_int)
+void
+_and_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
+{
+	slot_slot_slot(dst, src, src2, HAVE_and_int, Tcomplex);
+}
+
 void
 and_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 {
+	if (val == -1) {
+		move_int(dst, src);
+	}
+	else if (val == 0) {
+		move_int_const(dst, 0);
+	}
 #if defined(HAVE_and_int_const)
-	if (HAVE_and_int_const_rangecheck(val)) {
+	else if (HAVE_and_int_const_rangecheck(val)) {
 		slot_slot_const(dst, src, val, HAVE_and_int_const, Tcomplex);
 	}
-	else
 #endif
-	{
+	else {
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
-		and_int(dst, src, tmp);
+		_and_int(dst, src, tmp);
 		slot_freetmp(tmp);
 	}
 }
 
-#if defined(HAVE_and_int)
 void
 and_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
@@ -1551,7 +1641,7 @@ and_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	}
 	else
 #endif
-	slot_slot_slot(dst, src, src2, HAVE_and_int, Tcomplex);
+	_and_int(dst, src, src2);
 }
 #endif
 
@@ -1584,9 +1674,22 @@ and_long_const(SlotInfo* dst, SlotInfo* src, jlong val)
 }
 #endif
 
+#if defined(HAVE_or_int)
+void
+_or_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
+{
+	slot_slot_slot(dst, src, src2, HAVE_or_int, Tcomplex);
+}
+
 void
 or_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 {
+	if (val == -1) {
+		move_int_const(dst, -1);
+	}
+	else if (val == 0) {
+		move_int(dst, src);
+	}
 #if defined(HAVE_or_int_const)
 	if (HAVE_or_int_const_rangecheck(val)) {
 		slot_slot_const(dst, src, val, HAVE_or_int_const, Tcomplex);
@@ -1597,12 +1700,11 @@ or_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
-		or_int(dst, src, tmp);
+		_or_int(dst, src, tmp);
 		slot_freetmp(tmp);
 	}
 }
 
-#if defined(HAVE_or_int)
 void
 or_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
@@ -1615,7 +1717,7 @@ or_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	}
 	else
 #endif
-	slot_slot_slot(dst, src, src2, HAVE_or_int, Tcomplex);
+	_or_int(dst, src, src2);
 }
 #endif
 
@@ -1638,6 +1740,13 @@ or_long(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 #endif
 }
 
+#if defined(HAVE_xor_int)
+void
+_xor_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
+{
+	slot_slot_slot(dst, src, src2, HAVE_xor_int, Tcomplex);
+}
+
 void
 xor_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 {
@@ -1651,12 +1760,11 @@ xor_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
-		xor_int(dst, src, tmp);
+		_xor_int(dst, src, tmp);
 		slot_freetmp(tmp);
 	}
 }
 
-#if defined(HAVE_xor_int)
 void
 xor_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
@@ -1669,7 +1777,7 @@ xor_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	}
 	else
 #endif
-	slot_slot_slot(dst, src, src2, HAVE_xor_int, Tcomplex);
+	_xor_int(dst, src, src2);
 }
 #endif
 
@@ -1682,6 +1790,13 @@ xor_long(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	xor_int(LSLOT(dst), LSLOT(src), LSLOT(src2));
 	xor_int(HSLOT(dst), HSLOT(src), HSLOT(src2));
 #endif
+}
+
+#if defined(HAVE_lshl_int)
+void
+_lshl_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
+{
+	slot_slot_slot(dst, src, src2, HAVE_lshl_int, Tcomplex);
 }
 
 void
@@ -1697,12 +1812,11 @@ lshl_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
-		lshl_int(dst, src, tmp);
+		_lshl_int(dst, src, tmp);
 		slot_freetmp(tmp);
 	}
 }
 
-#if defined(HAVE_lshl_int)
 void
 lshl_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
@@ -1712,7 +1826,7 @@ lshl_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	}
 	else
 #endif
-	slot_slot_slot(dst, src, src2, HAVE_lshl_int, Tcomplex);
+	_lshl_int(dst, src, src2);
 }
 #endif
 
@@ -1755,6 +1869,13 @@ lshl_long(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 #endif
 }
 
+#if defined(HAVE_ashr_int)
+void
+_ashr_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
+{
+	slot_slot_slot(dst, src, src2, HAVE_ashr_int, Tcomplex);
+}
+
 void
 ashr_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 {
@@ -1768,12 +1889,11 @@ ashr_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
-		ashr_int(dst, src, tmp);
+		_ashr_int(dst, src, tmp);
 		slot_freetmp(tmp);
 	}
 }
 
-#if defined(HAVE_ashr_int)
 void
 ashr_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
@@ -1783,7 +1903,7 @@ ashr_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	}
 	else
 #endif
-	slot_slot_slot(dst, src, src2, HAVE_ashr_int, Tcomplex);
+	_ashr_int(dst, src, src2);
 }
 #endif
 
@@ -1808,6 +1928,13 @@ ashr_long(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 #endif
 }
 
+#if defined(HAVE_lshr_int)
+void
+_lshr_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
+{
+	slot_slot_slot(dst, src, src2, HAVE_lshr_int, Tcomplex);
+}
+
 void
 lshr_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 {
@@ -1821,22 +1948,21 @@ lshr_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
-		lshr_int(dst, src, tmp);
+		_lshr_int(dst, src, tmp);
 		slot_freetmp(tmp);
 	}
 }
 
-#if defined(HAVE_lshr_int)
 void
 lshr_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
-#if defined(HAVE_lshr_int_const)
+#if defined(HAVE_lshr_int_const) 
 	if (slot_type(src2) == Tconst) {
 		lshr_int_const(dst, src, slot_value(src2).i);
 	}
 	else
 #endif
-	slot_slot_slot(dst, src, src2, HAVE_lshr_int, Tcomplex);
+	_lshr_int(dst, src, src2);
 }
 #endif
 
@@ -3181,6 +3307,10 @@ pusharg_long(SlotInfo* src, int idx)
 #if defined(HAVE_pusharg_long)
 	lslot_lslot_const(0, src, idx, HAVE_pusharg_long, Tnull);
 	argcount += pusharg_long_idx_inc;
+#elif defined(PUSHARG_FORWARDS)
+	/* Don't use LSLOT & HSLOT here */
+	pusharg_int(src, idx);
+	pusharg_int(src+1, idx+1);
 #else
 	/* Don't use LSLOT & HSLOT here */
 	pusharg_int(src+1, idx+1);
@@ -3231,8 +3361,16 @@ cbranch_int(SlotInfo* s1, SlotInfo* s2, label* dst, int type)
 void
 cbranch_offset_int(SlotInfo* s1, SlotInfo* s2, jint s3, label* dst, int type)
 {
+#if defined(HAVE_cmp_int)
 	cmp_offset_int(0, s1, s2, s3);
 	branch(dst, type);
+#else
+	SlotInfo* tmp;
+	slot_alloctmp(tmp);
+	load_offset_int(tmp, s2, s3);
+	cbranch_int(s1, tmp, dst, type);
+	slot_freetmp(tmp);
+#endif
 }
 
 void
@@ -3367,8 +3505,12 @@ call_soft(void *routine)
 	l->from = 0;
 
 	slot_alloctmp(tmp);
+#if defined(HAVE_load_constpool_ref)
+	slot_slot_const(tmp, 0, (jword)l, HAVE_load_constpool_ref, Tnull);
+#else
 	move_label_const(tmp, l);
 	load_ref(tmp, tmp);
+#endif
 	call(tmp);
 	slot_freetmp(tmp);
 #endif
@@ -3589,6 +3731,12 @@ build_key(uint8* pos)
 
 #if defined(HAVE_cmp_int)
 void
+_cmp_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
+{
+	slot_slot_slot(dst, src, src2, HAVE_cmp_int, Tcomplex);
+}
+
+void
 cmp_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 {
 #if defined(HAVE_cmp_int_const)
@@ -3601,7 +3749,7 @@ cmp_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
-		cmp_int(dst, src, tmp);
+		_cmp_int(dst, src, tmp);
 		slot_freetmp(tmp);
 	}
 }
@@ -3615,7 +3763,7 @@ cmp_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	}
 	else
 #endif
-	slot_slot_slot(dst, src, src2, HAVE_cmp_int, Tcomplex);
+	_cmp_int(dst, src, src2);
 }
 #endif
 
@@ -3624,12 +3772,14 @@ cmp_offset_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2, jint off)
 {
 #if defined(HAVE_cmp_offset_int)
 	slot_slot_slot_const_const(dst, src, src2, off, 0, HAVE_cmp_offset_int, Tcomplex);
-#else
+#elif defined(HAVE_cmp_int)
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
 	load_offset_int(tmp, src2, off);
 	cmp_int(dst, src, tmp);
 	slot_freetmp(tmp);
+#else
+	ABORT();
 #endif
 }
 
@@ -4013,7 +4163,7 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 	/* Make sure we have enough argument space */
 	if (sp_idx + 2 > sz_args) {
 		sz_args = sp_idx + 2;
-		args = KREALLOC(args, sizeof(struct pusharg_info) * sz_args);
+		args = jrealloc(args, sizeof(struct pusharg_info) * sz_args);
 	}
 
 	/* If we've got an object ... */
@@ -4128,12 +4278,33 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 /* Soft calls.								   */
 /*									   */
 
+#if 0 /* Custom edition */
 void
 softcall_lookupmethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
 {
 	/* 'obj' must be written back since it will be reused */
 	begin_func_sync();
-        /* FIXME: should there be a pusharg_int_const? */
+#if defined(PUSHARG_FORWARDS)
+	pusharg_ref(obj, 0);
+	pusharg_utf8_const(meth->name, 1);
+	pusharg_utf8_const(meth->sig, 2);
+#else
+	pusharg_utf8_const(meth->sig, 2);
+	pusharg_utf8_const(meth->name, 1);
+	pusharg_ref(obj, 0);
+#endif
+	call_soft(soft_lookupmethod);
+	popargs();
+	end_func_sync();
+	return_ref(dst);
+}
+#endif
+
+void
+softcall_lookupmethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
+{
+	/* 'obj' must be written back since it will be reused */
+	begin_func_sync();
 #if defined(PUSHARG_FORWARDS)
         pusharg_ref(obj, 0);
         pusharg_class_const(meth->class, 1);
@@ -4152,14 +4323,19 @@ softcall_lookupmethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
 void
 check_array_index(SlotInfo* obj, SlotInfo* idx)
 {
-#if defined(HAVE_ccall_ugt)
-	SlotInfo* tmp;
-	slot_alloctmp(tmp);
-	load_offset_int(tmp, obj, object_array_length);
-	ccall_int_ugt(tmp, idx, soft_badarrayindex);
-	slot_freetmp(tmp);
+	if (noArrayBoundsChecks != 0) {
+		return;
+	}
+#if defined(HAVE_ccall)
+	{
+		SlotInfo* tmp;
+		slot_alloctmp(tmp);
+		load_offset_int(tmp, obj, object_array_length);
+		ccall_soft_int_ugt(tmp, idx, soft_badarrayindex);
+		slot_freetmp(tmp);
+	}
 #else
-#if defined(HAVE_fakecall)
+#if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
 	if (!canCatch(BADARRAYINDEX)) {
 		cbranch_offset_int_uge(idx, obj, object_array_length, newFakeCall(soft_badarrayindex, pc));
 	}
@@ -4176,11 +4352,27 @@ check_array_index(SlotInfo* obj, SlotInfo* idx)
 }
 
 void
+check_array_store(SlotInfo* array, SlotInfo* obj)
+{
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_ref(array, 0);
+	pusharg_ref(obj, 1);
+#else
+	pusharg_ref(obj, 1);
+	pusharg_ref(array, 0);
+#endif
+	call_soft(soft_checkarraystore);
+	popargs();
+	end_func_sync();
+}
+
+void
 check_null(int x, SlotInfo* obj, int y)
 {
 #if defined(CREATE_NULLPOINTER_CHECKS)
-#if defined(HAVE_fakecall)
-	if (!canCatch(NULLPOINTER)) {
+#if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
+	if (!canCatch(ANY)) {
 		cbranch_ref_const_eq(obj, 0, newFakeCall(soft_nullpointer, pc));
 	}
 	else
@@ -4193,8 +4385,9 @@ check_null(int x, SlotInfo* obj, int y)
 		set_label(x, y);
 	}
 #else
-	if (canCatch(NULLPOINTER)) {
-		sync_registers();
+	if (canCatch(ANY)) {
+		begin_func_sync();
+		end_func_sync();
 	}
 #endif
 }
@@ -4203,7 +4396,7 @@ void
 check_div(int x, SlotInfo* obj, int y)
 {
 #if defined(CREATE_NULLPOINTER_CHECKS)
-#if defined(HAVE_fakecall)
+#if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
 	if (!canCatch(ANY)) {
 		cbranch_int_const_eq(obj, 0, newFakeCall(soft_divzero, pc));
 	}
@@ -4218,7 +4411,8 @@ check_div(int x, SlotInfo* obj, int y)
 	}
 #else
 	if (canCatch(ANY)) {
-		sync_registers();
+		begin_func_sync();
+		end_func_sync();
 	}
 #endif
 }
@@ -4227,7 +4421,7 @@ void
 check_div_long(int x, SlotInfo* obj, int y)
 {
 #if defined(CREATE_NULLPOINTER_CHECKS)
-#if defined(HAVE_fakecall)
+#if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
 	if (!canCatch(ANY)) {
 		cbranch_int_const_eq(LSLOT(obj), 0, newFakeCall(soft_divzero, pc));
 		cbranch_int_const_eq(HSLOT(obj), 0, newFakeCall(soft_divzero, pc));
@@ -4244,24 +4438,48 @@ check_div_long(int x, SlotInfo* obj, int y)
 #else
 	if (canCatch(ANY)) {
 		begin_sync();
-		mark_all_writes();
 		end_sync();
 	}
 #endif
 }
 
-#if defined(HAVE_ccall_ugt)
+#if defined(HAVE_ccall)
 void
-ccall_ugt(void* func)
+ccall_ugt(SlotInfo* dst)
 {
-	slot_const_const(0, 0, (jword)func, HAVE_ccall_ugt, Tnull);
+	slot_slot_const(0, dst, bugt, HAVE_ccall, Tnull);
 }
 
 void
-ccall_int_ugt(SlotInfo* s1, SlotInfo* s2, void* func)
+ccall_soft_ugt(void* routine)
+{
+	label* l;
+	constpool* c;
+	SlotInfo* tmp;
+
+	l = newLabel();
+	c = newConstant(CPref, routine);
+	l->type = Lconstant;
+	l->at = 0;
+	l->to = (uintp)c;
+	l->from = 0;
+
+	slot_alloctmp(tmp);
+#if defined(HAVE_load_constpool_ref)
+	slot_slot_const(tmp, 0, (jword)l, HAVE_load_constpool_ref, Tnull);
+#else
+	move_label_const(tmp, l);
+	load_ref(tmp, tmp);
+#endif
+	ccall(tmp);
+	slot_freetmp(tmp);
+}
+
+void
+ccall_soft_int_ugt(SlotInfo* s1, SlotInfo* s2, void* func)
 {
 	cmp_int(0, s1, s2);
-	ccall_ugt(func);
+	ccall_soft_ugt(func);
 }
 
 void
@@ -4276,7 +4494,8 @@ void
 softcall_nullpointer(void)
 {
 	if (canCatch(ANY)) {
-		sync_registers();
+		begin_func_sync();
+		end_func_sync();
 	}
 	call_soft(soft_nullpointer);
 }
@@ -4285,7 +4504,8 @@ void
 softcall_divzero(void)
 {
 	if (canCatch(ANY)) {
-		sync_registers();
+		begin_func_sync();
+		end_func_sync();
 	}
 	call_soft(soft_divzero);
 }
@@ -4293,7 +4513,39 @@ softcall_divzero(void)
 void
 softcall_fakecall(label* from, label* to, void* func)
 {
-#if defined(HAVE_fakecall)
+#if defined(HAVE_fakecall_constpool)
+	label* l;
+	constpool* c;
+
+	/* Set the label for getting here */
+	slot_slot_const(0, 0, (jword)to, HAVE_set_label, Tnull);
+
+	/* We must put our 'from' in a constant.  We use the 'from' as
+	 * the constant value so it won't be aliases with others.
+	 */
+	c = newConstant(CPlabel, from);
+	from->type |= Lconstantpool|Labsolute|Llong;
+	from->at = (uintp)c;
+
+	from = newLabel();
+	from->type = Lconstant;
+	from->at = 0;
+	from->to = (uintp)c;
+	from->from = 0;
+
+	/* Build a label to hold the fake call */
+	l = newLabel();
+	c = newConstant(CPref, func);
+	l->type = Lconstant;
+	l->at = 0;
+	l->to = (uintp)c;
+	l->from = 0;
+
+	/* Make the fake call - passing the call label and the label we
+	 * got here from.
+	 */
+	slot_const_const(0, (jword)from, (jword)l, HAVE_fakecall_constpool, Tnull);
+#elif defined(HAVE_fakecall)
 	label* l;
 
 	/* Set the label for getting here */
@@ -4314,20 +4566,17 @@ softcall_fakecall(label* from, label* to, void* func)
 }
 
 void
-softcall_nosuchmethod(Hjava_lang_Class* cls, Utf8Const* name, Utf8Const* sig)
+softcall_nosuchmethod(Utf8Const* cls, Utf8Const* name, Utf8Const* sig)
 {
-	if (canCatch(ANY)) {
-		sync_registers();
-	}
 	begin_func_sync();
 #if defined(PUSHARG_FORWARDS)
-	pusharg_class_const(cls, 0);
+	pusharg_utf8_const(cls, 0);
 	pusharg_utf8_const(name, 1);
 	pusharg_utf8_const(sig, 2);
 #else
 	pusharg_utf8_const(sig, 2);
 	pusharg_utf8_const(name, 1);
-	pusharg_class_const(cls, 0);
+	pusharg_utf8_const(cls, 0);
 #endif
 	call_soft(soft_nosuchmethod);
 	popargs();
@@ -4335,18 +4584,15 @@ softcall_nosuchmethod(Hjava_lang_Class* cls, Utf8Const* name, Utf8Const* sig)
 }
 
 void
-softcall_nosuchfield(Hjava_lang_Class* cls, Utf8Const* name)
+softcall_nosuchfield(Utf8Const* cls, Utf8Const* name)
 {
-	if (canCatch(ANY)) {
-		sync_registers();
-	}
 	begin_func_sync();
 #if defined(PUSHARG_FORWARDS)
-	pusharg_class_const(cls, 0);
+	pusharg_utf8_const(cls, 0);
 	pusharg_utf8_const(name, 1);
 #else
 	pusharg_utf8_const(name, 1);
-	pusharg_class_const(cls, 0);
+	pusharg_utf8_const(cls, 0);
 #endif
 	call_soft(soft_nosuchfield);
 	popargs();
@@ -4481,27 +4727,16 @@ softcall_instanceof(SlotInfo* dst, SlotInfo* obj, Hjava_lang_Class* class)
 void
 softcall_initialise_class(Hjava_lang_Class* c)
 {
-	begin_func_sync();
-	pusharg_class_const(c, 0);
-	call_soft(soft_initialise_class);
-	popargs();
-	end_func_sync();
-}
-
-void
-softcall_checkarraystore(SlotInfo* array, SlotInfo* obj)
-{
-	begin_func_sync();
-#if defined(PUSHARG_FORWARDS)
-	pusharg_ref(array, 0);
-	pusharg_ref(obj, 1);
-#else
-	pusharg_ref(obj, 1);
-	pusharg_ref(array, 0);
+#if 0 /* Custom edition */
+	if (c != 0 && (c->sdata == 0 || c->sdata->state != CSTATE_COMPLETE)) {
 #endif
-	call_soft(soft_checkarraystore);
-	popargs();
-	end_func_sync();
+	if (c != 0 && c->state != CSTATE_COMPLETE) {
+		begin_func_sync();
+		pusharg_class_const(c, 0);
+		call_soft(soft_initialise_class);
+		popargs();
+		end_func_sync();
+	}
 }
 
 void
@@ -4543,11 +4778,36 @@ softcall_debug2(void* a0, void* a1, void* a2)
 void
 softcall_trace(Method* meth)
 {
+#if defined(HAVE_get_arg_ptr)
+        SlotInfo* tmp;
+ 
+        slot_alloctmp(tmp);
+        get_arg_ptr(tmp);
 	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+        pusharg_ref_const(meth, 0);
+        pusharg_ref(tmp, 1);
+#else
+        pusharg_ref(tmp, 1);
+        pusharg_ref_const(meth, 0);
+#endif
+        call_soft(soft_trace);
+        popargs();
+	end_func_sync();
+        slot_freetmp(tmp);
+#else
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
 	pusharg_ref_const(meth, 0);
+        pusharg_ref_const(0, 1);
+#else
+        pusharg_ref_const(0, 1);
+	pusharg_ref_const(meth, 0);
+#endif
 	call_soft(soft_trace);
 	popargs();
 	end_func_sync();
+#endif
 }
 
 #if defined(GC_INCREMENTAL)
@@ -4581,5 +4841,13 @@ softcall_addreference_static(void* from, SlotInfo* to)
 	call_soft(soft_addreference);
 	popargs();
 	end_func_sync();
+}
+#endif
+
+#if defined(HAVE_get_arg_ptr)
+void
+get_arg_ptr(SlotInfo* dst)
+{
+        slot_slot_slot(dst, 0, 0, HAVE_get_arg_ptr, Tcomplex);
 }
 #endif

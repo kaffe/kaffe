@@ -21,6 +21,7 @@
 #include "gc.h"
 #include "md.h"
 #include "support.h"
+#include "machine.h"
 
 label* firstLabel;
 label* lastLabel;
@@ -31,6 +32,11 @@ extern int maxLocal;
 extern int maxArgs;
 extern int maxStack;
 extern int maxTemp;
+
+/* Custom edition */
+#define	kprintf	kaffe_dprintf
+#define	gc_calloc_fixed(A,B)	jmalloc((A)*(B))
+#include "debug.h"
 
 void
 resetLabels(void)
@@ -45,7 +51,7 @@ resetLabels(void)
  * fragment into the program.
  */
 void
-linkLabels(codeinfo* codeInfo, uintp codebase)
+linkLabels(uintp codebase)
 {
 	long dest;
 	int* place;
@@ -74,6 +80,7 @@ linkLabels(codeinfo* codeInfo, uintp codebase)
 			dest = INSNPC(l->to) + codebase;
 			break;
 		case Lgeneral:		/* Dest not used */
+			dest = 0;
 			break;
 		default:
 			goto unhandled;
@@ -86,12 +93,22 @@ linkLabels(codeinfo* codeInfo, uintp codebase)
 		case Lrelative:		/* Relative address */
 			dest -= l->from + codebase;
 			break;
+		case Lfuncrelative:	/* Relative to function */
+			dest -= codebase;
+			break;
 		default:
 			goto unhandled;
 		}
 
 		/* Find place to store result */
-		place = (int*)(l->at + codebase);
+		switch (l->type & Latmask) {
+		case Lconstantpool:
+			place = (int*)((constpool*)l->at)->at;
+			break;
+		default:
+			place = (int*)(l->at + codebase);
+			break;
+		}
 
 		switch (l->type & Ltypemask) {
 		case Lquad:
@@ -106,7 +123,9 @@ linkLabels(codeinfo* codeInfo, uintp codebase)
 
 		default:
 		unhandled:
+#if defined(DEBUG)
 			kprintf("Label type 0x%x not supported (%p).\n", l->type, l);
+#endif
 			ABORT();
 		}
 #if 0
@@ -136,7 +155,7 @@ newLabel(void)
 
 	if (ret == 0) {
 		/* Allocate chunk of label elements */
-		ret = KCALLOC(ALLOCLABELNR, sizeof(label));
+		ret = gc_calloc_fixed(ALLOCLABELNR, sizeof(label));
 
 		/* Attach to current chain */
 		if (lastLabel == 0) {

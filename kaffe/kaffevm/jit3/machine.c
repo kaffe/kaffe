@@ -45,14 +45,10 @@
 #include "thread.h"
 #include "itypes.h"
 #include "code.h"
-#include "stringSupport.h"
-#include "debug.h"
-#include "stats.h"
 
 char* engine_name = "Just-in-time v3";
 char* engine_version = KAFFEVERSION;
 
-iLock translatorlock;           /* lock to protect the variables below */
 int stackno;
 int maxStack;
 int maxLocal;
@@ -60,21 +56,15 @@ int maxTemp;
 int maxArgs;
 int maxPush;
 int isStatic;
+codeinfo* codeInfo;
 
 int tmpslot;
 int argcount = 0;		/* Function call argument count */
 uint32 pc;
 uint32 npc;
 
-#if defined(KAFFE_PROFILER)
-int profFlag; /* flag to control profiling */
-Method *globalMethod;
-static void printProfilerStats(void);
-#endif
-
 /* Various exception related things */
 extern Hjava_lang_Class javaLangArrayIndexOutOfBoundsException;
-extern Hjava_lang_Class javaLangNullPointerException;
 extern struct JNIEnv_ Kaffe_JNIEnv;
 extern Method* jniMethod;
 extern void startJNIcall(void);
@@ -89,7 +79,6 @@ void check_null (int x, SlotInfo* obj, int y);
 void check_div (int x, SlotInfo* obj, int y);
 void check_div_long (int x, SlotInfo* obj, int y);
 void softcall_fakecall (label* from,label* to, void* func);
-#define	CHECK_NULL check_null
 
 /* Unit in which code block is increased when overrun */
 #define	ALLOCCODEBLOCKSZ	8192
@@ -101,8 +90,7 @@ int codeblock_size;
 static int code_generated;
 static int bytecode_processed;
 static int codeperbytecode;
-
-static codeinfo* codeInfo;
+iLock translatorlock;
 
 int CODEPC;
 
@@ -112,25 +100,32 @@ struct {
 
 extern int enable_readonce;
 
-void	initInsnSequence(int, int, int);
-bool	finishInsnSequence(void*, nativeCodeInfo*, errorInfo*);
+void	initInsnSequence(Method*, int, int, int);
+jboolean finishInsnSequence(void*, nativeCodeInfo*, errorInfo*);
 static void generateInsnSequence(void);
 void installMethodCode(void*, Method*, nativeCodeInfo*);
 static void nullCall(void);
-static void checkCaughtExceptions(Method*, int);
 
 jlong	currentTime(void);
 Method*	findMethodFromPC(uintp);
 label* newFakeCall(void*, uintp);
 static void makeFakeCalls(void);
 
+/* Desktop edition */
+#include "debug.h"
+#undef	DBG
+#define	DBG(A,B)
+int profFlag;
+Method* globalMethod;
 
 /*
  * Translate a method into native code.
  */
 jboolean
-translate(Method* meth, errorInfo *einfo)
+translate(Method* xmeth, errorInfo* einfo)
 {
+	int i;
+
 	jint low;
 	jint high;
 	jvalue tmpl;
@@ -138,12 +133,14 @@ translate(Method* meth, errorInfo *einfo)
 	SlotInfo* tmp;
 	SlotInfo* tmp2;
 	SlotInfo* mtable;
+	const char* str;
 
 	bytecode* base;
 	uint32 len;
 	callInfo cinfo;
 	fieldInfo finfo;
 	Hjava_lang_Class* crinfo;
+	codeinfo* mycodeInfo;
 
 	nativeCodeInfo ncode;
 
@@ -152,53 +149,34 @@ translate(Method* meth, errorInfo *einfo)
 
 	static bool reinvoke = false;
 
-	bool success = true;
-	codeinfo* myCodeInfo;
-	const char* str;
-
-	// MSR_START( jit_time);
+	jboolean success = true;
+	iLock* lock;
 
 	/* Since we get here by calling the trampoline, we must be about
 	 * to call this method - so make sure it's OK before generating
 	 * code to avoid any extra initialization calls.
 	 */
-	processClass(meth->class, CSTATE_COMPLETE, einfo);
+	processClass(xmeth->class, CSTATE_COMPLETE, einfo);
 
-	lockMutex(meth->class->centry);
+	lock = lockMutex(xmeth->class);
 
-	if (METHOD_TRANSLATED(meth)) {
-		goto done2;
+	if (METHOD_TRANSLATED(xmeth)) {
+		goto done3;
 	}
-
-	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
-		tms = currentTime();
-	}
-
-// DBG( vm_jit_translate, ("callinfo = 0x%x\n", &cinfo));
 
 	/* If this code block is native, then just set it up and return */
-	if ((meth->accflags & ACC_NATIVE) != 0) {
-		success = native(meth, einfo);
+	if ((xmeth->accflags & ACC_NATIVE) != 0) {
+		success = native(xmeth, einfo);
 		if (success == true) {
-			KAFFEJIT_TO_NATIVE(meth);
-			/* Note that this is a real function not a trampoline.*/
-			if (meth->c.ncode.ncode_end == 0) {
-				meth->c.ncode.ncode_end = METHOD_NATIVECODE(meth);
-			}
+			KAFFEJIT_TO_NATIVE(xmeth);
 		}
-		goto done2;
-	}
-
-	/* Handle null calls specially */
-	if (meth->c.bcode.codelen == 1 && meth->c.bcode.code[0] == RETURN) {
-		SET_METHOD_NATIVECODE(meth, (nativecode*)nullCall);
-		goto done2;
+		goto done3;
 	}
 
 	/* Scan the code and determine the basic blocks */
-        success = verifyMethod(meth, &myCodeInfo, einfo);
+	success = verifyMethod(xmeth, &mycodeInfo, einfo);
 	if (success == false) {
-		goto done2;
+		goto done3;
 	}
 
 	/* Only one in the translator at once. Must check the translation
@@ -206,16 +184,27 @@ translate(Method* meth, errorInfo *einfo)
 	 */
 	enterTranslator();
 
+	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
+		tms = currentTime();
+	}
+
+DBG( vm_jit_translate, ("callinfo = 0x%x\n", &cinfo));
+
+	/* Handle null calls specially */
+	if (METHOD_BYTECODE_LEN(xmeth) == 1 && METHOD_BYTECODE_CODE(xmeth)[0] == RETURN) {
+		SET_METHOD_NATIVECODE(xmeth, (nativecode*)nullCall);
+		goto done2;
+	}
+
 	assert(reinvoke == false);
 	reinvoke = true;
-	codeInfo = myCodeInfo;
+	codeInfo = mycodeInfo;
 
-	maxLocal = meth->localsz;
-	maxStack = meth->stacksz;
-        str = meth->signature->data;
+	maxLocal = xmeth->localsz;
+	maxStack = xmeth->stacksz;
+        str = xmeth->signature->data;
         maxArgs = sizeofSig(&str, false);
-
-	if (meth->accflags & ACC_STATIC) {
+	if (xmeth->accflags & ACC_STATIC) {
 		isStatic = 1;
 	}
 	else {
@@ -224,20 +213,40 @@ translate(Method* meth, errorInfo *einfo)
 	}
 
 SUSE(
-	printf("Method: %s.%s%s\n", CLASS_CNAME(meth->class), meth->name->data, makeStrFromSignature(meth->sig));
+	printf("Method: %s.%s%s\n", CLASS_CNAME(xmeth->class), xmeth->name->data, makeStrFromSignature(xmeth->sig));
 	for (i = 0; i < maxLocal; i++) {
 		printf(" L%d: %2d", i, codeInfo->localuse[i].use);
 	}
 	printf("\n");
 )
 
-	base = (bytecode*)meth->c.bcode.code;
-	len = meth->c.bcode.codelen;
+	base = (bytecode*)METHOD_BYTECODE_CODE(xmeth);
+	len = METHOD_BYTECODE_LEN(xmeth);
+
+	willcatch.ANY = false;
+	willcatch.BADARRAYINDEX = false;
+
+	/* Deterimine various exception conditions */
+	if (xmeth->exception_table != 0) {
+		willCatch(ANY);
+		for (i = 0; i < (int)xmeth->exception_table->length; i++) {
+			Hjava_lang_Class* etype;
+			etype = xmeth->exception_table->entry[i].catch_type;
+			if (etype == 0) {
+				willCatch(BADARRAYINDEX);
+			}
+			else {
+				if (instanceof(&javaLangArrayIndexOutOfBoundsException, etype)) {
+					willCatch(BADARRAYINDEX);
+				}
+			}
+		}
+	}
 
 	/*
 	 * Initialise the translator.
 	 */
-	initInsnSequence(codeperbytecode * meth->c.bcode.codelen, meth->localsz, meth->stacksz);
+	initInsnSequence(xmeth, codeperbytecode * METHOD_BYTECODE_LEN(xmeth), xmeth->localsz, xmeth->stacksz);
 
 	/***************************************/
 	/* Next reduce bytecode to native code */
@@ -247,7 +256,7 @@ SUSE(
 	start_function();
 	check_stack_limit();
 	if (Kaffe_JavaVMArgs[0].enableVerboseCall != 0) {
-		softcall_trace(meth);
+		softcall_trace(xmeth);
 	}
 	monitor_enter();
 	if (IS_STARTOFBASICBLOCK(0)) {
@@ -259,41 +268,39 @@ SUSE(
 	for (; pc < len; pc = npc) {
 
 		assert(stackno <= maxStack+maxLocal);
+		assert(stackno >= 0);
 
 		npc = pc + insnLen[base[pc]];
 
-		/* Skip over the generation of any unreachable basic blocks */
-		if (IS_UNREACHABLE(pc)) {
-			while (npc < len && !IS_STARTOFBASICBLOCK(npc) && !IS_STARTOFEXCEPTION(npc)) {
-				npc = npc + insnLen[base[npc]];
-			}
-DBG(JIT,		dprintf("unreachable basic block pc [%d:%d]\n", pc, npc - 1);   )
-			if (IS_STARTOFBASICBLOCK(npc)) {
-				end_basic_block();
-				start_basic_block();
-				stackno = STACKPOINTER(npc);
-			}
-			continue;
-		}
-
-DBG(JIT,        dprintf("pc = %d, npc = %d\n", pc, npc);        )
-
-		/* Determine various exception conditions */
-		checkCaughtExceptions(meth, pc);
+                /* Skip over the generation of any unreachable basic blocks */
+                if (IS_UNREACHABLE(pc)) {
+                        while (npc < len && !IS_STARTOFBASICBLOCK(npc) && !IS_STARTOFEXCEPTION(npc)) {
+                                npc = npc + insnLen[base[npc]];
+                        }
+DBG(JIT,                dprintf("unreachable basic block pc [%d:%d]\n", pc, npc - 1);   )
+                        if (IS_STARTOFBASICBLOCK(npc)) {
+                                end_basic_block();
+                                start_basic_block();
+                                stackno = STACKPOINTER(npc);
+                        }
+                        continue;
+                }
 
 		start_instruction();
 
 		/* Note start of exception handling blocks */
 		if (IS_STARTOFEXCEPTION(pc)) {
-			stackno = meth->localsz + meth->stacksz - 1;
+			stackno = xmeth->localsz + xmeth->stacksz - 1;
 			start_exception_block();
 		}
 
 		switch (base[pc]) {
 		default:
-// DBG(jit,		dprintf("Unknown bytecode %d\n", base[pc]); )
+			printf("Unknown bytecode %d\n", base[pc]);
+			unlockMutex(xmeth->class->centry);
+			leaveTranslator();
 			postException(einfo, JAVA_LANG(VerifyError));
-			goto done1;
+                        success = false;
 			break;
 #include "kaffe-jit.def"
 		}
@@ -321,57 +328,42 @@ SCHK(			sanityCheck();				)
 	assert(maxTemp < MAXTEMPS);
 
 	finishInsnSequence(0, &ncode, einfo);
-	installMethodCode(0, meth, &ncode);
+	installMethodCode(0, xmeth, &ncode);
 
 done:;
-	tidyVerifyMethod(myCodeInfo);
-	codeInfo = 0;
+	tidyVerifyMethod(&codeInfo);
 
 	reinvoke = false;
 
-// DBG( vm_jit_translate, ("Translating %s.%s%s (%s) %p\n", meth->class->name->data, meth->name->data, makeStrFromSignature(meth->sig), isStatic ? "static" : "normal", METHOD_NATIVECODE(meth)));
+DBG( vm_jit_translate, ("Translating %s.%s%s (%s) %p\n",
+						xmeth->class->name->data,
+						xmeth->name->data, makeStrFromSignature(xmeth->sig),
+						isStatic ? "static" : "normal", METHOD_NATIVECODE(xmeth)));
 
 	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
 		tme = currentTime();
 		jitStats.time += (int)(tme - tms);
 		printf("<JIT: %s.%s%s time %dms (%dms) @ %p (%p)>\n",
-		       CLASS_CNAME(meth->class),
-		       meth->name->data, meth->signature->data,
+		       CLASS_CNAME(xmeth->class),
+		       xmeth->name->data, xmeth->signature->data,
 		       (int)(tme - tms), jitStats.time,
-		       METHOD_NATIVECODE(meth), meth);
+		       METHOD_NATIVECODE(xmeth), xmeth);
 	}
 
-done1:;
-#if defined(KAFFE_PROFILER)
-	if (profFlag) {
-		profiler_click_t end;
-
-		profiler_get_clicks(end);
-		meth->jitClicks = end - meth->jitClicks;
-		globalMethod = 0;
-	}
-#endif
-	leaveTranslator();
 done2:;
-	unlockMutex(meth->class->centry);
-
-	// MSR_STOP( jit_time);
+	leaveTranslator();
+done3:;
+	unlockKnownMutex(lock);
 
 	return (success);
 }
 
-
 /*
  * Generate the code.
  */
-bool
-finishInsnSequence(void* dummy, nativeCodeInfo* code, errorInfo *einfo)
+jboolean
+finishInsnSequence(void* dummy, nativeCodeInfo* code, errorInfo* einfo)
 {
-#if defined(CALLTARGET_ALIGNMENT)
-	int align = CALLTARGET_ALIGNMENT;
-#else
-	int align = 0;
-#endif
 	uint32 constlen;
 	nativecode* methblock;
 	nativecode* codebase;
@@ -381,109 +373,89 @@ finishInsnSequence(void* dummy, nativeCodeInfo* code, errorInfo *einfo)
 
 	/* Okay, put this into malloc'ed memory */
 	constlen = nConst * sizeof(union _constpoolval);
-	/* Allocate some padding to align codebase if so desired 
-	 * NB: we assume the allocator returns at least 8-byte aligned 
-	 * addresses.   XXX: this should really be gc_memalign
-	 */  
-	methblock = gc_malloc(constlen + CODEPC + (align ? (align - 8) : 0), GC_ALLOC_JITCODE);
+	methblock = gc_malloc(constlen + CODEPC, GC_ALLOC_JITCODE);
 	if (methblock == 0) {
 		postOutOfMemory(einfo);
 		return (false);
 	}
+
 	codebase = methblock + constlen;
-	/* align entry point if so desired */
-	if (align != 0 && (unsigned int)codebase % align != 0) {
-		int pad = (align - (unsigned int)codebase % align);
-		/* assert the allocator indeed returned 8 bytes aligned addrs */
-		assert(pad <= align - 8);	
-		codebase = (void*)codebase + pad;
-	}
 	memcpy(codebase, codeblock, CODEPC);
-	addToCounter(&jitcodeblock, "jitmem-codeblock", 1,
-		-(jlong)GCSIZEOF(codeblock));
 	gc_free(codeblock);
 
 	/* Establish any code constants */
 	establishConstants(methblock);
 
 	/* Link it */
-	linkLabels(codeInfo, (uintp)codebase);
+	linkLabels((uintp)codebase);
 
 	/* Note info on the compiled code for later installation */
 	code->mem = methblock;
 	code->memlen = constlen + CODEPC;
 	code->code = codebase;
 	code->codelen = CODEPC;
+
 	return (true);
+}
+
+/*
+ * Get the instruction offset corresponding to the given PC.
+ * If the PC doesn't point at the start of a valid instruction,
+ * look forward until we find one.
+ */
+static
+int
+getInsnPC(int pc)
+{
+	int res;
+
+	for (;;) {
+		res = INSNPC(pc);
+		if (res != -1) {
+			return (res);
+		}
+		pc++;
+	}
 }
 
 /*
  * Install the compiled code in the method.
  */
 void
-installMethodCode(void* dummy, Method* meth, nativeCodeInfo* code)
+installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 {
-	int i;
+	uint32 i;
 	jexceptionEntry* e;
 
 	/* Work out new estimate of code per bytecode */
 	code_generated += code->memlen;
-	bytecode_processed += meth->c.bcode.codelen;
+	bytecode_processed += METHOD_BYTECODE_LEN(meth);
 	codeperbytecode = code_generated / bytecode_processed;
 
-	/* We must free the trampoline for <clinit> methods of interfaces 
-	 * before overwriting it.
-	 */
-	if (CLASS_IS_INTERFACE(meth->class) && utf8ConstEqual(meth->name, init_name)) {
-		KFREE(METHOD_NATIVECODE(meth));
-	}
+	GC_WRITE(meth, code->mem);
 	SET_METHOD_NATIVECODE(meth, code->code);
-	/* Free bytecode before replacing it with native code */
-	if (meth->c.bcode.code != 0) {
-		KFREE(meth->c.bcode.code);
-	}
 	meth->c.ncode.ncode_start = code->mem;
-	meth->c.ncode.ncode_end = code->code + code->codelen;
+	meth->c.ncode.ncode_end = (void*)((uintp)code->code + code->codelen);
 
 	/* Flush code out of cache */
-	FLUSH_DCACHE(meth->ncode, meth->c.ncode.ncode_end);
+#if defined(FLUSH_DCACHE)
+	FLUSH_DCACHE(code->code, (void*)((uintp)code->code + code->codelen));
+#endif
 
 	/* Translate exception table and make it available */
 	if (meth->exception_table != 0) {
 		for (i = 0; i < meth->exception_table->length; i++) {
-			/* Note that we cannot assume that the bytecode
-			 * instructions that are at the start/end/handler
-			 * pc index have a corresponding native pc.
-			 * They only have one if they already emitted
-			 * native instructions during translation.
-			 * Jikes, for instance, likes to put a `nop' at
-			 * the end_pc index of an exception handler range.
-			 *
-			 * If this happens, we simply find the next bytecode
-			 * instruction that has a native pc and use it instead.
-			 */
-			int npc, epc;
 			e = &meth->exception_table->entry[i];
-
-			epc = e->start_pc;
-			for (npc = INSNPC(epc); npc == -1; npc = INSNPC(++epc));
-			e->start_pc = npc + (uintp)code->code;
-
-			epc = e->end_pc;
-			for (npc = INSNPC(epc); npc == -1; npc = INSNPC(++epc));
-			e->end_pc = npc + (uintp)code->code;
-
-			epc = e->handler_pc;
-			for (npc = INSNPC(epc); npc == -1; npc = INSNPC(++epc));
-			e->handler_pc = npc + (uintp)code->code;
-			assert(e->start_pc <= e->end_pc);
+			e->start_pc = getInsnPC(e->start_pc) + (uintp)code->code;
+			e->end_pc = getInsnPC(e->end_pc) + (uintp)code->code;
+			e->handler_pc = getInsnPC(e->handler_pc) + (uintp)code->code;
 		}
 	}
 
 	/* Translate line numbers table */
 	if (meth->lines != 0) {
 		for (i = 0; i < meth->lines->length; i++) {
-			meth->lines->entry[i].start_pc = INSNPC(meth->lines->entry[i].start_pc) + (uintp)code->code;
+			meth->lines->entry[i].start_pc = getInsnPC(meth->lines->entry[i].start_pc) + (uintp)code->code;
 		}
 	}
 }
@@ -492,15 +464,19 @@ installMethodCode(void* dummy, Method* meth, nativeCodeInfo* code)
  * Init instruction generation.
  */
 void
-initInsnSequence(int codesize, int localsz, int stacksz)
+initInsnSequence(Method* meth, int codesize, int localsz, int stacksz)
 {
 	/* Clear various counters */
 	tmpslot = 0;
 	maxTemp = 0;
 	maxPush = 0;  
 	stackno = localsz + stacksz;
-	maxTemp = MAXTEMPS - 1; /* XXX */ 
 	npc = 0;
+
+	/* Do any machine dependent JIT initialization */
+#if defined(INIT_JIT_MD)
+	INIT_JIT_MD(meth);
+#endif
 
 	initSeq();
 	initRegisters();
@@ -512,7 +488,7 @@ initInsnSequence(int codesize, int localsz, int stacksz)
 	if (codeblock_size < ALLOCCODEBLOCKSZ) {
 		codeblock_size = ALLOCCODEBLOCKSZ;
 	}
-	codeblock = KMALLOC(codeblock_size + CODEBLOCKREDZONE);
+	codeblock = gc_malloc(codeblock_size + CODEBLOCKREDZONE, GC_ALLOC_FIXED);
 	CODEPC = 0;
 }
 
@@ -532,7 +508,7 @@ generateInsnSequence(void)
 		/* If we overrun the codeblock, reallocate and continue.  */
 		if (CODEPC >= codeblock_size) {
 			codeblock_size += ALLOCCODEBLOCKSZ;
-			codeblock = KREALLOC(codeblock, codeblock_size + CODEBLOCKREDZONE);
+			codeblock = gc_realloc(codeblock, codeblock_size + CODEBLOCKREDZONE, GC_ALLOC_FIXED);
 		}
 
 SCHK(		sanityCheck();					)
@@ -738,7 +714,7 @@ createSpillMask(void)
 #endif
 
 	c++; /* Add null slot on the end */
-	mem = KMALLOC(c * sizeof(SlotData*));
+	mem = gc_malloc(c * sizeof(SlotData*), GC_ALLOC_JITCODE);
 
 	i = maxLocal + maxStack + tmpslot;
 	c = 0;
@@ -801,6 +777,58 @@ SCHK(	sanityCheck();						)
 SCHK(	sanityCheck();						)
 }
 
+static
+int
+sortSlots(const void* s1, const void* s2)
+{
+	localUse* lcluse1;
+	localUse* lcluse2;
+	
+	lcluse1 = &codeInfo->localuse[*((SlotInfo**)s1) - localinfo];
+	lcluse2 = &codeInfo->localuse[*((SlotInfo**)s2) - localinfo];
+
+	if (lcluse1->use == lcluse2->use) {
+		return (0);
+	}
+	else if (lcluse1->use > lcluse2->use) {
+		return (-1);
+	}
+	else {
+		return (1);
+	}
+}
+
+static
+void
+bindSlotToGlobal(int lcl, int r, int type)
+{
+	kregs* reg;
+	SlotData* dslot;
+
+	reg = &reginfo[r];
+	dslot = localinfo[lcl].slot;
+
+	reg->ctype = type;
+	reg->type |= Rglobal;
+	reg->refs++;
+	reg->slot = dslot;
+	dslot->regno = r;
+
+	/* If this is an argument then pre-load */
+	if (lcl < maxArgs) {
+		dslot->global = GL_PRELOAD;
+	}
+	else {
+		dslot->global = GL_NOLOAD;
+	}
+	/* If this slot is never written note that the global is
+	 * read only.
+	 */
+	if (codeInfo->localuse[lcl].write == -1) {
+		dslot->global |= GL_RONLY;
+	}
+}
+
 /*
  * Setup global registers
  */
@@ -808,16 +836,9 @@ void
 setupGlobalRegisters(void)
 {
 #if defined(NR_GLOBALS)
-	int i;
+	SlotInfo** slots;
 	int j;
-	int k;
-	localUse* lcl;
-	int use;
-	struct {
-		localUse* lcl;
-		SlotData* slot;
-		jboolean arg;
-	} tmp[NR_GLOBALS];
+	int max;
 
 	/* If we don't have any code info we can't do any global
 	 * optimization
@@ -826,68 +847,75 @@ setupGlobalRegisters(void)
 		return;
 	}
 
-	for (j = 0; j < NR_GLOBALS; j++) {
-		tmp[j].lcl = 0;
-		tmp[j].slot = 0;
+	/* Allocate an array for the slot pointers and copy them in */
+	slots = gc_malloc((1+maxLocal) * sizeof(SlotInfo*), GC_ALLOC_JITCODE);
+	for (j = 0; j < maxLocal; j++) {
+		slots[j] = &localinfo[j];
 	}
 
-	for (i = 0; i < maxLocal; i++) {
+	/* Sort the slots to the most used is first */
+	qsort(slots, maxLocal, sizeof(SlotInfo*), sortSlots);
 
-		assert(localinfo[i].slot->global == GL_NOGLOBAL);
+	/* Allocate the slots to globals */
+	max = NR_GLOBALS;
+	for (j = 0; j < maxLocal && max > 0; j++) {
+		int k;
+		int i;
+		localUse* lcl;
 
+		i = slots[j] - localinfo;
 		lcl = &codeInfo->localuse[i];
-		if (lcl->type != TINT && lcl->type != TOBJ) {
-			continue;
-		}
 
-		/* Look for a global which has worse usage than this one */
-		k = -1;
-		use = 0x7FFFFFFF;
-		for (j = 0; j < NR_GLOBALS && use > 0; j++) {
-			if (tmp[j].slot == 0) {
-				use = 0;
-				k = j;
+		for (k = 0; k < MAXREG; k++) {
+			kregs* reg;
+
+			reg = &reginfo[k];
+			if ((reg->flags & Rglobal) == 0) {
+				/* Not a global */
 			}
-			else if (tmp[j].lcl->use < use) {
-				use = tmp[j].lcl->use;
-				k = j;
+			else if ((reg->type & Rglobal) != 0) {
+				/* Already used */
 			}
-		}
-		/* If we got a global and it's better, use it */
-		if (lcl->use > use) {
-			tmp[k].slot = localinfo[i].slot;
-			tmp[k].lcl = lcl;
-			tmp[k].arg = (i < maxArgs ? true : false);
+			else if (lcl->type == TINT && (reg->type & Rint) != 0) {
+				bindSlotToGlobal(i, k, Rint);
+				max--;
+				break;
+			}
+			else if (lcl->type == TOBJ && (reg->type & Rref) != 0) {
+				bindSlotToGlobal(i, k, Rref);
+				max--;
+				break;
+			}
 		}
 	}
 
-	for (i = 0, j = 0; i < MAXREG && tmp[j].slot != 0; i++) {
-		if ((reginfo[i].flags & Rglobal) != 0) {
-			assert(tmp[j].slot->rnext == 0);
-			assert(reginfo[i].slot == 0);
-			reginfo[i].ctype = reginfo[i].type & (Rref|Rint);
-			reginfo[i].type |= Rglobal;
-			reginfo[i].refs++;
-			reginfo[i].slot = tmp[j].slot;
-			tmp[j].slot->regno = i;
+	gc_free(slots);
+#endif
+}
 
-			/* If this is an argument then pre-load */
-			if (tmp[j].arg == true) {
-				tmp[j].slot->global = GL_PRELOAD;
-			}
-			/* Otherwise there's no need */
-			else {
-				tmp[j].slot->global = GL_NOLOAD;
-			}
-			/* If this slot is never written note that the
-			 * global is read-only.
-			 */
-			if (tmp[j].lcl->write == -1) {
-				tmp[j].slot->global |= GL_RONLY;
-			}
-			j++;
-		}
+void
+setupArgumentRegisters(void)
+{
+#if defined(NR_ARGUMENTS)
+	int args;
+	int i;
+	static sequence argseq[1];
+
+	args = maxArgs;
+	if (args > NR_ARGUMENTS) {
+		args = NR_ARGUMENTS;
 	}
+
+	for (i = 0; i < args; i++) {
+		writeslot(argseq, i, &localinfo[i], 1);
+		localinfo[i].slot->modified = rwrite;
+	}
+#if defined(STACK_LIMIT)
+	if (args < NR_ARGUMENTS) {
+		writeslot(argseq, i, stack_limit, 1);
+		stack_limit->slot->modified = rwrite;
+	}
+#endif
 #endif
 }
 
@@ -910,7 +938,7 @@ jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 		arraydims = array;
 	}
 	else {
-		arraydims = KCALLOC(dims+1, sizeof(int));
+		arraydims = gc_calloc(dims+1, sizeof(int), GC_ALLOC_JITCODE);
 	}
 
 	/* Extract the dimensions into an array */
@@ -937,54 +965,9 @@ jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 }
 
 /*
- * check what synchronous exceptions are caught for a given instruction
+ * Include the machine specific trampoline functions.
  */
-static
-void 
-checkCaughtExceptions(Method* meth, int pc)
-{
-	int i;
-
-	willcatch.BADARRAYINDEX = false;
-	willcatch.NULLPOINTER = false;
-
-	if (meth->exception_table == 0)  {
-		return;
-	}
-
-	/* Determine various exception conditions */
-	for (i = 0; i < meth->exception_table->length; i++) {
-		Hjava_lang_Class* etype;
-
-		/* include only if exception handler range matches pc */
-		if (meth->exception_table->entry[i].start_pc > pc ||
-		    meth->exception_table->entry[i].end_pc <= pc)
-			continue;
-
-		etype = meth->exception_table->entry[i].catch_type;
-		if (etype == 0) {
-			willCatch(BADARRAYINDEX);
-			willCatch(NULLPOINTER);
-		}
-		else {
-			if (instanceof(&javaLangArrayIndexOutOfBoundsException, etype)) {
-				willCatch(BADARRAYINDEX);
-			}
-			if (instanceof(&javaLangNullPointerException, etype)) {
-				willCatch(NULLPOINTER);
-			}
-		}
-	}
-}
-
-/*
- * return what engine we're using
- */
-char*
-getEngine(void)
-{
-	return "kaffe.jit";
-}
+#include "trampolines.c"
 
 static
 void
@@ -1025,7 +1008,7 @@ newFakeCall(void* func, uintp currpc)
 	to->from = 0;
 
 	if (currFake == 0) {
-		currFake = KMALLOC(sizeof(fakeCall));
+		currFake = gc_malloc(sizeof(fakeCall), GC_ALLOC_JITCODE);
 		if (lastFake == 0) {
 			firstFake = currFake;
 		}
@@ -1057,68 +1040,11 @@ makeFakeCalls(void)
 	currFake = firstFake;
 }
 
-#if defined(KAFFE_PROFILER)
-static jlong click_multiplier;
-static profiler_click_t click_divisor;
-
-static
-int
-profilerClassStat(Hjava_lang_Class *clazz, void *param)
+/*
+ * return what engine we're using
+ */
+char*
+getEngine()
 {
-	Method *meth;
-	int mindex;
-
-	for (mindex = clazz->nmethods, meth = clazz->methods; mindex-- > 0; meth++) {
-		if (meth->callsCount == 0)
-			continue;
-
-		fprintf(stderr, "%10d %10.6g %10.6g %10.6g %s.%s%s\n",
-				meth->callsCount,
-				(click_multiplier * ((double)meth->totalClicks)) / click_divisor,
-				(click_multiplier * ((double)meth->totalChildrenClicks)) / click_divisor,
-				(click_multiplier * ((double)meth->jitClicks)) / click_divisor,
-
-				meth->class->name->data,
-				meth->name->data,
-				meth->signature->data
-		       );
-
-	}
-	return 0;
+	return "kaffe.jit";
 }
-
-
-static
-void
-printProfilerStats(void)
-{
-	profiler_click_t start, end;
-	jlong m_start, m_end;
-
-	/* If the profFlag == 0, don't bother printing anything */
-	if (profFlag == 0)
-		return;
-
-	/* Need to figure out what profiler_click  _really_ is.
-	 * Use currentTime() to guest how long is a second.  Call it before
-	 * to don't count dynamic linker resolve time.  */
-	m_start = currentTime();
-	profiler_get_clicks(start);
-	sleep (1);
-	m_end = currentTime();
-	profiler_get_clicks(end);
-
-	click_multiplier = m_end - m_start;
-	click_divisor = end - start;
-
-	fprintf(stderr, "# clockTick: %lld per 1/%lld seconds aka %lld per milliseconds\n",
-		click_divisor,
-		click_multiplier,
-		click_divisor / click_multiplier);
-
-	fprintf(stderr, "# count\ttotal\tchildren\tjit\tmethod-name\n");
-
-	/* Traverse through class hash table */
-	walkClassPool(profilerClassStat, NULL);
-}
-#endif

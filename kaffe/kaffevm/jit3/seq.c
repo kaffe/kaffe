@@ -1,4 +1,3 @@
-/* #include "../jit/seq.c" */
 /* seq.c
  * Pseudo instruction sequences.
  *
@@ -15,8 +14,6 @@
 #include "gtypes.h"
 #include "seq.h"
 #include "gc.h"
-#include "support.h"
-#include "stats.h"
 
 sequence* firstSeq;
 sequence* lastSeq;
@@ -43,9 +40,7 @@ nextSeq(void)
 
 	if (ret == 0) {
 		/* Allocate chunk of sequence elements */
-		ret = KCALLOC(ALLOCSEQNR, sizeof(sequence));
-		addToCounter(&jitmem, "jitmem-temp", 1,
-			ALLOCSEQNR * sizeof(sequence));
+		ret = jmalloc(ALLOCSEQNR * sizeof(sequence));
 
 		/* Attach to current chain */
 		if (lastSeq == 0) {
@@ -63,10 +58,8 @@ nextSeq(void)
 		ret[ALLOCSEQNR-1].next = 0;
 	}
 	currSeq = ret->next;
-
 	ret->lastuse = 0;
 	ret->refed = 1;
 	activeSeq = ret;
-
 	return (ret);
 }

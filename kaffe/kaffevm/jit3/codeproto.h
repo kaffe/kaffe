@@ -51,6 +51,7 @@ void rem_int(SlotInfo*, SlotInfo*, SlotInfo*);
 void neg_int(SlotInfo*, SlotInfo*);
 void and_int(SlotInfo*, SlotInfo*, SlotInfo*);
 void or_int(SlotInfo*, SlotInfo*, SlotInfo*);
+void nor_int(SlotInfo*, SlotInfo*, SlotInfo*);
 void xor_int(SlotInfo*, SlotInfo*, SlotInfo*);
 void ashr_int(SlotInfo*, SlotInfo*, SlotInfo*);
 void lshr_int(SlotInfo*, SlotInfo*, SlotInfo*);
@@ -149,7 +150,7 @@ void build_key(uint8*);
 void prologue(Method*);
 void mon_enter(Method*, SlotInfo*);
 void mon_exit(Method*, SlotInfo*);
-void epilogue(void);
+void epilogue(Method*);
 void breakpoint(void);
 
 void load_int(SlotInfo*, SlotInfo*);
@@ -268,8 +269,8 @@ void cmpl_double(SlotInfo*, SlotInfo*, SlotInfo*);
 void cmpg_double(SlotInfo*, SlotInfo*, SlotInfo*);
 
 void check_array_index(SlotInfo*, SlotInfo*);
+void check_array_store(SlotInfo*, SlotInfo*);
 void check_array_constindex(SlotInfo*, jint);
-
 
 void softcall_lookupmethod(SlotInfo*, Method*, SlotInfo*);
 void softcall_nullpointer(void);
@@ -286,11 +287,10 @@ void softcall_instanceof(SlotInfo*, SlotInfo*, struct Hjava_lang_Class*);
 void softcall_monitorenter(SlotInfo*);
 void softcall_monitorexit(SlotInfo*);
 void softcall_initialise_class(struct Hjava_lang_Class*);
-void softcall_checkarraystore(SlotInfo*, SlotInfo*);
 void softcall_addreference(SlotInfo*, SlotInfo*);
 void softcall_addreference_static(void*, SlotInfo*);
-void softcall_nosuchfield(struct Hjava_lang_Class*, Utf8Const*);
-void softcall_nosuchmethod(struct Hjava_lang_Class*, Utf8Const*, Utf8Const*);
+void softcall_nosuchfield(Utf8Const*, Utf8Const*);
+void softcall_nosuchmethod(Utf8Const*, Utf8Const*, Utf8Const*);
 void softcall_newarray_const(SlotInfo*, int, int);
 void softcall_anewarray_const(SlotInfo*, int, struct Hjava_lang_Class*);
 void softcall_trace(Method*);
@@ -300,6 +300,7 @@ void load_globals(bool);
 
 void softcall_debug1(void*, void*, void*);
 void softcall_debug2(void*, void*, void*);
+void get_arg_ptr(SlotInfo*);
 
 void* jit_soft_multianewarray(struct Hjava_lang_Class* class, jint dims, ...);
 

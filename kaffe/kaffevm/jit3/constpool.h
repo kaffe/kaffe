@@ -17,10 +17,12 @@
 #define CPfloat		4
 #define CPdouble	5
 #define	CPstring	6
+#define	CPlabel		7
 
 typedef struct _constpool {
 	struct _constpool* next;
 	uintp		   at;
+	int		   type;
 	union _constpoolval {
 		jint	   i;
 		jlong	   l;

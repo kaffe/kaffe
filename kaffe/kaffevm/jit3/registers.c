@@ -15,6 +15,7 @@
 #include "bytecode.h"
 #include "slots.h"
 #include "md.h"
+#include "icode.h"
 #include "registers.h"
 #include "seq.h"
 #include "icode.h"
@@ -98,7 +99,7 @@ spill(SlotData* s)
 	else
 #endif
 #if defined(HAVE_spill_int)
-	if (reginfo[s->regno].ctype & Rint) {
+	if (reginfo[s->regno].ctype & (Rint|Rsubint)) {
 		spill_int(s);
 	}
 	else
@@ -139,7 +140,7 @@ reload(SlotData* s)
 	else
 #endif
 #if defined(HAVE_reload_int)
-	if (reginfo[s->regno].ctype & Rint) {
+	if (reginfo[s->regno].ctype & (Rint|Rsubint)) {
 		reload_int(s);
 	}
 	else
@@ -164,6 +165,53 @@ reload(SlotData* s)
 #endif
 	{
 		ABORT();
+	}
+}
+
+/*
+ * Move one register from to another.
+ */
+static
+int
+move_register(int toreg, int fromreg)
+{
+#if defined(HAVE_move_register_long)
+	if (reginfo[toreg].type & Rlong) {
+		HAVE_move_register_long(toreg, fromreg);
+		return (1);
+	}
+	else
+#endif
+#if defined(HAVE_move_register_int)
+	if (reginfo[toreg].type & (Rint|Rsubint)) {
+		HAVE_move_register_int(toreg, fromreg);
+		return (1);
+	}
+	else
+#endif
+#if defined(HAVE_move_register_ref)
+	if (reginfo[toreg].type & Rref) {
+		HAVE_move_register_ref(toreg, fromreg);
+		return (1);
+	}
+	else
+#endif
+#if defined(HAVE_move_register_double)
+	if (reginfo[toreg].type & Rdouble) {
+		HAVE_move_register_double(toreg, fromreg);
+		return (1);
+	}
+	else
+#endif
+#if defined(HAVE_move_register_float)
+	if (reginfo[toreg].type & Rfloat) {
+		HAVE_move_register_float(toreg, fromreg);
+		return (1);
+	}
+	else
+#endif
+	{
+		return (0);
 	}
 }
 
@@ -206,16 +254,26 @@ slotRegister(SlotData* slot, int type, int use, int idealreg)
 {
 	int reg;
 	kregs* regi;
+	int needreload;
+	int oldmod;
 
 	sanityCheck();
 
 	reg = slot->regno;
 	regi = &reginfo[reg];
 
-	/* Do global register stuff before anything else */
+	/* Do global register stuff before anything else.
+	 * Note that we ignore the ideal register for globals since we
+	 * cannot change the register assignment for globals.
+	 */
 	if (isGlobal(slot)) {
-		assert(reg == idealreg || idealreg == NOREG);
-		assert((regi->type & type) != 0);
+		/* If requested type cannot be honoured, we return NOREG
+		 * and let the caller deal with it.
+		 */
+		if ((regi->type & type) == 0) {
+			return (NOREG);
+		}
+
 		/* If we're reading or the register is only in my use
 		 * then we can use it directly.
 		 */
@@ -265,31 +323,45 @@ slotRegister(SlotData* slot, int type, int use, int idealreg)
 			}
 		}
 
-#if 0
-		/* Clobber any register associate with the slot - it must
-		 * be the wrong type.
-		 */
-		clobberRegister(slot[0].regno);
-		if (type == Rlong || type == Rdouble) {
-			clobberRegister(slot[1].regno);
+		/* Work out whether we'll need to reload the register */
+		if ((use & rread) != 0) {
+			needreload = 1;
 		}
-#endif
-		/*
-		 * Spill anything which might be in the slot if its
-		 * dirty.  Then invalidate the slot so we can reuse.
+		else {
+			needreload = 0;
+		}
+
+		/* If register types are compatible then we can just
+		 * move the value from one register to the other (if supported).
+		 * Note that since we've not writing it back we must preserve
+		 * the modified status on the slot which is cleared by
+		 * the slot_invalidate call.
 		 */
-		if (slot[0].regno != NOREG) {
-			if (slot[0].modified != 0) {
-				spill(&slot[0]);
-			}
+		if (reginfo[slot[0].regno].type == reginfo[reg].type &&
+		    needreload != 0 && move_register(reg, slot[0].regno) != 0) {
+			oldmod = slot[0].modified;
 			slot_invalidate(&slot[0]);
+			slot[0].modified = oldmod;
+			needreload = 0;
 		}
-		if (type == Rlong || type == Rdouble) {
-			if (slot[1].regno != NOREG) {
-				if (slot[1].modified != 0) {
-					spill(&slot[1]);
+		else {
+			/*
+			 * Spill anything which might be in the slot if its
+			 * dirty.  Then invalidate the slot so we can reuse.
+			 */
+			if (slot[0].regno != NOREG) {
+				if (slot[0].modified != 0) {
+					spill(&slot[0]);
 				}
-				slot_invalidate(&slot[1]);
+				slot_invalidate(&slot[0]);
+			}
+			if (type == Rlong || type == Rdouble) {
+				if (slot[1].regno != NOREG) {
+					if (slot[1].modified != 0) {
+						spill(&slot[1]);
+					}
+					slot_invalidate(&slot[1]);
+				}
 			}
 		}
 
@@ -305,11 +377,10 @@ slotRegister(SlotData* slot, int type, int use, int idealreg)
 		slot->regno = reg;
 
 		/* Reload a slot if we are not writing to it */
-		if ((use & rread) != 0) {
+		if (needreload != 0) {
 			assert((reginfo[reg].type & Rglobal) == 0);
 			reload(slot);
 		}
-		slot->modified = 0;
 	}
 
 	/* Mark as used */
@@ -426,7 +497,32 @@ slotOffset(SlotData* slot, int type, int use)
 
 	sanityCheck();
 
-	return (slot[0].offset);
+	return (slotOffsetNoSpill(slot, type));
+}
+
+/*
+ * Returns the absolute offset of a slot in the current frame.
+ */
+int
+slotOffsetNoSpill(SlotData* slot, int type)
+{
+	int off0;
+	int off1;
+
+	off0 = slot[0].offset;
+	if (type == Rlong || type == Rdouble) {
+		off1 = slot[1].offset;
+		/* For longs and doubles, which take two slots, we return
+		 * the offset to the lowest in memory since that's where
+		 * the data will be read/written.  Since the slots might
+		 * go up or down depending we need to find both offsets
+		 * and return the lowest one.
+		 */
+		if (off1 < off0) {
+			return (off1);
+		}
+	}
+	return (off0);
 }
 
 void
@@ -464,6 +560,27 @@ slot_invalidate(SlotData* sdata)
 	sdata->modified = 0;
 
 	sanityCheck();
+}
+
+/*
+ * Preload a register at the beginning of a function.  This is used to
+ * load up the argument which are passed in registers.
+ */
+void
+preloadRegister(SlotData* slot, int type, int idealreg)
+{
+	int r;
+	if (isGlobal(slot)) {
+		r = move_register(slot->regno, idealreg);
+		assert(r != 0);
+		/* Since we've got the global loaded from the argument
+		 * register there is no need to preload it.
+		 */
+		slot->global &= ~GL_PRELOAD;
+	}
+	else {
+		slotRegister(slot, type, rwrite, idealreg);
+	}
 }
 
 void

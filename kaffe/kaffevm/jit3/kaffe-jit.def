@@ -694,7 +694,7 @@ define_insn(AASTORE)
 	/* Check we are within the array bounds */
 	check_array_index(rstack(2), rstack(1));
 
-	softcall_checkarraystore(rstack(2), rstack(0));
+	check_array_store(rstack(2), rstack(0));
 
 	SOFT_ADDREFERENCE(rstack(2), rstack(0));
 
@@ -1942,7 +1942,7 @@ define_insn(GETSTATIC)
 	INIT_STATIC_CLASS(field_class());
 
 	if (field_field() == 0) {
-		softcall_nosuchfield(field_class(), field_name());
+		softcall_nosuchfield(field_classname(), field_name());
 		switch (field_sig()->data[0]) {
 		case 'J':
 		case 'D':
@@ -2007,7 +2007,7 @@ define_insn(PUTSTATIC)
 	INIT_STATIC_CLASS(field_class());
 
 	if (field_field() == 0) {
-		softcall_nosuchfield(field_class(), field_name());
+		softcall_nosuchfield(field_classname(), field_name());
 		switch (field_sig()->data[0]) {
 		case 'J':
 		case 'D':
@@ -2074,7 +2074,7 @@ define_insn(GETFIELD)
 
 	/* If field not found we put an exception down */
 	if (field_field() == 0) {
-		softcall_nosuchfield(field_class(), field_name());
+		softcall_nosuchfield(field_classname(), field_name());
 		switch (field_sig()->data[0]) {
 		case 'J':
 		case 'D':
@@ -2132,7 +2132,7 @@ define_insn(PUTFIELD)
 	get_field_info(idx);
 
 	if (field_field() == 0) {
-		softcall_nosuchfield(field_class(), field_name());
+		softcall_nosuchfield(field_classname(), field_name());
 		switch (field_sig()->data[0]) {
 		case 'J':
 		case 'D':
@@ -2250,7 +2250,7 @@ define_insn(INVOKEVIRTUAL)
 
 	/* If method doesn't exists, call 'NoSuchMethodError' */
 	if (method_method() == 0) {
-		softcall_nosuchmethod(method_class(), method_name(), method_sig());
+		softcall_nosuchmethod(method_classname(), method_name(), method_sig());
 		low = method_returntype();
 		pop(method_nargs() + 1);
 		METHOD_RETURN_VALUE();
@@ -2305,7 +2305,7 @@ define_insn(INVOKESPECIAL)
 
 	/* If method doesn't exists, call 'NoSuchMethodError' */
 	if (method_method() == 0) {
-		softcall_nosuchmethod(method_class(), method_name(), method_sig());
+		softcall_nosuchmethod(method_classname(), method_name(), method_sig());
 		low = method_returntype();
 		pop(method_nargs() + 1);
 		METHOD_RETURN_VALUE();
@@ -2350,7 +2350,7 @@ define_insn(INVOKESTATIC)
 
 	/* If method doesn't exists, call 'NoSuchMethodError' */
 	if (method_method() == 0) {
-		softcall_nosuchmethod(method_class(), method_name(), method_sig());
+		softcall_nosuchmethod(method_classname(), method_name(), method_sig());
 		low = method_returntype();
 		pop(method_nargs());
 		METHOD_RETURN_VALUE();
@@ -2391,7 +2391,7 @@ define_insn(INVOKEINTERFACE)
 
 	/* If method doesn't exists, call 'NoSuchMethodError' */
 	if (method_method() == 0) {
-		softcall_nosuchmethod(method_class(), method_name(), method_sig());
+		softcall_nosuchmethod(method_classname(), method_name(), method_sig());
 		low = method_returntype();
 		pop((uint8)getpc(2));
 		METHOD_RETURN_VALUE();

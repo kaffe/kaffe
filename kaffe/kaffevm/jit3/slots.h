@@ -55,6 +55,8 @@ struct SlotInfo {
 };
 typedef struct SlotInfo SlotInfo;
 
+#define	slot_data(S)		((S).slot)
+
 /* Global slots flags */
 #define	GL_NOGLOBAL		0x00
 #define	GL_PRELOAD		0x01

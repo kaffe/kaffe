@@ -19,6 +19,7 @@
 #define	Rfloat			0x04
 #define	Rdouble			0x08
 #define	Rref			0x10
+#define	Rsubint			0x20
 
 /* Register flags */
 #define	Rreadonce		0x01
@@ -66,21 +67,29 @@ void	initRegisters(void);
 int	slotRegister(SlotData*, int, int, int);
 void	clobberRegister(int);
 void	forceRegister(SlotData*, int, int);
+int	slotOffsetNoSpill(SlotData*, int);
 int	slotOffset(SlotData*, int, int);
 void	slot_invalidate(SlotData*);
 void	spillAndUpdate(SlotData*, jboolean);
+void	preloadRegister(SlotData*, int, int);
 
-
+#define	rreload			0
 #define	rread			1
 #define	rwrite			2
 
+/* JIT2 compatibility */
 #define	_slowSlotRegister(A,B,C) slotRegister(A,B,C,NOREG)
+#define	_slotInRegister(S,T)	_inRegister(S,T)
+#define	slotInRegister(I,T)	inRegister(I,T)
+#define	slowSlotOffset(S,T,U)	slotOffset(S,T,U)
+#define	_slowSlotOffset(S,T,U)	slotOffset(S,T,U)
 
 #define	rreg_int(i)		slotRegister(seq_slot(s, i), Rint, rread, NOREG)
 #define	wreg_int(i)		slotRegister(seq_slot(s, i), Rint, rwrite, NOREG)
 #define	rwreg_int(i)		slotRegister(seq_slot(s, i), Rint, rread|rwrite, NOREG)
 #define	rslot_int(i)		slotOffset(seq_slot(s, i), Rint, rread)
 #define	wslot_int(i)		slotOffset(seq_slot(s, i), Rint, rwrite)
+#define	rreg_ideal_int(i,r)	slotRegister(seq_slot(s, i), Rint, rread, r)
 
 #define	rreg_ref(i)		slotRegister(seq_slot(s, i), Rref, rread, NOREG)
 #define	wreg_ref(i)		slotRegister(seq_slot(s, i), Rref, rwrite, NOREG)
@@ -93,31 +102,48 @@ void	spillAndUpdate(SlotData*, jboolean);
 #define	rwreg_long(i)		slotRegister(seq_slot(s, i), Rlong, rread|rwrite, NOREG)
 #define	rslot_long(i)		slotOffset(seq_slot(s, i), Rlong, rread)
 #define	wslot_long(i)		slotOffset(seq_slot(s, i), Rlong, rwrite)
+#define	rreg_ideal_long(i,r)	slotRegister(seq_slot(s, i), Rlong, rread, r)
 
 #define	rreg_float(i)		slotRegister(seq_slot(s, i), Rfloat, rread, NOREG)
 #define	wreg_float(i)		slotRegister(seq_slot(s, i), Rfloat, rwrite, NOREG)
 #define	rwreg_float(i)		slotRegister(seq_slot(s, i), Rfloat, rread|rwrite, NOREG)
 #define	rslot_float(i)		slotOffset(seq_slot(s, i), Rfloat, rread)
 #define	wslot_float(i)		slotOffset(seq_slot(s, i), Rfloat, rwrite)
+#define	rreg_ideal_float(i,r)	slotRegister(seq_slot(s, i), Rfloat, rread, r)
 
 #define	rreg_double(i)		slotRegister(seq_slot(s, i), Rdouble, rread, NOREG)
 #define	wreg_double(i)		slotRegister(seq_slot(s, i), Rdouble, rwrite, NOREG)
 #define	rwreg_double(i)		slotRegister(seq_slot(s, i), Rdouble, rread|rwrite, NOREG)
 #define	rslot_double(i)		slotOffset(seq_slot(s, i), Rdouble, rread)
 #define	wslot_double(i)		slotOffset(seq_slot(s, i), Rdouble, rwrite)
+#define	rreg_ideal_double(i,r)	slotRegister(seq_slot(s, i), Rdouble, rread, r)
 
-#define	sreg(I)			(seq_slot(s,I)->regno)
+#define	rreg_subint(i)		slotRegister(seq_slot(s, i), Rsubint, rread, NOREG)
+#define	wreg_subint(i)		slotRegister(seq_slot(s, i), Rsubint, rwrite, NOREG)
+#define	rwreg_subint(i)		slotRegister(seq_slot(s, i), Rsubint, rread|rwrite, NOREG)
+#define	rslot_subint(i)		slotOffset(seq_slot(s, i), Rsubint, rread)
+#define	wslot_subint(i)		slotOffset(seq_slot(s, i), Rsubint, rwrite)
+#define	rreg_ideal_subint(i,r)	slotRegister(seq_slot(s, i), Rsubint, rread, r)
+
+#define	sreg(I)			reginfo[(seq_slot(s,I)->regno)].regno
 #define	sreg_int(i)		sreg(i)
 #define	sreg_ref(i)		sreg(i)
 #define	sreg_long(i)		sreg(i)
 #define	sreg_float(i)		sreg(i)
 #define	sreg_double(i)		sreg(i)
 
+#if 0
 #define	lreg_int(i)		wreg_int(i)
 #define	lreg_ref(i)		wreg_ref(i)
 #define	lreg_long(i)		wreg_long(i)
 #define	lreg_float(i)		wreg_float(i)
 #define	lreg_double(i)		wreg_double(i)
+#endif
+#define	lreg_int(i)		slotRegister(seq_slot(s, i), Rint, rreload, NOREG)     
+#define	lreg_ref(i)		slotRegister(seq_slot(s, i), Rref, rreload, NOREG)     
+#define	lreg_long(i)		slotRegister(seq_slot(s, i), Rlong, rreload, NOREG)     
+#define	lreg_float(i)		slotRegister(seq_slot(s, i), Rfloat, rreload, NOREG)     
+#define	lreg_double(i)		slotRegister(seq_slot(s, i), Rdouble, rreload, NOREG)     
 
 #define	const_int(I)		s->u[I].value.i
 #define const_long(I)		s->u[I].value.l
@@ -126,15 +152,29 @@ void	spillAndUpdate(SlotData*, jboolean);
 #define	const_float(I)		s->u[I].value.d
 #define	const_double(I)		s->u[I].value.d
 
+/* Reserve a register */
+#define register_reserve(r)     (reginfo[r].type |= Reserved)
+#define register_unreserve(r)   (reginfo[r].type &= ~Reserved)
+
 #define	calleeSave(R)		(reginfo[R].flags & Rnosaveoncall)
 
 /* Is a slot already in a register? */
-#define	inRegister(i)		(seq_slot(s,i)->regno != NOREG)
+#define	_inRegister(S,T)	((reginfo[(S)->regno].ctype & (T)) != (0))
+#define	inRegister(I,T)		(_inRegister(seq_slot(s,I), T))
+
+/* Is a register global? */
+#define	isRegisterGlobal(R)	((reginfo[(R)].type & Rglobal) != 0)
 
 extern void initGlobalRegisters(int);
 extern void setGlobalRegister(int);
 
-void sanityCheck(void);
-void reload(SlotData*);
+extern void sanityCheck(void);
+extern void reload(SlotData*);
+
+extern void HAVE_move_register_int(int, int);
+extern void HAVE_move_register_ref(int, int);
+extern void HAVE_move_register_long(int, int);
+extern void HAVE_move_register_float(int, int);
+extern void HAVE_move_register_double(int, int);
 
 #endif

@@ -1,4 +1,3 @@
-/*#include "../jit/seq.h"*/
 /* seq.h
  * Pseudo instruction sequences.
  *
@@ -14,13 +13,10 @@
 
 struct _sequence;
 struct _label_;
-struct codeinfo;
 
 typedef void (*ifunc)(struct _sequence*);
 
-#define	SEQSLOTS	5
-
-struct SlotData;
+#define	SEQSLOTS		5
 
 typedef struct _sequence {
 	ifunc			func;
@@ -43,7 +39,6 @@ sequence* nextSeq(void);
 extern sequence*		firstSeq;
 extern sequence*		lastSeq;
 extern sequence*		currSeq;
-extern sequence*		activeSeq;
 
 #define	ALLOCSEQNR		1024
 
@@ -52,5 +47,6 @@ extern sequence*		activeSeq;
 #define	seq_slot(_s, _i)	((_s)->u[_i].slot)
 #define	seq_value(_s, _i)	((_s)->u[_i].value.i)
 #define	seq_dst(_s)		seq_slot(_s, 0)
+#define	seq_ret(_s)		seq_slot(_s, 0)
 
 #endif
