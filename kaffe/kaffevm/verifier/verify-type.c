@@ -186,7 +186,7 @@ resolveType(Verifier* v, Type *t)
 		t->data.class = getClassFromSignature(t->data.sig, v->class->loader, v->einfo);	    
 	}
 	else if (t->tinfo & TINFO_NAME) {
-		char* tmp = NULL;;
+		char* tmp = NULL;
 		const char* sig = t->data.name;
 		
 		tmp = checkPtr(gc_malloc((strlen(sig) + 3) * sizeof(char), GC_ALLOC_VERIFIER));
