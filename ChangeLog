@@ -1,3 +1,7 @@
+Mon Feb  8 07:36:11 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* ltconfig, ltmain.sh: from libtool: fix installation for IRIX5
+
 Mon Feb  8 05:57:09 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.h

@@ -160,7 +160,7 @@ progname=`$echo "X$0" | $Xsed -e 's%^.*/%%'`
 PROGRAM=ltconfig
 PACKAGE=libtool
 VERSION=1.2e
-TIMESTAMP=" (1.259 1999/02/04 15:09:03)"
+TIMESTAMP=" (1.261 1999/02/08 09:33:36)"
 ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.c 1>&5'
 ac_link='${CC-cc} -o conftest $CFLAGS $CPPFLAGS $LDFLAGS conftest.c $LIBS 1>&5'
 rm="rm -f"
@@ -1280,8 +1280,8 @@ else
     # $CC -shared without GNU ld will not create a library from C++
     # object files and a static libstdc++, better avoid it by now
     archive_cmds='$LD -G${allow_undefined_flag} -h $soname -o $lib $libobjs $deplibs $linkopts'
-    archive_sym_cmds='$echo "{ global:" > $lib.exp~sed $export_symbols -e "s/.*/\1;/" >> $lib.exp~$echo "local: * }" >> $lib.exp~
-		$LD -G${allow_undefined_flag} -M $export_symbols -h $soname -o $lib $libobjs $deplibs $linkopts~$rm $lib.exp'
+    archive_sym_cmds='$echo "{ global:" > $lib.exp~cat $export_symbols | sed -e "s/\(.*\)/\1;/" >> $lib.exp~$echo "local: *; };" >> $lib.exp~
+		$LD -G${allow_undefined_flag} -M $lib.exp -h $soname -o $lib $libobjs $deplibs $linkopts~$rm $lib.exp'
     hardcode_libdir_flag_spec='-R$libdir'
     hardcode_shlibpath_var=no
     ;;
@@ -1657,6 +1657,8 @@ hpux9* | hpux10* | hpux11*)
   # link against other versions.
   dynamic_linker="$host_os dld.sl"
   version_type=sunos
+  need_lib_prefix=no
+  need_version=no
   shlibpath_var=SHLIB_PATH
   library_names_spec='${libname}${release}.sl$versuffix ${libname}${release}.sl$major $libname.sl'
   soname_spec='${libname}${release}.sl$major'
@@ -1667,12 +1669,14 @@ hpux9* | hpux10* | hpux11*)
 irix5*)
   version_type=osf
   soname_spec='${libname}${release}.so'
-  library_names_spec='${libname}${release}.so$versuffix $libname.so'
+  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so $libname.so'
   shlibpath_var=LD_LIBRARY_PATH
   ;;
 
 irix6*)
   version_type=osf
+  need_lib_prefix=no
+  need_version=no
   soname_spec='${libname}${release}.so'
   library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so $libname.so'
   shlibpath_var=LD_LIBRARYN32_PATH
@@ -1722,6 +1726,10 @@ netbsd*)
 
 openbsd*)
   version_type=sunos
+  if test "$with_gnu_ld" = yes; then
+    need_lib_prefix=no
+    need_version=no
+  fi
   library_names_spec='${libname}${release}.so$versuffix'
   finish_cmds='PATH="\$PATH:/sbin" ldconfig -m $libdir'
   shlibpath_var=LD_LIBRARY_PATH
@@ -1768,6 +1776,9 @@ sunos4*)
   library_names_spec='${libname}${release}.so$versuffix ${libname}.so$versuffix'
   finish_cmds='PATH="\$PATH:/usr/etc" ldconfig $libdir'
   shlibpath_var=LD_LIBRARY_PATH
+  if test "$with_gnu_ld" = yes; then
+    need_lib_prefix=no
+  fi
   need_version=yes
   ;;
 
@@ -1792,6 +1803,8 @@ uts4*)
 
 dgux*)
   version_type=linux
+  need_lib_prefix=no
+  need_version=no
   library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
   soname_spec='${libname}${release}.so$major'
   shlibpath_var=LD_LIBRARY_PATH
