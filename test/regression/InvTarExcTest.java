@@ -27,7 +27,11 @@ public class InvTarExcTest
 
 /* Expected Output:
 Caught itexception: null
-java.lang.reflect.InvocationTargetException
+java.lang.reflect.InvocationTargetException: java.lang.Exception: throwing inner exception
+	at java.lang.Throwable.fillInStackTrace(Throwable.java:native)
+	at java.lang.Throwable.<init>(Throwable.java:38)
+	at java.lang.Exception.<init>(Exception.java:24)
+	at InvTarExcTest.f(InvTarExcTest.java:6)
 	at java.lang.reflect.Method.invoke(Method.java:native)
 	at InvTarExcTest.main(InvTarExcTest.java:13)
 Target is: throwing inner exception
