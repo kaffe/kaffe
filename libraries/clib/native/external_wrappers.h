@@ -205,3 +205,15 @@ KAFFE_NATIVE(java_lang_UNIXProcess_forkAndExec)
 KAFFE_NATIVE(java_lang_UNIXProcess_destroy)
 KAFFE_NATIVE(java_lang_UNIXProcess_run)
 KAFFE_NATIVE(java_lang_UNIXProcess_notifyReaders)
+#if defined(DEBUG)
+/*
+ * Tests to make sure our sysdepCallMethod macros work, should help
+ * in porting to new architectures.
+ */
+KAFFE_NATIVE(TestNative_test16int)
+KAFFE_NATIVE(TestNative_test16long)
+KAFFE_NATIVE(TestNative_test16intlong)
+KAFFE_NATIVE(TestNative_test16float)
+KAFFE_NATIVE(TestNative_test16double)
+KAFFE_NATIVE(TestNative_test16floatdouble)
+#endif
