@@ -1,5 +1,5 @@
 /* LocaleInformation_fa_AF.java --
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -131,6 +131,7 @@ public class LocaleInformation_fa_AF extends ListResourceBundle
     { "currencyFormat", "#,##0 \u00a4;-#,##0 \u00a4" },
     { "shortMonths", shortMonths },
     { "months", months },
+    { "firstDayOfWeek", "sat" },
     { "zoneStrings", zoneStrings },
     { "territories", territories },
     { "languages", languages },

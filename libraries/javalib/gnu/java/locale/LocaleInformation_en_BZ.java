@@ -1,5 +1,5 @@
 /* LocaleInformation_en_BZ.java --
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -49,6 +49,7 @@ public class LocaleInformation_en_BZ extends ListResourceBundle
 {
   private static final Object[][] contents =
   {
+    { "firstDayOfWeek", "mon" },
     { "shortDateFormat", "dd/MM/yy" },
     { "mediumDateFormat", "dd-MMM-yy" },
     { "longDateFormat", "dd MMMM yyyy" },

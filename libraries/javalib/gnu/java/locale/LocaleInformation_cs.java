@@ -1,5 +1,5 @@
 /* LocaleInformation_cs.java --
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -215,6 +215,7 @@ public class LocaleInformation_cs extends ListResourceBundle
     { "months", months },
     { "shortWeekdays", shortWeekdays },
     { "weekdays", weekdays },
+    { "firstDayOfWeek", "mon" },
     { "eras", eras },
     { "ampms", ampms },
     { "shortDateFormat", "d.M.yy" },

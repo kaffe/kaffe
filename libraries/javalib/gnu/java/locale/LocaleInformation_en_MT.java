@@ -1,5 +1,5 @@
 /* LocaleInformation_en_MT.java --
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -87,6 +87,7 @@ public class LocaleInformation_en_MT extends ListResourceBundle
   {
     { "currenciesDisplayName", currenciesDisplayName },
     { "currenciesSymbol", currenciesSymbol },
+    { "minNumberOfDaysInFirstWeek", "4" },
     { "shortDateFormat", "dd/MM/yyyy" },
     { "mediumDateFormat", "dd MMM yyyy" },
     { "longDateFormat", "dd MMMM yyyy" },

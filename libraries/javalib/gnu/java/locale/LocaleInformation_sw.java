@@ -1,5 +1,5 @@
 /* LocaleInformation_sw.java --
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -191,6 +191,7 @@ public class LocaleInformation_sw extends ListResourceBundle
     { "months", months },
     { "shortWeekdays", shortWeekdays },
     { "weekdays", weekdays },
+    { "firstDayOfWeek", "sat" },
     { "eras", eras },
     { "zoneStrings", zoneStrings },
     { "territories", territories },

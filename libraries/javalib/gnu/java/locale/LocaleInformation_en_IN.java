@@ -1,5 +1,5 @@
 /* LocaleInformation_en_IN.java --
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -51,6 +51,7 @@ public class LocaleInformation_en_IN extends ListResourceBundle
   {
     { "percentFormat", "##,##,##0%" },
     { "currencyFormat", "\u00a4 ##,##,##0.00;-\u00a4 ##,##,##0.00" },
+    { "firstDayOfWeek", "mon" },
     { "shortDateFormat", "dd/MM/yy" },
     { "mediumDateFormat", "dd-MMM-yy" },
     { "longDateFormat", "d MMMM yyyy" },

@@ -145,24 +145,24 @@ public class GregorianCalendar extends Calendar
 
   /**
    * The point at which the Gregorian calendar rules were used.
-   * This is locale dependent; the default for most catholic
-   * countries is midnight (UTC) on October 5, 1582 (Julian),
+   * This may be changed by using setGregorianChange;
+   * The default is midnight (UTC) on October 5, 1582 (Julian),
    * or October 15, 1582 (Gregorian).
    *
    * @serial the changeover point from the Julian calendar
    *         system to the Gregorian.
    */
-  private long gregorianCutover;
+  private long gregorianCutover = (new Date((24 * 60 * 60 * 1000L) * (((1582 * (365 * 4
+                                            + 1)) / 4
+                                            + (java.util.Calendar.OCTOBER * (31
+                                            + 30 + 31 + 30 + 31) - 9) / 5 + 5)
+                                            - ((1970 * (365 * 4 + 1)) / 4 + 1
+                                            - 13)))).getTime();
 
   /**
    * For compatability with Sun's JDK.
    */
   static final long serialVersionUID = -8125100834729963327L;
-
-  /**
-   * The name of the resource bundle. Used only by getBundle()
-   */
-  private static final String bundleName = "gnu.java.locale.Calendar";
 
   /**
    * Days in the epoch. Relative Jan 1, year '0' which is not a leap year.
@@ -236,10 +236,6 @@ public class GregorianCalendar extends Calendar
   private GregorianCalendar(TimeZone zone, Locale locale, boolean unused)
   {
     super(zone, locale);
-    ResourceBundle rb = ResourceBundle.getBundle(bundleName, locale,
-                                                 ClassLoader
-                                                 .getSystemClassLoader());
-    gregorianCutover = ((Date) rb.getObject("gregorianCutOver")).getTime();
   }
 
   /**
@@ -478,7 +474,7 @@ public class GregorianCalendar extends Calendar
 
     if (isSet[AM_PM] && fields[AM_PM] != AM && fields[AM_PM] != PM)
       throw new IllegalArgumentException("Illegal AM_PM.");
-    if (isSet[HOUR] && (fields[HOUR] < 0 || fields[HOUR] > 12))
+    if (isSet[HOUR] && (fields[HOUR] < 0 || fields[HOUR] > 11))
       throw new IllegalArgumentException("Illegal HOUR.");
     if (isSet[HOUR_OF_DAY]
         && (fields[HOUR_OF_DAY] < 0 || fields[HOUR_OF_DAY] > 23))
@@ -564,10 +560,18 @@ public class GregorianCalendar extends Calendar
 	    // 3: YEAR + MONTH + DAY_OF_WEEK_IN_MONTH + DAY_OF_WEEK
 	    if (isSet[DAY_OF_WEEK_IN_MONTH])
 	      {
+		if (fields[DAY_OF_WEEK_IN_MONTH] < 0)
+		  {
+		    month++;
+		    first = getFirstDayOfMonth(year, month);
+		    day = 1 + 7 * (fields[DAY_OF_WEEK_IN_MONTH]);
+		  }
+		else
+		  day = 1 + 7 * (fields[DAY_OF_WEEK_IN_MONTH] - 1);
+
 		int offs = fields[DAY_OF_WEEK] - first;
 		if (offs < 0)
 		  offs += 7;
-		day = 1 + 7 * (fields[DAY_OF_WEEK_IN_MONTH] - 1);
 		day += offs;
 	      }
 	    else
@@ -584,7 +588,7 @@ public class GregorianCalendar extends Calendar
 
 		day = offs + 7 * (fields[WEEK_OF_MONTH] - 1);
 		offs = fields[DAY_OF_WEEK] - getFirstDayOfWeek();
-		if (offs < 0)
+		if (offs <= 0)
 		  offs += 7;
 		day += offs;
 	      }
@@ -602,11 +606,7 @@ public class GregorianCalendar extends Calendar
       {
 	hour = fields[HOUR];
 	if (fields[AM_PM] == PM)
-	  if (hour != 12) /* not Noon */
-	    hour += 12;
-	/* Fix the problem of the status of 12:00 AM (midnight). */
-	if (fields[AM_PM] == AM && hour == 12)
-	  hour = 0;
+	  hour += 12;
       }
     else
       hour = fields[HOUR_OF_DAY];
@@ -858,7 +858,7 @@ public class GregorianCalendar extends Calendar
     int hourOfDay = millisInDay / (60 * 60 * 1000);
     fields[AM_PM] = (hourOfDay < 12) ? AM : PM;
     int hour = hourOfDay % 12;
-    fields[HOUR] = (hour == 0) ? 12 : hour;
+    fields[HOUR] = hour;
     fields[HOUR_OF_DAY] = hourOfDay;
     millisInDay %= (60 * 60 * 1000);
     fields[MINUTE] = millisInDay / (60 * 1000);
@@ -925,9 +925,7 @@ public class GregorianCalendar extends Calendar
 	  }
 	int maxDay = getActualMaximum(DAY_OF_MONTH);
 	if (fields[DAY_OF_MONTH] > maxDay)
-	  {
-	    fields[DAY_OF_MONTH] = maxDay;
-	  }
+	  fields[DAY_OF_MONTH] = maxDay;
 	set(YEAR, fields[YEAR]);
 	set(MONTH, fields[MONTH]);
 	break;

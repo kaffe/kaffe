@@ -1,5 +1,5 @@
 /* LocaleInformation_fr_CA.java --
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -88,6 +88,8 @@ public class LocaleInformation_fr_CA extends ListResourceBundle
     { "currencyFormat", "#,##0.00 \u00a4;(#,##0.00\u00a4)" },
     { "currenciesDisplayName", currenciesDisplayName },
     { "currenciesSymbol", currenciesSymbol },
+    { "minNumberOfDaysInFirstWeek", "4" },
+    { "firstDayOfWeek", "sun" },
     { "shortDateFormat", "yy-MM-dd" },
     { "mediumDateFormat", "yy-MM-dd" },
     { "fullTimeFormat", "HH' h 'mm' min 'ss' s 'z" },

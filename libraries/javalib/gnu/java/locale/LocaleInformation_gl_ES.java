@@ -1,5 +1,5 @@
 /* LocaleInformation_gl_ES.java --
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -50,6 +50,7 @@ public class LocaleInformation_gl_ES extends ListResourceBundle
   private static final Object[][] contents =
   {
     { "currencyFormat", "#,##0.00 \u00a4;-#,##0.00 \u00a4" },
+    { "firstDayOfWeek", "mon" },
     { "shortDateFormat", "dd/MM/yy" },
     { "mediumDateFormat", "MMM dd,yy" },
     { "longDateFormat", "dd MMMM yyyy" },

@@ -1,5 +1,5 @@
 /* LocaleInformation_dz.java --
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -153,6 +153,7 @@ public class LocaleInformation_dz extends ListResourceBundle
     { "months", months },
     { "shortWeekdays", shortWeekdays },
     { "weekdays", weekdays },
+    { "firstDayOfWeek", "mon" },
     { "ampms", ampms },
     { "shortDateFormat", "\u0f66\u0fa4\u0fb1\u0f72\u0f0b\u0f63\u0f7c\u0f0b yyyy \u0f5f\u0fb3\u0f0b MMM \u0f5a\u0f7a\u0f66\u0f0b dd" },
     { "mediumDateFormat", "\u0f66\u0fa4\u0fb1\u0f72\u0f0b\u0f63\u0f7c\u0f0byyyy \u0f5f\u0fb3\u0f0b MMM \u0f5a\u0f7a\u0f66\u0f0b dd" },

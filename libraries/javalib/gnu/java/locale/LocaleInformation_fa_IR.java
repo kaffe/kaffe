@@ -1,5 +1,5 @@
 /* LocaleInformation_fa_IR.java --
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -56,6 +56,7 @@ public class LocaleInformation_fa_IR extends ListResourceBundle
     { "groupingSeparator", "\u066c" },
     { "percentFormat", "%#,##0" },
     { "currencyFormat", "#,##0 \u00a4;\u2212#,##0 \u00a4" },
+    { "firstDayOfWeek", "sat" },
   };
 
   public Object[][] getContents() { return contents; }

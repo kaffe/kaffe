@@ -1,5 +1,5 @@
 /* LocaleInformation_hu.java --
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -195,6 +195,7 @@ public class LocaleInformation_hu extends ListResourceBundle
     { "months", months },
     { "shortWeekdays", shortWeekdays },
     { "weekdays", weekdays },
+    { "firstDayOfWeek", "mon" },
     { "eras", eras },
     { "ampms", ampms },
     { "shortDateFormat", "yyyy.MM.dd." },
