@@ -21,6 +21,7 @@ public class BigInteger extends Number implements Comparable {
 
 private static final long serialVersionUID = -8287574255936472291L;
 private Ptr number;
+private int hash;
 
 public static final BigInteger ZERO;
 public static final BigInteger ONE;
@@ -335,7 +336,7 @@ public int compareTo(Object obj) {
 public int compareTo(BigInteger val) {
 	int r = cmp0(this, val);
 
-	// compute sign since JDK spec asks us to return -1/0/1, 
+	// compute sign since JDK spec asks us to return -1/0/1,
 	// but the GMP doc does not guarantee that.
 	return (r == 0) ? 0 : (r < 0) ? -1 : 1;
 }
@@ -365,8 +366,20 @@ public BigInteger max(BigInteger val) {
 }
 
 public int hashCode() {
-	// It probably isn't this but I don't know what it's suppose to be.
-	return (super.hashCode());
+	if (hash == 0) {
+		int tempHash = 0;
+		int sign = cmp0(this, ZERO);
+		BigInteger copy = abs(), divisor = new BigInteger();
+		divisor.setbit0(divisor, 32); // prepare to shift right
+		for (int i = bitLength() / 8 ; i > 4 ; i -= 4) {
+			tempHash ^= copy.toInt0();
+			copy.div0(copy, divisor);
+		}
+		tempHash ^= copy.toInt0();
+		tempHash *= sign;
+		hash = tempHash;	// race condition here is ok
+	}
+	return hash;
 }
 
 public String toString(int radix) {
@@ -460,41 +473,41 @@ class DefaultSerialization {
     	/* serialized form is
 	 * int bitCount
 	 *
-	 *   The bitCount of this BigInteger, as returned by 
+	 *   The bitCount of this BigInteger, as returned by
 	 *   bitCount(), or -1 (either value is acceptable).
 	 *
 	 * int bitLength
 	 *
-	 *   The bitLength of this BigInteger, as returned by bitLength(), 
+	 *   The bitLength of this BigInteger, as returned by bitLength(),
 	 *   or -1 (either value is acceptable).
 	 *
 	 * int firstNonzeroByteNum
 	 *
-	 *   The byte-number of the lowest-order nonzero byte in the 
-	 *   magnitude of this BigInteger, or -2 (either value is acceptable). 
-	 *   The least significant byte has byte-number 0, the next byte in 
+	 *   The byte-number of the lowest-order nonzero byte in the
+	 *   magnitude of this BigInteger, or -2 (either value is acceptable).
+	 *   The least significant byte has byte-number 0, the next byte in
 	 *   order of increasing significance has byte-number 1, and so forth.
 	 *
 	 * int lowestSetBit
 	 *
-	 *   The lowest set bit of this BigInteger, as returned by 
+	 *   The lowest set bit of this BigInteger, as returned by
 	 *   getLowestSetBit(), or -2 (either value is acceptable).
 	 *
 	 * byte[] magnitude
 	 *
-	 *   The magnitude of this BigInteger, in big-endian byte-order: 
-	 *   the zeroth element of this array is the most-significant byte 
-	 *   of the magnitude. The magnitude must be "minimal" in that the 
-	 *   most-significant byte (magnitude[0]) must be non-zero.  This is 
-	 *   necessary to ensure that there is exactly one representation for 
-	 *   each BigInteger value. Note that this implies that the BigInteger 
+	 *   The magnitude of this BigInteger, in big-endian byte-order:
+	 *   the zeroth element of this array is the most-significant byte
+	 *   of the magnitude. The magnitude must be "minimal" in that the
+	 *   most-significant byte (magnitude[0]) must be non-zero.  This is
+	 *   necessary to ensure that there is exactly one representation for
+	 *   each BigInteger value. Note that this implies that the BigInteger
 	 *   zero has a zero-length magnitude array.
 	 *
 	 * int signum
 	 *
-         *   The signum of this BigInteger: -1 for negative, 0 for zero, 
-	 *   or 1 for positive.  Note that the BigInteger zero must have a 
-	 *   signum of 0. This is necessary to ensures that there is exactly 
+         *   The signum of this BigInteger: -1 for negative, 0 for zero,
+	 *   or 1 for positive.  Note that the BigInteger zero must have a
+	 *   signum of 0. This is necessary to ensures that there is exactly
 	 *   one representation for each BigInteger value.
 	 */
 
@@ -517,7 +530,7 @@ class DefaultSerialization {
 		lowestSetBit = BigInteger.this.getLowestSetBit();
 		signum = BigInteger.this.signum();
 		/* XXX not implemented */
-		magnitude = BigInteger.this.toByteArray();   
+		magnitude = BigInteger.this.toByteArray();
 	}
 }
 
