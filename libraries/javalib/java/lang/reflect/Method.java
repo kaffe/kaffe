@@ -1,7 +1,7 @@
 /*
  * Java core library component.
  *
- * Copyright (c) 1997, 1998, 2001
+ * Copyright (c) 1997, 1998, 2001, 2002
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
@@ -126,7 +126,7 @@ public Object invoke(Object obj, Object args[])
 	for (int i = 0; i < args.length; i++) {
 		Class pt = parameterTypes[i];
 		Object arg = args[i];
-		if (arg == null || pt.isAssignableFrom(arg.getClass())) {
+		if ((arg == null && !pt.isPrimitive()) || pt.isAssignableFrom(arg.getClass())) {
 			/* Arg okay */
 		}
 		else if (pt.isPrimitive()) {
@@ -135,14 +135,14 @@ public Object invoke(Object obj, Object args[])
 				if (arg instanceof Boolean) {
 				}
 				else {
-					throw new IllegalAccessException();
+					throw new IllegalArgumentException();
 				}
 			}
 			else if (pt == Byte.TYPE) {
 				if (arg instanceof Byte) {
 				}
 				else {
-					throw new IllegalAccessException();
+					throw new IllegalArgumentException();
 				}
 			}
 			else if (pt == Short.TYPE) {
@@ -152,17 +152,14 @@ public Object invoke(Object obj, Object args[])
 					args[i] = new Short((short)((Byte)arg).byteValue());
 				}
 				else {
-					throw new IllegalAccessException();
+					throw new IllegalArgumentException();
 				}
 			}
 			else if (pt == Character.TYPE) {
 				if (arg instanceof Character) {
 				}
-				else if (arg instanceof Byte) {
-					args[i] = new Character((char)((Byte)arg).byteValue());
-				}
 				else {
-					throw new IllegalAccessException();
+					throw new IllegalArgumentException();
 				}
 			}
 			else if (pt == Integer.TYPE) {
@@ -178,13 +175,13 @@ public Object invoke(Object obj, Object args[])
 					args[i] = new Integer((int)((Byte)arg).byteValue());
 				}
 				else {
-					throw new IllegalAccessException();
+					throw new IllegalArgumentException();
 				}
 			}
 			else if (pt == Long.TYPE) {
 				if (arg instanceof Long) {
 				}
-				if (arg instanceof Integer) {
+				else if (arg instanceof Integer) {
 					args[i] = new Long((long)((Integer)arg).intValue());
 				}
 				else if (arg instanceof Short) {
@@ -197,7 +194,7 @@ public Object invoke(Object obj, Object args[])
 					args[i] = new Long((long)((Byte)arg).byteValue());
 				}
 				else {
-					throw new IllegalAccessException();
+					throw new IllegalArgumentException();
 				}
 			}
 			else if (pt == Float.TYPE) {
@@ -206,7 +203,7 @@ public Object invoke(Object obj, Object args[])
 				else if (arg instanceof Long) {
 					args[i] = new Float((float)((Long)arg).longValue());
 				}
-				if (arg instanceof Integer) {
+				else if (arg instanceof Integer) {
 					args[i] = new Float((float)((Integer)arg).intValue());
 				}
 				else if (arg instanceof Short) {
@@ -219,11 +216,11 @@ public Object invoke(Object obj, Object args[])
 					args[i] = new Float((float)((Byte)arg).byteValue());
 				}
 				else {
-					throw new IllegalAccessException();
+					throw new IllegalArgumentException();
 				}
 			}
 			else if (pt == Double.TYPE) {
-				if (arg instanceof Float) {
+				if (arg instanceof Double) {
 				}
 				else if (arg instanceof Float) {
 					args[i] = new Double((double)((Float)arg).floatValue());
@@ -231,7 +228,7 @@ public Object invoke(Object obj, Object args[])
 				else if (arg instanceof Long) {
 					args[i] = new Double((double)((Long)arg).longValue());
 				}
-				if (arg instanceof Integer) {
+				else if (arg instanceof Integer) {
 					args[i] = new Double((double)((Integer)arg).intValue());
 				}
 				else if (arg instanceof Short) {
@@ -244,7 +241,7 @@ public Object invoke(Object obj, Object args[])
 					args[i] = new Double((double)((Byte)arg).byteValue());
 				}
 				else {
-					throw new IllegalAccessException();
+					throw new IllegalArgumentException();
 				}
 			}
 			else {
@@ -252,7 +249,7 @@ public Object invoke(Object obj, Object args[])
 			}
 		}
 		else {
-			throw new IllegalAccessException("incompatible argument");
+			throw new IllegalArgumentException("incompatible argument");
 		}
 	}
 

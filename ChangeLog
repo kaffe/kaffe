@@ -1,3 +1,14 @@
+Tue May 14 21:14:00 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/lang/reflect/Method.java:
+	(invoke) made null illegal argument for methods expecting
+	primitive types. Changed all instances where IllegalAccesException
+	was thrown to throw IllegalArgumentException, fixing a mauve
+	failure. Removed widening of byte to char when char was
+	expected. Fixed instances where widening code was copied without
+	paying respect to if / else if execution flow. Fixed "widening" of
+	double to double.
+
 Tue May 14 21:08:11 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* test/regression/InvTarExcTest.java:
