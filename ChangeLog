@@ -1,4 +1,12 @@
 2004-07-08  Dalibor Topic  <robilad@kaffe.org>
+	    Yoshiharu Oba  <ooba@gk.avkk.yamaha.co.jp>
+
+	* kaffe/kaffevm/debug.c:
+	Only use jit_debug if both TRANSLATOR and 
+	KAFFEVM_DEBUG are defined. Fixes link errors on
+	mipsel-linux.
+
+2004-07-08  Dalibor Topic  <robilad@kaffe.org>
 
         * config/mips/atomicity.h:
 	New file, taken from glibc 2.3.2.

@@ -37,9 +37,9 @@
 /* Default debugging mask to use (if debug is enabled) */
 #define DEFAULT_DEBUG_MASK	DBG_NONE
 
-#if defined(TRANSLATOR)
+#if defined(TRANSLATOR) && defined(KAFFE_VMDEBUG)
 extern int jit_debug;
-#endif /* defined(TRANSLATOR) */
+#endif /* defined(TRANSLATOR) && defined(KAFFE_VMDEBUG) */
 
 static char *debugBuffer;
 static size_t bufferBegin = 0;
@@ -296,12 +296,12 @@ dbgSetMaskStr(const char *orig_mask_str)
 	}
 
 	if (kaffevmDebugMask & DBG_JIT) {
-#if defined(TRANSLATOR)
+#if defined(TRANSLATOR) && defined(KAFFE_VMDEBUG)
 		jit_debug = 1;
-#else
+#else /* !(defined(TRANSLATOR) && defined(KAFFE_VMDEBUG)) */
 		dprintf(
 			"You cannot debug the JIT in interpreter mode \n");
-#endif
+#endif /* defined(TRANSLATOR) && defined(KAFFE_VMDEBUG) */
 	}
 
 	free(mask_str);
@@ -350,7 +350,7 @@ debugSysInit(void)
 		if (getenv("JIT_DEBUG"))
 			jit_debug = 1;
 	}
-#endif
+#endif /*  defined(TRANSLATOR) && defined(KAFFE_VMDEBUG) */
 	atexit(debugExitHook);
 }
 
