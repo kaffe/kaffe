@@ -38,13 +38,18 @@
 #if defined(HAVE_UNISTD_H)
 #include <unistd.h>
 #endif
+#if defined(__arch64__)
+#include "sigcontextinfo64.h"
+#else /* !defined(__arch64__) */
+#include "sigcontextinfo32.h"
+#endif
 
 /* Function prototype for signal handlers */
 #define	SIGNAL_ARGS(sig, sc) int sig, struct sigcontext* sc
 #define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext* scp
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
-#define SIGNAL_PC(scp) ((scp)->sigc_pc)
-#define STACK_POINTER(scp) ((scp)->sigc_sp)
+#define SIGNAL_PC(scp) (GET_PC(scp))
+#define STACK_POINTER(scp) (GET_STACK(scp))
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

@@ -1,3 +1,23 @@
+2004-06-06  Dalibor Topic  <robilad@kaffe.org>
+
+        * config/sparc/linux/sigcontextinfo32.h,
+        config/sparc/linux/sigcontextinfo64.h:
+	New files, taken from glibc 2.3.2.
+
+        * THIRDPARTY:
+	Updated.
+
+        * config/Makefile.am:
+	(EXTRA_DIST) Updated for new files.
+
+        * config/Makefile.in:
+	Regenerated.
+
+        * config/sparc/linux/md.h:
+	(SIGNAL_PC, STACK_POINTER) Use glibc sigcontextinfo.
+
+	Reported by: Karl Trygve Kalleberg <karltk@gentoo.org>
+
 2004-06-05  Dalibor Topic  <robilad@kaffe.org>
 
         * configure.ac:

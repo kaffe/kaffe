@@ -614,6 +614,8 @@ EXTRA_DIST = \
 	sparc/linux/jit-md.h \
 	sparc/linux/md.c \
 	sparc/linux/md.h \
+	sparc/linux/sigcontextinfo32.h \
+	sparc/linux/sigcontextinfo64.h \
 	sparc/netbsd1/config.frag \
 	sparc/netbsd1/jit-md.h \
 	sparc/netbsd1/md.c \
