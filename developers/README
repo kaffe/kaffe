@@ -27,3 +27,5 @@ alignment_of_size.c:	determine alignments used by a given compiler.
 
 mangleNative.pl:	create linker scripts for native methods for GCJ.
 
+fixup.c		create GCJ fixup modules
+
