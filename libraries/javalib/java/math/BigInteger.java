@@ -104,23 +104,27 @@ public BigInteger(int bitLength, int certainty, Random rnd) {
 	byte andval = (byte)(~((~0) << zeroes));
 	/* orval is used to set the most significant bit.  */
 	byte orval = (byte)(0x100 >> zeroes);
+	BigInteger two = new BigInteger(2l);
  rerand:
 	for(;;) {
 		/* There must be a more efficient algorithm! */
 		rnd.nextBytes(bytes);
 		/* Ensure that we have the requested length.  */
 		bytes[0] = (byte)((bytes[0] & andval) | orval);
+		if (bitLength > 2) // 2 is prime, do not discard it
+			bytes[bytes.length-1] |= 1;
 		assignBytes0(1, bytes);
 		if (probablyPrime0(certainty) == 1)
 			break;
 		/* Only test whether the length has changed when
 		   testLength is becomes zero.  */
-		long testLength = longValue();
+		long testLength = longValue()-1; // make it even
 		if (bitLength < 64)
 			testLength |= ~0l << bitLength;
 		do {
-			add0(this, ONE);
-			if (++testLength == 0
+			add0(this, two);
+			testLength += 2;
+			if (testLength == 0
 			    && bitLength0() > bitLength)
 				continue rerand;
 		} while (probablyPrime0(certainty) == 0);

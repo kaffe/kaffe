@@ -1,5 +1,8 @@
 1999-04-22  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* libraries/javalib/java/math/BigInteger.java: Make prime
+	generator more efficient by skipping even numbers other than 2.
+
 	* libraries/javalib/java/math/BigInteger.java: Define ZERO and ONE 
 	constants.  Fix BigInteger(byte[]).  Detect error conditions in
 	BigInteger(int,byte[]).  Implement BigInteger(int,Random).
