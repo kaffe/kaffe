@@ -25,7 +25,7 @@ public final class Double extends Number implements Comparable {
   public static final double MIN_VALUE		= 4.9406564584124654418e-324;
   public static final double MAX_VALUE		= 1.7976931348623157081e+308;
 
-  public static final Class TYPE = Class.getPrimitiveClass("double");
+  public static final Class TYPE = VMClassLoader.getPrimitiveClass('D');
 
   private static final int MAX_DIGITS = 19;
 

@@ -297,8 +297,6 @@ public Package getPackage() {
 
 native public ProtectionDomain getProtectionDomain();
 
-native static Class getPrimitiveClass(String name);
-
 /**
  * Finds a resource with the specified name.
  * The rules for searching for resources associated with a given class

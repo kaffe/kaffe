@@ -1,3 +1,46 @@
+2005-01-09  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/lang/String.java
+	(valueOf): Replaced by implementation from GNU Classpath.
+
+	* libraries/javalib/java/lang/Boolean.java,
+	libraries/javalib/java/lang/Byte.java,
+	libraries/javalib/java/lang/Character.java,
+	libraries/javalib/java/lang/Integer.java,
+	libraries/javalib/java/lang/Long.java,
+	libraries/javalib/java/lang/Short.java:
+	Replaced by implemenation from GNU Classpath.
+
+	* test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java:
+	Adapted output for changes.
+
+	* libraries/javalib/java/io/ObjectOutputStream.java
+	(getObjectField): Clarified error checking code, and
+	improved exception messages.
+
+	* libraries/javalib/Klasses.jar.bootstrap:
+	Regenerated.
+	
+2005-01-09  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/javalib/java/lang/Double.java (TYPE),
+	libraries/javalib/java/lang/Float.java (TYPE):
+	Use VMClassLoader.getPrimitiveType.
+	
+	* libraries/clib/native/Class.c
+	(java_lang_Class_getPrimitiveClass): Removed.
+
+	* libraries/javalib/java/lang/Class.java
+	(getPrimitiveClass) Removed.
+
+	* libraries/clib/native/ClassLoader.c
+	(java_lang_VMClassLoader_getPrimitiveClass0): New function.
+
+	* libraries/javalib/java/lang/VMClassLoader.java
+	(getPrimitiveClass) Implemented.
+	(getPrimitiveClass0) New method.
+
 2005-01-09  Kiyo Inaba  <inaba@src.ricoh.co.jp>
 
         * config/m68k/jit-m68k.def,

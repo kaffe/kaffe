@@ -78,8 +78,7 @@ public final class Boolean implements Serializable
    *
    * @since 1.1
    */
-  /* Kaffe doesn't have VMClassLoader yet. */
-  public static final Class TYPE = Class.getPrimitiveClass("boolean");
+  public static final Class TYPE = VMClassLoader.getPrimitiveClass('Z');
 
   /**
    * The immutable value of this Boolean.

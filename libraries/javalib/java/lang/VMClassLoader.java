@@ -195,55 +195,35 @@ final class VMClassLoader
    */
   static final Class getPrimitiveClass(char type)
   {
-    String t;
-    switch (type)
-      {
-      case 'Z':
-        t = "boolean";
-        break;
-      case 'B':
-        t = "byte";
-        break;
-      case 'C':
-        t = "char";
-        break;
-      case 'D':
-        t = "double";
-        break;
-      case 'F':
-        t = "float";
-        break;
-      case 'I':
-        t = "int";
-        break;
-      case 'J':
-        t = "long";
-        break;
-      case 'S':
-        t = "short";
-        break;
-      case 'V':
-        t = "void";
-        break;
-      default:
-        throw new NoClassDefFoundError("Invalid type specifier: " + type);
-      }
-    return getPrimitiveClass(t);
+    Class primitive = getPrimitiveClass0(type);
+    if (primitive == null)
+	throw new NoClassDefFoundError("Invalid type specifier: " + type);
+    return primitive;
   }
 
+
   /**
-   * Old version of the interface, added here for backwards compatibility.
-   * Called by the java version of getPrimitiveClass(char) when no native
-   * version of that method is available.
-   * <strong>This method will be removed in a future version of GNU
-   * Classpath</strong>.
+   * Helper for java.lang.Integer, Byte, etc to get the TYPE class
+   * at initialization time. The type code is one of the chars that
+   * represents the primitive type as in JNI.
+   *
+   * <ul>
+   * <li>'Z' - boolean</li>
+   * <li>'B' - byte</li>
+   * <li>'C' - char</li>
+   * <li>'D' - double</li>
+   * <li>'F' - float</li>
+   * <li>'I' - int</li>
+   * <li>'J' - long</li>
+   * <li>'S' - short</li>
+   * <li>'V' - void</li>
+   * </ul>
+   *
    * @param type the primitive type
-   * @return a "bogus" class representing the primitive type
+   * @return a "bogus" class representing the primitive type, or null
+   *
    */
-  static Class getPrimitiveClass(String type)
-  {
-    throw new InternalError ();
-  }
+  native static final Class getPrimitiveClass0(char type);
 
   /**
    * The system default for assertion status. This is used for all system

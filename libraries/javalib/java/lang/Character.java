@@ -1031,7 +1031,7 @@ public final class Character implements Serializable, Comparable
    *
    * @since 1.1
    */
-  public static final Class TYPE = Class.getPrimitiveClass("char");
+  public static final Class TYPE = VMClassLoader.getPrimitiveClass('C');
 
   /**
    * Lu = Letter, Uppercase (Informative).

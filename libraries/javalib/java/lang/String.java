@@ -573,41 +573,126 @@ public String trim() {
 	return substring( i0-offset, i1+1-offset);
 }
 
-public static String valueOf( Object obj) {
-	return (obj == null) ? "null" : obj.toString();
-}
+    /* valueOf methods taken from GNU Classpath */
+  /**
+   * Returns a String representation of an Object. This is "null" if the
+   * object is null, otherwise it is <code>obj.toString()</code> (which
+   * can be null).
+   *
+   * @param obj the Object
+   * @return the string conversion of obj
+   */
+  public static String valueOf(Object obj)
+  {
+    return obj == null ? "null" : obj.toString();
+  }
 
-public static String valueOf( boolean b) {
-	return ( new Boolean(b)).toString();
-}
+  /**
+   * Returns a String representation of a character array. Subsequent
+   * changes to the array do not affect the String.
+   *
+   * @param data the character array
+   * @return a String containing the same character sequence as data
+   * @throws NullPointerException if data is null
+   * @see #valueOf(char[], int, int)
+   * @see #String(char[])
+   */
+  public static String valueOf(char[] data)
+  {
+    return valueOf (data, 0, data.length);
+  }
 
-public static String valueOf( char c) {
-	return new String(new char[] { c });
-}
+  /**
+   * Returns a String representing the character sequence of the char array,
+   * starting at the specified offset, and copying chars up to the specified
+   * count. Subsequent changes to the array do not affect the String.
+   *
+   * @param data character array
+   * @param offset position (base 0) to start copying out of data
+   * @param count the number of characters from data to copy
+   * @return String containing the chars from data[offset..offset+count]
+   * @throws NullPointerException if data is null
+   * @throws IndexOutOfBoundsException if (offset &lt; 0 || count &lt; 0
+   *         || offset + count &gt; data.length)
+   *         (while unspecified, this is a StringIndexOutOfBoundsException)
+   * @see #String(char[], int, int)
+   */
+  public static String valueOf(char[] data, int offset, int count)
+  {
+    return new String(data, offset, count, false);
+  }
 
-public static String valueOf(char data[]) {
-	return new String(data);
-}
+  /**
+   * Returns a String representing a boolean.
+   *
+   * @param b the boolean
+   * @return "true" if b is true, else "false"
+   */
+  public static String valueOf(boolean b)
+  {
+    return b ? "true" : "false";
+  }
 
-public static String valueOf( char data[], int offset, int count) {
-	return new String( data, offset, count);
-}
+  /**
+   * Returns a String representing a character.
+   *
+   * @param c the character
+   * @return String containing the single character c
+   */
+  public static String valueOf(char c)
+  {
+    // Package constructor avoids an array copy.
+    return new String(new char[] { c }, 0, 1, true);
+  }
 
-public static String valueOf( double d) {
-	return Double.toString(d);
-}
+  /**
+   * Returns a String representing an integer.
+   *
+   * @param i the integer
+   * @return String containing the integer in base 10
+   * @see Integer#toString(int)
+   */
+  public static String valueOf(int i)
+  {
+    // See Integer to understand why we call the two-arg variant.
+    return Integer.toString(i, 10);
+  }
 
-public static String valueOf( float f) {
-	return Float.toString(f);
-}
+  /**
+   * Returns a String representing a long.
+   *
+   * @param l the long
+   * @return String containing the long in base 10
+   * @see Long#toString(long)
+   */
+  public static String valueOf(long l)
+  {
+    return Long.toString(l);
+  }
 
-public static String valueOf( int i) {
-	return Integer.toString(i);
-}
+  /**
+   * Returns a String representing a float.
+   *
+   * @param f the float
+   * @return String containing the float
+   * @see Float#toString(float)
+   */
+  public static String valueOf(float f)
+  {
+    return Float.toString(f);
+  }
 
-public static String valueOf( long l) {
-	return Long.toString(l);
-}
+  /**
+   * Returns a String representing a double.
+   *
+   * @param d the double
+   * @return String containing the double
+   * @see Double#toString(double)
+   */
+  public static String valueOf(double d)
+  {
+    return Double.toString(d);
+  }
 
 public String intern() {
 	return interned ? this : intern0(this);

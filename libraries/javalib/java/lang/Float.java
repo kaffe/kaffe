@@ -25,7 +25,7 @@ public final class Float extends Number implements Comparable {
   public static final float MIN_VALUE		= 1.4012984643248170709e-45f;
   public static final float MAX_VALUE		= 3.4028234663852885981e+38f;
 
-  public static final Class TYPE = Class.getPrimitiveClass("float");
+  public static final Class TYPE = VMClassLoader.getPrimitiveClass('F');
   private static final int MAX_DIGITS = 10;
 
   private final float value;

@@ -1486,10 +1486,16 @@ public class ObjectOutputStream extends OutputStream
 	Field f = getField (klass, field_name);
 	ObjectStreamField of = new ObjectStreamField(f.getName(), f.getType());
 
-	if (of.getTypeString() == null ||
-	    !of.getTypeString().equals(type_code))
+	/* if of is primitive something went wrong
+	 * in the check for primitive classes in writeFields.
+	 */
+	if (of.isPrimitive())
 	  throw new InvalidClassException
-	    ("invalid type code for " + field_name + " in class " + klass.getName());
+	    ("invalid type code for " + field_name + " in class " + klass.getName() + " : object stream field is primitive");
+
+	if (!of.getTypeString().equals(type_code))
+	    throw new InvalidClassException
+		("invalid type code for " + field_name + " in class " + klass.getName() + " : object stream field " + of + " has type string " + of.getTypeString() + " instead of " + type_code);
 
 	Object o = f.get (obj);
 	// FIXME: We should check the type_code here

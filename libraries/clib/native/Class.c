@@ -227,42 +227,6 @@ java_lang_Class_isAssignableFrom(struct Hjava_lang_Class* this, struct Hjava_lan
 }
 
 /*
- * Get primitive class from class name (JDK 1.1)
- */
-struct Hjava_lang_Class*
-java_lang_Class_getPrimitiveClass(struct Hjava_lang_String* name)
-{
-	jchar* chrs;
-
-	chrs = STRING_DATA(name);
-	switch (chrs[0]) {
-	case 'b':
-		if (chrs[1] == 'y') {
-			return (byteClass);
-		}
-		if (chrs[1] == 'o') {
-			return (booleanClass);
-		}
-		break;
-	case 'c':
-		return (charClass);
-	case 'd':
-		return (doubleClass);
-	case 'f':
-		return (floatClass);
-	case 'i':
-		return (intClass);
-	case 'l':
-		return (longClass);
-	case 's':
-		return (shortClass);
-	case 'v':
-		return (voidClass);
-	}
-	return(NULL);
-}
-
-/*
  * Is object instance of this class?
  */
 jbool
