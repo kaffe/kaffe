@@ -1883,7 +1883,7 @@ AC_SUBST(jrelibdir)
 nativedir=$jredir/lib/$Khost_cpu
 AC_SUBST(nativedir)
 
-Securitydir=$jredir/lib/security
+securitydir=$jredir/lib/security
 AC_SUBST(securitydir)
 
 dnl =========================================================================

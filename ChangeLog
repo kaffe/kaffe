@@ -1,5 +1,14 @@
 2004-07-05  Dalibor Topic  <robilad@kaffe.org>
 
+        * configure.ac:
+	Fixed small typo that prevented installation of security_DATA.
+
+        * configure,
+        libraries/javalib/Makefile.in:
+	Regenerated.
+
+2004-07-05  Dalibor Topic  <robilad@kaffe.org>
+
         * config/powerpc/linux/md.h:
         (GET_SIGNAL_CONTEXT_POINTER) Fixed build on
         powerpc-linux. SIGNAL_ARGS says sigcontext is a
