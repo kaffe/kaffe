@@ -19,7 +19,6 @@ struct stat;
 
 typedef struct SystemCallInterface {
 
-	int	(*_fixfd)(int);
 	int	(*_open)(const char*, int, int);
 	ssize_t	(*_read)(int, void*, size_t);
 	ssize_t	(*_write)(int, const void*, size_t);
@@ -46,8 +45,9 @@ typedef struct SystemCallInterface {
 	int	(*_getpeername)(int, struct sockaddr*, int*);
 
 	int	(*_select)(int, fd_set*, fd_set*, fd_set*, struct timeval*);
-
+	int	(*_forkexec)(char**, char**, int[4]);
 	int	(*_waitpid)(int, int*, int);
+	int	(*_kill)(int, int);
 
 } SystemCallInterface;
 
@@ -58,7 +58,6 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
  * Define some 'UNIX' like macros to make things simpler.
  */
 
-#define fixfd(A)	(*Kaffe_SystemCallInterface._fixfd)(A)
 #define	open(A,B,C)	(*Kaffe_SystemCallInterface._open)(A,B,C)
 #define	read(A,B,C)	(*Kaffe_SystemCallInterface._read)(A,B,C)
 #define	write(A,B,C)	(*Kaffe_SystemCallInterface._write)(A,B,C)
@@ -95,6 +94,8 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
 			(*Kaffe_SystemCallInterface._select)(A,B,C,D,E)
 
 #define	waitpid(A,B,C)	(*Kaffe_SystemCallInterface._waitpid)(A,B,C)
+#define	forkexec(A,B,C)	(*Kaffe_SystemCallInterface._forkexec)(A,B,C)
+#define	kill(A,B)	(*Kaffe_SystemCallInterface._kill)(A,B)
 
 #endif
 
