@@ -49,7 +49,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public final class VMChannels
+final class VMChannels
 {
   /**
    * This class isn't intended to be instantiated.
@@ -95,7 +95,7 @@ public final class VMChannels
   /**
    * Constructs a stream that reads bytes from the given channel.
    */
-  public static InputStream newInputStream(ReadableByteChannel ch)
+  static InputStream newInputStream(ReadableByteChannel ch)
   {
     if (ch instanceof FileChannelImpl)
       return (FileInputStream) createStream(FileInputStream.class, ch);
@@ -106,7 +106,7 @@ public final class VMChannels
   /**
    * Constructs a stream that writes bytes to the given channel.
    */
-  public static OutputStream newOutputStream(WritableByteChannel ch)
+  static OutputStream newOutputStream(WritableByteChannel ch)
   {
     if (ch instanceof FileChannelImpl)
       return (FileOutputStream) createStream(FileOutputStream.class, ch);
