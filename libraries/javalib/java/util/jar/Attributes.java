@@ -56,6 +56,10 @@ public class Attributes implements Map, Cloneable {
 	return (String) get(name);
     }
 
+    public int hashCode() {
+	return map.hashCode();
+    }
+
     public Object put(Object name, Object value) {
 	return map.put((Attributes.Name)name, (String)value);
     }
