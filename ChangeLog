@@ -1,5 +1,14 @@
 2005-01-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/javalib/gnu/classpath/VMSystemProperties.java
+	(preInit): Check if LOCALE is null.
+
+	* kaffe/kaffevm/jni/jni-string.c
+	(KaffeJNI_NewStringUTF): Use the right return path so that exceptions
+	are handled correctly.
+
+2005-01-01  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/classMethod.h
 	(protectionDomain): Changed declaration to use the right type.
 

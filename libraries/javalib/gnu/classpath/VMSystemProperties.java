@@ -170,7 +170,7 @@ class VMSystemProperties
       properties.setProperty("sun.boot.class.path", SUN_BOOT_CLASS_PATH);
 
       final String LOCALE = getLocale();
-      if (LOCALE.length() > 2)
+      if (LOCALE != null && LOCALE.length() > 2)
 	{
 	  properties.setProperty("user.language", LOCALE.substring(0, 2));
 	  if (LOCALE.charAt(2) == '_')

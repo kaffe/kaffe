@@ -81,27 +81,28 @@ KaffeJNI_NewStringUTF(JNIEnv* env UNUSED, const char* data)
   Utf8Const* utf8;
   size_t len;
 
-  BEGIN_EXCEPTION_HANDLING(NULL);
-
   /* We cannot construct the string if data is NULL. So as JNI says
    * we return NULL.
    */
-  if (data == NULL)
-    return NULL;
 
-  len = strlen(data);
-  if (!utf8ConstIsValidUtf8(data, len)) {
-    str = NULL;
-  } else {
-    utf8 = checkPtr(utf8ConstNew(data, (int)len));
-    str = utf8Const2Java(utf8);
-    utf8ConstRelease(utf8);
-    if (!str) {
-      errorInfo info;
-      postOutOfMemory(&info);
-      throwError(&info);
+  BEGIN_EXCEPTION_HANDLING(NULL);
+
+  if (data != NULL) {
+    len = strlen(data);
+    if (!utf8ConstIsValidUtf8(data, len)) {
+      str = NULL;
+    } else {
+      utf8 = checkPtr(utf8ConstNew(data, (int)len));
+      str = utf8Const2Java(utf8);
+      utf8ConstRelease(utf8);
+      if (!str) {
+        errorInfo info;
+        postOutOfMemory(&info);
+        throwError(&info);
+      }
     }
-  }
+  } else
+   str = NULL;
 
   END_EXCEPTION_HANDLING();
   return (str);
