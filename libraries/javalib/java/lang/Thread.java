@@ -358,6 +358,12 @@ public static void sleep(long millis, int nanos) throws InterruptedException
 }
 
 public synchronized void start() {
+	if (dying) {
+		throw new IllegalThreadStateException("Dead Thread");
+	}
+	if (started) {
+		throw new IllegalThreadStateException("Active Thread");
+	}
 	started = true;
 	start0();
 }
