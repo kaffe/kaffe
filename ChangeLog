@@ -2,6 +2,16 @@
 
         Resynced with GNU Classpath.
 
+	2004-01-14  Michael Koch  <konqueror@gmx.de>
+
+        * java/text/MessageFormat.java:
+        Added descriptions to exceptions.
+        This fixes PR libgcj/2429.
+
+2004-02-02  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2004-01-25  Michael Koch  <konqueror@gmx.de>
 
         * java/net/URLConnection.java

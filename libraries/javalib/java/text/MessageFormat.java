@@ -209,7 +209,7 @@ public class MessageFormat extends Format
 	else if (c == '{')
 	  break;
 	else if (c == '}')
-	  throw new IllegalArgumentException ();
+	  throw new IllegalArgumentException("Found '}' without '{'");
 	else
 	  buffer.append(c);
       }
@@ -284,7 +284,7 @@ public class MessageFormat extends Format
       }
     catch (NumberFormatException nfx)
       {
-	throw new IllegalArgumentException ();
+	throw new IllegalArgumentException("Failed to parse integer string");
       }
 
     // Extract the element format.
@@ -303,7 +303,7 @@ public class MessageFormat extends Format
 
     // Advance past the last terminator.
     if (index >= max || pat.charAt(index) != '}')
-      throw new IllegalArgumentException ();
+      throw new IllegalArgumentException("Missing '}' at end of message format");
     ++index;
 
     // Now fetch trailing string.
@@ -413,7 +413,8 @@ public class MessageFormat extends Format
     for (int i = 0; i < elements.length; ++i)
       {
 	if (elements[i].argNumber >= arguments.length)
-	  throw new IllegalArgumentException ();
+	  throw new IllegalArgumentException("Not enough arguments given");
+
 	Object thisArg = arguments[elements[i].argNumber];
 	AttributedCharacterIterator iterator = null;
 
@@ -428,7 +429,8 @@ public class MessageFormat extends Format
 	  {
 	    if (elements[i].formatClass != null
 		&& ! elements[i].formatClass.isInstance(thisArg))
-	      throw new IllegalArgumentException ();
+	      throw new IllegalArgumentException("Wrong format class");
+	    
 	    formatter = elements[i].format;
 	  }
 	else if (thisArg instanceof Number)
@@ -705,7 +707,8 @@ public class MessageFormat extends Format
   public void setFormats (Format[] newFormats)
   {
     if (newFormats.length < elements.length)
-      throw new IllegalArgumentException ();
+      throw new IllegalArgumentException("Not enough format objects");
+
     int len = Math.min(newFormats.length, elements.length);
     for (int i = 0; i < len; ++i)
       elements[i].setFormat = newFormats[i];
