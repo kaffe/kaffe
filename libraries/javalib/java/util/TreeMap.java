@@ -75,6 +75,24 @@ public class TreeMap extends AbstractMap
 			return (key == null ? 0 : key.hashCode())
 			    ^ (value == null ? 0 : value.hashCode());
 		}
+
+		Node cloneTree() {
+			Node clone;
+			try {
+				clone = (Node)super.clone();
+			} catch (CloneNotSupportedException e) {
+				return null;		// should never happen
+			}
+			if (left != NIL) {
+				clone.left = left.cloneTree();
+				clone.left.parent = clone;
+			}
+			if (right != NIL) {
+				clone.right = right.cloneTree();
+				clone.right.parent = clone;
+			}
+			return clone;
+		}
 	}
 
 	// This is the NIL "sentinel" node which is the child of all leaves
@@ -198,7 +216,14 @@ public class TreeMap extends AbstractMap
 	}
 
 	public Object clone() {
-		return new TreeMap(this);
+		TreeMap clone;
+		try {
+			clone = (TreeMap)super.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;			// should never happen
+		}
+		clone.root = root.cloneTree();
+		return clone;
 	}
 
 	public Set entrySet() {
@@ -525,7 +550,7 @@ public class TreeMap extends AbstractMap
 			} else {			// pop back up the tree
 				while (true) {
 					if (node.parent == null
-					  || node == node.parent.left) {
+					    || node == node.parent.left) {
 						node = node.parent;
 						return;
 					}

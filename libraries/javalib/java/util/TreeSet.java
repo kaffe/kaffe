@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 public class TreeSet extends AbstractSet
 		implements SortedSet, Cloneable, Serializable {
-	private final SortedMap map;
+	private SortedMap map;
 
 	public TreeSet() {
 		map = new TreeMap();
@@ -126,7 +126,18 @@ public class TreeSet extends AbstractSet
 	}
 
 	public Object clone() {
-		return new TreeSet((SortedMap)((TreeMap)map).clone());
+		TreeSet clone;
+		try {
+			clone = (TreeSet)super.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;		// should never happen
+		}
+		if (map instanceof TreeMap) {
+			clone.map = (SortedMap)((TreeMap)map).clone();
+		} else {
+			clone.map = new TreeMap(map);
+		}
+		return clone;
 	}
 }
 

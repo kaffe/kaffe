@@ -127,10 +127,16 @@ public class ArrayList extends AbstractList
 	}
 
 	public Object clone() {
-		ArrayList minime = new ArrayList(len);
-		System.arraycopy(a, off, minime.a, 0, len);
-		minime.len = len;
-		return minime;
+		ArrayList clone;
+		try {
+			clone = (ArrayList)super.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;			// should never happen
+		}
+		clone.a = new Object[len];
+		System.arraycopy(a, off, clone.a, 0, len);
+		clone.off = 0;
+		return clone;
 	}
 
 	public Object[] toArray() {

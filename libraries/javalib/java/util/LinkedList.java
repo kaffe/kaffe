@@ -245,7 +245,17 @@ public class LinkedList extends AbstractSequentialList
 	}
 
 	public Object clone() {
-		return new LinkedList(this);
+		LinkedList clone;
+		try {
+			clone = (LinkedList)super.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;			// should never happen
+		}
+		clone.clear();
+		for (Iterator i = iterator(); i.hasNext(); ) {
+			clone.addLast(i.next());
+		}
+		return clone;
 	}
 
 	public Object[] toArray() {

@@ -78,7 +78,12 @@ public class HashSet extends AbstractSet
 	}
 
 	public Object clone() {
-		HashSet clone = new HashSet();
+		HashSet clone;
+		try {
+			clone = (HashSet)super.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;			// should never happen
+		}
 		clone.map = (HashMap)map.clone();
 		return clone;
 	}

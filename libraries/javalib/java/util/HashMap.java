@@ -171,22 +171,30 @@ public class HashMap extends AbstractMap
 	}
 
 	public Object clone() {
-		HashMap newmap = new HashMap(table.length, loadFactor);
+
+		// Clone this object
+		HashMap clone;
+		try {
+			clone = (HashMap)super.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;			// should never happen
+		}
+
+		// Make a shallow copy of hashmap (ie, just the buckets)
+		clone.table = new Entry[table.length];
 		for (int bucket = 0; bucket < table.length; bucket++) {
 			Entry first = table[bucket];
 			if (first == null) {
 				continue;
 			}
 			Entry newent = new Entry(first.key, first.value);
-			newmap.table[bucket] = newent;
+			clone.table[bucket] = newent;
 			for (Entry e = first.next; e != null; e = e.next) {
 				newent.next = new Entry(e.key, e.value);
 				newent = newent.next;
 			}
 		}
-		newmap.modCount = 0;
-		newmap.size = size;
-		return newmap;
+		return clone;
 	}
 
 	public Set entrySet() {
