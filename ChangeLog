@@ -1,5 +1,13 @@
 2004-01-25  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffevm/exception.c:
+	Include <stdarg.h> if it exists. Include <stdio.h> to fix
+	compiler warnings on HP-UX about missing vsnprintf prototype.
+
+	Reported by: Riccardo Mottola <zuse@libero.it>
+
+2004-01-25  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/debug.c:
 	Include <stdarg.h> if it exists. Include <stdio.h> to fix
 	compiler warnings on HP-UX about missing vsnprintf prototype.

@@ -6,10 +6,18 @@
  *	Transvirtual Technologies, Inc.  All rights reserved.
  * Copyright (c) 2003
  * 	Mark J. Wielaard <mark@klomp.org>
+ * Copyright (c) 2004
+ *      Kaffe.org contributors. See ChangeLogs for details. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+#if defined(HAVE_STDARG_H)
+#include <stdarg.h>
+#endif /* defined(HAVE_STDARG_H) */
+
+#include <stdio.h>
 
 #include "config.h"
 #include "debug.h"
