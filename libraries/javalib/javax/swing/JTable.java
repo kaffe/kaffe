@@ -1859,4 +1859,9 @@ public class JTable extends JComponent
     setColumnSelectionInterval(0, getColumnCount() - 1);
     setRowSelectionInterval(0, getRowCount() - 1);
   }
+
+  public Object getValueAt(int row, int column)
+  {
+    return dataModel.getValueAt(row, convertColumnIndexToModel(column));
+  }
 }

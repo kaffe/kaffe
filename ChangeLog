@@ -1,6 +1,17 @@
 2005-01-22  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+
+	2005-01-20  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JTable.java
+	(getValueAt): New method.
+	* javax/swing/table/JTableHeader.java
+	(columnAtPoint): New method.
+
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 	
 	2005-01-20  Michael Koch  <konqueror@gmx.de>
 

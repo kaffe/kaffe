@@ -1,5 +1,5 @@
 /* JTableHeader.java --
-   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -616,4 +616,11 @@ public class JTableHeader extends JComponent
     setUI((TableHeaderUI) UIManager.getUI(this));
   }
 
+  public int columnAtPoint(Point point)
+  {
+    if (getBounds().contains(point))
+      return columnModel.getColumnIndexAtX(point.x);
+    
+    return -1;
+  }
 }
