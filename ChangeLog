@@ -1,3 +1,12 @@
+Sun May 12 10:44:58 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/util/Hashtable.java:
+	(equals) Hashtable didn't compare equal to other Maps when they
+	weren't an instance of Hashtable.
+	* libraries/javalib/java/util/AbstractMap.java:
+	(equals) added a package private static implementation. It is used
+	by AbstractMap.equals(Object) and Hashtable.equals(Object).
+
 Sun May 12 10:40:40 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/util/AbstractMapEntry.java:

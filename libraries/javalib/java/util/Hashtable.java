@@ -145,8 +145,7 @@ public class Hashtable extends Dictionary
 	}
 
 	public synchronized boolean equals(Object o) {
-		return (o instanceof Hashtable)
-		    && map.equals(((Hashtable)o).map);
+		return AbstractMap.equals(this, o);
 	}
 
 	public synchronized int hashCode() {

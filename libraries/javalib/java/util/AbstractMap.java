@@ -161,14 +161,21 @@ public abstract class AbstractMap implements Map {
 	public abstract Set entrySet();
 
 	public boolean equals(Object o) {
+		return equals(this, o);
+	}
+
+	/* implemented as a static package wide method since Hashtable's
+	 * implementation of equals is essentially the same code.
+	 */
+	static boolean equals(Map left, Object o) {
 		if (!(o instanceof Map)) {
 			return false;
 		}
 		Map omap = (Map)o;
-		if (omap.size() != size()) {
+		if (omap.size() != left.size()) {
 			return false;
 		}
-		for (Iterator i = entrySet().iterator(); i.hasNext(); ) {
+		for (Iterator i = left.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry ent = (Map.Entry)i.next();
 			if (!omap.containsKey(ent.getKey())) {
 				return false;
