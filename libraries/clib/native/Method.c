@@ -74,14 +74,15 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 	clazz = unhand(this)->clazz;
 
 	/* 
-	 * we must not have handed out Method objects to unusable class
-	 * objects.  XXX
+	 * A method invocation via reflection is a first active use, so
+	 * initialize the class object.  (XXX: check whether that's true.)
 	 */
+	/* XXX use JNI here XXX */
 	if (clazz->state < CSTATE_USABLE) {
 		errorInfo info;
-		SET_LANG_EXCEPTION_MESSAGE(&info, InternalError, 
-			"attempt to invoke method on unusable class object");
-		throwError(&info);
+		if (processClass(clazz, CSTATE_COMPLETE, &info) == false) {
+			throwError(&info);
+		}
 	}
 
 	slot = unhand(this)->slot;

@@ -2,8 +2,7 @@ Tue Dec 15 01:22:27 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.c: save and restore pending exceptions
 	when invoking classloader.
-	libraries/clib/native/Constructor.c:  process class if needed before
-	invoking newInstance.  
+	libraries/clib/native/Method.c:  process class if needed.
 	Thanks to Benjamin Reed for helping to uncover these two bugs.
 
 Mon Dec 14 15:48:32 1998  Godmar Back  <gback@cs.utah.edu>
