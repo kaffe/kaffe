@@ -19,15 +19,15 @@
 #include "stringSupport.h"
 #include "object.h"
 
-Hjava_lang_Class _Jv_intClass[1];
-Hjava_lang_Class _Jv_longClass[1];
-Hjava_lang_Class _Jv_booleanClass[1];
-Hjava_lang_Class _Jv_charClass[1];
-Hjava_lang_Class _Jv_floatClass[1]; 
-Hjava_lang_Class _Jv_doubleClass[1];
-Hjava_lang_Class _Jv_byteClass[1]; 
-Hjava_lang_Class _Jv_shortClass[1];     
-Hjava_lang_Class _Jv_voidClass[1];
+Hjava_lang_Class* _Jv_intClass;
+Hjava_lang_Class* _Jv_longClass;
+Hjava_lang_Class* _Jv_booleanClass;
+Hjava_lang_Class* _Jv_charClass;
+Hjava_lang_Class* _Jv_floatClass; 
+Hjava_lang_Class* _Jv_doubleClass;
+Hjava_lang_Class* _Jv_byteClass; 
+Hjava_lang_Class* _Jv_shortClass;     
+Hjava_lang_Class* _Jv_voidClass;
 
 extern gcFuncs gcClassObject;
 
@@ -35,8 +35,12 @@ Hjava_lang_Class* types[MAXTYPES];
 
 static
 void
-initPrimClass(Hjava_lang_Class* clazz, char* name, char sig, int len)
+initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 {
+	Hjava_lang_Class* clazz = newClass();
+	(*class) = clazz;
+	gc_add_ref(clazz);
+
 	clazz->dtable = _PRIMITIVE_DTABLE;
 	clazz->name = utf8ConstNew(name, -1);
 	CLASS_PRIM_SIG(clazz) = sig;
@@ -50,15 +54,15 @@ initPrimClass(Hjava_lang_Class* clazz, char* name, char sig, int len)
 void
 initTypes(void)
 {
-	initPrimClass(_Jv_byteClass, "byte", 'B', 1);
-	initPrimClass(_Jv_shortClass, "short", 'S', 2);
-	initPrimClass(_Jv_intClass, "int", 'I', 4);
-	initPrimClass(_Jv_longClass, "long", 'J', 8);
-	initPrimClass(_Jv_booleanClass, "boolean", 'Z', 1);
-	initPrimClass(_Jv_charClass, "char", 'C', 2);
-	initPrimClass(_Jv_floatClass, "float", 'F', 4);
-	initPrimClass(_Jv_doubleClass, "double", 'D', 8);
-	initPrimClass(_Jv_voidClass, "void", 'V', 0);
+	initPrimClass(&_Jv_byteClass, "byte", 'B', 1);
+	initPrimClass(&_Jv_shortClass, "short", 'S', 2);
+	initPrimClass(&_Jv_intClass, "int", 'I', 4);
+	initPrimClass(&_Jv_longClass, "long", 'J', 8);
+	initPrimClass(&_Jv_booleanClass, "boolean", 'Z', 1);
+	initPrimClass(&_Jv_charClass, "char", 'C', 2);
+	initPrimClass(&_Jv_floatClass, "float", 'F', 4);
+	initPrimClass(&_Jv_doubleClass, "double", 'D', 8);
+	initPrimClass(&_Jv_voidClass, "void", 'V', 0);
 
 	TYPE_CLASS(TYPE_Boolean) = _Jv_booleanClass;
 	TYPE_CLASS(TYPE_Char) = _Jv_charClass;
