@@ -1,5 +1,11 @@
 2004-03-24  Dalibor Topic <robilad@kaffe.org>
 
+	* include/kaffe/jmalloc.h:
+	[KAFFEVM_DEBUG](KFREE) Changed prototype to 
+	void * to fix compiler warnings.
+
+2004-03-24  Dalibor Topic <robilad@kaffe.org>
+
 	* ChangeLog: Shuffled stuff before 1.1.4 into
 	ChangeLog.9.
 

@@ -33,9 +33,9 @@ extern void	jfree(void* ptr);
  * to aid debugging.
  * */
 #undef KFREE
-static inline void KFREE(const void *p) {
-	jfree ((void *)p);
-	p = (void *)0;
+static inline void KFREE(void *p) {
+	jfree (p);
+	p = NULL;
 }
 #endif
 
