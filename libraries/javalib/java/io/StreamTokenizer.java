@@ -150,6 +150,8 @@ private int nextTokenType() throws IOException {
 		while (lookup(chr).isNumeric) {
 			buffer.append((char)chr);
 			chr = chrRead();
+			if (chr == '\n' && EOLSignificant)
+				break;
 		}
 
 		/* For next time */
@@ -173,6 +175,8 @@ private int nextTokenType() throws IOException {
 		while (lookup(chr).isAlphabetic || lookup(chr).isNumeric) {
 			buffer.append((char)chr);
 			chr = chrRead();
+			if (chr == '\n' && EOLSignificant)
+				break;
 		}
 
 		/* For next time */
@@ -359,7 +363,10 @@ public String toString() {
 
 public void whitespaceChars(int low, int hi) {
 	for (int letter = low; letter <= hi; letter++) {
-		lookup(letter).isWhitespace = true;
+		TableEntry e = lookup(letter);
+		e.isWhitespace = true;
+		e.isAlphabetic = false;
+		e.isNumeric = false;
 	}    
 }
 
