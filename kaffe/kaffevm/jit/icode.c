@@ -1080,7 +1080,7 @@ void
 neg_float(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_neg_float)
-	lslot_lslot_lslot(dst, 0, src, HAVE_neg_float, Tcomplex);
+	slot_slot_slot(dst, 0, src, HAVE_neg_float, Tcomplex);
 #else
 	SlotInfo* zero;
 	slot_alloctmp(zero);

@@ -1,3 +1,9 @@
+Sat Oct  2 15:20:16 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/jit/icode.c, kaffe/kaffevm/jit3/icode.c:
+	Changed lslot_lslot_lslot to slot_slot_slot in neg_float
+	to fix JIT3 problem.
+
 Wed Sep 29 13:04:11 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/Observable.java: rewrite
