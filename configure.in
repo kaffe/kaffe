@@ -677,6 +677,7 @@ if test "x$enable_gcj" != "xno"; then
     if test "x$have_libgcj_headers" = xyes; then
       enable_gcj=yes
       AC_DEFINE([HAVE_GCJ_SUPPORT], 1, [Enable GCJ support. ])
+      CFLAGS="$CFLAGS -fexceptions"
     fi
   fi
 fi
