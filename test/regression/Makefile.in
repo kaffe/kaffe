@@ -143,6 +143,10 @@ with_gnu_ld = @with_gnu_ld@
 SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
 TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript
+@HAVE_GCJ_SUPPORT_TRUE@TEST_Overflow = \
+@HAVE_GCJ_SUPPORT_TRUE@#
+@HAVE_GCJ_SUPPORT_FALSE@TEST_Overflow = \
+@HAVE_GCJ_SUPPORT_FALSE@Overflow.java
 
 TESTS = \
 	HelloWorldApp.class.save \
@@ -223,7 +227,7 @@ TESTS = \
 	FindSystemClass.java \
 	ProcessClassLockTest.java \
 	DoubleBug.java \
-	Overflow.java \
+	$(TEST_Overflow) \
 	TestUnlock.java \
 	MarkResetTest.java \
 	HashtableTest1.java \
