@@ -439,7 +439,9 @@ jthread_disable_stop(void)
 {
 	jthread_t tid = GET_JTHREAD();
 
-	tid->flags |= THREAD_FLAG_DONTSTOP;
+	/* XXX is called exactly once before initial thread context is created. */
+	if (tid != NULL)
+		tid->flags |= THREAD_FLAG_DONTSTOP;
 }
 
 /*
@@ -449,12 +451,16 @@ void
 jthread_enable_stop(void)
 {
 	jthread_t tid = GET_JTHREAD();
-
-	tid->flags &= ~THREAD_FLAG_DONTSTOP;
-	if (tid->status == THREAD_DYING) {
-		tid->status = THREAD_RUNNING;
-		onstop();
-		jthread_exit();
+	
+	/* XXX is called exactly once before initial thread context is created. */
+	if (tid != NULL)
+	{
+		tid->flags &= ~THREAD_FLAG_DONTSTOP;
+		if (tid->status == THREAD_DYING) {
+			tid->status = THREAD_RUNNING;
+			onstop();
+			jthread_exit();
+		}
 	}
 }
 

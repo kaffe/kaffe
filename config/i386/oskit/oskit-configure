@@ -113,8 +113,6 @@ export CC
 ### our script oskit-ld.sh as the linker.  To do this requires
 ### setting both CCLD and LD in the configure environment.
 ###
-### Oh, we pass the OSKITUNIX_CCFLAGS to the ld-script because it needs
-### to link different libraries in for a UNIX-mode oskit.
 
 CCLD="${SRCDIR}/config/i386/oskit/${OSKITCCLD} --oskit=${OSKITDIR} ${OSKITUNIX_LDFLAGS}"
 export CCLD

@@ -1,3 +1,12 @@
+Mon Sep  4 20:05:05 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
+
+	* kaffe/kaffevm/utf8const.c: explicitly #include debug.h
+	* config/i386/oskit/*: Update for impending OSKit release
+	20000904.  Other minor cleanup 
+	* kaffe/kaffevm/systems/oskit-pthreads/*: Fix jthread_disable_stop
+ 	and jthread_enable_stop (called in context without thread at
+ 	startup).  Fix jcondvar_destroy() prototype.
+	
 Fri Sep 01 18:10:36 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/debug.c(dbgSysInit): Since this function exists in

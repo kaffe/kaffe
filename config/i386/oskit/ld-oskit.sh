@@ -21,7 +21,7 @@ gcc=gcc
 bootloaderObject=multiboot.o
 #bootloaderObject=dos.o
 
-# Uncomment this line to include memdebug support
+# Uncomment/Comment this line to include/remove memdebug support
 loskit_memdebug="-loskit_memdebug"
 
 # remove all the -lm's from the library list.  We need to link against
@@ -83,7 +83,7 @@ if test -z "$is_unix"; then
 	-loskit_com					\
 	-loskit_kern					\
 	-loskit_freebsd_m 				\
-	$loskit_memdebug \
+	$loskit_memdebug 				\
 	-loskit_freebsd_c_r				\
 	-Wl,--end-group					\
 	${oskit}/lib/oskit/crtn.o 
@@ -98,15 +98,15 @@ else
 	-L${oskit}/lib				\
         -loskit_startup  			\
 	-loskit_clientos 			\
-	-loskit_fsnamespace_r			\
         -loskit_threads 			\
-	$loskit_memdebug \
+	-loskit_fsnamespace_r			\
+	$loskit_memdebug 			\
 	-loskit_unix 				\
 	-loskit_freebsd_net 			\
 	-loskit_linux_dev 			\
 	-loskit_dev				\
   	-loskit_freebsd_c_r  			\
-	-loskit_lmm \
+	-loskit_lmm 				\
 	-loskit_com				\
   	-loskit_freebsd_m 			\
 	-loskit_freebsd_c_r			\
