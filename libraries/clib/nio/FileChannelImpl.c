@@ -463,7 +463,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_implCloseChannel(JNIEnv *env, jobject
   int rc = KCLOSE(fd);
 
   if (rc != 0)
-    trowIOException(env, rc);
+    throwIOException(env, rc);
 }
 
 jboolean JNICALL
