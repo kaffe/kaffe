@@ -486,6 +486,7 @@ java_util_SRCS = \
 	java/util/AbstractCollection.java \
 	java/util/AbstractList.java \
 	java/util/AbstractListIterator.java \
+	java/util/AbstractMap.java \
 	java/util/AbstractSequentialList.java \
 	java/util/AbstractSet.java \
 	java/util/ArrayList.java \
