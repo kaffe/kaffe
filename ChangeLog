@@ -1,5 +1,15 @@
 2005-01-27  Dalibor Topic  <robilad@kaffe.org>
 
+        * libraries/javalib/gnu/java/rmi/dgc/DGCImpl_Skel.java,
+          libraries/javalib/gnu/java/rmi/dgc/DGCImpl_Stub.java,
+          libraries/javalib/gnu/java/rmi/registry/RegistryImpl_Skel.java,
+          libraries/javalib/gnu/java/rmi/registry/RegistryImpl_Stub.java:
+        Reverted the files back to Classpath's version since they are generated.
+	It would be cool to fix rmic to not generate such files, though, to
+	avoid the jikes warnings in generated code.
+
+2005-01-27  Dalibor Topic  <robilad@kaffe.org>
+
         Resynced with GNU Classpath.
 	
 	2005-01-27  Andrew John Hughes  <gnu_andrew@member.fsf.org>

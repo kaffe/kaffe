@@ -86,12 +86,12 @@ public final class RegistryImpl_Skel
         switch (opnum) {
         case 0:
         {
-            java.lang.String param_0;
-            java.rmi.Remote param_1;
+            java.lang.String $param_0;
+            java.rmi.Remote $param_1;
             try {
                 java.io.ObjectInput in = call.getInputStream();
-                param_0 = (java.lang.String)in.readObject();
-                param_1 = (java.rmi.Remote)in.readObject();
+                $param_0 = (java.lang.String)in.readObject();
+                $param_1 = (java.rmi.Remote)in.readObject();
                 
             }
             catch (java.io.IOException e) {
@@ -103,7 +103,7 @@ public final class RegistryImpl_Skel
             finally {
                 call.releaseInputStream();
             }
-            server.bind(param_0, param_1);
+            server.bind($param_0, $param_1);
             try {
                 java.io.ObjectOutput out = call.getResultStream(true);
             }
@@ -125,10 +125,10 @@ public final class RegistryImpl_Skel
             finally {
                 call.releaseInputStream();
             }
-            java.lang.String[] result = server.list();
+            java.lang.String[] $result = server.list();
             try {
                 java.io.ObjectOutput out = call.getResultStream(true);
-                out.writeObject(result);
+                out.writeObject($result);
             }
             catch (java.io.IOException e) {
                 throw new java.rmi.MarshalException("error marshalling return", e);
@@ -138,10 +138,10 @@ public final class RegistryImpl_Skel
         
         case 2:
         {
-            java.lang.String param_0;
+            java.lang.String $param_0;
             try {
                 java.io.ObjectInput in = call.getInputStream();
-                param_0 = (java.lang.String)in.readObject();
+                $param_0 = (java.lang.String)in.readObject();
                 
             }
             catch (java.io.IOException e) {
@@ -153,10 +153,10 @@ public final class RegistryImpl_Skel
             finally {
                 call.releaseInputStream();
             }
-            java.rmi.Remote result = server.lookup(param_0);
+            java.rmi.Remote $result = server.lookup($param_0);
             try {
                 java.io.ObjectOutput out = call.getResultStream(true);
-                out.writeObject(result);
+                out.writeObject($result);
             }
             catch (java.io.IOException e) {
                 throw new java.rmi.MarshalException("error marshalling return", e);
@@ -166,12 +166,12 @@ public final class RegistryImpl_Skel
         
         case 3:
         {
-            java.lang.String param_0;
-            java.rmi.Remote param_1;
+            java.lang.String $param_0;
+            java.rmi.Remote $param_1;
             try {
                 java.io.ObjectInput in = call.getInputStream();
-                param_0 = (java.lang.String)in.readObject();
-                param_1 = (java.rmi.Remote)in.readObject();
+                $param_0 = (java.lang.String)in.readObject();
+                $param_1 = (java.rmi.Remote)in.readObject();
                 
             }
             catch (java.io.IOException e) {
@@ -183,7 +183,7 @@ public final class RegistryImpl_Skel
             finally {
                 call.releaseInputStream();
             }
-            server.rebind(param_0, param_1);
+            server.rebind($param_0, $param_1);
             try {
                 java.io.ObjectOutput out = call.getResultStream(true);
             }
@@ -195,10 +195,10 @@ public final class RegistryImpl_Skel
         
         case 4:
         {
-            java.lang.String param_0;
+            java.lang.String $param_0;
             try {
                 java.io.ObjectInput in = call.getInputStream();
-                param_0 = (java.lang.String)in.readObject();
+                $param_0 = (java.lang.String)in.readObject();
                 
             }
             catch (java.io.IOException e) {
@@ -210,7 +210,7 @@ public final class RegistryImpl_Skel
             finally {
                 call.releaseInputStream();
             }
-            server.unbind(param_0);
+            server.unbind($param_0);
             try {
                 java.io.ObjectOutput out = call.getResultStream(true);
             }
