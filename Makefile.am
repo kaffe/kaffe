@@ -209,16 +209,16 @@ endif
 
 kaffe-build-order:
 	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
-		$(MAKE) -C $$subdir $(KAFFE_BUILD_TARGET) || exit $$? ; \
+		(cd $$subdir && $(MAKE) $(KAFFE_BUILD_TARGET)) || exit $$? ; \
 	done; \
-	$(MAKE) -C libraries/javalib $(KAFFE_BUILD_TARGET) || exit $$? ; \
+	(cd libraries/javalib && $(MAKE) $(KAFFE_BUILD_TARGET)) || exit $$? ; \
 	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
-		$(MAKE) -C $$subdir $(KAFFE_BUILD_TARGET) || exit $$? ; \
+		(cd $$subdir && $(MAKE) $(KAFFE_BUILD_TARGET)) || exit $$? ; \
 	done ;
 
 all-local: KAFFE_BUILD_TARGET = all
 all-local: kaffe-build-order
-	$(MAKE) -C kaffe/kaffe final-executable
+	cd kaffe/kaffe && $(MAKE) final-executable
 
 install-exec-hook: KAFFE_BUILD_TARGET = install-exec
 install-exec-hook: kaffe-build-order
@@ -233,4 +233,4 @@ clean-local: KAFFE_BUILD_TARGET = clean
 clean-local: kaffe-build-order
 
 check-local:
-	$(MAKE) -C test check
+	cd test && $(MAKE) check

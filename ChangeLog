@@ -1,3 +1,12 @@
+2004-07-10  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* Makefile.am (kaffe-build-order): don't use -C option since it's
+	not available on all makes
+
+	* Makefile.in: regenerated
+	
+	Reported by: Riccardo Mottola  <zuse@libero.it>
+	
 2004-07-10  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/ksem.c: Removed a commented assertion.
