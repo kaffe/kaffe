@@ -1,3 +1,8 @@
+Wed Jun 30 14:49:20 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/code-analyse.c: verifyBasicBlock returns true on
+	failure
+
 Tue Jun 29 17:34:27 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 
 	* developers/gdbinit: update gcmem2block for current gc layout
