@@ -1,5 +1,12 @@
 2003-08-20  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/javalib/java/rmi/Naming.java:
+	(lookup,bind,rebind) check if the first character of the filename
+	returned by URL.getFile() is a '/', only if it is the case we cut
+	this first character and call the registry with the good name.
+
+2003-08-20  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/java/io/ObjectInputStream.java:
 	(readClassDescriptor) call resolveClass(ObjectStreamClass)
 	at the right moment ant not resolveClass(String) at the top of
