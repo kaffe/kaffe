@@ -406,8 +406,8 @@ verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 		if (sp < meth->localsz || sp > meth->localsz + meth->stacksz) {
 			failed = true;
 			postExceptionMessage(einfo, JAVA_LANG(VerifyError),
-				"sp out of range: %d <%d> %d\n", 
-				meth->localsz, sp, 
+				"at pc %d sp %d not in range [%d, %d]",
+				pc, sp, meth->localsz, 
 				meth->localsz + meth->stacksz);
 			break;
 		}
@@ -1959,7 +1959,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 	/* If we flow into the next basic block, set the stack pointer
 	 * and merge in the frame.
 	 */
-	if (pc < meth->c.bcode.codelen && IS_NORMALFLOW(pc)) {
+	if (!failed && pc < meth->c.bcode.codelen && IS_NORMALFLOW(pc)) {
 		assert(IS_STARTOFBASICBLOCK(pc) || IS_STARTOFEXCEPTION(pc));
 		FRAMEMERGE(pc, sp);
 	}
