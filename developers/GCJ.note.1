@@ -1,4 +1,11 @@
 #
+# Update: This is no longer necessary iff you specify the 
+# -fkeep-inline-functions flag.
+# This should hold true for gcc snapshots more recent than Dec 14
+# see Per Bothner's change to class.c
+#
+###############################################################################
+#
 # Note: this files must not be compiled with optimization turned on
 # in order to avoid that private methods are excluded from the
 # method table.
