@@ -1,3 +1,13 @@
+1999-05-19  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in (LIBS, *_LIBS): My 1999-04-23 change did break some
+	dumb linkers.  Fixed so that directories specified
+	--with-libraries are prepended to *_LIBS variables such as
+	ZIP_LIBS, MATH_LIBS and AWT_LIBS, so as to make sure appears -Ls
+	appear before -ls.  This will lead to repeated -Ls, but at least
+	it will work.
+	* configure: Rebuilt.
+
 1999-05-19  Edouard Parmelan <Edouard.Parmelan@quadratec.fr>
 
 	* libraries/javalib/java/awt/Image.java: Fix operators

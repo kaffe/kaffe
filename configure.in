@@ -21,12 +21,14 @@ AC_ARG_WITH(includes,
 
 AC_ARG_WITH(libraries,
   [  --with-libraries=dirs   Search for libraries in specified directories],
-  [ LIBS="$LIBS"`echo " $withval" |
+  [ CTLIBS="$CTLIBS"`echo " $withval" |
 	sed -e 's/ / -L/g' -e 's/-L //g' -e 's/-L$//'`
     LTLIBS="$LTLIBS"`echo " $withval" |
 	sed -e 's/ / -R/g' -e 's/-R //g' -e 's/-R$//'`],
-  [ LIBS="$LIBS -L/usr/local/lib"
+  [ CTLIBS="$CTLIBS -L/usr/local/lib"
     LTLIBS="$LTLIBS -R/usr/local/lib"])
+
+LIBS="$CTLIBS $LIBS"
 
 dnl Find the compiler early on in case we need to override.
 AC_PROG_CC
@@ -98,7 +100,7 @@ esac
 
 AC_LIBTOOL_DLOPEN
 AC_LIBLTDL_CONVENIENCE
-AM_PROG_LIBTOOL
+AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 AC_SUBST(LIBLTDL)
 
@@ -488,10 +490,12 @@ AC_SUBST(NET_LIBS)
 
 dnl Check for libraries for zip library.
 AC_CHECK_LIBRARY(z,deflate,ZIP_LIBS)
+ZIP_LIBS="$CTLIBS $ZIP_LIBS"
 AC_SUBST(ZIP_LIBS)
 
 dnl Check for libraries for math library.
 AC_CHECK_LIBRARY(gmp,mpz_add,MATH_LIBS)
+MATH_LIBS="$CTLIBS $MATH_LIBS"
 AC_SUBST(MATH_LIBS)
 
 dnl Checks for libraries for X related libraries.
@@ -543,6 +547,7 @@ else
   esac
 
   AWT_LIBS="$JPEG_LIBS $PNG_LIBS $GIF_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
+  AWT_LIBS="$CTLIBS $AWT_LIBS"
   AC_SUBST(AWT_LIBS)
 fi
 
