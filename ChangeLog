@@ -1,3 +1,9 @@
+Sun Jan  3 11:51:52 1999  Archie Cobbs <archie@whistle.com>
+
+	* test/regression/Reflect.{java,out}: don't display final keyword
+	for methods in a final class (this fixes this test when jikes is
+	used to build Klasses.jar).
+
 Sat Jan  2 14:16:14 1999  Godmar Back <gback@cs.utah.edu>
 
 	* libraries/clib/awt/X/imgjpeg.c: initialized local var img to zero

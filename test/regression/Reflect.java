@@ -14,17 +14,28 @@ public class Reflect {
     }
     try {
       Class cls = Class.forName(name);
+      boolean isfinal = false;
+
+      // In a final class, methods legally may or may not be marked final.
+      // To produce consistent output, remove the "final" keywords
+      if (Modifier.isFinal(cls.getModifiers())) {
+	isfinal = true;
+      }
+
       Method[] meth = cls.getMethods();
       for (int i = 0; i < meth.length; i++) {
-        System.out.println("Method: " + meth[i].toString());
+        System.out.println("Method: "
+	  + (isfinal ? stripFinal(meth[i].toString()) : meth[i].toString()));
       }
+
       Constructor[] cnst = cls.getConstructors();
       for (int i = 0; i < cnst.length; i++) {
-        System.out.println("Constructor: " + cnst[i].toString());
+        System.out.println("Constructor: " + cnst[i]);
       }
+
       Field[] fld = cls.getFields();
       for (int i = 0; i < fld.length; i++) {
-        System.out.println("Field: " + fld[i].toString());
+        System.out.println("Field: " + fld[i]);
       }
     }
     catch (ClassNotFoundException _) {
@@ -32,4 +43,11 @@ public class Reflect {
     }
   }
 
+  private static String stripFinal(String s) {
+    int i = s.indexOf("final ");
+    if (i == -1) {
+      return(s);
+    }
+    return s.substring(0, i) + s.substring(i + 6);
+  }
 }
