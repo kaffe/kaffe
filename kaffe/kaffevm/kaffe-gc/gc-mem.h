@@ -158,8 +158,7 @@ extern void	gc_primitive_free(gc_block* mem);
  * Evaluates to the gc_block that contains address @M.
  *
  */
-#define GCMEM2BLOCK(M)		(KGC_BLOCKS + ((((uintp) M) - gc_heap_base) \
-					      >> gc_pgbits))
+#define GCMEM2BLOCK(M)		(KGC_BLOCKS + ( ( ((uintp) (M)) - gc_heap_base) >> gc_pgbits))
 
 /**
  * Evaluates to the first usable address in gc_block @B.

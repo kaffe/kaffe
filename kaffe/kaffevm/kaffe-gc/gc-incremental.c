@@ -58,7 +58,7 @@ static const int finalise = 0;
 
 static int gc_init = 0;
 static volatile int gcDisabled = 0;
-static volatile int gcRunning = 0;
+static volatile int gcRunning = -1;
 static volatile bool finalRunning = false;
 #if defined(KAFFE_STATS)
 static timespent gc_time;
@@ -953,6 +953,9 @@ void
 gcInvokeGC(Collector* gcif UNUSED, int mustgc)
 {
 	int iLockRoot;
+
+	while (gcRunning < 0)
+		jthread_yield();
 
 	lockStaticMutex(&gcman);
 	if (gcRunning == 0) {

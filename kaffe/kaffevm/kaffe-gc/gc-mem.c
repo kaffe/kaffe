@@ -39,6 +39,7 @@
 #define MAX(A,B) ((A) > (B) ? (A) : (B))
 #endif
 
+static gc_block *gc_last_block;
 static iStaticLock	gc_heap_lock;
 
 #if defined(KAFFE_STATS)
@@ -154,7 +155,6 @@ printslack(void)
 		totalsmallobjs, totalslack, totalslack/(double)totalsmallobjs);
 }
 
-
 /*
  * check whether the heap is still in a consistent state
  */
@@ -163,6 +163,28 @@ gc_heap_check(void)
 {
 	int i; 
 
+	gc_block *chk_blk = gc_last_block;
+
+	while (chk_blk->pprev != NULL)
+	  {
+	    if (chk_blk->pprev != NULL && chk_blk->pprev->pnext != chk_blk)
+	      {
+		dprintf("Major failure in the Garbage Collector. Primitive block list trashed\n");
+		abort();
+	      }
+	    chk_blk = chk_blk->pprev;
+	  }
+
+	while (chk_blk != gc_last_block)
+	  {
+	    if (chk_blk->pnext != NULL && chk_blk->pnext->pprev != chk_blk)
+	      {
+		dprintf("Major failure in the Garbage Collector (2). Primitive block list trashed\n");
+		abort();
+	      }
+	    chk_blk = chk_blk->pnext;
+	  }
+	
 	for (i = 0; i < NR_FREELISTS; i++) {
 		gc_block* blk = freelist[i].list;
 		if (blk == 0 || blk == (gc_block*)-1) {
@@ -464,6 +486,7 @@ DBG(GCFREE,
 
 			info->size = gc_pgsize;
 			gc_primitive_free(info);
+
 		} else if (info->avail==1) {
 			/*
 			 * If this block contains no free sub-blocks yet, attach
@@ -503,6 +526,8 @@ gc_small_block(size_t sz)
 	gc_block* info;
 	int i;
 	int nr;
+
+	assert(sz >= sizeof(gc_block *));
 
 	info = gc_primitive_alloc(gc_pgsize);
 	if (info == 0) {
@@ -628,8 +653,7 @@ gc_large_block(size_t sz)
  */
 #define KGC_PRIM_LIST_COUNT 20
 
-uintp gc_block_base;
-static gc_block *gc_last_block;
+uintp gc_block_base = 0;
 static gc_block *gc_prim_freelist[KGC_PRIM_LIST_COUNT+1];
 
 #ifndef PROT_NONE
@@ -854,6 +878,7 @@ gc_primitive_free(gc_block* mem)
 	gc_block *blk;
 
 	assert(mem->size % gc_pgsize == 0);
+	assert(GCBLOCKINUSE(mem));
 
 	/* Remove from object hash */
 	gc_block_rm(mem);
@@ -865,7 +890,9 @@ gc_primitive_free(gc_block* mem)
 	 * We need to do the gc_block_end check, since the heap may not be a continuous
 	 * memory area and thus two consecutive blocks need not be mergable. 
 	 */
-	if ((blk=mem->pnext) &&
+	
+        blk = mem->pnext;
+	if ((blk != NULL) &&
 	    !GCBLOCKINUSE(blk) &&
 	    gc_block_end(mem)==blk) {
 		DBG(GCPRIM, dprintf ("gc_primitive_free: merging %p with its successor (%p, %u)\n", mem, blk, blk->size);)
@@ -875,18 +902,19 @@ gc_primitive_free(gc_block* mem)
 		gc_merge_with_successor (mem);
 	}
 
-	if ((blk=mem->pprev) &&
+	blk = mem->pprev;
+	if ((blk != NULL) &&
 	    !GCBLOCKINUSE(blk) &&
 	    gc_block_end(blk)==mem) {
 		DBG(GCPRIM, dprintf ("gc_primitive_free: merging %p with its predecessor (%p, %u)\n", mem, blk, blk->size); )
 
 		gc_remove_from_prim_freelist(blk);
-
+		  
 		mem = blk;
 
 		gc_merge_with_successor (mem);
 	}
-
+	
 	gc_add_to_prim_freelist (mem);
 
 	DBG(GCPRIM, dprintf ("gc_primitive_free: added 0x%x bytes @ %p to freelist %u @ %p\n", mem->size, mem,
@@ -969,7 +997,7 @@ pagealloc(size_t size)
 
         ptr = malloc(size);
 	CHECK_OUT_OF_MEMORY(ptr);
-	ptr = (void*)((((uintp)ptr) + gc_pgsize - 1) & -gc_pgsize);
+	ptr = (void*)((((uintp)ptr) + gc_pgsize - 1) & (uintp)-gc_pgsize);
 
 #endif
 	mprotect(ptr, size, ALL_PROT);
@@ -1075,13 +1103,19 @@ gc_block_alloc(size_t size)
 		   now. */ 
 		if (gc_block_base != old_blocks) {
 			int i;
-			gc_block *b = (void *) gc_block_base;
+			gc_block *b = (gc_block *) gc_block_base;
 			uintp delta = gc_block_base - old_blocks;
 #define R(X) if (X) ((uintp) (X)) += delta
 
 			DBG(GCSYSALLOC,
 			    dprintf("relocating gc_block array\n"));
-			for (i = 0; i < onb; i++) R(b[i].next);
+			for (i = 0; i < onb; i++) 
+			  {
+			    R(b[i].next);
+			    R(b[i].pprev);
+			    R(b[i].pnext);
+			  }
+
 			memset(b + onb, 0,
 			       (nblocks - onb) * sizeof(gc_block));
 
@@ -1167,11 +1201,12 @@ gc_heap_grow(size_t sz)
 	if (gc_last_block) {
 		gc_last_block->pnext = blk;
 		blk->pprev = gc_last_block;
-	} else {
-		gc_last_block = blk;
 	}
+	
+	gc_last_block = blk;
 
 	/* Free block into the system */
+	blk->nr = 1;
 	gc_primitive_free(blk);
 
 	unlockStaticMutex(&gc_heap_lock);

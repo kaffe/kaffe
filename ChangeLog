@@ -1,3 +1,21 @@
+2004-08-31  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	(gcRunning): Default value set to -1.
+	(gcInvokeGC): Wait for gcRunning to be 0 before starting
+	the real work.
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c
+	(gc_heap_check): Check the full integrity of the primitive block
+	list.
+	(gc_primitive_free): Separated the initialization of blk from the
+	the if condition. Check that the block is actually being used.
+	(gc_block_alloc): Update primitive block list if realloc gives a
+	different pointer.
+	(gc_heap_grow): Always set gc_last_block to blk. Fake a used block
+	for gc_primitive_free.
+	Various new assertion checkings and codestyle cleanups.
+	
 2004-08-30  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/i386/linux/md.c: Added missing md.h include.
