@@ -678,8 +678,8 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 			else {
 				syncobj = (Hjava_lang_Object*)call.args[0].l;
 			}
+			lockObject(syncobj);
 		}
-		lockObject(syncobj);
 
 		/* Make the call - system dependent */
 		sysdepCallMethod(&call);

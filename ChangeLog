@@ -1,5 +1,7 @@
 1999-09-18  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
+	* kaffe/kaffevm/support.c (callMethodV): Do not lockObject(0).
+
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c (TLOCK,
 	TUNLOCK): Protect macro argument with parentheses.  Make them a
 	single statement.
