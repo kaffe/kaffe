@@ -153,7 +153,9 @@ static void printProfilerStats(void);
 jboolean
 translate(Method* xmeth, errorInfo* einfo)
 {
+#if defined(KAFFE_VMDEBUG)
 	int i;
+#endif /* defined(KAFFE_VMDEBUG) */
 
 	jint low;
 	jint high;

@@ -1,6 +1,14 @@
 2004-08-26  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/jit3/constpool.c (printConstant): 
+	Only define if debugging is enabled. For real, this time.
+
+	* kaffe/kaffevm/jit3/machine.c (translate): 
+	Only declare i if debugging is enabled.
+	
+2004-08-26  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/jit3/constpool.c (printConstant): 
 	Only define if debugging is enabled.
 
 2004-08-26  Guilhem Lavaux <guilhem@kaffe.org>
