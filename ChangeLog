@@ -1,5 +1,13 @@
 2003-06-24  Dalibor Topic <robilad@yahoo.com>
 
+	* herrno.m4, in6addr.m4, include/dummyin6.h, replace/dummyin6.c,
+	replace/getaddrinfo.c, replace/memset.c, sockaddrin6.m4,
+	sockinttypes.m4: updated to getaddrinfo 1.6.
+	
+	Reported by:  Ito Kazumitsu <kaz@maczuka.gcd.org>
+	
+2003-06-24  Dalibor Topic <robilad@yahoo.com>
+
 	* developers/patch-libtool-amiga-max-command-line-length.diff:
 	new file.
 	

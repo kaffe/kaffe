@@ -412,7 +412,7 @@
 /* Define to 1 if you have the `strtoul' function. */
 #undef HAVE_STRTOUL
 
-/* Define if <netinet/in.h> defines \`struct in6_addr' */
+/* Define to 1 if <netinet/in.h> defines `struct in6_addr' */
 #undef HAVE_STRUCT_IN6_ADDR
 
 /* Do we have sigcontext */
@@ -421,7 +421,7 @@
 /* Do we have sigcontext_struct */
 #undef HAVE_STRUCT_SIGCONTEXT_STRUCT
 
-/* Define if <netinet/in.h> defines \`struct sockaddr_in6' */
+/* Define to 1 if <netinet/in.h> defines `struct sockaddr_in6' */
 #undef HAVE_STRUCT_SOCKADDR_IN6
 
 /* Define to 1 if `sin6_flowinfo' is member of `struct sockaddr_in6'. */
@@ -430,7 +430,7 @@
 /* Define to 1 if `sin6_scope_id' is member of `struct sockaddr_in6'. */
 #undef HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID
 
-/* Define if <netinet/in.h> defines \`struct sockaddr_storage' */
+/* Define to 1 if <netinet/in.h> defines `struct sockaddr_storage' */
 #undef HAVE_STRUCT_SOCKADDR_STORAGE
 
 /* Define to 1 if `tm_zone' is member of `struct tm'. */
@@ -581,16 +581,16 @@
 /* Define if we have __va_copy */
 #undef HAVE___VA_COPY
 
-/* Define if \`h_errno' is declared by <netdb.h> */
+/* Define to 1 if `h_errno' is declared by <netdb.h> */
 #undef H_ERRNO_DECLARED
 
 /* Define as const if the declaration of iconv() needs const. */
 #undef ICONV_CONST
 
-/* Define if \`in6addr_any' is declared by <netinet/in.h> */
+/* Define to 1 if `in6addr_any' is declared by <netinet/in.h> */
 #undef IN6ADDR_ANY_DECLARED
 
-/* Define if \`in6addr_loopback' is declared by <netinet/in.h> */
+/* Define to 1 if `in6addr_loopback' is declared by <netinet/in.h> */
 #undef IN6ADDR_LOOPBACK_DECLARED
 
 /* Kaffe version number */
@@ -689,7 +689,10 @@
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
-/* Define to \`int' if <sys/types.h> or <sys/socket.h> does not define. */
+/* Define to `unsigned char', `unsigned short', `unsigned int' or `unsigned
+   long' according with size of `sin_port' in `struct sockaddr_in', if
+   <sys/types.h>, <sys/socket.h> or <netinet/in.h> does not define
+   `in_port_t'. */
 #undef in_port_t
 
 /* Define as `__inline' if that's what the C compiler calls it, or to nothing
@@ -702,13 +705,15 @@
 /* Define to `int' if <sys/types.h> does not define. */
 #undef pid_t
 
-/* Define to \`int' if <sys/types.h> or <sys/socket.h> does not define. */
+/* Define to `unsigned char', `unsigned short', `unsigned int' or `unsigned
+   long' according with size of `sa_family' in `struct sockaddr', if
+   <sys/types.h> or <sys/socket.h> does not define `sa_family_t'. */
 #undef sa_family_t
 
 /* Define to `unsigned' if <sys/types.h> does not define. */
 #undef size_t
 
-/* Define to \`int' if <sys/types.h> or <sys/socket.h> does not define. */
+/* Define to `int' if <sys/types.h> or <sys/socket.h> does not define. */
 #undef socklen_t
 
 /* Define to `int' if <sys/types.h> does not define. */

@@ -52,7 +52,6 @@
  *   AC_DECL_IN6ADDR_ANY
  *   AC_DECL_IN6ADDR_LOOPBACK
  */
-
 #include "dummyin6.h"
 
 #ifndef IN6ADDR_ANY_DECLARED
@@ -62,4 +61,3 @@ const struct in6_addr in6addr_any = IN6ADDR_ANY_INIT;
 #ifndef IN6ADDR_LOOPBACK_DECLARED
 const struct in6_addr in6addr_loopback = IN6ADDR_LOOPBACK_INIT;
 #endif
-

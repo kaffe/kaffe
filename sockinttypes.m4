@@ -33,12 +33,12 @@ AC_DEFUN([AC_TYPE_SOCKLEN_T],
 [AC_CACHE_CHECK([for socklen_t], ac_cv_type_socklen_t,
 [AC_TRY_COMPILE([
 #include <sys/types.h>
-#include <sys/socket.h>],[
+#include <sys/socket.h>], [
 socklen_t socklen;
 ], [ac_cv_type_socklen_t=yes], [ac_cv_type_socklen_t=no])])
 if test "$ac_cv_type_socklen_t" != yes; then
     AC_DEFINE(socklen_t, int,
-[Define to \`int' if <sys/types.h> or <sys/socket.h> does not define.])
+[Define to `int' if <sys/types.h> or <sys/socket.h> does not define.])
 fi])
 
 dnl * 
@@ -49,16 +49,55 @@ AC_DEFUN([AC_TYPE_IN_PORT_T],
 [AC_TRY_COMPILE([
 #include <sys/types.h>
 #include <sys/socket.h>
-/* GLIBC defines in_port in netinet/in.h */
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-],[
+#include <netinet/in.h>], [
 in_port_t in_port;
 ], [ac_cv_type_in_port_t=yes], [ac_cv_type_in_port_t=no])])
 if test "$ac_cv_type_in_port_t" != yes; then
-    AC_DEFINE(in_port_t, int,
-[Define to \`int' if <sys/types.h> or <sys/socket.h> does not define.])
+    ac_cv_sin_port_size=unknown
+    AC_TRY_RUN([
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    int main() {
+	struct sockaddr_in addr;
+	return (sizeof(addr.sin_port) == sizeof(long)) ? 0 : 1;
+    }
+    ], [ac_cv_sin_port_size=long])
+    AC_TRY_RUN([
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    int main() {
+	struct sockaddr_in addr;
+	return (sizeof(addr.sin_port) == sizeof(int)) ? 0 : 1;
+    }
+    ], [ac_cv_sin_port_size=int])
+    AC_TRY_RUN([
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    int main() {
+	struct sockaddr_in addr;
+	return (sizeof(addr.sin_port) == sizeof(short)) ? 0 : 1;
+    }
+    ], [ac_cv_sin_port_size=short])
+    AC_TRY_RUN([
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    int main() {
+	struct sockaddr_in addr;
+	return (sizeof(addr.sin_port) == sizeof(char)) ? 0 : 1;
+    }
+    ], [ac_cv_sin_port_size=char])
+    if test "ac_cv_sin_port_size" = unknown; then
+	AC_MSG_ERROR([Failed to get size of sin_port in struct sockaddr_in.])
+    fi
+    AC_DEFINE_UNQUOTED(in_port_t, unsigned $ac_cv_sin_port_size,
+[Define to `unsigned char', `unsigned short', `unsigned int' or
+`unsigned long' according with size of `sin_port' in `struct sockaddr_in',
+if <sys/types.h>, <sys/socket.h> or <netinet/in.h> does not define
+`in_port_t'.])
 fi])
 
 dnl * 
@@ -68,10 +107,48 @@ AC_DEFUN([AC_TYPE_SA_FAMILY_T],
 [AC_CACHE_CHECK([for sa_family_t], ac_cv_type_sa_family_t,
 [AC_TRY_COMPILE([
 #include <sys/types.h>
-#include <sys/socket.h>],[
+#include <sys/socket.h>], [
 sa_family_t sa_family;
 ], [ac_cv_type_sa_family_t=yes], [ac_cv_type_sa_family_t=no])])
 if test "$ac_cv_type_sa_family_t" != yes; then
-    AC_DEFINE(sa_family_t, int,
-[Define to \`int' if <sys/types.h> or <sys/socket.h> does not define.])
+    ac_cv_sa_family_size=unknown
+    AC_TRY_RUN([
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    int main() {
+	struct sockaddr addr;
+	return (sizeof(addr.sa_family) == sizeof(long)) ? 0 : 1;
+    }
+    ], [ac_cv_sa_family_size=long])
+    AC_TRY_RUN([
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    int main() {
+	struct sockaddr addr;
+	return (sizeof(addr.sa_family) == sizeof(int)) ? 0 : 1;
+    }
+    ], [ac_cv_sa_family_size=int])
+    AC_TRY_RUN([
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    int main() {
+	struct sockaddr addr;
+	return (sizeof(addr.sa_family) == sizeof(short)) ? 0 : 1;
+    }
+    ], [ac_cv_sa_family_size=short])
+    AC_TRY_RUN([
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    int main() {
+	struct sockaddr addr;
+	return (sizeof(addr.sa_family) == sizeof(char)) ? 0 : 1;
+    }
+    ], [ac_cv_sa_family_size=char])
+    if test "ac_cv_sa_family_size" = unknown; then
+	AC_MSG_ERROR([Failed to get size of sa_family in struct sockaddr.])
+    fi
+    AC_DEFINE_UNQUOTED(sa_family_t, unsigned $ac_cv_sa_family_size,
+[Define to `unsigned char', `unsigned short', `unsigned int' or
+`unsigned long' according with size of `sa_family' in `struct sockaddr',
+if <sys/types.h> or <sys/socket.h> does not define `sa_family_t'.])
 fi])

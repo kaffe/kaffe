@@ -39,7 +39,7 @@ struct in6_addr address;
 ], [ac_cv_struct_in6_addr=yes], [ac_cv_struct_in6_addr=no])])
 if test "$ac_cv_struct_in6_addr" = yes; then
     AC_DEFINE(HAVE_STRUCT_IN6_ADDR, 1,
-[Define if <netinet/in.h> defines \`struct in6_addr'])
+[Define to 1 if <netinet/in.h> defines `struct in6_addr'])
 fi])
 
 dnl * 
@@ -61,7 +61,7 @@ address = (char *)&in6addr_any;
 ], [ac_cv_decl_in6addr_any=yes], [ac_cv_decl_in6addr_any=no])])
     if test "$ac_cv_decl_in6addr_any" = yes; then
         AC_DEFINE(IN6ADDR_ANY_DECLARED, 1,
-[Define if \`in6addr_any' is declared by <netinet/in.h>])
+[Define to 1 if `in6addr_any' is declared by <netinet/in.h>])
     fi
 fi])
 
@@ -84,6 +84,6 @@ address = (char *)&in6addr_loopback;
 ], [ac_cv_decl_in6addr_loopback=yes], [ac_cv_decl_in6addr_loopback=no])])
     if test "$ac_cv_decl_in6addr_loopback" = yes; then
         AC_DEFINE(IN6ADDR_LOOPBACK_DECLARED, 1,
-[Define if \`in6addr_loopback' is declared by <netinet/in.h>])
+[Define to 1 if `in6addr_loopback' is declared by <netinet/in.h>])
     fi
 fi])

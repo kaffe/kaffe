@@ -64,17 +64,17 @@
 
 #ifndef HAVE_STRUCT_IN6_ADDR
 struct in6_addr {
-    unsigned char s6_addr[16];
+    unsigned char	s6_addr[16];
 };
 #endif
 
 #ifndef HAVE_STRUCT_SOCKADDR_IN6
 struct sockaddr_in6 {
-    sa_family_t sin6_family;
-    in_port_t sin6_port;
-    int sin6_flowinfo;
-    struct in6_addr sin6_addr;
-    int sin6_scope_id;
+    sa_family_t		sin6_family;
+    in_port_t		sin6_port;
+    unsigned long	sin6_flowinfo;
+    struct in6_addr	sin6_addr;
+    unsigned long	sin6_scope_id;
 };
 #endif
 

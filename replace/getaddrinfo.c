@@ -28,8 +28,8 @@
 
 /*
  * This program provides getaddrinfo() and getnameinfo() described in
- * RFC2553.  These functions are mainly used for IPv6 application to
- * resolve hostname or address.
+ * RFC2133, 2553 and 3493.  These functions are mainly used for IPv6
+ * application to resolve hostname or address.
  * 
  * This program is designed to be working on traditional IPv4 systems
  * which don't have those functions.  Therefore, this implementation
