@@ -299,7 +299,7 @@ define_insn(epilogue, epilogue_xxx)
 {
 	label *el;
 
-	if( (el = getLastEpilogueLabel()) && (el->at == (CODEPC - 4)) )
+	if( (el = KaffeJIT3_getLastEpilogueLabel()) && (el->at == (CODEPC - 4)) )
 	{
 		/*
 		 * Nothing to jump over to get to the epilogue...  Replace
