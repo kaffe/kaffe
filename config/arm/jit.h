@@ -302,9 +302,8 @@ extern void arm_do_fixup_trampoline(void);
 /* Wrap up a native call for the JIT */
 #define KAFFEJIT_TO_NATIVE(M)
 
-/* For now, ignore BEG and END since we flush the complete I&D cache FIXME */
-extern void flush_dcache(void);
-#define	FLUSH_DCACHE(BEG, END)	flush_dcache()
+extern void flush_dcache(void *start, void *end);
+#define	FLUSH_DCACHE(BEG, END) flush_dcache(BEG, END)
 
 #if defined(JIT3)
 /*

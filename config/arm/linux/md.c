@@ -12,6 +12,14 @@
 #include "config.h"
 #include <malloc.h>
 #include <sched.h>
+#include <asm/unistd.h>
+
+/* If VM_EXEC is not defined, use definition from 
+ * linux/mm.h.
+ */
+#if !defined(VM_EXEC)
+long VM_EXEC =       0x00000004;
+#endif /* !defined(VM_EXEC) */
 
 void            
 init_md(void)
@@ -21,18 +29,17 @@ init_md(void)
 #endif
 }
 
-#define CACHE_SIZE (32 * 1024)
-#define LINE_SIZE sizeof(int)
-#define CACHE_LINES (CACHE_SIZE / LINE_SIZE)
-
-static volatile int flusher[CACHE_LINES];
-
-void
-flush_dcache(void)
-{
-        int i;
-        for (i = 0; i < CACHE_LINES; i++) {
-                flusher[i]++;
-        }
-        sched_yield();
+/**
+ * Shamelessly stolen from parrot... ([perl]/parrot/jit/arm/jit_emit.h arm_sync_d_i_cache)
+ *
+ * r2 should be zero for 2.4 (but it's ignored) so passing VM_EXEC (needed for 2.6) should be okay.
+ */
+void flush_dcache(void *start, void *end) {
+  __asm __volatile ("mov r0, %0\n"
+		    "mov r1, %1\n"
+		    "mov r2, #VM_EXEC\n"
+		    "swi " __sys1(__ARM_NR_cacheflush) "\n"
+		    : /* no return value */
+		    : "r" ((long)start), "r" ((long)end)
+		    : "r0","r1","r2");
 }
