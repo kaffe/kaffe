@@ -167,63 +167,63 @@ public class Collections {
 	}
 
 	public static Collection unmodifiableCollection(Collection c) {
-	  /* XXX UNIMPLEMENTED */
-	  return null;
+	  throw new kaffe.util.NotImplemented(Collections.class.getName()
+		+ ".unmodifiableCollection()");
 	}
 
 	public static Set unmodifiableSet(Set s) {
-	  /* XXX UNIMPLEMENTED */
-	  return null;
+	  throw new kaffe.util.NotImplemented(Collections.class.getName()
+		+ ".unmodifiableSet()");
 	}
 
 	public static SortedSet unmodifiableSortedSet(SortedSet s) {
-	  /* XXX UNIMPLEMENTED */
-	  return null;
+	  throw new kaffe.util.NotImplemented(Collections.class.getName()
+		+ ".unmodifiableSortedSet()");
 	}
 
 	public static List unmodifiableList(List list) {
-	  /* XXX UNIMPLEMENTED */
-	  return null;
+	  throw new kaffe.util.NotImplemented(Collections.class.getName()
+		+ ".unmodifiableList()");
 	}
 
 	public static Map unmodifiableMap(Map m) {
-	  /* XXX UNIMPLEMENTED */
-	  return null;
+	  throw new kaffe.util.NotImplemented(Collections.class.getName()
+		+ ".unmodifiableMap()");
 	}
 
 	public static SortedMap unmodifiableSortedMap(SortedMap m) {
-	  /* XXX UNIMPLEMENTED */
-	  return null;
+	  throw new kaffe.util.NotImplemented(Collections.class.getName()
+		+ ".unmodifiableSortedMap()");
 	}
 
 	public static Collection synchronizedCollection(Collection c) {
-	  /* XXX UNIMPLEMENTED */
-	  return null;
+	  throw new kaffe.util.NotImplemented(Collections.class.getName()
+		+ ".synchronizedCollection()");
 	}
 
 	public static Set synchronizedSet(Set s) {
-	  /* XXX UNIMPLEMENTED */
-	  return null;
+	  throw new kaffe.util.NotImplemented(Collections.class.getName()
+		+ ".synchronizedSet()");
 	}
 
 	public static SortedSet synchronizedSortedSet(SortedSet s) {
-	  /* XXX UNIMPLEMENTED */
-	  return null;
+	  throw new kaffe.util.NotImplemented(Collections.class.getName()
+		+ ".synchronizedSortedSet()");
 	}
 
 	public static List synchronizedList(List l) {
-	  /* XXX UNIMPLEMENTED */
-	  return null;
+	  throw new kaffe.util.NotImplemented(Collections.class.getName()
+		+ ".synchronizedList()");
 	}
 
 	public static Map synchronizedMap(Map m) {
-	  /* XXX UNIMPLEMENTED */
-	  return null;
+	  throw new kaffe.util.NotImplemented(Collections.class.getName()
+		+ ".synchronizedMap()");
 	}
 
 	public static SortedMap synchronizedSortedMap(SortedMap m) {
-	  /* XXX UNIMPLEMENTED */
-	  return null;
+	  throw new kaffe.util.NotImplemented(Collections.class.getName()
+		+ ".synchronizedSortedMap()");
 	}
 
 	public static Set singleton(final Object o) {
@@ -254,8 +254,8 @@ public class Collections {
 	}
 
 	public static List nCopies(int n, Object o) {
-	  /* XXX UNIMPLEMENTED */
-	  return null;
+	  throw new kaffe.util.NotImplemented(Collections.class.getName()
+		+ ".nCopies()");
 	}
 
 	private static final Comparator REVERSE_COMPARATOR = new Comparator() {
