@@ -41,6 +41,7 @@
 #endif
 
 #define	MAXEXCEPTIONLEN		200
+#define	ERROR_SIGNATURE0	"()V"
 #define	ERROR_SIGNATURE		"(Ljava/lang/String;)V"
 
 /* Anchor point for user defined properties */
@@ -722,8 +723,13 @@ SignalError(const char* cname, const char* str)
 {
 	Hjava_lang_Throwable* obj;
 
-	obj = (Hjava_lang_Throwable*)execute_java_constructor(cname,
-		0, ERROR_SIGNATURE, checkPtr(stringC2Java(str)));
+	if (str == NULL || *str == '\0') {
+		obj = (Hjava_lang_Throwable*)execute_java_constructor(cname,
+			0, ERROR_SIGNATURE0);
+	} else {
+		obj = (Hjava_lang_Throwable*)execute_java_constructor(cname,
+			0, ERROR_SIGNATURE, checkPtr(stringC2Java(str)));
+	}
 	throwException(obj);
 }
 
