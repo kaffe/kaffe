@@ -1,3 +1,20 @@
+2005-02-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-02-16  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/EventQueue.java: Reworked import statements.
+        * java/lang/StringBuilder.java
+        (DEFAULT_CAPACITY): Reordered modifiers.
+        * java/text/SimpleDateFormat.java: Reworked import statements.
+        Fixed one littel formatting issue.
+        (formatData): Removed a useless comment.
+        * javax/imageio/ImageIO.java: Reworked import statements.
+        * javax/swing/text/StringContent.java: Likewise.
+        * javax/swing/JTextField.java: Likewise.
+        (notifyAction): Added javadoc.
+
 2005-02-16  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/classMethod.h: (METHOD_CODE_START) 

@@ -1,6 +1,6 @@
 /* SimpleDateFormat.java -- A class for parsing/formating simple 
    date constructs
-   Copyright (C) 1998, 1999, 2000, 2001, 2003, 2004
+   Copyright (C) 1998, 1999, 2000, 2001, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -45,8 +45,8 @@ import gnu.java.text.FormatBuffer;
 import gnu.java.text.FormatCharacterIterator;
 import gnu.java.text.StringFormatBuffer;
 
-import java.io.InvalidObjectException;
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -96,7 +96,8 @@ public class SimpleDateFormat extends DateFormat
      * @param s the size of the field.
      * @param c the character used.
      */
-    public CompiledField(int f, int s, char c) {
+    public CompiledField(int f, int s, char c)
+    {
       field = f;
       size = s;
       character = c;
@@ -168,7 +169,7 @@ public class SimpleDateFormat extends DateFormat
    * @see DateFormatSymbols
    * @serial The localisation data.  May not be null.
    */
-  private DateFormatSymbols formatData;  // formatData
+  private DateFormatSymbols formatData;
 
   /**
    * The date representing the start of the century

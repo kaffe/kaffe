@@ -47,7 +47,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.accessibility.AccessibleStateSet;
-import javax.swing.Action;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
@@ -84,6 +83,10 @@ public class JTextField extends JTextComponent
 
   private static final Action[] actions;
 
+  /**
+   * Name of the action that gets sent when the content of the text field
+   * gets accepted.
+   */
   public static final String notifyAction = "notify-field-accept";
   
   static
