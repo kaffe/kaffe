@@ -15,9 +15,6 @@ void JNICALL Java_java_lang_ref_Reference_create(JNIEnv* env, jobject reference,
   kgc_reference_type reftype;
   Hjava_lang_Object *ref_object = (Hjava_lang_Object *)reference;
   Hjava_lang_Class *ref_class = OBJECT_CLASS(ref_object);
-  Field *referent_field;
-  errorInfo einfo;
-  Utf8Const *referent_name;
 
   if (instanceof(javaLangRefWeakReference, ref_class))
     reftype = KGC_WEAK_REFERENCE;
