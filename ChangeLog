@@ -1,5 +1,11 @@
 2003-08-29  Jim Pick  <jim@kaffe.org>
 
+	* libraries/javalib/java/io/RandomAccessFile.java:
+	Add unimplemented java.io.RandomAccessFile.setLength(int) method
+	(need for compiling ant from CVS).
+
+2003-08-29  Jim Pick  <jim@kaffe.org>
+
 	* kaffe/kaffe/main.c:
 	Add support for -Xbootclasspath/p: option.  Lazily not implementing
 	-Xbootclasspath: and -Xbootclasspath/a: for now.

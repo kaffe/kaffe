@@ -50,6 +50,11 @@ native public long getFilePointer() throws IOException;
 
 native public long length() throws IOException;
 
+public void setLength(long newLen) throws IOException
+{
+	throw new Error("Not implemented");
+}
+
 native private void open(String name, boolean rw);
 
 native public int read() throws IOException;
