@@ -468,7 +468,7 @@ public void layoutContainer( Container parent) {
 
 		case cc.VERTICAL:
 			cy += in.top + cc.ipady;
-			cw = dy - (in.top + in.bottom + 2 * cc.ipady);
+			ch = dy - (in.top + in.bottom + 2 * cc.ipady);
 			switch ( cc.anchor ) {
 			case cc.NORTH:
 			case cc.CENTER:
