@@ -43,9 +43,6 @@
 /* Define if the X Window System is missing or not being used.  */
 #undef X_DISPLAY_MISSING
 
-/* ssize_t may not be defined */
-#undef ssize_t
-
 /* The number of bytes in a __int64.  */
 #undef SIZEOF___INT64
 
@@ -459,6 +456,9 @@
 
 /* Define if signal handlers must be reset upon delivery */
 #undef KAFFE_SIGNAL_ONE_SHOT
+
+/* Define to int if ssize_t is not defined */
+#undef ssize_t
 
 /* Do we have the right version of libungif */
 #undef HAVE_GIF_LIB_H

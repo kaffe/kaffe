@@ -1,3 +1,10 @@
+1999-09-12  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* configure.in (ssize_t): Arrange that AC_CHECK_TYPE adds a
+	comment to config/config.h.in.
+	* config/acconfig.h: Removed.
+	* configure, config/config.h.in: Rebuilt.
+
 Mon Sep 13 15:37:09 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/File.java: fix bug in File.delete()
