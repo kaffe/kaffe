@@ -292,6 +292,9 @@ Java_java_math_BigInteger_mod0(JNIEnv* env, jobject r, jobject s1, jobject s2)
 	mpz_mod(res, src1, src2);
 }
 
+/*
+ * r = s1^s2 % s3
+ */
 void
 Java_java_math_BigInteger_modpow0(JNIEnv* env, jobject r, jobject s1, jobject s2, jobject s3)
 {
@@ -305,7 +308,27 @@ Java_java_math_BigInteger_modpow0(JNIEnv* env, jobject r, jobject s1, jobject s2
 	src3 = (mpz_srcptr)(*env)->GetObjectField(env, s3, number);
 	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
 
-	mpz_powm(res, src1, src2, src3);
+	if (mpz_sgn (src2) == -1) {
+		mpz_t tmp;
+		int rc;
+
+		mpz_init (tmp);
+		mpz_neg (tmp, src2);
+		mpz_powm (tmp, src1, tmp, src3);
+		rc = mpz_invert (res, tmp, src3);
+		mpz_clear (tmp);
+		if (rc == 0) {
+			jclass arexc = (*env)->FindClass(env, 
+				"java.lang.ArithmeticException");
+			(*env)->ThrowNew(env, arexc, "Inverse does not exist");
+		}
+		if (mpz_sgn (res) == -1)
+			mpz_add (res, src3, res);
+	}
+	else {
+		mpz_powm (res, src1, src2, src3);
+	}
+	
 }
 
 /*
@@ -336,6 +359,9 @@ Java_java_math_BigInteger_modinv0(JNIEnv* env, jobject r, jobject s1, jobject s2
 			"java.lang.ArithmeticException");
 		(*env)->ThrowNew(env, arexc, "Inverse does not exist");
 	}
+	/* java doesn't allow negative results */
+	if (mpz_sgn(res) == -1)
+		mpz_add (res, src2, res);
 }
 
 void
