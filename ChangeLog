@@ -1,3 +1,11 @@
+2003-07-06  Dalibor Topic <robilad@yahoo.com>
+
+	* Makefile.am:
+	reverted Mark's patch from 2003-07-04 since it breaks the build.
+	kaffe/kaffe depends on libraries/clib/native, and libraries/javalib
+	depends on a working kaffevm -> circular dependency between
+	libraries and kaffe subdirectories.
+
 2003-07-04  Dalibor Topic <robilad@yahoo.com>
 
 	* FAQ/FAQ.automake:
