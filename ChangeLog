@@ -1,3 +1,14 @@
+2003-10-27  Dalibor Topic <robilad@kafe.org>
+
+	* libraries/javalib/java/util/jar/Attributes.java,
+	libraries/javalib/java/util/jar/JarEntry.java,
+	libraries/javalib/java/util/jar/JarException.java,
+	libraries/javalib/java/util/jar/JarFile.java,
+	libraries/javalib/java/util/jar/JarInputStream.java,
+	libraries/javalib/java/util/jar/JarOutputStream.java,
+	libraries/javalib/java/util/jar/Manifest.java:
+	Replaced by implementation from GNU Classpath.
+
 2003-10-26  Mark Wielaard <mark@klomp.org>
 
 	* libraries/javalib/java/util/zip/ZipFile.java
