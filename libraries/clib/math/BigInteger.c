@@ -8,6 +8,8 @@
  * of this file.
  */
 
+#include <stdio.h>
+
 #include "config.h"
 #include "java_math_BigInteger.h"
 
