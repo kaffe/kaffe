@@ -41,11 +41,13 @@ package javax.net.ssl;
 
 import java.lang.reflect.InvocationTargetException;
 
+import java.security.AccessController;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivilegedAction;
 import java.security.Provider;
 import java.security.Security;
 import java.security.UnrecoverableKeyException;
@@ -64,6 +66,9 @@ public class KeyManagerFactory
 
   /** The service name for key manager factories. */
   private static final String KEY_MANAGER_FACTORY = "KeyManagerFactory";
+
+  /** The system default trust manager algorithm. */
+  private static final String DEFAULT_ALGORITHM = "JessieX509";
 
   /** The underlying engine. */
   private final KeyManagerFactorySpi kmfSpi;
@@ -98,17 +103,32 @@ public class KeyManagerFactory
   /**
    * Get the default algorithm name. This value may be specified at
    * run-time via the security property
-   * "ssl.KeyManagerFactory.algorithm.algorithm". If this property is
-   * not specified, this method returns "GNUX509".
+   * "ssl.KeyManagerFactory.algorithm". If this property is
+   * not specified, this method returns "JessieX509".
    *
    * @return The default key manager factory algorithm's name.
    */
   public static final String getDefaultAlgorithm()
   {
-    String name = Security.getProperty("ssl.KeyManagerFactory.algorithm.algorithm");
-    if (name == null)
-      name = "GNUX509";
-    return name;
+    String alg = null;
+    try
+      {
+        alg = (String) AccessController.doPrivileged(
+          new PrivilegedAction()
+          {
+            public Object run()
+            {
+              return Security.getProperty("ssl.KeyManagerFactory.algorithm");
+            }
+          }
+        );
+      }
+    catch (SecurityException se)
+      {
+      }
+    if (alg == null)
+      alg = DEFAULT_ALGORITHM;
+    return alg;
   }
 
   /**

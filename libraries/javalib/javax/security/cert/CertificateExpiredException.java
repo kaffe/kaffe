@@ -46,7 +46,8 @@ package javax.security.cert;
  * java.security.cert.CertificateExpiredException} class. It should not be used
  * in new applications.</b></p>
  *
- * @deprecated Use java.security.cert.CertificateExpiredException instead.
+ * <p><strong>NOTE:</strong> This class is deprecated.
+ * Use java.security.cert.CertificateExpiredException instead.
  */
 public class CertificateExpiredException extends CertificateException
 {

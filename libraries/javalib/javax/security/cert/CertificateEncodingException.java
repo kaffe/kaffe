@@ -46,7 +46,8 @@ package javax.security.cert;
  * java.security.cert.CertificateEncodingException} class. It should not be used
  * in new  applications.</b></p>
  *
- * @deprecated Use java.security.cert.CertificateEncodingException instead.
+ * <p><strong>NOTE:</strong></p> This class is deprecated. Use
+ * java.security.cert.CertificateEncodingException instead.</p>
  */
 public class CertificateEncodingException extends CertificateException
 {

@@ -110,49 +110,11 @@ public abstract class SSLSocketFactory extends SocketFactory
       {
         KeyManager[] km = null;
         TrustManager[] tm = null;
-        String kmAlg = null;
-        String tmAlg = null;
 
         // 1. Determine which algorithms to use for the key and trust
         // manager factories.
-        try
-          {
-            kmAlg = (String) AccessController.doPrivileged(
-              new PrivilegedAction()
-              {
-                public Object run()
-                {
-                  return Security.getProperty("ssl.keyManagerFactory.algorithm");
-                }
-              }
-            );
-          }
-        catch (SecurityException se)
-          {
-          }
-        if (kmAlg == null)
-          {
-            kmAlg = "JessieX509";
-          }
-        try
-          {
-            tmAlg = (String) AccessController.doPrivileged(
-              new PrivilegedAction()
-              {
-                public Object run()
-                {
-                  return Security.getProperty("ssl.trustManagerFactory.algorithm");
-                }
-              }
-            );
-          }
-        catch (SecurityException se)
-          {
-          }
-        if (tmAlg == null)
-          {
-            tmAlg = "JessieX509";
-          }
+        String kmAlg = KeyManagerFactory.getDefaultAlgorithm();
+        String tmAlg = TrustManagerFactory.getDefaultAlgorithm();
 
         // 2. Try to initialize the factories with default parameters.
         try
@@ -188,10 +150,7 @@ public abstract class SSLSocketFactory extends SocketFactory
       }
     try
       {
-        synchronized (context)
-          {
-            return context.getSocketFactory();
-          }
+        return context.getSocketFactory();
       }
     catch (Exception e)
       {

@@ -41,11 +41,13 @@ package javax.net.ssl;
 
 import java.lang.reflect.InvocationTargetException;
 
+import java.security.AccessController;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivilegedAction;
 import java.security.Provider;
 import java.security.Security;
 
@@ -60,6 +62,9 @@ public class TrustManagerFactory
 
   /** The service name for trust manager factories. */
   private static final String TRUST_MANAGER_FACTORY = "TrustManagerFactory";
+
+  /** The system default trust manager algorithm. */
+  private static final String DEFAULT_ALGORITHM = "JessieX509";
 
   /** The underlying engine class. */
   private final TrustManagerFactorySpi tmfSpi;
@@ -178,6 +183,38 @@ public class TrustManagerFactory
       {
         throw new NoSuchAlgorithmException(algorithm);
       }
+  }
+
+  /**
+   * Returns the default algorithm for trust manager factories. The value
+   * returned is either the value of the security property
+   * "ssl.TrustManagerFactory.algorithm" if it is set, or the value "JessieX509"
+   * if not.
+   *
+   * @return The default algorithm name.
+   * @see Security.getProperty(java.lang.String)
+   */
+  public static final String getDefaultAlgorithm()
+  {
+    String alg = null;
+    try
+      {
+        alg = (String) AccessController.doPrivileged(
+          new PrivilegedAction()
+          {
+            public Object run()
+            {
+              return Security.getProperty("ssl.TrustManagerFactory.algorithm");
+            }
+          }
+        );
+      }
+    catch (SecurityException se)
+      {
+      }
+    if (alg == null)
+      alg = DEFAULT_ALGORITHM;
+    return alg;
   }
 
   // Instance methods.

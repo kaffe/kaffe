@@ -58,7 +58,8 @@ import java.util.Date;
  * java.security.cert.X509Certificate} class. It should not be used in new
  * applications.</b></p>
  *
- * @deprecated Use java.security.cert.X509Certificate instead.
+ * <p><strong>NOTE:</strong> This class is deprecated.
+ * Use java.security.cert.X509Certificate instead.</p>
  */
 public abstract class X509Certificate extends Certificate
 {

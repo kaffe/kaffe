@@ -53,7 +53,7 @@ public abstract class SSLSocket extends Socket
   // Constructors.
   // -------------------------------------------------------------------------
 
-  protected SSLSocket() throws IOException
+  protected SSLSocket()
   {
     super();
   }

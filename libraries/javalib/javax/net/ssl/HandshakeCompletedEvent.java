@@ -40,6 +40,7 @@ version.  */
 package javax.net.ssl;
 
 import java.security.cert.Certificate;
+import javax.security.cert.X509Certificate;
 
 /**
  * An event raised by a SSLSocket and passed to the {@link
@@ -55,8 +56,11 @@ public class HandshakeCompletedEvent extends java.util.EventObject
   // Fields.
   // -------------------------------------------------------------------
 
+  /** Serialization constant. */
+  private static final long serialVersionUID = 7914963744257769778L;
+
   /** The session. */
-  private final SSLSession session;
+  private transient final SSLSession session;
 
   // Constructor.
   // -------------------------------------------------------------------
@@ -87,7 +91,9 @@ public class HandshakeCompletedEvent extends java.util.EventObject
    */
   public String getCipherSuite()
   {
-    return session.getCipherSuite();
+    if (session != null)
+      return session.getCipherSuite();
+    return null;
   }
 
   /**
@@ -97,7 +103,9 @@ public class HandshakeCompletedEvent extends java.util.EventObject
    */
   public Certificate[] getLocalCertificates()
   {
-    return session.getLocalCertificates();
+    if (session != null)
+      return session.getLocalCertificates();
+    return null;
   }
 
   /**
@@ -109,7 +117,16 @@ public class HandshakeCompletedEvent extends java.util.EventObject
    */
   public Certificate[] getPeerCertificates() throws SSLPeerUnverifiedException
   {
-    return session.getPeerCertificates();
+    if (session != null)
+      return session.getPeerCertificates();
+    return null;
+  }
+
+  public X509Certificate[] getPeerCertificateChain() throws SSLPeerUnverifiedException
+  {
+    if (session != null)
+      return session.getPeerCertificateChain();
+    return null;
   }
 
   /**

@@ -102,31 +102,50 @@ public abstract class SSLServerSocketFactory extends ServerSocketFactory
     catch (Exception e)
       {
       }
+    if (context == null)
+      {
+        KeyManager[] km = null;
+        TrustManager[] tm = null;
+
+        // 1. Determine which algorithms to use for the key and trust
+        // manager factories.
+        String kmAlg = KeyManagerFactory.getDefaultAlgorithm();
+        String tmAlg = TrustManagerFactory.getDefaultAlgorithm();
+        // 2. Try to initialize the factories with default parameters.
+        try
+          {
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(kmAlg);
+            kmf.init(null, null);
+            km = kmf.getKeyManagers();
+          }
+        catch (Exception ex)
+          {
+          }
+        try
+          {
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmAlg);
+            tmf.init((KeyStore) null);
+            tm = tmf.getTrustManagers();
+          }
+        catch (Exception ex)
+          {
+          }
+
+        // 3. Create and initialize a context.
+        try
+          {
+            context = SSLContext.getInstance("SSLv3");
+            context.init(km, tm, null);
+          }
+        catch (Exception ex)
+          {
+            throw new RuntimeException("error instantiating default server socket factory: "
+                                       + ex.toString());
+          }
+      }
     try
       {
-        if (context == null)
-          {
-            String kmAlg = Security.getProperty("ssl.keyManagerFactory.algorithm");
-            if (kmAlg == null)
-              {
-                kmAlg = "JessieX509";
-              }
-            String tmAlg = Security.getProperty("ssl.trustManagerFactory.algorithm");
-            if (tmAlg == null)
-              {
-                tmAlg = "JessieX509";
-              }
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance(kmAlg);
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmAlg);
-            kmf.init(null, null);
-            tmf.init((KeyStore) null);
-            context = SSLContext.getInstance("SSLv3");
-            context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-          }
-        synchronized (context)
-          {
-            return context.getServerSocketFactory();
-          }
+        return context.getServerSocketFactory();
       }
     catch (Exception e)
       {

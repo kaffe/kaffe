@@ -1,5 +1,29 @@
 2004-01-11  Dalibor Topic <robilad@kaffe.org>
 
+        Resynced with Jessie 0.9.6.
+
+	* javax/net/ssl/HandshakeCompletedEvent.java,
+        javax/net/ssl/HttpsURLConnection.java,
+        javax/net/ssl/KeyManagerFactory.java,
+        javax/net/ssl/SSLPermission.java,
+        javax/net/ssl/SSLServerSocket.java,
+        javax/net/ssl/SSLServerSocket.java.in,
+        javax/net/ssl/SSLServerSocketFactory.java,
+        javax/net/ssl/SSLSessionBindingEvent.java,
+        javax/net/ssl/SSLSocket.java,
+        javax/net/ssl/SSLSocketFactory.java,
+        javax/net/ssl/TrustManagerFactory.java,
+	javax/security/cert/Certificate.java,
+        javax/security/cert/CertificateEncodingException.java,
+        javax/security/cert/CertificateException.java,
+        javax/security/cert/CertificateExpiredException.java,
+        javax/security/cert/CertificateNotYetValidException.java,
+        javax/security/cert/CertificateParsingException.java,
+        javax/security/cert/X509Certificate.java:
+	Resynced with upstream.
+
+2004-01-11  Dalibor Topic <robilad@kaffe.org>
+
         Resynced with GNU Classpath.
 
 	2004-01-10  Michael Koch  <konqueror@gmx.de>

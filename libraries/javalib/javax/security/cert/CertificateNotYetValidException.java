@@ -46,7 +46,8 @@ package javax.security.cert;
  * java.security.cert.CertificateNotYetValidException} class. It should not be
  * used in new applications.</b></p>
  *
- * @deprecated Use java.security.cert.CertificateNotYetValidException instead.
+ * <p><strong>NOTE:</strong> This class is deprecated.
+ * Use java.security.cert.CertificateNotYetValidException instead.</p>
  */
 public class CertificateNotYetValidException extends CertificateException
 {

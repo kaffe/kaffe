@@ -253,5 +253,5 @@ public abstract class HttpsURLConnection extends HttpURLConnection
    * @throws SSLPeerUnverifiedException If the peer could not be
    *   verified.
    */
-  public abstract Certificate[] getPeerCertificates() throws SSLPeerUnverifiedException;
+  public abstract Certificate[] getServerCertificates() throws SSLPeerUnverifiedException;
 }

@@ -51,6 +51,8 @@ public class SSLSessionBindingEvent extends EventObject
   // Fields.
   // -------------------------------------------------------------------
 
+  private static final long serialVersionUID = 3989172637106345L;
+
   private final String name;
 
   // Constructor.

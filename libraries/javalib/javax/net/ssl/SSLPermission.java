@@ -47,6 +47,14 @@ import java.security.BasicPermission;
 public class SSLPermission extends BasicPermission
 {
 
+  // Constant.
+  // -------------------------------------------------------------------------
+
+  private static final long serialVersionUID = -3456898025505876775L;
+
+  // Constructors.
+  // -------------------------------------------------------------------------
+
   public SSLPermission(String name)
   {
     super(name);

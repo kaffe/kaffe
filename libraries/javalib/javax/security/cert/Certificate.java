@@ -55,7 +55,8 @@ import java.util.zip.Adler32;
  * java.security.cert.Certificate} class. It should not be used in new
  * applications.</b></p>
  *
- * @deprecated Use java.security.cert.Certificate instead.
+ * <p><strong>NOTE:</strong> This package is deprecated. Use
+ * java.security.cert.Certificate instead.
  */
 public abstract class Certificate
 {

@@ -123,7 +123,7 @@ public abstract class SSLServerSocket extends ServerSocket
    *
    * @param enabled The new enabled value.
    */
-  public abstract void setEnabledSessionCreation(boolean enabled);
+  public abstract void setEnableSessionCreation(boolean enabled);
 
   /**
    * Returns whether or not this server socket will require clients to

@@ -45,7 +45,8 @@ package javax.security.cert;
  * <p><b>This class is deprecated. It should not be used in new
  * applications.</b></p>
  *
- * @deprecated Use the java.security.cert package instead.
+ * <p><strong>NOTE:</strong> This class is deprecated.
+ * Use the java.security.cert package instead.</p>
  */
 public class CertificateParsingException extends CertificateException
 {
