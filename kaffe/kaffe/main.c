@@ -459,6 +459,50 @@ options(char** argv, int argc)
 			/* set the new boot classpath */
 			vmargs.bootClasspath = newbootcpath;
 		}
+		else if (strncmp(argv[i], "-Xbootclasspath/a:", (j=18)) == 0) {
+			char	*newbootcpath;
+			unsigned int      bootcpathlength;
+
+			bootcpathlength = strlen(&argv[i][j])
+				+ strlen(path_separator)
+				+ ((vmargs.bootClasspath != NULL) ?
+					strlen(vmargs.bootClasspath) : 0)
+				+ 1;
+
+			/* Get longer buffer FIXME:  free the old one */
+			if ((newbootcpath = malloc(bootcpathlength)) == NULL) {
+				fprintf(stderr,  "Error: out of memory.\n");
+				exit(1);
+			}
+
+			/* Construct new boot classpath */
+			if( vmargs.bootClasspath != 0 ) {
+			  	strcpy(newbootcpath, vmargs.bootClasspath);
+				strcat(newbootcpath, path_separator);
+			}
+			strcat(newbootcpath, &argv[i][j]);
+
+			/* set the new boot classpath */
+			vmargs.bootClasspath = newbootcpath;
+		}
+		else if (strncmp(argv[i], "-Xbootclasspath:", (j=16)) == 0) {
+			char	*newbootcpath;
+			unsigned int      bootcpathlength;
+
+			bootcpathlength = strlen(&argv[i][j]) + 1;
+
+			/* Get longer buffer FIXME:  free the old one */
+			if ((newbootcpath = malloc(bootcpathlength)) == NULL) {
+				fprintf(stderr,  "Error: out of memory.\n");
+				exit(1);
+			}
+
+			/* Construct new boot classpath */
+			strcpy(newbootcpath, &argv[i][j]);
+
+			/* set the new boot classpath */
+			vmargs.bootClasspath = newbootcpath;
+		}
 		else if ((strncmp(argv[i], "-ss", (j=3)) == 0) 
 			 || (strncmp(argv[i], "-Xss", (j=4)) == 0)) {
 			if (argv[i][j] == 0) {
@@ -701,60 +745,63 @@ usage(void)
 {
 	fprintf(stderr, "usage: kaffe [-options] class\n");
 	fprintf(stderr, "Options are:\n");
-	fprintf(stderr, "	-help			Print this message\n");
-	fprintf(stderr, "	-version		Print version number\n");
-	fprintf(stderr, "	-fullversion		Print verbose version info\n");
+	fprintf(stderr, "	-help			 Print this message\n");
+	fprintf(stderr, "	-version		 Print version number\n");
+	fprintf(stderr, "	-fullversion		 Print verbose version info\n");
 #if defined(__ia64__)
-	fprintf(stderr, "	-ia32			Execute the ia32 version of Kaffe\n");
+	fprintf(stderr, "	-ia32			 Execute the ia32 version of Kaffe\n");
 #endif
-	fprintf(stderr, "	-ss <size>		Maximum native stack size\n");
-	fprintf(stderr, "	-mx <size> 		Maximum heap size\n");
-	fprintf(stderr, "	-ms <size> 		Initial heap size\n");
-	fprintf(stderr, "	-as <size> 		Heap increment\n");
-	fprintf(stderr, "	-classpath <path>	Set classpath\n");
-	fprintf(stderr, "       -D<property>=<value>    Set a property\n");
-	fprintf(stderr, "	-verify *		Verify all bytecode\n");
-	fprintf(stderr, "	-verifyremote *		Verify bytecode loaded from network\n");
-	fprintf(stderr, "	-noverify		Do not verify any bytecode\n");
-	fprintf(stderr, "	-noclassgc		Disable class garbage collection\n");
-	fprintf(stderr, "	-verbosegc		Print message during garbage collection\n");
-	fprintf(stderr, "	-v, -verbose		Be verbose\n");
-	fprintf(stderr, "	-verbosejit		Print message during JIT code generation\n");
-	fprintf(stderr, "	-verbosemem		Print detailed memory allocation statistics\n");
-	fprintf(stderr, "	-verbosecall		Print detailed call flow information\n");
-	fprintf(stderr, "	-nodeadlock		Disable deadlock detection\n");
+	fprintf(stderr, "	-ss <size>		 Maximum native stack size\n");
+	fprintf(stderr, "	-mx <size> 		 Maximum heap size\n");
+	fprintf(stderr, "	-ms <size> 		 Initial heap size\n");
+	fprintf(stderr, "	-as <size> 		 Heap increment\n");
+	fprintf(stderr, "	-classpath <path>        Set classpath\n");
+	fprintf(stderr, "	-Xbootclasspath:<path>   Set bootclasspath\n");
+	fprintf(stderr, "	-Xbootclasspath:/a<path> Append path to bootclasspath\n");
+	fprintf(stderr, "	-Xbootclasspath:/p<path> Prepend path to bootclasspath\n");
+	fprintf(stderr, "	-D<property>=<value>     Set a property\n");
+	fprintf(stderr, "	-verify *		 Verify all bytecode\n");
+	fprintf(stderr, "	-verifyremote *		 Verify bytecode loaded from network\n");
+	fprintf(stderr, "	-noverify		 Do not verify any bytecode\n");
+	fprintf(stderr, "	-noclassgc		 Disable class garbage collection\n");
+	fprintf(stderr, "	-verbosegc		 Print message during garbage collection\n");
+	fprintf(stderr, "	-v, -verbose		 Be verbose\n");
+	fprintf(stderr, "	-verbosejit		 Print message during JIT code generation\n");
+	fprintf(stderr, "	-verbosemem		 Print detailed memory allocation statistics\n");
+	fprintf(stderr, "	-verbosecall		 Print detailed call flow information\n");
+	fprintf(stderr, "	-nodeadlock		 Disable deadlock detection\n");
 #if defined(KAFFE_PROFILER)
-	fprintf(stderr, "	-prof			Enable profiling of Java methods\n");
+	fprintf(stderr, "	-prof			 Enable profiling of Java methods\n");
 #endif
 #if defined(KAFFE_XPROFILER)
-	fprintf(stderr, "	-Xxprof			Enable cross language profiling\n");
-	fprintf(stderr, "	-Xxprof_syms <file>	Name of the profiling symbols file [Default: kaffe-jit-symbols.s]\n");
-	fprintf(stderr, "	-Xxprof_gmon <file>	Base name for gmon files [Default: xgmon.out]\n");
+	fprintf(stderr, "	-Xxprof			 Enable cross language profiling\n");
+	fprintf(stderr, "	-Xxprof_syms <file>	 Name of the profiling symbols file [Default: kaffe-jit-symbols.s]\n");
+	fprintf(stderr, "	-Xxprof_gmon <file>	 Base name for gmon files [Default: xgmon.out]\n");
 #endif
 #if defined(KAFFE_XDEBUGGING)
-	fprintf(stderr, "	-Xxdebug_file <file>	Name of the debugging symbols file\n");
+	fprintf(stderr, "	-Xxdebug_file <file>	 Name of the debugging symbols file\n");
 #endif
 #if defined(KAFFE_FEEDBACK)
-	fprintf(stderr, "	-Xfeedback <file>	The file name to write feedback data to\n");
+	fprintf(stderr, "	-Xfeedback <file>	 The file name to write feedback data to\n");
 #endif
-	fprintf(stderr, "	-debug * 		Trace method calls\n");
-	fprintf(stderr, "	-noasyncgc *		Do not garbage collect asynchronously\n");
-	fprintf(stderr, "	-cs, -checksource *	Check source against class files\n");
-	fprintf(stderr, "	-oss <size> *		Maximum java stack size\n");
-        fprintf(stderr, "	-jar                    Executable is a JAR\n");
+	fprintf(stderr, "	-debug * 		 Trace method calls\n");
+	fprintf(stderr, "	-noasyncgc *		 Do not garbage collect asynchronously\n");
+	fprintf(stderr, "	-cs, -checksource *	 Check source against class files\n");
+	fprintf(stderr, "	-oss <size> *		 Maximum java stack size\n");
+        fprintf(stderr, "	-jar                     Executable is a JAR\n");
 #ifdef KAFFE_VMDEBUG
-        fprintf(stderr, "	-vmdebug <flag{,flag}>	Internal VM debugging.  Set flag=list for a list\n");
+        fprintf(stderr, "	-vmdebug <flag{,flag}>	 Internal VM debugging.  Set flag=list for a list\n");
 #endif
 #ifdef KAFFE_STATS
-        fprintf(stderr, "	-vmstats <flag{,flag}>	Print VM statistics.  Set flag=all for all\n");
+        fprintf(stderr, "	-vmstats <flag{,flag}>	 Print VM statistics.  Set flag=all for all\n");
 #endif
 	fprintf(stderr, "  * Option currently ignored.\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, "Compatibility options:\n");
-	fprintf(stderr, "	-Xss <size>		Maximum native stack size\n");
-	fprintf(stderr, "	-Xmx <size> 		Maximum heap size\n");
-	fprintf(stderr, "	-Xms <size> 		Initial heap size\n");
-	fprintf(stderr, "	-cp <path> 		Set classpath\n");
+	fprintf(stderr, "	-Xss <size>		 Maximum native stack size\n");
+	fprintf(stderr, "	-Xmx <size> 		 Maximum heap size\n");
+	fprintf(stderr, "	-Xms <size> 		 Initial heap size\n");
+	fprintf(stderr, "	-cp <path> 		 Set classpath\n");
 }
 
 static
