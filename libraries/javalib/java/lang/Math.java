@@ -46,17 +46,46 @@ native public static double floor(double a);
 
 native public static double log(double a);
 
-public static double max(double a, double b) { return (b > a) ? (b) : (a); }
+public static double max(double a, double b) {
+	if (Double.isNaN(a) || Double.isNaN(b)) {
+		return (Double.NaN);
+	}
+	else {
+		return (b > a) ? (b) : (a);
+	}
+}
 
-public static float max(float a, float b) { return (b > a) ? (b) : (a); }
+public static float max(float a, float b) {
+	if (Float.isNaN(a) || Float.isNaN(b)) {
+		return (Float.NaN);
+	}
+	else {
+		return (b > a) ? (b) : (a);
+	}
+}
 
 public static int max(int a, int b) { return (b > a) ? (b) : (a); }
 
 public static long max(long a, long b) { return (b > a) ? (b) : (a); }
 
-public static double min(double a, double b) { return (a < b) ? (a) : (b); }
 
-public static float min(float a, float b) { return (a < b) ? (a) : (b); }
+public static double min(double a, double b) {
+	if (Double.isNaN(a) || Double.isNaN(b)) {
+		return (Double.NaN);
+	}
+	else {
+		return (a < b) ? (a) : (b);
+	}
+}
+
+public static float min(float a, float b) {
+	if (Float.isNaN(a) || Float.isNaN(b)) {
+		return (Float.NaN);
+	}
+	else {
+		return (a < b) ? (a) : (b);
+	}
+}
 
 public static int min(int a, int b) { return (a < b) ? (a) : (b); }
 
@@ -71,26 +100,26 @@ public static synchronized double random() {
 native public static double rint(double a);
 
 public static long round(double a) {
-	if ((a<(double )Long.MIN_VALUE) || (a==Double.NEGATIVE_INFINITY)) {
-		return Long.MIN_VALUE;
+	if ( a < (double)Long.MIN_VALUE || a == Double.NEGATIVE_INFINITY) {
+		return (Long.MIN_VALUE);
 	}
-	else if ((a>(double )Long.MAX_VALUE) || (a==Double.POSITIVE_INFINITY)) {
-		return Long.MAX_VALUE;
+	else if (a > (double)Long.MAX_VALUE || a == Double.POSITIVE_INFINITY) {
+		return (Long.MAX_VALUE);
 	}
 	else {
-		return (long )rint(a);
+		return ((long)floor(a + 0.5d));
 	}
 }
 
 public static int round(float a) {
-	if ((a<(float )Integer.MIN_VALUE) || (a==Float.NEGATIVE_INFINITY)) {
-		return Integer.MIN_VALUE;
+	if (a < (float)Integer.MIN_VALUE || a == Float.NEGATIVE_INFINITY) {
+		return (Integer.MIN_VALUE);
 	}
-	else if ((a>(float )Integer.MAX_VALUE) || (a==Float.POSITIVE_INFINITY)) {
-		return Integer.MAX_VALUE;
+	else if (a > (float)Integer.MAX_VALUE || a == Float.POSITIVE_INFINITY) {
+		return (Integer.MAX_VALUE);
 	}
 	else {
-		return (int )rint((double )a);
+		return ((int)floor((double)a + 0.5d));
 	}
 }
 
