@@ -112,4 +112,14 @@ void KaffeJIT3_resetConstants(void);
  */
 uint32 KaffeJIT3_getNumberOfConstants(void);
 
+/**
+ * Return the first constpool object.
+ */
+constpool* KaffeJIT3_getFirstConst(void);
+
+/**
+ * Return the current constpool object.
+ */
+constpool* KaffeJIT3_getCurrConst(void);
+
 #endif

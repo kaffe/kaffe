@@ -82,7 +82,7 @@ define_insn(prologue, prologue_xxx)
 	 * Either, this method is not a leaf or we have a constpool and need
 	 * to overwrite LR to get at it.
 	 */
-	if( (firstConst != currConst) ||
+	if( (KaffeJIT3_getFirstConst() != KaffeJIT3_getCurrConst()) ||
 	    maxLocal ||
 	    maxTemp )
 	{
@@ -314,7 +314,7 @@ define_insn(epilogue, epilogue_xxx)
 	}
 	setEpilogueLabel(CODEPC);
 	
-	if( (firstConst != currConst) ||
+	if( (KaffeJIT3_getFirstConst() != KaffeJIT3_getCurrConst()) ||
 	    maxLocal ||
 	    maxTemp )
 	{

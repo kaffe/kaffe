@@ -1,3 +1,20 @@
+2005-01-09  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/jit3/constpool.h: 
+	(KaffeJIT3_getCurrConst, KaffeJIT3_getFirstConst): 
+	Added prototypes.
+
+	* kaffe/kaffevm/jit3/constpool.c (KaffeJIT3_getFirstConst) 
+	(KaffeJIT3_getCurrConst): New functions.
+
+	* config/powerpc/jit-labels.h 
+	(FILL_LABEL_Lreg_s, FILL_LABEL_Lsavedregs, FILL_LABEL_Lframe),
+	config/powerpc/jit3-powerpc.def (define_insn, define_insn):
+	Replaced findConst and currConst by KaffeJIT3_getFirstConst and
+	KaffeJIT3_getCurrConst.
+
+	Reported by:  Michael Franz <mvfranz@gmail.com>
+	
 2005-01-08  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

@@ -206,3 +206,16 @@ KaffeJIT3_getNumberOfConstants(void)
 {
 	return nConst;
 }
+
+constpool* 
+KaffeJIT3_getFirstConst(void)
+{
+        return firstConst;
+}
+
+constpool* 
+KaffeJIT3_getCurrConst(void)
+{
+        return currConst;
+}
+

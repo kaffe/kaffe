@@ -83,7 +83,7 @@
 	if( saved_registers < 0 ) \
 		saved_registers = 0; \
 	saved_registers = maxStack + maxTemp + 18; \
-	if( (firstConst != currConst) || maxLocal || maxTemp ) \
+	if( (KaffeJIT3_getFirstConst() != KaffeJIT3_getCurrConst()) || maxLocal || maxTemp ) \
 	{ \
 		saved_registers += 1; /* r31 */ \
 	} \
@@ -103,7 +103,7 @@
 	if( saved_registers < 0 ) \
 		saved_registers = 0; \
 	saved_registers += maxStack + maxTemp; \
-	if( (firstConst != currConst) || maxLocal || maxTemp ) \
+	if( (KaffeJIT3_getFirstConst() != KaffeJIT3_getCurrConst()) || maxLocal || maxTemp ) \
 	{ \
 		saved_registers += 1; /* r31 */ \
 	} \
@@ -127,7 +127,7 @@
 	if( saved_registers < 0 ) \
 		saved_registers = 0; \
 	saved_registers = maxStack + maxTemp; \
-	if( (firstConst != currConst) || maxLocal || maxTemp ) \
+	if( (KaffeJIT3_getFirstConst() != KaffeJIT3_getCurrConst()) || maxLocal || maxTemp ) \
 	{ \
 		saved_registers += 1; /* r31 */ \
 	} \
