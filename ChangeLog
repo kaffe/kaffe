@@ -1,3 +1,10 @@
+2005-03-26  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/lookup.c
+	(getField): Use the resolved class name to get the name.
+
+	Reported by:  Daniel Bonniot  <Daniel.Bonniot@inria.fr>
+
 2005-03-26  Supreet Sethi  <supreet@linux-delhi.org>,
 	    Dalibor Topic  <robilad@kaffe.org>
 

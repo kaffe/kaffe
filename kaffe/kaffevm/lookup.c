@@ -265,7 +265,6 @@ DBG(RESERROR,	dprintf("No Fieldref found\n");				);
 
 	ni = FIELDREF_NAMEANDTYPE(idx, pool);
 
-	ret->cname = WORD2UTF(pool->data[ci]);
 	ret->name = WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]);
 	ret->signature = WORD2UTF(pool->data[NAMEANDTYPE_SIGNATURE(ni, pool)]);
 
@@ -279,11 +278,13 @@ DBG(FLOOKUP,	dprintf("*** getField(%s,%s,%s)\n",
 		WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)])->data, 
 		WORD2UTF(pool->data[NAMEANDTYPE_SIGNATURE(ni, pool)])->data);
     );
+	ret->cname = class->name;
 
 	field = lookupClassField(class, WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]), isStaticField, einfo);
 	if (field == 0) {
 		return (false);
 	}
+
 	if (!utf8ConstEqual(field->signature, ret->signature)) {
 		postExceptionMessage(einfo,
 				     JAVA_LANG(NoSuchFieldError),
