@@ -43,4 +43,8 @@ extern char* sys_errlist[];
 #define	jlong2off_t(j)		((off_t)(j))
 #define	off_t2jlong(j)		((jlong)(j))
 
+/* Convert jlong's to and from size_t's */
+#define jlong2size_t(j)         ((size_t)(j))
+#define size_t2jlong(j)         ((jlong)(j))
+
 #endif

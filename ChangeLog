@@ -1,3 +1,29 @@
+2003-07-26  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* include/files.h: (jlong2size_t, size_t2jlong) added two converters
+	between java types and Posix types.
+
+	* include/jsyscall.h: (SystemCallInterface) added 3 syscalls _ftruncate,
+	_mmap, _munmap with the corresponding macros KFTRUNCATE, KMMAP, KMUNMAP.
+	(KAFFE_MMAP_*) system independent constants for KMMAP.
+
+	* kaffe/kaffevm/systems/unix-jthreads/syscalls.c, 
+	kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
+	(jthreadedMmap, jthreadedMunmap, jthreadedFTruncate) added threaded
+	syscalls for mmap, munmap and ftruncate.
+
+	* kaffe/kaffevm/systems/oskit-pthreads/syscalls.c,
+	kaffe/kaffevm/systems/beos-native/syscalls.c: added dummy threaded
+	syscalls for mmap, munmap and ftruncate for compatibility.
+
+	* libraries/javalib/java/lang/Runtime.java:
+	(exitJavaCleanup, runShutdownHooks, exit) we must not throw ThreadDeath
+	because it induces a fatal loop in exitThread(). Instead I check if
+	runShutdownHooks is already running and in that case I kill again the
+	current thread only if it is a call to Runtime.exit(). In the other
+	case the thread will be automatically killed when exiting
+	exitJavaCleanup().
+
 2003-07-26 Timothy S. Stack <stack@cs.utah.edu>
 
 	* configure.in: 
@@ -122,6 +148,7 @@
 	* test/internal/Makefile.am:
 	Add jvmpi to the list of includes and libraries.
 
+>>>>>>> 1.1472
 2003-07-20 Fabio.di.Fabio <abel@lmib.org>
 
 	* libraries/kaffe/appletAppletTag.java:

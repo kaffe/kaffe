@@ -146,6 +146,12 @@ oskit_pthread_stat(const char *p, struct stat *st)
 }
 
 static int
+oskit_pthread_ftruncate(int fd, off_t new_size)
+{
+	return (ftruncate(fd, new_size) == -1) ? errno : 0;
+}
+
+static int
 oskit_pthread_mkdir(const char *p, int m)
 {
 	return (mkdir(p, m) == -1) ? errno : 0;
@@ -311,6 +317,18 @@ oskit_pthread_kill(int a, int b)
 #endif
 }
 
+static int
+oskit_pthread_mmap(void **memory, size_t *size, )
+{
+	return (EOPNOTSUPP);
+}
+
+static int
+oskit_pthread_munmap(void *memory, size_t size)
+{
+	return (EOPNOTSUPP);
+}
+
 SystemCallInterface Kaffe_SystemCallInterface = {
 	oskit_pthread_open,
 	oskit_pthread_read,
@@ -319,6 +337,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
 	oskit_pthread_close,
 	oskit_pthread_fstat,
 	oskit_pthread_stat,
+	oskit_pthread_ftruncate,
 	oskit_pthread_mkdir,
 	oskit_pthread_rmdir,
 	oskit_pthread_rename,
@@ -343,4 +362,6 @@ SystemCallInterface Kaffe_SystemCallInterface = {
 	oskit_pthread_forkexec,
 	oskit_pthread_waitpid,
 	oskit_pthread_kill,
+	oskit_pthread_mmap,
+	oskit_pthread_munmap
 };

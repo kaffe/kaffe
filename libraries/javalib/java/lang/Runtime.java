@@ -92,8 +92,8 @@ private native Process execInternal(String cmdary[], String envp[], File dir)
 /**
  * Callback used to execute the shutdown hooks.
  */
-void exitJavaCleanup() {
-        runShutdownHooks();
+boolean exitJavaCleanup() {
+	return runShutdownHooks();
 }
 
 public void exit(int status) throws SecurityException {
@@ -102,7 +102,9 @@ public void exit(int status) throws SecurityException {
 		sm.checkExit(status);
 
 	/* First we cleanup the Virtual Machine */
-	exitJavaCleanup();
+	if (!exitJavaCleanup())
+		Thread.currentThread().destroy();
+
 	/* Now we run the VM exit function */
 	exit0(status);
 }
@@ -195,7 +197,7 @@ int waitForMemoryAdvice(int level) throws InterruptedException {
 /**
  * Mark the VM as shutting down and walk the list of hooks.
  */
-private void runShutdownHooks() {
+private boolean runShutdownHooks() {
        Enumeration hook_enum;
        
        /* According to Java 1.3 we need to run all hooks simultaneously
@@ -208,7 +210,14 @@ private void runShutdownHooks() {
 			* Another thread called exit(), ignore and kill the
 			* thread.
 			*/
-		       throw new ThreadDeath();
+		       /* throw new ThreadDeath();
+			* We must not throw ThreadDeath because we are currently
+			* shutting down a thread (in an exitThread call) this may
+			* cause the VM to crash because it detects an infinite loop.
+			* Moreover we may want to add some more termination system
+			* later. Here we will just return.
+			*/
+		       return false;
 	       }
 	       else
 	       {
@@ -239,6 +248,7 @@ private void runShutdownHooks() {
 		       e.printStackTrace();
 	       }
        }
+       return true;
 }
 
 public void addShutdownHook(Thread hook) throws IllegalArgumentException, IllegalStateException {

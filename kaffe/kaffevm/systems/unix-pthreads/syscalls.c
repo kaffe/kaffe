@@ -213,6 +213,17 @@ jthreadedStat(const char* path, struct stat *sb)
 }
 
 static int
+jthreadedFTruncate(int fd, off_t new_size)
+{
+	int rc = 0;
+	
+	if (ftruncate(fd, new_size) == -1) {
+		rc = errno;
+	}
+	return (rc);
+}
+
+static int
 jthreadedMkdir(const char *path, int mode)
 {
 	int rc = 0;
@@ -716,6 +727,62 @@ jthreadedWaitpid(int wpid, int* status, int options, int *outpid)
 #endif
 }
 
+int
+jthreadedMmap(void **memory, size_t *size, int mode, int fd, off_t *offset)
+{
+#if defined(HAVE_MMAP)
+	size_t pages_sz;
+	off_t pages_offset;
+	int sysmode, sysflags;
+	int rc = 0;
+
+	pages_sz = (*size)/getpagesize();
+	*size = (pages_sz+1)*getpagesize();
+  
+	pages_offset = (*offset)/getpagesize();
+	*offset = pages_offset*getpagesize();
+
+	switch (mode) {
+		case KAFFE_MMAP_READ:
+			sysflags = MAP_SHARED;
+			sysmode = PROT_READ;
+			break;
+		case KAFFE_MMAP_WRITE:
+			sysflags = MAP_SHARED;
+			sysmode = PROT_WRITE | PROT_READ;
+			break;
+		case KAFFE_MMAP_PRIVATE:
+			sysflags = MAP_PRIVATE;
+			sysmode = PROT_WRITE | PROT_READ;
+			break;
+		default:
+			return -EINVAL;
+	}
+
+	*memory = mmap(*memory, *size, sysmode, sysflags, fd, *offset);
+
+	return (rc);
+#else
+	return (-ENOTSUP);
+#endif
+}
+
+
+static int
+jthreadedMunmap(void *memory, size_t size)
+{
+#if defined(HAVE_MMAP)
+	int rc = 0;
+	
+	if (munmap(memory, size) < 0) {
+		rc = errno;
+	}
+	return (rc);
+#else
+	return (-ENOTSUP);
+#endif
+}
+
 /*
  * The syscall interface as provided by the internal jthread system.
  */
@@ -727,6 +794,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         jthreadedClose,
         jthreadedFStat,
         jthreadedStat,
+        jthreadedFTruncate,
         jthreadedMkdir,
         jthreadedRmdir,
         jthreadedRename,
@@ -750,5 +818,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         jthreadedSelect,	
         jthreadedForkExec,
         jthreadedWaitpid,
-        jthreadedKill
+        jthreadedKill,
+        jthreadedMmap,
+        jthreadedMunmap
 };

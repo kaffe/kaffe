@@ -34,6 +34,7 @@ typedef struct SystemCallInterface {
 	int	(*_close)(int);
 	int	(*_fstat)(int, struct stat*);
 	int	(*_stat)(const char*, struct stat*);
+	int	(*_ftruncate)(int, off_t);
 
 	int	(*_mkdir)(const char*, int);
 	int	(*_rmdir)(const char*);
@@ -65,6 +66,8 @@ typedef struct SystemCallInterface {
 	int	(*_waitpid)(int, int*, int, int*);
 	int	(*_kill)(int, int);
 
+        int     (*_mmap)(void **memory, size_t *size, int mode, int fd, off_t *offset);
+	int     (*_munmap)(void *memory, size_t size);
 } SystemCallInterface;
 
 extern SystemCallInterface Kaffe_SystemCallInterface;
@@ -80,6 +83,7 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
 #define	KCLOSE(A)	(*Kaffe_SystemCallInterface._close)(A)
 #define	KFSTAT(A,B)	(*Kaffe_SystemCallInterface._fstat)(A,B)
 #define	KSTAT(A,B)	(*Kaffe_SystemCallInterface._stat)(A,B)
+#define KFTRUNCATE(A,B) (*Kaffe_SystemCallInterface._ftruncate)(A,B)
 
 #define	KMKDIR(A,B)	(*Kaffe_SystemCallInterface._mkdir)(A,B)
 #define	KRMDIR(A)	(*Kaffe_SystemCallInterface._rmdir)(A)
@@ -124,5 +128,11 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
 #define	KFORKEXEC(A,B,C,D,E) \
 			(*Kaffe_SystemCallInterface._forkexec)(A,B,C,D,E)
 #define	KKILL(A,B)	(*Kaffe_SystemCallInterface._kill)(A,B)
+#define KMMAP(A,B,C,D,E) (*Kaffe_SystemCallInterface._mmap)(A,B,C,D,E)
+#define KMUNMAP(A,B)  (*Kaffe_SystemCallInterface._munmap)(A,B)
+
+#define KAFFE_MMAP_READ 0
+#define KAFFE_MMAP_WRITE 1
+#define KAFFE_MMAP_PRIVATE 2
 
 #endif

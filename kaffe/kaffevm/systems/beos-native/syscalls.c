@@ -85,6 +85,12 @@ beos_native_stat(const char *p, struct stat *st)
 }
 
 static int
+beos_native_ftruncate(int fd, off_t new_size)
+{
+	return (ftruncate(fd, new_size) < 0) ? errno : 0;
+}
+
+static int
 beos_native_mkdir(const char *p, int m)
 {
 	return (mkdir(p, m) < 0) ? errno : 0;
@@ -493,6 +499,18 @@ beos_native_kill(int a, int b)
 	return (send_signal(a, b) < 0) ? errno : 0;
 }
 
+static int
+beos_native_mmap(void **memory, size_t *size, int mode, int fd, off_t *offset)
+{
+	return B_UNSUPPORTED;
+}
+
+static int
+beos_native_munmap(void *memory, size_t size)
+{
+	return B_UNSUPPORTED;
+}
+
 SystemCallInterface Kaffe_SystemCallInterface = {
 	beos_native_open,
 	beos_native_read,
@@ -501,6 +519,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
 	beos_native_close,
 	beos_native_fstat,
 	beos_native_stat,
+	beos_native_ftruncate,
 	beos_native_mkdir,
 	beos_native_rmdir,
 	beos_native_rename,
@@ -525,4 +544,6 @@ SystemCallInterface Kaffe_SystemCallInterface = {
 	beos_native_forkexec,
 	beos_native_waitpid,
 	beos_native_kill,
+	beos_native_mmap,
+	beos_native_munmap
 };
