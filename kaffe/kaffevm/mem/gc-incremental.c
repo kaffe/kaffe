@@ -939,7 +939,7 @@ static struct GarbageCollectorInterface_Ops GC_Ops = {
 	gcInit,
 	gcEnable,
 	gcMarkAddress,
-	gcMarkObject,
+	gcMarkAddress,	/* XXX */
 	gcGetObjectSize,
 	gcGetObjectDescription,
 	gcGetObjectIndex,
