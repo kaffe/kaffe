@@ -41,13 +41,7 @@
 #undef SA_SIGINFO
 #endif
 
-/* Function prototype for signal handlers */
-#if defined(__GLIBC__)
-#define	EXCEPTIONPROTO							\
-	int sig, int code, struct sigcontext* ctx
-#else
-#error Do not know how to define EXCEPTIONPROTO
-#endif
+#define	EXCEPTIONPROTO SIGNAL_ARGS(sig, ctx)
 
 /* Get the first exception frame from a signal handler */
 #define	EXCEPTIONFRAME(f, c)						\

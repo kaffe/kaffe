@@ -26,8 +26,7 @@
 #include <ucontext.h>
 
 /* Function prototype for signal handlers */
-#define	EXCEPTIONPROTO						\
-	int sig, siginfo_t* sip, ucontext_t* ctx
+#define	EXCEPTIONPROTO SIGNAL_ARGS(sig, ctx)
 
 /* Get the first exception frame from a signal handler */
 #define	EXCEPTIONFRAME(f, c)					\

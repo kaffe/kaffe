@@ -44,19 +44,7 @@
 #undef SA_SIGINFO
 #endif
 
-/* Function prototype for signal handlers */
-#if defined(HAVE_STRUCT_SIGCONTEXT_STRUCT) && !defined(__GLIBC__)
-/* Linux < 2.1.1 */
-#define	EXCEPTIONPROTO							\
-	int sig, struct sigcontext_struct ctx
-
-#elif defined(HAVE_STRUCT_SIGCONTEXT) || defined(__GLIBC__)
-/* Linux >= 2.1.1  or Linux 2.0.x with glibc2 */
-#define	EXCEPTIONPROTO							\
-	int sig, struct sigcontext ctx
-#else
-#error Do not know how to define EXCEPTIONPROTO
-#endif
+#define	EXCEPTIONPROTO SIGNAL_ARGS(sig, ctx)
 
 /* Get the first exception frame from a signal handler */
 #define	EXCEPTIONFRAME(f, c)						\

@@ -15,6 +15,17 @@
 #include "i386/common.h"
 #include "i386/threads.h"
 
+/* Function prototype for signal handlers */
+#if defined(__GLIBC__)
+#define	SIGNAL_ARGS(sig, sc) int sig, int code, struct sigcontext* sc
+#define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext * scp
+#define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
+#else
+#error Do not know how to define EXCEPTIONPROTO
+#endif
+
+#define SIGNAL_PC(scp) (scp)->eip
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

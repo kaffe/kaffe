@@ -15,6 +15,11 @@
 #include "i386/common.h"
 #include "i386/threads.h"
 
+#define	SIGNAL_ARGS(sig, sc) int sig, siginfo_t* sip, ucontext_t* sc
+#define SIGNAL_CONTEXT_POINTER(scp) struct ucontext_t * scp
+#define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
+#define SIGNAL_PC(scp) ((scp)->uc_mcontext.gregs[EIP])
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

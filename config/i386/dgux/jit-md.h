@@ -41,15 +41,8 @@
 	asm volatile ("							\n\
 		addl %0,%%esp" : : "r" (4*(nargs+1)) : "cc")
 
-/**/
-/* Extra exception handling information. */
-/**/
-#include <siginfo.h>
-#include <ucontext.h>
-
 /* Function prototype for signal handlers */
-#define	EXCEPTIONPROTO							\
-	int sig, siginfo_t* sip, ucontext_t* ctx
+#define	EXCEPTIONPROTO SIGNAL_ARGS(sig, ctx)
 
 /* Get the first exception frame from a signal handler */
 #define	EXCEPTIONFRAME(f, c)						\

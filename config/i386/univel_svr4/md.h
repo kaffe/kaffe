@@ -15,6 +15,12 @@
 #include "i386/common.h"
 #include "i386/threads.h"
 
+/* Function prototype for signal handlers */
+#define	SIGNAL_ARGS(sig, sc) int sig, siginfo_t* sip, ucontext_t* sc
+#define SIGNAL_CONTEXT_POINTER(scp) ucontext_t* scp
+#define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
+#define SIGNAL_PC(scp) ((scp)->uc_mcontext.gregs[EIP])
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

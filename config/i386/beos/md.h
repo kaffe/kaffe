@@ -27,6 +27,11 @@
  */
 #define MAINSTACKSIZE	(220*1024)
 
+#define	SIGNAL_ARGS(sig, sc) int sig, void* userdata, struct vregs* sc
+#define SIGNAL_CONTEXT_POINTER(scp) struct vregs * scp
+#define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
+#define SIGNAL_PC(scp) ((scp)->eip)
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

@@ -17,6 +17,11 @@
 
 #define	POSIX_SIGNALS
 
+#define SIGNAL_ARGS(sig, sc) int sig, siginfo_t* sip, ucontext_t* ctx
+#define SIGNAL_CONTEXT_POINTER(scp) ucontext_t* ctx
+#define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
+#define SIGNAL_PC(scp) ((scp)->uc_mcontext.regs[EIP])
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

@@ -28,6 +28,41 @@
 #undef	SP_OFFSET
 #define	SP_OFFSET	7
 
+/* 
+ * The contents of a QNX signal context was posted to comp.os.qnx on 
+ * Oct 6, 1997 by Steve McPolin, QNX Software Systems. 
+ */
+
+struct _sigcontext {
+        ulong_t   sc_mask;
+        ulong_t   sc_gs:16,:16; /* register set at fault time */
+        ulong_t   sc_fs:16,:16;
+        ulong_t   sc_es:16,:16;
+        ulong_t   sc_ds:16,:16;
+        ulong_t   sc_di;
+        ulong_t   sc_si;
+        ulong_t   sc_bp;
+        ulong_t   :32;          /* hole from pushad */
+        ulong_t   sc_bx;
+        ulong_t   sc_dx;
+        ulong_t   sc_cx;
+        ulong_t   sc_ax;
+        ulong_t   sc_ip;
+        ulong_t   sc_cs:16, :16;
+        ulong_t   sc_fl;
+        ulong_t   sc_sp;
+        ulong_t   sc_ss:16, :16;
+        ulong_t   sc_info;       /* fault specific info */
+        ushort_t  sc_errc;       /* error code pushed by processor */
+        uchar_t   sc_fault;      /* actual fault # */
+        uchar_t   sc_flags;      /* signal handler flags: */
+};
+
+#define SIGNAL_ARGS(sig, sc) int sig, struct _sigcontext *sc
+#define SIGNAL_CONTEXT_POINTER(scp) struct _sigcontext *scp
+#define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
+#define SIGNAL_PC(scp) ((scp)->sc_ip)
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif
