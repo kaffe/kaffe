@@ -6,4 +6,10 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = kaffeh kaffevm xprof kaffe scripts man
+if NEED_LIBXPROF
+XPROF_SUBDIRS = xprof
+else
+XPROF_SUBDIRS = #
+endif
+
+SUBDIRS = kaffeh kaffevm $(XPROF_SUBDIRS) kaffe scripts man

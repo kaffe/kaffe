@@ -8,12 +8,18 @@
 
 libexec_PROGRAMS = Kaffe
 
+if NEED_LIBXPROF
+libxprof = ../xprof/libkaffexprof.la
+else
+libxprof = #
+endif
+
 INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kaffe/xprof
 
 Kaffe_SOURCES = main.c version.c version.h
 
-LIBKAFFEVM = ../kaffevm/libkaffevm.la ../xprof/libkaffexprof.la
+LIBKAFFEVM = ../kaffevm/libkaffevm.la $(libxprof)
 
 Kaffe_LDFLAGS = -export-dynamic
 Kaffe_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS)
