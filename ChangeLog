@@ -1,3 +1,25 @@
+2004-12-05  Dalibor Topic  <robilad@kaffe.org>
+
+	* test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java:
+	Updated expected stack traces.
+
+2004-12-05  Casey Marshall  <csm@gnu.org>
+
+	* kaffe/kaffevm/classMethod.h:
+	(signers) new field.
+
+	* libraries/clib/native/Class.c:
+	(java_lang_Class_getSigners0) new function. implemented.
+	(java_lang_Class_getSigners) removed.
+	(java_lang_Class_setSigners) implemented.
+
+	* libraries/javalib/java/lang/Class.java:
+	(getSigners) implemented.
+
+	* libraries/javalib/java/lang/ClassLoader.java:
+	(setSigners) implemented.
+
 2004-12-05  Mark Wielaard  <mark@klomp.org>
 
 	* libraries/javalib/gnu/xml/dom/ls/ReaderInputStream.java

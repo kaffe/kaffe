@@ -356,7 +356,14 @@ public InputStream getResourceAsStream(String name) {
 	return loader.getResourceAsStream(name);
 }
 
-native public Object[] getSigners();
+public Object[] getSigners()
+{
+        Object[] signers = getSigners0();
+        return signers == null ? null : (Object[]) signers.clone();
+}
+
+private native Object[] getSigners0();
+
 native void setSigners(Object[] signers);
 
 native public Class getSuperclass();

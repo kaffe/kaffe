@@ -205,9 +205,8 @@ public final ClassLoader getParent() {
 	return parent;
 }
 
-protected final void setSigners(Class cl, Object signers[]) {
-	throw new kaffe.util.NotImplemented(getClass().getName()
-		+ ".setSigners()");
+protected final void setSigners(Class cl, Object[] signers) {
+        cl.setSigners (signers);
 }
 
 protected final Class findLoadedClass(String name) {

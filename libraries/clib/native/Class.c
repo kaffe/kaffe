@@ -280,16 +280,16 @@ java_lang_Class_getModifiers(struct Hjava_lang_Class* this)
 	return (this->accflags & (ACC_MASK & ~ACC_SUPER));
 }
 
-HArrayOfObject* NONRETURNING
-java_lang_Class_getSigners(struct Hjava_lang_Class* this UNUSED)
+HArrayOfObject*
+java_lang_Class_getSigners0(struct Hjava_lang_Class* this)
 {
-	unimp("java.lang.Class:getSigners unimplemented");
+	return this->signers;
 }
 
-void NONRETURNING
-java_lang_Class_setSigners(struct Hjava_lang_Class* this UNUSED, HArrayOfObject* sigs UNUSED)
+void
+java_lang_Class_setSigners(struct Hjava_lang_Class* this, HArrayOfObject* sigs)
 {
-	unimp("java.lang.Class:setSigners unimplemented");
+	this->signers = sigs;
 }
 
 /*

@@ -163,6 +163,9 @@ struct Hjava_lang_Class {
 	/** Stab type ID. */
 	int stab_id;
 #endif
+
+	/** The array of 'signer' objects; usually Certificates. */
+	HArrayOfObject*		signers;
 };
 
 #ifndef __DEFINED_CLASS
