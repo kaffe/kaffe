@@ -1,5 +1,9 @@
 2004-02-08  Dalibor Topic <robilad@kaffe.org>
 
+	* Makefile.am (DIST_SUBDIRS): Removed intl.
+
+2004-02-08  Dalibor Topic <robilad@kaffe.org>
+
 	* Makefile.am (EXTRA_DIST): Removed patches to libtool.
 
 2004-02-08  Dalibor Topic <robilad@kaffe.org>
