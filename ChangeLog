@@ -2,6 +2,22 @@
 
 	Resynced with GNU Classpath.
 
+	2005-01-04  Robert Schuster <thebohemian@gmx.net>
+
+       * gnu/java/beans/DummyAppletStub.java: Add dummy implementation
+       of AppletStub for java.beans.Beans.instantiate.
+       * gnu/java/beans/DummyAppletContext.java: Add dummy implementation
+       of AppletContext.
+       * java/beans/Beans: Added 1.4 functionality, fixed user documentation
+       to be conformant with Javadoc guidelines.
+       (instantiate): Added two more overloaded variants, reworked user
+       documentation, fixed exception behavior, fixed behavior when
+       deserializing null.
+	
+2005-01-07  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-01-03  Michael Koch  <konqueror@gmx.de>
 
 	* javax/swing/plaf/metal/MetalLookAndFeel.java
