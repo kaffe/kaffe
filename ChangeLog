@@ -1,5 +1,15 @@
 2005-02-10  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-02-06  Mark Wielaard  <mark@klomp.org>
+
+        Fix suggested by Timo Lindfors <timo.lindfors@iki.fi>
+        * java/util/regex/Pattern.java (split(CharSequence,int)):
+        Fix while empties > 0 loops.
+
+2005-02-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/lang/Thread.java (sleep): Improved
 	exception messages.
 
