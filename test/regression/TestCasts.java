@@ -7,7 +7,7 @@
    (clazz)obj
    clazz.isInstance(obj)
    clazz1.isAssignableFrom(clazz2);
-   
+
    Hopefully all needed cases are covered. If you want to add object just put it
    into objs table. If you want to add class, you need to add it to both cls and to
    testCode method. Of course you need to regenerate results after that.
@@ -47,7 +47,7 @@ public class TestCasts
 	else
 	    System.out.print(b?'t':'f');
     }
-   
+
     static void reportInstanceof( Object obj, Class cl, boolean b )
     {
 	if ( verbose )
@@ -55,7 +55,7 @@ public class TestCasts
 	else
 	    System.out.print(b?'t':'f');
     }
-   
+
     static void reportCast( Object obj, Class cl, boolean b )
     {
 	if ( verbose )
@@ -67,12 +67,12 @@ public class TestCasts
     static final boolean verbose = false;
 
     public static void main(String argv[] )
-    {   
+    {
 	test();
 	System.out.println();
     }
-   
-   
+
+
     static void test()
     {
 	int i;
@@ -83,13 +83,13 @@ public class TestCasts
 		    {
 			reportClIsInst(objs[i], cls[j], cls[j].isInstance(objs[i]) );
 		    }
-	    }  
+	    }
 
 	for (i=0; i < objs.length; i++ )
 	    {
 		testCode(objs[i]);
 	    }
-                  
+
 	for ( i=0; i < cls.length; i++ )
 	    {
 		for ( j=0; j < cls.length; j++ )
@@ -101,7 +101,7 @@ public class TestCasts
 
     static final Class intArray = new int[0].getClass();
 
-    public static final Object objs[] = 
+    public static final Object objs[] =
     {
 	null,
 	new Object(),
@@ -119,10 +119,10 @@ public class TestCasts
 	new int[1],
 	new A1[1][1],
 	new AB12[1][1],
-	new I1[1][1]      
+	new I1[1][1]
     };
-   
-    public static final Class cls[] = 
+
+    public static final Class cls[] =
     {
 	Object.class,
 	A1.class,
@@ -146,10 +146,10 @@ public class TestCasts
 	AB12[][].class,
 	I1[][].class
     };
-   
+
     static void testCode(Object o)
     {
-   
+
 	reportInstanceof(o, Object.class, (o instanceof Object) );
 	try
 	    {
@@ -158,7 +158,7 @@ public class TestCasts
 	    } catch (ClassCastException e) {
 		reportCast(o,Object.class, false );
 	    }
-      
+
 	reportInstanceof(o, A1.class, (o instanceof A1) );
 	try
 	    {
@@ -182,7 +182,7 @@ public class TestCasts
 		reportCast(o, ABC12.class, true );
 	    } catch (ClassCastException e) {
 		reportCast(o,ABC12.class, false );
-	    }  
+	    }
 	reportInstanceof(o, D3.class, (o instanceof D3) );
 	try
 	    {
@@ -190,7 +190,7 @@ public class TestCasts
 		reportCast(o, D3.class, true );
 	    } catch (ClassCastException e) {
 		reportCast(o,D3.class, false );
-	    }        
+	    }
 	reportInstanceof(o, I1.class, (o instanceof I1) );
 	try
 	    {
@@ -206,7 +206,7 @@ public class TestCasts
 		reportCast(o, I2.class, true );
 	    } catch (ClassCastException e) {
 		reportCast(o,I2.class, false );
-	    }                 
+	    }
 	reportInstanceof(o, I3.class, (o instanceof I3) );
 	try
 	    {
@@ -214,7 +214,7 @@ public class TestCasts
 		reportCast(o, I3.class, true );
 	    } catch (ClassCastException e) {
 		reportCast(o,I3.class, false );
-	    }        
+	    }
 	reportInstanceof(o, Cloneable.class, (o instanceof Cloneable) );
 	try
 	    {
@@ -222,8 +222,8 @@ public class TestCasts
 		reportCast(o, Cloneable.class, true );
 	    } catch (ClassCastException e) {
 		reportCast(o,Cloneable.class, false );
-	    }  
-      
+	    }
+
 	reportInstanceof(o, Serializable.class, (o instanceof Serializable) );
 	try
 	    {
@@ -231,7 +231,7 @@ public class TestCasts
 		reportCast(o, Serializable.class, true );
 	    } catch (ClassCastException e) {
 		reportCast(o,Serializable.class, false );
-	    }        
+	    }
 	reportInstanceof(o, A1[].class, (o instanceof A1[]) );
 	try
 	    {
@@ -239,7 +239,7 @@ public class TestCasts
 		reportCast(o, A1[].class, true );
 	    } catch (ClassCastException e) {
 		reportCast(o,A1[].class, false );
-	    }           
+	    }
 
 	reportInstanceof(o, AB12[].class, (o instanceof AB12[]) );
 	try
@@ -272,7 +272,7 @@ public class TestCasts
 		reportCast(o, I1[].class, true );
 	    } catch (ClassCastException e) {
 		reportCast(o,I1[].class, false );
-	    }  
+	    }
 	reportInstanceof(o, I2[].class, (o instanceof I2[]) );
 	try
 	    {
@@ -280,7 +280,7 @@ public class TestCasts
 		reportCast(o, I2[].class, true );
 	    } catch (ClassCastException e) {
 		reportCast(o,I2[].class, false );
-	    }     
+	    }
 
 	reportInstanceof(o, I3[].class, (o instanceof I3[]) );
 	try
@@ -290,7 +290,7 @@ public class TestCasts
 	    } catch (ClassCastException e) {
 		reportCast(o,I3[].class, false );
 	    }
-            
+
 	reportInstanceof(o, intArray, (o instanceof int[]) );
 	try
 	    {
@@ -299,7 +299,7 @@ public class TestCasts
 	    } catch (ClassCastException e) {
 		reportCast(o,intArray, false );
 	    }
-         
+
 	reportInstanceof(o, A1[][].class, (o instanceof A1[][]) );
 	try
 	    {
@@ -307,7 +307,7 @@ public class TestCasts
 		reportCast(o, A1[][].class, true );
 	    } catch (ClassCastException e) {
 		reportCast(o,A1[][].class, false );
-	    }                                                                                
+	    }
 	reportInstanceof(o, AB12[][].class, (o instanceof AB12[][]) );
 	try
 	    {
@@ -326,9 +326,10 @@ public class TestCasts
 	    }
 
     }
-   
+
 }
 
+// javac flags: -nowarn
 /* Expected Output:
 ffffffffffffffffffffftffffffffffffffffffffttffftffffffffffffffftttffttffffffffffffffttttfttfffffffffffffftffftfttffffffffffffftffffffftttffftfffffftfffffffttttffttffffftffffffftttttfttffffftfffffffttffftfttfffftfffffffttfffftfffffftfffffffttffffftffffftfffffffttfffffttfffftfffffffttffffffftffftfffffffttfffffffftfttfffffffttffffffffttttfffffffttfffffffffftftftftftftftftftftftftftftftftftftftftftftttffffffffffffffffffffffffffffffffffffffffttttffffffttffffffffffffffffffffffffffffffttttttffffttttffffffffffffffffffffffffffffttttttttffttttffffffffffffffffffffffffffffttffffffttffttttffffffffffffffffffffffffffttffffffffffffffttttttffffffttffffffffffffttffffffffffffffttttttttffffttttffffffffffttffffffffffffffttttttttttffttttffffffffffttffffffffffffffttttffffffttffttttffffffffttffffffffffffffttttffffffffttffffffffffffttffffffffffffffttttffffffffffttffffffffffttffffffffffffffttttffffffffffttttffffffffttffffffffffffffttttffffffffffffffttffffffttffffffffffffffttttffffffffffffffffttffttttffffffffffffffttttffffffffffffffffttttttttffffffffffffffttttfffffffffffffffffffftttttttttttttttttttttttftttfffffffffffffffffffttfffffffffffffffffffftffffffffffffffffffffftffffffffffffffffftttftffffffffffffffffftttfttffffffffffffffffftfftffffffffffffffffffffftftttttttttttfffffffffttttttttttttfffffffffftttfffffffffffffffffffttfffffffffffffffffffftffffffffffffffffffffftffffffffffffffffftttftffffffffffffffffftttfttffffffffffffffffftfftffffffffffffffffffffftfffffffffffffffffffffttfffffffffffffffffffftfffffffffffffffffffttt
 */
