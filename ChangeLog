@@ -1,3 +1,12 @@
+2004-03-08  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath
+
+	2003-05-02  Michael Koch  <konqueror@gmx.de>
+
+	* java/net/URI.java
+	(create): Doesnt throws IllegalArgumentException.
+
 2004-03-11  Dalibor Topic <robilad@kaffe.org>
 
 	* configure.in:
