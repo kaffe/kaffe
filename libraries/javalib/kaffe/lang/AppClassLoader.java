@@ -223,6 +223,10 @@ public Enumeration findResources(String name) throws IOException {
 	Vector v = new Vector();
 
 	PRIMORDIAL_LOADER.findResources(v, name);
+
+	if (name.charAt(0) == '/') {
+		name = name.substring (1);
+	}	
 	
 	for (Source i=this.sources; i!=null; i=i.next) {
 		i.findResources (v, name);
