@@ -37,6 +37,9 @@ exception statement from your version. */
 
 
 package java.util;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 
@@ -912,4 +915,32 @@ public class Vector extends AbstractList
     if (index >= elementCount)
       throw new ArrayIndexOutOfBoundsException(index + " >= " + elementCount);
   }
+
+  /**
+   * Serializes this object to the given stream.
+   *
+   * @param s the stream to write to
+   * @throws IOException if the underlying stream fails
+   * @serialData just calls default write function
+   */
+  private synchronized void writeObject(ObjectOutputStream s)
+    throws IOException
+  {
+    s.defaultWriteObject();
+  }
+
+  /**
+   * Deserializes this object from the given stream.
+   *
+   * @param s the stream to read from
+   * @throws ClassNotFoundException if the underlying stream fails
+   * @throws IOException if the underlying stream fails
+   * @serialData just calls default read function
+   */
+  private void readObject(ObjectInputStream s)
+    throws IOException, ClassNotFoundException
+  {
+    s.defaultReadObject();
+  }
+
 }

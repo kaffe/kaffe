@@ -86,7 +86,7 @@ java_io_VMObjectStreamClass_hasClassInitializer(struct Hjava_lang_Class* clazz)
 static void*
 getFieldAddress (struct Hjava_lang_reflect_Field* sfield, struct Hjava_lang_Object *obj)
 {
-	if (unhand(sfield)->slot < CLASS_NSFIELDS(OBJECT_CLASS(obj))) {
+	if (unhand(sfield)->slot < CLASS_NSFIELDS(OBJECT_CLASS(sfield->clazz))) {
 		SignalError ("java.lang.IllegalArgumentException", "");
 	}
 
