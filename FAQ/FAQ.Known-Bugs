@@ -115,5 +115,3 @@ MISCELLANEOUS & TODO
 
 * Stopping threads at inopportune times may corrupt the VM.
 
-* Kaffe does not garbage collect classes.
-
