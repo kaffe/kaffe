@@ -44,7 +44,7 @@ public class MarkResetTest {
 	// More rigourous test of BufferedInputStream
 	BufferedInputStream bis = new BufferedInputStream(
 	  new InputStream() {
-	    private static int count = 0;
+	    private int count = 0;
 	    public int read() {
 	      return count++ & 0xff;
 	    }
