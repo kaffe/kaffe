@@ -81,10 +81,11 @@ private void checkWriteAccess() {
 public boolean delete() {
 	System.getSecurityManager().checkDelete(getPath());
 
-	return delete0();
+	return isDirectory0() ? rmdir0() : delete0();
 }
 
 native private boolean delete0();
+native private boolean rmdir0();
 
 public int compareTo(Object that) {
 	return compareTo((File)that);
