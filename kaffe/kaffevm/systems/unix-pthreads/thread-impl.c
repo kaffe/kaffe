@@ -104,6 +104,12 @@ static int psigCancel;
 /** We keep a list of all active threads, so that we can enumerate them */
 static jthread_t	activeThreads;
 
+/** This mutex lock prevents somebody to modify or read the active thread
+ * concurrently with some other threads. This prevents some bug that may appear 
+ * when a thread die, is created or is being walked.
+ */
+pthread_mutex_t		activeThreadsLock = PTHREAD_MUTEX_INITIALIZER;
+
 /** We don't throw away threads when their user func terminates, but suspend
  * and cache them for later re-use */
 static jthread_t	cache;
@@ -130,9 +136,6 @@ static int		*priorities;
 /** thread-specific-data key to retrieve 'nativeData' */
 pthread_key_t		ntKey;
 
-/** our lock to protect list manipulation/iteration */
-static iStaticLock	tLock;
-
 /** a hint to avoid unnecessary pthread_creates (with pending exits) */
 static volatile int	pendingExits;
 
@@ -158,15 +161,19 @@ static void tDispose ( jthread_t nt );
 static void* (*thread_malloc)(size_t);
 static void (*thread_free)(void*);
 
-#define TLOCK(_nt) do { \
-   (_nt)->blockState |= BS_THREAD; \
-   lockStaticMutex (&tLock); \
-} while(0)
+static inline void
+protectThreadList(jthread_t cur)
+{
+  cur->blockState |= BS_THREAD;
+  jmutex_lock(&activeThreadsLock);
+}
 
-#define TUNLOCK(_nt) do { \
-   unlockStaticMutex (&tLock); \
-  (_nt)->blockState &= ~BS_THREAD; \
-} while(0)
+static inline void
+unprotectThreadList(jthread_t cur)
+{
+  jmutex_unlock(&activeThreadsLock);
+  cur->blockState &= ~BS_THREAD;
+}
 
 /***********************************************************************
  * internal functions
@@ -219,7 +226,7 @@ tDump (void)
 	//void		*cvNat  = tLock.heavyLock.cv ? unhand(tLock.heavyLock.cv)->PrivateInfo : 0;
 	int		iLockRoot;	
 
-	TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
+	protectThreadList(cur);
 
 	dprintf("\n======================== thread dump =========================\n");
 
@@ -240,7 +247,7 @@ tDump (void)
 
 	dprintf("====================== end thread dump =======================\n");
 
-	TUNLOCK( cur); /* ------------------------------------------------------ tLock */
+	unprotectThreadList(cur);
   })
 }
 
@@ -673,13 +680,14 @@ void* tRun ( void* p )
   while ( 1 ) {
 	DBG( JTHREAD, TMSG_LONG( "calling user func of: ", cur))
 
+
 	/* Now call our thread function, which happens to be firstStartThread(),
 	 * which will call TExit before it returns */
 	cur->func(cur->data.jlThread);
 
 	DBG( JTHREAD, TMSG_LONG( "exiting user func of: ", cur))
 
-	TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
+	protectThreadList(cur);
 
 	/* remove from active list */
 	if ( cur == activeThreads ){
@@ -705,7 +713,7 @@ void* tRun ( void* p )
 
 	pendingExits--;
 
-	TUNLOCK( cur); /* ---------------------------------------------------- tLock */
+	unprotectThreadList(cur);
 
 	/* we are done using locks now. ok to destroy ksem */
 	KaffeVM_unlinkNativeAndJavaThread();
@@ -781,7 +789,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	nonDaemons++;
 
   if ( cache ) {
-	TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
+	protectThreadList(cur);
 
 	/* move thread from the cache to the active list */
 	nt = cache;
@@ -804,7 +812,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	nt->active = 1;
 	sem_post( &nt->sem);
 
-	TUNLOCK( cur); /* ---------------------------------------------------- tLock */
+	unprotectThreadList(cur);
   }
   else {
 	int creation_succeeded;
@@ -835,7 +843,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	/* Link the new one into the activeThreads list. We lock until
 	 * the newly created thread is set up correctly (i.e. is walkable)
 	 */
-	TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
+	protectThreadList(cur);
 
 	nt->active = 1;
 	nt->next = activeThreads;
@@ -866,7 +874,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	  }
 
 	  sem_destroy( &nt->sem);
-	  TUNLOCK( cur);
+	  unprotectThreadList(cur);
 	  thread_free(nt);
 	  return 0;
 	}
@@ -875,7 +883,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	 * is in a suspendable state */
 	sem_wait( &nt->sem);
 
-	TUNLOCK( cur); /* ---------------------------------------------------- tLock */
+	unprotectThreadList(cur);
   }
   return (nt);
 }
@@ -923,7 +931,7 @@ jthread_exit ( void )
   if ( !cur->daemon ) {
 	/* the last non daemon should shut down the process */
 	if ( --nonDaemons == 0 ) {
-	  TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
+	  protectThreadList(cur);
 
 	  DBG( JTHREAD, dprintf("exit on last nonDaemon\n"))
 
@@ -955,7 +963,7 @@ jthread_exit ( void )
 	  pthread_exit( 0);
 
 	  /* pretty useless, but clean */
-	  TUNLOCK( cur); /* -------------------------------------------------- tLock */
+	  unprotectThreadList(cur);
 
 	  /* we shouldn't get here, this is a last safeguard */
 	  EXIT(0);
@@ -968,7 +976,7 @@ jthread_exit ( void )
 	 * that the firstThread always has to be the last entry in the activeThreads list
 	 * (we just add new entries at the head)
 	 */
-	TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
+	protectThreadList(cur);
 
 	/* if we would be the head, we would have been the last, too (and already exited) */
 	assert( cur != activeThreads);
@@ -977,7 +985,7 @@ jthread_exit ( void )
 	assert( t != NULL);
 	t->next = 0;
 
-	TUNLOCK( cur); /* ---------------------------------------------------- tLock */
+	unprotectThreadList(cur);
 
 	/*
 	 * Put us into a permanent freeze to avoid shut down of the whole process (it's
@@ -1149,7 +1157,7 @@ jthread_suspendall (void)
   int		iLockRoot;
  
   /* don't allow any new thread to be created or recycled until this is done */
-  TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
+  protectThreadList(cur);
 
   DBG( JTHREAD, dprintf("enter crit section[%d] from: %p [tid:%4ld, java:%p)\n",
 			critSection, cur, cur->tid, cur->data.jlThread))
@@ -1211,7 +1219,7 @@ jthread_suspendall (void)
 #endif
   }
 
-  TUNLOCK( cur); /* ------------------------------------------------------ tLock */
+  unprotectThreadList(cur);
 
   DBG( JTHREAD, dprintf("critical section (%d) established\n", critSection))
 }
@@ -1236,7 +1244,7 @@ jthread_unsuspendall (void)
 	/* No need to sync, there's nobody else running. It's just a matter of
 	 * defensive programming (and we use our fast locks)
 	 */
-	TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
+  	protectThreadList(cur);
 
 #if !defined(KAFFE_BOEHM_GC)
 	for ( t=activeThreads; t; t = t->next ){
@@ -1279,7 +1287,7 @@ jthread_unsuspendall (void)
 
 #endif
 
-	TUNLOCK( cur); /*----------------------------------------------------- tLock */
+	unprotectThreadList(cur);
   }
 
   DBG( JTHREAD, dprintf("exit crit section (%d)\n", critSection))
@@ -1308,12 +1316,15 @@ void
 jthread_walkLiveThreads (void(*func)(jthread_t,void*), void *private)
 {
   jthread_t t;
+  jthread_t cur = jthread_current();
 
   DBG( JTHREAD, dprintf("start walking threads\n"))
 
+  protectThreadList(cur);
   for ( t = activeThreads; t != NULL; t = t->next) {
 	func(t, private);
   }
+  unprotectThreadList(cur);
 
   DBG( JTHREAD, dprintf("end walking threads\n"))
 }

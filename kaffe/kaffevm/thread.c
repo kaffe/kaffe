@@ -281,9 +281,10 @@ attachFakedThreadInstance(const char* nm, int isDaemon)
  */
 static
 void
-startSpecialThread(void *arg UNUSED)
+startSpecialThread(void *arg)
 {
 	void (*func)(void *);
+	void **pointer_args = (void **)arg;
 	void *argument;
 	int iLockRoot;
 
@@ -293,10 +294,8 @@ startSpecialThread(void *arg UNUSED)
 	signalStaticCond(&thread_start_lock);
 	unlockStaticMutex(&thread_start_lock);
 
-	func = (void *)THREAD_DATA()->exceptPtr;
-	THREAD_DATA()->exceptPtr = NULL;
-
-	argument = (void *)THREAD_DATA()->exceptObj;
+	func = (void(*)(void*))pointer_args[0];
+	argument = pointer_args[1];
 	THREAD_DATA()->exceptObj = NULL;
 
 	func(argument);
@@ -320,6 +319,7 @@ createDaemon(void* func, const char* nm, void *arg, int prio,
   jthread_t nativeTid;
   int iLockRoot;
   Hjava_lang_String* name;
+  void *specialArgument[2];
 
 DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
   
@@ -346,13 +346,26 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 				  "()Ljava/lang/ClassLoader;").l;
   
   lockStaticMutex(&thread_start_lock);
+
+  specialArgument[0] = func;
+  specialArgument[1] = arg;
   
-  nativeTid = createThread(vmtid, startSpecialThread, stacksize, einfo);
+  nativeTid = 
+    jthread_create(((unsigned char)unhand(tid)->priority),
+		   startSpecialThread,
+		   true,
+		   specialArgument,
+		   stacksize);
+  
+  if (nativeTid == NULL) {
+    postOutOfMemory(einfo);
+    return 0;
+  }
+
+  jthread_get_data(nativeTid)->exceptPtr = NULL;
+  jthread_get_data(nativeTid)->exceptObj = NULL;
   
   linkNativeAndJavaThread (nativeTid, vmtid);
-  
-  jthread_get_data(nativeTid)->exceptPtr = func;
-  jthread_get_data(nativeTid)->exceptObj = arg;
 
   waitStaticCond(&thread_start_lock, (jlong)0);
   
