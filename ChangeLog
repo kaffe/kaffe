@@ -1,3 +1,11 @@
+Thu Feb 10 13:14:07 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
+
+	* libraries/clib/management/Debug.c (Java_kaffe_management_Debug_enableStats): 
+	fix spelling of name, fix code, and handle systems not configured
+	for stats
+	* kaffe/kaffevm/stats.c: install atexit function from
+	statsSetMaskStr rather than registerCounter.
+
 Wed Feb  9 11:18:38 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/Timer.java: fix bug in waking thread
