@@ -4,47 +4,69 @@ use strict;
 use warnings;
 use Data::Dumper;
 my $prefix_regex = qr/^([^:\n]+):(\d+): warning: /m;
+my $prefix_regex_noparam = qr/^(?:[^:\n]+):(?:\d+): warning: /m;
 my $prefix_regex2 = qr/^([^:\n]+):(\d+):(?:\d+): warning: /m;
 
 #<robilad> guilhem: ~3000 unique ones with -Wall -W -Wtraditional -Wundef -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual
 #          -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes
 #          -Wmissing-declarations -Wmissing-noreturn -Wredundant-decls -Wnested-externs -Winline -Wlong-long
 
-my %warning_types = (
+my @warning_types = (
+	'missing-prototypes-mismatch'	=> qr/${prefix_regex}no previous prototype for `([^']+)'\n${prefix_regex_noparam}type mismatch with previous implicit declaration\n${prefix_regex}previous implicit declaration of `[^']+'\n${prefix_regex_noparam}`[^']+' was previously implicitly declared to return `([^']+)'$/m,
+
+	'-Wformat-nonliteral'		=> qr/${prefix_regex}format not a string literal, argument types not checked$/m,
+	'-Wimplicit-func-decl'		=> qr/${prefix_regex}implicit declaration of function `([^']+)'$/m,
+	'-Wmissing-braces'		=> qr/${prefix_regex}missing initializer\n${prefix_regex_noparam}\(near initialization for `([^']+)'\)$/m,
+	'-Wunused-parameter'		=> qr/${prefix_regex}unused parameter `([^']+)'$/m,
+
+	'-Wfloat-equal'			=> qr/${prefix_regex}comparing floating point with == or != is unsafe$/m,
+
+	'-Wshadow:1'			=> qr/${prefix_regex}declaration of `([^']+)' shadows a global declaration\n${prefix_regex}shadowed declaration is here$/m,
+	'-Wshadow:2'			=> qr/${prefix_regex}declaration of `([^']+)' shadows a previous local\n${prefix_regex}shadowed declaration is here$/m,
+	'-Wpointer-arith:1'		=> qr/${prefix_regex}pointer of type `([^']+)' used in arithmetic$/m,
+	'-Wpointer-arith:2'		=> qr/${prefix_regex}pointer of type `([^']+)' used in subtraction$/m,
+	'-Wbad-function-cast'		=> qr/${prefix_regex}cast does not match function type$/m,
+	'-Wcast-qual:1'			=> qr/${prefix_regex}cast discards qualifiers from pointer target type$/m,
+	'-Wcast-qual:2'			=> qr/${prefix_regex}initialization discards qualifiers from pointer target type$/m,
+	'-Wcast-qual:3'			=> qr/${prefix_regex}passing arg (\d+) of `([^']+)' discards qualifiers from pointer target type$/m,
+	'-Wcast-qual:4'			=> qr/${prefix_regex}return discards qualifiers from pointer target type$/m,
+	'-Wcast-qual:5'			=> qr/${prefix_regex}assignment discards qualifiers from pointer target type$/m,
+	'-Wcast-align:1'		=> qr/${prefix_regex}padding struct size to alignment boundary$/m,
+	'-Wconversion:1'		=> qr/${prefix_regex}negative integer implicitly converted to unsigned type$/m,
+	'-Wconversion:2'		=> qr/${prefix_regex}passing arg (\d+) of `([^']+) makes (pointer) from (integer) without a cast$/m,
+	'-Wconversion:3'		=> qr/${prefix_regex}passing arg (\d+) of `([^']+)' makes (pointer) from (integer) without a cast$/m,
+	'-W:sign-compare'		=> qr/${prefix_regex}comparison of unsigned expression < 0 is always false$/m,
+	'-Wsign-compare:1'		=> qr/${prefix_regex}comparison between signed and unsigned$/m,
+	'-Wsign-compare:2'		=> qr/${prefix_regex}signed and unsigned type in conditional expression$/m,
+	'-Waggregate-return:1'		=> qr/${prefix_regex}function call has aggregate value$/m,
+	'-Waggregate-return:2'		=> qr/${prefix_regex}function returns an aggregate$/m,
+	'-Wstrict-prototypes'		=> qr/${prefix_regex}non-static declaration for `([^']+)' follows static$/m,
+	'-Wmissing-prototypes'		=> qr/${prefix_regex}no previous prototype for `([^']+)'$/m,
+	'-Wmissing-declarations:1'	=> qr/${prefix_regex2}"([^"]+)" is not defined\s*$/m,
+	'-Wmissing-declarations:2'	=> qr/${prefix_regex2}`([^']+)' is not defined\s*$/m,
+	'-Wmissing-noreturn'		=> qr/${prefix_regex}function might be possible candidate for attribute `(noreturn)'$/m,
+	'-Wmissing-format-attribute'	=> qr/${prefix_regex}function might be possible candidate for `printf' format attribute$/m,
+	'-Wpadded'			=> qr/${prefix_regex}padding struct to align `([^']+)'$/m,
+	'-Wredundant-decls'		=> qr/${prefix_regex}redundant redeclaration of `([^']+)' in same scope\n${prefix_regex}previous declaration of `[^']+'$/m,
+	'-Wnested-externs'		=> qr/${prefix_regex}nested extern declaration of `([^']+)'$/m,
+	'-Wunreachable-code'		=> qr/${prefix_regex}will never be executed$/m,
+	'-Winline'			=> qr/${prefix_regex}inlining failed in call to `([^']+)'\n${prefix_regex}called from here$/m,
+
+
+
+
+
 	'traditional-1'			=> qr/${prefix_regex}passing arg (\d+) of (?:`([^']+)'|(pointer to function)) with different width due to prototype$/m,
 	'traditional-2'			=> qr/${prefix_regex}passing arg (\d+) of (?:`([^']+)'|(pointer to function)) as (unsigned|signed) due to prototype$/m,
 	'traditional-3'			=> qr/${prefix_regex}passing arg (\d+) of `([^']+)' as `([^']+)' rather than `([^']+)' due to prototype$/m,
 	'traditional-4'			=> qr/${prefix_regex}macro arg `([^']+)' would be stringified with -traditional\.$/m,
-	'shadow-1'			=> qr/${prefix_regex}declaration of `([^']+)' shadows a global declaration$/m,
-	'shadow-2'			=> qr/${prefix_regex}declaration of `([^']+)' shadows a previous local$/m,
-	'pointer-arith-1'		=> qr/${prefix_regex}pointer of type `([^']+)' used in arithmetic$/m,
-	'pointer-arith-2'		=> qr/${prefix_regex}pointer of type `([^']+)' used in subtraction$/m,
-	'bad-function-cast'		=> qr/${prefix_regex}cast does not match function type$/m,
-	'cast-qual-1'			=> qr/${prefix_regex}cast discards qualifiers from pointer target type$/m,
-	'cast-qual-2'			=> qr/${prefix_regex}initialization discards qualifiers from pointer target type$/m,
-	'cast-qual-3'			=> qr/${prefix_regex}passing arg (\d+) of `([^']+)' discards qualifiers from pointer target type$/m,
-	'cast-qual-4'			=> qr/${prefix_regex}return discards qualifiers from pointer target type$/m,
-	'cast-qual-5'			=> qr/${prefix_regex}assignment discards qualifiers from pointer target type$/m,
-	'cast-align-1'			=> qr/${prefix_regex}padding struct size to alignment boundary$/m,
-	'cast-align-2'			=> qr/${prefix_regex}padding struct to align `([^']+)'$/m,
-	'conversion'			=> qr/${prefix_regex}negative integer implicitly converted to unsigned type$/m,
-	'sign-compare-1'		=> qr/${prefix_regex}comparison of unsigned expression < 0 is always false$/m,
-	'sign-compare-2'		=> qr/${prefix_regex}comparison between signed and unsigned$/m,
-	'sign-compare-3'		=> qr/${prefix_regex}signed and unsigned type in conditional expression$/m,
-	'aggregate-return-1'		=> qr/${prefix_regex}function call has aggregate value$/m,
-	'aggregate-return-2'		=> qr/${prefix_regex}function returns an aggregate$/m,
-#	'strict-prototypes-1'		=> qr/${prefix_regex}previous declaration of `([^']+)'$/m,
-	'strict-prototypes-1'		=> qr/${prefix_regex}redundant redeclaration of `([^']+)' in same scope$/m,
-	'strict-prototypes-2'		=> qr/${prefix_regex}non-static declaration for `([^']+)' follows static$/m,
-	'missing-prototypes'		=> qr/${prefix_regex}no previous prototype for `([^']+)'$/m,
-	'missing-declarations-1'	=> qr/${prefix_regex2}"([^"]+)" is not defined\s*$/m,
-	'missing-declarations-2'	=> qr/${prefix_regex2}`([^']+)' is not defined\s*$/m,
-	'missing-noreturn'		=> qr/${prefix_regex}function might be possible candidate for attribute `(noreturn)'$/m,
-	'attribute-formatf'		=> qr/${prefix_regex}function might be possible candidate for `printf' format attribute$/m,
-	'redundant-decls'		=> qr/${prefix_regex}redundant redeclaration of `([^']+)' in same scope$/m,
-	'nested-externs'		=> qr/${prefix_regex}nested extern declaration of `([^']+)'$/m,
-	'unused'			=> qr/${prefix_regex}unused parameter `([^']+)'$/m,
-	'never-run'			=> qr/${prefix_regex}will never be executed$/m,
+	'traditional-5'			=> qr/${prefix_regex}passing arg (\d+) of `([^']+)' as (floating) rather than (integer) due to prototype$/m,
+
+
+	'implicit-func-decl-mismatch'	=> qr/${prefix_regex}implicit declaration of function `([^']+)'$/m,
+	'deprecated-lvalue'		=> qr/${prefix_regex}use of (compound|conditional|cast) expressions as lvalues is deprecated$/m,
+
+
 
 );
 
@@ -62,8 +84,8 @@ my %error_counts;
 my %errors;
 my $total_errors = 0;
 
-foreach my $type ( keys( %warning_types ) ) {
-	my $regex = $warning_types{ $type };
+for ( my $i = 0; $i + 1 < @warning_types; $i += 2 ) {
+	my ( $type, $regex ) = @warning_types[ $i .. $i+1 ];
 
 print( STDERR "\t$type\t\t" );
 	my @matches;
@@ -101,7 +123,7 @@ foreach my $type ( sort( { $error_counts{ $b } <=> $error_counts{ $a } } keys( %
 			my $params = $h2->{ $line };
 			foreach my $param ( @$params ) {
 				print( "\t\tLine: $line\n" );
-				print( "\t\tParams: " . join( ',', @$param ) . "\n\n" ) if ( @$params );
+				print( "\t\tParams: " . join( ',', grep( { defined( $_ ) } @$param ) ) . "\n\n" ) if ( @$params );
 			}
 		}
 	}

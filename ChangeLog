@@ -1,5 +1,17 @@
 2004-04-03  Adam Heath <doogie@debian.org>
 
+        * scripts/sort-warnings.pl:
+	  * The warnings hash is now a list, so that we can specify the check
+	    order.
+	  * Renamed a bunch of warnings, so they contain the -W parameter
+	    passed to gcc.
+	  * Added several warnings that were being skipped in the log.
+	  * Make a few warnings match multiple lines, to more info is
+	    displayed.
+	  * Fix use of uninitialized value.
+
+2004-04-03  Adam Heath <doogie@debian.org>
+
         * scripts/sort-warnings.pl: Script to sort gcc warnings.
 	* configure.ac, configure: Turn off -Wall, instead specifing each
 	  warning explicitly.
