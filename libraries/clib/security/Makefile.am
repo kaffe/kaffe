@@ -9,7 +9,8 @@
 native_LTLIBRARIES = libsecurity.la
 
 EXTRA_DIST = \
-		kaffe_md5.h
+		kaffe_md5.h \
+		java.security
 
 SECURITY_SRCS =	\
 		digest.c \

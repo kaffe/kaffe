@@ -950,7 +950,7 @@ serialized_converters = \
 	kaffe/io/CharToByteCP918.ser \
 	kaffe/io/CharToByteKOI8_R.ser
 
-EXTRA_DIST = $(jrelib_DATA) $(toolslib_DATA) $(Klasses_jar_SRCS) \
+EXTRA_DIST = Klasses.jar $(toolslib_DATA) $(Klasses_jar_SRCS) \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
 	kaffe/io/ByteToCharEUC_JP.tbl \
