@@ -478,6 +478,7 @@ public abstract class NumberFormat extends Format implements Cloneable
   public static NumberFormat getIntegerInstance(Locale locale)
   {
     NumberFormat format = computeInstance (locale, "numberFormat", "#,##0");
+    format.setMaximumFractionDigits(0);
     format.setParseIntegerOnly (true);
     return format;
   }
