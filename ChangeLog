@@ -1,5 +1,22 @@
 2003-09-14  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/Klasses.jar.bootstrap:
+	Regenerated.
+
+	* libraries/javalib/bootstrap.classlist:
+	Added java/lang/InterruptedException.class.
+
+	* libraries/javalib/essential.files:
+	Added java/net/HttpURLConnection.java and
+	java/net/ProtocolException.java.
+	
+	* libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/core.files:
+	Removed java/net/HttpURLConnection.java and
+	java/net/ProtocolException.java.
+	
+2003-09-14  Dalibor Topic <robilad@kaffe.org>
+
 	* developers/mauve-results.sh:
 	Added a call to autoreconf to make build mauve's configure
 	script. Added missing '$' to dereference JTIDY_CPATH. Improved

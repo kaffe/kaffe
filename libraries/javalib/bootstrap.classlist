@@ -65,6 +65,7 @@ java/lang/IllegalArgumentException.class
 java/lang/IndexOutOfBoundsException.class
 java/lang/InstantiationException.class
 java/lang/Integer.class
+java/lang/InterruptedException.class
 java/lang/LinkageError.class
 java/lang/Long.class
 java/lang/Math.class
