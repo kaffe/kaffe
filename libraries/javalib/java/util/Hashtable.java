@@ -53,27 +53,11 @@ public class Hashtable extends Dictionary
 	}
 
 	public synchronized Enumeration keys() {
-		return new Enumeration() {
-			private final Iterator keys = keySet().iterator();
-			public boolean hasMoreElements() {
-				return keys.hasNext();
-			}
-			public Object nextElement() {
-				return keys.next();
-			}
-		};
+		return new Vector(map.keySet()).elements();
 	}
 
 	public synchronized Enumeration elements() {
-		return new Enumeration() {
-			private final Iterator vals = values().iterator();
-			public boolean hasMoreElements() {
-				return vals.hasNext();
-			}
-			public Object nextElement() {
-				return vals.next();
-			}
-		};
+		return new Vector(map.values()).elements();
 	}
 
 	public synchronized boolean contains(Object val) {
