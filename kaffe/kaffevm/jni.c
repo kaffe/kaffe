@@ -15,6 +15,7 @@
 
 #include "config.h"
 #include "config-std.h"
+#include "config-mem.h"
 #include "jni.h"
 #include "jnirefs.h"
 #include "classMethod.h"
@@ -28,7 +29,6 @@
 #include "baseClasses.h"
 #include "readClass.h"
 #include "access.h"
-#include "strings.h"
 #include "lookup.h"
 #include "thread.h"
 #include "external.h"
