@@ -1,3 +1,10 @@
+2004-02-07  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/intrp/machine.c
+	(overflow): New static variable.
+	(runVirtualMachine) Use pointer to static variable overflow to
+	fix a gcc warning.
+
 2004-02-04  Dalibor Topic <robilad@kaffe.org>
 
         Resynced with GNU Classpath.
