@@ -96,8 +96,13 @@ static void makeFakeCalls(void);
 #include "debug.h"
 #undef	DBG
 #define	DBG(A,B)
+
+#if defined(KAFFE_PROFILER)
 int profFlag;
-Method* globalMethod;
+Method *globalMethod;
+
+static void printProfilerStats(void);
+#endif
 
 /*
  * Translate a method into native code.
@@ -163,6 +168,23 @@ translate(Method* xmeth, errorInfo* einfo)
 	}
 
 DBG( vm_jit_translate, ("callinfo = 0x%x\n", &cinfo));
+
+#if defined(KAFFE_PROFILER)
+	if (profFlag) {
+		static int init = 0;
+
+		if (!init) {
+			atexit(printProfilerStats);
+			init = 1;
+		}
+
+		profiler_get_clicks(xmeth->jitClicks);
+		xmeth->callsCount = 0;
+		xmeth->totalClicks = 0;
+		xmeth->totalChildrenClicks = 0;
+		globalMethod = xmeth;
+	}
+#endif
 
 	/* Handle null calls specially */
 	if (METHOD_BYTECODE_LEN(xmeth) == 1 && METHOD_BYTECODE_CODE(xmeth)[0] == RETURN) {
@@ -319,6 +341,16 @@ done:;
 	tidyVerifyMethod(&codeInfo);
 
 	reinvoke = false;
+
+#if defined(KAFFE_PROFILER)
+	if (profFlag) {
+		profiler_click_t end;
+
+		profiler_get_clicks(end);
+		xmeth->jitClicks = end - xmeth->jitClicks;
+		globalMethod = 0;
+	}
+#endif
 
 DBG( vm_jit_translate, ("Translating %s.%s%s (%s) %p\n",
 						xmeth->class->name->data,
@@ -1064,3 +1096,83 @@ getEngine(void)
 {
 	return "kaffe.jit";
 }
+
+
+#if defined(KAFFE_PROFILER)
+static jlong click_multiplier;
+static profiler_click_t click_divisor;
+static FILE *prof_output;
+
+static int
+profilerClassStat(Hjava_lang_Class *clazz, void *param)
+{
+	Method *meth;
+	int mindex;
+
+	for (mindex = clazz->nmethods, meth = clazz->methods; mindex-- > 0; meth++) {
+		if (meth->callsCount == 0)
+			continue;
+
+		fprintf(prof_output,
+			"%10d %10.6g %10.6g %10.6g %10.6g %s.%s%s\n",
+			meth->callsCount,
+			(click_multiplier * ((double)meth->totalClicks)) / click_divisor,
+			(click_multiplier * ((double)(meth->totalClicks
+						      - meth->totalChildrenClicks)))
+			/ click_divisor,
+			(click_multiplier * ((double)meth->totalChildrenClicks)) / click_divisor,
+			(click_multiplier * ((double)meth->jitClicks)) / click_divisor,
+
+			meth->class->name->data,
+			meth->name->data,
+			METHOD_SIGD(meth)
+		       );
+	}
+	return 0;
+}
+
+
+static void
+printProfilerStats(void)
+{
+	profiler_click_t start, end;
+	jlong m_start, m_end;
+
+	/* If the profFlag == 0, don't bother printing anything */
+	if (profFlag == 0)
+		return;
+
+ 	/* open file */
+ 	prof_output = fopen("prof.out", "w");
+	if (prof_output == NULL) {
+		return;
+	}
+
+	/* Need to figure out what profiler_click  _really_ is.
+	 * Use currentTime() to guest how long is a second.  Call it before
+	 * to don't count dynamic linker resolve time.  */
+	m_start = currentTime();
+	profiler_get_clicks(start);
+	sleep (1);
+	m_end = currentTime();
+	profiler_get_clicks(end);
+
+	click_multiplier = m_end - m_start;
+	click_divisor = end - start;
+
+	fprintf(prof_output,
+		"# clockTick: %lld per 1/%lld seconds aka %lld per milliseconds\n",
+		click_divisor,
+		click_multiplier,
+		click_divisor / click_multiplier);
+
+ 	fprintf(prof_output, "%10s %10s %10s %10s %10s %s\n",
+ 		"#    count", "total", "self", "children", "jit",
+ 		"method-name");
+
+	/* Traverse through class hash table */
+	walkClassPool(profilerClassStat, NULL);
+
+	fclose(prof_output);
+}
+#endif

@@ -42,6 +42,8 @@
 
 #define Lrangecheck	0x1000	/* Check for overflow in the fixup */
 
+#define Lnoprofile	0x4000	/* don't profile this called label */
+
 typedef struct _label_ {
 	struct _label_*	next;
 	uintp		at;

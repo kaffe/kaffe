@@ -135,9 +135,11 @@ extern iLock* translatorlock;
 #define	leaveTranslator()	unlockStaticMutex(&translatorlock)
 
 extern jitflags willcatch;
-extern int profFlag;
 extern struct codeinfo* codeInfo;
+#if defined(KAFFE_PROFILER)
+extern int profFlag;
 extern Method* globalMethod;
+#endif
 
 typedef struct _nativeCodeInfo {
 	void*   mem;

@@ -53,6 +53,8 @@ sequence* lastSpill;
 #define	MAXLABTAB	64
 label* labtab[MAXLABTAB];
 
+static void _call_soft(void *routine, int profiled);
+
 /* ----------------------------------------------------------------------- */
 /* Register loads and spills.						   */
 /*									   */
@@ -3543,7 +3545,7 @@ call_indirect_method(Method *meth)
 	void* ptr;
 
 	if (METHOD_TRANSLATED(meth)) {
-		call_soft(METHOD_NATIVECODE(meth));
+		_call_soft(METHOD_NATIVECODE(meth), 1);
 	}
 	else {
 		ptr = PMETHOD_NATIVECODE(meth);
@@ -3563,12 +3565,12 @@ call_indirect_method(Method *meth)
 	}
 }
 
-void
-call_soft(void *routine)
+static void
+_call_soft(void *routine, int profiled)
 {
 #if defined(HAVE_call_soft)
 	label* l = newLabel();
-	l->type = Labsolute|Lexternal;
+	l->type = Labsolute|Lexternal | (profiled ? 0 : Lnoprofile);
 	l->at = 0;
 	l->to = (uintp)routine;	/* What place does it goto */
 	l->from = 0;
@@ -3577,7 +3579,7 @@ call_soft(void *routine)
 #elif defined(HAVE_call_ref)
 	label* l;
 	l = newLabel();
-	l->type = Lexternal;
+	l->type = Lexternal | (profiled ? 0 : Lnoprofile);
 	l->at = 0;
 	l->to = (uintp)routine;	/* What place does it goto */
 	l->from = 0;
@@ -3607,6 +3609,11 @@ call_soft(void *routine)
 #endif
 }
 
+void
+call_soft(void *routine)
+{
+	_call_soft(routine, 0);
+}
 
 #if defined(HAVE_ret)
 void
