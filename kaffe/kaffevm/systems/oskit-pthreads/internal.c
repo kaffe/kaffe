@@ -30,6 +30,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include "config-io.h"
+#include "config-signal.h"
 #include "jtypes.h"
 #include "access.h"
 #include "object.h"
@@ -46,10 +47,14 @@
 #include "gc.h"
 #include "md.h"
 #include "lerrno.h"
-#define NOUNIXPROTOTYPES
 #include "jsyscall.h"
 
 #include "jthread.h"
+
+/* If not otherwise specified, assume at least 1MB for main thread */
+#ifndef MAINSTACKSIZE
+#define MAINSTACKSIZE (1024*1024)
+#endif
 
 /* 
  * store the native thread for the main thread here 
@@ -120,13 +125,18 @@ static
 void
 Tinit(int nativestacksize)
 {
+	/* Even though the underlying operating or threading system could
+	 * probably extend the main thread's stack, we must impose this 
+	 * artificial boundary, because otherwise we wouldn't be able to 
+	 * catch stack overflow exceptions thrown by the main thread.
+	 */
 	threadStackSize = nativestacksize;
 	mainthread = (struct Hkaffe_util_Ptr*)jthread_init(
 		DBGEXPR(JTHREADNOPREEMPT, false, true),
 		java_lang_Thread_MAX_PRIORITY+1,
 		java_lang_Thread_MIN_PRIORITY,
 		java_lang_Thread_NORM_PRIORITY,
-		threadStackSize,
+		MAINSTACKSIZE,
 		thread_malloc,
 		thread_free,
 		broadcastDeath,
@@ -141,18 +151,10 @@ void
 TcreateFirst(Hjava_lang_Thread* tid)
 {
 	jthread_atexit(runfinalizer);
-
 	/* set Java thread associated with main thread */
-	GET_JTHREAD()->jlThread = tid;
 	SET_COOKIE(tid);
-
 	GC_WRITE(tid, mainthread);
 	unhand(tid)->PrivateInfo = mainthread;
-	/* Even though the underlying threading system would probably 
-	 * extend the main thread's stack, we must impose this artificial
-	 * boundary, because otherwise we wouldn't be able to catch
-	 * stack overflow exceptions thrown by the main thread.
-	 */
 	unhand(tid)->stackOverflowError = 
 		(Hjava_lang_Throwable*)StackOverflowError;
 	unhand(tid)->needOnStack = STACK_HIGH;
@@ -396,11 +398,9 @@ Tspinoffall(void* arg)
 	intsRestoreAll();
 }       
         
-int mkdir_with_int(const char *path, int m)
-{
-	return mkdir(path, m);
-}
-
+/*
+ * check whether we have at least `left' bytes left on the stack
+ */
 static
 Hjava_lang_Throwable*
 TcheckStack(int left)
@@ -415,37 +415,6 @@ DBG(VMTHREAD,
    )
 	return (Hjava_lang_Throwable*)
 		(rc == true ? 0 : unhand(TcurrentJava())->stackOverflowError);
-}
-
-static int
-my_connect(int fd, struct sockaddr* addr, size_t len)
-{
-        int r = connect(fd, addr, len);
-        /* annul EALREADY error */
-        if (r == -1 && errno == EALREADY)
-                r = 0;
-        return r;
-}
-
-static int
-my_waitpid(int wpid, int* status, int options)
-{
-	unimp("waitpid() not implemented");
-	return -1;
-}
-
-static int
-my_forkexec(char *argv[], char *env[], int fd[4])
-{
-	unimp("forkexec() not implemented");
-	return -1;
-}
-
-static int
-my_kill(void)
-{
-	unimp("kill() not implemented");
-	return -1;
 }
 
 /*
@@ -489,38 +458,4 @@ LockInterface Kaffe_LockInterface = {
         Tspinon,
         Tspinoff,
 
-};
-
-SystemCallInterface Kaffe_SystemCallInterface = {
-
-        (int (*)(const char *, int, int))open,	
-        read,	
-        write, 
-        lseek,
-        close,
-        fstat,
-        stat,
-
-        mkdir_with_int,		/* the real mkdir takes a mode_t */
-        rmdir,
-        rename,
-        remove,
-
-        socket,
-        my_connect,
-        (int (*)(int, struct sockaddr *, size_t*))accept, 
-        read,	
-        recvfrom,
-        write, 
-        sendto,	
-        setsockopt,	
-        getsockopt,
-        getsockname, 
-        getpeername,
-
-        select,	
-
-	my_forkexec,
-        my_waitpid,
-	my_kill,
 };

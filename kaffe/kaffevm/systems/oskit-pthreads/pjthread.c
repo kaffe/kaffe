@@ -358,8 +358,8 @@ DBG(JTHREAD,
 	dprintf("starting thread %d\n", tid->native_thread); )
 	jmutex_lock(&threadLock);
 	pthread_cleanup_push(deathcallback, tid);
-	SET_COOKIE(tid->jlThread);
 	SET_JTHREAD(tid);
+	SET_COOKIE(tid->jlThread);
 	jmutex_unlock(&threadLock);
 
         tid->status = THREAD_RUNNING;

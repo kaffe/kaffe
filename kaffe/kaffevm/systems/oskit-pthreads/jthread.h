@@ -51,10 +51,22 @@ typedef struct jthread {
 extern pthread_key_t		cookie_key;
 extern pthread_key_t		jthread_key;
 
-#define GET_COOKIE()		(pthread_getspecific(cookie_key))
-#define SET_COOKIE(x)		(pthread_setspecific(cookie_key, x))
 #define GET_JTHREAD()		((jthread_t)pthread_getspecific(jthread_key))
 #define SET_JTHREAD(x)		(pthread_setspecific(jthread_key, x))
+#define GET_COOKIE()		(pthread_getspecific(cookie_key))
+
+/*
+ * This is somewhat bogus. Set jthread->jlthread at the same time so
+ * as not to change the code in internal.c, which is going to be shared
+ * at some point. 
+ */
+#define SET_COOKIE(x) \
+	{ \
+		jthread_t jthread = GET_JTHREAD();			\
+									\
+		jthread->jlThread = (x);				\
+		pthread_setspecific(cookie_key, (x));			\
+	}
 
 /****************************************************************************
  *
