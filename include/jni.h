@@ -63,7 +63,7 @@ extern "C"
 {
 #endif /* __cplusplus */
   
-#include "jni_md.h" 
+#include "kaffe/jni_md.h" 
 
 typedef jint jsize;
   
