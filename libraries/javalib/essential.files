@@ -313,3 +313,4 @@ kaffe/util/UTF8.java
 kaffe/util/zip/SwitchInflater.java
 gnu/java/io/ObjectIdentityWrapper.java
 gnu/java/io/NullOutputStream.java
+gnu/java/lang/reflect/TypeSignature.java

@@ -1745,12 +1745,12 @@ public class ObjectInputStream extends InputStream
 	f.setBoolean (obj, val);
       }
     catch (IllegalArgumentException _)
-    {
-      throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
-    }
+      {
+	throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
+      }
     catch (Exception _)
-    {
-    }
+      {
+      }
   }
 
   private void setByteField (Object obj, Class klass, String field_name,
@@ -1762,12 +1762,12 @@ public class ObjectInputStream extends InputStream
 	f.setByte (obj, val);
       }
     catch (IllegalArgumentException _)
-    {
-      throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
-    }
+      {
+	throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
+      }
     catch (Exception _)
-    {
-    }
+      {
+      }
   }
 
   private void setCharField (Object obj, Class klass, String field_name,
@@ -1779,12 +1779,12 @@ public class ObjectInputStream extends InputStream
 	f.setChar (obj, val);
       }
     catch (IllegalArgumentException _)
-    {
-      throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
-    }
+      {
+	throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
+      }
     catch (Exception _)
-    {
-    }
+      {
+      }
   }
 
   private void setDoubleField (Object obj, Class klass, String field_name,
@@ -1796,12 +1796,12 @@ public class ObjectInputStream extends InputStream
 	f.setDouble (obj, val);
       }
     catch (IllegalArgumentException _)
-    {
-      throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
-    }
+      {
+	throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
+      }
     catch (Exception _)
-    {
-    }
+      {
+      }
   }
 
   private void setFloatField (Object obj, Class klass, String field_name,
@@ -1813,9 +1813,9 @@ public class ObjectInputStream extends InputStream
 	f.setFloat (obj, val);
       }
     catch (IllegalArgumentException _)
-    {
-      throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
-    }
+      {
+	throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
+      }
     catch (Exception _)
       {
       }    
@@ -1830,9 +1830,9 @@ public class ObjectInputStream extends InputStream
 	f.setInt (obj, val);
       }
     catch (IllegalArgumentException _)
-    {
-      throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
-    }
+      {
+	throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
+      }
     catch (Exception _)
       {
       }    
@@ -1848,9 +1848,9 @@ public class ObjectInputStream extends InputStream
 	f.setLong (obj, val);
       }
     catch (IllegalArgumentException _)
-    {
-      throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
-    }
+      {
+	throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
+      }
     catch (Exception _)
       {
       }    
@@ -1866,9 +1866,9 @@ public class ObjectInputStream extends InputStream
 	f.setShort (obj, val);
       }
     catch (IllegalArgumentException _)
-    {
-      throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
-    }
+      {
+	throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
+      }
     catch (Exception _)
       {
       }    
@@ -1891,12 +1891,11 @@ public class ObjectInputStream extends InputStream
 	f.set (obj, val);
       }
     catch (InvalidClassException e)
-    {
-      throw e;
-    }
+      {
+	throw e;
+      }
     catch (Exception _)
-    {
-    }
+      {}
   }
 
   private static final int BUFFER_SIZE = 1024;

@@ -1,3 +1,13 @@
+2003-08-12  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/bootstrap.classlist: updated (added some
+	serialization class).
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated.
+
+	* libraries/javalib/java/io/Object*.java: fixed some coding style
+	typos.
+	
 2003-08-11  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/clib/native/ObjectStreamClassImpl.c: removed

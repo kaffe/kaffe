@@ -30,6 +30,7 @@ java/io/ObjectInputStream.class
 java/io/ObjectStreamConstants.class
 java/io/OutputStream.class
 java/io/OutputStreamWriter.class
+java/io/ObjectStreamField.class
 java/io/PrintStream.class
 java/io/PrintWriter.class
 java/io/PushbackInputStream.class
@@ -128,8 +129,6 @@ java/util/AbstractMap$1.class
 java/util/AbstractMap$1$1.class
 java/util/AbstractMap$2.class
 java/util/AbstractMap$2$1.class
-java/util/AbstractMap$3.class
-java/util/AbstractMap$4.class
 java/util/AbstractMapEntry.class
 java/util/AbstractMapEntrySet.class
 java/util/AbstractSet.class
@@ -213,6 +212,7 @@ kaffe/net/DefaultFileNameMap.class
 java/net/FileNameMap.class
 kaffe/net/DefaultStreamMap.class
 kaffe/net/StreamMap.class
+gnu/java/lang/reflect/TypeSignature.class
 
 # Additional classes used by -v option passed to kjc
 java/text/FieldPosition.class

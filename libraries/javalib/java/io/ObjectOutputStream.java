@@ -348,12 +348,12 @@ public class ObjectOutputStream extends OutputStream
 	  } // end pseudo-loop
       }
     catch (ObjectStreamException ose)
-    {
-      // Rethrow these are fatal.
-      throw ose;
-    }
+      {
+	// Rethrow these are fatal.
+	throw ose;
+      }
     catch (IOException e)
-    {
+      {
 	realOutput.writeByte (TC_EXCEPTION);
 	reset (true);
 
@@ -368,13 +368,13 @@ public class ObjectOutputStream extends OutputStream
 	  }
 
 	reset (true);
-
-    }
+	
+      }
     finally
-    {
+      {
 	isSerializing = was_serializing;
 	setBlockDataMode (old_mode);
-    }
+      }
   }
 
   protected void writeClassDescriptor (ObjectStreamClass osc) throws IOException
@@ -1261,17 +1261,17 @@ public class ObjectOutputStream extends OutputStream
 	return b;
       }
     catch (IllegalArgumentException _)
-    {
-       throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
-    }
+      {
+	throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
+      }
     catch (IOException e)
-    {
-       throw e;
-    }
+      {
+	throw e;
+      }
     catch (Exception _)
-    {
-      throw new IOException ();
-    }    
+      {
+	throw new IOException ();
+      }
   }
 
   private byte getByteField (Object obj, Class klass, String field_name)
@@ -1284,13 +1284,13 @@ public class ObjectOutputStream extends OutputStream
 	return b;
       }
     catch (IllegalArgumentException _)
-    {
-       throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
-    }
+      {
+	throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
+      }
     catch (IOException e)
-    {
-       throw e;
-    }
+      {
+	throw e;
+      }
     catch (Exception _)
       {
 	throw new IOException ();
@@ -1307,17 +1307,17 @@ public class ObjectOutputStream extends OutputStream
 	return b;
       }
     catch (IllegalArgumentException _)
-    {
-       throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
-    }
+      {
+	throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
+      }
     catch (IOException e)
-    {
-       throw e;
-    }
+      {
+	throw e;
+      }
     catch (Exception _)
-    {
-       throw new IOException ();
-    }    
+      {
+	throw new IOException ();
+      }    
   }
 
   private double getDoubleField (Object obj, Class klass, String field_name)
@@ -1330,13 +1330,13 @@ public class ObjectOutputStream extends OutputStream
 	return b;
       }
     catch (IllegalArgumentException _)
-    {
-       throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
-    }
+      {
+	throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
+      }
     catch (IOException e)
-    {
-       throw e;
-    }
+      {
+	throw e;
+      }
     catch (Exception _)
       {
 	throw new IOException ();
@@ -1353,13 +1353,13 @@ public class ObjectOutputStream extends OutputStream
 	return b;
       }
     catch (IllegalArgumentException _)
-    {
-       throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
-    }
+      {
+	throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
+      }
     catch (IOException e)
-    {
-       throw e;
-    }
+      {
+	throw e;
+      }
     catch (Exception _)
       {
 	throw new IOException ();
@@ -1376,13 +1376,13 @@ public class ObjectOutputStream extends OutputStream
 	return b;
       }
     catch (IllegalArgumentException _)
-    {
-       throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
-    }
+      {
+	throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
+      }
     catch (IOException e)
-    {
-       throw e;
-    }
+      {
+	throw e;
+      }
     catch (Exception _)
       {
 	throw new IOException ();
@@ -1399,13 +1399,13 @@ public class ObjectOutputStream extends OutputStream
 	return b;
       }
     catch (IllegalArgumentException _)
-    {
-       throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
-    }
+      {
+	throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
+      }
     catch (IOException e)
-    {
-       throw e;
-    }
+      {
+	throw e;
+      }
     catch (Exception _)
       {
 	throw new IOException ();
@@ -1422,13 +1422,13 @@ public class ObjectOutputStream extends OutputStream
 	return b;
       }
     catch (IllegalArgumentException _)
-    {
-       throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
-    }
+      {
+	throw new InvalidClassException("invalid requested type for field " + field_name + " in class " + klass.getName());
+      }
     catch (IOException e)
-    {
+      {
        throw e;
-    }
+      }
     catch (Exception _)
       {
 	throw new IOException ();
@@ -1452,9 +1452,9 @@ public class ObjectOutputStream extends OutputStream
 	return o;
       }
     catch (IOException e)
-    {
-       throw e;
-    }
+      {
+	throw e;
+      }
     catch (Exception e)
       {
 	throw new IOException ();
