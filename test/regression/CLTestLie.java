@@ -60,8 +60,9 @@ public class CLTestLie extends ClassLoader
 	try {
 	    System.out.println(o);
 	    System.out.println("Failure");
-	} catch (ClassNotFoundException e) {
+	} catch (NoClassDefFoundError e) {
 	    System.out.println("Success.");
+	    // System.out.println(e);
 	}
     }
 }

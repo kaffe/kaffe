@@ -1,7 +1,13 @@
 /*
- * Test that classloader can properly supply exceptions.
+ * Test what happens if classloaders don't properly supply exceptions.
  *
  * This test needs ExceptionTest.java
+ *
+ * Kaffe-specific test.
+ *
+ * NB:  this tests depends on the lazyness with which Kaffe resolves
+ * symbols.  (The JLS leaves this open.)
+ * This test fails under both JDK 1.1 and 1.2 (for different reasons.)
  *
  * @author Benjamin Reed <breed@almaden.ibm.com>
  */
@@ -28,6 +34,7 @@ public class ExceptionTestClassLoader2 extends ClassLoader {
   }
 
   protected Class loadClass( String name, boolean resolve ) throws ClassNotFoundException {
+    /* don't respond */ 
     if (name.equals("java.lang.Exception")) {
        System.out.println("Success 2.");
        return (null);
@@ -61,9 +68,12 @@ public class ExceptionTestClassLoader2 extends ClassLoader {
       con.newInstance( instArgs );
     } catch ( InvocationTargetException e ) {
       Throwable t = e.getTargetException();
-      // 1.2 throws a NoClassDefFoundError here
-      // 1.2 also loads so eagerly that we don't see the "Success .1" print
-      if (t instanceof ClassNotFoundException) {
+      // JDK 1.1 throws a ClassNotFoundException here, which is wrong.
+      // JDK 1.2 loads so eagerly that we don't see the "Success 1." print
+      // Also, JDK 1.2 asks for the exception in the call to getConstructor
+      // which is pretty darn early.  This means we don't even get an
+      // InvocationTargetException.
+      if (t instanceof NoClassDefFoundError) {
 	    System.out.println("Success 3.");
       } else {
 	  System.out.println(t);

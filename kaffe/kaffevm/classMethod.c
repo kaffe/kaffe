@@ -804,18 +804,25 @@ DBG(VMCLASSLOADER,
 					RethrowException, excobj)
 				clazz = NULL;
 			} else
-			if (clazz == NULL || 
-			    strcmp(clazz->name->data, name->data)) {
-				/* 1.2 says: 
-				 * Bad class name (expect: THIS, get: THAT) 
-				 */
+			if (clazz == NULL) {
 DBG(VMCLASSLOADER,		
-				dprintf("clazz == NULL or wrong name!\n");
+				dprintf("loadClass returned clazz == NULL!\n");
     )
 				SET_LANG_EXCEPTION_MESSAGE(einfo, 
-					ClassNotFoundException, name->data)
+					NoClassDefFoundError, name->data)
+			} else
+			if (strcmp(clazz->name->data, name->data)) {
+				/* 1.2 says: 
+				 * Bad class name (expect: THIS, get: THAT) 
+				 * XXX make error more informative.
+				 */
+DBG(VMCLASSLOADER,		
+				dprintf("loadClass returned wrong name!\n");
+    )
+				SET_LANG_EXCEPTION_MESSAGE(einfo, 
+					NoClassDefFoundError, name->data)
 				clazz = NULL;
-			} 
+			}
 DBG(VMCLASSLOADER,		
 			dprintf("classLoader: done %p\n", clazz);			
     )
