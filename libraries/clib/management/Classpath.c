@@ -26,7 +26,7 @@ kaffe_management_Classpath_add0(struct Hjava_lang_String* str)
 
 	s = checkPtr(stringJava2C(str));
 	addClasspath(s);
-	KFREE(s);
+	gc_free(s);
 }
 
 /*
@@ -39,6 +39,6 @@ kaffe_management_Classpath_prepend0(struct Hjava_lang_String* str)
 
 	s = checkPtr(stringJava2C(str));
 	prependClasspath(s);
-	KFREE(s);
+	gc_free(s);
 }
 

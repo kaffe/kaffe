@@ -31,7 +31,7 @@ java_util_zip_ZipFile_openZipFile0(Hjava_lang_String* fname)
 
 	str = checkPtr(stringJava2C(fname));
 	zip = openJarFile(str);
-	KFREE(str);
+	gc_free(str);
 	return ((struct Hkaffe_util_Ptr*)zip);
 }
 
@@ -56,7 +56,7 @@ java_util_zip_ZipFile_getZipEntry0(struct Hkaffe_util_Ptr* zip, Hjava_lang_Strin
 
 	str = checkPtr(stringJava2C(zname));
 	entry = lookupJarFile((jarFile*)zip, str);
-	KFREE(str);
+	gc_free(str);
 	if (entry == 0) {
 		return (0);
 	}

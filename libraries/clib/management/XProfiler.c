@@ -41,6 +41,6 @@ void Java_kaffe_management_XProfiler_stage(JNIEnv *env UNUSED, jclass clazz UNUS
 	char *stage_name = stringJava2C(_stage_name);
 
 	xProfileStage(stage_name);
-	KFREE(stage_name);
+	gc_free(stage_name);
 #endif
 }

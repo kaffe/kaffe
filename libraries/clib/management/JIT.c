@@ -81,9 +81,9 @@ Java_kaffe_management_JIT_translateMethod(JNIEnv *env UNUSED, jclass _vmclass UN
 	utf8ConstRelease(u8cname);
 	utf8ConstRelease(u8mname);
 	utf8ConstRelease(u8sig);
-	KFREE(cname);
-	KFREE(mname);
-	KFREE(signature);
+	gc_free(cname);
+	gc_free(mname);
+	gc_free(signature);
 }
 
 /*

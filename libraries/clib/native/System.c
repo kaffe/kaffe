@@ -475,7 +475,7 @@ java_lang_System_debug(struct Hjava_lang_String *str)
 
 	s = checkPtr(stringJava2C(str));
 	dprintf("%s\n", s);
-	KFREE(s);
+	gc_free(s);
 }
 
 void
@@ -491,7 +491,7 @@ java_lang_System_debugE(struct Hjava_lang_Throwable *t)
 	if (msg) {
 		s = checkPtr(stringJava2C(msg));
 		dprintf("%s: %s\n", cname, s);
-		KFREE(s);
+		gc_free(s);
 	} else {
 		dprintf("%s\n", cname);
 	}

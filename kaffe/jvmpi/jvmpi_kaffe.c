@@ -593,9 +593,9 @@ static jint jvmpiRequestEvent(jint event_type, void *arg)
 			jvmpiFillThreadStart(&ev, tid);
 			ev.event_type |= JVMPI_REQUESTED_EVENT;
 			jvmpiPostEvent(&ev);
-			KFREE(ev.u.thread_start.parent_name);
-			KFREE(ev.u.thread_start.group_name);
-			KFREE(ev.u.thread_start.thread_name);
+			gc_free(ev.u.thread_start.parent_name);
+			gc_free(ev.u.thread_start.group_name);
+			gc_free(ev.u.thread_start.thread_name);
 		}
 		break;
 	case JVMPI_EVENT_OBJECT_ALLOC:

@@ -1,5 +1,16 @@
 2004-10-11  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/jvmpi/jvmpi_kaffe.c,
+	libraries/clib/management/Classpath.c,
+	libraries/clib/management/JIT.c,
+	libraries/clib/management/XProfiler.c,
+	libraries/clib/native/System.c,
+	libraries/clib/native/ZipFile.c:
+	Use gc_free instead of KFREE for strings allocated by
+	stringJava2C.
+
+2004-10-11  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/PrintStream.java:
 	Resynced with GNU Classpath.
 
