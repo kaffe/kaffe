@@ -51,6 +51,9 @@ public class ByteToCharEUC_JP extends ByteToCharConverter {
     }
 
     public int convert(byte[] from, int fpos, int flen, char[] to, int tpos, int tlen ) {
+	if (!tableLoaded) {
+	    loadTable();
+	}
 	int o = tpos;
 	int oe = tpos + tlen;
 	int i = fpos;
@@ -82,7 +85,7 @@ public class ByteToCharEUC_JP extends ByteToCharConverter {
 		i++;
 		data = from[i] & 0xFF;
 		int m = Arrays.binarySearch (cs2table, (byte)data);
-		if (m > 0) {
+		if (m >= 0) {
 		    to[o++] = uni2table[m];
 		}
 		else {
@@ -95,10 +98,10 @@ public class ByteToCharEUC_JP extends ByteToCharConverter {
 		if (i + 2 >= ie) {
 		    break;
 		}
-		data = ((from[i + 1] & 0xFF) << 16) + (from[i + 2] & 0xFF);
+		data = ((from[i + 1] & 0xFF) << 8) + (from[i + 2] & 0xFF);
 		i += 2;
 		int m = Arrays.binarySearch (cs3table, (char)data);
-		if (m > 0) {
+		if (m >= 0) {
 		    to[o++] = uni3table[m];
 		}
 		else {
@@ -108,13 +111,13 @@ public class ByteToCharEUC_JP extends ByteToCharConverter {
 	    else {
 		// Code set 1 (JIS X 0208): 0xA1A1-0xFEFE
 		// If we don't have enough data, bail.
-		if (i + 2 >= ie) {
+		if (i + 1 >= ie) {
 		    break;
 		}
-		data = ((from[i + 1] & 0xFF) << 16) + (from[i + 2] & 0xFF);
-		i += 2;
+		data = ((from[i] & 0xFF) << 8) + (from[i + 1] & 0xFF);
+		i += 1;
 		int m = Arrays.binarySearch (cs1table, (char)data);
-		if (m > 0) {
+		if (m >= 0) {
 		    to[o++] = uni1table[m];
 		}
 		else {
