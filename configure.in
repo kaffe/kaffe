@@ -517,7 +517,12 @@ AC_CHECK_FUNCS(select socket getsockname)
 AC_CHECK_FUNCS(memcpy memmove)
 AC_CHECK_FUNCS(mkdir)
 AC_CHECK_FUNCS(getcwd getwd gettimeofday ftime time uname getuid)
+
+KSAVE_LIBS="$LIBS"
+LIBS="$M_LIBS $LIBS"
 AC_CHECK_FUNCS(remainder remainderf fmod fmodf drem rint floor ceil finite isinf isnan strtod)
+LIBS="$KSAVE_LIBS"
+
 AC_CHECK_FUNCS(strerror hstrerror)
 AC_CHECK_FUNCS(fcntl ioctl)
 AC_CHECK_FUNCS(alarm setitimer)

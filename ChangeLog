@@ -1,3 +1,8 @@
+Mon Jan 18 18:10:46 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in: use M_LIBS to look for math functions
+	* configure: regen
+
 Mon Jan 18 18:00:48 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* ltconfig, ltmain.sh: update from libtool, with work-around for
