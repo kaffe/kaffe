@@ -98,8 +98,8 @@ extern void sparc_do_fixup_trampoline(void);
 		(t)->where = (w);					\
 	} while (0)
 
-#define FIXUP_TRAMPOLINE_DECL	Method *meth, void **where
-#define FIXUP_TRAMPOLINE_INIT	/* nothing, already in args */
+#define FIXUP_TRAMPOLINE_DECL	Method *_meth, void **_where
+#define FIXUP_TRAMPOLINE_INIT	meth = _meth; where = _where;
 
 
 /**/
