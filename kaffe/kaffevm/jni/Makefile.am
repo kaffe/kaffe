@@ -27,7 +27,9 @@ libkaffejni_la_LDFLAGS = \
 libkaffejni_la_SOURCES = \
 	jni.c \
 	jni-base.c \
-	jni-callmethod.c
+	jni-callmethod.c \
+	jni-fields.c \
+	jni-arrays.c
 
 noinst_HEADERS= \
 	jni_i.h \

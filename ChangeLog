@@ -1,4 +1,18 @@
+2004-06-52  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/jni/jni.c, kaffe/kaffevm/jni/jni_funcs.h:
+	Moved out functions concerning Field handling to jni-fields.c.
+	Moved out functions concerning arrays handling to jni-arrays.c.
+
+	* kaffe/kaffevm/jni/jni-arrays.c,
+	kaffe/kaffevm/jni/jni-fields.c: New files.
+
+	* kaffe/kaffevm/jni/Makefile.am: Added jni-arrays.c and jni-field.c.
+
+	* kaffe/kaffevm/jni/Makefile.in: Regenerated.
+
 2004-06-25  Rob Gonzalez <rob@kaffe.org>
+
 	* verify2.c
 	Some minor fixes to keep gcc from complaining
 

@@ -51,14 +51,6 @@
 #include "jni_i.h"
 #include "jni_funcs.h"
 
-/*
- * Get and set fields.
- */
-#define	GET_FIELD(T,O,F)	*(T*)((char*)(O) + FIELD_BOFFSET((Field*)(F)))
-#define	SET_FIELD(T,O,F,V)	*(T*)((char*)(O) + FIELD_BOFFSET((Field*)(F))) = (V)
-#define	GET_STATIC_FIELD(T,F)	*(T*)FIELD_ADDRESS((Field*)F)
-#define	SET_STATIC_FIELD(T,F,V)	*(T*)FIELD_ADDRESS((Field*)F) = (V)
-
 extern int Kaffe_Java_Major_Version;
 extern int Kaffe_Java_Minor_Version;
 extern struct JNINativeInterface Kaffe_JNINativeInterface;
@@ -545,207 +537,6 @@ Kaffe_GetFieldID(JNIEnv* env, jclass cls, const char* name, const char* sig UNUS
 	return (fld);
 }
 
-static jobject
-Kaffe_GetObjectField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
-{
-	jobject nobj;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	nobj = GET_FIELD(jobject, obj, fld);
-
-	ADD_REF(nobj);
-	END_EXCEPTION_HANDLING();
-	return (nobj);
-}
-
-static jboolean
-Kaffe_GetBooleanField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
-{
-	jboolean r;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_FIELD(jboolean, obj, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jbyte
-Kaffe_GetByteField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
-{
-	jbyte r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_FIELD(jbyte, obj, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jchar
-Kaffe_GetCharField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
-{
-	jchar r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_FIELD(jchar, obj, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jshort
-Kaffe_GetShortField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
-{
-	jshort r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_FIELD(jshort, obj, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jint
-Kaffe_GetIntField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
-{
-	jint r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_FIELD(jint, obj, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jlong
-Kaffe_GetLongField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
-{
-	jlong r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_FIELD(jlong, obj, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jfloat
-Kaffe_GetFloatField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
-{
-	jfloat r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_FIELD(jfloat, obj, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jdouble
-Kaffe_GetDoubleField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
-{
-	jdouble r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_FIELD(jdouble, obj, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static void
-Kaffe_SetObjectField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jobject val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_FIELD(jobject, obj, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetBooleanField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jbool val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_FIELD(jboolean, obj, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetByteField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jbyte val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_FIELD(jbyte, obj, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetCharField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jchar val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_FIELD(jchar, obj, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetShortField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jshort val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_FIELD(jshort, obj, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetIntField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jint val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_FIELD(jint, obj, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetLongField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jlong val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_FIELD(jlong, obj, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetFloatField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jfloat val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_FIELD(jfloat, obj, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetDoubleField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jdouble val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_FIELD(jdouble, obj, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
 static jmethodID
 Kaffe_GetStaticMethodID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 {
@@ -766,9 +557,6 @@ Kaffe_GetStaticMethodID(JNIEnv* env, jclass cls, const char* name, const char* s
 	return (meth);
 }
 
-
-
-
 static jfieldID
 Kaffe_GetStaticFieldID(JNIEnv* env, jclass cls, const char* name, const char* sig UNUSED)
 {
@@ -786,206 +574,6 @@ Kaffe_GetStaticFieldID(JNIEnv* env, jclass cls, const char* name, const char* si
 	END_EXCEPTION_HANDLING();
 
 	return (fld);
-}
-
-static jobject
-Kaffe_GetStaticObjectField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
-{
-	jobject obj;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	obj = GET_STATIC_FIELD(jobject, fld);
-
-	ADD_REF(obj);
-	END_EXCEPTION_HANDLING();
-	return (obj);
-}
-
-static jboolean
-Kaffe_GetStaticBooleanField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
-{
-	jboolean r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_STATIC_FIELD(jboolean, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jbyte
-Kaffe_GetStaticByteField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
-{
-	jbyte r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_STATIC_FIELD(jbyte, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jchar
-Kaffe_GetStaticCharField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
-{
-	jchar r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_STATIC_FIELD(jchar, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jshort
-Kaffe_GetStaticShortField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
-{
-	jint r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_STATIC_FIELD(jshort, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jint
-Kaffe_GetStaticIntField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
-{
-	jint r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_STATIC_FIELD(jint, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jlong
-Kaffe_GetStaticLongField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
-{
-	jlong r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_STATIC_FIELD(jlong, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jfloat
-Kaffe_GetStaticFloatField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
-{
-	jfloat r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_STATIC_FIELD(jfloat, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static jdouble
-Kaffe_GetStaticDoubleField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
-{
-	jdouble r;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	r = GET_STATIC_FIELD(jdouble, fld);
-
-	END_EXCEPTION_HANDLING();
-	return (r);
-}
-
-static void
-Kaffe_SetStaticObjectField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld, jobject val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_STATIC_FIELD(jobject, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetStaticBooleanField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld, jbool val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_STATIC_FIELD(jboolean, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetStaticByteField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld, jbyte val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_STATIC_FIELD(jbyte, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetStaticCharField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld, jchar val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_STATIC_FIELD(jchar, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetStaticShortField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld, jshort val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_STATIC_FIELD(jshort, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetStaticIntField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld, jint val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_STATIC_FIELD(jint, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetStaticLongField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld, jlong val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_STATIC_FIELD(jlong, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetStaticFloatField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld, jfloat val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_STATIC_FIELD(jfloat, fld, val);
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetStaticDoubleField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld, jdouble val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	SET_STATIC_FIELD(jdouble, fld, val);
-
-	END_EXCEPTION_HANDLING();
 }
 
 static jstring
@@ -1198,684 +786,6 @@ Kaffe_GetArrayLength(JNIEnv* env UNUSED, jarray arr)
 
 	END_EXCEPTION_HANDLING();
 	return (len);
-}
-
-static jobjectArray
-Kaffe_NewObjectArray(JNIEnv* env UNUSED, jsize len, jclass cls, jobject init)
-{
-	HArrayOfObject* obj;
-	int i;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	obj = (HArrayOfObject*)newArray((Hjava_lang_Class*)cls, len);
-
-	/* I assume this is what init is for */
-	for (i = 0; i < len; i++) {
-		unhand_array(obj)->body[i] = (Hjava_lang_Object*)init;
-	}
-
-	ADD_REF(obj);
-	END_EXCEPTION_HANDLING();
-	return (obj);
-}
-
-static jobject
-Kaffe_GetObjectArrayElement(JNIEnv* env UNUSED, jobjectArray arr, jsize elem)
-{
-	jobject obj;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	if (elem >= obj_length((HArrayOfObject*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	obj = unhand_array((HArrayOfObject*)arr)->body[elem];
-
-	ADD_REF(obj);
-	END_EXCEPTION_HANDLING();
-	return (obj);
-}
-
-static void
-Kaffe_SetObjectArrayElement(JNIEnv* env UNUSED, jobjectArray arr, jsize elem, jobject val)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (elem >= obj_length((HArrayOfObject*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	unhand_array((HArrayOfObject*)arr)->body[elem] = (Hjava_lang_Object*)val;
-
-	END_EXCEPTION_HANDLING();
-}
-
-static jbooleanArray
-Kaffe_NewBooleanArray(JNIEnv* env UNUSED, jsize len)
-{
-	jbooleanArray arr;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	arr = newArray(booleanClass, len);
-
-	ADD_REF(arr);
-	END_EXCEPTION_HANDLING();
-	return (arr);
-}
-
-static jbyteArray
-Kaffe_NewByteArray(JNIEnv* env UNUSED, jsize len)
-{
-	jbyteArray arr;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	arr = newArray(byteClass, len);
-
-	ADD_REF(arr);
-	END_EXCEPTION_HANDLING();
-	return (arr);
-}
-
-static jcharArray
-Kaffe_NewCharArray(JNIEnv* env UNUSED, jsize len)
-{
-	jcharArray arr;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	arr = newArray(charClass, len);
-
-	ADD_REF(arr);
-	END_EXCEPTION_HANDLING();
-	return (arr);
-}
-
-static jshortArray
-Kaffe_NewShortArray(JNIEnv* env UNUSED, jsize len)
-{
-	jshortArray arr;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	arr = newArray(shortClass, len);
-
-	ADD_REF(arr);
-	END_EXCEPTION_HANDLING();
-	return (arr);
-}
-
-static jintArray
-Kaffe_NewIntArray(JNIEnv* env UNUSED, jsize len)
-{
-	jintArray arr;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	arr = newArray(intClass, len);
-
-	ADD_REF(arr);
-	END_EXCEPTION_HANDLING();
-	return (arr);
-}
-
-static jlongArray
-Kaffe_NewLongArray(JNIEnv* env UNUSED, jsize len)
-{
-	jlongArray arr;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	arr = newArray(longClass, len);
-
-	ADD_REF(arr);
-	END_EXCEPTION_HANDLING();
-	return (arr);
-}
-
-static jfloatArray
-Kaffe_NewFloatArray(JNIEnv* env UNUSED, jsize len)
-{
-	jfloatArray arr;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	arr = newArray(floatClass, len);
-
-	ADD_REF(arr);
-	END_EXCEPTION_HANDLING();
-	return (arr);
-}
-
-static jdoubleArray
-Kaffe_NewDoubleArray(JNIEnv* env UNUSED, jsize len)
-{
-	jdoubleArray arr;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	arr = newArray(doubleClass, len);
-
-	ADD_REF(arr);
-	END_EXCEPTION_HANDLING();
-	return (arr);
-}
-
-static jboolean*
-Kaffe_GetBooleanArrayElements(JNIEnv* env UNUSED, jbooleanArray arr, jbool* iscopy)
-{
-	jboolean* array;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	if (iscopy != NULL) {
-		*iscopy = JNI_FALSE;
-	}
-	array = unhand_array((HArrayOfBoolean*)arr)->body;
-
-	END_EXCEPTION_HANDLING();
-	return (array);
-}
-
-static jbyte*
-Kaffe_GetByteArrayElements(JNIEnv* env UNUSED, jbyteArray arr, jbool* iscopy)
-{
-	jbyte* array;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	if (iscopy != NULL) {
-		*iscopy = JNI_FALSE;
-	}
-	array = unhand_array((HArrayOfByte*)arr)->body;
-
-	END_EXCEPTION_HANDLING();
-	return (array);
-}
-
-static void*
-Kaffe_GetPrimitiveArrayCritical(JNIEnv* env, jarray arr, jbool* iscopy)
-{
-  return (Kaffe_GetByteArrayElements(env, (jbyteArray)arr, iscopy));
-}
-
-static jchar*
-Kaffe_GetCharArrayElements(JNIEnv* env UNUSED, jcharArray arr, jbool* iscopy)
-{
-	jchar* array;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	if (iscopy != NULL) {
-		*iscopy = JNI_FALSE;
-	}
-	array = unhand_array((HArrayOfChar*)arr)->body;
-
-	END_EXCEPTION_HANDLING();
-	return (array);
-}
-
-static jshort*
-Kaffe_GetShortArrayElements(JNIEnv* env UNUSED, jshortArray arr, jbool* iscopy)
-{
-	jshort* array;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	if (iscopy != NULL) {
-		*iscopy = JNI_FALSE;
-	}
-	array = unhand_array((HArrayOfShort*)arr)->body;
-
-	END_EXCEPTION_HANDLING();
-	return (array);
-}
-
-static jint*
-Kaffe_GetIntArrayElements(JNIEnv* env UNUSED, jintArray arr, jbool* iscopy)
-{
-	jint* array;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	if (iscopy != NULL) {
-		*iscopy = JNI_FALSE;
-	}
-	array = unhand_array((HArrayOfInt*)arr)->body;
-
-	END_EXCEPTION_HANDLING();
-	return (array);
-}
-
-static jlong*
-Kaffe_GetLongArrayElements(JNIEnv* env UNUSED, jlongArray arr, jbool* iscopy)
-{
-	jlong* array;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	if (iscopy != NULL) {
-		*iscopy = JNI_FALSE;
-	}
-	array = unhand_array((HArrayOfLong*)arr)->body;
-
-	END_EXCEPTION_HANDLING();
-	return (array);
-}
-
-static jfloat*
-Kaffe_GetFloatArrayElements(JNIEnv* env UNUSED, jfloatArray arr, jbool* iscopy)
-{
-	jfloat* array;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	if (iscopy != NULL) {
-		*iscopy = JNI_FALSE;
-	}
-	array = unhand_array((HArrayOfFloat*)arr)->body;
-
-	END_EXCEPTION_HANDLING();
-	return (array);
-}
-
-static jdouble*
-Kaffe_GetDoubleArrayElements(JNIEnv* env UNUSED, jdoubleArray arr, jbool* iscopy)
-{
-	jdouble* array;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	if (iscopy != NULL) {
-		*iscopy = JNI_FALSE;
-	}
-	array = unhand_array((HArrayOfDouble*)arr)->body;
-
-	END_EXCEPTION_HANDLING();
-	return (array);
-}
-
-static void
-Kaffe_ReleaseBooleanArrayElements(JNIEnv* env UNUSED, jbooleanArray arr, jbool* elems, jint mode)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (elems != unhand_array((HArrayOfBoolean*)arr)->body) {
-		switch (mode) {
-		case JNI_COMMIT:
-			memcpy(unhand_array((HArrayOfBoolean*)arr)->body, elems, obj_length((HArrayOfBoolean*)arr) * sizeof(jboolean));
-			break;
-		case 0:
-			memcpy(unhand_array((HArrayOfBoolean*)arr)->body, elems, obj_length((HArrayOfBoolean*)arr) * sizeof(jboolean));
-			KFREE(elems);
-			break;
-		case JNI_ABORT:
-			KFREE(elems);
-			break;
-		}
-	}
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_ReleaseByteArrayElements(JNIEnv* env UNUSED, jbyteArray arr, jbyte* elems, jint mode)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (elems != unhand_array((HArrayOfByte*)arr)->body) {
-		switch (mode) {
-		case JNI_COMMIT:
-			memcpy(unhand_array((HArrayOfByte*)arr)->body, elems, obj_length((HArrayOfByte*)arr) * sizeof(jbyte));
-			break;
-		case 0:
-			memcpy(unhand_array((HArrayOfByte*)arr)->body, elems, obj_length((HArrayOfByte*)arr) * sizeof(jbyte));
-			KFREE(elems);
-			break;
-		case JNI_ABORT:
-			KFREE(elems);
-			break;
-		}
-	}
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_ReleasePrimitiveArrayCritical(JNIEnv* env, jbyteArray arr, void* elems, jint mode)
-{
-  Kaffe_ReleaseByteArrayElements(env, (jbyteArray)arr, (jbyte*)elems, mode);
-}
-
-static void
-Kaffe_ReleaseCharArrayElements(JNIEnv* env UNUSED, jcharArray arr, jchar* elems, jint mode)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (elems != unhand_array((HArrayOfChar*)arr)->body) {
-		switch (mode) {
-		case JNI_COMMIT:
-			memcpy(unhand_array((HArrayOfChar*)arr)->body, elems, obj_length((HArrayOfChar*)arr) * sizeof(jchar));
-			break;
-		case 0:
-			memcpy(unhand_array((HArrayOfChar*)arr)->body, elems, obj_length((HArrayOfChar*)arr) * sizeof(jchar));
-			KFREE(elems);
-			break;
-		case JNI_ABORT:
-			KFREE(elems);
-			break;
-		}
-	}
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_ReleaseShortArrayElements(JNIEnv* env UNUSED, jshortArray arr, jshort* elems, jint mode)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (elems != unhand_array((HArrayOfShort*)arr)->body) {
-		switch (mode) {
-		case JNI_COMMIT:
-			memcpy(unhand_array((HArrayOfShort*)arr)->body, elems, obj_length((HArrayOfShort*)arr) * sizeof(jshort));
-			break;
-		case 0:
-			memcpy(unhand_array((HArrayOfShort*)arr)->body, elems, obj_length((HArrayOfShort*)arr) * sizeof(jshort));
-			KFREE(elems);
-			break;
-		case JNI_ABORT:
-			KFREE(elems);
-			break;
-		}
-	}
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_ReleaseIntArrayElements(JNIEnv* env UNUSED, jintArray arr, jint* elems, jint mode)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (elems != unhand_array((HArrayOfInt*)arr)->body) {
-		switch (mode) {
-		case JNI_COMMIT:
-			memcpy(unhand_array((HArrayOfInt*)arr)->body, elems, obj_length((HArrayOfInt*)arr) * sizeof(jint));
-			break;
-		case 0:
-			memcpy(unhand_array((HArrayOfInt*)arr)->body, elems, obj_length((HArrayOfInt*)arr) * sizeof(jint));
-			KFREE(elems);
-			break;
-		case JNI_ABORT:
-			KFREE(elems);
-			break;
-		}
-	}
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_ReleaseLongArrayElements(JNIEnv* env UNUSED, jlongArray arr, jlong* elems, jint mode)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (elems != unhand_array((HArrayOfLong*)arr)->body) {
-		switch (mode) {
-		case JNI_COMMIT:
-			memcpy(unhand_array((HArrayOfLong*)arr)->body, elems, obj_length((HArrayOfLong*)arr) * sizeof(jlong));
-			break;
-		case 0:
-			memcpy(unhand_array((HArrayOfLong*)arr)->body, elems, obj_length((HArrayOfLong*)arr) * sizeof(jlong));
-			KFREE(elems);
-			break;
-		case JNI_ABORT:
-			KFREE(elems);
-			break;
-		}
-	}
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_ReleaseFloatArrayElements(JNIEnv* env UNUSED, jfloatArray arr, jfloat* elems, jint mode)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (elems != unhand_array((HArrayOfFloat*)arr)->body) {
-		switch (mode) {
-		case JNI_COMMIT:
-			memcpy(unhand_array((HArrayOfFloat*)arr)->body, elems, obj_length((HArrayOfFloat*)arr) * sizeof(jfloat));
-			break;
-		case 0:
-			memcpy(unhand_array((HArrayOfFloat*)arr)->body, elems, obj_length((HArrayOfFloat*)arr) * sizeof(jfloat));
-			KFREE(elems);
-			break;
-		case JNI_ABORT:
-			KFREE(elems);
-			break;
-		}
-	}
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_ReleaseDoubleArrayElements(JNIEnv* env UNUSED, jdoubleArray arr, jdouble* elems, jint mode)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (elems != unhand_array((HArrayOfDouble*)arr)->body) {
-		switch (mode) {
-		case JNI_COMMIT:
-			memcpy(unhand_array((HArrayOfDouble*)arr)->body, elems, obj_length((HArrayOfDouble*)arr) * sizeof(jdouble));
-			break;
-		case 0:
-			memcpy(unhand_array((HArrayOfDouble*)arr)->body, elems, obj_length((HArrayOfDouble*)arr) * sizeof(jdouble));
-			KFREE(elems);
-			break;
-		case JNI_ABORT:
-			KFREE(elems);
-			break;
-		}
-	}
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_GetBooleanArrayRegion(JNIEnv* env UNUSED, jbooleanArray arr, jsize start, jsize len, jbool* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfBoolean*)arr) || start + len > obj_length((HArrayOfBoolean*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(data, &unhand_array((HArrayOfBoolean*)arr)->body[start], len * sizeof(jboolean));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_GetByteArrayRegion(JNIEnv* env UNUSED, jbyteArray arr, jsize start, jsize len, jbyte* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfByte*)arr) || start + len > obj_length((HArrayOfByte*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(data, &unhand_array((HArrayOfByte*)arr)->body[start], len * sizeof(jbyte));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_GetCharArrayRegion(JNIEnv* env UNUSED, jcharArray arr, jsize start, jsize len, jchar* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfChar*)arr) || start + len > obj_length((HArrayOfChar*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(data, &unhand_array((HArrayOfChar*)arr)->body[start], len * sizeof(jchar));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_GetShortArrayRegion(JNIEnv* env UNUSED, jshortArray arr, jsize start, jsize len, jshort* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfShort*)arr) || start + len > obj_length((HArrayOfShort*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(data, &unhand_array((HArrayOfShort*)arr)->body[start], len * sizeof(jshort));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_GetIntArrayRegion(JNIEnv* env UNUSED, jintArray arr, jsize start, jsize len, jint* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfInt*)arr) || start + len > obj_length((HArrayOfInt*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(data, &unhand_array((HArrayOfInt*)arr)->body[start], len * sizeof(jint));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_GetLongArrayRegion(JNIEnv* env UNUSED, jlongArray arr, jsize start, jsize len, jlong* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfLong*)arr) || start + len > obj_length((HArrayOfLong*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(data, &unhand_array((HArrayOfLong*)arr)->body[start], len * sizeof(jlong));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_GetFloatArrayRegion(JNIEnv* env UNUSED, jfloatArray arr, jsize start, jsize len, jfloat* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfFloat*)arr) || start + len > obj_length((HArrayOfFloat*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(data, &unhand_array((HArrayOfFloat*)arr)->body[start], len * sizeof(jfloat));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_GetDoubleArrayRegion(JNIEnv* env UNUSED, jdoubleArray arr, jsize start, jsize len, jdouble* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfDouble*)arr) || start + len > obj_length((HArrayOfDouble*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(data, &unhand_array((HArrayOfDouble*)arr)->body[start], len * sizeof(jdouble));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetBooleanArrayRegion(JNIEnv* env UNUSED, jbooleanArray arr, jsize start, jsize len, jbool* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfBoolean*)arr) || start+len > obj_length((HArrayOfBoolean*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(&unhand_array((HArrayOfBoolean*)arr)->body[start], data, len * sizeof(jboolean));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetByteArrayRegion(JNIEnv* env UNUSED, jbyteArray arr, jsize start, jsize len, jbyte* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfByte*)arr) || start+len > obj_length((HArrayOfByte*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(&unhand_array((HArrayOfByte*)arr)->body[start], data, len * sizeof(jbyte));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetCharArrayRegion(JNIEnv* env UNUSED, jcharArray arr, jsize start, jsize len, jchar* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfChar*)arr) || start+len > obj_length((HArrayOfChar*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(&unhand_array((HArrayOfChar*)arr)->body[start], data, len * sizeof(jchar));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetShortArrayRegion(JNIEnv* env UNUSED, jshortArray arr, jsize start, jsize len, jshort* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfShort*)arr) || start+len > obj_length((HArrayOfShort*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(&unhand_array((HArrayOfShort*)arr)->body[start], data, len * sizeof(jshort));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetIntArrayRegion(JNIEnv* env UNUSED, jintArray arr, jsize start, jsize len, jint* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfInt*)arr) || start+len > obj_length((HArrayOfInt*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(&unhand_array((HArrayOfInt*)arr)->body[start], data, len * sizeof(jint));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetLongArrayRegion(JNIEnv* env UNUSED, jlongArray arr, jsize start, jsize len, jlong* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfLong*)arr) || start+len > obj_length((HArrayOfLong*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(&unhand_array((HArrayOfLong*)arr)->body[start], data, len * sizeof(jlong));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetFloatArrayRegion(JNIEnv* env UNUSED, jfloatArray arr, jsize start, jsize len, jfloat* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfFloat*)arr) || start+len > obj_length((HArrayOfFloat*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(&unhand_array((HArrayOfFloat*)arr)->body[start], data, len * sizeof(jfloat));
-
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_SetDoubleArrayRegion(JNIEnv* env UNUSED, jdoubleArray arr, jsize start, jsize len, jdouble* data)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	if (start >= obj_length((HArrayOfDouble*)arr) || start+len > obj_length((HArrayOfDouble*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
-	}
-	memcpy(&unhand_array((HArrayOfDouble*)arr)->body[start], data, len * sizeof(jdouble));
-
-	END_EXCEPTION_HANDLING();
 }
 
 static jint
@@ -2686,24 +1596,24 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	KaffeJNI_CallNonvirtualVoidMethodV,
 	KaffeJNI_CallNonvirtualVoidMethodA,
 	Kaffe_GetFieldID,
-	Kaffe_GetObjectField,
-	Kaffe_GetBooleanField,
-	Kaffe_GetByteField,
-	Kaffe_GetCharField,
-	Kaffe_GetShortField,
-	Kaffe_GetIntField,
-	Kaffe_GetLongField,
-	Kaffe_GetFloatField,
-	Kaffe_GetDoubleField,
-	Kaffe_SetObjectField,
-	Kaffe_SetBooleanField,
-	Kaffe_SetByteField,
-	Kaffe_SetCharField,
-	Kaffe_SetShortField,
-	Kaffe_SetIntField,
-	Kaffe_SetLongField,
-	Kaffe_SetFloatField,
-	Kaffe_SetDoubleField,
+	KaffeJNI_GetObjectField,
+	KaffeJNI_GetBooleanField,
+	KaffeJNI_GetByteField,
+	KaffeJNI_GetCharField,
+	KaffeJNI_GetShortField,
+	KaffeJNI_GetIntField,
+	KaffeJNI_GetLongField,
+	KaffeJNI_GetFloatField,
+	KaffeJNI_GetDoubleField,
+	KaffeJNI_SetObjectField,
+	KaffeJNI_SetBooleanField,
+	KaffeJNI_SetByteField,
+	KaffeJNI_SetCharField,
+	KaffeJNI_SetShortField,
+	KaffeJNI_SetIntField,
+	KaffeJNI_SetLongField,
+	KaffeJNI_SetFloatField,
+	KaffeJNI_SetDoubleField,
 	Kaffe_GetStaticMethodID,
 	KaffeJNI_CallStaticObjectMethod,
 	KaffeJNI_CallStaticObjectMethodV,
@@ -2736,24 +1646,24 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	KaffeJNI_CallStaticVoidMethodV,
 	KaffeJNI_CallStaticVoidMethodA,
 	Kaffe_GetStaticFieldID,
-	Kaffe_GetStaticObjectField,
-	Kaffe_GetStaticBooleanField,
-	Kaffe_GetStaticByteField,
-	Kaffe_GetStaticCharField,
-	Kaffe_GetStaticShortField,
-	Kaffe_GetStaticIntField,
-	Kaffe_GetStaticLongField,
-	Kaffe_GetStaticFloatField,
-	Kaffe_GetStaticDoubleField,
-	Kaffe_SetStaticObjectField,
-	Kaffe_SetStaticBooleanField,
-	Kaffe_SetStaticByteField,
-	Kaffe_SetStaticCharField,
-	Kaffe_SetStaticShortField,
-	Kaffe_SetStaticIntField,
-	Kaffe_SetStaticLongField,
-	Kaffe_SetStaticFloatField,
-	Kaffe_SetStaticDoubleField,
+	KaffeJNI_GetStaticObjectField,
+	KaffeJNI_GetStaticBooleanField,
+	KaffeJNI_GetStaticByteField,
+	KaffeJNI_GetStaticCharField,
+	KaffeJNI_GetStaticShortField,
+	KaffeJNI_GetStaticIntField,
+	KaffeJNI_GetStaticLongField,
+	KaffeJNI_GetStaticFloatField,
+	KaffeJNI_GetStaticDoubleField,
+	KaffeJNI_SetStaticObjectField,
+	KaffeJNI_SetStaticBooleanField,
+	KaffeJNI_SetStaticByteField,
+	KaffeJNI_SetStaticCharField,
+	KaffeJNI_SetStaticShortField,
+	KaffeJNI_SetStaticIntField,
+	KaffeJNI_SetStaticLongField,
+	KaffeJNI_SetStaticFloatField,
+	KaffeJNI_SetStaticDoubleField,
 	Kaffe_NewString,
 	Kaffe_GetStringLength,
 	Kaffe_GetStringChars,
@@ -2763,49 +1673,49 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	Kaffe_GetStringUTFChars,
 	Kaffe_ReleaseStringUTFChars,
 	Kaffe_GetArrayLength,
-	Kaffe_NewObjectArray,
-	Kaffe_GetObjectArrayElement,
-	Kaffe_SetObjectArrayElement,
-	Kaffe_NewBooleanArray,
-	Kaffe_NewByteArray,
-	Kaffe_NewCharArray,
-	Kaffe_NewShortArray,
-	Kaffe_NewIntArray,
-	Kaffe_NewLongArray,
-	Kaffe_NewFloatArray,
-	Kaffe_NewDoubleArray,
-	Kaffe_GetBooleanArrayElements,
-	Kaffe_GetByteArrayElements,
-	Kaffe_GetCharArrayElements,
-	Kaffe_GetShortArrayElements,
-	Kaffe_GetIntArrayElements,
-	Kaffe_GetLongArrayElements,
-	Kaffe_GetFloatArrayElements,
-	Kaffe_GetDoubleArrayElements,
-	Kaffe_ReleaseBooleanArrayElements,
-	Kaffe_ReleaseByteArrayElements,
-	Kaffe_ReleaseCharArrayElements,
-	Kaffe_ReleaseShortArrayElements,
-	Kaffe_ReleaseIntArrayElements,
-	Kaffe_ReleaseLongArrayElements,
-	Kaffe_ReleaseFloatArrayElements,
-	Kaffe_ReleaseDoubleArrayElements,
-	Kaffe_GetBooleanArrayRegion,
-	Kaffe_GetByteArrayRegion,
-	Kaffe_GetCharArrayRegion,
-	Kaffe_GetShortArrayRegion,
-	Kaffe_GetIntArrayRegion,
-	Kaffe_GetLongArrayRegion,
-	Kaffe_GetFloatArrayRegion,
-	Kaffe_GetDoubleArrayRegion,
-	Kaffe_SetBooleanArrayRegion,
-	Kaffe_SetByteArrayRegion,
-	Kaffe_SetCharArrayRegion,
-	Kaffe_SetShortArrayRegion,
-	Kaffe_SetIntArrayRegion,
-	Kaffe_SetLongArrayRegion,
-	Kaffe_SetFloatArrayRegion,
-	Kaffe_SetDoubleArrayRegion,
+	KaffeJNI_NewObjectArray,
+	KaffeJNI_GetObjectArrayElement,
+	KaffeJNI_SetObjectArrayElement,
+	KaffeJNI_NewBooleanArray,
+	KaffeJNI_NewByteArray,
+	KaffeJNI_NewCharArray,
+	KaffeJNI_NewShortArray,
+	KaffeJNI_NewIntArray,
+	KaffeJNI_NewLongArray,
+	KaffeJNI_NewFloatArray,
+	KaffeJNI_NewDoubleArray,
+	KaffeJNI_GetBooleanArrayElements,
+	KaffeJNI_GetByteArrayElements,
+	KaffeJNI_GetCharArrayElements,
+	KaffeJNI_GetShortArrayElements,
+	KaffeJNI_GetIntArrayElements,
+	KaffeJNI_GetLongArrayElements,
+	KaffeJNI_GetFloatArrayElements,
+	KaffeJNI_GetDoubleArrayElements,
+	KaffeJNI_ReleaseBooleanArrayElements,
+	KaffeJNI_ReleaseByteArrayElements,
+	KaffeJNI_ReleaseCharArrayElements,
+	KaffeJNI_ReleaseShortArrayElements,
+	KaffeJNI_ReleaseIntArrayElements,
+	KaffeJNI_ReleaseLongArrayElements,
+	KaffeJNI_ReleaseFloatArrayElements,
+	KaffeJNI_ReleaseDoubleArrayElements,
+	KaffeJNI_GetBooleanArrayRegion,
+	KaffeJNI_GetByteArrayRegion,
+	KaffeJNI_GetCharArrayRegion,
+	KaffeJNI_GetShortArrayRegion,
+	KaffeJNI_GetIntArrayRegion,
+	KaffeJNI_GetLongArrayRegion,
+	KaffeJNI_GetFloatArrayRegion,
+	KaffeJNI_GetDoubleArrayRegion,
+	KaffeJNI_SetBooleanArrayRegion,
+	KaffeJNI_SetByteArrayRegion,
+	KaffeJNI_SetCharArrayRegion,
+	KaffeJNI_SetShortArrayRegion,
+	KaffeJNI_SetIntArrayRegion,
+	KaffeJNI_SetLongArrayRegion,
+	KaffeJNI_SetFloatArrayRegion,
+	KaffeJNI_SetDoubleArrayRegion,
 	Kaffe_RegisterNatives,
 	Kaffe_UnregisterNatives,
 	Kaffe_MonitorEnter,
@@ -2813,8 +1723,8 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	Kaffe_GetJavaVM,
 	Kaffe_GetStringRegion,
 	Kaffe_GetStringUTFRegion,
-	Kaffe_GetPrimitiveArrayCritical,
-	Kaffe_ReleasePrimitiveArrayCritical,
+	KaffeJNI_GetPrimitiveArrayCritical,
+	KaffeJNI_ReleasePrimitiveArrayCritical,
 	NULL,
 	NULL,
 	NULL,

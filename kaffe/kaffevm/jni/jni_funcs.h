@@ -12,6 +12,191 @@
 #ifndef KAFFE_JNI_FUNCTIONS_H
 #define KAFFE_JNI_FUNCTIONS_H
 
+/* ====== Functions handling arrays ================================================= */
+
+jobject
+KaffeJNI_GetObjectArrayElement(JNIEnv* env, jobjectArray arr, jsize elem);
+void
+KaffeJNI_SetObjectArrayElement(JNIEnv* env, jobjectArray arr, jsize elem, jobject val);
+
+jobjectArray
+KaffeJNI_NewObjectArray(JNIEnv* env, jsize len, jclass cls, jobject init);
+jbooleanArray
+KaffeJNI_NewBooleanArray(JNIEnv* env, jsize len);
+jbyteArray
+KaffeJNI_NewByteArray(JNIEnv* env, jsize len);
+jcharArray
+KaffeJNI_NewCharArray(JNIEnv* env, jsize len);
+jshortArray
+KaffeJNI_NewShortArray(JNIEnv* env, jsize len);
+jintArray
+KaffeJNI_NewIntArray(JNIEnv* env, jsize len);
+jlongArray
+KaffeJNI_NewLongArray(JNIEnv* env, jsize len);
+jfloatArray
+KaffeJNI_NewFloatArray(JNIEnv* env, jsize len);
+jdoubleArray
+KaffeJNI_NewDoubleArray(JNIEnv* env, jsize len);
+
+jboolean*
+KaffeJNI_GetBooleanArrayElements(JNIEnv* env, jbooleanArray arr, jbool* iscopy);
+jbyte*
+KaffeJNI_GetByteArrayElements(JNIEnv* env, jbyteArray arr, jbool* iscopy);
+void*
+KaffeJNI_GetPrimitiveArrayCritical(JNIEnv* env, jarray arr, jbool* iscopy);
+jchar*
+KaffeJNI_GetCharArrayElements(JNIEnv* env, jcharArray arr, jbool* iscopy);
+jshort*
+KaffeJNI_GetShortArrayElements(JNIEnv* env, jshortArray arr, jbool* iscopy);
+jint*
+KaffeJNI_GetIntArrayElements(JNIEnv* env, jintArray arr, jbool* iscopy);
+jlong*
+KaffeJNI_GetLongArrayElements(JNIEnv* env, jlongArray arr, jbool* iscopy);
+jfloat*
+KaffeJNI_GetFloatArrayElements(JNIEnv* env, jfloatArray arr, jbool* iscopy);
+jdouble*
+KaffeJNI_GetDoubleArrayElements(JNIEnv* env, jdoubleArray arr, jbool* iscopy);
+
+void
+KaffeJNI_ReleaseBooleanArrayElements(JNIEnv* env, jbooleanArray arr, jbool* elems, jint mode);
+void
+KaffeJNI_ReleaseByteArrayElements(JNIEnv* env, jbyteArray arr, jbyte* elems, jint mode);
+void
+KaffeJNI_ReleasePrimitiveArrayCritical(JNIEnv* env, jbyteArray arr, void* elems, jint mode);
+void
+KaffeJNI_ReleaseCharArrayElements(JNIEnv* env, jcharArray arr, jchar* elems, jint mode);
+void
+KaffeJNI_ReleaseShortArrayElements(JNIEnv* env, jshortArray arr, jshort* elems, jint mode);
+void
+KaffeJNI_ReleaseIntArrayElements(JNIEnv* env, jintArray arr, jint* elems, jint mode);
+void
+KaffeJNI_ReleaseLongArrayElements(JNIEnv* env, jlongArray arr, jlong* elems, jint mode);
+void
+KaffeJNI_ReleaseFloatArrayElements(JNIEnv* env, jfloatArray arr, jfloat* elems, jint mode);
+void
+KaffeJNI_ReleaseDoubleArrayElements(JNIEnv* env, jdoubleArray arr, jdouble* elems, jint mode);
+
+void
+KaffeJNI_GetBooleanArrayRegion(JNIEnv* env, jbooleanArray arr, jsize start, jsize len, jbool* data);
+void
+KaffeJNI_GetByteArrayRegion(JNIEnv* env, jbyteArray arr, jsize start, jsize len, jbyte* data);
+void
+KaffeJNI_GetCharArrayRegion(JNIEnv* env, jcharArray arr, jsize start, jsize len, jchar* data);
+void
+KaffeJNI_GetShortArrayRegion(JNIEnv* env, jshortArray arr, jsize start, jsize len, jshort* data);
+void
+KaffeJNI_GetIntArrayRegion(JNIEnv* env, jintArray arr, jsize start, jsize len, jint* data);
+void
+KaffeJNI_GetLongArrayRegion(JNIEnv* env, jlongArray arr, jsize start, jsize len, jlong* data);
+void
+KaffeJNI_GetFloatArrayRegion(JNIEnv* env, jfloatArray arr, jsize start, jsize len, jfloat* data);
+void
+KaffeJNI_GetDoubleArrayRegion(JNIEnv* env, jdoubleArray arr, jsize start, jsize len, jdouble* data);
+
+void
+KaffeJNI_SetBooleanArrayRegion(JNIEnv* env, jbooleanArray arr, jsize start, jsize len, jbool* data);
+void
+KaffeJNI_SetByteArrayRegion(JNIEnv* env, jbyteArray arr, jsize start, jsize len, jbyte* data);
+void
+KaffeJNI_SetCharArrayRegion(JNIEnv* env, jcharArray arr, jsize start, jsize len, jchar* data);
+void
+KaffeJNI_SetShortArrayRegion(JNIEnv* env, jshortArray arr, jsize start, jsize len, jshort* data);
+void
+KaffeJNI_SetIntArrayRegion(JNIEnv* env, jintArray arr, jsize start, jsize len, jint* data);
+void
+KaffeJNI_SetLongArrayRegion(JNIEnv* env, jlongArray arr, jsize start, jsize len, jlong* data);
+void
+KaffeJNI_SetFloatArrayRegion(JNIEnv* env, jfloatArray arr, jsize start, jsize len, jfloat* data);
+void
+KaffeJNI_SetDoubleArrayRegion(JNIEnv* env, jdoubleArray arr, jsize start, jsize len, jdouble* data);
+
+/* ====== Functions to get fields =================================================== */
+
+jobject
+KaffeJNI_GetObjectField(JNIEnv* env, jobject obj, jfieldID fld);
+jboolean
+KaffeJNI_GetBooleanField(JNIEnv* env, jobject obj, jfieldID fld);
+jbyte
+KaffeJNI_GetByteField(JNIEnv* env, jobject obj, jfieldID fld);
+jchar
+KaffeJNI_GetCharField(JNIEnv* env, jobject obj, jfieldID fld);
+jshort
+KaffeJNI_GetShortField(JNIEnv* env, jobject obj, jfieldID fld);
+jint
+KaffeJNI_GetIntField(JNIEnv* env, jobject obj, jfieldID fld);
+jlong
+KaffeJNI_GetLongField(JNIEnv* env, jobject obj, jfieldID fld);
+jfloat
+KaffeJNI_GetFloatField(JNIEnv* env, jobject obj, jfieldID fld);
+jdouble
+KaffeJNI_GetDoubleField(JNIEnv* env, jobject obj, jfieldID fld);
+
+/* ====== Functions to set fields =================================================== */
+
+void
+KaffeJNI_SetObjectField(JNIEnv* env, jobject obj, jfieldID fld, jobject val);
+void
+KaffeJNI_SetBooleanField(JNIEnv* env, jobject obj, jfieldID fld, jbool val);
+void
+KaffeJNI_SetByteField(JNIEnv* env, jobject obj, jfieldID fld, jbyte val);
+void
+KaffeJNI_SetCharField(JNIEnv* env, jobject obj, jfieldID fld, jchar val);
+void
+KaffeJNI_SetShortField(JNIEnv* env, jobject obj, jfieldID fld, jshort val);
+void
+KaffeJNI_SetIntField(JNIEnv* env, jobject obj, jfieldID fld, jint val);
+void
+KaffeJNI_SetLongField(JNIEnv* env, jobject obj, jfieldID fld, jlong val);
+void
+KaffeJNI_SetFloatField(JNIEnv* env, jobject obj, jfieldID fld, jfloat val);
+void
+KaffeJNI_SetDoubleField(JNIEnv* env, jobject obj, jfieldID fld, jdouble val);
+
+/* ====== Functions to get static fields ============================================ */
+
+jobject
+KaffeJNI_GetStaticObjectField(JNIEnv* env, jclass cls, jfieldID fld);
+jboolean
+KaffeJNI_GetStaticBooleanField(JNIEnv* env, jclass cls, jfieldID fld);
+jbyte
+KaffeJNI_GetStaticByteField(JNIEnv* env, jclass cls, jfieldID fld);
+jchar
+KaffeJNI_GetStaticCharField(JNIEnv* env, jclass cls, jfieldID fld);
+jshort
+KaffeJNI_GetStaticShortField(JNIEnv* env, jclass cls, jfieldID fld);
+jint
+KaffeJNI_GetStaticIntField(JNIEnv* env, jclass cls, jfieldID fld);
+jlong
+KaffeJNI_GetStaticLongField(JNIEnv* env, jclass cls, jfieldID fld);
+jfloat
+KaffeJNI_GetStaticFloatField(JNIEnv* env, jclass cls, jfieldID fld);
+jdouble
+KaffeJNI_GetStaticDoubleField(JNIEnv* env, jclass cls, jfieldID fld);
+
+/* ====== Functions to set static fields ============================================ */
+
+void
+KaffeJNI_SetStaticObjectField(JNIEnv* env, jclass cls, jfieldID fld, jobject val);
+void
+KaffeJNI_SetStaticBooleanField(JNIEnv* env, jclass cls, jfieldID fld, jbool val);
+void
+KaffeJNI_SetStaticByteField(JNIEnv* env, jclass cls, jfieldID fld, jbyte val);
+void
+KaffeJNI_SetStaticCharField(JNIEnv* env, jclass cls, jfieldID fld, jchar val);
+void
+KaffeJNI_SetStaticShortField(JNIEnv* env, jclass cls, jfieldID fld, jshort val);
+void
+KaffeJNI_SetStaticIntField(JNIEnv* env, jclass cls, jfieldID fld, jint val);
+void
+KaffeJNI_SetStaticLongField(JNIEnv* env, jclass cls, jfieldID fld, jlong val);
+void
+KaffeJNI_SetStaticFloatField(JNIEnv* env, jclass cls, jfieldID fld, jfloat val);
+void
+KaffeJNI_SetStaticDoubleField(JNIEnv* env, jclass cls, jfieldID fld, jdouble val);
+
+
+/* ====== Functions to call methods ================================================= */
+
 jobject
 KaffeJNI_CallNonvirtualObjectMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID meth, va_list args);
 jobject
