@@ -76,10 +76,15 @@ error2Throwable(errorInfo* einfo)
 
 	switch (einfo->type & KERR_CODE_MASK) {
 	case KERR_EXCEPTION:
-		err = (Hjava_lang_Throwable*)execute_java_constructor(
-			    einfo->classname, 
-			    0, "(Ljava/lang/String;)V",
-			    checkPtr(stringC2Java(einfo->mess)));
+		if (einfo->mess == 0 || *einfo->mess == '\0') {
+			err = (Hjava_lang_Throwable*)execute_java_constructor(
+				    einfo->classname, 0, "()V");
+		} else {
+			err = (Hjava_lang_Throwable*)execute_java_constructor(
+				    einfo->classname, 
+				    0, "(Ljava/lang/String;)V",
+				    checkPtr(stringC2Java(einfo->mess)));
+		}
 		break;
 
 	case KERR_INITIALIZER_ERROR:
