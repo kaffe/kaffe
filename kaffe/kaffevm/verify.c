@@ -951,8 +951,12 @@ isWide(const Type * tinfo)
 
 static Type  verify_NULL;
 static Type* TNULL = &verify_NULL;
-#define IS_NULL(_TINFO) ((_TINFO)->data.class == TNULL->data.class)
-
+static inline
+bool
+isNull(const Type * tinfo)
+{
+	return (tinfo->data.class == TNULL->data.class);
+}
 
 static const char* OBJECT_SIG  = "Ljava/lang/Object;";
 static Type  verify_OBJ;
@@ -4556,7 +4560,7 @@ sameRefType(Type* t1, Type* t2)
 	const char* sig2 = NULL;
 	uint32 len1, len2;
 	
-	if (IS_NULL(t1) || IS_NULL(t2)) {
+	if (isNull(t1) || isNull(t2)) {
 		return true;
 	}
 	
@@ -5272,7 +5276,7 @@ printType(const Type* t)
 		if (type == NULL) {
 			dprintf("NULL");
 		}
-		else if (IS_NULL(t)) {
+		else if (isNull(t)) {
 			dprintf("TNULL");
 		}
 		
