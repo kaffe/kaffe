@@ -179,6 +179,7 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 
 	memset(&addr, 0, sizeof(addr));
 	if (obj_length(unhand(daddr)->addr) == 4) {
+	        alen = sizeof(addr.addr4); 
 #if defined(BSD44)
 		addr.addr4.sin_len = sizeof(addr.addr4);
 #endif
@@ -188,7 +189,7 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 		       unhand_byte_array(unhand(daddr)->addr), sizeof(addr.addr4.sin_addr));
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
 	} else if (obj_length(unhand(daddr)->addr) == 16) {
-
+	        alen = sizeof(addr.addr6);
 #if defined(BSD44)
 		addr.addr6.sin6_len = sizeof(addr.addr6);
 #endif
@@ -207,7 +208,7 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 	    )
 
 	fd = (int)unhand(unhand(this)->fd)->nativeFd;
-	r = KCONNECT(fd, (struct sockaddr*)&addr, sizeof(addr), timeout);
+	r = KCONNECT(fd, (struct sockaddr*)&addr, alen, timeout);
 	if (r == EINTR) {
 		SignalError("java.io.InterruptedIOException", 
 			    "Connect was interrupted");
@@ -264,6 +265,7 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 
 	memset(&addr, 0, sizeof(addr));
 	if (obj_length(unhand(laddr)->addr) == 4) {
+	        alen = sizeof(addr.addr4);
 #if defined(BSD44)
 		addr.addr4.sin_len = sizeof(addr.addr4);
 #endif
@@ -278,7 +280,7 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 		    );
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
 	} else if (obj_length(unhand(laddr)->addr) == 16) {
-
+	        alen = sizeof(addr.addr6);
 #if defined(BSD44)
 		addr.addr6.sin6_len = sizeof(addr.addr6);
 #endif
@@ -299,7 +301,7 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 
 	/* Allow rebinding to socket - ignore errors */
 	(void)KSETSOCKOPT(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
-	r = KBIND(fd, (struct sockaddr*)&addr, sizeof(addr));
+	r = KBIND(fd, (struct sockaddr*)&addr, alen);
 	switch( r )
 	{
 	case 0:

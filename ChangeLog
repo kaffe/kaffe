@@ -1,4 +1,15 @@
+2003-11-04  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/clib/net/PlainDatagramSocketImpl.c:
+	(bind, send) Compute the exact address length to pass to syscalls.
+	This is required for FreeBSD as reported by
+	Ito Kazumitsu <kaz@maczuka.gcd.org>.
+
+	* libraries/clib/net/PlainSocketImpl.c:
+	(bind, connect) Same commentary.
+
 2003-11-03  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffeh/support.c:
 	(kaffeh_findClass) Changed type of buf to unsigned char* to
 	fix -pedantic warnings.

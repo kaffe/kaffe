@@ -141,6 +141,7 @@ gnu_java_net_PlainDatagramSocketImpl_bind(struct Hgnu_java_net_PlainDatagramSock
 
 	memset(&addr, 0, sizeof(addr));
 	if (obj_length(unhand(laddr)->addr) == 4) {
+		alen = sizeof(addr.addr4);
 #if defined(BSD44)
 		addr.addr4.sin_len = sizeof(addr.addr4);
 #endif
@@ -155,6 +156,7 @@ DBG(NATIVENET,
 )
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
 	} else if (obj_length(unhand(laddr)->addr) == 16) {
+		alen = sizeof(addr.addr6);
 #if defined(BSD44)
 		addr.addr6.sin6_len = sizeof(addr.addr6);
 #endif
@@ -172,7 +174,7 @@ DBG(NATIVENET,
 		SignalError("java.net.SocketException", "Unsupported address family");
 	}
 
-	r = KBIND(fd, (struct sockaddr*)&addr, sizeof(addr));
+	r = KBIND(fd, (struct sockaddr*)&addr, alen);
 	switch( r )
 	{
 	case 0:
@@ -209,6 +211,7 @@ gnu_java_net_PlainDatagramSocketImpl_send(struct Hgnu_java_net_PlainDatagramSock
 	int rc;
 	ssize_t bsent;
 	KaffeSocketAddr addr;
+	int alen;
 	
 DBG(NATIVENET,
 	dprintf("datagram_send(%p, %p [%d bytes])\n",
@@ -217,6 +220,7 @@ DBG(NATIVENET,
 
         memset(&addr, 0, sizeof(addr));
         if (obj_length(unhand(unhand(pkt)->address)->addr) == 4) {
+	    alen = sizeof(addr.addr4);
 #if defined(BSD44)
 	    addr.addr4.sin_len = sizeof(addr.addr4);
 #endif
@@ -232,6 +236,7 @@ DBG(NATIVENET,
 
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
 	} else if (obj_length(unhand(unhand(pkt)->address)->addr) == 16) {
+	    alen = sizeof(addr.addr6);
 #if defined(BSD44)
 	    addr.addr6.sin6_len = sizeof(addr.addr6);
 #endif
@@ -253,7 +258,7 @@ DBG(NATIVENET,
 
 	rc = KSENDTO(unhand(unhand(this)->fd)->nativeFd,
 		unhand_array(unhand(pkt)->buffer)->body, unhand(pkt)->length,
-		0, (struct sockaddr *)&addr, sizeof(addr), &bsent);
+		0, (struct sockaddr *)&addr, alen, &bsent);
 
 DBG(NATIVENET,
 	dprintf("  datagram_send() -> rc=%d bsent=%ld\n", rc, (long) bsent);
