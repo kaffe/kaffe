@@ -1,3 +1,14 @@
+Tue Aug  4 11:57:54 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/javalib/java/io/Writer.java|PrintWriter.java:
+	synchronized println and write method to ensure that lines are
+	written as a whole.
+
+Tue Aug  4 10:48:23 1998  Wolfgang Muees <wolfgang@wmsickte.escape.de>
+
+	* libraries/javalib/java/util/ResourceBundle.java: don't call
+	newInstance in getSpecificBundle if object cannot be cast to Bundle.
+
 Sat Aug  1 12:16:30 1998  Petter Reinholdtsen <pere@games.no>
 
 	* libraries/javalib/java/net/Socket.java: added getLocalAddress()
