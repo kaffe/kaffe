@@ -98,7 +98,7 @@ static inline void UTFfree(const void *mem)
 	DBGIF(utfLockRoot = NULL);
 	_unlockMutex(&utf8Lock, myRoot);
 
-	jfree((void *)mem);
+	gc_free((void *)mem);
 
 	_lockMutex(&utf8Lock, myRoot);
 	DBGIF(assert(utfLockRoot == NULL));
@@ -157,7 +157,6 @@ utf8ConstNew(const char *s, int len)
 	if (sizeof(Utf8Const) + len + 1 > sizeof(buf)) {
 		fake = gc_malloc(sizeof(Utf8Const) + len + 1, GC_ALLOC_UTF8CONST);
 		if (!fake) {
-			unlockUTF();
 			return 0;
 		}
 	} else {
@@ -176,7 +175,7 @@ utf8ConstNew(const char *s, int len)
 		utf8->nrefs++;
 		unlockUTF();
 		if (fake != (Utf8Const*)buf) {
-			jfree(fake);
+			gc_free(fake);
 		}
 		return(utf8);
 	}
@@ -215,7 +214,7 @@ utf8ConstNew(const char *s, int len)
 	unlockUTF();
 
 	if (temp == 0 || temp != utf8) {
-		jfree(utf8);
+		gc_free(utf8);
 	}
 
 	assert(temp == 0 || temp->nrefs > 0);
@@ -261,7 +260,7 @@ utf8ConstRelease(Utf8Const *utf8)
 	}
 	unlockUTF();
 	if (utf8->nrefs == 0)
-		jfree(utf8);
+		gc_free(utf8);
 }
 
 /*
@@ -420,6 +419,6 @@ utf8ConstInit(void)
 	lockUTF();
 	hashTable = hashInit(utf8ConstHashValueInternal,
 		utf8ConstCompare, UTFmalloc, UTFfree);
-	assert(hashTable);
+	assert(hashTable != NULL);
 	unlockUTF();
 }
