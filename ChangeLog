@@ -1,6 +1,36 @@
 2004-11-27  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/util/ResourceBundle.java:
+	Resynced with GNU Classpath. Reverted Helmer's changes from 
+	2004-07-11 as they break mauve tests for 
+	java.util.logging.Logger.
+
+	2004-11-20  Tom Tromey  <tromey@redhat.com>
+
+        * java/util/ResourceBundle.java (tryBundle): Use
+        Class.isAssignableFrom rather than catching ClassCastException.
+
+	2004-11-20  Bryce McKinlay  <mckinlay@redhat.com>
+
+        * java/util/ResourceBundle.java (bundleCache): Renamed from
+        resourceBundleCache. Update comments.
+        (getObject): Don't catch MissingResourceException.
+        (getBundle(String)): Remove 'final'. Use system classloader if
+        getCallingClassLoader returned null.
+        (getBundle(String, Locale)): Likewise.
+        (BundleKey): New private class. HashMap key for bundle cache lookup.
+        (lookupKey): New. Singleton instance of BundleKey.
+        (nullEntry): New. Cache entry to represent failed lookups.
+        (getBundle(String, Locale, ClassLoader)): Re-written to use new
+        caching strategy, no-allocation lookup, and new tryBundle methods.
+        (tryBundle(String, ClassLoader)): New. Load a locale-qualified bundle
+        name using given classloader.
+        (tryBundle(String, Locale, ClassLoader, boolean): New. Qualify
+        baseName for given Locale and attempt to load bundle.
+
+2004-11-27  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/ResourceBundle.java:
 	Reindented to match GNU Classpath's version more closely.
 
 2004-11-26  Dalibor Topic  <robilad@kaffe.org>
