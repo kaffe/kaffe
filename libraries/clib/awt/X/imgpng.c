@@ -67,7 +67,7 @@ setPixel ( Image* img, unsigned long argb, int row, int col )
 }
 
 
-int
+static void
 readRowData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Image *img )
 {
   int            i, j;
@@ -84,7 +84,7 @@ readRowData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Image *img
   }
 }
 
-int
+static void
 readImageData ( png_structp png_ptr, png_infop info_ptr, png_bytepp rows, Image *img )
 {
   int            i, j;
@@ -104,7 +104,7 @@ readImageData ( png_structp png_ptr, png_infop info_ptr, png_bytepp rows, Image 
 void
 readbackRow ( Image *img, unsigned char* rowBuf, int row )
 {
-  int            i, j;
+  int            i;
   unsigned char  *p;
   int            r, g, b, a;
   unsigned long  pix;
@@ -127,7 +127,7 @@ readbackRow ( Image *img, unsigned char* rowBuf, int row )
  * memory for the WHOLE image in ARGB pels (but ADAM7 seems to require
  * neighbor rows, too)
  */
-int
+static void
 readInterlacedData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Image *img )
 {
   int   i, j, pass;
