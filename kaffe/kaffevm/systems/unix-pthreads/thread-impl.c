@@ -218,13 +218,6 @@ tDump (void)
 {
   DBG(JTHREAD, {
 	jthread_t	cur = jthread_current();
-	void		*lock   = tLock.lock;
-	void		*holder = tLock.heavyLock.holder;
-	void		*mux    = tLock.heavyLock.mux;
-	//void		*muxNat = tLock.heavyLock.mux ? unhand(tLock.heavyLock.mux)->PrivateInfo : 0;
-	void		*cv     = tLock.heavyLock.cv;
-	//void		*cvNat  = tLock.heavyLock.cv ? unhand(tLock.heavyLock.cv)->PrivateInfo : 0;
-	int		iLockRoot;	
 
 	protectThreadList(cur);
 
@@ -232,12 +225,6 @@ tDump (void)
 
 	dprintf("state:  nonDaemons: %d, critSection: %d\n",
 					 nonDaemons, critSection);
-	/*
-	dprintf("tLock:       %p [holder: %p, mux: %p (native: %p), cv: %p (native: %p)]\n",
-					 lock, holder, mux, muxNat, cv, cvNat);
-	*/
-	dprintf("tLock:	      %p [holder: %p, mux: %p, cv: %p]\n",
-				lock, holder, mux, cv);
 
 	dprintf("active threads:\n");
 	tDumpList( cur, activeThreads);
@@ -655,7 +642,6 @@ void* tRun ( void* p )
   jthread_t	t;
   size_t	ss;
   int		oldCancelType;
-  int		iLockRoot;
 
   /* get the stack boundaries */
   pthread_attr_getstacksize( &cur->attr, &ss);
@@ -767,7 +753,6 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
   jthread_t		cur = jthread_current();
   jthread_t		nt;
   struct sched_param	sp;
-  int			iLockRoot;
 
   /* if we are the first one, it's seriously broken */
   assert( activeThreads != 0 );
@@ -917,7 +902,6 @@ jthread_exit ( void )
 {
   jthread_t	cur = jthread_current();
   jthread_t	t;
-  int		iLockRoot;
   /*
    * We are leaving the thread user func, which means we are not
    * subject to GC, anymore (has to be marked here because the first thread
@@ -1154,7 +1138,6 @@ jthread_suspendall (void)
   int		status;
   jthread_t	cur = jthread_current();
   volatile jthread_t	t;
-  int		iLockRoot;
  
   /* don't allow any new thread to be created or recycled until this is done */
   protectThreadList(cur);
@@ -1235,7 +1218,6 @@ jthread_unsuspendall (void)
   jthread_t	cur = jthread_current();
   jthread_t	t;
   int		status;
-  int		iLockRoot;
 
   if ( !critSection )
 	return;

@@ -1,3 +1,10 @@
+2004-10-14  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(tDump): Removed unaccessible debugging information (will be readded
+	later).
+	Removed unused occurrences of iLockRoot.
+
 2004-10-14  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* libraries/clib/native/System.c (java_lang_System_initProperties): 
