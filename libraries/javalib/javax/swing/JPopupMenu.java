@@ -386,10 +386,7 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
    */
   public void setSelectionModel(SingleSelectionModel model)
   {
-    if (selectionModel != model)
-      {
-	SingleSelectionModel oldModel = this.selectionModel;
-      }
+	selectionModel = model;
   }
 
   /**
