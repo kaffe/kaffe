@@ -459,6 +459,7 @@ void waitOn(Object hold, long timeout) throws InterruptedException {
 	if (death != null) {
 		Error t = (Error)death;
 		death = null;
+		t.fillInStackTrace();
 		throw t;
 	}
 	holder = hold;
@@ -471,6 +472,7 @@ void waitOn(Object hold, long timeout) throws InterruptedException {
 	if (death != null) {
 		Error t = (Error)death;
 		death = null;
+		t.fillInStackTrace();
 		throw t;
 	}
 }
@@ -481,6 +483,7 @@ public static void yield() {
 	if (curr.death != null) {
 		Error t = (Error)curr.death;
 		curr.death = null;
+		t.fillInStackTrace();
 		throw t;
 	}
 }

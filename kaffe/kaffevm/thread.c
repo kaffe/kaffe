@@ -563,7 +563,11 @@ broadcastDeath(void *jlThread)
 static void 
 throwDeath(void)
 {
-	throwException(ThreadDeath);
+	Hjava_lang_Thread *cur = getCurrentThread();
+	Hjava_lang_Throwable *death = cur->death;
+
+	cur->death = NULL;
+	throwException(death ? death : ThreadDeath);
 }
 
 static
