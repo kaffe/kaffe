@@ -1,3 +1,11 @@
+2003-07-02  Rob Gonzalez <rob@kaffe.org>
+
+	Pass 2 verification should now be complete.
+	
+	* kaffe/kaffevm/verify.c
+	Now parses field and method references for valid type
+	descriptors.
+
 2003-07-01  Timothy S. Stack <stack@cs.utah.edu>
 
 	* configure.in:
@@ -12,7 +20,7 @@
 	stored as doubles.
 
 	Reported by: Gerlando Falauto <iurly@writeme.com>
-	
+
 2003-06-30  Dalibor Topic <robilad@yahoo.com>
 
 	* configure.in: 

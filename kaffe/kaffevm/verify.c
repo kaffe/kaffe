@@ -16,6 +16,12 @@
  * specifically part 3 of of pass 2, which has been modified),
  * so questions regarding pass 2 should be sent to:
  *     Rob Gonzalez <rob@kaffe.org>
+ *
+ * verify3() was also originally created by someone in Transvirtual, but it only
+ * returned true :)  Questions regarding this one can be sent to Rob as well.
+ *
+ * All other code in this file was added to assist the full versions of verify2() and
+ * verify3().
  */
 
 #include "config.h"
@@ -29,7 +35,9 @@
 #include "debug.h"
 #include "utf8const.h"
 
+// needed for pass 3
 #include "bytecode.h"
+#include "itypes.h"
 
 
 /*
@@ -38,14 +46,148 @@
 static
 bool
 isTrustedClass(Hjava_lang_Class* class) {
-	// class->loader == NULL ==> PrimordialClassLoader
-	//
 	// recall (from main.c): -verifyremote (default) ==> verifyMode = 2
 	//                       -verify                 ==> verifyMode = 3
 	//                       -noverify               ==> verifyMode = 0
-	return ((class->loader == NULL && (Kaffe_JavaVMArgs[0].verifyMode & 1) == 0) ||
-		(class->loader != NULL && (Kaffe_JavaVMArgs[0].verifyMode & 2) == 0));
+	return ((class->loader == 0 && (Kaffe_JavaVMArgs[0].verifyMode & 1) == 0) ||
+		(class->loader != 0 && (Kaffe_JavaVMArgs[0].verifyMode & 2) == 0));
 }
+
+
+/*********************************************************************************
+ * Type Descriptor Parsing Methods
+ *********************************************************************************/
+static const char* parseBaseTypeDescriptor(const char* sig);
+static const char* parseObjectTypeDescriptor(const char* sig);
+static const char* parseArrayTypeDescriptor(const char* sig);
+static const char* parseFieldTypeDescriptor(const char* sig);
+static bool        parseMethodTypeDescriptor(const char* sig);
+
+
+/*
+ * parses a BaseType descriptor (p.100 JVML Spec 2)
+ * 
+ *   BaseType: B | C | D | F | I | J | S | Z
+ *
+ * returns the sig pointing right after the BaseType
+ * or NULL if an error occurred.
+ */
+static
+const char*
+parseBaseTypeDescriptor(const char* sig)
+{
+	switch(*sig) {
+	case 'B': case 'C': case 'D': case 'F': case 'I': case 'J': case 'S': case 'Z':
+		return sig + 1;
+	default:
+		break;
+	}
+	
+	return NULL;
+}
+
+/*
+ * parses an ObjectType descriptor (p.101 JVML Spec 2)
+ *
+ *   ObjectType: L<classname>;
+ *   <classname> is a string made from unicode characters
+ *
+ * precondition: *sig == 'L'
+ *
+ * returns the sig pointing right after the ObjectType
+ * or NULL if an error occurred.
+ */
+static
+const char*
+parseObjectTypeDescriptor(const char* sig)
+{
+	for (sig++; sig != '\0' && *sig != ';'; sig++);
+	
+	if (sig == '\0') return NULL;
+	else             return sig + 1;
+}
+
+/* parses an ArrayType descriptor (p.101 JVML Spec 2)
+ *
+ *   ArrayType    : [ComponentType
+ *   ComponentType: FieldType
+ *
+ * precondition: *sig == '['
+ *
+ * returns the sig pointing right after the ArrayType
+ * or NULL if an error occurred.
+ */
+static
+const char*
+parseArrayTypeDescriptor(const char* sig)
+{
+	while (*sig != '\0' && *sig == '[') sig++;
+	
+	if (*sig == '\0') return NULL;
+	else              return parseFieldTypeDescriptor(sig);
+}
+
+
+/*
+ * parses a field type descriptor (i.e. its type signature).
+ *
+ *   FieldType:
+ *     BaseType | ObjectType | ArrayType
+ *
+ * returns the signatures position immediately after the field's
+ * type signature, or NULL if any error has occurred.
+ */
+static
+const char*
+parseFieldTypeDescriptor(const char* sig)
+{
+	if (sig == NULL)      return NULL;
+	else if (*sig == '[') return parseArrayTypeDescriptor(sig);
+	else if (*sig == 'L') return parseObjectTypeDescriptor(sig);
+	else                  return parseBaseTypeDescriptor(sig);
+}
+
+
+/*
+ * parses a method type descriptor (i.e. its signature).  (p.103 JVML Spec 2)
+ *
+ *   MethodDescriptor:
+ *     ( ParameterDescriptor* ) ReturnDescriptor
+ *   ParameterDescriptor:
+ *     FieldType
+ *   ReturnDescriptor:
+ *     FieldType | V
+ *
+ * returns whether the descriptor is legal
+ */
+static
+bool
+parseMethodTypeDescriptor(const char* sig)
+{
+	if (sig == NULL || *sig != '(') return false;
+	
+	DBG(VERIFY2, dprintf("        parsing method type descriptor: %s\n", sig); );
+	
+	// parse the type parameters
+	for (sig++; *sig != '\0' && *sig != ')'; sig = parseFieldTypeDescriptor(sig)) {
+		DBG(VERIFY2, dprintf("            parameter sig: %s\n", sig); );
+	}
+	
+	if (*sig == '\0') {
+		DBG(VERIFY2, dprintf("            error: no ReturnDescriptor\n"); );
+		return false;
+	}
+	sig++;
+
+	DBG(VERIFY2, dprintf("            ReturnDescriptor: %s\n", sig); );	
+	if (*sig == 'V')
+		return (*(sig + 1) == '\0');
+	
+	if (parseFieldTypeDescriptor(sig) != NULL) return true;
+	
+	return false;
+}
+
 
 
 /*********************************************************************************
@@ -62,7 +204,6 @@ static bool isMethodVoid(Method* method)
 	char* sig = (char*)method->parsed_sig->signature->data;
 	int i = strlen(sig);
 	
-	// TODO: i > 2 won't be necessary here after we put parsing into pass 2 verification
 	return (i > 2) && (sig[i-2] == ')' && sig[i-1] == 'V');
 }
 
@@ -145,8 +286,8 @@ printConstantPool(Hjava_lang_Class* class)
 			break;
 			
 		default:
-			// should never get here...
-			break;
+			DBG(VERIFY2, dprintf("   *** UNRECOGNIZED CONSTANT POOL ENTRY in class %s *** \n",
+					     class->name->data); );
 		}
 	}	
 }
@@ -306,7 +447,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 				for (m = CLASS_NMETHODS(superclass), method = CLASS_METHODS(superclass);
 				     m > 0;
 				     --m, ++method) {
-				
+					
 					if (METHOD_IS_FINAL(method) &&
 					    
 					    // the following exceptions come from testing against Sun's JVM behavior
@@ -420,18 +561,14 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 	 *     descriptor
 	 *
 	 * From the JVM spec pp.141-2:
-	 *  Note that when it looks at field and method references,
-	 *  this pass does not check to make sure that the given
-	 *  field or method actually exists in the given class, nor
-	 *  does it check that the type descriptors given refer to
-	 *  real classes.  It checks only that these items are well
-	 *  formed.
+	 *   Note that when it looks at field and method references,
+	 *   this pass does not check to make sure that the given
+	 *   field or method actually exists in the given class, nor
+	 *   does it check that the type descriptors given refer to
+	 *   real classes.  It checks only that these items are well
+	 *   formed.
 	 **************************************************************/
 	
-	/* TODO: we still need a parser that checks whether the
-	 *       type descriptors are valid.  when the parser's done, this
-	 *       loop will check that the field and method type descriptors are cool.
-	 
 	// Constant pool loaded - check the integrity of the type references
 	pool = CLASS_CONSTANTS(class);
 	for (idx = 1; idx < pool->size; idx++) {
@@ -456,12 +593,33 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 			
 			
 		case CONSTANT_Fieldref:
-			// todo
+			if (parseFieldTypeDescriptor(CONST_UTF2CHAR(FIELDREF_TYPE(idx, pool), pool)) == NULL) {
+				postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
+						     "malformed field reference type descriptor, \"%s\", in class \"%s\"",
+						     CONST_UTF2CHAR(FIELDREF_TYPE(idx, pool), pool),
+						     class->name->data);
+				return(false);
+			}
 			break;
 			
 		case CONSTANT_Methodref:
+			if (!parseMethodTypeDescriptor(CONST_UTF2CHAR(METHODREF_SIGNATURE(idx, pool), pool))) {
+				postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
+						     "malformed method reference type descriptor, \"%s\", in class \"%s\"",
+						     CONST_UTF2CHAR(METHODREF_SIGNATURE(idx, pool), pool),
+						     class->name->data);
+				return(false);
+			}
+			break;
+			
 		case CONSTANT_InterfaceMethodref:
-			// todo
+			if (!parseMethodTypeDescriptor(CONST_UTF2CHAR(INTERFACEMETHODREF_SIGNATURE(idx, pool), pool))) {
+				postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
+						     "malformed interface method reference type descriptor, \"%s\", in class \"%s\"",
+						     CONST_UTF2CHAR(INTERFACEMETHODREF_SIGNATURE(idx, pool), pool),
+						     class->name->data);
+				return(false);
+			}
 			break;
 			
 		default:
@@ -472,7 +630,6 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 			return(false);
 		}
 	}
-	*/
 	
 	return (true);
 }
@@ -502,8 +659,6 @@ static bool checkConstructor(Method* method, errorInfo* einfo)
 	} else if (checkMethodStaticConstraints(method, einfo) == false) {
 		return false;
 	}
-	
-	// TODO: make sure constructor has a valid signature
 	
 	return(true);
 }
