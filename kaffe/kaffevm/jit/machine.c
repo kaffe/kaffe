@@ -185,6 +185,7 @@ translate(Method* meth, errorInfo *einfo)
 
 	static iLock translatorlock;
 	static bool init = false;
+	static Method* jitting = 0;	/* DEBUG */
 
 	if (init == false) {
 		init = true;
@@ -218,6 +219,21 @@ DBG(MOREJIT,
 		meth->c.ncode.ncode_end = METHOD_NATIVECODE(meth);
 		goto done2;
 	}
+	/* Scan the code and determine the basic blocks */
+	success = verifyMethod(meth, &codeInfo, einfo);
+	if (success == false) {
+		goto done;
+	}
+
+	/* start modifying global variables now */
+	if (jitting) {
+	    extern void dumpThreads(void);
+	    extern void dumpLocks(void);
+	    dumpThreads();
+	    dumpLocks();
+	}
+	assert(jitting == 0 || !!!"reentered jitter");	/* DEBUG */
+	jitting = meth;					/* DEBUG */
 
 	maxLocal = meth->localsz;
 	maxStack = meth->stacksz;
@@ -234,12 +250,6 @@ DBG(MOREJIT,
 
 	base = (bytecode*)meth->c.bcode.code;
 	len = meth->c.bcode.codelen;
-
-	/* Scan the code and determine the basic blocks */
-	success = verifyMethod(meth, &codeInfo, einfo);
-	if (success == false) {
-		goto done;
-	}
 
 	/***************************************/
 	/* Next reduce bytecode to native code */
@@ -347,6 +357,7 @@ DBG(JIT,
 
 done2:
 	unlockMutex(meth->class);
+	jitting = 0;	/* DEBUG */
 	unlockStaticMutex(&translatorlock);
 	return (success);
 }

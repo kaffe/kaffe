@@ -1806,6 +1806,11 @@ IDBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case NEW:
+			class = getClass(lclw, meth->class, einfo);
+			if (class == 0) {
+				failed = true;
+				goto done;
+			}
 			STKPUSH(1);
 			STACKOUT(0, TOBJ);
 			INCPC(3);
@@ -1818,12 +1823,22 @@ IDBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case ANEWARRAY:
+			class = getClass(lclw, meth->class, einfo);
+			if (class == 0) {
+				failed = true;
+				goto done;
+			}
 			STACKIN(0, TINT);
 			STACKOUT(0, TOBJ);
 			INCPC(3);
 			break;
 
 		case MULTIANEWARRAY:
+			class = getClass(lclw, meth->class, einfo);
+			if (class == 0) {
+				failed = true;
+				goto done;
+			}
 			for (idx = INSN(pc+3) - 1; idx >= 0; idx--) {
 				STACKIN(idx, TINT);
 			}
