@@ -230,6 +230,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_implTruncate(JNIEnv *env, jobject fil
   int nativeFd = (int) getFD(env, filechannel);
   off_t fileSize;
   off_t new_length = (off_t)newSize;
+  off_t cur, oldPosition;
   int rc;
 
   rc = getFileSize(nativeFd, &fileSize);
@@ -241,6 +242,25 @@ Java_gnu_java_nio_channels_FileChannelImpl_implTruncate(JNIEnv *env, jobject fil
   
   if (new_length < fileSize)
     {
+      /* Get the old file position */
+      rc = KLSEEK(nativeFd, 0, SEEK_CUR, &oldPosition);
+      if (rc != 0)
+        {
+          throwIOException(env, rc);
+          return;
+        }
+
+      if (oldPosition > new_length)
+	{
+	  /* Go to eof */
+	  rc = KLSEEK(nativeFd, new_length, SEEK_SET, &cur);
+	  if (rc != 0)
+	  {
+	    throwIOException(env, rc);
+	    return;
+	  }
+        }
+
       rc = KFTRUNCATE(nativeFd, new_length);
       if (rc != 0)
 	{
@@ -250,8 +270,6 @@ Java_gnu_java_nio_channels_FileChannelImpl_implTruncate(JNIEnv *env, jobject fil
     }
   else
     {
-      off_t cur;
-      off_t oldPosition;
       char data = 0;
       ssize_t ret;
       
