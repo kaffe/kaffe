@@ -50,7 +50,7 @@ public Object[] toArray(Object[] a) {
     a = (Object[])Array.newInstance(a.getClass().getComponentType(), len);
   }
   Iterator i = iterator();
-  for (int index = 0; i.hasNext(); ) {
+  for (int index = 0; i.hasNext(); index++) {
     a[index] = i.next();
   }
   if (a.length > len) {
