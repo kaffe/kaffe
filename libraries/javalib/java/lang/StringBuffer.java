@@ -139,7 +139,7 @@ public void ensureCapacity(int minCapacity) {
 	if (minCapacity <= 0)
 		return;
 	synchronized (this) {
-		ensureCapacity(minCapacity, false);
+		ensureCapacity(minCapacity, isStringized);
 	}
 }
 
@@ -261,8 +261,7 @@ public synchronized void setLength(int newLength) {
 	if (newLength < 0) {
 		throw new StringIndexOutOfBoundsException();
 	}
-	boolean newBuf = ensureCapacity(newLength,
-	    isStringized || newLength < buffer.length / 2);
+	boolean newBuf = ensureCapacity(newLength, isStringized);
 	if (!newBuf && newLength > used) {
 		for (int index = used; index < newLength; index++)
 			buffer[index] = '\0';
