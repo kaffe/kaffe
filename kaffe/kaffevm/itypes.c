@@ -127,6 +127,8 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 		utf8ConstRelease(utf8);
 		return(cl);
 	default:
+		/* malformed signature */
+		SET_LANG_EXCEPTION(einfo, VerifyError);
 		return (NULL);
 	}
 }
