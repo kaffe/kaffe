@@ -82,7 +82,7 @@ AC_PROG_CC
 
 dnl If gcc is the compiler, compile with -Wall for lots of warnings
 
-dnl AX_CFLAGS_WARN_ALL
+AX_CFLAGS_WARN_ALL
 
 # the following are covered by -Wall, but we list them separately, so
 # that it's easier to control.
@@ -90,8 +90,8 @@ dnl AX_CFLAGS_WARN_ALL
 
 
 dnl AX_CFLAGS_GCC_OPTION([-Wno-import])
-AX_CFLAGS_GCC_OPTION([-Wchar-subscripts])
-AX_CFLAGS_GCC_OPTION([-Wcomment])
+# AX_CFLAGS_GCC_OPTION([-Wchar-subscripts])
+# AX_CFLAGS_GCC_OPTION([-Wcomment])
 
 dnl AX_CFLAGS_GCC_OPTION([-Wformat])
 dnl AX_CFLAGS_GCC_OPTION([-Wformat-y2k])
@@ -100,7 +100,7 @@ dnl AX_CFLAGS_GCC_OPTION([-Wno-format-zero-length])
 dnl AX_CFLAGS_GCC_OPTION([-Wformat-nonliteral])
 dnl AX_CFLAGS_GCC_OPTION([-Wformat-security])
 # -Wformat=2 includes -Wformat, -Wformat-nonliteral -Wformat-security, -Wformat-y2k
-AX_CFLAGS_GCC_OPTION([-Wformat=2])
+# AX_CFLAGS_GCC_OPTION([-Wformat=2])
 
 # -Wnonnull is included in -Wformat
 dnl AX_CFLAGS_GCC_OPTION([-Wnonnull])
@@ -108,24 +108,24 @@ dnl AX_CFLAGS_GCC_OPTION([-Wnonnull])
 # -Winit-self requires(-Wunitialized)
 dnl AX_CFLAGS_GCC_OPTION([-Winit-self])
 
-AX_CFLAGS_GCC_OPTION([-Wimplicit-function-declaration])
-AX_CFLAGS_GCC_OPTION([-Wimplicit-int])
+# AX_CFLAGS_GCC_OPTION([-Wimplicit-function-declaration])
+# AX_CFLAGS_GCC_OPTION([-Wimplicit-int])
 # -Wimplicit includes -Wimplicit-int, -Wimplicit-function-declaration
 dnl AX_CFLAGS_GCC_OPTION([-Wimplicit])
-AX_CFLAGS_GCC_OPTION([-Wmain])
-AX_CFLAGS_GCC_OPTION([-Wmissing-braces])
-AX_CFLAGS_GCC_OPTION([-Wparentheses])
-AX_CFLAGS_GCC_OPTION([-Wsequence-point])
-AX_CFLAGS_GCC_OPTION([-Wreturn-type])
-AX_CFLAGS_GCC_OPTION([-Wswitch])
-AX_CFLAGS_GCC_OPTION([-Wswitch-default])
-AX_CFLAGS_GCC_OPTION([-Wswitch-enum])
-AX_CFLAGS_GCC_OPTION([-Wtrigraphs])
-AX_CFLAGS_GCC_OPTION([-Wunused-function])
-AX_CFLAGS_GCC_OPTION([-Wunused-label])
-AX_CFLAGS_GCC_OPTION([-Wunused-parameter])
-AX_CFLAGS_GCC_OPTION([-Wunused-variable])
-AX_CFLAGS_GCC_OPTION([-Wunused-value])
+# AX_CFLAGS_GCC_OPTION([-Wmain])
+# AX_CFLAGS_GCC_OPTION([-Wmissing-braces])
+# AX_CFLAGS_GCC_OPTION([-Wparentheses])
+# AX_CFLAGS_GCC_OPTION([-Wsequence-point])
+# AX_CFLAGS_GCC_OPTION([-Wreturn-type])
+# AX_CFLAGS_GCC_OPTION([-Wswitch])
+# AX_CFLAGS_GCC_OPTION([-Wswitch-default])
+# AX_CFLAGS_GCC_OPTION([-Wswitch-enum])
+# AX_CFLAGS_GCC_OPTION([-Wtrigraphs])
+# AX_CFLAGS_GCC_OPTION([-Wunused-function])
+# AX_CFLAGS_GCC_OPTION([-Wunused-label])
+# AX_CFLAGS_GCC_OPTION([-Wunused-parameter])
+# AX_CFLAGS_GCC_OPTION([-Wunused-variable])
+# AX_CFLAGS_GCC_OPTION([-Wunused-value])
 # -Wunused includes -Wunused-function, -Wunused-label, -Wunused-parameter, -Wunused-variable, -Wunused-value
 dnl AX_CFLAGS_GCC_OPTION([-Wunused])
 ## disable -Wuninitialized as it clashes with -O0
@@ -133,9 +133,9 @@ dnl AX_CFLAGS_GCC_OPTION([-Wunused])
 ## misinterprets the compiler warnings for
 ## something more serious.
 # AX_CFLAGS_GCC_OPTION([-Wuninitialized])
-AX_CFLAGS_GCC_OPTION([-Wunknown-pragmas])
+# AX_CFLAGS_GCC_OPTION([-Wunknown-pragmas])
 # requires -fstrict-aliasing
-AX_CFLAGS_GCC_OPTION([-Wstrict-aliasing])
+# AX_CFLAGS_GCC_OPTION([-Wstrict-aliasing])
 # includes all of the above
 dnl AX_CFLAGS_GCC_OPTION([-Wall])
 
@@ -143,45 +143,48 @@ dnl AX_CFLAGS_GCC_OPTION([-Wall])
 
 dnl AX_CFLAGS_GCC_OPTION([-pedantic])
 dnl AX_CFLAGS_GCC_OPTION([-ansi])
-AX_CFLAGS_GCC_OPTION([-W])	dnl new name is -Wextra
+# AX_CFLAGS_GCC_OPTION([-W])	dnl new name is -Wextra
 
-AX_CFLAGS_GCC_OPTION([-Wfloat-equal])
+# AX_CFLAGS_GCC_OPTION([-Wfloat-equal])
 dnl AX_CFLAGS_GCC_OPTION([-Wtraditional])
-AX_CFLAGS_GCC_OPTION([-Wdeclaration-after-statement])
-AX_CFLAGS_GCC_OPTION([-Wundef])
-AX_CFLAGS_GCC_OPTION([-Wendif-labels])
-AX_CFLAGS_GCC_OPTION([-Wshadow])
-AX_CFLAGS_GCC_OPTION([-Wpointer-arith])
-AX_CFLAGS_GCC_OPTION([-Wbad-function-cast])
-AX_CFLAGS_GCC_OPTION([-Wcast-qual])
-AX_CFLAGS_GCC_OPTION([-Wcast-align])
-AX_CFLAGS_GCC_OPTION([-Wwrite-strings]) 
-AX_CFLAGS_GCC_OPTION([-Wconversion])
-AX_CFLAGS_GCC_OPTION([-Wsign-compare]) 
-AX_CFLAGS_GCC_OPTION([-Waggregate-return]) 
-AX_CFLAGS_GCC_OPTION([-Wstrict-prototypes])
-AX_CFLAGS_GCC_OPTION([-Wold-style-definition])
-AX_CFLAGS_GCC_OPTION([-Wmissing-prototypes])
-AX_CFLAGS_GCC_OPTION([-Wmissing-declarations])
-AX_CFLAGS_GCC_OPTION([-Wmissing-noreturn])
-AX_CFLAGS_GCC_OPTION([-Wmissing-format-attribute]) 
+# AX_CFLAGS_GCC_OPTION([-Wdeclaration-after-statement])
+# AX_CFLAGS_GCC_OPTION([-Wundef])
+# AX_CFLAGS_GCC_OPTION([-Wendif-labels])
+# AX_CFLAGS_GCC_OPTION([-Wshadow])
+# AX_CFLAGS_GCC_OPTION([-Wpointer-arith])
+# AX_CFLAGS_GCC_OPTION([-Wbad-function-cast])
+# AX_CFLAGS_GCC_OPTION([-Wcast-qual])
+# AX_CFLAGS_GCC_OPTION([-Wcast-align])
+# AX_CFLAGS_GCC_OPTION([-Wwrite-strings]) 
+# AX_CFLAGS_GCC_OPTION([-Wconversion])
+# AX_CFLAGS_GCC_OPTION([-Wsign-compare]) 
+# AX_CFLAGS_GCC_OPTION([-Waggregate-return]) 
+# AX_CFLAGS_GCC_OPTION([-Wstrict-prototypes])
+# AX_CFLAGS_GCC_OPTION([-Wold-style-definition])
+# AX_CFLAGS_GCC_OPTION([-Wmissing-prototypes])
+# AX_CFLAGS_GCC_OPTION([-Wmissing-declarations])
+# AX_CFLAGS_GCC_OPTION([-Wmissing-noreturn])
+# AX_CFLAGS_GCC_OPTION([-Wmissing-format-attribute]) 
 dnl AX_CFLAGS_GCC_OPTION([-Wno-multichar])
 dnl AX_CFLAGS_GCC_OPTION([-Wno-deprecated-declarations])
-AX_CFLAGS_GCC_OPTION([-Wpacked])
+# AX_CFLAGS_GCC_OPTION([-Wpacked])
 dnl AX_CFLAGS_GCC_OPTION([-Wpadded])
-AX_CFLAGS_GCC_OPTION([-Wredundant-decls])
-AX_CFLAGS_GCC_OPTION([-Wnested-externs])
+# AX_CFLAGS_GCC_OPTION([-Wredundant-decls])
+# AX_CFLAGS_GCC_OPTION([-Wnested-externs])
 dnl AX_CFLAGS_GCC_OPTION([-Wunreachable-code])
-AX_CFLAGS_GCC_OPTION([-Winvalid-pch])
-AX_CFLAGS_GCC_OPTION([-Winline])
-AX_CFLAGS_GCC_OPTION([-Wlong-long])
-AX_CFLAGS_GCC_OPTION([-Wdisabled-optimization])
+# AX_CFLAGS_GCC_OPTION([-Winvalid-pch])
+# AX_CFLAGS_GCC_OPTION([-Winline])
+# AX_CFLAGS_GCC_OPTION([-Wlong-long])
+# AX_CFLAGS_GCC_OPTION([-Wdisabled-optimization])
 
 ## required for old darwin versions because Apples'
 ## gcc falls appart all over assembler statements 
 ## and produces a ton of false warnings otherwise.
 ## AX_CFLAGS_GCC_OPTION([-no-cpp-precomp])
 
+## required for powerpc assember register names
+## in order to use a common notation on darwin
+## and GNU/Linux.
 AX_CFLAGS_GCC_OPTION([-mregnames])
 
 GCC_ATTRIBUTE_ALWAYS_INLINE

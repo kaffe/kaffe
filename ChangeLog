@@ -1,5 +1,10 @@
 2005-03-31  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Set warning leel back to 
+	-Wall to sort the most important ones out first.
+
+2005-03-31  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/i386/jit3-i386.def,
 	include/errors.h,
 	include/kaffe_jni.h,
