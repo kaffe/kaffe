@@ -14,7 +14,7 @@ ACLOCAL_AMFLAGS=-I m4
 
 AUTOMAKE_OPTIONS = foreign 1.3e
 
-SUBDIRS = . config include replace libltdl intl libraries/clib libraries/extensions kaffe libraries/javalib test po
+SUBDIRS = . config intl include replace libltdl libraries/clib libraries/extensions kaffe libraries/javalib test po
 
 DIST_SUBDIRS = . config include replace libltdl intl kaffe libraries test po
 

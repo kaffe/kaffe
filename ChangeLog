@@ -1,3 +1,38 @@
+2004-02-01  Dalibor Topic <robilad@kaffe.org>
+
+        developers/autogen.sh:
+	Update to use gettext 0.14.1.
+
+        ABOUT-NLS,
+        Makefile.am,
+        Makefile.in,
+        configure.in,
+        intl/ChangeLog,
+        intl/Makefile.in,
+        intl/VERSION,
+        intl/config.charset,
+        intl/gmo.h,
+        intl/loadmsgcat.c,
+        intl/locale.alias,
+        intl/localename.c,
+        libltdl/configure,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        m4/ChangeLog,
+        m4/po.m4,
+        po/ChangeLog,
+        po/Makefile.in.in,
+        po/Rules-quot:
+	Updated and regenerated.
+
+        libltdl/mkinstalldirs:
+	Removed.
+
+2004-01-31  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* configure.in (AC_CONFIG_FILES): Add intl/Makefile.
+	(AM_GNU_GETTEXT_VERSION): Bump to 0.14.1.
+
 2004-01-30  Helmer Kramer <hkraemer@freenet.de>
 
 	Checked in by Guilhem Lavaux <guilhem@kaffe.org>

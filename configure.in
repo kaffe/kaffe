@@ -178,7 +178,7 @@ AC_SUBST(CCLD)
 # ===========================================================================
 
 AM_GNU_GETTEXT()
-AM_GNU_GETTEXT_VERSION(0.13.1)
+AM_GNU_GETTEXT_VERSION(0.14.1)
 
 dnl =========================================================================
 dnl Do we need underscore?

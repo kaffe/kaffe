@@ -1,5 +1,5 @@
 /* Determine the current selected locale.
-   Copyright (C) 1995-1999, 2000-2003 Free Software Foundation, Inc.
+   Copyright (C) 1995-1999, 2000-2004 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU Library General Public License as published
@@ -845,7 +845,7 @@ _nl_locale_name (int category, const char *categoryname)
       return "hr";
     case LANG_CZECH: return "cs_CZ";
     case LANG_DANISH: return "da_DK";
-    case LANG_DIVEHI: return "div_MV";
+    case LANG_DIVEHI: return "dv_MV";
     case LANG_DUTCH:
       switch (sub)
 	{
@@ -906,7 +906,9 @@ _nl_locale_name (int category, const char *categoryname)
 	}
       return "fr";
     case LANG_FRISIAN: return "fy_NL";
-    case LANG_FULFULDE: return "ful_NG";
+    case LANG_FULFULDE:
+      /* Spoken in Nigeria, Guinea, Senegal, Mali, Niger, Cameroon, Benin. */
+      return "ff_NG";
     case LANG_GAELIC:
       switch (sub)
 	{
@@ -939,7 +941,7 @@ _nl_locale_name (int category, const char *categoryname)
     case LANG_HUNGARIAN: return "hu_HU";
     case LANG_IBIBIO: return "nic_NG";
     case LANG_ICELANDIC: return "is_IS";
-    case LANG_IGBO: return "ibo_NG";
+    case LANG_IGBO: return "ig_NG";
     case LANG_INDONESIAN: return "id_ID";
     case LANG_INUKTITUT: return "iu_CA";
     case LANG_ITALIAN:
@@ -951,7 +953,7 @@ _nl_locale_name (int category, const char *categoryname)
       return "it";
     case LANG_JAPANESE: return "ja_JP";
     case LANG_KANNADA: return "kn_IN";
-    case LANG_KANURI: return "kau_NG";
+    case LANG_KANURI: return "kr_NG";
     case LANG_KASHMIRI:
       switch (sub)
 	{
@@ -1125,12 +1127,7 @@ _nl_locale_name (int category, const char *categoryname)
 	case SUBLANG_UZBEK_CYRILLIC: return "uz_UZ@cyrillic";
 	}
       return "uz";
-    case LANG_VENDA:
-      /* FIXME: It's not clear whether Venda has the ISO 639-2 two-letter code
-	 "ve" or not.
-	 http://www.loc.gov/standards/iso639-2/englangn.html has it, but
-	 http://lcweb.loc.gov/standards/iso639-2/codechanges.html doesn't,  */
-      return "ven_ZA"; /* or "ve_ZA"? */
+    case LANG_VENDA: return "ve_ZA";
     case LANG_VIETNAMESE: return "vi_VN";
     case LANG_WELSH: return "cy_GB";
     case LANG_XHOSA: return "xh_ZA";

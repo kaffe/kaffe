@@ -21,7 +21,7 @@ if [ "$1" != "--override" ]; then
 WANTED_AUTOMAKE_VERS="1.8.2"
 WANTED_AUTOCONF_VERS="2.59"
 WANTED_LIBTOOL_VERS="1.5.2"
-WANTED_AUTOPOINT_VERS="0.13.1"
+WANTED_AUTOPOINT_VERS="0.14.1"
 
 ACLOCAL_VERS=`aclocal --version | 
 	sed -n 's,^aclocal (GNU automake) \(.*\)$,\1,p'`
@@ -114,6 +114,10 @@ find . -type f -name 'Makefile.in' | xargs rm -f
 # Now regenerate autotools
 libtoolize --automake --ltdl --copy --force
 cp libltdl/acinclude.m4 m4/libtool.m4
+
+# gettextize kaffe
+# commented out due to bugs in gettextize
+##gettextize -c -f --intl
 
 autopoint -f
 aclocal -I m4 
