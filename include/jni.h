@@ -183,7 +183,7 @@ JNIEXPORT void JNICALL JNI_OnUnload (JavaVM *, void *);
 /* These functions are called by user code to start using the
    invocation API.  */
 JNIEXPORT jint JNICALL JNI_GetDefaultJavaVMInitArgs (void *);
-JNIEXPORT jint JNICALL JNI_CreateJavaVM (JavaVM **, JNIEnv **, void *);
+JNIEXPORT jint JNICALL JNI_CreateJavaVM (JavaVM **, void **, void *);
 JNIEXPORT jint JNICALL JNI_GetCreatedJavaVMs(JavaVM **, jsize, jsize *);
 
 

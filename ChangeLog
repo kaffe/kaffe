@@ -1,3 +1,11 @@
+2004-07-07  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* include/jni.h: Reverted the definition of JNI_CreateJavaVM to
+	Classpath's one.
+
+	* kaffe/kaffevm/jni/jni-base.c
+	(JNI_CreateJavaVM): Modified prototype to follow JNI spec.
+
 2004-07-06  Dalibor Topic  <robilad@kaffe.org>
 
         * config/x86_64/linux/sigcontextinfo.h: Cleaned up.

@@ -114,9 +114,10 @@ KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions
 }
 
 jint
-JNI_CreateJavaVM(JavaVM** vm, JNIEnv** env, void* args)
+JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
 {
   JavaVMInitArgs *vm_args = (JavaVMInitArgs *)args;
+  JNIEnv **env = (JNIEnv **)penv;
 
   switch (vm_args->version)
     {
@@ -124,6 +125,7 @@ JNI_CreateJavaVM(JavaVM** vm, JNIEnv** env, void* args)
       memcpy(&Kaffe_JavaVMArgs, args, sizeof(Kaffe_JavaVMArgs));
       break;
     case JNI_VERSION_1_2:
+      memcpy(&Kaffe_JavaVMArgs, &Kaffe_JavaVMInitArgs, sizeof(Kaffe_JavaVMArgs));
       if (!KaffeJNI_ParseArgs(&Kaffe_JavaVMArgs, vm_args->options, vm_args->nOptions))
 	return -1;
       break;
