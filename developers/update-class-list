@@ -19,9 +19,10 @@ fi
 
 trap 'rm -f classlist pkglist macrodef; exit 1' 1 2 15
 
+echo WARNING: Omitting java/awt/win32 package from the list of packages
 find $SRCDIRS -name \*.java -print | sort > classlist
 
-sed 's,/[^/]*$,,' < classlist | uniq > pkglist
+sed 's,/[^/]*$,,' < classlist | uniq | grep -v java/awt/win32 > pkglist
 
 {
   sed 's,^,	$(,;s,$,_SRCS) \\,;$s, \\$,,;s,/,_,g' < pkglist
