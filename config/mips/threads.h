@@ -12,6 +12,10 @@
 #ifndef __mips_threads_h
 #define __mips_threads_h
 
+#if defined(HAVE_SGIDEFS_H)
+#include <sgidefs.h>
+#endif /* defined(HAVE_SGIDEFS_H) */
+
 /**/
 /* Thread handling */
 /**/

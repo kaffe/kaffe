@@ -434,6 +434,9 @@
 /* Define to 1 if you have the `setrlimit' function. */
 #undef HAVE_SETRLIMIT
 
+/* Define to 1 if you have the <sgidefs.h> header file. */
+#undef HAVE_SGIDEFS_H
+
 /* Define to 1 if you have the `sigaction' function. */
 #undef HAVE_SIGACTION
 

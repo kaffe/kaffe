@@ -42,6 +42,22 @@ exception statement from your version. */
 
 #include <stdarg.h>
 
+/* Linkage and calling conventions. */
+#if defined (_WIN32) || defined (__WIN32__) || defined (WIN32)
+
+#define JNIIMPORT        __declspec(dllimport)
+#define JNIEXPORT        __declspec(dllexport)
+
+#define JNICALL          __stdcall
+
+#else /* !( _WIN32 || __WIN32__ || WIN32) */
+
+#define JNIIMPORT
+#define JNIEXPORT
+#define JNICALL
+
+#endif /* !( _WIN32 || __WIN32__ || WIN32) */
+
 #ifdef __cplusplus
 extern "C"
 {

@@ -19,6 +19,10 @@
 #ifndef __mips_jit_h
 #define __mips_jit_h
 
+#if defined(HAVE_SGIDEFS_H)
+#include <sgidefs.h>
+#endif /* defined(HAVE_SGIDEFS_H) */
+
 #if defined (_MIPS_SIM) && (_MIPS_SIM != _MIPS_SIM_ABI32)
 #error "Calling convention other than o32 not supported"
 #endif

@@ -20,6 +20,10 @@
 
 #if defined(NEED_sysdepCallMethod)
 
+#if defined(HAVE_SGIDEFS_H)
+#include <sgidefs.h>
+#endif /* defined(HAVE_SGIDEFS_H) */
+
 #include "support.h"
 
 #if !defined (_MIPS_SIM) || (_MIPS_SIM == _MIPS_SIM_ABI32)

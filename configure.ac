@@ -1016,6 +1016,7 @@ AC_CHECK_HEADERS([netinet/tcp.h])
 AC_CHECK_HEADERS([png.h])
 AC_CHECK_HEADERS([poll.h])
 AC_CHECK_HEADERS([pwd.h])
+AC_CHECK_HEADERS([sgidefs.h])
 AC_CHECK_HEADERS([sigcontext.h])
 AC_CHECK_HEADERS([signal.h])
 AC_CHECK_HEADERS([stdlib.h])
@@ -1904,27 +1905,6 @@ dnl Define kaffehome.
 dnl -------------------------------------------------------------------------
 
 AC_DEFINE_UNQUOTED(DEFAULT_KAFFEHOME, "$jrelibdir", [Define default KAFFEHOME])
-
-dnl -------------------------------------------------------------------------
-
-dnl =========================================================================
-dnl Define JNI call.
-dnl -------------------------------------------------------------------------
-
-
-case $Khost_os in
-win32*)
-	jnicall_define="__stdcall"
-	jniexport_define="__declspec(dllexport)"
-	;;
-*)
-	jnicall_define=""
-	jniexport_define=""
-	;;
-esac
-
-AC_DEFINE_UNQUOTED(JNICALL, [$jnicall_define])
-AC_DEFINE_UNQUOTED(JNIEXPORT, [$jniexport_define])
 
 dnl -------------------------------------------------------------------------
 
