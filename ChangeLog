@@ -1,3 +1,8 @@
+Mon Jun 28 10:26:59 PDT 1999  YAMAGUCHI Yuji <yamag@distribution.co.jp>
+
+	* libraries/javalib/java/text/SimpleDateFormat.java: fix bug
+	in conversion of 'H' where leading zero was being omitted.
+
 1999-06-25  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/jit/registers.c (fastSlotRegister): If register is 
@@ -29,6 +34,8 @@ Tue Jun 22 16:44:52 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/Locale.java: languages codes
 	should be lower case
+	* libraries/javalib/java/io/BufferedOutputStream.java:
+	avoid copying data unless absolutely necessary
 
 Tue Jun 22 16:13:43 PDT 1999  Pavel Roskin <pavel_roskin@geocities.com>
 
