@@ -3381,6 +3381,26 @@ deplibs_check_method=$lt_cv_deplibs_check_method
 ])
 
 
+# AC_LTDL_SHLIBEXT
+# ----------------
+AC_DEFUN(AC_LTDL_SHLIBEXT,
+[AC_REQUIRE([_LT_AC_LTCONFIG_HACK])
+AC_CACHE_CHECK([which extension is used for shared libraries],
+  libltdl_cv_shlibext,
+[ac_last=
+  for ac_spec in $library_names_spec; do
+    ac_last="$ac_spec"
+  done
+  echo "$ac_last" | [sed 's/\[.*\]//;s/^[^.]*//;s/\$.*$//;s/\.$//'] > conftest
+libltdl_cv_shlibext=`cat conftest`
+rm -f conftest
+])
+if test -n "$libltdl_cv_shlibext"; then
+  AC_DEFINE_UNQUOTED(LTDL_SHLIB_EXT, "$libltdl_cv_shlibext",
+    [Define to the extension used for shared libraries, say, ".so". ])
+fi
+])# AC_LTDL_SHLIBEXT
+
 # AC_PROG_NM - find the path to a BSD-compatible name lister
 AC_DEFUN([AC_PROG_NM],
 [AC_REQUIRE([_LT_AC_LIBTOOL_SYS_PATH_SEPARATOR])dnl

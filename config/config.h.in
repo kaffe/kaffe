@@ -1,4 +1,4 @@
-/* config/config.h.in.  Generated automatically from configure.in by autoheader.  */
+/* config/config.h.in.  Generated automatically from configure.in by autoheader 2.13.  */
 
 /* Define if type char is unsigned and you are not using gcc.  */
 #ifndef __CHAR_UNSIGNED__
@@ -477,6 +477,9 @@
 
 /* If the vm is static or all libraries are static */
 #undef NO_SHARED_VMLIBRARY
+
+/* Define to the extension used for shared libraries, say, .so.  */
+#undef LTDL_SHLIB_EXT
 
 /* Define if C symbol names start with underscore */
 #undef HAVE_UNDERSCORED_C_NAMES

@@ -1,3 +1,19 @@
+Sun Jun 16 22:40:33 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+        * developers/update-class-list: Fixed (was broken by
+        rt.jar name change)
+
+        * kaffe/kaffevm/external.c: Fix error reporting when native lib
+        not found.
+
+Sun Jun 16 22:10:49 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+        From: Timothy Stack <stack@cs.utah.edu>
+	        
+        * acinclude.m4, configure.in, kaffe/kaffevm/external.c:
+        Libtool-related fix for loading of native libraries (look
+        for .so/.dll as well as .la)
+
 Sat Jun  8 16:43:17 CEST 2002 Jukka Santala <jsantala@tml.hut.fi>
 
 	* config/arm/jit-arm.def: made --with-debug configure parameter
