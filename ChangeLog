@@ -1,3 +1,11 @@
+Wed Aug 19 15:23:07 1998  Pavel Roskin  <Pavel.Roskin@ecsoft.co.uk>
+
+	* config/config-hacks.h, config-io.h: only include winsock if we
+	don't have <sys/socket.h>.
+	* libraries/clib/native/System.c, File.c: use ../ in include to
+	work around case insensitivity on some OSs.
+	* config/config.alias: treat all HPPA versions the same.
+
 Wed Aug 19 11:45:12 1998  Mike Boilen <mgb@cs.brown.edu>
 
 	* libraries/javalib/java/lang/Runtime.java: fixed typo in parsing cmd.
@@ -20,6 +28,11 @@ Tue Aug 18 14:03:54 1998  Archie Cobbs  <archie@whistle.com>
 	have a Makefile.  This works now whether or not object and source
 	tree are separate.
 	* kaffe/kaffevm/jni.c: added missing return values.
+
+Thu Aug 13 18:17:51 1998  Archie Cobbs <archie@whistle.com>
+
+	* config/config.h.in, libraries/clib/native/FileDescriptor.c:
+	  uppercase options HAVE_sync and HAVE_fsync
 
 Mon Aug 10 19:58:36 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
