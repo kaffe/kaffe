@@ -310,9 +310,9 @@ findMethodLocal(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature)
 		if (utf8ConstEqual (name, mptr->name) && utf8ConstEqual (signature, METHOD_SIG(mptr))) {
 			if ((mptr->accflags & ACC_ABSTRACT) != 0 && !CLASS_IS_INTERFACE(mptr->class)) {
 #if defined(TRANSLATOR)
-				if(GC_getObjectIndex(main_collector,
+				if(KGC_getObjectIndex(main_collector,
 						     METHOD_NATIVECODE(mptr))
-				   == GC_ALLOC_DISPATCHTABLE) {
+				   == KGC_ALLOC_DISPATCHTABLE) {
 					/* 'nc' is workaround for GCC 2.7.2 ?: bug */
 					void *nc;
 					nc = METHOD_NATIVECODE(mptr);

@@ -67,7 +67,7 @@ static struct {
 Method*
 findMethodFromPC(uintp pc)
 {        
-	void *pc_key = GC_getObjectBase(main_collector, (void*)pc);
+	void *pc_key = KGC_getObjectBase(main_collector, (void*)pc);
 
         if (!pc_key) {                
 		return (0);        

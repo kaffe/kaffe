@@ -206,7 +206,7 @@ initNative(void)
 	/*
 	 * Build a library path from the given library path.
 	 */
-	libraryPath = gc_malloc(len+1, GC_ALLOC_NATIVELIB);
+	libraryPath = gc_malloc(len+1, KGC_ALLOC_NATIVELIB);
 	addToCounter(&ltmem, "vmmem-libltdl", 1, GCSIZEOF(libraryPath));
 	if (lpath != 0) {
 		strcat(libraryPath, lpath);
@@ -362,7 +362,7 @@ DBG(NATIVELIB,
 		return -1;
 	}
 
-        lib->name = gc_malloc(strlen(path)+1, GC_ALLOC_NATIVELIB);
+        lib->name = gc_malloc(strlen(path)+1, KGC_ALLOC_NATIVELIB);
         strcpy (lib->name, path);
 
 	lib->ref = default_refs;

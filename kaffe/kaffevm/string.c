@@ -38,7 +38,7 @@ stringJava2C(const Hjava_lang_String* js)
 {
 	char* str;
 
-	str = gc_malloc((size_t)(STRING_SIZE(js) + 1), GC_ALLOC_FIXED);
+	str = gc_malloc((size_t)(STRING_SIZE(js) + 1), KGC_ALLOC_FIXED);
 	if (str != 0) {
 		stringJava2CBuf(js, str, STRING_SIZE(js) + 1);
 	}
@@ -86,7 +86,7 @@ stringC2Java(const char* cs)
 
 	/* Get buffer */
 	if (len * sizeof(*ary) > sizeof(buf)) {
-		ary = gc_malloc(len * sizeof(*ary), GC_ALLOC_FIXED);
+		ary = gc_malloc(len * sizeof(*ary), KGC_ALLOC_FIXED);
 		if (!ary) return 0;
 	} else {
 		ary = buf;
@@ -165,7 +165,7 @@ utf8Const2JavaReplace(const Utf8Const *utf8, jchar from_ch, jchar to_ch)
 
 	/* Get buffer */
 	if (uniLen * sizeof(jchar) > sizeof(buf)) {
-		jc = gc_malloc(uniLen * sizeof(*jc), GC_ALLOC_FIXED);
+		jc = gc_malloc(uniLen * sizeof(*jc), KGC_ALLOC_FIXED);
 		if (!jc) return 0;
 	} else {
 		jc = buf;
@@ -208,7 +208,7 @@ stringJava2Utf8ConstReplace(Hjava_lang_String *str, jchar from, jchar to)
 	/* convert characters only if necessary */
 	if (slength != 0 && from != to) {
 		int i;
-		chars = gc_malloc(sizeof(jchar) * slength, GC_ALLOC_FIXED);
+		chars = gc_malloc(sizeof(jchar) * slength, KGC_ALLOC_FIXED);
 
 		for (i = 0; i < slength; i++) {
 			jchar ci = ((jchar *)STRING_DATA(str))[i];
@@ -282,7 +282,7 @@ stringAlloc(size_t sz)
 
 	/* XXX assumes stringLock isn't acquired recursively (which it isn't) */
 	locks_internal_unlockMutex(&stringLock.lock, myRoot, &stringLock.heavyLock);
-	p = gc_malloc(sz, GC_ALLOC_FIXED);
+	p = gc_malloc(sz, KGC_ALLOC_FIXED);
 	locks_internal_lockMutex(&stringLock.lock, myRoot, &stringLock.heavyLock);
 	stringLockRoot = myRoot;
 	return (p);
@@ -441,7 +441,7 @@ stringCharArray2Java(const jchar *data, int len)
 		/* Construct a temporary and fake String object */
 		if (sizeof(*fakeAry) + (len * sizeof(*data)) > sizeof(buf)) {
 			fakeAry = gc_malloc(sizeof(*fakeAry) + len * sizeof(*data),
-					    GC_ALLOC_FIXED);
+					    KGC_ALLOC_FIXED);
 		} else {
 			fakeAry = (HArrayOfChar*)buf;
 		}
@@ -503,7 +503,7 @@ void
 stringWalk(Collector* collector, void* str, uint32 size UNUSED)
 {
         /* That's all we have to do here */
-        GC_markObject(collector, unhand((Hjava_lang_String*)str)->value);
+        KGC_markObject(collector, unhand((Hjava_lang_String*)str)->value);
 }
 
 /*       

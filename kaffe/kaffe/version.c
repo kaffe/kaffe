@@ -47,14 +47,15 @@ printFullVersion(void)
 {
 	printShortVersion();
 	fprintf(versionfd, "Configuration/Compilation options:\n");
-	fprintf(versionfd, "  Compile date  : %s\n", VER_COMPILE_DATE);
-	fprintf(versionfd, "  Compile host  : %s\n", VER_COMPILE_HOST);
-	fprintf(versionfd, "  Install prefix: %s\n", VER_PREFIX);
-	fprintf(versionfd, "  Thread system : %s\n", VER_THREAD_SYSTEM);
-	fprintf(versionfd, "  CC            : %s\n", VER_CC);
-	fprintf(versionfd, "  CFLAGS        : %s\n", VER_CFLAGS);
-	fprintf(versionfd, "  LDFLAGS       : %s\n", VER_LDFLAGS);
-	fprintf(versionfd, "  ChangeLog head: %s\n", VER_CHANGELOG_HEAD);
+	fprintf(versionfd, "  Compile date     : %s\n", VER_COMPILE_DATE);
+	fprintf(versionfd, "  Compile host     : %s\n", VER_COMPILE_HOST);
+	fprintf(versionfd, "  Install prefix   : %s\n", VER_PREFIX);
+	fprintf(versionfd, "  Thread system    : %s\n", VER_THREAD_SYSTEM);
+	fprintf(versionfd, "  Garbage Collector: %s\n", VER_GARBAGE_COLLECTOR);
+	fprintf(versionfd, "  CC               : %s\n", VER_CC);
+	fprintf(versionfd, "  CFLAGS           : %s\n", VER_CFLAGS);
+	fprintf(versionfd, "  LDFLAGS          : %s\n", VER_LDFLAGS);
+	fprintf(versionfd, "  ChangeLog head   : %s\n", VER_CHANGELOG_HEAD);
 	/* fprintf(versionfd, "  Libraries     : %s\n", VER_KAFFELIBS); */
 }
 

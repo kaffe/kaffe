@@ -81,10 +81,10 @@ initSlots(int islots)
 	if (nrslots > lastnrslots) {
 		basicslots = gc_realloc(basicslots,
 					nrslots * sizeof(SlotInfo),
-					GC_ALLOC_JIT_SLOTS);
+					KGC_ALLOC_JIT_SLOTS);
 		basicdatas = gc_realloc(basicdatas,
 					nrslots * sizeof(SlotData),
-					GC_ALLOC_JIT_SLOTS);
+					KGC_ALLOC_JIT_SLOTS);
 		lastnrslots = nrslots;
 	}
 	/* Set 'maxslot' to the maximum slot usable (excluding returns) */

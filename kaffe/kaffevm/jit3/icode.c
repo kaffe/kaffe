@@ -4441,7 +4441,7 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 
 		args = gc_realloc(args,
 				  sizeof(struct pusharg_info) * sz_args,
-				  GC_ALLOC_JIT_ARGS);
+				  KGC_ALLOC_JIT_ARGS);
 		if( !args )
 		{
 			/* XXX We should be a little more graceful */
@@ -5201,8 +5201,8 @@ softcall_exit_method(Method* meth)
 	end_func_sync();
 }
 
-#if defined(GC_INCREMENTAL)
-#if defined(GC_INCREMENTAL)
+#if defined(KGC_INCREMENTAL)
+#if defined(KGC_INCREMENTAL)
 void
 softcall_writeref(SlotInfo* from, SlotInfo* to)
 {

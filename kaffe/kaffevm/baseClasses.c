@@ -119,7 +119,7 @@ initialiseKaffe(void)
 
 	/* Register allocation types with gc subsystem */
 	main_collector = initCollector();
-	GC_init(main_collector);
+	KGC_init(main_collector);
 
 #if defined(KAFFE_XPROFILER)
 	/* Start up the profiler here so we can cover init stuff */
@@ -222,7 +222,7 @@ initialiseKaffe(void)
 	initThreads();
 
 	/* Now enable collector */
-	GC_enable(main_collector);
+	KGC_enable(main_collector);
 }
 
 static void NONRETURNING

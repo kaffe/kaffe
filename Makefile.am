@@ -58,6 +58,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.install-root \
 	FAQ/FAQ.jit3 \
 	FAQ/FAQ.jsignal \
+	FAQ/FAQ.kaffemd \
 	FAQ/FAQ.kjc \
 	FAQ/FAQ.libffi \
 	FAQ/FAQ.libtool \

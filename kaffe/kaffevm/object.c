@@ -101,7 +101,7 @@ newClass(void)
 {
 	Hjava_lang_Class* cls;
 
-	cls = gc_malloc(sizeof(Hjava_lang_Class), GC_ALLOC_CLASSOBJECT);
+	cls = gc_malloc(sizeof(Hjava_lang_Class), KGC_ALLOC_CLASSOBJECT);
 	if (cls == 0) {
 		goto done;
 	}
@@ -140,7 +140,7 @@ newArrayChecked(Hjava_lang_Class* elclass, size_t count, errorInfo *info)
 				ARRAY_DATA_OFFSET;
 			if (total_count > count) {
 				obj = gc_malloc(total_count,
-						GC_ALLOC_PRIMARRAY);
+						KGC_ALLOC_PRIMARRAY);
 			}
 		}
 		else {
@@ -148,7 +148,7 @@ newArrayChecked(Hjava_lang_Class* elclass, size_t count, errorInfo *info)
 				ARRAY_DATA_OFFSET;
 			if (total_count > count) {
 				obj = gc_malloc(total_count,
-						GC_ALLOC_REFARRAY);
+						KGC_ALLOC_REFARRAY);
 			}
 		}
 		if (obj != NULL) {

@@ -227,7 +227,7 @@ newLabel(void)
 		labelchunk *lc;
 		
 		/* Allocate chunk of label elements */
-		lc = gc_malloc(sizeof(labelchunk), GC_ALLOC_JIT_LABELS);
+		lc = gc_malloc(sizeof(labelchunk), KGC_ALLOC_JIT_LABELS);
 		assert(lc != NULL);
 
 		lc->next = labelchunks;

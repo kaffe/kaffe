@@ -458,7 +458,7 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	constlen = nConst * sizeof(union _constpoolval);
 	/* Allocate some padding to align codebase if so desired 
 	 */  
-	methblock = gc_malloc(exc_len + constlen + CODEPC + (align ? (align - ALIGNMENT_OF_SIZE(sizeof(jdouble))) : 0), GC_ALLOC_JITCODE);
+	methblock = gc_malloc(exc_len + constlen + CODEPC + (align ? (align - ALIGNMENT_OF_SIZE(sizeof(jdouble))) : 0), KGC_ALLOC_JITCODE);
 	if (methblock == 0) {
 		postOutOfMemory(einfo);
 		return (false);

@@ -81,7 +81,7 @@ static inline void *UTFmalloc(size_t size)
 	DBGIF(utfLockRoot = NULL);
 	locks_internal_unlockMutex(&utf8Lock.lock, myRoot, &utf8Lock.heavyLock);
 
-	ret = gc_malloc(size, GC_ALLOC_UTF8CONST);
+	ret = gc_malloc(size, KGC_ALLOC_UTF8CONST);
 
 	locks_internal_lockMutex(&utf8Lock.lock, myRoot, &utf8Lock.heavyLock);
 	DBGIF(assert(utfLockRoot == NULL));
@@ -160,7 +160,7 @@ utf8ConstNew(const char *s, int slen)
 	/* See if string is already in the table using a "fake" Utf8Const */
 	assert (hashTable != NULL);
 	if (sizeof(Utf8Const) + len + 1 > sizeof(buf)) {
-		fake = gc_malloc(sizeof(Utf8Const) + len + 1, GC_ALLOC_UTF8CONST);
+		fake = gc_malloc(sizeof(Utf8Const) + len + 1, KGC_ALLOC_UTF8CONST);
 		if (!fake) {
 			return 0;
 		}
@@ -190,7 +190,7 @@ utf8ConstNew(const char *s, int slen)
 	hitCounter(&utf8newalloc, "utf8-new-alloc");
 	/* Not in table; create new Utf8Const struct */
 	if ((char *) fake == buf) {
-		utf8 = gc_malloc(sizeof(Utf8Const) + len + 1, GC_ALLOC_UTF8CONST);
+		utf8 = gc_malloc(sizeof(Utf8Const) + len + 1, KGC_ALLOC_UTF8CONST);
 		if (!utf8) {
 			return 0;
 		}

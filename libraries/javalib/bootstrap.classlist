@@ -121,6 +121,9 @@ java/lang/VirtualMachineError.class
 java/lang/VMSecurityManager.class
 java/lang/VMThrowable.class
 java/lang/Void.class
+java/lang/ref/Reference.class
+java/lang/ref/SoftReference.class
+java/lang/ref/ReferenceQueue.class
 java/lang/reflect/AccessibleObject.class
 java/lang/reflect/Array.class
 java/lang/reflect/Constructor.class
@@ -135,6 +138,7 @@ java/net/MalformedURLException.class
 java/net/MimeTypeMapper.class
 java/net/NetPermission.class
 java/net/URL.class
+java/net/URL$1.class
 java/net/URLClassLoader.class
 java/net/URLConnection.class
 java/net/URLStreamHandler.class
@@ -155,7 +159,11 @@ java/security/ProtectionDomain.class
 java/security/SecureClassLoader.class
 java/security/DomainCombiner.class
 java/security/IntersectingDomainCombiner.class
+java/security/Policy.class
 java/security/VMAccessController.class
+java/security/PermissionsHash.class
+java/security/PrivilegedAction.class
+java/security/AccessController.class
 java/text/AttributedCharacterIterator.class
 java/text/AttributedCharacterIterator$Attribute.class
 java/text/CharacterIterator.class

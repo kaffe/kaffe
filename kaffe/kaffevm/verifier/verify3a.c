@@ -769,7 +769,7 @@ verifyMethod3a(Verifier* v)
 	
 	DBG(VERIFY3, dprintf("    Verifier Pass 3a: third pass to allocate memory for basic blocks...\n"); );
 	
-	blocks = checkPtr((BlockInfo**)gc_malloc(blockCount * sizeof(BlockInfo*), GC_ALLOC_VERIFIER));
+	blocks = checkPtr((BlockInfo**)gc_malloc(blockCount * sizeof(BlockInfo*), KGC_ALLOC_VERIFIER));
 	
 	for (inABlock = true, n = 0, pc = 0; pc < codelen; pc++) {
 		if (v->status[pc] & START_BLOCK) {

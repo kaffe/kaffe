@@ -524,7 +524,7 @@ inflate_new(void)
 {
 	inflateInfo* info;
 
-	info = gc_malloc(sizeof(inflateInfo), GC_ALLOC_FIXED);
+	info = gc_malloc(sizeof(inflateInfo), KGC_ALLOC_FIXED);
 	if (!info) {
 		return 0;
 	}
@@ -532,7 +532,7 @@ inflate_new(void)
 	info->fixed_td = 0;
 	info->fixed_bl = 0;
 	info->fixed_bd = 0;
-	info->slide = gc_malloc(WSIZE, GC_ALLOC_FIXED);
+	info->slide = gc_malloc(WSIZE, KGC_ALLOC_FIXED);
 	if (!info->slide){
 		gc_free(info);
 		return 0;
@@ -752,7 +752,7 @@ huft_build(inflateInfo* pG, unsigned* b, unsigned n, unsigned s, uint16* d, uint
         l[h] = j;               /* set table size in stack */
 
         /* allocate and link in new table */
-        if ((q = (huft *)gc_malloc((z + 1)*sizeof(huft), GC_ALLOC_FIXED)) ==
+        if ((q = (huft *)gc_malloc((z + 1)*sizeof(huft), KGC_ALLOC_FIXED)) ==
             0)
         {
           if (h)

@@ -119,7 +119,7 @@ DBG(SLOWLOCKS,
 				 * of loop)
 				 */
 				*lkp = old;
-				lk = (iLock*)gc_malloc(sizeof(iLock), GC_ALLOC_LOCK);
+				lk = (iLock*)gc_malloc(sizeof(iLock), KGC_ALLOC_LOCK);
 				/* if that fails we're in trouble!! */
 				assert(lk != 0);
 				continue;

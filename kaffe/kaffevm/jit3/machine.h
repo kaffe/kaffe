@@ -119,7 +119,7 @@
 #define	switchtable_shift	2
 
 /* Provide write barrier support for incremental GC */
-#if defined(GC_INCREMENTAL)
+#if defined(KGC_INCREMENTAL)
 #define	SOFT_ADDREFERENCE(_f, _t)	 softcall_writeref(_f, _t)
 #define	SOFT_ADDREFERENCE_STATIC(_f, _t) softcall_writeref_static(_f, _t)
 #else

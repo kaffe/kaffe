@@ -386,7 +386,7 @@ verifyMethod(errorInfo *einfo, Method* method)
 	 **************************************************************************************************/
 	DBG(VERIFY3, dprintf("        allocating memory for verification (codelen = %d)...\n", codelen); );
 	
-        v.status = checkPtr((uint32*)gc_malloc(codelen * sizeof(uint32), GC_ALLOC_VERIFIER));
+        v.status = checkPtr((uint32*)gc_malloc(codelen * sizeof(uint32), KGC_ALLOC_VERIFIER));
 	
 	/* find basic blocks and allocate memory for them */
 	verifyMethod3a(&v);
@@ -557,7 +557,7 @@ checkMethodCall(Verifier* v,
 	uint32 nargs                     = countSizeOfArgsInSignature(sig);
 	
 	uint32 paramIndex                = 0;
-	char* argbuf                     = checkPtr(gc_malloc(strlen(sig) * sizeof(char), GC_ALLOC_VERIFIER));
+	char* argbuf                     = checkPtr(gc_malloc(strlen(sig) * sizeof(char), KGC_ALLOC_VERIFIER));
 	
 	
 	DBG(VERIFY3, dprintf("%scalling method %s%s\n", indent, METHODREF_NAMED(idx, pool), sig); );
@@ -816,7 +816,7 @@ loadInitialArgs(Verifier* v)
 	
 	/* the +1 skips the initial '(' */
 	const char* sig = METHOD_SIGD(v->method) + 1;
-	char* argbuf    = checkPtr(gc_malloc((strlen(sig)+1) * sizeof(char), GC_ALLOC_VERIFIER));
+	char* argbuf    = checkPtr(gc_malloc((strlen(sig)+1) * sizeof(char), KGC_ALLOC_VERIFIER));
 	char* newsig    = NULL;
 	
 	/* load the initial argument into the first basic block.
@@ -875,7 +875,7 @@ loadInitialArgs(Verifier* v)
 			
 		case '[':
 		case 'L':
-			newsig = checkPtr(gc_malloc((strlen(argbuf) + 1) * sizeof(char), GC_ALLOC_VERIFIER));
+			newsig = checkPtr(gc_malloc((strlen(argbuf) + 1) * sizeof(char), KGC_ALLOC_VERIFIER));
 			v->sigs = pushSig(v->sigs, newsig);
 			sprintf(newsig, "%s", argbuf);
 			locals[paramCount].tinfo = TINFO_SIG;

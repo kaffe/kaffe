@@ -77,7 +77,7 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader,
 		return (entry);
 
 	/* Failed to find class entry - create a new one */
-	entry = gc_malloc(sizeof(classEntry), GC_ALLOC_CLASSPOOL);
+	entry = gc_malloc(sizeof(classEntry), KGC_ALLOC_CLASSPOOL);
 	if (entry == 0) {
 		postOutOfMemory(einfo);
 		return (0);
@@ -176,7 +176,7 @@ walkClassEntries(Collector *collector, Hjava_lang_ClassLoader* loader)
                      entry = entry->next)
                 {
                         if (entry->loader == loader && entry->state >= NMS_LOADING) {
-                                GC_markObject(collector, entry->data.cl);
+                                KGC_markObject(collector, entry->data.cl);
                         }
                 }
         }
@@ -563,7 +563,7 @@ statClass(Hjava_lang_Class *clazz, int *total)
 	int miscfixed = 0;
 	int bytecodemem = 0, jitmem = 0;
 
-#define SIZE_IFNONZERO(x)  ((x) ? GC_getObjectSize(c, (x)) : 0)
+#define SIZE_IFNONZERO(x)  ((x) ? KGC_getObjectSize(c, (x)) : 0)
 
 	/* compute sizes of miscellaneous data */
 	/* we tally up the memory for KMALLOC'ed objects (they'll appear

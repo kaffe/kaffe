@@ -974,7 +974,7 @@ jthread_setpriority (jthread_t cur, jint prio)
 void
 suspend_signal_handler ( int sig )
 {
-  jthread_t   cur = jthread_current();
+  volatile jthread_t   cur = jthread_current();
 
   DBG( JTHREADDETAIL, dprintf("suspend signal handler: %p\n", cur))
 

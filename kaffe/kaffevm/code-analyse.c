@@ -71,7 +71,7 @@ DBG(CODEANALYSE,
 	}
 
 	codeInfo = gc_malloc(sizeof(codeinfo) + meth->c.bcode.codelen*sizeof(perPCInfo),
-			     GC_ALLOC_CODEANALYSE);
+			     KGC_ALLOC_CODEANALYSE);
 	*pcodeinfo = codeInfo;
 	if (!codeInfo) {
 		postOutOfMemory(einfo);
@@ -80,7 +80,7 @@ DBG(CODEANALYSE,
 	/* Allocate space for local register info - we add in an extra one
 	 * to avoid mallocing 0 bytes.
 	 */
-	localuse = gc_malloc(sizeof(localUse) * (meth->localsz+1), GC_ALLOC_CODEANALYSE);
+	localuse = gc_malloc(sizeof(localUse) * (meth->localsz+1), KGC_ALLOC_CODEANALYSE);
 	if (!localuse) {
 		KFREE(codeInfo);
 		postOutOfMemory(einfo);

@@ -23,8 +23,6 @@
 #include "support.h"
 #include "stringSupport.h"
 
-extern size_t gc_heap_limit;
-extern size_t gc_heap_total;
 extern jboolean runFinalizerOnExit;
 
 /*
@@ -60,7 +58,7 @@ java_lang_Runtime_freeMemory(struct Hjava_lang_Runtime* this UNUSED)
 	 * free memory already within the GC system.
 	 * Well it'll do for now.
 	 */
-	return (gc_heap_limit - gc_heap_total);
+	return KGC_getHeapLimit(main_collector) - KGC_getHeapTotal(main_collector);
 }
 
 /*
@@ -69,7 +67,7 @@ java_lang_Runtime_freeMemory(struct Hjava_lang_Runtime* this UNUSED)
 jlong
 java_lang_Runtime_maxMemory(struct Hjava_lang_Runtime* this UNUSED)
 {
-	return (gc_heap_limit);
+	return KGC_getHeapLimit(main_collector);
 }
 
 /*
@@ -78,7 +76,7 @@ java_lang_Runtime_maxMemory(struct Hjava_lang_Runtime* this UNUSED)
 jlong
 java_lang_Runtime_totalMemory(struct Hjava_lang_Runtime* this UNUSED)
 {
-	return (gc_heap_total);
+	return KGC_getHeapTotal(main_collector);
 }
 
 /*

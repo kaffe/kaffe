@@ -21,7 +21,7 @@
 SigStack*
 pushSig(SigStack* sigs, const char* sig)
 {
-	SigStack* new_sig = checkPtr(gc_malloc(sizeof(SigStack), GC_ALLOC_VERIFIER));
+	SigStack* new_sig = checkPtr(gc_malloc(sizeof(SigStack), KGC_ALLOC_VERIFIER));
 	new_sig->sig = sig;
 	new_sig->next = sigs;
 	return new_sig;

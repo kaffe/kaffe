@@ -56,7 +56,7 @@ nextSeq(void)
 		
 		int i;
 		/* Allocate chunk of sequence elements */
-		sc = gc_malloc(sizeof(sequencechunk), GC_ALLOC_JIT_SEQ);
+		sc = gc_malloc(sizeof(sequencechunk), KGC_ALLOC_JIT_SEQ);
 		assert(sc != NULL);
 
 		sc->next = sequencechunks;

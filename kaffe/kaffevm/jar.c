@@ -833,7 +833,7 @@ static int readJarEntries(jarFile *jf)
 		table_size += jf->count * sizeof(jarEntry);
 		/* ... with NULL terminated name strings. */
 		table_size += jf->count * 1;
-		if( (jf->table = gc_malloc(table_size, GC_ALLOC_JAR)) )
+		if( (jf->table = gc_malloc(table_size, KGC_ALLOC_JAR)) )
 		{
 			char *name_strings;
 			jarEntry *je;
@@ -899,10 +899,10 @@ static uint8 *inflateJarData(jarFile *jf, jarEntry *je,
 		if( je->uncompressedSize == 0 )
 		{
 			/* XXX What to do? */
-			retval = gc_malloc(8, GC_ALLOC_JAR);
+			retval = gc_malloc(8, KGC_ALLOC_JAR);
 		}
 		else if( (retval = gc_malloc(je->uncompressedSize,
-					     GC_ALLOC_JAR)) )
+					     KGC_ALLOC_JAR)) )
 		{
 			if( inflate_oneshot(buf,
 					    (int)je->compressedSize,
@@ -959,7 +959,7 @@ uint8 *getDataJarFile(jarFile *jf, jarEntry *je)
 			SEEK_CUR);
 		/* Allocate some memory and read in the file data */
 		if( (buf = (uint8 *)gc_malloc(je->compressedSize,
-					      GC_ALLOC_JAR)) )
+					      KGC_ALLOC_JAR)) )
 		{
 			if( jarRead(jf, buf, je->compressedSize, 0) < 0 )
 			{
@@ -1072,7 +1072,7 @@ jarFile *openJarFile(char *name)
 	    (retval = (jarFile *)gc_malloc(sizeof(jarFile) +
 					   strlen(name) +
 					   1,
-					   GC_ALLOC_JAR)) )
+					   KGC_ALLOC_JAR)) )
 	{
 		int rc, error = 0;
 

@@ -149,7 +149,7 @@ DBG(CLASSGC,
 			/* Free ncode if necessary: this concerns
 			 * any uninvoked trampolines
 			 */
-			if (GC_getObjectIndex(collector, ncode) != -1) {
+			if (KGC_getObjectIndex(collector, ncode) != -1) {
 				KFREE(ncode);
 			}
 			m++;
@@ -183,9 +183,9 @@ DBG(CLASSGC,
 			/* Free ncode if necessary: this concerns
 			 * any uninvoked trampolines
 			 */
-			if (GC_getObjectIndex(collector,
+			if (KGC_getObjectIndex(collector,
 					      clazz->vtable->method[i])
-			    == GC_ALLOC_DISPATCHTABLE) {
+			    == KGC_ALLOC_DISPATCHTABLE) {
 				KFREE(clazz->vtable->method[i]);
 			}
 		}
@@ -198,8 +198,8 @@ DBG(CLASSGC,
 			Hjava_lang_Class* iface = clazz->interfaces[i];
 
 			/* only if interface has not been freed already */
-			if (GC_getObjectIndex(collector, iface)
-			    == GC_ALLOC_CLASSOBJECT)
+			if (KGC_getObjectIndex(collector, iface)
+			    == KGC_ALLOC_CLASSOBJECT)
 			{
 				iface->implementors[clazz->impl_index] = -1;
 			}
@@ -208,17 +208,17 @@ DBG(CLASSGC,
 		/* NB: we can't just sum up the msizes of the interfaces
 		 * here because they might be destroyed simultaneously
 		 */
-		j = GC_getObjectSize(collector, clazz->itable2dtable)
+		j = KGC_getObjectSize(collector, clazz->itable2dtable)
 			/ sizeof (void*);
 		for( i = 0; i < j; i++ )
 		{
-			if (GC_getObjectIndex(collector,
+			if (KGC_getObjectIndex(collector,
 					      clazz->itable2dtable[i])
-			    == GC_ALLOC_DISPATCHTABLE) {
-				GC_free(collector, clazz->itable2dtable[i]);
+			    == KGC_ALLOC_DISPATCHTABLE) {
+				KGC_free(collector, clazz->itable2dtable[i]);
 			}
 		}
-		GC_free(collector, clazz->itable2dtable);
+		KGC_free(collector, clazz->itable2dtable);
 	}
 	if( clazz->gc_layout &&
 	    (clazz->superclass->gc_layout != clazz->gc_layout) )
@@ -251,12 +251,12 @@ walkMethods(Collector* collector, Method* m, int nm)
                 if (METHOD_TRANSLATED(m) && (m->accflags & ACC_NATIVE) == 0) {
                         void *mem = m->c.ncode.ncode_start;
                         if (mem != 0) {
-				GC_walkConservative(collector, mem,
-					GC_getObjectSize(collector, mem));
+				KGC_walkConservative(collector, mem,
+					KGC_getObjectSize(collector, mem));
                         }
                 }
 #endif
-                GC_markObject(collector, m->class);
+                KGC_markObject(collector, m->class);
 
                 /* walk exception table in order to keep resolved catch types
                    alive */
@@ -267,7 +267,7 @@ walkMethods(Collector* collector, Method* m, int nm)
                         for (i = 0; i < m->exception_table->length; i++) {
                                 Hjava_lang_Class* c = eptr[i].catch_type;
                                 if (c != 0 && c != UNRESOLVABLE_CATCHTYPE) {
-                                        GC_markObject(collector, c);
+                                        KGC_markObject(collector, c);
                                 }
                         }
                 }
@@ -294,7 +294,7 @@ DBG(GCPRECISE,
     )
 
         if (class->state >= CSTATE_PREPARED) {
-                GC_markObject(collector, class->superclass);
+                KGC_markObject(collector, class->superclass);
         }
 
         /* walk constant pool - only resolved classes and strings count */
@@ -303,10 +303,10 @@ DBG(GCPRECISE,
                 switch (pool->tags[idx]) {
                 case CONSTANT_ResolvedClass:
 			assert(!CLASS_IS_PRIMITIVE(CLASS_CLASS(idx, pool)));
-                        GC_markObject(collector, CLASS_CLASS(idx, pool));
+                        KGC_markObject(collector, CLASS_CLASS(idx, pool));
                         break;
                 case CONSTANT_ResolvedString:
-                        GC_markObject(collector, (void*)pool->data[idx]);
+                        KGC_markObject(collector, (void*)pool->data[idx]);
                         break;
                 }
         }
@@ -335,7 +335,7 @@ DBG(GCPRECISE,
 				&& !CLASS_IS_PRIMITIVE(fld->type))
 			{
 				if (!CLASS_GCJ(fld->type)) {
-					GC_markObject(collector, fld->type);
+					KGC_markObject(collector, fld->type);
 				}
                         } /* else it's an Utf8Const that is not subject to gc */
                         fld++;
@@ -356,12 +356,12 @@ DBG(GCPRECISE,
  * http://sourceware.cygnus.com/ml/java-discuss/1999-q4/msg00379.html
  */
 				if (FIELD_TYPE(fld) == StringClass) {
-					GC_markAddress(collector, *faddr);
+					KGC_markAddress(collector, *faddr);
 				} else {
-					GC_markObject(collector, *faddr);
+					KGC_markObject(collector, *faddr);
 				}
 #else
-				GC_markObject(collector, *faddr);
+				KGC_markObject(collector, *faddr);
 #endif
                         }
                         fld++;
@@ -373,13 +373,13 @@ DBG(GCPRECISE,
         if (!CLASS_IS_ARRAY(class)) {
                 /* mark interfaces referenced by this class */
                 for (n = 0; n < class->total_interface_len; n++) {
-                        GC_markObject(collector, class->interfaces[n]);
+                        KGC_markObject(collector, class->interfaces[n]);
                 }
         } else {
                 /* array classes should keep their element type alive */
 		Hjava_lang_Class *etype = CLASS_ELEMENT_TYPE(class);
 		if (etype && !CLASS_IS_PRIMITIVE(etype)) {
-			GC_markObject(collector, etype);
+			KGC_markObject(collector, etype);
 		}
         }
 
@@ -388,7 +388,7 @@ DBG(GCPRECISE,
         if (!CLASS_IS_PRIMITIVE(class) && !CLASS_IS_ARRAY(class) && CLASS_METHODS(class) != 0) {
                 walkMethods(collector, CLASS_METHODS(class), CLASS_NMETHODS(class));
         }
-        GC_markObject(collector, class->loader);
+        KGC_markObject(collector, class->loader);
 }
 
 /*****************************************************************************
@@ -414,7 +414,7 @@ walkRefArray(Collector* collector, void* base, uint32 size UNUSED)
         /* mark class only if not a system class (which would be anchored
          * anyway.)  */
         if (arr->vtable->class->loader != 0) {
-                GC_markObject(collector, arr->vtable->class);
+                KGC_markObject(collector, arr->vtable->class);
         }
 
         for (i = ARRAY_SIZE(arr); --i>= 0; ) {
@@ -423,7 +423,7 @@ walkRefArray(Collector* collector, void* base, uint32 size UNUSED)
 		 * NB: This would break if some objects (i.e. class objects)
 		 * are not gc-allocated.
 		 */
-		GC_markObject(collector, el);
+		KGC_markObject(collector, el);
         }
 }
 
@@ -454,7 +454,7 @@ walkObject(Collector* collector, void* base, uint32 size)
          * bother marking them.
          */
         if (clazz->loader != 0) {
-                GC_markObject(collector, clazz);
+                KGC_markObject(collector, clazz);
         }
 
         layout = clazz->gc_layout;
@@ -490,7 +490,7 @@ DBG(GCPRECISE,
                                  * to a "real" Java object.
                                  */
 				void *p = *(void **)mem;
-				GC_markObject(collector, p);
+				KGC_markObject(collector, p);
                         }
                         i++;
                         l <<= 1;
@@ -529,7 +529,7 @@ finalizeObject(Collector* collector UNUSED, void* ob)
         final = objclass->finalizer;
 
 	if (!final) {
-		assert(objclass->alloc_type == GC_ALLOC_JAVALOADER);
+		assert(objclass->alloc_type == KGC_ALLOC_JAVALOADER);
 		return;
 	}
 
@@ -553,9 +553,9 @@ describeObject(const void* mem)
 	jchar* jc;
 	int l;
 
-	int idx = GC_getObjectIndex(main_collector, mem);
+	int idx = KGC_getObjectIndex(main_collector, mem);
 	switch (idx) {
-	case GC_ALLOC_JAVASTRING:
+	case KGC_ALLOC_JAVASTRING:
 
 		str = (Hjava_lang_String*)mem;
 		strcpy(buf, "java.lang.String `");
@@ -569,31 +569,31 @@ describeObject(const void* mem)
 		*c = 0;
 		break;
 
-	case GC_ALLOC_CLASSOBJECT:
+	case KGC_ALLOC_CLASSOBJECT:
 		clazz = (Hjava_lang_Class*)mem;
 		sprintf(buf, "java.lang.Class `%s'", clazz->name ?
 			CLASS_CNAME(clazz) : "name unknown");
 		break;
 
-	case GC_ALLOC_JAVALOADER:
-	case GC_ALLOC_NORMALOBJECT:
-	case GC_ALLOC_FINALIZEOBJECT:
-	case GC_ALLOC_REFARRAY:
-	case GC_ALLOC_PRIMARRAY:
+	case KGC_ALLOC_JAVALOADER:
+	case KGC_ALLOC_NORMALOBJECT:
+	case KGC_ALLOC_FINALIZEOBJECT:
+	case KGC_ALLOC_REFARRAY:
+	case KGC_ALLOC_PRIMARRAY:
 		obj = (Hjava_lang_Object*)mem;
 		if (obj->vtable != 0) {
 			clazz = obj->vtable->class;
 			sprintf(buf, "%s", CLASS_CNAME(clazz));
 		} else {
 			sprintf(buf, "newly born %s",
-				GC_getObjectDescription(main_collector, mem));
+				KGC_getObjectDescription(main_collector, mem));
 		}
 		break;
 
 	/* add more? */
 
 	default:
-		return ((char*)GC_getObjectDescription(main_collector, mem));
+		return ((char*)KGC_getObjectDescription(main_collector, mem));
 	}
 	return (buf);
 }
@@ -605,56 +605,56 @@ initCollector(void)
 
 	DBG(INIT, dprintf("initCollector()\n"); )
 
-	GC_registerGcTypeByIndex(gc, GC_ALLOC_JAVASTRING,
-	    stringWalk, GC_OBJECT_NORMAL, stringDestroy, "j.l.String");
-	GC_registerGcTypeByIndex(gc, GC_ALLOC_NOWALK,
-	    0, GC_OBJECT_NORMAL, 0, "other-nowalk");
-	GC_registerGcTypeByIndex(gc, GC_ALLOC_NORMALOBJECT,
-	    walkObject, GC_OBJECT_NORMAL, 0, "obj-no-final");
-	GC_registerGcTypeByIndex(gc, GC_ALLOC_PRIMARRAY,
-	    0, GC_OBJECT_NORMAL, 0, "prim-arrays");
-	GC_registerGcTypeByIndex(gc, GC_ALLOC_REFARRAY,
-	    walkRefArray, GC_OBJECT_NORMAL, 0, "ref-arrays");
-	GC_registerGcTypeByIndex(gc, GC_ALLOC_CLASSOBJECT,
-	    walkClass, GC_OBJECT_NORMAL, destroyClass, "j.l.Class");
-	GC_registerGcTypeByIndex(gc, GC_ALLOC_FINALIZEOBJECT,
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_JAVASTRING,
+	    stringWalk, KGC_OBJECT_NORMAL, stringDestroy, "j.l.String");
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_NOWALK,
+	    0, KGC_OBJECT_NORMAL, 0, "other-nowalk");
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_NORMALOBJECT,
+	    walkObject, KGC_OBJECT_NORMAL, 0, "obj-no-final");
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_PRIMARRAY,
+	    0, KGC_OBJECT_NORMAL, 0, "prim-arrays");
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_REFARRAY,
+	    walkRefArray, KGC_OBJECT_NORMAL, 0, "ref-arrays");
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_CLASSOBJECT,
+	    walkClass, KGC_OBJECT_NORMAL, destroyClass, "j.l.Class");
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_FINALIZEOBJECT,
 	    walkObject, finalizeObject, 0, "obj-final");
-	GC_registerGcTypeByIndex(gc, GC_ALLOC_JAVALOADER,
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_JAVALOADER,
 	    walkLoader, finalizeObject, destroyClassLoader,
 	    "j.l.ClassLoader");
 
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_BYTECODE, "java-bytecode");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_EXCEPTIONTABLE, "exc-table");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JITCODE, "jitcode");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_STATICDATA, "static-data");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_CONSTANT, "constants");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_FIXED, "other-fixed");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_DISPATCHTABLE, "dtable");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_METHOD, "methods");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_FIELD, "fields");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_UTF8CONST, "utf8consts");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_INTERFACE, "interfaces");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_LOCK, "locks");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_THREADCTX, "thread-ctxts");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_REF, "gc-refs");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JITTEMP, "jit-temp-data");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JAR, "jar");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_CODEANALYSE, "code-analyse");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_CLASSPOOL, "class-pool");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_LINENRTABLE, "linenr-table");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_LOCALVARTABLE, "lvar-table");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_DECLAREDEXC, "declared-exc");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_CLASSMISC, "class-misc");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_VERIFIER, "verifier");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_TRAMPOLINE, "trampoline");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_NATIVELIB, "native-lib");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_SEQ, "jit-seq");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_CONST, "jit-const");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_ARGS, "jit-args");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_FAKE_CALL, "jit-fake-call");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_SLOTS, "jit-slots");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_CODEBLOCK, "jit-codeblock");
-	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JIT_LABELS, "jit-labels");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_BYTECODE, "java-bytecode");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_EXCEPTIONTABLE, "exc-table");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JITCODE, "jitcode");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_STATICDATA, "static-data");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_CONSTANT, "constants");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_FIXED, "other-fixed");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_DISPATCHTABLE, "dtable");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_METHOD, "methods");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_FIELD, "fields");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_UTF8CONST, "utf8consts");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_INTERFACE, "interfaces");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_LOCK, "locks");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_THREADCTX, "thread-ctxts");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_REF, "gc-refs");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JITTEMP, "jit-temp-data");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JAR, "jar");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_CODEANALYSE, "code-analyse");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_CLASSPOOL, "class-pool");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_LINENRTABLE, "linenr-table");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_LOCALVARTABLE, "lvar-table");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_DECLAREDEXC, "declared-exc");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_CLASSMISC, "class-misc");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_VERIFIER, "verifier");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_TRAMPOLINE, "trampoline");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_NATIVELIB, "native-lib");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_SEQ, "jit-seq");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_CONST, "jit-const");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_ARGS, "jit-args");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_FAKE_CALL, "jit-fake-call");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_SLOTS, "jit-slots");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_CODEBLOCK, "jit-codeblock");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_LABELS, "jit-labels");
 
 	DBG(INIT, dprintf("initCollector() done\n"); )
 	return (gc);

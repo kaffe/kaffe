@@ -333,18 +333,6 @@ AC_SUBST_FILE(cpu_frag)dnl
 dnl =========================================================================
 
 dnl =========================================================================
-dnl Select the right garbage collector.
-dnl -------------------------------------------------------------------------
-
-gc_frag=$srcdir/kaffe/kaffevm/mem/Makefile.frag
-AC_SUBST_FILE(gc_frag)
-
-GC_NAME=mem
-AC_SUBST(GC_NAME)
-
-dnl =========================================================================
-
-dnl =========================================================================
 dnl Allow selection of a specific execution engine
 dnl -------------------------------------------------------------------------
 
@@ -654,6 +642,64 @@ AC_SUBST(THREAD_DIR)
 THREAD_DIR=systems/$with_threads
 
 dnl =========================================================================
+dnl Select the right garbage collector.
+dnl -------------------------------------------------------------------------
+
+
+AC_ARG_WITH([gc],
+	    AS_HELP_STRING([--with-gc=GC],
+			   [Force use given execution engine (kaffe-gc or boehm-gc)]),
+	    [ GC_NAME="$withval" ]
+)
+
+AC_MSG_CHECKING(which garbage collector to use)
+
+dnl Save the requested gc and set the default to 'kaffe-gc'
+if test x"${GC_NAME+set}" != x"set" ; then
+	GC_NAME="kaffe-gc"
+fi
+
+gc_frag=$srcdir/kaffe/kaffevm/$GC_NAME/Makefile.frag
+AC_SUBST(GC_NAME)
+AC_SUBST_FILE(gc_frag)
+
+dnl If the user has chosen the boehm-gc, build the specific flags.
+if test x"${GC_NAME}" = x"boehm-gc"; then
+	if test x"$with_threads" != x"unix-pthreads"; then
+		AC_MSG_ERROR(BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc.)
+	fi
+	
+	BOEHMGC_SPECIFIC_FLAGS="-DSILENT -DATOMIC_UNCOLLECTABLE -DGC_GCJ_SUPPORT -DALL_INTERIOR_POINTERS"
+
+	if test x"${Khost_cpu+set}" = "xi686"; then
+		BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DUSE_I686_PREFETCH"
+	fi
+
+	case "$Khost_os" in
+		solaris*)
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_SOLARIS_THREADS -DGC_SOLARIS_PTHREADS"
+			;;
+		irix*)
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_IRIX_THREADS"
+			;;
+		hpux*)
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_HPUX_THREADS"
+			;;
+		linux*)
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS"
+			;;
+		*)
+			AC_MSG_ERROR(Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc.)
+	esac
+fi
+
+AC_SUBST(BOEHMGC_SPECIFIC_FLAGS)
+
+AC_MSG_RESULT($GC_NAME)
+
+dnl =========================================================================
+
+dnl =========================================================================
 dnl Use jikes instead of kjc?
 dnl =========================================================================
 
@@ -887,7 +933,7 @@ if test x$with_threads = xunix-pthreads ; then
 	KAFFE_LIB_SOLARIS_PTHREAD
 	KAFFE_CHECK_GLIBC_VER([2],[3])
 
-	if test x"$ac_cv_gnu_library_2_3" != x"yes" -a x"$ac_cv_gnu_library_2_1"; then
+	if test x"$ac_cv_gnu_library_2_3" != x"yes" -a x"$ac_cv_gnu_library_2_1" = x"yes"; then
 		AC_DEFINE([OLD_LINUXTHREADS],1, [Is set if the current GLIBC is using the old Linuxthreads library])
 	fi
 
@@ -2000,7 +2046,8 @@ AC_CONFIG_FILES([kaffe/kaffevm/systems/oskit-pthreads/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/systems/beos-native/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/systems/unix-pthreads/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/verifier/Makefile])
-AC_CONFIG_FILES([kaffe/kaffevm/mem/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/kaffe-gc/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/boehm-gc/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/jni/Makefile])
 AC_CONFIG_FILES([kaffe/kaffe/Makefile])
 AC_CONFIG_FILES([kaffe/kaffeh/Makefile])

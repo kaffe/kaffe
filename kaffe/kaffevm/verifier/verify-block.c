@@ -42,14 +42,14 @@ createBlock(const Method* method)
 {
 	int i;
 	
-	BlockInfo* binfo = checkPtr((BlockInfo*)gc_malloc(sizeof(BlockInfo), GC_ALLOC_VERIFIER));
+	BlockInfo* binfo = checkPtr((BlockInfo*)gc_malloc(sizeof(BlockInfo), KGC_ALLOC_VERIFIER));
 	
 	binfo->startAddr   = 0;
 	binfo->status      = IS_INSTRUCTION | START_BLOCK;  /* not VISITED or CHANGED */
 	
 	/* allocate memory for locals */
 	if (method->localsz > 0) {
-		binfo->locals = checkPtr(gc_malloc(method->localsz * sizeof(Type), GC_ALLOC_VERIFIER));
+		binfo->locals = checkPtr(gc_malloc(method->localsz * sizeof(Type), KGC_ALLOC_VERIFIER));
 		
 		for (i = 0; i < method->localsz; i++) {
 			binfo->locals[i] = *TUNSTABLE;
@@ -62,7 +62,7 @@ createBlock(const Method* method)
 	/* allocate memory for operand stack */
 	binfo->stacksz = 0;
 	if (method->stacksz > 0) {
-		binfo->opstack = checkPtr(gc_malloc(method->stacksz * sizeof(Type), GC_ALLOC_VERIFIER));
+		binfo->opstack = checkPtr(gc_malloc(method->stacksz * sizeof(Type), KGC_ALLOC_VERIFIER));
 		
 		for (i = 0; i < method->stacksz; i++) {
 			binfo->opstack[i] = *TUNSTABLE;
@@ -1143,11 +1143,11 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				
 				sig = CLASS_NAMED(idx, pool);
 				if (*sig == '[') {
-					namestr = checkPtr(gc_malloc(sizeof(char) * (strlen(sig) + 2), GC_ALLOC_VERIFIER));
+					namestr = checkPtr(gc_malloc(sizeof(char) * (strlen(sig) + 2), KGC_ALLOC_VERIFIER));
 					v->sigs = pushSig(v->sigs, namestr);
 					sprintf(namestr, "[%s", sig);
 				} else {
-					namestr = checkPtr(gc_malloc(sizeof(char) * (strlen(sig) + 4), GC_ALLOC_VERIFIER));
+					namestr = checkPtr(gc_malloc(sizeof(char) * (strlen(sig) + 4), KGC_ALLOC_VERIFIER));
 					v->sigs = pushSig(v->sigs, namestr);
 					sprintf(namestr, "[L%s;", sig);
 				}

@@ -189,7 +189,7 @@ resolveType(Verifier* v, Type *t)
 		char* tmp = NULL;
 		const char* sig = t->data.name;
 		
-		tmp = checkPtr(gc_malloc((strlen(sig) + 3) * sizeof(char), GC_ALLOC_VERIFIER));
+		tmp = checkPtr(gc_malloc((strlen(sig) + 3) * sizeof(char), KGC_ALLOC_VERIFIER));
 		sprintf(tmp, "L%s;", sig);
 		sig = tmp;
 		
@@ -219,12 +219,12 @@ createSupertypeSet(Verifier* v,
 		   Hjava_lang_Class** interfaces_b)
 {
 	uint32 i, j;
-	SupertypeSet* set = checkPtr(gc_malloc(sizeof(SupertypeSet), GC_ALLOC_VERIFIER));
+	SupertypeSet* set = checkPtr(gc_malloc(sizeof(SupertypeSet), KGC_ALLOC_VERIFIER));
 	
 	(num_interfaces_a > num_interfaces_b) ?
 		(i = num_interfaces_a + 1) :
 		(i = num_interfaces_b + 1) ;
-	set->list = checkPtr(gc_malloc(i * sizeof(Hjava_lang_Class*), GC_ALLOC_VERIFIER));
+	set->list = checkPtr(gc_malloc(i * sizeof(Hjava_lang_Class*), KGC_ALLOC_VERIFIER));
 	
 	set->list[0] = getCommonSuperclass(class_a, class_b);
 	set->count = 1;

@@ -53,7 +53,7 @@ gc_add_ref(const void* mem)
 	}
 
 	/* Not found - create a new one */
-	obj = (refObject*)gc_malloc(sizeof(refObject), GC_ALLOC_REF);
+	obj = (refObject*)gc_malloc(sizeof(refObject), KGC_ALLOC_REF);
 	if (!obj) return false;
 	
 	obj->mem = mem;
@@ -127,7 +127,7 @@ DBG(JTHREAD|DBG_GCWALK,
                 dprintf("walking stack of `%s' thread\n", nameThread(jthread_get_data(jtid)->jlThread));
     )
                 /* and walk it if needed */
-                GC_walkConservative(collector, from, len);
+                KGC_walkConservative(collector, from, len);
         }
 }
 
@@ -146,11 +146,11 @@ liveThreadWalker(jthread_t tid)
   Collector *c = running_collector;
   threadData *thread_data = jthread_get_data(tid);
 
-  GC_markObject(c, thread_data->jlThread);
+  KGC_markObject(c, thread_data->jlThread);
   
   if (thread_data->exceptObj != NULL)
   {
-    GC_markObject(c, thread_data->exceptObj);
+    KGC_markObject(c, thread_data->exceptObj);
   }
 
   TwalkThread(c, tid);
@@ -173,7 +173,7 @@ DBG(GCWALK,
         /* Walk the referenced objects */
         for (i = 0; i < REFOBJHASHSZ; i++) {
                 for (robj = refObjects.hash[i]; robj != 0; robj = robj->next) {
-                        GC_markObject(collector, (void *) robj->mem);
+                        KGC_markObject(collector, (void *) robj->mem);
                 }
         }
 

@@ -58,7 +58,7 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 
 	/* Allocate space for tags and data */
 	pool = gc_malloc((sizeof(ConstSlot) + sizeof(u1)) * poolsize,
-			 GC_ALLOC_CONSTANT);
+			 KGC_ALLOC_CONSTANT);
 	if (!pool) {
 		postOutOfMemory(einfo);
 		return false;

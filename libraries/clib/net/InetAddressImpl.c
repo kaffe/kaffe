@@ -373,7 +373,7 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
   char *hostname;
   unsigned int sin_len;
 
-  hostname = gc_malloc(NI_MAXHOST, GC_ALLOC_FIXED);
+  hostname = gc_malloc(NI_MAXHOST, KGC_ALLOC_FIXED);
   switch( addr->length )
     {
     case 4:

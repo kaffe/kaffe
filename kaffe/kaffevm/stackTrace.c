@@ -65,7 +65,7 @@ buildStackTrace(struct _exceptionFrame* base)
 	}
 
 	/* Build an array of stackTraceInfo */
-	info = gc_malloc(sizeof(stackTraceInfo) * (cnt+1), GC_ALLOC_NOWALK);
+	info = gc_malloc(sizeof(stackTraceInfo) * (cnt+1), KGC_ALLOC_NOWALK);
 	if (!info) {
 	    dprintf("buildStackTrace(%p): can't allocate stackTraceInfo\n",
 		    base);
@@ -98,7 +98,7 @@ buildStackTrace(struct _exceptionFrame* base)
 static Method*
 stacktraceFindMethod(uintp fp UNUSED, uintp pc)
 {
-	void *pc_base = GC_getObjectBase(main_collector, (void *)pc);
+	void *pc_base = KGC_getObjectBase(main_collector, (void *)pc);
 
 	if (pc_base) {
 		return *(Method **)pc_base;

@@ -18,17 +18,17 @@ Collector* main_collector;
 void*
 jmalloc(size_t sz)
 {
-	return (GC_malloc(main_collector, sz, GC_ALLOC_FIXED));
+	return (KGC_malloc(main_collector, sz, KGC_ALLOC_FIXED));
 }
 
 void*
 jrealloc(void* mem, size_t sz)
 {
-	return (GC_realloc(main_collector, mem, sz, GC_ALLOC_FIXED));
+	return (KGC_realloc(main_collector, mem, sz, KGC_ALLOC_FIXED));
 }
 
 void
 jfree(void* mem)
 {
-	GC_free(main_collector, mem);
+	KGC_free(main_collector, mem);
 }

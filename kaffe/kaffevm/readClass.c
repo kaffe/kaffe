@@ -126,7 +126,7 @@ readInterfaces(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 		return false;
 
 	interfaces = (Hjava_lang_Class**)
-		gc_malloc(sizeof(Hjava_lang_Class**) * interfaces_count, GC_ALLOC_INTERFACE);
+		gc_malloc(sizeof(Hjava_lang_Class**) * interfaces_count, KGC_ALLOC_INTERFACE);
 	if (interfaces == 0) {
 		postOutOfMemory(einfo);
 		return false;	

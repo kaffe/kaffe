@@ -74,6 +74,7 @@ version-info.h: $(top_srcdir)/ChangeLog $(top_builddir)/config.status
 	echo '#define VER_DEFS          "$(DEFS)"'              >> $@T
 	echo '#define VER_PREFIX        "$(prefix)"'            >> $@T
 	echo '#define VER_THREAD_SYSTEM "$(THREAD_SYSTEM)"'     >> $@T
+	echo '#define VER_GARBAGE_COLLECTOR "$(GC_NAME)"'     >> $@T
 	-mv $@T $@
 
 DISTCLEANFILES = version-info.h

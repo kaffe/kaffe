@@ -47,7 +47,7 @@ addCode(Method* m, uint32 len UNUSED, classFile* fp, errorInfo *einfo)
 		);
 	
 	if ((c.code_length > 0) && (c.code_length < 65536)) {
-		c.code = gc_malloc(c.code_length, GC_ALLOC_BYTECODE);
+		c.code = gc_malloc(c.code_length, KGC_ALLOC_BYTECODE);
 		if (c.code == 0) {
 			postOutOfMemory(einfo);
 			return (false);
@@ -63,7 +63,7 @@ addCode(Method* m, uint32 len UNUSED, classFile* fp, errorInfo *einfo)
 		    );
 		
 		if (elen > 0) {
-			c.exception_table = gc_malloc(sizeof(jexception) + ((elen - 1) * sizeof(jexceptionEntry)), GC_ALLOC_EXCEPTIONTABLE);
+			c.exception_table = gc_malloc(sizeof(jexception) + ((elen - 1) * sizeof(jexceptionEntry)), KGC_ALLOC_EXCEPTIONTABLE);
 			if (c.exception_table == 0) {
 				if (c.code) {
 					gc_free(c.code);
@@ -87,8 +87,8 @@ addCode(Method* m, uint32 len UNUSED, classFile* fp, errorInfo *einfo)
 		else {
 			c.exception_table = 0;
 		}
-		GC_WRITE(m, c.code);
-		GC_WRITE(m, c.exception_table);
+		KGC_WRITE(m, c.code);
+		KGC_WRITE(m, c.exception_table);
 		addMethodCode(m, &c);
 		
 		retval = readAttributes(fp,
@@ -139,7 +139,7 @@ addLineNumbers(Method* m, uint32 len UNUSED, classFile* fp, errorInfo *info)
 
 	readu2(&nr, fp);
 
-	lines = gc_malloc(sizeof(lineNumbers)+sizeof(lineNumberEntry) * nr, GC_ALLOC_LINENRTABLE);
+	lines = gc_malloc(sizeof(lineNumbers)+sizeof(lineNumberEntry) * nr, KGC_ALLOC_LINENRTABLE);
 	if (!lines) {
 		postOutOfMemory(info);
 		return false;
@@ -183,7 +183,7 @@ addLocalVariables(Method *m, uint32 len UNUSED, classFile *fp, errorInfo *info)
 
 	lv = gc_malloc(sizeof(localVariables) +
 		       (sizeof(localVariableEntry) * nr),
-		       GC_ALLOC_LOCALVARTABLE);
+		       KGC_ALLOC_LOCALVARTABLE);
 	if( lv == NULL )
 	{
 		postOutOfMemory(info);
@@ -255,7 +255,7 @@ addCheckedExceptions(Method* m, uint32 len UNUSED, classFile* fp,
 	}
 
 	m->ndeclared_exceptions = nr;
-	idx = gc_malloc(sizeof(constIndex) * nr, GC_ALLOC_DECLAREDEXC);
+	idx = gc_malloc(sizeof(constIndex) * nr, KGC_ALLOC_DECLAREDEXC);
 	if (!idx) {
 		postOutOfMemory(info);
 		return false;

@@ -473,7 +473,7 @@ finishInsnSequence(void* dummy UNUSED, nativeCodeInfo* code, errorInfo* einfo)
 
 	/* Okay, put this into malloc'ed memory */
 	constlen = nConst * sizeof(union _constpoolval);
-	methblock = gc_malloc(constlen + CODEPC, GC_ALLOC_JITCODE);
+	methblock = gc_malloc(constlen + CODEPC, KGC_ALLOC_JITCODE);
 	if (methblock == 0) {
 		postOutOfMemory(einfo);
 		return (false);
@@ -550,7 +550,7 @@ installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 	if (bytecode_processed > 0) {
 		codeperbytecode = code_generated / bytecode_processed;
 	}
-	//GC_WRITE(meth, code->mem);
+	//KGC_WRITE(meth, code->mem);
 
 	tramp = METHOD_NATIVECODE(meth);
 
@@ -569,7 +569,7 @@ installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 				strlen(meth->name->data) +
 				strlen(METHOD_SIGD(meth)) +
 				1,
-				GC_ALLOC_JITTEMP);
+				KGC_ALLOC_JITTEMP);
 		sprintf(sym,
 			"%s/%s%s",
 			CLASS_CNAME(meth->class),
@@ -766,7 +766,7 @@ initInsnSequence(Method* meth, int codesize UNUSED, int localsz, int stacksz, er
 	/* Before generating code, try to guess how much space we'll need. */
 	codeblock_size = ALLOCCODEBLOCKSZ;
 	codeblock = gc_malloc(codeblock_size + CODEBLOCKREDZONE,
-			      GC_ALLOC_JIT_CODEBLOCK);
+			      KGC_ALLOC_JIT_CODEBLOCK);
 	if (codeblock == 0) {
 		postOutOfMemory(einfo);
 		return (false);
@@ -803,7 +803,7 @@ generateInsnSequence(errorInfo* einfo)
 			new_codeblock = gc_realloc(codeblock,
 						   codeblock_size +
 						   CODEBLOCKREDZONE,
-						   GC_ALLOC_JIT_CODEBLOCK);
+						   KGC_ALLOC_JIT_CODEBLOCK);
 			if (new_codeblock == NULL) {
 				gc_free(codeblock);
 				codeblock = NULL;
@@ -1073,7 +1073,7 @@ createSpillMask(void)
 #endif
 
 	c++; /* Add null slot on the end */
-	mem = gc_malloc(c * sizeof(SlotData*), GC_ALLOC_JIT_SLOTS);
+	mem = gc_malloc(c * sizeof(SlotData*), KGC_ALLOC_JIT_SLOTS);
 
 	i = maxLocal + maxStack + tmpslot;
 	c = 0;
@@ -1216,7 +1216,7 @@ setupGlobalRegisters(void)
 	}
 
 	/* Allocate an array for the slot pointers and copy them in */
-	slots = gc_malloc((1+maxLocal) * sizeof(SlotInfo*), GC_ALLOC_JIT_SLOTS);
+	slots = gc_malloc((1+maxLocal) * sizeof(SlotInfo*), KGC_ALLOC_JIT_SLOTS);
 	for (j = 0; j < maxLocal; j++) {
 		slots[j] = &localinfo[j];
 	}
@@ -1307,7 +1307,7 @@ jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 		arraydims = array;
 	}
 	else {
-		arraydims = checkPtr(gc_calloc(dims+1, sizeof(int), GC_ALLOC_JITTEMP));
+		arraydims = checkPtr(gc_calloc(dims+1, sizeof(int), KGC_ALLOC_JITTEMP));
 	}
 
 	/* Extract the dimensions into an array */
@@ -1413,9 +1413,9 @@ newFakeCall(void* func, uintp currpc)
 	}
 	else
 	{
-		fc = GC_malloc(main_collector,
+		fc = KGC_malloc(main_collector,
 			       sizeof(fakeCall),
-			       GC_ALLOC_JIT_FAKE_CALL);
+			       KGC_ALLOC_JIT_FAKE_CALL);
 	}
 #if defined(HAVE_branch_and_link)
 	fc->parent = findFakeCall(func);

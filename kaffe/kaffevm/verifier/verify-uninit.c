@@ -48,7 +48,7 @@ checkUninit(Hjava_lang_Class* this, Type* type)
 UninitializedType*
 pushUninit(UninitializedType* uninits, const Type* type)
 {
-	UninitializedType* uninit = checkPtr(gc_malloc(sizeof(UninitializedType), GC_ALLOC_VERIFIER));
+	UninitializedType* uninit = checkPtr(gc_malloc(sizeof(UninitializedType), KGC_ALLOC_VERIFIER));
 	uninit->type = *type;
 	uninit->prev = NULL;
 	

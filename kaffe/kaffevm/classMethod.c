@@ -85,15 +85,15 @@ static void
 determineAllocType(Hjava_lang_Class *class)
 {
         if (StringClass != 0 && instanceof(StringClass, class)) {
-                class->alloc_type = GC_ALLOC_JAVASTRING;
+                class->alloc_type = KGC_ALLOC_JAVASTRING;
         } else
         if (ClassLoaderClass != 0 && instanceof(ClassLoaderClass, class)) {
-                class->alloc_type = GC_ALLOC_JAVALOADER;
+                class->alloc_type = KGC_ALLOC_JAVALOADER;
         } else
         if (class->finalizer != 0) {
-                class->alloc_type = GC_ALLOC_FINALIZEOBJECT;
+                class->alloc_type = KGC_ALLOC_FINALIZEOBJECT;
         } else {
-                class->alloc_type = GC_ALLOC_NORMALOBJECT;
+                class->alloc_type = KGC_ALLOC_NORMALOBJECT;
         }
 }
 
@@ -677,7 +677,7 @@ expandMethods(Hjava_lang_Class *cl, Method *imeth, errorInfo *einfo)
 	*/
 	if( (new_methods = gc_realloc(CLASS_METHODS(cl),
 				      sizeof(Method) *
-				      (CLASS_NMETHODS(cl) + 1), GC_ALLOC_METHOD)) )
+				      (CLASS_NMETHODS(cl) + 1), KGC_ALLOC_METHOD)) )
 	{
 		int index;
 		
@@ -832,7 +832,7 @@ resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
 
 	/* We build a list of *all* interfaces this class can use */
 	if (class->interface_len != j) {
-		newifaces = (Hjava_lang_Class**)gc_malloc(sizeof(Hjava_lang_Class**) * j, GC_ALLOC_INTERFACE);
+		newifaces = (Hjava_lang_Class**)gc_malloc(sizeof(Hjava_lang_Class**) * j, KGC_ALLOC_INTERFACE);
 		if (newifaces == 0) {
 			postOutOfMemory(einfo);
 			success = false;
@@ -1013,7 +1013,7 @@ addSourceFile(Hjava_lang_Class* c, int idx, errorInfo *einfo)
 	} else {
 		basename++;
 	}
-	c->sourcefile = gc_malloc(strlen(basename) + 1, GC_ALLOC_CLASSMISC);
+	c->sourcefile = gc_malloc(strlen(basename) + 1, KGC_ALLOC_CLASSMISC);
 	if (c->sourcefile != 0) {
 		strcpy(c->sourcefile, basename);
 	} else {
@@ -1048,7 +1048,7 @@ addInnerClasses(Hjava_lang_Class* c, uint32 len UNUSED, classFile* fp,
 	if (! checkBufSize(fp, (u2)(nr*(2*4)), CLASS_CNAME(c), einfo))
 	    return false;
 
-	ic = gc_malloc(sizeof(innerClass) * nr, GC_ALLOC_CLASSMISC);
+	ic = gc_malloc(sizeof(innerClass) * nr, KGC_ALLOC_CLASSMISC);
 	if (!ic) {
 		postOutOfMemory(einfo);
 		return false;
@@ -1082,14 +1082,14 @@ startMethods(Hjava_lang_Class* this, u2 methct, errorInfo *einfo)
 	}
 	else
 	{
-		this->methods = gc_malloc(sizeof(Method)*(methct), GC_ALLOC_METHOD);
+		this->methods = gc_malloc(sizeof(Method)*(methct), KGC_ALLOC_METHOD);
 		if (this->methods == NULL)
 		{
 			postOutOfMemory(einfo);
 			return false;
 		}
 	}
-	GC_WRITE(this, this->methods);
+	KGC_WRITE(this, this->methods);
 
 	CLASS_NMETHODS(this) = 0; /* updated in addMethod */
 	return true;
@@ -1269,13 +1269,13 @@ startFields(Hjava_lang_Class* this, u2 fieldct, errorInfo *einfo)
 	}
 	else {
 		CLASS_FIELDS(this) = (Field*) gc_malloc(sizeof(Field) * fieldct,
-							GC_ALLOC_FIELD);
+							KGC_ALLOC_FIELD);
 		if (!CLASS_FIELDS(this)) {
 			postOutOfMemory(einfo);
 			return false;
 		}
 	}
-	GC_WRITE(this, CLASS_FIELDS(this)); /* XXX */
+	KGC_WRITE(this, CLASS_FIELDS(this)); /* XXX */
 	
 	return true;
 }
@@ -1323,7 +1323,7 @@ addInterfaces(Hjava_lang_Class* c, u2 inr, Hjava_lang_Class** inf)
         c->interfaces = inf;
 	c->interface_len = inr;
 
-	GC_WRITE(c, c->interfaces); /* XXX */
+	KGC_WRITE(c, c->interfaces); /* XXX */
 }
 
 static
@@ -1718,7 +1718,7 @@ resolveObjectFields(Hjava_lang_Class* class, errorInfo *einfo)
 	 * a bitmap to help the gc scan the object.  The first part is
 	 * inherited from the superclass.
 	 */
-	map = BITMAP_NEW(CLASS_FSIZE(class)/ALIGNMENTOF_VOIDP, GC_ALLOC_CLASSMISC);
+	map = BITMAP_NEW(CLASS_FSIZE(class)/ALIGNMENTOF_VOIDP, KGC_ALLOC_CLASSMISC);
 	if (map == 0) {
 		postOutOfMemory(einfo);
 		return (false);
@@ -1819,7 +1819,7 @@ allocStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 
 	assert(offset > 0);
 	/* Allocate memory required */
-	mem = gc_malloc((unsigned int)offset, GC_ALLOC_STATICDATA);
+	mem = gc_malloc((unsigned int)offset, KGC_ALLOC_STATICDATA);
 	if (mem == NULL) {
 		postOutOfMemory(einfo);
 		return (false);
@@ -2000,7 +2000,7 @@ buildTrampoline(Method *meth, void **where, errorInfo *einfo)
 
 	if (methodNeedsTrampoline(meth)) {
 		/* XXX don't forget to pick those up at class gc time */
-		tramp = (methodTrampoline*)gc_malloc(sizeof(methodTrampoline), GC_ALLOC_TRAMPOLINE);
+		tramp = (methodTrampoline*)gc_malloc(sizeof(methodTrampoline), KGC_ALLOC_TRAMPOLINE);
 		if (tramp == 0) {
 			postOutOfMemory(einfo);
 			return (0);
@@ -2114,7 +2114,7 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 	}
 
 	class->vtable = (dispatchTable*)gc_malloc(sizeof(dispatchTable) +
-		class->msize * sizeof(void*), GC_ALLOC_DISPATCHTABLE);
+		class->msize * sizeof(void*), KGC_ALLOC_DISPATCHTABLE);
 
 	if (class->vtable == 0) {
 		postOutOfMemory(einfo);
@@ -2194,7 +2194,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 		return (true);
 	}
 
-	class->if2itable = gc_malloc(class->total_interface_len * sizeof(short), GC_ALLOC_CLASSMISC);
+	class->if2itable = gc_malloc(class->total_interface_len * sizeof(short), KGC_ALLOC_CLASSMISC);
 
 	if (class->if2itable == 0) {
 		postOutOfMemory(einfo);
@@ -2208,7 +2208,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 		j += 1;		/* add one word to store interface class */
 		j += class->interfaces[i]->msize;
 	}
-	class->itable2dtable = gc_malloc(j * sizeof(void *), GC_ALLOC_CLASSMISC);
+	class->itable2dtable = gc_malloc(j * sizeof(void *), KGC_ALLOC_CLASSMISC);
 	if (class->itable2dtable == 0) {
 		postOutOfMemory(einfo);
 		return (false);
@@ -2335,7 +2335,7 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 		for (j = 0; j < clazz->total_interface_len - 1; j++) {
 			Hjava_lang_Class* iface_j = ifcs[j];
 			Hjava_lang_Class* iface_j1 = ifcs[j+1];
-			if (iface_j - iface_j1 > 0) {
+			if ((uintp)iface_j > (uintp)iface_j1) {
 				k = 1;
 				ifcs[j] = iface_j1;
 				ifcs[j+1] = iface_j;
@@ -2387,7 +2387,7 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 			short firstnewentry;
 			if (iface->implementors == NULL) {
 				len = (i + 1) + 4; /* 4 is slack only */
-				iface->implementors = gc_malloc(len * sizeof(short), GC_ALLOC_CLASSMISC);
+				iface->implementors = gc_malloc(len * sizeof(short), KGC_ALLOC_CLASSMISC);
 			} else {
 				/* double in size */
 				len = iface->implementors[0] * 2;
@@ -2396,7 +2396,7 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 				}
 				iface->implementors = gc_realloc(
 					iface->implementors,
-					len * sizeof(short), GC_ALLOC_CLASSMISC);
+					len * sizeof(short), KGC_ALLOC_CLASSMISC);
 			}
 
 			if (iface->implementors == 0) {
@@ -2811,7 +2811,7 @@ parseSignature(Utf8Const *signature, errorInfo *einfo)
 
 	nargs = countArgsInSignature(signature->data);
 	sig = (parsed_signature_t*)gc_malloc(sizeof(*sig) +
-					     nargs * sizeof(sig->ret_and_args[0]), GC_ALLOC_CLASSMISC);
+					     nargs * sizeof(sig->ret_and_args[0]), KGC_ALLOC_CLASSMISC);
 	if (sig == NULL) {
 		postOutOfMemory(einfo);
 		return (NULL);

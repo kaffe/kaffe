@@ -79,7 +79,7 @@ newConstant(int type, ...)
 		int i;
 
 		/* Allocate chunk of constpool elements */
-		cpc = gc_malloc(sizeof(constpoolchunk), GC_ALLOC_JIT_CONST);
+		cpc = gc_malloc(sizeof(constpoolchunk), KGC_ALLOC_JIT_CONST);
 		/* XXX Ack! */
 		assert(cpc != 0);
 

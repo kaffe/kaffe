@@ -67,7 +67,7 @@ static
 void *
 thread_malloc(size_t s)
 {
-	return gc_malloc(s, GC_ALLOC_THREADCTX);
+	return gc_malloc(s, KGC_ALLOC_THREADCTX);
 }
 
 static
@@ -81,7 +81,7 @@ static
 void *
 thread_realloc(void *p, size_t s)
 {
-	return gc_realloc(p, s, GC_ALLOC_THREADCTX);
+	return gc_realloc(p, s, KGC_ALLOC_THREADCTX);
 }
 
 static void

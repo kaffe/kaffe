@@ -23,7 +23,7 @@
 #include "kaffe/jmalloc.h"
 #include "defs.h"
 
-#define spMalloc(x) gc_malloc(x, GC_ALLOC_FIXED)
+#define spMalloc(x) gc_malloc(x, KGC_ALLOC_FIXED)
 #define spFree(x) gc_free(x)
 
 int cmpPStrStr(parsedString *ps, char *str)

@@ -78,7 +78,7 @@ extern counter cpemem;
 
 extern void statsComputeSumMedian(int *v, int n, int *sum, int *med);
 extern void statsSetMaskStr(char *);
-#define GCSIZEOF(x)	GC_getObjectSize(main_collector, (x))
+#define GCSIZEOF(x)	KGC_getObjectSize(main_collector, (x))
 
 #endif /* __kaffevm_stats_h */
 
