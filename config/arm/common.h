@@ -17,14 +17,11 @@
 #ifndef __arm_common_h
 #define __arm_common_h
 
-#include "atomicity.h"
-
 /* The arm never aligns to more than a 4 byte boundary. */
 #define	ALIGNMENT_OF_SIZE(S)	((S) < 4 ? (S) : 4)
 
-#define atomic_compare_and_exchange_val_acq(A, N, O) (compare_and_swap((long int *) A, (long int) O, (long int) N))
-
 #include "katomic.h"
+#include "generic/genatomic.h"
 #include "generic/comparexch.h"
 
 #endif
