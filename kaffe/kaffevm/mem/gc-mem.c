@@ -111,7 +111,7 @@ int gc_system_alloc_cnt;
 
 extern struct Hjava_lang_Thread* garbageman;
 
-#ifdef KAFFE_VMDEBUG
+#if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 /* Magic constant used to mark blocks under gc's management */
 static const uint32 gc_magic = 0xD0DECADE;
 
@@ -174,7 +174,7 @@ gc_heap_check(void)
 	}
 }
 
-#endif /* KAFFE_VMDEBUG */
+#endif /* !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG)) */
 
 /*
  * Initialise allocator.

@@ -1,5 +1,12 @@
 2004-02-08  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffevm/mem/gc-mem.c
+	(printslack, gc_heap_check):
+        Fixed gcc compiler warning about unused functions when
+        compiled without debugging enabled.
+
+2004-02-08  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/verify.c
 	(printConstantPool, printInstruction, printBlock):
 	Fixed gcc compiler warning about unused functions when 
