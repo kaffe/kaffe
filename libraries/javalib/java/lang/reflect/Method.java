@@ -1,11 +1,13 @@
 /*
  * Java core library component.
  *
- * Copyright (c) 1997, 1998
+ * Copyright (c) 1997, 1998, 2001
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
+ *
+ * Checked Spec: JDK 1.3
  */
 
 package java.lang.reflect;
@@ -14,7 +16,9 @@ import java.lang.Class;
 import java.lang.String;
 
 public final class Method
-	implements Member {
+    extends AccessibleObject
+    implements Member
+{
 
 private Class clazz;
 private int slot;
@@ -25,7 +29,7 @@ private Class[] exceptionTypes;
 
 private Method() {
 }
-    
+
 public boolean equals(Object obj) {
 	// Catch the simple case where they're really the same
 	if ((Object)this == obj) {
@@ -86,64 +90,44 @@ public String toString() {
 	StringBuffer str = new StringBuffer();
 	int mod = getModifiers();
 
-	if (Modifier.isPublic(mod)) {
-		str.append("public ");
-	}
-	else if (Modifier.isPrivate(mod)) {
-		str.append("private ");
-	}
-	else if (Modifier.isProtected(mod)) {
-		str.append("protected ");
-	}
-
-	if (Modifier.isAbstract(mod)) {
-		str.append("abstract ");
-	}
-	if (Modifier.isStatic(mod)) {
-		str.append("static ");
-	}
-	if (Modifier.isFinal(mod)) {
-		str.append("final ");
-	}
-	if (Modifier.isSynchronized(mod)) {
-		str.append("synchronized ");
-	}
-	if (Modifier.isNative(mod)) {
-		str.append("native ");
+	// Modifier
+	if (mod != 0) {
+		str.append(Modifier.toString(mod));
+		str.append(' ');
 	}
 
 	// Return type
 	str.append(getPrettyName(returnType));
-	str.append(" ");
+	str.append(' ');
 
 	// Class name
 	str.append(clazz.getName());
-	str.append(".");
+	str.append('.');
 
 	// Method name
 	str.append(name);
-	str.append("(");
+	str.append('(');
 
 	// Signature
 	for (int i = 0; i < parameterTypes.length; i++) {
 		str.append(getPrettyName(parameterTypes[i]));
 		if (i+1 < parameterTypes.length) {
-			str.append(",");
+			str.append(',');
 		}
 	}
-	str.append(")");
+	str.append(')');
 
         if (exceptionTypes.length > 0) {
                 str.append(" throws ");
                 for (int i = 0; i < exceptionTypes.length; i++) {
                         str.append(exceptionTypes[i].getName());
                         if (i+1 < exceptionTypes.length) {
-                                str.append(",");
+                                str.append(',');
                         }
                 }
         }
 
-	return (new String(str));
+	return (str.toString());
 }
 
 static String getPrettyName(Class cls) {

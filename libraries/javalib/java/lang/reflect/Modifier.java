@@ -1,11 +1,13 @@
 /*
  * Java core library component.
  *
- * Copyright (c) 1997, 1998
+ * Copyright (c) 1997, 1998, 2001
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
+ *
+ * Checked Since: JDK 1.3
  */
 
 package java.lang.reflect;
@@ -103,6 +105,10 @@ public class Modifier {
     if ((mod & PROTECTED) != 0) {
       append(str, "protected");
     }
+
+    if ((mod & ABSTRACT) != 0) {
+      append(str, "abstract");
+    }
     if ((mod & STATIC) != 0) {
       append(str, "static");
     }
@@ -112,17 +118,15 @@ public class Modifier {
     if ((mod & SYNCHRONIZED) != 0) {
       append(str, "synchronized");
     }
+    if ((mod & NATIVE) != 0) {
+      append(str, "native");
+    }
+
     if ((mod & VOLATILE) != 0) {
       append(str, "volatile");
     }
     if ((mod & TRANSIENT) != 0) {
       append(str, "transient");
-    }
-    if ((mod & ABSTRACT) != 0) {
-      append(str, "abstract");
-    }
-    if ((mod & NATIVE) != 0) {
-      append(str, "native");
     }
     if ((mod & STRICT) != 0) {
       append(str, "strictfp");

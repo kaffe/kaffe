@@ -1,11 +1,13 @@
 /*
  * Java core library component.
  *
- * Copyright (c) 1997, 1998
+ * Copyright (c) 1997, 1998, 2001
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
+ *
+ * Checked Spec: JDK 1.3
  */
 
 package java.lang.reflect;
@@ -14,6 +16,7 @@ import java.lang.String;
 import java.lang.Class;
 
 public final class Field
+  extends AccessibleObject
   implements Member
 {
 	private Class clazz;
@@ -105,27 +108,10 @@ public String toString()
 	StringBuffer str = new StringBuffer();
 	int mod = getModifiers();
 
-	if ((mod & Modifier.PUBLIC) != 0) {
-		str.append("public ");
-	}
-	else if ((mod & Modifier.PRIVATE) != 0) {
-		str.append("private ");
-	}
-	else if ((mod & Modifier.PROTECTED) != 0) {
-		str.append("protected ");
-	}
-
-	if ((mod & Modifier.STATIC) != 0) {
-		str.append("static ");
-	}
-	if ((mod & Modifier.FINAL) != 0) {
-		str.append("final ");
-	}
-	if ((mod & Modifier.TRANSIENT) != 0) {
-		str.append("transient ");
-	}
-	if ((mod & Modifier.VOLATILE) != 0) {
-		str.append("volatile ");
+	// Modifier
+	if (mod != 0) {
+		str.append(Modifier.toString(mod));
+		str.append(' ');
 	}
 
 	// Type
@@ -134,7 +120,7 @@ public String toString()
 
 	// Class name
 	str.append(clazz.getName());
-	str.append(".");
+	str.append('.');
 	// Field name
 	str.append(name);
 
