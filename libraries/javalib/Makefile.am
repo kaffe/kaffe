@@ -2273,6 +2273,8 @@ java_security_cert_SRCS = \
 	java/security/cert/TrustAnchor.java \
 	java/security/cert/X509CRL.java \
 	java/security/cert/X509CRLEntry.java \
+	java/security/cert/X509CRLSelector.java \
+	java/security/cert/X509CertSelector.java \
 	java/security/cert/X509Certificate.java \
 	java/security/cert/X509Extension.java
 java_security_interfaces_SRCS = \

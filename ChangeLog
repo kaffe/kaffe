@@ -1,5 +1,50 @@
 2004-08-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/security/cert/X509CRLSelector.java (match): 
+	Removed unnecessary throws clauses.
+
+2004-08-22  Dalibor Topic  <robilad@kaffe.org>
+
+        * libraries/javalib/java/security/cert/X509CRLSelector.java,
+        libraries/javalib/java/security/cert/X509CertSelector.java:
+	New files. Taken from GNU Classpath.
+
+        * libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        libraries/javalib/all.files:
+	Regenerated.
+
+        * libraries/javalib/java/security/AccessController.java,
+        libraries/javalib/java/security/VMAccessController.java:
+	Resynced with GNU Classpath.
+
+	2004-08-21  Casey Marshall  <csm@gnu.org>
+
+        * java/security/AccessController.java
+        Removed FIXME comment.
+        (doPriviliged(PrivilegedAction)): push and pop a null context.
+        (doPrivileged(PrivilegedExceptionAction)): likewise.
+        (doPrivileged(PrivilegedAction,AccessControlContext)): only pass
+        the context to `VMAccessController.pushContext'.
+        (doPrivileged(PrivilegedExceptionAction,AccessControlContext)):
+        likewise.
+        * vm/reference/java/security/VMAccessController.java
+        (contexts): use a ThreadLocal for this field.
+        (pushContext): only take the context as parameter; insert it
+        into a thread local stack.
+        (popContext): take no arguments. Handle new form of `contexts'
+        stack.
+        (getContext): set `inGetContext' as early as possible.
+        Include the call just prior to `doPrivileged' too.
+        Handle new form of `contexts' stack.
+
+	2004-08-20  Casey Marshall  <csm@gnu.org>
+
+        * java/security/cert/X509CRLSelector.java: new file.
+        * java/security/cert/X509CertSelector.java: new file.
+
+2004-08-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/x86_64/sysdepCallMethod.h:
         Add missing include.
 

@@ -52,15 +52,24 @@ final class VMAccessController
   // -------------------------------------------------------------------------
 
   /**
-   * A mapping between pairs (<i>thread</i>, <i>classname</i>) to access
-   * control contexts. The <i>thread</i> and <i>classname</i> are the thread
-   * and <i>classname</i> current as of the last call to doPrivileged with
-   * an AccessControlContext argument.
+   * This is a per-thread stack of AccessControlContext objects (which can
+   * be null) for each call to AccessController.doPrivileged in each thread's
+   * call stack. We use this to remember which context object corresponds to
+   * which call.
    */
-  private static final Map contexts = Collections.synchronizedMap(new HashMap());
+  private static final ThreadLocal contexts = new ThreadLocal();
 
+  /**
+   * This is a Boolean that, if set, tells getContext that it has already
+   * been called once, allowing us to handle recursive permission checks
+   * caused by methods getContext calls.
+   */
   private static final ThreadLocal inGetContext = new ThreadLocal();
 
+  /**
+   * And we return this all-permissive context to ensure that privileged
+   * methods called from getContext succeed.
+   */
   private final static AccessControlContext DEFAULT_CONTEXT;
   static
   {
@@ -74,10 +83,10 @@ final class VMAccessController
   }
 
   private static final boolean DEBUG = false;
-  private static void debug (String msg)
+  private static void debug(String msg)
   {
-    System.err.print (">>> VMAccessController: ");
-    System.err.println (msg);
+    System.err.print(">>> VMAccessController: ");
+    System.err.println(msg);
   }
 
   // Constructors.
@@ -97,15 +106,18 @@ final class VMAccessController
    * pushed from one thread will not be available to another.
    *
    * @param acc The access control context.
-   * @param clazz The class that implements {@link PrivilegedAction}.
    */
-  static void pushContext (AccessControlContext acc, Class clazz)
+  static void pushContext (AccessControlContext acc)
   {
-    ArrayList pair = new ArrayList (2);
-    pair.add (Thread.currentThread());
-    pair.add (clazz);
-    if (DEBUG) debug ("pushing " + pair);
-    contexts.put (pair, acc);
+    if (DEBUG)
+      debug("pushing " + acc);
+    LinkedList stack = (LinkedList) contexts.get();
+    if (stack == null)
+      {
+        stack = new LinkedList();
+        contexts.set(stack);
+      }
+    stack.addFirst(acc);
   }
 
   /**
@@ -113,16 +125,21 @@ final class VMAccessController
    * This method is used by {@link AccessController} when exiting from a
    * call to {@link
    * AccessController#doPrivileged(java.security.PrivilegedAction,java.security.AccessControlContext)}.
-   *
-   * @param clazz The class that implements {@link PrivilegedAction}.
    */
-  static void popContext (Class clazz)
+  static void popContext()
   {
-    ArrayList pair = new ArrayList (2);
-    pair.add (Thread.currentThread());
-    pair.add (clazz);
-    if (DEBUG) debug ("popping " + pair);
-    contexts.remove (pair);
+    if (DEBUG)
+      debug("popping context");
+
+    // Stack should never be null, nor should it be empty, if this method
+    // and its counterpart has been called properly.
+    LinkedList stack = (LinkedList) contexts.get();
+    if (stack != null)
+      {
+        stack.removeFirst();
+        if (stack.isEmpty())
+          contexts.set(null);
+      }
   }
 
   /**
@@ -143,80 +160,87 @@ final class VMAccessController
     Boolean inCall = (Boolean) inGetContext.get();
     if (inCall != null && inCall.booleanValue())
       {
-        if (DEBUG) debug ("already in getContext");
+        if (DEBUG)
+          debug("already in getContext");
         return DEFAULT_CONTEXT;
       }
+
+    inGetContext.set(Boolean.TRUE);
 
     Object[][] stack = getStack();
     Class[] classes = (Class[]) stack[0];
     String[] methods = (String[]) stack[1];
 
-    inGetContext.set (Boolean.TRUE);
-
-    if (DEBUG) debug (">>> got trace of length " + classes.length);
+    if (DEBUG)
+      debug(">>> got trace of length " + classes.length);
 
     HashSet domains = new HashSet();
     HashSet seenDomains = new HashSet();
     AccessControlContext context = null;
+    int privileged = 0;
 
     // We walk down the stack, adding each ProtectionDomain for each
     // class in the call stack. If we reach a call to doPrivileged,
     // we don't add any more stack frames. We skip the first three stack
     // frames, since they comprise the calls to getStack, getContext,
     // and AccessController.getContext.
-    for (int i = 3; i < classes.length; i++)
+    for (int i = 3; i < classes.length && privileged < 2; i++)
       {
         Class clazz = classes[i];
         String method = methods[i];
 
         if (DEBUG)
           {
-            debug (">>> checking " + clazz + "." + method);
-            debug (">>> loader = " + clazz.getClassLoader());
+            debug(">>> checking " + clazz + "." + method);
+            debug(">>> loader = " + clazz.getClassLoader());
           }
+
+        // If the previous frame was a call to doPrivileged, then this is
+        // the last frame we look at.
+        if (privileged == 1)
+          privileged = 2;
 
         if (clazz.equals (AccessController.class)
             && method.equals ("doPrivileged"))
           {
             // If there was a call to doPrivileged with a supplied context,
             // return that context.
-            List pair = new ArrayList(2);
-            pair.add (Thread.currentThread());
-            pair.add (classes[i-1]);
-            if (contexts.containsKey (pair))
-              context = (AccessControlContext) contexts.get (pair);
-            break;
+            LinkedList l = (LinkedList) contexts.get();
+            if (l != null)
+              context = (AccessControlContext) l.getFirst();
+            privileged = 1;
           }
 
         ProtectionDomain domain = clazz.getProtectionDomain();
 
         if (domain == null)
           continue;
-        if (seenDomains.contains (domain))
+        if (seenDomains.contains(domain))
           continue;
-        seenDomains.add (domain);
+        seenDomains.add(domain);
 
         // Create a static snapshot of this domain, which may change over time
         // if the current policy changes.
-        domains.add (new ProtectionDomain (domain.getCodeSource(),
-                                           domain.getPermissions()));
+        domains.add(new ProtectionDomain(domain.getCodeSource(),
+                                         domain.getPermissions()));
       }
 
-    if (DEBUG) debug ("created domains: " + domains);
+    if (DEBUG)
+      debug("created domains: " + domains);
 
     ProtectionDomain[] result = (ProtectionDomain[])
-      domains.toArray (new ProtectionDomain[domains.size()]);
+      domains.toArray(new ProtectionDomain[domains.size()]);
 
     // Intersect the derived protection domain with the context supplied
     // to doPrivileged.
     if (context != null)
-      context = new AccessControlContext (result, context,
-                                          IntersectingDomainCombiner.SINGLETON);
+      context = new AccessControlContext(result, context,
+                                         IntersectingDomainCombiner.SINGLETON);
     // No context was supplied. Return the derived one.
     else
-      context = new AccessControlContext (result);
+      context = new AccessControlContext(result);
 
-    inGetContext.set (Boolean.FALSE);
+    inGetContext.set(Boolean.FALSE);
     return context;
   }
 

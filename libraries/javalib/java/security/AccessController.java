@@ -47,11 +47,6 @@ package java.security;
  * And provides a <code>getContext()</code> method which gives the access
  * control context of the current thread that can be used for checking
  * permissions at a later time and/or in another thread.
- * <p>
- * XXX - Mostly a stub implementation at the moment. Needs native support
- * from the VM to function correctly. XXX - Do not forget to think about
- * how to handle <code>java.lang.reflect.Method.invoke()</code> on the
- * <code>doPrivileged()</code> methods.
  *
  * @author Mark Wielaard (mark@klomp.org)
  * @since 1.2
@@ -95,7 +90,15 @@ public final class AccessController
    */
   public static Object doPrivileged(PrivilegedAction action)
   {
-    return action.run();
+    VMAccessController.pushContext(null);
+    try
+      {
+        return action.run();
+      }
+    finally
+      {
+        VMAccessController.popContext();
+      }
   }
 
   /**
@@ -113,16 +116,16 @@ public final class AccessController
    * @return the result of the <code>action.run()</code> method.
    */
   public static Object doPrivileged(PrivilegedAction action,
-				    AccessControlContext context)
+                                    AccessControlContext context)
   {
-    VMAccessController.pushContext (context, action.getClass());
+    VMAccessController.pushContext(context);
     try
       {
         return action.run();
       }
     finally
       {
-        VMAccessController.popContext (action.getClass());
+        VMAccessController.popContext();
       }
   }
 
@@ -145,14 +148,18 @@ public final class AccessController
   public static Object doPrivileged(PrivilegedExceptionAction action)
     throws PrivilegedActionException
   {
-
+    VMAccessController.pushContext(null);
     try
       {
-	return action.run();
+        return action.run();
       }
     catch (Exception e)
       {
-	throw new PrivilegedActionException(e);
+        throw new PrivilegedActionException(e);
+      }
+    finally
+      {
+        VMAccessController.popContext();
       }
   }
 
@@ -175,22 +182,21 @@ public final class AccessController
    * is thrown in the <code>run()</code> method.
    */
   public static Object doPrivileged(PrivilegedExceptionAction action,
-				    AccessControlContext context)
+                                    AccessControlContext context)
     throws PrivilegedActionException
   {
-    VMAccessController.pushContext (context, action.getClass());
-
+    VMAccessController.pushContext(context);
     try
       {
-	return action.run();
+        return action.run();
       }
     catch (Exception e)
       {
-	throw new PrivilegedActionException(e);
+        throw new PrivilegedActionException(e);
       }
     finally
       {
-        VMAccessController.popContext (action.getClass());
+        VMAccessController.popContext();
       }
   }
 
