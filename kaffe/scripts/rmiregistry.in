@@ -1,5 +1,5 @@
 #! /bin/sh
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-exec @bindir@/@kaffe_TRANSF@ kaffe.rmi.registry.RegistryImpl ${1+"$@"}
+exec @bindir@/@kaffe_TRANSF@ gnu.java.rmi.registry.RegistryImpl ${1+"$@"}
 

@@ -144,9 +144,6 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 
 JNI_DERIVED_HDRS = $(INSTALL_JNI_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS)
 
-# rmi.jar
-# kaffe_rmi_server_RMIHashes.h
-
 if USE_COMPAT_IFADDRS
 ifaddrs_compat = ifaddrs.h
 ifaddrs.h: ifaddrs_compat.h

@@ -286,6 +286,11 @@ Klasses_jar_SRCS = \
 	$(gnu_java_locale_SRCS) \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
+	$(gnu_java_rmi_SRCS) \
+	$(gnu_java_rmi_dgc_SRCS) \
+	$(gnu_java_rmi_registry_SRCS) \
+	$(gnu_java_rmi_rmic_SRCS) \
+	$(gnu_java_rmi_server_SRCS) \
 	$(gnu_java_security_SRCS) \
 	$(gnu_java_security_der_SRCS) \
 	$(gnu_java_security_provider_SRCS) \
@@ -384,12 +389,7 @@ Klasses_jar_SRCS = \
 	$(kaffe_net_www_protocol_http_SRCS) \
 	$(kaffe_net_www_protocol_jar_SRCS) \
 	$(kaffe_net_www_protocol_system_SRCS) \
-	$(kaffe_rmi_dgc_SRCS) \
-	$(kaffe_rmi_registry_SRCS) \
-	$(kaffe_rmi_rmic_SRCS) \
-	$(kaffe_rmi_server_SRCS) \
 	$(kaffe_security_provider_SRCS) \
-	$(kaffe_tools_compiler_SRCS) \
 	$(kaffe_tools_jar_SRCS) \
 	$(kaffe_tools_native2ascii_SRCS) \
 	$(kaffe_tools_serialver_SRCS) \
@@ -622,6 +622,45 @@ gnu_java_nio_charset_SRCS = \
 	gnu/java/nio/charset/UTF_16.java \
 	gnu/java/nio/charset/UTF_16LE.java \
 	gnu/java/nio/charset/UTF_8.java
+
+gnu_java_rmi_SRCS = \
+	gnu/java/rmi/RMIMarshalledObjectInputStream.java \
+	gnu/java/rmi/RMIMarshalledObjectOutputStream.java
+
+gnu_java_rmi_dgc_SRCS = \
+	gnu/java/rmi/dgc/DGCImpl.java \
+	gnu/java/rmi/dgc/DGCImpl_Skel.java \
+	gnu/java/rmi/dgc/DGCImpl_Stub.java
+
+gnu_java_rmi_registry_SRCS = \
+	gnu/java/rmi/registry/RegistryImpl.java \
+	gnu/java/rmi/registry/RegistryImpl_Skel.java \
+	gnu/java/rmi/registry/RegistryImpl_Stub.java
+
+gnu_java_rmi_rmic_SRCS = \
+	gnu/java/rmi/rmic/Compile_gcj.java \
+	gnu/java/rmi/rmic/Compile_jikes.java \
+	gnu/java/rmi/rmic/Compile_kjc.java \
+	gnu/java/rmi/rmic/Compiler.java \
+	gnu/java/rmi/rmic/CompilerProcess.java \
+	gnu/java/rmi/rmic/RMICException.java \
+	gnu/java/rmi/rmic/RMIC.java \
+	gnu/java/rmi/rmic/TabbedWriter.java
+
+gnu_java_rmi_server_SRCS = \
+	gnu/java/rmi/server/ConnectionRunnerPool.java \
+	gnu/java/rmi/server/ProtocolConstants.java \
+	gnu/java/rmi/server/RMIDefaultSocketFactory.java \
+	gnu/java/rmi/server/RMIHashes.java \
+	gnu/java/rmi/server/RMIObjectInputStream.java \
+	gnu/java/rmi/server/RMIObjectOutputStream.java \
+	gnu/java/rmi/server/UnicastConnection.java \
+	gnu/java/rmi/server/UnicastConnectionManager.java \
+	gnu/java/rmi/server/UnicastRef.java \
+	gnu/java/rmi/server/UnicastRemoteCall.java \
+	gnu/java/rmi/server/UnicastRemoteStub.java \
+	gnu/java/rmi/server/UnicastServer.java \
+	gnu/java/rmi/server/UnicastServerRef.java
 
 gnu_java_security_SRCS = \
 	gnu/java/security/Engine.java \
@@ -2352,34 +2391,6 @@ kaffe_net_www_protocol_system_SRCS = \
 	kaffe/net/www/protocol/system/Handler.java \
 	kaffe/net/www/protocol/system/SystemURLConnection.java
 
-kaffe_rmi_dgc_SRCS = \
-	kaffe/rmi/dgc/DGCImpl.java \
-	kaffe/rmi/dgc/DGCImpl_Skel.java \
-	kaffe/rmi/dgc/DGCImpl_Stub.java
-
-kaffe_rmi_registry_SRCS = \
-	kaffe/rmi/registry/RegistryImpl.java \
-	kaffe/rmi/registry/RegistryImpl_Skel.java \
-	kaffe/rmi/registry/RegistryImpl_Stub.java
-
-kaffe_rmi_rmic_SRCS = \
-	kaffe/rmi/rmic/RMIC.java \
-	kaffe/rmi/rmic/TabbedWriter.java
-
-kaffe_rmi_server_SRCS = \
-	kaffe/rmi/server/ProtocolConstants.java \
-	kaffe/rmi/server/RMIDefaultSocketFactory.java \
-	kaffe/rmi/server/RMIHashes.java \
-	kaffe/rmi/server/RMIObjectInputStream.java \
-	kaffe/rmi/server/RMIObjectOutputStream.java \
-	kaffe/rmi/server/UnicastConnection.java \
-	kaffe/rmi/server/UnicastConnectionManager.java \
-	kaffe/rmi/server/UnicastRef.java \
-	kaffe/rmi/server/UnicastRemoteCall.java \
-	kaffe/rmi/server/UnicastRemoteStub.java \
-	kaffe/rmi/server/UnicastServer.java \
-	kaffe/rmi/server/UnicastServerRef.java
-
 kaffe_security_provider_SRCS = \
 	kaffe/security/provider/Kaffe.java \
 	kaffe/security/provider/MD2.java \
@@ -2388,13 +2399,6 @@ kaffe_security_provider_SRCS = \
 	kaffe/security/provider/SHA1PRNG.java \
 	kaffe/security/provider/SHA.java \
 	kaffe/security/provider/UpdateDigest.java
-
-kaffe_tools_compiler_SRCS = \
-	kaffe/tools/compiler/Compiler_default.java \
-	kaffe/tools/compiler/Compiler.java \
-	kaffe/tools/compiler/Compiler_jikes.java \
-	kaffe/tools/compiler/Compiler_kjc.java \
-	kaffe/tools/compiler/Compiler_pizza.java
 
 kaffe_tools_jar_SRCS = \
 	kaffe/tools/jar/Jar.java \

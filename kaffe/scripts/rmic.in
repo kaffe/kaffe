@@ -1,5 +1,5 @@
 #! /bin/sh
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-exec @bindir@/@kaffe_TRANSF@ kaffe.rmi.rmic.RMIC ${1+"$@"}
+exec @bindir@/@kaffe_TRANSF@ -Dclasspath.compiler=kjc gnu.java.rmi.rmic.RMIC ${1+"$@"}
 

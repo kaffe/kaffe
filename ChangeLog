@@ -1,3 +1,137 @@
+2003-08-18  Dalibor Topic <robilad@kaffe.org>
+
+	Merged in GNU Classpath's RMI implementation.
+	
+	* include/Makefile.am:
+	Removed commented out kaffe_rmi_server_RMIHashes.h.
+	
+        * include/Makefile.in,
+        kaffe/Makefile.in,
+        kaffe/kaffe/Makefile.in,
+        kaffe/scripts/Makefile.in,
+        kaffe/scripts/compat/Makefile.in,
+        libraries/clib/native/Makefile.in,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        libraries/javalib/profiles/allatonce/all.files,
+        libraries/javalib/profiles/default/rmi.files,
+        test/internal/Makefile.in:
+	Regenerated.
+
+        * kaffe/scripts/rmic.in:
+	Execute gnu.java.rmi.rmic.RMI with kjc as the default compiler.
+	
+        * kaffe/scripts/rmiregistry.in:
+	Execute gnu.java.rmi.registry.RegistryImpl.
+	
+        * libraries/clib/native/Makefile.am:
+	(LANG_SRCS) Removed RMIHashes.c.
+
+        * libraries/clib/native/RMIHashes.c:
+	Removed. No longer necessary, since RMI hashes are now computed by
+	pure java code.
+	
+        * libraries/javalib/gnu/java/rmi/RMIMarshalledObjectInputStream.java,
+        libraries/javalib/gnu/java/rmi/RMIMarshalledObjectOutputStream.java,
+        libraries/javalib/gnu/java/rmi/dgc/DGCImpl.java,
+        libraries/javalib/gnu/java/rmi/dgc/DGCImpl_Skel.java,
+        libraries/javalib/gnu/java/rmi/dgc/DGCImpl_Stub.java,
+        libraries/javalib/gnu/java/rmi/registry/RegistryImpl.java,
+        libraries/javalib/gnu/java/rmi/registry/RegistryImpl_Skel.java,
+        libraries/javalib/gnu/java/rmi/registry/RegistryImpl_Stub.java,
+        libraries/javalib/gnu/java/rmi/rmic/Compile_gcj.java,
+        libraries/javalib/gnu/java/rmi/rmic/Compiler.java,
+        libraries/javalib/gnu/java/rmi/rmic/CompilerProcess.java,
+        libraries/javalib/gnu/java/rmi/rmic/RMIC.java,
+        libraries/javalib/gnu/java/rmi/rmic/RMICException.java,
+        libraries/javalib/gnu/java/rmi/rmic/TabbedWriter.java,
+        libraries/javalib/gnu/java/rmi/server/ConnectionRunnerPool.java,
+        libraries/javalib/gnu/java/rmi/server/ProtocolConstants.java,
+        libraries/javalib/gnu/java/rmi/server/RMIDefaultSocketFactory.java,
+        libraries/javalib/gnu/java/rmi/server/RMIHashes.java,
+        libraries/javalib/gnu/java/rmi/server/RMIObjectInputStream.java,
+        libraries/javalib/gnu/java/rmi/server/RMIObjectOutputStream.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastConnection.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastConnectionManager.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastRef.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastRemoteCall.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastRemoteStub.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastServer.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastServerRef.java:
+	New files merged in from GNU Classpath.
+
+        * libraries/javalib/gnu/java/rmi/rmic/Compile_jikes.java,
+        libraries/javalib/gnu/java/rmi/rmic/Compile_kjc.java:
+	New files.
+
+
+        * libraries/javalib/java/rmi/MarshalledObject.java,
+        libraries/javalib/java/rmi/Naming.java,
+        libraries/javalib/java/rmi/Remote.java,
+        libraries/javalib/java/rmi/activation/Activatable.java,
+        libraries/javalib/java/rmi/activation/ActivationDesc.java,
+        libraries/javalib/java/rmi/activation/ActivationGroup.java,
+        libraries/javalib/java/rmi/activation/ActivationGroupDesc.java,
+        libraries/javalib/java/rmi/activation/ActivationGroupID.java,
+        libraries/javalib/java/rmi/activation/ActivationID.java,
+        libraries/javalib/java/rmi/activation/ActivationInstantiator.java,
+        libraries/javalib/java/rmi/activation/ActivationMonitor.java,
+        libraries/javalib/java/rmi/activation/ActivationSystem.java,
+        libraries/javalib/java/rmi/activation/Activator.java,
+        libraries/javalib/java/rmi/dgc/DGC.java,
+        libraries/javalib/java/rmi/dgc/Lease.java,
+        libraries/javalib/java/rmi/dgc/VMID.java,
+        libraries/javalib/java/rmi/registry/LocateRegistry.java,
+        libraries/javalib/java/rmi/registry/Registry.java,
+        libraries/javalib/java/rmi/registry/RegistryHandler.java,
+        libraries/javalib/java/rmi/server/LoaderHandler.java,
+        libraries/javalib/java/rmi/server/LogStream.java,
+        libraries/javalib/java/rmi/server/ObjID.java,
+        libraries/javalib/java/rmi/server/Operation.java,
+        libraries/javalib/java/rmi/server/RMIClassLoader.java,
+        libraries/javalib/java/rmi/server/RMIClientSocketFactory.java,
+        libraries/javalib/java/rmi/server/RMIFailureHandler.java,
+        libraries/javalib/java/rmi/server/RMIServerSocketFactory.java,
+        libraries/javalib/java/rmi/server/RMISocketFactory.java,
+        libraries/javalib/java/rmi/server/RemoteCall.java,
+        libraries/javalib/java/rmi/server/RemoteObject.java,
+        libraries/javalib/java/rmi/server/RemoteRef.java,
+        libraries/javalib/java/rmi/server/RemoteServer.java,
+        libraries/javalib/java/rmi/server/RemoteStub.java,
+        libraries/javalib/java/rmi/server/ServerRef.java,
+        libraries/javalib/java/rmi/server/Skeleton.java,
+        libraries/javalib/java/rmi/server/UID.java,
+        libraries/javalib/java/rmi/server/UnicastRemoteObject.java,
+        libraries/javalib/java/rmi/server/Unreferenced.java:
+	Replaced by implementation from GNU Classpath.
+	
+        * libraries/javalib/kaffe/rmi/dgc/DGCImpl.java,
+        libraries/javalib/kaffe/rmi/dgc/DGCImpl_Skel.java,
+        libraries/javalib/kaffe/rmi/dgc/DGCImpl_Stub.java,
+        libraries/javalib/kaffe/rmi/registry/RegistryImpl.java,
+        libraries/javalib/kaffe/rmi/registry/RegistryImpl_Skel.java,
+        libraries/javalib/kaffe/rmi/registry/RegistryImpl_Stub.java,
+        libraries/javalib/kaffe/rmi/rmic/RMIC.java,
+        libraries/javalib/kaffe/rmi/rmic/TabbedWriter.java,
+        libraries/javalib/kaffe/rmi/server/ProtocolConstants.java,
+        libraries/javalib/kaffe/rmi/server/RMIDefaultSocketFactory.java,
+        libraries/javalib/kaffe/rmi/server/RMIHashes.java,
+        libraries/javalib/kaffe/rmi/server/RMIObjectInputStream.java,
+        libraries/javalib/kaffe/rmi/server/RMIObjectOutputStream.java,
+        libraries/javalib/kaffe/rmi/server/UnicastConnection.java,
+        libraries/javalib/kaffe/rmi/server/UnicastConnectionManager.java,
+        libraries/javalib/kaffe/rmi/server/UnicastRef.java,
+        libraries/javalib/kaffe/rmi/server/UnicastRemoteCall.java,
+        libraries/javalib/kaffe/rmi/server/UnicastRemoteStub.java,
+        libraries/javalib/kaffe/rmi/server/UnicastServer.java,
+        libraries/javalib/kaffe/rmi/server/UnicastServerRef.java,
+        libraries/javalib/kaffe/tools/compiler/Compiler.java,
+        libraries/javalib/kaffe/tools/compiler/Compiler_default.java,
+        libraries/javalib/kaffe/tools/compiler/Compiler_jikes.java,
+        libraries/javalib/kaffe/tools/compiler/Compiler_kjc.java,
+        libraries/javalib/kaffe/tools/compiler/Compiler_pizza.java:
+	Removed.
+	
 2003-08-16  Jim Pick  <jim@kaffe.org>
 
 	* test/regression/TestScript.in:

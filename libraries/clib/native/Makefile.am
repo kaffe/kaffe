@@ -28,7 +28,6 @@ LANG_SRCS = \
 		NativeLibrary.c \
 		Object.c \
 		PrimordialClassLoader.c \
-		RMIHashes.c \
 		Runtime.c \
 		String.c \
 		System.c \
