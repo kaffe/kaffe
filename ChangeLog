@@ -2,6 +2,18 @@
 
 	* libraries/javalib/gnu/java/locale/LocaleInformation_de.java,
 	libraries/javalib/gnu/java/locale/LocaleInformation_de_DE.java:
+        Resynced with GNU Classpath.
+
+	2004-12-17  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/locale/LocaleInformation_de.java,
+        gnu/java/locale/LocaleInformation_de_DE.java:
+        Updated.
+
+2004-12-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/gnu/java/locale/LocaleInformation_de.java,
+	libraries/javalib/gnu/java/locale/LocaleInformation_de_DE.java:
 	Resynced with GNU Classpath.
 
 	2004-12-17  Michael Koch  <konqueror@gmx.de>

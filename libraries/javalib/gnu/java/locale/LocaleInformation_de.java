@@ -406,7 +406,6 @@ public class LocaleInformation_de extends ListResourceBundle
     { "fullDateFormat", "EEEE, d. MMMM yyyy" },
     { "fullTimeFormat", "H:mm' Uhr 'z" },
     { "zoneStrings", zoneStrings },
-    { "territories", territories },
     { "defaultDateFormat", defaultDateFormat },
     { "shortTimeFormat", shortTimeFormat },
     { "mediumTimeFormat", mediumTimeFormat },
@@ -414,6 +413,7 @@ public class LocaleInformation_de extends ListResourceBundle
     { "currencySymbol", currencySymbol },
     { "intlCurrencySymbol", intlCurrencySymbol },
     { "monetarySeparator", monetarySeparator },
+    { "territories", territories }
   };
 
   public Object[][] getContents() { return contents; }
