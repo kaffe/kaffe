@@ -1,3 +1,8 @@
+Tue May 14 21:04:22 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/lang/reflect/Field.java:
+	(set) fixed bug with widening.
+
 Tue May 14 20:59:36 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/clib/native/Field.c:

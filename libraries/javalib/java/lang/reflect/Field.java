@@ -209,28 +209,30 @@ public short getShort(Object obj) throws IllegalArgumentException, IllegalAccess
 }
 
 public void set(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException {
-	if (type == Boolean.TYPE) {
+	Class valtype = value.getClass();
+
+	if (valtype == Boolean.TYPE) {
 		setBoolean0(obj, ((Boolean)value).booleanValue());
 	}
-	else if (type == Byte.TYPE) {
+	else if (valtype == Byte.TYPE) {
 		setByte0(obj, ((Byte)value).byteValue());
 	}
-	else if (type == Short.TYPE) {
+	else if (valtype == Short.TYPE) {
 		setShort0(obj, ((Short)value).shortValue());
 	}
-	else if (type == Character.TYPE) {
+	else if (valtype == Character.TYPE) {
 		setChar0(obj, ((Character)value).charValue());
 	}
-	else if (type == Integer.TYPE) {
+	else if (valtype == Integer.TYPE) {
 		setInt0(obj, ((Integer)value).intValue());
 	}
-	else if (type == Long.TYPE) {
+	else if (valtype == Long.TYPE) {
 		setLong0(obj, ((Long)value).longValue());
 	}
-	else if (type == Float.TYPE) {
+	else if (valtype == Float.TYPE) {
 		setFloat0(obj, ((Float)value).floatValue());
 	}
-	else if (type == Double.TYPE) {
+	else if (valtype == Double.TYPE) {
 		setDouble0(obj, ((Double)value).doubleValue());
 	}
 	else {
