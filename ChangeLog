@@ -1,5 +1,11 @@
 2004-12-14  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/i386/threads.h:
+	(THREADSTACKSIZE) doubled to 128k with jit, and 256 with intrp
+	to hopefully make dom2 test suite run on gump.
+
+2004-12-14  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/external.c:
 	Improved initial native library lookup debug output.
 
