@@ -1921,6 +1921,7 @@ win32*)
 	jnicall_define=""
 	jniexport_define=""
 	;;
+esac
 
 AC_DEFINE_UNQUOTED(JNICALL, [$jnicall_define])
 AC_DEFINE_UNQUOTED(JNIEXPORT, [$jniexport_define])

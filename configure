@@ -54579,6 +54579,7 @@ win32*)
 	jnicall_define=""
 	jniexport_define=""
 	;;
+esac
 
 cat >>confdefs.h <<_ACEOF
 #define JNICALL $jnicall_define
