@@ -55,6 +55,8 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_antlr.m4 \
 	$(top_srcdir)/m4/ac_prog_java.m4 \
 	$(top_srcdir)/m4/ac_prog_java_works.m4 \
+	$(top_srcdir)/m4/ac_prog_javac.m4 \
+	$(top_srcdir)/m4/ac_prog_javac_works.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/compile_value.m4 \
@@ -195,6 +197,7 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INTLLIBS = @INTLLIBS@
 JASMIN = @JASMIN@
 JAVA = @JAVA@
+JAVAC = @JAVAC@
 JAVAC_FLAGS = @JAVAC_FLAGS@
 JAVA_LIBS = @JAVA_LIBS@
 JIKES = @JIKES@
