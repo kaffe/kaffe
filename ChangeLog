@@ -1,5 +1,8 @@
 1999-10-16  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
+	* libraries/javalib/kaffe/lang/SystemClassLoader.java
+	(findResources): Explicitly replace fileSep with '/'.
+
 	* configure.in (HAVE_DECLARED_SWAB): Don't let the cache prevent
 	us from defining it.
 	* configure, config/config.h.in: Rebuilt.

@@ -72,7 +72,7 @@ public Enumeration findResources(String name) throws IOException {
 				ZipEntry entry = zip.getEntry(name);
 				if (entry != null && !entry.isDirectory()) {
 				    URL ju = new URL("jar:file:"
-					+ file.getCanonicalPath() + "!/" + entry.getName());
+					+ file.getCanonicalPath().replace(File.separatorChar, '/') + "!/" + entry.getName());
 				    v.addElement(ju);
 				}
 			} catch (IOException e) {
