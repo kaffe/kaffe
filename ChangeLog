@@ -1,5 +1,15 @@
 2004-11-26  Dalibor Topic  <robilad@kaffe.org>
 
+	*  libraries/javalib/gnu/java/nio/FileLock.java:
+        Resynced with GNU Classpath.
+
+	2004-11-18  Casey Marshall  <csm@gnu.org>
+
+        * gnu/java/nio/FileLock.java (isValid): locks are valid if the
+        channel is open.
+
+2004-11-26  Dalibor Topic  <robilad@kaffe.org>
+
 	*  libraries/javalib/java/awt/print/PrinterJob.java:
         Resynced with GNU Classpath.
 
