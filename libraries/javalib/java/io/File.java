@@ -26,23 +26,30 @@ static {
 }
 
 public File(File dir, String name) {
-	if (dir == null) {
-		this.path = name;
-	}
+        this((dir == null) ? null : dir.getPath(), name);
+}
+
+public File(String path, String name) {
+	if (name == null)
+	    throw new NullPointerException();
+	if (path == null)
+	   this.path = name;
+	else if (path.length() == 0)
+	   this.path = separatorChar + name;
 	else {
-		this.path = dir.getPath() + separatorChar + name;
+		char last = path.charAt(path.length() - 1);
+
+		if (last != separatorChar)
+			this.path = path + separatorChar + name;
+		else
+			this.path = path + name;
 	}
 }
 
 public File(String path) {
+	if (path == null)
+		throw new NullPointerException();
 	this.path = path;
-}
-
-public File(String path, String name) {
-	if (path == null) {
-		path = ".";
-	}
-	this.path = path + separatorChar + name;
 }
 
 public boolean canRead() {

@@ -1,3 +1,8 @@
+Wed Jan 27 19:08:12 1999  Moses DeJong <dejong@cs.umn.edu>
+
+	* libraries/javalib/java/io/File.java: fix bugs and
+	bring up to spec wrt JDK 1.2
+
 Wed Jan 27 05:37:43 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* ltconfig, ltmain.sh: minor update for new warning messages
