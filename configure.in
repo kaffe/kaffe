@@ -21,13 +21,12 @@ AC_ARG_WITH(includes,
 
 AC_ARG_WITH(libraries,
   [  --with-libraries=dirs   Search for libraries in specified directories],
-  [ LDFLAGS="$LDFLAGS"`echo " $withval" |
+  [ LIBS="$LIBS"`echo " $withval" |
 	sed -e 's/ / -L/g' -e 's/-L //g' -e 's/-L$//'`
-    LTLDFLAGS="$LTLDFLAGS"`echo " $withval" |
+    LTLIBS="$LTLIBS"`echo " $withval" |
 	sed -e 's/ / -R/g' -e 's/-R //g' -e 's/-R$//'`],
-dnl No -R/usr/local/lib by default, as it is usually already searched
-dnl by dynamic linkers.
-  [ LDFLAGS="$LDFLAGS -L/usr/local/lib" ])
+  [ LIBS="$LIBS -L/usr/local/lib"
+    LTLIBS="$LTLIBS -R/usr/local/lib"])
 
 dnl Find the compiler early on in case we need to override.
 AC_PROG_CC
@@ -873,7 +872,7 @@ AC_SUBST(Kaffe_TRANSF)
 
 dnl These are not to be used during configuration, only during build.
 CPPFLAGS="-DKVER='\"\$(KVER)\"' -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
-LDFLAGS="$LDFLAGS $LTLDFLAGS"
+LIBS="$LIBS $LTLIBS"
 
 AC_CONFIG_SUBDIRS(libltdl)
 AM_CONFIG_HEADER(config/config.h include/jtypes.h)

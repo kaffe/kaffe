@@ -1,3 +1,9 @@
+1999-04-23  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in: Add -L and -R switches to LIBS, not LDFLAGS, so
+	that we don't use a pre-installed libkaffevm in /usr/local/lib.
+	* aclocal.m4, configure, */Makefile.in: Regen.
+
 Fri Apr 23 11:12:16 PDT 1999	Tim Wilkinson	<tim@transvirtual.com>
 
 	* TVT custom source merge.

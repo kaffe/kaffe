@@ -59,6 +59,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
+AMTAR = @AMTAR@
 AMTARFLAGS = @AMTARFLAGS@
 AS = @AS@
 AWT_DIR = @AWT_DIR@
@@ -103,7 +104,6 @@ PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
 RANLIB = @RANLIB@
 REGEN_FORWARD = @REGEN_FORWARD@
-TAR = @TAR@
 THREAD_DIR = @THREAD_DIR@
 THREAD_SYSTEM = @THREAD_SYSTEM@
 VERSION = @VERSION@
@@ -345,13 +345,14 @@ EXTRA_DIST = \
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h ../include/jtypes.h
 CONFIG_CLEAN_FILES = 
+DIST_SOURCES = 
 HEADERS =  $(noinst_HEADERS)
 
 DIST_COMMON =  $(noinst_HEADERS) ./stamp-h1.in Makefile.am Makefile.in \
-acconfig.h config.h.in
+config.h.in
 
 
-DISTFILES = $(DIST_COMMON) $(SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
 GZIP_ENV = --best
 all: all-redirect
@@ -370,18 +371,22 @@ config.h: stamp-h1
 		$(MAKE) stamp-h1; \
 	else :; fi
 stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
+	@rm -f stamp-h1 stamp-h1T
+	@echo timestamp > stamp-h1T 2> /dev/null
 	cd $(top_builddir) \
 	  && CONFIG_FILES= CONFIG_HEADERS=config/config.h \
 	     $(SHELL) ./config.status
-	@echo timestamp > stamp-h1 2> /dev/null
-$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/stamp-h1.in
+	@mv stamp-h1T stamp-h1
+$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/./stamp-h1.in
 	@if test ! -f $@; then \
-		rm -f $(srcdir)/stamp-h1.in; \
-		$(MAKE) $(srcdir)/stamp-h1.in; \
+		rm -f $(srcdir)/./stamp-h1.in; \
+		$(MAKE) $(srcdir)/./stamp-h1.in; \
 	else :; fi
-$(srcdir)/stamp-h1.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) acconfig.h
+$(srcdir)/./stamp-h1.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	@rm -f $(srcdir)/./stamp-h1.in $(srcdir)/./stamp-h1.inT
+	@echo timestamp > $(srcdir)/./stamp-h1.inT 2> /dev/null
 	cd $(top_srcdir) && $(AUTOHEADER)
-	@echo timestamp > $(srcdir)/stamp-h1.in 2> /dev/null
+	@mv $(srcdir)/./stamp-h1.inT $(srcdir)/./stamp-h1.in
 
 mostlyclean-hdr:
 

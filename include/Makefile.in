@@ -59,6 +59,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
+AMTAR = @AMTAR@
 AMTARFLAGS = @AMTARFLAGS@
 AS = @AS@
 AWT_DIR = @AWT_DIR@
@@ -103,7 +104,6 @@ PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
 RANLIB = @RANLIB@
 REGEN_FORWARD = @REGEN_FORWARD@
-TAR = @TAR@
 THREAD_DIR = @THREAD_DIR@
 THREAD_SYSTEM = @THREAD_SYSTEM@
 VERSION = @VERSION@
@@ -206,13 +206,14 @@ CLEANFILES = $(DERIVED_HDRS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config/config.h jtypes.h
 CONFIG_CLEAN_FILES = 
+DIST_SOURCES = 
 HEADERS =  $(noinst_HEADERS) $(pkginclude_HEADERS)
 
 DIST_COMMON =  $(noinst_HEADERS) $(pkginclude_HEADERS) ./stamp-h2.in \
 Makefile.am Makefile.in jtypes.h.in
 
 
-DISTFILES = $(DIST_COMMON) $(SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
 GZIP_ENV = --best
 all: all-redirect
@@ -231,18 +232,22 @@ jtypes.h: stamp-h2
 		$(MAKE) stamp-h2; \
 	else :; fi
 stamp-h2: $(srcdir)/jtypes.h.in $(top_builddir)/config.status
+	@rm -f stamp-h2 stamp-h2T
+	@echo timestamp > stamp-h2T 2> /dev/null
 	cd $(top_builddir) \
 	  && CONFIG_FILES= CONFIG_HEADERS=include/jtypes.h \
 	     $(SHELL) ./config.status
-	@echo timestamp > stamp-h2 2> /dev/null
-$(srcdir)/jtypes.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/stamp-h2.in
+	@mv stamp-h2T stamp-h2
+$(srcdir)/jtypes.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/./stamp-h2.in
 	@if test ! -f $@; then \
-		rm -f $(srcdir)/stamp-h2.in; \
-		$(MAKE) $(srcdir)/stamp-h2.in; \
+		rm -f $(srcdir)/./stamp-h2.in; \
+		$(MAKE) $(srcdir)/./stamp-h2.in; \
 	else :; fi
-$(srcdir)/stamp-h2.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+$(srcdir)/./stamp-h2.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	@rm -f $(srcdir)/./stamp-h2.in $(srcdir)/./stamp-h2.inT
+	@echo timestamp > $(srcdir)/./stamp-h2.inT 2> /dev/null
 	cd $(top_srcdir) && $(AUTOHEADER)
-	@echo timestamp > $(srcdir)/stamp-h2.in 2> /dev/null
+	@mv $(srcdir)/./stamp-h2.inT $(srcdir)/./stamp-h2.in
 
 mostlyclean-hdr:
 
