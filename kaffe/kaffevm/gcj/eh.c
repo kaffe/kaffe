@@ -20,6 +20,7 @@
 #if defined(HAVE_GCJ_SUPPORT) && defined(JIT3) && defined(TRANSLATOR)
 
 #include "gtypes.h"
+#include "debug.h"
 #include "md.h"
 #include "gansidecl.h"
 
@@ -419,7 +420,7 @@ __eh_rtime_match (void *rtime)
   if (! matcher)
     {
 #ifndef inhibit_libc
-      fprintf (stderr, "Internal Compiler Bug: No runtime type matcher.");
+      dprintf("Internal Compiler Bug: No runtime type matcher.");
 #endif
       return 0;
     }

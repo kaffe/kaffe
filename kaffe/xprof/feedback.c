@@ -23,6 +23,7 @@
 #include "classMethod.h"
 #include "lookup.h"
 #include "support.h"
+#include "debug.h"
 #include "stringSupport.h"
 #include "methodCache.h"
 #include "thread.h"
@@ -159,7 +160,7 @@ static int feedbackWalker(void *arg,
 						}
 						else
 						{
-							fprintf(stderr,
+							dprintf(
 								"Feedback: "
 								" Precompile "
 								"failed for "
@@ -169,7 +170,7 @@ static int feedbackWalker(void *arg,
 					}
 					else if( !meth )
 					{
-						fprintf(stderr,
+						dprintf(
 							"Feedback: Didn't "
 							"find method"
 							" %s\n",
@@ -178,7 +179,7 @@ static int feedbackWalker(void *arg,
 				}
 				else
 				{
-					fprintf(stderr,
+					dprintf(
 						"Feedback: Couldn't load "
 						"class %s\n",
 						u8cname->data);
@@ -189,7 +190,7 @@ static int feedbackWalker(void *arg,
 			}
 			else
 			{
-				fprintf(stderr,
+				dprintf(
 					"Feedback: Malformed method `%s'\n",
 					full_name);
 			}
@@ -201,7 +202,7 @@ static int feedbackWalker(void *arg,
 			if( !precompile_msg )
 			{
 				precompile_msg = 1;
-				fprintf(stderr,
+				dprintf(
 					"Feedback: Cannot precompile java for "
 					"the interpreter\n");
 			}

@@ -502,7 +502,7 @@ kenvFindClassByAddress(void *gcjclazz)
 
 	kclass = kenvFindClassByAddress2(gcjclazz, &info);
 	if (kclass == 0) {
-		fprintf(stderr, "GCJ: Missing needed class @%p\n", gcjclazz);
+		dprintf("GCJ: Missing needed class @%p\n", gcjclazz);
 		throwError(&info);
 	}
 	return (kclass);
@@ -561,7 +561,7 @@ tryCache(Hjava_lang_Class *kclass, const char *mname, const char *msig)
 static long long cachehits;
 static long long cachemisses;
 void printInterfaceCacheStats() {
-	fprintf(stderr, "GCJ interface cache: %qd hits, %qd misses\n",
+	dprintf("GCJ interface cache: %qd hits, %qd misses\n",
 		cachehits, cachemisses);
 }
 #endif

@@ -85,7 +85,7 @@ DBG(CLASSGC,
 	}
 
 	if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0 && clazz->name) {
-		fprintf(stderr, "<GC: unloading class `%s'>\n", 
+		dprintf("<GC: unloading class `%s'>\n", 
 			CLASS_CNAME(clazz));
 	}
 

@@ -16,6 +16,7 @@
 #include "config-std.h"
 #include "config-setjmp.h"
 #include "gtypes.h"
+#include "debug.h"
 #include "classMethod.h"
 #include "stackTrace.h"
 #include "thread.h"
@@ -65,10 +66,10 @@ static void *
 gcjMatcher(gcjException* einfo, void* match_info, void* exception_table)
 {
 DBG(GCJ,
-	fprintf(stderr, __FUNCTION__": match_info %p\n", match_info);
+	dprintf(__FUNCTION__": match_info %p\n", match_info);
     )
 	if (__get_eh_table_language (exception_table) != EH_LANG_Java) {
-DBG(GCJ,	fprintf(stderr, __FUNCTION__":not java, ignored\n"); 
+DBG(GCJ,	dprintf(__FUNCTION__":not java, ignored\n"); 
 	)
 		return (0);
 	}
@@ -112,7 +113,7 @@ _Jv_exception_info(void)
 	gcjException *einf = *(__get_eh_info());
 
 	if (einf == 0) {
-		fprintf(stderr, "Attempt to catch an exception "
+		dprintf("Attempt to catch an exception "
 				"before throwing one.  This is bad.\n");
 		ABORT();
 	}
@@ -210,8 +211,8 @@ dumpFS(char *label, struct frame_state *s)
 {
 	int i;
 
-	fprintf(stderr, "%s: frame_state %p\n", label, s);
-	fprintf(stderr, "cfa = %p, eh_ptr = %p, "
+	dprintf("%s: frame_state %p\n", label, s);
+	dprintf("cfa = %p, eh_ptr = %p, "
 			"cfa_offset = %ld, args_size = %ld\n",
 			s->cfa, s->eh_ptr, s->cfa_offset, s->args_size);
 	for (i = 0; i <= DWARF_FRAME_REGISTERS; i++) {
@@ -222,10 +223,10 @@ dumpFS(char *label, struct frame_state *s)
 					 */
 			continue;
 		}
-		fprintf(stderr, "{%2d: %s %4ld}%c", i, w, s->reg_or_offset[i],
+		dprintf("{%2d: %s %4ld}%c", i, w, s->reg_or_offset[i],
 				((i+1) % 8 == 0) ? '\n' : ' ');
 	}
-	fprintf(stderr, "\ncfa_reg = %d, retaddr_column = %d\n---- eofs ----\n",
+	dprintf("\ncfa_reg = %d, retaddr_column = %d\n---- eofs ----\n",
 		s->cfa_reg, s->retaddr_column);
 	fflush(stderr);
 }

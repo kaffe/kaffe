@@ -6,6 +6,7 @@
 #include "jthread.h"
 #endif
 #include "support.h"
+#include "debug.h"
 #include "stats.h"
 
 counter jitmem;
@@ -117,67 +118,64 @@ statsReport(void)
 		return;	/* user doesn't want to see any counters */
 	}
 
-#if defined(JTHREAD_RESTORE_FD)
-	jthreadRestoreFD(2);
-#endif
 	if (ntimers > 0) {
-		fprintf(stderr, "#FACILITY\tUSER TIME\tSYSTEM TIME\tCALLS\n"
+		dprintf("#FACILITY\tUSER TIME\tSYSTEM TIME\tCALLS\n"
 			"#--------------- --------------- "
 			"--------------- ---------------\n");
 	}
 	for (p = counters; p; p = p->next) {
 		if (reportCounter(p, STAT_TIMING)) {
-			fprintf(stderr, "%-15s %8d.%06d %8d.%06d %15d\n",
+			dprintf("%-15s %8d.%06d %8d.%06d %15d\n",
 				p->name, p->total.tv_sec, p->total.tv_usec,
 				p->stotal.tv_sec, p->stotal.tv_usec,
 				p->calls);
 		}
 	}
 	if (ntimers > 0) {
-		fprintf(stderr, "%-15s %8d.%06d %8d.%06d\n",
+		dprintf("%-15s %8d.%06d %8d.%06d\n",
 			"TOTAL",
 			tot_usage.ru_utime.tv_sec, tot_usage.ru_utime.tv_usec,
 			tot_usage.ru_stime.tv_sec, tot_usage.ru_stime.tv_usec);
 	}
 
 	if (ncounters > 0) {
-		fprintf(stderr, "#\n#HIT COUNTERS\n");
-		fprintf(stderr, "%-30s %8s\n", "#FACILITY", "HITS");
-		fprintf(stderr, "%-30s %8s\n", 
+		dprintf("#\n#HIT COUNTERS\n");
+		dprintf("%-30s %8s\n", "#FACILITY", "HITS");
+		dprintf("%-30s %8s\n", 
 			"#-----------------------------", "--------");
 	}
 	for (p = counters; p; p = p->next) {
 		if (reportCounter(p, STAT_COUNT)) {
-			fprintf(stderr, "%-30s %8d\n",
+			dprintf("%-30s %8d\n",
 				p->name, p->calls);
 		}
 	}
 
 	if (ncumcounters > 0) {
-		fprintf(stderr, "#\n#CUMULATIVE COUNTERS\n");
-		fprintf(stderr, "%-25s %-11s %-14s %-14s %-11s\n",
+		dprintf("#\n#CUMULATIVE COUNTERS\n");
+		dprintf("%-25s %-11s %-14s %-14s %-11s\n",
 			"#FACILITY", "VISITS", "FINAL", "MAX", "AVG PER HIT");
-		fprintf(stderr, "%-25s %-11s %14s %14s %11s\n",
+		dprintf("%-25s %-11s %14s %14s %11s\n",
 			"#------------------------", "-----------", 
 			"--------------", "--------------", 
 			"-----------");
 	}
 	for (p = counters; p; p = p->next) {
 		if (reportCounter(p, STAT_CUMULATE)) {
-			fprintf(stderr, "%-25s %11d %14qd %14qd %11.2f\n",
+			dprintf("%-25s %11d %14qd %14qd %11.2f\n",
 				p->name, p->calls, p->cumtotal, p->max,
 				p->cumtotal/(double)p->calls);
 		}
 	}
 
 	if (nusercounters > 0) {
-		fprintf(stderr, "#\n#USER-DEFINED COUNTERS\n");
+		dprintf("#\n#USER-DEFINED COUNTERS\n");
 	}
 	for (p = counters; p; p = p->next) {
 		if (reportCounter(p, STAT_USER)) {
-			fprintf(stderr, "#<------ BEGIN `%s' ------>\n", p->name);
+			dprintf("#<------ BEGIN `%s' ------>\n", p->name);
 			p->userfunc();
-			fprintf(stderr, "#<------ END `%s' ------>\n", p->name);
+			dprintf("#<------ END `%s' ------>\n", p->name);
 		}
 	}
 }

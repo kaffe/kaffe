@@ -248,13 +248,13 @@ checkClass(Hjava_lang_Class *c, Hjava_lang_ClassLoader *loader)
 			 * know what process a class came from.
 			 */
 			if (entry->class == c && entry->loader != loader) {
-				fprintf(stderr, "class %s@%p ",
+				dprintf("class %s@%p ",
 					describeObject(c), c);
-				fprintf(stderr, " referenced by initiating"
+				dprintf(" referenced by initiating"
 					" loader %s@%p",
 					describeObject(entry->loader),
 					entry->loader);
-				fprintf(stderr, " but not defining loader"
+				dprintf(" but not defining loader"
 					" %s@%p\n",
 					describeObject(loader),
 					loader);
@@ -347,7 +347,7 @@ statClass(Hjava_lang_Class *clazz, int *total)
 		}
 	}
 
-	fprintf(stderr, "%7d %7d %7d %7d %s\n",
+	dprintf("%7d %7d %7d %7d %s\n",
 		misc,
 		miscfixed,
 		jitmem,
@@ -366,13 +366,13 @@ statClassPool(void)
 	int total[20];
 		 
 	memset(total, 0, sizeof total);
-	fprintf(stderr, "#DUMPING CLASSPOOL MEMORY\n");
-	fprintf(stderr, "%-7s %-7s %-7s %-7s %-7s\n",
+	dprintf("#DUMPING CLASSPOOL MEMORY\n");
+	dprintf("%-7s %-7s %-7s %-7s %-7s\n",
 		"#MISC", "MISCFIX", "JCODE", "BCODE", "CLASS");
-	fprintf(stderr, "%-7s %-7s %-7s %-7s %-7s\n",
+	dprintf("%-7s %-7s %-7s %-7s %-7s\n",
 		"#------", "-------", "-------", "-------", "--------------\n");
 	walkClassPool(statClass, total);
-	fprintf(stderr, "%7.2f %7.2f %7.2f %7.2f KBytes\n",
+	dprintf("%7.2f %7.2f %7.2f %7.2f KBytes\n",
 		total[0]/1024.0, total[1]/1024.0, total[2]/1024.0,
 		total[3]/1024.0);
 	fflush(stderr);

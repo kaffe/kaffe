@@ -61,7 +61,7 @@ main(int argc, char* argv[])
 		/* Derive various names from class name */
 		for (i = 0; nm[i] != 0; i++) {
 			if (i >= BUFSZ - 100) {
-				fprintf(stderr,
+				dprintf(
 				    "kaffeh: class name too long\n");
 				exit(1);
 			}
@@ -120,7 +120,7 @@ main(int argc, char* argv[])
 			FILE *fp;
 
 			if ((fp = fopen(fileName, "w")) == NULL) {
-				fprintf(stderr,
+				dprintf(
 				    "Failed to create '%s'.\n", fileName);
 				exit(1);
 			}
@@ -183,10 +183,10 @@ options(char** argv)
 			exit(0);
 		}
 		else if (strcmp(argv[i], "-version") == 0) {
-			fprintf(stderr, "Kaffeh Stub Generator\n");
-			fprintf(stderr, "Copyright (c) 1996, 1997\nTransvirtual Technologies, Inc.  All rights reserved\n");
+			dprintf("Kaffeh Stub Generator\n");
+			dprintf("Copyright (c) 1996, 1997\nTransvirtual Technologies, Inc.  All rights reserved\n");
 
-			fprintf(stderr, "Version: %s\n", KVER);
+			dprintf("Version: %s\n", KVER);
 			exit(0);
 		}
 		else if (strcmp(argv[i], "-base") == 0) {
@@ -208,7 +208,7 @@ options(char** argv)
 			directoryName = argv[i];
 		}
 		else {
-			fprintf(stderr, "Unknown flag: %s\n", argv[i]);
+			dprintf("Unknown flag: %s\n", argv[i]);
 		}
 	}
 
@@ -223,12 +223,12 @@ static
 void
 usage(void)
 {
-	fprintf(stderr, "usage: kaffeh [-options] class ...\n");
-	fprintf(stderr, "Options are:\n");
-	fprintf(stderr, "	-help			Print this message\n");
-	fprintf(stderr, "	-version		Print version number\n");
-	fprintf(stderr, "	-classpath <path>	Set classpath\n");
-	fprintf(stderr, "	-jni			Generate JNI interface\n");
-	fprintf(stderr, "	-o <file>		Generate all output to the given file\n");
-	fprintf(stderr, "	-d <directory>		Directory for the output\n");
+	dprintf("usage: kaffeh [-options] class ...\n");
+	dprintf("Options are:\n");
+	dprintf("	-help			Print this message\n");
+	dprintf("	-version		Print version number\n");
+	dprintf("	-classpath <path>	Set classpath\n");
+	dprintf("	-jni			Generate JNI interface\n");
+	dprintf("	-o <file>		Generate all output to the given file\n");
+	dprintf("	-d <directory>		Directory for the output\n");
 }

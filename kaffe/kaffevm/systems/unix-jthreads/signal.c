@@ -18,6 +18,7 @@
 #include "jthread.h"
 #include "jsignal.h"
 #include "md.h"
+#include "gc.h"
 
 #if defined(INTERPRETER)
 #define	DEFINEFRAME()		/* Does nothing */
@@ -69,7 +70,13 @@ static void
 nullException(EXCEPTIONPROTO)
 {
 	DEFINEFRAME();
-
+#ifdef __FreeBSD__
+	if ((uintp) ctx->sc_err > gc_heap_base) {
+		dprintf("accessing free page %p (above %p)\n",
+			(void*) ctx->sc_err, (void *) gc_heap_base);
+		abort();
+	}
+#endif
 	/* Restore the signal handler if necessary */
 	restoreSyncSignalHandler(sig, nullException);
 

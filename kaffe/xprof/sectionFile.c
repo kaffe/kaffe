@@ -23,6 +23,7 @@
 
 #include "jmalloc.h"
 #include "stringSupport.h"
+#include "debug.h"
 
 #include "sectionFile.h"
 
@@ -278,7 +279,7 @@ static int parseDirective(struct parse_state *ps, int curr)
 			if( !syncFile(ps, ps->ps_section_file,
 				      args + name_start + 1) )
 			{
-				fprintf(stderr,
+				dprintf(
 					"Error:%s:%d:%d - Unable to process "
 					"file %s.\n",
 					ps->ps_filename,
@@ -290,7 +291,7 @@ static int parseDirective(struct parse_state *ps, int curr)
 		}
 		else
 		{
-			fprintf(stderr,
+			dprintf(
 				"Error:%s:%d:%d - %%include directive needs "
 				"a quoted filename.\n",
 				ps->ps_filename,
@@ -321,7 +322,7 @@ static int parseDirective(struct parse_state *ps, int curr)
 		{
 		case SFS_INVALID:
 			retval = 0;
-			fprintf(stderr,
+			dprintf(
 				"Error:%s:%d - Invalid characters in section "
 				"name\n",
 				ps->ps_filename,
@@ -419,7 +420,7 @@ static int parseDirective(struct parse_state *ps, int curr)
 	}
 	else
 	{
-		fprintf(stderr,
+		dprintf(
 			"Error:%s:%d - Directive `%s' is not valid\n",
 			ps->ps_filename,
 			ps->ps_line,
@@ -527,7 +528,7 @@ static int parseFile(struct parse_state *ps)
 			}
 			else
 			{
-				fprintf(stderr,
+				dprintf(
 					"Error:%s:%d:%d - Text outside of "
 					"section\n",
 					ps->ps_filename,
@@ -642,7 +643,7 @@ static int writeFile(struct parse_state *ps)
 		}
 		else
 		{
-			fprintf(stderr,
+			dprintf(
 				"Error: Unable to sync file %s\n",
 				ps->ps_filename);
 		}
@@ -663,7 +664,7 @@ static int writeFile(struct parse_state *ps)
 	}
 	else
 	{
-		fprintf(stderr,
+		dprintf(
 			"Error: Unable to create temporary file for "
 			"rewriting %s.\n",
 			ps->ps_filename);

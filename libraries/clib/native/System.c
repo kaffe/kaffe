@@ -34,6 +34,7 @@
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/external.h"
 #include "../../../kaffe/kaffevm/soft.h"
+#include "../../../kaffe/kaffevm/debug.h"
 #include "../../../include/system.h"
 #include "defs.h"
 #include "java_io_InputStream.h"
@@ -499,7 +500,7 @@ java_lang_System_debug(struct Hjava_lang_String *str)
 	char *s;
 
 	s = checkPtr(stringJava2C(str));
-	fprintf(stderr, "%s\n", s);
+	dprintf("%s\n", s);
 	KFREE(s);
 }
 
@@ -515,10 +516,10 @@ java_lang_System_debugE(struct Hjava_lang_Throwable *t)
 
 	if (msg) {
 		s = checkPtr(stringJava2C(msg));
-		fprintf(stderr, "%s: %s\n", cname, s);
+		dprintf("%s: %s\n", cname, s);
 		KFREE(s);
 	} else {
-		fprintf(stderr, "%s\n", cname);
+		dprintf("%s\n", cname);
 	}
 	printStackTrace(t, 0, 1);
 }

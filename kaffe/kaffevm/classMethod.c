@@ -1105,7 +1105,7 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 	}
 
 bad:
-	fprintf(stderr, "Couldn't find or load essential class `%s' %s %s\n", 
+	dprintf("Couldn't find or load essential class `%s' %s %s\n", 
 			name, info.classname, (char*)info.mess);
 	ABORT();
 }

@@ -16,6 +16,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
+#include "debug.h"
 #include "classMethod.h"
 #include "jtypes.h"
 #include "native.h"
@@ -119,7 +120,7 @@ main(int argc, char* argv[])
 	{
 		if( !enableXCallGraph() )
 		{
-			fprintf(stderr,
+			dprintf(
 				"Unable to initialize cross "
 				"language profiling\n");
 			xProfFlag = 0;
@@ -298,7 +299,7 @@ options(char** argv)
 		else if (strcmp(argv[i], "-classpath") == 0) {
 			i++;
 			if (argv[i] == 0) {
-				fprintf(stderr,
+				dprintf(
 				    "Error: No path found for %s option.\n",
 				    "-classpath");
 				exit(1);
@@ -310,7 +311,7 @@ options(char** argv)
 
 			i++;
 			if (argv[i] == 0) {
-				fprintf(stderr,
+				dprintf(
 				    "Error: No path found for %s option.\n",
 				    "-addclasspath");
 				exit(1);
@@ -320,7 +321,7 @@ options(char** argv)
 			if ((newcpath = malloc(strlen(vmargs.classpath)
 			    + strlen(path_separator)
 			    + strlen(argv[i]) + 1)) == NULL) {
-				fprintf(stderr, "Error: out of memory.\n");
+				dprintf( "Error: out of memory.\n");
 				exit(1);
 			}
 
@@ -334,7 +335,7 @@ options(char** argv)
 			if (argv[i][3] == 0) {
 				i++;
 				if (argv[i] == 0) {
-					fprintf(stderr, "Error: No stack size found for -ss option.\n");
+					dprintf( "Error: No stack size found for -ss option.\n");
 					exit(1);
 				}
 				sz = parseSize(argv[i]);
@@ -342,7 +343,7 @@ options(char** argv)
 				sz = parseSize(&argv[i][3]);
 			}
 			if (sz < THREADSTACKSIZE) {
-				fprintf(stderr, "Warning: Attempt to set stack size smaller than %d - ignored.\n", THREADSTACKSIZE);
+				dprintf( "Warning: Attempt to set stack size smaller than %d - ignored.\n", THREADSTACKSIZE);
 			}
 			else {
 				vmargs.nativeStackSize = sz;
@@ -352,7 +353,7 @@ options(char** argv)
 			if (argv[i][3] == 0) {
 				i++;
 				if (argv[i] == 0) {
-					fprintf(stderr, "Error: No heap size found for -mx option.\n");
+					dprintf( "Error: No heap size found for -mx option.\n");
 					exit(1);
 				}
 				vmargs.maxHeapSize = parseSize(argv[i]);
@@ -364,7 +365,7 @@ options(char** argv)
 			if (argv[i][3] == 0) {
 				i++;
 				if (argv[i] == 0) {
-					fprintf(stderr, "Error: No heap size found for -ms option.\n");
+					dprintf( "Error: No heap size found for -ms option.\n");
 					exit(1);
 				}
 				vmargs.minHeapSize = parseSize(argv[i]);
@@ -376,7 +377,7 @@ options(char** argv)
 			if (argv[i][3] == 0) {
 				i++;
 				if (argv[i] == 0) {
-					fprintf(stderr, "Error: No heap size found for -as option.\n");
+					dprintf( "Error: No heap size found for -as option.\n");
 					exit(1);
 				}
 				vmargs.allocHeapSize = parseSize(argv[i]);
@@ -425,13 +426,13 @@ options(char** argv)
 		else if (strcmp(argv[i], "-Xxprof_syms") == 0) {
 			i++;
 			if (argv[i] == 0) {
-				fprintf(stderr,
+				dprintf(
 					"Error: -Xxprof_syms option requires "
 					"a file name.\n");
 			}
 			else if( !profileSymbolFile(argv[i]) )
 			{
-				fprintf(stderr,
+				dprintf(
 					"Unable to create profiler symbol "
 					"file %s.\n",
 					argv[i]);
@@ -440,13 +441,13 @@ options(char** argv)
 		else if (strcmp(argv[i], "-Xxprof_gmon") == 0) {
 			i++;
 			if (argv[i] == 0) {
-				fprintf(stderr,
+				dprintf(
 					"Error: -Xxprof_gmon option requires "
 					"a file name.\n");
 			}
 			else if (!profileGmonFile(argv[i]))
 			{
-				fprintf(stderr,
+				dprintf(
 					"Unable to create gmon file %s.\n",
 					argv[i]);
 			}
@@ -456,7 +457,7 @@ options(char** argv)
 		else if (strcmp(argv[i], "-Xxdebug_file") == 0) {
 			i++;
 			if (argv[i] == 0) {
-				fprintf(stderr,
+				dprintf(
 					"Error: -Xxdebug_file option requires "
 					"a file name.\n");
 			}
@@ -470,7 +471,7 @@ options(char** argv)
 		else if (strcmp(argv[i], "-Xfeedback") == 0) {
 			i++;
 			if (argv[i] == 0) {
-				fprintf(stderr,
+				dprintf(
 					"Error: -Xfeedback option requires a "
 					"file name.\n");
 			}
@@ -488,7 +489,7 @@ options(char** argv)
 			extern void statsSetMaskStr(char *);
                         i++;
                         if (argv[i] == 0) { /* forgot second arg */
-                                fprintf(stderr, 
+                                dprintf( 
 					"Error: -vmstats option requires a "
 					"second arg.\n");
                                 exit(1);
@@ -501,7 +502,7 @@ options(char** argv)
 			extern int dbgSetMaskStr(char *);
                         i++;
                         if (argv[i] == 0) { /* forgot second arg */
-                                fprintf(stderr, 
+                                dprintf( 
 					"Error: -vmdebug option requires a "
 					"debug flag. Use `list' for a list.\n");
                                 exit(1);
@@ -527,7 +528,7 @@ options(char** argv)
 			prop->value = &argv[i][sz];
 		}
 		else if (argv[i][1] == 'X') {
-			fprintf(stderr,
+			dprintf(
 				"Error: Unrecognized JVM specific option "
 				"`%s'.\n",
 				argv[i]);
@@ -543,7 +544,7 @@ options(char** argv)
 			i++;
 		}
 		else {
-			fprintf(stderr, "Unknown flag: %s\n", argv[i]);
+			dprintf( "Unknown flag: %s\n", argv[i]);
 		}
 	}
 
@@ -558,52 +559,52 @@ static
 void
 usage(void)
 {
-	fprintf(stderr, "usage: kaffe [-options] class\n");
-	fprintf(stderr, "Options are:\n");
-	fprintf(stderr, "	-help			Print this message\n");
-	fprintf(stderr, "	-version		Print version number\n");
-	fprintf(stderr, "	-fullversion		Print verbose version info\n");
-	fprintf(stderr, "	-ss <size>		Maximum native stack size\n");
-	fprintf(stderr, "	-mx <size> 		Maximum heap size\n");
-	fprintf(stderr, "	-ms <size> 		Initial heap size\n");
-	fprintf(stderr, "	-as <size> 		Heap increment\n");
-	fprintf(stderr, "	-classpath <path>	Set classpath\n");
-	fprintf(stderr, "	-verify *		Verify all bytecode\n");
-	fprintf(stderr, "	-verifyremote *		Verify bytecode loaded from network\n");
-	fprintf(stderr, "	-noverify		Do not verify any bytecode\n");
-	fprintf(stderr, "	-D<property>=<value>	Set a property\n");
-	fprintf(stderr, "	-verbosegc		Print message during garbage collection\n");
-	fprintf(stderr, "	-noclassgc		Disable class garbage collection\n");
-	fprintf(stderr, "	-v, -verbose		Be verbose\n");
-	fprintf(stderr, "	-verbosejit		Print message during JIT code generation\n");
-	fprintf(stderr, "	-verbosemem		Print detailed memory allocation statistics\n");
-	fprintf(stderr, "	-nodeadlock		Disable deadlock detection\n");
+	dprintf("usage: kaffe [-options] class\n");
+	dprintf("Options are:\n");
+	dprintf("	-help			Print this message\n");
+	dprintf("	-version		Print version number\n");
+	dprintf("	-fullversion		Print verbose version info\n");
+	dprintf("	-ss <size>		Maximum native stack size\n");
+	dprintf("	-mx <size> 		Maximum heap size\n");
+	dprintf("	-ms <size> 		Initial heap size\n");
+	dprintf("	-as <size> 		Heap increment\n");
+	dprintf("	-classpath <path>	Set classpath\n");
+	dprintf("	-verify *		Verify all bytecode\n");
+	dprintf("	-verifyremote *		Verify bytecode loaded from network\n");
+	dprintf("	-noverify		Do not verify any bytecode\n");
+	dprintf("	-D<property>=<value>	Set a property\n");
+	dprintf("	-verbosegc		Print message during garbage collection\n");
+	dprintf("	-noclassgc		Disable class garbage collection\n");
+	dprintf("	-v, -verbose		Be verbose\n");
+	dprintf("	-verbosejit		Print message during JIT code generation\n");
+	dprintf("	-verbosemem		Print detailed memory allocation statistics\n");
+	dprintf("	-nodeadlock		Disable deadlock detection\n");
 #if defined(KAFFE_PROFILER)
-	fprintf(stderr, "	-prof			Enable profiling of Java methods\n");
+	dprintf("	-prof			Enable profiling of Java methods\n");
 #endif
 #if defined(KAFFE_XPROFILER)
-	fprintf(stderr, "	-Xxprof			Enable cross language profiling\n");
-	fprintf(stderr, "	-Xxprof_syms <file>	Name of the profiling symbols file [Default: kaffe-jit-symbols.s]\n");
-	fprintf(stderr, "	-Xxprof_gmon <file>	Base name for gmon files [Default: xgmon.out]\n");
+	dprintf("	-Xxprof			Enable cross language profiling\n");
+	dprintf("	-Xxprof_syms <file>	Name of the profiling symbols file [Default: kaffe-jit-symbols.s]\n");
+	dprintf("	-Xxprof_gmon <file>	Base name for gmon files [Default: xgmon.out]\n");
 #endif
 #if defined(KAFFE_XDEBUGGING)
-	fprintf(stderr, "	-Xxdebug_file <file>	Name of the debugging symbols file\n");
+	dprintf("	-Xxdebug_file <file>	Name of the debugging symbols file\n");
 #endif
 #if defined(KAFFE_FEEDBACK)
-	fprintf(stderr, "	-Xfeedback <file>	The file name to write feedback data too\n");
+	dprintf("	-Xfeedback <file>	The file name to write feedback data too\n");
 #endif
-	fprintf(stderr, "	-debug * 		Trace method calls\n");
-	fprintf(stderr, "	-noasyncgc *		Do not garbage collect asynchronously\n");
-	fprintf(stderr, "	-cs, -checksource *	Check source against class files\n");
-	fprintf(stderr, "	-oss <size> *		Maximum java stack size\n");
-        fprintf(stderr, "	-jar                    Executable is a JAR\n");
+	dprintf("	-debug * 		Trace method calls\n");
+	dprintf("	-noasyncgc *		Do not garbage collect asynchronously\n");
+	dprintf("	-cs, -checksource *	Check source against class files\n");
+	dprintf("	-oss <size> *		Maximum java stack size\n");
+        dprintf("	-jar                    Executable is a JAR\n");
 #ifdef DEBUG
-        fprintf(stderr, "	-vmdebug <flag{,flag}>	Internal VM debugging.  Set flag=list for a list\n");                     
+        dprintf("	-vmdebug <flag{,flag}>	Internal VM debugging.  Set flag=list for a list\n");                     
 #endif
 #ifdef KAFFE_STATS
-        fprintf(stderr, "	-vmstats <flag{,flag}>	Print VM statistics.  Set flag=all for all\n");                     
+        dprintf("	-vmstats <flag{,flag}>	Print VM statistics.  Set flag=all for all\n");                     
 #endif
-	fprintf(stderr, "  * Option currently ignored.\n");
+	dprintf("  * Option currently ignored.\n");
 }
 
 static

@@ -103,7 +103,7 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 				unhand(tid)->stackOverflowError;
 			if (overflow != 0) {
 				if (*needOnStack == STACK_LOW) {
-					fprintf(stderr, 
+					dprintf(
 					    "Panic: unhandled StackOverflowError()\n");
 					ABORT();
 				}
@@ -245,7 +245,7 @@ void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *r
 
 		switch (code[pc]) {
 		default:
-			fprintf(stderr, "Unknown bytecode %d\n", code[pc]);
+			dprintf("Unknown bytecode %d\n", code[pc]);
 			throwException(NEW_LANG_EXCEPTION(VerifyError));
 			break;
 #include "kaffe.def"

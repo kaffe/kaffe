@@ -206,7 +206,7 @@ dumpMethodCacheStats(void)
 			total++;
 			entry = entry->next;
 		}
-		fprintf(stderr, "[%3d] -> %d\n", i, l);
+		dprintf("[%3d] -> %d\n", i, l);
 
 		if (l == 0) {
 			empty++;
@@ -223,7 +223,7 @@ dumpMethodCacheStats(void)
 		}
 	}
 	avg /= METHCACHEHASHSZ;
-	fprintf(stderr,
+	dprintf(
 		"MethodCache: %d anchors, min list %d, max list %d, avg %d, "
 		"%d empty lists, total of %d entries\n",
 		METHCACHEHASHSZ, min, max, avg, empty, total);

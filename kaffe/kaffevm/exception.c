@@ -237,7 +237,7 @@ void
 throwExternalException(Hjava_lang_Throwable* eobj)
 {
 	if (eobj == 0) {
-		fprintf(stderr, "Exception thrown on null object ... aborting\n");
+		dprintf("Exception thrown on null object ... aborting\n");
 		ABORT();
 		EXIT(1);
 	}
@@ -254,7 +254,7 @@ throwOutOfMemory(void)
 	if (err != NULL) {
 		throwException(err);
 	}
-	fprintf(stderr, "(Insufficient memory)\n");
+	dprintf("(Insufficient memory)\n");
 	EXIT(-1);
 }
 #endif
@@ -460,7 +460,7 @@ unhandledException(Hjava_lang_Throwable *eobj)
 	}
 
 	/* We don't know what to do here. */
-	fprintf(stderr, "Internal error: caught an unexpected exception.\n"
+	dprintf("Internal error: caught an unexpected exception.\n"
 		"Please check your CLASSPATH and your installation.\n");
 
 	/*
@@ -470,9 +470,9 @@ unhandledException(Hjava_lang_Throwable *eobj)
 		Hjava_lang_String *msg;
 		msg = unhand((Hjava_lang_Throwable*)eobj)->message;
 		if (msg) {
-			fprintf(stderr, "%s: %s\n", cname, stringJava2C(msg));
+			dprintf("%s: %s\n", cname, stringJava2C(msg));
 		} else {
-			fprintf(stderr, "%s\n", cname);
+			dprintf("%s\n", cname);
 		}
 	}
 	printStackTrace((Hjava_lang_Throwable*)eobj, 0, 1);

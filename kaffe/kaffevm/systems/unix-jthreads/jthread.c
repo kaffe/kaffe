@@ -593,7 +593,7 @@ printflags(unsigned i)
 void
 jthread_dumpthreadinfo(jthread_t tid)
 {
-	fprintf(stderr, "tid %p, status %s flags %s\n", tid, 
+	dprintf("tid %p, status %s flags %s\n", tid, 
 		tid->status == THREAD_SUSPENDED ? "SUSPENDED" :
 		tid->status == THREAD_RUNNING ? "RUNNING" :
 		tid->status == THREAD_DEAD ? "DEAD" : "UNKNOWN!!!", 
@@ -602,36 +602,36 @@ jthread_dumpthreadinfo(jthread_t tid)
 		jthread *t;
 		int i;
 
-		fprintf(stderr, " blocked");
+		dprintf(" blocked");
 		if (isOnList(waitForList, tid)) {
-			fprintf(stderr, ": waiting for children");
+			dprintf(": waiting for children");
 		}
 #if 0
 		/* XXX FIXME: alarmList uses nextalarm, but isOnList iterates
 		 * using nextQ
 		 */
 		if (isOnList(alarmList, tid)) {
-			fprintf(stderr, ": sleeping");
+			dprintf(": sleeping");
 		}
 #endif
 		for (i = 0; i < FD_SETSIZE; i++) {
 			if (isOnList(readQ[i], tid)) {
-				fprintf(stderr, ": reading from fd %d ", i);
+				dprintf(": reading from fd %d ", i);
 				break;
 			}
 			if (isOnList(writeQ[i], tid)) {
-				fprintf(stderr, ": writing to fd %d ", i);
+				dprintf(": writing to fd %d ", i);
 				break;
 			}
 		}
 
-		fprintf(stderr, "@%p (%p->", tid->blockqueue,
+		dprintf("@%p (%p->", tid->blockqueue,
 					     t = *tid->blockqueue);
 		while (t && t->nextQ) {
 			t = t->nextQ; 
-			fprintf(stderr, "%p->", t);
+			dprintf("%p->", t);
 		}
-		fprintf(stderr, "|) ");
+		dprintf("|) ");
 	}
 }
 

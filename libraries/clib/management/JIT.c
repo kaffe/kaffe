@@ -17,6 +17,7 @@
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/lookup.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/debug.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
 #include "../../../kaffe/kaffevm/methodCache.h"
 
@@ -63,7 +64,7 @@ Java_kaffe_management_JIT_translateMethod(JNIEnv *env, jclass _vmclass,
 	Utf8Const* u8sig = utf8ConstNew(signature, -1);
 
 	/* 
-	fprintf(stderr, "translating %s.%s%s\n", cname, mname, signature);
+	dprintf("translating %s.%s%s\n", cname, mname, signature);
 	*/
 	cls = loadClass(u8cname, loader, &info);
 	if (cls == 0) {
@@ -72,7 +73,7 @@ Java_kaffe_management_JIT_translateMethod(JNIEnv *env, jclass _vmclass,
 	meth = findMethodLocal(cls, u8mname, u8sig);
 
 	if (meth == 0) {
-		fprintf(stderr, "Didn't find method %s%s in class %s\n",
+		dprintf("Didn't find method %s%s in class %s\n",
 			mname, signature, cname);
 	} else {
 #if defined(TRANSLATOR)
@@ -80,7 +81,7 @@ Java_kaffe_management_JIT_translateMethod(JNIEnv *env, jclass _vmclass,
 			throwError(&info);
 		}
 #else
-		fprintf(stderr, 
+		dprintf(
 			"Interpreter does not translate %s%s in class %s\n",
 			mname, signature, cname);
 #endif

@@ -556,15 +556,15 @@ static void
 dumpJavaThread(void *jlThread)
 {
         Hjava_lang_Thread *tid = jlThread;
-	fprintf(stderr, "`%s' ", nameThread(tid));
+	dprintf("`%s' ", nameThread(tid));
 	jthread_dumpthreadinfo((jthread_t)unhand(tid)->PrivateInfo);
-	fprintf(stderr, "\n");
+	dprintf("\n");
 }
 
 static void
 dumpThreads(void)
 {
-	fprintf(stderr, "Dumping live threads:\n");
+	dprintf("Dumping live threads:\n");
 	jthread_walkLiveThreads(dumpJavaThread);
 }
 
@@ -592,7 +592,7 @@ onDeadlock(void)
 #endif
 	dumpLocks();
 	dumpThreads();
-	fprintf(stderr, "Deadlock: all threads blocked on internal events\n");
+	dprintf("Deadlock: all threads blocked on internal events\n");
 	fflush(stderr);
 	ABORT();
 }

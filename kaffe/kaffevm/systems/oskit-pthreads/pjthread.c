@@ -718,7 +718,7 @@ DBG(JTHREAD,
 void 
 jthread_dumpthreadinfo(jthread_t tid)
 {
-	fprintf(stderr, "jthread %p native %ld status %s\n", 
+	dprintf("jthread %p native %ld status %s\n", 
 		tid, (long) tid->native_thread,
 		tid->status == THREAD_NEWBORN ? "NEWBORN" :
 		tid->status == THREAD_RUNNING ? "RUNNING" :

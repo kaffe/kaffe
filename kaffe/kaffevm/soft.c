@@ -589,7 +589,7 @@ soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 	}
 #endif
 
-TDBG(	fprintf(stderr, "Calling %s:%s%s @ 0x%x\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth), METHOD_NATIVECODE(meth));	)
+TDBG(	dprintf("Calling %s:%s%s @ 0x%x\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth), METHOD_NATIVECODE(meth));	)
 
 	return (METHOD_NATIVECODE(meth));
 }

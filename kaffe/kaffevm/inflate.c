@@ -12,11 +12,12 @@
  * of this file.
  */
 
-#define	DBG(s)
+#define	IDBG(s)
 
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
+#include "debug.h"
 #include "gtypes.h"
 #include "inflate.h"
 #include "gc.h"
@@ -219,7 +220,7 @@ inflate_stored(inflateInfo* pG)
 
 
   /* make local copies of globals */
-  DBG(fprintf(stderr, "\nstored block"));
+  IDBG(dprintf("\nstored block"));
   b = pG->bb;                       /* initialize bit buffer */
   k = pG->bk;
   w = pG->wp;                       /* initialize window position */
@@ -267,7 +268,7 @@ int
 inflate_fixed(inflateInfo* pG)
 {
   /* if first time, set up tables for fixed blocks */
-  DBG(fprintf(stderr, "\nliteral block"));
+  IDBG(dprintf("\nliteral block"));
   if (pG->fixed_tl == 0)
   {
     int i;                /* temporary variable */
@@ -330,7 +331,7 @@ inflate_dynamic(inflateInfo* pG)
 
 
   /* make local bit buffer */
-  DBG(fprintf(stderr, "\ndynamic block"));
+  IDBG(dprintf("\ndynamic block"));
   b = pG->bb;
   k = pG->bk;
 
@@ -602,7 +603,7 @@ inflate(inflateInfo* pG)
   FLUSH(pG, pG->wp);
 
   /* return success */
-  DBG(fprintf(stderr, "\n%u bytes in Huffman tables (%d/entry)\n", h * sizeof(huft), sizeof(huft)));
+  IDBG(dprintf("\n%u bytes in Huffman tables (%d/entry)\n", h * sizeof(huft), sizeof(huft)));
   return 0;
 }
 

@@ -111,7 +111,7 @@ static int totalsmallobjs;
 static void 
 printslack(void)
 {
-	fprintf(stderr, 
+	dprintf(
 		"allocated %d small objects, total slack %d, slack/per "
 		"object %8.2f\n", 
 		totalsmallobjs, totalslack, totalslack/(double)totalsmallobjs);
@@ -166,7 +166,7 @@ gc_heap_initialise(void)
 	 * Perform some sanity checks.
 	 */
 	if (gc_heap_initial_size > gc_heap_limit) {
-		fprintf(stderr, 
+		dprintf(
 		    "Initial heap size (%dK) > Maximum heap size (%dK)\n",
 		    (int) (gc_heap_initial_size/1024), (int)(gc_heap_limit/1024));
 		EXIT(-1);

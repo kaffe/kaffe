@@ -156,7 +156,7 @@ checkStackOverflow(void)
 
 	if (overflow != 0) {
 		if (*needOnStack == STACK_LOW) {
-			fprintf(stderr, 
+			dprintf(
 				"Panic: unhandled StackOverflowError()\n");
 			ABORT();
 		}
@@ -353,7 +353,7 @@ DBG(JIT,	dprintf("pc = %d, npc = %d\n", pc, npc);	)
 
 		switch (base[pc]) {
 		default:
-			fprintf(stderr, "Unknown bytecode %d\n", base[pc]);
+			dprintf("Unknown bytecode %d\n", base[pc]);
 			postException(einfo, JAVA_LANG(VerifyError));
 			success = false;
 			goto done;

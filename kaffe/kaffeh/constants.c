@@ -74,7 +74,7 @@ RDBG(		if (type != CONSTANT_Utf8) {
 				buf = KMALLOC(len);
 				readm(buf, len, sizeof(u1), fp);
 				if (!utf8ConstIsValidUtf8(buf, len)) {
-					fprintf(stderr, "Bad UTF-8 const\n");
+					dprintf("Bad UTF-8 const\n");
 					return(false);
 				}
 				utf8 = utf8ConstNew(buf, len);
@@ -126,7 +126,7 @@ RDBG(		if (type != CONSTANT_Utf8) {
 			break;
 
 		default:
-			fprintf(stderr, "Bad constant %d\n", type);
+			dprintf("Bad constant %d\n", type);
 			return (false);
 		}
 	}

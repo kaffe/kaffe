@@ -118,7 +118,7 @@ initialiseKaffe(void)
 	{
 		if( !enableXProfiling() )
 		{
-			fprintf(stderr,
+			dprintf(
 				"Unable to initialize cross "
 				"language profiling\n");
 		}
@@ -177,7 +177,7 @@ initialiseKaffe(void)
 	      constructor_name && Code_name && LineNumberTable_name &&
 	      ConstantValue_name && Exceptions_name &&
 	      SourceFile_name)) {
-		fprintf(stderr, "not enough memory to run kaffe\n");
+		dprintf("not enough memory to run kaffe\n");
 		ABORT();
 	}
 
@@ -267,13 +267,13 @@ initBaseClasses(void)
 	 */
 	utf8 = utf8ConstNew("KAFFE_VERSION", -1);
 	if (!utf8) {
-		fprintf(stderr, "not enough memory to run kaffe\n");
+		dprintf("not enough memory to run kaffe\n");
 		ABORT();
 	}
 	f = lookupClassField(CloneClass, utf8, true, &einfo);
 	utf8ConstRelease(utf8);
 	if (f == 0) {
-		fprintf(stderr,
+		dprintf(
 		    "\nCould not initialize Kaffe.\n"
 		    "It's likely that your CLASSPATH settings are wrong.  "
 		    "Please make sure\nyour CLASSPATH does not include any "
@@ -287,7 +287,7 @@ initBaseClasses(void)
 	}
 
 	if (*(jint*)FIELD_ADDRESS(f) != java_lang_Cloneable_KAFFE_VERSION) {
-		fprintf(stderr,
+		dprintf(
 		    "\nCould not initialize Kaffe.\n"
 		    "Your Klasses.jar version is %3.2f, but this VM "
 		    "was compiled with version %3.2f\n\n"

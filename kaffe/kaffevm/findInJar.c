@@ -80,7 +80,7 @@ findClass(classEntry* centry, errorInfo *einfo)
 	if (class != 0) {
 		if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
 			/* XXX could say from where, but see above */
-			fprintf(stderr, "Loading precompiled %s\n", cname);
+			dprintf("Loading precompiled %s\n", cname);
 		}
 DBG(GCJ,	dprintf(__FUNCTION__": adding class %s to pool@%p\n",
 			cname, centry);
@@ -150,7 +150,7 @@ DBG(CLASSLOOKUP,
 	 */
 	if (strcmp(cname, "java/lang/ClassNotFoundException") == 0 ||
 	    strcmp(cname, "java/lang/Object") == 0) {
-		fprintf(stderr, "Cannot find essential class '%s' in class library ... aborting.\n", cname);
+		dprintf("Cannot find essential class '%s' in class library ... aborting.\n", cname);
 		ABORT();
 	}
 	return (0);
@@ -209,11 +209,11 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			hand.size = entry->uncompressedSize;
 			hand.buf = hand.base;
 			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
-				fprintf(stderr, "Loading %s(%s)", cname, ptr->path);
+				dprintf("Loading %s(%s)", cname, ptr->path);
 				if (entry->compressionMethod != COMPRESSION_STORED) {
-					fprintf(stderr, " [compressed]");
+					dprintf(" [compressed]");
 				}
-				fprintf(stderr, "\n");
+				dprintf("\n");
 			}
 			goto done;
 
@@ -271,7 +271,7 @@ DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); )
 			}
 			KCLOSE(fp);
 			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
-				fprintf(stderr, "Loading %s\n", cname);
+				dprintf("Loading %s\n", cname);
 			}
 			goto done;
 

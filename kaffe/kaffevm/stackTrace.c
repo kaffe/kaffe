@@ -176,7 +176,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 				do_execute_java_method(p, "println",
 					"([C)V", 0, 0, str);
 			} else {
-				fprintf(stderr, "%s\n", buf);
+				dprintf("%s\n", buf);
 			}
 			KFREE(buf);
 		}

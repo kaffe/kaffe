@@ -12,6 +12,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
+#include "debug.h"
 #include "classMethod.h"
 #include "jtypes.h"
 #include "itypes.h"
@@ -82,7 +83,7 @@ initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 
 	return;
 bad:
-	fprintf(stderr, "not enough memory to run kaffe\n");
+	dprintf("not enough memory to run kaffe\n");
 	ABORT();
 }
 

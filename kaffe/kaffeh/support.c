@@ -8,13 +8,14 @@
  * of this file. 
  */
 
-#define	DBG(s)
+#define	RCDBG(s)
 #define	FDBG(s)
 
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "config-io.h"
+#include "debug.h"
 #include "jtypes.h"
 #include "jsyscall.h"
 #include "jmalloc.h"
@@ -60,6 +61,16 @@ static void  gcFree(struct _Collector*, void*);
 
 static inline int
 binary_open(const char *file, int mode, int perm, int *);
+
+int kaffe_dprintf(const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+	vfprintf(stderr, fmt, ap);
+	va_end(ap);
+	return 0;
+}
 
 static int 
 kread(int fd, void *buf, size_t len, ssize_t *out)
@@ -397,7 +408,7 @@ jniType(const char *sig)
 		case 'L':
 			return "jobjectArray";
 		default:
-			fprintf(stderr, "bogus array type `%c'", sig[1]);
+			dprintf("bogus array type `%c'", sig[1]);
 			exit(1);
 		}
 	case 'L':
@@ -425,7 +436,7 @@ jniType(const char *sig)
 	case 'V':
 		return "void";
 	default:
-		fprintf(stderr, "bogus signature type `%c'", sig[0]);
+		dprintf("bogus signature type `%c'", sig[0]);
 		exit(1);
 	}
 }
@@ -453,7 +464,7 @@ readMethod(classFile* fp, Hjava_lang_Class* this, constants* cpool)
 		return;
 	}
 
-DBG(	printf("Method %s%s\n", (char*)cpool->data[m.name_index], (char*)cpool->data[m.signature_index]);	)
+RCDBG(	printf("Method %s%s\n", (char*)cpool->data[m.name_index], (char*)cpool->data[m.signature_index]);	)
 
 	/* Only generate stubs for native methods */
 	if (!(m.access_flags & ACC_NATIVE)) {
@@ -535,7 +546,7 @@ findClass(char* nm)
 			start = getenv("CLASSPATH");
 		}
 		if (start == 0) {
-			fprintf(stderr, "CLASSPATH not set!\n");
+			dprintf("CLASSPATH not set!\n");
 			exit(1);
 		}
 		strcpy(realClassPath, start);
@@ -623,7 +634,7 @@ findClass(char* nm)
 			return;
 		}
 	}
-	fprintf(stderr, "Failed to open object '%s'\n", nm);
+	dprintf("Failed to open object '%s'\n", nm);
 	exit(1);
 }
 
@@ -640,7 +651,7 @@ jmalloc(size_t sz)
 	}
 
 	if ((p = malloc(sz)) == NULL) {
-		fprintf(stderr, "Out of memory.\n");
+		dprintf("Out of memory.\n");
 		exit(1);
 	}
 	memset(p, 0, sz);
@@ -681,5 +692,5 @@ postExceptionMessage(struct _errorInfo *e,
 	const char *name, const char *msgfmt, ...)
 {
 	/* XXX */
-	fprintf(stderr, "Error %s, %s\n", name, msgfmt);
+	dprintf("Error %s, %s\n", name, msgfmt);
 }

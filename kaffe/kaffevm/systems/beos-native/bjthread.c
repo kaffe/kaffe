@@ -790,7 +790,7 @@ jthread_exit(void)
 void 
 jthread_dumpthreadinfo(jthread_t tid)
 {
-	fprintf(stderr, "jthread %p native %ld status %s\n", 
+	dprintf("jthread %p native %ld status %s\n", 
 		tid, tid->native_thread,
 		tid->status == THREAD_NEWBORN ? "NEWBORN" :
 		tid->status == THREAD_RUNNING ? "RUNNING" :

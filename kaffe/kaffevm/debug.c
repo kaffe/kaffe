@@ -232,7 +232,7 @@ dbgSetMaskStr(char *mask_str)
 		extern int jit_debug;
 		jit_debug = 1;
 #else
-		fprintf(stderr, 
+		dprintf(
 			"You cannot debug the JIT in interpreter mode \n");
 #endif
 	}

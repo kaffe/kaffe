@@ -9,7 +9,7 @@
  * of this file. 
  */
 
-#define	DBG(s)
+#define	RCDBG(s)
 
 #include "config.h"
 #include "config-std.h"
@@ -21,6 +21,7 @@
 #include "object.h"
 #include "constants.h"
 #include "errors.h"
+#include "debug.h"
 #ifdef KAFFEH
 #include <readClassConfig.h>
 #else
@@ -49,13 +50,13 @@ readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoa
 	readu2(&minor_version, fp);
 	readu2(&major_version, fp);
 
-DBG(	dprintf("major=%d, minor=%d\n", major_version, minor_version);	)
+RCDBG(	dprintf("major=%d, minor=%d\n", major_version, minor_version);	)
 
 	if (major_version != MAJOR_VERSION) {
-		fprintf(stderr, "Warning: Major version number mismatch.\n");
+		dprintf("Warning: Major version number mismatch.\n");
 	}
 	if (minor_version != MINOR_VERSION) {
-		fprintf(stderr, "Warning: Minor version number mismatch.\n");
+		dprintf("Warning: Minor version number mismatch.\n");
 	}
 
 	if (readConstantPool(classThis, fp, einfo) == false) {
@@ -87,7 +88,7 @@ readInterfaces(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 	u2 interfaces_count;
 
 	readu2(&interfaces_count, fp);
-DBG(	dprintf("interfaces_count=%d\n", interfaces_count);	)
+RCDBG(	dprintf("interfaces_count=%d\n", interfaces_count);	)
 
 #ifdef READINTERFACES
 	READINTERFACES(fp, this, interfaces_count);
@@ -108,7 +109,7 @@ readFields(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 	void* fieldThis;
 
 	readu2(&fields_count, fp);
-DBG(	dprintf("fields_count=%d\n", fields_count);		)
+RCDBG(	dprintf("fields_count=%d\n", fields_count);		)
 	fieldThis = 0;
 
 #if defined(READFIELD_START)
@@ -144,7 +145,7 @@ readAttributes(classFile* fp, Hjava_lang_Class* this, void* thing, errorInfo *ei
 	u2 cnt;
 
 	readu2(&cnt, fp);
-DBG(	dprintf("attributes_count=%d\n", cnt);				)
+RCDBG(	dprintf("attributes_count=%d\n", cnt);				)
 
 	/* Skip attributes for the moment */
 	for (i = 0; i < cnt; i++) {
@@ -172,7 +173,7 @@ readMethods(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 	Method* methodThis;
 
 	readu2(&methods_count, fp);
-DBG(	dprintf("methods_count=%d\n", methods_count);		)
+RCDBG(	dprintf("methods_count=%d\n", methods_count);		)
 	methodThis = 0;
 
 #ifdef READMETHOD_START

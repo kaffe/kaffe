@@ -24,4 +24,8 @@ extern void endJniInclude(void);
 
 extern void findClass(char *nm);
 
+#ifndef dprintf
+extern int kaffe_dprintf(const char *, ...);
+#define dprintf kaffe_dprintf
+#endif
 #endif
