@@ -32,6 +32,7 @@ public DatagramPacket(byte ibuf[], int ilength) {
 		address = InetAddress.getLocalHost();
 	}
 	catch (UnknownHostException _) {
+		address = InetAddress.getLoopback();
 	}
 	port = -1;
 }
