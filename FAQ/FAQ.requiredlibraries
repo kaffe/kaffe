@@ -1,0 +1,19 @@
+
+To use all functionality provided by Kaffe, you need some freely available
+libraries installed on your system.
+
+Some of these libraries are absolutely required, in other cases, the 
+configure script detects whether the library is available and uses it 
+if so.  If your library is installed is not installed in a standard
+place where your compiler and linker finds it, you need to tell
+configure where to find it.
+
+<Alexandre explains how you do that with an example>
+
+libungif 4.0:	You need libungif 4.0 if you want Kaffe's awt to be 
+    able to decompress gif images.  Note that earlier versions will not
+    work.
+
+libz:		You need libz to use the functionality in java.util.zip
+
+<Complete this list>
