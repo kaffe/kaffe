@@ -13,9 +13,6 @@ package kaffe.util;
 /**
  * This class consists of static methods that perform assertion checks.
  * If a check fails, we throw an error with a descriptive message.
- *
- * @author      Archie L. Cobbs <address>archie@whistle.com</address>
- * @version     $Id: Assert.java,v 1.2 1998/08/29 04:41:47 archie Exp $
  */
 public class Assert {
   private static final String MSG = "assertion failure";
