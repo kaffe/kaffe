@@ -106,10 +106,8 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
  */
 #if defined(TRANSLATOR)
 #define KAFFE_JNI_SETEXCEPTFP(ebufp) {				\
-	exceptionFrame currentFrameInfo;			\
-	FIRSTFRAME(currentFrameInfo, 0);			\
-	vmExcept_setJNIFrame(ebufp, (uintp) FPFRAME(&currentFrameInfo));\
-	}
+        vmExcept_setJNIFrame(ebufp,(uintp)__builtin_frame_address(0));\
+        }
 #else
 /*
  * Stack frame info isn't needed (and isn't available) in the
