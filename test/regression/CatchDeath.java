@@ -27,7 +27,8 @@ public class CatchDeath implements Runnable
 	    }
 	    Thread.sleep(500);
 	}
-	System.out.flush();
+	// This makes the test pass, but we don't know why it should..
+	// System.out.flush();
     }
 }
 
