@@ -1,3 +1,7 @@
+Wed Sep  2 16:44:09 PDT 1998	Tim Wilkinson <tim@transvirtual.com>
+
+	* Merged in TVT's current Custom class & native changes.
+
 Sat Aug 29 16:30:41 1998  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/baseClasses.c, kaffe/kaffevm/classMethod.[ch]:

@@ -1,10 +1,3 @@
-package java.awt;
-
-import java.awt.event.PaintEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import kaffe.util.Ptr;
-
 /**
  * Window - 
  *
@@ -16,6 +9,15 @@ import kaffe.util.Ptr;
  *
  * @author P.C.Mehlitz
  */
+
+package java.awt;
+
+import java.awt.event.PaintEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.awt.peer.ComponentPeer;
+import kaffe.util.Ptr;
+
 public class Window
   extends Container
 {
@@ -83,6 +85,10 @@ Ptr createNativeWindow () {
 	                                cursor.type, bgClr.nativeValue);
 }
 
+ComponentPeer createPeer () {
+	return Toolkit.singleton.createWindow( this);
+}
+
 public void dispose () {
 	// we can't synchronously call removeNotify (i.e. bypass native destroy notification)
 	// since there might still be some native events (already) queued which subsequently
@@ -94,7 +100,7 @@ public void dispose () {
 	// prevent further drawing (might cause trouble for native windowing system)
 	isVisible = false;
 
-	if ( nativeData != null) {
+	if ( nativeData != null ) {
 		// if there are resident Graphics objects used in respond to a focusLost,
 		// we might get problems because of an already deleted window - we better
 		// simulate sync what has to be processed anyway (this error typically shows
@@ -107,45 +113,35 @@ public void dispose () {
 	}
 }
 
-public void dispose_X () {
-	// we can't synchronously call removeNotify (i.e. bypass native destroy notification)
-	// since there might still be some native events (already) queued which subsequently
-	// would "loose" their source. However, we also have to make sure that wndDestroyWindow
-	// is called just a single time (since many window managers react alergically on multiple
-	// destroy requests). We "borrow" the x field for this purpose (which isn't used
-	// hereafter, anyway)
-
-	if ( (nativeData != null) && (x != Integer.MIN_VALUE) ){
-		// if there are resident Graphics objects used in respond to a focusLost,
-		// we might get problems because of an already deleted window - we better
-		// simulate sync what has to be processed anyway (this error typically shows
-		// up in a KaffeServer context)
-		if ( AWTEvent.activeWindow == this ){
-			AWTEvent.sendFocusEvent( AWTEvent.keyTgt, false, true);
-		}
-			
-		Toolkit.wndDestroyWindow( nativeData);
-		x = Integer.MIN_VALUE;
-	}
-
-	// prevent further drawing (might cause trouble for native windowing system)
-	isVisible = false;
-
+/**
+ * Handle application resources.
+ */
+public void freeResource() {
+	dispose();
 }
 
 LayoutManager getDefaultLayout() {
 	return new BorderLayout();
 }
 
+public Component getFocusOwner () {
+	return ( this == AWTEvent.activeWindow ) ? AWTEvent.keyTgt : null;
+}
+
 public Container getParent () {
 	return owner;
 }
 
+public boolean isShowing () {
+	return isVisible;
+}
+
 public void pack () {
-	if ( nativeData == null )
-		addNotify();
 	if ( (width == 0) || (height == 0) )
 		setSize( getPreferredSize());
+		
+	if ( nativeData == null )
+		addNotify();
 }
 
 void processPaintEvent ( PaintEvent e ) {

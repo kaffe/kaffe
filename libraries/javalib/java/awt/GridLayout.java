@@ -1,14 +1,3 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
-
-
 package java.awt;
 
 
@@ -29,26 +18,46 @@ public GridLayout (int rows, int cols) {
 }
 
 public GridLayout (int rows, int cols, int hgap, int vgap) {
-	this.rows = rows;
-	this.cols = cols;
-	this.hgap = hgap;
-	this.vgap = vgap;
+  if ( (rows == 0) && (cols == 0) )
+    throw new IllegalArgumentException("GridLayout rows and cols cannot both be zero");
+  
+  this.rows = rows;
+  this.cols = cols;
+  this.hgap = hgap;
+  this.vgap = vgap;
 }
 
 public void addLayoutComponent ( String name, Component comp) {
 }
 
-Dimension adjustDim ( Container parent) {	
-	Dimension d = new Dimension( cols, rows);
-	
-	boolean extCol = true;
-	while ( parent.nChildren > d.width * d.height ) {
-		if ( extCol )	d.width++;
-		else					d.height++;
-		extCol = !extCol;
-	}
-	
-	return d;
+Dimension adjustDim ( Container parent) {
+  Dimension d = new Dimension( cols, rows);
+	int nChildren = parent.getComponentCount(); // beware of Frame Menubars
+
+  if ( rows == 0 ) {
+    d.width = cols;
+    d.height = nChildren / cols;
+    if ( (nChildren % cols) != 0 )
+      d.height++;
+  }
+  else if ( cols == 0 ) {
+    d.height = rows;
+    d.width = nChildren / rows;
+    if ( (nChildren % rows) != 0 )
+      d.width++;
+  }
+  else {
+    boolean extCol = true;
+    while ( nChildren > (d.width * d.height) ) {
+      if ( extCol )
+	      d.width++;
+      else
+	      d.height++;
+      extCol = !extCol;  
+    }
+  }
+  
+  return d;
 }
 
 public int getColumns () {
@@ -64,9 +73,10 @@ Dimension getLayoutSize ( Container parent, boolean preferred) {
 	int maxH = 0;
 	
 	Dimension d = adjustDim( parent);
+	int nChildren = parent.getComponentCount(); // beware of Frame Menubars
 	
-	for ( int i=0; i<parent.nChildren; i++) {
-		Component c = parent.children[i];
+	for ( int i=0; i<nChildren; i++) {
+		Component c = parent.getComponent( i);
 		Dimension cd = preferred ? c.getPreferredSize() : c.getMinimumSize();
 		maxW = Math.max( maxW, cd.width);
 		maxH = Math.max( maxH, cd.height );
@@ -91,6 +101,7 @@ public void layoutContainer ( Container parent) {
 	int th = parent.height - in.top - in.bottom - vgap;
 	
 	Dimension d = adjustDim( parent);
+	int nChildren = parent.getComponentCount(); // beware of Frame Menubars
 	
 	int cw = tw / d.width;
 	int ch = th / d.height;
@@ -100,9 +111,9 @@ public void layoutContainer ( Container parent) {
 	int y = in.top + vgap;
 	int ix = 0;
 	
-	for ( int i=0; i<parent.nChildren; i++) {
-		Component c = parent.children[i];
-		c.setBounds( x, y, cw-hgap, ch-hgap);
+	for ( int i=0; i<nChildren; i++) {
+		Component c = parent.getComponent( i);
+		c.setBounds( x, y, cw-hgap, ch-vgap);
 		if ( ix == d.width-1 ){
 			ix = 0;
 			x = x0;

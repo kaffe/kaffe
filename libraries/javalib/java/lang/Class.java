@@ -21,20 +21,20 @@ import java.util.SystemClassLoader;
 final public class Class
 {
 
-private static ClassLoader systemLoader = new SystemClassLoader();
+final static ClassLoader defaultClassLoader = new SystemClassLoader();
 
 native public static Class forName(String className) throws ClassNotFoundException;
 
 /**
- * Determines the class loader for the class. 
+ * Determines the class loader for the class.
  *
- * @returns 	the class loader that created the class or interface 
- *		represented by this object, or null if the class was not 
- *		created by a class loader. 
- * @see 	java.lang.ClassLoader 
+ * @returns   the class loader that created the class or interface
+ *            represented by this object, or null if the class was not
+ *            created by a class loader.
+ * @see       java.lang.ClassLoader
  */
 public ClassLoader getClassLoader() {
-	return getClassLoader0();
+	return (getClassLoader0());
 }
 
 native private ClassLoader getClassLoader0();
@@ -167,10 +167,12 @@ native public static Class getPrimitiveClass(String name);
  */
 public URL getResource(String name) {
 	ClassLoader loader = getClassLoader();
-	if (loader != null) 
+	if (loader != null)  {
 		return (loader.getResource(fullResourceName(name)));
-	else
-		return (systemLoader.getResource(fullResourceName(name)));
+	}
+	else {
+		return (defaultClassLoader.getResource(fullResourceName(name)));
+	}
 }
 
 /**
@@ -190,10 +192,12 @@ public URL getResource(String name) {
  */
 public InputStream getResourceAsStream(String name) {
 	ClassLoader loader = getClassLoader();
-	if (loader != null) 
+	if (loader != null)  {
 		return (loader.getResourceAsStream(fullResourceName(name)));
-	else
-		return (systemLoader.getResourceAsStream(fullResourceName(name)));
+	}
+	else {
+		return (defaultClassLoader.getResourceAsStream(fullResourceName(name)));
+	}
 }
 
 private String fullResourceName(String name) {
@@ -202,7 +206,7 @@ private String fullResourceName(String name) {
 		StringBuffer buf = new StringBuffer();
 		int tail = cname.lastIndexOf('.');
 		if (tail != -1) {
-			buf.append(cname.substring(0, tail).replace('.', '/'));
+			buf.append(cname.substring(0, tail+1).replace('.', '/'));
 		}
 		buf.append('/');
 		buf.append(name);
@@ -227,22 +231,19 @@ native public boolean isPrimitive();
 
 native public Object newInstance() throws InstantiationException, IllegalAccessException;
 
-public String toString() {
+public String toString()
+	{
 	Class cls = this;
 	StringBuffer str = new StringBuffer();
-
-	if (isPrimitive()) {
-		// Do nothing.
+	for (int count = 0;; count++) {
+		if (!cls.isArray()) {
+			str.append(cls.getName());
+			for (; count > 0; count--) {
+				str.append("[]");
+			}
+			return (str.toString());
+		}
+		cls = cls.getComponentType();
 	}
-	else if (isInterface()) {
-		str.append("interface ");
-	}
-	else {
-		str.append("class ");
-	}
-
-	str.append(cls.getName());
-
-	return (str.toString());
 }
 }

@@ -1,3 +1,13 @@
+/*
+ * Java core library component.
+ *
+ * Copyright (c) 1997, 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ */
+
 package java.util;
 
 import java.io.IOException;
@@ -18,10 +28,6 @@ public Properties() {
 
 public Properties(Properties defaults) {
 	this.defaults=defaults;
-}
-
-private String bytesToString(byte array[]) {
-	return new String(array, 0);
 }
 
 private String escape(String str) {
@@ -172,8 +178,7 @@ public synchronized void save(OutputStream out, String header) {
 	save(new PrintWriter(out), header);
 }
 
-private synchronized void save(Writer out, String header)
-	{
+private synchronized void save(Writer out, String header) {
 	try {
 		out.write("# ");
 		out.write(escape(header));
@@ -194,24 +199,8 @@ private synchronized void save(Writer out, String header)
 	}
 }
 
-private byte[] stringToBytes(String string) {
-	byte result[]=new byte[string.length()];
-
-	string.getBytes(0, string.length(), result, 0);
-
-	return result;
-}
 }
 
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
 class PropertyEnumeration
   implements Enumeration
 {
@@ -232,4 +221,5 @@ public Object nextElement() {
 
 	return vector.elementAt(posn++);
 }
+
 }

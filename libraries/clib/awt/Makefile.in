@@ -53,6 +53,9 @@ OBJECT=\
 		X/fnt$(OBJEXT) \
 		X/clr$(OBJEXT) \
 		X/img$(OBJEXT) \
+		X/imggif$(OBJEXT) \
+		X/imgjpeg$(OBJEXT) \
+		X/imgpng$(OBJEXT) \
 		X/cbd$(OBJEXT) \
 
 DEPENDS=        $(OBJECT:@OBJEXT@=.d)

@@ -1,5 +1,3 @@
-package kaffe.awt;
-
 /**
  * Type tag for Components that don't need to be repainted by their
  * parent because they draw their complete area by themselves
@@ -13,5 +11,7 @@ package kaffe.awt;
  * @author P.Mehlitz
  */
  
+package kaffe.awt;
+
 public interface OpaqueComponent {
 }

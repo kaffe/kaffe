@@ -9,6 +9,7 @@
  */
 
 package java.util;
+
 import java.io.Serializable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -195,33 +196,35 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
    * @return a clone of the hashtable. 
    */
   public synchronized Object clone() {
-    Hashtable result = null;
+    Hashtable result;
     try {
       /* Note that we must use super.clone() here instead of a
        * constructor or else subclasses such as java.util.Properties
        * will not be cloned properly.
        */
       result = (Hashtable)super.clone();
-      result.numberOfKeys = 0;
-      result.loadFactor = loadFactor;
-      result.bucket = new HashtableEntry[bucket.length];
+    }
+    catch (CloneNotSupportedException _) {
+      return (null);
+    }
+    result.numberOfKeys = 0;
+    result.loadFactor = loadFactor;
+    result.bucket = new HashtableEntry[bucket.length];
 
-      /* copy our entries in new hashtable */ 
-      for (int pos=0; pos<bucket.length; pos++) {
+    /* copy our entries in new hashtable */ 
+    for (int pos=0; pos<bucket.length; pos++) {
         for (HashtableEntry ptr = bucket[pos]; ptr != null; ptr = ptr.next) {
 	  result.put(ptr.getKey(), ptr.getData());
-        }
       }
-    } catch (CloneNotSupportedException _) { }
-    return (Object)result;
+    }
+
+    return ((Object)result);
   }
   
   /**
    * read this hashtable from a stream
    */
-  private void readObject(java.io.ObjectInputStream stream)
-      throws IOException, ClassNotFoundException
-  {
+  private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
     // read all non-transient fields
     stream.defaultReadObject();
 
@@ -239,23 +242,17 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
     numberOfKeys = 0;
 
     // read entries
-    for (int i=0; i<nkeys; i++) {
+    for (int i=0; i < nkeys; i++) {
       Object k = stream.readObject();
-      put(k, stream.readObject());
+      Object o = stream.readObject();
+      put(k, o);
     }
-
-    // safety check: do we actually have as many elements in the table
-    // now as were written when the table was serialized?
-    if (numberOfKeys != nkeys)
-      throw new IOException("read " + numberOfKeys + " expected " + nkeys);
   }
 
   /**
    * write this hashtable into a stream
    */
-  private void writeObject(java.io.ObjectOutputStream stream)
-	    throws IOException
-  {
+  private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
     // write all non-transient fields
     stream.defaultWriteObject();
 
@@ -265,7 +262,7 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
     // remember how many buckets there were
     stream.writeInt(bucket.length);
 
-    for (int pos=0; pos<bucket.length; pos++) {
+    for (int pos = 0; pos < bucket.length; pos++) {
       for (HashtableEntry ptr = bucket[pos]; ptr != null; ptr = ptr.next) {
 	stream.writeObject(ptr.getKey());
 	stream.writeObject(ptr.getData());

@@ -16,7 +16,8 @@ import java.io.Serializable;
 import java.util.StringTokenizer;
 import kaffe.net.DefaultURLStreamHandlerFactory;
 
-final public class URL implements Serializable
+final public class URL
+  implements Serializable
 {
 	private static URLStreamHandlerFactory defaultFactory = new DefaultURLStreamHandlerFactory();
 	private static URLStreamHandlerFactory factory;
@@ -28,21 +29,8 @@ final public class URL implements Serializable
 	private String ref;
 	private URLConnection conn;
 
-public URL(String protocol, String host, String file) throws MalformedURLException {
-	this(protocol, host, -1, file);
-}
-
-public URL(String protocol, String host, int port, String file) throws MalformedURLException {
-	this.protocol = protocol;
-	this.host = host;
-	this.file = file;
-	if (port == -1) {
-		port = getDefaultPort(protocol);
-	}
-	this.port = port;
-}
-
 public URL(String spec) throws MalformedURLException {
+	int fstart;
 
 	/* URL -> <protocol>:[//<hostname>[:port]]/<file> */
 
@@ -69,18 +57,34 @@ public URL(String spec) throws MalformedURLException {
 			int poend = spec.indexOf('/', postart);
 			port = Integer.parseInt(spec.substring(postart, poend));
 		}
+		fstart = spec.indexOf( '/', hstart);
 	}
 	else {
 		host = "";
 		port = getDefaultPort(protocol);
+		fstart = pend;
 	}
-	int fstart = spec.indexOf('/', hstart);
+
 	if (fstart != -1) {
 		file = spec.substring(fstart+1);
 	}
 	else {
 		file = "";
 	}
+}
+
+public URL(String protocol, String host, String file) throws MalformedURLException {
+	this(protocol, host, -1, file);
+}
+
+public URL(String protocol, String host, int port, String file) throws MalformedURLException {
+	this.protocol = protocol;
+	this.host = host;
+	this.file = file;
+	if (port == -1) {
+		port = getDefaultPort(protocol);
+	}
+	this.port = port;
 }
 
 public URL(URL context, String spec) throws MalformedURLException {
@@ -103,10 +107,35 @@ public boolean equals(Object obj) {
 	return (false);
 }
 
-public final Object getContent() throws IOException {
+final public Object getContent() throws IOException {
 	openConnection();
 	conn.connect();
 	return (conn.getContent());
+}
+
+private static int getDefaultPort(String protocol)
+{
+	int port;
+
+	if (protocol == "ftp") {
+		port = 21;
+	}
+	else if (protocol == "telnet") {
+		port = 23;
+	}
+	else if (protocol == "gopher") {
+		port = 70;
+	}
+	else if (protocol == "http") {
+		port = 80;
+	}
+	else if (protocol == "news") {
+		port = 119;
+	}
+	else {
+		port = 0;
+	}
+	return (port);
 }
 
 public String getFile() {
@@ -127,6 +156,23 @@ public String getProtocol() {
 
 public String getRef() {
 	return (ref);
+}
+
+private static URLStreamHandler getURLStreamHandler(String protocol) throws MalformedURLException {
+	URLStreamHandler handler = null;
+
+	if (factory != null) {
+		handler = factory.createURLStreamHandler(protocol);
+		if (handler != null) {
+			return (handler);
+		}
+	}
+	handler = defaultFactory.createURLStreamHandler(protocol);
+	if (handler != null) {
+		return (handler);
+	}
+
+	throw new MalformedURLException("failed to find handler");
 }
 
 public int hashCode() {
@@ -185,47 +231,4 @@ public String toExternalForm() {
 public String toString() {
 	return (protocol + "://" + host + ":" + port + "/" + file);
 }
-
-private static URLStreamHandler getURLStreamHandler(String protocol) throws MalformedURLException {
-	URLStreamHandler handler = null;
-
-	if (factory != null) {
-		handler = factory.createURLStreamHandler(protocol);
-		if (handler != null) {
-			return (handler);
-		}
-	}
-	handler = defaultFactory.createURLStreamHandler(protocol);
-	if (handler != null) {
-		return (handler);
-	}
-
-	throw new MalformedURLException("failed to find handler");
-}
-
-private static int getDefaultPort(String protocol)
-{
-	int port;
-
-	if (protocol == "ftp") {
-		port = 21;
-	}
-	else if (protocol == "telnet") {
-		port = 23;
-	}
-	else if (protocol == "gopher") {
-		port = 70;
-	}
-	else if (protocol == "http") {
-		port = 80;
-	}
-	else if (protocol == "news") {
-		port = 119;
-	}
-	else {
-		port = 0;
-	}
-	return (port);
-}
-
 }

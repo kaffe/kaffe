@@ -35,6 +35,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 import java.awt.peer.ActiveEvent;
+import java.awt.peer.ComponentPeer;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.EventListener;
@@ -42,7 +43,8 @@ import java.util.Locale;
 import java.util.Vector;
 import kaffe.awt.OpaqueComponent;
 
-abstract public class Component extends Object
+abstract public class Component
+  extends Object
   implements ImageObserver
 {
 	Container parent;
@@ -65,6 +67,7 @@ abstract public class Component extends Object
 	boolean isVisible;
 	Dimension dim;
 	Rectangle bounds;
+	ComponentPeer peer;
 	final public static float TOP_ALIGNMENT = (float)0.0;
 	final public static float CENTER_ALIGNMENT = (float)0.5;
 	final public static float BOTTOM_ALIGNMENT = (float)1.0;
@@ -73,8 +76,7 @@ abstract public class Component extends Object
 	final static int BORDER_WIDTH = 2;
 
 protected Component () {
-	isVisible = true;
-	
+	isVisible = true; // non Windows are visible by default
 	cursor = Cursor.defaultCursor;
 }
 
@@ -111,6 +113,7 @@ public void addMouseMotionListener ( MouseMotionListener newListener ) {
 }
 
 public void addNotify () {
+	peer = createPeer();
 }
 
 /**
@@ -161,6 +164,10 @@ public Image createImage ( ImageProducer producer ) {
 
 public Image createImage ( int width, int height ) {
 	return new Image( width, height);
+}
+
+ComponentPeer createPeer () {
+	return Toolkit.singleton.createLightweight( this);
 }
 
 public void disableEvents ( long disableMask ) {
@@ -297,11 +304,11 @@ public Point getLocationOnScreen () {
 }
 
 public Dimension getMaximumSize() {
-	return new Dimension(Short.MAX_VALUE, Short.MAX_VALUE);
+	return getPreferredSize();
 }
 
 public Dimension getMinimumSize() {
-	return new Dimension( 50, 50);
+	return getPreferredSize();
 }
 
 public String getName () {
@@ -310,6 +317,10 @@ public String getName () {
 
 public Container getParent() {
 	return parent;
+}
+
+public ComponentPeer getPeer() {
+	return peer;
 }
 
 public Dimension getPreferredSize() {
@@ -395,7 +406,7 @@ public boolean isShowing () {
 		if ( !c.isVisible ) return false;
 	}
 	
-	return true;
+	return (parent != null);
 }
 
 public boolean isValid () {
@@ -454,6 +465,13 @@ protected String paramString () {
 	return s;
 }
 
+/**
+ * @deprecated - use getPreferredSize()
+ */
+public Dimension preferredSize () {
+	return getPreferredSize();
+}
+
 public boolean prepareImage ( Image image, ImageObserver obs ){
 	return (Image.checkImage( image, -1, -1, obs, true) > 0);
 }
@@ -497,8 +515,40 @@ protected void processComponentEvent ( ComponentEvent event ) {
 protected void processContainerEvent ( ContainerEvent e ) {
 }
 
-protected void processEvent ( AWTEvent event ) {
-	event.dispatch();
+protected void processEvent ( AWTEvent e ) {
+  // Wasn't there something called "object oriented programming"?
+  // Would be nice if we could do a simple "e.dispatch()", but that doesn't work
+  // since the JDK allows processing events with "source != this"
+	
+	if ( e instanceof MouseEvent ) {
+		switch ( e.getID() ){
+		case MouseEvent.MOUSE_MOVED:
+		case MouseEvent.MOUSE_DRAGGED:
+			processMouseMotionEvent( (MouseEvent)e); break;
+		default:
+		  processMouseEvent( (MouseEvent)e);
+		}
+	}
+	else if ( e instanceof KeyEvent )
+		processKeyEvent( (KeyEvent)e);
+	else if ( e instanceof PaintEvent )
+    processPaintEvent( (PaintEvent) e);  		
+	else if ( e instanceof FocusEvent )
+		processFocusEvent( (FocusEvent)e);
+	else if ( e instanceof ComponentEvent )
+		processComponentEvent( (ComponentEvent)e);
+	else if ( e instanceof ContainerEvent )
+		processContainerEvent( (ContainerEvent)e);
+	else if ( e instanceof WindowEvent )
+		processWindowEvent( (WindowEvent)e);
+	else if ( e instanceof TextEvent )
+		processTextEvent( (TextEvent)e);
+	else if ( e instanceof ItemEvent )
+		processItemEvent( (ItemEvent)e);
+	else if ( e instanceof ActionEvent )
+		processActionEvent( (ActionEvent)e);
+	else if ( e instanceof AdjustmentEvent )
+		processAdjustmentEvent( (AdjustmentEvent)e);
 }
 
 protected void processFocusEvent ( FocusEvent event ) {
@@ -607,6 +657,7 @@ public void removeMouseMotionListener ( MouseMotionListener listener ) {
 
 public void removeNotify () {
 	HotKeyHandler.removeHotKeys( this);
+	peer = null;
 }
 
 public void repaint () {
@@ -621,6 +672,10 @@ public void repaint ( int x, int y, int width, int height ) {
 	}
 }
 
+public void repaint ( long ms ) {
+	Toolkit.eventQueue.postEvent( new RepaintEvent( this, ms, x, y, width, height));
+}
+
 public void repaint ( long ms, int x, int y, int width, int height ) {
 	Toolkit.eventQueue.postEvent( new RepaintEvent( this, ms, x, y, width, height));
 }
@@ -629,7 +684,6 @@ public void requestFocus () {
 	Component topNew, topOld = null;
 
 	if ( AWTEvent.keyTgt == this ) return;  // nothing to do
-
 	topNew = getToplevel();
 	
 	// there are bad apps out there requesting the focus for Components
@@ -824,6 +878,16 @@ public Dimension size () {
 
 public String toString () {
 	return (getClass().getName() + '[' + paramString() + ']');
+}
+
+PopupMenu triggerPopup ( int idx, int x, int y ) {
+	if ( popups != null && (popups.size() > idx) ){
+		PopupMenu p = (PopupMenu)popups.elementAt( idx);
+		p.show( this, x, y);
+		return p;
+	}
+	
+	return null;
 }
 
 public void update ( Graphics g ) {

@@ -1,14 +1,3 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
-
-
 package java.text;
 
 import java.util.Locale;
@@ -145,6 +134,10 @@ private void parseFormat(String argument, int argcount) {
 	else if (aformat.equals("choice")) {
 		forms[argcount] = new ChoiceFormat(astyle);
 	}
+	else {
+		// Should be a string.
+		forms[argcount] = null;
+	}
 }
 
 public Object clone() {
@@ -186,7 +179,7 @@ public final StringBuffer format(Object args[], StringBuffer buf, FieldPosition 
 	for (int i = 0; i < forms.length; i++) {
 		buf.append(strs[i]);
 		if (forms[i] == null) {
-			buf.append((String)args[argno[i]]);
+			buf.append(args[argno[i]].toString());
 		}
 		else {
 			forms[i].format(args[argno[i]], buf, dummy);

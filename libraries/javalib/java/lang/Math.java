@@ -29,7 +29,7 @@ public static double abs(double a) {
 }
 
 public static float abs(float a) {
-	if (a < 0.0) {
+	if (a < 0.0f) {
 		return (-a);
 	}
 	else {

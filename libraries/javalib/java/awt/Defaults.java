@@ -1,10 +1,11 @@
-package java.awt;
-
-import java.awt.event.KeyEvent;
-import java.util.Hashtable;
-
 /**
  * Defaults - adaption parameters of package java.awt
+ *
+ * Be very carefully to add additional java.awt types, since this might
+ * introduce recursive class init problems. This is especially
+ * true if static fields of such classes are involved (like Color), since
+ * they might be still "null" (if they in turn refer to Toolkit/Defaults)
+ * when referenced inside of this class.
  *
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
@@ -14,6 +15,12 @@ import java.util.Hashtable;
  *
  * @author P.C.Mehlitz
  */
+
+package java.awt;
+
+import java.awt.event.KeyEvent;
+import java.util.Hashtable;
+
 class Defaults
 {
 	static boolean RedirectStreams = false;
@@ -120,6 +127,8 @@ class Defaults
  * @grx
  */
 	static Color WndInactiveTitleClr = Color.black;
+	static String ControlBoxClass = "java.awt.WinTaskBar";
+	static String MinBoxClass = "java.awt.WinTaskBar";
 
 static {
 	// these are the computed values

@@ -13,12 +13,12 @@ package java.lang;
 public final class Float extends Number {
   private float value;
   
-  public static final float POSITIVE_INFINITY = (float)(1.0 / 0.0);
-  public static final float NEGATIVE_INFINITY = (float)(-1.0 / 0.0);
-  public static final float NaN = (float)(0.0 / 0.0);
-  public static final float MAX_VALUE = (float)3.40282346638528860e+38;
-  //public static final float MIN_VALUE = (float)1.40129846432481707e-45;
-  public static final float MIN_VALUE = (float)1.40129846432481707e-38;
+  public static final float POSITIVE_INFINITY = 1.0f / 0.0f;
+  public static final float NEGATIVE_INFINITY = -1.0f / 0.0f;
+  public static final float NaN = 0.0f / 0.0f;
+  public static final float MAX_VALUE = 3.40282346638528860e+38f;
+  //public static final float MIN_VALUE = 1.40129846432481707e-45f;
+  public static final float MIN_VALUE = 1.40129846432481707e-38f;
   public static final Class TYPE = Class.getPrimitiveClass("float");
   
   public Float(float value) {

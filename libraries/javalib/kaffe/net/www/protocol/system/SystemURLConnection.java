@@ -57,7 +57,12 @@ public void connect() throws IOException
 
 public InputStream getInputStream() throws IOException
 {
-	return (new ByteArrayInputStream(data));
+	if (data == null) {
+		return (null);
+	}
+	else {
+		return (new ByteArrayInputStream(data));
+	}
 }
 
 public Object getContent() throws IOException {

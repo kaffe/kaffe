@@ -108,24 +108,15 @@ public String getName() {
 	return path.substring(path.lastIndexOf(separatorChar)+1);
 }
 
-public String getParent()
-	{
-	String newpath = path;
-	// drop trailing separator
-	if (path.endsWith(separator)) {
-		newpath=path.substring(0, path.length()-1);
+public String getParent() {
+	int slashIndex = path.lastIndexOf(separatorChar);
+	if (slashIndex > 0) {
+		return (path.substring(0, slashIndex));
 	}
-
-	int slashIndex=newpath.lastIndexOf(separatorChar);
-	if (slashIndex==-1) {
-		return null;
-	} 
-	else if (slashIndex==0) {
-		return File.separator;
+	if (slashIndex == 0 && path.length() > 1) {
+		return (separator);
 	}
-	else {
-		return newpath.substring(0, slashIndex);
-	}
+	return (null);
 }
 
 public String getPath() {
@@ -195,8 +186,7 @@ public String[] list(FilenameFilter filter) {
 
 native private String[] list0();
 
-public boolean mkdir()
-	{
+public boolean mkdir() {
 	checkWriteAccess();
 
 	if (isDirectory()) {
@@ -209,12 +199,10 @@ public boolean mkdir()
 
 native private boolean mkdir0();
 
-public boolean mkdirs()
-	{
-	String parent = getParent();
-	if (parent != null) {
-		File fp = new File(parent);
-		if (fp.mkdirs() == false) {
+public boolean mkdirs() {
+	if (!toString().equals(separator)) {
+		File parent = new File(getParent());
+		if (parent.mkdirs() == false) {
 			return (false);
 		}
 	}
@@ -230,8 +218,8 @@ public boolean renameTo(File dest) {
 
 native private boolean renameTo0(File that);
 
-public String toString()
-	{
+public String toString() {
 	return path;
 }
+
 }

@@ -15,19 +15,25 @@ import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.SystemClassLoader;
+import java.util.Hashtable;
 
 abstract public class ClassLoader
 {
-	private boolean initialized = false;
+
+private boolean initialized = false;
+private Hashtable loader;
 
 protected ClassLoader() {
 	System.getSecurityManager().checkCreateClassLoader();
+	loader = new Hashtable();
 	init();
 	initialized = true;
 }
 
 final protected Class defineClass(String name, byte data[], int offset, int length) {
-	return (defineClass0(name, data, offset, length));
+	Class cls = defineClass0(name, data, offset, length);
+	loader.put(cls.getName(), cls);
+	return (cls);
 }
 
 final protected Class defineClass(byte data[], int offset, int length) {
@@ -37,16 +43,11 @@ final protected Class defineClass(byte data[], int offset, int length) {
 native private Class defineClass0(String name, byte data[], int offset, int length);
 
 final protected Class findLoadedClass(String name) {
-	try {
-		return (loadClass(name, true));	// Probably not what's wanted ...
-	}
-	catch (ClassNotFoundException _) {
-		return (null);
-	}
+	return ((Class)loader.get(name));
 }
 
 final protected Class findSystemClass(String name) throws ClassNotFoundException {
-	return findSystemClass0(name);
+	return (findSystemClass0(name));
 }
 
 native private Class findSystemClass0(String name);

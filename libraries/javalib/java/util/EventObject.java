@@ -1,7 +1,3 @@
-package java.util;
-
-import java.io.Serializable;
-
 /*
  * Java core library component.
  *
@@ -11,6 +7,11 @@ import java.io.Serializable;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.util;
+
+import java.io.Serializable;
+
 public class EventObject extends Object
   implements Serializable
 {

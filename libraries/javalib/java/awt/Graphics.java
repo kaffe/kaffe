@@ -77,6 +77,16 @@ public Graphics create () {
 	return g;
 }
 
+public Graphics create ( int x, int y, int width, int height ) {
+	Graphics g = getGraphics( this, x + xOffset, y + yOffset,
+	                          0, 0, width, height,
+	                          fg, bg, fnt, false);
+	if ( xClr != null )
+		g.setXORMode( xClr);
+		
+	return g;
+}
+
 public void dispose () {
 	if ( bg == null ) {
 		// We have to provide some protection against double disposes

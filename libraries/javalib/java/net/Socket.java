@@ -20,22 +20,13 @@ final public class Socket
      This is NOT part of the SUN spec.. Thanks AGAIN SUN! */
 	SocketImpl impl;
 
-protected Socket() {
+Socket() {
 	if (factory==null) {
 		impl=new PlainSocketImpl();
 	}
 	else {
 		impl=factory.createSocketImpl();
 	}
-}
-
-/**
- * Creates an unconnected Socket with a user-specified SocketImpl. 
- * The impl parameter is an instance of a SocketImpl the subclass wishes 
- * to use on the Socket.
- */
-protected Socket(SocketImpl impl) throws SocketException {
-	this.impl = impl;
 }
 
 public Socket(InetAddress address, int port) throws IOException {
@@ -81,17 +72,6 @@ public int getPort() {
 	return impl.getPort();
 }
 
-public InetAddress getLocalAddress() {
-	InetAddress localAddress;
-	try {
-		localAddress =
-			(InetAddress)impl.getOption(SocketOptions.SO_BINDADDR); 
-	} catch (Exception e) {
-		localAddress = InetAddress.anyLocalAddress;
-	}
-	return localAddress;
-}
-
 public static synchronized void setSocketImplFactory(SocketImplFactory fac) throws IOException {
 	factory=fac;
 }
@@ -99,9 +79,10 @@ public static synchronized void setSocketImplFactory(SocketImplFactory fac) thro
 public void setSoLinger(boolean on, int timeout) throws SocketException {
 	if (on) {
 		impl.setOption(SocketOptions.SO_LINGER, new Integer(timeout));
-		return;
 	}
-	impl.setOption(SocketOptions.SO_LINGER, new Boolean(on));
+	else {
+		impl.setOption(SocketOptions.SO_LINGER, new Boolean(on));
+	}
 }
 
 public int getSoLinger() throws SocketException {

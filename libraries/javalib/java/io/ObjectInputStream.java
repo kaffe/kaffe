@@ -208,23 +208,20 @@ public final Object readObject() throws OptionalDataException, ClassNotFoundExce
 					throw new StreamCorruptedException("expected class desc");
 				}
 				currObject = allocateNewObject(currStreamClass.clazz, null);
-				switch (currStreamClass.method) {
-				case ObjectStreamConstants.SC_EXTERNALIZABLE:
+				if ((currStreamClass.method & ObjectStreamConstants.SC_EXTERNALIZABLE) != 0) {
                                         try {
                                                 ((Externalizable)currObject).readExternal(this);
                                         }
                                         catch (ClassCastException _) {
                                         }
-                                        break;
-
-				case ObjectStreamConstants.SC_WRRD_METHODS:
+				}
+				else if ((currStreamClass.method & ObjectStreamConstants.SC_WRRD_METHODS) != 0) {
 					invokeObjectReader(currObject, ObjectStreamClass.class);
-					break;
-
-				case ObjectStreamConstants.SC_SERIALIZABLE:
+				}
+				else if ((currStreamClass.method & ObjectStreamConstants.SC_SERIALIZABLE) != 0) {
 					defaultReadObject();
-					break;
-				default:
+				}
+				else {
 					throw new StreamCorruptedException("unknown method type: " + currStreamClass.method);
 				}
 				break;

@@ -152,7 +152,7 @@ protected int classLoaderDepth() {
 protected Class currentLoadedClass() {
 	Class[] classes = getClassContext();
 	for (int i = 0; i < classes.length; i++) {
-		if (classes[i].getClassLoader() != null) {
+		if (classes[i].getClassLoader() != Class.defaultClassLoader) {
 			return (classes[i]);
 		}
 	}
@@ -187,7 +187,7 @@ protected ClassLoader currentClassLoader() {
 	Class[] classes = getClassContext0();
 	for (int i = 0; i < classes.length; i++) {
 		ClassLoader loader = classes[i].getClassLoader();
-		if (loader != null) {
+		if (loader != Class.defaultClassLoader) {
 			return (loader);
 		}
 	}

@@ -1,8 +1,3 @@
-package java.util;
-
-import java.io.InputStream;
-import java.net.URL;
-
 /*
  * Java core library component.
  *
@@ -12,6 +7,12 @@ import java.net.URL;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.util;
+
+import java.io.InputStream;
+import java.net.URL;
+
 public class SystemClassLoader
   extends ClassLoader
 {

@@ -1,8 +1,3 @@
-package java.net;
-
-import java.io.FileDescriptor;
-import java.io.IOException;
-
 /*
  * Java core library component.
  *
@@ -12,6 +7,12 @@ import java.io.IOException;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.net;
+
+import java.io.FileDescriptor;
+import java.io.IOException;
+
 public class DatagramSocket
 {
 	private DatagramSocketImpl impl;

@@ -1,14 +1,3 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
-
-
 package java.awt;
 
 import java.awt.image.ColorModel;
@@ -17,6 +6,7 @@ import java.awt.image.ImageConsumer;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 import java.awt.image.IndexColorModel;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,7 +15,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
-import kaffe.io.TmpFile;
+import kaffe.io.AccessibleBAOStream;
 import kaffe.util.Ptr;
 
 public class Image
@@ -133,7 +123,7 @@ void setHints ( int hints ) {
 }
 
 void setPixels ( int x, int y, int w, int h,
-                        ColorModel cm, int[] pixels, int off, int ssize ) {
+			ColorModel cm, int[] pixels, int off, int ssize ) {
 	ImageConsumer c;
 	Enumeration   e;
 	
@@ -228,7 +218,7 @@ public void setPixels( int x, int y, int w, int h, ColorModel model, byte[] pels
 }
 
 public void setPixels ( int x, int y, int w, int h,
-                 ColorModel model, int[] pels, int off, int scans) {
+		 ColorModel model, int[] pels, int off, int scans) {
 	if ( nativeData == null ) {
 		// error, we did not get a setDimension call
 		return;
@@ -286,29 +276,7 @@ Image ( URL url ) {
 }
 
 Image ( byte[] data, int offs, int len) {
-	TmpFile  tmp = null;
-	int   i = offs;
-
-	// check data-headers to identify format
-	if ( (data[i++] == 'G') && (data[i++] == 'I') && (data[i] == 'F') ) { // GIF
-		tmp = new TmpFile( null, ".gif");
-	}
-	else if ( (data[i++] == 0xff) && (data[i++] == 0xd8) &&
-	          (data[i++] == 0xff) && (data[i] == 0xe0) ) {                // JPEG
-	  tmp = new TmpFile( null, ".jpeg");
-	}
-
-	if ( tmp != null ) {
-		try {
-			FileOutputStream out = new FileOutputStream( tmp);
-			out.write( data, offs, len);
-			out.close();
-			srcObj = tmp;
-			createFromFile();
-			tmp.delete();
-		}
-		catch ( Exception x ) {}
-	}
+	createFromData( data, offs, len);
 }
 
 Image ( int w, int h ) {
@@ -335,7 +303,7 @@ void addObserver ( ImageObserver observer ) {
 
 static int checkImage ( Image image, int width, int height, ImageObserver obs, boolean load ){
 	if ( image == null )
-		return 0;
+		return (ImageObserver.ABORT | ImageObserver.ERROR);
 
 	if ( (image.flags & ImageObserver.ALLBITS) != 0 ) {
 		if ( (width > 0) && (height > 0) ){
@@ -345,7 +313,7 @@ static int checkImage ( Image image, int width, int height, ImageObserver obs, b
 	else {
 		if ( load ) {
 			image.addObserver( obs);
-			if ( (image.flags & PRODUCING) == 0 ) {
+			if ( (image.flags & (PRODUCING | ImageObserver.ABORT)) == 0 ) {
 				image.startAsyncProduction();
 			}
 		}
@@ -353,24 +321,63 @@ static int checkImage ( Image image, int width, int height, ImageObserver obs, b
 	return image.flags;
 }
 
+void createFromData ( byte[] data, int offs, int len ) {
+	nativeData = Toolkit.imgCreateFromData( data, offs, len);
+	finishCreate();
+}
+
 void createFromFile () {
 	File file = (File)srcObj;
 	String fileName = file.getAbsolutePath();
 
 	if ( file.exists() ) {
-		if ( fileName.endsWith( ".gif") || fileName.endsWith( ".GIF") ){
-			flags |= PRODUCING;
-			nativeData = Toolkit.imgCreateGifImage( fileName);
-		}
-		else if ( fileName.endsWith( ".jpg") || fileName.endsWith( ".jpeg") ||
-		          fileName.endsWith( ".JPG") || fileName.endsWith( ".JPEG") ){
-			flags |= PRODUCING;
-			nativeData = Toolkit.imgCreateJpegImage( fileName, 256);
-		}
+		flags |= PRODUCING;
+		nativeData = Toolkit.imgCreateFromFile( fileName);
 	}
 
-	flags = READY;
-	
+	finishCreate();
+}
+
+void createFromURL () {
+	URL url = (URL)srcObj;	
+	byte[] buf = new byte[1024];
+	int n;
+
+	flags |= PRODUCING;
+
+	// since this is most likely used in a browser context (no file system), the
+	// onlything we can do (in the absence of a suspendable native image production) is
+	// to temporarily store the data in memory. Note that this is done via
+	// kaffe.io.AccessibleBAOStream, to prevent the inacceptable memory consumption
+	// duplication of "toByteArray()".
+	// Ideally, we would have a suspendable image production (that can deal with reading
+	// and processing "incomplete" data), but that simply isn't supported by many native
+	// image conversion libraries. Some could be done in Java (at the expense of a
+	// significant speed degradation - this is the classical native functionality), but
+	// things like Jpeg ?
+	try {
+		InputStream in = url.openStream();
+		if ( in != null ) {
+			AccessibleBAOStream out = new AccessibleBAOStream( 8192);
+		
+			while ( (n = in.read( buf)) >= 0 ) {
+				out.write( buf, 0, n);
+			}
+			in.close();
+
+			createFromData( out.getBuffer(), 0, out.size());
+		}
+	}
+	catch ( Exception x ) {
+		flags = ImageObserver.ABORT | ImageObserver.ERROR;
+	}
+}
+
+protected void finalize () {
+	flush();
+}
+
+void finishCreate () {
 	if ( nativeData != null ) {
 		width = Toolkit.imgGetWidth( nativeData);
 		height = Toolkit.imgGetHeight( nativeData);
@@ -381,36 +388,6 @@ void createFromFile () {
 	else {
 		stateChange( ImageObserver.ERROR | ImageObserver.ABORT, 0, 0, width, height);
 	}
-}
-
-void createFromURL () {
-	URL url = (URL)srcObj;
-	// how to deal with the SecurityManager ??
-	TmpFile tmp = new TmpFile( url.getFile());
-	byte[] buf = new byte[1024];
-	int n;
-	
-	try {
-		InputStream in = url.openStream();
-		FileOutputStream out = new FileOutputStream( tmp);
-		
-		while ( (n = in.read( buf)) >= 0 ) {
-			out.write( buf, 0, n);
-		}
-	
-		out.close();
-		in.close();
-	
-		srcObj = tmp;
-		createFromFile();
-		tmp.delete();
-	}
-	catch ( IOException x ) {
-	}
-}
-
-protected void finalize () {
-	flush();
 }
 
 public void flush () {
@@ -433,7 +410,7 @@ public int getHeight ( ImageObserver observer ) {
 		return height;
 	else {
 		addObserver( observer);
-		if ( (flags & PRODUCING) == 0 )
+		if ( (flags & (PRODUCING | ImageObserver.ABORT)) == 0 )
 			startAsyncProduction();
 
 		return -1;
@@ -464,7 +441,7 @@ public int getWidth ( ImageObserver observer ) {
 		return width;
 	else {
 		addObserver( observer);
-		if ( (flags & PRODUCING) == 0 )
+		if ( (flags & (PRODUCING | ImageObserver.ABORT)) == 0 )
 			startAsyncProduction();
 
 		return -1;
@@ -520,7 +497,6 @@ synchronized void startAsyncProduction () {
 
 void stateChange( int flags, int x, int y, int w, int h) {
 	this.flags = flags;
-
 	if ( observers != null ) {
 	 	for ( Enumeration e = observers.elements(); e.hasMoreElements(); ) {
 			ImageObserver obs = (ImageObserver) e.nextElement();

@@ -8,9 +8,6 @@
  * of this file. 
  */
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <string.h>
 #include "config.h"
 #include "toolkit.h"
 
@@ -517,6 +514,44 @@ Java_java_awt_Toolkit_graSetXORMode ( JNIEnv* env, jclass clazz, Graphics* gr, j
  */
 
 void
+drawAlphaImage ( Graphics* gr, Image* img,
+				 jint srcX, jint srcY, jint dstX, jint dstY,
+				 jint width, jint height, jint bgval )
+{
+  XImage *dstImg;
+  int    i, j, si, sj, alpha;
+  unsigned long dpix, spix, bgpix;
+  int    sr, sg, sb, dr, dg, db;
+
+  dstImg = XGetImage( X->dsp, gr->drw, dstX, dstY, width, height, 0xffffffff, ZPixmap);
+  if ( bgval != -1 )
+	bgpix = pixelValue( X, bgval);
+
+  if ( dstImg ) {
+	for ( j=0, sj=srcY; j<dstImg->height; j++, sj++ ) {
+	  for ( i=0, si=srcX; i<dstImg->width; i++, si++ ) {
+		dpix = (bgval == -1) ? XGetPixel( dstImg, i, j) : bgpix;
+		spix = XGetPixel( img->xImg, si, sj);
+		alpha = GetAlpha( img->alpha, si, sj);
+
+		rgbValues( X, dpix, &dr, &dg, &db);
+		rgbValues( X, spix, &sr, &sg, &sb);
+
+		dr = ((alpha * sr + (255 - alpha) * dr) + 128) >> 8;
+		dg = ((alpha * sg + (255 - alpha) * dg) + 128) >> 8;
+		db = ((alpha * sb + (255 - alpha) * db) + 128) >> 8;
+
+		XPutPixel( dstImg, i, j, pixelValue( X, (dr << 16)|(dg << 8)|(db) ));
+	  }
+	}
+
+	XPutImage( X->dsp, gr->drw, gr->gc, dstImg, 0, 0, dstX, dstY, width, height);
+	XDestroyImage( dstImg);
+  }
+}
+
+
+void
 Java_java_awt_Toolkit_graDrawImage ( JNIEnv* env, jclass clazz, Graphics* gr, Image* img,
 									 jint srcX, jint srcY,
 									 jint dstX, jint dstY,
@@ -553,6 +588,10 @@ Java_java_awt_Toolkit_graDrawImage ( JNIEnv* env, jclass clazz, Graphics* gr, Im
 	  /* restore gc values except of the function */
 	  XChangeGC( X->dsp, gr->gc, GCFunction|GCPlaneMask|GCForeground|GCBackground, &values);
 	  XSetFunction( X->dsp, gr->gc, GXor);
+	}
+	else if ( img->alpha ) {
+	  drawAlphaImage( gr, img, srcX, srcY, dstX, dstY, width, height, bgval);
+	  return;
 	}
 
 	/* this is the real image drawing */
@@ -602,6 +641,7 @@ Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz, Graphics* 
   tgt.height = (y1 - y0 +1);
   tgt.xImg = createXImage( X, tgt.width, tgt.height);
   tgt.xMask = (img->xMask) ? createXMaskImage( X, tgt.width, tgt.height) : 0;
+  tgt.alpha = (img->alpha) ? createAlphaImage( X, tgt.width, tgt.height) : 0;
 
   initScaledImage( X, &tgt, img, dx0-x0, dy0-y0, dx1-x0, dy1-y0, sx0, sy0, sx1, sy1);
 

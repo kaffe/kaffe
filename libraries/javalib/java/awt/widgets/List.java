@@ -140,8 +140,11 @@ public void mouseMoved( MouseEvent e) {
 }
 
 public void mousePressed( MouseEvent e) {
-	if ( AWTEvent.keyTgt != this )
+	if ( AWTEvent.keyTgt != ip )
 		ip.requestFocus();
+		
+	if ( e.isPopupTrigger() )
+		triggerPopup( 0, e.getX(), e.getY());
 }
 
 public void mouseReleased( MouseEvent e) {

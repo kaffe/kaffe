@@ -1,10 +1,3 @@
-package java.net;
-
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 /*
  * Java core library component.
  *
@@ -14,8 +7,16 @@ import java.io.OutputStream;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.net;
+
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 abstract public class SocketImpl
-  implements SocketOptions
+	implements SocketOptions
 {
 	protected FileDescriptor fd;
 	protected InetAddress address;
@@ -65,4 +66,5 @@ abstract protected void listen(int backlog) throws IOException;
 public String toString() {
 	return "ServerSocket[addr="+address.toString()+",port="+String.valueOf(port)+",localport="+String.valueOf(localport)+"]";
 }
+
 }

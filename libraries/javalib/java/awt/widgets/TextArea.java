@@ -1,14 +1,3 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
-
-
 package java.awt;
 
 import java.awt.event.FocusEvent;
@@ -261,15 +250,19 @@ int get1D( Point p) {
 Point get2D( int pos) {
 	int rs = rows.size();
 	int xt = 0;
-	
+	TextBuffer tb = null;
+
+  if ( rs == 0 )
+		return new Point( -1, -1);
+
 	for ( int i=0; i<rs; i++) {
-		TextBuffer tb = (TextBuffer)rows.elementAt( i);
+		tb = (TextBuffer)rows.elementAt( i);
 		xt += tb.len;
 		if (xt >= pos)
 			return new Point( tb.len - xt + pos, i);
 	}
 	
-	return new Point( -1, -1);
+	return new Point( tb.len, rs-1);
 }
 
 int getCol( int row, int x) {
@@ -491,7 +484,12 @@ public void mouseMoved( MouseEvent e) {
 
 public void mousePressed( MouseEvent e) {
 	int mods = e.getModifiers();
-	
+
+	if ( e.isPopupTrigger() ){
+		if ( (triggerPopup( 0, e.getX(), e.getY())) != null )
+			return;
+	}
+
 	switch ( mods) {
 		case InputEvent.BUTTON1_MASK:
 			tp.requestFocus();
@@ -504,7 +502,6 @@ public void mousePressed( MouseEvent e) {
 			pasteFromClipboard();
 			break;
 	}
-	
 }
 
 public void mouseReleased( MouseEvent e) {
@@ -838,6 +835,7 @@ public TextArea( String text, int rows, int cols, int scrolls) {
 }
 
 public TextArea( int rows, int cols) {
+	this( null, rows, cols, SCROLLBARS_BOTH);
 }
 
 public void add( PopupMenu m) {
@@ -849,35 +847,42 @@ public synchronized void append( String str) {
 }
 
 String[] breakLines( String str) {
-	int i;
-	int bIdx = 0;
-	int lc = 0;
-	int numLines = 1;
-	String[] sbuf;
+	int       i, i0 = 0, n = str.length();
+	char      c;
+	Vector    v;
+	String[]  sbuf;
+	char[]    cbuf;
 
-	if ( str == null )
-		return new String[0];
+	if ( (str == null) || (n == 0) )
+		return new String[1];
+		
+	v = new Vector( n / 20);
+	cbuf = str.toCharArray();
 
-	char[] buf = str.toCharArray();
-	for ( i=0; i<buf.length; i++) {
-		if ( buf[i] == '\n' ) numLines++;
-	}
-	sbuf = new String[numLines];
+	// sometimes I wonder how long we will suffer from old DOS habits: some
+	// editors still use obscure '\r\r\n' or '\r' "weak" linefeeds to mark
+	// automatically wrapped lines
 
-	for ( i=0; i<buf.length; i++) {
-		if ( buf[i] == '\n' ){
-			if ( buf[i-1] == '\r' )
-				sbuf[lc++] = str.substring( bIdx, i-1);
-			else
-				sbuf[lc++] = str.substring( bIdx, i);
-			bIdx = i+1;
+	for ( i=0; i<n; i++ ) {
+		if ( (c=cbuf[i]) == '\n' ) {
+			v.addElement( new String( cbuf, i0, i-i0));
+			i0 = i+1;
+		}
+		else if ( c == '\r' ) {
+			v.addElement( new String( cbuf, i0, i-i0));
+			// skip all subsequent '\r'
+			for ( i++; (i < n) && (cbuf[i] == '\r'); i++ );
+			i0 = (cbuf[i] == '\n') ? i+1 : i;
 		}
 	}
 
-	if ( bIdx < buf.length ){
-		sbuf[lc] = str.substring( bIdx, buf.length);
+	if ( i0 < n ){
+		v.addElement( new String( cbuf, i0, i-i0));
 	}
-
+	
+	sbuf = new String[v.size()+1];
+	v.copyInto( sbuf);
+	
 	return sbuf;
 }
 

@@ -1,5 +1,12 @@
 package kaffe.awt;
 
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.image.ImageObserver;
+import java.io.File;
+import java.net.URL;
+import java.net.URLConnection;
+
 /**
  * Copyright (c) 1998
  *	Transvirtual Technologies, Inc.  All rights reserved.
@@ -9,14 +16,6 @@ package kaffe.awt;
  *
  * @author J.Mehlitz
  */
-
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.image.ImageObserver;
-import java.io.File;
-import java.net.URL;
-import java.net.URLConnection;
-
 public class ImageSpec
 {
 	Image img;
@@ -31,7 +30,6 @@ public ImageSpec ( String pathName, Class loader, ImageObserver obs, boolean pre
 
 	if ( preload )
 		loadImage( obs);
-
 }
 
 public Image getImage() {
@@ -44,26 +42,64 @@ public boolean isPlain() {
 	return plain;
 }
 
-boolean loadImage( ImageObserver obs) {
-	if ( img == null ) {
-		Toolkit tlk = Toolkit.getDefaultToolkit();
-		File f = new File( fileName);
-		if ( f.exists() ) {
-			img = tlk.getImage( fileName);
-			return true;
-		}
-		try {
-			URL url = loaderCls.getResource( fileName);
-			img = tlk.getImage( url);
-			if (obs != null)
-				img.getWidth( obs);
-			return true;
-		}
-		catch ( Exception x) {
-		}
+boolean loadFromClass( ImageObserver obs) {
+	try {
+		Class cc = Class.forName( fileName);
+		ImageClass ic = (ImageClass)cc.newInstance();
+		img = Toolkit.getDefaultToolkit().createImage( ic.source);
+		
+		if ( obs != null )
+			img.getHeight( obs);
+
+		return true;
+	}
+	catch ( Exception x) {
 		return false;
 	}
-	
-	return true;
+}
+
+boolean loadFromFile() {
+	File f = new File( fileName);
+	if ( f.exists() ) {
+		img = Toolkit.getDefaultToolkit().getImage( fileName);
+		return true;
+	}
+
+	return false;
+}
+
+boolean loadFromURL( ImageObserver obs) {
+	try {
+		URL url = loaderCls.getResource( fileName);
+		img = Toolkit.getDefaultToolkit().getImage( url);
+		
+		if (obs != null)
+			img.getWidth( obs);
+
+		return true;
+	}
+	catch ( Exception x) {
+		return false;
+	}
+}
+
+boolean loadImage( ImageObserver obs) {
+
+	if ( img != null )
+		return true;
+
+	if ( loadFromFile() ) {
+		return true;
+	}
+		
+	if ( loadFromClass( obs) ) {
+		return true;
+	}
+		
+	if ( loadFromURL( obs) ) {
+		return true;
+	}
+		
+	return false;
 }
 }

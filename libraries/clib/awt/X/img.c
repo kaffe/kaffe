@@ -9,27 +9,23 @@
  */
 
 
-#include <setjmp.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include "jpeglib.h"
-
 #include "config.h"
 #include "toolkit.h"
 
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
 
+/* interfaces of image conversion functions */
+Image* readGifFile ( FILE* );
+Image* readGifData ( unsigned char*, long len );
+Image* readJpegFile ( FILE* );
+Image* readJpegData ( unsigned char*, long len );
+Image* readPngFile ( FILE* );
+Image* readPngData ( unsigned char*, long len );
 
 /************************************************************************************
  * own auxiliary funcs
  */
 
-__inline__ Image*
+Image*
 createImage ( int width, int height )
 {
   Image * img = calloc( 1, sizeof( Image));
@@ -88,6 +84,97 @@ createXImage ( Toolkit* X, int width, int height )
   return xim;
 }
 
+AlphaImage*
+createAlphaImage ( Toolkit* X, int width, int height )
+{
+  int nBytes = width * height;
+  AlphaImage    *img = malloc( sizeof( AlphaImage));
+
+  img->width  = width;
+  img->height = height;
+
+  img->buf = malloc( nBytes);
+  memset( img->buf, 0xff, nBytes);
+  
+  return img;
+}
+
+/*
+ * For images with a full alpha channel, check if we really need an alpha byte for
+ * each pel, or if a mask bitmap (alpha 0x00 / 0xff) will be sufficient
+ */
+int
+needsFullAlpha ( Toolkit* X, Image *img, double threshold )
+{
+  int i, j, a;
+  int n = 0, max;
+
+  if ( !img->alpha ) return 0;
+
+  max = (img->width * img->height) * threshold;
+
+  for ( i=0; i<img->height; i++ ) {
+	for ( j=0; j<img->width; j++ ) {
+	  a = GetAlpha( img->alpha, j, i);
+	  if ( (a != 0) && (a != 0xff) ) {
+		if ( ++n > max )
+		  return 1;
+	  }
+	}
+  }
+
+  return 0;
+}
+
+void
+countAlphas ( Image *img, int* noAlpha, int* partAlpha, int* fullAlpha )
+{
+  int i, j, a;
+
+  if ( !img->alpha ) return;
+
+  for ( i=0; i<img->height; i++ ) {
+	for ( j=0; j<img->width; j++ ) {
+	  a = GetAlpha( img->alpha, j, i);
+	  if ( a == 0 )
+		*noAlpha++;
+	  else if ( a == 0xff )
+		*fullAlpha++;
+	  else
+		*partAlpha++;
+	}
+  }
+}
+
+/*
+ * A full alpha image channel is way slower than using a mask bitmap (= 0 / 0xff alpha).
+ * This function provides a simple alpha-to-mask translation
+ */
+void
+reduceAlpha ( Toolkit* X, Image* img, int threshold )
+{
+  int i, j, a;
+
+  if ( !img->alpha )
+	return;
+
+  img->xMask = createXMaskImage( X, img->width, img->height);
+
+  for ( i=0; i<img->height; i++ ) {
+	for ( j=0; j<img->width; j++ ) {
+	  a = GetAlpha( img->alpha, j, i);
+	  if ( a < threshold ) {
+		XPutPixel( img->xImg, j, i, 0);
+		XPutPixel( img->xMask, j, i, 0);
+	  }
+	}
+  }
+
+  free( img->alpha->buf);
+  free( img->alpha);
+  img->alpha = 0;
+}
+
 
 __inline__ int
 interpolate ( int ul, int ur, int ll, int lr, double dx, double dy )
@@ -98,12 +185,30 @@ interpolate ( int ul, int ur, int ll, int lr, double dx, double dy )
   return (int) (u + (l - u) * dy  + 0.5);
 }
 
+unsigned int
+getScaledAlpha ( Toolkit* X, Image* img, int x, int y, double dx, double dy )
+{
+  int   ul, ur, ll, lr, a;
+  int   xi = (dx) ? x+1 : x;
+  int   yi = (dy) ? y+1 : y;
+
+  if ( img->alpha ) {
+	ul = GetAlpha( img->alpha, x, y);
+	ur = GetAlpha( img->alpha, xi, y);
+	ll = GetAlpha( img->alpha, x, yi);
+	lr = GetAlpha( img->alpha, xi,yi);
+	a = (unsigned int) interpolate( ul, ur, ll, lr, dx, dy);
+	return a;
+  }
+
+  return 0xff;
+}
 
 long
 getScaledPixel ( Toolkit* X, Image* img, int x, int y, double dx, double dy )
 {
   unsigned long  ul, ur, ll, lr;
-  int            ulR, urR, llR, lrR, ulG, urG, llG, lrG, ulB, urB, llB, lrB, r, g, b;
+  int            ulR, urR, llR, lrR, ulG, urG, llG, lrG, ulB, urB, llB, lrB, r, g, b, a;
   int            xi = (dx) ? x+1 : x;
   int            yi = (dy) ? y+1 : y;
 
@@ -170,50 +275,16 @@ initScaledImage ( Toolkit* X, Image *tgt, Image *src,
 	  sx = (int) sX;
 	  sxDelta = (sx < sx1) ? sX - sx : 0;
 
-	  if ( (c = getScaledPixel( X, src, sx, sy, sxDelta, syDelta)) != -1 )
+	  if ( (c = getScaledPixel( X, src, sx, sy, sxDelta, syDelta)) != -1 ){
   		XPutPixel( tgt->xImg, dx, dy, c);
+		if ( src->alpha )
+		  PutAlpha( tgt->alpha, dx, dy, getScaledAlpha( X, src, sx, sy, sxDelta, syDelta));
+	  }
 	  else {
 		XPutPixel( tgt->xMask, dx, dy, 0);
 		XPutPixel( tgt->xImg, dx, dy, 0);
 	  }
 	}
-  }
-}
-
-/************************************************************************************
- * JPEG input rotinues
- */
-
-#define	CM_RED		0
-#define	CM_GREEN	1
-#define	CM_BLUE		2
-
-struct my_error_mgr {
-  struct jpeg_error_mgr pub;
-  jmp_buf setjmp_buffer;
-};
-
-typedef struct my_error_mgr * my_error_ptr;
-
-void
-my_error_exit ( j_common_ptr cinfo)
-{
-  my_error_ptr myerr = (my_error_ptr) cinfo->err;
-  (*cinfo->err->output_message)(cinfo);
-  longjmp(myerr->setjmp_buffer, 1);
-}
-
-void
-jscan_to_img( Image * img, JSAMPROW buf, struct jpeg_decompress_struct * cinfo)
-{
-  register col, pix, rgb, idx;
-  register JSAMPARRAY colormap = cinfo->colormap;
-
-  for ( col = 0; col < cinfo->output_width; col++) {
-    idx = *buf++;
-    rgb = (colormap[CM_RED][idx] << 16) | (colormap[CM_GREEN][idx] << 8) | colormap[CM_BLUE][idx];    
-    pix = pixelValue( X, rgb);
-    XPutPixel( img->xImg, col, cinfo->output_scanline-1, pix);
   }
 }
 
@@ -347,85 +418,13 @@ Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
 	img->xMask = 0;
   }
 
+  if ( img->alpha ) {
+	free( img->alpha->buf);
+	free( img->alpha);
+	img->alpha = 0;
+  }
+
   free( img);
-}
-
-
-/* native file-based image construction */
-
-void*
-Java_java_awt_Toolkit_imgCreateGifImage ( JNIEnv* env, jclass clazz, jstring gifpath)
-{
-  Image* img = 0;
-
-  /* Ideally there'd be a routine here to generate the GIF image - but GIF
-   * is a patented technology so we can't redistribute the code.
-   */
-
-  return img;
-}
-
-
-void*
-Java_java_awt_Toolkit_imgCreateJpegImage ( JNIEnv* env, jclass clazz, 
-										   jstring jpegPath, volatile jint colors)
-{
-  Image * volatile img;
-  struct jpeg_decompress_struct cinfo;
-  struct my_error_mgr jerr;
-  FILE * infile;
-  JSAMPARRAY buffer;
-  int row_stride;
-  char * filename = java2CString( env, X, jpegPath);
-
-  if ((infile = fopen(filename, "rb")) == NULL)
-    return 0;
-
-  cinfo.err = jpeg_std_error(&jerr.pub);
-  jerr.pub.error_exit = my_error_exit;
-
-  if ( setjmp(jerr.setjmp_buffer)) {
-	if ( img )
-	  Java_java_awt_Toolkit_imgFreeImage( env, clazz, img);
-
-    jpeg_destroy_decompress(&cinfo);
-    fclose( infile);
-    return 0;
-  }
-
-  jpeg_create_decompress(&cinfo);
-  jpeg_stdio_src(&cinfo, infile);
-  (void) jpeg_read_header(&cinfo, TRUE);
-
-  if ( colors < 8 )
-    colors = 8;
-  else if ( colors > 256 )
-    colors = 256;
-
-  cinfo.desired_number_of_colors = colors;
-  cinfo.quantize_colors = TRUE;
-  cinfo.out_color_space = JCS_RGB;
-
-  (void) jpeg_start_decompress(&cinfo);
-  row_stride = cinfo.output_width * cinfo.output_components;
-
-  /* it's time to create the target image */
-  img = createImage( cinfo.output_width, cinfo.output_height);
-  img->xImg = createXImage( X, img->width, img->height);
-
-  buffer = (*cinfo.mem->alloc_sarray)
-	((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
-
-  while (cinfo.output_scanline < cinfo.output_height) {
-    (void) jpeg_read_scanlines(&cinfo, buffer, 1);
-    jscan_to_img( img, buffer[0], &cinfo);
-  }
-
-  (void) jpeg_finish_decompress(&cinfo);
-  jpeg_destroy_decompress(&cinfo);
-  fclose(infile);
-
-  return img;
 }
 
 
@@ -509,7 +508,98 @@ Java_java_awt_Toolkit_imgProduceImage ( JNIEnv* env, jclass clazz,
 	(*env)->ReleaseIntArrayElements( env, scanLine, pels, JNI_ABORT);
 }
 
-/* field access */
+
+/************************************************************************************
+ * native format production dispatcher routines (GIF, jpeg, png, ..)
+ */
+
+#define SIG_LENGTH 4
+#define SIG_GIF    1
+#define SIG_JPEG   2
+#define SIG_PNG    3
+
+Image *unknownImage = 0;  /* fill in some default image here */
+
+int imageFormat ( unsigned char* sig ) {
+  if ( (sig[0] == 'G') && (sig[1] == 'I') && (sig[2] == 'F') )
+	return SIG_GIF;
+
+  if ( (sig[0] == 0xff) && (sig[1] == 0xd8) && (sig[2] == 0xff) && (sig[3] == 0xe0) )
+	return SIG_JPEG;
+
+  if ( (sig[0] == 0x89) && (sig[1] == 'P') && (sig[2] == 'N') && (sig[3] == 'G') )
+	return SIG_PNG;
+
+  return 0;
+}
+
+void*
+Java_java_awt_Toolkit_imgCreateFromFile ( JNIEnv* env, jclass clazz, jstring fileName )
+{
+  Image *img = 0;
+  FILE  *infile;
+  char  *fn = java2CString( env, X, fileName);
+  unsigned char  sig[SIG_LENGTH];
+
+  if ((infile = fopen( fn, "rb")) != NULL) {
+	if ( fread( sig, 1, sizeof(sig), infile) == sizeof(sig) ) {
+	  rewind( infile);  /* some native converters can't skip the signature read */
+
+	  switch ( imageFormat( sig) ) {
+	  case SIG_GIF:
+		img = readGifFile( infile);
+		break;
+	  case SIG_JPEG:
+		img = readJpegFile( infile);
+		break;
+	  case SIG_PNG:
+		img = readPngFile( infile);
+		break;
+	  default:
+		img = unknownImage;
+	  }
+	}
+	fclose( infile);
+  }
+
+  return img;
+}
+
+void*
+Java_java_awt_Toolkit_imgCreateFromData ( JNIEnv* env, jclass clazz,
+										  jarray jbuffer, jint off, jint len )
+{
+  Image *img = 0;
+  jboolean isCopy;
+  jint   length = (*env)->GetArrayLength( env, jbuffer);
+  jbyte  *jb = (*env)->GetByteArrayElements( env, jbuffer, &isCopy);
+  unsigned char *buf = (unsigned char*) jb + off;
+
+  /* in case of a buffer overrun, we probably have a JPEG read error, anyway */
+  if ( (off + len) <= length ) {
+	switch ( imageFormat( buf) ) {
+	case SIG_GIF:
+	  img = readGifData( buf, len);
+	  break;
+	case SIG_JPEG:
+	  img = readJpegData( buf, len);
+	  break;
+	case SIG_PNG:
+	  img = readPngData( buf, len);
+	  break;
+	default:
+	  img = unknownImage;
+	}
+  }
+
+  (*env)->ReleaseByteArrayElements( env, jbuffer, jb, JNI_ABORT);
+  return img;  
+}
+
+
+/************************************************************************************
+ * field access
+ */
 
 jint
 Java_java_awt_Toolkit_imgGetWidth ( JNIEnv* env, jclass clazz, Image* img)

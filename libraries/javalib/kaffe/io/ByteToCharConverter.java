@@ -11,6 +11,7 @@
 package kaffe.io;
 
 import java.io.UnsupportedEncodingException;
+import kaffe.util.Assert;
 
 abstract public class ByteToCharConverter
 {
@@ -30,6 +31,8 @@ public ByteToCharConverter() {
 void carry ( byte[] from, int fpos, int flen ) {
 	int n;
 	int m = blen + flen;
+
+	Assert.that(blen == 0);
 
 	if ( buf == null ){
 		n = (flen < 128) ? 128 : flen;

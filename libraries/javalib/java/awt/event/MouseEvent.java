@@ -50,57 +50,38 @@ public MouseEvent ( Component src, int evtId, long time, int modifiers,
 protected void dispatch () {
 	Component newTgt;
 
-	if ( buttonPressed ) {
+	if ( mouseDragged ) {
 		Object newTop = source;
 		int    newX = x, newY = y;
 	
-		x -= xMouseTgt;
-		y -= yMouseTgt;
-		source = mouseTgt;
+		// we might get here in a pseudo drag if a PopupWindow grabbed the mouse
+		// (a native click release has another source than a drag release!)
+		if ( source != mouseTgt ) {
+			x -= xMouseTgt;
+			y -= yMouseTgt;
+			source = mouseTgt;
+		}
 
 		if ( id == MOUSE_MOVED ) {
 			id = MOUSE_DRAGGED;
-			mouseDragged = true;
 			processMouseMotionEvent( this);
 		}
 		else if ( id == MOUSE_RELEASED ) {
 			accelHint = false;
 			updateInputModifier( button, false);
 
-			if ( mouseDragged ) {
-				buttonPressed = false;
-				processMouseEvent( this);
-				mouseDragged = false;
-				
-				x = newX;
-				y = newY;
-				if ( (newTgt = computeMouseTarget( (Container)newTop, x, y)) != mouseTgt ) {
-					x -= xMouseTgt;
-					y -= yMouseTgt;
-					transferMouse( this, mouseTgt, mousePos.x, mousePos.y, newTgt, x, y);
-					mouseTgt = newTgt;
-				}
-			}
-			else {
-				clickCount = clicks;
-				// Don't process the CLICKED event sync because we might get
-				// recursive during a RELEASED processing. However, we have to make
-				// sure the CLICKED event is processed because it has to reset the
-				//  inputModifier state
-				postMouseClicked( newTop, when, x+xMouseTgt, y+yMouseTgt,
-				                  modifiers, clickCount, button);				
-				processMouseEvent( this);
-			}
-		}
-		else if (id == MOUSE_CLICKED ) {
-			checkPopup( newTop); // the old highlander theme..
-		
 			buttonPressed = false;
-			clickCount = clicks;
 			processMouseEvent( this);
-			
-			if ( isPopupTrigger )
-				triggerPopup( this);
+			mouseDragged = false;
+				
+			x = newX;
+			y = newY;
+			if ( (newTgt = computeMouseTarget( (Container)newTop, x, y)) != mouseTgt ) {
+				x -= xMouseTgt;
+				y -= yMouseTgt;
+				transferMouse( this, mouseTgt, mousePos.x, mousePos.y, newTgt, x, y);
+				mouseTgt = newTgt;
+			}
 		}
 	}
 	else {
@@ -127,15 +108,16 @@ protected void dispatch () {
 		}
 
 		if ( id == MOUSE_MOVED ) {
+			if ( buttonPressed ) {
+				mouseDragged = true;
+				id = MOUSE_DRAGGED;
+			}
 			processMouseMotionEvent( this);
 		}
 		else if ( id == MOUSE_PRESSED ) {
-			if ( (mouseTgt != keyTgt) ) {          // click to focus
-				// we probably should simulate a toplevel focusGained here in
-				// case we don't have a native WM (but this might cause flicker
-				// if the toplevel instance forwards the focus to another child)
-				sendFocusEvent( newTgt, true, true); // has to be sync -> no requestFocus()
-			}
+			checkPopup( mouseTgt);         // the old highlander theme..
+			if ( (mouseTgt != keyTgt) )    // pass this to java.awt to decide upon policy
+				clickToFocus( newTgt);
 			
 			buttonPressed = true;
 			modifiers = updateInputModifier( button, true);
@@ -148,6 +130,24 @@ protected void dispatch () {
 			clickCount = clicks;
 			lastPressed = when;
 			
+			processMouseEvent( this);
+			
+			// some apps might react on isPopupTrigger() for both pressed + released
+			isPopupTrigger = false;
+		}
+		else if ( id == MOUSE_RELEASED ) {
+			accelHint = false;
+			clickCount = clicks;
+			updateInputModifier( button, false);
+
+			// we can't do this sync because of possible recursion, but we need to provide
+			// a clicked event as the next event to follow a MOUSE_RELEASE
+			postMouseClicked( mouseTgt, when, x, y, modifiers, clickCount, button);				
+			buttonPressed = false;
+			processMouseEvent( this);
+		}
+		else if ( id == MOUSE_CLICKED ) {
+			clickCount = clicks;
 			processMouseEvent( this);
 		}
 	}

@@ -106,7 +106,7 @@ public ScrollPane ( int policy ) {
 final protected void addImpl ( Component child, Object constraint, int idx ){
 	if ( (child != hScroll) && (child != vScroll) ){
 		if ( this.child != null )
-			throw new AWTError( "ScrollPanes can have just a single child");
+			remove( this.child);
 		
 		this.child = child;
 		wrapper = new ChildWrapper();

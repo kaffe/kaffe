@@ -55,7 +55,7 @@ private int alignComps( Container target, int start, int end, int w, int y) {
 	}
  
 	for ( int i = start; i <= end; i++) {
-		Component c = target.children[i];
+		Component c = target.getComponent(i);
 		if ( c.height > hMax ) {
 			hMax = c.height;
 		}
@@ -84,9 +84,10 @@ public void layoutContainer( Container target) {
 	int width = hgap;
 	int ypos = vgap;
 	int rowfirst = 0;
+	int cc = target.getComponentCount();
 
-	for ( int i = 0; i < target.nChildren; i++) {
-		Component c = target.children[i];
+	for ( int i = 0; i < cc; i++) {
+		Component c = target.getComponent(i);
 		if ( ! c.isVisible) {
 			continue;
 		}
@@ -108,7 +109,7 @@ public void layoutContainer( Container target) {
 			width = hgap;
 		}
 	}
-	alignComps( target, rowfirst, target.nChildren-1, width, ypos);
+	alignComps( target, rowfirst, cc-1, width, ypos);
 }
 
 public Dimension minimumLayoutSize( Container parent) {
@@ -122,9 +123,10 @@ public Dimension preferredLayoutSize( Container parent) {
 private Dimension preferredSize( Container parent, boolean min) {
 	int w = 0;
 	int h = 0;
+	int cc = parent.getComponentCount();
 
-	for ( int i=0; i<parent.nChildren; i++) {
-		Component c = parent.children[i];
+	for ( int i=0; i<cc; i++) {
+		Component c = parent.getComponent(i);
 		if ( c.isVisible) {
 			Dimension dc = min ? c.getMinimumSize() : c.getPreferredSize();
 			w += dc.width + hgap;

@@ -21,7 +21,7 @@ public class ThreadGroup {
 	private boolean destroyed = false;
 	private boolean daemon = false;
 	private int nthreads = 0;
-	private Thread[] threads = new Thread[0];
+	private Thread[] threads;
 	private int ngroups = 0;
 	private ThreadGroup[] groups = new ThreadGroup[0];
 
@@ -70,6 +70,10 @@ public void add(Thread thread) {
 	int i;
 
 	nthreads++;
+
+	if (threads == null) {
+		threads = new Thread[1];
+	}
 
 	for (i = 0; i < threads.length; i++) {
 		if (threads[i] == null) {

@@ -1,11 +1,3 @@
-package java.awt;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.util.EventListener;
-import java.util.Vector;
-
 /**
  * class MenuItem -
  *
@@ -17,6 +9,15 @@ import java.util.Vector;
  *
  * @author J.Mehlitz
  */
+
+package java.awt;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.EventListener;
+import java.util.Vector;
+
 public class MenuItem
   extends MenuComponent
 {

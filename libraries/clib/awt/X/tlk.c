@@ -67,8 +67,20 @@ Java_java_awt_Toolkit_tlkVersion ( JNIEnv* env, jclass clazz )
   return (*env)->NewStringUTF( env, "X-1.0");
 }
 
+/*
+ * we do this native because of two reasons: (1) this should appear as fast as
+ * possible (without being deferred by potential lengthy Java inits), (2) in
+ * native window systems we can't draw to the "root-window" from within Java
+ */
 void
-Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
+displayBanner ( JNIEnv* env, jclass clazz, jstring banner )
+{
+  /* no X banner yet */
+}
+
+
+void
+Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name, jstring banner )
 {
   char *dspName;
 
@@ -103,6 +115,9 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
   WM_TAKE_FOCUS    = XInternAtom( X->dsp, "WM_TAKE_FOCUS", False);
   WAKEUP           = XInternAtom( X->dsp, "WAKEUP", False);
   RETRY_FOCUS      = XInternAtom( X->dsp, "RETRY_FOCUS", False);
+
+  if ( banner )
+	displayBanner( env, clazz, banner);
 }
 
 void

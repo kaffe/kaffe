@@ -1,14 +1,3 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
-
-
 package java.awt;
 
 import java.util.Enumeration;
@@ -43,8 +32,10 @@ public void addLayoutComponent ( String name, Component comp) {
 
 public void first ( Container parent) {
 	Component fc = null;
-	for ( int i=0; i<parent.nChildren; i++) {
-		Component c = parent.children[i];
+	int cc = parent.getComponentCount();
+
+	for ( int i=0; i<cc; i++) {
+		Component c = parent.getComponent(i);
 		if ( fc == null )
 			fc = c;
 		if ( c.isVisible() ) {
@@ -71,8 +62,10 @@ public float getLayoutAlignmentY ( Container parent ) {
 
 Dimension getLayoutSize (  Container parent, boolean preferred) {
 	Dimension d = new Dimension();
-	for ( int i=0; i<parent.nChildren; i++) {
-		Component c = parent.children[i];
+	int cc = parent.getComponentCount();
+
+	for ( int i=0; i<cc; i++) {
+		Component c = parent.getComponent(i);
 		Dimension cd = preferred ? c.getPreferredSize() : c.getMinimumSize();
 		d.width = Math.max( d.width, cd.width );
 		d.height = Math.max( d.height, cd.height );
@@ -93,8 +86,10 @@ public void invalidateLayout ( Container parent) {
 
 public void last ( Container parent) {
 	Component lc = null;
-	for ( int i=parent.nChildren-1; i>=0; i--) {
-		Component c = parent.children[i];
+	int cc = parent.getComponentCount();
+
+	for ( int i=cc-1; i>=0; i--) {
+		Component c = parent.getComponent(i);
 		if ( lc == null )
 			lc = c;
 		if ( c.isVisible() ) {
@@ -109,8 +104,10 @@ public void last ( Container parent) {
 
 public void layoutContainer ( Container parent) {
 	Insets in = parent.insets;
-	for ( int i=0; i<parent.nChildren; i++) {
-		parent.children[i].setBounds(	in.left + hgap,
+	int cc = parent.getComponentCount();
+
+	for ( int i=0; i<cc; i++) {
+		parent.getComponent(i).setBounds(	in.left + hgap,
 																	in.top + vgap,
 																	parent.width - 2*hgap - in.left - in.right,
 																	parent.height - 2*vgap - in.top - in.bottom );
@@ -127,8 +124,10 @@ public Dimension minimumLayoutSize ( Container parent ) {
 
 public void next ( Container parent) {
 	Component lc = null;
-	for ( int i=0; i<parent.nChildren; i++) {
-		Component c = parent.children[i];
+	int cc = parent.getComponentCount();
+
+	for ( int i=0; i<cc; i++) {
+		Component c = parent.getComponent(i);
 		if ( c.isVisible() )
 			lc = c;
 		else if ( lc != null) {
@@ -145,8 +144,10 @@ public Dimension preferredLayoutSize ( Container parent) {
 
 public void previous ( Container parent) {
 	Component lc = null;
-	for ( int i=parent.nChildren-1; i>=0; i--) {
-		Component c = parent.children[i];
+	int cc = parent.getComponentCount();
+
+	for ( int i=cc-1; i>=0; i--) {
+		Component c = parent.getComponent(i);
 		if ( c.isVisible() )
 			lc = c;
 		else if ( lc != null) {
@@ -178,9 +179,10 @@ public void setVgap ( int vgap) {
 
 public void show ( Container parent, String name) {
 	Component nc = (Component)comptable.get( name);
+	int cc = parent.getComponentCount();
 	
-	for ( int i=0; i<parent.nChildren; i++) {
-		Component c = parent.children[i];
+	for ( int i=0; i<cc; i++) {
+		Component c = parent.getComponent(i);
 		if ( c.isVisible() ) {
 			if ( c != nc) {
 				c.setVisible( false);

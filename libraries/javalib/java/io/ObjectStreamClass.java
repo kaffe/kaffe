@@ -59,14 +59,12 @@ public static ObjectStreamClass lookup(Class cl)
 		method = ObjectStreamConstants.SC_STRING;
 	}
 	else if (Externalizable.class.isAssignableFrom(cl)) {
-		method = ObjectStreamConstants.SC_EXTERNALIZABLE;
+		method = ObjectStreamConstants.SC_SERIALIZABLE | ObjectStreamConstants.SC_EXTERNALIZABLE;
 	}
 	else if (Serializable.class.isAssignableFrom(cl)) {
+		method = ObjectStreamConstants.SC_SERIALIZABLE;
 		if (hasWriteObject(cl)) {
-			method = ObjectStreamConstants.SC_WRRD_METHODS;
-		}
-		else {
-			method = ObjectStreamConstants.SC_SERIALIZABLE;
+			method |= ObjectStreamConstants.SC_WRRD_METHODS;
 		}
 	}
 	else {

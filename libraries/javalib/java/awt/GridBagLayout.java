@@ -135,6 +135,7 @@ void getCellDims( Container parent, int mode) {
 	Dimension cd;
 	int x = -1;
 	int y = 0;
+	int nc = parent.getComponentCount();
 
 	if ( (rowHeights == null) || (rowHeights.length != d.height) )
 		rowHeights   = new int[d.height];
@@ -145,8 +146,8 @@ void getCellDims( Container parent, int mode) {
 	if ( (rowWeights == null) || (rowWeights.length != d.height) )
 		rowWeights = new double[d.height];
 	
-	for ( int ic=0; ic<parent.nChildren; ic++){
-		Component c = parent.children[ic];
+	for ( int ic=0; ic<nc; ic++){
+		Component c = parent.getComponent(ic);
 		GridBagConstraints cc = lookupConstraints( c);
 		if ( cc == null)
 			continue;
@@ -170,7 +171,7 @@ void getCellDims( Container parent, int mode) {
 		int gh = Math.max( cc.gridheight, 1);
 		cw = cw / gw;
 		ch = ch / gh;
-		
+
 		for ( int i=0; i<gw; i++) {
 			if ( columnWidths[x+i] < cw )
 				columnWidths[x+i] = cw;
@@ -225,9 +226,10 @@ Dimension getLayoutExtends( Container parent ) {
 	int maxY = 0;
 	int x = -1;
 	int y = 0;
+	int nc = parent.getComponentCount();
 	
-	for ( int i=0; i<parent.nChildren; i++){
-		Component c = parent.children[i];
+	for ( int i=0; i<nc; i++){
+		Component c = parent.getComponent(i);
 		GridBagConstraints cc = lookupConstraints( c);
 		if ( cc == null )
 			continue;
@@ -245,6 +247,10 @@ Dimension getLayoutExtends( Container parent ) {
 				x = -1;
 				y++;
 				break;
+			case cc.RELATIVE:
+				if ( maxX < x+1 )
+					maxX = x+1;
+				break;			  
 			default:
 				x += cc.gridwidth - 1;
 				if ( maxX < x+1 )
@@ -264,7 +270,6 @@ Dimension getLayoutExtends( Container parent ) {
 
 	}
 	maxY = Math.max( maxY, y);
-
 	return new Dimension( maxX, maxY);
 }
 
@@ -290,11 +295,12 @@ public void layoutContainer( Container parent) {
 	int dx = 0, dy = 0;
 	int i;
 	Rectangle relRect = new Rectangle();
+	int nc = parent.getComponentCount();
 	
 	getCellDims( parent, ACTUALSIZE);
 
-	for ( int ci=0; ci<parent.nChildren; ci++){
-		Component c = parent.children[ci];
+	for ( int ci=0; ci<nc; ci++){
+		Component c = parent.getComponent(ci);
 		GridBagConstraints cc = lookupConstraints( c);
 		if ( cc == null )
 			continue;

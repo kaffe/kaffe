@@ -56,7 +56,7 @@ protected void dispatch () {
 		// instances might have to react on this
 		newActiveWindow = (Window) getToplevel( src);
 		if ( (activeWindow != null) && (newActiveWindow != activeWindow)
-		       && ( (newActiveWindow instanceof Frame) || (newActiveWindow == root)) ) {
+		       && ((newActiveWindow instanceof Frame) || (newActiveWindow == root)) ) {
 			we = getWindowEvent( activeWindow, WindowEvent.WINDOW_DEACTIVATED);
 			processWindowEvent( we);
 		}

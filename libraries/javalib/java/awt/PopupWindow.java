@@ -33,6 +33,8 @@ class PopupWindow
 class PopupListener
   implements MouseListener, MouseMotionListener, KeyListener, FocusListener
 {
+	boolean firstEvent = true;
+
 public PopupListener () {
 	addMouseListener( this);
 	addMouseMotionListener( this);
@@ -44,8 +46,10 @@ public void focusGained ( FocusEvent evt ) {
 }
 
 public void focusLost ( FocusEvent evt ) {
+/*
 	if ( disposeOnLost)
 		disposeAll();
+*/
 }
 
 public void keyPressed ( KeyEvent evt ) {
@@ -79,15 +83,39 @@ public void keyTyped ( KeyEvent evt ) {
 }
 
 public void mouseClicked ( MouseEvent evt ) {
-	processSelection();
+	//processSelection();
 }
 
 public void mouseDragged ( MouseEvent evt ) {
+	int u = evt.getX();
+	int v = evt.getY();
+	firstEvent = false;
+
+	if ( contains( u, v) ) {
+		selectItem( itemAt( v ));
+
+		if ( (selection != null) && (selection instanceof Menu) ){
+			openSubMenu();
+		}
+	}
+	else {
+		if ( client instanceof PopupWindow ) {
+			PopupWindow master = (PopupWindow) client;
+			u -= (master.x - x);
+			v -= (master.y - y);
+			if ( master.contains( u, v) && (master.itemAt( v) != master.selection) ){
+				master.disposeSubMenus();
+				AWTEvent.revertDragGrab( master);
+			}
+		}
+	}
 }
 
 public void mouseEntered ( MouseEvent evt ) {
 	disposeOnLost = false;
 	requestFocus();
+	
+	selectItem( itemAt( evt.getY() ));
 }
 
 public void mouseExited ( MouseEvent evt ) {
@@ -95,52 +123,53 @@ public void mouseExited ( MouseEvent evt ) {
 }
 
 public void mouseMoved ( MouseEvent evt ) {
+	firstEvent = false;
 	selectItem( itemAt( evt.getY() ));
 }
 
 public void mousePressed ( MouseEvent evt ) {
+	firstEvent = false;
 }
 
 public void mouseReleased ( MouseEvent evt ) {
+	if ( contains( evt.getX(), evt.getY()) )
+		processSelection();
+	else if ( !firstEvent ) // maybe we were triggered by a click
+		disposeAll();
 }
 }
 
-public PopupWindow ( Component client, Frame fr, int x, int y, Vector items) {
+public PopupWindow ( Component client, Frame fr, Vector items) {
 	super( fr);
 	this.client = client;
 	this.items  = items;
 	
-	Dimension wd = Toolkit.singleton.getScreenSize();
-	Dimension md = getPreferredSize();
-
-	if ( x + md.width > wd.width)
-		x = wd.width - md.width;
-
-	if ( y + md.height > wd.height)
-		y = wd.height - md.height;
-
-	setBounds( x, y, md.width, md.height);
 	new PopupListener();
 
 	if ( !(client instanceof PopupWindow) )
 		AWTEvent.setPopup( this);
-
-	setVisible( true);
 }
 
 public void dispose () {
-
 	if ( !(client instanceof PopupWindow) )
 		AWTEvent.resetPopup( this);
-		
+
+	disposeSubMenus();		
 	super.dispose();
 }
 
 void disposeAll() {
+	// Window dispose will cause focus changes, save current state
+	Component keyTgt = AWTEvent.keyTgt;
+
 	PopupWindow p = rootWnd();
-	p.disposeSubMenus();
 	p.dispose();
-	p.client.requestFocus();
+
+	// otherwise, the focus probably has been set explicitly (by a
+	// triggered action)
+	if ( keyTgt instanceof PopupWindow ){
+		p.client.requestFocus();
+	}
 }
 
 void disposeSubMenus() {
@@ -200,6 +229,9 @@ public void notifyLost( Component newFocus) {
 }
 
 boolean openSubMenu () {
+	if ( sub != null )
+		return false;
+
 	if ( ( selection == null) || ( ! (selection instanceof Menu) ) )
 		return false;
 
@@ -207,7 +239,8 @@ boolean openSubMenu () {
 	if ( (v == null) || (v.size() == 0) )
 		return false;
 		
-	sub = new PopupWindow( this, owner, x+width, y+getY( selection), v );
+	sub = new PopupWindow( this, owner, v );
+	sub.popupAt( x+width, y+getY( selection));
 	return true;
 }
 
@@ -239,6 +272,22 @@ int paintItem ( MenuItem mi, Graphics g, int y) {
 	}
 
 	return ih;
+}
+
+public void popupAt ( int x, int y ) {
+	Dimension wd = Toolkit.singleton.getScreenSize();
+	Dimension md = getPreferredSize();
+
+	if ( x + md.width > wd.width)
+		x = wd.width - md.width;
+
+	if ( y + md.height > wd.height)
+		y = wd.height - md.height;
+
+	setBounds( x, y, md.width, md.height);
+
+	setVisible( true);
+	AWTEvent.grabMouseDrag( this);
 }
 
 void processSelection () {

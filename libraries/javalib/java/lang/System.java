@@ -23,29 +23,27 @@ import java.util.Properties;
 
 final public class System {
 
-private final static SecurityManager nullsecurity = new NullSecurityManager();
+final static SecurityManager defaultSecurityManager = new NullSecurityManager();
 
 public static InputStream in;
 public static PrintStream out;
 public static PrintStream err;
-
 private static Properties props;
 private static SecurityManager security;
 
 static {
-	security = nullsecurity;
+	security = defaultSecurityManager;
 
 	props = initProperties(new Properties());
-
-	// Setup I/O
-	setIn(new BufferedInputStream(new FileInputStream(FileDescriptor.in), 128));
-	setOut(new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true));
-	setErr(new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true));
 
 	// Initiate the timezone & calendar.
 	new SimpleTimeZone(0, "GMT");
 	new GregorianCalendar();
 
+	// Initialise the I/O
+	in = new BufferedInputStream(new FileInputStream(FileDescriptor.in), 128);
+	out = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true);
+	err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);
 }
 
 private static void checkPropertyAccess() {
@@ -119,7 +117,7 @@ public static void setProperties(Properties prps) {
 }
 
 public static void setSecurityManager(SecurityManager s) {
-	if (security != nullsecurity) {
+	if (security != defaultSecurityManager) {
 		throw new SecurityException();
 	}
 	security = s;
@@ -128,6 +126,6 @@ public static void setSecurityManager(SecurityManager s) {
 native public static long currentTimeMillis();
 native public static void arraycopy(Object src, int src_position, Object dst, int dst_position, int length);
 native public static int identityHashCode(Object x);
-native private static Properties initProperties(Properties props);
+native public static Properties initProperties(Properties props);
 
 }

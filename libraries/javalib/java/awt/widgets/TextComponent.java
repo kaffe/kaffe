@@ -72,10 +72,10 @@ public boolean isEditable() {
 boolean isPrintableTyped( KeyEvent e) {
 	int mods = e.getModifiers();
 	int chr  = e.getKeyChar();
-	
+
 	if ( (mods != 0) && (mods != e.SHIFT_MASK) )
 		return false;
-		
+
 	switch( chr ) {
 		case 8:		//BACKSPACE
 		case 9:		//TAB

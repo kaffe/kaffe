@@ -23,7 +23,7 @@ public interface SocketOptions {
   public final static int SO_SNDBUF 		= 0x1001;
   public final static int SO_RCVBUF 		= 0x1002;
 
-  public void setOption(int option, Object data) throws SocketException;
-  public Object getOption(int option) throws SocketException;
+  void setOption(int option, Object data) throws SocketException;
+  Object getOption(int option) throws SocketException;
 };
 

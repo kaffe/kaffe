@@ -1,9 +1,3 @@
-package java.awt;
-
-import java.awt.event.InputEvent;
-import java.util.Enumeration;
-import kaffe.util.Ptr;
-
 /**
  * Frame - 
  *
@@ -15,6 +9,13 @@ import kaffe.util.Ptr;
  *
  * @author P.C.Mehlitz
  */
+
+package java.awt;
+
+import java.awt.event.InputEvent;
+import java.util.Enumeration;
+import kaffe.util.Ptr;
+
 public class Frame
   extends Window
 {
@@ -81,6 +82,18 @@ public Image getIconImage() {
 
 public MenuBar getMenuBar () {
 	return (bMenu != null) ? bMenu.mb : null;
+}
+
+public Dimension getPreferredSize () {
+	Dimension d = super.getPreferredSize();
+	
+	d.width  += 2*Defaults.FrameBorderWidth;
+	d.height += Defaults.TitleBarHeight + Defaults.BottomBarHeight;
+	
+	if ( bMenu != null )
+		d.height += Defaults.MenuBarHeight;
+		
+	return d;
 }
 
 public String getTitle() {

@@ -1,5 +1,3 @@
-package kaffe.awt;
-
 /**
  * Copyright (c) 1998
  *	Transvirtual Technologies, Inc.  All rights reserved.
@@ -9,6 +7,8 @@ package kaffe.awt;
  *
  * @author J.Mehlitz
  */
+
+package kaffe.awt;
 
 import java.awt.Component;
 import java.awt.Image;

@@ -11,10 +11,14 @@
 #ifndef __toolkit_h
 #define __toolkit_h
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <jni.h>
-
+#if defined(HAVE_STRING_H)
+#include <string.h>
+#endif
 
 /*******************************************************************************
  *
@@ -43,10 +47,16 @@ typedef struct _Rgb2Pseudo {
 } Rgb2Pseudo;
 
 
+typedef struct _AlphaImage {
+  unsigned char *buf;
+  int           width, height;
+} AlphaImage;
+
 typedef struct _Image {
   Pixmap         pix;
   XImage         *xImg;
   XImage         *xMask;
+  AlphaImage     *alpha;         /* alpha channel (for alpha != 0x00 or 0xff) */
   int            trans;          /* transparent index */
   int            width, height;  /* we need this in case we are a pixmap */
 } Image;
@@ -208,8 +218,12 @@ pixelValue ( Toolkit* X, jint rgb )
 
   case PseudoColor:
 	return X->pclr->pix [JI8(JRED(rgb))] [JI8(JGREEN(rgb))] [JI8(JBLUE(rgb))];
+
+  case StaticGray:
+    return (JRED(rgb)+ JGREEN(rgb)+ JBLUE(rgb) < 196);
+
   default:
-	return 0;
+    return (0);
   }
 }
 
@@ -225,16 +239,26 @@ rgbValues ( Toolkit* X, unsigned long pixel, int* r, int* g, int* b )
 	*g = ((pixel & v->green_mask) << X->tclr->greenShift) >> 8;
 	*b = ((pixel & v->blue_mask)  << X->tclr->blueShift);
 	break;
+
   case DirectColor:
 	*r = JRED( pixel);
 	*g = JGREEN( pixel);
 	*b = JBLUE( pixel);
 	break;
+
   case PseudoColor:
 	*r = X->pclr->rgb[(unsigned char)pixel].r;
 	*g = X->pclr->rgb[(unsigned char)pixel].g;
 	*b = X->pclr->rgb[(unsigned char)pixel].b;
 	break;
+
+  case StaticGray:
+    *r = *g = *b = (JRED(pixel)+JGREEN(pixel)+JBLUE(pixel)/3);
+    break;
+
+  default:
+    *r = *g = *b = 0;
+    break;
   }
 }
 
@@ -245,10 +269,23 @@ rgbValues ( Toolkit* X, unsigned long pixel, int* r, int* g, int* b )
 
 XImage* createXMaskImage ( Toolkit* X, int width, int height );
 XImage* createXImage ( Toolkit* X, int width, int height );
+AlphaImage* createAlphaImage ( Toolkit* X, int width, int height );
 void initScaledImage ( Toolkit* X, Image *tgt, Image *src,
 					   int dx0, int dy0, int dx1, int dy1,
 					   int sx0, int sy0, int sx1, int sy1 );
 
+
+static __inline__ void
+PutAlpha ( AlphaImage* img, int col, int row, unsigned char alpha )
+{
+  img->buf[ row*img->width + col ] = alpha;
+}
+
+static __inline__ int
+GetAlpha ( AlphaImage* img, int col, int row )
+{
+  return img->buf[ row*img->width + col];
+}
 
 /*****************************************************************************************
  * clipboard functions

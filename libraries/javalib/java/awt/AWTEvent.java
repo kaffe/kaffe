@@ -89,8 +89,6 @@ static {
 	adjEvtCache = new AdjustmentEvent( null, 0, 0, 0);
 	
 	sources = Toolkit.evtInit();
-	
-	root = RootWindow.getDefaultRootWindow();
 }
 
 protected AWTEvent ( Object source, int id ) {
@@ -108,6 +106,25 @@ protected static void checkActiveWindow( Component c) {
 	}
 }
 
+protected static void checkMouseTransfer ( Component c ) {
+	Component pc = mouseTgt;
+	int x = mousePos.x;
+	int y = mousePos.y;
+	if ( pc != null ) {
+		for ( ; pc.parent != null; pc = pc.parent){
+			x += pc.x; y += pc.y;
+		}
+		x += pc.x;
+		y += pc.y;
+	}
+
+	x -= c.x;
+	y -= c.y;
+	if ( c.contains( x, y) ){
+		sendMouseEnterEvent( c, x, y, false);
+	}
+}
+
 protected static boolean checkPopup ( Object src ) {
 	if ( popup == null ) {
 		return true;
@@ -119,6 +136,18 @@ protected static boolean checkPopup ( Object src ) {
 	popup.dispose();
 	popup = null;
 	return false;
+}
+
+protected static void clickToFocus ( Component newKeyTgt ) {			
+	// The JDK does not automatically set the focus on mouse clicks for lightweights,
+	// (non-lightweights probably will be handled by the native window system), i.e.
+	// if a component explicitly requests the focus in respond to a mouse click, the
+	// focus events will be processed AFTER the mouse event. This is the opposite order
+	// compared to native handling (for toplevels). We try to be compatible with
+	// lightweight behavior
+	
+	//if ( newKeyTgt.isFocusTraversable() )
+		//newKeyTgt.requestFocus();
 }
 
 protected static Component computeMouseTarget ( Container toplevel, int x, int y ) {
@@ -157,6 +186,10 @@ protected static Component computeMouseTarget ( Container toplevel, int x, int y
 		if ( (x >= (cntr.width - cntr.insets.right)) || (y >= (cntr.height - cntr.insets.bottom)) )
 			return cntr;
 	}
+
+	// depending on the native window manager, we can get mouse events for windows
+	// which already are in their dispose() processing (PopupWindow drag mode)
+	if ( !cntr.isVisible ) return null;
 
 	for ( i=0; i<cntr.nChildren; ) {
 		c = cntr.children[i];
@@ -288,7 +321,7 @@ protected static ItemEvent getItemEvent ( ItemSelectable source, int id ) {
 }
 
 protected static MouseEvent getMouseEvent ( Component source, int id, long when, int mods,
-                                int x, int y, int clickCount, boolean isPopupTrigger ) {
+				int x, int y, int clickCount, boolean isPopupTrigger ) {
 	synchronized ( evtLock ) {
 		if ( mouseEvtCache == null ) {
 			return new MouseEvent( source, id, when, mods, x, y, clickCount, isPopupTrigger);
@@ -353,6 +386,37 @@ protected static WindowEvent getWindowEvent ( Window source, int id ) {
 	
 			return e;
 		}
+	}
+}
+
+protected static void grabMouseDrag ( Window c ) {
+	// if there is a contest for the most quirky method in the AWT, this is a winner:
+	// drag operations are usually native modal (i.e. no way to change the receiver or
+	// pointer from Java). Native popup menus usually have their own modality (grab pointer),
+	// e.g. to implement a drag selection mode. The least thing we want to do is to introduce
+	// grabs in the native layer (a great way to lock everything, and not even compatible
+	// on a single platform). Of course, we also don't want to use native popups (we already
+	// have enough trouble with two different toplevel classes).
+	// This method is a "poor mans grab", implemented in Java, based on our xMouseTgt, 
+	// yMouseTgt offsets. It only works in drag mode, but since its only purpose is to override
+	// the native drag mode, this might be enough.
+	Component pc;
+	
+	if ( (mouseTgt != null) && buttonPressed ) {
+		if ( mouseTgt instanceof PopupWindow ) {
+			xMouseTgt += (c.x - mouseTgt.x);
+			yMouseTgt += (c.y - mouseTgt.y);
+		}
+		else {
+			for ( pc=mouseTgt; pc.parent != null; pc = pc.parent);
+
+			xMouseTgt = c.x - pc.x;
+			yMouseTgt = c.y - pc.y;
+			pc.setNativeCursor( c.cursor);
+		}
+
+		mouseTgt = c;
+		mouseDragged = true;
 	}
 }
 
@@ -442,20 +506,28 @@ static void resetPopup ( Window oldPopup ) {
 	}
 }
 
+protected static void revertDragGrab ( Component revert ) {
+	// try to get around it, see grabMouseDrag
+	if ( mouseDragged ) {
+		xMouseTgt += (revert.x - mouseTgt.x);
+		yMouseTgt += (revert.y - mouseTgt.y);
+		mouseTgt = revert;
+	}
+}
+
 protected static void sendFocusEvent ( Component src, boolean focusGained, boolean sync ) {
 	int id = focusGained ? FocusEvent.FOCUS_GAINED : FocusEvent.FOCUS_LOST;
 	FocusEvent e = getFocusEvent( src, id);
-	
 	if ( sync )
 		e.dispatch();
 	else
 		Toolkit.eventQueue.postEvent( e);
 }
 
-protected static void sendMouseEnterEvent ( Component src, boolean sync ) {
+protected static void sendMouseEnterEvent ( Component src, int x, int y, boolean sync ) {
 	MouseEvent e = getMouseEvent( src, MouseEvent.MOUSE_ENTERED,
 	                              System.currentTimeMillis(),
-	                              0, mousePos.x + xMouseTgt, mousePos.y + yMouseTgt,
+	                              0, x, y,
 	                              0, false);
 	
 	if ( sync )
@@ -588,15 +660,6 @@ protected static void transferMouse ( MouseEvent e,
 	e.setXY( origX, origY);
 }
 
-protected static void triggerPopup ( MouseEvent e ) {
-	Component s = (Component) e.source;
-	
-	if ( (s.popups != null) && (s.popups.size() > 0) ) {
-		PopupMenu p = (PopupMenu)s.popups.firstElement();
-		p.show( s, e.getX(), e.getY());
-	}
-}
-
 static void unregisterSource ( Component c, Ptr nativeData ) {
 	int idx = Toolkit.evtUnregisterSource( nativeData);
 	sources[idx] = null;
@@ -621,9 +684,14 @@ protected static void updateToplevelBounds ( Component c, int x, int y, int widt
 		
 		// we don't want to repaint during the layout since we get a native
 		// expose anyway
-		c.isVisible = false;
-		c.doLayout();
-		c.isVisible = true;
+		if ( c.isVisible ) {
+			c.isVisible = false;
+			c.doLayout();
+			c.isVisible = true;
+		}
+		else {
+			c.doLayout();
+		}
 	}
 }
 }

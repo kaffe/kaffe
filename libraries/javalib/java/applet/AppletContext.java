@@ -1,15 +1,5 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
+package java.applet;
 
-
-package java.applet; 
 import java.net.URL;
 import java.awt.Image;
 import java.util.Enumeration;

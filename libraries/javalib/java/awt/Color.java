@@ -15,19 +15,49 @@ public class Color
 {
 	int rgbValue;
 	int nativeValue = 0xffffffff;
-	final public static Color white = new Color(255, 255, 255);
-	final public static Color lightGray = new Color(192, 192, 192);
-	final public static Color gray = new Color(128, 128, 128);
-	final public static Color darkGray = new Color(64, 64, 64);
-	final public static Color black = new Color(0, 0, 0);
-	final public static Color red = new Color(255, 0, 0);
-	final public static Color pink = new Color(255, 175, 175);
-	final public static Color orange = new Color(255, 200, 0);
-	final public static Color yellow = new Color(255, 255, 0);
-	final public static Color green = new Color(0, 255, 0);
-	final public static Color magenta = new Color(255, 0, 255);
-	final public static Color cyan = new Color(0, 255, 255);
-	final public static Color blue = new Color(0, 0, 255);
+	final public static Color lightGray = new Color( (byte)192, (byte)192, (byte)192);
+	final public static Color gray = new Color( (byte)128, (byte)128, (byte)128);
+	final public static Color darkGray = new Color( (byte)64, (byte)64, (byte)64);
+	final public static Color black = new Color( (byte)0, (byte)0, (byte)0);
+	final public static Color red = new Color( (byte)255, (byte)0, (byte)0);
+	final public static Color pink = new Color( (byte)255, (byte)175, (byte)175);
+	final public static Color orange = new Color( (byte)255, (byte)200, (byte)0);
+	final public static Color yellow = new Color( (byte)255, (byte)255, (byte)0);
+	final public static Color green = new Color( (byte)0, (byte)255, (byte)0);
+	final public static Color magenta = new Color( (byte)255, (byte)0, (byte)255);
+	final public static Color cyan = new Color( (byte)0, (byte)255, (byte)255);
+	final public static Color blue = new Color( (byte)0, (byte)0, (byte)255);
+	final public static Color white = new Color( (byte)255, (byte)255, (byte)255);
+
+static {
+	// Make sure that standard Color fields are native initialized.
+	// This rather obscure mechanism is required to overcome recursive
+	// init problems in Defaults (X->Color->Toolkit->Defaults->Color).
+	// (they already might have been referred by Defaults.java and other places)
+
+  gray.setNativeValue();
+  darkGray.setNativeValue();
+  black.setNativeValue();
+  red.setNativeValue();
+  pink.setNativeValue();
+  orange.setNativeValue();
+  yellow.setNativeValue();
+  green.setNativeValue();
+  magenta.setNativeValue();
+  cyan.setNativeValue();
+  blue.setNativeValue();
+  white.setNativeValue();
+  lightGray.setNativeValue();
+}
+
+private Color ( byte r, byte g, byte b ) {
+	// This ctor is used ONLY for deferred native init. Its only use is to init
+	// the static Color fields, which might be used in Defaults / Toolkit and
+	// other places where recursive class initmight occur. Make sure all
+	// instances get a subsequent native init (e.g. in clinit), because we don't
+	// want to add the overhead to every native color ref
+	rgbValue = 0xff000000 | ((r & 0xff) << 16) | ((g & 0xff) << 8)  | (b & 0xff);
+}
 
 public Color ( float r, float g, float b ) {
 	rgbValue = 0xff000000 |                      // const alpha channel
@@ -66,21 +96,21 @@ public static int HSBtoRGB ( float hue, float sat, float bri ) {
 		return 0xff000000;
 	}
 	else if ( sat == 0.0 ) {
-		r = (int) (bri * 255.0 + 0.5);
+		r = (int) (bri * 255 + 0.5f);
 		return ((r << 16) | (r << 8) | r) | 0xff000000;
 	}
 	else {
-		hue *= 6.0;                 // remove scaling
+		hue *= 6.0f;                 // remove scaling
 		hi = (int) Math.floor( hue);
 		if ( hi == 6 ) hi = 0;       // 360° == 0°
 		
 		hfrac = hue - hi;
 		bri *= 255;
-		bi = (int) (bri + 0.5);
+		bi = (int) (bri + 0.5f);
 		
-		x = (int) ((1 - sat) * bri + 0.5);
-		y = (int) ((1 - sat*hfrac) * bri + 0.5);
-		z = (int) ((1 - sat*(1 - hfrac)) * bri + 0.5);
+		x = (int) ((1 - sat) * bri + 0.5f);
+		y = (int) ((1 - sat*hfrac) * bri + 0.5f);
+		z = (int) ((1 - sat*(1 - hfrac)) * bri + 0.5f);
 		
 		switch ( hi ) {
 		case 0:   r = bi;   g = z;    b = x;    break;
@@ -102,9 +132,9 @@ public static int HSBtoRGB ( float hue, float sat, float bri ) {
 public static float[] RGBtoHSB ( int r, int g, int b, float[] hsb ) {
 	float min, max, dif, rf, gf, bf;
 
-	rf = (float) r / (float)255.0;
-	gf = (float) g / (float)255.0;
-	bf = (float) b / (float)255.0;	
+	rf = (float) r / 255.0f;
+	gf = (float) g / 255.0f;
+	bf = (float) b / 255.0f;	
 
 	if ( hsb == null )	hsb = new float[3];
 
@@ -131,21 +161,21 @@ public static float[] RGBtoHSB ( int r, int g, int b, float[] hsb ) {
 		
 		if ( dif > 0 ) {
 			if ( max == rf )                            // hue is scaled
-				hsb[0] = ((gf - bf)/dif) / (float)6.0;
+				hsb[0] = ((gf - bf)/dif) / 6.0f;
 			else if ( max == gf )
-				hsb[0] = (float)(2.0 + (bf - rf)/dif) / (float)6.0;
+				hsb[0] = (2.0f + (bf - rf)/dif) / 6.0f;
 			else
-				hsb[0] = (float)(4.0 + (rf - gf)/dif) / (float)6.0;
+				hsb[0] = (4.0f + (rf - gf)/dif) / 6.0f;
 			
-			if ( hsb[0] < 0 ) hsb[0] += 1.0;            // wrap hue around 360°
+			if ( hsb[0] < 0 ) hsb[0] += 1.0f;            // wrap hue around 360°
 		}
 		else {                                         // we don't want NaNs
-			hsb[0] = (float)0.0;
+			hsb[0] = 0.0f;
 		}
 	}
 	else {                                          // all black (0.0)
-		hsb[0] = (float)0.0;
-		hsb[1] = (float)0.0;
+		hsb[0] = 0.0f;
+		hsb[1] = 0.0f;
 	}	
 
 	return hsb;
@@ -214,6 +244,10 @@ public int getRed () {
 
 public int hashCode() {
 	return rgbValue;
+}
+
+void setNativeValue() {
+	nativeValue = Toolkit.clrGetPixelValue( rgbValue);
 }
 
 public String toString() {

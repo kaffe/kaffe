@@ -22,12 +22,13 @@ public class Timer
 	boolean stop;
 	static Timer defaultTimer;
 
-public Timer ( int msecInterval ) {
-	resolution = msecInterval;
+public Timer () {
+	resolution = Integer.MAX_VALUE;
 	
 	clients = new TimerClientEntry[5];
-	for ( int i=0; i<clients.length; i++ )
+	for ( int i=0; i<clients.length; i++ ) {
 		clients[i] = new TimerClientEntry();
+	}
 	
 	start();
 }
@@ -48,36 +49,50 @@ public synchronized void addClient ( TimerClient tc, int startWait, int interval
 	tce.client = tc;
 	tce.nextNotify = System.currentTimeMillis() + startWait;
 	tce.interval = interval;
+
+	// If interval is smaller than current resolution, drop current
+	// resolution and wake the timer thread.
+	if (interval < resolution) {
+		resolution = interval;
+		interrupt();
+	}
 	
-	if ( nClients == 1 )
+	if ( nClients == 1 ) {
 		notify();
+	}
 }
 
 public static Timer getDefaultTimer () {
 	if ( defaultTimer == null ) {
-		defaultTimer = new Timer( 100);
+		defaultTimer = new Timer();
 	}
 	
 	return defaultTimer;
 }
 
 public synchronized void removeClient ( TimerClient tc ) {
-	TimerClientEntry tce;
-	int i, i1;
 
-	for ( i=0; i<nClients; i++ ) {
-		tce = clients[i];
+	int newres = Integer.MAX_VALUE;
+
+	nClients--;
+	for (int i=0; i <= nClients; i++ ) {
+		TimerClientEntry tce = clients[i];
+		if (tce.interval < newres) {
+			newres = tce.interval;
+		}
 		if ( tce.client == tc ) {
-			i1 = i+1;
-			if ( i1 < nClients-- ){
+			tce.client = null;
+			int i1 = i+1;
+			if (i1 < nClients) {
 				System.arraycopy( clients, i1, clients, i, (nClients-i));
 				clients[nClients] = tce;
 			}
-			tce.client = null;
-
-			return;
+			break;
 		}
 	}
+
+	// Reset the resultion - takes effect after next timer tick
+	resolution = newres;
 }
 
 public void run () {
@@ -100,7 +115,11 @@ public void run () {
 						}
 					}
 				}
-				Thread.sleep( resolution);
+				try {
+					Thread.sleep(resolution);
+				}
+				catch (InterruptedException _) {
+				}
 			}
 		}
 		catch ( Exception x ) {

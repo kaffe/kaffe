@@ -1,6 +1,3 @@
-package java.util;
-
-
 /*
  * Java core library component.
  *
@@ -10,14 +7,18 @@ package java.util;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.util;
+
+import java.util.NoSuchElementException;
+
 public class StringTokenizer
   implements Enumeration
 {
-	private String input;
+	private char[] input;
 	private String delims;
-	private boolean returnTokens;
-	private int position = -1;
-	private boolean onToken = true;
+	private boolean retDelim;
+	private int position;
 
 public StringTokenizer(String str) {
 	this (str, " \t\n\r");
@@ -27,95 +28,93 @@ public StringTokenizer(String str, String delim) {
 	this (str, delim, false);
 }
 
-public StringTokenizer(String str, String delim, boolean returnTokens) {
-	input=str;
-	delims=delim;
-	this.returnTokens=returnTokens;
+public StringTokenizer(String str, String delim, boolean ret) {
+	input = str.toCharArray();
+	delims = delim;
+	retDelim = ret;
+	position = 0;
 }
 
 public int countTokens() {
-	int count=0;
-	int posn=position;
 
-	boolean tempGlobal=onToken; /* Ick.. Yuck.. Bleurgghhhhh! Sorry Tim */
-	while ((posn=nextTokenPosition(posn, delims))!=-1) { count++; }
-	onToken=tempGlobal;
+	int count;
+	int oldPosition = position;
 
-	return count;
+	for (count = 0; nextTokenInternal() != null; count++)
+		;
+
+	position = oldPosition;
+
+	return (count);
 }
 
 public boolean hasMoreElements() {
-	return hasMoreTokens();
+	return (hasMoreTokens());
 }
+
 
 public boolean hasMoreTokens() {
-	boolean globalTemp=onToken; /* Sorry again, Tim */
-	boolean result=((position>=input.length()) || (nextTokenPosition(position, delims)!=-1));
-	onToken=globalTemp;
 
-	return result;
-}
-
-private boolean isToken(int posn, String delim) {
-	return (delim.indexOf(input.charAt(posn))!=-1);
+	int oldPosition = position;
+	String ret = nextTokenInternal();
+	position = oldPosition;
+	if (ret == null) {
+		return (false);
+	}
+	return (true);
 }
 
 public Object nextElement() {
-	return (Object )nextToken();
-}
-
-public String nextToken() {
-	return nextToken(delims);
+	return ((Object)nextToken());
 }
 
 public String nextToken(String delim) {
-	position=nextTokenPosition(position, delim);
-
-	if ((returnTokens) && (isToken(position, delim))) {
-		return input.substring(position, position+1);
-	}
-	else {
-		int end=position;
-		try {
-			while (!isToken(end, delim)) end++;
-		}
-		catch (StringIndexOutOfBoundsException e) {
-			end=input.length();
-		}
-
-		int start=position;
-		position=end-1;
-
-		return input.substring(start, end);
-	}
+	delims = delim;
+	return (nextToken());
 }
 
-private int nextTokenPosition(int posn, String delim) {
-	char chr;
-
-	try {
-		posn++;
-
-		if ((!isToken(posn, delim)) && (onToken)) { onToken=false; return posn; }
-
-		/* Skip non-tokens */
-		while(!isToken(posn, delim)) posn++;
-
-		/* Process tokens */
-		if (returnTokens) {
-			onToken=true;
-			return posn;
-		}
-		else {
-			/* Skip tokens */
-			while (isToken(posn, delim)) posn++;
-
-			return posn;
-		}
+public String nextToken() {
+	String ret = nextTokenInternal();
+	if (ret == null) {
+		throw new NoSuchElementException("no more elements");
 	}
-	catch (StringIndexOutOfBoundsException e) {
-		/* Element not found */
-		return -1;
-	}
+	return (ret);
 }
+
+private String nextTokenInternal() {
+	if (position >= input.length) {
+		return (null);
+	}
+
+	// If we're on a delimiter, we must either return it or skip it.
+	if (delims.indexOf(input[position]) != -1) {
+		position++;
+		// If we're returning them, do it now
+		if (retDelim) {
+			return (new String(input, position-1, 1));
+		}
+		// Otherwise step though stream until we've reached a
+		// non-delimiter
+		for (;;) {
+			if (position >= input.length) {
+				return (null);
+			}
+			if (delims.indexOf(input[position]) == -1) {
+				break;
+			}
+			position++;
+		}
+	}
+
+	int start = position;
+	for (;;) {
+		position++;
+		if (position >= input.length || delims.indexOf(input[position]) != -1) {
+			break;
+		}
+	}
+
+	return (new String(input, start, position-start));
+}
+
 }

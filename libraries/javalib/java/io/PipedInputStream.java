@@ -1,6 +1,10 @@
 /*
  * Java core library component.
  *
+ * A shared pipe like UNIX..
+ * Implements a circular buffer in this class, used by PipedOutputStream
+ * to store
+ *
  * Copyright (c) 1997, 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
@@ -8,11 +12,8 @@
  * of this file.
  */
 
-
 package java.io;
 
-
-/* A shared pipe like UNIX.. Implements a circular buffer in this class, used by PipedOutputStream to store */
 public class PipedInputStream
   extends InputStream
 {

@@ -1,14 +1,3 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
-
-
 package java.awt;
 
 import java.awt.event.KeyEvent;
@@ -57,7 +46,7 @@ public void keyTyped ( KeyEvent evt ) {
 }
 
 public void mouseClicked ( MouseEvent evt ) {
-	processSelection();
+	//processSelection();
 }
 
 public void mouseDragged ( MouseEvent evt ) {
@@ -77,6 +66,7 @@ public void mouseMoved ( MouseEvent evt ) {
 }
 
 public void mousePressed ( MouseEvent evt ) {
+	processSelection();
 }
 
 public void mouseReleased ( MouseEvent evt ) {

@@ -123,7 +123,7 @@ protected void finalize () {
 }
 
 public String getFamily() {
-	return null;
+	return System.getProperty( ("awt.font." + name.toLowerCase()), name);
 }
 
 public static Font getFont ( String key ) {

@@ -1,6 +1,3 @@
-package java.io;
-
-
 /*
  * Java core library component.
  *
@@ -10,8 +7,12 @@ package java.io;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-abstract public class InputStream
+
+package java.io;
+
+abstract public class InputStream extends Object
 {
+
 public int available() throws IOException {
 	return 0;
 }

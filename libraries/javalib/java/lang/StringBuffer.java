@@ -42,10 +42,10 @@ public synchronized StringBuffer append(Object obj)
 }
 
 public synchronized StringBuffer append ( String str ) {
-	if ( str==null )
+	if (str == null) {
 		str = String.valueOf( str);
-		
-	return append( str.value, str.offset, str.count);
+	}
+	return (append( str.value, str.offset, str.count));
 }
 
 public StringBuffer append(boolean b)

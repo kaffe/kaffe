@@ -153,35 +153,42 @@ public boolean endsWith( String suffix) {
 public boolean equals ( Object anObject) {
 	// this is one of the most frequently called methods, it has to be as
 	// efficient as possible
-	int i, j, n;
 
-	if ( anObject instanceof String ) {
-		String other = (String)anObject;
-		if ( count == other.count ) {
-			for ( i=offset, j=other.offset, n=offset+count; i<n; i++, j++) {
-				if ( value[i] != other.value[j] ) return false;
-			}
-			return true;
+	if (!(anObject instanceof String)) {
+		return (false);
+	}
+
+	String other = (String)anObject;
+	if (count != other.count) {
+		return (false);
+	}
+
+	int i = offset;
+	int j = other.offset;
+	int n = offset + count;
+	for (; i < n; i++, j++) {
+		if (value[i] != other.value[j] ) {
+			return (false);
 		}
 	}
-	return false;
+	return (true);
 }
 
-public boolean equalsIgnoreCase ( String other ) {
-	int i, j, n;
-
-	// this is probably another native candidate, calling two methods
-	// for each char comparison seems to be too expensive
-	if (other != null && count == other.count) {
-		for ( i=offset, j=other.offset, n=offset+count; i<n; i++, j++ ) {
-			if ( value[i] != other.value[j] ) {
-				if ( Character.toUpperCase( value[i]) != Character.toUpperCase( other.value[j]) )
-					return false;
-			}
-		}
-		return true;
+public boolean equalsIgnoreCase (String other) {
+	if (other == null || count != other.count) {
+		return (false);
 	}
-	return false;
+
+	int i = offset;
+	int j = other.offset;
+	int n = offset + count;
+
+	for (; i < n; i++, j++ ) {
+		if (value[i] != other.value[j] && Character.toUpperCase(value[i]) != Character.toUpperCase(other.value[j])) {
+			return (false);
+		}
+	}
+	return (true);
 }
 
 protected void finalize()
@@ -469,10 +476,10 @@ public String trim() {
 
 final native private void unintern();
 
-public static String valueOf( Object obj)
-	{
-	if (obj==null)
+public static String valueOf( Object obj) {
+	if (obj==null) {
 		return "null";
+	}
 	return obj.toString();
 }
 

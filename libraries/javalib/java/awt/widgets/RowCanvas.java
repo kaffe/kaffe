@@ -122,10 +122,10 @@ void innerLayout() {
 	int w = parent.width;
 	int h = parent.height;
 	int sbd = Scrollbar.SCROLLBAR_WIDTH;
-	
+
 	boolean vVis = (vScroll != null ) && vScroll.isSliderShowing();
 	boolean hVis = (hScroll != null ) && hScroll.isSliderShowing();
-	
+
 	setBounds( 0, 0, vVis ? w-sbd : w, hVis ? h-sbd : h);
 
 	if ( vScroll != null ) {

@@ -118,8 +118,8 @@ public synchronized void removeImage(Image image)
 		}
 		else {
 			prev = curr;
-			curr = curr.next;
 		}
+		curr = curr.next;
 	}
 }
 
@@ -139,8 +139,8 @@ public synchronized void removeImage(Image image, int id)
 		}
 		else {
 			prev = curr;
-			curr = curr.next;
 		}
+		curr = curr.next;
 	}
 }
 
@@ -160,8 +160,8 @@ public synchronized void removeImage(Image image, int id, int w, int h)
 		}
 		else {
 			prev = curr;
-			curr = curr.next;
 		}
+		curr = curr.next;
 	}
 }
 

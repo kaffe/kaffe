@@ -1,3 +1,6 @@
+package java.lang.reflect;
+
+
 /*
  * Java core library component.
  *
@@ -7,10 +10,9 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.lang.reflect;
-
-public class Field implements Member {
+public class Field
+  implements Member
+{
 	private Class clazz;
 	private int slot;
 	private String name;
@@ -94,7 +96,8 @@ native public void setLong(Object obj, long l) throws IllegalArgumentException, 
 
 native public void setShort(Object obj, short s) throws IllegalArgumentException, IllegalAccessException;
 
-public String toString() {
+public String toString()
+	{
 	StringBuffer str = new StringBuffer();
 	int mod = getModifiers();
 

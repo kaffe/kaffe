@@ -82,9 +82,12 @@ final public synchronized void copyInto ( Object anArray[] ) {
 }
 
 final public synchronized Object elementAt ( int index ) {
-	if (index >= elementCount)
-		throw new ArrayIndexOutOfBoundsException();
-	return elementData[index];
+  // required because we might have a large enough, pre-allocated, empty element
+  // array that doesn't give us (physical) access errors
+  if ( index >= elementCount )
+    throw new ArrayIndexOutOfBoundsException( Integer.toString( index) + " >= " + 
+					      elementCount);
+  return elementData[index];
 }
 
 final public synchronized Enumeration elements () {

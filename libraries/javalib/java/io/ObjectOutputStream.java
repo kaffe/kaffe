@@ -264,28 +264,23 @@ public final void writeObject(Object obj) throws IOException
 				key = new Integer(++nextKey);
 				objectsDone.put(obj, key);
 
-				switch (currStreamClass.method) {
-				case ObjectStreamConstants.SC_EXTERNALIZABLE:
+				if ((currStreamClass.method & ObjectStreamConstants.SC_EXTERNALIZABLE) != 0) {
 					try {
 						((Externalizable)obj).writeExternal(this);
 					}
 					catch (ClassCastException _) {
 					}
-					break;
-
-				case ObjectStreamConstants.SC_WRRD_METHODS:
+				}
+				else if ((currStreamClass.method & ObjectStreamConstants.SC_WRRD_METHODS) != 0) {
 					invokeObjectWriter(obj, cls);
-					break;
-
-				case ObjectStreamConstants.SC_SERIALIZABLE:
+				}
+				else if ((currStreamClass.method & ObjectStreamConstants.SC_SERIALIZABLE) != 0) {
 					defaultWriteObject();
-					break;
-
-				case ObjectStreamConstants.SC_STRING:
+				}
+				else if ((currStreamClass.method & ObjectStreamConstants.SC_STRING) != 0) {
 					writeUTF((String)obj);
-					break;
-
-				default:
+				}
+				else {
 					throw new StreamCorruptedException("unknown method type");
 				}
 				// Write any annotations.

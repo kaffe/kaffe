@@ -313,11 +313,9 @@ clientMessage ( JNIEnv* env, Toolkit* X )
 	  return (*env)->CallStaticObjectMethod( env, WindowEvent, getWindowEvent,
 											 X->srcIdx, (X->evtId = WINDOW_CLOSING));
 	}
-  }
-  else if ( X->event.xclient.message_type == WM_TAKE_FOCUS ) {
-	/*
+	else if ( X->event.xclient.data.l[0] == WM_TAKE_FOCUS ) {
 	  XSetInputFocus( X->dsp, X->event.xany.window, RevertToNone, CurrentTime);
-	*/
+	}
   }
   /*
    * this is a workaround for the common problem of requesting the focus for not

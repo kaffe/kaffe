@@ -163,13 +163,14 @@ public Dimension getMinimumSize( int cols) {
 }
 
 public Dimension getPreferredSize() {
-	int cx = 50;
+	int cx = 80;
 	int cy = 20;
 	if ( font != null ){
 		FontMetrics fm = getFontMetrics( font);
-//		cx = Math.max( cx, fm.stringWidth( label));
+		cx = Math.max( cx, 15* fm.charWidth( 'm'));
 		cy = Math.max( cy, 3*fm.getHeight()/2 );
 	}
+
 	return new Dimension( cx, cy);
 }
 
@@ -255,7 +256,6 @@ public void keyReleased ( KeyEvent evt ) {
 }
 
 public void keyTyped( KeyEvent e) {
-
 	if ( ! isEditable || ! isPrintableTyped( e) )
 		return;
 
@@ -329,7 +329,12 @@ public void mousePressed( MouseEvent e) {
 	blankSelection();
 	setTextCursor( cIdx, true, false);
 	requestFocus();
-	
+
+	if ( e.isPopupTrigger() ){
+		if ( (triggerPopup( 0, e.getX(), e.getY())) != null )
+			return;
+	}
+
 	if ( e.getModifiers() == InputEvent.BUTTON2_MASK )
 		pasteFromClipboard();
 }

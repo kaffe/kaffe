@@ -97,6 +97,7 @@ createWindow ( JNIEnv* env, jclass clazz, Window parent, void* owner, jstring jT
   XSetWindowAttributes   attributes;
   Window                 wnd;
   Atom                   protocol[2];
+  int                    i;
 
   attributes.event_mask = StdEvents;
   attributes.background_pixel = clrBack;
@@ -126,9 +127,10 @@ createWindow ( JNIEnv* env, jclass clazz, Window parent, void* owner, jstring jT
   if ( wnd ) {
 	X->newWindow = wnd;
 
-	protocol[0] = WM_DELETE_WINDOW;
-	protocol[1] = WM_TAKE_FOCUS;
-	XSetWMProtocols( X->dsp, wnd, protocol, 2);
+	i=0;
+	protocol[i++] = WM_DELETE_WINDOW;
+	protocol[i++] = WM_TAKE_FOCUS;
+	XSetWMProtocols( X->dsp, wnd, protocol, i);
 
 	if ( owner )
 	  XSetTransientForHint( X->dsp, wnd, (Window)owner );
@@ -185,8 +187,15 @@ Java_java_awt_Toolkit_wndCreateDialog ( JNIEnv* env, jclass clazz, void* owner, 
 void
 Java_java_awt_Toolkit_wndDestroyWindow ( JNIEnv* env, jclass clazz, void* wnd )
 {
-  XSync( X->dsp, False); /* maybe we still have pending requests for wnd */
-  XDestroyWindow( X->dsp, (Window)wnd);
+  /* this is just a last defense against multiple destroy requests causing X errors */
+  static Window lastDestroyed;
+
+  if ( (Window)wnd != lastDestroyed ) {
+	XSync( X->dsp, False); /* maybe we still have pending requests for wnd */
+	XDestroyWindow( X->dsp, (Window)wnd);
+
+	lastDestroyed = (Window)wnd;
+  }
 }
 
 

@@ -1,3 +1,7 @@
+package java.beans;
+
+import java.lang.reflect.Method;
+
 /*
  * Java core library component.
  *
@@ -7,30 +11,30 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.beans;
-
-import java.lang.reflect.Method;
-
-public class MethodDescriptor extends FeatureDescriptor {
-
+public class MethodDescriptor
+  extends FeatureDescriptor
+{
 	private Method meth;
 	private ParameterDescriptor[] params;
 
-public MethodDescriptor(Method method) {
+public MethodDescriptor(Method method)
+	{
 	this(method, null);
 }
 
-public MethodDescriptor(Method method, ParameterDescriptor parameterDescriptors[]) {
+public MethodDescriptor(Method method, ParameterDescriptor parameterDescriptors[])
+	{
 	meth = method;
 	params = parameterDescriptors;
 }
 
-public Method getMethod() {
+public Method getMethod()
+	{
 	return (meth);
 }
 
-public ParameterDescriptor[] getParameterDescriptors() {
+public ParameterDescriptor[] getParameterDescriptors()
+	{
 	return (params);
 }
 }

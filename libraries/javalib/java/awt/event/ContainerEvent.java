@@ -1,6 +1,7 @@
 package java.awt.event;
 
 import java.awt.Component;
+import java.awt.Container;
 
 /**
  *
@@ -34,8 +35,8 @@ public Component getChild() {
 	return child;
 }
 
-public Component getContainer() {
-	return (Component) source;
+public Container getContainer() {
+	return (Container) source;
 }
 
 public String paramString () {

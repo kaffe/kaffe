@@ -94,6 +94,8 @@ protected void addImpl ( Component child, Object constraints, int index ) {
 }
 
 public void addNotify() {
+	super.addNotify();
+
 	for ( int i=0; i<nChildren; i++ )
 		children[i].addNotify();
 }
@@ -384,6 +386,8 @@ public void removeContainerListener ( ContainerListener listener ) {
 public void removeNotify() {
 	for ( int i=0; i<nChildren; i++ )
 		children[i].removeNotify();
+		
+	super.removeNotify();
 }
 
 public void setEnabled ( boolean isEnable ) {

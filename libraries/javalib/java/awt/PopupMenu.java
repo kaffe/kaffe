@@ -52,7 +52,10 @@ public void show( Component c, int x, int y) {
 	}
 	x += pc.x;
 	y += pc.y;
-	wnd = new PopupWindow( c, (Frame)pc, x, y, items);
+	
+	wnd = new PopupWindow( c, (pc instanceof Frame) ? (Frame)pc : null, items);
+	wnd.popupAt( x, y);
+	
 	wnd.requestFocus();
 	wnd.disposeOnLost = true;
 }

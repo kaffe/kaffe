@@ -17,6 +17,11 @@ public class FileWriter extends OutputStreamWriter {
     super(new FileOutputStream(fileName));
   }
 
+  public FileWriter(String fileName, boolean app) throws IOException
+  {
+    super(new FileOutputStream(fileName, app));
+  }
+
   public FileWriter(File file) throws IOException
   {
     super(new FileOutputStream(file));

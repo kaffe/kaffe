@@ -15,7 +15,8 @@ import java.io.FileDescriptor;
 public class NullSecurityManager
   extends SecurityManager
 {
-	protected boolean inCheck = false;
+
+protected boolean inCheck = false;
 
 NullSecurityManager() {
 }
@@ -23,13 +24,7 @@ NullSecurityManager() {
 public void checkAccept(String host, int port) {
 }
 
-public void checkAccess(Thread other)
-	{
-	ThreadGroup ctg = Thread.currentThread().getThreadGroup();
-	ThreadGroup otg = other.getThreadGroup();
-	if (ctg != otg) {
-		throw new SecurityException("must be in same thread group");
-	}
+public void checkAccess(Thread other) {
 }
 
 public void checkAccess(ThreadGroup g) {

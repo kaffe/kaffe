@@ -1,19 +1,3 @@
-package java.awt;
-
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.Transferable;
-import java.awt.event.InputEvent;
-import java.awt.image.ColorModel;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.URL;
-import java.util.Properties;
-import kaffe.util.Ptr;
-
 /**
  * Toolkit - used to be an abstract factory for peers, but since we don't have
  * peers, it is just a simple anchor for central mechanisms (like System-
@@ -28,6 +12,26 @@ import kaffe.util.Ptr;
  *
  * @author P.C.Mehlitz
  */
+
+package java.awt;
+
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.InputEvent;
+import java.awt.image.ColorModel;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
+import java.awt.peer.ComponentPeer;
+import java.awt.peer.LightweightPeer;
+import java.awt.peer.WindowPeer;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.URL;
+import java.util.Properties;
+import kaffe.util.Ptr;
+
 public class Toolkit
 {
 	static Toolkit singleton;
@@ -37,12 +41,15 @@ public class Toolkit
 	static EventDispatchThread eventThread;
 	static boolean isMultiThreaded;
 	static NativeClipboard clipboard;
+	static LightweightPeer lightweightPeer = new LightweightPeer() {};
+	static WindowPeer windowPeer = new WindowPeer() {};
 
 static {
 	System.loadLibrary( "awt");
 
 	String tkName = System.getProperty( "display");
-	tlkInit( tkName);
+	String banner = System.getProperty( "banner", "banner.gif");
+	tlkInit( tkName, banner);
 
 	screenSize = new Dimension( tlkGetScreenWidth(), tlkGetScreenHeight());
 	resolution = tlkGetResolution();
@@ -102,6 +109,24 @@ public Image createImage ( byte[] imageData ) {
 
 public Image createImage ( byte[] imagedata, int imageoffset, int imagelength ) {
 	return new Image( imagedata, imageoffset, imagelength);
+}
+
+ComponentPeer createLightweight ( Component c ) {
+	// WARNING! this is just a dummy to enable checks like
+	// "..getPeer() != null.. or ..peer instanceof LightweightPeer..
+  // see createWindow()
+	return lightweightPeer;
+}
+
+protected WindowPeer createWindow ( Window w ) {
+	// WARNING! this is just a dummy to enable checks like
+	// "..getPeer() != null.. or ..peer instanceof LightweightPeer..
+	// it is NOT a real peer support. The peer field just exists to
+	// check if a Component already passed its addNotify()/removeNotify().
+	// This most probably will be removed once the "isLightweightComponent()"
+	// method gets official (1.2?)
+
+	return windowPeer;
 }
 
 native static synchronized AWTEvent evtGetNextEvent ();
@@ -280,11 +305,11 @@ native static synchronized void graSetPaintMode ( Ptr grData );
 
 native static synchronized void graSetXORMode ( Ptr grData, int xClr );
 
-native static synchronized Ptr imgCreateGifImage( String gifPath);
+native static synchronized Ptr imgCreateFromData( byte[] buf, int offset, int len);
+
+native static synchronized Ptr imgCreateFromFile( String gifPath);
 
 native static synchronized Ptr imgCreateImage( int w, int h);
-
-native static synchronized Ptr imgCreateJpegImage( String gifPath, int colors);
 
 native static synchronized Ptr imgCreateScaledImage( Ptr imgData, int w, int h);
 
@@ -359,7 +384,7 @@ native static synchronized int tlkGetScreenHeight ();
 
 native static synchronized int tlkGetScreenWidth ();
 
-native static synchronized void tlkInit ( String name );
+native static synchronized void tlkInit ( String displayName, String bannerFile );
 
 native static synchronized boolean tlkIsMultiThreaded();
 
