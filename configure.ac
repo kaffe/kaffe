@@ -1887,6 +1887,16 @@ fi
 
 AM_CONDITIONAL([COND_LIBXMLJ], [test x"$enable_libxmlj" = x"yes"])
 
+dnl =========================================================================
+dnl Building of gjdoc
+dnl -------------------------------------------------------------------------
+
+AC_ARG_WITH([gjdoc],
+		AS_HELP_STRING([--with-gjdoc],
+				[Enable building of gjdoc]))
+
+AM_CONDITIONAL([COND_GJDOC], [test x"$with_gjdoc" = x"yes"])
+
 dnl -----------------------------------------------------------------------
 dnl                    Support for using a precompiled class library
 dnl -----------------------------------------------------------------------

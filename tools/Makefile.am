@@ -6,4 +6,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = gjdoc
+if COND_GJDOC
+MAYBE_GJDOC=gjdoc
+endif
+
+SUBDIRS = $(MAYBE_GJDOC)
