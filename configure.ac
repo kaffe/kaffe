@@ -1571,7 +1571,7 @@ if test x"$enable_native_awt" = x"yes"; then
    if test x"$with_kaffe_qt_awt" = x"yes"; then
 	gw_CHECK_QT
 
-        AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/qt/libqteawt.la"
+        AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/qt/libqtawt.la"
    fi
 fi
 
