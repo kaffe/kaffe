@@ -52,7 +52,7 @@ public DirectColorModel( int bits, int rmask, int gmask, int bmask, int amask) {
 		gmax = (gshift > 0) ? (0xffffffff & gmask) >> gshift :
 		                      (0xffffffff & gmask) << -gshift;
 	}
-	if ( bshift != 0 ) {		
+	if ( bmask != 0 ) {		
 		bshift = getShift( bmask);
 		bmax = (bshift > 0) ? (0xffffffff & bmask) >> bshift :
 		                      (0xffffffff & bmask) << -bshift;
@@ -118,10 +118,10 @@ final public int getRedMask() {
 int getShift ( int mask ) {
 	int i, j;
 	
-	for ( i=0; (mask & 1) == 0; i++ )
+	for ( i=0; ((mask & 1) == 0); i++ )
 		mask >>= 1;
 
-	for ( j=0; (mask & 1) != 0; j++ )
+	for ( j=0; ((mask & 1) != 0); j++ )
 		mask >>= 1;
 
 	return (i + (j - 8));

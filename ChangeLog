@@ -1,3 +1,66 @@
+Mon Nov  4 12:58:30 CET 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/kaffe/util/locale/CountryCodes.java: new
+	class for ISO3 country codes.
+	* libraries/javalib/kaffe/util/locale/LanguageCodes.java: new
+	class for ISO3 language codes.
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	Added kaffe.util.locale.CountryCodes and
+	kaffe.util.locale.LanguageCodes.
+	* libraries/javalib/java/util/Locale.java:
+	Added a todo list.
+	(COUNTRY, LANGUAGE) include RESOURCEBASE.
+	(COUNTRY_CODES, LANGUAGE_CODES) new private constants.
+	(Locale) added new constructor.
+	(getDisplayCountry, getDisplayLanguage) updated to new
+	getDisplayResource syntax.
+	(getDisplayResource) now also takes the value to look up as a
+	parameter. Returns an empty string if the value to look up is an
+	empty string. Fixed buggy return value when lookup failed.
+	(getISO3Country) simplified, now uses the CountryCodes resource
+	bundle.
+	(getISOCountries) new method.
+	(getISO3Languages) simplified, now uses the LanguageCodes resource
+	bundle.
+	(getISOLanguages) new method.
+	(getKeys) private helper method for getISOLanguages and
+	getISOCountries.
+	(setDefault) throw NullPointerException if new locale is null.
+	(ISO3Support) removed class. Replaced it by resource bundles
+	CountryCodes and LanguageCodes.
+	* libraries/javalib/kaffe/util/locale/Country.java:
+	Added more comments. Added all country codes from ISO 3166.
+	* libraries/javalib/kaffe/util/locale/Country_de.java:
+	Added German names of all countries.
+	* libraries/javalib/kaffe/util/locale/Country_en.java:
+	Added English names of all countries.
+	* libraries/javalib/kaffe/util/locale/Country_fr.java:
+	Added French names of all countries
+	* libraries/javalib/kaffe/util/locale/Country_it.java:
+	Added Italian names of all countries.
+	* libraries/javalib/kaffe/util/locale/Language.java:
+	Added more comments. Added all languages with two letter codes
+	from ISO 639.
+	* libraries/javalib/kaffe/util/locale/Language_de.java:
+	Added German names for all languages.
+	* libraries/javalib/kaffe/util/locale/Language_en.java:
+	Added English names for all languages.
+	* libraries/javalib/kaffe/util/locale/Language_fr.java:
+	Added French names for all languages.
+	* libraries/javalib/kaffe/util/locale/Language_it.java:
+	Removed unused language codes.
+	
+	* libraries/javalib/kaffe/io/ConverterAlias.java:
+	Added more missing aliases.
+
+	* libraries/javalib/java/util/Collections.java:
+	(list) new method.
+	
+	* libraries/javalib/java/awt/image/DirectColorModel.java
+	(DirectColorModel) fixed bug in constructor.
+
+	Patch by: Nicolas Le Sommer <Nicolas.LeSommer@univ-ubs.fr>
+
 Thu Oct 31 2002  Patrick Tullmann  <pat@tullmann.org>
 	* developers/update-class-list: tweak warning message format
 	* include/Makefile.am: add java_io_ObjectStreamClass.h and

@@ -147,6 +147,17 @@ public class Collections {
 		}
 	}
 
+	/** @since 1.4 */
+	public static ArrayList list(Enumeration e) {
+		ArrayList list = new ArrayList();
+
+		while (e.hasMoreElements()) {
+			list.add(e.nextElement());
+		}
+
+		return list;
+	}
+
 	public static Object min(Collection coll) {
 		return min(coll, Arrays.DEFAULT_COMPARATOR);
 	}

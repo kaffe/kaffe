@@ -839,6 +839,7 @@ kaffe_util_SRCS = \
 	kaffe/util/VectorSnapshot.java
 kaffe_util_locale_SRCS = \
 	kaffe/util/locale/Country.java \
+	kaffe/util/locale/CountryCodes.java \
 	kaffe/util/locale/Country_de.java \
 	kaffe/util/locale/Country_en.java \
 	kaffe/util/locale/Country_fr.java \
@@ -847,6 +848,7 @@ kaffe_util_locale_SRCS = \
 	kaffe/util/locale/Country_ko.java \
 	kaffe/util/locale/Country_zh.java \
 	kaffe/util/locale/Language.java \
+	kaffe/util/locale/LanguageCodes.java \
 	kaffe/util/locale/Language_de.java \
 	kaffe/util/locale/Language_en.java \
 	kaffe/util/locale/Language_fr.java \

@@ -11,6 +11,11 @@ import java.io.Serializable;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+/* TODO:
+ * * implement getAvailableLocales.
+ * * implement security checks in setDefault.
+ * * add more country and language names translations (chinese, korean, japanese).
+ */
 final public class Locale
   implements Cloneable, Serializable
 {
@@ -39,8 +44,10 @@ final public class Locale
 
 	/* locations of human-readable locale naming data */
 	private static final String RESOURCEBASE = "kaffe.util.locale.";
-	private static final String COUNTRY = "Country";
-	private static final String LANGUAGE = "Language";
+	private static final String COUNTRY = RESOURCEBASE + "Country";
+	private static final String COUNTRY_CODES = RESOURCEBASE + "CountryCodes";
+	private static final String LANGUAGE = RESOURCEBASE + "Language";
+	private static final String LANGUAGE_CODES = RESOURCEBASE + "LanguageCodes";
 
 	private static Locale defaultLocale;
 	private String lang;
@@ -74,6 +81,11 @@ private static String toUpperCase(String str) {
 	for (int pos=0; pos < buf.length; pos++)
 		buf[pos] = Character.toUpperCase(buf[pos]);
 	return new String(buf);
+}
+
+/** since 1.4 */
+public Locale(String language) {
+	this(language, "");
 }
 
 public Locale(String language, String country) {
@@ -117,7 +129,7 @@ final public String getDisplayCountry() {
 }
 
 public String getDisplayCountry(Locale inLocale) {
-	return getDisplayResource(inLocale, COUNTRY);
+	return getDisplayResource(inLocale, COUNTRY, getCountry());
 }
 
 final public String getDisplayLanguage() {
@@ -125,7 +137,7 @@ final public String getDisplayLanguage() {
 }
 
 public String getDisplayLanguage(Locale inLocale) {
-	return getDisplayResource(inLocale, LANGUAGE);
+	return getDisplayResource(inLocale, LANGUAGE, getLanguage());
 }
 
 final public String getDisplayName() {
@@ -143,15 +155,22 @@ public String getDisplayName(Locale inLocale) {
 	}
 }
 
-private String getDisplayResource(Locale inLocale, String resource) {
-	ResourceBundle rb = ResourceBundle.getBundle(RESOURCEBASE + resource, inLocale);
+/* looks up a value in a given resource for the given locale */
+private String getDisplayResource(Locale inLocale, String resource, String value) {
+	if (value.equals("")) {
+		return "";
+	}
 
-	String name =  rb.getString(toString());
+	/* Try to get the value for the given locale */
+	ResourceBundle rb = ResourceBundle.getBundle(resource, inLocale);
 
+	String name =  rb.getString(value);
+
+	/* If that fails, return the value for this locale */
 	if (name.equals("")) {
-		rb =  ResourceBundle.getBundle(RESOURCEBASE + resource, this);
+		rb =  ResourceBundle.getBundle(resource, this);
 
-		name =  rb.getString(toString());
+		name =  rb.getString(value);
 	}
 
 	return name;
@@ -166,23 +185,31 @@ public String getDisplayVariant(Locale inLocale) {
 }
 
 public String getISO3Country() throws MissingResourceException {
-	String name = ISO3Support.getISO3Country(this);
-
-	if (name == null) {
-		name = getDefault().getISO3Country();
-	}
-
-	return name;
+	return getDefault().getDisplayResource(this,
+					       COUNTRY_CODES,
+					       getCountry());
 }
 
+/** since 1.2 */
+public static String[] getISOCountries() {
+	return getKeys(ResourceBundle.getBundle(COUNTRY_CODES));
+}
+
+/** since 1.2 */
 public String getISO3Language() throws MissingResourceException {
-	String name = ISO3Support.getISO3Language(this);
+	return getDefault().getDisplayResource(this,
+					       LANGUAGE_CODES,
+					       getLanguage());
+}
 
-	if (name == null) {
-		name = getDefault().getISO3Language();
-	}
+/** since 1.2 */
+public static String[] getISOLanguages() {
+	return getKeys(ResourceBundle.getBundle(LANGUAGE_CODES));
+}
 
-	return name;
+/* used to extract the keys of a resource bundle as a String [] */
+private static String [] getKeys(ResourceBundle rb) {
+	return (String []) Collections.list(rb.getKeys()).toArray(new String[0]);
 }
 
 public String getLanguage() {
@@ -198,6 +225,10 @@ public synchronized int hashCode() {
 }
 
 public static synchronized void setDefault(Locale newLocale) {
+	if (newLocale == null) {
+		throw new NullPointerException();
+	}
+
 	defaultLocale = newLocale;
 }
 
@@ -224,73 +255,4 @@ final public String toString() {
 
 	return (new String(buf));
 }
-
-	/* A class for ISO3 language and country code support */
-	private static class ISO3Support {
-		/* a mapping of locales to 3-letter iso language codes */
-		private final static Map ISO3_LANGUAGES = new HashMap();
-		/* a mapping of locales to 3-letter iso country codes */
-		private final static Map ISO3_COUNTRIES = new HashMap();
-
-		static {
-			initISO3Countries();
-			initISO3Languages();
-		}
-
-		public static String getISO3Country(Locale loc) {
-			return (String) ISO3_COUNTRIES.get(loc);
-		}
-
-		public static String getISO3Language(Locale loc) {
-			return (String) ISO3_LANGUAGES.get(loc);
-		}
-
-		private static void initISO3Countries() {
-			ISO3_COUNTRIES.put(CANADA, "CAN");
-			ISO3_COUNTRIES.put(CANADA_FRENCH, "CAN");
-			ISO3_COUNTRIES.put(CHINA, "CHN");
-			ISO3_COUNTRIES.put(CHINESE, "");
-			ISO3_COUNTRIES.put(ENGLISH, "");
-			ISO3_COUNTRIES.put(FRANCE, "FRA");
-			ISO3_COUNTRIES.put(FRENCH, "");
-			ISO3_COUNTRIES.put(GERMAN, "");
-			ISO3_COUNTRIES.put(GERMANY, "DEU");
-			ISO3_COUNTRIES.put(ITALIAN, "");
-			ISO3_COUNTRIES.put(ITALY, "ITA");
-			ISO3_COUNTRIES.put(JAPAN, "JPN");
-			ISO3_COUNTRIES.put(JAPANESE, "");
-			ISO3_COUNTRIES.put(KOREA, "KOR");
-			ISO3_COUNTRIES.put(KOREAN, "");
-			ISO3_COUNTRIES.put(PRC, "CHN");
-			ISO3_COUNTRIES.put(SIMPLIFIED_CHINESE, "CHN");
-			ISO3_COUNTRIES.put(TAIWAN, "TWN");
-			ISO3_COUNTRIES.put(TRADITIONAL_CHINESE, "TWN");
-			ISO3_COUNTRIES.put(UK, "GBR");
-			ISO3_COUNTRIES.put(US, "USA");
-		}
-
-		private static void initISO3Languages() {
-			ISO3_LANGUAGES.put(CANADA, "eng");
-			ISO3_LANGUAGES.put(CANADA_FRENCH, "fra");
-			ISO3_LANGUAGES.put(CHINA, "zho");
-			ISO3_LANGUAGES.put(CHINESE, "zho");
-			ISO3_LANGUAGES.put(ENGLISH, "eng");
-			ISO3_LANGUAGES.put(FRANCE, "fra");
-			ISO3_LANGUAGES.put(FRENCH, "fra");
-			ISO3_LANGUAGES.put(GERMAN, "deu");
-			ISO3_LANGUAGES.put(GERMANY, "deu");
-			ISO3_LANGUAGES.put(ITALIAN, "ita");
-			ISO3_LANGUAGES.put(ITALY, "ita");
-			ISO3_LANGUAGES.put(JAPAN, "jpn");
-			ISO3_LANGUAGES.put(JAPANESE, "jpn");
-			ISO3_LANGUAGES.put(KOREA, "kor");
-			ISO3_LANGUAGES.put(KOREAN, "kor");
-			ISO3_LANGUAGES.put(PRC, "zho");
-			ISO3_LANGUAGES.put(SIMPLIFIED_CHINESE, "zho");
-			ISO3_LANGUAGES.put(TAIWAN, "zho");
-			ISO3_LANGUAGES.put(TRADITIONAL_CHINESE, "zho");
-			ISO3_LANGUAGES.put(UK, "eng");
-			ISO3_LANGUAGES.put(US, "eng");
-		}
-	}
 }
