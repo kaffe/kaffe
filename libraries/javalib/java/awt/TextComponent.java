@@ -108,12 +108,12 @@ protected transient TextListener textListener;
     {
       TextComponent.this.addTextListener(this);
     }
-
+    
     public AccessibleRole getAccessibleRole()
     {
       return AccessibleRole.TEXT;
     }
-
+    
     public AccessibleStateSet getAccessibleStateSet()
     {
       // TODO: Docs say PropertyChangeEvent will fire if this state changes.
@@ -123,12 +123,12 @@ protected transient TextListener textListener;
         ss.add(AccessibleState.EDITABLE);
       return ss;
     }
-
+    
     public AccessibleText getAccessibleText()
     {
       return this;
     }
-
+    
     /* (non-Javadoc)
      * @see javax.accessibility.AccessibleText#getIndexAtPoint(java.awt.Point)
      */
@@ -171,26 +171,26 @@ protected transient TextListener textListener;
       BreakIterator it = null;
       switch (part)
       {
-       case CHARACTER:
-         return text.substring(index, index + 1);
-       case WORD:
-         it = BreakIterator.getWordInstance();
-         break;
-       case SENTENCE:
-         it = BreakIterator.getSentenceInstance();
-         break;
-       default:
-         return null;
+      	case CHARACTER:
+      	  return text.substring(index, index + 1);
+      	case WORD:
+      	  it = BreakIterator.getWordInstance();
+      	  break;
+      	case SENTENCE:
+      	  it = BreakIterator.getSentenceInstance();
+      	  break;
+      	default:
+      	  return null;
       }
-         it.setText(text);
-         int start = index;
-         if (!it.isBoundary(index))
-           start = it.preceding(index);
-         int end = it.following(index);
-         if (end == -1)
-           return text.substring(index);
-         else
-           return text.substring(index, end);
+  	  it.setText(text);
+  	  int start = index;
+  	  if (!it.isBoundary(index))
+  	    start = it.preceding(index); 
+  	  int end = it.following(index);
+  	  if (end == -1)
+  	    return text.substring(index);
+  	  else
+  	    return text.substring(index, end);
     }
 
     /* (non-Javadoc)
@@ -202,30 +202,30 @@ protected transient TextListener textListener;
       BreakIterator it = null;
       switch (part)
       {
-       case CHARACTER:
-         return text.substring(index, index + 1);
-       case WORD:
-         it = BreakIterator.getWordInstance();
-         break;
-       case SENTENCE:
-         it = BreakIterator.getSentenceInstance();
-         break;
-       default:
-         return null;
+      	case CHARACTER:
+      	  return text.substring(index, index + 1);
+      	case WORD:
+      	  it = BreakIterator.getWordInstance();
+      	  break;
+      	case SENTENCE:
+      	  it = BreakIterator.getSentenceInstance();
+      	  break;
+      	default:
+      	  return null;
       }
-         it.setText(text);
-         int start = index;
-         if (!it.isBoundary(index))
-           start = it.following(index);
-         // Make sure there was a complete unit.  I.e. if index is in the middle
-         // of a word, return null if there is no word after the that one.
-         if (start == -1)
-           return null;
-         int end = it.following(start);
-         if (end == -1)
-           return text.substring(index);
-         else
-           return text.substring(index, end);
+  	  it.setText(text);
+  	  int start = index;
+  	  if (!it.isBoundary(index))
+  	    start = it.following(index);
+  	  // Make sure there was a complete unit.  I.e. if index is in the middle
+  	  // of a word, return null if there is no word after the that one.
+  	  if (start == -1)
+  	    return null;
+  	  int end = it.following(start);
+  	  if (end == -1)
+  	    return text.substring(index);
+  	  else
+  	    return text.substring(index, end);
     }
 
     /* (non-Javadoc)
@@ -238,30 +238,30 @@ protected transient TextListener textListener;
       BreakIterator it = null;
       switch (part)
       {
-       case CHARACTER:
-         return text.substring(index - 1, index);
-       case WORD:
-         it = BreakIterator.getWordInstance();
-         break;
-       case SENTENCE:
-         it = BreakIterator.getSentenceInstance();
-         break;
-       default:
-         return null;
+      	case CHARACTER:
+      	  return text.substring(index - 1, index);
+      	case WORD:
+      	  it = BreakIterator.getWordInstance();
+      	  break;
+      	case SENTENCE:
+      	  it = BreakIterator.getSentenceInstance();
+      	  break;
+      	default:
+      	  return null;
       }
-         it.setText(text);
-         int end = index;
-         if (!it.isBoundary(index))
-           end = it.preceding(index);
-         // Make sure there was a complete unit.  I.e. if index is in the middle
-         // of a word, return null if there is no word before that one.
-         if (end == -1)
-           return null;
-         int start = it.preceding(end);
-         if (start == -1)
-           return text.substring(0, end);
-         else
-           return text.substring(start, end);
+  	  it.setText(text);
+  	  int end = index;
+  	  if (!it.isBoundary(index))
+  	    end = it.preceding(index); 
+  	  // Make sure there was a complete unit.  I.e. if index is in the middle
+  	  // of a word, return null if there is no word before that one.
+  	  if (end == -1)
+  	    return null;
+  	  int start = it.preceding(end);
+  	  if (start == -1)
+  	    return text.substring(0, end);
+  	  else
+  	    return text.substring(start, end);
     }
 
     /* (non-Javadoc)
@@ -306,9 +306,9 @@ protected transient TextListener textListener;
     public void textValueChanged(TextEvent event)
     {
       // TODO Auto-generated method stub
-
+      
     }
-
+    
   }
 
 /*************************************************************************/
@@ -701,7 +701,7 @@ paramString()
       return tcp.getIndexAtPoint(p.x, p.y);
     return -1;
   }
-
+  
   private synchronized Rectangle
   getCharacterBounds(int i)
   {
@@ -710,8 +710,8 @@ paramString()
       return tcp.getCharacterBounds(i);
     return null;
   }
-
-
+  
+  
 
 
 } // class TextComponent

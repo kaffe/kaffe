@@ -231,7 +231,7 @@ public abstract class BasicTextUI extends TextUI
   }
 
   private FocusListener focuslistener = new FocusListener() {
-      public void focusGained(FocusEvent e)
+      public void focusGained(FocusEvent e) 
       {
         textComponent.repaint();
       }

@@ -526,13 +526,13 @@ paramString()
     protected AccessibleAWTTextField()
     {
     }
-
+    
     public AccessibleStateSet getAccessibleStateSet()
     {
       return super.getAccessibleStateSet();
     }
   }
-
+  
   public AccessibleContext getAccessibleContext()
   {
     return new AccessibleAWTTextField();

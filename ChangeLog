@@ -1,5 +1,26 @@
 2004-12-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/CardLayout.java,
+	libraries/javalib/java/awt/Menu.java,
+	libraries/javalib/java/awt/MenuItem.java,
+	libraries/javalib/java/awt/Panel.java,
+	libraries/javalib/java/awt/Polygon.java,
+	libraries/javalib/java/awt/PopupMenu.java,
+	libraries/javalib/java/awt/TextArea.java,
+	libraries/javalib/java/awt/TextComponent.java,
+	libraries/javalib/java/awt/TextField.java,
+	libraries/javalib/java/awt/dnd/peer/DropTargetContextPeer.java,
+	libraries/javalib/java/awt/im/spi/InputMethodContext.java,
+	libraries/javalib/java/awt/image/Raster.java,
+	libraries/javalib/javax/swing/AbstractListModel.java,
+	libraries/javalib/javax/swing/JPasswordField.java,
+	libraries/javalib/javax/swing/JTree.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTextUI.java,
+	libraries/javalib/javax/swing/text/PlainDocument.java:
+	Resynced with GNU Classpath. White-space diffs.
+
+2004-12-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c,
 	libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics.java,
 	libraries/javalib/gnu/java/awt/peer/gtk/GtkFramePeer.java,

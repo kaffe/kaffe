@@ -123,7 +123,7 @@ public abstract class AbstractListModel implements ListModel, Serializable
   {
     ListDataEvent event =
       new ListDataEvent(source, ListDataEvent.INTERVAL_ADDED,
-                       startIndex, endIndex);
+			startIndex, endIndex);
     ListDataListener[] listeners = getListDataListeners();
 
     for (int index = 0; index < listeners.length; index++)
@@ -146,7 +146,7 @@ public abstract class AbstractListModel implements ListModel, Serializable
   {
     ListDataEvent event =
       new ListDataEvent(source, ListDataEvent.INTERVAL_REMOVED,
-                       startIndex, endIndex);
+			startIndex, endIndex);
     ListDataListener[] listeners = getListDataListeners();
 
     for (int index = 0; index < listeners.length; index++)

@@ -143,14 +143,14 @@ show(Component component, int x, int y)
     protected AccessibleAWTPopupMenu()
     {
     }
-
+    
     public AccessibleRole getAccessibleRole()
     {
       return AccessibleRole.POPUP_MENU;
     }
-
+    
   }
-
+  
   public AccessibleContext getAccessibleContext()
   {
     return new AccessibleAWTPopupMenu();

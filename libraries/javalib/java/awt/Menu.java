@@ -444,7 +444,7 @@ paramString()
     protected AccessibleAWTMenu()
     {
     }
-
+    
     public AccessibleRole getAccessibleRole()
     {
       return AccessibleRole.MENU;

@@ -92,7 +92,7 @@ public class JPasswordField extends JTextField
 
   /**
    * Creates a <code>JPasswordField</code> object.
-   *
+   * 
    * @param text the initial text
    */
   public JPasswordField(String text)
@@ -102,7 +102,7 @@ public class JPasswordField extends JTextField
 
   /**
    * Creates a <code>JPasswordField</code> object.
-   *
+   * 
    * @param columns the number of columns
    */
   public JPasswordField(int columns)
@@ -112,7 +112,7 @@ public class JPasswordField extends JTextField
 
   /**
    * Creates a <code>JPasswordField</code> object.
-   *
+   * 
    * @param text the initial text
    * @param columns the number of columns
    */
@@ -123,7 +123,7 @@ public class JPasswordField extends JTextField
 
   /**
    * Creates a <code>JPasswordField</code> object.
-   *
+   * 
    * @param document the document to use
    * @param text the initial text
    * @param columns the number of columns
@@ -135,9 +135,9 @@ public class JPasswordField extends JTextField
 
   /**
    * writeObject
-   *
+   * 
    * @param stream the stream to write to
-   *
+   * 
    * @exception IOException if an error occurs
    */
   private void writeObject(ObjectOutputStream stream) throws IOException
@@ -147,7 +147,7 @@ public class JPasswordField extends JTextField
 
   /**
    * Returns the <code>UIClassID</code>
-   *
+   * 
    * @return the string "PasswordFieldUI"
    */
   public String getUIClassID()
@@ -157,7 +157,7 @@ public class JPasswordField extends JTextField
 
   /**
    * getEchoChar
-   *
+   * 
    * @return the echo char
    */
   public char getEchoChar()
@@ -167,7 +167,7 @@ public class JPasswordField extends JTextField
 
   /**
    * setEchoChar
-   *
+   * 
    * @param echo the echo char
    */
   public void setEchoChar(char echo)
@@ -177,7 +177,7 @@ public class JPasswordField extends JTextField
 
   /**
    * echoCharIsSet
-   *
+   * 
    * @return <code>true</code> if the echo char is set,
    * <code>false</code> otherwise.
    */
@@ -206,9 +206,9 @@ public class JPasswordField extends JTextField
 
   /**
    * getText
-   *
+   * 
    * @return String
-   *
+   * 
    * @deprecated
    */
   public String getText()
@@ -218,12 +218,12 @@ public class JPasswordField extends JTextField
 
   /**
    * getText
-   *
+   * 
    * @param offset TODO
    * @param length TODO
-   *
+   * 
    * @return String
-   *
+   * 
    * @exception BadLocationException TODO
    *
    * @deprecated
@@ -235,7 +235,7 @@ public class JPasswordField extends JTextField
 
   /**
    * getPassword
-   *
+   * 
    * @return char[]
    */
   public char[] getPassword()
@@ -245,7 +245,7 @@ public class JPasswordField extends JTextField
 
   /**
    * paramString
-   *
+   * 
    * @return String
    */
   protected String paramString()
@@ -255,7 +255,7 @@ public class JPasswordField extends JTextField
 
   /**
    * getAccessibleContext
-   *
+   * 
    * @return the <code>AccessibleContext</code> object
    */
   public AccessibleContext getAccessibleContext()

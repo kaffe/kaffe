@@ -600,19 +600,19 @@ public class TextArea extends TextComponent implements java.io.Serializable
   {
     return next_text_number++;
   }
-
+  
   protected class AccessibleAWTTextArea extends AccessibleAWTTextComponent
   {
     protected AccessibleAWTTextArea()
     {
     }
-
+    
     public AccessibleStateSet getAccessibleStateSet()
     {
       return super.getAccessibleStateSet();
     }
   }
-
+  
   public AccessibleContext getAccessibleContext()
   {
     return new AccessibleAWTTextArea();

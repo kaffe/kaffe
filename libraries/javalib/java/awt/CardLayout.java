@@ -85,7 +85,7 @@ public class CardLayout implements LayoutManager2, Serializable
    *
    * @param comp The component to add
    * @param constraints The name by which the component can later be called
-   *
+   * 
    * @exception IllegalArgumentException If `constraints' is not a
    * <code>String</code>
    */
@@ -100,10 +100,10 @@ public class CardLayout implements LayoutManager2, Serializable
   /**
    * Add a new component to the layout.  The name can be used later
    * to refer to the component.
-   *
+   * 
    * @param name The name by which the component can later be called
    * @param comp The component to add
-   *
+   * 
    * @deprecated This method is deprecated in favor of
    * <code>addLayoutComponent(Component, Object)</code>.
    */
@@ -137,7 +137,7 @@ public class CardLayout implements LayoutManager2, Serializable
   /**
    * Return this layout manager's x alignment.  This method always
    * returns Component.CENTER_ALIGNMENT.
-   *
+   * 
    * @param parent Container using this layout manager instance
    *
    * @return the x-axis alignment
@@ -150,7 +150,7 @@ public class CardLayout implements LayoutManager2, Serializable
   /**
    * Returns this layout manager's y alignment.  This method always
    * returns Component.CENTER_ALIGNMENT.
-   *
+   * 
    * @param parent Container using this layout manager instance
    *
    * @return the y-axis alignment
@@ -180,7 +180,7 @@ public class CardLayout implements LayoutManager2, Serializable
 
   /**
    * Cause the last component in the container to be displayed.
-   *
+   * 
    * @param parent The parent container
    */
   public void last (Container parent)
@@ -218,7 +218,7 @@ public class CardLayout implements LayoutManager2, Serializable
 
   /**
    * Get the maximum layout size of the container.
-   *
+   * 
    * @param target The parent container
    *
    * @return the maximum layout size
@@ -232,7 +232,7 @@ public class CardLayout implements LayoutManager2, Serializable
 
   /**
    * Get the minimum layout size of the container.
-   *
+   * 
    * @param target The parent container
    *
    * @return the minimum layout size
@@ -246,7 +246,7 @@ public class CardLayout implements LayoutManager2, Serializable
    * Cause the next component in the container to be displayed.  If
    * this current card is the  last one in the deck, the first
    * component is displayed.
-   *
+   * 
    * @param parent The parent container
    */
   public void next (Container parent)
@@ -256,7 +256,7 @@ public class CardLayout implements LayoutManager2, Serializable
 
   /**
    * Get the preferred layout size of the container.
-   *
+   * 
    * @param parent The parent container
    *
    * @return the preferred layout size
@@ -270,7 +270,7 @@ public class CardLayout implements LayoutManager2, Serializable
    * Cause the previous component in the container to be displayed.
    * If this current card is the first one in the deck, the last
    * component is displayed.
-   *
+   * 
    * @param parent The parent container
    */
   public void previous (Container parent)
@@ -280,7 +280,7 @@ public class CardLayout implements LayoutManager2, Serializable
 
   /**
    * Remove the indicated component from this layout manager.
-   *
+   * 
    * @param comp The component to remove
    */
   public void removeLayoutComponent (Component comp)
@@ -301,7 +301,7 @@ public class CardLayout implements LayoutManager2, Serializable
 
   /**
    * Set this layout manager's horizontal gap.
-   *
+   * 
    * @param hgap The new gap
    */
   public void setHgap (int hgap)
@@ -311,7 +311,7 @@ public class CardLayout implements LayoutManager2, Serializable
 
   /**
    * Set this layout manager's vertical gap.
-   *
+   * 
    * @param vgap The new gap
    */
   public void setVgap (int vgap)
@@ -322,7 +322,7 @@ public class CardLayout implements LayoutManager2, Serializable
   /**
    * Cause the named component to be shown.  If the component name is
    * unknown, this method does nothing.
-   *
+   * 
    * @param parent The parent container
    * @param name The name of the component to show
    */
@@ -359,7 +359,7 @@ public class CardLayout implements LayoutManager2, Serializable
 
   /**
    * This implements first(), last(), next(), and previous().
-   *
+   * 
    * @param parent The parent container
    * @param what The type of goto: FIRST, LAST, NEXT or PREV
    */

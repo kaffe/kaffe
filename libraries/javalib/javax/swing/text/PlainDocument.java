@@ -64,7 +64,7 @@ public class PlainDocument extends AbstractDocument
   protected void reindex()
   {
     Element[] lines;
-    try
+    try 
       {
         String str = content.getString(0, content.length());
 
@@ -75,14 +75,14 @@ public class PlainDocument extends AbstractDocument
             elts.add(createLeafElement(rootElement, null, j, i));
             j = i;
           }
-
+        
         if (j < content.length())
           elts.add(createLeafElement(rootElement, null, j, content.length()));
-
+        
         lines = new Element[elts.size()];
         for (int i = 0; i < elts.size(); ++i)
           lines[i] = (Element) elts.get(i);
-
+        
       }
     catch (BadLocationException e)
       {

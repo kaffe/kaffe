@@ -93,7 +93,7 @@ public class JTree extends JComponent
 
   private static final Object EXPANDED = new Object();
   private static final Object COLLAPSED = new Object();
-
+  
   private boolean dragEnabled;
   private boolean expandsSelectedPaths;
   private TreePath anchorSelectionPath;
@@ -788,7 +788,7 @@ public class JTree extends JComponent
   {
     scrollPathToVisible(getPathForRow(row));
   }
-
+  
   public boolean getScrollsOnExpand()
   {
     return scrollsOnExpand;
@@ -1084,10 +1084,10 @@ public class JTree extends JComponent
 
     if (parent != null)
       return isExpanded(parent);
-
+    
     return true;
   }
-
+  
   public boolean isExpanded(int row)
   {
     if (row < 0 || row >= getRowCount())
@@ -1263,7 +1263,7 @@ public class JTree extends JComponent
         if (path.isDescendant(parent))
           result.addElement(path);
       }
-
+    
     return result.elements();
   }
 
@@ -1289,7 +1289,7 @@ public class JTree extends JComponent
   }
 
   public boolean isPathEditable(TreePath path)
-  {
+  {    
     return isEditable();
   }
 }

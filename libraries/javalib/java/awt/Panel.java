@@ -73,7 +73,7 @@ public class Panel extends Container implements Accessible
   /*
    * The number used to generate the name returned by getName.
    */
-  private static transient long next_panel_number = 0;
+  private static transient long next_panel_number;
 
   /**
    * Initializes a new instance of <code>Panel</code> that has a default
