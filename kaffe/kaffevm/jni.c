@@ -38,6 +38,7 @@
 #include "md.h"
 #include "exception.h"
 #if defined(TRANSLATOR)
+#include "constpool.h"
 #include "seq.h"
 #include "slots.h"
 #include "registers.h"
@@ -4018,7 +4019,9 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 		xmeth->accflags |= ACC_JNI;
 
 done:
+#if defined(TRANSLATOR) && defined(JIT3)
 	resetConstants();
+#endif
 	resetLabels();
 
 #if defined(KAFFE_PROFILER)

@@ -1,5 +1,15 @@
 2003-09-25  Dalibor Topic <robilad@kaffe.org>
 
+	Fix for jit and intrp engine compilation breakage.
+	
+	* kaffe/kaffevm/jni.c:
+	Include constpool.h to declare resetConstants, if available.
+	(Kaffe_wrapper) Only call resetConstants with jit3 engine.
+
+	Reported by: Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+2003-09-25  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/util/zip/ZipFile.java:
 	(OPEN_READ, OPEN_DELETE) New constants.
 
