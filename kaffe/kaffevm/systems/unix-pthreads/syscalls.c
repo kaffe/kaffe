@@ -76,6 +76,31 @@
 		break;						\
 	}
 
+static 
+int
+waitForTimeout(int fd, int timeout){
+	fd_set rset;
+	struct timeval tv;
+	int ret;
+
+	FD_ZERO(&rset);
+	FD_SET(fd,&rset);
+	tv.tv_sec = 0; 
+	tv.tv_usec = timeout*1000;
+
+	if (timeout == NOTIMEOUT) 
+		ret = select(fd+1,&rset,NULL,NULL,NULL);
+	else	
+		ret = select(fd+1,&rset,NULL,NULL,&tv);
+
+	if (ret == 0) 
+		errno = ETIMEDOUT;
+	else if (ret == -1)
+		errno = EINTR;
+
+	return (ret);
+}
+
 static
 jlong
 currentTime(void)
@@ -406,19 +431,19 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 		int timeout, int* out)
 {
 	/* absolute time at which time out is reached */
-	jlong deadline = 0;
-	int r;
-
-	SET_DEADLINE(deadline, timeout)
-	for (;;) {
-		r = accept(fd, addr, len);
-		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR 
-				|| errno == EAGAIN)) {
-			break;	/* success or real error */
-		}
-		IGNORE_EINTR(r)
-		BREAK_IF_LATE(deadline, timeout)
+	int r=-1,ret;
+	
+	ret = waitForTimeout(fd,timeout);
+	if (ret > 0) {
+		r = accept(fd,addr,len);
+		SET_RETURN_OUT(r, out, r)
+		return (r);
 	}
+	else {
+		errno = EINTR;
+		r = -1;
+	}
+	
 	SET_RETURN_OUT(r, out, r)
 	return (r);
 }
@@ -431,19 +456,13 @@ jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *out)
 {
 	ssize_t r = -1;
 	/* absolute time at which timeout is reached */
-	jlong deadline = 0;
-
-	assert(timeout >= 0);
-	SET_DEADLINE(deadline, timeout)
-	for (;;) {
+	int ret;
+	
+	ret = waitForTimeout(fd,timeout);
+	if (ret) {
 		r = read(fd, buf, len);
-		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR 
-				|| errno == EAGAIN)) {
-			break;	/* real error or success */
-		}
-		IGNORE_EINTR(r)
-		BREAK_IF_LATE(deadline, timeout)
 	}
+	
 	SET_RETURN_OUT(r, out, r)
 	return (r);
 }

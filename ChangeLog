@@ -1,3 +1,16 @@
+Sun Aug 11 17:13:00 CEST 2002 Mathieu Dube <mdube@8d.com>
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c
+	added waitForTimeout with select instead of macros for
+	jthreadedTimedRead and jthreadedAccept 
+
+
+Sun Aug 11 17:10:15 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.h:
+	(jthread_relaxstack) implemented new function, fixing compilation
+	errors.
+	
 Wed Aug  7 13:09:27 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:

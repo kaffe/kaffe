@@ -175,6 +175,32 @@ jthread_stacklimit(void)
 #endif
 }
 
+/*
+ * Get the current stack limit.
+ * Adapted from kaffe/kaffevm/systems/unix-jthreads/jthread.h
+ */
+
+static inline void
+jthread_relaxstack(int yes)
+{
+	if( yes )
+	{
+#if defined(STACK_GROWS_UP)
+		jthread_current()->stackMax += STACKREDZONE;
+#else
+		jthread_current()->stackMin -= STACKREDZONE;
+#endif
+	}
+	else
+	{
+#if defined(STACK_GROWS_UP)
+		jthread_current()->stackMax -= STACKREDZONE;
+#else
+		jthread_current()->stackMin += STACKREDZONE;
+#endif
+	}
+}
+
 static inline
 void
 jthread_disable_stop(void)
