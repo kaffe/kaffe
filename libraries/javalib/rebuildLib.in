@@ -36,7 +36,7 @@ if [ "$JIKES" = "" ] ; then
 	CPATH="-classpath $LIBDIR${CPATH+'@PATHSEP@'$CPATH}"
 else
 	JAVAC="$JIKES"
-	CPATH="-classpath $LIBDIR${CPATH+@PATHSEP@$CPATH}"
+	CPATH="${CPATH+-classpath $CPATH}"
 fi
 
 cd $SRCDIR

@@ -1,3 +1,10 @@
+Wed Oct 27 16:22:10 PDT 1999	Tim Wilkinson <tim@transvirtual.com>
+
+	* java/security/Security.java - added missing method required for
+	  Volano.
+	* clib/native/ObjectClassStreamImpl.c - fixed handling of
+	  DefaultSerialization (also for Volano).
+
 Fri Oct 22 12:07:49 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* In kaffe/kaffevm:        
