@@ -325,8 +325,6 @@ internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags, int su, Hja
         cl->interfaces = 0;
 	cl->interface_len = 0;
 	cl->state = CSTATE_LOADED;
-	cl->final = false;
-	cl->cfinal = false;
 	cl->loader = loader;
 }
 
@@ -358,20 +356,6 @@ MDBG(		printf("addMethod: no signature name.\n");		)
 	name = WORD2UTF (pool->data[nc]);
 	signature = WORD2UTF (pool->data[sc]);
   
-	/* Check for finalize() */
-	if ((m->access_flags & ACC_STATIC) == 0
-	    && equalUtf8Consts (name, final_name)
-	    && equalUtf8Consts (signature, void_signature)) {
-		c->final = true;
-	}
- 
-	/* Check for classFinalize() */
-	if ((m->access_flags & ACC_STATIC) != 0
-	    && equalUtf8Consts (name, class_final_name)
-	    && equalUtf8Consts (signature, void_signature)) {
-		c->cfinal = true;
-	}
-
 #ifdef DEBUG
 	/* Search down class for method name - don't allow duplicates */
 	for (ni = CLASS_NMETHODS(c), mt = CLASS_METHODS(c); --ni >= 0; ) {

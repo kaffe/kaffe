@@ -84,8 +84,6 @@ struct Hjava_lang_Class {
 	short			total_interface_len;
 	Hjava_lang_ClassLoader*	loader;
 	char			state;
-	char			final;
-	char			cfinal;
 };
 
 #ifndef __DEFINED_CLASS
@@ -285,7 +283,6 @@ int32			hashUtf8String(char*, int);
 extern Utf8Const* init_name;		/* "<clinit>" */
 extern Utf8Const* constructor_name;	/* "<init>" */
 extern Utf8Const* final_name;		/* "finalize" */
-extern Utf8Const* class_final_name;	/* "classFinalize" */
 extern Utf8Const* void_signature;	/* "()V" */
 extern Utf8Const* Code_name;		/* "Code" */
 extern Utf8Const* LineNumberTable_name;	/* "LineNumberTable" */

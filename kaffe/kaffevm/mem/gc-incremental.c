@@ -127,11 +127,11 @@ static gcFuncs gcFunctions[] = {
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_NORMAL */
 	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_NOWALK */
 	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_FIXED */
-	{ walkObject,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_NORMALOBJECT */
+	{ walkObject,	    finalizeObject   },	/* GC_ALLOC_NORMALOBJECT */
 	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_PRIMARRAY */
 	{ walkRefArray,     GC_OBJECT_NORMAL },	/* GC_ALLOC_REFARRAY */
 	{ walkClass,        GC_OBJECT_NORMAL },	/* GC_ALLOC_CLASSOBJECT */
-	{ walkObject,       finalizeObject   },	/* GC_ALLOC_FINALIZEOBJECT */
+	{ 0,       	    0		     },	/* GC_ALLOC_FINALIZEOBJECT */
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_METHOD */
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_FIELD */
 	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_STATICDATA */
@@ -874,7 +874,13 @@ finalizeObject(void* ob)
 	Method* final;
 
 	final = findMethod(OBJECT_CLASS((Hjava_lang_Object*)ob), final_name, void_signature);
-	callMethodA(final, METHOD_INDIRECTMETHOD(final), (Hjava_lang_Object*)ob, 0, 0);
+	if (final != 0) {
+		callMethodA(final, METHOD_INDIRECTMETHOD(final), (Hjava_lang_Object*)ob, 0, 0);
+	}
+	else {
+		/* This shouldn't happen */
+	}
+
 	/* 
 	 * make sure thread objects get detached 
 	 */

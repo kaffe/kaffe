@@ -136,13 +136,16 @@ public boolean drawImage ( Image img, int x, int y, ImageObserver observer) {
 	return drawImage( img, x, y, img.width, img.height, null, observer);
 }
 
-public boolean drawImage ( Image img, int x, int y, int width, int height,
-		                Color background, ImageObserver observer ) {
-	if ( (Image.checkImage( img, -1, -1, observer, true) & ImageObserver.ALLBITS) != 0 ) {
-		drawImg( img, x, y, 0, 0, width, height, background);
+public boolean drawImage ( Image img, int x, int y, int width, int height, Color background, ImageObserver observer ) {
+	if ((Image.checkImage( img, -1, -1, observer, true) & ImageObserver.ALLBITS) != 0) {
+		if(img.width != width || img.height != height) {
+			drawImgScaled(img, x,y , x+width, y+height, 0, 0,img.width,img.height, background);
+		}
+		else {
+			drawImg(img, x, y, 0, 0, width, height, background);
+		}
 		return true;
 	}
-	
 	return false;
 }
 

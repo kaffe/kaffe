@@ -1,14 +1,14 @@
 
 			 =======================
 
-			 KAFFE OpenVM 1.0 Beta 1
+			 KAFFE OpenVM 1.0 Beta 2
 
 			 =======================
 
-This is the first release of "Kaffe OpenVM", a complete virtual machine
-and class library set which allows the execution of Java code without any
-code from Javasoft.  It comes with a virtual machine and a set of class
-libraries including beans, and the all important AWT graphics system.
+This is of "Kaffe OpenVM", a complete virtual machine and class library
+set which allows the execution of Java code without any code from Javasoft.
+It comes with a virtual machine and a set of class libraries including beans,
+and the all important AWT graphics system.
 
 Why use Kaffe?
 --------------
@@ -29,18 +29,22 @@ Kaffe will run on your system ('J' means 'just-in-time' while 'I' means
   ========================================================================
   uProc     | Mode |    Systems
   ========================================================================
-  i386      | J+I  |    FreeBSD 2.x +   Unixware        NetBSD 1.x
-            |      |    Solaris 2.x     BSDI 2.x        Linux 2.0.0 +
-            |      |    SCO 3.2v5       NeXTStep 3.x    Windows '95
+  i386      | J+I  |    Linux 2.x       FreeBSD 2.x +   NetBSD 1.x
+            |      |    Solaris 2.x     BSDI 2.x        Unixware
+            |      |    SCO 3.2v5       NeXTStep 3.x    Windows '95/98/NT
             |      |    DG/UX		OpenBSD 2.x	OpenStep 4.x
             |      |    QNX 4.x
   ------------------------------------------------------------------------
-  Sparc     | J+I  |    SunOS 4.x       Solaris 2.x     NetBSD 1.x
-            |      |    NeXTStep 3.x    Linux           Fujitsu UXP/DS
+  Sparc     | J+I  |    Linux 2.x       SunOS 4.x       NetBSD 1.x
+            |      |    NeXTStep 3.x    Solaris 2.x	Fujitsu UXP/DS
             |      |    BSDI 3.x
   ------------------------------------------------------------------------
-  ARM       | I    |    NetBSD 1.x
+  ARM       | I    |    Linux/Netwinder NetBSD 1.x
   ------------------------------------------------------------------------
+  MIPS      | I    |    Linux/Cobalt    IRIX 5 & 6	NetBSD 1.x
+  ------------------------------------------------------------------------
+  PARISC    | I    |    HPUX 10.x
+  ========================================================================
 
 Kaffe also ships with some code which used to work but has now fallen
 behind recent changes.  If you wanted to update these ports feel free:
@@ -52,11 +56,7 @@ behind recent changes.  If you wanted to update these ports feel free:
             |      |    SunOS 4.x	Linux		AUX
             |      |    OpenBSD 2.x
   ------------------------------------------------------------------------
-  MIPS      | I    |    IRIX 5 & 6	NetBSD 1.x
-  ------------------------------------------------------------------------
   PowerPC   | I    |    MkLinux         MachTen 4.0.3	AIX
-  ------------------------------------------------------------------------
-  PARISC    | I    |    HPUX 10.x
   ========================================================================
 
 Who can use Kaffe?
@@ -91,8 +91,8 @@ And mailing lists?
 A couple of mailing lists are available for information and discussion of
 the Kaffe project.  These lists are:
   
-        kaffe@transvirtual.com                      - General discussions
-        kaffe-announce@transvirtual.com             - Announcements
+        kaffe@rufus.w3.org                          - General discussions
+        kaffe-announce@rufus.w3.org                 - Announcements
 
 These lists are archived at:
 
@@ -101,8 +101,8 @@ These lists are archived at:
 To subscribe to these lists send a message containing the word "subscribe"
 to either:
         
-        kaffe-request@transvirtual.com
-        kaffe-announce-request@transvirtual.com
+        kaffe-request@rufus.w3.org
+        kaffe-announce-request@rufus.w3.org
   
 depending on what you are interested in.
 

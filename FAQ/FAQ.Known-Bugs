@@ -38,10 +38,9 @@ Treat it as an TODO list.
 
 * Kaffe does not currently provide its own implementation of RMI.
 
-* java.math.* is missing.  However, clib/math/BigInteger.c still contains
-  the native functions used for java.math.BigInteger.  Hence, it might work
-  to use Sun's  java/math/*.class files (or append classes.zip to the
-  CLASSPATH after Klasses.jar)
+* java.math.* is incomplete.  java.math.BigInteger is mostly written and
+  relies on the GNU Multi-precession math pacakge (GMP).  BigDecimal is
+  completely incomplete (?) and will just throw exceptions when used.
 
 * There are problems with String.intern().  Specifically, if a string
   is scheduled for finalization, and another string with the same value
@@ -55,3 +54,6 @@ Treat it as an TODO list.
   Apparently, this causes some software such Cygnus's kawa to fail in 
   certain circumstances.  It seems like they should fix that.
 
+* Sparc/Linux port is broken due to the odd way in which setjmp/longjmp is
+  done.  If someone wants to provide some alternate functions for these that
+  work we'd be greatful.
