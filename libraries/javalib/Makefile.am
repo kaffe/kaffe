@@ -48,9 +48,12 @@ KAFFELIBRARYPATH=$(top_builddir)/libraries/clib/native/:$(top_builddir)/librarie
 BOOTCLASSPATH=$(LIBDIR):$(srcdir)/Klasses.jar.bootstrap
 JAR=BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar
 
+installed_properties = \
+	logging.properties
+
 jrelib_DATA = \
 	rt.jar \
-	logging.properties
+	$(installed_properties)
 
 Klasses_jar_SRCS = \
 	$(com_jcraft_jzlib_SRCS) \
@@ -4743,7 +4746,6 @@ classpath_resources = \
 
 EXTRA_DIST = \
 	Makefile.am.in \
-	Klasses.jar.bootstrap \
 	META-INF \
 	com \
 	gnu \
@@ -4756,7 +4758,8 @@ EXTRA_DIST = \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
 	$(gnu_regexp_message_bundles) \
-	$(gnu_getopt_message_bundles)
+	$(gnu_getopt_message_bundles) \
+	$(installed_properties)
 
 dist-hook:
 	rm -rf `find $(distdir) -name CVS`

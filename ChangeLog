@@ -1,5 +1,14 @@
 2005-01-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/Makefile.am.in (EXTRA_DIST, jarlib_DATA): 
+	Added installed_properties.
+	(installed_properties): Moved loggig.properties there.
+
+	* configure.ac (AM_INIT_AUTOMAKE): Use new form of invoking it.
+	Pass tar option to set support for long file names in tar archives.
+
+2005-01-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/Makefile.am (SUBDIRS): Fix for make dist. Made
 	libxmlj really be picked up.
 

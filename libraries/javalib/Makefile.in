@@ -398,9 +398,12 @@ SRCDIRS = com gnu java javax kaffe org
 KAFFELIBRARYPATH = $(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/:$(top_builddir)/libraries/clib/nio/:$(top_builddir)/libraries/clib/security/:$(top_builddir)/libraries/clib/classpath/
 BOOTCLASSPATH = $(LIBDIR):$(srcdir)/Klasses.jar.bootstrap
 JAR = BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar
+installed_properties = \
+	logging.properties
+
 jrelib_DATA = \
 	rt.jar \
-	logging.properties
+	$(installed_properties)
 
 Klasses_jar_SRCS = \
 	$(com_jcraft_jzlib_SRCS) \
@@ -5365,7 +5368,6 @@ classpath_resources = \
 
 EXTRA_DIST = \
 	Makefile.am.in \
-	Klasses.jar.bootstrap \
 	META-INF \
 	com \
 	gnu \
@@ -5378,7 +5380,8 @@ EXTRA_DIST = \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
 	$(gnu_regexp_message_bundles) \
-	$(gnu_getopt_message_bundles)
+	$(gnu_getopt_message_bundles) \
+	$(installed_properties)
 
 LIBDIR = lib
 rebuildLib = ./rebuildLib
