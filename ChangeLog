@@ -1,5 +1,36 @@
 2004-10-15  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/clib/net/PlainDatagramSocketImpl.c:
+	(gnu_java_net_PlainDatagramSocketImpl_receive0) Adapted
+	to use public constructor.
+
+	* libraries/javalib/java/net/Inet4Address.java,
+	libraries/javalib/java/net/Inet6Address.java,
+	libraries/javalib/java/net/InetAddress.java:
+	Resynced with GNU Classpath.
+
+	2004-10-15  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/Inet4Address.java
+        (writeReplace): Use two-argument constructor of InetAddress.
+        (Inet4Address): Remove unused constructors. Use two-argument
+        constructor of InetAddress in remaining constructor.
+        * java/net/Inet6Address.java
+        (Inet6Address): Use two-argument constructor of InetAddress.
+        * java/net/InetAddress.java
+        (LOCALHOST): New static field to store object for localhost.
+        (static): Initialize LOCALHOST.
+        (hostname_alias): Removed.
+        (InetAdress): Removed hostname_alias argument.
+        (getHostName): Don't handle alias anymore.
+        (getCanonicalHostName): New method.
+        (toString): Don't handle alias anymore.
+        (getByName): Simply call getAllByName() and return its first result
+        entry.
+        (getAllByName): Handle null argument properly.
+
+2004-10-15  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/nio/charset/UTF_16Encoder.java:
         Resynced with GNU Classpath.
 
