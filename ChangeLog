@@ -1,5 +1,12 @@
+Tue Jul 21 19:37:59 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/javalib/java/lang/Class.java: fixed bug where 
+	getClassLoader() returned a non-null object for classes that
+	were not loaded by a class loader.
+
 Mon Jul 20 22:16:16 1998  Archie Cobbs  <archie@whistle.com>
 
+	* libraries/javalib/java/lang/Integer.java: fix for parseInt.
 	* libraries/javalib/java/util/Vector.java: check for array index
 	  out of bounds in elementAt
 
