@@ -3,17 +3,70 @@
 import java.io.*;
 
 public class BufferedReaderTest {
-	public static void main(String [] args) throws Exception {
 
-		class PseudoReader extends Reader {
-		    public void close() {
-		    }
+	static class PseudoReader extends Reader {
+	    public void close() {
+	    }
 
-		    public int read(char buf[], int offset, int count) {
-			System.out.println("count = " + count);
-			return (count);
-		    }
+	    public int read(char buf[], int offset, int count) {
+		System.out.println("count = " + count);
+		return (count);
+	    }
+	}
+
+	static class PseudoReader2 extends Reader {
+	    public int closeCounter = 0;
+  
+	    public void close() {
+		closeCounter++;
+	    }
+ 
+	    public int read(char buf[], int offset, int count) {
+		return (-1);
+	    }
+	}
+
+	static class PseudoReader3 extends Reader {
+	    boolean called;
+	    boolean calledAgain;
+
+	    public void close () {
+	    }
+
+	    /* This version of read returns a string of characters
+	       without EOL on the first call,
+	       then 0 characters on the second.
+
+	       If its caller is blocking, the caller will try again,
+	       otherwise it will have enough.
+
+	       If it tries again, and calls read for the 
+	       third time, an IOException is thrown.
+	    */
+
+	    public int read(char[] buf2, int offset, int count) 
+		throws IOException {
+
+		if (calledAgain) {
+		    throw (new IOException("you keep trying ..."));
 		}
+		if (called) {
+		    calledAgain = true;
+		    return (0);
+		}
+		else {
+		    called = true;
+  
+		    String s = new String("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+
+		    s.getChars(0, count, buf2, offset);
+
+		    return (count);
+		}
+	    }
+	}
+
+	public static void main(String [] args) throws Exception {
 
 		// This test shows that the default buffersize for
 		// a BufferedReader is 8192 characters.
@@ -144,18 +197,6 @@ public class BufferedReaderTest {
 		   already been closed should do nothing.
 		   So the expected result should be "1"
 		 */
-
-		class PseudoReader2 extends Reader {
-		    public int closeCounter = 0;
-		    
-		    public void close() {
-			closeCounter++;
-		    }
-		    
-		    public int read(char buf[], int offset, int count) {
-			return (-1);
-		    }
-		}
 
 		PseudoReader2 pr2 = new PseudoReader2();
 		br = new BufferedReader(pr2);
@@ -478,46 +519,6 @@ public class BufferedReaderTest {
 		}
 
 		/* Test whether readLine is blocking or not */
-
-		class PseudoReader3 extends Reader {
-		    boolean called;
-		    boolean calledAgain;
-		    
-		    public void close () {
-		    }
-		    
-		    /* This version of read returns a string of characters
-		       without EOL on the first call,
-		       then 0 characters on the second.
-
-		       If its caller is blocking, the caller will try again,
-		       otherwise it will have enough.
-
-		       If it tries again, and calls read for the 
-		       third time, an IOException is thrown.
-		    */
-
-		    public int read(char[] buf2, int offset, int count) 
-			throws IOException {
-
-			if (calledAgain) {
-			    throw (new IOException("you keep trying ..."));
-			}
-			if (called) {
-			    calledAgain = true;
-			    return (0);
-			}
-			else {
-			    called = true;
-			    
-			    String s = new String("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-			    
-			    s.getChars(0, count, buf2, offset);
-			    
-			    return (count);
-			}
-		    }
-		}
 
 		PseudoReader3 pr3 = new PseudoReader3();
 		br = new BufferedReader(pr3, 10);
