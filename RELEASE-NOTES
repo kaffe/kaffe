@@ -14,10 +14,20 @@ been added in this release.
 
 Even though this is not a production release, it
 contains a large number of improvements over 1.0.7, 
-which was released over two years ago.
+which was released over two years ago.  Don't use
+1.0.7, it's ancient!  We will release a new
+production release very soon.
 
 Bug reports, comments and patches are always
 welcome -- send them to the team at kaffe@kaffe.org.
+
+
+Dedication
+==========
+
+This release is dedicated to the memory of David Marston, who
+passed away at age 28 of cancer.  David collaborated on the
+RISC OS Kaffe port.
 
 
 Platform Specific Notes
@@ -164,9 +174,9 @@ powerpc | darwin6  | intrp  | pthread | kaffe | 146/147
 powerpc | darwin7  | intrp  | pthread | kaffe | 147/147
 x86-64  | linux    | intrp  | pthread | kaffe | 145/147
 
-
 Have fun!
 
 Cheers,
 
- - Dalibor Topic
+ - Dalibor Topic + Jim Pick
+

@@ -1,3 +1,9 @@
+2005-04-05  Jim Pick  <jim@kaffe.org>
+
+	* New branch Release_1_1_5_Branch.  (removed old one)
+	* RELEASE-NOTES: Add dedication, tell people not to use
+	1.0.7.
+
 2005-04-05  Supreet Sethi  <supreet@linux-delhi.org>
 
 	* include/jsyscall.h:
