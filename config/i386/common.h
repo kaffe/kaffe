@@ -79,4 +79,18 @@ typedef int64	profiler_click_t;
 
 #endif
 
+/*
+ * Do an atomic compare and exchange.  The address 'A' is checked against  
+ * value 'O' and if they match it's exchanged with value 'N'.
+ * We return '1' if the exchange is sucessful, otherwise 0.
+ */
+#define COMPARE_AND_EXCHANGE(A,O,N) \
+       ({ \
+               asm volatile(" \
+                       movl %2,%%eax \n\
+                       cmpxchgl %1,%0" \
+                 : : "m" (*(A)), "r" (N), "r" (O) : "eax", "cc", "memory" ); \
+               (*(A)) == (N) ? 1 : 0; \
+       })
+
 #endif
