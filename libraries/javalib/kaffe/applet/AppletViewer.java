@@ -77,13 +77,17 @@ public class AppletViewer
 
     // Our class loader
     private static class AppletClassLoader extends URLClassLoader {
-      AppletClassLoader(URL codebase, String archive) throws IOException {
-	  super(new URL[0]);
-	  for (StringTokenizer t = new StringTokenizer(archive, ", ");
-		  t.hasMoreTokens(); ) {
-	      addURL(new URL(codebase, t.nextToken()));
-	  }
-      }
+	AppletClassLoader(URL codebase, String archive) throws IOException {
+	    super(new URL[0]);
+	    if (archive.equals("")) {
+		addURL(codebase);
+	    } else {
+		for (StringTokenizer t = new StringTokenizer(archive, ", ");
+			t.hasMoreTokens(); ) {
+		    addURL(new URL(codebase, t.nextToken()));
+		}
+	    }
+	}
     }
 
 public static class DefaultAppletContext implements AppletContext {
