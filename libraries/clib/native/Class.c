@@ -167,16 +167,30 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
 	return (clazz);
 }
 
+/*
+ * Determine the class of the method that called the method that called
+ * Class.getCallingClass(), which in turned called this native method.
+ * It will be 3 stack frames up.
+ */
 struct Hjava_lang_Class*
-java_lang_Class_forName0(struct Hjava_lang_String* str)
+java_lang_Class_getCallingClass0()
 {
-	Hjava_lang_ClassLoader* loader;
-	errorInfo info;
+	stackTraceInfo *info;
+        int i;
 
-	if (!getClassLoader(&loader, &info)) {
-		throwError(&info);
+        info = (stackTraceInfo*)buildStackTrace(0);
+	if (info == NULL) {
+		errorInfo einfo;
+		postOutOfMemory(&einfo);
+		throwError(&einfo);
 	}
-	return java_lang_Class_forName(str, true, loader);
+        for (i = 0; info[i].meth != ENDOFSTACK; i++) {
+		struct _methods *meth = stacktraceFindMethod(&info[i]);
+
+                if (i >= 3 && meth != NULL && meth->class != NULL)
+                        return meth->class;
+        }
+	abort();
 }
 
 /*

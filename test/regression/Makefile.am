@@ -70,6 +70,7 @@ TESTS = \
 	finaltest.java \
 	finaltest2.java \
 	forNameTest.java \
+	LoaderTest.java \
 	ArrayForName.java \
 	KaffeVerifyBug.java \
 	Schtum.java \

@@ -18,8 +18,10 @@ import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.Vector;
 import kaffe.lang.SystemClassLoader;
 
@@ -33,6 +35,14 @@ public abstract class ClassLoader {
  * merely the initiating loader).
  */
 private final Hashtable loadedClasses = new Hashtable();
+
+/**
+ * Similarly, we keep a reference to all native libraries loaded by this
+ * loader.  When this class loader is GC'd, the native libraries become
+ * candidates for finalization, which unlinks the shared library.
+ */
+private final Set loadedLibraries = new HashSet();
+
 private ProtectionDomain defaultProtectionDomain;
 private final ClassLoader parent;
 
@@ -241,6 +251,10 @@ protected Package[] getPackages() {
 
 protected String findLibrary(String libname) {
 	return null;
+}
+
+void addNativeLibrary(NativeLibrary lib) {
+	loadedLibraries.add(lib);
 }
 
 private native Class defineClass0(String name, byte data[], int off, int len);

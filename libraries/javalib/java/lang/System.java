@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Properties;
 
-final public class System {
+public final class System {
 	final static SecurityManager defaultSecurityManager =
 		new NullSecurityManager();
 	final public static InputStream in;
@@ -92,7 +92,8 @@ static {
 
 private System() { }
 
-native public static void arraycopy(Object src, int src_position, Object dst, int dst_position, int length);
+native public static void arraycopy(Object src,
+	int src_position, Object dst, int dst_position, int length);
 
 private static void checkPropertyAccess() {
 	getSecurityManager().checkPropertiesAccess();
@@ -139,11 +140,17 @@ native public static int identityHashCode(Object x);
 native private static Properties initProperties(Properties props);
 
 public static void load(String filename) {
-	Runtime.getRuntime().load(filename);
+	Runtime.getRuntime().load(filename,
+	    Class.getCallingClass().getClassLoader());
 }
 
 public static void loadLibrary(String libname) {
-	Runtime.getRuntime().loadLibrary(libname);
+	Runtime.getRuntime().loadLibrary(libname,
+	    Class.getCallingClass().getClassLoader());
+}
+
+public static String mapLibraryName(String fn) {
+	return NativeLibrary.getLibPrefix() + fn + NativeLibrary.getLibSuffix();
 }
 
 public static void runFinalization() {

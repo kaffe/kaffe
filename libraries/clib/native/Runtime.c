@@ -25,51 +25,9 @@
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
 
-#define	LIBRARY_PREFIX	"/lib"
-
-#ifndef LIBRARYSUFFIX
-#define LIBRARYSUFFIX ""
-#endif
-
-extern char* libraryPath;
 extern size_t gc_heap_limit;
 extern size_t gc_heap_total;
 extern jboolean runFinalizerOnExit;
-
-
-/*
- * Initialise the linker and return the search path for shared libraries.
- */
-struct Hjava_lang_String*
-java_lang_Runtime_initializeLinkerInternal(struct Hjava_lang_Runtime* this)
-{
-	return (checkPtr(stringC2Java(libraryPath)));
-}
-
-/*
- * Construct a library name.
- */
-struct Hjava_lang_String*
-java_lang_Runtime_buildLibName(struct Hjava_lang_Runtime* this, struct Hjava_lang_String* s1, struct Hjava_lang_String* s2)
-{
-	char lib[MAXLIBPATH];
-	char str[MAXPATHLEN];
-
-	/*
-	 * Note. Although the code below will build a library string, if
-	 * it doesn't fit into the buffer, it will truncate the path
-	 * silently.
-	 */
-	stringJava2CBuf(s1, str, sizeof(str));
-	strncpy(lib, str, MAXLIBPATH-1);
-	strncat(lib, LIBRARY_PREFIX, MAXLIBPATH-1);
-	stringJava2CBuf(s2, str, sizeof(str));
-	strncat(lib, str, MAXLIBPATH-1);
-	strncat(lib, LIBRARYSUFFIX, MAXLIBPATH-1);
-	lib[MAXLIBPATH-1] = 0;
-
-	return (checkPtr(stringC2Java(lib)));
-}
 
 /*
  * Load in a library file.

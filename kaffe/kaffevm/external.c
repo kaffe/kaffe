@@ -64,14 +64,18 @@ static inline void kdlfree(lt_ptr_t ptr) {
 #endif
 
 #ifndef LIBRARYLOAD
-#define LIBRARYLOAD(desc,filename) ((desc)=lt_dlopenext((filename)))
+#define LIBRARYLOAD(desc,filename)	((desc)=lt_dlopenext((filename)))
+#endif
+
+#ifndef LIBRARYUNLOAD
+#define LIBRARYUNLOAD(desc)		(lt_dlclose(desc))
 #endif
 
 #ifndef LIBRARYERROR
 #define LIBRARYERROR() lt_dlerror()
 #endif
 
-static struct {
+static struct _libHandle {
 	LIBRARYHANDLE	desc;
 	char*		name;
 	int		ref;
@@ -93,10 +97,9 @@ static inline lt_ptr_t findLibraryFunction(const char *name) {
 #define LIBRARYFUNCTION(ptr,name) ((ptr)=findLibraryFunction(name))
 #endif
 
-char* libraryPath = "";
+static char *libraryPath = "";
 
-void* loadNativeLibrarySym(char*);
-jint Kaffe_JNI_native(Method*);
+extern jint Kaffe_JNI_native(Method*);
 
 /*
  * Error stub function.  Point unresolved link errors here to avoid
@@ -160,7 +163,7 @@ initNative(void)
 		strcat(lib, NATIVELIBRARY);
 		strcat(lib, LIBRARYSUFFIX);
 
-		if (loadNativeLibrary(lib, NULL, 0) == 1) {
+		if (loadNativeLibrary(lib, NULL, 0) >= 0) {
 			return;
 		}
 	}
@@ -171,51 +174,63 @@ initNative(void)
 	EXIT(1);
 }
 
+/*
+ * Link in a native library. If successful, returns an index >= 0 that
+ * can be passed to unloadNativeLibrary(). Otherwise, returns -1 and
+ * fills errbuf (if not NULL) with the error message. Assumes synchronization.
+ */
 int
-loadNativeLibrary(char* lib, char *errbuf, size_t errsiz)
+loadNativeLibrary(char* path, char *errbuf, size_t errsiz)
 {
-	int i;
+	struct _libHandle *lib;
+	int index;
 
 	/* Find a library handle.  If we find the library has already
 	 * been loaded, don't bother to get it again, just increase the
 	 * reference count.
 	 */
-	for (i = 0; i < MAXLIBS; i++) {
-		if (libHandle[i].desc == 0) {
+	for (index = 0; index < MAXLIBS; index++) {
+		lib = &libHandle[index];
+		if (lib->desc == 0) {
 			goto open;
 		}
-		if (strcmp(libHandle[i].name, lib) == 0) {
-			libHandle[i].ref++;
-			return (1);
+		if (strcmp(lib->name, path) == 0) {
+			lib->ref++;
+DBG(NATIVELIB,
+			dprintf("Native lib %s\n"
+			    "\tLOAD desc=%p index=%d ++ref=%d\n",
+			    lib->name, lib->desc, index, lib->ref);
+    )
+			return index;
 		}
 	}
 	if (errbuf != 0) {
 		strncpy(errbuf, "Too many open libraries", errsiz);
 		errbuf[errsiz - 1] = '\0';
 	}
-	return (0);
+	return -1;
 
 	/* Open the library */
 	open:
 
 #if 0
 	/* If this file doesn't exist, ignore it */
-	if (access(lib, R_OK) != 0) {
+	if (access(path, R_OK) != 0) {
 		if (errbuf != 0) {
 			strncpy(errbuf, SYS_ERROR(errno), errsiz);
 			errbuf[errsiz - 1] = '\0';
 		}
-		return (0);
+		return -1;
 	}
 #endif
 /* if we tested for existence here, libltdl wouldn't be able to look
    for system-dependent library names */
 
 	blockAsyncSignals();
-        LIBRARYLOAD(libHandle[i].desc, lib);
+	LIBRARYLOAD(lib->desc, path);
 	unblockAsyncSignals();
 
-	if (libHandle[i].desc == 0) {
+	if (lib->desc == 0) {
 		const char *err = LIBRARYERROR();
 
 		if (err == 0) {
@@ -225,15 +240,51 @@ loadNativeLibrary(char* lib, char *errbuf, size_t errsiz)
 			strncpy(errbuf, err, errsiz);
 			errbuf[errsiz - 1] = '\0';
 		}
-		return (0);
+		return -1;
 	}
 
-	libHandle[i].ref = 1;
-	libHandle[i].name = KMALLOC(strlen(lib) + 1);
-	addToCounter(&ltmem, "vmmem-libltdl", 1, GCSIZEOF(libHandle[i].name));
-	strcpy(libHandle[i].name, lib);
+	lib->ref = 1;
+	lib->name = KMALLOC(strlen(path) + 1);
+	addToCounter(&ltmem, "vmmem-libltdl", 1, GCSIZEOF(lib->name));
+	strcpy(lib->name, path);
 
-	return (1);
+DBG(NATIVELIB,
+	dprintf("Native lib %s\n"
+	    "\tLOAD desc=%p index=%d ++ref=%d\n",
+	    lib->name, lib->desc, index, lib->ref);
+    )
+
+	return index;
+}
+
+/*
+ * Unlink a native library. Assumes synchronization.
+ * Note that libnative is always at index zero and should
+ * never be unloaded. So index should never equal zero here.
+ */
+void
+unloadNativeLibrary(int index)
+{
+	struct _libHandle *lib;
+
+	assert(index > 0 && index < MAXLIBS);
+	lib = &libHandle[index];
+
+DBG(NATIVELIB,
+	dprintf("Native lib %s\n"
+	    "\tUNLOAD desc=%p index=%d --ref=%d\n",
+	    lib->name, lib->desc, index, lib->ref - 1);
+    )
+
+	assert(lib->desc != 0);
+	assert(lib->ref > 0);
+	if (--lib->ref == 0) {
+		blockAsyncSignals();
+		LIBRARYUNLOAD(lib->desc);
+		unblockAsyncSignals();
+		KFREE(lib->name);
+		lib->desc = 0;
+	}
 }
 
 /*
@@ -275,7 +326,7 @@ native(Method* m, errorInfo *einfo)
 	strcat(stub, m->name->data);
 	strcat(stub, STUB_POSTFIX);
 
-DBG(LIBTOOL,	
+DBG(NATIVELIB,	
 	dprintf("Method = %s.%s%s\n", m->class->name->data, 
 		m->name->data, METHOD_SIGD(m));
 	dprintf("Native stub = '%s'\n", stub);
@@ -295,7 +346,7 @@ DBG(LIBTOOL,
                 return (true);
         }
 
-DBG(LIBTOOL,
+DBG(NATIVELIB,
 	dprintf("Failed to locate native function:\n\t%s.%s%s\n",
 		m->class->name->data, m->name->data, METHOD_SIGD(m));
     )

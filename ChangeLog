@@ -1,3 +1,29 @@
+Wed Mar 22 17:46:57 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* include/Makefile.{am,in}: add java_lang_NativeLibrary.h
+	* kaffe/kaffevm/debug.c, kaffe/kaffevm/debug.h: rename debug
+	flag DBG_LIBTOOL to DBG_NATIVELIB
+	* kaffe/kaffevm/external.{c,h}: add unloadNativeLibrary()
+	* libraries/clib/native/Class.c: add getCallingClass0() and
+	remove forName0()
+	* libraries/clib/native/NativeLibrary.c: new file
+	* libraries/clib/native/Makefile.{am,in}: add NativeLibrary.c
+	* libraries/clib/native/Runtime.c: remove obsolete stuff
+	* libraries/clib/native/System.c: set java.library.path property
+	* libraries/javalib/Makefile.{am,in}: add java/lang/NativeLibrary.java
+	* libraries/javalib/java/lang/Class.java: add getCallingClass()
+	* libraries/javalib/java/lang/ClassLoader.java: associate native
+	libraries with their corresponding class loaders
+	* libraries/javalib/java/lang/NativeLibrary.java: new file;
+	add support for unloading native libraries
+	* libraries/javalib/java/lang/Runtime.java: use NativeLibrary
+	* libraries/javalib/java/lang/System.java: add mapLibraryName()
+	* libraries/javalib/java/lang/NativeLibrary.java: new file
+	* test/regression/LoaderTest.java: new test
+	* test/regression/Makefile.{am,in}: add LoaderTest.java
+	* test/regression/Reflect.java: add System.mapLibraryName()
+	* libraries/javalib/Klasses.jar: regen
+
 Wed Mar 22 13:43:22 CET 2000  Mo DeJong <mdejong@cygnus.com>
 
 	* test/regression/ArrayForName.java: Cleans up some old code

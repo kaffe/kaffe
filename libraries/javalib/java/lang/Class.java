@@ -29,15 +29,23 @@ public final class Class implements Serializable {
 
 private Class() { /* this class is not instantiable by the general public */ }
 
-// NB: kaffeh does not support mangling of overloaded native methods
-// yet, pending resolution of bug #65
-private native static Class forName0(String className) throws ClassNotFoundException;
-
-public static Class forName(String className) throws ClassNotFoundException {
-	return (forName0(className));
+/*
+ * This returns the "calling class", i.e., the class containing
+ * the method that called the method calling this method. This is
+ * used in Class.java, System.java, and Runtime.java.
+ */
+public static Class getCallingClass() {
+	return getCallingClass0();
 }
 
-native public static Class forName(String className, boolean initialize, ClassLoader loader) throws ClassNotFoundException;
+native static Class getCallingClass0();
+
+public static Class forName(String className) throws ClassNotFoundException {
+	return forName(className, true, getCallingClass().getClassLoader());
+}
+
+public static native Class forName(String className,
+	boolean initialize, ClassLoader loader) throws ClassNotFoundException;
 
 private String fullResourceName(String name) {
 	if (name.charAt(0) == '/') {

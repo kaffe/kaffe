@@ -19,38 +19,23 @@ import java.util.StringTokenizer;
 public class Runtime
 {
 /**
- *  This is not part of the public interface.
+ *  XXX This is not part of the public interface.
  */
 public static interface MemoryAdvice {
 
-// These should match those in kaffe.lang.MemoryAdvice
-public static final int GREEN = 0;
-public static final int YELLOW = 1;
-public static final int ORANGE = 2;
-public static final int RED = 3;
-
+	// These should match those in kaffe.lang.MemoryAdvice
+	public static final int GREEN = 0;
+	public static final int YELLOW = 1;
+	public static final int ORANGE = 2;
+	public static final int RED = 3;
 }
 
 private static Runtime currentRuntime = new Runtime();
-private String[] paths = null;
 private static kaffe.lang.MemoryAdvice advice
 	= kaffe.lang.MemoryAdvice.getInstance();
 
 private Runtime () {
-	String pathSpec = initializeLinkerInternal();
-
-	if ( pathSpec != null ) {
-		StringTokenizer tk = new StringTokenizer(
-			pathSpec, System.getProperty("path.separator"));
-		paths = new String[tk.countTokens()];
-
-		for (int pos = 0; tk.hasMoreTokens(); pos++) {
-			paths[pos] = tk.nextToken();
-		}
-	}
 }
-
-native private String  buildLibName(String path, String name);
 
 public Process exec(String command) throws IOException {
 	return exec(command, null, null);
@@ -127,51 +112,38 @@ public static Runtime getRuntime() {
 	return currentRuntime;		
 }
 
-private void initPaths() {
-	StringTokenizer tk = new StringTokenizer(initializeLinkerInternal(),
-		System.getProperty("path.separator"));
-
-	paths = new String[tk.countTokens()];
-
-	for (int pos = 0; tk.hasMoreTokens(); pos++) {
-		paths[pos] = tk.nextToken();
-	}
+public void loadLibrary(String libname) {
+	loadLibrary(libname, Class.getCallingClass().getClassLoader());
 }
 
-native private String  initializeLinkerInternal();
+void loadLibrary(String libname, ClassLoader loader) {
+	System.getSecurityManager().checkLink(libname);
+	String errmsg = libname + ": not found";
+	String filename;
+	String[] names;
 
-public synchronized void load(String filename) {
-	String errmsg = loadInternal(filename);
-
-	if (errmsg != null) {
-		throw new UnsatisfiedLinkError(filename + ": " + errmsg);
-	}
-}
-
-native private String loadFileInternal(String filename);
-
-private String loadInternal(String filename) {
-	System.getSecurityManager().checkLink(filename);
-	return loadFileInternal(filename);
-}
-
-public synchronized void loadLibrary(String libname) {
-	if ( paths != null ) {
-		String errmsg = "No directories for shared libraries defined";
-
-		/* Try library for each path */
-		for (int i = 0; i < paths.length; i++) {
-			errmsg = loadInternal(buildLibName(paths[i], libname));
-			if (errmsg == null) {
-				return;
-			}
+	if (loader != null && (filename = loader.findLibrary(libname)) != null)
+		names = new String[] { filename };
+	else
+		names = NativeLibrary.getLibraryNames(libname);
+	for (int i = 0; i < names.length; i++) {
+		try {
+			new NativeLibrary(names[i], loader);
+			return;
+		} catch (UnsatisfiedLinkError e) {
+			errmsg = e.getMessage();
 		}
-
-		/* Not found */
-		throw new UnsatisfiedLinkError(libname + ": " + errmsg);
 	}
-	// otherwise we don't have external libraries at all
-	// should we still throw an exception?
+	throw new UnsatisfiedLinkError(errmsg);
+}
+
+public void load(String filename) {
+	load(filename, Class.getCallingClass().getClassLoader());
+}
+
+void load(String filename, ClassLoader loader) {
+	System.getSecurityManager().checkLink(filename);
+	new NativeLibrary(filename, loader);
 }
 
 int getMemoryAdvice() {

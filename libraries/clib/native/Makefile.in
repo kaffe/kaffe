@@ -151,6 +151,7 @@ LANG_SRCS = \
 		Float.c \
 		Math.c \
 		MemoryAdvice.c \
+		NativeLibrary.c \
 		Object.c \
 		RMIHashes.c \
 		Runtime.c \
@@ -206,11 +207,11 @@ X_PRE_LIBS = @X_PRE_LIBS@
 libnative_la_DEPENDENCIES = 
 am_libnative_la_OBJECTS =  ObjectStreamClassImpl.lo Application.lo \
 ByteToCharDefault.lo CharToByteDefault.lo Class.lo ClassLoader.lo \
-Compiler.lo Double.lo Float.lo Math.lo MemoryAdvice.lo Object.lo \
-RMIHashes.lo Runtime.lo SecurityManager.lo String.lo System.lo \
-SystemClassLoader.lo Thread.lo Throwable.lo UNIXProcess.lo ZipFile.lo \
-Array.lo Constructor.lo Field.lo Method.lo DateFormat.lo TestNative.lo \
-Arrays.lo
+Compiler.lo Double.lo Float.lo Math.lo MemoryAdvice.lo NativeLibrary.lo \
+Object.lo RMIHashes.lo Runtime.lo SecurityManager.lo String.lo \
+System.lo SystemClassLoader.lo Thread.lo Throwable.lo UNIXProcess.lo \
+ZipFile.lo Array.lo Constructor.lo Field.lo Method.lo DateFormat.lo \
+TestNative.lo Arrays.lo
 libnative_la_OBJECTS =  $(am_libnative_la_OBJECTS)
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -230,7 +231,8 @@ $(DEPDIR)/CharToByteDefault.Plo $(DEPDIR)/Class.Plo \
 $(DEPDIR)/ClassLoader.Plo $(DEPDIR)/Compiler.Plo \
 $(DEPDIR)/Constructor.Plo $(DEPDIR)/DateFormat.Plo $(DEPDIR)/Double.Plo \
 $(DEPDIR)/Field.Plo $(DEPDIR)/Float.Plo $(DEPDIR)/Math.Plo \
-$(DEPDIR)/MemoryAdvice.Plo $(DEPDIR)/Method.Plo $(DEPDIR)/Object.Plo \
+$(DEPDIR)/MemoryAdvice.Plo $(DEPDIR)/Method.Plo \
+$(DEPDIR)/NativeLibrary.Plo $(DEPDIR)/Object.Plo \
 $(DEPDIR)/ObjectStreamClassImpl.Plo $(DEPDIR)/RMIHashes.Plo \
 $(DEPDIR)/Runtime.Plo $(DEPDIR)/SecurityManager.Plo \
 $(DEPDIR)/String.Plo $(DEPDIR)/System.Plo \
@@ -363,6 +365,7 @@ distdir: $(DISTFILES)
 @AMDEP@include $(DEPDIR)/Math.Plo
 @AMDEP@include $(DEPDIR)/MemoryAdvice.Plo
 @AMDEP@include $(DEPDIR)/Method.Plo
+@AMDEP@include $(DEPDIR)/NativeLibrary.Plo
 @AMDEP@include $(DEPDIR)/Object.Plo
 @AMDEP@include $(DEPDIR)/ObjectStreamClassImpl.Plo
 @AMDEP@include $(DEPDIR)/RMIHashes.Plo
