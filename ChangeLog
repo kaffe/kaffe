@@ -1,3 +1,10 @@
+2003-03-27  Riccardo Mottola <zuse@libero.it>
+
+	* kaffe/kaffeh/support.c:
+	Fixed warnings due to passing arguments of 
+	malloc and read with different width due to prototype
+	by casting them to proper type.
+
 2004-03-27  Dalibor Topic <robilad@kaffe.org>
 
         * include/native.h,

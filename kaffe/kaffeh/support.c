@@ -849,7 +849,7 @@ kaffeh_findClass(const char* nm)
 			strcpy(superName, start);
 		}
 		else {
-			strncpy(superName, start, end-start);
+			strncpy(superName, start, (size_t)(end-start));
 			superName[end-start] = '\0';
 		}
 
@@ -873,7 +873,7 @@ kaffeh_findClass(const char* nm)
 				continue;
 			}
 
-			buf = malloc(sbuf.st_size);
+			buf = malloc((size_t) sbuf.st_size);
 			if (buf == 0)
 			{
 				dprintf("kaffeh: Ran out of memory!");
@@ -882,13 +882,13 @@ kaffeh_findClass(const char* nm)
 			}
 
 			/* XXX this is a bit weak. */
-			if (read(fd, buf, sbuf.st_size) != sbuf.st_size) {
+			if (read(fd, buf, (size_t)sbuf.st_size) != sbuf.st_size) {
 				free(buf);
 				close(fd);
 				continue;
 			}
 
-			classFileInit(&hand, buf, sbuf.st_size, CP_DIR);
+			classFileInit(&hand, buf, (size_t)sbuf.st_size, CP_DIR);
 
 			objectDepth++;
 			/* savepool = constant_pool; */
