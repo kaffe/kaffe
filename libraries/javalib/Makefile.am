@@ -4633,38 +4633,43 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	fi
 	echo timestamp > $(LIBDIR)/stamp
 
-bootstrap: $(srcdir)/Klasses.jar.bootstrap rt.jar
-	if [ -f $(srcdir)/Klasses.jar.bootstrap ]; then \
-		mv -f $(srcdir)/Klasses.jar.bootstrap $(srcdir)/Klasses.jar.bootstrap.save; \
-	fi
-	(cd $(LIBDIR) && $(ZIP) -DX -r - `grep '\.class$$' $(abssrcdir)/libraries/javalib/bootstrap.classlist` \
-	) > $(srcdir)/Klasses.jar.bootstrap
+bootstrap: $(srcdir)/Klasses.jar.bootstrap
+$(srcdir)/Klasses.jar.bootstrap: rt.jar
+	rm -f $@.new
+if HAVE_ZIP
+	(cd $(LIBDIR) && $(ZIP) -DX -r $(CURDIR)/$@.new `grep '\.class$$' $(abssrcdir)/libraries/javalib/bootstrap.classlist`)\
+else
+	$(JAR) -cf $@.new -C $(LIBDIR) `grep '\.class$$' $(abssrcdir)/libraries/javalib/bootstrap.classlist`
+endif
+	mv $@.new $@
 
 .PHONY: bootstrap
 $(srcdir)/Klasses.jar.bootstrap: bootstrap.classlist
 
 if HAVE_ZIP
-JAR_CMD1 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -r $$dstdir/rt.jar META-INF)
-JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
-JAR_CMD3 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(gnu_regexp_message_bundles))
-JAR_CMD4 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(gnu_java_locale_bundles))
-JAR_CMD5 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(serialized_converters))
-JAR_CMD6 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(gnu_getopt_message_bundles))
+JAR_CMD1 = (cd $(srcdir) && $(ZIP) -q -r $(CURDIR)/$@.new META-INF)
+JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS))
+JAR_CMD3 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_regexp_message_bundles))
+JAR_CMD4 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_java_locale_bundles))
+JAR_CMD5 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(serialized_converters))
+JAR_CMD6 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_getopt_message_bundles))
 else
-JAR_CMD1 = $(JAR) -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
-JAR_CMD2 = $(JAR) -uvf rt.jar -C $(srcdir) META-INF/
-JAR_CMD3 = $(JAR) -uvf rt.jar -C $(srcdir) $(gnu_regexp_message_bundles)
-JAR_CMD4 = $(JAR) -uvf rt.jar -C $(srcdir) $(gnu_java_locale_bundles)
-JAR_CMD5 = $(JAR) -uvf rt.jar -C $(srcdir) $(serialized_converters)
-JAR_CMD6 = $(JAR) -uvf rt.jar -C $(srcdir) $(gnu_getopt_message_bundles)
+JAR_CMD1 = $(JAR) -cf $@.new -C $(LIBDIR) $(SRCDIRS)
+JAR_CMD2 = $(JAR) -uf $@.new -C $(srcdir) META-INF/
+JAR_CMD3 = $(JAR) -uf $@.new -C $(srcdir) $(gnu_regexp_message_bundles)
+JAR_CMD4 = $(JAR) -uf $@.new -C $(srcdir) $(gnu_java_locale_bundles)
+JAR_CMD5 = $(JAR) -uf $@.new -C $(srcdir) $(serialized_converters)
+JAR_CMD6 = $(JAR) -uf $@.new -C $(srcdir) $(gnu_getopt_message_bundles)
 endif
 
 .PHONY: jar-classes
 if USE_PRECOMPILED_RT_JAR
-jar-classes rt.jar:
-	cp $(PATH_TO_RT_JAR) rt.jar
+jar-classes: rt.jar
+rt.jar: $(PATH_TO_RT_JAR)
+	cp $< $@
 else
-jar-classes rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
+jar-classes: rt.jar
+rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 	rm -f rt.jar
 	$(JAR_CMD1)
 	$(JAR_CMD2)
@@ -4672,6 +4677,7 @@ jar-classes rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 	$(JAR_CMD4)
 	$(JAR_CMD5)
 	$(JAR_CMD6)
+	mv $@.new $@
 endif
 
 .PHONY: build-classes Klasses

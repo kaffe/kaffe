@@ -184,11 +184,11 @@ EXTRA_DIST = \
 	$(gjdoc_ressources)
 
 if HAVE_ZIP
-JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(ZIP) -r $$dstdir/$(CLASSFILE) $(SRCDIRS))
-JAR_CMD2 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/$(CLASSFILE) $(gjdoc_ressources))
+JAR_CMD1 = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new $(SRCDIRS))
+JAR_CMD2 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gjdoc_ressources))
 else
-JAR_CMD1 = $(JAR) -cvf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS)
-JAR_CMD2 = $(JAR) -uvf $(CLASSFILE) -C $(srcdir) $(gjdoc_ressources)
+JAR_CMD1 = $(JAR) -cf $@.new -C $(LIBDIR) $(SRCDIRS)
+JAR_CMD2 = $(JAR) -uf $@.new -C $(srcdir) $(gjdoc_ressources)
 endif
 
 LIBDIR = lib
@@ -213,9 +213,11 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(gjdoc_jar_SRCS)
 	echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes
-jar-classes $(CLASSFILE): $(LIBDIR)/stamp
-	rm -f $(CLASSFILE)
+jar-classes: $(CLASSFILE)
+$(CLASSFILE): $(LIBDIR)/stamp
+	rm -f $@ $@.new
 	$(JAR_CMD1)
 	$(JAR_CMD2)
+	mv $@.new $@
 
 export JIKES top_builddir LIBDIR srcdir

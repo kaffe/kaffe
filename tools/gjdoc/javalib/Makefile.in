@@ -519,10 +519,10 @@ EXTRA_DIST = \
 	$(gjdoc_jar_SRCS) \
 	$(gjdoc_ressources)
 
-@HAVE_ZIP_FALSE@JAR_CMD1 = $(JAR) -cvf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS)
-@HAVE_ZIP_TRUE@JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(ZIP) -r $$dstdir/$(CLASSFILE) $(SRCDIRS))
-@HAVE_ZIP_FALSE@JAR_CMD2 = $(JAR) -uvf $(CLASSFILE) -C $(srcdir) $(gjdoc_ressources)
-@HAVE_ZIP_TRUE@JAR_CMD2 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/$(CLASSFILE) $(gjdoc_ressources))
+@HAVE_ZIP_FALSE@JAR_CMD1 = $(JAR) -cf $@.new -C $(LIBDIR) $(SRCDIRS)
+@HAVE_ZIP_TRUE@JAR_CMD1 = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new $(SRCDIRS))
+@HAVE_ZIP_FALSE@JAR_CMD2 = $(JAR) -uf $@.new -C $(srcdir) $(gjdoc_ressources)
+@HAVE_ZIP_TRUE@JAR_CMD2 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gjdoc_ressources))
 LIBDIR = lib
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
 Klasses_jar = $(top_srcdir)/libraries/javalib/rt.jar
@@ -725,10 +725,12 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(gjdoc_jar_SRCS)
 	echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes
-jar-classes $(CLASSFILE): $(LIBDIR)/stamp
-	rm -f $(CLASSFILE)
+jar-classes: $(CLASSFILE)
+$(CLASSFILE): $(LIBDIR)/stamp
+	rm -f $@ $@.new
 	$(JAR_CMD1)
 	$(JAR_CMD2)
+	mv $@.new $@
 
 export JIKES top_builddir LIBDIR srcdir
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
