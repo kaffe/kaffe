@@ -133,13 +133,13 @@ private void nextTokenType() throws IOException {
 		/* Parse string and return word */
 		parseStringQuoteChars(chr);
 	}
-	else if (chr=='/' && CPlusPlusComments) {
+	else if (chr=='/' && CPlusPlusComments
+	    && parseCPlusPlusCommentChars()) {
 		/* Check for C++ comments */
-		parseCPlusPlusCommentChars();
 	}
-	else if (chr=='/' && CComments) {
+	else if (chr=='/' && CComments
+	    && parseCCommentChars()) {
 		/* Check for C comments */
-		parseCCommentChars();
 	}
 	else {
 		/* Just return it as a token */
@@ -341,33 +341,33 @@ private void parseStringQuoteChars(int chr) throws IOException {
 	sval = buffer.toString();
 }
 
-private void parseCPlusPlusCommentChars() throws IOException {
+private boolean parseCPlusPlusCommentChars() throws IOException {
 	int next = chrRead();
 	if (next == '/') {
 		/* C++ comment */
 		skipLine();
 
 		nextTokenType();
+		return true;
 	}
 	else {
 		unRead(next);
-
-		ttype = '/';
+		return false;
 	}
 }
 
-private void parseCCommentChars() throws IOException {
+private boolean parseCCommentChars() throws IOException {
 	int next = chrRead();
 	if (next == '*') {
 		/* C comment */
 		skipCComment();
 
 		nextTokenType();
+		return true;
 	}
 	else {
 		unRead(next);
-
-		ttype = '/';
+		return false;
 	}
 }
 
