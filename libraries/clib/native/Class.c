@@ -292,7 +292,7 @@ java_lang_Class_setSigners(struct Hjava_lang_Class* this, HArrayOfObject* sigs)
 	unhand(this)->signers = sigs;
 }
 
-struct Hjava_lang_Object*
+struct Hjava_security_ProtectionDomain*
 java_lang_Class_getProtectionDomain (struct Hjava_lang_Class* this)
 {
 	return unhand(this)->protectionDomain;

@@ -79,6 +79,9 @@ java/lang/CharSequence.class
 java/lang/Class.class
 java/lang/ClassCastException.class
 java/lang/ClassLoader.class
+java/lang/ClassLoader$1.class
+java/lang/ClassLoader$StaticData.class
+java/lang/VMClassLoader.class
 java/lang/ClassNotFoundException.class
 java/lang/Cloneable.class
 java/lang/CloneNotSupportedException.class
@@ -376,3 +379,4 @@ java/nio/Buffer.class
 java/io/VMObjectStreamClass.class
 java/nio/MappedByteBufferImpl.class
 java/nio/MappedByteBuffer.class
+gnu/java/security/provider/DefaultPolicy.class

@@ -1,3 +1,21 @@
+2004-12-21  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/clib/native/Class.c
+	(getProtectionDomain): Fixed return type.
+
+	* libraries/javalib/Makefile.am.in: Removed an extra '\'.
+
+	* libraries/javalib/Klasses.jar.bootstrap,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
+	* libraries/javalib/all.files:
+	Added missing files for KJC.
+
+	* libraries/javalib/bootstrap.classlist: 
+	Added missing files to bootstrap with KJC.
+
 2004-12-21  Helmer Kraemer  <hkraemer@freenet.de>
 
 	Merged java.lang.ClassLoader from GNU Classpath

@@ -210,7 +210,7 @@ bootstrap: $(srcdir)/Klasses.jar.bootstrap
 $(srcdir)/Klasses.jar.bootstrap: rt.jar
 	rm -f $@.new
 if HAVE_ZIP
-	(cd $(LIBDIR) && $(ZIP) -DX -r $(CURDIR)/$@.new `grep '\.class$$' $(abssrcdir)/libraries/javalib/bootstrap.classlist`)\
+	(cd $(LIBDIR) && $(ZIP) -DX -r $(CURDIR)/$@.new `grep '\.class$$' $(abssrcdir)/libraries/javalib/bootstrap.classlist`)
 else
 	$(JAR) -cf $@.new -C $(LIBDIR) `grep '\.class$$' $(abssrcdir)/libraries/javalib/bootstrap.classlist`
 endif
