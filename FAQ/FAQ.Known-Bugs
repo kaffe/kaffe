@@ -124,3 +124,7 @@ MISCELLANEOUS & TODO
 * kaffeh leaves incomplete output files around if it bails because it cannot
   find the class file.
 
+* 'configure' may take long time on systems like NetBSD. It looks stopping
+  eternally to check maximum length of command line arguments. This is a
+  bug of autoconf, and current workaround is to be patient (drinking coffe
+  or going to bed) or use 'bash' rather than 'sh' distributed with the os.
