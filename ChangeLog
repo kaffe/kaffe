@@ -1,5 +1,12 @@
 2005-01-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* test/regression/TestScript.in, 
+	Makefile.am (BUILD_ENVIRONMENT-make): Removed JAVAX_CRYPTO_JAR.	
+
+	* test/regression/TestScript.in: Use jikes for regression tests as well.
+	
+2005-01-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.classlibrary-compile: Changed recommended version of jikes 
 	to jikes 1.21.
 
