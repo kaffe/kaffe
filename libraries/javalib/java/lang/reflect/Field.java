@@ -247,7 +247,7 @@ public void set(Object obj, Object value) throws IllegalArgumentException, Illeg
 		}
 	}
 	else {
-		if (!type.isInstance(value)) {
+		if (value!=null && !type.isInstance(value)) {
 			throw new IllegalArgumentException("field type mismatch: Trying to assign a " + value.getClass().getName() + " to " + toString());
 		}
 
