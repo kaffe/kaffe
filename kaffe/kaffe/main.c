@@ -19,6 +19,7 @@
 #include "support.h"
 #include "errors.h"
 #include "thread.h"
+#include "md.h"
 
 extern char* engine_name;
 extern char* engine_version;
@@ -53,6 +54,10 @@ main(int argc, char* argv[])
 	int farg;
 	char* cp;
 
+#if defined(MAIN_MD)
+	/* Machine specific main first */
+	MAIN_MD;
+#endif
 	java_version = "1.1";
 	vmargs.version = 0x00010001;
 
