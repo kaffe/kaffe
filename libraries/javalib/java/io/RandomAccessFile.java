@@ -66,7 +66,7 @@ public int read(byte b[], int off, int len) throws IOException {
 		}
 		total += got;
 	}
-	if (total == 0) {
+	if (len > 0 && total == 0) {
 		return -1;
 	}
 	return total;
