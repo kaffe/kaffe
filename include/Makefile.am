@@ -11,9 +11,9 @@ KLASSES_JAR = $(top_srcdir)/libraries/javalib/Klasses.jar
 EXTRA_DIST = distclean-hack
 
 INSTALL_DERIVED_HDRS = \
-	java_lang_Throwable.h \
 	java_lang_Thread.h \
-	java_lang_ThreadGroup.h
+	java_lang_ThreadGroup.h \
+	java_lang_Throwable.h
 
 NOINSTALL_DERIVED_HDRS = \
 	java_io_File.h \
@@ -23,7 +23,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_io_InputStream.h \
 	java_io_ObjectInputStream.h \
 	java_io_ObjectOutputStream.h \
-	kaffe_io_ObjectStreamClassImpl.h \
 	java_io_PrintStream.h \
 	java_io_RandomAccessFile.h \
 	java_lang_Boolean.h \
@@ -59,6 +58,8 @@ NOINSTALL_DERIVED_HDRS = \
 	java_util_zip_Deflater.h \
 	java_util_zip_Inflater.h \
 	java_util_zip_ZipEntry.h \
+	kaffe_io_ObjectStreamClassImpl.h \
+	kaffe_lang_SystemClassLoader.h \
 	kaffe_lang_UNIXProcess.h
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
@@ -70,16 +71,16 @@ noinst_HEADERS = $(NOINSTALL_DERIVED_HDRS) \
 	system.h
 
 pkginclude_HEADERS = $(INSTALL_DERIVED_HDRS) \
+	Arrays.h \
 	errors.h \
-	jtypes.h \
-	native.h \
+	java_lang_Object.h \
+	java_lang_String.h \
 	jmalloc.h \
-	jsyscall.h \
 	jni.h \
 	jni_cpp.h \
-	Arrays.h \
-	java_lang_Object.h \
-	java_lang_String.h
+	jsyscall.h \
+	jtypes.h \
+	native.h
 
 $(DERIVED_HDRS): stamp-h0all
 	@if test -f $@; then :; else \
