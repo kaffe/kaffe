@@ -1,7 +1,7 @@
 package gnu.crypto.mac;
 
 // ----------------------------------------------------------------------------
-// $Id: IMac.java,v 1.3 2004/07/21 01:41:47 dalibor Exp $
+// $Id: IMac.java,v 1.4 2004/10/17 19:06:55 robilad Exp $
 //
 // Copyright (C) 2001, 2002, Free Software Foundation, Inc.
 //
@@ -92,9 +92,9 @@ import java.security.InvalidKeyException;
  *    T. Krovetz, J. Black, S. Halevi, A. Hevia, H. Krawczyk, and P. Rogaway.</li>
  * </ol>
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
-public interface IMac extends Cloneable {
+public interface IMac {
 
    // Constants
    // -------------------------------------------------------------------------
@@ -200,5 +200,5 @@ public interface IMac extends Cloneable {
     *
     * @return a clone copy of this instance.
     */
-   Object clone();
+   Object clone() throws CloneNotSupportedException;
 }

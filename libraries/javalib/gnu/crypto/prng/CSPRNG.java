@@ -157,23 +157,27 @@ public class CSPRNG extends BasePRNG
   private static final int MIX_COUNT = 10;
   private static final int X917_LIFETIME = 8192;
 
+  // FIXME this should be configurable.
+  private static final int SPINNER_COUNT = 8;
+
   /**
    * The spinner group singleton. We use this to add a small amount of
    * randomness (in addition to the current time and the amount of
    * free memory) based on the randomness (if any) present due to
    * system load and thread scheduling.
    */
-  private static final Spinner[] SPINNERS = new Spinner[8];
+  private static final Spinner[] SPINNERS = new Spinner[SPINNER_COUNT];
+  private static final Thread[] SPINNER_THREADS = new Thread[SPINNER_COUNT];
   static
   {
-    SPINNERS[0] = new Spinner(); SPINNERS[0].start();
-    SPINNERS[1] = new Spinner(); SPINNERS[1].start();
-    SPINNERS[2] = new Spinner(); SPINNERS[2].start();
-    SPINNERS[3] = new Spinner(); SPINNERS[3].start();
-    SPINNERS[4] = new Spinner(); SPINNERS[4].start();
-    SPINNERS[5] = new Spinner(); SPINNERS[5].start();
-    SPINNERS[6] = new Spinner(); SPINNERS[6].start();
-    SPINNERS[7] = new Spinner(); SPINNERS[7].start();
+    for (int i = 0; i < SPINNER_COUNT; i++)
+      {
+        SPINNER_THREADS[i] = new Thread(SPINNERS[i] = new Spinner(),
+                                        "spinner-" + i);
+        SPINNER_THREADS[i].setDaemon(true);
+        SPINNER_THREADS[i].setPriority(Thread.MIN_PRIORITY);
+        SPINNER_THREADS[i].start();
+      }
   }
 
   /**
@@ -882,14 +886,9 @@ public class CSPRNG extends BasePRNG
    */
   private void fastPoll()
   {
-    byte b = SPINNERS[0].getCount();
-    b ^= SPINNERS[1].getCount();
-    b ^= SPINNERS[2].getCount();
-    b ^= SPINNERS[3].getCount();
-    b ^= SPINNERS[4].getCount();
-    b ^= SPINNERS[5].getCount();
-    b ^= SPINNERS[6].getCount();
-    b ^= SPINNERS[7].getCount();
+    byte b = 0;
+    for (int i = 0; i < SPINNER_COUNT; i++)
+      b ^= SPINNERS[i].counter;
     addRandomByte (b);
     addRandomByte ((byte) System.currentTimeMillis());
     addRandomByte ((byte) Runtime.getRuntime().freeMemory());
@@ -971,7 +970,7 @@ public class CSPRNG extends BasePRNG
    * counters (updated in competition with all other threads) is used as a
    * source of entropy bits.
    */
-  private static class Spinner extends Thread
+  private static class Spinner implements Runnable
   {
 
     // Field.
@@ -982,10 +981,8 @@ public class CSPRNG extends BasePRNG
     // Constructor.
     // -----------------------------------------------------------------------
 
-    Spinner()
+    private Spinner()
     {
-      setPriority (MIN_PRIORITY);
-      setDaemon (true);
     }
 
     // Instance methods.
@@ -996,13 +993,14 @@ public class CSPRNG extends BasePRNG
       while (true)
         {
           counter++;
-          yield();
+          try
+            {
+              Thread.sleep(100);
+            }
+          catch (InterruptedException ie)
+            {
+            }
         }
-    }
-
-    byte getCount()
-    {
-      return counter;
     }
   }
 
@@ -1149,6 +1147,7 @@ public class CSPRNG extends BasePRNG
               return;
             }
 
+          Process proc = null;
           if (prog_it.hasNext())
             {
               try
@@ -1162,7 +1161,8 @@ public class CSPRNG extends BasePRNG
                   int offset = ((Integer) l.get (1)).intValue();
                   int count = ((Integer) l.get (2)).intValue();
                   String src = (String) l.get (3);
-                  Process proc = Runtime.getRuntime().exec (src);
+                  proc = null;
+                  proc = Runtime.getRuntime().exec (src);
                   InputStream in = proc.getInputStream();
                   byte[] buf = new byte[count];
                   if (offset > 0)
@@ -1175,6 +1175,8 @@ public class CSPRNG extends BasePRNG
                       pool.addRandomBytes (buf, 0, len);
                       pool.addQuality (qual * ((double) len / (double) count));
                     }
+                  proc.destroy();
+                  proc.waitFor();
                   if (DEBUG)
                     {
                       debug ("got " + len + " bytes from " + src);
@@ -1187,6 +1189,15 @@ public class CSPRNG extends BasePRNG
                       debug (x.toString());
                       x.printStackTrace();
                     }
+                  try
+                    {
+                      if (proc != null)
+                        {
+                          proc.destroy();
+                          proc.waitFor();
+                        }
+                    }
+                  catch (Exception ignored) { }
                 }
             }
 

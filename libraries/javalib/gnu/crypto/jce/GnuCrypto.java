@@ -1,7 +1,7 @@
 package gnu.crypto.jce;
 
 // --------------------------------------------------------------------------
-// $Id: GnuCrypto.java,v 1.1 2004/07/21 01:41:27 dalibor Exp $
+// $Id: GnuCrypto.java,v 1.2 2004/10/17 19:06:52 robilad Exp $
 //
 // Copyright (C) 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 //
@@ -58,7 +58,7 @@ import java.util.Set;
  * <p>The GNU Crypto implementation of the Java Cryptographic Extension (JCE)
  * Provider.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @see java.security.Provider
  */
 public final class GnuCrypto extends Provider {
@@ -340,6 +340,21 @@ public final class GnuCrypto extends Provider {
                put("SecretKeyFactory.PBKDF2WithHMacWhirlpool",
                    gnu.crypto.jce.PBKDF2SecretKeyFactory.HMacWhirlpool.class.getName());
 
+               // Simple SecretKeyFactory implementations.
+               put ("SecretKeyFactory.Anubis", gnu.crypto.jce.key.AnubisSecretKeyFactoryImpl.class.getName());
+               put ("SecretKeyFactory.Blowfish", gnu.crypto.jce.key.BlowfishSecretKeyFactoryImpl.class.getName());
+               put ("SecretKeyFactory.Cast5", gnu.crypto.jce.key.Cast5SecretKeyFactoryImpl.class.getName());
+               put ("SecretKeyFactory.DES", gnu.crypto.jce.key.DESSecretKeyFactoryImpl.class.getName());
+               put ("SecretKeyFactory.Khazad", gnu.crypto.jce.key.KhazadSecretKeyFactoryImpl.class.getName());
+               put ("SecretKeyFactory.Rijndael", gnu.crypto.jce.key.RijndaelSecretKeyFactoryImpl.class.getName());
+               put ("SecretKeyFactory.Serpent", gnu.crypto.jce.key.SerpentSecretKeyFactoryImpl.class.getName());
+               put ("SecretKeyFactory.Square", gnu.crypto.jce.key.SquareSecretKeyFactoryImpl.class.getName());
+               put ("SecretKeyFactory.TripleDES", gnu.crypto.jce.key.DESedeSecretKeyFactoryImpl.class.getName());
+               put ("Alg.Alias.SecretKeyFactory.AES", "Rijndael");
+               put ("Alg.Alias.SecretKeyFactory.DESede", "TripleDES");
+               put ("Alg.Alias.SecretKeyFactory.3-DES", "TripleDES");
+               put ("Alg.Alias.SecretKeyFactory.3DES", "TripleDES");
+
                put("AlgorithmParameters.BlockCipherParameters",
                    gnu.crypto.jce.params.BlockCipherParameters.class.getName());
 
@@ -360,16 +375,16 @@ public final class GnuCrypto extends Provider {
                put("Mac.UHASH32", gnu.crypto.jce.mac.UHash32Spi.class.getName());
                put("Mac.UMAC32", gnu.crypto.jce.mac.UMac32Spi.class.getName());
 
-               put("Mac.OMAC-ANUBIS", gnu.crypto.jce.mac.OMacImpl.Anubis.class.getName());
-               put("Mac.OMAC-BLOWFISH", gnu.crypto.jce.mac.OMacImpl.Blowfish.class.getName());
-               put("Mac.OMAC-CAST5", gnu.crypto.jce.mac.OMacImpl.Cast5.class.getName());
-               put("Mac.OMAC-DES", gnu.crypto.jce.mac.OMacImpl.DES.class.getName());
-               put("Mac.OMAC-KHAZAD", gnu.crypto.jce.mac.OMacImpl.Khazad.class.getName());
-               put("Mac.OMAC-RIJNDAEL", gnu.crypto.jce.mac.OMacImpl.Rijndael.class.getName());
-               put("Mac.OMAC-SERPENT", gnu.crypto.jce.mac.OMacImpl.Serpent.class.getName());
-               put("Mac.OMAC-SQUARE", gnu.crypto.jce.mac.OMacImpl.Square.class.getName());
-               put("Mac.OMAC-TRIPLEDES", gnu.crypto.jce.mac.OMacImpl.TripleDES.class.getName());
-               put("Mac.OMAC-TWOFISH", gnu.crypto.jce.mac.OMacImpl.Twofish.class.getName());
+               put("Mac.OMAC-ANUBIS", gnu.crypto.jce.mac.OMacAnubisImpl.class.getName());
+               put("Mac.OMAC-BLOWFISH", gnu.crypto.jce.mac.OMacBlowfishImpl.class.getName());
+               put("Mac.OMAC-CAST5", gnu.crypto.jce.mac.OMacCast5Impl.class.getName());
+               put("Mac.OMAC-DES", gnu.crypto.jce.mac.OMacDESImpl.class.getName());
+               put("Mac.OMAC-KHAZAD", gnu.crypto.jce.mac.OMacKhazadImpl.class.getName());
+               put("Mac.OMAC-RIJNDAEL", gnu.crypto.jce.mac.OMacRijndaelImpl.class.getName());
+               put("Mac.OMAC-SERPENT", gnu.crypto.jce.mac.OMacSerpentImpl.class.getName());
+               put("Mac.OMAC-SQUARE", gnu.crypto.jce.mac.OMacSquareImpl.class.getName());
+               put("Mac.OMAC-TRIPLEDES", gnu.crypto.jce.mac.OMacTripleDESImpl.class.getName());
+               put("Mac.OMAC-TWOFISH", gnu.crypto.jce.mac.OMacTwofishImpl.class.getName());
 
                // Aliases
                put("Alg.Alias.AlgorithmParameters.AES", "BlockCipherParameters");
@@ -399,6 +414,25 @@ public final class GnuCrypto extends Provider {
                put("Alg.Alias.Mac.HMAC-RIPEMD-128", "HMAC-RIPEMD128");
                put("Alg.Alias.Mac.OMAC-AES", "OMAC-RIJNDAEL");
                put("Alg.Alias.Mac.OMAC-3DES", "OMAC-3DES");
+               put("Alg.Alias.Mac.HmacMD4", "HMAC-MD4");
+               put("Alg.Alias.Mac.HmacMD5", "HMAC-MD5");
+               put("Alg.Alias.Mac.HmacSHA-1", "HMAC-SHA-1");
+               put("Alg.Alias.Mac.HmacSHA1", "HMAC-SHA1");
+               put("Alg.Alias.Mac.HmacSHA-160", "HMAC-SHA-160");
+               put("Alg.Alias.Mac.HmacSHA160", "HMAC-SHA-160");
+               put("Alg.Alias.Mac.HmacSHA-256", "HMAC-SHA-256");
+               put("Alg.Alias.Mac.HmacSHA256", "HMAC-SHA-256");
+               put("Alg.Alias.Mac.HmacSHA-384", "HMAC-SHA-384");
+               put("Alg.Alias.Mac.HmacSHA384", "HMAC-SHA-384");
+               put("Alg.Alias.Mac.HmacSHA-512", "HMAC-SHA-512");
+               put("Alg.Alias.Mac.HmacSHA512", "HMAC-SHA-512");
+               put("Alg.Alias.Mac.HmacRIPEMD128", "HMAC-RIPEMD128");
+               put("Alg.Alias.Mac.HmacRIPEMD-128", "HMAC-RIPEMD128");
+               put("Alg.Alias.Mac.HmacRIPEMD160", "HMAC-RIPEMD160");
+               put("Alg.Alias.Mac.HmacRIPEMD-160", "HMAC-RIPEMD160");
+               put("Alg.Alias.Mac.HmacTiger", "HMAC-TIGER");
+               put("Alg.Alias.Mac.HmacHaval", "HMAC-HAVAL");
+               put("Alg.Alias.Mac.HmacWhirlpool", "HMAC-WHIRLPOOL");
 
                return null;
             }

@@ -1,7 +1,7 @@
 package gnu.crypto.hash;
 
 // ----------------------------------------------------------------------------
-// $Id: BaseHash.java,v 1.1 2004/07/21 01:41:25 dalibor Exp $
+// $Id: BaseHash.java,v 1.2 2004/10/17 19:06:52 robilad Exp $
 //
 // Copyright (C) 2001, 2002, Free Software Foundation, Inc.
 //
@@ -46,7 +46,7 @@ package gnu.crypto.hash;
 /**
  * <p>A base abstract class to facilitate hash implementations.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class BaseHash implements IMessageDigest {
 
@@ -117,6 +117,10 @@ public abstract class BaseHash implements IMessageDigest {
       if (i == (blockSize - 1)) {
          transform(buffer, 0);
       }
+   }
+
+   public void update(byte[] b) {
+      update(b, 0, b.length);
    }
 
    public void update(byte[] b, int offset, int len) {

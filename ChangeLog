@@ -1,3 +1,206 @@
+2004-10-17  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/gnu/crypto/jce/key/AnubisSecretKeyFactoryImpl.java,
+	libraries/javalib/gnu/crypto/jce/key/BlowfishSecretKeyFactoryImpl.java,
+	libraries/javalib/gnu/crypto/jce/key/Cast5SecretKeyFactoryImpl.java,
+	libraries/javalib/gnu/crypto/jce/key/DESSecretKeyFactoryImpl.java,
+	libraries/javalib/gnu/crypto/jce/key/DESedeSecretKeyFactoryImpl.java,
+	libraries/javalib/gnu/crypto/jce/key/KhazadSecretKeyFactoryImpl.java,
+	libraries/javalib/gnu/crypto/jce/key/RijndaelSecretKeyFactoryImpl.java,
+	libraries/javalib/gnu/crypto/jce/key/SecretKeyFactoryImpl.java,
+	libraries/javalib/gnu/crypto/jce/key/SerpentSecretKeyFactoryImpl.java,
+	libraries/javalib/gnu/crypto/jce/key/SquareSecretKeyFactoryImpl.java,
+	libraries/javalib/gnu/crypto/jce/key/TwofishSecretKeyFactoryImpl.java,
+	libraries/javalib/gnu/crypto/jce/mac/OMacAnubisImpl.java,
+	libraries/javalib/gnu/crypto/jce/mac/OMacBlowfishImpl.java,
+	libraries/javalib/gnu/crypto/jce/mac/OMacCast5Impl.java,
+	libraries/javalib/gnu/crypto/jce/mac/OMacDESImpl.java,
+	libraries/javalib/gnu/crypto/jce/mac/OMacKhazadImpl.java,
+	libraries/javalib/gnu/crypto/jce/mac/OMacRijndaelImpl.java,
+	libraries/javalib/gnu/crypto/jce/mac/OMacSerpentImpl.java,
+	libraries/javalib/gnu/crypto/jce/mac/OMacSquareImpl.java,
+	libraries/javalib/gnu/crypto/jce/mac/OMacTripleDESImpl.java,
+	libraries/javalib/gnu/crypto/jce/mac/OMacTwofishImpl.java,
+	libraries/javalib/gnu/crypto/prng/Fortuna.java,
+	libraries/javalib/gnu/crypto/prng/RandomEvent.java,
+	libraries/javalib/gnu/crypto/prng/RandomEventListener.java:
+	New files taken from GNU Crypto.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/gnu/crypto/Registry.java,
+	libraries/javalib/gnu/crypto/auth/callback/GnuCallbacks.java,
+	libraries/javalib/gnu/crypto/hash/BaseHash.java,
+	libraries/javalib/gnu/crypto/hash/IMessageDigest.java,
+	libraries/javalib/gnu/crypto/jce/GnuCrypto.java,
+	libraries/javalib/gnu/crypto/jce/mac/HMacMD2Spi.java,
+	libraries/javalib/gnu/crypto/jce/mac/HMacMD4Spi.java,
+	libraries/javalib/gnu/crypto/jce/mac/HMacMD5Spi.java,
+	libraries/javalib/gnu/crypto/jce/mac/HMacRipeMD128Spi.java,
+	libraries/javalib/gnu/crypto/jce/mac/HMacRipeMD160Spi.java,
+	libraries/javalib/gnu/crypto/jce/mac/HMacSHA160Spi.java,
+	libraries/javalib/gnu/crypto/jce/mac/HMacSHA256Spi.java,
+	libraries/javalib/gnu/crypto/jce/mac/HMacSHA384Spi.java,
+	libraries/javalib/gnu/crypto/jce/mac/HMacSHA512Spi.java,
+	libraries/javalib/gnu/crypto/jce/mac/HMacWhirlpoolSpi.java,
+	libraries/javalib/gnu/crypto/jce/mac/MacAdapter.java,
+	libraries/javalib/gnu/crypto/jce/mac/TMMH16Spi.java,
+	libraries/javalib/gnu/crypto/jce/mac/UHash32Spi.java,
+	libraries/javalib/gnu/crypto/jce/mac/UMac32Spi.java,
+	libraries/javalib/gnu/crypto/mac/BaseMac.java,
+	libraries/javalib/gnu/crypto/mac/HMac.java,
+	libraries/javalib/gnu/crypto/mac/HMacFactory.java,
+	libraries/javalib/gnu/crypto/mac/IMac.java,
+	libraries/javalib/gnu/crypto/mac/MacFactory.java,
+	libraries/javalib/gnu/crypto/mac/MacInputStream.java,
+	libraries/javalib/gnu/crypto/mac/MacOutputStream.java,
+	libraries/javalib/gnu/crypto/mac/OMAC.java,
+	libraries/javalib/gnu/crypto/mac/TMMH16.java,
+	libraries/javalib/gnu/crypto/mac/UHash32.java,
+	libraries/javalib/gnu/crypto/mac/UMac32.java,
+	libraries/javalib/gnu/crypto/mode/EAX.java,
+	libraries/javalib/gnu/crypto/pad/SSL3.java,
+	libraries/javalib/gnu/crypto/prng/ARCFour.java,
+	libraries/javalib/gnu/crypto/prng/BasePRNG.java,
+	libraries/javalib/gnu/crypto/prng/CSPRNG.java,
+	libraries/javalib/gnu/crypto/prng/EntropySource.java,
+	libraries/javalib/gnu/crypto/prng/ICMGenerator.java,
+	libraries/javalib/gnu/crypto/prng/IPBE.java,
+	libraries/javalib/gnu/crypto/prng/IRandom.java,
+	libraries/javalib/gnu/crypto/prng/LimitReachedException.java,
+	libraries/javalib/gnu/crypto/prng/MDGenerator.java,
+	libraries/javalib/gnu/crypto/prng/PBKDF2.java,
+	libraries/javalib/gnu/crypto/prng/PRNGFactory.java,
+	libraries/javalib/gnu/crypto/prng/UMacGenerator.java:
+	Resynced with GNU Crypto.
+
+	* libraries/javalib/org/metastatic/jessie/provider/SSLRandom.java,
+	libraries/javalib/org/metastatic/jessie/provider/SynchronizedRandom.java,
+	libraries/javalib/org/metastatic/jessie/provider/TLSRandom.java:
+	Adapted for GNU Classspath IRandom fixes.
+
+	2004-10-12  Casey Marshall  <csm@gnu.org>
+
+        * source/gnu/crypto/auth/callback/GnuCallbacks.java
+        (<init>): don't reference AWT callbacks statically.
+
+        * source/gnu/crypto/mac/TMMH16.java
+        (<init>): removed copying constructor.
+        (clone): removed.
+
+        * build.xml: added gcjlib targets.
+
+	2004-10-11  Casey Marshall  <csm@gnu.org>
+
+        * source/gnu/crypto/jce/GnuCrypto.java
+        (<init>): added more Hmac aliases.
+
+	2004-10-10  Casey Marshall  <csm@gnu.org>
+
+        * source/gnu/crypto/jce/GnuCrypto.java
+        (<init>): added SecretKeyFactoryImpl classes; Hmac aliases.
+        * source/gnu/crypto/jce/mac/MacAdapter.java: implement Cloneable.
+        (<init>): removed 'copying' constructor.
+        (clone): call 'super.clone'; declare to throw
+        CloneNotSupportedException.
+        * source/gnu/crypto/mac/BaseMac.java
+        (clone): implemented using 'Object.clone'.
+        * source/gnu/crypto/mac/HMac.java: implement Cloneable.
+        (clone): removed.
+        * source/gnu/crypto/mac/IMac.java: don't extend Cloneable.
+        (clone): declare to throw CloneNotSupportedException.
+        * source/gnu/crypto/prng/ARCFour.java: implement Cloneable.
+        (clone): removed.
+        * source/gnu/crypto/prng/BasePRNG.java
+        (clone): implement using 'Object.clone'.
+        * source/gnu/crypto/prng/Fortuna.java
+        (clone): removed.
+        (Generator.clone): removed.
+        * source/gnu/crypto/prng/ICMGenerator.java: implement Cloneable.
+        (<init>): removed copying constructor.
+        (clone): removed.
+        * source/gnu/crypto/prng/IRandom.java
+        (clone): declare to throw CloneNotSupportedException.
+        * source/gnu/crypto/prng/MDGenerator.java: implement Cloneable.
+        (<init>): removed copying constructor.
+        (clone): removed.
+        * source/gnu/crypto/prng/PBKDF2.java
+        (clone): removed.
+        * source/gnu/crypto/prng/UMacGenerator.java: implement Cloneable.
+        (<init>): removed copying constructor.
+        (clone): removed.
+        * source/gnu/crypto/mode/EAX.java
+        (<init>): don't use IMac.clone to create mac instances.
+
+        * source/gnu/crypto/jce/key/AnubisSecretKeyFactoryImpl.java
+        * source/gnu/crypto/jce/key/RijndaelSecretKeyFactoryImpl.java
+        * source/gnu/crypto/jce/key/BlowfishSecretKeyFactoryImpl.java
+        * source/gnu/crypto/jce/key/SecretKeyFactoryImpl.java
+        * source/gnu/crypto/jce/key/Cast5SecretKeyFactoryImpl.java
+        * source/gnu/crypto/jce/key/SerpentSecretKeyFactoryImpl.java
+        * source/gnu/crypto/jce/key/DESSecretKeyFactoryImpl.java
+        * source/gnu/crypto/jce/key/SquareSecretKeyFactoryImpl.java
+        * source/gnu/crypto/jce/key/DESedeSecretKeyFactoryImpl.java
+        * source/gnu/crypto/jce/key/TwofishSecretKeyFactoryImpl.java
+        * source/gnu/crypto/jce/key/KhazadSecretKeyFactoryImpl.java
+        New files.
+
+	2004-08-19  Casey Marshall <csm@gnu.org>
+
+        * source/gnu/crypto/prng/BasePRNG.java
+        (nextBytes): fix bounds check. Use `while' not `do-while' loop.
+
+	2004-08-19  Casey Marshall <csm@gnu.org>
+
+        * source/gnu/crypto/Registry.java.in
+        (FORTUNA_PRNG): new constant.
+        (FORTUNA_GENERATOR_PRNG): new constant.
+        * source/gnu/crypto/hash/BaseHash.java
+        (update(byte[])): new method.
+        * source/gnu/crypto/hash/IMessageDigest.java
+        (update(byte[])): new method.
+        * source/gnu/crypto/prng/BasePRNG.java
+        (addRandomBytes(byte[])): new method.
+        * source/gnu/crypto/prng/Fortuna.java: new file.
+        * source/gnu/crypto/prng/IRandom.java
+        (addRandomBytes(byte[])): new method.
+        * source/gnu/crypto/prng/RandomEvent.java: new file.
+        * source/gnu/crypto/prng/RandomEventListener.java: new file.
+
+	2004-08-18  Casey Marshall <csm@gnu.org>
+
+        * source/gnu/crypto/pad/SSL3.java
+        (pad): commented out call to `PRNG.nextBytes'; this seems to cause
+        `make check' to hang for some reason.
+        * source/gnu/crypto/prng/CSPRNG.java
+        (SPINNER_COUNT): new constant.
+        (SPINNER_THREADS): new constant.
+        (<clinit>): initialize `SPINNER_THREADS' along with `SPINNERS'.
+        (fastPoll): use `SPINNER_COUNT'. Access Spinner.counter directly.
+        (Spinner): implement Runnable; don't extend Thread.
+        (Poller.run): kill-and-wait-on the process if we get an
+        exception.
+
+	2004-08-18  Casey Marshall <csm@gnu.org>
+
+        * source/gnu/crypto/jce/GnuCrypto.java
+        (<init>): use new OMac classes.
+        * source/gnu/crypto/jce/mac/OMacAnubisImpl.java,
+        * source/gnu/crypto/jce/mac/OMacBlowfishImpl.java,
+        * source/gnu/crypto/jce/mac/OMacCast5Impl.java,
+        * source/gnu/crypto/jce/mac/OMacDESImpl.java,
+        * source/gnu/crypto/jce/mac/OMacImpl.java,
+        * source/gnu/crypto/jce/mac/OMacKhazadImpl.java,
+        * source/gnu/crypto/jce/mac/OMacRijndaelImpl.java,
+        * source/gnu/crypto/jce/mac/OMacSerpentImpl.java,
+        * source/gnu/crypto/jce/mac/OMacSquareImpl.java,
+        * source/gnu/crypto/jce/mac/OMacTripleDESImpl.java,
+        * source/gnu/crypto/jce/mac/OMacTwofishImpl.java
+        new files.
+
 2004-10-17  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/thread.c

@@ -53,8 +53,9 @@ public final class GnuCallbacks extends Provider
         {
           put("CallbackHandler.Default", DefaultCallbackHandler.class.getName());
           put("CallbackHandler.Console", ConsoleCallbackHandler.class.getName());
-          put("CallbackHandler.AWT", AWTCallbackHandler.class.getName());
 
+          // We might not want/have AWT.
+          put("CallbackHandler.AWT", "gnu.crypto.auth.callback.AWTCallbackHandler");
           // SWT may not be available, so we cannot link this statically.
           put("CallbackHandler.SWT", "gnu.crypto.auth.callback.SWTCallbackHandler");
 

@@ -1,7 +1,7 @@
 package gnu.crypto.hash;
 
 // ----------------------------------------------------------------------------
-// $Id: IMessageDigest.java,v 1.3 2004/07/21 01:41:25 dalibor Exp $
+// $Id: IMessageDigest.java,v 1.4 2004/10/17 19:06:52 robilad Exp $
 //
 // Copyright (C) 2001, 2002, Free Software Foundation, Inc.
 //
@@ -49,7 +49,7 @@ package gnu.crypto.hash;
  * <p>A hash (or message digest) algorithm produces its output by iterating a
  * basic compression function on blocks of data.</p>
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface IMessageDigest extends Cloneable {
 
@@ -86,6 +86,16 @@ public interface IMessageDigest extends Cloneable {
     * @param b the input byte to digest.
     */
    void update(byte b);
+
+   /**
+    * <p>Continues a message digest operation, by filling the buffer, processing
+    * data in the algorithm's HASH_SIZE-bit block(s), updating the context and
+    * count, and buffering the remaining bytes in buffer for the next
+    * operation.</p>
+    *
+    * @param in the input block.
+    */
+   void update(byte[] in);
 
    /**
     * <p>Continues a message digest operation, by filling the buffer, processing

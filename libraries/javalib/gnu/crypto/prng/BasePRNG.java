@@ -1,8 +1,6 @@
 package gnu.crypto.prng;
 
 // ----------------------------------------------------------------------------
-// $Id: BasePRNG.java,v 1.1 2004/07/21 01:41:56 dalibor Exp $
-//
 // Copyright (C) 2001, 2002, Free Software Foundation, Inc.
 //
 // This file is part of GNU Crypto.
@@ -48,7 +46,7 @@ import java.util.Map;
 /**
  * <p>An abstract class to facilitate implementing PRNG algorithms.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class BasePRNG implements IRandom {
 
@@ -109,28 +107,46 @@ public abstract class BasePRNG implements IRandom {
       return nextByteInternal();
    }
 
+   public void nextBytes(byte[] out) throws IllegalStateException, LimitReachedException {
+      nextBytes(out, 0, out.length);
+   }
+
    public void nextBytes(byte[] out, int offset, int length)
-   throws IllegalStateException, LimitReachedException {
-      if (out == null) {
+   throws IllegalStateException, LimitReachedException
+   {
+      if (!initialised)
+         throw new IllegalStateException("not initialized");
+
+      if (length == 0)
          return;
-      }
 
-      if (!initialised) {
-         throw new IllegalStateException();
-      }
+      if (offset < 0 || length < 0 || offset + length > out.length)
+         throw new ArrayIndexOutOfBoundsException("offset=" + offset + " length="
+                                                  + length + " limit=" + out.length);
 
-      if (offset < 0 || offset >= out.length || length < 1) {
-         return;
+      if (ndx >= buffer.length) {
+         fillBlock();
+         ndx = 0;
       }
-
-      int limit = ((offset+length) > out.length ? out.length-offset : length);
-      for (int i = 0; i < limit; i++) {
-         out[offset++] = nextByteInternal();
+      int count = 0;
+      while (count < length) {
+         int amount = Math.min(buffer.length - ndx, length - count);
+         System.arraycopy(buffer, ndx, out, offset+count, amount);
+         count += amount;
+         ndx += amount;
+         if (ndx >= buffer.length) {
+            fillBlock();
+            ndx = 0;
+         }
       }
    }
 
    public void addRandomByte(byte b) {
       throw new UnsupportedOperationException("random state is non-modifiable");
+   }
+
+   public void addRandomBytes(byte[] buffer) {
+      addRandomBytes(buffer, 0, buffer.length);
    }
 
    public void addRandomBytes(byte[] buffer, int offset, int length) {
@@ -155,7 +171,10 @@ public abstract class BasePRNG implements IRandom {
 
    // abstract methods to implement by subclasses -----------------------------
 
-   public abstract Object clone();
+  public Object clone() throws CloneNotSupportedException
+  {
+    return super.clone();
+  }
 
    public abstract void setup(Map attributes);
 

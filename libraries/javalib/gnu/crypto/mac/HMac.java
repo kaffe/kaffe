@@ -1,7 +1,7 @@
 package gnu.crypto.mac;
 
 // ----------------------------------------------------------------------------
-// $Id: HMac.java,v 1.1 2004/07/21 01:41:47 dalibor Exp $
+// $Id: HMac.java,v 1.2 2004/10/17 19:06:55 robilad Exp $
 //
 // Copyright (C) 2001, 2002, 2003, Free Software Foundation, Inc.
 //
@@ -87,9 +87,9 @@ import java.util.Map;
  *    H. Krawczyk, M. Bellare, and R. Canetti.</li>
  * </ol>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class HMac extends BaseMac {
+public class HMac extends BaseMac implements Cloneable {
 
    // Constants and variables
    // -------------------------------------------------------------------------
@@ -129,24 +129,6 @@ public class HMac extends BaseMac {
 
    // Instance methods
    // -------------------------------------------------------------------------
-
-   // java.lang.Cloneable interface implementation ----------------------------
-
-   public Object clone() {
-      HMac result = new HMac((IMessageDigest) this.underlyingHash.clone());
-      result.truncatedSize = this.truncatedSize;
-      if (this.ipadHash != null) {
-         result.ipadHash = (IMessageDigest) this.ipadHash.clone();
-      }
-      if (this.opadHash != null) {
-         result.opadHash = (IMessageDigest) this.opadHash.clone();
-      }
-      if (this.ipad != null) {
-         result.ipad = (byte[]) this.ipad.clone();
-      }
-
-      return result;
-   }
 
    // implementation of abstract methods in BaseMac ---------------------------
 

@@ -1,7 +1,7 @@
 package gnu.crypto.mac;
 
 // ----------------------------------------------------------------------------
-// $Id: TMMH16.java,v 1.1 2004/07/21 01:41:48 dalibor Exp $
+// $Id: TMMH16.java,v 1.2 2004/10/17 19:06:55 robilad Exp $
 //
 // Copyright (C) 2001, 2002, Free Software Foundation, Inc.
 //
@@ -82,9 +82,10 @@ import java.util.Map;
  *    The Truncated Multi-Modular Hash Function (TMMH)</a>, David A. McGrew.</li>
  * </ol>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class TMMH16 extends BaseMac {
+public class TMMH16 extends BaseMac implements Cloneable
+{
 
    // Constants and variables
    // -------------------------------------------------------------------------
@@ -117,37 +118,11 @@ public class TMMH16 extends BaseMac {
       super(Registry.TMMH16);
    }
 
-   /**
-    * <p>Private constructor for cloning purposes.</p>
-    *
-    * @param that the instance to clone.
-    */
-   private TMMH16(TMMH16 that) {
-      this();
-
-      this.tagWords = that.tagWords;
-      this.keystream = (IRandom) that.keystream.clone();
-      this.keyWords = that.keyWords;
-      this.msgLength = that.msgLength;
-      this.msgWords = that.msgWords;
-      this.context = (int[]) that.context.clone();
-      this.prefix = (byte[]) that.prefix.clone();
-      this.K0 = (int[]) that.K0.clone();
-      this.Ki = (int[]) that.Ki.clone();
-      this.Mi = that.Mi;
-   }
-
    // Class methods
    // -------------------------------------------------------------------------
 
    // Instance methods
    // -------------------------------------------------------------------------
-
-   // java.lang.Cloneable interface implementation ----------------------------
-
-   public Object clone() {
-      return (new TMMH16(this));
-   }
 
    // gnu.crypto.mac.IMac interface implementation ----------------------------
 

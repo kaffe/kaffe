@@ -1,7 +1,7 @@
 package gnu.crypto.prng;
 
 // ----------------------------------------------------------------------------
-// $Id: IRandom.java,v 1.3 2004/07/21 01:41:56 dalibor Exp $
+// $Id: IRandom.java,v 1.4 2004/10/17 19:06:56 robilad Exp $
 //
 // Copyright (C) 2001, 2002, 2003 Free Software Foundation, Inc.
 //
@@ -82,7 +82,7 @@ import java.util.Map;
  *    Menezes, A., van Oorschot, P. and S. Vanstone.</li>
  * </ol>
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface IRandom extends Cloneable {
 
@@ -158,6 +158,18 @@ public interface IRandom extends Cloneable {
     * throw an {@link UnsupportedOperationException}.</p>
     *
     * @param in The buffer of new random bytes to add.
+    */
+   void addRandomBytes(byte[] in);
+
+   /**
+    * <p>Supplement, or possibly replace, the random state of this PRNG with
+    * a sequence of new random bytes.</p>
+    *
+    * <p>Implementations are not required to implement this method in any
+    * meaningful way; this may be a no-operation, and implementations may
+    * throw an {@link UnsupportedOperationException}.</p>
+    *
+    * @param in The buffer of new random bytes to add.
     * @param offset The offset from whence to begin reading random bytes.
     * @param length The number of random bytes to add.
     * @exception IndexOutOfBoundsException If <i>offset</i>, <i>length</i>,
@@ -170,5 +182,5 @@ public interface IRandom extends Cloneable {
     *
     * @return a clone copy of this instance.
     */
-   Object clone();
+   Object clone() throws CloneNotSupportedException;
 }

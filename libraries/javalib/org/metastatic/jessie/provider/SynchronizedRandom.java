@@ -87,6 +87,7 @@ class SynchronizedRandom implements IRandom
   }
 
   public synchronized Object clone()
+    throws CloneNotSupportedException
   {
     return new SynchronizedRandom((IRandom) random.clone());
   }
@@ -94,6 +95,10 @@ class SynchronizedRandom implements IRandom
   // For future versions of GNU Crypto. No-ops.
   public void addRandomByte (byte b)
   {
+  }
+
+  public void addRandomBytes(byte[] buffer) {
+    addRandomBytes(buffer, 0, buffer.length);
   }
 
   public void addRandomBytes (byte[] b, int i, int j)

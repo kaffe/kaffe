@@ -1,7 +1,7 @@
 package gnu.crypto.prng;
 
 // ----------------------------------------------------------------------------
-// $Id: ICMGenerator.java,v 1.1 2004/07/21 01:41:56 dalibor Exp $
+// $Id: ICMGenerator.java,v 1.2 2004/10/17 19:06:56 robilad Exp $
 //
 // Copyright (C) 2001, 2002, Free Software Foundation, Inc.
 //
@@ -101,9 +101,9 @@ import java.util.Map;
  *    Integer Counter Mode</a>, David A. McGrew.</li>
  * </ol>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class ICMGenerator extends BasePRNG {
+public class ICMGenerator extends BasePRNG implements Cloneable {
 
    // Constants and variables
    // -------------------------------------------------------------------------
@@ -154,35 +154,11 @@ public class ICMGenerator extends BasePRNG {
       super(Registry.ICM_PRNG);
    }
 
-   /**
-    * <p>Private constructor for cloning purposes.</p>
-    *
-    * @param that the instance to clone.
-    */
-   private ICMGenerator(ICMGenerator that) {
-      this();
-
-      this.cipher = (that.cipher == null ? null : (IBlockCipher) that.cipher.clone());
-      this.blockNdxLength = that.blockNdxLength;
-      this.segmentNdxLength = that.segmentNdxLength;
-      this.blockNdx = that.blockNdx;
-      this.segmentNdx = that.segmentNdx;
-      this.buffer = (byte[]) that.buffer.clone();
-      this.ndx = that.ndx;
-      this.initialised = that.initialised;
-   }
-
    // Class methods
    // -------------------------------------------------------------------------
 
    // Instance methods
    // -------------------------------------------------------------------------
-
-   // java.lang.Cloneable interface implementation ----------------------------
-
-   public Object clone() {
-      return new ICMGenerator(this);
-   }
 
    // Implementation of abstract methods in BasePRNG --------------------------
 

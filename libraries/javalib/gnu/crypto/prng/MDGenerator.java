@@ -1,7 +1,7 @@
 package gnu.crypto.prng;
 
 // ----------------------------------------------------------------------------
-// $Id: MDGenerator.java,v 1.1 2004/07/21 01:41:56 dalibor Exp $
+// $Id: MDGenerator.java,v 1.2 2004/10/17 19:06:56 robilad Exp $
 //
 // Copyright (C) 2001, 2002, Free Software Foundation, Inc.
 //
@@ -57,9 +57,9 @@ import java.util.Map;
  * SHA-160 algorithm is used as the underlying hash function. Also, if no
  * <code>seed</code> is given, an empty octet sequence is used.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class MDGenerator extends BasePRNG {
+public class MDGenerator extends BasePRNG implements Cloneable {
 
    // Constants and variables
    // -------------------------------------------------------------------------
@@ -81,31 +81,11 @@ public class MDGenerator extends BasePRNG {
       super(Registry.MD_PRNG);
    }
 
-   /**
-    * <p>Private constructor for cloning purposes.</p>
-    *
-    * @param that the instance to clone.
-    */
-   private MDGenerator(MDGenerator that) {
-      this();
-
-      this.md = (that.md == null ? null : (IMessageDigest) that.md.clone());
-      this.buffer = (byte[]) that.buffer.clone();
-      this.ndx = that.ndx;
-      this.initialised = that.initialised;
-   }
-
    // Class methods
    // -------------------------------------------------------------------------
 
    // Instance methods
    // -------------------------------------------------------------------------
-
-   // java.lang.Cloneable interface implementation ----------------------------
-
-   public Object clone() {
-      return new MDGenerator(this);
-   }
 
    // Implementation of abstract methods in BaseRandom ------------------------
 

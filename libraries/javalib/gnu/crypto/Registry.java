@@ -2,7 +2,7 @@
 package gnu.crypto;
 
 // ----------------------------------------------------------------------------
-// $Id: Registry.java,v 1.1 2004/07/21 01:41:15 dalibor Exp $
+// $Id: Registry.java,v 1.2 2004/10/17 19:06:51 robilad Exp $
 //
 // Copyright (C) 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 //
@@ -48,7 +48,7 @@ package gnu.crypto;
  * A placeholder for <i>names</i> and <i>literals</i> used throughout this
  * library.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface Registry {
 
@@ -184,6 +184,12 @@ public interface Registry {
 
    /** The continuously-seeded pseudo-random number generator. */
    String CSPRNG_PRNG = "csprng";
+
+   /** The Fortuna PRNG. */
+   String FORTUNA_PRNG = "fortuna";
+
+   /** The Fortuna generator PRNG. */
+   String FORTUNA_GENERATOR_PRNG = "fortuna-generator";
 
    // Asymmetric keypair generators............................................
 

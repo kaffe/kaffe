@@ -84,7 +84,8 @@ public class SSL3 extends BasePad
   {
     int padlen = blockSize - (len % blockSize);
     byte[] pad = new byte[padlen];
-    PRNG.nextBytes (pad, 0, padlen - 1);
+    // FIXME this seems to hang during 'make check'.
+//     PRNG.nextBytes (pad, 0, padlen - 1);
     pad[padlen - 1] = (byte) (padlen - 1);
     return pad;
   }

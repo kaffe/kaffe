@@ -1,7 +1,7 @@
 package gnu.crypto.mac;
 
 // ----------------------------------------------------------------------------
-// $Id: BaseMac.java,v 1.1 2004/07/21 01:41:47 dalibor Exp $
+// $Id: BaseMac.java,v 1.2 2004/10/17 19:06:55 robilad Exp $
 //
 // Copyright (C) 2001, 2002, Free Software Foundation, Inc.
 //
@@ -52,7 +52,7 @@ import java.security.InvalidKeyException;
  * <p>A base abstract class to facilitate <i>MAC</i> (Message Authentication
  * Code) implementations.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class BaseMac implements IMac {
 
@@ -128,9 +128,12 @@ public abstract class BaseMac implements IMac {
       underlyingHash.reset();
    }
 
-   // methods to be implemented by concrete subclasses ------------------------
+   public Object clone() throws CloneNotSupportedException
+   {
+      return super.clone();
+   }
 
-   public abstract Object clone();
+   // methods to be implemented by concrete subclasses ------------------------
 
    public abstract void init(Map attributes)
    throws InvalidKeyException, IllegalStateException;

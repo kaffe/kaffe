@@ -1,7 +1,7 @@
 package gnu.crypto.jce.mac;
 
 // --------------------------------------------------------------------------
-// $Id: MacAdapter.java,v 1.1 2004/07/21 01:41:35 dalibor Exp $
+// $Id: MacAdapter.java,v 1.2 2004/10/17 19:06:54 robilad Exp $
 //
 // Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 //
@@ -64,9 +64,9 @@ import javax.crypto.MacSpi;
  * message authentication code algorithm, such as the <i>Hashed Message
  * Authentication Code</i> (<b>HMAC</b>) algorithms.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-class MacAdapter extends MacSpi {
+class MacAdapter extends MacSpi implements Cloneable {
 
    // Constants and variables
    // -----------------------------------------------------------------------
@@ -79,16 +79,6 @@ class MacAdapter extends MacSpi {
 
    // Constructor(s)
    // -----------------------------------------------------------------------
-
-   /**
-    * <p>Private, "copying" constructor for cloning.</p>
-    *
-    * @param that The instance being cloned.
-    */
-   private MacAdapter(MacAdapter that) {
-      this.mac = (IMac) that.mac.clone();
-      this.attributes = new HashMap(that.attributes);
-   }
 
    /**
     * <p>Creates a new Mac instance for the given name.</p>
@@ -108,8 +98,8 @@ class MacAdapter extends MacSpi {
 
    // Cloneable interface implementation ------------------------------------
 
-   public Object clone() {
-      return new MacAdapter(this);
+   public Object clone() throws CloneNotSupportedException {
+      return super.clone();
    }
 
    // Instance methods implementing javax.crypto.MacSpi ---------------------

@@ -1,7 +1,7 @@
 package gnu.crypto.prng;
 
 // ----------------------------------------------------------------------------
-// $Id: PBKDF2.java,v 1.1 2004/07/21 01:41:56 dalibor Exp $
+// $Id: PBKDF2.java,v 1.2 2004/10/17 19:06:56 robilad Exp $
 //
 // Copyright (C) 2003 Free Software Foundation, Inc.
 //
@@ -66,7 +66,7 @@ import java.util.Map;
  *    Password-Based Cryptography Specification, Version 2.0</a></li>
  * </ol>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PBKDF2 extends BasePRNG implements Cloneable {
 
@@ -111,14 +111,6 @@ public class PBKDF2 extends BasePRNG implements Cloneable {
 
    // Instance methods
    // -------------------------------------------------------------------------
-
-   public Object clone() {
-      PBKDF2 that = new PBKDF2((IMac) mac.clone());
-      that.iterationCount = iterationCount;
-      that.salt = salt != null ? (byte[]) salt.clone() : null;
-      that.count = count;
-      return that;
-   }
 
    public void setup(Map attributes) {
       Map macAttrib = new HashMap();

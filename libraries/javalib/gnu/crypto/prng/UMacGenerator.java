@@ -1,7 +1,7 @@
 package gnu.crypto.prng;
 
 // ----------------------------------------------------------------------------
-// $Id: UMacGenerator.java,v 1.1 2004/07/21 01:41:56 dalibor Exp $
+// $Id: UMacGenerator.java,v 1.2 2004/10/17 19:06:56 robilad Exp $
 //
 // Copyright (C) 2001, 2002, Free Software Foundation, Inc.
 //
@@ -91,9 +91,9 @@ import java.security.InvalidKeyException;
  *    T. Krovetz, J. Black, S. Halevi, A. Hevia, H. Krawczyk, and P. Rogaway.</li>
  * </ol>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class UMacGenerator extends BasePRNG {
+public class UMacGenerator extends BasePRNG implements Cloneable {
 
    // Constants and variables
    // -------------------------------------------------------------------------
@@ -119,31 +119,11 @@ public class UMacGenerator extends BasePRNG {
       super(Registry.UMAC_PRNG);
    }
 
-   /**
-    * <p>Private constructor for cloning purposes.</p>
-    *
-    * @param that the instance to clone.
-    */
-   private UMacGenerator(UMacGenerator that) {
-      this();
-
-      this.cipher = (that.cipher == null ? null : (IBlockCipher) that.cipher.clone());
-      this.initialised = that.initialised;
-      this.buffer = (byte[]) that.buffer.clone();
-      this.ndx = that.ndx;
-   }
-
    // Class methods
    // -------------------------------------------------------------------------
 
    // Instance methods
    // -------------------------------------------------------------------------
-
-   // java.lang.Cloneable interface implementation ----------------------------
-
-   public Object clone() {
-      return new UMacGenerator(this);
-   }
 
    // Implementation of abstract methods in BasePRNG --------------------------
 

@@ -1,7 +1,7 @@
 package gnu.crypto.mode;  // -*- mode: java; c-basic-offset: 3 -*-
 
 // ---------------------------------------------------------------------------
-// $Id: EAX.java,v 1.1 2004/07/21 01:41:50 dalibor Exp $
+// $Id: EAX.java,v 1.2 2004/10/17 19:06:55 robilad Exp $
 //
 // Copyright (C) 2004 Free Software Foundation, Inc.
 //
@@ -123,9 +123,10 @@ public class EAX implements IAuthenticatedMode {
       if (i >= 0) {
          name = name.substring(0, i);
       }
-      nonceOmac = MacFactory.getInstance(Registry.OMAC_PREFIX + name);
-      headerOmac = (IMac) nonceOmac.clone();
-      msgOmac = (IMac) nonceOmac.clone();
+      String omacname = Registry.OMAC_PREFIX + name;
+      nonceOmac = MacFactory.getInstance(omacname);
+      headerOmac = MacFactory.getInstance(omacname);
+      msgOmac = MacFactory.getInstance(omacname);
       ctr = ModeFactory.getInstance(Registry.CTR_MODE, cipher, cipherBlockSize);
       t_n = new byte[cipherBlockSize];
       init = false;

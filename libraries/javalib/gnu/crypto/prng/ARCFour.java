@@ -1,7 +1,7 @@
 package gnu.crypto.prng;
 
 // ----------------------------------------------------------------------------
-// $Id: ARCFour.java,v 1.1 2004/07/21 01:41:56 dalibor Exp $
+// $Id: ARCFour.java,v 1.2 2004/10/17 19:06:56 robilad Exp $
 //
 // Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 //
@@ -73,9 +73,9 @@ import java.util.Map;
  * href="http://www.mozilla.org/projects/security/pki/nss/draft-kaukonen-cipher-arcfour-03.txt">draft-kaukonen-cipher-arcfour-03.txt</a></li>
  * </ol>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class ARCFour extends BasePRNG {
+public class ARCFour extends BasePRNG implements Cloneable {
 
    // Constants and variables.
    // -----------------------------------------------------------------------
@@ -102,17 +102,6 @@ public class ARCFour extends BasePRNG {
 
    // Methods implementing BasePRNG.
    // -----------------------------------------------------------------------
-
-   public Object clone() {
-      ARCFour copy = new ARCFour();
-      copy.s = (s != null) ? (byte[]) s.clone() : null;
-      copy.m = m;
-      copy.n = n;
-      copy.buffer = (buffer != null) ? (byte[]) buffer.clone() : null;
-      copy.ndx = ndx;
-      copy.initialised = initialised;
-      return copy;
-   }
 
    public void setup(Map attributes) {
       byte[] kb = (byte[]) attributes.get(ARCFOUR_KEY_MATERIAL);

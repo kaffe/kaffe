@@ -190,6 +190,10 @@ class TLSRandom implements IRandom
   {
   }
 
+  public void addRandomBytes(byte[] buffer) {
+    addRandomBytes(buffer, 0, buffer.length);
+  }
+
   public void addRandomBytes (byte[] b, int i, int j)
   {
   }
