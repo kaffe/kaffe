@@ -1,3 +1,18 @@
+2004-01-19  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* kaffe/libraries/javalib/gnu/java/io/EncodingManager.java:
+	Copied from GNU Classpath and modified for use with kaffe.
+
+	* kaffe/libraries/javalib/gnu/java/io/decode/Decoder.java,
+	kaffe/libraries/javalib/gnu/java/io/encode/Encoder.java:
+	Copied from GNU CLasspath.
+
+	* kaffe/libraries/javalib/gnu/java/io/decode/KaffeDecoder.java, 
+	kaffe/libraries/javalib/gnu/java/io/encode/KaffeEncoder.java:
+	New files.  These are added as a preparation for importing
+	GNU Classpath's java.io.InputStreamReader and
+	java.io.OutputStreamWriter.
+
 2004-01-19  Alexander Boettcher <ab764283@os.inf.tu-dresden.de>
 
 	* libraries/clib/net/PlainDatagramSocketImpl.c
