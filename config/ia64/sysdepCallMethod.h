@@ -9,6 +9,9 @@
  * of this file.
  */
 
+/* Needed for callMethodInfo declaration */
+#include "support.h"
+
 /* This define will cause callMethodV and callMethodA to avoid
    introducing unused slots after jlongs and jdoubles.  */
 #ifndef NO_HOLES

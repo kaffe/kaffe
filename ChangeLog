@@ -1,3 +1,9 @@
+2004-08-22  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/ia64/sysdepCallMethod.h,
+	config/s390/sysdepCallMethod.h:
+	Added missing includes.
+
 2004-08-22  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jit/icode.c

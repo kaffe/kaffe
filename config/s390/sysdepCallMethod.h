@@ -15,6 +15,7 @@
 #ifndef __s390_sysdepCallMethod_h
 #define __s390_sysdepCallMethod_h
 
+#include "debug.h"
 #include "support.h"
 
 /*
