@@ -1,3 +1,10 @@
+Mon Feb  8 07:37:24 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffe/Makefile.am: link libkaffevm after dlopened modules,
+	otherwise, if they're dlpreopened, libkaffevm wouldn't be used to
+	resolve their symbols on IRIX6
+	* kaffe/kaffe/Makefile.in: regen
+
 Mon Feb  8 07:36:11 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* ltconfig, ltmain.sh: from libtool: fix installation for IRIX5
