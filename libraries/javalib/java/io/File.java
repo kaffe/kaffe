@@ -155,7 +155,7 @@ public class File implements Serializable, Comparable
              accept '/' as separator. In that case the following code
              will fail.
           */
-          String filename = (!ON_WINDOWS)?"test-dir-write":"tst";
+          String filename = (separatorChar!='\\')?"test-dir-write":"tst";
   	  File test = createTempFile(filename, null, this);
   	  return (test != null && test.delete());
         }
@@ -228,7 +228,7 @@ public class File implements Serializable, Comparable
     
     File other = (File) obj;
 
-    if (VMFile.caseSensitive)
+    if (VMFile.IS_CASE_SENSITIVE)
       return path.equals(other.path);
     else
       return path.equalsIgnoreCase(other.path);
@@ -264,7 +264,7 @@ public class File implements Serializable, Comparable
   {
     // On Windows, convert any '/' to '\'.  This appears to be the same logic
     // that Sun's Win32 Java performs.
-    if (ON_WINDOWS)
+    if (separatorChar == '\\')
       {
         p = p.replace ('/', '\\');
 	// We have to special case the "\c:" prefix.
@@ -288,7 +288,7 @@ public class File implements Serializable, Comparable
         // example, is a valid and minimal path).
         if (plen > 1 && p.charAt (plen - 1) == separatorChar)
 	  {
-	    if (! (ON_WINDOWS && plen == 3 && p.charAt (1) == ':'))
+	    if (! (separatorChar == '\\' && plen == 3 && p.charAt (1) == ':'))
 	      return p.substring (0, plen - 1);
 	  }
 	else
@@ -317,7 +317,7 @@ public class File implements Serializable, Comparable
     int end;
     if (plen > 1 && p.charAt (plen - 1) == separatorChar)
     {
-      if (ON_WINDOWS && plen == 3 && p.charAt (1) == ':')
+      if (separatorChar == '\\' && plen == 3 && p.charAt (1) == ':')
         end = plen;
       else
         end = plen - 1;
@@ -424,7 +424,7 @@ public class File implements Serializable, Comparable
   {
     if (isAbsolute())
       return path;
-    else if (ON_WINDOWS 
+    else if (separatorChar == '\\' 
              && path.length() > 0 && path.charAt (0) == '\\')
       {
         // On Windows, even if the path starts with a '\\' it is not
@@ -432,7 +432,7 @@ public class File implements Serializable, Comparable
         // the current working directory to it.
         return System.getProperty ("user.dir").substring (0, 2) + path;
       }
-    else if (ON_WINDOWS 
+    else if (separatorChar == '\\' 
              && path.length() > 1 && path.charAt (1) == ':'
              && ((path.charAt (0) >= 'a' && path.charAt (0) <= 'z')
                  || (path.charAt (0) >= 'A' && path.charAt (0) <= 'Z')))
@@ -493,7 +493,7 @@ public class File implements Serializable, Comparable
   {
     // On Windows, getAbsolutePath might end up calling us, so we
     // have to special case that call to avoid infinite recursion.
-    if (ON_WINDOWS && path.length() == 2 &&
+    if (separatorChar == '\\' && path.length() == 2 &&
 	((path.charAt(0) >= 'a' && path.charAt(0) <= 'z') ||
 	 (path.charAt(0) >= 'A' && path.charAt(0) <= 'Z')) &&
 	path.charAt(1) == ':')
@@ -554,7 +554,7 @@ public class File implements Serializable, Comparable
         prefix = "/";
         nameSeqIndex = 1;
       }
-    else if (ON_WINDOWS && path.length() > 1)
+    else if (separatorChar == '\\' && path.length() > 1)
       {
         if ((path.charAt (0) == '\\' && path.charAt (1) == '\\')
             || (((path.charAt (0) >= 'a' && path.charAt (0) <= 'z')
@@ -631,7 +631,7 @@ public class File implements Serializable, Comparable
    */
   public int hashCode()
   {
-    if (VMFile.caseSensitive)
+    if (VMFile.IS_CASE_SENSITIVE)
       return path.hashCode() ^ 1234321;
     else
       return path.toLowerCase().hashCode() ^ 1234321;
@@ -648,7 +648,7 @@ public class File implements Serializable, Comparable
    */
   public boolean isAbsolute()
   {
-    if (ON_WINDOWS)
+    if (separatorChar == '\\')
 	return path.startsWith(dupSeparator) || 
 	    (path.length() > 2 && 
 	     ((path.charAt(0) >= 'a' && path.charAt(0) <= 'z') ||
@@ -960,7 +960,7 @@ public class File implements Serializable, Comparable
     if (isDirectory())
       abspath = abspath + separatorChar;
 
-    if (ON_WINDOWS)
+    if (separatorChar == '\\')
       abspath = separatorChar + abspath;
         
     try
@@ -991,7 +991,7 @@ public class File implements Serializable, Comparable
   {
     // On Win32, Sun's JDK returns URLs of the form "file:/c:/foo/bar.txt",
     // while on UNIX, it returns URLs of the form "file:/foo/bar.txt". 
-    if (ON_WINDOWS)
+    if (separatorChar == '\\')
       return new URL ("file:/" + getAbsolutePath().replace ('\\', '/')
 		      + (isDirectory() ? "/" : ""));
     else
@@ -1101,17 +1101,10 @@ public class File implements Serializable, Comparable
     if (suffix == null)
       suffix = ".tmp";
 
-    /* Now identify a file name and make sure it doesn't exist.
-       If the separator is '\' a DOS-style-filesystem is assumed and
-       a 8+3-filename is used, otherwise use a long name.
-       WARNGIN: some implementation of DOS-style-filesystems also
-       accept '/' as separator. In that case the following code
-       will fail.
-    */
+    // Now identify a file name and make sure it doesn't exist.
     File file;
-    if (!ON_WINDOWS)
+    if (!VMFile.IS_DOS_8_3)
       {      
-        // probably a non-DOS-filesystem, use long names
         do
           {
             String filename = prefix + System.currentTimeMillis() + suffix;
@@ -1121,8 +1114,6 @@ public class File implements Serializable, Comparable
       }
     else
       {
-        // probably a DOS-filesystem, use short names (8+3)
-
         // make sure prefix is not longer than 7 characters
         if (prefix.length() >= 8)
           throw new IllegalArgumentException("Prefix too long: " + prefix + "(valid length 3..7)");
@@ -1241,7 +1232,7 @@ public class File implements Serializable, Comparable
    */
   public int compareTo(File other)
   {
-    if (VMFile.caseSensitive)
+    if (VMFile.IS_CASE_SENSITIVE)
       return path.compareTo (other.path);
     else
       return path.compareToIgnoreCase (other.path);
@@ -1374,11 +1365,6 @@ public class File implements Serializable, Comparable
     if (oldSeparatorChar != separatorChar)
       path = path.replace(oldSeparatorChar, separatorChar);
   }
-
-  /**
-   * Used to determine whether we are running under Windows.
-   */
-  private static final boolean ON_WINDOWS = separatorChar =='\\';
-
+  
 } // class File
 

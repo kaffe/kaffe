@@ -47,19 +47,18 @@ import gnu.java.io.PlatformHelper;
  */
 final class VMFile
 {
-  static boolean caseSensitive;
-	
+  // FIXME: We support only case sensitive filesystems currently.
+  static final boolean IS_CASE_SENSITIVE = true;
+  static final boolean IS_DOS_8_3 = false;
+
   static
   {
     if (Configuration.INIT_LOAD_LIBRARY)
       {
 	System.loadLibrary("io");
       }
-
-    // FIXME: We support only caseSensitive filesystems currently.
-    caseSensitive = true;
   }
-  
+
   /*
    * This native method does the actual work of getting the last file
    * modification time.  It also does the existence check to avoid the
