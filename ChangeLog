@@ -5,6 +5,13 @@
 	
 2004-12-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/javalib/Klasses.jar.bootstrap: Regenerated.
+
+	* libraries/javalib/bootstrap.classlist: Added two missing classes
+	for KJC.
+	
+2004-12-21  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/clib/native/Class.c
 	(getProtectionDomain): Fixed return type.
 

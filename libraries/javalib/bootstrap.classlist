@@ -12,7 +12,9 @@ gnu/java/lang/CharData.class
 gnu/java/lang/reflect/TypeSignature.class
 gnu/java/locale/Calendar.class
 gnu/java/locale/LocaleInformation.class
+gnu/java/locale/LocaleInformation$HashtableCurrencySymbols.class
 gnu/java/locale/LocaleInformation_en.class
+gnu/java/locale/LocaleInformation_en$Hashtableterritories.class
 gnu/java/net/protocol/file/Handler.class
 gnu/java/net/protocol/file/Connection.class
 gnu/java/net/protocol/jar/Connection.class
