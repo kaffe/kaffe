@@ -1,3 +1,9 @@
+2005-04-05  Dalibor Topic  <robilad@kaffe.org>
+
+	* README: Set version to 1.1.5.
+	* RELEASE-NOTES: Written.
+	* configure.ac: Set version to 1.1.5.
+
 2005-04-04  Jim Huang  <jserv@kaffe.org>
 
 	Resynced with GNU Classpath.
