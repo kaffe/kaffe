@@ -68,7 +68,7 @@ native public short getShort(Object obj) throws IllegalArgumentException, Illega
 
 public Class getType()
 	{
-	return (clazz);
+	return (type);
 }
 
 public int hashCode()
