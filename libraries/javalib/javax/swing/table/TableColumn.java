@@ -151,7 +151,8 @@ public class TableColumn
 
   /**
    * Constructor TableColumn
-   * @param modelIndex TODO
+   * 
+   * @param modelIndex the index of the column in the model
    */
   public TableColumn(int modelIndex)
   {
@@ -160,8 +161,9 @@ public class TableColumn
 
   /**
    * Constructor TableColumn
-   * @param modelIndex TODO
-   * @param width TODO
+   * 
+   * @param modelIndex the index of the column in the model
+   * @param width the width
    */
   public TableColumn(int modelIndex, int width)
   {
@@ -170,10 +172,11 @@ public class TableColumn
 
   /**
    * Constructor TableColumn
-   * @param modelIndex TODO
-   * @param width TODO
-   * @param cellRenderer TODO
-   * @param cellEditor TODO
+   * 
+   * @param modelIndex the index of the column in the model
+   * @param width the width
+   * @param cellRenderer the cell renderer
+   * @param cellEditor the cell editor
    */
   public TableColumn(int modelIndex, int width,
                      TableCellRenderer cellRenderer, TableCellEditor cellEditor)
@@ -189,9 +192,10 @@ public class TableColumn
 
   /**
    * firePropertyChange
-   * @param property TODO
-   * @param oldValue TODO
-   * @param newValue TODO
+   * 
+   * @param property the name of the property
+   * @param oldValue the old value
+   * @param newValue the new value
    */
   private void firePropertyChange(String property, Object oldValue,
                                   Object newValue)
@@ -201,9 +205,10 @@ public class TableColumn
 
   /**
    * firePropertyChange
-   * @param property TODO
-   * @param oldValue TODO
-   * @param newValue TODO
+   * 
+   * @param property the name of the property
+   * @param oldValue the old value
+   * @param newValue the new value
    */
   private void firePropertyChange(String property, int oldValue, int newValue)
   {
@@ -212,9 +217,10 @@ public class TableColumn
 
   /**
    * firePropertyChange
-   * @param property TODO
-   * @param oldValue TODO
-   * @param newValue TODO
+   * 
+   * @param property the name of the property 
+   * @param oldValue the old value
+   * @param newValue the new value
    */
   private void firePropertyChange(String property, boolean oldValue,
                                   boolean newValue)
@@ -225,7 +231,8 @@ public class TableColumn
 
   /**
    * setModelIndex
-   * @param modelIndex TODO
+   * 
+   * @param modelIndex the index to set
    */
   public void setModelIndex(int modelIndex)
   {
@@ -234,7 +241,8 @@ public class TableColumn
 
   /**
    * getModelIndex
-   * @return int
+   * 
+   * @return the model index
    */
   public int getModelIndex()
   {
@@ -243,7 +251,8 @@ public class TableColumn
 
   /**
    * setIdentifier
-   * @param identifier TODO
+   * 
+   * @param identifier the identifier
    */
   public void setIdentifier(Object identifier)
   {
@@ -252,7 +261,8 @@ public class TableColumn
 
   /**
    * getIdentifier
-   * @return Object
+   * 
+   * @return the identifier
    */
   public Object getIdentifier()
   {
@@ -263,26 +273,23 @@ public class TableColumn
 
   /**
    * setHeaderValue
-   * @param headerValue TODO
+   * 
+   * @param headerValue the value of the header
    */
   public void setHeaderValue(Object headerValue)
   {
-    // Variables
-    Object oldValue;
-
-    // Get Old Value
-    oldValue = this.headerValue;
-
-    // Set Propeprty
+    if (this.headerValue == headerValue)
+      return;
+    
+    Object oldValue = this.headerValue;
     this.headerValue = headerValue;
-
-    // Notify Listeners of change
     firePropertyChange(HEADER_VALUE_PROPERTY, oldValue, headerValue);
   }
 
   /**
    * getHeaderValue
-   * @return Object
+   * 
+   * @return the value of the header
    */
   public Object getHeaderValue()
   {
@@ -291,7 +298,8 @@ public class TableColumn
 
   /**
    * setHeaderRenderer
-   * @param headerRenderer TODO
+   * 
+   * @param headerRenderer the renderer to se
    */
   public void setHeaderRenderer(TableCellRenderer renderer)
   {
@@ -315,7 +323,8 @@ public class TableColumn
 
   /**
    * setCellRenderer
-   * @param cellRenderer TODO
+   * 
+   * @param cellRenderer the cell renderer
    */
   public void setCellRenderer(TableCellRenderer renderer)
   {
@@ -330,7 +339,8 @@ public class TableColumn
 
   /**
    * getCellRenderer
-   * @return TableCellRenderer
+   * 
+   * @return the cell renderer
    */
   public TableCellRenderer getCellRenderer()
   {
@@ -339,7 +349,8 @@ public class TableColumn
 
   /**
    * setCellEditor
-   * @param cellEditor TODO
+   * 
+   * @param cellEditor the cell editor
    */
   public void setCellEditor(TableCellEditor cellEditor)
   {
@@ -348,7 +359,8 @@ public class TableColumn
 
   /**
    * getCellEditor
-   * @return TableCellEditor
+   * 
+   * @return the cell editor
    */
   public TableCellEditor getCellEditor()
   {
@@ -357,7 +369,8 @@ public class TableColumn
 
   /**
    * setWidth
-   * @param newWidth TODO
+   * 
+   * @param newWidth the width
    */
   public void setWidth(int newWidth)
   {
@@ -378,6 +391,7 @@ public class TableColumn
 
   /**
    * getWidth
+   * 
    * @return int
    */
   public int getWidth()
@@ -387,7 +401,8 @@ public class TableColumn
 
   /**
    * setPreferredWidth
-   * @param preferredWidth TODO
+   * 
+   * @param preferredWidth the preferred width
    */
   public void setPreferredWidth(int preferredWidth)
   {
@@ -401,7 +416,8 @@ public class TableColumn
 
   /**
    * getPreferredWidth
-   * @return int
+   * 
+   * @return the preferred width
    */
   public int getPreferredWidth()
   {
@@ -410,7 +426,8 @@ public class TableColumn
 
   /**
    * setMinWidth
-   * @param minWidth TODO
+   * 
+   * @param minWidth the minium width
    */
   public void setMinWidth(int minWidth)
   {
@@ -421,7 +438,8 @@ public class TableColumn
 
   /**
    * getMinWidth
-   * @return int
+   * 
+   * @return the minimum width
    */
   public int getMinWidth()
   {
@@ -430,7 +448,8 @@ public class TableColumn
 
   /**
    * setMaxWidth
-   * @param maxWidth TODO
+   * 
+   * @param maxWidth the maximum width
    */
   public void setMaxWidth(int maxWidth)
   {
@@ -441,7 +460,7 @@ public class TableColumn
 
   /**
    * getMaxWidth
-   * @return int
+   * @return the maximim width
    */
   public int getMaxWidth()
   {
@@ -450,7 +469,9 @@ public class TableColumn
 
   /**
    * setResizable
-   * @param isResizable TODO
+   * 
+   * @param isResizable <code>true</code> if this column is resizable,
+   * <code>false</code> otherwise
    */
   public void setResizable(boolean isResizable)
   {
@@ -459,7 +480,9 @@ public class TableColumn
 
   /**
    * getResizable
-   * @return boolean
+   * 
+   * @return <code>true</code> if this column is resizable,
+   * <code>false</code> otherwise
    */
   public boolean getResizable()
   {
