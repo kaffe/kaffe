@@ -6,6 +6,33 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([scripts])
 AC_CONFIG_SRCDIR([kaffe])
 
+# Copyright information. The nice sounding paragraphs about
+# GPLed portions has been taken from the GPL-d configure.ac
+# file of gimp-print project
+
+AC_COPYRIGHT([Copyright 1996 - 2004 Kaffe.org project contributors. All rights reserved.
+Portions Copyright 1996 - 2002 Transvirtual Technologies, Inc.
+Portions Copyright by various third parties, see file THIRDPARTY for details.
+
+This file is part of Kaffe Virtual Machine, a free software runtime
+for java applications. See http://www.kaffe.org for details.
+
+Parts of this configure script come from the `configure.in' file, and
+are not based on freely-redistributable m4 macros; you can redistribute
+them and/or modify them under the terms of the GNU General Public
+as published by the Free Software Foundation; either version 2, or (at
+your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+])
+
 AM_INIT_AUTOMAKE(kaffe, 1.1.x-cvs)
 
 AC_PREFIX_DEFAULT(/usr/local/kaffe)

@@ -1,6 +1,14 @@
 2004-01-14  Dalibor Topic <robilad@kaffe.org>
 
 	* configure.in:
+	(AC_COPYRIGHT) Added copyright information.
+
+	* configure:
+	Regenerated.
+
+2004-01-14  Dalibor Topic <robilad@kaffe.org>
+
+	* configure.in:
 	(AC_PREREQ) Require autoconf 2.59 for rebuilding configure.
 
 	* configure:
