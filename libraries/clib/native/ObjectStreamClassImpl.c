@@ -705,8 +705,12 @@ getFields(struct Hkaffe_io_ObjectStreamClassImpl* cls)
 		cnt++;
 	}
 
-	/* Sort the array */
-	qsort(unhand_array(array)->body, cnt, sizeof(void*), compare);
+	/* Sort the array - but only if it's standard and we're not using
+	 * the inner class compatibility system.
+	 */
+	if (offset == 0) {
+		qsort(unhand_array(array)->body, cnt, sizeof(void*), compare);
+	}
 
 	return (array);
 }

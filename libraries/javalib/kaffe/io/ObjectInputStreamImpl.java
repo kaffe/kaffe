@@ -52,7 +52,9 @@ public void close() throws IOException {
 
 public int read() throws IOException {
 	if (!buffering) {
-		return (in.read());
+		int v = in.read();
+//System.out.println("read " + v);
+		return (v);
 	}
 	if (pos < len) {
 		return ((int)(buffer[pos++] & 0xFF));

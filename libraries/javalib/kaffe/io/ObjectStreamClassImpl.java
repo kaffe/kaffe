@@ -107,6 +107,7 @@ public void getObjectWithoutSuper(Object obj, ObjectInputStream in, ObjectInputS
 
 public Object getClass(ObjectInputStream in, ObjectInputStreamImpl impl) throws StreamCorruptedException, OptionalDataException {
         try {
+//System.out.println("Getting class");
                 Object obj = allocateNewObject();
 		impl.makeObjectReference(obj);
 		invokeObjectReader0(obj, in);
@@ -114,7 +115,9 @@ public Object getClass(ObjectInputStream in, ObjectInputStreamImpl impl) throws 
 			throw new StreamCorruptedException("missing endblockdata");
                 }
 		// Get the superclass stream.
+//System.out.println("Getting superclass");
 		((ObjectStreamClassImpl)obj).superstream = (ObjectStreamClassImpl)in.readObject();
+//System.out.println("Done");
                 return (obj);
         }
         catch (IOException e1) {
