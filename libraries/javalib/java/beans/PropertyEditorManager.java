@@ -51,7 +51,8 @@ public class PropertyEditorManager {
     String editorname = editorClass.getName();
 
     // First try to load editor from package.
-    PropertyEditor editor = loadNamedPropertyEditor(editorname + "Editor");
+    PropertyEditor editor = loadNamedPropertyEditor(
+	editorClass.getClassLoader(), editorname + "Editor");
     if (editor != null) {
       return (editor);
     }
@@ -67,7 +68,8 @@ public class PropertyEditorManager {
 
     // Next try the search paths
     for (int i = 0; i < editorpath.length; i++) {
-      editor = loadNamedPropertyEditor(editorpath[i] + "." + editorname + "Editor");
+      editor = loadNamedPropertyEditor(editorClass.getClassLoader(),
+	editorpath[i] + "." + editorname + "Editor");
       if (editor != null) {
 	return (editor);
       }
@@ -76,10 +78,11 @@ public class PropertyEditorManager {
     return (null);
   }
 
-  private static PropertyEditor loadNamedPropertyEditor(String editorname)
+  private static PropertyEditor loadNamedPropertyEditor(ClassLoader loader,
+	String cl)
   {
     try {
-      return ((PropertyEditor)Class.forName(editorname).newInstance());
+      return (PropertyEditor)Class.forName(cl, true, loader).newInstance();
     }
     catch (ClassNotFoundException _) {
     }

@@ -300,7 +300,8 @@ private static BeanInfo loadBeanInfo(Class beanClass) {
 	String bname = beanClass.getName();
 
 	// First try to load bean info from package.
-	BeanInfo bean = loadNamedBean(bname + "BeanInfo");
+	BeanInfo bean = loadNamedBean(beanClass.getClassLoader(),
+	    bname + "BeanInfo");
 	if (bean != null) {
 		return (bean);
 	}
@@ -316,7 +317,8 @@ private static BeanInfo loadBeanInfo(Class beanClass) {
 
 	// Next try the search paths
 	for (int i = 0; i < beansearch.length; i++) {
-		bean = loadNamedBean(beansearch[i] + "." + bname + "BeanInfo");
+		bean = loadNamedBean(beanClass.getClassLoader(),
+		    beansearch[i] + "." + bname + "BeanInfo");
 		if (bean != null) {
 			return (bean);
 		}
@@ -325,9 +327,9 @@ private static BeanInfo loadBeanInfo(Class beanClass) {
 	return (null);
 }
 
-private static BeanInfo loadNamedBean(String bname) {
+private static BeanInfo loadNamedBean(ClassLoader loader, String cl) {
 	try {
-		return ((BeanInfo)Class.forName(bname).newInstance());
+		return (BeanInfo)Class.forName(cl, true, loader).newInstance();
 	}
 	catch (ClassNotFoundException _) {
 	}
