@@ -18,6 +18,9 @@ final public class StringBuffer
 	boolean isStringized;
 	final private int SPARECAPACITY = 16;
 
+	// This is what Sun's JDK1.1 "serialver java.lang.StringBuffer" says
+	private static final long serialVersionUID = 3388685877147921107L; 
+
 public StringBuffer() {
 	buffer = new char[SPARECAPACITY];
 }
