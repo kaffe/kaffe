@@ -1,3 +1,7 @@
+Mon Dec 14 13:20:30 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
+
+	* libraries/javalib/java/awt/widgets/List.java: fix for updateFlyOver.
+
 Mon Dec 14 10:55:26 1998  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/BufferedInputStream.java: rewrite

@@ -211,7 +211,7 @@ void updateFlyOver( int newIdx) {
 		
 	if ( (lov > -1) && (lov < rows.size() ) )
 		repaintItem( lov);
-	if ( newIdx > -1 )
+	if ( (newIdx > -1) && (newIdx < rows.size() ) )
 		repaintItem( newIdx);
 }
 
