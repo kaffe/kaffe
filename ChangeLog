@@ -9,11 +9,11 @@ Sun Dec 20 10:34:21 1998  Godmar Back  <gback@cs.utah.edu>
 	translator when called from Kaffe_JNI_Wrapper.  New functions
 	enterTranslator() and leaveTranslator().
 	* kaffe/kaffevm/jit/icode.c: fixed warning in softcall_lookupmethod
-	* kaffe/kaffevm/code-analyse.h, kaffe/kaffevm/jit/machine.c:
-	added code to align branch targets and function call entry points.
-	This code depends on MD macros (CALLTARGET_ALIGNMENT and 
-	JUMPTARGET_ALIGNMENT) which are currently not defined for any
-	architecture.
+	* kaffe/kaffevm/jit/machine.c: added code to align function call 
+	entry points.  This code depends on the MD macro CALLTARGET_ALIGNMENT.
+	* config/i386/jit.h: defined CALLTARGET_ALIGNMENT to 16 according
+	to Pentium II optimization manual.  Since we don't have gc_memalign, 
+	we must allocate 8 more bytes in jit/machine.c.
 
 Sat Dec 19 17:31:22 1998  Godmar Back  <gback@cs.utah.edu>
 

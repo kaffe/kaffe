@@ -132,4 +132,7 @@ extern void i386_do_fixup_trampoline(void);
 /* We don't have to flush the code out of cache on the i386 */
 #define	FLUSH_DCACHE(beg, end)	/* Do nothing */
 
+/* The Pentium optimization manual recommends these */
+#define CALLTARGET_ALIGNMENT	16
+
 #endif
