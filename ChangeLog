@@ -1,3 +1,13 @@
+Mon May 13 23:36:21 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* libraries/javalib/java/lang/reflect/Array.java:
+	(typeCache), (SEPARATOR) new private fields.
+	(getArrayType) new private method to resolve array types.
+	(getCachedType), (putTypeInCache) typeCache access methods.
+	(mangle) new method.
+	(multiNewArray) removed prototype.
+	(newInstanceInternal) rewritten to fix mauve failure and increase
+	performance.
+
 Sun May 12 12:25:28 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* kaffe/kaffevm/readClass.c,

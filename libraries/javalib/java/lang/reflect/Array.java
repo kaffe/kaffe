@@ -12,8 +12,17 @@
 
 package java.lang.reflect;
 
+import java.util.Map;
+import java.util.HashMap;
+
 public final class Array
 {
+/* This map is used to cache array types, since repeated native calls to
+ * resolve them are expensive. Key format is baseClass + "." + dimensions.
+ */
+private static final Map typeCache = new HashMap();
+private static final String SEPARATOR = ".";
+
 private Array() {
 }
     
@@ -59,6 +68,44 @@ public static Object get(Object array, int index) throws IllegalArgumentExceptio
 	}
 }
 
+
+/* A quick method to get an array type from a component type.
+ * This is the bottleneck of the multiArrayCreation. We speed it up
+ * using an array type cache.
+ * dimensions must be >= 1
+ */
+private static Class getArrayType(Class componentType, int dimensions) {
+	Class cachedType =  getCachedType(componentType, dimensions);
+	if (cachedType != null) {
+		return cachedType;
+	}
+
+	/* get a simple array of the component type first. If dimensions
+	 * is 1, that's all we'll need. If it isn't, then we only need to
+	 * append enough [ to the class name to get the array type name.
+	 */
+	Class simpleArrayType = newInstance(componentType, 0).getClass();
+	if (dimensions == 1) {
+		putTypeInCache(componentType, dimensions, simpleArrayType);
+		return simpleArrayType;
+	}
+	else {
+		StringBuffer buf = new StringBuffer(dimensions - 1);
+		for (int i = 0; i < dimensions - 1; ++ i) {
+			buf.append('[');
+		}
+		buf.append(simpleArrayType.getName());
+		try {
+			Class type = Class.forName(buf.toString());
+			putTypeInCache(componentType, dimensions, type);
+			return type;
+		}
+		catch (ClassNotFoundException e) {
+			throw new InternalError(e.getMessage());
+		}
+	}
+}
+
 public static boolean getBoolean(Object array, int index) throws IllegalArgumentException, ArrayIndexOutOfBoundsException {
 	if (array instanceof boolean[]) {
 		return (((boolean[])array)[index]);
@@ -75,6 +122,10 @@ public static byte getByte(Object array, int index) throws IllegalArgumentExcept
 	else {
 		throw new IllegalArgumentException();
 	}
+}
+
+private static Class getCachedType(Class componentType, int dimensions) {
+	return (Class) typeCache.get(mangle(componentType, dimensions));
 }
 
 public static char getChar(Object array, int index) throws IllegalArgumentException, ArrayIndexOutOfBoundsException {
@@ -190,7 +241,9 @@ public static short getShort(Object array, int index) throws IllegalArgumentExce
 
 native public static int getLength(Object array) throws IllegalArgumentException;
 
-native private static Object multiNewArray(Class componentType, int dimensions[]);
+private static String mangle(Class componentType, int dimensions) {
+	return componentType.getName() + SEPARATOR + dimensions;
+}
 
 native private static Object newArray(Class componentType, int len);
 
@@ -246,21 +299,28 @@ public static Object newInstance(Class componentType, int dimensions[]) throws I
 			throw new NegativeArraySizeException();
 		}
 	}
-
 	return (newInstanceInternal(componentType, dimensions, 0));
 }
 
 private static Object newInstanceInternal(Class componentType, int[] dimensions, int offset) {
-	Object obj = newInstance(componentType, dimensions[offset]);
-	offset++;
-	if (offset < dimensions.length) {
-		Object[] array = (Object[])obj;
-		componentType = componentType.getComponentType();
-		for (int i = dimensions[offset]; i >= 0; i--) {
-			array[i] = newInstanceInternal(componentType, dimensions, offset);
-		}
+	if (offset == (dimensions.length - 1)) {
+		return newInstance(componentType, dimensions[offset]);
 	}
-	return (obj);
+
+	Class arrayType = getArrayType(componentType, dimensions.length - 1 - offset);
+	Object[] array = (Object[]) newInstance(arrayType, dimensions[offset]);
+
+	for (int i = dimensions[offset] - 1; i >= 0; i--) {
+//		System.out.println("arr " + array.getClass());
+//		System.out.println("obj " + newInstanceInternal(componentType, dimensions, offset + 1).getClass());
+		array[i] = newInstanceInternal(componentType, dimensions, offset + 1);
+	}
+
+	return array;
+}
+
+private static void putTypeInCache(Class componentType, int dimensions, Class type) {
+	typeCache.put(mangle(componentType, dimensions), type);
 }
 
 public static void set(Object array, int index, Object value) throws IllegalArgumentException, ArrayIndexOutOfBoundsException {
