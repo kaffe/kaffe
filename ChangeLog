@@ -1,3 +1,28 @@
+2004-07-24  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/gnu/getopt/MessagesBundle_de.properties,
+	libraries/javalib/gnu/getopt/MessagesBundle_ja.properties,
+	libraries/javalib/gnu/getopt/MessagesBundle_hu.properties,
+	libraries/javalib/gnu/getopt/MessagesBundle_nl.properties,
+	libraries/javalib/gnu/getopt/MessagesBundle_fr.properties,
+	libraries/javalib/gnu/getopt/MessagesBundle_no.properties,
+	libraries/javalib/gnu/getopt/MessagesBundle_cs.properties,
+	libraries/javalib/gnu/getopt/MessagesBundle.properties,
+	libraries/javalib/gnu/getopt/Getopt.java,
+	libraries/javalib/gnu/getopt/LongOpt.java: Merged GNU Getopt
+	as it is needed by GNU Crypto.
+
+	* libraries/javalib/Makefile.am.in
+	(gnu_getopt_message_bundles): New variable.
+	(EXTRA_DIST): Added gnu_getopt_message_bundles.
+	(JAR_CMD6): New variable.
+	(rt.jar): Added JAR_CMD6.
+
+	* libraries/javalib/all.files: Added GNU Getopt classes.
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	Regenerated.
+
 2004-07-24  Mark Wielaard <mark@klomp.org>
 
 	2004-07-21  Michael Koch  <konqueror@gmx.de>

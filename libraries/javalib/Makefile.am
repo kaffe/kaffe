@@ -88,6 +88,7 @@ Klasses_jar_SRCS = \
 	$(gnu_crypto_tool_SRCS) \
 	$(gnu_crypto_tool_keytool_SRCS) \
 	$(gnu_crypto_util_SRCS) \
+	$(gnu_getopt_SRCS) \
 	$(gnu_inet_ftp_SRCS) \
 	$(gnu_inet_util_SRCS) \
 	$(gnu_java_awt_SRCS) \
@@ -755,6 +756,9 @@ gnu_crypto_util_SRCS = \
 	gnu/crypto/util/Sequence.java \
 	gnu/crypto/util/SimpleList.java \
 	gnu/crypto/util/Util.java
+gnu_getopt_SRCS = \
+	gnu/getopt/Getopt.java \
+	gnu/getopt/LongOpt.java
 gnu_inet_ftp_SRCS = \
 	gnu/inet/ftp/ActiveModeDTP.java \
 	gnu/inet/ftp/BlockInputStream.java \
@@ -4084,6 +4088,16 @@ gnu_java_locale_bundles = \
 	gnu/java/locale/iso639_ga.properties \
 	gnu/java/locale/iso639.properties
 
+gnu_getopt_message_bundles = \
+	gnu/getopt/MessagesBundle_cs.properties \
+       	gnu/getopt/MessagesBundle_ja.properties \
+	gnu/getopt/MessagesBundle_de.properties \
+       	gnu/getopt/MessagesBundle_nl.properties \
+	gnu/getopt/MessagesBundle_fr.properties \
+       	gnu/getopt/MessagesBundle_no.properties \
+	gnu/getopt/MessagesBundle_hu.properties \
+       	gnu/getopt/MessagesBundle.properties
+
 EXTRA_DIST = \
 	Makefile.am.in \
 	Klasses.jar.bootstrap \
@@ -4101,7 +4115,8 @@ EXTRA_DIST = \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
 	$(gnu_regexp_message_bundles) \
-	$(gnu_java_locale_bundles)
+	$(gnu_java_locale_bundles) \
+	$(gnu_getopt_message_bundles)
 
 dist-hook:
 	rm -rf `find $(distdir) -name CVS`
@@ -4146,12 +4161,14 @@ JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
 JAR_CMD3 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(gnu_regexp_message_bundles))
 JAR_CMD4 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(gnu_java_locale_bundles))
 JAR_CMD5 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(serialized_converters))
+JAR_CMD6 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(gnu_getopt_message_bundles))
 else
 JAR_CMD1 = $(JAR) -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
 JAR_CMD2 = $(JAR) -uvf rt.jar -C $(srcdir) META-INF/
 JAR_CMD3 = $(JAR) -uvf rt.jar -C $(srcdir) $(gnu_regexp_message_bundles)
 JAR_CMD4 = $(JAR) -uvf rt.jar -C $(srcdir) $(gnu_java_locale_bundles)
 JAR_CMD5 = $(JAR) -uvf rt.jar -C $(srcdir) $(serialized_converters)
+JAR_CMD6 = $(JAR) -uvf rt.jar -C $(srcdir) $(gnu_getopt_message_bundles)
 endif
 
 .PHONY: jar-classes
@@ -4166,6 +4183,7 @@ jar-classes rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 	$(JAR_CMD3)
 	$(JAR_CMD4)
 	$(JAR_CMD5)
+	$(JAR_CMD6)
 endif
 
 .PHONY: build-classes Klasses

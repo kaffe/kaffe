@@ -412,6 +412,7 @@ Klasses_jar_SRCS = \
 	$(gnu_crypto_tool_SRCS) \
 	$(gnu_crypto_tool_keytool_SRCS) \
 	$(gnu_crypto_util_SRCS) \
+	$(gnu_getopt_SRCS) \
 	$(gnu_inet_ftp_SRCS) \
 	$(gnu_inet_util_SRCS) \
 	$(gnu_java_awt_SRCS) \
@@ -1125,6 +1126,10 @@ gnu_crypto_util_SRCS = \
 	gnu/crypto/util/Sequence.java \
 	gnu/crypto/util/SimpleList.java \
 	gnu/crypto/util/Util.java
+
+gnu_getopt_SRCS = \
+	gnu/getopt/Getopt.java \
+	gnu/getopt/LongOpt.java
 
 gnu_inet_ftp_SRCS = \
 	gnu/inet/ftp/ActiveModeDTP.java \
@@ -4652,6 +4657,16 @@ gnu_java_locale_bundles = \
 	gnu/java/locale/iso639_ga.properties \
 	gnu/java/locale/iso639.properties
 
+gnu_getopt_message_bundles = \
+	gnu/getopt/MessagesBundle_cs.properties \
+       	gnu/getopt/MessagesBundle_ja.properties \
+	gnu/getopt/MessagesBundle_de.properties \
+       	gnu/getopt/MessagesBundle_nl.properties \
+	gnu/getopt/MessagesBundle_fr.properties \
+       	gnu/getopt/MessagesBundle_no.properties \
+	gnu/getopt/MessagesBundle_hu.properties \
+       	gnu/getopt/MessagesBundle.properties
+
 EXTRA_DIST = \
 	Makefile.am.in \
 	Klasses.jar.bootstrap \
@@ -4669,7 +4684,8 @@ EXTRA_DIST = \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
 	$(gnu_regexp_message_bundles) \
-	$(gnu_java_locale_bundles)
+	$(gnu_java_locale_bundles) \
+	$(gnu_getopt_message_bundles)
 
 LIBDIR = lib
 rebuildLib = ./rebuildLib
@@ -4683,6 +4699,8 @@ rebuildLib = ./rebuildLib
 @HAVE_ZIP_TRUE@JAR_CMD4 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(gnu_java_locale_bundles))
 @HAVE_ZIP_FALSE@JAR_CMD5 = $(JAR) -uvf rt.jar -C $(srcdir) $(serialized_converters)
 @HAVE_ZIP_TRUE@JAR_CMD5 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(serialized_converters))
+@HAVE_ZIP_FALSE@JAR_CMD6 = $(JAR) -uvf rt.jar -C $(srcdir) $(gnu_getopt_message_bundles)
+@HAVE_ZIP_TRUE@JAR_CMD6 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(gnu_getopt_message_bundles))
 all: all-recursive
 
 .SUFFIXES:
@@ -4883,7 +4901,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/gnu/java/locale $(distdir)/gnu/regexp $(distdir)/kaffe/io
+	$(mkdir_p) $(distdir)/gnu/getopt $(distdir)/gnu/java/locale $(distdir)/gnu/regexp $(distdir)/kaffe/io
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -5066,6 +5084,7 @@ $(srcdir)/Klasses.jar.bootstrap: bootstrap.classlist
 @USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD3)
 @USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD4)
 @USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD5)
+@USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD6)
 
 .PHONY: build-classes Klasses
 build-classes Klasses: rt.jar

@@ -417,6 +417,8 @@ gnu/crypto/util/PRNG.java
 gnu/crypto/util/Sequence.java
 gnu/crypto/util/SimpleList.java
 gnu/crypto/util/Util.java
+gnu/getopt/Getopt.java
+gnu/getopt/LongOpt.java
 gnu/inet/ftp/ActiveModeDTP.java
 gnu/inet/ftp/BlockInputStream.java
 gnu/inet/ftp/BlockOutputStream.java
