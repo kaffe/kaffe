@@ -36,12 +36,6 @@ Treat it as an TODO list.
 	    echo i386-unknown-win32/cygnus
 	    exit 0 ;;
 
-* When making test in the test dir, GCTest.java is flagged as failing
-  because output gets on one line:
-    [13]:  Success[43]:  Success[11]:  Success
-  Investigate whether a println("text") is supposed to be atomic or not;
-  if so, add needed synchronized statements.
-
 * Automatically generate the external_wrappers.h files in native, net, 
   math, and zip with a sed script or equivalent.  This might require moving 
   TestNative.c elsewhere.
@@ -58,10 +52,14 @@ Treat it as an TODO list.
   LD_LIBRARY_PATH (less likely), or a problem in the dynamic linking 
   mechanisms on this system.  Check the mailing list archive for more info.
 
-* Object serialization and RMI are broken because  Class UIDs are not computed.
+* Object serialization is broken because Class UIDs are not computed.
 
 * Several classes do not have serialVersionUIDs hard-coded in them. This
-  makes these classes not interoperable with Sun's classes.
+  makes these classes not interoperable with Sun's classes.  Note, however,
+  that simply putting in Sun's will not fix that: in order to allow 
+  interoperability, Sun would have to publish how the serialize objects
+  such as hashtable.  According to Tim, Sun at some point promised to do
+  that; it hasn't happened, though.
 
 * Object serialization is buggy.  For the JKernel, the system goes in an
   infinite loop.  When we use Sun's java.io.* classes, it will work fine,
@@ -69,4 +67,6 @@ Treat it as an TODO list.
   and restored using defaultWriteObject and defaultReadObject.  Weird. More
   investigation is needed.  (This is why java.util.Hashtable manually
   saves and restores its loadFactor.)  This is valid as of Jul 23, 1998.
+
+* Kaffe does not currently provide its own implementation of RMI.
 
