@@ -1,3 +1,8 @@
+2003-11-23 Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+	
+	* libraries/javalib/kaffe/applet/AppletTag.java
+	(parseForApplets):Fixed the parsing of empty <applet> tag.
+
 2003-11-23  Dalibor Topic <robilad@kaffe.org>
 
 	Updated build system to automake 1.7.9 and autoconf 2.58.
@@ -78,7 +83,7 @@
         * configure.in:
 	Fixed automake 1.7.9 warnings.
 	
-2002-11-23  Dalibor Topic <robilad@kaffe.org>	
+2003-11-23  Dalibor Topic <robilad@kaffe.org>	
 
 	Fixed build with kjc.
 	
@@ -90,7 +95,7 @@
 	Added java/awt/geom/CubicCurve2D.java and
 	java/awt/geom/QuadCurve2D.java.
 
-2002-11-22  Dalibor Topic <robilad@kaffe.org>
+2003-11-22  Dalibor Topic <robilad@kaffe.org>
 
 	Partially resynced with GNU Classpath. Detailed ChangeLog follows.
 

@@ -269,6 +269,7 @@ public static AppletTag[] parseForApplets(InputStream is) throws IOException
             if ( ttype == st.TT_WORD ) {
                 if ( st.sval.equals("applet") ) {
                     currentTag = new AppletTag( st);
+                    st.ordinaryChar('/');
                 }
                 else if ( st.sval.equals( "param") ) {
                     if (currentTag != null) {
@@ -281,6 +282,8 @@ public static AppletTag[] parseForApplets(InputStream is) throws IOException
                 if (ttype == st.TT_WORD && st.sval.equals("applet")) {
                     tags.addElement(currentTag);
                     currentTag = null;
+                    st.wordChars('/', '/');
+                    st.wordChars(':', ':');
                 }
             }
         }
