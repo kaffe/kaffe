@@ -161,30 +161,30 @@ public int getKeyCode() {
 }
 
 public static String getKeyModifiersText ( int modifiers ) {
-	String s = "";
+	StringBuffer sb = new StringBuffer();
 	int i = 0;
 
 	if ( (modifiers & META_MASK) != 0 ){
 		i++;
-		s += "Meta";
+		sb.append ("Meta");
 	}
 
 	if ( (modifiers & CTRL_MASK) != 0 ) {
-		if ( i++ > 0 ) s += '+';
-		s += "Ctrl";
+		if ( i++ > 0 ) sb.append ('+');
+		sb.append ("Ctrl");
 	}
 
 	if ( (modifiers & ALT_MASK) != 0 ) {
-		if ( i++ > 0 ) s += '+';
-		s += "Alt";
+		if ( i++ > 0 ) sb.append ('+');
+		sb.append ("Alt");
 	}
 
 	if ( (modifiers & InputEvent.SHIFT_MASK) != 0 ){
-		if ( i++ > 0 ) s += '+';
-		s += "Shift";
+		if ( i++ > 0 ) sb.append ('+');
+		sb.append ("Shift");
 	}
 
-	return s;
+	return sb.toString();
 }
 
 public static String getKeyText ( int keyCode ) {
