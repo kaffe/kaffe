@@ -1,3 +1,25 @@
+2003-06-30  Rob Gonzalez <rob@kaffe.org>
+
+	Many of the regression tests were failing when jikes 1.18
+	was used to compile them due to extraneous warnings produced
+	by the compiler and unrelated to the success of kaffe.
+	These updates make the classes compile without warning.
+	
+	* test/regression/ThreadState.java
+	(assert): renamed to check(...)
+	
+	* test/regression/SortTest.java
+	(assert): renamed to check(...)
+	
+	* test/regression/MapTest.java
+	(assert): renamed to check(...)
+	
+	* test/regression/finaltest.java
+	(finaltest2): renamed to finaltest_PI
+	
+	* test/regression/LineNumberReaderTest.java
+	(class Test*): renamed to LineNumberReader_Test*
+
 2003-06-29  Rob Gonzalez <rob@kaffe.org>
 
 	* kaffe/kaffevm/verify.c

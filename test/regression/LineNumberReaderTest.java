@@ -3,7 +3,7 @@
 
 import java.io.*;
 
-class Test {
+class LineNumberReader_Test {
 
   // Print a failure message
   public static void failure(Class test, Exception e) {
@@ -23,9 +23,9 @@ class Test {
 
 }
 
-class Test1 extends Test {
+class LineNumberReader_Test1 extends LineNumberReader_Test {
   // Construct from null
-  public Test1() {
+  public LineNumberReader_Test1() {
     super();
 
     try {
@@ -38,10 +38,10 @@ class Test1 extends Test {
   }
 }
 
-class Test2 extends Test {
+class LineNumberReader_Test2 extends LineNumberReader_Test {
 
   // Construct with size 0
-  public Test2() {
+  public LineNumberReader_Test2() {
     super();
 
     try {
@@ -55,10 +55,10 @@ class Test2 extends Test {
   }
 }
 
-class Test3 extends Test {
+class LineNumberReader_Test3 extends LineNumberReader_Test {
 
   // Construct with negative size
-  public Test3() {
+  public LineNumberReader_Test3() {
     super();
 
     try {
@@ -72,7 +72,7 @@ class Test3 extends Test {
   }
 }
 
-class NewLNR extends Test {
+class NewLNR extends LineNumberReader_Test {
 
   // Create a new line number reader to experiment with
   protected StringReader sr;
@@ -90,10 +90,10 @@ class NewLNR extends Test {
   }
 }
 
-class Test4 extends NewLNR {
+class LineNumberReader_Test4 extends NewLNR {
 
   // Initial line number
-  public Test4() {
+  public LineNumberReader_Test4() {
     super();
 
     try {
@@ -106,10 +106,10 @@ class Test4 extends NewLNR {
   }
 }
 
-class Test5 extends NewLNR {
+class LineNumberReader_Test5 extends NewLNR {
 
   // read ahead limit = 0
-  public Test5() {
+  public LineNumberReader_Test5() {
     super();
 
     try {
@@ -122,10 +122,10 @@ class Test5 extends NewLNR {
   }
 }
 
-class Test6 extends NewLNR {
+class LineNumberReader_Test6 extends NewLNR {
 
   // read ahead limit < 0
-  public Test6() {
+  public LineNumberReader_Test6() {
     super();
 
     try {
@@ -138,10 +138,10 @@ class Test6 extends NewLNR {
   }
 }
 
-class Test7 extends NewLNR {
+class LineNumberReader_Test7 extends NewLNR {
 
   // read into non-existent character array
-  public Test7() {
+  public LineNumberReader_Test7() {
     super();
 
     try {
@@ -155,10 +155,10 @@ class Test7 extends NewLNR {
   }
 }
 
-class Test8 extends NewLNR {
+class LineNumberReader_Test8 extends NewLNR {
 
   // read past end of character array
-  public Test8() {
+  public LineNumberReader_Test8() {
     super();
 
     try {
@@ -172,10 +172,10 @@ class Test8 extends NewLNR {
   }
 }
 
-class Test9 extends NewLNR {
+class LineNumberReader_Test9 extends NewLNR {
 
   // read past end of character array
-  public Test9() {
+  public LineNumberReader_Test9() {
     super();
 
     try {
@@ -189,10 +189,10 @@ class Test9 extends NewLNR {
   }
 }
 
-class Test10 extends NewLNR {
+class LineNumberReader_Test10 extends NewLNR {
 
   // read at negative offset
-  public Test10() {
+  public LineNumberReader_Test10() {
     super();
 
     try {
@@ -206,10 +206,10 @@ class Test10 extends NewLNR {
   }
 }
 
-class Test11 extends NewLNR {
+class LineNumberReader_Test11 extends NewLNR {
 
   // read negative amount of characters
-  public Test11() {
+  public LineNumberReader_Test11() {
 
     try {
       int r = lnr.read(new char[1], 0, -5);
@@ -222,10 +222,10 @@ class Test11 extends NewLNR {
   }
 }
 
-class Test12 extends NewLNR {
+class LineNumberReader_Test12 extends NewLNR {
 
   // read correct amount of characters
-  public Test12() {
+  public LineNumberReader_Test12() {
 
     try {
       System.out.println(bufferlength);
@@ -239,10 +239,10 @@ class Test12 extends NewLNR {
   }
 }
 
-class Test13 extends NewLNR {
+class LineNumberReader_Test13 extends NewLNR {
 
   // set line number to 0
-  public Test13() {
+  public LineNumberReader_Test13() {
     try {
       lnr.setLineNumber(0);
       System.out.println(lnr.getLineNumber());
@@ -254,10 +254,10 @@ class Test13 extends NewLNR {
   }
 }
 
-class Test14 extends NewLNR {
+class LineNumberReader_Test14 extends NewLNR {
 
   // set line number to < 0
-  public Test14() {
+  public LineNumberReader_Test14() {
     try {
       lnr.setLineNumber(-5);
       System.out.println(lnr.getLineNumber());
@@ -269,11 +269,11 @@ class Test14 extends NewLNR {
   }
 }
 
-class Test15 extends NewLNR {
+class LineNumberReader_Test15 extends NewLNR {
 
   // read \n
 
-  public Test15() {
+  public LineNumberReader_Test15() {
     super("\n");
 
     try {
@@ -287,11 +287,11 @@ class Test15 extends NewLNR {
   }
 }
 
-class Test16 extends NewLNR {
+class LineNumberReader_Test16 extends NewLNR {
 
     // read \r (compression test)
 
-  public Test16() {
+  public LineNumberReader_Test16() {
     super("\r");
 
     try {
@@ -306,11 +306,11 @@ class Test16 extends NewLNR {
   }
 }
 
-class Test17 extends NewLNR {
+class LineNumberReader_Test17 extends NewLNR {
 
   // read \r\n (compression test)
 
-  public Test17() {
+  public LineNumberReader_Test17() {
     super("\r\n");
 
     try {
@@ -325,11 +325,11 @@ class Test17 extends NewLNR {
   }
 }
 
-class Test18 extends NewLNR {
+class LineNumberReader_Test18 extends NewLNR {
 
   // read \r\r\n (compression test)
 
-  public Test18() {
+  public LineNumberReader_Test18() {
     super("\r\r\n");
 
     try {
@@ -345,11 +345,11 @@ class Test18 extends NewLNR {
   }
 }
 
-class Test19 extends NewLNR {
+class LineNumberReader_Test19 extends NewLNR {
 
   // read \n
 
-  public Test19() {
+  public LineNumberReader_Test19() {
     super("\n");
 
     try {
@@ -367,11 +367,11 @@ class Test19 extends NewLNR {
   }
 }
 
-class Test20 extends NewLNR {
+class LineNumberReader_Test20 extends NewLNR {
 
   // read \r (compression test)
 
-  public Test20() {
+  public LineNumberReader_Test20() {
     super("\r");
 
     try {
@@ -389,11 +389,11 @@ class Test20 extends NewLNR {
   }
 }
 
-class Test21 extends NewLNR {
+class LineNumberReader_Test21 extends NewLNR {
 
   // read \r\n (compression test)
 
-  public Test21() {
+  public LineNumberReader_Test21() {
     super("\r\n");
 
     try {
@@ -411,11 +411,11 @@ class Test21 extends NewLNR {
   }
 }
 
-class Test22 extends NewLNR {
+class LineNumberReader_Test22 extends NewLNR {
 
   // read \r\r\n (compression test)
 
-  public Test22() {
+  public LineNumberReader_Test22() {
     super("\r\r\n");
 
     try {
@@ -435,12 +435,12 @@ class Test22 extends NewLNR {
   }
 }
 
-class Test23 extends NewLNR {
+class LineNumberReader_Test23 extends NewLNR {
 
   // read \r\r\n (compression test)
   // read(,,) *doesn't* compress characters
 
-  public Test23() {
+  public LineNumberReader_Test23() {
     super("\r\n");
 
     try {
@@ -460,11 +460,11 @@ class Test23 extends NewLNR {
   }
 }
 
-class Test24 extends NewLNR {
+class LineNumberReader_Test24 extends NewLNR {
 
   // read \r\r\n (compression test)
 
-  public Test24() {
+  public LineNumberReader_Test24() {
     super("\r\n\r");
 
     try {
@@ -480,11 +480,11 @@ class Test24 extends NewLNR {
   }
 }
 
-class Test25 extends NewLNR {
+class LineNumberReader_Test25 extends NewLNR {
 
   // read \r\r\n (compression test)
 
-  public Test25() {
+  public LineNumberReader_Test25() {
     super("\r\r\n");
 
     try {
@@ -504,11 +504,11 @@ class Test25 extends NewLNR {
   }
 }
 
-class Test26 extends NewLNR {
+class LineNumberReader_Test26 extends NewLNR {
 
   // read \r\n\r (compression test)
   // with interleaving read() and read (,,)
-  public Test26() {
+  public LineNumberReader_Test26() {
     super("\r\n\r");
 
     try {
@@ -526,12 +526,12 @@ class Test26 extends NewLNR {
   }
 }
 
-class Test27 extends NewLNR {
+class LineNumberReader_Test27 extends NewLNR {
 
   // read \r\n\r (compression test)
   // with interleaving read() and read (,,)
 
-  public Test27() {
+  public LineNumberReader_Test27() {
     super("\r\n\r");
 
     try {
@@ -550,7 +550,7 @@ class Test27 extends NewLNR {
   }
 }
 
-class Test28 extends NewLNR {
+class LineNumberReader_Test28 extends NewLNR {
 
     // read \r\n\r (compression test)
     // with interleaving read() and read (,,)
@@ -569,7 +569,7 @@ class Test28 extends NewLNR {
       System.out.println(lnr.read());
     }
 
-  public Test28() {
+  public LineNumberReader_Test28() {
     super("\r\n\r");
 
     try {
@@ -586,7 +586,7 @@ class Test28 extends NewLNR {
   }
 }
 
-class Test29 extends NewLNR {
+class LineNumberReader_Test29 extends NewLNR {
 
     // read \r\n\r (compression test)
     // with interleaving read() and read (,,)
@@ -606,7 +606,7 @@ class Test29 extends NewLNR {
 	+ " , " + new Integer(ch[0]).toString());
     }
 
-  public Test29() {
+  public LineNumberReader_Test29() {
     super("\r\n\r");
 
     try {
@@ -623,10 +623,10 @@ class Test29 extends NewLNR {
   }
 }
 
-class Test30 extends NewLNR {
+class LineNumberReader_Test30 extends NewLNR {
 
     // reset without a mark
-    public Test30 () {
+    public LineNumberReader_Test30 () {
 	try {
 	    lnr.reset();
 	    success(this.getClass());
@@ -637,13 +637,13 @@ class Test30 extends NewLNR {
     }
 }
 
-class Test31 extends NewLNR {
+class LineNumberReader_Test31 extends NewLNR {
 
     // getLineNumber, mark, setLineNumber, reset, and getLineNumber.
     // is it the line number before the mark was set, or the set line number?
     // the spec is not clear on this one.
 
-    public Test31 () {
+    public LineNumberReader_Test31 () {
 	try {
 	    System.out.println(lnr.getLineNumber());
 	    lnr.mark(5);
@@ -658,14 +658,14 @@ class Test31 extends NewLNR {
     }
 }
 
-class Test32 extends NewLNR {
+class LineNumberReader_Test32 extends NewLNR {
 
     // readLine() after end of buffer
     // what's the line number ?
 
     // It should be one for the default NewLNR.
 
-    public Test32 () {
+    public LineNumberReader_Test32 () {
 	try {
 	    System.out.println(lnr.readLine());
 	    lnr.readLine();
@@ -678,11 +678,11 @@ class Test32 extends NewLNR {
     }
 }
 
-class Test33 extends NewLNR {
+class LineNumberReader_Test33 extends NewLNR {
 
   // read \r\n (compression test)
 
-  public Test33() {
+  public LineNumberReader_Test33() {
     super("\r\n");
 
     try {
@@ -697,11 +697,11 @@ class Test33 extends NewLNR {
   }
 }
 
-class Test34 extends NewLNR {
+class LineNumberReader_Test34 extends NewLNR {
 
   // read \r\r\n (compression test)
 
-  public Test34() {
+  public LineNumberReader_Test34() {
     super("\r\r\n");
 
     try {
@@ -717,12 +717,12 @@ class Test34 extends NewLNR {
   }
 }
 
-class Test35 extends NewLNR {
+class LineNumberReader_Test35 extends NewLNR {
 
     // read \r\nX\n
     // readLine should return "X"
 
-    public Test35 () {
+    public LineNumberReader_Test35 () {
 	super("\r\nX\n");
 
 	try {
@@ -744,11 +744,11 @@ class Test35 extends NewLNR {
     }
 }
 
-class Test36 extends NewLNR {
+class LineNumberReader_Test36 extends NewLNR {
 
     // readLine() gets EOF before a line terminator
     // what's the line number ?
-    public Test36 () {
+    public LineNumberReader_Test36 () {
 	try {
 	    System.out.println(lnr.readLine());
 	    System.out.println(lnr.getLineNumber());
@@ -760,11 +760,11 @@ class Test36 extends NewLNR {
     }
 }
 
-class Test37 extends NewLNR {
+class LineNumberReader_Test37 extends NewLNR {
 
     // negative skip
 
-    public Test37 () {
+    public LineNumberReader_Test37 () {
 	try {
 	    lnr.skip(-5);
 	    success(this.getClass());
@@ -775,13 +775,13 @@ class Test37 extends NewLNR {
     }
 }
 
-class Test38 extends NewLNR {
+class LineNumberReader_Test38 extends NewLNR {
 
     // skip at EOF
     // what does it return? Spec says number of characters read.
     // so it should be 0.
 
-    public Test38 () {
+    public LineNumberReader_Test38 () {
 	super("");
 	try {
 	    System.out.println(lnr.skip(1));
@@ -794,11 +794,11 @@ class Test38 extends NewLNR {
     }
 }
 
-class Test39 extends NewLNR {
+class LineNumberReader_Test39 extends NewLNR {
 
     // skip: as how many characters does \r\n count?
 
-    public Test39 () {
+    public LineNumberReader_Test39 () {
 	super("\r\nXY");
 	try {
 	    System.out.println(lnr.skip(2));
@@ -812,12 +812,12 @@ class Test39 extends NewLNR {
     }
 }
 
-class Test40 extends NewLNR {
+class LineNumberReader_Test40 extends NewLNR {
 
     // skip from \n part of \r\n
     // how many characters skipped?
 
-    public Test40 () {
+    public LineNumberReader_Test40 () {
 	super("\r\nXY");
 	try {
 	    System.out.println(lnr.read(new char[1], 0, 1));
@@ -832,10 +832,10 @@ class Test40 extends NewLNR {
     }
 }
 
-class Test41 extends NewLNR {
+class LineNumberReader_Test41 extends NewLNR {
     // skip \r\n
 
-    public Test41 () {
+    public LineNumberReader_Test41 () {
 	super("\r\nX\r\nY");
 	try {
 	    System.out.println(lnr.skip(2));
@@ -851,189 +851,189 @@ class Test41 extends NewLNR {
 
 public class LineNumberReaderTest {
 
-  // Test driver
+  // LineNumberReader_Test driver
   public static void main (String[] args) {
-    new Test1();
-    new Test2();
-    new Test3();
-    new Test4();
-    new Test5();
-    new Test6();
-    new Test7();
-    new Test8();
-    new Test9();
-    new Test10();
-    new Test11();
-    new Test12();
-    new Test13();
-    new Test14();
-    new Test15();
-    new Test16();
-    new Test17();
-    new Test18();
-    new Test19();
-    new Test20();
-    new Test21();
-    new Test22();
-    new Test23();
-    new Test24();
-    new Test25();
-    new Test26();
-    new Test27();
-    new Test28();
-    new Test29();
-    new Test30();
-    new Test31();
-    new Test32();
-    new Test33();
-    new Test34();
-    new Test35();
-    new Test36();
-    new Test37();
-    new Test38();
-    new Test39();
-    new Test40();
-    new Test41();
+    new LineNumberReader_Test1();
+    new LineNumberReader_Test2();
+    new LineNumberReader_Test3();
+    new LineNumberReader_Test4();
+    new LineNumberReader_Test5();
+    new LineNumberReader_Test6();
+    new LineNumberReader_Test7();
+    new LineNumberReader_Test8();
+    new LineNumberReader_Test9();
+    new LineNumberReader_Test10();
+    new LineNumberReader_Test11();
+    new LineNumberReader_Test12();
+    new LineNumberReader_Test13();
+    new LineNumberReader_Test14();
+    new LineNumberReader_Test15();
+    new LineNumberReader_Test16();
+    new LineNumberReader_Test17();
+    new LineNumberReader_Test18();
+    new LineNumberReader_Test19();
+    new LineNumberReader_Test20();
+    new LineNumberReader_Test21();
+    new LineNumberReader_Test22();
+    new LineNumberReader_Test23();
+    new LineNumberReader_Test24();
+    new LineNumberReader_Test25();
+    new LineNumberReader_Test26();
+    new LineNumberReader_Test27();
+    new LineNumberReader_Test28();
+    new LineNumberReader_Test29();
+    new LineNumberReader_Test30();
+    new LineNumberReader_Test31();
+    new LineNumberReader_Test32();
+    new LineNumberReader_Test33();
+    new LineNumberReader_Test34();
+    new LineNumberReader_Test35();
+    new LineNumberReader_Test36();
+    new LineNumberReader_Test37();
+    new LineNumberReader_Test38();
+    new LineNumberReader_Test39();
+    new LineNumberReader_Test40();
+    new LineNumberReader_Test41();
   }
 
 }
 // Results from IBM JRE 1.3
 /* Expected Output:
-class Test1 failed
+class LineNumberReader_Test1 failed
 java.lang.NullPointerException
-class Test2 failed
+class LineNumberReader_Test2 failed
 java.lang.IllegalArgumentException: Buffer size <= 0
-class Test3 failed
+class LineNumberReader_Test3 failed
 java.lang.IllegalArgumentException: Buffer size <= 0
 0
-class Test4 succeeded
-class Test5 succeeded
-class Test6 failed
+class LineNumberReader_Test4 succeeded
+class LineNumberReader_Test5 succeeded
+class LineNumberReader_Test6 failed
 java.lang.IllegalArgumentException: Read-ahead limit < 0
-class Test7 failed
+class LineNumberReader_Test7 failed
 java.lang.NullPointerException
-class Test8 failed
+class LineNumberReader_Test8 failed
 java.lang.IndexOutOfBoundsException
-class Test9 failed
+class LineNumberReader_Test9 failed
 java.lang.IndexOutOfBoundsException
-class Test10 failed
+class LineNumberReader_Test10 failed
 java.lang.IndexOutOfBoundsException
-class Test11 failed
+class LineNumberReader_Test11 failed
 java.lang.IndexOutOfBoundsException
 1
 1
-class Test12 succeeded
+class LineNumberReader_Test12 succeeded
 0
-class Test13 succeeded
+class LineNumberReader_Test13 succeeded
 -5
-class Test14 succeeded
+class LineNumberReader_Test14 succeeded
 10
 -1
-class Test15 succeeded
-10
--1
-1
-class Test16 succeeded
+class LineNumberReader_Test15 succeeded
 10
 -1
 1
-class Test17 succeeded
+class LineNumberReader_Test16 succeeded
+10
+-1
+1
+class LineNumberReader_Test17 succeeded
 10
 10
 -1
 2
-class Test18 succeeded
+class LineNumberReader_Test18 succeeded
 1 , 10
 -1 , 10
 1
-class Test19 succeeded
+class LineNumberReader_Test19 succeeded
 1 , 13
 -1 , 13
 1
-class Test20 succeeded
+class LineNumberReader_Test20 succeeded
 1 , 13
 1 , 10
 1
-class Test21 succeeded
+class LineNumberReader_Test21 succeeded
 1 , 13
 1 , 13
 1 , 10
 2
-class Test22 succeeded
+class LineNumberReader_Test22 succeeded
 2 , 13 , 10
 1
-class Test23 succeeded
+class LineNumberReader_Test23 succeeded
 10
 10
 -1
 2
-class Test24 succeeded
+class LineNumberReader_Test24 succeeded
 1 , 13
 1 , 13
 1 , 10
 2
-class Test25 succeeded
+class LineNumberReader_Test25 succeeded
 10
 1 , 10
 10
 2
-class Test26 succeeded
+class LineNumberReader_Test26 succeeded
 1 , 13
 10
 -1 , 13
 2
-class Test27 succeeded
+class LineNumberReader_Test27 succeeded
 10
 1 , 10
 10
 1 , 10
 10
 2
-class Test28 succeeded
+class LineNumberReader_Test28 succeeded
 1 , 13
 10
 -1 , 0
 10
 -1 , 0
 2
-class Test29 succeeded
-class Test30 failed
+class LineNumberReader_Test29 succeeded
+class LineNumberReader_Test30 failed
 java.io.IOException: Stream not marked
 0
 0
-class Test31 succeeded
+class LineNumberReader_Test31 succeeded
 X
 1
-class Test32 succeeded
+class LineNumberReader_Test32 succeeded
 
 1
-class Test33 succeeded
+class LineNumberReader_Test33 succeeded
 
 
 2
-class Test34 succeeded
+class LineNumberReader_Test34 succeeded
 1 , 13
 X
-class Test35 succeeded
+class LineNumberReader_Test35 succeeded
 X
 1
-class Test36 succeeded
-class Test37 failed
+class LineNumberReader_Test36 succeeded
+class LineNumberReader_Test37 failed
 java.lang.IllegalArgumentException: skip() value is negative
 0
 0
-class Test38 succeeded
+class LineNumberReader_Test38 succeeded
 2
 88
 1
-class Test39 succeeded
+class LineNumberReader_Test39 succeeded
 1
 1
 88
 1
-class Test40 succeeded
+class LineNumberReader_Test40 succeeded
 2
 88
 1
-class Test41 succeeded
+class LineNumberReader_Test41 succeeded
 */

@@ -43,7 +43,7 @@ public class ThreadState extends Thread {
 	verbose("main joining " + threads[i].getName());
 	threads[i].join();
       } catch (InterruptedException e) {
-	assert(false, "main " + e);
+	check(false, "main " + e);
       }
     }
     System.exit(0);
@@ -60,29 +60,29 @@ public class ThreadState extends Thread {
 	try {
 	  this.wait(0);
 	} catch (InterruptedException e) {
-	  assert(false, "thread " + e);
+	  check(false, "thread " + e);
 	}
 	verbose(ThreadState.this.getName() + " child thread exiting");
       }
     };
 
     // Check state
-    assert(!t.isAlive(), "alive before start()");
+    check(!t.isAlive(), "alive before start()");
     verbose(getName() + " starting child thread");
     t.start();
-    assert(t.isAlive(), "dead after start()");
+    check(t.isAlive(), "dead after start()");
 
     // Check setDaemon after start()
     try {
       t.setDaemon(false);
-      assert(false, "setDaemon() after start");
+      check(false, "setDaemon() after start");
     } catch (IllegalThreadStateException e) {
     }
 
     // Check double start()
     try {
       t.start();
-      assert(false, "start() while alive");
+      check(false, "start() while alive");
     } catch (IllegalThreadStateException e) {
     }
 
@@ -101,14 +101,14 @@ public class ThreadState extends Thread {
     try {
       t.join();
     } catch (InterruptedException e) {
-      assert(false, "join: " + e);
+      check(false, "join: " + e);
     }
-    assert(!t.isAlive(), "alive after join()");
+    check(!t.isAlive(), "alive after join()");
 
     // Check double start()
     try {
       t.start();
-      assert(false, "start() after dead");
+      check(false, "start() after dead");
     } catch (IllegalThreadStateException e) {
     }
 
@@ -119,7 +119,7 @@ public class ThreadState extends Thread {
     verbose(getName() + " exiting");
   }
 
-  public static void assert(boolean that, String msg) {
+  public static void check(boolean that, String msg) {
     if (!that) {
       System.err.println("Failure: " + msg);
       System.exit(1);
