@@ -1,6 +1,7 @@
 Tue Dec 22 10:30:16 1998  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffeh/Makefile.in: fix bugs reported by Raffaele Sena
+	* kaffe/kaffevm/hashtab.c: tweaks suggested by Edouard
 
 Mon Dec 21 23:30:26 1998  Archie Cobbs <archie@whistle.com>
 
