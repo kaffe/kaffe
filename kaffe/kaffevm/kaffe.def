@@ -2318,7 +2318,7 @@ define_insn(INVOKEINTERFACE)
 
 	slot_alloctmp(tmp);
 
-	get_method_info(idx);
+	get_interface_method_info(idx);
 
 	/* If method doesn't exist, call 'NoSuchMethodError' */
 	/* NB: This means that the interface class does not have the method

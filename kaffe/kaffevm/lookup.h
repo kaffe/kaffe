@@ -39,7 +39,7 @@ typedef struct _fieldInfo {
 	Utf8Const*		signature;
 } fieldInfo;
 
-bool	getMethodSignatureClass(constIndex, Hjava_lang_Class*, bool, bool, callInfo*, errorInfo*);
+bool	getMethodSignatureClass(constIndex, Hjava_lang_Class*, bool, int, callInfo*, errorInfo*);
 bool	getField(constIndex, Hjava_lang_Class*, bool, fieldInfo*, errorInfo*);
 Hjava_lang_Class* getClass(constIndex, Hjava_lang_Class*, errorInfo*);
 

@@ -22,11 +22,15 @@
 #define	object_array_length	(ARRAY_SIZE_OFFSET)
 
 #define get_method_info(idx)  \
-  if (getMethodSignatureClass(idx, meth->class, true, false, &cinfo, &einfo) \
+  if (getMethodSignatureClass(idx, meth->class, true, 0, &cinfo, &einfo) \
 	== false) { throwError(&einfo); }
 
 #define get_special_method_info(idx)  \
-  if (getMethodSignatureClass(idx, meth->class, true, true, &cinfo, &einfo) \
+  if (getMethodSignatureClass(idx, meth->class, true, 1, &cinfo, &einfo) \
+        == false) { throwError(&einfo); }
+
+#define get_interface_method_info(idx)  \
+  if (getMethodSignatureClass(idx, meth->class, true, 2, &cinfo, &einfo) \
         == false) { throwError(&einfo); }
 
 #define	get_dispatch_table(mtable) \

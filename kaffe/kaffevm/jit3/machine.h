@@ -36,19 +36,13 @@
 /* Methods */
 
 #define	get_method_info(IDX) \
-	getMethodSignatureClass((constIndex)(IDX), xmeth->class, false, &cinfo)
-#define	get_special_method_info(IDX) \
-	getMethodSignatureClass((constIndex)(IDX), xmeth->class, true, &cinfo)
-
-/* Desktop edition */
-#undef	get_method_info
-#undef	get_special_method_info
-
-#define	get_method_info(IDX) \
-	if (getMethodSignatureClass(idx, xmeth->class, true, false, &cinfo, einfo) == false) { success = false; goto done; }
+	if (getMethodSignatureClass(idx, xmeth->class, true, 0, &cinfo, einfo) == false) { success = false; goto done; }
 
 #define get_special_method_info(IDX) \
-	if (getMethodSignatureClass(idx, xmeth->class, true, true, &cinfo, einfo) == false) { success = false; goto done; }
+	if (getMethodSignatureClass(idx, xmeth->class, true, 1, &cinfo, einfo) == false) { success = false; goto done; }
+
+#define	get_interface_method_info(IDX) \
+	if (getMethodSignatureClass(idx, xmeth->class, true, 2, &cinfo, einfo) == false) { success = false; goto done; }
 
 #define	method_name()	(cinfo.name)
 #define	method_sig()	(cinfo.signature)

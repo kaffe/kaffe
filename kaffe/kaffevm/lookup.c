@@ -41,7 +41,7 @@ static void throwAbstractMethodError(void);
  * call->method is set to NULL in this case.
  */
 bool
-getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool loadClass, bool isSpecial, callInfo* call, errorInfo *einfo)
+getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool loadClass, int isSpecial, callInfo* call, errorInfo *einfo)
 {
 	constants* pool;
 	constIndex ci;
@@ -49,6 +49,8 @@ getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool loadClass, 
 	Hjava_lang_Class* class;
 	Utf8Const* name;
 	Utf8Const* sig;
+	Method* mptr;
+	int i;
 
 	pool = CLASS_CONSTANTS(this);
 	if (pool->tags[idx] != CONSTANT_Methodref &&
@@ -80,7 +82,7 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
 		}
 		assert(class->state >= CSTATE_LINKED);
 
-                if (isSpecial == true) {
+                if (isSpecial == 1) {
                         if (!utf8ConstEqual(name, constructor_name) && class !=
  this && instanceof(class, this)) {
                                 class = this->superclass;
@@ -93,13 +95,29 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
 		/* Find method - we don't use findMethod(...) yet since this
 		 * will initialise our class (and we don't want to do that).
 		 */
+		mptr = 0;
 		for (; class != 0; class = class->superclass) {
-			Method* mptr = findMethodLocal(class, name, sig);
+			mptr = findMethodLocal(class, name, sig);
 			if (mptr != NULL) {
 				call->method = mptr;
 				break;
 			}
 		}
+#if 0
+                /* If we've not found anything and we're searching interfaces,
+                 * search them too.
+                 */
+                if (mptr == 0 && isSpecial == 2) {
+                        class = call->class;
+                        for (i = class->total_interface_len - 1; i >= 0; i--) {
+                                mptr = findMethodLocal(class->interfaces[i], name, sig);
+                                if (mptr != 0) {
+                                        call->method = mptr;
+                                        break;
+                                }
+                        }
+                }
+#endif
 	}
 
 	/* Calculate in's and out's */

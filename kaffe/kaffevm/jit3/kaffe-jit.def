@@ -2387,7 +2387,7 @@ define_insn(INVOKEINTERFACE)
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 
-	get_method_info(idx);
+	get_interface_method_info(idx);
 
 	/* If method doesn't exists, call 'NoSuchMethodError' */
 	if (method_method() == 0) {
