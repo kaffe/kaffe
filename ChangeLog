@@ -1,5 +1,10 @@
 2004-03-29  Adam Heath <doogie@debian.org>
 
+	* kaffe/kaffevm/jni_i.h:
+	New file.
+
+2004-03-29  Adam Heath <doogie@debian.org>
+
 	Added NONRETURNING where gcc warned
 	about it.
 

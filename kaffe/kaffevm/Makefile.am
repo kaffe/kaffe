@@ -122,6 +122,7 @@ noinst_HEADERS = \
 	inflate.h \
 	itypes.h \
 	jar.h \
+	jni_i.h \
 	jnirefs.h \
 	ksem.h \
 	lerrno.h \
