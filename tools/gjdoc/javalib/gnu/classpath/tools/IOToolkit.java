@@ -20,9 +20,11 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 
 package gnu.classpath.tools;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -168,4 +170,30 @@ public class IOToolkit
       buffer.getChars(0, buffer.length(), result, 0);
       return result;
    }
+
+   public static String getLineFromFile(File file, int line)
+      throws IOException
+   {
+      FileReader reader = new FileReader(file);
+      BufferedReader bufferedReader = new BufferedReader(reader);
+      while (line > 1) {
+         bufferedReader.readLine();
+         -- line;
+      }
+      String result = bufferedReader.readLine();
+      reader.close();
+      return result;
+   }
+
+   public static String getColumnDisplayLine(int column)
+   {
+      StringBuffer result = new StringBuffer();
+      while (column > 0) {
+         result.append(' ');
+         --column;
+      }
+      result.append('^');
+      return result.toString();
+   }
+
 }

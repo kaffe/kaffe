@@ -404,7 +404,7 @@ public class Java2xhtml
         int saveIndex = 0;
         char presentChar = 0;
         State presentState = State.TEXT;
-        StringBuffer bufferOut = new StringBuffer();
+        StringBuffer bufferOut = new StringBuffer(8192);
         if (!isCodeSnippet)
         {
             bufferOut.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"); 
@@ -836,8 +836,8 @@ public class Java2xhtml
                     continue;  // keep adding characters to qualified identifier
                 }
                 String identifier = 
-                    bufferOut.toString().substring(bufferOut.length() - 
-                                                   identifierLength);
+                    bufferOut.substring(bufferOut.length() - 
+                                        identifierLength);
                 if ((State.PARAM_VARIABLE == presentState))
                 {
                     // any identifier after a param in a javadoc is assumed to

@@ -31,8 +31,11 @@ public class ClassDocProxy implements ClassDoc, WritableType {
    private ClassDoc classContext;
    private String dimension = "";
 
-   public ClassDocProxy(String qualifiedName, ClassDoc classContext) {
-      this.qualifiedName=qualifiedName;
+   public ClassDocProxy(String qualifiedName, ClassDoc classContext) 
+   {
+      this.qualifiedName
+         = Main.getRootDoc().resolveClassName(qualifiedName, 
+                                              (ClassDocImpl)classContext);
       this.classContext=classContext;
       int pndx=qualifiedName.lastIndexOf('.');
       if (pndx>=0) {
@@ -43,7 +46,8 @@ public class ClassDocProxy implements ClassDoc, WritableType {
       }
    }
 
-   private final String errorText() {
+   private final String errorText() 
+   {
       return "CLASS "+qualifiedName+" NOT LOADED.";
    }
 
@@ -56,6 +60,7 @@ public class ClassDocProxy implements ClassDoc, WritableType {
    public ClassDoc[] importedClasses() { return new ClassDoc[0]; } 
    public PackageDoc[] importedPackages() { return new PackageDoc[0]; } 
    public ClassDoc[] innerClasses() { return new ClassDoc[0]; } 
+   public ClassDoc[] innerClasses(boolean filtered) { return new ClassDoc[0]; } 
    public ClassDoc[] interfaces() { return new ClassDoc[0]; } 
    public boolean isAbstract() { return false; } 
    public boolean isExternalizable() { return false; } 
@@ -97,7 +102,6 @@ public class ClassDocProxy implements ClassDoc, WritableType {
    public int modifierSpecifier() { return 0; } 
    public String qualifiedName() { return qualifiedName; } 
    public String commentText() { return null; } 
-   public int compareTo(java.lang.Object obj) { return 0; } 
    public Tag[] firstSentenceTags() { return new Tag[0]; } 
    public String getRawCommentText() { return null; } 
    public Tag[] inlineTags() { return new Tag[0]; } 
@@ -120,6 +124,7 @@ public class ClassDocProxy implements ClassDoc, WritableType {
    public String qualifiedTypeName() { return qualifiedName; }
    public String dimension() { return dimension; }
    public ClassDoc asClassDoc() { return this; }
+   public boolean isPrimitive() { return false; }
 
    public String toString() { return "ClassDocProxy{"+qualifiedName+", context="+classContext+"}"; }
 
@@ -130,5 +135,14 @@ public class ClassDocProxy implements ClassDoc, WritableType {
    public Object clone() throws CloneNotSupportedException {
       return super.clone();
    }
-}
 
+   // Compares this Object with the specified Object for order. 
+   public int compareTo(java.lang.Object o) {
+      if (o instanceof Doc) {
+         return Main.getInstance().getCollator().compare(name(), ((Doc)o).name());
+      }
+      else {
+         return 0;
+      }
+   }
+}

@@ -26,6 +26,10 @@ import java.text.*;
 
 public class ThrowsTagImpl extends AbstractTagImpl implements ThrowsTag {
 
+   private ClassDoc exception;
+   private String exceptionName;
+   private String exceptionComment;
+
    public ThrowsTagImpl(String text, 
                         ClassDocImpl contextClass,
                         MemberDocImpl contextMember) {
@@ -43,20 +47,24 @@ public class ThrowsTagImpl extends AbstractTagImpl implements ThrowsTag {
 	    break;
 	 }
       }
-      if (contextClass==null) {
-	 this.exception=(ClassDocImpl)Main.getRootDoc().classNamed(exceptionName);
+      if (null != exceptionName) {
+         if (contextClass==null) {
+            this.exception=Main.getRootDoc().classNamed(exceptionName);
+         }
+         else {
+            this.exception=contextClass.findClass(exceptionName);
+         }
+         if (exception!=null)
+            this.exceptionName=exception.qualifiedName();
+         else {
+            if (text.trim().startsWith("<")) {
+               Main.getRootDoc().printWarning("Expected exception name but got '"+text+"' in class "+contextClass.getClassName());
+            }
+         }
       }
       else {
-	 this.exception=(ClassDocImpl)contextClass.findClass(exceptionName);
+         Main.getRootDoc().printWarning("@throws tag in comment for " + contextClass.qualifiedName() + "." + contextMember.name() + " doesn't specify an exception.");
       }
-      if (exception!=null)
-	 this.exceptionName=exception.qualifiedName();
-      else {
-	 if (text.trim().startsWith("<")) {
-	    Main.getRootDoc().printWarning("Expected exception name but got '"+text+"' in class "+contextClass.getClassName());
-	 }
-      }
-      
       if (this.exceptionComment!=null) {
          setBody(this.exceptionComment, contextClass, contextMember);
       }
@@ -77,8 +85,4 @@ public class ThrowsTagImpl extends AbstractTagImpl implements ThrowsTag {
    public String kind() {
       return "@throws";
    }
-
-   private ClassDocImpl	exception;
-   private String	exceptionName;
-   private String	exceptionComment;
 }

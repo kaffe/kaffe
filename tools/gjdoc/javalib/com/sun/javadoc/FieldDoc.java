@@ -78,6 +78,18 @@ public abstract Object
 constantValue();
 
 
+/*************************************************************************/
+
+/**
+  * This method returns the value of this static field converted to a
+  * human-readable string.
+  *
+  * @return The value of this static field as a human-readable string.
+  */
+public abstract String
+constantValueExpression();
+
+
 
 } // interface FieldDoc
 

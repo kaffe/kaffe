@@ -27,6 +27,19 @@ package gnu.classpath.tools.doclets.htmldoclet;
  */
 public class CssClass
 {
+   public static final CssClass BODY_MENU_PACKAGES        = new CssClass("menu packages");
+   public static final CssClass BODY_MENU_CLASSES         = new CssClass("menu classes");
+   public static final CssClass BODY_CONTENT_CLASS        = new CssClass("content class");
+   public static final CssClass BODY_CONTENT_DEPRECATED   = new CssClass("content deprecated");
+   public static final CssClass BODY_CONTENT_PACKAGE      = new CssClass("content package");
+   public static final CssClass BODY_CONTENT_OVERVIEW     = new CssClass("content overview");
+   public static final CssClass BODY_CONTENT_ABOUT        = new CssClass("content about");
+   public static final CssClass BODY_CONTENT_HELP         = new CssClass("content help");
+   public static final CssClass BODY_CONTENT_PACKAGE_TREE = new CssClass("content packagetree");
+   public static final CssClass BODY_CONTENT_FULL_TREE    = new CssClass("content fulltree");
+   public static final CssClass BODY_CONTENT_INDEX        = new CssClass("content index");
+   public static final CssClass BODY_CONTENT_USES         = new CssClass("content uses");
+
    public static final CssClass OVERVIEW_TITLE = new CssClass("overview title", "h1");
    public static final CssClass OVERVIEW_SUMMARY = new CssClass("overview summary");
    public static final CssClass OVERVIEW_SUMMARY_LEFT = new CssClass("overview summary left");
@@ -42,6 +55,14 @@ public class CssClass
    public static final CssClass DEPRECATION_TOC_LIST = new CssClass("deprecation toc list", "ul");
    public static final CssClass DEPRECATION_TOC_ENTRY = new CssClass("deprecation toc entry", "li");
 
+   public static final CssClass SERIALIZED_TITLE = new CssClass("serialized title", "h1");
+   public static final CssClass SERIALIZED_PACKAGE_HEADER = new CssClass("serialized package header", "h2");
+   public static final CssClass SERIALIZED_CLASS_HEADER = new CssClass("serialized class header", "h3");
+   public static final CssClass SERIALIZED_SVUID_OUTER = new CssClass("serialized svuid outer", "p");
+   public static final CssClass SERIALIZED_SVUID_HEADER = new CssClass("serialized svuid header", "b");
+   public static final CssClass SERIALIZED_SVUID_VALUE = new CssClass("serialized svuid header");
+   public static final CssClass SERIALIZED_SECTION_HEADER = new CssClass("serialized section header", "h4");
+
    public static final CssClass PACKAGE_TITLE = new CssClass("package title", "h1");
    public static final CssClass PACKAGE_SUMMARY = new CssClass("package summary");
    public static final CssClass PACKAGE_SUMMARY_LEFT = new CssClass("package summary left");
@@ -50,14 +71,21 @@ public class CssClass
    public static final CssClass PACKAGE_DESCRIPTION_FULL = new CssClass("package description full");
    public static final CssClass PACKAGE_TREE_TITLE = new CssClass("package tree title", "h1");
    public static final CssClass PACKAGE_TREE_SECTION_TITLE = new CssClass("package tree section title", "h2");
+   public static final CssClass TREE_LINK = new CssClass("tree link", "b");
 
-   public static final CssClass PACKAGE_MENU_LIST = new CssClass("package menu list", "dd");
-   public static final CssClass PACKAGE_MENU_ENTRY = new CssClass("package menu entry", "dt");
-   public static final CssClass PACKAGE_MENU_TITLE = new CssClass("package menu title", "h4");
+   public static final CssClass FULL_TREE_PACKAGELIST = new CssClass("fulltree package list", "dl");
+   public static final CssClass FULL_TREE_PACKAGELIST_HEADER = new CssClass("fulltree package header", "dt", "b");
+   public static final CssClass FULL_TREE_PACKAGELIST_ITEM = new CssClass("fulltree package item", "dd");
 
-   public static final CssClass CLASS_MENU_LIST = new CssClass("package menu list", "dd");
-   public static final CssClass CLASS_MENU_ENTRY = new CssClass("package menu entry", "dt");
-   public static final CssClass CLASS_MENU_TITLE = new CssClass("package menu title", "h4");
+   public static final CssClass PACKAGE_MENU_LIST = new CssClass("package menu-list", "div");
+   public static final CssClass PACKAGE_MENU_ENTRY = new CssClass("package menu-entry");
+   public static final CssClass PACKAGE_MENU_TITLE = new CssClass("package menu-title", "h4");
+
+   public static final CssClass CLASS_MENU_LIST = new CssClass("classes menu-list", "div");
+   public static final CssClass CLASS_MENU_TITLE = new CssClass("classes menu-title", "h4");
+   public static final CssClass CLASS_MENU_SUBTITLE = new CssClass("classes menu-subtitle", "p");
+   public static final CssClass CLASS_MENU_ENTRY_CLASS = new CssClass("classes menu-entry class");
+   public static final CssClass CLASS_MENU_ENTRY_INTERFACE = new CssClass("classes menu-entry interface", "i");
 
    public static final CssClass INDEX_TITLE = new CssClass("index title", "h1");
    public static final CssClass INDEX_CATEGORY = new CssClass("index category");
@@ -71,16 +99,31 @@ public class CssClass
    public static final CssClass CLASS_TITLE = new CssClass("class title outer");
    public static final CssClass CLASS_TITLE_PACKAGE = new CssClass("class title-package", "h3");
    public static final CssClass CLASS_TITLE_CLASS = new CssClass("class title-class", "h1");
-   public static final CssClass CLASS_SUBCLASSES = new CssClass("class subclasses");
-   public static final CssClass CLASS_SUBCLASSES_HEADER = new CssClass("class subclasses header", "h4");
+   public static final CssClass CLASS_SUBCLASSES = new CssClass("class subclasses", "dl");
+   public static final CssClass CLASS_SUBCLASSES_HEADER = new CssClass("class subclasses header", "dt", "b");
+   public static final CssClass CLASS_SUBCLASSES_ITEM = new CssClass("class subclasses header", "dd");
+   public static final CssClass CLASS_ENCLOSINGCLASS = new CssClass("class enclosing", "dl");
+   public static final CssClass CLASS_ENCLOSINGCLASS_HEADER = new CssClass("class enclosing header", "dt", "b");
+   public static final CssClass CLASS_ENCLOSINGCLASS_ITEM = new CssClass("class enclosing item", "dd");
+   public static final CssClass CLASS_KNOWNIMPLEMENTING = new CssClass("class knownimplementing", "dl");
+   public static final CssClass CLASS_KNOWNIMPLEMENTING_HEADER = new CssClass("header", "dt", "b");
+   public static final CssClass CLASS_KNOWNIMPLEMENTING_ITEM = new CssClass("item", "dd");
+   public static final CssClass CLASS_INHERITANCETREE = new CssClass("class inheritance-tree");
    public static final CssClass CLASS_SYNOPSIS = new CssClass("class synopsis outer");
-   public static final CssClass CLASS_SYNOPSIS_DECLARATION = new CssClass("class synopsis declaration");
-   public static final CssClass CLASS_SYNOPSIS_SUPERCLASS = new CssClass("class synopsis superclass");
-   public static final CssClass CLASS_SYNOPSIS_IMPLEMENTS = new CssClass("class synopsis implements");
+   public static final CssClass CLASS_SYNOPSIS_NAME = new CssClass("class synopsis name", "b");
+   public static final CssClass CLASS_SYNOPSIS_DECLARATION = new CssClass("class synopsis declaration", "div", "code");
+   public static final CssClass CLASS_SYNOPSIS_SUPERCLASS = new CssClass("class synopsis superclass", "div", "code");
+   public static final CssClass CLASS_SYNOPSIS_IMPLEMENTS = new CssClass("class synopsis implements", "div", "code");
    public static final CssClass CLASS_DESCRIPTION = new CssClass("class description");
    public static final CssClass CLASS_SUMMARY = new CssClass("class summary");
-   public static final CssClass CLASS_SUMMARY_LEFT = new CssClass("class summary left");
+   public static final CssClass CLASS_SUMMARY_LEFT = new CssClass("class summary left", new String[] { "valign" }, new String[] { "top" });
+   public static final CssClass CLASS_SUMMARY_LEFT_SYNOPSIS = new CssClass("class summary left synopsis", "code");
    public static final CssClass CLASS_SUMMARY_RIGHT = new CssClass("class summary right");
+   public static final CssClass CLASS_SUMMARY_RIGHT_LIST = new CssClass("class summary right list", "dl");
+   public static final CssClass CLASS_SUMMARY_RIGHT_SYNOPSIS = new CssClass("class summary right synopsis", "dt", "code");
+   public static final CssClass CLASS_SUMMARY_RIGHT_DESCRIPTION = new CssClass("class summary right description", "dd");
+   public static final CssClass CLASS_SUMMARY_INHERITED = new CssClass("class summary inherited");
+   public static final CssClass CLASS_SUMMARY_INHERITED_MEMBER = new CssClass("member", "code");
    public static final CssClass CLASS_BOILERPLATE = new CssClass("boilerplate", "pre", new String[] { "style" }, new String[] { "font-size: x-small;" });
 
    public static final CssClass USAGE_TITLE = new CssClass("usage title", "h1");
@@ -91,35 +134,56 @@ public class CssClass
    public static final CssClass USAGE_SUMMARY_RIGHT = new CssClass("usage summary right");
    public static final CssClass MEMBER_DETAIL = new CssClass("member detail outer");
    public static final CssClass MEMBER_DETAIL_NAME = new CssClass("member detail name", "h3");
-   public static final CssClass MEMBER_DETAIL_SYNOPSIS = new CssClass("member detail synopsis", "p");
+   public static final CssClass MEMBER_DETAIL_BODY = new CssClass("member detail name", "blockquote");
+   public static final CssClass MEMBER_DETAIL_SYNOPSIS = new CssClass("member detail synopsis", "code");
    public static final CssClass MEMBER_DETAIL_DESCRIPTION = new CssClass("member detail description");
-   public static final CssClass MEMBER_DETAIL_SPECIFIED_BY_LIST = new CssClass("member detail specified by list");
-   public static final CssClass MEMBER_DETAIL_SPECIFIED_BY_HEADER = new CssClass("member detail specified by header", "h4");
-   public static final CssClass MEMBER_DETAIL_SPECIFIED_BY_ITEM = new CssClass("member detail specified by item");
-   public static final CssClass MEMBER_DETAIL_OVERRIDDEN_LIST = new CssClass("member detail overridden list");
-   public static final CssClass MEMBER_DETAIL_OVERRIDDEN_HEADER = new CssClass("member detail overridden header", "h4");
-   public static final CssClass MEMBER_DETAIL_OVERRIDDEN_ITEM = new CssClass("member detail overridden item");
-   public static final CssClass MEMBER_DETAIL_PARAMETER_LIST = new CssClass("member detail parameter list");
-   public static final CssClass MEMBER_DETAIL_PARAMETER_HEADER = new CssClass("member detail parameter header", "h4");
-   public static final CssClass MEMBER_DETAIL_PARAMETER_ITEM = new CssClass("member detail parameter item");
-   public static final CssClass MEMBER_DETAIL_RETURN_LIST = new CssClass("member detail return list");
-   public static final CssClass MEMBER_DETAIL_RETURN_HEADER = new CssClass("member detail return header", "h4");
-   public static final CssClass MEMBER_DETAIL_RETURN_ITEM = new CssClass("member detail return item");
-   public static final CssClass MEMBER_DETAIL_THROWN_LIST = new CssClass("member detail thrown list");
-   public static final CssClass MEMBER_DETAIL_THROWN_HEADER = new CssClass("member detail thrown header", "h4");
-   public static final CssClass MEMBER_DETAIL_THROWN_ITEM = new CssClass("member detail thrown item");
+   public static final CssClass MEMBER_DETAIL_SPECIFIED_BY_LIST = new CssClass("member detail specified by list", "dl");
+   public static final CssClass MEMBER_DETAIL_SPECIFIED_BY_HEADER = new CssClass("member detail specified by header", "dt", "b");
+   public static final CssClass MEMBER_DETAIL_SPECIFIED_BY_ITEM = new CssClass("member detail specified by item", "dd");
+   public static final CssClass MEMBER_DETAIL_OVERRIDDEN_LIST = new CssClass("member detail overridden list", "dl");
+   public static final CssClass MEMBER_DETAIL_OVERRIDDEN_HEADER = new CssClass("member detail overridden header", "dt", "b");
+   public static final CssClass MEMBER_DETAIL_OVERRIDDEN_ITEM = new CssClass("member detail overridden item", "dd");
+   public static final CssClass MEMBER_DETAIL_PARAMETER_LIST = new CssClass("parameter", "p", "dl");
+   public static final CssClass MEMBER_DETAIL_PARAMETER_HEADER = new CssClass("header", "dt", "b");
+   public static final CssClass MEMBER_DETAIL_PARAMETER_ITEM = new CssClass("item", "dd");
+   public static final CssClass MEMBER_DETAIL_PARAMETER_ITEM_NAME = new CssClass("name", "code");
+   public static final CssClass MEMBER_DETAIL_PARAMETER_ITEM_SEPARATOR = new CssClass("separator");
+   public static final CssClass MEMBER_DETAIL_PARAMETER_ITEM_DESCRIPTION = new CssClass("description");
+   public static final CssClass MEMBER_DETAIL_RETURN_LIST = new CssClass("member detail return list", "p", "dl");
+   public static final CssClass MEMBER_DETAIL_RETURN_HEADER = new CssClass("member detail return header", "dt", "b");
+   public static final CssClass MEMBER_DETAIL_RETURN_ITEM = new CssClass("member detail return item", "dd");
+   public static final CssClass MEMBER_DETAIL_THROWN_LIST = new CssClass("member detail thrown list", "p", "dl");
+   public static final CssClass MEMBER_DETAIL_THROWN_HEADER = new CssClass("member detail thrown header", "dt", "b");
+   public static final CssClass MEMBER_DETAIL_THROWN_ITEM = new CssClass("member detail thrown item", "dd");
+   public static final CssClass MEMBER_DETAIL_THROWN_ITEM_NAME = new CssClass("name", "code");
+   public static final CssClass MEMBER_DETAIL_THROWN_ITEM_SEPARATOR = new CssClass("separator");
+   public static final CssClass MEMBER_DETAIL_THROWN_ITEM_DESCRIPTION = new CssClass("description");
 
-   public static final CssClass TABLE_HEADER = new CssClass("table header", "h4");
+   public static final CssClass TABLE_HEADER = new CssClass("table header", "h2");
+   public static final CssClass TABLE_SUB_HEADER = new CssClass("table sub header", "h3");
+   public static final CssClass TABLE_CONTAINER = new CssClass("table container", "dl");
+
+   public static final CssClass SECTION_HEADER = new CssClass("section header", "h2");
 
    public static final CssClass NAVBAR_TOP = new CssClass("navbar div top");
    public static final CssClass NAVBAR_BOTTOM = new CssClass("navbar div bottom");
-   public static final CssClass NAVBAR_BOTTOM_SPACER = new CssClass("navbar div bottom spacer", "p");
+   public static final CssClass NAVBAR_BOTTOM_SPACER = new CssClass("navbar bottom spacer", "p");
    public static final CssClass NAVBAR_ITEM_ENABLED = new CssClass("navbar item enabled");
    public static final CssClass NAVBAR_ITEM_DISABLED = new CssClass("navbar item disabled");
    public static final CssClass NAVBAR_ITEM_ACTIVE = new CssClass("navbar item active");
 
+   public static final CssClass TAGLET = new CssClass("taglet", "p");
+
+   public static final CssClass ABOUT_GENERATOR = new CssClass("about generator", "p");
+
+   public static final CssClass DEPRECATED = new CssClass("deprecated", "span");
+   public static final CssClass DEPRECATED_INLINE = new CssClass("deprecated", "p");
+   public static final CssClass DEPRECATED_HEADER = new CssClass("deprecated header", "b");
+   public static final CssClass DEPRECATED_BODY = new CssClass("deprecated", "i");
+
    private String name;
    private String elementName;
+   private String innerElementName;
    private String[] attributeNames;
    private String[] attributeValues;
 
@@ -130,14 +194,29 @@ public class CssClass
 
    private CssClass(String name, String elementName)
    {
-      this(name, elementName, null, null);
+      this(name, elementName, null);
    }
 
+   private CssClass(String name, String elementName, String innerElementName)
+   {
+      this(name, elementName, innerElementName, null, null);
+   }
 
    private CssClass(String name, String elementName, String[] attributeNames, String[] attributeValues)
    {
+      this(name, null, null, attributeNames, attributeValues);
+   }
+
+   private CssClass(String name, String[] attributeNames, String[] attributeValues)
+   {
+      this(name, null, null, attributeNames, attributeValues);
+   }
+
+   private CssClass(String name, String elementName, String innerElementName, String[] attributeNames, String[] attributeValues)
+   {
       this.name = name;
       this.elementName = elementName;
+      this.innerElementName = innerElementName;
       this.attributeNames = attributeNames;
       this.attributeValues = attributeValues;
    }
@@ -160,6 +239,11 @@ public class CssClass
       else {
          return "div";
       }
+   }
+
+   public String getInnerElementName()
+   {
+      return this.innerElementName;
    }
 
    public String[] getAttributeNames()

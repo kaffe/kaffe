@@ -80,5 +80,12 @@ toString();
 public abstract ClassDoc
 asClassDoc();
 
+/**
+  * This method returns whether this type represents one of the
+  * built-in Java primitive types.
+  */
+public abstract boolean
+isPrimitive();
+
 } // interface Type
 

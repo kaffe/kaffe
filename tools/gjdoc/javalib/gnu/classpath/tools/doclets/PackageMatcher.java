@@ -100,21 +100,31 @@ public class PackageMatcher
     *  array given will be put into the output list if it matches one
     *  or more of the wildcards added to this PackageMatcher before.
     */
-   public SortedSet match(PackageDoc[] packageDocs)
+   public SortedSet filter(PackageDoc[] packageDocs)
    {
       SortedSet result = new TreeSet();
       for (int i=0; i<packageDocs.length; ++i) {
-         PackageDoc packageDoc = packageDocs[i];
-         Iterator it = patterns.iterator();
-         while (it.hasNext()) {
-            Pattern pattern = (Pattern)it.next();
-            Matcher matcher = pattern.matcher(packageDoc.name());
-            if (matcher.matches()) {
-               result.add(packageDoc);
-               break;
-            }
+         if (match(packageDocs[i])) {
+            result.add(packageDocs[i]);
          }
       }
       return result;
+   }
+
+   /**
+    *  Return true when the given PackageDoc matches one or more of
+    *  the wildcard added to this PackageMatcher before.
+    */
+   public boolean match(PackageDoc packageDoc)
+   {
+      Iterator it = patterns.iterator();
+      while (it.hasNext()) {
+         Pattern pattern = (Pattern)it.next();
+         Matcher matcher = pattern.matcher(packageDoc.name());
+         if (matcher.matches()) {
+            break;
+         }
+      }
+      return false;
    }
 }

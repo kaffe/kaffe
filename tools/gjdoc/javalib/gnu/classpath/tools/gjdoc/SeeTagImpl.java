@@ -26,6 +26,7 @@ import java.text.*;
 
 public class SeeTagImpl extends AbstractTagImpl implements SeeTag {
 
+   protected String     reference;
    private String       referencedClassName;
    private String       referencedMemberName;
    private ClassDoc     referencedClass;
@@ -37,11 +38,21 @@ public class SeeTagImpl extends AbstractTagImpl implements SeeTag {
    public SeeTagImpl(String text, ClassDocImpl contextClass) {
       super(text);
       this.contextClass=contextClass;
+      if (null == contextClass) {
+         Thread.dumpStack();
+      }
    }
 
    public void resolve() {
 
       super.resolve();
+
+      text = text.trim();
+
+      if (text.startsWith("<") || text.startsWith("\"")) {
+         label = text;
+         return;
+      }
 
       int labelNdx=text.indexOf(';');
       if (labelNdx>=0) {
@@ -49,35 +60,41 @@ public class SeeTagImpl extends AbstractTagImpl implements SeeTag {
 	 return;
       }
 
-      labelNdx=text.indexOf(')');
+      for (int i=0; i<text.length(); ++i) {
+         if (" \t\r\n".indexOf(text.charAt(i)) >= 0) {
+            labelNdx = i;
+            break;
+         }
+      }
 
-      String ref;
+      int openParenNdx = text.indexOf('(');
+      if (openParenNdx >= 0 && openParenNdx < labelNdx) {
+         labelNdx=text.indexOf(')', openParenNdx);
+         if (labelNdx >= 0) {
+            ++ labelNdx;
+         }
+      }
 
-      if (labelNdx<0) {
-	 ref=text.trim();
+      if (labelNdx<0 || labelNdx>=text.length()) {
+	 reference=text.trim();
 	 label="";
       }
       else {
-	 ref=text.substring(0,labelNdx+1).trim();
-	 label=text.substring(labelNdx+1).trim();
-
-	 /*
-	 if (label.length()>0)
-	    System.err.println("have ref "+ref+", label "+label+".");
-	 */
+	 reference=text.substring(0,labelNdx).trim();
+	 label=text.substring(labelNdx).trim();
       }  
 
-      int mspecNdx=ref.indexOf('#');
+      int mspecNdx=reference.indexOf('#');
       String referencedFqName;
       if (mspecNdx<0) {
-	 referencedFqName=ref;
+	 referencedFqName=reference;
       }
       else {
-	 referencedFqName=ref.substring(0,mspecNdx);
-	 referencedMemberName=ref.substring(mspecNdx+1);
-      }
+	 referencedFqName=reference.substring(0,mspecNdx);
+	 referencedMemberName=reference.substring(mspecNdx+1); 
+     }
 
-      // the following is in condratiction to the api docs, but
+      // the following is in contradiction to the api docs, but
       // conform to sun javadoc: return fully qualified classname
       // with referencedClassName().
       if (referencedFqName.trim().length()>0) {
@@ -105,22 +122,37 @@ public class SeeTagImpl extends AbstractTagImpl implements SeeTag {
 	 if (referencedMemberName!=null) {
 	    if (referencedMemberName.indexOf('(')<0) {
 	       referencedMember=((ClassDocImpl)referencedClass).findField(referencedMemberName);
+               if (null == referencedMember) {
+                  MethodDoc[] methods = ((ClassDocImpl)referencedClass).methods();
+                  for (int i=0; i<methods.length; ++i) {
+                     if (methods[i].name().equals(referencedMemberName)) {
+                        if (null == referencedMember) {
+                           referencedMember = methods[i];
+                        }
+                        else {
+                           referencedClass = null;
+                           referencedMember = null;
+                           //print warning here
+                           break;
+                        }
+                     }
+                  }
+               }
 	    }
 	    else {
 	       referencedMember=((ClassDocImpl)referencedClass).findExecutableRec(referencedMemberName);
-	    }
-	    if (referencedMember==null) {
-	       //System.err.println("cannot find member for '"+referencedMemberName+"'");
+               if (referencedMember==null) {
+                  //System.err.println("cannot find member for '"+referencedMemberName+"'");
+                  referencedClass = null;
+               }
 	    }
 	 }
       }
+      /*
       else {
-	 //System.err.println("class not found: "+referencedFqName);
+	 System.err.println("class not found: '"+referencedFqName + "' in context class " + contextClass + " in " + this);
       }
-
-      if (text.endsWith("created")) {
-	 System.err.println("ref="+ref+", referencedClassName="+referencedClassName+", referencedMemberName="+referencedMemberName+", referencedClass="+referencedClass+", referencedMember="+referencedMember+", label="+label);
-      }
+      */
    }
 
    public ClassDoc referencedClass() {

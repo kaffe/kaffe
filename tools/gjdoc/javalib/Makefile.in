@@ -49,6 +49,9 @@ subdir = tools/gjdoc/javalib
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
+	$(top_srcdir)/m4/ac_prog_antlr.m4 \
+	$(top_srcdir)/m4/ac_prog_java.m4 \
+	$(top_srcdir)/m4/ac_prog_java_works.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/compile_value.m4 \
@@ -90,6 +93,8 @@ ALSA_LIBS = @ALSA_LIBS@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
+ANTLR = @ANTLR@
+ANTLR_JAR = @ANTLR_JAR@
 AR = @AR@
 AS = @AS@
 AUTOCONF = @AUTOCONF@
@@ -186,6 +191,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INTLLIBS = @INTLLIBS@
 JASMIN = @JASMIN@
+JAVA = $(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
 JAVAC_FLAGS = @JAVAC_FLAGS@
 JAVA_LIBS = @JAVA_LIBS@
 JIKES = @JIKES@
@@ -349,14 +355,14 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
+uudecode = @uudecode@
 with_engine = @with_engine@
-JAVA = $(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
 KAFFELIBRARYPATH = $(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/:$(top_builddir)/libraries/clib/nio/
 BOOTCLASSPATH = $(top_builddir)/libraries/javalib/rt.jar
 JAR = BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar
 CLASSFILE = gjdoc.jar
 SRCDIRS = com gnu
-toolslib_DATA = $(CLASSFILE)
+toolslib_DATA = $(CLASSFILE) $(ANTLR_JAR)
 gjdoc_jar_SRCS = \
 	com/sun/javadoc/ClassDoc.java \
 	com/sun/javadoc/ConstructorDoc.java \
@@ -393,6 +399,7 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java \
 	gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java \
 	gnu/classpath/tools/doclets/htmldoclet/ExternalDocSet.java \
+	gnu/classpath/tools/doclets/htmldoclet/HtmlTagletContext.java \
 	gnu/classpath/tools/doclets/AbstractDoclet.java \
 	gnu/classpath/tools/doclets/DocletConfigurationException.java \
 	gnu/classpath/tools/doclets/DocletOption.java \
@@ -405,6 +412,63 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/doclets/PackageMatcher.java \
 	gnu/classpath/tools/doclets/StandardTaglet.java \
 	gnu/classpath/tools/doclets/TagletPrinter.java \
+	gnu/classpath/tools/doclets/debugdoclet/DebugDoclet.java \
+	gnu/classpath/tools/doclets/DocletOptionPackageWildcard.java \
+	gnu/classpath/tools/doclets/InlineTagRenderer.java \
+	gnu/classpath/tools/gjdoc/expr/AdditionExpression.java \
+	gnu/classpath/tools/gjdoc/expr/AndExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryBitwiseExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryComputationExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryEqualityExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryLogicalExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryRelationExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryShiftExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BitShiftRightExpression.java \
+	gnu/classpath/tools/gjdoc/expr/ConditionalExpression.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantBoolean.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantByte.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantChar.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantDouble.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantExpression.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantFloat.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantInteger.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantLong.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantNull.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantShort.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantString.java \
+	gnu/classpath/tools/gjdoc/expr/Context.java \
+	gnu/classpath/tools/gjdoc/expr/DivisionExpression.java \
+	gnu/classpath/tools/gjdoc/expr/EqualExpression.java \
+	gnu/classpath/tools/gjdoc/expr/EvaluatorEnvironment.java \
+	gnu/classpath/tools/gjdoc/expr/Evaluator.java \
+	gnu/classpath/tools/gjdoc/expr/ExclusiveOrExpression.java \
+	gnu/classpath/tools/gjdoc/expr/Expression.java \
+	gnu/classpath/tools/gjdoc/expr/GreaterThanExpression.java \
+	gnu/classpath/tools/gjdoc/expr/GreaterThanOrEqualExpression.java \
+	gnu/classpath/tools/gjdoc/expr/IdentifierExpression.java \
+	gnu/classpath/tools/gjdoc/expr/IllegalExpressionException.java \
+	gnu/classpath/tools/gjdoc/expr/InclusiveOrExpression.java \
+	gnu/classpath/tools/gjdoc/expr/LessThanExpression.java \
+	gnu/classpath/tools/gjdoc/expr/LessThanOrEqualExpression.java \
+	gnu/classpath/tools/gjdoc/expr/LogicalAndExpression.java \
+	gnu/classpath/tools/gjdoc/expr/LogicalNotExpression.java \
+	gnu/classpath/tools/gjdoc/expr/LogicalOrExpression.java \
+	gnu/classpath/tools/gjdoc/expr/ModuloExpression.java \
+	gnu/classpath/tools/gjdoc/expr/MultiplicationExpression.java \
+	gnu/classpath/tools/gjdoc/expr/NegateExpression.java \
+	gnu/classpath/tools/gjdoc/expr/NotEqualExpression.java \
+	gnu/classpath/tools/gjdoc/expr/NotExpression.java \
+	gnu/classpath/tools/gjdoc/expr/ShiftLeftExpression.java \
+	gnu/classpath/tools/gjdoc/expr/ShiftRightExpression.java \
+	gnu/classpath/tools/gjdoc/expr/SubtractionExpression.java \
+	gnu/classpath/tools/gjdoc/expr/TypeCastExpression.java \
+	gnu/classpath/tools/gjdoc/expr/Type.java \
+	gnu/classpath/tools/gjdoc/expr/UnaryExpression.java \
+	gnu/classpath/tools/gjdoc/expr/UnknownIdentifierException.java \
+	gnu/classpath/tools/gjdoc/expr/JavaLexer.java \
+	gnu/classpath/tools/gjdoc/expr/JavaRecognizer.java \
+	gnu/classpath/tools/gjdoc/expr/JavaTokenTypes.java \
 	gnu/classpath/tools/gjdoc/AbstractTagImpl.java \
 	gnu/classpath/tools/gjdoc/ArrayCharacterIterator.java \
 	gnu/classpath/tools/gjdoc/ClassDocImpl.java \
@@ -443,6 +507,9 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/gjdoc/SourcePositionImpl.java \
 	gnu/classpath/tools/gjdoc/InheritDocTagImpl.java \
 	gnu/classpath/tools/gjdoc/TagContainer.java \
+	gnu/classpath/tools/gjdoc/ValueTagImpl.java \
+	gnu/classpath/tools/gjdoc/ClassDocReflectedImpl.java \
+	gnu/classpath/tools/taglets/CodeTaglet.java \
 	gnu/classpath/tools/taglets/CopyrightTaglet.java \
 	gnu/classpath/tools/taglets/AuthorTaglet.java \
 	gnu/classpath/tools/taglets/DeprecatedTaglet.java \
@@ -450,13 +517,15 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/taglets/SinceTaglet.java \
 	gnu/classpath/tools/taglets/TagletContext.java \
 	gnu/classpath/tools/taglets/VersionTaglet.java \
+	gnu/classpath/tools/taglets/GnuExtendedTaglet.java \
+	gnu/classpath/tools/taglets/ValueTaglet.java \
 	gnu/classpath/tools/java2xhtml/Java2xhtml.java \
 	gnu/classpath/tools/FileSystemClassLoader.java \
 	gnu/classpath/tools/IOToolkit.java \
 	gnu/classpath/tools/StringToolkit.java \
 	gnu/classpath/tools/MalformedInputEvent.java \
 	gnu/classpath/tools/MalformedInputListener.java \
-	gnu/classpath/tools/NotifyingInputStreamReader.java
+	gnu/classpath/tools/NotifyingInputStreamReader.java 
 
 gjdoc_ressources = \
         dtd/dbcentx.mod \
@@ -507,12 +576,20 @@ gjdoc_ressources = \
         doctranslets/html/help.xsl \
         doctranslets/html/serialized.xsl \
         doctranslets/gjdoc_common.xsl \
-        htmldoclet/HtmlDoclet.properties \
-        htmldoclet/gjdochtml-vanilla.css \
-        htmldoclet/help.xhtml \
+	htmldoclet/gjdochtml-clean-color1.css \
+	htmldoclet/gjdochtml-clean-layout.css \
+	htmldoclet/gjdochtml-vanilla.css \
+	htmldoclet/gjdoc.js \
+	htmldoclet/help.xhtml \
+	htmldoclet/HtmlDoclet.properties \
+	htmldoclet/inherit.png \
         rng/gjdoc-classdoc.rng \
         rng/gjdoc-common.rng \
-        rng/gjdoc-index.rng
+        rng/gjdoc-index.rng \
+	java.lang-classes-1.2.txt \
+	java.lang-classes-1.3.txt \
+	java.lang-classes-1.4.txt \
+	java.lang-classes-1.5.txt
 
 EXTRA_DIST = \
 	$(toolslib_DATA) \
@@ -593,7 +670,7 @@ CTAGS:
 
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/com/sun/javadoc $(distdir)/com/sun/tools/doclets $(distdir)/doctranslets $(distdir)/doctranslets/html $(distdir)/doctranslets/html/res $(distdir)/dtd $(distdir)/dtd/ent $(distdir)/gnu/classpath/tools $(distdir)/gnu/classpath/tools/doclets $(distdir)/gnu/classpath/tools/doclets/htmldoclet $(distdir)/gnu/classpath/tools/doclets/xmldoclet $(distdir)/gnu/classpath/tools/doclets/xmldoclet/doctranslet $(distdir)/gnu/classpath/tools/gjdoc $(distdir)/gnu/classpath/tools/java2xhtml $(distdir)/gnu/classpath/tools/taglets $(distdir)/htmldoclet $(distdir)/rng
+	$(mkdir_p) $(distdir)/com/sun/javadoc $(distdir)/com/sun/tools/doclets $(distdir)/doctranslets $(distdir)/doctranslets/html $(distdir)/doctranslets/html/res $(distdir)/dtd $(distdir)/dtd/ent $(distdir)/gnu/classpath/tools $(distdir)/gnu/classpath/tools/doclets $(distdir)/gnu/classpath/tools/doclets/debugdoclet $(distdir)/gnu/classpath/tools/doclets/htmldoclet $(distdir)/gnu/classpath/tools/doclets/xmldoclet $(distdir)/gnu/classpath/tools/doclets/xmldoclet/doctranslet $(distdir)/gnu/classpath/tools/gjdoc $(distdir)/gnu/classpath/tools/gjdoc/expr $(distdir)/gnu/classpath/tools/java2xhtml $(distdir)/gnu/classpath/tools/taglets $(distdir)/htmldoclet $(distdir)/rng
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -717,11 +794,11 @@ new-classes: $(top_srcdir)/developers/update-class-list
 	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
 
 .PHONY: compile-classes classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(gjdoc_jar_SRCS)
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	echo $(SHELL) $(rebuildLib)
-	CLASSPATH=$(Klasses_jar) BOOTCLASSPATH=$(top_srcdir)/libraries/javalib/Klasses.jar.bootstrap $(SHELL) $(rebuildLib) $(gjdoc_jar_SRCS)
+	CLASSPATH=$(Klasses_jar):$(ANTLR_JAR) BOOTCLASSPATH=$(top_srcdir)/libraries/javalib/Klasses.jar.bootstrap:$(ANTLR_JAR) $(SHELL) $(rebuildLib) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
 	echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes

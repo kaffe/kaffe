@@ -644,3 +644,12 @@ Licensed under the GNU General Public License. See licence.terms for more
 details. 
 
 Homepage: http://www.urbanophile.com/arenn/hacking/
+
+* ANTLR
+
+Gjdoc is using ANTLR. The configure script will try to find ANTLR's
+jar file on the system it's being run on.
+
+ANTLR is in the public domain. 
+
+More information on ANTLR is available from http://www.antlr.org

@@ -857,7 +857,7 @@ public class Driver {
 
       registerTaglet(new VersionTaglet());
       registerTaglet(new AuthorTaglet());
-      registerTaglet(new SinceTaglet());
+      //registerTaglet(new SinceTaglet());
       registerTaglet(new StandardTaglet("deprecated"));
       registerTaglet(new StandardTaglet("see"));
       registerTaglet(new StandardTaglet("param"));
@@ -2409,7 +2409,7 @@ public class Driver {
             packageMatcher.addWildcard(packageWildcard);
          }
 
-         SortedSet groupPackages = packageMatcher.match(rootDoc.specifiedPackages());
+         SortedSet groupPackages = packageMatcher.filter(rootDoc.specifiedPackages());
 
          packageGroups.add(new PackageGroup(groupName, groupPackages));
 

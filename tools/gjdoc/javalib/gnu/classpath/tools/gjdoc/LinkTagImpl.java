@@ -26,11 +26,14 @@ import java.text.*;
 
 public class LinkTagImpl extends SeeTagImpl {
 
-   public LinkTagImpl(String _text, ClassDocImpl contextClass) {
+   private String name;
+
+   public LinkTagImpl(String name, String _text, ClassDocImpl contextClass) {
       super(_text, contextClass);
+      this.name = name;
    }
 
-   public String name() { return "@link"; }
+   public String name() { return name; }
 
    public Tag[] firstSentenceTags() {
       return new Tag[0]; //inlineTags();

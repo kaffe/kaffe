@@ -201,7 +201,7 @@ methods();
   * constructors; otherwise, return all constructors.
   *
   * @return The list of all constructors in this class, or the list
-  * visible constructors in this class.
+  * of visible constructors in this class.
   */
 public abstract ConstructorDoc[]
 constructors(boolean filtered);
@@ -220,13 +220,29 @@ constructors();
 /*************************************************************************/
 
 /**
-  * This method returns the list of inner classes within the class
-  * represented by this object.
+  * This method returns the list of inner classes that are visible to
+  * the user within the class represented by this object.
   *
-  * @return The list of inner classes for this object.
+  * @return The list of visible inner classes for this object.
   */
 public abstract ClassDoc[]
 innerClasses();
+
+/*************************************************************************/
+
+/**
+  * This method returns the list of all inner classes within the class
+  * represented by this object, or the list of visible inner classes
+  * in this class.
+  *
+  * @param filtered if true, only return visible (included) inner
+  * classes; otherwise, return all inner classes.
+  *
+  * @return The list of all inner classes for this object, or the list
+  * of visible inner classes.
+  */
+public abstract ClassDoc[]
+innerClasses(boolean filtered);
 
 /*************************************************************************/
 

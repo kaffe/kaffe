@@ -55,8 +55,8 @@ public abstract class MemberDocImpl extends ProgramElementDocImpl implements Mem
 
       int state = STATE_NORMAL;
 
-      String word="";
-      int lastWordStart=-1;
+      String word = "";
+      int lastWordStart = startIndex;
       for (; startIndex<endIndex; ++startIndex) {
 	 if (state==STATE_STARC) {
 	    if (startIndex<endIndex-1 && source[startIndex]=='*' && source[startIndex+1]=='/') {
@@ -74,7 +74,7 @@ public abstract class MemberDocImpl extends ProgramElementDocImpl implements Mem
 	    state=STATE_STARC;
 	 }
 	 else if (source[startIndex]=='=' || source[startIndex]=='(' || source[startIndex]==';') {
-	    return lastWordStart;
+            return lastWordStart;
 	 }
 	 else if (Parser.WHITESPACE.indexOf(source[startIndex])>=0) {
 	    if (word.length()>0 && !word.endsWith(".")) {
@@ -91,7 +91,7 @@ public abstract class MemberDocImpl extends ProgramElementDocImpl implements Mem
 		  //throw new Error("In FieldComponent: cannot understand word '"+word+"' (typeName="+typeName+", name="+name()+")");
 	       }
 	       word="";
-	       lastWordStart=-1;
+	       lastWordStart=startIndex;
 	    }
 	 }
 	 else {
@@ -140,7 +140,7 @@ public abstract class MemberDocImpl extends ProgramElementDocImpl implements Mem
 
    // return true if this Doc is include in the active set. 
    public boolean isIncluded() {
-      return Main.getInstance().includeAccessLevel(accessLevel); //containingClass().isIncluded(); // && Main.getRootDoc().includeAccessLevel(accessLevel);
+      return Main.getInstance().includeAccessLevel(accessLevel);
    } 
 
    public int compareTo(Object o) {
@@ -151,7 +151,7 @@ public abstract class MemberDocImpl extends ProgramElementDocImpl implements Mem
 	 return rc;
       }
       else {
-	 return 0;
+	 return super.compareTo(o);
       }
    }
 

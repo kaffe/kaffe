@@ -532,20 +532,10 @@ public final class Main
               }
             }
 
-            //--- Otherwise, it must be a Java source file file
+            //--- Otherwise, emit error message
 
-            else
-            /* if (sourceFileExists) */{
-              if (sourceFile.isDirectory())
-              {
-                reporter.printError("File \"" + sourceFile
-                    + "\" is a directory!");
-                shutdown();
-              }
-              else
-              {
-                rootDoc.addSpecifiedClassName(classOrPackage);
-              }
+            else {
+                reporter.printError("No sources files found for package " + classOrPackage);
             }
         }
       }
@@ -575,6 +565,16 @@ public final class Main
       rootDoc.setOptions(customOptionArr);
 
       rootDoc.build();
+
+      //--- Bail out if no classes found
+
+      if (0 == rootDoc.classes().length
+          && 0 == rootDoc.specifiedPackages().length
+          && 0 == rootDoc.specifiedClasses().length)
+      {
+        reporter.printError("No packages or classes found(!).");
+        shutdown();
+      }
 
       //--- Our work is done, tidy up memory
 
@@ -719,7 +719,7 @@ public final class Main
 
       instance.start(args);
     }
-    catch (Exception e)
+    catch (Throwable e)
     {
 
       //--- Report any error
@@ -879,6 +879,8 @@ public final class Main
 
       startDoclet(arguments);
     }
+
+    System.exit(0);
   }
 
   private void addJavaLangClasses()
@@ -1189,7 +1191,13 @@ public final class Main
           }
         }
       });
-
+    options.put("-classpath", new OptionProcessor(2)
+      {
+        void process(String[] args)
+        {
+          System.setProperty("java.class.path", args[0]);
+        }
+      });
   }
 
   /**
@@ -1240,7 +1248,7 @@ public final class Main
     System.err
         .print("\n"
             + "USAGE: gjdoc [options] [packagenames] "
-            + "[sourcefiles] [classnames] [@files]\n\n"
+            + "[sourcefiles] [@files]\n\n"
             + "  -overview <file>         Read overview documentation from HTML file\n"
             + "  -public                  Include only public classes and members\n"
             + "  -protected               Include protected and public classes and members.\n"
@@ -1257,6 +1265,7 @@ public final class Main
             + "  -locale <name>           Locale to be used, e.g. en_US or en_US_WIN [ignored]\n"
             + "  -encoding <name>         Source file encoding name\n"
             + "  -breakiterator           Compute first sentence with BreakIterator\n"
+            + "  -classpath               Set the path used for loading auxilliary classes\n"
 
             + "Gjdoc extension options:\n"
             + "  -licensetext             Include license text from source files\n"
@@ -1296,7 +1305,7 @@ public final class Main
             + "  -exclude <pkglist>      List of packages to exclude\n"
             + "  -docfilessubdirs        Enables deep copy of 'doc-files' directories\n"
             + "  -excludedocfilessubdir  <name1:name2:...> Excludes 'doc-files' subdirectories with a give name\n"
-            /* + " -noqualifier all|<packagename1:packagename2:...> Do not qualify package name from ahead of class names\n" */
+            + "  -noqualifier all|<packagename1:packagename2:...> Do not qualify package name from ahead of class names\n"
             /* + " -nocomment               Suppress the entire comment body including the main description and all tags, only generate the declarations\n" */
                /**
             + "  -genhtml                Generate HTML code instead of XML code. This is the\n"
@@ -1445,5 +1454,9 @@ public final class Main
     }
     return this.collator;
   }
-}
 
+  public boolean isCacheRawComments()
+  {
+    return true;
+  }
+}

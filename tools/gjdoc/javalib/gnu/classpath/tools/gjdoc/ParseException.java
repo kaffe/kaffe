@@ -22,7 +22,12 @@ package gnu.classpath.tools.gjdoc;
 
 class ParseException extends Exception {
 
-   public ParseException(String msg) {
+   public ParseException() 
+   {
+   }
+
+   public ParseException(String msg) 
+   {
       super(msg);
    }
 

@@ -244,6 +244,7 @@ public class NotifyingInputStreamReader
       throws IOException
    {
       charBuffer.clear();
+   outer:
       while (!flushed) {
          CoderResult coderResult;
          int charBufferPositionBefore = charBuffer.position();
@@ -257,7 +258,7 @@ public class NotifyingInputStreamReader
             coderResult = decoder.flush(charBuffer);
             flushed = coderResult.isUnderflow();
          }
-         /*
+
          int charBufferPositionAfter = charBuffer.position();
          for (int i=charBufferPositionBefore; i<charBufferPositionAfter; ++i) {
             if (10 == charBuffer.get(i)) {
@@ -268,7 +269,6 @@ public class NotifyingInputStreamReader
                ++ columnNumber;
             }
          }
-         */
          if (coderResult.isOverflow()) {
             break;
          }
@@ -295,7 +295,7 @@ public class NotifyingInputStreamReader
                   columnNumber ++;
                }
                else {
-                  break;
+                  break outer;
                }
             }
          }
@@ -382,7 +382,7 @@ public class NotifyingInputStreamReader
     */
    public void addMalformedInputListener(MalformedInputListener listener)
    {
-      this.listeners.add(listeners);
+      this.listeners.add(listener);
    }
 
    /**
@@ -392,7 +392,7 @@ public class NotifyingInputStreamReader
     */
    public void removeMalformedInputListener(MalformedInputListener listener)
    {
-      this.listeners.remove(listeners);
+      this.listeners.remove(listener);
    }
 
 }

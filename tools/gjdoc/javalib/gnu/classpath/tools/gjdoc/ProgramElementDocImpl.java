@@ -34,10 +34,10 @@ public abstract class ProgramElementDocImpl extends DocImpl implements ProgramEl
 
    public static final int ACCESS_PUBLIC	  = 0;
    public static final int ACCESS_PROTECTED	  = 1;
-   public static final int ACCESS_PRIVATE	  = 2;
-   public static final int ACCESS_PACKAGEPRIVATE  = 3;
+   public static final int ACCESS_PACKAGEPRIVATE  = 2;
+   public static final int ACCESS_PRIVATE	  = 3;
 
-   private static final String[] accessModifiers = { "public ", "protected ", "private ", "" };
+   private static final String[] accessModifiers = { "public ", "protected ", "", "private "};
 
    public ProgramElementDocImpl(ClassDoc containingClass, 
                                 PackageDoc containingPackage,
@@ -109,8 +109,8 @@ public abstract class ProgramElementDocImpl extends DocImpl implements ProgramEl
    public String modifiers() {
       return 
 	 (accessModifiers[accessLevel]+
-	  (isStatic?"static ":"")+
-	  (isFinal?"final ":"")).trim();
+	  (isStatic()?"static ":"")+
+	  (isFinal()?"final ":"")).trim();
    }
  
    // Get the modifier specifier integer. 

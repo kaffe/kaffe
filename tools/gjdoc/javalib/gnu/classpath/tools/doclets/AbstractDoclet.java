@@ -24,19 +24,24 @@ import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ConstructorDoc;
 import com.sun.javadoc.Doc;
 import com.sun.javadoc.Doclet;
+import com.sun.javadoc.ExecutableMemberDoc;
 import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.RootDoc;
 import com.sun.javadoc.Tag;
+import com.sun.javadoc.Type;
 
 import com.sun.tools.doclets.Taglet;
 
+import gnu.classpath.tools.taglets.GnuExtendedTaglet;
 import gnu.classpath.tools.taglets.AuthorTaglet;
+import gnu.classpath.tools.taglets.CodeTaglet;
 import gnu.classpath.tools.taglets.DeprecatedTaglet;
 import gnu.classpath.tools.taglets.GenericTaglet;
 import gnu.classpath.tools.taglets.SinceTaglet;
+import gnu.classpath.tools.taglets.ValueTaglet;
 import gnu.classpath.tools.taglets.VersionTaglet;
 import gnu.classpath.tools.taglets.TagletContext;
 
@@ -52,6 +57,9 @@ import java.lang.reflect.InvocationTargetException;
 
 import java.text.MessageFormat;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -78,7 +86,7 @@ public abstract class AbstractDoclet
     *  Mapping from tag type to Taglet for user Taglets specified on
     *  the command line.
     */
-   private Map tagletMap = new LinkedHashMap();
+   protected Map tagletMap = new LinkedHashMap();
 
    /**
     *  Stores the package groups specified in the user
@@ -140,6 +148,8 @@ public abstract class AbstractDoclet
 
    private RootDoc rootDoc;
 
+   protected abstract InlineTagRenderer getInlineTagRenderer();
+
    private void startInstance(RootDoc rootDoc)
       throws DocletConfigurationException, IOException
    {
@@ -149,10 +159,15 @@ public abstract class AbstractDoclet
 
       registerTaglet(new VersionTaglet());
       registerTaglet(new AuthorTaglet());
-      registerTaglet(new SinceTaglet());
+      registerTaglet(new SinceTaglet(getInlineTagRenderer()));
+      registerTaglet(new StandardTaglet("serial"));
       registerTaglet(new StandardTaglet("deprecated"));
       registerTaglet(new StandardTaglet("see"));
       registerTaglet(new StandardTaglet("param"));
+      registerTaglet(new StandardTaglet("return"));
+
+      registerTaglet(new ValueTaglet());
+      registerTaglet(new CodeTaglet());
 
       // Process command line options
 
@@ -211,6 +226,9 @@ public abstract class AbstractDoclet
 
    private DocletOptionGroup optionGroup = 
      new DocletOptionGroup("-group");
+
+   private DocletOptionPackageWildcard optionNoQualifier = 
+     new DocletOptionPackageWildcard("-noqualifier", true);
 
    private DocletOptionFlag optionDocFilesSubDirs = 
      new DocletOptionFlag("-docfilessubdirs");
@@ -329,7 +347,7 @@ public abstract class AbstractDoclet
                packageMatcher.addWildcard(packageWildcard);
             }
             
-            SortedSet groupPackages = packageMatcher.match(rootDoc.specifiedPackages());
+            SortedSet groupPackages = packageMatcher.filter(rootDoc.specifiedPackages());
 
             packageGroups.add(new PackageGroup(optionArr[1], groupPackages));
 
@@ -340,6 +358,7 @@ public abstract class AbstractDoclet
          }
       }
    }
+
 
    private class DocletOptionTagletPath
       extends DocletOption
@@ -554,20 +573,27 @@ public abstract class AbstractDoclet
       implements Comparable
    {
       private String name;
+      private String lowerName;
 
       public IndexKey(String name)
       {
          this.name = name;
+         this.lowerName = name.toLowerCase();
       }
 
       public boolean equals(Object other)
       {
-         return false;
+         return this.lowerName.equals(((IndexKey)other).lowerName);
+      }
+
+      public int hashCode()
+      {
+         return lowerName.hashCode();
       }
 
       public int compareTo(Object other)
       {
-         return name.toLowerCase().compareTo(((IndexKey)other).name.toLowerCase());
+         return lowerName.compareTo(((IndexKey)other).lowerName);
       }
 
       public String getName()
@@ -584,7 +610,10 @@ public abstract class AbstractDoclet
          categorizedIndex = new LinkedHashMap();
          
          Map indexMap = getIndexByName();
-         Iterator it = indexMap.keySet().iterator();
+         LinkedList keys = new LinkedList(); //indexMap.keySet().size());
+         keys.addAll(indexMap.keySet());
+         Collections.sort(keys);
+         Iterator it = keys.iterator(); //indexMap.keySet().iterator();
          char previousCategoryLetter = '\0';
          Character keyLetter = null;
          while (it.hasNext()) {
@@ -613,7 +642,7 @@ public abstract class AbstractDoclet
 
          // Collect index
             
-         indexByName = new TreeMap();
+         indexByName = new HashMap(); //TreeMap();
 
          // Add packages to index
 
@@ -661,21 +690,23 @@ public abstract class AbstractDoclet
       tagletMap.put(taglet.getName(), taglet);
    }
 
-   protected void printTaglets(Tag[] tags, TagletContext context, TagletPrinter output) 
+   protected void printTaglets(Tag[] tags, TagletContext context, TagletPrinter output, boolean inline) 
    {
       for (Iterator it = tagletMap.keySet().iterator(); it.hasNext(); ) {
          String tagName = (String)it.next();
          Object o = tagletMap.get(tagName);
          Taglet taglet = (Taglet)o;
+         Doc doc = context.getDoc();
+         if (inline == taglet.isInlineTag()
+             && ((doc == null 
+                  && taglet.inOverview())
+                 || (doc != null 
+                     && ((doc.isConstructor() && taglet.inConstructor())
+                         || (doc.isField() && taglet.inField())
+                         || (doc.isMethod() && taglet.inMethod())
+                         || (doc instanceof PackageDoc && taglet.inPackage())
+                         || ((doc.isClass() || doc.isInterface()) && taglet.inType()))))) {
 
-         if (!taglet.isInlineTag()
-             && ((context != TagletContext.CONSTRUCTOR || taglet.inConstructor())
-                 || (context != TagletContext.FIELD || taglet.inField())
-                 || (context != TagletContext.METHOD || taglet.inMethod())
-                 || (context != TagletContext.OVERVIEW || taglet.inOverview())
-                 || (context != TagletContext.PACKAGE || taglet.inPackage())
-                 || (context != TagletContext.TYPE || taglet.inType()))) {
-            
             List tagsOfThisType = new LinkedList();
             for (int i=0; i<tags.length; ++i) {
                if (tags[i].name().substring(1).equals(tagName)) {
@@ -683,16 +714,48 @@ public abstract class AbstractDoclet
                }
             }
 
-            if (!tagsOfThisType.isEmpty()) {
-               Tag[] tagletTags = (Tag[])tagsOfThisType.toArray(new Tag[tagsOfThisType.size()]);
+            Tag[] tagletTags = (Tag[])tagsOfThisType.toArray(new Tag[tagsOfThisType.size()]);
 
-               String tagletString = taglet.toString(tagletTags);
-               if (null != tagletString) {
-                  output.printTagletString(tagletString);
-               }
+            String tagletString;
+            if (taglet instanceof StandardTaglet) {
+               tagletString = renderTag(tagName, tagletTags, context);
+            }
+            else if (taglet instanceof GnuExtendedTaglet) {
+               tagletString = ((GnuExtendedTaglet)taglet).toString(tagletTags, context);
+            }
+            else {
+               tagletString = taglet.toString(tagletTags);
+            }
+            if (null != tagletString) {
+               output.printTagletString(tagletString);
             }
          }
       }
+   }
+
+   protected void printInlineTaglet(Tag tag, TagletContext context, TagletPrinter output) 
+   {
+      Taglet taglet = (Taglet)tagletMap.get(tag.name().substring(1));
+      if (null != taglet) {
+         String tagletString;
+         if (taglet instanceof GnuExtendedTaglet) {
+            tagletString = ((GnuExtendedTaglet)taglet).toString(tag, context);
+         }
+         else {
+            tagletString = taglet.toString(tag);
+         }
+         if (null != tagletString) {
+            output.printTagletString(tagletString);
+         }
+      }
+      else {
+         printWarning("Unknown tag: " + tag.name());
+      }
+   }
+
+   protected void printMainTaglets(Tag[] tags, TagletContext context, TagletPrinter output) 
+   {
+      printTaglets(tags, context, output, false);
    }
 
    /**
@@ -891,7 +954,7 @@ public abstract class AbstractDoclet
          IOToolkit.copyDirectory(sourceDocFiles,
                                  targetDocFiles,
                                  optionDocFilesSubDirs.getValue(),
-                                 optionExcludeDocFilesSubDir.getSubdirs());
+                                 optionExcludeDocFilesSubDir.getComponents());
       }
    }
 
@@ -1016,15 +1079,273 @@ public abstract class AbstractDoclet
       }
       return this.allPackages;
    }
+
+   protected boolean omitPackageQualifier(PackageDoc packageDoc)
+   {
+      if (!optionNoQualifier.isSpecified()) {
+         return false;
+      }
+      else {
+         return optionNoQualifier.match(packageDoc);
+      }
+   }
+
+   protected String possiblyQualifiedName(Type type)
+   {
+      if (null == type.asClassDoc() 
+          || !omitPackageQualifier(type.asClassDoc().containingPackage())) {
+         return type.qualifiedTypeName();
+      }
+      else {
+         return type.typeName();
+      }
+   }
+
+   protected static class InterfaceRelation
+   {
+      public Set superInterfaces;
+      public Set subInterfaces;
+      public Set implementingClasses;
+
+      public InterfaceRelation()
+      {
+         superInterfaces = new TreeSet();
+         subInterfaces = new TreeSet();
+         implementingClasses = new TreeSet();
+      }
+   }
+
+   private void addAllInterfaces(ClassDoc classDoc, Set allInterfaces)
+   {
+      ClassDoc[] interfaces = classDoc.interfaces();
+      for (int i=0; i<interfaces.length; ++i) {
+         allInterfaces.add(interfaces[i]);
+         addAllInterfaces(interfaces[i], allInterfaces);
+      }
+   }
+
+   private Map allSubClasses;
+
+   protected Map getAllSubClasses()
+   {
+      if (null == allSubClasses) {
+         allSubClasses = new HashMap();
+
+         ClassDoc[] classDocs = getRootDoc().classes();
+         for (int i=0; i<classDocs.length; ++i) {
+            if (!classDocs[i].isInterface()) {
+               for (ClassDoc cd = classDocs[i].superclass();
+                    null != cd;
+                    cd = cd.superclass()) {
+
+                  if (!cd.qualifiedTypeName().equals("java.lang.Object")) {
+                     List subClasses = (List)allSubClasses.get(cd);
+                     if (null == subClasses) {
+                        subClasses = new LinkedList();
+                        allSubClasses.put(cd, subClasses);
+                     }
+                     subClasses.add(classDocs[i]);
+                  }
+               }
+            }
+         }
+      }
+      return allSubClasses;
+   }
+
+   private Map interfaceRelations;
+
+   private void addToInterfaces(ClassDoc classDoc, ClassDoc[] interfaces)
+   {
+      for (int i=0; i<interfaces.length; ++i) {
+         InterfaceRelation interfaceRelation
+            = (InterfaceRelation)interfaceRelations.get(interfaces[i]);
+         if (null == interfaceRelation) {
+            interfaceRelation = new InterfaceRelation();
+            interfaceRelations.put(interfaces[i], interfaceRelation);
+         }
+         interfaceRelation.implementingClasses.add(classDoc);
+         addToInterfaces(classDoc, interfaces[i].interfaces());
+      }
+   }
+
+   protected Map getInterfaceRelations()
+   {
+      if (null == interfaceRelations) {
+         interfaceRelations = new HashMap();
+
+         ClassDoc[] classDocs = getRootDoc().classes();
+         for (int i=0; i<classDocs.length; ++i) {
+            if (classDocs[i].isInterface()) {
+               InterfaceRelation relation = new InterfaceRelation();
+               addAllInterfaces(classDocs[i], relation.superInterfaces);
+               interfaceRelations.put(classDocs[i], relation);
+            }
+         }
+
+         Iterator it = interfaceRelations.keySet().iterator();
+         while (it.hasNext()) {
+            ClassDoc interfaceDoc = (ClassDoc)it.next();
+            InterfaceRelation relation 
+               = (InterfaceRelation)interfaceRelations.get(interfaceDoc);
+            Iterator superIt = relation.superInterfaces.iterator();
+            while (superIt.hasNext()) {
+               ClassDoc superInterfaceDoc = (ClassDoc)superIt.next();
+               InterfaceRelation superRelation
+                  = (InterfaceRelation)interfaceRelations.get(superInterfaceDoc);
+               if (null != superRelation) {
+                  superRelation.subInterfaces.add(interfaceDoc);
+               }
+            }
+         }
+
+         for (int i=0; i<classDocs.length; ++i) {
+            if (!classDocs[i].isInterface()) {
+               for (ClassDoc cd = classDocs[i]; null != cd; cd = cd.superclass()) {
+                  addToInterfaces(classDocs[i], cd.interfaces());
+               }
+            }
+         }
+      }
+
+      return interfaceRelations;
+   }
+
+   private Map sortedMethodMap = new HashMap();
+
+   protected MethodDoc[] getSortedMethods(ClassDoc classDoc)
+   {
+      MethodDoc[] result = (MethodDoc[])sortedMethodMap.get(classDoc);
+      if (null == result) {
+         MethodDoc[] methods = classDoc.methods();
+         result = (MethodDoc[])methods.clone();
+         Arrays.sort(result);
+         return result;
+      }
+      return result;
+   }
+
+   private Map sortedConstructorMap = new HashMap();
+
+   protected ConstructorDoc[] getSortedConstructors(ClassDoc classDoc)
+   {
+      ConstructorDoc[] result = (ConstructorDoc[])sortedConstructorMap.get(classDoc);
+      if (null == result) {
+         ConstructorDoc[] constructors = classDoc.constructors();
+         result = (ConstructorDoc[])constructors.clone();
+         Arrays.sort(result);
+         return result;
+      }
+      return result;
+   }
+
+   private Map sortedFieldMap = new HashMap();
+
+   protected FieldDoc[] getSortedFields(ClassDoc classDoc)
+   {
+      FieldDoc[] result = (FieldDoc[])sortedFieldMap.get(classDoc);
+      if (null == result) {
+         FieldDoc[] fields = classDoc.fields();
+         result = (FieldDoc[])fields.clone();
+         Arrays.sort(result);
+         return result;
+      }
+      return result;
+   }
+
+   private Map sortedInnerClassMap = new HashMap();
+
+   protected ClassDoc[] getSortedInnerClasses(ClassDoc classDoc)
+   {
+      ClassDoc[] result = (ClassDoc[])sortedInnerClassMap.get(classDoc);
+      if (null == result) {
+         ClassDoc[] innerClasses = classDoc.innerClasses();
+         result = (ClassDoc[])innerClasses.clone();
+         Arrays.sort(result);
+         return result;
+      }
+      return result;
+   }
+
+   protected abstract String renderTag(String tagName, Tag[] tags, TagletContext context);
+   
+   protected String getDocletVersion()
+   {
+      return "0.7.1-cvs";
+   }
+
+   protected SortedSet getThrownExceptions(ExecutableMemberDoc execMemberDoc)
+   {
+      SortedSet result = new TreeSet();
+      ClassDoc[] thrownExceptions = execMemberDoc.thrownExceptions();
+      for (int j=0; j<thrownExceptions.length; ++j) {
+         result.add(thrownExceptions[j]);
+      }
+      return result;
+   }
+
+   protected boolean isUncheckedException(ClassDoc classDoc) 
+   {
+      if (classDoc.isException()) {
+         while (null != classDoc) {
+            if (classDoc.qualifiedTypeName().equals("java.lang.RuntimeException")) {
+               return true;
+            }
+            classDoc = classDoc.superclass();
+         }
+         return false;
+      }
+      else {
+         return false;
+      }
+   }
+
+   protected FieldDoc findField(ClassDoc classDoc, String fieldName)
+   {
+      for (ClassDoc cd = classDoc; cd != null; cd = cd.superclass()) {
+         FieldDoc[] fields = cd.fields(false);
+         for (int i=0; i<fields.length; ++i) {
+            if (fields[i].name().equals(fieldName)) {
+               return fields[i];
+            }
+         }
+      }
+      return null;
+   }
+
+   private Map implementedInterfacesCache = new HashMap();
+
+   protected Set getImplementedInterfaces(ClassDoc classDoc)
+   {
+      Set result = (Set)implementedInterfacesCache.get(classDoc);
+      if (null == result) {
+         result = new TreeSet();
+
+         for (ClassDoc cd = classDoc; cd != null; cd = cd.superclass()) {
+            ClassDoc[] interfaces = cd.interfaces();
+            for (int i=0; i<interfaces.length; ++i) {
+               result.add(interfaces[i]);
+               InterfaceRelation relation 
+                  = (InterfaceRelation)getInterfaceRelations().get(interfaces[i]);
+               if (null != relation) {
+                  result.addAll(relation.superInterfaces);
+               }
+            }
+         }
+
+         implementedInterfacesCache.put(classDoc, result);
+      }
+
+      return result;
+   }
+
+   protected boolean isSinglePackage()
+   {
+      return 1 == getAllPackages().size();
+   }
+
+   protected PackageDoc getSinglePackage()
+   {
+      return (PackageDoc)getAllPackages().iterator().next();
+   }
 }
-
-
-/** missing:
-
-            + " -title <text>            Title for this set of API documentation (deprecated, -doctitle should be used instead).\n"
-            + " -link <extdoc URL>       Link to external javadoc-generated documentation you want to link to\n"
-            + " -linkoffline <extdoc URL> <packagelistLoc>  Link to external javadoc-generated documentation for the specified package-list\n"
-            + " -noqualifier all|<packagename1:packagename2:...> Do not qualify package name from ahead of class names\n"
-            + " -nocomment               Suppress the entire comment body including the main description and all tags, only generate the declarations\n"
-
-*/

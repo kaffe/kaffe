@@ -31,7 +31,7 @@ import java.util.StringTokenizer;
 public class DocletOptionColonSeparated
    extends DocletOption
 {
-   private Set subdirs = new LinkedHashSet();
+   private Set components = new LinkedHashSet();
 
    DocletOptionColonSeparated(String optionName)
    {
@@ -47,14 +47,14 @@ public class DocletOptionColonSeparated
    {
       StringTokenizer st = new StringTokenizer(":");
       while (st.hasMoreTokens()) {
-         subdirs.add(st.nextToken());
+         components.add(st.nextToken());
       }
       return true;
    }
 
-   public Set getSubdirs()
+   public Set getComponents()
    {
-      return subdirs;
+      return components;
    }
 }
 

@@ -29,17 +29,26 @@ import com.sun.tools.doclets.Taglet;
 
 import com.sun.javadoc.Tag;
 
+import gnu.classpath.tools.doclets.InlineTagRenderer;
+
 /**
  *  The default Taglet which handles since information.
  *
  *  @author Julian Scheid (julian@sektor37.de)
  */
-public class SinceTaglet implements Taglet {
+public class SinceTaglet implements GnuExtendedTaglet {
    
    private static final String NAME = "since";
    private static final String HEADER = "Since:";
 
    private static boolean enabled = true;
+
+   private InlineTagRenderer inlineTagRenderer;
+
+   public SinceTaglet(InlineTagRenderer inlineTagRenderer)
+   {
+      this.inlineTagRenderer = inlineTagRenderer;
+   }
    
    public String getName() {
       return NAME;
@@ -73,12 +82,8 @@ public class SinceTaglet implements Taglet {
       return false;
    }    
 
-   public static void register(Map tagletMap) {
-      SinceTaglet sinceTaglet = new SinceTaglet();
-      tagletMap.put(sinceTaglet.getName(), sinceTaglet);
-   }
-
    public String toString(Tag tag) {
+      // should raise assertion
       if (enabled) {
          return toString(new Tag[] { tag });
       }
@@ -88,6 +93,17 @@ public class SinceTaglet implements Taglet {
    }
 
    public String toString(Tag[] tags) {
+      // should raise assertion
+      return toString(tags, null);
+   }
+
+   public String toString(Tag tag, TagletContext context) 
+   {
+      return null;
+   }
+
+   public String toString(Tag[] tags, TagletContext context) 
+   {
       if (!enabled || tags.length == 0) {
          return null;
       }
@@ -98,10 +114,10 @@ public class SinceTaglet implements Taglet {
          result.append("<dt class=\"tag section header\"><b>");
          result.append(HEADER);
          result.append("</b></dt>");
-         for (int i = 0; i < tags.length; i++) {
+         for (int i = 0; i < tags.length; ++i) {
             result.append("<dd>");
-            result.append(tags[i].text());
-            result.append("</dt>");
+            result.append(inlineTagRenderer.renderInlineTags(tags[i].inlineTags(), context));
+            result.append("</dd>");
          }
          result.append("</dl>");
          return result.toString();

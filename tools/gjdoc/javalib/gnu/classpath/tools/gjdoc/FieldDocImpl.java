@@ -24,7 +24,19 @@ import java.util.*;
 import com.sun.javadoc.*;
 import java.lang.reflect.Modifier;
 
-public class FieldDocImpl extends MemberDocImpl implements FieldDoc, Cloneable {
+import gnu.classpath.tools.gjdoc.expr.Evaluator;
+import gnu.classpath.tools.gjdoc.expr.IllegalExpressionException;
+
+public class FieldDocImpl 
+   extends MemberDocImpl 
+   implements FieldDoc, Cloneable 
+{
+
+   private boolean isTransient;
+   private boolean isVolatile;
+   private String valueLiteral;
+   private Object constantValue;
+   private boolean constantValueEvaluated;
 
    private FieldDocImpl(ClassDoc containingClass,
                         PackageDoc containingPackage,
@@ -41,15 +53,15 @@ public class FieldDocImpl extends MemberDocImpl implements FieldDoc, Cloneable {
       
       List rcList=new ArrayList();
 
-      String s=new String(source, startIndex, endIndex-startIndex-1);
-
-      Debug.log(9,"Parsing FieldDoc '"+s+"'");
-
       FieldDocImpl fd=new FieldDocImpl(containingClass,
 				       containingPackage,
                                        DocImpl.getPosition(containingClass, source, startIndex));
 
       int ndx=fd.parseModifiers(source, startIndex, endIndex);
+
+      if (containingClass.isInterface()) {
+         fd.accessLevel = ACCESS_PUBLIC;
+      }
 
       String definition=new String(source, ndx, endIndex-ndx-1);
 
@@ -112,9 +124,13 @@ public class FieldDocImpl extends MemberDocImpl implements FieldDoc, Cloneable {
 
       for (Iterator it = fieldDefComponents.iterator(); it.hasNext(); ) {
 	 String fieldDef = (String) it.next();
+         String fieldValueLiteral = null;
 
 	 int endx=fieldDef.indexOf('=');
-	 if (endx>=0) fieldDef=fieldDef.substring(0,endx);
+	 if (endx>=0) {
+            fieldValueLiteral = fieldDef.substring(endx + 1);
+            fieldDef = fieldDef.substring(0,endx);
+         }
 	 Debug.log(9,"  Field Definition: '"+fieldDef+"'");
 	 
 	 try {
@@ -128,8 +144,8 @@ public class FieldDocImpl extends MemberDocImpl implements FieldDoc, Cloneable {
 	    }
 
 	    fieldDoc.setTypeName(fieldDoc.getTypeName()+dimSuffix);
-
 	    fieldDoc.setName(fieldDef.trim());
+            fieldDoc.setValueLiteral(fieldValueLiteral);
 	    rcList.add(fieldDoc);
 	 }
 	 catch (CloneNotSupportedException e) {
@@ -174,9 +190,6 @@ public class FieldDocImpl extends MemberDocImpl implements FieldDoc, Cloneable {
       }
    }
 
-   private boolean isTransient;
-   private boolean isVolatile;
-
    void resolve() {
       resolveTags();
    }
@@ -188,6 +201,103 @@ public class FieldDocImpl extends MemberDocImpl implements FieldDoc, Cloneable {
    public String toString() { return name(); }
 
    public Object constantValue() {
-      return new Integer(0); // FIXME
+      if (!isStatic() 
+          || !isFinal() 
+          || (!type().isPrimitive() && !"java.lang.String".equals(type().qualifiedTypeName()))
+          || type.dimension().length()>0 
+          || null == valueLiteral) {
+
+         return null;
+
+      }
+      else {
+         if (!constantValueEvaluated) {
+            String expression = "(" + type().typeName() + ")(" + valueLiteral + ")";
+            try {
+               this.constantValue = Evaluator.evaluate(expression, 
+                                                       (ClassDocImpl)containingClass());
+            }
+            catch (IllegalExpressionException ignore) {
+            }
+            constantValueEvaluated = true;
+         }
+         return this.constantValue;
+      }
+   }
+
+   private static void appendCharString(StringBuffer result, char c, boolean inSingleCuotes)
+   {
+      switch (c) {
+      case '\b': result.append("\\b"); break;
+      case '\t': result.append("\\t"); break;
+      case '\n': result.append("\\n"); break;
+      case '\f': result.append("\\f"); break;
+      case '\r': result.append("\\r"); break;
+      case '\"': result.append("\\\""); break;
+      case '\'': result.append(inSingleCuotes ? "\\'" : "'"); break;
+      default:
+         if (c >= 32 && c <= 127) {
+            result.append(c);
+         }
+         else {
+            result.append("\\u");
+            String hexValue = Integer.toString((int)c, 16);
+            int zeroCount = 4 - hexValue.length();
+            for (int i=0; i<zeroCount; ++i) {
+               result.append('0');
+            }
+            result.append(hexValue);
+         }
+      }
+   }
+
+   public String constantValueExpression() {
+      Object value = constantValue();
+
+      if (null == value) {
+         return "null";
+      }
+      else if (value instanceof String) {
+         StringBuffer result = new StringBuffer("\"");
+         char[] chars = ((String)value).toCharArray();
+         for (int i=0; i<chars.length; ++i) {
+            appendCharString(result, chars[i], false);
+         }
+         result.append("\"");
+         return result.toString();
+      }
+      else if (value instanceof Float) {
+         return value.toString() + "f";
+      }
+      else if (value instanceof Long) {
+         return value.toString() + "L";
+      }
+      else if (value instanceof Character) {
+         StringBuffer result = new StringBuffer("'");
+         appendCharString(result, ((Character)value).charValue(), false);
+         result.append("'");
+         return result.toString();
+      }
+      else /* if (value instanceof Double
+               || value instanceof Integer
+               || value instanceof Short
+               || value instanceof Byte) */ {
+         return value.toString();
+      }
+   }
+
+   void setValueLiteral(String valueLiteral)
+   {
+      this.valueLiteral = valueLiteral;
+   }
+
+   public boolean isStatic()
+   {
+      return super.isStatic() || containingClass().isInterface();
+   }
+
+   public boolean isFinal()
+   {
+      return super.isFinal() || containingClass().isInterface();
    }
 }

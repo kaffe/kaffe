@@ -23,7 +23,8 @@ package gnu.classpath.tools.gjdoc;
 import com.sun.javadoc.*;
 import java.util.*;
 
-public abstract class AbstractTagImpl implements Tag, TagContainer {
+public abstract class AbstractTagImpl 
+   implements Tag, TagContainer {
    
    private static final Tag[] emptyTags = new Tag[0];
 
@@ -36,8 +37,13 @@ public abstract class AbstractTagImpl implements Tag, TagContainer {
 
    public void resolve() {
       Tag[] allTags=inlineTags();
-      for (int i=0; i<allTags.length; ++i) {
-	 if (allTags[i]!=this) ((AbstractTagImpl)allTags[i]).resolve();
+      if (null != allTags) {
+         for (int i=0; i<allTags.length; ++i) {
+            if (allTags[i]!=this) ((AbstractTagImpl)allTags[i]).resolve();
+         }
+      }
+      else {
+         System.err.println("Null tags for " + this);
       }
    }
 

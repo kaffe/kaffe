@@ -16,7 +16,8 @@ JAR=BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) 
 CLASSFILE = gjdoc.jar
 SRCDIRS = com gnu
 
-toolslib_DATA = $(CLASSFILE)
+toolslib_DATA = $(CLASSFILE) $(ANTLR_JAR)
+
 
 gjdoc_jar_SRCS = \
 	com/sun/javadoc/ClassDoc.java \
@@ -54,6 +55,7 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java \
 	gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java \
 	gnu/classpath/tools/doclets/htmldoclet/ExternalDocSet.java \
+	gnu/classpath/tools/doclets/htmldoclet/HtmlTagletContext.java \
 	gnu/classpath/tools/doclets/AbstractDoclet.java \
 	gnu/classpath/tools/doclets/DocletConfigurationException.java \
 	gnu/classpath/tools/doclets/DocletOption.java \
@@ -66,6 +68,63 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/doclets/PackageMatcher.java \
 	gnu/classpath/tools/doclets/StandardTaglet.java \
 	gnu/classpath/tools/doclets/TagletPrinter.java \
+	gnu/classpath/tools/doclets/debugdoclet/DebugDoclet.java \
+	gnu/classpath/tools/doclets/DocletOptionPackageWildcard.java \
+	gnu/classpath/tools/doclets/InlineTagRenderer.java \
+	gnu/classpath/tools/gjdoc/expr/AdditionExpression.java \
+	gnu/classpath/tools/gjdoc/expr/AndExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryBitwiseExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryComputationExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryEqualityExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryLogicalExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryRelationExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BinaryShiftExpression.java \
+	gnu/classpath/tools/gjdoc/expr/BitShiftRightExpression.java \
+	gnu/classpath/tools/gjdoc/expr/ConditionalExpression.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantBoolean.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantByte.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantChar.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantDouble.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantExpression.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantFloat.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantInteger.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantLong.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantNull.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantShort.java \
+	gnu/classpath/tools/gjdoc/expr/ConstantString.java \
+	gnu/classpath/tools/gjdoc/expr/Context.java \
+	gnu/classpath/tools/gjdoc/expr/DivisionExpression.java \
+	gnu/classpath/tools/gjdoc/expr/EqualExpression.java \
+	gnu/classpath/tools/gjdoc/expr/EvaluatorEnvironment.java \
+	gnu/classpath/tools/gjdoc/expr/Evaluator.java \
+	gnu/classpath/tools/gjdoc/expr/ExclusiveOrExpression.java \
+	gnu/classpath/tools/gjdoc/expr/Expression.java \
+	gnu/classpath/tools/gjdoc/expr/GreaterThanExpression.java \
+	gnu/classpath/tools/gjdoc/expr/GreaterThanOrEqualExpression.java \
+	gnu/classpath/tools/gjdoc/expr/IdentifierExpression.java \
+	gnu/classpath/tools/gjdoc/expr/IllegalExpressionException.java \
+	gnu/classpath/tools/gjdoc/expr/InclusiveOrExpression.java \
+	gnu/classpath/tools/gjdoc/expr/LessThanExpression.java \
+	gnu/classpath/tools/gjdoc/expr/LessThanOrEqualExpression.java \
+	gnu/classpath/tools/gjdoc/expr/LogicalAndExpression.java \
+	gnu/classpath/tools/gjdoc/expr/LogicalNotExpression.java \
+	gnu/classpath/tools/gjdoc/expr/LogicalOrExpression.java \
+	gnu/classpath/tools/gjdoc/expr/ModuloExpression.java \
+	gnu/classpath/tools/gjdoc/expr/MultiplicationExpression.java \
+	gnu/classpath/tools/gjdoc/expr/NegateExpression.java \
+	gnu/classpath/tools/gjdoc/expr/NotEqualExpression.java \
+	gnu/classpath/tools/gjdoc/expr/NotExpression.java \
+	gnu/classpath/tools/gjdoc/expr/ShiftLeftExpression.java \
+	gnu/classpath/tools/gjdoc/expr/ShiftRightExpression.java \
+	gnu/classpath/tools/gjdoc/expr/SubtractionExpression.java \
+	gnu/classpath/tools/gjdoc/expr/TypeCastExpression.java \
+	gnu/classpath/tools/gjdoc/expr/Type.java \
+	gnu/classpath/tools/gjdoc/expr/UnaryExpression.java \
+	gnu/classpath/tools/gjdoc/expr/UnknownIdentifierException.java \
+	gnu/classpath/tools/gjdoc/expr/JavaLexer.java \
+	gnu/classpath/tools/gjdoc/expr/JavaRecognizer.java \
+	gnu/classpath/tools/gjdoc/expr/JavaTokenTypes.java \
 	gnu/classpath/tools/gjdoc/AbstractTagImpl.java \
 	gnu/classpath/tools/gjdoc/ArrayCharacterIterator.java \
 	gnu/classpath/tools/gjdoc/ClassDocImpl.java \
@@ -104,6 +163,9 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/gjdoc/SourcePositionImpl.java \
 	gnu/classpath/tools/gjdoc/InheritDocTagImpl.java \
 	gnu/classpath/tools/gjdoc/TagContainer.java \
+	gnu/classpath/tools/gjdoc/ValueTagImpl.java \
+	gnu/classpath/tools/gjdoc/ClassDocReflectedImpl.java \
+	gnu/classpath/tools/taglets/CodeTaglet.java \
 	gnu/classpath/tools/taglets/CopyrightTaglet.java \
 	gnu/classpath/tools/taglets/AuthorTaglet.java \
 	gnu/classpath/tools/taglets/DeprecatedTaglet.java \
@@ -111,14 +173,15 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/taglets/SinceTaglet.java \
 	gnu/classpath/tools/taglets/TagletContext.java \
 	gnu/classpath/tools/taglets/VersionTaglet.java \
+	gnu/classpath/tools/taglets/GnuExtendedTaglet.java \
+	gnu/classpath/tools/taglets/ValueTaglet.java \
 	gnu/classpath/tools/java2xhtml/Java2xhtml.java \
 	gnu/classpath/tools/FileSystemClassLoader.java \
 	gnu/classpath/tools/IOToolkit.java \
 	gnu/classpath/tools/StringToolkit.java \
 	gnu/classpath/tools/MalformedInputEvent.java \
 	gnu/classpath/tools/MalformedInputListener.java \
-	gnu/classpath/tools/NotifyingInputStreamReader.java
-
+	gnu/classpath/tools/NotifyingInputStreamReader.java 
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
@@ -171,12 +234,20 @@ gjdoc_ressources = \
         doctranslets/html/help.xsl \
         doctranslets/html/serialized.xsl \
         doctranslets/gjdoc_common.xsl \
-        htmldoclet/HtmlDoclet.properties \
-        htmldoclet/gjdochtml-vanilla.css \
-        htmldoclet/help.xhtml \
+	htmldoclet/gjdochtml-clean-color1.css \
+	htmldoclet/gjdochtml-clean-layout.css \
+	htmldoclet/gjdochtml-vanilla.css \
+	htmldoclet/gjdoc.js \
+	htmldoclet/help.xhtml \
+	htmldoclet/HtmlDoclet.properties \
+	htmldoclet/inherit.png \
         rng/gjdoc-classdoc.rng \
         rng/gjdoc-common.rng \
-        rng/gjdoc-index.rng
+        rng/gjdoc-index.rng \
+	java.lang-classes-1.2.txt \
+	java.lang-classes-1.3.txt \
+	java.lang-classes-1.4.txt \
+	java.lang-classes-1.5.txt
 
 EXTRA_DIST = \
 	$(toolslib_DATA) \
@@ -205,11 +276,11 @@ Klasses_jar = $(top_srcdir)/libraries/javalib/rt.jar
 
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(gjdoc_jar_SRCS)
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	echo $(SHELL) $(rebuildLib)
-	CLASSPATH=$(Klasses_jar) BOOTCLASSPATH=$(top_srcdir)/libraries/javalib/Klasses.jar.bootstrap $(SHELL) $(rebuildLib) $(gjdoc_jar_SRCS)
+	CLASSPATH=$(Klasses_jar):$(ANTLR_JAR) BOOTCLASSPATH=$(top_srcdir)/libraries/javalib/Klasses.jar.bootstrap:$(ANTLR_JAR) $(SHELL) $(rebuildLib) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
 	echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes

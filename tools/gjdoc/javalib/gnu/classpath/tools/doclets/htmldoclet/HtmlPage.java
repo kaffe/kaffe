@@ -20,14 +20,18 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 
 package gnu.classpath.tools.doclets.htmldoclet;
 
+import gnu.classpath.tools.IOToolkit;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.Writer;
 
 import com.sun.javadoc.Tag;
@@ -70,84 +74,109 @@ public class HtmlPage
 
    public void beginElement(String elementName)
    {
-      out.print('<');
-      out.print(elementName);
-      out.print('>');
+      print('<');
+      print(elementName);
+      print('>');
    }
 
    public void beginElement(String elementName, String attributeName, String attributeValue)
    {
-      out.print('<');
-      out.print(elementName);
-      out.print(' ');
-      out.print(attributeName);
-      out.print('=');
-      out.print('\"');
-      out.print(attributeValue);
-      out.print('\"');
-      out.print('>');
+      print('<');
+      print(elementName);
+      print(' ');
+      print(attributeName);
+      print('=');
+      print('\"');
+      print(attributeValue);
+      print('\"');
+      print('>');
    }
 
    public void beginElement(String elementName, String[] attributeNames, String[] attributeValues)
    {
-      out.print('<');
-      out.print(elementName);
+      print('<');
+      print(elementName);
       for (int i=0; i<attributeNames.length; ++i) {
          if (null != attributeValues[i]) {
-            out.print(' ');
-            out.print(attributeNames[i]);
-            out.print('=');
-            out.print('\"');
-            out.print(attributeValues[i]);
-            out.print('\"');
+            print(' ');
+            print(attributeNames[i]);
+            print('=');
+            print('\"');
+            print(attributeValues[i]);
+            print('\"');
          }
       }
-      out.print('>');
+      print('>');
+   }
+
+   public void beginElement(String elementName, String attributeName, String attributeValue, String[] attributeNames, String[] attributeValues)
+   {
+      print('<');
+      print(elementName);
+      print(' ');
+      print(attributeName);
+      print('=');
+      print('\"');
+      print(attributeValue);
+      print('\"');
+      if (null != attributeNames) {
+         for (int i=0; i<attributeNames.length; ++i) {
+            if (null != attributeValues[i]) {
+               print(' ');
+               print(attributeNames[i]);
+               print('=');
+               print('\"');
+               print(attributeValues[i]);
+               print('\"');
+            }
+         }
+      }
+      print('>');
    }
 
    public void atomicElement(String elementName)
    {
-      out.print('<');
-      out.print(elementName);
-      out.print("/>");
+      print('<');
+      print(elementName);
+      print("/>");
    }
 
    public void atomicElement(String elementName, String attributeName, String attributeValue)
    {
-      out.print('<');
-      out.print(elementName);
-      out.print(' ');
-      out.print(attributeName);
-      out.print('=');
-      out.print('\"');
-      out.print(attributeValue);
-      out.print('\"');
-      out.print("/>");
+      print('<');
+      print(elementName);
+      print(' ');
+      print(attributeName);
+      print('=');
+      print('\"');
+      print(attributeValue);
+      print('\"');
+      print("/>");
    }
 
    public void atomicElement(String elementName, String[] attributeNames, String[] attributeValues)
    {
-      out.print('<');
-      out.print(elementName);
+      print('<');
+      print(elementName);
       for (int i=0; i<attributeNames.length; ++i) {
          if (null != attributeValues[i]) {
-            out.print(' ');
-            out.print(attributeNames[i]);
-            out.print('=');
-            out.print('\"');
-            out.print(attributeValues[i]);
-            out.print('\"');
+            print(' ');
+            print(attributeNames[i]);
+            print('=');
+            print('\"');
+            print(attributeValues[i]);
+            print('\"');
          }
       }
-      out.print("/>");
+      print("/>");
    }
 
 
    public void endElement(String elementName)
    {
-      out.print("</");
-      out.print(elementName);
-      out.print('>');
+      print("</");
+      print(elementName);
+      print('>');
    }
 
    
@@ -168,11 +197,20 @@ public class HtmlPage
       System.arraycopy(divAttributeNames, 0, attributeNames, 1, divAttributeNames.length);
       System.arraycopy(divAttributeValues, 0, attributeValues, 1, divAttributeNames.length);
 
+      attributeNames[0] = "class";
+      attributeValues[0] = cssClass.getName();
+
       beginElement(cssClass.getDivElementName(), attributeNames, attributeValues);
+      if (null != cssClass.getInnerElementName()) {
+         beginElement(cssClass.getInnerElementName());
+      }
    }
 
    public void endDiv(CssClass cssClass)
    {
+      if (null != cssClass.getInnerElementName()) {
+         endElement(cssClass.getInnerElementName());
+      }
       endElement(cssClass.getDivElementName());
    }
 
@@ -190,10 +228,20 @@ public class HtmlPage
    {
       atomicElement("hr");
    }
+
+   public void br()
+   {
+      atomicElement("br");
+   }
    
    public void print(String text)
    {
       out.print(text);
+   }
+
+   public void print(char c)
+   {
+      out.print(c);
    }
 
    public void div(CssClass cssClass, String contents)
@@ -201,6 +249,13 @@ public class HtmlPage
       beginDiv(cssClass);
       print(contents);
       endDiv(cssClass);
+   }
+
+   public void span(CssClass cssClass, String contents)
+   {
+      beginSpan(cssClass);
+      print(contents);
+      endSpan(cssClass);
    }
 
    public void beginPage(String title, String charset)
@@ -212,9 +267,27 @@ public class HtmlPage
       beginElement("title");
       print(title);
       endElement("title");
+      beginElement("script", 
+                    new String[] { "src", "type" },
+                    new String[] { pathToRoot + "/resources/gjdoc.js", "text/javascript" });
+      print("<!-- this comment required for konqueror 3.2.2 -->");
+      endElement("script");
       atomicElement("meta", 
                     new String[] { "http-equiv", "content" },
                     new String[] { "Content-Type", "text/html; charset=" + charset });
+      atomicElement("meta", 
+                    new String[] { "name", "content" },
+                    new String[] { "generator", "GNU Gjdoc Standard Doclet" });
+      atomicElement("link", 
+                    new String[] { "rel", "type", "href", "title" },
+                    new String[] { "stylesheet", "text/css", 
+                                   pathToRoot + "/resources/gjdochtml-clean-layout.css",
+                                   "GNU Clean" });
+      atomicElement("link", 
+                    new String[] { "rel", "type", "href", "title" },
+                    new String[] { "stylesheet", "text/css", 
+                                   pathToRoot + "/resources/gjdochtml-clean-color1.css",
+                                   "GNU Clean" });
       endElement("head");
    }
 
@@ -233,9 +306,19 @@ public class HtmlPage
       beginElement("table", "class", cssClass.getName());
    }
 
+   public void beginTable(CssClass cssClass, String[] attributeNames, String[] attributeValues)
+   {
+      beginElement("table", "class", cssClass.getName(), attributeNames, attributeValues);
+   }
+
    public void beginRow()
    {
       beginElement("tr");
+   }
+
+   public void beginRow(CssClass cssClass)
+   {
+      beginElement("tr", "class", cssClass.getName(), cssClass.getAttributeNames(), cssClass.getAttributeValues());
    }
 
    public void beginRow(String attribute, String value)
@@ -255,7 +338,7 @@ public class HtmlPage
 
    public void beginCell(CssClass cssClass)
    {
-      beginElement("td", "class", cssClass.getName());
+      beginElement("td", "class", cssClass.getName(), cssClass.getAttributeNames(), cssClass.getAttributeValues());
    }
 
    public void endCell()
@@ -277,7 +360,7 @@ public class HtmlPage
 
    public void rowDiv(CssClass cssClass, String contents)
    {
-      beginRow();
+      beginRow(cssClass);
       beginCell("colspan", "2");
       beginDiv(cssClass);
       print(contents);
@@ -294,6 +377,13 @@ public class HtmlPage
    public void beginAnchor(String href)
    {
       beginElement("a", "href", href);
+   }
+
+   public void beginAnchor(String href, String title)
+   {
+      beginElement("a", 
+                   new String[] { "href", "title" },
+                   new String[] { href, title });
    }
 
    public void beginAnchor(String href, String title, String target)
@@ -325,13 +415,57 @@ public class HtmlPage
       return pathToRoot;
    }
 
-   public void beginBody()
+   public void beginBody(CssClass cssClass)
    {
-      beginElement("body");
+      beginBody(cssClass, true);
+   }
+
+   public void beginBody(CssClass cssClass, boolean setTitle)
+   {
+      if (setTitle) {
+         beginElement("body", 
+                      new String[] { "class", "onload" },
+                      new String[] { cssClass.getName(), "top.contentPageLoaded(document.title)" }
+                      );
+      }
+      else {
+         beginElement("body",
+                      new String[] { "class", "onload" },
+                      new String[] { cssClass.getName(), "top.contentPageLoaded()" }
+                      );
+      }
    }
 
    public void endBody()
    {
       endElement("body");
+   }
+
+   public void insert(Reader in)
+      throws IOException
+   {
+      IOToolkit.copyStream(in, out);
+   }
+
+   public String createHrefString(String url, String content)
+   {
+      return createHrefString(url, content, null);
+   }
+
+   public String createHrefString(String url, String content, String title)
+   {
+      StringBuffer result = new StringBuffer();
+      result.append("<a href=\"");
+      result.append(url);
+      result.append("\"");
+      if (null != title) {
+         result.append(" title=\"");
+         result.append(title);
+         result.append("\"");
+      }
+      result.append(">");
+      result.append(content);
+      result.append("</a>");
+      return result.toString();
    }
 }

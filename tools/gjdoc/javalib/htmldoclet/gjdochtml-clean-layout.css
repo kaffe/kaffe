@@ -1,0 +1,281 @@
+/* gjdochtml-clean-layout.css
+   Copyright (C) 2004 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+ 
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
+
+/* --- GNU Clean Style: Layout --- */
+
+body.content
+{
+        margin: 1.5em;        
+}
+
+div[class="class title outer"]
+{
+        margin: 0em;
+        border: 1px solid;
+        padding: 10pt;
+}
+
+[class="class title-package"]
+{
+        margin: 0em;
+        padding: 0em;
+}
+
+[class="class title-class"]
+{
+        margin: 0em;
+        margin-top: 0.2em;
+        padding: 0em;
+}
+
+[class="table header"],
+[class="table sub header"]
+{
+        margin: 0em;
+        padding: 0.25em;
+}
+
+[class="section header"]
+{
+        margin: 0em;
+        padding: 0.25em;
+        border: 1px solid;
+}
+
+[class="serialized package header"]
+{
+        margin: 0em;
+        padding: 0.25em;
+        border: 1px solid;
+        margin-bottom: 1em;
+}
+
+[class="serialized class header"]
+{
+        margin: 0em;
+        padding: 0.25em;
+        border: 1px solid;
+}
+
+td[class~="summary"][class~="left"],
+td[class~="summary"][class~="right"],
+[class="class summary inherited"]
+{
+        padding: 0.25em;
+}
+
+table[border]
+{
+        border-spacing: 0em;
+        border-collapse: collapse;
+}
+
+table[border] td
+{
+        border-spacing: 0em;
+        border-collapse: collapse;
+}
+
+hr
+{
+        border-top: 1px solid;
+        border-bottom: 0px;
+        border-left: 0px;
+        border-right: 0px;
+}
+
+[class="class summary left"]
+{
+        width: 10%;
+}
+
+td[class="class summary left"]
+{
+        text-align: right;
+}
+
+[class="class summary left"] [class~="synopsis"]
+{
+        font-size: small;
+}
+
+
+[class="package summary left"]
+{
+        width: 20%;
+}
+
+ul [class~="inheritance"]
+{       
+        margin-left: 1.8em;
+        padding-left: 0em;
+        marker-offset: 0em !important;
+        list-style-type: none;
+        list-style-image: none;
+}
+
+li [class~="inheritance]
+{
+        margin: 0em !important;
+        padding: 0em !important;
+        marker-offset: 0em !important;
+}
+
+ul [class~="inheritance"] > li:before
+{
+        display: marker;
+        width: 12px;
+        margin: 0em !important;
+        padding: 0em !important;
+        marker-offset: 0em !important;
+        content: url(inherit.png);
+}
+
+[class="inheritance 0"] > li:before
+{
+        display: none;
+}
+
+[class="inheritance 0"]
+{
+        margin-left: 12px !important;
+        padding-left: 0em;
+        list-style-type: none !important;
+        list-style-image: none !important;
+}
+
+[class="class inheritance-tree"]
+{
+        position: relative;
+        left: -24px;
+}
+
+[class="class synopsis outer"]
+{
+        padding: 0em;
+}
+
+[class="class synopsis outer"] > *
+{
+        margin: 0em;
+        padding: 0em;
+        line-height: 1.2em;
+}
+
+div[class~="navbar"][class~="div"]
+{
+        padding: 0em;
+        margin: 0em;
+        position: relative;
+        left: -0.2em;
+}
+
+table[class~="navbar"][class~="div"],
+table[class~="navbar"][class~="div"] tr,
+table[class~="navbar"][class~="div"] td
+{
+        margin: 0em;
+        padding: 0em;
+        border-spacing: 0em;
+        border-collapse: collapse;
+}
+
+[class~="navbar"][class~="item"]
+{
+        float: left;
+        border: 1px solid;
+        font-size: 0.9em;
+        width: 7.5em;
+        text-align: center;
+        margin: 0.2em;
+        padding-top: 0.2em;
+        padding-bottom: 0.3em;
+}
+
+[class~="navbar"][class~="item"][class~="active"]
+{
+        font-weight: bold;
+}
+
+[class~="title"]
+{
+        border: 1px solid;
+        padding: 0.3em;
+        margin-top: 0em;
+}
+
+[class="table container"]
+{
+        padding: 0em;
+        margin: 0em;
+}
+
+[class="overview summary"]
+{
+        padding: 0em;
+        margin: 0em;
+}
+
+table[class~="summary"]
+{
+        margin-bottom: 1.2em;
+}
+
+table[class="navbar div top"]
+{
+        margin-bottom: 1em !important;
+}
+
+[class~="package"][class~="description"]
+{
+        margin-top: 0.0em;
+        margin-bottom: 1.0em;
+}
+
+[class="class summary right list"]
+{
+        margin: 0em;
+        padding: 0em;  
+}
+
+[class="class summary right list"] [class="synopsis"]
+{
+        margin: 0em;
+        padding: 0em;         
+}
+
+[class="classes menu-subtitle"]
+{
+        padding: 0em;
+        margin-top: 0.5em;
+        margin-bottom: 0em;
+}
+
+[class~="menu-title"]
+{
+        padding: 0em;
+        margin-top: 0.8em;
+        margin-bottom: 0.2em;
+}
+
+[class~="menu-entry"]
+{
+        font-size: 0.8em;
+}

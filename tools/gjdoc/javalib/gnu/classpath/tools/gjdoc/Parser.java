@@ -33,6 +33,13 @@ import com.sun.javadoc.*;
 
 import gnu.classpath.tools.IOToolkit;
 import gnu.classpath.tools.NotifyingInputStreamReader;
+import gnu.classpath.tools.MalformedInputListener;
+import gnu.classpath.tools.MalformedInputEvent;
+
+   class IgnoredFileParseException extends ParseException 
+   {
+      // marker exception
+   }
 
    abstract class SourceComponent {
 
@@ -106,7 +113,7 @@ import gnu.classpath.tools.NotifyingInputStreamReader;
 
 	    parser.setLastComment(new String(source, startIndex, endIndex-startIndex));
 	 }
-         else if (null == parser.getBoilerplateComment()) {
+         else if (null == parser.getBoilerplateComment() && Main.getInstance().isCopyLicenseText()) {
             String boilerplateComment = new String(source, startIndex + 2, endIndex-startIndex - 4);
             if (boilerplateComment.toLowerCase().indexOf("copyright") >= 0) {
                parser.setBoilerplateComment(boilerplateComment);
@@ -132,6 +139,21 @@ import gnu.classpath.tools.NotifyingInputStreamReader;
       }
    }
 
+   class EmptyStatementComponent extends SourceComponent {
+
+      int match(char[] source, int index) {
+         while (index < source.length
+                && Parser.isWhitespace(source[index])) {
+            ++ index;
+         }
+         if (index < source.length && source[index] == ';') {
+            return index+1;
+         }
+         else {
+            return -1;
+         }
+      }
+   }
 
    class ImportComponent extends SourceComponent {
 
@@ -186,6 +208,7 @@ import gnu.classpath.tools.NotifyingInputStreamReader;
       int process(Parser parser, char[] source, int startIndex, int endIndex) {
 	 String packageName=new String(source,startIndex+8,endIndex-startIndex-8-1).trim();
 	 parser.packageOpened(packageName);
+         parser.importedStatementList.add(packageName + ".*");
 	 return endIndex;
       }
    }
@@ -197,21 +220,79 @@ import gnu.classpath.tools.NotifyingInputStreamReader;
 	 final int STATE_NORMAL=1;
 	 final int STATE_SLASHC=2;
 	 final int STATE_STARC=3;
+	 final int STATE_FIELDVAL=4;
+	 final int STATE_STRING=5;
+	 final int STATE_SINGLEQUOTED=6;
+	 final int STATE_STRING_BS=7;
+	 final int STATE_SINGLEQUOTED_BS=8;
 
 	 int state=STATE_NORMAL;
+         int prevState=STATE_NORMAL;
+
+         int fieldValueLevel = 0;
 
 	 for (; index<source.length && !isField; ++index) {
 	    if (state==STATE_STARC) {
 	       if (index<source.length-1 && source[index]=='*' && source[index+1]=='/') {
 		  ++index;
-		  state=STATE_NORMAL;
+		  state=prevState;
 	       }
 	    }
 	    else if (state==STATE_SLASHC) {
 	       if (source[index]=='\n') {
-		  state=STATE_NORMAL;
+		  state=prevState;
 	       }
 	    }
+	    else if (state==STATE_STRING) {
+	       if (source[index]=='\\') {
+		  state=STATE_STRING_BS;
+	       }
+	       else if (source[index]=='\"') {
+		  state=prevState;
+	       }
+	    }
+	    else if (state==STATE_STRING_BS) {
+               state=STATE_STRING;
+            }
+	    else if (state==STATE_SINGLEQUOTED) {
+	       if (source[index]=='\\') {
+		  state=STATE_SINGLEQUOTED_BS;
+	       }
+	       else if (source[index]=='\'') {
+		  state=prevState;
+	       }
+	    }
+	    else if (state==STATE_SINGLEQUOTED_BS) {
+               state=STATE_SINGLEQUOTED;
+            }
+            else if (state==STATE_FIELDVAL) {
+               if (source[index]=='/') {
+                  if (index<source.length-1 && source[index+1]=='*') {
+                     state=STATE_STARC; 
+                     ++index;
+                  }
+                  else if (index<source.length-1 && source[index+1]=='/') {
+                     state=STATE_SLASHC; 
+                     ++index;
+                  }
+               }
+               else if (source[index]=='{') {
+                  ++ fieldValueLevel;
+               }
+               else if (source[index]=='}') {
+                  -- fieldValueLevel;
+               }
+               else if (source[index]=='\"') {
+                  state=STATE_STRING;
+               }
+               else if (source[index]=='\'') {
+                  state=STATE_SINGLEQUOTED;
+               }
+               else if (source[index]==';' && 0 == fieldValueLevel) {
+                  isField=true;
+                  break;
+               }
+            }
 	    else switch (source[index]) {
 	    case '/': 
 	       if (index<source.length-1 && source[index+1]=='*') {
@@ -227,6 +308,9 @@ import gnu.classpath.tools.NotifyingInputStreamReader;
 	    case '(':  // method
 	       return -1;
 	    case '=':  // field
+               state=STATE_FIELDVAL;
+               prevState=state;
+               continue;
 	    case ';':  // field
 	       isField=true;
 	       break;
@@ -322,7 +406,11 @@ import gnu.classpath.tools.NotifyingInputStreamReader;
 
 	 if (execDoc.isMethod() 
 		  && (execDoc.name().equals("readObject")
-		      || execDoc.name().equals("writeObject"))) {
+		      || execDoc.name().equals("writeObject")
+		      || execDoc.name().equals("readExternal")
+		      || execDoc.name().equals("writeExternal")
+		      || execDoc.name().equals("readResolve"))) {
+           // FIXME: add readExternal here?
 
 	    parser.ctx.maybeSerMethodList.add(execDoc);
 	 }
@@ -533,27 +621,43 @@ public class Parser {
       }
    }
 
-   public boolean addComments=false;
+   static boolean addComments=false;
 
    public static final String WHITESPACE=" \t\r\n";
 
-   public static final boolean isWhitespace(char c) { return WHITESPACE.indexOf(c)>=0; }
+   public static final boolean isWhitespace(char c) {
+      return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '');
+      //return WHITESPACE.indexOf(c)>=0; 
+   }
 
    private int currentLine;
 
-   static char[] loadFile(File file, String encoding) 
+   static char[] loadFile(final File file, String encoding) 
       throws IOException 
    {
       InputStream in = new FileInputStream(file);
+      NotifyingInputStreamReader notifyingInput
+         = new NotifyingInputStreamReader(in, encoding);
+      notifyingInput.addMalformedInputListener(new MalformedInputListener() {
+            public void malformedInputEncountered(MalformedInputEvent event) {
+               Main.getRootDoc().printWarning("Illegal character in file " + file + ", line " + event.getLineNumber() + ", column " + event.getColumnNumber());
+               try {
+                  Main.getRootDoc().printWarning(IOToolkit.getLineFromFile(file, event.getLineNumber()));
+                  Main.getRootDoc().printWarning(IOToolkit.getColumnDisplayLine(event.getColumnNumber()));
+               }
+               catch (IOException ignore) {
+               }
+            }
+         });
       Reader reader
-         = new BufferedReader(new NotifyingInputStreamReader(in, encoding));
+         = new BufferedReader(notifyingInput);
       char[] result = IOToolkit.readFully(reader);
       reader.close();
       return result;
    }
 
-   SourceComponent[] sourceLevelComponents;
-   SourceComponent[] classLevelComponents;
+   static SourceComponent[] sourceLevelComponents;
+   static SourceComponent[] classLevelComponents;
 
    public Parser() {
       try {
@@ -563,6 +667,7 @@ public class Parser {
 	    new CommentComponent(),
 	    new SlashSlashCommentComponent(),
 	    new PackageComponent(),
+	    new EmptyStatementComponent(),
 	    new ImportComponent(),
 	    new ClassComponent(),
 	 };
@@ -584,16 +689,20 @@ public class Parser {
       }
    }
 
-   public int getNumberOfProcessedFiles() {
+   public static int getNumberOfProcessedFiles() {
       return processedFiles.size();
    }
 
-   Set processedFiles = new HashSet();
+   static Set processedFiles = new HashSet();
 
-   ClassDocImpl processSourceFile(File file, boolean addComments, String encoding) 
+   ClassDocImpl processSourceFile(File file, boolean addComments, 
+                                  String encoding, String expectedPackageName) 
       throws IOException, ParseException
    {
-      this.currentPackage = PackageDocImpl.DEFAULT_PACKAGE;
+      this.currentFile = file;
+      this.currentPackage = null;
+      this.currentPackageName = null;
+      this.expectedPackageName = expectedPackageName;
       this.outerClass = null;
       this.boilerplateComment = null;
 
@@ -602,38 +711,47 @@ public class Parser {
       if (processedFiles.contains(file)) {
          return null;
       }
+
       processedFiles.add(file);
-
+         
       Debug.log(1,"Processing file "+file);
-
+      
       contextStack.clear();
       ctx=null;
 
       importedClassesList.clear();
       importedStringList.clear();
       importedPackagesList.clear();
-     
+      importedStatementList.clear();
+      importedStatementList.add("java.lang.*");
+      
       currentLine = 1;
-
+      
       char[] source = loadFile(file, encoding);
-      parse(source, 0, sourceLevelComponents);
 
-      ClassDoc[] importedClasses=(ClassDoc[])importedClassesList.toArray(new ClassDoc[0]);
-      PackageDoc[] importedPackages=(PackageDoc[])importedPackagesList.toArray(new PackageDoc[0]);
+      try {
+         parse(source, 0, sourceLevelComponents);
 
-      if (Main.DESCEND_IMPORTED) {
-	 for (int i=0; i<importedClasses.length; ++i) {
-	    Main.getRootDoc().scheduleClass(currentClass, importedClasses[i].qualifiedName());
-	 }
+         ClassDoc[] importedClasses=(ClassDoc[])importedClassesList.toArray(new ClassDoc[0]);
+         PackageDoc[] importedPackages=(PackageDoc[])importedPackagesList.toArray(new PackageDoc[0]);
+         
+         if (Main.DESCEND_IMPORTED) {
+            for (int i=0; i<importedClasses.length; ++i) {
+               Main.getRootDoc().scheduleClass(currentClass, importedClasses[i].qualifiedName());
+            }
+         }
+       
+         /*
+           if (contextStack.size()>0) {
+           Debug.log(1,"-->contextStack not empty! size is "+contextStack.size());
+           }
+         */
+  
+         return outerClass;
       }
-
-      /*
-	if (contextStack.size()>0) {
-	Debug.log(1,"-->contextStack not empty! size is "+contextStack.size());
-	}
-      */
-
-      return outerClass;
+      catch (IgnoredFileParseException ignore) {
+         return null;
+      }
    }
       
    int parse(char[] source, int index, SourceComponent[] componentTypes) throws ParseException, IOException {
@@ -676,13 +794,15 @@ public class Parser {
       return rc;
    }
 
-   public void processSourceDir(File dir, String encoding) throws IOException, ParseException {
+   public void processSourceDir(File dir, String encoding, String expectedPackageName) 
+      throws IOException, ParseException 
+   {
       Debug.log(9,"Processing "+dir.getParentFile().getName()+"."+dir.getName());
       File[] files=dir.listFiles();
       if (null!=files) {
 	 for (int i=0; i<files.length; ++i) {
 	    if (files[i].getName().toLowerCase().endsWith(".java")) {
-	       processSourceFile(files[i], true, encoding);
+	       processSourceFile(files[i], true, encoding, expectedPackageName);
 	    }
 	 }
       }
@@ -692,13 +812,38 @@ public class Parser {
 
       referencedClassesList.clear();
 
+      if (null == currentPackage) {
+
+         if (expectedPackageName != null) {
+            if (null == currentPackageName ||
+                !currentPackageName.equals(expectedPackageName)) {
+
+               Main.getRootDoc().printWarning("Ignoring file " + currentFile + ": (wrong package)");
+               throw new IgnoredFileParseException();
+            }
+         }
+
+         if (null != currentPackageName) {
+            currentPackage = Main.getRootDoc().findOrCreatePackageDoc(currentPackageName);
+         }
+         else {
+            currentPackage = PackageDocImpl.DEFAULT_PACKAGE;
+         }
+      }
+
       ClassDocImpl classDoc
 	 = ClassDocImpl.createInstance((ctx!=null)?(ctx.classDoc):null, currentPackage, 
 				       null,
 				       (PackageDoc[])importedPackagesList.toArray(new PackageDoc[0]),
-				       source, startIndex, endIndex);
+				       source, startIndex, endIndex,
+                                       importedStatementList);
 
-      if (ctx!=null && classDoc.isIncluded()) ctx.innerClassesList.add(classDoc);
+      if (ctx != null) {
+         ctx.innerClassesList.add(classDoc);
+         if (classDoc.isIncluded()) {
+            ctx.filteredInnerClassesList.add(classDoc);
+         }
+      }
 
       if (importedClassesList.isEmpty()) {
 	 for (Iterator it=importedStringList.iterator(); it.hasNext(); ) {
@@ -726,27 +871,27 @@ public class Parser {
       //Debug.log(9,"ctx="+ctx);
    }
 
-   private Doc[] toSortedArray(List list, Doc[] template)
+   private Doc[] toArray(List list, Doc[] template)
    {
       Doc[] result = (Doc[])list.toArray(template);
-      Arrays.sort(result);
       return result;
    }
 
    void classClosed() throws ParseException, IOException {
 
-      ctx.classDoc.setFields((FieldDoc[])toSortedArray(ctx.fieldList, 
+      ctx.classDoc.setFields((FieldDoc[])toArray(ctx.fieldList, 
                                                              new FieldDoc[0]));
-      ctx.classDoc.setFilteredFields((FieldDoc[])toSortedArray(ctx.filteredFieldList, 
+      ctx.classDoc.setFilteredFields((FieldDoc[])toArray(ctx.filteredFieldList, 
                                                                      new FieldDoc[0]));
-      ctx.classDoc.setSerializableFields((FieldDoc[])toSortedArray(ctx.sfieldList, new FieldDoc[0]));
-      ctx.classDoc.setMethods((MethodDoc[])toSortedArray(ctx.methodList, new MethodDoc[0]));
-      ctx.classDoc.setFilteredMethods((MethodDoc[])toSortedArray(ctx.filteredMethodList, new MethodDoc[0]));
+      ctx.classDoc.setSerializableFields((FieldDoc[])toArray(ctx.sfieldList, new FieldDoc[0]));
+      ctx.classDoc.setMethods((MethodDoc[])toArray(ctx.methodList, new MethodDoc[0]));
+      ctx.classDoc.setFilteredMethods((MethodDoc[])toArray(ctx.filteredMethodList, new MethodDoc[0]));
       ctx.classDoc.setMaybeSerMethodList(ctx.maybeSerMethodList);
-      ctx.classDoc.setConstructors((ConstructorDoc[])toSortedArray(ctx.constructorList, new ConstructorDoc[0]));
-      ctx.classDoc.setFilteredConstructors((ConstructorDoc[])toSortedArray(ctx.filteredConstructorList, new ConstructorDoc[0]));
+      ctx.classDoc.setConstructors((ConstructorDoc[])toArray(ctx.constructorList, new ConstructorDoc[0]));
+      ctx.classDoc.setFilteredConstructors((ConstructorDoc[])toArray(ctx.filteredConstructorList, new ConstructorDoc[0]));
 
-      ctx.classDoc.setInnerClasses((ClassDocImpl[])toSortedArray(ctx.innerClassesList, new ClassDocImpl[0]));
+      ctx.classDoc.setInnerClasses((ClassDocImpl[])toArray(ctx.innerClassesList, new ClassDocImpl[0]));
+      ctx.classDoc.setFilteredInnerClasses((ClassDocImpl[])toArray(ctx.filteredInnerClassesList, new ClassDocImpl[0]));
       ctx.classDoc.setBoilerplateComment(boilerplateComment);
 
       Main.getRootDoc().addClassDoc(ctx.classDoc);
@@ -784,10 +929,14 @@ public class Parser {
       List	        constructorList          = new LinkedList();
       List	        filteredConstructorList  = new LinkedList();
       List              innerClassesList         = new LinkedList();
+      List              filteredInnerClassesList = new LinkedList();
    }
    
+   File currentFile = null;
    String lastComment = null;
-   PackageDocImpl currentPackage = PackageDocImpl.DEFAULT_PACKAGE;
+   String expectedPackageName = null;
+   String currentPackageName = null;
+   PackageDocImpl currentPackage = null;
    ClassDocImpl currentClass = null;
    ClassDocImpl outerClass   = null;
    List ordinaryClassesList  = new LinkedList();
@@ -797,17 +946,21 @@ public class Parser {
    List importedClassesList  = new LinkedList();
    List importedStringList   = new LinkedList();
    List importedPackagesList = new LinkedList();
+   List importedStatementList = new LinkedList();
 
    List referencedClassesList = new LinkedList();
 
    String boilerplateComment = null;
 
    void packageOpened(String packageName) {
-      currentPackage=Main.getRootDoc().findOrCreatePackageDoc(packageName);
+      currentPackageName = packageName;
    }
    
    void importEncountered(String importString) throws ParseException, IOException {
       //Debug.log(9,"importing '"+importString+"'");
+
+      importedStatementList.add(importString);
+
       if (importString.endsWith(".*")) {
 	 importedPackagesList.add(Main.getRootDoc().findOrCreatePackageDoc(importString.substring(0,importString.length()-2)));
       }

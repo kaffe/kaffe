@@ -1,28 +1,23 @@
 package gnu.classpath.tools.taglets;
 
+import com.sun.javadoc.Doc;
+
 public class TagletContext
 {
-   public static final TagletContext OVERVIEW = new TagletContext("overview");
-   public static final TagletContext PACKAGE = new TagletContext("package");
-   public static final TagletContext TYPE = new TagletContext("type");
-   public static final TagletContext CONSTRUCTOR = new TagletContext("constructor");
-   public static final TagletContext METHOD = new TagletContext("method");
-   public static final TagletContext FIELD = new TagletContext("field");
+   protected Doc doc;
 
-   private String name;
-
-   private TagletContext(String name)
+   public TagletContext(Doc doc)
    {
-      this.name = name;
+      this.doc = doc;
    }
 
-   public String getName()
+   public Doc getDoc()
    {
-      return name;
+      return this.doc;
    }
 
    public String toString()
    {
-      return "TagletContext{name=" + name + "}";
+      return "TagletContext{doc=" + doc + "}";
    }
 }

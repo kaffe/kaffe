@@ -25,7 +25,9 @@ import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
 
-public class RootDocImpl extends DocImpl implements GjdocRootDoc {
+public class RootDocImpl 
+   extends DocImpl 
+   implements GjdocRootDoc {
 
    private ErrorReporter reporter = new ErrorReporter();
 
@@ -39,14 +41,6 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
     *  option values as following elements.
     */
    private String[][] customOptionArr;
-
-   /**
-    *  The names of all classes explicitly specified on the 
-    *  command line.
-    *
-    *  @contains String
-    */
-   private List specifiedClassNames = new LinkedList();
 
    /**
     *  All source files explicitly specified on the command line.
@@ -125,6 +119,12 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 
    private String sourceEncoding;
 
+   private Parser parser = new Parser();
+
+   private Set unlocatableReportedSet = new HashSet();
+
+   private Set inaccessibleReportedSet = new HashSet();
+   
    //--------------------------------------------------------------------------
    //
    // Implementation of RootDoc interface
@@ -195,8 +195,6 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 
    public void build() throws ParseException, IOException {
 
-      Parser parser = new Parser();
-
       //--- Create a temporary random access file for caching comment text.
 
       //File rawCommentCacheFile=File.createTempFile("gjdoc_rawcomment",".cache");
@@ -208,7 +206,7 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 
       File javaLangSources = findSourceFile("java/lang");
       if (null!=javaLangSources) {
-	 parser.processSourceDir(javaLangSources, sourceEncoding);
+	 parser.processSourceDir(javaLangSources, sourceEncoding, "java.lang");
       }
       else {
 
@@ -228,25 +226,10 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 	 printNotice("Loading classes for package "+specifiedPackageName+"...");
 	 File sourceDir = findSourceFile(specifiedPackageName.replace('.',File.separatorChar));
 	 if (null!=sourceDir) {
-	    parser.processSourceDir(sourceDir, sourceEncoding);
+	    parser.processSourceDir(sourceDir, sourceEncoding, specifiedPackageName);
 	 }
 	 else {
 	    printError("Package '"+specifiedPackageName+"' not found.");
-	 }
-      }
-
-      //--- Parse all explicitly specified class files.
-
-      for (Iterator it=specifiedClassNames.iterator(); it.hasNext(); ) {
-
-	 String specifiedClassName = (String)it.next();
-	 printNotice("Loading class "+specifiedClassName+" ...");
-	 File sourceFile = findSourceFile(specifiedClassName.replace('.',File.separatorChar)+".java");
-	 if (null!=sourceFile) {
-	    parser.processSourceFile(sourceFile, true, sourceEncoding);
-	 }
-	 else {
-	    printError("Class '"+specifiedClassName+"' not found.");
 	 }
       }
 
@@ -258,7 +241,7 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 
 	 File specifiedSourceFile = (File)it.next();
 	 printNotice("Loading source file "+specifiedSourceFile+" ...");
-         ClassDocImpl classDoc = parser.processSourceFile(specifiedSourceFile, true, sourceEncoding);
+         ClassDocImpl classDoc = parser.processSourceFile(specifiedSourceFile, true, sourceEncoding, null);
          if (null != classDoc) {
             specifiedClassesList.add(classDoc);
             classesList.add(classDoc);
@@ -269,6 +252,8 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
          }
       }
 
+      this.specifiedClasses=(ClassDocImpl[])specifiedClassesList.toArray(new ClassDocImpl[0]);
+
       //--- Let the user know that all specified classes are loaded.
 
       printNotice("Constructing Javadoc information...");
@@ -277,6 +262,8 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 
       loadScheduledClasses(parser);
 
+      printNotice("Resolving references in comments...");
+
       resolveComments();
 
       //--- Resolve pending references in all ClassDocImpls
@@ -284,8 +271,10 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
       printNotice("Resolving references in classes...");
 
       for (Iterator it = classDocMap.values().iterator(); it.hasNext(); ) {
-	 ClassDocImpl cd=(ClassDocImpl)it.next();
-	 cd.resolve();
+	 ClassDoc cd=(ClassDoc)it.next();
+         if (cd instanceof ClassDocImpl) {
+            ((ClassDocImpl)cd).resolve();
+         }
       }
 
       //--- Resolve pending references in all PackageDocImpls
@@ -297,22 +286,6 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 	 pd.resolve();
       }
 
-      //--- Assemble the array with all specified classes
-
-      for (Iterator it = specifiedClassNames.iterator(); it.hasNext(); ) {
-	 String specifiedClassName = (String)it.next();
-	 ClassDocImpl specifiedClassDoc = (ClassDocImpl)classDocMap.get(specifiedClassName);
-         if (null == specifiedClassDoc) {
-            printWarning("No documentation found for class " +specifiedClassName + " - wrong filename?");
-         }
-         else {
-            specifiedClassDoc.setIsIncluded(true);
-            specifiedClassesList.add(specifiedClassDoc);
-            classesList.add(specifiedClassDoc);
-         }
-      }
-      this.specifiedClasses=(ClassDocImpl[])specifiedClassesList.toArray(new ClassDocImpl[0]);
-
       //--- Assemble the array with all specified packages
 
       Set specifiedPackageSet = new LinkedHashSet();
@@ -320,8 +293,6 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 	 String specifiedPackageName = (String)it.next();
 	 PackageDoc specifiedPackageDoc = (PackageDoc)packageDocMap.get(specifiedPackageName);
 	 if (null!=specifiedPackageDoc) {
-            //System.err.println("include package " + specifiedPackageName);
-
 	    ((PackageDocImpl)specifiedPackageDoc).setIsIncluded(true);
 	    specifiedPackageSet.add(specifiedPackageDoc);
 
@@ -330,13 +301,6 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 	       ClassDocImpl specifiedPackageClassDoc=(ClassDocImpl)packageClassDocs[i];
             
 	       specifiedPackageClassDoc.setIsIncluded(true);
-
-               /*
-               if (specifiedPackageClassDoc.isIncluded()) {
-                  System.err.println("include class " + specifiedPackageClassDoc.name() + " (" + specifiedPackageClassDoc + "@" + specifiedPackageClassDoc.hashCode() + ")");
-               }
-               */
-
 	       classesList.add(specifiedPackageClassDoc);
 	    }
 	 }
@@ -348,8 +312,10 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
       printNotice("Resolving references in class comments...");
 
       for (Iterator it=classDocMap.values().iterator(); it.hasNext(); ) {
-	 ClassDocImpl cd=(ClassDocImpl)it.next();
-	 cd.resolveComments();
+	 ClassDoc cd=(ClassDoc)it.next();
+         if (cd instanceof ClassDocImpl) {
+            ((ClassDocImpl)cd).resolveComments();
+         }
       }
 
       //--- Resolve pending references in comment data of all packages
@@ -445,6 +411,14 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
       classDocMap.put(cd.qualifiedName(), cd);
    }
 
+   public void addClassDocRecursive(ClassDoc cd) {
+      classDocMap.put(cd.qualifiedName(), cd);
+      ClassDoc[] innerClasses = cd.innerClasses(false);
+      for (int i=0; i<innerClasses.length; ++i) {
+         addClassDocRecursive(innerClasses[i]);
+      }
+   }
+
    public void addPackageDoc(PackageDoc pd) {
       packageDocMap.put(pd.name(), pd);
    }
@@ -474,6 +448,7 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
       if (classDocMap.get(qualifiedName)==null) {
 
 	 //Debug.log(9,"Scheduling "+qualifiedName+", context "+context+".");
+         //System.err.println("Scheduling " + qualifiedName + ", context " + context);
 
 	 scheduledClasses.add(new ScheduledClass(context, qualifiedName));
       }
@@ -537,6 +512,7 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 
 	    try {
 	       // Try to load the class
+               //printNotice("Trying to load " + scheduledClassName);
 	       loadScheduledClass(parser, scheduledClassName, scheduledClassContext);
 	    }
 	    catch (ParseException e) {
@@ -586,11 +562,20 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 
       if (loadedClass==null || loadedClass instanceof ClassDocProxy) {
 
-	 File file=findScheduledClassFile(scheduledClassName, scheduledClassContext);
-	 if (file!=null) {
-	    parser.processSourceFile(file, false, sourceEncoding);
-	 }
-	 else {
+	 ClassDoc classDoc = findScheduledClassFile(scheduledClassName, scheduledClassContext);
+         if (null != classDoc) {
+
+            if (classDoc instanceof ClassDocReflectedImpl) {
+               Main.getRootDoc().addClassDocRecursive(classDoc);
+            }
+
+            if (Main.DESCEND_SUPERCLASS
+                && null != classDoc.superclass() 
+                && (classDoc.superclass() instanceof ClassDocProxy)) {
+               scheduleClass(classDoc, classDoc.superclass().qualifiedName());
+            }
+         }
+         else {
 	    // It might be an inner class of one of the outer/super classes.
 	    // But we can only check that when they are all fully loaded.
 	    boolean retryLater = false;
@@ -640,85 +625,547 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
       }
    }
 
-
-   public File findScheduledClassFile(String scheduledClassName, ClassDoc scheduledClassContext) 
-
-      throws ParseException, IOException {
-
-      File rc;
-
-      if (scheduledClassName.indexOf('.')<0) {
-
-	 ClassDoc[] importedClasses=scheduledClassContext.importedClasses();
-	 int j;
-	 for (j=0; j<importedClasses.length; ++j) {
-	    if (importedClasses[j].qualifiedName().endsWith("."+scheduledClassName)) {
-	       rc = findClass(importedClasses[j].qualifiedName());
-	       if (rc!=null) return rc;
-	    }
-	 }
-	    
-	 PackageDoc[] importedPackages=scheduledClassContext.importedPackages();
-
-	 for (j=0; j<importedPackages.length; ++j) {
-	    rc = findClass(importedPackages[j].name()+"."+scheduledClassName);
-	    if (rc!=null) return rc;
-	 }
-      }
-
-      rc = findClass(scheduledClassName);
-      if (rc!=null) return rc;
-
-      if (scheduledClassContext.containingPackage()!=null) {
-	 rc = findClass(scheduledClassContext.containingPackage().name()+"."+scheduledClassName);
-	 if (rc!=null) return rc;
-      }
-
-      return findClass("java.lang."+scheduledClassName);
+   private static interface ResolvedImport
+   {
+      public String match(String name);
+      public boolean mismatch(String name);
+      public ClassDoc tryFetch(String name);
    }
 
-   public File findClass(String qualifiedName) throws IOException {
+   private class ResolvedImportNotFound
+      implements ResolvedImport
+   {
+      private String importSpecifier;
 
-      if (Main.getInstance().isDocletRunning()) return null;
+      ResolvedImportNotFound(String importSpecifier)
+      {
+         this.importSpecifier = importSpecifier;
+      }
 
-      if (Main.getRootDoc().getClassDoc(qualifiedName)==null) {
+      public String toString()
+      {
+         return "ResolvedImportNotFound{" + importSpecifier + "}";
+      }
 
-	 String relPath=qualifiedName.replace('.',File.separatorChar)+".java";
-	 //String filename=new File(Main.getRootDoc().getsourcePath()).getCanonicalFile().getAbsolutePath()+File.separatorChar+relPath;
-	 for (Iterator it=sourcePath.iterator(); it.hasNext(); ) {
+      public String match(String name)
+      {
+         return null; // FIXME!
+      }
 
-	    File sourcePath = (File)it.next();
+      public boolean mismatch(String name)
+      {
+         return true; // FIXME!
+      }
 
-	    String filename=sourcePath.getAbsolutePath()+File.separatorChar+relPath;
-	    File file = null;
+      public ClassDoc tryFetch(String name)
+      {
+         return null;
+      }
+   }
 
-	    Debug.log(9, "loadClass: trying file "+filename);
+   private class ResolvedImportPackageFile
+      implements ResolvedImport
+   {
+      private Set topLevelClassNames;
+      private File packageFile;
+      private String packageName;
+      private Map cache = new HashMap();
 
-	    // FIXME: the following can probably be done simpler and more elegant using File.getParent()
+      ResolvedImportPackageFile(File packageFile, String packageName)
+      {
+         this.packageFile = packageFile;
+         this.packageName = packageName;
+         topLevelClassNames = new HashSet();
+         File[] files = packageFile.listFiles();
+         for (int i=0; i<files.length; ++i) {
+            if (!files[i].isDirectory() && files[i].getName().endsWith(".java")) {
+               String topLevelClassName = files[i].getName();
+               topLevelClassName
+                  = topLevelClassName.substring(0, topLevelClassName.length() - 5);
+               topLevelClassNames.add(topLevelClassName);
+            }
+         }
+      }
 
-	    while ((!(file=new File(filename)).exists()) 
-		   || (!file.getAbsolutePath().toLowerCase().endsWith(relPath.toLowerCase()))) {
-	       int ndx=filename.lastIndexOf(File.separatorChar);
-	       if (ndx>=0) {
-		  filename=filename.substring(0,ndx)+".java";
-		  //Debug.log(6,"loadClass: trying file "+filename);
-	       }
-	       else {
-		  file = null;
-		  break;
-	       }
-	    }
+      public String match(String name)
+      {
+         ClassDoc loadedClass = classNamed(packageName + "." + name);
+         if (null != loadedClass) {
+            return loadedClass.qualifiedName();
+         }
+         else {
+            String topLevelName = name;
+            int ndx = topLevelName.indexOf('.');
+            String innerClassName = null;
+            if (ndx > 0) {
+               innerClassName = topLevelName.substring(ndx + 1);
+               topLevelName = topLevelName.substring(0, ndx);
+            }
+            
+            if (topLevelClassNames.contains(topLevelName)) {
+               //System.err.println(this + ".match returns " + packageName + "." + name);
+               return packageName + "." + name;
+            }
+            // FIXME: inner classes
+            else {
+               return null;
+            }
+         }
+      }
 
-	    if (null!=file) return file;
-	 }
+      public boolean mismatch(String name)
+      {
+         return null == match(name);
+      }
 
-	 return null;
+      public ClassDoc tryFetch(String name)
+      {
+         ClassDoc loadedClass = classNamed(packageName + "." + name);
+         if (null != loadedClass) {
+            return loadedClass;
+         }
+         else if (null != match(name)) {
+
+            String topLevelName = name;
+            int ndx = topLevelName.indexOf('.');
+            String innerClassName = null;
+            if (ndx > 0) {
+               innerClassName = topLevelName.substring(ndx + 1);
+               topLevelName = topLevelName.substring(0, ndx);
+            }
+
+            ClassDoc topLevelClass = (ClassDoc)cache.get(topLevelName);
+            if (null == topLevelClass) {
+               File classFile = new File(packageFile, topLevelName + ".java");
+               try {
+                  // FIXME: inner classes
+                  topLevelClass = parser.processSourceFile(classFile, false, sourceEncoding, null);
+               }
+               catch (Exception ignore) {
+                  printWarning("Could not parse source file " + classFile);
+               }
+               cache.put(topLevelName, topLevelClass);
+            }
+            if (null == innerClassName) {
+               return topLevelClass;
+            }
+            else {
+               return getInnerClass(topLevelClass, innerClassName);
+            }
+         }
+         else {
+            return null;
+         }
+      }
+
+      public String toString()
+      {
+         return "ResolvedImportPackageFile{" + packageFile + "," + packageName + "}";
+      }
+   }
+
+   private ClassDoc getInnerClass(ClassDoc topLevelClass, String innerClassName)
+   {
+      StringTokenizer st = new StringTokenizer(innerClassName, ".");
+   outer:
+      
+      while (st.hasMoreTokens()) {
+         String innerClassNameComponent = st.nextToken();
+         ClassDoc[] innerClasses = topLevelClass.innerClasses();
+         for (int i=0; i<innerClasses.length; ++i) {
+            if (innerClasses[i].name().equals(innerClassNameComponent)) {
+               topLevelClass = innerClasses[i];
+               continue outer;
+            }
+         }
+         printWarning("Could not find inner class " + innerClassName + " in class " + topLevelClass.qualifiedName());
+         return null;
+      }
+      return topLevelClass;
+   }
+
+   private class ResolvedImportClassFile
+      implements ResolvedImport
+   {
+      private File classFile;
+      private String innerClassName;
+      private String name;
+      private ClassDoc classDoc;
+      private boolean alreadyFetched;
+      private String qualifiedName;
+
+      ResolvedImportClassFile(File classFile, String innerClassName, String name, String qualifiedName)
+      {
+         this.classFile = classFile;
+         this.innerClassName = innerClassName;
+         this.name = name;
+         this.qualifiedName = qualifiedName;
+      }
+
+      public String toString()
+      {
+         return "ResolvedImportClassFile{" + classFile + "," + innerClassName +  "}";
+      }
+
+      public String match(String name)
+      {
+         String topLevelName = name;
+         int ndx = topLevelName.indexOf('.');
+         String innerClassName = null;
+         if (ndx > 0) {
+            innerClassName = topLevelName.substring(ndx + 1);
+            topLevelName = topLevelName.substring(0, ndx);
+         }
+
+         if (this.name.equals(topLevelName)) {
+            if (null == innerClassName) {
+               return qualifiedName;
+            }
+            else {
+               return qualifiedName + "." + innerClassName;
+            }
+         }
+         else {
+            return null;
+         }
+      }
+
+      public boolean mismatch(String name)
+      {
+         return null == match(name);
+      }
+
+      public ClassDoc tryFetch(String name)
+      {
+         if (null != match(name)) {
+            ClassDoc topLevelClass = null;
+            if (alreadyFetched) {
+               topLevelClass = classDoc;
+            }
+            else {
+               alreadyFetched = true;
+               try {
+                  topLevelClass = parser.processSourceFile(classFile, false, sourceEncoding, null);
+               }
+               catch (Exception ignore) {
+                  printWarning("Could not parse source file " + classFile);
+               }
+            }
+            if (null == topLevelClass) {
+               return null;
+            }
+            else {
+               return getInnerClass(topLevelClass, innerClassName);
+            }
+         }
+         else {
+            return null;
+         }
+      }
+
+      public String getName()
+      {
+         if (innerClassName != null) {
+            return name + innerClassName;
+         }
+         else {
+            return name;
+         }
+      }
+   }
+   
+   private class ResolvedImportReflectionClass
+      implements ResolvedImport
+   {
+      private Class clazz;
+      private String name;
+
+      ResolvedImportReflectionClass(Class clazz)
+      {
+         this.clazz = clazz;
+         String className = clazz.getName();
+         int ndx = className.lastIndexOf('.');
+         if (ndx >= 0) {
+            this.name = className.substring(ndx + 1);
+         }
+         else {
+            this.name = className;
+         }
+      }
+
+      public String toString()
+      {
+         return "ResolvedImportReflectionClass{" + clazz.getName() + "}";
+      }
+
+      public String match(String name)
+      {
+         if (this.name.equals(name)) {
+            return clazz.getName();
+         }
+         else {
+            return null;
+         }
+      }
+
+      public boolean mismatch(String name)
+      {
+         return null == match(name);
+      }
+
+      public ClassDoc tryFetch(String name)
+      {
+         if (null != match(name)) {
+            return new ClassDocReflectedImpl(clazz);
+         }
+         // FIXME: inner classes?
+         else {
+            return null;
+         }
+      }
+
+      public String getName()
+      {
+         return name;
+      }
+   }
+
+   private class ResolvedImportReflectionPackage
+      implements ResolvedImport
+   {
+      private String packagePrefix;
+
+      ResolvedImportReflectionPackage(String packagePrefix)
+      {
+         this.packagePrefix = packagePrefix;
+      }
+
+      public String toString()
+      {
+         return "ResolvedImportReflectionPackage{" + packagePrefix + ".*}";
+      }
+
+      public String match(String name)
+      {
+         try {
+            Class clazz = Class.forName(packagePrefix + "." + name);
+            return clazz.getName();
+         }
+         catch (Exception e) {
+            return null;
+         }
+      }
+
+      public boolean mismatch(String name)
+      {
+         return null == match(name);
+      }
+
+      public ClassDoc tryFetch(String name)
+      {
+         try {
+            Class clazz = Class.forName(packagePrefix + name);
+            return ClassDocReflectedImpl.newInstance(clazz);
+         }
+         catch (Exception e) {
+            return null;
+         }
+      }
+
+      public String getName()
+      {
+         return packagePrefix;
+      }
+   }
+
+   private List unlocatablePrefixes = new LinkedList();
+
+   private ResolvedImport resolveImport(String importSpecifier)
+   {
+      ResolvedImport result = resolveImportFileSystem(importSpecifier);
+      if (null == result) {
+         result = resolveImportReflection(importSpecifier);
+      }
+      if (null == result) {
+         result = new ResolvedImportNotFound(importSpecifier);
+      }
+      return result;
+   }
+
+   private ResolvedImport resolveImportReflection(String importSpecifier)
+   {
+      String importedPackageOrClass = importSpecifier;
+      if (importedPackageOrClass.endsWith(".*")) {
+         importedPackageOrClass = importedPackageOrClass.substring(0, importedPackageOrClass.length() - 2);
+
+         return new ResolvedImportReflectionPackage(importedPackageOrClass);
+         
+         //return null;
       }
       else {
-	 //Debug.log(9, "class \""+qualifiedName+"\" already loaded.");
-	 return null;
+         try {
+            Class importedClass = Class.forName(importSpecifier);
+            return new ResolvedImportReflectionClass(importedClass);
+         }
+         catch (Throwable ignore) {
+            return null;
+         }
       }
    }
+
+   private ResolvedImport resolveImportFileSystem(String importSpecifier)
+   {
+      for (Iterator it = unlocatablePrefixes.iterator(); it.hasNext(); ) {
+         String unlocatablePrefix = (String)it.next();
+         if (importSpecifier.startsWith(unlocatablePrefix)) {
+            return null;
+         }
+      }
+
+      String longestUnlocatablePrefix = "";
+
+      for (Iterator it=sourcePath.iterator(); it.hasNext(); ) {
+            
+         File sourcePath = (File)it.next();
+
+         StringBuffer packageOrClassPrefix = new StringBuffer();
+         StringTokenizer st = new StringTokenizer(importSpecifier, ".");
+         while (st.hasMoreTokens() && sourcePath.isDirectory()) {
+            String token = st.nextToken();
+            if ("*".equals(token)) {
+               return new ResolvedImportPackageFile(sourcePath, 
+                                                    packageOrClassPrefix.substring(0, packageOrClassPrefix.length() - 1));
+            }
+            else {
+               packageOrClassPrefix.append(token);
+               packageOrClassPrefix.append('.');
+               File classFile = new File(sourcePath, token + ".java");
+               //System.err.println("  looking for file " + classFile);
+               if (classFile.exists()) {
+                  StringBuffer innerClassName = new StringBuffer();
+                  while (st.hasMoreTokens()) {
+                     token = st.nextToken();
+                     if (innerClassName.length() > 0) {
+                        innerClassName.append('.');
+                     }
+                     innerClassName.append(token);
+                  }
+                  return new ResolvedImportClassFile(classFile, innerClassName.toString(), token, importSpecifier);
+               }
+               else {
+                  sourcePath = new File(sourcePath, token);
+               }
+            }
+         }
+         if (st.hasMoreTokens()) {
+            if (packageOrClassPrefix.length() > longestUnlocatablePrefix.length()) {
+               longestUnlocatablePrefix = packageOrClassPrefix.toString();
+            }
+         }
+      }
+
+      if (longestUnlocatablePrefix.length() > 0) {
+         unlocatablePrefixes.add(longestUnlocatablePrefix);
+      }
+
+      return null;
+   }
+
+   private Map resolvedImportCache = new HashMap();
+
+   private ResolvedImport getResolvedImport(String importSpecifier)
+   {
+      ResolvedImport result 
+         = (ResolvedImport)resolvedImportCache.get(importSpecifier);
+      if (null == result) {
+         result = resolveImport(importSpecifier);
+         resolvedImportCache.put(importSpecifier, result);
+      }
+      return result;
+   }
+
+   public String resolveClassName(String className, ClassDocImpl context)
+   {
+      Iterator it = context.getImportSpecifierList().iterator();
+      while (it.hasNext()) {
+         String importSpecifier = (String)it.next();
+         ResolvedImport resolvedImport = getResolvedImport(importSpecifier);
+         String resolvedScheduledClassName = resolvedImport.match(className);
+
+         if (null != resolvedScheduledClassName) {
+            return resolvedScheduledClassName;
+         }
+      }
+      return className;
+   }
+
+   public ClassDoc findScheduledClassFile(String scheduledClassName, 
+                                          ClassDoc scheduledClassContext)
+      throws ParseException, IOException 
+   {
+      String resolvedScheduledClassName = null;
+
+      if (scheduledClassContext instanceof ClassDocImpl) {
+
+         //((ClassDocImpl)scheduledClassContext).resolveReferencedName(scheduledClassName);
+         Iterator it = ((ClassDocImpl)scheduledClassContext).getImportSpecifierList().iterator();
+         while (it.hasNext()) {
+            String importSpecifier = (String)it.next();
+            ResolvedImport resolvedImport = getResolvedImport(importSpecifier);
+            //System.err.println("  looking in import '" +  resolvedImport + "'");
+            resolvedScheduledClassName = resolvedImport.match(scheduledClassName);
+            if (null != resolvedScheduledClassName) {
+               ClassDoc result = resolvedImport.tryFetch(scheduledClassName);
+               if (null != result) {
+                  return result;
+               }
+               else {
+                  if (!inaccessibleReportedSet.contains(scheduledClassName)) {
+                     inaccessibleReportedSet.add(scheduledClassName);
+                     printWarning("Error while loading class " + scheduledClassName);
+                  }
+                  // FIXME: output resolved class name here
+                  return null;
+               }
+            }
+         }
+      }
+      else {
+         System.err.println("findScheduledClassFile for '" + scheduledClassName + "' in proxy for " + scheduledClassContext);
+      }
+
+      // interpret as fully qualified name on file system
+
+      ResolvedImport fqImport = resolveImportFileSystem(scheduledClassName);
+      if (null != fqImport && fqImport instanceof ResolvedImportClassFile) {
+         return fqImport.tryFetch(((ResolvedImportClassFile)fqImport).getName());
+      }
+
+      // use reflection, assume fully qualified class name
+
+      if (!unlocatableReflectedClassNames.contains(scheduledClassName)) {
+         try {
+            Class clazz = Class.forName(scheduledClassName);
+            printWarning("Cannot locate class " + scheduledClassName + " on file system, falling back to reflection.");
+            ClassDoc result = new ClassDocReflectedImpl(clazz);
+            return result;
+         }
+         catch (Throwable ignore) {
+            unlocatableReflectedClassNames.add(scheduledClassName);
+         }
+      }
+
+      if (null == resolvedScheduledClassName) {
+         resolvedScheduledClassName = scheduledClassName;
+      }
+      if (!unlocatableReportedSet.contains(resolvedScheduledClassName)) {
+         unlocatableReportedSet.add(resolvedScheduledClassName);
+         printWarning("Cannot locate class " + resolvedScheduledClassName + " referenced in class " + scheduledClassContext.qualifiedName());
+      }
+      return null;
+   }
+
+   private Set unlocatableReflectedClassNames = new HashSet();
 
    public static boolean recursiveClasses = false;
 
@@ -726,18 +1173,13 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
       specifiedPackageNames.add(packageName);
    }
 
-   public void addSpecifiedClassName(String className) {
-      specifiedClassNames.add(className);
-   }
-
    public void addSpecifiedSourceFile(File sourceFile) {
       specifiedSourceFiles.add(sourceFile);
    }
 
    public boolean hasSpecifiedPackagesOrClasses() {
-      return !specifiedClassNames.isEmpty() 
-         || !specifiedPackageNames.isEmpty()
-         || !specifiedSourceFiles.isEmpty();
+      return !specifiedPackageNames.isEmpty()
+         ||  !specifiedSourceFiles.isEmpty();
    }
 
    public void setOptions(String[][] customOptionArr) {
@@ -763,7 +1205,6 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 
       rawCommentCache = null;
       customOptionArr = null;
-      specifiedClassNames = null;
       specifiedPackageNames = null;
       classesList = null;
       classDocMap = null;
@@ -773,6 +1214,9 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
       specifiedPackages = null;
       scheduledClasses = null;
       sourcePath = null;
+      parser = null;
+      unlocatableReportedSet = null;
+      inaccessibleReportedSet = null;
    }
 
    public void setSourceEncoding(String sourceEncoding)
@@ -815,5 +1259,10 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
             html = html.substring(start, end);
       }
       return html.trim();
+   }
+
+   public Parser getParser()
+   {
+      return parser;
    }
 }

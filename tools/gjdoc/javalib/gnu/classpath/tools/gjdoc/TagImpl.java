@@ -29,12 +29,12 @@ public class TagImpl extends AbstractTagImpl implements Tag {
    private String name;
    private Map    tagMap;
 
-   TagImpl(String name, String text) {
+   TagImpl(String name, String text, ClassDocImpl contextClass, MemberDocImpl contextMember) {
       super(text);
       this.kind=name;
       this.name=name;
 
-      setBody(text, null, null);
+      setBody(text, contextClass, contextMember);
    }
 
    public String kind() { return kind; }

@@ -82,8 +82,8 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
    public String flatSignature() { return flatSignature; }
 
    public ClassDoc overriddenClass() { 
-      for (ClassDocImpl cdi=(ClassDocImpl)containingClass().superclass(); cdi!=null; cdi=(ClassDocImpl)cdi.superclass()) {
-	 if (null!=cdi.findMethod(name(), signature()))
+      for (ClassDoc cdi=(ClassDoc)containingClass().superclass(); cdi!=null; cdi=(ClassDoc)cdi.superclass()) {
+	 if (null!=ClassDocImpl.findMethod(cdi, name(), signature()))
 	    return cdi;
       }
       return null;
@@ -310,7 +310,8 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
 	    if (word.length()>0) {
 	       ClassDoc exceptionType=rc.containingClass().findClass(word);
 	       if (exceptionType==null) {
-		  exceptionType=new ClassDocProxy(word, rc.containingClass());
+		  exceptionType=new ClassDocProxy(word, 
+                                                  rc.containingClass());
 	       }
 	       thrownExceptionsList.add(exceptionType);
 	    }
@@ -381,16 +382,27 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
 
    }
 
-   public int compareTo(Object o) {
-      if (o instanceof MemberDocImpl) {
-	 int rc=(name()+signature()).compareTo((((MemberDocImpl)o).name())+signature());
-	 if (rc==0) 
-	    rc=containingClass().qualifiedName().compareTo(((MemberDocImpl)o).containingClass().qualifiedName());
-	 return rc;
+   public int compareTo(Object other) {
+      int rc;
+      if (other instanceof MemberDocImpl) {
+         MemberDocImpl otherMember = (MemberDocImpl)other;
+	 rc = name().compareTo(otherMember.name());
+         if (0 == rc) {
+            if (other instanceof ExecutableMemberDocImpl) {
+               rc = signature().compareTo(((ExecutableMemberDocImpl)other).signature());
+               if (0 == rc) {
+                  return containingClass().compareTo(otherMember.containingClass());
+               }
+            }
+            else {
+               rc = 1;
+            }
+         }
       }
       else {
-	 return 0;
+	 rc = 1;
       }
+      return rc;
    }
 }
 

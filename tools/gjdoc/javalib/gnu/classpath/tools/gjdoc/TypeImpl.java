@@ -21,6 +21,9 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package gnu.classpath.tools.gjdoc;
 
 import com.sun.javadoc.*;
+import java.util.Collections;
+import java.util.Set;
+import java.util.HashSet;
 
 public class TypeImpl implements Type, WritableType {
 
@@ -57,5 +60,24 @@ public class TypeImpl implements Type, WritableType {
 
    public Object clone() throws CloneNotSupportedException {
       return super.clone();
+   }
+
+   public boolean isPrimitive()
+   {
+      return null == packageName && primitiveNames.contains(typeName);
+   }
+
+   private static final Set primitiveNames;
+   static {
+      Set _primitiveNames = new HashSet();
+      _primitiveNames.add("boolean");
+      _primitiveNames.add("char");
+      _primitiveNames.add("byte");
+      _primitiveNames.add("short");
+      _primitiveNames.add("int");
+      _primitiveNames.add("long");
+      _primitiveNames.add("float");
+      _primitiveNames.add("double");
+      primitiveNames = Collections.unmodifiableSet(_primitiveNames);
    }
 }

@@ -94,10 +94,10 @@ public class VersionTaglet implements Taglet {
       else {
          
          StringBuffer result = new StringBuffer();
-         result.append("<div class=\"classdoc-tag-section-header\">");
+         result.append("<div class=\"tag list\">");
          result.append(HEADER);
          result.append("</div>");
-         result.append("<dl class=\"classdoc-list\">");
+         result.append("<dl class=\"tag section header\">");
          result.append("<dt>");
          for (int i = 0; i < tags.length; i++) {
             if (i > 0) {
