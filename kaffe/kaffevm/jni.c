@@ -45,6 +45,7 @@
 #include "icode.h"
 #include "machine.h"
 extern int maxArgs;
+extern int maxLocal;
 extern int isStatic;
 extern int maxTemp;
 #endif
@@ -3525,8 +3526,8 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	/* Construct a wrapper to call the JNI method with the correct
 	 * arguments.
 	 */
-	maxArgs = count;
-	initInsnSequence(0, xmeth->localsz + !isStatic, 0);
+	maxArgs = maxLocal = count; /* make sure args are spilled if needed */
+	initInsnSequence(0, count, 0);
 	start_basic_block();
 	prologue(0);
 

@@ -1,3 +1,9 @@
+Thu Dec 10 22:07:44 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/jni.c (maxLocal): declare it
+	(Kaffe_JNI_wrapper): define maxLocal to ensure that args passed in 
+	registers are spilled when needed
+
 Thu Dec 10 11:40:11 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/intrp/machine.c: fix handling of synchronized
