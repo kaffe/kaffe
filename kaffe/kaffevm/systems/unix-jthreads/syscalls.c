@@ -43,6 +43,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         getsockopt,
         getsockname, 
         getpeername,
+        close,
         select,	
         jthreadedForkExec,
         jthreadedWaitpid,

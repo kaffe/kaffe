@@ -61,6 +61,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         getsockopt,
         getsockname, 
         getpeername,
+        close,
         select,	
 	my_forkexec,
         waitpid,

@@ -43,6 +43,7 @@ typedef struct SystemCallInterface {
 	int	(*_getsockopt)(int, int, int, void*, int*);
 	int	(*_getsockname)(int, struct sockaddr*, int*);
 	int	(*_getpeername)(int, struct sockaddr*, int*);
+	int	(*_sockclose)(int);
 
 	int	(*_select)(int, fd_set*, fd_set*, fd_set*, struct timeval*);
 	int	(*_forkexec)(char**, char**, int[4]);
@@ -89,6 +90,7 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
 			(*Kaffe_SystemCallInterface._getsockname)(A,B,C)
 #define	KGETPEERNAME(A,B,C) \
 			(*Kaffe_SystemCallInterface._getpeername)(A,B,C)
+#define KSOCKCLOSE(A)	(*Kaffe_SystemCallInterface._sockclose)(A)
 
 #define	KSELECT(A,B,C,D,E) \
 			(*Kaffe_SystemCallInterface._select)(A,B,C,D,E)
