@@ -1,3 +1,44 @@
+1999-09-20  Edouard G. Parmelan  <Edouard.Parmelan@quadratec.fr>
+
+	* config/alpha/jit-alpha.def config/alpha/jit.h
+	config/alpha/trampolines.c config/alpha/osf/config.frag
+	config/alpha/osf/jit-md.h config/alpha/osf/md.c: Follow ``Calling
+	Standard for Alpha Systems'' and add exceptions handling for Dec OSF/1
+	with libexc.
+	@@@ Be careful, it's not yet working. @@@
+
+	* config/alpha/linux/jit-md.h config/alpha/linux/md.c
+	Undefine SA_SIGINFO and remove check of variable KAFFE_JIT_DEBUG.
+
+	* kaffe/kaffevm/access.h kaffe/kaffevm/classMethod.h: New access
+	flag ACC_JITTED for methods (same value as ACC_GCJ for classes).
+	New macro METHOD_JITTED() and SET_METHOD_JITCODE().  They work as
+	METHOD_TRANSLATED() and SET_METHOD_NATIVECODE() but for real jitted
+	method [needed by destroyClass()].
+
+	* kaffe/kaffevm/jit/machine.c (finishInsSequence): Allocate
+	REGISTER_JIT_METHOD_LENGTH byte before constant pool.  If
+	REGISTER_JIT_METHOD() is defined, call it.
+	(installMethodCode): Use SET_METHOD_JITCODE() in place of
+	SET_METHOD_NATIVECODE().
+	
+	* kaffe/kaffevm/gcFuncs.c (destroyClass): If UNREGISTER_JIT_METHOD
+	is defined, call it for METHOD_JITTED() methods.
+
+	* kaffe/kaffevm/exception.c (nextFrame): Add cast to exceptionFrame.
+
+	* kaffe/kaffevm/gcj/gcj-except.c: Update gjcDispatchException() with
+	new stackTraceInfo.
+	
+	* kaffe/kaffevm/mem/gc-incremental.c kaffe/kaffevm/mem/gc-mem.c:
+	Add cast to int for statistics output.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h (jthread_stacklimit):
+	Cast stackEnd to long in place of int.
+
+	* kaffe/kaffevm/debug.[ch] kaffe/kaffevm/stackTrace.c: New flag
+	STACKTRACE for stack trace inspection.
+
 1999-09-18  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* FAQ/FAQ.locks: Update, but no description of fastlocking.
