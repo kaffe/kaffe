@@ -55,23 +55,6 @@ static const struct {
   };
 
 #ifdef KAFFE_VMDEBUG
-static const struct {
-    int opt;
-    const char *name;
-} optionNames[] = {
-#ifdef SO_SNDBUF
-    { java_net_SocketOptions_SO_SNDBUF,		"SO_SNDBUF" },
-#endif
-#ifdef SO_RCVBUF
-    { java_net_SocketOptions_SO_RCVBUF,		"SO_RCVBUF" },
-#endif
-#ifdef SO_REUSEADDR
-    { java_net_SocketOptions_SO_REUSEADDR,	"SO_REUSEADDR" },
-#endif
-};
-#endif /*KAFFE_VMDEBUG*/
-
-#ifdef KAFFE_VMDEBUG
 /* Generate a string for an inet addr (in host form). */
 static char *
 ip2str(jint addr) 
