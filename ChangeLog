@@ -1,3 +1,8 @@
+2004-03-27  Patrick Cernko <pcernko@mpi-sb.mpg.de>
+
+	kaffe/kaffevm/intrp/checks.h:
+	Fixed some checks to print out right results.
+
 2003-03-27  Riccardo Mottola <zuse@libero.it>
 
 	* kaffe/kaffeh/support.c:
