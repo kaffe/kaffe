@@ -40,20 +40,21 @@ exceptionFrame * __alpha_osf_nextFrame (exceptionFrame *frame);
 /* Native support for exception */
 
 #define MD_JIT_EXCEPTION_INFO_LENGTH		(8 + 8 + 24)
-#define MD_REGISTER_JIT_EXCEPTION_INFO(M,B,L)	__alpha_osf_register_jit_exc(M,B,L)
-#define MD_UNREGISTER_JIT_EXCEPTION_INFO(M,B,L)	__alpha_osf_unregister_jit_exc(M,B,L)
+#define MD_REGISTER_JIT_EXCEPTION_INFO(M,B,E)	__alpha_osf_register_jit_exc(M,B,E)
+#define MD_UNREGISTER_JIT_EXCEPTION_INFO(M,B,E)	__alpha_osf_unregister_jit_exc(M,B,E)
 
-void __alpha_osf_register_jit_exc (void *methblock, void *codebase, int codelen);
-void __alpha_osf_unregister_jit_exc (void *methblock, void *codebase, int codelen);
+void __alpha_osf_register_jit_exc (void *methblock, void *codebase, void *codeend);
+void __alpha_osf_unregister_jit_exc (void *methblock, void *codebase, void *codeend);
 
 
 /* Get the next frame in the chain */
 #define NEXTFRAME(f)							\
 	__alpha_osf_nextFrame (f)
 
-/* Extract the PC from the given frame */
+/* Extract PC, FP and SP from the given frame */
 #define PCFRAME(f)		((f)->sc.sc_pc)
 #define FPFRAME(f)		((f)->sc.sc_regs[15])
+#define SPFRAME(f)		((f)->sc.sc_regs[30])
 
 /* Get the first exception frame from a subroutine call */
 #define FIRSTFRAME(f, o)						\
@@ -69,6 +70,5 @@ void __alpha_osf_unregister_jit_exc (void *methblock, void *codebase, int codele
 /* Get the first exception frame from a signal handler */
 #define EXCEPTIONFRAME(f, c)						\
 	(f).sc = *(c)
-	/* __alpha_osf_firstFrame (&(f)) */
 
 #endif
