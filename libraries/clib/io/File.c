@@ -347,7 +347,11 @@ java_io_File_setLastModified0(struct Hjava_io_File* this, jlong thetime)
 #ifdef HAVE_UTIME_H
 	char path[MAXPATHLEN];
 	struct utimbuf ub;
+#endif
 
+	if (thetime < 0)
+		SignalError("java.lang.IllegalArgumentException", "time < 0");
+#ifdef HAVE_UTIME_H
 	stringJava2CBuf(unhand(this)->path, path, sizeof(path));
 	ub.actime = (time_t)(thetime / 1000);
 	ub.modtime = ub.actime;
