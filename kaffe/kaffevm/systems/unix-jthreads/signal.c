@@ -31,6 +31,10 @@
 #define	EXCEPTIONFRAMEPTR	&frame
 #endif /* TRANSLATOR */
 
+#ifndef STACK_STRUCT
+#define STACK_STRUCT stack_t
+#endif
+
 static void nullException(SIGNAL_ARGS(sig, sc));
 static void floatingException(EXCEPTIONPROTO);
 
@@ -376,9 +380,8 @@ stackOverflowDetector(SIGNAL_ARGS(sig, sc))
 void
 detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 {
-        stack_t newstack;
-
 #if defined(STACK_POINTER) && defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK)
+        STACK_STRUCT newstack;
 
 	/*
 	 * Signals has to have their own stack so we can solve

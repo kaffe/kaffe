@@ -1,5 +1,12 @@
 2004-04-24  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/sparc/openbsd2/md.h,
+	kaffe/kaffevm/systems/unix-jthreads/signal.c:
+	New macro STACK_STRUCT. On OpenBSD2 define it as
+	"struct sigaltstack".
+
+2004-04-24  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* config/i386/beos/md.h, config/i386/bsdi/md.h,
 	config/i386/dgux/md.h, config/i386/freebsd2/md.h,
 	config/i386/gnu/md.h, config/i386/linux/md.h,

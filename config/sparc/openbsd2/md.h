@@ -31,6 +31,8 @@
 #define SIGNAL_PC(scp) ((scp)->sc_pc)
 #define STACK_POINTER(scp) ((scp)->sc_sp)
 
+#define STACK_STRUCT struct sigaltstack
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif
