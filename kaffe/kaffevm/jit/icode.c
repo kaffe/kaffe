@@ -25,7 +25,6 @@
 #include "constants.h"
 #include "classMethod.h"
 #include "gc.h"
-#include "flags.h"
 #include "itypes.h"
 #include "md.h"
 #include "locks.h"

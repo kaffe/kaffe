@@ -53,6 +53,10 @@ static void dispatchException(Hjava_lang_Throwable*, struct _exceptionFrame*) __
 Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
 
 extern Hjava_lang_Object* exceptionObject;
+extern uintp Kaffe_JNI_estart;
+extern uintp Kaffe_JNI_eend;
+extern void Kaffe_JNIExceptionHandler(void);
+
 
 /*
  * Throw an internal exception.
@@ -127,6 +131,18 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 		bool res;
 
 		for (frame = (vmException*)unhand(ct)->exceptPtr; frame != 0; frame = frame->prev) {
+
+			if (frame->method == (Method*)1) {
+                                /* Don't allow JNI to catch thread death
+                                 * exceptions.  Might be bad but its going
+                                 * 1.2 anyway.
+                                 */
+                                if (strcmp(cname, THREADDEATHCLASS) != 0) {
+                                        unhand(ct)->exceptPtr = (struct Hkaffe_util_Ptr*)frame;
+                                        Kaffe_JNIExceptionHandler();
+                                }
+			}
+
 			/* Look for handler */
 			res = findExceptionBlockInMethod(frame->pc, eobj->base.dtable->class, frame->meth, &einfo);
 
@@ -162,6 +178,16 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 
 		for (frame = baseframe; frame != 0; frame = GETNEXTFRAME(frame)) {
 			findExceptionInMethod(PCFRAME(frame), class, &einfo);
+
+                        if (einfo.method == 0 && PCFRAME(frame) >= Kaffe_JNI_estart && PCFRAME(frame) < Kaffe_JNI_eend) {
+                                /* Don't allow JNI to catch thread death
+                                 * exceptions.  Might be bad but its going
+                                 * 1.2 anyway.
+                                 */
+                                if (strcmp(cname, THREADDEATHCLASS) != 0) {
+                                        Kaffe_JNIExceptionHandler();
+                                }
+                        }
 
 			/* Find the sync. object */
 			if (einfo.method == 0 || (einfo.method->accflags & ACC_SYNCHRONISED) == 0) {

@@ -219,6 +219,11 @@ DBG(	printf("Native stub = '%s'\n", stub);fflush(stdout);		)
 		return;
 	}
 
+	/* Try to locate the nature function using the JNI interface */
+        if (Kaffe_JNI_native(m)) {
+                return;
+        }
+
 	fprintf(stderr, "Failed to locate native function:\n\t%s.%s%s\n", m->class->name->data, m->name->data, m->signature->data);
 	fflush(stderr);
 	SET_METHOD_NATIVECODE(m, (void*)error_stub);

@@ -33,7 +33,6 @@
 #include "external.h"
 #include "thread.h"
 #include "baseClasses.h"
-#include "flags.h"
 #include "itypes.h"
 
 /*

@@ -63,6 +63,7 @@ COMMON=\
 		jar$(OBJEXT) \
 		inflate$(OBJEXT) \
 		debug$(OBJEXT) \
+		jni$(OBJEXT) \
 		md$(OBJEXT)
 
 all:		mkkaffevm

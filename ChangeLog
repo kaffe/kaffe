@@ -1,3 +1,9 @@
+Thu May 28 11:31:43 PDT 1998	Tim Wilkinson	<tim@transvirtual.com>
+
+	* Merged in Transvirtual's implementation of Java Native Interface
+	  (JNI) calling mechanism.
+	  This conforms to the JNI specified in JDK 1.1.
+
 Wed May 27 21:48:41 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* configure.in, Makefile.in at all levels: added depend target;

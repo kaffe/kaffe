@@ -23,7 +23,6 @@
 #include "exception.h"
 #include "readClass.h"
 #include "paths.h"
-#include "flags.h"
 #include "errors.h"
 #include "lerrno.h"
 #include "locks.h"
@@ -31,6 +30,7 @@
 #include "external.h"
 #include "jar.h"
 #include "jsyscall.h"
+#include "jni.h"
 
 #define	MAXBUF		256
 #define	MAXPATHELEM	16
@@ -191,7 +191,7 @@ ZDBG(			printf("Opening JAR file %s for %s\n", classpath[i].path, cname); )
 			}
 			hand.size = entry->uncompressedSize;
 			hand.buf = hand.base;
-			if (flag_classload) {
+			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
 				fprintf(stderr, "Loading %s(%s)", cname, classpath[i].path);
 				if (entry->compressionMethod != COMPRESSION_STORED) {
 					fprintf(stderr, " [compressed]");
@@ -229,7 +229,7 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 				}
 			}
 			close(fp);
-			if (flag_classload) {
+			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
 				fprintf(stderr, "Loading %s\n", cname);
 			}
 			goto okay;
@@ -246,7 +246,7 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 			if (hand.base == NULL) {
 				break;
 			}
-			if (flag_classload) {
+			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
 				fprintf(stderr, "Registering %s.\n", cname);
 			}
 			goto okay;
@@ -315,7 +315,8 @@ initClasspath(void)
 	int h;
 	int c;
 
-	cp = realClassPath;
+	cp = (char*)Kaffe_JavaVMArgs[0].classpath;
+
 	realClassPath = gc_malloc_fixed(strlen(cp) + 1);
 	strcpy(realClassPath, cp);
 

@@ -18,9 +18,9 @@
 #include "constants.h"
 #include "classMethod.h"
 #include "baseClasses.h"
-#include "flags.h"
 #include "exception.h"
 #include "errors.h"
+#include "jni.h"
 
 /*
  * Verify pass 2:  Check the internal consistency of the class file
@@ -116,8 +116,8 @@ DBG(	printf("Verifing class %s\n", (char*)class->name->data);	)
 void
 verify3(Hjava_lang_Class* class)
 {
-	if ((class->loader == 0 && (flag_verify & 1) == 0) ||
-	    (class->loader != 0 && (flag_verify & 2) == 0)) {
+	if ((class->loader == 0 && (Kaffe_JavaVMArgs[0].verifyMode & 1) == 0) ||
+	    (class->loader != 0 && (Kaffe_JavaVMArgs[0].verifyMode & 2) == 0)) {
 		return;
 	}
 

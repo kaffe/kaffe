@@ -19,7 +19,6 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "gc.h"
-#include "flags.h"
 #include "classMethod.h"
 #include "locks.h"
 #include "thread.h"
@@ -28,6 +27,7 @@
 #include "external.h"
 #include "lookup.h"
 #include "md.h"
+#include "jni.h"
 
 static gcList gclists[5];
 static int mustfree = 4;		/* temporary list */
@@ -427,10 +427,10 @@ gcMan(void* arg)
 
 		finishGC();
 
-		if (flag_gc > 0) {
+		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
 			fprintf(stderr, "<GC: heap %dK, total %dK, alloc %dK, marked %dK, freeing %dK>\n", gc_heap_total/1024, gcStats.totalmem/1024, gcStats.allocmem/1024, gcStats.markedmem/1024, (gcStats.totalmem > gcStats.markedmem ? (gcStats.totalmem - gcStats.markedmem)/1024 : 0));
 		}
-		if (flag_gc > 1) {
+		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 1) {
 			OBJECTSTATSPRINT();
 		}
 

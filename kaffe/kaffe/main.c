@@ -29,17 +29,11 @@ extern char* engine_name;
 extern char* engine_version;
 extern char* java_version;
 
-extern void initialiseKaffe(void);
+#include "jni.h"
 
-extern char* realClassPath;
-extern int threadStackSize;
-extern size_t gc_heap_limit;
-extern int flag_preemption;
-extern int flag_verify;
-extern int flag_gc;
-extern int flag_classload;
-extern int flag_jit;
-extern size_t gc_heap_allocation_size;
+JavaVMInitArgs vmargs;
+JNIEnv* env;
+JavaVM* vm;
 
 static int options(char**);
 static void usage(void);
@@ -55,13 +49,18 @@ static void handleErrors(void);
 int
 main(int argc, char* argv[])
 {
-	HArrayOfObject* args;
-	Hjava_lang_String** str;
+	jarray args;
+	jclass cls;
+	jclass mcls;
+	jmethodID mmth;
+	jobject str;
 	int i;
 	int farg;
 	char* cp;
 
-	/* Get classpath from environment */
+	vmargs.version = 0x00010001;
+	JNI_GetDefaultJavaVMInitArgs(&vmargs);
+
 	cp = getenv(CLASSPATH1);
 	if (cp == 0) {
 		cp = getenv(CLASSPATH2);
@@ -74,10 +73,11 @@ main(int argc, char* argv[])
 #endif
 		}
 	}
-	realClassPath = cp;
+	vmargs.classpath = cp;
 
 	/* Process program options */
 	farg = options(argv);
+	argc = argc - farg;
 
 	/* Get the class name to start with */
 	if (argv[farg] == 0) {
@@ -86,23 +86,45 @@ main(int argc, char* argv[])
 	}
 
 	/* Initialise */
-	initialiseKaffe();
+	JNI_CreateJavaVM(&vm, &env, &vmargs);
+
+	mcls = (*env)->FindClass(env, argv[farg]);
+	handleErrors();
+
+	mmth = (*env)->GetStaticMethodID(env, mcls, "main", "([Ljava/lang/String;)V");
+	handleErrors();
+
+	farg++;
+	argc--;
 
 	/* Build an array of strings as the arguments */
-	args = (HArrayOfObject*)AllocObjectArray(argc-(farg+1), "Ljava/lang/String");
-
-	/* Build each string and put into the array */
-	str = (Hjava_lang_String**)unhand(args)->body;
-	for (i = farg+1; i < argc; i++) {
-		str[i-(farg+1)] = makeJavaString(argv[i], strlen(argv[i]));
+	cls = (*env)->FindClass(env, "java/lang/String");
+	handleErrors();
+	args = (*env)->NewObjectArray(env, argc, cls, 0);
+	handleErrors();
+	for (i = 0; i < argc; i++) {
+		str = (*env)->NewStringUTF(env, argv[farg+i]);
+		handleErrors();
+		(*env)->SetObjectArrayElement(env, args, i, str);
+		handleErrors();
 	}
 
-	/* Kick it */
-	do_execute_java_class_method(argv[farg], "main", "([Ljava/lang/String;)V", args);
-	exitThread();
-	/* This should never return */
-	exit(1);
-	return(1);
+	/* Call method, check for errors and then exit */
+	(*env)->CallStaticVoidMethod(env, mcls, mmth, args);
+	handleErrors();
+
+	(*vm)->DetachCurrentThread(vm);
+}
+
+static
+void
+handleErrors(void)
+{
+	if ((*env)->ExceptionOccured(env)) {
+		(*env)->ExceptionDescribe(env);
+		(*env)->ExceptionClear(env);
+		(*vm)->DetachCurrentThread(vm);
+	}
 }
 
 /*
@@ -127,7 +149,7 @@ options(char** argv)
 		}
 		else if (strcmp(argv[i], "-version") == 0) {
 			fprintf(stderr, "Kaffe Virtual Machine\n");
-			fprintf(stderr, "Copyright (c) 1996, 1997\nTransvirtual Technologies, Inc.  All rights reserved\n");
+			fprintf(stderr, "Copyright (c) 1996, 1997, 1998\nTransvirtual Technologies, Inc.  All rights reserved\n");
 			fprintf(stderr, "Engine: %s   Version: %s   Java Version: %s\n", engine_name, engine_version, java_version);
 			exit(0);
 		}
@@ -137,7 +159,7 @@ options(char** argv)
 				fprintf(stderr, "Error: No path found for -classpath option.\n");
 				exit(1);
 			}
-			realClassPath = argv[i];
+			vmargs.classpath = argv[i];
 		}
 		else if (strcmp(argv[i], "-ss") == 0) {
 			i++;
@@ -150,7 +172,7 @@ options(char** argv)
 				fprintf(stderr, "Warning: Attempt to set stack size smaller than %d - ignored.\n", THREADSTACKSIZE);
 			}
 			else {
-				threadStackSize = sz;
+				vmargs.nativeStackSize = sz;
 			}
 		}
 		else if (strcmp(argv[i], "-mx") == 0) {
@@ -159,7 +181,7 @@ options(char** argv)
 				fprintf(stderr, "Error: No heap size found for -mx option.\n");
 				exit(1);
 			}
-			gc_heap_limit = parseSize(argv[i]);
+			vmargs.maxHeapSize = parseSize(argv[i]);
 		}
 		else if (strcmp(argv[i], "-ms") == 0) {
 			i++;
@@ -167,31 +189,28 @@ options(char** argv)
 				fprintf(stderr, "Error: No heap size found for -ms option.\n");
 				exit(1);
 			}
-			gc_heap_allocation_size = parseSize(argv[i]);
-		}
-		else if (strcmp(argv[i], "-nopreempt") == 0) {
-			flag_preemption = false;
+			vmargs.allocHeapSize = parseSize(argv[i]);
 		}
 		else if (strcmp(argv[i], "-verify") == 0) {
-			flag_verify = 3;
+			vmargs.verifyMode = 3;
 		}
 		else if (strcmp(argv[i], "-verifyremote") == 0) {
-			flag_verify = 2;
+			vmargs.verifyMode = 2;
 		}
 		else if (strcmp(argv[i], "-noverify") == 0) {
-			flag_verify = 0;
+			vmargs.verifyMode = 0;
 		}
 		else if (strcmp(argv[i], "-verbosegc") == 0) {
-			flag_gc = 1;
+			vmargs.enableVerboseGC = 1;
 		}
 		else if (strcmp(argv[i], "-verbosejit") == 0) {
-			flag_jit = 1;
+			vmargs.enableVerboseJIT = 1;
 		}
 		else if (strcmp(argv[i], "-verbosemem") == 0) {
-			flag_gc = 2;
+			vmargs.enableVerboseGC = 2;
 		}
 		else if (strcmp(argv[i], "-verbose") == 0 || strcmp(argv[i], "-v") == 0) {
-			flag_classload = 1;
+			vmargs.enableVerboseClassloading = 1;
 		}
 #ifdef DEBUG
                 else if (strcmp(argv[i], "-vmdebug") == 0) {
@@ -227,7 +246,6 @@ options(char** argv)
 		 */
 		else if (strcmp(argv[i], "-noasyncgc") == 0 ||
 		   strcmp(argv[i], "-cs") == 0 ||
-		   strcmp(argv[i], "-debug") == 0 ||
 		   strcmp(argv[i], "-checksource") == 0 ||
 		   strcmp(argv[i], "-prof") == 0) {
 		}
