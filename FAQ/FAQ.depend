@@ -21,7 +21,7 @@ the command $DEPTOOL, which defaults to "gcc -M".
 The depend target depends on all .d files, so "make depend" will create
 the .d files.
 
-In addition, I added a dependency on static libraries if --enable-staticlib
+In addition, I added a dependency on static libraries if --with-staticlib
 is given.  This will relink Kaffe if you change libkaffevm, for instance.
 
 The clean target will remove the .d files and recreate an empty .depend,
