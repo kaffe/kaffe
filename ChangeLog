@@ -1,3 +1,8 @@
+Mon Jun  7 12:39:00 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/net/URL.java: No NullPointerException
+	for a null host in the constructor if the protocol is "file".
+
 1999-06-04  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* include/system.h: NetBSD's gcc 2.7.2.2 does not define `unix'.
@@ -6,6 +11,7 @@ Tue Jun  1 18:54:36 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/String.java: fix bugs in corner
 	cases of indexOf() and lastIndexOf()
+	* test/regression/Str2.java: verify above fix
 
 1999-06-01  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
