@@ -703,13 +703,13 @@ gc_system_alloc(size_t sz)
 		gc_heap_total += sz;
 		return (0);
 	}
-	gc_heap_total += sz;
 #ifdef DEBUG
 	gc_system_alloc_cnt++;
 #endif
 
 	mem = gc_block_alloc(sz);
-
+	gc_heap_total += sz;
+	
 DBG(GCSYSALLOC,
 	dprintf("gc_system_alloc: %d byte at %p\n", sz, mem);		)
 
