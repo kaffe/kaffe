@@ -70,7 +70,6 @@ public PlainSocketImpl() {
         timeout = -1; // As defined in jsyscall.h
 	blocking = true;
 	native_fd = -1;
-	fd = new FileDescriptor();
 }
 
 public int getNativeFD() {

@@ -39,7 +39,6 @@ exception statement from your version. */
 package gnu.java.nio;
 
 import gnu.java.net.PlainDatagramSocketImpl;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;

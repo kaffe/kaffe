@@ -70,14 +70,14 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 libio_la_LIBADD =
-am_libio_la_OBJECTS = FileDescriptor.lo File.lo AudioPlayer.lo
+am_libio_la_OBJECTS = File.lo ObjectInputStream.lo AudioPlayer.lo
 libio_la_OBJECTS = $(am_libio_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/AudioPlayer.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/File.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/FileDescriptor.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/ObjectInputStream.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -330,8 +330,8 @@ libio_la_LDFLAGS = \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
 libio_la_SOURCES = \
-	FileDescriptor.c \
 	File.c \
+	ObjectInputStream.c \
 	AudioPlayer.c
 
 CLEANFILES = so_locations
@@ -406,7 +406,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AudioPlayer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/File.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FileDescriptor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObjectInputStream.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

@@ -14,8 +14,7 @@ IO_SRCS = \
 		ByteToCharDefault.c \
 		ByteToCharIconv.c \
 		CharToByteDefault.c \
-		CharToByteIconv.c \
-		ObjectInputStream.c
+		CharToByteIconv.c
 
 LANG_SRCS = \
 		Class.c \

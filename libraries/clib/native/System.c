@@ -233,6 +233,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	 * kaffe.compiler	Default java compiler
 	 * sun.boot.class.path  Bootclasspath
 	 * kaffe.library.path   Search path for kaffe's native libraries
+	 * gnu.cpu.endian	Specify the native endian-ness.
 	 *
 	 */
 
@@ -285,6 +286,12 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	setProperty(p, "file.separator", file_separator);
 	setProperty(p, "path.separator", path_separator);
 	setProperty(p, "line.separator", line_separator);
+
+#if defined(WORDS_BIGENDIAN)
+	setProperty(p, "gnu.cpu.endian", "big");
+#else
+	setProperty(p, "gnu.cpu.endian", "little");
+#endif
 
 #if defined(HAVE_GETCWD)
 	dir = getcwd(cwdpath, MAXPATHLEN);

@@ -4,6 +4,9 @@
  * Copyright (c) 1997, 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003, 2004
+ *      Kaffe.org's developers. Some parts from GNU Classpath.
+ *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
@@ -28,6 +31,17 @@ public class PlainDatagramSocketImpl
 
 private int timeout;
 private int native_fd;
+  
+  /**
+   * Lock object to serialize threads wanting to receive 
+   */
+  private final Object RECEIVE_LOCK = new Object();
+  
+  /**
+   * Lock object to serialize threads wanting to send 
+   */
+  private final Object SEND_LOCK = new Object();
+
 
 static {
 	System.loadLibrary("net");
@@ -35,7 +49,6 @@ static {
 
 public PlainDatagramSocketImpl() {
 	timeout = -1; // = NOTIMEOUT
-	fd = new FileDescriptor();
 	native_fd = -1;
 }
 
@@ -106,8 +119,12 @@ public Object getOption(int option) throws SocketException {
 }
 
 protected void finalize() throws Throwable {
+  synchronized(this)
+    {
+      if (native_fd != -1)
 	close();
-	super.finalize();
+    }
+  super.finalize();
 }
 
 protected void setTimeToLive(int ttl) throws IOException {
@@ -122,11 +139,27 @@ protected void sendUrgentData(int data) throws IOException {
 	// TODO: replace that dummy function with a real one.
 }
 
+protected void send(DatagramPacket packet) throws IOException
+{
+  synchronized(SEND_LOCK)
+    {
+      send0(packet);
+    }
+}
+
+protected void receive(DatagramPacket packet) throws IOException
+{
+  synchronized(RECEIVE_LOCK)
+    {
+      receive0(packet);
+    }
+}
+
 protected native int peekData(DatagramPacket p) throws IOException;
 protected native void bind(int lport, InetAddress laddr) throws SocketException;
-protected native void send(DatagramPacket p) throws IOException;
+protected native void send0(DatagramPacket p) throws IOException;
 protected native int peek(InetAddress i) throws IOException;
-protected native void receive(DatagramPacket p) throws IOException;
+protected native void receive0(DatagramPacket p) throws IOException;
 protected native void setTTL(byte ttl) throws IOException;
 protected native byte getTTL() throws IOException;
 protected native void join(InetAddress inetaddr) throws IOException;

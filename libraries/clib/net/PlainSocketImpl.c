@@ -14,7 +14,6 @@
 #include "config-mem.h"
 #include "config-net.h"
 #include "support.h"
-#include "java_io_FileDescriptor.h"
 #include "java_lang_Integer.h"
 #include "java_net_SocketImpl.h"
 #include "java_net_InetAddress.h"
@@ -162,7 +161,7 @@ gnu_java_net_PlainSocketImpl_socketCreate(struct Hgnu_java_net_PlainSocketImpl* 
 
 	rc = KSOCKET(AF_INET, type, 0, &fd);
 	if (rc) {
-		unhand(unhand(this)->fd)->nativeFd = -1;
+		unhand(this)->native_fd = -1;
 		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
 
@@ -171,7 +170,7 @@ gnu_java_net_PlainSocketImpl_socketCreate(struct Hgnu_java_net_PlainSocketImpl* 
 		    this, stream ? "stream" : "datagram", fd);
 	    )
 
-	unhand(unhand(this)->fd)->nativeFd = fd;
+	unhand(this)->native_fd = fd;
 	unhand(this)->native_fd = fd;
 }
 
@@ -224,7 +223,7 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 		    this, ip2str(addr.addr4.sin_addr.s_addr), dport, timeout);
 	    )
 
-	fd = (int)unhand(unhand(this)->fd)->nativeFd;
+	fd = (int)unhand(this)->native_fd;
 	r = KCONNECT(fd, (struct sockaddr*)&addr, alen, timeout);
 	if (r == EINTR) {
 		SignalError("java.io.InterruptedIOException", 
@@ -320,7 +319,7 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 	} else {
 		SignalError("java.net.SocketException", "Unsupported address family");
 	}
-	fd = (int)unhand(unhand(this)->fd)->nativeFd;
+	fd = (int)unhand(this)->native_fd;
 
 	/* Allow rebinding to socket - ignore errors */
 	(void)KSETSOCKOPT(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
@@ -364,7 +363,7 @@ gnu_java_net_PlainSocketImpl_socketListen(struct Hgnu_java_net_PlainSocketImpl* 
 	    dprintf("socketListen(%p, count=%d)\n", this, count);
 	    )
 
-	r = KLISTEN((int)unhand(unhand(this)->fd)->nativeFd, count);
+	r = KLISTEN((int)unhand(this)->native_fd, count);
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
@@ -404,7 +403,7 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 
 	alen = sizeof(addr);
 	do {
-	        rc = KACCEPT(unhand(unhand(this)->fd)->nativeFd,
+	        rc = KACCEPT(unhand(this)->native_fd,
 			     (struct sockaddr*)&addr, &alen, unhand(this)->timeout, &r);
 	} while (rc == EINTR);
 	if (rc == ETIMEDOUT) {
@@ -414,7 +413,6 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 	if (rc) {
 		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
-	unhand(unhand(sock)->fd)->nativeFd = r;
 	unhand((struct Hgnu_java_net_PlainSocketImpl *)sock)->native_fd = r;
 
 	/* Enter information into socket object */
@@ -481,7 +479,7 @@ gnu_java_net_PlainSocketImpl_socketAvailable(struct Hgnu_java_net_PlainSocketImp
 	DBG(NATIVENET,
 	    dprintf("socketAvailable(%p)\n", this);
 	    )
-	fd = (int)unhand(unhand(this)->fd)->nativeFd;
+	fd = (int)unhand(this)->native_fd;
 
 #if defined(HAVE_IOCTL) && defined(FIONREAD)
 	/* XXX make part of system call interface to protect errno */
@@ -528,9 +526,9 @@ gnu_java_net_PlainSocketImpl_socketClose(struct Hgnu_java_net_PlainSocketImpl* t
 	    dprintf("socketClose(%p)\n", this);
 	    )
 
-	if (unhand(unhand(this)->fd)->nativeFd != -1) {
-		r = KSOCKCLOSE((int)unhand(unhand(this)->fd)->nativeFd);
-		unhand(unhand(this)->fd)->nativeFd = -1;
+	if (unhand(this)->native_fd != -1) {
+		r = KSOCKCLOSE((int)unhand(this)->native_fd);
+		unhand(this)->native_fd = -1;
 		if (r) {
 			SignalError("java.io.IOException", SYS_ERROR(r));
 		}
@@ -572,7 +570,7 @@ gnu_java_net_PlainSocketImpl_socketSetOption(struct Hgnu_java_net_PlainSocketImp
 				optdata = (char *)&v;
 				optlen = sizeof(v);
 			}
-			r = KSETSOCKOPT((int)unhand(unhand(this)->fd)->nativeFd,
+			r = KSETSOCKOPT((int)unhand(this)->native_fd,
 				socketOptions[k].level, socketOptions[k].copt,
 				optdata, optlen);
 			if (r) {
@@ -614,7 +612,7 @@ gnu_java_net_PlainSocketImpl_socketGetOption(struct Hgnu_java_net_PlainSocketImp
 	/* Do easy cases */
 	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
 		if (opt == socketOptions[k].jopt) {
-			r = KGETSOCKOPT((int)unhand(unhand(this)->fd)->nativeFd,
+			r = KGETSOCKOPT((int)unhand(this)->native_fd,
 				socketOptions[k].level, socketOptions[k].copt,
 				&v, &vsize);
 			if (r) {
@@ -630,7 +628,7 @@ gnu_java_net_PlainSocketImpl_socketGetOption(struct Hgnu_java_net_PlainSocketImp
 	/* Do harder cases */
 	switch(opt) {
 	case java_net_SocketOptions_SO_BINDADDR:
-		r = KGETSOCKNAME((int)unhand(unhand(this)->fd)->nativeFd,
+		r = KGETSOCKNAME((int)unhand(this)->native_fd,
 			(struct sockaddr*)&addr, &alen);
 		if (r) {
 			SignalError("java.net.SocketException", SYS_ERROR(r));
@@ -661,7 +659,7 @@ gnu_java_net_PlainSocketImpl_socketRead(struct Hgnu_java_net_PlainSocketImpl* th
 		    this, buf, offset, len);
 	    )
 
-	fd = (int)unhand(unhand(this)->fd)->nativeFd;
+	fd = (int)unhand(this)->native_fd;
 	if (fd < 0) {
 		SignalError("java.io.IOException", "fd invalid"); 
 	}
@@ -706,7 +704,7 @@ gnu_java_net_PlainSocketImpl_socketWrite(struct Hgnu_java_net_PlainSocketImpl* t
 		    this, buf, offset, len);
 	    )
 
-	fd = (int)unhand(unhand(this)->fd)->nativeFd;
+	fd = (int)unhand(this)->native_fd;
 	if (fd >= 0) {
 		while (len > 0) {
 			r = KSOCKWRITE(fd,
@@ -729,14 +727,14 @@ gnu_java_net_PlainSocketImpl_setBlocking(struct Hgnu_java_net_PlainSocketImpl* t
 		return;
 	
 	unhand(this)->blocking = true;
-	jthread_set_blocking((int)unhand(unhand(this)->fd)->nativeFd, blocking);
+	jthread_set_blocking((int)unhand(this)->native_fd, blocking);
 }
 
 void
 gnu_java_net_PlainSocketImpl_waitForConnection(struct Hgnu_java_net_PlainSocketImpl* this)
 {
 	fd_set w;
-	int fd = (int)unhand(unhand(this)->fd)->nativeFd;
+	int fd = (int)unhand(this)->native_fd;
 	int o, r;
 	struct timeval tv;
 	struct timeval *ptv = NULL;

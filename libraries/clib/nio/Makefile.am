@@ -17,6 +17,8 @@ libnio_la_LDFLAGS = \
 libnio_la_SOURCES = \
 	DirectByteBufferImpl.c \
 	SelectorImpl.c \
-	NIOServerSocket.c
+	NIOServerSocket.c \
+	FileChannelImpl.c \
+	Channels.c
 
 CLEANFILES = so_locations

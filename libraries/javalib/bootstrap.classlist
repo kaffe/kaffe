@@ -30,6 +30,7 @@ java/io/FileDescriptor.class
 java/io/FileInputStream.class
 java/io/FileNotFoundException.class
 java/io/FileOutputStream.class
+java/io/FilePermission.class
 java/io/FileReader.class
 java/io/FilterInputStream.class
 java/io/FilterOutputStream.class
@@ -49,11 +50,11 @@ java/io/PrintStream.class
 java/io/PrintWriter.class
 java/io/PushbackInputStream.class
 java/io/PushbackReader.class
-java/io/PushbackReader$PushbackBuffer.class
 java/io/Reader.class
 java/io/Serializable.class
 java/io/UTFDataFormatException.class
 java/io/UnsupportedEncodingException.class
+java/io/VMObjectStreamClass.class
 java/io/Writer.class
 java/lang/ArithmeticException.class
 java/lang/ArrayIndexOutOfBoundsException.class
@@ -300,11 +301,17 @@ java/security/MessageDigest.class
 java/security/MessageDigestSpi.class
 gnu/java/nio/SelectorImpl.class
 gnu/java/nio/NIOServerSocket.class
+java/nio/channels/FileChannel.class
+java/nio/channels/spi/AbstractInterruptibleChannel.class
+gnu/java/nio/channels/FileChannelImpl.class
 java/nio/channels/spi/AbstractSelector.class
 java/nio/channels/Selector.class
+java/nio/channels/Channels.class
 java/nio/DirectByteBufferImpl.class
 java/nio/ByteBuffer.class
 java/nio/Buffer.class
+java/nio/MappedByteBufferImpl.class
+java/nio/MappedByteBuffer.class
 
 # needed for tritonus
 org/tritonus/lowlevel/esd/Esd.class

@@ -328,12 +328,12 @@ jthreadedMmap(void **memory, size_t *size, int mode, int fd, off_t *offset)
 
 	switch (mode) {
 		case KAFFE_MMAP_READ:
-			sysflags = MAP_SHARED;
+			sysflags = MAP_PRIVATE;
 			sysmode = PROT_READ;
 			break;
 		case KAFFE_MMAP_WRITE:
 			sysflags = MAP_SHARED;
-			sysmode = PROT_WRITE | PROT_READ;
+			sysmode = PROT_READ | PROT_WRITE;
 			break;
 		case KAFFE_MMAP_PRIVATE:
 			sysflags = MAP_PRIVATE;

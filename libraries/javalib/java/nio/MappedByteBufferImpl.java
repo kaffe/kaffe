@@ -38,75 +38,80 @@ exception statement from your version. */
 
 package java.nio;
 
+import java.io.IOException;
 import gnu.classpath.RawData;
 
-import java.io.IOException;
-import java.nio.channels.FileChannelImpl;
-
-public class MappedByteBufferImpl extends MappedByteBuffer
+final class MappedByteBufferImpl extends MappedByteBuffer
 {
   boolean readOnly;
-  RawData map_address;
-  public FileChannelImpl ch;
+  RawData address;
+
+  /** Posix uses this for the pointer returned by mmap;
+   * Win32 uses it for the pointer returned by MapViewOfFile. */
+  public RawData implPtr;
+  /** Posix uses this for the actual length passed to mmap;
+   * Win32 uses it for the pointer returned by CreateFileMapping. */
+  public long implLen;
   
-  public MappedByteBufferImpl (FileChannelImpl ch) throws IOException
+  public MappedByteBufferImpl (RawData address, int size, boolean readOnly)
+    throws IOException
   {
-    super ((int) ch.size (), (int) ch.size (), 0, -1);
-    
-    this.ch = ch;
-    map_address = ch.map_address;
-    long si = ch.size () / 1;
-    limit ((int) si);
-  }
-
-  public MappedByteBufferImpl (FileChannelImpl ch, int offset, int capacity, int limit, int position, int mark, boolean readOnly)
-  {
-    super (capacity, limit, position, mark);
-
-    this.ch = ch;
-    this.array_offset = offset;
+    super(size, size, 0, -1);
+    this.address = address;
     this.readOnly = readOnly;
   }
-  
+
   public boolean isReadOnly ()
   {
     return readOnly;
   }
   
-  public static byte getImpl (FileChannelImpl ch, int index,
-			      int limit, RawData map_address)
-  {
-    throw new Error ("Not implemented");
-  }
-  
-  public static void putImpl (FileChannelImpl ch, int index,
-			      int limit, byte value, RawData map_address)
-  {
-    throw new Error ("Not implemented");
-  }
-
   public byte get ()
   {
-    byte result = get (position());
-    position (position() + 1);
+    int pos = position();
+    if (pos >= limit())
+      throw new BufferUnderflowException();
+    byte result = DirectByteBufferImpl.getImpl(address, pos);
+    position (pos + 1);
     return result;
   }
 
   public ByteBuffer put (byte value)
   {
-    put (position(), value);
-    position (position() + 1);
+    int pos = position();
+    if (pos >= limit())
+      throw new BufferUnderflowException();
+    DirectByteBufferImpl.putImpl(address, pos, value);
+    position(pos + 1);
     return this;
   }
 
   public byte get (int index)
   {
-    return getImpl (ch, index, limit (), map_address);
+    if (index >= limit())
+      throw new BufferUnderflowException();
+    return DirectByteBufferImpl.getImpl(address, index);
+  }
+
+  public ByteBuffer get (byte[] dst, int offset, int length)
+  {
+    if (offset < 0 || length < 0 || offset + length > dst.length)
+      throw new IndexOutOfBoundsException ();
+    if (length > remaining())
+      throw new BufferUnderflowException();
+
+    int index = position();
+    DirectByteBufferImpl.getImpl(address, index, dst, offset, length);
+    position(index+length);
+
+    return this;
   }
 
   public ByteBuffer put (int index, byte value)
   {
-    putImpl (ch, index, limit (), value, map_address);
+    if (index >= limit())
+      throw new BufferUnderflowException();
+    DirectByteBufferImpl.putImpl(address, index, value);
     return this;
   }
 
@@ -130,17 +135,39 @@ public class MappedByteBufferImpl extends MappedByteBuffer
 
   public ByteBuffer slice ()
   {
-    throw new Error ("Not implemented");
+    int rem = remaining();
+    return new DirectByteBufferImpl (this,
+				     DirectByteBufferImpl
+				     .adjustAddress(address, position()),
+				     rem, rem, 0, isReadOnly ());
+  }
+
+  private ByteBuffer duplicate (boolean readOnly)
+  {
+    int pos = position();
+    reset();
+    int mark = position();
+    position(pos);
+    DirectByteBufferImpl result
+      = new DirectByteBufferImpl (this, address, capacity (), limit (),
+				  pos, readOnly);
+    if (mark != pos)
+      {
+	result.position(mark);
+	result.mark();
+	result.position(pos);
+      }
+    return result;
   }
 
   public ByteBuffer duplicate ()
   {
-    throw new Error ("Not implemented");
+    return duplicate(isReadOnly());
   }
 
   public ByteBuffer asReadOnlyBuffer ()
   {
-    throw new Error ("Not implemented");
+    return duplicate(true);
   }
 
   public CharBuffer asCharBuffer ()
@@ -173,135 +200,144 @@ public class MappedByteBufferImpl extends MappedByteBuffer
     return new DoubleViewBufferImpl (this, remaining() >> 3);
   }
 
-  final public char getChar ()
+  public char getChar ()
   {
     return ByteBufferHelper.getChar(this, order());
   }
   
-  final public ByteBuffer putChar (char value)
+  public ByteBuffer putChar (char value)
   {
     ByteBufferHelper.putChar(this, value, order());
     return this;
   }
   
-  final public char getChar (int index)
+  public char getChar (int index)
   {
     return ByteBufferHelper.getChar(this, index, order());
   }
   
-  final public ByteBuffer putChar (int index, char value)
+  public ByteBuffer putChar (int index, char value)
   {
     ByteBufferHelper.putChar(this, index, value, order());
     return this;
   }
 
-  final public short getShort ()
+  public short getShort ()
   {
     return ByteBufferHelper.getShort(this, order());
   }
   
-  final public ByteBuffer putShort (short value)
+  public ByteBuffer putShort (short value)
   {
     ByteBufferHelper.putShort(this, value, order());
     return this;
   }
   
-  final public short getShort (int index)
+  public short getShort (int index)
   {
     return ByteBufferHelper.getShort(this, index, order());
   }
   
-  final public ByteBuffer putShort (int index, short value)
+  public ByteBuffer putShort (int index, short value)
   {
     ByteBufferHelper.putShort(this, index, value, order());
     return this;
   }
 
-  final public int getInt ()
+  public int getInt ()
   {
     return ByteBufferHelper.getInt(this, order());
   }
   
-  final public ByteBuffer putInt (int value)
+  public ByteBuffer putInt (int value)
   {
     ByteBufferHelper.putInt(this, value, order());
     return this;
   }
   
-  final public int getInt (int index)
+  public int getInt (int index)
   {
     return ByteBufferHelper.getInt(this, index, order());
   }
   
-  final public ByteBuffer putInt (int index, int value)
+  public ByteBuffer putInt (int index, int value)
   {
     ByteBufferHelper.putInt(this, index, value, order());
     return this;
   }
 
-  final public long getLong ()
+  public long getLong ()
   {
     return ByteBufferHelper.getLong(this, order());
   }
   
-  final public ByteBuffer putLong (long value)
+  public ByteBuffer putLong (long value)
   {
     ByteBufferHelper.putLong (this, value, order());
     return this;
   }
   
-  final public long getLong (int index)
+  public long getLong (int index)
   {
     return ByteBufferHelper.getLong (this, index, order());
   }
   
-  final public ByteBuffer putLong (int index, long value)
+  public ByteBuffer putLong (int index, long value)
   {
     ByteBufferHelper.putLong (this, index, value, order());
     return this;
   }
 
-  final public float getFloat ()
+  public float getFloat ()
   {
     return ByteBufferHelper.getFloat (this, order());
   }
   
-  final public ByteBuffer putFloat (float value)
+  public ByteBuffer putFloat (float value)
   {
     ByteBufferHelper.putFloat (this, value, order());
     return this;
   }
   
-  public final float getFloat (int index)
+  public float getFloat (int index)
   {
     return ByteBufferHelper.getFloat (this, index, order());
   }
 
-  final public ByteBuffer putFloat (int index, float value)
+  public ByteBuffer putFloat (int index, float value)
   {
     ByteBufferHelper.putFloat (this, index, value, order());
     return this;
   }
 
-  final public double getDouble ()
+  public double getDouble ()
   {
     return ByteBufferHelper.getDouble (this, order());
   }
 
-  final public ByteBuffer putDouble (double value)
+  public ByteBuffer putDouble (double value)
   {
     ByteBufferHelper.putDouble (this, value, order());
     return this;
   }
   
-  final public double getDouble (int index)
+  public double getDouble (int index)
   {
     return ByteBufferHelper.getDouble (this, index, order());
   }
   
-  final public ByteBuffer putDouble (int index, double value)
+  public ByteBuffer putDouble (int index, double value)
   {
     ByteBufferHelper.putDouble (this, index, value, order());
     return this;
   }
+
+  // NOTE: In libgcj these methods are implemented in natFileChannelXxx.cc,
+  // because they're small, and to put them next to FileChannelImpl::mapImpl.
+  native void unmapImpl ();
+  native boolean isLoadedImpl ();
+    // FIXME: Try to load all pages into memory.
+  native void loadImpl();
+
+  native void forceImpl();
 }

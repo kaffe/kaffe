@@ -1,5 +1,5 @@
-/* AbstractSelector.java -- 
-   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+/* AbstractSelector.java --
+   Copyright (C) 2002, 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,7 +35,6 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-
 package java.nio.channels.spi;
 
 import java.io.IOException;
@@ -45,39 +44,44 @@ import java.nio.channels.Selector;
 import java.util.HashSet;
 import java.util.Set;
 
+
 public abstract class AbstractSelector extends Selector
 {
-  private boolean closed = false;
+  private boolean closed;
   private SelectorProvider provider;
   private HashSet cancelledKeys;
 
   /**
    * Initializes the slector.
+   *
+   * @param provider the provider that created this selector
    */
-  protected AbstractSelector (SelectorProvider provider)
+  protected AbstractSelector(SelectorProvider provider)
   {
     this.provider = provider;
     this.cancelledKeys = new HashSet();
   }
- 
+
   /**
    * Closes the channel.
-   * 
+   *
    * @exception IOException If an error occurs
    */
-  public final synchronized void close () throws IOException
+  public final synchronized void close() throws IOException
   {
     if (closed)
       return;
-    
+
     implCloseSelector();
     closed = true;
   }
 
   /**
    * Tells whether this channel is open or not.
+   *
+   * @return true if channel is open, false otherwise.
    */
-  public final boolean isOpen ()
+  public final boolean isOpen()
   {
     return ! closed;
   }
@@ -95,38 +99,69 @@ public abstract class AbstractSelector extends Selector
   protected final void end()
   {
   }
-    
-  public final SelectorProvider provider ()
+
+  /**
+   * Returns the provider for this selector object.
+   *
+   * @return the SelectorProvider object that created this seletor
+   */
+  public final SelectorProvider provider()
   {
     return provider;
   }
 
+  /**
+   * Returns the cancelled keys set.
+   *
+   * @return the cancelled keys set
+   */
   protected final Set cancelledKeys()
   {
-    if (!isOpen())
+    if (! isOpen())
       throw new ClosedSelectorException();
 
     return cancelledKeys;
   }
 
-  final void cancelKey (AbstractSelectionKey key)
+  /**
+   * Cancels a selection key.
+   */
+
+  // This method is only called by AbstractSelectionKey.cancel().
+  final void cancelKey(AbstractSelectionKey key)
   {
     synchronized (cancelledKeys)
       {
-        cancelledKeys.remove(key);
+	cancelledKeys.add(key);
       }
   }
 
   /**
    * Closes the channel.
+   *
+   * @exception IOException if an error occurs
    */
-  protected abstract void implCloseSelector () throws IOException;
+  protected abstract void implCloseSelector() throws IOException;
 
-  protected abstract SelectionKey register (AbstractSelectableChannel ch,
-                                            int ops, Object att);   
+  /**
+   * Registers a channel for the selection process.
+   *
+   * @param ch the channel register
+   * @param ops the interested operations
+   * @param att an attachement to the selection key
+   *
+   * @return the registered selection key
+   */
+  protected abstract SelectionKey register(AbstractSelectableChannel ch,
+                                           int ops, Object att);
 
-  protected final void deregister (AbstractSelectionKey key)
+  /**
+   * Deregisters the given selection key.
+   *
+   * @param key the key to deregister
+   */
+  protected final void deregister(AbstractSelectionKey key)
   {
-    // FIXME
+    ((AbstractSelectableChannel) key.channel()).removeSelectionKey(key);
   }
 }

@@ -171,6 +171,6 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
 #define KAFFE_MMAP_WRITE 1
 #define KAFFE_MMAP_PRIVATE 2
 
-#define NOTIMEOUT -1
+#define NOTIMEOUT (-1)
 
 #endif

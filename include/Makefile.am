@@ -43,7 +43,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_VMThrowable.h \
 	java_lang_SecurityManager.h \
 	java_io_File.h \
-	java_io_FileDescriptor.h \
 	java_io_FileInputStream.h \
 	java_io_FileOutputStream.h \
 	java_io_InputStream.h \
@@ -97,7 +96,6 @@ NOINSTALL_DERIVED_HDRS = \
 	kaffe_lang_PrimordialClassLoader.h \
 	kaffe_lang_ThreadStack.h \
 	kaffe_management_Classpath.h \
-	java_nio_DirectByteBufferImpl.h \
 	gnu_java_nio_SelectorImpl.h
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
@@ -106,6 +104,11 @@ INSTALL_JNI_DERIVED_HDRS =
 
 NOINSTALL_JNI_DERIVED_HDRS = \
 	java_math_BigInteger.h \
+	gnu_java_nio_channels_FileChannelImpl.h \
+	gnu_java_nio_NIOServerSocket.h \
+	java_nio_channels_Channels.h \
+	java_nio_DirectByteBufferImpl.h \
+	java_nio_MappedByteBufferImpl.h \
 	kaffe_io_ByteToCharDefault.h \
 	kaffe_io_ByteToCharIconv.h \
 	kaffe_io_CharToByteDefault.h \

@@ -16,8 +16,8 @@ libio_la_LDFLAGS = \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
 libio_la_SOURCES = \
-	FileDescriptor.c \
 	File.c \
+	ObjectInputStream.c \
 	AudioPlayer.c
 
 CLEANFILES = so_locations

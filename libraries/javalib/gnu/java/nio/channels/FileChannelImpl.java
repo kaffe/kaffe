@@ -1,5 +1,5 @@
 /* FileChannelImpl.java -- 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,19 +36,22 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package java.nio.channels;
+package gnu.java.nio.channels;
 
 import gnu.classpath.Configuration;
-import gnu.classpath.RawData;
+import gnu.java.nio.FileLockImpl;
 
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
-import java.nio.MappedByteBufferImpl;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.NonReadableChannelException;
+import java.nio.channels.NonWritableChannelException;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * This file is not user visible !
@@ -58,86 +61,94 @@ import java.nio.MappedByteBufferImpl;
  * Upon a Input/Output/RandomAccessFile object.
  */
 
-public class FileChannelImpl extends FileChannel
+public final class FileChannelImpl extends FileChannel
 {
+  // These are WHENCE values for seek.
+//   public static final int SET = 0;
+//   public static final int CUR = 1;
+
+  // These are mode values for open().
+  public static final int READ   = 1;
+  public static final int WRITE  = 2;
+  public static final int APPEND = 4;
+
+  // EXCL is used only when making a temp file.
+  public static final int EXCL   = 8;
+  public static final int SYNC   = 16;
+  public static final int DSYNC  = 32;
+
+  private static native void init();
+
   static
   {
-    // load the shared library needed for native methods.
     if (Configuration.INIT_LOAD_LIBRARY)
       {
-        System.loadLibrary ("nio");
+        System.loadLibrary("nio");
       }
+    
+    init();
   }
-  
-  public RawData map_address;
-  
+
+  /**
+   * This is the actual native file descriptor value
+   */
+  // System's notion of file descriptor.  It might seem redundant to
+  // initialize this given that it is reassigned in the constructors.
+  // However, this is necessary because if open() throws an exception
+  // we want to make sure this has the value -1.  This is the most
+  // efficient way to accomplish that.
+  int fd = -1;
+
+  int mode;
   int length;
-  FileDescriptor fd;
-  MappedByteBuffer buf;
-  Object file_obj; // just to keep it live...
-
-  public FileChannelImpl (FileDescriptor fd, boolean write, Object obj)
-  {
-    if (!(obj instanceof RandomAccessFile)
-        && !(obj instanceof FileInputStream)
-        && !(obj instanceof FileOutputStream))
-      throw new InternalError ();
-
-    this.fd = fd;
-    this.file_obj = obj;
-  }
+  long pos;
 
   public FileChannelImpl ()
   {
-    this (new FileDescriptor (), true, null);
   }
 
+  /* Open a file.  MODE is a combination of the above mode flags. */
+  public FileChannelImpl (String path, int mode) throws FileNotFoundException
+  {
+    fd = open (path, mode);
+    this.mode = mode;
+  }
+
+  public static FileChannelImpl in;
+  public static FileChannelImpl out;
+  public static FileChannelImpl err;
+
+  private native int open (String path, int mode) throws FileNotFoundException;
+
+  /** Attach to an already-opened file.  */
+  public FileChannelImpl (int desc, int mode)
+  {
+    fd = desc;
+    this.mode = mode;
+  }
+
+  public native int available () throws IOException;
   private native long implPosition ();
-  private native FileChannel implPosition (long newPosition);
-  private native FileChannel implTruncate (long size);
+  private native void seek (long newPosition);
+  private native void implTruncate (long size);
   
-  private native RawData nio_mmap_file (long pos, long size, int mode);
-  private native void nio_unmmap_file (RawData map_address, int size);
-  private native void nio_msync (RawData map_address, int length);
+  public native void unlock (long pos, long len);
 
   public native long size () throws IOException;
     
-  protected void implCloseChannel() throws IOException
-  {
-    if (map_address != null)
-      {
-        nio_unmmap_file (map_address, (int) length);
-        map_address = null;
-      }
-
-    if (file_obj instanceof RandomAccessFile)
-      {
-        RandomAccessFile o = (RandomAccessFile) file_obj;
-        o.close();
-      }
-    else if (file_obj instanceof FileInputStream)
-      {
-        FileInputStream o = (FileInputStream) file_obj;
-        o.close();
-      }
-    else if (file_obj instanceof FileOutputStream)
-      {
-        FileOutputStream o = (FileOutputStream) file_obj;
-        o.close();
-      }
-  }
+  protected native void implCloseChannel() throws IOException;
 
   public int read (ByteBuffer dst) throws IOException
   {
-    // Check if file is mapped into memory.
-    if (buf != null)
-      {
-	// FIXME: implement this
-        throw new Error ("Accessing mapped buffers not implemented.");
-      }
+    int result;
+    byte[] buffer = new byte [dst.remaining ()];
+    
+    result = read (buffer, 0, buffer.length);
 
-    // File not mapped, access it directly.
-    return implRead (dst);
+    if (result > 0)
+      dst.put (buffer, 0, result);
+
+    return result;
   }
 
   public int read (ByteBuffer dst, long position)
@@ -145,38 +156,18 @@ public class FileChannelImpl extends FileChannel
   {
     if (position < 0)
       throw new IllegalArgumentException ();
-
-    if (!isOpen ())
-      throw new ClosedChannelException ();
-   
-    if (file_obj instanceof FileOutputStream)
-      throw new NonReadableChannelException ();
-
-    int result;
-    long oldPosition;
-
-    oldPosition = implPosition ();
+    long oldPosition = implPosition ();
     position (position);
-    result = implRead (dst);
-    implPosition (oldPosition);
+    int result = read(dst);
+    position (oldPosition);
     
     return result;
   }
 
-  private int implRead (ByteBuffer dst) throws IOException
-  {
-    int result;
-    byte[] buffer = new byte [dst.remaining ()];
-    
-    result = implRead (buffer, 0, buffer.length);
+  public native int read ()
+    throws IOException;
 
-    if (result > 0)
-      dst.put (buffer, 0, result);
-
-    return result;
-  }
-  
-  private native int implRead (byte[] buffer, int offset, int length)
+  public native int read (byte[] buffer, int offset, int length)
     throws IOException;
 
   public long read (ByteBuffer[] dsts, int offset, int length)
@@ -194,15 +185,20 @@ public class FileChannelImpl extends FileChannel
 
   public int write (ByteBuffer src) throws IOException
   {
-    // Check if file is mapped into memory.
-    if (buf != null)
+    int len = src.remaining ();
+    if (src.hasArray())
       {
-	// FIXME: implement this
-        throw new Error ("Accessing mapped buffers not implemented.");
+	byte[] buffer = src.array();
+	write(buffer, src.arrayOffset() + src.position(), len);
       }
-    
-    // File not mapped, access it directly.
-    return implWrite (src);
+    else
+      {
+	// Use a more efficient native method! FIXME!
+	byte[] buffer = new byte [len];
+    	src.get (buffer, 0, len);
+	write (buffer, 0, len);
+      }
+    return len;
   }
     
   public int write (ByteBuffer src, long position)
@@ -214,31 +210,25 @@ public class FileChannelImpl extends FileChannel
     if (!isOpen ())
       throw new ClosedChannelException ();
     
-    if (file_obj instanceof FileInputStream)
+    if ((mode & WRITE) == 0)
        throw new NonWritableChannelException ();
 
     int result;
     long oldPosition;
 
     oldPosition = implPosition ();
-    position (position);
-    result = implWrite (src);
-    implPosition (oldPosition);
+    seek (position);
+    result = write(src);
+    seek (oldPosition);
     
     return result;
   }
 
-  private int implWrite (ByteBuffer src) throws IOException
-  {
-    byte[] buffer = new byte [src.remaining ()];
-    
-    src.get (buffer, 0, buffer.length);
-    return implWrite (buffer, 0, buffer.length);
-  }
-  
-  private native int implWrite (byte[] buffer, int offset, int length)
+  public native void write (byte[] buffer, int offset, int length)
     throws IOException;
   
+  public native void write (int b) throws IOException;
+
   public long write(ByteBuffer[] srcs, int offset, int length)
     throws IOException
   {
@@ -252,35 +242,32 @@ public class FileChannelImpl extends FileChannel
     return result;
   }
 				   
-  public MappedByteBuffer map (FileChannel.MapMode mode, long position,
-                               long size)
+  public native MappedByteBuffer mapImpl (char mode, long position, int size)
+    throws IOException;
+
+  public MappedByteBuffer map (FileChannel.MapMode mode,
+			       long position, long size)
     throws IOException
   {
-    if ((mode != MapMode.READ_ONLY
-         && mode != MapMode.READ_WRITE
-         && mode != MapMode.PRIVATE)
-        || position < 0
-        || size < 0
-        || size > Integer.MAX_VALUE)
+    char nmode = 0;
+    if (mode == MapMode.READ_ONLY)
+      {
+	nmode = 'r';
+	if ((this.mode & READ) == 0)
+	  throw new NonReadableChannelException();
+      }
+    else if (mode == MapMode.READ_WRITE || mode == MapMode.PRIVATE)
+      {
+	nmode = mode == MapMode.READ_WRITE ? '+' : 'c';
+	if ((this.mode & (READ|WRITE)) != (READ|WRITE))
+	  throw new NonWritableChannelException();
+      }
+    else
       throw new IllegalArgumentException ();
     
-    // FIXME: Make this working.
-    int cmode = mode.m;
-    map_address = nio_mmap_file (position, size, cmode);
-    length = (int) size;
-    buf = new MappedByteBufferImpl (this);
-    return buf;
-  }
-
-  static MappedByteBuffer create_direct_mapped_buffer (RawData map_address,
-                                                       long length)
-    throws IOException
-  {
-    FileChannelImpl ch = new FileChannelImpl ();
-    ch.map_address = map_address;
-    ch.length = (int) length;
-    ch.buf = new MappedByteBufferImpl (ch);
-    return ch.buf;			 
+    if (position < 0 || size < 0 || size > Integer.MAX_VALUE)
+      throw new IllegalArgumentException ();
+    return mapImpl(nmode, position, (int) size);
   }
 
   /**
@@ -290,10 +277,6 @@ public class FileChannelImpl extends FileChannel
   {
     if (!isOpen ())
       throw new ClosedChannelException ();
-
-    // FIXME: What to do with metaData ?
-    
-    nio_msync (map_address, length);
   }
 
   public long transferTo (long position, long count, WritableByteChannel target)
@@ -306,7 +289,7 @@ public class FileChannelImpl extends FileChannel
     if (!isOpen ())
       throw new ClosedChannelException ();
 
-    if (file_obj instanceof FileOutputStream)
+    if ((mode & READ) == 0)
        throw new NonReadableChannelException ();
    
     // XXX: count needs to be casted from long to int. Dataloss ?
@@ -326,7 +309,7 @@ public class FileChannelImpl extends FileChannel
     if (!isOpen ())
       throw new ClosedChannelException ();
 
-    if (file_obj instanceof FileInputStream)
+    if ((mode & WRITE) == 0)
        throw new NonWritableChannelException ();
 
     // XXX: count needs to be casted from long to int. Dataloss ?
@@ -336,27 +319,6 @@ public class FileChannelImpl extends FileChannel
     return write (buffer, position);
   }
 
-  public FileLock lock (long position, long size, boolean shared)
-    throws IOException
-  {
-    if (position < 0
-        || size < 0)
-      throw new IllegalArgumentException ();
-
-    if (!isOpen ())
-      throw new ClosedChannelException ();
-
-    if (shared &&
-        file_obj instanceof FileOutputStream)
-      throw new NonReadableChannelException ();
-	
-    if (!shared &&
-        file_obj instanceof FileInputStream)
-      throw new NonWritableChannelException ();
-	
-    throw new Error ("Not implemented");
-  }
-  
   public FileLock tryLock (long position, long size, boolean shared)
     throws IOException
   {
@@ -367,7 +329,59 @@ public class FileChannelImpl extends FileChannel
     if (!isOpen ())
       throw new ClosedChannelException ();
 
-    throw new Error ("Not implemented");
+    if (shared && (mode & READ) == 0)
+      throw new NonReadableChannelException ();
+	
+    if (!shared && (mode & WRITE) == 0)
+      throw new NonWritableChannelException ();
+	
+    boolean completed = false;
+    
+    try
+      {
+	begin();
+        lock(position, size, shared, true);
+	completed = true;
+	return new FileLockImpl(this, position, size, shared);
+      }
+    finally
+      {
+	end(completed);
+      }
+  }
+
+  /** Try to acquire a lock at the given position and size.
+   * On success return true.
+   * If wait as specified, block until we can get it.
+   * Otherwise return false.
+   */
+  private native boolean lock(long position, long size,
+			      boolean shared, boolean wait);
+  
+  public FileLock lock (long position, long size, boolean shared)
+    throws IOException
+  {
+    if (position < 0
+        || size < 0)
+      throw new IllegalArgumentException ();
+
+    if (!isOpen ())
+      throw new ClosedChannelException ();
+
+    boolean completed = false;
+
+    try
+      {
+	boolean lockable = lock(position, size, shared, false);
+	completed = true;
+	return (lockable
+		? new FileLockImpl(this, position, size, shared)
+		: null);
+      }
+    finally
+      {
+	end(completed);
+      }
   }
 
   public long position ()
@@ -388,7 +402,10 @@ public class FileChannelImpl extends FileChannel
     if (!isOpen ())
       throw new ClosedChannelException ();
 
-    return implPosition (newPosition);
+    // FIXME note semantics if seeking beyond eof.
+    // We should seek lazily - only on a write.
+    seek (newPosition);
+    return this;
   }
   
   public FileChannel truncate (long size)
@@ -400,9 +417,10 @@ public class FileChannelImpl extends FileChannel
     if (!isOpen ())
       throw new ClosedChannelException ();
 
-    if (file_obj instanceof FileInputStream)
+    if ((mode & WRITE) == 0)
        throw new NonWritableChannelException ();
 
-    return implTruncate (size);
+    implTruncate (size);
+    return this;
   }
 }

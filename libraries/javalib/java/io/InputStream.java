@@ -105,7 +105,7 @@ public abstract class InputStream
    * @param readLimit The number of bytes that can be read before the
    *                  mark becomes invalid
    */
-  public void mark(int readlimit)
+  public void mark(int readLimit)
   {
     // Do nothing
   }

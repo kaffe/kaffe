@@ -1700,6 +1700,7 @@ JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/native/libnative.la \
 \$(top_builddir)/libraries/clib/net/libnet.la \
 \$(top_builddir)/libraries/clib/io/libio.la \
+\$(top_builddir)/libraries/clib/nio/libnio.la \
 \$(top_builddir)/libraries/clib/zip/libzip.la \
 $MATH_LIB \
 $ALSA_LIB \

@@ -64,6 +64,7 @@ Klasses_jar_SRCS = \
 	$(gnu_java_net_protocol_http_SRCS) \
 	$(gnu_java_net_protocol_jar_SRCS) \
 	$(gnu_java_nio_SRCS) \
+	$(gnu_java_nio_channels_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
 	$(gnu_java_rmi_SRCS) \
 	$(gnu_java_rmi_dgc_SRCS) \
@@ -440,6 +441,8 @@ gnu_java_nio_SRCS = \
 	gnu/java/nio/ServerSocketChannelSelectionKey.java \
 	gnu/java/nio/SocketChannelImpl.java \
 	gnu/java/nio/SocketChannelSelectionKey.java
+gnu_java_nio_channels_SRCS = \
+	gnu/java/nio/channels/FileChannelImpl.java
 gnu_java_nio_charset_SRCS = \
 	gnu/java/nio/charset/ISO_8859_1.java \
 	gnu/java/nio/charset/Provider.java \
@@ -1277,7 +1280,6 @@ java_nio_channels_SRCS = \
 	java/nio/channels/ClosedSelectorException.java \
 	java/nio/channels/ConnectionPendingException.java \
 	java/nio/channels/DatagramChannel.java \
-	java/nio/channels/FileChannelImpl.java \
 	java/nio/channels/FileChannel.java \
 	java/nio/channels/FileLockInterruptionException.java \
 	java/nio/channels/FileLock.java \

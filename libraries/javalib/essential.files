@@ -42,6 +42,7 @@ gnu/java/nio/ServerSocketChannelImpl.java
 gnu/java/nio/ServerSocketChannelSelectionKey.java
 gnu/java/nio/SocketChannelImpl.java
 gnu/java/nio/SocketChannelSelectionKey.java
+gnu/java/nio/channels/FileChannelImpl.java
 gnu/java/security/Engine.java
 gnu/java/security/provider/DefaultPolicy.java
 gnu/regexp/CharIndexed.java
@@ -294,7 +295,6 @@ java/nio/channels/ClosedSelectorException.java
 java/nio/channels/ConnectionPendingException.java
 java/nio/channels/DatagramChannel.java
 java/nio/channels/FileChannel.java
-java/nio/channels/FileChannelImpl.java
 java/nio/channels/FileLockInterruptionException.java
 java/nio/channels/FileLock.java
 java/nio/channels/GatheringByteChannel.java

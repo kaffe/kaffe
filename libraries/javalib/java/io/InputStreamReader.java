@@ -150,7 +150,7 @@ public class InputStreamReader extends Reader
    * by this object.  If the stream has been closed, this method is allowed
    * to return <code>null</code>.
    *
-   * @param The current encoding name
+   * @return The current encoding name
    */
   public String getEncoding()
   {
@@ -217,7 +217,7 @@ public class InputStreamReader extends Reader
     * returns the actual number of chars skipped, which may be less than the
     * requested amount.
     *
-    * @param num_chars The requested number of chars to skip
+    * @param count The requested number of chars to skip
     *
     * @return The actual number of chars skipped.
     *
@@ -230,6 +230,4 @@ public class InputStreamReader extends Reader
      
      return super.skip(count);
   }
-
-} // class InputStreamReader
-
+}

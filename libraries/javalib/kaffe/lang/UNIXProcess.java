@@ -5,6 +5,9 @@
  * Copyright (c) 1997, 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2004
+ *      The Kaffe.org's developers.
+ *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
@@ -15,6 +18,7 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import gnu.java.nio.channels.FileChannelImpl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,11 +38,7 @@ public class UNIXProcess extends Process {
 
 public UNIXProcess(final String argv[], final String arge[], File dir)
 		throws Throwable {
-	stdin_fd = new FileDescriptor();
-	stdout_fd = new FileDescriptor();
-	stderr_fd = new FileDescriptor();
-	sync_fd = new FileDescriptor();
-
+	
 	/*
 	 * Use supplied directory, or current directory if null
 	 */
