@@ -137,18 +137,7 @@ public Enumeration propertyNames() {
 	}
 
 	// Return enumeration of vector
-	return new Enumeration() {
-		private int posn = 0;
-		public boolean hasMoreElements() {
-			return (posn < result.size());
-		}
-		public Object nextElement() {
-			if (posn == result.size())
-				throw new NoSuchElementException();
-			return result.elementAt(posn++);
-		}
-	} // not unreachable
-	;
+	return result.elements();
 }
 
 public synchronized void load(InputStream in) throws IOException {
