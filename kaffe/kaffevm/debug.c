@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 1998, 1999, 2000 The University of Utah. All rights reserved.
+ * Copyright (c) 1998, 1999, 2000, 2001
+ *     The University of Utah. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  *
  * Contributed by the Flux Research Group at the University of Utah.
- * Authors: Godmar Back, Patrick Tullmann
+ * Authors: Godmar Back, Patrick Tullmann, Edouard G. Parmelan
  */
 /*
  * debug.c
@@ -38,7 +39,7 @@ void dbgSetMask(debugmask_t m) { }
 int dbgSetMaskStr(char *s) { return 0; }
 
 #else /* Actually define the functions */
-/* --- Debugging is enabled --- */ 
+/* --- Debugging is enabled --- */
 
 debugmask_t kaffevmDebugMask = DEFAULT_DEBUG_MASK;
 
@@ -82,7 +83,7 @@ static struct debug_opts
 	D(GCPRECISE, "Debug precise collection of the heap."),
 	D(GCSTAT,   "count instances of class and array types"),
 	D(GCDIAG,   "Perform diagnostic checks on heap" ),
-	{ "GCMEM", DBG_GCPRIM|DBG_GCALLOC|DBG_GCFREE|DBG_GCSYSALLOC|DBG_GCSTAT, 
+	{ "GCMEM", DBG_GCPRIM|DBG_GCALLOC|DBG_GCFREE|DBG_GCSYSALLOC|DBG_GCSTAT,
 			"All allocation and free operations in gc-mem" },
 	D(SLACKANAL,   "Print internal fragmentation statistics."),
 
@@ -129,22 +130,22 @@ static struct debug_opts
 	D(REGFORCE,	"Debug forced registers framework."),
 
 	/* you can define combinations too */
-	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP, 
+	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP,
 			"Various lookup operations" },
 
 	{ "gcj", DBG_GCJ|DBG_GCJMORE,
 			"Debug GCJ support in detailed" },
-	{ "thread", DBG_JTHREAD|DBG_SLOWLOCKS|DBG_VMCONDS, 
+	{ "thread", DBG_JTHREAD|DBG_SLOWLOCKS|DBG_VMCONDS,
 			"Thread operations and locking operations" },
 
-	{ "intrp", DBG_INT_NATIVE|DBG_INT_RETURN|DBG_INT_VMCALL, 
+	{ "intrp", DBG_INT_NATIVE|DBG_INT_RETURN|DBG_INT_VMCALL,
 			"Calls of interpreter (without instructions)" },
 	{ "deadlock", DBG_LOCKCONTENTION, "Debug deadlocks" },
-	{ "classgc", DBG_CLASSGC|DBG_FINALIZE, 
+	{ "classgc", DBG_CLASSGC|DBG_FINALIZE,
 			"Debug finalization (show finalization)" },
-	{ "intrpA", 
+	{ "intrpA",
 		DBG_INT_CHECKS|DBG_INT_INSTR|DBG_INT_NATIVE|
-		DBG_INT_RETURN|DBG_INT_VMCALL, 
+		DBG_INT_RETURN|DBG_INT_VMCALL,
 			"Complete interpreter trace" },
 
 	/* special options */
@@ -153,7 +154,7 @@ static struct debug_opts
 	D(ALL, "Everything under the sun...."),
 	D(ANY, "Ibid.")
 };
-	
+
 static void debugToBuffer(int size);
 static void debugSysInit(void);
 void printDebugBuffer(void);
@@ -166,7 +167,7 @@ dbgSetMaskStr(char *mask_str)
 	int i;
 	char *separators = "|,";
 	char *opt;
-	
+
 	debugSysInit();
 
 	opt = strtok(mask_str, separators);
@@ -183,46 +184,74 @@ dbgSetMaskStr(char *mask_str)
 		for (i = 0; i < NELEMS(debug_opts); i++)
 			if (debug_opts[i].mask>>32)
 			{
-				dprintf("  %-15s\t%8X%08X  %s\n", 
+				dprintf("  %-15s\t%8X%08X  %s\n",
 					debug_opts[i].name,
-				       (int)(debug_opts[i].mask>>32), 
+				       (int)(debug_opts[i].mask>>32),
 				       (int)(debug_opts[i].mask),
 				       debug_opts[i].desc);
 			}
 			else
 			{
-				dprintf("  %-15s\t        %8X  %s\n", 
+				dprintf("  %-15s\t        %8X  %s\n",
 					debug_opts[i].name,
-				       (int)(debug_opts[i].mask), 
+				       (int)(debug_opts[i].mask),
 				       debug_opts[i].desc);
 			}
 		return 0;
 	}
-	
+
 
 	while (opt) {
 		if (!strcasecmp(opt, "buffer"))
-			debugToBuffer(16 * 1024);
+			debugToBuffer(64 * 1024);
 		else if (!strcasecmp(opt, "dump"))
 			atexit(printDebugBuffer);
 		else
 		{
+			int set;
+
+			switch(opt[0]) {
+			case '-':
+				opt++;
+				set = 0;
+				break;
+
+			case '+':
+				opt++;
+				/* FALLTHRU */
+			default:
+				set = 1;
+			}
+
 			for (i = 0; i < NELEMS(debug_opts); i++)
 				if (!strcasecmp(opt, debug_opts[i].name))
 				{
-					kaffevmDebugMask |= debug_opts[i].mask;
+					if (set)
+						kaffevmDebugMask |= debug_opts[i].mask;
+					else
+						kaffevmDebugMask &= ~debug_opts[i].mask;
 					break;
 				}
-		
-			/* Be polite. */
-			if (i == (sizeof debug_opts)/(sizeof(debug_opts[0]))){
-				dprintf(
-				    "Unknown flag (%s) passed to -vmdebug\n",
-					opt);
-				return 0;
+
+			/* Allow bit shifts. */
+			if (i == (sizeof debug_opts)/(sizeof(debug_opts[0]))) {
+				char *endp;
+				int bit;
+
+				bit = strtoul(opt, &endp, 0);
+				/* Be polite. */
+				if (*endp != '\0') {
+					dprintf("Unknown flag (%s) passed to -vmdebug\n",
+						opt);
+					return 0;
+				}
+				if (set)
+					kaffevmDebugMask |= DBG_BIT(bit);
+				else
+					kaffevmDebugMask &= ~DBG_BIT(bit);
 			}
 		}
-		
+
 		/* Get next opt */
 		opt = strtok(NULL, separators);
 	}
@@ -242,7 +271,7 @@ dbgSetMaskStr(char *mask_str)
 
 static char *debugBuffer;
 static int bufferBegin = 0;
-static int bufferSz = 1024;
+static int bufferSz = 16 * 1024;
 static int bufferOutput = 0;
 
 /*
@@ -267,7 +296,7 @@ debugExitHook(void)
 	/*
 	 * this is a hook for catching exits from GDB.
 	 * make this dependent on the selection of this option
-	 */	
+	 */
 	DBG(BREAKONEXIT, DBGGDBBREAK())
 }
 
@@ -284,7 +313,7 @@ debugSysInit(void)
 #if defined(TRANSLATOR) && defined(DEBUG)
 	{
 		extern int jit_debug;
-		if (getenv("JIT_DEBUG")) 
+		if (getenv("JIT_DEBUG"))
 			jit_debug = 1;
 	}
 #endif
