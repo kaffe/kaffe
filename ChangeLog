@@ -1,3 +1,12 @@
+2003-08-09  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	(jthread_create) don't forget to set the daemon flag of the native
+	thread
+	* libraries/javalib/java/text/MessageFormat.java:
+	(format) properly handle null arguments
+	* libraries/javalib/Makefile.in: regenerated
+
 2003-08-08  Rob Gonzalez <rob@kaffe.org>
 
 	* libraries/javalib/Makefile.am

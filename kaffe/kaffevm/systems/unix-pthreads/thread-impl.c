@@ -626,7 +626,7 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
   }
 
   sp.sched_priority = priorities[pri];
- 
+
   if ( !daemon ) 
 	nonDaemons++;
 
@@ -676,6 +676,7 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 	nt->stackMin     = 0;
 	nt->stackMax     = 0;
 	nt->stackCur     = 0;
+	nt->daemon	 = daemon;
 
 	DBG( JTHREAD, TMSG_SHORT( "create new ", nt))
 

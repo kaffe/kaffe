@@ -270,7 +270,8 @@ public final StringBuffer format(Object args[], StringBuffer buf, FieldPosition 
 		for (int i = 0; i < desc.formats.length; i++) {
 			temp_buf.append(desc.strs[i]);
 			if (desc.formats[i] == null) {
-				temp_buf.append(args[desc.argumentNumber[i]].toString());
+				Object arg = args[desc.argumentNumber[i]];
+				temp_buf.append(arg!=null?arg.toString():"null");
 			}
 			else {
 				desc.formats[i].format(args[desc.argumentNumber[i]], temp_buf, dummy);
