@@ -6,6 +6,8 @@ Tue Mar  9 14:31:18 PST 1999  Archie Cobbs <archie@whistle.com>
 	compiler and the platform to always represent NaN with the
 	"Java canonical" bit pattern.
 	* test/regression/ThreadLocalTest.java: synchronize printing
+	* test/regression/DoublePrint.java: add a test for the correct
+	computation of 0.0/0.0 as a NaN; this test currently fails
 
 Sat Mar  6 16:57:53 PST 1999  Archie Cobbs <archie@whistle.com>
 
