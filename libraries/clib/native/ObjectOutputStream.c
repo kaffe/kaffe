@@ -18,7 +18,7 @@
 #include <native.h>
 #include "defs.h"
 #include "files.h"
-#include "system.h"
+#include "../../../include/system.h"
 #include "ObjectOutputStream.h"
 
 void

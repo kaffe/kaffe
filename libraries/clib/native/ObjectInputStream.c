@@ -20,7 +20,7 @@
 #include <native.h>
 #include "defs.h"
 #include "files.h"
-#include "system.h"
+#include "../../../include/system.h"
 #include "ObjectInputStream.h"
 
 struct Hjava_lang_Class*

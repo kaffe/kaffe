@@ -19,7 +19,7 @@
 #include <native.h>
 #include "defs.h"
 #include "files.h"
-#include "system.h"
+#include "../../../include/system.h"
 #include "ObjectStreamClass.h"
 #include "ObjectStreamField.h"
 #include "Field.h"
