@@ -1,3 +1,12 @@
+Tue Mar  9 14:31:18 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/lang/Float.java, Double.java:
+	Apply a better test for isNaN(). As NaN has more than one
+	binary representation under IEEE 754, don't rely on the
+	compiler and the platform to always represent NaN with the
+	"Java canonical" bit pattern.
+	* test/regression/ThreadLocalTest.java: synchronize printing
+
 Sat Mar  6 16:57:53 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/OutputStreamWriter.java: buffer output 
