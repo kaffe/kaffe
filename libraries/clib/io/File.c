@@ -188,10 +188,7 @@ jboolean java_io_VMFile_delete(struct Hjava_lang_String* fileName)
 	
 	stringJava2CBuf(fileName, str, sizeof(str));
 
-	if (java_io_VMFile_isDirectory(fileName))
-	  r = KRMDIR(str);
-	else
-	  r = KREMOVE(str);
+	r = KREMOVE(str);
 	return(r != 0 ? 0 : 1);
 }
 
