@@ -11,6 +11,9 @@
 #ifndef __config_io_h
 #define __config_io_h
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif
 #if defined(HAVE_POLL_H)
 #include <poll.h>
 #endif
