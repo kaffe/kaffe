@@ -29,6 +29,7 @@ public class UDPTest {
 		socket.send(packet);
 	    } catch (Exception e) {
 		System.out.println(e);
+		e.printStackTrace(System.out);
 	    }
 	}
     }
@@ -55,6 +56,7 @@ public class UDPTest {
 			+ s + "', expected `" + msg + "'");
 	    } catch (Exception e) {
 		System.out.println(e);
+		e.printStackTrace(System.out);
 	    }
 	}
     }
