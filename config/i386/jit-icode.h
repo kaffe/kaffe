@@ -220,5 +220,9 @@
 
 #define HAVE_call_indirect_const	call_ind_xCC
 
+/*
+ * They are required by some architectures.
+ */
+#define HAVE_kill_readonce_register		kill_readonce_register
 
 #endif

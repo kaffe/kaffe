@@ -77,7 +77,6 @@ void	preloadRegister(SlotData*, int, int);
 #define	rreload			0
 #define	rread			1
 #define	rwrite			2
-#define	rforced			4
 
 /* JIT2 compatibility */
 #define	_slowSlotRegister(A,B,C) slotRegister(A,B,C,NOREG)
@@ -173,10 +172,10 @@ extern void setGlobalRegister(int);
 extern void sanityCheck(void);
 extern void reload(SlotData*);
 
-extern void slot_kill_forced(SlotData*);
+extern void slot_kill_readonce(SlotData*);
 
-#if defined(HAVE_kill_forced_register)
-extern void HAVE_kill_forced_register(SlotData *s);
+#if defined(HAVE_kill_readonce_register)
+extern void HAVE_kill_readonce_register(SlotData *s);
 #endif
 
 extern void HAVE_move_register_int(int, int);

@@ -97,7 +97,6 @@ jitflags willcatch;
 #define check_null(x,obj,y)		CHECK_NULL(x,obj,y)
 #define check_div(x,obj,y)
 #define check_div_long(x,obj,y)
-#define pop_slot(src,len)
 
 /* Unit in which code block is increased when overrun */
 #define	ALLOCCODEBLOCKSZ	8192

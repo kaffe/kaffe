@@ -119,11 +119,6 @@ lastuse_slot(SlotInfo* data, int nr)
 
 	for (; nr > 0; nr--, data++) {
 		sdata = data->slot;
-		if (sdata->modified & rforced) {
-DBG(REGFORCE,
-    dprintf ("lastuse_slot() forced %d %x\n", sdata->regno, sdata);
-    )
-		}
 		if (sdata->rseq != 0 && !isGlobal(sdata)) {
 			sdata->rseq->lastuse |= 1 << sdata->rseqslot;
 		}

@@ -2466,23 +2466,11 @@ define_insn(cmp_int_offset, cmp_xRRC)
 
 /* --------------------------------------------------------------------- */
 
-define_insn(pop_slot, pop_slot_xRC)
-{
-	/* Dummy function to mark popped slot as read (see pop_slot()
-           in file jit3/machine.c).  This is necessary to avoid
-           elimitate requied return_float() or return_double()
-           sequences.  Real job will be done latter by
-           kill_forced_register().  */
-DBG(REGFORCE,
-    dprintf ("pop_slot(%d)\n", const_int(2));
-    )
-}
-
 void
-kill_forced_register (SlotData *s)
+kill_readonce_register (SlotData *s)
 {
 DBG(REGFORCE,
-    dprintf ("kill_forced_register(%s)\n", regname(s->regno));
+    dprintf ("kill_readonce_register(%s)\n", regname(s->regno));
     )
 	if (((reginfo[s->regno].ctype & Rdouble) && (s->regno == REG_dbl0)) ||
 	    ((reginfo[s->regno].ctype & Rfloat) && (s->regno == REG_flt0))) {

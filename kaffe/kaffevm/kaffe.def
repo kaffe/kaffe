@@ -848,7 +848,6 @@ define_insn(POP)
 	 */
 	trace_jcode (("pop\n"));
 
-	pop_slot(stack(0), 1);
 	pop(1);
 }
 
@@ -859,7 +858,6 @@ define_insn(POP2)
 	 */
 	trace_jcode (("pop2\n"));
 
-	pop_slot(stack(0), 2);
 	pop(2);
 }
 

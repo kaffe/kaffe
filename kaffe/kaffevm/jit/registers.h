@@ -60,6 +60,12 @@ extern int usecnt;
 void	spill(SlotInfo*);
 void	reload(SlotInfo*);
 
+extern void slot_kill_readonce(SlotInfo*);
+
+#if defined(HAVE_kill_readonce_register)
+extern void HAVE_kill_readonce_register(SlotInfo *s);
+#endif
+
 void	initRegisters(void);
 int	slowSlotRegister(SlotInfo*, int, int);
 int	fastSlotRegister(SlotInfo*, int, int);

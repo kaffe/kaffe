@@ -91,6 +91,7 @@ typedef struct _methodTrampoline {
 /**/
 /* Register management information. */
 /**/
+#define HAVE_FLOATING_POINT_STACK
 
 /* Define the register set */
 #define	REGISTER_SET							\

@@ -3644,11 +3644,28 @@ return_long(SlotInfo* dst)
 }
 #endif
 
+#if defined(HAVE_FLOATING_POINT_STACK)
+static void
+floating_point_stack_mark_used(sequence *s) 
+{
+    (void)s;
+}
+#endif
+
 void
 return_float(SlotInfo* dst)
 {
 #if defined(HAVE_return_float)
 	slot_slot_slot(dst, 0, 0, HAVE_return_float, Tnull);
+#if defined(HAVE_FLOATING_POINT_STACK)
+	{
+		/* make slot as used do not be removed */
+		SlotInfo* tmp;
+		slot_alloctmp(tmp);
+		slot_slot_const(tmp, dst, 0, floating_point_stack_mark_used, Tload);
+		slot_freetmp(tmp);
+	}
+#endif
 #elif defined(HAVE_NO_FLOATING_POINT)
 	return_int(dst);
 #else
@@ -3661,6 +3678,15 @@ return_double(SlotInfo* dst)
 {
 #if defined(HAVE_return_double)
 	lslot_lslot_lslot(dst, 0, 0, HAVE_return_double, Tnull);
+#if defined(HAVE_FLOATING_POINT_STACK)
+	{
+		/* make slot as used do not be removed */
+		SlotInfo* tmp;
+		slot_alloc2tmp(tmp);
+		lslot_lslot_const(tmp, dst, 0, floating_point_stack_mark_used, Tload);
+		slot_free2tmp(tmp);
+	}
+#endif
 #elif defined(HAVE_NO_FLOATING_POINT)
 	return_long(dst);
 #else
@@ -3713,19 +3739,6 @@ returnarg_double(SlotInfo* src)
 	returnarg_long(src);
 #else
 	ABORT();
-#endif
-}
-
-void
-pop_slot(SlotInfo* src, int len)
-{
-#ifdef HAVE_pop_slot
-	if (len == 1) {
-		slot_slot_const(0, src, (jword)len, HAVE_pop_slot, Tload);
-	}
-	else {
-		lslot_lslot_const(0, src, (jword)len, HAVE_pop_slot, Tload);
-	}
 #endif
 }
 

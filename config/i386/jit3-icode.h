@@ -308,7 +308,6 @@
 /*
  * They are required by some architectures.
  */
-#define HAVE_pop_slot				pop_slot_xRC
-#define HAVE_kill_forced_register		kill_forced_register
+#define HAVE_kill_readonce_register		kill_readonce_register
 
 #endif

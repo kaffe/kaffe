@@ -1623,3 +1623,20 @@ define_insn(lshl_int_const, lshl_RRC)
 	debug(("shll #%d,%s\n", v, regname(rw)));
 }
 
+/* --------------------------------------------------------------------- */
+
+void
+kill_readonce_register (SlotInfo *s)
+{
+DBG(REGFORCE,
+    dprintf ("kill_readonce_register(%s)\n", regname(s->regno));
+    )
+	if (((reginfo[s->regno].ctype & Rdouble) && (s->regno == REG_dbl0)) ||
+	    ((reginfo[s->regno].ctype & Rfloat) && (s->regno == REG_flt0))) {
+	    	OUT = 0xDD;
+		OUT = 0xD8;
+
+		debug (("fstp %%st(0)\n"));
+	}
+}
+

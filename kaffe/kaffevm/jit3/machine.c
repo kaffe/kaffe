@@ -716,7 +716,7 @@ SCHK(		sanityCheck();					)
 			for (i = 0; m != 0; m = m >> 1, i++) {
 				if ((m & 1) != 0) {
 					assert(!isGlobal(t->u[i].slot));
-					slot_kill_forced(t->u[i].slot);
+					slot_kill_readonce(t->u[i].slot);
 					slot_invalidate(t->u[i].slot);
 				}
 			}

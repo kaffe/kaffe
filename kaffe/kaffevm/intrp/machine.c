@@ -78,7 +78,6 @@ char* engine_version = KVER;
 #define check_null(x,obj,y)		CHECK_NULL(x,obj,y)
 #define check_div(x,obj,y)
 #define check_div_long(x,obj,y)
-#define pop_slot(src,len)
 
 
 #if defined(KAFFE_PROFILER)

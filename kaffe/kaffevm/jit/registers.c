@@ -144,6 +144,19 @@ reload(SlotInfo* s)
 	}
 }
 
+void
+slot_kill_readonce(SlotInfo *s)
+{
+#if defined(HAVE_kill_readonce_register)
+    	if (((s->modified & rwrite) != 0) &&
+	    ((reginfo[s->regno].flags & enable_readonce) != 0)) {
+	    	HAVE_kill_readonce_register (s);
+		s->modified &= ~rwrite;
+	}
+#endif
+}
+
+
 /*
  * Translate a slot number into a register.
  *  Perform the necessary spills and reloads to make this happen.
@@ -196,6 +209,7 @@ slowSlotRegister(SlotInfo* slot, int type, int use)
 	 * invalidate it so we know it is free later.
 	 */
 	if (use == rwrite) {
+		slot_kill_readonce(slot);
 		register_invalidate(slot->regno);
 		slot_invalidate(slot);
 		if (type == Rlong || type == Rdouble) {

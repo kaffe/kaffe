@@ -88,12 +88,6 @@ static
 void
 spill(SlotData* s)
 {
-    	if (s->modified & rforced) {
-DBG(REGFORCE,
-    dprintf ("spill() spill forced %d %x\n", s->regno, s);
-    )
-	    s->modified &= ~rforced;
-	}
 #if defined(HAVE_spill_long)
 	if (reginfo[s->regno].ctype & Rlong) {
 		spill_long(s);
@@ -171,14 +165,15 @@ reload(SlotData* s)
 }
 
 void
-slot_kill_forced(SlotData *s)
+slot_kill_readonce(SlotData *s)
 {
-    	if (s->modified & rforced) {
-#if defined(HAVE_kill_forced_register)
-	    	HAVE_kill_forced_register (s);
-#endif
-		s->modified &= ~rforced;
+#if defined(HAVE_kill_readonce_register)
+    	if (((s->modified & rwrite) != 0) &&
+	    ((reginfo[s->regno].flags & enable_readonce) != 0)) {
+	    	HAVE_kill_readonce_register (s);
+		s->modified &= ~rwrite;
 	}
+#endif
 }
 
 /*
@@ -274,11 +269,6 @@ slotRegister(SlotData* slot, int type, int use, int idealreg)
 	reg = slot->regno;
 	regi = &reginfo[reg];
 
-	if (slot->modified & rforced) {
-DBG(REGFORCE,
-    dprintf ("slotRegister() is forced %d %x\n", reg, slot);
-    )
-	}
 	/* Do global register stuff before anything else.
 	 * Note that we ignore the ideal register for globals since we
 	 * cannot change the register assignment for globals.
@@ -314,19 +304,13 @@ DBG(REGFORCE,
 	 * use it.
 	 */
 	if ((reg == idealreg || idealreg == NOREG) && use == rread && (regi->type & type) != 0) {
-	    	if (regi->slot && regi->slot->modified & rforced) {
-DBG(REGFORCE,
-    dprintf ("slotRegister() use forced %d %x\n", reg, regi->slot);
-    )
-			regi->slot->modified &= ~rforced;
-		}
 		regi->ctype = regi->type & type;
 	}
 	/* If we're writing and we're not sharing this register and it's
 	 * the right type then use it.
 	 */
 	else if ((reg == idealreg || idealreg == NOREG) && regi->refs == 1 && (regi->type & type) != 0) {
-	    	slot_kill_forced(regi->slot);
+		slot_kill_readonce(regi->slot);
 		regi->ctype = regi->type & type;
 	}
 	/* Otherwise reallocate */
@@ -442,7 +426,6 @@ clobberRegister(int reg)
 		pslot = regi->slot;
 		while (pslot != NOSLOT) {
 			assert(pslot->regno == reg);
-			/* rforced imply rwrite, see forceRegister() */
 			if ((pslot->modified & rwrite) != 0 || (regi->flags & enable_readonce)) {
 				spill(pslot);
 				pslot->modified = 0;
@@ -476,11 +459,6 @@ forceRegister(SlotData* slot, int reg, int type)
 		assert(!isGlobal(slot));
 		assert((reginfo[reg].type & Rglobal) == 0);
 		/*assert((reginfo[slot->regno].type & Rglobal) == 0);*/
-		if (slot->modified & rforced) {
-DBG(REGFORCE,
-    dprintf ("forceRegister() invalidate forced %d %x\n", slot->regno, slot);
-    )
-		}
 		/* Invalidate the current register in this slot - don't spill
 		 * it 'cause we will be rebinding the slot.
 		 */
@@ -491,16 +469,11 @@ DBG(REGFORCE,
 		 */
 		clobberRegister(reg);
 	}
-	else if (slot->modified & rforced) {
-DBG(REGFORCE,
-    dprintf ("forceRegister() reuse forced %d %x\n", slot->regno, slot);
-    )
-	}
 
 	/* Setup the slot with the desirable register */
 	regi = &reginfo[reg];
 	slot->regno = reg;
-	slot->modified = rwrite | rforced;
+	slot->modified = rwrite;
 	regi->slot = slot;
 	regi->used = ++usecnt;
 	regi->refs = 1;
@@ -578,11 +551,6 @@ slot_invalidate(SlotData* sdata)
 	if (reg != NOREG) {
 		regi = &reginfo[reg];
 		if (regi->refs == 1) {
-		    	if (regi->slot->modified & rforced) {
-DBG(REGFORCE,
-    dprintf ("slot_invalidate() [1] forced %d %x\n", reg, regi->slot);
-    )
-			}
 			regi->slot = NOSLOT;
 			regi->used = 0;
 		}
