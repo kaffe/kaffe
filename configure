@@ -6063,6 +6063,7 @@ JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/zip/libzip.la \
 \$(top_builddir)/libraries/clib/math/libmath.la \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
+\$(top_builddir)/libraries/extensions/microsoft/clib/libmicrosoft.la \
 $AWT_LIB \
 $JAVA_LIBS \
 "
@@ -6099,7 +6100,7 @@ if test "$cross_compiling" = yes; then
   # Extract the first word of "kaffeh", so it can be a program name with args.
 set dummy kaffeh; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:6103: checking for $ac_word" >&5
+echo "configure:6104: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_KAFFEH'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6160,7 +6161,7 @@ EOF
 
 
 echo $ac_n "checking how to run the C preprocessor""... $ac_c" 1>&6
-echo "configure:6164: checking how to run the C preprocessor" >&5
+echo "configure:6165: checking how to run the C preprocessor" >&5
 # On Suns, sometimes $CPP names a directory.
 if test -n "$CPP" && test -d "$CPP"; then
   CPP=
@@ -6175,13 +6176,13 @@ else
   # On the NeXT, cc -E runs the code through the compiler's parser,
   # not just through cpp.
   cat > conftest.$ac_ext <<EOF
-#line 6179 "configure"
+#line 6180 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:6185: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:6186: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -6192,13 +6193,13 @@ else
   rm -rf conftest*
   CPP="${CC-cc} -E -traditional-cpp"
   cat > conftest.$ac_ext <<EOF
-#line 6196 "configure"
+#line 6197 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:6202: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:6203: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -6209,13 +6210,13 @@ else
   rm -rf conftest*
   CPP="${CC-cc} -nologo -E"
   cat > conftest.$ac_ext <<EOF
-#line 6213 "configure"
+#line 6214 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:6219: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:6220: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -6241,7 +6242,7 @@ echo "$ac_t""$CPP" 1>&6
 
 
 echo $ac_n "checking for path separator""... $ac_c" 1>&6
-echo "configure:6245: checking for path separator" >&5
+echo "configure:6246: checking for path separator" >&5
 if eval "test \"`echo '$''{'ac_cv_kaffe_pathsep'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6258,7 +6259,7 @@ PATHSEP=$ac_cv_kaffe_pathsep
 
 
 echo $ac_n "checking for directory separator""... $ac_c" 1>&6
-echo "configure:6262: checking for directory separator" >&5
+echo "configure:6263: checking for directory separator" >&5
 if eval "test \"`echo '$''{'ac_cv_kaffe_dirsep'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6427,6 +6428,9 @@ libraries/extensions/servlet/Makefile \
 libraries/extensions/servlet/javalib/Makefile \
 libraries/extensions/tools/Makefile \
 libraries/extensions/tools/javalib/Makefile \
+libraries/extensions/microsoft/Makefile \
+libraries/extensions/microsoft/javalib/Makefile \
+libraries/extensions/microsoft/clib/Makefile \
 kaffe/man/kaffe.1 \
 libraries/javalib/rebuildLib \
 kaffe/scripts/install-jar \
@@ -6651,6 +6655,9 @@ libraries/extensions/servlet/Makefile \
 libraries/extensions/servlet/javalib/Makefile \
 libraries/extensions/tools/Makefile \
 libraries/extensions/tools/javalib/Makefile \
+libraries/extensions/microsoft/Makefile \
+libraries/extensions/microsoft/javalib/Makefile \
+libraries/extensions/microsoft/clib/Makefile \
 kaffe/man/kaffe.1 \
 libraries/javalib/rebuildLib \
 kaffe/scripts/install-jar \

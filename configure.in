@@ -774,6 +774,7 @@ JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/zip/libzip.la \
 \$(top_builddir)/libraries/clib/math/libmath.la \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
+\$(top_builddir)/libraries/extensions/microsoft/clib/libmicrosoft.la \
 $AWT_LIB \
 $JAVA_LIBS \
 "
@@ -922,6 +923,9 @@ libraries/extensions/servlet/Makefile \
 libraries/extensions/servlet/javalib/Makefile \
 libraries/extensions/tools/Makefile \
 libraries/extensions/tools/javalib/Makefile \
+libraries/extensions/microsoft/Makefile \
+libraries/extensions/microsoft/javalib/Makefile \
+libraries/extensions/microsoft/clib/Makefile \
 kaffe/man/kaffe.1 \
 libraries/javalib/rebuildLib \
 kaffe/scripts/install-jar \

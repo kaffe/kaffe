@@ -11,7 +11,7 @@
 # PARTICULAR PURPOSE.
 
 #
-# tools extension library component.
+# Microsoft extension library component.
 #
 # Copyright (c) 1999
 #      Transvirtual Technologies, Inc.  All rights reserved.
@@ -128,17 +128,17 @@ kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
-CLASSFILE = tools.jar
+CLASSFILE = microsoft.jar
 SRCDIRS = kaffe
 
 class_DATA = $(CLASSFILE)
 
-tools_jar_SRCS =  	$(kaffe_tools_jar_SRCS)
+microsoft_jar_SRCS =  	$(com_ms_lang_SRCS)
 
-kaffe_tools_jar_SRCS =  	kaffe/tools/jar/Jar.java 	kaffe/tools/jar/XPFile.java 	kaffe/tools/jar/XPFileInputStream.java 	kaffe/tools/jar/XPFileOutputStream.java 	kaffe/tools/jar/XPFileReader.java 	kaffe/tools/jar/XPFileWriter.java
+com_ms_lang_SRCS =  	com/ms/lang/Delegate.java 	com/ms/lang/MulticastNotSupportedException.java 	com/ms/lang/MulticastDelegate.java
 
 
-EXTRA_DIST = $(class_DATA) $(tools_jar_SRCS)
+EXTRA_DIST = $(class_DATA) $(microsoft_jar_SRCS)
 
 LIBDIR = lib
 
@@ -159,7 +159,7 @@ GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu libraries/extensions/tools/javalib/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu libraries/extensions/microsoft/javalib/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -190,15 +190,15 @@ TAGS:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = libraries/extensions/tools/javalib
+subdir = libraries/extensions/microsoft/javalib
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu libraries/extensions/tools/javalib/Makefile
-	$(mkinstalldirs) $(distdir)/kaffe/tools/jar
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu libraries/extensions/microsoft/javalib/Makefile
+	$(mkinstalldirs) $(distdir)/com/ms/lang
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -280,13 +280,13 @@ new-classes: $(top_srcdir)/developers/update-class-list
 	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
 
 .PHONY: compile-classes classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(tools_jar_SRCS)
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(microsoft_jar_SRCS)
 	@echo $(SHELL) $(rebuildLib)
-	@CPATH=$(Klasses_jar) $(SHELL) $(rebuildLib) $(tools_jar_SRCS)
+	@CPATH=$(Klasses_jar) $(SHELL) $(rebuildLib) $(microsoft_jar_SRCS)
 	@echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes
-jar-classes $(LIBDIR)/tools.jar: $(LIBDIR)/stamp
+jar-classes $(LIBDIR)/microsoft.jar: $(LIBDIR)/stamp
 	rm -f $(LIBDIR)/$(CLASSFILE)
 	(cd $(LIBDIR) && $(ZIP) -r $(CLASSFILE) $(SRCDIRS))
 

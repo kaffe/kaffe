@@ -10,9 +10,9 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-# Top-level Makefile for Kaffe OpenVM.
+# Base level Makefile.in for kaffe comm extension
 #
-# Copyright (c) 1996, 1997, 1998, 1999
+# Copyright (c) 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
@@ -46,7 +46,7 @@ pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 
-top_builddir = .
+top_builddir = ../../..
 
 ACLOCAL = @ACLOCAL@
 AUTOCONF = @AUTOCONF@
@@ -124,28 +124,11 @@ kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
-AUTOMAKE_OPTIONS = foreign 1.3e
-
-SUBDIRS = . config include libltdl libraries kaffe test
-
-EXTRA_DIST =  	ChangeLog.1 	WHATSNEW 	license.terms 	FAQ/FAQ.BeOS 	FAQ/FAQ.Known-Bugs 	FAQ/FAQ.amigaos 	FAQ/FAQ.automake 	FAQ/FAQ.awt 	FAQ/FAQ.class-states 	FAQ/FAQ.classlibrary-compile 	FAQ/FAQ.depend 	FAQ/FAQ.gcblock 	FAQ/FAQ.gcstrategy 	FAQ/FAQ.hotjava 	FAQ/FAQ.install-root 	FAQ/FAQ.jsignal 	FAQ/FAQ.libtool 	FAQ/FAQ.linux 	FAQ/FAQ.nativemethods 	FAQ/FAQ.requiredlibraries 	FAQ/FAQ.timing 	FAQ/FAQ.unicode 	FAQ/FAQ.win32 	developers/JavaClass.pm 	developers/README 	developers/README.unicode 	developers/autogen.sh 	developers/dumpClass.pl 	developers/gdbinit 	developers/sp_offset.c 	developers/update-class-list 	developers/unicode.pl 	developers/utf8munge.pl
-
-
-CLEANFILES = BUILD_ENVIRONMENT
-
-noinst_SCRIPTS = libtool BUILD_ENVIRONMENT
-
-CLASSDIRS = libraries/javalib
-ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+SUBDIRS = javalib clib
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = ./config/config.h ./include/jtypes.h
+CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
-SCRIPTS =  $(noinst_SCRIPTS)
-
-DIST_COMMON =  README AUTHORS ChangeLog INSTALL Makefile.am Makefile.in \
-acinclude.m4 aclocal.m4 config.guess config.sub config/config.h.in \
-config/stamp-h1.in configure configure.in include/jtypes.h.in \
-include/stamp-h2.in install-sh ltconfig ltmain.sh missing mkinstalldirs
+DIST_COMMON =  Makefile.am Makefile.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -155,66 +138,12 @@ GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu libraries/extensions/microsoft/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
-	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ configure.in  acinclude.m4
-	cd $(srcdir) && $(ACLOCAL)
-
-config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
-	$(SHELL) ./config.status --recheck
-$(srcdir)/configure: @MAINTAINER_MODE_TRUE@$(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
-	cd $(srcdir) && $(AUTOCONF)
-
-config/config.h: config/stamp-h1
-	@if test ! -f $@; then \
-		rm -f config/stamp-h1; \
-		$(MAKE) config/stamp-h1; \
-	else :; fi
-config/stamp-h1: $(srcdir)/config/config.h.in $(top_builddir)/config.status
-	cd $(top_builddir) \
-	  && CONFIG_FILES= CONFIG_HEADERS=config/config.h \
-	     $(SHELL) ./config.status
-	@echo timestamp > config/stamp-h1 2> /dev/null
-$(srcdir)/config/config.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/config/stamp-h1.in
-	@if test ! -f $@; then \
-		rm -f $(srcdir)/config/stamp-h1.in; \
-		$(MAKE) $(srcdir)/config/stamp-h1.in; \
-	else :; fi
-$(srcdir)/config/stamp-h1.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOHEADER)
-	@echo timestamp > $(srcdir)/config/stamp-h1.in 2> /dev/null
-
-include/jtypes.h: include/stamp-h2
-	@if test ! -f $@; then \
-		rm -f include/stamp-h2; \
-		$(MAKE) include/stamp-h2; \
-	else :; fi
-include/stamp-h2: $(srcdir)/include/jtypes.h.in $(top_builddir)/config.status
-	cd $(top_builddir) \
-	  && CONFIG_FILES= CONFIG_HEADERS=include/jtypes.h \
-	     $(SHELL) ./config.status
-	@echo timestamp > include/stamp-h2 2> /dev/null
-$(srcdir)/include/jtypes.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/include/stamp-h2.in
-	@if test ! -f $@; then \
-		rm -f $(srcdir)/include/stamp-h2.in; \
-		$(MAKE) $(srcdir)/include/stamp-h2.in; \
-	else :; fi
-$(srcdir)/include/stamp-h2.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOHEADER)
-	@echo timestamp > $(srcdir)/include/stamp-h2.in 2> /dev/null
-
-mostlyclean-hdr:
-
-clean-hdr:
-
-distclean-hdr:
-	-rm -f config/config.h include/jtypes.h
-
-maintainer-clean-hdr:
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
@@ -305,50 +234,16 @@ distclean-tags:
 
 maintainer-clean-tags:
 
-distdir = $(PACKAGE)-$(VERSION)
-top_distdir = $(distdir)
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-# This target untars the dist file and tries a VPATH configuration.  Then
-# it guarantees that the distribution is self-contained by making another
-# tarfile.
-distcheck: dist
-	-rm -rf $(distdir)
-	GZIP=$(GZIP_ENV) $(TAR) zxf $(distdir).tar.gz
-	mkdir $(distdir)/=build
-	mkdir $(distdir)/=inst
-	dc_install_base=`cd $(distdir)/=inst && pwd`; \
-	cd $(distdir)/=build \
-	  && ../configure --srcdir=.. --prefix=$$dc_install_base \
-	  && $(MAKE) $(AM_MAKEFLAGS) \
-	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
-	  && $(MAKE) $(AM_MAKEFLAGS) check \
-	  && $(MAKE) $(AM_MAKEFLAGS) install \
-	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
-	  && $(MAKE) $(AM_MAKEFLAGS) dist
-	-rm -rf $(distdir)
-	@banner="$(distdir).tar.gz is ready for distribution"; \
-	dashes=`echo "$$banner" | sed s/./=/g`; \
-	echo "$$dashes"; \
-	echo "$$banner"; \
-	echo "$$dashes"
-dist: distdir
-	-chmod -R a+r $(distdir)
-	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
-	-rm -rf $(distdir)
-dist-all: distdir
-	-chmod -R a+r $(distdir)
-	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
-	-rm -rf $(distdir)
+subdir = libraries/extensions/microsoft
+
 distdir: $(DISTFILES)
-	-rm -rf $(distdir)
-	mkdir $(distdir)
-	-chmod 777 $(distdir)
 	here=`cd $(top_builddir) && pwd`; \
-	top_distdir=`cd $(distdir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign Makefile
-	$(mkinstalldirs) $(distdir)/FAQ $(distdir)/developers
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu libraries/extensions/microsoft/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -365,7 +260,7 @@ distdir: $(DISTFILES)
 	    || mkdir $(distdir)/$$subdir \
 	    || exit 1; \
 	    chmod 777 $(distdir)/$$subdir; \
-	    (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir=../$(distdir) distdir=../$(distdir)/$$subdir distdir) \
+	    (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir=../$(top_distdir) distdir=../$(distdir)/$$subdir distdir) \
 	      || exit 1; \
 	  fi; \
 	done
@@ -388,7 +283,7 @@ install-am: all-am
 install: install-recursive
 uninstall-am:
 uninstall: uninstall-recursive
-all-am: Makefile $(SCRIPTS)
+all-am: Makefile
 all-redirect: all-recursive
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
@@ -399,39 +294,37 @@ installdirs-am:
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-mostlyclean-am:  mostlyclean-hdr mostlyclean-tags mostlyclean-generic
+mostlyclean-am:  mostlyclean-tags mostlyclean-generic
 
 mostlyclean: mostlyclean-recursive
 
-clean-am:  clean-hdr clean-tags clean-generic mostlyclean-am
+clean-am:  clean-tags clean-generic mostlyclean-am
 
 clean: clean-recursive
 
-distclean-am:  distclean-hdr distclean-tags distclean-generic clean-am
+distclean-am:  distclean-tags distclean-generic clean-am
+	-rm -f libtool
 
 distclean: distclean-recursive
-	-rm -f config.status
 
-maintainer-clean-am:  maintainer-clean-hdr maintainer-clean-tags \
-		maintainer-clean-generic distclean-am
+maintainer-clean-am:  maintainer-clean-tags maintainer-clean-generic \
+		distclean-am
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 
 maintainer-clean: maintainer-clean-recursive
-	-rm -f config.status
 
-.PHONY: mostlyclean-hdr distclean-hdr clean-hdr maintainer-clean-hdr \
-install-data-recursive uninstall-data-recursive install-exec-recursive \
-uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
-all-recursive check-recursive installcheck-recursive info-recursive \
-dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
+.PHONY: install-data-recursive uninstall-data-recursive \
+install-exec-recursive uninstall-exec-recursive installdirs-recursive \
+uninstalldirs-recursive all-recursive check-recursive \
+installcheck-recursive info-recursive dvi-recursive \
+mostlyclean-recursive distclean-recursive clean-recursive \
 maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
 distclean-tags clean-tags maintainer-clean-tags distdir info-am info \
 dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
@@ -440,33 +333,6 @@ uninstall-am uninstall all-redirect all-am all installdirs-am \
 installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
-
-depend:
-	@echo \`make depend\' is no longer needed
-
-libtool: $(LIBTOOL_DEPS)
-	$(SHELL) ./config.status --recheck
-
-BUILD_ENVIRONMENT: Makefile
-	$(MAKE) top_srcdir=`cd $(top_srcdir) >/dev/null; pwd` \
-		top_builddir=`cd $(top_builddir) >/dev/null; pwd` \
-		"DEBUG_ENV=$(DEBUG_ENV)" BUILD_ENVIRONMENT-make
-
-BUILD_ENVIRONMENT-make: Makefile
-	echo CLASSPATH=\$${CLASSPATH-.}\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/Klasses.jar\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/pizza.jar\; export CLASSPATH > BUILD_ENVIRONMENT; \
-	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' ' '; echo) | sed -e 's/ $$//' -e "s/ /\'$(PATHSEP)\'/g"`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT; \
-	echo JAVA=$(top_builddir)/kaffe/kaffe/Kaffe$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT
-
-.PHONY: Klasses new-classes compile-classes jar-classes build-classes
-Klasses new-classes compile-classes jar-classes build-classes:
-	@if test "$(CLASSDIRS)" = all; then \
-	   $(MAKE) CLASSDIRS="`echo libraries/javalib \
-				    libraries/extensions/*/javalib`" $@; \
-	else \
-	  for f in $(CLASSDIRS); do \
-	    (cd $$f && $(MAKE) $@); \
-	  done; \
-	fi
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
