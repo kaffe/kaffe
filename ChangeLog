@@ -1,5 +1,15 @@
 2004-09-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/net/protocol/file/Handler.java:
+        Resynced with GNU Classpath.
+
+	2004-09-20  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/net/protocol/file/Handler.java
+        (openConnection): Clarified comment.
+
+2004-09-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/JInternalFrame.java,
 	libraries/javalib/javax/swing/plaf/basic/BasicInternalFrameTitlePane.java:
         Resynced with GNU Classpath.

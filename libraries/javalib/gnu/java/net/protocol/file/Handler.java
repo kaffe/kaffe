@@ -79,9 +79,8 @@ public class Handler extends URLStreamHandler
 	// Reset the protocol (and implicitly the handler) for this URL.
 	// Then have the URL attempt the connection again, as it will
 	// get the changed handler the next time around.
-	// N.B.: FTP protocol is not supported by default in GNU Classpath
-	// but it does not matter because setURL will keep the current protocol
-	// if "ftp" is not available.
+	// If the ftp protocol handler is not installed, an 
+	// exception will be thrown from the new openConnection() call.
 	setURL (url, "ftp", url.getHost(), url.getPort(), url.getFile(),
 	        url.getRef());
 	return url.openConnection();
