@@ -1,3 +1,42 @@
+Sat Aug 26 16:41:19 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/mem/gc-incremental.h, kaffe/kaffevm/mem/gc-mem.h 
+ 	kaffe/kaffevm/jni.c:
+	Move default heap sizes, gc_heap_base, gc_block_base and
+	gc_heap_range from gc-mem.h to gc-incremental.h.  Kaffe should get
+	all the info it needs from gc.h, and should not know that either
+	file exists.  (jni.c no longer needs to include mem/gc-mem.h.)
+
+	* libraries/clib/native/Method.c: 
+	Work around the fact that abstract methods may have the native bit
+	set.  We could elminate this behavior by cleaning up callMethod*,
+	and findLocalMethod.
+
+	* kaffe/xprof/mangle.c:
+	Existing tools don't understand the way gcj mangles inner class
+	names.  We can give them alternate handling: treating the $ as a
+	qualifier.  The 'U' escape character also confuses non-gcj tools,
+	we can avoid using it as well. But, if HAVE_GCJ_SUPPORT is
+	defined, we can remain compatible.
+
+	* kaffe/kaffevm/gcRefs.c:
+	Mark live threads with GC_markObject, rather than walking them but
+	leaving them unmarked.  Also, cast root to (void*) when walking
+	it.
+
+	* libraries/javalib/java/util/AbstractSet.java:
+	make hashCode() handle with null entries.
+
+	*  kaffe/kaffevm/jar.c, kaffe/kaffevm/jar.h,
+	libraries/clib/native/ZipFile.c,
+	libraries/javalib/java/util/zip/ZipEntry.java:
+	Maintain modified time in jarEntry structure.  We copy this into
+	the dosTime field of a ZipEntry object in makeZipEntry(), and
+	compute the java time lazily in ZipEntry.getTime().
+
+	Also, remove low-order junk from result of ZipEntry.setDosTime().
+	(We were getting the dos-time + (current-time % 1000)).
+
 Thu Aug 24 17:33:01 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/SecurityManager: make non-abstract
