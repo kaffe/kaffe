@@ -170,12 +170,4 @@ int bitCount(int bits);
 		(1 << (BITMAP_BPI - 1 - (n) % BITMAP_BPI))) \
 	    dprintf("1"); else dprintf("0"); }
 
-#ifndef MIN
-#define MIN(A,B) ((A) < (B) ? (A) : (B))
-#endif
-
-#ifndef MAX
-#define MAX(A,B) ((A) > (B) ? (A) : (B))
-#endif
-
 #endif

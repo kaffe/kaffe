@@ -28,6 +28,10 @@
 #include <unistd.h>
 #endif
 
+#ifndef MAX
+#define MAX(A,B) ((A) > (B) ? (A) : (B))
+#endif
+
 static iStaticLock	gc_heap_lock;
 
 #if defined(KAFFE_STATS)
