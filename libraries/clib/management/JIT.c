@@ -36,15 +36,6 @@
 #include <native.h>
 
 /*
- * Dump all active methods to a PrintStream p
- */
-void
-Java_kaffe_management_JIT_dumpActiveMethods(JNIEnv *env, jclass clazz, jobject p, jobject loader)
-{
-	dumpActiveMethods(p, loader);
-}
-
-/*
  * Translate a method given class, method name, and signature
  */
 void

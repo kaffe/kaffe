@@ -1,3 +1,15 @@
+2003-07-28  Timothy S. Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/intrp/stackTrace-impl.h:
+	Add empty EXCEPTIONFRAME()/FIRSTFRAME() macros, these need to be
+	filled in eventually so JVMPI can do backtraces on threads besides
+	the current one.
+
+	* libraries/clib/management/JIT.c,
+	libraries/javalib/kaffe/management/JIT.java:
+	Remove stale dumpActiveMethods function, it was never implemented
+	anyways.
+	
 2003-07-28  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/util/Calendar.java:

@@ -34,21 +34,7 @@ import java.io.PrintStream;
 
 public class JIT implements Runnable {
     /**
-     * dump a list of all methods loaded by a given class loader
-     */
-    public static native void dumpActiveMethods(PrintStream printstream,
-						ClassLoader loader);
-
-    /**
-     * dump a list of all methods loaded by the system class loader
-     */
-    public static void dumpActiveMethods(PrintStream printstream) {
-	dumpActiveMethods(printstream, null);
-    }
-
-    /**
-     * load a method consisting of class, method, signature as dumped
-     * by dumpActiveMethods using a given loader
+     * load a method consisting of class, method, signature.
      */
     public static native void translateMethod(String clazz, 
 					String method, 
@@ -56,8 +42,7 @@ public class JIT implements Runnable {
 					ClassLoader loader);
 
     /**
-     * load a method consisting of class, method, signature as dumped
-     * by dumpActiveMethods using the system class loader
+     * load a method consisting of class, method, signature.
      */
     public static void translateMethod(String clazz, 
 					String method, 
@@ -71,17 +56,6 @@ public class JIT implements Runnable {
      * the cache.  Architecture-dependent.
      */
     public static native void flushCache();
-
-    /**
-     * Dump all active methods loaded by the system loader to a file
-     */
-    public static void dumpActiveMethods(String fname) 
-	throws IOException 
-    {
-	PrintStream p = new PrintStream(new FileOutputStream(fname));
-	dumpActiveMethods(p);
-	p.close();
-    }
 
     /**
      * load and translate from file using system classloader
@@ -167,7 +141,6 @@ public class JIT implements Runnable {
 
     public static void main(String av[]) throws IOException {
         PrintStream p = new PrintStream(new BufferedOutputStream(new FileOutputStream(av[0])));
-        dumpActiveMethods(p);
         System.exit(0);
     }
 

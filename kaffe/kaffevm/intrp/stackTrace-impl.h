@@ -21,4 +21,8 @@ struct _exceptionFrame {
 
 #define STACKTRACEFRAME(S)	((struct _exceptionFrame *)(S).frame)
 
+/* XXX Fix to work with jvmpi */
+#define EXCEPTIONFRAME(f, c)
+#define FIRSTFRAME(f, c)
+
 #endif /* __stackTrace_impl_h__ */
