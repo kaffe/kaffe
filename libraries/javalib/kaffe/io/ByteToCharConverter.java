@@ -108,26 +108,16 @@ private static ByteToCharConverter getConverterInternal ( String enc ) {
 	if (cls == noConverter) {
 		return (null);
 	}
-	else if (cls == useIconv) {
-		try {
-			return (new ByteToCharIconv (ConverterAlias.alias(enc)));
-		}
-		catch (UnsupportedEncodingException _) {
-			return (null);
-		}
+	if (cls == useIconv) {
+		return (getByteToCharIconv(ConverterAlias.alias(enc)));
 	}
 	try {
 		if (cls == null) {
 			String realenc = ConverterAlias.alias(enc);
 			if (ConverterAlias.shouldUseIconv(realenc)) {
-				try {
-					cache.put(enc, useIconv);
-					return (new ByteToCharIconv (realenc));
-				}
-				catch (UnsupportedEncodingException _) {
-					cache.put(enc, noConverter);
-					return (null);
-				}
+				ByteToCharConverter conv = getByteToCharIconv(realenc);
+				cache.put(enc, (conv != null ? useIconv : noConverter));
+				return (conv);
 			}
 			realenc = encodingRoot + ".ByteToChar" + realenc;
 			cls = Class.forName(realenc);
@@ -157,8 +147,19 @@ private static ByteToCharConverter getConverterInternal ( String enc ) {
 	}
 	catch (InstantiationException _) {
 	}
-	cache.put(enc, noConverter);
-	return (null);
+	// Finally, try iconv.
+        ByteToCharConverter conv = getByteToCharIconv(ConverterAlias.alias(enc));
+	cache.put(enc, (conv != null ? useIconv : noConverter));
+	return (conv);
+}
+
+private static ByteToCharConverter getByteToCharIconv ( String enc ) {
+	try {
+		return (new ByteToCharIconv (enc));
+	}
+	catch (UnsupportedEncodingException _) {
+		return (null);
+	}
 }
 
 public static ByteToCharConverter getConverter ( String enc ) throws UnsupportedEncodingException {
@@ -166,7 +167,7 @@ public static ByteToCharConverter getConverter ( String enc ) throws Unsupported
 	if (conv != null) {
 		return (conv);
 	}
-	return new ByteToCharIconv (enc);
+	throw new UnsupportedEncodingException(enc);
 }
 public static ByteToCharConverter getDefault() {
 	try {

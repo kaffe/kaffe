@@ -1,11 +1,8 @@
-2004-01-07  Dalibor Topic <robilad@kaffe.org>
+2004-01-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
-	* libraries/clib/net/PlainSocketImpl.c
-	[KAFFE_VMDEBUG] Merged the separate KAFFE_VMDEBUG parts
-	of the file to a single part, and added !defined(NDEBUG).
-	Fixes a compiler warning on sparc-solaris.
-
-        Reported by: Riccardo Mottola <zuse@libero.it>
+	* libraries/javalib/kaffe/io/ByteToCharConverter.java,
+	libraries/javalib/kaffe/io/CharToByteConverter.java:
+	Refined (hopefully).
 
 2004-01-06  Guilhem Lavaux <guilhem@kaffe.org>
 

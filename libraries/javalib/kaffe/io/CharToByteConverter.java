@@ -86,26 +86,16 @@ private static CharToByteConverter getConverterInternal(String enc)
 	if (cls == noConverter) {
 		return (null);
 	}
-	else if (cls == useIconv) {
-		try {
-			return (new CharToByteIconv (ConverterAlias.alias(enc)));
-		}
-		catch (UnsupportedEncodingException _) {
-			return (null);
-		}
+	if (cls == useIconv) {
+		return (getCharToByteIconv(ConverterAlias.alias(enc)));
 	}
 	try {
 		if (cls == null) {
 			String realenc = ConverterAlias.alias(enc);
 			if (ConverterAlias.shouldUseIconv(realenc)) {
-				try {
-					cache.put(enc, useIconv);
-					return (new CharToByteIconv (realenc));
-				}
-				catch (UnsupportedEncodingException _) {
-					cache.put(enc, noConverter);
-					return (null);
-				}
+				CharToByteConverter conv = getCharToByteIconv(realenc);
+				cache.put(enc, (conv != null ? useIconv : noConverter));
+				return (conv);
 			}
 			realenc = encodingRoot + ".CharToByte" + realenc;
 			cls = Class.forName(realenc);
@@ -135,8 +125,19 @@ private static CharToByteConverter getConverterInternal(String enc)
 	}
 	catch (IllegalAccessException _) {
 	}
-	cache.put(enc, noConverter);
-	return (null);
+	// Finally, try iconv.
+	CharToByteConverter conv = getCharToByteIconv(ConverterAlias.alias(enc));
+	cache.put(enc, (conv != null ? useIconv : noConverter));
+	return (conv);
+}
+
+public static CharToByteConverter getCharToByteIconv(String enc) {
+	try {
+		return (new CharToByteIconv (enc));
+	}
+	catch (UnsupportedEncodingException _) {
+		return (null);
+	}
 }
 
 public static CharToByteConverter getConverter(String enc) throws UnsupportedEncodingException {
@@ -144,7 +145,7 @@ public static CharToByteConverter getConverter(String enc) throws UnsupportedEnc
 	if (conv != null) {
 		return (conv);
 	}
-	return new CharToByteIconv (enc);
+	throw new UnsupportedEncodingException(enc);
 }
 
 public static CharToByteConverter getDefault() {
