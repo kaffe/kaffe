@@ -60,5 +60,9 @@ libtool not to create shared libraries by configuring
 --with-staticlib does not affect libltdl, whereas --disable-shared
 does.
 
+Libtool's hompage is here:
+
+    http://www.gnu.org/software/libtool/libtool.html
+
 --
 oliva
