@@ -13,7 +13,7 @@
  * Author: Archie L. Cobbs <archie@whistle.com>
  *
  * Based on an (unrestricted) C version by: Thomas Niemann <niemannt@home.com>
- * most recently sited at: http://wannabe.guru.org/alg/node21.html
+ * most recently sited at: http://www.geocities.com/Area51/Vault/3150/rbtc.htm
  */
 
 package java.util;
@@ -26,15 +26,15 @@ public class TreeMap extends AbstractMap
 		implements SortedMap, Cloneable, Serializable {
 	private static final int BLACK = 0;
 	private static final int RED = 1;
-	private static final Node NIL;
+	private final Node NIL;
 	private final Comparator c;
 	private Node insertionPoint;		// used by find() method
 	private int modCount = 0;
-	private Node root = NIL;
+	private Node root;
 	private int size = 0;
 
 	// Tree nodes look like this
-	private static class Node implements Cloneable, Map.Entry {
+	private class Node implements Cloneable, Map.Entry {
 		int color;
 		Node left;
 		Node right;
@@ -96,25 +96,22 @@ public class TreeMap extends AbstractMap
 		}
 	}
 
-	// This is the NIL "sentinel" node which is the child of all leaves
-	static {
+	public TreeMap() {
+		this(Arrays.DEFAULT_COMPARATOR);
+	}
+
+	public TreeMap(Comparator c) {
+		this.c = (c != null) ? c : Arrays.DEFAULT_COMPARATOR;
 		NIL = new Node(null, null);
 		NIL.left = NIL;
 		NIL.right = NIL;
 		NIL.parent = null;
 		NIL.color = BLACK;
-	}
-
-	public TreeMap() {
-		c = Arrays.DEFAULT_COMPARATOR;
-	}
-
-	public TreeMap(Comparator c) {
-		this.c = c;
+		root = NIL;
 	}
 
 	public TreeMap(Map m) {
-		c = Arrays.DEFAULT_COMPARATOR;
+		this(Arrays.DEFAULT_COMPARATOR);
 		for (Iterator i = m.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry e = (Map.Entry)i.next();
 			put(e.getKey(), e.getValue());
@@ -123,8 +120,7 @@ public class TreeMap extends AbstractMap
 
 	// XXX this is not linear time like it should be..
 	public TreeMap(SortedMap m) {
-		Comparator c = m.comparator();
-		this.c = (c != null) ? c : Arrays.DEFAULT_COMPARATOR;
+		this(m.comparator());
 		for (Iterator i = m.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry e = (Map.Entry)i.next();
 			put(e.getKey(), e.getValue());
@@ -322,8 +318,7 @@ public class TreeMap extends AbstractMap
 		}
 
 		// Remove y from the parent chain
-		if (x != NIL)
-			x.parent = y.parent;
+		x.parent = y.parent;
 		if (y.parent != null) {
 			if (y == y.parent.left) {
 				y.parent.left = x;
@@ -339,7 +334,7 @@ public class TreeMap extends AbstractMap
 			node.value = y.value;
 		}
 
-		if (y.color == BLACK && x != NIL) {
+		if (y.color == BLACK) {
 			deleteFixup(x);
 		}
 	}
