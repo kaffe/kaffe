@@ -58,7 +58,7 @@ Hjava_lang_Class* ThreadClass;
 Hjava_lang_Class* VMThreadClass;
 Hjava_lang_Class* ThreadGroupClass;
 
-static void firstStartThread(void*) NONRETURNING;
+static void firstStartThread(void*);
 static void runfinalizer(void);
 
 static void
