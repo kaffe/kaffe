@@ -1,3 +1,14 @@
+2003-05-11 Tony Wyatt <wyattaw@optushome.com.au>
+
+	* config/m68k/jit3-m68k.def:
+	Deleted the "restore registers" instruction from the "eprolog"
+	instruction sequence. This sequence was only executed during an
+	exception, and caused havoc when it "restored" rubbish into
+	perfectly good registers, some with return addresses in them. The
+	"restoration" was unnecessary anyway, so I have deleted it
+	altogether. JIT3 now runs as well as JIT1 on both the Amiga and
+	Debian running natively on my m68k platform.
+	
 2003-05-11 Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/net/URL.java:
