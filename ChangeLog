@@ -1,3 +1,13 @@
+2001-08-30  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/java/io/BufferedReader.java (fillOutBuffer):
+	defers fields update to avoid inconsistency on exception.
+	Reported by Oskar Sandberg <oskar@freenetproject.org>.
+
+	* libraries/javalib/java/math/BigInteger.java (hashCode): return
+	consistant hashcode values.
+	Patch by Oskar Sandberg <oskar@freenetproject.org>.
+
 2001-08-28  Edouard G. Parmelan  <egp@free.fr>
 
 	* config/powerpc/netbsd1/config.frag: handle --with-setjmp=glibc
