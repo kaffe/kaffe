@@ -35,6 +35,7 @@ typedef struct SystemCallInterface {
 	int	(*_fstat)(int, struct stat*);
 	int	(*_stat)(const char*, struct stat*);
 	int	(*_ftruncate)(int, off_t);
+	int	(*_fsync)(int);
 
 	int	(*_mkdir)(const char*, int);
 	int	(*_rmdir)(const char*);
@@ -89,6 +90,7 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
 #define	KFSTAT(A,B)	(*Kaffe_SystemCallInterface._fstat)(A,B)
 #define	KSTAT(A,B)	(*Kaffe_SystemCallInterface._stat)(A,B)
 #define KFTRUNCATE(A,B) (*Kaffe_SystemCallInterface._ftruncate)(A,B)
+#define KFSYNC(A)       (*Kaffe_SystemCallInterface._fsync)(A)
 
 #define	KMKDIR(A,B)	(*Kaffe_SystemCallInterface._mkdir)(A,B)
 #define	KRMDIR(A)	(*Kaffe_SystemCallInterface._rmdir)(A)

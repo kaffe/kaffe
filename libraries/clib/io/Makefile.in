@@ -248,9 +248,6 @@ libio_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "
 libio_la_SOURCES = \
 	FileDescriptor.c \
 	File.c \
-	FileInputStream.c \
-	FileOutputStream.c \
-	RandomAccessFile.c \
 	AudioPlayer.c
 
 
@@ -264,18 +261,14 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(native_LTLIBRARIES)
 
 libio_la_LIBADD =
-am_libio_la_OBJECTS = FileDescriptor.lo File.lo FileInputStream.lo \
-	FileOutputStream.lo RandomAccessFile.lo AudioPlayer.lo
+am_libio_la_OBJECTS = FileDescriptor.lo File.lo AudioPlayer.lo
 libio_la_OBJECTS = $(am_libio_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/AudioPlayer.Plo ./$(DEPDIR)/File.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/FileDescriptor.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/FileInputStream.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/FileOutputStream.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/RandomAccessFile.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/FileDescriptor.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -335,9 +328,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AudioPlayer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/File.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FileDescriptor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FileInputStream.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FileOutputStream.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RandomAccessFile.Plo@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)

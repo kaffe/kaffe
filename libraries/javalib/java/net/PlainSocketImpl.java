@@ -13,6 +13,7 @@ package java.net;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.FileDescriptor;
 
 /* XXX: This class should not be public!
  * It's public right now cause it's accessed from kaffe.net.
@@ -34,6 +35,7 @@ static {
 public PlainSocketImpl() {
         timeout = -1; // As defined in jsyscall.h
 	blocking = true;
+	fd = new FileDescriptor();
 }
 
 protected void accept(SocketImpl s) throws IOException {
@@ -67,6 +69,8 @@ protected void connect(InetAddress address, int port) throws IOException {
 protected void connect(SocketAddress address, int timeout) throws IOException {
         InetSocketAddress iaddr = (InetSocketAddress)address;
 	
+	if (timeout == 0)
+	    timeout = -1;
 	socketConnect(iaddr.getAddress(), iaddr.getPort(), timeout);
 }
 
@@ -222,6 +226,10 @@ protected void write(byte[] buf, int offset, int len) throws IOException {
 	if (closed)
 		throw new IOException("socket closed");
 	socketWrite(buf, offset, len);
+}
+
+protected void sendUrgentData(int data) throws IOException {
+	// TODO: replace with a real function.
 }
 
 public native void socketSetOption(int option, Object data) throws SocketException;

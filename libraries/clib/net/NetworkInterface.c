@@ -21,6 +21,7 @@
 #include "config-hacks.h"
 #include <native.h>
 #include "java_net_NetworkInterface.h"
+#include "java_util_Vector.h"
 #include "nets.h"
 #include <arpa/inet.h>
 #include <jsyscall.h>
@@ -28,109 +29,125 @@
 
 #include <ifaddrs.h>
 
-struct Hkaffe_util_Ptr *
-java_net_NetworkInterface_detectInterfaces(void)
+static struct ifaddrs*
+detectInterfaces(void)
 {
-	struct Hkaffe_util_Ptr *retval = NULL;
-	struct ifaddrs *ifa;
-	errorInfo einfo;
-
-	if( getifaddrs(&ifa) == 0 )
+  struct Hkaffe_util_Ptr *retval = NULL;
+  struct ifaddrs *ifa;
+  errorInfo einfo;
+  
+  if( getifaddrs(&ifa) == 0 )
+    {
+      retval = (struct Hkaffe_util_Ptr *)ifa;
+    }
+  else
+    {
+      switch( errno )
 	{
-		retval = (struct Hkaffe_util_Ptr *)ifa;
+	case ENOMEM:
+	  postOutOfMemory(&einfo);
+	  break;
+	case ENOSYS:
+	  postExceptionMessage(
+			       &einfo,
+			       "kaffe.util.NotImplemented",
+			       "OS doesn't support getifaddrs()");
+	  break;
+	default:
+	  postExceptionMessage(
+			       &einfo,
+			       "java.net.SocketException",
+			       "%s",
+			       SYS_ERROR(errno));
+	  break;
 	}
-	else
-	{
-		switch( errno )
-		{
-		case ENOMEM:
-			postOutOfMemory(&einfo);
-			break;
-		case ENOSYS:
-			postExceptionMessage(
-				&einfo,
-				"kaffe.util.NotImplemented",
-				"OS doesn't support getifaddrs()");
-			break;
-		default:
-			postExceptionMessage(
-				&einfo,
-				"java.net.SocketException",
-				"%s",
-				SYS_ERROR(errno));
-			break;
-		}
-		throwError(&einfo);
-	}
-	return( retval );
+      throwError(&einfo);
+    }
+  return( ifa );
 }
 
-void
-java_net_NetworkInterface_freeInterfaces(struct Hkaffe_util_Ptr *jifa)
+static void
+freeInterfaces(struct ifaddrs* jifa)
 {
-	if( jifa )
-	{
-		freeifaddrs((struct ifaddrs *)jifa);
-	}
+  if( jifa )
+    {
+      freeifaddrs(jifa);
+    }
 }
 
-struct Hkaffe_util_Ptr *
-java_net_NetworkInterface_getNext(struct Hkaffe_util_Ptr *jifa)
+static struct Hjava_net_InetAddress *
+getInetAddress(struct ifaddrs *ifa)
 {
-	struct Hkaffe_util_Ptr *retval = NULL;
-	
-	if( jifa )
+  struct Hjava_lang_String *address_string = NULL;
+  struct Hjava_net_InetAddress *retval = NULL;
+
+  if( ifa )
+    {
+      struct sockaddr *sa;
+      
+      if( (sa = ifa->ifa_addr) )
 	{
-		struct ifaddrs *ifa = (struct ifaddrs *)jifa;
-		
-		retval = (struct Hkaffe_util_Ptr *)ifa->ifa_next;
+#define NII_MAX_ADDRESS_SIZE 128
+	  char addr[NII_MAX_ADDRESS_SIZE];
+	  
+	  switch( sa->sa_family )
+	    {
+	    case AF_INET:
+	      inet_ntop(sa->sa_family,
+			&((struct sockaddr_in *)sa)->sin_addr,
+			addr,
+			NII_MAX_ADDRESS_SIZE);
+	      address_string = stringC2Java(addr);
+	      break;
+#if defined(AF_INET6)
+	    case AF_INET6:
+	      inet_ntop(sa->sa_family,
+			&((struct sockaddr_in6 *)sa)->sin6_addr,
+			addr,
+			NII_MAX_ADDRESS_SIZE);
+	      address_string = stringC2Java(addr);
+#endif
+	    default:
+	      /* XXX What to do? */
+	      break;
+	    }
 	}
-	return( retval );
+    }
+  retval = (struct Hjava_net_InetAddress *)do_execute_java_class_method
+    ("java/net/InetAddress", 0, "getByName", "(Ljava/lang/String;)Ljava/net/InetAddress;",
+     address_string).l;
+  return( retval );
 }
 
-struct Hjava_lang_String *
-java_net_NetworkInterface_getName(struct Hkaffe_util_Ptr *jifa)
+struct Hjava_util_Vector*
+java_net_NetworkInterface_getRealNetworkInterfaces(void)
 {
-	struct Hjava_lang_String *retval = NULL;
+  struct Hjava_util_Vector* vector;
+  struct ifaddrs* addrs;
+  struct ifaddrs* ifa; 
 
-	if( jifa )
-	{
-		struct ifaddrs *ifa = (struct ifaddrs *)jifa;
-		
-		retval = stringC2Java(ifa->ifa_name);
-	}
-	return( retval );
-}
+  vector =
+    (struct Hjava_util_Vector*)execute_java_constructor("java/util/Vector", 0, 0, "()V");
+  
+  ifa = addrs = detectInterfaces();
+  while (ifa != NULL)
+    {
+      struct Hjava_lang_String* iface_name =
+	stringC2Java(ifa->ifa_name);
+      struct Hjava_net_InetAddress* addr;
+      
+      addr = getInetAddress(ifa);
 
-struct Hjava_lang_String *
-java_net_NetworkInterface_getIPv4Address(struct Hkaffe_util_Ptr *jifa)
-{
-	struct Hjava_lang_String *retval = NULL;
+      if (addr != NULL)
+	do_execute_java_method
+	  (vector, "add", "(Ljava/lang/Object;)Z", 0, 0,
+	   execute_java_constructor("java/net/NetworkInterface", 0, 0,
+		   "(Ljava/lang/String;Ljava/net/InetAddress;)V",
+		    iface_name, addr));
+      
+      ifa = ifa->ifa_next;
+    }
 
-	if( jifa )
-	{
-		struct ifaddrs *ifa = (struct ifaddrs *)jifa;
-		struct sockaddr *sa;
-
-		if( (sa = ifa->ifa_addr) )
-		{
-			char addr[20];
-			
-			switch( sa->sa_family )
-			{
-			case AF_INET:
-				inet_ntop(sa->sa_family,
-					  &((struct sockaddr_in *)sa)->
-					  sin_addr,
-					  addr,
-					  20);
-				retval = stringC2Java(addr);
-				break;
-			default:
-				/* XXX What to do? */
-				break;
-			}
-		}
-	}
-	return( retval );
+  freeInterfaces(addrs);
+  return vector;
 }

@@ -1,3 +1,125 @@
+2003-08-30  Guilhem Lavaux <guilhem@kaffe.org>
+
+	IO/net subsystem merging from Classpath. KJC's compile fix for next
+	check in.
+
+	* configure.in: Added detection of fsync and ftruncate.
+	
+	* include/Makefile.am: removed older kaffe's include files about
+	net subsystem. NOINSTALL_DERIVED_HDRS keep java_net_PlainSocketImpl.h,
+	java_net_PlainDatagramSocketImpl.h, java_net_InetAddress.h,
+	
+	* include/jsyscall.h:
+	(KFSYNC, _fsync) Added a new protected syscall to synchronize files.
+	
+	* kaffe/kaffevm/systems/unix-jthreads/syscalls.c:
+	(jthreadedFSync) added.
+
+	* libraries/clib/io/FileInputStream.c,
+	libraries/clib/io/FileOutputStream.c: removed.
+
+	* libraries/clib/io/File.c, libraries/clib/io/FileDescriptor.c,
+	libraries/clib/io/RandomAccessFile.c:
+	rewritten to match Classpath's native interface.
+
+	* libraries/clib/io/Makefile.am:
+	(libio_la_SOURCES) Removed FileInputStream.c, FileOutputStream.c,
+	RandomAccessFile.c
+
+	* libraries/clib/native/ClassLoader.c:
+	(java_lang_ClassLoader_defineClass0) check whether length==0 and
+	throws InvalidClassError (truncated class) in that case.
+
+	* libraries/clib/native/UNIXProcess.c:
+	(kaffe_lang_UNIXProcess_forkAndExec) Changed "fd" to "nativeFd" for
+	catched IO filedescriptors.
+	
+	* libraries/clib/net/Makefile.am:
+	(libnet_la_SOURCES) removed NetworkInterfaceImpl.c
+
+	* libraries/clib/net/InetAddressImpl.c: rewritten to match classpath's
+	native interface.
+
+	* libraries/clib/net/NetworkInterfaceImpl.c: removed.
+
+	* libraries/clib/net/NetworkInterface.c: rewritten.
+
+	* libraries/clib/net/PlainDatagramSocketImpl.c,
+	libraries/clib/net/PlainSocketImpl.c: adapted to classpath
+	structure. Kaffe's implementation is kept but external references have
+	changed.
+
+	* config/config.h.in, configure, include/Makefile.in,
+	libraries/clib/io/Makefile.in, libraries/clib/net/Makefile.in,
+	libraries/javalib/Klasses.jar.bootstrap,
+	libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	regenerated.
+
+	* libraries/javalib/bootstrap.classlist: Removed
+	java/net/NativeInetAddressImpl, java/net/InetAddressImpl.
+	Added gnu/java/io/PlatformHelper.
+	
+	* libraries/javalib/essential.files: Removed java/net/InetAddressImpl,
+	java/net/NativeInetAddressImpl.
+
+	* libraries/javalib/java/io/ByteArrayInputStream.java,
+	libraries/javalib/java/io/ByteArrayOutputStream.java,
+	libraries/javalib/java/io/Externalizable.java,
+	libraries/javalib/java/io/File.java,
+	libraries/javalib/java/io/FileDescriptor.java,
+	libraries/javalib/java/io/FileInputStream.java,
+	libraries/javalib/java/io/FileOutputStream.java,
+	libraries/javalib/java/io/FileReader.java,
+	libraries/javalib/java/io/FileWriter.java,
+	libraries/javalib/java/io/InputStream.java,
+	libraries/javalib/java/io/ObjectInputStream.java,
+	libraries/javalib/java/io/OutputStream.java,
+	libraries/javalib/java/io/PipedInputStream.java,
+	libraries/javalib/java/io/PipedOutputStream.java,
+	libraries/javalib/java/io/PipedReader.java,
+	libraries/javalib/java/io/PipedWriter.java,
+	libraries/javalib/java/io/RandomAccessFile.java,
+	libraries/javalib/java/io/StringBufferInputStream.java,
+	libraries/javalib/java/io/StringReader.java,
+	libraries/javalib/java/io/StringWriter.java,
+	libraries/javalib/java/net/DatagramPacket.java
+	libraries/javalib/java/net/DatagramSocketImpl.java
+	libraries/javalib/java/net/DatagramSocketImplFactory.java
+	libraries/javalib/java/net/InetAddress.java
+	libraries/javalib/java/net/MulticastSocket.java
+	libraries/javalib/java/net/DatagramSocket.java
+	libraries/javalib/java/net/NetworkInterface.java,
+	libraries/javalib/java/net/ServerSocket.java,
+	libraries/javalib/java/net/Socket.java,
+	libraries/javalib/java/net/SocketImpl.java,
+	libraries/javalib/java/net/SocketImplFactory.java,
+	libraries/javalib/java/net/SocketInputStream.java,
+	libraries/javalib/java/net/SocketOptions.java,
+	libraries/javalib/java/net/SocketOutputStream.java,
+	libraries/javalib/java/net/SocketPermission.java:
+	Imported from GNU Classpath + fixes to pass regression tests.
+	
+	* libraries/javalib/java/net/PlainSocketImpl.java:
+	(sendUrgentData) Added dummy method.
+	(connect) Added timeout conversion for kaffe.
+
+	* libraries/javalib/java/net/PlainDatagramSocketImpl.java:
+	(sendUrgentData) Added dummy method.
+	(setTimeToLive) changed the signature to match Java spec.
+	(PlainDatagramSocketImpl) Construct fd.
+	
+	
+	* libraries/javalib/java/net/DNSJavaInetAddressImpl.java,
+	libraries/javalib/java/net/InetAddressImpl.java,
+	libraries/javalib/java/net/NativeInetAddressImpl.java
+	libraries/javalib/java/net/NetworkInterfaceImpl.java: removed.
+
+	* libraries/javalib/profiles/default/core.files: Removed
+	java/net/NetworkInterfaceImpl, kaffe/net/DefaultSocketImplFactory,
+	kaffe/net/DefaultDatagramSocketImplFactory.
+
+	* libraries/javalib/profiles/default/allatonce/all.files: Regenerated.
+
 2003-08-29  Jim Pick  <jim@kaffe.org>
 
 	* libraries/javalib/java/io/RandomAccessFile.java:
@@ -63,6 +185,27 @@
 
 	* libraries/javalib/java/text/DecimalFormat.java:
 	Added import java.util.Currency to fix compile.
+
+2003-08-28  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/util/Currency.java: new class.
+	
+	* libraries/javalib/java/text/DecimalFormatSymbols.java:
+	(locale) new field.
+	(readObject) check for version number and fix fields accordingly.
+	(getCurrency) new method.
+	(setCurrency) new method.
+
+	* libraries/javalib/java/text/NumberFormat.java:
+	(getCurrency) new method.
+	(setCurrency) new method. 
+
+	* libraries/javalib/java/text/DecimalFormat.java:
+	(getCurrency) new method.
+	(setCurrency) new method. 
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	regenerated.
 
 2003-08-28  Guilhem Lavaux <guilhem@kaffe.org>
 

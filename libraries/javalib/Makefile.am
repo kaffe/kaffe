@@ -219,7 +219,8 @@ gnu_java_awt_SRCS = \
 gnu_java_io_SRCS = \
 	gnu/java/io/ASN1ParsingException.java \
 	gnu/java/io/NullOutputStream.java \
-	gnu/java/io/ObjectIdentityWrapper.java
+	gnu/java/io/ObjectIdentityWrapper.java \
+	gnu/java/io/PlatformHelper.java
 gnu_java_lang_SRCS = \
 	gnu/java/lang/CharData.java
 gnu_java_lang_reflect_SRCS = \
@@ -1124,20 +1125,16 @@ java_net_SRCS = \
 	java/net/DatagramSocketImplFactory.java \
 	java/net/DatagramSocketImpl.java \
 	java/net/DatagramSocket.java \
-	java/net/DNSJavaInetAddressImpl.java \
 	java/net/FileNameMap.java \
 	java/net/HttpURLConnection.java \
 	java/net/Inet4Address.java \
 	java/net/Inet6Address.java \
-	java/net/InetAddressImpl.java \
 	java/net/InetAddress.java \
 	java/net/InetSocketAddress.java \
 	java/net/JarURLConnection.java \
 	java/net/MalformedURLException.java \
 	java/net/MulticastSocket.java \
-	java/net/NativeInetAddressImpl.java \
 	java/net/NetPermission.java \
-	java/net/NetworkInterfaceImpl.java \
 	java/net/NetworkInterface.java \
 	java/net/NoRouteToHostException.java \
 	java/net/PasswordAuthentication.java \
@@ -2027,9 +2024,7 @@ kaffe_management_SRCS = \
 	kaffe/management/JIT.java \
 	kaffe/management/XProfiler.java
 kaffe_net_SRCS = \
-	kaffe/net/DefaultDatagramSocketImplFactory.java \
 	kaffe/net/DefaultFileNameMap.java \
-	kaffe/net/DefaultSocketImplFactory.java \
 	kaffe/net/DefaultStreamMap.java \
 	kaffe/net/DefaultURLStreamHandlerFactory.java \
 	kaffe/net/StreamMap.java

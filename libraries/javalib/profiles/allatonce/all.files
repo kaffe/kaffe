@@ -373,7 +373,6 @@ java/net/InetSocketAddress.java
 java/net/JarURLConnection.java
 java/net/MulticastSocket.java
 java/net/NetworkInterface.java
-java/net/NetworkInterfaceImpl.java
 java/net/NoRouteToHostException.java
 java/net/PasswordAuthentication.java
 java/net/PlainDatagramSocketImpl.java
@@ -675,8 +674,6 @@ kaffe/management/Classpath.java
 kaffe/management/Debug.java
 kaffe/management/JIT.java
 kaffe/management/XProfiler.java
-kaffe/net/DefaultDatagramSocketImplFactory.java
-kaffe/net/DefaultSocketImplFactory.java
 kaffe/security/provider/Kaffe.java
 kaffe/security/provider/MD2.java
 kaffe/security/provider/MD4.java

@@ -11,6 +11,7 @@
 package java.net;
 
 import java.io.IOException;
+import java.io.FileDescriptor;
 
 /* XXX: This class should not be public!
  * It's public right now cause it's accessed from kaffe.net.
@@ -26,6 +27,7 @@ static {
 
 public PlainDatagramSocketImpl() {
 	timeout = -1; // = NOTIMEOUT
+	fd = new FileDescriptor();
 }
 
 protected void create() throws SocketException {
@@ -95,14 +97,19 @@ protected void finalize() throws Throwable {
 	super.finalize();
 }
 
-protected void setTimeToLive(byte ttl) throws IOException {
-	setTTL(ttl);
+protected void setTimeToLive(int ttl) throws IOException {
+	setTTL((byte)ttl);
 }
 
-protected byte getTimeToLive() throws IOException {
+protected int getTimeToLive() throws IOException {
 	return getTTL();
 }
 
+protected void sendUrgentData(int data) throws IOException {
+	// TODO: replace that dummy function with a real one.
+}
+
+protected native int peekData(DatagramPacket p) throws IOException;
 protected native void bind(int lport, InetAddress laddr) throws SocketException;
 protected native void send(DatagramPacket p) throws IOException;
 protected native int peek(InetAddress i) throws IOException;

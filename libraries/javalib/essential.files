@@ -2,6 +2,7 @@ gnu/classpath/Configuration.java
 gnu/java/lang/CharData.java
 gnu/java/lang/reflect/TypeSignature.java
 gnu/java/util/EmptyEnumeration.java
+gnu/java/io/PlatformHelper.java
 gnu/regexp/CharIndexed.java
 gnu/regexp/CharIndexedCharArray.java
 gnu/regexp/CharIndexedInputStream.java
@@ -170,9 +171,7 @@ java/net/FileNameMap.java
 java/net/InetAddress.java
 java/net/Inet4Address.java
 java/net/Inet6Address.java
-java/net/InetAddressImpl.java
 java/net/MalformedURLException.java
-java/net/NativeInetAddressImpl.java
 java/net/NetPermission.java
 java/net/SocketPermission.java
 java/net/UnknownHostException.java

@@ -243,8 +243,8 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env,
 		jobject fdi = (*env)->GetObjectField(env, proc, pfd_field);
 		jfieldID fd_field = (*env)->GetFieldID(env, 
 					(*env)->GetObjectClass(env, fdi), 
-					"fd", "I");
-		(*env)->SetIntField(env, fdi, fd_field, ioes[i]);
+					"nativeFd", "J");
+		(*env)->SetLongField(env, fdi, fd_field, ioes[i]);
 	}
 
 	return (0);

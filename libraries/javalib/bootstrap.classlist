@@ -235,8 +235,6 @@ java/text/ChoiceFormat.class
 java/io/RandomAccessFile.class
 java/net/DatagramPacket.class
 java/net/InetAddress.class
-java/net/InetAddressImpl.class
-java/net/NativeInetAddressImpl.class
 java/net/InetSocketAddress.class
 java/net/NetworkInterface.class
 java/net/NetworkInterfaceImpl.class

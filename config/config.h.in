@@ -100,6 +100,9 @@
 /* Define to 1 if you have the `ftime' function. */
 #undef HAVE_FTIME
 
+/* Define to 1 if you have the `ftruncate' function. */
+#undef HAVE_FTRUNCATE
+
 /* Enable GCJ support. */
 #undef HAVE_GCJ_SUPPORT
 

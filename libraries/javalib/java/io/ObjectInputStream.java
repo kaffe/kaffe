@@ -1370,7 +1370,8 @@ public class ObjectInputStream extends InputStream
       }
     else
       {
-	throw new EOFException ("Attempt to read primitive data, but no data block is active.");
+	throw new EOFException ("Attempt to read primitive data, but no data block is active. Marker is 0x" +
+				Integer.toHexString((int)marker));
       }
 
     if (this.blockData.length < this.blockDataBytes)

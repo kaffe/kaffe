@@ -13,9 +13,6 @@ libio_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "
 libio_la_SOURCES = \
 	FileDescriptor.c \
 	File.c \
-	FileInputStream.c \
-	FileOutputStream.c \
-	RandomAccessFile.c \
 	AudioPlayer.c
 
 CLEANFILES = so_locations

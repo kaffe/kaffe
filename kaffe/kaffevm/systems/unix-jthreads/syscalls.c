@@ -118,6 +118,7 @@ jthreadedStat(const char* path, struct stat *sb)
 static int
 jthreadedFTruncate(int fd, off_t new_size)
 {
+#ifdef HAVE_FTRUNCATE
 	int rc = 0;
 	jthread_spinon(0);
 	if (ftruncate(fd, new_size) == -1) {
@@ -125,6 +126,25 @@ jthreadedFTruncate(int fd, off_t new_size)
 	}
 	jthread_spinoff(0);
 	return (rc);
+#else
+	return ENOTSUP;
+#endif
+}
+
+static int
+jthreadedFSync(int fd)
+{
+#ifdef HAVE_FSYNC
+	int rc = 0;
+	jthread_spinon(0);
+	if (fsync(fd) == -1) {
+		rc = errno;
+	}
+	jthread_spinoff(0);
+	return (rc);
+#else
+	return ENOTSUP;
+#endif
 }
 
 static int
@@ -385,6 +405,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         jthreadedFStat,
         jthreadedStat,
         jthreadedFTruncate,
+        jthreadedFSync,
         jthreadedMkdir,
         jthreadedRmdir,
         jthreadedRename,
