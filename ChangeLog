@@ -1,3 +1,12 @@
+Mon Feb  8 22:00:26 1999  Alan L. Batongbacal <alanlb@access.rrinc.com>
+
+	* FAQ/FAQ.BeOS, config/i386/beos/md.c, config/i386/beos/md.h
+	kaffe/kaffevm/systems/beos-native/bjthread.c
+	kaffe/kaffevm/systems/beos-native/jthread.h
+	kaffe/kaffevm/systems/beos-native/signal.c
+	kaffe/kaffevm/systems/beos-native/syscalls.c: track latest
+	changes to jsyscall interface.
+
 Mon Feb  8 20:08:25 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* ltconfig, ltmain.sh: update from libtool, improved inter-library

@@ -284,6 +284,4 @@ void jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
 void jcondvar_signal(jcondvar *cv, jmutex *lock);
 void jcondvar_broadcast(jcondvar *cv, jmutex *lock);
 
-extern void catchSignal(int sig, void* handler);
-
 #endif

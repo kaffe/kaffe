@@ -20,7 +20,7 @@ as there is a known problem with building shared libs on R4 (yes, I
 realize that the fix is documented in the R4 release notes, but I'll
 let someone else muck with the Makefiles accordingly).
 
-As of 27 January 1999, Kaffe has not been built or tested with AWT at all.
+As of 08 February 1999, Kaffe has not been built or tested with AWT at all.
 Also, the following entry points in the jthread interface have been stubbed
 but not fleshed out:
 
@@ -28,6 +28,12 @@ but not fleshed out:
 	jthread_unsuspendall
 	jthread_spinon
 	jthread_spinoff
+
+Unfortunately, although BeOS exposes the functions acquire_spinlock() and
+release_spinlock() to user programs, it doesn't do the same for the crucial
+disable_interrupts() and restore_interrupts() functions, making spinlocks
+unusable from user programs.  A feature request sent to Be dev support
+to address this deficiency has been declined :(
 
 KNOWN PROBLEMS
 ==============
@@ -42,21 +48,16 @@ that can be successfully created will be somewhat less than MAX_THREADS.
 
 The following tests in the regression test suite currently fail:
 
+	Alias:			throws NullPointerException
+	CLTestConc:		apparent deadlock*
+	ExecTest:		requires fork/execvp (incomp. with Be threads)
+	ProcessTest:		requires fork/execvp (incomp. with Be threads)
+	SoTimeout:		blocks in server-read
 	ThreadInterrupt:	apparent deadlock*
-	UncaughtException:	SEGV in callMethodV**
-	UDPTest:		SEGV in find_directory
-	ProcessClassTest:	SEGV in callMethodV**
-	ProcessClassInst:	SEGV in callMethodA**
-	ProcessTest:		requires execvp (UNIXism)
-	ExecTest:		requires waitpid/kill (UNIXism)
+	UDPTest:		throws ExceptionInInitializerError
 
-*  Probably owing to a defective jcondvar implementation on my part.
-   I'm looking into it.
-
-** The segmentation violations in callMethodV and callMethodA may be
-   due to something goofy with sysdepMethodCall.  I'm not particularly
-   familiar with i386 assembly language and gcc internals, so I'll
-   have to leave it to someone else to figure these out.
+*    Probably owing to a defective jcondvar implementation on my part.
+     I'm looking into it.
 
 REFERENCES
 ==========
@@ -66,3 +67,4 @@ REFERENCES
 REV HISTORY
 ===========
 27 Jan 99 -- Submitted for inclusion into Kaffe, alanlb@cs.vt.edu
+08 Feb 99 -- Fixed various segmentation violations

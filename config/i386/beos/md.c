@@ -9,14 +9,3 @@
  * of this file. 
  */
 
-#include <stdlib.h>
-#include <errno.h>
-#include "config.h"
-
-/* This is the faked getsockopt for BeOS R4 */
-int
-getsockopt(int s, int level, int optname, void* optval, int *optlen)
-{
-	errno = EOPNOTSUPP;
-	return -1;
-}

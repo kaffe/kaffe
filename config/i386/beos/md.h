@@ -27,11 +27,6 @@
  */
 #define MAINSTACKSIZE	(220*1024)
 
-/*
- * BeOS R4's sockets implementation doesn't provide getsockopt()
- */
-int getsockopt(int,int,int,void*,int*);
-
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

@@ -66,30 +66,6 @@ static void (*onstop)(void);		/* call when a thread is stopped */
 static int  max_priority;		/* maximum supported priority */
 static int  min_priority;		/* minimum supported priority */
 
-/*
- * This is gross: ordinarily we'd include KernelExport.h to get the
- * types for cpu_status and prototypes for the interrupt and spinlock
- * stuff, but Kaffe defines dprintf and kprintf, both of which are
- * prototyped in KernelExport.h.
- */
-#if !defined(_KERNEL_EXPORT_H)
-/* Where the heck are these defined?
-typedef ulong cpu_status;
-extern _IMPEXP_KERNEL cpu_status disable_interrupts();
-extern _IMPEXP_KERNEL void       restore_interrupts(cpu_status);
-*/
-
-typedef vlong spinlock;
-extern _IMPEXP_KERNEL void       acquire_spinlock(spinlock*);
-extern _IMPEXP_KERNEL void       release_spinlock(spinlock*);
-#endif
-
-/*
- * BeOS' interrupt management routines pass a cpu_status between them.
- * Will allocating it statically here work for multiprocessors?
- */
-/* static cpu_status my_cpu_status; */
-
 /* this is where the cookies are kept */
 per_thread_info_t*	per_thread_info;
 static area_id		pti_area;
@@ -103,10 +79,6 @@ static area_id		pti_area;
  *
  * Functions related to interrupt handling
  *
- */
-
-/*
- * Woo-hoo!  BeOS has spinlocks and interrupt enable/disable functions.
  */
 
 /*
@@ -133,13 +105,7 @@ jthread_unsuspendall(void)
 void 
 jthread_spinon(void *arg)
 {
-/*
-	cpu_status cstat;
-
-	cstat = disable_interrupts();
-	acquire_spinlock((spinlock*)arg);
-	restore_interrupts(cstat);
-*/
+	/* Unimplemented */
 }
 
 /*
@@ -148,13 +114,7 @@ jthread_spinon(void *arg)
 void 
 jthread_spinoff(void *arg)
 {
-/*
-	cpu_status cstat;
-
-	cstat = disable_interrupts();
-	release_spinlock((spinlock*)arg);
-	restore_interrupts(cstat);
-*/
+	/* Unimplemented */
 }
 
 /*
@@ -464,6 +424,16 @@ DBG(JTHREAD,
 	dprintf("starting thread %p\n", tid); 
     )
 	acquire_sem(threadLock);
+
+	/* GROSS HACK ALERT -- On R4, child threads don't inherit the
+	 * spawning thread's signal handlers!
+	 */
+
+	initExceptions();   /* from ../../exceptions.c */
+
+	/* END OF GROSS HACK
+	 */
+
 	signal(STOP_SIGNAL, deathcallback);
 	tid->stop_pending = FALSE;
 	SET_JTHREAD(tid);

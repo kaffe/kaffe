@@ -143,3 +143,16 @@ catchSignal(int sig, void* handler)
 	sigaddset(&nsig, sig);
 	sigprocmask(SIG_UNBLOCK, &nsig, 0);
 }
+
+/*
+ * we don't really block/unblock any signals here
+ */
+void
+blockAsyncSignals(void)
+{
+}
+
+void
+unblockAsyncSignals(void)
+{
+}
