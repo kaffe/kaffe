@@ -45,6 +45,7 @@ static int inflate_dynamic(inflateInfo*);
 static int inflate_block(inflateInfo*, int*);
 static int huft_free(huft*);
 static int inflate(inflateInfo*);
+static int huft_build(inflateInfo* pG, unsigned* b, unsigned n, unsigned s, uint16* d, uint16* e, huft** t, int* m);
 
 /* Tables for deflate from PKZIP's appnote.txt. */
 static unsigned border[] = {    /* Order of the bit length code lengths */
@@ -546,9 +547,7 @@ inflate_new(void)
 int
 inflate_oneshot(uint8* ibuf, int ilen, uint8* obuf, int olen)
 {
-	int e;                /* last block flag */
 	int r;                /* result code */
-	unsigned h;           /* maximum huft's malloc'ed */
 	inflateInfo* pG;
 
 	pG = inflate_new();
@@ -621,6 +620,7 @@ inflate_free(inflateInfo* pG)
 #define BMAX 16         /* maximum bit length of any code (16 for explode) */
 #define N_MAX 288       /* maximum number of codes in any set */
 
+static
 int
 huft_build(inflateInfo* pG, unsigned* b, unsigned n, unsigned s, uint16* d, uint16* e, huft** t, int* m)
 {

@@ -422,7 +422,6 @@ discoverClasspath(char* home)
 int
 addClasspath(char* cp)
 {
-	int i;
 	classpathEntry* ptr;
 	classpathEntry* lptr;
 

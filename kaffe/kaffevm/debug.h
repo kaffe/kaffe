@@ -152,6 +152,8 @@ void dbgSetMaskStr(char *mask_str);
 /* XXX: change dprintf to kaffe_dprintf and get rid of the macro */
 # define dprintf       kaffe_dprintf
 
+extern int kaffe_dprintf(const char *fmt, ...);
+
 #else	/* !defined(KAFFEH) */
 
 /* --- give some simple macros for debugging kaffeh */

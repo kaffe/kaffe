@@ -32,6 +32,7 @@
 #define	OBJECTCLASSSIG	"Ljava/lang/Object;"
 
 void initBaseClasses(void);
+void initialiseKaffe(void);
 
 extern struct Hjava_lang_Class*	ClassClass;
 extern struct Hjava_lang_Class*	ObjectClass;

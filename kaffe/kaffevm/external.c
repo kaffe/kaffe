@@ -62,6 +62,7 @@ static struct {
 char* libraryPath = "";
 
 void* loadNativeLibrarySym(char*);
+jint Kaffe_JNI_native(Method*);
 
 /*
  * Error stub function.  Point unresolved link errors here to avoid
@@ -138,7 +139,6 @@ int
 loadNativeLibrary(char* lib)
 {
 	int i;
-	int j;
 
 	/* Find a library handle.  If we find the library has already
 	 * been loaded, don't bother to get it again, just increase the

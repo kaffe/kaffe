@@ -36,8 +36,6 @@ Hjava_lang_Class* types[MAXTYPES];
 void
 initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 {
-	void* mem;
-
 	(*class) = newClass();
 	(*class)->dtable = _PRIMITIVE_DTABLE;
 	(*class)->name = makeUtf8Const(name, -1);

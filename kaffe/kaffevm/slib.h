@@ -30,6 +30,7 @@ char* dlerror(void);
 #define	LIBRARYFUNCTION(FUNC, SYM)					\
 	{								\
 		int i;							\
+		FUNC = 0;						\
 		for (i = 0; i < MAXLIBS && libHandle[i].ref > 0; i++) {	\
 			FUNC = dlsym(libHandle[i].desc, SYM);		\
 			if (FUNC != 0) {				\
@@ -102,6 +103,7 @@ char* dlerror(void);
 #define LIBRARYFUNCTION(FUNC, SYM)					\
 	{								\
 		int i;							\
+		FUNC = 0;						\
 		for (i = 0; i < MAXLIBS && libHandle[i].ref > 0; i++) {	\
 			FUNC = GetProcAddress(libHandle[i].desc, SYM);	\
 			if (FUNC != 0) {				\

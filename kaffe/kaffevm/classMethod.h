@@ -274,8 +274,11 @@ Hjava_lang_Class*	getClassFromSignature(char*, Hjava_lang_ClassLoader*);
 void			finishFields(Hjava_lang_Class*);
 Method*			findMethodFromPC(uintp);
 
+void			registerClass(classEntry* entry);
+
 Utf8Const*		makeUtf8ConstFixed(char*, int);
 Utf8Const*		makeUtf8Const(char*, int);
+int32			hashUtf8String(char*, int);
 
 extern Utf8Const* init_name;		/* "<clinit>" */
 extern Utf8Const* constructor_name;	/* "<init>" */

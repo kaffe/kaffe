@@ -34,6 +34,7 @@
 #include "thread.h"
 #include "baseClasses.h"
 #include "itypes.h"
+#include "machine.h"
 
 /*
  * soft_new
@@ -244,7 +245,6 @@ jint
 instanceof_class(Hjava_lang_Class* c, Hjava_lang_Class* oc)
 {
 	Hjava_lang_Class* tc;
-	int i;
 
 	/* Check for superclass matches */
 	for (tc = oc->superclass; tc != 0; tc = tc->superclass) {
@@ -259,7 +259,6 @@ inline
 jint
 instanceof_interface(Hjava_lang_Class* c, Hjava_lang_Class* oc)
 {
-	Hjava_lang_Class* tc;
 	int i;
 
 	/* Check 'total' interface list */
@@ -432,7 +431,6 @@ nativecode*
 soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 {
 	Method* meth;
-	nativecode* ocode;
 	FIXUP_TRAMPOLINE_INIT;
 
 	/* If this class needs initializing, do it now.  */
@@ -451,7 +449,7 @@ soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 #if 0
 	if (METHOD_PRE_COMPILED(meth)) {
 		nativecode* ncode = METHOD_TRUE_NCODE(meth);
-		ocode = METHOD_NATIVECODE(meth);
+		nativecode* ocode = METHOD_NATIVECODE(meth);
 		METHOD_NATIVECODE(meth) = ncode;
 		/* Update the dtable entries for all classes if this isn't a
 	   	   static method.  */

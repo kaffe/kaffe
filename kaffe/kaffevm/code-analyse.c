@@ -68,7 +68,6 @@ verifyMethod(Method* meth)
 {
 	int32 pc;
 	int32 tabpc;
-	int32 restartpc;
 	int32 idx;
 	int32 sp;
 	int32 lcl;
@@ -343,7 +342,6 @@ verifyBasicBlock(Method* meth, int32 pc)
 	Hjava_lang_Class* type;
 	char* sig;
 	Hjava_lang_Class* class;
-	Field* field;
 	frameElement* activeFrame;
 	bool wide;
 	bool failed;

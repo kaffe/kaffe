@@ -87,11 +87,9 @@ processClass(Hjava_lang_Class* class, int tostate)
 	int i;
 	int j;
 	int k;
-	constants* pool;
 	Method* meth;
 	Hjava_lang_Class* nclass;
 	Hjava_lang_Class** newifaces;
-	Field *fld;
 	static bool init;
 	static iLock classLock;
 
@@ -340,7 +338,9 @@ addMethod(Hjava_lang_Class* c, method_info* m)
 	constants* pool;
 	Utf8Const* name;
 	Utf8Const* signature;
+#ifdef DEBUG
 	int ni;
+#endif
 
 	pool = CLASS_CONSTANTS (c);
 
@@ -496,7 +496,7 @@ Hjava_lang_Class*
 loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 {
 	classEntry* centry;
-	Hjava_lang_Class* clazz;
+	Hjava_lang_Class* clazz = NULL;
 
         centry = lookupClassEntry(name, loader);
 	if (centry->class != NULL) {
@@ -567,7 +567,6 @@ loadArray(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 void
 loadStaticClass(Hjava_lang_Class** class, char* name)
 {
-	void* mem;
 	classEntry* centry;
 
 	(*class) = newClass();
@@ -634,11 +633,9 @@ resolveObjectFields(Hjava_lang_Class* class)
 {
 	int fsize;
 	int align;
-	char* sig;
 	Field* fld;
 	int n;
 	int offset;
-	int lalign;
 
 	/* Find start of new fields in this object.  If start is zero, we must
 	 * allow for the object headers.
@@ -691,13 +688,10 @@ allocStaticFields(Hjava_lang_Class* class)
 {
 	int fsize;
 	int align;
-	char* sig;
 	uint8* mem;
 	int offset;
-	int idx;
 	int n;
 	Field* fld;
-	constants* pool;
 
 	/* No static fields */
 	if (CLASS_NSFIELDS(class) == 0) {
@@ -948,8 +942,6 @@ static
 void
 resolveConstants(Hjava_lang_Class* class)
 {
-	Field* fld;
-	int n;
 	int idx;
 	constants* pool;
 
@@ -1139,6 +1131,7 @@ sizeofSigItem(char** strp, bool want_wide_refs)
 			}
 			break;
 		default:
+			count = 0;	/* avoid compiler warning */
 			ABORT();
 		}
 

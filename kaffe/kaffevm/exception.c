@@ -57,6 +57,7 @@ extern uintp Kaffe_JNI_estart;
 extern uintp Kaffe_JNI_eend;
 extern void Kaffe_JNIExceptionHandler(void);
 
+extern void Tspinoffall();
 
 /*
  * Throw an internal exception.
@@ -243,7 +244,6 @@ void
 nullException(EXCEPTIONPROTO)
 {
 	Hjava_lang_Throwable* npe;
-	sigset_t nsig;
 
 	DEFINEFRAME();
 
@@ -264,7 +264,6 @@ void
 floatingException(EXCEPTIONPROTO)
 {
 	Hjava_lang_Throwable* ae;
-	sigset_t nsig;
 	DEFINEFRAME();
 
 	/* don't catch the signal if debugging exceptions */

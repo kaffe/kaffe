@@ -15,6 +15,7 @@
 #include "config-io.h"
 #include "config-mem.h"
 #include "gtypes.h"
+#include "inflate.h"
 #include "jar.h"
 
 #if !defined(KAFFEH)

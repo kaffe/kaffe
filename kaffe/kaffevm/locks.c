@@ -246,7 +246,6 @@ int
 _waitCond(void* addr, jlong timeout)
 {
 	iLock* lk;
-	int count;
 
 DBG(VMLOCKS,	dprintf("Wait 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);    )
 
