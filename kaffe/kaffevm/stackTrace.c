@@ -44,7 +44,7 @@ buildStackTrace(struct _exceptionFrame* base)
 
 	(void) orig;			/* avoid compiler warning in intrp */
 	DBG(STACKTRACE,
-	    dprintf("STACKTRACEINIT(trace, base, base, orig);\n"); );
+	    dprintf("STACKTRACEINIT(trace, %p, %p, orig);\n", base, base); );
 	STACKTRACEINIT(trace, base, base, orig);
 	cnt = 0;
 	while(!STACKTRACEEND(trace)) {
@@ -64,7 +64,7 @@ buildStackTrace(struct _exceptionFrame* base)
 	cnt = 0;
 
 	DBG(STACKTRACE,
-	    dprintf("STACKTRACEINIT(trace, &orig, base, orig);\n"); );
+	    dprintf("STACKTRACEINIT(trace, &orig, %p, orig);\n", base); );
 	STACKTRACEINIT(trace, &orig, base, orig);
 
 	for(; !STACKTRACEEND(trace); STACKTRACESTEP(trace)) {
@@ -77,6 +77,9 @@ buildStackTrace(struct _exceptionFrame* base)
 	}
 	info[cnt].pc = 0;
 	info[cnt].meth = ENDOFSTACK;
+
+	DBG(STACKTRACE,
+	    dprintf("ENDOFSTACK\n"); );
 
 	return ((Hjava_lang_Object*)info);
 }
