@@ -43,21 +43,21 @@ public String getEncoding() {
 
 public int read ( char cbuf[], int off, int len ) throws IOException {
 	int outlen = 0;
-	int olen;
 
 	synchronized ( lock ) {
-		// First we return anything left in the converter
-		outlen = encoding.flush(cbuf, off, len);
 		while (len > outlen) {
+			// First we return anything left in the converter
+			int inpos = encoding.withdraw(inbuf, 0, inbuf.length);
 			int n = len - outlen;
-			if (n > inbuf.length) {
-				n = inbuf.length;
+			int m = inbuf.length - inpos;
+			if (n > m) {
+				n = m;
 			}
-			int inlen = strm.read(inbuf, 0, n);
+			int inlen = strm.read(inbuf, inpos, n);
 			if (inlen < 0) {
-				break;
+				inlen = 0;
 			}
-			outlen += encoding.convert(inbuf, 0, inlen, cbuf, off+outlen, len-outlen);
+			outlen += encoding.convert(inbuf, 0, inpos+inlen, cbuf, off+outlen, len-outlen);
 			if (inlen < n) {
 				break;
 			}

@@ -84,6 +84,16 @@ public int flush ( char[] to, int tpos, int tlen ) {
 	}
 }
 
+public int withdraw ( byte[] to, int tpos, int tlen ) {
+	int n = (tlen < blen ? tlen : blen);
+	System.arraycopy( buf, 0, to, 0, n);
+	if ( n < blen ) {
+		System.arraycopy( buf, n, buf, 0, blen - n);
+	}
+	blen -= n;
+	return n;
+}
+
 private static ByteToCharConverter getConverterInternal ( String enc ) {
 	Class cls = (Class)cache.get(enc);
 	if (cls == noConverter) {
