@@ -1,5 +1,17 @@
 2005-01-07  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-01-03  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/text/AbstractDocument.java
+	(documentFilter): New field.
+	(getDocumentFilter): New method.
+	(setDocumentFilter): Likewise.
+	(dump): Likewise.
+	
+2005-01-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Added missing check for X libraries.
 
 	* configure: Regenerated.
