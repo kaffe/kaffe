@@ -1,5 +1,5 @@
 /* Handler.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,13 +38,13 @@ exception statement from your version. */
 
 package gnu.java.net.protocol.https;
 
+import gnu.java.net.protocol.http.HTTPConnection;
+import gnu.java.net.protocol.http.HTTPURLConnection;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-
-import gnu.java.net.protocol.http.HTTPConnection;
-import gnu.java.net.protocol.http.HTTPURLConnection;
 
 /**
  * An HTTPS URL stream handler.
