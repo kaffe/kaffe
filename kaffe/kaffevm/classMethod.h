@@ -236,7 +236,10 @@ struct _classFile;
 /* Assuming CLASS_IS_PRIMITIVE(CL), return the 1-letter signature code. */
 #define CLASS_PRIM_SIG(CL) ((CL)->msize)
 
-#define CLASS_IS_ARRAY(CL) (CLASS_CNAME(CL)[0] == '[')
+/* A freshly born class that does have its name set, but the collector
+ * may already want to know whether it'll be a boy or a girl.
+ */
+#define CLASS_IS_ARRAY(CL) ((CL)->name && CLASS_CNAME(CL)[0] == '[')
 
 #define	CLASS_IS_INTERFACE(CL) ((CL)->accflags & ACC_INTERFACE)
 #define	CLASS_IS_ABSTRACT(CL) ((CL)->accflags & ACC_ABSTRACT)
