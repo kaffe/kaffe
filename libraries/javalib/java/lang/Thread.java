@@ -13,6 +13,7 @@ package java.lang;
 import java.lang.Throwable;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.security.AccessController;
 import kaffe.lang.Application;
 import kaffe.lang.ApplicationResource;
 
@@ -22,6 +23,8 @@ public class Thread
 final public static int MIN_PRIORITY = 1;
 final public static int NORM_PRIORITY = 5;
 final public static int MAX_PRIORITY = 10;
+
+final private static RuntimePermission sccl = new RuntimePermission("setContextClassLoader");
 
 private static int threadCount;
 
@@ -38,7 +41,8 @@ private Throwable exceptObj;
 private kaffe.util.Ptr jnireferences;
 private Throwable stackOverflowError;
 private Throwable outOfMemoryError;
-private boolean started, dying;
+private boolean started;
+private boolean dying;
 private HashMap threadLocals;
 private Object suspendResume;
 private Object sleeper;
@@ -148,6 +152,10 @@ native public static Thread currentThread();
  * from the thread group.
  */
 public void destroy() {
+	synchronized(this) {
+		dying = true;
+		notifyAll();     // in case somebody is joining on us
+	}
 	if (group != null) {
 		group.remove(this);
 	}
@@ -474,7 +482,7 @@ public ClassLoader getContextClassLoader() {
 }
 
 public void setContextClassLoader(ClassLoader cl) {
-	// XXX call security manager for RuntimePermission("setContextClassLoader")
+	AccessController.checkPermission(sccl);
 	context = cl;
 }
 
