@@ -161,6 +161,10 @@ java_net_PlainDatagramSocketImpl_receive(struct Hjava_net_PlainDatagramSocketImp
 	unhand(pkt)->length = r;
 	unhand(pkt)->port = ntohs(addr.sin_port);
 	unhand(unhand(pkt)->address)->address = ntohl(addr.sin_addr.s_addr);
+	/* zero out hostname to overwrite old name which does not match
+	 * the new address from which the packet came.
+	 */
+	unhand(unhand(pkt)->address)->hostName = 0;
 }
 
 /*

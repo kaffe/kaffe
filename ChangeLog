@@ -1,3 +1,9 @@
+Fri Apr 30 16:20:28 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/clib/net/PlainDatagramSocketImpl.c: zero out hostname
+	in inetaddress of received packet when overwriting addr
+	in socket.receive().  Fixes bug #85
+
 Fri Apr 30 11:38:40 PDT 1999  Edouard Parmelan <Edouard.Parmelan@quadratec.fr>
 
 	* kaffe/kaffevm/systems/unix-jthreads/config-jthreads.h:
