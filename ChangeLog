@@ -1,3 +1,11 @@
+Thu Jun 22 12:54:00 PDT 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/beans/Introspector.java: fix bugs in
+	handling of the 'stop class' when introspecting
+	* libraries/javalib/java/util/Set.java: re-declare methods inherited
+	from java.util.Collection for consistency with JDK
+	* test/regression/NullPointerTest.java: check for invoke on a null
+
 2000-06-22  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/clib/math/BigInteger.c
