@@ -13,6 +13,7 @@
  * Author: Archie L. Cobbs <archie@whistle.com>
  *
  * Based on an (unrestricted) C version by: Thomas Niemann <niemannt@home.com>
+ * most recently sited at: http://wannabe.guru.org/alg/node21.html
  */
 
 package java.util;
@@ -313,7 +314,7 @@ public class TreeMap extends AbstractMap
 			for (y = node.right; y.left != NIL; y = y.left);
 		}
 
-		// Set x to y's only child
+		// Set x to y's only child, or NIL if no children
 		if (y.left != NIL) {
 			x = y.left;
 		} else {
@@ -321,7 +322,8 @@ public class TreeMap extends AbstractMap
 		}
 
 		// Remove y from the parent chain
-		x.parent = y.parent;
+		if (x != NIL)
+			x.parent = y.parent;
 		if (y.parent != null) {
 			if (y == y.parent.left) {
 				y.parent.left = x;
@@ -337,7 +339,7 @@ public class TreeMap extends AbstractMap
 			node.value = y.value;
 		}
 
-		if (y.color == BLACK) {
+		if (y.color == BLACK && x != NIL) {
 			deleteFixup(x);
 		}
 	}
