@@ -1,3 +1,12 @@
+Sun Jan 23 18:46:20 PST 2000  Tatu Saloranta <tatu@hypermall.net>
+
+	* libraries/javalib/java/awt/widgets/Choice.java: fix bug
+	in preferredSize()
+	* libraries/javalib/java/io/StreamTokenizer.java: fix bugs
+	parsing C and C++ comment characters
+	* libraries/javalib/java/awt/GridBagLayout.java: fix bug
+	in getGrid()
+
 Thu Jan 20 13:40:56 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/clib/awt/X/img.c: remove unused function
