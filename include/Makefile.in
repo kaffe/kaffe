@@ -32,7 +32,7 @@ INCLUDEFILES= \
 		java_lang_String.h \
 		java_lang_Throwable.h \
 		java_lang_Thread.h \
-		java_lang_ThreadGroup.h \
+		java_lang_ThreadGroup.h
 
 all: $(BUILT_INCLUDEFILES)
 
