@@ -1,3 +1,10 @@
+Tue May 26 09:45:50 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/system/unix-internal/internalCalls.c
+	kaffe/kaffevm/system/unix-jthreads/internal.c:
+	include/jsyscall.h:  added fstat to syscall interface as
+	suggested by Robert S. Thau <rst@ai.mit.edu>
+
 Mon May 25 15:02:26 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/debug.[ch]: new debug options.

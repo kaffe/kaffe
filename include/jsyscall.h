@@ -25,6 +25,7 @@ typedef struct SystemCallInterface {
 	ssize_t	(*_write)(int, const void*, size_t);
 	off_t	(*_lseek)(int, off_t, int);
 	int	(*_close)(int);
+	int	(*_fstat)(int, struct stat*);
 	int	(*_stat)(const char*, struct stat*);
 
 	int	(*_mkdir)(const char*, int);
@@ -63,6 +64,7 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
 #define	write(A,B,C)	(*Kaffe_SystemCallInterface._write)(A,B,C)
 #define	lseek(A,B,C)	(*Kaffe_SystemCallInterface._lseek)(A,B,C)
 #define	close(A)	(*Kaffe_SystemCallInterface._close)(A)
+#define	fstat(A,B)	(*Kaffe_SystemCallInterface._fstat)(A,B)
 #define	stat(A,B)	(*Kaffe_SystemCallInterface._stat)(A,B)
 
 #define	mkdir(A,B)	(*Kaffe_SystemCallInterface._mkdir)(A,B)

@@ -395,6 +395,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         jthreadedWrite, 
         lseek,
         close,
+        fstat,
         stat,
 
         mkdir_with_int,		/* the real mkdir takes a mode_t */

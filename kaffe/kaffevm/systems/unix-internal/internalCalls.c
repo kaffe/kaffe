@@ -189,6 +189,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
 	threadedWrite,
 	lseek,
 	close,
+	fstat,
 	stat,
 
 	mkdir,			/* warning because second argument is mode_t */
