@@ -1197,12 +1197,15 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 #if defined(SAVE_FP)
 				SAVE_FP(lastThread->fpstate);
 #endif
+#if defined(CONTEXT_SWITCH)
+				CONTEXT_SWITCH(lastThread, currentJThread);
+#else
 				if (setjmp(lastThread->env) == 0) {
 				    lastThread->restorePoint = 
 					GET_SP(lastThread->env);
 				    longjmp(currentJThread->env, 1);
 				}
-
+#endif
 #if defined(LOAD_FP)
 				LOAD_FP(currentJThread->fpstate);
 #endif
