@@ -36,6 +36,7 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 #include "config.h"
+#include "jsyscall.h"
 
 /* <sys/types.h> needs to be included on OSX before <sys/select.h> */
 #if defined(HAVE_SYS_TYPES_H)
@@ -154,11 +155,13 @@ helper_select (JNIEnv *env, jclass thread_class, jmethodID thread_interrupted,
 
 	while (1)
 	{
-		r = select (n, readfds, writefds, exceptfds,
-		      timeout ? &delay : NULL);
+		int retcode;
+
+		r = KSELECT (n, readfds, writefds, exceptfds,
+		      timeout ? &delay : NULL, &retcode);
 		      
-		if (r != -1 || errno != EINTR)
-			return r;
+		if (r != EINTR)
+			return retcode;
 
 		/* Here we know we got EINTR. */
 		if ( (*env)->CallStaticBooleanMethod(env, thread_class, thread_interrupted) )
@@ -209,7 +212,7 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv *env,
 	jclass thread_class = (*env)->FindClass(env, "java/lang/Thread");
 	jmethodID thread_current_thread = (*env)->GetStaticMethodID(env, thread_class, "currentThread", "()Ljava/lang/Thread;");
 	jmethodID thread_interrupt = (*env)->GetMethodID(env, thread_class, "interrupt", "()V");
-	jmethodID thread_interrupted = (*env)->GetMethodID(env, thread_class, "interrupted", "()Z");
+	jmethodID thread_interrupted = (*env)->GetStaticMethodID(env, thread_class, "interrupted", "()Z");
 	jobject current_thread;
 	int max_fd = 0;
 	fd_set read_fds;

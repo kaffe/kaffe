@@ -1,3 +1,9 @@
+2005-03-29  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/clib/nio/gnu_java_nio_VMSelector.c
+	(helper_select): Use KSELECT instead of select.
+	(select): Use GetStaticMethodID as the method is static.
+
 2005-03-28  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
