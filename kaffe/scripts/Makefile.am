@@ -9,7 +9,7 @@
 DIST_SUBDIRS = bat compat
 
 SCRIPTFILES_KJC=\
-		kjc
+		kjc kopi
 
 SCRIPTFILES_SUN=\
 		jar javakey javap jdb \
