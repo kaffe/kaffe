@@ -1,3 +1,7 @@
+Wed Feb  9 11:18:38 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/Timer.java: fix bug in waking thread
+
 Tue Feb 08 15:30:31 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* libraries/javalib/java/util/HashMap.java(bucket): mask off sign
