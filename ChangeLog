@@ -1,3 +1,14 @@
+Mon Jan  4 23:00:34 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/jit/machine.c: added jit_time timer/counter.
+	Right now this is only meaningful if no gc occurs.
+	* kaffe/kaffevm/mem/gc-incremental.c, kaffe/kaffevm/mem/gc-mem.c:
+	Changed strategy to trigger gc.  Hoisted lock/unlock out if
+	sweep loop.  Added sweep timer.  Changed verbosegc output.
+	* kaffe/kaffevm/classMethod.c: fixed bug with <clinit> for 
+	interfaces.
+	* kaffe/kaffevm/systems/unix-jthreads/*: reshuffling.
+
 Mon Jan  4 15:28:45 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/exception.c: set up sa_mask in catchSignal to
