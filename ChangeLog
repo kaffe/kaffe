@@ -1,3 +1,14 @@
+Fri May 22 14:55:35 PDT 1998	Alexandre Oliva <oliva@dcc.unicamp.br>
+
+        * libraries/clib/math/BigInteger.c
+        (java_math_BigInteger_plumbModInverse): implement
+        (java_math_BigInteger_plumbSquare): implement
+        (java_math_BigInteger_plumbGeneratePrime): remove
+        * libraries/clib/math/BigInteger.h
+        (java_math_BigInteger_plumbGeneratePrime): remove
+        * libraries/clib/math/external_wrappers.h
+        (java_math_BigInteger_plumbGeneratePrime): remove
+
 Tue May 19 18:02:55 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/debug.[ch]: new files.  Support for debugging.

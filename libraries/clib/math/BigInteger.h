@@ -31,7 +31,6 @@ extern HArrayOfByte* java_math_BigInteger_plumbGcd(HArrayOfByte*, HArrayOfByte*)
 extern HArrayOfByte* java_math_BigInteger_plumbModPow(HArrayOfByte*, HArrayOfByte*, HArrayOfByte*);
 extern HArrayOfByte* java_math_BigInteger_plumbModInverse(HArrayOfByte*, HArrayOfByte*);
 extern HArrayOfByte* java_math_BigInteger_plumbSquare(HArrayOfByte*);
-extern HArrayOfByte* java_math_BigInteger_plumbGeneratePrime(HArrayOfByte*);
 
 #ifdef __cplusplus
 }

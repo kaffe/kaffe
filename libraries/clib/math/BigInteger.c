@@ -306,6 +306,54 @@ java_math_BigInteger_plumbModPow(HArrayOfByte* src1, HArrayOfByte* src2, HArrayO
 	return (result);
 }
 
+HArrayOfByte*
+java_math_BigInteger_plumbModInverse(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	int res;
+	MP_INT r;
+	MP_INT s1;
+	MP_INT s2;
+	HArrayOfByte* result;
+
+	mpz_init(&r);
+	mpz_init(&s1);
+	mpz_init(&s2);
+
+	bytes2mpz(&s1, src1);
+	bytes2mpz(&s2, src2);
+
+	if ((res = mpz_invert(&r, &s1, &s2)) != 0)
+		mpz2bytes(&result, &r);
+
+	mpz_clear(&r);
+	mpz_clear(&s1);
+	mpz_clear(&s2);
+	
+	if (res)
+		return result;
+	else
+		SignalError("java/lang/ArithmeticException", "no modInverse");
+}
+
+HArrayOfByte*
+java_math_BigInteger_plumbSquare(HArrayOfByte* src)
+{
+	MP_INT s;
+	HArrayOfByte* result;
+
+	mpz_init(&s);
+
+	bytes2mpz(&s, src);
+
+	mpz_mul(&s, &s, &s);
+
+	mpz2bytes(&result, &s);
+
+	mpz_clear(&s);
+
+	return (result);
+}
+
 #else
 
 HArrayOfByte*
@@ -356,8 +404,6 @@ java_math_BigInteger_plumbModPow(HArrayOfByte* src1, HArrayOfByte* src2, HArrayO
 	unimp("bigint");
 }
 
-#endif
-
 HArrayOfByte*
 java_math_BigInteger_plumbModInverse(HArrayOfByte* src1, HArrayOfByte* src2)
 {
@@ -370,8 +416,4 @@ java_math_BigInteger_plumbSquare(HArrayOfByte* src)
 	unimp("bigint");
 }
 
-HArrayOfByte*
-java_math_BigInteger_plumbGeneratePrime(HArrayOfByte* src)
-{
-	unimp("bigint");
-}
+#endif
