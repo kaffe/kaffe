@@ -1,3 +1,16 @@
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-01-18 David Gilbert <david.gilbert@object-refinery.com>
+
+	* javax/swing/DefaultListModel.java
+	(add): fire correct event,
+	(addElement): corrected interval indices in event,
+	(clear): corrected upper bound for interval, only fire event if
+	list is not empty,
+	(setSize): fire appropriate event.
+	
 2005-01-20  Kiyo Inaba  <inaba@src.ricoh.co.jp>
 
 	* kaffe/kaffevm/jit/funcs.c,
