@@ -904,7 +904,7 @@ checkCaughtExceptions(Method* meth, int pc)
 /*
  * return what engine we're using
  */
-char* 
+const char* 
 getEngine(void)
 {
 	return "kaffe.jit";

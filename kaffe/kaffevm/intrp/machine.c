@@ -117,10 +117,10 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 	
 		{
 			Hjava_lang_Throwable *th;
-			errorInfo einfo;
+			errorInfo soeinfo;
 
 			thread_data->needOnStack = STACK_LOW;
-			th = (Hjava_lang_Throwable *)newObjectChecked (javaLangStackOverflowError, &einfo);
+			th = (Hjava_lang_Throwable *)newObjectChecked (javaLangStackOverflowError, &soeinfo);
 			thread_data->needOnStack = STACK_HIGH;
 		
 			throwException(th);
@@ -281,7 +281,7 @@ void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *r
 /*
  * say what engine we're using
  */
-char*
+const char*
 getEngine()
 {
 	return "kaffe.intr";

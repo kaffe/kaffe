@@ -792,6 +792,7 @@ soft_fcmpl(jfloat v1, jfloat v2)
 	return (ret);
 }
 
+#if defined(TRANSLATOR)
 jlong
 soft_lmul(jlong v1, jlong v2)
 {
@@ -914,6 +915,7 @@ soft_lcmp(jlong v1, jlong v2)
 		return (0);
 	}
 }
+#endif
 
 jint
 soft_mul(jint v1, jint v2)

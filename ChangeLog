@@ -1,3 +1,9 @@
+2004-04-05  Nektarios K. Papadopoulos <npapadop@inaccessnetworks.com>
+
+	* kaffe/kaffevm/{classMethod,exception,jni,soft,stackTrace,
+	  support,verify,{intrp,jit,jit3}/machine}.c,
+	  kaffe/kaffevm/support.h: Fix several warnings.
+
 2004-04-05  Dalibor Topic <robilad@kaffe.org>
 
         * Makefile.in,

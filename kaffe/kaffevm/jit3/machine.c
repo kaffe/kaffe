@@ -1472,7 +1472,7 @@ void relinkFakeCalls(void)
 /*
  * return what engine we're using
  */
-char*
+const char*
 getEngine(void)
 {
 	return "kaffe.jit";

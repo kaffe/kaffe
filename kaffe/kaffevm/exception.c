@@ -70,8 +70,6 @@ static void nullException(struct _exceptionFrame *) NONRETURNING;
 static void floatingException(struct _exceptionFrame *) NONRETURNING;
 static void dispatchException(Hjava_lang_Throwable*, stackTraceInfo*) NONRETURNING;
 
-extern void printStackTrace(struct Hjava_lang_Throwable*, struct Hjava_lang_Object*, int);
-
 static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, uintp*);
 
 /*
@@ -348,7 +346,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 		/*
 		 * if we reach the last jni frame, we're done
 		 */
-		if (lastJniFrame && vmExcept_JNIContains(lastJniFrame, frame->fp)) {
+		if (lastJniFrame && vmExcept_JNIContains(lastJniFrame, (void*)frame->fp)) {
 			thread_data->exceptPtr = lastJniFrame;
 			vmExcept_jumpToHandler(lastJniFrame); /* doesn't return */
 		}

@@ -1024,7 +1024,7 @@ currentTime(void)
  * @param value the value of the property to be set
  */
 void
-setProperty(void* properties, char* key, char* value)
+setProperty(void* properties, const char* key, const char* value)
 {
 	Hjava_lang_String* jkey;
 	Hjava_lang_String* jvalue;

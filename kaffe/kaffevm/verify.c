@@ -3382,13 +3382,13 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 				UninitializedType* uninit = receiver->data.uninit;
 				
 				if (receiver->tinfo == TINFO_UNINIT_SUPER) {
-					Type t;
-					t.tinfo = TINFO_CLASS;
-					t.data.class = uninit->type.data.class->superclass;
+					Type t_uninit_super;
+					t_uninit_super.tinfo = TINFO_CLASS;
+					t_uninit_super.data.class = uninit->type.data.class->superclass;
 					
 					if (!sameType(methodRefClass, &uninit->type) &&
 					    uninit->type.data.class != TOBJ->data.class &&
-					    !sameType(methodRefClass, &t)) {
+					    !sameType(methodRefClass, &t_uninit_super)) {
 						return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "incompatible receiving type for superclass constructor call");
 					}
 				} else if (!sameType(methodRefClass, &uninit->type)) {

@@ -107,9 +107,8 @@ struct Hjava_lang_Object;
 struct Hjava_lang_Throwable;
 struct Hjava_lang_ClassLoader;
 
-extern void		setProperty(void*, char*, char*);
-extern char*		getEngine(void);
-extern void		pathname2classname(const char*, char*);
+extern void		setProperty(void*, const char*, const char*);
+extern const char*		getEngine(void);
 extern jvalue		do_execute_java_method(void*, const char*, const char*, struct _methods*, int, ...);
 extern jvalue		do_execute_java_method_v(void*, const char*, const char*, struct _methods*, int, va_list);
 extern jvalue		do_execute_java_class_method(const char*, struct Hjava_lang_ClassLoader*, const char*, const char*, ...);
@@ -132,6 +131,9 @@ extern void kprintf(FILE*, const char*, ...) PRINTFFORMAT(2,3);
 extern int addClasspath(const char*);
 extern int prependClasspath(const char*);
 
+void replacechar(const char* from, char* to, char old, char new);
+void classname2pathname(const char* from, char* to);
+void pathname2classname(const char* from, char* to);
 int bitCount(int bits);
 
 /*

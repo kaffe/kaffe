@@ -4456,6 +4456,7 @@ struct JNIInvokeInterface Kaffe_JNIInvokeInterface = {
 	Kaffe_AttachCurrentThread,
 	Kaffe_DetachCurrentThread,
 	Kaffe_GetEnv,
+	NULL
 };
 
 /*

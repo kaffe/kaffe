@@ -1659,7 +1659,7 @@ resolveObjectFields(Hjava_lang_Class* class, errorInfo *einfo)
 	int fsize;
 	int align;
 	Field* fld;
-	int nbits, n;
+	int nbits, nifields;
 	int offset;
 	int maxalign;
 	int oldoffset;
@@ -1677,8 +1677,8 @@ resolveObjectFields(Hjava_lang_Class* class, errorInfo *einfo)
 	/* Find the largest alignment in this class */
 	maxalign = 1;
 	fld = CLASS_IFIELDS(class);
-	n = CLASS_NIFIELDS(class);
-	for (; --n >= 0; fld++) {
+	nifields = CLASS_NIFIELDS(class);
+	for (; --nifields >= 0; fld++) {
 		fsize = FIELD_SIZE(fld);
 		/* Work out alignment for this size entity */
 		fsize = ALIGNMENT_OF_SIZE(fsize);
@@ -1698,8 +1698,8 @@ resolveObjectFields(Hjava_lang_Class* class, errorInfo *einfo)
 
 	/* Now work out where to put each field */
 	fld = CLASS_IFIELDS(class);
-	n = CLASS_NIFIELDS(class);
-	for (; --n >= 0; fld++) {
+	nifields = CLASS_NIFIELDS(class);
+	for (; --nifields >= 0; fld++) {
 		fsize = FIELD_SIZE(fld);
 		/* Align field */
 		align = ALIGNMENT_OF_SIZE(fsize);
@@ -1750,8 +1750,8 @@ DBG(GCPRECISE,
 
 	/* Now work out the gc layout */
 	fld = CLASS_IFIELDS(class);
-	n = CLASS_NIFIELDS(class);
-	for (; --n >= 0; fld++) {
+	nifields = CLASS_NIFIELDS(class);
+	for (; --nifields >= 0; fld++) {
 		fsize = FIELD_SIZE(fld);
 		/* Align field */
 		align = ALIGNMENT_OF_SIZE(fsize);
