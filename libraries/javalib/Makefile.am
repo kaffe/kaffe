@@ -451,6 +451,7 @@ java_net_SRCS = \
 	java/net/SocketInputStream.java \
 	java/net/SocketOptions.java \
 	java/net/SocketOutputStream.java \
+	java/net/SocketPermission.java \
 	java/net/URL.java \
 	java/net/URLClassLoader.java \
 	java/net/URLConnection.java \
