@@ -104,9 +104,9 @@ public class TransferHandler implements Serializable
   
   private static final long serialVersionUID = -7908749299918704233L;
 
-  public static final String COMMAND_COPY = "copy";
-  public static final String COMMAND_CUT = "cut";
-  public static final String COMMAND_PASTE = "paste";
+  private static final String COMMAND_COPY = "copy";
+  private static final String COMMAND_CUT = "cut";
+  private static final String COMMAND_PASTE = "paste";
   
   public static final int NONE = 0;
   public static final int COPY = 1;

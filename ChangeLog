@@ -4,6 +4,30 @@
 	
 	2005-01-26  Michael Koch  <konqueror@gmx.de>
 
+	* javax/swing/DefaultButtonModel.java
+	(changeState): Made private.
+	* javax/swing/DefaultDesktopManager.java
+	(setWasIcon): Fixed second argument to be java.lang.Boolean.
+	* javax/swing/JLayeredPane.java
+	(layerToRange): Made private.
+	(incrLayer): Likewise.
+	(decrLayer): Likewise.
+	* javax/swing/JTable.java
+	(dragEnabled): Likewise.
+	(preferredViewportSize): Renamed from preferredScrollableViewportSize.
+	* javax/swing/KeyStroke.java
+	(Keystroke): Made private.
+	* javax/swing/TransferHandler.java
+	(COMMAND_COPY): Likewise.
+	(COMMAND_CUT): Likewise.
+	(COMMAND_PASTE): Likewise.
+	
+2005-01-27  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+	
+	2005-01-26  Michael Koch  <konqueror@gmx.de>
+
 	* javax/swing/JTextField.java
 	(postActionEvent): Use text in field when actionCommand is null.
 	(getActionCommand): Removed.

@@ -315,7 +315,7 @@ public class DefaultButtonModel implements ButtonModel, Serializable
    * @param stateflag DOCUMENT ME!
    * @param b DOCUMENT ME!
    */
-  protected void changeState(int stateflag, boolean b)
+  private void changeState(int stateflag, boolean b)
   {
     int oldstate = stateMask;
     int newstate;

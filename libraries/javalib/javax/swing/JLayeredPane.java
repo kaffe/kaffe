@@ -143,7 +143,7 @@ public class JLayeredPane extends JComponent implements Accessible
    * @throws IllegalArgumentException if layer does not refer to an active layer
    * in this container.
    */
-  protected int[] layerToRange (Integer layer)
+  private int[] layerToRange (Integer layer)
   {
     int[] ret = new int[2];
     ret[1] = getComponents ().length;
@@ -173,7 +173,7 @@ public class JLayeredPane extends JComponent implements Accessible
    * @param layer the layer number to increment.
    * @see #incrLayer()
    */
-  protected void incrLayer(Integer layer)
+  private void incrLayer(Integer layer)
   {
     int sz = 1;
     if (layers.containsKey (layer))
@@ -187,7 +187,7 @@ public class JLayeredPane extends JComponent implements Accessible
    * @param layer the layer number to decrement.
    * @see #decrLayer()
    */
-  protected void decrLayer(Integer layer)
+  private void decrLayer(Integer layer)
   {
     int sz = 0;
     if (layers.containsKey (layer))

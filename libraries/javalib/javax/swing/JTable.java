@@ -279,7 +279,7 @@ public class JTable extends JComponent
    * @see #setDragEnabled()
    * @see #getDragEnabled()
    */
-  protected boolean dragEnabled;
+  private boolean dragEnabled;
 
   /**
    * The color to paint the grid lines of the table, when either {@link
@@ -297,7 +297,7 @@ public class JTable extends JComponent
    * @see #setPreferredScrollableViewportSize()
    * @see #getPreferredScrollableViewportSize()
    */
-  protected Dimension preferredScrollableViewportSize;
+  protected Dimension preferredViewportSize;
 
   /**
    * The color to paint the background of selected cells. Fires a property
@@ -438,7 +438,7 @@ public class JTable extends JComponent
     // this.accessibleContext = new AccessibleJTable();
     this.cellEditor = null;
     this.dragEnabled = false;
-    this.preferredScrollableViewportSize = new Dimension(450,400);
+    this.preferredViewportSize = new Dimension(450,400);
     this.showHorizontalLines = true;
     this.showVerticalLines = true;
     this.editingColumn = -1;
@@ -1124,13 +1124,13 @@ public class JTable extends JComponent
   }
 
   /**
-   * Get the value of the {@link #preferredScrollableViewportSize} property.
+   * Get the value of the {@link #preferredViewportSize} property.
    *
    * @return The current value of the property
    */
   public Dimension getPreferredScrollableViewportSize()
   {
-    return preferredScrollableViewportSize;
+    return preferredViewportSize;
   }
 
   /**
@@ -1447,13 +1447,13 @@ public class JTable extends JComponent
   }
 
   /**
-   * Set the value of the {@link #preferredScrollableViewportSize} property.
+   * Set the value of the {@link #preferredViewportSize} property.
    *
-   * @param p The new value of the preferredScrollableViewportSize property
+   * @param p The new value of the preferredViewportSize property
    */ 
   public void setPreferredScrollableViewportSize(Dimension p)
   {
-    preferredScrollableViewportSize = p;
+    preferredViewportSize = p;
     revalidate();
     repaint();
   }
