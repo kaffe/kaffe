@@ -1,6 +1,6 @@
 2004-03-19  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
-	* libraries/javalib/java/util/Properties
+	* libraries/javalib/java/util/Properties.java
 	(load): Delete leading whiltespaces before checking comment characters.
 
 2004-03-19  Dalibor Topic <robilad@kaffe.org>
