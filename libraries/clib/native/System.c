@@ -18,9 +18,8 @@
 #if defined(HAVE_PWD_H)
 #include <pwd.h>
 #endif
-#if defined(HAVE_TIME_H)
+#include <sys/time.h>
 #include <time.h>
-#endif
 #include <ctype.h>
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/gtypes.h"
