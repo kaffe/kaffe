@@ -1,5 +1,9 @@
 2004-12-08  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/xprof/debugFile.c: s/null/NULL/, I hand-applied a diff.
+
+2004-12-08  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/xprof/debugFile.c: When printing out the DIA_SourceFile
 	  record, if addr is null, hard-code 0 as the value; otherwise,
 	  fprintf prints '(nil)', and ld complains when linking.

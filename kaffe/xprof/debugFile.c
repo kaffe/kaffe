@@ -545,7 +545,7 @@ int addDebugInfo(struct debug_file *df, df_tag_t tag, ...)
 			case DIA_SourceFile:
 				name = va_arg(args, char *);
 				addr = va_arg(args, char *);
-				if (addr != null)
+				if (addr != NULL)
 					fprintf(df->df_file,
 						"\n\n.stabs \"%s\",%d,0,0,%p\n",
 						name,
