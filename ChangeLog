@@ -1,5 +1,12 @@
 2004-06-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/config-std.h:
+	Added workaround for platforms without ENOTSUP.
+
+	Reported by: Kiyo Inaba  <inaba@src.ricoh.co.jp>
+
+2004-06-22  Dalibor Topic  <robilad@kaffe.org>
+
         * configure.ac:
 	Check for always_inline attribute.
 
