@@ -176,15 +176,27 @@ threadedWaitpid(int wpid, int* status, int options)
 #endif
 }
 
-int threadedFileDescriptor(int fd)
+static int 
+threadedFileDescriptor(int fd)
 {
 	return (fd);
+}
+
+static int
+threadedOpen(const char *name, int flags, int mode)
+{
+	/* Cygnus NT requires this */
+	int fd = open(name, 
+#if defined(O_BINARY)
+		O_BINARY |
+#endif
+		flags, mode);
 }
 
 SystemCallInterface Kaffe_SystemCallInterface = {
 
 	threadedFileDescriptor,
-	open,			/* warning because third argument is mode_t */
+	threadedOpen,
 	threadedRead,
 	threadedWrite,
 	lseek,
