@@ -12,21 +12,15 @@
 #ifndef __jnirefs_h
 #define	__jnirefs_h
 
-#if 0
-#define NEED_JNIREFS		/* define to manage local jni refs */
-#endif
-
-#ifdef NEED_JNIREFS
-
-#define	JNIREFS				61
+#define	DEFAULT_JNIREFS_NUMBER 61
 
 typedef struct _jnirefs {
 	int				next;
+        int                             localFrames;
 	int				used;
+        int                             frameSize;
 	struct _jnirefs*		prev;
-	jref				objects[JNIREFS];
+	jref				objects[1];
 } jnirefs;
-
-#endif /* NEED_JNIREFS */
 
 #endif

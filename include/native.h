@@ -36,9 +36,15 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 struct _dispatchTable;
 struct _iLock;
 
+
+
 typedef struct Hjava_lang_Object {
 	struct _dispatchTable*  vtable;
 	struct _iLock*		lock;
+	/* This pointer contains the VM function which should be called
+	 * to handle object finalization.
+	 */
+        void*       finalizer_call;
 	/* Data follows on immediately */
 } Hjava_lang_Object;
 

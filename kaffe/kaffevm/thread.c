@@ -69,6 +69,7 @@ linkNativeAndJavaThread(jthread_t thread, Hjava_lang_VMThread *jlThread)
 	thread_data->jlThread = jlThread;
 	unhand (jlThread)->jthreadID = (struct Hkaffe_util_Ptr *)thread;
 
+	thread_data->jnireferences = NULL;
 	thread_data->jniEnv = &Kaffe_JNINativeInterface;
 
 	thread_data->needOnStack = STACK_HIGH; 
@@ -716,6 +717,7 @@ initNativeThreads(int nativestacksize)
 
 	KSEM(init)(&thread_data->sem);
 
+	thread_data->jnireferences = NULL;
 	thread_data->jniEnv = &Kaffe_JNINativeInterface;
 
 	DBG(INIT, dprintf("initNativeThreads(0x%x) done\n", nativestacksize); );

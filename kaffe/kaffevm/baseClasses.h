@@ -38,6 +38,11 @@ extern struct Hjava_lang_Class* PtrClass;
 extern struct Hjava_lang_Class* ClassLoaderClass;
 extern struct Hjava_lang_Class* kaffeLangAppClassLoaderClass;
 
+extern struct Hjava_lang_Class* javaLangRefReference;
+extern struct Hjava_lang_Class* javaLangRefSoftReference;
+extern struct Hjava_lang_Class* javaLangRefWeakReference;
+extern struct Hjava_lang_Class* javaLangRefPhantomReference;
+
 extern struct Hjava_lang_Class*	javaLangVoidClass;
 extern struct Hjava_lang_Class*	javaLangBooleanClass;
 extern struct Hjava_lang_Class*	javaLangByteClass;

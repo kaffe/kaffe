@@ -51,6 +51,7 @@ newObjectChecked(Hjava_lang_Class* class, errorInfo *info)
 		postOutOfMemory(info);
 	} else {
 	    /* Fill in object information */
+	    KaffeVM_setFinalizer(obj, KGC_DEFAULT_FINALIZER);
 	    obj->vtable = class->vtable;
 
 #if defined(ENABLE_JVMPI)
@@ -114,6 +115,7 @@ newClass(void)
 	}
 
         /* Fill in object information */
+	KaffeVM_setFinalizer(cls, KGC_DEFAULT_FINALIZER);
 	cls->head.vtable = ClassClass->vtable;
 done:
 DBG(NEWOBJECT,
@@ -152,6 +154,7 @@ newArrayChecked(Hjava_lang_Class* elclass, jsize count, errorInfo *info)
 			}
 		}
 		if (obj != NULL) {
+		        KaffeVM_setFinalizer(obj, KGC_DEFAULT_FINALIZER);
 			obj->vtable = class->vtable;
 			ARRAY_SIZE(obj) = count;
 

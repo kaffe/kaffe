@@ -51,6 +51,8 @@ ksem_get(Ksem* volatile sem, jlong timeout)
 	if (timeout == 0)
 		timeout = NOTIMEOUT;
 
+	dprintf("ksem_get sp=%p\n", &r);
+
 	KMUTEX(lock)(&sem->mux);
 	/* If no stored wakeups, then sleep. */
 	if (sem->count == 0) {

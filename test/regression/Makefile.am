@@ -18,6 +18,7 @@ ALWAYS_TESTS = \
 	$(SIMPLE_HEALTH_CHECK) \
 	$(TEST_COMPILER) \
 	$(TEST_ARRAYS) \
+	$(TEST_REFERENCE) \
 	$(TEST_INTS_LONGS_FLOATS_DOUBLES) \
 	$(TEST_STRINGS) \
 	$(TEST_EXCEPTIONS) \
@@ -41,6 +42,10 @@ SIMPLE_HEALTH_CHECK = \
 ## Now test the compiler
 TEST_COMPILER = \
 	HelloWorldApp.java 
+
+## Test the reference subsystem.
+TEST_REFERENCE = \
+	RefTest.java
 
 ## Test the array creation/handling.
 TEST_ARRAYS = \

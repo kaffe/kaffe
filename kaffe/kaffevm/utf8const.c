@@ -49,7 +49,7 @@ static iStaticLock	utf8Lock = KAFFE_STATIC_LOCK_INITIALIZER;	/* mutex on all int
  * Also used by debugging code to assert that the utf8Lock is never
  * recursively acquired.
  */
-static int *utfLockRoot;
+static int *utfLockRoot = NULL;
 
 static inline void do_lockUTF(int *where)
 {

@@ -38,6 +38,7 @@
 #include "locks.h"
 #include "methodcalls.h"
 #include "native.h"
+#include "jni_i.h"
 
 #if !defined(HAVE_GETTIMEOFDAY)
 #include <sys/timeb.h>
@@ -96,7 +97,7 @@ do_execute_java_method_v(jvalue *retval, void* obj, const char* method_name, con
 		throwException(NoSuchMethodError(method_name));
 	}
 
-	callMethodV(mb, METHOD_NATIVECODE(mb), obj, argptr, retval);
+	KaffeVM_callMethodV(mb, METHOD_NATIVECODE(mb), obj, argptr, retval);
 }
 
 /**
@@ -166,7 +167,7 @@ do_execute_java_class_method_v(jvalue *retval, const char* cname,
 	}
 
 	/* Make the call */
-	callMethodV(mb, METHOD_NATIVECODE(mb), NULL, argptr, retval);
+	KaffeVM_callMethodV(mb, METHOD_NATIVECODE(mb), NULL, argptr, retval);
 }
 
 /**
@@ -250,7 +251,7 @@ execute_java_constructor_v(const char* cname, Hjava_lang_ClassLoader* loader,
 	assert(obj != 0);
 
 	/* Make the call */
-	callMethodV(mb, METHOD_NATIVECODE(mb), obj, argptr, &retval);
+	KaffeVM_callMethodV(mb, METHOD_NATIVECODE(mb), obj, argptr, &retval);
 
 	return (obj);
 }
@@ -365,8 +366,8 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
  * @param promoted true iff 64 bit values occupy two entries in args, otherwise false
  */
 void
-callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
-	    int promoted)
+KaffeVM_callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
+		    int promoted)
 {
 	int i;
 	int j;
@@ -504,6 +505,32 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 
 	/* Make the call - system dependent */
 	engine_callMethod(&call);
+
+	memset(call.args, 0, (METHOD_NARGS(meth)+engine_reservedArgs(meth)+2)*(sizeof(jvalue)+2));
+	memset(&call, 0, sizeof(call));
+}
+
+/**
+ * Generic routine to call a native or Java method (array style). This is the exception-safe version of
+ * KaffeVM_callMethodA. Exceptions are not thrown but caught the JNI way. This is useful for internal VM
+ * functions which are not exception-safe.
+ *
+ * @param meth the struct _methods of the method to be executed
+ * @param func the code that's to be executed
+ * @param obj  the object whose method is to be called (my be 0 iff method is static)
+ * @param args the arguments to be passed to the method
+ * @param ret  buffer for the return value of the method (may be 0 iff return type is void)
+ * @param promoted true iff 64 bit values occupy two entries in args, otherwise false
+ */
+void
+KaffeVM_safeCallMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
+			int promoted)
+{
+  BEGIN_EXCEPTION_HANDLING_VOID();
+
+  KaffeVM_callMethodA(meth, func, obj, args, ret, promoted);
+    
+  END_EXCEPTION_HANDLING();
 }
 
 /**
@@ -516,7 +543,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
  * @param ret  buffer for the return value of the method (may be 0 iff return type is void)
  */
 void
-callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
+KaffeVM_callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 {
   /* const char* sig; FIXME */
 	int i;
@@ -635,6 +662,28 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 
 	/* Make the call - system dependent */
 	engine_callMethod(&call);
+}
+
+/**
+ * Generic routine to call a native or Java method (varargs style). This is the exception-safe version of
+ * KaffeVM_callMethodV. Exceptions are not thrown but caught the JNI way. This is useful for internal VM
+ * functions which are not exception-safe.
+ *
+ * @param meth the struct _methods of the method to be executed
+ * @param func the code that's to be executed
+ * @param obj  the object whose method is to be called (my be 0 iff method is static)
+ * @param args the arguments to be passed to the method
+ * @param ret  buffer for the return value of the method (may be 0 iff return type is void)
+ * @param promoted true iff 64 bit values occupy two entries in args, otherwise false
+ */
+void
+KaffeVM_safeCallMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
+{
+  BEGIN_EXCEPTION_HANDLING_VOID();
+
+  KaffeVM_callMethodV(meth, func, obj, args, ret);
+    
+  END_EXCEPTION_HANDLING();
 }
 
 /**

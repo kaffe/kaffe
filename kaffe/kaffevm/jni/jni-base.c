@@ -236,6 +236,7 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
 {
   JavaVMInitArgs *vm_args = (JavaVMInitArgs *)args;
   JNIEnv **env = (JNIEnv **)penv;
+  jnirefs *reftable;
 
   switch (vm_args->version)
     {
@@ -260,9 +261,12 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
   initialiseKaffe();
 
   /* Setup JNI for main thread */
-#if defined(NEED_JNIREFS)
-  THREAD_DATA()->jnireferences = (jnirefs *)gc_malloc(sizeof(jnirefs), &gcNormal);
-#endif
+  reftable =
+    (jnirefs *)gc_malloc(sizeof(jnirefs) + sizeof(jref) * DEFAULT_JNIREFS_NUMBER,
+			 KGC_ALLOC_STATIC_THREADDATA);
+  reftable->frameSize = DEFAULT_JNIREFS_NUMBER;
+  reftable->localFrames = 1;
+  THREAD_DATA()->jnireferences = reftable; 
 
   /* Return the VM and JNI we're using */
   *vm = &Kaffe_JavaVM;

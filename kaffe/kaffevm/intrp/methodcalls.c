@@ -30,6 +30,50 @@ engine_buildTrampoline (Method *meth, void **where, errorInfo *einfo UNUSED)
 	return meth;
 }
 
+static void
+startJNIcall(void)
+{
+	threadData 	*thread_data = THREAD_DATA();
+	jnirefs* table;
+
+	table = gc_malloc
+	  (sizeof(jnirefs) + sizeof(jref)*DEFAULT_JNIREFS_NUMBER,
+	   KGC_ALLOC_STATIC_THREADDATA);
+
+	table->prev = thread_data->jnireferences;
+	thread_data->jnireferences = table;
+	table->frameSize = DEFAULT_JNIREFS_NUMBER;
+	table->localFrames = 1;
+
+	/* No pending exception when we enter JNI routine */
+	thread_data->exceptObj = NULL;
+}
+
+static void
+finishJNIcall(void)
+{
+	jref eobj;
+	threadData	*thread_data = THREAD_DATA();
+	jnirefs* table;
+	int localFrames;
+
+	table = thread_data->jnireferences;
+	localFrames = table->localFrames;
+	for (localFrames = table->localFrames; localFrames >= 1; localFrames--)
+	  {
+	    thread_data->jnireferences = table->prev;
+	    gc_free(table);
+	    table = thread_data->jnireferences;
+	  }
+
+	/* If we have a pending exception, throw it */
+	eobj = thread_data->exceptObj;
+	if (eobj != 0) {
+		thread_data->exceptObj = NULL;
+		throwExternalException(eobj);
+	}
+}
+
 void
 engine_callMethod (callMethodInfo *call)
 {
@@ -118,7 +162,7 @@ engine_callMethod (callMethodInfo *call)
 				save_except = thread_data->exceptObj;
 			else
 				save_except = NULL;
-			thread_data->exceptObj = NULL;
+			startJNIcall();
 		}
 
 		/* Make the call - system dependent */
@@ -130,13 +174,7 @@ engine_callMethod (callMethodInfo *call)
 
 		/* If we have a pending exception and this is JNI, throw it */
 		if ((meth->accflags & ACC_JNI) != 0) {
-			struct Hjava_lang_Throwable *eobj;
-
-			eobj = thread_data->exceptObj;
-			if (eobj != 0) {
-				thread_data->exceptObj = 0;
-				throwExternalException(eobj);
-			}
+		        finishJNIcall();
 			thread_data->exceptObj = save_except;
 		}
 

@@ -556,6 +556,7 @@ LIBGTKPEER_JNI_HDRS = \
 @COND_CLASSPATH_GTK_AWT_TRUE@@COND_NATIVE_AWT_TRUE@MAYBE_LIBGTKPEER_JNI_HDRS = $(LIBGTKPEER_JNI_HDRS)
 NOINSTALL_JNI_DERIVED_HDRS = \
 	java_math_BigInteger.h \
+	java_lang_ref_Reference.h \
 	gnu_classpath_VMSystemProperties.h \
 	gnu_java_nio_channels_FileChannelImpl.h \
 	gnu_java_nio_SelectorImpl.h \

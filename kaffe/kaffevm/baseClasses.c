@@ -64,6 +64,11 @@ Hjava_lang_Class* CloneClass;
 Hjava_lang_Class* PtrClass;
 Hjava_lang_Class* ClassLoaderClass;
 
+Hjava_lang_Class* javaLangRefReference;
+Hjava_lang_Class* javaLangRefSoftReference;
+Hjava_lang_Class* javaLangRefWeakReference;
+Hjava_lang_Class* javaLangRefPhantomReference;
+
 Hjava_lang_Class* javaLangVoidClass;
 Hjava_lang_Class* javaLangBooleanClass;
 Hjava_lang_Class* javaLangByteClass;
@@ -161,6 +166,9 @@ initialiseKaffe(void)
 	/* Initialise the string and utf8 systems */
 	stringInit();
 	utf8ConstInit();
+
+	/* Initialize the reference tracking subsystem */
+	KaffeVM_referenceInit();
 
 	/* Setup CLASSPATH */
 	initClasspath();
@@ -309,6 +317,12 @@ initBaseClasses(void)
 	loadStaticClass(&javaLangNoClassDefFoundError, "java/lang/NoClassDefFoundError");
 	loadStaticClass(&javaLangStackOverflowError, "java/lang/StackOverflowError");
 	loadStaticClass(&javaIoIOException, "java/io/IOException");
+
+	/* Object references. */
+	loadStaticClass(&javaLangRefReference, "java/lang/ref/Reference");
+	loadStaticClass(&javaLangRefWeakReference, "java/lang/ref/WeakReference");
+	loadStaticClass(&javaLangRefSoftReference, "java/lang/ref/SoftReference");
+	loadStaticClass(&javaLangRefPhantomReference, "java/lang/ref/PhantomReference");
 
 	DBG(INIT, dprintf("initBaseClasses() done\n"); );
 

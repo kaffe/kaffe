@@ -305,6 +305,8 @@ gcMarkAddress(Collector* gcif UNUSED, void *gc_info UNUSED, const void* mem)
 	/* Get block info for this memory - if it exists */
 	info = gc_mem2block(mem);
 	unit = UTOUNIT(mem);
+	if (mem == 0x832e3b4)
+		dprintf("marked bad mem\n");
 	if (gc_heap_isobject(info, unit)) {
 		markObjectDontCheck(unit, info, GCMEM2IDX(info, unit));
 	}
@@ -719,6 +721,9 @@ startGC(Collector *gcif)
 		markObjectDontCheck(unit, info, idx); 
 	}
 
+	/*
+	 * Now we may walk static strong references.
+	 */
 	KaffeGC_walkRefs(gcif);
 }
 
@@ -863,6 +868,14 @@ startFinalizer(void)
  * the objects in turn.  An object is only finalised once after which
  * it is deleted.
  */
+
+static void clearStack(void *stackMin, void *stackMax)
+{
+	void *p = alloca(1024);
+	
+	memset(p, 0, 1024);
+}
+
 static void NONRETURNING
 finaliserMan(void* arg)
 {
@@ -922,7 +935,7 @@ finaliserMan(void* arg)
 
 			gcStats.finalmem -= GCBLOCKSIZE(info);
 			gcStats.finalobj -= 1;
-
+			
 			assert(KGC_GET_STATE(info,idx) == KGC_STATE_INFINALIZE);
 			/* Objects are only finalised once */
 			KGC_SET_STATE(info, idx, KGC_STATE_FINALIZED);
@@ -931,6 +944,9 @@ finaliserMan(void* arg)
 		}
 
 		/* Wake up anyone waiting for the finalizer to finish */
+		{
+			clearStack(NULL, NULL);
+		}
 		lockStaticMutex(&finmanend);
 		broadcastStaticCond(&finmanend);
 		unlockStaticMutex(&finmanend);

@@ -106,10 +106,10 @@ jmutex_lock( jmutex* lk )
 static inline int
 ThreadCondWait(jthread_t cur, jcondvar *cv, jmutex *mux)
 {
-  int status;
+  int status = 0;
   sigset_t oldmask;
 
-  setBlockState(cur, BS_CV, (void*)&cur, &oldmask);
+  setBlockState(cur, BS_CV, (void*)&status, &oldmask);
   status = pthread_cond_wait( cv, mux );
   clearBlockState(cur, BS_CV, &oldmask);
 
@@ -124,10 +124,7 @@ jboolean
 jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 {
   jthread_t cur = jthread_current();
-  int             status;
-  struct timespec abst;
-  struct timeval  now;
-  sigset_t oldmask;
+  int             status = 0;
 
   /*
    * If a thread trying to get a heavy lock is interrupted, we may get here
@@ -138,11 +135,16 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 
   if ( timeout == NOTIMEOUT )
     {
+	    if ((void *)0x827e6dc == cur)
+		    dprintf("stack ptr=%p\n", &status);
       /* we handle this as "wait forever" */
       status = ThreadCondWait(cur, cv, mux);
     }
   else
     {
+      sigset_t oldmask;
+      struct timespec abst;
+      struct timeval  now;
       /* timeout is in millisecs, timeval in microsecs, and timespec in nanosecs */
       gettimeofday( &now, NULL);
       abst.tv_sec = now.tv_sec + (timeout / 1000);
@@ -161,7 +163,7 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 	      abst.tv_nsec -= 1000000000;
 	    }
 
-	  setBlockState(cur, BS_CV_TO, (void*)&cur, &oldmask);
+	  setBlockState(cur, BS_CV_TO, (void*)&status, &oldmask);
 	  status = pthread_cond_timedwait( cv, mux, &abst);
 	  clearBlockState(cur, BS_CV_TO, &oldmask);
 	}

@@ -47,6 +47,7 @@ struct Hjava_lang_String;
 struct _jitCodeHeader;
 
 #include <java_lang_ClassLoader.h>
+#include "reference.h"
 
 /**
  * Builtin stab type IDs.
@@ -83,12 +84,13 @@ struct Hjava_lang_Class {
 	Hjava_lang_Object	head;		/* A class is an object too */
 
 	struct _iLock*		lock;		/* Lock for internal use */
+        void *finalizer_call;
 
 	/* Link to class entry */
 	struct _classEntry*	centry;
 
 	Utf8Const*		name;
-	unsigned int			packageLength;
+	unsigned int		packageLength;
 	char*			sourcefile;	/* source file name if known */
 	accessFlags		accflags;
 
@@ -144,6 +146,9 @@ struct Hjava_lang_Class {
 	int*			gc_layout;
 	class_state_t		state;
 	void*			processingThread;
+	/* This pointer contains the method which should be called
+	 * at object finalization.
+	 */
 	Method*			finalizer;
 	int			alloc_type;	/* allocation type */
 
@@ -339,7 +344,7 @@ typedef struct _methods {
 
 typedef struct _dispatchTable {
 	Hjava_lang_Class*	class;
-	void*			__dummy0; /* For GCJ/C++ compatibility */
+	void*			__dummy0; /* For GCJ/C++ compatibility. */
 	void*			method[1];
 } dispatchTable;
 
@@ -378,6 +383,7 @@ typedef struct _fields {
 				 && CLASS_IS_PRIMITIVE(FIELD_TYPE(FLD)))
 #define FIELD_ISREF(FLD)	(!FIELD_ISPRIM(FLD)			\
 				 && FIELD_TYPE(FLD) != PtrClass)
+#define FIELD_NAME(FLD)		((FLD)->name->data)
 
 #define	CLASSMAXSIG		256
 

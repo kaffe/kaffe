@@ -134,10 +134,10 @@ CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, MET
 	if (methaccflags & ACC_NATIVE) {
 NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth)); );
 		if (methaccflags & ACC_STATIC) {
-			callMethodA(meth, meth, 0, (jvalue*)arg, (jvalue*)retval, 1);
+			KaffeVM_callMethodA(meth, meth, 0, (jvalue*)arg, (jvalue*)retval, 1);
 		}
 		else {
-			callMethodA(meth, meth, ((jvalue*)arg)[0].l, &((jvalue*)arg)[1], (jvalue*)retval, 1);
+			KaffeVM_callMethodA(meth, meth, ((jvalue*)arg)[0].l, &((jvalue*)arg)[1], (jvalue*)retval, 1);
 		}
 		return;
 	}

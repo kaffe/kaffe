@@ -104,7 +104,7 @@ am__libkaffevm_la_SOURCES_DIST = access.c baseClasses.c classMethod.c \
 	hashtab.c inflate.c itypes.c jar.c ksem.c locks.c lookup.c \
 	object.c readClass.c soft.c stackTrace.c stats.c string.c \
 	stringParsing.c support.c thread.c utf8const.c gcFuncs.c \
-	reflect.c ../../binreloc/prefix.c
+	reflect.c reference.c ../../binreloc/prefix.c
 @ENABLE_BINRELOC_TRUE@am__objects_1 = libkaffevm_la-prefix.lo
 am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-baseClasses.lo libkaffevm_la-classMethod.lo \
@@ -123,7 +123,8 @@ am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-string.lo libkaffevm_la-stringParsing.lo \
 	libkaffevm_la-support.lo libkaffevm_la-thread.lo \
 	libkaffevm_la-utf8const.lo libkaffevm_la-gcFuncs.lo \
-	libkaffevm_la-reflect.lo $(am__objects_1)
+	libkaffevm_la-reflect.lo libkaffevm_la-reference.lo \
+	$(am__objects_1)
 am__objects_2 = libkaffevm_la-md.lo
 nodist_libkaffevm_la_OBJECTS = $(am__objects_2)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
@@ -512,6 +513,7 @@ libkaffevm_la_SOURCES = \
 	utf8const.c \
 	gcFuncs.c \
 	reflect.c \
+	reference.c \
 	$(BINRELOC_SOURCES)
 
 noinst_HEADERS = \
@@ -552,6 +554,7 @@ noinst_HEADERS = \
 	threadData.h \
 	utf8const.h \
 	reflect.h \
+	reference.h \
 	../../binreloc/prefix.h
 
 CLEANFILES = so_locations
@@ -652,6 +655,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-object.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-prefix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-readClass.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-reference.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-reflect.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-soft.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-stackTrace.Plo@am__quote@
@@ -920,6 +924,13 @@ libkaffevm_la-reflect.lo: reflect.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='reflect.c' object='libkaffevm_la-reflect.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-reflect.lo `test -f 'reflect.c' || echo '$(srcdir)/'`reflect.c
+
+libkaffevm_la-reference.lo: reference.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-reference.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-reference.Tpo" -c -o libkaffevm_la-reference.lo `test -f 'reference.c' || echo '$(srcdir)/'`reference.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-reference.Tpo" "$(DEPDIR)/libkaffevm_la-reference.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-reference.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='reference.c' object='libkaffevm_la-reference.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-reference.lo `test -f 'reference.c' || echo '$(srcdir)/'`reference.c
 
 libkaffevm_la-prefix.lo: ../../binreloc/prefix.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-prefix.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-prefix.Tpo" -c -o libkaffevm_la-prefix.lo `test -f '../../binreloc/prefix.c' || echo '$(srcdir)/'`../../binreloc/prefix.c; \

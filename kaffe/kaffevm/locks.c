@@ -257,6 +257,9 @@ DBG(SLOWLOCKS,
 		if (lk != heavyLock) {
 			gc_free(lk);
 		}
+		else {
+			lk->holder = NULL;
+		}
 		putHeavyLock(lkp, LOCKFREE);
 	}
 	KTHREAD(enable_stop)();

@@ -26,6 +26,7 @@
 #include "gc-incremental.h"
 #include "gc-refs.h"
 #include "java_lang_Thread.h"
+#include "locks.h"
 
 #define	REFOBJHASHSZ	128
 typedef struct _strongRefObject {
@@ -51,6 +52,8 @@ typedef struct _weakRefTable {
 
 static strongRefTable			strongRefObjects;
 static weakRefTable                     weakRefObjects;
+static iStaticLock                      strongRefLock = KAFFE_STATIC_LOCK_INITIALIZER;
+static iStaticLock                      weakRefLock = KAFFE_STATIC_LOCK_INITIALIZER;
 
 /* This is a bit homemade.  We need a 7-bit hash from the address here */
 #define	REFOBJHASH(V)	((((uintp)(V) >> 2) ^ ((uintp)(V) >> 9))%REFOBJHASHSZ)
@@ -61,6 +64,7 @@ static weakRefTable                     weakRefObjects;
 bool
 KaffeGC_addRef(Collector *collector, const void* mem)
 {
+  int iLockRoot;
   uint32 idx;
   strongRefObject* obj;
 
@@ -80,8 +84,11 @@ KaffeGC_addRef(Collector *collector, const void* mem)
 	
   obj->mem = mem;
   obj->ref = 1;
+
+  lockStaticMutex(&strongRefLock);
   obj->next = strongRefObjects.hash[idx];
   strongRefObjects.hash[idx] = obj;
+  unlockStaticMutex(&strongRefLock);
   return true;
 }
 
@@ -92,11 +99,13 @@ KaffeGC_addRef(Collector *collector, const void* mem)
 bool
 KaffeGC_rmRef(Collector *collector, void* mem)
 {
+  int iLockRoot;
   uint32 idx;
   strongRefObject** objp;
   strongRefObject* obj;
 
   idx = REFOBJHASH(mem);
+  lockStaticMutex(&strongRefLock);
   for (objp = &strongRefObjects.hash[idx]; *objp != 0; objp = &obj->next) {
     obj = *objp;
     /* Found it - just decrease reference */
@@ -106,10 +115,12 @@ KaffeGC_rmRef(Collector *collector, void* mem)
 	*objp = obj->next;
 	KGC_free(collector, obj);
       }
+      unlockStaticMutex(&strongRefLock);
       return true;
     }
   }
 
+  unlockStaticMutex(&strongRefLock);
   /* Not found!! */
   return false;
 }
@@ -117,10 +128,12 @@ KaffeGC_rmRef(Collector *collector, void* mem)
 bool
 KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
 {
+  int iLockRoot;
   int idx;
   weakRefObject* obj;
 
   idx = REFOBJHASH(mem);
+  lockStaticMutex(&weakRefLock);
   for (obj = weakRefObjects.hash[idx]; obj != 0; obj = obj->next) {
     /* Found it - just register a new weak reference */
     if (obj->mem == mem) {
@@ -133,14 +146,19 @@ KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
 
       obj->allRefs = newRefs;
       obj->allRefs[obj->ref-1] = refobj;
+
+      unlockStaticMutex(&weakRefLock);
       return true;
     }
   }
 
   /* Not found - create a new one */
   obj = (weakRefObject*)KGC_malloc(collector, sizeof(weakRefObject), KGC_ALLOC_REF);
-  if (!obj)
-    return false;
+  if (obj == NULL)
+    {
+      unlockStaticMutex(&weakRefLock);
+      return false;
+    }
 
   obj->mem = mem;
   obj->ref = 1;
@@ -148,18 +166,22 @@ KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
   obj->allRefs[0] = refobj;
   obj->next = weakRefObjects.hash[idx];
   weakRefObjects.hash[idx] = obj;
+  unlockStaticMutex(&weakRefLock);
   return true;
 }
 
 bool
 KaffeGC_rmWeakRef(Collector *collector, void* mem, void** refobj)
 {
+  int iLockRoot;
   uint32 idx;
   weakRefObject** objp;
   weakRefObject* obj;
   unsigned int i;
 
   idx = REFOBJHASH(mem);
+
+  lockStaticMutex(&weakRefLock);
   for (objp = &weakRefObjects.hash[idx]; *objp != 0; objp = &obj->next) {
     obj = *objp;
     /* Found it - just decrease reference */
@@ -181,14 +203,20 @@ KaffeGC_rmWeakRef(Collector *collector, void* mem, void** refobj)
 	      }
 	  }
 	if (i == obj->ref)
-	  return false;
+	  {
+	    unlockStaticMutex(&weakRefLock);
+	    return false;
+	  }
 	if (obj->ref == 0) {
 	  *objp = obj->next;
 	  KGC_free(collector, obj);
 	}
+	unlockStaticMutex(&weakRefLock);
 	return true;
       }
   }
+
+  unlockStaticMutex(&weakRefLock);
 
   /* Not found!! */
   return false;
@@ -254,9 +282,19 @@ liveThreadWalker(jthread_t tid, void *private)
   if (THREAD_DATA_INITIALIZED(thread_data))
     {
       Hjava_lang_VMThread *thread = (Hjava_lang_VMThread *)thread_data->jlThread;
+      jnirefs *table;
 
       KGC_markObject(c, NULL, unhand(thread)->thread);
       KGC_markObject(c, NULL, thread);
+
+      for(table = thread_data->jnireferences; table != NULL; table = table->prev)
+	{
+	  int i;
+
+	  for (i = 0; i < table->frameSize; i++)
+	    if (table->objects[i] != NULL)
+	      KGC_markObject(c, NULL, table->objects[i]);
+	}
   
       if (thread_data->exceptObj != NULL)
         {
@@ -276,17 +314,20 @@ KaffeGC_walkRefs(Collector* collector)
 {
   int i;
   strongRefObject* robj;
+  int iLockRoot;
   
 DBG(GCWALK,
     dprintf("Walking gc roots...\n");
     );
 
   /* Walk the referenced objects */
+  lockStaticMutex(&strongRefLock); 
   for (i = 0; i < REFOBJHASHSZ; i++) {
     for (robj = strongRefObjects.hash[i]; robj != 0; robj = robj->next) {
       KGC_markObject(collector, NULL, robj->mem);
     }
   }
+  unlockStaticMutex(&strongRefLock);
  
 DBG(GCWALK,
     dprintf("Walking live threads...\n");
@@ -318,8 +359,11 @@ KaffeGC_clearWeakRef(Collector *collector, void* mem)
   weakRefObject** objp;
   weakRefObject* obj;
   unsigned int i;
+  int iLockRoot;
 
   idx = REFOBJHASH(mem);
+
+  lockStaticMutex(&weakRefLock);
   for (objp = &weakRefObjects.hash[idx]; *objp != 0; objp = &obj->next)
     {
       obj = *objp;
@@ -332,7 +376,9 @@ KaffeGC_clearWeakRef(Collector *collector, void* mem)
 
 	  *objp = obj->next;
 	  KGC_free(collector, obj);
+	  unlockStaticMutex(&weakRefLock);
 	  return;
 	}
     }
+  unlockStaticMutex(&weakRefLock);
 }

@@ -573,8 +573,7 @@ walkLoader(Collector* collector, void *gc_info, void* base, uint32 size)
         walkClassEntries(collector, gc_info, (Hjava_lang_ClassLoader*)base);
 }
 
-static
-void
+static void
 /* ARGSUSED */
 finalizeObject(Collector* collector UNUSED, void* ob)
 {
@@ -587,17 +586,8 @@ finalizeObject(Collector* collector UNUSED, void* ob)
 		/* Suppose we catch ThreadDeath inside newObject() */
 		return;
 	}
-        objclass = OBJECT_CLASS(obj);
-        final = objclass->finalizer;
-
-	if (!final) {
-		assert(objclass->alloc_type == KGC_ALLOC_JAVALOADER);
-		return;
-	}
-
-	(*env)->CallVoidMethod(env, obj, final);
-	/* ignore any resulting exception */
-	(*env)->ExceptionClear(env);
+	assert(obj->finalizer_call != NULL);
+	((KaffeVM_Finalizer)obj->finalizer_call)(obj);
 }
 
 /*

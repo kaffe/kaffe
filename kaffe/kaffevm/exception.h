@@ -56,7 +56,7 @@ typedef struct _jexception {
 /*
  * A VmExceptHandle is used to handle *any* exception in native code
  * in the core of the VM.  Set up when entering Kaffe_JNI methods, or
- * when callMethodA or callMethodV are invoked.
+ * when KaffeVM_callMethodA or KaffeVM_callMethodV are invoked.
  *
  * Each thread in the system has a exceptPtr, which points
  * to the most recent VmExceptHandler buffer (the buffers

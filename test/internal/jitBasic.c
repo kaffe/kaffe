@@ -182,7 +182,7 @@ int testMethod(Hjava_lang_Class *cl, Field *field)
 						     METHOD_NATIVECODE(meth));
 			memset(&rc, 0, sizeof(rc));
 			memset(&actual, 0, sizeof(actual));
-			callMethodA(meth,
+			KaffeVM_callMethodA(meth,
 				    METHOD_NATIVECODE(meth),
 				    0,
 				    args,

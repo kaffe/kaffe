@@ -16,15 +16,10 @@
  * add extra functions to the JNI calls and returns to manage the
  * referencing.
  */
-#if defined(NEED_JNIREFS)
-void addJNIref(jref);
-void removeJNIref(jref);
-#define	ADD_REF(O)		addJNIref(O)
-#define	REMOVE_REF(O)		removeJNIref(O)
-#else
-#define	ADD_REF(O)
-#define	REMOVE_REF(O)
-#endif
+void KaffeJNI_addJNIref(jref);
+void KaffeJNI_removeJNIref(jref);
+#define	ADD_REF(O)		KaffeJNI_addJNIref(O)
+#define	REMOVE_REF(O)		KaffeJNI_removeJNIref(O)
 
 /*
  * Define how to set the frame pointer in a VmExceptHandler.

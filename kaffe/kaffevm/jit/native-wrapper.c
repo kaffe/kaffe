@@ -24,6 +24,7 @@
 #include "basecode.h"
 #include "icode.h"
 #include "machine.h"
+#include "gc.h"
 
 #if defined(KAFFE_FEEDBACK)
 #include "feedback.h"
@@ -33,13 +34,17 @@ static void*
 startJNIcall(void)
 {
 	threadData 	*thread_data = THREAD_DATA();
-#if defined(NEED_JNIREFS)
 	jnirefs* table;
 
-	table = gc_malloc(sizeof(jnirefs), &gcNormal);
+	table = gc_malloc
+	  (sizeof(jnirefs) + sizeof(jref)*DEFAULT_JNIREFS_NUMBER,
+	   KGC_ALLOC_STATIC_THREADDATA);
+
 	table->prev = thread_data->jnireferences;
 	thread_data->jnireferences = table;
-#endif
+	table->frameSize = DEFAULT_JNIREFS_NUMBER;
+	table->localFrames = 1;
+
 	/* No pending exception when we enter JNI routine */
 	thread_data->exceptObj = NULL;
 	return( &thread_data->jniEnv ); 
@@ -50,15 +55,18 @@ finishJNIcall(void)
 {
 	jref eobj;
 	threadData	*thread_data = THREAD_DATA();
+	jnirefs* table;
+	int localFrames;
 
-#if defined(NEED_JNIREFS)
-	{
-		jnirefs* table;
+	table = thread_data->jnireferences;
+	localFrames = table->localFrames;
+	for (localFrames = table->localFrames; localFrames >= 1; localFrames--)
+	  {
+	    thread_data->jnireferences = table->prev;
+	    gc_free(table);
+	    table = thread_data->jnireferences;
+	  }
 
-		table = thread_data->jnireferences;
-		thread_data->jnireferences = table->prev;
-	}
-#endif
 	/* If we have a pending exception, throw it */
 	eobj = thread_data->exceptObj;
 	if (eobj != 0) {
@@ -127,7 +135,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 		end_func_sync();
 		return_ref(tmp);
 
-#if defined(NEED_JNIREFS)
+#if 0
 		{
 			int j;
 			int jcount;
@@ -136,20 +144,20 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 			if (!METHOD_IS_STATIC(xmeth)) {
 				pusharg_ref(local(0), 0);
 				end_sub_block();
-				call_soft(addJNIref);
+				call_soft(KaffeJNI_addJNIref);
 				popargs();
 			}
 			j = METHOD_NARGS(xmeth);
 			jcount = count;
 			while (j > 0) {
 				j--;
-				jcount -= sizeofSigChar(*METHOD_ARG_TYPE(xmeth, j));
+				jcount -= sizeofSigChar(*METHOD_ARG_TYPE(xmeth, j), false);
 				switch (*METHOD_ARG_TYPE(xmeth, j)) {
 				case 'L':
 				case '[':
 					pusharg_ref(local(jcount), 0);
 					end_sub_block();
-					call_soft(addJNIref);
+					call_soft(KaffeJNI_addJNIref);
 					popargs();
 				}
 			}

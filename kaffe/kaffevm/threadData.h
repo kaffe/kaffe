@@ -16,9 +16,7 @@ typedef struct _threadData {
 	void		*jlThread;
 
 	/* required by the jnireferences stuff */
-#ifdef NEED_JNIREFS
 	jnirefs		*jnireferences;
-#endif
 
 
 	/* things necessary for jvmpi */

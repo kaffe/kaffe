@@ -257,6 +257,13 @@ void* jthread_stacklimit(void)
 #endif
 }
 
+static inline
+void jthread_get_stack_limits(jthread_t t, void **smin, void **smax)
+{
+	*smin = t->stackMin;
+	*smax = t->stackMax;
+}
+
 /*
  * Get the current stack limit.
  */

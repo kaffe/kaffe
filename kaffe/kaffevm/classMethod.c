@@ -85,17 +85,13 @@ static bool resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo);
 static void
 determineAllocType(Hjava_lang_Class *class)
 {
-        if (StringClass != 0 && instanceof(StringClass, class)) {
-                class->alloc_type = KGC_ALLOC_JAVASTRING;
-        } else
-        if (ClassLoaderClass != 0 && instanceof(ClassLoaderClass, class)) {
-                class->alloc_type = KGC_ALLOC_JAVALOADER;
-        } else
-        if (class->finalizer != 0) {
-                class->alloc_type = KGC_ALLOC_FINALIZEOBJECT;
-        } else {
-                class->alloc_type = KGC_ALLOC_NORMALOBJECT;
-        }
+  if (StringClass != 0 && StringClass == class)
+    class->alloc_type = KGC_ALLOC_JAVASTRING;
+  else
+    if (ClassLoaderClass != 0 && instanceof(ClassLoaderClass, class))
+      class->alloc_type = KGC_ALLOC_JAVALOADER;
+    else
+      class->alloc_type = KGC_ALLOC_FINALIZEOBJECT;
 }
 
 /*
@@ -510,8 +506,8 @@ retry:
 	}
 
 	DO_CLASS_STATE(CSTATE_COMPLETE) {
-		JNIEnv *env = THREAD_JNIENV();
 		jthrowable exc = NULL;
+		jthrowable excpending;
 		JavaVM *vms[1];
 		jsize jniworking;
 
@@ -551,26 +547,15 @@ DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
 		/* give classLock up for the duration of this call */
 		unlockClass(class);
 
-		/* we use JNI to catch possible exceptions, except
-		 * during initialization, when JNI doesn't work yet.
-		 * Should an exception occur at that time, we're
-		 * lost anyway.
+		/* We use here an exception safe call method to be able
+		 * to catch possible exceptions which may occur.
 		 */
-		JNI_GetCreatedJavaVMs(vms, 1, &jniworking);
-		if (jniworking) {
-DBG(STATICINIT,
-			dprintf("using JNI\n");
-);
-			(*env)->ExceptionClear(env);
-			(*env)->CallStaticVoidMethodA(env, class, (jmethodID)meth, NULL);
-			exc = (*env)->ExceptionOccurred(env);
-			(*env)->ExceptionClear(env);
-		} else {
-DBG(STATICINIT,
-			dprintf("using callMethodA\n");
-    );
-			callMethodA(meth, METHOD_NATIVECODE(meth), NULL, NULL, NULL, 1);
-		}
+		excpending = THREAD_DATA()->exceptObj;
+		THREAD_DATA()->exceptObj = NULL;
+
+		KaffeVM_safeCallMethodA(meth, METHOD_NATIVECODE(meth), NULL, NULL, NULL, 0);
+		exc = THREAD_DATA()->exceptObj;
+		THREAD_DATA()->exceptObj = excpending;
 
 		lockClass(class);
 
@@ -1333,44 +1318,58 @@ Hjava_lang_Class *userLoadClass(classEntry *ce,
 	JNIEnv *env = THREAD_JNIENV();
 	Hjava_lang_String *jname;
 	jthrowable excpending;
-	jmethodID meth;
+	Method *meth;
+	Hjava_lang_Class *class_of_loader;
 	
 	/*
 	 * If an exception is already pending, for instance because we're
 	 * resolving one that has occurred, save it and clear it for the
 	 * upcall.
 	 */
-	excpending = (*env)->ExceptionOccurred(env);
-	(*env)->ExceptionClear(env);
+	excpending = THREAD_DATA()->exceptObj;
+	THREAD_DATA()->exceptObj = NULL;
 	
-	if( (jname = utf8Const2JavaReplace(ce->name, '/', '.')) &&
-	    /*
-	     * We use JNI here so that all exceptions are caught and we'll
-	     * always return.
+	class_of_loader = OBJECT_CLASS((Hjava_lang_Object *)loader);
+
+	if( (jname = utf8Const2JavaReplace(ce->name, '/', '.')) )
+	  {
+	    jvalue jretval;
+	    jvalue args[1];
+	    jthrowable excobj;
+
+	    /* If we fail to resolve loadClass then we just have to set retval to NULL.
+	     * einfo is already set.
 	     */
-	    (meth = (*env)->GetMethodID(
-		env,
-		(*env)->GetObjectClass(env, loader),
-		"loadClass",
-		"(Ljava/lang/String;)Ljava/lang/Class;")) )
-	{
-		jthrowable excobj;
-		
-		retval = (Hjava_lang_Class*)
-			(*env)->CallObjectMethod(env,
-						 loader,
-						 meth,
-						 jname);
-		
-		/*
-		 * Check whether an exception occurred.  If one was pending,
-		 * the new exception will override this one.
-		 */
-		excobj = (*env)->ExceptionOccurred(env);
-		(*env)->ExceptionClear(env);
-		
-		if( excobj != 0 )
-		{
+	    if ((meth = lookupClassMethod(class_of_loader, "loadClass", 
+					 "(Ljava/lang/String;)Ljava/lang/Class;",
+					 einfo)) == NULL)
+	      {
+		retval = NULL;
+		goto userload_done;
+	      }
+	    
+	    if (METHOD_IS_STATIC(meth))
+	      {
+		postExceptionMessage(einfo, "java/lang/NoSuchMethodError",
+				     "loadClass is wrongly a static method in %s", CLASS_CNAME(class_of_loader));
+		retval = NULL;
+		goto userload_done;
+	      }
+
+	    /* ClassLoader is not an interface so we may use NATIVECODE directly. */
+	    args[0].l = jname;
+	    KaffeVM_safeCallMethodA(meth, METHOD_NATIVECODE(meth), loader, args, &jretval, false);
+	    retval = jretval.l;
+
+	    /*
+	     * Check whether an exception occurred.  If one was pending,
+	     * the new exception will override this one.
+	     */
+	    excobj = THREAD_DATA()->exceptObj;
+	    THREAD_DATA()->exceptObj = NULL;
+	    
+	    if( excobj != 0 )
+	      {
 			/* There was an exception. */
 			einfo->type = KERR_RETHROW;
 			einfo->throwable = excobj;
@@ -1381,50 +1380,55 @@ Hjava_lang_Class *userLoadClass(classEntry *ce,
 				/* Set this for the verifier. */
 				einfo->type |= KERR_NO_CLASS_FOUND;
 			}
-		}
-		else if( retval == NULL )
-		{
-			/* No class returned. */
-			postExceptionMessage(einfo,
-					     JAVA_LANG(ClassNotFoundException),
-					     "%s",
-					     ce->name->data);
-			/* Set this for the verifier. */
-			einfo->type |= KERR_NO_CLASS_FOUND;
-		}
-		else if( !utf8ConstEqual(retval->name, ce->name) )
-		{
-			/*
-			 * Its a valid class, but the name differs from the one
-			 * that was requested.
+			/* We must clear the return value as safeCallMethod does not
+			 * handle this.
 			 */
-			postExceptionMessage(
-				einfo,
-				JAVA_LANG(ClassNotFoundException),
-				"Bad class name (expect: %s, get: %s)",
-				ce->name->data,
-				retval->name->data);
-			/* Set this for the verifier. */
-			einfo->type |= KERR_NO_CLASS_FOUND;
 			retval = NULL;
-		}
-		else
-		{
-			retval = classMappingLoaded(ce, retval);
-		}
-		
-	}
+	      }
+	    else if( retval == NULL )
+	      {
+		/* No class returned. */
+		postExceptionMessage(einfo,
+				     JAVA_LANG(ClassNotFoundException),
+				     "%s",
+				     ce->name->data);
+		/* Set this for the verifier. */
+		einfo->type |= KERR_NO_CLASS_FOUND;
+	      }
+	    else if( !utf8ConstEqual(retval->name, ce->name) )
+	      {
+		/*
+		 * Its a valid class, but the name differs from the one
+		 * that was requested.
+		 */
+		postExceptionMessage(
+				     einfo,
+				     JAVA_LANG(ClassNotFoundException),
+				     "Bad class name (expect: %s, get: %s)",
+				     ce->name->data,
+				     retval->name->data);
+		/* Set this for the verifier. */
+		einfo->type |= KERR_NO_CLASS_FOUND;
+		retval = NULL;
+	      }
+	    else
+	      {
+		retval = classMappingLoaded(ce, retval);
+	      }
+	  }
 	else
-	{
-		postOutOfMemory(einfo);
-	}
+	  {
+	    postOutOfMemory(einfo);
+	  }
 	
+ userload_done:
 	/* rethrow pending exception */
 	if( excpending != NULL )
 	{
-		(*env)->Throw(env, excpending);
+	  THREAD_DATA()->exceptObj = excpending;
 	}
-	return( retval );
+
+	return retval;
 }
 
 Hjava_lang_Class *loadClass(Utf8Const *name,
@@ -1665,6 +1669,7 @@ resolveObjectFields(Hjava_lang_Class* class, errorInfo *einfo)
 	int maxalign;
 	int oldoffset;
 	int *map;
+	jbool is_reference;
 
 	/* Find start of new fields in this object.  If start is zero, we must
 	 * allow for the object headers.
@@ -1713,6 +1718,10 @@ resolveObjectFields(Hjava_lang_Class* class, errorInfo *einfo)
 
 	/* recall old offset */
 	offset = oldoffset;
+
+	/* Check whether the class is java.lang.ref.Reference */
+	is_reference =
+	   (strcmp(CLASS_CNAME(class), "java/lang/ref/Reference") == 0);
 
 	/* Now that we know how big that object is going to be, create
 	 * a bitmap to help the gc scan the object.  The first part is
@@ -1767,11 +1776,12 @@ DBG(GCPRECISE,
 		if (!FIELD_RESOLVED(fld)) {
 			Utf8Const *sig = fld->signature;
 			if ((sig->data[0] == 'L' || sig->data[0] == '[') &&
-			    strcmp(sig->data, PTRCLASSSIG)) {
+			    strcmp(sig->data, PTRCLASSSIG) &&
+			    (!is_reference || strcmp(FIELD_NAME(fld), "referent") != 0)) {
 				BITMAP_SET(map, nbits);
 			}
 		} else {
-			if (FIELD_ISREF(fld)) {
+			if (FIELD_ISREF(fld) ) {
 				BITMAP_SET(map, nbits);
 			}
 		}

@@ -50,18 +50,18 @@ static jint Kaffe_GetVersion(JNIEnv*);
 static jclass Kaffe_FindClass(JNIEnv*, const char*);
 static jint Kaffe_ThrowNew(JNIEnv*, jclass, const char*);
 static jint Kaffe_Throw(JNIEnv* env, jobject obj);
+static void NONRETURNING Kaffe_FatalError(JNIEnv* env UNUSED, const char* mess);
 
-#if defined(NEED_JNIREFS)
 void
-addJNIref(jref obj)
+KaffeJNI_addJNIref(jref obj)
 {
 	jnirefs* table;
 	int idx;
 
 	table = THREAD_DATA()->jnireferences;
 
-	if (table->used == JNIREFS) {
-		abort();	/* FIX ME */
+	if (table->used == table->frameSize) {
+	  Kaffe_FatalError(NULL, "No more room for local references");
 	}
 
 	idx = table->next;
@@ -69,22 +69,22 @@ addJNIref(jref obj)
 		if (table->objects[idx] == 0) {
 			table->objects[idx] = obj;
 			table->used++;
-			table->next = (idx + 1) % JNIREFS;
+			table->next = (idx + 1) % table->frameSize;
 			return;
 		}
-		idx = (idx + 1) % JNIREFS;
+		idx = (idx + 1) % table->frameSize;
 	}
 }
 
 void
-removeJNIref(jref obj)
+KaffeJNI_removeJNIref(jref obj)
 {
 	int idx;
 	jnirefs* table;
 
 	table = THREAD_DATA()->jnireferences;
 
-	for (idx = 0; idx < JNIREFS; idx++) {
+	for (idx = 0; idx < table->frameSize; idx++) {
 		if (table->objects[idx] == obj) {
 			table->objects[idx] = 0;
 			table->used--;
@@ -92,8 +92,6 @@ removeJNIref(jref obj)
 		}
 	}
 }
-#endif /* NEED_JNIREFS */
-
 
 /*
  * Everything from this point to Kaffe_GetVersion is not
@@ -103,7 +101,7 @@ removeJNIref(jref obj)
  * Everything from Kaffe_GetVersion to Kaffe_GetJavaVM
  * should be bracketed with BEGIN and END _EXCEPTION_HANDLING.
  */
-void NONRETURNING
+static void NONRETURNING
 Kaffe_FatalError(JNIEnv* env UNUSED, const char* mess)
 {
 	kprintf(stderr, "FATAL ERROR: %s\n", mess);
@@ -143,8 +141,6 @@ Kaffe_IsSameObject(JNIEnv* env UNUSED, jobject obj1, jobject obj2)
 		return (JNI_FALSE);
 	}
 }
-
-
 static jint
 Kaffe_GetVersion(JNIEnv* UNUSED env)
 {
@@ -182,6 +178,103 @@ Kaffe_NewGlobalRef(JNIEnv* env, jref obj)
 #endif
 	END_EXCEPTION_HANDLING();
 	return obj;
+}
+
+static jint
+KaffeJNI_EnsureLocalCapacity(JNIEnv* env UNUSED, jint capacity)
+{
+  BEGIN_EXCEPTION_HANDLING(-1);
+
+  END_EXCEPTION_HANDLING();
+}
+
+static jint
+KaffeJNI_PushLocalFrame(JNIEnv* env UNUSED, jint capacity)
+{
+  jnirefs *table;
+
+  BEGIN_EXCEPTION_HANDLING(-1);
+
+  if (capacity <= 0)
+    return -1;  
+
+  table = gc_malloc
+    (sizeof(jnirefs) + sizeof(jref)*capacity,
+     KGC_ALLOC_STATIC_THREADDATA);
+  if (table == NULL)
+    {
+      errorInfo info;
+      postOutOfMemory(&info);
+      postError(env, &info);
+      return -1;
+    }
+
+  table->prev = thread_data->jnireferences;
+  table->frameSize = capacity;
+  table->localFrames = thread_data->jnireferences->localFrames+1;
+
+  thread_data->jnireferences = table;
+
+  END_EXCEPTION_HANDLING();
+  
+  return 0;
+}
+
+static jobject
+KaffeJNI_PopLocalFrame(JNIEnv* env UNUSED, jobject obj)
+{
+  int localFrames;
+  int i;
+  jnirefs *table;
+
+  BEGIN_EXCEPTION_HANDLING(NULL);
+
+  table = thread_data->jnireferences;
+  localFrames = table->localFrames;
+
+  /* We must not delete the top JNI local frame as it is done by
+   * the native wrapper.
+   */
+  if (localFrames == 1)
+    goto popframe_end;
+  
+  localFrames = table->localFrames;
+  for (localFrames = table->localFrames; localFrames >= 1; localFrames--)
+    {
+      thread_data->jnireferences = table->prev;
+      gc_free(table);
+      table = thread_data->jnireferences;
+    }
+  
+  if (obj != NULL)
+    {
+      for (i = 0; i < table->frameSize; i++)
+	if (table->objects[i] == obj)
+	  break;
+      
+      /* If the object is not already referenced, add a new reference to it.
+       */
+      if (i == table->frameSize)
+	ADD_REF(obj); 
+    }
+  
+  END_EXCEPTION_HANDLING();
+
+ popframe_end:
+  return obj;
+} 
+
+static jobject
+KaffeJNI_NewLocalRef(JNIEnv* env, jobject ref)
+{
+  BEGIN_EXCEPTION_HANDLING(NULL);
+
+  if (ref != NULL)
+    ADD_REF(ref);
+
+  END_EXCEPTION_HANDLING();
+
+  return ref;
 }
 
 static jclass
@@ -390,7 +483,7 @@ Kaffe_NewObjectV(JNIEnv* env UNUSED, jclass cls, jmethodID meth, va_list args)
 	}
 	obj = newObject(clazz);
 
-	callMethodV(m, METHOD_NATIVECODE(m), obj, args, &retval);
+	KaffeVM_callMethodV(m, METHOD_NATIVECODE(m), obj, args, &retval);
 
 	ADD_REF(obj);
 	END_EXCEPTION_HANDLING();
@@ -430,7 +523,7 @@ Kaffe_NewObjectA(JNIEnv* env UNUSED, jclass cls, jmethodID meth, jvalue* args)
 	}
 	obj = newObject(clazz);
 
-	callMethodA(m, METHOD_NATIVECODE(m), obj, args, &retval, 0);
+	KaffeVM_callMethodA(m, METHOD_NATIVECODE(m), obj, args, &retval, 0);
 
 	ADD_REF(obj);
 	END_EXCEPTION_HANDLING();
@@ -655,7 +748,7 @@ Kaffe_AttachCurrentThread(JavaVM* vm UNUSED, void** penv, void* args UNUSED)
 }
 
 static jint
-Kaffe_AttrachCurrentThreadAsDaemon(JavaVM* vm UNUSED, void** penv, void* args UNUSED)
+Kaffe_AttachCurrentThreadAsDaemon(JavaVM* vm UNUSED, void** penv, void* args UNUSED)
 {
 	if (KTHREAD(attach_current_thread) (true)) {
 		KSEM(init)(&THREAD_DATA()->sem);
@@ -744,14 +837,14 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	Kaffe_ExceptionDescribe,
 	Kaffe_ExceptionClear,
 	Kaffe_FatalError,
-	NULL,
-	NULL,
+	KaffeJNI_PushLocalFrame,
+	KaffeJNI_PopLocalFrame,
 	Kaffe_NewGlobalRef,
 	Kaffe_DeleteGlobalRef,
 	Kaffe_DeleteLocalRef,
 	Kaffe_IsSameObject,
-	NULL,
-	NULL,
+	KaffeJNI_NewLocalRef,
+	KaffeJNI_EnsureLocalCapacity,
 	Kaffe_AllocObject,
 	Kaffe_NewObject,
 	Kaffe_NewObjectV,
@@ -971,7 +1064,7 @@ const struct JNIInvokeInterface Kaffe_JNIInvokeInterface = {
 	Kaffe_AttachCurrentThread,
 	Kaffe_DetachCurrentThread,
 	Kaffe_GetEnv,
-	Kaffe_AttrachCurrentThreadAsDaemon
+	Kaffe_AttachCurrentThreadAsDaemon
 };
 
 /*

@@ -143,6 +143,7 @@ java/lang/VMThrowable.class
 java/lang/Void.class
 java/lang/ref/Reference.class
 java/lang/ref/SoftReference.class
+java/lang/ref/PhantomReference.class
 java/lang/ref/ReferenceQueue.class
 java/lang/ref/WeakReference.class
 java/lang/reflect/AccessibleObject.class

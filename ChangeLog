@@ -1,3 +1,113 @@
+2005-01-23  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* include/Makefile.in,
+	kaffe/kaffevm/Makefile.in,
+	libraries/clib/native/Makefile.in,
+	test/regression/Makefile.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in: Regenerated.
+		
+	* include/Makefile.am: Build java_lang_ref_Reference.h.
+
+	* include/native.h
+	(Hjava_lang_Object): Added finalizer_call.
+
+	* kaffe/kaffevm/Makefile.am: Added reference.[ch].
+
+	* kaffe/kaffevm/locks.c
+	(slowUnlockMutex): Clear holder if heavylock is static.
+	
+	* kaffe/kaffevm/baseClasses.c
+	(javaLangRefReference, javaLangRefSoftReference,
+	javaLangRefWeakReference, javaLangRefPhantomReference): New static
+	classes.
+	(initBaseClasses): Invoke KaffeVM_referenceInit.
+
+	* kaffe/kaffevm/baseClasses.h: Likewise.
+
+	* kaffe/kaffevm/reference.c, kaffe/kaffevm/reference.h: New files
+	to handle java references.
+	
+	* kaffe/kaffevm/classMethod.c
+	(processClass): Do not use JNI anymore.
+	(userLoadClass): Set retval to NULL if an exception is raised.
+
+	* kaffe/kaffevm/classMethod.h:
+	(Hjava_lang_Class): New field finalizer_call to handle different
+	type of object finalizing whether it is referenced or not.
+
+	* kaffe/kaffevm/exception.h: Fixed documentation.
+
+	* kaffe/kaffevm/gcFuncs.c
+	(finalizeObject): Invoke finalizer_call for finalization process.
+
+	* kaffe/kaffevm/intrp/machine.c:
+	(virtualMachine) Updated function prefix.
+
+	* kaffe/kaffevm/jit/native-wrapper.c:
+	(startJNIcall) Always handle JNI references now.
+	(Kaffe_wrapper) Updated function prefix and handle JNI references.
+
+	* kaffe/kaffevm/intrp/method-calls.c
+	(startJNIcall, finishJNIcall): Copied from jit/method-calls.c.
+	(engine_callMethod): Use startJNIcall and finishJNIcall.
+	
+	* kaffe/kaffevm/jni/jni-base.c
+	(JNI_CreateJavaVM): Build a JNI reference table for the invoking
+	thread.
+
+	* kaffe/kaffevm/jni/jni-callmethod.c: Updated function prefix.
+
+	* kaffe/kaffevm/jni.c
+	(KaffeJNI_addJNIref, KaffeJNI_removeJNIref): Fixed and activated
+	JNI references counting.
+
+	* kaffe/kaffevm/jni/jni_i.h: Externalized addJNIref and
+	removeJNIref.
+
+	* kaffe/kaffevm/jni/jnirefs.h: Updated to handle multiple frames
+	by thread.
+
+	* kaffe/kaffevm/kaffe-gc/gc-refs.c: Protected the access to the
+	weaek and strong reference lists.
+
+	* kaffe/kaffevm/object.c:
+	(newObjectChecked, newClass, newArrayChecked): Set the finalizer type
+	to the newly created object.
+
+	* kaffe/kaffevm/support.c,
+	kaffe/kaffevm/support.h
+	(KaffeVM_safeCallMethodA, KaffeVM_safeCallMethodV): New functions.
+	(KaffeVM_callMethodA, KaffeVM_callMethodV): Renamed.
+	
+	* kaffe/kaffevm/thread.c
+	(linkNativeAndJavaThread): Initialize jnireferences.
+
+	* kaffe/kaffevm/threadData.h
+	(jnireferences): New field.
+
+	* kaffe/kaffevm/utf8const.c
+	(utfLockRoot): Initialize it to NULL.
+
+	* libraries/clib/native/Makefile.am: Added new file
+	java_lang_ref_Reference.c.
+
+	* libraries/clib/native/java_lang_ref_Reference.c:
+	New file.
+
+	* libraries/javalib/bootstrap.classlist: Updated.
+
+	* libraries/javalib/java/lang/ref/PhantomReference.java,
+	libraries/javalib/java/lang/ref/Reference.java,
+	libraries/javalib/java/lang/ref/ReferenceQueue.java,
+	libraries/javalib/java/lang/ref/SoftReference.java,
+	libraries/javalib/java/lang/ref/WeakReference.java:
+	Imported from GNU Classpath.
+
+	* test/regression/Makefile.am: Added new regression test RefTest.
+
+	* test/regression/RefTest.java: New test.
+
 2005-01-29  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/Makefile.am (EXTRA_DIST): Added 
