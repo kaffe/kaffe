@@ -950,6 +950,14 @@ SCHK(	sanityCheck();						)
 	type = s->u[1].value.i;
 	from = s->u[2].slot;
 
+	if (reginfo[from->regno].flags & Rreadonce) {
+		/*
+		 * XXX Aggressively spill the floating point register on x86.
+		 * Otherwise it might not get spilled out at all.
+		 */
+		spillAndUpdate(from, true);
+	}
+	
 	/* If this slot has a register we must invalidate it before we
 	 * overwrite it.
 	 */

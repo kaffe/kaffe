@@ -1,3 +1,14 @@
+2003-03-14 Tim Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/jit3/machine.c: Aggressively spill Rreadonce
+	registers in slotAlias, otherwise they might not get spilled at
+	all.
+
+	* test/regression/FloatAlias.j: Test aliased float problems on
+	x86.  (Not integrated into the test suite yet.)
+
+	Reported by: Ito Kazumitsu <kaz@maczuka.gcd.org>
+
 2003-03-13 Tim Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/jit3/icode.c: Fix div_int_const_optimize so it
