@@ -41,7 +41,6 @@ package java.util;
 import gnu.java.locale.LocaleInformation;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 
@@ -129,8 +128,7 @@ public final class Currency
     /* Try and load the properties from our iso4217.properties resource */
     try 
       {
-	InputStream propertyStream = Currency.class.getResourceAsStream("iso4217.properties");
-        properties.load(propertyStream);
+        properties.load(Currency.class.getResourceAsStream("iso4217.properties"));
       }
     catch (IOException exception)
       {
@@ -170,7 +168,8 @@ public final class Currency
     /* If there is no country code, return */
     if (countryCode.equals(""))
       {
-        return;
+        throw new
+	  IllegalArgumentException("The specified country code is invalid");
       }
     /* Construct the key for the currency */
     currencyKey = countryCode + ".currency";
@@ -250,6 +249,11 @@ public final class Currency
      */
     Currency newCurrency;
 
+    if (locale == null || locale.getCountry() == null)
+      {
+	throw new
+	  NullPointerException("The locale or its country is null.");
+      }
     /* Attempt to get the currency from the cache */
     newCurrency = (Currency) cache.get(locale);
     if (newCurrency == null)
@@ -300,11 +304,19 @@ public final class Currency
     /* Loop through each locale, looking for the code */
     for (int i = 0;i < allLocales.length; i++)
       {
-	Currency testCurrency = getInstance (allLocales[i]);
-	
-	if (testCurrency != null &&
-	    testCurrency.getCurrencyCode().equals(currencyCode))
-	  return testCurrency;
+	try
+	  {
+	    Currency testCurrency = getInstance (allLocales[i]);
+	    if (testCurrency != null &&
+		testCurrency.getCurrencyCode().equals(currencyCode))
+	      {
+		return testCurrency;
+	      }
+	  }
+	catch (IllegalArgumentException exception)
+	  {
+	    /* Ignore locales without valid countries */
+	  }
       }
     /* 
      * If we get this far, the code is not supported by any of

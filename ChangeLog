@@ -1,6 +1,26 @@
 2005-01-18  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+	
+	2005-01-17  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/util/Currency.java:
+	(getInstance(String)): catch IllegalArgumentException
+	for locales without countries
+	
+2005-01-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-01-16  Mark Wielaard  <mark@klomp.org>
+
+	Reported by Christian Thalinger <twisti@complang.tuwien.ac.at>
+	* java/lang/ClassLoader.java (getExtClassLoaderUrls): Add check for
+	null returned from getFiles().
+	
+2005-01-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 
 	2005-01-15  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
