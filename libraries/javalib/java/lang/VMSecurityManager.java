@@ -33,6 +33,8 @@ combination.*/
  * of this file.
  */
 
+package java.lang;
+
 import kaffe.lang.ThreadStack;
 
 /**
