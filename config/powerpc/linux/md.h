@@ -18,6 +18,12 @@
 #if defined(HAVE_SYS_RESOURCE_H)
 #include <sys/resource.h>
 #endif
+#if defined(HAVE_SIGNAL_H)
+#include <signal.h>
+#endif
+#if defined(HAVE_ASM_SIGCONTEXT_H) && !defined(__GLIBC__)
+#include <asm/sigcontext.h>
+#endif
 
 /* Linux requires a little initialisation */
 extern void init_md(void);
@@ -28,24 +34,16 @@ extern void init_md(void);
 #endif
 #define SP_OFFSET	0
 
-#define SIGNAL_ARGS(sig, sc) int sig
+#include "sigcontextinfo.h"
+
+#define SIGNAL_ARGS(sig, sc) int sig, struct sigcontext *sc
+#define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext *scp
+#define GET_SIGNAL_CONTEXT_POINTER(sc) (&sc)
+#define SIGNAL_PC(scp) (GET_PC(scp))
+#define STACK_POINTER(scp) (GET_STACK(scp))
 #undef HAVE_SIGALTSTACK
 
-#if defined(HAVE_GETRLIMIT)
-#define KAFFEMD_STACKSIZE
-
-static inline rlim_t mdGetStackSize(void)
-{
-  struct rlimit rl;
-
-  // The soft limit is always the lower limit.
-  // Use it by default.
-  if (getrlimit(RLIMIT_STACK, &rl) < 0)
-    return 0;
-  else
-    return rl.rlim_cur;
-}
-#endif
+#include "kaffe-unix-stack.h"
 
 
 #endif

@@ -512,7 +512,8 @@ noinst_HEADERS = \
 	verify-debug.h \
 	verify-sigstack.h \
 	verify-type.h \
-	verify-uninit.h
+	verify-uninit.h \
+	verify-errors.h
 
 CLEANFILES = so_locations
 DISTCLEANFILES = gc-mem.c md.c stamp-h01 stamp-h02

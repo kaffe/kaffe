@@ -36,10 +36,13 @@
 /**/
 #include <signal.h>
 
+#include "sigcontextinfo.h"
+
 #define SIGNAL_ARGS(sig, sc) int sig, int code, struct sigcontext *sc
 #define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext *scp
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
-#define SIGNAL_PC(scp) ((uintp)(scp)->sc_pc)
+#define SIGNAL_PC(scp) (GET_PC(scp))
+#define STACK_POINTER(scp) (GET_STACK(scp))
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"
@@ -49,22 +52,7 @@
 extern void init_md(void);
 #define	INIT_MD()	init_md()
 
-#if defined(HAVE_GETRLIMIT)
-#define KAFFEMD_STACKSIZE
-
-static inline rlim_t mdGetStackSize(void)
-{
-  struct rlimit rl;
-
-  // The soft limit is always the lower limit.
-  // Use it by default.
-  if (getrlimit(RLIMIT_STACK, &rl) < 0)
-    return 0;
-  else
-    return rl.rlim_cur;
-}
-#endif
-
+#include "kaffe-unix-stack.h"
 
 /*
  * sysdepCallMethod supports:

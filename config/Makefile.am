@@ -45,7 +45,8 @@ noinst_HEADERS = \
 	config-net.h \
 	config-setjmp.h \
 	config-signal.h \
-	config-std.h
+	config-std.h \
+	kaffe-unix-stack.h
 
 EXTRA_DIST = \
 	config.alias \
@@ -62,6 +63,7 @@ EXTRA_DIST = \
 	alpha/linux/jit-md.h \
 	alpha/linux/md.c \
 	alpha/linux/md.h \
+	alpha/linux/sigcontextinfo.h \
 	alpha/netbsd1/config.frag \
 	alpha/netbsd1/jit-md.h \
 	alpha/netbsd1/md.c \
@@ -85,6 +87,7 @@ EXTRA_DIST = \
 	arm/linux/jit-md.h \
 	arm/linux/md.c \
 	arm/linux/md.h \
+	arm/linux/sigcontextinfo.h \
 	arm/netbsd1/config.frag \
 	arm/netbsd1/jit-md.h \
 	arm/netbsd1/jit3-md.h \
@@ -107,6 +110,7 @@ EXTRA_DIST = \
 	x86_64/linux/config.frag \
 	x86_64/linux/md.c \
 	x86_64/linux/md.h \
+	x86_64/linux/sigcontextinfo.h \
 	x86_64/threads.h \
 	x86_64/sysdepCallMethod.h \
 	i386/beos/config.frag \
@@ -149,6 +153,7 @@ EXTRA_DIST = \
 	i386/linux/jit3-md.h \
 	i386/linux/md.c \
 	i386/linux/md.h \
+	i386/linux/sigcontextinfo.h \
 	i386/linux/xprofile-md.h \
 	i386/netbsd1/config.frag \
 	i386/netbsd1/jit-md.h \
@@ -218,6 +223,7 @@ EXTRA_DIST = \
 	m68k/linux/jit-md.h \
 	m68k/linux/md.c \
 	m68k/linux/md.h \
+	m68k/linux/sigcontextinfo.h \
 	m68k/netbsd1/config.frag \
 	m68k/netbsd1/jit-md.h \
 	m68k/netbsd1/jit3-md.h \
@@ -250,6 +256,7 @@ EXTRA_DIST = \
 	mips/linux/jit3-md.h \
 	mips/linux/md.c \
 	mips/linux/md.h \
+	mips/linux/sigcontextinfo.h \
 	mips/mips.c \
 	mips/n32-sysdepCallMethod.h \
 	mips/netbsd1/config.frag \

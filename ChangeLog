@@ -1,3 +1,53 @@
+2004-06-07  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* configure.ac: Check for setrlimit. Fixed typo.
+
+	* FAQ/FAQ.kaffemd: Updated with new macros.
+	
+	* config/Makefile.am: Updated EXTRA_DIST and noinst_HEADERS.
+
+	* config/Makefile.in, configure, config.h.in,
+	kaffe/kaffevm/Makefile.in: Regenerated.
+	
+	* config/kaffe-unix-stack.h: New file to summarize stack size
+	detection on Unix/SysV architectures.
+
+	* config/alpha/linux/md.h, config/alpha/linux/sigcontextinfo.h,
+	config/arm/linux/md.h, config/arm/linux/sigcontextinfo.h,
+	config/i386/beos/md.h, config/i386/bsdi/md.h,
+	config/i386/dgux/md.h, config/i386/freebsd2/md.h,
+	config/i386/gnu/md.h, config/i386/linux/md.h,
+	config/i386/linux/sigcontextinfo.h, config/i386/netbsd1/md.h,
+	config/i386/nextstep3/md.h, config/i386/openbsd2/md.h,
+	config/i386/oskit/md.h, config/i386/qnx/md.h,
+	config/i386/sco3.2v5/md.h, config/i386/solaris2/md.h,
+	config/i386/univel_svr4/md.h, config/m68k/linux/md.h,
+	config/m68k/linux/sigcontextinfo.h, config/m68k/netbsd1/md.h,
+	config/m68k/openbsd2/md.h, config/mips/linux/md.h,
+	config/mips/linux/sigcontextinfo.h, config/powerpc/darwin/md.h,
+	config/powerpc/linux/md.h, config/powerpc/linux/sigcontextinfo.h,
+	config/s390/linux/md.h, config/s390/linux/sigcontextinfo.h,
+	config/sparc/bsdi3/md.h, config/sparc/linux/md.h,
+	config/sparc/openbsd2/md.h, config/sparc/solaris2/md.h,
+	config/sparc/sunos4/md.h, config/sparc/uxpds/md.h
+	config/x86_64/linux/md.h, config/x86_64/linux/sigcontextinfo.h:
+	Moved mdGetStackSize to kaffe-unix-stack.h
+	On linux platforms, use sigcontextinfo.h from GLIBC 2.3.2.
+	
+	* kaffe/kaffevm/Makefile.am: New file verify-errors.h
+
+	* kaffe/kaffevm/thread.c: Upgraded stack handling to use mdSetStackSize.
+
+	* kaffe/kaffevm/verify-errors.h, kaffe/kaffevm/verify.c:
+	Moved some function to verify-errors.h to ease up the reading.
+	3000+ lines is just too much.
+
+	* libraries/javalib/rebuildLib.in: Set the stacksize to 500k for kjc.
+	
+2004-06-07  Jim Huang <jserv@linux2.cc.ntu.edu.tw>
+
+	* po/LINGUAS, po/zh_TW.po: Traditional Chinese support for kaffe.
+
 2004-06-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/powerpc/linux/md.h:

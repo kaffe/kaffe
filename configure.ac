@@ -56,7 +56,7 @@ AC_SUBST(abssrcdir)
 
 dnl =========================================================================
 dnl Allow specification of header-file and library directories
-wdnl -------------------------------------------------------------------------
+dnl -------------------------------------------------------------------------
 
 AC_ARG_WITH([includes],
   	    AS_HELP_STRING([--with-includes=dirs],
@@ -1393,7 +1393,7 @@ AC_CHECK_FUNCS([strerror hstrerror])
 AC_CHECK_FUNCS([fcntl ioctl])
 AC_CHECK_FUNCS([alarm setitimer])
 AC_CHECK_FUNCS([sigprocmask sigsetmask sigemptyset sigaddset signal sigaction])
-AC_CHECK_FUNCS([sbrk valloc memalign mallopt getrlimit sigaltstack])
+AC_CHECK_FUNCS([sbrk valloc memalign mallopt getrlimit setrlimit sigaltstack])
 AC_CHECK_FUNCS([madvise])
 AC_CHECK_FUNCS([waitpid kill fork execve execvp])
 AC_CHECK_FUNCS([sync fsync ftruncate])

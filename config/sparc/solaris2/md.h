@@ -34,19 +34,7 @@
 #define SIGNAL_PC(scp) ((scp)->uc_mcontext.gregs[REG_PC])
 #define STACK_POINTER(scp) ((scp)->uc_mcontext.gregs[REG_SP])
 
-#if defined(HAVE_GETRLIMIT)
-#define KAFFEMD_STACKSIZE
-
-static inline rlim_t mdGetStackSize(void)
-{
-  struct rlimit rl;
-
-  if (getrlimit(RLIMIT_STACK, &rl) < 0)
-    return 0;
-  else
-    return rl.rlim_cur;
-}
-#endif
+#include "kaffe-unix-stack.h"
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

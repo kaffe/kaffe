@@ -716,10 +716,22 @@ initNativeThreads(int nativestacksize)
 	 */
 #if defined(KAFFEMD_STACKSIZE)
 	stackSize = mdGetStackSize();
-	if (stackSize == 0)
+
+	if (stackSize == KAFFEMD_STACK_ERROR)
 	  {
 	    dprintf("WARNING: Impossible to retrieve the real stack size\n");
 	    dprintf("WARNING: You may experience deadlocks\n");
+	  }
+	else if (stackSize == KAFFEMD_STACK_INFINITE || stackSize > threadStackSize)
+	  {
+	    mdSetStackSize(threadStackSize);
+	    /* Last chance. We check whether the size has really been updated. */
+	    stackSize = mdGetStackSize();
+	  }
+	else
+	  {
+	    dprintf("NOTE: It is impossible to set the main thread stack\n"
+		    "NOTE: size because the system stack size is too low\n");
 	  }
 #else
 	stackSize = MAINSTACKSIZE;

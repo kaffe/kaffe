@@ -146,7 +146,8 @@ noinst_HEADERS = \
 	verify-debug.h \
 	verify-sigstack.h \
 	verify-type.h \
-	verify-uninit.h
+	verify-uninit.h \
+	verify-errors.h
 
 gc-mem.c: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \

@@ -38,9 +38,13 @@
 /* Signal handling */
 /**/
 #include <signal.h>
+
+#include "sigcontextinfo.h"
+
 #define SIGNAL_ARGS(sig, sc) int sig, int dummy, struct sigcontext *sc
 #define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext * scp
 #define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
-#define SIGNAL_PC(scp) scp->pc
+#define SIGNAL_PC(scp) (GET_PC(scp))
+#define STACK_POINTER(scp) (GET_STACK(scp))
 
 #endif

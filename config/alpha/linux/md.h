@@ -22,10 +22,13 @@
 #undef SP_OFFSET
 #define SP_OFFSET 8
 
+#include "sigcontextinfo.h"
+
 #define SIGNAL_ARGS(sig, sc) int sig, int alpha_dummy, struct sigcontext *sc
 #define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext * scp
 #define GET_SIGNAL_CONTEXT_POINTER(sc) (&sc)
-#define SIGNAL_PC(scp) scp->pc
+#define SIGNAL_PC(scp) (GET_PC((*scp)))
+#define STACK_POINTER(scp) (GET_STACK((*scp)))
 
 /* Linux requires a little initialisation */
 extern void init_md(void);

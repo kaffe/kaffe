@@ -40,18 +40,6 @@
 #include "jit-md.h"
 #endif
 
-#if defined(HAVE_GETRLIMIT)
-#define KAFFEMD_STACKSIZE
-
-static inline rlim_t mdGetStackSize(void)
-{
-  struct rlimit rl;
-
-  if (getrlimit(RLIMIT_STACK, &rl) < 0)
-    return 0;
-  else
-    return (rl.rlim_max >= RLIM_INFINITY) ? rl.rlim_cur : rl.rlim_max;
-}
-#endif
+#include "kaffe-unix-stack.h"
 
 #endif

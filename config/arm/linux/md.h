@@ -45,13 +45,12 @@
 #error Do not know how to define SIGNAL_ARGS
 #endif
 
+#include "sigcontextinfo.h"
+
 #define GET_SIGNAL_CONTEXT_POINTER(ctx) (&ctx)
 
-#if defined(HAVE_REG_SIGCONTEXT)
-#define SIGNAL_PC(ctx) (ctx)->reg.ARM_pc
-#else
-#define SIGNAL_PC(ctx) (ctx)->arm_pc
-#endif
+#define SIGNAL_PC(ctx) (GET_PC((*ctx)))
+#define STACK_POINTER(ctx) (GET_STACK((*ctx)))
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

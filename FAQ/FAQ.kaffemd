@@ -30,3 +30,21 @@ KAFFEMD_STACKEND
 
 This macro is to be defined is the platform supports mdGetStackEnd(). This
 function returns a pointer to the end of the stack.
+
+KAFFEMD_STACKSIZE
+-----------------
+
+This macro specifies whether the platform supports mdGetStackSize(),
+mdSetStackSize(), KAFFEMD_STACK_INFINITY and KAFFEMD_STACK_ERROR.
+mdGetStackSize() returns the maximum acceptable stack size for the OS.
+mdSetStackSize() changes this limit.
+KAFFEMD_STACK_INFINITY is an alias for the value representing an infinite
+stack size.
+KAFFEMD_STACK_ERROR is an alias for the special value representing an error for
+mdGetStackSize() (usually 0).
+
+KAFFEMD_BUGGY_STACKOVERFLOW
+---------------------------
+
+This macro indicated that the architecture has a buggy stack overflow handling
+and thus kaffe must take care of not enabling some stack protection features.

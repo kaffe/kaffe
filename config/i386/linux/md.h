@@ -72,25 +72,13 @@ extern void init_md(void);
 #error Do not know how to define SIGNAL_ARGS
 #endif
 
+#include "sigcontextinfo.h"
+
 #define GET_SIGNAL_CONTEXT_POINTER(sc) (&sc)
-#define SIGNAL_PC(scp) (scp)->eip
-#define STACK_POINTER(scp) (scp)->esp
+#define SIGNAL_PC(scp) (GET_PC((*scp)))
+#define STACK_POINTER(scp) (GET_STACK((*scp)))
 
-#if defined(HAVE_GETRLIMIT)
-#define KAFFEMD_STACKSIZE
-
-static inline rlim_t mdGetStackSize(void)
-{
-  struct rlimit rl;
-
-  // The soft limit is always the lower limit.
-  // Use it by default.
-  if (getrlimit(RLIMIT_STACK, &rl) < 0)
-    return 0;
-  else
-    return rl.rlim_cur;
-}
-#endif
+#include "kaffe-unix-stack.h"
 
 #if defined(__GLIBC__)
 #define KAFFEMD_STACKBASE

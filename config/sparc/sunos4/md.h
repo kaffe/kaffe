@@ -49,18 +49,6 @@ extern int getpeername(int, struct sockaddr*, int*);
 extern int select(int, fd_set*, fd_set*, fd_set*, struct timeval*);
 extern int vfprintf(FILE *, char *, va_list);
 
-#if defined(HAVE_GETRLIMIT)
-#define KAFFEMD_STACKSIZE
-
-static inline rlim_t mdGetStackSize(void)
-{
-  struct rlimit rl;
-
-  if (getrlimit(RLIMIT_STACK, &rl) < 0)
-    return 0;
-  else
-    return rl.rlim_cur;
-}
-#endif
+#include "kaffe-unix-stack.h"
 
 #endif

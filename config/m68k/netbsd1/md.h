@@ -34,6 +34,8 @@
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
 #define SIGNAL_PC(scp) ((uintp)(scp)->sc_pc)
 
+#include "kaffe-unix-stack.h"
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

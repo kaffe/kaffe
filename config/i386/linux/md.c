@@ -10,7 +10,10 @@
  */
 
 #include "config.h"
+#include "gtypes.h"
 #include <malloc.h>
+#include <unistd.h>
+#include <stdio.h>
 #if defined(HAVE_FEATURES_H)
 #include <features.h>
 #endif
@@ -28,6 +31,8 @@ extern void * __libc_stack_end;
 
 void *mdGetStackBase(void)
 {
-  return __libc_stack_end;
+  long sz = sysconf(_SC_PAGESIZE);
+  
+  return (void *)(((uintp)__libc_stack_end + sz - 1) & (-sz));
 }
 #endif

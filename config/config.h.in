@@ -399,6 +399,9 @@
 /* Define to 1 if you have the `setitimer' function. */
 #undef HAVE_SETITIMER
 
+/* Define to 1 if you have the `setrlimit' function. */
+#undef HAVE_SETRLIMIT
+
 /* Define to 1 if you have the `sigaction' function. */
 #undef HAVE_SIGACTION
 
