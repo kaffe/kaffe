@@ -1,4 +1,25 @@
-2003-05-11 Dalibor Topic <robilad@yahoo.com>
+2003-05-15 Dalibor Topic <robilad@yahoo.com>
+
+	Started to merge in the Collection classes implementation from GNU
+	Classpath, replacing kaffe's implementation.
+	
+        libraries/javalib/java/util/AbstractCollection.java,
+        libraries/javalib/java/util/AbstractList.java,
+        libraries/javalib/java/util/Collection.java,
+        libraries/javalib/java/util/Comparator.java,
+        libraries/javalib/java/util/Enumeration.java,
+        libraries/javalib/java/util/EventListener.java,
+        libraries/javalib/java/util/Iterator.java,
+        libraries/javalib/java/util/List.java,
+        libraries/javalib/java/util/ListIterator.java,
+        libraries/javalib/java/util/Map.java,
+        libraries/javalib/java/util/Observer.java,
+        libraries/javalib/java/util/Set.java,
+        libraries/javalib/java/util/SortedMap.java,
+        libraries/javalib/java/util/SortedSet.java:
+	replaced by implementation from GNU Classpath.
+
+2003-05-14 Dalibor Topic <robilad@yahoo.com>
 
 	Resynced with GNU Classpath.
 
@@ -130,8 +151,8 @@
 2003-05-13 Benja Fallenstein <b.fallenstein@gmx.de>
 
 	* libraries/javalib/java/security/MessageDigest.java:
-	Fixed problems with classes extending MessageDigest instead of
-	MessageDigestSpi.
+	Fixed problems with classes extending MessageDigestSpi instead of
+	MessageDigest.
 
 	* FAQ/FAQ.classlibrary-compile:
 	Added FAQ entry on detecting compilation errors.
