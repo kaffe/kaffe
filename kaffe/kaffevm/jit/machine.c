@@ -8,11 +8,8 @@
  * of this file. 
  */
 
-#define	DBG(s)
-#define	MDBG(s)
-#define	SDBG(s)
-
 #include "config.h"
+#include "debug.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "classMethod.h"
@@ -174,7 +171,9 @@ translate(Method* meth)
 		tms = currentTime();
 	}
 
-DBG(	printf("callinfo = 0x%x\n", &cinfo);	)
+DBG(MOREJIT,
+	dprintf("callinfo = 0x%x\n", &cinfo);	
+    )
 
 	/* If this code block is native, then just set it up and return */
 	if ((meth->accflags & ACC_NATIVE) != 0) {
@@ -226,6 +225,8 @@ DBG(	printf("callinfo = 0x%x\n", &cinfo);	)
 
 		npc = pc + insnLen[base[pc]];
 
+DBG(JIT,	dprintf("pc = %d, npc = %d\n", pc, npc);	)
+
 		/* Determine various exception conditions */
 		checkCaughtExceptions(meth, pc);
 
@@ -272,7 +273,11 @@ DBG(	printf("callinfo = 0x%x\n", &cinfo);	)
 
 	tidyVerifyMethod();
 
-MDBG(	printf("Translating %s.%s%s (%s) %p\n", meth->class->name->data, meth->name->data, meth->signature->data, isStatic ? "static" : "normal", meth->ncode);	)
+DBG(JIT,
+	dprintf("Translated %s.%s%s (%s) %p\n", meth->class->name->data, 
+		meth->name->data, meth->signature->data, 
+		isStatic ? "static" : "normal", meth->ncode);	
+    )
 
 	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
 		tme = currentTime();
@@ -307,8 +312,6 @@ finishInsnSequence(nativeCodeInfo* code)
 	codebase = methblock + constlen;
 	memcpy(codebase, codeblock, CODEPC);
 	gc_free(codeblock);
-
-SDBG(	printf("%s.%s: allocated %d, needed %d\n", meth->class->name->data, meth->name->data, meth->codelen * codeperbytecode, constlen + CODEPC);	)
 
 	/* Establish any code constants */
 	establishConstants(methblock);
