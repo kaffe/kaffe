@@ -134,6 +134,7 @@ Klasses_jar_SRCS = \
 	$(gnu_java_net_protocol_ftp_SRCS) \
 	$(gnu_java_net_protocol_http_SRCS) \
 	$(gnu_java_net_protocol_http_event_SRCS) \
+	$(gnu_java_net_protocol_https_SRCS) \
 	$(gnu_java_net_protocol_jar_SRCS) \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_channels_SRCS) \
@@ -1508,6 +1509,8 @@ gnu_java_net_protocol_http_event_SRCS = \
 	gnu/java/net/protocol/http/event/ConnectionListener.java \
 	gnu/java/net/protocol/http/event/RequestEvent.java \
 	gnu/java/net/protocol/http/event/RequestListener.java
+gnu_java_net_protocol_https_SRCS = \
+	gnu/java/net/protocol/https/Handler.java
 gnu_java_net_protocol_jar_SRCS = \
 	gnu/java/net/protocol/jar/Connection.java \
 	gnu/java/net/protocol/jar/Handler.java
