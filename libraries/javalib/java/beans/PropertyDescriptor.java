@@ -438,7 +438,7 @@ public class PropertyDescriptor extends FeatureDescriptor
      * <li>the property type and the read method's return type must be assignable from the
      * write method's argument type</li>
      * <li>the write method may not exist</li>
-     * <ul>
+     * </ul>
      * While checking the methods a common new property type is calculated. If the method
      * succeeds this property type is returned.<br/>
      * <br/>

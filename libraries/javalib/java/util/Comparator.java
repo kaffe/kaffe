@@ -84,7 +84,7 @@ public interface Comparator
    *   <li>if compare(a, b) &lt; 0 and compare(b, c) &lt; 0 then compare(a, c)
    *       &lt; 0</li>
    *   <li>if compare(a, b) == 0 then compare(a, c) and compare(b, c) must
-   *       have the same sign</li
+   *       have the same sign</li>
    * </ul>
    * To be consistent with equals, the following additional constraint is
    * in place:
