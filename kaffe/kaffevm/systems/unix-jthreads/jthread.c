@@ -1923,9 +1923,10 @@ jthreadedFileDescriptor(int fd)
  		return (r);
 	}
 #elif defined(FIOASYNC) && !defined(linux)
-	/* Don't do this on Linux because Linux (at least up to 2.2.1) doesn't
+	/* Don't do this on Linux because Linux version < 2.2.5 doesn't
 	 * know what FIOASYNC means.  It thinks FIOASYNC == O_SYNC. I kid you
 	 * not.  You can imagine what that means. ;-)
+	 * Never mind, FASYNC work as expected and is already set :)
 	 */
 	/* 
 	 * This ioctl fails for so many systems on so many occasions.

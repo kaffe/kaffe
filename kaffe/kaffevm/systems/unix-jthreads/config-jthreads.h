@@ -117,7 +117,7 @@ typedef int sigset_t;
 #endif
 
 #ifndef FD_COPY
-#define FD_COPY(from, to)	memcpy(from, to, sizeof(from))
+#define FD_COPY(from, to)	memcpy(to, from, sizeof(*(from)))
 #endif
 
 /* define our own jlong and NOTIMEOUT */

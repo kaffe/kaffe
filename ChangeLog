@@ -1,3 +1,10 @@
+Fri Apr 30 11:38:40 PDT 1999  Edouard Parmelan <Edouard.Parmelan@quadratec.fr>
+
+	* kaffe/kaffevm/systems/unix-jthreads/config-jthreads.h:
+	fix backwards definition of FD_COPY() macro
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: adjust comment
+	* libraries/clib/net/InetAddressImpl.c: eliminate warning
+
 1999-04-29  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* acinclude.m4, ltconfig, ltmain.sh: Update from libtool 1.3.

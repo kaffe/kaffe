@@ -18,6 +18,7 @@
 #include <native.h>
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
+#include "../../../kaffe/kaffevm/support.h"
 #include "java_net_InetAddress.h"
 #include "java_net_InetAddressImpl.h"
 #include "nets.h"
