@@ -186,6 +186,7 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 Hjava_lang_Class*
 getClassFromSignature(const char* sig, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
+	const char *const sig0 = sig;
 	Hjava_lang_Class *cls = classFromSig(&sig, loader, einfo);
 
 	/* name must consume all characters in string */
@@ -197,7 +198,7 @@ getClassFromSignature(const char* sig, Hjava_lang_ClassLoader* loader, errorInfo
 	 * .class file, or it could be a malformed user input from 
 	 * Class.forName()
 	 */
-	postException(einfo, JAVA_LANG(NoClassDefFoundError));
+	postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError), sig0);
 	return (0);
 }
 
