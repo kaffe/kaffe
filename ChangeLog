@@ -1,3 +1,17 @@
+2003-12-12  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/kaffe/io/CharToByteEUC_JP.java,
+	libraries/javalib/kaffe/io/ByteToCharEUC_JP.java:
+	Rewritten as an extension of CharToByteIconv and
+	ByteToCharIconv.
+
+	* kaffe/developers/README.EUC_JP:
+	Added a comment on the change above.
+
+	* libraries/javalib/kaffe/io/CharToByteEUC_JP.tbl,
+	libraries/javalib/kaffe/io/ByteToCharEUC_JP.tbl:
+	Deleted.
+
 2003-12-11  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/io/CharToByteEUC_JP.java:

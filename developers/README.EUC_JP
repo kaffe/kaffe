@@ -1,3 +1,9 @@
+# This is a historical document.
+# Classes kaffe.io.ByteToCharEUC_JP and kaffe.io.CharToByteEUC_JP use
+# Classes kaffe.io.ByteToCharIconv and kaffe.io.CharToByteIconv
+# respectively and the tables ByteToCharEUC_JP.tbl and CharToByteEUC_JP.tbl
+# are no longer used.  (Dec 12, 2003, Ito Kazumitsu <kaz@maczuka.gcd.org>)
+
 Extended UNIX Code (EUC) Encoding Scheme
 
 The EUC encoding scheme defines a set of encoding rules that can
