@@ -1,5 +1,27 @@
 2004-05-17  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/rmi/MarshalledObject.java,
+        libraries/javalib/java/rmi/Naming.java,
+        libraries/javalib/java/rmi/RemoteException.java,
+        libraries/javalib/java/rmi/activation/ActivationException.java,
+        libraries/javalib/java/rmi/server/ServerCloneException.java:
+	Resynced with GNU Classpath.
+
+	2004-04-18  Michael Koch  <konqueror@gmx.de>
+
+	* java/rmi/Naming.java,
+	java/rmi/RemoteException.java,
+	java/rmi/activation/ActivationException.java,
+	java/rmi/server/ServerCloneException.java:
+	Fixed HTML tags in javadocs.
+
+	2004-04-02  Tom Tromey  <tromey@redhat.com>
+
+	* java/rmi/MarshalledObject.java (MarshalledObject): Removed
+	redundant `extends'.
+
+2004-05-17  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/beans/Introspector.java,
         libraries/javalib/java/beans/PropertyEditor.java,
         libraries/javalib/java/beans/PropertyEditorManager.java,
