@@ -1919,7 +1919,7 @@ IDBG(		printf("%d: %d\n", pc, INSN(pc));		)
 
 done:
 	/* Discard active frame */
-	gc_free(activeFrame);
+	KFREE(activeFrame);
 
 	return (failed);
 }
@@ -1975,10 +1975,10 @@ tidyVerifyMethod(codeinfo *codeInfo)
 	/* Free the old data */
 	for (pc = 0; pc < codeInfo->codelen; pc++) {
 		if (codeInfo->perPC[pc].frame != 0) {
-			gc_free(codeInfo->perPC[pc].frame);
+			KFREE(codeInfo->perPC[pc].frame);
 		}
 	}
-	gc_free(codeInfo);
+	KFREE(codeInfo);
 DBG(CODEANALYSE,
 	dprintf(__FUNCTION__" %p: clearing codeInfo %p\n", 
 		THREAD_NATIVE(), codeInfo);
