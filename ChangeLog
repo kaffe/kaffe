@@ -1,3 +1,41 @@
+2003-12-09  Dalibor Topic <robilad@kaffe.org>
+
+	* config/m68k/common.h
+	(sysdepCallMethod) Converted to inline function.
+	(COMPARE_AND_EXCHANGE) Call compare_and_swap inline function
+	from atomicity.h.
+
+	* config/m68k/atomicity.h: New file from GNU libc.
+
+	* config/Makefile.am 
+	(EXTRA_DIST) Added config/m68k/atomicity.h.
+
+	* config/Makefile.in,
+	aclocal.m4:
+	Regenerated.
+	
+	* THIRDPARTY: Added information on m68k atomic compare_and_swap.
+	
+2003-12-08  Dalibor Topic <robilad@kaffe.org>
+
+        * Makefile.am
+	(EXTRA_DIST) Added ChangeLog.6, ChangeLog.7 and ChangeLog.8.
+
+        * Makefile.in,
+        aclocal.m4,
+        config/Makefile.in,
+        kaffe/Makefile.in,
+        kaffe/kaffe/Makefile.in,
+        kaffe/kaffevm/Makefile.in,
+        kaffe/kaffevm/gcj/Makefile.in,
+        kaffe/scripts/Makefile.in,
+        libraries/clib/Makefile.in,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        test/internal/Makefile.in,
+        test/regression/Makefile.in:
+	Regenerated.
+
 2003-12-08  Dalibor Topic <robilad@kaffe.org>
 
         * Makefile.am

@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003
+ *      Kaffe.org contributors. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  *
@@ -20,6 +23,8 @@
 
 #ifndef __m68k_common_h
 #define __m68k_common_h
+
+#include "atomicity.h"
 
 /*
  * Alignment in structure is 2 bytes packed.
@@ -38,121 +43,128 @@
  */
 #if defined(__linux__)		// try forcing linux sysdepCallMethod()
 #ifdef	USE_ASM		/* Old and obsolete... */
-#define	sysdepCallMethod(CALL)					      	\
-               asm volatile (" \n"					\
-"       1: \n"								\
-"               cmp.l   #0,%0 \n"					\
-"               beq     3f \n"						\
-"               subq.l  #1,%0 \n"					\
-"               cmp.b   #0,(%2,%0.l) \n"				\
-"               beq     1b \n"						\
-"               cmp.b   #1,(%2,%0.l) \n"				\
-"               beq     2f \n"						\
-"               move.l  4(%1,%0.l*8),-(%/sp) \n"			\
-"       2: \n"								\
-"               move.l  (%1,%0.l*8),-(%/sp) \n"				\
-"               jmp     1b \n"						\
-"       3: \n"								\
-"               jsr     (%3) \n"					\
-"               cmp.b   #0x46,%4 \n"					\
-"               bne     4f \n"						\
-"               fmove.s %/fp0,(%5) \n"					\
-"               jmp     6f \n"						\
-"       4: \n"								\
-"               cmp.b   #0x44,%4 \n"					\
-"               bne     5f \n"						\
-"               fmove.d %/fp0,(%5) \n"					\
-"               jmp     6f \n"						\
-"       5: \n"								\
-"               move.l  %/d0,(%5) \n"					\
-"               cmp.b   #0x4a,%4 \n"					\
-"               bne     6f \n"						\
-"               move.l  %/d1,4(%5) \n"					\
-"       6: \n"                                                          \
-"       " :                                                             \
-         : "r" ((CALL)->nrargs),					\
-           "a" ((CALL)->args),						\
-           "a" ((CALL)->callsize),					\
-           "a" ((CALL)->function),					\
-           "m" ((CALL)->rettype),					\
-           "a" ((CALL)->ret)						\
-          : "d0", "d1", "fp0", "cc", "memory");				\
-               asm volatile (" \n"					\
-"               add.w %0,%/sp \n"					\
-"        " : : "r" ((CALL)->argsize * sizeof(jint)) : "cc")
+static inline void sysdepCallMethod(callMethodInfo *call)
+{
+
+	asm volatile (" \n"
+		      "       1: \n"
+		      "               cmp.l   #0,%0 \n"
+		      "               beq     3f \n"
+		      "               subq.l  #1,%0 \n"
+		      "               cmp.b   #0,(%2,%0.l) \n"
+		      "               beq     1b \n"
+		      "               cmp.b   #1,(%2,%0.l) \n"
+		      "               beq     2f \n"
+		      "               move.l  4(%1,%0.l*8),-(%/sp) \n"
+		      "       2: \n"
+		      "               move.l  (%1,%0.l*8),-(%/sp) \n"
+		      "               jmp     1b \n"
+		      "       3: \n"
+		      "               jsr     (%3) \n"
+		      "               cmp.b   #0x46,%4 \n"
+		      "               bne     4f \n"
+		      "               fmove.s %/fp0,(%5) \n"
+		      "               jmp     6f \n"
+		      "       4: \n"
+		      "               cmp.b   #0x44,%4 \n"
+		      "               bne     5f \n"
+		      "               fmove.d %/fp0,(%5) \n"
+		      "               jmp     6f \n"
+		      "       5: \n"
+		      "               move.l  %/d0,(%5) \n"
+		      "               cmp.b   #0x4a,%4 \n"
+		      "               bne     6f \n"
+		      "               move.l  %/d1,4(%5) \n"
+		      "       6: \n"
+		      "       " :
+		      : "r" ((call)->nrargs),
+		      "a" ((call)->args),
+		      "a" ((call)->callsize),
+		      "a" ((call)->function),
+		      "m" ((call)->rettype),
+		      "a" ((call)->ret)
+		      : "d0", "d1", "fp0", "cc", "memory");
+	asm volatile (" \n"
+		      "               add.w %0,%/sp \n"
+		      "        " : 
+		      : "r" ((call)->argsize * sizeof(jint)) 
+		      : "cc");
+}
+		       
 #else	/* undef USE_ASM */
 //	Linux version
-#define sysdepCallMethod(CALL) do {				\
-	int extraargs[(CALL)->nrargs];				\
-	register int d0 asm ("d0");				\
-	register int d1 asm ("d1");				\
-	register double f0d asm ("fp0");			\
-	register float f0f asm ("fp0");				\
-	int *res;						\
-	int *args = extraargs;					\
-	int argidx;						\
-	for(argidx = 0; argidx < (CALL)->nrargs; ++argidx) {	\
-		if ((CALL)->callsize[argidx])			\
-			*args++ = (CALL)->args[argidx].i;	\
-		else						\
-			*args++ = (CALL)->args[argidx-1].j;	\
-	}							\
-	asm volatile ("jsr	%2@\n"				\
-	 : "=r" (d0), "=r" (d1)					\
-	 : "a" ((CALL)->function)				\
-	 : "cc", "memory");					\
-	if ((CALL)->retsize != 0) {				\
-		res = (int *)(CALL)->ret;			\
-	switch((CALL)->retsize) {				\
-	case 2:							\
-	  if ((CALL)->rettype == 'D')				\
-	    *(double*)res = f0d;				\
-	  else {						\
-		res[1] = d1;					\
-		res[0] = d0;					\
-	  }							\
-	  break;						\
-	case 1:							\
-	  if ((CALL)->rettype == 'F')				\
-	    *(double*)res = f0f;				\
-	  else							\
-		res[0] = d0;					\
-	  break;						\
-	}							\
-	}							\
-} while (0)
+static inline void sysdepCallMethod(callMethodInfo *call)
+{
+	int extraargs[(call)->nrargs];
+	register int d0 asm ("d0");
+	register int d1 asm ("d1");
+	register double f0d asm ("fp0");
+	register float f0f asm ("fp0");
+	int *res;
+	int *args = extraargs;
+	int argidx;
+	for(argidx = 0; argidx < (call)->nrargs; ++argidx) {
+		if ((call)->callsize[argidx])
+			*args++ = (call)->args[argidx].i;
+		else
+			*args++ = (call)->args[argidx-1].j;
+	}
+	asm volatile ("jsr	%2@\n"
+		      : "=r" (d0), "=r" (d1)
+		      : "a" ((call)->function)
+		      : "cc", "memory");
+	if ((call)->retsize != 0) {
+		res = (int *)(call)->ret;
+	switch((call)->retsize) {
+	case 2:
+	  if ((call)->rettype == 'D')
+	    *(double*)res = f0d;
+	  else {
+		res[1] = d1;
+		res[0] = d0;
+	  }
+	  break;
+	case 1:
+	  if ((call)->rettype == 'F')
+	    *(double*)res = f0f;
+	  else
+		res[0] = d0;
+	  break;
+	}
+	}
+}
 #endif	/* USE_ASM */
 #else	/* not defined(__linux__) */
 
-#define sysdepCallMethod(CALL) do				\
-{								\
-	int extraargs[(CALL)->nrargs];				\
-	register int d0 asm ("d0");				\
-	register int d1 asm ("d1");				\
-	register double f0d asm ("fp0");			\
-	register float f0f asm ("fp0");				\
-	int *res;						\
-	int *args = extraargs;					\
-	int argidx;						\
-	for(argidx = 0; argidx < (CALL)->nrargs; ++argidx)	\
-	{							\
-		if ((CALL)->callsize[argidx])			\
-			*args++ = (CALL)->args[argidx].i;	\
-		else						\
-			*args++ = (CALL)->args[argidx-1].j;	\
-	}							\
-	asm volatile ("jsr	%2@\n"				\
-	 : "=r" (d0), "=r" (d1)					\
-	 : "a" ((CALL)->function)				\
-	 : "cc", "memory");					\
-	if ((CALL)->retsize >= 1 )				\
-	{							\
-		res = (int *)(CALL)->ret;			\
-		res[0] = d0;					\
-  		if((CALL)->retsize > 1)	/* >= 2 */		\
-			res[1] = d1;				\
-	}							\
-} while (0)
+static inline void sysdepCallMethod(callMethodInfo *call) 
+{
+	int extraargs[(call)->nrargs];
+	register int d0 asm ("d0");
+	register int d1 asm ("d1");
+	register double f0d asm ("fp0");
+	register float f0f asm ("fp0");
+	int *res;
+	int *args = extraargs;
+	int argidx;
+	for(argidx = 0; argidx < (call)->nrargs; ++argidx)
+	{
+		if ((call)->callsize[argidx])
+			*args++ = (call)->args[argidx].i;
+		else
+			*args++ = (call)->args[argidx-1].j;
+	}
+	asm volatile ("jsr	%2@\n"
+	 : "=r" (d0), "=r" (d1)
+	 : "a" ((call)->function)
+	 : "cc", "memory");
+	if ((call)->retsize >= 1 )
+	{
+		res = (int *)(call)->ret;
+		res[0] = d0;
+  		if((call)->retsize > 1)	/* >= 2 */
+			res[1] = d1;
+	}
+}
 
 #endif	/* defined(__linux__) */
 
@@ -160,29 +172,9 @@
  * Do an atomic compare and exchange.  The address 'A' is checked against
  * value 'O' and if they match it's exchanged with value 'N'.
  * We return '1' if the exchange is successful, otherwise 0.
- *
- *	Modified by tony wyatt March 2003 - change register assignments
- *	to force use of data registers in 'casl' instruction.
- *	Also initialise return value by clearing at start.
  */
-#define COMPARE_AND_EXCHANGE(A,O,N)		\
-({						\
-	unsigned int tmp, ret = 0;		\
-						\
-	asm volatile(				\
-	"	clr		%1 \n"		\
-	"1:	movel	%2, %0\n"		\
-	"	cmpl	%4, %0\n"		\
-	"	bne	2f\n"			\
-	"	casl	%0, %5, %2\n"		\
-	"	bne	1b\n"			\
-	"	movq	#1, %1\n"		\
-	"2:\n"					\
-	: "=&r" (tmp), "=&d" (ret), "=m" (*(A))	\
-	: "m" (*(A)), "d" (O), "d" (N)		\
-	: "memory");				\
-						\
-	ret;					\
-})
+
+
+#define COMPARE_AND_EXCHANGE(A, O, N)  (compare_and_swap((long int*) A, (long int) O, (long int) N)) 
 
 #endif

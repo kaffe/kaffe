@@ -168,6 +168,7 @@ EXTRA_DIST = \
 	i386/win32/jit-md.h \
 	i386/win32/md.h \
 	i386/win32/win32-md.asm \
+	m68k/atomicity.h \
 	m68k/a-ux/config.frag \
 	m68k/a-ux/jit-md.h \
 	m68k/a-ux/md.c \

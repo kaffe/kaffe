@@ -152,10 +152,19 @@ SUCH DAMAGE.
 
 At the time of writing, Kaffe uses getaddrinfo 1.6.1.
 
+* M68k atomic compare_and_swap
+
+Taken from GNU libc 2.3.2, which is licensed under the GNU Lesser General 
+Public License. See file license-lesser.terms for details.
+
+More information on GNU libc is available at 
+http://www.gnu.org/software/libc/libc.html.
+
 * Configure.in tests for isinf, isnan, finite
 
 Taken from Sablotron 1.0, which is dually licensed licensed under MPL 1.1 
-and GPL. It is available from http://www.gingerall.cz/charlie/ga/xml/p_sab.xml
+and GPL. It is available from 
+http://www.gingerall.cz/charlie/ga/xml/p_sab.xml.
 
 * valist.m4
 
@@ -189,6 +198,9 @@ Licensed under the GNU General Public License with a special exception:
   do so, delete this exception statement from your version."
 
 See license.terms for details of the GNU GPL.
+
+More information on GNU Crypto is available from 
+http://www.gnu.org/software/gnu-crypto/.
 
 * iconv.m4, lib-ld.m4, lib-link.m4, lib-prefix.m4
 
