@@ -5,6 +5,7 @@ Fri May  5 12:48:22 PDT 2000  Archie Cobbs <archie@whistle.com>
 	and increment modCount after each structural change
 	* libraries/javalib/java/text/ParsePosition.java: add missing methods
 	* libraries/javalib/Klasses.jar: regen
+	* libraries/javalib/java/net/ServerSocket.java: fix bug in accept()
 
 Wed May  3 11:37:33 PDT 2000  Archie Cobbs <archie@whistle.com>
 
