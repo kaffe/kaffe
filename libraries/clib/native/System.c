@@ -31,6 +31,7 @@
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/external.h"
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../include/system.h"
 #include "defs.h"
@@ -163,6 +164,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	 * java.home            Java installation directory
 	 *
 	 * java.io.tmpdir	Default directory for temporary files
+	 * java.library.path	Search path for native libraries
 	 *
 	 * java.vm.specification.version
 	 *			Java Virtual Machine specification version
@@ -217,6 +219,8 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 #else
 	setProperty(p, "java.io.tmpdir", "/tmp");	/* XXX or /var/tmp?? */
 #endif
+
+	setProperty(p, "java.library.path", getLibraryPath());
 
 	setProperty(p, "java.vm.specification.version",
 		  kaffe_vm_specification_version);
