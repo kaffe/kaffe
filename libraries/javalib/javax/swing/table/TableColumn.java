@@ -219,7 +219,8 @@ public class TableColumn
   private void firePropertyChange(String property, boolean oldValue,
                                   boolean newValue)
   {
-    firePropertyChange(property, new Boolean(oldValue), new Boolean(newValue));
+    firePropertyChange(property, Boolean.valueOf(oldValue),
+		       Boolean.valueOf(newValue));
   }
 
   /**

@@ -70,19 +70,19 @@ public final class TextAttribute extends AttributedCharacterIterator.Attribute
   public static final Float POSTURE_REGULAR = new Float (0.0);
   public static final TextAttribute RUN_DIRECTION =
     new TextAttribute ("RUN_DIRECTION");
-  public static final Boolean RUN_DIRECTION_LTR = new Boolean (true);
-  public static final Boolean RUN_DIRECTION_RTL = new Boolean (false);
+  public static final Boolean RUN_DIRECTION_LTR = Boolean.valueOf(true);
+  public static final Boolean RUN_DIRECTION_RTL = Boolean.valueOf(false);
   public static final TextAttribute SIZE = new TextAttribute ("SIZE");
   public static final TextAttribute STRIKETHROUGH =
     new TextAttribute ("STRIKETHROUGH");
-  public static final Boolean STRIKETHROUGH_ON = new Boolean (true);
+  public static final Boolean STRIKETHROUGH_ON = Boolean.valueOf(true);
   public static final TextAttribute SUPERSCRIPT =
     new TextAttribute ("SUPERSCRIPT");
   public static final Integer SUPERSCRIPT_SUB = new Integer (-1);
   public static final Integer SUPERSCRIPT_SUPER = new Integer (1);
   public static final TextAttribute SWAP_COLORS =
     new TextAttribute ("SWAP_COLORS");
-  public static final Boolean SWAP_COLORS_ON = new Boolean (true);
+  public static final Boolean SWAP_COLORS_ON = Boolean.valueOf(true);
   public static final TextAttribute TRANSFORM = new TextAttribute ("TRANSFORM");
   public static final TextAttribute UNDERLINE = new TextAttribute ("UNDERLINE");
   public static final Integer UNDERLINE_LOW_DASHED = new Integer (0);

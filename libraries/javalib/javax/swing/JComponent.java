@@ -615,8 +615,8 @@ public abstract class JComponent extends Container implements Serializable
                                  boolean newValue)
   {
     if (changeSupport != null)
-      changeSupport.firePropertyChange(propertyName, new Boolean(oldValue),
-                                       new Boolean(newValue));
+      changeSupport.firePropertyChange(propertyName, Boolean.valueOf(oldValue),
+                                       Boolean.valueOf(newValue));
   }
 
   /**

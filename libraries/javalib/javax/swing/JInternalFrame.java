@@ -1706,6 +1706,6 @@ public class JInternalFrame extends JComponent implements Accessible,
                                   boolean newValue)
                            throws PropertyVetoException
   {
-    super.fireVetoableChange(name, new Boolean(oldValue), new Boolean(newValue));
+    super.fireVetoableChange(name, Boolean.valueOf(oldValue), Boolean.valueOf(newValue));
   }
-} // class JInternalFrame
+}

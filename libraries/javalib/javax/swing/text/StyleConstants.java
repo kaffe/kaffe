@@ -279,7 +279,7 @@ public class StyleConstants
 
   public static void setBold(MutableAttributeSet a, boolean b)
   {
-    a.addAttribute(Bold, new Boolean(b));
+    a.addAttribute(Bold, Boolean.valueOf(b));
   } 
   
   public static void setComponent(MutableAttributeSet a, Component c)
@@ -314,7 +314,7 @@ public class StyleConstants
  
   public static void setItalic(MutableAttributeSet a, boolean b)
   {
-    a.addAttribute(Italic, new Boolean(b));
+    a.addAttribute(Italic, Boolean.valueOf(b));
   }
  
   public static void setLeftIndent(MutableAttributeSet a, float i)
@@ -344,17 +344,17 @@ public class StyleConstants
 
   public static void setStrikeThrough(MutableAttributeSet a, boolean b)
   {
-    a.addAttribute(StrikeThrough, new Boolean(b));
+    a.addAttribute(StrikeThrough, Boolean.valueOf(b));
   } 
 
   public static void setSubscript(MutableAttributeSet a, boolean b)
   {
-    a.addAttribute(Subscript, new Boolean(b));
+    a.addAttribute(Subscript, Boolean.valueOf(b));
   } 
 
   public static void setSuperscript(MutableAttributeSet a, boolean b)
   {
-    a.addAttribute(Superscript, new Boolean(b));
+    a.addAttribute(Superscript, Boolean.valueOf(b));
   } 
 
   public static void setTabSet(MutableAttributeSet a, javax.swing.text.TabSet tabs)
@@ -364,7 +364,7 @@ public class StyleConstants
 
   public static void setUnderline(MutableAttributeSet a, boolean b)
   {
-    a.addAttribute(Underline, new Boolean(b));
+    a.addAttribute(Underline, Boolean.valueOf(b));
   } 
 
   // The remainder are so-called "typesafe enumerations" which 
