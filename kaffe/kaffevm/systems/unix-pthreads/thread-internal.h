@@ -90,11 +90,7 @@ extern pthread_key_t   ntKey;
  * Returns the current native thread.
  *
  */
-static inline          
-jthread_t jthread_current(void)      
-{
-  return (jthread_t)pthread_getspecific(ntKey);
-}
+jthread_t jthread_current(void);
 
 /**
  * Attaches the calling thread to the vm.

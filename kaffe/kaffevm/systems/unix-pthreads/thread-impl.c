@@ -1684,3 +1684,12 @@ bool jthread_extract_stack(jthread_t tid, void** from, unsigned* len)
 #endif
   return true;
 }
+
+/**
+ * Returns the current native thread.
+ *
+ */
+jthread_t jthread_current(void)      
+{
+  return (jthread_t)pthread_getspecific(ntKey);
+}
