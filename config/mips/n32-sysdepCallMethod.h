@@ -140,18 +140,18 @@ longSysdepCallMethod(callMethodInfo *call,
       jvalue *last = &callargs[args];
       ARG_TYPE *xargs = extraargs+ARG_DISPLACEMENT + args-ARG_COUNT;
       while (last != &callargs[ARG_COUNT])
-	switch (calltype[last-callargs]) {
+	switch (calltype[(--last) - callargs]) {
 	case 'D':
-	  *(double*)--xargs = (--last)->d;
+	  *(double*)--xargs = last->d;
 	  break;
 	case 'F':
-	  *(float*)--xargs = (--last)->f;
+	  *(float*)--xargs = last->f;
 	  break;
 	case 'J':
-	  *--xargs = (--last)->j;
+	  *--xargs = last->j;
 	  break;
 	default:
-	  *--xargs = (--last)->i;
+	  *--xargs = last->i;
 	  break;
 	}
     }
