@@ -1,3 +1,8 @@
+Fri May 15 17:07:36 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/thread.c: set standardGroups.group initially to null
+	instead of an array of length null to fix ThreadGroup creation problem.
+
 Thu May 14 15:04:09 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* test/regression/TestScript: added GCTest
