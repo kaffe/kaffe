@@ -73,7 +73,8 @@ public boolean equals ( Object obj ) {
 }
 
 public String toString() {
-	return getClass().getName() + " ["  + top + ',' + left
-	                            + ',' + bottom + ',' + right + ']';
+	return getClass().getName() 
+		+ " [top="  + top + ",left=" + left
+		+ ",bottom=" + bottom + ",right=" + right + ']';
 }
 }
