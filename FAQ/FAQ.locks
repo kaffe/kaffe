@@ -118,7 +118,8 @@ A. The Ksem interface:
 The Ksem is a binary semaphore, and need not be recursive.  The Ksem
 is initialized to 0 (in semaphore-speak this means the resource is not
 available).  ksemGet() can timeout, thus it returns a boolean
-indication of whether it acquired the semaphore or not.
+indication of whether it acquired the semaphore or not.  The timeout
+is specified in milliseconds.
 
 As a side-effect of Kaffe's fast locking scheme, there is a one-to-one
 mapping between Ksem and threads.  Also, all Ksem's are dynamically
