@@ -1224,12 +1224,12 @@ void
 cleanupInVerifyMethod(uint32* status, SigStack* sigs, UninitializedType* uninits, uint32* numBlocks, BlockInfo ** blocks)
 {
 	DBG(VERIFY3, dprintf("    cleaning up..."); );
-	KFREE(status);
+	gc_free(status);
 	if (blocks != NULL) {
 		while (*numBlocks > 0) {
 			freeBlock(blocks[--(*numBlocks)]);
 		}
-		KFREE(blocks);
+		gc_free(blocks);
 	}
         freeSigStack(sigs);
         freeUninits(uninits);
@@ -2081,7 +2081,7 @@ static inline
 bool
 verifyErrorInVerifyMethod3b(errorInfo* einfo, const Method* method, BlockInfo* curBlock, const char * msg)
 {
-        KFREE(curBlock);
+        gc_free(curBlock);
         if (einfo->type == 0) {
         	postExceptionMessage(einfo, JAVA_LANG(VerifyError),
 				     "in method \"%s.%s\": %s",
@@ -2394,7 +2394,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 	
 	
 	DBG(VERIFY3, dprintf("    Verifier Pass 3b: Complete\n"); );
-	KFREE(curBlock);
+	gc_free(curBlock);
 	return(true);
 }
 
@@ -4264,7 +4264,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 	for (sig = getNextArg(sig + 1, argbuf); *argbuf != ')'; sig = getNextArg(sig, argbuf)) {
 		
 		if (paramIndex >= binfo->stacksz) {
-			KFREE(argbuf);
+			gc_free(argbuf);
 			return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "error: not enough parameters on stack for method invocation");
 		}
 		
@@ -4394,13 +4394,13 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 	default:
 	        /* shouldn't get here because of parsing during pass 2... */
 		DBG(VERIFY3, dprintf("                unrecognized return type signature: %s\n", argbuf); );
-		KFREE(argbuf);
+		gc_free(argbuf);
 		postExceptionMessage(einfo, JAVA_LANG(InternalError),
 				     "unrecognized return type signature");
 		return(false);
 	}
 	
-	KFREE(argbuf);
+	gc_free(argbuf);
 	return(true);
 }
 
@@ -4420,7 +4420,7 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 	postExceptionMessage(einfo, JAVA_LANG(VerifyError), \
 			     "method %s.%s: %s", \
 			     CLASS_CNAME(method->class), METHOD_NAMED(method), _MSG); \
-	KFREE(argbuf); \
+	gc_free(argbuf); \
 	return(false)
 
 #define LOCAL_OVERFLOW_ERROR \
@@ -4508,7 +4508,7 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 	
 	
 	/* success! */
-	KFREE(argbuf);
+	gc_free(argbuf);
 	return(true);
 
 #undef LOCAL_OVERFLOW_ERROR
@@ -4557,7 +4557,7 @@ resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
 		type->data.class = getClassFromSignature(sig, this->loader, einfo);
 		
 		if (tmp) {
-			KFREE(tmp);
+			gc_free(tmp);
 		}
 	}
 	else if (type->tinfo & TINFO_SIG) {
@@ -4962,11 +4962,11 @@ freeBlock(BlockInfo* binfo)
 	if (binfo == NULL) return;
 	
 	if (binfo->locals != NULL)
-		KFREE(binfo->locals);
+		gc_free(binfo->locals);
 	if (binfo->opstack != NULL)
-		KFREE(binfo->opstack);
+		gc_free(binfo->opstack);
 	
-	KFREE(binfo);
+	gc_free(binfo);
 }
 
 /*
@@ -5049,7 +5049,7 @@ freeSigStack(SigStack* sigs)
 	SigStack* tmp;
 	while(sigs != NULL) {
 		tmp = sigs->next;
-		KFREE(sigs);
+		gc_free(sigs);
 		sigs = tmp;
 	}
 }
@@ -5139,7 +5139,7 @@ popUninit(const Method* method, UninitializedType* uninit, BlockInfo* binfo)
 		uninit->next->prev = uninit->prev;
 	}
 	
-	KFREE(uninit);
+	gc_free(uninit);
 }
 
 /*
@@ -5153,7 +5153,7 @@ freeUninits(UninitializedType* uninits)
 	UninitializedType* tmp;
 	while (uninits) {
 		tmp = uninits->next;
-		KFREE(uninits);
+		gc_free(uninits);
 		uninits = tmp;
 	}
 }
