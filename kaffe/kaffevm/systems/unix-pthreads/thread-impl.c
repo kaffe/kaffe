@@ -439,6 +439,25 @@ tSetLock ( nativeThread* nt )
   lk->thd = nt;
 }
 
+/*
+ * We must have a certain amount of credible thread information setup
+ * as soon as possible.
+ */
+static
+void
+tSetupFirstNative(void)
+{
+  nativeThread* nt;
+
+  /*
+   * We need to have a native thread context available as soon as possible.
+   */
+  nt = thread_malloc( sizeof(nativeThread));
+  nt->tid = pthread_self();
+  pthread_setspecific( ntKey, nt);
+  nt->stackMin  = (void*)0;
+  nt->stackMax  = (void*)-1;
+}
 
 /*
  * The global, one-time initialization goes here. This is a
@@ -467,6 +486,8 @@ jthread_init(int pre,
   sigfillset( &suspendSet);
   sigdelset( &suspendSet, SIG_RESUME);
 
+  tSetupFirstNative();
+
   DBG_ACTION( vm_thread, { tStartDeadlockWatchdog(); });
 }
 
@@ -478,7 +499,7 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
   int            oldCancelType;
 
   thread = (Hjava_lang_Thread*)jlThread;
-  nt = thread_malloc( sizeof(nativeThread));
+  nt = GET_CURRENT_THREAD( &nt );
 
   /* we can't use nt->attr, because it wasn't used to create this thread */
   pthread_attr_init( &nt->attr);
