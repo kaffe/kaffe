@@ -1,6 +1,6 @@
 #
-# This file contains various macros useful for Kaffe debugging.
-# Most of the macros in this file were either written by or originated from
+# This file contains various macros useful for Kaffe debugging.  Most
+# of the macros in this file were either written by or originated from
 # Patrick Tullmann <tullmann@cs.utah.edu>
 #
 # To use it, you need to use gdb's "source" command to source it.  This can
@@ -11,10 +11,16 @@
 #	kaffe ...
 # 
 # There's no guarantee that all of these macros work; if you notice 
-# problems, fixes are always welcome.
+# problems, fixes are always welcome.  Most of the macros are dependent
+# on the structure of internal variables and types in the VM.
 #
-# Here's what should definitely work:	pstr, jlstring, pclass, pmeth, intbt
+# Here's what should definitely work:	pstr, jlstring, pclass, pmeth, intbt,
+# livethreads, livethreadsbt, rr, findNativeMethod, btThread, pobject,
+# pobjecttype, vmdebug_state, vmdebug_list, vmdebug_setopt
 #
+
+# Kaffe ignores SIGPIPE, so we should too (on systems that have SIGPIPE)
+#handle SIGPIPE nostop noprint
 
 define pStr
   p (char*)(($arg0).data)
@@ -486,8 +492,17 @@ document restoreThread
 end
 
 define btThread
-  set $th = ((jthread*)$arg0)
+  set $th = ((jthread_t)$arg0)
   set $jbuf = (int*)($th.env)
+
+  btThreadBSDjmpbuf $jbuf
+end
+document btThread
+  Print a backtrace for the given JTHREAD
+end
+
+define btThreadBSDjmpbuf
+  set $jbuf = (int*)($arg0)
 
   set $saveEIP = $eip
   set $saveESP = $esp
@@ -500,7 +515,7 @@ define btThread
   set $esp = $jbuf[2]
   set $ebp = $jbuf[3]
 
-  # printf "btThread: .esp=%x .ebp=%x\n", $esp, $ebp
+  # printf "btThreadBSDjmpbuf: .esp=%x .ebp=%x\n", $esp, $ebp
 
   bt
 
@@ -508,8 +523,35 @@ define btThread
   set $esp = $saveESP
   set $ebp = $saveEBP
 end
-document btThread
-  Print a backtrace for the given JTHREAD
+document btThreadBSDjmpbuf
+  Print a backtrace based on the given BSDish JMPBUF
+end
+
+
+define btThreadOSKitUnixbuf
+  set $jbuf = (pcb_t*)($arg0)
+
+  set $saveEIP = $eip
+  set $saveESP = $esp
+  set $saveEBP = $ebp
+
+  ## jmpbuf[0] = instruction pointer
+  ## jmpbuf[2] = stack pointer
+  ## jmpbuf[3] = base pointer
+  set $eip = $jbuf.eip
+  set $esp = $jbuf.esp
+  set $ebp = $jbuf.ebp
+
+  # printf "btThreadOSKitUnixbuf: .esp=%x .ebp=%x\n", $esp, $ebp
+
+  bt
+
+  set $eip = $saveEIP
+  set $esp = $saveESP
+  set $ebp = $saveEBP
+end
+document btThreadOSKitUnixbuf
+  Print a backtrace based on the given JMPBUF
 end
 
 
@@ -585,4 +627,138 @@ define dumpexcchain
 end
 document dumpexcchain
     Dump exception chain for a given jthread
+end
+
+define pobject
+  set $object  = $arg0
+  set $class = (((Hjava_lang_Object*)$object).dtable.class)
+
+  pobjecttype $object $class
+end
+document pobject
+  Given a java object POINTER, lookup the object class and print its state
+end
+
+define pobjecttype
+  set $SHOWSTATICS = 0
+
+  set $obj  = ((Hjava_lang_Object*)$arg0)
+  set $type = ((Hjava_lang_Class*)$arg1)
+  set $fields = $type.fields
+  set $i = 0
+  while $i < ($type.nfields)
+    ## Print the type 
+    if $fields[$i].accflags & 0x8000
+      # field is unresolved
+      printf "  (unresolved %s)\n", (char*)(((Utf8Const*)($fields[$i].type)).data)
+    else
+      # field is resolved
+
+
+      ## Print the location
+      if $fields[$i].accflags & 0x8
+       # Static field element
+       if $SHOWSTATICS != 0
+          printf "  %s %s", $fields[$i].type.name.data, (char*)(($fields[$i]).name.data)
+         printf " @ %p (static)\n", $fields[$i].info.addr
+       end
+      else
+        ## Regular, non-static field
+        printf "  %s %s", $fields[$i].type.name.data, (char*)(($fields[$i]).name.data)
+        set $size = $fields[$i].bsize
+       if $size == 1
+         printf " = %d\n", *((unsigned char*)(((char*)$obj) + $fields[$i].info.boffset))
+       else
+         if $size == 2
+           printf " = %d\n", *((unsigned short*)(((char*)$obj) + $fields[$i].info.boffset))
+         else
+           if $size == 4
+              if $type.methods == ((Method*)-1)
+                # primitive type, show as int
+                printf " = %d\n", *((int*)(((char*)$obj) + $fields[$i].info.boffset))
+              else
+                printf " = %p\n", *((void**)(((char*)$obj) + $fields[$i].info.boffset))
+              end
+           else
+             if $size == 8
+               printf " = icky\n"
+             else
+               printf " = ?? size=%d\n", $size
+             end
+           end
+         end
+       end
+      end
+    end
+    set $i = $i + 1
+  end
+end
+document pobjecttype
+  Print the state of an object and a class object.
+end
+
+define vmdebug_state
+  set $df = kaffevmDebugMask
+
+  set $index = 0
+  set $flag = debug_opts[$index].mask
+  printf "Current vmdebug flags are: "
+  ### XXX end-of-list marker is bogus.  I just assume DBG_ANY is last...
+  while $flag != (long long)-1
+    #printf "\n  (checking %s @ %d) ", debug_opts[$index].name, $index
+    set $match = ((long long)$flag) & kaffevmDebugMask
+    if ($flag != 0) && ($match == $flag)
+      printf "%s, ", debug_opts[$index].name
+    end
+    set $index = $index + 1
+    set $flag = debug_opts[$index].mask
+  end
+  printf "\n"
+end
+document vmdebug_state
+  Print the Kaffe internal debug flag state
+end
+
+define vmdebug_list
+  set $index = 0
+  set $flag = debug_opts[$index].mask
+  ### XXX end-of-list marker is bogus.  I just assume DBG_ANY is last...
+  while $flag != (long long)-1
+    if $flag != 0
+      printf "%s: %s ", debug_opts[$index].name, debug_opts[$index].desc
+    end
+
+    set $index = $index + 1
+    set $flag = debug_opts[$index].mask
+    printf "\n"
+  end
+end
+document vmdebug_list
+  List the vmdebug flags (equivalent to -vmdebug list on command line)
+end
+
+define vmdebug_setopt
+  set $name = ($arg0)
+  set $foundit = 0
+    
+  set $index = 0
+  set $flag = debug_opts[$index].mask
+  ### XXX end-of-list marker is bogus.  I just assume DBG_ANY is last...
+  while ($flag != (long long)-1) && ($foundit == 0)
+    set $strchk = strcmp($name, debug_opts[$index].name)
+    if $strchk == 0
+      set kaffevmDebugMask = kaffevmDebugMask | debug_opts[$index].mask
+      set $foundit = 1
+    end
+
+    set $index = $index + 1
+    set $flag = debug_opts[$index].mask
+  end
+
+  if $foundit == 0
+    printf "Couldn't find mask %s, no changes made.\n", $name
+  end
+end
+document vmdebug_setopt
+  Turn on some bits in the debug mask, based on the STRING given
 end

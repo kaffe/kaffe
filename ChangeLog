@@ -1,3 +1,9 @@
+Tue Jun 20 21:59:44 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
+
+	* developers/gdbinit: Add three macros for tweaking the
+	kaffevmDebugMask from GDB, factor out the thread platform from the 
+	bt 
+
 2000-06-20  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/javalib/java/text/SimpleDateFormat.java (format): use
