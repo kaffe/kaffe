@@ -884,19 +884,19 @@ public void paintAll ( Graphics g ) {
 	paint( g);
 }
 
-void paintBorder () {
+void kaffePaintBorder () {
 	Graphics g = getGraphics();
 	if ( g != null ) {
-		paintBorder( g);
+		kaffePaintBorder( g);
 		g.dispose();
 	}
 }
 
-void paintBorder ( Graphics g ) {
-	paintBorder( g, 0, 0, 0, 0);
+void kaffePaintBorder ( Graphics g ) {
+	kaffePaintBorder( g, 0, 0, 0, 0);
 }
 
-void paintBorder ( Graphics g, int left, int top, int right, int bottom ) {
+void kaffePaintBorder ( Graphics g, int left, int top, int right, int bottom ) {
 	int w = width - (left + right);
 	int h = height - (top + bottom);
 

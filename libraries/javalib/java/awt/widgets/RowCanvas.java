@@ -65,7 +65,7 @@ public void adjustmentValueChanged( AdjustmentEvent e) {
 }
 
 public void focusGained( FocusEvent e) {
-	paintBorder();
+	kaffePaintBorder();
 	
 	if ( Defaults.FocusScrolls ) {
 		if ( hScroll != null )
@@ -78,7 +78,7 @@ public void focusGained( FocusEvent e) {
 }
 
 public void focusLost( FocusEvent e) {
-	paintBorder();
+	kaffePaintBorder();
 	
 	if ( Defaults.FocusScrolls ) {
 		if ( hScroll != null )
@@ -195,12 +195,12 @@ int maxRowWidth() {
 	return 0;
 }
 
-void paintBorder () {
+void kaffePaintBorder () {
   // not nice to resolve this, but our getGraphics() is more expensive
 
 	Graphics g = super.getGraphics();
 	if ( g != null ){
-		paintBorder( g);
+		kaffePaintBorder( g);
 		g.dispose();
 	}
 }

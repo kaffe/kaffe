@@ -286,7 +286,7 @@ public void paint ( Graphics g ) {
 	if ( vw != 0 )
 		g.paintChild( vScroll, false);
 		
-	paintBorder( g, 0, 0, vw, hh);
+	kaffePaintBorder( g, 0, 0, vw, hh);
 }
 
 final public void setLayout ( LayoutManager mgr ) {

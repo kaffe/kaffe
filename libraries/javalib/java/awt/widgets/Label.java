@@ -77,7 +77,7 @@ public void paint( Graphics g) {
 	g.fillRect( 0, 0, width, height);
 
 	if ( hasBorder )
-		paintBorder( g);
+		kaffePaintBorder( g);
 			
 	if ( Defaults.LabelTxtCarved ) {
 		g.setColor( Color.white);

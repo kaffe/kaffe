@@ -169,7 +169,7 @@ public void paint ( Graphics g) {
 		drawImage( g);
 	}
 	else {
-		paintBorder( g);
+		kaffePaintBorder( g);
 		g.setColor( ((state & HILIGHTED) > 0) ? Defaults.BtnPointClr : bgClr);
 		g.fill3DRect( d, d, width-2*d, height-2*d, ((state & PUSHED) == 0));
 		if ( imgs != null )

@@ -678,7 +678,7 @@ void pageUp( boolean extend) {
 
 public void paint( Graphics g) {
 	repaintRows( g, first, rows.size()-first );
-	paintBorder( g);
+	kaffePaintBorder( g);
 }
 
 void paintInactiveCursor() {

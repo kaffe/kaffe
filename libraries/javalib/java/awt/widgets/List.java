@@ -215,7 +215,7 @@ public void mouseReleased( MouseEvent e) {
 
 public void paint ( Graphics g ) {
 	repaintRows( g, first, getVisibleRows() );
-	paintBorder( g);
+	kaffePaintBorder( g);
 }
 
 void repaintItem( Graphics g, int idx) {

@@ -124,7 +124,7 @@ public void paint ( Graphics g ) {
 	}
 }
 
-void paintBorder ( Graphics g, int left, int top, int right, int bottom ) {
+void kaffePaintBorder ( Graphics g, int left, int top, int right, int bottom ) {
 }
 
 void processMouse( MouseEvent e) {

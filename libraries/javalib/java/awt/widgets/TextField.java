@@ -141,7 +141,7 @@ public void focusGained( FocusEvent e) {
 }
 
 public void focusLost( FocusEvent e) {
-	paintBorder();
+	kaffePaintBorder();
 	if ( Defaults.ShowInactiveCursor ) {
 		paintInactiveCursor();
 	}
@@ -413,7 +413,7 @@ void notifyAction(){
 
 public void paint( Graphics g) {
 	int d = BORDER_WIDTH;
-	paintBorder( g);
+	kaffePaintBorder( g);
 	
 	g.setColor( bgClr);
 	g.fillRect( d, d, width-2*d, height-2*d);

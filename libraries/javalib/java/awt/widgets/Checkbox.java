@@ -67,10 +67,10 @@ void drawButton( Graphics g, int ext, int x0, int y0 ) {
 	g.fill3DRect( x0, y0, ext, ext, true);
 
 	if ( label.endsWith( " " ) )
-		paintBorder( g);
+		kaffePaintBorder( g);
 	else {
 		int d = BORDER_WIDTH;
-		paintBorder( g, x0-d, y0-d, width-(x0+ext+d), height-(y0+ext+d) );
+		kaffePaintBorder( g, x0-d, y0-d, width-(x0+ext+d), height-(y0+ext+d) );
 	}
 
 }
