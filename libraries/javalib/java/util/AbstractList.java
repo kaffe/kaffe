@@ -91,7 +91,7 @@ public List subList(final int fromIndex, final int toIndex) {
   }
   return new AbstractList() {
     private final AbstractList list = AbstractList.this;
-    private int modCount = AbstractList.this.modCount;
+    protected int modCount = AbstractList.this.modCount;
     private final int off = fromIndex;
     private int len = toIndex - fromIndex;
 
