@@ -32,6 +32,7 @@
 // needed for pass 3
 #include "bytecode.h"
 #include "itypes.h"
+#include "soft.h"
 
 
 /*
@@ -163,19 +164,21 @@ parseMethodTypeDescriptor(const char* sig)
 	DBG(VERIFY2, dprintf("        parsing method type descriptor: %s\n", sig); );
 	
 	// parse the type parameters
-	for (sig++; *sig != '\0' && *sig != ')'; sig = parseFieldTypeDescriptor(sig)) {
+	for (sig++; sig && *sig != ')' && *sig != '\0'; sig = parseFieldTypeDescriptor(sig)) {
 		DBG(VERIFY2, dprintf("            parameter sig: %s\n", sig); );
 	}
 	
-	if (*sig == '\0') {
+	if (sig == NULL || *sig == '\0') {
 		DBG(VERIFY2, dprintf("            error: no ReturnDescriptor\n"); );
 		return false;
 	}
 	sig++;
-
+	
 	DBG(VERIFY2, dprintf("            ReturnDescriptor: %s\n", sig); );	
-	if (*sig == 'V')
-		return (*(sig + 1) == '\0');
+	if (*sig == 'V') {
+		sig++;
+		return *sig == '\0';
+	}
 	
 	if (parseFieldTypeDescriptor(sig) != NULL) return true;
 	
@@ -206,78 +209,94 @@ static bool isMethodVoid(Method* method)
  * For debugging purposes.  Prints out the value of the specified constant pool entry.
  */
 #ifdef KAFFE_VMDEBUG
+const char* indent  = "                ";
+const char* indent2 = "                        ";
+
+static
+uint32
+printConstantPoolEntry(const Hjava_lang_Class* class, uint32 idx)
+{
+	const constants* pool = CLASS_CONSTANTS(class);
+	
+	switch (pool->tags[idx]) {
+	case CONSTANT_Utf8:
+		DBG(VERIFY2, dprintf("   UTF8: %s", CONST_UTF2CHAR(idx, pool)) );
+		break;
+			
+			
+	case CONSTANT_Long:
+	case CONSTANT_Double:
+		idx++;
+	case CONSTANT_Integer:
+	case CONSTANT_Float:
+		DBG(VERIFY2, dprintf("   NUMERICAL"); );
+		break;
+			
+			
+	case CONSTANT_ResolvedString:
+	case CONSTANT_ResolvedClass:
+		DBG(VERIFY2, dprintf("   RESOLVED: %s",
+				     ((Hjava_lang_Class*)pool->data[idx])->name->data); );
+		break;
+			
+			
+			
+	case CONSTANT_Class:
+		DBG(VERIFY2, dprintf("   UNRESOLVED CLASS: %s", CLASS_NAMED(idx, pool)); );
+		break;
+			
+	case CONSTANT_String:
+		DBG(VERIFY2, dprintf("   STRING: %s", CONST_STRING_NAMED(idx, pool)); );
+		break;
+			
+			
+			
+	case CONSTANT_Fieldref:
+		DBG(VERIFY2, dprintf("   FIELDREF: %s  --type--  %s",
+				     FIELDREF_NAMED(idx, pool), FIELDREF_SIGD(idx, pool)); );
+		break;
+			
+	case CONSTANT_Methodref:
+		DBG(VERIFY2, dprintf("   METHODREF: %s  --type--  %s",
+				     METHODREF_NAMED(idx, pool), METHODREF_SIGD(idx, pool)); );
+		break;
+			
+			
+	case CONSTANT_InterfaceMethodref:
+		DBG(VERIFY2, dprintf("   INTERFACEMETHODREF: %s  --type--  %s",
+				     INTERFACEMETHODREF_NAMED(idx, pool), INTERFACEMETHODREF_SIGD(idx, pool)); );
+		break;
+			
+			
+	case CONSTANT_NameAndType:
+		DBG(VERIFY2, dprintf("   NAMEANDTYPE: %s  --and--  %s",
+				     NAMEANDTYPE_NAMED(idx, pool), NAMEANDTYPE_SIGD(idx, pool)); );
+		break;
+			
+	default:
+		DBG(VERIFY2, dprintf("   *** UNRECOGNIZED CONSTANT POOL ENTRY in class %s *** ",
+				     CLASS_CNAME(class)); );
+	}
+	
+	return idx;
+}
+
 static
 void
-printConstantPool(Hjava_lang_Class* class)
+printConstantPool(const Hjava_lang_Class* class)
 {
-	int idx;
-	constants *pool = CLASS_CONSTANTS(class);
+	uint32 idx;
+	const constants *pool = CLASS_CONSTANTS(class);
 	
 	DBG(VERIFY2, dprintf("    CONSTANT POOL FOR %s\n", class->name->data); );
 	
 	for (idx = 1; idx < pool->size; idx++) {
 		DBG(VERIFY2, dprintf("      %d", idx); );
 		
-		switch (pool->tags[idx]) {
-		case CONSTANT_Utf8:
-			DBG(VERIFY2, dprintf("   UTF8: %s\n", CONST_UTF2CHAR(idx, pool)) );
-			break;
-			
-			
-		case CONSTANT_Long:
-		case CONSTANT_Double:
-			idx++;
-		case CONSTANT_Integer:
-		case CONSTANT_Float:
-			DBG(VERIFY2, dprintf("   NUMERICAL\n"); );
-			break;
-			
-			
-		case CONSTANT_ResolvedString:
-		case CONSTANT_ResolvedClass:
-			DBG(VERIFY2, dprintf("   RESOLVED: %s\n",
-					     ((Hjava_lang_Class*)pool->data[idx])->name->data); );
-			break;
-			
-			
-			
-		case CONSTANT_Class:
-			DBG(VERIFY2, dprintf("   UNRESOLVED CLASS: %s\n", CLASS_NAMED(idx, pool)); );
-			break;
-			
-		case CONSTANT_String:
-			DBG(VERIFY2, dprintf("   STRING: %s\n", CONST_STRING_NAMED(idx, pool)); );
-			break;
-			
-			
-			
-		case CONSTANT_Fieldref:
-			DBG(VERIFY2, dprintf("   FIELDREF: %s  --type--  %s\n",
-					     FIELDREF_NAMED(idx, pool), FIELDREF_SIGD(idx, pool)); );
-			break;
-			
-		case CONSTANT_Methodref:
-			DBG(VERIFY2, dprintf("   METHODREF: %s  --type--  %s\n",
-					     METHODREF_NAMED(idx, pool), METHODREF_SIGD(idx, pool)); );
-			break;
-			
-			
-		case CONSTANT_InterfaceMethodref:
-			DBG(VERIFY2, dprintf("   INTERFACEMETHODREF: %s  --type--  %s\n",
-					     INTERFACEMETHODREF_NAMED(idx, pool), INTERFACEMETHODREF_SIGD(idx, pool)); );
-			break;
-			
-			
-		case CONSTANT_NameAndType:
-			DBG(VERIFY2, dprintf("   NAMEANDTYPE: %s  --and--  %s\n",
-					     NAMEANDTYPE_NAMED(idx, pool), NAMEANDTYPE_SIGD(idx, pool)); );
-			break;
-			
-		default:
-			DBG(VERIFY2, dprintf("   *** UNRECOGNIZED CONSTANT POOL ENTRY in class %s *** \n",
-					     CLASS_CNAME(class)); );
-		}
-	}	
+		idx = printConstantPoolEntry(class, idx);
+		
+		DBG(VERIFY2, dprintf("\n"); );
+	}
 }
 #endif
 
@@ -890,6 +909,7 @@ typedef struct block_info
 #define START_BLOCK     16
 #define END_BLOCK       32
 
+#define EXCEPTION_HANDLER 64
 
 
 // types for type checking (pass 3b)
@@ -922,35 +942,6 @@ typedef struct block_info
 #define IS_PRIMITIVE_TYPE(_T) (_T == TINT || _T == TFLOAT || _T == TLONG || _T == TDOUBLE)
 
 
-/*
- * array types
- */
-#define TCHARARR		(charArrClass)
-
-// internally, booleans are represented by bytes
-#define TBOOLARR                (byteArrClass)
-#define TBYTEARR		(byteArrClass)
-
-#define TSHORTARR		(shortArrClass)
-#define TINTARR			(intArrClass)
-#define TLONGARR		(longArrClass)
-
-#define TFLOATARR		(floatArrClass)
-#define TDOUBLEARR		(doubleArrClass)
-
-#define TOBJARR			(objectArrClass)
-
-
-#define IS_PRIMITIVE_ARRAY(_T) \
-           ((_T) == TCHARARR || (_T) == TBYTEARR || (_T) == TSHORTARR || (_T) == TINTARR || (_T) == TLONGARR || \
-            (_T) == TFLOATARR || (_T) == TDOUBLEARR)
-
-// for IS_ARRAY we need to make sure that CLASS_IS_ARRAY is passed something legitimate...
-#define IS_ARRAY(_T) \
-           ((_T) && ((_T) != TUNSTABLE) && ((_T) != TADDR) && ((_T) != TNULL) && ((_T) != TWIDE) && \
-	    CLASS_IS_ARRAY(_T))
-
-
 /***********************************************************************************
  * Methods for Pass 3 Verification
  ***********************************************************************************/
@@ -961,7 +952,7 @@ static void printInstruction(const int opcode);
 static bool              verifyMethod(errorInfo* einfo, Method* method);
 static BlockInfo**       verifyMethod3a(errorInfo* einfo,
 					Method* method,
-					char* status,       // array of status info for all opcodes
+					uint32* status,       // array of status info for all opcodes
 					uint32* numBlocks); // number of basic blocks
 
 
@@ -983,30 +974,41 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
 		return (true);
 	
 	
+	// make sure it's initialized...we had some problems because of this
+	einfo->type = 0;
+	
+	
 	DBG(VERIFY3, dprintf("\nPass 3 Verifying Class \"%s\"\n", CLASS_CNAME(class)); );
+	DBG(VERIFY3, {
+		Hjava_lang_Class* tmp;
+		for (tmp = class->superclass; tmp; tmp = tmp->superclass) {
+			dprintf("                        |-> %s\n", tmp->name->data);
+		}
+	});
 	
 	for (n = CLASS_NMETHODS(class), method = CLASS_METHODS(class);
 	     n > 0;
 	     --n, ++method) {
 		
-		DBG(VERIFY3, dprintf("\n  -----------------------------------\n  considering method %s\n", METHOD_NAMED(method)); );
+		DBG(VERIFY3, dprintf("\n  -----------------------------------\n  considering method %s%s\n",
+				     METHOD_NAMED(method), METHOD_SIGD(method)); );
 		
 		// if it's abstract or native, no verification necessary
 		if (!(METHOD_IS_ABSTRACT(method) || METHOD_IS_NATIVE(method))) {
 			DBG(VERIFY3, dprintf("  verifying method %s\n", METHOD_NAMED(method)); );
 			
-			if (parseMethodTypeDescriptor(METHOD_SIGD(method)) == false) {
+			if (!parseMethodTypeDescriptor(METHOD_SIGD(method))) {
 				postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 						     "Method %s.%s has invalid signature, %s",
 						     CLASS_CNAME(class), METHOD_NAMED(method), METHOD_SIGD(method));
 				return(false);
 			}
-			else if (verifyMethod(einfo, method) == false) {
-				DBG(VERIFY3, dprintf("  FAILURE TO VERIFY METHOD %s.%s\n",
-						     CLASS_CNAME(class),
-						     METHOD_NAMED(method)); );
-				
-				// propagate the error...
+			else if (!verifyMethod(einfo, method)) {
+				if (einfo->type == 0) {
+					postExceptionMessage(einfo, JAVA_LANG(InternalError),
+							     "failure to verify method %s.%s ... reason unspecified",
+							     CLASS_CNAME(class), METHOD_NAMED(method));
+				}
 				return(false);
 			}
 		}
@@ -1029,7 +1031,7 @@ verifyMethod(errorInfo *einfo, Method* method)
 	// to save some typing, etc.
 	int codelen  = METHOD_BYTECODE_LEN(method);
 	
-	char* status = NULL; // the status of each instruction...changed, visited, etc.
+	uint32* status = NULL; // the status of each instruction...changed, visited, etc.
                              // used primarily to help find the basic blocks initially
 	
 	uint32      numBlocks = 0;
@@ -1039,7 +1041,7 @@ verifyMethod(errorInfo *einfo, Method* method)
 	 **************************************************************************************************/
 	DBG(VERIFY3, dprintf("    allocating memory for verification (codelen = %d)...\n", codelen); );
 	
-        status   = checkPtr((char*)KMALLOC(codelen * sizeof(char)));
+        status = checkPtr((char*)KMALLOC(codelen * sizeof(uint32)));
 	
 	// find basic blocks and allocate memory for them
 	verifyMethod3a(einfo, method, status, &numBlocks);
@@ -1061,16 +1063,19 @@ verifyMethod(errorInfo *einfo, Method* method)
  *       Thus we check whether execution can fall off the end during the data flow analysis
  *       of pass 3b, structural constraint checking.
  */
+static
 BlockInfo**
 verifyMethod3a(errorInfo* einfo,
 	       Method* method,
-	       char* status,      // array of status info for all opcodes
+	       uint32* status,    // array of status info for all opcodes
 	       uint32* numBlocks) // number of basic blocks
 {
 #define VERIFY_ERROR(_MSG) \
-	postExceptionMessage(einfo, JAVA_LANG(VerifyError), \
-			     "in method \"%s.%s\": %s", \
-			     CLASS_CNAME(method->class), METHOD_NAMED(method), _MSG); \
+	if (einfo->type == 0) { \
+		postExceptionMessage(einfo, JAVA_LANG(VerifyError), \
+				     "in method \"%s.%s\": %s", \
+				     CLASS_CNAME(method->class), METHOD_NAMED(method), _MSG); \
+	} \
 	return NULL
 
 #define ENSURE_NON_WIDE \
@@ -1081,8 +1086,12 @@ verifyMethod3a(errorInfo* einfo,
 #define CHECK_POOL_IDX(_IDX) \
 	if (_IDX > pool->size) { \
 		VERIFY_ERROR("attempt to access a constant pool index beyond constant pool range"); \
-		return(false); \
 	}
+	
+#define GET_IDX(_IDX, _PC) \
+	(_IDX) = (_PC) + 1; \
+	(_IDX) = code[_IDX]; \
+	CHECK_POOL_IDX(_IDX)
 	
 #define GET_WIDX(_IDX, _PC) \
 	_IDX = (_PC) + 1; \
@@ -1091,17 +1100,20 @@ verifyMethod3a(errorInfo* einfo,
 
 #define BRANCH_IN_BOUNDS(_N, _INST) \
 	if (_N < 0 || _N >= codelen) { \
-		postExceptionMessage(einfo, JAVA_LANG(VerifyError), \
-				     "in method \"%s.%s\": %s branches out of method's code", \
-				     CLASS_CNAME(method->class), METHOD_NAMED(method), _INST); \
-		return NULL; \
+		DBG(VERIFY3, dprintf("ERROR: branch to (%d) out of bound (%d) \n", _N, codelen); ); \
+		VERIFY_ERROR("branch out of method code"); \
 	}
 
 	// makes sure the index given for a local variable is within the correct index
 #define CHECK_LOCAL_INDEX(_N) \
 	if ((_N) >= method->localsz) { \
-		VERIFY_ERROR("attempting to access a local variable beyond local array"); \
-	} 
+		DBG(VERIFY3, \
+		    dprintf("ERROR:  pc = %d, instruction = ", pc); \
+		    printInstruction(code[pc]); \
+		    dprintf(", localsz = %d, localindex = %d\n", method->localsz, _N); \
+		    ); \
+		VERIFY_ERROR("attempting to access a local variable beyond local array");  \
+	}
 	
 	
 	constants* pool     = CLASS_CONSTANTS(method->class);
@@ -1118,13 +1130,13 @@ verifyMethod3a(errorInfo* einfo,
 	int32 low, high;
 	
 	bool wide;
-	//	bool inABlock; // used when calculating the start/return address of each block
+	// bool inABlock; // used when calculating the start/return address of each block
 	
 	uint32 blockCount  = 0;
-	BlockInfo** blocks = NULL;
+	// BlockInfo** blocks = NULL;
 	
 	
-	DBG(VERIFY3, dprintf("      Verifier Pass 3a: checking static constraints and finding basic blocks...\n"); );
+	DBG(VERIFY3, dprintf("    Verifier Pass 3a: checking static constraints and finding basic blocks...\n"); );
 	
 	
 	// find the start of every instruction and basic block to determine legal branches
@@ -1136,7 +1148,7 @@ verifyMethod3a(errorInfo* einfo,
 	while(pc < codelen) {
 		status[pc] |= IS_INSTRUCTION;
 		
-		DBG(VERIFY3, dprintf("        instruction: "); printInstruction(code[pc]); dprintf("\n"); );
+		DBG(VERIFY3, dprintf("        instruction: (%d) ", pc); printInstruction(code[pc]); dprintf("\n"); );
 		
 		if (codelen - pc < insnLen[code[pc]]) {
 			VERIFY_ERROR("last operand in code array is cut off");
@@ -1180,13 +1192,34 @@ verifyMethod3a(errorInfo* einfo,
 			break;
 			
 			
+		case LDC1:
+			GET_IDX(idx, pc);
+			goto LDC_common;
+		case LDC2:
+			GET_WIDX(idx, pc);
+		LDC_common:
+			n = CONST_TAG(idx, pool);
+			if (n != CONSTANT_Integer && n != CONSTANT_Float &&
+			    n != CONSTANT_String && n != CONSTANT_ResolvedString) {
+				VERIFY_ERROR("ldc* on constant pool entry other than int/float/string");
+			}
+			break;
+			
+		case LDC2W:
+			GET_WIDX(idx, pc);
+			n = CONST_TAG(idx, pool);
+			if (n != CONSTANT_Double && n != CONSTANT_Long) {
+				VERIFY_ERROR("ldc2_w on constant pool entry other than long or double");
+			}
+			break;
+			
 		case GETFIELD:  case PUTFIELD:
 		case GETSTATIC: case PUTSTATIC:
 			ENSURE_NON_WIDE;
 			
-			GET_WIDX(n, pc);
-			n = CONST_TAG(n, pool);
-			if (n != CONSTANT_Fieldref) {
+			GET_WIDX(idx, pc);
+			idx = CONST_TAG(idx, pool);
+			if (idx != CONSTANT_Fieldref) {
 				VERIFY_ERROR("[get/put][field/static] accesses something in the constant pool that is not a CONSTANT_Fieldref");
 			}
 			break;
@@ -1348,11 +1381,10 @@ verifyMethod3a(errorInfo* einfo,
 				pc++;
 				wide = false;
 				
-				n = DWORD(code, pc);
+				n = WORD(code, pc);
 			}
 			else {
-				n = pc + 1;
-				n = WORD(code, n);
+				n = code[pc + 1];
 			}
 			
 			CHECK_LOCAL_INDEX(n);
@@ -1371,8 +1403,7 @@ verifyMethod3a(errorInfo* einfo,
 				n = WORD(code, pc);
 			}
 			else {
-				n = pc + 1;
-				n = WORD(code, n);
+				GET_IDX(n, pc);
 			}
 			
 			// makes sure the index given for a local variable is within the correct index
@@ -1466,16 +1497,19 @@ verifyMethod3a(errorInfo* einfo,
 			
 		case RET:
 			status[pc] |= END_BLOCK;
-			if (wide == true) {
+			if (!wide) {
+				GET_IDX(idx, pc);
+			} else {
+				GET_WIDX(idx, pc);
+				
 				status[pc] ^= IS_INSTRUCTION;
 				status[pc] |= WIDE_MODDED;
 				
 				wide = false;
 				pc += 2;
 			}
+			CHECK_LOCAL_INDEX(idx);
 			pc = NEXTPC;
-			// we don't make the status of the next instruction the start of
-			// any block as it's uncertain whether we ever get there.
 			continue;
 			
 			
@@ -1543,7 +1577,8 @@ verifyMethod3a(errorInfo* einfo,
 			low  = DWORD(code, n + 4);
 			high = DWORD(code, n + 8);
 			if (high < low) {
-				VERIFY_ERROR("tableswitch high val <= low val");
+				DBG(VERIFY3, dprintf("ERROR: low = %d, high = %d\n", low, high); );
+				VERIFY_ERROR("tableswitch high val < low val");
 			}
 			n += 12;
 			
@@ -1588,7 +1623,7 @@ verifyMethod3a(errorInfo* einfo,
 	}
 	
 	
-	DBG(VERIFY3, dprintf("      Verifier Pass 3a: second pass to locate illegal branches and count blocks..."); );
+	DBG(VERIFY3, dprintf("    Verifier Pass 3a: second pass to locate illegal branches and count blocks...\n"); );
 	
 	// newpc is going to stand for the PC of the previous instruction
 	for (newpc = 0, pc = 0; pc < codelen; pc++) {
@@ -1613,55 +1648,61 @@ verifyMethod3a(errorInfo* einfo,
 	}
 	
 	
-	DBG(VERIFY3, dprintf("      done, %d blocks found.\n", blockCount); );
-	
-	
-	blocks = NULL;
-	/* To be included with pass 3b ...
-	 *
-	DBG(VERIFY3, dprintf("      Verifier Pass 3a: third pass to allocate memory for basic blocks...\n"); );
-	
-	blocks = checkPtr((BlockInfo**)KMALLOC(blockCount * sizeof(BlockInfo*)));
-	
-	for (inABlock = true, n = 0, pc = 0; pc < codelen; pc++) {
-		if (status[pc] & START_BLOCK) {
-			blocks[n] = createBlock(method);
-			blocks[n]->startAddr = pc;
-			n++;
+	DBG(VERIFY3, dprintf("        perusing exception table\n"); );
+	if (method->exception_table != 0) {
+		jexceptionEntry *entry;
+		for (n = 0; n < method->exception_table->length; n++) {
+			entry = &(method->exception_table->entry[n]);
 			
-			inABlock = true;
+			pc = entry->handler_pc;
+			if (pc >= codelen) {
+				VERIFY_ERROR("exception handler is beyond bound of method code");
+			}
+			else if (!(status[pc] & IS_INSTRUCTION)) {
+				VERIFY_ERROR("exception handler starts in the middle of an instruction");
+			}
+			
+			status[pc] |= (EXCEPTION_HANDLER & START_BLOCK);
 			
 			
-			DBG(VERIFY3, dprintf("        setting blocks[%d]->startAddr = %d\n",
-					     n-1, blocks[n-1]->startAddr); );
-		}
-		
-		if (inABlock && (status[pc] & END_BLOCK)) {
-			blocks[n-1]->lastAddr = pc;
-			
-			inABlock = false;
-			
-			
-			DBG(VERIFY3, dprintf("        setting blocks[%d]->lastAddr = %d\n",
-					     n-1, blocks[n-1]->lastAddr); );
+			// verify properties about the clause
+			//
+			// if entry->catch_type == 0, it's a finally clause
+			if (entry->catch_type != 0) {
+				if (entry->catch_type == NULL) {
+					entry->catch_type = getClass(entry->catch_idx, method->class, einfo);
+				}
+				if (entry->catch_type == NULL) {
+					DBG(VERIFY3, dprintf("        ERROR: could not resolve catch type...\n"); );
+					entry->catch_type = UNRESOLVABLE_CATCHTYPE;
+					
+					VERIFY_ERROR("unresolvable catch type");
+				}
+				if (!instanceof(javaLangThrowable, entry->catch_type)) {
+					VERIFY_ERROR("Exception to be handled by exception handler is not a subclass of Java/Lang/Throwable");
+				}
+			}
 		}
 	}
-	*/
 	
 	
-	DBG(VERIFY3, dprintf("      Verifier Pass 3a: done\n"); );
+	DBG(VERIFY3, dprintf("        done, %d blocks found.\n", blockCount); );
+	
+	// TODO: memory allocation here
 	
 	*numBlocks = blockCount;
-	return blocks;
+	return NULL;
 	
 	
+#undef CHECK_LOCAL_INDEX	
 #undef NEXTPC
 #undef BRANCH_IN_BOUNDS
+#undef GET_IDX
+#undef GET_WIDX
+#undef CHECK_POOL_IDX
 #undef ENSURE_NON_WIDE
 #undef VERIFY_ERROR
 }
-
-
 
 
 // for debugging
@@ -1673,9 +1714,9 @@ printInstruction(const int opcode)
 #define PRINT(_OP) dprintf("%s", _OP); return;
 	
 	switch(opcode) {
-	case 0:   PRINT("NOP");
+	case 0: PRINT("NOP");
 		
-	case 1:   PRINT("ACONST-null");
+	case 1: PRINT("ACONST-null");
 		
 	case 2:   PRINT("ICONST_M1");
 	case 3:   PRINT("ICONST_0");
@@ -1942,4 +1983,4 @@ printInstruction(const int opcode)
 	
 #undef PRINT
 }
-#endif
+#endif // ifdef KAFFE_VMDEBUG

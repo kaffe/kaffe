@@ -1,3 +1,8 @@
+2003-07-30  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffevm/verify.c
+	Update...prep for pass 3b checkin.
+
 2003-07-29  Rob Gonzalez <rob@kaffe.org>
 
 	* kaffe/kaffevm/verify.c
