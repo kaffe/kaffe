@@ -261,7 +261,7 @@ nullException(EXCEPTIONPROTO)
  * Division by zero.
  */
 void
-arithmeticException(EXCEPTIONPROTO)
+floatingException(EXCEPTIONPROTO)
 {
 	Hjava_lang_Throwable* ae;
 	sigset_t nsig;
@@ -269,7 +269,7 @@ arithmeticException(EXCEPTIONPROTO)
 
 	/* don't catch the signal if debugging exceptions */
 	if (DBGEXPR(EXCEPTION, false, true))
-		catchSignal(sig, arithmeticException);
+		catchSignal(sig, floatingException);
 	EXCEPTIONFRAME(frame, ctx);
 	ae = (Hjava_lang_Throwable*)ArithmeticException;
 	unhand(ae)->backtrace = buildStackTrace(EXCEPTIONFRAMEPTR);

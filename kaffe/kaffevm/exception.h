@@ -49,7 +49,7 @@ struct Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
 extern void catchSignal(int, void*);
 
 extern void nullException();
-extern void arithmeticException();
+extern void floatingException();
 
 #if defined(__WIN32__)
 #define SIG_T   void(*)()

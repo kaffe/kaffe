@@ -170,7 +170,7 @@ DBG(INIT,	printf("initExceptions()\n");			)
 		catchSignal(SIGBUS, nullException);
 #endif
 #if defined(SIGFPE)
-		catchSignal(SIGFPE, arithmeticException);
+		catchSignal(SIGFPE, floatingException);
 #endif
 #if defined(SIGPIPE)
 		catchSignal(SIGPIPE, SIG_IGN);
