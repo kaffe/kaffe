@@ -755,8 +755,8 @@ element_loop:
 	  }
 
         // Check for primary strength differences
-        int prim1 = cs.primaryOrder(ord1); 
-        int prim2 = ct.primaryOrder(ord2); 
+        int prim1 = CollationElementIterator.primaryOrder(ord1); 
+        int prim2 = CollationElementIterator.primaryOrder(ord2); 
 
         if (prim1 < prim2)
           return -1;
@@ -766,8 +766,8 @@ element_loop:
           continue;
 
         // Check for secondary strength differences
-        int sec1 = cs.secondaryOrder(ord1);
-        int sec2 = ct.secondaryOrder(ord2);
+        int sec1 = CollationElementIterator.secondaryOrder(ord1);
+        int sec2 = CollationElementIterator.secondaryOrder(ord2);
 
         if (sec1 < sec2)
           return -1;
@@ -777,8 +777,8 @@ element_loop:
           continue;
 
         // Check for tertiary differences
-        int tert1 = cs.tertiaryOrder(ord1);
-        int tert2 = ct.tertiaryOrder(ord2);
+        int tert1 = CollationElementIterator.tertiaryOrder(ord1);
+        int tert2 = CollationElementIterator.tertiaryOrder(ord2);
 
         if (tert1 < tert2)
           return -1;
@@ -894,11 +894,11 @@ element_loop:
         switch (getStrength())
           {
             case PRIMARY:
-               ord = cei.primaryOrder(ord);
+               ord = CollationElementIterator.primaryOrder(ord);
                break;
 
             case SECONDARY:
-               ord = cei.secondaryOrder(ord);
+               ord = CollationElementIterator.secondaryOrder(ord);
 
             default:
                break;
