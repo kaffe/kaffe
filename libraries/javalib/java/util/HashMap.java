@@ -173,12 +173,7 @@ public class HashMap extends AbstractMap
 	public Object clone() {
 
 		// Clone this object
-		HashMap clone;
-		try {
-			clone = (HashMap)super.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;			// should never happen
-		}
+		HashMap clone = (HashMap)super.clone();
 
 		// Make a shallow copy of hashmap (ie, just the buckets)
 		clone.table = new Entry[table.length];
