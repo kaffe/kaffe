@@ -1,3 +1,9 @@
+Sun Feb 14 01:18:46 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(jthreadedConnect): re-introduce special handling of EISCONN for
+	Solaris 2.5
+
 Sat Feb 13 23:12:25 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* update from libtool

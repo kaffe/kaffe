@@ -1956,6 +1956,7 @@ jthreadedConnect(int fd, struct sockaddr* addr, size_t len, int timeout)
 {
 	int r;
 	jlong deadline = 0;
+	int haveBlocked = 0;
 
 	intsDisable();	
 	SET_DEADLINE(deadline, timeout)
@@ -1965,6 +1966,18 @@ jthreadedConnect(int fd, struct sockaddr* addr, size_t len, int timeout)
 				|| errno == EINTR || errno == EISCONN)) {
 			break;	/* success or real error */
 		}
+		if (haveBlocked && r == -1 && errno == EISCONN) {
+			/* on Solaris 2.5, connect returns EISCONN
+			   when we retry a connect attempt in
+			   background.  This might lead to false
+			   positives if the connect fails and another
+			   thread tries to connect this socket and
+			   succeeds before this one is waken up.
+			   Let's just hope it doesn't happen for now.  */
+			r = 0;
+			break;
+		} else
+			haveBlocked = 1;
 		IGNORE_EINTR()
 		CALL_BLOCK_ON_FILE(fd, TH_CONNECT, timeout)
 		BREAK_IF_LATE(deadline, timeout)
