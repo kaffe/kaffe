@@ -58,7 +58,9 @@ public class InetAddress
 	    catch(IllegalAccessException e)
 	    {
 		/* Really should not happen. */
-		throw new InternalError(e);
+	        InternalError err = new InternalError();
+		err.initCause(e);
+		throw err;
 	    }
 	    catch(ExceptionInInitializerError e)
 	    {

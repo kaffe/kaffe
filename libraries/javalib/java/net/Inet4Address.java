@@ -100,11 +100,15 @@ public final class Inet4Address extends InetAddress
     }
     catch(NoSuchElementException e)
     {
-      throw new IllegalArgumentException(e);
+      IllegalArgumentException ex = new IllegalArgumentException();
+      ex.initCause(e);
+      throw ex;
     }
     catch(NumberFormatException e)
     {
-      throw new IllegalArgumentException(e);
+      IllegalArgumentException ex = new IllegalArgumentException();
+      ex.initCause(e);
+      throw ex;
     }
     return retval;
   }
