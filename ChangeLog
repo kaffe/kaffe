@@ -1,3 +1,8 @@
+Tue May 14 20:52:20 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/lang/reflect/Array.java:
+	(set) fixed widening bug.
+
 Mon May 13 23:46:47 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/lang/Character.java

@@ -1,7 +1,7 @@
 /*
  * Java core library component.
  *
- * Copyright (c) 1997, 1998, 2001
+ * Copyright (c) 1997, 1998, 2001, 2002
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
@@ -332,29 +332,29 @@ public static void set(Object array, int index, Object value) throws IllegalArgu
 			throw new IllegalArgumentException();
 		}
 	}
-	else if (array instanceof boolean[] && value instanceof Boolean) {
-		((boolean[])array)[index] = ((Boolean)value).booleanValue();
+	else if (value instanceof Boolean) {
+		setBoolean(array, index, ((Boolean)value).booleanValue());
 	}
-	else if (array instanceof byte[] && value instanceof Byte) {
-		((byte[])array)[index] = ((Byte)value).byteValue();
+	else if (value instanceof Byte) {
+		setByte(array, index, ((Byte)value).byteValue());
 	}
-	else if (array instanceof short[] && value instanceof Short) {
-		((short[])array)[index] = ((Short)value).shortValue();
+	else if (value instanceof Short) {
+		setShort(array, index, ((Short)value).shortValue());
 	}
-	else if (array instanceof char[] && value instanceof Character) {
-		((char[])array)[index] = ((Character)value).charValue();
+	else if (value instanceof Character) {
+		setChar(array, index, ((Character)value).charValue());
 	}
-	else if (array instanceof int[] && value instanceof Integer) {
-		((int[])array)[index] = ((Integer)value).intValue();
+	else if (value instanceof Integer) {
+		setInt(array, index, ((Integer)value).intValue());
 	}
-	else if (array instanceof long[] && value instanceof Long) {
-		((long[])array)[index] = ((Long)value).longValue();
+	else if (value instanceof Long) {
+		setLong(array, index, ((Long)value).longValue());
 	}
-	else if (array instanceof float[] && value instanceof Float) {
-		((float[])array)[index] = ((Float)value).floatValue();
+	else if (value instanceof Float) {
+		setFloat(array, index, ((Float)value).floatValue());
 	}
-	else if (array instanceof double[] && value instanceof Double) {
-		((double[])array)[index] = ((Double)value).doubleValue();
+	else if (value instanceof Double) {
+		setDouble(array, index,  ((Double)value).doubleValue());
 	}
 	else {
 		throw new IllegalArgumentException();
