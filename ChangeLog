@@ -1,6 +1,13 @@
 2004-02-11  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+	(isWide): New static inline function.
+	(IS_WIDE) Removed.
+	Replaced use of IS_WIDE by isWide.
+
+2004-02-11  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
 	(abstractMethodError): New static inline function.
 	(ABSTRACT_METHOD_ERROR) Removed.
 	(checkAbstractMethod) Use abstractMethodError instead of

@@ -941,9 +941,13 @@ static Type* TDOUBLE = &verify_DOUBLE;
  */
 static Type  _WIDE;
 static Type* TWIDE = &_WIDE;
-#define IS_WIDE(_TINFO) ((_TINFO)->data.class == TWIDE->data.class)
 
-
+static inline
+bool
+isWide(const Type * tinfo)
+{
+	return (tinfo->data.class == TWIDE->data.class);
+}
 
 static Type  verify_NULL;
 static Type* TNULL = &verify_NULL;
@@ -3425,7 +3429,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			
 		case PUTFIELD:
-			if (IS_WIDE(OPSTACK_TOP)) n = 3;
+			if (isWide(OPSTACK_TOP)) n = 3;
 			else                      n = 2;
 			ENSURE_OPSTACK_SIZE(n);
 			
@@ -3681,7 +3685,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case DUP:
 			ENSURE_OPSTACK_SIZE(1);
-			if (IS_WIDE(OPSTACK_TOP)) {
+			if (isWide(OPSTACK_TOP)) {
 				VERIFY_ERROR("dup: on a long or double");
 			}
 			
@@ -3690,7 +3694,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case DUP_X1:
 			ENSURE_OPSTACK_SIZE(2);
-			if (IS_WIDE(OPSTACK_TOP) || IS_WIDE(OPSTACK_WTOP)) {
+			if (isWide(OPSTACK_TOP) || isWide(OPSTACK_WTOP)) {
 				VERIFY_ERROR("dup_x1: splits up a double or long");
 			}
 			
@@ -3702,7 +3706,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case DUP_X2:
 			ENSURE_OPSTACK_SIZE(3);
-			if (IS_WIDE(OPSTACK_TOP)) {
+			if (isWide(OPSTACK_TOP)) {
 				VERIFY_ERROR("cannot dup_x2 when top item on operand stack is a two byte item");
 			}
 			
@@ -3722,7 +3726,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case DUP2_X1:
 			ENSURE_OPSTACK_SIZE(2);
-			if (IS_WIDE(OPSTACK_ITEM(2))) {
+			if (isWide(OPSTACK_ITEM(2))) {
 				VERIFY_ERROR("dup_x1 requires top 2 bytes on operand stack to be single bytes items");
 			}
 			CHECK_STACK_OVERFLOW(2);
@@ -3737,7 +3741,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case DUP2_X2:
 			ENSURE_OPSTACK_SIZE(4);
-			if (IS_WIDE(OPSTACK_ITEM(2)) || IS_WIDE(OPSTACK_ITEM(4))) {
+			if (isWide(OPSTACK_ITEM(2)) || isWide(OPSTACK_ITEM(4))) {
 				VERIFY_ERROR("dup2_x2 where either 2nd or 4th byte is 2nd half of a 2 byte item");
 			}
 			CHECK_STACK_OVERFLOW(2);
@@ -3754,7 +3758,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case SWAP:
 			ENSURE_OPSTACK_SIZE(2);
-			if (IS_WIDE(OPSTACK_TOP) || IS_WIDE(OPSTACK_WTOP)) {
+			if (isWide(OPSTACK_TOP) || isWide(OPSTACK_WTOP)) {
 				VERIFY_ERROR("cannot swap 2 bytes of a long or double");
 			}
 			
@@ -4070,7 +4074,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			
 		case 'J':
 			if (binfo->opstack[paramIndex].data.class != TLONG->data.class ||
-			    !IS_WIDE(&binfo->opstack[paramIndex + 1])) {
+			    !isWide(&binfo->opstack[paramIndex + 1])) {
 				TYPE_ERROR;
 			}
 			
@@ -4081,7 +4085,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			
 		case 'D':
 			if (binfo->opstack[paramIndex].data.class != TDOUBLE->data.class ||
-			    !IS_WIDE(&binfo->opstack[paramIndex + 1])) {
+			    !isWide(&binfo->opstack[paramIndex + 1])) {
 				TYPE_ERROR;
 			}
 			
@@ -5226,7 +5230,7 @@ printType(const Type* t)
 		if (type == TUNSTABLE->data.class) {
 			dprintf("TUNSTABLE");
 		}
-		else if (IS_WIDE(t)) {
+		else if (isWide(t)) {
 			dprintf("TWIDE");
 		}
 		else {
