@@ -1,0 +1,153 @@
+#!/bin/sh
+#
+# Copyright (c) 1998, 1999 The University of Utah. All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file.
+#
+# Contributed by the Flux Research Group at the University of Utah.
+# Authors: Leigh Stoller, Patrick Tullmann
+#
+
+#
+# A wrapper for Kaffe's configure that includes OSKit specific 
+# options and setup.  Regular configure options will be passed
+# directly to Kaffe's configure.
+#
+# Edit the paths below, or use the appropriate command line
+# options.  
+#
+# This script needs to know the location of the Kaffe source, and the
+# location of the installed Flux OSKit to link against.  The script
+# defines CC to be the OSKit's GCC wrapper.  Several options to
+# configure are added to the configure command line.  See the
+# configure invocation, below.
+#
+# Notes:
+#   1) Real oskit kernels are built using ELF tools, so unset
+#      OBJFORMAT.
+#
+
+# Kaffe's source directory (the one that contains the vanilla Kaffe configure)
+SRCDIR=/usr/src/kaffe   	# set via --srcdir=
+
+# Where your oskit was installed  
+OSKITDIR=/usr/lib/oskit/	# set via --oskitdir=
+
+# The OSKit CC wrapper from the OSKit bin directory
+OSKITCC=i386-oskit-gcc		# set via --oskitcc=
+OSKITCCARGS="-posix-oskit -pthread -nostdinc"
+
+
+# XXX the gcc specs file that ships with 990722 forgot these libraries:
+OSKITCC_HACKLIBS="-lmemfs -llinux_dev -lfsnamespace_r"
+
+OSKITCCLD=ld-oskit.sh
+
+KAFFEH=kaffeh		# set via --localkaffeh
+
+OSKITUNIX_CCFLAGS=
+
+## The arguments unilaterally passed to Kaffe's configure
+OSKIT_CONFIG_ARGS="--with-threads=oskit-pthreads \
+	--with-staticlib \
+	--without-x \
+	--host=i386-oskit"
+
+
+# Parse the command-line options to override above.
+## XXX should set a flag on help and print it *after* parsing the other options.
+PASSTHROUGH=
+until [ $# -eq 0 ]
+do
+	case "$1" in
+		--srcdir=* )
+			SRCDIR=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;
+			shift;;
+		--oskitunix )
+			OSKITUNIX_CCFLAGS='-DOSKIT_UNIX';
+			shift;;
+		--oskitdir=* )
+			OSKITDIR=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;
+			shift;;
+		--oskitcc=* )
+			OSKITCC=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;
+			shift;;
+		--oskitccld=* )
+			OSKITCCLD=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;
+			shift;;
+		--localkaffeh=* )
+			KAFFEH=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;
+			shift;;
+		--help )
+		        ${SRCDIR}/configure --help
+			echo "  "
+			echo "OSKit Kaffe configure wrapper adds:"
+			echo "  --srcdir=SRCDIR         Kaffe's source directory ($SRCDIR)"
+			echo "  --oskitunix             Use OSKit/UNIX initialization [for user-mode OSKit] (false)"
+			echo "  --oskitdir=OSKIT        Location of the installed Flux OSKit ($OSKITDIR)"
+			echo "  --oskitcc=CC            The CC wrapper in the OSKit bin directory ($CC)"
+			echo "  --oskitccld=CCLD        The CCLD wrapper in Kaffe's config/i386/oskit directory ($CCLD)"
+			echo "  --localkaffeh=KAFFEH    A build-machine runnable copy of kaffeh ($KAFFEH)"
+			echo "  "
+			echo "The following arguments are unilaterally passed to Kaffe's configure: "
+			echo "    $OSKIT_CONFIG_ARGS"
+			echo "  "
+			echo "The following arguments are unilaterally passed to the OSKit CC: "
+			echo "    $OSKITCCARGS"
+			exit 1
+			;;
+		* ) 
+		    	PASSTHROUGH="$PASSTHROUGH $1"
+			shift;;
+	esac
+done
+
+export KAFFEH
+
+PATH=${OSKITDIR}/bin:$PATH
+export PATH
+
+CC="${OSKITDIR}/bin/${OSKITCC} ${OSKITCCARGS} ${OSKITUNIX_CCFLAGS}"
+export CC
+
+### Grr.  We need to convince Kaffe's configure scripts to use
+### our script oskit-ld.sh as the linker.  To do this requires
+### setting both CCLD and LD in the configure environment.
+###
+### Oh, we pass the OSKITUNIX_CCFLAGS to the ld-script because it needs
+### to link different libraries in for a UNIX-mode oskit.
+
+CCLD="${SRCDIR}/config/i386/oskit/${OSKITCCLD} --oskit=${OSKITDIR} ${OSKITUNIX_CCFLAGS}"
+export CCLD
+
+LD="${CCLD}"
+export LD
+
+echo "Kaffe on OSKit Configuration"
+echo "  srcdir    = $SRCDIR"
+echo "  oskit     = $OSKITDIR"
+echo "  KAFFEH    = $KAFFEH"
+echo "  CC        = $CC"
+echo "  LD/CCLD   = $CCLD"
+
+if test ! -d $SRCDIR ; then
+    echo "srcdir ($SRCDIR) invalid"
+    exit 1
+fi
+
+if test ! -x $OSKITDIR/bin/$OSKITCC ; then
+    echo "Invalid OSKit C compiler ($CC)"
+    exit 1
+fi
+
+if test ! -x $KAFFEH ; then
+    echo "kaffeh binary ($KAFFEH) is not executable"
+    exit 1
+fi
+
+exec sh -x $SRCDIR/configure \
+        $OSKIT_CONFIG_ARGS \
+	$PASSTHROUGH
+
+#eof
