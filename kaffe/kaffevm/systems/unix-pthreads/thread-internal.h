@@ -4,6 +4,10 @@
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2005
+ *      Kaffe.org contributors.  See ChangeLog for details.
+ *      All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
@@ -14,12 +18,6 @@
 #define __USE_GNU
 #include <pthread.h>
 #include "repsemaphore.h"
-
-#if !defined(HAVE_PTHREAD_YIELD) && defined(HAVE_SCHED_YIELD)
-#if defined(HAVE_SCHED_H)
-#include <sched.h>
-#endif // SCHED_H
-#endif // SCHED_YIELD && !PTHREAD_YIELD
 
 #include "gtypes.h"
 #include "threadData.h"
@@ -266,15 +264,7 @@ void jthread_relaxstack(int yes);
  * yield.
  *
  */
-static inline
-void jthread_yield (void)
-{
-#if defined(HAVE_PTHREAD_YIELD)
-  pthread_yield();
-#elif defined(HAVE_SCHED_YIELD)
-  sched_yield();
-#endif
-}
+void jthread_yield (void);
 
 /**
  * Acquire a spin lock.

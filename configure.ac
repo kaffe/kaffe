@@ -667,7 +667,6 @@ THREAD_DIR=systems/$with_threads
 dnl Check for thread libraries
 if test x$with_threads = xunix-pthreads ; then
 	ACX_PTHREAD([THREADLIBS="$PTHREAD_LIBS "
-		     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
                      CC="$PTHREAD_CC"])
 	AC_CHECK_LIB(semaphore,sem_init,SEMAPHORE_LIB)
 	AC_SUBST(SEMAPHORE_LIB)

@@ -4,6 +4,10 @@
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2005
+ *      Kaffe.org contributors.  See ChangeLog for details. 
+ *      All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
@@ -26,6 +30,16 @@
 #ifdef KAFFE_BOEHM_GC
 #include "boehm-gc/boehm/include/gc.h"
 #endif
+
+/* define __USE_GNU for pthread_yield on linux */
+#define __USE_GNU
+#include <pthread.h>
+
+#if !defined(HAVE_PTHREAD_YIELD) && defined(HAVE_SCHED_YIELD)
+#if defined(HAVE_SCHED_H)
+#include <sched.h>
+#endif // SCHED_H
+#endif // SCHED_YIELD && !PTHREAD_YIELD
 
 #ifndef MAINSTACKSIZE
 #define MAINSTACKSIZE (1024*1024)
@@ -1148,6 +1162,20 @@ jthread_setpriority (jthread_t cur UNUSED, jint prio UNUSED)
 {
 }
 #endif
+
+/**
+ * yield.
+ *
+ */
+void 
+jthread_yield (void)
+{
+#if defined(HAVE_PTHREAD_YIELD)
+  pthread_yield();
+#elif defined(HAVE_SCHED_YIELD)
+  sched_yield();
+#endif
+}
 
 /*******************************************************************************
  * the suspend/resume mechanism

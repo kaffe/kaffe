@@ -84,8 +84,9 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libkthread_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am_libkthread_la_OBJECTS = lock-impl.lo signal.lo syscalls.lo \
-	thread-impl.lo
+am_libkthread_la_OBJECTS = libkthread_la-lock-impl.lo \
+	libkthread_la-signal.lo libkthread_la-syscalls.lo \
+	libkthread_la-thread-impl.lo
 libkthread_la_OBJECTS = $(am_libkthread_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -387,6 +388,9 @@ libkthread_la_LDFLAGS = \
 	$(PTHREAD_LIBS) \
 	$(SEMAPHORE_LIB)
 
+libkthread_la_CFLAGS = \
+	$(PTHREAD_CFLAGS)
+
 libkthread_la_SOURCES = lock-impl.c signal.c syscalls.c thread-impl.c
 EXTRA_DIST = Makefile.frag lock-impl.h thread-impl.h thread-internal.h \
 		jsignal.h jthread.h
@@ -457,10 +461,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lock-impl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/signal.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/syscalls.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/thread-impl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkthread_la-lock-impl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkthread_la-signal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkthread_la-syscalls.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkthread_la-thread-impl.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -482,6 +486,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+libkthread_la-lock-impl.lo: lock-impl.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkthread_la_CFLAGS) $(CFLAGS) -MT libkthread_la-lock-impl.lo -MD -MP -MF "$(DEPDIR)/libkthread_la-lock-impl.Tpo" -c -o libkthread_la-lock-impl.lo `test -f 'lock-impl.c' || echo '$(srcdir)/'`lock-impl.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkthread_la-lock-impl.Tpo" "$(DEPDIR)/libkthread_la-lock-impl.Plo"; else rm -f "$(DEPDIR)/libkthread_la-lock-impl.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lock-impl.c' object='libkthread_la-lock-impl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkthread_la_CFLAGS) $(CFLAGS) -c -o libkthread_la-lock-impl.lo `test -f 'lock-impl.c' || echo '$(srcdir)/'`lock-impl.c
+
+libkthread_la-signal.lo: signal.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkthread_la_CFLAGS) $(CFLAGS) -MT libkthread_la-signal.lo -MD -MP -MF "$(DEPDIR)/libkthread_la-signal.Tpo" -c -o libkthread_la-signal.lo `test -f 'signal.c' || echo '$(srcdir)/'`signal.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkthread_la-signal.Tpo" "$(DEPDIR)/libkthread_la-signal.Plo"; else rm -f "$(DEPDIR)/libkthread_la-signal.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='signal.c' object='libkthread_la-signal.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkthread_la_CFLAGS) $(CFLAGS) -c -o libkthread_la-signal.lo `test -f 'signal.c' || echo '$(srcdir)/'`signal.c
+
+libkthread_la-syscalls.lo: syscalls.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkthread_la_CFLAGS) $(CFLAGS) -MT libkthread_la-syscalls.lo -MD -MP -MF "$(DEPDIR)/libkthread_la-syscalls.Tpo" -c -o libkthread_la-syscalls.lo `test -f 'syscalls.c' || echo '$(srcdir)/'`syscalls.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkthread_la-syscalls.Tpo" "$(DEPDIR)/libkthread_la-syscalls.Plo"; else rm -f "$(DEPDIR)/libkthread_la-syscalls.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='syscalls.c' object='libkthread_la-syscalls.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkthread_la_CFLAGS) $(CFLAGS) -c -o libkthread_la-syscalls.lo `test -f 'syscalls.c' || echo '$(srcdir)/'`syscalls.c
+
+libkthread_la-thread-impl.lo: thread-impl.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkthread_la_CFLAGS) $(CFLAGS) -MT libkthread_la-thread-impl.lo -MD -MP -MF "$(DEPDIR)/libkthread_la-thread-impl.Tpo" -c -o libkthread_la-thread-impl.lo `test -f 'thread-impl.c' || echo '$(srcdir)/'`thread-impl.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkthread_la-thread-impl.Tpo" "$(DEPDIR)/libkthread_la-thread-impl.Plo"; else rm -f "$(DEPDIR)/libkthread_la-thread-impl.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='thread-impl.c' object='libkthread_la-thread-impl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkthread_la_CFLAGS) $(CFLAGS) -c -o libkthread_la-thread-impl.lo `test -f 'thread-impl.c' || echo '$(srcdir)/'`thread-impl.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -9,7 +9,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = $(ENGINE_NAME) $(GC_NAME) systems gcj verifier jni
+SUBDIRS = $(ENGINE_NAME) systems $(GC_NAME) gcj verifier jni
 DIST_SUBDIRS = boehm-gc kaffe-gc intrp jit jit3 systems gcj verifier jni
 
 EXTRA_DIST = \

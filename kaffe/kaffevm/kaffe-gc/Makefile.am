@@ -1,7 +1,8 @@
 # Makefile.am for the garbage collector - original Kaffe's GC.
 #
-# Copyright (c) 2004
-#	Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
+# Copyright (c) 2004, 2005
+#	Kaffe.org contributors, see ChangeLogs for details.  
+#       All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
@@ -29,5 +30,8 @@ libkaffegc_la_SOURCES= \
 	gc-incremental.c \
 	gc-mem.c \
 	gc-refs.c
+
+libkaffegc_la_DEPENDENCIES = \
+        $(top_builddir)/kaffe/kaffevm/systems/$(THREAD_SYSTEM)/libkthread.la
 
 noinst_HEADERS= gc-mem.h gc-incremental.h gc-refs.h

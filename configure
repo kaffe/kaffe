@@ -28174,7 +28174,6 @@ fi
 # Finally, execute ACTION-IF-FOUND/ACTION-IF-NOT-FOUND:
 if test x"$acx_pthread_ok" = xyes; then
         THREADLIBS="$PTHREAD_LIBS "
-		     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
                      CC="$PTHREAD_CC"
         :
 else
@@ -58454,7 +58453,7 @@ EOF
 if uudecode$EXEEXT Test.uue; then
         ac_cv_prog_uudecode_base64=yes
 else
-        echo "configure: 58457: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
+        echo "configure: 58456: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
         echo "configure: failed file was:" >&5
         cat Test.uue >&5
         ac_cv_prog_uudecode_base64=no
@@ -58572,7 +58571,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 58575 "configure" */
+/* #line 58574 "configure" */
 public class Test {
 }
 EOF
@@ -58609,7 +58608,7 @@ JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 TEST=Test
 cat << \EOF > $JAVA_TEST
-/* [#]line 58612 "configure" */
+/* [#]line 58611 "configure" */
 public class Test {
 public static void main (String args[]) {
         System.exit (0);

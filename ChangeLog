@@ -1,3 +1,27 @@
+2005-02-05  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Don't add PTHREAD_CFLAGS to CFLAGS.
+	That fixes 'make CFLAGS="-Wall"' again.
+
+	* kaffe/kaffevm/Makefile.am (SUBDIRS): Build threads
+	before gc, because gc depends on them.
+
+	* kaffe/kaffevm/kaffe-gc/Makefile.am 
+	(libkaffegc_la_DEPENDENCIES): Added dependency on threads.
+
+	* kaffe/kaffevm/systems/unix-pthreads/Makefile.am
+	(libkthread_la_CFLAGS): Set to PTHREAD_CFLAGS.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_yield): Moved over here.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h
+	(jthread_yield): Removed. Fixes numerous compiler warnings.
+
+	* libraries/clib/libxmlj/Makefile.am (libxmlj_la_LDFLAGS):
+	Added PTHREAD_LIBS.
+	(libxmlj_la_CFLAGS): Added PTHREAD_CFLAGS.
+
 2005-02-05  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jni/jni.c

@@ -44,10 +44,12 @@ libxmlj_la_CFLAGS = \
 	-pedantic \
 	-Wall \
 	-fbounds-check \
+        $(PTHREAD_CFLAGS) \
 	$(CFLAGS_PG)
 
 libxmlj_la_LDFLAGS = \
         $(KLIBFLAGS) \
+        $(PTHREAD_LIBS) \
         -module \
 	-export-dynamic \
         -release $(PACKAGE_VERSION)
