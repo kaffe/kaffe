@@ -154,6 +154,13 @@ private static TimeZone loadTimeZone(String ID) {
 		/* If file cannot parsed properly, simply fall back to GMT
 		 * timezone.  This is what the getTimeZone() API doc demands.
 		 */
+		if (ID.equals("GMT"))
+		{
+			System.err.println("Fatal error loading (required) GMT TimeZone.  Aborting.");
+			System.err.println("Exception: " +e);
+			e.printStackTrace(System.err);
+			System.exit(1);
+		}
 		tz = getTimeZone("GMT");
 		zones.put(ID, tz);
 	}

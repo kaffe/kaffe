@@ -20,13 +20,8 @@ static {
 
 private FileDescriptor fd = new FileDescriptor();
 
-public FileOutputStream(File file) throws IOException
-{
-	this(file.getPath());
-}
-
 public FileOutputStream(FileDescriptor fdObj)
-	{
+{
 	final SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkWrite(fdObj);
@@ -38,16 +33,39 @@ public FileOutputStream(String name) throws FileNotFoundException
 	this(name, false);
 }
 
+public FileOutputStream(File file) throws FileNotFoundException
+{
+	this(file, false);
+}
+
 public FileOutputStream(String name, boolean append) throws FileNotFoundException
 {
+	this(new File(name), append);
+}
+
+public FileOutputStream(File file, boolean append) throws FileNotFoundException
+{
+	final String fname = file.getPath();
+
+	// Note, don't need an explicit File.isDirectory() check 
+	// as the open() call in write mode will check that.
+	
 	final SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
-		sm.checkWrite(name);
-	if (!append) {
-		open(name);
+		sm.checkWrite(fname);
+
+	try
+	{
+		if (!append) {
+			open(fname);
+		}
+		else {
+			openAppend(fname);
+		}
 	}
-	else {
-		openAppend(name);
+	catch (IOException ioe)
+	{
+		throw new FileNotFoundException(fname+ ": " +ioe.getMessage());
 	}
 }
 
@@ -69,9 +87,9 @@ final public FileDescriptor getFD()  throws IOException
 	return (fd);
 }
 
-native private void open(String name);
+native private void open(String name) throws IOException;
 
-native private void openAppend(String name);
+native private void openAppend(String name) throws IOException;
 
 public void write(byte b[]) throws IOException
 {
