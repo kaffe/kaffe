@@ -142,7 +142,8 @@ TEST_MISC = \
         NetworkInterfaceTest.java \
         InetAddressTest.java \
         InetSocketAddressTest.java \
-        ShutdownHookTest.java
+        ShutdownHookTest.java \
+	TestMessageFormat.java
 
 TEST_REFLECTION = \
 	ReflectInvoke.java \

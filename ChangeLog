@@ -1,3 +1,28 @@
+2003-07-15  Guilhem Lavaux <guilhem.lavaux@free.fr>
+
+	* libraries/clib/awt/X/img.c:
+	(Java_java_awt_Toolkit_imgCreateFromFile) call initColorMapping to
+	ensure that pixelValue will return the color value the fastest way.
+
+	* libraries/clib/awt/X/imgjpeg.c:
+	(readJpeg) check if we are in TrueColor mode, if so load JPEG in
+	full colors, otherwise quantize colors.
+	(jscan_to_img, jscan_cmap_to_img) renamed jscan_to_img into
+	jscan_cmap_to_img, created jscan_to_img to deal with full RGB colors.
+
+	* libraries/javalib/java/text/MessageFormat.java:
+	(class MessagePatternDescription) added a description for formats
+	currently in parsing state.
+	(tryToApplyPattern) Parse a pattern string and transform it into
+	a MessagePatternDescription.
+	(applyPattern) just call tryToApplyPattern
+	(format) Iterate until the number of found arguments is 0. This
+	is to ensure that no format spawn a new pattern to be parsed.
+
+	* test/regression/TestMessageFormat.java: added a test case for
+	java.text.MessageFormat (reported by Jaco Greef - code partly taken
+	from Ant)
+
 2003-07-15  Rob Gonzalez <rob@kaffe.org>
 
 	* test/regression/BitSetTest.java

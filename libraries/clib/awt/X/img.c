@@ -686,6 +686,9 @@ Java_java_awt_Toolkit_imgCreateFromFile ( JNIEnv* env, jclass clazz, jstring fil
   char  *fn = java2CString( env, X, fileName);
   unsigned char  sig[SIG_LENGTH];
 
+  if (!X->colorMode)
+	initColorMapping( env, clazz, X );
+
   if ( (infile = AWT_OPEN( fn)) >= 0 ) {
 	if ( AWT_READ( infile, sig, sizeof(sig)) == sizeof(sig) ) {
 	  AWT_REWIND( infile);  /* some native converters can't skip the signature read */

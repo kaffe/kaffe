@@ -268,7 +268,7 @@ jpeg_file_src (j_decompress_ptr cinfo, int fd )
  */
 
 void
-jscan_to_img( Image * img, JSAMPROW buf, struct jpeg_decompress_struct * cinfo)
+jscan_cmap_to_img( Image * img, JSAMPROW buf, struct jpeg_decompress_struct * cinfo)
 {
   register int col, pix, rgb, idx;
   register JSAMPARRAY colormap = cinfo->colormap;
@@ -281,6 +281,22 @@ jscan_to_img( Image * img, JSAMPROW buf, struct jpeg_decompress_struct * cinfo)
   }
 }
 
+void
+jscan_to_img( Image * img, JSAMPROW buf, struct jpeg_decompress_struct * cinfo)
+{
+  register int col, pix, rgb;
+  int i;
+  
+  for ( col = 0; col < cinfo->output_width; col++) {
+    for (rgb=0,i=0; i<3; i++) {
+      rgb |= *buf++;
+      rgb <<= 8;
+    }
+    rgb >>= 8;
+    pix = pixelValue( X, rgb);
+    XPutPixel( img->xImg, col, cinfo->output_scanline-1, pix);
+  }
+}
 
 /************************************************************************************
  * Jpeg production
@@ -305,7 +321,7 @@ readJpeg ( struct jpeg_decompress_struct* cinfo, volatile int colors )
   }
 
   jpeg_read_header( cinfo, TRUE);
-
+  
   if ( colors < 8 ) {
     colors = 8;
   }
@@ -313,8 +329,15 @@ readJpeg ( struct jpeg_decompress_struct* cinfo, volatile int colors )
     colors = 256;
   }
 
-  cinfo->desired_number_of_colors = colors;
-  cinfo->quantize_colors = TRUE;
+  if (X->colorMode != CM_PSEUDO_256)
+    colors = 0;
+
+  if (colors) {
+    cinfo->desired_number_of_colors = colors;
+    cinfo->quantize_colors = TRUE;
+  } else
+    cinfo->quantize_colors = FALSE;
+
   cinfo->out_color_space = JCS_RGB;
 
   jpeg_start_decompress( cinfo);
@@ -328,7 +351,10 @@ readJpeg ( struct jpeg_decompress_struct* cinfo, volatile int colors )
 
   while (cinfo->output_scanline < cinfo->output_height) {
     jpeg_read_scanlines( cinfo, buffer, 1);
-    jscan_to_img( img, buffer[0], cinfo);
+    if (colors)
+      jscan_cmap_to_img( img, buffer[0], cinfo);
+    else
+      jscan_to_img( img, buffer[0], cinfo);
   }
 
   jpeg_finish_decompress( cinfo);

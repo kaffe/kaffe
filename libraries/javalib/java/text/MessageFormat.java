@@ -14,6 +14,11 @@ import java.util.Locale;
 import kaffe.util.NotImplemented;
 
 public class MessageFormat extends Format {
+	private class MessagePatternDescription {
+		String[] strs;
+		Format[] formats;
+		int[] argumentNumber;
+	}
 
 /**
  * @serial The locale to use for formatting numbers and dates.
@@ -70,8 +75,20 @@ public MessageFormat(String patt) {
 }
 
 public void applyPattern(String patt) {
+	MessagePatternDescription desc;
+	
+	desc = tryToApplyPattern(patt);
+
+	formats = desc.formats;
+	strs = desc.strs;
+	argumentNumber = desc.argumentNumber;
+}
+
+private MessagePatternDescription tryToApplyPattern(String patt) {
 	int len = patt.length();
 	int argcount = 0;
+	MessagePatternDescription desc = new MessagePatternDescription();
+	
 	for (int i = 0; i < len; i++) {
 		if (patt.charAt(i) == '{') {
 			argcount++;
@@ -83,29 +100,32 @@ public void applyPattern(String patt) {
 
 	// Allocate the required number of formatting arguments and enough
 	// strings to go around them.
-	formats = new Format[argcount];
-	strs = new String[argcount+1];
-	argumentNumber = new int[argcount];
+	desc.formats = new Format[argcount];
+	desc.strs = new String[argcount+1];
+	desc.argumentNumber = new int[argcount];
 
 	argcount = 0;
 	int start = 0;
 	for (int curr = 0; curr < len; curr++) {
 		if (patt.charAt(curr) == '{') {
-			strs[argcount] = patt.substring(start, curr);
+			desc.strs[argcount] = patt.substring(start, curr);
 			curr++;
 			start = curr;
 			while (patt.charAt(curr) != '}' && curr < len) {
 				curr++;
 			}
-			parseFormat(patt.substring(start, curr), argcount);
+			parseFormat(patt.substring(start, curr), desc, argcount);
 			argcount++;
 			start = curr+1;
 		}
 	}
-	strs[argcount] = patt.substring(start, len);
+	desc.strs[argcount] = patt.substring(start, len);
+
+	return desc;
 }
 
-private void parseFormat(String argument, int argcount) {
+private void parseFormat(String argument, MessagePatternDescription desc,
+			 int argcount) {
 	int anumber;
 	String aformat;
 	String astyle;
@@ -131,67 +151,67 @@ private void parseFormat(String argument, int argcount) {
 	aformat = argument.substring(fstart, fend);
 	astyle = argument.substring(sstart, argument.length());
 
-	argumentNumber[argcount] = anumber;
+	desc.argumentNumber[argcount] = anumber;
 	if (aformat.equals("time")) {
 		if (astyle.equals("")) {
-			formats[argcount] = DateFormat.getTimeInstance(DateFormat.DEFAULT, locale);
+			desc.formats[argcount] = DateFormat.getTimeInstance(DateFormat.DEFAULT, locale);
 		}
 		else if (astyle.equals("short")) {
-			formats[argcount] = DateFormat.getTimeInstance(DateFormat.SHORT, locale);
+			desc.formats[argcount] = DateFormat.getTimeInstance(DateFormat.SHORT, locale);
 		}
 		else if (astyle.equals("medium")) {
-			formats[argcount] = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
+			desc.formats[argcount] = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
 		}
 		else if (astyle.equals("long")) {
-			formats[argcount] = DateFormat.getTimeInstance(DateFormat.LONG, locale);
+			desc.formats[argcount] = DateFormat.getTimeInstance(DateFormat.LONG, locale);
 		}
 		else if (astyle.equals("full")) {
-			formats[argcount] = DateFormat.getTimeInstance(DateFormat.FULL, locale);
+			desc.formats[argcount] = DateFormat.getTimeInstance(DateFormat.FULL, locale);
 		}
 		else {
-			formats[argcount] = new SimpleDateFormat(astyle, locale);
+			desc.formats[argcount] = new SimpleDateFormat(astyle, locale);
 		}
 	}
 	else if (aformat.equals("date")) {
 		if (astyle.equals("")) {
-			formats[argcount] = DateFormat.getDateInstance(DateFormat.DEFAULT, locale);
+			desc.formats[argcount] = DateFormat.getDateInstance(DateFormat.DEFAULT, locale);
 		}
 		else if (astyle.equals("short")) {
-			formats[argcount] = DateFormat.getDateInstance(DateFormat.SHORT, locale);
+			desc.formats[argcount] = DateFormat.getDateInstance(DateFormat.SHORT, locale);
 		}
 		else if (astyle.equals("medium")) {
-			formats[argcount] = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
+			desc.formats[argcount] = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 		}
 		else if (astyle.equals("long")) {
-			formats[argcount] = DateFormat.getDateInstance(DateFormat.LONG, locale);
+			desc.formats[argcount] = DateFormat.getDateInstance(DateFormat.LONG, locale);
 		}
 		else if (astyle.equals("full")) {
-			formats[argcount] = DateFormat.getDateInstance(DateFormat.FULL, locale);
+			desc.formats[argcount] = DateFormat.getDateInstance(DateFormat.FULL, locale);
 		}
 		else {
-			formats[argcount] = new SimpleDateFormat(astyle, locale);
+			desc.formats[argcount] = new SimpleDateFormat(astyle, locale);
 		}
 	}
 	else if (aformat.equals("number")) {
 		if (astyle.equals("currency")) {
-			formats[argcount] = NumberFormat.getCurrencyInstance(locale);
+			desc.formats[argcount] = NumberFormat.getCurrencyInstance(locale);
 		}
 		else if (astyle.equals("percent")) {
-			formats[argcount] = NumberFormat.getPercentInstance(locale);
+			desc.formats[argcount] = NumberFormat.getPercentInstance(locale);
 		}
 		else if (astyle.equals("integer")) {
-			formats[argcount] = NumberFormat.getNumberInstance(locale);
+			desc.formats[argcount] = NumberFormat.getNumberInstance(locale);
 		}
 		else {
-			formats[argcount] = new DecimalFormat(astyle, locale);
+			desc.formats[argcount] = new DecimalFormat(astyle, locale);
 		}
 	}
 	else if (aformat.equals("choice")) {
-		formats[argcount] = new ChoiceFormat(astyle);
+		desc.formats[argcount] = new ChoiceFormat(astyle);
 	}
 	else {
 		// Should be a string.
-		formats[argcount] = null;
+		desc.formats[argcount] = null;
 	}
 }
 
@@ -231,16 +251,32 @@ public static String format(String patt, Object args[]) {
 
 public final StringBuffer format(Object args[], StringBuffer buf, FieldPosition ignore) {
 	FieldPosition dummy = new FieldPosition(0);
-	for (int i = 0; i < formats.length; i++) {
-		buf.append(strs[i]);
-		if (formats[i] == null) {
-			buf.append(args[argumentNumber[i]].toString());
+	MessagePatternDescription desc = new MessagePatternDescription();
+	boolean hasChanged = true;
+	StringBuffer temp_buf;
+
+	desc.formats = formats;
+	desc.strs = strs;
+	desc.argumentNumber = argumentNumber;
+
+	do {
+		temp_buf = new StringBuffer();
+
+		for (int i = 0; i < desc.formats.length; i++) {
+			temp_buf.append(desc.strs[i]);
+			if (desc.formats[i] == null) {
+				temp_buf.append(args[desc.argumentNumber[i]].toString());
+			}
+			else {
+				desc.formats[i].format(args[desc.argumentNumber[i]], temp_buf, dummy);
+			}
 		}
-		else {
-			formats[i].format(args[argumentNumber[i]], buf, dummy);
-		}
-	}
-	buf.append(strs[strs.length - 1]);
+	        temp_buf.append(desc.strs[strs.length - 1]);
+		desc = tryToApplyPattern(temp_buf.toString());
+		if (desc.argumentNumber.length == 0)
+	            hasChanged = false;
+	} while(hasChanged);
+	buf.append(temp_buf.toString());
 	return (buf);
 }
 
