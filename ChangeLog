@@ -1,3 +1,8 @@
+Wed Aug 19 21:54:45 1998  Archie Cobbs  <archie@whistle.com>
+
+	* libraries/javalib/java/lang/Throwable.java: use toString in
+	printStackTrace.
+
 Wed Aug 19 21:41:53 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
         * libraries/clib/native/Method.c
