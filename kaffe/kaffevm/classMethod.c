@@ -24,6 +24,7 @@
 #include "baseClasses.h"
 #include "thread.h"
 #include "itypes.h"
+#include "bytecode.h"
 #include "exception.h"
 #include "md.h"
 #include "external.h"
@@ -318,8 +319,34 @@ retry:
 			}
 		}
 
+		SET_CLASS_STATE(CSTATE_DOING_SUPER);
+
+		/* Now determine the method used to finalize this object.
+		 * If the finalizer is empty, we set class->finalizer to null.
+		 * Find finalizer first without calling findMethod.
+		 */
+		meth = 0;
+		for (nclass = class; nclass != 0; nclass = nclass->superclass) {
+			meth = findMethodLocal(nclass, final_name, void_signature);
+			if (meth != NULL) {
+				break;
+			}
+		}
+
+		/* every class must have one since java.lang.Object has one */
+		if (meth == NULL) {
+			success = false;
+			goto done;
+		}
+
+		/* is it empty? */
+		if (meth->c.bcode.codelen == 1 && meth->c.bcode.code[0] == RETURN) {
+			class->finalizer = 0;
+		} else {
+			class->finalizer = meth;
+		}
+
 		if (class->superclass != NULL) {
-			SET_CLASS_STATE(CSTATE_DOING_SUPER);
 			class->processingThread = THREAD_NATIVE();
 
 			/* We must not hold the class lock here because we 

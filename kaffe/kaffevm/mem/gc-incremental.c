@@ -920,15 +920,12 @@ static
 void
 finalizeObject(void* ob)
 {
-	Method* final;
-	errorInfo info;
+	Hjava_lang_Object* obj = (Hjava_lang_Object*)ob;
+	Hjava_lang_Class* objclass = OBJECT_CLASS(obj);
+	Method* final = objclass->finalizer;
 
-	final = findMethod(OBJECT_CLASS((Hjava_lang_Object*)ob), final_name, void_signature, &info);
 	if (final != 0) {
-		callMethodA(final, METHOD_INDIRECTMETHOD(final), (Hjava_lang_Object*)ob, 0, 0);
-	}
-	else {
-		/* This shouldn't happen */
+		callMethodA(final, METHOD_INDIRECTMETHOD(final), obj, 0, 0);
 	}
 
 	/* 

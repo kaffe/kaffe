@@ -1,3 +1,8 @@
+Fri Dec 11 09:40:17 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/classMethod.[ch], kaffe/kaffevm/mem/gc-incremental.c:
+	don't waste time invoking empty finalizers.
+
 Fri Dec 11 14:14:45 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/clib/awt/X/clr.c: memmove is missing on SunOS4, get

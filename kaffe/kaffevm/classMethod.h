@@ -94,6 +94,7 @@ struct Hjava_lang_Class {
 	int*			gc_layout;
 	char			state;
 	void*			processingThread;
+	Method*			finalizer;
 };
 
 #ifndef __DEFINED_CLASS
