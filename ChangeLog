@@ -1,5 +1,29 @@
 2004-11-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/color/ICC_ColorSpace.java,
+	libraries/javalib/java/awt/color/ICC_Profile.java,
+	libraries/javalib/java/awt/color/ICC_ProfileGray.java,
+	libraries/javalib/java/awt/color/ICC_ProfileRGB.java,
+	libraries/javalib/java/awt/datatransfer/StringSelection.java,
+	libraries/javalib/java/awt/geom/Area.java:
+        Resynced with GNU Classpath.
+
+	2004-11-16  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/color/ICC_ColorSpace.java,
+        java/awt/color/ICC_Profile.java,
+        java/awt/color/ICC_ProfileGray.java,
+        java/awt/color/ICC_ProfileRGB.java:
+        Re-indent copyright header to be standardish.
+        * java/awt/datatransfer/StringSelection.java:
+        Reformatted.
+        * java/awt/geom/Area.java
+        (EPSILON): Made static.
+        (RS_EPSILON): Likewise.
+        (PE_EPSILON): Likewide.
+
+2004-11-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/SwingUtilities.java:
         Resynced with GNU Classpath.
 

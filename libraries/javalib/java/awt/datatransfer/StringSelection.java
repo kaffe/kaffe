@@ -68,26 +68,15 @@ static final DataFlavor[] supported_flavors
 // This is the data to transfer
 private String data;
 
-/*************************************************************************/
-
-/*
- * Constructors
- */
-
-/**
-  * Transfer the specfied string as text.
-  */
-public
-StringSelection(String data)
-{
-  this.data = data;
-}
-
-/*************************************************************************/
-
-/*
- * Instance Methods
- */
+  /**
+   * Transfer the specfied string as text.
+   *
+   * @param data the data for the string selection
+   */
+  public StringSelection(String data)
+  {
+    this.data = data;
+  }
 
 /**
   * Returns a list of supported data flavors.

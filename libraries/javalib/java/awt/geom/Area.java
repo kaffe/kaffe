@@ -75,17 +75,17 @@ public class Area implements Shape, Cloneable
   /**
    * General numerical precision
    */
-  private final double EPSILON = 1E-11;
+  private static final double EPSILON = 1E-11;
 
   /**
    * recursive subdivision epsilon - (see getRecursionDepth)
    */
-  private final double RS_EPSILON = 1E-13;
+  private static final double RS_EPSILON = 1E-13;
 
   /**
    * Snap distance - points within this distance are considered equal
    */
-  private final double PE_EPSILON = 1E-11;
+  private static final double PE_EPSILON = 1E-11;
 
   /**
    * Segment vectors containing solid areas and holes
