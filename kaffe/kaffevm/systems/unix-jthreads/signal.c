@@ -109,13 +109,13 @@ registerSignalHandler(int sig, void* handler, int isAsync)
 	struct sigaction newact;
 
 	newact.sa_handler = (SIG_T)handler;
-	
+	sigemptyset(&newact.sa_mask);
+
 	/*
 	 * Define sa_mask to include the signals to block when
 	 * running handler.
 	 */
 	if (isAsync) {
-		sigemptyset(&newact.sa_mask);
 		sigaddset(&newact.sa_mask, SIGIO);
 		sigaddset(&newact.sa_mask, SIGALRM);
 		sigaddset(&newact.sa_mask, SIGCHLD);
@@ -123,7 +123,6 @@ registerSignalHandler(int sig, void* handler, int isAsync)
 		sigaddset(&newact.sa_mask, SIGVTALRM);
 #endif
 	}
-	
 
 	newact.sa_flags = 0;
 #if defined(SA_SIGINFO)
