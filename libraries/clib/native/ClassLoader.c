@@ -69,9 +69,9 @@ java_lang_VMClassLoader_defineClass(struct Hjava_lang_ClassLoader* this, struct 
 
 	/* This is the error sent by JDK 1.4.2 */
 	if (length == 0)
-	{
 		SignalError("java.lang.ClassFormatError", "truncated class");
-	}
+	if (length < 0)
+		SignalError("java.lang.ArrayIndexOutOfBoundsException", "invalid data length"); 
 	classFileInit(&hand,
 		      NULL,
 		      &unhand_array(data)->body[offset],
