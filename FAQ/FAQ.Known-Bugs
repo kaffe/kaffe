@@ -6,8 +6,14 @@ MISSING OR BROKEN FEATURES
 
 * java.net.Socket:
 
-     getSoTimeout() 
+  +  getSoTimeout() 
      setSoTimeout(int) 	are not implemented.
+ 
+  Gerhard Paulus <gpaulus@stud.uni-frankfurt.de> reports:
+  +  a host name "" is not taken as local host (as in JDK)
+  +  if a socket is closed and a thread is reading from the socket's input
+  stream then this thread should be able to catch the SocketException
+  "Socket closed" (as in JDK)
 
 * Kaffe does not currently provide its own implementation of RMI.
 
@@ -34,6 +40,12 @@ MISSING OR BROKEN FEATURES
 * The conversion of floats or doubles to strings does not conform to Sun's
   spec.  Instead, Kaffe uses the output format provided by printf().
 
+* DecimalFormat is broken :  no formatting at all and decimals are cut off.
+  There are problems with date & calendar.
+
+  Reported by: Gerhard Paulus <gpaulus@stud.uni-frankfurt.de>
+  See http://rufus.w3.org/tools/Kaffe/messages/3785.html,
+	http://rufus.w3.org/tools/Kaffe/messages/3784.html
 
 ARCHITECTURE-SPECIFIC PROBLEMS
 ---------------------------------------------------------------------------
