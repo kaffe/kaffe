@@ -1,3 +1,9 @@
+2000-11-07  Edouard G. Parmelan  <egp@free.fr>
+
+	* configure.in (ZIP_LIBS): Add check for __gmpz_get_d as it's the
+	new name of mpz_get_d with GNU MP.
+	* configure: regen
+
 Tue Oct 31 14:36:47 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* test/regression/Makefile.am, test/regression/CLTestDelegate:
