@@ -39,9 +39,8 @@ protected void dispatch () {
 			if ( !consumed && !ShortcutHandler.handle( this) ) {
 				if ( keyChar != 0 ) {         // printable key
 					if ( AWTEvent.keyTgt != null ) {     // maybe a fast finger pulled the keyTgt under our feet
-						id = KEY_TYPED;
-						keyCode = 0;
-						AWTEvent.keyTgt.process( this);
+						KeyEvt typedEvt = getEvent((Component)source, KEY_TYPED, 0, keyChar, modifiers);
+						AWTEvent.keyTgt.process(typedEvt);
 					}
 				}
 			}

@@ -1,3 +1,12 @@
+2003-01-10 Benja Fallenstein <b.fallenstein@gmx.de>
+
+	* libraries/javalib/java/awt/KeyEvt.java:
+	(dispatch) Don't reuse the current KeyEvt object for
+	KEY_TYPED events right after issuing KEY_PRESSED.
+	Instead, create a new KeyEvt object.
+
+	Gzz wouldn't run because of it.
+	
 2003-01-10 Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
 
 	* libraries/javalib/org/tritonus/share/midi/TSequencer.java:
