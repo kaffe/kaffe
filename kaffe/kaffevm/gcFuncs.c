@@ -60,13 +60,11 @@ destroyClass(Collector *collector, void* c)
 	int idx;
 	Hjava_lang_Class* clazz = c;
 	constants* pool;
-	extern void checkClass(Hjava_lang_Class*, Hjava_lang_ClassLoader*);
 
 DBG(CLASSGC,
         dprintf("destroying class %s @ %p\n", 
 		clazz->name ? clazz->name->data : "newborn", c);
    )
-	checkClass(clazz, clazz->loader);	/* temporary! */
 	assert(!CLASS_IS_PRIMITIVE(clazz));
 
 	/* NB: Make sure that we don't unload fully loaded classes without

@@ -247,36 +247,6 @@ destroyClassLoader(Collector *c, void* _loader)
    	}
 }
 
-/*
- * this is a diagnostic function that does a sanity check
- */
-void
-checkClass(Hjava_lang_Class *c, Hjava_lang_ClassLoader *loader)
-{
-	classEntry* entry;
-	int ipool;
-
-	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
-		entry = classEntryPool[ipool];
-		for (; entry != NULL; entry = entry->next) {
-			if (entry->class == c && entry->loader != loader) {
-				dprintf("class %s@%p ",
-					describeObject(c), c);
-				dprintf(" referenced by initiating"
-					" loader %s@%p",
-					describeObject(entry->loader),
-					entry->loader);
-				dprintf(" but not defining loader"
-					" %s@%p\n",
-					describeObject(loader),
-					loader);
-				ABORT();
-			}
-		}
-	}
-}
-
-
 #if defined(KAFFE_STATS) || defined(KAFFE_PROFILER) || defined(DEBUG)
 /**
  * Walk the class pool and invoke walker() for each classes
