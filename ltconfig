@@ -164,7 +164,7 @@ progname=`$echo "X$0" | $Xsed -e 's%^.*/%%'`
 PROGRAM=ltconfig
 PACKAGE=libtool
 VERSION=1.2e
-TIMESTAMP=" (1.300 1999/02/22 20:55:42)"
+TIMESTAMP=" (1.307 1999/03/06 19:41:21)"
 ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.c 1>&5'
 ac_link='${CC-cc} -o conftest $CFLAGS $CPPFLAGS $LDFLAGS conftest.c $LIBS 1>&5'
 rm="rm -f"
@@ -177,8 +177,8 @@ can_build_shared=yes
 enable_shared=yes
 # All known linkers require a `.a' archive for static linking.
 enable_static=yes
-enable_dlopen=no
-enable_dlopen_self=no
+enable_dlopen=unknown
+enable_dlopen_self=unknown
 ltmain=
 silent=
 srcdir=
@@ -907,44 +907,14 @@ if test -z "$LD"; then
     ac_prog=`($CC -print-prog-name=ld) 2>&5`
     case "$ac_prog" in
     # Accept absolute paths.
-    /* | [A-Za-z]:/*)
+    /* | [A-Za-z]:[\\/]*)
       re_direlt='/[^/][^/]*/\.\./'
-      sub_uncdrive='s%^\([A-Za-z]\):/%//\1/%'
       # Canonicalize the path of ld
+      ac_prog=`echo $ac_prog| sed 's%\\\\%/%g'`
       while echo $ac_prog | grep "$re_direlt" > /dev/null 2>&1; do
 	ac_prog=`echo $ac_prog| sed "s%$re_direlt%/%"`
       done
-      case "$host_os" in
-      cygwin*)
-	# Convert to a UNC path for cygwin
-	test -z "$LD" && LD=`echo X$ac_prog | $Xsed -e "$sub_uncdrive"`
-	;;
-      *)
-	test -z "$LD" && LD="$ac_prog"
-	;;
-      esac
-      ;;
-    ##
-    ## FIXME:  The code fails later on if we try to use an $LD with
-    ##         '\\' path separators.
-    ##
-    [A-Za-z]:[\\]*)
-      re_direlt='\\[^\\][^\\]*\\\.\.\(\\\)'
-      sub_uncdrive='s%^\([A-Za-z]\):\\%//\1/%'
-      sub_uncdir='s%\\%/%g'
-      # Canonicalize the path of ld
-      while echo $ac_prog | grep "$re_direlt" > /dev/null 2>&1; do
-	ac_prog=`echo $ac_prog| sed "s%$re_direlt%\1%"`
-      done
-      case "$host_os" in
-      cygwin*)
-	# Convert to a UNC path for cygwin
-	test -z "$LD" && LD=`echo X$ac_prog | $Xsed -e "$sub_uncdrive" -e "$sub_uncdir"`
-	;;
-      *)
-	test -z "$LD" && LD="$ac_prog"
-	;;
-      esac
+      test -z "$LD" && LD="$ac_prog"
       ;;
     "")
       # If it fails, then pretend we are not using GCC.
@@ -957,10 +927,10 @@ if test -z "$LD"; then
     esac
   elif test "$with_gnu_ld" = yes; then
     echo $ac_n "checking for GNU ld... $ac_c" 1>&6
-    echo "$progname:960: checking for GNU ld" >&5
+    echo "$progname:930: checking for GNU ld" >&5
   else
     echo $ac_n "checking for non-GNU ld""... $ac_c" 1>&6
-    echo "$progname:963: checking for non-GNU ld" >&5
+    echo "$progname:933: checking for non-GNU ld" >&5
   fi
 
   if test -z "$LD"; then
@@ -1308,8 +1278,8 @@ else
     # $CC -shared without GNU ld will not create a library from C++
     # object files and a static libstdc++, better avoid it by now
     archive_cmds='$LD -G${allow_undefined_flag} -h $soname -o $lib $libobjs $deplibs $linkopts'
-    archive_expsym_cmds='$echo "{ global:" > $objdir/$lib.exp~cat $export_symbols | sed -e "s/\(.*\)/\1;/" >> $objdir/$lib.exp~$echo "local: *; };" >> $objdir/$lib.exp~
-		$LD -G${allow_undefined_flag} -M $objdir/$lib.exp -h $soname -o $lib $libobjs $deplibs $linkopts~$rm $objdir/$lib.exp'
+    archive_expsym_cmds='$echo "{ global:" > $lib.exp~cat $export_symbols | sed -e "s/\(.*\)/\1;/" >> $lib.exp~$echo "local: *; };" >> $lib.exp~
+		$LD -G${allow_undefined_flag} -M $lib.exp -h $soname -o $lib $libobjs $deplibs $linkopts~$rm $lib.exp'
     hardcode_libdir_flag_spec='-R$libdir'
     hardcode_shlibpath_var=no
     ;;
@@ -1448,11 +1418,11 @@ void nm_test_func(){}
 main(){nm_test_var='a';nm_test_func();return(0);}
 EOF
 
-  echo "$progname:1451: checking if global_symbol_pipe works" >&5
-  if { (eval echo $progname:1452: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
+  echo "$progname:1421: checking if global_symbol_pipe works" >&5
+  if { (eval echo $progname:1422: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
     # Now try to grab the symbols.
     nlist=conftest.nm
-    if { echo "$progname:1455: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
+    if { echo "$progname:1425: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
 
       # Try sorting and uniquifying the output.
       if sort "$nlist" | uniq > "$nlist"T; then
@@ -1504,7 +1474,7 @@ EOF
 	  save_CFLAGS="$CFLAGS"
 	  LIBS="conftestm.$objext"
 	  CFLAGS="$CFLAGS$no_builtin_flag"
-	  if { (eval echo $progname:1507: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+	  if { (eval echo $progname:1477: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
 	    pipe_works=yes
 	  else
 	    echo "$progname: failed program was:" >&5

@@ -50,7 +50,7 @@ modename="$progname"
 PROGRAM=ltmain.sh
 PACKAGE=libtool
 VERSION=1.2e
-TIMESTAMP=" (1.300 1999/02/22 20:55:42)"
+TIMESTAMP=" (1.307 1999/03/06 19:41:21)"
 
 default_mode=
 help="Try \`$progname --help' for more information."
@@ -869,9 +869,11 @@ compiler."
 	  self)
 	    if test "$prev" = dlprefiles; then
 	      dlself=yes
-	    elif test "$prev" = dlfiles && test "$dlopen_self" = no; then
+	    elif test "$prev" = dlfiles && test "$dlopen_self" != yes; then
 	      dlself=yes
 	    fi
+	    prev=
+	    continue
 	    ;;
 	  *)
 	    dlprefiles="$dlprefiles $arg"
@@ -1186,7 +1188,7 @@ compiler."
 	# This library was specified with -dlopen.
 	if test "$prev" = dlfiles; then
 	  dlfiles="$dlfiles $arg"
-	  if test -z "$dlname" || test "$dlopen" = no || test "$build_libtool_libs" = no; then
+	  if test -z "$dlname" || test "$dlopen" != yes || test "$build_libtool_libs" = no; then
 	    # If there is no dlname, no dlopen support or we're linking statically,
 	    # we need to preload.
 	    prev=dlprefiles
@@ -1866,7 +1868,7 @@ EOF
 			esac
 		      done
 		      if eval $file_magic_cmd \"\$potlib\" \
-			 | sed '11,$d' \
+			 | sed 10q \
 			 | egrep "$file_magic_regex" > /dev/null; then
 			newdeplibs="$newdeplibs $a_deplib"
 			a_deplib=""
@@ -2166,6 +2168,12 @@ EOF
 	$echo "$modename: warning: \`-release' is ignored for programs" 1>&2
       fi
 
+      if test "$preload" = yes; then
+	if test "$dlopen" = unknown || test "$dlopen_self" = unknown; then
+	  $echo "$modename: warning: \`AC_LIBTOOL_DLOPEN' not used. Assuming no dlopen support."
+	fi 
+      fi
+    
       if test "$dlself" = yes && test "$export_dynamic" = no; then
 	$echo "$modename: error: \`-dlopen self' requires \`-export-dynamic'" 1>&2
 	exit 1
@@ -2381,9 +2389,11 @@ lt_preloaded_symbols[] =
 };
 
 /* This works around a problem in FreeBSD linker */
+#ifdef FREEBSD_WORKAROUND
 static const void *lt_preloaded_setup() {
   return lt_preloaded_symbols;
 }
+#endif
 
 #ifdef __cplusplus
 }
@@ -2391,10 +2401,22 @@ static const void *lt_preloaded_setup() {
 "
 	  fi
 
+	  pic_flag_for_symtable=
+          case "$host" in
+	  # compiling the symbol table file with pic_flag works around a 
+	  # FreeBSD bug that causes programs to crash when -lm is linked
+	  # before any other PIC object.  But we must not use pic_flag
+	  # when linking with -static.
+	  *-*-freebsd*)
+	    case "$compile_command " in
+	    *" -static "*) ;;
+	    *) pic_flag_for_symtable=" $pic_flag -DPIC -DFREEBSD_WORKAROUND";;
+	    esac
+	  esac
+
 	  # Now compile the dynamic symbol file.
-	  # pic_flag works around a bug in FreeBSD linker
-	  $show "(cd $objdir && $C_compiler -c$no_builtin_flag $pic_flag -DPIC \"$dlsyms\")"
-	  $run eval '(cd $objdir && $C_compiler -c$no_builtin_flag $pic_flag -DPIC "$dlsyms")' || exit $?
+	  $show "(cd $objdir && $C_compiler -c$no_builtin_flag$pic_flag_for_symtable \"$dlsyms\")"
+	  $run eval '(cd $objdir && $C_compiler -c$no_builtin_flag$pic_flag_for_symtable "$dlsyms")' || exit $?
 
 	  # Transform the symbol file into the correct name.
 	  compile_command=`$echo "X$compile_command" | $Xsed -e "s%@SYMFILE@%$objdir/${output}S.${objext}%"`
