@@ -5,8 +5,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #ifndef __access_h
@@ -26,14 +26,17 @@
 
 #define	ACC_MASK		0x07FF
 
+/* Warning: strictfp aka ACC_STRICT is also 0x0800 and used for
+   classes and methods */
 #define	ACC_CONSTRUCTOR		0x0800
+
 /* only for class */
-#define	ACC_GCJ			0x1000		
+#define	ACC_GCJ			0x1000
 /* only for method: method was jitted */
-#define	ACC_JITTED		0x1000		
+#define	ACC_JITTED		0x1000
 #define ACC_JNI                 0x2000
 /* either jitted or native method was found */
-#define	ACC_TRANSLATED		0x4000		
+#define	ACC_TRANSLATED		0x4000
 #define	ACC_VERIFIED		0x8000
 
 #endif
