@@ -698,26 +698,29 @@ AC_ARG_WITH([gc],
 )
 
 dnl =========================================================================
-dnl Use jikes instead of kjc?
+dnl Use jikes
 dnl =========================================================================
 
 AC_CHECK_PROG(JIKESPROG, jikes, jikes)
 AC_ARG_WITH([jikes],
             AS_HELP_STRING([--with-jikes<=JIKES>],
-                           [Define to use jikes compiler @<:@default=no@:>@.  If yes, use jikes +Pno-switchcheck +Pno-shadow +E]),
+                           [Define to use jikes compiler @<:@default=yes@:>@.  If yes, use jikes +Pno-switchcheck +Pno-shadow +E]),
 	[JIKES="$withval"],
-	[JIKES=""])
+	[with_jikes="yes"])
 
 AC_MSG_CHECKING([whether to use jikes])
 
 case $with_jikes in
 yes)
+	if test x"$JIKESPROG" == x"" ; then
+	  AC_MSG_ERROR([No jikes compiler found. It is required to build Kaffe's class library. Recommended is jikes version 1.21 or higher.])
+	fi
 	JIKES="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
 	use_jikes="yes ($JIKES)"
 	;;
 no)
 	use_jikes="no"
-	JIKES=
+	AC_MSG_ERROR([You have to use jikes 1.21 or higher to build kaffe's class library, or to pass a different external java compiler to configure script.])
 	;;
 *)
 	JIKES="$with_jikes"

@@ -4,7 +4,7 @@
 # Copyright (c) 1997, 1998, 1999
 #      Transvirtual Technologies, Inc.  All rights reserved.
 #
-# Copyright (c) 2002, 2003
+# Copyright (c) 2002, 2003, 2005
 #      Kaffe.org contributors.
 #
 # See the file "license.terms" for information on usage and redistribution
@@ -51,8 +51,6 @@ JAR=BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) 
 jrelib_DATA = \
 	rt.jar \
 	logging.properties
-
-toolslib_DATA = kjc.jar
 
 Klasses_jar_SRCS = \
 	$(com_jcraft_jzlib_SRCS) \
@@ -3028,12 +3026,15 @@ javax_imageio_event_SRCS = \
 	javax/imageio/event/IIOWriteProgressListener.java \
 	javax/imageio/event/IIOWriteWarningListener.java
 javax_imageio_metadata_SRCS = \
+	javax/imageio/metadata/IIOAttr.java \
 	javax/imageio/metadata/IIOInvalidTreeException.java \
 	javax/imageio/metadata/IIOMetadata.java \
 	javax/imageio/metadata/IIOMetadataController.java \
 	javax/imageio/metadata/IIOMetadataFormat.java \
 	javax/imageio/metadata/IIOMetadataFormatImpl.java \
-	javax/imageio/metadata/IIOMetadataNode.java
+	javax/imageio/metadata/IIOMetadataNode.java \
+	javax/imageio/metadata/IIONamedNodeMap.java \
+	javax/imageio/metadata/IIONodeList.java
 javax_imageio_spi_SRCS = \
 	javax/imageio/spi/IIORegistry.java \
 	javax/imageio/spi/IIOServiceProvider.java \
@@ -3231,6 +3232,7 @@ javax_print_attribute_SRCS = \
 	javax/print/attribute/URISyntax.java \
 	javax/print/attribute/UnmodifiableSetException.java
 javax_print_attribute_standard_SRCS = \
+	javax/print/attribute/standard/Chromaticity.java \
 	javax/print/attribute/standard/ColorSupported.java \
 	javax/print/attribute/standard/Compression.java \
 	javax/print/attribute/standard/Copies.java \
@@ -3238,6 +3240,7 @@ javax_print_attribute_standard_SRCS = \
 	javax/print/attribute/standard/DateTimeAtCompleted.java \
 	javax/print/attribute/standard/DateTimeAtCreation.java \
 	javax/print/attribute/standard/DateTimeAtProcessing.java \
+	javax/print/attribute/standard/Destination.java \
 	javax/print/attribute/standard/DocumentName.java \
 	javax/print/attribute/standard/Fidelity.java \
 	javax/print/attribute/standard/Finishings.java \
@@ -3777,6 +3780,7 @@ javax_swing_text_SRCS = \
 	javax/swing/text/Position.java \
 	javax/swing/text/Segment.java \
 	javax/swing/text/SimpleAttributeSet.java \
+	javax/swing/text/StringContent.java \
 	javax/swing/text/Style.java \
 	javax/swing/text/StyleConstants.java \
 	javax/swing/text/StyleContext.java \
@@ -4736,7 +4740,6 @@ classpath_resources = \
 EXTRA_DIST = \
 	Makefile.am.in \
 	Klasses.jar.bootstrap \
-        $(toolslib_DATA) \
 	META-INF \
 	com \
 	gnu \

@@ -4,7 +4,7 @@
 # Copyright (c) 1997, 1998, 1999
 #      Transvirtual Technologies, Inc.  All rights reserved.
 #
-# Copyright (c) 2002, 2003
+# Copyright (c) 2002, 2003, 2005
 #      Kaffe.org contributors.
 #
 # See the file "license.terms" for information on usage and redistribution
@@ -51,8 +51,6 @@ JAR=BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) 
 jrelib_DATA = \
 	rt.jar \
 	logging.properties
-
-toolslib_DATA = kjc.jar
 
 Klasses_jar_SRCS = \
 	# The following will be replaced by the
@@ -164,7 +162,6 @@ classpath_resources = \
 EXTRA_DIST = \
 	Makefile.am.in \
 	Klasses.jar.bootstrap \
-        $(toolslib_DATA) \
 	META-INF \
 	com \
 	gnu \

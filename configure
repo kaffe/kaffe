@@ -1127,7 +1127,7 @@ Optional Packages:
                           [default=unix-pthreads]
   --with-gc=GC            Force use given execution engine (kaffe-gc or
                           boehm-gc)
-  --with-jikes<=JIKES>    Define to use jikes compiler [default=no]. If
+  --with-jikes<=JIKES>    Define to use jikes compiler [default=yes]. If
                           yes, use jikes +Pno-switchcheck +Pno-shadow +E
   --with-libffi           Use libffi for sysdepCallMethod
   --without-gmp           don't use GNU multiple precision arithmetic library
@@ -28589,7 +28589,7 @@ if test "${with_jikes+set}" = set; then
   withval="$with_jikes"
   JIKES="$withval"
 else
-  JIKES=""
+  with_jikes="yes"
 fi;
 
 echo "$as_me:$LINENO: checking whether to use jikes" >&5
@@ -28597,12 +28597,19 @@ echo $ECHO_N "checking whether to use jikes... $ECHO_C" >&6
 
 case $with_jikes in
 yes)
+	if test x"$JIKESPROG" == x"" ; then
+	  { { echo "$as_me:$LINENO: error: No jikes compiler found. It is required to build Kaffe's class library. Recommended is jikes version 1.21 or higher." >&5
+echo "$as_me: error: No jikes compiler found. It is required to build Kaffe's class library. Recommended is jikes version 1.21 or higher." >&2;}
+   { (exit 1); exit 1; }; }
+	fi
 	JIKES="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
 	use_jikes="yes ($JIKES)"
 	;;
 no)
 	use_jikes="no"
-	JIKES=
+	{ { echo "$as_me:$LINENO: error: You have to use jikes 1.21 or higher to build kaffe's class library, or to pass a different external java compiler to configure script." >&5
+echo "$as_me: error: You have to use jikes 1.21 or higher to build kaffe's class library, or to pass a different external java compiler to configure script." >&2;}
+   { (exit 1); exit 1; }; }
 	;;
 *)
 	JIKES="$with_jikes"
@@ -58240,7 +58247,7 @@ EOF
 if uudecode$EXEEXT Test.uue; then
         ac_cv_prog_uudecode_base64=yes
 else
-        echo "configure: 58243: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
+        echo "configure: 58250: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
         echo "configure: failed file was:" >&5
         cat Test.uue >&5
         ac_cv_prog_uudecode_base64=no
@@ -58358,7 +58365,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 58361 "configure" */
+/* #line 58368 "configure" */
 public class Test {
 }
 EOF
@@ -58395,7 +58402,7 @@ JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 TEST=Test
 cat << \EOF > $JAVA_TEST
-/* [#]line 58398 "configure" */
+/* [#]line 58405 "configure" */
 public class Test {
 public static void main (String args[]) {
         System.exit (0);
