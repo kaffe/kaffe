@@ -1,5 +1,13 @@
 2004-01-17  Dalibor Topic <robilad@kaffe.org>
 
+	* config/parisc/sysdepCallMethod.h:
+	(sysdepCallMethod) Cleaned up, and fixed compilation
+	problems.
+
+	Reported by: Riccardo Mottola <zuse@libero.it>
+
+2004-01-17  Dalibor Topic <robilad@kaffe.org>
+
 	Switched over to using gettext's autopoint to
 	update m4 files required for iconv support.
 

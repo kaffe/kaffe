@@ -36,7 +36,8 @@ static inline void sysdepCallMethod(callMethodInfo *call)
   int *stackx;
   int st_reserve[(call)->nrargs];
   asm volatile ("ldo -36(%%r30),%0" : "=r" (sa) : "r" (st_reserve));
-  for (argidx = 0, stackx = sa; argidx < (call)->nrargs; argidx++)
+
+  for (argidx = 0, stackx = sa; argidx < (call)->nrargs; argidx++) {
     switch ((call)->callsize[argidx])
       {
       case 1:
@@ -47,18 +48,19 @@ static inline void sysdepCallMethod(callMethodInfo *call)
 	*stackx-- = (int) ((call)->args[argidx].j);
 	*stackx-- = (call)->args[argidx].i;
 	argidx++;
-      default:
 	break;
-      }
+      };
+  }
+
   if ((call)->rettype == 'F') {
     (call)->ret->f =
       ((f4int_f *) ((call)->function)) (sa[0], sa[-1], sa[-2], sa[-3]);
-    break;
+    return;
   }
   if ((call)->rettype == 'D') {
     (call)->ret->d =
       ((d4int_f *) ((call)->function)) (sa[0], sa[-1], sa[-2], sa[-3]);
-    break;
+    return;
   }
   (call)->ret->j =
     ((j4int_f *) ((call)->function)) (sa[0], sa[-1], sa[-2], sa[-3]);
