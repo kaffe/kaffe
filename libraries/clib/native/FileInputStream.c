@@ -130,7 +130,7 @@ java_io_FileInputStream_available(struct Hjava_io_FileInputStream* fh)
 	if (cur != (off_t)-1) {
 		struct stat statbuf;
 		if (fstat(fd, &statbuf) != -1) {
-			return statbuf.st_size - cur;
+			return (statbuf.st_size - cur);
 		}
 	}
 
@@ -138,7 +138,9 @@ java_io_FileInputStream_available(struct Hjava_io_FileInputStream* fh)
 
 #if defined(HAVE_IOCTL) && defined(FIONREAD)
 	r = ioctl(fd, FIONREAD, &nr);
-	if (r < 0 || nr == 0)
+	if (r >= 0 && nr != 0) {
+		return (nr);
+	} else
 		/* FIONREAD may report 0 for files for which data is
                    available; maybe select will do... */
 #endif
