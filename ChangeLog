@@ -1,3 +1,12 @@
+2005-01-20  Kiyo Inaba  <inaba@src.ricoh.co.jp>
+
+	* kaffe/kaffevm/jit/funcs.c,
+	kaffe/kaffevm/jit3/funcs.c: Remove unused macro 'ALIGN' or
+	'ALIGN_CODEPC'. The former is not compatible with OpenBSD
+	anyway.
+	* FAQ/FAQ.jit3: Update description of ?OUT macro and remove
+	description of ALIGN_CODEPC.
+
 2005-01-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/arm/linux/config.frag (CFLAGS):

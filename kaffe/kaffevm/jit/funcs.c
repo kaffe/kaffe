@@ -29,11 +29,6 @@
 #undef	define_insn
 #define	define_insn(n, i) void i (sequence* s)
 
-#define ALIGN(byte)							\
-	(CODEPC = (CODEPC % (byte)					\
-		   ? CODEPC + (byte) - (CODEPC % (byte))		\
-		   : CODEPC))
-
 #if defined(KAFFE_VMDEBUG)
 /*
  * Print any labels that refer to the current address.

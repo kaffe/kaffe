@@ -30,11 +30,6 @@
 nativecode* codeblock;
 uintp CODEPC;
 
-#define ALIGN_CODEPC(byte)						\
-	(CODEPC = (CODEPC % (byte)					\
-		   ? CODEPC + (byte) - (CODEPC % (byte))		\
-		   : CODEPC))
-
 #if defined(KAFFE_VMDEBUG)
 /*
  * Print any labels that refer to the current address.

@@ -182,14 +182,11 @@ File Layout
 
     CODEPC - The current index into codeblock.
 
-    OUT, BOUT, WOUT, LOUT, QOUT - Macros that resolve to a type lvalue
-    and automatically increment the CODEPC value.  For example, using
-    "LOUT = 0x45" in the architecture defs file will put the 32 bit
-    value "0x45" into the current position in the code block and
-    increment CODEPC by four.
-
-    ALIGN_CODEPC(byte) - A macro that aligns the CODEPC to the given
-    value.
+    OUT, BOUT, WOUT, LOUT, QOUT - Macros that store values given by
+    arguments into the current position and automatically increment
+    the CODEPC value.  For example, using "LOUT(0x45)" in the
+    architecture defs file will put the 32 bit value "0x45" into the
+    current position in the code block and increment CODEPC by four.
 
   kaffe/kaffevm/jit3/icode.c - The implementation of the intermediate
   functions.  These functions generate "sequence" structures that
