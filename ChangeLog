@@ -1,3 +1,12 @@
+2004-08-24  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Check for semaphore.h.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h: 
+	Only include semaphore.h if it is defined.
+
+	Reported by: Riccardo Mottola <rmottola@users.sf.net>
+	
 2004-08-23  Dalibor Topic  <robilad@kaffe.org>
 
 	Fixed debian bug #159162

@@ -12,7 +12,9 @@
 #define __thread_internal_h
 
 #include <pthread.h>
+#if defined(HAVE_SEMAPHORE_H)
 #include <semaphore.h>
+#endif /* defined(HAVE_SEMAPHORE_H) */
 
 #include "gtypes.h"
 #include "threadData.h"
