@@ -378,6 +378,11 @@ void jthread_walkLiveThreads (void(*)(void*));
  */
 int jthread_get_status (jthread_t thread);
 
+/**
+ * Specify the blocking state of a file descriptor
+ */
+void jthread_set_blocking (int fd, int blocking);
+
 static inline void
 jthread_suspend(jthread_t jt, void *suspender)
 {

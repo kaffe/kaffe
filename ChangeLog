@@ -1,3 +1,18 @@
+2003-08-05 Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/net/UnknownHostException.java:
+	Merged in from GNU Classpath.
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/lock-impl.h,
+	kaffe/kaffevm/systems/unix-pthreads/thread-internal.h,
+	kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
+	Adapted to match the new jthread interface. Changed 0 in NOTIMEOUT
+	for timeout comparisons. Added jthread_set_blocking. Added
+	syscalls jthreadedMsync, jthreadedPipeCreate, jthreadedTimedWrite.
+	Fixed the behaviour of syscalls which may time out so they return
+	ETIMEDOUT and not EINTR.
+	
 2003-08-05 Dalibor Topic <robilad@kaffe.org>
 
         libraries/javalib/awt/AWTError.java,

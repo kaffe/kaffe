@@ -12,6 +12,7 @@
 #include "config-std.h"
 #include "config-signal.h"
 #include "config-setjmp.h"
+#include "config-io.h"
 
 #include "locks.h"
 #include "thread-impl.h"
@@ -1084,6 +1085,37 @@ jthread_walkLiveThreads (void(*func)(void*))
   }
 
   DBG( JTHREAD, dprintf("end walking threads\n"))
+}
+
+void
+jthread_set_blocking (int fd, int blocking)
+{
+  int r;
+  /* This code has been copied from jthreadedFileDescriptor in
+     unix-jthreads/jthread.c
+  */
+  if (!blocking) {
+    /* Make non-blocking */
+    if ((r = fcntl(fd, F_GETFL, 0)) < 0) {
+      perror("F_GETFL");
+      return;
+    }
+    
+    /*
+     * Apparently, this can fail, for instance when we stdout is 
+     * redirected to /dev/null. (On FreeBSD)
+     */
+    fcntl(fd, F_SETFL, r | O_NONBLOCK 
+#if defined(O_ASYNC)
+	  | O_ASYNC
+#elif defined(FASYNC)
+	  | FASYNC
+#endif
+	  );
+  } else {
+    /* clear nonblocking flag */
+    fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) & ~O_NONBLOCK);
+  }
 }
 
 #if 0

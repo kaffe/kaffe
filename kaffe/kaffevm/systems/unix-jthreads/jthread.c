@@ -3067,7 +3067,7 @@ int jthreadedPipeCreate(int *read_fd, int *write_fd)
 }
 
 
-void jthread_set_blocking(int fd, jbool blocking)
+void jthread_set_blocking(int fd, int blocking)
 {
 	assert(fd < FD_SETSIZE);
 

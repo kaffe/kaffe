@@ -389,7 +389,7 @@ jthreadedSelect(int a, fd_set* b, fd_set* c, fd_set* d,
 		struct timeval* e, int* out);
 int jthreadedPipeCreate(int *read_fd, int *write_fd);
 
-void jthread_set_blocking(int fd, jbool blocking);
+void jthread_set_blocking(int fd, int blocking);
 
 /* restore an fd, i.e., put it in blocking state without async I/O */
 #define JTHREAD_RESTORE_FD

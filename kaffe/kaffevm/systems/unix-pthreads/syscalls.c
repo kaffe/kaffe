@@ -23,8 +23,6 @@
 #include <sys/wait.h>
 #endif
 
-#define NOTIMEOUT	0
-
 /*
  * various building blocks for timeout system call functions
  */
@@ -84,6 +82,33 @@ waitForTimeout(int fd, int timeout){
 		ret = select(fd+1,&rset,NULL,NULL,&tv);
 
 	if (ret == 0) 
+		errno = ETIMEDOUT;
+	else if (ret == -1)
+		errno = EINTR;
+
+	return (ret);
+}
+
+/* These two functions would need to be merged some time later.
+ */
+static
+int waitForWritable(int fd, int timeout)
+{
+	fd_set wset;
+	struct timeval tv;
+	int ret;
+
+	FD_ZERO(&wset);
+        FD_SET(fd,&wset);
+        tv.tv_sec = timeout / 1000;
+	tv.tv_usec = (timeout % 1000) * 1000;
+
+        if (timeout == NOTIMEOUT)
+		ret = select(fd+1,NULL,&wset,NULL,NULL);
+	else
+		ret = select(fd+1,NULL,&wset,NULL,&tv);
+
+	if (ret == 0)
 		errno = ETIMEDOUT;
 	else if (ret == -1)
 		errno = EINTR;
@@ -449,7 +474,7 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 		    switch( errno )
 		    {
 		    case EAGAIN:
-			errno = EINTR;
+			errno = ETIMEDOUT;
 			break;
 		    }
 		}
@@ -465,7 +490,7 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 		return (r);
 	}
 	else {
-		errno = EINTR;
+		errno = ETIMEDOUT;
 		r = -1;
 	}
 	
@@ -487,6 +512,25 @@ jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *out)
 	ret = waitForTimeout(fd,timeout);
 	if (ret > 0) {
 		r = read(fd, buf, len);
+	}
+	
+	SET_RETURN_OUT(r, out, r)
+	return (r);
+}
+
+/*
+ * Threaded write with timeout
+ */
+int
+jthreadedTimedWrite(int fd, const void* buf, size_t len, int timeout, ssize_t *out)
+{
+	ssize_t r = -1;
+	/* absolute time at which timeout is reached */
+	int ret;
+	
+	ret = waitForWritable(fd,timeout);
+	if (ret > 0) {
+		r = write(fd, buf, len);
 	}
 	
 	SET_RETURN_OUT(r, out, r)
@@ -763,7 +807,7 @@ jthreadedMmap(void **memory, size_t *size, int mode, int fd, off_t *offset)
 
 	return (rc);
 #else
-	return (-ENOTSUP);
+	return (ENOTSUP);
 #endif
 }
 
@@ -779,8 +823,43 @@ jthreadedMunmap(void *memory, size_t size)
 	}
 	return (rc);
 #else
-	return (-ENOTSUP);
+	return (ENOTSUP);
 #endif
+}
+
+static int
+jthreadedMsync(void *memory, size_t size)
+{
+#if defined(HAVE_MMAP)
+        int rc = 0;
+
+        memory = (void *)(((size_t)memory/getpagesize()) * getpagesize());
+        size += getpagesize();
+        /* TODO: Try not to freeze the entire VM. */
+        if (msync(memory, size, MS_SYNC | MS_INVALIDATE) < 0) {
+            rc = errno;
+        }
+
+        return rc;
+#else
+        return (ENOTSUP);
+#endif
+}
+
+int jthreadedPipeCreate(int *read_fd, int *write_fd)
+{
+	int pairs[2];
+
+	assert(read_fd != NULL);
+	assert(write_fd != NULL);
+
+	if (pipe(pairs) < 0)
+		return errno;
+
+	*read_fd = pairs[0];
+	*write_fd = pairs[1];
+
+	return 0;
 }
 
 /*
@@ -820,5 +899,9 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         jthreadedWaitpid,
         jthreadedKill,
         jthreadedMmap,
-        jthreadedMunmap
+        jthreadedMunmap,
+	jthreadedMsync,
+	jthreadedPipeCreate,
+	jthreadedTimedRead,
+	jthreadedTimedWrite
 };

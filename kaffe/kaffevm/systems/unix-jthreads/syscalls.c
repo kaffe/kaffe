@@ -320,7 +320,7 @@ jthreadedMmap(void **memory, size_t *size, int mode, int fd, off_t *offset)
 			sysmode = PROT_WRITE | PROT_READ;
 			break;
 		default:
-			return -EINVAL;
+			return EINVAL;
 	}
 
 	jthread_spinon(0);
@@ -331,7 +331,7 @@ jthreadedMmap(void **memory, size_t *size, int mode, int fd, off_t *offset)
 	jthread_spinoff(0);
 	return (rc);
 #else
-	return (-ENOTSUP);
+	return (ENOTSUP);
 #endif
 }
 
@@ -348,7 +348,7 @@ jthreadedMunmap(void *memory, size_t size)
 	jthread_spinoff(0);
 	return (rc);
 #else
-	return (-ENOTSUP);
+	return (ENOTSUP);
 #endif
 }
 
@@ -369,7 +369,7 @@ jthreadedMsync(void *memory, size_t size)
 
 	return rc;
 #else
-	return (-ENOTSUP);
+	return (ENOTSUP);
 #endif
 }
 

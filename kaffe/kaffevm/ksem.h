@@ -86,7 +86,6 @@ ksemGet(Ksem* sem, jlong timeout)
 	if (timeout == 0)
 		timeout = NOTIMEOUT;
 
-DBG(JTHREAD, dprintf("ksemGet(%p, %qd)\n", sem, timeout); )
 	jmutex_lock(&sem->mux);
 	/* If no stored wakeups, then sleep. */
 	if (sem->count == 0) {

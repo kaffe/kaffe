@@ -12,6 +12,8 @@
 #include "config-std.h"
 
 #include "lock-impl.h"
+/* For NOTIMEOUT */
+#include "jsyscall.h"
 
 /*
  * Wait on the condvar with a given relative timeout in ms (which we
@@ -29,7 +31,7 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 
   cur->stackCur  = (void*)&cur;
 
-  if ( timeout == 0 ) {
+  if ( timeout == NOTIMEOUT ) {
 	/* we handle this as "wait forever"	*/
 	cur->blockState |= BS_CV;
 	stat = pthread_cond_wait( cv, mux );
