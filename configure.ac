@@ -1691,9 +1691,9 @@ dnl  If nothing is set, use native implementation if GNU MP can be found.
 			AC_MSG_ERROR([Could not find GNU MP library.  Install the gmp development package, or pass --enable-pure-java-math to configure.])
 		fi
 	fi
-	AC_CHECK_HEADER([gmp.h],
-			[pure_java_math=false],
-			[AC_MSG_ERROR([Found GNU MP library, but can't find gmp.h.  Install the gmp development package, or pass --enable-pure-java-math to configure.])])
+	AC_CHECK_HEADERS([gmp.h],
+			 [pure_java_math=false],
+			 [AC_MSG_ERROR([Found GNU MP library, but can't find gmp.h.  Install the gmp development package, or pass --enable-pure-java-math to  configure.])])
 ]
 )
 

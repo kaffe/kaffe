@@ -4811,8 +4811,8 @@ sed_quote_subst='$sed_quote_subst'
 
 # The HP-UX ksh and POSIX shell print the target directory to stdout
 # if CDPATH is set.
-if test \"\${CDPATH+set}\" = set; then CDPATH=:; export CDPATH; fi
-
+#if test \"\${CDPATH+set}\" = set; then CDPATH=:; export CDPATH; fi
+(unset CDPATH) >/dev/null 2>&1 && unset CDPATH 
 relink_command=\"$relink_command\"
 
 # This environment variable determines our operation mode.
