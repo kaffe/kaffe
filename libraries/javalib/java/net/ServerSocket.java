@@ -333,7 +333,7 @@ public class ServerSocket
 	  {
 	    socket.close ();
 	  }
-	catch (IOException e)
+	catch (IOException e2)
 	  {
 	  }
 	throw e;
