@@ -34,6 +34,7 @@ private boolean CComments;
 private boolean CPlusPlusComments;
 private boolean toLower;
 private StringBuffer buffer = new StringBuffer();
+private boolean endOfFile;
 
 /**
  * @deprecated
@@ -53,7 +54,20 @@ public StreamTokenizer(Reader r) {
 }
 
 private int chrRead() throws IOException {
-	return (pushIn.read());
+	if (endOfFile) {
+		return (-1);
+	} else {
+		return (pushIn.read());
+	}
+}
+
+private void unRead(int c) throws IOException {
+	/* do not push EOF back --- it would show up as 65535 the next time */
+	if (c == -1) {
+		endOfFile = true;
+	} else {
+		pushIn.unread(c);
+	}
 }
 
 public void commentChar(int ch) {
@@ -105,7 +119,7 @@ private int nextTokenType() throws IOException {
 			return (ttype);
 		}
 		else {
-			pushIn.unread(next);
+			unRead(next);
 		}
 	}
 
@@ -120,10 +134,14 @@ private int nextTokenType() throws IOException {
 		/* Skip whitespace and return nextTokenType */
 		while (lookup(chr).isWhitespace) {
 			chr = chrRead();
+			if (chr=='\n' && EOLSignificant) {
+				ttype = TT_EOL;
+				return (ttype);
+			}
 		}
 
 		/* For next time */
-		pushIn.unread(chr);
+		unRead(chr);
 		ttype = nextTokenType();
 	}
 	else if (e.isNumeric) {
@@ -135,7 +153,7 @@ private int nextTokenType() throws IOException {
 		}
 
 		/* For next time */
-		pushIn.unread(chr);
+		unRead(chr);
 
 		try {
 			nval = new Double(buffer.toString()).doubleValue();
@@ -158,7 +176,7 @@ private int nextTokenType() throws IOException {
 		}
 
 		/* For next time */
-		pushIn.unread(chr);
+		unRead(chr);
 
 		ttype = TT_WORD;
 		sval = buffer.toString();
@@ -299,7 +317,7 @@ private void skipCComment() throws IOException {
 				break;
 			}
 			else {
-				pushIn.unread(next);
+				unRead(next);
 			}
 		}
 		else if (chr == -1) {
@@ -312,7 +330,7 @@ private void skipLine() throws IOException {
 	while (chrRead() != '\n')
 		;
 	if (EOLSignificant) {
-		pushIn.unread('\n');
+		unRead('\n');
 	}
 }
 

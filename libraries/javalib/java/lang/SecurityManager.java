@@ -180,8 +180,13 @@ protected Class currentLoadedClass() {
 /**
  * @deprecated, Deprecated in 1.2
  */
+protected boolean inCheck;
+
+/**
+ * @deprecated, Deprecated in 1.2
+ */
 public boolean getInCheck() {
-	return (false);
+	return (inCheck);
 }
 
 public Object getSecurityContext() {

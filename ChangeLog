@@ -1,3 +1,11 @@
+Sat Dec 12 19:04:18 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/io/StreamTokenizer.java: fixed bug where
+	whitespaces including \n were skipped even though EOL was significant.
+	Avoid pushing back EOF because it comes back as 65535.
+	* libraries/javalib/java/lang/SecurityManager.java: added deprecated
+	inCheck variable.
+
 Sat Dec 12 10:46:44 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/external.[ch], kaffe/kaffevm/support.c: changed
