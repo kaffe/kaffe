@@ -1,3 +1,8 @@
+1999-04-14  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* config/config.alias: Cygnus has renamed cygwin32 to cygwin, but
+	our config directory is still named cygwin32.
+
 1999-04-13  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in: Modify --with-libraries so that it also adds

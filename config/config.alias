@@ -19,6 +19,7 @@ aix*)		host_os=aix ;;
 aux*)		host_os=a-ux ;;
 bsdi3*)		host_os=bsdi3 ;;
 bsdi*)		host_os=bsdi ;;
+cygwin*)	host_os=cygwin32 ;;
 freebsd*)	host_os=freebsd2 ;;
 hpux*)		host_os=hpux ;;
 irix*)		host_os=irix5 ;;
