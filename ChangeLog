@@ -1,3 +1,14 @@
+Thu Aug  1 00:12:41 CEST 2002 Robert N. Gonzalez <Robert.N.Gonzalez@williams.edu>
+
+	* kaffe/kaffevm/classMethod.h:
+	some of the macros defined in classMethod.h depend on macros
+	defined in access.h, which is not included in classMethod.h.  thus
+	if you try to use the macros in some file that includes
+	classMethod.h you get compiletime errors, which is sortof
+	annoying.
+	
+	so #include "access.h" in classMethod.h to fix this.
+
 Mon Jul 29 18:32:48 CEST 2002 RyosIII Suzuki <ryos@sinby.com>
 
 	* kaffe/kaffevm/kaffe.def: fixed compilation problems when kaffe

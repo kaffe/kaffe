@@ -12,6 +12,7 @@
 #ifndef __classmethod_h
 #define __classmethod_h
 
+#include "access.h"
 #include "gtypes.h"
 #include "object.h"
 #include "md.h"	 /* XXX: need this here so KAFFE_PROFILER is accurately def'd */
