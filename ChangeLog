@@ -2,6 +2,42 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-10  Chris Burdess  <dog@gnu.org>
+
+        * gnu/xml/dom/DomAttr.java,
+        gnu/xml/dom/DomCDATA.java,
+        gnu/xml/dom/DomCDATASection.java,
+        gnu/xml/dom/DomCharacterData.java,
+        gnu/xml/dom/DomDOMException.java,
+        gnu/xml/dom/DomDoctype.java,
+        gnu/xml/dom/DomDocument.java,
+        gnu/xml/dom/DomDocumentConfiguration.java,
+        gnu/xml/dom/DomDocumentFragment.java,
+        gnu/xml/dom/DomElement.java,
+        gnu/xml/dom/DomEx.java,
+        gnu/xml/dom/DomFragment.java,
+        gnu/xml/dom/DomImpl.java,
+        gnu/xml/dom/DomIterator.java,
+        gnu/xml/dom/DomNamedNodeMap.java,
+        gnu/xml/dom/DomNode.java,
+        gnu/xml/dom/DomNsNode.java,
+        gnu/xml/dom/DomPI.java,
+        gnu/xml/dom/DomProcessingInstruction.java,
+        gnu/xml/dom/DomText.java,
+        gnu/xml/dom/DomLSEx.java,
+        gnu/xml/dom/DomLSException.java,
+        gnu/xml/dom/DomLSParser.java,
+        gnu/xml/dom/DomLSSerializer.java: Refactoring of exception and DOM
+        implementation class names to conform to Classpath guidelines. Make
+        DomLSException use JDK 1.4+ exception chaining.
+        * gnu/xml/util/SAXNullTransformerFactory.java,
+        gnu/xml/xpath/Predicate.java: Use constants relative to declaring
+        class or interface.
+
+2005-02-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-10  Michael Koch  <konqueror@gmx.de>
 
         * javax/swing/JTabbedPane.java
