@@ -1,5 +1,17 @@
 2004-09-03  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c: Use gc_get_heap_total.
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.h: (gc_heap_total) Removed.
+	(gc_get_heap_total) Added.
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c (gc_get_heap_total): 
+	New function.
+
+	Reported by: Michael Franz <developer.franz@verizon.net>
+
+2004-09-03  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/kaffe-gc/gc-mem.c: (gc_pgbits) 
 	Made static.
 

@@ -561,7 +561,7 @@ DBG(GCSTAT,
 		 *
 		 * XXX: make this a run-time configurable parameter.
 		 */
-		if (gcRunning == 1 && gc_heap_total < gc_heap_limit && 
+		if (gcRunning == 1 && gc_get_heap_total() < gc_heap_limit && 
 		    gcStats.allocmem * 4 < gcStats.totalmem * 1) {
 DBG(GCSTAT,
 			dprintf("skipping collection since alloc/total "
@@ -630,13 +630,13 @@ DBG(GCSTAT,
 			    " allocated %dK (#%d), marked %dK, "
 			    "swept %dK (#%d)\n"
 			    " %d objs (%dK) awaiting finalization>\n",
-			(int)(gc_heap_total/1024), 
+			(int)(gc_get_heap_total()/1024), 
 			gcStats.totalmem/1024, 
 			(gcStats.totalmem-gcStats.freedmem)/1024, 
 			gcStats.totalobj,
 			gcStats.totalobj-gcStats.freedobj,
 			(1.0 - ((gcStats.totalmem-gcStats.freedmem)/
-				(double)gc_heap_total)) * 100.0,
+				(double)gc_get_heap_total())) * 100.0,
 			gcStats.allocmem/1024,
 			gcStats.allocobj,
 			gcStats.markedmem/1024, 
@@ -1059,7 +1059,7 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 				/* Grow the heap */
 				DBG (GCSYSALLOC, dprintf ("growing heap by %u bytes of type %s (%2.1f%% free)\n", 
 							  (unsigned int)size, gcFunctions[fidx].description,
-							  (1.0 - (gcStats.totalmem / (double)gc_heap_total)) * 100.0); )
+							  (1.0 - (gcStats.totalmem / (double)gc_get_heap_total())) * 100.0); )
 				
 				gc_heap_grow(size);
 				break;
@@ -1426,7 +1426,7 @@ gcGetHeapLimit(Collector *gcif UNUSED)
 static uintp
 gcGetHeapTotal(Collector *gcif UNUSED)
 {
-  return gc_heap_total;
+  return gc_get_heap_total();
 }
 
 static const char *
