@@ -319,7 +319,8 @@ NOINSTALL_DERIVED_HDRS = \
 	java_util_zip_ZipEntry.h \
 	java_util_zip_ZipFile.h \
 	kaffe_applet_AudioPlayer.h \
-	kaffe_lang_SystemClassLoader.h \
+	kaffe_lang_PrimordialClassLoader.h \
+	kaffe_lang_ThreadStack.h \
 	kaffe_management_Classpath.h 
 
 
@@ -370,12 +371,12 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 
 
 JNI_DERIVED_HDRS = $(INSTALL_JNI_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS)
-@USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
 
 
 # rmi.jar
 # kaffe_rmi_server_RMIHashes.h
 @USE_COMPAT_IFADDRS_TRUE@ifaddrs_compat = ifaddrs.h
+@USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
 
 nodist_noinst_HEADERS = \
 	$(NOINSTALL_DERIVED_HDRS) \

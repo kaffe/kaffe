@@ -1638,6 +1638,7 @@ kaffe_jar_SRCS = \
 	kaffe/jar/ExecJar.java \
 	kaffe/jar/ExecJarName.java
 kaffe_lang_SRCS = \
+	kaffe/lang/AppClassLoader.java \
 	kaffe/lang/Application.java \
 	kaffe/lang/ApplicationException.java \
 	kaffe/lang/ApplicationResource.java \
@@ -1646,8 +1647,9 @@ kaffe_lang_SRCS = \
 	kaffe/lang/MemoryAdvice.java \
 	kaffe/lang/MemoryAdviceCallback.java \
 	kaffe/lang/PackageHelper.java \
+	kaffe/lang/PrimordialClassLoader.java \
 	kaffe/lang/ResourceReader.java \
-	kaffe/lang/SystemClassLoader.java \
+	kaffe/lang/ThreadStack.java \
 	kaffe/lang/UNIXProcess.java
 kaffe_management_SRCS = \
 	kaffe/management/Classpath.java \

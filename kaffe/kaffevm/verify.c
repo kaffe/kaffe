@@ -11,8 +11,6 @@
  * of this file. 
  */
 
-#define	DBG(s)
-
 #include "config.h"
 #include "config-std.h"
 #include "constants.h"
@@ -21,6 +19,9 @@
 #include "exception.h"
 #include "errors.h"
 #include "jni.h"
+
+#undef DBG
+#define	DBG(s)
 
 /*
  * Verify pass 2:  Check the internal consistency of the class file

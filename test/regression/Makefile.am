@@ -179,7 +179,9 @@ TEST_CLASS_LOADING = \
 	MarkResetTest.java \
 	HashtableTest1.java \
 	ReflectMultiArray.java \
-	ExecTest.java 
+	ExecTest.java \
+	ProhibitedClass.java \
+	KaffeInternal.java
 
 ## Test catching our own death
 ## Test various ways of stopping threads

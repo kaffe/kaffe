@@ -188,10 +188,14 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 {
 	char gc_safe_zone[1024];
 	jarray args;
+	jclass lcls;
 	jclass cls;
 	jclass mcls;
+	jmethodID cmth;
+	jmethodID lmth;
 	jmethodID mmth;
 	jobject str;
+	jobject loader;
 	int i;
 	char* exec;
 
@@ -208,10 +212,42 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 		argc--;
 	}
 
-	mcls = (*env)->FindClass(env, exec);
+	/* Get the application class loader class */
+	lcls = (*env)->FindClass(env, "kaffe.lang.AppClassLoader");
 	if (checkException())
 		goto done;
 
+	/* ... and then get the singleton. */
+	cmth = (*env)->GetStaticMethodID(env,
+					 lcls,
+					 "getSingleton",
+					 "()Ljava/lang/ClassLoader;");
+	if (checkException())
+		goto done;
+
+	loader = (*env)->CallStaticObjectMethod(env,
+						lcls,
+						cmth);
+	if (checkException())
+		goto done;
+
+	/* Load the main class into the AppClassLoader */
+	lmth = (*env)->GetMethodID(env,
+				   lcls,
+				   "loadClass",
+				   "(Ljava/lang/String;Z)Ljava/lang/Class;");
+	if (checkException())
+		goto done;
+
+	mcls = (*env)->CallObjectMethod(env,
+					loader,
+					lmth,
+					(*env)->NewStringUTF(env, exec),
+					false);
+	if (checkException())
+		goto done;
+
+	/* ... and run main. */
 	mmth = (*env)->GetStaticMethodID(env,
 	    mcls, "main", "([Ljava/lang/String;)V");
 	if (checkException())

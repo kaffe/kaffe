@@ -79,7 +79,7 @@ initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 		goto bad;
 	}
 	clazz->centry = centry;
-	centry->class = clazz;
+	centry->data.cl = clazz;
 
 	return;
 bad:

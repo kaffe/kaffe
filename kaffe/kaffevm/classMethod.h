@@ -18,23 +18,27 @@
 #include "md.h"	 /* XXX: need this here so KAFFE_PROFILER is accurately def'd */
 #include "constants.h"
 #include "errors.h"
+#include "jthread.h"
 
 #define	MAXMETHOD		64
 
 /* Class state */
-#define	CSTATE_UNLOADED		0
-#define	CSTATE_LOADED		1
-#define	CSTATE_PRELOADED	2
-#define CSTATE_DOING_PREPARE	3
-#define CSTATE_PREPARED		4
-#define CSTATE_LINKED		5
-#define CSTATE_CONSTINIT	6
-#define	CSTATE_DOING_SUPER	7
-#define	CSTATE_USABLE		8
-#define	CSTATE_DOING_INIT	9
-#define	CSTATE_INIT_FAILED	10
-#define	CSTATE_COMPLETE		11
-#define	CSTATE_FAILED		-1
+typedef enum {
+	CSTATE_FAILED = -1,
+	CSTATE_UNLOADED,
+	CSTATE_LOADED,
+	CSTATE_LOADED_SUPER,
+	CSTATE_PRELOADED,
+	CSTATE_VERIFIED,
+	CSTATE_DOING_PREPARE,
+	CSTATE_PREPARED,
+	CSTATE_LINKED,
+	CSTATE_CONSTINIT,
+	CSTATE_DOING_SUPER,
+	CSTATE_USABLE,
+	CSTATE_DOING_INIT,
+	CSTATE_COMPLETE,
+} class_state_t;
 
 struct _classEntry;
 struct _innerClass;
@@ -44,6 +48,8 @@ struct Hjava_lang_String;
 
 struct Hjava_lang_Class {
 	Hjava_lang_Object	head;		/* A class is an object too */
+
+	struct _iLock*		lock;		/* Lock for internal use */
 
 	/* Link to class entry */
 	struct _classEntry*	centry;
@@ -102,7 +108,7 @@ struct Hjava_lang_Class {
 	   The MSB corresponds to the dtable field.
 	 */
 	int*			gc_layout;
-	signed char		state;
+	class_state_t		state;
 	void*			processingThread;
 	Method*			finalizer;
 	int			alloc_type;	/* allocation type */
@@ -131,11 +137,11 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
  * bits.  This is not for static+synchronized methods.
  * Use the centry lock, as it is convenient and available.
  */
-#define lockClass(C) lockMutex(((C)->centry))
-#define unlockClass(C) unlockMutex(((C)->centry))
-#define waitOnClass(C) waitCond(((C)->centry), 0)
-#define signalOnClass(C) signalCond(((C)->centry))
-#define broadcastOnClass(C) broadcastCond(((C)->centry))
+#define lockClass(C) lockMutex(((C)))
+#define unlockClass(C) unlockMutex(((C)))
+#define waitOnClass(C) waitCond(((C)), 0)
+#define signalOnClass(C) signalCond(((C)))
+#define broadcastOnClass(C) broadcastCond(((C)))
 
 #define METHOD_TRANSLATED(M)		((M)->accflags & ACC_TRANSLATED)
 #define METHOD_JITTED(M)		((M)->accflags & ACC_JITTED)
@@ -169,18 +175,52 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 #endif
 
 /*
- * Class hash entry.
+ * Stats for the nameMapping object.
  *
- * Note that the lock on this struct is used to
- * synchronize internal Class object state, too.
+ * searching - The system is searching for this particular class.
+ * loading - The system is loading this particular class and/or its parents.
+ *   If a circularity exists in the hierarchy it will be detected in this
+ *   state.
+ * loaded - The class and its parents have been loaded.
+ * done - The class have been loaded and verified.
+ */
+typedef enum {
+	NMS_EMPTY,
+	NMS_SEARCHING,
+	NMS_LOADING,
+	NMS_LOADED,
+	NMS_DONE,
+} name_mapping_state_t;
+
+/*
+ * Class hash entry.
  */
 typedef struct _classEntry {
-	Utf8Const*		name;
-	Hjava_lang_ClassLoader*	loader;
-	Hjava_lang_Class*	class;
 	struct _classEntry*	next;
+	Utf8Const*		name;
+    
         struct _iLock*          lock;
+	name_mapping_state_t state;
+	Hjava_lang_ClassLoader*	loader;
+	union {
+		jthread_t thread;
+		struct Hjava_lang_Class *cl;
+	} data;
 } classEntry;
+
+/*
+ * The nameDependency structure is used to detect cycles between classes.
+ * Basically, its used as a simple deadlock detection system.
+ *
+ * next - The next object in the list.
+ * thread - The thread that is blocked on "mapping".
+ * mapping - The mapping that "thread" is waiting for.
+ */
+typedef struct _nameDependency {
+	struct _nameDependency *next;
+	jthread_t thread;
+	classEntry *mapping;
+} nameDependency;
 
 typedef struct _innerClass {
 	u2			outer_class;
@@ -402,7 +442,7 @@ Hjava_lang_Class* 	findClass(struct _classEntry* centry, errorInfo *einfo);
 
 void			loadStaticClass(Hjava_lang_Class**, const char*);
 
-bool			setupClass(Hjava_lang_Class*, constIndex,
+Hjava_lang_Class*	setupClass(Hjava_lang_Class*, constIndex,
 				   constIndex, u2, Hjava_lang_ClassLoader*, errorInfo*);
 bool 			addSourceFile(Hjava_lang_Class* c, int idx, errorInfo*);
 bool			addInnerClasses(Hjava_lang_Class* c, uint32 len, struct classFile* fp, errorInfo *info);
@@ -454,6 +494,49 @@ Method*			findMethodFromPC(uintp);
 void			destroyClassLoader(Collector *, void *);
 struct Hjava_lang_String* resolveString(Hjava_lang_Class* clazz, int idx,
 					errorInfo *einfo);
+/*
+ * Start a search for a class.  If no other thread is searching for this
+ * mapping then the responsibility falls on the current thread.
+ *
+ * ce - The mapping to start searching for.
+ * out_cl - A placeholder for the class if it has already been bound.
+ * einfo - An uninitialized errorInfo object.
+ * returns - True, if the class is already bound or if this thread should be
+ *   responsible for searching/loading the class.  False, if searching for this
+ *   class would result in a class circularity.
+ */
+int classMappingSearch(classEntry *ce,
+		       Hjava_lang_Class **out_cl,
+		       errorInfo *einfo);
+/*
+ * Start loading a class.
+ *
+ * ce - The mapping to start searching for.
+ * out_cl - A placeholder for the class if it has already been bound.
+ * einfo - An uninitialized errorInfo object.
+ * returns - True, if the class is already bound or if this thread should be
+ *   responsible for searching/loading the class.  False, if searching for this
+ *   class would result in a class circularity.
+ */
+int classMappingLoad(classEntry *ce,
+		     Hjava_lang_Class **out_cl,
+		     errorInfo *einfo);
+/*
+ * Transition a mapping to the loaded state.
+ *
+ * ce - The name mapping whose state should be updated.
+ * cl - The class object that should be bound to this mapping.
+ * return - The value of "cl" if the mapping wasn't already updated, otherwise,
+ *   it will be the value previously stored in the mapping.
+ */
+Hjava_lang_Class *classMappingLoaded(classEntry *ce, Hjava_lang_Class *cl);
+/*
+ * Force a mapping to a particular state.
+ *
+ * ce - The name mapping whose state should be updated.
+ * nms - The state the mapping should be set to.
+ */
+void setClassMappingState(classEntry *ce, name_mapping_state_t nms);
 
 void walkClassPool(int (*walker)(Hjava_lang_Class *clazz, void *), void *param);
 

@@ -106,15 +106,6 @@ DBG(GCJ,	dprintf(__FUNCTION__": adding class %s to pool@%p\n",
 	}
 #endif
 
-	/* Note: In order to avoid that a thread goes on and tries to link a
-	 * class that hasn't been fully read, we make sure we don't set
-	 * centry->class before the reading has completed.  It's the
-	 * caller's responsibility to set centry->class after the reading
-	 * is completed and threads can start racing for who gets to process
-	 * it.
-	 */
-	assert(centry->class == 0);
-
 	/* Look for the class */
 DBG(CLASSLOOKUP,
 	dprintf("Scanning for class %s\n", cname);		)
@@ -126,6 +117,12 @@ DBG(CLASSLOOKUP,
 	findClassInJar(buf, &hand, einfo);
 	KFREE(buf);
 	if (hand.type == CP_INVALID) {
+		/* We should only throw a ClassNotFoundException. */
+		discardErrorInfo(einfo);
+		postExceptionMessage(einfo,
+				     JAVA_LANG(ClassNotFoundException),
+				     "%s",
+				     centry->name->data);
 		return (0);
 	}
 
@@ -325,7 +322,14 @@ DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); )
 
 	/* cut off the ".class" suffix for the exception msg */
 	cname[strlen(cname) - strlen(".class")] = '\0';
-	postNoClassDefFoundError(einfo, cname);
+	/*
+	 * Technically, we're just loading a file, so use
+	 * FileNotFoundException.
+	 */
+	postExceptionMessage(einfo,
+			     JAVA_IO(FileNotFoundException),
+			     "%s",
+			     cname);
 
 	done:;
 	unlockStaticMutex(&jarlock);

@@ -10,7 +10,7 @@ public class InetSocketAddress
 	try
 	{
 	    ANY_ADDRESS = InetAddress.getByAddress(new byte[] { 0, 0, 0, 0 });
-	    ANY_ADDRESS.getHostName();
+	    ANY_ADDRESS.hostName = "";
 	}
 	catch(UnknownHostException e)
 	{

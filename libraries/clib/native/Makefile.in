@@ -255,12 +255,12 @@ LANG_SRCS = \
 		MemoryAdvice.c \
 		NativeLibrary.c \
 		Object.c \
+		PrimordialClassLoader.c \
 		RMIHashes.c \
 		Runtime.c \
 		SecurityManager.c \
 		String.c \
 		System.c \
-		SystemClassLoader.c \
 		Thread.c \
 		Throwable.c \
 		UNIXProcess.c \
@@ -305,8 +305,8 @@ am__objects_1 = ByteToCharDefault.lo ByteToCharIconv.lo \
 	ObjectStreamClassImpl.lo
 am__objects_2 = Application.lo Class.lo ClassLoader.lo Compiler.lo \
 	Double.lo Float.lo Math.lo MemoryAdvice.lo NativeLibrary.lo \
-	Object.lo RMIHashes.lo Runtime.lo SecurityManager.lo String.lo \
-	System.lo SystemClassLoader.lo Thread.lo Throwable.lo \
+	Object.lo PrimordialClassLoader.lo RMIHashes.lo Runtime.lo \
+	SecurityManager.lo String.lo System.lo Thread.lo Throwable.lo \
 	UNIXProcess.lo ZipFile.lo
 am__objects_3 = Array.lo Constructor.lo Field.lo Method.lo
 am__objects_4 = DateFormat.lo
@@ -336,10 +336,10 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/NativeLibrary.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Object.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ObjectStreamClassImpl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/PrimordialClassLoader.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/RMIHashes.Plo ./$(DEPDIR)/Runtime.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/SecurityManager.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/String.Plo ./$(DEPDIR)/System.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/SystemClassLoader.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TestNative.Plo ./$(DEPDIR)/Thread.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Throwable.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/UNIXProcess.Plo ./$(DEPDIR)/ZipFile.Plo
@@ -420,12 +420,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NativeLibrary.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Object.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObjectStreamClassImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrimordialClassLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RMIHashes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Runtime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SecurityManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/String.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/System.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SystemClassLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestNative.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Throwable.Plo@am__quote@

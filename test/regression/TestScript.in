@@ -12,7 +12,7 @@
 
 : ${JAVA=kaffe} ${SRCDIR=@srcdir@} ${PATHSEP='@PATHSEP@'}
 # If you want to use jikes as default compiler for the regression tests uncomment the line below.
-#test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn"}
+test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn"}
 : ${JAVAC=${JIKES-"$JAVA at.dms.kjc.Main"}" -classpath \".$PATHSEP$SRCDIR$PATHSEP$CLASSPATH\""}
 overallerror=0
 error=0
@@ -89,7 +89,9 @@ run()
 		rm -f "$RESULT"
 	else
 	        $VERBOSE output differs from "$1.out", saving in "$1.fail"
-		error=1
+		if test "$error" != 77; then
+		    error=1
+		fi
 	fi
 	if test -f core; then
 		$VERBOSE saving core in "$1.core"
@@ -97,6 +99,26 @@ run()
 	fi
 }
 
+# Execution options
+#
+# Sources: <source1> [<source2> ...]
+# Specify another source file to compiled with this test.
+#
+# Unsafe
+# Add the CLASSPATH value to the BOOTCLASSPATH so the test can access kaffe
+# internal classes.
+#
+# Skip Run
+# Skip this test.
+#
+# Sort Output
+# Sort the output of the test.
+#
+# Expected Output: <expected test output>
+# A multi-line comment that contains the expected output of the test.
+#
+# java args: <class name> [optional arguments]
+# Specify the arguments to use when running the 'java' command.
 runtest()
 {
 	error=0
@@ -110,6 +132,10 @@ runtest()
 	done
 	$VERBOSE JAVA_SRCS="$JAVA_SRCS"
 	compile $JAVA_SRCS
+	if grep '// [Uu]nsafe' < "$1" > /dev/null; then
+	    BOOTCLASSPATH="${BOOTCLASSPATH}${PATHSEP}${CLASSPATH}"
+	    CLASSPATH=""
+	fi
 	if grep '// [Ss]kip [Rr]un' < "$1" > /dev/null; then
 	    error=0
 	elif test $error = 0 ; then

@@ -19,6 +19,8 @@ import java.net.URL;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import kaffe.lang.PrimordialClassLoader;
+
 public class Package {
 
 	private final String name;
@@ -61,7 +63,7 @@ public class Package {
 		ClassLoader loader = Class.CallStack.getCallersClassLoader();
 
 		if (loader == null) {
-			loader = ClassLoader.getSystemClassLoader();
+			loader = PrimordialClassLoader.getSingleton();
 		}
 
 		return loader;

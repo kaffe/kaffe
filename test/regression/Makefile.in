@@ -406,7 +406,9 @@ TEST_CLASS_LOADING = \
 	MarkResetTest.java \
 	HashtableTest1.java \
 	ReflectMultiArray.java \
-	ExecTest.java 
+	ExecTest.java \
+	ProhibitedClass.java \
+	KaffeInternal.java
 
 
 TEST_STOPPING_THREADS = \

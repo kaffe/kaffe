@@ -18,6 +18,8 @@ public class sysdepCallMethod {
     }
 }
 
+// unsafe
+
 /* Expected output:
 97
 98

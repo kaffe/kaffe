@@ -28,7 +28,7 @@ public class ProcessClassInst
 
     public static void main(String av[]) throws Exception {
 	// a watchdog thread that kills us off after 9 sec
-	new Thread() {
+	Thread wd = new Thread() {
 	    public void run() {
 		try {
 		    Thread.sleep(9000);
@@ -38,7 +38,9 @@ public class ProcessClassInst
 		    System.out.println(e);
 		}
 	    }
-	}.start();
+	};
+	wd.setDaemon(true);
+	wd.start();
 
 	// a thread that will load Base
 	Thread t = new Thread() {
@@ -99,6 +101,9 @@ public class ProcessClassInst
 
 /* Expected Output:
 tan java.lang.NoClassDefFoundError: Base
-m2 a base
-t2 a base
+java.lang.NoClassDefFoundError: Base
+	at java.lang.Class.getConstructor0(Class.java:native)
+	at java.lang.Class.getDeclaredConstructor(Class.java:173)
+	at java.lang.Class.newInstance(Class.java:356)
+	at ProcessClassInst.main(ProcessClassInst.java:72)
 */

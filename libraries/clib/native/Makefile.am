@@ -26,13 +26,13 @@ LANG_SRCS = \
 		MemoryAdvice.c \
 		NativeLibrary.c \
 		Object.c \
+		PrimordialClassLoader.c \
 		RMIHashes.c \
 		Runtime.c \
-		SecurityManager.c \
 		String.c \
 		System.c \
-		SystemClassLoader.c \
 		Thread.c \
+		ThreadStack.c \
 		Throwable.c \
 		UNIXProcess.c \
 		ZipFile.c

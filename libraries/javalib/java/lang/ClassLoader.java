@@ -23,7 +23,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Vector;
-import kaffe.lang.SystemClassLoader;
+import kaffe.lang.AppClassLoader;
+import kaffe.lang.PrimordialClassLoader;
 
 public abstract class ClassLoader {
 
@@ -130,8 +131,9 @@ protected Class loadClass(String name, boolean resolve)
 		try {
 			if (parent != null) {
 				c = parent.loadClass(name, resolve);
-			} else if (this != getSystemClassLoader()) {
-				c = getSystemClassLoader().loadClass(name, resolve);
+			} else {
+				PrimordialClassLoader.getSingleton().
+					loadClass(name, resolve);
 			}
 		} catch (ClassNotFoundException _) {
 		}
@@ -148,15 +150,6 @@ protected Class loadClass(String name, boolean resolve)
 	}
 	return (c);
 }
-
-/**
- * Special method to load array classes.
- *
- * It loads the array denoted by @name and loads the element class
- * using this classloader. It's package visible so Class.forName
- * can use it.
- */
-native Class loadArrayClass (String name) throws ClassNotFoundException;
 
 protected Class findClass(String name) throws ClassNotFoundException {
 	throw new ClassNotFoundException(name);
@@ -201,7 +194,7 @@ protected final void resolveClass(Class c) {
 
 protected final Class findSystemClass(String name)
 		throws ClassNotFoundException {
-	return getSystemClassLoader().findClass(name);
+	return getSystemClassLoader().loadClass(name);
 }
 
 public final ClassLoader getParent() {
@@ -289,7 +282,7 @@ public static InputStream getSystemResourceAsStream(String name) {
 }
 
 public static ClassLoader getSystemClassLoader() {
-	return SystemClassLoader.getClassLoader();
+	return AppClassLoader.getSingleton();
 }
 
 protected Package definePackage(String name, String specTitle,

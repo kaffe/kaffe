@@ -10,11 +10,16 @@ import java.lang.reflect.*;
 class Base {
     static boolean useme;
 
+    private static void killme()
+    {
+	throw new ThreadDeath();
+    }
+
     static {
 	Base b = new Base();
 	ProcessClassStop.v.addElement(b);
 	useme = true;
-	Thread.currentThread().stop();
+	killme();
     }
     public String toString() { return "a base"; }
 }
@@ -25,7 +30,7 @@ public class ProcessClassStop
 
     public static void main(String av[]) throws Exception {
 	// a watchdog thread that kills us off after 3 sec
-	new Thread() {
+	Thread wd = new Thread() {
 	    public void run() {
 		try {
 		    Thread.sleep(3000);
@@ -35,7 +40,9 @@ public class ProcessClassStop
 		    System.out.println(e);
 		}
 	    }
-	}.start();
+	};
+	wd.setDaemon(true);
+	wd.start();
 
 	// a thread that will load Base
 	Thread t = new Thread() {
@@ -97,6 +104,9 @@ public class ProcessClassStop
 // javac flags: -nowarn
 /* Expected Output:
 tan java.lang.NoClassDefFoundError: Base
-m2 a base
-t2 a base
+java.lang.NoClassDefFoundError: Base
+	at java.lang.Class.getConstructor0(Class.java:native)
+	at java.lang.Class.getDeclaredConstructor(Class.java:173)
+	at java.lang.Class.newInstance(Class.java:356)
+	at ProcessClassStop.main(ProcessClassStop.java:74)
 */

@@ -146,7 +146,7 @@ public void checkAccess() {
 }
 
 public int countStackFrames() {
-	return SecurityManager.getClassContext0().length - 2;
+	return 0;
 }
 
 native public static Thread currentThread();

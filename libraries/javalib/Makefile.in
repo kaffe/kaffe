@@ -255,9 +255,9 @@ JAR = CLASSPATH=$(CLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.
 
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
-@HAVE_DNSJAVA_FALSE@DNSJAVA_InetAddressImpl = 
 
 @HAVE_DNSJAVA_TRUE@DNSJAVA_InetAddressImpl = java/net/DNSJavaInetAddressImpl.java
+@HAVE_DNSJAVA_FALSE@DNSJAVA_InetAddressImpl = 
 
 Klasses_jar_SRCS = \
 	$(gnu_java_lang_SRCS) \
@@ -1944,6 +1944,7 @@ kaffe_jar_SRCS = \
 	kaffe/jar/ExecJarName.java
 
 kaffe_lang_SRCS = \
+	kaffe/lang/AppClassLoader.java \
 	kaffe/lang/Application.java \
 	kaffe/lang/ApplicationException.java \
 	kaffe/lang/ApplicationResource.java \
@@ -1952,8 +1953,9 @@ kaffe_lang_SRCS = \
 	kaffe/lang/MemoryAdvice.java \
 	kaffe/lang/MemoryAdviceCallback.java \
 	kaffe/lang/PackageHelper.java \
+	kaffe/lang/PrimordialClassLoader.java \
 	kaffe/lang/ResourceReader.java \
-	kaffe/lang/SystemClassLoader.java \
+	kaffe/lang/ThreadStack.java \
 	kaffe/lang/UNIXProcess.java
 
 kaffe_management_SRCS = \

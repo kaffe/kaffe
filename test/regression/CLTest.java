@@ -116,10 +116,10 @@ Load returned class -CLTest$Hello-
 Trying to create new instance
 Hello World
 Trying same file under different name
-Duplicate name
+Duplicate name: CLTest$Hello
 Trying file with wrong name
-Wrong name
+CLTest$Hello (wrong name: b)
 Now second load attempt for a
-Duplicate name
+Duplicate name: CLTest$Hello
 Done.
 */

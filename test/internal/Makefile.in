@@ -237,9 +237,9 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-@NEED_LIBXPROF_FALSE@libxprof = #
 
 @NEED_LIBXPROF_TRUE@libxprof = ../../kaffe/xprof/libkaffexprof.la
+@NEED_LIBXPROF_FALSE@libxprof = #
 
 check_PROGRAMS = jitBasic
 

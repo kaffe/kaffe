@@ -35,6 +35,90 @@
 extern Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
 
 /*
+ * Convert string name to class object.
+ */
+struct Hjava_lang_Class*
+java_lang_Class_forName(struct Hjava_lang_String* str,
+			jbool doinit,
+			Hjava_lang_ClassLoader* loader)
+{
+	errorInfo einfo;
+	Hjava_lang_Class* clazz;
+	Utf8Const *utf8buf;
+	const char *buf;
+	int jlen;
+	jchar *js;
+
+	/*
+	 * NB: internally, we store class names as path names (with slashes
+	 *     instead of dots.  However, we must also prevent calls to
+	 *     "java/lang/Object" or "[[Ljava/lang/Object;" from succeeding.
+	 *	Since class names cannot have slashes, we reject all attempts
+	 *	to look up names that do.  Awkward.  Inefficient.
+	 */
+	js = STRING_DATA(str);
+	jlen = STRING_SIZE(str);
+	while (--jlen > 0) {
+		if (*js++ == '/') {
+			postExceptionMessage(&einfo,
+				JAVA_LANG(ClassNotFoundException),
+				"Cannot have slashes - use dots instead.");
+			throwError(&einfo);
+		}
+	}
+
+	/*
+	 * Note the following oddity:
+	 *
+	 * It is apparently perfectly legal to call forName for array types,
+	 * such as "[Ljava.lang.String;" or "[B".
+	 * However, it is wrong to call Class.forName("Ljava.lang.String;")
+	 *
+	 * This situation is similar to the constant pool resolution.  We
+	 * therefore do the same thing as in getClass in kaffevm/lookup.c,
+	 * that is, use either loadArray or loadClass depending on the name.
+	 *
+	 * This is somewhat described in Section 5.1.3 of the VM
+	 * Specification, titled "Array Classes".  This section seems to
+	 * imply that we must avoid asking a class loader to resolve such
+	 * array names (those starting with an [), and this is what calling
+	 * loadArray does.
+	 */
+
+	/* Convert string to utf8, converting '.' to '/' */
+	utf8buf = checkPtr(stringJava2Utf8ConstReplace(str, '.', '/'));
+	buf = utf8buf->data;
+
+	if (buf[0] == '[') {
+		clazz = loadArray(utf8buf, loader, &einfo);
+	}
+	else {
+		clazz = loadClass(utf8buf, loader, &einfo);
+	}
+	
+	/* if an error occurred, throw an exception */
+	if (clazz == 0) {
+		utf8ConstRelease(utf8buf);
+		throwError(&einfo);
+	}
+	utf8ConstRelease(utf8buf);
+	/*
+	 * loadClass returns the class in state CSTATE_LINKED.
+	 *
+	 * Processing to CSTATE_COMPLETE will initialize the class, resolve
+	 * its constants and run its static initializers.
+	 *
+	 * The option to load a class via forName without initializing it
+	 * was introduced in 1.2, presumably for the convenience of
+	 * programs such as stub compilers.
+	 */
+	if (doinit && processClass(clazz, CSTATE_COMPLETE, &einfo) == false) {
+		throwError(&einfo);
+	}
+	return (clazz);
+}
+
+/*
  * Convert class to string name.
  */
 struct Hjava_lang_String*

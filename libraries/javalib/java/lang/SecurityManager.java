@@ -10,6 +10,8 @@
 
 package java.lang;
 
+import kaffe.lang.ThreadStack;
+
 import java.util.PropertyPermission;
 import java.io.FileDescriptor;
 import java.net.InetAddress;
@@ -224,11 +226,11 @@ protected boolean inClassLoader() {
 }
 
 protected Class[] getClassContext() {
-	return (getClassContext0());
+	return (ThreadStack.getClassStack());
 }
 
 protected ClassLoader currentClassLoader() {
-	Class[] classes = getClassContext0();
+	Class[] classes = getClassContext();
 	for (int i = 0; i < classes.length; i++) {
 		ClassLoader loader = classes[i].getClassLoader();
 		if (loader != null) {
@@ -237,8 +239,5 @@ protected ClassLoader currentClassLoader() {
 	}
 	return (null);
 }
-
-// used by java.lang.Class.getStackClass()
-native static /* private */ Class[] getClassContext0();
 
 }

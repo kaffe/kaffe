@@ -11,7 +11,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "kaffe_lang_Application.h"
-#include "java_lang_SecurityManager.h"
+#include "kaffe_lang_ThreadStack.h"
 #include <native.h>
 
 extern void exitThread(void);
@@ -29,5 +29,5 @@ Java_kaffe_lang_Application_exit0(JNIEnv* env, jobject application)
 jarray
 Java_kaffe_lang_Application_classStack0(JNIEnv *env, jclass cls)
 {
-	return (java_lang_SecurityManager_getClassContext0());
+	return (kaffe_lang_ThreadStack_getClassStack());
 }

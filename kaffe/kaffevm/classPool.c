@@ -84,7 +84,7 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader,
 	}
 	entry->name = name;
 	entry->loader = loader;
-	entry->class = 0;
+	entry->data.cl = 0;
 	entry->next = 0;
 
 	/* Lock the class table and insert entry into it (if not already
@@ -143,9 +143,9 @@ findMethodFromPC(uintp pc)
 
 	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
 		for (entry = classEntryPool[ipool];  entry != NULL; entry = entry->next) {
-			if (entry->class != 0) {
-				imeth = CLASS_NMETHODS(entry->class);
-				ptr = CLASS_METHODS(entry->class);
+			if (entry->data.cl != 0) {
+				imeth = CLASS_NMETHODS(entry->data.cl);
+				ptr = CLASS_METHODS(entry->data.cl);
 				for (; --imeth >= 0;  ptr++) {
 					uintp ncode;
 					if (!METHOD_TRANSLATED(ptr)) {
@@ -174,7 +174,7 @@ walkClassEntries(Collector *collector, Hjava_lang_ClassLoader* loader)
                      entry = entry->next)
                 {
                         if (entry->loader == loader) {
-                                GC_markObject(collector, entry->class);
+                                GC_markObject(collector, entry->data.cl, loader);
                         }
                 }
         }
@@ -207,11 +207,11 @@ removeClassEntries(Hjava_lang_ClassLoader* loader)
 				 * should ever be finalized because they're all
 				 * kept alive by their respective classes.
 				 */
-				assert(entry->class == 0 ||
+				assert(entry->data.cl == 0 ||
 					Kaffe_JavaVMArgs[0].enableClassGC != 0);
 DBG(CLASSGC,
 				dprintf("removing %s l=%p/c=%p\n",
-				    entry->name->data, loader, entry->class);
+				    entry->name->data, loader, entry->data.cl);
     )
 				/* release reference to name */
 				utf8ConstRelease(entry->name);
@@ -247,6 +247,286 @@ destroyClassLoader(Collector *c, void* _loader)
    	}
 }
 
+static nameDependency *dependencies;
+static iLock *mappingLock;
+
+static
+nameDependency *findNameDependency(jthread_t jt)
+{
+	nameDependency *curr, *retval = 0;
+
+	for( curr = dependencies; curr && !retval; curr = curr->next )
+	{
+		if( curr->thread == jt )
+		{
+			retval = curr;
+		}
+	}
+	return( retval );
+}
+
+static
+int addNameDependency(nameDependency *nd)
+{
+	int retval = 1;
+	int iLockRoot;
+
+	assert(nd != 0);
+
+	lockStaticMutex(&mappingLock);
+	{
+		nameDependency *curr;
+		
+		nd->next = dependencies;
+		dependencies = nd;
+
+		for( curr = findNameDependency(nd->mapping->data.thread);
+		     curr && retval;
+		     curr = findNameDependency(curr->mapping->data.thread) )
+		{
+			if( curr->mapping->data.thread == nd->thread )
+			{
+				retval = 0;
+			}
+		}
+	}
+	unlockStaticMutex(&mappingLock);
+	return( retval );
+}
+
+static
+void remNameDependency(classEntry *ce)
+{
+	int iLockRoot;
+
+	assert(ce != 0);
+	
+	lockStaticMutex(&mappingLock);
+	{
+		nameDependency **last, *curr;
+
+		last = &dependencies;
+		curr = dependencies;
+		while( curr && (curr->mapping != ce) )
+		{
+			last = &curr->next;
+			curr = curr->next;
+		}
+		if( curr )
+		{
+			*last = curr->next;
+		}
+	}
+	unlockStaticMutex(&mappingLock);
+}
+
+int classMappingSearch(classEntry *ce,
+		       Hjava_lang_Class **out_cl,
+		       errorInfo *einfo)
+{
+	int done = 0, retval = 1;
+	nameDependency nd;
+	jthread_t jt;
+	int iLockRoot;
+
+	jt = jthread_current();
+	while( !done )
+	{
+		lockMutex(ce);
+		switch( ce->state )
+		{
+		case NMS_EMPTY:
+			/* This thread's responsibility. */
+			ce->state = NMS_SEARCHING;
+			ce->data.thread = jt;
+			done = 1;
+			break;
+		case NMS_SEARCHING:
+			if( ce->data.thread == jt )
+			{
+				done = 1;
+				break;
+			}
+			waitCond(ce, 0);
+			break;
+		case NMS_LOADING:
+			/*
+			 * Another thread is loading it, make sure there is not
+			 * a cycle.
+			 */
+			nd.thread = jt;
+			nd.mapping = ce;
+			if( (ce->data.thread == jt) ||
+			    !addNameDependency(&nd) )
+			{
+				/* Circularity. */
+				done = 1;
+				retval = 0;
+				postExceptionMessage(
+					einfo,
+					JAVA_LANG(ClassCircularityError),
+					"%s",
+					ce->name->data);
+			}
+			else
+			{
+				waitCond(ce, 0);
+			}
+			remNameDependency(ce);
+			break;
+		case NMS_LOADED:
+			/*
+			 * Another thread loaded it, however, its not finished
+			 * linking yet.
+			 */
+			waitCond(ce, 0);
+			break;
+		case NMS_DONE:
+			/* Its already been loaded and linked. */
+			*out_cl = ce->data.cl;
+			done = 1;
+			break;
+		}
+		unlockMutex(ce);
+	}
+	return( retval );
+}
+
+int classMappingLoad(classEntry *ce,
+		     Hjava_lang_Class **out_cl,
+		     errorInfo *einfo)
+{
+	int done = 0, retval = 1;
+	nameDependency nd;
+	jthread_t jt;
+	int iLockRoot;
+
+	*out_cl = 0;
+	jt = jthread_current();
+	while( !done )
+	{
+		lockMutex(ce);
+		switch( ce->state )
+		{
+		case NMS_EMPTY:
+		case NMS_SEARCHING:
+			/* This thread's responsibility. */
+			ce->state = NMS_LOADING;
+			ce->data.thread = jt;
+			done = 1;
+			break;
+		case NMS_LOADING:
+			/*
+			 * Another thread is loading it, make sure there is not
+			 * a cycle.
+			 */
+			nd.thread = jt;
+			nd.mapping = ce;
+			if( (ce->data.thread == jt) ||
+			    !addNameDependency(&nd) )
+			{
+				/* Circularity. */
+				done = 1;
+				retval = 0;
+				postExceptionMessage(
+					einfo,
+					JAVA_LANG(ClassCircularityError),
+					"%s",
+					ce->name->data);
+			}
+			else
+			{
+				waitCond(ce, 0);
+			}
+			remNameDependency(ce);
+			break;
+		case NMS_LOADED:
+			/*
+			 * Another thread loaded it, however, its not finished
+			 * linking yet.
+			 */
+			waitCond(ce, 0);
+			break;
+		case NMS_DONE:
+			/* Its already been loaded and linked. */
+			*out_cl = ce->data.cl;
+			done = 1;
+			break;
+		}
+		unlockMutex(ce);
+	}
+	return( retval );
+}
+
+Hjava_lang_Class *classMappingLoaded(classEntry *ce, Hjava_lang_Class *cl)
+{
+	Hjava_lang_Class *retval = 0;
+	int iLockRoot;
+
+	assert(ce != 0);
+	assert(cl != 0);
+	
+	lockMutex(ce);
+	{
+		switch( ce->state )
+		{
+		case NMS_LOADING:
+			/* FALLTHROUGH */
+		case NMS_SEARCHING:
+			if( cl->state < CSTATE_PREPARED )
+			{
+				ce->state = NMS_LOADED;
+			}
+			else
+			{
+				ce->state = NMS_DONE;
+			}
+			ce->data.cl = cl;
+			retval = cl;
+			break;
+		default:
+			/* Ignore. */
+			retval = ce->data.cl;
+			break;
+		}
+		broadcastCond(ce);
+	}
+	unlockMutex(ce);
+
+	return( retval );
+}
+
+void setClassMappingState(classEntry *ce, name_mapping_state_t nms)
+{
+	int iLockRoot;
+	
+	assert(ce != 0);
+	
+	lockMutex(ce);
+	{
+		switch( ce->state )
+		{
+		case NMS_SEARCHING:
+			ce->state = nms;
+			break;
+		case NMS_LOADING:
+			/* FALLTHROUGH */
+		case NMS_LOADED:
+			ce->state = nms;
+			break;
+		case NMS_DONE:
+			break;
+		case NMS_EMPTY:
+			break;
+		default:
+			assert(0);
+			break;
+		}
+		broadcastCond(ce);
+	}
+	unlockMutex(ce);
+}
+
 #if defined(KAFFE_STATS) || defined(KAFFE_PROFILER) || defined(KAFFE_VMDEBUG)
 /**
  * Walk the class pool and invoke walker() for each classes
@@ -262,9 +542,9 @@ walkClassPool(int (*walker)(Hjava_lang_Class *clazz, void *), void *param)
 	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
 		entry = classEntryPool[ipool];
 		for (; entry != NULL; entry = entry->next) {
-			if (entry->class
-			    && entry->loader == entry->class->loader) {
-				walker(entry->class, param);
+			if (entry->data.cl
+			    && entry->loader == entry->data.cl->loader) {
+				walker(entry->data.cl, param);
 			}
 		}
 	}

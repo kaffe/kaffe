@@ -10,6 +10,8 @@
 
 package java.io;
 
+import kaffe.lang.ThreadStack;
+
 import java.util.ArrayList;
 
 public class ObjectInputStream
@@ -335,7 +337,9 @@ public class ObjectInputStream
 	/*package*/ Class resolveClassInternal(String name) 
 		throws IOException, ClassNotFoundException
 	{
-		return (Class.forName(name));
+		return (Class.forName(name,
+				      false,
+				      ThreadStack.firstClassLoader()));
 	}
 	
 	public final Object readObject() 

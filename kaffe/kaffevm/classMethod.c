@@ -60,7 +60,7 @@ extern JNIEnv Kaffe_JNIEnv;
 extern bool verify2(Hjava_lang_Class*, errorInfo*);
 extern bool verify3(Hjava_lang_Class*, errorInfo*);
 
-static void internalSetupClass(Hjava_lang_Class*, Utf8Const*, int, int, int, Hjava_lang_ClassLoader*);
+static int internalSetupClass(Hjava_lang_Class*, Utf8Const*, int, int, int, Hjava_lang_ClassLoader*, errorInfo *einfo);
 
 static bool buildDispatchTable(Hjava_lang_Class*, errorInfo *info);
 static bool buildInterfaceDispatchTable(Hjava_lang_Class*, errorInfo *);
@@ -109,6 +109,7 @@ bool
 processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 {
 	Method* meth;
+	classEntry *ce;
 	Hjava_lang_Class* nclass;
 	bool success = true;	/* optimistic */
 #ifdef KAFFE_VMDEBUG
@@ -131,6 +132,12 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 	 * we've got to work out.
 	 */
 
+	/*
+	 * Get the entry for this class, we'll need to update its state along
+	 * the way.
+	 */
+	ce = lookupClassEntryInternal(class->name, class->loader);
+
 	lockClass(class);
 
 DBG(RESERROR,
@@ -150,27 +157,101 @@ retry:
 	 * can learn that things went wrong.
 	 */
 	if (class->state == CSTATE_FAILED) {
-		postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError),
-			"%s", class->name->data);
+		postExceptionMessage(einfo,
+				     JAVA_LANG(NoClassDefFoundError),
+				     "%s",
+				     class->name->data);
+		einfo->type |= KERR_NO_CLASS_FOUND; // for the verifier
 		success = false;
 		goto done;
 	}
 
-	DO_CLASS_STATE(CSTATE_PREPARED) {
+	DO_CLASS_STATE(CSTATE_LOADED_SUPER) {
 
-		if (class->state == CSTATE_DOING_PREPARE) {
-			if (THREAD_NATIVE() == class->processingThread) {
-				/* Check for circular dependent classes */
-				postException(einfo,
-					JAVA_LANG(ClassCircularityError));
+		setClassMappingState(ce, NMS_LOADING);
+		
+		class->processingThread = THREAD_NATIVE();
+		
+		/* Load and link the super class */
+		if( class->superclass )
+		{
+			/*
+			 * propagate failures in super class loading and
+			 * processing.  Since getClass might involve an
+			 * upcall to a classloader, we must release the
+			 * classLock here.
+			 */
+			unlockClass(class);
+			
+#if defined(HAVE_GCJ_SUPPORT)
+			if( CLASS_GCJ(class) )
+			{
+				class->superclass
+					= gcjGetClass((void*)class->superclass,
+						      einfo);
+			}
+			else
+#endif
+			{
+				class->superclass =
+					getClass((uintp)class->superclass,
+						 class,
+						 einfo);
+			}
+			
+			lockClass(class);
+			if( class->superclass == 0 )
+			{
 				success = false;
 				goto done;
-			} else {
-				while (class->state == CSTATE_DOING_PREPARE) {
-					waitOnClass(class);
-					goto retry;
-				}
 			}
+			if( !(class->accflags & ACC_INTERFACE) &&
+			    (class->superclass->accflags & ACC_INTERFACE)) {
+				postExceptionMessage(
+					einfo,
+					JAVA_LANG(
+						IncompatibleClassChangeError),
+					"Super class, %s, is an interface.",
+					class->superclass->name->data);
+				success = false;
+				goto done;
+			}
+			/* that's pretty much obsolete. */
+			assert(class->superclass->state >= CSTATE_LINKED);
+			classMappingLoaded(ce, class);
+			/* Copy initial field size and gc layout.
+			 * Later, as this class's fields are resolved, they
+			 * are added to the superclass's layout.
+			 */
+			CLASS_FSIZE(class) = CLASS_FSIZE(class->superclass);
+			class->gc_layout = class->superclass->gc_layout;
+		}
+		if( class->superclass )
+		{
+			assert(class->superclass->state >= CSTATE_LINKED);
+		}
+		
+	}
+	
+	DO_CLASS_STATE(CSTATE_VERIFIED) {
+		/*
+		 * Second stage verification - check the class format is okay
+		 */
+		success =  verify2(class, einfo);
+		if (success == false) {
+			goto done;
+		}
+
+		SET_CLASS_STATE(CSTATE_VERIFIED);
+	}
+	
+	DO_CLASS_STATE(CSTATE_PREPARED) {
+
+		if( (class->loader == 0) && !gc_add_ref(class) )
+		{
+			postOutOfMemory(einfo);
+			success = false;
+			goto done;
 		}
 
 		/* Allocate any static space required by class and initialise
@@ -185,46 +266,6 @@ retry:
 
 		SET_CLASS_STATE(CSTATE_DOING_PREPARE);
 		class->processingThread = THREAD_NATIVE();
-
-		/* Load and link the super class */
-		if (class->superclass) {
-			/* propagate failures in super class loading and
-			 * processing.  Since getClass might involve an
-			 * upcall to a classloader, we must release the
-			 * classLock here.
-			 */
-			unlockClass(class);
-#if defined(HAVE_GCJ_SUPPORT)
-			if (CLASS_GCJ(class)) {
-				class->superclass
-					= gcjGetClass((void*)class->superclass,
-						      einfo);
-			} else {
-#endif
-				class->superclass
-					= getClass((uintp)class->superclass,
-						          class, einfo);
-#if defined(HAVE_GCJ_SUPPORT)
-			}
-#endif
-			lockClass(class);
-			if (class->superclass == 0) {
-				success = false;
-				goto done;
-			}
-			/* that's pretty much obsolete. */
-			assert(class->superclass->state >= CSTATE_LINKED);
-
-			/* Copy initial field size and gc layout.
-			 * Later, as this class's fields are resolved, they
-			 * are added to the superclass's layout.
-			 */
-			CLASS_FSIZE(class) = CLASS_FSIZE(class->superclass);
-			class->gc_layout = class->superclass->gc_layout;
-		}
-		if (class->superclass) {
-			assert(class->superclass->state >= CSTATE_LINKED);
-		}
 
 #if defined(HAVE_GCJ_SUPPORT)
 		if (CLASS_GCJ(class)) {
@@ -282,17 +323,13 @@ retry:
 		}
 
 		SET_CLASS_STATE(CSTATE_PREPARED);
+		
+		setClassMappingState(ce, NMS_DONE);
 	}
 
 	assert((class == ObjectClass) || (class->superclass != NULL));
 
 	DO_CLASS_STATE(CSTATE_LINKED) {
-
-		/* Second stage verification - check the class format is okay */
-		success =  verify2(class, einfo);
-		if (success == false) {
-			goto done;
-		}
 
 		/* Third stage verification - check the bytecode is okay */
 		success = verify3(class, einfo);
@@ -413,11 +450,12 @@ retry:
 			 */
 			unlockClass(class);
 			success = processClass(class->superclass,
-					     CSTATE_COMPLETE, einfo);
+					       CSTATE_COMPLETE,
+					       einfo);
 			lockClass(class);
 			if (success == false) {
-				if (class->superclass->state == CSTATE_INIT_FAILED)
-					SET_CLASS_STATE(CSTATE_INIT_FAILED);
+				if (class->superclass->state == CSTATE_FAILED)
+					SET_CLASS_STATE(CSTATE_FAILED);
 				goto done;
 			}
 		}
@@ -434,7 +472,7 @@ retry:
 		/* If we need a successfully initialized class here, but its
 		 * initializer failed, return false as well
 		 */
-		if (class->state == CSTATE_INIT_FAILED) {
+		if (class->state == CSTATE_FAILED) {
 			postExceptionMessage(einfo,
 				JAVA_LANG(NoClassDefFoundError),
 				"%s", class->name->data);
@@ -490,16 +528,29 @@ DBG(STATICINIT,
 
 		lockClass(class);
 
+		class->processingThread = 0;
+		
 		if (exc != 0) {
-			/* this is special-cased in throwError */
-			einfo->type = KERR_INITIALIZER_ERROR;
-			einfo->throwable = exc;
-
+			if( soft_instanceof(javaLangException, exc) )
+			{
+				/* this is special-cased in throwError */
+				einfo->type = (KERR_INITIALIZER_ERROR |
+					       KERR_NO_CLASS_FOUND);
+				einfo->throwable = exc;
+			}
+			else
+			{
+				/* Should be an error... */
+				einfo->type = (KERR_RETHROW |
+					       KERR_NO_CLASS_FOUND);
+				einfo->throwable = exc;
+			}
+			
 			/*
 			 * we return false here because COMPLETE fails
 			 */
 			success = false;
-			SET_CLASS_STATE(CSTATE_INIT_FAILED);
+			SET_CLASS_STATE(CSTATE_FAILED);
 		} else {
 			SET_CLASS_STATE(CSTATE_COMPLETE);
 		}
@@ -542,8 +593,13 @@ done:
 	 * to access that class.
 	 * NB: this does not include when a static initializer failed.
 	 */
-	if (success == false && class->state != CSTATE_INIT_FAILED) {
+	if (success == false && class->state != CSTATE_FAILED) {
 		SET_CLASS_STATE(CSTATE_FAILED);
+
+		if( ce->state != NMS_DONE )
+		{
+			setClassMappingState(ce, NMS_EMPTY);
+		}
 	}
 
 	/* wake up any waiting threads */
@@ -756,10 +812,73 @@ done:
 	return (success);
 }
 
-static void
-internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags, int this_index, int su, Hjava_lang_ClassLoader* loader)
+/**
+ * Check if a class name is in a set of packages.
+ *
+ * XXX Move somewhere else...
+ *
+ * @param plist The null terminated list of packages to check against.
+ * @param name The class name to check.
+ * @return True if the class name is in one of the packages, false otherwise.
+ */
+static int
+inPackageSet(char **plist, Utf8Const *name)
 {
-	utf8ConstAssign(cl->name, name);
+	int name_len, lpc, retval = 0;
+	
+	name_len = strlen(name->data);
+	for( lpc = 0; plist[lpc] && !retval; lpc++ )
+	{
+		int len;
+
+		len = strlen(plist[lpc]);
+		if( (name_len > len) &&
+		    strncmp(name->data, plist[lpc], len) == 0 )
+		{
+			retval = 1;
+		}
+	}
+	return( retval );
+}
+
+/**
+ * The set of restricted packages that a user defined class loader can't add
+ * classes to.
+ */
+static char *restrictedPackages[] = {
+	"java/",
+	"kaffe/",
+	NULL
+};
+
+static int
+internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags,
+		   int this_index, int su, Hjava_lang_ClassLoader* loader,
+		   struct _errorInfo *einfo)
+{
+	if( (loader != NULL) &&
+	    inPackageSet(restrictedPackages, name) ) {
+		/*
+		 * Can't allow users to add classes to the bootstrap
+		 * packages.
+		 */
+		postExceptionMessage(einfo,
+				     JAVA_LANG(SecurityException),
+				     "Prohibited package: %s",
+				     name->data);
+		return 0;
+	}
+	if( cl->name == NULL ) {
+		utf8ConstAssign(cl->name, name);
+	}
+	else if( !utf8ConstEqual(cl->name, name) ) {
+		postExceptionMessage(einfo,
+				     JAVA_LANG(ClassFormatError),
+				     "%s (wrong name: %s)",
+				     name->data,
+				     cl->name->data);
+		return 0;
+	}
 	CLASS_METHODS(cl) = NULL;
 	CLASS_NMETHODS(cl) = 0;
 	assert(cl->superclass == 0);
@@ -777,9 +896,10 @@ internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags, int this_in
 	cl->this_index = this_index;
 	cl->inner_classes = 0;
 	cl->nr_inner_classes = 0;
+	return 1;
 }
 
-bool
+Hjava_lang_Class*
 setupClass(Hjava_lang_Class* cl, constIndex c, constIndex s,
 	   u2 flags, Hjava_lang_ClassLoader* loader,
 	   errorInfo* einfo)
@@ -795,9 +915,10 @@ setupClass(Hjava_lang_Class* cl, constIndex c, constIndex s,
 		return false;
 	}
 
-	internalSetupClass(cl, WORD2UTF(pool->data[c]), flags, c, s, loader);
-
-	return true;
+	if (!internalSetupClass(cl, WORD2UTF(pool->data[c]), flags, c, s,
+				loader, einfo))
+		return 0;
+	return (cl);
 }
 
 
@@ -1133,208 +1254,162 @@ addInterfaces(Hjava_lang_Class* c, u2 inr, Hjava_lang_Class** inf)
 	GC_WRITE(c, c->interfaces); /* XXX */
 }
 
-/**
- * Lookup a named class, loading it if necessary.
- *
- * @param name: the name of the class (fully qualified with slashes instead of dots)
- * @param loader: the loader that is to be used to load the class (0 for premordial class loader)
- * @param einfo: storage for error information
- *
- * If a class called @name has already been loaded by @loader, that class is
- * returned. Otherwise, it is loaded and brought to LINKED afterwards.
- */
-Hjava_lang_Class*
-loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
+static
+Hjava_lang_Class *userLoadClass(classEntry *ce,
+				Hjava_lang_ClassLoader *loader,
+				errorInfo *einfo)
 {
-	classEntry* centry;
-	Hjava_lang_Class* clazz = NULL;
-	int iLockRoot;
-
-        centry = lookupClassEntry(name, loader, einfo);
-	if (!centry) {
-		return 0;
-	}
-
+	Hjava_lang_Class *retval = NULL;
+	JNIEnv *env = &Kaffe_JNIEnv;
+	Hjava_lang_String *jname;
+	jthrowable excpending;
+	jmethodID meth;
+	
 	/*
-	 * An invariant for classEntries is that if centry->class != 0, then
-	 * the corresponding class object has been read completely and it is
-	 * safe to invoke processClass on it.  processClass will resolve any
-	 * races between threads.
+	 * If an exception is already pending, for instance because we're
+	 * resolving one that has occurred, save it and clear it for the
+	 * upcall.
 	 */
-	if (centry->class != NULL) {
-		clazz = centry->class;
-		goto found;
-	}
-
-	/*
-	 * Failed to find class, so must now load it.
-	 * We send at most one thread to load a class.
-	 */
-	lockMutex(centry);
-
-	/* Check again in case someone else did it */
-	if (centry->class == NULL) {
-
-		if (loader != NULL) {
-			Hjava_lang_String* str;
-			JNIEnv *env = &Kaffe_JNIEnv;
-			jmethodID meth;
-			jthrowable excobj, excpending;
-
-DBG(VMCLASSLOADER,
-			dprintf("classLoader %s: loading %s\n", loader->base.dtable->class->name->data, name->data);
-    )
-			str = utf8Const2JavaReplace(name, '/', '.');
-			if (!str) {
-				postOutOfMemory(einfo);
-				unlockMutex(centry);
-				return 0;
-			}
-			/* If an exception is already pending, for instance
-			 * because we're resolving one that has occurred,
-			 * save it and clear it for the upcall.
-			 */
-			excpending = (*env)->ExceptionOccurred(env);
-			(*env)->ExceptionClear(env);
-
-			/*
-			 * We use JNI here so that all exceptions are caught
-			 * and we'll always return.
-			 */
-			meth = (*env)->GetMethodID(env,
-				    (*env)->GetObjectClass(env, loader),
-				    "loadClass",
-				    "(Ljava/lang/String;Z)Ljava/lang/Class;");
-			if (!meth)
+	excpending = (*env)->ExceptionOccurred(env);
+	(*env)->ExceptionClear(env);
+	
+	if( (jname = utf8Const2JavaReplace(ce->name, '/', '.')) &&
+	    /*
+	     * We use JNI here so that all exceptions are caught and we'll
+	     * always return.
+	     */
+	    (meth = (*env)->GetMethodID(
+		env,
+		(*env)->GetObjectClass(env, loader),
+		"loadClass",
+		"(Ljava/lang/String;Z)Ljava/lang/Class;")) )
+	{
+		jthrowable excobj;
+		
+		retval = (Hjava_lang_Class*)
+			(*env)->CallObjectMethod(env,
+						 loader,
+						 meth,
+						 jname,
+						 false);
+		
+		/*
+		 * Check whether an exception occurred.  If one was pending,
+		 * the new exception will override this one.
+		 */
+		excobj = (*env)->ExceptionOccurred(env);
+		(*env)->ExceptionClear(env);
+		
+		if( excobj != 0 )
+		{
+			/* There was an exception. */
+			einfo->type = KERR_RETHROW;
+			einfo->throwable = excobj;
+			if( soft_instanceof(javaLangClassNotFoundException,
+					    (Hjava_lang_Object *)
+					    einfo->throwable) )
 			{
-				postOutOfMemory(einfo);
-				unlockMutex(centry);
-				return 0;
+				/* Set this for the verifier. */
+				einfo->type |= KERR_NO_CLASS_FOUND;
 			}
-			
+		}
+		else if( retval == NULL )
+		{
+			/* No class returned. */
+			postExceptionMessage(einfo,
+					     JAVA_LANG(ClassNotFoundException),
+					     "%s",
+					     ce->name->data);
+			/* Set this for the verifier. */
+			einfo->type |= KERR_NO_CLASS_FOUND;
+		}
+		else if( !utf8ConstEqual(retval->name, ce->name) )
+		{
 			/*
-			 * We have to pass false as the second parameter to loadClass
-			 * in order to prevent the classloader from resolving the class
-			 * since that would run the static initializers of the loaded
-			 * class too early.
+			 * Its a valid class, but the name differs from the one
+			 * that was requested.
 			 */
-			clazz = (Hjava_lang_Class*)
-				(*env)->CallObjectMethod(env, loader, meth,
-							str, false);
+			postExceptionMessage(
+				einfo,
+				JAVA_LANG(ClassNotFoundException),
+				"Bad class name (expect: %s, get: %s)",
+				ce->name->data,
+				retval->name->data);
+			/* Set this for the verifier. */
+			einfo->type |= KERR_NO_CLASS_FOUND;
+			retval = NULL;
+		}
+		else
+		{
+			retval = classMappingLoaded(ce, retval);
+		}
+		
+	}
+	else
+	{
+		postOutOfMemory(einfo);
+	}
+	
+	/* rethrow pending exception */
+	if( excpending != NULL )
+	{
+		(*env)->Throw(env, excpending);
+	}
+	return( retval );
+}
 
-			/*
-			 * Check whether an exception occurred.
-			 * If one was pending, the new exception will
-			 * override this one.
-			 */
-			excobj = (*env)->ExceptionOccurred(env);
-			(*env)->ExceptionClear(env);
-			if (excobj != 0) {
-DBG(VMCLASSLOADER,
-				dprintf("exception %s!\n", ((Hjava_lang_Object*)excobj)->dtable->class->name->data);
-    )
-				einfo->type = KERR_RETHROW;
-				einfo->throwable = excobj;
-				if( (einfo->throwable->base.dtable->class ==
-				     javaLangClassNotFoundException) )
+Hjava_lang_Class *loadClass(Utf8Const *name,
+			    Hjava_lang_ClassLoader *loader,
+			    errorInfo *einfo)
+{
+	Hjava_lang_Class *retval = NULL;
+	classEntry *ce;
+
+	if( (ce = lookupClassEntry(name, loader, einfo)) )
+	{
+		if( classMappingSearch(ce, &retval, einfo) )
+		{
+			if( retval == NULL )
+			{
+				/* Loading is this thread's responsibility. */
+				if( loader )
 				{
-					postNoClassDefFoundError(
-						einfo,
-						stringJava2C(einfo->
-							     throwable->
-							     message));
+					/* Use a user defined loader. */
+					retval = userLoadClass(ce,
+							       loader,
+							       einfo);
 				}
-				clazz = NULL;
-			} else
-			if (clazz == NULL) {
-DBG(VMCLASSLOADER,
-				dprintf("loadClass returned clazz == NULL!\n");
-    )
-				postExceptionMessage(einfo,
-					JAVA_LANG(NoClassDefFoundError),
-					"%s", name->data);
-			} else
-			if (strcmp(clazz->name->data, name->data)) {
-DBG(VMCLASSLOADER,
-				dprintf("loadClass returned wrong name!\n");
-    )
-				postExceptionMessage(einfo,
-					JAVA_LANG(NoClassDefFoundError),
-					"Bad class name (expect: %s, get: %s)",
-					name->data, clazz->name->data);
-				clazz = NULL;
-			}
-DBG(VMCLASSLOADER,
-			dprintf("classLoader %s: done (%s) at %p\n", loader->base.dtable->class->name->data, clazz->name->data, clazz);
-    )
-			/* rethrow pending exception */
-			if (excpending != NULL) {
-				(*env)->Throw(env, excpending);
-			}
-			/*
-			 * NB: if the classloader we invoked defined that class
-			 * by the time we're here, we must ignore whatever it
-			 * returns.  It can return null or lie or whatever.
-			 *
-			 * If, however, the classloader we initiated returns
-			 * and has not defined the class --- for instance,
-			 * because it has used delegation --- then we must
-			 * record this classloader's answer in the class entry
-			 * pool to guarantee temporal consistency.
-			 */
-			if (centry->class == 0) {
-				/* NB: centry->class->centry != centry */
-				centry->class = clazz;
-			}
-		} else {
-			/* no classloader, use findClass */
-			clazz = findClass(centry, einfo);
-
-			/* we do not ever unload system classes without a
-			 * classloader, so anchor this one
-			 */
-			if (clazz != NULL) {
-				if (!gc_add_ref(clazz)) {
-					postOutOfMemory(einfo);
-					unlockMutex(centry);
-					return 0;
+				else
+				{
+					/* Use the primordial loader. */
+					retval = findClass(ce, einfo);
 				}
-			} else {
-DBG(RESERROR,
-				dprintf("findClass failed: %s:`%s'\n",
-					einfo->classname, (char*)einfo->mess);
-    )
 			}
-			centry->class = clazz;
+			else
+			{
+				/* Class is already loaded. */
+			}
+			if( !retval )
+			{
+				/* No joy, update state. */
+				setClassMappingState(ce, NMS_EMPTY);
+			}
+			else if( processClass(retval, CSTATE_LINKED, einfo)
+				 == false )
+			{
+				retval = NULL;
+			}
+		}
+		else
+		{
+			/* Class circularity, or some other error. */
 		}
 	}
-	else {
-		/* get the result from some other thread */
-		clazz = centry->class;
+	else
+	{
+		/* No memory? */
 	}
-
-	/* Release lock now class has been entered */
-	unlockMutex(centry);
-
-	if (clazz == NULL) {
-		return (NULL);
-	}
-
-	/*
-	 * A post condition of getClass is that the class is at least in
-	 * state LINKED.  However, we must not call processClass (and attempt
-	 * to get the global lock there) while having the lock on centry.
-	 * Otherwise, we would deadlock with a thread calling getClass out
-	 * of processClass.
-	 */
-found:;
-	if (clazz->state < CSTATE_LINKED) {
-		if (processClass(clazz, CSTATE_LINKED, einfo) == false)  {
-			return (NULL);
-		}
-	}
-
-	return (clazz);
+	return( retval );
 }
 
 Hjava_lang_Class*
@@ -1343,8 +1418,29 @@ loadArray(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 	Hjava_lang_Class *clazz;
 
 	clazz = getClassFromSignature(&name->data[1], loader, einfo);
-	if (clazz != 0) {
-		return (lookupArray(clazz, einfo));
+	if (clazz != 0)
+	{
+		if( (clazz = lookupArray(clazz, einfo)) )
+		{
+			return( clazz );
+		}
+		else
+		{
+			/* XXX Is it always class not found? */
+			discardErrorInfo(einfo);
+			postExceptionMessage(einfo,
+					     JAVA_LANG(ClassNotFoundException),
+					     "%s",
+					     name->data);
+		}
+	}
+	else
+	{
+		discardErrorInfo(einfo);
+		postExceptionMessage(einfo,
+				     JAVA_LANG(ClassNotFoundException),
+				     "%s",
+				     name->data);
 	}
 	return (0);
 }
@@ -1369,7 +1465,8 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 
 	utf8ConstRelease(utf8);
 	lockMutex(centry);
-	if (centry->class == 0) {
+	if (centry->data.cl == 0) {
+		centry->state = NMS_LOADING;
 		clazz = findClass(centry, &info);
 		if (clazz == 0) {
 			goto bad;
@@ -1379,11 +1476,12 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 			goto bad;
 		}
 
-		(*class) = centry->class = clazz;
+		(*class) = centry->data.cl = clazz;
 	}
 	unlockMutex(centry);
 
-	if (processClass(centry->class, CSTATE_LINKED, &info) == true) {
+	if (processClass(centry->data.cl, CSTATE_LINKED, &info) == true) {
+		assert(centry->state = NMS_DONE);
 		return;
 	}
 
@@ -2142,7 +2240,7 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 	} while (k);
 
 	for (j = 0; j < clazz->total_interface_len; j++) {
-		_lockMutex(&(ifcs[j]->centry)->lock, &iLockRoot);
+		lockClass(ifcs[j]);
 	}
 
 	i = 0;
@@ -2218,7 +2316,7 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 
 done:
 	for (j = clazz->total_interface_len - 1; j >= 0; j--) {
-		_unlockMutex(&(ifcs[j]->centry)->lock, &iLockRoot);
+		unlockClass(ifcs[j]);
 	}
 	KFREE(ifcs);
 	return (rc);
@@ -2664,7 +2762,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 		return (0);
 	}
 
-	if (centry->class != 0) {
+	if (centry->data.cl != 0) {
 		goto found;
 	}
 
@@ -2672,7 +2770,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	lockMutex(centry);
 
 	/* Incase someone else did it */
-	if (centry->class != 0) {
+	if (centry->data.cl != 0) {
 		unlockMutex(centry);
 		goto found;
 	}
@@ -2680,7 +2778,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	arr_class = newClass();
 	if (arr_class == 0) {
 		postOutOfMemory(einfo);
-		centry->class = c = 0;
+		centry->data.cl = c = 0;
 		goto bail;
 	}
 
@@ -2688,7 +2786,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	if (c->loader == 0) {
 		if (!gc_add_ref(arr_class)) {
 			postOutOfMemory(einfo);
-			centry->class = c = 0;
+			centry->data.cl = c = 0;
 			goto bail;
 		}
 	}
@@ -2702,10 +2800,10 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	if (c->accflags & ACC_PUBLIC) {
 		arr_flags |= ACC_PUBLIC;
 	}
-	internalSetupClass(arr_class, arr_name, arr_flags, 0, 0, c->loader);
+	internalSetupClass(arr_class, arr_name, arr_flags, 0, 0, c->loader, 0);
 	arr_class->superclass = ObjectClass;
 	if (buildDispatchTable(arr_class, einfo) == false) {
-		centry->class = c = 0;
+		centry->data.cl = c = 0;
 		goto bail;
 	}
 	CLASS_ELEMENT_TYPE(arr_class) = c;
@@ -2724,16 +2822,16 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	arr_class->state = CSTATE_COMPLETE;
 	arr_class->centry = centry;
 
-	centry->class = arr_class;
+	centry->data.cl = arr_class;
 
 bail:
 	unlockMutex(centry);
 
 	found:;
 	if (c && CLASS_IS_PRIMITIVE(c)) {
-		CLASS_ARRAY_CACHE(c) = centry->class;
+		CLASS_ARRAY_CACHE(c) = centry->data.cl;
 	}
 
 	utf8ConstRelease(arr_name);
-	return (centry->class);
+	return (centry->data.cl);
 }

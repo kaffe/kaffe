@@ -753,7 +753,7 @@ addCheckedExceptions(Method* m, uint32 len, classFile* fp,
 }
 
 
-bool
+Hjava_lang_Class*
 setupClass(Hjava_lang_Class* this, u2 thisidx, u2 super, u2 access_flags,
 	   struct Hjava_lang_ClassLoader* loader, struct _errorInfo* einfo)
 {
@@ -780,7 +780,7 @@ setupClass(Hjava_lang_Class* this, u2 thisidx, u2 super, u2 access_flags,
 		}
 	}
 	
-	return true;
+	return this;
 }
 
 void

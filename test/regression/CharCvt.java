@@ -59,6 +59,8 @@ public class CharCvt
     }
 }
 
+// unsafe
+
 /* Expected Output:
 65535
 -1

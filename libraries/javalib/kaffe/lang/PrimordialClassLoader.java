@@ -1,4 +1,3 @@
-
 /*
  * Java core library component.
  *
@@ -25,12 +24,41 @@ import java.util.zip.ZipFile;
 import java.util.jar.JarFile;
 import java.util.jar.Attributes;
 
-public class SystemClassLoader extends ClassLoader {
+/**
+ * Java-level access to the primordial class loader.
+ */
+public final class PrimordialClassLoader extends ClassLoader {
 	
-private static final ClassLoader singleton = new SystemClassLoader();
+private static final PrimordialClassLoader SINGLETON =
+	new PrimordialClassLoader();
 
-private SystemClassLoader() {
+private PrimordialClassLoader() {
 	super(null);
+}
+
+public Class loadClass(String name, boolean resolve)
+	throws ClassNotFoundException
+{
+	Class retval;
+
+	if( name.startsWith("kaffe.") &&
+	    (!name.startsWith("kaffe.security.provider.") &&
+	     !name.startsWith("kaffe.util.") &&
+	     !name.startsWith("kaffe.text.")) )
+	{
+		throw new ClassNotFoundException(name);
+	}
+	
+	if( (retval = this.findLoadedClass(name)) == null )
+	{
+		retval = this.findClass(name);
+	}
+
+	if( resolve )
+	{
+		this.resolveClass(retval);
+	}
+	return retval;
 }
 
 // returns the component type name of an array type.
@@ -70,8 +98,8 @@ private static String componentType(String name) throws ClassNotFoundException {
 	}
 }
 
-public static ClassLoader getClassLoader() {
-	return (singleton);
+public static PrimordialClassLoader getSingleton() {
+	return SINGLETON;
 }
 
 /*
@@ -79,13 +107,12 @@ public static ClassLoader getClassLoader() {
  * the named resource (which may appear more than once). Make sure
  * it really exists in each place before adding it.
  */
-public Enumeration findResources(String name) throws IOException {
+void findResources(Vector v, String name) throws IOException {
 	// search the bootclasspath first
 	String fileSep = System.getProperties().getProperty("file.separator");
 	String pathSep = System.getProperties().getProperty("path.separator");
 	String classpath = System.getProperties().getProperty("sun.boot.class.path");
 	StringTokenizer t = new StringTokenizer(classpath, pathSep);
-	Vector v = new Vector();
 	
 	if (name.startsWith("/")) {
 	    name = name.substring(1);
@@ -128,9 +155,14 @@ public Enumeration findResources(String name) throws IOException {
 			}
 		}
 	}
-	return v.elements();
 }
 
+public Enumeration findResources(String name) throws IOException {
+	Vector retval = new Vector();
+
+	this.findResources(retval, name);
+	return retval.elements();
+}
 
 protected Class findClass(String name) throws ClassNotFoundException {
 	return findClass0 (name);

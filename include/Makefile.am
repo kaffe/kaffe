@@ -60,7 +60,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_Math.h \
 	java_lang_NativeLibrary.h \
 	java_lang_Runtime.h \
-	java_lang_SecurityManager.h \
 	java_lang_Short.h \
 	java_lang_System.h \
 	java_lang_reflect_Array.h \
@@ -90,7 +89,8 @@ NOINSTALL_DERIVED_HDRS = \
 	java_util_zip_ZipEntry.h \
 	java_util_zip_ZipFile.h \
 	kaffe_applet_AudioPlayer.h \
-	kaffe_lang_SystemClassLoader.h \
+	kaffe_lang_PrimordialClassLoader.h \
+	kaffe_lang_ThreadStack.h \
 	kaffe_management_Classpath.h 
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)

@@ -1,3 +1,169 @@
+2003-05-24 Tim Stack <stack@cs.utah.edu>
+
+	* include/Makefile.am:
+	Remove java_lang_SecurityManager.h.  
+	Move kaffe_lang_SystemClassLoader.h to
+	kaffe_lang_PrimordialClassLoader.
+	Add kaffe_lang_ThreadStack.h.
+
+	* kaffe/kaffe/main.c:
+	Load the main class into the AppClassLoader.
+
+	* kaffe/kaffeh/support.c:
+	Change to the prototype for setupClass.
+
+	* kaffe/kaffevm/baseClasses.h,
+	kaffe/kaffevm/baseClasses.c:
+	Add javaLangException class (used to detect types throwable types
+	in classMethod.c).
+
+	* kaffe/kaffevm/classMethod.h,
+	kaffe/kaffevm/classMethod.c:
+	Loading fixes that should bring it closer to jdk1.3's behavior.
+	Fixes include better class circularity detection, better handling
+	of errors while loading, etc...
+
+	* kaffe/kaffevm/classPool.c:
+	Added some more functions to better handle loading semantics.
+
+	* kaffe/kaffevm/findInJar.c:
+	Minor tweaks to make the functions post the proper exceptions.
+
+	* kaffe/kaffevm/itypes.c,
+	kaffe/kaffevm/jit3/machine.c:
+	Update for change in classEntry structure.
+
+	* kaffe/kaffevm/lookup.c:
+	(getClass) Convert ClassNotFoundExceptions from loadClass to
+	NoClassDefFoundErrors since thats what the verifier/jitter/etc
+	expect.
+
+	* kaffe/kaffevm/verify.c:
+	Tweak to fix compilation when debugging is turned on.
+
+	* libraries/clib/native/Application.c:
+	Change java_lang_SecurityManager_getClassContext0() to
+	kaffe_lang_ThreadStack_getClassStack().
+
+	* libraries/clib/native/Class.c:
+	Revert to the native impl of forName.
+
+	* libraries/clib/native/ClassLoader.c:
+	Remove loadArray, its handled by the native Class.forName() now.
+	Simplify define class and move some functionality into
+	classMethod.c.
+
+	* libraries/clib/native/Makefile.am:
+	Move SystemClassLoader.c to PrimordialClassLoader.c.  Move
+	SecurityManager.c to ThreadStack.c.
+
+	* libraries/clib/native/ObjectStreamClassImpl.c:
+	Use lookupArray instead of lookupClass.
+
+	* libraries/clib/native/PrimordialClassLoader.c:
+	Moved from SystemClassLoader.c.
+
+	* libraries/clib/native/SecurityManager.c:
+	Moved to ThreadStack.c.
+
+	* libraries/clib/native/SystemClassLoader.c:
+	Move to PrimordialClassLoader.c.
+
+	* libraries/clib/native/ThreadStack.c:
+	Moved from SecurityManager.c.
+
+	* libraries/javalib/Klasses.jar.bootstrap:
+	Recompiled with added classes.
+
+	* libraries/javalib/Makefile.am:
+	Added kaffe/lang/AppClassLoader.java and
+	kaffe/lang/ThreadStack.java.  Moved
+	kaffe/lang/SystemClassLoader.java to
+	kaffe/lang/PrimordialClassLoader.java.
+
+	* libraries/javalib/bootstrap.classlist:
+	Added java/security/CodeSource.class,
+	java/security/SecureClassLoader.class,
+	java/util/AbstractList$1.class, kaffe/lang/AppClassLoader.class,
+	kaffe/lang/AppClassLoader$Source.class,
+	kaffe/lang/AppClassLoader$DirSource.class,
+	kaffe/lang/AppClassLoader$JarSource.class, and
+	kaffe/lang/ThreadStack.class.  Moved
+	kaffe/lang/SystemClassLoader.class to
+	kaffe/lang/PrimordialClassLoader.class.
+
+	* libraries/javalib/essential.files:
+	Added kaffe/lang/AppClassLoader.java and
+	kaffe/lang/ThreadStack.java.  Moved
+	kaffe/lang/SystemClassLoader.java to
+	kaffe/lang/PrimordialClassLoader.java.
+
+	* libraries/javalib/java/io/ObjectInputStream.java:
+	(resolveClassInternal) Call forName() with the first class loader
+	encountered while going up the stack.
+
+	* libraries/javalib/java/lang/Class.java:
+	Revert to the native forName() implementation since it will
+	properly implement any synchronization stuff.
+
+	* libraries/javalib/java/lang/ClassLoader.java:
+	(loadClass) A null parent loader should use the
+	PrimordialClassLoader and not the value of
+	getSystemClassLoader().
+	(findSystemClass) Should use loadClass() instead of findClass(),
+	otherwise it might redefine a class.
+
+	* libraries/javalib/java/lang/Package.java:
+	Use the PrimordialClassLoader if the null loader is encountered.
+
+	* libraries/javalib/java/lang/SecurityManager.java:
+	Use the kaffe.lang.ThreadStack class.
+
+	* libraries/javalib/java/lang/Thread.java:
+	(countStackFrames) Just return zero.
+
+	* libraries/javalib/java/net/InetSocketAddress.java:
+	Set the hostName in ANY_ADDRESS to avoid a lookup.
+
+	* libraries/javalib/kaffe/lang/AppClassLoader.java:
+	ClassLoader used to load things from CLASSPATH.
+
+	* libraries/javalib/kaffe/lang/PrimordialClassLoader.java:
+	Moved from SystemClassLoader.java.
+
+	* libraries/javalib/kaffe/lang/SystemClassLoader.java:
+	Moved to PrimordialClassLoader.java.
+
+	* libraries/javalib/kaffe/lang/ThreadStack.java:
+	Moved functionality from java.lang.SecurityManager.
+
+	* test/regression/CLTest.java:
+	Update for changes in exception messages.
+
+	* test/regression/CharCvt.java,
+	test/regression/sysdepCallMethod.java:
+	Add 'unsafe' directive since it accesses kaffe private classes.
+
+	* test/regression/KaffeInternal.java:
+	Check whether a user level class can load kaffe private classes.
+
+	* test/regression/Makefile.am:
+	Add ProhibitedClass.java and KaffeInternal.java.
+
+	* test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java,
+	test/regression/ProcessClassTest.java:
+	Reflect changes in loading.
+
+	* test/regression/ProhibitedClass.java:
+	Check whether a user level loader can define classes in the java
+	package.
+
+	* test/regression/TestScript.in:
+	Fix small problem with tests that were supposed to be skipped.
+	Added 'unsafe' directive so tests could muck around with kaffe
+	internal classes.
+
 2003-05-23  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffeh/support.c:

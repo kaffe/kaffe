@@ -87,7 +87,7 @@ java_io_ObjectStreamClass_init0(void)
 		goto spfn;
 	}
 	ObjectStreamFieldClass = lookupClass("java/io/ObjectStreamField", NULL, &einfo);
-	ObjectStreamFieldClassArray = lookupClass("[Ljava/io/ObjectStreamField;", NULL, &einfo);
+	ObjectStreamFieldClassArray = lookupArray(ObjectStreamFieldClass, &einfo);
 	if ((ObjectStreamFieldClass == 0)
 	    || (ObjectStreamFieldClassArray == 0)) {
 		utf8ConstRelease(serialPersistentFieldsName);

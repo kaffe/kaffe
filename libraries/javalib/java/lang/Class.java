@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1997, 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
- * Portions Copyright (C) 1998, 2002 Free Software Foundation
+ * Portions Copyright (C) 1998, 2002, 2003 Free Software Foundation
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -23,8 +23,8 @@ import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.Vector;
+import kaffe.lang.ThreadStack;
 import kaffe.lang.PackageHelper;
-import kaffe.lang.SystemClassLoader;
 
 public final class Class implements Serializable {
 
@@ -40,40 +40,14 @@ private Class() {
 }
 
 public static Class forName(String className) throws ClassNotFoundException {
-	return forName(className, true, null);
+	return forName(className, true, CallStack.getCallersClassLoader());
 }
 
-public static Class forName(String className, boolean initialize, ClassLoader loader) throws ClassNotFoundException {
-        /*
-         * NB: internally, we store class names as path names (with slashes
-         *     instead of dots.  However, we must also prevent calls to
-         *     "java/lang/Object" or "[[Ljava/lang/Object;" from succeeding.
-         *      Since class names cannot have slashes, we reject all attempts
-         *      to look up names that do.  Awkward.  Inefficient.
-         */
-	if (className.indexOf('/') != -1) {
-		throw new ClassNotFoundException("Cannot have slashes - use dots instead.");
-	}
-
-	/* find the appropriate class loader */
-	if (loader == null) {
-
-		loader = CallStack.getCallersClassLoader();
-		/* if loader is null, then the calling class has been loaded by the
-		 * bootstrap class loader. We can use the system class loader to
-		 * load the requested class.
-		 */
-		if (loader == null) {
-			loader = ClassLoader.getSystemClassLoader();
-		}
-	}
-
-	if (className.startsWith ("[")) {
-		return loader.loadArrayClass (className);
-	} else {
-		return loader.loadClass (className, initialize);
-        }
-}
+/*
+ * NOTE: We go native here because it already implements all the necessary
+ * synchronization stuff.
+ */
+public static native Class forName(String className, boolean initialize, ClassLoader loader) throws ClassNotFoundException;
 
 private String fullResourceName(String name) {
 	if (name.charAt(0) == '/') {
@@ -416,7 +390,7 @@ static class CallStack {
 	private Class [] classStack;
 
 	CallStack() {
-		classStack = SecurityManager.getClassContext0();
+		classStack = ThreadStack.getClassStack();
 	}
 
 	/* This method walks the call stack to find the

@@ -154,7 +154,7 @@ translate(Method* xmeth, errorInfo* einfo)
 	jboolean success = true;
 	int iLockRoot;
 
-	lockMutex(xmeth->class->centry);
+	lockClass(xmeth->class);
 
 	if (METHOD_TRANSLATED(xmeth)) {
 		goto done3;
@@ -331,7 +331,7 @@ DBG(JIT,                dprintf("unreachable basic block pc [%d:%d]\n", pc, npc 
 			if( kaffe_feedback_file )
 				unlockMutex(kaffe_feedback_file);
 #endif
-			unlockMutex(xmeth->class->centry);
+			unlockClass(xmeth->class);
 			postException(einfo, JAVA_LANG(VerifyError));
                         success = false;
 			break;
@@ -411,7 +411,7 @@ DBG(MOREJIT,
 		unlockMutex(kaffe_feedback_file);
 #endif
 done3:;
-	unlockMutex(xmeth->class->centry);
+	unlockClass(xmeth->class);
 
 	return (success);
 }

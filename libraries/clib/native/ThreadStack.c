@@ -1,5 +1,5 @@
 /*
- * java.lang.SecurityManager.c
+ * kaffe.lang.ThreadStack.c
  *
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.

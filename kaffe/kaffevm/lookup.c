@@ -189,7 +189,34 @@ getClass(constIndex idx, Hjava_lang_Class* this, errorInfo *einfo)
 	else {
 		class = loadClass(name, this->loader, einfo);
 	}
-	if (class == 0) {	/* propagate failure */
+	if (class == 0) {
+		/*
+		 * Need to translate ClassNotFoundExceptions to
+		 * NoClassDefFoundErrors since thats what the
+		 * verifier/jitter/etc expect.
+		 */
+		switch( einfo->type & KERR_CODE_MASK )
+		{
+		case KERR_RETHROW:
+			if( soft_instanceof(javaLangClassNotFoundException,
+					    (Hjava_lang_Object *)
+					    einfo->throwable) )
+			{
+				discardErrorInfo(einfo);
+				postNoClassDefFoundError(einfo, name->data);
+			}
+			break;
+		case KERR_EXCEPTION:
+			if( strcmp(einfo->classname,
+				   JAVA_LANG(ClassNotFoundException)) == 0 )
+			{
+				errorInfo einfo_copy = *einfo;
+				
+				postNoClassDefFoundError(einfo, einfo->mess);
+				discardErrorInfo(&einfo_copy);
+			}
+			break;
+		}
 		return NULL;
 	}
 
