@@ -3974,6 +3974,11 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 void
 Kaffe_KNI_wrapper(Method* xmeth, void* func)
 {
+#if defined(JIT3)
+	/* findMethodFromPC() in JIT3 use the method cache.  As it's based on
+	   GC_getObjectBase(), we need create one.  */
+	Kaffe_wrapper(xmeth, func, false);
+#else
 	    if ((xmeth->accflags & ACC_SYNCHRONISED)
 #if defined(KAFFE_PROFILER)
 	    || profFlag
@@ -3992,6 +3997,7 @@ Kaffe_KNI_wrapper(Method* xmeth, void* func)
 #endif
 		    SET_METHOD_NATIVECODE(xmeth, func);
 	    }
+#endif
 }
 #endif
 #if defined(INTERPRETER)
