@@ -1,5 +1,15 @@
 2004-08-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c:
+	Resynced with GNU Classpath.
+
+	2004-08-08  Mark Wielaard  <mark@klomp.org>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c: 
+	Reindent.
+
+2004-08-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/awt/peer/gtk/GtkFramePeer.java,
 	libraries/javalib/gnu/java/awt/peer/gtk/GtkImage.java,
 	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c:
