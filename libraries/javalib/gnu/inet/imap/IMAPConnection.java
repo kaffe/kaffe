@@ -1,5 +1,5 @@
 /*
- * $Id: IMAPConnection.java,v 1.2 2004/08/09 14:38:08 dalibor Exp $
+ * $Id: IMAPConnection.java,v 1.3 2004/09/13 11:00:25 dalibor Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -70,7 +70,7 @@ import gnu.inet.util.SaslOutputStream;
  * The protocol class implementing IMAP4rev1.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.2 $ $Date: 2004/08/09 14:38:08 $
+ * @version $Revision: 1.3 $ $Date: 2004/09/13 11:00:25 $
  */
 public class IMAPConnection
 implements IMAPConstants
@@ -661,6 +661,11 @@ implements IMAPConstants
                                                  getHostName (), p, ch);
         if (sasl == null)
           {
+            if (debug)
+              {
+                Logger logger = Logger.getInstance ();
+                logger.log("imap", mechanism + " not available");
+              }
             return false;
           }
         
@@ -737,10 +742,20 @@ implements IMAPConstants
       }
     catch (SaslException e)
       {
+        if (debug)
+          {
+            Logger logger = Logger.getInstance ();
+            logger.error ("imap", e);
+          }
         return false;             // No provider for mechanism
       }
     catch (RuntimeException e)
       {
+        if (debug)
+          {
+            Logger logger = Logger.getInstance ();
+            logger.error ("imap", e);
+          }
         return false;             // No javax.security.sasl classes
       }
   }

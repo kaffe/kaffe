@@ -1,5 +1,5 @@
 /*
- * $Id: ParameterList.java,v 1.2 2004/08/09 14:38:09 dalibor Exp $
+ * $Id: ParameterList.java,v 1.4 2004/10/04 19:34:02 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -34,7 +34,7 @@ import java.util.List;
  * A list of ESMTP parameters.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.2 $ $Date: 2004/08/09 14:38:09 $
+ * @version $Revision: 1.4 $ $Date: 2004/10/04 19:34:02 $
  */
 public final class ParameterList
 {
@@ -46,7 +46,10 @@ public final class ParameterList
    */
   public int size ()
   {
-    return parameters.size ();
+    synchronized (parameters)
+      {
+        return parameters.size ();
+      }
   }
   
   /**
@@ -54,7 +57,10 @@ public final class ParameterList
    */
   public Parameter get (int index)
   {
-    return (Parameter) parameters.get (index);
+    synchronized (parameters)
+      {
+        return (Parameter) parameters.get (index);
+      }
   }
 
   /**
@@ -62,7 +68,33 @@ public final class ParameterList
    */
   public void add (Parameter parameter)
   {
-    parameters.add (parameter);
+    synchronized (parameters)
+      {
+        parameters.add (parameter);
+      }
+  }
+
+  /**
+   * String form.
+   */
+  public String toString ()
+  {
+    synchronized (parameters)
+      {
+        int len = parameters.size ();
+        if (len == 0)
+          {
+            return "";
+          }
+        StringBuffer buffer = new StringBuffer ();
+        buffer.append (parameters.get (0));
+        for (int i = 1; i < len; i++)
+          {
+            buffer.append (' ');
+            buffer.append (parameters.get (i));
+          }
+        return buffer.toString ();
+      }
   }
 
 }

@@ -440,6 +440,7 @@ Klasses_jar_SRCS = \
 	$(gnu_inet_http_event_SRCS) \
 	$(gnu_inet_https_SRCS) \
 	$(gnu_inet_imap_SRCS) \
+	$(gnu_inet_ldap_SRCS) \
 	$(gnu_inet_nntp_SRCS) \
 	$(gnu_inet_pop3_SRCS) \
 	$(gnu_inet_smtp_SRCS) \
@@ -1232,6 +1233,17 @@ gnu_inet_imap_SRCS = \
 	gnu/inet/imap/MessageStatus.java \
 	gnu/inet/imap/Pair.java \
 	gnu/inet/imap/UTF7imap.java
+
+gnu_inet_ldap_SRCS = \
+	gnu/inet/ldap/AttributeValues.java \
+	gnu/inet/ldap/BERConstants.java \
+	gnu/inet/ldap/BERDecoder.java \
+	gnu/inet/ldap/BEREncoder.java \
+	gnu/inet/ldap/BERException.java \
+	gnu/inet/ldap/LDAPConnection.java \
+	gnu/inet/ldap/LDAPResult.java \
+	gnu/inet/ldap/Modification.java \
+	gnu/inet/ldap/ResultHandler.java
 
 gnu_inet_nntp_SRCS = \
 	gnu/inet/nntp/ActiveTime.java \

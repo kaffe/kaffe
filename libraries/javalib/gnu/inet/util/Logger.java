@@ -1,5 +1,5 @@
 /*
- * $Id: Logger.java,v 1.2 2004/08/09 14:38:10 dalibor Exp $
+ * $Id: Logger.java,v 1.4 2004/10/04 19:34:03 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -76,5 +76,12 @@ public abstract class Logger
    * @param message the message
    */
   public abstract void log (String protocol, String message);
+
+  /**
+   * Logs an error.
+   * @param protocol the provider protocol
+   * @param message the message
+   */
+  public abstract void error (String protocol, Throwable t);
 
 }

@@ -1,6 +1,6 @@
 /*
- * $Id: Parameter.java,v 1.4 2004/10/04 19:34:02 robilad Exp $
- * Copyright (C) 2003 The Free Software Foundation
+ * AttributeValues.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
  * 
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
+ * 
  * As a special exception, if you link this library with other files to
  * produce an executable, this library does not by itself cause the
  * resulting executable to be covered by the GNU General Public License.
@@ -25,60 +25,57 @@
  * executable file might be covered by the GNU General Public License.
  */
 
-package gnu.inet.smtp;
+package gnu.inet.ldap;
+
+import java.util.Set;
 
 /**
- * An ESMTP parameter.
+ * An attribute type and set of values to associate with it.
  *
- * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.4 $ $Date: 2004/10/04 19:34:02 $
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public final class Parameter
+public class AttributeValues
 {
 
-  final String key;
-  final String value;
+  /**
+   * The attribute type.
+   */
+  protected final String type;
 
   /**
-   * Creates a new parameter with the specified key and value.
-   * @param key the key
-   * @param value the value
+   * The values to assign.
    */
-  public Parameter (String key, String value)
-  {
-    this.key = key;
-    this.value = value;
-  }
+  protected final Set values;
 
   /**
-   * Returns the key.
+   * Constructor.
+   * @param type the attribute type
+   * @param values the values to assign
    */
-  public String getKey ()
+  public AttributeValues (String type, Set values)
   {
-    return key;
-  }
-
-  /**
-   * Returns the value.
-   */
-  public String getValue ()
-  {
-    return value;
-  }
-
-  /**
-   * String form.
-   */
-  public String toString ()
-  {
-    if (value == null)
+    if (type == null)
       {
-        return key;
+        throw new NullPointerException ("type");
       }
-    else
-      {
-        return key + '=' + value;
-      }
+    this.type = type;
+    this.values = values;
+  }
+  
+  /**
+   * @see #type
+   */
+  public String getType ()
+  {
+    return type;
   }
 
+  /**
+   * @see #values
+   */
+  public Set getValues ()
+  {
+    return values;
+  }
+  
 }

@@ -1,5 +1,64 @@
 2004-09-12  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/inet/ldap/AttributeValues.java,
+	libraries/javalib/gnu/inet/ldap/BERConstants.java,
+	libraries/javalib/gnu/inet/ldap/BERDecoder.java,
+	libraries/javalib/gnu/inet/ldap/BEREncoder.java,
+	libraries/javalib/gnu/inet/ldap/BERException.java,
+	libraries/javalib/gnu/inet/ldap/LDAPConnection.java,
+	libraries/javalib/gnu/inet/ldap/LDAPResult.java,
+	libraries/javalib/gnu/inet/ldap/Modification.java,
+	libraries/javalib/gnu/inet/ldap/ResultHandler.java:
+	New files, taken from GNU inetlib.
+
+	* libraries/javalib/gnu/inet/imap/IMAPConnection.java,
+	libraries/javalib/gnu/inet/imap/IMAPConstants.java,
+	libraries/javalib/gnu/inet/imap/IMAPException.java,
+	libraries/javalib/gnu/inet/imap/IMAPResponse.java,
+	libraries/javalib/gnu/inet/imap/IMAPResponseTokenizer.java,
+	libraries/javalib/gnu/inet/imap/ListEntry.java,
+	libraries/javalib/gnu/inet/imap/MailboxStatus.java,
+	libraries/javalib/gnu/inet/imap/MessageStatus.java,
+	libraries/javalib/gnu/inet/imap/Pair.java,
+	libraries/javalib/gnu/inet/imap/UTF7imap.java,
+	libraries/javalib/gnu/inet/smtp/Parameter.java,
+	libraries/javalib/gnu/inet/smtp/ParameterList.java,
+	libraries/javalib/gnu/inet/smtp/SMTPConnection.java,
+	libraries/javalib/gnu/inet/util/BASE64.java,
+	libraries/javalib/gnu/inet/util/CRLFInputStream.java,
+	libraries/javalib/gnu/inet/util/CRLFOutputStream.java,
+	libraries/javalib/gnu/inet/util/EmptyX509TrustManager.java,
+	libraries/javalib/gnu/inet/util/GetLocalHostAction.java,
+	libraries/javalib/gnu/inet/util/GetSystemPropertyAction.java,
+	libraries/javalib/gnu/inet/util/LineInputStream.java,
+	libraries/javalib/gnu/inet/util/Logger.java,
+	libraries/javalib/gnu/inet/util/MessageInputStream.java,
+	libraries/javalib/gnu/inet/util/MessageOutputStream.java,
+	libraries/javalib/gnu/inet/util/SaslCallbackHandler.java,
+	libraries/javalib/gnu/inet/util/SaslInputStream.java,
+	libraries/javalib/gnu/inet/util/SaslOutputStream.java,
+	libraries/javalib/gnu/inet/util/StderrLogger.java:
+	Resynced with GNU inetlib.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	2004-09-10  Chris Burdess  <dog@bluezoo.org>
+
+        * imap,Logger.java: More verbose debugging messages.
+
+	2004-09-07  Chris Burdess  <dog@bluezoo.org>
+
+        * smtp: Corrections to ESMTP parameter list string form.
+
+	2004-08-25  Chris Burdess  <dog@bluezoo.org>
+
+        * ldap: Experimental LDAP client.
+
+2004-09-12  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/MenuComponent.java,
 	libraries/javalib/java/awt/Component.java,
 	libraries/javalib/java/awt/MenuBar.java,

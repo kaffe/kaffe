@@ -1,5 +1,5 @@
 /*
- * $Id: StderrLogger.java,v 1.2 2004/08/09 14:38:10 dalibor Exp $
+ * $Id: StderrLogger.java,v 1.4 2004/10/04 19:34:03 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -31,7 +31,7 @@ package gnu.inet.util;
  * A logger that simply writes to <code>System.err</code>.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.2 $ $Date: 2004/08/09 14:38:10 $
+ * @version $Revision: 1.4 $ $Date: 2004/10/04 19:34:03 $
  */
 public class StderrLogger extends Logger
 {
@@ -42,10 +42,10 @@ public class StderrLogger extends Logger
    * @param message the message
    */
   public void config (String message)
-    {
-      System.err.print ("DEBUG: ");
-      System.err.println (message);
-    }
+  {
+    System.err.print ("DEBUG: ");
+    System.err.println (message);
+  }
 
   /**
    * Logs a provider-specific debugging message.
@@ -53,10 +53,17 @@ public class StderrLogger extends Logger
    * @param message the message
    */
   public void log (String protocol, String message)
-    {
-      System.err.print (protocol);
-      System.err.print (": ");
-      System.err.println (message);
-    }
+  {
+    System.err.print (protocol);
+    System.err.print (": ");
+    System.err.println (message);
+  }
+  
+  public void error (String protocol, Throwable t)
+  {
+    System.err.print (protocol);
+    System.err.print (": ");
+    t.printStackTrace (System.err);
+  }
 
 }

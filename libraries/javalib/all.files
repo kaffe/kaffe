@@ -477,6 +477,15 @@ gnu/inet/imap/MailboxStatus.java
 gnu/inet/imap/MessageStatus.java
 gnu/inet/imap/Pair.java
 gnu/inet/imap/UTF7imap.java
+gnu/inet/ldap/AttributeValues.java
+gnu/inet/ldap/BERConstants.java
+gnu/inet/ldap/BERDecoder.java
+gnu/inet/ldap/BEREncoder.java
+gnu/inet/ldap/BERException.java
+gnu/inet/ldap/LDAPConnection.java
+gnu/inet/ldap/LDAPResult.java
+gnu/inet/ldap/Modification.java
+gnu/inet/ldap/ResultHandler.java
 gnu/inet/nntp/ActiveTime.java
 gnu/inet/nntp/ActiveTimesIterator.java
 gnu/inet/nntp/ArticleNumberIterator.java
