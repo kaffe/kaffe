@@ -35,6 +35,7 @@ gnu/java/nio/SelectorProviderImpl.java
 gnu/java/nio/ServerSocketChannelImpl.java
 gnu/java/nio/ShortBufferImpl.java
 gnu/java/nio/SocketChannelImpl.java
+gnu/java/lang/reflect/TypeSignature.java
 gnu/java/util/EmptyEnumeration.java
 gnu/java/util/prefs/FileBasedFactory.java
 gnu/java/util/prefs/MemoryBasedFactory.java

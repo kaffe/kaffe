@@ -54,11 +54,15 @@ public class URLClassLoader extends SecureClassLoader {
 		this.urls = new Vector();
 		this.factory = factory;
 		for (int i = 0; i < urls.length; i++) {
-			addURL(urls[i]);
+			internalAddURL(urls[i]);
 		}
 	}
 
 	protected void addURL(URL url) {
+		internalAddURL(url);
+	}
+
+	private void internalAddURL(URL url) {
 		urls.addElement(url);
 	}
 

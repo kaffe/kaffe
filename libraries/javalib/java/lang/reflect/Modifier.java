@@ -20,6 +20,14 @@ public class Modifier {
   public static final int STATIC = 0x0008;
   public static final int FINAL = 0x0010;
   public static final int SYNCHRONIZED = 0x0020;
+
+  /**
+   * Super - treat invokespecial as polymorphic so that super.foo() works
+   * according to the JLS. This is a reuse of the synchronized constant
+   * to patch a hole in JDK 1.0. *shudder*.
+   */
+  static final int SUPER = 0x0020;
+
   public static final int VOLATILE = 0x0040;
   public static final int TRANSIENT = 0x0080;
   public static final int NATIVE = 0x0100;

@@ -1,3 +1,30 @@
+2003-05-21 Dalibor Topic <robilad@yahoo.com>
+
+	Merged in java/lang/reflect/Proxy implementation from GNU Classpath.
+	
+	* libraries/javalib/gnu/java/lang/reflect/TypeSignature.java:
+	new file, taken from GNU Classpath.
+	
+	* libraries/javalib/java/lang/reflect/Modifier.java:
+	(SUPER) new package scoped constant.
+	
+	* libraries/javalib/java/lang/reflect/Proxy.java:
+	replaced by implementation from GNU CLasspath.
+	
+	* libraries/javalib/java/net/URLClassLoader.java:
+	(URLClassLoader) use internalAddURL.
+	(addURL) use internalAddURL.
+	(internalAddURL) new method, to avoid crashes due to constructor
+	using an overwritten addURL method as in JBoss 3.2.4.
+
+	* libraries/javalib/profiles/default/core.files,
+	libraries/javalib/profiles/allatonce/all.files:
+	added gnu/java/lang/reflect/TypeSignature.java
+
+	* WHATSNEW, README: updated
+
+	* THIRDPARTY: new file on third party sources used in kaffe.
+	
 2003-05-21  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
 
         * config/ia64/sysdepCallMethod.h (sysdepCallMethod): Fix to really

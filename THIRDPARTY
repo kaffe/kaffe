@@ -1,0 +1,37 @@
+Kaffe uses code from other free software projects. Only code licensed
+under a GPL compatible license can be merged in. You can find the
+licenses of third party sources either in their respective sources, of
+in license*.terms files in the top directory.
+
+* javax.sound 
+
+This code has been merged in from tritonus.org. The tritonus project
+offers many other codecs beside those shipped with kaffe, most notably
+GSM, MP3 and ogg support. Kaffe is tracking this project's CVS HEAD.
+
+Thanks to Matthias Pfisterer from the tritonus project, who was very
+helpful during the merge.
+
+* JAXP
+
+This code has been merged in from the GNU JAXP project. Kaffe is
+tracking this project's CVS HEAD.
+
+* java.util.regex
+
+This code has been merged in from GNU regexp. Kaffe is tracking this
+project's CVS HEAD.
+
+Thanks to Wes Biggs for providing kaffe with a working java.util.regex
+implementation over GNU regexp.
+
+* Class library
+
+Parts of kaffe's class library were merged in from GNU
+Classpath. Work continues on replacing kaffe's classes where they
+have been superseeded by GNU Classpath's implementation. Kaffe tracks
+this projects's CVS HEAD.
+
+Thanks to Stuart Ballard and Ito Kazumitsu, who started the merge
+effort, and Mark Wielaard, who provided a lot of useful advice on GNU
+Classpath's implementation.
