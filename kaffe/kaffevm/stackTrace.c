@@ -41,6 +41,7 @@ buildStackTrace(struct _exceptionFrame* base)
 	stackTraceInfo* info;
 	struct _exceptionFrame orig;
 
+	(void) orig;			/* avoid compiler warning in intrp */
 	STACKTRACEINIT(trace, base, base, orig);
 	cnt = 0;
 	while(!STACKTRACEEND(trace)) {
@@ -88,7 +89,8 @@ stacktraceFindMethod(stackTraceInfo *info)
 #endif
 
 void
-printStackTrace(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
+printStackTrace(struct Hjava_lang_Throwable* o,
+		struct Hjava_lang_Object* p, int nullOK)
 {
 	int i;
 	stackTraceInfo* info;
@@ -162,8 +164,15 @@ printStackTrace(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
 			for (j = len;  --j >= 0; ) {
 				cptr[j] = (unsigned char)buf[j];
 			}
-			do_execute_java_method(p,"println","([C)V",0,0,str);
+			if (p != 0 || !nullOK) {
+				do_execute_java_method(p, "println",
+					"([C)V", 0, 0, str);
+			} else {
+				fprintf(stderr, "%s\n", buf);
+			}
 		}
 	}
-	do_execute_java_method(p, "flush", "()V", 0, 0);
+	if (p != 0 || !nullOK) {
+		do_execute_java_method(p, "flush", "()V", 0, 0);
+	}
 }
