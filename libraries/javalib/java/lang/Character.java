@@ -51,6 +51,9 @@ public final class Character implements Serializable {
 
   private final char value;
 
+  /* This is what Sun's JDK1.1 "serialver java.lang.Character" spits out */
+  private static final long serialVersionUID = 3786198910865385080L;
+
   public Character(char value)
   {
     this.value = value;

@@ -19,6 +19,9 @@ final public class Long
 	final public static long MAX_VALUE = 0x7fffffffffffffffL;
 	final public static Class TYPE = Class.getPrimitiveClass("long");
 
+	/* This is what Sun's JDK1.1 "serialver java.lang.Long" spits out */ 
+	private static final long serialVersionUID = 4290774380558885855L;
+
 public Long(String s) throws NumberFormatException {
 	this.value = valueOf(s).value;
 }

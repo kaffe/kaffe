@@ -23,6 +23,9 @@ public final class Float extends Number {
 
   private final float value;
 
+  /* This is what Sun's JDK1.1 "serialver java.lang.Float" spits out */  
+  private static final long serialVersionUID = -2671257302660747028L;
+
   public static native int floatToIntBits(float value);
   public static native float intBitsToFloat(int bits);
 

@@ -17,6 +17,10 @@ final public class Boolean implements Serializable {
 public static final Boolean TRUE = new Boolean(true);
 public static final Boolean FALSE = new Boolean(false);
 public static final Class TYPE = Class.getPrimitiveClass("boolean");
+
+/* This is what Sun's JDK1.1 "serialver java.lang.Boolean" spits out */
+private static final long serialVersionUID = -3665804199014368530L;
+
 private final boolean value;
 
 public Boolean(String s) {

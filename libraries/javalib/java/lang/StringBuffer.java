@@ -12,6 +12,9 @@ package java.lang;
  */
 public final class StringBuffer implements java.io.Serializable
 {
+	// This is what Sun's JDK1.1 "serialver java.lang.StringBuffer" says
+	private static final long serialVersionUID = 3388685877147921107L; 
+
 	private char[] buffer;
 	private int used;
 	final private int SPARECAPACITY = 16;

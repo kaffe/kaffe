@@ -25,6 +25,9 @@ public class Throwable extends Object implements Serializable
 	private transient Object backtrace = null;
 	private String message = null;
 
+	// This is what Sun's JDK1.1 "serialver java.lang.Throwable" spits out
+	private static final long serialVersionUID = -3042686055658047285L;
+
 public Throwable()
 	{
 	message = null;

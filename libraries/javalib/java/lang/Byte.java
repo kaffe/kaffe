@@ -18,6 +18,9 @@ public final class Byte extends Number
 	final public static Class TYPE = Class.getPrimitiveClass("byte");
 	final private byte value;
 
+	/* This is what Sun's JDK1.1 "serialver java.lang.Byte" spits out */
+	private static final long serialVersionUID = -7183698231559129828L;
+
 public Byte(String s) throws NumberFormatException {
 	this.value = parseByte(s);
 }

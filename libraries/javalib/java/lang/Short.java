@@ -18,6 +18,9 @@ final public class Short
 	final public static Class TYPE = Class.getPrimitiveClass("short");
 	final private short value;
 
+	/* This is what Sun's JDK1.1 "serialver java.lang.Short" spits out */ 
+	private static final long serialVersionUID = 7515723908773894738L; 
+
 public Short(String s) throws NumberFormatException
 {
 	value = parseShort(s);
