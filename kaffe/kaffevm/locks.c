@@ -293,7 +293,7 @@ __lockMutex(iLock* lk)
 DBG(VMLOCKS,	dprintf("Lock 0x%x on iLock=0x%x\n", jthread_current(), lk);	    )
 
 	/*
-	 * Note: simply testing 'holder == currentNative' is not enough.
+	 * Note: simply testing 'holder == jthread_current()' is not enough.
 	 * If a thread systems uses the same value to which we initialized
 	 * holder as a thread id (null), we might be fooled into thinking 
 	 * we already hold the lock, when in fact we don't.
