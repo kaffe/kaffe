@@ -475,9 +475,6 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	/* Link it */
 	linkLabels(codeInfo, (uintp)codebase);
 
-#if defined(MD_REGISTER_JIT_EXCEPTION_INFO)
-	MD_REGISTER_JIT_EXCEPTION_INFO (methblock, codebase, CODEPC);
-#endif
 	/* Note info on the compiled code for later installation */
 	code->mem = methblock;
 	code->memlen = constlen + CODEPC;
@@ -516,6 +513,12 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 
 	/* Flush code out of cache */
 	FLUSH_DCACHE(meth->ncode, meth->c.ncode.ncode_end);
+
+#if defined(MD_REGISTER_JIT_EXCEPTION_INFO)
+	MD_REGISTER_JIT_EXCEPTION_INFO (meth->c.ncode.ncode_start,
+		meth->ncode,
+		meth->c.ncode.ncode_end - meth->ncode);
+#endif
 
 	/* Translate exception table and make it available */
 	if (meth->exception_table != 0) {
@@ -894,6 +897,7 @@ getEngine()
 #if defined(KAFFE_PROFILER)
 static jlong click_multiplier;
 static profiler_click_t click_divisor;
+static FILE *prof_output;
 
 static int
 profilerClassStat(Hjava_lang_Class *clazz, void *param)
@@ -905,17 +909,20 @@ profilerClassStat(Hjava_lang_Class *clazz, void *param)
 		if (meth->callsCount == 0)
 			continue;
 
-		fprintf(stderr, "%10d %10.6g %10.6g %10.6g %s.%s%s\n",
-				meth->callsCount,
-				(click_multiplier * ((double)meth->totalClicks)) / click_divisor,
-				(click_multiplier * ((double)meth->totalChildrenClicks)) / click_divisor,
-				(click_multiplier * ((double)meth->jitClicks)) / click_divisor,
+		fprintf(prof_output,
+			"%10d %10.6g %10.6g %10.6g %10.6g %s.%s%s\n",
+			meth->callsCount,
+			(click_multiplier * ((double)meth->totalClicks)) / click_divisor,
+			(click_multiplier * ((double)(meth->totalClicks
+						      - meth->totalChildrenClicks)))
+			/ click_divisor,
+			(click_multiplier * ((double)meth->totalChildrenClicks)) / click_divisor,
+			(click_multiplier * ((double)meth->jitClicks)) / click_divisor,
 
-				meth->class->name->data,
-				meth->name->data,
-				METHOD_SIGD(meth)
+			meth->class->name->data,
+			meth->name->data,
+			METHOD_SIGD(meth)
 		       );
-
 	}
 	return 0;
 }
@@ -931,6 +938,12 @@ printProfilerStats(void)
 	if (profFlag == 0)
 		return;
 
+ 	/* open file */
+ 	prof_output = fopen("prof.out", "w");
+	if (prof_output == NULL) {
+		return;
+	}
+
 	/* Need to figure out what profiler_click  _really_ is.
 	 * Use currentTime() to guest how long is a second.  Call it before
 	 * to don't count dynamic linker resolve time.  */
@@ -943,14 +956,19 @@ printProfilerStats(void)
 	click_multiplier = m_end - m_start;
 	click_divisor = end - start;
 
-	fprintf(stderr, "# clockTick: %lld per 1/%lld seconds aka %lld per milliseconds\n",
+	fprintf(prof_output,
+		"# clockTick: %lld per 1/%lld seconds aka %lld per milliseconds\n",
 		click_divisor,
 		click_multiplier,
 		click_divisor / click_multiplier);
 
-	fprintf(stderr, "# count\ttotal\tchildren\tjit\tmethod-name\n");
+ 	fprintf(prof_output, "%10s %10s %10s %10s %10s %s\n",
+ 		"#    count", "total", "self", "children", "jit",
+ 		"method-name");
 
 	/* Traverse through class hash table */
 	walkClassPool(profilerClassStat, NULL);
+
+	fclose(prof_output);
 }
 #endif
