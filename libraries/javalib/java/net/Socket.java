@@ -74,6 +74,16 @@ public int getPort() {
 	return impl.getPort();
 }
 
+public InetAddress getLocalAddress() {
+	try {
+		return (InetAddress)impl.getOption(SocketOptions.SO_BINDADDR); 
+	} catch (SocketException e) { }
+	try {
+		return InetAddress.getByName("0.0.0.0");
+	} catch (UnknownHostException e2) { }
+	return null;
+}
+
 public static synchronized void setSocketImplFactory(SocketImplFactory fac) throws IOException {
 	factory = fac;
 }
