@@ -39,6 +39,7 @@ exception statement from your version. */
 package java.security.cert;
 
 import java.io.InputStream;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;

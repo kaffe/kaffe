@@ -1,5 +1,23 @@
 2004-03-22  Dalibor Topic <robilad@kaffe.org>
 
+        * libraries/javalib/java/security/cert/CRL.java,
+        libraries/javalib/java/security/cert/CertPathBuilder.java,
+        libraries/javalib/java/security/cert/CertPathValidator.java,
+        libraries/javalib/java/security/cert/CertStore.java,
+        libraries/javalib/java/security/cert/Certificate.java,
+        libraries/javalib/java/security/cert/CertificateFactory.java,
+        libraries/javalib/java/security/cert/CertificateFactorySpi.java,
+        libraries/javalib/java/security/cert/PKIXBuilderParameters.java,
+        libraries/javalib/java/security/cert/PKIXParameters.java,
+        libraries/javalib/java/security/cert/PolicyQualifierInfo.java,
+        libraries/javalib/java/security/cert/TrustAnchor.java,
+        libraries/javalib/java/security/cert/X509CRL.java,
+        libraries/javalib/java/security/cert/X509CRLEntry.java,
+        libraries/javalib/java/security/cert/X509Certificate.java:
+	Replaced by implementation from GNU Classpath.
+
+2004-03-22  Dalibor Topic <robilad@kaffe.org>
+
         * libraries/javalib/java/security/spec/DSAParameterSpec.java,
         libraries/javalib/java/security/spec/DSAPrivateKeySpec.java,
         libraries/javalib/java/security/spec/DSAPublicKeySpec.java,

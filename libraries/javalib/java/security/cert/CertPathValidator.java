@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package java.security.cert;
 
-import gnu.java.security.Engine;
-
 import java.security.AccessController;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
@@ -47,6 +45,8 @@ import java.security.NoSuchProviderException;
 import java.security.PrivilegedAction;
 import java.security.Provider;
 import java.security.Security;
+
+import gnu.java.security.Engine;
 
 /**
  * Generic interface to classes that validate certificate paths.
