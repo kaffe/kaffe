@@ -79,24 +79,50 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 	assert(clazz != 0);
 
 	/*
-	 * loadClass returns the class in state CSTATE_LINKED.
+	 * Note:
+	 * The JDK documentation says: "...this method attempts to locate, 
+	 * load and link the class."
 	 *
-	 * This is sufficient for now, it is not necessary to process the
-	 * class to state CSTATE_OK.  In fact, not processing the class
-	 * here avoids ClassNotFoundExceptions if any of the classes
-	 * to which this class refers do not exist.  Some programs who
-	 * look the class up, but never invoke methods on it, will tolerate
-	 * if referred classes do not exist, but they will not work if we
-	 * throw a ClassNotFoundException here just because we couldn't
-	 * resolve the constant pool.  (serialver, for example)
+	 * loadClass returns the class in state CSTATE_LINKED.
+	 * Processing to CSTATE_OK will initialize the class, resolve
+	 * its constants and run its static initializers.
+	 *
+	 * According to 2.16.4 of the VM Specification, a class should be
+	 * initialized at its first active use.   The VM Specification
+	 * does not mention whether Class.forName is an active use, and
+	 * although 2.16.4 seems to imply that it is not, Sun's implementation 
+	 * seems to run the static initializerss of a class when 
+	 * Class.forName is called (see forNameTest.java)
+	 *
+	 * On the other hand, processing the class to CSTATE_OK is bad
+	 * because our constant resolution will require that all classes
+	 * to which the class refers are resolvable.  In practice, this
+	 * causes ClassNotFoundExceptions to be thrown in situations where
+	 * Sun would not throw such an exception, for instance, if serialver
+	 * finds that .class files are missing.  This should be tolerable.
+	 *
+	 * Also, 2.16.4 of the VM spec says:
+	 *
+	 *  "The intent here is that a type has a set of initializers that 
+	 *   put it in a consistent state, and that this state is the first 
+	 *   state that is observed by other classes".
 	 * 
-	 * Finally, note that it is at least safe as the other ways user
-	 * programs can use to obtain a Class object:
+	 * We are somewhat inconsistent here.  The following list lists
+	 * the functions that return or process Class objects to or for
+	 * the user, and the state in which the class is afterwards:
 	 *
 	 *	ClassLoader_defineClass0: 	returns CSTATE_PREPARED
 	 * 	ClassLoader_resolveClass0:	returns CSTATE_LINKED
 	 * 	ClassLoader_findSystemClass0:	returns CSTATE_LINKED
+	 * 	Class_forName:			returns CSTATE_OK
+	 *
+	 * We have also observed that processing a class to CSTATE_OK in
+	 * defineClass0 *does not* work; it causes repeated invocations of
+	 * static initializers, which crashes in classMethod.c where
+	 * ncode_start and ncode_end are set to zero after a initializer
+	 * was invoked.
 	 */
+	processClass(clazz, CSTATE_OK);
 	return (clazz);
 }
 
