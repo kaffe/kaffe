@@ -50,12 +50,11 @@ public static void main(String[] args)
 	String mainClass = manifest.getMainAttributes().getValue(
 					Attributes.Name.MAIN_CLASS);
 	if (mainClass == null) {
-		System.err.println("No Main-Class attribute found in JAR: "
-			+ args[0]);
+		System.err.println("No ``Main-Class'' found in manifest");
 		System.exit(1);
 	}
 
-	// Now call other class' main()
+	// Now call ExecJarName's main()
 	String[] newArgs = new String[args.length + 1];
 	System.arraycopy(args, 1, newArgs, 2, args.length - 1);
 	newArgs[0] = args[0];
