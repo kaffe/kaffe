@@ -1,5 +1,13 @@
 2004-05-16  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/javalib/java/text/CollationElementIterator.java
+	(setText): Add an extra entry in text_indexes for the end of
+	string. Fixed logic for intricated expansion/contraction of sequences.
+	(nextBlock, previousBlock): Some fixes on how to chose textIndex.
+	(setOffset): Use text_indexes to chose the right position.
+
+2004-05-16  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/mem/gc-incremental.c
 	(gcMalloc): Removed a suspicious static variable which is not
 	used anyway and caused compile error.

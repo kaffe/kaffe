@@ -119,8 +119,8 @@ public final class CollationElementIterator
     RuleBasedCollator.CollationElement e =
       (RuleBasedCollator.CollationElement) text_decomposition[index];
     
-    textIndex = text_indexes[index];
-    
+    textIndex = text_indexes[index+1];
+
     index++;
 
     return e;
@@ -135,7 +135,7 @@ public final class CollationElementIterator
     RuleBasedCollator.CollationElement e =
       (RuleBasedCollator.CollationElement) text_decomposition[index];
 
-    textIndex = text_indexes[index];
+    textIndex = text_indexes[index+1];
     
     return e;
   }
@@ -238,7 +238,7 @@ public final class CollationElementIterator
   public void setText(String text)
   {
     int idx = 0;
-    int idx_idx = 1;
+    int idx_idx = 0;
     int alreadyExpanded = 0;
     int idxToMove = 0;
 
@@ -285,9 +285,17 @@ public final class CollationElementIterator
 	
 	RuleBasedCollator.CollationElement prefix =
 	  (RuleBasedCollator.CollationElement) collator.prefix_tree.get (key);
-	
+
+	/*
+	 * First case: There is no such sequence in the database.
+	 * We will have to build one from the context.
+	 */
 	if (prefix == null)
 	  {
+	    /*
+	     * We are dealing with sequences in an expansion. They
+	     * are treated as accented characters (tertiary order).
+	     */
 	    if (alreadyExpanded > 0)
 	      {
 		RuleBasedCollator.CollationElement e =
@@ -299,6 +307,9 @@ public final class CollationElementIterator
 		alreadyExpanded--;
 		if (alreadyExpanded == 0)
 		  {
+		    /* There is not any characters left in the expansion set.
+		     * We can increase the pointer in the source string.
+		     */
 		    idx_idx += idxToMove;
 		    idxToMove = 0; 
 		  }
@@ -307,10 +318,14 @@ public final class CollationElementIterator
 	      }
 	    else
 	      {
+		/* This is a normal character. */
 		RuleBasedCollator.CollationElement e =
 		  collator.getDefaultElement (work_text.charAt (idx));
 		Integer i_ref = new Integer(idx_idx);
 
+		/* Don't forget to mark it as a special sequence so the
+		 * string can be ordered.
+		 */
 		v.add (RuleBasedCollator.SPECIAL_UNKNOWN_SEQ);
 		vi.add (i_ref);
 		v.add (e);
@@ -320,7 +335,12 @@ public final class CollationElementIterator
 	      }
 	    continue;
 	  }
-
+ 
+	/*
+	 * Second case: Here we have found a matching sequence.
+	 * Here we have an expansion string prepend it to the "work text" and
+	 * add the corresponding sorting element. We must also mark 
+	 */
 	if (prefix.expansion != null)
 	  {
 	    work_text = prefix.expansion
@@ -330,18 +350,22 @@ public final class CollationElementIterator
 	    vi.add (new Integer(idx_idx));
 	    if (alreadyExpanded == 0)
 	      idxToMove = prefix.key.length();
-	    else
-	      idxToMove = 0;
-	    alreadyExpanded += prefix.expansion.length();
+	    alreadyExpanded += prefix.expansion.length()-prefix.key.length();
 	  }
 	else
 	  {
+	    /* Third case: the simplest. We have got the prefix and it
+	     * has not to be expanded.
+	     */
 	    if (!prefix.ignore)
 	      {
 		v.add (prefix);
 		vi.add (new Integer(idx_idx));
 	      }
 	    idx += prefix.key.length();
+	    /* If the sequence is in an expansion, we must decrease the
+	     * counter.
+	     */
 	    if (alreadyExpanded > 0)
 	      {
 		alreadyExpanded -= prefix.key.length();
@@ -356,9 +380,12 @@ public final class CollationElementIterator
       }
     
     text_decomposition = v.toArray();
-    text_indexes = new int[vi.size()];
+    text_indexes = new int[vi.size()+1];
     for (int i = 0; i < vi.size(); i++) 
-      text_indexes[i] = ((Integer)vi.elementAt(i)).intValue();
+      {
+	text_indexes[i] = ((Integer)vi.elementAt(i)).intValue();
+      }
+    text_indexes[vi.size()] = text.length();
   }
 
   /**
@@ -410,22 +437,22 @@ public final class CollationElementIterator
     if (offset < 0)
       throw new IllegalArgumentException("Negative offset: " + offset);
 
-    if ((text.length() > 0) && (offset > 0))
+    if (offset > (text.length() - 1))
       throw new IllegalArgumentException("Offset too large: " + offset);
-    else if (offset > (text.length() - 1))
-      throw new IllegalArgumentException("Offset too large: " + offset);
-
-    textIndex = 0;
-    for (int i=0;i<text_decomposition.length;i++)
-      {
-	RuleBasedCollator.CollationElement e =
-	  (RuleBasedCollator.CollationElement) text_decomposition[i];
-	int idx = textIndex + e.key.length();
-	
-	if (idx > offset)
+    
+    for (index = 0; index < text_decomposition.length; index++)
+      {	
+	if (offset <= text_indexes[index])
 	  break;
-	textIndex = idx;
       }
+    /*
+     * As text_indexes[0] == 0, we should not have to take care whether index is
+     * greater than 0. It is always.
+     */
+    if (text_indexes[index] == offset)
+      textIndex = offset;
+    else
+      textIndex = text_indexes[index-1];
   }
 
   /**
