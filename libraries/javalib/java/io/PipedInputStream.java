@@ -36,11 +36,12 @@ public PipedInputStream (PipedOutputStream src) throws IOException {
 public int available() throws IOException {
 	return(in >= out ? in-out : PIPE_SIZE+out-in);
 }
-    
+
 public void close() throws IOException {
 	out = 0;
 	in = 0;
 	closed = true;
+    	finished = true;
 }
 
 public void connect(PipedOutputStream src) throws IOException {
