@@ -180,14 +180,32 @@ public class Hashtable extends Dictionary implements Cloneable {
     }
   }
   
+  /**
+   * Creates a shallow copy of this hashtable.  
+   * The keys and values themselves are not cloned. 
+   * This is a relatively expensive operation. 
+   *
+   * @return a clone of the hashtable. 
+   */
   public synchronized Object clone() {
-    Hashtable result=new Hashtable(bucket.length, loadFactor);
+    Hashtable result = null;
+    try {
+      /* Note that we must use super.clone() here instead of a
+       * constructor or else subclasses such as java.util.Properties
+       * will not be cloned properly.
+       */
+      result = (Hashtable)super.clone();
+      result.numberOfKeys = 0;
+      result.loadFactor = loadFactor;
+      result.bucket = new HashtableEntry[bucket.length];
 
-    for (int pos=0; pos<bucket.length; pos++) {
-      for (HashtableEntry ptr = bucket[pos]; ptr != null; ptr = ptr.next) {
-	result.put(ptr.getKey(), ptr.getData());
+      /* copy our entries in new hashtable */ 
+      for (int pos=0; pos<bucket.length; pos++) {
+        for (HashtableEntry ptr = bucket[pos]; ptr != null; ptr = ptr.next) {
+	  result.put(ptr.getKey(), ptr.getData());
+        }
       }
-    }
+    } catch (CloneNotSupportedException _) { }
     return (Object)result;
   }
   
