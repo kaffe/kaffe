@@ -4,13 +4,6 @@
  *  when the class is being loaded (so isn't here) and stage 4 is performed
  *  as the method is being executed.
  *
- * Copyright (c) 1996, 1997
- *	Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
- *
- *
  * verify2() was originally created by someone in Transvirtual Technologies.  however,
  * it did almost nothing (only a shrivel of the stuff needed by pass 2...
  * specifically part 3 of of pass 2, which has been modified),
@@ -29,6 +22,7 @@
 #include "constants.h"
 #include "classMethod.h"
 #include "baseClasses.h"
+#include "lookup.h"
 #include "exception.h"
 #include "errors.h"
 #include "jni.h"
@@ -248,46 +242,40 @@ printConstantPool(Hjava_lang_Class* class)
 			
 			
 		case CONSTANT_Class:
-			DBG(VERIFY2, dprintf("   UNRESOLVED CLASS: %s\n",
-					     WORD2UTF(pool->data[idx])->data); );
+			DBG(VERIFY2, dprintf("   UNRESOLVED CLASS: %s\n", CLASS_NAMED(idx, pool)); );
 			break;
 			
 		case CONSTANT_String:
-			DBG(VERIFY2, dprintf("   STRING: %s\n",
-					     WORD2UTF(pool->data[idx])->data); );
+			DBG(VERIFY2, dprintf("   STRING: %s\n", CONST_STRING_NAMED(idx, pool)); );
 			break;
 			
 			
 			
 		case CONSTANT_Fieldref:
 			DBG(VERIFY2, dprintf("   FIELDREF: %s  --type--  %s\n",
-					     CONST_UTF2CHAR(FIELDREF_NAME(idx, pool), pool),
-					     CONST_UTF2CHAR(FIELDREF_TYPE(idx, pool), pool)); );
+					     FIELDREF_NAMED(idx, pool), FIELDREF_SIGD(idx, pool)); );
 			break;
 			
 		case CONSTANT_Methodref:
 			DBG(VERIFY2, dprintf("   METHODREF: %s  --type--  %s\n",
-					     CONST_UTF2CHAR(METHODREF_NAME(idx, pool), pool),
-					     CONST_UTF2CHAR(METHODREF_SIGNATURE(idx, pool), pool)); );
+					     METHODREF_NAMED(idx, pool), METHODREF_SIGD(idx, pool)); );
 			break;
 			
 			
 		case CONSTANT_InterfaceMethodref:
 			DBG(VERIFY2, dprintf("   INTERFACEMETHODREF: %s  --type--  %s\n",
-					     CONST_UTF2CHAR(INTERFACEMETHODREF_NAME(idx, pool), pool),
-					     CONST_UTF2CHAR(INTERFACEMETHODREF_SIGNATURE(idx, pool), pool)); );
+					     INTERFACEMETHODREF_NAMED(idx, pool), INTERFACEMETHODREF_SIGD(idx, pool)); );
 			break;
 			
 			
 		case CONSTANT_NameAndType:
 			DBG(VERIFY2, dprintf("   NAMEANDTYPE: %s  --and--  %s\n",
-					     CONST_UTF2CHAR(NAMEANDTYPE_NAME(idx, pool), pool),
-					     CONST_UTF2CHAR(NAMEANDTYPE_SIGNATURE(idx, pool), pool)); );
+					     NAMEANDTYPE_NAMED(idx, pool), NAMEANDTYPE_SIGD(idx, pool)); );
 			break;
 			
 		default:
 			DBG(VERIFY2, dprintf("   *** UNRECOGNIZED CONSTANT POOL ENTRY in class %s *** \n",
-					     class->name->data); );
+					     CLASS_CNAME(class)); );
 		}
 	}	
 }
@@ -332,7 +320,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 		return(true);
 	
 	
-	DBG(VERIFY2, dprintf("\nPass 2 Verifying class %s\n", class->name->data); );
+	DBG(VERIFY2, dprintf("\nPass 2 Verifying class %s\n", CLASS_CNAME(class)); );
 	
 	
 	/* this is commented out because Sun's Java runtime environment doesn't enforce the restrictions
@@ -347,12 +335,12 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 		if (!CLASS_IS_ABSTRACT(class)) {
 			postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 					     "interfaces must have their abstract flag set (in interface \"%s\")",
-					     class->name->data);
+					     CLASS_CNAME(class));
 			return(false);
 		} else if (CLASS_IS_FINAL(class)) {
 			postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 					     "interfaces cannot be final (in interface \"%s\")",
-					     class->name->data);
+					     CLASS_CNAME(class));
 			return(false);
 		}
 	}
@@ -361,14 +349,14 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 	
 	// java/lang/Object does not have a superclass, is not final, and is not an interface,
 	// so we skip all of those checks
-	if(strcmp(OBJECTCLASS, class->name->data)) {
+	if(strcmp(OBJECTCLASS, CLASS_CNAME(class))) {
 		if (class->superclass == NULL) {
 			/***********************************************************
 			 * 1 - every class except java/lang/Object has a superclass
 			 ***********************************************************/
 			postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 					     "class \"%s\" does not have a superclass",
-					     class->name->data);
+					     CLASS_CNAME(class));
 			return(false);
 		} else if (CLASS_IS_FINAL(class->superclass)) {
 			/*********************************************************
@@ -377,8 +365,8 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 		
 			postExceptionMessage(einfo, JAVA_LANG(VerifyError),
 					     "class \"%s\" cannot inherit from final class \"%s\"",
-					     class->name->data,
-					     class->superclass->name->data);
+					     CLASS_CNAME(class),
+					     CLASS_CNAME(class->superclass));
 			return(false);
 		} else if (CLASS_IS_INTERFACE(class)) {
 			// we separate this from the rest of the method checking because the only requirement
@@ -394,18 +382,18 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 				// if it's <clinit> (init_name) then it doesn't have to be public.
 				// compilers often insert a <clinit> function to initialize an
 				// interfaces public static fields, if there are any.
-				if (strcmp(init_name->data, method->name->data)) {
+				if (strcmp(init_name->data, METHOD_NAMED(method))) {
 					if (!METHOD_IS_PUBLIC(method)) {
 						postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 								     "interface methods must be declared public (method \"%s\" in interface \"%s\")",
-								     method->name->data,
-								     class->name->data);
+								     METHOD_NAMED(method),
+								     CLASS_CNAME(class));
 						return(false);
 					} else if (!METHOD_IS_ABSTRACT(method)) {
 						postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 								     "interface methods must be declared abstract (method \"%s\" in interface \"%s\")",
-								     method->name->data,
-								     class->name->data);
+								     METHOD_NAMED(method),
+								     CLASS_CNAME(class));
 						return(false);
 					}
 				}
@@ -451,8 +439,8 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 					if (METHOD_IS_FINAL(method) &&
 					    
 					    // the following exceptions come from testing against Sun's JVM behavior
-					    (strcmp(init_name->data, method->name->data) &&
-					     strcmp("this", method->name->data))) {
+					    (strcmp(init_name->data, METHOD_NAMED(method)) &&
+					     strcmp("this", METHOD_NAMED(method)))) {
 						
 						// make sure the method in question was not overriden in the current class
 						for (n = CLASS_NMETHODS(class), curMethod = CLASS_METHODS(class);
@@ -470,9 +458,9 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 								{
 									postExceptionMessage(einfo, JAVA_LANG(VerifyError),
 											     "final method \"%s\" declared in class \"%s\" is overriden in class \"%s\"",
-											     method->name->data,
-											     superclass->name->data,
-											     class->name->data);
+											     METHOD_NAMED(method),
+											     CLASS_CNAME(class->superclass),
+											     CLASS_CNAME(class));
 									return(false);
 								}
 						}
@@ -491,7 +479,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 	 *********************************************************/
 	// error message for step 3
 #define POOLERROR \
-	postExceptionMessage(einfo, JAVA_LANG(ClassFormatError), "malformed constant pool in class \"%s\"", class->name->data); \
+	postExceptionMessage(einfo, JAVA_LANG(ClassFormatError), "malformed constant pool in class \"%s\"", CLASS_CNAME(class)); \
 	return (false)
 	
 	
@@ -593,31 +581,31 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 			
 			
 		case CONSTANT_Fieldref:
-			if (parseFieldTypeDescriptor(CONST_UTF2CHAR(FIELDREF_TYPE(idx, pool), pool)) == NULL) {
+			if (!parseFieldTypeDescriptor(FIELDREF_SIGD(idx, pool))) {
 				postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 						     "malformed field reference type descriptor, \"%s\", in class \"%s\"",
 						     CONST_UTF2CHAR(FIELDREF_TYPE(idx, pool), pool),
-						     class->name->data);
+						     CLASS_CNAME(class));
 				return(false);
 			}
 			break;
 			
 		case CONSTANT_Methodref:
-			if (!parseMethodTypeDescriptor(CONST_UTF2CHAR(METHODREF_SIGNATURE(idx, pool), pool))) {
+			if (!parseMethodTypeDescriptor(METHODREF_SIGD(idx, pool))) {
 				postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 						     "malformed method reference type descriptor, \"%s\", in class \"%s\"",
 						     CONST_UTF2CHAR(METHODREF_SIGNATURE(idx, pool), pool),
-						     class->name->data);
+						     CLASS_CNAME(class));
 				return(false);
 			}
 			break;
 			
 		case CONSTANT_InterfaceMethodref:
-			if (!parseMethodTypeDescriptor(CONST_UTF2CHAR(INTERFACEMETHODREF_SIGNATURE(idx, pool), pool))) {
+			if (!parseMethodTypeDescriptor(INTERFACEMETHODREF_SIGD(idx, pool))) {
 				postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 						     "malformed interface method reference type descriptor, \"%s\", in class \"%s\"",
 						     CONST_UTF2CHAR(INTERFACEMETHODREF_SIGNATURE(idx, pool), pool),
-						     class->name->data);
+						     CLASS_CNAME(class));
 				return(false);
 			}
 			break;
@@ -626,7 +614,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 			// we'll never get here, because of pass 3
 			postExceptionMessage(einfo, JAVA_LANG(InternalError),
 					     "step 4 of pass 2 verification has screwed up while processing class \"%s\"",
-					     class->name->data);
+					     CLASS_CNAME(class));
 			return(false);
 		}
 	}
@@ -644,17 +632,17 @@ static bool checkConstructor(Method* method, errorInfo* einfo)
 	if (METHOD_IS_STATIC(method)) {
 		postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 				     "class %s: constructor cannot be static",
-				     method->class->name->data);
+				     CLASS_CNAME(method->class));
 		return false;
 	} else if (METHOD_IS_FINAL(method)) {
 		postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 				     "class %s: constructor cannot be final",
-				     method->class->name->data);
+				     CLASS_CNAME(method->class));
 		return false;
 	} else if (!isMethodVoid(method)) {
 		postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 				     "class %s: constructor does not have void return type",
-				     method->class->name->data);
+				     CLASS_CNAME(method->class));
 		return false;
 	} else if (checkMethodStaticConstraints(method, einfo) == false) {
 		return false;
@@ -678,21 +666,21 @@ checkMethodStaticConstraints(Method* method, errorInfo* einfo)
 		if (METHOD_IS_PROTECTED(method)) {
 			postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 					     "%s.%s: method cannot be both public and protected",
-					     method->class->name->data,
-					     method->name->data);
+					     CLASS_CNAME(method->class),
+					     METHOD_NAMED(method));
 			return(false);
 		} else if(METHOD_IS_PRIVATE(method)) {
 			postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 					     "%s.%s: method cannot be both public and private",
-					     method->class->name->data,
-					     method->name->data);
+					     CLASS_CNAME(method->class),
+					     METHOD_NAMED(method));
 			return(false);
 		}
 	} else if (METHOD_IS_PROTECTED(method) && METHOD_IS_PRIVATE(method)) {
 		postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 				     "%s.%s: method cannot be both protected and private",
-				     method->class->name->data,
-				     method->name->data);
+				     CLASS_CNAME(method->class),
+				     METHOD_NAMED(method));
 		return(false);
 	}
 	
@@ -707,14 +695,14 @@ checkMethodStaticConstraints(Method* method, errorInfo* einfo)
 		if (METHOD_BYTECODE_LEN(method) == 0) {
 			postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 					     "%s.%s: method's code length cannot be zero",
-					     method->class->name->data,
-					     method->name->data);
+					     CLASS_CNAME(method->class),
+					     METHOD_NAMED(method));
 			return(false);
 		} else if (METHOD_BYTECODE_LEN(method) >= 65536) {
 			postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 					     "%s.%s: method's code length must be less than 65536 bytes",
-					     method->class->name->data,
-					     method->name->data);
+					     CLASS_CNAME(method->class),
+					     METHOD_NAMED(method));
 			return(false);
 		}
 	}
@@ -738,8 +726,8 @@ checkAbstractMethod(Method* method, errorInfo* einfo)
 #define ABSTRACT_METHOD_ERROR(_MSG) \
 	postExceptionMessage(einfo, JAVA_LANG(ClassFormatError), \
 			     "in method \"%s.%s\": abstract methods cannot be %s", \
-			     method->class->name->data, \
-			     method->name->data, _MSG); \
+			     CLASS_CNAME(method->class), \
+			     METHOD_NAMED(method), _MSG); \
 	return(false)
 	
 	
@@ -750,8 +738,8 @@ checkAbstractMethod(Method* method, errorInfo* einfo)
 	if (!(CLASS_IS_INTERFACE(method->class) || CLASS_IS_ABSTRACT(method->class))) {
 		postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 				     "in method \"%s.%s\": only abstract classes may have abstract methods",
-				     method->class->name->data,
-				     method->name->data);
+				     CLASS_CNAME(method->class),
+				     METHOD_NAMED(method));
 		return(false);
 	}
 	*/
@@ -762,14 +750,14 @@ checkAbstractMethod(Method* method, errorInfo* einfo)
 		if (CLASS_IS_INTERFACE(method->class)) {
 			postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 					     "in method \"%s.%s\": an interface cannot have a constructor <init>",
-					     method->class->name->data,
-					     method->name->data);
+					     CLASS_CNAME(method->class),
+					     METHOD_NAMED(method));
 			return(false);
 		} else {
 			postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 					     "in method \"%s.%s\": constructors cannot be abstract",
-					     method->class->name->data,
-					     method->name->data);
+					     CLASS_CNAME(method->class),
+					     METHOD_NAMED(method));
 			return(false);
 		}
 	}
@@ -779,8 +767,8 @@ checkAbstractMethod(Method* method, errorInfo* einfo)
 	if (METHOD_BYTECODE_LEN(method) > 0) {
 		postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 				     "in method \"%s.%s\": abstract methods cannot have a Code attribute",
-				     method->class->name->data,
-				     method->name->data);
+				     CLASS_CNAME(method->class),
+				     METHOD_NAMED(method));
 		return(false);
 	}
 	
@@ -848,18 +836,16 @@ static const uint8 insnLen[256] = {
 };
 
 
-// TODO: should we be aware of the endianess of the target machine?
-//
 // these retrieve the word (16 bits) or double world (32 bits) of bytecode starting
 // at pc = _PC
-#define	WORD(_CODE, _PC)  (int16)( \
+#define	WORD(_CODE, _PC)  ((int16)( \
 			   (_CODE[(_PC)+0] << 8) | \
-			   (_CODE[(_PC)+1]))
-#define	DWORD(_CODE, _PC) (int32)( \
+			   (_CODE[(_PC)+1])))
+#define	DWORD(_CODE, _PC) ((int32)( \
 			   (_CODE[(_PC)+0] << 24) | \
 			   (_CODE[(_PC)+1] << 16) | \
 			   (_CODE[(_PC)+2] << 8) | \
-			   (_CODE[(_PC)+3]))
+			   (_CODE[(_PC)+3])))
 
 
 /*
@@ -890,6 +876,7 @@ typedef struct block_info
 	struct block_info* next;
 } BlockInfo;
 
+
 // status flags for a basic block.
 // these also pertain to the status[] array for the entire instruction array
 #define CHANGED          1
@@ -905,19 +892,83 @@ typedef struct block_info
 
 
 
+// types for type checking (pass 3b)
+#define	TUNSTABLE		((Hjava_lang_Class*)0)
+
+// returnAddress type
+#define	TADDR			((Hjava_lang_Class*)2)
+
+#define	TOBJ			(ObjectClass)
+#define TNULL			((Hjava_lang_Class*)4)
+#define TSTRING			(StringClass)
+
+#define	TVOID			(voidClass)
+
+#define	TINT			(intClass)
+#define	TFLOAT			(floatClass)
+
+#define	TLONG			(longClass)
+#define	TDOUBLE			(doubleClass)
+
+// used for the second space of LONGs and DOUBLEs
+// in local variables or on the operand stack
+#define TWIDE                   ((Hjava_lang_Class*)5)
+
+
+#define IS_OBJECT(_T)         (_T == TOBJ)
+#define IS_STRING(_T)         (_T == TSTRING)
+
+#define IS_ADDRESS(_T)        (_T == TADDR)
+#define IS_PRIMITIVE_TYPE(_T) (_T == TINT || _T == TFLOAT || _T == TLONG || _T == TDOUBLE)
+
+
+/*
+ * array types
+ */
+#define TCHARARR		(charArrClass)
+
+// internally, booleans are represented by bytes
+#define TBOOLARR                (byteArrClass)
+#define TBYTEARR		(byteArrClass)
+
+#define TSHORTARR		(shortArrClass)
+#define TINTARR			(intArrClass)
+#define TLONGARR		(longArrClass)
+
+#define TFLOATARR		(floatArrClass)
+#define TDOUBLEARR		(doubleArrClass)
+
+#define TOBJARR			(objectArrClass)
+
+
+#define IS_PRIMITIVE_ARRAY(_T) \
+           ((_T) == TCHARARR || (_T) == TBYTEARR || (_T) == TSHORTARR || (_T) == TINTARR || (_T) == TLONGARR || \
+            (_T) == TFLOATARR || (_T) == TDOUBLEARR)
+
+// for IS_ARRAY we need to make sure that CLASS_IS_ARRAY is passed something legitimate...
+#define IS_ARRAY(_T) \
+           ((_T) && ((_T) != TUNSTABLE) && ((_T) != TADDR) && ((_T) != TNULL) && ((_T) != TWIDE) && \
+	    CLASS_IS_ARRAY(_T))
+
+
+/***********************************************************************************
+ * Methods for Pass 3 Verification
+ ***********************************************************************************/
 #ifdef KAFFE_VMDEBUG
 static void printInstruction(const int opcode);
 #endif
 
-static bool verifyMethod(errorInfo *einfo, Method* method);
-static BlockInfo** verifyMethod3a(errorInfo* einfo,
-				  Method* method,
-				  char* status,       // array of status info for all opcodes
-				  uint32* numBlocks); // number of basic blocks
+static bool              verifyMethod(errorInfo* einfo, Method* method);
+static BlockInfo**       verifyMethod3a(errorInfo* einfo,
+					Method* method,
+					char* status,       // array of status info for all opcodes
+					uint32* numBlocks); // number of basic blocks
 
 
 /*
  * Verify pass 3:  Check the consistency of the bytecode.
+ *
+ * This is the k-razy step that does data-flow analysis to prove the safety of the code.
  */
 bool
 verify3(Hjava_lang_Class* class, errorInfo *einfo)
@@ -928,25 +979,32 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
 	// see if verification is turned on, and whether the class we're about to verify requires verification
 	//
 	// NOTE: we don't skip interfaces here because an interface may contain a <clinit> method with bytecode
-	if (isTrustedClass(class)) {
+	if (isTrustedClass(class))
 		return (true);
-	}
 	
 	
-	DBG(VERIFY3, dprintf("\nPass 3 Verifying Class \"%s\"\n", class->name->data); );
+	DBG(VERIFY3, dprintf("\nPass 3 Verifying Class \"%s\"\n", CLASS_CNAME(class)); );
 	
 	for (n = CLASS_NMETHODS(class), method = CLASS_METHODS(class);
 	     n > 0;
 	     --n, ++method) {
 		
-		DBG(VERIFY3, dprintf("\n  -----------------------------------\n  considering method %s\n", method->name->data); );
+		DBG(VERIFY3, dprintf("\n  -----------------------------------\n  considering method %s\n", METHOD_NAMED(method)); );
 		
 		// if it's abstract or native, no verification necessary
 		if (!(METHOD_IS_ABSTRACT(method) || METHOD_IS_NATIVE(method))) {
-			DBG(VERIFY3, dprintf("  verifying method %s\n", method->name->data); );
+			DBG(VERIFY3, dprintf("  verifying method %s\n", METHOD_NAMED(method)); );
 			
-			if (verifyMethod(einfo, method) == false) {
-				DBG(VERIFY3, dprintf("  FAILURE TO VERIFY METHOD %s\n", method->name->data); );
+			if (parseMethodTypeDescriptor(METHOD_SIGD(method)) == false) {
+				postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
+						     "Method %s.%s has invalid signature, %s",
+						     CLASS_CNAME(class), METHOD_NAMED(method), METHOD_SIGD(method));
+				return(false);
+			}
+			else if (verifyMethod(einfo, method) == false) {
+				DBG(VERIFY3, dprintf("  FAILURE TO VERIFY METHOD %s.%s\n",
+						     CLASS_CNAME(class),
+						     METHOD_NAMED(method)); );
 				
 				// propagate the error...
 				return(false);
@@ -955,30 +1013,33 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
 	}
 	
 	
-	DBG(VERIFY3, dprintf("\nDone Pass 3 Verifying Class \"%s\"\n", class->name->data); );
+	DBG(VERIFY3, dprintf("\nDone Pass 3 Verifying Class \"%s\"\n", CLASS_CNAME(class)); );
 	return(true);
 }
 
-
+/*
+ * Controls the verification of a single method.  It allocates most of the memory needed for
+ * verification (when encountering JSRs, more memory will need to be allocated later),
+ * loads the initial arguments, calls pass3a, then calls pass3b and cleans up.
+ */
 static
 bool
 verifyMethod(errorInfo *einfo, Method* method)
 {
 	// to save some typing, etc.
-	int codelen         = METHOD_BYTECODE_LEN(method);
+	int codelen  = METHOD_BYTECODE_LEN(method);
 	
 	char* status = NULL; // the status of each instruction...changed, visited, etc.
                              // used primarily to help find the basic blocks initially
 	
 	uint32      numBlocks = 0;
 	
-	
 	/**************************************************************************************************
 	 * Memory Allocation
 	 **************************************************************************************************/
 	DBG(VERIFY3, dprintf("    allocating memory for verification (codelen = %d)...\n", codelen); );
 	
-        status = checkPtr((char*)KMALLOC(codelen * sizeof(char)));
+        status   = checkPtr((char*)KMALLOC(codelen * sizeof(char)));
 	
 	// find basic blocks and allocate memory for them
 	verifyMethod3a(einfo, method, status, &numBlocks);
@@ -986,18 +1047,19 @@ verifyMethod(errorInfo *einfo, Method* method)
 	DBG(VERIFY3, dprintf("    done allocating memory\n"); );
 	
 	KFREE(status);
-	
-	/*
-	 * This is where pass 3b would go
-	 */
-	
 	return(true);
 }
 
 
-/* 
- * performs the pass 3's static checks and builds the set of basic blocks
- * to be verfied during the data-flow analysis of 3b.
+/*
+ * verifyMethod3a()
+ *     check static constraints.  section 4.8.1 of JVML Spec 2.
+ *
+ * NOTE: we don't check whether execution can fall off the end of method code here as
+ *       that would require us to know whether the last statements are reachable.
+ *       Sun's verifier, for instance, rejects code with an unreachable NOP at the end!
+ *       Thus we check whether execution can fall off the end during the data flow analysis
+ *       of pass 3b, structural constraint checking.
  */
 BlockInfo**
 verifyMethod3a(errorInfo* einfo,
@@ -1008,7 +1070,7 @@ verifyMethod3a(errorInfo* einfo,
 #define VERIFY_ERROR(_MSG) \
 	postExceptionMessage(einfo, JAVA_LANG(VerifyError), \
 			     "in method \"%s.%s\": %s", \
-			     method->class->name->data, method->name->data, _MSG); \
+			     CLASS_CNAME(method->class), METHOD_NAMED(method), _MSG); \
 	return NULL
 
 #define ENSURE_NON_WIDE \
@@ -1016,27 +1078,47 @@ verifyMethod3a(errorInfo* einfo,
 		VERIFY_ERROR("illegal instruction following wide instruction"); \
 	}
 
+#define CHECK_POOL_IDX(_IDX) \
+	if (_IDX > pool->size) { \
+		VERIFY_ERROR("attempt to access a constant pool index beyond constant pool range"); \
+		return(false); \
+	}
+	
+#define GET_WIDX(_IDX, _PC) \
+	_IDX = (_PC) + 1; \
+	_IDX = WORD(code, _IDX); \
+	CHECK_POOL_IDX(_IDX)
+
 #define BRANCH_IN_BOUNDS(_N, _INST) \
 	if (_N < 0 || _N >= codelen) { \
 		postExceptionMessage(einfo, JAVA_LANG(VerifyError), \
 				     "in method \"%s.%s\": %s branches out of method's code", \
-				     method->class->name->data, method->name->data, _INST); \
+				     CLASS_CNAME(method->class), METHOD_NAMED(method), _INST); \
 		return NULL; \
 	}
 
-#define NEXTPC (pc + insnLen[code[pc]])
+	// makes sure the index given for a local variable is within the correct index
+#define CHECK_LOCAL_INDEX(_N) \
+	if ((_N) >= method->localsz) { \
+		VERIFY_ERROR("attempting to access a local variable beyond local array"); \
+	} 
 	
 	
+	constants* pool     = CLASS_CONSTANTS(method->class);
+	
+	// used for looking at method signatures...
+	const char* sig;
 	
 	int codelen         = METHOD_BYTECODE_LEN(method);
 	unsigned char* code = METHOD_BYTECODE_CODE(method);
 	
-	uint32 pc = 0, newpc = 0, n = 0;
+	uint32 pc = 0, newpc = 0, n = 0, idx = 0;
+#define NEXTPC (pc + insnLen[code[pc]])
 	int32 branchoffset = 0;
 	int32 low, high;
 	
 	bool wide;
-	bool inABlock; // used when calculating the start/return address of each block
+	//	bool inABlock; // used when calculating the start/return address of each block
 	
 	uint32 blockCount  = 0;
 	BlockInfo** blocks = NULL;
@@ -1054,16 +1136,230 @@ verifyMethod3a(errorInfo* einfo,
 	while(pc < codelen) {
 		status[pc] |= IS_INSTRUCTION;
 		
+		DBG(VERIFY3, dprintf("        instruction: "); printInstruction(code[pc]); dprintf("\n"); );
+		
+		if (codelen - pc < insnLen[code[pc]]) {
+			VERIFY_ERROR("last operand in code array is cut off");
+		}
+		
 		switch(code[pc]) {
-		case WIDE:
+		case ALOAD_0: case ASTORE_0:
+		case ILOAD_0: case ISTORE_0:
+		case FLOAD_0: case FSTORE_0:
+			ENSURE_NON_WIDE;
+			CHECK_LOCAL_INDEX(0);
+			break;
+		case ALOAD_1: case ASTORE_1:
+		case ILOAD_1: case ISTORE_1:
+		case FLOAD_1: case FSTORE_1:
+		case LLOAD_0: case LSTORE_0:
+		case DLOAD_0: case DSTORE_0:
+			ENSURE_NON_WIDE;
+			CHECK_LOCAL_INDEX(1);
+			break;
+		case ALOAD_2: case ASTORE_2:
+		case ILOAD_2: case ISTORE_2:
+		case FLOAD_2: case FSTORE_2:
+		case LLOAD_1: case LSTORE_1:
+		case DLOAD_1: case DSTORE_1:
+			ENSURE_NON_WIDE;
+			CHECK_LOCAL_INDEX(2);
+			break;
+		case ALOAD_3: case ASTORE_3:
+		case ILOAD_3: case ISTORE_3:
+		case FLOAD_3: case FSTORE_3:
+		case LLOAD_2: case LSTORE_2:
+		case DLOAD_2: case DSTORE_2:
+			ENSURE_NON_WIDE;
+			CHECK_LOCAL_INDEX(3);
+			break;
+		case LLOAD_3: case LSTORE_3:
+		case DLOAD_3: case DSTORE_3:
+			ENSURE_NON_WIDE;
+			CHECK_LOCAL_INDEX(4);
+			break;
+			
+			
+		case GETFIELD:  case PUTFIELD:
+		case GETSTATIC: case PUTSTATIC:
 			ENSURE_NON_WIDE;
 			
+			GET_WIDX(n, pc);
+			n = CONST_TAG(n, pool);
+			if (n != CONSTANT_Fieldref) {
+				VERIFY_ERROR("[get/put][field/static] accesses something in the constant pool that is not a CONSTANT_Fieldref");
+			}
+			break;
+			
+		case INVOKEVIRTUAL:
+		case INVOKESTATIC:
+		case INVOKESPECIAL:
+			ENSURE_NON_WIDE;
+			
+			GET_WIDX(idx, pc);
+			n = CONST_TAG(idx, pool);
+			if (n != CONSTANT_Methodref) {
+				VERIFY_ERROR("invoke* accesses something in the constant pool that is not a CONSTANT_Methodref");
+			}
+			
+			sig = METHODREF_SIGD(idx, pool);
+			if (*sig == '<') {
+				if (!strcmp(constructor_name->data, sig)) {
+					if (code[pc] != INVOKESPECIAL) {
+						VERIFY_ERROR("only invokespecial can be used to execute <init> methods");
+					}
+				} else {
+					VERIFY_ERROR("no method with a name whose first character is '<' may be called by an invoke instruction");
+				}
+			}
+			
+			break;
+			
+			
+			// invokeinterface is a 5 byte instruction.  the first byte is the instruction.
+			// the next two are the index into the constant pool for the methodreference.
+			// the fourth is the number of parameters expected by the method, and the verifier
+			// must check that the actual method signature of the method to be invoked matches
+			// this number.  the 5th must be zero.  these are apparently present for historical
+			// reasons (yeah Sun :::smirk:::).
+		case INVOKEINTERFACE:
+			ENSURE_NON_WIDE;
+			
+			GET_WIDX(idx, pc);
+			n = CONST_TAG(idx, pool);
+			if (n != CONSTANT_InterfaceMethodref) {
+				VERIFY_ERROR("invokeinterface accesses something in the constant pool that is not a CONSTANT_InterfaceMethodref");
+			}
+			
+			sig = INTERFACEMETHODREF_SIGD(idx, pool);
+			if (*sig == '<') {
+				VERIFY_ERROR("invokeinterface cannot be used to invoke any instruction with a name starting with '<'");
+			}
+			
+			n = countArgsInSignature(sig);
+			if (n != code[pc + 3] + 1) {
+				VERIFY_ERROR("fourth byte of invokeinterface doesn't have the number of arguments expected by the method plus one");
+			}
+			else if (code[pc + 4] != 0) {
+				VERIFY_ERROR("fifth byte of invokeinterface is not zero");
+			}
+			
+			break;
+			
+			
+		case INSTANCEOF:
+		case CHECKCAST:
+			ENSURE_NON_WIDE;
+			
+			GET_WIDX(n, pc);
+			n = CONST_TAG(n, pool);
+			if (n != CONSTANT_Class && n != CONSTANT_ResolvedClass) {
+				VERIFY_ERROR("instanceof/checkcast indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+			}
+			
+			break;
+			
+			
+		case MULTIANEWARRAY:
+			ENSURE_NON_WIDE;
+			
+			GET_WIDX(idx, pc);
+			n = CONST_TAG(idx, pool);
+			if (n != CONSTANT_Class && n != CONSTANT_ResolvedClass) {
+				VERIFY_ERROR("multinewarray indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+			}
+			
+			// number of dimensions must be <= num dimensions of array type being created
+			sig = CLASS_NAMED(idx, pool);
+			newpc = code[pc + 3];
+			if (newpc == 0) {
+				VERIFY_ERROR("dimensions operand of multianewarray must be non-zero");
+			}
+			for(n = 0; *sig == '['; sig++, n++);
+			if (n < newpc) {
+				VERIFY_ERROR("dimensions operand of multianewarray is > the number of dimensions in array being created");
+			}
+			
+			break;
+			
+			
+		case NEW:
+			ENSURE_NON_WIDE;
+			
+			GET_WIDX(idx, pc);
+			n = CONST_TAG(idx, pool);
+			if (n != CONSTANT_Class && n != CONSTANT_ResolvedClass) {
+				VERIFY_ERROR("new indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+			}
+			
+			// cannot create arrays with NEW
+			sig = CLASS_NAMED(idx, pool);
+			if (*sig == '[') {
+				VERIFY_ERROR("new instruction used to create a new array");
+			}
+			break;
+			
+			
+		case ANEWARRAY:
+			ENSURE_NON_WIDE;
+			
+			GET_WIDX(idx, pc);
+			n = CONST_TAG(idx, pool);
+			if (n != CONSTANT_Class && n != CONSTANT_ResolvedClass) {
+				VERIFY_ERROR("anewarray indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+			}
+			
+			// count the number of dimensions of the array being created...it must be <= 255
+			sig = CLASS_NAMED(idx, pool);
+			for (n = 0; *sig == '['; sig++, n++);
+			if (n > 255) {
+				VERIFY_ERROR("anewarray used to create an array of > 255 dimensions");
+			}
+			
+			break;
+			
+		case NEWARRAY:
+			ENSURE_NON_WIDE;
+			
+			n = code[pc + 1];
+			if (n < 4 || n > 11) {
+				VERIFY_ERROR("newarray operand must be in the range [4,11]");
+			}
+			
+			break;
+			
+			
+			
+			/***********************************************************
+			 * Instructions that can be modified by WIDE
+			 ***********************************************************/
+		case WIDE:
+			ENSURE_NON_WIDE;
 			wide = true;
 			break;
+			
 			
 		case ALOAD: case ASTORE:
 		case ILOAD: case ISTORE:
 		case FLOAD: case FSTORE:
+			if (wide == true) {
+				// the WIDE is considered the beginning of the instruction
+				status[pc] ^= IS_INSTRUCTION;
+				status[pc] |= WIDE_MODDED;
+				
+				pc++;
+				wide = false;
+				
+				n = DWORD(code, pc);
+			}
+			else {
+				n = pc + 1;
+				n = WORD(code, n);
+			}
+			
+			CHECK_LOCAL_INDEX(n);
+			break;
+			
 		case LLOAD: case LSTORE:
 		case DLOAD: case DSTORE:
 			if (wide == true) {
@@ -1073,8 +1369,20 @@ verifyMethod3a(errorInfo* einfo,
 				
 				pc++;
 				wide = false;
+				
+				n = WORD(code, pc);
 			}
+			else {
+				n = pc + 1;
+				n = WORD(code, n);
+			}
+			
+			// makes sure the index given for a local variable is within the correct index
+			//
+			// REM: longs and doubles take two consecutive local spots
+			CHECK_LOCAL_INDEX(n + 1);
 			break;
+			
 			
 		case IINC:
 			if (wide == true) {
@@ -1138,10 +1446,12 @@ verifyMethod3a(errorInfo* einfo,
 			
 			
 		case JSR:
-			newpc = pc + WORD(code, pc + 1);
+			newpc = pc + 1;
+			newpc = pc + WORD(code, newpc);
 			goto JSR_common;
 		case JSR_W:
-			newpc = pc + DWORD(code, pc + 1);
+			newpc = pc + 1;
+			newpc = pc + DWORD(code, newpc);
 			
 		JSR_common:
 			ENSURE_NON_WIDE;
