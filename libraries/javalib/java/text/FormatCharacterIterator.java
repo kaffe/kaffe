@@ -58,7 +58,7 @@ class FormatCharacterIterator implements AttributedCharacterIterator
     attributes = new HashMap[0];
   }
 
-  FormatCharacterIterator(String s, int[] ranges, HashMap[] attributes)
+  FormatCharacterIterator (String s, int[] ranges, HashMap[] attributes)
   {
     formattedString = s;
     this.ranges = ranges;
@@ -86,10 +86,10 @@ class FormatCharacterIterator implements AttributedCharacterIterator
       return new HashMap();
   }
   
-  public Object getAttribute(AttributedCharacterIterator.Attribute attrib)
+  public Object getAttribute (AttributedCharacterIterator.Attribute attrib)
   {
     if (attributes != null && attributes[attributeIndex] != null)
-      return attributes[attributeIndex].get(attrib);
+      return attributes[attributeIndex].get (attrib);
     else
       return null;
   }
@@ -111,17 +111,17 @@ class FormatCharacterIterator implements AttributedCharacterIterator
 	  break;
 	newKeys = attributes[currentAttrIndex].keySet();
       }
-    while (newKeys.containsAll(reqAttrs));
+    while (newKeys.containsAll (reqAttrs));
 
     return ranges[currentAttrIndex-1];
   }
   
-  public int getRunLimit(AttributedCharacterIterator.Attribute attribute) 
+  public int getRunLimit (AttributedCharacterIterator.Attribute attribute) 
   {
     Set s = new HashSet();
 
-    s.add(attribute);
-    return getRunLimit(s);
+    s.add (attribute);
+    return getRunLimit (s);
   }
 
   public int getRunLimit()
@@ -139,7 +139,7 @@ class FormatCharacterIterator implements AttributedCharacterIterator
     return getRunLimit (attributes[attributeIndex].keySet());
   }
   
-  public int getRunStart(Set reqAttrs)
+  public int getRunStart (Set reqAttrs)
   {
     if (attributes == null)
       return formattedString.length();
@@ -157,7 +157,7 @@ class FormatCharacterIterator implements AttributedCharacterIterator
 	  break;
 	newKeys = attributes[currentAttrIndex].keySet();
       }
-    while (newKeys.containsAll(reqAttrs));
+    while (newKeys.containsAll (reqAttrs));
    
     return (currentAttrIndex > 0) ? ranges[currentAttrIndex-1] : 0;
   } 
@@ -175,20 +175,20 @@ class FormatCharacterIterator implements AttributedCharacterIterator
 	return 0;
       }
 
-    return getRunStart(attributes[attributeIndex].keySet());
+    return getRunStart (attributes[attributeIndex].keySet());
   }
   
-  public int getRunStart(AttributedCharacterIterator.Attribute attribute) 
+  public int getRunStart (AttributedCharacterIterator.Attribute attribute) 
   {
     Set s = new HashSet();
     
-    s.add(attribute);
-    return getRunStart(s);
+    s.add (attribute);
+    return getRunStart (s);
   }
 
   public Object clone()
   {
-    return new FormatCharacterIterator(formattedString, ranges, attributes);
+    return new FormatCharacterIterator (formattedString, ranges, attributes);
   }
   
   /*
@@ -198,14 +198,14 @@ class FormatCharacterIterator implements AttributedCharacterIterator
    */
   public char current()
   {
-    return formattedString.charAt(charIndex);
+    return formattedString.charAt (charIndex);
   }
   
   public char first()
   {
     charIndex = 0;
     attributeIndex = 0;
-    return formattedString.charAt(0);
+    return formattedString.charAt (0);
   }
   
   public int getBeginIndex()
@@ -228,7 +228,7 @@ class FormatCharacterIterator implements AttributedCharacterIterator
     charIndex = formattedString.length()-1;
     if (attributes != null)
       attributeIndex = attributes.length-1;
-    return formattedString.charAt(charIndex);
+    return formattedString.charAt (charIndex);
   }
   
   public char next()
@@ -244,7 +244,7 @@ class FormatCharacterIterator implements AttributedCharacterIterator
 	if (charIndex >= ranges[attributeIndex])
 	  attributeIndex++;
       }
-    return formattedString.charAt(charIndex);
+    return formattedString.charAt (charIndex);
   }
   
   public char previous()
@@ -261,13 +261,13 @@ class FormatCharacterIterator implements AttributedCharacterIterator
 	if (charIndex < ranges[attributeIndex])
 	  attributeIndex--;
       }
-    return formattedString.charAt(charIndex);
+    return formattedString.charAt (charIndex);
   }
   
-  public char setIndex(int position)
+  public char setIndex (int position)
   {
     if (position < 0 || position > formattedString.length())
-      throw new IllegalArgumentException("position is out of range");
+      throw new IllegalArgumentException ("position is out of range");
     
     charIndex = position;
     if (attributes != null)
@@ -281,10 +281,10 @@ class FormatCharacterIterator implements AttributedCharacterIterator
     if (charIndex == formattedString.length())
       return DONE;
     else
-      return formattedString.charAt(charIndex);
+      return formattedString.charAt (charIndex);
   }
 
-  protected void mergeAttributes(HashMap[] attributes, int[] ranges)
+  protected void mergeAttributes (HashMap[] attributes, int[] ranges)
   {
     Vector new_ranges = new Vector();
     Vector new_attributes = new Vector();
@@ -294,28 +294,28 @@ class FormatCharacterIterator implements AttributedCharacterIterator
       {
 	if (this.attributes[i] != null)
 	  {
-	    new_attributes.add(this.attributes[i]);
+	    new_attributes.add (this.attributes[i]);
 	    if (attributes[j] != null)
-	      this.attributes[i].putAll(attributes[j]);
+	      this.attributes[i].putAll (attributes[j]);
 	  }
 	else
 	  {
-	    new_attributes.add(attributes[j]);
+	    new_attributes.add (attributes[j]);
 	  }
 	if (this.ranges[i] == ranges[j])
 	  {
-	    new_ranges.add(new Integer(ranges[j]));
+	    new_ranges.add (new Integer (ranges[j]));
 	    i++;
 	    j++;
 	  }
 	else if (this.ranges[i] < ranges[j])
 	  {
-	    new_ranges.add(new Integer(this.ranges[i]));
+	    new_ranges.add (new Integer (this.ranges[i]));
 	    i++;
 	  }
 	else
 	  {
-	    new_ranges.add(new Integer(ranges[j]));
+	    new_ranges.add (new Integer (ranges[j]));
 	    j++;
 	  }
      }
@@ -324,32 +324,32 @@ class FormatCharacterIterator implements AttributedCharacterIterator
       {
 	for (;i<this.ranges.length;i++)
 	  {
-	    new_attributes.add(this.attributes[i]);
-	    new_ranges.add(new Integer(this.ranges[i]));
+	    new_attributes.add (this.attributes[i]);
+	    new_ranges.add (new Integer (this.ranges[i]));
 	  }
       }
     if (j != ranges.length)
       {
 	for (;j<ranges.length;j++)
 	  {
-	    new_attributes.add(attributes[j]);
-	    new_ranges.add(new Integer(ranges[j]));
+	    new_attributes.add (attributes[j]);
+	    new_ranges.add (new Integer (ranges[j]));
 	  }
       }
 
     this.attributes = new HashMap[new_attributes.size()];
     this.ranges = new int[new_ranges.size()];
-    System.arraycopy(new_attributes.toArray(), 0, this.attributes,
-		     0, this.attributes.length);
+    System.arraycopy (new_attributes.toArray(), 0, this.attributes,
+		      0, this.attributes.length);
 
     for (i=0;i<new_ranges.size();i++)
       {
-	this.ranges[i] = ((Integer)new_ranges.elementAt(i)).intValue();
+	this.ranges[i] = ((Integer)new_ranges.elementAt (i)).intValue();
       }
     
   }
 
-  protected void append(AttributedCharacterIterator iterator)
+  protected void append (AttributedCharacterIterator iterator)
   {
     char c = iterator.first();
     Vector more_ranges = new Vector();
@@ -360,7 +360,7 @@ class FormatCharacterIterator implements AttributedCharacterIterator
 	formattedString = formattedString + String.valueOf(c);
 	// TODO: Reduce the size of the output array.
 	more_attributes.add (iterator.getAttributes());
-	more_ranges.add(new Integer(formattedString.length()));
+	more_ranges.add (new Integer (formattedString.length()));
 	// END TOOD
 	c = iterator.next();
       } 
@@ -370,11 +370,11 @@ class FormatCharacterIterator implements AttributedCharacterIterator
 					   + more_attributes.size()];
     int[] new_ranges = new int[ranges.length + more_ranges.size()];
     
-    System.arraycopy(attributes, 0, new_attributes, 0, attributes.length);
-    System.arraycopy(more_attributes.toArray(), 0, new_attributes,
-		     attributes.length, more_attributes.size());
+    System.arraycopy (attributes, 0, new_attributes, 0, attributes.length);
+    System.arraycopy (more_attributes.toArray(), 0, new_attributes,
+		      attributes.length, more_attributes.size());
 
-    System.arraycopy(ranges, 0, new_ranges, 0, ranges.length);
+    System.arraycopy (ranges, 0, new_ranges, 0, ranges.length);
     Object[] new_ranges_array = more_ranges.toArray();
     for (int i=0;i<more_ranges.size();i++)
       new_ranges[i+ranges.length] = ((Integer)new_ranges_array[i]).intValue();
@@ -383,14 +383,14 @@ class FormatCharacterIterator implements AttributedCharacterIterator
     ranges = new_ranges;
   }
 
-  protected void append(String text, HashMap local_attributes)
+  protected void append (String text, HashMap local_attributes)
   {
     int[] new_ranges = new int[ranges.length+1];
     HashMap[] new_attributes = new HashMap[attributes.length+1];
 
     formattedString += text;
-    System.arraycopy(attributes, 0, new_attributes, 0, attributes.length);
-    System.arraycopy(ranges, 0, new_ranges, 0, ranges.length);
+    System.arraycopy (attributes, 0, new_attributes, 0, attributes.length);
+    System.arraycopy (ranges, 0, new_ranges, 0, ranges.length);
     new_ranges[ranges.length] = formattedString.length();
     new_attributes[attributes.length] = local_attributes;
 
@@ -398,8 +398,8 @@ class FormatCharacterIterator implements AttributedCharacterIterator
     attributes = new_attributes;
   }  
 
-  protected void append(String text)
+  protected void append (String text)
   {
-    append(text, null);
+    append (text, null);
   }  
 }

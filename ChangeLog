@@ -1,4 +1,15 @@
-2003-11-23 Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+2003-11-23  Dalibor Topic <robilad@kaffe.org>
+
+	Partially re-synced with GNU Classpath. Detailed ChangeLog follows.
+
+	2003-11-22  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* java/text/DecimalFormatSymbols.java (locale): New field.
+        (DecimalFormatSymbols (Locale)): Set locale.
+        (serialVersionOnStream): Upgraded to number 2.
+        (readObject): Assign locale if it wasn't by the serializer.
+
+2003-11-23  Atsushi Nemoto <anemo@mba.ocn.ne.jp>
 	
 	* libraries/javalib/kaffe/applet/AppletTag.java
 	(parseForApplets):Fixed the parsing of empty <applet> tag.

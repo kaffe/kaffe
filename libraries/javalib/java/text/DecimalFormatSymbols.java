@@ -580,9 +580,10 @@ public final class DecimalFormatSymbols implements Cloneable, Serializable
   private char perMill;
   /**
    * @serial This value represents the type of object being de-serialized.
+   * 0 indicates a pre-Java 1.1.6 version, 1 indicates 1.1.6 or later.
    * 0 indicates a pre-Java 1.1.6 version, 1 indicates 1.1.6 or later,
    * 2 indicates 1.4 or later
-   */
+    */
   private int serialVersionOnStream = 2;
   /**
    * @serial This is the character used to represent 0.
@@ -590,10 +591,10 @@ public final class DecimalFormatSymbols implements Cloneable, Serializable
   private char zeroDigit;
 
   /**
-   * @serial the locale of these currency symbols.
+   * @serial The locale of these currency symbols.
    */
   private Locale locale;
-
+ 
   private static final long serialVersionUID = 5772796243397350300L;
 
   private void readObject(ObjectInputStream stream)
@@ -606,9 +607,8 @@ public final class DecimalFormatSymbols implements Cloneable, Serializable
 	exponential = 'E';
       }
     if (serialVersionOnStream < 2)
-      {
 	locale = Locale.getDefault();
-      }
+
     serialVersionOnStream = 2;
   }
 }
