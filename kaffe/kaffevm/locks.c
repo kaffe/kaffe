@@ -48,23 +48,20 @@
 #endif
 #endif
 
-/* We need to treat the gc locks special since it's guards memory allocation.
+/* We need to treat the gc locks special since they guard memory allocation
+ * and cannot be acquired by the gc thread otherwise.
  * I'm not proud of this - it's a hack waiting for a better idea - TIM.
  */
 extern iLock* gc_lock;
-extern iLock* gcman1;
-extern iLock* gcman2;
-extern iLock* finman;
-#define	NR_SPECIAL_LOCKS	4
+extern iLock* gcman;
 static struct {
 	iLock**	key;
 	iLock	lock;
-} specialLocks[NR_SPECIAL_LOCKS] = {
+} specialLocks[] = {
 	{ &gc_lock,	{ 0, 0, 0 } },
-	{ &gcman1,	{ 0, 0, 0 } },
-	{ &gcman2,	{ 0, 0, 0 } },
-	{ &finman,	{ 0, 0, 0 } }
+	{ &gcman,	{ 0, 0, 0 } },
 };
+#define	NR_SPECIAL_LOCKS	(sizeof(specialLocks)/sizeof(specialLocks[0]))
 
 static jboolean _SemGet(void*, jlong);
 static void _SemPut(void*);

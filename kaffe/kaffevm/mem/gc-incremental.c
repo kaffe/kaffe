@@ -97,8 +97,7 @@ void record_marked(int nr_of_objects, uint32 size)
         gcStats.markedmem += size;
 } 
 
-iLock* gcman1;
-iLock* gcman2;
+iLock* gcman;
 iLock* finman;
 iLock* gc_lock;			/* allocator mutex */
 
@@ -394,15 +393,20 @@ gcMan(void* arg)
 	Collector *gcif = (Collector*)arg;
 	int iLockRoot;
 
-	lockStaticMutex(&gcman1);
-
 	/* Wake up anyone waiting for the GC to finish every time we're done */
 	for (;;) {
+		lockStaticMutex(&gcman);
 
 		while (gcRunning == 0) {
-			waitStaticCond(&gcman1, 0);
+			waitStaticCond(&gcman, 0);
 		}
+		/* We have observed that gcRunning went from 0 to 1 or 2 
+		 * One thread requested a gc.  We will decide whether to gc
+		 * or not, and then we will set gcRunning back to 0 and
+		 * inform the calling thread of the change
+		 */
 		assert(gcRunning > 0);
+
 		/* 
 		 * gcRunning will either be 1 or 2.  If it's 1, we can apply
 		 * some heuristics for when we skip a collection.
@@ -524,10 +528,10 @@ DBG(GCSTAT,
 		gcStats.allocmem = 0;
 
 gcend:;
-		lockStaticMutex(&gcman2);
+		/* now signal any waiters */
 		gcRunning = 0;
-		broadcastStaticCond(&gcman2);
-		unlockStaticMutex(&gcman2);
+		broadcastStaticCond(&gcman);
+		unlockStaticMutex(&gcman);
 	}
 }
 
@@ -685,12 +689,12 @@ startFinalizer(void)
 	}
 	unlockStaticMutex(&gc_lock);
 
+	lockStaticMutex(&finman);
 	if (start != 0 && finalRunning == false) {
-		lockStaticMutex(&finman);
 		finalRunning = true;
 		signalStaticCond(&finman);
-		unlockStaticMutex(&finman);
 	}
+	unlockStaticMutex(&finman);
 
 }
 
@@ -709,9 +713,9 @@ finaliserMan(void* arg)
 	Collector *gcif = (Collector*)arg;
 	int iLockRoot;
 
-	lockStaticMutex(&finman);
 
 	for (;;) {
+		lockStaticMutex(&finman);
 
 		finalRunning = false;
 		while (finalRunning == false) {
@@ -744,6 +748,7 @@ finaliserMan(void* arg)
 
 		/* Wake up anyone waiting for the finalizer to finish */
 		broadcastStaticCond(&finman);
+		unlockStaticMutex(&finman);
 	}
 }
 
@@ -756,17 +761,18 @@ gcInvokeGC(Collector* gcif, int mustgc)
 {
 	int iLockRoot;
 
-	lockStaticMutex(&gcman1);
-	lockStaticMutex(&gcman2);
-
+	lockStaticMutex(&gcman);
 	if (gcRunning == 0) {
 		gcRunning = mustgc ? 2 : 1;
-		signalStaticCond(&gcman1);
+		signalStaticCond(&gcman);
 	}
-	unlockStaticMutex(&gcman1);
+	unlockStaticMutex(&gcman);
 
-	waitStaticCond(&gcman2, 0);
-	unlockStaticMutex(&gcman2);
+	lockStaticMutex(&gcman);
+	while (gcRunning != 0) {
+		waitStaticCond(&gcman, 0);
+	}
+	unlockStaticMutex(&gcman);
 }
 
 /*
