@@ -1,5 +1,17 @@
 2004-12-03  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/net/protocol/ftp/package.html,
+	libraries/javalib/gnu/java/net/protocol/http/package.html:
+	Resynced with GNU Classpath.
+
+
+	2004-12-03  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/net/protocol/ftp/package.html,
+	gnu/java/net/protocol/http/package.html:
+	Add missing files.
+
+2004-12-03  Dalibor Topic  <robilad@kaffe.org>
 	* libraries/javalib/java/awt/EventDispatchThread.java,
 	libraries/javalib/java/awt/Toolkit.java,
 	libraries/javalib/java/io/ObjectStreamClass.java,
