@@ -34,10 +34,10 @@ public InvalidClassException(String c, String s)
 public String getMessage()
 	{
 	if (classname != null) {
-		return (classname + ((Throwable)this).getMessage());
+		return (classname + super.getMessage());
 	}
 	else {
-		return (((Throwable)this).getMessage());
+		return (super.getMessage());
 	}
 }
 }
