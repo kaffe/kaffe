@@ -5,6 +5,9 @@ Fri Oct 15 15:36:19 PDT 1999  Archie Cobbs <archie@whistle.com>
 	write out checksums using Base64 class
 	* libraries/extensions/tools/javalib/tools.jar: regen
 	* libraries/javalib/Makefile.*: add new class
+	* libraries/javalib/java/util/zip/ZipInputStream.java,
+	libraries/javalib/java/util/zip/ZipOutputStream.java,
+	libraries/javalib/java/util/zip/ZipEntry.java: fix several bugs
 	* libraries/javalib/Klasses.jar: regen
 
 Fri Oct 15 10:47:54 PDT 1999  Patrick A Tullmann  <tullmann@cs.utah.edu>
