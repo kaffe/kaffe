@@ -150,10 +150,10 @@ java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jbool val)
 		postOutOfMemory(&info);
 		throwError(&info);
 	}
-	dstream->next_out = 0;
+	dstream->next_out = NULL;
 	dstream->zalloc = kaffe_zalloc;
 	dstream->zfree = kaffe_zfree;
-	dstream->opaque = 0;
+	dstream->opaque = NULL;
 
 	r = inflateInit2(dstream, val ? -WSIZEBITS : WSIZEBITS);
 

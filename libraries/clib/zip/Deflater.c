@@ -120,7 +120,7 @@ java_util_zip_Deflater_end(struct Hjava_util_zip_Deflater* this)
 	z_stream* dstream;
 
 	dstream = GET_STREAM(this);
-	GET_STREAM(this) = 0;
+	GET_STREAM(this) = NULL;
 
 	deflateEnd(dstream);
 	KFREE(dstream);
@@ -150,10 +150,10 @@ java_util_zip_Deflater_init(struct Hjava_util_zip_Deflater* this, jbool val)
 		postOutOfMemory(&info);
 		throwError(&info);
 	}
-	dstream->next_in = 0;
+	dstream->next_in = NULL;
 	dstream->zalloc = kaffe_zalloc;
 	dstream->zfree = kaffe_zfree;
-	dstream->opaque = 0;
+	dstream->opaque = NULL;
 
 	r = deflateInit2(dstream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, (val ? -WSIZEBITS : WSIZEBITS), 9, Z_DEFAULT_STRATEGY);
 

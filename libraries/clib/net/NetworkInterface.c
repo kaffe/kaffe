@@ -116,7 +116,7 @@ getInetAddress(struct ifaddrs *ifa)
     }
   if (address_string) {
     do_execute_java_class_method
-      (&jv, "java/net/InetAddress", 0, "getByName", "(Ljava/lang/String;)Ljava/net/InetAddress;",
+      (&jv, "java/net/InetAddress", NULL, "getByName", "(Ljava/lang/String;)Ljava/net/InetAddress;",
        address_string);
     retval = (struct Hjava_net_InetAddress *)jv.l;
   }
@@ -131,7 +131,7 @@ java_net_NetworkInterface_getRealNetworkInterfaces(void)
   struct ifaddrs* ifa; 
 
   vector =
-    (struct Hjava_util_Vector*)execute_java_constructor("java/util/Vector", 0, 0, "()V");
+    (struct Hjava_util_Vector*)execute_java_constructor("java/util/Vector", NULL, NULL, "()V");
   
   ifa = addrs = detectInterfaces();
   while (ifa != NULL)
@@ -149,11 +149,11 @@ java_net_NetworkInterface_getRealNetworkInterfaces(void)
 	     vector,
 	     "add",
 	     "(Ljava/lang/Object;)Z",
-	     0,
+	     NULL,
 	     0,
 	     execute_java_constructor("java/net/NetworkInterface",
-				      0,
-				      0,
+				      NULL,
+				      NULL,
 				      "(Ljava/lang/String;Ljava/net/InetAddress;)V",
 				      iface_name,
 				      addr));

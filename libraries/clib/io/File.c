@@ -220,13 +220,13 @@ HArrayOfObject* java_io_VMFile_list(struct Hjava_lang_String* dirName)
   /* XXX make part of jsyscall interface !? */
   dir = opendir(path);
   if (dir == 0) {
-    return (0);
+    return (NULL);
   }
   
-  dirlist = 0;
+  dirlist = NULL;
   count = 0;
   /* XXX make part of jsyscall interface !? */
-  while ((entry = readdir(dir)) != 0) {
+  while ((entry = readdir(dir)) != NULL) {
     /* We skip '.' and '..' */
     if (strcmp(".", entry->d_name) == 0 ||
 	strcmp("..", entry->d_name) == 0) {
@@ -253,10 +253,10 @@ HArrayOfObject* java_io_VMFile_list(struct Hjava_lang_String* dirName)
   closedir(dir);
   
   array = (HArrayOfObject*)AllocObjectArray(count,
-					    "Ljava/lang/String;", 0);
+					    "Ljava/lang/String;", NULL);
   /* XXX: This assert is a noop.  If AllocObjectArray throws an
      exception, we leak. */
-  assert(array != 0);
+  assert(array != NULL);
   for (i = 0; i < count; i++) {
     mentry = dirlist;
     dirlist = mentry->next;

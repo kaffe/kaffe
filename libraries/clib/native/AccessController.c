@@ -53,7 +53,7 @@ java_security_VMAccessController_getStack (void)
   HArrayOfObject *meths;
   HArrayOfArray *array;
 
-  info = (stackTraceInfo *) buildStackTrace(0);
+  info = (stackTraceInfo *) buildStackTrace(NULL);
   if (info == NULL)
     {
       postOutOfMemory (&einfo);
@@ -67,9 +67,9 @@ java_security_VMAccessController_getStack (void)
 	cnt++;
     }
 
-  array = (HArrayOfArray *) AllocObjectArray (2, "[Ljava/lang/Object;", 0);
-  classes = (HArrayOfObject *) AllocObjectArray (cnt, "Ljava/lang/Class;", 0);
-  meths = (HArrayOfObject *) AllocObjectArray (cnt, "Ljava/lang/String;", 0);
+  array = (HArrayOfArray *) AllocObjectArray (2, "[Ljava/lang/Object;", NULL);
+  classes = (HArrayOfObject *) AllocObjectArray (cnt, "Ljava/lang/Class;", NULL);
+  meths = (HArrayOfObject *) AllocObjectArray (cnt, "Ljava/lang/String;", NULL);
 
   cnt = 0;
   for (i = 0; info[i].meth != ENDOFSTACK; i++)

@@ -74,7 +74,7 @@ java_net_InetAddressImpl_getInetFamily(jint kind)
 HArrayOfByte*
 java_net_InetAddress_lookupInaddrAny(void)
 {
-  HArrayOfByte* addr = 0;
+  HArrayOfByte* addr = NULL;
   errorInfo einfo;
 
   addr = (HArrayOfByte *)newArrayChecked(TYPE_CLASS(TYPE_Byte),
@@ -102,7 +102,7 @@ java_net_InetAddress_getLocalHostname(void)
   static char hostname[HOSTNMSZ] = "localhost";
   static iStaticLock	hostLock;
 	
-  struct Hjava_lang_String *retval = 0;
+  struct Hjava_lang_String *retval = NULL;
   int iLockRoot;
 	
   lockStaticMutex(&hostLock);
@@ -129,8 +129,8 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
 #if defined(HAVE_GETADDRINFO)
   int i = 0, retryCount = 5, rc;
   jsize count = 0;
-  struct addrinfo hints, *ai = 0, *curr;
-  HArrayOfArray *retval = 0;
+  struct addrinfo hints, *ai = NULL, *curr;
+  HArrayOfArray *retval = NULL;
   int iLockRoot;
   errorInfo einfo;
   char *name;
@@ -180,7 +180,7 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
 	  struct sockaddr_in6 *in6;
 #endif
 	  struct sockaddr_in *in4;
-	  HArrayOfByte *addr = 0;
+	  HArrayOfByte *addr = NULL;
 			
 	  switch( curr->ai_family )
 	    {
@@ -199,7 +199,7 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
 		}
 	      else
 		{
-		  retval = 0;
+		  retval = NULL;
 		}
 	      break;
 #if defined(PF_INET6)
@@ -218,7 +218,7 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
 		}
 	      else
 		{
-		  retval = 0;
+		  retval = NULL;
 		}
 	      break;
 #endif
@@ -360,7 +360,7 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
 		HArrayOfByte *addr)
 {
 #if defined(HAVE_GETADDRINFO)
-  struct Hjava_lang_String *retval = 0;
+  struct Hjava_lang_String *retval = NULL;
 #if defined(AF_INET6)
   struct sockaddr_in6 sa_buf;
   struct sockaddr_in6 *sain6 = &sa_buf;

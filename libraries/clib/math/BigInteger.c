@@ -108,7 +108,7 @@ Java_java_math_BigInteger_assignBytes0(JNIEnv* env, jobject r, jint sign, jbyteA
 	res = (*env)->GetObjectField(env, r, number);
 
 	len = (*env)->GetArrayLength(env, magnitude);
-	data = (*env)->GetByteArrayElements(env, magnitude, 0);
+	data = (*env)->GetByteArrayElements(env, magnitude, NULL);
 
 	/* clear mpz by setting it to zero; do not use mpz_clear here 
 	 * cause that would free its storage which is wrong.
@@ -144,7 +144,7 @@ Java_java_math_BigInteger_assignString0(JNIEnv* env, jobject r, jstring val, jin
 	int rc;
 
 	res = (*env)->GetObjectField(env, r, number);
-	str = (*env)->GetStringUTFChars(env, val, 0);
+	str = (*env)->GetStringUTFChars(env, val, NULL);
 
 	rc = mpz_set_str(res, (char*)str, (int)radix);
 
@@ -494,7 +494,7 @@ Java_java_math_BigInteger_toString0(JNIEnv* env, jobject s, jint base)
 
 	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
 
-	res = mpz_get_str(0, (int)base, src);
+	res = mpz_get_str(NULL, (int)base, src);
 	str = (*env)->NewStringUTF(env, res);
 	bi_free(res, 0 /* is ignored */);
 

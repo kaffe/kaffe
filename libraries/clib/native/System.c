@@ -149,7 +149,7 @@ java_lang_System_debugE(struct Hjava_lang_Throwable *t)
 	} else {
 		dprintf("%s\n", cname);
 	}
-	printStackTrace(t, 0, 1);
+	printStackTrace(t, NULL, 1);
 }
 
 void

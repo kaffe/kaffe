@@ -47,7 +47,7 @@ nextSeq(void)
 			ALLOCSEQNR * sizeof(sequence));
 
 		/* Attach to current chain */
-		if (lastSeq == 0) {
+		if (lastSeq == NULL) {
 			firstSeq = ret;
 		}
 		else {
@@ -59,7 +59,7 @@ nextSeq(void)
 		for (i = 0; i < ALLOCSEQNR-1; i++) {
 			ret[i].next = &ret[i+1];
 		}
-		ret[ALLOCSEQNR-1].next = 0;
+		ret[ALLOCSEQNR-1].next = NULL;
 	}
 	currSeq = ret->next;
 	return (ret);

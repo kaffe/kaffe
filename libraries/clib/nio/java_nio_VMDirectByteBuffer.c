@@ -134,7 +134,7 @@ Java_java_nio_VMDirectByteBuffer_allocate
     {
       JCL_ThrowException (env, "java/lang/OutOfMemoryError",
                           "unable to allocate memory for direct byte buffer");
-      return 0;
+      return NULL;
     }
 
   return NIOGetRawData (env, buffer);

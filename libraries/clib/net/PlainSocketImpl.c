@@ -469,7 +469,7 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 
 	/* and use that byte array to create an appropriate Inet*Address instance */
 	do_execute_java_class_method (&jv, "java.net.InetAddress",
-							      0, 
+							      NULL, 
 							      "getByAddress",
 							      "([B)Ljava/net/InetAddress;",
 							      remote_addr);
@@ -704,7 +704,7 @@ gnu_java_net_PlainSocketImpl_socketRead(struct Hgnu_java_net_PlainSocketImpl* th
 
 			 except = (struct Hjava_io_InterruptedIOException *)
 			   execute_java_constructor(
-						    "java.net.SocketTimeoutException", 0, 0,
+						    "java.net.SocketTimeoutException", NULL, NULL,
 						    "(Ljava/lang/String;)V",
 						    checkPtr(stringC2Java("Read was interrupted")));
 			 except->bytesTransferred = r;

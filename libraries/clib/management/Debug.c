@@ -9,7 +9,7 @@ void
 Java_kaffe_management_Debug_enable
 	(JNIEnv *env, jclass thisClass UNUSED, jobject list)
 {
-	const char *real_list = (*env)->GetStringUTFChars(env, list, 0);
+	const char *real_list = (*env)->GetStringUTFChars(env, list, NULL);
 	/* do we always have alloca? */
 	char *copy = alloca(strlen(real_list) + 1);
 
@@ -48,7 +48,7 @@ Java_kaffe_management_Debug_enableStats
 	static char *curStats;	/* kaffe expects this string to be
 				 * around at exit.
 				 */
-	const char *real_list = (*env)->GetStringUTFChars(env, list, 0);
+	const char *real_list = (*env)->GetStringUTFChars(env, list, NULL);
 
 	if (curStats) jfree(curStats);
 	curStats = jmalloc(strlen(real_list) + 1);

@@ -290,7 +290,7 @@ gnu_java_net_PlainDatagramSocketImpl_peek(struct Hgnu_java_net_PlainDatagramSock
 	int alen = sizeof(saddr);
 
 	rc = KRECVFROM(unhand(obj)->native_fd,
-		0, 0, MSG_PEEK, (struct sockaddr*)&saddr,
+		NULL, 0, MSG_PEEK, (struct sockaddr*)&saddr,
 		&alen, NOTIMEOUT /* timeout */, &r);
 	if (rc) {
 		SignalError("java.net.SocketException", SYS_ERROR(rc));
@@ -350,7 +350,7 @@ DBG(NATIVENET,
 		  
 			except = (struct Hjava_io_InterruptedIOException *)
 			  execute_java_constructor(
-						   "java.net.SocketTimeoutException", 0, 0,
+						   "java.net.SocketTimeoutException", NULL, NULL,
 						   "(Ljava/lang/String;)V",
 						   checkPtr(stringC2Java("Read timed out")));
 			except->bytesTransferred = offset-unhand(pkt)->offset;
@@ -376,7 +376,7 @@ DBG(NATIVENET,
 		memcpy(unhand_byte_array(array_address), &addr.addr4.sin_addr, sizeof(addr.addr4.sin_addr));
 		
 		unhand(pkt)->address = (struct Hjava_net_InetAddress*)
-			execute_java_constructor("java/net/Inet4Address", 0, 0, "([BLjava/lang/String;)V",
+			execute_java_constructor("java/net/Inet4Address", NULL, NULL, "([BLjava/lang/String;)V",
 						 array_address, NULL);
 
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
@@ -385,7 +385,7 @@ DBG(NATIVENET,
 		memcpy(unhand_byte_array(array_address), &addr.addr6.sin6_addr, sizeof(addr.addr6.sin6_addr));
 		
 		unhand(pkt)->address = (struct Hjava_net_InetAddress*)
-			execute_java_constructor("java/net/Inet6Address", 0, 0, "([BLjava/lang/String;)V",
+			execute_java_constructor("java/net/Inet6Address", NULL, NULL, "([BLjava/lang/String;)V",
 						 array_address, NULL);
 #endif /* defined(HAVE_STRUCT_SOCKADDR_IN6) */
 		
@@ -396,7 +396,7 @@ DBG(NATIVENET,
 	/* zero out hostname to overwrite old name which does not match
 	 * the new address from which the packet came.
 	 */
-	unhand(unhand(pkt)->address)->hostName = 0;
+	unhand(unhand(pkt)->address)->hostName = NULL;
 
 DBG(NATIVENET,
 	dprintf("  datagram_receive(%p, %p) -> from %s:%d; brecv=%ld\n",

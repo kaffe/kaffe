@@ -33,7 +33,7 @@ kaffe_lang_ThreadStack_getClassStack(void)
 	int i;
 	HArrayOfObject* array;
 
-	info = (stackTraceInfo*)buildStackTrace(0);
+	info = (stackTraceInfo*)buildStackTrace(NULL);
 	if (info == NULL) {
 		postOutOfMemory(&einfo);
 		throwError(&einfo);
@@ -41,16 +41,16 @@ kaffe_lang_ThreadStack_getClassStack(void)
 
 	cnt = 0;
 	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
-		if (info[i].meth != 0 && info[i].meth->class != 0) {
+		if (info[i].meth != NULL && info[i].meth->class != NULL) {
 			cnt++;
 		}
 	}
 
-	array = (HArrayOfObject*)AllocObjectArray(cnt, "Ljava/lang/Class;", 0);
+	array = (HArrayOfObject*)AllocObjectArray(cnt, "Ljava/lang/Class;", NULL);
 
 	cnt = 0;
 	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
-		if (info[i].meth != 0 && info[i].meth->class != 0) {
+		if (info[i].meth != NULL && info[i].meth->class != NULL) {
 			unhand_array(array)->body[cnt] = (Hjava_lang_Object*)info[i].meth->class;
 			cnt++;
 		}

@@ -1,5 +1,28 @@
 2004-12-19  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/jit/seq.c, libraries/clib/io/File.c,
+	  libraries/clib/management/Debug.c,
+	  libraries/clib/math/BigInteger.c,
+	  libraries/clib/native/AccessController.c,
+	  libraries/clib/native/Arrays.c,
+	  libraries/clib/native/ByteToCharIconv.c,
+	  libraries/clib/native/CharToByteIconv.c,
+	  libraries/clib/native/Class.c, libraries/clib/native/Method.c,
+	  libraries/clib/native/PrimordialClassLoader.c,
+	  libraries/clib/native/Runtime.c, libraries/clib/native/System.c,
+	  libraries/clib/native/ThreadStack.c,
+	  libraries/clib/native/Throwable.c,
+	  libraries/clib/native/ZipFile.c,
+	  libraries/clib/net/InetAddressImpl.c,
+	  libraries/clib/net/NetworkInterface.c,
+	  libraries/clib/net/PlainDatagramSocketImpl.c,
+	  libraries/clib/net/PlainSocketImpl.c,
+	  libraries/clib/nio/java_nio_VMDirectByteBuffer.c,
+	  libraries/clib/zip/Deflater.c, libraries/clib/zip/Inflater.c:
+	  Sparse NULL-constant fixes.
+
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
 	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c,
 	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkChoicePeer.c,
 	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c,

@@ -170,7 +170,7 @@ java_lang_Class_getInterfaces(struct Hjava_lang_Class* this)
 	}
 #endif
 
-	obj = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;", 0);
+	obj = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;", NULL);
 	ifaces = (struct Hjava_lang_Class**)unhand_array(obj)->body;
 	for (i = 0; i < nr; i++) {
 		ifaces[i] = this->interfaces[i];
@@ -389,21 +389,21 @@ getInterfaceMethods0(struct Hjava_lang_Class* this, jint declared)
 	int i;
 
 	count = 0;
-	count += countMethods(0, this, declared);
+	count += countMethods(NULL, this, declared);
 	if (!declared) {
 		for (i = 0; i < this->total_interface_len; i++) {
-			count += countMethods(0, this->interfaces[i], declared);
+			count += countMethods(NULL, this->interfaces[i], declared);
 		}
 	}
 
 	array = (HArrayOfObject*)
-	    AllocObjectArray(count, "Ljava/lang/reflect/Method;", 0);
+	    AllocObjectArray(count, "Ljava/lang/reflect/Method;", NULL);
 	ptr = (Hjava_lang_reflect_Method**)&unhand_array(array)->body[0];
 
-	addMethods(0, this, declared, &ptr);
+	addMethods(NULL, this, declared, &ptr);
 	if (!declared) {
 		for (i = 0; i < this->total_interface_len; i++) {
-			addMethods(0, this->interfaces[i], declared, &ptr);
+			addMethods(NULL, this->interfaces[i], declared, &ptr);
 		}
 	}
 
@@ -438,7 +438,7 @@ java_lang_Class_getMethods0(struct Hjava_lang_Class* this, jboolean declared)
 		}
 	}
 	array = (HArrayOfObject*)
-	    AllocObjectArray(count, "Ljava/lang/reflect/Method;", 0);
+	    AllocObjectArray(count, "Ljava/lang/reflect/Method;", NULL);
 	ptr = (Hjava_lang_reflect_Method**)&unhand_array(array)->body[0];
 	for (clas = this; clas != NULL; clas = clas->superclass) {
 
@@ -471,7 +471,7 @@ java_lang_Class_getConstructors0(struct Hjava_lang_Class* this, jboolean declare
 		}
 	}
 	array = (HArrayOfObject*)
-	   AllocObjectArray(count, "Ljava/lang/reflect/Constructor;", 0);
+	   AllocObjectArray(count, "Ljava/lang/reflect/Constructor;", NULL);
 	ptr = (Hjava_lang_reflect_Constructor**)&unhand_array(array)->body[0];
 	clas = this;
 	mth = CLASS_METHODS(clas);
@@ -560,7 +560,7 @@ java_lang_Class_getFields0(struct Hjava_lang_Class* clazz, jboolean declared)
 		count = countPublicFields(clazz);
 	}
 	array = (HArrayOfObject*)
-	    AllocObjectArray(count, "Ljava/lang/reflect/Field;", 0);
+	    AllocObjectArray(count, "Ljava/lang/reflect/Field;", NULL);
 	ptr = (Hjava_lang_reflect_Field**)&unhand_array(array)->body[0];
 	makePublicFields(clazz, declared, &ptr);
 
@@ -647,7 +647,7 @@ findMatchingMethod(struct Hjava_lang_Class* clas,
 				return (KaffeVM_makeReflectMethod(clas, i));
 		}
 	}
-	return (0);
+	return (NULL);
 }
 
 /** 
@@ -745,12 +745,12 @@ checkForField(struct Hjava_lang_Class* clazz, struct Hjava_lang_String* name, jb
 		for (i = 0; i < clazz->total_interface_len; i++) {
 			Hjava_lang_reflect_Field *f;
 			f = checkForField(clazz->interfaces[i], name, declared);
-			if (f != 0) {
+			if (f != NULL) {
 				return (f);
 			}
 		}
 	}
-	return (0);
+	return (NULL);
 }
 
 /* Lookup a field in a class.
@@ -804,14 +804,14 @@ java_lang_Class_getClasses0(struct Hjava_lang_Class* clazz, jboolean inner)
 	}
 
 	array = (HArrayOfObject*)
-		AllocObjectArray(count, "Ljava/lang/Class;", 0);
+		AllocObjectArray(count, "Ljava/lang/Class;", NULL);
 	if (count == 0) {
 		return array;
 	}
 	ptr = (Hjava_lang_Class**)&unhand_array(array)->body[0];
 
 	for (i = clazz->nr_inner_classes, ic = clazz->inner_classes; i-- > 0; ic++) {
-		if (ic->inner_class == 0 || ic->outer_class == 0) {
+		if (ic->inner_class == NULL || ic->outer_class == NULL) {
 			continue;
 		}
 #if 0

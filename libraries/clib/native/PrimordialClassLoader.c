@@ -34,7 +34,7 @@
 struct Hjava_lang_Class*
 kaffe_lang_PrimordialClassLoader_findClass0(Hkaffe_lang_PrimordialClassLoader* this UNUSED, Hjava_lang_String* jStr)
 {
-	Hjava_lang_Class *clazz = 0;
+	Hjava_lang_Class *clazz = NULL;
 	errorInfo info;
 	int error = 0;
         Utf8Const *c;
@@ -47,11 +47,11 @@ kaffe_lang_PrimordialClassLoader_findClass0(Hkaffe_lang_PrimordialClassLoader* t
 	{
 		if( c->data[0] == '[' )
 		{
-			clazz = loadArray(c, 0, &info);
+			clazz = loadArray(c, NULL, &info);
 		}
 		else
 		{
-			clazz = loadClass(c, 0, &info);
+			clazz = loadClass(c, NULL, &info);
 		}
 		if( clazz )
 		{
