@@ -422,6 +422,7 @@ DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
 DBG(STATICINIT, 		
 			dprintf("using JNI\n");	
 )
+			(*env)->ExceptionClear(env);
 			(*env)->CallStaticVoidMethodA(env, class, meth, 0);
 			exc = (*env)->ExceptionOccurred(env);
 			(*env)->ExceptionClear(env);
