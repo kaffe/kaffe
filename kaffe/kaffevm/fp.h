@@ -15,14 +15,14 @@
 #define __fp_h
 
 /*
- * Bit patterns according to IEEE 754. Note use of "LL" gcc-ism.
+ * Bit patterns according to IEEE 754.
  */
 
-#define DEXPMASK	0x7ff0000000000000LL
-#define DMANMASK	0x000fffffffffffffLL
-#define DSIGNBIT	0x8000000000000000LL
-#define DINFBITS	0x7ff0000000000000LL
-#define DNANBITS	0x7ff8000000000000LL
+#define DEXPMASK	(((uint64)0x7ff00000)<<32)
+#define DMANMASK	((((uint64)0x000fffff)<<32)|((uint64)0xffffffff))
+#define DSIGNBIT	(((uint64)0x80000000)<<32)
+#define DINFBITS	(((uint64)0x7ff00000)<<32)
+#define DNANBITS	(((uint64)0x7ff80000)<<32)
 
 #define FEXPMASK	0x7f800000
 #define FMANMASK	0x007fffff
