@@ -1,3 +1,39 @@
+2003-08-13  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffevm/verify.h
+	(type_info) union expanded to support returnAddress type address
+	value.  Type.tinfo no longer used to hold return PC.
+	
+	(TINFO_SYSTEM) added.
+	(TINFO_ADDR) added.
+	(TINFO_PRIMITIVE) added.
+	(TINFO_CLASS) added.
+	tinfo constant tags expanded in preparation for interface set
+	type checking.
+
+	* kaffe/kaffevm/verify.c
+	(verify_VOID) removed.
+	(TVOID) removed.
+
+	(OPSTACK_PUSH_INFO) removed.
+	(OPSTACK_PUSH_INFO_BLIND) removed.
+
+	(initVerifierPrimTypes) modified to initialized static Types
+	with proper tinfo values.
+	
+	(printType) rewritten for new tinfo values.
+
+	(sameType) rewritten for new tinfo values.
+
+	(sameTypeRef) added.
+
+	(loadInitialArgs) modified how TLONG and TDOUBLE values are
+	put into the local type arrays.  Also added VERIFY_ERROR macro
+	to be consistent with other methods in verify.c.
+
+	(verifyBasicBlocK) NEW, NEWARRAY, etc., cases modified to take
+	advantage of new tinfo types.
+
 2003-08-13  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/kjc.jar: Regenerated and included the

@@ -33,26 +33,35 @@ typedef struct type_info
 		const char* sig;
 		Hjava_lang_Class* class;
 		struct unitialized_types_double_list* uninit;
+		uint32 addr;  // return address for TINFO_ADDR
 	} data;
 } Type;
 
 // status flags for opstack/local info arrays
 //
-//   TINFO_CLASS   Type.data.class
-//   TINFO_NAMESTR Type.data.name represents the class' fully qualified name
-//   TINFO_SIGSTR  Type.data.sig  represents the class' fully qualified type signature
-//   UNINIT        is a class instance created by NEW that has yet to be initialized.
-//                 the type is really an (UninitializedType*), so that dups, moves, etc. ensure that whatever
-//                 copies of the type are around are all initialized when the <init>() is called.
-//   UNINIT_SUPER  reserved for the self-reference in a constructor method.  when the receiver of a call to <init>()
-//                 is of type UNINIT_SUPER, then the <init>() referenced may be in the current class of in its
-//                 superclass.
-#define TINFO_CLASS        0
-#define TINFO_SIGSTR       1
-#define TINFO_NAMESTR      2
-#define UNINIT             4
-#define UNINIT_SUPER       12
+//   TINFO_SYSTEM    internal type, such as UNSTABLE or VOID
+//   TINFO_ADDR      return address type
+//   TINFO_PRIMITIVE Type.data.class is some primitive class, like intClass
+//   TINFO_CLASS     Type.data.class
+//   TINFO_NAMESTR   Type.data.name represents the class' fully qualified name
+//   TINFO_SIGSTR    Type.data.sig  represents the class' fully qualified type signature
+//   UNINIT          is a class instance created by NEW that has yet to be initialized.
+//                   the type is really an (UninitializedType*), so that dups, moves, etc. ensure that whatever
+//                   copies of the type are around are all initialized when the <init>() is called.
+//   UNINIT_SUPER    reserved for the self-reference in a constructor method.  when the receiver of a call to <init>()
+//                   is of type UNINIT_SUPER, then the <init>() referenced may be in the current class of in its
+//                   superclass.
+#define TINFO_SYSTEM       0
+#define TINFO_ADDR         1
+#define TINFO_PRIMITIVE    2
+#define TINFO_SIGSTR       4
+#define TINFO_NAMESTR      8
+#define TINFO_CLASS        16
+#define UNINIT             32
+#define UNINIT_SUPER       96
 
+// returnAddress type
+#define IS_ADDRESS(_TINFO) ((_TINFO)->tinfo & TINFO_ADDR)
 
 
 /*
