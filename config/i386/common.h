@@ -40,18 +40,18 @@
 		call *%3						\n\
 		movl %5,%%ebx						\n\
 		movb %4,%%cl						\n\
-		cmpb $'F',%%cl						\n\
+		cmpb $0x46,%%cl						\n\
 		jne 4f							\n\
 		fstps (%%ebx)						\n\
 		jmpl 6f							\n\
 4:									\n\
-		cmpb $'D',%%cl						\n\
+		cmpb $0x44,%%cl						\n\
 		jne 5f							\n\
 		fstpl (%%ebx)						\n\
 		jmpl 6f							\n\
 5:									\n\
 		movl %%eax,(%%ebx)					\n\
-		cmpb $'J',%%cl						\n\
+		cmpb $0x4a,%%cl						\n\
 		jne 6f							\n\
 		movl %%edx,4(%%ebx)					\n\
 6:									\n\
