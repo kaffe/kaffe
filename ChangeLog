@@ -1,3 +1,7 @@
+Mon Mar  1 09:53:31 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/util/BitSet.java: double size in ensureSize
+
 Sun Feb 28 15:01:54 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* In java/util: Collection.java, Comparator.java, Iterator.java,
