@@ -428,9 +428,18 @@ paramString()
     + getWidth () + "x" + getHeight () + ",label=" + getLabel ();
 }
 
+/**
+ * Gets the AccessibleContext associated with this <code>Button</code>.
+ * The context is created, if necessary.
+ *
+ * @return the associated context
+ */
 public AccessibleContext getAccessibleContext()
 {
-  return new AccessibleAWTButton();
+  /* Create the context if this is the first request */
+  if (accessibleContext == null)
+    accessibleContext = new AccessibleAWTButton();
+  return accessibleContext;
 }
 
   /**

@@ -490,11 +490,22 @@ paramString()
 	  + "," + super.paramString());
 }
 
+/**
+ * Gets the AccessibleContext associated with this <code>CheckBox</code>.
+ * The context is created, if necessary.
+ *
+ * @return the associated context
+ */
 public AccessibleContext getAccessibleContext()
 {
-  AccessibleAWTCheckBox ac = new AccessibleAWTCheckBox();
-  addItemListener(ac);
-  return ac;
+  /* Create the context if this is the first request */
+  if (accessibleContext == null)
+  {
+    AccessibleAWTCheckBox ac = new AccessibleAWTCheckBox();
+    accessibleContext = ac;
+    addItemListener(ac);
+  }
+  return accessibleContext;
 }
 
 } // class Checkbox 

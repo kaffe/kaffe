@@ -823,10 +823,7 @@ public class Window extends Container implements Accessible
   {
     /* Create the context if this is the first request */
     if (accessibleContext == null)
-      {
-        /* Create the context */
-        accessibleContext = new AccessibleAWTWindow();
-      }
+      accessibleContext = new AccessibleAWTWindow();
     return accessibleContext;
   }
 

@@ -583,10 +583,7 @@ getFrames()
   {
     /* Create the context if this is the first request */
     if (accessibleContext == null)
-      {
-        /* Create the context */
-        accessibleContext = new AccessibleAWTFrame();
-      }
+      accessibleContext = new AccessibleAWTFrame();
     return accessibleContext;
   }
 

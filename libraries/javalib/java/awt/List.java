@@ -1257,10 +1257,7 @@ paramString()
   {
     /* Create the context if this is the first request */
     if (accessibleContext == null)
-      {
-        /* Create the context */
-        accessibleContext = new AccessibleAWTList();
-      }
+      accessibleContext = new AccessibleAWTList();
     return accessibleContext;
   }
 } // class List

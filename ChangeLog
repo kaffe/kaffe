@@ -2,6 +2,39 @@
 
 	Resynced with GNU Classpath.
 
+	2004-12-29  Jerry Quinn  <jlquinn@optonline.net>
+
+	* java/awt/Button.java,
+	java/awt/Canvas.java,
+	java/awt/Checkbox.java,
+	java/awt/CheckboxMenuItem.java,
+	java/awt/Choice.java,
+	java/awt/Dialog.java,
+	java/awt/Frame.java,
+	java/awt/Label.java,
+	java/awt/List.java,
+	java/awt/Menu.java,
+	java/awt/MenuBar.java,
+	java/awt/MenuItem.java,
+	java/awt/PopupMenu.java,
+	java/awt/ScrollPane.java,
+	java/awt/Scrollbar.java,
+	java/awt/TextArea.java,
+	java/awt/Window.java (getAccessibleContext): Clean up comments.
+	Reformat.
+	* java/awt/Button.java,
+	java/awt/Checkbox.java,
+	java/awt/Choice.java,
+	java/awt/Menu.java,
+	java/awt/PopupMenu.java,
+	java/awt/TextArea.java (getAccessibleContext): Only create new
+	accessible once.
+	* java/awt/TextComponent.java (getAccessibleContext): Implement.
+
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2004-12-30  Michael Koch  <konqueror@gmx.de>
 
 	* javax/imageio/metadata/IIOInvalidTreeException.java
