@@ -74,7 +74,14 @@ initThreads(void)
 	unhand(standardGroup)->nthreads = 0;
 	unhand(standardGroup)->threads = 0;
 	unhand(standardGroup)->ngroups = 0;
-	unhand(standardGroup)->groups = (HArrayOfObject*)newArray(ThreadGroupClass, 0);
+	/* 
+	 * Note that groups must be set to null, and *not* to a zero-length
+	 * array.  Otherwise, creating a new ThreadGroup will throw an
+	 * ArrayOutOfBoundsException with Sun's classes.zip when the 
+	 * new ThreadGroup is added as a child to this thread group.
+	 * This is known to work as of 5/29/98 with 1.1.3's classes.zip
+	 */
+	unhand(standardGroup)->groups = 0;
 
 	/* Allocate a thread to be the main thread */
 	createInitialThread("main");
