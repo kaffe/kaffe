@@ -1,3 +1,10 @@
+Tue Nov  2 12:22:18 MST 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* In kaffe/kaffevm:
+	kaffe.def soft.c intrp/icode.h jit/codeproto.h jit/icode.c
+	jit3/codeproto.h jit3/icode.c jit3/kaffe-jit.def:
+	fix problems with soft{call}_lookupinterfacemethod in intr/jit2/jit3
+
 Thu Oct 28 11:16:49 PDT 1999  majiro@distribution.co.jp
 
 	* libraries/javalib/java/io/FileOutputStream.java: fix exceptions
