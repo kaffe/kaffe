@@ -246,9 +246,11 @@ Java_kaffe_lang_UNIXProcess_destroy(JNIEnv* env, jobject proc)
 jint
 Java_kaffe_lang_UNIXProcess_execWait(JNIEnv* env, jobject process)
 {
-        int status;
 	int npid;
-        status = -1;
-	KWAITPID(-1, &status, 0, &npid);
-        return (status);
+	int status = -1;
+	jfieldID pid = (*env)->GetFieldID(env, 
+				(*env)->GetObjectClass(env, process), 
+				"pid", "I");
+	KWAITPID((*env)->GetIntField(env, process, pid), &status, 0, &npid);
+	return (status);
 }
