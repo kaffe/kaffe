@@ -10,15 +10,6 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-# Regression testing
-#
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
-
-
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -68,6 +59,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
+AMDEP = @AMDEP@
+AMTAR = @AMTAR@
 AS = @AS@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
@@ -75,6 +68,9 @@ CC = @CC@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
 CPP = @CPP@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+DEPDIR = @DEPDIR@
 DIRSEP = @DIRSEP@
 DLLTOOL = @DLLTOOL@
 DLOPEN_JAVA_LIBS = @DLOPEN_JAVA_LIBS@
@@ -126,11 +122,105 @@ kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
+# Regression testing
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+
 SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
 TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript
 
-TESTS =  	HelloWorldApp.class.save 	HelloWorldApp.java 	TestIntLong.java 	TestFloatDouble.java 	DoublePrint.java 	DoubleComp.java 	ModuloTest.java 	LongNeg.java 	Str.java 	Str2.java 	InternHog.java 	IndexTest.java 	StackDump.java 	tname.java 	ttest.java 	ThreadInterrupt.java 	UncaughtException.java 	ReflectInterfaces.java 	TestSerializable.java 	TestCasts.java 	Alias.java 	NullPointerTest.java 	TableSwitch.java 	LostFrame.java 	ConstructorTest.java 	burford.java 	IllegalInterface.java 	GetInterfaces.java 	IntfTest.java 	SignedShort.java 	CharCvt.java 	BadFloatTest.java 	ProcessTest.java 	UDPTest.java 	SoTimeout.java 	wc.java 	FileTest.java 	finalexc.java 	finaltest.java 	finaltest2.java 	forNameTest.java 	KaffeVerifyBug.java 	Schtum.java 	Reflect.java 	MethodBug.java 	Bean.java 	SortTest.java 	ReflectInvoke.java 	InvTarExcTest.java 	CLTest.java 	CLTestConc.java 	CLTestJLock.java 	CLTestLie.java 	CLTestFindLoaded.java 	ExceptionTest.java 	ExceptionTestClassLoader.java 	ExceptionTestClassLoader2.java 	TestClassRef.java 	ClassGC.java 	GCTest.java 	ThreadLocalTest.java 	BeanBug.java 	BitSetTest.java 	ExceptionInInitializerTest.java 	InitTest.java 	ProcessClassTest.java 	ProcessClassInst.java 	ProcessClassStop.java 	FindSystemClass.java 	ProcessClassLockTest.java 	DoubleBug.java 	Overflow.java 	TestUnlock.java 	MarkResetTest.java 	HashtableTest1.java 	ReflectMultiArray.java 	ExecTest.java 	CatchDeath.java 	ThreadStop.java 	DeadThread.java 	tthrd1.java 	SoInterrupt.java 	sysdepCallMethod.java 	TestNative.java
+TESTS = \
+	HelloWorldApp.class.save \
+	HelloWorldApp.java \
+	TestIntLong.java \
+	TestFloatDouble.java \
+	DoublePrint.java \
+	DoubleComp.java \
+	ModuloTest.java \
+	LongNeg.java \
+	Str.java \
+	Str2.java \
+	InternHog.java \
+	IndexTest.java \
+	StackDump.java \
+	tname.java \
+	ttest.java \
+	ThreadInterrupt.java \
+	UncaughtException.java \
+	ReflectInterfaces.java \
+	TestSerializable.java \
+	TestCasts.java \
+	Alias.java \
+	NullPointerTest.java \
+	TableSwitch.java \
+	LostFrame.java \
+	ConstructorTest.java \
+	burford.java \
+	IllegalInterface.java \
+	GetInterfaces.java \
+	IntfTest.java \
+	SignedShort.java \
+	CharCvt.java \
+	BadFloatTest.java \
+	ProcessTest.java \
+	UDPTest.java \
+	SoTimeout.java \
+	wc.java \
+	FileTest.java \
+	finalexc.java \
+	finaltest.java \
+	finaltest2.java \
+	forNameTest.java \
+	KaffeVerifyBug.java \
+	Schtum.java \
+	Reflect.java \
+	MethodBug.java \
+	Bean.java \
+	SortTest.java \
+	HashTest.java \
+	ReflectInvoke.java \
+	InvTarExcTest.java \
+	CLTest.java \
+	CLTestConc.java \
+	CLTestJLock.java \
+	CLTestLie.java \
+	CLTestFindLoaded.java \
+	ExceptionTest.java \
+	ExceptionTestClassLoader.java \
+	ExceptionTestClassLoader2.java \
+	TestClassRef.java \
+	ClassGC.java \
+	GCTest.java \
+	ThreadLocalTest.java \
+	BeanBug.java \
+	BitSetTest.java \
+	ExceptionInInitializerTest.java \
+	InitTest.java \
+	ProcessClassTest.java \
+	ProcessClassInst.java \
+	ProcessClassStop.java \
+	FindSystemClass.java \
+	ProcessClassLockTest.java \
+	DoubleBug.java \
+	Overflow.java \
+	TestUnlock.java \
+	MarkResetTest.java \
+	HashtableTest1.java \
+	ReflectMultiArray.java \
+	ExecTest.java \
+	CatchDeath.java \
+	ThreadStop.java \
+	DeadThread.java \
+	tthrd1.java \
+	SoInterrupt.java \
+	sysdepCallMethod.java \
+	TestNative.java
 
 
 EXTRA_DIST = $(TESTS)
@@ -139,12 +229,12 @@ CLEANFILES = *.class *.fail *.out core *.core ExceptionTest
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES =  TestScript
+DIST_SOURCES = 
 DIST_COMMON =  Makefile.am Makefile.in TestScript.in
 
 
-DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -166,11 +256,6 @@ distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 subdir = test/regression
 
 distdir: $(DISTFILES)
-	here=`cd $(top_builddir) && pwd`; \
-	top_distdir=`cd $(top_distdir) && pwd`; \
-	distdir=`cd $(distdir) && pwd`; \
-	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu test/regression/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -182,24 +267,50 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-TESTS: $(TESTS)
-	@failed=0; all=0; \
+	@failed=0; all=0; xfail=0; xpass=0; \
 	srcdir=$(srcdir); export srcdir; \
 	for tst in $(TESTS); do \
-	  if test -f $$tst; then dir=.; \
-	  else dir="$(srcdir)"; fi; \
-	  if $(TESTS_ENVIRONMENT) $$dir/$$tst; then \
+	  if test -f ./$$tst; then dir=./; \
+	  elif test -f $$tst; then dir=; \
+	  else dir="$(srcdir)/"; fi; \
+	  if $(TESTS_ENVIRONMENT) $${dir}$$tst; then \
 	    all=`expr $$all + 1`; \
-	    echo "PASS: $$tst"; \
+	    case " $(XFAIL_TESTS) " in \
+	    *" $$tst "*) \
+	      xpass=`expr $$xpass + 1`; \
+	      failed=`expr $$failed + 1`; \
+	      echo "XPASS: $$tst"; \
+	    ;; \
+	    *) \
+	      echo "PASS: $$tst"; \
+	    ;; \
+	    esac; \
 	  elif test $$? -ne 77; then \
 	    all=`expr $$all + 1`; \
-	    failed=`expr $$failed + 1`; \
-	    echo "FAIL: $$tst"; \
+	    case " $(XFAIL_TESTS) " in \
+	    *" $$tst "*) \
+	      xfail=`expr $$xfail + 1`; \
+	      echo "XFAIL: $$tst"; \
+	    ;; \
+	    *) \
+	      failed=`expr $$failed + 1`; \
+	      echo "FAIL: $$tst"; \
+	    ;; \
+	    esac; \
 	  fi; \
 	done; \
 	if test "$$failed" -eq 0; then \
-	  banner="All $$all tests passed"; \
+	  if test "$$xfail" -eq 0; then \
+	    banner="All $$all tests passed"; \
+	  else \
+	    banner="All $$all tests behaved as expected ($$xfail expected failures)"; \
+	  fi; \
 	else \
-	  banner="$$failed of $$all tests failed"; \
+	  if test "$$xpass" -eq 0; then \
+	    banner="$$failed of $$all tests failed"; \
+	  else \
+	    banner="$$failed of $$all tests did not behave as expected ($$xpass unexpected passes)"; \
+	  fi; \
 	fi; \
 	dashes=`echo "$$banner" | sed s/./=/g`; \
 	echo "$$dashes"; \
@@ -265,7 +376,7 @@ maintainer-clean: maintainer-clean-am
 .PHONY: tags distdir check-TESTS info-am info dvi-am dvi check check-am \
 installcheck-am installcheck install-exec-am install-exec \
 install-data-am install-data install-am install uninstall-am uninstall \
-all-redirect all-am all installdirs mostlyclean-generic \
+all-redirect all-am all install-strip installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
