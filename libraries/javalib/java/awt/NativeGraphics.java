@@ -176,7 +176,7 @@ public void dispose () {
 public void draw3DRect ( int x, int y, int width, int height, boolean raised ){
 	// we pass the rgb color value because it might be stored on the native
 	// side as pixel value (requiring an additional color conversion)
-	Toolkit.graDraw3DRect( nativeData, x, y, width, height, raised, fgClr.rgbValue);
+	Toolkit.graDraw3DRect( nativeData, x, y, width, height, raised, fgClr.value);
 }
 
 public void drawArc ( int x, int y, int width, int height,
@@ -293,7 +293,7 @@ void drawImg ( Image img,	int x, int y, int sx, int sy,	int width, int height, C
 	
 	Toolkit.graDrawImage( nativeData, img.nativeData,
 	                      sx, sy, x, y, width, height,
-		                    (background == null) ? -1 : background.nativeValue);
+		                    (background == null) ? -1 : background.getNativeValue());
 }
 
 void drawImgScaled ( Image img,
@@ -307,7 +307,7 @@ void drawImgScaled ( Image img,
 		Toolkit.graDrawImageScaled( nativeData, img.nativeData,
 			dx0, dy0, dx1, dy1,
 			sx0, sy0, sx1, sy1,
-			(background == null) ? -1 : background.nativeValue);
+			(background == null) ? -1 : background.getNativeValue());
 	}
 }
 
@@ -345,7 +345,7 @@ public void drawString ( String str, int x, int y ){
 }
 
 public void fill3DRect ( int x, int y, int width, int height, boolean raised ){
-	Toolkit.graFill3DRect( nativeData, x, y, width, height, raised, fgClr.rgbValue);
+	Toolkit.graFill3DRect( nativeData, x, y, width, height, raised, fgClr.value);
 }
 
 public void fillArc ( int x, int y, int width, int height, int startAngle, int arcAngle ){
@@ -451,8 +451,8 @@ static NativeGraphics getClippedGraphics ( NativeGraphics g, Component c,
 		                             xOff, yOff,
 	 	                             xClip, yClip, wClip, hClip,
 	  	                           fnt.nativeData,
-	   	                           fg.nativeValue,
-	    	                         bg.nativeValue,
+	   	                           fg.getNativeValue(),
+	    	                         bg.getNativeValue(),
 	     	                         blank);
 				return g;
 			}
@@ -555,7 +555,7 @@ if ( fg == null ){ Thread.currentThread().dumpStack();}
 	                                        xOffset, yOffset,
 	                                        xClip, yClip, wClip, hClip,
 	                                        fnt.nativeData,
-	                                        fg.nativeValue, bg.nativeValue,
+	                                        fg.getNativeValue(), bg.getNativeValue(),
 	                                        blank);
 	return g;
 }
@@ -621,7 +621,7 @@ void setBackColor ( Color clr ){
 	if ( (clr != null) && (clr != bgClr) ) {
 		bgClr = clr;
 		
-		Toolkit.graSetBackColor( nativeData, bgClr.nativeValue);
+		Toolkit.graSetBackColor( nativeData, bgClr.getNativeValue());
 	}
 }
 
@@ -652,7 +652,7 @@ public void setClip ( int x, int y, int width, int height ) {
 public void setColor ( Color clr ){
 	if ( (clr != null) && (clr != fgClr) ) {
 		fgClr = clr;
-		Toolkit.graSetColor( nativeData, fgClr.nativeValue);
+		Toolkit.graSetColor( nativeData, fgClr.getNativeValue());
 	}
 }
 
@@ -688,8 +688,8 @@ void setGraphics ( Ptr tgtData, int tgtType, int xOffset, int yOffset,
 	                                      xOffset, yOffset,
 	                                      xClip, yClip, wClip, hClip,
 	                                      font.nativeData,
-	                                      fgClr.nativeValue,
-	                                      bgClr.nativeValue,
+	                                      fgClr.getNativeValue(),
+	                                      bgClr.getNativeValue(),
 	                                      blank);
 }
 
@@ -703,7 +703,7 @@ public void setPaintMode() {
 public void setXORMode ( Color newXorClr ) {
 	if ( newXorClr != xClr ) {
 		xClr = newXorClr;
-		Toolkit.graSetXORMode( nativeData, xClr.nativeValue);
+		Toolkit.graSetXORMode( nativeData, xClr.getNativeValue());
 	}
 }
 

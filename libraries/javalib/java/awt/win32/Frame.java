@@ -76,7 +76,7 @@ void createNative() {
 	}
 
 	nativeData = Toolkit.wndCreateFrame( title, u, v, w, h,
-	             		                 cursor.type, bgClr.nativeValue,
+	             		                 cursor.type, bgClr.getNativeValue(),
 										 ((flags & IS_RESIZABLE) != 0));
 }
 

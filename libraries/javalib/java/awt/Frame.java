@@ -101,7 +101,7 @@ void createNative () {
 	}
 
 	nativeData = Toolkit.wndCreateFrame( title, u, v, w, h,
-	                               cursor.type, bgClr.nativeValue, ((flags & IS_RESIZABLE) != 0));
+	                               cursor.type, bgClr.getNativeValue(), ((flags & IS_RESIZABLE) != 0));
 }
 
 public Component getComponent( int index) {

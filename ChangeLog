@@ -1,5 +1,20 @@
 2003-05-17 Benja Fallenstein <b.fallenstein@gmx.de>
 
+	* libraries/javalib/java/awt/Color.java,
+	libraries/javalib/java/awt/Dialog.java,
+	libraries/javalib/java/awt/Frame.java,
+	libraries/javalib/java/awt/NativeGraphics.java,
+	libraries/javalib/java/awt/Window.java,
+	libraries/javalib/java/awt/win32/Frame.java,
+	libraries/javalib/java/awt/win32/NativeComponent.java,
+	libraries/javalib/java/awt/win32/NativeContainer.java,
+	libraries/javalib/java/awt/win32/NativeGraphics.java,
+	libraries/javalib/java/awt/win32/Window.java:
+	Replaced Kaffe's java.awt.Color by the 1.2-compliant one from GNU 
+	Classpath, adding support for 'nativeValue' to it.
+
+2003-05-17 Benja Fallenstein <b.fallenstein@gmx.de>
+
 	* libraries/javalib/java/awt/Dimension.java:
 	extend and implement java.awt.geom.Dimension2D.
 	

@@ -71,7 +71,7 @@ public void addWindowListener ( WindowListener newListener ) {
 void createNative () {
 	nativeData = Toolkit.wndCreateWindow( (owner != null) ? owner.nativeData : null,
 	                                x, y, width, height,
-	                                cursor.type, bgClr.nativeValue);
+	                                cursor.type, bgClr.getNativeValue());
 }
 
 public void dispose () {

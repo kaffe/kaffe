@@ -37,8 +37,8 @@ public void addNotify () {
 
 	initAttribs();
 
-	Toolkit.cmnSetBackground( nativeData, bgClr.nativeValue);
-	Toolkit.cmnSetForeground( nativeData, fgClr.nativeValue);
+	Toolkit.cmnSetBackground( nativeData, bgClr.getNativeValue());
+	Toolkit.cmnSetForeground( nativeData, fgClr.getNativeValue());
 	Toolkit.cmnSetFont( nativeData, font.nativeData);
 	Toolkit.cmnSetCursor( nativeData, cursor.type);		
 }
@@ -179,7 +179,7 @@ public void setBackground ( Color clr ) {
 		super.setBackground( clr);
 
 		if ( nativeData != null ) {
-			Toolkit.cmnSetBackground( nativeData, bgClr.nativeValue);
+			Toolkit.cmnSetBackground( nativeData, bgClr.getNativeValue());
 		}
 	}
 }
@@ -214,7 +214,7 @@ public void setForeground ( Color clr ) {
 		super.setForeground( clr);
 
 		if ( nativeData != null ) {
-			Toolkit.cmnSetForeground( nativeData, fgClr.nativeValue);
+			Toolkit.cmnSetForeground( nativeData, fgClr.getNativeValue());
 		}
 	}
 }
