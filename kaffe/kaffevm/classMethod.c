@@ -111,10 +111,10 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 	classEntry *ce;
 	Hjava_lang_Class* nclass;
 	bool success = true;	/* optimistic */
-#ifdef KAFFE_VMDEBUG
+#if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 	int i;
 	static int depth;
-#endif
+#endif /* !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG)) */
 	static Method *object_fin;
 	int iLockRoot;
 
