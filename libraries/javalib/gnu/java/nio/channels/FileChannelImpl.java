@@ -111,7 +111,18 @@ public final class FileChannelImpl extends FileChannel
     // First open the file and then check if it is a a directory
     // to avoid race condition.
     if (file.isDirectory())
-      throw new FileNotFoundException(file.getPath() + " is a directory");
+      {
+	try 
+	  {
+	      close();
+	  }
+	catch (IOException e)
+	  {
+	      /* ignore it */
+	  }
+
+	throw new FileNotFoundException(path + " is a directory");
+      }
   }
 
   /* Used by init() (native code) */
