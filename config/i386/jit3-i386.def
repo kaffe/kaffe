@@ -163,6 +163,54 @@ define_insn(prologue, prologue_xxx)
 #endif
 }
 
+#if defined (HAVE_GCJ_SUPPORT)
+#include "gcj/gcj.h"
+
+/*
+ * Establish JIT3 callee-saved register information for i386
+ * We must tell gcj where esi, edi, and ebx have been stored 
+ * on this frame, as an offset from the CFA.
+ * In addition, we must tell it where the caller's esp was stored
+ *
+ * This depends on prologue_xxx so I put it here (XXX?).
+ */
+void
+arch_get_frame_description(int framesize,
+        struct kaffe_frame_descriptor frame_desc[],
+        int *n)
+{
+        int i = 0;
+        int rsave_area_offset = CFA_OFFSET + framesize;
+
+        frame_desc[i].idx = DWARF_FRAME_RETURN_COLUMN;
+        frame_desc[i].offset = RETADDR_SAVED_OFFSET;
+        i++;
+
+        frame_desc[i].idx = CFA_REGISTER;               /* gcc_esp */
+        frame_desc[i].offset = CFA_SAVED_OFFSET;
+        i++;
+
+        /* NB: since CFA is pointing at caller's ret pc + 4,
+         * subtracting CFA_OFFSET + framesize points at the last
+         * slot.  The callee-saved registers are stored one word
+         * below, hence the 1 * 4
+         */
+        frame_desc[i].idx = DBX_REGISTER_NUMBER(/* gcc_edi */ 5);
+        frame_desc[i].offset = - (rsave_area_offset + 1 * 4);
+        i++;
+
+        frame_desc[i].idx = DBX_REGISTER_NUMBER(/* gcc_esi */ 4);
+        frame_desc[i].offset = - (rsave_area_offset + 2 * 4);
+        i++;
+
+        frame_desc[i].idx = DBX_REGISTER_NUMBER(/* gcc_ebx */ 3);
+        frame_desc[i].offset = - (rsave_area_offset + 3 * 4);
+        i++;
+
+        *n = i;
+}
+#endif /* HAVE_GCJ_SUPPORT */
+
 define_insn(check_stack_limit, check_stack_limit_xRC)
 {
 	int r = rreg_int(1);
