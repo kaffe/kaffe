@@ -281,7 +281,7 @@ debugSysInit(void)
 
 	if (once) return;
 	once = 1;
-#if defined(TRANSLATOR)
+#if defined(TRANSLATOR) && defined(DEBUG)
 	{
 		extern int jit_debug;
 		if (getenv("JIT_DEBUG")) 
