@@ -11,6 +11,8 @@
 #ifndef __codeproto_h
 #define __codeproto_h
 
+#include "config.h"
+
 struct Hjava_lang_Class;
 
 void _start_basic_block(void);
@@ -155,7 +157,7 @@ void prologue(Method*);
 void mon_enter(Method*, SlotInfo*);
 void mon_exit(Method*, SlotInfo*);
 void epilogue(Method*);
-void softcall_breakpoint(void);
+void softcall_breakpoint(void) NONRETURNING;
 
 void load_int(SlotInfo*, SlotInfo*);
 void load_ref(SlotInfo*, SlotInfo*);

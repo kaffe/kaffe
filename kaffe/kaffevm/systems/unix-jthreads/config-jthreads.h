@@ -24,6 +24,8 @@
 #ifndef __config_jthreads_h
 #define __config_jthreads_h
 
+#include "config.h"
+
 #include <assert.h>
 #include <setjmp.h>
 #include <sys/types.h>
@@ -136,7 +138,7 @@ static jlong currentTime()
 }
 
 /* let main thread loop until all threads finish, for tests */
-void 	jthread_exit_when_done();
+void 	jthread_exit_when_done() NONRETURNING;
 
 /* debug.h stuff */
 #ifdef KAFFE_VMDEBUG

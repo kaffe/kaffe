@@ -12,6 +12,7 @@
 #ifndef __thread_h
 #define __thread_h
 
+#include "config.h"
 #include "md.h"
 
 #include "native.h"
@@ -33,7 +34,7 @@ void	initThreads(void);
 void    initNativeThreads(int nativestacksize);
 void	yieldThread(void);
 void	sleepThread(jlong);
-void	exitThread(void);
+void	exitThread(void) NONRETURNING;
 bool	aliveThread(Hjava_lang_Thread*);
 jint	framesThread(Hjava_lang_Thread*);
 void	setPriorityThread(Hjava_lang_Thread*, jint);

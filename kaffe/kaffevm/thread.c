@@ -586,7 +586,7 @@ broadcastDeath(void *jlThread)
         unlockMutex(&tid->base);
 }
 
-static void 
+static void NONRETURNING
 throwDeath(void)
 {
 	Hjava_lang_Thread *cur = getCurrentThread();

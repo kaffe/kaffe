@@ -370,6 +370,7 @@ findMethod(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature, error
 
 static
 void
+NONRETURNING
 throwAbstractMethodError(void)
 {
 	throwException(AbstractMethodError);

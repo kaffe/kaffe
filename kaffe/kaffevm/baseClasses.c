@@ -220,7 +220,7 @@ initialiseKaffe(void)
 	GC_enable(main_collector);
 }
 
-void
+static void NONRETURNING
 abortWithEarlyClassFailure(errorInfo* einfo)
 {
 	dprintf("\n"

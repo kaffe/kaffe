@@ -66,8 +66,8 @@
 
 #endif	/* TRANSLATOR */
 
-static void nullException(struct _exceptionFrame *);
-static void floatingException(struct _exceptionFrame *);
+static void nullException(struct _exceptionFrame *) NONRETURNING;
+static void floatingException(struct _exceptionFrame *) NONRETURNING;
 static void dispatchException(Hjava_lang_Throwable*, stackTraceInfo*) NONRETURNING;
 
 extern void printStackTrace(struct Hjava_lang_Throwable*, struct Hjava_lang_Object*, int);

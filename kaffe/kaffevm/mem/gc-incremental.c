@@ -489,7 +489,7 @@ gcDumpCounts(Hjava_lang_Class *c, void *_)
  * until it's finished incrementally, then tidying up before starting
  * another one.
  */
-static void
+static void NONRETURNING
 gcMan(void* arg)
 {
 	gc_unit* unit;
@@ -849,7 +849,7 @@ startFinalizer(void)
  * the objects in turn.  An object is only finalised once after which
  * it is deleted.
  */
-static void
+static void NONRETURNING
 finaliserMan(void* arg)
 {
 	gc_block* info;
