@@ -56,7 +56,7 @@ public synchronized void reset() throws IOException {
 }
 
 public long skip(long n) throws IOException {
-	byte[] buf = new char[1024];
+	byte[] buf = new byte[1024];
 	int skipped = 0;
 
 	while (n > 0) {
