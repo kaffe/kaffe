@@ -352,8 +352,8 @@ public class ObjectOutputStream extends OutputStream
 		      {
 			if (dump)
 			  dumpElementln ("WRITE FIELDS CALLED FOR: " + obj);
-		      writeFields(obj, currentObjectStreamClass);
-		  }
+			writeFields(obj, currentObjectStreamClass);
+		      }
 		  }
 
 		this.currentObject = prevObject;
@@ -1268,7 +1268,7 @@ public class ObjectOutputStream extends OutputStream
 	if (exception instanceof IOException)
 	  throw (IOException) exception;
 
-        IOException ioe
+	IOException ioe
 	  = new IOException("Exception thrown from writeObject() on " +
 			    osc.forClass().getName() + ": " +
                             exception.getClass().getName());

@@ -501,7 +501,8 @@ public class ObjectInputStream extends InputStream
 						  flags, fields);
     assignNewHandle(osc);
 
-    ClassLoader currentLoader = currentLoader();
+    if (callersClassLoader == null)
+      callersClassLoader = currentLoader();
 	      
     for (int i = 0; i < field_count; i++)
       {
@@ -522,12 +523,40 @@ public class ObjectInputStream extends InputStream
 	  class_name = String.valueOf(type_code);
 		  
 	fields[i] =
-	  new ObjectStreamField(field_name, class_name, currentLoader);
+	  new ObjectStreamField(field_name, class_name, callersClassLoader);
       }
 	      
     /* Now that fields have been read we may resolve the class
      * (and read annotation if needed). */
-    Class clazz = resolveClass(osc);
+    Class clazz;
+    try
+      {
+	clazz = resolveClass(osc);
+      }
+    catch (ClassNotFoundException cnfe)
+      {
+	// Maybe it was an primitive class?
+	if (name.equals("void"))
+	  clazz = Void.TYPE;
+	else if (name.equals("boolean"))
+	  clazz = Boolean.TYPE;
+	else if (name.equals("byte"))
+	  clazz = Byte.TYPE;
+	else if (name.equals("short"))
+	  clazz = Short.TYPE;
+	else if (name.equals("char"))
+	  clazz = Character.TYPE;
+	else if (name.equals("int"))
+	  clazz = Integer.TYPE;
+	else if (name.equals("long"))
+	  clazz = Long.TYPE;
+	else if (name.equals("float"))
+	  clazz = Float.TYPE;
+	else if (name.equals("double"))
+	  clazz = Double.TYPE;
+	else
+	  throw cnfe;
+      }
 
     boolean oldmode = setBlockDataMode(true);
     osc.setClass(clazz, lookupClass(clazz.getSuperclass()));
@@ -540,6 +569,7 @@ public class ObjectInputStream extends InputStream
     // Maybe it is a primitive class, those don't have a super class,
     // or Object itself.  Otherwise we can keep getting the superclass
     // till we hit the Object class, or some other non-serializable class.
+
     if (first_nonserial == null)
       first_nonserial = clazz;
     else
@@ -740,35 +770,16 @@ public class ObjectInputStream extends InputStream
   protected Class resolveClass(ObjectStreamClass osc)
     throws ClassNotFoundException, IOException
   {
-    try
+    if (callersClassLoader == null)
       {
-	return Class.forName(osc.getName(), true, currentLoader());
+	callersClassLoader = currentLoader ();
+	if (Configuration.DEBUG && dump)
+	  {
+	    dumpElementln ("CallersClassLoader = " + callersClassLoader);
+	  }
       }
-    catch (ClassNotFoundException cnfe)
-      {
-	// Maybe it was an primitive class?
-	String name = osc.getName();
-	if (name.equals("void"))
-	  return Void.TYPE;
-	if (name.equals("boolean"))
-	  return Boolean.TYPE;
-	if (name.equals("byte"))
-	  return Byte.TYPE;
-	if (name.equals("short"))
-	  return Short.TYPE;
-	if (name.equals("char"))
-	  return Character.TYPE;
-	if (name.equals("int"))
-	  return Integer.TYPE;
-	if (name.equals("long"))
-	  return Long.TYPE;
-	if (name.equals("float"))
-	  return Float.TYPE;
-	if (name.equals("double"))
-	  return Double.TYPE;
 
-	throw cnfe;
-      }
+    return Class.forName(osc.getName(), true, callersClassLoader);
   }
 
   /**
@@ -1919,6 +1930,7 @@ public class ObjectInputStream extends InputStream
   private Hashtable classLookupTable;
   private GetField prereadFields;
 
+  private ClassLoader callersClassLoader;
   private static boolean dump;
 
   // The nesting depth for debugging output
