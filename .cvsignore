@@ -1,0 +1,7 @@
+Makefile
+libtool
+config.cache
+config.log
+config.status
+BUILD_ENVIRONMENT
+.deps
