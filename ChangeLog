@@ -1,3 +1,8 @@
+2003-09-29  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/zip/GZIPOutputStream.java:
+	Replaced by implementation from GNU Classpath.
+
 2003-09-29  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/mem/gc-mem.c: (gc_heap_grow) don't forget
