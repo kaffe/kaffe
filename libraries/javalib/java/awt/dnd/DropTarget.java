@@ -205,16 +205,14 @@ public class DropTarget
   /**
    * Adds a new <code>DropTargetListener</code>.
    * 
-   * @exception TooManyListenersException If there is already a
-   * <code>DropTargetListener</code>.
+   * @exception TooManyListenersException Sun's JDK does not, despite
+   * documentation, throw this exception here when you install an additional
+   * <code>DropTargetListener</code>.  So to be compatible, we do the same
+   * thing.
    */
   public void addDropTargetListener (DropTargetListener dtl)
     throws TooManyListenersException
   {
-    // Sun's JDK does not, despite documentation, throw any sort of
-    // exception here when you install an additional DropTargetListener.
-    // So to be compatible, we do the same thing.
-
     dropTargetListener = dtl;
   }
 
