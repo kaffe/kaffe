@@ -215,10 +215,7 @@ discardErrorInfo(errorInfo *einfo)
 void 
 throwError(errorInfo* einfo)
 {
-	Hjava_lang_Throwable* eobj;
-	int fresh;
-
-	eobj = error2Throwable (einfo);
+	Hjava_lang_Throwable* eobj = error2Throwable (einfo);
 	throwException(eobj);
 }
  
@@ -274,11 +271,15 @@ throwOutOfMemory(void)
 
 void*
 nextFrame(void* fm)
-{  
+{
+#if !defined(SPFRAME)
+#define SPFRAME(f)	FPFRAME(f)
+#endif
+
 #if defined(TRANSLATOR)
 #if defined(STACK_NEXT_FRAME)
 	STACK_NEXT_FRAME((exceptionFrame*)fm);
-        if (jthread_on_current_stack((void *)NEXTFRAME((exceptionFrame*)fm))) {
+        if (jthread_on_current_stack((void *)SPFRAME((exceptionFrame*)fm))) {
 		return (fm);
 	}
 	else {
@@ -289,7 +290,7 @@ nextFrame(void* fm)
 
         nfm = (exceptionFrame*)NEXTFRAME((exceptionFrame*)fm);
         /* Note: this should obsolete the FRAMEOKAY macro */
-        if (nfm && jthread_on_current_stack((void *)NEXTFRAME(nfm))) {
+        if (nfm && jthread_on_current_stack((void *)SPFRAME(nfm))) {
                 return (nfm);
         }
         else {
@@ -396,6 +397,9 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 #endif
 
 	/* Search down exception stack for a match */
+DBG(ELOOKUP,
+	dprintf ("dispatchException(): %s\n", ((Hjava_lang_Object*)eobj)->dtable->class->name->data);)
+    
 #if defined(INTERPRETER)
 	{
 		Hjava_lang_Object* obj;
@@ -441,7 +445,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 	{
 		stackTraceInfo* frame;
 
-		assert (baseframe);
+		assert (baseframe != NULL);
 		
 		for (frame = baseframe; frame->meth != ENDOFSTACK; frame++) {
 			unwindStackFrame(frame, eobj);
