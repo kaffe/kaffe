@@ -1,5 +1,13 @@
 2005-02-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Require -no-cpp-precomp if available
+	to prevent Apple's gcc on old Darwin version to trip 
+	over itself.
+
+	Reported by:  Michael Franz <mvfranz@gmail.com>
+	
+2005-02-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/resync-classpath.sh: Added new
 	script to simplyfy resyncing with GNU Classpath.
 

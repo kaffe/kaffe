@@ -176,6 +176,12 @@ AX_CFLAGS_GCC_OPTION([-Winvalid-pch])
 AX_CFLAGS_GCC_OPTION([-Winline])
 AX_CFLAGS_GCC_OPTION([-Wlong-long])
 AX_CFLAGS_GCC_OPTION([-Wdisabled-optimization])
+
+## required for old darwin versions because Apples'
+## gcc falls appart all over assembler statements 
+## and produces a ton of false warnings otherwise.
+AX_CFLAGS_GCC_OPTION([-no-cpp-precomp])
+
 GCC_ATTRIBUTE_ALWAYS_INLINE
 GCC_ATTRIBUTE_CONST
 GCC_ATTRIBUTE_FORMAT
