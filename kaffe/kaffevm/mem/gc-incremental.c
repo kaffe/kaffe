@@ -207,7 +207,8 @@ DBG(GCWALK,
 	    case GC_ALLOC_REFARRAY: {
 		    Hjava_lang_Class *c
 			    = OBJECT_CLASS((Hjava_lang_Object *) (unit+1));
-		    c->live_count++;
+		    if (c)
+			    c->live_count++;
 	    }});
 	    
 
@@ -534,7 +535,7 @@ DBG(GCSTAT,
 
 		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
 			/* print out all the info you ever wanted to know */
-			fprintf(stderr, 
+			dprintf(
 			    "<GC: heap %dK, total before %dK,"
 			    " after %dK (%d/%d objs)\n %2.1f%% free,"
 			    " alloced %dK (#%d), marked %dK, "
@@ -970,7 +971,7 @@ gcThrowOOM(Collector *gcif)
 	if (ret == OOM_ALLOCATING || ret == 0) {
 		/* die now */
 		unlockStaticMutex(&gc_lock);
-		fprintf(stderr,
+		dprintf(
 			"Not enough memory to throw OutOfMemoryError!\n");
 		ABORT();
 	}
@@ -1116,23 +1117,23 @@ objectStatsPrint(void)
 {
 	int cnt = 0;
 
-	fprintf(stderr, "Memory statistics:\n");
-	fprintf(stderr, "------------------\n");
+	dprintf("Memory statistics:\n");
+	dprintf("------------------\n");
 
 	while (cnt < nrTypes) {
-		fprintf(stderr, "%14.14s: Nr %6d  Mem %6dK",
+		dprintf("%14.14s: Nr %6d  Mem %6dK",
 			gcFunctions[cnt].description, 
 			gcFunctions[cnt].nr, 
 			gcFunctions[cnt].mem/1024);
 		if (++cnt % 2 != 0) {
-			fprintf(stderr, "   ");
+			dprintf("   ");
 		} else {
-			fprintf(stderr, "\n");
+			dprintf("\n");
 		}
 	}
 
 	if (cnt % 2 != 0) {
-		fprintf(stderr, "\n");
+		dprintf("\n");
 	}
 }
 #endif
