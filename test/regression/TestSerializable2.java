@@ -127,8 +127,11 @@ public class TestSerializable2
 
 	    System.out.println ("b = " + b);
 	}
-	catch (Exception e) {
+	catch (InvalidClassException e) {
 	    System.out.println (e);
+	}
+	catch (Exception e) {
+	    e.printStackTrace();
 	}
     }
 

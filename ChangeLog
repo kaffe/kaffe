@@ -1,4 +1,11 @@
-2005-01-01  Dalibor Topic  <topic@notebox>
+2005-01-02  Dalibor Topic  <robilad@kaffe.org>
+
+	* test/regression/TestSerializable2.java:
+	Print stack traces in unexpected exceptions. Should help
+	detect the reason of the last failing regression test
+	on freebsd-amd64.
+
+2005-01-01  Dalibor Topic  <robilad@kaffe.org>
 
 	* TODO: Added a few more entries.
 
