@@ -1,5 +1,13 @@
 2004-01-15  Dalibor Topic <robilad@kaffe.org>
 
+	* mkinstalldirs:
+	Removed.
+
+	* Makefile.in
+	Removed mkinstalldirs.
+
+2004-01-15  Dalibor Topic <robilad@kaffe.org>
+
         * configure.in:
 	(KVER, KAFFEVERSION) Removed.
 

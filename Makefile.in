@@ -50,9 +50,9 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/project.properties.in \
 	$(srcdir)/project.xml.in $(top_srcdir)/configure \
 	$(top_srcdir)/include/kaffe/jtypes.h.in AUTHORS ChangeLog \
-	INSTALL config.rpath mkinstalldirs scripts/config.guess \
-	scripts/config.sub scripts/depcomp scripts/install-sh \
-	scripts/ltmain.sh scripts/missing
+	INSTALL config.rpath scripts/config.guess scripts/config.sub \
+	scripts/depcomp scripts/install-sh scripts/ltmain.sh \
+	scripts/missing
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 $(top_srcdir)/m4/esd.m4 \
