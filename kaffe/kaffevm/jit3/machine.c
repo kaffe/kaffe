@@ -150,7 +150,7 @@ translate(Method* xmeth, errorInfo* einfo)
 	jboolean success = true;
 	int iLockRoot;
 
-	lockMutex(&xmeth->class->head);
+	lockMutex(xmeth->class->centry);
 
 	if (METHOD_TRANSLATED(xmeth)) {
 		goto done3;
@@ -291,7 +291,7 @@ DBG(JIT,                dprintf("unreachable basic block pc [%d:%d]\n", pc, npc 
 		switch (base[pc]) {
 		default:
 			printf("Unknown bytecode %d\n", base[pc]);
-			unlockMutex(&xmeth->class->head);
+			unlockMutex(xmeth->class->centry);
 			leaveTranslator();
 			postException(einfo, JAVA_LANG(VerifyError));
                         success = false;
@@ -348,7 +348,7 @@ DBG( vm_jit_translate, ("Translating %s.%s%s (%s) %p\n",
 done2:;
 	leaveTranslator();
 done3:;
-	unlockMutex(&xmeth->class->head);
+	unlockMutex(xmeth->class->centry);
 
 	return (success);
 }
