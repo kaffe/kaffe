@@ -285,19 +285,29 @@ public class Arrays {
   }
 
   public static boolean equals(Object[] a, Object[] a2) {
-	try {
+		if (a == a2) {
+			return true;
+		}
+
+		if (a == null || a2 == null) {      
+			return false; // One is null and not the other.
+		}
+
 		if (a.length != a2.length) {
 			return false;
 		}
+
 		for (int i = a.length; i-- > 0; ) {
-			if (!a[i].equals(a2[i])) {
+			if (a[i] == null) {
+				if (a2[i] != null) {
+					return false;
+				}
+			} else if (!a[i].equals(a2[i])) {
 				return false;
 			}
 		}
+
 		return true;
-	} catch (NullPointerException _) {
-		return (a == a2);	// ie, they are both null
-	}
   }
 
   public static void fill(boolean[] a, boolean val) {

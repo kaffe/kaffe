@@ -122,6 +122,7 @@ TEST_MISC = \
 	MethodBug.java \
 	Bean.java \
 	SortTest.java \
+	ArraysTest.java \
 	SubListTest.java \
 	HashTest.java \
         SecureRandomTest.java \
