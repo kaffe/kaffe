@@ -99,6 +99,10 @@ public InputStream getInputStream(ZipEntry ze) throws IOException
 		ze = getEntry(ze.getName());
 	}
 
+	if (ze == null) {
+		return null;
+	}
+
 	byte[] buf = getZipData0(zip, ze);
 	if (buf == null) {
 		throw new ZipException("no data");
