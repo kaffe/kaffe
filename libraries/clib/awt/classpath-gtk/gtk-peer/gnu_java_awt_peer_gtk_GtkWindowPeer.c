@@ -44,8 +44,6 @@ exception statement from your version. */
 #include <gdk/gdkx.h>
 #include <X11/Xatom.h>
 
-struct state_table *native_pixbufdecoder_state_table;
-
 /* FIXME: we're currently seeing the double-activation that occurs
    with metacity and GTK.  See
    http://bugzilla.gnome.org/show_bug.cgi?id=140977 for details. */
@@ -547,7 +545,7 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_nativeSetIconImageFromDecoder
 
   ptr = NSA_GET_PTR (env, obj);
 
-  loader = get_state (env, decoder, native_pixbufdecoder_state_table);
+  loader = NSA_GET_PB_PTR (env, decoder);
   g_assert (loader != NULL);
 
   gdk_threads_enter ();

@@ -91,6 +91,20 @@ extern struct state_table *native_global_ref_table;
     (*env)->DeleteGlobalRef (env, *globRefPtr); \
     free (globRefPtr);} while (0)
 
+extern struct state_table *native_pixbufdecoder_state_table;
+
+#define NSA_PB_INIT(env, clazz) \
+  native_pixbufdecoder_state_table = init_state_table (env, clazz)
+
+#define NSA_GET_PB_PTR(env, obj) \
+  get_state (env, obj, native_pixbufdecoder_state_table)
+
+#define NSA_SET_PB_PTR(env, obj, ptr) \
+  set_state (env, obj, native_pixbufdecoder_state_table, (void *)ptr)
+
+#define NSA_DEL_PB_PTR(env, obj) \
+  remove_state_slot (env, obj, native_pixbufdecoder_state_table)
+
 #endif /* JVM_SUN */
 
 struct graphics

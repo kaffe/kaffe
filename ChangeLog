@@ -1,5 +1,21 @@
 2004-08-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gtkpeer.h,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c:
+	Resynced with GNU Classpath.
+
+	2004-08-09  Andreas Tobler  <a.tobler@schweiz.ch>
+        	    Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c: 
+	Move NSA_PB macros to gtkpeer.h.  Include gtkpeer.h.
+        * native/jni/gtk-peer/gtkpeer.h: Move NSA_PB macros here.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+        (nativeSetIconImageFromDecoder): Use NSA_GET_PB_PTR macro.
+
+2004-08-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/JMenuItem.java:
 	Resynced with GNU Classpath.
 
