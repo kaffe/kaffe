@@ -93,7 +93,7 @@ public class Date implements Cloneable, Comparable, java.io.Serializable
    */
   public Date(int year, int month, int day)
   {
-    time = new GregorianCalendar(year + 1900, month, day).getTimeInMillis();
+    this(year, month, day, 0, 0, 0);
   }
 
   /**
@@ -103,21 +103,24 @@ public class Date implements Cloneable, Comparable, java.io.Serializable
    */
   public Date(int year, int month, int day, int hour, int min)
   {
-    time =
-      new GregorianCalendar(year + 1900, month, day, hour,
-			    min).getTimeInMillis();
+    this(year, month, day, hour, min, 0);
   }
 
   /**
    * Creates a new Date Object representing the given time.
    * @deprecated use <code>new GregorianCalendar(year+1900, month,
-   * day)</code> instead.  
+   * day, hour, min, sec)</code> instead.  
    */
   public Date(int year, int month, int day, int hour, int min, int sec)
   {
-    time =
-      new GregorianCalendar(year + 1900, month, day, hour, min,
-			    sec).getTimeInMillis();
+    GregorianCalendar cal = new GregorianCalendar(year + 1900, 0, 1);
+    int dst = cal.get(Calendar.DST_OFFSET);
+    cal.add(GregorianCalendar.MONTH, month);
+    cal.add(GregorianCalendar.DAY_OF_MONTH, day - 1);
+    cal.add(GregorianCalendar.HOUR, hour);
+    cal.add(GregorianCalendar.MINUTE, min);
+    cal.add(GregorianCalendar.SECOND, sec);
+    time = cal.getTimeInMillis() + dst - cal.get(Calendar.DST_OFFSET);
   }
 
   /**
@@ -178,7 +181,7 @@ public class Date implements Cloneable, Comparable, java.io.Serializable
   {
     Calendar cal = Calendar.getInstance();
     cal.setTimeInMillis(time);
-    return (cal.get(Calendar.ZONE_OFFSET)
+    return - (cal.get(Calendar.ZONE_OFFSET)
 	    + cal.get(Calendar.DST_OFFSET)) / (60 * 1000);
   }
 
