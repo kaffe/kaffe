@@ -1926,7 +1926,9 @@ java_lang_SRCS = \
 	java/lang/UnsupportedOperationException.java \
 	java/lang/VerifyError.java \
 	java/lang/VirtualMachineError.java \
+	java/lang/VMObject.java \
 	java/lang/VMSecurityManager.java \
+	java/lang/VMThread.java \
 	java/lang/VMThrowable.java \
 	java/lang/Void.java
 java_lang_ref_SRCS = \

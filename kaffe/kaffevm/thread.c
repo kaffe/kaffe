@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2004
+ *      The Kaffe.org's developers. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -52,13 +55,14 @@ jbool runFinalizerOnExit;	/* should we run finalizers? */
 jbool deadlockDetection = 1;	/* abort if we detect deadlock */
 
 Hjava_lang_Class* ThreadClass;
+Hjava_lang_Class* VMThreadClass;
 Hjava_lang_Class* ThreadGroupClass;
 Hjava_lang_ThreadGroup* standardGroup;
 
 static void firstStartThread(void*);
 static void runfinalizer(void);
 
-static iStaticLock	thread_start_lock = KAFFE_STATIC_LOCK_INITIALIZER;
+static iStaticLock thread_start_lock = KAFFE_STATIC_LOCK_INITIALIZER;
 
 /*
  * How do I get memory?
@@ -85,12 +89,12 @@ thread_realloc(void *p, size_t s)
 }
 
 static void
-linkNativeAndJavaThread(jthread_t thread, Hjava_lang_Thread *jlThread)
+linkNativeAndJavaThread(jthread_t thread, Hjava_lang_VMThread *jlThread)
 {
 	threadData *thread_data = jthread_get_data(thread);
 
 	thread_data->jlThread = jlThread;
-	unhand (jlThread)->PrivateInfo = (struct Hkaffe_util_Ptr *)thread;
+	unhand (jlThread)->jthreadID = (struct Hkaffe_util_Ptr *)thread;
 
 	thread_data->jniEnv = &Kaffe_JNINativeInterface;
 
@@ -102,11 +106,6 @@ unlinkNativeAndJavaThread(jthread_t thread)
 {
 	threadData *thread_data = jthread_get_data(thread);
 
-	/*
-	unhand((Hjava_lang_Thread *)thread_data->jlThread)->PrivateInfo = 0;
-	*/
-
-	//thread_data->jlThread = 0;
 	thread_data->jniEnv = 0;
 
 	ksemDestroy (&thread_data->sem);
@@ -125,24 +124,17 @@ initThreads(void)
 	/* Get a handle on the thread and thread group classes */
 	ThreadClass = lookupClass(THREADCLASS, NULL, &info);
 	assert(ThreadClass != 0);
+	VMThreadClass = lookupClass(VMTHREADCLASS, NULL, &info);
+	assert(VMThreadClass != 0);
 	ThreadGroupClass = lookupClass(THREADGROUPCLASS, NULL, &info);
 	assert(ThreadGroupClass != 0);
 
 	/* Create base group */
-	standardGroup = (Hjava_lang_ThreadGroup*)newObject(ThreadGroupClass);
+	standardGroup = (struct Hjava_lang_ThreadGroup*)
+	  execute_java_constructor(NULL, NULL,
+				   ThreadGroupClass, "()V");
 
 	assert(standardGroup != 0);
-	unhand(standardGroup)->parent = 0;
-	unhand(standardGroup)->name = stringC2Java("main");
-	assert(unhand(standardGroup)->name != NULL);
-	unhand(standardGroup)->maxPriority = java_lang_Thread_MAX_PRIORITY;
-	unhand(standardGroup)->destroyed = 0;
-	unhand(standardGroup)->daemon = 0;
-	unhand(standardGroup)->nthreads = 0;
-	unhand(standardGroup)->threads = (HArrayOfObject*)newArray(ThreadClass, 0);
-	unhand(standardGroup)->ngroups = 0;
-	unhand(standardGroup)->groups = (HArrayOfObject*)newArray(ThreadGroupClass, 0);
-
 
 	/* Allocate a thread to be the main thread */
 	attachFakedThreadInstance("main", false);
@@ -152,16 +144,18 @@ initThreads(void)
 
 
 static jthread_t
-createThread(Hjava_lang_Thread* tid, void (*func)(void *), size_t stacksize,
+createThread(Hjava_lang_VMThread* vmtid, void (*func)(void *), size_t stacksize,
 	     struct _errorInfo *einfo)
 {
 	jthread_t nativeThread;
+	Hjava_lang_Thread* tid = unhand(vmtid)->thread;
 
-	nativeThread = jthread_create((unsigned char)unhand(tid)->priority,
-			       func,
-			       unhand(tid)->daemon,
-			       tid,
-			       stacksize);
+	nativeThread = 
+	  jthread_create(((unsigned char)unhand(tid)->priority),
+			 func,
+			 unhand(tid)->daemon,
+			 vmtid,
+			 stacksize);
 
 	if (nativeThread == NULL) {
 		postOutOfMemory(einfo);
@@ -175,17 +169,11 @@ createThread(Hjava_lang_Thread* tid, void (*func)(void *), size_t stacksize,
  * Start a new thread running.
  */
 void
-startThread(Hjava_lang_Thread* tid)
+startThread(Hjava_lang_VMThread* tid)
 {
 	jthread_t nativeTid;
 	struct _errorInfo info;
 	int iLockRoot;
-
-#if 0
-	if (aliveThread(tid) == true) {
-		throwException(IllegalThreadStateException);
-	}
-#endif
 
 	/* Hold the start lock while the thread is created.
 	 * This lock prevents the new thread from running until we're
@@ -210,10 +198,10 @@ startThread(Hjava_lang_Thread* tid)
  * Interrupt a thread
  */
 void
-interruptThread(Hjava_lang_Thread* tid)
+interruptThread(Hjava_lang_VMThread* tid)
 {
-	if ((jthread_t)unhand(tid)->PrivateInfo) {
-		jthread_interrupt((jthread_t)unhand(tid)->PrivateInfo);
+	if ((jthread_t)unhand(tid)->jthreadID) {
+		jthread_interrupt((jthread_t)unhand(tid)->jthreadID);
 	}
 }
 
@@ -221,9 +209,9 @@ interruptThread(Hjava_lang_Thread* tid)
  * Stop a thread from running and terminate it.
  */
 void
-stopThread(Hjava_lang_Thread* tid, Hjava_lang_Object* obj)
+stopThread(Hjava_lang_VMThread* tid, Hjava_lang_Object* obj)
 {
-	if (getCurrentThread() == tid) {
+	if (getCurrentThread() == unhand(tid)->thread) {
 		throwException((Hjava_lang_Throwable*)obj);
 	}
 	else {
@@ -232,8 +220,8 @@ stopThread(Hjava_lang_Thread* tid, Hjava_lang_Object* obj)
 		 * thread won't throw the exception `obj', but it will 
 		 * construct a new ThreadDeath exception when it dies.
 		 */
-		if ((jthread_t)unhand(tid)->PrivateInfo)
-			jthread_stop((jthread_t)unhand(tid)->PrivateInfo);
+		if ((jthread_t)unhand(tid)->jthreadID)
+			jthread_stop((jthread_t)unhand(tid)->jthreadID);
 	}
 }
 
@@ -256,26 +244,29 @@ attachFakedThreadInstance(const char* nm, int isDaemon)
 	assert(unhand(tid)->name != NULL);
 	unhand(tid)->priority = java_lang_Thread_NORM_PRIORITY;
 	unhand(tid)->daemon = isDaemon;
-	unhand(tid)->interrupting = 0;
-	unhand(tid)->target = 0;
 	unhand(tid)->group = standardGroup;
-	unhand(tid)->started = 1;
+	unhand(tid)->runnable = NULL;
+	unhand(tid)->vmThread = (Hjava_lang_VMThread *)
+	  execute_java_constructor(NULL, NULL,
+				   VMThreadClass, "(Ljava/lang/Thread;)V",
+				   tid);
 
 	/* set Java thread associated with main thread */
-	linkNativeAndJavaThread (jthread_current(), tid);
+	linkNativeAndJavaThread (jthread_current(), unhand(tid)->vmThread);
 
         /*
 	 * set context class loader of primordial thread to app classloader
 	 * must not be done earlier, since getCurrentThread() won't work
-         * before the jthread_createfirst and the PrivateInfo assignment
+         * before the jthread_createfirst and the jthreadID assignment
 	 */
-        unhand(tid)->context = do_execute_java_class_method ("kaffe/lang/AppClassLoader",
-                                                             NULL,
-                                                             "getSingleton",
-                                                             "()Ljava/lang/ClassLoader;").l;
+        unhand(tid)->contextClassLoader = (struct Hjava_lang_ClassLoader *)
+	  do_execute_java_class_method ("kaffe/lang/AppClassLoader",
+					NULL,
+					"getSingleton",
+					"()Ljava/lang/ClassLoader;").l;
 
 	/* Attach thread to threadGroup */
-	do_execute_java_method(unhand(tid)->group, "add", "(Ljava/lang/Thread;)V", 0, 0, tid);
+	do_execute_java_method(unhand(tid)->group, "addThread", "(Ljava/lang/Thread;)V", 0, 0, tid);
 
 	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)=%p done\n", nm, tid); )
 }
@@ -318,39 +309,48 @@ Hjava_lang_Thread*
 createDaemon(void* func, const char* nm, void *arg, int prio,
 	     size_t stacksize, struct _errorInfo *einfo)
 {
-	Hjava_lang_Thread* tid;
-	jthread_t nativeTid;
-	int iLockRoot;
+  Hjava_lang_Thread* tid;
+  Hjava_lang_VMThread *vmtid;
+  jthread_t nativeTid;
+  int iLockRoot;
+  Hjava_lang_String* name;
 
 DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
+  
+  /* Keep daemon threads as root objects */
+  vmtid = (Hjava_lang_Thread*)newObject(VMThreadClass);
+  assert(vmtid != 0);
+  
+  name = stringC2Java(nm);
+  if (!name) {
+    postOutOfMemory(einfo);
+    return 0;
+  }
+  tid = (Hjava_lang_Thread *)
+    execute_java_constructor(NULL, NULL,
+			     ThreadClass, "(Ljava/lang/VMThread;Ljava/lang/String;IZ)V",
+			     vmtid, name, prio, true);
+  unhand(vmtid)->thread = tid;
+  unhand(vmtid)->running = true;
 
-	/* Keep daemon threads as root objects */
-	tid = (Hjava_lang_Thread*)newObject(ThreadClass);
-	assert(tid != 0);
-
-	unhand(tid)->name = stringC2Java(nm);
-	if (!unhand(tid)->name) {
-		postOutOfMemory(einfo);
-		return 0;
-	}
-	unhand(tid)->priority = prio;
-	unhand(tid)->daemon = 1;
-	unhand(tid)->interrupting = 0;
-	unhand(tid)->target = 0;
-	unhand(tid)->group = 0;
-
-	lockStaticMutex(&thread_start_lock);
-
-	nativeTid = createThread(tid, startSpecialThread, stacksize, einfo);
-
-	linkNativeAndJavaThread (nativeTid, tid);
-
-	jthread_get_data(nativeTid)->exceptPtr = func;
-	jthread_get_data(nativeTid)->exceptObj = arg;
-
-	unlockStaticMutex(&thread_start_lock);
-
-	return (tid);
+  unhand(tid)->contextClassLoader = (struct Hjava_lang_ClassLoader *)
+    do_execute_java_class_method ("java/lang/ClassLoader",
+				  NULL,
+				  "getSystemClassLoader",
+				  "()Ljava/lang/ClassLoader;").l;
+  
+  lockStaticMutex(&thread_start_lock);
+  
+  nativeTid = createThread(vmtid, startSpecialThread, stacksize, einfo);
+  
+  linkNativeAndJavaThread (nativeTid, vmtid);
+  
+  jthread_get_data(nativeTid)->exceptPtr = func;
+  jthread_get_data(nativeTid)->exceptObj = arg;
+  
+  unlockStaticMutex(&thread_start_lock);
+  
+  return (tid);
 }
 
 /*
@@ -360,11 +360,10 @@ static
 void
 firstStartThread(void* arg UNUSED)
 {
-	Hjava_lang_Thread* tid;
+	Hjava_lang_VMThread* tid;
 	jthread_t cur;
 	JNIEnv *env;
 	jmethodID runmethod;
-	jthrowable eobj;
 	int iLockRoot;
 
 	cur = jthread_current();
@@ -374,7 +373,7 @@ firstStartThread(void* arg UNUSED)
 	lockStaticMutex(&thread_start_lock);
 	unlockStaticMutex(&thread_start_lock);
 
-	tid = jthread_get_data(cur)->jlThread;
+	tid = (Hjava_lang_VMThread *)(jthread_get_data(cur)->jlThread);
 	env = &jthread_get_data(cur)->jniEnv;
 
 #if defined(ENABLE_JVMPI)
@@ -403,41 +402,13 @@ DBG(VMTHREAD,
 	/* Find the run()V method and call it */
 	runmethod = (*env)->GetMethodID(env, (*env)->GetObjectClass(env, tid),
 					"run", "()V");
-	if (runmethod != 0) {
+	if (runmethod != 0)
 		(*env)->CallVoidMethod(env, tid, runmethod);
 
-		/* note that since exception.c does not allow JNI to catch
-		 * ThreadDeath (for now!), we won't see ThreadDeath here.
-		 * That is, we must invoke the uncaughtException method
-		 * if we see an exception here.
-		 */
-		eobj = (*env)->ExceptionOccurred(env);
-		(*env)->ExceptionClear(env);
-	} else {
-		/* eobj will usually be NoSuchMethodError */
-		eobj = (*env)->ExceptionOccurred(env);
-		(*env)->ExceptionClear(env);
-	}
-
-	/* If all else fails we call the the uncaught exception method
-	 * on this thread's group.  Note we must set a flag so we 
-	 * don't do this again while in the handler.
+	/*
+	 * We may ignore all exceptions here as it is already handled by VMThread.run().
 	 */
-	if (eobj != 0 && unhand(tid)->dying == false) {
-		jobject group = unhand(tid)->group;
-		jclass groupclass = (*env)->GetObjectClass(env, group);
-		jmethodID uncaughtmeth = 
-			(*env)->GetMethodID(env, groupclass,
-				"uncaughtException",
-				"(Ljava/lang/Thread;Ljava/lang/Throwable;)V");
-
-		unhand(tid)->dying = true;
-		(*env)->CallVoidMethod(env, group, uncaughtmeth, tid, eobj);
-		/* exceptions thrown in `uncaughtException' are 
-		 * silently ignored says the JLS.
-		 */
-		(*env)->ExceptionClear(env);
-	}
+	(*env)->ExceptionClear(env);
 	exitThread();
 }
 
@@ -452,17 +423,18 @@ yieldThread(void)
 
 /*
  * Change thread priority.
+ *
+ * We assume the call comes from VMThread and so that the field priority has
+ * already been updated. In the other case, there will be a small inconsistency.
  */
 void
-setPriorityThread(Hjava_lang_Thread* tid, int prio)
+setPriorityThread(Hjava_lang_VMThread* tid, int prio)
 {
-	unhand(tid)->priority = prio;
-
 	/* no native thread yet */
-	if (unhand(tid)->PrivateInfo == 0)
-		return;
+	if (unhand(tid)->jthreadID == 0)
+	        return;
 
-	jthread_setpriority((jthread_t)unhand(tid)->PrivateInfo, prio);
+	jthread_setpriority((jthread_t)unhand(tid)->jthreadID, prio);
 }
 
 /*
@@ -485,8 +457,6 @@ DBG(VMTHREAD,
 	}
 #endif
 
-        do_execute_java_method(getCurrentThread(), "finish", "()V", 0, 0);
-
 	/* Destroy this thread's heavy lock */
 	unlinkNativeAndJavaThread(jthread_current());
 
@@ -494,42 +464,14 @@ DBG(VMTHREAD,
 	jthread_exit();
 }
 
-#if 0
 /*
- * Put a thread to sleep.
+ * Get the current JavaVM thread.
  */
-void
-sleepThread(jlong time)
+Hjava_lang_VMThread*
+getCurrentVMThread(void)
 {
-	if (time > 0) {
-		jthread_sleep(time);
-	}
+	return (Hjava_lang_VMThread *) THREAD_DATA()->jlThread;
 }
-
-/*
- * Is this thread alive?
- */
-bool
-aliveThread(Hjava_lang_Thread* tid)
-{
-	bool status;
-
-DBG(VMTHREAD,	dprintf("aliveThread: tid %p\n", tid);		)
-
-	status = jthread_alive((jthread_t)unhand(tid)->PrivateInfo);
-
-	return (status);
-}
-
-/*
- * How many stack frames have I invoked?
- */
-jint
-framesThread(Hjava_lang_Thread* tid)
-{
-	return (jthread_frames((jthread_t)unhand(tid)->PrivateInfo));
-}
-#endif
 
 /*
  * Get the current Java thread.
@@ -537,13 +479,12 @@ framesThread(Hjava_lang_Thread* tid)
 Hjava_lang_Thread*
 getCurrentThread(void)
 {
-	Hjava_lang_Thread* tid;
-	
-	tid = THREAD_DATA()->jlThread;
+	Hjava_lang_VMThread *vmtid;
 
-	assert(tid);
+	vmtid = getCurrentVMThread();
+	assert(vmtid != NULL);
 	
-	return tid;
+	return unhand(vmtid)->thread;
 }
 
 /*
@@ -551,9 +492,9 @@ getCurrentThread(void)
  *  This is to free the native thread context.
  */
 void
-finalizeThread(Hjava_lang_Thread* tid)
+finalizeThread(Hjava_lang_VMThread* tid)
 {
-	jthread_t jtid = (jthread_t)unhand(tid)->PrivateInfo;
+	jthread_t jtid = (jthread_t)unhand(tid)->jthreadID;
 
 	if (jtid != NULL) {
 		jthread_destroy(jtid);
@@ -565,11 +506,11 @@ finalizeThread(Hjava_lang_Thread* tid)
  * Returns static buffer.
  */
 char *
-nameThread(Hjava_lang_Thread *tid)
+nameThread(Hjava_lang_VMThread *tid)
 {
 	static char buf[80];
 
-	stringJava2CBuf(unhand(tid)->name, buf, sizeof(buf));
+	stringJava2CBuf(unhand(unhand(tid)->thread)->name, buf, sizeof(buf));
 
 	return buf;
 }
@@ -577,7 +518,8 @@ nameThread(Hjava_lang_Thread *tid)
 static void 
 broadcastDeath(void *jlThread)
 {
-        Hjava_lang_Thread *tid = jlThread;
+        Hjava_lang_VMThread *vmtid = (Hjava_lang_VMThread *)jlThread;
+	Hjava_lang_Thread *tid = unhand(vmtid)->thread;
 	int iLockRoot;
 
         /* Notify on the object just in case anyone is waiting */
@@ -589,11 +531,7 @@ broadcastDeath(void *jlThread)
 static void NONRETURNING
 throwDeath(void)
 {
-	Hjava_lang_Thread *cur = getCurrentThread();
-	Hjava_lang_Throwable *death = cur->death;
-
-	cur->death = NULL;
-	throwException(death ? death : ThreadDeath);
+	throwException(ThreadDeath);
 }
 
 static
@@ -634,7 +572,7 @@ runfinalizer(void)
 static void
 dumpJavaThread(jthread_t thread)
 {
-	Hjava_lang_Thread *tid = jthread_get_data(thread)->jlThread;
+	Hjava_lang_VMThread *tid = (Hjava_lang_VMThread *)jthread_get_data(thread)->jlThread;
 	dprintf("`%s' ", nameThread(tid));
 	jthread_dumpthreadinfo(thread);
 	dprintf("\n");
@@ -653,7 +591,7 @@ dumpThreads(void)
 char*
 nameNativeThread(void* native_data)
 {
-	return nameThread((Hjava_lang_Thread*)
+	return nameThread((Hjava_lang_VMThread*)
 		jthread_get_data((jthread_t)native_data)->jlThread);
 }
 
@@ -737,7 +675,7 @@ initNativeThreads(int nativestacksize)
 #else
 	stackSize = MAINSTACKSIZE;
 #endif
-	DBG(INIT, dprintf("Detected stackSize %d\n", stackSize); )
+	DBG(INIT, dprintf("Detected stackSize %lu\n", stackSize); )
 	jthread_createfirst(stackSize, (unsigned char)java_lang_Thread_NORM_PRIORITY, 0);
 
 	/*

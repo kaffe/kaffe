@@ -27,7 +27,6 @@ public final class System {
 	final public static PrintStream out;
 	final public static PrintStream err;
 	static Properties properties;
-	private static SecurityManager security;
 
 // When trying to debug Java code that gets executed early on during
 // JVM initialization, eg, before System.err is initialized, debugging
@@ -101,7 +100,7 @@ public static String getProperty(String key, String def) {
 }
 
 public static SecurityManager getSecurityManager() {
-	return security;
+	return Runtime.securityManager;
 }
 
 public static String getenv(String name) {
@@ -178,10 +177,10 @@ public static void setProperties(Properties prps) {
 }
 
 public static void setSecurityManager(SecurityManager s) {
-	if (security != null) {
-		security.checkPermission(
+	if (Runtime.securityManager != null) {
+		Runtime.securityManager.checkPermission(
 			new RuntimePermission("setSecurityManager"));
 	}
-	security = s;
+	Runtime.securityManager = s;
 }
 }

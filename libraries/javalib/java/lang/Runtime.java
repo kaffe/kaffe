@@ -43,6 +43,8 @@ private static boolean VMShuttingDown = false;
 
 private static final RuntimePermission SHUTDOWN_HOOKS =
 	new RuntimePermission("shutdownHooks");
+
+static SecurityManager securityManager;
 	
 private Runtime () {
 }
@@ -102,7 +104,8 @@ public void exit(int status) throws SecurityException {
 
 	/* First we cleanup the Virtual Machine */
 	if (!exitJavaCleanup())
-		Thread.currentThread().destroy();
+		/* Throw ThreadDeath to kill the currently running thread. */
+		throw new ThreadDeath();
 
 	/* Now we run the VM exit function */
 	exit0(status);

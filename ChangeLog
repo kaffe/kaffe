@@ -1,3 +1,130 @@
+2004-07-29  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* include/Makefile.am: Added header generation for
+	java/lang/VMObject and java/lang/VMThread.
+
+	* test/regression/ThreadStop.java:
+	Removed file.
+	
+	* kaffe/kaffevm/exception.c
+	(unhandledException): ThreadDeath should not be unhandled anymore
+	now. VMThread handles it.
+
+	* kaffe/kaffevm/gcRefs.c
+	(liveThreadWalker): Mark both a Thread and a VMThread instance.
+
+	* kaffe/kaffevm/locks.h
+	(KAFFE_STATIC_LOCK_INITIALIZER): Completed initializer.
+
+	* kaffe/kaffevm/thread.c,
+	kaffe/kaffevm/thread.h: Updated to GNU Classpath's thread
+	infrastructure. Removed unused code.
+	(setPriorityThread,startThread,stopThread,interruptThread,
+	finalizeThread, nameThread): New prototype.
+	(firstStartThread): We do not need to handle exceptions anymore as
+	this is already done by VMThread.
+	(getCurrentVMThread): New function.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(suspendOnQThread): Clear INTERRUPTED_READ flag.
+	(jthread_interrupted): New function.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h
+	(THREAD_FLAGS_INTERRUPTED_READ): New flag.
+	(jthread_interrupted): New function.
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c
+	(jcondvar_wait): Set the interrupt status to the correct
+	value according to the return value.
+	
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c
+	(waitForTimeOut, waitForWritable): Set the interrupt status to the
+	correct value according to errno.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_interrupt): Set the interrupt status to 1.
+	(jthread_is_interrupted): New function.
+	(jthread_interrupted): New function.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h
+	(jthread_t.interrupting): New field.
+	(jthread_is_interrupted): Removed.
+
+	* libraries/clib/native/Object.c
+	(java_lang_VMObject_clone): Renamed from java_lang_Object_clone.
+	(java_lang_VMObject_nativeWait): Renamed from
+	java_lang_Object_wait0.
+	(java_lang_VMObject_notifyAll): Renamed from
+	java_lang_Object_notifyAll.
+	(java_lang_Object_hashCode): Removed.
+	(java_lang_VMObject_notify):  Renamed from
+	java_lang_Object_notify.
+
+	* libraries/clib/native/System.c
+	(java_lang_System_identityHashCode): Compute the hash code here
+	now.
+
+	* libraries/clib/native/Thread.c
+	(java_lang_VMThread_yield): Renamed from java_lang_Thread_yield0.
+	(java_lang_VMThread_start): Renamed from java_lang_Thread_start0.
+	(java_lang_VMThread_nativeSetPriority): Renamed from
+	java_lang_Thread_setPriority0.
+	(java_lang_VMThread_nativeInterrupt): Renamed from 
+	java_lang_Thread_interrupt0.
+	(java_lang_VMThread_finalize): Renamed from
+	java_lang_Thread_finalize0.
+	(java_lang_VMThread_nativeInterrupted,
+	java_lang_VMThread_nativeIsInterrupted): New functions.
+	(java_lang_Thread_destroy0,
+	java_lang_Thread_stop0): Removed.
+
+	* libraries/javalib/all.files: Added java/lang/VMObject.java
+	and java/lang/VMThread.java.
+
+	* libraries/javalib/bootstrap.classlist: Added java/lang/VMObject.class
+	and java/lang/VMThread.class.
+
+	* libraries/javalib/java/lang/InheritableThreadLocal.java,
+	libraries/javalib/java/lang/Object.java,
+	libraries/javalib/java/lang/Thread.java,
+	libraries/javalib/java/lang/ThreadDeath.java,
+	libraries/javalib/java/lang/ThreadGroup.java,
+	libraries/javalib/java/lang/ThreadLocal.java:
+	Imported from GNU Classpath.
+	
+	* libraries/javalib/java/lang/Runtime.java
+	(securityManager): New field.
+	(runShutdownHooks): Do not call Thread.destroy() but throw
+	ThreadDeath.
+	
+	* libraries/javalib/java/lang/System.java
+	(security): Removed.
+	(getSecurityManager, setSecurityManager): Use
+	Runtime.securityManager instead of security.
+
+	* test/regression/Bean.java, test/regression/Reflect.java:
+	Updated the expected output to match the new interface.
+
+	* test/regression/CLTestConc.java: Do not call Thread.stop().
+
+	* test/regression/CatchDeath.java: Explicitly throw ThreadDeath
+	instead of throwing it implicitly using Thread.stop().
+
+	* test/regression/Makefile.am
+	(TEST_STOPPING_THREADS): Removed ThreadStop.
+
+	* test/regression/ThreadInterrupt.java
+	(ssij): Added a call to printStackTrace().
+
+	* libraries/javalib/awt-implementations/kaffe/Makefile.am
+	(Klasses_jar): rt.jar is generated in the build directory.
+	
+	* include/Makefile.in, libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/awt-implementations/kaffe/Makefile.in,
+	test/regression/Makefile.in:
+	Regenerated.
+	
 2004-07-29  Dalibor Topic  <robilad@kaffe.org>
 
         * Makefile.am:

@@ -58,11 +58,9 @@ Field: public static final java.io.InputStream java.lang.System.in
 Field: public static final java.io.PrintStream java.lang.System.err
 Field: public static final java.io.PrintStream java.lang.System.out
 Method: public boolean java.lang.Object.equals(java.lang.Object)
+Method: public int java.lang.Object.hashCode()
 Method: public java.lang.String java.lang.Object.toString()
-Method: public native int java.lang.Object.hashCode()
 Method: public native java.lang.Class java.lang.Object.getClass()
-Method: public native void java.lang.Object.notify()
-Method: public native void java.lang.Object.notifyAll()
 Method: public static java.lang.SecurityManager java.lang.System.getSecurityManager()
 Method: public static java.lang.String java.lang.System.getProperty(java.lang.String)
 Method: public static java.lang.String java.lang.System.getProperty(java.lang.String,java.lang.String)
@@ -84,7 +82,9 @@ Method: public static void java.lang.System.setIn(java.io.InputStream)
 Method: public static void java.lang.System.setOut(java.io.PrintStream)
 Method: public static void java.lang.System.setProperties(java.util.Properties)
 Method: public static void java.lang.System.setSecurityManager(java.lang.SecurityManager)
-Method: public void java.lang.Object.wait() throws java.lang.InterruptedException
-Method: public void java.lang.Object.wait(long) throws java.lang.InterruptedException
-Method: public void java.lang.Object.wait(long,int) throws java.lang.InterruptedException
+Method: public void java.lang.Object.notify() throws java.lang.IllegalMonitorStateException
+Method: public void java.lang.Object.notifyAll() throws java.lang.IllegalMonitorStateException
+Method: public void java.lang.Object.wait() throws java.lang.IllegalMonitorStateException,java.lang.InterruptedException
+Method: public void java.lang.Object.wait(long) throws java.lang.IllegalMonitorStateException,java.lang.InterruptedException
+Method: public void java.lang.Object.wait(long,int) throws java.lang.IllegalMonitorStateException,java.lang.InterruptedException
 */

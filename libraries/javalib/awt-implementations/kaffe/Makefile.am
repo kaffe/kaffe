@@ -435,7 +435,7 @@ new-classes: $(top_srcdir)/developers/update-class-list
 	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
 
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
-Klasses_jar = $(top_srcdir)/libraries/javalib/rt.jar
+Klasses_jar = $(top_builddir)/libraries/javalib/rt.jar
 
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes

@@ -4,6 +4,9 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2004
+ *      The Kaffe.org's developers. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -12,69 +15,63 @@
 #include "config-std.h"
 #include "gtypes.h"
 #include "java_lang_Thread.h"
+#include "java_lang_VMThread.h"
 #include "thread.h"
 #include "locks.h"
 #include "support.h"
+#include "jthread.h"
 
 struct Hjava_lang_Thread*
-java_lang_Thread_currentThread(void)
+java_lang_VMThread_currentThread(void)
 {
-	return (getCurrentThread());
+  return (getCurrentThread());
 }
 
 /*
  * Yield processor to another thread of the same priority.
  */
 void
-java_lang_Thread_yield0(void)
+java_lang_VMThread_yield(void)
 {
-	yieldThread();
+  yieldThread();
 }
 
 /*
  * Start this thread running.
  */
 void
-java_lang_Thread_start0(struct Hjava_lang_Thread* this)
+java_lang_VMThread_start(struct Hjava_lang_VMThread* this, UNUSED jlong stacksize)
 {
-	startThread(this);
+  startThread(this);
 }
 
 /*
  * Change thread priority.
  */
 void
-java_lang_Thread_setPriority0(struct Hjava_lang_Thread* this, jint prio)
+java_lang_VMThread_nativeSetPriority(struct Hjava_lang_VMThread* this, jint prio)
 {
-	setPriorityThread(this, prio);
-}
-
-/*
- * Stop a thread in its tracks.
- */
-void
-java_lang_Thread_stop0(struct Hjava_lang_Thread* this, struct Hjava_lang_Object* obj)
-{
-	stopThread(this, obj);
+  setPriorityThread(this, prio);
 }
 
 void
-java_lang_Thread_interrupt0(struct Hjava_lang_Thread* this)
+java_lang_VMThread_nativeInterrupt(struct Hjava_lang_VMThread* this)
 {
-	interruptThread(this);
+  interruptThread(this);
 }
 
 void
-java_lang_Thread_finalize0(struct Hjava_lang_Thread* this)
+java_lang_VMThread_finalize(struct Hjava_lang_VMThread* this)
 {
-	finalizeThread(this);
+  finalizeThread(this);
 }
 
-/*
- * Destroy a thread (it had better be myself!!)
- */
-void
-java_lang_Thread_destroy0(struct Hjava_lang_Thread* this UNUSED)
+jboolean java_lang_VMThread_nativeInterrupted(void)
 {
-	exitThread();
+  return jthread_interrupted(jthread_current());
+}
+
+jboolean java_lang_VMThread_nativeIsInterrupted(Hjava_lang_VMThread *this)
+{
+  return jthread_is_interrupted((jthread_t)unhand(this)->jthreadID);
 }

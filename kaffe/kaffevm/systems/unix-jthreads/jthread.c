@@ -910,7 +910,7 @@ DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%ld) bI %d\n",
 				if (jtid == currentJThread) {
 					reschedule();
 					if (jtid->flags & THREAD_FLAGS_INTERRUPTED) {
-						jtid->flags &= ~THREAD_FLAGS_INTERRUPTED;
+						jtid->flags &= ~(THREAD_FLAGS_INTERRUPTED|THREAD_FLAGS_INTERRUPTED_READ);
 						rc = true;
 					}
 				}
@@ -2606,6 +2606,15 @@ int jthread_get_status(jthread_t jt)
 int jthread_is_interrupted(jthread_t jt)
 {
 	return (jt->flags & THREAD_FLAGS_INTERRUPTED);
+}
+
+int jthread_interrupted(jthread_t jt)
+{
+	if (jt->flags & THREAD_FLAGS_INTERRUPTED_READ || !(jt->flags & THREAD_FLAGS_INTERRUPTED))
+		return 0;
+
+	jt->flags |= THREAD_FLAGS_INTERRUPTED_READ;
+	return 1;
 }
 
 int jthread_on_mutex(jthread_t jt)

@@ -202,7 +202,6 @@ TEST_CLASS_LOADING = \
 ## Test various ways of stopping threads
 TEST_STOPPING_THREADS = \
 	CatchDeath.java \
-	ThreadStop.java \
 	DeadThread.java \
 	tthrd1.java 
 

@@ -95,6 +95,7 @@ java/lang/NullPointerException.class
 java/lang/Number.class
 java/lang/NumberFormatException.class
 java/lang/Object.class
+java/lang/VMObject.class
 java/lang/OutOfMemoryError.class
 java/lang/Package.class
 java/lang/Runnable.class
@@ -112,6 +113,7 @@ java/lang/StringBuffer.class
 java/lang/StringIndexOutOfBoundsException.class
 java/lang/System.class
 java/lang/Thread.class
+java/lang/VMThread.class
 java/lang/ThreadGroup.class
 java/lang/Throwable.class
 java/lang/Throwable$StaticData.class

@@ -19,32 +19,34 @@
 #include "errors.h"
 #include "java_lang_Throwable.h"
 #include "java_lang_Thread.h"
+#include "java_lang_VMThread.h"
 #include "java_lang_ThreadGroup.h"
 
 #define	THREADCLASS			"java/lang/Thread"
+#define VMTHREADCLASS			"java/lang/VMThread"
 #define	THREADGROUPCLASS		"java/lang/ThreadGroup"
-#define	THREADDEATHCLASS		"java/lang/ThreadDeath"
 
 #define THREAD_MAXPRIO  		(java_lang_Thread_MAX_PRIORITY+1)
 
 /*
- * Interface to the thread system.
+ * Interface to the VM thread system.
  */
 void	initThreads(void);
 void    initNativeThreads(int nativestacksize);
 void	yieldThread(void);
-void	sleepThread(jlong);
 void	exitThread(void);
-bool	aliveThread(Hjava_lang_Thread*);
-jint	framesThread(Hjava_lang_Thread*);
-void	setPriorityThread(Hjava_lang_Thread*, jint);
-void	startThread(Hjava_lang_Thread*);
-void	stopThread(Hjava_lang_Thread*, Hjava_lang_Object*);
-void	interruptThread(Hjava_lang_Thread*);
-void	finalizeThread(Hjava_lang_Thread*);
-char*	nameThread(Hjava_lang_Thread*);
+void	setPriorityThread(Hjava_lang_VMThread*, jint);
+void	startThread(Hjava_lang_VMThread*);
+void	stopThread(Hjava_lang_VMThread*, Hjava_lang_Object*);
+void	interruptThread(Hjava_lang_VMThread*);
+void	finalizeThread(Hjava_lang_VMThread*);
+char*	nameThread(Hjava_lang_VMThread*);
 char*	nameNativeThread(void*);
+
+
+
 Hjava_lang_Thread* getCurrentThread(void);
+Hjava_lang_VMThread* getCurrentVMThread(void);
 Hjava_lang_Thread* createDaemon(void*, const char*, void *arg, int,
 				size_t, struct _errorInfo *);
 void	attachFakedThreadInstance (const char *name, int isDaemon);

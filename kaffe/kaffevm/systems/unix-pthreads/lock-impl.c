@@ -10,6 +10,8 @@
 
 #include "config.h"
 #include "config-std.h"
+#include <errno.h>
+#include "debug.h"
 
 #include "jthread.h"
 /* For NOTIMEOUT */
@@ -43,6 +45,7 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
   //CHECK_LOCK( cur,lk);
 
   cur->stackCur  = (void*)&cur;
+  jthread_current()->interrupting = 0;
 
   if ( timeout == NOTIMEOUT ) {
 	/* we handle this as "wait forever"	*/
@@ -74,6 +77,7 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 	}
 
   }
+  jthread_current()->interrupting = (status == EINTR);
   
   return (status == 0);
 }

@@ -54,6 +54,7 @@ typedef struct _jthread {
 
   /* wether this is a daemon thread */
   int			daemon;
+  int                   interrupting;
 
   /* convars and mutexes aren't useful in signal handlers, semaphores are */
   sem_t                 sem;
@@ -405,11 +406,8 @@ jlong jthread_get_usage(UNUSED jthread_t jt)
 	return 0;
 }
 
-static inline
-int jthread_is_interrupted(UNUSED jthread_t jt)
-{
-	/* TODO */
-	return 0;
-}
+int jthread_is_interrupted(jthread_t jt);
+
+int jthread_interrupted(jthread_t jt);
 
 #endif /* __thread_impl_h */

@@ -423,13 +423,6 @@ unhandledException(Hjava_lang_Throwable *eobj)
 	class = OBJECT_CLASS(&eobj->base);
 	cname = CLASS_CNAME(class);
 
-	/* We must catch 'java.lang.ThreadDeath' exceptions now and
-	 * kill the thread rather than the machine.
-	 */
-	if (strcmp(cname, THREADDEATHCLASS) == 0) {
-		exitThread();
-	}
-
 	/* We don't know what to do here. */
 	dprintf("Internal error: caught an unexpected exception.\n"
 		"Please check your CLASSPATH and your installation.\n");

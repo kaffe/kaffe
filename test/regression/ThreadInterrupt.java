@@ -217,6 +217,7 @@ public class ThreadInterrupt {
 	    t.join();
 	} catch (InterruptedException e) { 
 	    System.out.println("caught " + e);
+	    e.printStackTrace();
 	}
     }
 }

@@ -20,6 +20,7 @@
 #include "jthread.h"
 #include "errors.h"
 #include "md.h"
+#include "java_lang_Thread.h"
 
 #define	REFOBJHASHSZ	128
 typedef struct _refObject {
@@ -145,8 +146,10 @@ liveThreadWalker(jthread_t tid)
 {
   Collector *c = running_collector;
   threadData *thread_data = jthread_get_data(tid);
+  Hjava_lang_VMThread *thread = (Hjava_lang_VMThread *)thread_data->jlThread;
 
-  KGC_markObject(c, thread_data->jlThread);
+  KGC_markObject(c, unhand(thread)->thread);
+  KGC_markObject(c, thread);
   
   if (thread_data->exceptObj != NULL)
   {

@@ -86,6 +86,7 @@
 #define THREAD_FLAGS_INTERRUPTED	128
 #define THREAD_FLAGS_WAIT_MUTEX		256
 #define THREAD_FLAGS_WAIT_CONDVAR	512
+#define THREAD_FLAGS_INTERRUPTED_READ   1024
 
 /*
  * This is our internal structure representing the "native" threads.
@@ -340,6 +341,8 @@ jlong jthread_get_usage(jthread_t jt);
 int jthread_get_status(jthread_t jt);
 
 int jthread_is_interrupted(jthread_t jt);
+
+int jthread_interrupted(jthread_t jt);
 
 int jthread_on_mutex(jthread_t jt);
 

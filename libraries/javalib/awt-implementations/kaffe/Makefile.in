@@ -757,7 +757,7 @@ EXTRA_DIST = \
 @HAVE_ZIP_TRUE@JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(ZIP) -r $$dstdir/$(CLASSFILE) $(SRCDIRS))
 LIBDIR = lib
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
-Klasses_jar = $(top_srcdir)/libraries/javalib/rt.jar
+Klasses_jar = $(top_builddir)/libraries/javalib/rt.jar
 all: all-am
 
 .SUFFIXES:

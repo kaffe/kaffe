@@ -53,7 +53,7 @@ typedef struct _iStaticLock {
 	iLock	heavyLock; 
 } iStaticLock;
 
-#define KAFFE_STATIC_LOCK_INITIALIZER { NULL }
+#define KAFFE_STATIC_LOCK_INITIALIZER { NULL, { NULL, (jthread_t)0, (jthread_t)0 } }
 
 #define	LOCKINPROGRESS	((iLock*)-1)
 #define	LOCKFREE	((iLock*)0)

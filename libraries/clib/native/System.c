@@ -432,7 +432,8 @@ Java_java_lang_System_setErr0(JNIEnv *env, jclass system_cls, struct Hjava_io_Pr
 jint
 java_lang_System_identityHashCode(struct Hjava_lang_Object* o)
 {
-       return (java_lang_Object_hashCode(o));
+  /* Hash code is object's address */
+  return ((jint)(jword)o);
 }
 
 /*

@@ -516,7 +516,6 @@ TEST_CLASS_LOADING = \
 
 TEST_STOPPING_THREADS = \
 	CatchDeath.java \
-	ThreadStop.java \
 	DeadThread.java \
 	tthrd1.java 
 

@@ -74,7 +74,7 @@ public class CLTestConc extends ClassLoader
 		    System.out.println("stopping first thread");
 		// interestingly, JDK 1.2 doesn't throw a ThreadDeath when
 		// I call stop here --- it just ignores it.
-		current.stop();
+//		current.stop();
 		if (verbose)
 		    System.out.println("first thread was not stopped???");
 		// this convinces even 1.2 that I want out.
@@ -112,7 +112,7 @@ public class CLTestConc extends ClassLoader
 	    if (current == second) {
 		if (verbose)
 		    System.out.println("stopping second thread");
-		current.stop();
+//		current.stop();
 		throw new ThreadDeath();
 	    }
 	} else {

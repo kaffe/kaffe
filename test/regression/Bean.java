@@ -64,16 +64,16 @@ public class Bean {
   Editor: class gnu.java.beans.editors.StringEditor
   Method: public boolean java.lang.Object.equals(java.lang.Object)
   Method: public final native java.lang.Class java.lang.Object.getClass()
-  Method: public final native void java.lang.Object.notify()
-  Method: public final native void java.lang.Object.notifyAll()
-  Method: public final void java.lang.Object.wait() throws java.lang.InterruptedException
-  Method: public final void java.lang.Object.wait(long) throws java.lang.InterruptedException
-  Method: public final void java.lang.Object.wait(long,int) throws java.lang.InterruptedException
+  Method: public final void java.lang.Object.notify() throws java.lang.IllegalMonitorStateException
+  Method: public final void java.lang.Object.notifyAll() throws java.lang.IllegalMonitorStateException
+  Method: public final void java.lang.Object.wait() throws java.lang.IllegalMonitorStateException,java.lang.InterruptedException
+  Method: public final void java.lang.Object.wait(long) throws java.lang.IllegalMonitorStateException,java.lang.InterruptedException
+  Method: public final void java.lang.Object.wait(long,int) throws java.lang.IllegalMonitorStateException,java.lang.InterruptedException
+  Method: public int java.lang.Object.hashCode()
   Method: public java.lang.String Bean.getArray(int)
   Method: public java.lang.String Bean.getValue()
   Method: public java.lang.String java.lang.Object.toString()
   Method: public java.lang.String[] Bean.getArray()
-  Method: public native int java.lang.Object.hashCode()
   Method: public static void Bean.main(java.lang.String[])
   Method: public void Bean.setArray(int,java.lang.String)
   Method: public void Bean.setArray(java.lang.String[])

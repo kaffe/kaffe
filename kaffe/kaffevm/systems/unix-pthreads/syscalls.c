@@ -57,13 +57,6 @@
 		r = 0;					\
 	}
 
-#define CALL_BLOCK_ON_FILE(A, B, C)				\
-	if (blockOnFile(A, B, C)) {				\
-		/* interrupted via jthread_interrupt() */ 	\
-		errno = EINTR; 					\
-		break;						\
-	}
-
 static 
 int
 waitForTimeout(int fd, int timeout){
@@ -76,6 +69,7 @@ waitForTimeout(int fd, int timeout){
 	tv.tv_sec = timeout / 1000;
 	tv.tv_usec = (timeout % 1000) * 1000;
 
+	jthread_current()->interrupting = 0;
 	if (timeout == NOTIMEOUT) 
 		ret = select(fd+1,&rset,NULL,NULL,NULL);
 	else	
@@ -84,7 +78,10 @@ waitForTimeout(int fd, int timeout){
 	if (ret == 0) 
 		errno = ETIMEDOUT;
 	else if (ret == -1)
+	{
 		errno = EINTR;
+		jthread_current()->interrupting = 1;
+	}
 
 	return (ret);
 }
@@ -103,6 +100,7 @@ int waitForWritable(int fd, int timeout)
         tv.tv_sec = timeout / 1000;
 	tv.tv_usec = (timeout % 1000) * 1000;
 
+	jthread_current()->interrupting = 0;
         if (timeout == NOTIMEOUT)
 		ret = select(fd+1,NULL,&wset,NULL,NULL);
 	else
@@ -111,7 +109,10 @@ int waitForWritable(int fd, int timeout)
 	if (ret == 0)
 		errno = ETIMEDOUT;
 	else if (ret == -1)
+	{
 		errno = EINTR;
+		jthread_current()->interrupting = 1;
+	}
 
 	return (ret);
 }

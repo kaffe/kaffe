@@ -508,8 +508,22 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
 
 void jthread_interrupt(jthread_t tid)
 {
-	/* We need to send some signal to interrupt syscalls. */
-	pthread_kill(tid->tid, SIG_RESUME);
+  tid->interrupting = 1;
+  /* We need to send some signal to interrupt syscalls. */
+  pthread_kill(tid->tid, SIG_RESUME);
+}
+
+int jthread_is_interrupted(jthread_t jt)
+{
+  return jt->interrupting;
+}
+
+int jthread_interrupted(jthread_t jt)
+{
+  int i = jt->interrupting;
+
+  jt->interrupting = 0;
+  return i;
 }
 
 bool jthread_attach_current_thread (bool daemon)
