@@ -475,7 +475,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
    * A helper class that implements Icon. This is used temporarily until
    * ImageIcons are fixed.
    */
-  private static class messageIcon implements Icon
+  private static class MessageIcon implements Icon
   {
     /**
      * This method returns the width of the icon.
@@ -512,7 +512,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
   }
 
   /** The icon displayed for ERROR_MESSAGE. */
-  private static messageIcon errorIcon = new messageIcon()
+  private static MessageIcon errorIcon = new MessageIcon()
     {
       public void paintIcon(Component c, Graphics g, int x, int y)
       {
@@ -534,7 +534,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
     };
 
   /** The icon displayed for INFORMATION_MESSAGE. */
-  private static messageIcon infoIcon = new messageIcon()
+  private static MessageIcon infoIcon = new MessageIcon()
     {
       public void paintIcon(Component c, Graphics g, int x, int y)
       {
@@ -560,7 +560,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
     };
 
   /** The icon displayed for WARNING_MESSAGE. */
-  private static messageIcon warningIcon = new messageIcon()
+  private static MessageIcon warningIcon = new MessageIcon()
     {
       public void paintIcon(Component c, Graphics g, int x, int y)
       {
@@ -585,7 +585,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
     };
 
   /** The icon displayed for MESSAGE_ICON. */
-  private static messageIcon questionIcon = new messageIcon()
+  private static MessageIcon questionIcon = new MessageIcon()
     {
       public void paintIcon(Component c, Graphics g, int x, int y)
       {

@@ -85,17 +85,24 @@ public class RescaleOp implements BufferedImageOp, RasterOp
     return offsets;
   }
 
-  public final int getNumFactors() { return scale.length; }
+  public final int getNumFactors()
+  {
+    return scale.length;
+  }
 
   /* (non-Javadoc)
    * @see java.awt.image.BufferedImageOp#getRenderingHints()
    */
-  public RenderingHints getRenderingHints() { return hints; }
+  public RenderingHints getRenderingHints()
+  {
+    return hints;
+  }
 
   /* (non-Javadoc)
    * @see java.awt.image.BufferedImageOp#filter(java.awt.image.BufferedImage, java.awt.image.BufferedImage)
    */
-  public BufferedImage filter(BufferedImage src, BufferedImage dst) {
+  public BufferedImage filter(BufferedImage src, BufferedImage dst)
+  {
     // TODO Make sure premultiplied alpha is handled correctly.
     // TODO See that color conversion is handled.
     // TODO figure out how to use rendering hints.
@@ -127,7 +134,8 @@ public class RescaleOp implements BufferedImageOp, RasterOp
   /* (non-Javadoc)
    * @see java.awt.image.RasterOp#filter(java.awt.image.Raster, java.awt.image.WritableRaster)
    */
-  public WritableRaster filter(Raster src, WritableRaster dest) {
+  public WritableRaster filter(Raster src, WritableRaster dest)
+  {
     if (dest == null) dest = src.createCompatibleWritableRaster();
 
     // Required sanity checks
