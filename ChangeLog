@@ -1,3 +1,19 @@
+2003-07-02  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/io/StreamTokenizer.java:
+	nextTokenType(): changed the order of rules so that the result
+	is similar to Sun's implementation.
+	numericChar(), commentChar(), quoteChar(), whitespaceChars(),
+	wordChars(): changed these methods so that assigning one attribute
+	may drop other attributes. This makes the result similar to Sun's
+	implementation.
+	Added new private method isNumericByDefault() to be used in
+	parseNumericChars(). Numeric characters should be checked with
+	this method rather than with lookup(chr).isNumeric, which may
+	have been changed by some attribute-assining methods.
+
+	Reported by Hermanni Hyytiala <hemppah@cc.jyu.fi>.
+
 2003-07-02  Rob Gonzalez <rob@kaffe.org>
 
 	* kaffe/kaffevm/verify.c

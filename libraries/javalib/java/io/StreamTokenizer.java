@@ -72,12 +72,6 @@ private void unRead(int c) throws IOException {
 	}
 }
 
-public void commentChar(int ch) {
-	if (ch >= 0 && ch <= 255) {
-		lookup(ch).isComment = true;
-	}
-}
-
 public void eolIsSignificant(boolean flag) {
 	EOLSignificant = flag;
 }
@@ -106,6 +100,14 @@ public int nextToken() throws IOException {
 }
 
 private void nextTokenType() throws IOException {
+	/* The rule for finding the next token was defined in JLS 1.ed
+	   but this document is obsolete.  A simple testing shows 
+	   that Sun's implementation no longer respects this old
+	   document, but no official document for this can be found now.
+	   The following rule, found by a try-and-error testing, seems
+	   to match Sun's implementation.
+	*/
+
         /* Sets ttype to the type of the next token */ 
 
 	int chr = chrRead();
@@ -115,14 +117,6 @@ private void nextTokenType() throws IOException {
 	if (e.isWhitespace) {
 		/* Skip whitespace and return nextTokenType */
 		parseWhitespaceChars(chr);
-	}
-	else if (e.isNumeric) {
-		/* Parse the number and return */
-		parseNumericChars(chr);
-	}
-	else if (e.isAlphabetic) {
-		/* Parse the word and return */
-		parseAlphabeticChars(chr);
 	}
 	/* Contrary to the description in JLS 1.ed,
 	   C & C++ comments seem to be checked
@@ -141,6 +135,14 @@ private void nextTokenType() throws IOException {
 	else if (e.isComment) {
 	        /* skip comment and return nextTokenType() */
 	        parseCommentChars();
+	}
+	else if (e.isNumeric) {
+		/* Parse the number and return */
+		parseNumericChars(chr);
+	}
+	else if (e.isAlphabetic) {
+		/* Parse the word and return */
+		parseAlphabeticChars(chr);
 	}
 	else if (e.isStringQuote) {
 	        /* Parse string and return word */
@@ -231,7 +233,7 @@ private void parseNumericChars(int chr) throws IOException {
 		buffer.append((char)chr);
 		chr = chrRead();
 
-	} while (lookup(chr).isNumeric
+	} while (isNumericByDefault(chr)
 		 && chr != '-'
 		 && !(chr == '.' && dotParsed));
 
@@ -432,20 +434,18 @@ public void ordinaryChars(int low, int hi) {
 
 public void parseNumbers() {
 	for (int letter = '0'; letter <= '9'; letter++) {
-		lookup(letter).isNumeric = true;
+		numericChar(letter);
 	}
-	lookup('.').isNumeric = true;
-	lookup('-').isNumeric = true;
+	numericChar('.');
+	numericChar('-');
+}
+
+private boolean isNumericByDefault(int chr) {
+	return ('0' <= chr && chr <= '9') || chr == '.' || chr == '-';
 }
 
 public void pushBack() {
 	pushBack = true;
-}
-
-public void quoteChar(int ch) {
-	if (ch >= 0 && ch <= 255) {
-		lookup(ch).isStringQuote = true;
-	}
 }
 
 private void init() {
@@ -535,6 +535,43 @@ public String toString() {
 	}
 }
 
+/*  While Sun's API document says "Each character can have zero or more
+    of these attributes," it seems that Sun's implementation has
+    some dependencies among these attributes.  The following rule
+    is not clearly documented but found by a try-and-error approach.
+*/
+
+private void numericChar(int ch) {
+	TableEntry e = lookup(ch);
+	e.isNumeric = true;
+	// e.isWhitespace = false;
+	e.isStringQuote = false;
+	e.isComment = false;
+	e.isAlphabetic = false;
+}
+
+public void commentChar(int ch) {
+	if (ch >= 0 && ch <= 255) {
+		TableEntry e = lookup(ch);
+		e.isComment = true;
+		e.isStringQuote = false;
+		e.isWhitespace = false;
+		e.isAlphabetic = false;
+		e.isNumeric = false;
+	}
+}
+
+public void quoteChar(int ch) {
+	if (ch >= 0 && ch <= 255) {
+		TableEntry e = lookup(ch);
+		e.isComment = false;
+		e.isStringQuote = true;
+		e.isWhitespace = false;
+		e.isAlphabetic = false;
+		e.isNumeric = false;
+	}
+}
+
 public void whitespaceChars(int low, int hi) {
         if (low < 0) {
 		low = 0;
@@ -547,6 +584,8 @@ public void whitespaceChars(int low, int hi) {
 	for (int letter = low; letter <= hi; letter++) {
 		TableEntry e = lookup(letter);
 		e.isWhitespace = true;
+		e.isComment = false;
+		e.isStringQuote = false;
 		e.isAlphabetic = false;
 		e.isNumeric = false;
 	}    
@@ -562,7 +601,12 @@ public void wordChars(int low, int hi) {
 	}
 
 	for (int letter = low; letter <= hi; letter++) {
-		lookup(letter).isAlphabetic = true;
+		TableEntry e = lookup(letter);
+		e.isAlphabetic = true;
+		e.isComment = false;
+		e.isStringQuote = false;
+		// e.isWhitespace = false;
+		// e.isNumeric = false;
 	}    
 }
 
