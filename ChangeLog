@@ -2,6 +2,30 @@
 
         Resynced with GNU Classpath.
 
+	2005-01-24  Michael Koch  <konqueror@gmx.de>
+
+        * javax/swing/plaf/basic/BasicTextUI.java
+        (RootView.modelToView): Made it public and return a java.awt.Shape.
+        Handle null subview.
+        (uninstall): Set textComponent to null when its not possible used
+        anymore.
+        * javax/swing/text/View.java
+        (setParent): Use better argument name.
+        (getContainer): Get parent via getParent().
+        (getViewFactory): Likewise.
+        (getAttributes): Get element via getElement().
+        (getStartOffset): Likewise.
+        (getEndOffset): Likewise.
+        (getResizeWeight): New method.
+        (getMaximumSpan): Likewise.
+        (getMinimumSpan): Likewise.
+        (setSize): Likewise.
+        (getGraphics): Likewise.
+
+2005-01-26  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-01-24  Graydon Hoare  <graydon@redhat.com>
 	            Michael Koch  <konqueror@gmx.de>
 

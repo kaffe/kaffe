@@ -1,5 +1,5 @@
-/* BasicTextUI.java
-   Copyright (C) 2002, 2003, 2004  Free Software Foundation, Inc.
+/* BasicTextUI.java --
+   Copyright (C) 2002, 2003, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -104,6 +104,8 @@ public abstract class BasicTextUI extends TextUI
       super(null);
     }
 
+    // View methods.
+
     public ViewFactory getViewFactory()
     {
       // FIXME: Handle EditorKit somehow.
@@ -140,9 +142,12 @@ public abstract class BasicTextUI extends TextUI
 	view.paint(g, s);
     }
 
-    protected Rectangle modelToView(int position, Shape a, Position.Bias bias)
+    public Shape modelToView(int position, Shape a, Position.Bias bias)
       throws BadLocationException
     {
+      if (view == null)
+	return null;
+      
       return ((PlainView) view).modelToView(position, a, bias).getBounds();
     }
   }
@@ -327,11 +332,12 @@ public abstract class BasicTextUI extends TextUI
     rootView.setView(null);
 
     textComponent.removePropertyChangeListener(updateHandler);
-    textComponent = null;
 
     uninstallDefaults();
     uninstallListeners();
     uninstallKeyboardActions();
+
+    textComponent = null;
   }
 
   protected void uninstallDefaults()
@@ -442,13 +448,13 @@ public abstract class BasicTextUI extends TextUI
 
   public View create(Element elem)
   {
-    // subclasses have to implement this to get this functionality
+    // Subclasses have to implement this to get this functionality.
     return null;
   }
 
   public View create(Element elem, int p0, int p1)
   {
-    // subclasses have to implement this to get this functionality
+    // Subclasses have to implement this to get this functionality.
     return null;
   }
   
