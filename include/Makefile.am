@@ -10,6 +10,23 @@ KLASSES_JAR = $(top_srcdir)/libraries/javalib/Klasses.jar.bootstrap
 
 EXTRA_DIST = distclean-hack
 
+# INSTALL_ means: these headers get installed,
+# NOINSTALL_ means: they don't get installed.
+# _DERIVED_ means: these headers are derived (using
+# kaffeh, from Klasses.jar.bootstrap). 
+# _JNI_DERIVED_ means: these headers are derived using kaffeh
+# from Klasses.jar.bootstrap *and* the -jni option is
+# set, resulting in JNI-ish method names.
+#
+# So if your class uses JNI to call its native methods
+# (like tritonus), then it goes into the JNI set,
+# otherwise it goes into the other one.
+#
+# In libraries/javalib, Klasses.jar.bootstrap contains
+# beside classes necesary for kjc to run, also all the
+# classes necessary to generate headers from. They are
+# at the end of bootstrap.classlist.
+
 INSTALL_DERIVED_HDRS = \
 	java_lang_Object.h \
 	java_lang_String.h \
