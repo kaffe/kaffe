@@ -26,7 +26,7 @@ constants* constant_pool;
  * Read in constant pool from opened file.
  */
 void
-readConstantPool(struct Hjava_lang_Class* this, FILE* fp)
+readConstantPool(struct Hjava_lang_Class* this, classFile* fp)
 {
 	constants* info;
 	jword* pool;
@@ -86,7 +86,7 @@ RDBG(				printf("%2d: Cnst %2d: utf8: %.*s\n", i, type, len, name); )
 #else
 				Utf8Const *m =
 				  gc_malloc_fixed(sizeof(Utf8Const) + len + 1);
-				fread(m->data, len, sizeof(u1), fp);
+				readm(m->data, len, sizeof(u1), fp);
 				m->data[len] = 0;
 				m->hash = (uint16)hashUtf8String (m->data,len);
 				pool[i] = (jword)&(m->data);

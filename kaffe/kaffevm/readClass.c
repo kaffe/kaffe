@@ -81,7 +81,7 @@ DBG(	printf("interfaces_count=%d\n", interfaces_count);	)
 #ifdef READINTERFACES
 	READINTERFACES(fp, this, interfaces_count);
 #else
-	fseek(fp, interfaces_count * 2, SEEK_CUR);
+	seekm(fp, interfaces_count * 2);
 #endif
 }
 
@@ -140,7 +140,7 @@ DBG(	printf("attributes_count=%d\n", cnt);				)
 		u4 len;
 		readu2(&idx, fp);
 		readu4(&len, fp);
-		fseek(fp, len, SEEK_CUR);
+		seekm(fp, len);
 #endif
 	}
 }

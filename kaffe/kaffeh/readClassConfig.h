@@ -14,15 +14,14 @@
 
 #include <stdio.h>
 
-typedef FILE classFile;
 typedef struct Hjava_lang_Class Hjava_lang_Class;
 typedef struct _methods methods;
 
 /* Following functions are defined in kaffeh/support.c */
 void addClass(u2 this, u2 super, u2 access, constants* cpool);
 void readFieldEnd(void);
-void readField(FILE* fp, Hjava_lang_Class* this, constants* cpool);
-void readMethod(FILE* fp, Hjava_lang_Class* this, constants* cpool);
+void readField(classFile* fp, Hjava_lang_Class* this, constants* cpool);
+void readMethod(classFile* fp, Hjava_lang_Class* this, constants* cpool);
 
 #define	ADDCLASS(t, s, a, c)	addClass(t, s, a, c)
 #define	READFIELD(f, t)		readField(f, t, constant_pool)

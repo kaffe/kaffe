@@ -12,8 +12,18 @@
 #ifndef __file_h
 #define __file_h
 
-#define	readu1(c, f)	((*(c)) = getc(f))
-#define	readu2(c, f)	((*(c)) = getc(f) << 8, (*c) |= getc(f))
-#define	readu4(c, f)	((*(c)) = getc(f) << 24, (*c) |= getc(f) << 16, (*c) |= getc(f) << 8, (*c) |= getc(f))
+typedef struct _classFile {
+	unsigned char*	base;
+	unsigned char*	buf;
+	int		size;
+} classFile;
+
+#define readu1(c,f)     (*(c) = f->buf[0], f->buf += 1)
+#define readu2(c,f)     (*(c) = (f->buf[0] << 8) | f->buf[1], f->buf += 2)
+#define readu4(c,f)     (*(c) = (f->buf[0] << 24)|(f->buf[1] << 16)|\
+                                (f->buf[2] << 8)|f->buf[3], f->buf += 4)
+
+#define readm(b,l,s,f)  (memcpy(b, f->buf, (l)*(s)), f->buf += (l)*(s))
+#define seekm(f,l)      (f->buf += (l))
 
 #endif
