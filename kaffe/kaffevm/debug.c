@@ -45,13 +45,6 @@ jlong kaffevmDebugMask = DEFAULT_DEBUG_MASK;
 void dbgSetMask(jlong mask)
 {
 	kaffevmDebugMask = mask;
-#if defined(JTHREAD_RESTORE_FD)
-	if (mask) {
-		jthreadRestoreFD(0);
-		jthreadRestoreFD(1);
-		jthreadRestoreFD(2);
-	}
-#endif
 }
 
 /*
@@ -177,6 +170,11 @@ int dbgSetMaskStr(char *mask_str)
 		return 1;
 	}
 
+#if defined(JTHREAD_RESTORE_FD)
+	jthreadRestoreFD(0);
+	jthreadRestoreFD(1);
+	jthreadRestoreFD(2);
+#endif
 	/* Special target 'list' lists all the defined options */
 	if (!strcasecmp(opt, "list")) {
 		dprintf("Available debug opts: \n");
