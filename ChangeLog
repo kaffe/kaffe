@@ -1,3 +1,15 @@
+Wed Nov  6 06:49:43 CET 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/lang/System.java:
+	(arraycopy) fixed all mauve failures. Added more explicit
+	parameter checks. Now follows the JDK 1.4 API description very
+	closely.
+	* libraries/javalib/kaffe/io/ByteToCharConverter.java:
+	(withdraw) fixed bad arraycopy call.
+	* test/regression/InnerTest.java:
+	Changed expected output back to old format. The change in output
+	was caused by the bad arraycopy implementation.
+
 Tue Nov  5 11:45:14 CET 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/lang/reflect/Field.java:

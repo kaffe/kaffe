@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Array;
 import java.util.Properties;
 
 public final class System {
@@ -85,159 +86,111 @@ static {
 private System() { }
 
 public static void arraycopy(Object src, int src_position, Object dst, int dst_position, int length) {
+	Class src_class = src.getClass();
+	Class src_component = src_class.getComponentType();
+	Class dst_class = dst.getClass();
+	Class dst_component = dst_class.getComponentType();
+
+	/* check for:
+	 * src or dst not array
+	 * src and dst reference vs. primitive type mismatch
+	 * src and dst both primitive arrays, but for different primitives
+	 */
+	if (!src_class.isArray()
+	    || !dst_class.isArray()
+	    || (src_component.isPrimitive()
+		&& !dst_component.isPrimitive())
+	    || (!src_component.isPrimitive()
+		&& dst_component.isPrimitive())
+	    || (src_component.isPrimitive()
+		&& dst_component.isPrimitive()
+		&& src_component != dst_component)) {
+		throw new ArrayStoreException("not assignable: source type is "
+					      + src_class.getName()
+					      + ", destination type is "
+					      + dst_class.getName());
+	}
+
 	if (length < 0) {
 		throw new ArrayIndexOutOfBoundsException();
 	}
 
-	if (dst instanceof Object[]) {
+	if (src == dst) {
+		Object tmp = Array.newInstance(dst_component, length);
+		System.arraycopy(src, src_position, tmp, 0, length);
+		System.arraycopy(tmp, 0, dst, dst_position, length);
+	}
+	else if (dst instanceof Object[]) {
 		Object[] d = (Object[])dst;
 		Object[] s = (Object[])src;
-		if (dst_position < src_position) {
-			for (int i = length - 1; i >= 0; --i) {
-				d[dst_position++] = s[src_position++];
-			}
-		}
-		else {
-			dst_position += length;
-			src_position += length;
-			for (int i = length - 1; i >= 0; --i) {
-				d[--dst_position] = s[--src_position];
-			}
+
+		for (int i = length - 1; i >= 0; --i) {
+			d[dst_position++] = s[src_position++];
 		}
 	}
 	else if (dst instanceof int[]) {
 		int[] d = (int[])dst;
 		int[] s = (int[])src;
-		if (dst_position < src_position) {
-			for (int i = length - 1; i >= 0; --i) {
-				d[dst_position++] = s[src_position++];
-			}
-		}
-		else {
-			dst_position += length;
-			src_position += length;
-			for (int i = length - 1; i >= 0; --i) {
-				d[--dst_position] = s[--src_position];
-			}
+
+		for (int i = length - 1; i >= 0; --i) {
+			d[dst_position++] = s[src_position++];
 		}
 	}
 	else if (dst instanceof float[]) {
 		float[] d = (float[])dst;
 		float[] s = (float[])src;
-		if (dst_position < src_position) {
-			for (int i = length - 1; i >= 0; --i) {
-				d[dst_position++] = s[src_position++];
-			}
-		}
-		else {
-			dst_position += length;
-			src_position += length;
-			for (int i = length - 1; i >= 0; --i) {
-				d[--dst_position] = s[--src_position];
-			}
+
+		for (int i = length - 1; i >= 0; --i) {
+			d[dst_position++] = s[src_position++];
 		}
 	}
 	else if (dst instanceof long[]) {
 		long[] d = (long[])dst;
 		long[] s = (long[])src;
-		if (dst_position < src_position) {
-			for (int i = length - 1; i >= 0; --i) {
-				d[dst_position++] = s[src_position++];
-			}
-		}
-		else {
-			dst_position += length;
-			src_position += length;
-			for (int i = length - 1; i >= 0; --i) {
-				d[--dst_position] = s[--src_position];
-			}
+
+		for (int i = length - 1; i >= 0; --i) {
+			d[dst_position++] = s[src_position++];
 		}
 	}
 	else if (dst instanceof double[]) {
 		double[] d = (double[])dst;
 		double[] s = (double[])src;
-		if (dst_position < src_position) {
-			for (int i = length - 1; i >= 0; --i) {
-				d[dst_position++] = s[src_position++];
-			}
-		}
-		else {
-			dst_position += length;
-			src_position += length;
-			for (int i = length - 1; i >= 0; --i) {
-				d[--dst_position] = s[--src_position];
-			}
+
+		for (int i = length - 1; i >= 0; --i) {
+			d[dst_position++] = s[src_position++];
 		}
 	}
 	else if (dst instanceof boolean[]) {
 		boolean[] d = (boolean[])dst;
 		boolean[] s = (boolean[])src;
-		if (dst_position < src_position) {
-			for (int i = length - 1; i >= 0; --i) {
-				d[dst_position++] = s[src_position++];
-			}
-		}
-		else {
-			dst_position += length;
-			src_position += length;
-			for (int i = length - 1; i >= 0; --i) {
-				d[--dst_position] = s[--src_position];
-			}
+
+		for (int i = length - 1; i >= 0; --i) {
+			d[dst_position++] = s[src_position++];
 		}
 	}
 	else if (dst instanceof byte[]) {
 		byte[] d = (byte[])dst;
 		byte[] s = (byte[])src;
-		if (dst_position < src_position) {
-			for (int i = length - 1; i >= 0; --i) {
-				d[dst_position++] = s[src_position++];
-			}
-		}
-		else {
-			dst_position += length;
-			src_position += length;
-			for (int i = length - 1; i >= 0; --i) {
-				d[--dst_position] = s[--src_position];
-			}
+
+		for (int i = length - 1; i >= 0; --i) {
+			d[dst_position++] = s[src_position++];
 		}
 	}
 	else if (dst instanceof char[]) {
 		char[] d = (char[])dst;
 		char[] s = (char[])src;
-		if (dst_position < src_position) {
-			for (int i = length - 1; i >= 0; --i) {
-				d[dst_position++] = s[src_position++];
-			}
-		}
-		else {
-			dst_position += length;
-			src_position += length;
-			for (int i = length - 1; i >= 0; --i) {
-				d[--dst_position] = s[--src_position];
-			}
+
+		for (int i = length - 1; i >= 0; --i) {
+			d[dst_position++] = s[src_position++];
 		}
 	}
 	else if (dst instanceof short[]) {
 		short[] d = (short[])dst;
 		short[] s = (short[])src;
-		if (dst_position < src_position) {
-			for (int i = length - 1; i >= 0; --i) {
-				d[dst_position++] = s[src_position++];
-			}
+
+		for (int i = length - 1; i >= 0; --i) {
+			d[dst_position++] = s[src_position++];
 		}
-		else {
-			dst_position += length;
-			src_position += length;
-			for (int i = length - 1; i >= 0; --i) {
-				d[--dst_position] = s[--src_position];
-			}
-		}
-	}
-	else {
-		throw new ArrayStoreException("not arrays: source type is "
-					      + src.getClass().getName()
-					      + ", destination type is "
-					      + dst.getClass().getName());
 	}
 }
 

@@ -89,6 +89,11 @@ public boolean havePending() {
 
 public int withdraw ( byte[] to, int tpos, int tlen ) {
 	int n = (tlen < blen ? tlen : blen);
+
+	if ( n == 0 ){
+		return 0;
+	}
+
 	System.arraycopy( buf, 0, to, 0, n);
 	if ( n < blen ) {
 		System.arraycopy( buf, n, buf, 0, blen - n);
