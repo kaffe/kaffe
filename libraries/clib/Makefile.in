@@ -252,10 +252,10 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
+@COND_PURE_JAVA_MATH_FALSE@MAYBE_NATIVE_MATH = math
 
 # Build math library only if native implementation of java.math should be used.
 @COND_PURE_JAVA_MATH_TRUE@MAYBE_NATIVE_MATH = 
-@COND_PURE_JAVA_MATH_FALSE@MAYBE_NATIVE_MATH = math
 
 SUBDIRS = native io nio net zip $(MAYBE_NATIVE_MATH) security management awt
 subdir = libraries/clib

@@ -27,6 +27,7 @@ EXTRA_DIST = \
 	license.terms \
 	license-lesser.terms \
 	license-w3c.terms \
+	gnu-crypto.m4 \
 	gwqt.m4 \
 	herrno.m4 \
 	in6addr.m4 \
@@ -58,6 +59,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.gcblock \
 	FAQ/FAQ.gcj \
 	FAQ/FAQ.gcstrategy \
+	FAQ/FAQ.hpux \
 	FAQ/FAQ.hotjava \
 	FAQ/FAQ.install-root \
 	FAQ/FAQ.jit3 \

@@ -1,4 +1,39 @@
-What's New since Kaffe OpenVM 1.1.1
+What's New in CVS
+------------------------------------------------------
+
+What's New in Kaffe 1.1.3
+------------------------------------------------------
+* More merges from GNU Classpath:
+  * java.beans
+  * java.util.Date
+  * java.util.jar
+  * java.net
+  * java.io
+  * javax.swing.EventListenerList
+* More JVMPI support implemented.
+* More NIO support implemented.
+* java.security.SecureRandom bugfix (with security
+   implications)
+* JIT fixes for x86, ARM and Sparc.
+* Interpreter fixes (underflow problem)
+* Fixes for Solaris, Darwin, FreeBSD.
+* Build fixes for powerpc64.
+* IPv6 fixes.
+* KJC fixes:
+  * inner class access
+  * switch labels
+  * constant initializers
+  * concatenating a null to a string
+* Fixes for SHIFT_JIS (Japanese) encoding.
+* Fix for Jetty 4.2.14.
+* AppletViewer fix for <applet> tag.
+* Lots of minor bug fixes.
+* Cleaned up GC code.
+* Compiler warning fixes.
+* Resynced with existing Classpath, GNU JAXP, Jessie.
+* Some successes: JBoss, Eclipse 3.0M4, gjdoc/libxmlj.
+
+What's New in Kaffe 1.1.2
 ------------------------------------------------------
 * New packages:
   * javax.net
@@ -15,7 +50,7 @@ What's New since Kaffe OpenVM 1.1.1
   improvements.
 * Some successes: Tomcat4, eXist, JavaLayer, JOrbis.
 
-What's New in Kaffe OpenVM 1.1.1
+What's New in Kaffe 1.1.1
 ------------------------------------------------------
 * Much of the new bytecode verifier has been added (but not all of
   it).  Soon, we will be able to safely run untrusted code!
@@ -28,7 +63,7 @@ What's New in Kaffe OpenVM 1.1.1
 * Some successes: Eclipse (loads, doesn't completely work yet),
   Jetty w/JSP, Java-Gnome, Qt AWT under QTopia, Snark, hsqldb
 
-What's New in Kaffe OpenVM 1.1.0
+What's New in Kaffe 1.1.0
 ------------------------------------------------------
 * Port to x86-64 GNU/Linux
 
@@ -115,7 +150,7 @@ What's New in Kaffe OpenVM 1.1.0
 
 * Lots of bug fixes.
 
-What's New in Kaffe OpenVM 1.0.7
+What's New in Kaffe 1.0.7
 ------------------------------------------------------
 
 This release is dedicated to the memory of Edouard G. Parmelan, one of
@@ -141,7 +176,7 @@ the driving forces behind the project.
 * Lots of bug fixes.
 
 
-What's New in Kaffe OpenVM 1.0.6
+What's New in Kaffe 1.0.6
 --------------------------------
 
 * New cross language debugging support for JIT3 engine.
@@ -161,7 +196,7 @@ What's New in Kaffe OpenVM 1.0.6
 * Lots of bug fixes.
 
 
-What's New in Kaffe OpenVM 1.0.5
+What's New in Kaffe 1.0.5
 --------------------------------
 
 * JIT port for StrongARM

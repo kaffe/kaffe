@@ -222,8 +222,7 @@ TEST_INTERRUPTING_IO = \
 TEST_NATIVE = \
 	TestNative.java
 
-if HAVE_JASMIN
-JASMIN_TESTS = \
+JASMIN_TESTS_DIST = \
 	FloatAlias.j \
 	BadCatch1.j \
 	BadCatch2.j \
@@ -259,14 +258,17 @@ JASMIN_TESTS = \
 	MethodSignature7.j \
 	MethodSignature8.j \
 	MethodSignature9.j
+if HAVE_JASMIN
+JASMIN_TESTS = JASMIN_TESTS_DIST
 else
 JASMIN_TESTS =
 endif
 
-if HAVE_BCEL
-BCEL_TESTS = \
+BCEL_TESTS_DIST = \
 	BadClassFileCode.java \
 	BadClassFileConstants.java
+if HAVE_BCEL
+BCEL_TESTS = BCEL_TESTS_DIST
 else
 BCEL_TESTS =
 endif
@@ -303,7 +305,10 @@ EXTRA_DIST = $(ALWAYS_TESTS) \
 	LoaderTest_Class3.java \
 	LoaderTest_Loader1.java \
 	LoaderTest_Loader2.java \
-	CatchLimits.j
+	$(JASMIN_TESTS_DIST) \
+	CatchLimits.j \
+	$(BCEL_TESTS_DIST) \
+	TestGnuCrypto.java
 
 CLEANFILES = *.class *.fail *.out core *.core ExceptionTest ziptest1.zip \
 	ziptest2.zip frozen_serial
