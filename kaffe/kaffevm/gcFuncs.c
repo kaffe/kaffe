@@ -174,6 +174,17 @@ DBG(CLASSGC,
         KFREE(clazz->if2itable);
 	if( clazz->itable2dtable )
 	{
+		for (i = 0; i < clazz->total_interface_len; i++) {
+			Hjava_lang_Class* iface = clazz->interfaces[i];
+
+			/* only if interface has not been freed already */
+			if (GC_getObjectIndex(collector, iface) 
+			    == GC_ALLOC_CLASSOBJECT) 
+			{
+				iface->implementors[clazz->impl_index] = -1;
+			}
+		}
+
 		/* NB: we can't just sum up the msizes of the interfaces
 		 * here because they might be destroyed simultaneously
 		 */

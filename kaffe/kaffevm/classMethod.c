@@ -1831,6 +1831,9 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 {
 	int i, j, k;
 	int found_i;
+	bool rc = false;
+	Hjava_lang_Class** ifcs;
+	int iLockRoot;
 
 	/* find an impl_index for this class 
 	 * Note that we only find a suitable impl_index with regard to the
@@ -1846,6 +1849,37 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 	 * time when soft_lookupinterfacemethod is invoked.  We do not have
 	 * such a verifier at this point.
 	 */
+
+	if (clazz->total_interface_len == 0) {
+		return (true);
+	}
+
+	/* We are manipulating the implementor tables of all implemented
+	 * interfaces.  We must lock them.  To avoid deadlock, lets lock
+	 * them in ascending order.
+	 */
+	ifcs = KMALLOC(clazz->total_interface_len * sizeof(Hjava_lang_Class*));
+	memcpy(ifcs, clazz->interfaces, 
+		clazz->total_interface_len * sizeof(Hjava_lang_Class*));
+
+	/* this is bubble-sort */
+	do {
+		k = 0;
+		for (j = 0; j < clazz->total_interface_len - 1; j++) {
+			Hjava_lang_Class* iface_j = ifcs[j];
+			Hjava_lang_Class* iface_j1 = ifcs[j+1];
+			if (iface_j - iface_j1 > 0) {
+				k = 1;
+				ifcs[j] = iface_j1;
+				ifcs[j+1] = iface_j;
+			}
+		}
+	} while (k);
+
+	for (j = 0; j < clazz->total_interface_len; j++) {
+		_lockMutex(&(ifcs[j]->centry)->lock, &iLockRoot);
+	}
+
 	i = 0;
 	do {
 		found_i = 1;
@@ -1900,7 +1934,7 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 
 			if (iface->implementors == 0) {
 				postOutOfMemory(einfo);
-				return (false);
+				goto done;
 			}
 			/* NB: we assume KMALLOC/KREALLOC zero memory out */
 			firstnewentry = iface->implementors[0] + 1;
@@ -1915,7 +1949,14 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 		assert(i < iface->implementors[0] + 1);
 		iface->implementors[i] = clazz->if2itable[j];
 	}
-	return (true);
+	rc = true;
+
+done:
+	for (j = clazz->total_interface_len - 1; j >= 0; j--) {
+		_unlockMutex(&(ifcs[j]->centry)->lock, &iLockRoot);
+	}
+	KFREE(ifcs);
+	return (rc);
 }
 
 /* Check for undefined abstract methods if class is not abstract.

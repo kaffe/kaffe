@@ -1,3 +1,11 @@
+Fri Dec  1 18:41:36 MST 2000  Godmar Back <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/gcFuncs.c: unregister ourselves from implementor
+	tables to prevent their unbounded growth.
+
+	* kaffe/kaffevm/classMethod.c: lock interface classes when
+	updating implementor tables.
+
 2000-12-02  Edouard G. Parmelan  <egp@free.fr>
 
 	* kaffe/kaffevm/stackTrace.c (buildStackTrace): Add error message
