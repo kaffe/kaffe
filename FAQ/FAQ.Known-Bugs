@@ -1,0 +1,53 @@
+This file is a list of known bugs, short-comings and oddities.  
+Treat it as an TODO list.
+
+
+* java/lang/Class.getClassLoader() is broken for classes that were not loaded
+  with a class loader.  Easy to fix; Tim must say if there was a reason to 
+  introduce that bug in the first place.
+
+* java/net/ServerSocket.<init>(IILjava/net/InetAddress;)V
+  is not implemented.  Should be easy and quick to fix.
+
+* javap java.lang.ThreadGroup outputs 'NUL' characters when used with
+  Klasses.jar.
+
+* java.net.Socket is missing several methods:
+
+     getSoLinger() 
+     getSoTimeout() 
+     setSoLinger(boolean, int) 
+     setSoTimeout(int) 
+     getTcpNoDelay() 
+     setTcpNoDelay(boolean) 
+
+* Win32/Cygnus stuff:
+
+    It apparently doesn't build because .def files are missing:
+    (dlltool: Can't open def file ./libmanagement.def)
+
+    Pavel Roskin writes:
+
+    Can anybody explain me why the configuration files for cygwin are placed in
+    config/i386/win32/cygnus, 4 levels below of the distibution root? All other
+    configurations are placed 3 levels below, for example config/parisc/hpux or
+    config/alpha/linux. I think, files from config/i386/win32/cygnus should be
+    moved to config/i386/win32 while directory config/i386/win32/cygnus should
+    be removed.
+    It could be also useful to get latest config.sub and config.guess from
+    ftp://alpha.gnu.org/gnu/libtool-1.2b.tar.gz. IMHO it is better to use
+    official sources and do all non-official system name canonicalization (if
+    somebody still needs it) in configure.in or somewhere else.
+
+    Stan Bailes writes:
+
+    I found that with cygwin b19, the stuff in config.guess doesn't work,
+    and that the final case should be something like:
+
+	i*86:CYGWIN32*:*:*)
+	    echo i386-unknown-win32/cygnus
+	    exit 0 ;;
+
+* Object serialization and RMI are broken.
+  Class UID are not computed.
+
