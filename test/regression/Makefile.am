@@ -129,6 +129,7 @@ TEST_MISC = \
 	LineNumberReaderTest.java \
 	BufferedReaderTest.java \
 	ReaderReadVoidTest.java \
+	InputStreamTest.java \
 	PipeTest.java \
 	GetField.java \
 	LostTrampolineFrame.java 

@@ -590,7 +590,7 @@ public abstract class TSequencer
 	public SyncMode[] getMasterSyncModes()
 	{
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.getMasterSyncModes(): begin"); }
-		SyncMode[]	syncModes = (SyncMode[]) m_masterSyncModes.toArray();
+		SyncMode[]	syncModes = (SyncMode[]) m_masterSyncModes.toArray(new SyncMode[0]);
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.getMasterSyncModes(): end"); }
 		return syncModes;
 	}
@@ -641,7 +641,7 @@ public abstract class TSequencer
 	public SyncMode[] getSlaveSyncModes()
 	{
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.getSlaveSyncModes(): begin"); }
-		SyncMode[]	syncModes = (SyncMode[]) m_slaveSyncModes.toArray();
+		SyncMode[]	syncModes = (SyncMode[]) m_slaveSyncModes.toArray(new SyncMode[0]);
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.getSlaveSyncModes(): end"); }
 		return syncModes;
 	}

@@ -15,7 +15,7 @@ import kaffe.util.UTF8;
 public class DataInputStream extends FilterInputStream implements DataInput {
 
 public DataInputStream(InputStream in) {
-	super(new PushbackInputStream(in));
+	super(in);
 }
 
 public final int read(byte b[]) throws IOException {
@@ -94,13 +94,41 @@ public final String readLine() throws IOException {
 				break;
 			}
 			if (ch == '\r') {
-				/* Since not all streams support marking
-				   and resetting, the underlying stream is
-				   wrapped in a PushbackInputStream. If
-				   there are bytes available for reading,
-				   we use its read() and unread() methods
-				   to skip the eventual '\n' character after
-				   a '\r' character.
+				/* The spec demands that we handle '\r\n'
+				   as a single end-of-line character. The
+				   core of the problem is: How do you unread
+				   the character following '\r' if it turns out
+				   not to be '\n'?
+
+				   There are several ways to do this, none
+				   of them have worked really great so far.
+
+				   *  Wrapping the input stream in the
+				   constructor with a PushbackInputStream:
+				   fails because classes extending DataInputStream
+				   can access the protected field in. Casting that 
+				   field to classes that don't extend PushbackInputStream
+				   will result in a ClassCastException at runtime.
+				   That bug prevented the jakarta BCEL verifier 
+				   from verifying anything when run on kaffe.
+
+				   * Using a boolean flag to decide if the
+				   next '\n' should be skipped:
+				   There is no way to skip it when the user uses
+				   read() to read a single character. The API spec
+				   says that DataInputStream doesn't override
+				   FilteredInputStream.read(). This can lead to
+				   input data curruption. That bug prevented jython
+				   from running on kaffe.
+
+				   * Mark and reset:
+				   Not all streams support marking and resetting.
+
+				   This is the current solution:
+
+				   We use an internal buffer in FilterInputStream.
+				   That's a clumsy workaround, but there doesn't seem
+				   to be a better method.
 
 				   Making sure bytes are available before
 				   reading should prevent hanging on a socket.
@@ -109,7 +137,7 @@ public final String readLine() throws IOException {
 					final int lf = read();
 
 					if (lf != -1 && lf != '\n') {
-						((PushbackInputStream) in).unread((byte) lf);
+						super.buffer = lf;
 					}
 				}
 

@@ -1,3 +1,39 @@
+2003-01-10 Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
+
+	* libraries/javalib/org/tritonus/share/midi/TSequencer.java:
+	Fixed bad toArray() calls without appropriate array type.
+	Now MidiPlayer -l works on ALSA.
+	
+2003-01-09 Dalibor Topic <robilad@yahoo.com>
+
+	* README: Added Linux 2.x for PARISC, PS2linux, and changed
+	PPC liux entry to Linux 2.x.
+	
+	* libraries/javalib/java/io/FilterInputStream.java:
+	(buffer) new field. Used by DataInputStream.
+	(BUFFER_EMPTY) new constant.
+	(available, read, skip) use buffered byte if buffer is not empty.
+	
+	* libraries/javalib/java/io/DataInputStream.java:
+	(DataInputStream) don't wrap input stream in a
+	PushbackInputStream. The jakarta BCEL verifier
+	wouldn't run because of it.
+	
+	(readLine) use internal buffer in FilterInputStream to
+	handle '\r\n' detection. Added more comments on the
+	history of failed attempts to fix this method.
+	
+2003-01-09 Jukka Santala <jsantala@nic.fi>
+	
+	* test/regression/InputStreamTest.java:
+	New file.
+
+	* test/regression/Makefile.am:
+	Added InputStreamTest.java.
+
+	* test/regression/Makefile.in:
+	regenerated.
+	
 2003-01-09 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/io/DataInputStream.java

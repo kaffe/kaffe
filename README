@@ -45,15 +45,15 @@ while 'I' means 'interpreter'):
   ARM       | J+I  |    Linux/Netwinder NetBSD 1.x
   ------------------------------------------------------------------------
   MIPS      | J+I  |    Linux/Cobalt    IRIX 5 & 6	NetBSD 1.x
-	    |	   |	Ultrix 4.2
+	    |	   |	Ultrix 4.2      PS2Linux
   ------------------------------------------------------------------------
   M68K      | J+I  |    AmigaOS         NeXTStep 3.x    NetBSD 1.x
             |      |    SunOS 4.x	Linux		AUX
             |      |    OpenBSD 2.x
   ------------------------------------------------------------------------
-  PARISC    | I    |    HPUX 10.x
+  PARISC    | I    |    HPUX 10.x       Linux 2.x
   ------------------------------------------------------------------------
-  PowerPC   | I    |    MkLinux         MachTen 4.0.3	AIX
+  PowerPC   | I    |    Linux 2.x       MachTen 4.0.3	AIX
 	    |	   |	Darwin		NetBSD1.x       Mac OS X
   ------------------------------------------------------------------------
   ia64	    | I	   |	Linux 2.x

@@ -15,12 +15,18 @@ public class FilterInputStream
 
 	protected InputStream in;
 
+	/* used by DataInputStream handle unreading of characters.
+	 * See DataInputStream.readLine() for a description.
+	 */
+	private static final int BUFFER_EMPTY = -1;
+	int buffer = BUFFER_EMPTY;
+
 protected FilterInputStream(InputStream in) {
 	this.in = in;
 }
 
 public int available() throws IOException {
-	return (in.available());
+	return in.available() + ((buffer == BUFFER_EMPTY) ? 0 : 1);
 }
 
 public void close() throws IOException {
@@ -39,18 +45,37 @@ public boolean markSupported() {
 }
 
 public int read() throws IOException {
-	return (in.read());
+	if (buffer == BUFFER_EMPTY) {
+		return in.read();
+	}
+	else {
+		final int value = buffer;
+		buffer = BUFFER_EMPTY;
+		return value;
+	}
 }
 
 public int read(byte b[]) throws IOException {
     /* BufferedInputStream depends on this method
      * *not* reading directly from the stream.
      */
-	return (read(b, 0, b.length));
+	if (buffer == BUFFER_EMPTY) {
+		return (read(b, 0, b.length));
+	}
+	else {
+		b[0] = (byte) read();
+		return read(b, 1, b.length - 1);
+	}
 }
 
 public int read(byte b[], int off, int len) throws IOException {
-	return (in.read(b, off, len));
+	if (buffer == BUFFER_EMPTY) {
+		return (in.read(b, off, len));
+	}
+	else {
+		b[off] = (byte) read();
+		return in.read(b, off + 1, len - 1);
+	}		
 }
 
 public synchronized void reset() throws IOException {
@@ -58,6 +83,12 @@ public synchronized void reset() throws IOException {
 }
 
 public long skip(long n) throws IOException {
-	return (in.skip(n));
+	if (buffer == BUFFER_EMPTY) {
+		return (in.skip(n));
+	}
+	else {
+		buffer = BUFFER_EMPTY;
+		return (in.skip(n - 1));
+	}
 }
 }
