@@ -191,6 +191,27 @@ LIBGTKPEER_JNI_HDRS = \
 	gnu_java_awt_peer_gtk_GtkWindowPeer.h \
 	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h
 
+# Only create headers for AWT, Sound and libxmlj if they are going to be built.
+
+if COND_LIBXMLJ
+  MAYBE_LIBXMLJ_JNI_HDRS = $(LIBXMLJ_JNI_HDRS)
+endif
+
+if COND_NATIVE_SOUND
+if COND_SOUND_ALSA
+  MAYBE_LIBTRITONUSALSA_JNI_HDRS = $(LIBTRITONUSALSA_JNI_HDRS)
+endif
+if COND_SOUND_ESD
+  MAYBE_LIBTRITONUSESD_JNI_HDRS = $(LIBTRITONUSESD_JNI_HDRS)
+endif
+endif
+
+if COND_NATIVE_AWT
+if COND_CLASSPATH_GTK_AWT
+  MAYBE_LIBGTKPEER_JNI_HDRS = $(LIBGTKPEER_JNI_HDRS)
+endif
+endif
+
 NOINSTALL_JNI_DERIVED_HDRS = \
 	java_math_BigInteger.h \
 	gnu_classpath_VMSystemProperties.h \
@@ -213,10 +234,10 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	kaffe_security_provider_MD4.h \
 	kaffe_security_provider_MD5.h \
 	kaffe_security_provider_SHA.h \
-	$(LIBTRITONUSALSA_JNI_HDRS) \
-	$(LIBTRITONUSESD_JNI_HDRS) \
-	$(LIBXMLJ_JNI_HDRS) \
-	$(LIBGTKPEER_JNI_HDRS)
+	$(MAYBE_LIBTRITONUSALSA_JNI_HDRS) \
+	$(MAYBE_LIBTRITONUSESD_JNI_HDRS) \
+	$(MAYBE_LIBXMLJ_JNI_HDRS) \
+	$(MAYBE_LIBGTKPEER_JNI_HDRS)
 
 JNI_DERIVED_HDRS = \
 	$(INSTALL_JNI_DERIVED_HDRS) \
