@@ -27,6 +27,7 @@ char realClassPath[PATHSZ];
 char tmpName[BUFSZ];
 
 int flag_shrt = 0;
+int flag_jni = 0;
 char* outputName = 0;
 char* directoryName = 0;
 
@@ -170,6 +171,9 @@ options(char** argv)
 		}
 		else if (strcmp(argv[i], "-base") == 0) {
 			flag_shrt = 1;
+		}
+		else if (strcmp(argv[i], "-jni") == 0) {
+			flag_jni = 1;
 		}
 		else if (strcmp(argv[i], "-classpath") == 0) {
 			i++;
