@@ -105,7 +105,12 @@ final private static ResourceBundle getSpecificBundle(String baseName) throws Mi
 	baseName = baseName.replace('.', '/');
 	try {
 		Class cls = Class.forName(baseName);
-		return ((ResourceBundle)cls.newInstance());
+		/* 
+		 * Only call newInstance if the cast to resource bundle 
+		 * will indeed succeed.
+		 */
+		if (ResourceBundle.class.isAssignableFrom(cls))
+			return ((ResourceBundle)cls.newInstance());
 	}
 	catch (Exception _) {
 	}
