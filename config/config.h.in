@@ -385,6 +385,9 @@
 /* Define if you have the <zlib.h> header file.  */
 #undef HAVE_ZLIB_H
 
+/* Define if you have the Csup library (-lCsup).  */
+#undef HAVE_LIBCSUP
+
 /* Define if you have the Xext library (-lXext).  */
 #undef HAVE_LIBXEXT
 

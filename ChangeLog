@@ -1,3 +1,10 @@
+Tue Mar 16 19:14:04 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in (X_LIBS): check for the Csup library, it may be
+	needed by image libraries on IRIX
+	* configure, config/config.h.in: regen
+	From Lee Iverson <leei@ai.sri.com>, but modified
+
 Mon Mar 15 16:23:01 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* ltconfig, ltmain.sh: update from just-released libtool 1.2f

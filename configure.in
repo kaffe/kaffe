@@ -448,9 +448,13 @@ AC_PATH_XTRA
 if test x"$no_x" = x"yes"; then
   AWT_LIBS=
 else
+  dnl Csup is needed for IRIX libraries such as libjpeg and libpng
+  dnl Instead of adding it to both JPEG_LIBS and PNG_LIBS, use X_LIBS
+  AC_CHECK_LIBRARY(Csup,__T_9__nothrow,X_LIBS)
   OLIBS=$LIBS
-  LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
+  LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $OLIBS"
   AC_CHECK_LIBRARY(Xext,XShmQueryExtension,X_PRE_LIBS)
+  LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $OLIBS"
   AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
   AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
   AC_CHECK_LIBRARY(gif,DGifOpenFileHandle,GIF_LIBS)
@@ -458,12 +462,10 @@ else
   LIBS=$OLIBS
   dnl If libpng is included, we also need libz - if we don't have it then
   dnl we can't include png support.
-  if test "$PNG_LIBS" != "" ; then
-	if test "$ZIP_LIBS" != "" ; then
-		PNG_LIBS="$PNG_LIBS $ZIP_LIBS $M_LIBS"
-	else
-		PNG_LIBS=""
-	fi
+  if test -n "$PNG_LIBS" && test -n "$ZIP_LIBS"; then
+    PNG_LIBS="$PNG_LIBS $ZIP_LIBS $M_LIBS"
+  else
+    PNG_LIBS=""
   fi
   dnl -R in X_PRE_LIBS should only be replaced with -rpath here,
   dnl otherwise configure tests that don't use libtool will fail
