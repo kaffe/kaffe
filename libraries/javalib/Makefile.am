@@ -485,11 +485,17 @@ java_text_SRCS = \
 java_util_SRCS = \
 	java/util/AbstractCollection.java \
 	java/util/AbstractList.java \
+	java/util/AbstractListIterator.java \
+	java/util/AbstractSequentialList.java \
+	java/util/AbstractSet.java \
+	java/util/ArrayList.java \
 	java/util/Arrays.java \
 	java/util/BitSet.java \
 	java/util/Calendar.java \
 	java/util/Collection.java \
+	java/util/Collections.java \
 	java/util/Comparator.java \
+	java/util/ConcurrentModificationException.java \
 	java/util/Date.java \
 	java/util/Dictionary.java \
 	java/util/EmptyStackException.java \
@@ -500,6 +506,8 @@ java_util_SRCS = \
 	java/util/HashMap.java \
 	java/util/Hashtable.java \
 	java/util/Iterator.java \
+	java/util/LinkedList.java \
+	java/util/LinkedListIterator.java \
 	java/util/List.java \
 	java/util/ListIterator.java \
 	java/util/ListResourceBundle.java \

@@ -27,18 +27,18 @@ public class ArrayList extends AbstractList
 	private int len;
 
 	public ArrayList() {
-	  this(DEFAULT_CAPACITY);
+		this(DEFAULT_CAPACITY);
 	}
 
 	public ArrayList(Collection c) {
-	  final Iterator i = c.iterator();
-	  a = new Object[(c.size() * 11) / 10];
-	  off = 0;
-	  int count;
-	  for (count = 0; i.hasNext(); count++) {
-		a[count] = i.next();
-	  }
-	  len = count;
+		final Iterator i = c.iterator();
+		a = new Object[(c.size() * 11) / 10];
+		off = 0;
+		int count;
+		for (count = 0; i.hasNext(); count++) {
+		      a[count] = i.next();
+		}
+		len = count;
 	}
 
 	public ArrayList(int initialCapacity) {

@@ -1,3 +1,15 @@
+Tue Jul 13 17:36:51 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/AbstractList.java: use new
+	AbstractListIterator instead of inner class
+	* libraries/javalib/java/util/AbstractListIterator.java,
+	AbstractSequentialList.java, AbstractSet.java, Collections.java,
+	LinkedList.java, LinkedListIterator.java: new files
+	* libraries/javalib/java/util/ArrayList.java: formatting tweak
+	* libraries/javalib/java/util/Arrays.java: make DEFAULT_COMPARATOR
+	package so Collections.java can use it
+	* libraries/javalib/Makefile.{am,in}: add new java/util classes
+
 Mon Jul 12 21:06:34 PDT 1999  Niels Kristian Bech Jensen <nkbj@image.dk>
 
 	* libraries/extensions/microsoft/javalib/Makefile.{am,in}: fix typo

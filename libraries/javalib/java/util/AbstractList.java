@@ -70,101 +70,6 @@ public boolean addAll(int index, Collection c) {
   return c.size() != 0;
 }
 
-// This class is used below by iterator() and listIterator()
-private static class ALI implements ListIterator  {
-  private final AbstractList list;
-  private int modCount;
-  private int lastIndex = -1;
-  private int index;
-
-  ALI(AbstractList list, int index) {
-    if (index < 0 || index > list.size()) {
-      throw new IllegalArgumentException();
-    }
-    this.list = list;
-    this.index = index;
-    this.modCount = list.modCount;
-  }
-
-  public int nextIndex() {
-    return index;
-  }
-
-  public int previousIndex() {
-    return index - 1;
-  }
-
-  public boolean hasNext() {
-    return index < list.size();
-  }
-
-  public Object next() {
-    if (list.modCount != this.modCount) {
-      throw new ConcurrentModificationException();
-    }
-    if (index >= list.size()) {
-      throw new NoSuchElementException();
-    }
-    Object rtn = list.get(index);
-    lastIndex = index++;
-    return rtn;
-  }
-
-  public boolean hasPrevious() {
-    return index > 0;
-  }
-
-  public Object previous() {
-    if (list.modCount != this.modCount) {
-      throw new ConcurrentModificationException();
-    }
-    if (index == 0) {
-      throw new NoSuchElementException();
-    }
-    Object rtn = list.get(index - 1);
-    lastIndex = --index;
-    return rtn;
-  }
-
-  public void remove() {
-    if (list.modCount != this.modCount) {
-      throw new ConcurrentModificationException();
-    }
-    if (lastIndex == -1) {
-      throw new IllegalStateException();
-    }
-    list.remove(lastIndex);
-    modCount = list.modCount;
-    if (lastIndex < index) {
-      index--;
-    }
-    lastIndex = -1;
-  }
-
-  public void set(Object o) {
-    if (list.modCount != this.modCount) {
-      throw new ConcurrentModificationException();
-    }
-    if (lastIndex == -1) {
-      throw new IllegalStateException();
-    }
-    list.set(lastIndex, o);
-  }
-
-  public void add(Object o) {
-    if (list.modCount != this.modCount) {
-      throw new ConcurrentModificationException();
-    }
-    if (lastIndex == -1) {
-      throw new IllegalStateException();
-    }
-    list.add(index, o);
-    modCount = list.modCount;
-    index++;
-    lastIndex = -1;
-  }
-}
-
 public Iterator iterator() {
   return listIterator(0);
 }
@@ -174,7 +79,7 @@ public ListIterator listIterator() {
 }
 
 public ListIterator listIterator(int index) {
-  return new ALI(this, index);
+  return new AbstractListIterator(this, index);
 }
 
 public List subList(final int fromIndex, final int toIndex) {

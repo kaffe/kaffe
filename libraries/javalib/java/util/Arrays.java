@@ -5,7 +5,7 @@
  * Copyright (c) 1999
  *	Archie L. Cobbs.  All rights reserved.
  * Copyright (c) 1999
- *      Transvirtual Technologies, Inc.  All rights reserved.
+ *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -22,7 +22,7 @@ public class Arrays {
   }
 
   // The "default" Comparator
-  private static final Comparator defaultComparator =
+  static final Comparator DEFAULT_COMPARATOR =
 	new Comparator() {
 	      public int compare(Object o1, Object o2) {
 		      return ((Comparable)o1).compareTo(o2);
@@ -44,7 +44,7 @@ public class Arrays {
 			lim--;
 		}
 	}
-	return(-base - 1);
+	return ~base;
   }
 
   public static int binarySearch(char[] a, char key) {
@@ -58,7 +58,7 @@ public class Arrays {
 			lim--;
 		}
 	}
-	return(-base - 1);
+	return ~base;
   }
 
   public static int binarySearch(double[] a, double key) {
@@ -74,7 +74,7 @@ public class Arrays {
 			lim--;
 		}
 	}
-	return(-base - 1);
+	return ~base;
   }
 
   public static int binarySearch(float[] a, float key) {
@@ -90,7 +90,7 @@ public class Arrays {
 			lim--;
 		}
 	}
-	return(-base - 1);
+	return ~base;
   }
 
   public static int binarySearch(int[] a, int key) {
@@ -104,7 +104,7 @@ public class Arrays {
 			lim--;
 		}
 	}
-	return(-base - 1);
+	return ~base;
   }
 
   public static int binarySearch(short[] a, short key) {
@@ -118,7 +118,7 @@ public class Arrays {
 			lim--;
 		}
 	}
-	return(-base - 1);
+	return ~base;
   }
 
   public static int binarySearch(long[] a, long key) {
@@ -132,11 +132,11 @@ public class Arrays {
 			lim--;
 		}
 	}
-	return(-base - 1);
+	return ~base;
   }
 
   public static int binarySearch(Object[] a, Object key) {
-  	return binarySearch(a, key, defaultComparator);
+  	return binarySearch(a, key, DEFAULT_COMPARATOR);
   }
 
   public static int binarySearch(Object[] a, Object key, Comparator c) {
@@ -151,7 +151,7 @@ public class Arrays {
 			lim--;
 		}
 	}
-	return(-base - 1);
+	return ~base;
   }
 
   public static boolean equals(boolean[] a, boolean[] a2) {
@@ -466,7 +466,7 @@ public class Arrays {
   }
 
   public static void sort(Object[] a) {
-	sort(a, 0, a.length, defaultComparator);
+	sort(a, 0, a.length, DEFAULT_COMPARATOR);
   }
 
   public static void sort(Object[] a, Comparator c) {
@@ -474,7 +474,7 @@ public class Arrays {
   }
 
   public static void sort(Object[] a, int fromIndex, int toIndex) {
-	sort(a, fromIndex, toIndex, defaultComparator);
+	sort(a, fromIndex, toIndex, DEFAULT_COMPARATOR);
   }
 
   public static void sort(Object[] a, int fromIndex, int toIndex, Comparator c) {
