@@ -1,4 +1,14 @@
+Sun Jul 19 23:28:02 1998  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/m68k/netbsd1/config.frag|md.h: system/configuration stuff
+
+	* include/java_lang_ThreadGroup.h:  removed vmAllowSuspension field.
+	  kaffe/kaffevm/thread.c: removed vmAllowSuspension field.
+
 Sun Jul 19 19:54:21 1998  Archie Cobbs  <archie@whistle.com>
+
+	* libraries/javalib/java/lang/Class.java: added missing slash
+	  in fullResourceName.
 
 	* kaffe/kaffevm/jni.c: fixed problem where JNI would signal
 	  out of bound if last array element was included.
