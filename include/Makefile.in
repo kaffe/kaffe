@@ -561,7 +561,6 @@ LIBGTKPEER_JNI_HDRS = \
 	gnu_java_awt_peer_gtk_GtkImagePainter.h \
 	gnu_java_awt_peer_gtk_GtkLabelPeer.h \
 	gnu_java_awt_peer_gtk_GtkListPeer.h \
-	gnu_java_awt_peer_gtk_GtkMainThread.h \
 	gnu_java_awt_peer_gtk_GtkMenuBarPeer.h \
 	gnu_java_awt_peer_gtk_GtkMenuComponentPeer.h \
 	gnu_java_awt_peer_gtk_GtkMenuItemPeer.h \

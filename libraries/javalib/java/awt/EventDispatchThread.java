@@ -53,7 +53,6 @@ class EventDispatchThread extends Thread
     setName("AWT-EventQueue-" + ++dispatchThreadNum);
     this.queue = queue;
     setPriority(NORM_PRIORITY + 1);
-    start();
   }
 
   public void run()
@@ -63,11 +62,6 @@ class EventDispatchThread extends Thread
         try
 	{
 	  AWTEvent evt = queue.getNextEvent();
-	  if (isInterrupted ())
-	    {
-	      // We are interrupted when we should finish executing
-	      return;
-	    }
 
           KeyboardFocusManager manager;
           manager = KeyboardFocusManager.getCurrentKeyboardFocusManager ();

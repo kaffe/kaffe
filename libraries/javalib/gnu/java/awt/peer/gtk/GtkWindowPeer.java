@@ -194,7 +194,7 @@ public class GtkWindowPeer extends GtkContainerPeer
 	// Post a WINDOW_OPENED event the first time this window is shown.
 	if (!hasBeenShown)
 	  {
-	    q.postEvent (new WindowEvent ((Window) awtComponent, id,
+	    q().postEvent (new WindowEvent ((Window) awtComponent, id,
 					  opposite));
 	    hasBeenShown = true;
 	  }
@@ -203,12 +203,12 @@ public class GtkWindowPeer extends GtkContainerPeer
       {
 	if (oldState != newState)
 	  {
-	    q.postEvent (new WindowEvent ((Window) awtComponent, id, opposite,
+	    q().postEvent (new WindowEvent ((Window) awtComponent, id, opposite,
 					  oldState, newState));
 	    oldState = newState;
 	  }
       }
     else
-      q.postEvent (new WindowEvent ((Window) awtComponent, id, opposite));
+      q().postEvent (new WindowEvent ((Window) awtComponent, id, opposite));
   }
 }

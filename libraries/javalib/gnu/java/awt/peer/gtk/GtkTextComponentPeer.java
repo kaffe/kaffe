@@ -85,6 +85,6 @@ public class GtkTextComponentPeer extends GtkComponentPeer
 
   protected void postTextEvent ()
   {
-    q.postEvent (new TextEvent (awtComponent, TextEvent.TEXT_VALUE_CHANGED));
+    q().postEvent (new TextEvent (awtComponent, TextEvent.TEXT_VALUE_CHANGED));
   }
 }

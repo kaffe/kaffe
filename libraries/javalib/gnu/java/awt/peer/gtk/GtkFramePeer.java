@@ -253,7 +253,7 @@ public class GtkFramePeer extends GtkWindowPeer
   protected void postExposeEvent (int x, int y, int width, int height)
   {
     if (!isInRepaint)
-      q.postEvent (new PaintEvent (awtComponent, PaintEvent.PAINT,
+      q().postEvent (new PaintEvent (awtComponent, PaintEvent.PAINT,
                                    new Rectangle (x + insets.left, 
                                                   y + insets.top, 
                                                   width, height)));

@@ -225,6 +225,8 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetVisible
 
   gdk_threads_enter ();
 
+  gdk_env = env;
+
   if (visible)
     gtk_widget_show (GTK_WIDGET (ptr));
   else

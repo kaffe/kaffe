@@ -39,6 +39,9 @@ exception statement from your version. */
 package java.awt;
 
 import java.awt.peer.FramePeer;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.accessibility.AccessibleContext;
@@ -214,6 +217,7 @@ public
 Frame()
 {
   this("");
+  noteFrame(this);
 }
 
 /**
@@ -229,6 +233,7 @@ Frame(String title)
   this.title = title;
   // Top-level frames are initially invisible.
   visible = false;
+  noteFrame(this);
 }
 
 public
@@ -236,6 +241,7 @@ Frame(GraphicsConfiguration gc)
 {
   super(gc);
   visible = false;
+  noteFrame(this);
 }
 
 public
@@ -244,6 +250,7 @@ Frame(String title, GraphicsConfiguration gc)
   super(gc);
   setTitle(title);
   visible = false;
+  noteFrame(this);
 }
 
 /**
@@ -396,6 +403,12 @@ remove(MenuComponent menu)
 /**
   * Notifies this frame that it should create its native peer.
   */
+
+private static void fireDummyEvent()
+{
+  EventQueue.invokeLater(new Runnable() { public void run() { } });
+}
+
 public void
 addNotify()
 {
@@ -403,6 +416,12 @@ addNotify()
     menuBar.addNotify();
   if (peer == null)
     peer = getToolkit ().createFrame (this);
+
+  // We now know there's a Frame (us) with a live peer, so we can start the
+  // fundamental queue and dispatch thread, by inserting a dummy event.
+  if (parent != null && parent.isDisplayable())
+    fireDummyEvent();
+  
   super.addNotify();
 }
 
@@ -411,6 +430,12 @@ public void removeNotify()
   if (menuBar != null)
     menuBar.removeNotify();
   super.removeNotify();
+
+  // By now we've been disconnected from the peer, and the peer set to
+  // null.  This is formally the same as saying "we just became
+  // un-displayable", so we wake up the event queue with a dummy event to
+  // see if it's time to shut down.
+  fireDummyEvent();
 }
 
   /**
@@ -449,13 +474,41 @@ public void removeNotify()
     return super.paramString () + ",title=" + title + resizable + state;
   }
 
-public static Frame[]
-getFrames()
+private static ArrayList weakFrames = new ArrayList();
+
+private static void noteFrame(Frame f)
 {
-  //Frame[] array = new Frames[frames.size()];
-  //return frames.toArray(array);
-  String msg = "FIXME: can't be implemented without weak references";
-  throw new UnsupportedOperationException(msg);
+  weakFrames.add(new WeakReference(f));
+}
+
+public static Frame[] getFrames()
+{
+  int n = 0;
+  synchronized (weakFrames)
+    {
+      Iterator i = weakFrames.iterator();
+      while (i.hasNext())
+        {
+          WeakReference wr = (WeakReference) i.next();
+          if (wr.get() != null)
+            ++n;
+        }
+      if (n == 0)
+        return new Frame[0];
+      else
+        {
+          Frame[] frames = new Frame[n];
+          n = 0;
+          i = weakFrames.iterator();
+          while (i.hasNext())
+            {
+              WeakReference wr = (WeakReference) i.next();
+              if (wr.get() != null)
+                frames[n++] = (Frame) wr.get();
+            }
+          return frames;
+        }
+    }
 }
 
   public void setState (int state)

@@ -38,8 +38,321 @@ exception statement from your version. */
 
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkToolkit.h"
+#include "gthread-jni.h"
+
+#ifdef JVM_SUN
+  struct state_table *native_state_table;
+  struct state_table *native_global_ref_table;
+#endif
+
+jmethodID setBoundsCallbackID;
+
+jmethodID postActionEventID;
+jmethodID postMenuActionEventID;
+jmethodID postMouseEventID;
+jmethodID postConfigureEventID;
+jmethodID postExposeEventID;
+jmethodID postKeyEventID;
+jmethodID postFocusEventID;
+jmethodID postAdjustmentEventID;
+jmethodID postItemEventID;
+jmethodID choicePostItemEventID;
+jmethodID postListItemEventID;
+jmethodID postTextEventID;
+jmethodID postWindowEventID;
+
+jmethodID beginNativeRepaintID;
+jmethodID endNativeRepaintID;
+
+jmethodID initComponentGraphicsID;
+jmethodID initComponentGraphics2DID;
+jmethodID setCursorID;
+
+JNIEnv *gdk_env;
+
+GtkWindowGroup *global_gtk_window_group;
+
+static void init_glib_threads(JNIEnv *, jint);
+
+double dpi_conversion_factor;
+
+static void init_dpi_conversion_factor (void);
+static void dpi_changed_cb (GtkSettings  *settings,
+                            GParamSpec   *pspec);
+
+/*
+ * Call gtk_init.  It is very important that this happen before any other
+ * gtk calls.
+ *
+ * The portableNativeSync argument may have the values:
+ *   1 if the Java property gnu.classpath.awt.gtk.portable.native.sync
+ *     is set to "true".  
+ *   0 if it is set to "false"
+ *  -1 if unset.
+ */
+
+
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env, 
+					       jclass clazz __attribute__((unused)),
+					       jint portableNativeSync)
+{
+  int argc = 1;
+  char **argv;
+  char *homedir, *rcpath = NULL;
+
+  jclass gtkgenericpeer, gtkcomponentpeer, gtkchoicepeer, gtkwindowpeer, gtkscrollbarpeer, gtklistpeer,
+    gtkmenuitempeer, gtktextcomponentpeer, window, gdkgraphics, gdkgraphics2d;
+
+  gtkgenericpeer = (*env)->FindClass(env, "gnu/java/awt/peer/gtk/GtkGenericPeer");
+
+  NSA_INIT (env, gtkgenericpeer);
+  gdk_env = env;
+
+  /* GTK requires a program's argc and argv variables, and requires that they
+     be valid.   Set it up. */
+  argv = (char **) g_malloc (sizeof (char *) * 2);
+  argv[0] = (char *) g_malloc(1);
+#if 1
+  strcpy(argv[0], "");
+#else  /* The following is a more efficient alternative, but less intuitively
+	* expresses what we are trying to do.   This code is only run once, so
+	* I'm going for intuitive. */
+  argv[0][0] = '\0';
+#endif
+  argv[1] = NULL;
+
+  init_glib_threads(env, portableNativeSync);
+
+  /* From GDK 2.0 onwards we have to explicitly call gdk_threads_init */
+  gdk_threads_init();
+
+  gtk_init (&argc, &argv);
+
+  gdk_rgb_init ();
+  gtk_widget_set_default_colormap (gdk_rgb_get_cmap ());
+  gtk_widget_set_default_visual (gdk_rgb_get_visual ());
+
+  /* Make sure queued calls don't get sent to GTK/GDK while 
+     we're shutting down. */
+  atexit (gdk_threads_enter);
+
+  gdk_event_handler_set ((GdkEventFunc)awt_event_handler, NULL, NULL);
+
+  if ((homedir = getenv ("HOME")))
+    {
+      rcpath = (char *) g_malloc (strlen (homedir) + strlen (RC_FILE) + 2);
+      sprintf (rcpath, "%s/%s", homedir, RC_FILE);
+    }
+  
+  gtk_rc_parse ((rcpath) ? rcpath : RC_FILE);
+
+  g_free (rcpath);
+  g_free (argv[0]);
+  g_free (argv);
+
+  /* setup cached IDs for posting GTK events to Java */
+
+  window = (*env)->FindClass (env, "java/awt/Window");
+
+  gtkcomponentpeer = (*env)->FindClass (env,
+				     "gnu/java/awt/peer/gtk/GtkComponentPeer");
+  gtkchoicepeer = (*env)->FindClass (env,
+				     "gnu/java/awt/peer/gtk/GtkChoicePeer");
+  gtkwindowpeer = (*env)->FindClass (env,
+				     "gnu/java/awt/peer/gtk/GtkWindowPeer");
+  gtkscrollbarpeer = (*env)->FindClass (env, 
+				     "gnu/java/awt/peer/gtk/GtkScrollbarPeer");
+  gtklistpeer = (*env)->FindClass (env, "gnu/java/awt/peer/gtk/GtkListPeer");
+  gtkmenuitempeer = (*env)->FindClass (env,
+                                     "gnu/java/awt/peer/gtk/GtkMenuItemPeer");
+  gtktextcomponentpeer = (*env)->FindClass (env,
+                                     "gnu/java/awt/peer/gtk/GtkTextComponentPeer");
+  gdkgraphics = (*env)->FindClass (env,
+                                   "gnu/java/awt/peer/gtk/GdkGraphics");
+  gdkgraphics2d = (*env)->FindClass (env,
+                                     "gnu/java/awt/peer/gtk/GdkGraphics2D");
+  setBoundsCallbackID = (*env)->GetMethodID (env, window,
+					     "setBoundsCallback",
+					     "(IIII)V");
+
+  postMenuActionEventID = (*env)->GetMethodID (env, gtkmenuitempeer,
+					       "postMenuActionEvent",
+					       "()V");
+  postMouseEventID = (*env)->GetMethodID (env, gtkcomponentpeer, 
+                                          "postMouseEvent", "(IJIIIIZ)V");
+  setCursorID = (*env)->GetMethodID (env, gtkcomponentpeer,
+                                     "setCursor", "()V");
+  beginNativeRepaintID = (*env)->GetMethodID (env, gtkcomponentpeer, 
+                                              "beginNativeRepaint", "()V");
+
+  endNativeRepaintID = (*env)->GetMethodID (env, gtkcomponentpeer, 
+                                            "endNativeRepaint", "()V");
+
+  postConfigureEventID = (*env)->GetMethodID (env, gtkwindowpeer, 
+					      "postConfigureEvent", "(IIII)V");
+  postWindowEventID = (*env)->GetMethodID (env, gtkwindowpeer,
+					   "postWindowEvent",
+					   "(ILjava/awt/Window;I)V");
+  postExposeEventID = (*env)->GetMethodID (env, gtkcomponentpeer, 
+					  "postExposeEvent", "(IIII)V");
+  postKeyEventID = (*env)->GetMethodID (env, gtkcomponentpeer,
+					"postKeyEvent", "(IJIICI)V");
+  postFocusEventID = (*env)->GetMethodID (env, gtkcomponentpeer,
+					  "postFocusEvent", "(IZ)V");
+  postAdjustmentEventID = (*env)->GetMethodID (env, gtkscrollbarpeer,
+					       "postAdjustmentEvent", 
+					       "(II)V");
+  postItemEventID = (*env)->GetMethodID (env, gtkcomponentpeer,
+					 "postItemEvent", 
+					 "(Ljava/lang/Object;I)V");
+  choicePostItemEventID = (*env)->GetMethodID (env, gtkchoicepeer,
+					 "choicePostItemEvent", 
+					 "(Ljava/lang/String;I)V");
+  postListItemEventID = (*env)->GetMethodID (env, gtklistpeer,
+					     "postItemEvent",
+					     "(II)V");
+  postTextEventID = (*env)->GetMethodID (env, gtktextcomponentpeer,
+					     "postTextEvent",
+					     "()V");
+  initComponentGraphicsID = (*env)->GetMethodID (env, gdkgraphics,
+                                                 "initComponentGraphics",
+                                                 "()V");
+  initComponentGraphics2DID = (*env)->GetMethodID (env, gdkgraphics2d,
+                                                   "initComponentGraphics2D",
+                                                   "()V");
+  global_gtk_window_group = gtk_window_group_new ();
+
+  init_dpi_conversion_factor ();
+}
+
+
+/** Initialize GLIB's threads properly, based on the value of the
+    gnu.classpath.awt.gtk.portable.native.sync Java system property.  If
+    that's unset, use the PORTABLE_NATIVE_SYNC config.h macro.  (TODO: 
+    In some release following 0.10, that config.h macro will go away.)
+    */ 
+static void 
+init_glib_threads(JNIEnv *env, jint portableNativeSync)
+{
+  if (portableNativeSync < 0)
+    {
+#ifdef PORTABLE_NATIVE_SYNC /* Default value, if not set by the Java system
+                               property */ 
+      portableNativeSync = 1;
+#else
+      portableNativeSync = 0;
+#endif
+    }
+  
+  (*env)->GetJavaVM( env, &the_vm );
+  if (portableNativeSync)
+    g_thread_init ( &portable_native_sync_jni_functions );
+  else
+    g_thread_init ( NULL );
+
+  /* Debugging progress message; uncomment if needed: */
+  /*   printf("called gthread init\n"); */
+}
+
+
+/* This is a big hack, needed until this pango bug is resolved:
+   http://bugzilla.gnome.org/show_bug.cgi?id=119081.
+   See: http://mail.gnome.org/archives/gtk-i18n-list/2003-August/msg00001.html
+   for details. */
+static void
+init_dpi_conversion_factor ()
+{
+  GtkSettings *settings = gtk_settings_get_default ();
+  GObjectClass *klass;
+
+  klass = G_OBJECT_CLASS (GTK_SETTINGS_GET_CLASS (settings));
+  if (g_object_class_find_property (klass, "gtk-xft-dpi"))
+    {
+      int int_dpi;
+      g_object_get (settings, "gtk-xft-dpi", &int_dpi, NULL);
+      /* If int_dpi == -1 gtk-xft-dpi returns the default value. So we
+	 have to do approximate calculation here.  */
+      if (int_dpi < 0)
+	dpi_conversion_factor = PANGO_SCALE * 72.0 / 96.;
+      else
+	dpi_conversion_factor = PANGO_SCALE * 72.0 / (int_dpi / PANGO_SCALE);
+
+      g_signal_connect (settings, "notify::gtk-xft-dpi",
+			G_CALLBACK (dpi_changed_cb), NULL);
+    }
+  else
+    /* Approximate. */
+    dpi_conversion_factor = PANGO_SCALE * 72.0 / 96.;
+}
+
+static void
+dpi_changed_cb (GtkSettings  *settings,
+		GParamSpec *pspec __attribute__((unused)))
+{
+  int int_dpi;
+  g_object_get (settings, "gtk-xft-dpi", &int_dpi, NULL);
+  if (int_dpi < 0)
+    dpi_conversion_factor = PANGO_SCALE * 72.0 / 96.;
+  else
+    dpi_conversion_factor = PANGO_SCALE * 72.0 / (int_dpi / PANGO_SCALE);
+}
+
+
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkToolkit_iterateNativeQueue
+(JNIEnv *env, 
+ jobject self __attribute__((unused)),
+ jobject lockedQueue)
+{
+  /* We're holding an EventQueue lock, and we're about to acquire the GDK
+   * lock before dropping the EventQueue lock. This can deadlock if someone
+   * holds the GDK lock and wants to acquire the EventQueue lock; however
+   * all callbacks from GTK happen with the GDK lock released, so this
+   * would only happen in an odd case such as some JNI helper code
+   * acquiring the GDK lock and calling back into
+   * EventQueue.getNextEvent().
+   */
+  gdk_threads_enter ();
+  (*env)->MonitorExit (env, lockedQueue);
+
+  /* It is quite important that this be a do .. while loop. The first pass
+   * should do an iteration w/o a test so that it sleeps when there really
+   * aren't any events; and the loop should continue for as many events as
+   * there are to avoid pointless thrashing up and down through JNI (it
+   * runs very slowly when this is not a loop).
+   */
+  do 
+    {
+      gtk_main_iteration();
+    }
+  while (gtk_events_pending());
+
+  (*env)->MonitorEnter (env, lockedQueue);
+  gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkToolkit_wakeNativeQueue
+  (JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)))
+{
+  g_main_context_wakeup (NULL);
+}
+
+JNIEXPORT jboolean JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkToolkit_nativeQueueEmpty
+  (JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)))
+{
+  jboolean empty = FALSE;
+  gdk_threads_enter ();
+  empty = ! gtk_events_pending();
+  gdk_threads_leave ();
+  return empty;
+}
+
 
 static jint gdk_color_to_java_color (GdkColor color);
+
 
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkToolkit_beep

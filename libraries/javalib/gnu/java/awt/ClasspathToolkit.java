@@ -45,6 +45,7 @@ import java.awt.AWTException;
 import java.awt.Image;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GraphicsEnvironment;
@@ -354,4 +355,8 @@ public abstract class ClasspathToolkit
 
   public abstract RobotPeer createRobot (GraphicsDevice screen)
     throws AWTException;
+
+  public abstract boolean nativeQueueEmpty();
+  public abstract void wakeNativeQueue();  
+  public abstract void iterateNativeQueue(EventQueue locked);
 }

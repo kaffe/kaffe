@@ -3408,9 +3408,15 @@ public abstract class Component
    */
   public void removeNotify()
   {
-    if (peer != null)
-      peer.dispose();
+    // We null our peer field before disposing of it, such that if we're
+    // not the event dispatch thread and the dispatch thread is awoken by
+    // the dispose call, there will be no race checking the peer's null
+    // status.
+
+    ComponentPeer tmp = peer;
     peer = null;
+    if (tmp != null)
+      tmp.dispose();
   }
 
   /**

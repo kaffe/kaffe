@@ -70,6 +70,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
+import javax.imageio.spi.IIORegistry;
 
 /* This class uses a deprecated method java.awt.peer.ComponentPeer.getPeer().
    This merits comment.  We are basically calling Sun's bluff on this one.
@@ -88,9 +89,8 @@ import java.util.Properties;
 public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
   implements EmbeddedWindowSupport
 {
-  GtkMainThread main;
   Hashtable containers = new Hashtable();
-  static EventQueue q = new EventQueue();
+  static EventQueue q;
   static Clipboard systemClipboard;
   static boolean useGraphics2dSet;
   static boolean useGraphics2d;
@@ -105,19 +105,32 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     return useGraphics2d;
   }
 
+  static native void gtkInit(int portableNativeSync);
+
   static
   {
     if (Configuration.INIT_LOAD_LIBRARY)
       System.loadLibrary("gtkpeer");
+
+    int portableNativeSync;     
+    String portNatSyncProp = 
+      System.getProperty("gnu.classpath.awt.gtk.portable.native.sync");
+    
+    if (portNatSyncProp == null)
+      portableNativeSync = -1;  // unset
+    else if (Boolean.valueOf(portNatSyncProp).booleanValue())
+      portableNativeSync = 1;   // true
+    else
+      portableNativeSync = 0;   // false
+
+    gtkInit(portableNativeSync);
   }
 
   public GtkToolkit ()
   {
-    main = new GtkMainThread ();
     systemClipboard = new GtkClipboard ();
-    GtkGenericPeer.enableQueue (q);
   }
-  
+
   native public void beep ();
   native private void getScreenSizeDimensions (int[] xy);
   
@@ -596,6 +609,14 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
   protected EventQueue getSystemEventQueueImpl() 
   {
+    synchronized (GtkToolkit.class)
+      {
+        if (q == null)
+          {
+            q = new EventQueue();
+            GtkGenericPeer.enableQueue (q);
+          }
+      }    
     return q;
   }
 
@@ -627,4 +648,9 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
   {
     return new GdkRobotPeer (screen);
   }
-}
+
+  public native boolean nativeQueueEmpty();
+  public native void wakeNativeQueue();  
+  public native void iterateNativeQueue(EventQueue locked);
+
+} // class GtkToolkit

@@ -1,6 +1,71 @@
 2005-01-13  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+
+	2005-01-11  Graydon Hoare  <graydon@redhat.com>
+
+	* gnu/java/awt/ClasspathToolkit.java
+	(nativeQueueEmpty)
+	(wakeNativeQueue)
+	(iterateNativeQueue): New methods.
+	* gnu/java/awt/peer/gtk/GtkMainThread.java: Remove.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java
+	(gtkInit): Absorb from defunct GtkMainThread class.
+	(static): Run gtkInit in static startup block.
+	(GtkToolkit): Remove construction of GtkMainThread and queue.
+	(getSystemEventQueueImpl): Construct queue when requested.
+	(nativeQueueEmpty)
+	(wakeNativeQueue)
+	(iterateNativeQueue): New methods.
+	* java/awt/Component.java (removeNotify): Remove race.
+	* java/awt/EventDispatchThread.java
+	(EventDispatchThread): Don't start on construction.
+	(run): Remove isInterrupted check.
+	* java/awt/EventQueue.java (shutdown): New flag.
+	(isShutdown): New method checking J2SE shutdown condition.
+	(setShutdown): New method.
+	(getNextEvent): Restructure to use ClasspathToolkit.
+	(postEvent): Activate new thread on posting, wake thread on
+	post of possible shutdown condition event.
+	* java/awt/Frame.java
+	(Frame): Call noteFrame in all constructors.
+	(fireDummyEvent): New helper method.
+	(addNotify): Fire a dummy event to wake up queue.
+	(removeNotify): Fire a dummy event to wake up queue.
+	(noteFrame): New method.
+	(weakFrames): New static field.
+	(getFrames): Implement.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMainThread.c:
+	Remove.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c:
+	Move everything from GtkMainThread into this file
+	(Java_gnu_java_awt_peer_gtk_GtkToolkit_iterateNativeQueue)
+	(Java_gnu_java_awt_peer_gtk_GtkToolkit_wakeNativeQueue)
+	(Java_gnu_java_awt_peer_gtk_GtkToolkit_nativeQueueEmpty):
+	New functions to implement single-threaded queue semantics.
+
+	2005-01-11  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GtkComponentPeer.java: Replace direct
+	references to event queue q with method call q().
+	* gnu/java/awt/peer/gtk/GtkDialogPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkFramePeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkScrollbarPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkTextComponentPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkWindowPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkGenericPeer.java: Likewise.
+	(q): New method.
+
+	2005-01-11  Michael Koch  <konqueror@gmx.de>
+
+	* native/jni/gtk-peer/Makefile.am:
+	Removed gnu_java_awt_peer_gtk_GtkMainThread.c.
+	* include/Makefile.am:
+	Don't generate gnu_java_awt_peer_gtk_GtkMainThread.h
+	
+2005-01-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 	
 	2005-01-11  Michael Koch  <konqueror@gmx.de>
 
