@@ -523,6 +523,8 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 	}
 	else {
 		Hjava_lang_Object* syncobj = 0;
+		vmException mjbuf;
+		Hjava_lang_Thread* tid = getCurrentThread();
 
 		if (meth->accflags & ACC_SYNCHRONISED) {
 			if (meth->accflags & ACC_STATIC) {
@@ -534,11 +536,23 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 			lockObject(syncobj);
 		}
 
+		mjbuf.pc = 0;
+		mjbuf.mobj = syncobj;
+		mjbuf.meth = meth;
+		if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
+			mjbuf.prev = (vmException*)unhand(tid)->exceptPtr;
+			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
+		}
+
 		/* Make the call - system dependent */
 		sysdepCallMethod(&call);
 
 		if (syncobj != 0) {
 			unlockObject(syncobj);
+		}
+
+		if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
+			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)mjbuf.prev;
 		}
 	}
 #endif
@@ -720,6 +734,8 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	}
 	else {
 		Hjava_lang_Object* syncobj = 0;
+		vmException mjbuf;
+		Hjava_lang_Thread* tid = getCurrentThread();
 
 		if (meth->accflags & ACC_SYNCHRONISED) {
 			if (meth->accflags & ACC_STATIC) {
@@ -731,11 +747,23 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 			lockObject(syncobj);
 		}
 
+		mjbuf.pc = 0;
+		mjbuf.mobj = syncobj;
+		mjbuf.meth = meth;
+		if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
+			mjbuf.prev = (vmException*)unhand(tid)->exceptPtr;
+			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
+		}
+
 		/* Make the call - system dependent */
 		sysdepCallMethod(&call);
 
 		if (syncobj != 0) {
 			unlockObject(syncobj);
+		}
+
+		if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
+			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)mjbuf.prev;
 		}
 	}
 #endif
