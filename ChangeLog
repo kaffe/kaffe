@@ -1,5 +1,15 @@
 2004-10-18  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/security/provider/DSAParameters.java:
+        Resynced with GNU Classpath.
+
+	2004-10-18  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/security/provider/DSAParameters.java:
+        Fixed copyright years.
+
+2004-10-18  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/util/Calendar.java,
 	libraries/javalib/java/util/Date.java,
 	libraries/javalib/java/util/GregorianCalendar.java:
