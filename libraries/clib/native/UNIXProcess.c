@@ -19,6 +19,7 @@
 #include "FileDescriptor.h"
 #include "UNIXProcess.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/gtypes.h"
 #include <jsyscall.h>
 #include <native.h>
 
@@ -152,7 +153,7 @@ DBG(	printf("args %d envs %d\n", arglen, envlen); fflush(stdout);	)
 #else
 	unimp("execve() not provided");
 #endif
-	exit(-1);
+	EXIT(-1);
 }
 
 void

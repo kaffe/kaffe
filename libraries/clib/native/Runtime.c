@@ -85,12 +85,12 @@ java_lang_Runtime_loadFileInternal(struct Hjava_lang_Runtime* this, struct Hjava
 }
 
 /*
- * Exit - is this just a thread or the whole thing?
+ * Exit this VM
  */
 void
 java_lang_Runtime_exitInternal(struct Hjava_lang_Runtime* r, jint v)
 {
-	exit (v);
+	EXIT (v);
 }
 
 /*
