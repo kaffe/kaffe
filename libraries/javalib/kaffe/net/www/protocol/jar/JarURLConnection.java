@@ -16,6 +16,7 @@
 package kaffe.net.www.protocol.jar;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +30,7 @@ import java.util.zip.ZipEntry;
 
 public class JarURLConnection extends java.net.JarURLConnection {
 	private URL jarFileURL;
+	private File underlyingFile;
 	private JarFile jarFile;
 	private String jarEntryName;
 	private ZipEntry jarEntry;
@@ -56,9 +58,9 @@ public class JarURLConnection extends java.net.JarURLConnection {
 			return;
 		}
 
-		// If inner URL is a file, just use it directly
+		// Get the file: if inner URL is file: just use it directly
 		if (jarFileURL.getProtocol().equals("file")) {
-			jarFile = new JarFile(jarFileURL.getFile());
+			underlyingFile = new File(jarFileURL.getFile());
 		} else {
 
 			// Get the JAR file input stream
@@ -67,22 +69,27 @@ public class JarURLConnection extends java.net.JarURLConnection {
 			InputStream in = jarFileURLConnection.getInputStream();
 
 			// Save it to a temp file
-			File tempFile = File.createTempFile("jar", null);
-			OutputStream out = new FileOutputStream(tempFile);
+			underlyingFile = File.createTempFile("jar", null);
+			OutputStream out = new FileOutputStream(underlyingFile);
 			byte[] buf = new byte[1024];
 			for (int r; (r = in.read(buf)) != -1; )
 				out.write(buf, 0, r);
+			in.close();
 			out.close();
-// XXX should use	tempFile.deleteOnExit();   but not implemented yet
-
-			jarFile = new JarFile(tempFile);
 		}
 
-		// Get the entry in the file
-		jarEntry = jarFile.getEntry(jarEntryName);
-		if (jarEntry == null) {
-			throw new IOException("JAR entry \""
-			    + jarEntryName + "\" not found");
+		// Create JAR file out of underlying file
+		jarFile = new JarFile(underlyingFile);
+
+		// Get the entry in the file, or possibly the whole JAR file
+		if (jarEntryName.equals("")) {
+			jarEntry = null;
+		} else {
+			jarEntry = jarFile.getEntry(jarEntryName);
+			if (jarEntry == null) {
+				throw new IOException("JAR entry \""
+				    + jarEntryName + "\" not found");
+			}
 		}
 		connected = true;
 	}
@@ -91,7 +98,9 @@ public class JarURLConnection extends java.net.JarURLConnection {
 		if (!connected) {
 			throw new IOException("not connected");
 		}
-		return jarFile.getInputStream(jarEntry);
+		return jarEntry == null ?
+		    new FileInputStream(underlyingFile) :
+		    jarFile.getInputStream(jarEntry);
 	}
 }
 
