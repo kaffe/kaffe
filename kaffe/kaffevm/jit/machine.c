@@ -226,9 +226,6 @@ DBG(	printf("callinfo = 0x%x\n", &cinfo);	)
 
 		npc = pc + insnLen[base[pc]];
 
-		if (getenv("JIT_DEBUG"))
-		    printf("[%d-%d]\n", pc, npc);
-
 		/* Determine various exception conditions */
 		checkCaughtExceptions(meth, pc);
 
