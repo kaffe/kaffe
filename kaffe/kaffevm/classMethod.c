@@ -385,6 +385,8 @@ retry:
 					     CSTATE_COMPLETE, einfo);
 			classLock = lockMutex(class);
 			if (success == false) {
+				if (class->superclass->state == CSTATE_INIT_FAILED)
+					SET_CLASS_STATE(CSTATE_INIT_FAILED);
 				goto done;
 			}
 		}
