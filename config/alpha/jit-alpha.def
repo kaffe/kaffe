@@ -126,7 +126,7 @@ alpha_jit_info_t alpha_jit_info;
 
 #ifdef DEBUG
 int jit_debug;
-#define debug(x)	(jit_debug ? printf("%x:\t", CODEPC), printf x : 0)
+#define debug(x)	(jit_debug ? dprintf("%x:\t", CODEPC), dprintf x : 0)
 #else
 #define debug(x)	((void)0)
 #endif
@@ -237,7 +237,7 @@ int jit_debug;
 
 #define op_cpysn(ra, rb, rc)						\
 	debug(("cpysn\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
-	insn_fp(0x17, 0x021, REG_zero, (rb), (rc))
+	insn_fp(0x17, 0x021, (ra), (rb), (rc))
 
 #define op_cvtlq(rb, rc)						\
 	debug(("cvtlq\t%s,%s\n",fregname(rb),fregname(rc))),		\
@@ -349,7 +349,7 @@ int jit_debug;
 
 #define op_mov(ra, rb)							\
 	debug(("mov\t%s,%s\n",regname(ra),regname(rb))),		\
-	insn_opr(0x11, 0x20, REG_zero, (ra), (rb))
+	insn_opr(0x11, 0x20, (ra), (ra), (rb))
 
 #define op_mskbl(ra, rb, rc)						\
 	debug(("mskbl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
@@ -665,11 +665,12 @@ define_insn(prologue, prologue_xxC)
 
 #ifdef DEBUG
 	if (jit_debug) {
-		printf("\n%s.%s %s\n", meth->class->name->data,
+		dprintf("\n%s.%s %s\n", meth->class->name->data,
 			meth->name->data, METHOD_SIGD(meth));
 	}
 #endif
-
+	alpha_jit_info.ieee = 0;
+	
 	/* Initial stack frame looks like:
 	 *
 	 *      |  Argument above 6             |
@@ -836,6 +837,7 @@ define_insn(prologue, prologue_xxC)
 	 *    passed-in-procedure (code address) value in $27.  */
 
 	op_lda(REG_gp, REG_pv, 0);
+	// op_mov(REG_pv, REG_gp);
 
 	/* Calling Standard for Alpha Systems
 	 * 3.2.6.1    Entry Code Sequence
@@ -911,27 +913,60 @@ define_insn(prologue, prologue_xxC)
 	if (alpha_nslot2argoffset < l) {
 		alpha_nslot2argoffset = l;
 		alpha_slot2argoffset = KREALLOC(alpha_slot2argoffset,
-						sizeof(int)*l);
+						l * sizeof(alpha_slot2argoffset[0]));
 	}
 
-	/* Work out arg spill space */
-	aspill = (maxArgs < 6 ? maxArgs : 6);
+	if (isStatic) {
+		r = 0;
+	}
+	else {
+		alpha_slot2argoffset[0] = -SLOTSIZE;
+		r = 1;
+	}
+	sl = r;
 
-	/* Assign arguments, locals and temps to slots from $fp */
-	for (r = 0; r < l; r++) {
-		if (r >= maxArgs) {
-		        /* locals and temps */
-			alpha_slot2argoffset[r] = -SLOTSIZE * (aspill+(r-maxArgs+1));
-		}
-		else if (r < 6) {
-		        /* register passed arguments */
-			alpha_slot2argoffset[r] = -SLOTSIZE * (aspill-r);
-		}
-		else {
-		        /* memory passed arguments */
-			alpha_slot2argoffset[r] = SLOTSIZE * (r-6);
+	/* register passed arguments */
+	for (l = 0; l < METHOD_NARGS(meth) && r < 6; l++, r++) {
+		char type = *METHOD_ARG_TYPE(meth, l);
+		
+		alpha_slot2argoffset[sl++] = -SLOTSIZE * (r+1);
+		if (type == 'J' || type == 'D') {
+			/* long and double use two slots */
+			alpha_slot2argoffset[sl++] = -SLOTSIZE * (r+1);
 		}
 	}
+	aspill = r + 1;
+	
+	/* memory passed arguments */
+	for (; l < METHOD_NARGS(meth); l++, r++) {
+		char type = *METHOD_ARG_TYPE(meth, l);
+		
+		alpha_slot2argoffset[sl++] = SLOTSIZE * (r-6);
+		if (type == 'J' || type == 'D') {
+			/* long and double use two slots */
+			alpha_slot2argoffset[sl++] = SLOTSIZE * (r-6);
+		}
+	}
+
+#ifdef DEBUG
+	if (jit_debug) {
+	    dprintf ("nr arg slots = %d\n", sl);
+	}
+#endif
+	
+	l = maxLocal + maxStack + maxTemp;
+	/* locals and temps */
+	while (sl < l) {
+		alpha_slot2argoffset[sl++] = -SLOTSIZE * (aspill++);
+	}
+
+#ifdef DEBUG
+	if (jit_debug) {
+		for (sl = 0; sl < l; sl++) {
+			dprintf ("slot(%d) = %d\n", sl, alpha_slot2argoffset[sl]);
+		}
+	}
+#endif
 
 	/* Now assign the registers to slots */
         if (isStatic) {
@@ -961,11 +996,11 @@ define_insn(prologue, prologue_xxC)
 			break;
 		case 'J':
 			forceRegister(&localinfo[sl], REG_a0+r, Rlong);
-			s++;
+			sl++;
 			break;
 		case 'D':
 			forceRegister(&localinfo[sl], REG_fa0+r, Rdouble);
-			s++;
+			sl++;
 			break;
 		default:
 			ABORT();
@@ -1496,6 +1531,7 @@ define_insn(add_float, addf_RRR)
 #else
 	op_adds_su(r1, r2, w);
 	op_trapb();
+	alpha_jit_info.ieee = 1;
 #endif
 }
 
@@ -1510,6 +1546,7 @@ define_insn(add_double, addd_RRR)
 #else
 	op_addt_su(r1, r2, w);
 	op_trapb();
+	alpha_jit_info.ieee = 1;
 #endif
 }
 
@@ -1569,6 +1606,7 @@ define_insn(sub_float, subf_RRR)
 #else
 	op_subs_su(r1, r2, w);
 	op_trapb();
+	alpha_jit_info.ieee = 1;
 #endif
 }
 
@@ -1583,6 +1621,7 @@ define_insn(sub_double, subd_RRR)
 #else
 	op_subt_su(r1, r2, w);
 	op_trapb();
+	alpha_jit_info.ieee = 1;
 #endif
 }
 
@@ -1732,6 +1771,7 @@ define_insn(mul_float, mulf_RRR)
 #else
 	op_muls_su(r1, r2, w);
 	op_trapb();
+	alpha_jit_info.ieee = 1;
 #endif
 }
 
@@ -1746,6 +1786,7 @@ define_insn(mul_double, muld_RRR)
 #else
 	op_mult_su(r1, r2, w);
 	op_trapb();
+	alpha_jit_info.ieee = 1;
 #endif
 }
 
@@ -1847,6 +1888,7 @@ define_insn(div_float, divf_RRR)
 #else
 	op_divs_su(r1, r2, w);
 	op_trapb();
+	alpha_jit_info.ieee = 1;
 #endif
 }
 
@@ -1861,6 +1903,7 @@ define_insn(div_double, divd_RRR)
 #else
 	op_divt_su(r1, r2, w);
 	op_trapb();
+	alpha_jit_info.ieee = 1;
 #endif
 }
 
@@ -2166,7 +2209,7 @@ define_insn(load_offset_long, loadl_RRC)
 define_insn(load_float, loadf_RxR)
 {
 	int r = rreg_ref(2);
-	int w = rreg_float(0);
+	int w = wreg_float(0);
 
 	op_lds(w, r, 0);
 }
@@ -2477,6 +2520,7 @@ define_insn(cvt_double_float, cvtdf_RxR)
 #else
 	op_cvtts_su(r, w);
 	op_trapb();
+	alpha_jit_info.ieee = 1;
 #endif
 }
 
@@ -2617,11 +2661,6 @@ define_insn(cbranch_ref, cbranchr_xRRLC)
 static void
 alpha_cbranch_const(int r, long o, label *l, int bt, bool is_int)
 {
-	static const int negate_test[] = {
-		[beq] bne, [blt] bge, [ble] bgt, [bgt] ble,
-		[bge] blt, [bne] beq, [bult] buge, [buge] bult
-	};
-
 	int t;
 
 	if (o == 0) {
@@ -2666,18 +2705,16 @@ alpha_cbranch_const(int r, long o, label *l, int bt, bool is_int)
 	}
 	else if (o < 0 && o >= -0xFF) {
 		if (is_int)
-			op_addl_i(r, o, REG_at);
+			op_addl_i(r, -o, REG_at);
 		else
-			op_addq_i(r, o, REG_at);
+			op_addq_i(r, -o, REG_at);
 		t = REG_at;
-		bt = negate_test[bt];
 	}
 	else {
 		/* The rangechecks should have been set up to prevent this.  */
 		assert(!is_int && o >= -0x8000 && o < 0x8000);
-		op_lda(REG_at, r, o);
+		op_lda(REG_at, r, -o);
 		t = REG_at;
-		bt = negate_test[bt];
 	}
 
 	l->type |= Llong21 | Lrelative | Lrangecheck;
