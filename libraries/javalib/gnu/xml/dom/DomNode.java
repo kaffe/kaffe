@@ -1,6 +1,6 @@
 /*
  * DomNode.java
- * Copyright (C) 1999,2000,2001 The Free Software Foundation
+ * Copyright (C) 1999,2000,2001,2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -76,1704 +76,2134 @@ import org.w3c.dom.traversal.*;
  * do not have namespace URIs.
  *
  * @author David Brownell
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public abstract class DomNode
-    implements Node, NodeList, EventTarget, DocumentEvent, Cloneable, Comparable
+  implements Node, NodeList, EventTarget, DocumentEvent, Cloneable, Comparable
 {
-    //
-    // CLASS DATA
-    //
 
-    // tunable
-    //	NKIDS_* affects arrays of children (which grow)
-    // (currently) fixed size:
-    //	ANCESTORS_* is for event capture/bubbling, # ancestors
-    //	NOTIFICATIONS_* is for per-node event delivery, # events
-    private static final int		NKIDS_INIT = 5;
-    private static final int		NKIDS_DELTA = 8;
-    private static final int		ANCESTORS_INIT = 20;
-    private static final int		NOTIFICATIONS_INIT = 10;
-
-    // tunable: enable mutation events or not?  Enabling it costs about
-    // 10-15% in DOM construction time, last time it was measured.
-
-    // package private !!!
-    static final boolean		reportMutations = true;
-
-    // locking protocol changeable only within this class
-    private static final Object		lockNode = new Object ();
-
-    // optimize space to share what we can
-    private static final DomNode	noKids [] = new DomNode [0];
-
-
-    // NON-FINAL class data
-
-    // Optimize event dispatch by not allocating memory each time
-    private static boolean		dispatchDataLock;
-    private static DomNode		ancestors []
-		    = new DomNode [ANCESTORS_INIT];
-    private static ListenerRecord	notificationSet []
-		    = new ListenerRecord [NOTIFICATIONS_INIT];
-
-    // Ditto for the (most common) event object itself!
-    private static boolean		eventDataLock;
-    private static DomEvent.DomMutationEvent	mutationEvent
-		    = new DomEvent.DomMutationEvent (null);
-    
-    //
-    // PER-INSTANCE DATA
-    //
-
-    Document			owner;
-    DomNode			parent;
-
-    // Bleech ... "package private" so a builder can populate entity refs.
-    // writable during construction.  DOM spec is nasty.
-    boolean				readonly;
-
-    // children
-    private DomNode			children [];
-    private int				length;
-
-    // event registrations
-    private ListenerRecord		listeners [];
-    private int				nListeners;
-
-    // Optimize access to siblings by caching indices.
-    private transient int index;
-
-    // Optimize document order comparison by caching the depth of this node
-    // in the tree.
-    private transient int depth;
-
-    // DOM Level 3 userData dictionary.
-    private Map                         userData;
-
-    /**
-     * DOM nodes have a natural ordering: document order.
-     */
-    public final int compareTo(Object other)
-    {
-      if (other instanceof DomNode)
-        {
-          DomNode n1 = this;
-          DomNode n2 = (DomNode) other;
-          if (n1.owner != n2.owner)
-            {
-              return 0;
-            }
-          int d1 = n1.depth, d2 = n2.depth;
-          int delta = d1 - d2;
-          while (d1 > d2) {
-            n1 = n1.parent;
-            d1--;
-          }
-          while (d2 > d1) {
-            n2 = n2.parent;
-            d2--;
-          }
-          int c = compareTo2(n1, n2);
-          return (c != 0) ? c : delta;
-        }
-      return 0;
-    }
-
-    /**
-     * Compare two nodes at the same depth.
-     */
-    final int compareTo2(DomNode n1, DomNode n2)
-    {
-      if (n1.depth == 0 || n1 == n2)
-        {
-          return 0;
-        }
-      int c = compareTo2(n1.parent, n2.parent);
-      return (c != 0) ? c : n1.index - n2.index;
-    }
-    
-	//
-	// Some of the methods here are declared 'final' because
-	// knowledge about their implementation is built into this
-	// class -- for both integrity and performance.
-	//
-
-    // package private
-    void nyi ()
-    {
-	throw new DomEx (DomEx.NOT_SUPPORTED_ERR,
-		"feature not yet implemented", this, 0);
-    }
-
-    /**
-     * Reduces space utilization for this node.
-     */
-    public void compact ()
-    {
-	if (children != null && children != noKids) {
-	    if (length == 0)
-		children = noKids;
-	    // allow a bit of fuzz (max NKIDS_DELTA).
-	    // the JVM won't always use less memory for smaller arrays...
-	    else if ((children.length - length) > 1) {
-		DomNode	newKids [] = new DomNode [length];
-		System.arraycopy (children, 0, newKids, 0, length);
-		children = newKids;
-	    }
-	}
-	if (listeners != null && listeners.length != nListeners) {
-	    if (nListeners == 0)
-		listeners = null;
-	    else {
-		ListenerRecord	l [] = new ListenerRecord [nListeners];
-		System.arraycopy (listeners, 0, l, 0, nListeners);
-		listeners = l;
-	    }
-	}
-    }
-
-    /**
-     * Constructs a node and associates it with its owner.  Only
-     * Document and DocumentType nodes may be created with no owner,
-     * and DocumentType nodes get an owner as soon as they are
-     * associated with a document.
-     */
-    protected DomNode (Document owner)
-    {
-	short 	type = getNodeType ();
-
-	if (owner == null) {
-	    // DOM calls never go down this path
-	    if (type != DOCUMENT_NODE && type != DOCUMENT_TYPE_NODE)
-		throw new IllegalArgumentException ("no owner!");
-	}
-	this.owner = owner;
-
-	switch (type) {
-	    case DOCUMENT_NODE:
-	    case DOCUMENT_FRAGMENT_NODE:
-	    case ENTITY_REFERENCE_NODE:
-	    case ELEMENT_NODE:
-		children = new DomNode [NKIDS_INIT];
-		break;
-	    // no sane app wants the attributes-with-children model
-	    case ATTRIBUTE_NODE:
-		children = new DomNode [1];
-		break;
-	    // we don't currently build children with entities
-	    case ENTITY_NODE:
-		children = noKids;
-
-	    // no other kinds of nodes may have children; so for
-	    // such nodes, length stays zero, children stays null
-	}
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns null; Element subclasses must override this method.
-     */
-    public NamedNodeMap getAttributes ()
-	{ return null; }
-    
-    /**
-     * <b>DOM L2></b>
-     * Returns true iff this is an element node with attributes.
-     */
-    public boolean hasAttributes ()
-	{ return false; }
-
-    /**
-     * <b>DOM L1</b>
-     * Returns a list, possibly empty, of the children of this node.
-     * In this implementation, to conserve memory, nodes are the same
-     * as their list of children.  This can have ramifications for
-     * subclasses, which may need to provide their own getLength method
-     * for reasons unrelated to the NodeList method of the same name.
-     */
-    public NodeList getChildNodes ()
-	{ return this; }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the first child of this node, or null if there are none.
-     */
-    final public Node getFirstChild ()
-	{ return item (0); }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the last child of this node, or null if there are none.
-     */
-    final public Node getLastChild ()
-	{ return item (length - 1); }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns true if this node has children.
-     */
-    final public boolean hasChildNodes ()
-	{ return length > 0; }
-
-
-    /**
-     * Exposes the internal "readonly" flag.  In DOM, children of
-     * entities and entity references are readonly, as are the
-     * objects associated with DocumentType objets.
-     */
-    final public boolean isReadonly ()
-    {
-	return readonly;
-    }
-
-    
-    /**
-     * Sets the internal "readonly" flag so this subtree can't be changed.
-     * Subclasses need to override this method for any associated content
-     * that's not a child node, such as an element's attributes or the
-     * (few) declarations associated with a DocumentType.
-     */
-    public void makeReadonly ()
-    {
-	readonly = true;
-
-	for (int i = 0; i < length; i++)
-	    children [i].makeReadonly ();
-    }
-
-
-    // we need to have at least N more kids
-    private void ensureEnough (int n)
-    {
-	if ((children.length - length) > n)
-	    return;
-	
-	// don't grow in micro-chunks
-	if (n < NKIDS_DELTA)
-	    n = NKIDS_DELTA;
-	n += children.length;
-
-	DomNode newKids [] = new DomNode [n];
-        System.arraycopy(children, 0, newKids, 0, length);
-	children = newKids;
-    }
-
-    // just checks the node for inclusion -- may be called many
-    // times (docfrag) before anything is allowed to change
-    private void checkMisc (DomNode child)
-    {
-	if (readonly)
-	    throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR,
-		    null, this, 0);
-	if (children == null)
-	    throw new DomEx (DomEx.HIERARCHY_REQUEST_ERR,
-		    null, this, 0);
-	if (parent != null && child.length > 0) {
-	    for (Node temp = parent;
-		    temp != null;
-		    temp = temp.getParentNode ()) {
-		if (child == parent)
-		    throw new DomEx (DomEx.HIERARCHY_REQUEST_ERR,
-			    "can't make ancestor into a child", this, 0);
-	    }
-	}
-	
-	Node myOwner = owner;
-	Node newOwner = child.owner;
-	short nodeType = getNodeType ();
-	short newType = child.getNodeType ();
-
-	if (nodeType == DOCUMENT_NODE)
-	    myOwner = this;
-
-	if (newOwner != myOwner) {
-	    // new in DOM L2, this case -- patch it up later, in reparent()
-	    if (!(newType == DOCUMENT_TYPE_NODE && newOwner == null))
-		throw new DomEx (DomEx.WRONG_DOCUMENT_ERR,
-			null, child, 0);
-	}
-
-	// Test code.
-	// 	System.out.println("DOMNode node type = " + nodeType
-	// 			   + " new type: " + newType);
-	
-	// 	if (newType == 3)
-	// 	  System.out.println("child content = " + child.getNodeValue());
-	
-	// enforce various structural constraints
-	switch (nodeType) {
-	    case DOCUMENT_NODE:
-		if (newType == ELEMENT_NODE
-			|| newType == PROCESSING_INSTRUCTION_NODE
-			|| newType == COMMENT_NODE
-			|| newType == DOCUMENT_TYPE_NODE)
-		    return;
-		break;
-
-	    case ATTRIBUTE_NODE:
-		if (newType == TEXT_NODE || newType == ENTITY_REFERENCE_NODE)
-		    return;
-		break;
-
-	    case DOCUMENT_FRAGMENT_NODE:
-	    case ENTITY_REFERENCE_NODE:
-	    case ELEMENT_NODE:
-	    case ENTITY_NODE:
-		if (newType == ELEMENT_NODE
-			|| newType == TEXT_NODE
-			|| newType == COMMENT_NODE
-			|| newType == PROCESSING_INSTRUCTION_NODE
-			|| newType == CDATA_SECTION_NODE
-			|| newType == ENTITY_REFERENCE_NODE)
-		    return;
-	}
-	throw new DomEx (DomEx.HIERARCHY_REQUEST_ERR,
-	    "this node can't have that type of child", this, 0);
-    }
-
-    //
-    // NOTE:  after this method, the new child knows its parent,
-    // but the parent doesn't know the child.  Don't let that
-    // intermediate state be seen by the application.
-    //
-    // XXX prefer to pass in a mutation event object, making removeChild reuse
-    // it appropriately.  That'll shorten critical paths, and remove the
-    // guarantee that the three-message replaceChild case will hit the heap.
-    //
-    private void reparent (DomNode newChild)
-    {
-	short childType = newChild.getNodeType ();
-
-	if (getNodeType () == DOCUMENT_NODE
-		&& childType == DOCUMENT_TYPE_NODE) {
-	    DomDoctype	doctype = (DomDoctype) newChild;
-
-	    if (doctype.getImplementation ()
-		    != ((Document)this).getImplementation ())
-		throw new DomEx (DomEx.WRONG_DOCUMENT_ERR,
-			"implementation mismatch", newChild, 0);
-	    newChild.owner = (Document) this;
-	}
-
-	// get rid of old parent
-	Node		oldParent = newChild.parent;
-
-	if (oldParent != null)
-	    oldParent.removeChild (newChild);
-	
-	if (childType != ATTRIBUTE_NODE)
-	    newChild.parent  = this;
-        newChild.depth = depth + 1;
-    }
-
-
-    // Here's hoping a good optimizer will detect the case when the
-    // next several methods are never called, and won't allocate
-    // object code space of any kind.  (Case:  not reporting any
-    // mutation events.  We can also remove some static variables
-    // listed above.)
-
-
-    private void insertionEvent (
-	DomEvent.DomMutationEvent	event,
-	DomNode				target
-    ) {
-	boolean doFree = false;
-
-	if (event == null) {
-	    event = getMutationEvent ();
-	    if (event != null)
-		doFree = true;
-	    else
-		event = new DomEvent.DomMutationEvent (null);
-	}
-	event.initMutationEvent ("DOMNodeInserted",
-		true /* bubbles */, false /* nocancel */,
-		this /* related */, null, null, null, (short) 0);
-	target.dispatchEvent (event);
-
-	// XXX should really visit every descendant of 'target'
-	// and sent a DOMNodeInsertedIntoDocument event to it...
-	// bleech, there's no way to keep that acceptably fast.
-
-	if (doFree) {
-	    event.target = null;
-	    event.relatedNode = null;
-	    event.currentNode = null;
-	    eventDataLock = false;
-	} // else we created work for the GC
-    }
-
-
-    private void removalEvent (
-	DomEvent.DomMutationEvent	event,
-	DomNode				target
-    ) {
-	boolean doFree = false;
-
-	if (event == null) {
-	    event = getMutationEvent ();
-	    if (event != null)
-		doFree = true;
-	    else
-		event = new DomEvent.DomMutationEvent (null);
-	}
-	event.initMutationEvent ("DOMNodeRemoved",
-		true /* bubbles */, false /* nocancel */,
-		this /* related */, null, null, null, (short) 0);
-	target.dispatchEvent (event);
-
-	// XXX should really visit every descendant of 'target'
-	// and sent a DOMNodeRemovedFromDocument event to it...
-	// bleech, there's no way to keep that acceptably fast.
-
-	event.target = null;
-	event.relatedNode = null;
-	event.currentNode = null;
-	if (doFree)
-	    eventDataLock = false;
-	// else we created more work for the GC
-    }
-
-    //
-    // Avoid creating lots of memory management work, by using a simple
-    // allocation strategy for the mutation event objects that get used
-    // at least once per tree modification.  We can't use stack allocation,
-    // so we do the next simplest thing -- more or less, static allocation.
-    // Concurrent notifications should be rare, anyway.
-    //
-    // Returns the preallocated object, which needs to be carefully freed,
-    // or null to indicate the caller needs to allocate their own.
-    //
-    static private DomEvent.DomMutationEvent getMutationEvent ()
-    {
-	synchronized (lockNode) {
-	    if (eventDataLock)
-		return null;
-	    eventDataLock = true;
-	    return mutationEvent;
-	}
-    }
-
-    // NOTE:  this is manually inlined in the insertion
-    // and removal event methods above; change in sync.
-    static private void freeMutationEvent ()
-    {
-	// clear fields to enable GC
-	mutationEvent.clear ();
-	eventDataLock = false;
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Appends the specified node to this node's list of children.
-     * Document subclasses must override this to enforce the restrictions
-     * that there be only one element and document type child.
-     *
-     * <p> Causes a DOMNodeInserted mutation event to be reported.
-     * Will first cause a DOMNodeRemoved event to be reported if the
-     * parameter already has a parent.  If the new child is a document
-     * fragment node, both events will be reported for each child of
-     * the fragment; the order in which children are removed and
-     * inserted is implementation-specific.
-     *
-     * <p> If this DOM has been compiled without mutation event support,
-     * these events will not be reported.
-     */
-    public Node appendChild (Node newChild)
-    {
-	try {
-	    DomNode	child = (DomNode) newChild;
-
-	    if (newChild.getNodeType () != DOCUMENT_FRAGMENT_NODE) {
-		checkMisc (child);
-		if (!(length < children.length))
-		    ensureEnough (1);
-		reparent (child);
-                child.index = length++;
-		children [child.index] = child;
-		if (reportMutations)
-		    insertionEvent (null, child);
-	    } else {
-		// See if we can append all the nodes in the fragment
-		for (int i = 0; i < child.length; i++)
-		    checkMisc (child.children [i]);
-
-		// yep -- do so!
-		ensureEnough (child.length);
-		for (int i = 0; i <= child.length; i++)
-		    appendChild (child.children [0]);
-	    }
-	    return child;
-
-	} catch (ClassCastException e) {
-	    throw new DomEx (DomEx.WRONG_DOCUMENT_ERR,
-		null, newChild, 0);
-	}
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Inserts the specified node in this node's list of children.
-     * Document subclasses must override this to enforce the restrictions
-     * that there be only one element and document type child.
-     *
-     * <p> Causes a DOMNodeInserted mutation event to be reported.  Will
-     * first cause a DOMNodeRemoved event to be reported if the newChild
-     * parameter already has a parent. If the new child is a document
-     * fragment node, both events will be reported for each child of
-     * the fragment; the order in which children are removed and inserted
-     * is implementation-specific.
-     *
-     * <p> If this DOM has been compiled without mutation event support,
-     * these events will not be reported.
-     */
-    public Node insertBefore (Node newChild, Node refChild)
-    {
-	if (refChild == null)
-	    return appendChild (newChild);
-
-	try {
-	    DomNode	child = (DomNode) newChild;
-
-	    if (newChild.getNodeType () != DOCUMENT_FRAGMENT_NODE) {
-		checkMisc (child);
-		for (int i = 0; i < length; i++) {
-		    if (children [i] != refChild)
-			continue;
-
-		    ensureEnough (1);
-		    reparent (child);
-		    if (children [i] != refChild)
-			i--;
-		    for (int j = ++length; j > i; j--)
-                      {
-                        children [j - 1].index = j;
-			children [j] = children [j - 1];
-                      }
-                    child.index = i;
-		    children [i] = child;
-		    if (reportMutations)
-			insertionEvent (null, child);
-
-		    return newChild;
-		}
-		throw new DomEx (DomEx.NOT_FOUND_ERR,
-		    "that's no child of mine", refChild, 0);
-
-	    } else {
-		// See if we can insert all the nodes in the fragment
-		for (int i = 0; i < child.length; i++)
-		    checkMisc (child.children [i]);
-
-		// yep -- do so!
-		ensureEnough (child.length);
-		for (int i = 0; i <= child.length; i++)
-		    insertBefore (child.children [0], refChild);
-		return newChild;
-	    }
-	} catch (ClassCastException e) {
-	    throw new DomEx (DomEx.WRONG_DOCUMENT_ERR,
-		null, newChild, 0);
-	}
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Replaces the specified node in this node's list of children.
-     * Document subclasses must override this to test the restrictions
-     * that there be only one element and document type child.
-     *
-     * <p> Causes DOMNodeRemoved and DOMNodeInserted mutation event to be
-     * reported.  Will cause another DOMNodeRemoved event to be reported if
-     * the newChild parameter already has a parent.  These events may be
-     * delivered in any order, except that the event reporting removal
-     * from such an existing parent will always be delivered before the
-     * event reporting its re-insertion as a child of some other node.
-     * The order in which children are removed and inserted is implementation
-     * specific.
-     *
-     * <p> If your application needs to depend on the in which those removal
-     * and insertion events are delivered, don't use this API.  Instead,
-     * invoke the removeChild and insertBefore methods directly, to guarantee
-     * a specific delivery order.  Similarly, don't use document fragments,
-     * Otherwise your application code may not work on a DOM which implements
-     * this method differently.
-     *
-     * <p> If this DOM has been compiled without mutation event support,
-     * these events will not be reported.
-     */
-    public Node replaceChild (Node newChild, Node refChild)
-    {
-	try {
-	    DomNode		child = (DomNode) newChild;
-
-	    if (newChild.getNodeType () != DOCUMENT_FRAGMENT_NODE) {
-		checkMisc (child);
-		for (int i = 0; i < length; i++) {
-		    if (children [i] != refChild)
-			continue;
-
-		    DomNode			rmchild = (DomNode) refChild;
-		    DomEvent.DomMutationEvent	event;
-		    boolean			doFree;
-
-		    event = getMutationEvent ();
-		    if (event != null)
-			doFree = true;
-		    else
-			doFree = false;
-		    if (reportMutations)
-			removalEvent (event, rmchild);
-		    reparent (child);
-		    if (children [i] != refChild)
-			i--;
-                    child.index = i;
-		    children [i] = child;
-		    rmchild.parent = null;
-		    if (reportMutations)
-			insertionEvent (event, child);
-		    if (doFree)
-			freeMutationEvent ();
-
-		    return refChild;
-		}
-		throw new DomEx (DomEx.NOT_FOUND_ERR,
-			"that's no child of mine", newChild, 0);
-	    } else {
-// XXX implement me
-		throw new DomEx (DomEx.NOT_SUPPORTED_ERR,
-			"replacing with fragment, NYI", null, 0);
-	    }
-	} catch (ClassCastException e) {
-	    throw new DomEx (DomEx.WRONG_DOCUMENT_ERR,
-		null, newChild, 0);
-	}
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Removes the specified child from this node's list of children,
-     * or else reports an exception.
-     *
-     * <p> Causes a DOMNodeRemoved mutation event to be reported.
-     *
-     * <p> If this DOM has been compiled without mutation event support,
-     * these events will not be reported.
-     */
-    public Node removeChild (Node refChild)
-    {
-	if (readonly)
-	    throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR,
-		    null, this, 0);
-	for (int i = 0; i < length; i++) {
-	    if (children [i] != refChild)
-		continue;
-	    
-	    DomNode		child = (DomNode) refChild;
-
-	    if (reportMutations)
-		removalEvent (null, child);
-	    for (int j = i + 1; j < length; j++, i++)
-              {
-                children [j].index = i;
-		children [i] = children [j];
-              }
-	    children [i] = null;
-	    child.parent = null;
-	    length--;
-
-	    return refChild;
-	}
-	throw new DomEx (DomEx.NOT_FOUND_ERR,
-		    "that's no child of mine", refChild, 0);
-    }
-
-
-    /**
-     * <b>DOM L1 (NodeList)</b>
-     * Returns the item with the specified index in this NodeList,
-     * else null.
-     */
-    final public Node item (int index)
-    {
-	try {
-	    if (index < length)
-		return children [index];
-	} catch (RuntimeException e) {
-	    // children == null or index < 0 ... bad parameter
-	    // FALLTHROUGh
-	}
-	return null;
-    }
-
-
-    /**
-     * <b>DOM L1 (NodeList)</b>
-     * Returns the number of elements in this NodeList.
-     * (Note that many interfaces have a "Length" property, not just
-     * NodeList, and if a node subtype must implement one of those,
-     * it will also need to override getChildNodes.)
-     */
-    public int getLength ()
-	{ return length; }
-
-
-    /**
-     * Minimize extra space consumed by this node to hold children and event
-     * listeners.
-     */
-    public void trimToSize ()
-    {
-	if (children != null && children.length != length) {
-	    DomNode newKids [] = new DomNode [length];
-
-	    for (int i = 0; i < length; i++)
-		newKids [i] = children [i];
-	    children = newKids;
-	}
-
-	if (listeners != null && listeners.length != nListeners) {
-	    ListenerRecord newKids [] = new ListenerRecord [length];
-
-	    for (int i = 0; i < nListeners; i++)
-		newKids [i] = listeners [i];
-	    listeners = newKids;
-	}
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the previous sibling, if one is known.
-     */
-    final public Node getNextSibling ()
-    {
-	if (parent == null || getNodeType() == ATTRIBUTE_NODE)
-	    return null;
-        return ((index + 1) < parent.length) ? parent.children[index + 1] : null;
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the previous sibling, if one is known.
-     */
-    final public Node getPreviousSibling ()
-    {
-	if (parent == null || getNodeType () == ATTRIBUTE_NODE)
-	    return null;
-        return (index > 0) ? parent.children[index - 1] : null;
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the parent node, if one is known.
-     */
-    final public Node getParentNode ()
-	{ return parent; }
-
-    // parent node is only set in reparent() after sanity chex
-
-
-    /**
-     * <b>DOM L2</b>
-     * Consults the DOM implementation to determine if the requested
-     * feature is supported.  DocumentType subclasses must override
-     * this method, and associate themselves directly with the
-     * DOMImplementation node used.  (This method relies on being able
-     * to access the DOMImplementation from the owner document, but
-     * DocumentType nodes can be created without an owner.)
-     */
-    public boolean isSupported (String feature, String version)
-    {
-	Document		doc = owner;
-	DOMImplementation	impl = null;
-
-	if (doc == null && getNodeType () == DOCUMENT_NODE)
-	    doc = (Document) this;
-
-	if (doc == null)
-	    // possible for DocumentType
-	    throw new IllegalStateException ("unbound ownerDocument");
-
-	impl = doc.getImplementation ();
-	return impl.hasFeature (feature, version);
-    }
-
-
-    /**
-     * <b>DOM L1 (modified in L2)</b>
-     * Returns the owner document.  This is only null for Document nodes,
-     * and (new in L2) for DocumentType nodes which have not yet been
-     * associated with the rest of their document.
-     */
-    final public Document getOwnerDocument ()
-	{ return owner; }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Does nothing; this must be overridden (along with the
-     * getNodeValue method) for nodes with a non-null defined value.
-     */
-    public void setNodeValue (String value)
-	{ }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns null; this must be overridden for nodes types with
-     * a defined value, along with the setNodeValue method.
-     */
-    public String getNodeValue ()
-	{ return null; }
-    
-
-    /** This forces GCJ compatibility.
-     * Without this method GCJ is unable to compile to byte code.
-     */
-    public abstract short getNodeType ();
-
-    /** This forces GCJ compatibility.
-     * Without this method GCJ seems unable to natively compile GNUJAXP.
-     */
-    public abstract String getNodeName ();
-
-    /**
-     * <b>DOM L2</b>
-     * Does nothing; this must be overridden (along with the
-     * getPrefix method) for element and attribute nodes.
-     */
-    public void setPrefix (String prefix)
-	{ }
-
-
-    /**
-     * <b>DOM L2</b>
-     * Returns null; this must be overridden for element and
-     * attribute nodes.
-     */
-    public String getPrefix ()
-	{ return null; }
-
-
-    /**
-     * <b>DOM L2</b>
-     * Returns null; this must be overridden for element and
-     * attribute nodes.
-     */
-    public String getNamespaceURI ()
-	{ return null; }
-
-
-    /**
-     * <b>DOM L2</b>
-     * Returns the node name; this must be overridden for element and
-     * attribute nodes.
-     */
-    public String getLocalName ()
-	{ return null; }
-
-    
-    /**
-     * <b>DOM L1</b>
-     * Returns a clone of this node which optionally includes cloned
-     * versions of child nodes.  Clones are always mutable, except for
-     * entity reference nodes.
-     */
-    public Node cloneNode (boolean deep)
-    {
-	DomNode		retval = (DomNode) clone ();
-
-	if (deep && children != null) {
-	    DomNode newKids [] = retval.children;
-
-	    if (newKids.length < length)
-		newKids = new DomNode [length];
-	    for (int i = 0; i < length; i++)
-		newKids [i] = (DomNode) children [i].cloneNode (true);
-	    retval.children = newKids;
-	    retval.length = length;
-
-	    if (getNodeType () == ENTITY_REFERENCE_NODE)
-		retval.makeReadonly ();
-	}
-	return retval;
-    }
-
-    /**
-     * Clones this node; roughly equivalent to cloneNode(false).
-     * Element subclasses must provide a new implementation which
-     * invokes this method to handle the basics, and then arranges
-     * to clone any element attributes directly.  Attribute subclasses
-     * must make similar arrangements, ensuring that existing ties to
-     * elements are broken by cloning.
-     */
-    public Object clone ()
-    {
-	try {
-	    DomNode		retval = (DomNode) super.clone ();
-
-	    retval.parent = null;
-	    retval.readonly = false;
-	    if (retval.children != null) {
-		retval.children = noKids;
-		retval.length = 0;
-	    }
-	    retval.listeners = null;
-	    retval.nListeners = 0;
-	    return retval;
-
-	} catch (CloneNotSupportedException x) {
-	    throw new Error ("clone didn't work");
-	}
-    }
-
-
-    // the elements-by-tagname stuff is needed for both
-    // elements and documents ... this is in lieu of a
-    // common base class between Node and NodeNS.
-
-    /**
-     * <b>DOM L1</b>
-     * Creates a NodeList giving array-style access to elements with
-     * the specified name.  Access is fastest if indices change by
-     * small values, and the DOM is not modified.
-     */
-    public NodeList getElementsByTagName (String tag)
-    {
-	return new ShadowList (null, tag);
-    }
-
-    /**
-     * <b>DOM L2</b>
-     * Creates a NodeList giving array-style access to elements with
-     * the specified namespace and local name.  Access is fastest if
-     * indices change by small values, and the DOM is not modified.
-     */
-    public NodeList getElementsByTagNameNS (String namespace, String local)
-    {
-	return new ShadowList (namespace, local);
-    }
-
-    
-    //
-    // This shadow class is GC-able even when the live list it shadows
-    // can't be, because of event registration hookups.  Its finalizer
-    // makes that live list become GC-able.
-    //
-    final class ShadowList implements NodeList
-    {
-	private LiveNodeList		liveList;
-
-	ShadowList (String ns, String local)
-	    { liveList = new LiveNodeList (ns, local); }
-	
-	public void finalize ()
-	{
-	    liveList.detach ();
-	    liveList = null;
-	}
-
-	public Node item (int index)
-	    { return liveList.item (index); }
-
-	public int getLength ()
-	    { return liveList.getLength (); }
-    }
-
-
-    final class LiveNodeList implements NodeList, EventListener, NodeFilter
-    {
-	private String		elementURI;
-	private String		elementName;
-
-	private DomIterator	current;
-	private int		lastIndex;
-
-
-	LiveNodeList (String uri, String name)
-	{
-	    elementURI = uri;
-	    elementName = name;
-	    DomNode.this.addEventListener ("DOMNodeInserted", this, true);
-	    DomNode.this.addEventListener ("DOMNodeRemoved", this, true);
-	}
-
-	void detach ()
-	{
-	    current.detach ();
-	    current = null;
-	    DomNode.this.removeEventListener ("DOMNodeInserted", this, true);
-	    DomNode.this.removeEventListener ("DOMNodeRemoved", this, true);
-	}
-
-	public short acceptNode (Node element)
-	{
-	    if (element == DomNode.this)
-		return FILTER_SKIP;
-
-	    // use namespace-aware matching ...
-	    if (elementURI != null) {
-		if (!("*".equals (elementURI)
-			|| elementURI.equals (element.getNamespaceURI ())))
-		    return FILTER_SKIP;
-		if (!("*".equals (elementName)
-			|| elementName.equals (element.getLocalName ())))
-		    return FILTER_SKIP;
-
-	    // ... or qName-based kind.
-	    } else {
-		if (!("*".equals (elementName)
-			|| elementName.equals (element.getNodeName ())))
-		    return FILTER_SKIP;
-	    }
-	    return FILTER_ACCEPT;
-	}
-
-	private DomIterator createIterator ()
-	{
-	    return new DomIterator (DomNode.this,
-		    NodeFilter.SHOW_ELEMENT,
-		    this,	/* filter */
-		    true	/* expand entity refs */
-		    );
-	}
-
-	public void handleEvent (Event e)
-	{
-	    MutationEvent	mutation = (MutationEvent) e;
-	    Node		related = mutation.getRelatedNode ();
-
-	    // XXX if it's got children ... check all kids too, they
-	    // will invalidate our saved index
-
-	    if (related.getNodeType () != Node.ELEMENT_NODE)
-		return;
-	    if (related.getNodeName () != elementName)
-		return;
-	    if (related.getNamespaceURI () != elementURI)
-		return;
-
-	    current = null;
-	}
-
-	public Node item (int index)
-	{
-	    if (current == null) {
-		current = createIterator ();
-		lastIndex = -1;
-	    }
-
-	    // last node or before?  go backwards
-	    if (index <= lastIndex) {
-		while (index != lastIndex) {
-		    current.previousNode ();
-		    lastIndex--;
-		}
-		return current.previousNode ();
-	    } 
-
-	    // somewhere after last node
-	    while (++lastIndex != index)
-		current.nextNode ();
-	    return current.nextNode ();
-	}
-
-	public int getLength ()
-	{
-	    int retval = 0;
-	    NodeIterator	iter = createIterator ();
-
-	    while (iter.nextNode () != null)
-		retval++;
-	    return retval;
-	}
-    }
-
-    //
-    // EventTarget support
-    //
-    static final class ListenerRecord {
-	String		type;
-	EventListener	listener;
-	boolean		useCapture;
-
-	// XXX use JDK 1.2 java.lang.ref.WeakReference to listener,
-	// and we can both get rid of "shadow" classes and remove
-	// the need for applications to apply similar trix ... but
-	// JDK 1.2 support isn't generally available yet
-
-	ListenerRecord (
-	    String		type,
-	    EventListener	listener,
-	    boolean		useCapture
-	) {
-	    this.type = type.intern ();
-	    this.listener = listener;
-	    this.useCapture = useCapture;
-	}
-
-	boolean equals (ListenerRecord rec)
-	{
-	    return listener == rec.listener
-		    && useCapture == rec.useCapture
-		    && type == rec.type;
-	}
-    }
-
-    /**
-     * <b>DOM L2 (Events)</b>
-     * Returns an instance of the specified type of event object.
-     * Understands about DOM Mutation, HTML, and UI events.
-     *
-     * <p>If the name of the event type begins with "USER-", then an object
-     * implementing the "Event" class will be returned; this provides a
-     * limited facility for application-defined events to use the DOM event
-     * infrastructure.  Alternatively, use one of the standard DOM event
-     * classes and initialize it using use such a "USER-" event type name;
-     * or defin, instantiate, and initialize an application-specific subclass
-     * of DomEvent and pass that to dispatchEvent().
-     *
-     * @param eventType Identifies the particular DOM feature module
-     *	defining the type of event, such as "MutationEvents".
-     *	<em>The event "name" is a different kind of "type".</em>
-     */
-    public Event createEvent (String eventType)
-    {
-	eventType = eventType.toLowerCase ();
-
-	if ("mutationevents".equals (eventType))
-	    return new DomEvent.DomMutationEvent (null);
-
-	if ("htmlevents".equals (eventType)
-		|| "events".equals (eventType)
-		|| "user-events".equals (eventType))
-	    return new DomEvent (null);
-
-	if ("uievents".equals (eventType))
-	    return new DomEvent.DomUIEvent (null);
-	
-	// mouse events 
-
-	throw new DomEx (DomEx.NOT_SUPPORTED_ERR,
-		eventType, null, 0);
-    }
-
-
-    /**
-     * <b>DOM L2 (Events)</b>
-     * Registers an event listener's interest in a class of events.
-     */
-    final public void addEventListener (
-	String		type,
-	EventListener	listener,
-	boolean		useCapture
-    ) {
-	if (listeners == null)
-	    listeners = new ListenerRecord [1];
-	else if (nListeners == listeners.length) {
-	    ListenerRecord newListeners [];
-	    newListeners =
-		new ListenerRecord [listeners.length + NKIDS_DELTA];
-	    for (int i = 0; i < nListeners; i++)
-		newListeners [i] = listeners [i];
-	    listeners = newListeners;
-	}
-
-	// prune duplicates
-	ListenerRecord	record;
-
-	record = new ListenerRecord (type, listener, useCapture);
-	for (int i = 0; i < nListeners; i++) {
-	    if (record.equals (listeners [i]))
-		return;
-	}
-	listeners [nListeners++] = record;
-    }
-
-
-    // XXX this exception should be discarded from DOM
-
-    // this class can be instantiated, unlike the one in the spec
-    final static class DomEventException extends EventException {
-	DomEventException ()
-	    { super (UNSPECIFIED_EVENT_TYPE_ERR, "unspecified event type"); }
-    }
-
-
-    /**
-     * <b>DOM L2 (Events)</b>
-     * Delivers an event to all relevant listeners, returning true if the
-     * caller should perform their default action.  Note that the event
-     * must have been provided by the createEvent() method on this
-     * class, else it can't be dispatched.
-     *
-     * @see #createEvent
-     *
-     * @exception NullPointerException When a null event is passed.
-     * @exception ClassCastException When the event wasn't provided by
-     *	the createEvent method, or otherwise isn't a DomEvent.
-     * @exception EventException If the event type wasn't specified
-     */
-    final public boolean dispatchEvent (Event event)
-    throws EventException
-    {
-	DomEvent	e = (DomEvent) event;
-	DomNode		ancestors [] = null;
-	int		ancestorMax = 0;
-	boolean		haveDispatchDataLock = false;
-
-	if (e.type == null)
-	    throw new DomEventException ();
-
-	e.doDefault = true;
-	e.target = this;
-
-	//
-	// Typical case:  one nonrecursive dispatchEvent call at a time
-	// for this class.  If that's our case, we can avoid allocating
-	// garbage, which is overall a big win.  Even with advanced GCs
-	// that deal well with short-lived garbage, and wayfast allocators,
-	// it still helps.
-	//
-	// Remember -- EVERY mutation goes though here at least once.
-	//
-	// When populating a DOM tree, trying to send mutation events is
-	// the primary cost; this dominates the critical path.
-	//
-	try {
-	    DomNode		current;
-	    int			index;
-	    boolean		haveAncestorRegistrations = false;
-	    ListenerRecord	notificationSet [];
-	    int			ancestorLen;
-
-	    synchronized (lockNode) {
-		if (!dispatchDataLock) {
-		    haveDispatchDataLock = dispatchDataLock = true;
-		    notificationSet = DomNode.notificationSet;
-		    ancestors = DomNode.ancestors;
-		} else {
-		    notificationSet = new ListenerRecord [NOTIFICATIONS_INIT];
-		    ancestors = new DomNode [ANCESTORS_INIT];
-		}
-		ancestorLen = ancestors.length;
-	    }
-
-		// XXX autogrow ancestors ... based on statistics
-
-	    // Climb to the top of this subtree and handle capture, letting
-	    // each node (from the top down) capture until one stops it or
-	    // until we get to this one.
-
-	    for (index = 0, current = parent;
-		    current != null && index < ancestorLen;
-		    index++, current = current.parent) {
-		if (current.nListeners != 0)
-		    haveAncestorRegistrations = true;
-		ancestors [index] = current;
-	    }
-	    if (current != null)
-		throw new RuntimeException ("dispatchEvent capture stack size");
-
-	    ancestorMax = index;
-	    e.stop = false;
-
-	    if (haveAncestorRegistrations) {
-		e.eventPhase = Event.CAPTURING_PHASE;
-		while (!e.stop && index-- > 0) {
-		    current = ancestors [index];
-		    if (current.nListeners != 0)
-			notifyNode (e, current, true, notificationSet);
-		}
-	    }
-
-	    // Always deliver events to the target node (this)
-	    // unless stopPropagation was called.  If we saw
-	    // no registrations yet (typical!), we never will.
-	    if (!e.stop && nListeners != 0) {
-		e.eventPhase = Event.AT_TARGET;
-		notifyNode (e, this, false, notificationSet);
-	    } else if (!haveAncestorRegistrations)
-		e.stop = true;
-
-	    // If the event bubbles and propagation wasn't halted,
-	    // walk back up the ancestor list.  Stop bubbling when
-	    // any bubbled event handler stops it.
-
-	    if (!e.stop && e.bubbles) {
-		e.eventPhase = Event.BUBBLING_PHASE;
-		for (index = 0;
-			!e.stop
-			    && index < ancestorMax
-			    && (current = ancestors [index]) != null;
-			index++) {
-		    if (current.nListeners != 0)
-			notifyNode (e, current, false, notificationSet);
-		}
-	    }
-	    e.eventPhase = 0;
-
-	    // Caller chooses whether to perform the default
-	    // action based on return from this method.
-	    return e.doDefault;
-
-	} finally {
-	    if (haveDispatchDataLock) {
-		// synchronize to force write ordering
-		synchronized (lockNode) {
-		    // null out refs to ensure they'll be GC'd
-		    for (int i = 0; i < ancestorMax; i++)
-			ancestors [i] = null;
-		    // notificationSet handled by notifyNode
-
-		    dispatchDataLock = false;
-		}
-	    }
-	}
-    }
-
-
-    private void notifyNode (
-	DomEvent	e,
-	DomNode		current,
-	boolean		capture,
-	ListenerRecord	notificationSet []
-    ) {
-	int count = 0;
-
-	// do any of this set of listeners get notified?
-	for (int i = 0; i < current.nListeners; i++) {
-	    ListenerRecord	rec = current.listeners [i];
-
-	    if (rec.useCapture != capture)
-		continue;
-	    if (!e.type.equals (rec.type)) 
-		continue;
-	    if (count < notificationSet.length)
-		notificationSet [count++] = rec;
-	    else
-		// XXX fire up some cheap growth algorithm
-		throw new RuntimeException (
-		    "Event notification set size exceeded");
-	}
-
-	// Notify just those listeners
-	e.currentNode = current; 
-	for (int i = 0; i < count; i++) {
-	    try {
-		// Late in the DOM CR process (3rd or 4th CR?) the
-		// removeEventListener spec became asymmetric with respect
-		// to addEventListener ... effect is now immediate.
-		for (int j = 0; j < current.nListeners; j++) {
-		    if (current.listeners [j].equals (notificationSet [i])) {
-			notificationSet [i].listener.handleEvent (e);
-			break;
-		    }
-		}
-
-	    } catch (Exception x) {
-		// ignore all exceptions
-	    }
-	    notificationSet [i] = null;		// free for GC
-	}
-    }
-
-    /**
-     * <b>DOM L2 (Events)</b>
-     * Unregisters an event listener.
-     */
-    final public void removeEventListener (
-	String type,
-	EventListener listener,
-	boolean useCapture
-    ) {
-	for (int i = 0; i < nListeners; i++) {
-	    if (listeners [i].listener != listener)
-		continue;
-	    if (listeners [i].useCapture != useCapture)
-		continue;
-	    if (!listeners [i].type.equals (type))
-		continue;
-
-	    if (nListeners == 1) {
-		listeners = null;
-		nListeners = 0;
-	    } else {
-		for (int j = i + 1; j < nListeners; j++)
-		    listeners [i++] = listeners [j++];
-		listeners [--nListeners] = null;
-	    }
-	    break;
-	}
-	// no exceptions reported
-    }
-
-
-    /**
-     * <b>DOM L1 (relocated in DOM L2)</b>
-     * In this node and all contained nodes (including attributes if
-     * relevant) merge adjacent text nodes.  This is done while ignoring
-     * text which happens to use CDATA delimiters).
-     */
-    public void normalize ()
-    {
-	int		index = 0;
-	Node		child, next;
-	Text		temp;
-	NamedNodeMap	attributes;
-
-	while ((child = item (index)) != null) {
-	    switch (child.getNodeType ()) {
-		case TEXT_NODE:
-		    next = item (index + 1);
-		    if (next == null || next.getNodeType () != TEXT_NODE)
-			break;
-		    temp = (Text) child;
-		    temp.appendData (next.getNodeValue ());
-		    removeChild (next);
-		    // don't increment index ... we do extra fetches
-		    // of the current node, affecting only speed.
-		    continue;
-
-		case ELEMENT_NODE:
-		    child.normalize ();
-		    attributes = child.getAttributes ();
-		    for (int i = 0; i < attributes.getLength (); i++) 
-			attributes.item (i).normalize ();
-		    // FALLTHROUGH
-	    }
-	    index++;
-	    continue;
-	}
-    }
-
-
-    /**
-     * Returns true iff node types match, and either (a) both nodes have no
-     * namespace and their getNodeName() values are the same, or (b) both
-     * nodes have the same getNamespaceURI() and same getLocalName() values.
-     *
-     * <p>Note that notion of a "Per-Element-Type" attribute name scope, as
-     * found in a non-normative appendix of the XML Namespaces specification,
-     * is not supported here.  Your application must implement that notion,
-     * typically by not bothering to check nameAndTypeEquals for attributes
-     * without namespace URIs unless you already know their elements are
-     * nameAndTypeEquals.
-     */
-    public boolean nameAndTypeEquals (Node other)
-    {
-	// node types must match
-	if (getNodeType () != other.getNodeType ())
-	    return false;
-
-	// if both have namespaces, do a "full" comparision
-	// this is a "global" partition
-	String	ns1 = this.getNamespaceURI ();
-	String	ns2 = other.getNamespaceURI ();
-
-	if (ns1 != null && ns2 != null)
-	    return ns1.equals (ns2)
-		    && getLocalName ().equals (other.getLocalName ());
-
-	// if neither has a namespace, this is a "no-namespace" name.
-	if (ns1 == null && ns2 == null) {
-	    if (getNodeName().equals (other.getNodeName ()) == false)
-		return false;
-	    // can test the non-normative "per-element-type" scope here.
-	    // if this is an attribute node and both nodes have been bound
-	    // to elements (!!), then return the nameAndTypeEquals()
-	    // comparison of those elements.
-	    return true;
-	}
-
-	// otherwise they're unequal: one scoped, one not.
-	return false;
-    }
-
-    // DOM Level 3 methods
-
-    public String getBaseURI ()
+  // tunable
+  //	NKIDS_* affects arrays of children (which grow)
+  // (currently) fixed size:
+  //	ANCESTORS_* is for event capture/bubbling, # ancestors
+  //	NOTIFICATIONS_* is for per-node event delivery, # events
+  private static final int		NKIDS_INIT = 5;
+  private static final int		NKIDS_DELTA = 8;
+  private static final int		ANCESTORS_INIT = 20;
+  private static final int		NOTIFICATIONS_INIT = 10;
+
+  // tunable: enable mutation events or not?  Enabling it costs about
+  // 10-15% in DOM construction time, last time it was measured.
+
+  // package private !!!
+  static final boolean		reportMutations = true;
+
+  // locking protocol changeable only within this class
+  private static final Object		lockNode = new Object ();
+
+  // optimize space to share what we can
+  private static final DomNode	noKids [] = new DomNode [0];
+
+
+  // NON-FINAL class data
+
+  // Optimize event dispatch by not allocating memory each time
+  private static boolean		dispatchDataLock;
+  private static DomNode		ancestors []
+    = new DomNode [ANCESTORS_INIT];
+  private static ListenerRecord	notificationSet []
+    = new ListenerRecord [NOTIFICATIONS_INIT];
+
+  // Ditto for the (most common) event object itself!
+  private static boolean		eventDataLock;
+  private static DomEvent.DomMutationEvent	mutationEvent
+    = new DomEvent.DomMutationEvent (null);
+
+  //
+  // PER-INSTANCE DATA
+  //
+
+  Document owner;
+  DomNode parent; // parent node;
+  DomNode previous; // previous sibling node
+  DomNode next; // next sibling node
+  DomNode first; // first child node
+  DomNode last; // last child node
+  int index; // index of this node in its parent's children
+  int depth; // depth of the node in the document
+  int length; // number of children
+  final short nodeType;
+
+  // Bleech ... "package private" so a builder can populate entity refs.
+  // writable during construction.  DOM spec is nasty.
+  boolean				readonly;
+
+  // children
+  //private DomNode			children [];
+  //private int				length;
+
+  // event registrations
+  private ListenerRecord		listeners [];
+  private int				nListeners;
+
+  // DOM Level 3 userData dictionary.
+  private Map                         userData;
+
+  /**
+   * DOM nodes have a natural ordering: document order.
+   */
+  public final int compareTo(Object other)
+  {
+    if (other instanceof DomNode)
       {
-        // TODO
-        return null;
+        DomNode n1 = this;
+        DomNode n2 = (DomNode) other;
+        if (n1.owner != n2.owner)
+          {
+            return 0;
+          }
+        int d1 = n1.depth, d2 = n2.depth;
+        int delta = d1 - d2;
+        while (d1 > d2) {
+          n1 = n1.parent;
+          d1--;
+        }
+        while (d2 > d1) {
+          n2 = n2.parent;
+          d2--;
+        }
+        int c = compareTo2(n1, n2);
+        return (c != 0) ? c : delta;
+      }
+    return 0;
+  }
+
+  /**
+   * Compare two nodes at the same depth.
+   */
+  final int compareTo2(DomNode n1, DomNode n2)
+  {
+    if (n1.depth == 0 || n1 == n2)
+      {
+        return 0;
+      }
+    int c = compareTo2(n1.parent, n2.parent);
+    return (c != 0) ? c : n1.index - n2.index;
+  }
+
+  //
+  // Some of the methods here are declared 'final' because
+  // knowledge about their implementation is built into this
+  // class -- for both integrity and performance.
+  //
+
+  // package private
+  void nyi()
+  {
+    throw new DomEx(DomEx.NOT_SUPPORTED_ERR,
+                    "feature not yet implemented", this, 0);
+  }
+  
+  /**
+   * Reduces space utilization for this node.
+   */
+  public void compact()
+  {
+    /*
+       if (children != null && children != noKids) {
+       if (length == 0)
+       children = noKids;
+    // allow a bit of fuzz (max NKIDS_DELTA).
+    // the JVM won't always use less memory for smaller arrays...
+    else if ((children.length - length) > 1) {
+    DomNode	newKids [] = new DomNode [length];
+    System.arraycopy (children, 0, newKids, 0, length);
+    children = newKids;
+    }
+    }*/
+    if (listeners != null && listeners.length != nListeners)
+      {
+        if (nListeners == 0)
+          listeners = null;
+        else {
+          ListenerRecord	l [] = new ListenerRecord [nListeners];
+          System.arraycopy (listeners, 0, l, 0, nListeners);
+          listeners = l;
+        }
+      }
+  }
+
+  /**
+   * Constructs a node and associates it with its owner.  Only
+   * Document and DocumentType nodes may be created with no owner,
+   * and DocumentType nodes get an owner as soon as they are
+   * associated with a document.
+   */
+  protected DomNode(short nodeType, Document owner)
+  {
+    this.nodeType = nodeType;
+
+    if (owner == null)
+      {
+        // DOM calls never go down this path
+        if (nodeType != DOCUMENT_NODE && nodeType != DOCUMENT_TYPE_NODE)
+          {
+            throw new IllegalArgumentException ("no owner!");
+          }
+      }
+    this.owner = owner;
+  
+    /*  
+    switch (type)
+      {
+      case DOCUMENT_NODE:
+      case DOCUMENT_FRAGMENT_NODE:
+      case ENTITY_REFERENCE_NODE:
+      case ELEMENT_NODE:
+        children = new DomNode [NKIDS_INIT];
+        break;
+        // no sane app wants the attributes-with-children model
+      case ATTRIBUTE_NODE:
+        children = new DomNode [1];
+        break;
+        // we don't currently build children with entities
+      case ENTITY_NODE:
+        children = noKids;
+
+        // no other kinds of nodes may have children; so for
+        // such nodes, length stays zero, children stays null
+      }
+      */
+  }
+  
+
+  /**
+   * <b>DOM L1</b>
+   * Returns null; Element subclasses must override this method.
+   */
+  public NamedNodeMap getAttributes()
+  {
+    return null;
+  }
+
+  /**
+   * <b>DOM L2></b>
+   * Returns true iff this is an element node with attributes.
+   */
+  public boolean hasAttributes()
+  {
+    return false;
+  }
+
+  /**
+   * <b>DOM L1</b>
+   * Returns a list, possibly empty, of the children of this node.
+   * In this implementation, to conserve memory, nodes are the same
+   * as their list of children.  This can have ramifications for
+   * subclasses, which may need to provide their own getLength method
+   * for reasons unrelated to the NodeList method of the same name.
+   */
+  public NodeList getChildNodes()
+  {
+    return this;
+  }
+
+  /**
+   * <b>DOM L1</b>
+   * Returns the first child of this node, or null if there are none.
+   */
+  final public Node getFirstChild()
+  {
+    return first;
+  }
+
+
+  /**
+   * <b>DOM L1</b>
+   * Returns the last child of this node, or null if there are none.
+   */
+  final public Node getLastChild()
+  {
+    return last;
+  }
+
+
+  /**
+   * <b>DOM L1</b>
+   * Returns true if this node has children.
+   */
+  final public boolean hasChildNodes()
+  {
+    return length != 0;
+  }
+
+
+  /**
+   * Exposes the internal "readonly" flag.  In DOM, children of
+   * entities and entity references are readonly, as are the
+   * objects associated with DocumentType objets.
+   */
+  final public boolean isReadonly()
+  {
+    return readonly;
+  }
+
+  /**
+   * Sets the internal "readonly" flag so this subtree can't be changed.
+   * Subclasses need to override this method for any associated content
+   * that's not a child node, such as an element's attributes or the
+   * (few) declarations associated with a DocumentType.
+   */
+  public void makeReadonly()
+  {
+    readonly = true;
+    for (DomNode child = first; child != null; child = child.next)
+      {
+        child.makeReadonly();
+      }
+  }
+
+  /**
+   * Used to adopt a node to a new document.
+   */
+  void setOwner(Document doc)
+  {
+    this.owner = doc;
+    for (DomNode ctx = first; ctx != null; ctx = ctx.next)
+      {
+        ctx.setOwner(doc);
+      }
+  }
+
+  // we need to have at least N more kids
+  /*private void ensureEnough (int n)
+    {
+      if ((children.length - length) > n)
+        return;
+
+      // don't grow in micro-chunks
+      if (n < NKIDS_DELTA)
+        n = NKIDS_DELTA;
+      n += children.length;
+
+      DomNode newKids [] = new DomNode [n];
+      System.arraycopy(children, 0, newKids, 0, length);
+      children = newKids;
+    }*/
+
+  // just checks the node for inclusion -- may be called many
+  // times (docfrag) before anything is allowed to change
+  private void checkMisc(DomNode child)
+  {
+    if (readonly)
+      {
+        throw new DomEx(DomEx.NO_MODIFICATION_ALLOWED_ERR,
+                        null, this, 0);
+      }
+    for (DomNode ctx = parent; ctx != null; ctx = ctx.parent)
+      {
+        if (child == ctx)
+          {
+            throw new DomEx(DomEx.HIERARCHY_REQUEST_ERR,
+                            "can't make ancestor into a child", this, 0);
+          }
       }
 
-    public short compareDocumentPosition (Node other) throws DOMException
+    Document owner = (nodeType == DOCUMENT_NODE) ? (Document) this : this.owner;
+    Document childOwner = child.owner;
+    short childNodeType = child.nodeType;
+    
+    if (childOwner != owner)
       {
-        throw new DOMException (DOMException.NOT_SUPPORTED_ERR,
-                                "compareDocumentPosition");
+        // new in DOM L2, this case -- patch it up later, in reparent()
+        if (!(childNodeType == DOCUMENT_TYPE_NODE && childOwner == null))
+          {
+            throw new DomEx(DomEx.WRONG_DOCUMENT_ERR,
+                            null, child, 0);
+          }
       }
 
-    public String getTextContent () throws DOMException
+    // enforce various structural constraints
+    switch (nodeType)
       {
-        switch (getNodeType ())
+      case DOCUMENT_NODE:
+        switch (childNodeType)
           {
           case ELEMENT_NODE:
-          case ATTRIBUTE_NODE:
-          case ENTITY_NODE:
+          case PROCESSING_INSTRUCTION_NODE:
+          case COMMENT_NODE:
+          case DOCUMENT_TYPE_NODE:
+            return;
+          }
+        break;
+        
+      case ATTRIBUTE_NODE:
+        switch (childNodeType)
+          {
+          case TEXT_NODE:
           case ENTITY_REFERENCE_NODE:
-          case DOCUMENT_FRAGMENT_NODE:
-            StringBuffer buffer = new StringBuffer ();
-            NodeList children = getChildNodes ();
-            int len = children.getLength ();
-            for (int i = 0; i < len; i++)
+            return;
+          }
+        break;
+        
+      case DOCUMENT_FRAGMENT_NODE:
+      case ENTITY_REFERENCE_NODE:
+      case ELEMENT_NODE:
+      case ENTITY_NODE:
+        switch (childNodeType)
+          {
+          case ELEMENT_NODE:
+          case TEXT_NODE:
+          case COMMENT_NODE:
+          case PROCESSING_INSTRUCTION_NODE:
+          case CDATA_SECTION_NODE:
+          case ENTITY_REFERENCE_NODE:
+            return;
+          }
+        break;
+      }
+    throw new DomEx(DomEx.HIERARCHY_REQUEST_ERR,
+                    "can't append " + nodeTypeToString(childNodeType) +
+                    " to node of type " + nodeTypeToString(nodeType), this, 0);
+  }
+  
+  //
+  // NOTE:  after this method, the new child knows its parent,
+  // but the parent doesn't know the child.  Don't let that
+  // intermediate state be seen by the application.
+  //
+  // XXX prefer to pass in a mutation event object, making removeChild reuse
+  // it appropriately.  That'll shorten critical paths, and remove the
+  // guarantee that the three-message replaceChild case will hit the heap.
+  //
+  /*private void reparent (DomNode newChild)
+    {
+      short childType = newChild.getNodeType ();
+
+      if (getNodeType () == DOCUMENT_NODE
+          && childType == DOCUMENT_TYPE_NODE) {
+        DomDoctype	doctype = (DomDoctype) newChild;
+
+        if (doctype.getImplementation ()
+            != ((Document)this).getImplementation ())
+          throw new DomEx (DomEx.WRONG_DOCUMENT_ERR,
+                           "implementation mismatch", newChild, 0);
+        newChild.owner = (Document) this;
+      }
+
+      // get rid of old parent
+      Node		oldParent = newChild.parent;
+
+      if (oldParent != null)
+        oldParent.removeChild (newChild);
+
+      if (childType != ATTRIBUTE_NODE)
+        newChild.parent  = this;
+      newChild.depth = depth + 1;
+    }*/
+
+
+  // Here's hoping a good optimizer will detect the case when the
+  // next several methods are never called, and won't allocate
+  // object code space of any kind.  (Case:  not reporting any
+  // mutation events.  We can also remove some static variables
+  // listed above.)
+
+
+  private void insertionEvent (
+                               DomEvent.DomMutationEvent	event,
+                               DomNode				target
+                              ) {
+    boolean doFree = false;
+
+    if (event == null) {
+      event = getMutationEvent ();
+      if (event != null)
+        doFree = true;
+      else
+        event = new DomEvent.DomMutationEvent (null);
+    }
+    event.initMutationEvent ("DOMNodeInserted",
+                             true /* bubbles */, false /* nocancel */,
+                             this /* related */, null, null, null, (short) 0);
+    target.dispatchEvent (event);
+
+    // XXX should really visit every descendant of 'target'
+    // and sent a DOMNodeInsertedIntoDocument event to it...
+    // bleech, there's no way to keep that acceptably fast.
+
+    if (doFree) {
+      event.target = null;
+      event.relatedNode = null;
+      event.currentNode = null;
+      eventDataLock = false;
+    } // else we created work for the GC
+  }
+
+
+  private void removalEvent (
+                             DomEvent.DomMutationEvent	event,
+                             DomNode				target
+                            ) {
+    boolean doFree = false;
+
+    if (event == null) {
+      event = getMutationEvent ();
+      if (event != null)
+        doFree = true;
+      else
+        event = new DomEvent.DomMutationEvent (null);
+    }
+    event.initMutationEvent ("DOMNodeRemoved",
+                             true /* bubbles */, false /* nocancel */,
+                             this /* related */, null, null, null, (short) 0);
+    target.dispatchEvent (event);
+
+    // XXX should really visit every descendant of 'target'
+    // and sent a DOMNodeRemovedFromDocument event to it...
+    // bleech, there's no way to keep that acceptably fast.
+
+    event.target = null;
+    event.relatedNode = null;
+    event.currentNode = null;
+    if (doFree)
+      eventDataLock = false;
+    // else we created more work for the GC
+  }
+
+  //
+  // Avoid creating lots of memory management work, by using a simple
+  // allocation strategy for the mutation event objects that get used
+  // at least once per tree modification.  We can't use stack allocation,
+  // so we do the next simplest thing -- more or less, static allocation.
+  // Concurrent notifications should be rare, anyway.
+  //
+  // Returns the preallocated object, which needs to be carefully freed,
+  // or null to indicate the caller needs to allocate their own.
+  //
+  static private DomEvent.DomMutationEvent getMutationEvent ()
+    {
+      synchronized (lockNode) {
+        if (eventDataLock)
+          return null;
+        eventDataLock = true;
+        return mutationEvent;
+      }
+    }
+
+  // NOTE:  this is manually inlined in the insertion
+  // and removal event methods above; change in sync.
+  static private void freeMutationEvent ()
+    {
+      // clear fields to enable GC
+      mutationEvent.clear ();
+      eventDataLock = false;
+    }
+
+  void setDepth(int depth)
+  {
+    this.depth = depth;
+    for (DomNode ctx = first; ctx != null; ctx = ctx.next)
+      {
+        ctx.setDepth(depth + 1);
+      }
+  }
+
+  /**
+   * <b>DOM L1</b>
+   * Appends the specified node to this node's list of children.
+   * Document subclasses must override this to enforce the restrictions
+   * that there be only one element and document type child.
+   *
+   * <p> Causes a DOMNodeInserted mutation event to be reported.
+   * Will first cause a DOMNodeRemoved event to be reported if the
+   * parameter already has a parent.  If the new child is a document
+   * fragment node, both events will be reported for each child of
+   * the fragment; the order in which children are removed and
+   * inserted is implementation-specific.
+   *
+   * <p> If this DOM has been compiled without mutation event support,
+   * these events will not be reported.
+   */
+  public Node appendChild(Node newChild)
+  {
+    try
+      {
+        DomNode	child = (DomNode) newChild;
+
+        if (child.nodeType == DOCUMENT_FRAGMENT_NODE)
+          {
+            // Append all nodes in the fragment to this node
+            for (DomNode ctx = child.first; ctx != null; ctx = ctx.next)
               {
-                Node child = children.item (i);
-                String textContent = child.getTextContent ();
-                if (textContent != null)
+                checkMisc(ctx);
+              }
+            for (DomNode ctx = child.first; ctx != null; ctx = ctx.next)
+              {
+                appendChild(ctx);
+              }
+          }
+        else
+          {
+            checkMisc(child);
+            if (child.parent != null)
+              {
+                child.parent.removeChild(child);
+              }
+            child.parent = this;
+            child.index = length++;
+            child.setDepth(depth + 1);
+            child.next = null;
+            if (last == null)
+              {
+                first = child;
+                child.previous = null;
+              }
+            else
+              {
+                last.next = child;
+                child.previous = last;
+              }
+            last = child;
+
+            if (reportMutations)
+              {
+                insertionEvent(null, child);
+              }
+          }
+
+        /*
+        if (newChild.getNodeType () != DOCUMENT_FRAGMENT_NODE) {
+          checkMisc (child);
+          if (!(length < children.length))
+            ensureEnough (1);
+          reparent (child);
+          child.index = length++;
+          children [child.index] = child;
+          if (reportMutations)
+            insertionEvent (null, child);
+        } else {
+          // See if we can append all the nodes in the fragment
+          for (int i = 0; i < child.length; i++)
+            checkMisc (child.children [i]);
+
+          // yep -- do so!
+          ensureEnough (child.length);
+          for (int i = 0; i <= child.length; i++)
+            appendChild (child.children [0]);
+        }
+        */
+        return child;
+
+      }
+    catch (ClassCastException e)
+      {
+        throw new DomEx(DomEx.WRONG_DOCUMENT_ERR,
+                        null, newChild, 0);
+    }
+  }
+
+  /**
+   * <b>DOM L1</b>
+   * Inserts the specified node in this node's list of children.
+   * Document subclasses must override this to enforce the restrictions
+   * that there be only one element and document type child.
+   *
+   * <p> Causes a DOMNodeInserted mutation event to be reported.  Will
+   * first cause a DOMNodeRemoved event to be reported if the newChild
+   * parameter already has a parent. If the new child is a document
+   * fragment node, both events will be reported for each child of
+   * the fragment; the order in which children are removed and inserted
+   * is implementation-specific.
+   *
+   * <p> If this DOM has been compiled without mutation event support,
+   * these events will not be reported.
+   */
+  public Node insertBefore(Node newChild, Node refChild)
+  {
+    if (refChild == null)
+      {
+        return appendChild(newChild);
+      }
+
+    try
+      {
+        DomNode	child = (DomNode) newChild;
+        DomNode ref = (DomNode) refChild;
+        
+        if (child.nodeType == DOCUMENT_FRAGMENT_NODE)
+          {
+            // Append all nodes in the fragment to this node
+            for (DomNode ctx = child.first; ctx != null; ctx = ctx.next)
+              {
+                checkMisc(ctx);
+              }
+            for (DomNode ctx = child.first; ctx != null; ctx = ctx.next)
+              {
+                insertBefore(ctx, refChild);
+              }
+          }
+        else
+          {
+            checkMisc(child);
+            if (child.parent != null)
+              {
+                child.parent.removeChild(child);
+              }
+            child.parent = this;
+            int i = ref.index;
+            child.setDepth(depth + 1);
+            child.next = ref;
+            if (ref.previous != null)
+              {
+                ref.previous.next = child;
+              }
+            child.previous = ref.previous;
+            ref.previous = child;
+            if (first == ref)
+              {
+                first = child;
+              }
+            // index renumbering
+            for (DomNode ctx = child; ctx != null; ctx = ctx.next)
+              {
+                ctx.index = i++;
+              }
+
+            if (reportMutations)
+              {
+                insertionEvent(null, child);
+              }
+          }
+        
+        /*
+        if (newChild.getNodeType () != DOCUMENT_FRAGMENT_NODE) {
+          checkMisc (child);
+          for (int i = 0; i < length; i++) {
+            if (children [i] != refChild)
+              continue;
+
+            ensureEnough (1);
+            reparent (child);
+            if (children [i] != refChild)
+              i--;
+            for (int j = ++length; j > i; j--)
+              {
+                children [j - 1].index = j;
+                children [j] = children [j - 1];
+              }
+            child.index = i;
+            children [i] = child;
+            if (reportMutations)
+              insertionEvent (null, child);
+
+            return newChild;
+          }
+          throw new DomEx (DomEx.NOT_FOUND_ERR,
+                           "that's no child of mine", refChild, 0);
+
+        } else {
+          // See if we can insert all the nodes in the fragment
+          for (int i = 0; i < child.length; i++)
+            checkMisc (child.children [i]);
+
+          // yep -- do so!
+          ensureEnough (child.length);
+          for (int i = 0; i <= child.length; i++)
+            insertBefore (child.children [0], refChild);
+          return newChild;
+        }*/
+        
+        return child;
+      }
+    catch (ClassCastException e)
+      {
+        throw new DomEx(DomEx.WRONG_DOCUMENT_ERR,
+                        null, newChild, 0);
+      }
+  }
+
+
+  /**
+   * <b>DOM L1</b>
+   * Replaces the specified node in this node's list of children.
+   * Document subclasses must override this to test the restrictions
+   * that there be only one element and document type child.
+   *
+   * <p> Causes DOMNodeRemoved and DOMNodeInserted mutation event to be
+   * reported.  Will cause another DOMNodeRemoved event to be reported if
+   * the newChild parameter already has a parent.  These events may be
+   * delivered in any order, except that the event reporting removal
+   * from such an existing parent will always be delivered before the
+   * event reporting its re-insertion as a child of some other node.
+   * The order in which children are removed and inserted is implementation
+   * specific.
+   *
+   * <p> If your application needs to depend on the in which those removal
+   * and insertion events are delivered, don't use this API.  Instead,
+   * invoke the removeChild and insertBefore methods directly, to guarantee
+   * a specific delivery order.  Similarly, don't use document fragments,
+   * Otherwise your application code may not work on a DOM which implements
+   * this method differently.
+   *
+   * <p> If this DOM has been compiled without mutation event support,
+   * these events will not be reported.
+   */
+  public Node replaceChild(Node newChild, Node refChild)
+  {
+    try
+      {
+        DomNode child = (DomNode) newChild;
+        DomNode ref = (DomNode) refChild;
+        
+        DomEvent.DomMutationEvent event = getMutationEvent();
+        boolean doFree = (event != null);
+            
+        if (child.nodeType == DOCUMENT_FRAGMENT_NODE)
+          {
+            // Append all nodes in the fragment to this node
+            for (DomNode ctx = child.first; ctx != null; ctx = ctx.next)
+              {
+                checkMisc(ctx);
+              }
+            
+            if (reportMutations)
+              {
+                removalEvent(event, ref);
+              }
+            length--;
+            length += child.length;
+            
+            if (child.length == 0)
+              {
+                // Removal
+                if (ref.previous != null)
                   {
-                    buffer.append (textContent);
+                    ref.previous.next = ref.next;
+                  }
+                if (ref.next != null)
+                  {
+                    ref.next.previous = ref.previous;
+                  }
+                if (first == ref)
+                  {
+                    first = ref.next;
+                  }
+                if (last == ref)
+                  {
+                    last = ref.previous;
                   }
               }
-            return buffer.toString ();
-          case TEXT_NODE:
-          case CDATA_SECTION_NODE:
-          case COMMENT_NODE:
-          case PROCESSING_INSTRUCTION_NODE:
-            return getNodeValue ();
-          default:
-            return null;
+            else
+              {
+                int i = ref.index;
+                for (DomNode ctx = child.first; ctx != null; ctx = ctx.next)
+                  {
+                    // Insertion
+                    ctx.parent = this;
+                    ctx.index = i++;
+                    ctx.setDepth(ref.depth);
+                    if (ctx == child.first)
+                      {
+                        ctx.previous = ref.previous;
+                      }
+                    if (ctx == child.last)
+                      {
+                        ctx.next = ref.next;
+                      }
+                  }
+                if (first == ref)
+                  {
+                    first = child.first;
+                  }
+                if (last == ref)
+                  {
+                    last = child.last;
+                  }
+              }
           }
-      }
-
-    public void setTextContent (String textContent) throws DOMException
-      {
-        switch (getNodeType ())
+        else
           {
-          case ELEMENT_NODE:
-          case ATTRIBUTE_NODE:
-          case ENTITY_NODE:
-          case ENTITY_REFERENCE_NODE:
-          case DOCUMENT_FRAGMENT_NODE:
-            NodeList children = getChildNodes ();
-            int len = children.getLength ();
-            for (int i = 0; i < len; i++)
+            checkMisc(child);
+        
+            if (reportMutations)
               {
-                Node child = children.item (i);
-                removeChild (child);
+                removalEvent(event, ref);
               }
-            if (textContent != null)
+            
+            if (child.parent != null)
               {
-                Text text = getOwnerDocument ().createTextNode (textContent);
-                appendChild (text);
+                child.parent.removeChild(child);
               }
-            break;
-          case TEXT_NODE:
-          case CDATA_SECTION_NODE:
-          case COMMENT_NODE:
-          case PROCESSING_INSTRUCTION_NODE:
-            setNodeValue (textContent);
-            break;
+            child.parent = this;
+            child.index = ref.index;
+            child.setDepth(ref.depth);
+            if (ref.previous != null)
+              {
+                ref.previous.next = child;
+              }
+            child.previous = ref.previous;
+            if (ref.next != null)
+              {
+                ref.next.previous = child;
+              }
+            child.next = ref.next;
+            if (first == ref)
+              {
+                first = child;
+              }
+            if (last == ref)
+              {
+                last = child;
+              }
+
+            if (reportMutations)
+              {
+                insertionEvent(event, child);
+              }
+            if (doFree)
+              {
+                freeMutationEvent();
+              }
           }
+        ref.parent = null;
+        ref.index = 0;
+        ref.depth = 0;
+        ref.previous = null;
+        ref.next = null;
+        
+        /*
+        if (newChild.getNodeType () != DOCUMENT_FRAGMENT_NODE) {
+          checkMisc (child);
+          for (int i = 0; i < length; i++) {
+            if (children [i] != refChild)
+              continue;
+
+            DomNode			rmchild = (DomNode) refChild;
+            DomEvent.DomMutationEvent	event;
+            boolean			doFree;
+
+            event = getMutationEvent ();
+            if (event != null)
+              doFree = true;
+            else
+              doFree = false;
+            if (reportMutations)
+              removalEvent (event, rmchild);
+            reparent (child);
+            if (children [i] != refChild)
+              i--;
+            child.index = i;
+            children [i] = child;
+            rmchild.parent = null;
+            if (reportMutations)
+              insertionEvent (event, child);
+            if (doFree)
+              freeMutationEvent ();
+
+            return refChild;
+          }
+          throw new DomEx (DomEx.NOT_FOUND_ERR,
+                           "that's no child of mine", newChild, 0);
+        } else {
+          // XXX implement me
+          throw new DomEx (DomEx.NOT_SUPPORTED_ERR,
+                           "replacing with fragment, NYI", null, 0);
+        }
+        */
+        return child;
+      }
+    catch (ClassCastException e)
+      {
+        throw new DomEx(DomEx.WRONG_DOCUMENT_ERR,
+                        null, newChild, 0);
+      }
+  }
+
+
+  /**
+   * <b>DOM L1</b>
+   * Removes the specified child from this node's list of children,
+   * or else reports an exception.
+   *
+   * <p> Causes a DOMNodeRemoved mutation event to be reported.
+   *
+   * <p> If this DOM has been compiled without mutation event support,
+   * these events will not be reported.
+   */
+  public Node removeChild(Node refChild)
+  {
+    if (readonly)
+      {
+        throw new DomEx(DomEx.NO_MODIFICATION_ALLOWED_ERR,
+                        null, this, 0);
       }
 
-    public boolean isSameNode (Node other)
+    try
       {
-        return equals (other);
+        DomNode ref = (DomNode) refChild;
+        
+        for (DomNode child = first; child != null; child = child.next)
+          {
+            if (child == ref)
+              {
+                if (reportMutations)
+                  {
+                    removalEvent(null, child);
+                  }
+
+                length--;
+                if (ref.previous != null)
+                  {
+                    ref.previous.next = ref.next;
+                  }
+                if (ref.next != null)
+                  {
+                    ref.next.previous = ref.previous;
+                  }
+                if (first == ref)
+                  {
+                    first = ref.next;
+                  }
+                if (last == ref)
+                  {
+                    last = ref.previous;
+                  }
+                // renumber indices
+                int i = 0;
+                for (DomNode ctx = first; ctx != null; ctx = ctx.next)
+                  {
+                    ctx.index = i++;
+                  }
+                ref.parent = null;
+                ref.depth = 0;
+                ref.index = 0;
+                ref.previous = null;
+                ref.next = null;
+                
+                /*
+        for (int j = i + 1; j < length; j++, i++)
+          {
+            children [j].index = i;
+            children [i] = children [j];
+          }
+        children [i] = null;
+        child.parent = null;
+        length--;
+                 */
+                
+                return ref;
+              }
+          }
+        throw new DomEx(DomEx.NOT_FOUND_ERR,
+                        "that's no child of mine", refChild, 0);
+      }
+    catch (ClassCastException e)
+      {
+        throw new DomEx(DomEx.WRONG_DOCUMENT_ERR,
+                        null, refChild, 0);
+      }
+  }
+
+
+  /**
+   * <b>DOM L1 (NodeList)</b>
+   * Returns the item with the specified index in this NodeList,
+   * else null.
+   */
+  final public Node item(int index)
+  {
+    DomNode child = first;
+    int count = 0;
+    while (child != null && count < index)
+      {
+        child = child.next;
+        count++;
+      }
+    return child;
+  }
+
+
+  /**
+   * <b>DOM L1 (NodeList)</b>
+   * Returns the number of elements in this NodeList.
+   * (Note that many interfaces have a "Length" property, not just
+   * NodeList, and if a node subtype must implement one of those,
+   * it will also need to override getChildNodes.)
+   */
+  public int getLength()
+  {
+    return length;
+  }
+
+
+  /**
+   * Minimize extra space consumed by this node to hold children and event
+   * listeners.
+   */
+  /*
+  public void trimToSize ()
+    {
+      if (children != null && children.length != length) {
+        DomNode newKids [] = new DomNode [length];
+
+        for (int i = 0; i < length; i++)
+          newKids [i] = children [i];
+        children = newKids;
       }
 
-    public String lookupPrefix (String namespaceURI)
+      if (listeners != null && listeners.length != nListeners) {
+        ListenerRecord newKids [] = new ListenerRecord [length];
+
+        for (int i = 0; i < nListeners; i++)
+          newKids [i] = listeners [i];
+        listeners = newKids;
+      }
+    }
+   */
+
+  /**
+   * <b>DOM L1</b>
+   * Returns the previous sibling, if one is known.
+   */
+  final public Node getNextSibling()
+  {
+    if (nodeType == ATTRIBUTE_NODE)
       {
-        // TODO
         return null;
       }
+    return next;
+    /*
+      if (parent == null || getNodeType() == ATTRIBUTE_NODE)
+        return null;
+      return (index + 1 < parent.length) ? parent.children[index + 1] : null;
+      */
+  }
 
-    public boolean isDefaultNamespace (String namespaceURI)
+
+  /**
+   * <b>DOM L1</b>
+   * Returns the previous sibling, if one is known.
+   */
+  final public Node getPreviousSibling()
+  {
+    if (nodeType == ATTRIBUTE_NODE)
       {
-        // TODO
+        return null;
+      }
+    return previous;
+    /*
+      if (parent == null || getNodeType () == ATTRIBUTE_NODE)
+        return null;
+      return (index > 0) ? parent.children[index - 1] : null;
+      */
+  }
+
+
+  /**
+   * <b>DOM L1</b>
+   * Returns the parent node, if one is known.
+   */
+  final public Node getParentNode()
+  {
+    if (nodeType == ATTRIBUTE_NODE)
+      {
+        return null;
+      }
+    return parent;
+  }
+
+  // parent node is only set in reparent() after sanity chex
+
+
+  /**
+   * <b>DOM L2</b>
+   * Consults the DOM implementation to determine if the requested
+   * feature is supported.  DocumentType subclasses must override
+   * this method, and associate themselves directly with the
+   * DOMImplementation node used.  (This method relies on being able
+   * to access the DOMImplementation from the owner document, but
+   * DocumentType nodes can be created without an owner.)
+   */
+  public boolean isSupported(String feature, String version)
+  {
+    Document		doc = owner;
+    DOMImplementation	impl = null;
+    
+    if (doc == null && nodeType == DOCUMENT_NODE)
+      {
+        doc = (Document) this;
+      }
+
+    if (doc == null)
+      {
+        // possible for DocumentType
+        throw new IllegalStateException ("unbound ownerDocument");
+      }
+
+    impl = doc.getImplementation();
+    return impl.hasFeature(feature, version);
+  }
+
+
+  /**
+   * <b>DOM L1 (modified in L2)</b>
+   * Returns the owner document.  This is only null for Document nodes,
+   * and (new in L2) for DocumentType nodes which have not yet been
+   * associated with the rest of their document.
+   */
+  final public Document getOwnerDocument()
+  {
+    return owner;
+  }
+
+
+  /**
+   * <b>DOM L1</b>
+   * Does nothing; this must be overridden (along with the
+   * getNodeValue method) for nodes with a non-null defined value.
+   */
+  public void setNodeValue(String value)
+  {
+  }
+
+
+  /**
+   * <b>DOM L1</b>
+   * Returns null; this must be overridden for nodes types with
+   * a defined value, along with the setNodeValue method.
+   */
+  public String getNodeValue()
+  {
+    return null;
+  }
+
+
+  /** This forces GCJ compatibility.
+   * Without this method GCJ is unable to compile to byte code.
+   */
+  public final short getNodeType()
+  {
+    return nodeType;
+  }
+
+  /** This forces GCJ compatibility.
+   * Without this method GCJ seems unable to natively compile GNUJAXP.
+   */
+  public abstract String getNodeName();
+
+  /**
+   * <b>DOM L2</b>
+   * Does nothing; this must be overridden (along with the
+   * getPrefix method) for element and attribute nodes.
+   */
+  public void setPrefix(String prefix)
+  {
+  }
+
+
+  /**
+   * <b>DOM L2</b>
+   * Returns null; this must be overridden for element and
+   * attribute nodes.
+   */
+  public String getPrefix()
+  {
+    return null;
+  }
+
+
+  /**
+   * <b>DOM L2</b>
+   * Returns null; this must be overridden for element and
+   * attribute nodes.
+   */
+  public String getNamespaceURI()
+  {
+    return null;
+  }
+
+
+  /**
+   * <b>DOM L2</b>
+   * Returns the node name; this must be overridden for element and
+   * attribute nodes.
+   */
+  public String getLocalName()
+  {
+    return null;
+  }
+
+
+  /**
+   * <b>DOM L1</b>
+   * Returns a clone of this node which optionally includes cloned
+   * versions of child nodes.  Clones are always mutable, except for
+   * entity reference nodes.
+   */
+  public Node cloneNode(boolean deep)
+  {
+    DomNode node = (DomNode) clone();
+    
+    if (deep)
+      {
+        for (DomNode ctx = first; ctx != null; ctx = ctx.next)
+          {
+            DomNode newChild = (DomNode) ctx.cloneNode(deep);
+            node.appendChild(newChild);
+          }
+      }
+    
+    if (nodeType == ENTITY_REFERENCE_NODE)
+      {
+        node.makeReadonly();
+      }
+    return node;
+  }
+
+  /**
+   * Clones this node; roughly equivalent to cloneNode(false).
+   * Element subclasses must provide a new implementation which
+   * invokes this method to handle the basics, and then arranges
+   * to clone any element attributes directly.  Attribute subclasses
+   * must make similar arrangements, ensuring that existing ties to
+   * elements are broken by cloning.
+   */
+  public Object clone()
+  {
+    try
+      {
+        DomNode node = (DomNode) super.clone();
+        
+        node.parent = null;
+        node.depth = 0;
+        node.index = 0;
+        node.first = null;
+        node.last = null;
+        node.previous = null;
+        node.next = null;
+        
+        node.readonly = false;
+        node.listeners = null;
+        node.nListeners = 0;
+        return node;
+
+      }
+    catch (CloneNotSupportedException x)
+      {
+        throw new Error("clone didn't work");
+      }
+  }
+
+
+  // the elements-by-tagname stuff is needed for both
+  // elements and documents ... this is in lieu of a
+  // common base class between Node and NodeNS.
+
+  /**
+   * <b>DOM L1</b>
+   * Creates a NodeList giving array-style access to elements with
+   * the specified name.  Access is fastest if indices change by
+   * small values, and the DOM is not modified.
+   */
+  public NodeList getElementsByTagName(String tag)
+  {
+    return new ShadowList(null, tag);
+  }
+
+  /**
+   * <b>DOM L2</b>
+   * Creates a NodeList giving array-style access to elements with
+   * the specified namespace and local name.  Access is fastest if
+   * indices change by small values, and the DOM is not modified.
+   */
+  public NodeList getElementsByTagNameNS(String namespace, String local)
+  {
+    return new ShadowList(namespace, local);
+  }
+
+
+  //
+  // This shadow class is GC-able even when the live list it shadows
+  // can't be, because of event registration hookups.  Its finalizer
+  // makes that live list become GC-able.
+  //
+  final class ShadowList
+    implements NodeList
+  {
+
+    private LiveNodeList liveList;
+    
+    ShadowList(String ns, String local)
+    {
+      liveList = new LiveNodeList(ns, local);
+    }
+
+    public void finalize()
+    {
+      liveList.detach();
+      liveList = null;
+    }
+
+    public Node item(int index)
+    {
+      return liveList.item(index);
+    }
+
+    public int getLength()
+    {
+      return liveList.getLength();
+    }
+  }
+
+  final class LiveNodeList
+    implements NodeList, EventListener, NodeFilter
+  {
+ 
+    private final boolean matchAnyURI;
+    private final boolean matchAnyName; 
+    private final String elementURI;
+    private final String elementName;
+    
+    private DomIterator current;
+    private int lastIndex;
+    
+    LiveNodeList(String uri, String name)
+    {
+      elementURI = uri;
+      elementName = name;
+      matchAnyURI = "*".equals(uri);
+      matchAnyName = "*".equals(name);
+      
+      DomNode.this.addEventListener("DOMNodeInserted", this, true);
+      DomNode.this.addEventListener("DOMNodeRemoved", this, true);
+    }
+
+    void detach()
+    {
+      current.detach();
+      current = null;
+      
+      DomNode.this.removeEventListener("DOMNodeInserted", this, true);
+      DomNode.this.removeEventListener("DOMNodeRemoved", this, true);
+    }
+
+    public short acceptNode(Node element)
+    {
+      if (element == DomNode.this)
+        {
+          return FILTER_SKIP;
+        }
+
+      // use namespace-aware matching ...
+      if (elementURI != null)
+        {
+          if (!(matchAnyURI
+                || elementURI.equals(element.getNamespaceURI())))
+            {
+              return FILTER_SKIP;
+            }
+          if (!(matchAnyName
+                || elementName.equals(element.getLocalName())))
+            {
+              return FILTER_SKIP;
+            }
+
+          // ... or qName-based kind.
+        }
+      else
+        {
+          if (!(matchAnyName
+                || elementName.equals(element.getNodeName())))
+            {
+              return FILTER_SKIP;
+            }
+        }
+      return FILTER_ACCEPT;
+    }
+
+    private DomIterator createIterator()
+    {
+      return new DomIterator(DomNode.this,
+                             NodeFilter.SHOW_ELEMENT,
+                             this,	/* filter */
+                             true	/* expand entity refs */
+                            );
+    }
+
+    public void handleEvent(Event e)
+    {
+      MutationEvent	mutation = (MutationEvent) e;
+      Node		related = mutation.getRelatedNode();
+      
+      // XXX if it's got children ... check all kids too, they
+      // will invalidate our saved index
+      
+      if (related.getNodeType() != Node.ELEMENT_NODE ||
+          related.getNodeName() != elementName ||
+          related.getNamespaceURI() != elementURI)
+        {
+          return;
+        }
+      
+      current = null;
+    }
+
+    public Node item(int index)
+    {
+      if (current == null)
+        {
+          current = createIterator();
+          lastIndex = -1;
+        }
+      
+      // last node or before?  go backwards
+      if (index <= lastIndex) {
+        while (index != lastIndex) {
+          current.previousNode ();
+          lastIndex--;
+        }
+        return current.previousNode ();
+      } 
+      
+      // somewhere after last node
+      while (++lastIndex != index)
+        current.nextNode ();
+        return current.nextNode ();
+    }
+    
+    public int getLength()
+    {
+      int retval = 0;
+      NodeIterator iter = createIterator();
+      
+      while (iter.nextNode() != null)
+        {
+          retval++;
+        }
+      return retval;
+    }
+    
+  }
+
+  //
+  // EventTarget support
+  //
+  static final class ListenerRecord
+  {
+  
+    String type;
+    EventListener listener;
+    boolean useCapture;
+
+    // XXX use JDK 1.2 java.lang.ref.WeakReference to listener,
+    // and we can both get rid of "shadow" classes and remove
+    // the need for applications to apply similar trix ... but
+    // JDK 1.2 support isn't generally available yet
+
+    ListenerRecord(String type, EventListener listener, boolean useCapture)
+    {
+      this.type = type.intern();
+      this.listener = listener;
+      this.useCapture = useCapture;
+    }
+
+    boolean equals(ListenerRecord rec)
+    {
+      return listener == rec.listener
+        && useCapture == rec.useCapture
+        && type == rec.type;
+    }
+    
+  }
+
+  /**
+   * <b>DOM L2 (Events)</b>
+   * Returns an instance of the specified type of event object.
+   * Understands about DOM Mutation, HTML, and UI events.
+   *
+   * <p>If the name of the event type begins with "USER-", then an object
+   * implementing the "Event" class will be returned; this provides a
+   * limited facility for application-defined events to use the DOM event
+   * infrastructure.  Alternatively, use one of the standard DOM event
+   * classes and initialize it using use such a "USER-" event type name;
+   * or defin, instantiate, and initialize an application-specific subclass
+   * of DomEvent and pass that to dispatchEvent().
+   *
+   * @param eventType Identifies the particular DOM feature module
+   *	defining the type of event, such as "MutationEvents".
+   *	<em>The event "name" is a different kind of "type".</em>
+   */
+  public Event createEvent(String eventType)
+  {
+    eventType = eventType.toLowerCase();
+    
+    if ("mutationevents".equals(eventType))
+      {
+        return new DomEvent.DomMutationEvent(null);
+      }
+    
+    if ("htmlevents".equals(eventType)
+        || "events".equals(eventType)
+        || "user-events".equals(eventType))
+      {
+        return new DomEvent(null);
+      }
+    
+    if ("uievents".equals(eventType))
+      {
+        return new DomEvent.DomUIEvent(null);
+      }
+
+    // mouse events 
+    
+    throw new DomEx(DomEx.NOT_SUPPORTED_ERR,
+                    eventType, null, 0);
+  }
+
+
+  /**
+   * <b>DOM L2 (Events)</b>
+   * Registers an event listener's interest in a class of events.
+   */
+  final public void addEventListener (
+                                      String		type,
+                                      EventListener	listener,
+                                      boolean		useCapture
+                                     ) {
+    if (listeners == null)
+      listeners = new ListenerRecord [1];
+    else if (nListeners == listeners.length) {
+      ListenerRecord newListeners [];
+      newListeners =
+        new ListenerRecord [listeners.length + NKIDS_DELTA];
+      for (int i = 0; i < nListeners; i++)
+        newListeners [i] = listeners [i];
+      listeners = newListeners;
+    }
+
+    // prune duplicates
+    ListenerRecord	record;
+
+    record = new ListenerRecord (type, listener, useCapture);
+    for (int i = 0; i < nListeners; i++) {
+      if (record.equals (listeners [i]))
+        return;
+    }
+    listeners [nListeners++] = record;
+  }
+
+
+  // XXX this exception should be discarded from DOM
+
+  // this class can be instantiated, unlike the one in the spec
+  final static class DomEventException extends EventException {
+    DomEventException ()
+      { super (UNSPECIFIED_EVENT_TYPE_ERR, "unspecified event type"); }
+  }
+
+
+  /**
+   * <b>DOM L2 (Events)</b>
+   * Delivers an event to all relevant listeners, returning true if the
+   * caller should perform their default action.  Note that the event
+   * must have been provided by the createEvent() method on this
+   * class, else it can't be dispatched.
+   *
+   * @see #createEvent
+   *
+   * @exception NullPointerException When a null event is passed.
+   * @exception ClassCastException When the event wasn't provided by
+   *	the createEvent method, or otherwise isn't a DomEvent.
+   * @exception EventException If the event type wasn't specified
+   */
+  final public boolean dispatchEvent (Event event)
+    throws EventException
+      {
+        DomEvent	e = (DomEvent) event;
+        DomNode		ancestors [] = null;
+        int		ancestorMax = 0;
+        boolean		haveDispatchDataLock = false;
+
+        if (e.type == null)
+          throw new DomEventException ();
+
+        e.doDefault = true;
+        e.target = this;
+
+        //
+        // Typical case:  one nonrecursive dispatchEvent call at a time
+        // for this class.  If that's our case, we can avoid allocating
+        // garbage, which is overall a big win.  Even with advanced GCs
+        // that deal well with short-lived garbage, and wayfast allocators,
+        // it still helps.
+        //
+        // Remember -- EVERY mutation goes though here at least once.
+        //
+        // When populating a DOM tree, trying to send mutation events is
+        // the primary cost; this dominates the critical path.
+        //
+        try {
+          DomNode		current;
+          int			index;
+          boolean		haveAncestorRegistrations = false;
+          ListenerRecord	notificationSet [];
+          int			ancestorLen;
+
+          synchronized (lockNode) {
+            if (!dispatchDataLock) {
+              haveDispatchDataLock = dispatchDataLock = true;
+              notificationSet = DomNode.notificationSet;
+              ancestors = DomNode.ancestors;
+            } else {
+              notificationSet = new ListenerRecord [NOTIFICATIONS_INIT];
+              ancestors = new DomNode [ANCESTORS_INIT];
+            }
+            ancestorLen = ancestors.length;
+          }
+
+          // XXX autogrow ancestors ... based on statistics
+
+          // Climb to the top of this subtree and handle capture, letting
+          // each node (from the top down) capture until one stops it or
+          // until we get to this one.
+
+          for (index = 0, current = parent;
+               current != null && index < ancestorLen;
+               index++, current = current.parent) {
+            if (current.nListeners != 0)
+              haveAncestorRegistrations = true;
+            ancestors [index] = current;
+          }
+          if (current != null)
+            throw new RuntimeException ("dispatchEvent capture stack size");
+
+          ancestorMax = index;
+          e.stop = false;
+
+          if (haveAncestorRegistrations) {
+            e.eventPhase = Event.CAPTURING_PHASE;
+            while (!e.stop && index-- > 0) {
+              current = ancestors [index];
+              if (current.nListeners != 0)
+                notifyNode (e, current, true, notificationSet);
+            }
+          }
+
+          // Always deliver events to the target node (this)
+          // unless stopPropagation was called.  If we saw
+          // no registrations yet (typical!), we never will.
+          if (!e.stop && nListeners != 0) {
+            e.eventPhase = Event.AT_TARGET;
+            notifyNode (e, this, false, notificationSet);
+          } else if (!haveAncestorRegistrations)
+            e.stop = true;
+
+          // If the event bubbles and propagation wasn't halted,
+          // walk back up the ancestor list.  Stop bubbling when
+          // any bubbled event handler stops it.
+
+          if (!e.stop && e.bubbles) {
+            e.eventPhase = Event.BUBBLING_PHASE;
+            for (index = 0;
+                 !e.stop
+                 && index < ancestorMax
+                 && (current = ancestors [index]) != null;
+                 index++) {
+              if (current.nListeners != 0)
+                notifyNode (e, current, false, notificationSet);
+            }
+          }
+          e.eventPhase = 0;
+
+          // Caller chooses whether to perform the default
+          // action based on return from this method.
+          return e.doDefault;
+
+        } finally {
+          if (haveDispatchDataLock) {
+            // synchronize to force write ordering
+            synchronized (lockNode) {
+              // null out refs to ensure they'll be GC'd
+              for (int i = 0; i < ancestorMax; i++)
+                ancestors [i] = null;
+              // notificationSet handled by notifyNode
+
+              dispatchDataLock = false;
+            }
+          }
+        }
+      }
+
+
+  private void notifyNode (
+                           DomEvent	e,
+                           DomNode		current,
+                           boolean		capture,
+                           ListenerRecord	notificationSet []
+                          ) {
+    int count = 0;
+
+    // do any of this set of listeners get notified?
+    for (int i = 0; i < current.nListeners; i++) {
+      ListenerRecord	rec = current.listeners [i];
+
+      if (rec.useCapture != capture)
+        continue;
+      if (!e.type.equals (rec.type)) 
+        continue;
+      if (count < notificationSet.length)
+        notificationSet [count++] = rec;
+      else
+        // XXX fire up some cheap growth algorithm
+        throw new RuntimeException (
+                                    "Event notification set size exceeded");
+    }
+
+    // Notify just those listeners
+    e.currentNode = current; 
+    for (int i = 0; i < count; i++) {
+      try {
+        // Late in the DOM CR process (3rd or 4th CR?) the
+        // removeEventListener spec became asymmetric with respect
+        // to addEventListener ... effect is now immediate.
+        for (int j = 0; j < current.nListeners; j++) {
+          if (current.listeners [j].equals (notificationSet [i])) {
+            notificationSet [i].listener.handleEvent (e);
+            break;
+          }
+        }
+
+      } catch (Exception x) {
+        // ignore all exceptions
+      }
+      notificationSet [i] = null;		// free for GC
+    }
+  }
+
+  /**
+   * <b>DOM L2 (Events)</b>
+   * Unregisters an event listener.
+   */
+  final public void removeEventListener (
+                                         String type,
+                                         EventListener listener,
+                                         boolean useCapture
+                                        ) {
+    for (int i = 0; i < nListeners; i++) {
+      if (listeners [i].listener != listener)
+        continue;
+      if (listeners [i].useCapture != useCapture)
+        continue;
+      if (!listeners [i].type.equals (type))
+        continue;
+
+      if (nListeners == 1) {
+        listeners = null;
+        nListeners = 0;
+      } else {
+        for (int j = i + 1; j < nListeners; j++)
+          listeners [i++] = listeners [j++];
+        listeners [--nListeners] = null;
+      }
+      break;
+    }
+    // no exceptions reported
+  }
+
+
+  /**
+   * <b>DOM L1 (relocated in DOM L2)</b>
+   * In this node and all contained nodes (including attributes if
+   * relevant) merge adjacent text nodes.  This is done while ignoring
+   * text which happens to use CDATA delimiters).
+   */
+  public void normalize()
+  {
+    for (DomNode ctx = first; ctx != null; ctx = ctx.next)
+      {
+        switch (ctx.nodeType)
+          {
+          case TEXT_NODE:
+            while (ctx.next != null && ctx.next.nodeType == TEXT_NODE)
+              {
+                Text text = (Text) ctx;
+                text.appendData(ctx.next.getNodeValue());
+                removeChild(ctx.next);
+              }
+            break;
+          case ELEMENT_NODE:
+            NamedNodeMap attrs = ctx.getAttributes();
+            int len = attrs.getLength();
+            for (int i = 0; i < len; i++)
+              {
+                attrs.item(i).normalize();
+              }
+            // Fall through
+          case DOCUMENT_NODE:
+          case DOCUMENT_FRAGMENT_NODE:
+            ctx.normalize();
+            break;
+          }
+      }
+    /*
+      int		index = 0;
+      Node		child, next;
+      Text		temp;
+      NamedNodeMap	attributes;
+
+      while ((child = item (index)) != null) {
+        switch (child.getNodeType ()) {
+        case TEXT_NODE:
+          next = item (index + 1);
+          if (next == null || next.getNodeType () != TEXT_NODE)
+            break;
+          temp = (Text) child;
+          temp.appendData (next.getNodeValue ());
+          removeChild (next);
+          // don't increment index ... we do extra fetches
+          // of the current node, affecting only speed.
+          continue;
+
+        case ELEMENT_NODE:
+          child.normalize ();
+          attributes = child.getAttributes ();
+          for (int i = 0; i < attributes.getLength (); i++) 
+            attributes.item (i).normalize ();
+          // FALLTHROUGH
+        }
+        index++;
+        continue;
+      }
+      */
+  }
+
+
+  /**
+   * Returns true iff node types match, and either (a) both nodes have no
+   * namespace and their getNodeName() values are the same, or (b) both
+   * nodes have the same getNamespaceURI() and same getLocalName() values.
+   *
+   * <p>Note that notion of a "Per-Element-Type" attribute name scope, as
+   * found in a non-normative appendix of the XML Namespaces specification,
+   * is not supported here.  Your application must implement that notion,
+   * typically by not bothering to check nameAndTypeEquals for attributes
+   * without namespace URIs unless you already know their elements are
+   * nameAndTypeEquals.
+   */
+  public boolean nameAndTypeEquals(Node other)
+  {
+    // node types must match
+    if (nodeType != other.getNodeType())
+      {
         return false;
       }
 
-    public String lookupNamespaceURI (String prefix)
+    // if both have namespaces, do a "full" comparision
+    // this is a "global" partition
+    String ns1 = this.getNamespaceURI();
+    String ns2 = other.getNamespaceURI();
+
+    if (ns1 != null && ns2 != null)
       {
-        // TODO
-        return null;
+        return ns1.equals(ns2) &&
+          getLocalName().equals(other.getLocalName());
       }
 
-    public boolean isEqualNode (Node arg)
+    // if neither has a namespace, this is a "no-namespace" name.
+    if (ns1 == null && ns2 == null)
       {
-        if (equals (arg))
-          return true;
-        if (getNodeType() != arg.getNodeType ())
-          return false;
-        if (!equal (getNodeName (), arg.getNodeName ()))
-          return false;
-        if (!equal (getLocalName (), arg.getLocalName ()))
-          return false;
-        if (!equal (getNamespaceURI (), arg.getNamespaceURI ()))
-          return false;
-        if (!equal (getPrefix (), arg.getPrefix ()))
-          return false;
-        if (!equal (getNodeValue (), arg.getNodeValue ()))
-          return false;
-        // TODO Attr NamedNodeMap
-        // TODO DocumentType
-        if (!equal (getChildNodes (), arg.getChildNodes ()))
-          return false;
+        if (!getNodeName().equals(other.getNodeName()))
+          {
+            return false;
+          }
+        // can test the non-normative "per-element-type" scope here.
+        // if this is an attribute node and both nodes have been bound
+        // to elements (!!), then return the nameAndTypeEquals()
+        // comparison of those elements.
         return true;
       }
 
-    boolean equal (String arg1, String arg2)
-      {
-        return ((arg1 == null && arg2 == null) ||
-               (arg1 != null && arg1.equals (arg2))); 
-      }
+    // otherwise they're unequal: one scoped, one not.
+    return false;
+  }
 
-    boolean equal (NodeList arg1, NodeList arg2)
+  // DOM Level 3 methods
+
+  public String getBaseURI()
+  {
+    // TODO
+    return null;
+  }
+
+  public short compareDocumentPosition(Node other)
+    throws DOMException
+  {
+    return (short) compareTo(other);
+  }
+
+  public String getTextContent()
+    throws DOMException
+  {
+    switch (nodeType)
       {
-        if (arg1 == null && arg2 == null)
-          return true;
-        if (arg1 == null || arg2 == null)
-          return false;
-        int len1 = arg1.getLength ();
-        int len2 = arg2.getLength ();
-        if (len1 != len2)
-          return false;
-        for (int i = 0; i < len1; i++)
+      case ELEMENT_NODE:
+      case ATTRIBUTE_NODE:
+      case ENTITY_NODE:
+      case ENTITY_REFERENCE_NODE:
+      case DOCUMENT_FRAGMENT_NODE:
+        StringBuffer buffer = new StringBuffer ();
+        for (DomNode ctx = first; ctx != null; ctx = ctx.next)
           {
-            Node child1 = arg1.item (i);
-            Node child2 = arg2.item (i);
-            if (child1.isSameNode (child2))
-              return false;
+            String textContent = ctx.getTextContent ();
+            if (textContent != null)
+              {
+                buffer.append(textContent);
+              }
           }
+        return buffer.toString();
+      case TEXT_NODE:
+      case CDATA_SECTION_NODE:
+      case COMMENT_NODE:
+      case PROCESSING_INSTRUCTION_NODE:
+        return getNodeValue();
+      default:
+        return null;
+      }
+  }
+
+  public void setTextContent(String textContent)
+    throws DOMException
+  {
+    switch (nodeType)
+      {
+      case ELEMENT_NODE:
+      case ATTRIBUTE_NODE:
+      case ENTITY_NODE:
+      case ENTITY_REFERENCE_NODE:
+      case DOCUMENT_FRAGMENT_NODE:
+        for (DomNode ctx = first; ctx != null; )
+          {
+            DomNode n = ctx.next;
+            removeChild(ctx);
+            ctx = n;
+          }
+        if (textContent != null)
+          {
+            Text text = owner.createTextNode(textContent);
+            appendChild(text);
+          }
+        break;
+      case TEXT_NODE:
+      case CDATA_SECTION_NODE:
+      case COMMENT_NODE:
+      case PROCESSING_INSTRUCTION_NODE:
+        setNodeValue(textContent);
+        break;
+      }
+  }
+
+  public boolean isSameNode(Node other)
+  {
+    return equals(other);
+  }
+
+  public String lookupPrefix(String namespaceURI)
+  {
+    // TODO
+    return null;
+  }
+
+  public boolean isDefaultNamespace(String namespaceURI)
+  {
+    // TODO
+    return false;
+  }
+
+  public String lookupNamespaceURI(String prefix)
+  {
+    // TODO
+    return null;
+  }
+
+  public boolean isEqualNode(Node arg)
+  {
+    if (equals(arg))
+      {
         return true;
       }
+    if (nodeType != arg.getNodeType() ||
+        !equal(getNodeName(), arg.getNodeName()) ||
+        !equal(getLocalName(), arg.getLocalName()) ||
+        !equal(getNamespaceURI(), arg.getNamespaceURI()) ||
+        !equal(getPrefix(), arg.getPrefix()) ||
+        !equal(getNodeValue(), arg.getNodeValue()) ||
+        !equal(getChildNodes(), arg.getChildNodes()))
+      {
+        return false;
+      }
+    // TODO Attr NamedNodeMap
+    // TODO DocumentType
+    return true;
+  }
 
-    public Object getFeature (String feature, String version)
+  boolean equal(String arg1, String arg2)
+  {
+    return ((arg1 == null && arg2 == null) ||
+            (arg1 != null && arg1.equals(arg2))); 
+  }
+  
+  boolean equal(NodeList arg1, NodeList arg2)
+  {
+    if (arg1 == null && arg2 == null)
+      {
+        return true;
+      }
+    if (arg1 == null || arg2 == null)
+      {
+        return false;
+      }
+    int len1 = arg1.getLength();
+    int len2 = arg2.getLength();
+    if (len1 != len2)
+      {
+        return false;
+      }
+    for (int i = 0; i < len1; i++)
+      {
+        Node child1 = arg1.item(i);
+        Node child2 = arg2.item(i);
+        if (child1.isSameNode(child2))
+          {
+            return false;
+          }
+      }
+    return true;
+  }
+
+  public Object getFeature(String feature, String version)
+  {
+    return null;
+  }
+
+  public Object setUserData(String key, Object data, UserDataHandler handler)
+  {
+    // TODO handler
+    if (userData == null)
+      {
+        userData = new HashMap();
+      }
+    return userData.put(key, data);
+  }
+
+  public Object getUserData(String key)
+  {
+    if (userData == null)
       {
         return null;
       }
-
-    public Object setUserData (String key, Object data, UserDataHandler handler)
-      {
-        // TODO handler
-        if (userData == null)
-          {
-            userData = new HashMap();
-          }
-        return userData.put (key, data);
-      }
-
-    public Object getUserData (String key)
-      {
-        if (userData == null)
-          {
-            return null;
-          }
-        return userData.get (key);
-      }
+    return userData.get(key);
+  }
 
   public String toString()
   {
@@ -1792,11 +2222,75 @@ public abstract class DomNode
             buf.append('=');
           }
         buf.append('\'');
-        buf.append(nodeValue);
+        buf.append(encode(nodeValue));
         buf.append('\'');
       }
     buf.append(']');
     return buf.toString();
+  }
+  
+  String encode(String value)
+  {
+    StringBuffer buf = null;
+    int len = value.length();
+    for (int i = 0; i < len; i++)
+      {
+        char c = value.charAt(i);
+        if (c == '\n')
+          {
+            if (buf == null)
+              {
+                buf = new StringBuffer(value.substring(0, i));
+              }
+            buf.append("\\n");
+          }
+        else if (c == '\r')
+          {
+            if (buf == null)
+              {
+                buf = new StringBuffer(value.substring(0, i));
+              }
+            buf.append("\\r");
+          }
+        else if (buf != null)
+          {
+            buf.append(c);
+          }
+      }
+    return (buf != null) ? buf.toString() : value;
+  }
+
+  String nodeTypeToString(short nodeType)
+  {
+    switch (nodeType)
+      {
+      case ELEMENT_NODE:
+        return "ELEMENT_NODE";
+      case ATTRIBUTE_NODE:
+        return "ATTRIBUTE_NODE";
+      case TEXT_NODE:
+        return "TEXT_NODE";
+      case CDATA_SECTION_NODE:
+        return "CDATA_SECTION_NODE";
+      case DOCUMENT_NODE:
+        return "DOCUMENT_NODE";
+      case DOCUMENT_TYPE_NODE:
+        return "DOCUMENT_TYPE_NODE";
+      case COMMENT_NODE:
+        return "COMMENT_NODE";
+      case PROCESSING_INSTRUCTION_NODE:
+        return "PROCESSING_INSTRUCTION_NODE";
+      case DOCUMENT_FRAGMENT_NODE:
+        return "DOCUMENT_FRAGMENT_NODE";
+      case ENTITY_NODE:
+        return "ENTITY_NODE";
+      case ENTITY_REFERENCE_NODE:
+        return "ENTITY_REFERENCE_NODE";
+      case NOTATION_NODE:
+        return "NOTATION_NODE";
+      default:
+        return "UNKNOWN";
+      }
   }
 
 }

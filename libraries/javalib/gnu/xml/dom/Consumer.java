@@ -220,7 +220,7 @@ public class Consumer extends DomConsumer
 	    Attributes2		attrs = (Attributes2) atts;
 	    int			length = atts.getLength ();
 
-	    map.compact ();
+	    //map.compact ();
 	    for (int i = 0; i < length; i++) {
 		if (attrs.isSpecified (i))
 		    continue;
@@ -293,14 +293,28 @@ public class Consumer extends DomConsumer
 	    DomDocument		doc;
 
 	    super.startDocument ();
-	    ((DomDocument) getDocument ()).setCheckingCharacters (false);
+	    ((DomDocument) getDocument ()).setStrictErrorChecking(false);
 	}
+
+        /**
+         * Required by DOM Level 3 to report document parameters
+         */
+        public void xmlDecl(String version,
+                            String encoding,
+                            boolean standalone)
+          throws SAXException
+        {
+          super.xmlDecl(version, encoding, standalone);
+
+          DomDocument doc = (DomDocument) getDocument();
+          doc.setXmlEncoding(encoding);
+        }
 
 	public void endDocument ()
 	throws SAXException
 	{
 	    DomDocument		doc = (DomDocument) getDocument ();
-	    doc.setCheckingCharacters (true);
+	    doc.setStrictErrorChecking(true);
 	    doc.compact ();
 	    super.endDocument ();
 	}

@@ -1866,6 +1866,7 @@ gnu_regexp_SRCS = \
 	gnu/regexp/UncheckedRE.java
 
 gnu_xml_aelfred2_SRCS = \
+	gnu/xml/aelfred2/ContentHandler2.java \
 	gnu/xml/aelfred2/JAXPFactory.java \
 	gnu/xml/aelfred2/SAXDriver.java \
 	gnu/xml/aelfred2/XmlParser.java \
@@ -1888,6 +1889,7 @@ gnu_xml_dom_SRCS = \
 	gnu/xml/dom/DomFragment.java \
 	gnu/xml/dom/DomImpl.java \
 	gnu/xml/dom/DomIterator.java \
+	gnu/xml/dom/DomNSResolverContext.java \
 	gnu/xml/dom/DomNamedNodeMap.java \
 	gnu/xml/dom/DomNode.java \
 	gnu/xml/dom/DomNotation.java \
@@ -1973,17 +1975,44 @@ gnu_xml_pipeline_SRCS = \
 	gnu/xml/pipeline/XsltFilter.java
 
 gnu_xml_transform_SRCS = \
-	gnu/xml/transform/DOMResultWrapper.java \
-	gnu/xml/transform/DOMSerializer.java \
+	gnu/xml/transform/AbstractNumberNode.java \
+	gnu/xml/transform/ApplyTemplatesNode.java \
+	gnu/xml/transform/AttributeNode.java \
+	gnu/xml/transform/Bindings.java \
+	gnu/xml/transform/CallTemplateNode.java \
+	gnu/xml/transform/ChooseNode.java \
+	gnu/xml/transform/CommentNode.java \
+	gnu/xml/transform/CopyNode.java \
+	gnu/xml/transform/CopyOfNode.java \
 	gnu/xml/transform/DOMSourceLocator.java \
-	gnu/xml/transform/DOMSourceWrapper.java \
+	gnu/xml/transform/DocumentFunction.java \
+	gnu/xml/transform/DummyNode.java \
+	gnu/xml/transform/ElementNode.java \
 	gnu/xml/transform/ErrorListenerErrorHandler.java \
+	gnu/xml/transform/ForEachNode.java \
+	gnu/xml/transform/IfNode.java \
+	gnu/xml/transform/LiteralNode.java \
+	gnu/xml/transform/NodeNumberNode.java \
+	gnu/xml/transform/NumberNode.java \
+	gnu/xml/transform/OtherwiseNode.java \
+	gnu/xml/transform/ParameterNode.java \
+	gnu/xml/transform/ProcessingInstructionNode.java \
+	gnu/xml/transform/SAXSerializer.java \
+	gnu/xml/transform/SortKey.java \
+	gnu/xml/transform/StreamSerializer.java \
 	gnu/xml/transform/Stylesheet.java \
 	gnu/xml/transform/Template.java \
+	gnu/xml/transform/TemplateNode.java \
 	gnu/xml/transform/TemplatesImpl.java \
+	gnu/xml/transform/TextNode.java \
 	gnu/xml/transform/TransformerFactoryImpl.java \
 	gnu/xml/transform/TransformerImpl.java \
-	gnu/xml/transform/URIResolverEntityResolver.java
+	gnu/xml/transform/URIResolverEntityResolver.java \
+	gnu/xml/transform/ValueOfNode.java \
+	gnu/xml/transform/WhenNode.java \
+	gnu/xml/transform/WithParam.java \
+	gnu/xml/transform/XSLComparator.java \
+	gnu/xml/transform/XSLURIResolver.java
 
 gnu_xml_util_SRCS = \
 	gnu/xml/util/DoParse.java \
@@ -1997,22 +2026,50 @@ gnu_xml_util_SRCS = \
 gnu_xml_xpath_SRCS = \
 	gnu/xml/xpath/AndExpr.java \
 	gnu/xml/xpath/ArithmeticExpr.java \
+	gnu/xml/xpath/BooleanFunction.java \
+	gnu/xml/xpath/CeilingFunction.java \
+	gnu/xml/xpath/ConcatFunction.java \
 	gnu/xml/xpath/Constant.java \
+	gnu/xml/xpath/ContainsFunction.java \
+	gnu/xml/xpath/CountFunction.java \
+	gnu/xml/xpath/DocumentOrderComparator.java \
 	gnu/xml/xpath/EqualityExpr.java \
 	gnu/xml/xpath/Expr.java \
 	gnu/xml/xpath/ExpressionTest.java \
+	gnu/xml/xpath/FalseFunction.java \
+	gnu/xml/xpath/FloorFunction.java \
 	gnu/xml/xpath/FunctionCall.java \
-	gnu/xml/xpath/Index.java \
+	gnu/xml/xpath/IdFunction.java \
+	gnu/xml/xpath/LangFunction.java \
+	gnu/xml/xpath/LastFunction.java \
+	gnu/xml/xpath/LocalNameFunction.java \
+	gnu/xml/xpath/NameFunction.java \
 	gnu/xml/xpath/NameTest.java \
+	gnu/xml/xpath/NamespaceUriFunction.java \
 	gnu/xml/xpath/NegativeExpr.java \
 	gnu/xml/xpath/NodeTypeTest.java \
+	gnu/xml/xpath/NormalizeSpaceFunction.java \
+	gnu/xml/xpath/NotFunction.java \
+	gnu/xml/xpath/NumberFunction.java \
 	gnu/xml/xpath/OrExpr.java \
 	gnu/xml/xpath/ParenthesizedExpr.java \
+	gnu/xml/xpath/Path.java \
+	gnu/xml/xpath/PositionFunction.java \
 	gnu/xml/xpath/RelationalExpr.java \
 	gnu/xml/xpath/Root.java \
+	gnu/xml/xpath/RoundFunction.java \
 	gnu/xml/xpath/Selector.java \
+	gnu/xml/xpath/StartsWithFunction.java \
 	gnu/xml/xpath/Step.java \
+	gnu/xml/xpath/StringFunction.java \
+	gnu/xml/xpath/StringLengthFunction.java \
+	gnu/xml/xpath/SubstringAfterFunction.java \
+	gnu/xml/xpath/SubstringBeforeFunction.java \
+	gnu/xml/xpath/SubstringFunction.java \
+	gnu/xml/xpath/SumFunction.java \
 	gnu/xml/xpath/Test.java \
+	gnu/xml/xpath/TranslateFunction.java \
+	gnu/xml/xpath/TrueFunction.java \
 	gnu/xml/xpath/UnionExpr.java \
 	gnu/xml/xpath/VariableReference.java \
 	gnu/xml/xpath/XPathFactoryImpl.java \

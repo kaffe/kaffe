@@ -45,31 +45,31 @@ import org.w3c.dom.Node;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class OrExpr
-extends Expr
+public final class OrExpr
+  extends Expr
 {
 
   final Expr lhs;
   final Expr rhs;
 
-  OrExpr (Expr lhs, Expr rhs)
+  public OrExpr(Expr lhs, Expr rhs)
   {
     this.lhs = lhs;
     this.rhs = rhs;
   }
 
-  public Object evaluate (Node context)
+  public Object evaluate(Node context, int pos, int len)
   {
-    Object left = lhs.evaluate (context);
-    if (_boolean (context, left))
+    Object left = lhs.evaluate(context, pos, len);
+    if (_boolean(context, left))
       {
         return Boolean.TRUE;
       }
-    Object right = rhs.evaluate (context);
-    return _boolean (context, right) ? Boolean.TRUE : Boolean.FALSE;
+    Object right = rhs.evaluate(context, pos, len);
+    return _boolean(context, right) ? Boolean.TRUE : Boolean.FALSE;
   }
 
-  public String toString ()
+  public String toString()
   {
     return lhs + " or " + rhs;
   }

@@ -1,6 +1,6 @@
 /*
  * DomNamedNodeMap.java
- * Copyright (C) 1999,2000,2001 The Free Software Foundation
+ * Copyright (C) 1999,2000,2001,2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -38,10 +38,7 @@
 
 package gnu.xml.dom;
 
-import java.util.Vector;
-
 import org.w3c.dom.*;
-
 
 /**
  * <p> "NamedNodeMap" implementation. </p>
@@ -49,306 +46,325 @@ import org.w3c.dom.*;
  * to list notations or entities.
  *
  * @author David Brownell 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomNamedNodeMap implements NamedNodeMap
+public class DomNamedNodeMap
+  implements NamedNodeMap
 {
-    private final Document		owner;
 
-    private DomNode			contents [] = new DomNode [1];
-    private int				length;
-    private boolean			readonly;
-    private final Element		element;
+  final DomNode owner;
+  final short type;
+  
+  DomNode first;
+  int length;
+  boolean readonly;
+  
+  // package private
+  DomNamedNodeMap(DomNode owner, short type)
+  {
+    this.owner = owner;
+    this.type = type;
+  }
 
-    private static final int		DELTA = 5;
-
-
-    /**
-     * Constructs an empty map associated with the specified document.
-     */
-    public DomNamedNodeMap (Document owner)
-    {
-	this.owner = owner;
-	this.element = null;
-    }
-
-    // package private
-    DomNamedNodeMap (Document owner, Element element)
-    {
-	this.owner = owner;
-	this.element = element;
-    }
-
-    /**
-     * Reduces space utilization for this object.
-     */
-    public void compact ()
-    {
-	if (contents.length != length)
-	    setCapacity (length);
-    }
-
-    private void setCapacity (int len)
-    {
-	DomNode		newContents [] = new DomNode [len];
-
-	System.arraycopy (contents, 0, newContents, 0, length);
-	contents = newContents;
-    }
-
-    /**
-     * Exposes the internal "readonly" flag.  In DOM, all NamedNodeMap
-     * objects found in a DocumentType object are read-only (after
-     * they are fully constructed), and those holding attributes of
-     * a readonly element will also be readonly.
-     */
-    final public boolean isReadonly ()
-    {
-	return readonly;
-    }
-
+  /**
+   * Exposes the internal "readonly" flag.  In DOM, all NamedNodeMap
+   * objects found in a DocumentType object are read-only (after
+   * they are fully constructed), and those holding attributes of
+   * a readonly element will also be readonly.
+   */
+  public final boolean isReadonly()
+  {
+    return readonly;
+  }  
     
-    /**
-     * Sets the internal "readonly" flag so the node and its
-     * children can't be changed.
-     */
-    public void makeReadonly ()
-    {
-	readonly = true;
-	for (int i = 0; i < length; i++)
-	    contents [i].makeReadonly ();
-    }
+  /**
+   * Sets the internal "readonly" flag so the node and its
+   * children can't be changed.
+   */
+  public void makeReadonly()
+  {
+    readonly = true;
+    for (DomNode ctx = first; ctx != null; ctx = ctx.next)
+      {
+        ctx.makeReadonly();
+      }
+  }
+  
+  /**
+   * <b>DOM L1</b>
+   * Returns the named item from the map, or null; names are just
+   * the nodeName property.
+   */
+  public Node getNamedItem(String name)
+  {
+    for (DomNode ctx = first; ctx != null; ctx = ctx.next)
+      {
+        if (ctx.getNodeName().equals(name))
+          {
+            return ctx;
+          }
+      }
+    return null;
+  }
 
+  /**
+   * <b>DOM L2</b>
+   * Returns the named item from the map, or null; names are the
+   * localName and namespaceURI properties, ignoring any prefix.
+   */
+  public Node getNamedItemNS(String namespaceURI, String localName)
+  {
+    for (DomNode ctx = first; ctx != null; ctx = ctx.next)
+      {
+        String name = ctx.getLocalName();
+        if ((localName == null && name == null) ||
+            (localName != null && localName.equals(name)))
+          {
+            String uri = ctx.getNamespaceURI();
+            if ((namespaceURI == null && uri == null) ||
+                (namespaceURI != null && namespaceURI.equals(uri)))
+              {
+                return ctx;
+              }
+          }
+      }
+    return null;
+  }
 
-    /**
-     * <b>DOM L1</b>
-     * Returns the named item from the map, or null; names are just
-     * the nodeName property.
-     */
-    public Node getNamedItem (String name)
-    {
-	for (int i = 0; i < length; i++) {
-	    if (contents [i].getNodeName ().equals (name))
-		return contents [i];
-	}
-	return null;
-    }
+  /**
+   * <b>DOM L1</b>
+   * Stores the named item into the map, optionally overwriting
+   * any existing node with that name.  The name used is just
+   * the nodeName attribute.
+   */
+  public Node setNamedItem(Node arg)
+  {
+    return setNamedItem(arg, false);
+  }
 
+  /**
+   * <b>DOM L2</b>
+   * Stores the named item into the map, optionally overwriting
+   * any existing node with that fully qualified name.  The name
+   * used incorporates the localName and namespaceURI properties,
+   * and ignores any prefix.
+   */
+  public Node setNamedItemNS(Node arg)
+  {
+    return setNamedItem(arg, true);
+  }
 
-    /**
-     * <b>DOM L2</b>
-     * Returns the named item from the map, or null; names are the
-     * localName and namespaceURI properties, ignoring any prefix.
-     */
-    public Node getNamedItemNS (String namespaceURI, String localName)
-    {
-	for (int i = 0; i < length; i++) {
-	    DomNode	temp = contents [i];
-	    String	tempName = temp.getLocalName ();
-	    String	ns;
+  Node setNamedItem(Node arg, boolean ns)
+  {
+    if (readonly)
+      {
+        throw new DomEx(DomEx.NO_MODIFICATION_ALLOWED_ERR);
+      }
 
-	    if (tempName != null && tempName.equals (localName)) {
-		ns = temp.getNamespaceURI ();
-		if ((ns == null && namespaceURI == null)
-			|| ns.equals (namespaceURI)) {
-		    return temp;
-		}
-	    }
-	}
-	return null;
-    }
+    DomNode node = (DomNode) arg;
+    if (node.owner != owner.owner)
+      {
+        System.err.println(node+".owner="+node.owner);
+        System.err.println(owner+".owner="+owner.owner);
+        throw new DomEx(DomEx.WRONG_DOCUMENT_ERR);
+      }
+    if (node.nodeType != type)
+      {
+        throw new DomEx(DomEx.HIERARCHY_REQUEST_ERR);
+      }
+    if (node.nodeType == Node.ATTRIBUTE_NODE)
+      {
+        DomNode element = node.parent;
+        if (element != null && element != owner)
+          {
+            throw new DomEx(DomEx.INUSE_ATTRIBUTE_ERR);
+          }
+        node.parent = owner;
+        node.depth = owner.depth + 1;
+      }
+    
+    String nodeName = ns ? null : node.getNodeName();
+    String localName = ns ? node.getLocalName() : null;
+    String namespaceURI = ns ? node.getNamespaceURI() : null;
+    
+    // maybe attribute ADDITION events (?)
+    
+    for (DomNode ctx = first; ctx != null; ctx = ctx.next)
+      {
+        boolean test = false;
+        if (ns)
+          {
+            String tln = ctx.getLocalName();
+            if (tln.equals(localName))
+              {
+                String tu = ctx.getNamespaceURI();
+                if ((tu == null && namespaceURI == null) ||
+                    (tu != null && tu.equals(namespaceURI)))
+                  {
+                    test = true;
+                  }
+              }
+          }
+        else
+          {
+            test = ctx.getNodeName().equals(nodeName);
+          }
+        if (test)
+          {
+            // replace
+            node.previous = ctx.previous;
+            node.next = ctx.next;
+            if (ctx.previous != null)
+              {
+                ctx.previous.next = node;
+              }
+            if (ctx.next != null)
+              {
+                ctx.next.previous = node;
+              }
+            if (first == ctx)
+              {
+                first = node;
+              }
+            ctx.next = null;
+            ctx.previous = null;
+            return ctx;
+          }
+      }
+    // prepend
+    if (first != null)
+      {
+        first.previous = node;
+      }
+    node.next = first;
+    first = node;
+    length++;
+    return null;
+  }
 
+  /**
+   * <b>DOM L1</b>
+   * Removes the named item from the map, or reports an exception;
+   * names are just the nodeName property.
+   */
+  public Node removeNamedItem(String name)
+  {
+    return removeNamedItem(null, name, false);
+  }
 
-    private void checkAttr (Attr arg)
-    {
-	if (element == null)
-	    return;
+  /**
+   * <b>DOM L2</b>
+   * Removes the named item from the map, or reports an exception;
+   * names are the localName and namespaceURI properties.
+   */
+  public Node removeNamedItemNS(String namespaceURI, String localName)
+  {
+    return removeNamedItem(namespaceURI, localName, false);
+  }
 
-	Element	argOwner = arg.getOwnerElement ();
+  Node removeNamedItem(String uri, String name, boolean ns)
+  {
+    if (readonly)
+      {
+        throw new DomEx(DomEx.NO_MODIFICATION_ALLOWED_ERR);
+      }
 
-	if (argOwner != null) {
-	    if (argOwner != element)
-		throw new DomEx (DomEx.INUSE_ATTRIBUTE_ERR);
-	    return;
-	}
+    // report attribute REMOVAL event?
 
-	// We can't escape implementation dependencies here; we let
-	// the Java runtime deal with error reporting
-	((DomAttr)arg).setOwnerElement (element);
-    }
+    for (DomNode ctx = first; ctx != null; ctx = ctx.next)
+      {
+        boolean test = false;
+        if (ns)
+          {
+            String tln = ctx.getLocalName();
+            if (tln.equals(name))
+              {
+                String tu = ctx.getNamespaceURI();
+                if ((tu == null && uri == null) ||
+                    (tu != null && tu.equals(uri)))
+                  {
+                    test = true;
+                  }
+              }
+          }
+        else
+          {
+            test = ctx.getNodeName().equals(name);
+          }
+        if (test)
+          {
+            // is this a default attribute?
+            if (ctx.nodeType == Node.ATTRIBUTE_NODE)
+              {
+                String def = getDefaultValue(ctx.getNodeName());
+                if (def != null)
+                  {
+                    ctx.setNodeValue(def);
+                    ((DomAttr) ctx).setSpecified(false);
+                    return null;
+                  }
+              }
+            // remove
+            if (ctx == first)
+              {
+                first = ctx.next;
+              }
+            if (ctx.previous != null)
+              {
+                ctx.previous.next = ctx.next;
+              }
+            if (ctx.next != null)
+              {
+                ctx.next.previous = ctx.previous;
+              }
+            ctx.previous = null;
+            ctx.next = null;
+            length--;
+            return ctx;
+          }
+      }    
+    throw new DomEx(DomEx.NOT_FOUND_ERR);
+  }
+  
+  String getDefaultValue(String name)
+  {
+    DomDoctype doctype = (DomDoctype) owner.owner.getDoctype();
+    if (doctype == null)
+      {
+        return null;
+      }
+    DomDoctype.ElementInfo info =
+      doctype.getElementInfo(owner.getNodeName());
+    if (info == null)
+      {
+        return null;
+      }
+    return info.getAttrDefault(name);
+  }
 
+  /**
+   * <b>DOM L1</b>
+   * Returns the indexed item from the map, or null.
+   */
+  public Node item(int index)
+  {
+    DomNode ctx = first;
+    int count = 0;
+    while (ctx != null && count < index)
+      {
+        ctx = ctx.next;
+        count++;
+      }
+    return ctx;
+  }
 
-    /**
-     * <b>DOM L1</b>
-     * Stores the named item into the map, optionally overwriting
-     * any existing node with that name.  The name used is just
-     * the nodeName attribute.
-     */
-    public Node setNamedItem (Node arg)
-    {
-	if (readonly)
-	    throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR);
-	if (arg.getOwnerDocument () != owner)
-	    throw new DomEx (DomEx.WRONG_DOCUMENT_ERR);
-	if (arg instanceof Attr)
-	    checkAttr ((Attr) arg);
-
-	String	name = arg.getNodeName ();
-
-// maybe attribute ADDITION events (?)
-
-	for (int i = 0; i < length; i++) {
-	    Node temp = contents [i];
-	    if (temp.getNodeName ().equals (name)) {
-		contents [i] = (DomNode) arg;
-		return temp;
-	    }
-	}
-	if (length == contents.length)
-	    setCapacity (length + DELTA);
-	contents [length++] = (DomNode) arg;
-	return null;
-    }
-
-
-    /**
-     * <b>DOM L2</b>
-     * Stores the named item into the map, optionally overwriting
-     * any existing node with that fully qualified name.  The name
-     * used incorporates the localName and namespaceURI properties,
-     * and ignores any prefix.
-     */
-    public Node setNamedItemNS (Node arg)
-    {
-	if (readonly)
-	    throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR);
-	if (arg.getOwnerDocument () != owner)
-	    throw new DomEx (DomEx.WRONG_DOCUMENT_ERR);
-	if (arg instanceof Attr)
-	    checkAttr ((Attr) arg);
-
-	String	localName = arg.getLocalName ();
-	String	namespaceURI = arg.getNamespaceURI ();
-
-	if (localName == null)
-	    throw new DomEx (DomEx.INVALID_ACCESS_ERR);
-
-	for (int i = 0; i < length; i++) {
-	    DomNode	temp = contents [i];
-	    String	tempName = temp.getLocalName ();
-	    String	ns;
-
-	    if (tempName != null && tempName.equals (localName)) {
-		ns = temp.getNamespaceURI ();
-		if ((ns == null && namespaceURI == null)
-			|| ns.equals (namespaceURI)) {
-		    contents [i] = (DomNode) arg;
-		    return temp;
-		}
-	    }
-	}
-	if (length == contents.length)
-	    setCapacity (length + DELTA);
-	contents [length++] = (DomNode) arg;
-	return null;
-    }
-
-    private void maybeRestoreDefault (String uri, String name)
-    {
-	DomDoctype		doctype = (DomDoctype)owner.getDoctype ();
-	DomDoctype.ElementInfo	info;
-	String			value;
-	DomAttr			attr;
-
-	if (doctype == null)
-	    return;
-	if ((info = doctype.getElementInfo (element.getNodeName ())) == null)
-	    return;
-	if ((value = info.getAttrDefault (name)) == null)
-	    return;
-	if (uri == null)
-	    attr = (DomAttr) owner.createAttribute (name);
-	else
-	    attr = (DomAttr) owner.createAttributeNS (uri, name);
-	attr.setNodeValue (value);
-	attr.setSpecified (false);
-	setNamedItem (attr);
-    }
-
-    /**
-     * <b>DOM L1</b>
-     * Removes the named item from the map, or reports an exception;
-     * names are just the nodeName property.
-     */
-    public Node removeNamedItem (String name)
-    {
-	if (readonly)
-	    throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR);
-
-// report attribute REMOVAL event?
-
-	for (int i = 0; i < length; i++) {
-	    DomNode	temp = contents [i];
-	    if (temp.getNodeName ().equals (name)) {
-		System.arraycopy (contents, i+1, contents, i,
-			length - (i + 1));
-		contents [--length] = null;
-		if (element != null)
-		    maybeRestoreDefault (temp.getNamespaceURI (), name);
-		return temp;
-	    }
-	}
-	throw new DomEx (DomEx.NOT_FOUND_ERR);
-    }
-
-
-    /**
-     * <b>DOM L2</b>
-     * Removes the named item from the map, or reports an exception;
-     * names are the localName and namespaceURI properties.
-     */
-    public Node removeNamedItemNS (String namespaceURI, String localName)
-    {
-	if (readonly)
-	    throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR);
-
-	for (int i = 0; i < length; i++) {
-	    DomNode	temp = contents [i];
-	    String	tempName = temp.getLocalName ();
-	    String	ns;
-
-	    if (tempName != null && tempName.equals (localName)) {
-		ns = temp.getNamespaceURI ();
-		if ((ns == null && namespaceURI == null)
-			|| ns.equals (namespaceURI)) {
-		    System.arraycopy (contents, i+1, contents, i,
-			    length - (i + 1));
-		    contents [--length] = null;
-		    if (element != null)
-			maybeRestoreDefault (ns, temp.getNodeName ());
-		    return temp;
-		}
-	    }
-	}
-	throw new DomEx (DomEx.NOT_FOUND_ERR);
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the indexed item from the map, or null.
-     */
-    public Node item (int index)
-    {
-	if (index < 0 || index >= length)
-	    return null;
-	return contents [index];
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the length of the map.
-     */
-    public int getLength ()
-	{ return length; }
+  /**
+   * <b>DOM L1</b>
+   * Returns the length of the map.
+   */
+  public int getLength()
+  {
+    return length;
+  }
+  
 }

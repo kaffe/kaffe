@@ -43,6 +43,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
@@ -54,7 +55,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import gnu.xml.xpath.XPathImpl;
 
 /**
  * GNU transformer factory implementation.
@@ -65,14 +65,15 @@ public class TransformerFactoryImpl
   extends TransformerFactory
 {
 
-  ErrorListener errorListener;
-  URIResolver uriResolver;
-  final XPathImpl xpath;
+  final XPathFactory xpathFactory;
+	final XSLURIResolver resolver;
+  ErrorListener userListener;
+  URIResolver userResolver;
 
   public TransformerFactoryImpl()
   {
-    XPathFactory xpathFactory = new gnu.xml.xpath.XPathFactoryImpl();
-    xpath = (XPathImpl) xpathFactory.newXPath();
+    xpathFactory = new gnu.xml.xpath.XPathFactoryImpl();
+		resolver = new XSLURIResolver();
   }
 
   public Transformer newTransformer(Source source)
@@ -84,28 +85,47 @@ public class TransformerFactoryImpl
   public Transformer newTransformer()
     throws TransformerConfigurationException
   {
-    Stylesheet stylesheet = new Stylesheet(xpath);
-    return new TransformerImpl(uriResolver, errorListener, stylesheet);
+    return new TransformerImpl(this, null);
   }
 
   public Templates newTemplates(Source source)
     throws TransformerConfigurationException
   {
+    Stylesheet stylesheet = newStylesheet(source, 0, null);
+    return new TemplatesImpl(this, stylesheet);
+  }
+
+  Stylesheet newStylesheet(Source source, int precedence, Stylesheet parent)
+    throws TransformerConfigurationException
+  {
     Document doc = null;
+    String systemId = null;
     if (source != null)
       {
-        DOMSource ds =
-          new DOMSourceWrapper(source, uriResolver, errorListener);
-        Node node = ds.getNode();
-        if (node == null)
-          {
-            throw new TransformerConfigurationException("no source document");
-          }
-        doc = (node instanceof Document) ? (Document) node :
-          node.getOwnerDocument();
+				try
+				  {
+						DOMSource ds;
+						synchronized (resolver)
+						{
+							resolver.setUserResolver(userResolver);
+							resolver.setUserListener(userListener);
+							ds = resolver.resolveDOM(source, null, null);
+						}
+						Node node = ds.getNode();
+						if (node == null)
+						{
+							throw new TransformerConfigurationException("no source document");
+						}
+						doc = (node instanceof Document) ? (Document) node :
+							node.getOwnerDocument();
+						systemId = ds.getSystemId();
+					}
+				catch (TransformerException e)
+				  {
+						throw new TransformerConfigurationException(e);
+					}
       }
-    Stylesheet stylesheet = new Stylesheet(xpath, doc, 0);
-    return new TemplatesImpl(uriResolver, errorListener, stylesheet);
+    return new Stylesheet(this, parent, doc, systemId, precedence);
   }
 
   public Source getAssociatedStylesheet(Source source,
@@ -120,12 +140,12 @@ public class TransformerFactoryImpl
 
   public void setURIResolver(URIResolver resolver)
   {
-    uriResolver = resolver;
+    userResolver = resolver;
   }
 
   public URIResolver getURIResolver()
   {
-    return uriResolver;
+    return userResolver;
   }
 
   public void setFeature(String name, boolean value)
@@ -163,12 +183,12 @@ public class TransformerFactoryImpl
   public void setErrorListener(ErrorListener listener)
     throws IllegalArgumentException
   {
-    errorListener = listener;
+    userListener = listener;
   }
 
   public ErrorListener getErrorListener()
   {
-    return errorListener;
+    return userListener;
   }
   
 }

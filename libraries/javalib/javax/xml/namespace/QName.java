@@ -117,24 +117,37 @@ public class QName
   public String toString()
   {
     StringBuffer buf = new StringBuffer();
-    buf.append('{');
-    buf.append(namespaceURI);
-    buf.append('}');
+    if (namespaceURI != null && namespaceURI.length() > 0)
+      {
+        buf.append('{');
+        buf.append(namespaceURI);
+        buf.append('}');
+      }
     buf.append(localName);
     return buf.toString();
   }
 
   public static QName valueOf(String qNameAsString)
   {
+    String namespaceUri = "", prefix = null;
     int start = qNameAsString.indexOf('{');
     int end = qNameAsString.indexOf('}');
-    if (start != 0 || end < start)
+    if (start != -1)
       {
-        throw new IllegalArgumentException(qNameAsString);
+        if (end < start)
+          {
+            throw new IllegalArgumentException(qNameAsString);
+          }
+        namespaceUri = qNameAsString.substring(start + 1, end);
+        qNameAsString = qNameAsString.substring(end + 1);
       }
-    String namespaceURI = qNameAsString.substring(start + 1, end);
-    String localName = qNameAsString.substring(end + 1);
-    return new QName(namespaceURI, localName);
+    start = qNameAsString.indexOf(':');
+    if (start != -1)
+      {
+        prefix = qNameAsString.substring(0, start);
+        qNameAsString = qNameAsString.substring(start + 1);
+      }
+    return new QName(namespaceUri, qNameAsString, prefix);
   }
   
 }

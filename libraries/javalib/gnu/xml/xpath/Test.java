@@ -49,6 +49,6 @@ import org.w3c.dom.Node;
 public abstract class Test
 {
 
-  abstract boolean matches (Node node);
+  public abstract boolean matches(Node node, int pos, int len);
 
 }

@@ -55,22 +55,22 @@ class TemplatesImpl
   implements Templates
 {
 
-  final URIResolver uriResolver;
-  final ErrorListener errorListener;
+	final TransformerFactoryImpl factory;
   final Stylesheet stylesheet;
 
-  TemplatesImpl(URIResolver resolver, ErrorListener listener,
-                Stylesheet stylesheet)
+  TemplatesImpl(TransformerFactoryImpl factory, Stylesheet stylesheet)
   {
-    uriResolver = resolver;
-    errorListener = listener;
+		this.factory = factory;
     this.stylesheet = stylesheet;
   }
 
   public Transformer newTransformer()
     throws TransformerConfigurationException
   {
-    return new TransformerImpl(uriResolver, errorListener, stylesheet);
+    Stylesheet stylesheet = (Stylesheet) this.stylesheet.clone();
+    TransformerImpl transformer = new TransformerImpl(factory, stylesheet);
+    stylesheet.transformer = transformer;
+    return transformer;
   }
 
   public Properties getOutputProperties()

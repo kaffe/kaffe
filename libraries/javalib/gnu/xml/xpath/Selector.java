@@ -38,11 +38,14 @@
 
 package gnu.xml.xpath;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -52,8 +55,8 @@ import org.w3c.dom.NodeList;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class Selector
-extends Expr
+public final class Selector
+  extends Path
 {
 
   public static final int ANCESTOR = 0;
@@ -80,11 +83,11 @@ extends Expr
    */
   final Test[] tests;
 
-  public Selector (int axis, List tests)
+  public Selector(int axis, List tests)
   {
     this.axis = axis;
-    this.tests = new Test[tests.size ()];
-    tests.toArray (this.tests);
+    this.tests = new Test[tests.size()];
+    tests.toArray(this.tests);
   }
 
   /**
@@ -95,209 +98,241 @@ extends Expr
     return tests;
   }
 
-  public Object evaluate (Node context)
+  public Object evaluate(Node context, int pos, int len)
   {
-    List candidates = new LinkedList ();
-    // Build list of candidates
-    switch (axis)
+    Set acc = new HashSet();
+    addCandidates(context, acc);
+    List candidates = new ArrayList(acc);
+    Collections.sort(candidates, documentOrderComparator);
+    return filterCandidates(candidates);
+  }
+
+  Collection evaluate(Node context, Collection ns)
+  {
+    Set acc = new HashSet();
+    for (Iterator i = ns.iterator(); i.hasNext(); )
       {
-      case CHILD:
-        addChildNodes (context, candidates, false);
-        break;
-      case DESCENDANT:
-        addChildNodes (context, candidates, true);
-        break;
-      case DESCENDANT_OR_SELF:
-        candidates.add (context);
-        addChildNodes (context, candidates, true);
-        break;
-      case PARENT:
-        addParentNode (context, candidates, false);
-        break;
-      case ANCESTOR:
-        addParentNode (context, candidates, true);
-        break;
-      case ANCESTOR_OR_SELF:
-        candidates.add (context);
-        addParentNode (context, candidates, true);
-        break;
-      case FOLLOWING_SIBLING:
-        addFollowingNodes (context, candidates, false);
-        break;
-      case PRECEDING_SIBLING:
-        addPrecedingNodes (context, candidates, false);
-        break;
-      case FOLLOWING:
-        addFollowingNodes (context, candidates, true);
-        break;
-      case PRECEDING:
-        addPrecedingNodes (context, candidates, true);
-        break;
-      case ATTRIBUTE:
-        addAttributes (context, candidates);
-        break;
-      case NAMESPACE:
-        // TODO
-        break;
-      case SELF:
-        candidates.add (context);
-        break;
+        addCandidates((Node) i.next(), acc);
       }
-    // Now filter them
+    List candidates = new ArrayList(acc);
+    Collections.sort(candidates, documentOrderComparator);
+    return filterCandidates(candidates);
+  }
+
+  /**
+   * Filter the given list of candates according to the node tests.
+   */
+  List filterCandidates(List candidates)
+  {
+    int len = candidates.size();
     int tlen = tests.length;
-    if (tlen > 0)
+    if (tlen > 0 && len > 0)
       {
-        for (Iterator i = candidates.iterator (); i.hasNext (); )
+        // Present the result of each successful generation to the next test
+        for (int j = 0; j < tlen && len > 0; j++)
           {
-            Node node = (Node) i.next ();
-            for (int j = 0; j < tlen; j++)
+            Test test = tests[j];
+            List successful = new ArrayList();
+            for (int i = 0; i < len; i++)
               {
-                if (!tests[j].matches (node))
+                Node node = (Node) candidates.get(i);
+                if (test.matches(node, i + 1, len))
                   {
-                    i.remove ();
+                    successful.add(node);
                   }
               }
+            candidates = successful;
+            len = candidates.size();
           }
       }
     return candidates;
   }
 
-  void addChildNodes (Node context, Collection acc, boolean recurse)
+  void addCandidates(Node context, Collection candidates)
   {
-    NodeList children = context.getChildNodes ();
-    if (children != null)
+    // Build list of candidates
+    switch (axis)
       {
-        int len = children.getLength ();
-        for (int i = 0; i < len; i++)
-          {
-            Node child = children.item (i);
-            acc.add (child);
-            if (recurse)
-              {
-                addChildNodes (child, acc, recurse);
-              }
-          }
+      case CHILD:
+        addChildNodes(context, candidates, false);
+        break;
+      case DESCENDANT:
+        addChildNodes(context, candidates, true);
+        break;
+      case DESCENDANT_OR_SELF:
+        candidates.add (context);
+        addChildNodes(context, candidates, true);
+        break;
+      case PARENT:
+        addParentNode(context, candidates, false);
+        break;
+      case ANCESTOR:
+        addParentNode(context, candidates, true);
+        break;
+      case ANCESTOR_OR_SELF:
+        candidates.add(context);
+        addParentNode(context, candidates, true);
+        break;
+      case FOLLOWING_SIBLING:
+        addFollowingNodes(context, candidates, false);
+        break;
+      case PRECEDING_SIBLING:
+        addPrecedingNodes(context, candidates, false);
+        break;
+      case FOLLOWING:
+        addFollowingNodes(context, candidates, true);
+        break;
+      case PRECEDING:
+        addPrecedingNodes(context, candidates, true);
+        break;
+      case ATTRIBUTE:
+        addAttributes(context, candidates);
+        break;
+      case NAMESPACE:
+        // TODO
+        break;
+      case SELF:
+        candidates.add(context);
+        break;
       }
   }
 
-  void addParentNode (Node context, Collection acc, boolean recurse)
+  void addChildNodes(Node context, Collection acc, boolean recurse)
   {
-    Node parent = context.getParentNode ();
-    if (parent != null)
+    Node child = context.getFirstChild();
+    while (child != null)
       {
-        acc.add (parent);
+        acc.add(child);
         if (recurse)
           {
-            addParentNode (parent, acc, recurse);
+            addChildNodes(child, acc, recurse);
+          }
+        child = child.getNextSibling();
+      }
+  }
+
+  void addParentNode(Node context, Collection acc, boolean recurse)
+  {
+    Node parent = (context.getNodeType() == Node.ATTRIBUTE_NODE) ?
+      ((Attr) context).getOwnerElement() : context.getParentNode();
+    if (parent != null)
+      {
+        acc.add(parent);
+        if (recurse)
+          {
+            addParentNode(parent, acc, recurse);
           }
       }
   }
 
-  void addFollowingNodes (Node context, Collection acc, boolean recurse)
+  void addFollowingNodes(Node context, Collection acc, boolean recurse)
   {
-    Node cur = context.getNextSibling ();
+    Node cur = context.getNextSibling();
     while (cur != null)
       {
-        acc.add (cur);
-        cur = cur.getNextSibling ();
+        acc.add(cur);
+        cur = cur.getNextSibling();
       }
     if (recurse)
       {
-        context = context.getParentNode ();
+        context = context.getParentNode();
         if (context != null)
           {
-            addFollowingNodes (context, acc, recurse);
+            addFollowingNodes(context, acc, recurse);
           }
       }
   }
 
-  void addPrecedingNodes (Node context, Collection acc, boolean recurse)
+  void addPrecedingNodes(Node context, Collection acc, boolean recurse)
   {
-    Node cur = context.getPreviousSibling ();
+    Node cur = context.getPreviousSibling();
     while (cur != null)
       {
-        acc.add (cur);
-        cur = cur.getPreviousSibling ();
+        acc.add(cur);
+        cur = cur.getPreviousSibling();
       }
     if (recurse)
       {
         // FIXME This is probably not correct
-        context = context.getParentNode ();
+        context = context.getParentNode();
         if (context != null)
           {
-            addPrecedingNodes (context, acc, recurse);
+            addPrecedingNodes(context, acc, recurse);
           }
       }
   }
 
-  void addAttributes (Node context, Collection acc)
+  void addAttributes(Node context, Collection acc)
   {
-    NamedNodeMap attrs = context.getAttributes ();
-    int attrLen = attrs.getLength ();
-    for (int j = 0; j < attrLen; j++)
+    NamedNodeMap attrs = context.getAttributes();
+    if (attrs != null)
       {
-        acc.add (attrs.item (j));
+        int attrLen = attrs.getLength();
+        for (int i = 0; i < attrLen; i++)
+          {
+            acc.add(attrs.item(i));
+          }
       }
   }
 
-  public String toString ()
+  public String toString()
   {
-    StringBuffer buf = new StringBuffer ();
+    StringBuffer buf = new StringBuffer();
     switch (axis)
       {
       case ANCESTOR:
-        buf.append ("ancestor");
+        buf.append("ancestor");
         break;
       case ANCESTOR_OR_SELF:
-        buf.append ("ancestor-or-self");
+        buf.append("ancestor-or-self");
         break;
       case ATTRIBUTE:
-        buf.append ("attribute");
+        buf.append("attribute");
         break;
       case CHILD:
-        buf.append ("child");
+        buf.append("child");
         break;
       case DESCENDANT:
-        buf.append ("descendant");
+        buf.append("descendant");
         break;
       case DESCENDANT_OR_SELF:
-        buf.append ("descendant-or-self");
+        buf.append("descendant-or-self");
         break;
       case FOLLOWING:
-        buf.append ("following");
+        buf.append("following");
         break;
       case FOLLOWING_SIBLING:
-        buf.append ("following-sibling");
+        buf.append("following-sibling");
         break;
       case NAMESPACE:
-        buf.append ("namespace");
+        buf.append("namespace");
         break;
       case PARENT:
-        buf.append ("parent");
+        buf.append("parent");
         break;
       case PRECEDING:
-        buf.append ("preceding");
+        buf.append("preceding");
         break;
       case PRECEDING_SIBLING:
-        buf.append ("preceding-sibling");
+        buf.append("preceding-sibling");
         break;
       case SELF:
-        buf.append ("self");
+        buf.append("self");
         break;
       }
-    buf.append ("::");
+    buf.append("::");
     if (tests.length == 0)
       {
-        buf.append ('*');
+        buf.append('*');
       }
     else
       {
         for (int i = 0; i < tests.length; i++)
           {
-            buf.append (tests[i]);
+            buf.append(tests[i]);
           }
       }
-    return buf.toString ();
+    return buf.toString();
   }
   
 }

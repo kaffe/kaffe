@@ -45,7 +45,9 @@ import org.w3c.dom.*;
  *
  * @author David Brownell 
  */
-public class DomText extends DomCharacterData implements Text
+public class DomText
+  extends DomCharacterData
+  implements Text
 {
     // NOTE:  deleted unused per-instance "isIgnorable"
     // support to reclaim its space.
@@ -60,12 +62,23 @@ public class DomText extends DomCharacterData implements Text
      */
     protected DomText (Document owner, String value)
     {
-	super (owner, value);
+	super (TEXT_NODE, owner, value);
     }
 
     protected DomText (Document owner, char buf [], int off, int len)
     {
-	super (owner, buf, off, len);
+	super (TEXT_NODE, owner, buf, off, len);
+    }
+
+    // Used by DomCDATA
+    DomText (short nodeType, Document owner, String value)
+    {
+	super (nodeType, owner, value);
+    }
+
+    DomText (short nodeType, Document owner, char buf [], int off, int len)
+    {
+	super (nodeType, owner, buf, off, len);
     }
 
 
@@ -78,15 +91,6 @@ public class DomText extends DomCharacterData implements Text
     {
 	return "#text";
     }
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the constant TEXT_NODE.
-     */
-    // would be final except DomCDATA subclasses this ...
-    public short getNodeType ()
-	{ return TEXT_NODE; }
-
 
     /**
      * <b>DOM L1</b>

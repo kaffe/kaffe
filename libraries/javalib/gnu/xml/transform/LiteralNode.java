@@ -1,5 +1,5 @@
 /*
- * DOMResultWrapper.java
+ * LiteralNode.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -38,88 +38,79 @@
 
 package gnu.xml.transform;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import javax.xml.transform.Result;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.TransformerException;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
- * A DOM result that wraps an underlying result.
+ * A template node that copies a DOM node in the template to the result
+ * tree.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class DOMResultWrapper
-  extends DOMResult
+final class LiteralNode
+  extends TemplateNode
 {
 
-  final Result result;
+  /**
+   * The source node in the XSL template.
+   */
+  final Node source;
 
-  DOMResultWrapper(Result result)
+  LiteralNode(TemplateNode children, TemplateNode next, Node source)
   {
-    this.result = result;
+    super(children, next);
+    this.source = source;
   }
-  
-  public Node getNode()
+
+  void apply(Stylesheet stylesheet, String mode,
+             Node context, int pos, int len,
+             Node parent, Node nextSibling)
+    throws TransformerException
   {
-    if (result instanceof DOMResult)
+    // Insert result node
+    Node result = source.cloneNode(false);
+    Document doc = (parent instanceof Document) ? (Document) parent :
+      parent.getOwnerDocument();
+    result = doc.adoptNode(result);
+    if (result == null)
       {
-        return ((DOMResult) result).getNode();
+        String msg = "Error adopting node to result tree";
+        DOMSourceLocator l = new DOMSourceLocator(context);
+        throw new TransformerException(msg, l);
       }
-    return null;
-  }
-
-  public Node getNextSibling()
-  {
-    if (result instanceof DOMResult)
+    if (nextSibling != null)
       {
-        return ((DOMResult) result).getNextSibling();
+        parent.insertBefore(result, nextSibling);
       }
-    return null;
-  }
-
-  public String getSystemId()
-  {
-    return result.getSystemId();
-  }
-
-  public void setSystemId(String systemId)
-  {
-    result.setSystemId(systemId);
-  }
-
-  public void setNode(Node node)
-  {
-    if (result instanceof DOMResult)
+    else
       {
-        ((DOMResult) result).setNode(node);
+        parent.appendChild(result);
       }
-    else if (result instanceof StreamResult)
+    // Process children and next sibling
+    if (children != null)
       {
-        try
-          {
-            StreamResult sr = (StreamResult) result;
-            OutputStream out = sr.getOutputStream();
-            DOMSerializer.serialize(node, out);
-            out.close();
-          }
-        catch (IOException e)
-          {
-            // TODO
-            e.printStackTrace();
-          }
+        children.apply(stylesheet, mode,
+                       context, pos, len,
+                       result, null);
       }
-    else if (result instanceof SAXResult)
+    if (next != null)
       {
-        // TODO
+        next.apply(stylesheet, mode,
+                   context, pos, len,
+                   parent, nextSibling);
       }
   }
 
-  public void setNextSibling(Node node)
+  public String toString()
   {
-    // Will never be called by transform
+    StringBuffer buf = new StringBuffer(getClass().getName());
+    buf.append('[');
+    buf.append("source=");
+    buf.append(source);
+    buf.append(']');
+    return buf.toString();
   }
   
 }

@@ -38,7 +38,10 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.*;
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.events.MutationEvent;
 
 
@@ -49,227 +52,279 @@ import org.w3c.dom.events.MutationEvent;
  *
  * @author David Brownell
  */
-public abstract class DomCharacterData extends DomNode
-    implements CharacterData
+public abstract class DomCharacterData
+  extends DomNode
+  implements CharacterData
 {
-    private char		raw [];
 
-    // package private
-    DomCharacterData (Document doc, String value)
-    {
-	super (doc);
-	if (value != null)
-	    raw = value.toCharArray ();
-	else
-	    raw = new char [0];
-    }
+  private String text;
+  
+  // package private
+  DomCharacterData(short nodeType, Document doc, String value)
+  {
+    super(nodeType, doc);
+    text = (value == null) ? "" : value;
+  }
 
-    // package private
-    DomCharacterData (Document doc, char buf [], int offset, int length)
-    {
-	super (doc);
-	if (buf == null)
-	    raw = new char [0];
-	else {
-	    raw = new char [length];
-	    System.arraycopy (buf, offset, raw, 0, length);
-	}
-    }
+  // package private
+  DomCharacterData(short nodeType, Document doc,
+                   char[] buf, int offset, int length)
+  {
+    super(nodeType, doc);
+    text = (buf == null) ? "" : new String(buf, offset, length);
+  }
 
-    /**
-     * <b>DOM L1</b>
-     * Appends the specified data to the value of this node.
-     * Causes a DOMCharacterDataModified mutation event to be reported.
-     */
-    public void appendData (String arg)
-    {
-	if (isReadonly ())
-	    throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR);
-
-	char	tmp [] = arg.toCharArray ();
-	char	buf [] = new char [raw.length + tmp.length];
-
-	System.arraycopy (raw, 0, buf, 0, raw.length);
-	System.arraycopy (tmp, 0, buf, raw.length, tmp.length);
-	mutating (new String (buf));
-	raw = buf;
-    }
-    
-
-    /**
-     * <b>DOM L1</b>
-     * Modifies the value of this node.
-     * Causes a DOMCharacterDataModified mutation event to be reported.
-     */
-    public void deleteData (int offset, int count)
-    {
-	char	buf [];
-
-	if (isReadonly ())
-	    throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR);
+  /**
+   * <b>DOM L1</b>
+   * Appends the specified data to the value of this node.
+   * Causes a DOMCharacterDataModified mutation event to be reported.
+   */
+  public void appendData(String arg)
+  {
+	if (isReadonly())
+      {
+	    throw new DomEx(DomEx.NO_MODIFICATION_ALLOWED_ERR);
+      }
+    String value = text + arg;
+	mutating(value);
+	text = value;
+  }
+  
+  /**
+   * <b>DOM L1</b>
+   * Modifies the value of this node.
+   * Causes a DOMCharacterDataModified mutation event to be reported.
+   */
+  public void deleteData(int offset, int count)
+  {
+	if (isReadonly())
+      {
+	    throw new DomEx(DomEx.NO_MODIFICATION_ALLOWED_ERR);
+      }
+    char[] raw = text.toCharArray();
 	if (offset < 0 || count < 0 || offset > raw.length)
-	    throw new DomEx (DomEx.INDEX_SIZE_ERR);
+      {
+	    throw new DomEx(DomEx.INDEX_SIZE_ERR);
+      }
 	if ((offset + count) > raw.length)
+      {
 	    count = raw.length - offset;
+      }
 	if (count == 0)
+      {
 	    return;
-	buf = new char [raw.length - count];
-	System.arraycopy (raw, 0, buf, 0, offset);
-	System.arraycopy (raw, offset + count, buf, offset,
-	    raw.length - (offset + count));
-	mutating (new String (buf));
-	raw = buf;
+      }
+    try
+      {
+        char[] buf = new char[raw.length - count];
+        System.arraycopy(raw, 0, buf, 0, offset);
+        System.arraycopy(raw, offset + count, buf, offset,
+                         raw.length - (offset + count));
+        String value = new String(buf);
+        mutating(value);
+        text = value;
+      }
+    catch (IndexOutOfBoundsException x)
+      {
+        throw new DomEx(DomEx.INDEX_SIZE_ERR);
+      }
+  }
+    
+  /**
+   * <b>DOM L1</b>
+   * Returns the value of this node.
+   */
+  public String getNodeValue()
+  {
+    return text;
+  }
+    
+  /**
+   * <b>DOM L1</b>
+   * Returns the value of this node; same as getNodeValue.
+   */
+  final public String getData()
+  {
+    return text;
+  }
+
+  /**
+   * <b>DOM L1</b>
+   * Returns the length of the data.
+   */
+  public int getLength()
+  {
+	return text.length();
+  }
+  
+  static final class EmptyNodeList
+    implements NodeList
+  {
+    
+    public int getLength()
+    {
+      return 0;
     }
     
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the value of this node.
-     */
-    public String getNodeValue ()
+    public Node item(int i)
     {
-	return new String (raw);
+      return null;
     }
 
+  }
     
-    /**
-     * <b>DOM L1</b>
-     * Returns the value of this node; same as getNodeValue.
-     */
-    final public String getData ()
-    {
-	return getNodeValue ();
-    }
+  static final EmptyNodeList theEmptyNodeList = new EmptyNodeList();
 
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the length of the data.
-     */
-    public int getLength ()
-    {
-	return raw.length;
-    }
-
-
-    static final class EmptyNodeList implements NodeList
-    {
-	public int getLength () { return 0; }
-	public Node item (int i) { return null; }
-    }
-    
-    static final EmptyNodeList	theEmptyNodeList = new EmptyNodeList ();
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns an empty list of children.
-     */
-    final public NodeList getChildNodes ()
-    {
+  /**
+   * <b>DOM L1</b>
+   * Returns an empty list of children.
+   */
+  final public NodeList getChildNodes()
+  {
 	return theEmptyNodeList;
-    }
+  }
 
+  /**
+   * <b>DOM L1</b>
+   * Modifies the value of this node.
+   */
+  public void insertData(int offset, String arg)
+  {
+	if (isReadonly())
+      {
+	    throw new DomEx(DomEx.NO_MODIFICATION_ALLOWED_ERR);
+      }
+    char[] raw = text.toCharArray();
+	char[] tmp = arg.toCharArray ();
+	char[] buf = new char[raw.length + tmp.length];
 
-    /**
-     * <b>DOM L1</b>
-     * Modifies the value of this node.
-     */
-    public void insertData (int offset, String arg)
-    {
-	char	tmp [] = arg.toCharArray ();
-	char	buf [] = new char [raw.length + tmp.length];
-
-	if (isReadonly ())
-	    throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR);
-	try {
-	    System.arraycopy (raw, 0, buf, 0, offset);
-	    System.arraycopy (tmp, 0, buf, offset,
-		tmp.length);
-	    System.arraycopy (raw, offset, buf, offset + tmp.length,
-	    	raw.length - offset);
-	    mutating (new String (buf));
-	    raw = buf;
-	} catch (IndexOutOfBoundsException x) {
-	    throw new DomEx (DomEx.INDEX_SIZE_ERR);
-	}
-    }
+	try
+      {
+	    System.arraycopy(raw, 0, buf, 0, offset);
+	    System.arraycopy(tmp, 0, buf, offset, tmp.length);
+	    System.arraycopy(raw, offset, buf, offset + tmp.length,
+                         raw.length - offset);
+        String value = new String(buf);
+	    mutating(value);
+	    text = value;
+      }
+    catch (IndexOutOfBoundsException x)
+      {
+        throw new DomEx(DomEx.INDEX_SIZE_ERR);
+      }
+  }
     
+  /**
+   * <b>DOM L1</b>
+   * Modifies the value of this node.  Causes DOMCharacterDataModified
+   * mutation events to be reported (at least one).
+   */
+  public void replaceData(int offset, int count, String arg)
+  {
+	if (isReadonly())
+      {
+	    throw new DomEx(DomEx.NO_MODIFICATION_ALLOWED_ERR);
+      }
+    char[] raw = text.toCharArray();
 
-    /**
-     * <b>DOM L1</b>
-     * Modifies the value of this node.  Causes DOMCharacterDataModified
-     * mutation events to be reported (at least one).
-     */
-    public void replaceData (int offset, int count, String arg)
-    {
-	if (isReadonly ())
-	    throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR);
-
-	// this could be rewritten to be faster,
-	// and to report only one mutation event
-	deleteData (offset, count);
-	insertData (offset, arg);
-    }
+    // deleteData
+	if (offset < 0 || count < 0 || offset > raw.length)
+      {
+	    throw new DomEx(DomEx.INDEX_SIZE_ERR);
+      }
+	if ((offset + count) > raw.length)
+      {
+	    count = raw.length - offset;
+      }
+	try
+      {
+        char[] buf = new char[raw.length - count];
+        System.arraycopy(raw, 0, buf, 0, offset);
+        System.arraycopy(raw, offset + count, buf, offset,
+                         raw.length - (offset + count));
+        
+        // insertData
+        char[] tmp = arg.toCharArray ();
+        char[] buf2 = new char[buf.length + tmp.length];
+	    System.arraycopy(raw, 0, buf, 0, offset);
+	    System.arraycopy(tmp, 0, buf, offset, tmp.length);
+	    System.arraycopy(raw, offset, buf, offset + tmp.length,
+                         raw.length - offset);
+        String value = new String(buf);
+	    mutating(value);
+	    text = value;
+      }
+    catch (IndexOutOfBoundsException x)
+      {
+        throw new DomEx(DomEx.INDEX_SIZE_ERR);
+      }
+  }
     
-
-    /**
-     * <b>DOM L1</b>
-     * Assigns the value of this node.
-     * Causes a DOMCharacterDataModified mutation event to be reported.
-     */
-    public void setNodeValue (String value)
-    {
-	if (isReadonly ())
-	    throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR);
-	if (value == null)
+  /**
+   * <b>DOM L1</b>
+   * Assigns the value of this node.
+   * Causes a DOMCharacterDataModified mutation event to be reported.
+   */
+  public void setNodeValue(String value)
+  {
+    if (isReadonly())
+      {
+        throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR);
+      }
+    if (value == null)
+      {
 	    value = "";
-	mutating (value);
-	raw = value.toCharArray ();
-    }
+      }
+	mutating(value);
+	text = value;
+  }
+ 
+  /**
+   * <b>DOM L1</b>
+   * Assigns the value of this node; same as setNodeValue.
+   */
+  final public void setData(String data)
+  {
+    setNodeValue(data);
+  }
 
-    
-    /**
-     * <b>DOM L1</b>
-     * Assigns the value of this node; same as setNodeValue.
-     */
-    final public void setData (String data)
-    {
-	setNodeValue (data);
-    }
+  /**
+   * <b>DOM L1</b>
+   * Returns the specified substring.
+   */
+  public String substringData(int offset, int count)
+  {
+	try
+      {
+        return text.substring(offset, count);
+      }
+    catch (StringIndexOutOfBoundsException e)
+      {
+        if (offset >= 0 && count >= 0 && offset < text.length())
+          {
+            return text.substring(offset);
+          }
+        throw new DomEx(DomEx.INDEX_SIZE_ERR);
+      }
+  }
 
-    
-    /**
-     * <b>DOM L1</b>
-     * Returns the specified substring.
-     */
-    public String substringData (int offset, int count)
-    {
-	try {
-	    return new String (raw, offset, count);
-	} catch (IndexOutOfBoundsException e) {
-	    if (offset >= 0 && count >= 0) {
-		int len = raw.length;
-		if (offset < len && (offset + count) > len)
-		    return new String (raw, offset, len - offset);
-	    }
-	    throw new DomEx (DomEx.INDEX_SIZE_ERR);
-	}
-    }
-
-    private void mutating (String newValue)
-    {
+  private void mutating(String newValue)
+  {
 	if (!reportMutations)
+      {
 	    return;
+      }
 
 	// EVENT:  DOMCharacterDataModified, target = this,
 	//	prev/new values provided
 	MutationEvent	event;
 
-	event = (MutationEvent) createEvent ("MutationEvents");
-	event.initMutationEvent ("DOMCharacterDataModified",
-		true /* bubbles */, false /* nocancel */,
-		null, new String (raw), newValue, null, (short) 0);
-	dispatchEvent (event);
-    }
+	event = (MutationEvent) createEvent("MutationEvents");
+	event.initMutationEvent("DOMCharacterDataModified",
+                            true /* bubbles */, false /* nocancel */,
+                            null, text, newValue, null, (short) 0);
+    dispatchEvent(event);
+  }
+  
 }
+

@@ -45,6 +45,7 @@ import org.xml.sax.*;
 import org.xml.sax.ext.*;
 import org.xml.sax.helpers.XMLFilterImpl;
 
+import gnu.xml.aelfred2.ContentHandler2;
 
 /**
  * A customizable event consumer, used to assemble various kinds of filters
@@ -138,7 +139,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * @author David Brownell
  */
 public class EventFilter
-    implements EventConsumer, ContentHandler, DTDHandler,
+    implements EventConsumer, ContentHandler2, DTDHandler,
 	    LexicalHandler, DeclHandler
 {
     // SAX handlers
@@ -598,6 +599,15 @@ public class EventFilter
     {
 	if (docNext != null)
 	    docNext.startDocument ();
+    }
+
+    public void xmlDecl(String version, String encoding, boolean standalone)
+      throws SAXException
+    {
+      if (docNext != null && docNext instanceof ContentHandler2)
+        {
+          ((ContentHandler2) docNext).xmlDecl(version, encoding, standalone);
+        }
     }
 
     /** <b>SAX2:</b> passes this callback to the next consumer, if any */

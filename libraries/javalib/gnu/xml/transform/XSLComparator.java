@@ -1,5 +1,5 @@
 /*
- * Index.java
+ * XSLComparator.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -36,53 +36,66 @@
  * exception statement from your version. 
  */
 
-package gnu.xml.xpath;
+package gnu.xml.transform;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.text.Collator;
 import org.w3c.dom.Node;
 
 /**
- * Returns the specified numbered child of the context node.
+ * Comparator for sorting lists of nodes according to a list of sort keys.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class Index
-extends Expr
+class XSLComparator
+  implements Comparator
 {
 
-  final Expr lhs;
-  final Expr rhs;
+  final List sortKeys;
 
-  Index (Expr lhs, Expr rhs)
+  XSLComparator(List sortKeys)
   {
-    this.lhs = lhs;
-    this.rhs = rhs;
+    this.sortKeys = sortKeys;
   }
 
-  public Object evaluate (Node context)
+  public int compare(Object o1, Object o2)
   {
-    Object left = lhs.evaluate (context);
-    if (left instanceof Collection)
+    if (o1 instanceof Node && o2 instanceof Node)
       {
-        Object right = rhs.evaluate (context);
-        double n = _number (context, right);
-        int index = ((int) n) - 1;
-        
-        Collection ns = (Collection) left;
-        Node[] nodes = new Node[ns.size ()];
-        ns.toArray (nodes);
-        if (index >= 0 && index < nodes.length)
+        Node n1 = (Node) o1;
+        Node n2 = (Node) o2;
+        for (Iterator i = sortKeys.iterator(); i.hasNext(); )
           {
-            return Collections.singleton (nodes[index]);
+            SortKey sortKey = (SortKey) i.next();
+            String k1 = sortKey.key(n1);
+            String k2 = sortKey.key(n2);
+            Locale locale = (sortKey.lang == null) ? Locale.getDefault() :
+              new Locale(sortKey.lang);
+            Collator collator = Collator.getInstance(locale);
+            int d = collator.compare(k1, k2);
+            if (d != 0)
+              {
+                switch (sortKey.caseOrder)
+                  {
+                  case SortKey.UPPER_FIRST:
+                    // TODO
+                    break;
+                  case SortKey.LOWER_FIRST:
+                    // TODO
+                    break;
+                  }
+                if (sortKey.descending)
+                  {
+                    d = -d;
+                  }
+                return d;
+              }
           }
       }
-    return null;
-  }
-
-  public String toString ()
-  {
-    return lhs.toString () + "[" + rhs.toString () + "]";
+    return 0;
   }
   
 }

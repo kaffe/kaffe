@@ -632,6 +632,8 @@ final class XmlParser
 	skipWhitespace ();
 	require ("?>");
 
+        handler.xmlDecl(version, encodingName, "yes".equals(standalone));
+
 	return encodingName;
     }
 

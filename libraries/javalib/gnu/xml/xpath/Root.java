@@ -38,6 +38,7 @@
 
 package gnu.xml.xpath;
 
+import java.util.Collection;
 import java.util.Collections;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -47,18 +48,23 @@ import org.w3c.dom.Node;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class Root
-extends Expr
+public final class Root
+  extends Path
 {
 
-  public Object evaluate (Node context)
+  public Object evaluate(Node context, int pos, int len)
   {
-    Document doc = (context instanceof Document) ? (Document) context :
-      context.getOwnerDocument ();
-    return Collections.singleton (doc);
+    return evaluate(context, Collections.EMPTY_SET);
   }
 
-  public String toString ()
+  Collection evaluate(Node context, Collection ns)
+  {
+    Document doc = (context instanceof Document) ? (Document) context :
+      context.getOwnerDocument();
+    return Collections.singleton(doc);
+  }
+
+  public String toString()
   {
     return "/";
   }

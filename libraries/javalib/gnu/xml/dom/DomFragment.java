@@ -46,7 +46,9 @@ import org.w3c.dom.*;
  *
  * @author David Brownell 
  */
-public class DomFragment extends DomNode implements DocumentFragment
+public class DomFragment
+  extends DomNode
+  implements DocumentFragment
 {
     /**
      * Constructs a DocumentFragment node associated with the
@@ -58,7 +60,7 @@ public class DomFragment extends DomNode implements DocumentFragment
      */
     protected DomFragment (Document owner)
     {
-	super (owner);
+	super (DOCUMENT_FRAGMENT_NODE, owner);
     }
 
 
@@ -71,10 +73,4 @@ public class DomFragment extends DomNode implements DocumentFragment
 	return "#document-fragment";
     }
 
-    /**
-     * <b>DOM L1</b>
-     * Returns the constant DOCUMENT_FRAGMENT_NODE.
-     */
-    final public short getNodeType ()
-	{ return DOCUMENT_FRAGMENT_NODE; }
 }

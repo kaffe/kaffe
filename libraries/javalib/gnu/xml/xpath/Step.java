@@ -41,8 +41,8 @@ package gnu.xml.xpath;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.TreeSet;
 import org.w3c.dom.Node;
 
 /**
@@ -50,48 +50,57 @@ import org.w3c.dom.Node;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class Step
-extends Expr
+public final class Step
+  extends Path
 {
 
   final Expr lhs;
-  final Expr rhs;
+  final Path rhs;
 
-  public Step (Expr lhs, Expr rhs)
+  public Step(Expr lhs, Path rhs)
   {
     this.lhs = lhs;
     this.rhs = rhs;
   }
 
-  public Object evaluate (Node context)
+  public Object evaluate(Node context, int pos, int len)
   {
-    Object left = lhs.evaluate (context);
+    Object left = lhs.evaluate(context, pos, len);
     if (left instanceof Collection)
       {
-        Collection ns = (Collection) left;
-        Set ret1 = new TreeSet ();
-        Object ret2 = null;
-        for (Iterator i = ns.iterator (); i.hasNext (); )
-          {
-            Node node = (Node) i.next ();
-            Object right = rhs.evaluate (node);
-            if (right instanceof Collection)
-              {
-                ret1.addAll ((Collection) right);
-              }
-            else if (ret2 == null)
-              {
-                ret2 = right;
-              }
-          }
-        return (ret1.isEmpty () && ret2 != null) ? ret2 : ret1;
+        return rhs.evaluate(context, (Collection) left);
       }
     return Collections.EMPTY_SET;
   }
 
-  public String toString ()
+  Collection evaluate(Node context, Collection ns)
+  {
+    if (lhs instanceof Path)
+      {
+        ns = ((Path) lhs).evaluate(context, ns);
+      }
+    else
+      {
+        Set acc = new LinkedHashSet();
+        int pos = 1, len = ns.size();
+        for (Iterator i = ns.iterator(); i.hasNext(); )
+          {
+            Node node = (Node) i.next();
+            Object ret = lhs.evaluate(node, pos++, len);
+            if (ret instanceof Collection)
+              {
+                acc.addAll((Collection) ret);
+              }
+          }
+        ns = acc;
+      }
+    ns = rhs.evaluate(context, ns);
+    return ns;
+  }
+
+  public String toString()
   {
     return lhs + ((lhs instanceof Root) ? "" : "/") + rhs;
   }
-  
+
 }

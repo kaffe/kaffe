@@ -46,6 +46,7 @@ import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
+import gnu.xml.aelfred2.ContentHandler2;
 import gnu.xml.util.DomParser;
 
 
@@ -317,7 +318,7 @@ public class DomConsumer implements EventConsumer
      * accepted illegal input data). </p>
      */
     public static class Handler
-	implements ContentHandler, LexicalHandler,
+	implements ContentHandler2, LexicalHandler,
 	    DTDHandler, DeclHandler
     {
 	protected DomConsumer		consumer;
@@ -416,6 +417,19 @@ public class DomConsumer implements EventConsumer
 		}
 	    top = document;
 	}
+
+        // ContentHandler2
+        public void xmlDecl(String version,
+                            String encoding,
+                            boolean standalone)
+          throws SAXException
+        {
+          if (document != null)
+            {
+              document.setXmlVersion(version);
+              document.setXmlStandalone(standalone);
+            }
+        }
 
 	// SAX1
 	public void endDocument ()

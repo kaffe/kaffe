@@ -38,8 +38,8 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.*;
-
+import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
 
 /**
  * <p> "Comment" implementation.
@@ -51,35 +51,32 @@ import org.w3c.dom.*;
  *
  * @author David Brownell
  */
-public class DomComment extends DomCharacterData implements Comment
+public class DomComment
+  extends DomCharacterData
+  implements Comment
 {
-    /**
-     * Constructs a comment node associated with the specified
-     * document and holding the specified data.
-     *
-     * <p>This constructor should only be invoked by a Document as part of
-     * its createComment functionality, or through a subclass which is
-     * similarly used in a "Sub-DOM" style layer.
-     */
-    protected DomComment (Document owner, String value)
-    {
-	super (owner, value);
-    }
+ 
+  /**
+   * Constructs a comment node associated with the specified
+   * document and holding the specified data.
+   *
+   * <p>This constructor should only be invoked by a Document as part of
+   * its createComment functionality, or through a subclass which is
+   * similarly used in a "Sub-DOM" style layer.
+   */
+  protected DomComment(Document owner, String value)
+  {
+    super(COMMENT_NODE, owner, value);
+  }
+  
+  /**
+   * <b>DOM L1</b>
+   * Returns the string "#comment".
+   */
+  final public String getNodeName()
+  {
+    return "#comment";
+  }
 
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the string "#comment".
-     */
-    final public String getNodeName ()
-    {
-	return "#comment";
-    }
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the constant COMMENT_NODE.
-     */
-    final public short getNodeType ()
-	{ return COMMENT_NODE; }
 }
+

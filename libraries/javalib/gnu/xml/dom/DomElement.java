@@ -38,338 +38,339 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.*;
-
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.TypeInfo;
 
 /**
  * <p> "Element" implementation.
  *
  * @author David Brownell 
  */
-public class DomElement extends DomNsNode implements Element
+public class DomElement
+  extends DomNsNode
+  implements Element
 {
-    // Attributes are VERY expensive in DOM, and not just for
-    // this implementation.  Avoid creating them.
-    private DomNamedNodeMap	attributes;
 
+  // Attributes are VERY expensive in DOM, and not just for
+  // this implementation.  Avoid creating them.
+  private DomNamedNodeMap attributes;
 
-    /**
-     * Constructs an Element node associated with the specified document.
-     *
-     * <p>This constructor should only be invoked by a Document as part
-     * of its createElement functionality, or through a subclass which is
-     * similarly used in a "Sub-DOM" style layer.
-     *
-     * @param owner The document with which this node is associated
-     * @param namespaceURI Combined with the local part of the name,
-     *	this is used to uniquely identify a type of element
-     * @param name Name of this element, which may include a prefix
-     */
-    protected DomElement (Document owner, String namespaceURI, String name)
-    {
-	super (owner, namespaceURI, name);
-    }
+  /**
+   * Constructs an Element node associated with the specified document.
+   *
+   * <p>This constructor should only be invoked by a Document as part
+   * of its createElement functionality, or through a subclass which is
+   * similarly used in a "Sub-DOM" style layer.
+   *
+   * @param owner The document with which this node is associated
+   * @param namespaceURI Combined with the local part of the name,
+   *	this is used to uniquely identify a type of element
+   * @param name Name of this element, which may include a prefix
+   */
+  protected DomElement(Document owner, String namespaceURI, String name)
+  {
+    super(ELEMENT_NODE, owner, namespaceURI, name);
+  }
 
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the element's attributes
-     */
-    public NamedNodeMap getAttributes ()
-    {
-	if (attributes == null)
-	    attributes = new DomNamedNodeMap (getOwnerDocument (), this);
-	return attributes;
-    }
-
-
-    /**
-     * <b>DOM L2></b>
-     * Returns true iff this is an element node with attributes.
-     */
-    public boolean hasAttributes ()
-	{ return attributes != null && attributes.getLength () != 0; }
-
-
-    /**
-     * Shallow clone of the element, except that associated
-     * attributes are (deep) cloned.
-     */
-    public Object clone ()
-    {
-	DomElement	retval = (DomElement) super.clone ();
-	DomNamedNodeMap	atts;
-
-	if (attributes == null)
-	    return retval;
-
-	atts = new DomNamedNodeMap (getOwnerDocument (), retval);
-	retval.attributes = atts;
-	for (int i = 0; i < attributes.getLength (); i++) {
-	    Node	temp = attributes.item (i);
-
-	    temp = temp.cloneNode (true);
-	    atts.setNamedItem (temp);
-	}
-	return retval;
-    }
-
-
-    /**
-     * Marks this element, its children, and its associated attributes as
-     * readonly.
-     */
-    public void makeReadonly ()
-    {
-	super.makeReadonly ();
-	if (attributes != null)
-	    attributes.makeReadonly ();
-    }
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the element name (same as getNodeName).
-     */
-    final public String getTagName ()
-    {
-	return getNodeName ();
-    }
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the constant ELEMENT_NODE.
-     */
-    final public short getNodeType ()
-	{ return ELEMENT_NODE; }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the value of the specified attribute, or an
-     * empty string.
-     */
-    public String getAttribute (String name)
-    {
-	Attr attr = getAttributeNode (name);
-
-	if (attr == null)
-	    return "";
-	else
-	    return attr.getValue ();
-    }
-
-
-    /**
-     * <b>DOM L2</b>
-     * Returns true if the element has an attribute with the
-     * specified name (specified or DTD defaulted).
-     */
-    public boolean hasAttribute (String name)
-    {
-	return getAttributeNode (name) != null;
-    }
-
-
-    /**
-     * <b>DOM L2</b>
-     * Returns true if the element has an attribute with the
-     * specified name (specified or DTD defaulted).
-     */
-    public boolean hasAttributeNS (String namespaceURI, String local)
-    {
-	return getAttributeNodeNS (namespaceURI, local) != null;
-    }
-
-
-    /**
-     * <b>DOM L2</b>
-     * Returns the value of the specified attribute, or an
-     * empty string.
-     */
-    public String getAttributeNS (String namespaceURI, String local)
-    {
-	Attr attr = getAttributeNodeNS (namespaceURI, local);
-
-	if (attr == null)
-	    return "";
-	else
-	    return attr.getValue ();
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the appropriate attribute node; the name is the
-     * nodeName property of the attribute.
-     */
-    public Attr getAttributeNode (String name)
-    {
-	if (attributes == null)
-	    return null;
-
-	return (Attr) attributes.getNamedItem (name);
-    }
-
-
-    /**
-     * <b>DOM L2</b>
-     * Returns the appropriate attribute node; the name combines
-     * the namespace name and the local part.
-     */
-    public Attr getAttributeNodeNS (String namespace, String localPart)
-    {
-	if (attributes == null)
-	    return null;
-
-	return (Attr) attributes.getNamedItemNS (namespace, localPart);
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Modifies an existing attribute to have the specified value,
-     * or creates a new one with that value.  The name used is the
-     * nodeName value. 
-     */
-    public void setAttribute (String name, String value)
-    {
-	Attr attr = getAttributeNode (name);
-
-	if (attr != null) {
-	    attr.setNodeValue (value);
-	    return;
-	}
-	attr = getOwnerDocument ().createAttribute (name);
-	attr.setNodeValue (value);
-	setAttributeNode (attr);
-    }
-
-
-    /**
-     * <b>DOM L2</b>
-     * Modifies an existing attribute to have the specified value,
-     * or creates a new one with that value.
-     */
-    public void setAttributeNS (String uri, String aname, String value)
-    {
-	if (("xmlns".equals (aname) || aname.startsWith ("xmlns:"))
-		&& !DomDocument.xmlnsURI.equals (uri))
-	    throw new DomEx (DomEx.NAMESPACE_ERR,
-		"setting xmlns attribute to illegal value", this, 0);
-
-	Attr attr = getAttributeNodeNS (uri, aname);
-
-	if (attr != null) {
-	    attr.setNodeValue (value);
-	    return;
-	}
-	attr = getOwnerDocument ().createAttributeNS (uri, aname);
-	attr.setNodeValue (value);
-	setAttributeNodeNS (attr);
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Stores the specified attribute, optionally overwriting any
-     * existing one with that name.
-     */
-    public Attr setAttributeNode (Attr attr)
-    {
-	return (Attr) getAttributes ().setNamedItem (attr);
-    }
-
-    /**
-     * <b>DOM L2</b>
-     * Stores the specified attribute, optionally overwriting any
-     * existing one with that name.
-     */
-    public Attr setAttributeNodeNS (Attr attr)
-    {
-	return (Attr) getAttributes ().setNamedItemNS (attr);
-    }
-
-    /**
-     * <b>DOM L1</b>
-     * Removes the appropriate attribute node.
-     * If there is no such node, this is (bizarrely enough) a NOP so you
-     * won't see exceptions if your code deletes non-existent attributes.
-     *
-     * <p>Note that since there is no portable way for DOM to record
-     * DTD information, default values for attributes will never be
-     * provided automatically.
-     */
-    public void removeAttribute (String name)
-    {
-	if (attributes == null)
-	    return;
-	    // throw new DomEx (DomEx.NOT_FOUND_ERR, name, null, 0);
-
-	try {
-	    attributes.removeNamedItem (name);
-	} catch (DomEx e) {
-	    if (e.code == DomEx.NOT_FOUND_ERR)
-		return;
-	}
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Removes the appropriate attribute node; the name is the
-     * nodeName property of the attribute.
-     *
-     * <p>Note that since there is no portable way for DOM to record
-     * DTD information, default values for attributes will never be
-     * provided automatically.
-     */
-    public Attr removeAttributeNode (Attr node)
-    {
-	if (attributes == null)
-	    throw new DomEx (DomEx.NOT_FOUND_ERR, null, node, 0);
-
-	return (Attr) attributes.removeNamedItem (node.getNodeName ());
-    }
-
-
-    /**
-     * <b>DOM L2</b>
-     * Removes the appropriate attribute node; the name combines
-     * the namespace name and the local part.
-     *
-     * <p>Note that since there is no portable way for DOM to record
-     * DTD information, default values for attributes will never be
-     * provided automatically.
-     */
-    public void removeAttributeNS (String namespace, String localPart)
-    {
-	if (attributes == null)
-	    throw new DomEx (DomEx.NOT_FOUND_ERR, localPart, null, 0);
-
-	attributes.removeNamedItemNS (namespace, localPart);
-    }
-
-    // DOM Level 3 methods
-
-    public TypeInfo getSchemaTypeInfo ()
+  /**
+   * <b>DOM L1</b>
+   * Returns the element's attributes
+   */
+  public NamedNodeMap getAttributes()
+  {
+    if (attributes == null)
       {
-        // TODO
-        return null;
+        attributes = new DomNamedNodeMap(this, Node.ATTRIBUTE_NODE);
+      }
+    return attributes;
+  }
+
+  /**
+   * <b>DOM L2></b>
+   * Returns true iff this is an element node with attributes.
+   */
+  public boolean hasAttributes()
+  {
+    return attributes != null && attributes.length != 0;
+  }
+
+  /**
+   * Shallow clone of the element, except that associated
+   * attributes are (deep) cloned.
+   */
+  public Object clone()
+  {
+    DomElement node = (DomElement) super.clone();
+
+    if (attributes != null)
+      {
+        node.attributes = new DomNamedNodeMap(node, Node.ATTRIBUTE_NODE);
+        for (DomNode ctx = attributes.first; ctx != null; ctx = ctx.next)
+          {
+            node.attributes.setNamedItemNS(ctx.cloneNode(true));
+          }
+      }
+    return node;
+  }
+
+  void setOwner(Document doc)
+  {
+    if (attributes != null)
+      {
+        for (DomNode ctx = attributes.first; ctx != null; ctx = ctx.next)
+          {
+            ctx.setOwner(doc);
+          }
+      }
+    super.setOwner(doc);
+  }
+
+  /**
+   * Marks this element, its children, and its associated attributes as
+   * readonly.
+   */
+  public void makeReadonly()
+  {
+    super.makeReadonly();
+    if (attributes != null)
+      {
+        attributes.makeReadonly();
+      }
+  }
+
+  /**
+   * <b>DOM L1</b>
+   * Returns the element name (same as getNodeName).
+   */
+  final public String getTagName()
+  {
+    return getNodeName();
+  }
+
+
+  /**
+   * <b>DOM L1</b>
+   * Returns the value of the specified attribute, or an
+   * empty string.
+   */
+  public String getAttribute(String name)
+  {
+    Attr attr = getAttributeNode(name);
+    return (attr == null) ? "" : attr.getValue();
+  }
+
+  /**
+   * <b>DOM L2</b>
+   * Returns true if the element has an attribute with the
+   * specified name (specified or DTD defaulted).
+   */
+  public boolean hasAttribute(String name)
+  {
+    // FIXME DTD defaulted case
+    return getAttributeNode(name) != null;
+  }
+
+  /**
+   * <b>DOM L2</b>
+   * Returns true if the element has an attribute with the
+   * specified name (specified or DTD defaulted).
+   */
+  public boolean hasAttributeNS(String namespaceURI, String local)
+  {
+    // FIXME DTD defaulted case
+    return getAttributeNodeNS(namespaceURI, local) != null;
+  }
+
+  /**
+   * <b>DOM L2</b>
+   * Returns the value of the specified attribute, or an
+   * empty string.
+   */
+  public String getAttributeNS(String namespaceURI, String local)
+  {
+    Attr attr = getAttributeNodeNS(namespaceURI, local);
+    return (attr == null) ? "" : attr.getValue();
+  }
+
+  /**
+   * <b>DOM L1</b>
+   * Returns the appropriate attribute node; the name is the
+   * nodeName property of the attribute.
+   */
+  public Attr getAttributeNode(String name)
+  {
+    return (attributes == null) ? null :
+      (Attr) attributes.getNamedItem(name);
+  }
+
+  /**
+   * <b>DOM L2</b>
+   * Returns the appropriate attribute node; the name combines
+   * the namespace name and the local part.
+   */
+  public Attr getAttributeNodeNS(String namespace, String localPart)
+  {
+    return (attributes == null) ? null :
+      (Attr) attributes.getNamedItemNS(namespace, localPart);
+  }
+
+  /**
+   * <b>DOM L1</b>
+   * Modifies an existing attribute to have the specified value,
+   * or creates a new one with that value.  The name used is the
+   * nodeName value. 
+   */
+  public void setAttribute(String name, String value)
+  {
+    Attr attr = getAttributeNode(name);
+    if (attr != null)
+      {
+        attr.setNodeValue(value);
+        ((DomAttr) attr).setSpecified(true);
+        return;
+      }
+    attr = owner.createAttribute(name);
+    attr.setNodeValue(value);
+    setAttributeNode(attr);
+  }
+
+  /**
+   * <b>DOM L2</b>
+   * Modifies an existing attribute to have the specified value,
+   * or creates a new one with that value.
+   */
+  public void setAttributeNS(String uri, String aname, String value)
+  {
+    if (("xmlns".equals (aname) || aname.startsWith ("xmlns:"))
+        && !DomDocument.xmlnsURI.equals (uri))
+      {
+        throw new DomEx(DomEx.NAMESPACE_ERR,
+                        "setting xmlns attribute to illegal value", this, 0);
       }
 
-    public void setIdAttribute (String name, boolean isId)
+    Attr attr = getAttributeNodeNS(uri, aname);
+    if (attr != null)
       {
-        // TODO
+        attr.setNodeValue(value);
+        return;
+      }
+    attr = owner.createAttributeNS(uri, aname);
+    attr.setNodeValue(value);
+    setAttributeNodeNS(attr);
+  }
+
+  /**
+   * <b>DOM L1</b>
+   * Stores the specified attribute, optionally overwriting any
+   * existing one with that name.
+   */
+  public Attr setAttributeNode(Attr attr)
+  {
+    return (Attr) getAttributes().setNamedItem(attr);
+  }
+
+  /**
+   * <b>DOM L2</b>
+   * Stores the specified attribute, optionally overwriting any
+   * existing one with that name.
+   */
+  public Attr setAttributeNodeNS(Attr attr)
+  {
+    return (Attr) getAttributes().setNamedItemNS(attr);
+  }
+
+  /**
+   * <b>DOM L1</b>
+   * Removes the appropriate attribute node.
+   * If there is no such node, this is (bizarrely enough) a NOP so you
+   * won't see exceptions if your code deletes non-existent attributes.
+   *
+   * <p>Note that since there is no portable way for DOM to record
+   * DTD information, default values for attributes will never be
+   * provided automatically.
+   */
+  public void removeAttribute(String name)
+  {
+    if (attributes == null)
+      {
+        return;
       }
 
-    public void setIdAttributeNode (Attr isAddr, boolean isId)
+    try
       {
-        // TODO
+        attributes.removeNamedItem(name);
       }
+    catch (DomEx e)
+      {
+        if (e.code != DomEx.NOT_FOUND_ERR)
+          {
+            throw e;
+          }
+      }
+  }
 
-    public void setIdAttributeNS (String namespaceURI, String localName,
-                                  boolean isId)
+  /**
+   * <b>DOM L1</b>
+   * Removes the appropriate attribute node; the name is the
+   * nodeName property of the attribute.
+   *
+   * <p>Note that since there is no portable way for DOM to record
+   * DTD information, default values for attributes will never be
+   * provided automatically.
+   */
+  public Attr removeAttributeNode(Attr node)
+  {
+    if (attributes == null)
       {
-        // TODO
+        throw new DomEx(DomEx.NOT_FOUND_ERR, null, node, 0);
       }
+    return (Attr) attributes.removeNamedItem(node.getNodeName());
+  }
+
+  /**
+   * <b>DOM L2</b>
+   * Removes the appropriate attribute node; the name combines
+   * the namespace name and the local part.
+   *
+   * <p>Note that since there is no portable way for DOM to record
+   * DTD information, default values for attributes will never be
+   * provided automatically.
+   */
+  public void removeAttributeNS(String namespace, String localPart)
+  {
+    if (attributes == null)
+      {
+        throw new DomEx(DomEx.NOT_FOUND_ERR, localPart, null, 0);
+      }
+    attributes.removeNamedItemNS (namespace, localPart);
+  }
+
+  // DOM Level 3 methods
+
+  public TypeInfo getSchemaTypeInfo()
+  {
+    // TODO
+    return null;
+  }
+
+  public void setIdAttribute(String name, boolean isId)
+  {
+    // TODO
+  }
+  
+  public void setIdAttributeNode(Attr isAddr, boolean isId)
+  {
+    // TODO
+  }
+
+  public void setIdAttributeNS(String namespaceURI, String localName,
+                               boolean isId)
+  {
+    // TODO
+  }
+  
 }

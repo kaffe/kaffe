@@ -45,8 +45,8 @@ import org.w3c.dom.Node;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class ArithmeticExpr
-extends Expr
+final class ArithmeticExpr
+  extends Expr
 {
 
   static final int ADD = 0;
@@ -59,63 +59,74 @@ extends Expr
   final Expr rhs;
   final int op;
 
-  ArithmeticExpr (Expr lhs, Expr rhs, int op)
+  ArithmeticExpr(Expr lhs, Expr rhs, int op)
   {
     this.lhs = lhs;
     this.rhs = rhs;
-    this.op = op;
-  }
-
-  public Object evaluate (Node context)
-  {
-    Object left = lhs.evaluate (context);
-    Object right = rhs.evaluate (context);
-
-    double ln = _number (context, left);
-    double rn = _number (context, right);
     switch (op)
       {
       case ADD:
-        return new Double (ln + rn);
       case SUBTRACT:
-        return new Double (ln - rn);
       case MULTIPLY:
-        return new Double (ln * rn);
       case DIVIDE:
-        return new Double (ln / rn);
       case MODULO:
-        return new Double (ln % rn);
+				this.op = op;
+				break;
       default:
-        throw new IllegalStateException ();
+        throw new IllegalArgumentException();
       }
   }
 
-  public String toString ()
+  public Object evaluate(Node context, int pos, int len)
   {
-    StringBuffer buf = new StringBuffer ();
-    buf.append (lhs);
-    buf.append (' ');
+    Object left = lhs.evaluate(context, pos, len);
+    Object right = rhs.evaluate(context, pos, len);
+
+    double ln = _number(context, left);
+    double rn = _number(context, right);
     switch (op)
       {
       case ADD:
-        buf.append ('+');
+        return new Double(ln + rn);
+      case SUBTRACT:
+        return new Double(ln - rn);
+      case MULTIPLY:
+        return new Double(ln * rn);
+      case DIVIDE:
+        return new Double(ln / rn);
+      case MODULO:
+        return new Double(ln % rn);
+      default:
+        throw new IllegalStateException();
+      }
+  }
+
+  public String toString()
+  {
+    StringBuffer buf = new StringBuffer();
+    buf.append(lhs);
+    buf.append(' ');
+    switch (op)
+      {
+      case ADD:
+        buf.append('+');
         break;
       case SUBTRACT:
-        buf.append ('-');
+        buf.append('-');
         break;
       case MULTIPLY:
-        buf.append ('*');
+        buf.append('*');
         break;
       case DIVIDE:
-        buf.append ("div");
+        buf.append("div");
         break;
       case MODULO:
-        buf.append ("mod");
+        buf.append("mod");
         break;
       }
-    buf.append (' ');
-    buf.append (rhs);
-    return buf.toString ();
+    buf.append(' ');
+    buf.append(rhs);
+    return buf.toString();
   }
   
 }

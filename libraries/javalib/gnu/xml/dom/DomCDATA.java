@@ -38,8 +38,8 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.*;
-
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.Document;
 
 /**
  * <p> "CDATASection" implementation.
@@ -55,43 +55,38 @@ import org.w3c.dom.*;
  *
  * @author David Brownell
  */
-public class DomCDATA extends DomText implements CDATASection
+public class DomCDATA
+  extends DomText
+  implements CDATASection
 {
-    /**
-     * Constructs a CDATA section node associated with the specified
-     * document and holding the specified data.
-     *
-     * <p>This constructor should only be invoked by a Document as part of
-     * its createCDATASection functionality, or through a subclass which is
-     * similarly used in a "Sub-DOM" style layer.
-     *
-     */
-    protected DomCDATA (Document owner, String value)
-    {
-	super (owner, value);
-    }
+  
+  /**
+   * Constructs a CDATA section node associated with the specified
+   * document and holding the specified data.
+   *
+   * <p>This constructor should only be invoked by a Document as part of
+   * its createCDATASection functionality, or through a subclass which is
+   * similarly used in a "Sub-DOM" style layer.
+   *
+   */
+  protected DomCDATA(Document owner, String value)
+  {
+    super(CDATA_SECTION_NODE, owner, value);
+  }
 
-    protected DomCDATA (Document owner, char buf [], int off, int len)
-    {
-	super (owner, buf, off, len);
-    }
+  protected DomCDATA (Document owner, char buf [], int off, int len)
+  {
+    super(CDATA_SECTION_NODE, owner, buf, off, len);
+  }
 
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the string "#cdata-section".
-     */
-    final public String getNodeName ()
-    {
+  /**
+   * <b>DOM L1</b>
+   * Returns the string "#cdata-section".
+   */
+  final public String getNodeName()
+  {
 	return "#cdata-section";
-    }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the constant CDATA_SECTION_NODE.
-     */
-    final public short getNodeType ()
-	{ return CDATA_SECTION_NODE; }
-    
+  }
+  
 }
+

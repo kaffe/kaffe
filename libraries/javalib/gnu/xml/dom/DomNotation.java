@@ -60,7 +60,9 @@ import org.w3c.dom.*;
  *
  * @author David Brownell 
  */
-public class DomNotation extends DomExtern implements Notation
+public class DomNotation
+  extends DomExtern
+  implements Notation
 {
     /**
      * Constructs a Notation node associated with the specified document,
@@ -77,21 +79,13 @@ public class DomNotation extends DomExtern implements Notation
      * @param publicId If non-null, provides the notation's PUBLIC identifier
      * @param systemId If non-null, rovides the notation's SYSTEM identifier
      */
-    protected DomNotation (
-	Document owner,
-	String name,
-	String publicId,
-	String systemId
-    )
+    protected DomNotation(Document owner,
+                          String name,
+                          String publicId,
+                          String systemId)
     {
-	super (owner, name, publicId, systemId);
+	super (NOTATION_NODE, owner, name, publicId, systemId);
 	makeReadonly ();
     }
 
-    /**
-     * <b>DOM L1</b>
-     * Returns the constant NOTATION_NODE.
-     */
-    final public short getNodeType ()
-	{ return NOTATION_NODE; }
 }

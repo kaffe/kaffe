@@ -45,19 +45,19 @@ import org.w3c.dom.Node;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class NodeTypeTest
+public final class NodeTypeTest
   extends Test
 {
 
   final short type;
   final String data;
 
-  public NodeTypeTest (short type)
+  public NodeTypeTest(short type)
   {
-    this (type, null);
+    this(type, null);
   }
 
-  public NodeTypeTest (short type, String data)
+  public NodeTypeTest(short type, String data)
   {
     this.type = type;
     this.data = data;
@@ -73,15 +73,15 @@ public class NodeTypeTest
     return data;
   }
 
-  boolean matches (Node node)
+  public boolean matches(Node node, int pos, int len)
   {
     if (type > 0)
       {
-        if (node.getNodeType () != type)
+        if (node.getNodeType() != type)
           {
             return false;
           }
-        if (data != null && !data.equals (node.getNodeValue ()))
+        if (data != null && !data.equals(node.getNodeValue()))
           {
             return false;
           }
@@ -89,7 +89,7 @@ public class NodeTypeTest
     return true;
   }
 
-  public String toString ()
+  public String toString()
   {
     switch (type)
       {
@@ -106,7 +106,7 @@ public class NodeTypeTest
           }
         return "processing-instruction()";
       default:
-        throw new IllegalStateException ();
+        throw new IllegalStateException();
       }
   }
   

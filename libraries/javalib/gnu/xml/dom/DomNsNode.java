@@ -47,7 +47,8 @@ import org.w3c.dom.*;
  *
  * @author David Brownell 
  */
-public abstract class DomNsNode extends DomNode
+public abstract class DomNsNode
+  extends DomNode
 {
     private String		name;		// changed by setPrefix
     private final String	namespace;
@@ -65,9 +66,9 @@ public abstract class DomNsNode extends DomNode
      * @param name Name of this node, which may include a prefix
      */
     // package private
-    DomNsNode (Document owner, String namespaceURI, String name)
+    DomNsNode (short nodeType, Document owner, String namespaceURI, String name)
     {
-	super (owner);
+	super (nodeType, owner);
 	this.name = name;
 	if ("".equals (namespaceURI))
 	    namespaceURI = null;
@@ -156,18 +157,15 @@ public abstract class DomNsNode extends DomNode
 
     /**
      * <b>DOM L2</b>
-     * Returns the local part of the node's name (after any colon),
-     * <em>or null</em> if the node name is not namespace scoped.
+     * Returns the local part of the node's name (after any colon).
      */
     public String getLocalName ()
     {
-	if (namespace == null)
-	    return null;
-
 	int index = name.indexOf (':');
 	if (index < 0)
 	    return name;
 	else
 	    return name.substring (index + 1);
     }
+    
 }

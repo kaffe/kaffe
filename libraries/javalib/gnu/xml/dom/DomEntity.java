@@ -38,8 +38,8 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.*;
-
+import org.w3c.dom.Document;
+import org.w3c.dom.Entity;
 
 /**
  * <p> "Entity" implementation.  This is a non-core DOM class, supporting the
@@ -69,76 +69,68 @@ import org.w3c.dom.*;
  *
  * @author David Brownell 
  */
-public class DomEntity extends DomExtern implements Entity
+public class DomEntity
+  extends DomExtern
+  implements Entity
 {
-    private String	notation;
+  
+  private String notation;
 
-
-    /**
-     * Constructs an Entity node associated with the specified document,
-     * with the specified descriptive data.
-     *
-     * <p>This constructor should only be invoked by a DomDoctype as part
-     * of its declareEntity functionality, or through a subclass which is
-     * similarly used in a "Sub-DOM" style layer.
-     *
-     * @param owner The document with which this entity is associated
-     * @param name Name of this entity
-     * @param publicId If non-null, provides the entity's PUBLIC identifier
-     * @param systemId Provides the entity's SYSTEM identifier (URI)
-     * @param notation If non-null, provides the unparsed entity's notation.
-     */
-    protected DomEntity (
-	Document owner,
-	String name,
-	String publicId,
-	String systemId,
-	String notation
-    )
-    {
-	super (owner, name, publicId, systemId);
-	this.notation = notation;
+  /**
+   * Constructs an Entity node associated with the specified document,
+   * with the specified descriptive data.
+   *
+   * <p>This constructor should only be invoked by a DomDoctype as part
+   * of its declareEntity functionality, or through a subclass which is
+   * similarly used in a "Sub-DOM" style layer.
+   *
+   * @param owner The document with which this entity is associated
+   * @param name Name of this entity
+   * @param publicId If non-null, provides the entity's PUBLIC identifier
+   * @param systemId Provides the entity's SYSTEM identifier (URI)
+   * @param notation If non-null, provides the unparsed entity's notation.
+   */
+  protected DomEntity(Document owner,
+                      String name,
+                      String publicId,
+                      String systemId,
+                      String notation)
+  {
+	super(ENTITY_NODE, owner, name, publicId, systemId);
+    this.notation = notation;
 
 	// NOTE:  if notation == null, this is a parsed entity
 	// which could reasonably be given child nodes ...
-	makeReadonly ();
-    }
+	makeReadonly();
+  }
 
+  /**
+   * <b>DOM L1</b>
+   * Returns the NOTATION identifier associated with this entity, if any.
+   */
+  final public String getNotationName()
+  {
+    return notation;
+  }
 
-    /**
-     * <b>DOM L1</b>
-     * Returns the NOTATION identifier associated with this entity, if any.
-     */
-    final public String getNotationName ()
-    {
-	return notation;
-    }
+  // DOM Level 3 methods
+  
+  public String getInputEncoding()
+  {
+    // TODO
+    return null;    
+  }
+  
+  public String getXmlEncoding()
+  {
+    // TODO
+    return null;
+  }
 
-    /**
-     * <b>DOM L1</b>
-     * Returns the constant ENTITY_NODE.
-     */
-    final public short getNodeType ()
-	{ return ENTITY_NODE; }
-
-    // DOM Level 3 methods
-    
-    public String getInputEncoding ()
-      {
-        // TODO
-        return null;    
-      }
-
-    public String getXmlEncoding ()
-      {
-        // TODO
-        return null;
-      }
-
-    public String getXmlVersion ()
-      {
-        // TODO
-        return null;
-      }
-
+  public String getXmlVersion()
+  {
+    // TODO
+    return null;
+  }
+  
 }

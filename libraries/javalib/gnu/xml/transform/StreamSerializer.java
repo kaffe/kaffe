@@ -1,5 +1,5 @@
 /*
- * DOMSerializer.java
+ * StreamSerializer.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -42,24 +42,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import org.w3c.dom.Attr;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
+import java.util.HashMap;
+import java.util.Map;
 import org.w3c.dom.DocumentType;
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 /**
- * Serializer for a DOM node.
+ * Serializes a DOM node to an output stream.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class DOMSerializer
+public class StreamSerializer
 {
   
   static final int SPACE = 0x20;
@@ -70,161 +64,187 @@ class DOMSerializer
   static final int KET = 0x3e; // >
   static final int EQ = 0x3d; // =
 
-  static void serialize(Node node, OutputStream out)
+  final String encoding;
+  final Map namespaces;
+
+  public StreamSerializer(String encoding)
+  {
+    this.encoding = (encoding != null) ? encoding : "UTF-8";
+    namespaces = new HashMap();
+  }
+
+  public void serialize(final Node node, final OutputStream out,
+                        final int mode)
     throws IOException
   {
-    final String charset = "UTF-8";
-    NodeList children;
-    int len;
-    String qName, value;
-    byte[] buf;
+    if (out == null)
+      {
+        throw new NullPointerException("no output stream");
+      }
+    String value;
+    Node children;
+    Node next = node.getNextSibling();
+    String uri = node.getNamespaceURI();
+    boolean defined = false;
     switch (node.getNodeType())
       {
       case Node.ATTRIBUTE_NODE:
-        Attr attr = (Attr) node;
-        // TODO namespaces
-        qName = attr.getNodeName();
-        buf = qName.getBytes(charset);
+        if (uri != null && !isDefined(uri))
+          {
+            String prefix = define(uri, node.getPrefix());
+            String nsname = (prefix == null) ? "xmlns" : "xmlns:" + prefix;
+            out.write(SPACE);
+            out.write(nsname.getBytes(encoding));
+            out.write(EQ);
+            String nsvalue = "'" + encode(uri) + "'";
+            out.write(nsvalue.getBytes(encoding));
+            defined = true;
+          }
         out.write(SPACE);
-        out.write(buf);
+        out.write(node.getNodeName().getBytes(encoding));
         out.write(EQ);
-        value = "'" + encode(attr.getValue()) + "'";
-        buf = value.getBytes(charset);
-        out.write(buf);
+        value = "'" + encode(node.getNodeValue()) + "'";
+        out.write(value.getBytes(encoding));
         break;
       case Node.ELEMENT_NODE:
-        Element element = (Element) node;
-        // TODO namespaces
-        qName = element.getNodeName();
-        buf = qName.getBytes(charset);
+        value = node.getNodeName();
         out.write(BRA);
-        out.write(buf);
-        NamedNodeMap attrs = element.getAttributes();
+        out.write(value.getBytes(encoding));
+        if (uri != null && !isDefined(uri))
+          {
+            String prefix = define(uri, node.getPrefix());
+            String nsname = (prefix == null) ? "xmlns" : "xmlns:" + prefix;
+            out.write(SPACE);
+            out.write(nsname.getBytes(encoding));
+            out.write(EQ);
+            String nsvalue = "'" + encode(uri) + "'";
+            out.write(nsvalue.getBytes(encoding));
+            defined = true;
+          }
+        NamedNodeMap attrs = node.getAttributes();
         if (attrs != null)
           {
-            len = attrs.getLength();
+            int len = attrs.getLength();
             for (int i = 0; i < len; i++)
               {
-                Node child = attrs.item(i);
-                serialize(child, out);
+                Node attr = attrs.item(i);
+                serialize(attr, out, mode);
               }
           }
-        children = element.getChildNodes();
-        len = 0;
-        if (children != null)
-          {
-            len = children.getLength();
-            if (len > 0)
-              {
-                out.write('>');
-                for (int i = 0; i < len; i++)
-                  {
-                    Node child = children.item(i);
-                    serialize(child, out);
-                  }
-              }
-          }
-        if (len == 0)
+        children = node.getFirstChild();
+        if (children == null)
           {
             out.write(SLASH);
             out.write(KET);
           }
         else
           {
+            out.write(KET);
+            serialize(children, out, mode);
             out.write(BRA);
             out.write(SLASH);
-            out.write(buf);
+            out.write(value.getBytes(encoding));
             out.write(KET);
           }
         break;
       case Node.TEXT_NODE:
-        Text text = (Text) node;
-        value = encode(text.getData());
-        buf = value.getBytes(charset);
-        out.write(buf);
+        out.write(encode(node.getNodeValue()).getBytes(encoding));
         break;
       case Node.CDATA_SECTION_NODE:
-        CDATASection cdata = (CDATASection) node;
-        value = "<![CDATA[" + cdata.getData() + "]]>";
-        buf = value.getBytes(charset);
-        out.write(buf);
+        value = "<![CDATA[" + node.getNodeValue() + "]]>";
+        out.write(value.getBytes(encoding));
         break;
       case Node.COMMENT_NODE:
-        Comment comment = (Comment) node;
-        value = "<!--" + encode(comment.getData()) + "-->";
-        buf = value.getBytes(charset);
-        out.write(buf);
+        value = "<!--" + encode(node.getNodeValue()) + "-->";
+        out.write(value.getBytes(encoding));
         break;
       case Node.DOCUMENT_NODE:
-        Document doc = (Document) node;
-        // TODO XML declaration?
-        children = doc.getChildNodes();
-        if (children != null)
-          {
-            len = children.getLength();
-            for (int i = 0; i < len; i++)
-              {
-                Node child = children.item(i);
-                serialize(child, out);
-              }
-          }
-        break;
       case Node.DOCUMENT_FRAGMENT_NODE:
-        DocumentFragment docFrag = (DocumentFragment) node;
-        children = docFrag.getChildNodes();
+        if (mode == Stylesheet.OUTPUT_XML)
+          {
+            out.write(BRA);
+            out.write(0x3f);
+            out.write("xml version='1.0'".getBytes(encoding));
+            if (!("UTF-8".equalsIgnoreCase(encoding)))
+              {
+                out.write(" encoding='".getBytes(encoding));
+                out.write(encoding.getBytes(encoding));
+                out.write(APOS);
+              }
+            out.write(0x3f);
+            out.write(KET);
+            out.write(0x0a);
+          }
+        children = node.getFirstChild();
         if (children != null)
           {
-            len = children.getLength();
-            for (int i = 0; i < len; i++)
-              {
-                Node child = children.item(i);
-                serialize(child, out);
-              }
+            serialize(children, out, mode);
           }
         break;
       case Node.DOCUMENT_TYPE_NODE:
         DocumentType doctype = (DocumentType) node;
         out.write(BRA);
         out.write(BANG);
-        qName = doctype.getNodeName();
-        buf = qName.getBytes(charset);
-        out.write(buf);
+        value = doctype.getNodeName();
+        out.write(value.getBytes(encoding));
         String publicId = doctype.getPublicId();
         if (publicId != null)
           {
-            qName = " PUBLIC ";
-            buf = qName.getBytes(charset);
-            out.write(buf);
+            out.write(" PUBLIC ".getBytes(encoding));
             out.write(APOS);
-            buf = publicId.getBytes(charset);
-            out.write(buf);
+            out.write(publicId.getBytes(encoding));
             out.write(APOS);
           }
         String systemId = doctype.getSystemId();
         if (systemId != null)
           {
-            qName = " SYSTEM ";
-            buf = qName.getBytes(charset);
-            out.write(buf);
+            out.write(" SYSTEM ".getBytes(encoding));
             out.write(APOS);
-            buf = systemId.getBytes(charset);
-            out.write(buf);
+            out.write(systemId.getBytes(encoding));
             out.write(APOS);
           }
         String internalSubset = doctype.getInternalSubset();
         if (internalSubset != null)
           {
-            buf = internalSubset.getBytes(charset);
-            out.write(buf);
+            out.write(internalSubset.getBytes(encoding));
           }
         out.write(KET);
+        out.write(0x0a);
         break;
       case Node.ENTITY_REFERENCE_NODE:
-        qName = "&" + node.getNodeValue() + ";";
-        buf = qName.getBytes(charset);
-        out.write(buf);
+        value = "&" + node.getNodeValue() + ";";
+        out.write(value.getBytes(encoding));
         break;
       }
+    if (defined)
+      {
+        undefine(uri);
+      }
+    if (next != null)
+      {
+        serialize(next, out, mode);
+      }
+  }
+
+  boolean isDefined(String uri)
+  {
+    return namespaces.containsKey(uri);
+  }
+
+  String define(String uri, String prefix)
+  {
+    while (namespaces.containsValue(prefix))
+      {
+        // Fabricate new prefix
+        prefix = prefix + "_";
+      }
+    namespaces.put(uri, prefix);
+    return prefix;
+  }
+
+  void undefine(String uri)
+  {
+    namespaces.remove(uri);
   }
 
   static String encode(String text)
@@ -282,13 +302,13 @@ class DOMSerializer
     return (buf == null) ? text : buf.toString();
   }
 
-  static String toString(Node node)
+  String toString(Node node)
   {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try
       {
-        serialize(node, out);
-        return new String(out.toByteArray(), "UTF-8");
+        serialize(node, out, Stylesheet.OUTPUT_XML);
+        return new String(out.toByteArray(), encoding);
       }
     catch (IOException e)
       {

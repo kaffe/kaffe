@@ -58,6 +58,120 @@ public class XPathParser
   XPathVariableResolver variableResolver;
   XPathFunctionResolver functionResolver;
 
+  Expr lookupFunction(String name, List args)
+  {
+    int arity = args.size();
+		if ("position".equals(name) && arity == 0)
+			{
+				return new PositionFunction();
+			}
+		else if ("last".equals(name) && arity == 0)
+			{
+				return new LastFunction();
+			}
+		else if ("string".equals(name) && (arity == 1 || arity == 0))
+			{
+				return new StringFunction(args);
+			}
+		else if ("number".equals(name) && (arity == 1 || arity == 0))
+			{
+				return new NumberFunction(args);
+			}
+		else if ("boolean".equals(name) && arity == 1)
+			{
+				return new BooleanFunction(args);
+			}
+		else if ("count".equals(name) && arity == 1)
+			{
+				return new CountFunction(args);
+			}
+		else if ("not".equals(name) && arity == 1)
+			{
+				return new NotFunction(args);
+			}
+		else if ("id".equals(name) && arity == 1)
+			{
+				return new IdFunction(args);
+			}
+		else if ("concat".equals(name) && arity > 1)
+			{
+				return new ConcatFunction(args);
+			}
+		else if ("true".equals(name) && arity == 0)
+			{
+				return new TrueFunction();
+			}
+		else if ("false".equals(name) && arity == 0)
+			{
+				return new FalseFunction();
+			}
+		else if ("name".equals(name) && (arity == 1 || arity == 0))
+			{
+				return new NameFunction(args);
+			}
+		else if ("local-name".equals(name) && (arity == 1 || arity == 0))
+			{
+				return new LocalNameFunction(args);
+			}
+		else if ("namespace-uri".equals(name) && (arity == 1 || arity == 0))
+			{
+				return new NamespaceUriFunction(args);
+			}
+		else if ("starts-with".equals(name) && arity == 2)
+			{
+				return new StartsWithFunction(args);
+			}
+		else if ("contains".equals(name) && arity == 2)
+			{
+				return new ContainsFunction(args);
+			}
+		else if ("string-length".equals(name) && (arity == 1 || arity == 0))
+			{
+				return new StringLengthFunction(args);
+			}
+		else if ("translate".equals(name) && arity == 3)
+			{
+				return new TranslateFunction(args);
+			}
+		else if ("normalize-space".equals(name) && (arity == 1 || arity == 0))
+			{
+				return new NormalizeSpaceFunction(args);
+			}
+		else if ("substring".equals(name) && (arity == 2 || arity == 3))
+			{
+				return new SubstringFunction(args);
+			}
+		else if ("substring-before".equals(name) && arity == 2)
+			{
+				return new SubstringBeforeFunction(args);
+			}
+		else if ("substring-after".equals(name) && arity == 2)
+			{
+				return new SubstringAfterFunction(args);
+			}
+		else if ("lang".equals(name) && arity == 1)
+			{
+				return new LangFunction(args);
+			}
+		else if ("sum".equals(name) && arity == 1)
+			{
+				return new SumFunction(args);
+			}
+		else if ("floor".equals(name) && arity == 1)
+			{
+				return new FloorFunction(args);
+			}
+		else if ("ceiling".equals(name) && arity == 1)
+			{
+				return new CeilingFunction(args);
+			}
+		else if ("round".equals(name) && arity == 1)
+			{
+				return new RoundFunction(args);
+			}
+    return new FunctionCall(functionResolver, name, args);
+  }
+
 %}
 
 %token LITERAL
@@ -128,19 +242,19 @@ location_path:
 absolute_location_path:
   SLASH
     {
-      $$ = new Root ();
+      $$ = new Root();
     }
   | SLASH relative_location_path
     {
-      $$ = new Step (new Root (), (Expr) $2);
+      $$ = new Step(new Root(), (Path) $2);
     }
   | DOUBLE_SLASH relative_location_path
     {
-      Test nt = new NodeTypeTest ((short) 0);
-      Selector s = new Selector (Selector.DESCENDANT_OR_SELF,
-                                 Collections.singletonList (nt));
-      Step step = new Step (s, (Expr) $2);
-      $$ = new Step (new Root (), step);
+      Test nt = new NodeTypeTest((short) 0);
+      Selector s = new Selector(Selector.DESCENDANT_OR_SELF,
+                                Collections.singletonList (nt));
+      Step step = new Step(s, (Path) $2);
+      $$ = new Step(new Root(), step);
     }
   ;
 
@@ -148,15 +262,15 @@ relative_location_path:
   step
   | relative_location_path SLASH step
     {
-      $$ = new Step ((Expr) $1, (Expr) $3);
+      $$ = new Step((Expr) $1, (Path) $3);
     }
   | relative_location_path DOUBLE_SLASH step
     {
-      Test nt = new NodeTypeTest ((short) 0);
-      Selector s = new Selector (Selector.DESCENDANT_OR_SELF,
-                                 Collections.singletonList (nt));
-      Step step = new Step (s, (Expr) $3);
-      $$ = new Step ((Expr) $1, step);
+      Test nt = new NodeTypeTest((short) 0);
+      Selector s = new Selector(Selector.DESCENDANT_OR_SELF,
+                                Collections.singletonList (nt));
+      Step step = new Step(s, (Path) $3);
+      $$ = new Step((Expr) $1, step);
     }
   ;
 
@@ -309,11 +423,11 @@ primary_expr:
 function_call:
   function_name LP RP
     {
-      $$ = new FunctionCall (functionResolver, (String) $1);
+      $$ = lookupFunction((String) $1, Collections.EMPTY_LIST);
     }
   | function_name LP argument_list RP
     {
-      $$ = new FunctionCall (functionResolver, (String) $1, (List) $3);
+      $$ = lookupFunction((String) $1, (List) $3);
     }
   ;
 
@@ -345,14 +459,14 @@ path_expr:
   | filter_expr
   | filter_expr SLASH relative_location_path
     {
-      $$ = new Step ((Expr) $1, (Expr) $3);
+      $$ = new Step ((Expr) $1, (Path) $3);
     }
   | filter_expr DOUBLE_SLASH relative_location_path
     {
       Test nt = new NodeTypeTest ((short) 0);
       Selector s = new Selector (Selector.DESCENDANT_OR_SELF,
                                  Collections.singletonList (nt));
-      Step step = new Step (s, (Expr) $3);
+      Step step = new Step (s, (Path) $3);
       $$ = new Step ((Expr) $1, step);
     }
   ;

@@ -39,10 +39,13 @@
 package gnu.xml.xpath;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.TreeSet;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
@@ -69,6 +72,9 @@ public abstract class Expr
   implements XPathExpression
 {
 
+  static final Comparator documentOrderComparator =
+    new DocumentOrderComparator();
+
   public Object evaluate(Object item, QName returnType)
     throws XPathExpressionException
   {
@@ -77,7 +83,7 @@ public abstract class Expr
     if (item instanceof Node)
       {
         context = (Node) item;
-        ret = evaluate(context);
+        ret = evaluate(context, 1, 1);
         if (XPathConstants.STRING == returnType &&
             !(ret instanceof String))
           {
@@ -163,49 +169,9 @@ public abstract class Expr
     return (String) evaluate(source, XPathConstants.STRING);
   }
 
-  public abstract Object evaluate (Node context);
+  public abstract Object evaluate(Node context, int pos, int len);
   
   /* -- 4.1 Node Set Functions -- */
-
-  /**
-   * The last function returns a number equal to the context size from the
-   * expression evaluation context.
-   */
-  static double _last (Node context)
-  {
-    Node parent = context.getParentNode ();
-    int ret = (parent == null || !parent.hasChildNodes ()) ? 0 :
-      parent.getChildNodes ().getLength ();
-    if (ret > 0)
-      {
-        ret++;
-      }
-    return (double) ret;
-  }
-
-  /**
-   * The position function returns a number equal to the context position
-   * from the expression evaluation context.
-   */
-  static double _position (Node context)
-  {
-    int count = 0;
-    while (context != null)
-      {
-        context = context.getPreviousSibling ();
-        count++;
-      }
-    return (double) count;
-  }
-
-  /**
-   * The count function returns the number of nodes in the argument
-   * node-set.
-   */
-  static double _count (Node context, Collection nodeSet)
-  {
-    return (double) nodeSet.size ();
-  }
 
   /**
    * The id function selects elements by their unique ID.
@@ -219,30 +185,30 @@ public abstract class Expr
    * same document as the context node that have a unique ID equal to any of
    * the tokens in the list.
    */
-  static Collection _id (Node context, Object object)
+  public static Collection _id(Node context, Object object)
   {
-    Set ret = new TreeSet ();
+    Set ret = new HashSet();
     if (object instanceof Collection)
       {
         Collection nodeSet = (Collection) object;
-        for (Iterator i = nodeSet.iterator (); i.hasNext (); )
+        for (Iterator i = nodeSet.iterator(); i.hasNext(); )
           {
-            String string = _string (context, i.next ());
-            ret.addAll (_id (context, string));
+            String string = _string(context, i.next());
+            ret.addAll(_id (context, string));
           }
       }
     else
       {
         Document doc = (context instanceof Document) ? (Document) context :
-          context.getOwnerDocument ();
-        String string = _string (context, object);
-        StringTokenizer st = new StringTokenizer (string, " \t\r\n");
-        while (st.hasMoreTokens ())
+          context.getOwnerDocument();
+        String string = _string(context, object);
+        StringTokenizer st = new StringTokenizer(string, " \t\r\n");
+        while (st.hasMoreTokens())
           {
-            Node element = doc.getElementById (st.nextToken ());
+            Node element = doc.getElementById(st.nextToken());
             if (element != null)
               {
-                ret.add (element);
+                ret.add(element);
               }
           }
       }
@@ -256,16 +222,14 @@ public abstract class Expr
    * an empty string is returned. If the argument is omitted, it defaults to
    * a node-set with the context node as its only member.
    */
-  static String _local_name (Node context, Collection nodeSet)
+  public static String _local_name(Node context, Collection nodeSet)
   {
-    if (nodeSet == null || nodeSet.size () == 0)
+    if (nodeSet == null || nodeSet.size() == 0)
       {
-        return context.getLocalName ();
+        return context.getLocalName();
       }
-    Document doc = (context instanceof Document) ? (Document) context :
-      context.getOwnerDocument ();
-    Node node = firstNode (doc, nodeSet);
-    return (node == null ) ? null : node.getLocalName ();
+    Node node = firstNode(nodeSet);
+    return node.getLocalName();
   }
 
   /**
@@ -276,16 +240,14 @@ public abstract class Expr
    * empty string is returned. If the argument is omitted, it defaults to a
    * node-set with the context node as its only member.
    */
-  static String _namespace_uri (Node context, Collection nodeSet)
+  public static String _namespace_uri(Node context, Collection nodeSet)
   {
-    if (nodeSet == null || nodeSet.size () == 0)
+    if (nodeSet == null || nodeSet.size() == 0)
       {
-        return context.getNamespaceURI ();
+        return context.getNamespaceURI();
       }
-    Document doc = (context instanceof Document) ? (Document) context :
-      context.getOwnerDocument ();
-    Node node = firstNode (doc, nodeSet);
-    return (node == null ) ? null : node.getNamespaceURI ();
+    Node node = firstNode(nodeSet);
+    return node.getNamespaceURI();
   }
   
   /**
@@ -304,40 +266,24 @@ public abstract class Expr
    * string is returned. If the argument it omitted, it defaults to a
    * node-set with the context node as its only member.
    */
-  static String _name (Node context, Collection nodeSet)
+  public static String _name(Node context, Collection nodeSet)
   {
-    if (nodeSet == null || nodeSet.size () == 0)
+    if (nodeSet == null || nodeSet.size() == 0)
       {
-        return context.getNodeName ();
+        return context.getNodeName();
       }
-    Document doc = (context instanceof Document) ? (Document) context :
-      context.getOwnerDocument ();
-    Node node = firstNode (doc, nodeSet);
-    return (node == null ) ? null : node.getNodeName ();
+    Node node = firstNode(nodeSet);
+    return node.getNodeName();
   }
 
-  /*
-   * Descend the node in document order and return the first matching node
-   * in the node-set.
+  /**
+   * Returns the first node in the set in document order.
    */
-  static Node firstNode (Node node, Collection nodeSet)
+  static Node firstNode(Collection nodeSet)
   {
-    if (nodeSet.contains (node))
-      {
-        return node;
-      }
-    NodeList children = node.getChildNodes ();
-    int len = children.getLength ();
-    for (int i = 0; i < len; i++)
-      {
-        Node child = children.item (i);
-        Node test = firstNode (child, nodeSet);
-        if (test != null)
-          {
-            return test;
-          }
-      }
-    return null;
+    List list = new ArrayList(nodeSet);
+    Collections.sort(list, documentOrderComparator);
+    return (Node) list.get(0);
   }
 
   /* -- 4.2 String Functions -- */
@@ -345,11 +291,11 @@ public abstract class Expr
   /**
    * Implementation of the XPath <code>string</code> function.
    */
-  static String _string (Node context, Object object)
+  public static String _string(Node context, Object object)
   {
     if (object == null)
       {
-        return stringValue (context);
+        return stringValue(context);
       }
     if (object instanceof String)
       {
@@ -357,189 +303,29 @@ public abstract class Expr
       }
     if (object instanceof Boolean)
       {
-        return object.toString ();
+        return object.toString();
       }
     if (object instanceof Double)
       {
         Double d = (Double) object;
-        String ret = d.toString ();
+        String ret = d.toString();
         if (ret.endsWith (".0"))
           { 
-            ret = ret.substring (0, ret.length () - 2);
+            ret = ret.substring(0, ret.length() - 2);
           }
         return ret;
       }
     if (object instanceof Collection)
       {
         Collection nodeSet = (Collection) object;
-        if (nodeSet.isEmpty ())
+        if (nodeSet.isEmpty())
           {
             return "";
           }
-        Document doc = (context instanceof Document) ? (Document) context : 
-          context.getOwnerDocument ();
-        Node node = firstNode (doc, nodeSet);
-        return (node == null) ? "" : stringValue (node);
+        Node node = firstNode(nodeSet);
+        return stringValue(node);
       }
-    return null;
-  }
-
-  /**
-   * The concat function returns the concatenation of its arguments.
-   */
-  static String _concat (Node context, String s1, String s2)
-  {
-    return s1 + s2;
-  }
-
-  /**
-   * The starts-with function returns true if the first argument string
-   * starts with the second argument string, and otherwise returns false.
-   */
-  static boolean _starts_with (Node context, String s1, String s2)
-  {
-    return s1.startsWith (s2);
-  }
-
-  /**
-   * The contains function returns true if the first argument string
-   * contains the second argument string, and otherwise returns false.
-   */
-  static boolean _contains (Node context, String s1, String s2)
-  {
-    return s1.indexOf (s2) != -1;
-  }
-
-  /**
-   * The substring-before function returns the substring of the first
-   * argument string that precedes the first occurrence of the second
-   * argument string in the first argument string, or the empty string if
-   * the first argument string does not contain the second argument string.
-   * For example, substring-before("1999/04/01","/") returns 1999.
-   */
-  static String _substring_before (Node context, String s1, String s2)
-  {
-    int index = s1.indexOf (s2);
-    return (index == -1) ? "" : s1.substring (0, index);
-  }
-
-  /**
-   * The substring-after function returns the substring of the first
-   * argument string that follows the first occurrence of the second
-   * argument string in the first argument string, or the empty string if
-   * the first argument string does not contain the second argument string.
-   * For example, substring-after("1999/04/01","/") returns 04/01, and
-   * substring-after("1999/04/01","19") returns 99/04/01.
-   */
-  static String _substring_after (Node context, String s1, String s2)
-  {
-    int index = s1.indexOf (s2);
-    return (index == -1) ? "" : s1.substring (index + s2.length ());
-  }
-
-  /**
-   * The substring function returns the substring of the first argument
-   * starting at the position specified in the second argument with length
-   * specified in the third argument. For example, substring("12345",2,3)
-   * returns "234". If the third argument is not specified, it returns the
-   * substring starting at the position specified in the second argument and
-   * continuing to the end of the string. For example, substring("12345",2)
-   * returns "2345".
-   */
-  static String _substring (Node context, String s1, double pos, double len)
-  {
-    int ipos = Math.max (((int) Math.round (pos)) - 1, 0);
-    int ilen = Math.min (((int) Math.round (len)) - 1, s1.length ());
-    return s1.substring (ipos, ilen);
-  }
-
-  /**
-   * The string-length returns the number of characters in the string.
-   * If the argument is omitted, it defaults to the context
-   * node converted to a string, in other words the string-value of the
-   * context node.
-   */
-  static double _string_length (Node context, String string)
-  {
-    if (string == null)
-      {
-        string = stringValue (context);
-      }
-    return (double) string.length ();
-  }
-
-  /**
-   * The normalize-space function returns the argument string with
-   * whitespace normalized by stripping leading and trailing whitespace and
-   * replacing sequences of whitespace characters by a single space.
-   * Whitespace characters are the same as those allowed by the S production
-   * in XML. If the argument is omitted, it defaults to the context node
-   * converted to a string, in other words the string-value of the context
-   * node.
-   */
-  static String _normalize_space (Node context, String string)
-  {
-    if (string == null)
-      {
-        string = stringValue (context);
-      }
-    StringTokenizer st = new StringTokenizer (string, " \t\r\n");
-    StringBuffer buf = new StringBuffer ();
-    if (st.hasMoreTokens ())
-      {
-        buf.append (st.nextToken ());
-        while (st.hasMoreTokens ())
-          {
-            buf.append (' ');
-            buf.append (st.nextToken ());
-          }
-      }
-    return buf.toString ();
-  }
-
-  /**
-   * The translate function returns the first argument string with
-   * occurrences of characters in the second argument string replaced by the
-   * character at the corresponding position in the third argument string.
-   * For example, translate("bar","abc","ABC") returns the string BAr. If
-   * there is a character in the second argument string with no character at
-   * a corresponding position in the third argument string (because the
-   * second argument string is longer than the third argument string), then
-   * occurrences of that character in the first argument string are removed.
-   * For example, translate("--aaa--","abc-","ABC") returns "AAA". If a
-   * character occurs more than once in the second argument string, then the
-   * first occurrence determines the replacement character. If the third
-   * argument string is longer than the second argument string, then excess
-   * characters are ignored.
-   */
-  static String _translate (Node context, String string, String search,
-                            String replace)
-  {
-    StringBuffer buf = new StringBuffer ();
-    int l1 = string.length ();
-    int l2 = search.length ();
-    int l3 = replace.length ();
-    for (int i = 0; i < l1; i++)
-      {
-        char c = string.charAt (i);
-        boolean replaced = false;
-        for (int j = 0; j < l2; j++)
-          {
-            if (c == search.charAt (j))
-              {
-                if (j < l3)
-                  {
-                    buf.append (replace.charAt (j));
-                  }
-                replaced = true;
-              }
-          }
-        if (!replaced)
-          {
-            buf.append (c);
-          }
-      }
-    return new String (buf);
+    throw new IllegalArgumentException(object.toString());
   }
 
   /* -- 4.3 Boolean Functions -- */
@@ -547,85 +333,25 @@ public abstract class Expr
   /**
    * Implementation of the XPath <code>boolean</code> function.
    */
-  static boolean _boolean (Node context, Object object)
+  public static boolean _boolean(Node context, Object object)
   {
     if (object instanceof Boolean)
       {
-        return ((Boolean) object).booleanValue ();
+        return ((Boolean) object).booleanValue();
       }
     if (object instanceof Double)
       {
-        return ((Double) object).doubleValue () != 0.0;
+        return ((Double) object).doubleValue() != 0.0;
       }
     if (object instanceof String)
       {
-        return ((String) object).length () != 0;
+        return ((String) object).length() != 0;
       }
     if (object instanceof Collection)
       {
-        return ((Collection) object).size () != 0;
+        return ((Collection) object).size() != 0;
       }
     return false; // TODO user defined types
-  }
-
-  /**
-   * The not function returns true if its argument is false, and false
-   * otherwise.
-   */
-  static boolean _not (Node context, boolean b)
-  {
-    return !b;
-  }
-
-  /**
-   * The true function returns true.
-   */
-  static boolean _true (Node context)
-  {
-    return true;
-  }
-
-  /**
-   * The false function returns false.
-   */
-  static boolean _false (Node context)
-  {
-    return false;
-  }
-
-  /**
-   * The lang function returns true or false depending on whether the
-   * language of the context node as specified by xml:lang attributes is the
-   * same as or is a sublanguage of the language specified by the argument
-   * string. The language of the context node is determined by the value of
-   * the xml:lang attribute on the context node, or, if the context node has
-   * no xml:lang attribute, by the value of the xml:lang attribute on the
-   * nearest ancestor of the context node that has an xml:lang attribute. If
-   * there is no such attribute, then lang returns false. If there is such
-   * an attribute, then lang returns true if the attribute value is equal to
-   * the argument ignoring case, or if there is some suffix starting with -
-   * such that the attribute value is equal to the argument ignoring that
-   * suffix of the attribute value and ignoring case.
-   */
-  static boolean _lang (Node context, String lang)
-  {
-    String clang = getLang (context);
-    while (clang == null && context != null)
-      {
-        context = context.getParentNode ();
-        clang = getLang (context);
-      }
-    return (clang == null) ? false :
-      clang.toLowerCase ().startsWith (lang.toLowerCase ());
-  }
-
-  static String getLang (Node node)
-  {
-    if (node instanceof Element)
-      {
-        return ((Element) node).getAttribute ("xml:lang");
-      }
-    return null;
   }
 
   /* -- 4.4 Number Functions -- */
@@ -633,31 +359,31 @@ public abstract class Expr
   /**
    * Implementation of the XPath <code>number</code> function.
    */
-  static double _number (Node context, Object object)
+  public static double _number(Node context, Object object)
   {
     if (object == null)
       {
-        object = Collections.singleton (context);
+        object = Collections.singleton(context);
       }
     if (object instanceof Double)
       {
-        return ((Double) object).doubleValue ();
+        return ((Double) object).doubleValue();
       }
     if (object instanceof Boolean)
       {
-        return ((Boolean) object).booleanValue () ? 1.0 : 0.0;
+        return ((Boolean) object).booleanValue() ? 1.0 : 0.0;
       }
     if (object instanceof Collection)
       {
         // Convert node-set to string
-        object = stringValue ((Collection) object);
+        object = stringValue((Collection) object);
       }
     if (object instanceof String)
       {
-        String string = ((String) object).trim ();
+        String string = ((String) object).trim();
         try
           {
-            return Double.parseDouble (string);
+            return Double.parseDouble(string);
           }
         catch (NumberFormatException e)
           {
@@ -668,99 +394,50 @@ public abstract class Expr
   }
 
   /**
-   * The sum function returns the sum, for each node in the argument
-   * node-set, of the result of converting the string-values of the node to
-   * a number.
-   */
-  static double _sum (Node context, Collection nodeSet)
-  {
-    double ret = 0.0;
-    for (Iterator i = nodeSet.iterator (); i.hasNext (); )
-      {
-        ret += _number (context, stringValue ((Node) i.next ()));
-      }
-    return ret;
-  }
-
-  /**
-   * The floor function returns the largest (closest to positive infinity)
-   * number that is not greater than the argument and that is an integer.
-   */
-  static double _floor (Node context, double number)
-  {
-    return Math.floor (number);
-  }
-
-  /**
-   * The ceiling function returns the smallest (closest to negative
-   * infinity) number that is not less than the argument and that is an
-   * integer.
-   */
-  static double _ceiling (Node context, double number)
-  {
-    return Math.ceil (number);
-  }
-
-  /**
-   * The round function returns the number that is closest to the argument
-   * and that is an integer. If there are two such numbers, then the one
-   * that is closest to positive infinity is returned. If the argument is
-   * NaN, then NaN is returned. If the argument is positive infinity, then
-   * positive infinity is returned. If the argument is negative infinity,
-   * then negative infinity is returned. If the argument is positive zero,
-   * then positive zero is returned. If the argument is negative zero, then
-   * negative zero is returned. If the argument is less than zero, but
-   * greater than or equal to -0.5, then negative zero is returned.
-   */
-  static double _round (Node context, double number)
-  {
-    return (double) Math.round (number);
-  }
-
-  /**
    * Computes the XPath string-value of the specified node-set.
    */
-  static String stringValue (Collection nodeSet)
+  public static String stringValue(Collection nodeSet)
   {
-    StringBuffer buf = new StringBuffer ();
-    for (Iterator i = nodeSet.iterator (); i.hasNext (); )
+    StringBuffer buf = new StringBuffer();
+    for (Iterator i = nodeSet.iterator(); i.hasNext(); )
       {
-        buf.append (stringValue ((Node) i.next ()));
+        buf.append(stringValue((Node) i.next()));
       }
-    return buf.toString ();
+    return buf.toString();
   }
 
   /**
    * Computes the XPath string-value of the specified node.
    */
-  static String stringValue (Node node)
+  public static String stringValue(Node node)
   {
-    return stringValue (node, false);
+    return stringValue(node, false);
   }
   
-  static String stringValue (Node node, boolean elementMode)
+  static String stringValue(Node node, boolean elementMode)
   {
-    switch (node.getNodeType ())
+    switch (node.getNodeType())
       {
       case Node.DOCUMENT_NODE: // 5.1 Root Node
+      case Node.DOCUMENT_FRAGMENT_NODE:
       case Node.ELEMENT_NODE: // 5.2 Element Nodes
-        StringBuffer buf = new StringBuffer ();
-        NodeList children = node.getChildNodes ();
-        int len = children.getLength ();
+        StringBuffer buf = new StringBuffer();
+        NodeList children = node.getChildNodes();
+        int len = children.getLength();
         for (int i = 0; i < len; i++)
           {
-            buf.append (stringValue (children.item (i), true));
+            buf.append(stringValue(children.item(i), true));
           }
-        return buf.toString ();
+        return buf.toString();
       case Node.TEXT_NODE: // 5.7 Text Nodes
       case Node.CDATA_SECTION_NODE:
-        return node.getNodeValue ();
+        return node.getNodeValue();
       case Node.ATTRIBUTE_NODE: // 5.3 Attribute Nodes
       case Node.PROCESSING_INSTRUCTION_NODE: // 5.5 Processing Instruction
       case Node.COMMENT_NODE: // 5.6 Comment Nodes
         if (!elementMode)
           {
-            return node.getNodeValue ();
+            return node.getNodeValue();
           }
       default:
         return "";

@@ -41,24 +41,30 @@ package gnu.xml.xpath;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathVariableResolver;
 import org.w3c.dom.Node;
+import gnu.xml.transform.Bindings;
 
-class VariableReference
+public class VariableReference
   extends Expr
 {
 
   final XPathVariableResolver resolver;
   final String name;
 
-  VariableReference(XPathVariableResolver resolver, String name)
+  public VariableReference(XPathVariableResolver resolver, String name)
   {
     this.resolver = resolver;
     this.name = name;
   }
 
-  public Object evaluate(Node node)
+  public Object evaluate(Node context, int pos, int len)
   {
     if (resolver != null)
       {
+        if (resolver instanceof Bindings)
+          {
+            // Needs context to operate properly
+            return ((Bindings) resolver).get(name, context);
+          }
         QName qname = QName.valueOf(name);
         return resolver.resolveVariable(qname);
       }
@@ -67,7 +73,7 @@ class VariableReference
 
   public String toString()
   {
-    return "#" + name;
+    return "$" + name;
   }
   
 }

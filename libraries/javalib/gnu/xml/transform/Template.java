@@ -38,12 +38,14 @@
 
 package gnu.xml.transform;
 
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+import java.util.LinkedList;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -71,32 +73,39 @@ class Template
 
   static final double DEFAULT_PRIORITY = 0.5d;
 
-  final XPathImpl xpath;
-  final Expr expr;
-  final Collection nodeset;
+  final Stylesheet stylesheet;
+  final String name;
+  final Expr match;
+  final TemplateNode node;
   final double priority;
   final int precedence;
   final String mode;
 
-  Template(XPathImpl xpath, String expression, Collection nodeset,
-           int precedence, double priority, String mode)
-    throws XPathExpressionException
+  static Expr patternToXPath(Expr pattern)
   {
-    this.xpath = xpath;
-    Expr e = (Expr) xpath.compile(expression);
-    if (e instanceof Selector || e instanceof Step)
+    /*
+    if (pattern instanceof Selector || pattern instanceof Step)
       {
-        Expr root = new Root();
         Test nt = new NodeTypeTest((short) 0);
         Selector s = new Selector(Selector.DESCENDANT_OR_SELF,
                                   Collections.singletonList(nt));
-        e = new Step(s, e);
-        e = new Step(root, e);
+        pattern = new Step(s, pattern);
+        pattern = new Step(new Root(), pattern);
       }
-    expr = e;
+      */
+    return pattern;
+  }
+
+  Template(Stylesheet stylesheet, String name, Expr match, Node source,
+           int precedence, double priority, String mode)
+    throws TransformerConfigurationException
+  {
+    this.stylesheet = stylesheet;
+    this.name = name;
+    this.match = patternToXPath(match);
     // adjust priority if necessary
     // see XSLT section 5.5
-    Test test = getNodeTest(expr);
+    Test test = getNodeTest(match);
     if (test != null)
       {
         if (test instanceof NameTest)
@@ -127,7 +136,7 @@ class Template
               }
           }
       }
-    this.nodeset = nodeset;
+    node = parse(source);
     this.precedence = precedence;
     this.priority = priority;
     this.mode = mode;
@@ -152,7 +161,7 @@ class Template
     return 0;
   }
 
-  Test getNodeTest(XPathExpression expr)
+  Test getNodeTest(Expr expr)
   {
     if (expr instanceof Selector)
       {
@@ -166,159 +175,496 @@ class Template
     return null;
   }
 
-  boolean matches(Node context, Node node, String mode)
+  boolean matches(String mode, Node context, Node node, int pos, int len)
   {
     if (mode != null && !mode.equals(this.mode))
       {
         return false;
       }
-    try
+    if (match == null)
       {
-        Collection ns =
-          (Collection) expr.evaluate(context, XPathConstants.NODESET);
-        if (ns == null)
-          {
-            return false;
-          }
-        return ns.contains(node);
-      }
-    catch (XPathExpressionException e)
-      {
-        e.printStackTrace();
         return false;
       }
+    Object ret = match.evaluate(context, pos, len);
+    if (ret != null && ret instanceof Collection)
+      {
+        Collection ns = (Collection) ret;
+        return ns.contains(node);
+      }
+    return false;
   }
 
   /**
    * @param stylesheet the stylesheet
-   * @param context the context node in the source document
    * @param parent the parent of result nodes
+   * @param context the context node in the source document
+   * @param pos the context position
+   * @param len the context size
    * @param nextSibling if non-null, add result nodes before this node
    */
-  void apply(Stylesheet stylesheet, Node context, String mode,
+  void apply(Stylesheet stylesheet, String mode,
+             Node context, int pos, int len,
              Node parent, Node nextSibling)
     throws TransformerException
   {
-    if (nodeset == null)
+    if (node != null)
       {
-        // Identity transform
-        applyNode(context, stylesheet, context, mode, parent, nextSibling);
-        return;
-      }
-    for (Iterator i = nodeset.iterator(); i.hasNext(); )
-      {
-        applyNode((Node) i.next(), stylesheet, context, mode,
-                  parent, nextSibling);
+        node.apply(stylesheet, mode,
+                   context, pos, len,
+                   parent, nextSibling);
       }
   }
 
-  private void applyNode(Node node, Stylesheet stylesheet,
-                         Node context, String mode,
-                         Node parent, Node nextSibling)
-    throws TransformerException
+  TemplateNode parse(Node source)
+    throws TransformerConfigurationException
   {
-    String namespaceUri = node.getNamespaceURI();
-    if (Stylesheet.XSL_NS.equals(namespaceUri) &&
-        Node.ELEMENT_NODE == node.getNodeType())
+    // Hack to associate the document function with its declaring node
+    stylesheet.current = source;
+    if (source == null)
       {
-        try
+        return null;
+      }
+    Node children = source.getFirstChild();
+    Node next = source.getNextSibling();
+    
+    try
+      {
+        String namespaceUri = source.getNamespaceURI();
+        if (Stylesheet.XSL_NS.equals(namespaceUri) &&
+            Node.ELEMENT_NODE == source.getNodeType())
           {
-            String name = node.getLocalName();
+            Element element = (Element) source;
+            String name = element.getLocalName();
             if ("apply-templates".equals(name))
               {
-                String select = ((Element) node).getAttribute("select");
-                stylesheet.applyTemplates(context, select, mode,
-                                          parent, nextSibling);
+                String mode = element.getAttribute("mode");
+                String s = element.getAttribute("select");
+                if (s == null || s.length() == 0)
+                  {
+                    s = "child::node()";
+                  }
+                Expr select = (Expr) stylesheet.xpath.compile(s);
+                List sortKeys = parseSortKeys(children);
+                List withParams = parseWithParams(children);
+                return new ApplyTemplatesNode(null, parse(next),
+                                              select, mode,
+                                              sortKeys, withParams);
+              }
+            else if ("call-template".equals(name))
+              {
+                String tname = element.getAttribute("name");
+                List withParams = parseWithParams(children);
+                return new CallTemplateNode(null, parse(next), tname,
+                                            withParams);
               }
             else if ("value-of".equals(name))
               {
-                String select = ((Element) node).getAttribute("select");
-                Object ret = xpath.evaluate(select, context);
-                //System.out.println("apply: value-of returned "+ret);
-                if (ret instanceof Collection)
+                String s = element.getAttribute("select");
+                if (s == null || s.length() == 0)
                   {
-                    Collection ns = (Collection) ret;
-                    for (Iterator i = ns.iterator(); i.hasNext(); )
-                      {
-                        Node child = (Node) i.next();
-                        if (nextSibling != null)
-                          {
-                            parent.insertBefore(child, nextSibling);
-                          }
-                        else
-                          {
-                            parent.appendChild(child);
-                          }
-                      }
+                    String msg = "select attribute is required on value-of";
+                    DOMSourceLocator l = new DOMSourceLocator(element);
+                    throw new TransformerConfigurationException(msg, l);
                   }
-                else if (ret != null)
+                Expr select = (Expr) stylesheet.xpath.compile(s);
+                String doe = element.getAttribute("disable-output-escaping");
+                boolean d = "yes".equals(doe);
+                return new ValueOfNode(null, parse(next), select, d);
+              }
+            else if ("for-each".equals(name))
+              {
+                String s = element.getAttribute("select");
+                if (s == null || s.length() == 0)
                   {
-                    String text = ret.toString(); // FIXME number formatting
-                    Document doc = (parent instanceof Document) ?
-                      (Document) parent : parent.getOwnerDocument();
-                    Text textNode = doc.createTextNode(text);
-                    if (nextSibling != null)
+                    String msg = "select attribute is required on for-each";
+                    DOMSourceLocator l = new DOMSourceLocator(element);
+                    throw new TransformerConfigurationException(msg, l);
+                  }
+                Expr select = (Expr) stylesheet.xpath.compile(s);
+                List sortKeys = parseSortKeys(children);
+                return new ForEachNode(parse(children), parse(next), select, sortKeys);
+              }
+            else if ("sort".equals(name))
+              {
+                return new DummyNode(null, parse(next));
+              }
+            else if ("if".equals(name))
+              {
+                String t = element.getAttribute("test");
+                if (t == null || t.length() == 0)
+                  {
+                    String msg = "test attribute is required on if";
+                    DOMSourceLocator l = new DOMSourceLocator(element);
+                    throw new TransformerConfigurationException(msg, l);
+                  }
+                Expr test = (Expr) stylesheet.xpath.compile(t);
+                return new IfNode(parse(children), parse(next), test);
+              }
+            else if ("choose".equals(name))
+              {
+                return new ChooseNode(parse(children), parse(next));
+              }
+            else if ("when".equals(name))
+              {
+                String t = element.getAttribute("test");
+                if (t == null || t.length() == 0)
+                  {
+                    String msg = "test attribute is required on when";
+                    DOMSourceLocator l = new DOMSourceLocator(element);
+                    throw new TransformerConfigurationException(msg, l);
+                  }
+                Expr test = (Expr) stylesheet.xpath.compile(t);
+                return new WhenNode(parse(children), parse(next), test);
+              }
+            else if ("otherwise".equals(name))
+              {
+                return new OtherwiseNode(parse(children), parse(next));
+              }
+            else if ("element".equals(name))
+              {
+                String ename = element.getAttribute("name");
+                String ns = element.getAttribute("namespace");
+                String uas = element.getAttribute("used-attribute-sets");
+                // TODO uas
+                return new ElementNode(parse(children), parse(next),
+                                       ename, ns);
+              }
+            else if ("attribute".equals(name))
+              {
+                String aname = element.getAttribute("name");
+                String ns = element.getAttribute("namespace");
+                return new AttributeNode(parse(children), parse(next),
+                                         aname, ns);
+              }
+            else if ("text".equals(name))
+              {
+                String doe = element.getAttribute("disable-output-escaping");
+                boolean d = "yes".equals(doe);
+                return new TextNode(parse(children), parse(next), d);
+              }
+            else if ("copy".equals(name))
+              {
+                return new CopyNode(parse(children), parse(next));
+              }
+            else if ("processing-instruction".equals(name))
+              {
+                String piname = element.getAttribute("name");
+                return new ProcessingInstructionNode(parse(children),
+                                                     parse(next), piname);
+              }
+            else if ("comment".equals(name))
+              {
+                return new CommentNode(parse(children), parse(next));
+              }
+            else if ("number".equals(name))
+              {
+                String v = element.getAttribute("value");
+                String format = element.getAttribute("format");
+                if (format == null || format.length() == 0)
+                  {
+                    format = "1";
+                  }
+                String lang = element.getAttribute("lang");
+                if (lang != null && lang.length() == 0)
+                  {
+                    lang = null;
+                  }
+                String lv = element.getAttribute("letter-value");
+                int letterValue = "traditional".equals(lv) ?
+                  AbstractNumberNode.TRADITIONAL :
+                  AbstractNumberNode.ALPHABETIC;
+                String gs = element.getAttribute("grouping-separator");
+                String gz = element.getAttribute("grouping-size");
+                int gz2 = Integer.parseInt(gz);
+                if (v != null && v.length() > 0)
+                  {
+                    Expr value = (Expr) stylesheet.xpath.compile(v);
+                    return new NumberNode(parse(children), parse(next),
+                                          value, format, lang,
+                                          letterValue, gs, gz2);
+                  }
+                else
+                  {
+                    String l = element.getAttribute("level");
+                    int level =
+                      "multiple".equals(l) ? NodeNumberNode.MULTIPLE :
+                      "any".equals(l) ? NodeNumberNode.ANY :
+                      NodeNumberNode.SINGLE;
+                    String c = element.getAttribute("count");
+                    if (c != null && c.length() > 0)
                       {
-                        parent.insertBefore(textNode, nextSibling);
+                        c = "countable()";
                       }
-                    else
+                    Expr count = (Expr) stylesheet.xpath.compile(c);
+                    String f = element.getAttribute("from");
+                    if (f == null || f.length() > 0)
                       {
-                        parent.appendChild(textNode);
+                        f = ".";
                       }
+                    Expr from = (Expr) stylesheet.xpath.compile(f);
+                    return new NodeNumberNode(parse(children), parse(next),
+                                              level, count, from,
+                                              format, lang,
+                                              letterValue, gs, gz2);
                   }
               }
-        // TODO if
-        // TODO choose
-        // TODO element
-        // TODO attribute
+            else if ("param".equals(name) ||
+                     "variable".equals(name))
+              {
+                boolean global = "variable".equals(name);
+                TemplateNode content = parse(children);
+                String paramName = element.getAttribute("name");
+                if (paramName.length() == 0)
+                  {
+                    paramName = null;
+                  }
+                String select = element.getAttribute("select");
+                if (select != null && select.length() > 0)
+                  {
+                    if (content != null)
+                      {
+                        String msg = "parameter '" + paramName +
+                          "' has both select and content";
+                        DOMSourceLocator l = new DOMSourceLocator(element);
+                        throw new TransformerConfigurationException(msg, l);
+                      }
+                    Expr expr = (Expr) stylesheet.xpath.compile(select);
+                    return new ParameterNode(content, parse(next),
+                                             paramName, expr, global);
+                  }
+                else
+                  {
+                    return new ParameterNode(content, parse(next),
+                                             paramName, null, global);
+                  }
+              }
+            else if ("copy-of".equals(name))
+              {
+                String s = element.getAttribute("select");
+                if (s == null || s.length() == 0)
+                  {
+                    String msg = "select attribute is required on copy-of";
+                    DOMSourceLocator l = new DOMSourceLocator(element);
+                    throw new TransformerConfigurationException(msg, l);
+                  }
+                Expr select = (Expr) stylesheet.xpath.compile(s);
+                return new CopyOfNode(parse(children), parse(next), select);
+              }
           }
-        catch (XPathExpressionException e)
+        switch (source.getNodeType())
           {
-            throw new TransformerException(e.getMessage(),
-                                           new DOMSourceLocator(node),
-                                           e);
-          }
-      }
-    else
-      {
-        // Insert result node
-        Node result = node.cloneNode(false);
-        Document doc = (parent instanceof Document) ? (Document) parent :
-          parent.getOwnerDocument();
-        result = doc.adoptNode(result);
-        if (nextSibling != null)
-          {
-            parent.insertBefore(result, nextSibling);
-          }
-        else
-          {
-            parent.appendChild(result);
-          }
-        // Copy attributes
-        NamedNodeMap attrs = node.getAttributes();
-        if (attrs != null)
-          {
-            NamedNodeMap resultAttrs = result.getAttributes();
+          case Node.TEXT_NODE:
+            // Determine whether to strip whitespace
+            Text text = (Text) source;
+            if (!stylesheet.isPreserved(text))
+              {
+                return parse(next);
+              }
+            break;
+          case Node.COMMENT_NODE:
+            // Ignore comments
+            return parse(next);
+          case Node.ELEMENT_NODE:
+            // Check for attribute value templates
+            NamedNodeMap attrs = source.getAttributes();
+            boolean convert = false;
             int len = attrs.getLength();
             for (int i = 0; i < len; i++)
               {
-                Node attr = attrs.item(i).cloneNode(true);
-                attr = doc.adoptNode(attr);
-                resultAttrs.setNamedItemNS(attr);
+                Node attr = attrs.item(i);
+                String value = attr.getNodeValue();
+                int start = value.indexOf('{');
+                int end = value.indexOf('}');
+                if (start != -1 && end > start)
+                  {
+                    convert = true;
+                    break;
+                  }
               }
-          }
-        // Process children
-        NodeList children = node.getChildNodes();
-        if (children != null)
-          {
-            int len = children.getLength();
-            for (int i = 0; i < len; i++)
+            if (convert)
               {
-                Node child = children.item(i);
-                applyNode(child, stylesheet, context, mode, result, null);
+                // Create an element-producing template node instead
+                // with appropriate attribute-producing child template nodes
+                TemplateNode child = parse(children);
+                for (int i = 0; i < len; i++)
+                  {
+                    Node attr = attrs.item(i);
+                    String value = attr.getNodeValue();
+                    int start = value.lastIndexOf('{');
+                    int end = value.lastIndexOf('}');
+                    TemplateNode grandchild = null;
+                    Document doc = source.getOwnerDocument();
+                    if (start != -1 && end > start)
+                      {
+                        while (value.length() > 0 &&
+                               start != -1 && end > start)
+                          {
+                            // Verbatim text at end
+                            String sub = value.substring(end + 1);
+                            if (sub.length() > 0)
+                              {
+                                grandchild =
+                                  new LiteralNode(null, grandchild,
+                                                  doc.createTextNode(sub));
+                              }
+                            // Expression text
+                            String expr = value.substring(start + 1, end);
+                            if (expr.length() == 0)
+                              {
+                                String msg = "attribute value template " +
+                                  "must contain expression";
+                                DOMSourceLocator l =
+                                  new DOMSourceLocator(source);
+                                throw new TransformerConfigurationException(msg,
+                                                                            l);
+                              }
+                            Expr select = (Expr) stylesheet.xpath.compile(expr);
+                            grandchild = new ValueOfNode(null, grandchild,
+                                                         select, false);
+                            // work backwards through the text
+                            value = value.substring(0, start);
+                            start = value.lastIndexOf('{');
+                            end = value.lastIndexOf('}');
+                          }
+                        if (value.length() > 0)
+                          {
+                            // Verbatim text at beginning
+                            grandchild =
+                              new LiteralNode(null, grandchild,
+                                              doc.createTextNode(value));
+                          }
+                      }
+                    else
+                      {
+                        // Verbatim
+                        grandchild = new LiteralNode(null, grandchild,
+                                                     doc.createTextNode(value));
+                      }
+                    child = new AttributeNode(grandchild, child,
+                                              attr.getNodeName(),
+                                              attr.getNamespaceURI());
+                  }
+                return new ElementNode(child, parse(next),
+                                       source.getNodeName(),
+                                       namespaceUri);
               }
+            // Otherwise fall through
+            break;
           }
       }
+    catch (XPathExpressionException e)
+      {
+        DOMSourceLocator l = new DOMSourceLocator(source);
+        throw new TransformerConfigurationException(e.getMessage(), l, e);
+      }
+    return new LiteralNode(parse(children), parse(next), source);
   }
-  
+
+  List parseSortKeys(Node node)
+    throws XPathExpressionException
+  {
+    List ret = new LinkedList();
+    while (node != null)
+      {
+        String namespaceUri = node.getNamespaceURI();
+        if (Stylesheet.XSL_NS.equals(namespaceUri) &&
+            Node.ELEMENT_NODE == node.getNodeType())
+          {
+            Element element = (Element) node;
+            String name = element.getLocalName();
+
+            if ("sort".equals(name))
+              {
+                String s = element.getAttribute("select");
+                Expr select = (Expr) stylesheet.xpath.compile(s);
+                String lang = element.getAttribute("lang");
+                String dataType = element.getAttribute("data-type");
+                String order = element.getAttribute("order");
+                boolean descending = "descending".equals(order);
+                String caseOrder = element.getAttribute("case-order");
+                int co =
+                  "upper-first".equals(caseOrder) ? SortKey.UPPER_FIRST :
+                  "lower-first".equals(caseOrder) ? SortKey.LOWER_FIRST :
+                  SortKey.DEFAULT;
+                ret.add(new SortKey(select, lang, dataType, descending, co));
+              }
+          }
+    
+        node = node.getNextSibling();
+      }
+    return ret.isEmpty() ? null : ret;
+  }
+
+  List parseWithParams(Node node)
+    throws TransformerConfigurationException, XPathExpressionException
+  {
+    List ret = new LinkedList();
+    while (node != null)
+      {
+        String namespaceUri = node.getNamespaceURI();
+        if (Stylesheet.XSL_NS.equals(namespaceUri) &&
+            Node.ELEMENT_NODE == node.getNodeType())
+          {
+            Element element = (Element) node;
+            String name = element.getLocalName();
+
+            if ("with-param".equals(name))
+              {
+                TemplateNode content = parse(element.getFirstChild());
+                String paramName = element.getAttribute("name");
+                if (paramName.length() == 0)
+                  {
+                    paramName = null;
+                  }
+                String select = element.getAttribute("select");
+                if (select != null && select.length() > 0)
+                  {
+                    if (content != null)
+                      {
+                        String msg = "parameter '" + paramName +
+                          "' has both select and content";
+                        DOMSourceLocator l = new DOMSourceLocator(element);
+                        throw new TransformerConfigurationException(msg, l);
+                      }
+                    Expr expr = (Expr) stylesheet.xpath.compile(select);
+                    ret.add(new WithParam(paramName, expr));
+                  }
+                else
+                  {
+                    ret.add(new WithParam(paramName, content));
+                  }
+              }
+          }
+        node = node.getNextSibling();
+      }
+    return ret.isEmpty() ? null : ret;
+  }
+
+  public String toString()
+  {
+    StringBuffer buf = new StringBuffer(getClass().getName());
+    buf.append('[');
+    if (name != null)
+      {
+        buf.append("name=");
+        buf.append(name);
+      }
+    else if (match != null)
+      {
+        buf.append("match=");
+        buf.append(match);
+      }
+    buf.append(']');
+    return buf.toString();
+  }
+
+  void list(PrintStream out)
+  {
+    out.println(toString());
+    if (node != null)
+      {
+        node.list(1, out, true);
+      }
+  }
+
 }

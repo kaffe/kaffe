@@ -46,22 +46,22 @@ import org.w3c.dom.Node;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 class ExpressionTest
-extends Test
+  extends Test
 {
 
   final Expr expr;
 
-  ExpressionTest (Expr expr)
+  ExpressionTest(Expr expr)
   {
     this.expr = expr;
   }
 
-  boolean matches (Node node)
+  public boolean matches(Node node, int pos, int len)
   {
-    return expr._boolean (node, expr.evaluate (node));
+    return expr._boolean(node, expr.evaluate(node, pos, len));
   }
 
-  public String toString ()
+  public String toString()
   {
     return "[" + expr + "]";
   }

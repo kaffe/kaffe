@@ -58,7 +58,9 @@ import org.w3c.dom.*;
  *
  * @author David Brownell 
  */
-public class DomPI extends DomNode implements ProcessingInstruction
+public class DomPI
+  extends DomNode
+  implements ProcessingInstruction
 {
     private String	target;
     private String	data;
@@ -74,7 +76,7 @@ public class DomPI extends DomNode implements ProcessingInstruction
      */
     protected DomPI (Document owner, String target, String data)
     {
-	super (owner);
+	super (PROCESSING_INSTRUCTION_NODE, owner);
 	this.target = target;
 	this.data = data;
     }
@@ -99,14 +101,6 @@ public class DomPI extends DomNode implements ProcessingInstruction
     {
 	return target;
     }
-
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the constant PROCESSING_INSTRUCTION_NODE.
-     */
-    final public short getNodeType ()
-	{ return PROCESSING_INSTRUCTION_NODE; }
 
 
     /**

@@ -193,7 +193,10 @@ public final class JAXPFactory extends DocumentBuilderFactory
 	throws SAXException, IOException
 	{
 	    producer.parse (source);
-	    return consumer.getDocument ();
+	    Document doc = consumer.getDocument ();
+            // TODO inputEncoding
+            doc.setDocumentURI(source.getSystemId());
+            return doc;
 	}
 
 	public boolean isNamespaceAware ()

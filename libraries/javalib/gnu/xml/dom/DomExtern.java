@@ -54,7 +54,8 @@ import org.w3c.dom.*;
  *
  * @author David Brownell 
  */
-public abstract class DomExtern extends DomNode
+public abstract class DomExtern
+  extends DomNode
 {
     private String	name;
     private String	publicId;
@@ -71,14 +72,13 @@ public abstract class DomExtern extends DomNode
      * @param systemId If non-null, provides the entity's SYSTEM identifier
      */
     // package private
-    DomExtern (
-	Document owner,
-	String name,
-	String publicId,
-	String systemId
-    )
+    DomExtern(short nodeType,
+              Document owner,
+              String name,
+              String publicId,
+              String systemId)
     {
-	super (owner);
+	super (nodeType, owner);
 	this.name = name;
 	this.publicId = publicId;
 	this.systemId = systemId;

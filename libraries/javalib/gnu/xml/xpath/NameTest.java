@@ -38,6 +38,7 @@
 
 package gnu.xml.xpath;
 
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -45,19 +46,60 @@ import org.w3c.dom.Node;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class NameTest
+public final class NameTest
   extends Test
 {
 
+  final String uri;
+  final String prefix;
   final String name;
   final boolean anyLocalName;
   final boolean any;
 
-  NameTest (String name, boolean anyLocalName, boolean any)
+  public NameTest(String name, boolean anyLocalName, boolean any)
   {
-    this.name = name;
     this.anyLocalName = anyLocalName;
     this.any = any;
+   
+    if (name != null)
+      { 
+        int start = name.indexOf('{');
+        int end = name.indexOf('}');
+        if (start != -1 && end > start)
+          {
+            uri = name.substring(start + 1, end);
+            name = name.substring(end + 1);
+          }
+        else
+          {
+            uri = null;
+          }
+        if (anyLocalName)
+          {
+            prefix = name;
+            this.name = null;
+          }
+        else
+          {
+            start = name.indexOf(':');
+            if (start != -1)
+              {
+                prefix = name.substring(0, start);
+                name = name.substring(start + 1);
+              }
+            else
+              {
+                prefix = null;
+              }
+            this.name = name;
+          }
+      }
+    else
+      {
+        uri = null;
+        prefix = null;
+        this.name = "";
+      }
   }
 
   public boolean matchesAny()
@@ -70,9 +112,9 @@ public class NameTest
     return anyLocalName;
   }
 
-  boolean matches (Node node)
+  public boolean matches(Node node, int pos, int len)
   {
-    switch (node.getNodeType ())
+    switch (node.getNodeType())
       {
       case Node.DOCUMENT_TYPE_NODE:
       case Node.ENTITY_NODE:
@@ -85,16 +127,54 @@ public class NameTest
       {
         return true;
       }
+    if (uri != null)
+      {
+        if (!uri.equals(node.getNamespaceURI()))
+          {
+            return false;
+          }
+      }
+    if (prefix != null)
+      {
+        if (!prefix.equals(node.getPrefix()))
+          {
+            return false;
+          }
+      }
     if (anyLocalName)
       {
-        return name.equals (node.getPrefix ());
+        return true;
       }
-    return name.equals (node.getNodeName ());
+    return (name.equals(node.getLocalName()));
   }
 
   public String toString ()
   {
-    return any ? "*" : anyLocalName ? name + ":*" : name;
+    if (any)
+      {
+        return "*";
+      }
+    StringBuffer buf = new StringBuffer();
+    if (uri != null)
+      {
+        buf.append('{');
+        buf.append(uri);
+        buf.append('}');
+      }
+    if (prefix != null)
+      {
+        buf.append(prefix);
+        buf.append(':');
+      }
+    if (anyLocalName)
+      {
+        buf.append('*');
+      }
+    else
+      {
+        buf.append(name);
+      }
+    return buf.toString();
   }
   
 }

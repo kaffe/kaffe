@@ -39,16 +39,22 @@
 package gnu.xml.dom;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.xpath.XPathException;
-import org.w3c.dom.xpath.XPathExpression;
 import org.w3c.dom.xpath.XPathNSResolver;
 import org.w3c.dom.xpath.XPathResult;
-import gnu.xml.xpath.Expr;
-import gnu.xml.xpath.XPathParser;
-import gnu.xml.xpath.XPathTokenizer;
+import gnu.xml.xpath.DocumentOrderComparator;
 
 /**
  * An XPath expression.
@@ -56,77 +62,83 @@ import gnu.xml.xpath.XPathTokenizer;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 class DomXPathExpression
-implements XPathExpression
+implements org.w3c.dom.xpath.XPathExpression
 {
 
   final DomDocument doc;
-  final Expr expression;
+  final XPathExpression expression;
   final XPathNSResolver resolver;
 
-  DomXPathExpression (DomDocument doc, String expression,
-                      XPathNSResolver resolver)
+  DomXPathExpression(DomDocument doc, String expression,
+                     XPathNSResolver resolver)
     throws XPathException
   {
     this.doc = doc;
     this.resolver = resolver;
     
-    XPathParser parser = new XPathParser ();
-    XPathTokenizer tokenizer = new XPathTokenizer (expression);
+		XPathFactory factory = XPathFactory.newInstance();
+		XPath xpath = factory.newXPath();
+		if (resolver != null)
+		  {
+				xpath.setNamespaceContext(new DomNSResolverContext(resolver));
+	 	  }
     try
       {
-        this.expression = (Expr) parser.yyparse (tokenizer);
+        this.expression = xpath.compile(expression);
       }
-    catch (IOException e)
+    catch (XPathExpressionException e)
       {
-        throw new XPathException (XPathException.INVALID_EXPRESSION_ERR,
-                                  e.getMessage ());
-      }
-    catch (XPathParser.yyException e)
-      {
-        throw new XPathException (XPathException.INVALID_EXPRESSION_ERR,
-                                  e.getMessage ());
+        throw new XPathException(XPathException.INVALID_EXPRESSION_ERR,
+						                     e.getMessage ());
       }
   }
 
-  public Object evaluate (Node contextNode, short type, Object result)
+  public Object evaluate(Node contextNode, short type, Object result)
     throws XPathException, DOMException
   {
-    Object val = expression.evaluate (contextNode);
-    switch (type)
-      {
-      case XPathResult.BOOLEAN_TYPE:
-        if (!(val instanceof Boolean))
-          {
-            throw new XPathException (XPathException.TYPE_ERR, null);
-          }
-        break;
-      case XPathResult.NUMBER_TYPE:
-        if (!(val instanceof Double))
-          {
-            throw new XPathException (XPathException.TYPE_ERR, null);
-          }
-        break;
-      case XPathResult.STRING_TYPE:
-        if (!(val instanceof String))
-          {
-            throw new XPathException (XPathException.TYPE_ERR, null);
-          }
-        break;
-      case XPathResult.ANY_UNORDERED_NODE_TYPE:
-      case XPathResult.FIRST_ORDERED_NODE_TYPE:
-      case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
-      case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
-        if (!(val instanceof Collection))
-          {
-            throw new XPathException (XPathException.TYPE_ERR, null);
-          }
-        break;
-      case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
-      case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
-        /* We don't support ordered node-sets */
-        throw new XPathException (XPathException.TYPE_ERR, null);
-      }
-    return new DomXPathResult (val, type);
+		try
+		  {
+				QName typeName = null;
+				switch (type)
+				  {
+						case XPathResult.BOOLEAN_TYPE:
+							typeName = XPathConstants.BOOLEAN;
+							break;
+						case XPathResult.NUMBER_TYPE:
+							typeName = XPathConstants.NUMBER;
+							break;
+						case XPathResult.STRING_TYPE:
+							typeName = XPathConstants.STRING;
+							break;
+						case XPathResult.ANY_UNORDERED_NODE_TYPE:
+						case XPathResult.FIRST_ORDERED_NODE_TYPE:
+							typeName = XPathConstants.NODE;
+							break;
+						case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
+						case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
+						case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
+						case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
+							typeName = XPathConstants.NODESET;
+							break;
+						default:
+							throw new XPathException(XPathException.TYPE_ERR, null);
+					}
+				Object val = expression.evaluate(contextNode, typeName);
+				switch (type)
+				  {
+						case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
+						case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
+							// Sort the nodes
+							List ns = new ArrayList((Collection) val);
+							Collections.sort(ns, new DocumentOrderComparator());
+							val = ns;
+					}
+				return new DomXPathResult(val, type);
+			}
+		catch (javax.xml.xpath.XPathException e)
+		  {
+				throw new XPathException(XPathException.TYPE_ERR, e.getMessage());
+			}
   }
 
   public String toString ()

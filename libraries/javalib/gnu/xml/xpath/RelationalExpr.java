@@ -46,8 +46,8 @@ import org.w3c.dom.Node;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class RelationalExpr
-extends Expr
+final class RelationalExpr
+  extends Expr
 {
 
   final Expr lhs;
@@ -55,7 +55,7 @@ extends Expr
   final boolean lt;
   final boolean eq;
 
-  RelationalExpr (Expr lhs, Expr rhs, boolean lt, boolean eq)
+  RelationalExpr(Expr lhs, Expr rhs, boolean lt, boolean eq)
   {
     this.lhs = lhs;
     this.rhs = rhs;
@@ -63,16 +63,16 @@ extends Expr
     this.eq = eq;
   }
 
-  public Object evaluate (Node context)
+  public Object evaluate(Node context, int pos, int len)
   {
-    Object left = lhs.evaluate (context);
-    Object right = rhs.evaluate (context);
+    Object left = lhs.evaluate(context, pos, len);
+    Object right = rhs.evaluate(context, pos, len);
 
     if (!(left instanceof Collection) &&
         !(right instanceof Collection))
       {
-        double ln = _number (context, left);
-        double rn = _number (context, right);
+        double ln = _number(context, left);
+        double rn = _number(context, right);
         if (eq && ln == rn)
           {
             return Boolean.TRUE;
@@ -95,7 +95,7 @@ extends Expr
     return Boolean.FALSE;
   }
 
-  public String toString ()
+  public String toString()
   {
     return lhs + " " + (lt ? "<" : ">") + (eq ? "=" : "") + " " + rhs;
   }

@@ -47,24 +47,24 @@ import org.w3c.dom.Node;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class EqualityExpr
-extends Expr
+final class EqualityExpr
+  extends Expr
 {
 
   final Expr lhs;
   final Expr rhs;
   final boolean invert;
 
-  EqualityExpr (Expr lhs, Expr rhs, boolean invert)
+  EqualityExpr(Expr lhs, Expr rhs, boolean invert)
   {
     this.lhs = lhs;
     this.rhs = rhs;
     this.invert = invert;
   }
 
-  public Object evaluate (Node context)
+  public Object evaluate(Node context, int pos, int len)
   {
-    boolean val = evaluateImpl (context);
+    boolean val = evaluateImpl(context, pos, len);
     if (invert)
       {
         return val ? Boolean.FALSE : Boolean.TRUE;
@@ -75,10 +75,11 @@ extends Expr
       }
   }
 
-  private boolean evaluateImpl (Node context)
+  private boolean evaluateImpl(Node context, int pos, int len)
   {
-    Object left = lhs.evaluate (context);
-    Object right = rhs.evaluate (context);
+    Object left = lhs.evaluate(context, pos, len);
+    Object right = rhs.evaluate(context, pos, len);
+
     /*
      * If both objects to be compared are node-sets, then the comparison
      * will be true if and only if there is a node in the first node-set and
@@ -91,13 +92,18 @@ extends Expr
       {
         Collection lns = (Collection) left;
         Collection rns = (Collection) right;
-        for (Iterator i = lns.iterator (); i.hasNext (); )
+        for (Iterator i = lns.iterator(); i.hasNext(); )
           {
-            Node ltest = (Node) i.next ();
-            for (Iterator j = rns.iterator (); j.hasNext (); )
+            Node ltest = (Node) i.next();
+            for (Iterator j = rns.iterator(); j.hasNext(); )
               {
-                Node rtest = (Node) j.next ();
-                if (stringValue (ltest).equals (stringValue (rtest)))
+                Node rtest = (Node) j.next();
+                if (ltest == rtest || ltest.equals(rtest))
+                  {
+                    // much shorter
+                    return true;
+                  }
+                else if (stringValue(ltest).equals(stringValue(rtest)))
                   {
                     return true;
                   }
@@ -118,12 +124,12 @@ extends Expr
     if ((flns && frn) || (frns && fln))
       {
         Collection ns = flns ? (Collection) left : (Collection) right;
-        double n = fln ? ((Double) left).doubleValue () :
-          ((Double) right).doubleValue ();
-        for (Iterator i = ns.iterator (); i.hasNext (); )
+        double n = fln ? ((Double) left).doubleValue() :
+          ((Double) right).doubleValue();
+        for (Iterator i = ns.iterator(); i.hasNext(); )
           {
-            Node test = (Node) i.next ();
-            if (_number (context, stringValue (test)) == n)
+            Node test = (Node) i.next();
+            if (_number(context, stringValue(test)) == n)
               {
                 return true;
               }
@@ -143,10 +149,10 @@ extends Expr
       {
         Collection ns = flns ? (Collection) left : (Collection) right;
         String s = fls ? (String) left : (String) right;
-        for (Iterator i = ns.iterator (); i.hasNext (); )
+        for (Iterator i = ns.iterator(); i.hasNext(); )
           {
-            Node test = (Node) i.next ();
-            if (stringValue (test).equals (s))
+            Node test = (Node) i.next();
+            if (stringValue(test).equals(s))
               {
                 return true;
               }
@@ -165,9 +171,9 @@ extends Expr
     if ((flns && frb) || (frns && flb))
       {
         Collection ns = flns ? (Collection) left : (Collection) right;
-        boolean b = flb ? ((Boolean) left).booleanValue () :
-          ((Boolean) right).booleanValue ();
-        return _boolean (context, ns) == b;
+        boolean b = flb ? ((Boolean) left).booleanValue() :
+          ((Boolean) right).booleanValue();
+        return _boolean(context, ns) == b;
       }
     /*
      * If at least one object to be compared is a boolean, then each object
@@ -176,10 +182,10 @@ extends Expr
      */
     if (flb || frb)
       {
-        boolean lb = flb ? ((Boolean) left).booleanValue () :
-          _boolean (context, left);
-        boolean rb = frb ? ((Boolean) right).booleanValue () :
-          _boolean (context, right);
+        boolean lb = flb ? ((Boolean) left).booleanValue() :
+          _boolean(context, left);
+        boolean rb = frb ? ((Boolean) right).booleanValue() :
+          _boolean(context, right);
         return lb == rb;
       }
     /*
@@ -189,10 +195,10 @@ extends Expr
      */
     if (fln || frn)
       {
-        double ln = fln ? ((Double) left).doubleValue () :
-          _number (context, left);
-        double rn = frn ? ((Double) right).doubleValue () :
-          _number (context, right);
+        double ln = fln ? ((Double) left).doubleValue() :
+          _number(context, left);
+        double rn = frn ? ((Double) right).doubleValue() :
+          _number(context, right);
         return ln == rn;
       }
     /*
@@ -200,12 +206,12 @@ extends Expr
      * compared are converted to strings as if by applying the string
      * function.
      */
-    String ls = fls ? (String) left : _string (context, left);
-    String rs = frs ? (String) right : _string (context, right);
-    return ls.equals (rs);
+    String ls = fls ? (String) left : _string(context, left);
+    String rs = frs ? (String) right : _string(context, right);
+    return ls.equals(rs);
   }
 
-  public String toString ()
+  public String toString()
   {
     if (invert)
       {

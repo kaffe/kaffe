@@ -45,28 +45,28 @@ import org.w3c.dom.Node;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class Constant
-extends Expr
+final class Constant
+  extends Expr
 {
 
   final Object value;
 
-  Constant (Object value)
+  Constant(Object value)
   {
     this.value = value;
   }
 
-  public Object evaluate (Node context)
+  public Object evaluate(Node context, int pos, int len)
   {
     return value;
   }
 
-  public String toString ()
+  public String toString()
   {
-    String ret = value.toString ();
+    String ret = value.toString();
     if (value instanceof String)
       {
-        if (ret.indexOf ('\'') == -1)
+        if (ret.indexOf('\'') == -1)
           {
             return '\'' + ret + '\'';
           }
@@ -77,9 +77,9 @@ extends Expr
       }
     if (value instanceof Double)
       {
-        if (ret.endsWith (".0"))
+        if (ret.endsWith(".0"))
           {
-            ret = ret.substring (0, ret.length () - 2);
+            ret = ret.substring(0, ret.length() - 2);
           }
       }
     return ret;
