@@ -314,7 +314,12 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 			// If no matching timezone, put in GMT info.
 			if (j == syms.zoneStrings.length) {
 				buf.append("GMT");
-				int ro = zone.getRawOffset() / 60000;
+				int ro = zone.getOffset(calendar.get(Calendar.ERA),
+							calendar.get(Calendar.YEAR),
+							calendar.get(Calendar.MONTH),
+							calendar.get(Calendar.DAY_OF_MONTH),
+							calendar.get(Calendar.DAY_OF_WEEK),
+							calendar.get(Calendar.MILLISECOND)) / 60000;
 				if (ro < 0) {
 					ro = Math.abs(ro);
 					buf.append("-");
