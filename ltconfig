@@ -600,7 +600,7 @@ if test "$with_gcc" = yes; then
     # list by gcc. This cause undefined symbols with -static flags.
     # This hack allows C programs to be linked with "-static -ldl", but
     # we not sure about C++ programs.
-    link_static_flag="$link_static_flag -Wl,-lC"
+    link_static_flag="$link_static_flag ${wl}-lC"
     ;;
   cygwin32* | mingw32* | os2*)
     # We can build DLLs from non-PIC.
@@ -664,7 +664,7 @@ else
     wl='-Qoption ld '
     ;;
 
-  sysv4.2uw2* | sysv5* | sysv4.3*)
+  sysv4.2uw2* | sysv4.3* | sysv5*)
     pic_flag='-KPIC'
     link_static_flag='-Bstatic'
     wl='-Wl,'
@@ -1059,22 +1059,22 @@ if test "$with_gnu_ld" = yes; then
       (cd $objdir && $CC -c $soname-ltdll.c)~
       echo EXPORTS > $objdir/$soname-def~
       $DLLTOOL --export-all --output-def $objdir/$soname-def $objdir/$soname-ltdll.$objext $libobjs~
-      $CC -Wl,--base-file,$objdir/$soname-base -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $compile_dependencylibs~
+      $CC -Wl,--base-file,$objdir/$soname-base -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs~
       $DLLTOOL --as=$AS --dllname $soname --exclude-symbol=_cygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
-      $CC -Wl,--base-file,$objdir/$soname-base $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $compile_dependencylibs~
+      $CC -Wl,--base-file,$objdir/$soname-base $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs~
       $DLLTOOL --as=$AS --dllname $soname --exclude-symbol=_cygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
-      $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $compile_dependencylibs'
+      $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs'
 
       archive_sym_cmds='rm -f $objdir/$soname-ltdll.c~
       sed -e "/^# \/\* ltdll.c starts here \*\//,/^# \/\* ltdll.c ends here \*\// { s/^# //; p; }" -e d < $0 > $objdir/$soname-ltdll.c~
       (cd $objdir && $CC -c $soname-ltdll.c)~
       echo EXPORTS > $objdir/$soname-def~
       cat "$export_symbols" >> $objdir/$soname-def~
-      $CC -Wl,--base-file,$objdir/$soname-base -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $compile_dependencylibs~
+      $CC -Wl,--base-file,$objdir/$soname-base -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs~
       $DLLTOOL --as=$AS --dllname $soname --exclude-symbol=_cygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
-      $CC -Wl,--base-file,$objdir/$soname-base $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $compile_dependencylibs~
+      $CC -Wl,--base-file,$objdir/$soname-base $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs~
       $DLLTOOL --as=$AS --dllname $soname --exclude-symbol=_cygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
-      $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $compile_dependencylibs'
+      $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs'
 
       old_archive_from_new_cmds='$DLLTOOL --as=$AS --dllname $soname --def $objdir/$soname-def --output-lib $objdir/$libname.a'
    else
@@ -1134,15 +1134,22 @@ else
   aix4*)
     allow_undefined_flag=
     if test "$with_gcc" = yes; then
-      # collect2 in egcs and probably latest gcc has full support for
-      # -shared flag, so we feel much better.
-      archive_cmds='$CC -shared -o $objdir/$soname $libobjs $deplibs'
+      if strings `${CC} -print-prog-name=collect2` | \
+         grep resolve_lib_name >/dev/null
+      then
+        # We have reworked collect2
+        hardcode_direct=yes
+      else
+        # We have old collect2
+        hardcode_direct=unsupported
+      fi
+      archive_cmds='$CC -shared ${wl}-bnoentry -o $objdir/$soname $libobjs $deplibs'
     else
       archive_cmds='$NM $libobjs | $global_symbol_pipe | sed '\''s/.* //'\' | sort | uniq' > $lib.exp        else cat $export_symbols > $lib.exp~
       $CC -o $objdir/$soname $libobjs $deplibs ${wl}-bE:$lib.exp ${wl}-bM:SRE ${wl}-bnoentry'
       archive_sym_cmds='$CC -o $objdir/$soname $libobjs $deplibs ${wl}-bE:$export_symbols ${wl}-bM:SRE ${wl}-bnoentry'
+      hardcode_direct=yes
     fi
-    hardcode_direct=yes
     hardcode_minus_L=yes
     # Though LIBPATH variable hardcodes shlibpath into executable,
     # it doesn't affect searching for -l* libraries; this confuses
@@ -1170,22 +1177,22 @@ else
       (cd $objdir && $CC -c $soname-ltdll.c)~
       echo EXPORTS > $objdir/$soname-def~
       $DLLTOOL --export-all --output-def $objdir/$soname-def $objdir/$soname-ltdll.$objext $libobjs~
-      $CC -Wl,--base-file,$objdir/$soname-base -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $compile_dependencylibs~
+      $CC -Wl,--base-file,$objdir/$soname-base -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs~
       $DLLTOOL --as=$AS --dllname $soname --exclude-symbol=_cygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
-      $CC -Wl,--base-file,$objdir/$soname-base $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $compile_dependencylibs~
+      $CC -Wl,--base-file,$objdir/$soname-base $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs~
       $DLLTOOL --as=$AS --dllname $soname --exclude-symbol=_cygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
-      $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $compile_dependencylibs'
+      $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs'
 
       archive_sym_cmds='rm -f $objdir/$soname-ltdll.c~
       sed -e "/^# \/\* ltdll.c starts here \*\//,/^# \/\* ltdll.c ends here \*\// { s/^# //; p; }" -e d < $0 > $objdir/$soname-ltdll.c~
       (cd $objdir && $CC -c $soname-ltdll.c)~
       echo EXPORTS > $objdir/$soname-def~
       cat "$export_symbols" >> $objdir/$soname-def~
-      $CC -Wl,--base-file,$objdir/$soname-base -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $compile_dependencylibs~
+      $CC -Wl,--base-file,$objdir/$soname-base -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs~
       $DLLTOOL --as=$AS --dllname $soname --exclude-symbol=_cygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
-      $CC -Wl,--base-file,$objdir/$soname-base $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $compile_dependencylibs~
+      $CC -Wl,--base-file,$objdir/$soname-base $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs~
       $DLLTOOL --as=$AS --dllname $soname --exclude-symbol=_cygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
-      $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $compile_dependencylibs'
+      $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs'
 
       old_archive_from_new_cmds='$DLLTOOL --as=$AS --dllname $soname --def $objdir/$soname-def --output-lib $objdir/$libname.a'
     else
@@ -1313,19 +1320,13 @@ else
 		$LD -G${allow_undefined_flag} -M $export_symbols -h $soname -o $lib $libobjs $deplibs~$rm $lib.exp'
     hardcode_libdir_flag_spec='-R$libdir'
     hardcode_shlibpath_var=no
-
-    # Solaris 2 before 2.5 hardcodes -L paths.
-    case "$host_os" in
-    solaris2.[0-4]*)
-      hardcode_minus_L=yes
-      ;;
-    esac
     ;;
 
   sunos4*)
     # Why do we need -Bstatic?  To avoid inter-library dependencies, maybe...
     if test "$with_gcc" = yes; then
-      archive_cmds='$CC -shared ${wl}-Bstatic -o $lib $libobjs $deplibs'
+      # Use -fPIC here because libgcc is multilibbed
+      archive_cmds='$CC -shared ${wl}-Bstatic -fPIC -o $lib $libobjs $deplibs'
     else
       archive_cmds='$LD -assert pure-text -Bstatic -o $lib $libobjs $deplibs'
     fi
@@ -1461,11 +1462,11 @@ void nm_test_func(){}
 main(){nm_test_var='a';nm_test_func();return(0);}
 EOF
 
-  echo "$progname:1464: checking if global_symbol_pipe works" >&5
-  if { (eval echo $progname:1465: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
+  echo "$progname:1465: checking if global_symbol_pipe works" >&5
+  if { (eval echo $progname:1466: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
     # Now try to grab the symbols.
     nlist=conftest.nm
-    if { echo "$progname:1468: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
+    if { echo "$progname:1469: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
 
       # Try sorting and uniquifying the output.
       if sort "$nlist" | uniq > "$nlist"T; then
@@ -1491,6 +1492,7 @@ EOF
 # define lt_ptr_t void *
 #else
 # define lt_ptr_t char *
+# define const
 #endif
 
 /* The mapping between symbol names and symbols. */
@@ -1516,7 +1518,7 @@ EOF
 	  save_CFLAGS="$CFLAGS"
 	  LIBS="conftestm.$objext"
 	  CFLAGS="$CFLAGS$no_builtin_flag"
-	  if { (eval echo $progname:1519: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+	  if { (eval echo $progname:1521: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
 	    pipe_works=yes
 	  else
 	    echo "$progname: failed program was:" >&5
@@ -1644,10 +1646,12 @@ beos*)
 
 bsdi4*)
   version_type=linux
-  library_names_spec='${libname}.so.$major ${libname}.so'
+  library_names_spec='${libname}.so$major ${libname}.so'
   soname_spec='${libname}.so'
   finish_cmds='PATH="$PATH:/sbin" ldconfig $libdir'
   shlibpath_var=LD_LIBRARY_PATH
+  check_shared_deplibs_method='file_magic ELF 32-bit LSB shared object'
+  sys_lib_search_path="/shlib /usr/lib /usr/local/lib"
   ;;
 
 cygwin32* | mingw32*)
@@ -1668,6 +1672,15 @@ cygwin32* | mingw32*)
 freebsd2* | freebsd3*)
   objformat=`test -x /usr/bin/objformat && /usr/bin/objformat || echo aout`
   version_type=freebsd-$objformat
+  case "$version_type" in
+    freebsd-elf*)
+      deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [LM]SB shared object'
+      file_magic_command=file
+      ;;
+    freebsd-*)
+      deplibs_check_method=unknown
+      ;;
+  esac
   library_names_spec='${libname}${release}.so$versuffix $libname.so$versuffix'
   finish_cmds='PATH="$PATH:/sbin" OBJFORMAT="$objformat" ldconfig -m $libdir'
   shlibpath_var=LD_LIBRARY_PATH
@@ -1718,11 +1731,10 @@ linux-gnu*)
   need_version=no
   library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
   soname_spec='${libname}${release}.so$major'
-  finish_cmds='PATH="\$PATH:/sbin" ldconfig -n $libdir'
+  finish_cmds='PATH="$PATH:/sbin" ldconfig -n $libdir'
   shlibpath_var=LD_LIBRARY_PATH
   deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [LM]SB shared object'
   file_magic_command=file
-  sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib `echo $LD_LIBRARY_PATH | sed -e 's/:/ /g'`"
 
   if test -f /lib/ld.so.1; then
     dynamic_linker='GNU ld.so'
@@ -1738,12 +1750,12 @@ linux-gnu*)
 netbsd*)
   version_type=sunos
   if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
-    library_names_spec='${libname}${release}.so.$versuffix'
+    library_names_spec='${libname}${release}.so$versuffix'
     finish_cmds='PATH="$PATH:/sbin" ldconfig -m $libdir'
     dynamic_linker='NetBSD (a.out) ld.so'
   else
-    library_names_spec='${libname}${release}.so.$versuffix ${libname}${release}.so.$major ${libname}${release}.so'
-    soname_spec='${libname}${release}.so.$major'
+    library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major ${libname}${release}.so'
+    soname_spec='${libname}${release}.so$major'
     dynamic_linker='NetBSD ld.elf_so'
   fi
   shlibpath_var=LD_LIBRARY_PATH
@@ -1790,7 +1802,6 @@ solaris*)
   postinstall_cmds='chmod +x $lib'
   deplibs_check_method="file_magic ELF [0-9][0-9]-bit [LM]SB dynamic lib"
   file_magic_command="file"
-  sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib `echo $LD_LIBRARY_PATH | sed -e 's/:/ /g'`"
   ;;
 
 sunos4*)
@@ -1801,7 +1812,7 @@ sunos4*)
   need_version=yes
   ;;
 
-sysv4.2uw2* | sysv4.3*)
+sysv4.2uw2* | sysv4.3* | sysv5*)
   version_type=linux
   library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
   soname_spec='${libname}${release}.so$major'
@@ -1815,8 +1826,8 @@ sysv4.2uw2* | sysv4.3*)
 
 uts4*)
   version_type=linux
-  library_names_spec='${libname}${release}.so.$versuffix ${libname}${release}.so.$major $libname.so'
-  soname_spec='${libname}${release}.so.$major'
+  library_names_spec='${libname}${release}.so.$versuffix ${libname}${release}.so$major $libname.so'
+  soname_spec='${libname}${release}.so$major'
   shlibpath_var=LD_LIBRARY_PATH
   ;;
 

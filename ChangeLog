@@ -1,3 +1,14 @@
+Thu Jan 21 03:13:39 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* ltconfig, ltmain.sh: updated from libtool
+	* libltdl/Makefile.am, libltdl/configure.in: ditto
+	* libltdl/Makefile.in, libltdl/configure: regen
+	* libltdl/ltdl.c: reduce dramatically the amount of stack space
+	used, at the cost of dynamic memory management
+	* kaffe/kaffevm/external.c (LIBRARYSUFFIX): can now be empty;
+	libltdl will take care of the rest, but external.c might benefit
+	from a major rewrite, to use more of libltdl
+
 Tue Jan 19 20:33:40 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/javalib/Makefile.am (classes): depend on rebuildLib

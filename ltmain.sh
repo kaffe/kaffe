@@ -372,9 +372,9 @@ if test -z "$show_help"; then
 
     # Delete any leftover library objects.
     if test "$build_old_libs" = yes; then
-      removelist="$obj $libobj $lockfile"
+      removelist="$obj $libobj"
     else
-      removelist="$libobj $lockfile"
+      removelist="$libobj"
     fi
 
     $run $rm $removelist
@@ -429,12 +429,34 @@ compiler."
 
       # All platforms use -DPIC, to notify preprocessed assembler code.
       command="$base_compile$pic_flag -DPIC $srcfile"
+      if test "$build_old_libs" = yes; then
+        lo_libobj="$libobj"
+	dir=`$echo "X$libobj" | $Xsed -e 's%/[^/]*$%%'`
+	if test "X$dir" = "X$libobj"; then
+	  dir="$objdir"
+	else
+	  dir="$dir/$objdir"
+	fi
+        libobj="$dir/"`$echo "X$libobj" | $Xsed -e 's%^.*/%%'`
+
+	if test -d "$dir"; then
+	  $show "$rm $libobj"
+	  $run $rm $libobj
+	else
+	  $show "$mkdir $dir"
+	  $run $mkdir $dir
+	  status=$?
+	  if test $status -ne 0 && test ! -d $dir; then
+	    exit $status
+	  fi
+	fi
+      fi
       if test "$compiler_o_lo" = yes; then
-	command="$command -o $libobj"
 	output_obj="$libobj"
+	command="$command -o $output_obj"
       elif test "$compiler_c_o" = yes; then
-	command="$command -o $obj"
 	output_obj="$obj"
+	command="$command -o $output_obj"
       fi
 
       $show "$command"
@@ -465,7 +487,7 @@ compiler."
       fi
 
       # Just move the object if needed, then go on to compile the next one
-      if test "$compiler_o_lo" = no && test x"$output_obj" != x"$libobj"; then
+      if test x"$output_obj" != x"$libobj"; then
 	$show "$mv $output_obj $libobj"
 	if $run $mv $output_obj $libobj; then :
 	else
@@ -476,11 +498,24 @@ compiler."
       fi
 
       # If we have no pic_flag, then copy the object into place and finish.
-      if test -z "$pic_flag"; then
-	$show $rm $obj
-	$run $rm $obj
-	$show "$LN_S $libobj $obj"
-	if $run $LN_S $libobj $obj; then
+      if test -z "$pic_flag" && test "$build_old_libs" = yes; then
+	# Rename the .lo from within objdir to obj
+        if test -f $obj; then
+	  $show $rm $obj
+	  $run $rm $obj
+	fi
+
+	$show "$mv $libobj $obj"
+	if $run $mv $libobj $obj; then :
+	else
+	  error=$?
+	  $run $rm $removelist
+	  exit $error
+	fi
+
+	# Now arrange that obj and lo_libobj become the same file
+	$show "$LN_S $obj $lo_libobj"
+	if $run $LN_S $obj $lo_libobj; then
 	  exit 0
 	else
 	  error=$?
@@ -531,9 +566,25 @@ compiler."
       fi
 
       # Just move the object if needed
-      if test "$compiler_c_o" = no && test x"$output_obj" != x"$obj"; then
+      if test x"$output_obj" != x"$obj"; then
 	$show "$mv $output_obj $obj"
 	if $run $mv $output_obj $obj; then :
+	else
+	  error=$?
+	  $run $rm $removelist
+	  exit $error
+	fi
+      fi
+
+      # Create an invalid libtool object if no PIC, so that we do not
+      # accidentally link it into a program.
+      if test "$build_libtool_libs" != yes; then
+        $show "echo timestamp > $libobj"
+        $run eval "echo timestamp > \$libobj" || exit $?
+      else
+	# Move the .lo from within objdir
+	$show "$mv $libobj $lo_libobj"
+	if $run $mv $libobj $lo_libobj; then :
 	else
 	  error=$?
 	  $run $rm $removelist
@@ -545,13 +596,6 @@ compiler."
     # Unlock the critical section if it was locked
     if test "$need_locks" != no; then
       $rm "$lockfile"
-    fi
-
-    # Create an invalid libtool object if no PIC, so that we do not
-    # accidentally link it into a program.
-    if test "$build_libtool_libs" != yes; then
-      $show "echo timestamp > $libobj"
-      $run eval "echo timestamp > \$libobj" || exit $?
     fi
 
     exit 0
@@ -611,12 +655,19 @@ compiler."
     convenience=
     old_convenience=
     deplibs=
-    eval lib_search_path=\"$sys_lib_search_path_spec\"
+
+    if test -n "$shlibpath_var"; then
+      # get the directories listed in $shlibpath_var
+      eval lib_search_path=\`\$echo \"X \${$shlibpath_var}\" \| \$Xsed -e \'s/:/ /g\'\`
+    else
+      libsearch_path=
+    fi
+    # now prepend the system-specific ones
+    eval lib_search_path=\"$sys_lib_search_path_spec\$lib_search_path\"
     
     avoid_version=no
     dlfiles=
     dlprefiles=
-    dlpredeps=
     export_dynamic=no
     export_symbols=
     generated=
@@ -789,7 +840,6 @@ compiler."
 	lib_search_path="$lib_search_path `expr $arg : '-L\(.*\)'`"
 	case "$host" in
 	*-*-cygwin32* | *-*-mingw32* | *-*-os2*)
-	  compile_dependencylibs="$compile_dependencylibs $arg"
 	  dllsearchdir="`expr $arg : '-L\(.*\)'`"
 	  dllsearchdir=`cd "$dllsearchdir" && pwd || echo "$dllsearchdir"`
 	  if test -n "$dllsearchpath"; then
@@ -803,7 +853,6 @@ compiler."
 
       -l*)
 	deplibs="$deplibs $arg"
-	compile_dependencylibs="$compile_dependencylibs $arg"
 	;;
 
       -module)
@@ -978,7 +1027,8 @@ compiler."
 	  else
 	    # We should not create a dependency on this library, but we
 	    # may need any libraries it requires.
-	    dlpredeps="$dlpredeps$dependency_libs"
+	    compile_command="$compile_command$dependency_libs"
+	    finalize_command="$finalize_command$dependency_libs"
 	    prev=
 	    continue
 	  fi
@@ -1046,9 +1096,9 @@ compiler."
 	  immediate | unsupported)
 	    if test "$hardcode_direct" = no; then
 	      compile_command="$compile_command $dir/$linklib"
+	      deplibs="$deplibs $dir/$linklib"
 	      case "$host" in
 	      *-*-cygwin32* | *-*-mingw32* | *-*-os2*)
-		compile_dependencylibs="$compile_dependencylibs -L$dir -l$name"
 		dllsearchdir=`cd "$dir" && pwd || echo "$dir"`
 		if test -n "$dllsearchpath"; then
 		  dllsearchpath="$dllsearchpath:$dllsearchdir"
@@ -1064,9 +1114,11 @@ compiler."
 		;;
 	      esac
 	      compile_command="$compile_command -L$dir -l$name"
+	      deplibs="$deplibs -L$dir -l$name"
 	    elif test "$hardcode_shlibpath_var" = no; then
 	      compile_shlibpath="$compile_shlibpath$dir:"
 	      compile_command="$compile_command -l$name"
+	      deplibs="$deplibs -l$name"
 	    else
 	      lib_linked=no
 	    fi
@@ -1088,11 +1140,14 @@ compiler."
 
 	    if test "$hardcode_direct" = yes; then
 	      compile_command="$compile_command $dir/$linklib"
+	      deplibs="$deplibs $dir/$linklib"
 	    elif test "$hardcode_minus_L" = yes; then
 	      compile_command="$compile_command -L$dir -l$name"
+	      deplibs="$deplibs -L$dir -l$name"
 	    elif test "$hardcode_shlibpath_var" = yes; then
 	      compile_shlibpath="$compile_shlibpath$dir:"
 	      compile_command="$compile_command -l$name"
+	      deplibs="$deplibs -l$name"
 	    else
 	      lib_linked=no
 	    fi
@@ -1503,6 +1558,7 @@ compiler."
 	versuffix=""
 	major=""
 	newdeplibs=
+	droppeddeps=no
 	case "$deplibs_check_method" in
 	pass_all)
 	  newdeplibs=$deplibs
@@ -1535,6 +1591,7 @@ EOF
 		if test `expr "$ldd_output" : ".*$deplib_match"` -ne 0 ; then
 		  newdeplibs="$newdeplibs $i"
 		else
+		  droppeddeps=yes
 		  echo
 		  echo "*** Warning: This library needs some functionality provided by $i."
 		  echo "*** I have the capability to make that library automatically link in when"
@@ -1564,6 +1621,7 @@ EOF
 		    if test `expr "$ldd_output" : ".*$deplib_match"` -ne 0 ; then
 		      newdeplibs="$newdeplibs $i"
 		    else
+		      droppeddeps=yes
 		      echo
 		      echo "*** Warning: This library needs some functionality provided by $i."
 		      echo "*** I have the capability to make that library automatically link in when"
@@ -1571,6 +1629,7 @@ EOF
 		      echo "*** shared version of the library, which you do not appear to have."
 		    fi
 		else
+		  droppeddeps=yes
 		  echo
 		  echo "*** Warning!  Library $i is needed by this library but I was not able to"
 		  echo "***  make it link in!  You will probably need to install it or some"
@@ -1603,7 +1662,26 @@ EOF
 		   # strict.  What do you think Gordon?
 		    potential_libs=`ls $i/$libname[.-]* 2>/dev/null`
 		    for potent_lib in $potential_libs; do
-		      file_output=`eval $file_magic_command $potent_lib \
+		      # Follow soft links.
+		      if ls -lLd "$potlib" 2>/dev/null \
+			 | grep " -> " >/dev/null; then
+			continue 
+		      fi
+		      # The statement above tries to avoid entering an
+		      # endless loop below, in case of cyclic links.
+		      # We might still enter an endless loop, since a link
+		      # loop can be closed while we follow links,
+		      # but so what?
+		      potlib="$potent_lib"
+		      while test -h "$potlib" 2>/dev/null; do
+		        potliblink=`ls -ld $potlib | sed 's/.* -> //'`
+			case "$potliblink" in
+			/*) potlib="$potliblink";;
+			*) potlib=`$echo "X$potlib" \
+				   | $Xsed -e 's,[^/]*$,,'`"$potliblink";;
+			esac
+		      done
+		      file_output=`eval $file_magic_command \"\$potlib\" \
 				   | sed '11,$d'`
 		      if test `expr "X$file_output" : "X.*$file_magic_regex"` -ne 0 ; then
 			newdeplibs="$newdeplibs $a_deplib"
@@ -1627,7 +1705,8 @@ EOF
 		  done
 		  ;;
 	      esac
-	      if test "$a_deplib" != "" ; then
+	      if test -n "$a_deplib" ; then
+		droppeddeps=yes
 		echo
 		echo "*** Warning: This library needs some functionality provided by $a_deplib."
 		echo "*** I have the capability to make that library automatically link in when"
@@ -1640,13 +1719,40 @@ EOF
 	    fi
 	  done # Gone through all deplibs.
 	  ;;
-	none | unknown | *)  deplibs="" ;;
+	none | unknown | *) newdeplibs=""; droppeddeps=yes ;;
 	esac
 	versuffix=$versuffix_save
 	major=$major_save
 	release=$release_save
 	libname=$libname_save
 	name=$name_save
+
+	if test "$module,$droppeddeps" = "yes,yes"; then
+	  echo
+	  echo "*** Warning: libtool could not satisfy all dependencies of module $libname"
+	  echo "*** Therefore, instead of creating a dynamic module that would not run, "
+	  echo "*** libtool will create a static module.  As long as the dlopening"
+	  echo "*** application is linked with the -dlopen flag, this should be enough."
+	  if test -z "$global_symbol_pipe"; then
+	    echo
+	    echo "*** However, this would only work if libtool was able to extract symbol"
+	    echo "*** lists from a program, using \`nm' or equivalent, but libtool could"
+	    echo "*** not find such a program.  So, this module is mostly useless."
+	  fi
+	  if test "$build_old_libs" = no; then
+	    oldlibs="$output_objdir/$libname.$libext"
+	    build_libtool_libs=module
+	    build_old_libs=yes
+	  else
+	    build_libtool_libs=no
+	  fi
+	  dlname=
+	  library_names=
+	fi
+      fi
+
+      # test again, we may have decided not to build it any more
+      if test "$build_libtool_libs" = yes; then
 	deplibs=$newdeplibs
 	# Done checking deplibs!
  
@@ -1969,6 +2075,7 @@ extern \"C\" {
 # define lt_ptr_t void *
 #else
 # define lt_ptr_t char *
+# define const
 #endif
 
 /* The mapping between symbol names and symbols. */
@@ -2046,10 +2153,6 @@ static const void *lt_preloaded_setup() {
 	compile_command=`$echo "X$compile_command" | $Xsed -e 's%@OUTPUT@%'"$output"'%g'`
 	finalize_command=`$echo "X$finalize_command" | $Xsed -e 's%@OUTPUT@%'"$output"'%g'`
 
-	# Append dependencies from dlopened modules
-	compile_command="$compile_command$dlpredeps"
-	finalize_command="$finalize_command$dlpredeps"
-
 	# We have no uninstalled library dependencies, so finalize right now.
 	$show "$compile_command"
 	$run eval "$compile_command"
@@ -2059,10 +2162,6 @@ static const void *lt_preloaded_setup() {
       # Replace the output file specification.
       compile_command=`$echo "X$compile_command" | $Xsed -e 's%@OUTPUT@%'"$output_objdir/$outputname"'%g'`
       finalize_command=`$echo "X$finalize_command" | $Xsed -e 's%@OUTPUT@%'"$output_objdir/$outputname"'T%g'`
-
-      # Append dependencies from dlopened modules
-      compile_command="$compile_command$dlpredeps"
-      finalize_command="$finalize_command$dlpredeps"
 
       # Create the binary in the object directory, then wrap it.
       if test ! -d $output_objdir; then
@@ -2114,7 +2213,7 @@ static const void *lt_preloaded_setup() {
 
       if test "$hardcode_action" = relink; then
 	# AGH! Flame the AIX and HP-UX people for me, will ya?
-	$echo "$modename: warning: this platform doesn\'t like uninstalled shared libraries" 1>&2
+	$echo "$modename: warning: this platform does not like uninstalled shared libraries" 1>&2
 	$echo "$modename: \`$output' will be relinked during installation" 1>&2
       fi
 
@@ -2295,7 +2394,12 @@ fi\
 	addlibs="$convenience"
 	build_libtool_libs=no
       else
-	oldobjs="$objs "`$echo "X$libobjs_save" | $SP2NL | $Xsed -e '/\.'${libext}'$/d' -e '/\.lib$/d' -e "$lo2o" | $NL2SP`
+	if test "$build_libtool_libs" = module; then
+	  oldobjs="$libobjs_save"
+	  build_libtool_libs=no
+	else
+	  oldobjs="$objs "`$echo "X$libobjs_save" | $SP2NL | $Xsed -e '/\.'${libext}'$/d' -e '/\.lib$/d' -e "$lo2o" | $NL2SP`
+	fi
 	addlibs="$old_convenience"
       fi
 

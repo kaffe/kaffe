@@ -49,7 +49,7 @@
 #endif
 
 #ifndef LIBRARYSUFFIX
-#define LIBRARYSUFFIX ".la"
+#define LIBRARYSUFFIX ""
 #endif
 
 #ifndef LIBRARYLOAD
