@@ -202,7 +202,7 @@ void 	jthread_yield(void);
 /*
  * sleep for time milliseconds
  */
-void 	jthread_sleep(jlong time);
+void 	jthread_sleep(jlong millis);
 
 /* 
  * return the current thread 

@@ -96,7 +96,6 @@ reload_int(SlotData* dst)
 #endif
 
 #if defined(HAVE_spill_ref)
-void HAVE_spill_ref(sequence*);
 
 void
 spill_ref(SlotData* src)
@@ -109,7 +108,6 @@ spill_ref(SlotData* src)
 #endif
 
 #if defined(HAVE_reload_ref)
-void HAVE_reload_ref(sequence*);
 
 void
 reload_ref(SlotData* dst)

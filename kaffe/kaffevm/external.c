@@ -43,12 +43,11 @@
 #define LT_NON_POSIX_NAMESPACE
 #include "ltdl.h"
 #include "feedback.h"
+#include "jni_i.h"
 
 #ifdef __riscos__
 #include <unixlib/local.h>
 #endif
-
-extern void Kaffe_KNI_wrapper(Method* xmeth, void* func);
 
 #ifndef STUB_PREFIX
 #define STUB_PREFIX ""
@@ -140,8 +139,6 @@ DBG(NATIVELIB,
 #endif
 
 static char *libraryPath = "";
-
-extern jint Kaffe_JNI_native(Method*);
 
 extern JavaVM Kaffe_JavaVM;
 

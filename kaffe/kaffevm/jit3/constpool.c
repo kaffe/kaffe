@@ -122,7 +122,7 @@ char *constpoolTypeNames[] = {
 	"label",
 };
 
-void
+static void
 printConstant(FILE *file, constpool *cp)
 {
 	fprintf(file, "%08x: (%s) ", cp->at, constpoolTypeNames[cp->type]);

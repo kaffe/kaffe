@@ -80,7 +80,7 @@ static bool resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo);
 #endif
 
 /* set a class's alloc_type field */
-void
+static void
 determineAllocType(Hjava_lang_Class *class)
 {
         if (StringClass != 0 && instanceof(StringClass, class)) {

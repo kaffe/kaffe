@@ -1,5 +1,9 @@
 2004-03-29  Adam Heath <doogie@debian.org>
 
+	Misc. small warning fixes.
+
+2004-03-29  Adam Heath <doogie@debian.org>
+
 	* kaffe/kaffevm/jni_i.h:
 	New file.
 

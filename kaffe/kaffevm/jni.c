@@ -46,6 +46,7 @@
 #include "feedback.h"
 #endif
 #include "jvmpi_kaffe.h"
+#include "jni_i.h"
 
 /*
  * Define the version of JNI we support.
@@ -240,7 +241,7 @@ JNI_GetCreatedJavaVMs(JavaVM** vm, jsize buflen, jsize* nvm)
  * Everything from Kaffe_GetVersion to Kaffe_GetJavaVM
  * should be bracketed with BEGIN and END _EXCEPTION_HANDLING.
  */
-static void
+static void NONRETURNING
 Kaffe_FatalError(JNIEnv* env, const char* mess)
 {
 	kprintf(stderr, "FATAL ERROR: %s\n", mess);
@@ -4076,7 +4077,7 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	xmeth->accflags |= ACC_JNI;
 }
 
-void
+static void
 Kaffe_KNI_wrapper(Method* xmeth, void* func)
 {
 	SET_METHOD_NATIVECODE(xmeth, func);
