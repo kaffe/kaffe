@@ -1,3 +1,24 @@
+Tue Jan  4 15:54:07 PST 2000  Frohwalt Egerer <froh@iconsult.com>
+
+	* libraries/clib/io/File.c, libraries/javalib/java/io/File.java:
+	implement some missing JDK 1.2 methods
+	* libraries/javalib/java/awt/Component.java,
+	libraries/javalib/java/awt/ScrollPane.java,
+	libraries/javalib/java/awt/widgets/Button.java,
+	libraries/javalib/java/awt/widgets/Checkbox.java,
+	libraries/javalib/java/awt/widgets/Label.java,
+	libraries/javalib/java/awt/widgets/List.java,
+	libraries/javalib/java/awt/widgets/RowCanvas.java,
+	libraries/javalib/java/awt/widgets/TextArea.java,
+	libraries/javalib/java/awt/widgets/TextField.java,
+	libraries/javalib/java/awt/win32/NativeComponent.java,
+	libraries/javalib/java/awt/win32/NativeContainer.java,
+	libraries/javalib/java/awt/win32/ScrollPane.java: change
+	'paintBorder' to 'kaffePaintBorder' to avoid conflict with Swing 
+	* configure.in: add test for <utime.h>
+	* Makefile.in, aclocal.m4, configure, config/config.h.in,
+	libraries/javalib/Klasses.jar: regen
+
 Tue Dec 28 10:14:16 CET 1999  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/javalib/java/util/zip/ZipInputStream.java: Skip remaining
