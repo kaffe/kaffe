@@ -1,3 +1,9 @@
+2003-12-09  Bernhard Rosenkraenzer <bero@arklinux.org>
+
+	* libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaPcmHWParams.c,
+	libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaPcmSWParams.c
+	(ALSA_PCM_OLD_HW_PARAMS_API) Defined to fix kaffe on ALSA 1.x.
+	
 2003-12-09  Dalibor Topic <robilad@kaffe.org>
 
 	* config/m68k/common.h

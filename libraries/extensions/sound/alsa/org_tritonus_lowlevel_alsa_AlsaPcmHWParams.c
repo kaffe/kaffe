@@ -20,6 +20,11 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+/* The following is needed for ALSA 1.x and doesn't have any effect on
+ * ALSA 0.9.x
+ */
+#define ALSA_PCM_OLD_HW_PARAMS_API 1
+
 #include "org_tritonus_lowlevel_alsa_AlsaPcmHWParams.h"
 #include "common.h"
 
