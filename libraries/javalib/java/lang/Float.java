@@ -58,7 +58,11 @@ public final class Float extends Number implements Comparable {
     final int bits1 = floatToIntBits(this.value);
     final int bits2 = floatToIntBits(that.value);
 
-    return (bits1 < bits2) ? -1 : (bits1 == bits2) ? 0 : 1;
+    if ((bits1>>>31)==1 && (bits2>>>31)==1) {
+      return (bits1 < bits2) ?  1 : (bits1 == bits2) ? 0 : -1;
+    } else {
+      return (bits1 < bits2) ? -1 : (bits1 == bits2) ? 0 :  1;
+    }
   }
 
   public int compareTo(Object that) {

@@ -107,11 +107,11 @@ public class Modifier {
     if ((mod & PUBLIC) != 0) {
       append(str, "public");
     }
-    if ((mod & PRIVATE) != 0) {
-      append(str, "private");
-    }
     if ((mod & PROTECTED) != 0) {
       append(str, "protected");
+    }
+    if ((mod & PRIVATE) != 0) {
+      append(str, "private");
     }
 
     if ((mod & ABSTRACT) != 0) {
@@ -123,6 +123,12 @@ public class Modifier {
     if ((mod & FINAL) != 0) {
       append(str, "final");
     }
+    if ((mod & TRANSIENT) != 0) {
+      append(str, "transient");
+    }
+    if ((mod & VOLATILE) != 0) {
+      append(str, "volatile");
+    }
     if ((mod & SYNCHRONIZED) != 0) {
       append(str, "synchronized");
     }
@@ -130,12 +136,6 @@ public class Modifier {
       append(str, "native");
     }
 
-    if ((mod & VOLATILE) != 0) {
-      append(str, "volatile");
-    }
-    if ((mod & TRANSIENT) != 0) {
-      append(str, "transient");
-    }
     if ((mod & STRICT) != 0) {
       append(str, "strictfp");
     }

@@ -164,6 +164,15 @@ getAttr:
 			    // Update state
 			    switch (state) {
 			    case ST_START:
+				/* ouch. accept manifests that have a 0x00 at the end */
+				if (c == 0x00) {
+					int t = p.read();
+					if (t == -1) {
+						throw new EOFException();
+					}
+					p.unread (t);
+				}
+
 				if (c == '\n') {
 				    if (attr.size() == 0) {
 					continue;	// initial blank line

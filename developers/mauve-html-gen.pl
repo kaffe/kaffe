@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -w 
 #
 # run as: mauve-html-gen.pl <extra-title-text> <extra-blurb> < mauve-output
 #
@@ -24,7 +24,7 @@ while (<>) {
     $total_tests = $2;
   }
 
-  if (/PASS: ([^ ]+) ([^(]+)? ?\(number ([0-9]+)\)/) {
+  if (/PASS: ([^: ]+): (.+)? ?\(number ([0-9]+)\)$/) {
     my $trimmed_class;
     my $blurb = $2;
     my $num = $3;
@@ -36,8 +36,19 @@ while (<>) {
     $cur_testlet = $2;
     $test_hash{$trimmed_class}{$cur_testlet}{$blurb}[$num] = 1;
   }
+  elsif (/PASS: ([^: ]+): (.*)/) {
+    my $trimmed_class;
+    my $blurb = $2;
+    $cur_class = $1;
 
-  if (/FAIL: ([^: ]+):? ([^(]+)? ?\(number ([0-9]+)\)/) {
+    $blurb = "" if (!defined $blurb);
+    $cur_class =~ /gnu.testlet.(.*)\.([^.]+)/;
+    $trimmed_class = $1;
+    $cur_testlet = $2;
+    $test_hash{$trimmed_class}{$cur_testlet}{$blurb}[1] = 1;
+  }
+
+  if (/FAIL: ([^: ]+): (.+)? ?\(number ([0-9]+)\)$/) {
     my $trimmed_class;
     my $blurb = $2;
     my $num = $3;
@@ -48,6 +59,17 @@ while (<>) {
     $trimmed_class = $1;
     $cur_testlet = $2;
     $test_hash{$trimmed_class}{$cur_testlet}{$blurb}[$num] = 0;
+  }
+  elsif (/FAIL: ([^: ]+): (.*)/) {
+    my $trimmed_class;
+    my $blurb = $2;
+    $cur_class = $1;
+
+    $blurb = "" if (!defined $blurb);
+    $cur_class =~ /gnu.testlet.(.*)\.([^.]+)/;
+    $trimmed_class = $1;
+    $cur_testlet = $2;
+    $test_hash{$trimmed_class}{$cur_testlet}{$blurb}[1] = 0;
   }
 
   $prev_line = $_;

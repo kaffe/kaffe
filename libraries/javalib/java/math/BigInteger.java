@@ -520,16 +520,28 @@ public byte[] toByteArray() {
 }
 
 public int intValue() {
+	/*
+	 * the spec says that we simply take the lower 32 bits and
+	 * don't care about loosing sign and/or magnitude. toInt0()
+	 * gives the lower 31 bits, so we have to readjust bit 32
+	 * afterwards.
+         */
 	int v = toInt0();
-	if (signum() < 0)
-		v = -v;
+	
+	if (testBit (1<<31)) {
+		v |= (1<<31);
+	}
+
 	return v;
 }
 
 public long longValue() {
-	long v = ((long)shiftRight(32).toInt0()) << 32 | (long)toInt0();
-	if (signum() < 0)
-		v = -v;
+	/*
+	 * the spec says that we only take the lower 64 bits and don't care
+	 * about loosing sign or magnitude.
+	 */
+	long v = ((long)shiftRight(32).intValue()) << 32 | (long)intValue();
+
 	return v;
 }
 

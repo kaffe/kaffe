@@ -28,6 +28,7 @@ public abstract class Signature extends SignatureSpi {
 	protected int state;
 	private final String algorithm;
 	private Provider provider;
+	private SignatureSpi engine = this;
 
 	protected Signature(String algorithm) {
 		this.algorithm = algorithm;
@@ -47,8 +48,16 @@ public abstract class Signature extends SignatureSpi {
 	}
 
 	private static Signature getInstance(Security.Engine e) {
-		Signature s = (Signature)e.getEngine();
-		s.state = UNINITIALIZED;
+		Signature s = null;
+		Object o = e.getEngine();
+
+		if (o instanceof Signature) {
+			s = (Signature)o;
+			s.state = UNINITIALIZED;
+		} else {
+			s = new NonSpiSignature(e.algorithm);
+			s.engine = (SignatureSpi)o;
+		}
 		s.provider = e.getProvider();
 		return s;
 	}
@@ -59,21 +68,21 @@ public abstract class Signature extends SignatureSpi {
 
 	public final void initVerify(PublicKey publicKey)
 			throws InvalidKeyException {
-		/*engine.*/engineInitVerify(publicKey);
+		engine.engineInitVerify(publicKey);
 	}
 
 	public final void initSign(PrivateKey privateKey)
 			throws InvalidKeyException {
-		/*engine.*/engineInitSign(privateKey);
+		engine.engineInitSign(privateKey);
 	}
 
 	public final void initSign(PrivateKey privateKey, SecureRandom random)
 			throws InvalidKeyException {
-		/*engine.*/engineInitSign(privateKey, random);
+		engine.engineInitSign(privateKey, random);
 	}
 
 	public final byte[] sign() throws SignatureException {
-		return /*engine.*/engineSign();
+		return engine.engineSign();
 	}
 
 	public final int sign(byte[] outbuf, int offset, int len)
@@ -88,20 +97,20 @@ public abstract class Signature extends SignatureSpi {
 
 	public final boolean verify(byte[] signature)
 			throws SignatureException {
-		return /*engine.*/engineVerify(signature);
+		return engine.engineVerify(signature);
 	}
 
 	public final void update(byte b) throws SignatureException {
-		/*engine.*/engineUpdate(b);
+		engine.engineUpdate(b);
 	}
 
 	public final void update(byte[] data) throws SignatureException {
-		/*engine.*/engineUpdate(data, 0, data.length);
+		engine.engineUpdate(data, 0, data.length);
 	}
 
 	public final void update(byte[] data, int off, int len)
 			throws SignatureException {
-		/*engine.*/engineUpdate(data, off, len);
+		engine.engineUpdate(data, off, len);
 	}
 
 	public final String getAlgorithm() {
@@ -115,21 +124,72 @@ public abstract class Signature extends SignatureSpi {
 
 	public final void setParameter(String param, Object value)
 			throws InvalidParameterException {
-		/*engine.*/engineSetParameter(param, value);
+		engine.engineSetParameter(param, value);
 	}
 
 	public final void setParameter(AlgorithmParameterSpec params)
 		throws InvalidAlgorithmParameterException {
-		/*engine.*/engineSetParameter(params);
+		engine.engineSetParameter(params);
 	}
 
 	public final Object getParameter(String param)
 			throws InvalidParameterException {
-		return /*engine.*/engineGetParameter(param);
+		return engine.engineGetParameter(param);
 	}
 
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
+
+	private static String NONSPI_MSG =
+                "This Signature is not a SignatureSpi. "+
+                "SignatureSpi methods should not be used "+
+                "on Signature objects.";
+
+        private static class NonSpiSignature extends Signature {
+                protected NonSpiSignature(String algorithm) {
+                        super(algorithm);
+                }
+                protected Object engineGetParameter(String name) {
+                        throw new UnsupportedOperationException(NONSPI_MSG);
+                }
+		protected AlgorithmParameters engineGetParameters() {
+			throw new UnsupportedOperationException(NONSPI_MSG);
+		}
+		protected void engineInitSign (PrivateKey key) {
+                        throw new UnsupportedOperationException(NONSPI_MSG);
+                }
+		protected void engineInitSign (PrivateKey key, SecureRandom rand) {
+                        throw new UnsupportedOperationException(NONSPI_MSG);
+                }
+		protected void engineInitVerify (PublicKey key) {
+                        throw new UnsupportedOperationException(NONSPI_MSG);
+                }
+                protected void engineSetParameter (AlgorithmParameterSpec param) {
+                        throw new UnsupportedOperationException(NONSPI_MSG);
+                }
+                protected void engineSetParameter (String param, Object value) {
+                        throw new UnsupportedOperationException(NONSPI_MSG);
+                }
+		protected byte[] engineSign () {
+			throw new UnsupportedOperationException(NONSPI_MSG);
+		}
+		protected int engineSign (byte[] outbuf, int off, int len) {
+			throw new UnsupportedOperationException(NONSPI_MSG);
+		}
+		protected void engineUpdate (byte b) {
+			throw new UnsupportedOperationException(NONSPI_MSG);
+		}
+		protected void engineUpdate (byte[] b, int off, int len) {
+			throw new UnsupportedOperationException(NONSPI_MSG);
+		}
+		protected boolean engineVerify (byte[] sigBytes) {
+			throw new UnsupportedOperationException(NONSPI_MSG);
+		}
+		protected boolean engineVerify (byte[] sigBytes, int off, int len) {
+			throw new UnsupportedOperationException(NONSPI_MSG);
+		} 
+        }
+
 }
 

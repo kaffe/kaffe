@@ -131,9 +131,21 @@ public synchronized Enumeration elements() {
 
 public synchronized void ensureCapacity(int newCapacity) { 
 	if (elementData.length < newCapacity) {
+		int tmpCapacity = elementData.length;
+
+        	if (capacityIncrement > 0) { 
+			tmpCapacity += capacityIncrement;
+		} else { 
+			tmpCapacity *= 2;
+		}
+
+		if (tmpCapacity < newCapacity) {
+			tmpCapacity = newCapacity;
+		}
+
 		modCount++;
 		Object oldBuffer[] = elementData;
-		elementData = new Object[newCapacity];
+		elementData = new Object[tmpCapacity];
 		System.arraycopy(oldBuffer, 0, elementData, 0, elementCount);
 	}
 }
@@ -165,8 +177,7 @@ public synchronized boolean equals(Object o) {
 			Object other_elem = iter.next();
 
 			// if an element differs, return false.
-			if ((this_elem == null && other_elem != null)
-			    || !this_elem.equals(other_elem)) {
+			if ((this_elem != other_elem) && (this_elem==null || !this_elem.equals(other_elem))) {
 				return false;
 			}
 
@@ -230,7 +241,7 @@ public int indexOf(Object elem) {
 public synchronized int indexOf(Object elem, int index) {
 	for (int pos = index; pos < elementCount; pos++) {
 		Object obj = elementData[pos];
-		if (elem == obj || (elem != null && elem.equals(obj))) {
+		if ((elem == obj) || (elem != null && elem.equals(obj))) {
 			return (pos);
 		}
 	}
@@ -276,7 +287,7 @@ public synchronized int lastIndexOf(Object elem, int index) {
 		throw new ArrayIndexOutOfBoundsException();	// per JDK 1.3
 	for (int pos = index; pos >= 0; pos--) {
 		Object obj = elementData[pos];
-		if (elem == obj || elem.equals(obj)) {
+		if ((elem == obj) || (elem!=null && elem.equals(obj))) {
 			return (pos);
 		}
 	}
@@ -301,10 +312,20 @@ public boolean remove(Object o) {
 	}
 }
 
+/**
+ * Remove all elements from this vector that are contained in @c.
+ * 
+ * @return true iff this vector has been changed.
+ */
 public synchronized boolean removeAll(Collection c) {
-	int oldSize = size();
+	// anything to do?
+	if (c.size()==0) {
+		return false;
+	}
 
-	for (int i = 0; i < size(); ++i) {
+	int oldSize = elementCount;
+
+	for (int i = 0; i < elementCount; ++i) {
 		Object elem = elementData[i];
 		if (c.contains(elem)) {
 			remove(i);
@@ -315,7 +336,33 @@ public synchronized boolean removeAll(Collection c) {
 		}
 	}
 
-	return oldSize == size();
+	return oldSize != elementCount;
+}
+
+/**
+ * Remove all elements from this vector that are not contained in @c.
+ * 
+ * @return ture iff this vector has been changed.
+ */
+public synchronized boolean retainAll(Collection c) {
+	if (c.size()==0) {
+		// if the collection is empty, we will
+		// eventually remove all elements
+		removeAllElements();
+		return true;
+	}
+
+	int oldSize = elementCount;
+
+	for (int i=0; i<elementCount; i++) {
+		Object elem = elementData[i];
+		if (!c.contains(elem)) {
+			remove(i);
+			--i;
+		}
+	}
+
+	return oldSize != elementCount;
 }
 
 public synchronized void removeAllElements () {
@@ -358,6 +405,10 @@ public synchronized void setElementAt(Object obj, int index) {
 }
 
 public synchronized void setSize(int newSize) {
+	if (newSize < 0) {
+		throw new ArrayIndexOutOfBoundsException ();
+	}
+
 	int initialModCount = modCount;
 	ensureCapacity(newSize);
 	modCount = initialModCount + 1;
@@ -384,8 +435,13 @@ public synchronized Object[] toArray( Object anArray[] ) {
 		anArray.getClass().getComponentType(),
 		elementCount);
     }
+
     copyInto(anArray);
-    Arrays.fill(anArray, elementCount, anArray.length, null);
+ 
+    if (anArray.length > elementCount) {
+	anArray[elementCount] = null;
+    }
+ 
     return anArray;
 }
 
@@ -411,11 +467,23 @@ public synchronized String toString() {
 
 public synchronized void trimToSize() {
 	if (elementCount != elementData.length) {
-		modCount++;
 		Object oldBuffer[] = elementData;
 		elementData = new Object[elementCount];
 		System.arraycopy(oldBuffer, 0, elementData, 0, elementCount);
 	}
+}
+
+protected void removeRange (int fromIndex, int toIndex) {
+
+	int change = toIndex - fromIndex;
+
+	if (change > 0) {
+		System.arraycopy (elementData, toIndex, elementData, fromIndex, elementCount-toIndex);
+	} else if (change < 0) {
+		throw new IndexOutOfBoundsException ();
+	}
+	
+	elementCount -= change;
 }
 }
 

@@ -128,10 +128,7 @@ public Object invoke(Object obj, Object args[])
 	for (int i = 0; i < args.length; i++) {
 		Class pt = parameterTypes[i];
 		Object arg = args[i];
-		if ((arg == null && !pt.isPrimitive()) || pt.isAssignableFrom(arg.getClass())) {
-			/* Arg okay */
-		}
-		else if (pt.isPrimitive()) {
+		if (pt.isPrimitive()) { 
 			/* Might need fixup */
 			if (pt == Boolean.TYPE) {
 				if (arg instanceof Boolean) {
@@ -250,7 +247,7 @@ public Object invoke(Object obj, Object args[])
 				throw new Error("cannot happen");
 			}
 		}
-		else {
+		else if (arg!=null && !pt.isAssignableFrom(arg.getClass())) {
 			throw new IllegalArgumentException("incompatible argument");
 		}
 	}

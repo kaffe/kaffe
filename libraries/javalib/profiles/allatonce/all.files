@@ -429,6 +429,7 @@ java/security/MessageDigest.java
 java/security/MessageDigestSpi.java
 java/security/NoSuchAlgorithmException.java
 java/security/NoSuchProviderException.java
+java/security/Policy.java
 java/security/PrivateKey.java
 java/security/ProviderException.java
 java/security/Provider.java

@@ -93,6 +93,11 @@ public static Integer getInteger(String nm) {
 }
 
 public static Integer getInteger(String nm, Integer val) {
+
+	if (nm==null || nm.length()==0) {
+		return null;
+	}
+
 	String prop = System.getProperty(nm);
 	if (prop != null) {
 		try {

@@ -40,9 +40,22 @@ public File(File dir, String name) {
 }
 
 public File(String path, String name) {
-	if (name == null) {
-	    throw new NullPointerException();
+	/*
+	 * possible npe is required by the spec.
+	 */
+	int i = name.length();
+	
+	if (i>0) {
+                /*
+                 * The first character of the path should never be removed,
+                 * therefore >1. It's safe to do so, since we've already
+                 * checked that the path is not empty.
+                 */
+                for (; i-->1 && name.charAt(i)==separatorChar;);
+                name = name.substring(0, i+1);
+	
 	}
+		
 	if (path == null) {
 	   this.path = name;
 	}
@@ -51,7 +64,7 @@ public File(String path, String name) {
 	}
 	else {
 		final char last = path.charAt(path.length() - 1);
-
+		
 		if (last != separatorChar) {
 			this.path = path + separatorChar + name;
 		}
@@ -62,10 +75,24 @@ public File(String path, String name) {
 }
 
 public File(String path) {
-	if (path == null) {
-		throw new NullPointerException();
+        /*
+         * we remove all trailing seperatorChars from the path, since
+         * they are unnecessary. Note that the NullPointerException is
+         * not only ok but required by the spec.
+         */
+        int i=path.length();
+
+        if (i>0) {
+                /*
+                 * The first character of the path should never be removed,
+                 * therefore >1. It's safe to do so, since we've already
+                 * checked that the path is not empty.
+                 */
+                for (; i-->1 && path.charAt(i)==separatorChar;);
+                this.path = path.substring(0, i+1);
+        } else {
+		this.path = "";
 	}
-	this.path = path;
 }
 
 public File(URI uri) {
@@ -311,11 +338,15 @@ public File[] listFiles() {
 }
 
 public File[] listFiles(final FileFilter filter) {
-	return listFiles(new FilenameFilter() {
-	  public boolean accept(File dir, String name) {
-	    return filter.accept(new File(dir, name));
-	  }
-	});
+	if (filter == null) {
+		return listFiles ((FilenameFilter)null);
+	} else {
+		return listFiles(new FilenameFilter() {
+	  	  public boolean accept(File dir, String name) {
+	    	    return filter.accept(new File(dir, name));
+	  	  }
+		});
+	}
 }
 
 public File[] listFiles(FilenameFilter filter) {

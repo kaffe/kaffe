@@ -95,7 +95,7 @@ public void applyPattern(String pattern) {
 	minint = 1;
 	maxint = Integer.MAX_VALUE;
 	minfrac = 0;
-	maxfrac = Integer.MAX_VALUE;
+	maxfrac = 0;
 	decsepshown = false;
 	groupsize = Integer.MAX_VALUE;
 	grouping = false;
@@ -252,7 +252,23 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 	int endpos = decpos;
 	if (endpos == -1) {
 		endpos = val.length;
+	} else {
+		/*
+	 	 * prepare num so the stuff below works:
+	 	 * 	a) if we're formatting a floating point value but don't have any
+	 	 * 	   fractional digits, we may have to round the last integer digit
+	 	 *	b) if we're formatting a floating point value that has more fractional
+	 	 * 	   digits than our pattern, round the last digit that fits into the pattern 
+	 	 */
+		if (maxfrac==0) {
+			if (val[decpos+1] >= '5') {
+				val[decpos-1] = (char)(val[decpos-1] + 1 - '0' + syms.zeroDigit);	
+			}
+		} else if ((maxfrac < val.length-decpos-1) && (val[decpos+maxfrac+1] >= '5')) {
+			val[decpos+maxfrac] = (char)(val[decpos+maxfrac] + 1 - '0' + syms.zeroDigit); 
+		}
 	}
+
 	int startpos = 0;
 	if (val[startpos] == '-') {
 		startpos++;
@@ -263,6 +279,7 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 		if (grouping && count % groupsize == 0 && count > 0) {
 			buf.append(syms.groupSeparator);
 		}
+
 		buf.append((char)(val[i] - '0' + syms.zeroDigit));
 	}
 	for (; count < minint; count++) {

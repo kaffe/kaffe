@@ -1,5 +1,62 @@
 2003-06-02  Helmer Kraemer  <hkraemer@freenet.de>
 
+	* libraries/javalib/java/lang/Double.java
+	(compareTo) corrected comparison of two negative doubles
+
+	* libraries/javalib/java/lang/Float.java
+	(compareTo) corrected comparison of two negative floats
+
+	* libraries/javalib/java/lang/Integer.java
+	(getInteger) return null if name is null or empty
+
+	* libraries/javalib/java/lang/reflect/Method.java
+	(invoke) don't crash if non primitive arg is null
+
+	* libraries/javalib/java/lang/reflect/Modifier.java
+	(toString) fix order of modifiers in the generated string
+
+	* libraries/javalib/java/text/DecimalFormat.java
+	(format) properly round the value if necessary
+	(applyPattern) default maximum number of fraction digits to 0
+
+	* libraries/javalib/java/math/BigInteger.java
+	(intValue, longValue): use the analogous of narrowing primitive
+	conversion as per spec
+
+	* libraries/javalib/java/io/File.java
+	(File): remove trailing seperatorChars from path
+	(listFiles): return all files in the directory if filter is
+	null
+
+	* libraries/javalib/java/io/FilePermissions.java:
+	(equals, implies): minor tweak to make it working
+
+	* libraries/javalib/java/util/jar/Manifest.java:
+	(read): accept manifests with a 0x00 at the end
+
+	* libraries/javalib/java/util/Vector.java:
+	(ensureCapacity): grow size as defined by spec
+	(equals): don't crash if element is null
+	(lastIndexOf): don't crash if element is null
+	(removeAll): corrected return value
+	(retainAll): new method
+	(setSize): throw ArrayIndexOutOfBounds if new size is < 0
+	(toArray): don't set all unused array elements to null
+	(trimToSize): don't increment modCount
+	(removeRange): new method, taken from Classpath
+
+	* libraries/javalib/java/security/Signature.java:
+	properly handle classes that are derived from SignatureSpi
+	but not from Signature
+
+	* developers/mauve-html-gen.pl: tweaked so it catches
+	all PASSes and all FAILs
+
+	* libraries/javalib/profiles/allatonce/all.files:
+	added java/security/Policy.java
+	
+2003-06-02  Helmer Kraemer  <hkraemer@freenet.de>
+
 	* kaffe/kaffevm/thread.c
 	(createInitialThread): properly initialize the context class
 	loader of the initial thread
