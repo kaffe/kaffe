@@ -47,7 +47,7 @@ public class ThreadState extends Thread {
 	childRunning = true;
 	verbose(ThreadState.this.getName() + " child running [child]");
 	try {
-	  wait(0);
+	  this.wait(0);
 	} catch (InterruptedException e) {
 	  assert(false, "thread " + e);
 	}
@@ -60,6 +60,13 @@ public class ThreadState extends Thread {
     verbose(getName() + " starting child thread");
     t.start();
     assert(t.isAlive(), "dead after start()");
+
+    // Check setDaemon after start()
+    try {
+      t.setDaemon(false);
+      assert(false, "setDaemon() after start");
+    } catch (IllegalThreadStateException e) {
+    }
 
     // Check double start()
     try {
