@@ -37,6 +37,15 @@ extern char*		  stringJava2C(const Hjava_lang_String*);
 /* Like stringJava2C() but use a caller-supplied buffer instead of KMALLOC() */
 extern char*		  stringJava2CBuf(const Hjava_lang_String*, char*, int);
 
+/* Create a Utf8Const object from a String object after replacing all 
+   occurrences of the first character with the second. 
+   NB.: unlike a conversion via stringJava2C -> utf8ConstNew, this will
+   preserve unicode characters properly, including the '\u0000' character.
+ */
+extern Utf8Const* stringJava2Utf8ConstReplace(Hjava_lang_String *,
+				jchar, jchar);
+
+/* Return the length of the corresponding Unicode string */
 /* Create an array of Unicode characters from the supplied C string */
 extern HArrayOfChar*	  stringC2CharArray(const char*);
 
@@ -93,6 +102,12 @@ extern int		  utf8ConstIsValidUtf8(const char *, unsigned int);
 
 /* Decode a Utf8Const (to Unicode) into the buffer (which must be big enough) */
 extern void		  utf8ConstDecode(const Utf8Const*, jchar*);
+
+/* 
+ * Encode a jchar[] Array into a zero-terminated C string
+ * that contains the array's utf8 encoding.
+ */
+extern char * utf8ConstEncode(const jchar *chars, int clength);
 
 /* Compare a Utf8Const and a String object */
 extern int		  utf8ConstEqualJavaString(const Utf8Const*,

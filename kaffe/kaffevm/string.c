@@ -188,6 +188,52 @@ utf8Const2JavaReplace(const Utf8Const *utf8, jchar from_ch, jchar to_ch)
 	return(string);
 }
 
+/* Create a Utf8Const object from a String object after replacing all
+ * occurrences of the first character with the second.
+ *
+ * NB.: unlike a conversion via stringJava2C -> utf8ConstNew, this will   
+ * preserve unicode characters properly, including the '\u0000' character.
+ */
+Utf8Const* 
+stringJava2Utf8ConstReplace(Hjava_lang_String *str, jchar from, jchar to) 
+{
+	int slength = STRING_SIZE(str);
+	jchar * chars = STRING_DATA(str);
+	char *utf8buf;
+	Utf8Const* utf8;
+
+	/* convert characters only if necessary */
+	if (slength != 0 && from != to) {
+		int i;
+		chars = KMALLOC(sizeof(jchar) * slength);
+
+		for (i = 0; i < slength; i++) {
+			jchar ci = ((jchar *)STRING_DATA(str))[i];
+
+			if (from == ci) {
+				ci = to;
+			} 
+			chars[i] = ci;
+		}
+	}
+
+	utf8buf = utf8ConstEncode(chars, slength);
+
+	if (chars != STRING_DATA(str)) {
+		KFREE(chars);
+	}
+
+	if (utf8buf == 0) {
+		errorInfo info;
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
+
+	utf8 = utf8ConstNew(utf8buf, -1);
+	KFREE(utf8buf);
+	return (utf8);
+}
+
 /*
  * Define functions used by the string hashtable to resize itself.
  * The problem is that we may block in KCALLOC/KFREE and the gc may kick
