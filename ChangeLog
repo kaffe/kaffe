@@ -1,5 +1,47 @@
 2003-06-12 Dalibor Topic <robilad@yahoo.com>
 
+	Linux 2.0.x IPv6 support compilation fixes.
+
+	* aclocal.m4, config/config.h.in,
+	configure, replace/Makefile.in: Regenerated.
+
+	* configure.in:
+	Check for getaddrinfo and getnameinfo, and use
+	replacement implementaitons if necessary. Added
+	more checks for IPv6 features.
+
+	* developers/getaddrinfo-socketinttypes-glibc2.diff:
+	New file, patch to allow getaddrinfo to find in_port_t
+	on Mandrake Linux 9.1.
+
+	* developers/autogen.sh:
+	Apply developers/getaddrinfo-socketinttypes-glibc2.diff.
+
+	* herrno.m4, in6addr.m4, include/dummyin6.h,
+	include/getaddrinfo.h, replace/dummyin6.c,
+	replace/getaddrinfo.c, replace/memset.c,
+	sockaddrin6.m4, sockinttypes.m4:
+	New files, taken from BSD-type licensed getaddrinfo
+	implementation version 1.5.1 from 
+	http://www.sra.co.jp/people/m-kasahr/getaddrinfo/ .
+	
+	* libraries/clib/net/InetAddressImpl.c,
+	libraries/clib/net/NetworkInterfaceImpl.c,
+	libraries/clib/net/PlainSocketImpl.c:
+	Use dummy IPv6 implementation and getaddrinfo if
+	necessary.
+
+	* replace/Makefile.am:
+	(libreplace_la_SOURCES) Added dummyin6.c, getaddrinfo.c
+	and memset.c.
+
+	Based on a patch by: Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	Reported by: Ito Kazumitsu <kaz@maczuka.gcd.org>,
+	Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+2003-06-12 Dalibor Topic <robilad@yahoo.com>
+
 	* test/regression/Reflect.java:
 	Fixed expected output for java.lang.System.arraycopy.
 	

@@ -28,6 +28,12 @@
 
 #include <ifaddrs.h>
 
+#include "dummyin6.h"
+
+#if !defined(HAVE_GETADDRINFO) || !defined(HAVE_GETNAMEINFO)
+#include "getaddrinfo.h"
+#endif
+
 struct Hkaffe_util_Ptr *
 java_net_NetworkInterfaceImpl_detectInterfaces(void)
 {

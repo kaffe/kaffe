@@ -26,6 +26,12 @@
 #include "../../../kaffe/kaffevm/object.h"
 #include "../../../kaffe/kaffevm/itypes.h"
 
+#include "dummyin6.h"
+
+#if !defined(HAVE_GETADDRINFO) || !defined(HAVE_GETNAMEINFO)
+#include "getaddrinfo.h"
+#endif
+
 /*
  * Supported socket options
  */

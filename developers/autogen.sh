@@ -106,6 +106,8 @@ patch -p0 < developers/patch-libtool-openbsd.diff
 patch -p0 < developers/patch-libtool-realloc.diff
 cp libltdl/acinclude.m4 libtool.m4
 
+patch -p 1 < developers/getaddrinfo-socketinttypes-glibc2.diff
+
 aclocal -I .
 autoheader -Wall
 automake --add-missing --copy -Wall || /bin/true  # ignore warnings

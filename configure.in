@@ -963,18 +963,38 @@ AC_CHECK_FUNCS([memcpy memmove])
 AC_CHECK_FUNCS([mkdir rmdir])
 AC_CHECK_FUNCS([getcwd chdir getwd gettimeofday ftime time uname getuid])
 AC_CHECK_FUNCS([localtime])
-AC_CHECK_FUNCS([getaddrinfo])
 
 AM_ICONV
 LIBS="$LIBS $LIBICONV"
 
+dnl getifaddrs replacement for linux
 AC_REPLACE_FUNCS([getifaddrs])
 AC_CHECK_HEADERS(ifaddrs.h,use_compat_ifaddrs="no",use_compat_ifaddrs="yes")
 AM_CONDITIONAL(USE_COMPAT_IFADDRS, test "$use_compat_ifaddrs" = "yes")
 
+dnl inet_ntop and inet_pton replacement for cygwin
 AC_REPLACE_FUNCS([inet_ntop])
 AC_REPLACE_FUNCS([inet_pton])
 AC_CHECK_HEADERS([arpa/nameser.h])
+
+dnl getaddrinfo replacement for Linux 2.0.x
+AC_REPLACE_FUNCS([memset])
+AC_TYPE_SOCKLEN_T
+AC_TYPE_IN_PORT_T
+AC_DECL_H_ERRNO
+
+AC_CHECK_FUNCS([getaddrinfo getnameinfo])
+if test "$ac_cv_func_getaddrinfo$ac_cv_func_getnameinfo" != yesyes ; then
+   AC_LIBOBJ(getaddrinfo)
+fi
+
+dnl IPv6 macros on systems lacking them
+AC_STRUCT_IN6_ADDR
+AC_STRUCT_SOCKADDR_IN6
+AC_STRUCT_SOCKADDR_STORAGE
+AC_DECL_IN6ADDR_ANY
+AC_DECL_IN6ADDR_LOOPBACK
+AC_TYPE_SA_FAMILY_T
 
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"

@@ -29,6 +29,12 @@
 #include "baseClasses.h"
 #include "locks.h"
 
+#include "dummyin6.h"
+
+#if !defined(HAVE_GETADDRINFO) || !defined(HAVE_GETNAMEINFO)
+#include "getaddrinfo.h"
+#endif
+
 #define	HOSTNMSZ	1024
 
 /*

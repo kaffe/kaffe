@@ -109,6 +109,9 @@
 /* Define to 1 if you have the `getifaddrs' function. */
 #undef HAVE_GETIFADDRS
 
+/* Define to 1 if you have the `getnameinfo' function. */
+#undef HAVE_GETNAMEINFO
+
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
@@ -277,6 +280,9 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
+/* Define to 1 if you have the `memset' function. */
+#undef HAVE_MEMSET
+
 /* Define to 1 if you have the `mergesort' function. */
 #undef HAVE_MERGESORT
 
@@ -406,11 +412,20 @@
 /* Define to 1 if you have the `strtoul' function. */
 #undef HAVE_STRTOUL
 
+/* Define if <netinet/in.h> defines \`struct in6_addr' */
+#undef HAVE_STRUCT_IN6_ADDR
+
 /* Do we have sigcontext */
 #undef HAVE_STRUCT_SIGCONTEXT
 
 /* Do we have sigcontext_struct */
 #undef HAVE_STRUCT_SIGCONTEXT_STRUCT
+
+/* Define if <netinet/in.h> defines \`struct sockaddr_in6' */
+#undef HAVE_STRUCT_SOCKADDR_IN6
+
+/* Define if <netinet/in.h> defines \`struct sockaddr_storage' */
+#undef HAVE_STRUCT_SOCKADDR_STORAGE
 
 /* Define to 1 if `tm_zone' is member of `struct tm'. */
 #undef HAVE_STRUCT_TM_TM_ZONE
@@ -554,8 +569,17 @@
 /* Define to 1 if you have the `__throw' function. */
 #undef HAVE___THROW
 
+/* Define if \`h_errno' is declared by <netdb.h> */
+#undef H_ERRNO_DECLARED
+
 /* Define as const if the declaration of iconv() needs const. */
 #undef ICONV_CONST
+
+/* Define if \`in6addr_any' is declared by <netinet/in.h> */
+#undef IN6ADDR_ANY_DECLARED
+
+/* Define if \`in6addr_loopback' is declared by <netinet/in.h> */
+#undef IN6ADDR_LOOPBACK_DECLARED
 
 /* Kaffe version number */
 #undef KAFFEVERSION
@@ -653,6 +677,9 @@
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
+/* Define to \`int' if <sys/types.h> or <sys/socket.h> does not define. */
+#undef in_port_t
+
 /* Define as `__inline' if that's what the C compiler calls it, or to nothing
    if it is not supported. */
 #undef inline
@@ -663,8 +690,14 @@
 /* Define to `int' if <sys/types.h> does not define. */
 #undef pid_t
 
+/* Define to \`int' if <sys/types.h> or <sys/socket.h> does not define. */
+#undef sa_family_t
+
 /* Define to `unsigned' if <sys/types.h> does not define. */
 #undef size_t
+
+/* Define to \`int' if <sys/types.h> or <sys/socket.h> does not define. */
+#undef socklen_t
 
 /* Define to `int' if <sys/types.h> does not define. */
 #undef ssize_t
