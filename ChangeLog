@@ -1,4 +1,12 @@
 2003-09-16  Dalibor Topic <robilad@kaffe.org>
+
+	* developers/patch-libtool-amiga.diff,
+	developers/patch-libtool-openbsd.diff,
+	developers/patch-libtool-realloc.diff:
+	Updated merge status, since the patches have been merged into
+	libtool's CVS.
+
+2003-09-16  Dalibor Topic <robilad@kaffe.org>
 	
 	* test/regression/run_time/Makefile.am:
 	Don't use GNU make extensions to avoid build problems on platforms

@@ -3,7 +3,7 @@ More info on this patch:
 
   http://www.kaffe.org/pipermail/kaffe/2003-June/042426.html
 
-This should be merged upstream to libtool.
+This patch has been merged upstream in libtool.
 
  
 --- libltdl/ltdl.c.jim	2003-06-06 16:55:53.000000000 -0700
