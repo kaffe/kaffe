@@ -34,7 +34,9 @@ all:
 clean:
 
 distclean:
-		rm -f Makefile .depend $(PSCRIPTFILES)
+		rm -f Makefile .depend $(PSCRIPTFILES) $(SCRIPTFILES_SUN) $(SCRIPTFILES_PIZZA)
+		(cd compat ; rm -f $(SCRIPTFILES_COMPAT))
+		-rmdir compat
 
 install:	install-pizza install-sun install-jars @suncompatible@
 
