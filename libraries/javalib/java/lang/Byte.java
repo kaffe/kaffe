@@ -49,14 +49,9 @@ public double doubleValue() {
 }
 
 public boolean equals(Object obj) {
-	try {
-		if (((Byte)obj).val == val) {
-			return (true);
-		}
-	}
-	catch (ClassCastException _) {
-	}
-	return (false);
+	return (obj != null)
+	    && (obj instanceof Byte)
+	    && (((Byte) obj).val == this.val);
 }
 
 public float floatValue() {

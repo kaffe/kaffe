@@ -53,16 +53,10 @@ public double doubleValue()
 	return ((double)val);
 }
 
-public boolean equals(Object obj)
-	{
-	try {
-		if (((Short)obj).val == val) {
-			return (true);
-		}
-	}
-	catch (ClassCastException _) {
-	}
-	return (false);
+public boolean equals(Object obj) {
+	return (obj != null)
+	    && (obj instanceof Short)
+	    && (((Short) obj).val == this.val);
 }
 
 public float floatValue()
