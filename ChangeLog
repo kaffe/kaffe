@@ -1,3 +1,7 @@
+Wed Mar 29 18:22:48 CEST 2000  Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
+
+	* config/m68k/trampolines.c: fix m68k compiles again (Debian bug#59420).
+
 Tue Mar 28 15:02:57 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* include/errors.h, include/native.h, kaffe/kaffevm/exception.c,
