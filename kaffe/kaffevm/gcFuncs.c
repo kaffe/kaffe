@@ -117,15 +117,13 @@ DBG(CLASSGC,
         KFREE(clazz->if2itable);
         KFREE(clazz->itable2dtable);
         KFREE(clazz->gc_layout);
+	KFREE(clazz->sourcefile);
 
         /* The interface table for array classes points to static memory */
         if (!CLASS_IS_ARRAY(clazz)) {
                 KFREE(clazz->interfaces);
         }
         utf8ConstRelease(clazz->name);
-	if (clazz->sourcefile != 0) {
-		utf8ConstRelease(clazz->sourcefile);
-	}
 }
 
 /*      

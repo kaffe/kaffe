@@ -48,7 +48,7 @@ struct Hjava_lang_Class {
 	struct _classEntry*	centry;
 
 	Utf8Const*		name;
-	Utf8Const*		sourcefile;	/* source file name if known */
+	char*			sourcefile;	/* source file name if known */
 	accessFlags		accflags;
 
 	/* If non-NULL, a pointer to the superclass.
@@ -232,7 +232,7 @@ struct _classFile;
 #define OBJECT_CLASS(OBJ)     ((OBJ)->dtable->class)
 #define CLASS_CNAME(CL)  ((CL)->name->data)
 #define CLASS_SOURCEFILE(CL)	\
-	((CL)->sourcefile == 0 ? "source file unknown" : (CL)->sourcefile->data)
+	((CL)->sourcefile == 0 ? "source file unknown" : (CL)->sourcefile)
 #define _PRIMITIVE_DTABLE ((struct _dispatchTable*)(-1))
 #define CLASS_IS_PRIMITIVE(CL) ((CL)->dtable == _PRIMITIVE_DTABLE)
 

@@ -536,12 +536,19 @@ void
 addSourceFile(Hjava_lang_Class* c, int idx)
 {
 	constants* pool;
-	Utf8Const* sourcefile;
+	const char* sourcefile;
+	const char* basename;
 
 	pool = CLASS_CONSTANTS (c);
-	sourcefile = WORD2UTF (pool->data[idx]);
-	utf8ConstAddRef(sourcefile);
-	c->sourcefile = sourcefile;
+	sourcefile = WORD2UTF (pool->data[idx])->data;
+	basename = strrchr(sourcefile, '/');
+	if (basename == 0) {
+		basename = sourcefile;
+	} else {
+		basename++;
+	}
+	c->sourcefile = KMALLOC(strlen(basename) + 1);
+	strcpy(c->sourcefile, basename);	
 }
 
 Method*
