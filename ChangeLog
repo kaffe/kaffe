@@ -1,5 +1,75 @@
 2004-10-15  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/awt/BitwiseXORComposite.java,
+	libraries/javalib/gnu/java/awt/ClasspathToolkit.java,
+	libraries/javalib/gnu/java/awt/image/XBMDecoder.java,
+	libraries/javalib/gnu/java/awt/peer/GLightweightPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkGlyphVector.java,
+	libraries/javalib/gnu/java/net/protocol/http/Connection.java,
+	libraries/javalib/gnu/java/nio/NIODatagramSocket.java,
+	libraries/javalib/gnu/java/nio/ServerSocketChannelImpl.java,
+	libraries/javalib/gnu/java/nio/charset/UTF_16.java,
+	libraries/javalib/gnu/java/nio/charset/UTF_16BE.java,
+	libraries/javalib/gnu/java/nio/charset/UTF_16LE.java,
+	libraries/javalib/gnu/java/rmi/RMIMarshalledObjectOutputStream.java,
+	libraries/javalib/gnu/java/rmi/rmic/RMIC.java,
+	libraries/javalib/gnu/java/rmi/server/RMIHashes.java,
+	libraries/javalib/gnu/java/rmi/server/RMIObjectInputStream.java,
+	libraries/javalib/gnu/java/rmi/server/RMIObjectOutputStream.java,
+	libraries/javalib/gnu/java/rmi/server/UnicastConnection.java,
+	libraries/javalib/gnu/java/rmi/server/UnicastConnectionManager.java,
+	libraries/javalib/gnu/java/rmi/server/UnicastRemoteCall.java,
+	libraries/javalib/gnu/java/rmi/server/UnicastServer.java,
+	libraries/javalib/gnu/java/rmi/server/UnicastServerRef.java,
+	libraries/javalib/gnu/java/security/OID.java,
+	libraries/javalib/gnu/java/security/provider/DSAParameters.java,
+	libraries/javalib/gnu/java/security/provider/DSASignature.java,
+	libraries/javalib/gnu/java/security/x509/X500DistinguishedName.java,
+	libraries/javalib/gnu/java/security/x509/X509CRL.java,
+	libraries/javalib/gnu/javax/rmi/PortableServer.java,
+	libraries/javalib/gnu/javax/rmi/CORBA/DelegateFactory.java,
+	libraries/javalib/gnu/javax/rmi/CORBA/GetDelegateInstanceException.java,
+	libraries/javalib/gnu/javax/rmi/CORBA/PortableRemoteObjectDelegateImpl.java,
+	libraries/javalib/gnu/javax/rmi/CORBA/StubDelegateImpl.java:
+	Resynced with GNU Classpath.
+
+	2004-10-13  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/awt/BitwiseXORComposite.java,
+        gnu/java/awt/ClasspathToolkit.java,
+        gnu/java/awt/image/XBMDecoder.java,
+        gnu/java/awt/peer/GLightweightPeer.java,
+        gnu/java/awt/peer/gtk/GdkGlyphVector.java,
+        gnu/java/net/protocol/http/Connection.java,
+        gnu/java/nio/NIODatagramSocket.java,
+        gnu/java/nio/ServerSocketChannelImpl.java,
+        gnu/java/nio/charset/UTF_16.java,
+        gnu/java/nio/charset/UTF_16BE.java,
+        gnu/java/nio/charset/UTF_16LE.java,
+        gnu/java/rmi/RMIMarshalledObjectOutputStream.java,
+        gnu/java/rmi/rmic/RMIC.java,
+        gnu/java/rmi/server/RMIHashes.java,
+        gnu/java/rmi/server/RMIObjectInputStream.java,
+        gnu/java/rmi/server/RMIObjectOutputStream.java,
+        gnu/java/rmi/server/UnicastConnection.java,
+        gnu/java/rmi/server/UnicastConnectionManager.java,
+        gnu/java/rmi/server/UnicastRemoteCall.java,
+        gnu/java/rmi/server/UnicastServer.java,
+        gnu/java/rmi/server/UnicastServerRef.java,
+        gnu/java/security/OID.java,
+        gnu/java/security/provider/DSAParameters.java,
+        gnu/java/security/provider/DSASignature.java,
+        gnu/java/security/x509/X500DistinguishedName.java,
+        gnu/java/security/x509/X509CRL.java,
+        gnu/javax/rmi/CORBA/DelegateFactory.java,
+        gnu/javax/rmi/CORBA/GetDelegateInstanceException.java,
+        gnu/javax/rmi/CORBA/PortableRemoteObjectDelegateImpl.java,
+        gnu/javax/rmi/CORBA/StubDelegateImpl.java,
+        gnu/javax/rmi/PortableServer.java:
+        Reorganized import statements.
+
+2004-10-15  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/beans/ExplicitBeanInfo.java:
         Resynced with GNU Classpath.
 

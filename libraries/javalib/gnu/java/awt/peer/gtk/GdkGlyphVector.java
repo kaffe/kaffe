@@ -50,14 +50,6 @@ import java.awt.font.GlyphJustificationInfo;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.text.AttributedCharacterIterator;
-import java.text.CharacterIterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringTokenizer;
 
 public class GdkGlyphVector extends GlyphVector
 {

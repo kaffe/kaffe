@@ -1,5 +1,5 @@
 /* PortableServer.java -- 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,18 +38,14 @@ exception statement from your version. */
 
 package gnu.javax.rmi;
 
-import java.rmi.NoSuchObjectException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteStub;
+import java.rmi.NoSuchObjectException;
 import java.rmi.server.UnicastRemoteObject;
+import java.rmi.server.RemoteStub;
 import java.util.Hashtable;
 
-import javax.rmi.CORBA.ObjectImpl;
-import javax.rmi.CORBA.Stub;
-import javax.rmi.CORBA.Tie;
-import javax.rmi.CORBA.Util;
-//import org.omg.CORBA.portable.ObjectImpl;
+import javax.rmi.CORBA.*;
 
 /**
  * The relationship of PortableRemoteObjectImpl with PortableServer
