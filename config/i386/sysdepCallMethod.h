@@ -25,7 +25,7 @@
  *  This function is mandatory for both JIT and Interpreter (since stubs
  *  have now been deprecated).
  */
-#if NEED_sysdepCallMethod
+#if defined(NEED_sysdepCallMethod)
 static inline void sysdepCallMethod(callMethodInfo *call) {
   unsigned args = call->nrargs;
 
