@@ -288,12 +288,9 @@ public abstract class DateFormat extends Format implements Cloneable
    * This method returns a list of available locales supported by this
    * class.
    */
-  public static Locale[] getAvailableLocales ()
+  public static Locale[] getAvailableLocales()
   {
-    // FIXME
-    Locale[] l = new Locale[1];
-    l[0] = Locale.US;
-    return l;
+    return Locale.getAvailableLocales();
   }
 
   /**

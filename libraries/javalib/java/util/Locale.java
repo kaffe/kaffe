@@ -194,14 +194,14 @@ public final class Locale implements Serializable, Cloneable
   /**
    * Array storing all available locales.
    */
-  private transient static Locale[] availableLocales;
+  private static transient Locale[] availableLocales;
 
   /**
    * Locale cache. Only created locale objects are stored.
    * Contains all supported locales when getAvailableLocales()
    * got called.
    */
-  private transient static HashMap localeMap;
+  private static transient HashMap localeMap;
   
   /**
    * The default locale. Except for during bootstrapping, this should never be
@@ -346,7 +346,7 @@ public final class Locale implements Serializable, Cloneable
    *
    * @return the installed locales
    */
-  public synchronized static Locale[] getAvailableLocales()
+  public static synchronized Locale[] getAvailableLocales()
   {
     if (availableLocales == null)
       {
