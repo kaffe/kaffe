@@ -27,6 +27,7 @@ private int level = Deflater.DEFAULT_COMPRESSION;
 private byte[] lh = new byte[LOC_RECSZ];
 private byte[] ch = new byte[CEN_RECSZ];
 private byte[] ce = new byte[END_RECSZ];
+private byte[] da = new byte[DATA_RECSZ];
 private ZipEntry curr;
 private Vector dir;
 private OutputStream strm;
@@ -43,6 +44,9 @@ private int off;
 private int len;
 
 Storer() {
+    total = 0;
+    off = 0;
+    len = 0;
 }
 
 public int deflate(byte[] b, int p, int l) {
@@ -128,6 +132,22 @@ public void closeEntry() throws IOException
 	curr.crc = crcval;
 	dout += curr.csize;
 
+
+	// I do not know exactly why, but adding an extended header to
+	// an uncompressed entry breaks things when extracting.
+
+	if (curr.method == DEFLATED) {
+	    // do method called putextended() from zipfile.c
+	    // IE : Write an extended local header (crc, csize, size)
+
+	    put32(da, DATA_SIGNATURE, (int)DATA_HEADSIG);
+	    put32(da, DATA_CRC, (int)curr.crc);
+	    put32(da, DATA_COMPRESSEDSIZE, (int) curr.csize);
+	    put32(da, DATA_UNCOMPRESSEDSIZE, (int) curr.size);
+
+	    strm.write(da);
+	}
+
 	curr = null;
 }
 
@@ -195,9 +215,6 @@ public void putNextEntry(ZipEntry ze) throws IOException
 {
 	closeEntry();	// Close previous entry
 
-	put32(lh, LOC_SIGNATURE, (int)LOC_HEADSIG);
-	put16(lh, LOC_VERSIONEXTRACT, ZIPVER);
-	put16(lh, LOC_FLAGS, ze.flag);
 	if (ze.method == -1) {
 		ze.method = method;
 	}
@@ -210,6 +227,7 @@ public void putNextEntry(ZipEntry ze) throws IOException
 			throw new ZipException("crc not set in stored entry");
 		}
 	}
+	ze.flag = ze.method;
 
 	if (curr == null || curr.method != ze.method) {
 		if (ze.method == STORED) {
@@ -220,6 +238,9 @@ public void putNextEntry(ZipEntry ze) throws IOException
 		}
 	}
 
+	put32(lh, LOC_SIGNATURE, (int)LOC_HEADSIG);
+	put16(lh, LOC_VERSIONEXTRACT, ZIPVER);
+	put16(lh, LOC_FLAGS, ze.flag);
 	put16(lh, LOC_METHOD, ze.method);
 	put16(lh, LOC_TIME, 0);
 	put16(lh, LOC_DATE, 0);
@@ -277,14 +298,14 @@ public synchronized void write(byte[] buf, int off, int len) throws IOException
 
 private void put16(byte[] zheader, int pos, int val) {
 	zheader[pos] = (byte)val;
-	zheader[pos+1] = (byte)(val >> 8);
+	zheader[pos+1] = (byte)(val >>> 8);
 }
 
 private void put32(byte[] zheader, int pos, int val) {
 	zheader[pos] = (byte)val;
-	zheader[pos+1] = (byte)(val >> 8);
-	zheader[pos+2] = (byte)(val >> 16);
-	zheader[pos+3] = (byte)(val >> 24);
+	zheader[pos+1] = (byte)(val >>> 8);
+	zheader[pos+2] = (byte)(val >>> 16);
+	zheader[pos+3] = (byte)(val >>> 24);
 }
 
 }

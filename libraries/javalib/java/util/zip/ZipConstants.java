@@ -66,6 +66,11 @@ public interface ZipConstants {
   public final static long LOC_HEADSIG = 0x04034b50;
 
   public final static long DATA_HEADSIG = 0x08074b50;
+  public final static int DATA_SIGNATURE = 0;
+  public final static int DATA_CRC = 4;
+  public final static int DATA_COMPRESSEDSIZE = 8;
+  public final static int DATA_UNCOMPRESSEDSIZE = 12;
+
   public final static int DATA_RECSZ = 16;
 
   public static final int DEFLATED = 8;
