@@ -1,5 +1,24 @@
 2004-07-25  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* java/awt/image/ByteLookupTable.java,
+	java/awt/image/Kernel.java,
+	java/awt/image/LookupTable.java,
+	java/awt/image/ShortLookupTable.java,
+	javax/swing/Spring.java,
+	javax/swing/SpringLayout.java,
+	javax/swing/plaf/basic/BasicTextFieldUI.java,
+	javax/swing/plaf/basic/BasicToolBarSeparatorUI.java,
+	javax/swing/text/DefaultHighlighter.java,
+	javax/swing/text/FieldView.java,
+	javax/swing/text/Highlighter.java,
+	javax/swing/text/LayeredHighlighter.java,
+	javax/swing/text/PlainView.java,
+	javax/swing/text/TabExpander.java,
+	javax/swing/text/TabableView.java:
+	Added missing files from the merge.
+
+2004-07-25  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* THIRDPARTY: Added an entry for GNU Getopt.
 
 2004-07-24  Guilhem Lavaux <guilhem@kaffe.org>
