@@ -111,7 +111,6 @@ EXTRA_DIST = \
 	developers/mauve-html-gen.pl \
 	developers/mauve-kaffe \
 	developers/mauve-results.sh \
-	developers/patch-libtool-cdpath-zsh.patch \
 	developers/patch-libtool-quote-sys_search_path.diff \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \

@@ -1,3 +1,31 @@
+2004-08-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* FAQ/FAQ.automake:
+	Updated to libtool 1.5.8.
+
+	* developers/autogen.sh:
+	Check for libtool 1.5.8.
+
+	* developers/patch-libtool-cdpath-zsh.patch:
+	Removed.
+
+	* Makefile.am:
+	(EXTRA_DIST) Removed developers/patch-libtool-cdpath-zsh.patch.
+
+	* Makefile.in,
+	configure:
+	Regenerated.
+
+	* libltdl/acinclude.m4,
+	libltdl/config.guess,
+	libltdl/config.sub,
+	libltdl/configure,
+	libltdl/install-sh,
+	libltdl/ltmain.sh,
+	m4/libtool.m4,
+	scripts/ltmain.sh:
+	Updated to libtool 1.5.8.
+
 2004-08-11  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/io/File.java:

@@ -16,7 +16,7 @@ if [ "$1" != "--override" ]; then
 
 WANTED_AUTOMAKE_VERS="1.9"
 WANTED_AUTOCONF_VERS="2.59"
-WANTED_LIBTOOL_VERS="1.5.6"
+WANTED_LIBTOOL_VERS="1.5.8"
 WANTED_AUTOPOINT_VERS="0.14.1"
 
 ACLOCAL_VERS=`aclocal --version | 
@@ -110,7 +110,6 @@ find . -type f -name 'Makefile.in' | xargs rm -f
 # Now regenerate autotools
 libtoolize --automake --ltdl --copy --force
 patch -p0 < developers/patch-libtool-quote-sys_search_path.diff
-patch -p0 <developers/patch-libtool-cdpath-zsh.patch
 cp libltdl/acinclude.m4 m4/libtool.m4
 
 # gettextize kaffe
