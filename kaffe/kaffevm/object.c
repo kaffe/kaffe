@@ -39,9 +39,6 @@ extern gcFuncs gcClassObject;
 
 /*
  * Create a new Java object.
- * If the object is a Class then we make it a root (for the moment).
- * Otherwise, if the object has a finalize method we look it up and store
- * it with the object for it's later use.  Otherwise the object is normal.
  */
 Hjava_lang_Object*
 newObject(Hjava_lang_Class* class)
@@ -62,6 +59,7 @@ ADBG(	printf("newObject %x class %s\n", obj,
 
 /*
  * Allocate a new class object.
+ * We make Class objects roots (for the moment).
  */
 Hjava_lang_Class*
 newClass(void)
