@@ -136,20 +136,20 @@ public void closeEntry() throws IOException
 	// We only add the data descriptor when writing a compressed entry
 
 	if (curr.flag == 0x0008) {
-	    byte[] da = new byte[DATA_RECSZ];
-	    put32(da, DATA_SIGNATURE, (int)DATA_HEADSIG);
-	    put32(da, DATA_CRC, (int)curr.crc);
-	    put32(da, DATA_COMPRESSEDSIZE, (int) curr.csize);
-	    put32(da, DATA_UNCOMPRESSEDSIZE, (int) curr.size);
+	    byte[] da = new byte[EXTHDR];
+	    put32(da, 0, (int)EXTSIG);
+	    put32(da, EXTCRC, (int)curr.crc);
+	    put32(da, EXTSIZ, (int) curr.csize);
+	    put32(da, EXTLEN, (int) curr.size);
 	    strm.write(da);
-	    dout += DATA_RECSZ;
+	    dout += EXTHDR;
 	}
 
 	curr = null;
 }
 
 public void finish() throws IOException {
-	byte[] ch = new byte[CEN_RECSZ];
+	byte[] ch = new byte[CENHDR];
 	int count = 0;
 	int size = 0;
 
@@ -168,28 +168,28 @@ public void finish() throws IOException {
 		    UTF8.encode(ze.name) : new byte[0];
 
 		// Write central directory entry
-		put32(ch, CEN_SIGNATURE, (int)CEN_HEADSIG);
+		put32(ch, 0, (int)CENSIG);
 		int zipver = (ze.method == STORED ? ZIPVER_1_0 : ZIPVER_2_0);
-		put16(ch, CEN_VERSIONMADE, zipver);
-		put16(ch, CEN_VERSIONEXTRACT, zipver);
-		put16(ch, CEN_FLAGS, ze.flag);
-		put16(ch, CEN_METHOD, ze.method);
-		put32(ch, CEN_TIME, ze.dosTime);
-		put32(ch, CEN_CRC, (int)ze.crc);
-		put32(ch, CEN_COMPRESSEDSIZE, (int)ze.csize);
-		put32(ch, CEN_UNCOMPRESSEDSIZE, (int)ze.size);
-		put16(ch, CEN_FILENAMELEN, nameBuf.length);
-		put16(ch, CEN_EXTRAFIELDLEN, ze.extra == null ?
+		put16(ch, CENVEM, zipver);
+		put16(ch, CENVER, zipver);
+		put16(ch, CENFLG, ze.flag);
+		put16(ch, CENHOW, ze.method);
+		put32(ch, CENTIM, ze.dosTime);
+		put32(ch, CENCRC, (int)ze.crc);
+		put32(ch, CENSIZ, (int)ze.csize);
+		put32(ch, CENLEN, (int)ze.size);
+		put16(ch, CENNAM, nameBuf.length);
+		put16(ch, CENEXT, ze.extra == null ?
 			0 : ze.extra.length);
-		put16(ch, CEN_FILECOMMENTLEN, ze.comment == null ?
+		put16(ch, CENCOM, ze.comment == null ?
 			0 : ze.comment.length());
-		put16(ch, CEN_DISKNUMBER, 0);
-		put16(ch, CEN_INTERNALATTR, 0);
-		put32(ch, CEN_EXTERNALATTR, 0);
-		put32(ch, CEN_LCLOFFSET, (int)ze.offset);
+		put16(ch, CENDSK, 0);
+		put16(ch, CENATT, 0);
+		put32(ch, CENATX, 0);
+		put32(ch, CENOFF, (int)ze.offset);
 
 		strm.write(ch);
-		size += CEN_RECSZ;
+		size += CENHDR;
 
 		// Write name
 		strm.write(nameBuf);
@@ -209,15 +209,15 @@ public void finish() throws IOException {
 	        throw new ZipException("ZIP file must have at least one entry");
 	}
 
-	byte[] ce = new byte[END_RECSZ];
-	put32(ce, END_SIGNATURE, (int)END_ENDSIG);
-	put16(ce, END_DISKNUMBER, 0);
-	put16(ce, END_CENDISKNUMBER, 0);
-	put16(ce, END_TOTALCENONDISK, count);
-	put16(ce, END_TOTALCEN, count);
-	put32(ce, END_CENSIZE, size);
-	put32(ce, END_CENOFFSET, dout);
-	put16(ce, END_COMMENTLEN, 0);
+	byte[] ce = new byte[ENDHDR];
+	put32(ce, 0, (int)ENDSIG);
+	put16(ce, ENDNRD, 0);
+	put16(ce, ENDDCD, 0);
+	put16(ce, ENDSUB, count);
+	put16(ce, ENDTOT, count);
+	put32(ce, ENDSIZ, size);
+	put32(ce, ENDOFF, dout);
+	put16(ce, ENDCOM, 0);
 
 	strm.write(ce);
 
@@ -257,31 +257,31 @@ public void putNextEntry(ZipEntry ze) throws IOException
 	byte[] nameBuf = (ze.name != null) ?
 	    UTF8.encode(ze.name) : new byte[0];
 
-	byte[] lh = new byte[LOC_RECSZ];
-	put32(lh, LOC_SIGNATURE, (int)LOC_HEADSIG);
-	put16(lh, LOC_VERSIONEXTRACT,
+	byte[] lh = new byte[LOCHDR];
+	put32(lh, 0, (int)LOCSIG);
+	put16(lh, LOCVER,
 		ze.method == STORED ? ZIPVER_1_0 : ZIPVER_2_0);
-	put16(lh, LOC_FLAGS, ze.flag);
-	put16(lh, LOC_METHOD, ze.method);
-	put32(lh, LOC_TIME, ze.dosTime);
+	put16(lh, LOCFLG, ze.flag);
+	put16(lh, LOCHOW, ze.method);
+	put32(lh, LOCTIM, ze.dosTime);
 
 	if (ze.method == STORED) {
-		put32(lh, LOC_CRC, (int)ze.crc);
-		put32(lh, LOC_COMPRESSEDSIZE, (int)ze.csize);
-		put32(lh, LOC_UNCOMPRESSEDSIZE, (int)ze.size);
+		put32(lh, LOCCRC, (int)ze.crc);
+		put32(lh, LOCSIZ, (int)ze.csize);
+		put32(lh, LOCLEN, (int)ze.size);
 	} else {
-		put32(lh, LOC_CRC, 0);
-		put32(lh, LOC_COMPRESSEDSIZE, 0);
-		put32(lh, LOC_UNCOMPRESSEDSIZE, 0);
+		put32(lh, LOCCRC, 0);
+		put32(lh, LOCSIZ, 0);
+		put32(lh, LOCLEN, 0);
 	}
 
-	put16(lh, LOC_FILENAMELEN, nameBuf.length);
-	put16(lh, LOC_EXTRAFIELDLEN, ze.extra == null ? 0 : ze.extra.length);
+	put16(lh, LOCNAM, nameBuf.length);
+	put16(lh, LOCEXT, ze.extra == null ? 0 : ze.extra.length);
 
 	strm.write(lh);
 
 	ze.offset = dout;
-	dout += LOC_RECSZ;
+	dout += LOCHDR;
 
 	// Write name
 	strm.write(nameBuf);

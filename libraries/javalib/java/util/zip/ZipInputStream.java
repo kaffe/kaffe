@@ -20,8 +20,8 @@ public class ZipInputStream extends InflaterInputStream
 	implements ZipConstants {
 
   private byte sigbuf[] = new byte[4];
-  private byte zheader[] = new byte[LOC_RECSZ];
-  private byte dheader[] = new byte[DATA_RECSZ];
+  private byte zheader[] = new byte[LOCHDR];
+  private byte dheader[] = new byte[EXTHDR];
   private boolean gotSig;
   private SwitchInflater sinf;
   private ZipEntry entry;
@@ -43,9 +43,9 @@ public class ZipInputStream extends InflaterInputStream
       // Read next signature
       int sig = readSig();
       switch (sig) {
-      case (int)CEN_HEADSIG:		// central dir: no more entries
+      case (int)CENSIG:		// central dir: no more entries
 	return null;
-      case (int)LOC_HEADSIG:		// another entry
+      case (int)LOCSIG:		// another entry
 	break;
       default:				// unexpected
 	throw new IOException("Bogus signature: 0x" + Integer.toHexString(sig));
@@ -55,31 +55,31 @@ public class ZipInputStream extends InflaterInputStream
       readFully(zheader, sigbuf.length, zheader.length - sigbuf.length);
 
       // Read filename; assume UTF-8 encoding
-      byte[] nameBuf = new byte[get16(zheader, LOC_FILENAMELEN)];
+      byte[] nameBuf = new byte[get16(zheader, LOCNAM)];
       readFully(nameBuf, 0, nameBuf.length);
 
       // Read extra field
-      byte[] extra = new byte[get16(zheader, LOC_EXTRAFIELDLEN)];
+      byte[] extra = new byte[get16(zheader, LOCEXT)];
       readFully(extra, 0, extra.length);
 
       // Setup new entry
       entry = new ZipEntry(UTF8.decode(nameBuf));
-      entry.version = get16(zheader, LOC_VERSIONEXTRACT);
-      entry.flag    = get16(zheader, LOC_FLAGS);
+      entry.version = get16(zheader, LOCVER);
+      entry.flag    = get16(zheader, LOCFLG);
 
-      entry.setMethod(get16(zheader, LOC_METHOD));
-      entry.setDosTime(get32(zheader, LOC_TIME));
-      entry.setCrc(get32(zheader, LOC_CRC) & 0xffffffffL);
+      entry.setMethod(get16(zheader, LOCHOW));
+      entry.setDosTime(get32(zheader, LOCTIM));
+      entry.setCrc(get32(zheader, LOCCRC) & 0xffffffffL);
 
-      entry.setCompressedSize(get32(zheader, LOC_COMPRESSEDSIZE) & 0xffffffffL);
-      entry.setSize(get32(zheader, LOC_UNCOMPRESSEDSIZE) & 0xffffffffL);
+      entry.setCompressedSize(get32(zheader, LOCSIZ) & 0xffffffffL);
+      entry.setSize(get32(zheader, LOCLEN) & 0xffffffffL);
 
       entry.setExtra( extra );
       entry.setComment("");
       entry.offset = 0;
 
       // Select the loader, simple or inflater.
-      if (entry.method == STORED) {
+      if (entry.method == ZipEntry.STORED) {
 	sinf.setMode(true);
 	sinf.setLength((int)entry.csize);
       }
@@ -120,7 +120,7 @@ public class ZipInputStream extends InflaterInputStream
 	// from the DATA header. This is so that users can find out
 	// the compressed and uncompressed sizes of data written in
 	// a compressed entry.
-	if (entry.method == DEFLATED && peekSig() == (int)DATA_HEADSIG) {
+	if (entry.method == ZipEntry.DEFLATED && peekSig() == (int)EXTSIG) {
 
 	  // Consume signature
 	  readSig();
@@ -129,15 +129,15 @@ public class ZipInputStream extends InflaterInputStream
 	  readFully(dheader, sigbuf.length, dheader.length - sigbuf.length);
 
 	  // Read CRC
-	  int data_crc = get32(dheader, DATA_CRC);
+	  int data_crc = get32(dheader, EXTCRC);
 	  entry.setCrc(data_crc & 0xffffffffL);
 
 	  // Read compressed size
-	  int data_csize = get32(dheader, DATA_COMPRESSEDSIZE);
+	  int data_csize = get32(dheader, EXTSIZ);
 	  entry.setCompressedSize(data_csize & 0xffffffffL);
 
 	  // Read uncompressed size
-	  int data_size = get32(dheader, DATA_UNCOMPRESSEDSIZE);
+	  int data_size = get32(dheader, EXTLEN);
 	  if (data_crc == 0 && data_size != 0) {
 	      throw new IOException(
 		"CRC error: data_crc=0, data_csize=" + data_csize + ",data_size=" + data_size);
