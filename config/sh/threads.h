@@ -12,11 +12,6 @@
 #if ! defined(__sh_threads_h)
 #define __sh_threads_h
 
-/**/
-/* Thread handling */
-/**/
-#define	USE_INTERNAL_THREADS
-
 /*
  * Set a default size for the stack.
  */

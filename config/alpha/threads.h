@@ -12,11 +12,6 @@
 #ifndef __alpha_threads_h
 #define __alpha_threads_h
 
-/**/
-/* Thread handling */
-/**/
-#define	USE_INTERNAL_THREADS
-
 #if defined(INTERPRETER)
 #define	THREADSTACKSIZE		(128 * 1024)
 #else

@@ -17,11 +17,6 @@
 
 #include "mips/sysdepCallMethod.h"
 
-/**/
-/* Thread handling */
-/**/
-#define	USE_INTERNAL_THREADS
-
 #define	THREADSTACKSIZE		(32 * 1024)
 
 /*

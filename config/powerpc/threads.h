@@ -12,11 +12,6 @@
 #ifndef __powerpc_threads_h
 #define __powerpc_threads_h
 
-/**/
-/* Thread handling */
-/**/
-#define	USE_INTERNAL_THREADS
-
 #define	THREADSTACKSIZE		(128 * 1024)
 
 /*

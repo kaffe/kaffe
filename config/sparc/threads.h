@@ -12,11 +12,6 @@
 #ifndef __sparc_threads_h
 #define __sparc_threads_h
 
-/**/
-/* Thread handling */
-/**/
-#define	USE_INTERNAL_THREADS
-
 #if defined(INTERPRETER)
 #define	THREADSTACKSIZE		(96 * 1024)
 #else

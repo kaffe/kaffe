@@ -15,11 +15,6 @@
 /* Stacks grow up on the PARISC */
 #define	STACK_GROWS_UP	1
  
-/**/
-/* Thread handling */
-/**/ 
-#define USE_INTERNAL_THREADS  
-  
 /* Not sure on this... */
 #define THREADSTACKSIZE		(64 * 1024)
 

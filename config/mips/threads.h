@@ -16,11 +16,6 @@
 #include <sgidefs.h>
 #endif /* defined(HAVE_SGIDEFS_H) */
 
-/**/
-/* Thread handling */
-/**/
-#define	USE_INTERNAL_THREADS
-
 #if defined(INTERPRETER)
 #if !defined(_MIPS_SIM) || (_MIPS_SIM == _MIPS_SIM_ABI32)
 #define	THREADSTACKSIZE		(64 * 1024)

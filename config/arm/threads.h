@@ -12,11 +12,6 @@
 #ifndef __arm32_threads_h
 #define __arm32_threads_h
 
-/**/
-/* Thread handling */
-/**/
-#define	USE_INTERNAL_THREADS
-
 #define	THREADSTACKSIZE		(64 * 1024)
 
 /*

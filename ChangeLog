@@ -1,5 +1,22 @@
 2004-10-22  Eric Anholt  <eta@lclark.edu>
 
+	* config/alpha/threads.h,
+	config/arm/threads.h,
+	config/i386/threads.h,
+	config/ia64/threads.h,
+	config/m68k/threads.h,
+	config/mips/threads.h,
+	config/mips/ultrix4/md.h,
+	config/parisc/threads.h,
+	config/powerpc/threads.h,
+	config/s390/threads.h,
+	config/sh/threads.h,
+	config/sparc/threads.h,
+	config/x86_64/threads.h:
+	(USE_INTERNAL_THREADS) Removed, since it's unused.
+
+2004-10-22  Eric Anholt  <eta@lclark.edu>
+
 	* kaffe/kaffevm/verifier/verify3a.c:
 	Added missing includes.
 

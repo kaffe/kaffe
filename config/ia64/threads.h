@@ -12,11 +12,6 @@
 #ifndef __ia64_threads_h
 #define __ia64_threads_h
 
-/**/
-/* Thread handling */
-/**/
-#define	USE_INTERNAL_THREADS
-
 /*
  * Set a default size for the stack.
  * Includes register stack size

@@ -12,11 +12,6 @@
 #ifndef __x86_64_threads_h
 #define __x86_64_threads_h
 
-/**/
-/* Thread handling */
-/**/
-#define	USE_INTERNAL_THREADS
-
 /*
  * Set a default size for the stack.
  */

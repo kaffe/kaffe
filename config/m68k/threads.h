@@ -12,11 +12,6 @@
 #ifndef __m68k_threads_h
 #define __m68k_threads_h
 
-/**/
-/* Thread handling */
-/**/
-#define	USE_INTERNAL_THREADS
-
 /*
  * Set a default size for the stack.
  */
