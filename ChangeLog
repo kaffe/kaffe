@@ -1,3 +1,14 @@
+2004-07-25  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/javax/swing/text/DefaultHighlighter.java:
+	Added the last missing file.
+
+2004-07-25  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* configure.ac: We need GTK+ >= 2.4 now.
+
+	* configure: Regenerated.
+
 2004-07-25  Helmer Krämer <hkraemer@freenet.de>
 
 	* include/Makefile.am
