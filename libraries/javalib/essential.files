@@ -1,5 +1,9 @@
 gnu/java/lang/CharData.java
 gnu/java/util/EmptyEnumeration.java
+gnu/java/locale/Calendar.java
+gnu/java/locale/Calendar_de.java
+gnu/java/locale/Calendar_en.java
+gnu/java/locale/Calendar_nl.javA
 gnu/regexp/CharIndexed.java
 gnu/regexp/CharIndexedCharArray.java
 gnu/regexp/CharIndexedInputStream.java

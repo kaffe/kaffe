@@ -11,6 +11,9 @@
 	anyways.
 	
 2003-07-28  Ito Kazumitsu <kaz@maczuka.gcd.org>
+        * libraries/javalib/essential.files: Add gnu/java/locale/Calendar*.java
+
+2003-07-28  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/util/Calendar.java:
 	copied from GNU classpath.
