@@ -38,17 +38,76 @@ exception statement from your version. */
 package javax.swing;
 
 import java.awt.Dimension;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
 
+/**
+ * The <code>JTextArea</code> component provides a multi-line area for displaying
+ * and editing plain text.  The component is designed to act as a lightweight
+ * replacement for the heavyweight <code>java.awt.TextArea</code> component,
+ * which provides similar functionality using native widgets.
+ * <p>
+ *
+ * This component has additional functionality to the AWT class.  It follows
+ * the same design pattern as seen in other text components, such as
+ * <code>JTextField</code>, <code>JTextPane</code> and <code>JEditorPane</code>,
+ * and embodied in <code>JTextComponent</code>.  These classes separate the text
+ * (the model) from its appearance within the onscreen component (the view).  The
+ * text is held within a <code>javax.swing.text.Document</code> object, which can
+ * also maintain relevant style information where necessary.  As a result, it is the
+ * document that should be monitored for textual changes, via
+ * <code>DocumentEvent</code>s delivered to registered
+ * <code>DocumentListener</code>s, rather than this component.
+ * <p>
+ *
+ * Unlike <code>java.awt.TextArea</code>, <code>JTextArea</code> does not
+ * handle scrolling.  Instead, this functionality is delegated to a
+ * <code>JScrollPane</code>, which can contain the text area and handle
+ * scrolling when required.  Likewise, the word wrapping functionality
+ * of the AWT component is converted to a property of this component
+ * and the <code>rows</code> and <code>columns</code> properties
+ * are used in calculating the preferred size of the scroll pane's
+ * view port.
+ *
+ * @author Michael Koch  <konqueror@gmx.de>
+ * @author Andrew John Hughes  <gnu_andrew@member.fsf.org>
+ * @see java.awt.TextArea
+ * @see javax.swing.JTextComponent
+ * @see javax.swing.JTextField
+ * @see javax.swing.JTextPane
+ * @see javax.swing.JEditorPane
+ * @see javax.swing.text.Document
+ * @see javax.swing.text.DocumentEvent
+ * @see javax.swing.text.DocumentListener
+ */
+
 public class JTextArea extends JTextComponent
 {
+  /**
+   * Compatible with Sun's JDK
+   */
   private static final long serialVersionUID = -6141680179310439825L;
   
+  /**
+   * The number of rows used by the component.
+   */
   private int rows;
+
+  /**
+   * The number of columns used by the component.
+   */
   private int columns;
+
+  /**
+   * Whether line wrapping is enabled or not.
+   */
   private boolean wrapping;
+
+  /**
+   * The number of characters equal to a tab within the text.
+   */
   private int tabSize = 8;
 
   /**
@@ -125,13 +184,22 @@ public class JTextArea extends JTextComponent
   }
 
   /**
-   * Appends some text.
+   * Appends the supplied text to the current contents
+   * of the document model.
    *
    * @param toAppend the text to append
    */
   public void append(String toAppend)
   {
-    setText(getText() + toAppend);
+      try
+	  {
+	      getDocument().insertString(getText().length(), toAppend, null);
+	  }
+      catch (BadLocationException exception)
+	  {
+	      /* This shouldn't happen in theory -- but, if it does...  */
+	      throw new RuntimeException("Unexpected exception occurred.", exception);
+	  }
   }
 
   /**
@@ -144,7 +212,13 @@ public class JTextArea extends JTextComponent
     return new PlainDocument();
   }
 
-
+  /**
+   * Returns true if the width of this component should be forced
+   * to match the width of a surrounding view port.  When line wrapping
+   * is turned on, this method returns true.
+   *
+   * @return true if lines are wrapped.
+   */
   public boolean getScrollableTracksViewportWidth()
   {
     return wrapping ? true : super.getScrollableTracksViewportWidth();
@@ -211,7 +285,7 @@ public class JTextArea extends JTextComponent
   }
 
   /**
-   * Checks whethet line wrapping is enabled.
+   * Checks whether line wrapping is enabled.
    *
    * @return true if line wrapping is enabled, false otherwise
    */
@@ -235,11 +309,25 @@ public class JTextArea extends JTextComponent
     firePropertyChange("lineWrap", oldValue, wrapping);
   }
 
+  /**
+   * Returns the number of characters used for a tab.
+   * This defaults to 8.
+   *
+   * @return the current number of spaces used for a tab.
+   */
   public int getTabSize()
   {
     return tabSize;
   }
 
+  /**
+   * Sets the number of characters used for a tab to the
+   * supplied value.  If a change to the tab size property
+   * occurs (i.e. newSize != tabSize), a property change event
+   * is fired.
+   * 
+   * @param newSize The new number of characters to use for a tab.
+   */
   public void setTabSize(int newSize)
   {
     if (tabSize == newSize)
@@ -249,4 +337,38 @@ public class JTextArea extends JTextComponent
     tabSize = newSize;
     firePropertyChange("tabSize", oldValue, tabSize);
   }
+
+  /**
+   * Inserts the supplied text at the specified position.  Nothing
+   * happens in the case that the model or the supplied string is null
+   * or of zero length.
+   *
+   * @param string The string of text to insert.
+   * @param position The position at which to insert the supplied text.
+   * @throws IllegalArgumentException if the position is < 0 or greater
+   *         than the length of the current text.
+   */
+  public void insert(String string, int position)
+  {
+      Document document;
+      
+      /* Retrieve the document model */
+      document = getDocument();
+      /* Check the model and string for validity */
+      if (document == null || string == null || string.length() == 0)
+	  {
+	      return; /* Do nothing */
+	  }
+      /* Insert the text into the model */
+      try
+	  {
+	      document.insertString(position, string, null);
+	  }
+      catch (BadLocationException exception)
+	  {
+	      throw new IllegalArgumentException("The supplied position, " +
+						 position + ", was invalid.");
+	  }
+  }
+
 }

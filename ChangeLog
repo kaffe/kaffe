@@ -1,3 +1,23 @@
+2004-08-18  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/javax/swing/JTextArea.java,
+	libraries/javalib/javax/swing/SpinnerListModel.java,
+	libraries/javalib/javax/swing/SpinnerModel.java:
+	Resynced with GNU Classpath.
+
+	2004-08-18  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * javax/swing/JTextArea.java
+        Implemented insert() method and added additional
+        documentation.
+
+	2004-08-18  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * javax/swing/SpinnerListModel.java, javax/swing/SpinnerModel.java
+        Implemented SpinnerListModel.  Added documentation to
+        SpinnerModel.
+
+
 2004-08-18  Dalibor Topic  <robilad@kaffe.org>,
 	    Guilhem Lavaux  <guilhem@kaffe.org>
 

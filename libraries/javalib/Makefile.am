@@ -3068,6 +3068,7 @@ javax_swing_SRCS = \
 	javax/swing/SingleSelectionModel.java \
 	javax/swing/SizeRequirements.java \
 	javax/swing/SizeSequence.java \
+	javax/swing/SpinnerListModel.java \
 	javax/swing/SpinnerModel.java \
 	javax/swing/SpinnerNumberModel.java \
 	javax/swing/Spring.java \
