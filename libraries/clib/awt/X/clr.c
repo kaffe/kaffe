@@ -8,8 +8,9 @@
  * of this file. 
  */
 
-#include "toolkit.h"
+#include "config.h"
 #include "config-mem.h"
+#include "toolkit.h"
 #include <limits.h>
 #include <math.h>
 
