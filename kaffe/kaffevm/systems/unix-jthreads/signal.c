@@ -186,17 +186,21 @@ registerAsyncSignalHandler(int sig, void* handler)
 void
 registerSyncSignalHandler(int sig, void* handler)
 {
+#if !defined(NDEBUG)
+        /* Only used in assert. */
+
 	int validSig = 0
 #if defined(SIGFPE)	       
 		|| (sig == SIGFPE)
-#endif
+#endif /* defined(SIGFPE) */
 #if defined(SIGSEGV)
 		|| (sig == SIGSEGV)
-#endif
+#endif /* defined(SIGSEGV) */
 #if defined(SIGBUS)
 		|| (sig == SIGBUS)
-#endif
+#endif /* defined(SIGBUS) */
 		;
+#endif /* !defined(NDEBUG) */
 	
 	assert(handler != NULL);
 	assert(validSig);
