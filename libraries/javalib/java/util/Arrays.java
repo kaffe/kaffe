@@ -21,92 +21,6 @@ public class Arrays {
   private Arrays() {
   }
 
-  // An instance of this class is returned by the asList() method
-  private static class ArrayList extends AbstractList {
-	private final Object[] a;
-	private final int off;
-	private final int len;
-
-	ArrayList(Object[] a, int off, int len) {
-		this.a = a;
-		this.off = off;
-		this.len = len;
-	}
-
-	public int size() {
-		return len;
-	}
-
-	public Object get(int index) {
-		if (index < 0 || index > len) {
-			throw new IndexOutOfBoundsException();
-		}
-		return a[off + index];
-	}
-
-	public Object set(int index, Object element) {
-		if (index < 0 || index > len) {
-			throw new IndexOutOfBoundsException();
-		}
-		Object old = a[off + index];
-		a[off + index] = element;
-		return old;
-	}
-
-	public ListIterator listIterator(final int start) {
-		if (start < 0 || start > len) {
-			throw new IndexOutOfBoundsException();
-		}
-		return new ListIterator() {
-			private final Object[] a = ArrayList.this.a;
-			private final int off = ArrayList.this.off + start;
-			private final int len = ArrayList.this.len - start;
-			private int index = 0;
-
-			public boolean hasNext() {
-				return index < len;
-			}
-			public synchronized Object next() {
-				if (index == len) {
-					throw new NoSuchElementException();
-				}
-				return a[index++];
-			}
-			public int nextIndex() {
-				return index;
-			}
-			public boolean hasPrevious() {
-				return index > 0;
-			}
-			public synchronized Object previous() {
-				if (index == 0) {
-					throw new NoSuchElementException();
-				}
-				return a[--index];
-			}
-			public int previousIndex() {
-				return index - 1;
-			}
-			public void add(Object o) {
-				throw new UnsupportedOperationException();
-			}
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-			public void set(Object o) {
-				throw new UnsupportedOperationException();
-			}
-		};
-	}
-
-	public List subList(int fromIndex, int toIndex) {
-		if (fromIndex < 0 || toIndex > len || fromIndex > toIndex) {
-			throw new IndexOutOfBoundsException();
-		}
-		return new ArrayList(a, off + fromIndex, toIndex - fromIndex);
-	}
-  }
-
   // The "default" Comparator
   private static final Comparator defaultComparator =
 	new Comparator() {
@@ -115,8 +29,8 @@ public class Arrays {
 	      }
 	};
 
-  public static List asList(final Object[] a) {
-	return new ArrayList(a, 0, a.length);
+  public static List asList(Object[] a) {
+	return new ArrayList(a);
   }
 
   public static int binarySearch(byte[] a, byte key) {

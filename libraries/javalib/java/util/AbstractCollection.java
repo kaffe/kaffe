@@ -10,7 +10,7 @@
 
 package java.util;
 
-import java.lang.String;
+import java.lang.reflect.Array;
 
 public abstract class AbstractCollection implements Collection {
 
@@ -26,13 +26,13 @@ public boolean isEmpty() {
 }
 
 public boolean contains(Object o) {
-  Iterator it = iterator();
-  while (it.hasNext()) {
-    if (it.next() == o) {
-      return (true);
+  for (Iterator it = iterator(); it.hasNext(); ) {
+    Object next = it.next();
+    if (o == null ? next == null : o.equals(next)) {
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 public Object[] toArray() {
@@ -45,7 +45,18 @@ public Object[] toArray() {
 }
 
 public Object[] toArray(Object[] a) {
-  throw new kaffe.util.NotImplemented();
+  final int len = size();
+  if (a.length < len) {
+    a = (Object[])Array.newInstance(a.getClass().getComponentType(), len);
+  }
+  Iterator i = iterator();
+  for (int index = 0; i.hasNext(); ) {
+    a[index] = i.next();
+  }
+  if (a.length > len) {
+    a[len] = null;
+  }
+  return a;
 }
 
 public boolean add(Object o) {
@@ -53,24 +64,23 @@ public boolean add(Object o) {
 }
 
 public boolean remove(Object o) {
-  Iterator it = iterator();
-  while (it.hasNext()) {
-    if (it.next() == o) {
+  for (Iterator it = iterator(); it.hasNext(); ) {
+    Object next = it.next();
+    if (o == null ? next == null : o.equals(next)) {
       it.remove();
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 public boolean containsAll(Collection c) {
-  Iterator it = c.iterator();
-  while (it.hasNext()) {
+  for (Iterator it = c.iterator(); it.hasNext(); ) {
     if (!contains(it.next())) {
-      return (false);
+      return false;
     }
   }
-  return (true);
+  return true;
 }
 
 public boolean addAll(Collection c) {
