@@ -1,5 +1,17 @@
 2004-10-14  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/math/BigDecimal.java,
+	libraries/javalib/java/math/BigInteger.java:
+        Resynced with GNU Classpath.
+
+	2004-10-13  Michael Koch  <konqueror@gmx.de>
+
+        * java/math/BigDecimal.java, java/math/BigInteger.java:
+        Reorganized import statements, removed redundant and reorganized
+        modifiers.
+
+2004-10-14  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/util/zip/GZIPInputStream.java,
 	libraries/javalib/java/util/zip/GZIPOutputStream.java:
         Resynced with GNU Classpath.
