@@ -191,8 +191,14 @@ DIRECTORIES_BEFORE_RTJAR = \
 DIRECTORIES_AFTER_RTJAR = \
 	tools \
 	test \
-	po \
+	$(RUN_PO) \
 	libraries/clib/awt
+
+if MAY_RUN_PO
+RUN_PO=po
+else
+RUN_PO=
+endif
 
 if COND_LIBXMLJ
 DIRECTORIES_AFTER_RTJAR += libraries/clib/libxmlj

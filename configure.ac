@@ -258,6 +258,8 @@ AC_DEFINE_UNQUOTED(KAFFE_LOCALEDIR, "$KAFFE_LOCALEPATH", [Full path to the direc
 
 AM_LC_MESSAGES
 
+AM_CONDITIONAL(MAY_RUN_PO, test x"$MSGFMT" != x":" || test -f $ac_top_srcdir/po/fr.gmo)
+
 dnl =========================================================================
 dnl Do we need underscore?
 dnl -------------------------------------------------------------------------
@@ -620,6 +622,31 @@ threads_frag=$srcdir/kaffe/kaffevm/systems/$with_threads/Makefile.frag
 AC_SUBST(THREAD_DIR)
 THREAD_DIR=systems/$with_threads
 
+KAFFE_CHECK_GLIBC_VER
+
+dnl Check for thread libraries
+if test x$with_threads = xunix-pthreads ; then
+	ACX_PTHREAD([THREADLIBS="$PTHREAD_LIBS "
+		     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+                     CC="$PTHREAD_CC"])
+
+	if test -z "$THREADLIBS"; then
+		AC_MSG_ERROR([Missing library libpthread, read FAQ/FAQ.pthreads])
+	fi
+
+	KAFFE_LIB_SOLARIS_PTHREAD
+
+	if test x"$ac_cv_gnu_library_version" != x"no" -a "$ac_cv_gnu_library_version" -le "2002"; then
+		AC_DEFINE([OLD_LINUXTHREADS],1, [Is set if the current GLIBC is using the old Linuxthreads library])
+	fi
+
+	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
+ else
+        CPPFLAGS="$CPPFLAGS -DBR_PTHREADS=0"
+fi
+
+AC_SUBST(VM_LIBS)
+
 dnl =========================================================================
 dnl Select the right garbage collector.
 dnl -------------------------------------------------------------------------
@@ -665,7 +692,14 @@ if test x"${GC_NAME}" = x"boehm-gc"; then
 			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_HPUX_THREADS"
 			;;
 		linux*)
-			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS"
+			if test x"$ac_cv_gnu_library_version" "!=" x"no"; then
+			   if test "$ac_cv_gnu_library_version" -le "2002"; then
+				BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS"
+			   fi
+			   if test "$ac_cv_gnu_library_version" -ge "2003"; then
+			        BOEHMGC_SPECIFIC_FLAGS="$$BOEHMGC_SPECIFIC_FLAGS -DGC_PTHREADS"
+			   fi
+			fi
 			;;
 		*)
 			AC_MSG_ERROR(Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc.)
@@ -898,30 +932,6 @@ case "$Khost_os" in
 freebsd2|oskit)
 	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBS);;
 esac
-
-dnl Check for thread libraries
-if test x$with_threads = xunix-pthreads ; then
-	ACX_PTHREAD([THREADLIBS="$PTHREAD_LIBS "
-		     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
-                     CC="$PTHREAD_CC"])
-
-	if test -z "$THREADLIBS"; then
-		AC_MSG_ERROR([Missing library libpthread, read FAQ/FAQ.pthreads])
-	fi
-
-	KAFFE_LIB_SOLARIS_PTHREAD
-	KAFFE_CHECK_GLIBC_VER([2],[3])
-
-	if test x"$ac_cv_gnu_library_2_3" != x"yes" -a x"$ac_cv_gnu_library_2_1" = x"yes"; then
-		AC_DEFINE([OLD_LINUXTHREADS],1, [Is set if the current GLIBC is using the old Linuxthreads library])
-	fi
-
-	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
- else
-        CPPFLAGS="$CPPFLAGS -DBR_PTHREADS=0"
-fi
-
-AC_SUBST(VM_LIBS)
 
 dnl Check for libraries for native library.
 dnl None required.

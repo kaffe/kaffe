@@ -1,5 +1,86 @@
 2004-07-21  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* configure.ac, m4/glibcver.m4, Makefile.am:
+	Go into the "po" directory only
+	we either have already the .gmo files or if msgfmt has been found.
+	Better checking of the GNU C Library version number.
+
+	* THIRDPARTY: Added an entry about the Boehm-Weiser garbage
+	collector.
+	
+	* configure,
+	test/jni/Makefile.in,
+	test/regression/compile_time/Makefile.in,
+	test/regression/run_time/Makefile.in,
+	test/regression/compiler/Makefile.in,
+	test/regression/Makefile.in,
+	test/Makefile.in,
+	test/internal/Makefile.in,
+	replace/Makefile.in,
+	build/po/Makefile.in,
+	kaffe/man/Makefile.in,
+	kaffe/kaffevm/gcj/Makefile.in,
+	kaffe/kaffevm/jit/Makefile.in,
+	kaffe/kaffevm/jni/Makefile.in,
+	kaffe/kaffevm/jit3/Makefile.in,
+	kaffe/kaffevm/kaffe-gc/Makefile.in,
+	kaffe/kaffevm/intrp/Makefile.in,
+	kaffe/kaffevm/Makefile.in,
+	kaffe/kaffevm/systems/beos-native/Makefile.in,
+	kaffe/kaffevm/systems/unix-pthreads/Makefile.in,
+	kaffe/kaffevm/systems/Makefile.in,
+	kaffe/kaffevm/systems/oskit-pthreads/Makefile.in,
+	kaffe/kaffevm/systems/unix-jthreads/Makefile.in,
+	kaffe/kaffevm/verifier/Makefile.in,
+	kaffe/kaffevm/boehm-gc/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	kaffe/jvmpi/Makefile.in,
+	kaffe/xprof/Makefile.in,
+	kaffe/scripts/bat/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	kaffe/scripts/Makefile.in,
+	kaffe/Makefile.in,
+	kaffe/kaffeh/Makefile.in,
+	tools/gjdoc/Makefile.in,
+	tools/gjdoc/javalib/Makefile.in,
+	tools/Makefile.in,
+	libraries/clib/io/Makefile.in,
+	libraries/clib/awt/X/Makefile.in,
+	libraries/clib/awt/qt/Makefile.in,
+	libraries/clib/awt/Makefile.in,
+	libraries/clib/net/Makefile.in,
+	libraries/clib/nio/Makefile.in,
+	libraries/clib/zip/Makefile.in,
+	libraries/clib/math/Makefile.in,
+	libraries/clib/sound/esd/Makefile.in,
+	libraries/clib/sound/alsa/Makefile.in,
+	libraries/clib/sound/common/Makefile.in,
+	libraries/clib/sound/Makefile.in,
+	libraries/clib/management/Makefile.in,
+	libraries/clib/libxmlj/Makefile.in,
+	libraries/clib/Makefile.in,
+	libraries/clib/security/Makefile.in,
+	libraries/clib/native/Makefile.in,
+	libraries/Makefile.in,
+	libraries/extensions/comm/Makefile.in,
+	libraries/extensions/comm/javalib/Makefile.in,
+	libraries/extensions/pjava/Makefile.in,
+	libraries/extensions/pjava/javalib/Makefile.in,
+	libraries/extensions/servlet/Makefile.in,
+	libraries/extensions/servlet/javalib/Makefile.in,
+	libraries/extensions/Makefile.in,
+	libraries/extensions/microsoft/clib/Makefile.in,
+	libraries/extensions/microsoft/Makefile.in,
+	libraries/extensions/microsoft/javalib/Makefile.in,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/gmp-math/Makefile.in,
+	libltdl/Makefile.in,
+	config/Makefile.in,
+	Makefile.in,
+	include/Makefile.in: Regenerated.
+
+2004-07-21  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/kjc.jar: Regenerated.
 
 2004-07-21  Dalibor Topic  <robilad@kaffe.org>

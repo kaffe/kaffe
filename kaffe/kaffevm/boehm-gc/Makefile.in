@@ -22,7 +22,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SOURCES = $(libkaffegc_la_SOURCES)
+
+SOURCES = $(libkaffegc_la_SOURCES) $(if_mach_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -45,6 +46,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
+noinst_PROGRAMS = if_mach$(EXEEXT)
 subdir = kaffe/kaffevm/boehm-gc
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -79,11 +81,14 @@ am_libkaffegc_la_OBJECTS = gc2.lo allchblk.lo alloc.lo blacklst.lo \
 	checksums.lo dbg_mlc.lo dyn_load.lo finalize.lo gcj_mlc.lo \
 	headers.lo aix_irix_threads.lo win32_threads.lo \
 	solaris_pthreads.lo solaris_threads.lo pthread_support.lo \
-	pthread_stop_world.lo malloc.lo mallocx.lo mark.lo mark_rts.lo \
-	misc.lo new_hblk.lo obj_map.lo os_dep.lo pcr_interface.lo \
-	ptr_chck.lo real_malloc.lo reclaim.lo stubborn.lo typd_mlc.lo \
-	mach_dep.lo
+	malloc.lo mallocx.lo mark.lo mark_rts.lo misc.lo new_hblk.lo \
+	obj_map.lo os_dep.lo pcr_interface.lo ptr_chck.lo \
+	real_malloc.lo reclaim.lo stubborn.lo typd_mlc.lo mach_dep.lo
 libkaffegc_la_OBJECTS = $(am_libkaffegc_la_OBJECTS)
+PROGRAMS = $(noinst_PROGRAMS)
+am_if_mach_OBJECTS = if_mach.$(OBJEXT)
+if_mach_OBJECTS = $(am_if_mach_OBJECTS)
+if_mach_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -93,13 +98,12 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/dbg_mlc.Plo ./$(DEPDIR)/dyn_load.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/finalize.Plo ./$(DEPDIR)/gc2.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/gcj_mlc.Plo ./$(DEPDIR)/headers.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/mach_dep.Plo ./$(DEPDIR)/malloc.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/mallocx.Plo ./$(DEPDIR)/mark.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/mark_rts.Plo ./$(DEPDIR)/misc.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/new_hblk.Plo ./$(DEPDIR)/obj_map.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/os_dep.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/if_mach.Po ./$(DEPDIR)/mach_dep.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/malloc.Plo ./$(DEPDIR)/mallocx.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/mark.Plo ./$(DEPDIR)/mark_rts.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/misc.Plo ./$(DEPDIR)/new_hblk.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/obj_map.Plo ./$(DEPDIR)/os_dep.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/pcr_interface.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/pthread_stop_world.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/pthread_support.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ptr_chck.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/real_malloc.Plo \
@@ -115,8 +119,8 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
 	$(AM_CFLAGS) $(CFLAGS)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libkaffegc_la_SOURCES)
-DIST_SOURCES = $(libkaffegc_la_SOURCES)
+SOURCES = $(libkaffegc_la_SOURCES) $(if_mach_SOURCES)
+DIST_SOURCES = $(libkaffegc_la_SOURCES) $(if_mach_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -240,6 +244,8 @@ MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MAKE_KAFFEH = @MAKE_KAFFEH@
 MATH_LIB = @MATH_LIB@
+MAY_RUN_PO_FALSE = @MAY_RUN_PO_FALSE@
+MAY_RUN_PO_TRUE = @MAY_RUN_PO_TRUE@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MKTEMP = @MKTEMP@
 MOC = @MOC@
@@ -372,6 +378,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/boehm-gc/boehm/include \
 	$(BOEHMGC_SPECIFIC_FLAGS)
 
+if_mach_SOURCES = boehm/if_mach.c
 native_LTLIBRARIES = libkaffegc.la
 libkaffegc_la_LDFLAGS = \
 	$(KVMLIBFLAGS) \
@@ -398,7 +405,6 @@ libkaffegc_la_SOURCES = \
 	boehm/solaris_pthreads.c \
 	boehm/solaris_threads.c \
 	boehm/pthread_support.c \
-	boehm/pthread_stop_world.c \
 	boehm/malloc.c \
 	boehm/mallocx.c \
 	boehm/mark.c \
@@ -482,6 +488,16 @@ clean-nativeLTLIBRARIES:
 libkaffegc.la: $(libkaffegc_la_OBJECTS) $(libkaffegc_la_DEPENDENCIES) 
 	$(LINK) -rpath $(nativedir) $(libkaffegc_la_LDFLAGS) $(libkaffegc_la_OBJECTS) $(libkaffegc_la_LIBADD) $(LIBS)
 
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
+	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  echo " rm -f $$p $$f"; \
+	  rm -f $$p $$f ; \
+	done
+if_mach$(EXEEXT): $(if_mach_OBJECTS) $(if_mach_DEPENDENCIES) 
+	@rm -f if_mach$(EXEEXT)
+	$(LINK) $(if_mach_LDFLAGS) $(if_mach_OBJECTS) $(if_mach_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -499,6 +515,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gcj_mlc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/headers.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/if_mach.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mach_dep.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/malloc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mallocx.Plo@am__quote@
@@ -509,7 +526,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/obj_map.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/os_dep.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcr_interface.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pthread_stop_world.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pthread_support.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ptr_chck.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/real_malloc.Plo@am__quote@
@@ -880,30 +896,6 @@ pthread_support.lo: boehm/pthread_support.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o pthread_support.lo `test -f 'boehm/pthread_support.c' || echo '$(srcdir)/'`boehm/pthread_support.c
 
-pthread_stop_world.o: boehm/pthread_stop_world.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT pthread_stop_world.o -MD -MP -MF "$(DEPDIR)/pthread_stop_world.Tpo" -c -o pthread_stop_world.o `test -f 'boehm/pthread_stop_world.c' || echo '$(srcdir)/'`boehm/pthread_stop_world.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/pthread_stop_world.Tpo" "$(DEPDIR)/pthread_stop_world.Po"; else rm -f "$(DEPDIR)/pthread_stop_world.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/pthread_stop_world.c' object='pthread_stop_world.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/pthread_stop_world.Po' tmpdepfile='$(DEPDIR)/pthread_stop_world.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o pthread_stop_world.o `test -f 'boehm/pthread_stop_world.c' || echo '$(srcdir)/'`boehm/pthread_stop_world.c
-
-pthread_stop_world.obj: boehm/pthread_stop_world.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT pthread_stop_world.obj -MD -MP -MF "$(DEPDIR)/pthread_stop_world.Tpo" -c -o pthread_stop_world.obj `if test -f 'boehm/pthread_stop_world.c'; then $(CYGPATH_W) 'boehm/pthread_stop_world.c'; else $(CYGPATH_W) '$(srcdir)/boehm/pthread_stop_world.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/pthread_stop_world.Tpo" "$(DEPDIR)/pthread_stop_world.Po"; else rm -f "$(DEPDIR)/pthread_stop_world.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/pthread_stop_world.c' object='pthread_stop_world.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/pthread_stop_world.Po' tmpdepfile='$(DEPDIR)/pthread_stop_world.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o pthread_stop_world.obj `if test -f 'boehm/pthread_stop_world.c'; then $(CYGPATH_W) 'boehm/pthread_stop_world.c'; else $(CYGPATH_W) '$(srcdir)/boehm/pthread_stop_world.c'; fi`
-
-pthread_stop_world.lo: boehm/pthread_stop_world.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT pthread_stop_world.lo -MD -MP -MF "$(DEPDIR)/pthread_stop_world.Tpo" -c -o pthread_stop_world.lo `test -f 'boehm/pthread_stop_world.c' || echo '$(srcdir)/'`boehm/pthread_stop_world.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/pthread_stop_world.Tpo" "$(DEPDIR)/pthread_stop_world.Plo"; else rm -f "$(DEPDIR)/pthread_stop_world.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/pthread_stop_world.c' object='pthread_stop_world.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/pthread_stop_world.Plo' tmpdepfile='$(DEPDIR)/pthread_stop_world.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o pthread_stop_world.lo `test -f 'boehm/pthread_stop_world.c' || echo '$(srcdir)/'`boehm/pthread_stop_world.c
-
 malloc.o: boehm/malloc.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT malloc.o -MD -MP -MF "$(DEPDIR)/malloc.Tpo" -c -o malloc.o `test -f 'boehm/malloc.c' || echo '$(srcdir)/'`boehm/malloc.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/malloc.Tpo" "$(DEPDIR)/malloc.Po"; else rm -f "$(DEPDIR)/malloc.Tpo"; exit 1; fi
@@ -1264,6 +1256,30 @@ mach_dep.lo: boehm/mach_dep.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o mach_dep.lo `test -f 'boehm/mach_dep.c' || echo '$(srcdir)/'`boehm/mach_dep.c
 
+if_mach.o: boehm/if_mach.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT if_mach.o -MD -MP -MF "$(DEPDIR)/if_mach.Tpo" -c -o if_mach.o `test -f 'boehm/if_mach.c' || echo '$(srcdir)/'`boehm/if_mach.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/if_mach.Tpo" "$(DEPDIR)/if_mach.Po"; else rm -f "$(DEPDIR)/if_mach.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/if_mach.c' object='if_mach.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/if_mach.Po' tmpdepfile='$(DEPDIR)/if_mach.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o if_mach.o `test -f 'boehm/if_mach.c' || echo '$(srcdir)/'`boehm/if_mach.c
+
+if_mach.obj: boehm/if_mach.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT if_mach.obj -MD -MP -MF "$(DEPDIR)/if_mach.Tpo" -c -o if_mach.obj `if test -f 'boehm/if_mach.c'; then $(CYGPATH_W) 'boehm/if_mach.c'; else $(CYGPATH_W) '$(srcdir)/boehm/if_mach.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/if_mach.Tpo" "$(DEPDIR)/if_mach.Po"; else rm -f "$(DEPDIR)/if_mach.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/if_mach.c' object='if_mach.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/if_mach.Po' tmpdepfile='$(DEPDIR)/if_mach.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o if_mach.obj `if test -f 'boehm/if_mach.c'; then $(CYGPATH_W) 'boehm/if_mach.c'; else $(CYGPATH_W) '$(srcdir)/boehm/if_mach.c'; fi`
+
+if_mach.lo: boehm/if_mach.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT if_mach.lo -MD -MP -MF "$(DEPDIR)/if_mach.Tpo" -c -o if_mach.lo `test -f 'boehm/if_mach.c' || echo '$(srcdir)/'`boehm/if_mach.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/if_mach.Tpo" "$(DEPDIR)/if_mach.Plo"; else rm -f "$(DEPDIR)/if_mach.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/if_mach.c' object='if_mach.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/if_mach.Plo' tmpdepfile='$(DEPDIR)/if_mach.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o if_mach.lo `test -f 'boehm/if_mach.c' || echo '$(srcdir)/'`boehm/if_mach.c
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -1351,7 +1367,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
 installdirs:
 	for dir in "$(DESTDIR)$(nativedir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
@@ -1383,7 +1399,7 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-nativeLTLIBRARIES \
-	mostlyclean-am
+	clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -1432,17 +1448,17 @@ ps-am:
 uninstall-am: uninstall-info-am uninstall-nativeLTLIBRARIES
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-nativeLTLIBRARIES ctags distclean \
-	distclean-compile distclean-generic distclean-libtool \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am install-man \
-	install-nativeLTLIBRARIES install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-info-am \
-	uninstall-nativeLTLIBRARIES
+	clean-libtool clean-nativeLTLIBRARIES clean-noinstPROGRAMS \
+	ctags distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-nativeLTLIBRARIES \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-info-am uninstall-nativeLTLIBRARIES
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

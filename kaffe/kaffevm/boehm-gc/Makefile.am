@@ -17,6 +17,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/boehm-gc/boehm/include \
 	$(BOEHMGC_SPECIFIC_FLAGS)
 
+noinst_PROGRAMS = if_mach
+
+if_mach_SOURCES= boehm/if_mach.c
+
 native_LTLIBRARIES = libkaffegc.la
 
 libkaffegc_la_LDFLAGS = \
@@ -44,7 +48,6 @@ libkaffegc_la_SOURCES= \
 	boehm/solaris_pthreads.c \
 	boehm/solaris_threads.c \
 	boehm/pthread_support.c \
-	boehm/pthread_stop_world.c \
 	boehm/malloc.c \
 	boehm/mallocx.c \
 	boehm/mark.c \

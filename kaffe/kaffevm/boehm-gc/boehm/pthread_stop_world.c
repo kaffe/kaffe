@@ -71,6 +71,8 @@ word GC_stop_count;	/* Incremented at the beginning of GC_stop_world. */
 #  endif
 #endif
 
+#if 0
+  
 sem_t GC_suspend_ack_sem;
 
 void GC_suspend_handler(int sig)
@@ -176,6 +178,7 @@ void GC_restart_handler(int sig)
     GC_printf1("In GC_restart_handler for 0x%lx\n", pthread_self());
 #endif
 }
+#endif
 
 # ifdef IA64
 #   define IF_IA64(x) x
@@ -242,6 +245,7 @@ void GC_push_all_stacks()
     }
 }
 
+#if 0
 /* There seems to be a very rare thread stopping problem.  To help us  */
 /* debug that, we save the ids of the stopping thread. */
 pthread_t GC_stopping_thread;
@@ -441,5 +445,7 @@ void GC_stop_init() {
 	  }
 #     endif
 }
+
+#endif
 
 #endif

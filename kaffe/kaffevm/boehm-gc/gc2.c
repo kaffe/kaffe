@@ -25,6 +25,7 @@
 #include "errors.h"
 #include "boehm/include/gc.h"
 #include "boehm/include/gc_mark.h"
+#include "boehm/include/gc_gcj.h"
 #include "java_lang_Thread.h"
 #include "debug.h"
 #include "thread.h"
@@ -47,7 +48,6 @@ static iStaticLock	gc_lock;			/* allocator mutex */
 static jboolean finalRunning = false;
 static int gcRunning = 0;
 static int gcDisabled = 0;
-static int gc_init = 0;
 static Hjava_lang_Thread* finalman;
 static Hjava_lang_Thread* garbageman;
 static void (*walkRootSet)(Collector*);
@@ -62,33 +62,35 @@ typedef struct
 
 static BoehmGarbageCollector boehm_gc;
 
-#define SYSTEM_SIZE(s) ((s) + sizeof(int))
-#define USER_SIZE(s) ((s) - sizeof(int))
-#define ALIGN_FORWARD(p) ((void *)((uintp)(p) + sizeof(int)))
-#define ALIGN_BACK(p) ((void *)((uintp)(p) - sizeof(int)))
+#define SYSTEM_SIZE(s) ((s) + sizeof(void *))
+#define USER_SIZE(s) ((s) - sizeof(void *))
 
 static
 void*
-GC_malloc_atomic_and_clear(size_t sz)
+GC_malloc_atomic_and_clear(size_t sz, void *ptr_vtable)
 {
   void* mem;
-  //  mem = GC_malloc_atomic(sz);
-  mem = GC_malloc(sz);
+  mem = GC_malloc_atomic(sz);
   if (mem != 0) {
+    uint8 *idx = (uint8 *)mem + GC_size(mem) - sizeof(void *);
     memset(mem, 0, sz);
+
+    *((void **)mem) = ptr_vtable;
   }
   return (mem);
 }
 
 static
 void*
-GC_malloc_atomic_uncollectable_and_clear(size_t sz)
+GC_malloc_atomic_uncollectable_and_clear(size_t sz, void *ptr_vtable)
 {
   void* mem;
-  //  mem = GC_malloc_atomic_uncollectable(sz);
-  mem = GC_malloc_uncollectable(sz);
+  mem = GC_malloc_atomic_uncollectable(sz);
   if (mem != 0) {
+    uint8 *idx = (uint8 *)mem + GC_size(mem) - sizeof(void *);
+
     memset(mem, 0, sz);
+    *((void **)idx) = ptr_vtable;
   }
   return (mem);
 }
@@ -157,7 +159,7 @@ finalizeObject(void* ob, void* descriptor)
 {
   gcFuncs *func = (gcFuncs *)descriptor;
 
-  func->final(&boehm_gc.collector, ALIGN_FORWARD(ob));
+  func->final(&boehm_gc.collector, ob);
 }
 
 static void NONRETURNING
@@ -191,6 +193,11 @@ KaffeGC_InvokeGC(Collector* gcif UNUSED, int mustgc)
 {
   int iLockRoot;
 
+  char *s;
+
+  s = "signaling the gc man\n";
+  write(fileno(stderr), s, strlen(s));
+
   lockStaticMutex(&gcman_lock);
   if (gcRunning == 0) {
     gcRunning = mustgc ? 2 : 1;
@@ -199,6 +206,9 @@ KaffeGC_InvokeGC(Collector* gcif UNUSED, int mustgc)
   }
   unlockStaticMutex(&gcman_lock);
 
+
+  s = "waiting for the end of the gc\n";
+  write(fileno(stderr), s, strlen(s));
   lockStaticMutex(&gcman_lock);
   while (gcRunning != 0) {
     waitStaticCond(&gcman_lock, (jlong)0);
@@ -238,10 +248,15 @@ KaffeGC_realloc(Collector *gcif, void* mem, int sz, gc_alloc_type_t type)
     return KGC_malloc(gcif, sz, type);
     
   lockStaticMutex(&gc_lock);
-  new_ptr = GC_REALLOC ( ALIGN_BACK(mem), (size_t)SYSTEM_SIZE(sz));
+  new_ptr = GC_realloc ( mem, (size_t)SYSTEM_SIZE(sz));
+  if (new_ptr) {
+    uint8 *idx = (uint8 *)new_ptr + GC_size(new_ptr) - sizeof(void *);
+    memset(new_ptr, 0, sz);
+    *((void **)idx) = &gcFunctions[type];
+  }
   unlockStaticMutex(&gc_lock);
 
-  return (void *)ALIGN_FORWARD(new_ptr);
+  return new_ptr;
 }
 
 static void
@@ -253,7 +268,7 @@ KaffeGC_free(Collector *gcif UNUSED, void* mem)
     return;
 
   lockStaticMutex(&gc_lock);
-  GC_FREE(ALIGN_BACK(mem));
+  GC_FREE(mem);
   unlockStaticMutex(&gc_lock);
 }
 
@@ -263,7 +278,6 @@ KaffeGC_malloc(Collector *gcif UNUSED, size_t sz, int type)
   void* mem;
   int iLockRoot;
 
-  assert(gc_init != 0);
   assert(gcFunctions[type].description != NULL);
   assert(sz != 0);
 
@@ -271,9 +285,9 @@ KaffeGC_malloc(Collector *gcif UNUSED, size_t sz, int type)
 
   // Allocate memory
   if (gcFunctions[type].final == KGC_OBJECT_FIXED)
-    mem = GC_malloc_atomic_uncollectable_and_clear(SYSTEM_SIZE(sz));
+    mem = GC_malloc_atomic_uncollectable_and_clear(SYSTEM_SIZE(sz), &gcFunctions[type]);
   else
-    mem = GC_malloc_atomic_and_clear(SYSTEM_SIZE(sz));
+    mem = GC_malloc_atomic_and_clear(SYSTEM_SIZE(sz), &gcFunctions[type]);
 	  
   // Attach finalizer
   if (mem != 0) {
@@ -285,9 +299,7 @@ KaffeGC_malloc(Collector *gcif UNUSED, size_t sz, int type)
 
   unlockStaticMutex(&gc_lock);
 
-  *((int *)mem) = type;
-
-  return ALIGN_FORWARD(mem);
+  return mem;
 }
 
 static uint32
@@ -304,19 +316,24 @@ KaffeGC_GetObjectBase(Collector *gcif UNUSED, const void* mem)
 {
   void *position;
 
-  if (mem == NULL || (position = GC_base(mem)) == 0)
+  if (mem == NULL)
     return NULL;
 
-  return ALIGN_FORWARD(position);
+  return GC_base(mem);
 }
 
 static int 
 KaffeGC_GetObjectIndex(Collector *gcif UNUSED, const void *mem)
 {
-  int *idx = (int *)GC_base(mem);
-  
-  if (idx != NULL)
-    return *idx;
+  uint8 *idx_ptr = (uint8 *)GC_base(mem);
+  void **idx;
+
+  if (idx_ptr != NULL)
+    {
+      idx = (void **)&idx_ptr[GC_size(idx_ptr) - sizeof(void *)];
+      //assert(*idx > gcFunctions && *idx < &gcFunctions[KGC_ALLOC_MAX_INDEX]);
+      return (gcFuncs *)(*idx) - gcFunctions;
+    }
   else
     return -1;
 }
@@ -332,22 +349,40 @@ KaffeGC_GetObjectDescription(Collector* gcif, const void* mem)
     return NULL;
 }
 
+static int KGC_init = 0;
+
+void GC_stop_world()
+{
+  if (!KGC_init)
+    jthread_suspendall();
+}
+
+void GC_start_world()
+{
+  if (!KGC_init)
+    jthread_unsuspendall();
+}
+
+void GC_stop_init()
+{
+}
+
 static
 void
 KaffeGC_Init(Collector *collector)
 {
-  gc_init = 1;
+  KGC_init = 1;
+  GC_all_interior_pointers = 0;
   GC_finalizer_notifier = KaffeGC_SignalFinalizer;
   GC_java_finalization = 1;
   GC_finalize_on_demand = 1;
   GC_set_max_heap_size(Kaffe_JavaVMArgs.maxHeapSize);
-  /*
-    GC_init_gcj_malloc(GC_GCJ_RESERVED_MARK_PROC_INDEX, onObjectMarking);
-  */
+  //  GC_init_gcj_malloc(GC_GCJ_RESERVED_MARK_PROC_INDEX, onObjectMarking);
   GC_init();
 
   if (GC_get_heap_size() < Kaffe_JavaVMArgs.minHeapSize)
     GC_expand_hp( Kaffe_JavaVMArgs.minHeapSize - GC_get_heap_size());
+  KGC_init = 0;
 }
 
 /* =====================================================================
@@ -358,19 +393,25 @@ KaffeGC_Init(Collector *collector)
 static void NONRETURNING
 gcMan(void* arg)
 {
+  char *s;
   int iLockRoot;
 
   for (;;) {
     lockStaticMutex(&gcman_lock);
     
     gcRunning = false;
+    s = "waiting for a condition\n";
+    write(fileno(stderr), s, strlen(s));
     while (gcRunning == 0) {
       waitStaticCond(&gcman_lock, 0);
     }
 
-    lockStaticMutex(&gc_lock);
+    s = "entering gcollect\n";
+    write(fileno(stderr), s, strlen(s));
     GC_gcollect();
-    unlockStaticMutex(&gc_lock);
+
+    s = "exiting gcollect\n";
+    write(fileno(stderr), s, strlen(s));
 
     /* Wake up anyone waiting for the finalizer to finish */
     broadcastStaticCond(&gcman_lock);
