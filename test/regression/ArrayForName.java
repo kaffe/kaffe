@@ -137,6 +137,7 @@ public class ArrayForName {
 	expect("[void",      "Exception");  // array of void is not allowed
 	expect("[[Ljava/lang/Object;", "Exception"); // classes must use . as seperator
 	expect("[[Ljava.lang.String",  "Exception"); // need ; at the end of class name
+	expect("[[java.lang.String;",  "Exception"); // need L after [
 	expect("",           "Exception");
     }
 
@@ -149,9 +150,6 @@ public class ArrayForName {
 	    msg.append("for clsName \"" + clsName + "\" expected \"" +
 		       expected + "\" but got \"" + result + "\"");
 
-	    /*
-	    throw new RuntimeException(msg.toString());
-	    */
 	    System.err.println(msg.toString());
 	}
     }
