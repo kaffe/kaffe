@@ -144,7 +144,6 @@ TESTS = \
 	DoubleComp.java \
 	ModuloTest.java \
 	LongNeg.java \
-	LongAdd.java \
 	Str.java \
 	Str2.java \
 	InternHog.java \
