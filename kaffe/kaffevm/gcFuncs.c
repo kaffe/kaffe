@@ -319,8 +319,9 @@ DBG(JTHREAD,
          * 0 from extract_stack.  In that case, we don't have walk anything.
          */
         if (jthread_extract_stack(jtid, &from, &len)) {
-DBG(JTHREAD,
-                dprintf("%d walking jtid %p\n", jthread_current(), jtid);
+DBG(JTHREAD|DBG_GCWALK,
+                dprintf("walking stack of `%s' thread\n", 
+			nameNativeThread(jtid));
     )
                 /* and walk it if needed */
                 GC_walkConservative(collector, from, len);
@@ -360,7 +361,7 @@ walkObject(Collector* collector, void* base, uint32 size)
         layout = clazz->gc_layout;
         nbits = CLASS_FSIZE(clazz)/ALIGNMENTOF_VOIDP;
 
-DBG(GCWALK,
+DBG(GCPRECISE,
         dprintf("walkObject `%s' ", CLASS_CNAME(clazz));
         BITMAP_DUMP(layout, nbits)
         dprintf(" (nbits=%d) %x-%x\n", nbits, base, base+size);
@@ -426,12 +427,14 @@ describeObject(const void* mem)
 {
 	static char buf[256];		/* BIG XXX */
 	Hjava_lang_Class* clazz;
+	char *c;
 
 	int idx = GC_getObjectIndex(main_collector, mem);
 	switch (idx) {
 	case GC_ALLOC_JAVASTRING:
 		sprintf(buf, "java.lang.String `%s'", 
-			stringJava2C((Hjava_lang_String*)mem));
+			c = stringJava2C((Hjava_lang_String*)mem));
+		KFREE(c);
 		break;
 
 	case GC_ALLOC_CLASSOBJECT:

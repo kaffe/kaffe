@@ -190,6 +190,10 @@ markObjectDontCheck(gc_unit *unit, gc_block *info, int idx)
 	if (GC_GET_COLOUR(info, idx) != GC_COLOUR_WHITE) {
 		return;
 	}
+DBG(GCWALK,	
+	dprintf("  marking @%08p: %s\n", UTOMEM(unit),
+			describeObject(UTOMEM(unit)));
+    )
 
 	/* If we found a new white object, mark it as grey and
 	 * move it into the grey list.
@@ -219,7 +223,8 @@ gcWalkConservative(Collector* gcif, const void* base, uint32 size)
 	int8* mem;
 
 DBG(GCWALK,	
-	dprintf("walkConservative: %x-%x\n", base, base+size);
+	dprintf("scanning %d bytes conservatively from %p-%p\n", 
+		size, base, base+size);
     )
 
 	record_marked(1, size);
@@ -288,6 +293,10 @@ gcWalkMemory(Collector* gcif, void* mem)
 	record_marked(1, size);
 	walkf = gcFunctions[GC_GET_FUNCS(info, idx)].walk;
 	if (walkf != 0) {
+DBG(GCWALK,	
+		dprintf("walking %d bytes @%08p: %s\n", size, mem, 
+			describeObject(mem));
+    )
 		walkf(gcif, mem, size);
 	}
 }

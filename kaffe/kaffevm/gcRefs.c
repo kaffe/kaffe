@@ -109,6 +109,10 @@ gc_walk_refs(Collector* collector)
         int i;
 	refObject* robj;
 
+DBG(GCWALK,
+	dprintf("Walking gc roots...\n");
+    )
+
         /* Walk the referenced objects */
         for (i = 0; i < REFOBJHASHSZ; i++) {
                 for (robj = refObjects.hash[i]; robj != 0; robj = robj->next) {
@@ -116,10 +120,16 @@ gc_walk_refs(Collector* collector)
                 }
         }
 
+DBG(GCWALK,
+	dprintf("Walking live threads...\n");
+    )
 	running_collector = collector;
         /* Walk the thread objects as the threading system has them
          * registered.  Terminating a thread will remove it from the
          * threading system, and then we won't walk it here anymore
          */
 	jthread_walkLiveThreads(walkMemory);
+DBG(GCWALK,
+	dprintf("Following references now...\n");
+    )
 }
