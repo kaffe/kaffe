@@ -529,7 +529,12 @@ define dumpclasses
 	# print $i2
 	set $b = classEntryPool[$i2]
 	while $b != 0
-	   pclass $b.class
+	   # print /x $b
+	   if $b.class == 0
+	      print "not loaded"
+	   else
+	      pclass $b.class
+	   end
 	   set $b = $b.next
 	end
 	set $i2 = $i2 + 1
