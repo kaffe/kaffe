@@ -1,5 +1,11 @@
 2004-10-17  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(tDump): Fixed format warning.
+	(tWatchdogRun): Made static.
+
+2004-10-17  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/crypto/jce/key/AnubisSecretKeyFactoryImpl.java,
 	libraries/javalib/gnu/crypto/jce/key/BlowfishSecretKeyFactoryImpl.java,
 	libraries/javalib/gnu/crypto/jce/key/Cast5SecretKeyFactoryImpl.java,

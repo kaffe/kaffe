@@ -234,7 +234,7 @@ tDump (void)
 
 	dprintf("\n======================== thread dump =========================\n");
 
-	dprintf("thread list lock owner: %p (name=%s)\n", threadListOwner);
+	dprintf("thread list lock owner: %p\n", threadListOwner);
 
 	protectThreadList(cur);
 
@@ -297,6 +297,7 @@ void* tWatchdogRun (void* p)
   return 0;
 }
 
+static
 void tStartDeadlockWatchdog (void)
 {
   pthread_attr_t attr;
