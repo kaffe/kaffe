@@ -2106,6 +2106,10 @@ void
 handleIO(int canSleep)
 {
 	int r;
+	/** the wake-up time of the next thread on the alarm queue */
+	jlong firstAlarm;
+	/** how long do we want to sleep, at most */
+	jlong maxWait;
 	/* NB: both pollarray and rd, wr are thread-local */
 #if USE_POLL
 	/* for poll(2) */
@@ -2181,13 +2185,13 @@ retry:
 	 * poll / select
 	 *
 	 */
-	jlong firstAlarm = -1;
+	firstAlarm = -1;
 	if (alarmList != 0) {
 		// sorted
 		firstAlarm = JTHREADQ(alarmList)->time;
 	}
 
-	jlong maxWait = (canSleep ? -1 : 0);
+	maxWait = (canSleep ? -1 : 0);
 	if ( (firstAlarm != -1) && (canSleep) ) {
 		jlong curTime = currentTime();
 		if (curTime >= firstAlarm) {

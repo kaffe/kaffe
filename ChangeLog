@@ -1,3 +1,10 @@
+2004-09-05  jrandom <jrandom@i2p.net>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(handleIO) Declare local variables before use.
+
+	Reported by: Kiyo Inaba <inaba@src.ricoh.co.jp>
+
 2004-09-05  Dalibor Topic  <robilad@kaffe.org>
 
 	 * kaffe/kaffevm/baseClasses.c:
