@@ -38,15 +38,17 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.gtk;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.image.BufferedImage;
 import java.util.Locale;
 
-
 public class GdkGraphicsEnvironment extends GraphicsEnvironment
 {
-  
   public GdkGraphicsEnvironment ()
   {
   	super();
@@ -81,7 +83,4 @@ public class GdkGraphicsEnvironment extends GraphicsEnvironment
   {
     throw new java.lang.UnsupportedOperationException ();
   }
-
-
-} // class GdkGraphicsEnvironment
-
+}

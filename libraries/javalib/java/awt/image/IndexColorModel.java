@@ -69,7 +69,7 @@ public class IndexColorModel extends ColorModel
   private boolean opaque;
   private int trans = -1;
   private int[] rgb;
-  private BigInteger validBits = new BigInteger("0");
+  private BigInteger validBits = BigInteger.ZERO;
 
   /**
    * Each array much contain <code>size</code> elements.  For each 
@@ -152,8 +152,7 @@ public class IndexColorModel extends ColorModel
       }
 
     // Generate a bigint with 1's for every pixel
-    validBits.setBit(size);
-    validBits.subtract(new BigInteger("1"));
+    validBits = validBits.setBit(size).subtract(BigInteger.ONE);
   }
 
   /**
@@ -195,8 +194,7 @@ public class IndexColorModel extends ColorModel
     opaque = !hasAlpha;
     this.trans = trans;
     // Generate a bigint with 1's for every pixel
-    validBits.setBit(size);
-    validBits.subtract(new BigInteger("1"));
+    validBits = validBits.setBit(size).subtract(BigInteger.ONE);
   }
 
   /**
@@ -229,8 +227,7 @@ public class IndexColorModel extends ColorModel
     opaque = !hasAlpha;
     this.trans = trans;
     // Generate a bigint with 1's for every pixel
-    validBits.setBit(size);
-    validBits.subtract(new BigInteger("1"));
+    validBits = validBits.setBit(size).subtract(BigInteger.ONE);
   }
 
   /**

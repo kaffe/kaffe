@@ -45,8 +45,8 @@ import java.awt.Graphics;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.awt.peer.FileDialogPeer;
-import java.io.FilenameFilter;
 import java.io.File;
+import java.io.FilenameFilter;
 
 public class GtkFileDialogPeer extends GtkDialogPeer implements FileDialogPeer
 {

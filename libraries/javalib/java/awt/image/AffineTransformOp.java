@@ -54,8 +54,8 @@ import java.awt.geom.Rectangle2D;
  
 public class AffineTransformOp implements BufferedImageOp, RasterOp
 {
-    public static final int TYPE_BILINEAR = 0;
     public static final int TYPE_NEAREST_NEIGHBOR = 1;
+    public static final int TYPE_BILINEAR = 2;
 
     private AffineTransform transform;
     private RenderingHints hints;

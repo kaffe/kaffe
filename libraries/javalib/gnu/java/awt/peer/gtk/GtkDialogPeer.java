@@ -42,9 +42,9 @@ import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Graphics;
-import java.awt.peer.DialogPeer;
 import java.awt.Rectangle;
 import java.awt.event.PaintEvent;
+import java.awt.peer.DialogPeer;
 
 public class GtkDialogPeer extends GtkWindowPeer
   implements DialogPeer

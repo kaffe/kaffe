@@ -1,5 +1,5 @@
 /* GdkGraphics2D.java
-   Copyright (C) 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,21 +38,60 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.gtk;
 
-import java.awt.*;
-import java.awt.geom.*;
-import java.awt.font.*;
-import java.awt.color.*;
-import java.awt.image.*;
-import java.awt.image.renderable.*;
-import java.util.HashMap;
-import java.util.Map;
-
-import java.text.AttributedCharacterIterator;
-import java.util.Stack;
-import java.lang.Integer;
+import gnu.classpath.Configuration;
 import gnu.java.awt.ClasspathToolkit;
 import gnu.java.awt.peer.ClasspathFontPeer;
-import gnu.classpath.Configuration;
+
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.Image;
+import java.awt.Paint;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.TexturePaint;
+import java.awt.Toolkit;
+import java.awt.color.ColorSpace;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
+import java.awt.font.GlyphJustificationInfo;
+import java.awt.geom.Arc2D;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ColorModel;
+import java.awt.image.CropImageFilter;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferInt;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageConsumer;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImagingOpException;
+import java.awt.image.SampleModel;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
+import java.awt.image.WritableRaster;
+import java.awt.image.renderable.RenderableImage;
+import java.awt.image.renderable.RenderContext;
+import java.text.AttributedCharacterIterator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 
 public class GdkGraphics2D extends Graphics2D
 {
@@ -390,7 +429,6 @@ public class GdkGraphics2D extends Graphics2D
                       RenderingHints.VALUE_RENDER_DEFAULT);
     
     return defaultHints;
-    
   }
 
   private void updateBufferedImage()
@@ -399,19 +437,13 @@ public class GdkGraphics2D extends Graphics2D
     updateImagePixels(pixels);
   }
 
-  
   private boolean isBufferedImageGraphics ()
   {
-
-    if (bimage != null)
-      return true;
-    else
-      return false;
+    return bimage != null;
   }
     
   private void updateImagePixels (int[] pixels)
   {
-
     // This function can only be used if 
     // this graphics object is used to draw into 
     // buffered image 
@@ -443,7 +475,6 @@ public class GdkGraphics2D extends Graphics2D
       }
   }
 
-
   private boolean drawImage(Image img, 
                             AffineTransform xform,
                             Color bgcolor,			    
@@ -467,7 +498,6 @@ public class GdkGraphics2D extends Graphics2D
       }
     else
       {
-      
         // In this case, xform is an AffineTransform that transforms bounding
         // box of the specified image from image space to user space. However
         // when we pass this transform to cairo, cairo will use this transform

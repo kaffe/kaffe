@@ -123,12 +123,6 @@ public class ComponentColorModel extends ColorModel
   }
 
 
-  /* FIXME: Is the values returned from toRGB() in the [0.0, 1.0] or the
-     [0.0, 256) range? 
-     
-     we assume it is in the [0.0, 1.0] range along with the
-     other color spaces. */
-  
   /* Note, it's OK to pass a to large array to toRGB(). Extra
      elements are ignored. */
   

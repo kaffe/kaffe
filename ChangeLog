@@ -1,5 +1,68 @@
 2004-10-04  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/awt/peer/gtk/GdkClasspathFontPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkClasspathFontPeerMetrics.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkGlyphVector.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics2D.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkPixbufDecoder.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkButtonPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkClipboard.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkDialogPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkFileDialogPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkFontPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkListPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkMenuItemPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkToolkit.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkWindowPeer.java,
+	libraries/javalib/java/awt/geom/AffineTransform.java,
+	libraries/javalib/java/awt/image/AffineTransformOp.java,
+	libraries/javalib/java/awt/image/ComponentColorModel.java,
+	libraries/javalib/java/awt/image/IndexColorModel.java,
+	libraries/javalib/java/awt/print/Printable.java:
+        Resynced with GNU Classpath.
+
+	2004-10-02  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/awt/peer/gtk/GdkClasspathFontPeer.java,
+        gnu/java/awt/peer/gtk/GdkClasspathFontPeerMetrics.java,
+        gnu/java/awt/peer/gtk/GdkGlyphVector.java,
+        gnu/java/awt/peer/gtk/GdkGraphics2D.java,
+        gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java,
+        gnu/java/awt/peer/gtk/GdkPixbufDecoder.java,
+        gnu/java/awt/peer/gtk/GtkButtonPeer.java,
+        gnu/java/awt/peer/gtk/GtkClipboard.java,
+        gnu/java/awt/peer/gtk/GtkDialogPeer.java,
+        gnu/java/awt/peer/gtk/GtkFileDialogPeer.java,
+        gnu/java/awt/peer/gtk/GtkFontPeer.java,
+        gnu/java/awt/peer/gtk/GtkListPeer.java,
+        gnu/java/awt/peer/gtk/GtkMenuItemPeer.java,
+        gnu/java/awt/peer/gtk/GtkToolkit.java,
+        gnu/java/awt/peer/gtk/GtkWindowPeer.java: Import statements reworked.
+        Some little reformattings.
+
+	2004-10-01  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/image/AffineTransformOp.java
+        (TYPE_BILINEAR): Initialize with 2.
+        * java/awt/print/Printable.java: Jalopied.
+        (PAGE_EXISTS): Initialize with 0;
+        (NO_SUCH_PAGE): Initialized with 1.
+
+	2004-10-01  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * java/awt/geom/AffineTransform.java:
+        Fixed javadocs overall.
+
+	2004-10-01  Jerry Quinn  <jlquinn@optonline.net>
+
+        * java/awt/image/IndexColorModel.java: Fix use of immutable
+        BigIntegers.
+        * java/awt/image/ComponentColorModel.java: Remove FIXME comment
+        since it's correct.
+
+2004-10-04  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/InetAddress.java:
         Resynced with GNU Classpath.
 

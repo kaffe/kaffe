@@ -1,5 +1,5 @@
 /* AffineTransform.java -- transform coordinates between two 2-D spaces
-   Copyright (C) 2000, 2001, 2002 Free Software Foundation
+   Copyright (C) 2000, 2001, 2002, 2004 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -57,10 +57,11 @@ import java.io.Serializable;
  * [ 1 ]   [  0   0   1  ] [ 1 ]   [          1          ]
  * </pre>
  * The bottom row of the matrix is constant, so a transform can be uniquely
- * represented (as in toString) by "[[m00, m01, m02], [m10, m11, m12]]".
+ * represented (as in {@link #toString()}) by 
+ * "[[m00, m01, m02], [m10, m11, m12]]".
  *
- * @author Tom Tromey <tromey@cygnus.com>
- * @author Eric Blake <ebb9@email.byu.edu>
+ * @author Tom Tromey (tromey@cygnus.com)
+ * @author Eric Blake (ebb9@email.byu.edu)
  * @since 1.2
  * @status partially updated to 1.4, still has some problems
  */
@@ -517,6 +518,8 @@ public class AffineTransform implements Cloneable, Serializable
    * or a bit-wise combination of TYPE_TRANSLATION, the mutually exclusive
    * TYPE_*_ROTATIONs, and the mutually exclusive TYPE_*_SCALEs.
    *
+   * @return The type.
+   * 
    * @see #TYPE_IDENTITY
    * @see #TYPE_TRANSLATION
    * @see #TYPE_UNIFORM_SCALE
@@ -1105,9 +1108,9 @@ public class AffineTransform implements Cloneable, Serializable
    * transformation, so that no result will overwrite a point that has not yet
    * been evaluated.
    *
-   * @param src the array of source points
+   * @param srcPts the array of source points
    * @param srcOff the starting offset into src
-   * @param dst the array of destination points
+   * @param dstPts the array of destination points
    * @param dstOff the starting offset into dst
    * @param num the number of points to transform
    * @throws NullPointerException if src or dst is null
@@ -1139,9 +1142,9 @@ public class AffineTransform implements Cloneable, Serializable
    * transformation, so that no result will overwrite a point that has not yet
    * been evaluated.
    *
-   * @param src the array of source points
+   * @param srcPts the array of source points
    * @param srcOff the starting offset into src
-   * @param dst the array of destination points
+   * @param dstPts the array of destination points
    * @param dstOff the starting offset into dst
    * @param num the number of points to transform
    * @throws NullPointerException if src or dst is null
@@ -1171,9 +1174,9 @@ public class AffineTransform implements Cloneable, Serializable
    * storing the results in another array. This will not create a destination
    * array.
    *
-   * @param src the array of source points
+   * @param srcPts the array of source points
    * @param srcOff the starting offset into src
-   * @param dst the array of destination points
+   * @param dstPts the array of destination points
    * @param dstOff the starting offset into dst
    * @param num the number of points to transform
    * @throws NullPointerException if src or dst is null
@@ -1196,9 +1199,9 @@ public class AffineTransform implements Cloneable, Serializable
    * storing the results in another array. This will not create a destination
    * array.
    *
-   * @param src the array of source points
+   * @param srcPts the array of source points
    * @param srcOff the starting offset into src
-   * @param dst the array of destination points
+   * @param dstPts the array of destination points
    * @param dstOff the starting offset into dst
    * @param num the number of points to transform
    * @throws NullPointerException if src or dst is null
@@ -1251,9 +1254,9 @@ public class AffineTransform implements Cloneable, Serializable
    * transformation, so that no result will overwrite a point that has not yet
    * been evaluated.
    *
-   * @param src the array of source points
+   * @param srcPts the array of source points
    * @param srcOff the starting offset into src
-   * @param dst the array of destination points
+   * @param dstPts the array of destination points
    * @param dstOff the starting offset into dst
    * @param num the number of points to transform
    * @throws NullPointerException if src or dst is null
@@ -1322,9 +1325,9 @@ public class AffineTransform implements Cloneable, Serializable
    * [ y' ]   [ m10 m11 ] [ y ] = [ m10 * x + m11 * y ]
    * </pre>
    *
-   * @param src the array of source points
+   * @param srcPts the array of source points
    * @param srcOff the starting offset into src
-   * @param dst the array of destination points
+   * @param dstPts the array of destination points
    * @param dstOff the starting offset into dst
    * @param num the number of points to transform
    * @throws NullPointerException if src or dst is null
@@ -1445,7 +1448,7 @@ public class AffineTransform implements Cloneable, Serializable
    * Compares two transforms for equality. This returns true if they have the
    * same matrix values.
    *
-   * @param o the transform to compare
+   * @param obj the transform to compare
    * @return true if it is equal
    */
   public boolean equals(Object obj)
