@@ -1,5 +1,5 @@
 /*
- * i386/win32/cygnus/md.c
+ * i386/cygwin32/md.c
  * Windows'95 (Cygnus GNU C) i386 specific functions.
  *
  * Copyright (c) 1996, 1997

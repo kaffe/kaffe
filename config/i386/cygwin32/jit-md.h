@@ -9,8 +9,8 @@
  * of this file. 
  */
 
-#ifndef __i386_win32_cygnus_jit_md_h
-#define __i386_win32_cygnus_jit_md_h
+#ifndef __i386_cygwin32_jit_md_h
+#define __i386_cygwin32_jit_md_h
 
 /**/
 /* Include common information. */

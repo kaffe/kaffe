@@ -1,5 +1,5 @@
 /*
- * i386/win32/cygnus/md.h
+ * i386/cygwin32/md.h
  * Windows'95 (Cygnus GNU C) i386 configuration information.
  *
  * Copyright (c) 1996, 1997
@@ -9,8 +9,8 @@
  * of this file. 
  */
 
-#ifndef __i386_win32_cygnus_md_h
-#define __i386_win32_cygnus_md_h
+#ifndef __i386_cygwin32_md_h
+#define __i386_cygwin32_md_h
 
 /**/
 /* Thread handling */
