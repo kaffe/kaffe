@@ -466,6 +466,9 @@
 /* Version number of package */
 #undef VERSION
 
+/* If the vm is static or all libraries are static */
+#undef NO_SHARED_VMLIBRARY
+
 /* Define if C symbol names start with underscore */
 #undef HAVE_UNDERSCORED_C_NAMES
 
