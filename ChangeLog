@@ -1,3 +1,8 @@
+Wed Oct 21 18:30:12 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/baseClasses.[ch], kaffe/kaffevm/classMethod.c:
+	arrays must implement the cloneable interface.
+
 Wed Oct 21 08:41:29 1998  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/RandomAccessFile.java:
