@@ -258,6 +258,27 @@ jthread_stackcheck(int left)
 
 #define	REDZONE	1024
 
+static inline void
+jthread_relaxstack(int yes)
+{
+	if( yes )
+	{
+#if defined(STACK_GROWS_UP)
+		(uintp)currentJThread->stackEnd += REDZONE;
+#else
+		(uintp)currentJThread->stackBase -= REDZONE;
+#endif
+	}
+	else
+	{
+#if defined(STACK_GROWS_UP)
+		(uintp)currentJThread->stackEnd -= REDZONE;
+#else
+		(uintp)currentJThread->stackBase += REDZONE;
+#endif
+	}
+}
+
 static
 inline
 void*

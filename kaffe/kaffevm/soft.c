@@ -488,7 +488,15 @@ soft_divzero(void)
 void
 soft_stackoverflow(void)
 {
-	throwException(unhand(getCurrentThread())->stackOverflowError);
+	Hjava_lang_Throwable *th;
+	errorInfo einfo;
+	
+	/* XXX Dear lord this sucks! */
+	jthread_relaxstack(1);
+	th = (Hjava_lang_Throwable *)
+		newObjectChecked(javaLangStackOverflowError, &einfo);
+	jthread_relaxstack(0);
+	throwException(th);
 }
 
 /*
