@@ -1,5 +1,17 @@
 2004-10-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gdkfont.h,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c:
+	Resynced with GNU Classpath.
+
+	2004-10-10  Andreas Tobler  <a.tobler@schweiz.ch>
+
+        * jni/gtk-peer/gdkfont.h: Mark native_text_layout_state_table extern.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c: Use
+        native_text_layout_state_table here.
+
+2004-10-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/imageio/metadata/IIOInvalidTreeException.java,
 	libraries/javalib/javax/imageio/metadata/IIOMetadataFormatImpl.java,
 	libraries/javalib/javax/imageio/metadata/IIOMetadataNode.java,

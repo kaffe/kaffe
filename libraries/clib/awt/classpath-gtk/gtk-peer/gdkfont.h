@@ -47,7 +47,7 @@
 
 extern struct state_table *native_font_state_table;
 extern struct state_table *native_glyphvector_state_table;
-struct state_table *native_text_layout_state_table;
+extern struct state_table *native_text_layout_state_table;
 
 #define NSA_FONT_INIT(env, clazz) \
   native_font_state_table = init_state_table (env, clazz)
