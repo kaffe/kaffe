@@ -10,12 +10,10 @@
 
 package java.io;
 
-import java.lang.String;
+import kaffe.util.UTF8;
 
-public class DataInputStream
-  extends FilterInputStream
-  implements DataInput
-{
+public class DataInputStream extends FilterInputStream implements DataInput {
+
 public DataInputStream(InputStream in) {
 	super(in);
 }
@@ -62,6 +60,9 @@ final public void readFully(byte b[]) throws IOException {
 }
 
 final public void readFully(byte b[], int off, int len) throws IOException {
+	if (b == null) {
+		throw new NullPointerException();
+	}
 	int total = 0;
 	while (total < len) {
 		int got = read(b, off + total, len - total);
@@ -155,85 +156,18 @@ final public short readShort() throws IOException {
 }
 
 final public String readUTF() throws IOException {
-	return readUTF(this);
-}
-
-final public static String readUTF(DataInput in) throws IOException {
-	int length = in.readUnsignedShort();
-	StringBuffer buffer = new StringBuffer();
-
-	int pos=0;
-	while (pos<length) {
-		int data = in.readUnsignedByte();
-
-		if ((data & 0x80)==0x80) {
-			/* Hi-bit set, multi byte char */
-			if ((data & 0xE0)==0xC0) {
-				/* Valid 2 byte string '110' */
-				byte data2 = in.readByte();
-
-				if ((data2 & 0xC0) == 0x80) {
-					/* Valid 2nd byte */
-					char toAdd=(char )((((int )(data & 0x1F)) << 6) + (data2 & 0x3F));
-					buffer.append(toAdd);
-					pos=pos+2;
-				}
-				else throw new UTFDataFormatException();
-			} else if ((data & 0xF0)==0xE0) {
-				/* Valid 3 byte string '1110' */
-				byte data2 = in.readByte();
-
-				if ((data2 & 0xC0) == 0x80) {
-					/* Valid 2nd byte */
-					byte data3 = in.readByte();
-
-					if ((data3 & 0xC0) == 0x80) {
-						/* Valid 3rd byte */
-						char toAdd=(char )((((int )(data & 0x0F)) << 12) + (((int )(data2 & 0x3F)) << 6)+ (data3 & 0x3F));
-						buffer.append(toAdd);
-						pos=pos+3;
-					}
-					else throw new UTFDataFormatException();
-				}
-				else throw new UTFDataFormatException();
-			}
-			else throw new UTFDataFormatException();
-		}
-		else {
-			buffer.append((char )data);
-			pos++;
-		}
-	}
-
-	if (pos>length) throw new UTFDataFormatException();
-
-	return buffer.toString();
+	return UTF8.decode(this, readUnsignedShort());
 }
 
 final public int readUnsignedByte() throws IOException {
-	int value=read();
-
-	if (value == -1) {
-		throw new EOFException();
-	}
-	return (value);
+	return readByte() & 0xff;
 }
 
 final public int readUnsignedShort() throws IOException {
-	int val = read() << 8;
-	val |= read();
-	if (val == -1) {
-		throw new EOFException();
-	}
-	return (val);
+	return readShort() & 0xffff;
 }
 
-final public int skipBytes(int n) throws IOException
-{
-	int skipped = (int)in.skip((long)n);
-	if (skipped != n) {
-		throw new EOFException();
-	}
-	return (skipped);
+final public int skipBytes(int n) throws IOException {
+	return (int)in.skip((long)n);
 }
 }
