@@ -218,7 +218,7 @@ public abstract class ClasspathFontPeer
     AffineTransform trans = this.transform;
     float size = this.size;
     int style = this.style;
-    
+
     if (attribs.containsKey (TextAttribute.FAMILY))
       family = (String) attribs.get (TextAttribute.FAMILY);
 
@@ -243,7 +243,13 @@ public abstract class ClasspathFontPeer
       {
         Float sz = (Float) attribs.get (TextAttribute.SIZE);
         size = sz.floatValue ();
+
+        // Pango doesn't accept 0 as a font size.
+        if (size < 1)
+          size = 1;
       }
+    else
+      size = 12;
 
     if (attribs.containsKey (TextAttribute.TRANSFORM))
       {
