@@ -13,6 +13,8 @@
  * University of Utah, http://www.cs.utah.edu/flux/
  */
 
+#include "config.h"
+
 #if defined(KAFFE_XDEBUGGING) || defined(KAFFE_XPROFILER)
 
 #include <stdarg.h>

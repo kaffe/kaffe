@@ -1,3 +1,29 @@
+2004-09-18  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Use AC_DEFINE instead of messing
+	with CFLAGS for xdebugging.
+
+	* configure,
+	config/config.h.in,
+	kaffe/kaffe/Makefile.in:
+	Regenerated.
+
+	* kaffe/kaffe/Makefile.am:
+	Cleaned up.
+
+	* kaffe/xprof/callGraph.c,
+	kaffe/xprof/debugFile.c,
+	kaffe/xprof/feedback.c,
+	kaffe/xprof/fileSections.c,
+	kaffe/xprof/gmonFile.c,
+	kaffe/xprof/mangle.c,
+	kaffe/xprof/memorySamples.c,
+	kaffe/xprof/sectionFile.c,
+	kaffe/xprof/xprofiler.c:
+	Include config.h.
+
+	Reported by: Daniel Bonniot  <bonniot@users.sourceforge.net>
+
 2004-09-17  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/security/Permission.java:

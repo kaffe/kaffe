@@ -14,6 +14,8 @@
  * University of Utah, http://www.cs.utah.edu/flux/
  */
 
+#include "config.h"
+
 #if defined(KAFFE_FEEDBACK)
 
 #include <stdlib.h>

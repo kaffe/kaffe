@@ -543,7 +543,9 @@ AC_ARG_ENABLE([xdebugging],
 [
 case "$enable_xdebugging" in
 no) ;;
-*) need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_XDEBUGGING"; JAVAC_FLAGS="-g $JAVAC_FLAGS";;
+*) need_libxprof=yes; 
+JAVAC_FLAGS="-g $JAVAC_FLAGS";
+AC_DEFINE(KAFFE_XDEBUGGING, 1, [Enable debugging symbol generation for jitted code]);;
 esac
 ],
 [

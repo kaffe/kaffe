@@ -80,10 +80,10 @@ PROGRAMS = $(jrebin_PROGRAMS)
 am_kaffe_bin_OBJECTS = main.$(OBJEXT) version.$(OBJEXT)
 kaffe_bin_OBJECTS = $(am_kaffe_bin_OBJECTS)
 am__DEPENDENCIES_1 =
-@ENABLE_JVMPI_TRUE@am__DEPENDENCIES_2 = ../jvmpi/libkaffejvmpi.la
-@NEED_LIBXPROF_TRUE@am__DEPENDENCIES_3 = ../xprof/libkaffexprof.la
-am__DEPENDENCIES_4 = ../kaffevm/libkaffevm.la $(am__DEPENDENCIES_2) \
-	$(am__DEPENDENCIES_3)
+@NEED_LIBXPROF_TRUE@am__DEPENDENCIES_2 = ../xprof/libkaffexprof.la
+@ENABLE_JVMPI_TRUE@am__DEPENDENCIES_3 = ../jvmpi/libkaffejvmpi.la
+am__DEPENDENCIES_4 = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_3) \
+	../kaffevm/libkaffevm.la
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -381,9 +381,9 @@ kaffe_bin_SOURCES = \
 	version.h
 
 LIBKAFFEVM = \
-	../kaffevm/libkaffevm.la \
+	$(libxprof) \
 	$(libjvmpi) \
-	$(libxprof)
+	../kaffevm/libkaffevm.la
 
 kaffe_bin_LDFLAGS = \
 	$(KVMBINFLAGS) \

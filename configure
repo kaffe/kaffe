@@ -26906,7 +26906,13 @@ if test "${enable_xdebugging+set}" = set; then
 
 case "$enable_xdebugging" in
 no) ;;
-*) need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_XDEBUGGING"; JAVAC_FLAGS="-g $JAVAC_FLAGS";;
+*) need_libxprof=yes;
+JAVAC_FLAGS="-g $JAVAC_FLAGS";
+
+cat >>confdefs.h <<\_ACEOF
+#define KAFFE_XDEBUGGING 1
+_ACEOF
+;;
 esac
 
 else

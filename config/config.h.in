@@ -714,6 +714,9 @@
 /* Do we enable stats in the vm? */
 #undef KAFFE_STATS
 
+/* Enable debugging symbol generation for jitted code */
+#undef KAFFE_XDEBUGGING
+
 /* If the vm is static or all libraries are static */
 #undef NO_SHARED_VMLIBRARY
 

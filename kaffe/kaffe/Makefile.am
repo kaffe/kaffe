@@ -31,9 +31,9 @@ kaffe_bin_SOURCES = \
 	version.h
 
 LIBKAFFEVM = \
-	../kaffevm/libkaffevm.la \
+	$(libxprof) \
 	$(libjvmpi) \
-	$(libxprof)
+	../kaffevm/libkaffevm.la
 
 kaffe_bin_LDFLAGS = \
 	$(KVMBINFLAGS) \
