@@ -1,6 +1,11 @@
-2003-10-28  Dalibor Topic <robilad@kafee.org>
+2003-10-28  Guilhem Lavaux <guilhem@kaffe.org>
 
-	Makefile.am:
+	* libraries/javalib/kjc.jar: New fixed KJC. Fix concerns the problem
+	reported by Ito Kazumitsu.
+
+2003-10-28  Dalibor Topic <robilad@kaffe.org>
+
+	* Makefile.am:
 	(BUILD_ENVIRONMENT-make) Don't add existing 
 	CLASSPATH to CLASSPATH in BUILD_ENVIRONMENT.
 
