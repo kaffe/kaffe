@@ -1126,7 +1126,7 @@ op_fsmovex_ff(int src, int dst)
 	debug(("fsmovex %s, %s\n", regname(src), regname(dst)));
 	assert_freg(src);
 	assert_freg(dst);
-	WOUT(0xF000 | (COPROCID << 9)); 
+	WOUT(0xF000 | (COPROCID << 9));
 	WOUT(((src & 7) << 10) | ((dst & 7) << 7) | OPMODE_s);
 }
 
@@ -1136,7 +1136,7 @@ op_fdmovex_ff(int src, int dst)
 	debug(("fdmovex %s, %s\n", regname(src), regname(dst)));
 	assert_freg(src);
 	assert_freg(dst);
-	WOUT(0xF000 | (COPROCID << 9)); 
+	WOUT(0xF000 | (COPROCID << 9));
 	WOUT(((src & 7) << 10) | ((dst & 7) << 7) | OPMODE_d);
 }
 

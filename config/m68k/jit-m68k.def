@@ -63,7 +63,7 @@ static const char * const rnames[] = {
 
 #ifdef KAFFE_VMDEBUG
 int jit_debug = 0;
-#define	debug(x)	(jit_debug ? printf("%dx:\t", CODEPC), printf x : 0)
+#define	debug(x)	(jit_debug ? printf("%x:\t", (int)CODEPC), printf x : 0)
 #else
 #define	debug(x)	((void)0)
 #endif
@@ -91,8 +91,8 @@ op_addl_id(int imm, int dst)
 {
 	debug(("addl #%d, %s\n", imm, regname(dst)));
 	assert_dreg(dst);
-	WOUT = 0xD080 | (dst << 9) | MODE_src_imm;
-	LOUT = imm;
+	WOUT(0xD080 | (dst << 9) | MODE_src_imm);
+	LOUT(imm);
 }
 
 static inline void
@@ -101,7 +101,7 @@ op_addl_dd(int src, int dst)
 	debug(("addl %s, %s\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_dreg(dst);
-	WOUT = 0xD080 | (dst << 9) | (MODE_d << 3) | (src & 7);
+	WOUT(0xD080 | (dst << 9) | (MODE_d << 3) | (src & 7));
 }
 
 static inline void
@@ -110,8 +110,8 @@ op_addaw_ia(int imm, int dst)
 	debug(("addaw #%d, %s\n", imm, regname(dst)));
 	assert_s16(imm);
 	assert_areg(dst);
-	WOUT = 0xD0C0 | ((dst & 7) << 9) | MODE_src_imm;
-	WOUT = imm;
+	WOUT(0xD0C0 | ((dst & 7) << 9) | MODE_src_imm);
+	WOUT(imm);
 }
 
 static inline void
@@ -119,8 +119,8 @@ op_addal_ia(int imm, int dst)
 {
 	debug(("addal #%d, %s\n", imm, regname(dst)));
 	assert_areg(dst);
-	WOUT = 0xD1C0 | ((dst & 7) << 9) | MODE_src_imm;
-	LOUT = imm;
+	WOUT(0xD1C0 | ((dst & 7) << 9) | MODE_src_imm);
+	LOUT(imm);
 }
 
 static inline void
@@ -129,7 +129,7 @@ op_addal_da(int src, int dst)
 	debug(("addal %s, %s\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_areg(dst);
-	WOUT = 0xD1C0 | ((dst & 7) << 9) | (MODE_d << 3) | (src & 7);
+	WOUT(0xD1C0 | ((dst & 7) << 9) | (MODE_d << 3) | (src & 7));
 }
 
 static inline void
@@ -138,7 +138,7 @@ op_addql_ia(int imm, int dst)
 	debug(("addql #%d, %s\n", imm, regname(dst)));
 	assert(imm >= 1 && imm <= 8);
 	assert_areg(dst);
-	WOUT = 0x5080 | ((imm & 7) << 9) | (MODE_a << 3) | (dst & 7);
+	WOUT(0x5080 | ((imm & 7) << 9) | (MODE_a << 3) | (dst & 7));
 }
 
 static inline void
@@ -147,7 +147,7 @@ op_addql_id(int imm, int dst)
 	debug(("addql #%d, %s\n", imm, regname(dst)));
 	assert(imm >= 1 && imm <= 8);
 	assert_dreg(dst);
-	WOUT = 0x5080 | ((imm & 7) << 9) | (MODE_d << 3) | (dst & 7);
+	WOUT(0x5080 | ((imm & 7) << 9) | (MODE_d << 3) | (dst & 7));
 }
 
 static inline void
@@ -156,7 +156,7 @@ op_addxl_dd(int src, int dst)
 	debug(("addxl %s, %s\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_dreg(dst);
-	WOUT = 0xD180 | (dst << 9) | src;
+	WOUT(0xD180 | (dst << 9) | src);
 }
 
 static inline void
@@ -164,8 +164,8 @@ op_andl_id(int imm, int dst)
 {
 	debug(("andl #0x%x, %s\n", imm, regname(dst)));
 	assert_dreg(dst);
-	WOUT = 0xC080 | (dst << 9) | MODE_src_imm;
-	LOUT = imm;
+	WOUT(0xC080 | (dst << 9) | MODE_src_imm);
+	LOUT(imm);
 }
 
 static inline void
@@ -174,7 +174,7 @@ op_andl_dd(int src, int dst)
 	debug(("andl %s, %s\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_dreg(dst);
-	WOUT = 0xC080 | (dst << 9) | (MODE_d << 3) | (src & 7);
+	WOUT(0xC080 | (dst << 9) | (MODE_d << 3) | (src & 7));
 }
 
 static inline void
@@ -183,7 +183,7 @@ op_asr_id(int imm, int dst)
 	debug(("asr #%d, %s\n", imm, regname(dst)));
 	assert_dreg(dst);
 	assert(imm >= 1 && imm <= 8);
-	WOUT = 0xE080 | ((imm & 7) << 9) | dst;
+	WOUT(0xE080 | ((imm & 7) << 9) | dst);
 }
 
 static inline void
@@ -192,79 +192,79 @@ op_asr_dd(int src, int dst)
 	debug(("asr %s, %s\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_dreg(dst);
-	WOUT = 0xE0A0 | ((src & 7) << 9) | dst;
+	WOUT(0xE0A0 | ((src & 7) << 9) | dst);
 }
 
 static inline void
 op_beq_32(int disp)
 {
 	debug(("beq %+d\n", disp));
-	WOUT = 0x67FF;
-	LOUT = disp;
+	WOUT(0x67FF);
+	LOUT(disp);
 }
 
 static inline void
 op_bne_32(int disp)
 {
 	debug(("bne %+d\n", disp));
-	WOUT = 0x66FF;
-	LOUT = disp;
+	WOUT(0x66FF);
+	LOUT(disp);
 }
 
 static inline void
 op_blt_32(int disp)
 {
 	debug(("blt %+d\n", disp));
-	WOUT = 0x6DFF;
-	LOUT = disp;
+	WOUT(0x6DFF);
+	LOUT(disp);
 }
 
 static inline void
 op_ble_32(int disp)
 {
 	debug(("ble %+d\n", disp));
-	WOUT = 0x6FFF;
-	LOUT = disp;
+	WOUT(0x6FFF);
+	LOUT(disp);
 }
 
 static inline void
 op_bgt_32(int disp)
 {
 	debug(("bgt %+d\n", disp));
-	WOUT = 0x6EFF;
-	LOUT = disp;
+	WOUT(0x6EFF);
+	LOUT(disp);
 }
 
 static inline void
 op_bge_32(int disp)
 {
 	debug(("bge %+d\n", disp));
-	WOUT = 0x6CFF;
-	LOUT = disp;
+	WOUT(0x6CFF);
+	LOUT(disp);
 }
 
 static inline void
 op_blo_32(int disp)
 {
 	debug(("blo %+d\n", disp));
-	WOUT = 0x65FF;
-	LOUT = disp;
+	WOUT(0x65FF);
+	LOUT(disp);
 }
 
 static inline void
 op_bra_32(int disp)
 {
 	debug(("bra %+d\n", disp));
-	WOUT = 0x60FF;
-	LOUT = disp;
+	WOUT(0x60FF);
+	LOUT(disp);
 }
 
 static inline void
 op_bsr_32(int disp)
 {
 	debug(("bsr %+d\n", disp));
-	WOUT = 0x61FF;
-	LOUT = disp;
+	WOUT(0x61FF);
+	LOUT(disp);
 }
 
 static inline void
@@ -272,7 +272,7 @@ op_clrl_d(int dst)
 {
 	debug(("clrl %s\n", regname(dst)));
 	assert_dreg(dst);
-	WOUT = 0x4280 | (MODE_d << 3) | (dst & 7);
+	WOUT(0x4280 | (MODE_d << 3) | (dst & 7));
 }
 
 static inline void
@@ -281,7 +281,7 @@ op_cmpl_dd(int src1, int src2)
 	debug(("cmpl %s, %s\n", regname(src1), regname(src2)));
 	assert_dreg(src1);
 	assert_dreg(src2);
-	WOUT = 0xB080 | (src2 << 9) | (MODE_d << 7) | (src1 & 7);
+	WOUT(0xB080 | (src2 << 9) | (MODE_d << 7) | (src1 & 7));
 }
 
 static inline void
@@ -290,7 +290,7 @@ op_cmpal_aa(int src1, int src2)
 	debug(("cmpl %s, %s\n", regname(src1), regname(src2)));
 	assert_areg(src1);
 	assert_areg(src2);
-	WOUT = 0xB1C0 | (src2 << 9) | (MODE_a << 3) | (src1 & 7);
+	WOUT(0xB1C0 | (src2 << 9) | (MODE_a << 3) | (src1 & 7));
 }
 
 static inline void
@@ -298,8 +298,8 @@ op_cmpil_ia(int imm, int src2)
 {
 	debug(("cmpil #%d, %s\n", imm, regname(src2)));
 	assert_areg(src2);
-	WOUT = 0x0C80 | (MODE_a << 3) | (src2 & 7);
-	LOUT = imm;
+	WOUT(0x0C80 | (MODE_a << 3) | (src2 & 7));
+	LOUT(imm);
 }
 
 static inline void
@@ -307,8 +307,8 @@ op_cmpil_id(int imm, int src2)
 {
 	debug(("cmpil #%d, %s\n", imm, regname(src2)));
 	assert_dreg(src2);
-	WOUT = 0x0C80 | (MODE_d << 3) | (src2 & 7);
-	LOUT = imm;
+	WOUT(0x0C80 | (MODE_d << 3) | (src2 & 7));
+	LOUT(imm);
 }
 
 static inline void
@@ -318,8 +318,8 @@ op_divsl_ddd(int src, int r, int q)
 	assert_dreg(src);
 	assert_dreg(r);
 	assert_dreg(q);
-	WOUT = 0x4C40 | (MODE_d << 3) | (src & 7);
-	WOUT = 0x0800 | (q << 12) | r;
+	WOUT(0x4C40 | (MODE_d << 3) | (src & 7));
+	WOUT(0x0800 | (q << 12) | r);
 }
 
 static inline void
@@ -328,7 +328,7 @@ op_eorl_dd(int src, int dst)
 	debug(("eorl %s, %s\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_dreg(dst);
-	WOUT = 0xB180 | ((src & 7) << 9) | (MODE_d << 3) | (dst & 7);
+	WOUT(0xB180 | ((src & 7) << 9) | (MODE_d << 3) | (dst & 7));
 }
 
 static inline void
@@ -336,7 +336,7 @@ op_extbl_d(int dst)
 {
 	debug(("extbl %s\n", regname(dst)));
 	assert_dreg(dst);
-	WOUT = 0x49C0 | dst;
+	WOUT(0x49C0 | dst);
 }
 
 static inline void
@@ -344,7 +344,7 @@ op_extwl_d(int dst)
 {
 	debug(("extwl %s\n", regname(dst)));
 	assert_dreg(dst);
-	WOUT = 0x48C0 | dst;
+	WOUT(0x48C0 | dst);
 }
 
 static inline void
@@ -353,7 +353,7 @@ op_exg_aa(int r1, int r2)
 	debug(("exg %s, %s\n", regname(r1), regname(r2)));
 	assert_areg(r1);
 	assert_areg(r2);
-	WOUT = 0xC148 | ((r1 & 7) << 9) | (r2 & 7);
+	WOUT(0xC148 | ((r1 & 7) << 9) | (r2 & 7));
 }
 
 static inline void
@@ -362,7 +362,7 @@ op_exg_da(int r1, int r2)
 	debug(("exg %s, %s\n", regname(r1), regname(r2)));
 	assert_dreg(r1);
 	assert_areg(r2);
-	WOUT = 0xC188 | (r1 << 9) | (r2 & 7);
+	WOUT(0xC188 | (r1 << 9) | (r2 & 7));
 }
 
 static inline void
@@ -371,7 +371,7 @@ op_exg_dd(int r1, int r2)
 	debug(("exg %s, %s\n", regname(r1), regname(r2)));
 	assert_dreg(r1);
 	assert_dreg(r2);
-	WOUT = 0xC140 | (r1 << 9) | r2;
+	WOUT(0xC140 | (r1 << 9) | r2);
 }
 
 static inline void
@@ -379,7 +379,7 @@ op_jmp_I(int dst)
 {
 	debug(("jmp (%s)\n", regname(dst)));
 	assert_areg(dst);
-	WOUT = 0x4EC0 | (MODE_ind << 3) | (dst & 7);
+	WOUT(0x4EC0 | (MODE_ind << 3) | (dst & 7));
 }
 
 static inline void
@@ -387,7 +387,7 @@ op_jsr_I(int dst)
 {
 	debug(("jsr (%s)\n", regname(dst)));
 	assert_areg(dst);
-	WOUT = 0x4E80 | (MODE_ind << 3) | (dst & 7);
+	WOUT(0x4E80 | (MODE_ind << 3) | (dst & 7));
 }
 
 static inline void
@@ -396,8 +396,8 @@ op_linkw_ai(int areg, int disp)
 	debug(("linkw %s, #%d\n", regname(areg), disp));
 	assert_s16(disp);
 	assert_areg(areg);
-	WOUT = 0x4E50 | (areg & 7);
-	WOUT = disp;
+	WOUT(0x4E50 | (areg & 7));
+	WOUT(disp);
 }
 
 static inline void
@@ -406,7 +406,7 @@ op_lsl_id(int imm, int dst)
 	debug(("lsl #%d, %s\n", imm, regname(dst)));
 	assert_dreg(dst);
 	assert(imm >= 1 && imm <= 8);
-	WOUT = 0xE188 | ((imm & 7) << 9) | dst;
+	WOUT(0xE188 | ((imm & 7) << 9) | dst);
 }
 
 static inline void
@@ -415,7 +415,7 @@ op_lsl_dd(int src, int dst)
 	debug(("lsl %s, %s\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_dreg(dst);
-	WOUT = 0xE1A8 | ((src & 7) << 9) | dst;
+	WOUT(0xE1A8 | ((src & 7) << 9) | dst);
 }
 
 static inline void
@@ -424,7 +424,7 @@ op_lsr_id(int imm, int dst)
 	debug(("lsr #%d, %s\n", imm, regname(dst)));
 	assert_dreg(dst);
 	assert(imm >= 1 && imm <= 8);
-	WOUT = 0xE088 | ((imm & 7) << 9) | dst;
+	WOUT(0xE088 | ((imm & 7) << 9) | dst);
 }
 
 static inline void
@@ -433,7 +433,7 @@ op_lsr_dd(int src, int dst)
 	debug(("lsr %s, %s\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_dreg(dst);
-	WOUT = 0xE0A8 | ((src & 7) << 9) | dst;
+	WOUT(0xE0A8 | ((src & 7) << 9) | dst);
 }
 
 static inline void
@@ -442,8 +442,7 @@ op_moveb_Id(int src, int dst)
 	debug(("moveb (%s), %s\n", regname(src), regname(dst)));
 	assert_areg(src);
 	assert_dreg(dst);
-	WOUT = (0x1000 | ((dst & 7) << 9) | (MODE_d << 6)
-		| (MODE_ind << 3) | (src & 7));
+	WOUT(0x1000 | ((dst & 7) << 9) | (MODE_d << 6) | (MODE_ind << 3) | (src & 7));
 }
 
 static inline void
@@ -452,8 +451,7 @@ op_moveb_dI(int src, int dst)
 	debug(("moveb %s, (%s)\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_areg(dst);
-	WOUT = (0x1000 | ((dst & 7) << 9) | (MODE_ind << 6)
-		| (MODE_d << 3) | (src & 7));
+	WOUT(0x1000 | ((dst & 7) << 9) | (MODE_ind << 6) | (MODE_d << 3) | (src & 7));
 }
 
 static inline void
@@ -462,8 +460,7 @@ op_movew_Id(int src, int dst)
 	debug(("movew (%s), %s\n", regname(src), regname(dst)));
 	assert_areg(src);
 	assert_dreg(dst);
-	WOUT = (0x3000 | ((dst & 7) << 9) | (MODE_d << 6)
-		| (MODE_ind << 3) | (src & 7));
+	WOUT(0x3000 | ((dst & 7) << 9) | (MODE_d << 6) | (MODE_ind << 3) | (src & 7));
 }
 
 static inline void
@@ -472,8 +469,7 @@ op_movew_dI(int src, int dst)
 	debug(("movew %s, (%s)\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_areg(dst);
-	WOUT = (0x3000 | ((dst & 7) << 9) | (MODE_ind << 6)
-		| (MODE_d << 3) | (src & 7));
+	WOUT(0x3000 | ((dst & 7) << 9) | (MODE_ind << 6) | (MODE_d << 3) | (src & 7));
 }
 
 static inline void
@@ -483,9 +479,8 @@ op_movel_ao(int src, int base, int disp)
 	assert_areg(src);
 	assert_areg(base);
 	assert_s16(disp);
-	WOUT = (0x2000 | ((base & 7) << 9) | (MODE_inddisp << 6)
-		| (MODE_a << 3) | (src & 7));
-	WOUT = disp;
+	WOUT(0x2000 | ((base & 7) << 9) | (MODE_inddisp << 6) | (MODE_a << 3) | (src & 7));
+	WOUT(disp);
 }
 
 static inline void
@@ -494,8 +489,7 @@ op_movel_ad(int src, int dst)
 	debug(("movel %s, %s\n", regname(src), regname(dst)));
 	assert_areg(src);
 	assert_dreg(dst);
-	WOUT = (0x2000 | ((dst & 7) << 9) | (MODE_d << 6)
-		| (MODE_a << 3) | (src & 7));
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_d << 6) | (MODE_a << 3) | (src & 7));
 }
 
 static inline void
@@ -504,8 +498,7 @@ op_movel_dd(int src, int dst)
 	debug(("movel %s, %s\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_dreg(dst);
-	WOUT = (0x2000 | ((dst & 7) << 9) | (MODE_d << 6)
-		| (MODE_d << 3) | (src & 7));
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_d << 6) | (MODE_d << 3) | (src & 7));
 }
 
 static inline void
@@ -515,9 +508,8 @@ op_movel_do(int src, int base, int disp)
 	assert_dreg(src);
 	assert_areg(base);
 	assert_s16(disp);
-	WOUT = (0x2000 | ((base & 7) << 9) | (MODE_inddisp << 6)
-		| (MODE_d << 3) | (src & 7));
-	WOUT = disp;
+	WOUT(0x2000 | ((base & 7) << 9) | (MODE_inddisp << 6) | (MODE_d << 3) | (src & 7));
+	WOUT(disp);
 }
 
 static inline void
@@ -525,8 +517,8 @@ op_movel_id(int imm, int dst)
 {
 	debug(("movel #%d, %s\n", imm, regname(dst)));
 	assert_dreg(dst);
-	WOUT = 0x2000 | ((dst & 7) << 9) | (MODE_d << 6) | MODE_src_imm;
-	LOUT = imm;
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_d << 6) | MODE_src_imm);
+	LOUT(imm);
 }
 
 static inline void
@@ -535,8 +527,7 @@ op_movel_Id(int src, int dst)
 	debug(("movel (%s), %s\n", regname(src), regname(dst)));
 	assert_areg(src);
 	assert_dreg(dst);
-	WOUT = (0x2000 | ((dst & 7) << 9) | (MODE_d << 6)
-		| (MODE_ind << 3) | (src & 7));
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_d << 6) | (MODE_ind << 3) | (src & 7));
 }
 
 static inline void
@@ -545,8 +536,7 @@ op_movel_aI(int src, int dst)
 	debug(("movel %s, (%s)\n", regname(src), regname(dst)));
 	assert_areg(src);
 	assert_areg(dst);
-	WOUT = (0x2000 | ((dst & 7) << 9) | (MODE_ind << 6)
-		| (MODE_a << 3) | (src & 7));
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_ind << 6) | (MODE_a << 3) | (src & 7));
 }
 
 static inline void
@@ -555,8 +545,7 @@ op_movel_dI(int src, int dst)
 	debug(("movel %s, (%s)\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_areg(dst);
-	WOUT = (0x2000 | ((dst & 7) << 9) | (MODE_ind << 6)
-		| (MODE_d << 3) | (src & 7));
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_ind << 6) | (MODE_d << 3) | (src & 7));
 }
 
 static inline void
@@ -564,8 +553,8 @@ op_movel_ip(int imm, int dst)
 {
 	debug(("movel #%d, -(%s)\n", imm, regname(dst)));
 	assert_areg(dst);
-	WOUT = 0x2000 | ((dst & 7) << 9) | (MODE_predec << 6) | MODE_src_imm;
-	LOUT = imm;
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_predec << 6) | MODE_src_imm);
+	LOUT(imm);
 }
 
 static inline void
@@ -574,8 +563,7 @@ op_movel_ap(int src, int dst)
 	debug(("movel %s, -(%s)\n", regname(src), regname(dst)));
 	assert_areg(src);
 	assert_areg(dst);
-	WOUT = (0x2000 | ((dst & 7) << 9) | (MODE_predec << 6)
-		| (MODE_a << 3) | (src & 7));
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_predec << 6) | (MODE_a << 3) | (src & 7));
 }
 
 static inline void
@@ -584,8 +572,7 @@ op_movel_dp(int src, int dst)
 	debug(("movel %s, -(%s)\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_areg(dst);
-	WOUT = (0x2000 | ((dst & 7) << 9) | (MODE_predec << 6) 
-		| (MODE_d << 3) | (src & 7));
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_predec << 6) | (MODE_d << 3) | (src & 7));
 }
 
 static inline void
@@ -595,9 +582,8 @@ op_movel_op(int base, int disp, int dst)
 	assert_areg(base);
 	assert_s16(disp);
 	assert_areg(dst);
-	WOUT = (0x2000 | ((dst & 7) << 9) | (MODE_predec << 6) 
-		| (MODE_inddisp << 3) | (base & 7));
-	WOUT = disp;
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_predec << 6) | (MODE_inddisp << 3) | (base & 7));
+	WOUT(disp);
 }
 
 static inline void
@@ -607,9 +593,8 @@ op_movel_od(int base, int disp, int dst)
 	assert_areg(base);
 	assert_s16(disp);
 	assert_dreg(dst);
-	WOUT = (0x2000 | ((dst & 7) << 9) | (MODE_d << 6)
-		| (MODE_inddisp << 3) | (base & 7));
-	WOUT = disp;
+	WOUT(0x2000 | ((dst & 7) << 9) | (MODE_d << 6) | (MODE_inddisp << 3) | (base & 7));
+	WOUT(disp);
 }
 
 static inline void
@@ -618,7 +603,7 @@ op_moveal_aa(int src, int dst)
 	debug(("moveal %s, %s\n", regname(src), regname(dst)));
 	assert_areg(src);
 	assert_areg(dst);
-	WOUT = 0x2040 | ((dst & 7) << 9) | (MODE_a << 3) | (src & 7);
+	WOUT(0x2040 | ((dst & 7) << 9) | (MODE_a << 3) | (src & 7));
 }
 
 static inline void
@@ -627,7 +612,7 @@ op_moveal_Ia(int src, int dst)
 	debug(("moveal (%s), %s\n", regname(src), regname(dst)));
 	assert_areg(src);
 	assert_areg(dst);
-	WOUT = 0x2040 | ((dst & 7) << 9) | (MODE_ind << 3) | (src & 7);
+	WOUT(0x2040 | ((dst & 7) << 9) | (MODE_ind << 3) | (src & 7));
 }
 
 static inline void
@@ -637,8 +622,8 @@ op_moveal_oa(int base, int disp, int dst)
 	assert_areg(base);
 	assert_s16(disp);
 	assert_areg(dst);
-	WOUT = 0x2040 | ((dst & 7) << 9) | (MODE_inddisp << 3) | (base & 7);
-	WOUT = disp;
+	WOUT(0x2040 | ((dst & 7) << 9) | (MODE_inddisp << 3) | (base & 7));
+	WOUT(disp);
 }
 
 static inline void
@@ -646,8 +631,8 @@ op_moveal_ia(int imm, int dst)
 {
 	debug(("moveal #0x%x, %s\n", imm, regname(dst)));
 	assert_areg(dst);
-	WOUT = 0x2040 | ((dst & 7) << 9) | MODE_src_imm;
-	LOUT = imm;
+	WOUT(0x2040 | ((dst & 7) << 9) | MODE_src_imm);
+	LOUT(imm);
 }
 
 static inline void
@@ -656,8 +641,8 @@ op_moveml_ro(int mask, int areg, int disp)
 	debug(("moveml 0x%04x, %d(%s)\n", mask, disp, regname(areg)));
 	assert_s16(disp);
 	assert_areg(areg);
-	WOUT = 0x48C0 | (MODE_inddisp << 3) | (areg & 7);
-	WOUT = mask;
+	WOUT(0x48C0 | (MODE_inddisp << 3) | (areg & 7));
+	WOUT(mask);
 }
 
 static inline void
@@ -666,8 +651,8 @@ op_moveml_or(int areg, int disp, int mask)
 	debug(("moveml %d(%s), 0x%04x\n", disp, regname(areg), mask));
 	assert_s16(disp);
 	assert_areg(areg);
-	WOUT = 0x4CC0 | (MODE_inddisp << 3) | (areg & 7);
-	WOUT = mask;
+	WOUT(0x4CC0 | (MODE_inddisp << 3) | (areg & 7));
+	WOUT(mask);
 }
 
 static inline void
@@ -676,7 +661,7 @@ op_moveq_id(int imm, int dst)
 	debug(("moveq #%d, %s\n", imm, regname(dst)));
 	assert_dreg(dst);
 	assert_s8(imm);
-	WOUT = 0x7000 | (dst << 9) | (imm & 0xFF);
+	WOUT(0x7000 | (dst << 9) | (imm & 0xFF));
 }
 
 static inline void
@@ -684,9 +669,9 @@ op_mulsl_id(int imm, int dst)
 {
 	debug(("mulsl #%d, %s\n", imm, regname(dst)));
 	assert_dreg(dst);
-	WOUT = 0x4C00 | MODE_src_imm;
-	WOUT = 0x0800 | (dst << 12);
-	LOUT = imm;
+	WOUT(0x4C00 | MODE_src_imm);
+	WOUT(0x0800 | (dst << 12));
+	LOUT(imm);
 }
 
 static inline void
@@ -695,8 +680,8 @@ op_mulsl_dd(int src, int dst)
 	debug(("mulsl %s, %s\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_dreg(dst);
-	WOUT = 0x4C00 | (MODE_d << 3) | src;
-	WOUT = 0x0800 | (dst << 12);
+	WOUT(0x4C00 | (MODE_d << 3) | src);
+	WOUT(0x0800 | (dst << 12));
 }
 
 static inline void
@@ -704,7 +689,7 @@ op_negl_d(int dst)
 {
 	debug(("negl %s\n", regname(dst)));
 	assert_dreg(dst);
-	WOUT = 0x4480 | (MODE_d << 3) | dst;
+	WOUT(0x4480 | (MODE_d << 3) | dst);
 }
 
 static inline void
@@ -712,14 +697,14 @@ op_negxl_d(int dst)
 {
 	debug(("negxl %s\n", regname(dst)));
 	assert_dreg(dst);
-	WOUT = 0x4080 | (MODE_d << 3) | dst;
+	WOUT(0x4080 | (MODE_d << 3) | dst);
 }
 
 static inline void
 op_nop(void)
 {
 	debug(("nop\n"));
-	WOUT = 0x4E71;
+	WOUT(0x4E71);
 }
 
 static inline void
@@ -728,22 +713,22 @@ op_orl_dd(int src, int dst)
 	debug(("orl %s, %s\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_dreg(dst);
-	WOUT = 0x8080 | (dst << 9) | (MODE_d << 3) | src;
+	WOUT(0x8080 | (dst << 9) | (MODE_d << 3) | src);
 }
 
 static inline void
 op_pea_l(int addr)
 {
 	debug(("pea 0x%08x\n", addr));
-	WOUT = 0x4840 | MODE_src_absl;
-	LOUT = addr;
+	WOUT(0x4840 | MODE_src_absl);
+	LOUT(addr);
 }
 
 static inline void
 op_rts(void)
 {
 	debug(("rts\n"));
-	WOUT = 0x4E75;
+	WOUT(0x4E75);
 }
 
 static inline void
@@ -751,8 +736,8 @@ op_subl_id(int imm, int dst)
 {
 	debug(("subl #%d, %s\n", imm, regname(dst)));
 	assert_dreg(dst);
-	WOUT = 0x9080 | (dst << 9) | MODE_src_imm;
-	LOUT = imm;
+	WOUT(0x9080 | (dst << 9) | MODE_src_imm);
+	LOUT(imm);
 }
 
 static inline void
@@ -761,7 +746,7 @@ op_subl_dd(int src, int dst)
 	debug(("subl %s, %s\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_dreg(dst);
-	WOUT = 0x9080 | (dst << 9) | (MODE_d << 3) | src;
+	WOUT(0x9080 | (dst << 9) | (MODE_d << 3) | src);
 }
 
 static inline void
@@ -770,8 +755,8 @@ op_subaw_ia(int disp, int dst)
 	debug(("subaw #%d, %s\n", disp, regname(dst)));
 	assert_s16(disp);
 	assert_areg(dst);
-	WOUT = 0x90C0 | ((dst & 7) << 9) | MODE_src_imm;
-	WOUT = disp;
+	WOUT(0x90C0 | ((dst & 7) << 9) | MODE_src_imm);
+	WOUT(disp);
 }
 
 static inline void
@@ -780,7 +765,7 @@ op_subql_id(int imm, int dst)
 	debug(("subql #%d, %s\n", imm, regname(dst)));
 	assert(imm >= 1 && imm <= 8);
 	assert_dreg(dst);
-	WOUT = 0x5180 | ((imm & 7) << 9) | (MODE_d << 3) | dst;
+	WOUT(0x5180 | ((imm & 7) << 9) | (MODE_d << 3) | dst);
 }
 
 static inline void
@@ -789,7 +774,7 @@ op_subxl_dd(int src, int dst)
 	debug(("subxl %s, %s\n", regname(src), regname(dst)));
 	assert_dreg(src);
 	assert_dreg(dst);
-	WOUT = 0x9180 | (dst << 9) | src;
+	WOUT(0x9180 | (dst << 9) | src);
 }
 
 static inline void
@@ -797,7 +782,7 @@ op_tst_a(int src)
 {
 	debug(("tst %s\n", regname(src)));
 	assert_areg(src);
-	WOUT = 0x4A80 | (MODE_a << 3) | (src & 7);
+	WOUT(0x4A80 | (MODE_a << 3) | (src & 7));
 }
 
 static inline void
@@ -805,7 +790,7 @@ op_tst_d(int src)
 {
 	debug(("tst %s\n", regname(src)));
 	assert_dreg(src);
-	WOUT = 0x4A80 | (MODE_d << 3) | (src & 7);
+	WOUT(0x4A80 | (MODE_d << 3) | (src & 7));
 }
 
 static inline void
@@ -813,7 +798,7 @@ op_unlk_a(int areg)
 {
 	debug(("unlk %s\n", regname(areg)));
 	assert_areg(areg);
-	WOUT = 0x4E58 | (areg & 7);
+	WOUT(0x4E58 | (areg & 7));
 }
 
 /* --------------------------------------------------------------------- */
@@ -823,8 +808,8 @@ _op_fop_ff(int src, int dst, int opmode)
 {
 	assert_freg(src);
 	assert_freg(dst);
-	WOUT = 0xF000 | (COPROCID << 9);
-	WOUT = ((src & 7) << 10) | ((dst & 7) << 7) | opmode;
+	WOUT(0xF000 | (COPROCID << 9));
+	WOUT(((src & 7) << 10) | ((dst & 7) << 7) | opmode);
 }
 
 static inline void
@@ -861,8 +846,8 @@ op_fmoves_fI(int src, int base)
 	debug(("fmoves %s, (%s)\n", regname(src), regname(base)));
 	assert_freg(src);
 	assert_areg(base);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_ind << 3) | (base & 7);
-	WOUT = 0x6400 | ((src & 7) << 7);
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_ind << 3) | (base & 7));
+	WOUT(0x6400 | ((src & 7) << 7));
 }
 
 static inline void
@@ -871,8 +856,8 @@ op_fmoves_fp(int src, int base)
 	debug(("fmoves %s, -(%s)\n", regname(src), regname(base)));
 	assert_freg(src);
 	assert_areg(base);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_predec << 3) | (base & 7);
-	WOUT = 0x6400 | ((src & 7) << 7);
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_predec << 3) | (base & 7));
+	WOUT(0x6400 | ((src & 7) << 7));
 }
 
 static inline void
@@ -882,9 +867,9 @@ op_fmoves_fo(int src, int base, int disp)
 	assert_freg(src);
 	assert_areg(base);
 	assert_s16(disp);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7);
-	WOUT = 0x6400 | ((src & 7) << 7);
-	WOUT = disp;
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7));
+	WOUT(0x6400 | ((src & 7) << 7));
+	WOUT(disp);
 }
 
 static inline void
@@ -893,8 +878,8 @@ op_fmoves_fd(int src, int dst)
 	debug(("fmoves %s, %s\n", regname(src), regname(dst)));
 	assert_freg(src);
 	assert_dreg(dst);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_d << 3) | (dst & 7);
-	WOUT = 0x6400 | ((src & 7) << 7);
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_d << 3) | (dst & 7));
+	WOUT(0x6400 | ((src & 7) << 7));
 }
 
 static inline void
@@ -903,8 +888,8 @@ op_fmoved_fI(int src, int base)
 	debug(("fmoved %s, (%s)\n", regname(src), regname(base)));
 	assert_freg(src);
 	assert_areg(base);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_ind << 3) | (base & 7);
-	WOUT = 0x7400 | ((src & 7) << 7);
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_ind << 3) | (base & 7));
+	WOUT(0x7400 | ((src & 7) << 7));
 }
 
 static inline void
@@ -913,8 +898,8 @@ op_fmoved_fp(int src, int base)
 	debug(("fmoved %s, -(%s)\n", regname(src), regname(base)));
 	assert_freg(src);
 	assert_areg(base);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_predec << 3) | (base & 7);
-	WOUT = 0x7400 | ((src & 7) << 7);
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_predec << 3) | (base & 7));
+	WOUT(0x7400 | ((src & 7) << 7));
 }
 
 static inline void
@@ -924,9 +909,9 @@ op_fmoved_fo(int src, int base, int disp)
 	assert_freg(src);
 	assert_areg(base);
 	assert_s16(disp);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7);
-	WOUT = 0x7400 | ((src & 7) << 7);
-	WOUT = disp;
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7));
+	WOUT(0x7400 | ((src & 7) << 7));
+	WOUT(disp);
 }
 
 static inline void
@@ -935,8 +920,8 @@ op_fsmoves_df(int src, int dst)
 	debug(("fsmoves %s, %s\n", regname(src), regname(dst)));
  	assert_dreg(src);
 	assert_freg(dst);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_d << 3) | (src & 7);
-	WOUT = 0x4400 | ((dst & 7) << 7) | OPMODE_s;
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_d << 3) | (src & 7));
+	WOUT(0x4400 | ((dst & 7) << 7) | OPMODE_s);
 }
 
 static inline void
@@ -945,8 +930,8 @@ op_fsmoves_If(int base, int dst)
 	debug(("fsmoves (%s), %s\n", regname(base), regname(dst)));
  	assert_areg(base);
 	assert_freg(dst);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_ind << 3) | (base & 7);
-	WOUT = 0x4400 | ((dst & 7) << 7) | OPMODE_s;
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_ind << 3) | (base & 7));
+	WOUT(0x4400 | ((dst & 7) << 7) | OPMODE_s);
 }
 
 static inline void
@@ -955,8 +940,8 @@ op_fdmoved_If(int base, int dst)
 	debug(("fdmoved (%s), %s\n", regname(base), regname(dst)));
  	assert_areg(base);
 	assert_freg(dst);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_ind << 3) | (base & 7);
-	WOUT = 0x5400 | ((dst & 7) << 7) | OPMODE_d;
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_ind << 3) | (base & 7));
+	WOUT(0x5400 | ((dst & 7) << 7) | OPMODE_d);
 }
 
 static inline void
@@ -966,9 +951,9 @@ op_fsmoves_of(int base, int disp, int dst)
  	assert_areg(base);
 	assert_s16(disp);
 	assert_freg(dst);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7);
-	WOUT = 0x4400 | ((dst & 7) << 7) | OPMODE_s;
-	WOUT = disp;
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7));
+	WOUT(0x4400 | ((dst & 7) << 7) | OPMODE_s);
+	WOUT(disp);
 }
 
 static inline void
@@ -978,9 +963,9 @@ op_fdmoved_of(int base, int disp, int dst)
  	assert_areg(base);
 	assert_s16(disp);
 	assert_freg(dst);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7);
-	WOUT = 0x5400 | ((dst & 7) << 7) | OPMODE_d;
-	WOUT = disp;
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7));
+	WOUT(0x5400 | ((dst & 7) << 7) | OPMODE_d);
+	WOUT(disp);
 }
 
 static inline void
@@ -989,8 +974,8 @@ op_fsmovel_df(int src, int dst)
 	debug(("fsmovel %s, %s\n", regname(src), regname(dst)));
  	assert_dreg(src);
 	assert_freg(dst);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_d << 3) | (src & 7);
-	WOUT = 0x4000 | ((dst & 7) << 7) | OPMODE_s;
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_d << 3) | (src & 7));
+	WOUT(0x4000 | ((dst & 7) << 7) | OPMODE_s);
 }
 
 static inline void
@@ -999,8 +984,8 @@ op_fdmovel_df(int src, int dst)
 	debug(("fdmovel %s, %s\n", regname(src), regname(dst)));
  	assert_dreg(src);
 	assert_freg(dst);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_d << 3) | (src & 7);
-	WOUT = 0x4000 | ((dst & 7) << 7) | OPMODE_d;
+	WOUT(0xF000 | (COPROCID << 9) | (MODE_d << 3) | (src & 7));
+	WOUT(0x4000 | ((dst & 7) << 7) | OPMODE_d);
 }
 
 static inline void
@@ -1009,8 +994,8 @@ op_fsmovex_ff(int src, int dst)
 	debug(("fsmovex %s, %s\n", regname(src), regname(dst)));
 	assert_freg(src);
 	assert_freg(dst);
-	WOUT = 0xF000 | (COPROCID << 9); 
-	WOUT = ((src & 7) << 10) | ((dst & 7) << 7) | OPMODE_s;
+	WOUT(0xF000 | (COPROCID << 9));
+	WOUT(((src & 7) << 10) | ((dst & 7) << 7) | OPMODE_s);
 }
 
 static inline void
@@ -1019,8 +1004,8 @@ op_fdmovex_ff(int src, int dst)
 	debug(("fdmovex %s, %s\n", regname(src), regname(dst)));
 	assert_freg(src);
 	assert_freg(dst);
-	WOUT = 0xF000 | (COPROCID << 9); 
-	WOUT = ((src & 7) << 10) | ((dst & 7) << 7) | OPMODE_d;
+	WOUT(0xF000 | (COPROCID << 9));
+	WOUT(((src & 7) << 10) | ((dst & 7) << 7) | OPMODE_d);
 }
 
 static inline void
@@ -1029,8 +1014,8 @@ op_fmovemx_ro(int mask, int base, int disp)
 	debug(("fmovemx 0x%02x, %d(%s)\n", mask, disp, regname(base)));
 	assert_s16(disp);
 	assert_areg(base);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7);
-	WOUT = 0xD000 | mask;
+	WOUT((0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7)));
+	WOUT((0xD000 | mask));
 }
 
 static inline void
@@ -1039,8 +1024,8 @@ op_fmovemx_or(int base, int disp, int mask)
 	debug(("fmovemx %d(%s), 0x%02x\n", disp, regname(base), mask));
 	assert_s16(disp);
 	assert_areg(base);
-	WOUT = 0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7);
-	WOUT = 0xE000 | mask;
+	WOUT((0xF000 | (COPROCID << 9) | (MODE_inddisp << 3) | (base & 7)));
+	WOUT((0xE000 | mask));
 }
 
 static inline void
@@ -1993,7 +1978,7 @@ define_insn(build_key, set_word_xxC)
 	jint val = const_int(2);
 
 	debug((".long %08x\n", val));
-	LOUT = val;
+	LOUT(val);
 }
 
 define_insn(build_code_ref, set_wordpc_xxC)
@@ -2005,7 +1990,7 @@ define_insn(build_code_ref, set_wordpc_xxC)
 	l->from = 0;
 
 	debug((".long ?\n"));
-	LOUT = 0;
+	LOUT(0);
 }
 
 /* --------------------------------------------------------------------- */

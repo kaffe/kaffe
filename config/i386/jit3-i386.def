@@ -111,7 +111,7 @@ extern bool used_ieee_division;
 								\
 	OUT(0x29);						\
 	OUT(0x05);						\
-	LOUT((int)(__counter));				\
+	LOUT((int)(__counter));					\
 	debug(("sub eax, 0x%x\n", (int)(__counter)));		\
 								\
 	OUT(0x19);						\
@@ -147,7 +147,7 @@ extern bool used_ieee_division;
 								\
 	OUT(0x01);						\
 	OUT(0x05);						\
-	LOUT((int)(__counter));				\
+	LOUT((int)(__counter));					\
 	debug(("add eax, 0x%x\n", (int)(__counter)));		\
 								\
 	OUT(0x11);						\
@@ -176,6 +176,7 @@ define_insn(unimplemented, unimplemented)
 define_insn(nop, nop)
 {
 	OUT(0x90);
+	debug(("nop\n"));
 }
 
 /* --------------------------------------------------------------------- */
@@ -455,7 +456,7 @@ define_insn(epilogue, epilogue_xxx)
 		/* The function ends with a throw, not a return. */
 	}
 	setEpilogueLabel((uintp)CODEPC);
-	
+
 #if 0
 	/* If this method uses IEEE, restore it */
 	if (used_ieee_division == true) {
@@ -518,10 +519,9 @@ define_insn(spill_int, spill_Rxx)
 
 define_insn(spill_float, fspill_Rxx)
 {
-	int o;
+	int o = const_int(1);
 
 	(void)sreg_float(0);
-	o = const_int(1);
 
 	OUT(0xD9);
 	OUT(0x98|REG_ebp);
@@ -532,10 +532,9 @@ define_insn(spill_float, fspill_Rxx)
 
 define_insn(spill_double, fspilll_Rxx)
 {
-	int o;
+	int o = const_int(1);
 
 	(void)sreg_double(0);
-	o = const_int(1);
 
 	OUT(0xDD);
 	OUT(0x98|REG_ebp);
@@ -546,11 +545,8 @@ define_insn(spill_double, fspilll_Rxx)
 
 define_insn(reload_int, reload_Rxx)
 {
-	int o;
-	int r;
-
-	r = lreg_int(0);
-	o = const_int(1);
+	int r = lreg_int(0);
+	int o = const_int(1);
 
 	OUT(0x8B);
 	OUT(0x80|(r<<3)|REG_ebp);
@@ -561,10 +557,9 @@ define_insn(reload_int, reload_Rxx)
 
 define_insn(reload_float, freload_Rxx)
 {
-	int o;
+	int o = const_int(1);
 
 	lreg_float(0);
-	o = const_int(1);
 
 	OUT(0xD9);
 	OUT(0x80|REG_ebp);
@@ -575,15 +570,13 @@ define_insn(reload_float, freload_Rxx)
 
 define_insn(reload_double, freloadl_Rxx)
 {
-	int r, o;
+	int r = lreg_double(0);
+	int o = const_int(1);
 
-	r = lreg_double(0);
-	o = const_int(1);
-	
 	OUT(0xDD);
 	OUT(0x80|REG_ebp);
 	LOUT(o);
-		
+
 	debug(("fldl %d(ebp) %d\n", o, r));
 }
 
@@ -656,7 +649,7 @@ define_insn(move_float_const, fmove_RxC)
 			OUT(0xe0);
 
 			debug(("fchs\n"));
-                }
+		}
 	}
 	else if (d.d == 1.0) {
 		OUT(0xD9);
@@ -702,7 +695,7 @@ define_insn(move_double_const, fmovel_RxC)
 			OUT(0xe0);
 
 			debug(("fchs\n"));
-                }
+		}
 	}
 	else if (d.d == 1.0) {
 		OUT(0xD9);
@@ -1259,7 +1252,7 @@ define_insn(store_float, fstore_RxR)
 	
 	OUT(0xD9);
 	OUT(0x18|w);
-	
+
 	debug(("fstp (%s)\n", regname(w)));
 }
 
@@ -1356,9 +1349,8 @@ define_insn(cvt_long_double, cvtld_RxR)
 
 define_insn(cvt_float_double, cvtfd_RxR)
 {
-	int o;
+	int o = rslot_float(2);
 
-	o = rslot_float(2);
 	wreg_double(0);
 
 	OUT(0xD9);
@@ -1750,7 +1742,7 @@ define_insn(add_int_const, add_RRC)
 	rw = rwreg_int(0);
 
 	OUT(0x81);
-        OUT(0xC0|rw);
+	OUT(0xC0|rw);
 	LOUT(v);
 
 	debug(("addl #%d,%s\n", v, regname(rw)));
@@ -1767,7 +1759,7 @@ define_insn(sub_int_const, sub_RRC)
 	rw = rwreg_int(0);
 
 	OUT(0x81);
-        OUT(0xE8|rw);
+	OUT(0xE8|rw);
 	LOUT(v);
 
 	debug(("subl #%d,%s\n", v, regname(rw)));
@@ -1897,7 +1889,7 @@ define_insn(cmp_int_const, cmp_xRC)
 	int v = const_int(2);
 
 	OUT(0x81);
-        OUT(0xF8|r1);
+	OUT(0xF8|r1);
 	LOUT(v);
 
 	debug(("cmpl #%d,%s\n", v, regname(r1)));
@@ -1924,7 +1916,7 @@ define_insn(lshl_int_const, lshl_RRC)
 	v = const_int(2);
 
 	OUT(0xC1);
-        OUT(0xE0|rw);
+	OUT(0xE0|rw);
 	OUT(v);
 
 	debug(("shll #%d,%s\n", v, regname(rw)));

@@ -19,15 +19,15 @@ int jit_debug;
 #define	debug(x)
 #endif
 
-#define	do_move_int(t, f) {					\
-		if ((t) != (f)) {				\
-			OUT = 0x89;				\
-			OUT = 0xC0|(f<<3)|t;			\
-			debug(("movl %s,%s\n", regname(f), regname(t)));\
-		}						\
+#define	do_move_int(t, f)					\
+	if ((t) != (f)) {					\
+		OUT(0x89);					\
+		OUT(0xC0|(f<<3)|t);				\
+		debug(("movl %s,%s\n", regname(f), regname(t)));\
 	}
 
-#define	check_reg_01() { 					\
+#define	check_reg_01()						\
+	{							\
 		int _r_ = rreg_int(1);				\
 		int _w_ = wreg_int(0);				\
 		assert(_r_ == _w_);				\
@@ -79,30 +79,30 @@ extern bool used_ieee_division;
 	int *__counter = (int *)&(COUNTER);			\
 	if (SAVE_EDX_EAX) {					\
 		/* Save EAX and EDX */				\
-		OUT = 0x50|REG_edx;				\
-		OUT = 0x50|REG_eax;				\
+		OUT(0x50|REG_edx);				\
+		OUT(0x50|REG_eax);				\
 		debug(("pushl edx\n"));				\
 		debug(("pushl eax\n"));				\
 	}							\
 								\
-	OUT = 0x0F;						\
-	OUT = 0x31;						\
+	OUT(0x0F);						\
+	OUT(0x31);						\
 	debug(("rdtsc\n"));					\
 								\
-	OUT = 0x29;						\
-	OUT = 0x05;						\
-	LOUT = (int)(__counter);				\
+	OUT(0x29);						\
+	OUT(0x05);						\
+	LOUT((int)(__counter));					\
 	debug(("sub eax, 0x%x\n", (int)(__counter)));		\
 								\
-	OUT = 0x19;						\
-	OUT = 0x15;						\
-	LOUT = (int)(__counter + 1);				\
+	OUT(0x19);						\
+	OUT(0x15);						\
+	LOUT((int)(__counter + 1));				\
 	debug(("sbb edx, 0x%x\n", (int)(__counter + 1)));	\
 								\
 	if (SAVE_EDX_EAX) {					\
 		/* Restore EAX and EDX */			\
-		OUT = 0x58|REG_eax;				\
-		OUT = 0x58|REG_edx;				\
+		OUT(0x58|REG_eax);				\
+		OUT(0x58|REG_edx);				\
 		debug(("popl eax\n"));				\
 		debug(("popl edx\n"));				\
 	}							\
@@ -115,30 +115,30 @@ extern bool used_ieee_division;
 	int *__counter = (int *)&(COUNTER);			\
 	if (SAVE_EDX_EAX) {					\
 		/* Save EAX and EDX */				\
-		OUT = 0x50|REG_edx;				\
-		OUT = 0x50|REG_eax;				\
+		OUT(0x50|REG_edx);				\
+		OUT(0x50|REG_eax);				\
 		debug(("pushl edx\n"));				\
 		debug(("pushl eax\n"));				\
 	}							\
 								\
-	OUT = 0x0F;						\
-	OUT = 0x31;						\
+	OUT(0x0F);						\
+	OUT(0x31);						\
 	debug(("rdtsc\n"));					\
 								\
-	OUT = 0x01;						\
-	OUT = 0x05;						\
-	LOUT = (int)(__counter);				\
+	OUT(0x01);						\
+	OUT(0x05);						\
+	LOUT((int)(__counter));					\
 	debug(("add eax, 0x%x\n", (int)(__counter)));		\
 								\
-	OUT = 0x11;						\
-	OUT = 0x15;						\
-	LOUT = (int)(__counter + 1);				\
+	OUT(0x11);						\
+	OUT(0x15);						\
+	LOUT((int)(__counter + 1));				\
 	debug(("adc edx, 0x%x\n", (int)(__counter + 1)));	\
 								\
 	if (SAVE_EDX_EAX) {					\
 		/* Restore EAX and EDX */			\
-		OUT = 0x58|REG_eax;				\
-		OUT = 0x58|REG_edx;				\
+		OUT(0x58|REG_eax);				\
+		OUT(0x58|REG_edx);				\
 		debug(("popl eax\n"));				\
 		debug(("popl edx\n"));				\
 	}							\
@@ -155,7 +155,7 @@ define_insn(unimplemented, unimplemented)
 
 define_insn(nop, nop)
 {
-	OUT = 0x90;
+	OUT(0x90);
 	debug(("nop\n"));
 }
 
@@ -165,20 +165,20 @@ define_insn(prologue, prologue_xxx)
 {
 	label* l;
 
-	OUT = 0x50|REG_ebp;
-	OUT = 0x89;
-	OUT = 0xC0|(REG_esp<<3)|REG_ebp;
-	OUT = 0x81;
-	OUT = 0xE8|REG_esp;
+	OUT(0x50|REG_ebp);
+	OUT(0x89);
+	OUT(0xC0|(REG_esp<<3)|REG_ebp);
+	OUT(0x81);
+	OUT(0xE8|REG_esp);
 
 	l = (label*)const_int(1);
 	l->type = Lframe|Labsolute|Lgeneral;
 	l->at = (uintp)CODEPC;
-	LOUT = 0;
+	LOUT(0);
 
-	OUT = 0x50|REG_edi;
-	OUT = 0x50|REG_esi;
-	OUT = 0x50|REG_ebx;
+	OUT(0x50|REG_edi);
+	OUT(0x50|REG_esi);
+	OUT(0x50|REG_ebx);
 
 	debug(("pushl ebp\n"));
 	debug(("movl esp,ebp\n"));
@@ -192,131 +192,137 @@ define_insn(prologue, prologue_xxx)
 	{
 		profiler_start(globalMethod->totalClicks, 0);
 
-		OUT = 0xFF;
-		OUT = 0x05;
-		LOUT = (int)&(globalMethod->callsCount);
+		OUT(0xFF);
+		OUT(0x05);
+		LOUT((int)&(globalMethod->callsCount));
 		debug(("incl 0x%x\n",(int)&(globalMethod->callsCount)));
 	}
 #endif
 
+#if 0
 	/* If this method uses IEEE, set up the mode here */
-	if (used_ieee_division == true && 0) {
-		OUT = 0x68;
-		LOUT = 0;
-		OUT = 0x68;
-		LOUT = 0;
+	if (used_ieee_division == true) {
+		OUT(0x68);
+		LOUT(0);
+		OUT(0x68);
+		LOUT(0);
 		debug(("pushl #0\n"));
 		debug(("pushl #0\n"));
 
-		OUT = 0xD9;
-		OUT = 0x3C;
-		OUT = 0x24;
+		OUT(0xD9);
+		OUT(0x3C);
+		OUT(0x24);
 		debug(("fnstcw (esp)\n"));
 
-		OUT = 0x8B;
-		OUT = (REG_ebx<<3)|0x04;
-		OUT = 0x24;
-		debug(("movl (esp),ebx\n"));
+		OUT(0x8B);
+		OUT((REG_eax<<3)|0x04);
+		OUT(0x24);
+		debug(("movl (esp),eax\n"));
 
-		OUT = 0xB8|REG_ebx;
-		LOUT = IEEE_MODE;
-		debug(("movl %d,ebx\n", IEEE_MODE));
+		OUT(0xB8|REG_eax);
+		LOUT(IEEE_MODE);
+		debug(("movl %d,eax\n", IEEE_MODE));
 
-		OUT = 0x89;
-		OUT = (REG_ebx<<3)|0x44;
-		OUT = 0x24;
-		OUT = 0x04;
-		debug(("movl ebx,4(esp)\n"));
+		OUT(0x89);
+		OUT((REG_eax<<3)|0x44);
+		OUT(0x24);
+		OUT(0x04);
+		debug(("movl eax,4(esp)\n"));
 
-		OUT = 0xD9;
-		OUT = 0x6C;
-		OUT = 0x24;
-		OUT = 0x04;
+		OUT(0xD9);
+		OUT(0x6C);
+		OUT(0x24);
+		OUT(0x04);
 		debug(("fldcw 4(esp)\n"));
 	}
+#endif
 }
 
 define_insn(exception_prologue, eprologue_xLx)
 {
 	label* l;
 
-	OUT = 0x89;
-	OUT = 0xC0|(REG_ebp<<3)|REG_ebx;
+	OUT(0x89);
+	OUT(0xC0|(REG_ebp<<3)|REG_ecx);
 
-	OUT = 0x81;
-	OUT = 0xE8|REG_ebx;
+	OUT(0x81);
+	OUT(0xE8|REG_ecx);
 
 	/* Remember where the framesize is to go */
 	l = (label*)const_int(1);
 	l->type = Lframe|Labsolute|Lgeneral;
 	l->at = (uintp)CODEPC;
-	LOUT = 0;
+	LOUT(0);
 
-	OUT = 0x81;
-	OUT = 0xE8|REG_ebx;
-	LOUT = 3*SLOTSIZE;
+	OUT(0x81);
+	OUT(0xE8|REG_ecx);
+	LOUT(3*SLOTSIZE);
 
-	OUT = 0x89;
-	OUT = 0xC0|(REG_ebx<<3)|REG_esp;
+	OUT(0x89);
+	OUT(0xC0|(REG_ecx<<3)|REG_esp);
 
-	debug(("movl ebp,ebx\n"));
-	debug(("subl #?,ebx\n"));
-	debug(("subl #3*SLOTSIZE,ebx\n"));
-	debug(("movl ebx,esp\n"));
+	debug(("movl ebp,ecx\n"));
+	debug(("subl #?,ecx\n"));
+	debug(("subl #3*SLOTSIZE,ecx\n"));
+	debug(("movl ecx,esp\n"));
 
-	if (used_ieee_division == true && 0) {
-		OUT = 0x81;
-		OUT = 0xE8|REG_esp;
-		LOUT = SLOTSIZE;
+#if 0
+	if (used_ieee_division == true) {
+		OUT(0x81);
+		OUT(0xE8|REG_esp);
+		LOUT(SLOTSIZE);
 
 		debug(("subl #%d,esp\n", SLOTSIZE));
 
-		OUT = 0x8B;
-		OUT = (REG_ebx<<3)|0x04;
-		OUT = 0x24;
-		debug(("movl (esp),ebx\n"));
+		OUT(0x8B);
+		OUT((REG_eax<<3)|0x04);
+		OUT(0x24);
+		debug(("movl (esp),eax\n"));
 
-		OUT = 0xB8|REG_ebx;
-		LOUT = IEEE_MODE;
-		debug(("movl %d,ebx\n", IEEE_MODE));
+		OUT(0xB8|REG_eax);
+		LOUT(IEEE_MODE);
+		debug(("movl %d,eax\n", IEEE_MODE));
 
-		OUT = 0x89;
-		OUT = (REG_ebx<<3)|0x44;
-		OUT = 0x24;
-		OUT = 0x04;
-		debug(("movl ebx,4(esp)\n"));
+		OUT(0x89);
+		OUT((REG_eax<<3)|0x44);
+		OUT(0x24);
+		OUT(0x04);
+		debug(("movl eax,4(esp)\n"));
 
-		OUT = 0xD9;
-		OUT = 0x6C;
-		OUT = 0x24;
-		OUT = 0x04;
+		OUT(0xD9);
+		OUT(0x6C);
+		OUT(0x24);
+		OUT(0x04);
 		debug(("fldcw 4(esp)\n"));
 	}
+#endif
 }
 
 define_insn(epilogue, epilogue_xxx)
 {
 	setEpilogueLabel((uintp)CODEPC);
-	
-	/* If this method uses IEEE, restore it */
-	if (used_ieee_division == true && 0) {
+
 #if 0
-		OUT = 0xD9;
-		OUT = 0x2C;
-		OUT = 0x24;
+	/* If this method uses IEEE, restore it */
+	if (used_ieee_division == true) {
+#if 0
+		OUT(0xD9);
+		OUT(0x2C);
+		OUT(0x24);
 		debug(("fldcw (esp)\n"));
 #endif
-		OUT = 0xD9;
-		OUT = 0x6C;
-		OUT = 0x24;
-		OUT = 0;
+		OUT(0xD9);
+		OUT(0x6C);
+		OUT(0x24);
+		OUT(0);
 		debug(("fldcw 0(esp)\n"));
 
-		OUT = 0x81;
-		OUT = 0xC0|REG_esp;
-		LOUT = 8;
+		OUT(0x81);
+		OUT(0xC0|REG_esp);
+		LOUT(8);
 		debug(("addl 8,esp\n"));
 	}
+#endif
 
 #if defined(KAFFE_PROFILER)
 	if (profFlag) {
@@ -324,12 +330,12 @@ define_insn(epilogue, epilogue_xxx)
 	}
 #endif
 
-	OUT = 0x58|REG_ebx;
-	OUT = 0x58|REG_esi;
-	OUT = 0x58|REG_edi;
-	OUT = 0x89;
-	OUT = 0xC0|(REG_ebp<<3)|REG_esp;
-	OUT = 0x58|REG_ebp;
+	OUT(0x58|REG_ebx);
+	OUT(0x58|REG_esi);
+	OUT(0x58|REG_edi);
+	OUT(0x89);
+	OUT(0xC0|(REG_ebp<<3)|REG_esp);
+	OUT(0x58|REG_ebp);
 
 	debug(("popl ebx\n"));
 	debug(("popl esi\n"));
@@ -337,7 +343,7 @@ define_insn(epilogue, epilogue_xxx)
 	debug(("movl ebp,esp\n"));
 	debug(("popl ebp\n"));
 
-	OUT = 0xC3;
+	OUT(0xC3);
 
 	debug(("ret\n"));
 }
@@ -349,9 +355,9 @@ define_insn(spill_int, spill_Rxx)
 	int r = sreg_int(0);
 	int o = const_int(1);
 
-	OUT = 0x89;
-	OUT = 0x80|(r<<3)|REG_ebp;
-	LOUT = o;
+	OUT(0x89);
+	OUT(0x80|(r<<3)|REG_ebp);
+	LOUT(o);
 
 	debug(("movl %s,%d(ebp)\n", regname(r), o));
 }
@@ -360,11 +366,11 @@ define_insn(spill_float, fspill_Rxx)
 {
 	int o = const_int(1);
 
-	sreg_float(0);
+	(void)sreg_float(0);
 
-	OUT = 0xD9;
-	OUT = 0x98|REG_ebp;
-	LOUT = o;
+	OUT(0xD9);
+	OUT(0x98|REG_ebp);
+	LOUT(o);
 
 	debug(("fstp %d(ebp)\n", o));
 }
@@ -373,11 +379,11 @@ define_insn(spill_double, fspilll_Rxx)
 {
 	int o = const_int(1);
 
-	sreg_double(0);
+	(void)sreg_double(0);
 
-	OUT = 0xDD;
-	OUT = 0x98|REG_ebp;
-	LOUT = o;
+	OUT(0xDD);
+	OUT(0x98|REG_ebp);
+	LOUT(o);
 
 	debug(("fstpl %d(ebp)\n", o));
 }
@@ -387,9 +393,9 @@ define_insn(reload_int, reload_Rxx)
 	int r = lreg_int(0);
 	int o = const_int(1);
 
-	OUT = 0x8B;
-	OUT = 0x80|(r<<3)|REG_ebp;
-	LOUT = o;
+	OUT(0x8B);
+	OUT(0x80|(r<<3)|REG_ebp);
+	LOUT(o);
 
 	debug(("movl %d(ebp),%s\n", o, regname(r)));
 }
@@ -400,24 +406,23 @@ define_insn(reload_float, freload_Rxx)
 
 	lreg_float(0);
 
-	OUT = 0xD9;
-	OUT = 0x80|REG_ebp;
-	LOUT = o;
+	OUT(0xD9);
+	OUT(0x80|REG_ebp);
+	LOUT(o);
 
 	debug(("fld %d(ebp)\n", o));
 }
 
 define_insn(reload_double, freloadl_Rxx)
 {
+	int r = lreg_double(0);
 	int o = const_int(1);
 
-	lreg_double(0);
+	OUT(0xDD);
+	OUT(0x80|REG_ebp);
+	LOUT(o);
 
-	OUT = 0xDD;
-	OUT = 0x80|REG_ebp;
-	LOUT = o;
-
-	debug(("fldl %d(ebp)\n", o));
+	debug(("fldl %d(ebp) %d\n", o, r));
 }
 
 /* --------------------------------------------------------------------- */
@@ -426,10 +431,18 @@ define_insn(move_int_const, move_RxC)
 {
 	int val = const_int(2);
 	int w = wreg_int(0);
-	OUT = 0xB8|w;
-	LOUT = val;
 
-	debug(("movl #%d,%s\n", val, regname(w)));
+	if (val == 0) {
+		OUT(0x31);
+		OUT(0xC0|(w<<3)|w);
+		debug(("xorl %s,%s\n", regname(w), regname(w)));
+	}
+	else {
+		OUT(0xB8|w);
+		LOUT(val);
+
+		debug(("movl #%d,%s\n", val, regname(w)));
+	}
 }
 
 define_insn(move_label_const, move_RxL)
@@ -437,10 +450,10 @@ define_insn(move_label_const, move_RxL)
 	label* l = const_label(2);
 	int w = wreg_int(0);
 
-	OUT = 0xB8|w;
+	OUT(0xB8|w);
 	l->type |= Llong|Labsolute;
 	l->at = CODEPC;
-	LOUT = 0;
+	LOUT(0);
 
 	debug(("movl #?,%s\n", regname(w)));
 }
@@ -451,38 +464,35 @@ define_insn(move_int, move_RxR)
 	int w = wreg_int(0);
 
 	if (r != w) {
-		OUT = 0x89;
-		OUT = 0xC0|(r<<3)|w;
+		OUT(0x89);
+		OUT(0xC0|(r<<3)|w);
 		debug(("movl %s,%s\n", regname(r), regname(w)));
 	}
 }
 
 define_insn(move_float_const, fmove_RxC)
 {
-	double val = const_float(2);
+	jvalue d;
 
+	d.d = const_float(2);
 	wreg_float(0);
 
-	if (val == 0.0) {
-		OUT = 0xD9;
-		OUT = 0xEE;
+	if (d.d == 0.0) {
+		OUT(0xD9);
+		OUT(0xEE);
 
 		debug(("fldz\n"));
-		{
-			jvalue d;
-			d.d = val;
 
-			if ((d.j >> 63) & 1) {
-				OUT = 0xD9;
-				OUT = 0xe0;
+		if ((d.j >> 63) & 1) {
+			OUT(0xD9);
+			OUT(0xe0);
 
-				debug(("fchs\n"));
-			}
+			debug(("fchs\n"));
 		}
 	}
-	else if (val == 1.0) {
-		OUT = 0xD9;
-		OUT = 0xE8;
+	else if (d.d == 1.0) {
+		OUT(0xD9);
+		OUT(0xE8);
 
 		debug(("fld1\n"));
 	}
@@ -499,9 +509,9 @@ define_insn(move_float, fmove_RxR)
 	if (or != ow) {
 		wreg_float(0);
 
-		OUT = 0xD9;
-		OUT = 0x80|REG_ebp;
-		LOUT = or;
+		OUT(0xD9);
+		OUT(0x80|REG_ebp);
+		LOUT(or);
 
 		debug(("fld %d(ebp)\n", or));
 	}
@@ -509,30 +519,26 @@ define_insn(move_float, fmove_RxR)
 
 define_insn(move_double_const, fmovel_RxC)
 {
-	double val = const_double(2);
+	jvalue d;
 
+	d.d = const_double(2);
 	wreg_double(0);
 
-	if (val == 0.0) {
-		OUT = 0xD9;
-		OUT = 0xEE;
+	if (d.d == 0.0) {
+		OUT(0xD9);
+		OUT(0xEE);
 
 		debug(("fldz\n"));
-		{
-			jvalue d;
-			d.d = val;
+		if ((d.j >> 63) & 1) {
+			OUT(0xD9);
+			OUT(0xe0);
 
-			if ((d.j >> 63) & 1) {
-				OUT = 0xD9;
-				OUT = 0xe0;
-
-				debug(("fchsl\n"));
-			}
+			debug(("fchs\n"));
 		}
 	}
-	else if (val == 1.0) {
-		OUT = 0xD9;
-		OUT = 0xE8;
+	else if (d.d == 1.0) {
+		OUT(0xD9);
+		OUT(0xE8);
 
 		debug(("fld1\n"));
 	}
@@ -549,9 +555,9 @@ define_insn(move_double, fmovel_RxR)
 	if (or != ow) {
 		wreg_double(0);
 
-		OUT = 0xDD;
-		OUT = 0x80|REG_ebp;
-		LOUT = or;
+		OUT(0xDD);
+		OUT(0x80|REG_ebp);
+		LOUT(or);
 
 		debug(("fldl %d(ebp)\n", or));
 	}
@@ -569,8 +575,8 @@ define_insn(add_int, add_RRR)
 	r = rreg_int(2);
 	w = rwreg_int(0);
 
-	OUT = 0x01;
-        OUT = 0xC0|(r<<3)|w;
+	OUT(0x01);
+        OUT(0xC0|(r<<3)|w);
 
 	debug(("addl %s,%s\n", regname(r), regname(w)));
 }
@@ -583,8 +589,8 @@ define_insn(adc_int, adc_RRR)
 	r = rreg_int(2);
 	w = rwreg_int(0);
 
-	OUT = 0x11;
-        OUT = 0xC0|(r<<3)|w;
+	OUT(0x11);
+        OUT(0xC0|(r<<3)|w);
 
 	debug(("adcl %s,%s\n", regname(r), regname(w)));
 }
@@ -596,9 +602,9 @@ define_insn(add_float, fadd_RRR)
 	rreg_float(1);			/* Load r1 into the register stack */
 	wreg_float(0);			/* Result will be in register stack */
 
-	OUT = 0xD8;
-	OUT = 0x80|REG_ebp;
-	LOUT = r2;
+	OUT(0xD8);
+	OUT(0x80|REG_ebp);
+	LOUT(r2);
 
 	debug(("fadd %d(ebp)\n", r2));
 }
@@ -610,9 +616,9 @@ define_insn(add_double, faddl_RRR)
 	rreg_double(1);			/* Load r1 into the register stack */
 	wreg_double(0);			/* Result will be in register stack */
 
-	OUT = 0xDC;
-	OUT = 0x80|REG_ebp;
-	LOUT = r2;
+	OUT(0xDC);
+	OUT(0x80|REG_ebp);
+	LOUT(r2);
 
 	debug(("faddl %d(ebp)\n", r2));
 }
@@ -627,8 +633,8 @@ define_insn(sub_int, sub_RRR)
 	r = rreg_int(2);
 	w = rwreg_int(0);
 
-	OUT = 0x29;
-        OUT = 0xC0|(r<<3)|w;
+	OUT(0x29);
+        OUT(0xC0|(r<<3)|w);
 
 	debug(("subl %s,%s\n", regname(r), regname(w)));
 }
@@ -641,8 +647,8 @@ define_insn(sbc_int, sbc_RRR)
 	r = rreg_int(2);
 	w = rwreg_int(0);
 
-	OUT = 0x19;
-        OUT = 0xC0|(r<<3)|w;
+	OUT(0x19);
+        OUT(0xC0|(r<<3)|w);
 
 	debug(("sbbl %s,%s\n", regname(r), regname(w)));
 }
@@ -654,9 +660,9 @@ define_insn(sub_float, fsub_RRR)
 	rreg_float(1);			/* Load r1 into the register stack */
 	wreg_float(0);			/* Result will be in register stack */
 
-	OUT = 0xD8;
-	OUT = 0xA0|REG_ebp;
-	LOUT = r2;
+	OUT(0xD8);
+	OUT(0xA0|REG_ebp);
+	LOUT(r2);
 
 	debug(("fsub %d(ebp)\n", r2));
 }
@@ -668,33 +674,33 @@ define_insn(sub_double, fsubl_RRR)
 	rreg_double(1);			/* Load r1 into the register stack */
 	wreg_double(0);			/* Result will be in register stack */
 
-	OUT = 0xDC;
-	OUT = 0xA0|REG_ebp;
-	LOUT = r2;
+	OUT(0xDC);
+	OUT(0xA0|REG_ebp);
+	LOUT(r2);
 
 	debug(("fsubl %d(ebp)\n", r2));
 }
 
 define_insn(neg_float, negf_RxR)
 {
-    rreg_float(2);
-    wreg_float(0);
+	rreg_float(2);
+	wreg_float(0);
 
-    OUT = 0xD9;
-    OUT = 0xe0;
+	OUT(0xD9);
+	OUT(0xe0);
 
-    debug(("fchs\n"));
+	debug(("fchs\n"));
 }
 
 define_insn(neg_double, negd_RxR)
 {
-    rreg_double(2);
-    wreg_double(0);
+	rreg_double(2);
+	wreg_double(0);
 
-    OUT = 0xD9;
-    OUT = 0xe0;
+	OUT(0xD9);
+	OUT(0xe0);
 
-    debug(("fchsl\n"));
+	debug(("fchs\n"));
 }
 
 define_insn(mul_int, mul_RRR)
@@ -707,9 +713,9 @@ define_insn(mul_int, mul_RRR)
 	r = rreg_int(2);
 	w = rwreg_int(0);
 
-	OUT = 0x0F;
-	OUT = 0xAF;
-        OUT = 0xC0|(w<<3)|r;
+	OUT(0x0F);
+	OUT(0xAF);
+        OUT(0xC0|(w<<3)|r);
 
 	debug(("imull %s,%s\n", regname(r), regname(w)));
 }
@@ -721,9 +727,9 @@ define_insn(mul_float, fmul_RRR)
 	rreg_float(1);			/* Load r1 into the register stack */
 	wreg_float(0);			/* Result will be in register stack */
 
-	OUT = 0xD8;
-	OUT = 0x88|REG_ebp;
-	LOUT = r2;
+	OUT(0xD8);
+	OUT(0x88|REG_ebp);
+	LOUT(r2);
 
 	debug(("fmul %d(ebp)\n", r2));
 }
@@ -735,9 +741,9 @@ define_insn(mul_double, fmull_RRR)
 	rreg_double(1);			/* Load r1 into the register stack */
 	wreg_double(0);			/* Result will be in register stack */
 
-	OUT = 0xDC;
-	OUT = 0x88|REG_ebp;
-	LOUT = r2;
+	OUT(0xDC);
+	OUT(0x88|REG_ebp);
+	LOUT(r2);
 
 	debug(("fmull %d(ebp)\n", r2));
 }
@@ -765,43 +771,43 @@ define_insn(div_int, div_RRR)
 	assert(r != REG_edx);
 
 	/* special case for LONG_MIN / -1l: r == -1 ? -eax : eax / r  */
-	OUT = 0x83;
-	OUT = 0xF8|r;
-	OUT = 0xFF;
+	OUT(0x83);
+	OUT(0xF8|r);
+	OUT(0xFF);
 	debug(("cmp #0xFF,%s\n", regname(r)));
 
 	l1 = newLabel();
 	l1->type = Linternal| Llong8|Lrelative;
-	OUT = 0x74;
+	OUT(0x74);
 	l1->at = CODEPC;
-	OUT = 0;
+	OUT(0);
 	l1->from = CODEPC;
 	debug(("je neg\n"));
 
 	/* Setup EDX - should contains the sign of EAX */
 	do_move_int(REG_edx, REG_eax);
 #if 0
-	OUT = 0xC1;
-	OUT = 0xF8|REG_edx;
-	OUT = 31;
+	OUT(0xC1);
+	OUT(0xF8|REG_edx);
+	OUT(31);
 	debug(("sarl #31,edx\n"));
 #else
-	OUT = 0x99;
+	OUT(0x99);
 	debug(("cltd\n"));
 #endif
 
-	OUT = 0xF7;
-        OUT = 0xF8|r;
+	OUT(0xF7);
+        OUT(0xF8|r);
 	debug(("idivl %s,%s\n", regname(r), regname(w)));
 
-	OUT = 0xEB;
-	OUT = 2;
+	OUT(0xEB);
+	OUT(2);
 	debug(("jmp +2\n"));
 
 	debug(("neg:\n"));
 	l1->to = CODEPC;
-	OUT = 0xF7;
-	OUT = 0xD8|REG_eax;
+	OUT(0xF7);
+	OUT(0xD8|REG_eax);
 	debug(("neg eax\n"));
 }
 
@@ -812,9 +818,9 @@ define_insn(div_float, fdiv_RRR)
 	rreg_float(1);			/* Load r1 into the register stack */
 	wreg_float(0);			/* Result will be in register stack */
 
-	OUT = 0xD8;
-	OUT = 0xB0|REG_ebp;
-	LOUT = r2;
+	OUT(0xD8);
+	OUT(0xB0|REG_ebp);
+	LOUT(r2);
 
 	debug(("fdiv %d(ebp)\n", r2));
 }
@@ -826,9 +832,9 @@ define_insn(div_double, fdivl_RRR)
 	rreg_double(1);			/* Load r1 into the register stack */
 	wreg_double(0);			/* Result will be in register stack */
 
-	OUT = 0xDC;
-	OUT = 0xB0|REG_ebp;
-	LOUT = r2;
+	OUT(0xDC);
+	OUT(0xB0|REG_ebp);
+	LOUT(r2);
 
 	debug(("fdivl %d(ebp)\n", r2));
 }
@@ -855,43 +861,43 @@ define_insn(rem_int, rem_RRR)
 	assert(r != REG_edx);
 
 	/* special case for LONG_MIN % -1l: r == -1 ? 0 : eax / r  */
-	OUT = 0x83;
-	OUT = 0xF8|r;
-	OUT = 0xFF;
+	OUT(0x83);
+	OUT(0xF8|r);
+	OUT(0xFF);
 	debug(("cmp #0xFF,%s\n", regname(r)));
 
 	l1 = newLabel();
 	l1->type = Linternal| Llong8|Lrelative;
-	OUT = 0x74;
+	OUT(0x74);
 	l1->at = CODEPC;
-	OUT = 0;
+	OUT(0);
 	l1->from = CODEPC;
 	debug(("je const0\n"));
 
 	/* Setup EDX - should contains the sign of EAX */
 	do_move_int(REG_edx, REG_eax);
 #if 0
-	OUT = 0xC1;
-	OUT = 0xF8|REG_edx;
-	OUT = 31;
+	OUT(0xC1);
+	OUT(0xF8|REG_edx);
+	OUT(31);
 	debug(("sarl #31,edx\n"));
 #else
-	OUT = 0x99;
+	OUT(0x99);
 	debug(("cltd\n"));
 #endif
 
-	OUT = 0xF7;
-        OUT = 0xF8|r;
+	OUT(0xF7);
+        OUT(0xF8|r);
 	debug(("idivl %s,%s\n", regname(r), regname(w)));
 
-	OUT = 0xEB;
-	OUT = 2;
+	OUT(0xEB);
+	OUT(2);
 	debug(("jmp +2\n"));
 
 	debug(("const0:\n"));
 	l1->to = CODEPC;
-	OUT = 0x31;
-        OUT = 0xC0|(REG_edx<<3)|REG_edx;
+	OUT(0x31);
+        OUT(0xC0|(REG_edx<<3)|REG_edx);
 	debug(("xorl edx,edx\n"));
 
 	/* Result is in EDX not EAX - we must force the slot register */
@@ -910,8 +916,8 @@ define_insn(and_int, and_RRR)
 	r = rreg_int(2);
 	w = rwreg_int(0);
 
-	OUT = 0x21;
-        OUT = 0xC0|(r<<3)|w;
+	OUT(0x21);
+        OUT(0xC0|(r<<3)|w);
 
 	debug(("andl %s,%s\n", regname(r), regname(w)));
 }
@@ -926,8 +932,8 @@ define_insn(or_int, or_RRR)
 	r = rreg_int(2);
 	w = rwreg_int(0);
 
-	OUT = 0x09;
-        OUT = 0xC0|(r<<3)|w;
+	OUT(0x09);
+        OUT(0xC0|(r<<3)|w);
 
 	debug(("orl %s,%s\n", regname(r), regname(w)));
 }
@@ -942,8 +948,8 @@ define_insn(xor_int, xor_RRR)
 	r = rreg_int(2);
 	w = rwreg_int(0);
 
-	OUT = 0x31;
-        OUT = 0xC0|(r<<3)|w;
+	OUT(0x31);
+        OUT(0xC0|(r<<3)|w);
 
 	debug(("xorl %s,%s\n", regname(r), regname(w)));
 }
@@ -962,8 +968,8 @@ define_insn(ashr_int, ashr_RRR)
 
 	w = rwreg_int(0);
 
-	OUT = 0xD3;
-        OUT = 0xF8|w;
+	OUT(0xD3);
+        OUT(0xF8|w);
 
 	debug(("sarl %s,%s\n", regname(r), regname(w)));
 }
@@ -982,8 +988,8 @@ define_insn(lshr_int, lshr_RRR)
 
 	w = rwreg_int(0);
 
-	OUT = 0xD3;
-        OUT = 0xE8|w;
+	OUT(0xD3);
+        OUT(0xE8|w);
 
 	debug(("shrl %s,%s\n", regname(r), regname(w)));
 }
@@ -1002,8 +1008,8 @@ define_insn(lshl_int, lshl_RRR)
 
 	w = rwreg_int(0);
 
-	OUT = 0xD3;
-        OUT = 0xE0|w;
+	OUT(0xD3);
+        OUT(0xE0|w);
 
 	debug(("shll %s,%s\n", regname(r), regname(w)));
 }
@@ -1015,10 +1021,10 @@ define_insn(load_int, load_RxR)
 	int r = rreg_int(2);
 	int w = wreg_int(0);
 
-	OUT = 0x8B;
-	OUT = 0x00|(w<<3)|r;
+	OUT(0x8B);
+	OUT(0x00|(w<<3)|r);
 	if (r == REG_esp) {
-		OUT = 0x20|REG_esp;
+		OUT(0x20|REG_esp);
 	}
 
 	debug(("movl (%s),%s\n", regname(r), regname(w)));
@@ -1030,8 +1036,8 @@ define_insn(load_float, fload_RxR)
 
 	wreg_float(0);
 
-	OUT = 0xD9;
-	OUT = 0x00|r;
+	OUT(0xD9);
+	OUT(0x00|r);
 
 	debug(("fld (%s)\n", regname(r)));
 }
@@ -1042,8 +1048,8 @@ define_insn(load_double, floadl_RxR)
 
 	wreg_double(0);
 
-	OUT = 0xDD;
-	OUT = 0x00|r;
+	OUT(0xDD);
+	OUT(0x00|r);
 
 	debug(("fldl (%s)\n", regname(r)));
 }
@@ -1053,10 +1059,10 @@ define_insn(store_int, store_xRR)
 	int r = rreg_int(2);
 	int w = rreg_int(1);
 
-	OUT = 0x89;
-	OUT = 0x00|(r<<3)|w;
+	OUT(0x89);
+	OUT(0x00|(r<<3)|w);
 	if (w == REG_esp) {
-		OUT = 0x20|REG_esp;
+		OUT(0x20|REG_esp);
 	}
 
 	debug(("movl %s,(%s)\n", regname(r), regname(w)));
@@ -1068,8 +1074,8 @@ define_insn(store_float, fstore_RxR)
 
 	rreg_float(2);
 
-	OUT = 0xD9;
-	OUT = 0x18|w;
+	OUT(0xD9);
+	OUT(0x18|w);
 
 	debug(("fstp (%s)\n", regname(w)));
 }
@@ -1080,8 +1086,8 @@ define_insn(store_double, fstorel_RxR)
 
 	rreg_double(2);
 
-	OUT = 0xDD;
-	OUT = 0x18|w;
+	OUT(0xDD);
+	OUT(0x18|w);
 
 	debug(("fstlp (%s)\n", regname(w)));
 }
@@ -1093,8 +1099,8 @@ define_insn(cmp_int, cmp_xRR)
 	int r1 = rreg_int(1);
 	int r2 = rreg_int(2);
 
-	OUT = 0x39;
-	OUT = 0xC0|(r2<<3)|r1;
+	OUT(0x39);
+	OUT(0xC0|(r2<<3)|r1);
 
 	debug(("cmpl %s,%s\n", regname(r2), regname(r1)));
 }
@@ -1107,9 +1113,9 @@ define_insn(cvt_int_float, cvtif_RxR)
 
 	wreg_float(0);
 
-	OUT = 0xDB;
-	OUT = 0x80|REG_ebp;
-	LOUT = r;
+	OUT(0xDB);
+	OUT(0x80|REG_ebp);
+	LOUT(r);
 
 	debug(("fild %d(ebp)\n", r));
 }
@@ -1120,9 +1126,9 @@ define_insn(cvt_int_double, cvtid_RxR)
 
 	wreg_double(0);
 
-	OUT = 0xDB;
-	OUT = 0x80|REG_ebp;
-	LOUT = r;
+	OUT(0xDB);
+	OUT(0x80|REG_ebp);
+	LOUT(r);
 
 	debug(("fild %d(ebp)\n", r));
 }
@@ -1133,9 +1139,9 @@ define_insn(cvt_long_float, cvtlf_RxR)
 
 	wreg_float(0);
 
-	OUT = 0xDF;
-	OUT = 0xA8|REG_ebp;
-	LOUT = r;
+	OUT(0xDF);
+	OUT(0xA8|REG_ebp);
+	LOUT(r);
 
 	debug(("fildll %d(ebp)\n", r));
 }
@@ -1146,9 +1152,9 @@ define_insn(cvt_long_double, cvtld_RxR)
 
 	wreg_double(0);
 
-	OUT = 0xDF;
-	OUT = 0xA8|REG_ebp;
-	LOUT = r;
+	OUT(0xDF);
+	OUT(0xA8|REG_ebp);
+	LOUT(r);
 
 	debug(("fildll %d(ebp)\n", r));
 }
@@ -1159,9 +1165,9 @@ define_insn(cvt_float_double, cvtfd_RxR)
 
 	wreg_double(0);
 
-	OUT = 0xD9;
-	OUT = 0x80|REG_ebp;
-	LOUT = o;
+	OUT(0xD9);
+	OUT(0x80|REG_ebp);
+	LOUT(o);
 
 	debug(("fld %d(ebp)\n", o));
 }
@@ -1172,9 +1178,9 @@ define_insn(cvt_double_float, cvtdf_RxR)
 
 	wreg_float(0);
 
-	OUT = 0xDD;
-	OUT = 0x80|REG_ebp;
-	LOUT = o;
+	OUT(0xDD);
+	OUT(0x80|REG_ebp);
+	LOUT(o);
 
 	debug(("fldl %d(ebp)\n", o));
 }
@@ -1185,7 +1191,7 @@ define_insn(build_key, set_word_xxC)
 {
 	jint val = const_int(2);
 
-	LOUT = val;
+	LOUT(val);
 
 	debug((".word %08x\n", val));
 }
@@ -1196,7 +1202,7 @@ define_insn(build_code_ref, set_wordpc_xxC)
 
 	l->type |= Llong|Labsolute;
 	l->at = CODEPC;
-	LOUT = 0;
+	LOUT(0);
 	l->from = CODEPC;
 	debug((".word ?\n"));
 }
@@ -1217,73 +1223,73 @@ define_insn(branch, branch_xCC)
 	l->type |= Llong|Lrelative;
 	switch (bt) {
 	case ba:
-		OUT = 0xE9;
+		OUT(0xE9);
 		l->at = CODEPC;
-		LOUT = 0;
+		LOUT(0);
 		l->from = CODEPC;
 		debug(("jmpl ?\n"));
 		break;
 	case beq:
-		OUT = 0x0F;
-		OUT = 0x84;
+		OUT(0x0F);
+		OUT(0x84);
 		l->at = CODEPC;
-		LOUT = 0;
+		LOUT(0);
 		l->from = CODEPC;
 		debug(("je ?\n"));
 		break;
 	case bne:
-		OUT = 0x0F;
-		OUT = 0x85;
+		OUT(0x0F);
+		OUT(0x85);
 		l->at = CODEPC;
-		LOUT = 0;
+		LOUT(0);
 		l->from = CODEPC;
 		debug(("jne ?\n"));
 		break;
 	case blt:
-		OUT = 0x0F;
-		OUT = 0x8C;
+		OUT(0x0F);
+		OUT(0x8C);
 		l->at = CODEPC;
-		LOUT = 0;
+		LOUT(0);
 		l->from = CODEPC;
 		debug(("jlt ?\n"));
 		break;
 	case ble:
-		OUT = 0x0F;
-		OUT = 0x8E;
+		OUT(0x0F);
+		OUT(0x8E);
 		l->at = CODEPC;
-		LOUT = 0;
+		LOUT(0);
 		l->from = CODEPC;
 		debug(("jle ?\n"));
 		break;
 	case bgt:
-		OUT = 0x0F;
-		OUT = 0x8F;
+		OUT(0x0F);
+		OUT(0x8F);
 		l->at = CODEPC;
-		LOUT = 0;
+		LOUT(0);
 		l->from = CODEPC;
 		debug(("jgt ?\n"));
 		break;
 	case bge:
-		OUT = 0x0F;
-		OUT = 0x8D;
+		OUT(0x0F);
+		OUT(0x8D);
 		l->at = CODEPC;
-		LOUT = 0;
+		LOUT(0);
 		l->from = CODEPC;
 		debug(("jge ?\n"));
 		break;
 	case bult:
-		OUT = 0x0F;
-		OUT = 0x82;
+		OUT(0x0F);
+		OUT(0x82);
 		l->at = CODEPC;
-		LOUT = 0;
+		LOUT(0);
 		l->from = CODEPC;
 		debug(("jult ?\n"));
 		break;
 	case bugt:
-		OUT = 0x0F;
-		OUT = 0x87;
+		OUT(0x0F);
+		OUT(0x87);
 		l->at = CODEPC;
-		LOUT = 0;
+		LOUT(0);
 		l->from = CODEPC;
 		debug(("jugt ?\n"));
 		break;
@@ -1297,8 +1303,8 @@ define_insn(branch_indirect, branch_indirect_xRC)
 	int r = rreg_int(1);
 	assert(const_int(2) == ba);
 
-	OUT = 0xFF;
-	OUT = 0xE0|r;
+	OUT(0xFF);
+	OUT(0xE0|r);
 
 	debug(("jmp (%s)\n", regname(r)));
 }
@@ -1315,10 +1321,10 @@ define_insn(call_ref, call_xCC)
 	}
 #endif
 
-	OUT = 0xE8;
+	OUT(0xE8);
 	l->type |= Llong|Lrelative;
 	l->at = CODEPC;
-	LOUT = 0;
+	LOUT(0);
 	l->from = CODEPC;
 
 	debug(("call ?\n"));
@@ -1342,8 +1348,8 @@ define_insn(call, call_xRC)
 	}
 #endif
 
-	OUT = 0xFF;
-	OUT = 0xD0|r;
+	OUT(0xFF);
+	OUT(0xD0|r);
 
 	debug(("call %s\n", regname(r)));
 
@@ -1365,8 +1371,8 @@ define_insn(call_indirect_const, call_ind_xCC)
 	}
 #endif
 
-	WOUT = 0x15FF;
-	LOUT = m;
+	WOUT(0x15FF);
+	LOUT(m);
 
 	debug(("call *%x\n", m));
 
@@ -1381,8 +1387,8 @@ define_insn(push_int, push_xRC)
 {
 	int r = rreg_int(1);
 
-	OUT = 0xFF;
-	OUT = 0xF0|r;
+	OUT(0xFF);
+	OUT(0xF0|r);
 
 	debug(("pushl %s\n", regname(r)));
 }
@@ -1391,8 +1397,8 @@ define_insn(push_float, fpush_xRC)
 {
 	int r = rreg_int(1);	/* Move the float into a register */
 
-	OUT = 0xFF;
-	OUT = 0xF0|r;
+	OUT(0xFF);
+	OUT(0xF0|r);
 
 	debug(("pushl %s\n", regname(r)));
 }
@@ -1401,15 +1407,15 @@ define_insn(push_double, fpushl_xRC)
 {
 	int o = rslot_double(1);
 
-	OUT = 0xFF;
-	OUT = 0xB0|REG_ebp;
-	LOUT = o+4;
+	OUT(0xFF);
+	OUT(0xB0|REG_ebp);
+	LOUT(o+4);
 
 	debug(("pushl %d(ebp)\n", (o+4)));
 
-	OUT = 0xFF;
-	OUT = 0xB0|REG_ebp;
-	LOUT = o;
+	OUT(0xFF);
+	OUT(0xB0|REG_ebp);
+	LOUT(o);
 
 	debug(("pushl %d(ebp)\n", o));
 }
@@ -1419,9 +1425,9 @@ define_insn(popargs, popargs_xxC)
 	int o = const_int(2);
 	o *= 4;
 
-	OUT = 0x81;
-	OUT = 0xC0|REG_esp;
-	LOUT = o;
+	OUT(0x81);
+	OUT(0xC0|REG_esp);
+	LOUT(o);
 
 	debug(("addl %d,esp\n", o));
 }
@@ -1478,8 +1484,8 @@ define_insn(returnarg_long, returnargl_xxR)
 	}
 	else {
 		/* r1 == REG_edx && r2 == REG_eax - swap */
-		OUT = 0x87;
-		OUT = 0xC0|r1<<3|r2;
+		OUT(0x87);
+		OUT(0xC0|r1<<3|r2);
 	}
 }
 
@@ -1507,9 +1513,9 @@ define_insn(add_int_const, add_RRC)
 	v = const_int(2);
 	rw = rwreg_int(0);
 
-	OUT = 0x81;
-        OUT = 0xC0|rw;
-	LOUT = v;
+	OUT(0x81);
+	OUT(0xC0|rw);
+	LOUT(v);
 
 	debug(("addl #%d,%s\n", v, regname(rw)));
 }
@@ -1524,9 +1530,9 @@ define_insn(sub_int_const, sub_RRC)
 	v = const_int(2);
 	rw = rwreg_int(0);
 
-	OUT = 0x81;
-        OUT = 0xE8|rw;
-	LOUT = v;
+	OUT(0x81);
+	OUT(0xE8|rw);
+	LOUT(v);
 
 	debug(("subl #%d,%s\n", v, regname(rw)));
 }
@@ -1538,9 +1544,9 @@ define_insn(load_offset_int, load_RRC)
 	int w = wreg_int(0);
 
 	assert(r != REG_esp);
-	OUT = 0x8B;
-	OUT = 0x80|(w<<3)|r;
-	LOUT = v;
+	OUT(0x8B);
+	OUT(0x80|(w<<3)|r);
+	LOUT(v);
 
 	debug(("movl %d(%s),%s\n", v, regname(r), regname(w)));
 }
@@ -1550,11 +1556,11 @@ define_insn(load_byte, loadb_RxR)
 	int r = rreg_int(2);
 	int w = wreg_int(0);
 
-	OUT = 0x0F;
-	OUT = 0xBE;
-	OUT = 0x00|(w<<3)|r;
+	OUT(0x0F);
+	OUT(0xBE);
+	OUT(0x00|(w<<3)|r);
 	if (r == REG_esp) {
-		OUT = 0x20|REG_esp;
+		OUT(0x20|REG_esp);
 	}
 
 	debug(("movsb (%s),%s\n", regname(r), regname(w)));
@@ -1565,11 +1571,11 @@ define_insn(load_char, loadc_RxR)
 	int r = rreg_int(2);
 	int w = wreg_int(0);
 
-	OUT = 0x0F;
-	OUT = 0xB7;
-	OUT = 0x00|(w<<3)|r;
+	OUT(0x0F);
+	OUT(0xB7);
+	OUT(0x00|(w<<3)|r);
 	if (r == REG_esp) {
-		OUT = 0x20|REG_esp;
+		OUT(0x20|REG_esp);
 	}
 
 	debug(("movzw (%s),%s\n", regname(r), regname(w)));
@@ -1580,11 +1586,11 @@ define_insn(load_short, loads_RxR)
 	int r = rreg_int(2);
 	int w = wreg_int(0);
 
-	OUT = 0x0F;
-	OUT = 0xBF;
-	OUT = 0x00|(w<<3)|r;
+	OUT(0x0F);
+	OUT(0xBF);
+	OUT(0x00|(w<<3)|r);
 	if (r == REG_esp) {
-		OUT = 0x20|REG_esp;
+		OUT(0x20|REG_esp);
 	}
 
 	debug(("movsw (%s),%s\n", regname(r), regname(w)));
@@ -1601,9 +1607,9 @@ define_insn(store_offset_int, store_xRRC)
 	r1 = rreg_int(1);
 
 	assert(r0 != REG_esp);
-	OUT = 0x89;
-	OUT = 0x80|(r0<<3)|r1;
-	LOUT = v;
+	OUT(0x89);
+	OUT(0x80|(r0<<3)|r1);
+	LOUT(v);
 
 	debug(("movl %s,%d(%s)\n", regname(r0), v, regname(r1)));
 }
@@ -1618,12 +1624,13 @@ define_insn(store_byte, storeb_xRR)
 	if (r == REG_edi || r == REG_esi) {
 		do_force_move_int(REG_ebx, r, 2);
 	}
+
 	w = rreg_int(1);
 
-	OUT = 0x88;
-	OUT = 0x00|(r<<3)|w;
+	OUT(0x88);
+	OUT(0x00|(r<<3)|w);
 	if (w == REG_esp) {
-		OUT = 0x20|REG_esp;
+		OUT(0x20|REG_esp);
 	}
 
 	debug(("movb %s,(%s)\n", regname(r), regname(w)));
@@ -1634,11 +1641,11 @@ define_insn(store_short, stores_xRR)
 	int r = rreg_int(2);
 	int w = rreg_int(1);
 
-	OUT = 0x66;
-	OUT = 0x89;
-	OUT = 0x00|(r<<3)|w;
+	OUT(0x66);
+	OUT(0x89);
+	OUT(0x00|(r<<3)|w);
 	if (w == REG_esp) {
-		OUT = 0x20|REG_esp;
+		OUT(0x20|REG_esp);
 	}
 
 	debug(("movw %s,(%s)\n", regname(r), regname(w)));
@@ -1649,9 +1656,9 @@ define_insn(cmp_int_const, cmp_xRC)
 	int r1 = rreg_int(1);
 	int v = const_int(2);
 
-	OUT = 0x81;
-        OUT = 0xF8|r1;
-	LOUT = v;
+	OUT(0x81);
+	OUT(0xF8|r1);
+	LOUT(v);
 
 	debug(("cmpl #%d,%s\n", v, regname(r1)));
 }
@@ -1660,8 +1667,8 @@ define_insn(push_int_const, push_xCC)
 {
 	int v = const_int(1);
 
-	OUT = 0x68;
-	LOUT = v;
+	OUT(0x68);
+	LOUT(v);
 
 	debug(("pushl #%d\n", v));
 }
@@ -1676,9 +1683,9 @@ define_insn(lshl_int_const, lshl_RRC)
 	rw = rreg_int(0);
 	v = const_int(2);
 
-	OUT = 0xC1;
-        OUT = 0xE0|rw;
-	OUT = v;
+	OUT(0xC1);
+	OUT(0xE0|rw);
+	OUT(v);
 
 	debug(("shll #%d,%s\n", v, regname(rw)));
 }
@@ -1693,8 +1700,8 @@ DBG(REGFORCE,
     )
 	if (((reginfo[s->regno].ctype & Rdouble) && (s->regno == REG_dbl0)) ||
 	    ((reginfo[s->regno].ctype & Rfloat) && (s->regno == REG_flt0))) {
-	    	OUT = 0xDD;
-		OUT = 0xD8;
+	    	OUT(0xDD);
+		OUT(0xD8);
 
 		debug (("fstp %%st(0)\n"));
 	}
