@@ -37,8 +37,6 @@ static
 void
 initPrimClass(Hjava_lang_Class* clazz, char* name, char sig, int len)
 {
-	gc_add_ref(clazz);
-
 	clazz->dtable = _PRIMITIVE_DTABLE;
 	clazz->name = utf8ConstNew(name, -1);
 	CLASS_PRIM_SIG(clazz) = sig;

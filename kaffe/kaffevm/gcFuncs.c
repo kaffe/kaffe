@@ -193,6 +193,7 @@ walkClass(Collector* collector, void* base, uint32 size)
         for (idx = 0; idx < pool->size; idx++) {
                 switch (pool->tags[idx]) {
                 case CONSTANT_ResolvedClass:
+			assert(!CLASS_IS_PRIMITIVE(CLASS_CLASS(idx, pool)));
                         GC_markObject(collector, CLASS_CLASS(idx, pool));
                         break;
                 case CONSTANT_ResolvedString:
@@ -220,7 +221,10 @@ walkClass(Collector* collector, void* base, uint32 size)
                 /* walk all fields to keep their types alive */
                 fld = CLASS_FIELDS(class);
                 for (n = 0; n < CLASS_NFIELDS(class); n++) {
-                        if (FIELD_RESOLVED(fld)) {
+			/* don't mark field types that are primitive classes */
+                        if (FIELD_RESOLVED(fld) 
+				&& !CLASS_IS_PRIMITIVE(fld->type)) 
+			{
                                 GC_markObject(collector, fld->type);
                         } /* else it's an Utf8Const that is not subject to gc */
                         fld++;
@@ -230,7 +234,12 @@ walkClass(Collector* collector, void* base, uint32 size)
                 fld = CLASS_SFIELDS(class);
                 for (n = 0; n < CLASS_NSFIELDS(class); n++) {
                         if (FIELD_RESOLVED(fld) && FIELD_ISREF(fld)) {
-                                GC_markObject(collector, *(void**)FIELD_ADDRESS(fld));
+				/* XXX:
+				 * static fields can refer to non 
+				 * gc-allocated objects (Example: 
+				 * java.lang.Integer.TYPE)
+				 */
+                                GC_markAddress(collector, *(void**)FIELD_ADDRESS(fld));
                         }
                         fld++;
                 }
@@ -245,7 +254,10 @@ walkClass(Collector* collector, void* base, uint32 size)
                 }
         } else {
                 /* array classes should keep their element type alive */
-                GC_markObject(collector, CLASS_ELEMENT_TYPE(class));
+		Hjava_lang_Class *etype = CLASS_ELEMENT_TYPE(class);
+		if (!CLASS_IS_PRIMITIVE(etype)) {
+			GC_markObject(collector, etype);
+		}
         }
 
         /* CLASS_METHODS only points to the method array for non-array and
