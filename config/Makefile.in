@@ -601,6 +601,8 @@ EXTRA_DIST = \
 	powerpc/netbsd1/md.h \
 	powerpc/sysdepCallMethod.h \
 	powerpc/threads.h \
+	s390/atomicity32.h \
+	s390/atomicity64.h \
 	s390/common.h \
 	s390/linux/config.frag \
 	s390/linux/md.c \

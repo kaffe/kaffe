@@ -414,6 +414,13 @@ EXTRA_DIST = \
 	compat-include/eh-common.h \
 	compat-include/frame.h \
 	compat-include/gansidecl.h \
+	binreloc/ChangeLog \
+	binreloc/libtest.c \
+	binreloc/Makefile \
+	binreloc/prefix.c \
+	binreloc/prefix.h \
+	binreloc/README \
+	binreloc/test.c \
 	developers/check-classpath-merge-status \
 	developers/Encode.java \
 	developers/EncodeEUC_JP.java \
@@ -633,7 +640,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/compat-include $(distdir)/developers $(distdir)/include/kaffe $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/m4 $(distdir)/po $(distdir)/scripts $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/compiler $(distdir)/test/regression/run_time
+	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/binreloc $(distdir)/compat-include $(distdir)/developers $(distdir)/include/kaffe $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/m4 $(distdir)/po $(distdir)/scripts $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/compiler $(distdir)/test/regression/run_time
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

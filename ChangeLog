@@ -1,3 +1,16 @@
+2004-06-22  Dalibor Topic  <robilad@kaffe.org>
+
+        * config/Makefile.am
+	(EXTRA_DIST): Added s390/atomicity32.h and
+	s390/atomicity64.h.
+
+        * Makefile.am
+	(EXTRA_DIST): Added binreloc.
+
+        * config/Makefile.in,
+        Makefile.in:
+	Regenerated.
+
 2004-06-21  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/text/MessageFormat.java
