@@ -20,6 +20,14 @@
 
 #include "m68k/threads.h"
 
+/*
+ * Stack offset.
+ * This is the offset into the setjmp buffer 
+ * where the stack pointer is stored.
+ */
+#undef	SP_OFFSET
+#define	SP_OFFSET		2
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

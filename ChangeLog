@@ -1,3 +1,10 @@
+2003-04-02 Tony Wyatt <wyattaw@optushome.com.au>
+
+	* config/m68k/a-ux/md.h,
+	config/m68k/nextstep3/md.h,
+	config/m68k/openbsd2/md.h:
+	Moved stack offset setting in.
+
 2003-03-30 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Klasses.jar.bootstrap:
