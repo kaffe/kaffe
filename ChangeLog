@@ -1,3 +1,10 @@
+2003-07-17 Guilhem Lavaux <guilhem@kaffe.org>
+	* libraries/javalib/java/test/DecimalFormat.java:
+	(applyPattern) Throw IllegalArgumentException if the pattern is
+	incorrect.
+	(format) Check if "num" ends with a 0 when you build the fractional
+	part. For example, this case should be corrected: 100.0 => 100.
+
 2003-07-17  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/text/MessageFormat.java:

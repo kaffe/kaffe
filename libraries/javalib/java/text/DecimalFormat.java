@@ -177,24 +177,18 @@ public void applyPattern(String pattern) {
 	for (int i = formatstart; i < formatend; i++) {
 		switch (patt[i]) {
 		case '0':
-			if (hashcount > 0 && dec) {
-				// throw new ParseException("", i);
-				return;
-			}
+			if (hashcount > 0 && dec)
+				throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
 			zerocount++;
 			break;
 		case '#':
-			if (zerocount > 0 && !dec) {
-				// throw new ParseException("", i);
-				return;
-			}
+			if (zerocount > 0 && !dec)
+				throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
 			hashcount++;
 			break;
 		case '.':
-			if (dec) {
-				// throw new ParseException("", i);
-				return;
-			}
+			if (dec)
+				throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
 			dec = true;
 			minint = zerocount;
 			maxint = Integer.MAX_VALUE;
@@ -210,10 +204,8 @@ public void applyPattern(String pattern) {
 			zerocount = 0;
 			break;
 		case ',':
-			if (group >= 0) {
-				// throw new ParseException("", i);
-				return;
-			}
+			if (group >= 0)
+				throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
 			group = i;
 			break;
 
@@ -317,6 +309,12 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 			startpos = decpos + 1;
 			endpos = val.length;
 
+			/* First we remove the extra zero generated
+			 * by Double.toString()
+			 */
+			if (val[endpos-1] == '0')
+			    endpos--;
+
 			for (int i = startpos; i < endpos && count < maxfrac; i++, count++) {
 				buf.append((char)(val[i] - '0' + syms.zeroDigit));
 			}
@@ -326,6 +324,8 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 			buf.append(syms.zeroDigit);
 		}
 
+		if (count == 0)
+			decpos = -1;
 	}
 
 	if (val[0] == '-') {
