@@ -1,3 +1,8 @@
+Mon Jan 31 16:53:56 PST 2000  Pavel Roskin <pavel_roskin@geocities.com>
+
+	* test/regression/TestScript.in: detect when a test fails
+	and exits with a non-zero exit code.
+
 Mon Jan 31 13:55:43 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/kaffe/io/ConverterAlias.java: don't
