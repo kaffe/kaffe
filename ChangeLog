@@ -1,3 +1,8 @@
+Mon Aug 10 19:58:36 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/jni.c (Kaffe_JNI_wrapper): call installMethodCode
+	* kaffe/kaffevm/jit/machine.c: export installMethodCode 
+
 Sun Aug  9 12:06:18 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* libraries/javalib/java/net/DatagramSocket.java: modified to
