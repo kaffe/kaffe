@@ -1,3 +1,10 @@
+2004-03-19  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/gcFuncs.c,
+	kaffe/kaffevm/mem/gc-incremental.c,
+	kaffe/kaffevm/mem/gc-mem.c:
+	Cast void * to char * before doing arithmetic on them.
+
 2004-03-18  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/essential.files,

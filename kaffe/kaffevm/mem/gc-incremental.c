@@ -322,7 +322,7 @@ gcWalkConservative(Collector* gcif, const void* base, uint32 size)
 
 DBG(GCWALK,	
 	dprintf("scanning %d bytes conservatively from %p-%p\n", 
-		size, base, base+size);
+		size, base, ((char *)base) + size);
     )
 
 	record_marked(1, size);

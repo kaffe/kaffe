@@ -525,8 +525,8 @@ gc_small_block(size_t sz)
 	GC_SET_STATE(info, nr-1, GC_STATE_NORMAL);
 	info->free = GCBLOCK2FREE(info, 0);
 DBG(SLACKANAL,
-	int slack = ((void *)info) 
-		+ gc_pgsize - (void *)(GCBLOCK2MEM(info, nr));
+	int slack = ((char *)info) 
+		+ gc_pgsize - (char *)(GCBLOCK2MEM(info, nr));
 	totalslack += slack;
     )
 	return (info);
