@@ -275,6 +275,9 @@ typedef struct _methods {
 #endif
 } methods;
 
+#define METHOD_NAME(M)          ((M)->name)
+#define METHOD_NAMED(M)         (METHOD_NAME(M)->data)
+
 #define PSIG_UTF8(sig)		((sig)->signature)
 #define PSIG_DATA(sig)		(PSIG_UTF8((sig))->data)
 #define PSIG_RET(sig)		((sig)->ret_and_args[0])

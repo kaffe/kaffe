@@ -1,3 +1,8 @@
+2003-07-03  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffevm/classMethod.h
+	Added METHOD_NAME(M) and METHOD_NAMED(M) macros.
+
 2003-07-02  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/io/StreamTokenizer.java:
