@@ -131,7 +131,8 @@ struct GarbageCollectorInterface_Ops {
 
 	void 	(*enableGC)(Collector *);
 	void 	(*disableGC)(Collector *);
-  
+
+        uintp   (*getHeapFree)(Collector *); 
         uintp   (*getHeapLimit)(Collector *);
         uintp   (*getHeapTotal)(Collector *);
 
@@ -194,6 +195,8 @@ static inline void KGC_markObject(void *g, void *gc_info, void *addr)
 #define KGC_disableGC(G)		\
     ((G)->ops->disableGC)((Collector*)(G));
 
+#define KGC_getHeapFree(G) \
+    ((G)->ops->getHeapFree)((Collector *)(G));
 #define KGC_getHeapLimit(G) \
     ((G)->ops->getHeapLimit)((Collector *)(G));
 #define KGC_getHeapTotal(G) \

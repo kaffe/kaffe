@@ -1,5 +1,26 @@
 2004-10-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/gc.h:
+	(GarbageCollectorInterface_Ops) Added getHeapFree.
+	(KGC_getHeapFree) New macro.
+
+	* kaffe/kaffevm/boehm-gc/gc2.c:
+	(KaffeGC_HeapFree) New static function.
+	(GarbageCollectorInterface_) Added KaffeGC_HeapFree.
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c:
+	(gcGetHeapFree) New static function.
+	(GarbageCollectorInterface_) Added gcGetHeapFree.
+
+	* libraries/clib/native/Runtime.c:
+	(java_lang_Runtime_freeMemory) Use KGC_getHeapFree.
+	(java_lang_Runtime_maxMemory) Return Long.MAX_VALUE if
+	memory is unlimited.
+
+	Reported by:  Matthew Toseland <mtoseland@blueyonder.co.uk>
+
+2004-10-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* README: Added ports to x86_64-freebsd and
 	i386-darwin.
 

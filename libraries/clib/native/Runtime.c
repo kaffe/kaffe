@@ -53,12 +53,7 @@ java_lang_Runtime_execInternal(struct Hjava_lang_Runtime* this UNUSED,
 jlong
 java_lang_Runtime_freeMemory(struct Hjava_lang_Runtime* this UNUSED)
 {
-	/* This is a particularly inaccurate guess - it's basically how
-	 * much more memory we can claim from the heap, and ignores any
-	 * free memory already within the GC system.
-	 * Well it'll do for now.
-	 */
-	return KGC_getHeapLimit(main_collector) - KGC_getHeapTotal(main_collector);
+	return KGC_getHeapFree(main_collector);
 }
 
 /*
@@ -67,7 +62,14 @@ java_lang_Runtime_freeMemory(struct Hjava_lang_Runtime* this UNUSED)
 jlong
 java_lang_Runtime_maxMemory(struct Hjava_lang_Runtime* this UNUSED)
 {
-	return KGC_getHeapLimit(main_collector);
+	jlong max = KGC_getHeapLimit(main_collector);
+
+	if (max <= 0) {
+		return 0x7fffffffffffffffL;
+	}
+	else {
+		return max;
+	}
 }
 
 /*

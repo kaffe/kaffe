@@ -1430,6 +1430,13 @@ gcGetHeapTotal(Collector *gcif UNUSED)
   return gc_get_heap_total();
 }
 
+static uintp
+gcGetHeapFree(Collector *gcif)
+{
+  return gcGetHeapTotal(gcif) - gcStats.totalmem;
+}
+
+
 static const char *
 gcGetName(UNUSED Collector *gcif)
 {
@@ -1461,6 +1468,7 @@ static struct GarbageCollectorInterface_Ops KGC_Ops = {
 	gcThrowOOM,
 	gcEnableGC,
 	gcDisableGC,
+	gcGetHeapFree,
 	gcGetHeapLimit,
 	gcGetHeapTotal,
 	KaffeGC_addRef,

@@ -423,6 +423,12 @@ KaffeGC_ThrowOOM(Collector* gcif UNUSED)
 }
 
 static uintp
+KaffeGC_HeapFree(Collector *gcif UNUSED)
+{
+  return GC_get_free_bytes();
+}
+
+static uintp
 KaffeGC_HeapLimit(Collector *gcif UNUSED)
 {
   return 0;
@@ -564,6 +570,7 @@ static struct GarbageCollectorInterface_Ops GC_Ops = {
   KaffeGC_ThrowOOM,
   KaffeGC_EnableGC,
   KaffeGC_DisableGC,
+  KaffeGC_HeapFree,
   KaffeGC_HeapLimit,
   KaffeGC_HeapTotal,
   KaffeGC_addRef,
