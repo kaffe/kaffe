@@ -299,16 +299,18 @@ jthread_getcookie(jthread_t tid)
 /*
  * API related to I/O
  */
-int jthreadedOpen(const char* path, int flags, int mode);
-int jthreadedSocket(int af, int type, int proto);
+int jthreadedOpen(const char* path, int flags, int mode, int*);
+int jthreadedSocket(int af, int type, int proto, int*);
 int jthreadedConnect(int fd, struct sockaddr* addr, size_t len);
-int jthreadedAccept(int fd, struct sockaddr* addr, size_t* len);
-ssize_t jthreadedRead(int fd, void* buf, size_t len);
-ssize_t jthreadedWrite(int fd, const void* buf, size_t len);
-ssize_t jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
-        struct sockaddr* from, int* fromlen);
-int jthreadedWaitpid(int wpid, int* status, int options);
-int jthreadedForkExec(char **argv, char **arge, int ioes[4]);
+int jthreadedAccept(int fd, struct sockaddr* addr, size_t* len, 
+	int timeout, ssize_t *);
+int jthreadedRead(int fd, void* buf, size_t len, ssize_t *);
+int jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *);
+int jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *);
+int jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
+        struct sockaddr* from, int* fromlen, int timeout, ssize_t *);
+int jthreadedWaitpid(int wpid, int* status, int options, int *);
+int jthreadedForkExec(char **argv, char **arge, int ioes[4], int *);
 
 /* 
  * Locking API

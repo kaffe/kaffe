@@ -21,18 +21,26 @@ void
 kaffe_applet_AudioPlayer_playFile( jstring jstr ) {
 	char    fName[MAXPATHLEN];
 	int     bLen = 1024;
-	int     bRead, fin, dev;
+	int     bRead, fin, dev, rc;
 	void	*buf;
 
 	buf = KMALLOC( bLen);
 
 	stringJava2CBuf( jstr, fName, sizeof(fName));
 
-	dev = KOPEN( "/dev/audio", O_WRONLY|O_BINARY, 0);
-	fin = KOPEN( fName, O_RDONLY|O_BINARY, 0);
+	rc = KOPEN( "/dev/audio", O_WRONLY|O_BINARY, 0, &dev);
+	if (rc) {
+		SignalError("java.io.IOException", SYS_ERROR(rc));
+	}
+	rc = KOPEN( fName, O_RDONLY|O_BINARY, 0, &fin);
+	if (rc) {
+		KCLOSE(dev);
+		SignalError("java.io.IOException", SYS_ERROR(rc));
+	}
 
-	while ( (bRead = KREAD( fin, buf, bLen )) > 0 ) {
-		KWRITE( dev, buf, bRead );
+	while ( (KREAD( fin, buf, bLen, &bRead ) == 0) && (bRead > 0)) {
+		ssize_t bWritten;
+		KWRITE( dev, buf, bRead, &bWritten );	/* XXX check error */
 	}
 
 	KCLOSE( dev);

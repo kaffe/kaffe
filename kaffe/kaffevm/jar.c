@@ -9,8 +9,8 @@
  * of this file.
  */
 
-#include "debug.h"
 #include "config.h"
+#include "debug.h"
 #include "config-std.h"
 #include "config-io.h"
 #include "config-mem.h"
@@ -18,6 +18,7 @@
 #include "jsyscall.h"
 #include "inflate.h"
 #include "jar.h"
+#include "files.h"
 
 static inline int
 jar_read(jarFile* file, char *buf, off_t len)
@@ -34,7 +35,15 @@ jar_read(jarFile* file, char *buf, off_t len)
     }
     else
 #endif
-    return KREAD(file->fd, buf, len);
+    {
+	int rc;
+	ssize_t bread;
+	rc = KREAD(file->fd, buf, len, &bread);
+	if (rc) {
+	    file->error = SYS_ERROR(rc);
+	}
+	return (rc == 0 ? bread : -1);
+    }
 }
 
 static inline off_t
@@ -66,7 +75,11 @@ jar_lseek(jarFile* file, off_t offset, int whence)
     }
     else
 #endif
-    return KLSEEK(file->fd, offset, whence);
+    {
+	off_t off;
+	int rc = KLSEEK(file->fd, offset, whence, &off);
+	return (rc == 0 ? off : -1);
+    }
 }
 
 /*
@@ -182,21 +195,23 @@ openJarFile(char* name)
 	jarFile* file;
 	jarEntry* curr;
 	int i;
+	int rc;
 
 	file = KMALLOC(sizeof(jarFile));
 
-	file->fd = KOPEN(name, O_RDONLY|O_BINARY, 0);
-	if (file->fd == -1) {
+	rc = KOPEN(name, O_RDONLY|O_BINARY, 0, &file->fd);
+	if (rc) {
 		KFREE(file);
 		return (0);
 	}
 #ifdef HAVE_MMAP
-	file->size = KLSEEK(file->fd, 0, SEEK_END);
-	if (file->size == -1) {
+	rc = KLSEEK(file->fd, 0, SEEK_END, &file->size);
+	if (rc) {
 		KCLOSE(file->fd);
 		KFREE(file);
 		return (0);
 	}
+	/* XXX unprotected -> make part of jsyscall interface! */
 	file->data = mmap(NULL, file->size, PROT_READ, MAP_SHARED, file->fd, 0);
 	if (file->data != (char*)-1) {
 		KCLOSE(file->fd);
@@ -244,7 +259,6 @@ getDataJarFile(jarFile* file, jarEntry* entry)
 	}
 	buf = KMALLOC(entry->compressedSize);
 	if (jar_read(file, buf, entry->compressedSize) != entry->compressedSize) {
-		file->error = "Failed to read from JAR file";
 		KFREE(buf);
 		return (0);
 	}

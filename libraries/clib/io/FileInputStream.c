@@ -28,13 +28,15 @@ java_io_FileInputStream_open(struct Hjava_io_FileInputStream* this, struct Hjava
 {
 	char str[MAXPATHLEN];
 	int fd;
+	int rc;
 
 	stringJava2CBuf(name, str, sizeof(str));
-	fd = KOPEN(str, O_RDONLY|O_BINARY, 0);
-	unhand(unhand(this)->fd)->fd = fd;
-	if (fd < 0) {
-		SignalError("java.io.IOException", SYS_ERROR);
+	rc = KOPEN(str, O_RDONLY|O_BINARY, 0, &fd);
+	if (rc) {
+		unhand(unhand(this)->fd)->fd = -1;
+		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
+	unhand(unhand(this)->fd)->fd = fd;
 }
 
 /*
@@ -48,8 +50,8 @@ java_io_FileInputStream_close(struct Hjava_io_FileInputStream* this)
 	if (unhand(unhand(this)->fd)->fd >= 0) {
 		r = KCLOSE(unhand(unhand(this)->fd)->fd);
 		unhand(unhand(this)->fd)->fd = -1;
-		if (r < 0) {
-			SignalError("java.io.IOException", SYS_ERROR);
+		if (r) {
+			SignalError("java.io.IOException", SYS_ERROR(r));
 		}
 	}
 }
@@ -60,11 +62,12 @@ java_io_FileInputStream_close(struct Hjava_io_FileInputStream* this)
 jint
 java_io_FileInputStream_readBytes(struct Hjava_io_FileInputStream* fh, HArrayOfByte* bytes, jint off, jint len)
 {
-	jint ret;
+	int rc;
+	ssize_t ret;
 
-	ret = KREAD(unhand(unhand(fh)->fd)->fd, &unhand(bytes)->body[off], len);
-	if (ret < 0) {
-		SignalError("java.io.IOException", SYS_ERROR);
+	rc = KREAD(unhand(unhand(fh)->fd)->fd, &unhand(bytes)->body[off], len, &ret);
+	if (rc) {
+		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
 	return (ret > 0 ? ret : -1);
 }
@@ -75,12 +78,13 @@ java_io_FileInputStream_readBytes(struct Hjava_io_FileInputStream* fh, HArrayOfB
 jint
 java_io_FileInputStream_read(struct Hjava_io_FileInputStream* fh)
 {
-	jint ret;
+	ssize_t ret;
+	int rc;
 	unsigned char byte;
 
-	ret = KREAD(unhand(unhand(fh)->fd)->fd, &byte, 1);
-	if (ret < 0) {
-		SignalError("java.io.IOException", SYS_ERROR);
+	rc = KREAD(unhand(unhand(fh)->fd)->fd, &byte, 1, &ret);
+	if (rc) {
+		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
 	return (ret > 0 ? byte : -1);
 }
@@ -94,23 +98,27 @@ java_io_FileInputStream_skip(struct Hjava_io_FileInputStream* fh, jlong off)
 	off_t orig;
 	off_t ret;
 	char buffer[100];
-	int count;
+	ssize_t count;
+	int rc;
 
-	orig = KLSEEK(unhand(unhand(fh)->fd)->fd, (off_t)0, 1);
-	ret = KLSEEK(unhand(unhand(fh)->fd)->fd, jlong2off_t(off), 1);
-	if (ret >= 0) {
+	rc = KLSEEK(unhand(unhand(fh)->fd)->fd, (off_t)0, 1, &orig);
+	if (rc) {
+		SignalError("java.io.IOException", SYS_ERROR(rc));
+	}
+	rc = KLSEEK(unhand(unhand(fh)->fd)->fd, jlong2off_t(off), 1, &ret);
+	if (rc == 0) {
 		return (off_t2jlong(ret-orig));
 	}
 
 	/* Not seekable - try just reading. */
 	ret = 0;
 	while (off > 0) {
-		count = KREAD(unhand(unhand(fh)->fd)->fd, buffer, 100);
+		rc = KREAD(unhand(unhand(fh)->fd)->fd, buffer, 100, &count);
+		if (rc) {
+			SignalError("java.io.IOException", SYS_ERROR(rc));
+		}
 		if (count == 0) {	/* Reached EOF. */
 			break;
-		}
-		if (count < 0) {
-			SignalError("java.io.IOException", SYS_ERROR);
 		}
 		ret += count;
 		off -= count;
@@ -128,11 +136,10 @@ java_io_FileInputStream_available(struct Hjava_io_FileInputStream* fh)
 	int fd = unhand(unhand(fh)->fd)->fd;
 	off_t cur = 0;
 
-	cur = KLSEEK(fd, cur, SEEK_CUR);
-	if (cur != (off_t)-1) {
+	r = KLSEEK(fd, cur, SEEK_CUR, &cur);
+	if (r == 0) {
 		struct stat statbuf;
-		if ((KFSTAT(fd, &statbuf) != -1) &&
-		    S_ISREG(statbuf.st_mode)) {
+		if ((KFSTAT(fd, &statbuf) == 0) && S_ISREG(statbuf.st_mode)) {
 			return (statbuf.st_size - cur);
 		}
 	}
@@ -140,6 +147,7 @@ java_io_FileInputStream_available(struct Hjava_io_FileInputStream* fh)
 	/* If lseek or fstat fail, try another mechanism... */
 
 #if defined(HAVE_IOCTL) && defined(FIONREAD)
+	/* XXX make part of jsyscall interface */
 	r = ioctl(fd, FIONREAD, &nr);
 	if (r >= 0 && nr != 0) {
 		return (nr);
@@ -155,7 +163,7 @@ java_io_FileInputStream_available(struct Hjava_io_FileInputStream* fh)
 
 		FD_ZERO(&rd);
 		FD_SET(fd, &rd);
-		r = KSELECT(fd+1, &rd, NULL, NULL, &tm);
+		KSELECT(fd+1, &rd, NULL, NULL, &tm, &r);
 		if (r == 1) {
 			nr = 1;
 		}

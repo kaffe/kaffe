@@ -48,13 +48,15 @@ java_io_FileDescriptor_sync(struct Hjava_io_FileDescriptor* this)
 {
 #if defined(HAVE_FSYNC)
 	if (unhand(this)->fd >= 0) {
+		/* XXX make part of jsyscall --- errno is unprotected */
 		int r = fsync(unhand(this)->fd);
 		if (r < 0) {
-			SignalError("java.io.SyncFailedException", SYS_ERROR);
+			SignalError("java.io.SyncFailedException", SYS_ERROR(errno));
 		}
 	}
 #elif defined(HAVE_SYNC)
 	/* Fallback on a full sync */
+	/* XXX make part of jsyscall */
 	sync();
 #else
 	/* Well we can't do anything can we? */

@@ -29,6 +29,7 @@
 #include "md.h"
 #include "system.h"
 #include "jthread.h"
+#include "jsignal.h"
 #include "ltdl.h"
 
 #ifndef STUB_PREFIX
@@ -197,7 +198,9 @@ loadNativeLibrary(char* lib)
 /* if we tested for existence here, libltdl wouldn't be able to look
    for system-dependent library names */
 
+	blockAsyncSignals();
         LIBRARYLOAD(libHandle[i].desc, lib);
+	unblockAsyncSignals();
 
 	if (libHandle[i].desc == 0) {
 		const char *err = LIBRARYERROR();
@@ -227,7 +230,9 @@ loadNativeLibrarySym(char* name)
 {
 	void* func;
 
+	blockAsyncSignals();
 	LIBRARYFUNCTION(func, name);
+	unblockAsyncSignals();
 
 	return (func);
 }

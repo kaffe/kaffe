@@ -27,15 +27,17 @@ void
 java_io_FileOutputStream_open(struct Hjava_io_FileOutputStream* fh, struct Hjava_lang_String* nm)
 {
 	int fd;
+	int rc;
 	char str[MAXPATHLEN];
 
 	stringJava2CBuf(nm, str, sizeof(str));
 
-	fd = KOPEN(str, O_WRONLY|O_CREAT|O_BINARY|O_TRUNC, 0666);
-	unhand(unhand(fh)->fd)->fd = fd;
-	if (fd < 0) {
-		SignalError("java.io.IOException", SYS_ERROR);
+	rc = KOPEN(str, O_WRONLY|O_CREAT|O_BINARY|O_TRUNC, 0666, &fd);
+	if (rc) {
+		unhand(unhand(fh)->fd)->fd = -1;
+		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
+	unhand(unhand(fh)->fd)->fd = fd;
 }
 
 /*
@@ -45,15 +47,17 @@ void
 java_io_FileOutputStream_openAppend(struct Hjava_io_FileOutputStream* fh, struct Hjava_lang_String* nm)
 {
 	int fd;
+	int rc;
 	char str[MAXPATHLEN];
 
 	stringJava2CBuf(nm, str, sizeof(str));
 
-	fd = KOPEN(str, O_WRONLY|O_CREAT|O_BINARY|O_APPEND, 0666);
-	unhand(unhand(fh)->fd)->fd = fd;
-	if (fd < 0) {
-		SignalError("java.io.IOException", SYS_ERROR);
+	rc = KOPEN(str, O_WRONLY|O_CREAT|O_BINARY|O_APPEND, 0666, &fd);
+	if (rc) {
+		unhand(unhand(fh)->fd)->fd = -1;
+		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
+	unhand(unhand(fh)->fd)->fd = fd;
 }
 
 /*
@@ -67,8 +71,8 @@ java_io_FileOutputStream_close(struct Hjava_io_FileOutputStream* fh)
 	if (unhand(unhand(fh)->fd)->fd >= 0) {
 		r = KCLOSE(unhand(unhand(fh)->fd)->fd);
 		unhand(unhand(fh)->fd)->fd = -1;
-		if (r < 0) {
-			SignalError("java.io.IOException", SYS_ERROR);
+		if (r) {
+			SignalError("java.io.IOException", SYS_ERROR(r));
 		}
 	}
 }
@@ -81,11 +85,12 @@ java_io_FileOutputStream_writeBytes(struct Hjava_io_FileOutputStream* fh, HArray
 {
 	int fd;
 	int r;
+	ssize_t bwritten;
 
 	fd = unhand(unhand(fh)->fd)->fd;
-	r = KWRITE(fd, &unhand(byteArray)->body[start], len);
-	if (r < 0) {
-		SignalError("java.io.IOException", SYS_ERROR);
+	r = KWRITE(fd, &unhand(byteArray)->body[start], len, &bwritten);
+	if (r) {
+		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
 }
 
@@ -98,10 +103,11 @@ java_io_FileOutputStream_write(struct Hjava_io_FileOutputStream* fh, jint byte)
 	int fd;
 	int r;
 	unsigned char b = byte;
+	ssize_t bwritten;
 
 	fd = unhand(unhand(fh)->fd)->fd;
-	r = KWRITE(fd, &b, 1);
-	if (r < 0) {
-		SignalError("java.io.IOException", SYS_ERROR);
+	r = KWRITE(fd, &b, 1, &bwritten);
+	if (r) {
+		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
 }

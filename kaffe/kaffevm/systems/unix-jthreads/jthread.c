@@ -129,7 +129,7 @@ static void handleInterrupt(int sig);
 static void interrupt(int sig);
 static void childDeath(void);
 static void handleIO(int);
-static void blockOnFile(int fd, int op);
+static void blockOnFile(int fd, int op, int timeout);
 static void killThread(jthread *jtid);
 static void resumeThread(jthread* jtid);
 static void reschedule(void);
@@ -1585,7 +1585,7 @@ DBG(JTHREADDETAIL,
  * fd is assumed to be valid.
  */
 static void
-blockOnFile(int fd, int op)
+blockOnFile(int fd, int op, int timeout)
 {
 DBG(JTHREAD,
 	dprintf("blockOnFile(%d,%s)\n", fd, op == TH_READ ? "r":"w"); )
@@ -1598,12 +1598,12 @@ DBG(JTHREAD,
 	}
 	if (op == TH_READ) {
 		FD_SET(fd, &readsPending);
-		suspendOnQThread(currentJThread, &readQ[fd], NOTIMEOUT);
+		suspendOnQThread(currentJThread, &readQ[fd], timeout);
 		FD_CLR(fd, &readsPending);
 	}
 	else {
 		FD_SET(fd, &writesPending);
-		suspendOnQThread(currentJThread, &writeQ[fd], NOTIMEOUT);
+		suspendOnQThread(currentJThread, &writeQ[fd], timeout);
 		FD_CLR(fd, &writesPending);
 	}
 }
@@ -1859,25 +1859,41 @@ restore_fds_and_exit()
  * Threaded socket create.
  */
 int
-jthreadedSocket(int af, int type, int proto)
+jthreadedSocket(int af, int type, int proto, int *out)
 {
-	int fd;
+	int r;
 
-	fd = socket(af, type, proto);
-	return (jthreadedFileDescriptor(fd));
+	intsDisable();
+	r = socket(af, type, proto);
+	if (r == -1) {
+		r = errno;
+	} else {
+		*out = jthreadedFileDescriptor(r);
+		r = 0;
+	}
+	intsRestore();
+	return (r);
 }
 
 /*
  * Threaded file open.
  */
 int
-jthreadedOpen(const char* path, int flags, int mode)
+jthreadedOpen(const char* path, int flags, int mode, int *out)
 {
-	int fd;
+	int r;
 
+	intsDisable();
 	/* Cygnus WinNT requires this */
-	fd = open(path, flags|O_BINARY, mode);
-	return (jthreadedFileDescriptor(fd));
+	r = open(path, flags|O_BINARY, mode);
+	if (r == -1) {
+		r = errno;
+	} else {
+		*out = jthreadedFileDescriptor(r);
+		r = 0;
+	}
+	intsRestore();
+	return (r);
 }
 
 /*
@@ -1887,18 +1903,29 @@ int
 jthreadedConnect(int fd, struct sockaddr* addr, size_t len)
 {
 	int r;
+	int haveBlocked = 0;
 
 	intsDisable();	
 	for (;;) {
 		r = connect(fd, addr, len);
-		if (r < 0 && !(errno == EINPROGRESS || errno == EINTR)) 
-		      break;
+		if (r == 0 || !(errno == EINPROGRESS || errno == EINTR)) {
+			break;	/* success or real error */
+		}
+		if (errno == EINTR) {
+			/* ignore */
+			continue;
+		}
+		if (haveBlocked) {
+			errno = EINTR;
+			break;
+		}
 
-		blockOnFile(fd, TH_CONNECT);
+		blockOnFile(fd, TH_CONNECT, NOTIMEOUT);
+		haveBlocked++;
 	}
-	/* annul EISCONN error */
-	if (r < 0 && errno == EISCONN)
-		r = 0;
+	if (r == -1) {
+		r = errno;
+	}
 	intsRestore();
 	return (r);
 }
@@ -1907,51 +1934,96 @@ jthreadedConnect(int fd, struct sockaddr* addr, size_t len)
  * Threaded socket accept.
  */
 int
-jthreadedAccept(int fd, struct sockaddr* addr, size_t* len)
+jthreadedAccept(int fd, struct sockaddr* addr, size_t* len, 
+		int timeout, int* out)
 {
 	int r;
+	int haveBlocked = 0;
 
 	intsDisable();
 	for (;;) {
 		r = accept(fd, addr, len);
 		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR 
-				|| errno == EAGAIN))
+				|| errno == EAGAIN)) {
+			break;	/* success or real error */
+		}
+		if (errno == EINTR) {
+			/* ignore */
+			continue;
+		}
+		if (haveBlocked) {
+			errno = EINTR;
 			break;
-		blockOnFile(fd, TH_ACCEPT);
+		}
+		blockOnFile(fd, TH_ACCEPT, timeout);
+		haveBlocked++;
+	}
+	if (r == -1) {
+		r = errno;
+	} else {
+		*out = jthreadedFileDescriptor(r);
+		r = 0;
 	}
 	intsRestore();
-	return (r >= 0 ? jthreadedFileDescriptor(r) : r);
+	return (r);
 }
 
 /*
- * Threaded read
+ * Threaded read with timeout
  */
-ssize_t
-jthreadedRead(int fd, void* buf, size_t len)
+int
+jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *out)
 {
 	ssize_t r;
+	int haveBlocked = 0;
 
 	intsDisable();
 	for (;;) {
 		r = read(fd, buf, len);
 		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR 
-				|| errno == EAGAIN))
+				|| errno == EAGAIN)) {
+			break;	/* real error or success */
+		}
+		if (errno == EINTR) {
+			/* ignore */
+			continue;
+		}
+		if (haveBlocked) {
+			errno = EINTR;
 			break;
+		}
 
-		blockOnFile(fd, TH_READ);
+		blockOnFile(fd, TH_READ, timeout);
+		haveBlocked++;
+	}
+	if (r == -1) {
+		r = errno;
+	} else {
+		*out = r;
+		r = 0;
 	}
 	intsRestore();
-	return r;
+	return (r);
+}
+
+/*
+ * Threaded read with no time out
+ */
+int
+jthreadedRead(int fd, void* buf, size_t len, ssize_t *out)
+{
+	return (jthreadedTimedRead(fd, buf, len, NOTIMEOUT, out));
 }
 
 /*
  * Threaded write
  */
-ssize_t
-jthreadedWrite(int fd, const void* buf, size_t len)
+int
+jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *out)
 {
 	ssize_t r = 1;
 	const void* ptr;
+	int haveBlocked = 0;
 
 	ptr = buf;
 
@@ -1964,35 +2036,73 @@ jthreadedWrite(int fd, const void* buf, size_t len)
 			r = ptr - buf;
 			continue;
 		}
-		if (!(errno == EWOULDBLOCK || errno == EINTR || errno == EAGAIN))
+		if (errno == EINTR) {
+			/* ignore */
+			r = 1;
+			continue;
+		}
+		if (!(errno == EWOULDBLOCK || errno == EAGAIN)) {
+			/* real error */
 			break;
+		}
+		/* must be EWOULDBLOCK or EAGAIN */
+		if (haveBlocked) {
+			/* bail out the second time */
+			errno = EINTR;
+			*out = ptr - buf;
+			break;
+		}
 
-		blockOnFile(fd, TH_WRITE);
+		blockOnFile(fd, TH_WRITE, NOTIMEOUT);
+		haveBlocked++;
 		r = 1;
 	}
+	if (r == -1) {
+		r = errno;
+	} else {
+		*out = r;
+		r = 0;
+	}
 	intsRestore();
-	return r; 
+	return (r); 
 }
 
 /*
  * Threaded recvfrom 
  */
-ssize_t 
+int 
 jthreadedRecvfrom(int fd, void* buf, size_t len, int flags, 
-	struct sockaddr* from, int* fromlen)
+	struct sockaddr* from, int* fromlen, int timeout, ssize_t *out)
 {
-	ssize_t r;
+	int r;
+	int haveBlocked = 0;
  
 	intsDisable();
 	for (;;) {
 		r = recvfrom(fd, buf, len, flags, from, fromlen);
 		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR 
-					|| errno == EAGAIN))
+					|| errno == EAGAIN)) {
 			break;
-		blockOnFile(fd, TH_READ);
+		}
+		if (errno == EINTR) {
+			continue;
+		}
+		/* else EWOULDBLOCK or EAGAIN */
+		if (haveBlocked) {
+			errno = EINTR;
+			break;
+		}
+		blockOnFile(fd, TH_READ, timeout);
+		haveBlocked++;
+	}
+	if (r == -1) {
+		r = errno;
+	} else {
+		*out = r;
+		r = 0;
 	}
 	intsRestore();
-	return r;
+	return (r);
 }
 
 /*============================================================================
@@ -2017,7 +2127,7 @@ childDeath(void)
  * Wait for a child process.
  */
 int
-jthreadedWaitpid(int wpid, int* status, int options)
+jthreadedWaitpid(int wpid, int* status, int options, int *outpid)
 {
 #if defined(HAVE_WAITPID)
 	int npid;
@@ -2029,16 +2139,18 @@ DBG(JTHREAD,
 	for (;;) {
 		wouldlosewakeup = 1;
 		npid = waitpid(wpid, status, options|WNOHANG);
+		/* XXX what return codes should cause us to return an error? */
 		if (npid > 0) {
+			*outpid = npid;
 			break;
 		}
 		BLOCKED_ON_EXTERNAL(currentJThread);
 		suspendOnQThread(currentJThread, &waitForList, NOTIMEOUT);
 	}
 	intsRestore();
-	return (npid);
+	return (0);
 #else
-	return -1;
+	return (EOPNOTSUPPORT);
 #endif
 }
 
@@ -2052,7 +2164,7 @@ close_fds(int fd[], int n)
 }
 
 int 
-jthreadedForkExec(char **argv, char **arge, int ioes[4])
+jthreadedForkExec(char **argv, char **arge, int ioes[4], int *outpid)
 {
 /* these defines are indices in ioes */
 #define IN_IN		0
@@ -2093,10 +2205,12 @@ DBG(JTHREAD,
 	/* Create the pipes to communicate with the child */
 	/* Make sure fds get closed if we can't create all pipes */
 	for (nfd = 0; nfd < 8; nfd += 2) {
+		int e;
 		err = pipe(fds + nfd);
+		e = errno;
 		if (err == -1) {
 			close_fds(fds, nfd);
-			return -1;
+			return (e);
 		}
 	}
 
@@ -2160,7 +2274,7 @@ DBG(JTHREAD,
 		/* Error */
 		/* Close all pipe fds */
 		close_fds(fds, 8);
-		return (-1);
+		return (errno);		/* XXX unprotected! */
 
 	default:
 		/* Parent */
@@ -2177,7 +2291,8 @@ DBG(JTHREAD,
 		ioes[3] = jthreadedFileDescriptor(fds[SYNC_OUT]);
 
 		sigprocmask(SIG_UNBLOCK, &nsig, 0);
-		return (pid);
+		*outpid = pid;
+		return (0);
 	}
 
 	exit(-1);

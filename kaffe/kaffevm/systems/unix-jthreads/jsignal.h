@@ -37,5 +37,6 @@ void ignoreSignal(int sig);
 void clearSignal(int sig);
 void unblockSignal(int sig);
 void unblockAsyncSignals(void);
+void blockAsyncSignals(void);
 
 #endif /* UNIXJTHREAD_SIGNAL_H */

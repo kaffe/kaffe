@@ -287,3 +287,22 @@ unblockAsyncSignals(void)
 	
 }
 
+/*
+ * Block all of the async signals.  (These are the
+ * signals specified in the sa_mask in registerAsynchSignalHandler().)
+ */
+void 
+blockAsyncSignals(void)
+{
+	sigset_t nsig;
+
+	sigemptyset(&nsig);
+	sigaddset(&nsig, SIGIO);
+	sigaddset(&nsig, SIGALRM);
+	sigaddset(&nsig, SIGCHLD);
+#if defined(SIGVTALRM)
+	sigaddset(&nsig, SIGVTALRM);
+#endif
+	sigprocmask(SIG_BLOCK, &nsig, 0);
+	
+}

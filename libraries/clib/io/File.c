@@ -78,8 +78,9 @@ java_io_File_exists0(struct Hjava_io_File* this)
 
 	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 
+	/* a file exists if I can stat it */
 	r = KSTAT(str, &buf);
-	if (r < 0) {
+	if (r) {
 		return (0);
 	}
 	else {
@@ -116,6 +117,7 @@ java_io_File_canWrite0(struct Hjava_io_File* this)
 	int r;
 
 	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
+	/* XXX make part of jsyscall interface !? */
 	r = access(str, W_OK);
 	return (r < 0 ? 0 : 1);
 }
@@ -130,6 +132,7 @@ java_io_File_canRead0(struct Hjava_io_File* this)
 	int r;
 
 	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
+	/* XXX make part of jsyscall interface !? */
 	r = access(str, R_OK);
 	return (r < 0 ? 0 : 1);
 }
@@ -164,7 +167,7 @@ java_io_File_mkdir0(struct Hjava_io_File* this)
 
 	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 	r = KMKDIR(str, 0777);
-	return (r < 0 ? 0 : 1);
+	return (r != 0 ? 0 : 1);
 }
 
 /*
@@ -181,7 +184,7 @@ java_io_File_renameTo0(struct Hjava_io_File* this, struct Hjava_io_File* that)
 	stringJava2CBuf(unhand(that)->path, str2, sizeof(str2));
 
 	r = KRENAME(str, str2);
-	return (r < 0 ? 0 : 1);
+	return (r != 0 ? 0 : 1);
 }
 
 /*
@@ -195,7 +198,7 @@ java_io_File_delete0(struct Hjava_io_File* this)
 
 	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 	r = KREMOVE(str);
-	return(r < 0 ? 0 : 1);
+	return(r != 0 ? 0 : 1);
 }
 
 /*
@@ -209,7 +212,7 @@ java_io_File_rmdir0(struct Hjava_io_File* this)
 
 	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 	r = KRMDIR(str);
-	return(r < 0 ? 0 : 1);
+	return(r != 0 ? 0 : 1);
 }
 
 /*
@@ -233,6 +236,7 @@ java_io_File_list0(struct Hjava_io_File* this)
 
 	stringJava2CBuf(unhand(this)->path, path, sizeof(path));
 
+	/* XXX make part of jsyscall interface !? */
 	dir = opendir(path);
 	if (dir == 0) {
 		return (0);
@@ -240,6 +244,7 @@ java_io_File_list0(struct Hjava_io_File* this)
 
 	dirlist = 0;
 	count = 0;
+	/* XXX make part of jsyscall interface !? */
 	while ((entry = readdir(dir)) != 0) {
 		/* We skip '.' and '..' */
 		if (strcmp(".", entry->d_name) == 0 ||
@@ -253,6 +258,7 @@ java_io_File_list0(struct Hjava_io_File* this)
 		dirlist = mentry;
 		count++;
 	}
+	/* XXX make part of jsyscall interface !? */
 	closedir(dir);
 
 	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/String");

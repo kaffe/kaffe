@@ -27,6 +27,7 @@
 #include "errors.h"
 #include "lerrno.h"
 #include "locks.h"
+#include "files.h"
 #include "baseClasses.h"
 #include "external.h"
 #include "jar.h"
@@ -168,6 +169,7 @@ findInJar(char* cname, errorInfo *einfo)
 	static iLock jarlock;
 	classpathEntry* ptr;
 	int i;
+	int rc;
 
 	/* Initialise on first use */
 	if (!staticLockIsInitialized(&jarlock)) {
@@ -219,13 +221,20 @@ ZDBG(			printf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			strcat(buf, file_separator);
 			strcat(buf, cname);
 FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
-			fp = KOPEN(buf, O_RDONLY|O_BINARY, 0);
-			if (fp < 0) {
-				break;
+			rc = KOPEN(buf, O_RDONLY|O_BINARY, 0, &fp);
+			/* if we can't open the file, we keep looking */
+			if (rc) {
+				break;	/* will be NoClassDefFoundError */
 			}
-			if (KFSTAT(fp, &sbuf) < 0) {
+			/* if we can open the file, but cannot stat or read it,
+			 * we flag an IOException (!?)
+			 */
+			if ((rc = KFSTAT(fp, &sbuf)) != 0) {
 				KCLOSE(fp);
-				break;
+				SET_IO_EXCEPTION_MESSAGE(einfo, IOException, 
+								SYS_ERROR(rc))
+				hand.type = CP_INVALID;
+				goto done;
 			}
 			hand.size = sbuf.st_size;
 
@@ -234,14 +243,18 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 
 			i = 0;
 			while (i < hand.size) {
-				j = KREAD(fp, hand.buf, hand.size - i);
-				if (j >= 0) {
-					i += j;
-				}
-				else if (!(errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)) {
-					SET_IO_EXCEPTION_MESSAGE(einfo, IOException, "failed to read class data")
+				rc = KREAD(fp, hand.buf, hand.size - i, &j);
+				if (rc != 0) {
+					SET_IO_EXCEPTION_MESSAGE(einfo, 
+						IOException, SYS_ERROR(rc))
 					hand.type = CP_INVALID;
 					break;
+				} else {
+					if (j > 0) {	/* more data */
+						i += j;
+					} else {	/* end of file */
+						break;
+					}
 				}
 			}
 			KCLOSE(fp);
@@ -475,6 +488,7 @@ getClasspathType(const char* path)
 {
 	int h;
 	int c;
+	int rc;
 	char buf[2];
 	struct stat sbuf;
 
@@ -486,12 +500,12 @@ getClasspathType(const char* path)
 		return (CP_DIR);
 	}
 
-	h = KOPEN(path, O_RDONLY, 0);
-	if (h < 0) {
+	rc = KOPEN(path, O_RDONLY, 0, &h);
+	if (rc) {
 		return (CP_INVALID);
 	}
 
-	c = KREAD(h, buf, sizeof(buf));
+	rc = KREAD(h, buf, sizeof(buf), &c);
 	KCLOSE(h);
 	if (c != sizeof(buf)) {
 		return (CP_INVALID);
