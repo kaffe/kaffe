@@ -31,7 +31,7 @@ TRAMPOLINE_FUNCTION()
 #define	C_FUNC_NAME(FUNC) #FUNC
 #endif
 
-#if defined(NO_SHARED_VMLIBRARY)
+#if 1 /* defined(NO_SHARED_VMLIBRARY) */
 
 asm(
 	START_ASM_FUNC() C_FUNC_NAME(arm_do_fixup_trampoline) "\n"

@@ -124,7 +124,7 @@ extern void arm_do_fixup_trampoline(void);
 	  (T)->loadlr = 0xE1A0c00F; 		\
 	  (T)->branch = 0xE59FF000; 		\
 	  (T)->meth = (M);			\
-	  (T)->trampaddr = arm_do_fixup_trampoline; \
+	  (T)->trampaddr = (void**)arm_do_fixup_trampoline; \
 	} while(0)
 
 /* _pmeth will be $ip from FILL_IN_TRAMPOLINE */
@@ -177,7 +177,9 @@ extern void arm_do_fixup_trampoline(void);
 /* Extra label types */
 #define Llong26		(Larchdepend+0)	/* Label is 26 bits long */
 #define Llong8x8x8x8	(Larchdepend+1)	/* Label is split into 4x8 bit parts */
-
+#define Loffset12       (Larchdepend+2) /* fill in 12-bit offset */
+#define Lfoffset8       (Larchdepend+3) /* fill in 8-bit offset */
+#define Lexception      (Larchdepend+4)
 
 #define	LABEL_Llong26(P,V,L) \
         { \
@@ -191,10 +193,43 @@ extern void arm_do_fixup_trampoline(void);
 	(P)[2] = ((P)[2] & 0xFFFFFF00)|(((V)>>16) & 0xFF);		\
 	(P)[3] = ((P)[3] & 0xFFFFFF00)|(((V)>>24) & 0xFF)
 
+//
+// Patch in the offset for constant pool references.
+// Note that the instruction is encoded to subtract the
+// offset from the base register (which points to the procedure entry)
+// and thus we need to put in a positive address to get
+// the proper displacement
+//
+#define LABEL_Loffset12(P,V,L) \
+        { \
+         int offset = codebase - (V); \
+         int highpart = offset & ~0xfff;\
+         assert((highpart >= 0) && (highpart <= 0xfff)); \
+         (P)[0] = ((P)[0] & ~0xfff) | ((offset) & 0xfff); \
+        }
+
+//
+// Used by move_float_constpool. Same caveats as above.
+// Note that floating/double loads used scaled indicies.
+//
+#define LABEL_Lfoffset8(P,V,L) \
+        { \
+         int offset = (codebase - (V)) >> 2; \
+         int highpart = offset & ~0xff;\
+         assert((highpart >= 0) && (highpart <= 0xff)); \
+         (P)[0] = ((P)[0] & ~0xff) | ((offset) & 0xff); \
+        }
+
 #define EXTRA_LABELS(P,D,L)						\
 	case Lframe:		LABEL_Lframe(P,D,L);		break;	\
+	case Lexception:        LABEL_Lframe(P,D,L);			\
+				LABEL_Llong8x8x8x8( &(P[1]), codebase, L); \
+								break;	\
+	case Loffset12:		LABEL_Loffset12(P,D,L);		break;  \
+	case Lfoffset8:		LABEL_Lfoffset8(P,D,L);		break;  \
 	case Llong26:		LABEL_Llong26(P,D,L);		break;	\
-	case Llong8x8x8x8:	LABEL_Llong8x8x8x8(P,D,L);	break;
+	case Llong8x8x8x8:	LABEL_Llong8x8x8x8(P,D,L);	break;	\
+
 
 /**/
 /* Slot management information. */
@@ -285,8 +320,8 @@ extern void flush_dcache(void);
 #undef	SLOT2LOCALOFFSET
 #undef	SLOT2ARGOFFSET
 
-#define FRAMEOBJECT(F) \
-	(*(Hjava_lang_Object**)((uintp)(F) - SLOTSIZE * REGISTERS_SAVED))
+#define FRAMEOBJECT(O, F, E) \
+	(O) = (*(Hjava_lang_Object**)((uintp)(F) - SLOTSIZE * REGISTERS_SAVED))
 
 /* Number of function globals in register set */
 #define	NR_GLOBALS	6

@@ -20,4 +20,12 @@
 /* We have no floating point or kernel emulation */
 #define HAVE_NO_FLOATING_POINT  1
 
+
+#define EXCEPTIONPROTO  int sig, int code, struct sigcontext* ctx
+
+#define EXCEPTIONFRAME(F, C)                    \
+	(F).retfp = (void*)(C)->sc_r11;		\
+	(F).retsp = (void*)(C)->sc_usr_sp;	\
+	(F).retpc = (void*)(C)->sc_pc;
+
 #endif

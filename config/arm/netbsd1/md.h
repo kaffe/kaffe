@@ -19,10 +19,4 @@
 #include "jit-md.h"
 #endif
 
-#define EXCEPTIONPROTO  int sig, int code, struct sigcontext* ctx
-
-#define EXCEPTIONFRAME(F, C)			\
-	(F).return_frame = (void*)(C)->sc_r11;	\
-	(F).return_pc = (void*)(C)->sc_pc;
-
 #endif
