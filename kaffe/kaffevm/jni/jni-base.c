@@ -23,6 +23,8 @@
 #include "baseClasses.h"
 #include "kaffe_jni.h"
 #include "support.h"
+#include "classMethod.h"
+#include "jvmpi_kaffe.h"
 
 /*
  * Keep track of how many VM's are active. Right now

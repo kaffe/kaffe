@@ -1,10 +1,29 @@
+2005-01-14  Jim Huang  <jserv@kaffe.org>
+
+	* include/jvmpi.h:
+	Add missing JVMPI version numbers.
+
+	* kaffe/jvmpi/jvmpi_kaffe.c
+	(jvmpiFillObjectAlloc):
+	Use KGC_getObjectSize instead of GC_getObjectSize since the
+	internal API changes.
+	Retrive thread ID with vmThread with the directions from Guilhem
+	Lavaux <guilhem@kaffe.org>.
+
+	* kaffe/kaffevm/jit3/machine.c
+	(translate):
+	Add casting in subtraction between ncode_end and ncode_start.
+
+	* kaffe/kaffevm/jni/jni-base.c:
+	Add JVMPI specific header.
+
 2005-01-14  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/jvmpi/jvmpi_kaffe.c
 	(jvmpiFillThreadStart): Updated to follow the new threadData
 	structure.
 
-	Reported by Jim Huang <jserv@linux2.cc.ntu.edu.tw>
+	Reported by Jim Huang <jserv@kaffe.org>
 
 2005-01-14  Guilhem Lavaux  <guilhem@kaffe.org>
 
@@ -12,7 +31,7 @@
 	(VMThread.wait): Use vmThread and not sleeper to check whether we are
 	sleeping.
 
-	Reported by Jim Huang <jserv@linux2.cc.ntu.edu.tw>
+	Reported by Jim Huang <jserv@kaffe.org>
 
 2005-01-13  Dalibor Topic  <robilad@kaffe.org>
 

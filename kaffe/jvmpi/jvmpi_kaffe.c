@@ -170,7 +170,7 @@ void jvmpiFillObjectAlloc(JVMPI_Event *ev, struct Hjava_lang_Object *obj)
 	{
 		ev->u.obj_alloc.is_array = JVMPI_NORMAL_OBJECT;
 	}
-	ev->u.obj_alloc.size = GC_getObjectSize(main_collector, obj);
+	ev->u.obj_alloc.size = KGC_getObjectSize(main_collector, obj);
 	ev->u.obj_alloc.obj_id = obj;
 }
 
@@ -194,8 +194,8 @@ void jvmpiFillThreadStart(JVMPI_Event *ev, struct Hjava_lang_Thread *tid)
 	ev->u.thread_start.group_name = stringJava2C(tid->group->name);
 	ev->u.thread_start.parent_name = NULL;
 	ev->u.thread_start.thread_id = tid;
-	ev->u.thread_start.thread_env_id =
-		&KTHREAD(get_data)->jniEnv;
+	ev->u.thread_start.thread_env_id = 
+		&KTHREAD(get_data)((jthread_t)tid->vmThread->jthreadID)->jniEnv;
 }
 
 void jvmpiFillClassLoad(JVMPI_Event *ev, struct Hjava_lang_Class *cl)

@@ -8,6 +8,10 @@
 
 #include <jni.h>
 
+/* JVMPI version numbers. */
+#define JVMPI_VERSION_1	0x10000001
+#define JVMPI_VERSION_1_1	0x10000002
+
 typedef void *jobjectID;
 
 enum {

@@ -440,7 +440,7 @@ done3:;
 		ev.u.compiled_method_load.code_addr =
 			METHOD_NATIVECODE(xmeth);
 		ev.u.compiled_method_load.code_size =
-			xmeth->c.ncode.ncode_end - xmeth->c.ncode.ncode_start;
+			(uintp)xmeth->c.ncode.ncode_end - (uintp)xmeth->c.ncode.ncode_start;
 		if( xmeth->lines )
 		{
 			JVMPI_Lineno *jvmpi_lineno = NULL;
