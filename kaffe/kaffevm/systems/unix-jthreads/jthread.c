@@ -324,9 +324,10 @@ processSignals(void)
 {
 	int i;
 	for (i = 1; i < NSIG; i++) {
-		if (pendingSig[i])
+		if (pendingSig[i]) {
+			pendingSig[i] = 0;
 			handleInterrupt(i);
-		pendingSig[i] = 0;
+		}
 	}
 	sigPending = 0;
 }
@@ -344,12 +345,14 @@ intsRestore(void)
         assert(blockInts >= 1);
 
         if (blockInts == 1) {   
-                if (sigPending)
+                if (sigPending) {
 			processSignals();
+		}
  
 		/* reschedule if necessary */
-                if (needReschedule == true)
+                if (needReschedule == true) {
                         reschedule(); 
+		}
         }
         blockInts--;
 }
@@ -452,14 +455,15 @@ interrupt(int sig)
 	 * in because we just unblocked them will discover that
 	 * blockInts > 0, and flag their arrival in the pendingSig[]
 	 * array.
+	 *
+	 * We clear the signal's pending indicator before reallowing signals.
 	 */
+	pendingSig[sig] = 0;
 	unblockAsyncSignals();
 
 	/*
-	 * Handle the signal.  Since we're handling the signal, might
-	 * as well clear its pending indicator, just for kicks.
+	 * Handle the signal.
 	 */
-	pendingSig[sig] = 0;
 	handleInterrupt(sig);
 
 	/*
@@ -494,8 +498,9 @@ handleVtAlarm(void)
 	 *
 	 * So we check periodically, every 0.2 seconds virtual time.
 	 */
-	if (++c % 20 == 0)
+	if (++c % 20 == 0) {
 		handleIO(false);
+	}
 }
 
 /*
