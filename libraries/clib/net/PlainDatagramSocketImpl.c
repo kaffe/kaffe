@@ -141,7 +141,6 @@ java_net_PlainDatagramSocketImpl_receive(struct Hjava_net_PlainDatagramSocketImp
 	int r;
 	struct sockaddr_in addr;
 	size_t alen = sizeof(addr);
-	struct Hjava_net_InetAddress **fromaddr;
 
 	/* Which port am I receiving from */
 	addr.sin_port = htons(unhand(this)->localPort);

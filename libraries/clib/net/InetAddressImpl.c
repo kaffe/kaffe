@@ -74,7 +74,6 @@ java_net_InetAddressImpl_lookupAllHostAddr(struct Hjava_net_InetAddressImpl* non
 {
 	char name[MAXHOSTNAME];
 	struct hostent* ent;
-	Hjava_lang_Object* obj;
 	HArrayOfInt* array;
 	int i;
 	int alength;
