@@ -98,7 +98,12 @@ Type* TBOOLARR = &verify_BOOLARR;
 
 static const char* SHORTARR_SIG = "[S";
 static Type  verify_SHORTARR;
-Type* TSHORTARR = &verify_SHORTARR;
+static Type* TSHORTARR = &verify_SHORTARR;
+
+Type* getTSHORTARR(void)
+{
+  return TSHORTARR;
+}
 
 static const char* INTARR_SIG = "[I";
 static Type  verify_INTARR;
