@@ -13,6 +13,15 @@
 
 #include "exception.h"
 
+/*
+ * STACKTRACEMETHCREATE is a pointer to a method object that is stored when 
+ * the stack trace is built.  This value is easily available in the interpreter.
+ *
+ * In the jitter, however, it is found using findMethodFromPC, which is
+ * expensive.  That is why there is STACKTRACEMETHPRINT, which will compute
+ * the method ptr corresponding to a given pc if and only when the stack trace
+ * is in fact printed.  This should speed up constructing stack traces.
+ */
 #if defined(INTERPRETER)
 
 typedef struct _stackTrace {
@@ -22,8 +31,9 @@ typedef struct _stackTrace {
 #define STACKTRACEINIT(S,I,O)	((S).frame = (vmException*)unhand((*Kaffe_ThreadInterface.currentJava)())->exceptPtr)
 #define	STACKTRACESTEP(S)	((S).frame = (*Kaffe_ThreadInterface.nextFrame)((S).frame))
 #define STACKTRACEPC(S)		((S).frame->pc)
-#define STACKTRACEMETH(S)	((S).frame->meth)
+#define STACKTRACEMETHCREATE(S)	((S).frame->meth)
 #define STACKTRACEEND(S)	((S).frame == 0 || (S).frame->meth == (Method*)1)
+#define STACKTRACEMETHPRINT(I)	((I).meth)
 
 #elif defined(TRANSLATOR)
 
@@ -43,8 +53,9 @@ typedef struct _stackTrace {
 	}
 #define	STACKTRACESTEP(S)	((S).frame = (*Kaffe_ThreadInterface.nextFrame)((S).frame))
 #define STACKTRACEPC(S)		(PCFRAME((S).frame))
-#define	STACKTRACEMETH(S)	(findMethodFromPC(PCFRAME((S).frame)))
+#define	STACKTRACEMETHCREATE(S)	(0)
 #define	STACKTRACEEND(S)	((S).frame == 0)
+#define STACKTRACEMETHPRINT(I)	(findMethodFromPC((I).pc))
 
 #endif
 

@@ -1,3 +1,8 @@
+Tue Nov 24 19:45:47 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/stackTrace.[ch]: postpone call to findMethodFromPC
+	to when stacktrace is really printed.
+
 Tue Nov 24 18:11:50 1998  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/DataInputStream.java: catch

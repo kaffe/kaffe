@@ -57,7 +57,7 @@ buildStackTrace(struct _exceptionFrame* base)
 
 	for(; !STACKTRACEEND(trace); STACKTRACESTEP(trace)) {
 		info[cnt].pc = STACKTRACEPC(trace);
-		info[cnt].meth = STACKTRACEMETH(trace);
+		info[cnt].meth = STACKTRACEMETHCREATE(trace);
 		cnt++;
 	}
 	info[cnt].pc = 0;
@@ -87,7 +87,7 @@ printStackTrace(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
 	}
 	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
 		pc = info[i].pc;
-		meth = info[i].meth; 
+		meth = STACKTRACEMETHPRINT(info[i]);
 		if (meth != 0) {
 			linepc = 0;
 			linenr = -1;
