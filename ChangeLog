@@ -14,6 +14,13 @@ Tue Aug  4 10:48:23 1998  Wolfgang Muees <wolfgang@wmsickte.escape.de>
 	* libraries/javalib/java/util/ResourceBundle.java: don't call
 	newInstance in getSpecificBundle if object cannot be cast to Bundle.
 
+Sun Aug  2 10:33:16 1998  Petter Reinholdtsen <pere@td.org.uit.no>
+
+	*libraries/javalib/java/net/Socket.java
+	libraries/javalib/java/net/DatagramSocket.java: Corrected
+	interface of setSoTimeout from (boolean, int) to (int).  Added
+	DatagramSocket.getLocalAddress()
+
 Sat Aug  1 12:16:30 1998  Petter Reinholdtsen <pere@td.org.uit.no>
 
 	* libraries/javalib/java/net/Socket.java: added getLocalAddress()
