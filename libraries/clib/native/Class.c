@@ -307,7 +307,7 @@ makeMethod(struct Hjava_lang_Class* clazz, int slot)
 
 	unhand(meth)->clazz = clazz;
 	unhand(meth)->slot = slot;
-	unhand(meth)->name = Utf8Const2JavaString(mth->name);
+	unhand(meth)->name = Utf8Const2JavaString(mth->name);	/* XXX */
 	unhand(meth)->parameterTypes = makeParameters(mth);
 	unhand(meth)->exceptionTypes = makeExceptions(mth);
 	unhand(meth)->returnType = makeReturn(mth);
@@ -327,7 +327,7 @@ makeField(struct Hjava_lang_Class* clazz, int slot)
 	unhand(field)->clazz = clazz;
 	unhand(field)->slot = slot;
 	unhand(field)->type = (struct Hjava_lang_Class*)fld->type;
-	unhand(field)->name = Utf8Const2JavaString(fld->name);
+	unhand(field)->name = Utf8Const2JavaString(fld->name);	/* XXX */
 	return (field);
 }
  
@@ -471,7 +471,7 @@ static
 int
 checkParameters(Method* mth, HArrayOfObject* argtypes)
 {
-	char *sig = makeCString(Utf8Const2JavaString(mth->signature));
+	char *sig = mth->signature->data;
 	int   i;
 
 	sig++;	/* skip leading '(' */
