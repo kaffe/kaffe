@@ -214,7 +214,7 @@ final public synchronized int lastIndexOf(Object elem, int index) {
 	return (-1);
 }
 
-public Object remove(int idx) {
+public synchronized Object remove(int idx) {
 	Object obj = elementAt(idx);
 	removeElementAt(idx);
 	return (obj);
