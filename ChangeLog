@@ -1,3 +1,10 @@
+1999-04-20  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* FAQ/FAQ.requiredlibraries: Completed.
+	* configure.in: Do not check for libgif, only libungif, and only
+	if gif_lib.h indicates it's at least libungif 4.
+	* configure, config/config.h.in: Regen.
+
 1999-04-18  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/intrp/Makefile.am: Use KVMLIBFLAGS to build

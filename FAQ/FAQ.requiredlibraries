@@ -2,19 +2,38 @@
 To use all functionality provided by Kaffe, you need some freely available
 libraries installed on your system.
 
-Some of these libraries are absolutely required, in other cases, the 
-configure script detects whether the library is available and uses it 
-if so.  If your library is installed is not installed in a standard
-place where your compiler and linker finds it, you need to tell
-configure where to find it.
+Some of these libraries are absolutely required, in other cases, the
+configure script detects whether the library is available and uses it
+if so.  If your library is not installed in a standard place where
+your compiler and linker finds it, you need to tell configure where to
+find it, using the --with-libraries="/my/dir1/lib /my/dir2/lib ..." 
+flag.  You may also have to specify the location of C header files,
+--with-includes="/my/dir1/include /my/dir2/include ...".
 
-<Alexandre explains how you do that with an example>
+X11/XFree:
+    The AWT implementation of the Desktop Edition of Kaffe OpenVM (the
+one that's Free Software) depends on X11.  If this is not enough for
+you, you may need the Custom Edition.  See www.transvirtual.com for
+details.
 
-libungif 4.0:	You need libungif 4.0 if you want Kaffe's awt to be 
-    able to decompress gif images.  Note that earlier versions will not
-    work.  You can get libgif from:
-    http://prtr-13.ucsc.edu/~badger/software/libungif.shtml
+libungif: 
+    You need libungif 4.0 or newer if you want Kaffe's awt to be able
+to decompress gif images.  Note that earlier versions will not work.
+You can get libungif from:
+http://prtr-13.ucsc.edu/~badger/software/libungif.shtml
 
-libz:		You need libz to use the functionality in java.util.zip
+jpeg:
+    Used by Kaffe's awt to decompress jpeg images.  Available at
+http://www.ijg.org/
 
-<Complete this list>
+libpng:
+    Ditto for png images.  Available at
+http://www.cdrom.com/pub/png/pngcode.html
+
+libz:
+    You need libz to use the functionality in java.util.zip.  It's
+available at http://www.cdrom.com/pub/infozip/zlib/
+
+GNU gmp:
+    libgmp is used in the implementation of java.math.BigInteger.
+It is available at ftp://ftp.gnu.org/pub/gmp, or from any GNU mirror.
