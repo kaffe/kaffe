@@ -1,0 +1,4 @@
+#! /bin/sh
+# Pretend Kaffe is Java
+exec @prefix@/bin/kaffe ${1+"$@"}
+

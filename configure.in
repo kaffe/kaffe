@@ -718,6 +718,23 @@ output="$make_output \
 libraries/javalib/rebuildLib \
 kaffe/scripts/install-jar \
 kaffe/scripts/kaffe \
+kaffe/scripts/javac \
+kaffe/scripts/javakey \
+kaffe/scripts/jar \
+kaffe/scripts/javap \
+kaffe/scripts/jdb \
+kaffe/scripts/pizza \
+kaffe/scripts/javadoc \
+kaffe/scripts/pizzadoc \
+kaffe/scripts/appletviewer \
+kaffe/scripts/rmic \
+kaffe/scripts/rmiregistry \
+kaffe/scripts/serialver \
+kaffe/scripts/native2ascii \
+kaffe/scripts/compat/java \
+kaffe/scripts/compat/javac \
+kaffe/scripts/compat/appletviewer \
+kaffe/scripts/compat/javadoc \
 "
 
 dnl =========================================================================

@@ -22,7 +22,7 @@ SCRIPTFILES_PIZZA=\
 
 SCRIPTFILES_SUN=\
 		appletviewer jar javac javadoc javakey javap jdb \
-		native2ascii report-kaffe-bug rmic rmiregistry serialver
+		native2ascii rmic rmiregistry serialver
 
 SCRIPTFILES_COMPAT=\
 		appletviewer java javac javadoc
@@ -42,19 +42,20 @@ install-sun:
 		test -d $(INSTROOT)$(bindir) || $(MKDIR) $(INSTROOT)$(bindir)
 		for i in $(SCRIPTFILES_SUN) ;\
 		do \
-			$(INSTALL_SCRIPT) $(srcdir)/$(SCREXT)/$$i $(INSTROOT)$(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
+			$(INSTALL_SCRIPT) ./$(SCREXT)/$$i $(INSTROOT)$(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
 		done
+		$(INSTALL_SCRIPT) $(srcdir)/$(SCREXT)/report-kaffe-bug $(INSTROOT)$(bindir)/$(KPREFIX)report-kaffe-bug$(SCREXT)  ;\
 
 install-pizza:
 		for i in $(SCRIPTFILES_PIZZA) ;\
 		do \
-			$(INSTALL_SCRIPT) $(srcdir)/$(SCREXT)/$$i $(INSTROOT)$(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
+			$(INSTALL_SCRIPT) ./$(SCREXT)/$$i $(INSTROOT)$(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
 		done
 
 install-compat:
 		for i in $(SCRIPTFILES_COMPAT) ;\
 		do \
-			$(INSTALL_SCRIPT) $(srcdir)/compat/$$i $(INSTROOT)$(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
+			$(INSTALL_SCRIPT) compat/$$i $(INSTROOT)$(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
 		done
 
 install-jars:

@@ -1,0 +1,4 @@
+#! /bin/sh
+# Script to run Pizza Java compiler
+exec @prefix@/bin/kaffe pizza.compiler.Main ${1+"$@"}
+

@@ -1,3 +1,8 @@
+Fri Sep 11 22:46:26 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/scripts/: replaced all scripts with .in files,
+	let configure insert configuration prefix.
+
 Thu Sep 10 14:12:27 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
 
 	* config/i386/linux/jit-md.h: handle SA_SIGINFO which is provided

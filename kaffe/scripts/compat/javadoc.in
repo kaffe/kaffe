@@ -1,0 +1,4 @@
+#! /bin/sh
+# We use Pizza rather than Sun's
+exec @prefix@/bin/kaffe pizza.compiler.Main -pizzadoc ${1+"$@"}
+

@@ -1,0 +1,3 @@
+#! /bin/sh
+# Script to run Sun's documenter
+exec @prefix@/bin/java sun.tools.javadoc.Main ${1+"$@"}

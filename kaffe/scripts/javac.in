@@ -1,0 +1,3 @@
+#! /bin/sh
+# Script to run Sun's compiler
+exec @prefix@/bin/java sun.tools.javac.Main ${1+"$@"}

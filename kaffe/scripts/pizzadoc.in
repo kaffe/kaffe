@@ -1,0 +1,4 @@
+#! /bin/sh
+# Script to run PizzaDoc
+exec @prefix@/bin/kaffe pizza.compiler.Main -pizzadoc ${1+"$@"}
+

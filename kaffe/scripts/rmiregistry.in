@@ -1,0 +1,3 @@
+#! /bin/sh
+exec @prefix@/bin/java sun.rmi.registry.RegistryImpl ${1+"$@"}
+

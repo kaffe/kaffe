@@ -1,0 +1,2 @@
+#! /bin/sh
+exec @prefix@/bin/java sun.security.provider.Main ${1+"$@"}
