@@ -286,7 +286,11 @@ public class UIDefaults extends Hashtable
 
   public Object put(Object key, Object value)
   {
-    Object old = super.put(key, value);
+    Object old;
+    if (value != null)
+      old = super.put(key, value);
+    else
+      old = super.remove(key);
     if (key instanceof String && old != value)
       firePropertyChange((String) key, old, value);
     return old;
