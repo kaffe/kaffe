@@ -1,3 +1,18 @@
+Tue Aug 25 00:59:00 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/mem/gc-incremental.c: 
+	libraries/clib/native/Thread.c:
+	libraries/javalib/java/lang/Thread.java:  we cannot rely on
+	Thread.finalize to free thread contexts because subclasses
+	may not call super.finalize().  Instead, we invoke finalizeThread
+	from finalizeObject in gc-incremental.c
+
+Tue Aug 25 00:57:40 1998  Leigh Stoller <stoller@cs.utah.edu>
+	
+	* kaffe/kaffevm/mem/gc-incremental.c: fixed nasty bug where
+ 	objects that were not yet finalized referred to reclaimed
+	memory.
+
 Mon Aug 24 19:01:23 1998  Tim Wilkinson <tim@transvirtual.com>
 
 	* kaffe/kaffevm/intrp/icode.h: fixed cvt_int_char. 

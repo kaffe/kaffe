@@ -116,9 +116,3 @@ java_lang_Thread_interrupt0(struct Hjava_lang_Thread* this)
 {
 	unimp("java.lang.Thread:interrupt0 unimplemented");
 }
-
-void
-java_lang_Thread_finalize0(struct Hjava_lang_Thread* this)
-{
-	finalizeThread(this);
-}

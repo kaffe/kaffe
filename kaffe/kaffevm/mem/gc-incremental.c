@@ -456,6 +456,8 @@ startGC(void)
 	int idx;
 	int i;
 	refObject* robj;
+	gc_unit* unit;
+	gc_unit* nunit;
 
 	gcStats.freedmem = 0;
 	gcStats.freedobj = 0;
@@ -470,6 +472,13 @@ startGC(void)
 		for (robj = refObjects.hash[i]; robj != 0; robj = robj->next) {
 			markObject(robj->mem);
 		}
+	}
+
+	/* Walk all objects on the finalizer list */
+	for (unit = gclists[finalise].cnext;
+	     unit != &gclists[finalise]; unit = nunit) {
+		nunit = unit->cnext;
+		markObject(UTOMEM(unit));
 	}
 
 	/* Walk the thread objects */
@@ -497,8 +506,8 @@ finishGC(void)
 	 * Any white objects should now be freed, but we cannot call
 	 * gc_heap_free here because we might block in gc_heap_free, 
 	 * which would leave the white list unprotected.
-	 * So we move them to a 'mustfree' list from where we'll pull off
-	 * them later.
+	 * So we move them to a 'mustfree' list from where we'll pull them
+	 * off later.
 	 */
 	while (gclists[white].cnext != &gclists[white]) {
 		unit = gclists[white].cnext;
@@ -508,15 +517,16 @@ finishGC(void)
 		idx = GCMEM2IDX(info, unit);
 
 		assert(GC_GET_COLOUR(info, idx) == GC_COLOUR_WHITE);
-		if (GC_GET_STATE(info, idx) == GC_STATE_INFINALIZE) {
-			UAPPENDLIST(gclists[finalise], unit);
-		}
-		else {
-			UAPPENDLIST(gclists[mustfree], unit);
-		}
+		assert(GC_GET_STATE(info, idx) == GC_STATE_NORMAL);
+		UAPPENDLIST(gclists[mustfree], unit);
 	}
 
-	/* Now move the black objects back to the white queue for next time.
+	/* 
+	 * Now move the black objects back to the white queue for next time.
+	 * Note that all objects that were eligible for finalization are now
+	 * black - this is so because we marked and then walked them.
+	 * We recognize them by their "INFINALIZE" state, however, and put
+	 * them on the finalise list.
 	 */
 	while (gclists[black].cnext != &gclists[black]) {
 		unit = gclists[black].cnext;
@@ -526,9 +536,14 @@ finishGC(void)
 		idx = GCMEM2IDX(info, unit);
 
 		assert(GC_GET_COLOUR(info, idx) == GC_COLOUR_BLACK);
-		GC_SET_COLOUR(info, idx, GC_COLOUR_WHITE);
 
-		UAPPENDLIST(gclists[white], unit);
+		if (GC_GET_STATE(info, idx) == GC_STATE_INFINALIZE) {
+			UAPPENDLIST(gclists[finalise], unit);
+		}
+		else {
+			UAPPENDLIST(gclists[white], unit);
+		}
+		GC_SET_COLOUR(info, idx, GC_COLOUR_WHITE);
 	}
 	/* 
 	 * Now that all lists that the mutator manipulates are in a
@@ -591,8 +606,7 @@ finaliserMan(void* arg)
 			LOCK();
 			unit = gclists[finalise].cnext;
 			UREMOVELIST(unit);
-			UAPPENDLIST(gclists[white], unit);
-			UNLOCK();
+			UAPPENDLIST(gclists[grey], unit);
 
 			info = GCMEM2BLOCK(unit);
 			idx = GCMEM2IDX(info, unit);
@@ -600,7 +614,8 @@ finaliserMan(void* arg)
 			assert(GC_GET_STATE(info,idx) == GC_STATE_INFINALIZE);
 			/* Objects are only finalised once */
 			GC_SET_STATE(info, idx, GC_STATE_FINALIZED);
-			GC_SET_COLOUR(info, idx, GC_COLOUR_WHITE);
+			GC_SET_COLOUR(info, idx, GC_COLOUR_GREY);
+			UNLOCK();
 			/* Call finaliser */
 			unlockStaticMutex(&finman);
 			(*gcFunctions[GC_GET_FUNCS(info,idx)].final)(UTOMEM(unit));
@@ -613,7 +628,7 @@ finaliserMan(void* arg)
 }
 
 /*
- * Explicity invoke the garbage collecto and wait for it to complete.
+ * Explicity invoke the garbage collector and wait for it to complete.
  */
 static
 void
@@ -863,6 +878,12 @@ finalizeObject(void* ob)
 
 	final = findMethod(OBJECT_CLASS((Hjava_lang_Object*)ob), final_name, void_signature);
 	callMethodA(final, METHOD_INDIRECTMETHOD(final), (Hjava_lang_Object*)ob, 0, 0);
+	/* 
+	 * make sure thread objects get detached 
+	 */
+	if (soft_instanceof(ThreadClass, ob)) {
+		finalizeThread((Hjava_lang_Thread*)ob);
+	}
 }
 
 #if defined(STATS)

@@ -284,12 +284,6 @@ public class Thread implements Runnable {
     return getName();
   }
 
-  protected void finalize()
-  {
-    finalize0();
-  }
-
-  private final native void finalize0();
   private static native void sleep0(long millis);
   private native void interrupt0();
   private native void destroy0();
