@@ -14,6 +14,25 @@
 
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/util/Locale.java:
+	Resynced with GNU Classpath.
+
+	2004-07-05  Bryce McKinlay  <mckinlay@redhat.com>
+
+        * java/util/Locale.java (readObject): Intern strings read from object
+        stream.
+
+	2004-07-05  Bryce McKinlay  <mckinlay@redhat.com>
+
+        * java/util/Locale.java (hashcode): Made transient.
+        (hashCode): No longer synchronized.
+        (equals): Remove comment.
+        (writeObject): No longer synchronized. Implement using writeObject
+        calls instead of tweaking hashCode field. Update doc.
+        (readObject): Implement using readObject calls.
+
+2004-07-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/text/DateFormat.java:
 	Resynced with GNU Classpath.
 
