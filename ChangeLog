@@ -1,3 +1,17 @@
+2004-04-16  Dalibor Topic <robilad@kaffe.org>
+
+	* FAQ/FAQ.automake:
+	Updated requirements to libtool 1.5.6.
+
+	* libraries/javalib/Makefile.am.in:
+	(KAFFELIBRARYPATH): Added nio libs.
+
+	Reported by: Riccardo Mottola <zuse@libero.it>
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
 2004-04-15  Jim Pick <jim@kaffe.org>
 
 	* libraries/clib/native/UNIXProcess.c:
