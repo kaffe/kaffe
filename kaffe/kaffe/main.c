@@ -39,6 +39,7 @@ static int options(char**);
 static void usage(void);
 static size_t parseSize(char*);
 static void handleErrors(void);
+static int main2(JNIEnv* env, char *argv[], int farg, int argc);
 
 #define	CLASSPATH1	"KAFFE_CLASSPATH"
 #define	CLASSPATH2	"CLASSPATH"
@@ -49,12 +50,6 @@ static void handleErrors(void);
 int
 main(int argc, char* argv[])
 {
-	jarray args;
-	jclass cls;
-	jclass mcls;
-	jmethodID mmth;
-	jobject str;
-	int i;
 	int farg;
 	char* cp;
 
@@ -90,6 +85,56 @@ main(int argc, char* argv[])
 	/* Initialise */
 	JNI_CreateJavaVM(&vm, &env, &vmargs);
 
+	main2(env, argv, farg, argc);
+}
+
+/*
+ * Note:
+ * Why do we split main in two parts?
+ *
+ * During initialisation, which is invoked in JNI_CreateJavaVM, we will
+ * estimate the upper end of the main stack by taking the address of a
+ * local variable.  The upper end of the main stack is important since
+ * it tells the conservative garbage collector the upper boundary up to 
+ * which it must scan the stack (stackEnd in the thread context).
+ * (Replace stackEnd with stackBase and upper with lower if your stack
+ *  grows upward.)
+ *
+ * To ensure that no references will be stored on the stack above that
+ * estimated point, we will allocate 1K on the stack as a safe zone.
+ *
+ * The old approach would have the initialisation code guess how much 
+ * it must add to the address of the local variable to find the actual 
+ * upper end up to which the gc must look for local variables.  
+ * The problem with that approach is what if the code guesses wrong?  
+ * If it guesses too low, we will lose objects.  If it guesses too
+ * high, however, the gc might segfault when trying to scan the stack.
+ *
+ * With the new approach some guessing is still involved:
+ * we guess how big the safe zone should be.  If we guess too small,
+ * we will lose objects.  If we guess too big, however, all we do is to 
+ * waste memory on the main stack.  
+ * Weighing the consequences, the new approach seems better.
+ * Does anybody have a better solution?
+ */
+
+/*
+ * MAIN, part II
+ */
+int
+main2(JNIEnv* env, char *argv[], int farg, int argc)
+{
+	char gc_safe_zone[1024];
+	jarray args;
+	jclass cls;
+	jclass mcls;
+	jmethodID mmth;
+	jobject str;
+	int i;
+
+	/* make sure no compiler optimizes this away */
+	gc_safe_zone[0] = gc_safe_zone[sizeof gc_safe_zone - 1] = 0;
+
 	mcls = (*env)->FindClass(env, argv[farg]);
 	handleErrors();
 
@@ -98,7 +143,7 @@ main(int argc, char* argv[])
 
 	farg++;
 	argc--;
-
+	
 	/* Build an array of strings as the arguments */
 	cls = (*env)->FindClass(env, "java/lang/String");
 	handleErrors();
