@@ -233,6 +233,11 @@ native public Object newInstance() throws InstantiationException, IllegalAccessE
 public String toString() {
 	Class cls = this;
 	StringBuffer str = new StringBuffer();
+	if (isInterface()) {
+		str.append("interface ");
+	} else {
+		str.append("class ");
+	}
 	for (int count = 0;; count++) {
 		if (!cls.isArray()) {
 			str.append(cls.getName());
