@@ -1,5 +1,12 @@
 2003-08-20  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/javalib/gnu/java/rmi/server/UnicastConnectionManager.java:
+	(startScavenger) set the client connection manager to daemon state
+	because it may block clients until TIMEOUT is reached when they are
+	exiting.
+
+2003-08-20  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/java/rmi/Naming.java:
 	(lookup,bind,rebind) check if the first character of the filename
 	returned by URL.getFile() is a '/', only if it is the case we cut
