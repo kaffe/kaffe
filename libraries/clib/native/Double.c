@@ -36,7 +36,7 @@
 struct Hjava_lang_String*
 java_lang_Double_toStringWithPrecision(jdouble val, jint precision)
 {
-	const jlong bits = java_lang_Double_doubleToLongBits(val);
+	const jlong bits = java_lang_Double_doubleToRawLongBits(val);
 	char *s, buf[MAXNUMLEN];
 	int k;
 
@@ -209,7 +209,7 @@ java_lang_Double_valueOf(struct Hjava_lang_String* str)
  * Convert double to jlong.
  */
 jlong
-java_lang_Double_doubleToLongBits(jdouble val)
+java_lang_Double_doubleToRawLongBits(jdouble val)
 {
 	return(doubleToLong(val));
 }

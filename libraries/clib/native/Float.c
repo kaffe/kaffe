@@ -35,7 +35,7 @@ java_lang_Float_valueOf(struct Hjava_lang_String* str)
  * Convert float to bits.
  */
 jint
-java_lang_Float_floatToIntBits(jfloat val)
+java_lang_Float_floatToRawIntBits(jfloat val)
 {
 	return floatToInt(val);
 }
