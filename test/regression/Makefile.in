@@ -69,6 +69,7 @@ AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 CC = @CC@
 CCLD = @CCLD@
+CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
 CPP = @CPP@
@@ -145,6 +146,7 @@ ALWAYS_TESTS = \
 	TestFloatDouble.java \
 	DoubleCvt.java \
 	DoubleNeg.java \
+	DoubleConst.java \
 	DoublePrint.java \
 	DoubleComp.java \
 	ModuloTest.java \
@@ -248,6 +250,7 @@ ALWAYS_TESTS = \
 	sysdepCallMethod.java \
 	DosTimeVerify.java \
 	ZipVerify.java \
+	ZipTest.java \
 	TestNative.java
 
 
@@ -255,7 +258,7 @@ TEST_Overflow = Overflow.java
 @HAVE_GCJ_SUPPORT_TRUE@TESTS = @HAVE_GCJ_SUPPORT_TRUE@$(ALWAYS_TESTS) $(TEST_Overflow)
 @HAVE_GCJ_SUPPORT_FALSE@TESTS = @HAVE_GCJ_SUPPORT_FALSE@$(ALWAYS_TESTS)
 
-XFAIL_TESTS = divtest.java
+XFAIL_TESTS = 
 
 EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
 	CLTestConc_run.java \

@@ -69,6 +69,7 @@ AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 CC = @CC@
 CCLD = @CCLD@
+CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
 CPP = @CPP@
@@ -173,8 +174,7 @@ noinst_HEADERS = \
 	xprofiler.h
 
 
-CONF_CFLAGS = @CFLAGS@
-CFLAGS = $(filter-out -pg,$(CONF_CFLAGS))
+CFLAGS = @CFLAGS_WITHOUT_PG@
 subdir = kaffe/xprof
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h

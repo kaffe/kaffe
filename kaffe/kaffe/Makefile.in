@@ -69,6 +69,7 @@ AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 CC = @CC@
 CCLD = @CCLD@
+CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
 CPP = @CPP@
@@ -135,6 +136,8 @@ with_engine = @with_engine@
 
 
 libexec_PROGRAMS = Kaffe
+@NEED_LIBXPROF_TRUE@libxprof = @NEED_LIBXPROF_TRUE@../xprof/libkaffexprof.la
+@NEED_LIBXPROF_FALSE@libxprof = @NEED_LIBXPROF_FALSE@#
 
 INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kaffe/xprof
@@ -142,7 +145,7 @@ INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
 
 Kaffe_SOURCES = main.c version.c version.h
 
-LIBKAFFEVM = ../kaffevm/libkaffevm.la ../xprof/libkaffexprof.la
+LIBKAFFEVM = ../kaffevm/libkaffevm.la $(libxprof)
 
 Kaffe_LDFLAGS = -export-dynamic
 Kaffe_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS)

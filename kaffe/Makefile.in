@@ -69,6 +69,7 @@ AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 CC = @CC@
 CCLD = @CCLD@
+CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
 CPP = @CPP@
@@ -133,8 +134,10 @@ with_engine = @with_engine@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
+@NEED_LIBXPROF_TRUE@XPROF_SUBDIRS = @NEED_LIBXPROF_TRUE@xprof
+@NEED_LIBXPROF_FALSE@XPROF_SUBDIRS = @NEED_LIBXPROF_FALSE@#
 
-SUBDIRS = kaffeh kaffevm xprof kaffe scripts man
+SUBDIRS = kaffeh kaffevm $(XPROF_SUBDIRS) kaffe scripts man
 subdir = kaffe
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config/config.h ../include/jtypes.h
@@ -146,6 +149,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
 GZIP_ENV = --best
+DIST_SUBDIRS =  kaffeh kaffevm xprof kaffe scripts man
 all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
@@ -259,7 +263,7 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
-	for subdir in $(SUBDIRS); do \
+	for subdir in $(DIST_SUBDIRS); do \
 	  if test "$$subdir" = .; then :; else \
 	    test -d $(distdir)/$$subdir \
 	    || mkdir $(distdir)/$$subdir \

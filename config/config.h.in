@@ -529,6 +529,12 @@
 /* Do we have sigcontext_struct */
 #undef HAVE_STRUCT_SIGCONTEXT_STRUCT
 
+/* Define if LONG_MIN / -1l produces an arithmetic exception */
+#undef LONG_DIVISION_BROKEN
+
+/* Define if LONG_MIN % -1l produces an arithmetic exception */
+#undef LONG_MODULO_BROKEN
+
 /* Define if LONG_LONG_MIN % -1ll produces an arithmetic exception */
 #undef LONG_LONG_MODULO_BROKEN
 
