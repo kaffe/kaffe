@@ -1,6 +1,15 @@
 2005-01-13  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+	
+	2005-01-11  Michael Koch  <konqueror@gmx.de>
+
+	* java/net/URL.java (URL): Handle specs like
+	"/redir?http://domain2.com/index.html" which start with a slash.
+	
+2005-01-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 
 	2005-01-11  Graydon Hoare  <graydon@redhat.com>
 
