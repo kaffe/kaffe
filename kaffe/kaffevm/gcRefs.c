@@ -77,7 +77,7 @@ gc_rm_ref(const void* mem)
 	idx = REFOBJHASH(mem);
 	for (objp = &refObjects.hash[idx]; *objp != 0; objp = &obj->next) {
 		obj = *objp;
-		/* Found it - just increase reference */
+		/* Found it - just decrease reference */
 		if (obj->mem == mem) {
 			obj->ref--;
 			if (obj->ref == 0) {
