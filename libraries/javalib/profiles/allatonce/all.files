@@ -311,7 +311,6 @@ java/awt/AWTError.java
 java/awt/AWTEvent.java
 java/awt/AWTEventMulticaster.java
 java/awt/AWTException.java
-java/awt/AWTPermission.java
 java/awt/BarMenu.java
 java/awt/BasicStroke.java
 java/awt/BorderLayout.java

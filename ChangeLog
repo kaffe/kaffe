@@ -1,3 +1,18 @@
+2004-04-07  Dalibor Topic <robilad@kaffe.org>
+
+        * libraries/javalib/java/lang/VMSecurityManager.java:
+	New file, taken from GNU Classpath and merged in the code from
+	Kaffe's old java.lang.SecurityManager.
+
+        * libraries/javalib/java/lang/SecurityManager.java:
+	New file, taken from GNU Classpath.
+
+        * libraries/javalib/bootstrap.classlist,
+        libraries/javalib/essential.files,
+        libraries/javalib/profiles/allatonce/all.files,
+        libraries/javalib/profiles/default/awt.files:
+	Updated.
+
 2004-04-07  Nektarios K. Papadopoulos <npapadop@inaccessnetworks.com>
 
 	* kaffe/kaffevm/stackTrace.c:

@@ -1,5 +1,4 @@
 java/awt/ActiveEvent.java
-java/awt/AWTPermission.java
 java/awt/BasicStroke.java
 java/awt/Canvas.java
 java/awt/CardLayout.java

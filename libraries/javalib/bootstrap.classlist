@@ -44,6 +44,7 @@ java/io/ObjectInputStream.class
 java/io/ObjectStreamConstants.class
 java/io/OutputStream.class
 java/io/OutputStreamWriter.class
+java/io/ObjectStreamField.class
 java/io/PrintStream.class
 java/io/PrintWriter.class
 java/io/PushbackInputStream.class
@@ -53,7 +54,6 @@ java/io/Reader.class
 java/io/Serializable.class
 java/io/UTFDataFormatException.class
 java/io/UnsupportedEncodingException.class
-java/io/VMObjectStreamClass.class
 java/io/Writer.class
 java/lang/ArithmeticException.class
 java/lang/ArrayIndexOutOfBoundsException.class
@@ -113,6 +113,7 @@ java/lang/UnsatisfiedLinkError.class
 java/lang/UnsupportedOperationException.class
 java/lang/VerifyError.class
 java/lang/VirtualMachineError.class
+java/lang/VMSecurityManager.class
 java/lang/VMThrowable.class
 java/lang/Void.class
 java/lang/reflect/AccessibleObject.class
@@ -226,7 +227,6 @@ java/util/zip/ZipFile.class
 kaffe/io/ByteToCharConverter.class
 kaffe/io/ByteToCharDefault.class
 kaffe/io/ByteToCharIconv.class
-kaffe/io/ByteToChar8859_1.class
 kaffe/io/CharToByteConverter.class
 kaffe/io/CharToByteDefault.class
 kaffe/io/CharToByteIconv.class

@@ -68,6 +68,7 @@ gnu/regexp/RETokenRange.java
 gnu/regexp/RETokenRepeated.java
 gnu/regexp/RETokenStart.java
 gnu/regexp/RETokenWordBoundary.java
+java/awt/AWTPermission.java
 java/io/CharConversionException.java
 java/io/WriteAbortedException.java
 java/io/BufferedInputStream.java
@@ -207,6 +208,7 @@ java/lang/Throwable.java
 java/lang/UnsatisfiedLinkError.java
 java/lang/UnsupportedOperationException.java
 java/lang/VirtualMachineError.java
+java/lang/VMSecurityManager.java
 java/lang/VMThrowable.java
 java/lang/Void.java
 java/lang/ref/Reference.java
