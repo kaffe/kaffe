@@ -111,18 +111,7 @@ public class HashMap extends AbstractMap
 
 		// See if we need to increase capacity
 		if ((float) size / (float) table.length >= loadFactor) {
-			Entry[] newtab = new Entry[table.length * 2];
-			for (int buck2 = 0; buck2 < table.length; buck2++) {
-				for (Entry e2 = table[buck2]; e2 != null; ) {
-					int newbuck;
-					Entry next = e2.next;
-					newbuck = bucket(e2.key, newtab.length);
-					e2.next = newtab[newbuck];
-					newtab[newbuck] = e2;
-					e2 = next;
-				}
-			}
-			table = newtab;
+			rehash();
 			bucket = bucket(key, table.length);
 		}
 
@@ -207,6 +196,21 @@ public class HashMap extends AbstractMap
 				return oent.equals(myent) ? myent : null;
 			}
 		};
+	}
+
+	void rehash() {
+		Entry[] newtab = new Entry[table.length * 2];
+		for (int buck2 = 0; buck2 < table.length; buck2++) {
+			for (Entry e2 = table[buck2]; e2 != null; ) {
+				int newbuck;
+				Entry next = e2.next;
+				newbuck = bucket(e2.key, newtab.length);
+				e2.next = newtab[newbuck];
+				newtab[newbuck] = e2;
+				e2 = next;
+			}
+		}
+		table = newtab;
 	}
 
 	private Entry find(Object key) {
