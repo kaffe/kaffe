@@ -1493,7 +1493,7 @@ verifyMethod3a(errorInfo* einfo,
 		
 		DBG(VERIFY3, dprintf("        instruction: (%d) ", pc); printInstruction(code[pc]); dprintf("\n"); );
 		
-		if (codelen - pc < insnLen[code[pc]]) {
+		if (codelen < getNextPC(code, pc)) {
 			return verifyErrorInVerifyMethod3a(einfo, method, "last operand in code array is cut off");
 		}
 		
@@ -2214,8 +2214,8 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 		 * merge this block's information into the next block
 		 */
 		pc = curBlock->lastAddr;
-		if (code[pc] == WIDE && code[pc + insnLen[code[pc]]] == RET)
-			pc += insnLen[code[pc]];
+		if (code[pc] == WIDE && code[getNextPC(code, pc)] == RET)
+			pc = getNextPC(code, pc);
 		switch(code[pc])
 			{
 			case GOTO:
@@ -3383,7 +3383,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			ENSURE_LOCAL_TYPE(idx, TINT);
 			
-			pc += insnLen[code[pc]];
+			pc = getNextPC(code, pc);
 			if (wide == true) {
 				pc += 2;
 				wide = false;
@@ -3736,7 +3736,7 @@ verifyBasicBlock(errorInfo* einfo,
 			block->stacksz++;
 			type = getOpstackTop(block);
 			type->tinfo = TINFO_ADDR;
-			type->data.addr = pc + insnLen[code[pc]];
+			type->data.addr = getNextPC(code, pc);
 			break;
 
 		case RET:
@@ -3980,7 +3980,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case WIDE:
 			wide = true;
-			pc += insnLen[code[pc]];
+			pc = getNextPC(code, pc);
 			continue;
 			
 		default:
@@ -3989,7 +3989,7 @@ verifyBasicBlock(errorInfo* einfo,
 		}
 		
 		
-		pc += insnLen[code[pc]];
+		pc = getNextPC(code, pc);
 		if (wide == true) {
 			wide = false;
 			pc++;
