@@ -1,5 +1,5 @@
 /*
- * arm/trampolines.c
+ * arm/trampolines.S
  * ARM trampolines codes for various occasions.
  *
  * Copyright (c) 1996, 1997
@@ -8,6 +8,10 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
 
 #if defined(TRAMPOLINE_FUNCTION)
 /*
@@ -19,43 +23,38 @@ TRAMPOLINE_FUNCTION()
 /*
  * Otherwise we'll try to construct one.
  */
-#if !defined(START_ASM_FUNC)
-
-#ifdef __riscos__
-#define	START_ASM_FUNC() "ALIGN\n\tEXPORT\t"
-#else
-#define	START_ASM_FUNC() ".text\n\t.align 4\n\t.globl "
-#endif
-
-#endif
-#if !defined(END_ASM_FUNC)
-#define	END_ASM_FUNC() ""
-#endif
 #if defined(HAVE_UNDERSCORED_C_NAMES)
-#define	C_FUNC_NAME(FUNC) "_" #FUNC
+#define	C_FUNC_NAME(FUNC) _FUNC
 #else
-#define	C_FUNC_NAME(FUNC) #FUNC
+#define	C_FUNC_NAME(FUNC) FUNC
 #endif
 
 #if defined(NO_SHARED_VMLIBRARY)
 
-asm(
-	START_ASM_FUNC() C_FUNC_NAME(arm_do_fixup_trampoline) "\n"
 #ifdef __riscos__
-"|" C_FUNC_NAME(arm_do_fixup_trampoline) "|\n"
-#else
-C_FUNC_NAME(arm_do_fixup_trampoline) ":				\n"
-#endif
-"	stmdb	sp!,{r0,r1,r2,r3,fp,ip,lr}\n"
-"	add	fp, sp, #28\n"
-"	mov	r0,ip\n"
-"	bl	" C_FUNC_NAME(soft_fixup_trampoline) "		\n"
-"	str	r0, [sp, #-4]\n"
-"	ldmia	sp!,{r0,r1,r2,r3,fp,ip,lr}\n"
-"	ldr	pc, [sp, #-32]\n"
 
-	END_ASM_FUNC()
-);
+    ALIGN
+    EXPORT C_FUNC_NAME(arm_do_fixup_trampoline)
+#else
+
+    .text
+    .align 4
+    .globl C_FUNC_NAME(arm_do_fixup_trampoline)
+#endif
+
+#ifdef __riscos__
+| C_FUNC_NAME(arm_do_fixup_trampoline) |
+#else
+C_FUNC_NAME(arm_do_fixup_trampoline) :
+#endif
+
+    stmdb	sp!,{r0,r1,r2,r3,fp,ip,lr}
+    add	fp, sp, #28
+    mov	r0,ip
+    bl	C_FUNC_NAME(soft_fixup_trampoline)
+    str	r0, [sp, #-4]
+    ldmia	sp!,{r0,r1,r2,r3,fp,ip,lr}
+    ldr	pc, [sp, #-32]
 
 #else
 /*
@@ -73,24 +72,30 @@ C_FUNC_NAME(arm_do_fixup_trampoline) ":				\n"
  * the stack, then the registers are restored and the saved
  * address is loaded into the pc afterwards.
  */
-asm(
-	START_ASM_FUNC() C_FUNC_NAME(arm_do_fixup_trampoline) "\n"
 #ifdef __riscos__
-"|" C_FUNC_NAME(arm_do_fixup_trampoline) "|\n"
+
+    ALIGN
+    EXPORT C_FUNC_NAME(arm_do_fixup_trampoline)
 #else
-C_FUNC_NAME(arm_do_fixup_trampoline) ":				\n"
+
+    .text
+    .align 4
+    .globl C_FUNC_NAME(arm_do_fixup_trampoline)
 #endif
-"	stmdb	sp!,{r0,r1,r2,r3,fp,ip,lr}\n"
-"	add	fp, sp, #28\n"
-"	mov	r0,ip\n"
-"	bl	" C_FUNC_NAME(soft_fixup_trampoline) " (PLT)	\n"
-"	str	r0, [sp, #-4]\n"
-"	ldmia	sp!,{r0,r1,r2,r3,fp,ip,lr}\n"
-"	ldr	pc, [sp, #-32]\n"
 
-	END_ASM_FUNC()
-);
+#ifdef __riscos__
+| C_FUNC_NAME(arm_do_fixup_trampoline) |
+#else
+C_FUNC_NAME(arm_do_fixup_trampoline) :
+#endif
 
+     stmdb	sp!,{r0,r1,r2,r3,fp,ip,lr}
+     add	fp, sp, #28
+     mov	r0,ip
+     bl	C_FUNC_NAME(soft_fixup_trampoline) (PLT)
+     str	r0, [sp, #-4]
+     ldmia	sp!,{r0,r1,r2,r3,fp,ip,lr}
+     ldr	pc, [sp, #-32]
 #endif
 
 #endif

@@ -299,6 +299,10 @@ extern void __mipsInitJit(struct _methods*);
 #include <sys/cachectl.h>
 #endif /* defined(HAVE_SYS_CACHECTL_H) */
 
+#if defined(HAVE_ASM_CACHECTL_H)
+#include <asm/cachectl.h>
+#endif /* defined(HAVE_ASM_CACHECTL_H) */
+
 #define	FLUSH_DCACHE(_start,_end) cacheflush((_start), (uintp)(_end) - (uintp)(_start), BCACHE)
 
 /* Argument register mapping */

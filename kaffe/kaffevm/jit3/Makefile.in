@@ -22,7 +22,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SOURCES = $(libengine_la_SOURCES)
+SOURCES = $(libengine_la_SOURCES) $(nodist_libengine_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -79,10 +79,15 @@ libengine_la_LIBADD =
 am_libengine_la_OBJECTS = basecode.lo constpool.lo funcs.lo icode.lo \
 	labels.lo machine.lo registers.lo seq.lo slots.lo \
 	native-wrapper.lo methodcalls.lo
-libengine_la_OBJECTS = $(am_libengine_la_OBJECTS)
+nodist_libengine_la_OBJECTS = trampolines.lo
+libengine_la_OBJECTS = $(am_libengine_la_OBJECTS) \
+	$(nodist_libengine_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
+CCASCOMPILE = $(CCAS) $(AM_CCASFLAGS) $(CCASFLAGS)
+LTCCASCOMPILE = $(LIBTOOL) --mode=compile $(CCAS) $(AM_CCASFLAGS) \
+	$(CCASFLAGS)
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
@@ -90,7 +95,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 	$(AM_CFLAGS) $(CFLAGS)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libengine_la_SOURCES)
+SOURCES = $(libengine_la_SOURCES) $(nodist_libengine_la_SOURCES)
 DIST_SOURCES = $(libengine_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
@@ -115,6 +120,8 @@ BOEHMGC_SPECIFIC_FLAGS = @BOEHMGC_SPECIFIC_FLAGS@
 CAIRO_CFLAGS = @CAIRO_CFLAGS@
 CAIRO_LIBS = @CAIRO_LIBS@
 CC = @CC@
+CCAS = @CCAS@
+CCASFLAGS = @CCASFLAGS@
 CCDEPMODE = @CCDEPMODE@
 CCLD = @CCLD@
 CFLAGS = @CFLAGS@
@@ -212,7 +219,7 @@ KAFFEH = @KAFFEH@
 KAFFEVM_ICODE_H = @KAFFEVM_ICODE_H@
 KAFFEVM_JIT_DEF = @KAFFEVM_JIT_DEF@
 KAFFEVM_MD_C = @KAFFEVM_MD_C@
-KAFFEVM_TRAMPOLINES_C = @KAFFEVM_TRAMPOLINES_C@
+KAFFEVM_TRAMPOLINES_S = @KAFFEVM_TRAMPOLINES_S@
 KAFFE_ARCHOS = @KAFFE_ARCHOS@
 KAFFE_LIBS = @KAFFE_LIBS@
 KLIBFLAGS = @KLIBFLAGS@
@@ -379,6 +386,9 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/jvmpi \
 	-I$(top_builddir)/include
 
+AM_CCASFLAGS = \
+	-I$(top_builddir)/config
+
 noinst_LTLIBRARIES = libengine.la
 libengine_la_LDFLAGS = \
 	$(KVMLIBFLAGS)
@@ -409,14 +419,21 @@ libengine_la_SOURCES = \
 	methodcalls.c \
 	methodcalls.h
 
+BUILT_SOURCES = \
+	trampolines.S
+
+nodist_libengine_la_SOURCES = \
+	trampolines.S
+
 EXTRA_DIST = \
 	Makefile.frag
 
-DISTCLEANFILES = icode.h jit.def trampolines.c stamp-h01 stamp-h02 stamp-h03
-all: all-am
+DISTCLEANFILES = icode.h jit.def trampolines.S stamp-h01 stamp-h02 stamp-h03
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .lo .o .obj
+.SUFFIXES: .S .c .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -475,6 +492,15 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/registers.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seq.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slots.Plo@am__quote@
+
+.S.o:
+	$(CCASCOMPILE) -c $<
+
+.S.obj:
+	$(CCASCOMPILE) -c `$(CYGPATH_W) '$<'`
+
+.S.lo:
+	$(LTCCASCOMPILE) -c -o $@ $<
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -586,10 +612,12 @@ distdir: $(DISTFILES)
 	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
 	  dist-hook
 check-am: all-am
-check: check-am
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(LTLIBRARIES)
 installdirs:
-install: install-am
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -614,6 +642,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
@@ -681,7 +710,7 @@ uninstall-am: uninstall-info-am
 @engine_frag@
 
 basecode.lo icode.lo machine.lo registers.lo: icode.h
-funcs.lo: jit.def trampolines.c
+funcs.lo: jit.def trampolines.S
 
 icode.h: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
@@ -695,11 +724,11 @@ jit.def: stamp-h02
 stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_JIT_DEF) jit.def $@
 
-trampolines.c: stamp-h03
+trampolines.S: stamp-h03
 	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h03; \
 	else :; fi
 stamp-h03: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_C) trampolines.c $@
+	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_S) trampolines.S $@
 
 dist-hook:
 	@for file in $(DISTCLEANFILES); do \

@@ -231,13 +231,6 @@ void arch_get_frame_description(int framesize,
 	struct kaffe_frame_descriptor frame_desc[], 
 	int *n);
 
-/*
- * Return true if the pc passed is within the trampoline function
- * Since the trampoline is written in assembler, we must handle it
- * manually when unwinding the stack.  XXX Find a better way.
- */
-int arch_is_trampoline_frame(void *pc);
-
 /* See libgcj's MAKE_THROW_FRAME */
 #define FAKE_THROW_FRAME()                                      \
 do {                                                            \

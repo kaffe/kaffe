@@ -1,3 +1,52 @@
+2005-03-15  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/powerpc/trampolines.c: Use common powerpc assembler
+	syntax, and include asm/ppc_asm.h to fix build problems with JIT on darwin.
+
+	Reported and suggested by: Christian Thalinger <twisti@complang.tuwien.ac.at>
+
+	* configure.ac: Check for assembler. Check for assembler trampoline file
+	instead of C one. Check for asm/ppc_asm.h and asm/cachectl.h.
+
+	* config/Makefile.am: Replaced trampline.c trampoline.S for the new, 
+	real assembler files.
+
+	* config/alpha/trampolines.S,
+	config/arm/trampolines.S,
+	config/i386/trampolines.S,
+	config/m68k/trampolines.S,
+	config/mips/trampolines.S,
+	config/powerpc/trampolines.S,
+	config/sh/trampolines.S,
+	config/sparc/trampolines.S:
+	New files.
+
+	* config/alpha/trampolines.c,
+	config/arm/trampolines.c,
+	config/i386/trampolines.c,
+	config/m68k/trampolines.c,
+	config/mips/trampolines.c,
+	config/powerpc/trampolines.c,
+	config/sh/trampolines.c,
+	config/sparc/trampolines.c:
+	Removed.
+	
+	* config/i386/jit.h (arch_is_trampoline_frame) 
+	Removed prototype.
+
+	* config/mips/jit.h: 
+	Include <asm/cachectl.h> if available.
+
+	* kaffe/kaffevm/gcj/gcj-except.c:
+	(arch_is_trampoline_frame) Moved over here.
+
+	* kaffe/kaffevm/jit/Makefile.am,
+	kaffe/kaffevm/jit3/Makefile.am:
+	Use trampolines.S instead of trampolines.c.
+
+	* kaffe/kaffevm/jit/methodcalls.c:
+	Don't include trampolines.c.
+
 2005-03-14  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

@@ -56,6 +56,19 @@ extern void **__get_eh_info(void);
 extern short __get_eh_table_language (void *table);
 
 /*
+ * Return true if the pc passed is within the trampoline function
+ * Since the trampoline is written in assembler, we must handle it
+ * manually when unwinding the stack.  XXX Find a better way.
+ */
+
+static int 
+arch_is_trampoline_frame(void *pc) 
+{
+	extern void (*f)(void) asm(C_FUNC_NAME(i386_do_fixup_trampoline));
+	return ((char*)pc == ((char*)&f + 4));
+}
+
+/*
  * See if the exception info matches the given class.
  * This function is invoked by __throw as it tries to find a
  * matching exception handler.

@@ -196,6 +196,9 @@ fi
 dnl Find the c++ compiler early on
 AC_PROG_CXX
 
+dnl find the assembler
+AM_PROG_AS
+
 dnl Find the machine type and setup the relevant links
 AC_CANONICAL_HOST
 AC_EXEEXT
@@ -774,12 +777,12 @@ AC_SUBST(JIKES)
 dnl =========================================================================
 dnl Look for trampoline code if in JIT mode
 dnl -------------------------------------------------------------------------
-KAFFEVM_TRAMPOLINES_C=
+KAFFEVM_TRAMPOLINES_S=
 if test x"$with_engine" != x"intrp" ; then
 	AC_MSG_CHECKING(for trampolines)
 	if test -f $srcdir/config/$Khost_cpu/trampolines.c ; then
-		KAFFEVM_TRAMPOLINES_C="\$(top_srcdir)/config/$Khost_cpu/trampolines.c"
-		AC_SUBST(KAFFEVM_TRAMPOLINES_C)
+		KAFFEVM_TRAMPOLINES_S="\$(top_srcdir)/config/$Khost_cpu/trampolines.S"
+		AC_SUBST(KAFFEVM_TRAMPOLINES_S)
 		AC_MSG_RESULT(yes)
 	else
 		AC_MSG_ERROR(does not support trampolines - now mandatory)
@@ -1046,6 +1049,12 @@ AC_CHECK_HEADERS([asm/sigcontext.h])
 AC_CHECK_HEADERS([asm/signal.h], [], [], [
 #include <linux/types.h>
 ])
+
+dnl needed for common ppc asm syntax on GNU/Linux
+AC_CHECK_HEADERS([asm/ppc_asm.h])
+
+dnl needed for MIPS cache flushing on GNU/Linux
+AC_CHECK_HEADERS([asm/cachectl.h])
 
 dnl needed for ia64
 AC_CHECK_HEADERS([ia64intrin.h])

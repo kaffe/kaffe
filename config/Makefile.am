@@ -75,7 +75,7 @@ EXTRA_DIST = \
 	alpha/osf/md.h \
 	alpha/sysdepCallMethod.h \
 	alpha/threads.h \
-	alpha/trampolines.c \
+	alpha/trampolines.S \
 	arm/atomicity.h \
 	arm/callKaffeException.h \
 	arm/common.h \
@@ -100,7 +100,7 @@ EXTRA_DIST = \
         arm/riscos/md.h \
 	arm/threads.h \
 	arm/sysdepCallMethod.h \
-	arm/trampolines.c \
+	arm/trampolines.S \
 	ia64/atomicity.h \
 	ia64/common.h \
 	ia64/linux/config.frag \
@@ -197,7 +197,7 @@ EXTRA_DIST = \
 	i386/solaris2/md.h \
 	i386/sysdepCallMethod.h \
 	i386/threads.h \
-	i386/trampolines.c \
+	i386/trampolines.S \
 	i386/univel_svr4/config.frag \
 	i386/univel_svr4/jit-md.h \
 	i386/univel_svr4/jit3-md.h \
@@ -249,7 +249,7 @@ EXTRA_DIST = \
 	m68k/sunos4/md.h \
 	m68k/sysdepCallMethod.h \
 	m68k/threads.h \
-	m68k/trampolines.c \
+	m68k/trampolines.S \
 	mips/atomicity.h \
 	mips/callKaffeException.h \
 	mips/common.h \
@@ -275,7 +275,7 @@ EXTRA_DIST = \
 	mips/o32-sysdepCallMethod.h \
 	mips/sysdepCallMethod.h \
 	mips/threads.h \
-	mips/trampolines.c \
+	mips/trampolines.S \
 	mips/ultrix4/Make.frag \
 	mips/ultrix4/config.frag \
 	mips/ultrix4/md.c \
@@ -315,7 +315,7 @@ EXTRA_DIST = \
 	powerpc/ppc_stack_frame.h \
 	powerpc/sysdepCallMethod.h \
 	powerpc/threads.h \
-	powerpc/trampolines.c \
+	powerpc/trampolines.S \
 	s390/atomicity32.h \
 	s390/atomicity64.h \
 	s390/common.h \
@@ -365,7 +365,7 @@ EXTRA_DIST = \
 	sparc/sunos4/md.h \
 	sparc/sysdepCallMethod.h \
 	sparc/threads.h \
-	sparc/trampolines.c \
+	sparc/trampolines.S \
 	sparc/uxpds/config.frag \
 	sparc/uxpds/jit-md.h \
 	sparc/uxpds/md.c \
@@ -376,7 +376,7 @@ EXTRA_DIST = \
         sh/linux/md.h \
 	sh/sysdepCallMethod.h \
         sh/threads.h \
-        sh/trampolines.c
+        sh/trampolines.S
 
 jit-md.h: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \

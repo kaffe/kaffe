@@ -99,8 +99,6 @@ DBG(MOREJIT,
 	return (METHOD_NATIVECODE(meth));
 }
 
-#include "trampolines.c"
-
 /*
  * When do we need a trampoline?
  *

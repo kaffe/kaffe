@@ -18,6 +18,9 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/jvmpi \
 	-I$(top_builddir)/include
 
+AM_CCASFLAGS = \
+	-I$(top_builddir)/config
+
 noinst_LTLIBRARIES = libengine.la
 
 libengine_la_LDFLAGS = \
@@ -49,13 +52,19 @@ libengine_la_SOURCES = \
 	methodcalls.c \
 	methodcalls.h
 
+BUILT_SOURCES = \
+	trampolines.S
+
+nodist_libengine_la_SOURCES = \
+	trampolines.S
+
 EXTRA_DIST = \
 	Makefile.frag
 
-DISTCLEANFILES = icode.h jit.def trampolines.c stamp-h01 stamp-h02 stamp-h03
+DISTCLEANFILES = icode.h jit.def trampolines.S stamp-h01 stamp-h02 stamp-h03
 
 basecode.lo icode.lo machine.lo registers.lo: icode.h
-funcs.lo: jit.def trampolines.c
+funcs.lo: jit.def trampolines.S
 
 icode.h: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
@@ -69,11 +78,11 @@ jit.def: stamp-h02
 stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_JIT_DEF) jit.def $@
 
-trampolines.c: stamp-h03
+trampolines.S: stamp-h03
 	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h03; \
 	else :; fi
 stamp-h03: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_C) trampolines.c $@
+	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_S) trampolines.S $@
 
 dist-hook:
 	@for file in $(DISTCLEANFILES); do \
