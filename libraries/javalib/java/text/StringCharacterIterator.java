@@ -1,3 +1,4 @@
+
 /*
  * Java core library component.
  *
@@ -9,8 +10,6 @@
  */
 
 package java.text;
-
-import java.lang.String;
 
 public final class StringCharacterIterator implements CharacterIterator {
 	private String text;
@@ -37,7 +36,7 @@ public StringCharacterIterator(String text, int begin, int end, int pos) {
 	this.end = end;
 }
 
-/*public ?? */ void setText(String text) {
+void setText(String text) {
 	this.text = text;
 	this.pos = 0;
 	this.begin = 0;
@@ -52,9 +51,7 @@ public char current() {
 	if (pos < begin || pos >= end) {
 		return (DONE);
 	}
-	else {
-		return (text.charAt(pos));
-	}
+	return text.charAt(pos);
 }
 
 public boolean equals(Object obj) {
@@ -114,6 +111,6 @@ public char setIndex(int pos) {
 	        throw new IllegalArgumentException("Invalid index: "+pos);
 	}
 	this.pos = pos;
-	return (text.charAt(pos));
+	return (pos == end ? DONE : text.charAt(pos));
 }
 }
