@@ -1,3 +1,18 @@
+2003-07-28  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/util/Calendar.java:
+	copied from GNU classpath.
+	* libraries/javalib/java/util/GregorianCalendar.java:
+	copied from GNU classpath and corrected a bug about
+	the week of the month.
+	* libraries/javalib/gnu/java/locale,
+	libraries/javalib/gnu/java/locale/Calendar.java,
+	libraries/javalib/gnu/java/locale/Calendar_de.java
+	libraries/javalib/gnu/java/locale/Calendar_en.java,
+	libraries/javalib/gnu/java/locale/Calendar_nl.java:
+	added a new directory and copied new files from GNU Classpath
+	(required by the above two).
+
 2003-07-28  Guilhem Lavaux <guilhem@kaffe.org>
 
 	Fixes to make unix-pthreads compile with JVMPI (but lots of
