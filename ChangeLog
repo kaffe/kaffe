@@ -1,5 +1,10 @@
 2004-08-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/powerpc/sysdepCallMethod.h:
+	Add missing include.
+
+2004-08-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/sparc/common.h:
 	Add missing include.
 
