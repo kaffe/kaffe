@@ -1,3 +1,9 @@
+2004-09-14  Michael Franz <mvfranz@gmail.com>
+
+	* kaffe/kaffevm/jit3/funcs.h:
+        Rewritten to only define the functions that are
+        actually used.
+
 2004-09-14  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/net/Socket.java

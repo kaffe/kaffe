@@ -100,6 +100,10 @@ extern void HAVE_build_code_ref (sequence* s);
 extern void HAVE_build_const_ref (sequence* s);
 #endif /* defined(HAVE_build_const_ref) */
 
+#if defined(HAVE_branch_and_link)
+extern void HAVE_branch_and_link (sequence* s);
+#endif /* defined(HAVE_branch_and_link) */
+
 #if defined(HAVE_build_key)
 extern void HAVE_build_key (sequence* s);
 #endif /* defined(HAVE_build_key) */
@@ -155,6 +159,10 @@ extern void HAVE_cmp_int (sequence* s);
 #if defined(HAVE_cmp_int_const)
 extern void HAVE_cmp_int_const (sequence* s);
 #endif /* defined(HAVE_cmp_int_const) */
+
+#if defined(HAVE_cmpl_int)
+extern void HAVE_cmpl_int (sequence* s);
+#endif /* defined(HAVE_cmpl_int) */
 
 #if defined(HAVE_cmpl_double)
 extern void HAVE_cmpl_double (sequence* s);
@@ -356,13 +364,29 @@ extern void HAVE_load_int (sequence* s);
 extern void HAVE_load_long (sequence* s);
 #endif /* defined(HAVE_load_long) */
 
+#if defined(HAVE_load_offset_byte)
+extern void HAVE_load_offset_byte (sequence* s);
+#endif /* defined(HAVE_load_offset_byte) */
+
+#if defined(HAVE_load_offset_char)
+extern void HAVE_load_offset_char (sequence* s);
+#endif /* defined(HAVE_load_offset_char) */
+
 #if defined(HAVE_load_offset_int)
 extern void HAVE_load_offset_int (sequence* s);
 #endif /* defined(HAVE_load_offset_int) */
 
+#if defined(HAVE_load_offset_float)
+extern void HAVE_load_offset_float (sequence* s);
+#endif /* defined(HAVE_load_offset_float) */
+
 #if defined(HAVE_load_offset_long)
 extern void HAVE_load_offset_long (sequence* s);
 #endif /* defined(HAVE_load_offset_long) */
+
+#if defined(HAVE_load_offset_double)
+extern void HAVE_load_offset_double (sequence* s);
+#endif /* defined(HAVE_load_offset_double) */
 
 #if defined(HAVE_load_offset_ref)
 extern void HAVE_load_offset_ref (sequence* s);
@@ -475,6 +499,12 @@ extern void HAVE_move_int_const (sequence* s);
 #if defined(HAVE_move_int_const_incode)
 extern void HAVE_move_int_const_incode (sequence* s);
 #endif /* defined(HAVE_move_int_const_incode) */
+
+/*
+#if defined(HAVE_move_int_const_rangecheck)
+extern void HAVE_move_int_const_rangecheck (sequence* s);
+#endif *//* defined(HAVE_move_int_const_rangecheck) */
+
 
 #if defined(HAVE_move_label_const)
 extern void HAVE_move_label_const (sequence* s);
@@ -796,9 +826,17 @@ extern void HAVE_store_offset_char (sequence* s);
 extern void HAVE_store_offset_int (sequence* s);
 #endif /* defined(HAVE_store_offset_int) */
 
+#if defined(HAVE_store_offset_float)
+extern void HAVE_store_offset_float (sequence* s);
+#endif /* defined(HAVE_store_offset_float) */
+
 #if defined(HAVE_store_offset_long)
 extern void HAVE_store_offset_long (sequence* s);
 #endif /* defined(HAVE_store_offset_long) */
+
+#if defined(HAVE_store_offset_double)
+extern void HAVE_store_offset_double (sequence* s);
+#endif /* defined(HAVE_store_offset_double) */
 
 #if defined(HAVE_store_offset_ref)
 extern void HAVE_store_offset_ref (sequence* s);
