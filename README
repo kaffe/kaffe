@@ -1,9 +1,9 @@
 
-			 =======================
+			 ==================
 
-			 KAFFE OpenVM 1.0 Beta 4
+			 KAFFE OpenVM 1.0.5
 
-			 =======================
+			 ==================
 
 This is of "Kaffe OpenVM", a complete virtual machine and class library
 set which allows the execution of Java code without any code from Javasoft.
@@ -15,6 +15,8 @@ Why use Kaffe?
 
 Because Kaffe is distributed under the terms of the GNU Public License
 which means the source code is free for you to download, modify and use.
+It's also demonstratably faster on many application compared with that
+latest VM's from Sun, IBM or Microsoft.
 
 What systems does Kaffe support?
 -------------------------------
@@ -39,9 +41,13 @@ while 'I' means 'interpreter'):
             |      |    NeXTStep 3.x    Solaris 2.x	Fujitsu UXP/DS
             |      |    BSDI 3.x
   ------------------------------------------------------------------------
-  ARM       | I    |    Linux/Netwinder NetBSD 1.x
+  ARM       | J+I  |    Linux/Netwinder NetBSD 1.x
   ------------------------------------------------------------------------
-  MIPS      | I    |    Linux/Cobalt    IRIX 5 & 6	NetBSD 1.x
+  MIPS      | J+I  |    Linux/Cobalt    IRIX 5 & 6	NetBSD 1.x
+  ------------------------------------------------------------------------
+  M68K      | J+I  |    AmigaOS         NeXTStep 3.x    NetBSD 1.x
+            |      |    SunOS 4.x	Linux		AUX
+            |      |    OpenBSD 2.x
   ------------------------------------------------------------------------
   PARISC    | I    |    HPUX 10.x
   ========================================================================
@@ -51,10 +57,6 @@ behind recent changes.  If you wanted to update these ports feel free:
 
   ========================================================================
   Alpha     | J+I  |    Linux		OSF/1		NetBSD 1.x
-  ------------------------------------------------------------------------
-  M68K      | J+I  |    AmigaOS         NeXTStep 3.x    NetBSD 1.x
-            |      |    SunOS 4.x	Linux		AUX
-            |      |    OpenBSD 2.x
   ------------------------------------------------------------------------
   PowerPC   | I    |    MkLinux         MachTen 4.0.3	AIX
   ========================================================================
@@ -110,6 +112,12 @@ to either:
   
 depending on what you are interested in.
 
+How do I report bugs and problems?
+----------------------------------
+
+Go the website http://www.kaffe.org and you'll find a link to our bug-tracking
+system.  We now use Jitterbug (from those awfully nice Samba people).
+
 How do I compile and install kaffe?
 -----------------------------------
 
@@ -145,7 +153,7 @@ number of ways:
 2. Use the --prefix configure option to place the kaffe installation tree
    somewhere other than /usr/local.
 
-For Windows 95/98/NT it's a little different.
+For Windows 9x/NT it's a little different.
 
 The only 'working' port to Windows '95 uses Cygnus's GNU tools for
 Windows (available from http://sourceware.cygnus.com/cygwin - don't
@@ -182,8 +190,8 @@ If you want to test the kaffe executable you built, type
 tests to check that your Kaffe executable is in fact working.
 
 
-Tim Wilkinson
-<tim@transvirtual.com>
+The Kaffe Core Team
+<kaffe@rufus.w3.org>
 ----
 * Java and Javasoft are registered trademark of Sun Microsystems, Inc.
 * Kaffe, and Kaffe OpenVM are registered trademarks of Transvirtual

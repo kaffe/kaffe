@@ -27,6 +27,8 @@ What's New in Kaffe OpenVM 1.0.5
 
 * Improved i18n support.
 
+* New utilities: serialver, rmiregistry, rmic, javap
+
 * ....
 
 * Lots of bug fixes.
