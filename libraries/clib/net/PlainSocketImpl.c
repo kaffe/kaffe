@@ -13,7 +13,9 @@
 #include "config-io.h"
 #include "config-mem.h"
 #include <netinet/in.h>
+#if defined(HAVE_NETINET_TCP_H)
 #include <netinet/tcp.h>
+#endif
 #include <native.h>
 #include "../native/FileDescriptor.h"
 #include "../native/Integer.h"

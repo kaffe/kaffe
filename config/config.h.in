@@ -135,6 +135,9 @@
 /* Do we have zlib.h */
 #undef	HAVE_ZLIB_H
 
+/* Do we have netinet/tcp.h */
+#undef	HAVE_NETINET_TCP_H
+
 /* Do we have strerror */
 #undef	HAVE_STRERROR
 
