@@ -21,11 +21,13 @@ public class InputStreamReader
 	private byte[] inbuf = new byte[BUFDEFAULT];
 
 public InputStreamReader(InputStream in) {
+	super(in);
 	strm = in;
 	encoding = ByteToCharConverter.getDefault();
 }
 
 public InputStreamReader(InputStream in, String enc) throws UnsupportedEncodingException {
+	super(in);
 	strm = in;
 	encoding = ByteToCharConverter.getConverter(enc);
 }
@@ -46,15 +48,26 @@ public void close() throws IOException {
 			strm.close();
 			strm = null;
 			inbuf = null;
+			encoding = null;
 		}
 	}
 }
 
 public String getEncoding() {
-	return (encoding.toString());
+	synchronized(lock) {
+		return encoding == null ? null : encoding.toString();
+	}
+}
+
+public int read() throws IOException {
+        return super.read();
 }
 
 public int read ( char cbuf[], int off, int len ) throws IOException {
+	if (len < 0 || off < 0 || off + len > cbuf.length) {
+		throw new IndexOutOfBoundsException();
+	}
+
 	int outlen = 0;
 	boolean seenEOF = false;
 
@@ -75,7 +88,7 @@ public int read ( char cbuf[], int off, int len ) throws IOException {
 				seenEOF = true;
 			}
 			outlen += encoding.convert(inbuf, 0, inpos+inlen, cbuf, off+outlen, len-outlen);
-			if (inlen < n || !this.ready()) {
+			if (inlen < n || !ready()) {
 				break;
 			}
 		}
@@ -90,7 +103,7 @@ public boolean ready() throws IOException {
 	synchronized (lock) {
 		checkIfStillOpen();
 
-		return ((encoding.havePending() || (strm.available() > 0)) ? true : false);
+		return encoding.havePending() || (strm.available() > 0);
 	}
 }
 }

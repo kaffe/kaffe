@@ -21,6 +21,10 @@ static {
 }
 
 public FileInputStream(FileDescriptor fdObj) {
+	if (fdObj == null) {
+		throw new NullPointerException();
+	}
+
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkRead(fdObj);
@@ -80,12 +84,11 @@ public int read(byte b[]) throws IOException {
 }
 
 public int read(byte b[], int off, int len) throws IOException {
-	if (off >= 0 && off + len <= b.length) {
-		return readBytes(b, off, len);
+	if (off < 0 || len < 0 || off + len > b.length) {
+	   throw new IndexOutOfBoundsException();
 	}
-	else {
-		throw new ArrayIndexOutOfBoundsException();
-	}
+
+        return readBytes(b, off, len);
 }
 
 native private int readBytes(byte b[], int off, int len);

@@ -19,16 +19,40 @@ public class StringReader
 
 public StringReader(String s) {
 	buf = s.toCharArray();
-	pos = 0;
-	markpos = 0;
+}
+
+/* internal function used to signal EOF */
+private boolean atEOF() {
+	return pos == buf.length;
+}
+
+/* Internal function used to check whether the
+   StringReader has been closed already, throws
+   an IOException in that case.
+*/
+private void checkIfStillOpen() throws IOException {
+	if (buf == null) {
+		throw new IOException("Stream closed");
+	}
 }
 
 public void close() {
-	// Does nothing.
+	synchronized(lock) {
+		if (buf != null) {
+			buf = null;
+		}
+	}
 }
 
 public void mark(int readAheadLimit) throws IOException {
-	markpos = pos;
+	if (readAheadLimit < 0) {
+		throw (new IllegalArgumentException("Read-ahead limit < 0"));
+	}
+
+	synchronized(lock) {
+		checkIfStillOpen();
+		markpos = pos;
+	}
 }
 
 public boolean markSupported() {
@@ -37,28 +61,31 @@ public boolean markSupported() {
 
 public int read() throws IOException {
 	synchronized(lock) {
-		if (pos == buf.length) {
-			return (-1);
-		}
-		else {
+		checkIfStillOpen();
+
+		if (!atEOF()) {
 			return ((int)buf[pos++]);
 		}
-
 	}
+	return (-1);
 }
 
 public int read ( char cbuf[], int off, int len ) throws IOException {
-	int i;
-	final int m = off+len;
-	synchronized(lock) {
-		for (i = off; i < m && pos < buf.length; i++, pos++ ) {
-			cbuf[i] = buf[pos];
-		}
-		if (i != off) {
-			return (i - off);
-		}
-		return (-1);
+	if (len < 0 || off < 0 || off + len > cbuf.length) {
+		throw new IndexOutOfBoundsException();
 	}
+
+	synchronized(lock) {
+		checkIfStillOpen();
+
+		if (!atEOF()) {
+			int num_read = Math.min(len, buf.length - pos);
+			System.arraycopy(buf, pos, cbuf, off, num_read);
+			pos += num_read;
+			return num_read;
+		}
+	}
+	return (-1);
 }
 
 public boolean ready() throws IOException {
@@ -66,19 +93,23 @@ public boolean ready() throws IOException {
 }
 
 public void reset() throws IOException {
-	pos = markpos;
+	synchronized(lock) {
+		checkIfStillOpen();
+		pos = markpos;
+	}
 }
 
 public long skip(long ns) throws IOException {
 	synchronized(lock) {
+		checkIfStillOpen();
 
-		long left = (long)(buf.length - pos);
-		if (ns < left) {
-			left = ns;
+		if (ns <= 0) {
+			return 0;
 		}
+		
+		long left = Math.min(ns, (long)(buf.length - pos));
 		pos += (int)left;
 		return (left);
-
 	}
 }
 }

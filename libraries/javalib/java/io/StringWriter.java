@@ -23,22 +23,37 @@ public class StringWriter extends Writer {
 
   public StringWriter(int initialSize)
   {
+    if (initialSize < 0) {
+	    throw new IllegalArgumentException("Negative initial size: " + initialSize);
+    }
+
     buf = new StringBuffer(initialSize);
+    lock = buf;
   }
 
   public void write(int c)
   {
-    buf.append((char)c);
+    synchronized(lock) {
+      buf.append((char)c);
+    }
   }
 
   public void write(char cbuf[], int off, int len)
   {
-    buf.append(cbuf, off, len);
+    if (len < 0 || off < 0 || off + len > cbuf.length) {
+      throw new IndexOutOfBoundsException();
+    }
+
+    synchronized(lock) {
+      buf.append(cbuf, off, len);
+    }
   }
 
   public void write(String str)
   {
-    buf.append(str);
+    synchronized(lock) {
+      buf.append(str);
+    }
   }
 
   public void write(String str, int off, int len)
@@ -48,12 +63,16 @@ public class StringWriter extends Writer {
 
   public String toString()
   {
-    return (buf.toString());
+    synchronized(lock) {
+      return (buf.toString());
+    }
   }
 
   public StringBuffer getBuffer()
   {
-    return (buf);
+    synchronized(lock) {
+      return (buf);
+    }
   }
 
   public void flush()

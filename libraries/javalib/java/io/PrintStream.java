@@ -174,6 +174,10 @@ public void println(long x) {
 }
 
 public void write(byte b[], int off, int len) {
+	if (off < 0 || len < 0 || off + len > b.length) {
+	   throw new IndexOutOfBoundsException();
+	}
+
 	try {
 		out.write(b, off, len);
 	}

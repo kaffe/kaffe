@@ -10,28 +10,29 @@ package java.io;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+/*
+ * @deprecated
+ */
 public class LineNumberInputStream
   extends FilterInputStream
 {
 	private int lineNo;
+	private boolean skipNextLF;
 	private int markLineNo;
-	private boolean pushedBack;
-	private int pushBack;
+	private boolean markSkipNextLF;
 
 public LineNumberInputStream(InputStream in) {
 	super(in);
 }
 
 public int available() throws IOException {
-	int sup=super.available();
+	/* get the number of available bytes in input */
+	int avail = super.available();
 
-	if (pushedBack) sup++;
-
-	/* Code according to Sun's SPEC */
-	//    return sup/2;
-
-	/* Code according to Sun's code.. thanks again Sun! */
-	return sup;
+	/* if next '\n' needs to be skipped,
+	 * substract one from the number of available bytes
+	 */
+	return skipNextLF ? Math.max(avail - 1, 0) : avail;
 }
 
 public int getLineNumber() {
@@ -39,46 +40,49 @@ public int getLineNumber() {
 }
 
 public void mark(int readlimit) {
-	markLineNo=lineNo;
 	super.mark(readlimit);
-}
 
-private void pushBack(int chr) {
-	pushBack=chr;
-	pushedBack=true;
-}
-
-private int pushBackRead() throws IOException {
-	if (pushedBack) {
-		pushedBack=false;
-		return pushBack;
-	}
-	else {
-		return super.read();
-	}
+	/* store the state information for reset */
+	markLineNo=lineNo;
+	markSkipNextLF = skipNextLF;
 }
 
 public int read() throws IOException {
-	int chr=pushBackRead();
+	int chr=super.read();
 
-	if ((chr=='\n') || (chr=='\r')) lineNo++;
-
-	if (chr=='\r') {
-		/* Read ahead */
-		final int next=pushBackRead();
-		if (next !='\n') {
-		    pushBack(next);
+	/* skip next '\n' if necessary */
+	if (skipNextLF) {
+		skipNextLF = false;
+		if (chr == '\n') {
+			chr = super.read();
 		}
-		/* Return \r and \r\n as a single \n */
+	}
+
+	/* '\r' might be followed by '\n'
+	 * so set skipNextLF to true.
+	 * convert '\r' to '\n'
+	 */
+	if (chr=='\r') {
+		skipNextLF = true;
 		chr = '\n';
 	}
 
-	//System.out.println("LINENo: "+lineNo);
+	/* increase line number if necessary */
+	if (chr=='\n') {
+		lineNo++;
+	}
+
 	return chr;
 }
 
 public int read(byte b[], int off, int len) throws IOException {
-	for (int pos=off; pos<off+len; pos++) {
+	if (off < 0 || len < 0 || off + len > b.length) {
+	   throw new IndexOutOfBoundsException();
+	}
+
+	final int limit = off + len;
+
+	for (int pos=off; pos < limit; ++pos) {
 		final int data=read();
 		if (data==-1) {
 			if (pos-off==0) return -1; else return pos-off;
@@ -90,8 +94,11 @@ public int read(byte b[], int off, int len) throws IOException {
 }
 
 public void reset() throws IOException {
-	lineNo=markLineNo;
 	super.reset();
+
+	/* reset state information */
+	lineNo=markLineNo;
+	skipNextLF = markSkipNextLF;
 }
 
 public void setLineNumber(int lineNumber) {
@@ -99,8 +106,18 @@ public void setLineNumber(int lineNumber) {
 }
 
 public long skip(long n) throws IOException {
-	final byte junk[]=new byte[(int )n];
+	for (long i = 0; i < n; ++i) {
+		final int ch = read();
+		if (ch == -1) {
+			if (i == 0) {
+				return -1;
+			}
+			else {
+				return i;
+			}
+		}
+	}
 
-	return (long)read(junk, 0, junk.length);
+	return n;
 }
 }

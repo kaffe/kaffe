@@ -16,12 +16,19 @@ public class PushbackInputStream
 	protected byte[] buf;
 	protected int pos;
 
+	private static final int DEFAULT_PUSHBACK_BUFFER_SIZE = 1;
+
 public PushbackInputStream(InputStream in) {
-	this(in, 1);
+	this(in, DEFAULT_PUSHBACK_BUFFER_SIZE);
 }
 
 public PushbackInputStream(InputStream in, int size) {
 	super(in);
+
+	if (size <= 0) {
+		throw new IllegalArgumentException("size <= 0");
+	}
+
 	buf = new byte[size];
 	pos = buf.length;
 }
@@ -40,6 +47,10 @@ public int read() throws IOException {
 }
 
 public int read(byte cbuf[], int off, int len) throws IOException {
+	if (off < 0 || len < 0 || off + len > cbuf.length) {
+	   throw new IndexOutOfBoundsException();
+	}
+
 	int cnt = 0;
 	while (pos < buf.length && len > 0) {
 		cbuf[off++] = buf[pos++];
@@ -50,7 +61,7 @@ public int read(byte cbuf[], int off, int len) throws IOException {
 		final int r = super.read(cbuf, off, len);
 		if (r == -1) {
 			if (cnt == 0) {
-				cnt = -1;
+				return -1;
 			}
 		}
 		else {
@@ -65,6 +76,10 @@ public void unread(byte cbuf[]) throws IOException {
 }
 
 public void unread(byte cbuf[], int off, int len) throws IOException {
+	if (off < 0 || len < 0 || off + len > cbuf.length) {
+	   throw new IndexOutOfBoundsException();
+	}
+
 	if (pos < len) {
 		throw new IOException("pushback buffer is full");
 	}
@@ -76,7 +91,6 @@ public void unread(int c) throws IOException {
 	if (pos == 0) {
 		throw new IOException("pushback buffer is full");
 	}
-	pos--;
-	buf[pos] = (byte)c;
+	buf[--pos] = (byte)c;
 }
 }

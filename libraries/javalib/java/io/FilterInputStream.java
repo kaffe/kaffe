@@ -20,76 +20,44 @@ protected FilterInputStream(InputStream in) {
 }
 
 public int available() throws IOException {
-	try {
-		return (in.available());
-	}
-	catch (NullPointerException _) {
-		return (0);
-	}
+	return (in.available());
 }
 
 public void close() throws IOException {
-	try {
+	if (in != null) {
 		in.close();
-	}
-	catch (NullPointerException _) {
+		in = null;
 	}
 }
 
 public synchronized void mark(int readlimit) {
-	try {
-		in.mark(readlimit);
-	}
-	catch (NullPointerException _) {
-	}
+	in.mark(readlimit);
 }
 
 public boolean markSupported() {
-	try {
-		return (in.markSupported());
-	}
-	catch (NullPointerException _) {
-		return (false);
-	}
+	return (in.markSupported());
 }
 
 public int read() throws IOException {
-	try {
-		return (in.read());
-	}
-	catch (NullPointerException _) {
-		throw new EOFException("null stream");
-	}
+	return (in.read());
 }
 
 public int read(byte b[]) throws IOException {
+    /* BufferedInputStream depends on this method
+     * *not* reading directly from the stream.
+     */
 	return (read(b, 0, b.length));
 }
 
 public int read(byte b[], int off, int len) throws IOException {
-	try {
-		return (in.read(b, off, len));
-	}
-	catch (NullPointerException _) {
-		throw new EOFException("null stream");
-	}
+	return (in.read(b, off, len));
 }
 
 public synchronized void reset() throws IOException {
-	try {
-		in.reset();
-	}
-	catch (NullPointerException _) {
-		throw new IOException("null stream");
-	}
+	in.reset();
 }
 
 public long skip(long n) throws IOException {
-	try {
-		return (in.skip(n));
-	}
-	catch (NullPointerException _) {
-		throw new EOFException("null stream");
-	}
+	return (in.skip(n));
 }
 }

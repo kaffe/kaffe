@@ -181,9 +181,8 @@ native public void seek(long pos) throws IOException;
 
 public int skipBytes(int n) throws IOException {
 	long pos = getFilePointer();
-	int distance = Math.min((int) (length() - pos), n);
-	seek(pos + (long) distance);
-	return distance;
+	seek(pos+(long)n);
+	return n;
 }
 
 public void write(byte b[]) throws IOException {

@@ -17,32 +17,67 @@ public abstract class FilterWriter extends Writer {
 
   protected FilterWriter(Writer o)
   {
+    super(o);
     out = o;
+  }
+
+/* Internal function used to check whether the
+   BufferedWriter has been closed already, throws
+   an IOException in that case.
+*/
+  private void checkIfStillOpen() throws IOException {
+    if (out == null) {
+      throw new IOException("Stream closed");
+    }
   }
 
   public void write(int c) throws IOException
   {
-    out.write(c);
+    synchronized(lock) {
+      checkIfStillOpen();
+      out.write(c);
+    }
   }
 
   public void write(char cbuf[], int off, int len) throws IOException
   {
-    out.write(cbuf, off, len);
+    if (len < 0 || off < 0 || off + len > cbuf.length) {
+      throw new ArrayIndexOutOfBoundsException();
+    }
+
+    synchronized(lock) {
+      checkIfStillOpen();
+      out.write(cbuf, off, len);
+    }
   }
 
   public void write(String str, int off, int len) throws IOException
   {
-    out.write(str, off, len);
+    if (len < 0 || off < 0 || off + len > str.length()) {
+      throw new ArrayIndexOutOfBoundsException();
+    }
+
+    synchronized(lock) {
+      checkIfStillOpen();
+      out.write(str, off, len);
+    }
   }
 
   public void flush() throws IOException
   {
-    out.flush();
+    synchronized(lock) {
+      checkIfStillOpen();
+      out.flush();
+    }
   }
 
   public void close() throws IOException
   {
-    out.close();
+    synchronized(lock) {
+      if (out != null) {
+	out.close();
+	out = null;
+      }
+    }
   }
-
 }

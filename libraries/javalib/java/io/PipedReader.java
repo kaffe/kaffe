@@ -39,7 +39,7 @@ public class PipedReader extends Reader {
 	throw new IOException("Already connected");
       }
       else {
-	writer.buffer = buffer = new CircularBuffer(PIPE_SIZE);
+	buffer = writer.buffer = new CircularBuffer(PIPE_SIZE);
       }
     }
   }

@@ -37,17 +37,16 @@ public int read(byte b[]) throws IOException {
 }
 
 public int read(byte b[], int off, int len) throws IOException {
-	if (b==null) {
-		return (int )skip((long )len);
+	if (len < 0 || off < 0 || off + len > b.length) {
+		throw new IndexOutOfBoundsException();
 	}
-	else {
-		for (int pos=off; pos<off+len; pos++) {
-			final int data=read();
-			if (data==-1) {
-				if (pos-off==0) return -1; else return pos-off;
-			}
-			b[pos]=(byte )data;
-		}
+
+	for (int pos=off; pos<off+len; pos++) {
+	    final int data=read();
+	    if (data==-1) {
+		if (pos == off) return -1; else return pos-off;
+	    }
+	    b[pos]=(byte )data;
 	}
 
 	return len;
@@ -58,13 +57,12 @@ public synchronized void reset() throws IOException {
 }
 
 public long skip(long n) throws IOException {
-	int skipped = 0;
+	long skipped = 0;
 
 	while (n > 0) {
 		final int r = read(skipBuffer,
 				   0,
-				   skipBuffer.length < n ?
-				   skipBuffer.length : (int)n);
+				   Math.min(skipBuffer.length, (int)n));
 		if (r < 0)
 			break;
 		n -= r;

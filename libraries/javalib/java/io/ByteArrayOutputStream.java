@@ -20,6 +20,10 @@ public ByteArrayOutputStream() {
 }
 
 public ByteArrayOutputStream(int size) {
+	if (size < 0) {
+		throw new IllegalArgumentException("Negative initial size: " + size);
+	}
+
 	buf = new byte[size];
 	count = 0;
 }
@@ -62,6 +66,10 @@ public String toString(int hibyte) {
 }
 
 public synchronized void write ( byte b[], int off, int len ) {
+	if (off < 0 || len < 0 || off + len > b.length) {
+	   throw new IndexOutOfBoundsException();
+	}
+
 	ensureCapacity(count + len);
 	System.arraycopy(b, off, buf, count, len);
 	count += len;

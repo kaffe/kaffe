@@ -17,7 +17,6 @@ public class ByteArrayInputStream
 	protected int pos;
 	protected int count;
 	protected int mark;
-	private int off;
 
 public ByteArrayInputStream(byte buffer[])
 	{
@@ -26,11 +25,10 @@ public ByteArrayInputStream(byte buffer[])
 
 public ByteArrayInputStream(byte buffer[], int offset, int length)
 	{
-	count = length;
-	off = offset;
+	count = Math.min(offset + length, buffer.length);
+	pos = offset;
+	mark = offset;
 	buf = buffer;
-	mark = 0;
-	pos = 0;
 }
 
 public synchronized int available()
@@ -38,7 +36,7 @@ public synchronized int available()
 	return (count-pos);
 }
 
-public void mark(int readaheadlimit)
+public synchronized void mark(int readaheadlimit)
 	{
 	// ignore readaheadlimit because no matter how many bytes are
 	// read, we can always resupply them since we read from a finite
@@ -53,20 +51,24 @@ public boolean markSupported()
 
 public synchronized int read()
 	{
-	if (pos == count) {
+	if (available() == 0) {
 		return (-1);
 	}
-	return (((int)buf[off + pos++]) & 0xFF);
+	return (((int)buf[pos++]) & 0xFF);
 }
 
 public synchronized int read(byte b[], int offset, int len)
 	{
-	if (pos==count) {
+	if (offset < 0 || len < 0 || offset + len > b.length) {
+	   throw new IndexOutOfBoundsException();
+	}
+
+	if (available() == 0) {
 		return (-1);
 	}
 
 	final int toRead = Math.min(available(), len);
-	System.arraycopy(buf, off+pos, b, offset, toRead);
+	System.arraycopy(buf, pos, b, offset, toRead);
 	pos += toRead;
 
 	return (toRead);

@@ -22,6 +22,11 @@ public BufferedOutputStream(OutputStream out) {
 
 public BufferedOutputStream(OutputStream out, int size) {
 	super(out);
+
+	if (size <= 0) {
+	        throw new IllegalArgumentException("Buffer size <= 0");
+	}
+
 	buf = new byte[size];
 	count = 0;
 }
@@ -43,6 +48,9 @@ public synchronized void flush() throws IOException {
 }
 
 public synchronized void write(byte b[], int off, int len) throws IOException {
+	if (off < 0 || len < 0 || off + len > b.length) {
+	   throw new IndexOutOfBoundsException();
+	}
 
 	// If no write will be necessary, just copy the new data to the buffer
 	if (count + len <= buf.length) {

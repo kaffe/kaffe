@@ -13,7 +13,7 @@ package java.io;
 
 public class BufferedWriter extends Writer {
 
-  private static final int DEFAULTBUFFERSIZE = 1024;
+  private static final int DEFAULTBUFFERSIZE = 8192;
   private static final String newline = System.getProperty("line.separator");
   private Writer wr;
   private char[] wrbuf;
@@ -27,41 +27,58 @@ public class BufferedWriter extends Writer {
 
   public BufferedWriter(Writer out, int sz)
   {
-    wr = out;
-    wrbuf = new char[sz];
-    pos = 0;
+    super(out);
+
+    if (sz <= 0) {
+      throw new IllegalArgumentException("buffer size <= 0");
+    }
+
     size = sz;
+    wrbuf = new char[sz];
+    wr = out;
+  }
+
+/* Internal function used to check whether the
+   BufferedWriter has been closed already, throws
+   an IOException in that case.
+*/
+  private void checkIfStillOpen() throws IOException {
+    if (wr == null) {
+      throw new IOException("Stream closed");
+    }
   }
 
   public void write(int c) throws IOException
   {
-    char[] buf = new char[1];
-    buf[0] = (char)c;
-    write(buf, 0, 1);
+    super.write(c);
   }
 
   public void write(char cbuf[], int off, int len) throws IOException
   {
+    if (len < 0 || off < 0 || off + len > cbuf.length) {
+      throw new IndexOutOfBoundsException();
+    }
+
     synchronized(lock) {
-
-      for (;;) {
-        int i;
-        for (i = 0; i < size && i < len; i++) {
-          wrbuf[pos++] = cbuf[off++];
-        }
-        size -= i;
-        if (i == len) {
-          return;
-        }
-	len -= i;
-        flush();
+      checkIfStillOpen();
+      if (len > size) {
+	flush();
+	wr.write(cbuf, off, len);
       }
-
+      else {
+	System.arraycopy(cbuf, off, wrbuf, pos, len);
+	pos += len;
+        size -= len;
+        if (size == 0) {
+	  flush();
+	}
+      }
     }
   }
 
   public void write(String s, int off, int len) throws IOException
   {
+    /* small optimization to avoid double argument checking */
     write(s.toCharArray(), off, len);
   }
 
@@ -73,6 +90,7 @@ public class BufferedWriter extends Writer {
   public void flush() throws IOException
   {
     synchronized(lock) {
+      checkIfStillOpen();
       wr.write(wrbuf, 0, pos);
       wr.flush();
       pos = 0;
@@ -82,8 +100,13 @@ public class BufferedWriter extends Writer {
 
   public void close() throws IOException
   {
-    flush();
-    wr.close();
+    synchronized(lock) {
+      if (wr != null) {
+	flush();
+	wr.close();
+	wr = null;
+	wrbuf = null;
+      }
+    }
   }
-
 }

@@ -1,3 +1,190 @@
+Tue Sep  3 13:47:26 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/io/BufferedInputStream.java:
+	(BufferedInputStream) throw IllegalArgumentException if buffer
+	size <= 0.
+	(available) check if stream still open.
+	(checkIfStillOpen) new private method.
+	(read) check arguments. check if stream still open. Use Math.min.
+	(reset) check if stream still open.
+	(skip) check if stream still open.
+
+	* libraries/javalib/java/io/BufferedOutputStream.java:
+	(BufferedOutputStream) throw IllegalArgumentException if buffer
+	size <= 0.
+	(write) check arguments.
+
+	* libraries/javalib/java/io/BufferedWriter.java:
+	(DEFAULTBUFFERSIZE) increase to 8K
+	(BufferedWriter) throw IllegalArgumentException if buffer
+	size <= 0. removed unnecessary initialization. Use out writer as
+	lock.
+	(checkIfStillOpen) new private method.
+	(write) simplified. check arguments. check if stream still open.
+	(flush) check if stream still open.
+	(close) synchronized on lock. free unneeded references.
+
+	* libraries/javalib/java/io/ByteArrayInputStream.java:
+	(off) removed field.
+	(ByteArrayInputStream) removed unnecessary initialization. Use
+	Math.min to determine count.
+	(mark) synchronized.
+	(read) use available. check arguments.
+
+	* libraries/javalib/java/io/ByteArrayOutputStream.java
+	(ByteArrayOutputStream) throw IllegalArgumentException if buffer
+	size <= 0.
+	(write) check arguments.
+
+	* libraries/javalib/java/io/CharArrayReader.java:
+	(CharArrayReader) use Math.min.
+	(skip) always throw IOException if stream is closed. Use Math.min.
+
+	* libraries/javalib/java/io/CharArrayWriter.java:
+	(CharArrayWriter) throw IllegalArgumentException if buffer
+	size <= 0.
+	(write) use parent method. check arguments.
+	(toCharArray) synchronize on lock.
+	(size) synchronize on lock.
+	(toString) synchronize on lock.
+
+	* libraries/javalib/java/io/DataInputStream.java:
+	(skipNextLF) new private field.
+	(read) check arguments.
+	(readByte) skip next '\n' if necessary.
+	(readChar) simplified.
+	(readFully) removed NullPointerCheck as read will automatically
+	check it.
+	(readInt) simplified.
+	(readLine) rewritten skipping of '\n' to set a flag if next line
+	feed needs to be skipped. This prevents hanging on input until the
+	character following a '\r' is read.
+	(readShort) simplified.
+	(readUTF) simplified.
+
+	* libraries/javalib/java/io/DataOutputStream.java:
+	(write) check arguments.
+
+	* libraries/javalib/java/io/FileInputStream.java:
+	(FileInputStream) throw NullPointerException if file descriptor is
+	null.
+	(read) simplified.
+
+	* libraries/javalib/java/io/FilterInputStream.java:
+	(available) simplified.
+	(close) simplified.
+	(mark) simplified.
+	(markSupported) simplified.
+	(read) simplified. Added comments.
+	(reset) simplified.
+	(skip) simplified.
+
+	* libraries/javalib/java/io/FilterWriter.java:
+	(FilterWriter) use writer as lock.
+	(checkIfStillOpen) new private method.
+	(write) synchronized on lock. check if stream still open. check arguments.
+	(flush) synchronized on lock. check if stream still open.
+	(close) synchronized on lock. free reference to writer.
+
+	* libraries/javalib/java/io/InputStream.java:
+	(read) check arguments.
+	(skip) Use Math.min. skip up to n bytes, even when n > max int.
+
+	* libraries/javalib/java/io/InputStreamReader.java:
+	(InputStreamReader) use input stream as lock.
+	(close) free reference to encoding.
+	(getEncoding) synchronized on lock. return null after close.
+	(read) check arguments.
+
+	* libraries/javalib/java/io/LineNumberInputStream.java:
+	marked class as deprecated.
+	(skipNextLF) new private field.
+	(markSkipNextLF) new private field.
+	(pushedBack) removed field.
+	(pushBack) removed field.
+	(available) simplified. adapted to handle skipping next line feed.
+	(mark) store skipNextLF for reset.
+	(read) simplified. skipt next line feed when necessary. check arguments.
+	(reset) reset skipNextLF.
+	(skip) don't use junk buffer.
+
+	* libraries/javalib/java/io/OutputStreamWriter.java:
+	(BUFDEFAULT) increased to 8K.
+	(outbuf) no longer final.
+	(OutputStreamWriter) use output stream as lock.
+	(checkIfStillOpen) new private method.
+	(close) synchronized on lock. free references to encoding and
+	outbuf.
+	(flush)  check if strem still open.
+	(getEncoding) synchronized on lock. return null if stream closed.
+	(write) check arguments. check if stream still open.
+
+	* libraries/javalib/java/io/PipedInputStream.java:
+	(PIPE_SIZE) decreased to 512 according to Java Class Libraries
+	book.
+
+	* libraries/javalib/java/io/PipedOutputStream.java:
+	(write) added a message to IOException.
+
+	* libraries/javalib/java/io/PipedReader.java:
+	(connect) fixed a deadlock.
+
+	* libraries/javalib/java/io/PrintStream.java:
+	(write) check arguments.
+
+	* libraries/javalib/java/io/PrintWriter.java:
+	(PrintWriter) use writer as lock. removed unnecessary
+	initializations. simplified.
+	(flush) synchronized on lock. check if still open.
+	(close) synchronized on lock. check if still open. free reference
+	to writer.
+	(checkError) synchronized on lock.
+	(isStillOpen) new private method.
+	(setError) synchronized on lock.
+	(write) synchronized on lock. check arguments. 
+	(print) use String.valueOf.
+
+	* libraries/javalib/java/io/PushbackInputStream.java:
+	(DEFAULT_PUSHBACK_BUFFER_SIZE) new constant.
+	(PushbackInputStream) use named constants. throw
+	IllegalArgumentException if size <= 0.
+	(read) check arguments.
+	(unread) check arguments.
+
+	* libraries/javalib/java/io/RandomAccessFile.java:
+	(skipBytes) always try to seek n bytes.
+
+	* libraries/javalib/java/io/Reader.java:
+	(skip) check argument. Use Math.min.
+
+	* libraries/javalib/java/io/SequenceInputStream.java:
+	(SequenceInputStream) throw NullPointerException if one the
+	streams is null.
+
+	* libraries/javalib/java/io/StringReader.java:
+	(StringReader) removed unnecessary intializations.
+	(atEOF) new private method.
+	(checkIfStillOpen) new private method.
+	(close) synchronized on lock. free reference of buffer.
+	(mark) check argument. synchronized on lock. check if stream still
+	open.
+	(read) check if stream still open. check arguments. use atEOF. Use
+	Math.min. Use System.arraycopy.
+	(reset) synchronized on lock. check if stream still
+	open.
+	(skip) synchronized on lock. check if stream still
+	open. Use Math.min.
+
+	* libraries/javalib/java/io/StringWriter.java:
+	(StringWriter) check argument.
+	(write) synchronized on lock. check arguments.
+	(toString) synchronized on lock.
+	(getBuffer) synchronized on lock.
+
+	* libraries/javalib/java/io/Writer.java:
+	(single) new single char array, used for reading.
+	(write) use single for reading. check arguments.
+	
 Mon Sep  2 17:51:27 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* test/regression/TestScript.in:

@@ -32,14 +32,25 @@ public BufferedInputStream(InputStream in) {
 
 public BufferedInputStream(InputStream in, int size) {
 	super(in);
+
+	if (size <= 0) {
+		throw new IllegalArgumentException("Buffer size <= 0");
+	}
+
 	buf = new byte[size];
-	pos = count = 0;
 	marklimit = size;
 	markpos = -1;
 }
 
 public synchronized int available() throws IOException {
+	checkIfStillOpen();
 	return (count - pos) + in.available();
+}
+
+private void checkIfStillOpen() throws IOException {
+	if (in == null) {
+		throw new IOException("stream closed");
+	}
 }
 
 public synchronized void mark(int marklimit) {
@@ -75,6 +86,12 @@ public synchronized int read() throws IOException {
 }
 
 public synchronized int read(byte b[], int off, int len) throws IOException {
+	if (off < 0 || len < 0 || off + len > b.length) {
+	   throw new IndexOutOfBoundsException();
+	}
+
+	checkIfStillOpen();
+
 	/* Common case short-cut */
 	if (len == 1 && pos < count) {
 		b[off] = buf[pos++];
@@ -111,10 +128,7 @@ public synchronized int read(byte b[], int off, int len) throws IOException {
 		}
 
 		// Copy the next chunk of bytes from our buffer
-		nread = count - pos;
-		if (nread > len) {
-			nread = len;
-		}
+		nread = Math.min(count - pos, len);
 		System.arraycopy(buf, pos, b, off, nread);
 		total += nread;
 		pos += nread;
@@ -125,6 +139,8 @@ public synchronized int read(byte b[], int off, int len) throws IOException {
 }
 
 public synchronized void reset() throws IOException {
+	checkIfStillOpen();
+
 	if (markpos == -1) {
 		throw new IOException(
 		    "Attempt to reset when no mark is valid"
@@ -139,6 +155,8 @@ public synchronized void reset() throws IOException {
  * Not sure if this is actually a requirement or not.
  */
 public synchronized long skip(long n) throws IOException {
+
+	checkIfStillOpen();
 
 	// Sanity check
 	if (n <= 0) {

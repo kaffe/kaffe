@@ -41,14 +41,14 @@ public void connect(PipedInputStream snk) throws IOException {
 
 public void write(byte b[], int off, int len) throws IOException {
 	if (sink == null) {
-		throw new IOException();
+		throw new IOException("Pipe not connected");
 	}
 	super.write(b, off, len);
 }
 
 public void write(int b) throws IOException {
 	if (sink == null) {
-		throw new IOException();
+		throw new IOException("Pipe not connected");
 	}
 	sink.receive(b);
 }

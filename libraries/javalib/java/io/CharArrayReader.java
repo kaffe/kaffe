@@ -41,8 +41,8 @@ public class CharArrayReader extends Reader {
 
     buf       = bf;
     pos       = offset;
-    count     = offset + length < bf.length ? offset + length : bf.length;
     markedPos = offset;
+    count     = Math.min(offset + length, bf.length);
   }
 
   /* Internal function used to check whether the
@@ -99,20 +99,19 @@ public class CharArrayReader extends Reader {
 
   public long skip(long n) throws IOException
   {
-    /* If n < 0, don't throw an exception, as some other
-       Readers do. IBM's JRE 1.3 doesn't throw one.
-       Act as if n == 0.
-    */
-
      synchronized(lock) {
        checkIfStillOpen();
 
-       int cnt = (int)Math.min(n, (long)(count - pos));
+       /* If n < 0, don't throw an exception, as some other
+	  Readers do. IBM's JRE 1.3 doesn't throw one.
+	  Return 0.
+       */
 
-       if (cnt < 0) {
-	   cnt = 0;
+       if (n <= 0) {
+	 return 0;
        }
-
+       
+       int cnt = (int)Math.min(n, (long)(count - pos));
        pos += cnt;
        return (cnt);
      }

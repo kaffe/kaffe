@@ -25,19 +25,29 @@ public class CharArrayWriter extends Writer {
 
   public CharArrayWriter(int initialSize)
   {
-    count = 0;
+    if (initialSize < 0) {
+      throw new IllegalArgumentException("Negative initial size : " + initialSize);
+    }
+
     buf = new char[initialSize];
   }
 
   public void write(int c)
   {
-    char buf[] = new char[1];
-    buf[0] = (char)c;
-    write(buf, 0, 1);
+    try {
+      super.write(c);
+    }
+    catch (IOException e) {
+      /* can't happen */
+    }
   }
 
   public void write(char c[], int off, int len)
   {
+    if (len < 0 || off < 0 || off + len > c.length) {
+      throw new IndexOutOfBoundsException();
+    }
+
     synchronized(lock) {
 
       // Check we have room and if not reallocate.
@@ -54,12 +64,14 @@ public class CharArrayWriter extends Writer {
 
   public void write(String str, int off, int len)
   {
-    write(str.toCharArray(), off, len);
+      write(str.toCharArray(), off, len);
   }
 
   public void writeTo(Writer out) throws IOException
   {
-    out.write(buf, 0, count);
+    synchronized(lock) {
+      out.write(buf, 0, count);
+    }
   }
 
   public void reset()
@@ -71,20 +83,26 @@ public class CharArrayWriter extends Writer {
 
   public char[] toCharArray()
   {
-    /* note that the spec asks us to "Return a copy of the input data." */
-    final char result[] = new char[count];
-    System.arraycopy(buf, 0, result, 0, count);
-    return result;
+    synchronized(lock) {
+      /* note that the spec asks us to "Return a copy of the input data." */
+      final char result[] = new char[count];
+      System.arraycopy(buf, 0, result, 0, count);
+      return result;
+    }
   }
 
   public int size()
   {
-    return (count);
+    synchronized(lock) {
+      return (count);
+    }
   }
 
   public String toString()
   {
-    return (new String(buf, 0, count));
+    synchronized(lock) {
+      return (new String(buf, 0, count));
+    }
   }
 
   public void flush()

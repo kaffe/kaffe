@@ -13,6 +13,8 @@ package java.io;
 import kaffe.util.UTF8;
 
 public class DataInputStream extends FilterInputStream implements DataInput {
+	/* used to determine whether to skip next '\n' */
+	private boolean skipNextLF;
 
 public DataInputStream(InputStream in) {
 	super(in);
@@ -23,6 +25,10 @@ public final int read(byte b[]) throws IOException {
 }
 
 public final int read(byte b[], int off, int len) throws IOException {
+	if (off < 0 || len < 0 || off + len > b.length) {
+	   throw new IndexOutOfBoundsException();
+	}
+
 	return super.read(b, off, len);
 }
 
@@ -31,19 +37,22 @@ public final boolean readBoolean() throws IOException {
 }
 
 public final byte readByte() throws IOException {
-	final int value = read();
+	int value = read();
 	if (value == -1) {
 		throw new EOFException();
+	}
+	if (skipNextLF) {
+		skipNextLF = false;
+		if (value == '\n') {
+			value = readByte();
+		}
 	}
 	return ((byte)value);
 }
 
 public final char readChar() throws IOException {
-	int val = read() << 8;
-	val |= read();
-	if (val == -1) {
-		throw new EOFException();
-	}
+	int val = readUnsignedByte() << 8;
+	val |= readUnsignedByte();
 	return ((char)val);
 }
 
@@ -60,9 +69,6 @@ public final void readFully(byte b[]) throws IOException {
 }
 
 public final void readFully(byte b[], int off, int len) throws IOException {
-	if (b == null) {
-		throw new NullPointerException();
-	}
 	int total = 0;
 	while (total < len) {
 		final int got = read(b, off + total, len - total);
@@ -74,14 +80,11 @@ public final void readFully(byte b[], int off, int len) throws IOException {
 }
 
 public final int readInt() throws IOException {
-	int v1 = read() << 24;
-	v1 |= read() << 16;
-	v1 |= read() << 8;
-	final int v2 = read();
-	if (v2 == -1) {
-		throw new EOFException();
-	}
-	return (v1 | v2);
+	int v1 = readUnsignedByte() << 24;
+	v1 |= readUnsignedByte() << 16;
+	v1 |= readUnsignedByte() << 8;
+	v1 |= readUnsignedByte();
+	return v1;
 }
 
 /**
@@ -89,42 +92,26 @@ public final int readInt() throws IOException {
  */
 public final String readLine() throws IOException {
 	final StringBuffer buffer = new StringBuffer();
-	final byte[] data = new byte[1];
 	boolean eof = false;
 
-	while (true) {
-		if (read(data, 0, 1) != 1) {
-			eof = true;
-			break;
-		}
-		final char ch = (char) (data[0] & 0xff);
-		if (ch == '\n') {
-			break;
-		}
-
-		if (ch == '\r') {       // Check for '\r\n'
-			// Note that we don't know whether the InputStream
-			// implements mark() and reset(), but we're using
-			// them anyway. If they don't, then characters
-			// after a lone '\r' will be elided from the input
-			// (ie, this is a bug). We could override mark()
-			// and reset() to always provide at least a
-			// one-character buffer, but then we'd violate
-			// the spec, which says to inherit these from
-			// FilterInputStream...
-
-			super.mark(1);
-			if (read(data, 0, 1) == 1 && data[0] != '\n') {
-				try {
-					super.reset();
-				}
-				catch (IOException e) {
-				}
+	try {
+		while (true) {
+			final char ch = (char) readUnsignedByte();
+			if (ch == '\n') {
+				break;
 			}
-			break;
+			if (ch == '\r') {
+				skipNextLF = true;
+				break;
+			}
+
+			buffer.append(ch);
 		}
-		buffer.append(ch);
 	}
+	catch (EOFException e) {
+		eof = true;
+	}
+
 	if (eof && buffer.length() == 0) {
 		return (null);
 	}
@@ -136,16 +123,13 @@ public final long readLong() throws IOException {
 }
 
 public final short readShort() throws IOException {
-	int val = read() << 8;
-	val |= read();
-	if (val == -1) {
-		throw new EOFException();
-	}
+	int val = readUnsignedByte() << 8;
+	val |= readUnsignedByte();
 	return ((short)val);
 }
 
 public final String readUTF() throws IOException {
-	return UTF8.decode(this, readUnsignedShort());
+	return readUTF(this);
 }
 
 public static final String readUTF(DataInput in) throws IOException {

@@ -27,6 +27,10 @@ public SequenceInputStream(Enumeration e) {
 }
 
 public SequenceInputStream(InputStream s1, InputStream s2) {
+	if (s1 == null || s2 == null) {
+		throw new NullPointerException();
+	}
+
 	streams.addElement(s1);
 	streams.addElement(s2);
 	currentStream = s1;

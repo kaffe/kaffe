@@ -26,9 +26,9 @@ public class PrintWriter extends Writer {
 
   public PrintWriter(Writer out, boolean autoFlush)
   {
+    super(out);
     this.out = out;
     flsh = autoFlush;
-    error = false;
   }
 
   public PrintWriter(OutputStream out)
@@ -38,56 +38,83 @@ public class PrintWriter extends Writer {
 
   public PrintWriter(OutputStream out, boolean autoFlush)
   {
-    this.out = new OutputStreamWriter(out);
-    flsh = autoFlush;
-    error = false;
+    this(new OutputStreamWriter(out), autoFlush);
   }
 
   public void flush()
   {
-    try {
-      out.flush();
-    }
-    catch (IOException _) {
-      error = true;
+    synchronized(lock) {
+      if (isStillOpen()) {
+	try {
+	  out.flush();
+	}
+	catch (IOException _) {
+	  error = true;
+	}
+      }
     }
   }
 
   public void close()
   {
-    try {
-      out.close();
-    }
-    catch (IOException _) {
-      error = true;
+    synchronized(lock) {
+      if (isStillOpen()) {
+	try {
+	  out.close();
+	}
+	catch (IOException _) {
+	  error = true;
+	}
+	out = null;
+      }
     }
   }
 
   public boolean checkError()
   {
-    flush();
-    return (error);
+    synchronized(lock) {
+      flush();
+      return (error);
+    }
+  }
+
+  /* returns true if the Writer is still open */
+  private boolean isStillOpen() {
+    return out != null;
   }
 
   protected void setError()
   {
-    error = true;
+    synchronized(lock) {
+      error = true;
+    }
   }
 
   public void write(int c)
   {
-    char ch[] = new char[1];
-    ch[0] = (char)c;
-    write(ch, 0, 1);
+    try {
+      super.write(c);
+    }
+    catch (IOException e) {
+      /* can't happen */
+    }
   }
 
   public void write(char buf[], int off, int len)
   {
-    try {
-      out.write(buf, off, len);
+    if (len < 0 || off < 0 || off + len > buf.length) {
+      throw new IndexOutOfBoundsException();
     }
-    catch (IOException _) {
-      error = true;
+
+    synchronized(lock) {
+      if (isStillOpen()) {
+	try {
+	  out.write(buf, off, len);
+	}
+	catch (IOException _) {
+	  setError();
+	}
+      }
     }
   }
 
@@ -95,65 +122,56 @@ public class PrintWriter extends Writer {
   {
     write(buf, 0, buf.length);
   }
-
+      
   public void write(String s, int off, int len)
   {
-    if (s == null) {
-      write(String.valueOf(s));
-    }
-    else {
-      write(s.toCharArray(), off, len);
-    }
+    write(s.toCharArray(), off, len);
   }
 
   public void write(String s)
   {
-    if (s == null) {
-      write(String.valueOf(s));
-    }
-    else {
-      write(s.toCharArray(), 0, s.length());
-    }
+    write(s.toCharArray(), 0, s.length());
   }
 
   public void print(boolean b)
   {
-    write(b ? "true" : "false");
+    write(String.valueOf(b));
   }
 
   public void print(char c)
   {
-    write((int)c);
+    write(String.valueOf(c));
   }
 
   public void print(int i)
   {
-    write(Integer.toString(i));
+    write(String.valueOf(i));
   }
 
   public void print(long l)
   {
-    write(Long.toString(l));
+    write(String.valueOf(l));
   }
 
   public void print(float f)
   {
-    write(Float.toString(f));
+    write(String.valueOf(f));
   }
 
   public void print(double d)
   {
-    write(Double.toString(d));
+    write(String.valueOf(d));
   }
 
   public void print(char s[])
   {
-    write(s, 0, s.length);
+    write(String.valueOf(s));
   }
 
   public void print(String s)
   {
-    write(s);
+    /* use String.valueOf here to handle s == null in a single place */
+    write(String.valueOf(s));
   }
 
   public void print(Object obj)
@@ -163,57 +181,53 @@ public class PrintWriter extends Writer {
 
   public void println()
   {
-    write(newline);
-    if (flsh) {
-      flush();
+    synchronized(lock) {
+      write(newline);
+      if (flsh) {
+	flush();
+      }
     }
   }
 
   public void println(boolean x)
   {
-    println(x ? "true" : "false");
+    println(String.valueOf(x));
   }
 
   public void println(char x)
   {
-    synchronized(lock) {
-      write((int)x);
-      println();
-    }
+    println(String.valueOf(x));
   }
 
   public void println(int x)
   {
-    println(Integer.toString(x));
+    println(String.valueOf(x));
   }
 
   public void println(long x)
   {
-    println(Long.toString(x));
+    println(String.valueOf(x));
   }
 
   public void println(float x)
   {
-    println(Float.toString(x));
+    println(String.valueOf(x));
   }
 
   public void println(double x)
   {
-    println(Double.toString(x));
+    println(String.valueOf(x));
   }
 
   public void println(char x[])
   {
-    synchronized(lock) {
-      write(x, 0, x.length);
-      println();
-    }
+    println(String.valueOf(x));
   }
 
   public void println(String x)
   {
     synchronized(lock) {
-      write(x);
+      print(x);
       println();
     }
   }

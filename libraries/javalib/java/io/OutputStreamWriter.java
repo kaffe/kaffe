@@ -14,65 +14,87 @@ import kaffe.io.CharToByteConverter;
 public class OutputStreamWriter
   extends Writer
 {
-	private final static int BUFDEFAULT = 1024;
+	private final static int BUFDEFAULT = 8192;
 	private static final int MINMARGIN = 32;
 	private OutputStream strm;
 	private CharToByteConverter encoding;
-	private final byte[] outbuf = new byte[BUFDEFAULT];
+	private byte[] outbuf = new byte[BUFDEFAULT];
 	private int buflen;
-	private boolean closed;
 
 public OutputStreamWriter(OutputStream out) {
+	super(out);
 	strm = out;
 	encoding = CharToByteConverter.getDefault();
 }
 
 public OutputStreamWriter(OutputStream out, String enc) throws UnsupportedEncodingException
 {
+	super(out);
 	strm = out;
 	encoding = CharToByteConverter.getConverter(enc);
 }
 
+/* Internal function used to check whether the
+   OutputStreamWriter has been closed already, throws
+   an IOException in that case.
+*/
+  private void checkIfStillOpen() throws IOException {
+    if (strm == null) {
+      throw new IOException("Stream closed");
+    }
+  }
+
 public void close() throws IOException
 {
-	if (!closed) {
-		flush();
-		strm.close();
-		strm = null;
-		closed = true;
+	synchronized(lock) {
+		if (strm != null) {
+			flush();
+			strm.close();
+			strm = null;
+			encoding = null;
+			outbuf = null;
+		}
 	}
 }
 
 public void flush() throws IOException
 {
 	synchronized (lock) {
-		if (closed) {
-			throw new IOException("stream closed");
-		}
+		checkIfStillOpen();
 		if (buflen > 0) {
 			strm.write(outbuf, 0, buflen);
 			buflen = 0;
 		}
+		strm.flush();
 	}
-	strm.flush();
 }
 
 public String getEncoding() {
-	return (encoding.toString());
+	synchronized(lock) {
+		return encoding == null ? null : encoding.toString();
+	}
 }
 
 public void write(String str, int off, int len) throws IOException
 {
-	write(str.toCharArray(), off, len);
+	if (len < 0 || off < 0 || off + len > str.length()) {
+		throw new IndexOutOfBoundsException();
+	}
+
+	synchronized(lock) {
+		checkIfStillOpen();
+		super.write(str, off, len);
+	}
 }
 
 public void write(char cbuf[], int off, int len) throws IOException
 {
-	if (strm == null) {
-		throw new IOException("stream closed");
+	if (len < 0 || off < 0 || off + len > cbuf.length) {
+		throw new IndexOutOfBoundsException();
 	}
 
 	synchronized (lock) {
+		checkIfStillOpen();
 		if (len > 0) {
 			int outlen = encoding.convert(cbuf, off, len,
 				outbuf, buflen, outbuf.length - buflen);
@@ -93,6 +115,6 @@ public void write(char cbuf[], int off, int len) throws IOException
 
 public void write(int c) throws IOException
 {
-	write (new char[] { (char)c }, 0, 1);
+        super.write (c);
 }
 }
