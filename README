@@ -73,6 +73,11 @@ Kaffe is available from various sites.  The primary site is:
 
         ftp://ftp.transvirtual.com/pub/kaffe/
 
+While Kaffe is being developed, look for daily snapshots of the latest
+version, including the most recent bug fixes, at:
+
+        ftp://ftp.transvirtual.com/pub/kaffe/kaffe-snap.tar.gz
+
 What about a web site?
 ----------------------
 
