@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 The University of Utah. All rights reserved.
+ * Copyright (c) 1998, 1999 The University of Utah. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -195,9 +195,13 @@ jthread_on_current_stack(void *bp)
 	struct pthread_state ps;
 	int rc;
 
-	if (oskit_pthread_getstate(pthread_self(), &ps))
-		panic("jthread_on_current_stack: oskit_pthread_getstate(%d)",
-		      pthread_self());
+	rc = oskit_pthread_getstate(pthread_self(), &ps);
+	if (rc != 0)
+	{
+		panic("jthread_on_current_stack: oskit_pthread_getstate(pid %d) failed (rc=%#x)",
+		      pthread_self(), rc);
+	}
+
         rc = (uint32)bp >= ps.stackbase && 
 	     (uint32)bp < ps.stackbase + ps.stacksize;
 DBG(JTHREAD,
@@ -319,8 +323,7 @@ jthread_frames(jthread_t thrd)
  */
 jthread_t 
 jthread_init(int pre,
-	int maxpr, int minpr, int mainthreadpr, 
-	size_t mainThreadStackSize,
+	int maxpr, int minpr,
 	void *(*_allocator)(size_t), 
 	void (*_deallocator)(void*),
 	void (*_destructor1)(void*),
@@ -357,8 +360,6 @@ jthread_init(int pre,
          * XXX: ignore mapping of min/max priority for now and assume
          * pthread priorities include java priorities.
          */
-	/* XXX: use pthread_setschedparam here */
-        oskit_pthread_setprio(pmain, mainthreadpr);
 
         pthread_key_create(&jthread_key, 0 /* destructor */);
         pthread_key_create(&cookie_key, 0 /* destructor */);
@@ -377,6 +378,29 @@ jthread_init(int pre,
 DBG(JTHREAD,
 	dprintf("main thread has id %d\n", jtid->native_thread);
     )
+
+	return (jtid);
+}
+
+/*
+ * Create an OSKit jthread context to go with the initial thread in the system.
+ * (The initial thread is created in jthread_init, above.
+ */
+jthread_t
+jthread_createfirst(size_t mainThreadStackSize, unsigned char prio, void* jlThread)
+{
+        jthread_t jtid; 
+
+	jtid = GET_JTHREAD();
+	assert(jtid != NULL);
+	assert(jtid->native_thread != NULL);
+	assert(jtid->status == THREAD_RUNNING);
+
+	jtid->jlThread = jlThread;
+
+	/* XXX what to do with mainThreadStackSize?? */
+
+	jthread_setpriority(jtid, prio);
 
 	return (jtid);
 }
@@ -655,7 +679,7 @@ DBG(JTHREAD,
     )
 
 	mark_thread_dead();
-#ifndef newer_than_990722
+#ifndef newer_than_990722 
 	/* The main thread must be explicitly detached before
 	 * exitting.  Since its mutex is unitialized, detach will work,
 	 * but the idle thread will crash trying to clean up.
@@ -739,7 +763,7 @@ jcondvar_initialise(jcondvar *cv)
 	}
 }
 
-void
+jbool
 jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 {
 	struct oskit_timespec abstime;
@@ -747,7 +771,7 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 
 	if (timeout == (jlong)0) {
 		pthread_cond_wait(cv, lock);
-		return;
+		return true;
 	}
 
 	/* Need to convert timeout to an abstime. Very dumb! */
@@ -761,6 +785,8 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 		abstime.tv_nsec -= 1000000000;
 	}
 	pthread_cond_timedwait(cv, lock, &abstime);
+	
+	return true;  /* XXX what should I be returning?? */
 }
 
 void

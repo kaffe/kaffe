@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 The University of Utah. All rights reserved.
+ * Copyright (c) 1998, 1999 The University of Utah. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -16,6 +16,12 @@
 #ifdef CPU_INHERIT
 #include <oskit/threads/cpuinherit.h>
 #endif
+
+/*
+ * Define this hack if using a version of the OSKit more recent than
+ * 990722
+ */
+/* #define newer_than_990722 */
 
 #include "config.h"
 #include "config-setjmp.h"
@@ -98,13 +104,22 @@ jthread_init(
 	int preemptive,			/* preemptive scheduling */
 	int maxpr, 			/* maximum priority */
 	int minpr, 			/* minimum priority */
-	int mainthreadpr,		/* priority of current (main) thread */
-	size_t mainThreadStackSize,	/* assumed main stack size */
         void *(*_allocator)(size_t),	/* memory allocator */
 	void (*_deallocator)(void*),	/* memory deallocator */
 	void (*_destructor1)(void*),	/* called when a thread exits */ 
 	void (*_onstop)(void),		/* called when a thread is stopped */
 	void (*_ondeadlock)(void));     /* called on deadlock */
+
+
+/*
+ * Create the first thread - actually bind the first thread to the java
+ * context.
+ */
+jthread_t
+jthread_createfirst(size_t mainThreadStackSize, 
+		    unsigned char prio, 
+		    void* jlThread);
+
 
 /*
  * create a thread with a given priority
@@ -206,6 +221,24 @@ int 	jthread_on_current_stack(void *bp);
  */
 int 	jthread_stackcheck(int left);
 
+#define	REDZONE	1024
+
+static inline void*
+jthread_stacklimit(void)
+{
+	struct pthread_state ps;
+	jthread_t jtid = GET_JTHREAD();
+
+	if (oskit_pthread_getstate(jtid->native_thread, &ps))
+		panic("jthread_extract_stack: tid(%d)", jtid->native_thread);
+	
+#if defined(STACK_GROWS_UP)
+#error FIXME
+#else
+        return (void*)(((long)(ps.stackbase)) + REDZONE);
+#endif
+}
+
 /*
  * determine the "interesting" stack range a conservative gc must walk
  */
@@ -251,7 +284,7 @@ void jmutex_lock(jmutex *lock);
 void jmutex_unlock(jmutex *lock);
 
 void jcondvar_initialise(jcondvar *cv);
-void jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
+jbool jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
 void jcondvar_signal(jcondvar *cv, jmutex *lock);
 void jcondvar_broadcast(jcondvar *cv, jmutex *lock);
 

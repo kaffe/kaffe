@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 The University of Utah. All rights reserved.
+ * Copyright (c) 1998, 1999 The University of Utah. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -23,12 +23,12 @@
 #include "jit-md.h"
 #endif
 
-void oskit_kaffe_clean_cmdline(int *pargc, char ***pargv);
+void oskit_kaffe_main(int *pargc, char ***pargv);
 void oskit_kaffe_init_md(void);
 
 #define INIT_MD	oskit_kaffe_init_md
 
-#define MAIN_MD oskit_kaffe_clean_cmdline(&argc, &argv)
+#define MAIN_MD oskit_kaffe_main(&argc, &argv)
 
 /*
  * CLASSPATH

@@ -1,101 +1,194 @@
-OSKit 990722 snapshot:
-
-This version of kaffe has been ported to the July OSKit snapshot.
-There are some known problems with this oskit/kaffe combination:
-Threads waiting on conditions cannot be interrupted, and all the math
-problems found in freebsd 2.x are also found here.
-
-Rather than letting configure choose oskit libraries, I have been
-using ld-oskit.sh.  However, when building with this method you invoke
-make with CCLD=ld-oskit on the commandline...every single time.
-Otherwise, look at the commented out KAFFE_LIBS= lines in config.frag.
-
-****************************************************************************
 This is the i386/oskit specific configuration directory.
 
-There are several scripts in this directory to aid in the build process.
-These scripts assume that you already have the oskit built and installed,
-and that you know the path to the install directory. You should also have
-the oskit build tools on your path.
+This version of Kaffe has been ported to the July, 1999 OSKit
+snapshot: oskit-990722.  It probably won't work with any other version
+of the OSKit.  Please upgrade if you're behind.  See the OSKit web
+page:
+	http://www.cs.utah.edu/flux/oskit/
 
-****************************************************************************
-			*** VERY IMPORTANT ***
+Future major OSKit releases will include patches for the most recent
+version of Kaffe.  Contact us if you're in need of recent Kaffe patches.
+(oskit-users@cs.utah.edu).
 
-If you have Version 0.96 of the oskit, you must first apply the patches in
-the file ./oskit-patches-0.96 to your oskit source tree. Reconfigure,
-rebuild and reinstall your oskit! You *do not* need to apply the oskit
-patches if you have Version 0.97 or later.
+NOTE: We recommend that you *not* upgrade to OSKit snapshot 990914.
+It will probably cause you more problems than it is worth.
 
-If you have the daily snapshot of Kaffe OpenVM dated Jan 4 1999 or
-later (based on 1.0 Beta 3 but considerably changed from that), you
-must also apply the patches in the file ./kaffe-patches to your Kaffe
-tree. These patches worked against the Jan 4 1999 snapshot;
-snapshots since then are not guaranteed to work with these patches,
+We will keep the OSKit in synch with Kaffe as best we can.  Visit the
+OSKit web pages for more information:
+	http://www.cs.utah.edu/flux/oskit/
 
-Note this restriction: currently the only display support for
-Kaffe/OSKit kernels is to use the OSKit's xclient support to display
-on another machine that runs an X server.
 
 ****************************************************************************
 
+KNOWN PROBLEMS:
 
-(*) config-oskit.sh:
+Threads waiting on conditions cannot be interrupted.
 
-This script will configure Kaffe to be built on the oskit. It is just a
-small front end script to the Kaffe configure script, adding a few
-configuration options that are required when building on the oskit. There
-are some environment specific options that need to be changed, either by
-copying the script and editing it, or by passing them in as command line
-options. Please look at the first part of the script to see what needs to
-be changed. Also note that the oskit is built using ELF tools, so you need
-to make sure that you unset OBJFORMAT, or make sure that elf tools are your
-default.
+All of the math problems found in FreeBSD 2.x are also found here.
+
+Currently the only GUI display support for Kaffe/OSKit kernels
+is to use the OSKit's xclient support to display on another machine
+that runs an X server.
 
 
-(*) config-oskit-unix.sh:
+****************************************************************************
 
-Same as config-oskit.sh, but configures Kaffe to run on a "unix process"
-enabled version of the oskit. This gives you the ability to run Kaffe/Oskit
-kernels as a unix process and debug them with GDB.
 
+SCRIPTS:
+
+There are three scripts in this directory to aid in the build process.
+These scripts assume that you already have the OSKit built and
+*installed*, and that you know the path to the install directory.
+
+(*) oskit-configure
+
+This script will configure Kaffe to be built on the OSKit (or on
+OSKit/Unix). It is just a front end script to the Kaffe configure
+script, adding a few configuration options that are required when
+building on the OSKit. There are some environment specific options
+that need to be changed, either by copying the script and editing it,
+or by passing them in as command line options.  'oskit-configure
+--help' will give you a short summary of the options.  Please look at
+the script itself for more documentation.  Note that the OSKit is
+built using ELF tools, so you need to make sure that you unset
+OBJFORMAT, or make sure that elf tools are your default.
+
+(*) ld-oskit.sh: 
+
+This script is used to link against the appropriate OSKit libraries.
+You shouldn't have to look at this file at all, unless you want to use 
+a different boot loader (The bootloader glue is linked into the kernel).
+Look at the comments in the script for more information.
 
 (*) mkimage.sh:
 
-This script builds a multiboot image from Kaffe plus other stuff.  The
-multiboot image contains the files specified, and results in a memory based
-filesystem being created by the oskit kernel at boot time. By default, the
-output file name is called "Image." Like the other scripts, there are some
-environment specific options that need to be changed, either by copying the
-script and editing it, or by passing them in as command line options.
-Please look at the first part of the script to see what needs to be
-changed.
+This script is used for building a bootable image from the Kaffe
+executable.  'mkimage.sh --help' See the comments in the script.
 
-The most important arguments are the -dir args, which specify which
-directories to place into the multiboot image. You can specify as many -dir
-args as you like. Min usage would be:
 
-	mkimage.sh -dir /tmp/foo -dir /tmp/fee
+****************************************************************************
 
-which will add the contents of the those two directories to the image.
-By default, you alway get the contents of the Kaffe install/share/kaffe
-directory, which includes the standard kaffe classes.
 
-The other important consideration is the default CLASSPATH. Since there
-is no "easy" way to pass a long environment string to an oskit kernel,
-the oskit/kaffe startup code will read a file from /etc that contains the
-default classpath. This file is called /etc/kaffe_classpath, and is the
-usual colon separated list of names. This script will add that file to
-the boot image. Note that the target file resides in /etc, but the file
-that the classpath is taken from can reside anywhere. It defaults to the
-value of CLASSPATHFILE below, but can be specified as a command line
-option to this script using the --classpathfile= option. With the example
-above, you would want to add /tmp/foo and /tmp/fee to the classpath
-list in your classpath file. 
+CLASSPATH:
 
-When you start the oskit, you can change the name of file to be loaded
+Another important consideration is the default CLASSPATH. Since there
+is no "easy" way to pass a long environment string to an OSKit kernel,
+the OSKit/kaffe startup code will read a file from /etc (in the boot
+image) that contains the default classpath. This file is called
+/etc/kaffe_classpath, and is the usual colon separated list of jar
+files and directory names.  
+
+mkimage.sh will create a default classpath file (called
+default_classpath_file) which will be mapped to /etc/kaffe_classpath.
+This default file contains all of the .jar files installed in Kaffe's
+share/kaffe/ directory, plus "." (Which will be the root directory in
+the Kaffe/OSKIT file system.)
+
+If you want to build any non-trivial kernels, you should either place
+your .jar file in the Kaffe directory, or add your .jar to the image
+(via --explicitfile) and manually add it to a classpath file.  Use the 
+--classpathfile=<foo> argument to mkimage.sh to use your new classpath 
+file.
+
+
+****************************************************************************
+
+
+Command line arguments:
+
+When you start the OSKit, you can change the name of file to be loaded
 to any other file in the multiboot image by using the environment variable
 command line option. That is, you can add CLASSPATHFILE=some_file_name to
-the oskit the command line, and that becomes an environment variable that
-the oskit/kaffe startup code will look for before opening the default
+the OSKit the command line, and that becomes an environment variable that
+the OSKit/kaffe startup code will look for before opening the default
 file /etc/kaffe_classpath.
 
+The command line for a Kaffe kernel can be specified in three ways:
+
+(1) if your bootloader supports it, the bootloader arguments are
+    passed to the Kaffe kernel as command line arguments.
+
+(2) If no arguments are passed to kaffe, then the file
+    /etc/kaffe_cmdline is used as the command line.  (You can specify
+    a different cmdline file thorugh the environment variable
+    KAFFE_CMDLINE.)
+
+(3) If both of the above fail, kaffe will interactively prompt for a
+    command line.  (That is it will print "> " and wait for you to
+    type a command line on the console input.)
+
+In all cases the command line is an OSKitSuperCommandline (tm).  An
+OSKitSuperCommandline contains environment variable settings in
+addition to traditional Kaffe command line arguments.  The format of
+an OSKitSuperCommandline is:
+	[<VAR>=<VALUE>.. --] [ <regular Kaffe args> ]
+
+The magic '--' separates environment variables from command line
+arguments.
+
+Here's an example.  Assume the image contains a file called
+/etc/regression_classpath which contains our classpath,
+"/install/share/kaffe/Klasses.jar:/classes/utah.jar/classes/regresssion:".
+And, we want to run the class utah.kaffe.regression.OSKitTest with the
+options '-repeat 2' and '-threads 10' and, we want to pass '-vmdebug
+NATIVENET' to kaffe.  The following command line will do that:
+
+CLASSPATHFILE=/etc/regression_classpath -- -vmdebug NATIVENET utah.kaffe.regression.OSKitTest -repeat 2 -threads 10
+
+
+****************************************************************************
+
+
+PUTTING IT ALL TOGETHER:
+
+1) Build and install the OSKit.  We'll refer to the install directory
+   as /opt/oskit from now on.
+
+1.5) You will need a local (build machine) install of Kaffe as the build
+	process requires running kaffeh.  Note that this kaffeh should
+	be built from the same sources.  You don't want to be caught
+	generating header files in an old format.
+
+2) Configure Kaffe for running on the oskit.  Use the oskit-configure
+   script from the config/i386/oskit directory to configure Kaffe.
+   Look at the script source for a description of its parameters.
+   Example:
+
+	$ cd /home/tullmann/obj/kaffe/
+	$ /home/tullmann/kaffe/config/i386/oskit/oskit-configure \
+		--srcdir=/home/tullmann/kaffe \
+		--oskitdir=/opt/oskit \
+		--oskitcc=i386-oskit-gcc \
+		--localkaffeh=/opt/kaffe/bin/kaffeh \
+		--enable-debug \
+		--prefix=/opt/kaffe/ 
+	
+	(Note that '--enable-debug and --prefix' are just passed
+	directly to the Kaffe configure script by oskit-configure.)
+		
+3) Compile it with 'make all' in the kaffe directory.
+
+4) Install Kaffe with 'make install'.  (this is required for the
+	mkimage.sh script to find all of the libraries).
+	
+5) Build a boot image.  (If you're building Kaffe for OSKit/UNIX, you
+   don't need to do this step.  Just run the executable.)  Use the
+   script mkimage.sh in the config/i386/oskit directory.  Look at the
+   script source for a description of its arguments.  Example:
+
+	$ /home/tullmann/kaffe/config/i386/oskit/mkimage.sh \
+		--kerneldir=/home/tullmann/kernels/ \
+		--kaffedir=/opt/kaffe/ \
+		--oskitdir=/opt/oskit/ \
+		--classpathfile=/home/tullmann/kaffe-classpath \
+		-dir /home/tullmann/classes \
+		--explicitfile=/home/tullmann/hosts-hack:/etc/hosts \
+		--explicitfile=/home/tullmann/commandline:/etc/kaffe_cmdline \
+		--explicitfile=/home/tullmann/java/HelloWorld.class:/HelloWorld.class
+
+   This will generate a file 'Image' in the directory given by --kerneldir.
+
+6) Boot the image.  This is dependent upon you bootloader syntax.
+
+
+(Hope that helps.)
