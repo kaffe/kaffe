@@ -1,3 +1,7 @@
+Thu Jul  4 03:48:36 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Klasses.jar: regenerated using kaffe's kjc.
+
 Thu Jul  4 03:42:57 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/awt/datatransfer/StringSelection.java:
