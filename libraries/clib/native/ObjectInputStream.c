@@ -10,14 +10,17 @@
 #include "config-std.h"
 #include <kaffe/jtypes.h>
 #include <native.h>
-#include "java_lang_SecurityManager.h"
-#include "java_io_ObjectInputStream.h"
 #include "../../../kaffe/kaffevm/object.h"
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/exception.h"
 #include "../../../kaffe/kaffevm/lookup.h"
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "java_lang_SecurityManager.h"
+#include "java_io_ObjectInputStream.h"
+#include "java_lang_reflect_Field.h"
+#include "java_io_VMObjectStreamClass.h"
+
 
 struct Hjava_lang_ClassLoader*
 java_io_ObjectInputStream_currentClassLoader(
@@ -30,7 +33,7 @@ java_io_ObjectInputStream_currentClassLoader(
 
 struct Hjava_lang_Object*
 java_io_ObjectInputStream_allocateObject(
-		struct Hjava_io_ObjectInputStream* this,
+		struct Hjava_io_ObjectInputStream* this UNUSED,
 		struct Hjava_lang_Class* clazz)
 {
 	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz))
@@ -41,7 +44,7 @@ java_io_ObjectInputStream_allocateObject(
 
 void
 java_io_ObjectInputStream_callConstructor(
-		struct Hjava_io_ObjectInputStream* this,
+		struct Hjava_io_ObjectInputStream* this UNUSED,
 		struct Hjava_lang_Class* clazz,
 		struct Hjava_lang_Object* object)
 {
@@ -78,4 +81,77 @@ java_io_VMObjectStreamClass_hasClassInitializer(struct Hjava_lang_Class* clazz)
 
 	meth = findMethodLocal(clazz, init_name, void_signature);
 	return (meth != NULL);		
+}
+
+
+void java_io_VMObjectStreamClass_setBooleanNative
+                (struct Hjava_lang_reflect_Field* sfield,
+		 struct Hjava_lang_Object* obj,
+		 jboolean value)
+{
+  java_lang_reflect_Field_setBoolean0(sfield, obj, value);
+}
+
+void java_io_VMObjectStreamClass_setByteNative
+                (struct Hjava_lang_reflect_Field* sfield, 
+		 struct Hjava_lang_Object* obj,
+		 jbyte value)
+{
+  java_lang_reflect_Field_setByte0(sfield, obj, value);
+}
+
+void java_io_VMObjectStreamClass_setCharNative
+                (struct Hjava_lang_reflect_Field* sfield, 
+		 struct Hjava_lang_Object* obj,
+		 jchar value)
+{
+  java_lang_reflect_Field_setChar0(sfield, obj, value);
+}
+
+void java_io_VMObjectStreamClass_setShortNative
+                (struct Hjava_lang_reflect_Field* sfield, 
+		 struct Hjava_lang_Object* obj,
+		 jshort value)
+{
+  java_lang_reflect_Field_setShort0(sfield, obj, value);
+}
+
+void java_io_VMObjectStreamClass_setIntNative
+                (struct Hjava_lang_reflect_Field* sfield, 
+		 struct Hjava_lang_Object* obj,
+		 jint value)
+{
+  java_lang_reflect_Field_setInt0(sfield, obj, value);
+}
+
+void java_io_VMObjectStreamClass_setLongNative
+                (struct Hjava_lang_reflect_Field* sfield, 
+		 struct Hjava_lang_Object* obj,
+		 jlong value)
+{
+  java_lang_reflect_Field_setLong0(sfield, obj, value);
+}
+
+void java_io_VMObjectStreamClass_setFloatNative
+                (struct Hjava_lang_reflect_Field* sfield, 
+		 struct Hjava_lang_Object* obj,
+		 jfloat value)
+{
+  java_lang_reflect_Field_setFloat0(sfield, obj, value);
+}
+
+void java_io_VMObjectStreamClass_setDoubleNative
+                (struct Hjava_lang_reflect_Field* sfield, 
+		 struct Hjava_lang_Object* obj,
+		 jdouble value)
+{
+  java_lang_reflect_Field_setDouble0(sfield, obj, value);
+}
+
+void java_io_VMObjectStreamClass_setObjectNative
+                (struct Hjava_lang_reflect_Field* sfield,
+		 struct Hjava_lang_Object* obj, 
+		 struct Hjava_lang_Object* value)
+{
+  java_lang_reflect_Field_setObject0(sfield, obj, value);
 }

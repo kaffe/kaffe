@@ -95,30 +95,32 @@ jfree(void* mem)
 }
 
 static void *
-gcMalloc(struct _Collector *collector, size_t sz, gc_alloc_type_t type)
+gcMalloc(struct _Collector *collector UNUSED, size_t sz, 
+	 gc_alloc_type_t type UNUSED)
 {
 	return(jmalloc(sz));
 }
 
 static void *
-gcRealloc(struct _Collector *collector, void *mem, size_t sz, gc_alloc_type_t type)
+gcRealloc(struct _Collector *collector UNUSED, void *mem,
+	  size_t sz, gc_alloc_type_t type UNUSED)
 {
 	return(jrealloc(mem, sz));
 }
 
-static void  gcFree(struct _Collector *collector, void *mem)
+static void  gcFree(struct _Collector *collector UNUSED, void *mem)
 {
 	jfree(mem);
 }
 
 void
-postOutOfMemory(struct _errorInfo* einfo)
+postOutOfMemory(struct _errorInfo* einfo UNUSED)
 {
 	dprintf("Error: kaffeh ran out of memory.\n");
 }
 
 void 
-postExceptionMessage(struct _errorInfo *e, 
+postExceptionMessage(struct _errorInfo *e UNUSED, 
 	const char *name, const char *msgfmt, ...)
 {
 	va_list ap;

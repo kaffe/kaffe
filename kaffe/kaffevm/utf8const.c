@@ -342,7 +342,8 @@ utf8ConstDecode(const Utf8Const *utf8, jchar *buf)
 char *
 utf8ConstEncode(const jchar *chars, int clength)
 {
-	int i, size = 0, pos = 0;
+	int i, pos = 0;
+	unsigned int size = 0;
 	char * buf;
 
 	/* Size output array */

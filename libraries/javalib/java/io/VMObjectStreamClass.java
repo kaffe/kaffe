@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package java.io;
 
+import java.lang.reflect.Field;
 
 final class VMObjectStreamClass
 {
@@ -46,4 +47,32 @@ final class VMObjectStreamClass
     * (a.k.a. <clinit>).
     */
   static native boolean hasClassInitializer (Class clazz);
+
+  static native void setDoubleNative(Field field, Object obj, double val) 
+    throws IllegalAccessException;
+
+  static native void setObjectNative(Field field, Object obj, Object val) 
+    throws IllegalAccessException;
+  
+  static native void setFloatNative(Field field, Object obj, float val) 
+    throws IllegalAccessException;
+
+  static native void setLongNative(Field field, Object obj, long val) 
+    throws IllegalAccessException;
+  
+  static native void setIntNative(Field field, Object obj, int val) 
+    throws IllegalAccessException;
+  
+  static native void setShortNative(Field field, Object obj, short val) 
+    throws IllegalAccessException;
+
+  static native void setCharNative(Field field, Object obj, char val) 
+    throws IllegalAccessException;
+
+  static native void setByteNative(Field field, Object obj, byte val) 
+    throws IllegalAccessException;
+
+  static native void setBooleanNative(Field field, Object obj, boolean val) 
+    throws IllegalAccessException;
 }
+

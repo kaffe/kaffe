@@ -354,14 +354,11 @@ public class ObjectStreamField implements Comparable
     return "ObjectStreamField< " + type + " " + name + " >";
   }
 
-  final private native void setBooleanNative(Object obj, boolean val) 
-    throws IllegalAccessException;
-
   final void setBooleanField(Object obj, boolean val)
   {
     try
       {
-	setBooleanNative(obj, val);
+	VMObjectStreamClass.setBooleanNative(field, obj, val);
       }
     catch(IllegalAccessException x)
       {
@@ -369,29 +366,23 @@ public class ObjectStreamField implements Comparable
       }
   }
 
-  final private native void setByteNative(Object obj, byte val) 
-    throws IllegalAccessException;
-  
   final void setByteField(Object obj, byte val)
   {
     try
       {
-	setByteNative(obj, val);
+	VMObjectStreamClass.setByteNative(field, obj, val);
       }
     catch(IllegalAccessException x)
       {
 	throw new InternalError(x.getMessage());
       }
   }
-
-  final private native void setCharNative(Object obj, char val) 
-    throws IllegalAccessException;
   
   final void setCharField(Object obj, char val)
   {
     try
       {
-	setCharNative(obj, val);
+	VMObjectStreamClass.setCharNative(field, obj, val);
       }
     catch(IllegalAccessException x)
       {
@@ -399,14 +390,11 @@ public class ObjectStreamField implements Comparable
       }
   }
   
-  final private native void setShortNative(Object obj, short val) 
-    throws IllegalAccessException;
-
   final void setShortField(Object obj, short val)
   {
     try
       {
-	setShortNative(obj, val);
+	VMObjectStreamClass.setShortNative(field, obj, val);
       }
     catch(IllegalAccessException x)
       {
@@ -414,14 +402,11 @@ public class ObjectStreamField implements Comparable
       }
   }
 
-  final private native void setIntNative(Object obj, int val) 
-    throws IllegalAccessException;
-  
   final void setIntField(Object obj, int val)
   {
     try
       {
-	setIntNative(obj, val);
+	VMObjectStreamClass.setIntNative(field, obj, val);
       }
     catch(IllegalAccessException x)
       {
@@ -429,14 +414,11 @@ public class ObjectStreamField implements Comparable
       }
   }
   
-  final private native void setLongNative(Object obj, long val) 
-    throws IllegalAccessException;
-
   final void setLongField(Object obj, long val)
   {
     try
       {
-	setLongNative(obj, val);
+	VMObjectStreamClass.setLongNative(field, obj, val);
       }
     catch(IllegalAccessException x)
       {
@@ -444,29 +426,23 @@ public class ObjectStreamField implements Comparable
       }
   }
   
-  final private native void setFloatNative(Object obj, float val) 
-    throws IllegalAccessException;
-
   final void setFloatField(Object obj, float val)
   {
     try
       {
-	setFloatNative(obj, val);
+	VMObjectStreamClass.setFloatNative(field, obj, val);
       }
     catch(IllegalAccessException x)
       {
 	throw new InternalError(x.getMessage());
       }
   }
-  
-  final private native void setDoubleNative(Object obj, double val) 
-    throws IllegalAccessException;
   
   final void setDoubleField(Object obj, double val)
   {
     try
       {
-	setDoubleNative(obj, val);
+	VMObjectStreamClass.setDoubleNative(field, obj, val);
       }
     catch(IllegalAccessException x)
       {
@@ -474,14 +450,12 @@ public class ObjectStreamField implements Comparable
       }
   }
 
-  final private native void setObjectNative(Object obj, Object val) 
-    throws IllegalAccessException;
   
   final void setObjectField(Object obj, Object val)
   { 
     try
       {
-	setObjectNative(obj, val);
+	VMObjectStreamClass.setObjectNative(field, obj, val);
       }
     catch(IllegalAccessException x)
       {

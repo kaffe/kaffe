@@ -44,7 +44,6 @@ java/io/ObjectInputStream.class
 java/io/ObjectStreamConstants.class
 java/io/OutputStream.class
 java/io/OutputStreamWriter.class
-java/io/ObjectStreamField.class
 java/io/PrintStream.class
 java/io/PrintWriter.class
 java/io/PushbackInputStream.class
@@ -54,6 +53,7 @@ java/io/Reader.class
 java/io/Serializable.class
 java/io/UTFDataFormatException.class
 java/io/UnsupportedEncodingException.class
+java/io/VMObjectStreamClass.class
 java/io/Writer.class
 java/lang/ArithmeticException.class
 java/lang/ArrayIndexOutOfBoundsException.class

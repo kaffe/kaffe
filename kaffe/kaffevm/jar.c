@@ -498,7 +498,7 @@ static inline off_t jarSeek(jarFile *jf, off_t offset, int whence)
 			ABORT();
 			break;
 		}
-		if( (pos >= 0) && (pos < jf->size) )
+		if( (pos >= 0) && ((unsigned)pos < jf->size) )
 		{
 			jf->offset = pos;
 			retval = pos;
@@ -639,6 +639,7 @@ static inline int instantiateSignature(uint8 *dest, uint8 *buf)
 static int readJarHeader(jarFile *jf, uint32 sig, void *buf, size_t len)
 {
 	int retval = 0;
+	int ret;
 
 	assert(jf != 0);
 	assert((sig == CENTRAL_HEADER_SIGNATURE) ||
@@ -646,7 +647,8 @@ static int readJarHeader(jarFile *jf, uint32 sig, void *buf, size_t len)
 		(sig == CENTRAL_END_SIGNATURE));
 	assert(buf != 0);
 	
-	if( jarRead(jf, buf, len, instantiateSignature) == len )
+	ret = jarRead(jf, buf, len, instantiateSignature);
+	if (ret >= 0 && (unsigned)ret == len )
 	{
 		/* Check the signature */
 		if( sig == ((uint32 *)buf)[0] )
@@ -771,7 +773,7 @@ static int getCentralDirCount(jarFile *jf, unsigned int *out_dir_size)
 			{
 				jf->error = JAR_ERROR_ENTRY_COUNT_MISMATCH;
 			}
-			else if( cde.sizeOfDirectory > pos )
+			else if( cde.sizeOfDirectory > (unsigned)pos )
 			{
 				jf->error = JAR_ERROR_IMPOSSIBLY_LARGE_DIRECTORY;
 			}

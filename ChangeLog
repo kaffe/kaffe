@@ -1,3 +1,50 @@
+2004-04-02  Guilhem Lavaux <guilhem@kaffe.org>
+
+        * kaffe/kaffevm/systems/unix-jthreads/jthread.h:
+	Marked a parameter as unused.
+
+	* kaffe/kaffeh/mem.c: Marked some parameters as unused.
+
+	* kaffe/kaffevm/jar.c: Fixed some warnings.
+
+	* kaffe/kaffevm/utf8const.c: Fixed some warnings.
+	
+	* libraries/javalib/bootstrap.classlist: Added 
+	java/io/VMObjectStreamClass.class to fix some warnings.
+
+	* libraries/javalib/java/io/ObjectStreamField.java
+	(setBooleanField, setCharField, setByteField, setShortField,
+	setIntField, setLongField, setFloatField, setDoubleField): Use
+	native methods directly to be able to set final fields.
+
+	* libraries/javalib/java/io/VMObjectStreamClass.java
+	(setBooleanNative, setCharNative, setByteNative, setShortNative,
+	setIntNative, setLongNative, setFloatNative, setDoubleNative):
+	New methods for serialization to be able to set final fields.
+
+	* libraries/clib/native/ObjectInputStream.c: Changed implementation
+	accordingly.
+
+	* libraries/clib/native/ObjectStreamField.c: Removed file.
+
+	* libraries/clib/native/Makefile.am: Removed ObjectStreamField.c
+
+	* libraries/clib/native/Makefile.in: Regenerated.
+
+	* include/Makefile.am: Added java_io_VMObjectStreamClass.h
+
+	* include/Makefile.in: Regenerated.
+
+	* libraries/javalib/Klasses.jar.bootstrap: Regenerated.
+
+	Merged a fix from GNU Classpath.
+	
+	2004-04-01  Jeroen Frijters  <jeroen@frijters.net>
+
+	  * java/text/DecimalFormat.java (scanFix): Removed suffix check
+	  for percent and permill check.
+
+	
 2004-04-02  Dalibor Topic <robilad@kaffe.org>
 
 	* config/alpha/common.h:
