@@ -54,6 +54,12 @@ class URLTest {
     ),
 
     new TestCase(
+	"http://www.kaffe.org/foo/bar",
+	"",
+	"http://www.kaffe.org/foo/bar"
+    ),
+
+    new TestCase(
 	null,
 	"foo/bar",
 	"java.net.MalformedURLException: no protocol"
@@ -63,6 +69,12 @@ class URLTest {
 	"file:/foo/bar",
 	"barf#jow",
 	"file:/foo/barf#jow"
+    ),
+
+    new TestCase(
+	"file:/foo/bar#fly",
+	"jabawaba",
+	"file:/foo/jabawaba"
     ),
 
     new TestCase(
@@ -115,8 +127,8 @@ class URLTest {
 
     new TestCase(
 	null,
-	"jar:http://www.kaffe.org:99999/foo/bar.jar!/eat/me",
-	"java.net.MalformedURLException: invalid inner URL: bad port: 99999"
+	"jar:abc!/eat/me",
+	"java.net.MalformedURLException: invalid inner URL: no protocol"
     ),
 
   };
