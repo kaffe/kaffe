@@ -1,3 +1,8 @@
+Sat Dec 19 17:31:22 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/awt/Component.java: use Toolkit.class
+	instead of Toolkit.singleton as tree lock to prevent deadlock.
+
 Sat Dec 19 14:36:27 1998  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/gtypes.h: remove unused "utf8str" typedef
