@@ -91,7 +91,7 @@ static void removeJNIref(jref);
 	vmException ebuf;				\
 	ebuf.prev = (vmException*)unhand(getCurrentThread())->exceptPtr;\
 	ebuf.meth = (Method*)1;				\
-	if (sigsetjmp(ebuf.jbuf, false) != 0) {		\
+	if (JTHREAD_SETJMP(ebuf.jbuf) != 0) {		\
 		unhand(getCurrentThread())->exceptPtr = \
 		  (struct Hkaffe_util_Ptr*)ebuf.prev;	\
 		return X;				\
@@ -102,7 +102,7 @@ static void removeJNIref(jref);
 	vmException ebuf;				\
 	ebuf.prev = (vmException*)unhand(getCurrentThread())->exceptPtr;\
 	ebuf.meth = (Method*)1;				\
-	if (sigsetjmp(ebuf.jbuf, false) != 0) {		\
+	if (JTHREAD_SETJMP(ebuf.jbuf) != 0) {		\
 		unhand(getCurrentThread())->exceptPtr = \
 		  (struct Hkaffe_util_Ptr*)ebuf.prev;	\
 		return;					\
@@ -3875,7 +3875,7 @@ Kaffe_JNIExceptionHandler(void)
 	vmException* frame;
 
 	frame = (vmException*)unhand(getCurrentThread())->exceptPtr;
-	siglongjmp(frame->jbuf, 1);
+	JTHREAD_LONGJMP(frame->jbuf, 1);
 }
 
 /*
