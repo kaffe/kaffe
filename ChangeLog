@@ -1,3 +1,8 @@
+2004-08-09  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/boehm-gc/gc-refs.c: Added missing include
+	for ALIGN_BACKWARD.
+
 2004-08-07  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

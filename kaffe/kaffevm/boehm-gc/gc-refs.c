@@ -26,6 +26,7 @@
 #include "gc-refs.h"
 #include "java_lang_Thread.h"
 #include "boehm/include/gc.h"
+#include "gc2.h"
 
 #define	REFOBJHASHSZ	128
 typedef struct _refObject {
