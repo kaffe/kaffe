@@ -236,7 +236,6 @@ void*
 soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, int idx)
 {
 	Hjava_lang_Class* cls;
-	Method* meth;
 	void*	ncode;
 	register int i;
 	register short* implementors;
@@ -401,12 +400,12 @@ soft_checkcast(Hjava_lang_Class* c, Hjava_lang_Object* o)
 		if (c->loader != OBJECT_CLASS(o)->loader) {
 			const char *toloader = c->loader?CLASS_CNAME(OBJECT_CLASS((Hjava_lang_Object *)c->loader)):"bootstrap";
 			const char *fromloader = OBJECT_CLASS(o)->loader?CLASS_CNAME(OBJECT_CLASS((Hjava_lang_Object *)OBJECT_CLASS(o)->loader)):"bootstrap";
-			char *format = "can't cast `%s' (%s@%p) to `%s' (%s@%p)";
+			const char *format = "can't cast `%s' (%s@%p) to `%s' (%s@%p)";
 			buf = checkPtr(KMALLOC(strlen(fromtype) + 12 + strlen(fromloader)+
 				+ strlen(totype) + 12 + strlen(toloader) + strlen(format)));
 			sprintf(buf, format, fromtype, fromloader, OBJECT_CLASS(o)->loader, totype, toloader, c->loader);
 		} else {
-			char* format = "can't cast `%s' to `%s'";
+			const char* format = "can't cast `%s' to `%s'";
 			buf = checkPtr(KMALLOC(strlen(fromtype)+strlen(totype)+strlen(format)));
 			sprintf(buf, format, fromtype, totype);
 		}

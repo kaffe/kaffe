@@ -1,5 +1,12 @@
 2004-11-06  Eric Anholt  <eta@lclark.edu>
 
+	* kaffe/kaffevm/access.c,
+	kaffe/kaffevm/soft.c,
+	replace/getaddrinfo.c:
+	Const cleanups to shut the compiler up some more.
+
+2004-11-06  Eric Anholt  <eta@lclark.edu>
+
 	* test/regression/Preempt.java:
 	Increased the timeout to make test pass on amd64-freebsd.
 

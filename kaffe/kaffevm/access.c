@@ -26,7 +26,7 @@
 
 char *checkAccessFlags(access_type_t type, accessFlags access_flags)
 {
-	char *retval = 0;
+	const char *retval = 0;
 
 	if( (type == ACC_TYPE_CLASS) &&
 	    (access_flags & ACC_INTERFACE) &&

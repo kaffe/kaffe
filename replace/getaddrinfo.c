@@ -144,7 +144,7 @@ extern int h_errno;
 /*
  * Error messages for gai_strerror().
  */
-static char *eai_errlist[] = {
+static const char *eai_errlist[] = {
     N_("Success"),
 
     /* EAI_ADDRFAMILY */
@@ -269,7 +269,7 @@ static int
 is_address(s)
     const char *s;
 {
-    const static char delimiters[] = {'.', '.', '.', '\0'};
+    static const char delimiters[] = {'.', '.', '.', '\0'};
     int i, j;
     int octet;
 
@@ -559,7 +559,7 @@ getnameinfo(sa, salen, node, nodelen, serv, servlen, flags)
 	if (flags & NI_NUMERICHOST)
 	    hostent = NULL;
 	else {
-	    hostent = gethostbyaddr((char *)&sa_in->sin_addr, 
+	    hostent = gethostbyaddr((const char *)&sa_in->sin_addr, 
 		sizeof(struct in_addr), AF_INET);
 	}
 	if (hostent != NULL) {
