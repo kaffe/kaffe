@@ -1,3 +1,9 @@
+Wed Jul  3 22:37:15 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* test/regression/FileChecks.java:
+	relaxed test case to check for the exception,
+	instead of exact exception message text.
+
 Wed Jul 03 08:21:11 PDT 2002  Jim Pick  <jim@kaffe.org>
 
         From: Dalibor Topic <robilad@yahoo.com>

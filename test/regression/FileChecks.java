@@ -15,7 +15,7 @@ public class FileChecks
 		}
 		catch (FileNotFoundException e)
 		{
-			System.out.println("1 Success got: " +e);
+			System.out.println("1 Success.");
 		}
 
 		try
@@ -27,7 +27,7 @@ public class FileChecks
 		}
 		catch (FileNotFoundException e)
 		{
-			System.out.println("2 Success got: " +e);
+			System.out.println("2 Success.");
 		}
 
 		try
@@ -38,7 +38,7 @@ public class FileChecks
 		}
 		catch (FileNotFoundException e)
 		{
-			System.out.println("3 Success got: " +e);
+			System.out.println("3 Success.");
 		}
 
 		try
@@ -50,7 +50,7 @@ public class FileChecks
 		}
 		catch (FileNotFoundException e)
 		{
-			System.out.println("4 Success got: " +e);
+			System.out.println("4 Success.");
 		}
 
 		try
@@ -68,9 +68,9 @@ public class FileChecks
 }
 
 /* Expected Output:
-1 Success got: java.io.FileNotFoundException: .: Is a directory
-2 Success got: java.io.FileNotFoundException: .: Is a directory
-3 Success got: java.io.FileNotFoundException: .: Is a directory
-4 Success got: java.io.FileNotFoundException: .: Is a directory
+1 Success.
+2 Success.
+3 Success.
+4 Success.
 5 Success.
 */
