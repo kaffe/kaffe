@@ -60,7 +60,7 @@ static gboolean focus_out_cb (GtkWidget *widget,
 #ifdef __GNUC__
 __inline
 #endif
-static guint
+guint
 awt_keycode_to_keysym (jint keyCode, jint keyLocation)
 {
   /* GDK_A through GDK_Z */

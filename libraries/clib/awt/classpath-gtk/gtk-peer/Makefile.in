@@ -91,6 +91,7 @@ am__libgtkpeer_la_SOURCES_DIST =  \
 	gnu_java_awt_peer_gtk_GdkGraphics.c \
 	gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c \
 	gnu_java_awt_peer_gtk_GdkPixbufDecoder.c \
+	gnu_java_awt_peer_gtk_GdkRobotPeer.c \
 	gnu_java_awt_peer_gtk_GdkTextLayout.c \
 	gnu_java_awt_peer_gtk_GtkFileDialogPeer.c \
 	gnu_java_awt_peer_gtk_GtkButtonPeer.c \
@@ -132,6 +133,7 @@ am_libgtkpeer_la_OBJECTS = $(am__objects_1) \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GdkPixbufDecoder.lo \
+	libgtkpeer_la-gnu_java_awt_peer_gtk_GdkRobotPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GdkTextLayout.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkFileDialogPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkButtonPeer.lo \
@@ -468,6 +470,7 @@ libgtkpeer_la_SOURCES = \
 	gnu_java_awt_peer_gtk_GdkGraphics.c \
 	gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c \
 	gnu_java_awt_peer_gtk_GdkPixbufDecoder.c \
+	gnu_java_awt_peer_gtk_GdkRobotPeer.c \
 	gnu_java_awt_peer_gtk_GdkTextLayout.c \
 	gnu_java_awt_peer_gtk_GtkFileDialogPeer.c \
 	gnu_java_awt_peer_gtk_GtkButtonPeer.c \
@@ -524,7 +527,9 @@ libgtkpeer_la_LDFLAGS = \
 	@CLASSPATH_MODULE@ \
 	@GTK_LIBS@ \
 	@CAIRO_LIBS@ \
-	@PANGOFT2_LIBS@
+	@PANGOFT2_LIBS@ \
+	@X_LIBS@ \
+	-lXtst
 
 all: all-am
 
@@ -603,6 +608,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics2D.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkPixbufDecoder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkRobotPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkTextLayout.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkButtonPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkCanvasPeer.Plo@am__quote@
@@ -712,6 +718,13 @@ libgtkpeer_la-gnu_java_awt_peer_gtk_GdkPixbufDecoder.lo: gnu_java_awt_peer_gtk_G
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_awt_peer_gtk_GdkPixbufDecoder.c' object='libgtkpeer_la-gnu_java_awt_peer_gtk_GdkPixbufDecoder.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GdkPixbufDecoder.lo `test -f 'gnu_java_awt_peer_gtk_GdkPixbufDecoder.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GdkPixbufDecoder.c
+
+libgtkpeer_la-gnu_java_awt_peer_gtk_GdkRobotPeer.lo: gnu_java_awt_peer_gtk_GdkRobotPeer.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GdkRobotPeer.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkRobotPeer.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GdkRobotPeer.lo `test -f 'gnu_java_awt_peer_gtk_GdkRobotPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GdkRobotPeer.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkRobotPeer.Tpo" "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkRobotPeer.Plo"; else rm -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkRobotPeer.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_awt_peer_gtk_GdkRobotPeer.c' object='libgtkpeer_la-gnu_java_awt_peer_gtk_GdkRobotPeer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GdkRobotPeer.lo `test -f 'gnu_java_awt_peer_gtk_GdkRobotPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GdkRobotPeer.c
 
 libgtkpeer_la-gnu_java_awt_peer_gtk_GdkTextLayout.lo: gnu_java_awt_peer_gtk_GdkTextLayout.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GdkTextLayout.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GdkTextLayout.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GdkTextLayout.lo `test -f 'gnu_java_awt_peer_gtk_GdkTextLayout.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GdkTextLayout.c; \

@@ -2,6 +2,36 @@
 
 	Resynced with GNU Classpath.
 
+	2005-01-03  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/ClasspathToolkit.java (createRobot): New method.
+	* gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java
+	(getDefaultScreenDevice): Implement.
+	* gnu/java/awt/peer/gtk/GdkRobotPeer.java: New file.
+	* gnu/java/awt/peer/gtk/GdkScreenGraphicsDevice.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java (createRobot): New method.
+	* java/awt/Robot.java: Implement.
+	* java/awt/peer/RobotPeer.java: Rename parameters.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkRobotPeer.c: New file.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c
+	(awt_keycode_to_keysym): Make non-static.
+	* native/jni/gtk-peer/gtkpeer.h (AWT_BUTTON1_MASK, AWT_BUTTON2_MASK,
+	AWT_BUTTON3_MASK): Declare constants.
+	(awt_keycode_to_keysym): Declare.
+
+	2005-01-03  Michael Koch  <konqueror@gmx.de>
+
+	* configure.ac: Check for X11 stuff when GTK peer is enabled.
+	* include/Makefile.am: Generate gnu_java_awt_peer_gtk_GdkRobotPeer.h.
+	* native/jni/gtk-peer/Makefile.am: Link libXtst.
+	Added gnu_java_awt_peer_gtk_GdkRobotPeer.c to the build.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkRobotPeer.c:
+	Added "__attribute__((__unused__))" all over.
+
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-01-03  Michael Koch  <konqueror@gmx.de>
 
 	* java/net/InetAddress.java: Made all hexadecimal numbers lowercase.

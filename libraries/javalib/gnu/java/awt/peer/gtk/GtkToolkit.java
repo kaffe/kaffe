@@ -622,4 +622,9 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
   {
     throw new UnsupportedOperationException();
   }
+
+  public RobotPeer createRobot (GraphicsDevice screen) throws AWTException
+  {
+    return new GdkRobotPeer (screen);
+  }
 }

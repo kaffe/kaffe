@@ -42,6 +42,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.image.BufferedImage;
@@ -61,7 +62,10 @@ public class GdkGraphicsEnvironment extends GraphicsEnvironment
 
   public GraphicsDevice getDefaultScreenDevice ()
   {
-    throw new java.lang.UnsupportedOperationException ();
+    if (GraphicsEnvironment.isHeadless ())
+      throw new HeadlessException ();
+
+    return new GdkScreenGraphicsDevice ();
   }
 
   public Graphics2D createGraphics (BufferedImage image)

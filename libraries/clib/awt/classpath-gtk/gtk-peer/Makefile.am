@@ -17,6 +17,7 @@ libgtkpeer_la_SOURCES = \
 	gnu_java_awt_peer_gtk_GdkGraphics.c \
 	gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c \
 	gnu_java_awt_peer_gtk_GdkPixbufDecoder.c \
+	gnu_java_awt_peer_gtk_GdkRobotPeer.c \
 	gnu_java_awt_peer_gtk_GdkTextLayout.c \
 	gnu_java_awt_peer_gtk_GtkFileDialogPeer.c \
 	gnu_java_awt_peer_gtk_GtkButtonPeer.c \
@@ -73,7 +74,9 @@ libgtkpeer_la_LDFLAGS = \
 	@CLASSPATH_MODULE@ \
 	@GTK_LIBS@ \
 	@CAIRO_LIBS@ \
-	@PANGOFT2_LIBS@
+	@PANGOFT2_LIBS@ \
+	@X_LIBS@ \
+	-lXtst
 
 $(libgtkpeer_la_SOURCES): libgtkpeer_headers
 
