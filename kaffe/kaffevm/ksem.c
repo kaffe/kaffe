@@ -45,7 +45,6 @@ ksemGet(Ksem* sem, jlong timeout)
 	if (timeout == 0)
 		timeout = NOTIMEOUT;
 
-	jmutex_lock(&sem->mux);
 	/* If no stored wakeups, then sleep. */
 	if (sem->count == 0) {
 		(void)jcondvar_wait(&sem->cv, &sem->mux, timeout);
@@ -73,7 +72,6 @@ void
 ksemPut(Ksem* sem)
 {
 	jmutex_lock(&sem->mux);
-	assert(sem->count == 0);
         sem->count = 1;
 	jcondvar_signal(&sem->cv, &sem->mux);
 	jmutex_unlock(&sem->mux);

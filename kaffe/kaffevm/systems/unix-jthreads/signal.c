@@ -448,7 +448,7 @@ void kaffeNoopFunc(char c UNUSED)
 void
 detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 {
-	char *guessPointer;
+	static volatile char *guessPointer;
 
 	setupSigAltStack();
 
