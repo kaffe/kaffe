@@ -1,3 +1,15 @@
+2004-10-22  Eric Anholt  <eta@lclark.edu>
+
+	* libraries/clib/native/Double.c,
+	libraries/clib/native/Float.c:
+	(toCharArrayWithPrecision): Added len parameter.
+	Use snprintf instead of sprintf. Take care not to
+	erase last decimal digit if necessary. 
+	(java_lang_Double_toStringWithPrecision,
+	java_lang_Float_toStringWithPrecision) Make sure 
+	that max_precision is always smaller than MAXNUMLEN.
+	Pass buffer length to toCharArrayWithPrecision.
+
 2004-10-22  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/io/CharToByteConverter.java,

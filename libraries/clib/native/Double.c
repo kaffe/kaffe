@@ -35,7 +35,7 @@
  * in Float.c as well.
  */
 static char *
-toCharArrayWithPrecision(char * buf, jdouble val, jint precision) {
+toCharArrayWithPrecision(char * buf, int len, jdouble val, jint precision) {
  	const jlong bits = java_lang_Double_doubleToRawLongBits(val);
 	char *s;
 	int k;
@@ -45,16 +45,17 @@ toCharArrayWithPrecision(char * buf, jdouble val, jint precision) {
 	if (bits & DSIGNBIT) {
 		val = -val;
 		*s++ = '-';
+		len--;
 	}
 
 	/* Print in normal or 'scientific' form according to value */
 	if (val == 0.0 || (val >= 1.0e-3 && val < 1.0e7)) {
 		/* Print in decimal notation */
-		sprintf(s, "%.*f", (int) precision, (double) val);
+		snprintf(s, len, "%.*f", (int) precision, (double) val);
 
 		/* Remove trailing zeroes after the decimal point */
 		for (k = strlen(buf) - 1;
-		    buf[k] == '0' && buf[k - 1] != '.';
+		    k > 1 && buf[k] == '0' && buf[k - 1] != '.';
 		    k--) {
 			buf[k] = '\0';
 		}
@@ -62,7 +63,7 @@ toCharArrayWithPrecision(char * buf, jdouble val, jint precision) {
 		char *t, *eptr, *eval;
 
 		/* Print in exponential notation */
-		sprintf(s, "%.*E", (int) precision - 1, (double) val);
+		snprintf(s, len, "%.*E", (int) precision - 1, (double) val);
 
 		/* Find the exponent */
 		eptr = strchr(buf, 'E');
@@ -188,10 +189,14 @@ java_lang_Double_toStringWithPrecision(jdouble val, jint max_precision)
 	jint min_precision = 1;
 	jint precision = 0;
 
+	/* FreeBSD's snprintf dies on very large precision. */
+	if (max_precision > MAXNUMLEN)
+		max_precision = MAXNUMLEN;
+
 	/* perform a binary search over precision. */
 	while (max_precision != min_precision + 1) {
 	    precision = (max_precision + min_precision) / 2;
-	    toCharArrayWithPrecision(buf, val, (int) precision);
+	    toCharArrayWithPrecision(buf, MAXNUMLEN, val, (int) precision);
 
 	    if (valueOfCharArray(buf) != val) {
 		min_precision = precision;
@@ -207,7 +212,7 @@ java_lang_Double_toStringWithPrecision(jdouble val, jint max_precision)
 	 * is not equal to val.
 	 */
 	if (precision == min_precision) {
-	    toCharArrayWithPrecision(buf, val, (int) precision + 1);
+	    toCharArrayWithPrecision(buf, MAXNUMLEN, val, (int) precision + 1);
 	}
 
 	return (checkPtr(stringC2Java(buf)));
