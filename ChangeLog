@@ -1,3 +1,8 @@
+Fri Mar 26 12:10:02 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/kaffe.def: fix bug in DASTORE instruction
+	* config/sparc/jit-sparc.def: fix compiler warning
+
 Thu Mar 25 17:15:56 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* config/i386/linux/jit-md.h: attempt at dealing with Linux sigcontext
