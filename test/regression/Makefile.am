@@ -44,6 +44,7 @@ ALWAYS_TESTS = \
 	Preempt.java 		\
 ## Misc tests
 	ReflectInterfaces.java \
+	InnerTest.java \
 	SerialUID.java \
 	TestSerializable.java \
 	TestSerializable2.java \

@@ -164,6 +164,7 @@ ALWAYS_TESTS = \
 	IllegalWait.java \
 	Preempt.java 		\
 	ReflectInterfaces.java \
+	InnerTest.java \
 	SerialUID.java \
 	TestSerializable.java \
 	TestSerializable2.java \
