@@ -2,7 +2,8 @@ Mon Jan 11 03:17:45 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* acconfig.h: moved into config
 	* Makefile.am, config/Makefile.am (AUTOHEADER): added --localdir
-
+	* Makefile.in, config/Makefile.in: regen
+	
 	* configure.in, libltdl/configure.in: accept also autoconf 2.14,
 	it's the version number in their CVS tree now
 	* configure, libltdl/configure: regen
