@@ -1,3 +1,21 @@
+2004-02-24  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath
+
+	2004-02-12  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/DatagramSocket.java
+        (setReuseAddress): Use Boolean.valueOf() instead of creating a new
+        Boolean object.
+        (setBroadcast): Likewise.
+
+	2004-02-06  Mohan Embar  <gnustuff@thisiscool.com>
+
+        * java/net/DatagramSocket.java (receive): Don't throw an
+        IllegalBlockingModeException if we have a non-blocking
+        channel which initiated this operation.
+        (send): Likewise.
+
 2004-02-23  Dalibor Topic <robilad@kaffe.org>
 
 	Resynced with GNU Classpath
