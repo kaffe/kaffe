@@ -12,6 +12,10 @@
  * Figure out deadlock issues with System.gc() on smp(finalexc, ClassGC,
    GCTest all fail on smp).
 
+* Missing features
+ * Implement support for extension override mechanism, and allow overriding
+   with older versions of APIs as well, which is needed for DOM.
+
 * Merging work:
   * From GNU Classpath:
     java.util.zip, java.lang.ref, java.lang.reflect, java.lang
