@@ -17,6 +17,9 @@
 #else
 #define NEED_sysdepCallMethod 1
 #endif
+
+#include "locks.h"
+#include "machine.h"
 #include "methodcalls.h"
 #include "thread.h"
 #include "slots.h"

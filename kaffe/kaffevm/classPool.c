@@ -14,6 +14,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include "errors.h"
+#include "external.h"
 #include "itypes.h"
 #include "access.h"
 #include "file.h"

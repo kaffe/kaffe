@@ -11,6 +11,8 @@
 #ifndef __machine_h
 #define	__machine_h
 
+#include "threadData.h"
+
 #define current_class()		(meth->class)
 
 #define getopcode()             ((int)code[pc])

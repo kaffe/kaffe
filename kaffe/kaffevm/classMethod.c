@@ -508,8 +508,6 @@ retry:
 	DO_CLASS_STATE(CSTATE_COMPLETE) {
 		jthrowable exc = NULL;
 		jthrowable excpending;
-		JavaVM *vms[1];
-		jsize jniworking;
 
 		/* If we need a successfully initialized class here, but its
 		 * initializer failed, return false as well

@@ -771,7 +771,9 @@ DBG(CLASSLOOKUP,	dprintf("Entry '%s' added to classpath\n", newEntry->path); );
 }
 #endif
 
+#ifdef ENABLE_BINRELOC
 static char discoveredClassHome[MAXPATHLEN];
+#endif
 
 /*
  * Guess the path to kaffe/jre/lib by going upwards from the current

@@ -727,7 +727,6 @@ Kaffe_GetJavaVM(JNIEnv* env UNUSED, JavaVM** vm)
 }
 
 static jint
-NONRETURNING
 Kaffe_DestroyJavaVM(JavaVM* vm UNUSED)
 {
 	/* Right now, calling this from main2 is what prevents us from 
