@@ -929,18 +929,4 @@ public class Vector extends AbstractList
     s.defaultWriteObject();
   }
 
-  /**
-   * Deserializes this object from the given stream.
-   *
-   * @param s the stream to read from
-   * @throws ClassNotFoundException if the underlying stream fails
-   * @throws IOException if the underlying stream fails
-   * @serialData just calls default read function
-   */
-  private void readObject(ObjectInputStream s)
-    throws IOException, ClassNotFoundException
-  {
-    s.defaultReadObject();
-  }
-
 }

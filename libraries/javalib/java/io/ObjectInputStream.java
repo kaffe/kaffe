@@ -324,6 +324,14 @@ public class ObjectInputStream extends InputStream
 		      boolean oldmode = setBlockDataMode(true);
 		      callReadMethod(readObjectMethod, this.currentObjectStreamClass.forClass(), obj);
 		      setBlockDataMode(oldmode);
+		    }
+		  else
+		    {
+		      readFields(obj, currentObjectStreamClass);
+		    }
+
+		  if (this.currentObjectStreamClass.hasWriteMethod())
+		    {
 		      if(dump) dumpElement("ENDBLOCKDATA? ");
 		      try
 			{
@@ -345,10 +353,6 @@ public class ObjectInputStream extends InputStream
 			{
 			  if(dump) dumpElementln("no, got IOException");
 			}
-		    }
-		  else
-		    {
-		      readFields(obj, currentObjectStreamClass);
 		    }
 		}
 
