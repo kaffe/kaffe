@@ -38,10 +38,433 @@ exception statement from your version. */
 
 package javax.imageio;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+
 import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.spi.ImageWriterSpi;
+import javax.imageio.spi.ServiceRegistry;
 
 public final class ImageIO
 {
+  private static final class ReaderFormatFilter implements ServiceRegistry.Filter
+  {
+    private String formatName;
+
+    public ReaderFormatFilter(String formatName)
+    {
+      this.formatName = formatName;
+    }
+
+    public boolean filter (Object provider)
+    {
+      if (provider instanceof ImageReaderSpi)
+        {
+          ImageWriterSpi spi = (ImageWriterSpi) provider;
+          String[] formatNames = spi.getFormatNames();
+
+          for (int i = formatNames.length - 1; i >= 0; --i)
+            if (formatName.equals(formatNames[i]))
+              return true;
+        }
+
+      return false;
+    }
+  }
+
+  private static final class ReaderMIMETypeFilter implements ServiceRegistry.Filter
+  {
+    private String MIMEType;
+
+    public ReaderMIMETypeFilter(String MIMEType)
+    {
+      this.MIMEType = MIMEType;
+    }
+
+    public boolean filter(Object provider)
+    {
+      if (provider instanceof ImageReaderSpi)
+        {
+          ImageReaderSpi spi = (ImageReaderSpi) provider;
+          String[] mimetypes = spi.getMIMETypes();
+
+          for (int i = mimetypes.length - 1; i >= 0; --i)
+            if (MIMEType.equals(mimetypes[i]))
+              return true;
+        }
+
+      return false;
+    }
+  }
+  
+  private static final class ReaderSuffixFilter implements ServiceRegistry.Filter
+  {
+    private String fileSuffix;
+
+    public ReaderSuffixFilter(String fileSuffix)
+    {
+      this.fileSuffix = fileSuffix;
+    }
+
+    public boolean filter(Object provider)
+    {
+      if (provider instanceof ImageReaderSpi)
+        {
+          ImageReaderSpi spi = (ImageReaderSpi) provider;
+          String[] suffixes = spi.getFileSuffixes();
+
+          for (int i = suffixes.length - 1; i >= 0; --i)
+            if (fileSuffix.equals(suffixes[i]))
+              return true;
+        }
+
+      return false;
+    }
+  }
+  
+  private static final class WriterFormatFilter implements ServiceRegistry.Filter
+  {
+    private String formatName;
+
+    public WriterFormatFilter(String formatName)
+    {
+      this.formatName = formatName;
+    }
+
+    public boolean filter(Object provider)
+    {
+      if (provider instanceof ImageReaderSpi)
+	{
+	  ImageReaderSpi spi = (ImageReaderSpi) provider;
+	  String[] formatNames = spi.getFormatNames();
+	  
+	  for (int i = formatNames.length - 1; i >= 0; --i)
+	    if (formatName.equals(formatNames[i]))
+	      return true;
+	}
+
+      return false;
+    }
+  }
+
+  private static final class WriterMIMETypeFilter implements ServiceRegistry.Filter
+  {
+    private String MIMEType;
+
+    public WriterMIMETypeFilter(String MIMEType)
+    {
+      this.MIMEType = MIMEType;
+    }
+
+    public boolean filter(Object provider)
+    {
+      if (provider instanceof ImageReaderSpi)
+        {
+          ImageWriterSpi spi = (ImageWriterSpi) provider;
+          String[] mimetypes = spi.getMIMETypes();
+
+          for (int i = mimetypes.length - 1; i >= 0; --i)
+            if (MIMEType.equals(mimetypes[i]))
+              return true;
+        }
+
+      return false;
+    }
+  }
+  
+  private static final class WriterSuffixFilter implements ServiceRegistry.Filter
+  {
+    private String fileSuffix;
+
+    public WriterSuffixFilter(String fileSuffix)
+    {
+      this.fileSuffix = fileSuffix;
+    }
+
+    public boolean filter(Object provider)
+    {
+      if (provider instanceof ImageReaderSpi)
+        {
+          ImageWriterSpi spi = (ImageWriterSpi) provider;
+          String[] suffixes = spi.getFileSuffixes();
+
+          for (int i = suffixes.length - 1; i >= 0; --i)
+            if (fileSuffix.equals(suffixes[i]))
+              return true;
+        }
+
+      return false;
+    }
+  }
+
+  private static final class ImageReaderIterator implements Iterator
+  {
+    Iterator it;
+    
+    public ImageReaderIterator(Iterator it)
+    {
+      this.it = it;
+    }
+
+    public boolean hasNext()
+    {
+      return it.hasNext();
+    }
+
+    public Object next()
+    {
+      try
+        {
+          return ((ImageReaderSpi) it.next()).createReaderInstance();
+        }
+      catch (IOException e)
+        {
+          return null;
+        }
+    }
+
+    public void remove()
+    {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  private static final class ImageWriterIterator implements Iterator
+  {
+    Iterator it;
+    
+    public ImageWriterIterator(Iterator it)
+    {
+      this.it = it;
+    }
+
+    public boolean hasNext()
+    {
+      return it.hasNext();
+    }
+
+    public Object next()
+    {
+      try
+        {
+          return ((ImageWriterSpi) it.next()).createWriterInstance();
+        }
+      catch (IOException e)
+        {
+          return null;
+        }
+    }
+
+    public void remove()
+    {
+      throw new UnsupportedOperationException();
+    }
+  }
+  
+  private static File cacheDirectory;
+  private static boolean useCache = true;
+
+  private static Iterator getReadersByFilter(Class type,
+                                             ServiceRegistry.Filter filter)
+  {
+    try
+      {
+        Iterator it = getRegistry().getServiceProviders(type, filter, true);
+        return new ImageReaderIterator(it);
+      }
+    catch (IllegalArgumentException e)
+      {
+        return Collections.EMPTY_SET.iterator();
+      }
+  }
+  
+  private static Iterator getWritersByFilter(Class type,
+					     ServiceRegistry.Filter filter)
+  {
+    try
+      {
+        Iterator it = getRegistry().getServiceProviders(type, filter, true);
+        return new ImageWriterIterator(it);
+      }
+    catch (IllegalArgumentException e)
+      {
+        return Collections.EMPTY_SET.iterator();
+      }
+  }
+
+  public static File getCacheDirectory()
+  {
+    return cacheDirectory;
+  }
+
+  public static Iterator getImageReadersByFormatName(String formatName)
+  {
+    if (formatName == null)
+      throw new IllegalArgumentException("formatName may not be null");
+
+    return getReadersByFilter(ImageReaderSpi.class,
+                              new ReaderFormatFilter(formatName));
+  }
+
+  public static Iterator getImageReadersByMIMEType(String MIMEType)
+  {
+    if (MIMEType == null)
+      throw new IllegalArgumentException("MIMEType may not be null");
+
+    return getReadersByFilter(ImageReaderSpi.class,
+                              new ReaderMIMETypeFilter(MIMEType));
+  }
+
+  public static Iterator getImageReadersBySuffix(String fileSuffix)
+  {
+    if (fileSuffix == null)
+      throw new IllegalArgumentException("formatName may not be null");
+    
+    return getReadersByFilter(ImageReaderSpi.class,
+                              new ReaderSuffixFilter(fileSuffix));
+  }
+
+  public static Iterator getImageWritersByFormatName(String formatName)
+  {
+    if (formatName == null)
+      throw new IllegalArgumentException("formatName may not be null");
+    
+    return getWritersByFilter(ImageWriterSpi.class,
+                              new WriterFormatFilter(formatName));
+  }
+
+  public static Iterator getImageWritersByMIMEType(String MIMEType)
+  {
+    if (MIMEType == null)
+      throw new IllegalArgumentException("MIMEType may not be null");
+    
+    return getWritersByFilter(ImageWriterSpi.class,
+                              new WriterMIMETypeFilter(MIMEType));
+  }
+
+  public static Iterator getImageWritersBySuffix(String fileSuffix)
+  {
+    if (fileSuffix == null)
+      throw new IllegalArgumentException("fileSuffix may not be null");
+    
+    return getWritersByFilter(ImageWriterSpi.class,
+                              new WriterSuffixFilter(fileSuffix));
+  }
+
+  public static String[] getReaderFormatNames()
+  {
+    try
+      {
+        Iterator it =
+	  getRegistry().getServiceProviders(ImageReaderSpi.class, true);
+	ArrayList result = new ArrayList();
+
+	while (it.hasNext())
+	  {
+	    ImageReaderSpi spi = (ImageReaderSpi) it.next();
+	    String[] names = spi.getFormatNames();
+
+	    for (int i = names.length - 1; i >= 0; --i)
+	      result.add(names[i]);
+	  }
+
+	return (String[]) result.toArray(new String[result.size()]);
+      }
+    catch (IllegalArgumentException e)
+      {
+        return new String[0];
+      }
+  }
+
+  public static String[] getReaderMIMETypes()
+  {
+    try
+      {
+        Iterator it =
+	  getRegistry().getServiceProviders(ImageReaderSpi.class, true);
+	ArrayList result = new ArrayList();
+
+	while (it.hasNext())
+	  {
+	    ImageReaderSpi spi = (ImageReaderSpi) it.next();
+	    String[] names = spi.getMIMETypes();
+
+	    for (int i = names.length - 1; i >= 0; --i)
+	      result.add(names[i]);
+	  }
+
+	return (String[]) result.toArray(new String[result.size()]);
+      }
+    catch (IllegalArgumentException e)
+      {
+        return new String[0];
+      }
+  }
+
+  private static IIORegistry getRegistry()
+  {
+    return IIORegistry.getDefaultInstance();
+  }
+
+  public static boolean getUseCache()
+  {
+    return useCache;
+  }
+
+  public static String[] getWriterFormatNames()
+  {
+    try
+      {
+        Iterator it =
+	  getRegistry().getServiceProviders(ImageWriterSpi.class, true);
+	ArrayList result = new ArrayList();
+
+	while (it.hasNext())
+	  {
+	    ImageWriterSpi spi = (ImageWriterSpi) it.next();
+	    String[] names = spi.getFormatNames();
+
+	    for (int i = names.length - 1; i >= 0; --i)
+	      result.add(names[i]);
+	  }
+
+	return (String[]) result.toArray(new String[result.size()]);
+      }
+    catch (IllegalArgumentException e)
+      {
+        return new String[0];
+      }
+  }
+
+  public static String[] getWriterMIMETypes()
+  {
+    try
+      {
+        Iterator it =
+	  getRegistry().getServiceProviders(ImageWriterSpi.class, true);
+	ArrayList result = new ArrayList();
+
+	while (it.hasNext())
+	  {
+	    ImageWriterSpi spi = (ImageWriterSpi) it.next();
+	    String[] names = spi.getMIMETypes();
+
+	    for (int i = names.length - 1; i >= 0; --i)
+	      result.add(names[i]);
+	  }
+
+	return (String[]) result.toArray(new String[result.size()]);
+      }
+    catch (IllegalArgumentException e)
+      {
+        return new String[0];
+      }
+  }
+  
   /**
    * Rescans the application classpath for ImageIO service providers
    * and registers them.
@@ -49,5 +472,23 @@ public final class ImageIO
   public static void scanForPlugins()
   {
     IIORegistry.getDefaultInstance().registerApplicationClasspathSpis();
+  }
+
+  public static void setCacheDirectory(File cacheDirectory)
+  {
+    if (cacheDirectory != null)
+      {
+        if (!cacheDirectory.isDirectory())
+          throw new IllegalArgumentException("cacheDirectory must be a directory");
+
+        cacheDirectory.canWrite();
+      }
+    
+    ImageIO.cacheDirectory = cacheDirectory;
+  }
+
+  public static void setUseCache(boolean useCache)
+  {
+    ImageIO.useCache = useCache;
   }
 }

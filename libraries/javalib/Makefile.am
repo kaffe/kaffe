@@ -2636,8 +2636,10 @@ javax_imageio_spi_SRCS = \
 	javax/imageio/spi/IIOServiceProvider.java \
 	javax/imageio/spi/ImageInputStreamSpi.java \
 	javax/imageio/spi/ImageOutputStreamSpi.java \
+	javax/imageio/spi/ImageReaderSpi.java \
 	javax/imageio/spi/ImageReaderWriterSpi.java \
 	javax/imageio/spi/ImageTranscoderSpi.java \
+	javax/imageio/spi/ImageWriterSpi.java \
 	javax/imageio/spi/RegisterableService.java \
 	javax/imageio/spi/ServiceRegistry.java
 javax_imageio_stream_SRCS = \

@@ -38,9 +38,73 @@ exception statement from your version. */
 
 package javax.imageio;
 
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+
 /**
  * @author Michel Koch (konqueror@gmx.de)
  */
 public class ImageReadParam extends IIOParam
 {
+  protected boolean canSetSourceRenderSize;
+  protected BufferedImage destination;
+  protected int[] destinationBands;
+  protected int minProgressivePass;
+  protected int numProgressivePasses = Integer.MAX_VALUE;
+  protected Dimension sourceRenderSize;
+
+  public ImageReadParam()
+  {
+  }
+
+  public boolean canSetSourceRenderSize()
+  {
+    return canSetSourceRenderSize;
+  }
+
+  public BufferedImage getDestination()
+  {
+    return destination;
+  }
+
+  public int[] getDestinationBands()
+  {
+    return destinationBands;
+  }
+
+  public int getSourceMaxProgressivePass()
+  {
+    if (getSourceNumProgressivePasses() == Integer.MAX_VALUE)
+      return Integer.MAX_VALUE;
+
+    return getSourceMinProgressivePass() + getSourceNumProgressivePasses() - 1;
+  }
+
+  public int getSourceMinProgressivePass()
+  {
+    return minProgressivePass;
+  }
+
+  public int getSourceNumProgressivePasses()
+  {
+    return numProgressivePasses;
+  }
+
+  public Dimension getSourceRenderSize()
+  {
+    return sourceRenderSize;
+  }
+  
+  public void setSourceRenderSize(Dimension size)
+    throws UnsupportedOperationException
+  {
+    if (! canSetSourceRenderSize())
+      throw new UnsupportedOperationException
+	("setting source render size not supported");
+    
+    if (size.width <= 0 || size.height <= 0)
+      throw new IllegalArgumentException("negative dimension not allowed");
+    
+    sourceRenderSize = size;
+  }
 }

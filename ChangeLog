@@ -1,3 +1,44 @@
+2004-10-05  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/javax/imageio/spi/ImageReaderSpi.java,
+	libraries/javalib/javax/imageio/spi/ImageWriterSpi.java:
+	New files taken from GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/javax/imageio/IIOParam.java,
+	libraries/javalib/javax/imageio/ImageIO.java,
+	libraries/javalib/javax/imageio/ImageReadParam.java,
+	libraries/javalib/javax/imageio/ImageReader.java,
+	libraries/javalib/javax/imageio/ImageWriter.java:
+	Resynced with GNU Classpath.
+
+	2004-10-05  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/ImageIO.java:
+        Added much new methods.
+
+	2004-10-05  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/ImageReader.java,
+        javax/imageio/ImageWriter.java,
+        javax/imageio/spi/ImageWriterSpi.java:
+        Add SOME new methods.
+
+	2004-10-05  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/IIOParam.java,
+        javax/imageio/ImageReadParam.java,
+        javax/imageio/ImageReader.java,
+        javax/imageio/ImageWriter.java:
+        Mostly implemented.
+        * javax/imageio/spi/ImageReaderSpi.java,
+        javax/imageio/spi/ImageWriterSpi.java:
+        New files.
+
 2004-10-05  Djordje Nikolic  <dmn@ict-tower.com>
 
 	* kaffe/kaffeh/mem.c

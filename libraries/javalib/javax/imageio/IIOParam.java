@@ -38,15 +38,120 @@ exception statement from your version. */
 
 package javax.imageio;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+
 /**
  * @author Michael Koch (konqueror@gmx.de)
  */
 public abstract class IIOParam
 {
+  protected IIOParamController controller;
+  protected IIOParamController defaultController;
+  protected Point destinationOffset = new Point(0, 0);
+  protected ImageTypeSpecifier destinationType;
+  protected int[] sourceBands;
+  protected Rectangle sourceRegion;
+  protected int sourceXSubsampling;
+  protected int sourceYSubsampling;
+  protected int subsamplingXOffset;
+  protected int subsamplingYOffset;
+
   /**
    * Initializes an <code>IIOParam</code> object.
    */
   protected IIOParam()
   {
+    // Do nothing here.
+  }
+
+  public boolean activateController()
+  {
+    if (controller == null)
+      return false;
+    
+    return controller.activate(this);
+  }
+  
+  public IIOParamController getController()
+  {
+    return controller;
+  }
+
+  public IIOParamController getDefaultController()
+  {
+    return defaultController;
+  }
+
+  public Point getDestinationOffset()
+  {
+    return destinationOffset;
+  }
+
+  public ImageTypeSpecifier getDestinationType()
+  {
+    return destinationType;
+  }
+
+  public int[] getSourceBands()
+  {
+    return sourceBands;
+  }
+
+  public Rectangle getSourceRegion()
+  {
+    return sourceRegion;
+  }
+
+  public int getSourceXSubsampling()
+  {
+    return sourceXSubsampling;
+  }
+  
+  public int getSourceYSubsampling()
+  {
+    return sourceYSubsampling;
+  }
+
+  public int getSubsamplingXOffset()
+  {
+    return subsamplingXOffset;
+  }
+  
+  public int getSubsamplingYOffset()
+  {
+    return subsamplingYOffset;
+  }
+
+  public boolean hasController()
+  {
+    return getController() != null;
+  }
+
+  public void setController(IIOParamController controller)
+  {
+    this.controller = controller;
+  }
+
+  public void setDestinationOffset(Point destinationOffset)
+  {
+    if (destinationOffset == null)
+      throw new IllegalArgumentException("destinationOffset is null");
+
+    this.destinationOffset = destinationOffset;
+  }
+
+  public void setSourceRegion(Rectangle sourceRegion)
+  {
+    if (sourceRegion != null
+	&& (sourceRegion.x < 0
+	    || sourceRegion.y < 0
+	    || sourceRegion.width <= 0
+	    || sourceRegion.height <= 0))
+      throw new IllegalArgumentException("illegal source region");
+    
+    // FIXME: Throw IllegalStateException.
+
+    this.sourceRegion = sourceRegion;
   }
 }
