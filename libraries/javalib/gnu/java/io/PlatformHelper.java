@@ -37,91 +37,97 @@ exception statement from your version. */
 
 package gnu.java.io;
 
-import java.io.*;
 import java.util.StringTokenizer;
 
 /**
- * We had many cahnges in File.java, URLStreamHandler.java etc. to handle
+ * We had many changes in File.java, URLStreamHandler.java etc. to handle
  * path representations on different platforms (Windows/Unix-family).
  * Finally we'd like to collect all these ad hoc codes into this utility class.
  *       --Gansha
  */
- 
-public class PlatformHelper{
+public class PlatformHelper
+{
+  public static final boolean isWindows = System.getProperty("os.name").indexOf("Windows") >= 0;
+  public static final String separator = System.getProperty("file.separator");
+  public static final char separatorChar = separator.charAt(0);
+  public static final String pathSeparator = System.getProperty("path.separator");
+  public static final char pathSeparatorChar = pathSeparator.charAt(0);
 
-public static final boolean isWindows
-	= System.getProperty("os.name").indexOf("Windows") >= 0;
+  /**
+   * On most platforms 260 is equal or greater than a max path value, 
+   * so we can set the initial buffer size of StringBuffer to half of this value
+   * to improve performance.
+   */
+  public static final int INITIAL_MAX_PATH = 260/2;
 
-public static final String separator = System.getProperty("file.separator");
-public static final char separatorChar = separator.charAt(0);
-public static final String pathSeparator = System.getProperty("path.separator");
-public static final char pathSeparatorChar = pathSeparator.charAt(0);
+  /**
+   * This routine checks the input param "path" whether it begins with root path
+   * prefix.
+   * if not, return 0;
+   * if yes, return the len of root path prefix;
+   *   --for Unix-family platform, root path begins with "/" and len is 1
+   *   --for Windows platform, root path begins with "drive:\\" and len is 3
+   */
+  public static final int beginWithRootPathPrefix(String path)
+  {
+    if (path.startsWith("/") || path.startsWith("\\"))
+      return 1;
 
-/**
-  * On most platforms 260 is equal or greater than a max path value, 
-  * so we can set the initial buffer size of StringBuffer to half of this value
-  * to improve performance.
-  */
-public static final int INITIAL_MAX_PATH = 260/2;
+    if (!isWindows)
+      return 0;
 
-/**
- * This routine checks the input param "path" whether it begins with root path
- * prefix.
- * if not, return 0;
- * if yes, return the len of root path prefix;
- *   --for Unix-family platform, root path begins with "/" and len is 1
- *   --for Windows platform, root path begins with "drive:\\" and len is 3
- */
-public static final int beginWithRootPathPrefix(String path){
-    if(path.startsWith("/") || path.startsWith("\\"))
-        return 1;
-    if(!isWindows)
-        return 0;
-    if( path.length() > 2 &&
-        Character.isLetter(path.charAt(0)) &&
-        path.charAt(1) == ':' &&
-        ( path.charAt(2) == '/' || path.charAt(2) == '\\')
-        )
-        return 3;
+    if (path.length() > 2
+        && Character.isLetter(path.charAt(0))
+        && path.charAt(1) == ':'
+        && (path.charAt(2) == '/' || path.charAt(2) == '\\'))
+      return 3;
+
     return 0;
-}
+  }
 
-/**
- * This routine checks the input param "path" whether it's root directory.
- *  --for Unix-family platform, root directory is "/"
- *  --for Windows platform, root directory is "\\" or "drive:\\".
- */
-public static final boolean isRootDirectory(String path){
+  /**
+   * This routine checks the input param "path" whether it's root directory.
+   *  --for Unix-family platform, root directory is "/"
+   *  --for Windows platform, root directory is "\\" or "drive:\\".
+   */
+  public static final boolean isRootDirectory(String path)
+  {
     if (path.equals("/") || path.equals("\\"))
-        return true;
+      return true;
+    
     if(!isWindows)
-        return false;
-    if( path.length() > 2 &&
-        path.length() <= 3 &&
-        Character.isLetter(path.charAt(0))
-        )
-        return true;
+      return false;
+    
+    if (path.length() > 2
+        && path.length() <= 3
+        && Character.isLetter(path.charAt(0)))
+      return true;
+    
     return false;
-}
+  }
 
-/**
- * This routine canonicalizes input param "path" to formal path representation
- *  for current platform, including interpreting ".." and "." .
- */
-public static final String toCanonicalForm(String path){
+  /**
+   * This routine canonicalizes input param "path" to formal path representation
+   *  for current platform, including interpreting ".." and "." .
+   */
+  public static final String toCanonicalForm(String path)
+  {
     /*??
     if(path.indexOf('.') < 0 && path.indexOf("..") < 0)
         return path; 
     */
     String tmppath = path.replace('/', separatorChar);
     StringBuffer canonpath;
+
     // We found it'll be more efficient and easy to handle to
     // return a lowercased canonical path
     if(isWindows)
-        tmppath = tmppath.toLowerCase();
+      tmppath = tmppath.toLowerCase();
+
     int i;
+
     if ((i = beginWithRootPathPrefix(tmppath)) == 0 )
-        return path;
+      return path;
     
     /* The original 
            "canonpath = new StringBuffer(tmppath.substring(0, i))"
@@ -140,82 +146,93 @@ public static final String toCanonicalForm(String path){
     // Traverse each element of the path, handling "." and ".."
     // Should handle "~" too?
     if (st.hasMoreTokens())
-        do {
-            String s = st.nextToken();
+      do
+        {
+          String s = st.nextToken();
         
-            // Handle "." or an empty element.  
-            if (s.equals(".") || s.equals(""))
+          // Handle "." or an empty element.  
+          if (s.equals(".") || s.equals(""))
+            continue;
+        
+          // Handle ".." by deleting the last element from the path
+          if (s.equals(".."))
+            {
+              if (pathdepth == 0)
                 continue;
+
+              // Strip of trailing separator
+              canonpath.setLength(canonpath.length() - 1/*separator.length()*/);
+              String tmpstr = canonpath.toString();
+              int idx = tmpstr.lastIndexOf(separator); 
+
+              if ((idx == -1) || ((idx + 1/*separator.length()*/) > tmpstr.length()))
+                //throw new IOException("Can't happen error"); 
+                return path; // Shouldn't happen 
         
-            // Handle ".." by deleting the last element from the path
-            if (s.equals("..")) {
-                if (pathdepth == 0)
-                    continue;
-                // Strip of trailing separator
-                canonpath.setLength(canonpath.length() - 1/*separator.length()*/);
-                String tmpstr = canonpath.toString();
-                int idx = tmpstr.lastIndexOf(separator); 
-                if ((idx == -1) || ((idx + 1/*separator.length()*/) > tmpstr.length()))
-                  //throw new IOException("Can't happen error"); 
-                  return path; // Shouldn't happen 
+              canonpath.setLength(idx + 1/*separator.length()*/);
+              pathdepth--;
+              continue;
+            }
         
-                canonpath.setLength(idx + 1/*separator.length()*/);
-                pathdepth--;
-                continue;
-            }       
-        
-            canonpath.append(s);
-            pathdepth++; //now it's more than root path
-            if (st.hasMoreTokens())
-                canonpath.append(separator);
+          canonpath.append(s);
+          pathdepth++; //now it's more than root path
+
+          if (st.hasMoreTokens())
+            canonpath.append(separator);
         }
-        while(st.hasMoreTokens());
+      while (st.hasMoreTokens());
     
-    if(endWithSeparator(path))
-        canonpath.append(separator);
+    if (endWithSeparator(path))
+      canonpath.append(separator);
         
     String tmpstr = canonpath.toString();
     //if (pathdepth > 0 && endWithSeparator(tmpstr) )
     //    tmpstr = tmpstr.substring(0, tmpstr.length() - 1/*separator.length()*/);
     
     return tmpstr;
-}
+  }
 
-/**
- * This routine canonicalizes input param "path" to formal path representation
- *  for current platform, and normalize all separators to "sepchar".
- */
-public static final String toCanonicalForm(String path, char sepchar){
+  /**
+   * This routine canonicalizes input param "path" to formal path representation
+   *  for current platform, and normalize all separators to "sepchar".
+   */
+  public static final String toCanonicalForm(String path, char sepchar)
+  {
     String tmpstr = toCanonicalForm(path);
     tmpstr = tmpstr.replace(separatorChar, sepchar);
     return tmpstr;
-}
+  }
 
-/**
- * This routine checks whether input param "path" ends with separator
- */
-public static final boolean endWithSeparator(String path){
+  /**
+   * This routine checks whether input param "path" ends with separator
+   */
+  public static final boolean endWithSeparator(String path)
+  {
     if (path.endsWith("\\") || path.endsWith("/"))
-        return true;
+      return true;
+
     return false;
-}
+  }
 
-/**
- * This routine removes from input param "path" the tail separator if it exists, 
- * and return the remain part.
- */
-public static final String removeTailSeparator(String path){
+  /**
+   * This routine removes from input param "path" the tail separator if it exists, 
+   * and return the remain part.
+   */
+  public static final String removeTailSeparator(String path)
+  {
     if (endWithSeparator(path) && !isRootDirectory(path))
-        return path.substring(0, path.length() - 1);
-    return path;
-}
+      return path.substring(0, path.length() - 1);
 
-/**
- * This routine returns last index of separator in input param "path", 
- * and return it.
- */
-public static final int lastIndexOfSeparator(String path){
+    return path;
+  }
+
+  /**
+   * This routine returns last index of separator in input param "path", 
+   * and return it.
+   */
+  public static final int lastIndexOfSeparator(String path)
+  {
     return Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\"));
-}
+  }
 
 }
