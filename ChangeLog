@@ -1,5 +1,10 @@
 2004-11-06  Eric Anholt  <eta@lclark.edu>
 
+	* kaffe/kaffevm/jni/jni.c:
+	Clean up cast warnings.
+
+2004-11-06  Eric Anholt  <eta@lclark.edu>
+
 	* libraries/clib/native/AccessController.c:
 	Warnings fixes which probably matter on 64-bit (assuming that a
 	non-prototyped function returns int, instead of pointer).

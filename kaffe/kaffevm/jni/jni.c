@@ -486,7 +486,7 @@ Kaffe_GetMethodID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 	}
 	END_EXCEPTION_HANDLING();
 	
-	return (meth);
+	return ((jmethodID)meth);
 }
 
 
@@ -505,7 +505,7 @@ Kaffe_GetFieldID(JNIEnv* env, jclass cls, const char* name, const char* sig UNUS
 		postError(env, &info);
 	}
 	END_EXCEPTION_HANDLING();
-	return (fld);
+	return ((jfieldID)fld);
 }
 
 static jmethodID
@@ -525,7 +525,7 @@ Kaffe_GetStaticMethodID(JNIEnv* env, jclass cls, const char* name, const char* s
 	}
 	END_EXCEPTION_HANDLING();
 
-	return (meth);
+	return ((jmethodID)meth);
 }
 
 static jfieldID
@@ -544,7 +544,7 @@ Kaffe_GetStaticFieldID(JNIEnv* env, jclass cls, const char* name, const char* si
 	}
 	END_EXCEPTION_HANDLING();
 
-	return (fld);
+	return ((jfieldID)fld);
 }
 
 static jsize
