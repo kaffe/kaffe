@@ -746,6 +746,7 @@ kaffe_util_SRCS = \
 	kaffe/util/Ptr.java \
 	kaffe/util/Timer.java \
 	kaffe/util/TimerClient.java \
+	kaffe/util/UNIXTimeZone.java \
 	kaffe/util/UTF8.java \
 	kaffe/util/VectorSnapshot.java
 kaffe_util_log_SRCS = \
