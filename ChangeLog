@@ -1,3 +1,11 @@
+2004-07-12  Jim Huang  <jserv@kaffe.org>
+
+	* libraries/javalib/java/awt/ScrollPane.java
+	(ScrollPane): supports GraphicsEnvironment.isHeadless() checks.
+	(addImpl): checks scrollbar type.
+	(getScrollPosition), (getViewportSize), (layout), (layoutX):
+	scrollbar boundary check.
+					
 2004-07-11  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.h:
@@ -11,8 +19,8 @@
 
 	2004-07-01  Mark Wielaard  <mark@klomp.org>
 
-        * java/awt/event/InvocationEvent.java (dispatch): Synchronize
-        on notifier object before calling notifyAll().
+	* java/awt/event/InvocationEvent.java (dispatch): Synchronize
+	on notifier object before calling notifyAll().
 
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>
 
@@ -32,8 +40,8 @@
 
 	2004-06-24  Mark Wielaard  <mark@klomp.org>
 
-        * gnu/java/nio/SelectorImpl.java (select): Call static Thread
-        interrupted() method to clear interupt flag of our Thread.
+	* gnu/java/nio/SelectorImpl.java (select): Call static Thread
+	interrupted() method to clear interupt flag of our Thread.
 
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>
 
@@ -42,8 +50,8 @@
 
 	2004-06-24  Mark Wielaard  <mark@klomp.org>
 
-        * gnu/java/nio/SelectorImpl.java (select): Call static Thread
-        interrupted() method to clear interupt flag of our Thread.
+	* gnu/java/nio/SelectorImpl.java (select): Call static Thread
+	interrupted() method to clear interupt flag of our Thread.
 
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>,
 
@@ -52,9 +60,9 @@
 
 	2004-06-27  Mark Wielaard  <mark@klomp.org>
 
-        * gnu/java/net/protocol/http/Connection.java (userAgent): New static
-        final field.
-        (sendRequest): Use new field in user-agent http agent.
+	* gnu/java/net/protocol/http/Connection.java (userAgent): New static
+	final field.
+	(sendRequest): Use new field in user-agent http agent.
 
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>
 
@@ -68,15 +76,15 @@
 
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>
 
-        * configure.ac:
+	* configure.ac:
 	Added check for pthread_attr_setschedpolicy.
 
-        * kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
 	Only use pthread_attr_setschedpolicy if it exists on
 	the system.
 
-        * configure,
-        config/config.h.in:
+	* configure,
+	config/config.h.in:
 	Regenerated.
 
 	Reported by: Riccardo Mottola  <zuse@libero.it>
@@ -84,42 +92,42 @@
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>,
 	    Helmer Kraemer  <hkraemer@freenet.de>
 
-        * kaffe/kaffevm/jit3/funcs.h:
+	* kaffe/kaffevm/jit3/funcs.h:
 	Rewritten to only define the functions that are
 	actually used.
 
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>
 
-        * kaffe/kaffevm/jit3/funcs.c: Added more comments.
+	* kaffe/kaffevm/jit3/funcs.c: Added more comments.
 
 	* config/mips/jit3-mips.def: Changed LOUT to use
 	jit3 syntax.
 
 2004-07-11  Yoshiharu Oba  <ooba@gk.avkk.yamaha.co.jp>
 
-        * config/mips/linux/jit-md.h: (MIPS_SP) Added.
+	* config/mips/linux/jit-md.h: (MIPS_SP) Added.
 
-        * config/mips/jit.h: Add current stackpointer register into
-        the structure of exception frame.
+	* config/mips/jit.h: Add current stackpointer register into
+	the structure of exception frame.
 
-        * config/mips/threads.h:Align FP_OFFSET and SP_OFFSET macro with linux
+	* config/mips/threads.h:Align FP_OFFSET and SP_OFFSET macro with linux
 
-        * config/mips/linux/md.h: Align FP_OFFSET, EXCEPTIONPROTO macro with linux
+	* config/mips/linux/md.h: Align FP_OFFSET, EXCEPTIONPROTO macro with linux
 
-        * config/mips/mips.c:Fetch the return address from the stackpointer
-        that is under certain instruction. (What reason, the exception frame is
-        built on the stackpointer when exception occurs in INTERFACE class.
-        In this case, Walk backwards process uses the stackpointer
-        instead of the framepointer )
+	* config/mips/mips.c:Fetch the return address from the stackpointer
+	that is under certain instruction. (What reason, the exception frame is
+	built on the stackpointer when exception occurs in INTERFACE class.
+	In this case, Walk backwards process uses the stackpointer
+	instead of the framepointer )
 
-        * config/mips/jit3-icode.h: Undefine the double types instruction.
-        Only the PlayStation2, Although it has FPU, since only double type
-        instructions does not have.
+	* config/mips/jit3-icode.h: Undefine the double types instruction.
+	Only the PlayStation2, Although it has FPU, since only double type
+	instructions does not have.
 
-        * kaffe/kaffevm/jit3/icode.c: Its on the same reason.
+	* kaffe/kaffevm/jit3/icode.c: Its on the same reason.
 
-        * config/mips/jit3-mips.def: Bug fixes, How to use of floating point 
-        register was corrected.
+	* config/mips/jit3-mips.def: Bug fixes, How to use of floating point 
+	register was corrected.
 
 2004-07-11  Helmer Kraemer  <hkraemer@freenet.de>
 
