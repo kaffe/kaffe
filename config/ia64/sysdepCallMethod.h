@@ -9,6 +9,9 @@
  * of this file.
  */
 
+#if !defined(IA64_SYSDEP_CALL_METHOD)
+#define IA64_SYSDEP_CALL_METHOD
+
 /* Needed for callMethodInfo declaration */
 #include "support.h"
 
@@ -249,3 +252,5 @@ static inline void sysdepCallMethod(callMethodInfo* call)
 #undef ARG_DISPLACEMENT
 #undef ARG_GPR
 #undef ARG_FPR
+
+#endif
