@@ -52,6 +52,13 @@ ARCHITECTURE-SPECIFIC PROBLEMS
   test/regression (and possibly others) should fail if you're affected
   by this problem.
 
+* On netbsd1.3/arm32, the % operator for long data types is broken.
+  This means that the sign of such an operation may come out wrong.
+  Java says it must be equal to the sign of the dividend.  This is
+  mostly due to a bug in __moddi3.  FreeBSD <=2.2.8 and <=3.0 have
+  the same problem, but there it's only in libc, not in libgcc, so
+  we instruct configure to explicitly link with libgcc.
+
 
 THINGS WHERE KAFFE'S BEHAVIOR DIFFERS
 ---------------------------------------------------------------------------
@@ -107,4 +114,6 @@ MISCELLANEOUS & TODO
 * OutOfMemoryErrors are not handled properly.
 
 * Stopping threads at inopportune times may corrupt the VM.
+
+* Kaffe does not garbage collect classes.
 
