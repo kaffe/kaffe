@@ -64,14 +64,18 @@ compile()
 run()
 {
 	RESULT="$1.fail"
+	TMPRESULT="$1.tmp"
 	$VERBOSE $JAVA $*
+	$JAVA $* >$TMPRESULT 2>&1
+	error=$?
 	if test "x$SORT" = "xyes"; then
 	    # grep will take care of stripping \r from DOS-like output
-	    { $JAVA $* 2>&1; error=$?; } | sort | grep '.*' > $RESULT
+	    sort $TMPRESULT | grep '.*' > $RESULT
 	else
 	    # grep will take care of stripping \r from DOS-like output
-	    { $JAVA $* 2>&1; error=$?; } | grep '.*' > "$RESULT"
+	    grep '.*' $TMPRESULT > "$RESULT"
 	fi
+	rm -f $TMPRESULT
 	if test ! -f "$1.out"; then
 		if test "$error" = 0 || test "$error" = 77; then
 		    mv "$RESULT" "$1.out"
