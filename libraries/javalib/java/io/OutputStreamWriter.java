@@ -21,6 +21,7 @@ public class OutputStreamWriter
 	private CharToByteConverter encoding;
 	private byte[] outbuf = new byte[BUFDEFAULT];
 	private int buflen;
+	private boolean closed = false;
 
 public OutputStreamWriter(OutputStream out) {
 	strm = out;
@@ -35,30 +36,26 @@ public OutputStreamWriter(OutputStream out, String enc) throws UnsupportedEncodi
 
 public void close() throws IOException
 {
-	flush();
-	try {
+	if (closed == false) {
+		flush();
 		strm.close();
 		strm = null;
-	}
-	catch (NullPointerException _) {
-		throw new IOException("stream closed");
+		closed = true;
 	}
 }
 
 public void flush() throws IOException
 {
-	try {
-		synchronized (lock) {
-			if (buflen > 0) {
-				strm.write(outbuf, 0, buflen);
-				buflen = 0;
-			}
+	synchronized (lock) {
+		if (closed == true) {
+			throw new IOException("stream closed");
 		}
-		strm.flush();
+		if (buflen > 0) {
+			strm.write(outbuf, 0, buflen);
+			buflen = 0;
+		}
 	}
-	catch (NullPointerException _) {
-		throw new IOException("stream closed");
-	}
+	strm.flush();
 }
 
 public String getEncoding() {
