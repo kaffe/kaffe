@@ -48,7 +48,9 @@ KAFFELIBRARYPATH=$(top_builddir)/libraries/clib/native/:$(top_builddir)/librarie
 BOOTCLASSPATH=$(LIBDIR):$(srcdir)/Klasses.jar.bootstrap
 JAR=BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar
 
-jrelib_DATA = rt.jar
+jrelib_DATA = \
+	rt.jar \
+	logging.properties
 toolslib_DATA = kjc.jar
 
 Klasses_jar_SRCS = \
