@@ -47,7 +47,7 @@ public static int abs(int a) {
 }
 
 public static long abs(long a) {
-	if (a < 0l) {
+	if (a < 0L) {
 		return (-a);
 	}
 	else {

@@ -44,7 +44,9 @@ public String paramString () {
 
 	switch ( id ) {
 	case COMPONENT_ADDED:  s += "ADDED";
+		break;
 	case COMPONENT_REMOVED: s += "REMOVED";
+		break;
 	default: s += "?";
 	}
 

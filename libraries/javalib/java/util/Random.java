@@ -13,9 +13,9 @@ package java.util;
 public class Random
 {
 	private long seed;
-	final private long p1 = 3141592653l;
-	final private long p2 = 2718281829l;
-	final private long mod = 34359738368l;
+	final private long p1 = 3141592653L;
+	final private long p2 = 2718281829L;
+	final private long mod = 34359738368L;
 
 public Random()
 	{

@@ -428,7 +428,7 @@ private static String makeUTF(String str)
 		if (chr >= '\u0001' && chr <= '\u007F') {
 			out.append(chr);
 		}
-		else if ((chr >= '\u0080' && chr <= '\u07FF') | chr=='\u0000') {
+		else if ((chr >= '\u0080' && chr <= '\u07FF') || chr=='\u0000') {
 			out.append(((chr & 0x07C0) >> 6) | 0xC0);
 			out.append((chr & 0x003F) | 0x80);
 		}

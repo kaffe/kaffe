@@ -89,7 +89,7 @@ int getWidth() {
 boolean handleShortcut ( KeyEvent e) {
 	if ( shortcut == null)
 		return false;
-  if ( shortcut.key != e.getKeyChar() + 96 )	//ctrl offset
+	if ( shortcut.key != e.getKeyChar() + 96 )	//ctrl offset
 		return false;
 
 	process();
