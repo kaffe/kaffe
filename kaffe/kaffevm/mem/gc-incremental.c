@@ -47,11 +47,12 @@ static struct CollectorImpl {
 Hjava_lang_Thread* garbageman;
 static Hjava_lang_Thread* finalman;
 
-static gcList gclists[5];
-static const int mustfree = 4;		/* temporary list */
-static const int white = 3;
-static const int grey = 2;
-static const int black = 1;
+static gcList gclists[6];
+static const int nofin_white = 5;
+static const int fin_white = 4;
+static const int grey = 3;
+static const int nofin_black = 2;
+static const int fin_black = 1;
 static const int finalise = 0;
 
 static int gc_init = 0;
@@ -430,8 +431,26 @@ gcWalkMemory(Collector* gcif, void* mem)
 	info = GCMEM2BLOCK(unit);
 	idx = GCMEM2IDX(info, unit);
 
+	if (GC_GET_COLOUR(info, idx) == GC_COLOUR_BLACK) {
+		return;
+	}
+
 	UREMOVELIST(unit);
-	UAPPENDLIST(gclists[black], unit);
+
+	/* if the object is about to be finalized, put it directly
+	 * into the finalise list, otherwise put it into the black
+	 * list.
+	 */
+	if (GC_GET_STATE(info, idx) == GC_STATE_INFINALIZE) {
+		gcStats.finalobj += 1;
+		gcStats.finalmem += GCBLOCKSIZE(info);
+		UAPPENDLIST(gclists[finalise], unit);
+	} else if (GC_GET_STATE(info, idx) == GC_STATE_NEEDFINALIZE) {
+		UAPPENDLIST(gclists[fin_black], unit);
+	} else {
+		UAPPENDLIST(gclists[nofin_black], unit);
+	}
+	
 	GC_SET_COLOUR(info, idx, GC_COLOUR_BLACK);
 
 	assert(GC_GET_FUNCS(info, idx) < 
@@ -474,7 +493,6 @@ static void
 gcMan(void* arg)
 {
 	gc_unit* unit;
-	gc_unit* nunit;
 	gc_block* info;
 	int idx;
 	Collector *gcif = (Collector*)arg;
@@ -554,27 +572,33 @@ DBG(GCSTAT,
 		    
 		startGC(gcif);
 
-		for (unit = gclists[grey].cnext; unit != &gclists[grey]; unit = gclists[grey].cnext) {
+		/* process any objects found by walking the root references */
+		while (gclists[grey].cnext != &gclists[grey]) {
+			unit = gclists[grey].cnext;
 			gcWalkMemory(gcif, UTOMEM(unit));
 		}
+
 		/* Now walk any white objects which will be finalized.  They
 		 * may get reattached, so anything they reference must also
 		 * be live just in case.
 		 */
-		for (unit = gclists[white].cnext; unit != &gclists[white]; unit = nunit) {
-			nunit = unit->cnext;
+		while (gclists[fin_white].cnext != &gclists[fin_white]) {
+			unit = gclists[fin_white].cnext;
 			info = GCMEM2BLOCK(unit);
 			idx = GCMEM2IDX(info, unit);
-			if (GC_GET_STATE(info, idx) == GC_STATE_NEEDFINALIZE) {
-				/* this assert is somewhat expensive */
-				DBG(GCDIAG,
-				    assert(gc_heap_isobject(info, unit)));
-				GC_SET_STATE(info, idx, GC_STATE_INFINALIZE);
-				markObjectDontCheck(unit, info, idx);
-			}
+		
+			assert (GC_GET_STATE(info, idx) == GC_STATE_NEEDFINALIZE);
+
+			/* this assert is somewhat expensive */
+			DBG(GCDIAG,
+			    assert(gc_heap_isobject(info, unit)));
+			GC_SET_STATE(info, idx, GC_STATE_INFINALIZE);
+			markObjectDontCheck(unit, info, idx);
 		}
-		/* We may now have more grey objects, so walk them */
-		for (unit = gclists[grey].cnext; unit != &gclists[grey]; unit = gclists[grey].cnext) {
+
+		/* now process the objects that are referenced by objects to be finalized */
+		while (gclists[grey].cnext != &gclists[grey]) {
+			unit = gclists[grey].cnext;
 			gcWalkMemory(gcif, UTOMEM(unit));
 		}
 
@@ -639,7 +663,6 @@ void
 startGC(Collector *gcif)
 {
 	gc_unit* unit;
-	gc_unit* nunit;
 
 	gcStats.freedmem = 0;
 	gcStats.freedobj = 0;
@@ -663,9 +686,8 @@ startGC(Collector *gcif)
 	startTiming(&gc_time, "gctime-scan");
 
 	/* Walk all objects on the finalizer list */
-	for (unit = gclists[finalise].cnext;
-	     unit != &gclists[finalise]; unit = nunit) {
-		nunit = unit->cnext;
+	while (gclists[finalise].cnext != &gclists[finalise]) {
+		unit = gclists[finalise].cnext;
 		gcMarkObject(gcif, UTOMEM(unit));
 	}
 
@@ -685,31 +707,57 @@ finishGC(Collector *gcif)
 	gc_unit* unit;
 	gc_block* info;
 	int idx;
+	gcList   toRemove;
+	int i;
 
 	/* There shouldn't be any grey objects at this point */
 	assert(gclists[grey].cnext == &gclists[grey]);
 
-	/* 
-	 * Any white objects should now be freed, but we cannot call
-	 * gc_heap_free here because we might block in gc_heap_free, 
-	 * which would leave the white list unprotected.
-	 * So we move them to a 'mustfree' list from where we'll pull them
-	 * off later.
-	 *
-	 * XXX: this is so silly it hurts.  Jason has a fix.
-	 */
-	while (gclists[white].cnext != &gclists[white]) {
-		unit = gclists[white].cnext;
-		UREMOVELIST(unit);
+	if (gclists[nofin_white].cnext != &gclists[nofin_white]) {
+		toRemove.cnext = gclists[nofin_white].cnext;
+		toRemove.cprev = gclists[nofin_white].cprev;
 
+		toRemove.cnext->cprev = &toRemove;
+		toRemove.cprev->cnext = &toRemove;
+
+		URESETLIST(gclists[nofin_white]);
+	} else {
+		URESETLIST(toRemove);
+	}	
+
+	stopTiming(&gc_time);
+	
+	RESUMEWORLD();
+
+	/* 
+	 * Now move the black objects back to the white queue for next time.
+	 */
+	for (i=1; i<3; i++) {
+		while (gclists[i].cnext != &gclists[i]) {
+			unit = gclists[i].cnext;
+			UREMOVELIST(unit);
+
+			info = GCMEM2BLOCK(unit);
+			idx = GCMEM2IDX(info, unit);
+
+			assert(GC_GET_COLOUR(info, idx) == GC_COLOUR_BLACK);
+
+			UAPPENDLIST(gclists[i+3], unit);
+
+			GC_SET_COLOUR(info, idx, GC_COLOUR_WHITE);
+		}
+	}
+
+	startTiming(&sweep_time, "gctime-sweep");
+
+	while (toRemove.cnext != &toRemove) {
+		destroy_func_t destroy;
+		unit = toRemove.cnext; 
 		info = GCMEM2BLOCK(unit);
 		idx = GCMEM2IDX(info, unit);
 
-		assert(GC_GET_COLOUR(info, idx) == GC_COLOUR_WHITE);
-		assert(GC_GET_STATE(info, idx) == GC_STATE_NORMAL);
 		gcStats.freedmem += GCBLOCKSIZE(info);
 		gcStats.freedobj += 1;
-		UAPPENDLIST(gclists[mustfree], unit);
 		OBJECTSTATSREMOVE(unit);
 
 #if defined(ENABLE_JVMPI)
@@ -722,70 +770,6 @@ finishGC(Collector *gcif)
 			jvmpiPostEvent(&ev);
 		}
 #endif
-	}
-
-	/* 
-	 * Now move the black objects back to the white queue for next time.
-	 * Note that all objects that were eligible for finalization are now
-	 * black - this is so because we marked and then walked them.
-	 * We recognize them by their "INFINALIZE" state, however, and put
-	 * them on the finalise list.
-	 */
-	while (gclists[black].cnext != &gclists[black]) {
-		unit = gclists[black].cnext;
-		UREMOVELIST(unit);
-
-		info = GCMEM2BLOCK(unit);
-		idx = GCMEM2IDX(info, unit);
-
-		assert(GC_GET_COLOUR(info, idx) == GC_COLOUR_BLACK);
-
-		if (GC_GET_STATE(info, idx) == GC_STATE_INFINALIZE) {
-			gcStats.finalmem += GCBLOCKSIZE(info);
-			gcStats.finalobj += 1;
-			UAPPENDLIST(gclists[finalise], unit);
-		}
-		else {
-			UAPPENDLIST(gclists[white], unit);
-		}
-		GC_SET_COLOUR(info, idx, GC_COLOUR_WHITE);
-	}
-
-	/* this is where we'll stop locking out other threads 
-	 * measure gc time until here.  This is not quite accurate, as
-	 * it excludes the time to sweep objects, but lacking
-	 * per-thread timing it's a reasonable thing to do.
-	 */
-	stopTiming(&gc_time);
-
-#if defined(ENABLE_JVMPI)
-	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_GC_FINISH) )
-	{
-		JVMPI_Event ev;
-
-		ev.event_type = JVMPI_EVENT_GC_FINISH;
-		ev.u.gc_info.used_objects = (jlong)gcStats.markedobj;
-		ev.u.gc_info.used_object_space = (jlong)gcStats.markedmem;
-		ev.u.gc_info.total_object_space = (jlong)gcStats.totalmem;
-		jvmpiPostEvent(&ev);
-	}
-#endif
-
-	/* 
-	 * Now that all lists that the mutator manipulates are in a
-	 * consistent state, we can reenable the mutator here 
-	 */
-	RESUMEWORLD();
-
-	/* 
-	 * Now free the objects.  We can block here since we're the only
-	 * thread manipulating the "mustfree" list.
-	 */
-	startTiming(&sweep_time, "gctime-sweep");
-
-	while (gclists[mustfree].cnext != &gclists[mustfree]) {
-		destroy_func_t destroy;
-		unit = gclists[mustfree].cnext;
 
 		/* invoke destroy function before freeing the object */
 		info = GCMEM2BLOCK(unit);
@@ -800,6 +784,20 @@ finishGC(Collector *gcif)
 			-((jlong)GCBLOCKSIZE(info)));
 		gc_heap_free(unit);
 	}
+
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_GC_FINISH) )
+	{ 
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_GC_FINISH;
+		ev.u.gc_info.used_objects = (jlong)gcStats.markedobj;
+		ev.u.gc_info.used_object_space = (jlong)gcStats.markedmem;
+		ev.u.gc_info.total_object_space = (jlong)gcStats.totalmem;
+		jvmpiPostEvent(&ev);
+	}
+#endif
+
 	stopTiming(&sweep_time);
 }
 
@@ -1063,7 +1061,12 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 		 * compiler to not delay computing mem by defining it volatile.
 		 */
 		GC_SET_COLOUR(info, i, GC_COLOUR_WHITE);
-		UAPPENDLIST(gclists[white], unit);
+
+		if (GC_GET_STATE(info, i) == GC_STATE_NEEDFINALIZE) {
+			UAPPENDLIST(gclists[fin_white], unit);
+		} else {
+			UAPPENDLIST(gclists[nofin_white], unit);
+		}
 	}
 	if (!reserve) {
 		reserve = gc_primitive_reserve();
@@ -1388,11 +1391,12 @@ Collector*
 createGC(void (*_walkRootSet)(Collector*))
 {
 	walkRootSet = _walkRootSet;
-	URESETLIST(gclists[white]);
+	URESETLIST(gclists[nofin_white]);
+	URESETLIST(gclists[fin_white]);
 	URESETLIST(gclists[grey]);
-	URESETLIST(gclists[black]);
+	URESETLIST(gclists[nofin_black]);
+	URESETLIST(gclists[fin_black]);
 	URESETLIST(gclists[finalise]);
-	URESETLIST(gclists[mustfree]);
 	gc_obj.collector.ops = &GC_Ops;
 	return (&gc_obj.collector);
 }

@@ -445,12 +445,13 @@ DBG(GCFREE,
 			for (;*finfo;) {
 				if (*finfo == info) {
 					(*finfo) = info->next;
-					info->size = gc_pgsize;
-					gc_primitive_free(info);
 					break;
 				}
 				finfo = &(*finfo)->next;
 			}
+
+			info->size = gc_pgsize;
+			gc_primitive_free(info);
 		} else if (info->avail==1) {
 			/*
 			 * If this block contains no free sub-blocks yet, attach
