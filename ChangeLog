@@ -1,5 +1,13 @@
 Wed Feb  3 20:48:51 1999  Godmar Back  <gback@cs.utah.edu>
 
+	* kaffe/kaffevm/baseClasses.c, kaffe/kaffevm/classMethod.[ch],
+	kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/readClassConfig.h,
+	kaffe/kaffevm/stackTrace.c: read in and print SourceFile attribute,
+	first draft.
+
+	* kaffe/kaffevm/mem/gc-mem.c:  added additional sanity check 
+	when -vmdebug GCDIAG is used.
+
 	* libraries/clib/native/ClassLoader.c: skip leading slashes in
 	java_lang_ClassLoader_getSystemResourceAsBytes0.
 
