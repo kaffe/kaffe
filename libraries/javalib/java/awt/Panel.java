@@ -1,84 +1,145 @@
+/* Panel.java -- Simple container object
+   Copyright (C) 1999, 2002 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
+
 package java.awt;
 
+import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 
 /**
+ * A panel is a simple container class. It's default layout is the
+ * <code>FlowLayout</code> manager.
  *
- * Copyright (c) 1998
- *	Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- *
+ * @author Aaron M. Renn <arenn@urbanophile.com>
+ * @author Eric Blake <ebb9@email.byu.edu>
+ * @see FlowLayout
+ * @since 1.0
+ * @status updated to 1.4
  */
-public class Panel
-  extends Container
+public class Panel extends Container implements Accessible
 {
-	final private static long serialVersionUID = -2728009084054400034L;
-	private static LayoutManager defaultLayout = new FlowLayout();
-	private static int counter;
+  /**
+   * Compatible with JDK 1.0+.
+   */
+  private static final long serialVersionUID = -2728009084054400034L;
 
-public Panel() {
-	this( defaultLayout );
-}
+  /** The cached accessible context. */
+  private transient AccessibleContext context;
 
-public Panel( LayoutManager layout) {
-	// Panels usually get their own update events, not being updated
-	// sync within their parents
-	flags |= IS_ASYNC_UPDATED;
+  /**
+   * Initializes a new instance of <code>Panel</code> that has a default
+   * layout manager of <code>FlowLayout</code>.
+   */
+  public Panel()
+  {
+    this(new FlowLayout());
+  }
 
-	setLayout( layout);
-	setName("panel" + counter++);
-}
+  /**
+   * Initializes a new instance of <code>Panel</code> with the specified
+   * layout manager.
+   *
+   * @param layoutManager the layout manager for this object
+   * @since 1.1
+   */
+  public Panel(LayoutManager layoutManager)
+  {
+    setLayout(layoutManager);
+  }
 
-ClassProperties getClassProperties () {
-	return ClassAnalyzer.analyzeAll( getClass(), true);
-}
+  /**
+   * Notifies this object to create its native peer.
+   *
+   * @see #isDisplayable()
+   * @see #removeNotify()
+   */
+  public void addNotify()
+  {
+    if (peer == null)
+      peer = getToolkit().createPanel(this);
+    super.addNotify();
+  }
 
-public Graphics getGraphics () {
-	if ( (flags & IS_ADD_NOTIFIED) != 0 ){
-		NativeGraphics g = NativeGraphics.getClippedGraphics( null, this,
-		                                                      0, 0, 0, 0,
-		                                                      width, height, false);
-		if ( g != null )
-			linkGraphics( g);
+  /**
+   * Gets the AccessibleContext associated with this panel, creating one if
+   * necessary. This always returns an instance of {@link AccessibleAWTPanel}.
+   *
+   * @return the accessibility context of this panel
+   * @since 1.3
+   */
+  public AccessibleContext getAccessibleContext()
+  {
+    if (context == null)
+      context = new AccessibleAWTPanel();
+    return context;
+  }
 
-		return g;
-	}
-	else {
-		return null;
-	}
-}
+  /**
+   * This class provides accessibility support for Panels, and is the
+   * runtime type returned by {@link #getAccessibleContext()}.
+   *
+   * @author Eric Blake <ebb9@email.byu.edu>
+   * @since 1.3
+   */
+  protected class AccessibleAWTPanel extends AccessibleAWTContainer
+  {
+    /**
+     * Compatible with JDK 1.4+.
+     */
+    private static final long serialVersionUID = -6409552226660031050L;
 
-public boolean isFocusTraversable () {
-	// for some obscure reason, Panels are not focusTraversable by default
-	return false;
-}
+    /**
+     * The default constructor.
+     */
+    protected AccessibleAWTPanel()
+    {
+    }
 
-void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
-	NativeGraphics g = NativeGraphics.getClippedGraphics( null, this, 0,0,
-	                                                      ux, uy, uw, uh,
-	                                                      false);
-	if ( g != null ){
-		markRepaints( ux, uy, uw, uh);
-
-		if ( id == PaintEvt.UPDATE ) {
-			update( g);
-		}
-		else {
-			// Another anoying anomaly: on some window systems, the
-			// background of native Components is automatically blanked (by the
-			// native window system or native peer), which is simulated here.
-			// Note that we don't do that for UPDATE events, since the update() spec
-			// explicitly states "you can assume that the background is not cleared..",
-			// and we take that literally! This also shows up in Canvas
-			g.clearRect( 0, 0, width, height);
-
-			paint( g);
-		}
-		g.dispose();
-
-		if ( hasDirties() )
-			emitRepaints( ux, uy, uw, uh);
-	}
-}
-}
+    /**
+     * Get the role of this accessible object, a panel.
+     *
+     * @return the role of the object
+     * @see AccessibleRole#PANEL
+     */
+    public AccessibleRole getAccessibleRole()
+    {
+      return AccessibleRole.PANEL;
+    }
+  } // class AccessibleAWTPanel
+} // class Panel 

@@ -37,10 +37,10 @@ exception statement from your version. */
 
 package java.awt.dnd;
 
+import java.awt.Point;
 import java.awt.Component;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
-import java.awt.Point;
 import java.awt.datatransfer.FlavorMap;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -1,114 +1,330 @@
+/* MenuComponent.java -- Superclass of all AWT menu components
+   Copyright (C) 1999, 2000, 2002, 2003 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
+
 package java.awt;
 
 import java.awt.peer.MenuComponentPeer;
+import java.io.Serializable;
+
+// FIXME: Java 1.0 event model unimplemented
 
 /**
- * Copyright (c) 1998
- *    Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- *
- */
-abstract public class MenuComponent implements java.io.Serializable
+  * This is the superclass of all non-menu AWT widgets. 
+  *
+  * @author Aaron M. Renn (arenn@urbanophile.com)
+  */
+public abstract class MenuComponent implements Serializable
 {
-	/* XXX implement serial form! */
-	Font fnt;
-	String name;
-	MenuContainer parent;
-	FontMetrics fm;
-	static Font defFnt = Defaults.MenuFont;
-	final static int IS_ADD_NOTIFIED = Component.IS_ADD_NOTIFIED;
-	final static int IS_OLD_EVENT = Component.IS_OLD_EVENT;
-	int flags;
-	Component owner;
-	private static final long serialVersionUID = -4536902356223894379L;
 
-public MenuComponent () {
-	setFont( defFnt);
-}
+/*
+ * Static Variables
+ */
 
-final public void dispatchEvent( AWTEvent e) {
-}
+// Serialization Constant
+private static final long serialVersionUID = -4536902356223894379L;
 
-ClassProperties getClassProperties () {
-	return ClassAnalyzer.analyzeProcessEvent( getClass(), false);
-}
+/*************************************************************************/
 
-public Font getFont() {
-	return fnt;
-}
+/*
+ * Instance Variables
+ */
 
-public String getName() {
-	return name;
-}
+  // FIXME: missing serialized fields `nameExplicitlySet',
+  // `newEventsOnly', and `accessibleContext'.
 
-public MenuContainer getParent() {
-	return parent;
-}
+// The font for this component
+private Font font;
+
+// The name of the component
+private String name;
+
+// The parent of this component
+transient MenuContainer parent;
+
+// The native peer for this componet
+transient MenuComponentPeer peer;
+
+// The synchronization locking object for this component
+private transient Object tree_lock = this;
+
+// The toolkit for this object
+private static transient Toolkit toolkit = Toolkit.getDefaultToolkit();
+
+/*************************************************************************/
+
+/*
+ * Constructors
+ */
 
 /**
- * @deprecated
- */
-public MenuComponentPeer getPeer() {
-	return (null);
+  * Default constructor for subclasses.
+  *
+  * @exception HeadlessException If GraphicsEnvironment.isHeadless() is true.
+  */
+public
+MenuComponent()
+{
+  if (GraphicsEnvironment.isHeadless())
+    throw new HeadlessException ();
 }
 
-protected String paramString() {
-	return name;
-}
+/*************************************************************************/
+
+/*
+ * Instance Methods
+ */
 
 /**
- * @deprecated
- */
-public boolean postEvent ( Event evt ) {
-	boolean ret = false;
-
-	if ( evt != null ) {
-		if (parent != null) {
-			ret = parent.postEvent( evt);
-		}
-		else if ( owner != null ) {
-			ret = owner.postEvent( evt);
-		}
-
-		evt.recycle();
-	}
-	
-	return ret;
+  * Returns the font in use for this component.
+  *
+  * @return The font for this component.
+  */
+public Font
+getFont()
+{
+  return(font);
 }
 
-protected void processEvent(AWTEvent evt) {
-        return;
+/*************************************************************************/
+
+/**
+  * Sets the font for this component to the specified font.
+  *
+  * @param font The new font for this component.
+  */
+public void
+setFont(Font font)
+{
+  this.font = font;
 }
 
-protected void propagateOldEvents ( boolean isOldEventClient ) {
-	if ( isOldEventClient )
-		flags |= IS_OLD_EVENT;
-	else {
-		flags &= ~IS_OLD_EVENT;
-	
-		// we're not set yet - this might be a subclassed MenuComponent with a
-		// resolved postEvent (call it a zombie)
-		ClassProperties props = ClassAnalyzer.analyzePostEvent( getClass());
-		if ( props.useOldEvents )
-			flags |= IS_OLD_EVENT;
-	}
+/*************************************************************************/
+
+/**
+  * Returns the name of this component.
+  *
+  * @return The name of this component.
+  */
+public String
+getName()
+{
+  return(name);
 }
 
-public void removeNotify() {
+/*************************************************************************/
+
+/**
+  * Sets the name of this component to the specified name.
+  *
+  * @param name The new name of this component.
+  */
+public void
+setName(String name)
+{
+  this.name = name;
 }
 
-public void setFont( Font f) {
-	fnt = f;
-	fm = Toolkit.getDefaultToolkit().getFontMetrics( fnt);
+/*************************************************************************/
+
+/**
+  * Returns the parent of this component.
+  * 
+  * @return The parent of this component.
+  */
+public MenuContainer
+getParent()
+{
+  return(parent);
+} 
+
+/*************************************************************************/
+
+// Sets the parent of this component.
+final void
+setParent(MenuContainer parent)
+{
+  this.parent = parent;
 }
 
-public void setName( String name) {
-	this.name = name;
+/*************************************************************************/
+
+/**
+  * Returns the native windowing system peer for this component.
+  *
+  * @return The peer for this component.
+  *
+  * @deprecated
+  */
+public MenuComponentPeer
+getPeer()
+{
+  return(peer);
 }
 
-public String toString() {
-	return getClass().getName() + '[' + paramString() + ']';
+/*************************************************************************/
+
+// Sets the peer for this component.
+final void
+setPeer(MenuComponentPeer peer)
+{
+  this.peer = peer;
 }
+
+/*************************************************************************/
+
+/**
+  * Destroys this component's native peer
+  */
+public void
+removeNotify()
+{
+  if (peer != null)
+    peer.dispose();
+  peer = null;
 }
+
+/*************************************************************************/
+
+/**
+  * Returns the toolkit in use for this component.
+  *
+  * @return The toolkit for this component.
+  */
+final Toolkit
+getToolkit()
+{
+  return(toolkit);
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the object used for synchronization locks on this component
+  * when performing tree and layout functions.
+  *
+  * @return The synchronization lock for this component.
+  */
+protected final Object
+getTreeLock()
+{
+  return(tree_lock);
+}
+
+/*************************************************************************/
+
+// The sync lock object for this component.
+final void
+setTreeLock(Object tree_lock)
+{
+  this.tree_lock = tree_lock;
+}
+
+/*************************************************************************/
+
+/**
+  * AWT 1.0 event dispatcher.
+  *
+  * @deprecated Deprecated in favor of <code>dispatchEvent()</code>.
+  */
+public boolean
+postEvent(Event event)
+{
+  return(false);
+}
+
+/*************************************************************************/
+
+/**
+  * Sends this event to this component or a subcomponent for processing.
+  *
+  * @param event The event to dispatch
+  */
+public final void
+dispatchEvent(AWTEvent event)
+{
+  // See comment in Component.dispatchEvent().
+  dispatchEventImpl(event);
+}
+
+void
+dispatchEventImpl(AWTEvent e)
+{
+  // This is overridden by subclasses that support events.
+}
+
+/*************************************************************************/
+
+/**
+  * Processes the specified event.  In this class, this method simply
+  * calls one of the more specific event handlers.
+  * 
+  * @param event The event to process.
+  */
+protected void
+processEvent(AWTEvent event)
+{
+}
+
+/*************************************************************************/
+
+/**
+  * Returns a string representation of this component.
+  *
+  * @return A string representation of this component
+  */
+public String
+toString()
+{
+  return this.getClass().getName() + "[" + paramString() + "]";
+}
+
+/*************************************************************************/
+
+/**
+  * Returns a debugging string for this component
+  */
+protected String
+paramString()
+{
+  return "name=" + getName();
+}
+
+// Accessibility API not yet implemented.
+// public AccessibleContext getAccessibleContext()
+
+} // class Component

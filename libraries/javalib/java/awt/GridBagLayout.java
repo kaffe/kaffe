@@ -40,8 +40,8 @@ package java.awt;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.HashMap;
 
 /**
  * @author Michael Koch <konqueror@gmx.de>

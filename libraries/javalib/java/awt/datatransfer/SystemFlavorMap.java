@@ -39,8 +39,8 @@ exception statement from your version. */
 package java.awt.datatransfer;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
 
 /**
   * This class maps between native platform type names and DataFlavors.

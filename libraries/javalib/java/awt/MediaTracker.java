@@ -1,348 +1,399 @@
+/* MediaTracker.java -- Class used for keeping track of images
+   Copyright (C) 1999, 2002 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
+
 package java.awt;
 
+import java.util.ArrayList;
 import java.awt.image.ImageObserver;
-import java.io.Serializable;
 
 /**
- * MediaTracker - 
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
- *
- */
-public class MediaTracker
-  implements Serializable
+  * This class is used for keeping track of the status of various media
+  * objects.
+  *
+  * @author Aaron M. Renn (arenn@urbanophile.com)
+  * @author Bryce McKinlay
+  */
+public class MediaTracker implements java.io.Serializable
 {
-	private MediaTrackerEntry images;
-	final private static long serialVersionUID = -483174189758638095L;
-	final public static int LOADING = 1;
-	final public static int ABORTED = 2;
-	final public static int ERRORED = 4;
-	final public static int COMPLETE = 8;
-	final static int LOADED = ImageObserver.ALLBITS | ImageObserver.FRAMEBITS | ImageObserver.ABORT;
+  public static final int LOADING = 1 << 0;
+  public static final int ABORTED = 1 << 1;
+  public static final int ERRORED = 1 << 2;
+  public static final int COMPLETE = 1 << 3;
+  
+  Component target;
+  MediaEntry head;
 
-public MediaTracker(Component comp)
-{
-}
+  static final long serialVersionUID = -483174189758638095L;
 
-public void addImage(Image image, int id)
-{
-	addImage(image, id, -1, -1);
-}
+  // FIXME: The serialized form documentation says MediaEntry is a 
+  // serializable field, but the serialized form of MediaEntry itself
+  // doesn't appear to be documented.
+  class MediaEntry implements ImageObserver
+  {
+    int id;
+    Image image;
+    MediaEntry next;
+    int status;
+    int width;
+    int height;
+    
+    public boolean imageUpdate(Image img, int flags, int x, int y, 
+			       int width, int height)
+    {
+      if ((flags & ABORT) != 0)
+        status = ABORTED | COMPLETE;
+      else if ((flags & ERROR) != 0)
+        status = ERRORED | COMPLETE;
+      else if ((flags & ALLBITS) != 0)
+        status = COMPLETE;
+      else if ((flags & SOMEBITS) != 0)
+        status = LOADING;
+      else
+        status = 0;
 
-public synchronized void addImage(Image image, int id, int w, int h)
-{
-	if ( image != null ) {
-		MediaTrackerEntry entry = new MediaTrackerEntry(image, id, w, h);
-		entry.next = images;
-		images = entry;
-	}
-}
+      if ((status & COMPLETE) == COMPLETE)
+      {
+        synchronized (MediaTracker.this)
+        {
+          MediaTracker.this.notifyAll();
+        }
+      }
+      // If status is not COMPLETE then we need more updates.
+      return (status & COMPLETE) == 0;
+    }
+  }
 
-public boolean checkAll()
-{
-	return (checkAll(false));
-}
+  public MediaTracker(Component c)
+  {
+    target = c;
+  }
 
-public synchronized boolean checkAll ( boolean load ) {
-	for ( MediaTrackerEntry e = images; e != null; e = e.next) {
-		if ((e.img.checkImage( e.w, e.h, e, load) & (ImageObserver.ALLBITS|ImageObserver.FRAMEBITS)) == 0) {
-			return (false);
-		}
-	}
-	return (true);
-}
+  public void addImage(Image image, int id)
+  {
+    MediaEntry e = new MediaEntry();
+    e.id = id;
+    e.image = image;
+    e.next = head;
+    head = e;
+    // Start tracking image status.
+    int flags = target.checkImage(image, e);
+    e.imageUpdate(image, flags, -1, -1, -1, -1);
+  }
 
-public boolean checkID(int id)
-{
-	return (checkID(id, false));
-}
+  public void addImage(Image image, int id, int width, int height)
+  {
+    MediaEntry e = new MediaEntry();
+    e.id = id;
+    e.image = image;
+    e.next = head;
+    e.width = width;
+    e.height = height;
+    head = e;
+    // Start tracking image status.
+    int flags = target.checkImage(image, width, height, e);
+    e.imageUpdate(image, flags, -1, -1, width, height);
+  }
 
-public synchronized boolean checkID ( int id, boolean load ) {
-	for ( MediaTrackerEntry e = getNextEntry( id, null); e != null; e= getNextEntry( id, e) ) {
-		if ( (e.img.checkImage( e.w, e.h, e, load) & (ImageObserver.ALLBITS|ImageObserver.FRAMEBITS)) == 0)
-			return false;
-	}
-	return true;
-}
+  public boolean checkAll()
+  {
+    return checkAll(false);
+  }
 
-public synchronized Object[] getErrorsAny() {
-	MediaTrackerEntry   e;
-	int                 n = 0, i;
-	Object[]            a = null;
-	
-	// most MediaTrackers are used for a small number of images, iterating twice is less
-	// expensive than creating temp. object arrays
-	for ( e = images; e != null; e = e.next) {
-		if ((e.img.checkImage( e.w, e.h, e, false) & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0)
-			n++;
-	}
-	
-	if ( n > 0 ) {
-		a = new Object[n];
-		
-		for ( e = images, i=0; (i < n); e = e.next) {
-			if ((e.img.checkImage( e.w, e.h, e, false) & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0)
-				a[i++] = e.img;
-		}
-	}
-		
-	return a;
-}
+  public boolean checkAll(boolean load)
+  {
+    MediaEntry e = head;
+    boolean result = true;
+    
+    while (e != null)
+      {
+	if ((e.status & COMPLETE) == 0)
+	  {
+	    if (load)
+	      {
+		result = false;
+	        if (e.status == 0)
+		  {
+		    target.prepareImage(e.image, e);
+		    e.status = LOADING;
+		  }
+	      }
+	    else
+	      return false;
+	  }
+	e = e.next;
+      }
+    return result;
+  }
 
-public synchronized Object[] getErrorsID ( int id ) {
-	MediaTrackerEntry   e;
-	int                 n = 0, i;
-	Object[]            a = null;
-	
-	// would be nice if we could use a certain id value as "don't care" so that we can unify this
-	// with getErrorsAny()
-	for ( e = images; e != null; e = e.next) {
-		if ( (e.id == id) && 
-		     (e.img.checkImage( e.w, e.h, e, false) & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0)
-			n++;
-	}
-	
-	if ( n > 0 ) {
-		a = new Object[n];
-		
-		for ( e = images, i=0; (i < n); e = e.next) {
-			if ( (e.id == id) &&
-			     (e.img.checkImage( e.w, e.h, e, false) & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0)
-				a[i++] = e.img;
-		}
-	}
-		
-	return a;
-}
+  public boolean isErrorAny()
+  {
+    MediaEntry e = head;    
+    while (e != null)
+      {
+        if ((e.status & ERRORED) != 0)
+	  return true;
+        e = e.next;
+      }
+    return false;
+  }
 
-MediaTrackerEntry getNextEntry ( int id, MediaTrackerEntry prev ) {
-	MediaTrackerEntry e = (prev != null) ? prev.next : images;
+  public Object[] getErrorsAny()
+  {
+    MediaEntry e = head;
+    ArrayList result = null;
+    while (e != null)
+      {
+        if ((e.status & ERRORED) != 0)
+	  {
+	    if (result == null)
+	      result = new ArrayList();
+	    result.add(e.image);
+	  }
+        e = e.next;
+      }
+    if (result == null)
+      return null;
+    else
+      return result.toArray();
+  }
 
-	for ( ; e != null; e = e.next ) {
-		if ( e.id == id )
-			return e;
-	}
-	
-	return null;
-}
+  public void waitForAll() throws InterruptedException
+  {
+    synchronized (this)
+    {
+      while (checkAll(true) == false)
+        wait();
+    }
+  }
 
-public synchronized boolean isErrorAny() {
-	for ( MediaTrackerEntry e = images; e != null; e = e.next) {
-		if ((e.img.checkImage( e.w, e.h, e, false) & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0)
-			return true;
-	}
+  public boolean waitForAll(long ms) throws InterruptedException
+  {
+    long start = System.currentTimeMillis();
+    synchronized (this)
+    {
+      while (!checkAll(true))
+        wait(ms);
+    }
+    if ((System.currentTimeMillis() - start) < ms)
+      return true;
+    else
+      return false;
+  }
 
-	return (false);
-}
+  public int statusAll(boolean load)
+  {
+    int result = 0;
+    MediaEntry e = head;
+    while (e != null)
+      {
+        if (load && e.status == 0)
+	  {
+	    target.prepareImage(e.image, e);
+	    e.status = LOADING;
+	  }
+        result |= e.status;
+	e = e.next;
+      }
+    return result;
+  }
 
-public synchronized boolean isErrorID ( int id ) {
-	for ( MediaTrackerEntry e = images; e != null; e = e.next) {
-		if ( (e.id == id) &&
-		     (e.img.checkImage( e.w, e.h, e, false) & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0)
-			return true;
-	}
-	
-	return false;
-}
+  public boolean checkID(int id)
+  {
+    return checkID(id, false);
+  }
 
-public synchronized void removeImage(Image image)
-{
-	MediaTrackerEntry prev = null;
-	MediaTrackerEntry curr = images;
+  public boolean checkID(int id, boolean load)
+  {
+    MediaEntry e = head;
+    boolean result = true;
+    
+    while (e != null)
+      {
+	if (e.id == id && ((e.status & COMPLETE) == 0))
+	  {
+	    if (load)
+	      {
+		result = false;
+	        if (e.status == 0)
+		  {
+		    target.prepareImage(e.image, e);
+		    e.status = LOADING;
+		  }
+	      }
+	    else
+	      return false;
+	  }
+	e = e.next;
+      }
+    return result;
+  }
 
-	while (curr != null) {
-		if (curr.img == image) {
-			if (prev != null) {
-				prev.next = curr.next;
-			}
-			else {
-				images = curr.next;
-			}
-		}
-		else {
-			prev = curr;
-		}
-		curr = curr.next;
-	}
-}
+  public boolean isErrorID(int id)
+  {
+    MediaEntry e = head;    
+    while (e != null)
+      {
+        if (e.id == id && ((e.status & ERRORED) != 0))
+	  return true;
+        e = e.next;
+      }
+    return false;
+  }
 
-public synchronized void removeImage(Image image, int id)
-{
-	MediaTrackerEntry prev = null;
-	MediaTrackerEntry curr = images;
+  public Object[] getErrorsID(int id)
+  {
+    MediaEntry e = head;
+    ArrayList result = null;
+    while (e != null)
+      {
+        if (e.id == id && ((e.status & ERRORED) != 0))
+	  {
+	    if (result == null)
+	      result = new ArrayList();
+	    result.add(e.image);
+	  }
+        e = e.next;
+      }
+    if (result == null)
+      return null;
+    else
+      return result.toArray();
+  }
 
-	while (curr != null) {
-		if (curr.img == image && curr.id == id) {
-			if (prev != null) {
-				prev.next = curr.next;
-			}
-			else {
-				images = curr.next;
-			}
-		}
-		else {
-			prev = curr;
-		}
-		curr = curr.next;
-	}
-}
+  public void waitForID(int id) throws InterruptedException
+  {
+    MediaEntry e = head;
+    synchronized (this)
+    {
+      while (checkID (id, true) == false)
+        wait();
+    }
+  }
 
-public synchronized void removeImage(Image image, int id, int w, int h)
-{
-	MediaTrackerEntry prev = null;
-	MediaTrackerEntry curr = images;
+  public boolean waitForID(int id, long ms) throws InterruptedException
+  {
+    MediaEntry e = head;
+    long start = System.currentTimeMillis();
+    synchronized (this)
+    {
+      while (checkID (id, true) == false)
+        wait(ms);
+    }  
+    if ((System.currentTimeMillis() - start) < ms)
+      return true;
+    else
+      return false;
+  }
 
-	while (curr != null) {
-		if (curr.img == image && curr.id == id && curr.w == w && curr.h == h) {
-			if (prev != null) {
-				prev.next = curr.next;
-			}
-			else {
-				images = curr.next;
-			}
-		}
-		else {
-			prev = curr;
-		}
-		curr = curr.next;
-	}
-}
+  public int statusID(int id, boolean load)
+  {
+    int result = 0;
+    MediaEntry e = head;
+    while (e != null)
+      {
+        if (e.id == id)
+	  {
+            if (load && e.status == 0)
+	      {
+		target.prepareImage(e.image, e);
+		e.status = LOADING;
+	      }
+            result |= e.status;
+	  }
+	e = e.next;
+      }
+    return result;
+  }
 
-public synchronized int statusAll ( boolean load ) {
-	int ic, ret = 0;
+  public void removeImage(Image image)
+  {
+    MediaEntry e = head;
+    MediaEntry prev = null;
+    while (e != null)
+      {
+        if (e.image == image)
+	  {
+	    if (prev == null)
+	      head = e.next;
+	    else
+	      prev.next = e.next;
+	  }
+	prev = e;
+	e = e.next;
+      }
+  }
 
-	for ( MediaTrackerEntry e = images; e != null; e = e.next ) {
-		ic = e.img.checkImage( e.w, e.h, e, load);
+  public void removeImage(Image image, int id)
+  {
+    MediaEntry e = head;
+    MediaEntry prev = null;
+    while (e != null)
+      {
+        if (e.id == id && e.image == image)
+	  {
+	    if (prev == null)
+	      head = e.next;
+	    else
+	      prev.next = e.next;
+	  }
+	else
+	  prev = e;
+	e = e.next;
+      }  
+  }
 
-		if ( (ic & ImageObserver.ALLBITS) != 0 )
-			ret |= COMPLETE;
-		else if ( (ic & ImageObserver.ABORT) != 0 )
-			ret |= ABORTED;
-		else if ( (ic & Image.PRODUCING) != 0 )
-			ret |= LOADING;
-			
-		if ( (ic & ImageObserver.ERROR) != 0 )
-			ret |= ERRORED;
-	}
-	
-	return ret;
-}
-
-public synchronized int statusID ( int id, boolean load ) {
-	int ic, ret = 0;
-
-	for ( MediaTrackerEntry e = getNextEntry( id, null); e != null; e = getNextEntry( id, e) ) {
-		ic = e.img.checkImage( e.w, e.h, e, load);
-
-		if ( (ic & (ImageObserver.ALLBITS|ImageObserver.FRAMEBITS)) != 0 )
-			ret |= COMPLETE;
-		else if ( (ic & ImageObserver.ABORT) != 0 )
-			ret |= ABORTED;
-		else if ( (ic & Image.PRODUCING) != 0 )
-			ret |= LOADING;
-			
-		if ( (ic & ImageObserver.ERROR) != 0 )
-			ret |= ERRORED;
-	}
-
-	return ret;
-
-}
-
-public synchronized void waitForAll() throws InterruptedException {
-	for ( MediaTrackerEntry e = images; e != null; e = e.next ) {
-		if ((e.img.checkImage( e.w, e.h, e, true) & LOADED) == 0) {
-			synchronized ( e ) {
-				e.wait();
-			}
-		}
-	}
-}
-
-public synchronized boolean waitForAll ( long ms ) throws InterruptedException {
-	long now = System.currentTimeMillis();
-	long end = now + ms;
-	
-	for ( MediaTrackerEntry e = images; e != null; e = e.next ) {
-		if ( now > end )
-			return false;
-	
-		if ((e.img.checkImage( e.w, e.h, e, true) & LOADED) == 0) {
-			synchronized ( e ) {
-				e.wait( ms);
-			}
-		}
-		now = System.currentTimeMillis();
-	}
-
-	return true;
-}
-
-public synchronized void waitForID ( int id ) throws InterruptedException {
-	for ( MediaTrackerEntry e = getNextEntry( id, null); e != null; e = getNextEntry( id, e) ) {
-		if ((e.img.checkImage( e.w, e.h, e, true) & LOADED) == 0) {
-			synchronized ( e ) {
-				e.wait();
-			}
-		}
-	}
-}
-
-public synchronized boolean waitForID ( int id, long ms) throws InterruptedException {
-	long now = System.currentTimeMillis();
-	long end = now + ms;
-	
-	for (MediaTrackerEntry e = getNextEntry( id, null); e != null; e = getNextEntry( id, e) ) {
-		if ( now > end ) {
-			return false;
-		}
-	
-		synchronized ( e ) {
-			if ((e.img.checkImage(e.w, e.h, e, true) & (ImageObserver.FRAMEBITS|ImageObserver.ALLBITS|ImageObserver.ERROR)) == 0) {
-				e.wait( ms);
-			}
-		}
-		now = System.currentTimeMillis();
-	}
-
-	return true;
-}
-}
-
-class MediaTrackerEntry
-  implements ImageObserver
-{
-	Image img;
-	int id;
-	int w;
-	int h;
-	MediaTrackerEntry next;
-
-MediaTrackerEntry(Image img, int id, int w, int h)
-{
-	this.img = img;
-	this.id = id;
-	this.w = w;
-	this.h = h;
-}
-
-public boolean imageUpdate ( Image img, int infoflags, int x, int y, int width, int height ) {
-	/* sync moved from method for GCJ */
-	synchronized (this) {
-		if ( (infoflags & (ImageObserver.WIDTH | ImageObserver.HEIGHT )) != 0 ) {
-			w = width;
-			h = height;
-		}
-		if ( (infoflags & (ALLBITS | FRAMEBITS | ABORT | ImageObserver.ERROR)) != 0 ) {
-			notify();
-			return (false);
-		}
-	
-		return (true);
-	}
-}
+  public void removeImage(Image image, int id, int width, int height)
+  {
+    MediaEntry e = head;
+    MediaEntry prev = null;
+    while (e != null)
+      {
+        if (e.id == id && e.image == image
+	    && e.width == width && e.height == height)
+	  {
+	    if (prev == null)
+	      head = e.next;
+	    else
+	      prev.next = e.next;
+	  }
+	else
+	  prev = e;
+	e = e.next;
+      }
+  }
 }

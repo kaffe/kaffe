@@ -37,9 +37,9 @@ exception statement from your version. */
 
 package java.awt.dnd.peer;
 
+import java.awt.dnd.DropTarget;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DropTarget;
 import java.awt.dnd.InvalidDnDOperationException;
 
 

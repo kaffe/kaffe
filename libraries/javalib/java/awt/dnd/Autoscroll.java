@@ -37,8 +37,8 @@ exception statement from your version. */
 
 package java.awt.dnd;
 
-import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Insets;
 
 /**
  * During DnD operations it is possible that a user may wish to drop the

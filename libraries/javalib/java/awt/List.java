@@ -1,870 +1,1078 @@
+/* List.java -- A listbox widget
+   Copyright (C) 1999, 2002 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
+
 package java.awt;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.util.BitSet;
+import java.awt.peer.ListPeer;
+import java.util.EventListener;
 import java.util.Vector;
+import javax.accessibility.Accessible;
 
 /**
- * class List -
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
-public class List
-  extends Container
-  implements ItemSelectable
+  * Class that implements a listbox widget
+  *
+  * @author Aaron M. Renn (arenn@urbanophile.com)
+  */
+public class List extends Component
+  implements ItemSelectable, Accessible
 {
-	final private static long serialVersionUID = -3304312411574666869L;
-	ActionListener aListener;
-	ItemListener iListener;
-	ItemPane ip = new ItemPane();
-	Vector selections = new Vector( 1);
-	boolean multipleMode;
-	boolean selMouse;
-	int sel = -1;
-	BitSet multiSel;
-	int nSel;
 
-class ItemPane
-  extends RowCanvas
-  implements MouseListener, MouseMotionListener, KeyListener
+/*
+ * Static Variables
+ */
+
+// Serialization constant
+private static final long serialVersionUID = -3304312411574666869L;
+
+/*************************************************************************/
+
+/*
+ * Instance Variables
+ */
+
+// FIXME: Need read/writeObject
+
+/**
+  * @serial The items in the list.
+  */
+private Vector items = new Vector();
+
+/**
+  * @serial Indicates whether or not multiple items can be selected
+  * simultaneously.
+  */
+private boolean multipleMode;
+
+/**
+  * @serial The number of rows in the list.  This is set on creation
+  * only and cannot be modified.
+  */
+private int rows;
+
+/**
+  * @serial An array of the item indices that are selected.
+  */
+private int[] selected;
+
+/**
+  * @serial An index value used by <code>makeVisible()</code> and
+  * <code>getVisibleIndex</code>.
+  */
+private int visibleIndex;
+
+// The list of ItemListeners for this object.
+private ItemListener item_listeners;
+
+// The list of ActionListeners for this object.
+private ActionListener action_listeners;
+
+/*************************************************************************/
+
+/*
+ * Constructors
+ */
+
+/**
+  * Initializes a new instance of <code>List</code> with no visible lines
+  * and multi-select disabled.
+  *
+  * @exception HeadlessException If GraphicsEnvironment.isHeadless() is true.
+  */
+public
+List()
 {
-	StringBuffer lnsBuf = new StringBuffer();
-	int idxFlyOver = -1;
-
-public ItemPane () {
-	this.addKeyListener( this);
-	this.addMouseListener( this);
-	this.addMouseMotionListener( this);
-	this.addFocusListener( this);
+  this(4, false);
 }
 
-public void keyPressed( KeyEvent e) {
-	int nIdx;
-	int mods = e.getModifiers();
-
-	if ( this.parent.keyListener != null ){
-		// give our parent a chance to intercept keystrokes
-		// check for keyListeners first, it's a rare case
-		redirectKeyEvent( e);
-	}
-
-	//do not consume unused key for HotKeyHandler
-	if ( mods != 0 )
-		return;
-
-	selMouse = false;
-
-	switch ( e.getKeyCode() ) {
-		case KeyEvent.VK_DOWN:
-			nIdx = getSelectedIndex() + 1;
-			this.makeVisible( nIdx);
-			selectEvent( nIdx, true);
-			break;
-		case KeyEvent.VK_UP:
-			nIdx = getSelectedIndex() - 1;
-			this.makeVisible( nIdx);
-			selectEvent( nIdx, true);
-			break;
-		case KeyEvent.VK_ENTER:
-			notifyAction();
-			break;
-		case KeyEvent.VK_PAGE_UP:
-			this.makeVisible( first - getVisibleRows());
-			break;
-		case KeyEvent.VK_PAGE_DOWN:
-			this.makeVisible( first + 2 * getVisibleRows() - 1);
-			break;
-		case KeyEvent.VK_ESCAPE:
-			clearSelections();
-			this.repaint();
-			break;
-		default:
-		  return;
-	}
-
-	e.consume();
-}
-
-public void keyReleased( KeyEvent e) {
-	if ( this.parent.keyListener != null ){
-		// check for keyListeners first, it's a rare case
-		redirectKeyEvent( e);
-		e.consume();
-	}
-}
-
-public void keyTyped( KeyEvent e) {
-	int mods = e.getModifiers();
-	if ( (mods == 0) || (mods == KeyEvent.SHIFT_MASK ) ) {
-		letterNav( e.getKeyChar(), e.isShiftDown() );
-		e.consume();
-	}
-
-	if ( this.parent.keyListener != null ){
-		// check for keyListeners first, it's a rare case
-		redirectKeyEvent( e);
-	}
-}
-
-void letterNav( char c, boolean acc) {
-	int rs = rows.size();
-
-	if ( !acc )
-		lnsBuf.setLength( 0);
-	lnsBuf.append( c);
-
-	for ( int i=0; i<rs; i++) {
-		String s = (String)rows.elementAt( i);
-		if ( s.regionMatches( true, 0, lnsBuf.toString(), 0, lnsBuf.length() ) ){
-			selectEvent( i, true);
-			return;
-		}
-	}
-}
-
-int maxRowWidth() {
-	int rs = rows.size();
-	int iw, mw = 0;
-
-	for ( int i=0; i<rs; i++ ) {
-		iw = fm.stringWidth( (String)rows.elementAt( i) );
-		if ( iw > mw )
-			mw = iw;
-	}
-
-	return mw;
-}
-
-public void mouseClicked( MouseEvent e) {
-	if ( e.getClickCount() == 1) {
-		int idx = getRowIdx( e.getY() );
-		if ( idx > -1 ) {
-			selMouse = true;
-
-			if ( isIndexSelected( idx) ) {
-				if ( multipleMode )
-					deselectElement( idx, true, true);
-			}
-			else {
-				selectEvent( idx, true);
-			}
-		}
-	}
-	else
-		notifyAction();
-
-	redirectMouseEvent( e);
-}
-
-public void mouseDragged( MouseEvent e) {
-	if ( this.parent.motionListener != null ){
-		// unlikely, check listener first
-		redirectMotionEvent( e);
-	}
-}
-
-public void mouseEntered( MouseEvent e) {
-	redirectMouseEvent( e);
-}
-
-public void mouseExited( MouseEvent e) {
-	if ( rgr != null ) // otherwise we aren't visible anymore
-		updateFlyOver( -1);
-
-	redirectMouseEvent( e);
-}
-
-public void mouseMoved( MouseEvent e) {
-	int row = getRowIdx( e.getY() );
-	if ( row != idxFlyOver ) {
-		updateFlyOver( row );
-	}
-
-	if ( this.parent.motionListener != null ){
-		// unlikely, check listener first
-		redirectMotionEvent( e);
-	}
-}
-
-public void mousePressed( MouseEvent e) {
-	if ( AWTEvent.keyTgt != ip )
-		ip.requestFocus();
-
-	if ( e.isPopupTrigger() )
-		this.triggerPopup( e.getX(), e.getY());
-
-	redirectMouseEvent( e);
-}
-
-public void mouseReleased( MouseEvent e) {
-	redirectMouseEvent( e);
-}
-
-public void paint ( Graphics g ) {
-	repaintRows( g, first, getVisibleRows() );
-	this.kaffePaintBorder( g);
-}
-
-void repaintItem( Graphics g, int idx) {
-	if ( g == null)
-		return;
-
-	int d = BORDER_WIDTH;
-	int x0 = xOffs + d +2;
-	int y0 = d + ( idx - first) * rowHeight;
-	int y1 = y0 + rowHeight - (rowHeight - fm.getHeight())/2 - fm.getDescent();
-
-	String s = (String)rows.elementAt( idx);
-
-	if ( isIndexSelected( idx) ) {
-		g.setColor( Defaults.ListSelBgClr);
-		g.fill3DRect( d, y0, this.width-2*d, rowHeight, true);
-		g.setColor( Defaults.ListSelTxtClr);
-	}
-	else if ( idx == idxFlyOver ) {
-		g.setColor( Defaults.ListFlyOverBgClr);
-		g.fill3DRect( d, y0, this.width-2*d, rowHeight, !Defaults.ListFlyOverInset);
-		g.setColor( Defaults.ListFlyOverTxtClr);
-	}
-	else {
-		g.setColor( this.bgClr );
-		g.fillRect( d, y0, this.width-2*d, rowHeight);
-		g.setColor( this.fgClr );
-	}
-
-	g.drawString( s, x0, y1);
-}
-
-void repaintItem( int idx) {
-	if ( rgr != null )
-		repaintItem( rgr, idx);
-}
-
-void repaintRow( Graphics g, int idx) {
-	repaintItem( g, idx);
-}
-
-public void setFont( Font fnt) {
-	fm = this.getFontMetrics( fnt);
-	rowHeight = fm.getHeight() + 1;
-
-	super.setFont( fnt);
-}
-
-void updateFlyOver( int newIdx) {
-	int lov = idxFlyOver;
-	idxFlyOver = newIdx;
-
-	if ( lov == newIdx )
-		return;
-
-	int rs = rows.size();
-	if ( (lov > -1) && (lov < rs) )
-		repaintItem( lov);
-	if ( (newIdx > -1) && (newIdx < rs) )
-		repaintItem( newIdx);
-}
-}
-
-public List () {
-	this( 4, false);
-}
-
-public List ( int rows) {
-	this( rows, false);
-}
-
-public List ( int rows, boolean multipleMode) {
-	setMultipleMode( multipleMode);
-
-	setLayout( null);
-
-	setForeground( Defaults.ListTxtClr);
-	setBackground( Defaults.ListBgClr);
-	setFont( Defaults.ListFont);
-
-	add( ip.vScroll = new Scrollbar( Scrollbar.VERTICAL,0,0,0,0));
-	add( ip.hScroll = new Scrollbar( Scrollbar.HORIZONTAL,0,0,0,0));
-	add( ip);
-
-	ip.setListeners();
-}
-
-public void add ( PopupMenu m) {
-	ip.add( m);
-}
-
-public void add ( String item) {
-	addElement( item, -1);
-}
-
-public synchronized void add ( String item, int index) {
-	addElement( item, index);
-}
-
-public synchronized void addActionListener ( ActionListener l) {
-	aListener = AWTEventMulticaster.add( aListener, l);
-}
-
-void addElement ( String item, int index) {
-	if ( index == -1 )
-		ip.rows.addElement( item);
-	else
-		ip.rows.insertElementAt( item, index);
-
-	ip.updateScrolls();
-
-	if ( isShowing() )
-		ip.repaint();
-}
-
-public void addItem ( String item) {
-	addElement( item, -1);
-}
-
-public synchronized void addItem ( String item, int index) {
-	addElement( item, index);
-}
-
-public synchronized void addItemListener ( ItemListener l) {
-	iListener = AWTEventMulticaster.add( iListener, l);
-}
+/*************************************************************************/
 
 /**
- * @deprecated
- */
-public boolean allowsMultipleSelections() {
-	return multipleMode;
+  * Initializes a new instance of <code>List</code> with the specified
+  * number of visible lines and multi-select disabled.
+  *
+  * @param lines The number of visible lines in the list.
+  *
+  * @exception HeadlessException If GraphicsEnvironment.isHeadless() is true.
+  */
+public
+List(int rows)
+{
+  this(rows, false);
 }
+
+/*************************************************************************/
 
 /**
- * @deprecated
+  * Initializes a new instance of <code>List</code> with the specified
+  * number of lines and the specified multi-select setting.
+  *
+  * @param lines The number of visible lines in the list.
+  * @param multipleMode <code>true</code> if multiple lines can be selected
+  * simultaneously, <code>false</code> otherwise.
+  *
+  * @exception HeadlessException If GraphicsEnvironment.isHeadless() is true.
+  */
+public 
+List(int rows, boolean multipleMode)
+{
+  this.rows = rows;
+  this.multipleMode = multipleMode;
+
+  if (GraphicsEnvironment.isHeadless())
+    throw new HeadlessException ();
+}
+
+/*************************************************************************/
+
+/*
+ * Instance Variables
  */
-public synchronized void clear() {
-	clearSelections();
-
-	ip.rows.removeAllElements();
-	ip.first = 0;
-	ip.updateScrolls();
-	ip.repaint();
-}
-
-void clearSelection ( int index ) {
-	if ( sel == index )
-		sel = -1;
-
-	if ( multipleMode ) {
-		if (multiSel.get(index)) {
-			multiSel.clear( index);
-			nSel--;
-		}
-	}
-}
-
-void clearSelections () {
-	sel = -1;
-	nSel = 0;
-
-	if ( multipleMode ){
-		nSel = 0;
-		multiSel = new BitSet( ip.rows.size());
-	}
-}
 
 /**
- * @deprecated
- */
-public int countItems() {
-	return ip.rows.size();
+  * Returns the number of items in this list.
+  *
+  * @return The number of items in this list.
+  */
+public int
+getItemCount()
+{
+  return countItems ();
 }
 
-public synchronized void delItem ( int index) {
-	removeElement( index);
-}
+/*************************************************************************/
 
 /**
- * @deprecated
- */
-public synchronized void delItems ( int start, int end ) {
-	for (int i = end; i >= start; i--) {
-		remove(i);
-	}
+  * Returns the number of items in this list.
+  *
+  * @return The number of items in this list.
+  *
+  * @deprecated This method is deprecated in favor of
+  * <code>getItemCount()</code>
+  */
+public int
+countItems()
+{
+  return items.size ();
 }
 
-public synchronized void deselect ( int index) {
-	deselectElement( index, true, false);
-}
-
-void deselectElement ( int index, boolean repaint, boolean fire) {
-
-	try {
-		Object item = ip.rows.elementAt( index);
-		clearSelection( index);
-
-		if ( repaint)
-			ip.repaintRows( index, 1);
-
-		if (fire) {
-			notifyItem( new Integer(index), ItemEvent.DESELECTED);
-		}
-	}
-	catch ( Exception e) {}
-}
-
-public void doLayout () {
-	ip.innerLayout();
-}
-
-public Color getBackground () {
-	// some anomaly, we forward colors to our ip, so we should return its colors
-	// for consistencies sake
-	return ip.getBackground();
-}
-
-ClassProperties getClassProperties () {
-	return ClassAnalyzer.analyzeAll( getClass(), true);
-}
-
-public Color getForeground () {
-	// some anomaly, we forward colors to our ip, so we should return its colors
-	// for consistencies sake
-	return ip.getForeground();
-}
-
-public String getItem ( int index) {
-	return (String)ip.rows.elementAt( index);
-}
-
-public int getItemCount () {
-	return (countItems());
-}
-
-public synchronized String[] getItems () {
-	String[] si = new String[ ip.rows.size() ];
-	for ( int i=0; i<si.length; i++) {
-		si[i] = (String)ip.rows.elementAt( i);
-	}
-	return si;
-}
-
-public Dimension getMinimumSize(int rows) {
-        return minimumSize(rows);
-}
-
-public int getRows () {
-	return ip.rows.size();
-}
-
-public Dimension getPreferredSize(int rows) {
-        return preferredSize(rows);
-}
-
-public synchronized int getSelectedIndex () {
-	return sel;
-}
-
-public synchronized int[] getSelectedIndexes () {
-	int[] r;
-	int   i, j, n;
-
-	if ( multipleMode ) {
-		if ( nSel == 0 )
-			return new int[0];
-		else if ( (nSel == 1) && (sel >= 0) ){
-			r = new int[1];
-			r[0] = sel;
-			return r;
-		}
-		else {
-			r = new int[nSel];
-			n = Math.min( ip.rows.size(), multiSel.size());
-
-			for ( i=0, j=0; i<n; i++ ) {
-				if ( multiSel.get( i) ){
-					r[j++] = i;
-					if ( j == nSel )
-						break;
-				}
-			}
-			return r;
-		}
-	}
-	else {
-		if ( sel >= 0 ) {
-			r = new int[1];
-			r[0] = sel;
-			return r;
-		}
-		else {
-			return new int[0];
-		}
-	}
-}
-
-public synchronized String getSelectedItem () {
-	if ( sel >= 0 ) {
-		return (String) ip.rows.elementAt( sel);
-	}
-	else if ( nSel > 0 ) {
-		int  n = Math.min( multiSel.size(), ip.rows.size());
-		int  i;
-
-		for ( i=0; i<n; i++ ){
-			if ( multiSel.get(i) )
-				return (String) ip.rows.elementAt( i);
-		}
-	}
-
-	return null;
-}
-
-public synchronized String[] getSelectedItems () {
-	// Not very nice to copy this from getSelectedIndexes, but some people
-	// don't care how many items they have in their lists, and creating this
-	// from a temporary int[] might produce a lot of garbage. Moreover, some
-	// people just don't care for if they are in multiMode and use this
-	// as a default (i.e. also in single mode)
-
-	String[] r;
-	int   i, j, n;
-
-	if ( multipleMode ) {
-		if ( nSel == 0 )
-			return new String[0];
-		else if ( (nSel == 1) && (sel >= 0) ){
-			r = new String[1];
-			r[0] = (String) ip.rows.elementAt( sel);
-			return r;
-		}
-		else {
-			r = new String[nSel];
-			n = Math.min( ip.rows.size(), multiSel.size());
-
-			for ( i=0, j=0; i<n; i++ ) {
-				if ( multiSel.get( i) ){
-					r[j++] = (String) ip.rows.elementAt( i);
-					if ( j == nSel )
-						break;
-				}
-			}
-			return r;
-		}
-	}
-	else {
-		if ( sel >= 0 ) {
-			r = new String[1];
-			r[0] = (String) ip.rows.elementAt( sel);
-			return r;
-		}
-		else {
-			return new String[0];
-		}
-	}
-}
-
-public Object[] getSelectedObjects () {
-	// Now what is this - we can't put arbitrary Objects in there, but we can get
-	// them out? Seems like somebody finally discovered the potential of Lists,
-	// but didn't finish on it.
-	// Since we don't consider this the default access method (unfortunately), we
-	// don't do the same expensive processing like in getSelectedItems
-
-	int      i;
-	int[]    selIdx = getSelectedIndexes();
-	Object[] selObj = new Object[selIdx.length];
-
-	for ( i=0; i<selIdx.length; i++ ) {
-		selObj[i] = ip.rows.elementAt( selIdx[i]);
-	}
-
-	return selObj;
-}
-
-public int getVisibleIndex () {
-	return ip.first;
-}
-
-void hPosChange () {
-	ip.repaint();
-}
-
-public boolean isIndexSelected ( int index) {
-	return (isSelected(index));
-}
-
-public boolean isMultipleMode () {
-	return (allowsMultipleSelections());
-}
+/*************************************************************************/
 
 /**
- * @deprecated
- */
-public boolean isSelected ( int index ) {
-	if ( sel == index )
-		return true;
-
-	if ( multipleMode )
-		return multiSel.get( index);
-
-	return false;
+  * Returns the complete list of items.
+  *
+  * @return The complete list of items in the list.
+  */
+public synchronized String[]
+getItems()
+{
+  String[] l_items = new String[getItemCount()];
+ 
+  items.copyInto(l_items);
+  return(l_items);
 }
 
-public void makeVisible ( int idx ) {
-	ip.makeVisible( idx);
-}
-
-public Dimension minimumSize () {
-	return minimumSize(0);
-}
-
-public Dimension minimumSize (int rows) {
-	return preferredSize(rows);
-}
-
-void notifyAction () {
-	String s = (sel >= 0) ? (String) ip.rows.elementAt( sel) : null;
-
-	if ( (s != null) &&
-	     ((aListener != null) || (eventMask & AWTEvent.ACTION_EVENT_MASK) != 0) ) {
-		Toolkit.eventQueue.postEvent( ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED, s, 0));
-	}
-}
-
-void notifyItem ( Object item, int op) {
-	if ( (iListener != null) ||
-	     (eventMask & AWTEvent.ITEM_EVENT_MASK) != 0 ||
-	     (flags & IS_OLD_EVENT) != 0 ){
-		ItemEvt e = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, item, op);
-		Toolkit.eventQueue.postEvent( e);
-	}
-}
-
-public void paint ( Graphics g ) {
-	// we know about our childs, we don't have to blank the background,
-	// so let's speed up things a little
-	g.paintChild( ip, false);
-
-	if ( (ip.hScroll != null) && ((ip.hScroll.flags & IS_VISIBLE) != 0) )
-		g.paintChild( ip.hScroll, true);
-	if ( (ip.vScroll != null) && ((ip.vScroll.flags & IS_VISIBLE) != 0) )
-		g.paintChild( ip.vScroll, true);
-}
-
-protected String paramString() {
-	return super.paramString();
-}
-
-public Dimension preferredSize () {
-	int rows = ip.rows.size();
-	if ( rows < 5 )
-		rows = 5;
-	else if ( rows > 10 )
-		rows = 10;
-	return preferredSize( rows);
-}
-
-public Dimension preferredSize (int rows) {
-	int h = rows * ip.rowHeight;
-	int w = 25 * ip.fm.charWidth( 'x');
-	return new Dimension( w, h);
-}
-
-void process ( ActionEvent e ) {
-	if ( (aListener != null) || ((eventMask & AWTEvent.ACTION_EVENT_MASK) != 0) ){
-		processEvent( e);
-	}
-}
-
-void process ( ItemEvent e ) {
-	if ( (iListener != null) || ((eventMask & AWTEvent.ITEM_EVENT_MASK) != 0) ){
-		processEvent( e);
-	}
-
-	if ((flags & IS_OLD_EVENT) != 0) {
-		postEvent (Event.getEvent( e));
-	}
-}
-
-protected void processActionEvent( ActionEvent e) {
-	if ( aListener != null ){
-		aListener.actionPerformed( e);
-	}
-}
-
-protected void processItemEvent( ItemEvent e) {
-	if (iListener != null) {
-		iListener.itemStateChanged( e);
-	}
-}
-
-public synchronized void remove ( String item) {
-	removeElement( ip.rows.indexOf( item));
-}
-
-public synchronized void remove ( int index) {
-	removeElement( index);
-}
-
-public synchronized void removeActionListener ( ActionListener l) {
-	aListener = AWTEventMulticaster.remove( aListener, l);
-}
-
-public synchronized void removeAll () {
-	clear();
-}
-
-void removeElement ( int index) {
-	try {
-		deselectElement( index, false, true);
-		ip.rows.removeElementAt( index);
-
-		ip.updateScrolls();
-		ip.repaintRows( index, ip.getVisibleRows() );
-	}
-	catch ( Exception e) {}
-}
-
-void removeHScroll () {
-	//	remove( hScroll);
-	ip.hScroll = null;
-}
-
-public synchronized void removeItemListener ( ItemListener l) {
-	iListener = AWTEventMulticaster.remove( iListener, l);
-}
-
-public synchronized void repaintRow ( int idx) {
-	ip.repaintItem( idx);
-}
-
-public synchronized void replaceItem ( String newValue, int index) {
-	try {
-		Object o = ip.rows.elementAt( index);
-		ip.rows.setElementAt( newValue, index);
-		ip.updateHScroll();
-		ip.repaintRows( index, 1);
-	}
-	catch ( Exception e) {
-	}
-}
-
-public void requestFocus () {
-	ip.requestFocus();
-}
-
-public void reshape ( int x, int y, int w, int h ) {
-	super.reshape( x, y, w, h);
-
-	// there is no need for validation of compound IS_NATIVE_LIKES, they are no Containers
-	// in JDK, so we automagically have to re-layout them
-	ip.innerLayout();
-	flags |= IS_VALID;
-}
-
-public void select ( int index ) {
-	// It's unclear whether a user selection should fire an event of
-	// not - but some code appears rely on event *NOT* being sent.
-	selectEvent( index, false);
-}
-
-void selectEvent ( int index, boolean fire ) {
-	if ( (index < 0) || (index > ip.rows.size() - 1) )
-		return;
-
-	if ( isIndexSelected( index) )
-		return;
-
-	if ( multipleMode ) {
-		sel = index;
-		multiSel.set( index);
-		nSel++;
-	}
-	else if ( sel >= 0 ) {
-		int oldSel = sel;
-		sel = index;
-		ip.repaintRows( oldSel, 1);
-		if (fire) {
-			notifyItem( new Integer( oldSel), ItemEvent.DESELECTED);
-		}
-	}
-	else
-		sel = index;
-
-	ip.makeVisible( index);
-	ip.repaintRows( index, 1);
-
-	if (fire) {
-		notifyItem( new Integer( index), ItemEvent.SELECTED);
-	}
-}
-
-public void setBackground ( Color c) {
-	// Ideally, we would just do a super.setBackground(), but that would give us
-	// a strange look for the scrollbar backgrounds. If we just forward here, we also
-	// have to resolve getBackground()
-
-	//super.setBackground( c);
-	ip.setBackground( c);
-}
-
-public void setEnabled ( boolean isEnabled ) {
-	super.setEnabled( isEnabled);
-
-	ip.setEnabled( isEnabled);
-}
-
-public void setFont ( Font fnt) {
-	super.setFont( fnt);
-	ip.setFont( fnt);
-	ip.updateScrolls();
-}
-
-public void setForeground ( Color c) {
-	//super.setForeground( c);
-	ip.setForeground( c);
-}
-
-public synchronized void setMultipleMode ( boolean b) {
-	setMultipleSelections(b);
-}
+/*************************************************************************/
 
 /**
- * @deprecated
- */
-public synchronized void setMultipleSelections ( boolean b ) {
-	if ( multipleMode == b )
-		return;
-
-	if ( multipleMode ){
-		multiSel = null;
-		nSel = 0;
-
-		multipleMode = false;
-	}
-	else {
-		multiSel = new BitSet();
-		nSel = 0;
-
-		multipleMode = true;
-	}
+  * Returns the item at the specified index.
+  *
+  * @param index The index of the item to retrieve.
+  *
+  * @exception IndexOutOfBoundsException If the index value is not valid.
+  */
+public String
+getItem(int index)
+{
+  return((String)items.elementAt(index));
 }
 
-public void update ( Graphics g ) {
-	paint( g); // no background blanking required
+/*************************************************************************/
+
+/**
+  * Returns the number of visible rows in the list.
+  *
+  * @return The number of visible rows in the list.
+  */
+public int
+getRows()
+{
+  return(rows);
 }
 
-void vPosChange ( int dy) {
+/*************************************************************************/
+
+/**
+  * Tests whether or not multi-select mode is enabled.
+  *
+  * @return <code>true</code> if multi-select mode is enabled,
+  * <code>false</code> otherwise.
+  */
+public boolean
+isMultipleMode()
+{
+  return allowsMultipleSelections ();
 }
+
+/*************************************************************************/
+
+/**
+  * Tests whether or not multi-select mode is enabled.
+  *
+  * @return <code>true</code> if multi-select mode is enabled,
+  * <code>false</code> otherwise.
+  *
+  * @deprecated This method is deprecated in favor of 
+  * <code>isMultipleMode()</code>.
+  */
+public boolean
+allowsMultipleSelections()
+{
+  return multipleMode;
 }
+
+/*************************************************************************/
+
+/**
+  * This method enables or disables multiple selection mode for this
+  * list.
+  *
+  * @param multipleMode <code>true</code> to enable multiple mode,
+  * <code>false</code> otherwise.
+  */
+public void
+setMultipleMode(boolean multipleMode)
+{
+  setMultipleSelections (multipleMode);
+}
+
+/*************************************************************************/
+
+/**
+  * This method enables or disables multiple selection mode for this
+  * list.
+  *
+  * @param multipleMode <code>true</code> to enable multiple mode,
+  * <code>false</code> otherwise.
+  *
+  * @deprecated
+  */
+public void
+setMultipleSelections(boolean multipleMode)
+{
+  this.multipleMode = multipleMode;
+
+  ListPeer peer = (ListPeer) getPeer ();
+  if (peer != null)
+    peer.setMultipleMode (multipleMode);
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the minimum size of this component.
+  *
+  * @return The minimum size of this component.
+  */
+public Dimension
+getMinimumSize()
+{
+  return getMinimumSize (getRows ());
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the minimum size of this component.
+  *
+  * @return The minimum size of this component.
+  *
+  * @deprecated This method is deprecated in favor of
+  * <code>getMinimumSize</code>.
+  */
+public Dimension
+minimumSize()
+{
+  return minimumSize (getRows ());
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the minimum size of this component assuming it had the specified
+  * number of rows.
+  *
+  * @param rows The number of rows to size for.
+  *
+  * @return The minimum size of this component.
+  */
+public Dimension
+getMinimumSize(int rows)
+{
+  return minimumSize (rows);
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the minimum size of this component assuming it had the specified
+  * number of rows.
+  *
+  * @param rows The number of rows to size for.
+  *
+  * @return The minimum size of this component.
+  *
+  * @deprecated This method is deprecated in favor of 
+  * <code>getMinimumSize(int)</code>>
+  */
+public Dimension
+minimumSize(int rows)
+{
+  ListPeer peer = (ListPeer) getPeer ();
+  if (peer != null)
+    return peer.minimumSize (rows);
+  else
+    return new Dimension (0, 0);
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the preferred size of this component.
+  *
+  * @return The preferred size of this component.
+  */
+public Dimension
+getPreferredSize()
+{
+  return getPreferredSize (getRows ());
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the preferred size of this component.
+  *
+  * @return The preferred size of this component.
+  *
+  * @deprecated This method is deprecated in favor of
+  * <code>getPreferredSize</code>.
+  */
+public Dimension
+preferredSize()
+{
+  return preferredSize (getRows ());
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the preferred size of this component assuming it had the specified
+  * number of rows.
+  *
+  * @param rows The number of rows to size for.
+  *
+  * @return The preferred size of this component.
+  */
+public Dimension
+getPreferredSize(int rows)
+{
+  return preferredSize (rows);
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the preferred size of this component assuming it had the specified
+  * number of rows.
+  *
+  * @param rows The number of rows to size for.
+  *
+  * @return The preferred size of this component.
+  *
+  * @deprecated This method is deprecated in favor of 
+  * <code>getPreferredSize(int)</code>>
+  */
+public Dimension
+preferredSize(int rows)
+{
+  ListPeer peer = (ListPeer) getPeer ();
+  if (peer != null)
+    return peer.preferredSize (rows);
+  else
+    return new Dimension (0, 0);
+}
+
+/*************************************************************************/
+
+/**
+  * This method adds the specified item to the end of the list.
+  *
+  * @param item The item to add to the list.
+  */
+public void
+add(String item)
+{
+  add (item, -1);
+}
+
+/*************************************************************************/
+
+/**
+  * This method adds the specified item to the end of the list.
+  *
+  * @param item The item to add to the list.
+  *
+  * @deprecated Use add() instead.
+  */
+public void
+addItem(String item)
+{
+  addItem (item, -1);
+}
+
+/*************************************************************************/
+
+/**
+  * Adds the specified item to the specified location in the list.
+  * If the desired index is -1 or greater than the number of rows
+  * in the list, then the item is added to the end.
+  *
+  * @param item The item to add to the list.
+  * @param index The location in the list to add the item, or -1 to add
+  * to the end.
+  */
+public void
+add(String item, int index)
+{
+  addItem (item, index);
+}
+
+/*************************************************************************/
+
+/**
+  * Adds the specified item to the specified location in the list.
+  * If the desired index is -1 or greater than the number of rows
+  * in the list, then the item is added to the end.
+  *
+  * @param item The item to add to the list.
+  * @param index The location in the list to add the item, or -1 to add
+  * to the end.
+  *
+  * @deprecated Use add() instead.
+  */
+public void
+addItem(String item, int index)
+{
+  if ((index == -1) || (index >= items.size ()))
+    items.addElement (item);
+  else
+    items.insertElementAt (item, index);
+
+  ListPeer peer = (ListPeer) getPeer ();
+  if (peer != null)
+    peer.add (item, index);
+}
+
+/*************************************************************************/
+
+/**
+  * Deletes the item at the specified index.
+  *
+  * @param index The index of the item to delete.
+  *
+  * @exception IllegalArgumentException If the index is not valid
+  *
+  * @deprecated
+  */
+public void
+delItem(int index) throws IllegalArgumentException
+{
+  items.removeElementAt (index);
+
+  ListPeer peer = (ListPeer) getPeer ();
+  if (peer != null)
+    peer.delItems (index, index);
+}
+
+/*************************************************************************/
+
+/**
+  * Deletes the item at the specified index.
+  *
+  * @param index The index of the item to delete.
+  *
+  * @exception IllegalArgumentException If the index is not valid
+  */
+public void
+remove(int index) throws IllegalArgumentException
+{
+  delItem (index);
+}
+
+/*************************************************************************/
+
+/**
+  * Deletes all items in the specified index range.
+  *
+  * @param start The beginning index of the range to delete.
+  * @param end The ending index of the range to delete.
+  *
+  * @exception IllegalArgumentException If the indexes are not valid
+  *
+  * @deprecated This method is deprecated for some unknown reason.
+  */
+public synchronized void
+delItems(int start, int end) throws IllegalArgumentException
+{
+  if ((start < 0) || (start >= items.size()))
+    throw new IllegalArgumentException("Bad list start index value: " + start);
+
+  if ((start < 0) || (start >= items.size()))
+    throw new IllegalArgumentException("Bad list start index value: " + start);
+
+  if (start > end)
+    throw new IllegalArgumentException("Start is greater than end!");
+
+  // We must run the loop in reverse direction.
+  for (int i = end; i >= start; --i)
+    items.removeElementAt (i);
+  if (peer != null)
+    {
+      ListPeer l = (ListPeer) peer;
+      l.delItems (start, end);
+    }
+}
+
+/*************************************************************************/
+
+/**
+  * Deletes the first occurrence of the specified item from the list.
+  *
+  * @param item The item to delete.
+  *
+  * @exception IllegalArgumentException If the specified item does not exist.
+  */
+public synchronized void
+remove(String item) throws IllegalArgumentException
+{
+  int index = items.indexOf(item);
+  if (index == -1)
+    throw new IllegalArgumentException("List element to delete not found");
+
+  remove(index);
+}
+
+/*************************************************************************/
+
+/**
+  * Deletes all of the items from the list.
+  */
+public synchronized void
+removeAll()
+{
+  clear ();
+}
+
+/*************************************************************************/
+
+/**
+  * Deletes all of the items from the list.
+  * 
+  * @deprecated This method is deprecated in favor of <code>removeAll()</code>.
+  */
+public void
+clear()
+{
+  items.clear();
+
+  ListPeer peer = (ListPeer) getPeer ();
+  if (peer != null)
+    peer.removeAll ();
+}
+
+/*************************************************************************/
+
+/**
+  * Replaces the item at the specified index with the specified item.
+  *
+  * @param item The new item value.
+  * @param index The index of the item to replace.
+  *
+  * @exception IllegalArgumentException If the index is not valid.
+  */
+public synchronized void
+replaceItem(String item, int index) throws IllegalArgumentException
+{
+  if ((index < 0) || (index >= items.size()))
+    throw new IllegalArgumentException("Bad list index: " + index);
+
+  items.insertElementAt(item, index + 1);
+  items.removeElementAt (index);
+
+  if (peer != null)
+    {
+      ListPeer l = (ListPeer) peer;
+
+      /* We add first and then remove so that the selected
+	 item remains the same */
+      l.add (item, index + 1);
+      l.delItems (index, index);
+    }
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the index of the currently selected item.  -1 will be returned
+  * if there are no selected rows or if there are multiple selected rows.
+  *
+  * @return The index of the selected row.
+  */
+public synchronized int
+getSelectedIndex()
+{
+  if (peer != null)
+    {
+      ListPeer l = (ListPeer) peer;
+      selected = l.getSelectedIndexes ();
+    }
+
+  if (selected == null || selected.length != 1)
+    return -1;
+  return selected[0];
+}
+
+/*************************************************************************/
+
+/**
+  * Returns an array containing the indexes of the rows that are 
+  * currently selected.
+  *
+  * @return A list of indexes of selected rows.
+  */
+public synchronized int[]
+getSelectedIndexes()
+{
+  if (peer != null)
+    {
+      ListPeer l = (ListPeer) peer;
+      selected = l.getSelectedIndexes ();
+    }
+  return selected;
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the item that is currently selected, or <code>null</code> if there 
+  * is no item selected.  FIXME: What happens if multiple items selected?
+  *
+  * @return The selected item, or <code>null</code> if there is no
+  * selected item.
+  */
+public synchronized String
+getSelectedItem()
+{
+  int index = getSelectedIndex();
+  if (index == -1)
+    return(null);
+
+  return((String)items.elementAt(index));
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the list of items that are currently selected in this list.
+  *
+  * @return The list of currently selected items.
+  */
+public synchronized String[]
+getSelectedItems()
+{
+  int[] indexes = getSelectedIndexes();
+  if (indexes == null)
+    return(new String[0]);
+
+  String[] retvals = new String[indexes.length];
+  if (retvals.length > 0)
+    for (int i = 0 ; i < retvals.length; i++)
+       retvals[i] = (String)items.elementAt(indexes[i]);
+
+  return(retvals);
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the list of items that are currently selected in this list as
+  * an array of type <code>Object[]</code> instead of <code>String[]</code>.
+  *
+  * @return The list of currently selected items.
+  */
+public synchronized Object[]
+getSelectedObjects()
+{
+  int[] indexes = getSelectedIndexes();
+  if (indexes == null)
+    return(new Object[0]);
+
+  Object[] retvals = new Object[indexes.length];
+  if (retvals.length > 0)
+    for (int i = 0 ; i < retvals.length; i++)
+       retvals[i] = items.elementAt(indexes[i]);
+
+  return(retvals);
+}
+
+/*************************************************************************/
+
+/**
+  * Tests whether or not the specified index is selected.
+  *
+  * @param index The index to test.
+  *
+  * @return <code>true</code> if the index is selected, <code>false</code>
+  * otherwise.
+  */
+public boolean
+isIndexSelected(int index)
+{
+  return isSelected (index);
+}
+
+/*************************************************************************/
+
+/**
+  * Tests whether or not the specified index is selected.
+  *
+  * @param index The index to test.
+  *
+  * @return <code>true</code> if the index is selected, <code>false</code>
+  * otherwise.
+  *
+  * @deprecated This method is deprecated in favor of
+  * <code>isIndexSelected(int)</code>.
+  */
+public boolean
+isSelected(int index)
+{
+  int[] indexes = getSelectedIndexes ();
+
+  for (int i = 0; i < indexes.length; i++)
+    if (indexes[i] == index)
+      return true;
+
+  return false;
+}
+
+/*************************************************************************/
+
+/**
+  * This method ensures that the item at the specified index is visible.
+  *
+  * @exception IllegalArgumentException If the specified index is out of
+  * range.
+  */
+public synchronized void
+makeVisible(int index) throws IllegalArgumentException
+{
+  if ((index < 0) || (index >= items.size()))
+    throw new IllegalArgumentException("Bad list index: " + index);
+
+  visibleIndex = index;
+  if (peer != null)
+    {
+      ListPeer l = (ListPeer) peer;
+      l.makeVisible (index);
+    }
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the index of the last item that was made visible via the
+  * <code>makeVisible()</code> method.
+  *
+  * @return The index of the last item made visible via the 
+  * <code>makeVisible()</code> method.
+  */
+public int
+getVisibleIndex()
+{
+  return(visibleIndex);
+}
+
+/*************************************************************************/
+
+/**
+  * Makes the item at the specified index selected.
+  *
+  * @param index The index of the item to select.
+  */
+public synchronized void
+select(int index)
+{
+  ListPeer lp = (ListPeer)getPeer();
+  if (lp != null)
+    lp.select(index);
+}
+
+/*************************************************************************/
+
+/**
+  * Makes the item at the specified index not selected.
+  *
+  * @param index The index of the item to unselect.
+  */
+public synchronized void
+deselect(int index)
+{
+  ListPeer lp = (ListPeer)getPeer();
+  if (lp != null)
+    lp.deselect(index);
+}
+
+/*************************************************************************/
+
+/**
+  * Notifies this object to create its native peer.
+  */
+public void
+addNotify()
+{
+  if (peer == null)
+    peer = getToolkit ().createList (this);
+  super.addNotify ();
+}
+
+/*************************************************************************/
+
+/**
+  * Notifies this object to destroy its native peer.
+  */
+public void
+removeNotify()
+{
+  super.removeNotify();
+}
+
+/*************************************************************************/
+
+/**
+  * Adds the specified <code>ActionListener</code> to the list of
+  * registered listeners for this object.
+  *
+  * @param listener The listener to add.
+  */
+public synchronized void
+addActionListener(ActionListener listener)
+{
+  action_listeners = AWTEventMulticaster.add(action_listeners, listener);
+}
+
+/*************************************************************************/
+
+/**
+  * Removes the specified <code>ActionListener</code> from the list of
+  * registers listeners for this object.
+  *
+  * @param listener The listener to remove.
+  */
+public synchronized void
+removeActionListener(ActionListener listener)
+{
+  action_listeners = AWTEventMulticaster.remove(action_listeners, listener);
+}
+
+/*************************************************************************/
+
+/**
+  * Adds the specified <code>ItemListener</code> to the list of
+  * registered listeners for this object.
+  *
+  * @param listener The listener to add.
+  */
+public synchronized void
+addItemListener(ItemListener listener)
+{
+  item_listeners = AWTEventMulticaster.add(item_listeners, listener);
+}
+
+/*************************************************************************/
+
+/**
+  * Removes the specified <code>ItemListener</code> from the list of
+  * registers listeners for this object.
+  *
+  * @param listener The listener to remove.
+  */
+public synchronized void
+removeItemListener(ItemListener listener)
+{
+  item_listeners = AWTEventMulticaster.remove(item_listeners, listener);
+}
+
+/*************************************************************************/
+
+/**
+  * Processes the specified event for this object.  If the event is an
+  * instance of <code>ActionEvent</code> then the
+  * <code>processActionEvent()</code> method is called.  Similarly, if the
+  * even is an instance of <code>ItemEvent</code> then the
+  * <code>processItemEvent()</code> method is called.  Otherwise the
+  * superclass method is called to process this event.
+  *
+  * @param event The event to process.
+  */
+protected void
+processEvent(AWTEvent event)
+{
+  if (event instanceof ActionEvent)
+    processActionEvent((ActionEvent)event);
+  else if (event instanceof ItemEvent)
+    processItemEvent((ItemEvent)event);
+  else
+    super.processEvent(event);
+}
+
+/*************************************************************************/
+
+/**
+  * This method processes the specified event by dispatching it to any
+  * registered listeners.  Note that this method will only get called if
+  * action events are enabled.  This will happen automatically if any
+  * listeners are added, or it can be done "manually" by calling
+  * the <code>enableEvents()</code> method.
+  *
+  * @param event The event to process.
+  */
+protected void 
+processActionEvent(ActionEvent event)
+{
+  if (action_listeners != null)
+    action_listeners.actionPerformed(event);
+}
+
+/*************************************************************************/
+
+/**
+  * This method processes the specified event by dispatching it to any
+  * registered listeners.  Note that this method will only get called if
+  * item events are enabled.  This will happen automatically if any
+  * listeners are added, or it can be done "manually" by calling
+  * the <code>enableEvents()</code> method.
+  *
+  * @param event The event to process.
+  */
+protected void 
+processItemEvent(ItemEvent event)
+{
+  if (item_listeners != null)
+    item_listeners.itemStateChanged(event);
+}
+
+void
+dispatchEventImpl(AWTEvent e)
+{
+  if (e.id <= ItemEvent.ITEM_LAST
+      && e.id >= ItemEvent.ITEM_FIRST
+      && (item_listeners != null 
+	  || (eventMask & AWTEvent.ITEM_EVENT_MASK) != 0))
+    processEvent(e);
+  else if (e.id <= ActionEvent.ACTION_LAST 
+	   && e.id >= ActionEvent.ACTION_FIRST
+	   && (action_listeners != null 
+	       || (eventMask & AWTEvent.ACTION_EVENT_MASK) != 0))
+    processEvent(e);
+  else
+    super.dispatchEventImpl(e);
+}
+
+/*************************************************************************/
+
+/**
+  * Returns a debugging string for this object.
+  *
+  * @return A debugging string for this object.
+  */
+protected String
+paramString()
+{
+  return "multiple=" + multipleMode + ",rows=" + rows + super.paramString();
+}
+
+  /**
+   * Returns an array of all the objects currently registered as FooListeners
+   * upon this <code>List</code>. FooListeners are registered using the 
+   * addFooListener method.
+   *
+   * @exception ClassCastException If listenerType doesn't specify a class or
+   * interface that implements java.util.EventListener.
+   */
+  public EventListener[] getListeners (Class listenerType)
+  {
+    if (listenerType == ActionListener.class)
+      return AWTEventMulticaster.getListeners (action_listeners, listenerType);
+    
+    if (listenerType == ItemListener.class)
+      return AWTEventMulticaster.getListeners (item_listeners, listenerType);
+
+    return super.getListeners (listenerType);
+  }
+
+  /**
+   * Returns all action listeners registered to this object.
+   */
+  public ActionListener[] getActionListeners ()
+  {
+    return (ActionListener[]) getListeners (ActionListener.class);
+  }
+  
+  /**
+   * Returns all action listeners registered to this object.
+   */
+  public ItemListener[] getItemListeners ()
+  {
+    return (ItemListener[]) getListeners (ItemListener.class);
+  }
+} // class List

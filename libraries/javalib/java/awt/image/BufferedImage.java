@@ -37,8 +37,6 @@ exception statement from your version. */
 
 package java.awt.image;
 
-import gnu.java.awt.ComponentDataBlitOp;
-
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
@@ -49,6 +47,7 @@ import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.util.Hashtable;
 import java.util.Vector;
+import gnu.java.awt.ComponentDataBlitOp;
 
 /**
  * A buffered image always starts at coordinates (0, 0).

@@ -1,156 +1,253 @@
-/**
- * class Label - 
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
+/* Label.java -- Java label widget
+   Copyright (C) 1999, 2000, 2002 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
 
 package java.awt;
 
-
-public class Label
-  extends Component
-{
-	private static final long serialVersionUID = 3094126758329070636L;
-
-	final public static int LEFT = 0;
-	final public static int CENTER = 1;
-	final public static int RIGHT = 2;
-
-	private static final String [] ALIGNMENTS = {
-		"left",
-		"center",
-		"right",
-	};
-
-	private static int counter;
-
-	int align;
-	String label;
-	boolean hasBorder;
-	FontMetrics fm;
-
-public Label() {
-	this( null );
-}
-
-public Label( String label) {
-	this( label, LEFT);
-}
-
-public Label( String label, int align) {
-	setForeground(Defaults.LabelClr);
-	setFont(Defaults.LabelFont);
-	setText(label != null ? label : "");
-	setAlignment(align);
-	setName("label" + counter++);
-}
-
-public int getAlignment() {
-	return align;
-}
-
-ClassProperties getClassProperties () {
-	return ClassAnalyzer.analyzeAll( getClass(), true);
-}
-
-public String getText() {
-	return label;
-}
-
-public boolean isFocusTraversable() {
-	return false;
-}
-
-public void paint( Graphics g) {
-	int sw = fm.stringWidth( label);
-	int db = hasBorder ? BORDER_WIDTH : 0;
-	int y0 = height - (height-fm.getHeight())/2 - fm.getDescent();
-	int x0;
-
-	switch( align) {
-	case CENTER:
-		x0 = (width - sw)/2;
-		break;
-	case RIGHT:
-		x0 = width - sw - db;
-		break;
-	case LEFT:
-	default:
-		x0 = db + 1;
-		break;
-	}
-
-	g.setColor( getBackground() );
-	g.fillRect( 0, 0, width, height);
-
-	if ( hasBorder )
-		kaffePaintBorder( g);
-			
-	if ( Defaults.LabelTxtCarved ) {
-		g.setColor( Color.white);
-		g.drawString( label, x0+1, y0+1 );
-	}
-	
-	g.setColor( fgClr);
-	g.drawString( label, x0, y0);
-}
-
-protected String paramString() {
-	return ( super.paramString()
-		 + ",align=" + ALIGNMENTS[getAlignment()]
-		 + ",text=" + getText());
-}
+import java.awt.peer.LabelPeer;
+import javax.accessibility.Accessible;
 
 /**
- * @deprecated
+  * This component is used for displaying simple text strings that cannot
+  * be edited.
+  *
+  * @author Aaron M. Renn (arenn@urbanophile.com)
+  * @author Tom Tromey <tromey@cygnus.com>
+  */
+public class Label extends Component implements Accessible
+{
+
+/*
+ * Static Variables
  */
-public Dimension preferredSize() {
-	int cx = 40;
-	int cy = 20;
-	if ( fm != null ){
-		cx = Math.max( cx, fm.stringWidth( label));
-		cy = Math.max( cy, 3*fm.getHeight()/2 );
-	}
-	return new Dimension( cx, cy);
+
+/**
+  * Alignment constant aligning the text to the left of its window.
+  */
+public static final int LEFT = 0;
+
+/**
+  * Alignment constant aligning the text in the center of its window.
+  */
+public static final int CENTER = 1;
+
+/**
+  * Alignment constant aligning the text to the right of its window.
+  */
+public static final int RIGHT = 2;
+
+// Serialization version constant:
+private static final long serialVersionUID = 3094126758329070636L;
+
+/*************************************************************************/
+
+/*
+ * Instance Variables
+ */
+
+/**
+  * @serial Indicates the alignment of the text within this label's window.
+  * This is one of the constants in this class.  The default value is 
+  * <code>LEFT</code>.
+  */
+private int alignment;
+
+/**
+  * @serial The text displayed in the label
+  */
+private String text;
+
+/*************************************************************************/
+
+/*
+ * Constructors
+ */
+
+/**
+  * Initializes a new instance of <code>Label</code> with no text.
+  *
+  * @exception HeadlessException If GraphicsEnvironment.isHeadless() is true.
+  */
+public
+Label()
+{
+  this("", LEFT);
 }
 
-public void setAlignment( int align) {
-	if ( align < LEFT || align > RIGHT ) {
-		throw new IllegalArgumentException();
-	}
-	this.align = align;
-	if ( isShowing() ) {
-		repaint();
-	}
+/*************************************************************************/
+
+/**
+  * Initializes a new instance of <code>Label</code> with the specified
+  * text that is aligned to the left.
+  *
+  * @param text The text of the label.
+  *
+  * @exception HeadlessException If GraphicsEnvironment.isHeadless() is true.
+  */
+public
+Label(String text)
+{
+  this(text, LEFT);
 }
 
-public void setFont( Font f) {
-	super.setFont( f);
-	fm = getFontMetrics( f);
-	if ( isShowing() ) {
-		repaint();
-	}
+/*************************************************************************/
+
+/**
+  * Initializes a new instance of <code>Label</code> with the specified
+  * text and alignment.
+  *
+  * @param text The text of the label.
+  * @param alignment The desired alignment for the text in this label,
+  * which must be one of <code>LEFT</code>, <code>CENTER</code>, or
+  * <code>RIGHT</code>.
+  *
+  * @exception HeadlessException If GraphicsEnvironment.isHeadless() is true.
+  */
+public
+Label(String text, int alignment)
+{
+  setAlignment (alignment);
+  setText (text);
+
+  if (GraphicsEnvironment.isHeadless())
+    throw new HeadlessException ();
 }
 
-public void setText( String label) {
-	if ( label == null ) {
-		label = "";
-	}
-	if ( (this.label == null ) || ! (this.label.equals( label)) ){
-		this.label = label;
-		hasBorder = label.startsWith(" ") && label.endsWith( " ");
-		if ( (flags & IS_SHOWING) == IS_SHOWING ) {
-			Graphics g = getGraphics();
-			if ( g != null ) {
-				paint( g);
-				g.dispose();
-			}
-			//repaint();
-		}
-	}
+/*************************************************************************/
+
+/*
+ * Instance Variables
+ */
+
+/**
+  * Returns the constant indicating the alignment of the text in this
+  * label.  The value returned will be one of the alignment constants
+  * from this class.
+  *
+  * @return The alignment of the text in the label.
+  */
+public int
+getAlignment()
+{
+  return(alignment);
 }
+
+/*************************************************************************/
+
+/**
+  * Sets the text alignment of this label to the specified value.
+  *
+  * @param alignment The desired alignment for the text in this label,
+  * which must be one of <code>LEFT</code>, <code>CENTER</code>, or
+  * <code>RIGHT</code>.
+  */
+public synchronized void
+setAlignment(int alignment)
+{
+  if (alignment != CENTER && alignment != LEFT && alignment != RIGHT)
+    throw new IllegalArgumentException ("invalid alignment: " + alignment);
+  this.alignment = alignment;
+  if (peer != null)
+    {
+      LabelPeer lp = (LabelPeer) peer;
+      lp.setAlignment (alignment);
+    }
 }
+
+/*************************************************************************/
+
+/**
+  * Returns the text displayed in this label.
+  *
+  * @return The text for this label.
+  */
+public String
+getText()
+{
+  return(text);
+}
+
+/*************************************************************************/
+
+/**
+  * Sets the text in this label to the specified value.
+  *
+  * @param text The new text for this label.
+  */
+public synchronized void
+setText(String text)
+{
+  this.text = text;
+
+  if (peer != null)
+    {
+      LabelPeer lp = (LabelPeer) peer;
+      lp.setText (text);
+    }
+}
+
+/*************************************************************************/
+
+/**
+  * Notifies this label that it has been added to a container, causing
+  * the peer to be created.  This method is called internally by the AWT
+  * system.
+  */
+public void
+addNotify()
+{
+  if (peer == null)
+    peer = getToolkit ().createLabel (this);
+  super.addNotify ();
+}
+
+/*************************************************************************/
+
+/**
+  * Returns a parameter string useful for debugging.
+  *
+  * @param A debugging string.
+  */
+protected String
+paramString()
+{
+  return ("text=" + getText() + ",alignment=" +
+	  getAlignment() + "," + super.paramString());
+}
+
+} // class Label
+

@@ -37,9 +37,9 @@ exception statement from your version. */
 
 package java.awt.dnd;
 
+import java.util.List;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
-import java.util.List;
 
 /**
  * @since 1.2
