@@ -245,7 +245,7 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 		case 'J': ret.j = CallStaticTypeMethodA(Long); break;
 		case 'F': ret.f = CallStaticTypeMethodA(Float); break;
 		case 'D': ret.d = CallStaticTypeMethodA(Double); break;
-		case 'I': ret.j = CallStaticTypeMethodA(Int); break;
+		case 'I': ret.i = CallStaticTypeMethodA(Int); break;
 		case 'S': ret.s = CallStaticTypeMethodA(Short); break;
 		case 'B': ret.b = CallStaticTypeMethodA(Byte); break;
 		case 'Z': ret.z = CallStaticTypeMethodA(Boolean); break;
