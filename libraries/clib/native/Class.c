@@ -4,8 +4,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "config.h"
@@ -59,26 +59,26 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
 	jlen = STRING_SIZE(str);
 	while (--jlen > 0) {
 		if (*js++ == '/') {
-			postExceptionMessage(&einfo, 
-				JAVA_LANG(ClassNotFoundException), 
+			postExceptionMessage(&einfo,
+				JAVA_LANG(ClassNotFoundException),
 				"Cannot have slashes - use dots instead.");
 			throwError(&einfo);
 		}
 	}
 
 	/*
-	 * Note the following oddity: 
-	 * 
+	 * Note the following oddity:
+	 *
 	 * It is apparently perfectly legal to call forName for array types,
-	 * such as "[Ljava.lang.String;" or "[B".  
+	 * such as "[Ljava.lang.String;" or "[B".
 	 * However, it is wrong to call Class.forName("Ljava.lang.String;")
 	 *
 	 * This situation is similar to the constant pool resolution.  We
 	 * therefore do the same thing as in getClass in kaffevm/lookup.c,
 	 * that is, use either loadArray or loadClass depending on the name.
 	 *
-	 * This is somewhat described in Section 5.1.3 of the VM 
-	 * Specification, titled "Array Classes".  This section seems to 
+	 * This is somewhat described in Section 5.1.3 of the VM
+	 * Specification, titled "Array Classes".  This section seems to
 	 * imply that we must avoid asking a class loader to resolve such
 	 * array names (those starting with an [), and this is what calling
 	 * loadArray does.
@@ -105,18 +105,18 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
 		 * NoClassDefFoundError, if for instance a superclass for
 		 * a class couldn't be found.
 		 *
-		 * When it throws which, we don't really know.  We try to be 
-		 * compatible, so we upgrade the error to an exception if it's 
+		 * When it throws which, we don't really know.  We try to be
+		 * compatible, so we upgrade the error to an exception if it's
 		 * (NoClassDefFoundError, this_class_name), or if it's a
 		 * VerifyError.
-		 * NB: 1.2 seems to be more consistent and throws 
+		 * NB: 1.2 seems to be more consistent and throws
 		 * ClassNotFoundException in most cases.
 		 */
-		if ((einfo.type & KERR_EXCEPTION) && !strcmp(einfo.classname, "java.lang.VerifyError")) 
+		if ((einfo.type & KERR_EXCEPTION) && !strcmp(einfo.classname, "java.lang.VerifyError"))
 		{
 			errorInfo einfo_copy = einfo;
-			postExceptionMessage(&einfo, 
-				JAVA_LANG(ClassNotFoundException), 
+			postExceptionMessage(&einfo,
+				JAVA_LANG(ClassNotFoundException),
 				einfo.mess);
 			discardErrorInfo(&einfo_copy);
 		} else
@@ -141,7 +141,7 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
 			if (buf[0] == '[' || !strcmp(einfo.mess, buf)) {
 				errorInfo einfo_copy = einfo;
 				postExceptionMessage(&einfo,
-					JAVA_LANG(ClassNotFoundException), 
+					JAVA_LANG(ClassNotFoundException),
 					einfo.mess);
 				discardErrorInfo(&einfo_copy);
 			}
@@ -183,7 +183,7 @@ struct Hjava_lang_Object*
 java_lang_Class_newInstance(struct Hjava_lang_Class* this)
 {
 	if (CLASS_IS_PRIMITIVE(this)) {
-		SignalError("java.lang.InstantiationException", 
+		SignalError("java.lang.InstantiationException",
 			    CLASS_CNAME(this));
 	}
 	return (execute_java_constructor(0, 0, this, "()V"));
@@ -384,7 +384,7 @@ makeReturn(Method* meth)
 }
 
 /*
- * create an array of types for the checked exceptions that this method 
+ * create an array of types for the checked exceptions that this method
  * declared to throw.  These are stored in the declared_exception table
  * as indices into the constant pool.
  *
@@ -404,7 +404,7 @@ makeExceptions(Method* meth)
 	for (i = 0; i < nr; i++) {
 		errorInfo info;
 		Hjava_lang_Class* clazz;
-		clazz = getClass(meth->declared_exceptions[i], meth->class, 
+		clazz = getClass(meth->declared_exceptions[i], meth->class,
 				&info);
 		if (clazz == 0) {
 			throwError(&info);
@@ -423,7 +423,7 @@ makeConstructor(struct Hjava_lang_Class* clazz, int slot)
 
 	mth = CLASS_METHODS(clazz) + slot;
 	meth = (Hjava_lang_reflect_Constructor*)
-	    AllocObject("java/lang/reflect/Constructor", 0);      
+	    AllocObject("java/lang/reflect/Constructor", 0);
 
 	unhand(meth)->clazz = clazz;
 	unhand(meth)->slot = slot;
@@ -442,7 +442,7 @@ makeMethod(struct Hjava_lang_Class* clazz, int slot)
 
 	mth = CLASS_METHODS(clazz) + slot;
 	meth = (Hjava_lang_reflect_Method*)
-	    AllocObject("java/lang/reflect/Method", 0);      
+	    AllocObject("java/lang/reflect/Method", 0);
 
 	unhand(meth)->clazz = clazz;
 	unhand(meth)->slot = slot;
@@ -474,8 +474,8 @@ makeField(struct Hjava_lang_Class* clazz, int slot)
 	unhand(field)->name = checkPtr(utf8Const2Java(fld->name));
 	return (field);
 }
- 
-/* 
+
+/*
  * Return true if there is method defined in any subclass of 'cls'
  * that overrides 'meth'.
  *
@@ -485,7 +485,7 @@ static int
 isOverridden(Hjava_lang_Class *base, Hjava_lang_Class *cls, Method *meth)
 {
 	/* XXX for interfaces for now */
-	if (base == 0) 
+	if (base == 0)
 		return (false);
 
 	/* Search superclasses for equivalent method name.
@@ -525,11 +525,11 @@ countMethods(Hjava_lang_Class* base, Hjava_lang_Class* clas, jint declared)
 }
 
 /*
- * create reflect.Method objects for all methods in a class that are 
+ * create reflect.Method objects for all methods in a class that are
  * not constructors.  If declared is not set, include only public methods.
  */
 static void
-addMethods(Hjava_lang_Class* base, Hjava_lang_Class* clas, jint declared, 
+addMethods(Hjava_lang_Class* base, Hjava_lang_Class* clas, jint declared,
 	Hjava_lang_reflect_Method*** ptr)
 {
 	Method* mth = CLASS_METHODS(clas);
@@ -544,13 +544,13 @@ addMethods(Hjava_lang_Class* base, Hjava_lang_Class* clas, jint declared,
 }
 
 /*
- * Reflect all methods implemented by an interface or one of its 
+ * Reflect all methods implemented by an interface or one of its
  * superinterfaces.
  *
  * Note that we do not reach the "superinterface" via the superclass pointer.
  * See the VM Spec, which says:
  *
- *   "The implements clause in a [interface] class declaration lists the 
+ *   "The implements clause in a [interface] class declaration lists the
  *    names of interfaces that are direct superinterfaces of the [interface]
  *    class being declared."
  *
@@ -597,7 +597,7 @@ java_lang_Class_getMethods0(struct Hjava_lang_Class* this, jboolean declared)
 
 	/*
 	 * Note: the spec wants us to include the methods of all superclasses
-	 * and all superinterfaces.  
+	 * and all superinterfaces.
 	 *
 	 * Superinterfaces cannot be reached through the superclass
 	 * pointer.  We handle them in a separate function.
@@ -666,7 +666,7 @@ java_lang_Class_getConstructors0(struct Hjava_lang_Class* this, jboolean declare
  * fields from implemented interfaces
  */
 static int
-countPublicFields(Hjava_lang_Class* clazz) 
+countPublicFields(Hjava_lang_Class* clazz)
 {
 	Hjava_lang_Class* clas;
 	int i, count;
@@ -714,13 +714,13 @@ makePublicFields(Hjava_lang_Class* clazz, jboolean declared, Hjava_lang_reflect_
 	*pptr = ptr;
 }
 
-/* 
+/*
  * Below, "declared" means to include a field only if it is directly
  * declared by that class (and not inherited from a superclass or defined
  * by an interface the class implements.)  This applies to both private,
  * protected, and public fields.
  *
- * On the other hand, if "declared" is false, we only include public 
+ * On the other hand, if "declared" is false, we only include public
  * fields.  Weird semantics.
  */
 HArrayOfObject*
@@ -749,7 +749,7 @@ java_lang_Class_getFields0(struct Hjava_lang_Class* clazz, jboolean declared)
  * types as `argtypes', where argtypes is an array of Hjava_lang_Class *
  *
  * Note that checking the arguments might cause the resolution of names
- * that are part of the signature.  These must be resolved by the same 
+ * that are part of the signature.  These must be resolved by the same
  * classloader that loaded the class to which the method belongs.
  *
  * This function is used by getMethod0 and getConstructor0.
@@ -763,7 +763,7 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 	int i;
 	errorInfo info;
 
-	/* The JDK doc says and experimentation shows that a null second 
+	/* The JDK doc says and experimentation shows that a null second
 	 * parameter to all get(Declared){Method|Constructor} functions
 	 * is treated like passing an empty array "new Class [] {}"
 	 */
@@ -794,8 +794,8 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 
 static
 Hjava_lang_reflect_Method*
-findMatchingMethod(struct Hjava_lang_Class* clas, 
-		   struct Hjava_lang_String* name, 
+findMatchingMethod(struct Hjava_lang_Class* clas,
+		   struct Hjava_lang_String* name,
 		   HArrayOfObject* arr, jboolean declared)
 {
 	Method* mth = CLASS_METHODS(clas);
@@ -832,7 +832,7 @@ java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_Stri
 	if (CLASS_IS_INTERFACE(this)) {
 		int i;
 		for (i = 0; i < this->total_interface_len; i++) {
-			rmeth = findMatchingMethod(this->interfaces[i], 
+			rmeth = findMatchingMethod(this->interfaces[i],
 						   name, arr, declared);
 			if (rmeth != 0) {
 				return (rmeth);
@@ -841,15 +841,15 @@ java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_Stri
 	}
 
 	/* like SignalError, except that the name of the class that is
-	 * not found becomes the error message 
+	 * not found becomes the error message
 	 */
 	throwException((struct Hjava_lang_Throwable*)execute_java_constructor(
-		"java.lang.NoSuchMethodException", 0, 0, 
+		"java.lang.NoSuchMethodException", 0, 0,
 		"(Ljava/lang/String;)V", name));
 }
 
 struct Hjava_lang_reflect_Constructor*
-java_lang_Class_getConstructor0(struct Hjava_lang_Class* this, HArrayOfObject* arr, jboolean declared) 
+java_lang_Class_getConstructor0(struct Hjava_lang_Class* this, HArrayOfObject* arr, jboolean declared)
 {
 	Hjava_lang_Class* clas = this;
 
@@ -908,4 +908,73 @@ java_lang_Class_getField0(struct Hjava_lang_Class* clazz, struct Hjava_lang_Stri
 		return (f);
 	}
 	SignalError("java.lang.NoSuchFieldException", ""); /* FIXME */
+}
+
+HArrayOfObject*
+java_lang_Class_getClasses0(struct Hjava_lang_Class* clazz, jboolean inner)
+{
+	errorInfo einfo;
+	int count;
+	int i;
+	innerClass *ic;
+	Hjava_lang_Class* c;
+	HArrayOfObject* array;
+	Hjava_lang_Class** ptr;
+
+	/* Lookup inner classes or outer class.
+	   An inner class have outer == clazz.
+	   An outer class have inner == clazz.  */
+	count = 0;
+	for (i = clazz->nr_inner_classes, ic = clazz->inner_classes; i-- > 0; ic++) {
+		if (ic->inner_class == 0 || ic->outer_class == 0) {
+			continue;
+		}
+#if 0
+		c = getClass (inner ? ic->outer_class : ic->inner_class, clazz, &einfo);
+		if (c == NULL) {
+			throwError(&einfo);
+		}
+		if (c == clazz) {
+			count++;
+		}
+#else
+		/* assume one unique constant pool entry per class */
+		if (clazz->this_index == (inner ? ic->outer_class : ic->inner_class)) {
+			count++;
+		}
+#endif
+	}
+
+	array = (HArrayOfObject*)
+		AllocObjectArray(count, "Ljava/lang/Class;", 0);
+	if (count == 0) {
+		return array;
+	}
+	ptr = (Hjava_lang_Class**)&unhand_array(array)->body[0];
+
+	for (i = clazz->nr_inner_classes, ic = clazz->inner_classes; i-- > 0; ic++) {
+		if (ic->inner_class == 0 || ic->outer_class == 0) {
+			continue;
+		}
+#if 0
+		c = getClass (inner ? ic->outer_class : ic->inner_class, clazz, &einfo);
+		if (c == NULL) {
+			throwError(&einfo);
+		}
+		if (c != clazz) {
+			continue;
+		}
+#else
+		/* assume one unique constant pool entry per class */
+		if (clazz->this_index != (inner ? ic->outer_class : ic->inner_class)) {
+			continue;
+		}
+#endif
+		c = getClass (inner ? ic->inner_class : ic->outer_class, clazz, &einfo);
+		if (c == NULL) {
+			throwError(&einfo);
+		}
+		*ptr++ = c;
+	}
+	return array;
 }

@@ -16,13 +16,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.Vector;
 import kaffe.lang.SystemClassLoader;
 
 public final class Class implements Serializable {
 
 /* For GCJ compatibility, we cannot define any fields in
- * java.lang.Class at this point.  Valid as of 10/28/99 
+ * java.lang.Class at this point.  Valid as of 10/28/99
  * We special case it instead in clib/native/ObjectStreamClassImpl.c
  * --gback
  */
@@ -84,11 +86,53 @@ public ClassLoader getClassLoader() {
 
 native private ClassLoader getClassLoader0();
 
-public Class[] getClasses() {
-	return (getClasses0(false));
+/**
+ * If this is an inner class, return the class that
+ * declared it.  If not, return null.
+ *
+ * @return the declaring class of this class.
+ * @since JDK1.1
+ */
+public Class getDeclaringClass() {
+	Class[] classes = getClasses0(false);
+
+	switch (classes.length) {
+	case 0:
+		return null;
+	case 1:
+		return classes[0];
+	default:
+		throw new ClassFormatError ("Too many outer classes :" + classes.length);
+	}
 }
 
-native private Class[] getClasses0(boolean declared);
+/**
+ * Get all the public inner classes, declared in this
+ * class or inherited from superclasses, that are
+ * members of this class.
+ *
+ * @return all public inner classes in this class.
+ * @since JDK1.1
+ */
+public Class[] getClasses() {
+	Vector v = new Vector();
+	Class clazz = this;
+	while (clazz != null) {
+		System.getSecurityManager().checkMemberAccess(clazz, Member.PUBLIC);
+		Class[] classes = clazz.getClasses0(true);
+
+		for (int i = 0; i < classes.length; i++) {
+			if (Modifier.isPublic(classes[i].getModifiers())) {
+				v.add (classes[i]);
+			}
+		}
+		clazz = clazz.getSuperclass();
+	}
+
+	return (Class[])v.toArray (new Class[v.size()]);
+}
+
+native private Class[] getClasses0(boolean inner);
 
 native public Class getComponentType();
 
@@ -108,6 +152,14 @@ public Constructor[] getConstructors() throws SecurityException
 
 native private Constructor[] getConstructors0(boolean declared);
 
+/**
+ * Get all the inner classes declared in this class.
+ *
+ * @return all inner classes declared in this class.
+ * @exception SecurityException if you do not have access
+ *            to non-public inner classes of this class.
+ * @since JDK1.1
+ */
 public Class[] getDeclaredClasses() throws SecurityException
 {
 	System.getSecurityManager().checkMemberAccess( this, Member.DECLARED);
@@ -148,12 +200,6 @@ public Method[] getDeclaredMethods() throws SecurityException
 {
 	System.getSecurityManager().checkMemberAccess( this, Member.DECLARED);
 	return (getMethods0(true));
-}
-
-public Class getDeclaringClass()
-	{
-	// Not sure what this is about.
-	return (null);
 }
 
 public Field getField(String name) throws NoSuchFieldException, SecurityException
@@ -197,19 +243,18 @@ native public String getName();
 native static Class getPrimitiveClass(String name);
 
 /**
- * Finds a resource with the specified name.  
- * The rules for searching for resources associated with a given class 
- * are implemented by the class loader of the class. 
+ * Finds a resource with the specified name.
+ * The rules for searching for resources associated with a given class
+ * are implemented by the class loader of the class.
  * <p>
- * The Class methods delegate to ClassLoader methods, after applying a 
- * naming convention: if the resource name starts with "/", it is used as 
- * is. Otherwise, the name of the package is prepended, after converting 
- * "." to "/". 
+ * The Class methods delegate to ClassLoader methods, after applying a
+ * naming convention: if the resource name starts with "/", it is used as
+ * is. Otherwise, the name of the package is prepended, after converting
+ * "." to "/".
  *
- * @param 	name the string representing the resource to be found. 
- * @return 	the URL object having the specified name, or null if no 
- *		resource with the specified name is found. 
- */
+ * @param 	name the string representing the resource to be found.
+ * @return 	the URL object having the specified name, or null if no
+ * resource with the specified name is found.  */
 public URL getResource(String name) {
 	ClassLoader loader = getClassLoader();
 	if (loader == null) {
@@ -219,19 +264,19 @@ public URL getResource(String name) {
 }
 
 /**
- * Finds a resource with a given name.  
+ * Finds a resource with a given name.
  * Will return null if no resource with this name is found. The rules
- * for searching a resources associated with a given class are implemented 
+ * for searching a resources associated with a given class are implemented
  * by the ClassLoader of the class.
  *
- * The Class methods delegate to ClassLoader methods, after applying a 
- * naming convention: if the resource name starts with "/", it is used 
- * as is. Otherwise, the name of the package is prepended, after 
- * converting "." to "/". 
+ * The Class methods delegate to ClassLoader methods, after applying a
+ * naming convention: if the resource name starts with "/", it is used
+ * as is. Otherwise, the name of the package is prepended, after
+ * converting "." to "/".
  *
- * @param 	name the string representing the resource to be found 
- * @return 	the InputStream object having the specified name, or null 
- *		if no resource with the specified name is found. 
+ * @param 	name the string representing the resource to be found
+ * @return 	the InputStream object having the specified name, or null
+ *		if no resource with the specified name is found.
  */
 public InputStream getResourceAsStream(String name) {
 	ClassLoader loader = getClassLoader();
@@ -260,7 +305,7 @@ native public boolean isPrimitive();
 native public Object newInstance() throws InstantiationException, IllegalAccessException;
 
 /*
- * toString() 
+ * toString()
  */
 public String toString() {
 	return (isInterface() ? "interface " : isPrimitive() ? "" : "class ")
