@@ -5,7 +5,7 @@ import kaffe.util.Assert;
 class SortTest {
 
   public static void main (String[] args) throws Exception {
-    long seed = 12345;
+    long seed = -1;
     int num = 100;
 
     switch (args.length) {
@@ -20,7 +20,7 @@ class SortTest {
       default:
 	throw new Exception("Usage: SortTest [#elem [randseed]]");
     }
-    final Random r = new Random(seed);
+    final Random r = (seed == -1) ? new Random() : new Random(seed);
 
     // Create arrays
     double[] da = new double[num];
