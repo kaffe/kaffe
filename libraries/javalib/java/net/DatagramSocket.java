@@ -17,7 +17,7 @@ import kaffe.net.DefaultDatagramSocketImplFactory;
 public class DatagramSocket {
 
 private InetAddress address;	// remote address if connected, else null
-private int port;		// remote port
+private int port = -1;		// remote port if connected, else -1
 
 static private DatagramSocketImplFactory factory = new DefaultDatagramSocketImplFactory();
 
@@ -60,7 +60,15 @@ public synchronized void connect(InetAddress address, int port) {
 
 public synchronized void disconnect() {
 	this.address = null;
-	this.port = 0;
+	this.port = -1;
+}
+
+public InetAddress getInetAddress() {
+	return address;
+}
+
+public int getPort() {
+	return port;
 }
 
 public void setSoTimeout(int timeout) throws SocketException {
@@ -68,7 +76,23 @@ public void setSoTimeout(int timeout) throws SocketException {
 }
 
 public int getSoTimeout() throws SocketException {
-	return ((Integer) impl.getOption(SocketOptions.SO_TIMEOUT)).intValue();
+	return ((Integer)impl.getOption(SocketOptions.SO_TIMEOUT)).intValue();
+}
+
+public void setSendBufferSize(int size) throws SocketException {
+	impl.setOption(SocketOptions.SO_SNDBUF, new Integer(size));
+}
+
+public void setReceiveBufferSize(int size) throws SocketException {
+	impl.setOption(SocketOptions.SO_RCVBUF, new Integer(size));
+}
+
+public int getSendBufferSize() throws SocketException {
+	return ((Integer)impl.getOption(SocketOptions.SO_SNDBUF)).intValue();
+}
+
+public int getReceiveBufferSize() throws SocketException {
+	return ((Integer)impl.getOption(SocketOptions.SO_RCVBUF)).intValue();
 }
 
 public int getLocalPort() {
