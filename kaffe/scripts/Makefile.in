@@ -49,6 +49,7 @@ install-sun:
 		$(INSTALL_SCRIPT) $(srcdir)/$(SCREXT)/report-kaffe-bug $(INSTROOT)$(bindir)/$(KPREFIX)report-kaffe-bug$(SCREXT)  ;\
 
 install-pizza:
+		test -d $(INSTROOT)$(bindir) || $(MKDIR) $(INSTROOT)$(bindir)
 		for i in $(SCRIPTFILES_PIZZA) ;\
 		do \
 			$(INSTALL_SCRIPT) ./$(SCREXT)/$$i $(INSTROOT)$(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
