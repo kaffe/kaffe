@@ -1,3 +1,8 @@
+2005-02-15  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffe/main.c
+	(main2): If an exception happens, exit with a non-null value.
+
 2005-02-15  Jim Huang  <jserv@kaffe.org>
 
 	* include/jawt.h,

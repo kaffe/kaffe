@@ -265,6 +265,7 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 	jmethodID mmth;
 	jobject str;
 	int i;
+	int ret_code;
 	const char* exec;
 
 	/* make sure no compiler optimizes this away */
@@ -282,39 +283,45 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 	
 	mcls = (*env)->FindClass(env, exec);
 	if (checkException())
-		goto done;
+		goto exception_happened;
 	
 	/* ... and run main. */
 	mmth = (*env)->GetStaticMethodID(env,
 	    mcls, "main", "([Ljava/lang/String;)V");
 	if (checkException())
-		goto done;
+		goto exception_happened;
 
 	/* Build an array of strings as the arguments */
 	cls = (*env)->FindClass(env, "java/lang/String");
 	if (checkException())
-		goto done;
+		goto exception_happened;
 	args = (*env)->NewObjectArray(env, argc, cls, NULL);
 	if (checkException())
-		goto done;
+		goto exception_happened;
 	for (i = 0; i < argc; i++) {
 		str = (*env)->NewStringUTF(env, argv[farg+i]);
 		if (checkException())
-			goto done;
+			goto exception_happened;
 		(*env)->SetObjectArrayElement(env, args, i, str);
 		if (checkException())
-			goto done;
+			goto exception_happened;
 	}
 
 	/* Call method, check for errors and then exit */
 	(*env)->CallStaticVoidMethod(env, mcls, mmth, args);
-	(void)checkException();
+	if (checkException())
+	  goto exception_happened;
 
+	ret_code = 0;
+	goto done;
+
+exception_happened:
+	ret_code = 1;
 done:
 	/* We're done. We are the "main thread" and so are required to call
 	   (*vm)->DestroyJavaVM() instead of (*vm)->DetachCurrentThread() */
 	(*global_vm)->DestroyJavaVM(global_vm);
-	return (0);
+	return ret_code;
 }
 
 static int
