@@ -122,7 +122,7 @@ java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 	stringJava2CBuf(str, buf0, sizeof(buf0));
 
 	/* Skip initial white space */
-	for (buf = buf0; isspace(*buf); buf++)
+	for (buf = buf0; isspace((int) *buf); buf++)
 		;
 
 #if defined(HAVE_STRTOD)
