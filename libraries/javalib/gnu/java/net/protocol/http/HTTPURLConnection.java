@@ -70,6 +70,11 @@ public class HTTPURLConnection
   implements HandshakeCompletedListener
 {
 
+  /**
+   * Pool of reusable connections, used if keepAlive is true.
+   */
+  private static final Map connectionPool = new LinkedHashMap();
+
   /*
    * The underlying connection.
    */
@@ -77,6 +82,9 @@ public class HTTPURLConnection
 
   private String proxyHostname;
   private int proxyPort;
+  private String agent;
+  private boolean keepAlive;
+  private int maxConnections;
 
   private Request request;
   private Headers requestHeaders;
@@ -97,10 +105,10 @@ public class HTTPURLConnection
   {
     super(url);
     requestHeaders = new Headers();
-    AccessController.doPrivileged(this.new GetProxyAction());
+    AccessController.doPrivileged(this.new GetHTTPPropertiesAction());
   }
 
-  class GetProxyAction
+  class GetHTTPPropertiesAction
     implements PrivilegedAction
   {
 
@@ -112,7 +120,7 @@ public class HTTPURLConnection
           String port = System.getProperty("http.proxyPort");
           if (port != null && port.length() > 0)
             {
-              proxyPort = Integer.parseInt (port);
+              proxyPort = Integer.parseInt(port);
             }
           else
             {
@@ -120,9 +128,15 @@ public class HTTPURLConnection
               proxyPort = -1;
             }
         }
+      agent = System.getProperty("http.agent");
+      String ka = System.getProperty("http.keepAlive");
+      keepAlive = !(ka != null && "false".equals(ka));
+      String mc = System.getProperty("http.maxConnections");
+      maxConnections = (mc != null && mc.length() > 0) ?
+        Math.max(Integer.parseInt(mc), 1) : 5;
       return null;
     }
-    
+
   }
 
   public void connect()
@@ -162,7 +176,7 @@ public class HTTPURLConnection
         retry = false;
         if (connection == null)
           {
-            connection = new HTTPConnection(host, port, secure);
+            connection = getConnection(host, port, secure);
             if (secure)
               {
                 SSLSocketFactory factory = getSSLSocketFactory();
@@ -185,6 +199,14 @@ public class HTTPURLConnection
             connection.setProxy(proxyHostname, proxyPort);
           }
         request = connection.newRequest(method, file);
+        if (!keepAlive)
+          {
+            request.setHeader("Connection", "close");
+          }
+        if (agent != null)
+          {
+            request.setHeader("User-Agent", agent);
+          }
         request.getHeaders().putAll(requestHeaders);
         if (requestSink != null)
           {
@@ -267,6 +289,44 @@ public class HTTPURLConnection
       }
     while (retry);
     connected = true;
+  }
+
+  /**
+   * Returns a connection, from the pool if necessary.
+   */
+  HTTPConnection getConnection(String host, int port, boolean secure)
+    throws IOException
+  {
+    HTTPConnection connection;
+    if (keepAlive)
+      {
+        StringBuffer buf = new StringBuffer(secure ? "https://" : "http://");
+        buf.append(host);
+        buf.append(':');
+        buf.append(port);
+        String key = buf.toString();
+        synchronized (connectionPool)
+          {
+            connection = (HTTPConnection) connectionPool.get(key);
+            if (connection == null)
+              {
+                connection = new HTTPConnection(host, port, secure);
+                // Good housekeeping
+                if (connectionPool.size() == maxConnections)
+                  {
+                    // maxConnections must always be >= 1
+                    Object lru = connectionPool.keySet().iterator().next();
+                    connectionPool.remove(lru);
+                  }
+                connectionPool.put(key, connection);
+              }
+          }
+      }
+    else
+      {
+        connection = new HTTPConnection(host, port, secure);
+      }
+    return connection;
   }
 
   public void disconnect()
