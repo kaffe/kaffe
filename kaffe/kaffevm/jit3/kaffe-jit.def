@@ -2292,6 +2292,10 @@ define_insn(INVOKEVIRTUAL)
 			load_offset_ref(tmp, tmp,
 				DTABLE_METHODOFFSET + 
 				method_idx() * DTABLE_METHODSIZE);
+		} else {
+			/* Explicitly check that object is non-null.
+			 * Implicitly done in the dispatch table lookup. */
+			explict_check_null(INVOKEVIRTUAL, stack(idx), 35);
 		}
 
 		/* Push arguments & object */

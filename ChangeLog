@@ -1,3 +1,9 @@
+2000-06-26  Patrick Tullmann  <tullmann@cs.utah.edu>
+
+	* kaffe/kaffevm/jit3/kaffe-jit.def: Explicitly check that 'this'
+ 	is not null when dispatching to a final virtual method.
+	* kaffe/kaffevm/kaffe.def: Same thing, but for the interpreter.
+	
 Thu Jun 22 15:47:03 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
 	* test/regression/{NullPointerTest.java,NullInvoke.java}: move
