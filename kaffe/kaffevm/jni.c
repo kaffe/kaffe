@@ -4387,6 +4387,7 @@ JavaVMInitArgs Kaffe_JavaVMInitArgs = {
 	MAX_HEAPSIZE,	/* Max heap size */
 	0,		/* Verify mode */
 	".",		/* Classpath */
+	".",		/* Bootclasspath */
 	(void*)&vfprintf,/* Vprintf */
 	(void*)&exit,	/* Exit */
 	(void*)&abort,	/* Abort */

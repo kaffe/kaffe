@@ -123,32 +123,23 @@ public Class loadClass(String name) throws ClassNotFoundException {
 
 protected Class loadClass(String name, boolean resolve)
 		throws ClassNotFoundException {
-	Class c;
+	Class c = findLoadedClass (name);
 
-	// Search for class...
-	search: {
-		// First, see if already loaded by this class
-		if ((c = findLoadedClass(name)) != null) {
-			break search;
-		}
-
-		// Second, try the parent class loader
+	// Second, try the parent class loader
+	if (c == null) {
 		try {
 			if (parent != null) {
 				c = parent.loadClass(name, resolve);
-				break search;
 			} else if (this != getSystemClassLoader()) {
-				c = getSystemClassLoader()
-					.loadClass(name, resolve);
-				break search;
+				c = getSystemClassLoader().loadClass(name, resolve);
 			}
-		} catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException _) {
 		}
+	}
 
-		// Third, try findClass()
-		if ((c = findClass(name)) == null) {
-			throw new ClassNotFoundException(name);
-		}
+	// Third, try findClass()
+	if (c==null && (c = findClass(name)) == null) {
+		throw new ClassNotFoundException(name);
 	}
 
 	// Now, optionally resolve the class
@@ -157,6 +148,15 @@ protected Class loadClass(String name, boolean resolve)
 	}
 	return (c);
 }
+
+/**
+ * Special method to load array classes.
+ *
+ * It loads the array denoted by @name and loads the element class
+ * using this classloader. It's package visible so Class.forName
+ * can use it.
+ */
+native Class loadArrayClass (String name) throws ClassNotFoundException;
 
 protected Class findClass(String name) throws ClassNotFoundException {
 	throw new ClassNotFoundException(name);
@@ -234,22 +234,20 @@ public URL getResource(String name) {
 
 public final Enumeration getResources(String name) throws IOException {
 	Vector v = new Vector();
-	ClassLoader p;
-
+	
 	if (parent != null) {
-		p = parent;
-	} else if (this != getSystemClassLoader()) {
-		p = getSystemClassLoader();
-	} else {
-		p = null;
-	}
-	if (p != null) {
-		for (Enumeration e = p.getResources(name);
-		    e.hasMoreElements(); )
+		for (Enumeration e = parent.getResources(name); e.hasMoreElements();) {
 			v.addElement(e.nextElement());
+		}
+	} else if (this != getSystemClassLoader()) {
+		for (Enumeration e=getSystemClassLoader().getResources(name); e.hasMoreElements();) {
+			v.addElement (e.nextElement ());
+		}
 	}
+
 	for (Enumeration e = findResources(name); e.hasMoreElements(); )
 		v.addElement(e.nextElement());
+
 	return v.elements();
 }
 
@@ -316,9 +314,10 @@ protected Package getPackage(String name) {
 	Package pack = (Package) loadedPackages.get(name);
 
 	if (pack == null) {
-		ClassLoader dad = getParent();
-		if (dad != null) {
-			pack = dad.getPackage(name);
+		if (parent != null) {
+			pack = parent.getPackage(name);
+		} else if (this != getSystemClassLoader()) {
+			pack = getSystemClassLoader().getPackage(name);
 		}
 	}
 
@@ -331,9 +330,15 @@ protected Package[] getPackages() {
 		? NO_PACKAGES
 		: (Package []) values;
 
-	ClassLoader dad = getParent();
-	if (dad != null) {
-		Package [] ancestorPacks = dad.getPackages();
+	Package[] ancestorPacks = null;
+
+	if (parent != null) {
+		ancestorPacks = parent.getPackages();
+	} else if (this != getSystemClassLoader()) {
+		ancestorPacks = getSystemClassLoader().getPackages();
+	}
+
+	if (ancestorPacks != null) {
 		Package [] allPacks = new Package[packs.length
 						 + ancestorPacks.length];
 		System.arraycopy(packs, 0, allPacks, 0, packs.length);

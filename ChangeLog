@@ -1,5 +1,78 @@
 2003-05-18  Helmer Kraemer  <hkraemer@freenet.de>
 
+	* kaffe/kaffe/main.c:
+	(main) initialize vmargs.bootClasspath using the BOOTCLASSPATH
+	environment variable, fixed parsing of -classpath option
+	
+	* Makefile.am:
+	(BUILD_ENVIRONMENT-make) add BOOTCLASSPATH variable to 
+	BUILD_ENVIRONMENT script
+
+	* Makfile.in:
+	regenerated
+	
+	* include/jni.h:
+	(JavaVMInitArgs) added a field bootClasspath to contain the
+	boot classpath
+
+	* kaffe/kaffevm/jni.c: 
+	(Kaffe_JavaVMInitArgs) set default boot classpath to "."
+
+	* kaffe/kaffevm/findInJar.c:
+	(realBootClassPath) new variable containing the boot classpath
+	(initClasspath) use boot classpath instead of application
+	classpath
+	
+	* kaffe/scripts/kaffe.in:
+	put contents of jre/lib and lib/ into BOOTCLASSPATH variable
+	
+	* libraries/javalib/rebuildlib.in:
+	updated to handle new BOOTCLASSPATH variable 
+	
+	* libraries/javalib/essential.files:
+	Add java/io/BufferedWriter.java, java/io/FilterReader.java,
+	java/io/InputStreamReader.java, java/io/PushbackReader.java,
+	java/security/SecureClassLoader.java,
+	java/security/SignatureException.java,
+	java/security/InvalidKeyException.java,
+	java/security/NoSuchProviderException.java,
+	java/security/NoSuchAlgorithmException.java,
+	java/security/cert/Certificate.java,
+	java/security/cert/CertificateException.java,
+	java/security/cert/CertificateEncodingException.java,
+	java/util/jar/Attributes.java, java/util/jar/JarEntry.java,
+	java/util/jar/JarException.java, java/util/jar/JarFile.java
+	java/util/jar/Manifest.java
+
+	* libraries/clib/native/System.c:
+	(java_lang_System_initProperties) define a property called
+	sun.boot.class.path that contains the boot classpath
+
+	* libraries/clib/native/ClassLoader.c:
+	(java_lang_ClassLoader_loadArrayClass) new method
+
+	* libraries/javalib/java/lang/ClassLoader.java: 
+	(loadArrayClass) new method
+	(loadClass, getResources, getPackage, getPackages) delegate call
+	to SystemClassLoader if necessary
+	
+	* libraries/javalib/java/lang/Class.java: 
+	(forName) load arrays using the new loadArrayClass method
+	(getProtectionDomain) use SystemClassLoader if getClassLoader()
+	returns null
+	
+	* libraries/javalib/java/lang/System.java:
+	(static initializer) remove initialization of SystemClassLoader 
+
+	* libraries/javalib/kaffe/lang/SystemClassLoader.java: 
+	(Source, DirSource, JarSource) new inner classes to handle
+	application classpath
+	(SystemClassLoader) parse application classpath
+	(findResources, findClass) search in boot classpath and
+	application classpath
+	
+2003-05-18  Helmer Kraemer  <hkraemer@freenet.de>
+
 	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
 	don't undef HAVE_FORK and HAVE_WAITPID since UNIXProcess.java
 	starts a dedicated thread that starts the new process and waits

@@ -29,22 +29,20 @@ if [ -z "$JIKES" ] ; then
 	if [ -z "$JAVA" ]; then
 		test -f ${TOPBLD}/BUILD_ENVIRONMENT &&
 		. ${TOPBLD}/BUILD_ENVIRONMENT
+		BOOTCLASSPATH=${BOOTCLASSPATH}:${CLASSPATH}:${LIBDIR}; export BOOTCLASSPATH
 		JAVA="$JAVA -verbosegc"
 	fi
 	if [ -z "$JAVAC" ]; then
 		JAVAC="$JAVA at.dms.kjc.Main"
 		VERBOSE=-v
 	fi
-	CPATH="${CPATH+-classpath $LIBRARY${CPATH+@PATHSEP@$CPATH}}"
-	CLASSPATH=./Klasses.jar.bootstrap:$CLASSPATH; export CLASSPATH
+	BOOTCLASSPATH=${SRCDIR}/Klasses.jar.bootstrap:$BOOTCLASSPATH; export BOOTCLASSPATH
 else
 	test -f ${TOPBLD}/BUILD_ENVIRONMENT && . ${TOPBLD}/BUILD_ENVIRONMENT
 	JAVAC="$JIKES"
-	CPATH="${CPATH+-classpath $CPATH}"
+	CPATH="${CPATH+-classpath $CPATH:$BOOTCLASSPATH}"
 #	VERBOSE=${VERBOSE-"-verbose"}
 fi
-
-CLASSPATH=$CLASSPATH:$LIBDIR; export CLASSPATH
 
 cd $SRCDIR
 

@@ -45,6 +45,7 @@ static char cwdpath[MAXPATHLEN];
 extern jlong currentTime(void);
 extern userProperty* userProperties;
 extern char* realClassPath;
+extern char* realBootClassPath;
 extern jint java_lang_Object_hashCode(struct Hjava_lang_Object*);
 extern void printStackTrace(struct Hjava_lang_Throwable*,
 	struct Hjava_lang_Object*, int);
@@ -156,7 +157,6 @@ initProxyProperties (struct Hjava_util_Properties *prop)
 	KFREE(start);
 }
 
-
 /*
  * Initialise system properties to their defaults.
  */
@@ -229,6 +229,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	 * file.encoding	Character encoding for locale
 	 * file.encoding.pkg	Character encoding package
 	 * kaffe.compiler	Default java compiler
+	 * sun.boot.class.path  Bootclasspath
 	 *
 	 */
 
@@ -267,14 +268,14 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	}
 	setProperty(p, "java.home", jhome);
 
-	setProperty(p, "java.class.version", kaffe_class_version);
-
         cpath = realClassPath;
 	if (cpath == 0) {
 		cpath = ".";
 	}
 	setProperty(p, "java.class.path", cpath);
 
+	setProperty(p, "sun.boot.class.path", realBootClassPath); 
+        
 	setProperty(p, "file.separator", file_separator);
 	setProperty(p, "path.separator", path_separator);
 	setProperty(p, "line.separator", line_separator);

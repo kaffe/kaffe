@@ -28,6 +28,103 @@
 #include "defs.h"
 
 /*
+ * Load an array class.
+ */
+struct Hjava_lang_Class*
+java_lang_ClassLoader_loadArrayClass (struct Hjava_lang_ClassLoader* this, struct Hjava_lang_String* str)
+{
+        errorInfo info;
+        Hjava_lang_Class *clazz = 0;
+        int len = STRING_SIZE(str);
+        Utf8Const* c;
+        char* name;
+        char buffer[100];
+
+        if (len <= sizeof(buffer) - 1) {
+                name = buffer;
+        }
+        else {
+                name = KMALLOC (len);
+        }
+
+        if (!name) {
+                postOutOfMemory(&info);
+                throwError(&info);
+        }
+        else {
+                stringJava2CBuf(str, name, len + 1);
+                classname2pathname(name, name);
+
+                c = utf8ConstNew(name, len);
+                if (!c) {
+                    postOutOfMemory(&info);
+                    throwError(&info);
+                }
+                else {
+                    clazz = loadArray(c, this, &info);
+
+                    utf8ConstRelease(c);
+
+			if (clazz == 0) {
+	
+	                /*
+                 * upgrade error to an exception if *this* class wasn't found.
+                 * See discussion in Class.forName()
+                 */
+                if ((info.type & KERR_EXCEPTION)
+                    && !strcmp(info.classname, "java.lang.NoClassDefFoundError")) {
+                        /*
+                         * However, we don't upgrade if it is a second attempt
+                         * to load a class whose loading has already failed.
+                         */
+                        classEntry* centry;
+
+                        stringJava2CBuf(str, name, len + 1);
+                        classname2pathname(name, name);
+                        c = utf8ConstNew(name, len);
+
+                        centry = lookupClassEntry(c, 0, &info);
+                        if (centry == 0
+                            || (centry->class
+                                && centry->class->state == CSTATE_FAILED)) {
+                                utf8ConstRelease(c);
+                                throwError(&info);
+                        }
+                        utf8ConstRelease(c);
+
+                        if (!strcmp(info.mess, name)) {
+                                errorInfo info_tmp = info;
+                                postExceptionMessage(&info,
+                                                     JAVA_LANG(ClassNotFoundException),
+                                                     "%s", info.mess);
+                                discardErrorInfo(&info_tmp);
+                        }
+                }
+
+	
+				if (name != buffer) {
+					KFREE (name);
+				}
+
+				throwError (&info);
+			}
+                }
+        }
+
+        if (name != buffer) {
+                KFREE(name);
+        }
+
+        /* do not process to COMPLETE, it will run static initializers
+         * prematurely!
+         */
+        if (processClass(clazz, CSTATE_LINKED, &info) == false) {
+                throwError(&info);
+        }
+        return (clazz);
+}
+
+/*
  * Translate an array of bytes into a class.
  */
 struct Hjava_lang_Class*

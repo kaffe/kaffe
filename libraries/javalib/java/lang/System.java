@@ -33,12 +33,10 @@ public final class System {
 // JVM initialization, eg, before System.err is initialized, debugging
 // println() statements don't work. In these cases, the following routines
 // are very handy. Simply uncomment the following two lines to enable them.
-
 /****
 public static native void debug(String s);	// print s to stderr, then \n
 public static native void debugE(Throwable t);	// print stack trace to stderr
 ****/
-
 static {
 	// XXX what are the constraints on the initialization order in here?
 
@@ -46,25 +44,13 @@ static {
 
 	// Initialise the I/O
 	if (props.getProperty("kaffe.embedded", "false").equals("false")) {
-
 		in = new BufferedInputStream(new FileInputStream(FileDescriptor.in), 128);
 		out = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true);
 		err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);
-	}
-	else {
+	} else {
 		in = new BufferedInputStream(new kaffe.io.StdInputStream(), 128);
 		out = new PrintStream(new BufferedOutputStream(new kaffe.io.StdOutputStream(), 128), true);
 		err = new PrintStream(new BufferedOutputStream(new kaffe.io.StdErrorStream(), 128), true);
-	}
-
-	// Initialize the system class loader
-	try {
-		Class.forName("kaffe.lang.SystemClassLoader");
-	}
-	catch (ClassNotFoundException _)
-	{
-		// Kaffe won't let exceptions be thrown this early in
-		// the init process, anyway...
 	}
 }
 

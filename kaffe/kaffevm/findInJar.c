@@ -49,6 +49,7 @@
 classpathEntry* classpath;
 
 char* realClassPath;
+char* realBootClassPath;
 
 void initClasspath(void);
 
@@ -341,7 +342,7 @@ initClasspath(void)
 	int len;
 	classpathEntry* ptr;
 
-	cp = (char*)Kaffe_JavaVMArgs[0].classpath;
+	cp = (char*)Kaffe_JavaVMArgs[0].bootClasspath;
 	hm = (char*)Kaffe_JavaVMArgs[0].classhome;
 
 	if (cp != 0 && cp[0] != '\0') {
@@ -364,17 +365,20 @@ initClasspath(void)
 
 	if (len == 0) {
 		/* Error on classpath will be reported latter */
-		realClassPath = "";
+		realBootClassPath = "";
 		return;
 	}
 
-	realClassPath = KMALLOC(len);
+	
+	realBootClassPath = KMALLOC(len);
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
 		if (ptr != classpath) {
-			strcat(realClassPath, path_separator);
+			strcat(realBootClassPath, path_separator);
 		}
-		strcat(realClassPath, ptr->path);
+		strcat(realBootClassPath, ptr->path);
 	}
+	
+	realClassPath = (char *)Kaffe_JavaVMArgs[0].classpath;
 }
 
 void

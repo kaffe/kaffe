@@ -61,6 +61,8 @@ static int main2(JNIEnv* env, char *argv[], int farg, int argc);
 #define	CLASSPATH2	"CLASSPATH"
 #define	LIBRARYPATH2	"LD_LIBRARY_PATH"
 
+#define BOOTCLASSPATH 	"BOOTCLASSPATH"
+
 /*
  * MAIN
  */
@@ -90,6 +92,9 @@ main(int argc, char* argv[])
 	if (cp != 0)
 		dbgSetMaskStr(cp);
 #endif
+
+	cp = getenv(BOOTCLASSPATH);
+	vmargs.bootClasspath = cp;
 
 	cp = getenv(CLASSPATH1);
 	if (cp == 0) {
@@ -321,7 +326,7 @@ options(char** argv)
 				exit(1);
 			}
 
-			cpathlength = strlen(vmargs.classpath)
+			cpathlength = vmargs.classpath!=0?strlen(vmargs.classpath):0
 				+ strlen(path_separator)
 				+ strlen(argv[i])
 				+ 1;

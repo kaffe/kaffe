@@ -539,6 +539,7 @@ struct JavaVMInitArgs {
 	jint		maxHeapSize;
 	jint		verifyMode;
 	const char*	classpath;
+	const char*     bootClasspath;
 	jint		(*vfprintf)(FILE*, const char*, va_list);
 	void		(*exit)(jint) __NORETURN__;
 	void		(*abort)(void) __NORETURN__;

@@ -26,6 +26,7 @@ gnu/regexp/RETokenWordBoundary.java
 java/io/BufferedInputStream.java
 java/io/BufferedOutputStream.java
 java/io/BufferedReader.java
+java/io/BufferedWriter.java
 java/io/ByteArrayInputStream.java
 java/io/ByteArrayOutputStream.java
 java/io/DataInput.java
@@ -43,7 +44,10 @@ java/io/FileNotFoundException.java
 java/io/FileOutputStream.java
 java/io/FilterInputStream.java
 java/io/FilterOutputStream.java
+java/io/FilterReader.java
 java/io/InputStream.java
+java/io/InputStreamReader.java
+java/io/PushbackReader.java
 java/io/InterruptedIOException.java
 java/io/InvalidClassException.java
 java/io/InvalidObjectException.java
@@ -186,6 +190,14 @@ java/security/PrivilegedActionException.java
 java/security/PrivilegedExceptionAction.java
 java/security/ProtectionDomain.java
 java/security/PublicKey.java
+java/security/SecureClassLoader.java
+java/security/SignatureException.java
+java/security/InvalidKeyException.java
+java/security/NoSuchProviderException.java
+java/security/NoSuchAlgorithmException.java
+java/security/cert/Certificate.java
+java/security/cert/CertificateException.java
+java/security/cert/CertificateEncodingException.java
 java/text/ChoiceFormat.java
 java/text/DateFormat.java
 java/text/DateFormatSymbols.java
@@ -247,6 +259,11 @@ java/util/TimeZone.java
 java/util/TreeMap.java
 java/util/TreeSet.java
 java/util/Vector.java
+java/util/jar/Attributes.java
+java/util/jar/JarEntry.java
+java/util/jar/JarException.java
+java/util/jar/JarFile.java
+java/util/jar/Manifest.java
 java/util/zip/Deflater.java
 java/util/zip/ZipConstants.java
 java/util/zip/ZipEntry.java

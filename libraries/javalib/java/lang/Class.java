@@ -68,13 +68,11 @@ public static Class forName(String className, boolean initialize, ClassLoader lo
 		}
 	}
 
-	Class cls = loader.findLoadedClass(className);
-
-	if (cls == null) {
-		cls = loader.loadClass(className, initialize);
-	}
-
-	return cls;
+	if (className.startsWith ("[")) {
+		return loader.loadArrayClass (className);
+	} else {
+		return loader.loadClass (className, initialize);
+        }
 }
 
 private String fullResourceName(String name) {
@@ -302,7 +300,12 @@ public Package getPackage() {
 }
 
 public ProtectionDomain getProtectionDomain() {
-	return getClassLoader().getProtectionDomain(this);
+	ClassLoader loader = getClassLoader ();
+
+	if (loader == null) {
+		loader = ClassLoader.getSystemClassLoader ();
+	}
+	return loader.getProtectionDomain(this);
 }
 
 native static Class getPrimitiveClass(String name);
