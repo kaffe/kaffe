@@ -634,7 +634,7 @@ if test "$cross_compiling" = yes; then
   fi
   ac_cv_BUILD_CC="${BUILD_CC-${ac_cv_BUILD_CC}}"
   BUILD_CC="$ac_cv_BUILD_CC"
-  KAFFEH_FOR_BUILD="\$(top_builddir)/kaffe/kaffeh/kaffeh-build"
+  KAFFEH_FOR_BUILD="\$(top_builddir)/kaffe/kaffeh-build/kaffeh\$(EXEEXT)"
   MAKE_KAFFEH_FOR_BUILD="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE) kaffeh-build"
 else
   BUILD_CC="$CC" dnl just in case

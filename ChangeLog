@@ -1,3 +1,12 @@
+Thu Jan 28 19:04:56 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffeh/Makefile.am (kaffe-build): this is now a phony
+	target, that creates ../kaffeh-build/ if needed and builds kaffeh 
+	in there with the non-cross compiler
+	* configure.in (KAFFEH_FOR_BUILD): when cross-building, use
+	kaffeh from kaffeh-build
+	* configure, kaffe/kaffeh/Makefile.in: regen
+
 Thu Jan 28 11:18:42 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/clib/native/Class.c: throw InstantiationException when

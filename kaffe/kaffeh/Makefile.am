@@ -22,5 +22,9 @@ $(GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@
 
 all: $(KAFFEH_build)
+
+.PHONY: kaffeh-build
 kaffeh-build:
-	$(BUILD_CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) $(kaffeh_SOURCES) -o $@
+	@test -d ../kaffeh-build || mkdir ../kaffeh-build
+	cd ../kaffeh-build && $(MAKE) -f ../kaffeh/Makefile kaffeh \
+		"CC=$(BUILD_CC)" "srcdir=$(srcdir)/../kaffeh"
