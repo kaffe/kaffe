@@ -424,9 +424,12 @@ if test "${x_includes}" != NONE && test -n "${x_includes}"; then
 	X_INCLUDES=-I`echo ${x_includes} | sed -e "s/:/ -I/g"`
 	# This hack looks for libjpeg.a in /usr/local/lib and for
 	# jpeglib.h in /usr/local/include.
-	# Are there more locations where these files would normally be?
-	# I guess we need to require this a --with option or conditionally
-	# compile them in if we don't find it here.
+	# It is intended for users who do not set their LDFLAGS env
+	# variable properly before invoking configure.
+	#
+	# The reason is that the config files are currently missing a 
+	# HAVE_JPEGLIB flag which would allow conditional reference to
+	# the functions in this library.
 	GUESSWHEREJPEGLIBIS="/usr/local"
 	for DIR in $GUESSWHEREJPEGLIBIS
 	do
