@@ -1,3 +1,8 @@
+Sat Aug 24 13:30:56 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* test/regression/Reflect.java: adapted expected output for
+	System.arraycopy.
+	
 Wed Aug 21 18:55:38 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/clib/native/System.c:
