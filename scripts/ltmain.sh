@@ -43,8 +43,8 @@ EXIT_FAILURE=1
 
 PROGRAM=ltmain.sh
 PACKAGE=libtool
-VERSION=1.5.4
-TIMESTAMP=" (1.1220.2.90 2004/04/03 14:10:19)"
+VERSION=1.5.6
+TIMESTAMP=" (1.1220.2.94 2004/04/10 16:27:27)"
 
 
 # Check that we have a working $echo.

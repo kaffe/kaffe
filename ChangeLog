@@ -1,3 +1,24 @@
+2004-04-15  Jim Pick <jim@kaffe.org>
+
+	* configure.ac:
+	Removed stray "HEADER" in file that broke
+	--with-staticlib.
+
+	* developers/autogen.sh:
+	Use libtool 1.5.6 (libtoolize in 1.5.4 seemed broken).
+	
+	* configure,
+	libltdl/Makefile.am,
+	libltdl/Makefile.in,
+	libltdl/acinclude.m4,
+	libltdl/configure,
+	libltdl/ltmain.sh,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	m4/libtool.m4,
+	scripts/ltmain.sh:
+	Regenerated.
+
 2004-04-14  Dalibor Topic <robilad@kaffe.org>
 
 	* config/i386/jit.h:

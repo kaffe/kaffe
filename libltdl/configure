@@ -19858,7 +19858,7 @@ if test "${libltdl_cv_shlibext+set}" = set; then
 else
 
 module=yes
-eval libltdl_cv_shlibext=$shrext
+eval libltdl_cv_shlibext=$shrext_cmds
 
 fi
 echo "$as_me:$LINENO: result: $libltdl_cv_shlibext" >&5

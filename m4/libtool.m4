@@ -6150,7 +6150,7 @@ AC_CACHE_CHECK([which extension is used for loadable modules],
   [libltdl_cv_shlibext],
 [
 module=yes
-eval libltdl_cv_shlibext=$shrext
+eval libltdl_cv_shlibext=$shrext_cmds
   ])
 if test -n "$libltdl_cv_shlibext"; then
   AC_DEFINE_UNQUOTED(LTDL_SHLIB_EXT, "$libltdl_cv_shlibext",

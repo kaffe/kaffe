@@ -172,7 +172,7 @@ AC_ARG_WITH([staticlib],
                            [Force the use of static libraries rather than shared]))
 
 if test x"$with_staticlib" = x"yes" ; then
-HEADER	dynamic_libraries=no
+	dynamic_libraries=no
 	if test x"${with_staticvm+set}" != x"set"; then
 		with_staticvm=yes
 	fi
