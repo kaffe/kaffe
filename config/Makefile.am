@@ -129,6 +129,9 @@ EXTRA_DIST = \
 	i386/cygwin32/jit-md.h \
 	i386/cygwin32/md.c \
 	i386/cygwin32/md.h \
+	i386/darwin/config.frag \
+	i386/darwin/md.c \
+	i386/darwin/md.h \
 	i386/dgux/config.frag \
 	i386/dgux/jit-md.h \
 	i386/dgux/md.c \
