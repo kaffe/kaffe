@@ -14,6 +14,7 @@ BEGIN {
 use LogWarning;
 use JikesWarning;
 use GCCWarning;
+use SparseWarning;
 use Registry;
 
 Registry::analyze_warnings();
@@ -23,7 +24,7 @@ Registry::analyze_warnings();
 #	   -Wmissing-declarations -Wmissing-noreturn -Wredundant-decls -Wnested-externs -Winline -Wlong-long
 
 my $path_prefix_regex = qr/\/?([^\/]*\/)*?/;
-my $prog_regex = qr/ ?\(?(${path_prefix_regex})\b(kaffeh|config\.status|rm|mv|mkdir|ar|ranlib|echo|gmake|bash|sh|nm|sed|cd|grep|cat|gcc|touch|test|make)\b/;
+my $prog_regex = qr/ ?\(?(${path_prefix_regex})\b(kaffeh|config\.status|rm|mv|mkdir|ar|ranlib|echo|gmake|bash|sh|nm|sed|cd|grep|cat|gcc|touch|test|make|cgcc)\b/;
 my $kjc_regex = qr/\[ (?:start compilation|compilation ended|parsed|checked body|optimized and generated|checked interfaces)/;
 my $shell_keywords = qr/(?:for|then|if) /;
 my $make_regex = qr/make\[\d+\]: (?:(?:Entering|Leaving) directory|Nothing to be done for)/;
@@ -61,6 +62,7 @@ my $skip_line_regex = qr,
 
 my %ignore = (
 	'gcc/traditional:1' => 1,
+	'sparse-cc/too-many-warnings' => 1,
 );
 
 # No User Servicable Parts Below

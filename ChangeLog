@@ -1,3 +1,8 @@
+2004-12-16  Adam Heath  <doogieg@brainfood.com>
+
+	* scripts/sort-warnings.pl, scripts/SparseWarning.pm:
+	  Add support for sparse.
+
 2004-12-17  Michael Koch  <konqueror@gmx.de>
 
 	* libraries/javalib/javax/swing/JTable.java
