@@ -762,7 +762,7 @@ static
 void
 gcAddRef(void* mem)
 {
-	uint idx;
+	uint32 idx;
 	refObject* obj;
 
 	idx = REFOBJHASH(mem);
@@ -790,7 +790,7 @@ static
 bool
 gcRmRef(void* mem)
 {
-	uint idx;
+	uint32 idx;
 	refObject** objp;
 	refObject* obj;
 
