@@ -1,3 +1,8 @@
+Tue Jun  1 18:54:36 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/lang/String.java: fix bugs in corner
+	cases of indexOf() and lastIndexOf()
+
 1999-06-01  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* Makefile.am (BUILD_ENVIRONMENT-make): Quote PATHSEP in
@@ -118,7 +123,11 @@ Tue May 18 20:16:44 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 	* config/i386/oskit/{md.c mkimage.sh}:  Update startup 
 	* kaffe/kaffevm/systems/oskit-pthreads{jthread.h pjthread.c
 	syscalls.c}: interupt socket calls with SIG_USR2.
-	
+
+Mon May 17 16:00:25 PDT 1999  Pavel Roskin <pavel_roskin@geocities.com>
+
+        * libraries/javalib/java/lang/Class.java: make forName0() private
+
 Mon May 17 11:55:13 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/classMethod.h: fix race condition resolving fields
