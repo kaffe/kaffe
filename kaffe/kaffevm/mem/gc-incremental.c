@@ -29,7 +29,8 @@
 #include "lookup.h"
 #include "md.h"
 
-static gcList gclists[4];
+static gcList gclists[5];
+static int mustfree = 4;		/* temporary list */
 static int white = 3;
 static int grey = 2;
 static int black = 1;
@@ -179,6 +180,7 @@ initGc(void)
 	URESETLIST(gclists[grey]);
 	URESETLIST(gclists[black]);
 	URESETLIST(gclists[finalise]);
+	URESETLIST(gclists[mustfree]);
 }
 
 /*
@@ -400,8 +402,6 @@ gcMan(void* arg)
 		waitStaticCond(&gcman, 0);
 		assert(gcRunning == true);
 
-		LOCK();
-
 		startGC();
 
 		for (unit = gclists[grey].cnext; unit != &gclists[grey]; unit = gclists[grey].cnext) {
@@ -426,8 +426,6 @@ gcMan(void* arg)
 		}
 
 		finishGC();
-
-		UNLOCK();
 
 		if (flag_gc > 0) {
 			fprintf(stderr, "<GC: heap %dK, total %dK, alloc %dK, marked %dK, freeing %dK>\n", gc_heap_total/1024, gcStats.totalmem/1024, gcStats.allocmem/1024, gcStats.markedmem/1024, (gcStats.totalmem > gcStats.markedmem ? (gcStats.totalmem - gcStats.markedmem)/1024 : 0));
@@ -464,6 +462,9 @@ startGC(void)
 	gcStats.markedobj = 0;
 	gcStats.markedmem = 0;
 
+	/* disable the mutator to protect colour lists */
+	LOCK();
+
 	/* Walk the referenced objects */
 	for (i = 0; i < REFOBJHASHSZ; i++) {
 		for (robj = refObjects.hash[i]; robj != 0; robj = robj->next) {
@@ -492,7 +493,13 @@ finishGC(void)
 	/* There shouldn't be any grey objects at this point */
 	assert(gclists[grey].cnext == &gclists[grey]);
 
-	/* Any white objects should now be freed */
+	/* 
+	 * Any white objects should now be freed, but we cannot call
+	 * gc_heap_free here because we might block in gc_heap_free, 
+	 * which would leave the white list unprotected.
+	 * So we move them to a 'mustfree' list from where we'll pull off
+	 * them later.
+	 */
 	while (gclists[white].cnext != &gclists[white]) {
 		unit = gclists[white].cnext;
 		UREMOVELIST(unit);
@@ -505,12 +512,7 @@ finishGC(void)
 			UAPPENDLIST(gclists[finalise], unit);
 		}
 		else {
-FDBG(			printf("freeObject %p size %d\n", info, info->size);
-			fflush(stdout);					)
-			gcStats.freedmem += GCBLOCKSIZE(info);
-			gcStats.freedobj += 1;
-			OBJECTSTATSREMOVE(unit);
-			gc_heap_free(unit);
+			UAPPENDLIST(gclists[mustfree], unit);
 		}
 	}
 
@@ -528,6 +530,27 @@ FDBG(			printf("freeObject %p size %d\n", info, info->size);
 
 		UAPPENDLIST(gclists[white], unit);
 	}
+	/* 
+	 * Now that all lists that the mutator manipulates are in a
+	 * consistent state, we can reenable the mutator here 
+	 */
+	UNLOCK();
+
+	/* 
+	 * Now free the objects.  We can block here since we're the only
+	 * thread manipulating the "mustfree" list.
+	 */
+	while (gclists[mustfree].cnext != &gclists[mustfree]) {
+		unit = gclists[mustfree].cnext;
+		UREMOVELIST(unit);
+FDBG(		printf("freeObject %p size %d\n", info, info->size);
+		fflush(stdout);					)
+		gcStats.freedmem += GCBLOCKSIZE(info);
+		gcStats.freedobj += 1;
+		OBJECTSTATSREMOVE(unit);
+		gc_heap_free(unit);
+	}
+
 
 FTDBG(	printf("Freed %d objects of %dK\n", gcStats.freedobj,
 		gcStats.freedmem/1024);					)
