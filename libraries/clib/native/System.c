@@ -234,6 +234,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	 * file.encoding.pkg	Character encoding package
 	 * kaffe.compiler	Default java compiler
 	 * sun.boot.class.path  Bootclasspath
+	 * kaffe.library.path   Search path for kaffe's native libraries
 	 *
 	 */
 
@@ -249,7 +250,8 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	setProperty(p, "java.io.tmpdir", "/tmp");	/* XXX or /var/tmp?? */
 #endif
 
-	setProperty(p, "java.library.path", getLibraryPath());
+	setProperty(p, "java.library.path", "");
+	setProperty(p, "kaffe.library.path", getLibraryPath());
 
 	setProperty(p, "java.vm.specification.version",
 		  kaffe_vm_specification_version);

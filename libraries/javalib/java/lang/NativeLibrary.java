@@ -48,8 +48,12 @@ class NativeLibrary {
 	}
 
 	static String[] getLibraryNames(String libname) {
-		StringTokenizer t = new StringTokenizer(
-		    System.getProperty("java.library.path"),
+		final String libPath = 
+			System.getProperty("kaffe.library.path")
+			+ File.pathSeparatorChar
+			+ System.getProperty("java.library.path");
+
+		StringTokenizer t = new StringTokenizer(libPath,
 		    new String(new char[] { File.pathSeparatorChar }));
 		String[] dirs = new String[t.countTokens()];
 		for (int i = 0; i < dirs.length; i++) {
