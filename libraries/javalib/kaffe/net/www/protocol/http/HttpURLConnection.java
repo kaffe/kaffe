@@ -46,32 +46,59 @@ final private static int Date = 3;
 final private static int Expiration = 4;
 final private static int IfModifiedSince = 5;
 final private static int LastModified = 6;
+
+private static String proxyHost;
+private static int proxyPort;
+private static boolean useProxy;
 private String[] headersValue = new String[headers.length];
 
 private Socket sock;
 private DataInputStream in;
 private DataOutputStream out;
 
+static {
+    // How these properties are undocumented in the API doc.  We know 
+    // about them from www.icesoft.no's webpage
+    //
+    proxyHost = System.getProperty("http.proxyHost");
+    if (proxyHost != null) {
+	// I believe Sun also supports a http.nonProxyHosts property to
+	// avoid proxy use for local sites.  For now, we always use a
+	// proxy if these properties are set.
+	useProxy = true;
+	String pp = System.getProperty("http.proxyPort");
+	if (pp == null) {
+	    proxyPort = 80;
+	} else {
+	    proxyPort = Integer.parseInt(pp);
+	}
+    }
+}
+
 public HttpURLConnection(URL url) {
 	super(url);
 }
 
 public void connect() throws IOException {
-	int port = url.getPort();
+	int port = useProxy ? proxyPort : url.getPort();
 	if (port == -1) {
 		port = 80;
 	}
-	sock = new Socket(url.getHost(), port);
+	sock = new Socket(useProxy ? proxyHost : url.getHost(), port);
 
 	in = new DataInputStream(sock.getInputStream());
 	out = new DataOutputStream(sock.getOutputStream());
 
 	// Make the http request.
-	String file = url.getFile();
-	if (file.equals("")) {
-		file = "/";
+	if (useProxy) {
+		out.writeBytes(method + " " + url.toString() + " HTTP/1.0\n\n");
+	} else {
+		String file = url.getFile();
+		if (file.equals("")) {
+			file = "/";
+		}
+		out.writeBytes(method + " " + file + " HTTP/1.0\n\n");
 	}
-	out.writeBytes(method + " " + file + " HTTP/1.0\n\n");
 
 	for (;;) {
 		String line = in.readLine();
@@ -170,7 +197,7 @@ public void disconnect() {
 }
 
 public boolean usingProxy() {
-	return (false);
+	return (useProxy);
 }
 
 }
