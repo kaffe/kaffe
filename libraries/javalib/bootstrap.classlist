@@ -182,6 +182,8 @@ java/util/StringTokenizer.class
 java/util/TimeZone.class
 java/util/Vector.class
 java/util/Vector$1.class
+java/util/jar/JarEntry.class
+java/util/jar/JarException.class
 java/util/jar/JarFile.class
 java/util/jar/Manifest.class
 java/util/jar/Attributes.class
