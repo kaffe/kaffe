@@ -170,7 +170,7 @@ extern void alpha_do_fixup_trampoline(void);
 	{ /* f27 */	0, 0, Rfloat|Rdouble,	0, 0, 59 },		\
 	{ /* f28 */	0, 0, Rfloat|Rdouble,	0, 0, 60 },		\
 	{ /* f29 */	0, 0, Rfloat|Rdouble,	0, 0, 61 },		\
-	{ /* f30 */	0, 0, Rfloat|Rdouble,	0, 0, 62 },		\
+	{ /* f30 */	0, 0, Reserved,		0, 0, 62 },		\
 	{ /* fzero */	0, 0, Reserved,		0, 0, 63 },
 
 

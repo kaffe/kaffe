@@ -49,8 +49,9 @@
 #define REG_sp			30
 #define REG_zero		31
 #define REG_f0			(32+0)
-#define REG_f1			(32+1)
+#define REG_f2			(32+2)
 #define REG_fa0			(32+16)
+#define REG_ft			(32+30)
 #define REG_fzero		(32+31)
 
 
@@ -247,6 +248,10 @@ int jit_debug;
 	debug(("cvtql\t%s,%s\n",fregname(rb),fregname(rc))),		\
 	insn_fp(0x17, 0x030, REG_zero, (rb), (rc))
 
+#define op_cvtql_sv(rb, rc)						\
+	debug(("cvtql/sv\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	insn_fp(0x17, 0x530, REG_zero, (rb), (rc))
+
 #define op_cvtqs(rb, rc)						\
 	debug(("cvtqs\t%s,%s\n",fregname(rb),fregname(rc))),		\
 	insn_fp(0x16, 0x0BC, REG_zero, (rb), (rc))
@@ -259,9 +264,17 @@ int jit_debug;
 	debug(("cvtst\t%s,%s\n",fregname(rb),fregname(rc))),		\
 	insn_fp(0x16, 0x2AC, REG_zero, (rb), (rc))
 
+#define op_cvtst_s(rb, rc)						\
+	debug(("cvtst/s\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	insn_fp(0x16, 0x6AC, REG_zero, (rb), (rc))
+
 #define op_cvttq_c(rb, rc)						\
 	debug(("cvttq/c\t%s,%s\n",fregname(rb),fregname(rc))),		\
 	insn_fp(0x16, 0x02F, REG_zero, (rb), (rc))
+
+#define op_cvttq_svc(rb, rc)						\
+	debug(("cvttq/svc\t%s,%s\n",fregname(rb),fregname(rc))),	\
+	insn_fp(0x16, 0x52F, REG_zero, (rb), (rc))
 
 #define op_cvtts(rb, rc)						\
 	debug(("cvtts\t%s,%s\n",fregname(rb),fregname(rc))),		\
@@ -574,15 +587,15 @@ alpha_have_precise_trap(void)
 {
 #ifdef HAVE_ALPHA_ASM_AMASK
 	long r;
-	__asm__("amask %1,%0" : "=r"(r) : "i"(1<<9));
+	__asm__("amask %1,%0" : "=r"(r) : "r"(1<<9));
 #else
 	/* For those whose assemblers are so far behind not to
 	   have the amask instruction.  */
-	register long r __asm__("$0");
+	register long r __asm__("$0") = (1 << 9);
 	__asm__(".long %1"
 		: "=r"(r)
-		: "i"((0x11 << 26) | (REG_zero << 21) | ((1<<9) << 13)
-		      | 0x1000 | (0x61 << 5) | REG_v0));
+		: "i"((0x11 << 26) | (REG_zero << 21) | (REG_v0 << 16)
+		      | (0x61 << 5) | REG_v0));
 #endif
 	return !r;
 }
@@ -766,13 +779,13 @@ define_insn(prologue, prologue_xxC)
 	 *
 	 * Until we have some method of determining in the prologue which
 	 * Rnosaveoncall registers are used by a method, we will save registers
-	 * s0 to s5 and f1 to f9.  As we change FP, we must save it also.
+	 * s0 to s5 and f2 to f9.  As we change FP, we must save it also.
 	 *
 	 * imask = (1 << 9) + ... + (1 << 14) + (1 << 15)
-	 * fmask = (1 << 1) + ... + (1 << 9)
+	 * fmask = (1 << 2) + ... + (1 << 9)
 	 *
-	 * with the return address register, we save 17 registers in RSA.
-	 * ra, s0 ... s5, fp, f1 ... f9
+	 * with the return address register, we save 16 registers in RSA.
+	 * ra, s0 ... s5, fp, f2 ... f9
 	 *
 	 */
 
@@ -867,10 +880,10 @@ define_insn(prologue, prologue_xxC)
 
 	/* Build Register Save mask (without ra) */
 	alpha_jit_info.imask = 0xFE00;		/* s0 to s5 and fp */
-	alpha_jit_info.fmask = 0x3FE;		/* f1 to f9 */
+	alpha_jit_info.fmask = 0x3FC;		/* f2 to f9 */
 
-	/* compute rsa_size for ra, s0-s5, fp, f1-f9 */
-	rsa_size = 1 + (5 - 0 + 1) + 1 + (9 - 1 + 1);
+	/* compute rsa_size for ra, s0-s5, fp, f2-f9 */
+	rsa_size = 1 + (5 - 0 + 1) + 1 + (9 - 2 + 1);
 
 	alpha_jit_info.rsa_size = rsa_size;
 
@@ -890,12 +903,12 @@ define_insn(prologue, prologue_xxC)
 		op_stq(REG_s0+r, REG_sp, SLOTSIZE * N);
 	}
 
-	/* registers f1 - f9 */
-	for (r = 0; r < 9; r++, N++) {
+	/* registers f2 - f9 */
+	for (r = 0; r < (9 - 2 + 1); r++, N++) {
 		L = newLabel();
 		L->type = Lrsa|Labsolute|Lgeneral;
 		L->at = (uintp)CODEPC;
-		op_stt(REG_f1+r, REG_sp, SLOTSIZE * N);
+		op_stt(REG_f2+r, REG_sp, SLOTSIZE * N);
 	}
 	    
 	/* this is the end of the prologue */
@@ -1125,12 +1138,12 @@ define_insn(epilogue, epilogue_xxx)
 		op_ldq(REG_s0+r, REG_sp, SLOTSIZE * N);
 	}
 
-	/* registers f1 - f9 */
-	for (r = 0; r < 9; r++, N++) {
+	/* registers f2 - f9 */
+	for (r = 0; r < (9 - 2 + 1); r++, N++) {
 		l = newLabel();
 		l->type = Lrsa|Labsolute|Lgeneral;
 		l->at = (uintp)CODEPC;
-		op_ldt(REG_f1+r, REG_sp, SLOTSIZE * N);
+		op_ldt(REG_f2+r, REG_sp, SLOTSIZE * N);
 	}
 
 	/* Calling Standard for Alpha Systems
@@ -1525,14 +1538,18 @@ define_insn(add_float, addf_RRR)
 	int r2 = rreg_float(2);
 	int r1 = rreg_float(1);
 	int w = wreg_float(0);
+	int t = ((r1 == w) || (r2 == w)) ? REG_ft : w;
 
-#ifndef AXP_FULL_IEEE_FP
-	op_adds(r1, r2, w);
-#else
-	op_adds_su(r1, r2, w);
-	op_trapb();
 	alpha_jit_info.ieee = 1;
+#ifndef AXP_FULL_IEEE_FP
+	op_adds(r1, r2, t);
+#else
+	op_adds_su(r1, r2, t);
+	op_trapb();
 #endif
+	if (t == REG_ft) {
+		op_fmov(t, w);
+	}
 }
 
 define_insn(add_double, addd_RRR)
@@ -1540,14 +1557,18 @@ define_insn(add_double, addd_RRR)
 	int r2 = rreg_double(2);
 	int r1 = rreg_double(1);
 	int w = wreg_double(0);
+	int t = ((r1 == w) || (r2 == w)) ? REG_ft : w;
 
-#ifndef AXP_FULL_IEEE_FP
-	op_addt(r1, r2, w);
-#else
-	op_addt_su(r1, r2, w);
-	op_trapb();
 	alpha_jit_info.ieee = 1;
+#ifndef AXP_FULL_IEEE_FP
+	op_addt(r1, r2, t);
+#else
+	op_addt_su(r1, r2, t);
+	op_trapb();
 #endif
+	if (t == REG_ft) {
+		op_fmov(t, w);
+	}
 }
 
 define_insn(sub_int_const, subi_RRC)
@@ -1600,14 +1621,18 @@ define_insn(sub_float, subf_RRR)
 	int r2 = rreg_float(2);
 	int r1 = rreg_float(1);
 	int w = wreg_float(0);
+	int t = ((r1 == w) || (r2 == w)) ? REG_ft : w;
 
-#ifndef AXP_FULL_IEEE_FP
-	op_subs(r1, r2, w);
-#else
-	op_subs_su(r1, r2, w);
-	op_trapb();
 	alpha_jit_info.ieee = 1;
+#ifndef AXP_FULL_IEEE_FP
+	op_subs(r1, r2, t);
+#else
+	op_subs_su(r1, r2, t);
+	op_trapb();
 #endif
+	if (t == REG_ft) {
+		op_fmov(t, w);
+	}
 }
 
 define_insn(sub_double, subd_RRR)
@@ -1615,14 +1640,18 @@ define_insn(sub_double, subd_RRR)
 	int r2 = rreg_double(2);
 	int r1 = rreg_double(1);
 	int w = wreg_double(0);
+	int t = ((r1 == w) || (r2 == w)) ? REG_ft : w;
 
-#ifndef AXP_FULL_IEEE_FP
-	op_subt(r1, r2, w);
-#else
-	op_subt_su(r1, r2, w);
-	op_trapb();
 	alpha_jit_info.ieee = 1;
+#ifndef AXP_FULL_IEEE_FP
+	op_subt(r1, r2, t);
+#else
+	op_subt_su(r1, r2, t);
+	op_trapb();
 #endif
+	if (t == REG_ft) {
+		op_fmov(t, w);
+	}
 }
 
 /* Implement these because the compiler don't know about $zero and will
@@ -1765,14 +1794,18 @@ define_insn(mul_float, mulf_RRR)
 	int r2 = rreg_float(2);
 	int r1 = rreg_float(1);
 	int w = wreg_float(0);
+	int t = ((r1 == w) || (r2 == w)) ? REG_ft : w;
 
-#ifndef AXP_FULL_IEEE_FP
-	op_muls(r1, r2, w);
-#else
-	op_muls_su(r1, r2, w);
-	op_trapb();
 	alpha_jit_info.ieee = 1;
+#ifndef AXP_FULL_IEEE_FP
+	op_muls(r1, r2, t);
+#else
+	op_muls_su(r1, r2, t);
+	op_trapb();
 #endif
+	if (t == REG_ft) {
+		op_fmov(t, w);
+	}
 }
 
 define_insn(mul_double, muld_RRR)
@@ -1780,14 +1813,18 @@ define_insn(mul_double, muld_RRR)
 	int r2 = rreg_double(2);
 	int r1 = rreg_double(1);
 	int w = wreg_double(0);
+	int t = ((r1 == w) || (r2 == w)) ? REG_ft : w;
 
-#ifndef AXP_FULL_IEEE_FP
-	op_mult(r1, r2, w);
-#else
-	op_mult_su(r1, r2, w);
-	op_trapb();
 	alpha_jit_info.ieee = 1;
+#ifndef AXP_FULL_IEEE_FP
+	op_mult(r1, r2, t);
+#else
+	op_mult_su(r1, r2, t);
+	op_trapb();
 #endif
+	if (t == REG_ft) {
+		op_fmov(t, w);
+	}
 }
 
 /* While we don't have a native integer division instruction, we do have
@@ -1882,14 +1919,18 @@ define_insn(div_float, divf_RRR)
 	int r2 = rreg_float(2);
 	int r1 = rreg_float(1);
 	int w = wreg_float(0);
+	int t = ((r1 == w) || (r2 == w)) ? REG_ft : w;
 
-#ifndef AXP_FULL_IEEE_FP
-	op_divs(r1, r2, w);
-#else
-	op_divs_su(r1, r2, w);
-	op_trapb();
 	alpha_jit_info.ieee = 1;
+#ifndef AXP_FULL_IEEE_FP
+	op_divs(r1, r2, t);
+#else
+	op_divs_su(r1, r2, t);
+	op_trapb();
 #endif
+	if (t == REG_ft) {
+		op_fmov(t, w);
+	}
 }
 
 define_insn(div_double, divd_RRR)
@@ -1897,14 +1938,18 @@ define_insn(div_double, divd_RRR)
 	int r2 = rreg_double(2);
 	int r1 = rreg_double(1);
 	int w = wreg_double(0);
+	int t = ((r1 == w) || (r2 == w)) ? REG_ft : w;
 
-#ifndef AXP_FULL_IEEE_FP
-	op_divt(r1, r2, w);
-#else
-	op_divt_su(r1, r2, w);
-	op_trapb();
 	alpha_jit_info.ieee = 1;
+#ifndef AXP_FULL_IEEE_FP
+	op_divt(r1, r2, t);
+#else
+	op_divt_su(r1, r2, t);
+	op_trapb();
 #endif
+	if (t == REG_ft) {
+		op_fmov(t, w);
+	}
 }
 
 define_insn(rem_int, remi_RRR)
@@ -2436,17 +2481,25 @@ define_insn(cvt_int_float, cvtif_RxR)
 {
 	int r = rreg_float(2);
 	int w = wreg_float(0);
-
-	op_cvtlq(r, w);
-	op_cvtqs(w, w);
+	
+	alpha_jit_info.ieee = 1;
+	op_cvtlq(r, REG_ft);
+	op_cvtqs(REG_ft, w);
+	op_trapb();
 }
 
 define_insn(cvt_long_float, cvtlf_RxR)
 {
 	int r = rreg_double(2);
 	int w = wreg_float(0);
-
-	op_cvtqs(r, w);
+	int t = (r == w) ? REG_ft : w;
+	
+	alpha_jit_info.ieee = 1;
+	op_cvtqs(r, t);
+	op_trapb();
+	if (t == REG_ft) {
+		op_fmov(t, w);
+	}
 }
 
 define_insn(cvt_int_double, cvtid_RxR)
@@ -2454,16 +2507,24 @@ define_insn(cvt_int_double, cvtid_RxR)
 	int r = rreg_float(2);
 	int w = wreg_double(0);
 
-	op_cvtlq(r, w);
-	op_cvtqt(w, w);
+	alpha_jit_info.ieee = 1;
+	op_cvtlq(r, REG_ft);
+	op_cvtqt(REG_ft, w);
+	op_trapb();
 }
 
 define_insn(cvt_long_double, cvtld_RxR)
 {
 	int r = rreg_double(2);
 	int w = wreg_double(0);
+	int t = (r == w) ? REG_ft : w;
 
-	op_cvtqt(r, w);
+	alpha_jit_info.ieee = 1;
+	op_cvtqt(r, t);
+	op_trapb();
+	if (t == REG_ft) {
+		op_fmov(t, w);
+	}
 }
 
 define_insn(cvt_float_int, cvtfi_RxR)
@@ -2471,9 +2532,25 @@ define_insn(cvt_float_int, cvtfi_RxR)
 	int r = rreg_float(2);
 	int w = wreg_float(0);
 
-	op_cvtst(r, w);
-	op_cvttq_c(w, w);
-	op_cvtql(w, w);
+	alpha_jit_info.ieee = 1;
+	if (r == w) {
+		/* XXX allocate three temp registers ? */
+		op_cvtst_s(r, REG_ft);
+		op_trapb();
+		op_cvttq_svc(REG_ft, w);
+		op_trapb();
+		op_cvtql_sv(w, REG_ft);
+		op_trapb();
+		op_fmov(REG_ft, w);
+	}
+	else {
+		op_cvtst_s(r, w);
+		op_cvttq_svc(w, REG_ft);
+		/* XXX allocate another temp register ? */
+		op_trapb();
+		op_cvtql_sv(REG_ft, w);
+		op_trapb();
+	}
 }
 
 define_insn(cvt_float_long, cvtfl_RxR)
@@ -2481,16 +2558,14 @@ define_insn(cvt_float_long, cvtfl_RxR)
 	int r = rreg_float(2);
 	int w = wreg_double(0);
 
-	op_cvtst(r, w);
-	op_cvttq_c(w, w);
-}
-
-define_insn(cvt_double_long, cvtdl_RxR)
-{
-	int r = rreg_double(2);
-	int w = wreg_double(0);
-
-	op_cvttq_c(r, w);
+	alpha_jit_info.ieee = 1;
+	op_cvtst_s(r, REG_ft);
+	if (r == w) {
+		/* XXX allocate another temp register ? */
+		op_trapb();
+	}
+	op_cvttq_svc(REG_ft, w);
+	op_trapb();
 }
 
 define_insn(cvt_double_int, cvtdi_RxR)
@@ -2498,30 +2573,60 @@ define_insn(cvt_double_int, cvtdi_RxR)
 	int r = rreg_double(2);
 	int w = wreg_float(0);
 
-	op_cvttq_c(r, w);
-	op_cvtql(w, w);
+	alpha_jit_info.ieee = 1;
+	op_cvttq_svc(r, REG_ft);
+	if (r == w) {
+		/* XXX allocate another temp register ? */
+		op_trapb();
+	}
+	op_cvtql_sv(REG_ft, w);
+	op_trapb();
+}
+
+define_insn(cvt_double_long, cvtdl_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_double(0);
+	int t = (r == w) ? REG_ft : w;
+
+	alpha_jit_info.ieee = 1;
+	op_cvttq_svc(r, t);
+	op_trapb();
+	if (t == REG_ft) {
+		op_fmov(t, w);
+	}
 }
 
 define_insn(cvt_float_double, cvtfd_RxR)
 {
 	int r = rreg_float(2);
 	int w = wreg_double(0);
+	int t = (r == w) ? REG_ft : w;
 
-	op_cvtst(r, w);
+	alpha_jit_info.ieee = 1;
+	op_cvtst_s(r, t);
+	op_trapb();
+	if (t == REG_ft) {
+		op_fmov(t, w);
+	}
 }
 
 define_insn(cvt_double_float, cvtdf_RxR)
 {
 	int r = rreg_double(2);
 	int w = wreg_float(0);
+	int t = (r == w) ? REG_ft : w;
 
-#ifndef AXP_FULL_IEEE_FP
-	op_cvtts(r, w);
-#else
-	op_cvtts_su(r, w);
-	op_trapb();
 	alpha_jit_info.ieee = 1;
+#ifndef AXP_FULL_IEEE_FP
+	op_cvtts(r, t);
+#else
+	op_cvtts_su(r, t);
+	op_trapb();
 #endif
+	if (t == REG_ft) {
+		op_fmov(t, w);
+	}
 }
 
 /* --------------------------------------------------------------------- */
@@ -3101,7 +3206,7 @@ define_insn(returnarg_double, returnargd_xxR)
 	else {
 		r = rslot_double(2);
 		assert(r >= -0x8000 && r < 0x8000);
-		op_ldq(REG_f0, REG_fp, r);
+		op_ldt(REG_f0, REG_fp, r);
 	}
 }
 
