@@ -26278,7 +26278,6 @@ if test "${enable_jvmpi+set}" = set; then
 fi;
 
 case "$enable_jvmpi" in
-"") ;;
 no) ;;
 *) if test "x$NOSIGCONTEXT" = "xtrue"; then
 	echo "JVMPI does not support Cygwin"
@@ -26372,7 +26371,6 @@ if test "${enable_xdebugging+set}" = set; then
 fi;
 
 case "$enable_xdebugging" in
-"") ;;
 no) ;;
 *) need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_XDEBUGGING"; JAVAC_FLAGS="-g $JAVAC_FLAGS";;
 esac
@@ -26387,7 +26385,6 @@ if test "${enable_feedback+set}" = set; then
 fi;
 
 case "$enable_feedback" in
-"") ;;
 no) ;;
 *) need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_FEEDBACK";;
 esac

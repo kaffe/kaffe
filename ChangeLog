@@ -1,5 +1,12 @@
 2004-05-13  Dalibor Topic  <robilad@kaffe.org>
 
+	*  configure.ac: Allow enabling of jvmpi, xdebugging and 
+	feedback without an explicit 'yes'.
+
+	* configure: Regenerated.
+
+2004-05-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Allow enabling of xprofiling without
 	an explicit 'yes'.
 

@@ -447,7 +447,6 @@ AC_ARG_ENABLE([jvmpi],
                              [Enable JVMPI @<:@default=no@:>@]))
 
 case "$enable_jvmpi" in
-"") ;;
 no) ;;
 *) if test "x$NOSIGCONTEXT" = "xtrue"; then
 	echo "JVMPI does not support Cygwin"
@@ -511,7 +510,6 @@ AC_ARG_ENABLE([xdebugging],
                              [Enable debugging symbol generation for jitted code]))
 
 case "$enable_xdebugging" in
-"") ;;
 no) ;;
 *) need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_XDEBUGGING"; JAVAC_FLAGS="-g $JAVAC_FLAGS";;
 esac
@@ -527,7 +525,6 @@ AC_ARG_ENABLE([feedback],
                              [Enable generation of feedback data]))
 
 case "$enable_feedback" in
-"") ;;
 no) ;;
 *) need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_FEEDBACK";;
 esac
