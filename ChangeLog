@@ -1,3 +1,10 @@
+2001-02-23  Edouard G. Parmelan  <egp@free.fr>
+
+	* config/sparc/jit.h (FIXUP_TRAMPOLINE_DECL): meth and where are
+	locals variables in soft_fixup_tampoline() and therefor can't be
+	uses as parameters name.  Close PR#753.
+	Submited by Delarue Christophe <cdelarue@bigfoot.com>
+	
 2001-02-11  Edouard G. Parmelan  <egp@free.fr>
 
 	* config/alpha/trampolines.c: setup return register before
