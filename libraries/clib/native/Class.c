@@ -927,7 +927,12 @@ java_lang_Class_getField0(struct Hjava_lang_Class* clazz, struct Hjava_lang_Stri
 	if (f != 0) {
 		return (f);
 	}
-	SignalError("java.lang.NoSuchFieldException", ""); /* FIXME */
+	/* like SignalError, except that the name of the field that is
+	 * not found becomes the error message
+	 */
+	throwException((struct Hjava_lang_Throwable*)execute_java_constructor(
+		"java.lang.NoSuchFieldException", 0, 0,
+		"(Ljava/lang/String;)V", name));
 }
 
 HArrayOfObject*

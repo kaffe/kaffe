@@ -81,111 +81,111 @@ java_lang_reflect_Field_getModifiers(struct Hjava_lang_reflect_Field * this)
 }
 
 struct Hjava_lang_Object*
-Java_java_lang_reflect_Field_getObject0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
+java_lang_reflect_Field_getObject0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
 {
 	return ((struct Hjava_lang_Object*)getFieldAddress(this, obj));
 }
 
 jboolean
-Java_java_lang_reflect_Field_getBoolean0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
+java_lang_reflect_Field_getBoolean0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
 {
 	return (*(jboolean*)getFieldAddress(this, obj));
 }
 
 jbyte
-Java_java_lang_reflect_Field_getByte0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
+java_lang_reflect_Field_getByte0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
 {
 	return (*(jbyte*)getFieldAddress(this, obj));
 }
 
 jchar
-Java_java_lang_reflect_Field_getChar0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
+java_lang_reflect_Field_getChar0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
 {
 	return (*(jchar*)getFieldAddress(this, obj));
 }
 
 
 jshort
-Java_java_lang_reflect_Field_getShort0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
+java_lang_reflect_Field_getShort0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
 {
 	return (*(jshort*)getFieldAddress(this, obj));
 }
 
 jint
-Java_java_lang_reflect_Field_getInt0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
+java_lang_reflect_Field_getInt0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
 {
 	return (*(jint*)getFieldAddress(this, obj));
 }
 
 jlong
-Java_java_lang_reflect_Field_getLong0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
+java_lang_reflect_Field_getLong0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
 {
 	return (*(jlong*)getFieldAddress(this, obj));
 }
 
 jfloat
-Java_java_lang_reflect_Field_getFloat0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
+java_lang_reflect_Field_getFloat0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
 {
 	return (*(jfloat*)getFieldAddress(this, obj));
 }
 
 jdouble
-Java_java_lang_reflect_Field_getDouble0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
+java_lang_reflect_Field_getDouble0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
 {
 	return (*(jdouble*)getFieldAddress(this, obj));
 }
 
 
 void
-Java_java_lang_reflect_Field_setBoolean(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jboolean val)
+java_lang_reflect_Field_setBoolean(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jboolean val)
 {
 	*(jboolean*)getFieldAddress(this, obj) = val;
 }
 
 void
-Java_java_lang_reflect_Field_setByte(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jbyte val)
+java_lang_reflect_Field_setByte(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jbyte val)
 {
 	*(jbyte*)getFieldAddress(this, obj) = val;
 }
 
 void
-Java_java_lang_reflect_Field_setChar(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jchar val)
+java_lang_reflect_Field_setChar(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jchar val)
 {
 	*(jchar*)getFieldAddress(this, obj) = val;
 }
 
 void
-Java_java_lang_reflect_Field_setShort(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jshort val)
+java_lang_reflect_Field_setShort(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jshort val)
 {
 	*(jshort*)getFieldAddress(this, obj) = val;
 }
 
 void
-Java_java_lang_reflect_Field_setInt(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jint val)
+java_lang_reflect_Field_setInt(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jint val)
 {
 	*(jint*)getFieldAddress(this, obj) = val;
 }
 
 void
-Java_java_lang_reflect_Field_setLong(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jlong val)
+java_lang_reflect_Field_setLong(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jlong val)
 {
 	*(jlong*)getFieldAddress(this, obj) = val;
 }
 
 void
-Java_java_lang_reflect_Field_setFloat(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jfloat val)
+java_lang_reflect_Field_setFloat(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jfloat val)
 {
 	*(jfloat*)getFieldAddress(this, obj) = val;
 }
 
 void
-Java_java_lang_reflect_Field_setDouble(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jdouble val)
+java_lang_reflect_Field_setDouble(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, jdouble val)
 {
 	*(jdouble*)getFieldAddress(this, obj) = val;
 }
 
 void
-Java_java_lang_reflect_Field_set(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, struct Hjava_lang_Object* val)
+java_lang_reflect_Field_set(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, struct Hjava_lang_Object* val)
 {
 	*(jobject*)getFieldAddress(this, obj) = val;
 }

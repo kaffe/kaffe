@@ -40,7 +40,7 @@ static {
 	// How these properties are undocumented in the API doc.  We know
 	// about them from www.icesoft.no's webpage
 	proxyHost = System.getProperty("http.proxyHost");
-	if (proxyHost != null) {
+	if (proxyHost != null && !proxyHost.equals("")) {
 		// Sun also supports a http.nonProxyHosts property to
 		// avoid proxy use for local sites.  It's a regular expression
 		// like so "*.pa.dec.com|*.compaq.com"
@@ -52,7 +52,11 @@ static {
 		useProxy = true;
 		String pp = System.getProperty("http.proxyPort");
 		if (pp != null) {
-			proxyPort = Integer.parseInt(pp);
+			try {
+				proxyPort = Integer.parseInt(pp);
+			} catch (NumberFormatException e) {
+				proxyPort = -1; // Make sure.
+			}
 		}
 	}
 }
@@ -74,11 +78,18 @@ public void connect() throws IOException {
 		if (useProxy) {
 			port = proxyPort;
 			host = proxyHost;
+			if (port == -1) {
+				port = 80;
+			}
+			try {
+				sock = new Socket(host, port);
+			} catch (IOException e) {
+				// Sun JDK just ignores proxy errors.
+			}
 		}
-		else {
-			port = url.getPort();
-			host = url.getHost();
-		}
+
+		port = url.getPort();
+		host = url.getHost();
 		if (port == -1) {
 			port = 80;
 		}

@@ -133,7 +133,7 @@ long writeGmonRecord(struct gmon_file *gf, int tag, ...)
 			strcpy(ghh.dimen, va_arg(args, char *));
 			break;
 		case GRA_DimensionAbbrev:
-			ghh.dimen_abbrev = va_arg(args, char);
+			ghh.dimen_abbrev = va_arg(args, int);
 			break;
 		case GRA_ProfilingRate:
 			*((int *)ghh.prof_rate) = va_arg(args, int);

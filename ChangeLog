@@ -1,3 +1,20 @@
+Wed May  8 20:38:38 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* test/regression/Makefile.am, test/regression/Makefile.in: added
+	GetTest.java to the list of tests.
+
+Wed May  8 14:42:26 EEST 2002 Jukka Santala <jsantala@tml.hut.fi>
+
+        * kaffe/xprof/gmonFile.c: va_arg with int type to allow building
+        with GCC 3+
+        * libraries/clib/native/Class.c: Made exception match Sun JDK's.
+        * libraries/clib/native/Field.c: Methods aren't JNI compatible, so
+        named them correctly.
+        * libraries/javalib/kaffe/net/www/protocol/http/
+        HttpURLConnection.java: Made proxy address handling match Sun
+        JDK's observed behaviour.
+        * test/regression/GetField.java: Added test-case for Field
+        methods.
+
 Wed May  8 19:22:18 CEST 2002 Tim Stack <stack@cs.utah.edu>
 	* kaffe/kaffevm/jar.c:
 	(getDataJarFile) Send something back for entries with compressed

@@ -90,6 +90,7 @@ ALWAYS_TESTS = \
 	BufferedReaderTest.java \
 	ReaderReadVoidTest.java \
 	PipeTest.java \
+	GetField.java \
 ## simple test for Method.invoke
 	ReflectInvoke.java \
 ## simple test for InvocationTargetExceptions
