@@ -184,6 +184,7 @@ registerAsyncSignalHandler(int sig, void* handler)
 #endif /* defined(SIGVTALRM) */
 		|| (sig == SIGIO)
 		|| (sig == SIGUSR1)
+		|| (sig == SIGUSR2)
 		|| (sig == SIGCHLD);
 #endif /* !defined(NDEBUG) */
 

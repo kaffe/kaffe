@@ -22,6 +22,8 @@
 /* For NOTIMEOUT */
 #include "jsyscall.h"
 
+/* For Hjava_lang_VMThread */
+#include "thread.h"
 
 /* Flags used for threading I/O calls */
 #define TH_READ                         0
@@ -677,6 +679,28 @@ jthread_dumpthreadinfo(jthread_t tid)
 }
 
 /*
+ * print info about a java thread (hopefully we'll get this to include more
+ * detail, such as the actual stack traces for each thread)
+ *
+ */
+static void
+dumpJavaThreadLocal(jthread_t thread, UNUSED void *p)
+{
+	Hjava_lang_VMThread *tid = (Hjava_lang_VMThread *)jthread_get_data(thread)->jlThread;
+	dprintf("`%s' ", nameThread(tid));
+	jthread_dumpthreadinfo(thread);
+	dprintf("\n");
+}
+
+static void
+dumpThreadsLocal(void)
+{
+	dprintf("Dumping live threads:\n");
+	jthread_walkLiveThreads(dumpJavaThreadLocal, NULL);
+}
+
+
+/*
  * handle an interrupt.
  * 
  * this function is either invoked from within a signal handler, or as the
@@ -692,6 +716,10 @@ handleInterrupt(int sig, SIGNAL_CONTEXT_POINTER(sc))
 
 	case SIGUSR1:
 		ondeadlock();
+		break;
+
+	case SIGUSR2:
+		dumpThreadsLocal();
 		break;
 
 #if defined(SIGVTALRM)
@@ -1233,6 +1261,7 @@ jthread_init(int pre,
 	registerAsyncSignalHandler(SIGIO, interrupt);
         registerAsyncSignalHandler(SIGCHLD, interrupt);
         registerAsyncSignalHandler(SIGUSR1, interrupt);
+        registerAsyncSignalHandler(SIGUSR2, interrupt);
 
 	/* 
 	 * If debugging is not enabled, set stdin, stdout, and stderr in 
@@ -2144,10 +2173,39 @@ retry:
 		FD_SET(sigPipe[0], &rd);
 #endif
 	}
+
+        /*
+	 * find out if we have any threads waiting (and if so, when the first
+	 * one will expire).  we use this to prevent indefinite waits in the
+	 * poll / select
+	 *
+	 */
+	jlong firstAlarm = -1;
+	if (alarmList != 0) {
+		// sorted
+		firstAlarm = JTHREADQ(alarmList)->time;
+	}
+
+	jlong maxWait = (canSleep ? -1 : 0);
+	if ( (firstAlarm != -1) && (canSleep) ) {
+		jlong curTime = currentTime();
+		if (curTime >= firstAlarm) {
+			maxWait = 0;
+		} else {
+			maxWait = firstAlarm - curTime;
+		}
+		DBG(JTHREADDETAIL, dprintf("handleIO(sleep=%d) maxWait=%d\n", canSleep, maxWait); )
+	}
+
 #if USE_POLL
-	r = poll(pollarray, nfd, canSleep ? -1 : 0);
+	r = poll(pollarray, nfd, maxWait);
 #else
-	r = select(maxFd+1, &rd, &wr, 0, canSleep ? 0 : &zero);
+	if (maxWait <= 0) {
+		r = select(maxFd+1, &rd, &wr, 0, &zero);
+	} else {
+		struct timeval maxWaitVal = { maxWait/1000, (maxWait % 1000) * 1000 };
+		r = select(maxFd+1, &rd, &wr, 0, &maxWaitVal);
+	}
 #endif
 	/* Reset wouldlosewakeup here */
 	wouldlosewakeup = 0; 

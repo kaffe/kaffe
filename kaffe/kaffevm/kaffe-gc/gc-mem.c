@@ -112,13 +112,26 @@ uintp gc_heap_base;
 uintp gc_heap_range;
 
 #ifndef gc_pgsize
-size_t gc_pgsize;
+static size_t gc_pgsize;
 int gc_pgbits;
 #endif
 
 #ifdef KAFFE_VMDEBUG
 int gc_system_alloc_cnt;
 #endif
+
+/**
+ * rounds @V up to the next page size.
+ *
+ */
+#define	ROUNDUPPAGESIZE(V)	(((uintp)(V) + gc_pgsize - 1) & -gc_pgsize)
+
+/**
+ * Evaluates to the first usable address in gc_block @B.
+ *
+ */ 
+#define GCBLOCK2BASE(B)		(((char *)gc_heap_base) \
+					 + gc_pgsize * ((B) - KGC_BLOCKS))
 
 #if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 /* Magic constant used to mark blocks under gc's management */

@@ -21,7 +21,6 @@
 #endif
 
 #ifndef gc_pgsize
-extern size_t gc_pgsize;
 extern int gc_pgbits;
 #endif
 
@@ -62,12 +61,6 @@ typedef struct _gc_freeobj {
  *
  */
 #define	ROUNDDOWNALIGN(V)	((uintp)(V) & -MEMALIGN)
-
-/**
- * rounds @V up to the next page size.
- *
- */
-#define	ROUNDUPPAGESIZE(V)	(((uintp)(V) + gc_pgsize - 1) & -gc_pgsize)
 
 /* ------------------------------------------------------------------------ */
 
@@ -158,13 +151,6 @@ extern void	gc_primitive_free(gc_block* mem);
  *
  */
 #define GCMEM2BLOCK(M)		(KGC_BLOCKS + ( ( ((uintp) (M)) - gc_heap_base) >> gc_pgbits))
-
-/**
- * Evaluates to the first usable address in gc_block @B.
- *
- */ 
-#define GCBLOCK2BASE(B)		(((char *)gc_heap_base) \
-					 + gc_pgsize * ((B) - KGC_BLOCKS))
 
 #define ASSERT_ONBLOCK(OBJ, BLK) assert(GCMEM2BLOCK(OBJ) == BLK)
 
