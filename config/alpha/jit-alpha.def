@@ -23,6 +23,7 @@
 #include "exception.h"
 #include "thread.h"
 #include "gc.h"
+#include "gtypes.h"
 
 
 #define	REG_v0			0
@@ -589,7 +590,7 @@ alpha_andconst_rangecheck(long v)
 
 define_insn(unimplemented, unimplemented)
 {
-	abort();
+	ABORT();
 }
 
 define_insn(nop, nop)
@@ -728,7 +729,7 @@ define_insn(prologue, prologue_xxC)
 			s++;
 			break;
 		default:
-			abort();
+			ABORT();
 		}
 	}
 }
@@ -1050,7 +1051,7 @@ define_insn(add_int_const, addi_RRC)
 		op_subl_i(r, -o, w);
 	}
 	else {
-		abort();
+		ABORT();
 	}
 }
 
@@ -1142,7 +1143,7 @@ define_insn(sub_int_const, subi_RRC)
 		op_addl_i(r, -o, w);
 	}
 	else {
-		abort();
+		ABORT();
 	}
 }
 
@@ -2177,7 +2178,7 @@ define_insn(branch, branch_xCC)
 		op_br(REG_zero, 0);
 		break;
 	default:
-		abort();
+		ABORT();
 	}
 
 	l->from = CODEPC;
@@ -2221,7 +2222,7 @@ alpha_cbranch(int r1, int r2, label *l, int bt)
 		ne = 1;
 		break;
 	default:
-		abort();
+		ABORT();
 	}
 
 	l->type |= Llong21 | Lrelative | Lrangecheck;
@@ -2291,7 +2292,7 @@ alpha_cbranch_const(int r, long o, label *l, int bt, bool is_int)
 			bt = bne;
 			break;
 		default:
-			abort();
+			ABORT();
 		}
 		t = REG_at;
 	}
@@ -2334,7 +2335,7 @@ alpha_cbranch_const(int r, long o, label *l, int bt, bool is_int)
 		op_bge(t, 0);
 		break;
 	default:
-		abort();
+		ABORT();
 	}
 
 	l->from = CODEPC;
@@ -2997,7 +2998,7 @@ alpha_call_kaffe_method_varargs(Method *meth, Hjava_lang_Object *obj, va_list ar
 			break;
 
 		default:
-			abort();
+			ABORT();
 		}
 	}
 
@@ -3023,7 +3024,7 @@ alpha_call_kaffe_method_varargs(Method *meth, Hjava_lang_Object *obj, va_list ar
 	case 'V':
 		return 0;
 	}
-	abort();
+	ABORT();
 	return 0;
 }
 
@@ -3073,7 +3074,7 @@ alpha_call_kaffe_static_varargs(Method *meth, va_list argptr)
 			break;
 
 		default:
-			abort();
+			ABORT();
 		}
 	}
 
@@ -3099,7 +3100,7 @@ alpha_call_kaffe_static_varargs(Method *meth, va_list argptr)
 	case 'V':
 		return 0;
 	}
-	abort();
+	ABORT();
 	return 0;
 }
 

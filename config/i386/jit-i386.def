@@ -11,6 +11,7 @@
 #define DEBUG
 
 #include "classMethod.h"
+#include "gtypes.h"
 
 
 #ifdef DEBUG
@@ -75,7 +76,7 @@ extern bool used_ieee_division;
 
 define_insn(unimplemented, unimplemented)
 {
-	abort();
+	ABORT();
 }
 
 define_insn(nop, nop)
@@ -367,7 +368,7 @@ define_insn(move_float_const, fmove_RxC)
 		debug(("fld1\n"));
 	}
 	else {
-		abort();
+		ABORT();
 	}
 }
 
@@ -405,7 +406,7 @@ define_insn(move_double_const, fmovel_RxC)
 		debug(("fld1\n"));
 	}
 	else {
-		abort();
+		ABORT();
 	}
 }
 
@@ -1055,7 +1056,7 @@ define_insn(branch, branch_xCC)
 		debug(("jugt ?\n"));
 		break;
 	default:
-		abort();
+		ABORT();
 	}
 }
 

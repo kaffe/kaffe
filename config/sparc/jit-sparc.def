@@ -18,6 +18,7 @@
 
 #include "classMethod.h"
 #include "access.h"
+#include "gtypes.h"
 
 #define	REG_g0			0
 #define	REG_o0			8
@@ -100,7 +101,7 @@ static int argcount = 0;
 
 define_insn(unimplemented, unimplemented)
 {
-	abort();
+	ABORT();
 }
 
 define_insn(nop, nop)
@@ -943,7 +944,7 @@ define_insn(branch, branch_xCC)
 		debug(("bugt ?\n"));
 		break;
 	default:
-		abort();
+		ABORT();
 	}
 
 	NOP();

@@ -14,6 +14,7 @@
 #include <string.h>
 #include "classMethod.h"
 #include "access.h"
+#include "gtypes.h"
 
 #define	REG_d0			0
 #define	REG_d1			1
@@ -1096,7 +1097,7 @@ op_fdsubx_ff(int src, int dst)
 
 define_insn(unimplemented, unimplemented)
 {
-	abort();
+	ABORT();
 }
 
 define_insn(nop, nop)
@@ -1767,7 +1768,7 @@ define_insn(swap_any, swap_RxR)
 		op_exg_da(r2, r1);
 		break;
 	default:
-		abort();
+		ABORT();
 	}
 }
 
@@ -2048,7 +2049,7 @@ define_insn(branch, branch_xCC)
 		op_blo_32(0);
 		break;
 	default:
-		abort();
+		ABORT();
 	}
 }
 
@@ -2155,7 +2156,7 @@ define_insn(popargs, popargs_xxC)
 	int o = const_int(2) * 4;
 
 	if (o < 0) {
-		abort();
+		ABORT();
 	}
 	else if (o > 0) {
 		if (o <= 0x8) {
