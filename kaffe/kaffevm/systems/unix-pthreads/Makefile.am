@@ -24,9 +24,15 @@ EXTRA_DIST = Makefile.frag lock-impl.h thread-impl.h thread-internal.h \
 @engine_frag@
 
 AM_CPPFLAGS = \
-	-I. -I$(srcdir) -I../.. -I$(srcdir)/../.. \
+	-I. \
+	-I$(srcdir) \
+	-I../.. \
+	-I$(srcdir)/../.. \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
-	-I$(top_builddir)/config -I$(top_srcdir)/config \
-	-I$(top_builddir)/include -I$(top_srcdir)/include \
+	-I$(top_builddir)/config \
+	-I$(top_srcdir)/config \
 	-I$(top_builddir)/include \
+	-I$(top_srcdir)/include \
+	-I$(top_builddir)/include \
+	$(ENGINE_INCUDES) \
 	$(ENGINE_DEFS)
