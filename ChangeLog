@@ -1,3 +1,12 @@
+Sun Oct  3 16:26:13 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/gc.h, kaffe/kaffevm/gc-incremental.c:
+	added gcGetObjectBase.
+	* kaffe/kaffevm/methodCache.[ch]: new files.  
+	* kaffe/kaffevm/classMethod.[ch], classPool.c, jit3/machine.c,
+	gcFuncs.c, Makefile.in, Makefile.am:
+	Added method cache to speed up exception lookup.
+
 Sat Oct  2 15:20:16 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/jit/icode.c, kaffe/kaffevm/jit3/icode.c:
