@@ -261,6 +261,7 @@ java_io_SRCS = \
 	java/io/Externalizable.java \
 	java/io/File.java \
 	java/io/FileDescriptor.java \
+	java/io/FileFilter.java \
 	java/io/FileInputStream.java \
 	java/io/FileNotFoundException.java \
 	java/io/FileOutputStream.java \
@@ -564,6 +565,8 @@ java_util_SRCS = \
 	java/util/Stack.java \
 	java/util/StringTokenizer.java \
 	java/util/TimeZone.java \
+	java/util/Timer.java \
+	java/util/TimerTask.java \
 	java/util/TooManyListenersException.java \
 	java/util/TreeMap.java \
 	java/util/TreeSet.java \
