@@ -22,6 +22,8 @@ Thu Dec 10 11:40:11 1998  Godmar Back  <gback@cs.utah.edu>
 	* kaffe/kaffevm/soft.c: fixed long remainder prob for FreeBSD.
 	* kaffe/kaffevm/code-analyse.c, kaffe/kaffevm/jit/labels.[ch],
 	kaffe/kaffevm/jit/machine.[ch]: made verifier reentrant.
+	guarded translator against reentering by moving all loading to
+	the (now) reentrant verifier.
 	* kaffe/test/regression/TestScript: adapted to handle deprecated and
 	sorted tests.  New tests for all the bug fixes:
 	CLTestConc.java, CLTestConc_run.java, LostFrame.java, TestUnlock.java,
