@@ -15,7 +15,9 @@
 
 package kaffe.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInput;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.UTFDataFormatException;
 
@@ -28,7 +30,39 @@ public final class UTF8 {
   }
 
   /**
-   * Decode a UTF-8 encoded string from a DataInput
+   * Decode a UTF-8 encoded string from a byte array. No trailing zero
+   * byte is expected.
+   *
+   * @param	buf			Byte array
+   * @exception UTFDataFormatException	If the input is invalid or truncated
+   */
+  public static String decode(byte[] buf) throws UTFDataFormatException {
+    return decode(buf, 0, buf.length);
+  }
+
+  /**
+   * Decode a UTF-8 encoded string from a byte array. No trailing zero
+   * byte is expected.
+   *
+   * @param	buf			Byte array
+   * @param	off			Offset in buf[]
+   * @param	len			Exactly how many bytes to read
+   * @exception UTFDataFormatException	If the input is invalid or truncated
+   */
+  public static String decode(byte[] buf, int off, int len)
+			throws UTFDataFormatException {
+    try {
+      return decode(
+	  new DataInputStream(new ByteArrayInputStream(buf, off, len)), len);
+    } catch (IOException e) {
+      Assert.fail();
+      return null;
+    }
+  }
+
+  /**
+   * Decode a UTF-8 encoded string from a DataInput. No trailing zero
+   * byte is expected.
    *
    * @param	length			Exactly how many bytes to read
    * @exception IOException 		If there is an error reading the input
@@ -46,7 +80,7 @@ public final class UTF8 {
       if ((byte1 & 0x80) == 0x80) {		// Hi-bit set, multi byte char
 	if ((byte1 & 0xe0) == 0xc0) {		// Valid 2 byte string '110'
 	  if (count++ == length) {
-	    throw new UTFDataFormatException("truncated");
+	    throw new UTFDataFormatException("truncated input");
 	  }
 	  byte byte2 = (byte)in.readByte();
 	  if ((byte2 & 0xc0) != 0x80) {		// Valid 2nd byte?
@@ -82,7 +116,8 @@ public final class UTF8 {
   }
 
   /**
-   * Encode a string into a UTF-8 byte array
+   * Encode a string into a UTF-8 byte array. No trailing zero
+   * byte is added.
    */
   public static byte[] encode(String str) {
     char chars[] = str.toCharArray();
