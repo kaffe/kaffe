@@ -14,7 +14,7 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "mem/gc-mem.h"
-#include "gc-block.h"
+#include "mem/gc-block.h"
 
 /* Why isn't this in exception.h? */
 extern void throwOutOfMemory(void);

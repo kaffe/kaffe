@@ -16,7 +16,7 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "gc.h"
-#include "gc-block.h"
+#include "mem/gc-block.h"
 #include "locks.h"
 #include "thread.h"
 #include "errors.h"

@@ -19,7 +19,7 @@
 #include "locks.h"
 #include "gc-mem.h"
 #include "gc.h"
-#include "gc-block.h"
+#include "mem/gc-block.h"
 #include "jni.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

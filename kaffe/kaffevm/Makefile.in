@@ -6,7 +6,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-@VPATHOPT@=	@srcdir@@VPATHSEP@@srcdir@/@with_engine@@VPATHSEP@@srcdir@/../../config/@host_cpu@/@host_os@@VPATHSEP@@srcdir@/../../config/@host_cpu@@VPATHSEP@@srcdir@/systems/@THREAD_SYSTEM@:@VPATHSEP@@srcdir@/mem@VPATHSEP@@srcdir@/mem/@gcblock@
+@VPATHOPT@=	@srcdir@@VPATHSEP@@srcdir@/@with_engine@@VPATHSEP@@srcdir@/../../config/@host_cpu@/@host_os@@VPATHSEP@@srcdir@/../../config/@host_cpu@@VPATHSEP@@srcdir@/systems/@THREAD_SYSTEM@@VPATHSEP@mem@VPATHSEP@@srcdir@/mem
 srcdir=		@srcdir@
 prefix=		@prefix@
 exec_prefix=	@exec_prefix@
@@ -30,7 +30,7 @@ KVER=		@KVER@
 OBJEXT=		@OBJEXT@
 LIBEXT=		@LIBVMEXT@
 
-INCLUDES=	-I. -I$(srcdir) -I$(srcdir)/../../config -I../../config -I../../include -I$(srcdir)/../../include -I../../libraries/clib -I$(srcdir)/mem/@gcblock@
+INCLUDES=	-I. -I$(srcdir) -I$(srcdir)/../../config -I../../config -I../../include -I$(srcdir)/../../include -I../../libraries/clib
 CPPFLAGS=	@CPPFLAGS@
 CFLAGS=		@CFLAGS@
 ALL_CFLAGS=	$(INCLUDES) $(CPPFLAGS) $(CFLAGS) @KAFFEVMFLAGS@ $(ENGINE_CFLAGS) -DKVER=\"$(KVER)\" $(EXTRA_CFLAGS)

@@ -1,3 +1,17 @@
+Thu Dec  3 21:00:25 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* FAQ/FAQ.gcblock: renamed `old' to `hash' and `new' to `mmap'
+	* kaffe/kaffevm/mem/block.old/gc-block.c: now ../gc-block-hash.c
+	* kaffe/kaffevm/mem/block.old/gc-block.h: now ../gc-block-hash.h
+	* kaffe/kaffevm/mem/block.new/gc-block.c: now ../gc-block-mmap.c
+	* kaffe/kaffevm/mem/block.new/gc-block.h: now ../gc-block-mmap.h
+	* kaffe/kaffevm/mem/gc-mem.c: include mem/gc-block.h
+	* kaffe/kaffevm/mem/gc-incremental.c: ditto
+	* kaffe/kaffevm/Makefile.in (VPATH, INCLUDES): removed block.*,
+	added builddir/mem
+	* configure.in, configure: print selected gcblock scheme, and
+ 	create links for gc-block-*.[hc]
+
 Thu Dec  3 12:24:06 1998  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/net/URL.java: fix bug in constructor

@@ -174,11 +174,11 @@ dnl -------------------------------------------------------------------------
 dnl Choose a gc_block allocation scheme
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(gcblock, [  --with-gcblock=(old|new)	Choose gc_block allocation])
+AC_ARG_WITH(gcblock, [  --with-gcblock=(hash|mmap)	Choose gc_block allocation])
 
 dnl default to old scheme
-if test "$with_gcblock" = ""; then
-	with_gcblock=old
+if test x"$with_gcblock" != x"mmap"; then
+	with_gcblock=hash
 fi
 
 dnl This is not a very good test.  AC_FUNC_MMAP may decide that mmap is 
@@ -186,15 +186,19 @@ dnl present but broken.  The only way to check this is to look at
 dnl ac_func_mmap_fixed_mapped.
 
 AC_FUNC_MMAP			dnl keep out of conditional
-if test "$with_gcblock" = "new"; then
+if test "$with_gcblock" = "mmap"; then
 	if test "$ac_cv_func_mmap_fixed_mapped" != "yes"; then
-		echo "can't use new gcblock without mmap"
-		with_gcblock=old
+		echo "can't use gcblock-mmap without mmap"
+		with_gcblock=hash
 	fi
 fi
 
-dnl transform to directory name in kaffevm/mem
-gcblock="block.$with_gcblock"
+AC_MSG_CHECKING(garbage collection heap layout)
+link_from="$link_from kaffe/kaffevm/mem/gc-block-${with_gcblock}.c"
+link_from="$link_from kaffe/kaffevm/mem/gc-block-${with_gcblock}.h"
+link_to="$link_to kaffe/kaffevm/mem/gc-block.c"
+link_to="$link_to kaffe/kaffevm/mem/gc-block.h"
+AC_MSG_RESULT($with_gcblock)
 
 dnl =========================================================================
 
@@ -309,7 +313,6 @@ AC_SUBST(LINKLIB)
 AC_SUBST(LINKVMLIB)
 AC_SUBST(LD)
 AC_SUBST(THREAD_SYSTEM)
-AC_SUBST(gcblock)
 AC_SUBST(DEPTOOL)
 AC_SUBST(INC_DEPEND)
 AC_DEFINE_UNQUOTED(LIBRARYSUFFIX, "$LIBEXT")

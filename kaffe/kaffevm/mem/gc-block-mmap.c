@@ -15,7 +15,7 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "mem/gc-mem.h"
-#include "gc-block.h"
+#include "mem/gc-block.h"
 #include "slib.h"
 #include <sys/mman.h>
 #include <limits.h>

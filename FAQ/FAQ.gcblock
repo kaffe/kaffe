@@ -10,7 +10,7 @@ eliminating gc_object_hash, and reduces cache conflict misses and
 paging by placing struct gc_blocks in an array.
 
 On startup, the new system finds a free address range large enough for
-the heap, and a second range large enough for all the gc_block
+the heap, and a seconda range large enough for all the gc_block
 structures.  Memory is mapped into these ranges as needed, and these
 addresses must still be available when they are needed.
  
@@ -19,19 +19,19 @@ markObject simply needs to subtract the heap base from a pointer, and
 use the difference in pages to index the gc_block array.
 
 mem/gc-mem.c and mem/gc-incremental.c have been modified to work with
-either heap layout.  mem/block.new and mem/block.old contain code for
-the new and old heap layouts respectively.  They contain the following
-files:
+either heap layout.  mem/gc-block-mmap.[hc] and mem/gc-block-hash.[hc]
+contain code for the new and old heap layouts respectively.  The
+contents of the files are as follows:
  
-gc-block.h: defines gc_block struct, accessor macros and
+gc-block-*.h: defines gc_block struct, accessor macros and
         gc_heap_isobject inline function.
-gc-block.c: defines gc_block_init, gc_block_add, gc_block_rm and
+gc-block-*.c: defines gc_block_init, gc_block_add, gc_block_rm and
         gc_block_alloc.
  
 It has been tested with FreeBSD and linux (on i386), irix and hpux.  
 It is known not to work with Solaris.  By default, the old gc-block
 allocation scheme is used.  The new scheme can be enabled with
-./configure --with-gcblock=new.
+./configure --with-gcblock=mmap.
 
 Portability:
  
@@ -43,10 +43,10 @@ which are "close" to a shared function.  It also assumes that the
 system will use the mmap hint address when not using MAP_FIXED.  
 The last requirement is one which solaris cannot meet.
  
-When  --with-gcblock=new is given, configure will check that a working
-mmap is available.  If not, it will fall back to the old scheme.
-However, configure currently does not test for the other assumptions
-mentioned above.
+When --with-gcblock=mmap is given, configure will check that a working
+mmap is available.  If not, it will fall back to the old hash-based
+scheme.  However, configure currently does not test for the other
+assumptions mentioned above.
 
 Jason Baker <jbaker@cs.utah.edu>
 Dec 2, 1998
