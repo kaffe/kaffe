@@ -479,7 +479,8 @@ public class Socket
 
   /**
    * Returns the local address to which this socket is bound.  If this socket
-   * is not connected, then <code>null</code> is returned.
+   * is not connected, then a wildcard address, for which isAnyLocalAddress()
+   * is true, is returned.
    *
    * @return The local address
    *
@@ -487,21 +488,25 @@ public class Socket
    */
   public InetAddress getLocalAddress()
   {
-    if (! isBound())
-      return null;
-
     InetAddress addr = null;
 
-    try
+    if (! isBound())
       {
-	addr = (InetAddress) getImpl().getOption(SocketOptions.SO_BINDADDR);
+        addr = InetAddress.ANY_IF;
       }
-    catch (SocketException e)
+    else
       {
-	// (hopefully) shouldn't happen
-	// throw new java.lang.InternalError
-	//      ("Error in PlainSocketImpl.getOption");
-	return null;
+        try
+          {
+	    addr = (InetAddress) getImpl().getOption(SocketOptions.SO_BINDADDR);
+          }
+        catch (SocketException e)
+          {
+	    // (hopefully) shouldn't happen
+	    // throw new java.lang.InternalError
+	    //      ("Error in PlainSocketImpl.getOption");
+	    return null;
+          }
       }
 
     // FIXME: According to libgcj, checkConnect() is supposed to be called
