@@ -1,3 +1,10 @@
+2003-08-20  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/io/ObjectInputStream.java:
+	(readClassDescriptor) call resolveClass(ObjectStreamClass)
+	at the right moment ant not resolveClass(String) at the top of
+	the method. This could cause problems in RMI.
+
 2003-08-19  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/text/RuleBasedCollator.java:

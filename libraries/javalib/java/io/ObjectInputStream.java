@@ -426,12 +426,13 @@ public class ObjectInputStream extends InputStream
     byte flags = this.realInputStream.readByte ();
     short field_count = this.realInputStream.readShort ();
     ObjectStreamField[] fields = new ObjectStreamField[field_count];
-    Class clazz = resolveClass(name);
     ObjectStreamClass osc = new ObjectStreamClass (name, uid,
                                                    flags, fields);
     assignNewHandle (osc);
 
-    dumpElementln("CLASSDESC NAME=" + name + "; UID=" + Long.toHexString(uid) + "; FLAGS=" + Integer.toHexString(flags) + "; FIELD COUNT=" + field_count);
+    dumpElementln("CLASSDESC NAME=" + name + "; UID=" + Long.toHexString(uid)
+		  + "; FLAGS=" + Integer.toHexString(flags) + "; FIELD COUNT="
+		  + field_count);
     
     int real_count = 0;
     for (int i=0; i < field_count; i++)
@@ -469,38 +470,32 @@ public class ObjectInputStream extends InputStream
 	  class_name = String.valueOf (type_code);
 	  of = new ObjectStreamField (field_name, class_name);
 	}
-		  
-	Field f;
-	try
-	{
-	  f = clazz.getDeclaredField (field_name);
-	  if (f == null)
-	    throw new NoSuchFieldException();
-	  if (!f.getType().equals(of.getType()))
-	    throw new InvalidClassException("invalid field type for " + field_name + " in class " + class_name + " (requested was \"" + of.getType() + " and found \"" + f.getType() + "\")"); 
-	}
-	catch (NoSuchFieldException _)
-	{
-	}
-
-	fields[real_count] = of;
-	real_count++;
-
+	
+	fields[i] = of;
       }
-    if (real_count != fields.length)
-    {
-      ObjectStreamField[] new_fields = new ObjectStreamField[real_count];
-	    
-      System.arraycopy(fields, 0, new_fields, 0, real_count);
-      fields = new_fields;
-    }
 
-    /* Just before computing fields related parameters we must
-     * update it in the descriptor according to the just computed
-     * adaptation.
-     */
-    osc.fields = fields;
- 
+    /* Now that fields have been read we may resolve the class
+     * (and read annotation if needed). */
+    Class clazz = resolveClass(osc);
+    
+    for (int i=0; i < field_count; i++)
+      {
+	Field f;
+	
+	try
+	  {
+	    f = clazz.getDeclaredField (fields[i].getName());
+	    if (f != null && !f.getType().equals(fields[i].getType()))
+	      throw new InvalidClassException("invalid field type for " +
+			      fields[i].getName() + " in class " + name +
+			      " (requested was \"" + fields[i].getType() +
+			      " and found \"" + f.getType() + "\")"); 
+	  }
+	catch (NoSuchFieldException _)
+	  {
+	  }
+      }
+
     boolean oldmode = setBlockDataMode (true);
     osc.setClass (clazz, lookupClass(clazz.getSuperclass()));
     classLookupTable.put (clazz, osc);
