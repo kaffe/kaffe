@@ -1,3 +1,9 @@
+Thu Aug 15 11:37:50 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/io/RandomAccessFile.java:
+	(skipBytes) don't skip further than current end of file. Fixes a
+	bug exposed by mauve test suite.
+
 Thu Aug 15 10:11:54 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/kjc.jar: updated to kjc-2.1B.
