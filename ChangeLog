@@ -4,6 +4,7 @@ Wed Aug 18 22:11:14 PDT 1999  Archie Cobbs <archie@whistle.com>
 	libraries/javalib/java/lang/Runtime.java: include dlopen() error
 	with UnsatisfiedLinkException's
 	* libraries/javalib/Klasses.jar: regen
+	* configure{.in}: fix bug when specifying --with-engine=intrp
 
 1999-08-17  Alexandre Oliva  <oliva@dcc.unicamp.br>
 

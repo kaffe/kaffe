@@ -230,16 +230,17 @@ dnl If it is not supported at all, run UNSUP_CMDS.
 AC_DEFUN([AC_KAFFE_IF_SUPPORTED_ENGINE], [
   if test x"$1" = x"intrp"; then
     ifelse([$2],[],[:],[$2])
-  fi
-  if test -f "$srcdir/config/$host_cpu/$host_os/$1-md.h"; then
-    if sed 1q < "$srcdir/config/$host_cpu/$host_os/$1-md.h" |
-       fgrep "Needs update, do not use" > /dev/null; then
-      ifelse([$3],[],[:],[$3])
-    else
-      ifelse([$2],[],[:],[$2])
-    fi
   else
-    ifelse([$4],[],[:],[$4])
+    if test -f "$srcdir/config/$host_cpu/$host_os/$1-md.h"; then
+      if sed 1q < "$srcdir/config/$host_cpu/$host_os/$1-md.h" |
+	 fgrep "Needs update, do not use" > /dev/null; then
+	ifelse([$3],[],[:],[$3])
+      else
+	ifelse([$2],[],[:],[$2])
+      fi
+    else
+      ifelse([$4],[],[:],[$4])
+    fi
   fi
 ])
 
