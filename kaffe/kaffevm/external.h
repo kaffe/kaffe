@@ -23,11 +23,12 @@
 #define	NATIVELIBRARY	"libnative"
 
 struct _methods;
+struct _errorInfo;
 
 void	initNative(void);
 int	loadNativeLibrary(char*);
 void*	loadNativeLibrarySym(char*);
-void	native(struct _methods*);
+bool	native(struct _methods*, struct _errorInfo*);
 void	addNativeFunc(char*, void*);
 
 #endif

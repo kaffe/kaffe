@@ -1,3 +1,14 @@
+Sat Dec 12 10:46:44 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/external.[ch], kaffe/kaffevm/support.c: changed
+	signature of native to take errorInfo.
+	kaffe/kaffevm/jit/machine.c: moved call to verifier out of 
+	translatorlock.
+	* test/regression/CLTestJLock.java, TestScript:  test for that
+	translator lock fix.
+	* libraries/clib/awt/X/clr.c: include "config-std.h" to fix broken
+	compile.
+
 Sat Dec 12 09:24:42 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/clib/native/Makefile.in (depend): duplicate `$'s in

@@ -237,7 +237,10 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 	meth = (Method*)func;
 	if (meth->accflags & ACC_NATIVE) {
 		if (METHOD_NATIVECODE(meth) == 0) {
-			native(meth);
+			errorInfo info;
+			if (native(meth, &info) == false) {
+				throwError(&info);
+			}
 		}
 		call.function = METHOD_NATIVECODE(meth);
 	}
@@ -407,7 +410,10 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	meth = (Method*)func;
 	if (meth->accflags & ACC_NATIVE) {
                 if (METHOD_NATIVECODE(meth) == 0) {
-                        native(meth);
+			errorInfo info;
+			if (native(meth, &info) == false) {
+				throwError(&info);
+			}
                 }
 		call.function = METHOD_NATIVECODE(meth);
 	}

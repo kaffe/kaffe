@@ -199,13 +199,14 @@ loadNativeLibrarySym(char* name)
 	return (func);
 }
 
-void
-native(Method* m)
+bool
+native(Method* m, errorInfo *einfo)
 {
 	char stub[MAXSTUBLEN];
 	char* ptr;
 	int i;
 	void* func;
+	char *errmask = "Failed to locate native function:\n\t%s.%s%s\n";
 
 	/* Construct the stub name */
 	strcpy(stub, STUB_PREFIX);
@@ -231,19 +232,26 @@ DBG(	printf("Native stub = '%s'\n", stub);fflush(stdout);		)
 	if (func != 0) {
 		/* Fill it in */
 		SET_METHOD_NATIVECODE(m, func);
-		return;
+		return (true);
 	}
 
 	/* Try to locate the nature function using the JNI interface */
         if (Kaffe_JNI_native(m)) {
-                return;
+                return (true);
         }
 
-	fprintf(stderr, "Failed to locate native function:\n\t%s.%s%s\n", m->class->name->data, m->name->data, m->signature->data);
-	fflush(stderr);
+DBG(	fprintf(stderr, "Failed to locate native function:\n\t%s.%s%s\n", m->class->name->data, m->name->data, m->signature->data);
+	fflush(stderr); )
 	SET_METHOD_NATIVECODE(m, (void*)error_stub);
 
-        throwException(UnsatisfiedLinkError);
+	/* construct nice error message */
+	i = strlen(errmask) + strlen(m->class->name->data) 
+		+ strlen(m->name->data) + strlen(m->signature->data) + 1;
+	ptr = gc_malloc(i, GC_ALLOC_NOWALK);
+	sprintf(ptr, errmask, m->class->name->data, m->name->data, m->signature->data);
+
+	SET_LANG_EXCEPTION_MESSAGE(einfo, UnsatisfiedLinkError, ptr);
+	return (false);
 }
 
 /*

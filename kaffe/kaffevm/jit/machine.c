@@ -192,16 +192,14 @@ translate(Method* meth, errorInfo *einfo)
 		initStaticLock(&translatorlock);
 	}
 
-	/* Only one in the translator at once. Must check the translation
+	/* lock class to protect the method */
+	lockMutex(meth->class);
+	/* Must check the translation
 	 * hasn't been done by someone else once we get it.
 	 */
-	lockStaticMutex(&translatorlock);
 	if (METHOD_TRANSLATED(meth)) {
-		unlockStaticMutex(&translatorlock);
-		return (true);
+		goto done2;
 	}
-
-	lockMutex(meth->class);
 
 	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
 		tms = currentTime();
@@ -213,17 +211,24 @@ DBG(MOREJIT,
 
 	/* If this code block is native, then just set it up and return */
 	if ((meth->accflags & ACC_NATIVE) != 0) {
-		native(meth);
+		success = native(meth, einfo);
+		if (success == false) {
+			goto done2;
+		}
 		KAFFEJIT_TO_NATIVE(meth);
 		/* Note that this is a real function not a trampoline.  */
 		meth->c.ncode.ncode_end = METHOD_NATIVECODE(meth);
 		goto done2;
 	}
+
 	/* Scan the code and determine the basic blocks */
 	success = verifyMethod(meth, &codeInfo, einfo);
 	if (success == false) {
-		goto done;
+		goto done2;
 	}
+
+	/* Only one in the translator at once. */
+	lockStaticMutex(&translatorlock);
 
 	/* start modifying global variables now */
 	assert(jitting == 0 || !!!"reentered jitter");	/* DEBUG */
@@ -349,10 +354,10 @@ DBG(JIT,
 		       METHOD_NATIVECODE(meth));
 	}
 
-done2:
-	unlockMutex(meth->class);
 	jitting = 0;	/* DEBUG */
 	unlockStaticMutex(&translatorlock);
+done2:
+	unlockMutex(meth->class);
 	return (success);
 }
 
