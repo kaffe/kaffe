@@ -220,7 +220,8 @@ final public boolean parentOf(ThreadGroup g) {
 
 private void printGroups(int tabulation) {
 	for (int i = 0; i < groups.length; i++) {
-		groups[i].list(tabulation);
+		if (groups[i] != null)
+			groups[i].list(tabulation);
 	}
 }
 
@@ -234,7 +235,8 @@ private void printLine(String str, int tabulation) {
 
 private void printThreads(int tabulation) {
 	for (int i = 0; i < threads.length; i++) {
-		printLine(threads[i].toString(), tabulation);
+		if (threads[i] != null)
+			printLine(threads[i].toString(), tabulation);
 	}
 }
 
