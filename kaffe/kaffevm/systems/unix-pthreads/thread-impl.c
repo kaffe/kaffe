@@ -801,6 +801,9 @@ void* tRun ( void* p )
 	  break;
 	}
 
+	if (cur->status == THREAD_KILL)
+	  break;
+
 	/* Wait until we get re-used (by TcreateThread). No need to update the
 	 * blockState, since we aren't active anymore */
 	repsem_wait( &cur->sem);
@@ -1063,15 +1066,14 @@ jthread_exit ( void )
 		if ( t != cur && t != firstThread) {
 		  /* Mark the thread as to be killed. */
 		  t->status = THREAD_KILL;
-		  /* Send an interrupt event to the remote thread.
-		   * We try to restrain ourself from using pthread_cancel
-		   * as it seems to cause deadlocks on some pthread
-		   * implementations.
+		  /* Send an interrupt event to the remote thread to wake up.
+		   * This may not work in any cases. However that way we prevent a
+		   * predictable deadlock on some threads implementation.
 		   */
-		  if (t->blockState & (BS_CV|BS_CV_TO))
-		     jthread_interrupt(t);
-		  else
-		     pthread_cancel(t->tid);
+		  jthread_interrupt(t);
+		  unprotectThreadList(cur);
+		  pthread_join(t->tid, NULL);
+		  protectThreadList(cur);
 		}
 	  }
 

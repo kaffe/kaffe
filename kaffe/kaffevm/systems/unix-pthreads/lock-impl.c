@@ -76,7 +76,7 @@ clearBlockState(jthread_t cur, unsigned int newState, sigset_t *old_mask)
   /* Catch an interrupt event sent while we were being killed.
    * This is needed for Darwin's pthreads.
    */
-  if (cur->status == THREAD_KILL)
+  if (cur->status == THREAD_KILL && ((cur->blockState & BS_THREAD) == 0))
     pthread_exit(NULL);
 
   pthread_sigmask(SIG_SETMASK, old_mask, NULL);
