@@ -23,4 +23,10 @@
 extern void init_md(void);
 #define INIT_MD()       init_md()
 
+/*
+ * Redefine stack pointer offset.
+ */
+#undef  SP_OFFSET
+#define SP_OFFSET 34
+
 #endif

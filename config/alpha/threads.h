@@ -28,6 +28,7 @@
  * This is the offset into the setjmp buffer where the stack pointer is
  * stored.  This may be different with different OSes.
  */
-#define	SP_OFFSET		8
+
+#define	SP_OFFSET		?
 
 #endif

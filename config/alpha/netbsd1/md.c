@@ -16,9 +16,6 @@
  */
 
 #include <machine/fpu.h>
-#include <sys/sysinfo.h>
-#include <machine/hal_sysinfo.h>
-#include <sys/proc.h>
 
 #ifndef FPCR_INED
 #define FPCR_INED 0

@@ -822,10 +822,14 @@ int parseString_script_values(char *str, stringScript *ss, void **values)
 	parseErrorInfo pe;
 	parsedString ps;
 	int retval;
+	va_list * args;
+
+	args = KCALLOC(1, sizeof(args));
 
 	ps.data = str;
 	ps.len = strlen(str);
-	retval = parseString_private(&pe, &ps, ss, values, SPO_Noop, NULL);
+	retval = parseString_private(&pe, &ps, ss, values, SPO_Noop, *args);
+	KFREE(args);
 	return( retval );
 }
 
