@@ -27,31 +27,15 @@ extern int IA64_context_save(jmp_buf env);
 extern void IA64_context_restore(jmp_buf env, int val);
 
 #if 0
-#undef JTHREAD_SETJMP
-#define JTHREAD_SETJMP(env)			IA64_context_save((env))
-#undef JTHREAD_LONGJMP
-#define JTHREAD_LONGJMP(env, val)		IA64_context_restore((env), (val))
+#undef  JTHREAD_CONTEXT_SAVE
+#define JTHREAD_CONTEXT_SAVE(env)		IA64_context_save((env))
+#undef  JTHREAD_CONTEXT_RESTORE
+#define JTHREAD_CONTEXT_RESTORE(env, val)	IA64_context_restore((env), (val))
 #endif
 
 #define SIGNAL_ARGS(sig, scp)			int sig, siginfo_t *sip, struct sigcontext *scp
 #define SIGNAL_CONTEXT_POINTER(scp)		struct sigcontext *scp
 #define GET_SIGNAL_CONTEXT_POINTER(sc)		(sc)
 #define SIGNAL_PC(scp)				((scp)->sc_ip & ~0x3ULL)
-
-#ifdef HAVE_IA64INTRIN_H
-
-#include <ia64intrin.h>
-#undef COMPARE_AND_EXCHANGE
-#define COMPARE_AND_EXCHANGE(A, O, N) \
-	__sync_bool_compare_and_swap((A), (O), (N))
-
-#else
-
-#include <asm/atomic.h>
-#undef COMPARE_AND_EXCHANGE
-#define COMPARE_AND_EXCHANGE(A, O, N) \
-	(cmpxchg((A), (O), (N)) == (O))
-		
-#endif /* HAVE_IA64INTRIN_H */
 
 #endif

@@ -123,6 +123,14 @@ static int  min_priority;		/* minimum supported priority */
 
 jthread* currentJThread;
 
+/* Context switch related functions */
+#ifndef JTHREAD_CONTEXT_SAVE
+#define JTHREAD_CONTEXT_SAVE(buf)		JTHREAD_SETJMP((buf))
+#endif
+#ifndef JTHREAD_CONTEXT_RESTORE
+#define JTHREAD_CONTEXT_RESTORE(buf, val)	JTHREAD_LONGJMP((buf), (val))
+#endif
+
 /* The arguments to a signal handler */
 #ifndef SIGNAL_ARGS
 #define SIGNAL_ARGS(sig, sc) int sig
@@ -898,10 +906,14 @@ newThreadCtx(int stackSize)
 {
 	jthread *ct;
 
-	ct = allocator(sizeof(jthread) + stackSize);
+	ct = allocator(sizeof(jthread) + 16 + stackSize);
 	if (ct == 0) {
 		return 0;
 	}
+#if defined(__ia64__)
+	/* (gb) Align jmp_buf on 16-byte boundaries */
+	ct = (jthread *)((((unsigned long)(ct)) & 15) ^ (unsigned long)(ct));
+#endif
 	ct->stackBase = (ct + 1);
 	ct->stackEnd = (char *) ct->stackBase + stackSize;
 	ct->restorePoint = ct->stackEnd;
@@ -1269,12 +1281,6 @@ jthread_create(unsigned char pri, void (*func)(void *), int daemon,
 	void	*oldbsp, *newbsp;
 #endif
 	size_t   page_size;
-	
-	/* Adjust stack size */
-	page_size = getpagesize();
-	if (threadStackSize == 0)
-		threadStackSize = THREADSTACKSIZE;
-	threadStackSize = (threadStackSize + page_size - 1) & -page_size;
 
 	/*
 	 * Disable stop to protect the threadLock lock, and prevent
@@ -1282,6 +1288,12 @@ jthread_create(unsigned char pri, void (*func)(void *), int daemon,
 	 * thread is queued up).
 	 */
 	jthread_disable_stop();
+
+	/* Adjust stack size */
+	page_size = getpagesize();
+	if (threadStackSize == 0)
+		threadStackSize = THREADSTACKSIZE;
+	threadStackSize = (threadStackSize + page_size - 1) & -page_size;
 
 	jmutex_lock(&threadLock);
 	jtid = newThreadCtx(threadStackSize);
@@ -1319,7 +1331,7 @@ DBG(JTHREAD,
 	 *
 	 * To be safe, we immediately call a new function.
 	 */
-        if (JTHREAD_SETJMP(JTHREAD_ACCESS_JMPBUF(jtid, env))) {
+        if (JTHREAD_CONTEXT_SAVE(jtid->env)) {
 		/* new thread */
 		start_this_sucker_on_a_new_frame();
 		assert(!"Never!");
@@ -1330,9 +1342,9 @@ DBG(JTHREAD,
 	SAVE_FP(jtid->fpstate);
 #endif
 	/* set up context for new thread */
-	oldstack = GET_SP(JTHREAD_ACCESS_JMPBUF(jtid, env));
+	oldstack = GET_SP(jtid->env);
 #if defined(__ia64__)
-	oldbsp = GET_BSP(JTHREAD_ACCESS_JMPBUF(jtid, env));
+	oldbsp = GET_BSP(jtid->env);
 #endif
 
 #if defined(STACK_GROWS_UP)
@@ -1348,7 +1360,7 @@ DBG(JTHREAD,
 	 * grows downward. Both stacks start in the middle and grow outward
 	 * from each other.
 	 */
-	newstack -= (threadStackSize >> 1);
+	(char *) newstack -= (threadStackSize >> 1);
 	newbsp = newstack;
 	/* Make register stack 64-byte aligned */
 	if ((unsigned long)newbsp & 0x3f)
@@ -1364,9 +1376,9 @@ DBG(JTHREAD,
 	newstack = (void *) STACK_ALIGN(newstack);
 #endif
 
-	SET_SP(JTHREAD_ACCESS_JMPBUF(jtid, env), newstack);
+	SET_SP(jtid->env, newstack);
 #if defined(__ia64__)
-	SET_BSP(JTHREAD_ACCESS_JMPBUF(jtid, env), newbsp);
+	SET_BSP(jtid->env, newbsp);
 #endif
 
 #if defined(SET_BP)
@@ -1374,13 +1386,13 @@ DBG(JTHREAD,
 	 * Clear the base pointer in the new thread's stack.
 	 * Nice for debugging, but not strictly necessary.
 	 */
-	SET_BP(JTHREAD_ACCESS_JMPBUF(jtid, env), 0);
+	SET_BP(jtid->env, 0);
 #endif
 
 
 #if defined(FP_OFFSET)
 	/* needed for: IRIX */
-	SET_FP(JTHREAD_ACCESS_JMPBUF(jtid, env), newstack + ((void *)GET_FP(JTHREAD_ACCESS_JMPBUF(jtid, env)) - oldstack));
+	SET_FP(jtid->env, newstack + ((void *)GET_FP(jtid->env) - oldstack));
 #endif
 
         resumeThread(jtid);
@@ -1627,9 +1639,10 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 #if defined(CONTEXT_SWITCH)
 				CONTEXT_SWITCH(lastThread, currentJThread);
 #else
-				if (JTHREAD_SETJMP(JTHREAD_ACCESS_JMPBUF(lastThread, env)) == 0) {
-				    lastThread->restorePoint = GET_SP(JTHREAD_ACCESS_JMPBUF(lastThread, env));
-				    JTHREAD_LONGJMP(JTHREAD_ACCESS_JMPBUF(currentJThread, env), 1);
+				if (JTHREAD_CONTEXT_SAVE(lastThread->env) == 0) {
+				    lastThread->restorePoint = 
+					GET_SP(lastThread->env);
+				    JTHREAD_CONTEXT_RESTORE(currentJThread->env, 1);
 				}
 #endif
 #if defined(LOAD_FP)

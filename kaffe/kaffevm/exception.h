@@ -92,7 +92,7 @@ typedef struct VmExceptHandler {
 	u4				pc;
 		} intrp;
 	} frame;
-	JTHREAD_DECLARE_JMPBUF		(jbuf);
+	JTHREAD_JMPBUF		jbuf;
 } VmExceptHandler;
 
 #define VMEXCEPTHANDLER_KAFFEJNI_HANDLER ((struct _methods*)1)
@@ -156,7 +156,7 @@ vmExcept_setJNIFrame(VmExceptHandler* eh, uintp fp)
 static inline void
 vmExcept_jumpToHandler(VmExceptHandler* frame)
 {
-	JTHREAD_LONGJMP(JTHREAD_ACCESS_JMPBUF(frame, jbuf), 1);
+	JTHREAD_LONGJMP(frame->jbuf, 1);
 }
 
 #if defined(INTERPRETER)

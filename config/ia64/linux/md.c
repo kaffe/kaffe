@@ -29,7 +29,8 @@ init_md(void)
 }
 
 /*
- * Copyright (C) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ * Portions created by SGI are Copyright (C) 2000 Silicon Graphics, Inc.
+ * All Rights Reserved.
  *
  * The internal __jmp_buf layout is different from one used
  * by setjmp()/longjmp().
@@ -92,8 +93,8 @@ init_md(void)
         asm("
         .text
         .align 32
-        .global IA64_context_save#
-        .proc IA64_context_save#
+        .global IA64_context_save
+        .proc IA64_context_save
 IA64_context_save:
         alloc r14 = ar.pfs,1,0,0,0
         mov r16 = ar.unat
@@ -103,6 +104,7 @@ IA64_context_save:
         add r3 = 8,in0
         ;;
         st8.spill.nta [r2] = sp,16    // r12 (sp)
+        ;;
         st8.spill.nta [r3] = gp,16    // r1  (gp)
         ;;
         st8.nta [r2] = r16,16         // save caller's unat
@@ -110,6 +112,7 @@ IA64_context_save:
         add r8 = 0xb0,in0
         ;;   
         st8.spill.nta [r2] = r4,16    // r4
+        ;;
         st8.spill.nta [r3] = r5,16    // r5
         add r9 = 0xc0,in0
         ;;
@@ -150,11 +153,14 @@ IA64_context_save:
         ;;
         stf.spill.nta [r8] = f30
         stf.spill.nta [r9] = f31
+
         st8.spill.nta [r2] = r6,16    // r6
+        ;;
         st8.spill.nta [r3] = r7,16    // r7
         ;;
         mov r23 = ar.bsp
         mov r25 = ar.unat
+
         st8.nta [r2] = r15,16         // b0
         st8.nta [r3] = r17,16         // b1
         ;;
@@ -189,15 +195,17 @@ IA64_context_save:
         ;;
         mov r8 = 0
         br.ret.sptk.few b0
-        .endp IA64_context_save#
+        .endp IA64_context_save
         ");
+
+
+/****************************************************************/
 
         /* IA64_context_restore(__jmp_buf env, int val) */
         asm("
         .text
-        .align 32
-        .global IA64_context_restore#
-        .proc IA64_context_restore#
+        .global IA64_context_restore
+        .proc IA64_context_restore
 IA64_context_restore:
         alloc r8 = ar.pfs,2,0,0,0
         add r2 = 0x88,in0             // r2 <- &jmpbuf.ar_bsp
@@ -296,7 +304,10 @@ IA64_context_restore:
         ldf.fill.nta f31 = [r3]
 (p6)    mov r8 = 1
 (p7)    mov r8 = in1
+
         mov pr = r24,-1
         br.ret.sptk.few b0
-        .endp IA64_context_restore#
+        .endp IA64_context_restore
         ");
+
+/****************************************************************/

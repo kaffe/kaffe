@@ -90,12 +90,4 @@ typedef void* kaffe_jmp_buf[JTHREAD_JBLEN];
 
 #endif
 
-#if defined(__ia64__)
-#define JTHREAD_DECLARE_JMPBUF(x)	JTHREAD_JMPBUF x; void * x##_pad
-#define JTHREAD_ACCESS_JMPBUF(x, y)	(__typeof__((x)->y[0]) *) ((((unsigned long)&(x)->y) + 15) & -16)
-#else
-#define JTHREAD_DECLARE_JMPBUF(x)	JTHREAD_JMPBUF x
-#define JTHREAD_ACCESS_JMPBUF(x, y)	(x)->y
-#endif
-
 #endif

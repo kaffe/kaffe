@@ -131,7 +131,7 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
 	VmExceptHandler ebuf;				\
 	KAFFE_JNI_SETEXCEPTFP(&ebuf); 			\
 	ebuf.prev = (VmExceptHandler*)(unhand(getCurrentThread())->exceptPtr);\
-	if (JTHREAD_SETJMP(JTHREAD_ACCESS_JMPBUF(&ebuf, jbuf)) != 0) {		\
+	if (JTHREAD_SETJMP(ebuf.jbuf) != 0) {		\
 		unhand(getCurrentThread())->exceptPtr = \
 		  (struct Hkaffe_util_Ptr*)ebuf.prev;	\
 		return X;				\
@@ -142,7 +142,7 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
 	VmExceptHandler ebuf; 				\
 	KAFFE_JNI_SETEXCEPTFP(&ebuf); 			\
 	ebuf.prev = (VmExceptHandler*)(unhand(getCurrentThread())->exceptPtr);\
-	if (JTHREAD_SETJMP(JTHREAD_ACCESS_JMPBUF(&ebuf, jbuf)) != 0) {		\
+	if (JTHREAD_SETJMP(ebuf.jbuf) != 0) {		\
 		unhand(getCurrentThread())->exceptPtr = \
 		  (struct Hkaffe_util_Ptr*)ebuf.prev;	\
 		return;					\

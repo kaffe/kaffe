@@ -452,7 +452,7 @@ DBG(ELOOKUP,
 
 			/* If not here, exit monitor if synchronised. */
 			if (obj != 0 && (einfo.method->accflags & ACC_SYNCHRONISED) != 0) {
-				_slowUnlockMutexIfHeld(&obj->lock, JTHREAD_ACCESS_JMPBUF(frame, jbuf));
+				_slowUnlockMutexIfHeld(&obj->lock, frame->jbuf);
 			}
 		}
 	}

@@ -1,3 +1,39 @@
+2003-05-21  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
+
+        * config/ia64/sysdepCallMethod.h (sysdepCallMethod): Fix to really
+        match register passing conventions. Only the first eigth parameter
+        slots are passed in registers. This concerns both integer and
+        floating-point values.
+
+        * config/ia64/linux/md.h (COMPARE_AND_EXCHANGE): Move to...
+        * config/ia64/common.h: ... here.
+
+        The Intel Itanium Processor-specific ABI defines
+        __sync_bool_compare_and_swap primitive (7.4.3).
+
+        * config/config-setjmp.h (JTHREAD_DECLARE_JMPBUF,
+        JTHREAD_ACCESS_JMPBUF): Kill.
+        * kaffe/kaffevm/exception.c (dispatchException): Likewise.
+        * kaffe/kaffevm/exception.h (vmExcept_jumpToHandler): Likewise.
+        * kaffe/kaffevm/jni.c (BEGIN_EXCEPTION_HANDLING*): Likewise.
+        
+        Instead, the jthread struct containing a jmp_buf must be aligned
+        once it is allocated. Other occurrences were already aligned per
+        natural alignment requirements in stack.
+
+        * config/ia64/linux/md.c (IA64_context_*): Update to match current
+        state-threads v1.4 code from SGI.
+
+        * config/ia64/sysdepCallMethod.h (sysdepCallMethod): Really match
+        calling conventions. We now can deal with a mix of ints, longs,
+        floats and doubles correctly. Reindent.
+
+        * kaffe/kaffevm/systems/unix-jthreads/jthread.c
+        (JTHREAD_CONTEXT_SAVE, JTHREAD_CONTEXT_RESTORE): New macros
+        specific to context switches.
+        (newThreadCtx): Align jthread struct on 16-byte boundaries for
+        jmp_buf. Move down stack adjusting.
+
 2003-05-21 Dalibor Topic <robilad@yahoo.com>
 
 	Fixed alpha-netbsd1 port.

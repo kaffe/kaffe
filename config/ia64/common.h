@@ -19,4 +19,20 @@
 #include "sysdepCallMethod.h"
 #endif
 
+/*
+ * Do an atomic compare and exchange.  The address 'A' is checked
+ * against value 'O' and if they match it's exchanged with value 'N'.
+ * We return '1' if the exchange is sucessful, otherwise 0.
+ */
+
+#ifdef HAVE_IA64INTRIN_H
+#include <ia64intrin.h>
+#endif
+
+/* Intel Itanium Processor-specific ABI defines
+   __sync_bool_compare_and_swap primitive (7.4.3).  */
+#undef COMPARE_AND_EXCHANGE
+#define COMPARE_AND_EXCHANGE(A, O, N) \
+	__sync_bool_compare_and_swap((A), (O), (N))
+
 #endif
