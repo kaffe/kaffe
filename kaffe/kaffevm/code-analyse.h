@@ -163,7 +163,7 @@ typedef struct codeinfo {
 		FRAME(pc) = ALLOCFRAME();			\
 		if (!FRAME(pc)) {				\
 			meth->accflags &= ~ACC_VERIFIED;	\
-			tidyVerifyMethod(codeInfo);		\
+			tidyVerifyMethod(&codeInfo);		\
 			return false;				\
 		}						\
 	}
@@ -254,7 +254,7 @@ typedef struct codeinfo {
 
 struct _methods;
 bool verifyMethod(struct _methods*, codeinfo**, errorInfo*);
-void tidyVerifyMethod(codeinfo*);
+void tidyVerifyMethod(codeinfo**);
 
 extern const uint8 insnLen[];
 

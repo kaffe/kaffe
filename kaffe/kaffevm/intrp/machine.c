@@ -132,7 +132,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	if ((methaccflags & ACC_VERIFIED) == 0) {
 		codeinfo* codeInfo;
 		bool success = verifyMethod(meth, &codeInfo, &einfo);
-		tidyVerifyMethod(codeInfo);
+		tidyVerifyMethod(&codeInfo);
 		if (success == false) {
 			throwError(&einfo);
 		}

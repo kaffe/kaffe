@@ -163,6 +163,9 @@ typedef struct _methods {
 #endif
 } methods;
 
+#define	METHOD_BYTECODE_LEN(M)	((M)->c.bcode.codelen)
+#define	METHOD_BYTECODE_CODE(M)	((M)->c.bcode.code)
+
 typedef struct _dispatchTable {
 	Hjava_lang_Class*	class;
 	void*			__dummy0; /* For GCJ/C++ compatibility */

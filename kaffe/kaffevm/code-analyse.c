@@ -2012,21 +2012,22 @@ mergeFrame(codeinfo* codeInfo, int pc, int sp, frameElement* from, Method* meth)
  * Tidy up after verfication data has been finished with.
  */
 void
-tidyVerifyMethod(codeinfo *codeInfo)
+tidyVerifyMethod(codeinfo** codeInfo)
 {
 	int pc;
 
 	/* Free the old data */
-	if (!codeInfo) {
+	if (!*codeInfo) {
 		return;
 	}
-	for (pc = 0; pc < codeInfo->codelen; pc++) {
-		if (codeInfo->perPC[pc].frame != 0) {
-			KFREE(codeInfo->perPC[pc].frame);
+	for (pc = 0; pc < (*codeInfo)->codelen; pc++) {
+		if ((*codeInfo)->perPC[pc].frame != 0) {
+			KFREE((*codeInfo)->perPC[pc].frame);
 		}
 	}
-	KFREE(codeInfo->localuse);
-	KFREE(codeInfo);
+	KFREE((*codeInfo)->localuse);
+	KFREE(*codeInfo);
+	*codeInfo = 0;
 DBG(CODEANALYSE,
 	dprintf(__FUNCTION__" %p: clearing codeInfo %p\n", 
 		THREAD_NATIVE(), codeInfo);

@@ -3651,7 +3651,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 #endif
 
 	maxArgs = maxLocal = count; /* make sure args are spilled if needed */
-	success = initInsnSequence(0, count, 0, &info);
+	success = initInsnSequence(0, 0, count, 0, &info);
 	if (!success) {
 		goto done;
 	}

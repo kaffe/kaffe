@@ -295,7 +295,7 @@ DBG(MOREJIT,
 	/* Next reduce bytecode to native code */
 	/***************************************/
 
-	if (!(success = initInsnSequence(codeperbytecode * len, meth->localsz,
+	if (!(success = initInsnSequence(meth, codeperbytecode * len, meth->localsz,
 					 meth->stacksz, einfo))) {
 		goto done1;
 	}
@@ -385,7 +385,7 @@ DBG(JIT,	dprintf("pc = %d, npc = %d\n", pc, npc);	)
 	installMethodCode(codeInfo, meth, &ncode);
 
 done:
-	tidyVerifyMethod(codeInfo);
+	tidyVerifyMethod(&codeInfo);
 
 DBG(JIT,
 	dprintf("Translated %s.%s%s (%s) %p\n", meth->class->name->data, 
@@ -551,7 +551,7 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
  * Init instruction generation.
  */
 bool
-initInsnSequence(int codesize, int localsz, int stacksz,
+initInsnSequence(Method* meth, int codesize, int localsz, int stacksz,
 		 struct _errorInfo *einfo)
 {
 	/* Clear various counters */

@@ -149,6 +149,7 @@ extern Collector* main_collector;
 
 #define	gc_malloc(A,B)	    GC_malloc(main_collector,A,B)
 #define	gc_calloc(A,B,C)    GC_malloc(main_collector,(A)*(B),C)
+#define	gc_realloc(A,B,C)   GC_realloc(main_collector,(A),(B),C)
 #define	gc_free(A)	    GC_free(main_collector,(A))
 
 #define	invokeGC()	    GC_invoke(main_collector,1)
