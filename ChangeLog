@@ -1,3 +1,45 @@
+Wed Sep  4 09:36:45 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	added kaffe.util.locale.
+
+	* libraries/javalib/java/text/Collator.java,
+	libraries/javalib/java/text/DateFormat.java,
+	libraries/javalib/java/text/NumberFormat.java :
+	(LOCALES) new private constant, used to register this type's
+	locales.
+	(getAvailableLocales) use LOCALES.
+
+	* libraries/javalib/java/text/Format.java:
+	(getAvailableLocales) removed method.
+
+	* libraries/javalib/java/util/Locale.java: sorted locales
+	alphabetically.
+	(getDisplayCountry), (getDisplayLanguage), (getDisplayName),
+	(getDisplayVariant) use getDefault. use locale's resource.
+	(getDisplayResource) new private method.
+	(getISO3Country) implemented.
+	(getISO3Language) implemented.
+	(ISO3Support) new private inner class.
+
+	* kaffe/util/locale/Country.java,
+	kaffe/util/locale/Country_de.java,
+	kaffe/util/locale/Country_en.java,
+	kaffe/util/locale/Country_fr.java,
+	kaffe/util/locale/Country_it.java,
+	kaffe/util/locale/Country_ja.java,
+	kaffe/util/locale/Country_ko.java,
+	kaffe/util/locale/Country_zh.java,
+	kaffe/util/locale/Language.java,
+	kaffe/util/locale/Language_de.java,
+	kaffe/util/locale/Language_en.java,
+	kaffe/util/locale/Language_fr.java,
+	kaffe/util/locale/Language_it.java,
+	kaffe/util/locale/Language_ja.java,
+	kaffe/util/locale/Language_ko.java,
+	kaffe/util/locale/Language_zh.java:
+	new locale classes.
+
 Tue Sep  3 13:47:26 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/io/BufferedInputStream.java:
