@@ -1,3 +1,8 @@
+2005-04-01  gian paolo ciceri <gp.ciceri@acm.org>
+
+	* config/katomic.h (__atomic_val_bysize, __atomic_bool_bysize): 
+	Added versions for gcc 2.x variadic macro format.
+
 2005-04-01  Supreet Sethi  <supreet@linux-delhi.org>
 
 	* configure.ac: Check for uintmax_t and intmax_t.

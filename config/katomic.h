@@ -26,6 +26,43 @@
 /* Wrapper macros to call pre_NN_post (mem, ...) where NN is the
    bit width of *MEM.  The calling macro puts parens around MEM
    and following args.  */
+   
+   
+#if __GNUC__ == 2 
+
+#define __atomic_val_bysize(pre, post, mem, args...)			      \
+  ({									      \
+    __typeof (*mem) __result;						      \
+    if (sizeof (*mem) == 1)						      \
+      __result = pre##_8_##post (mem, args...);			              \
+    else if (sizeof (*mem) == 2)					      \
+      __result = pre##_16_##post (mem, args...);			      \
+    else if (sizeof (*mem) == 4)					      \
+      __result = pre##_32_##post (mem, args...);			      \
+    else if (sizeof (*mem) == 8)					      \
+      __result = pre##_64_##post (mem, args...);			      \
+    else								      \
+      abort ();								      \
+    __result;								      \
+  })
+#define __atomic_bool_bysize(pre, post, mem, args...)			      \
+  ({									      \
+    int __result;							      \
+    if (sizeof (*mem) == 1)						      \
+      __result = pre##_8_##post (mem, args...);			              \
+    else if (sizeof (*mem) == 2)					      \
+      __result = pre##_16_##post (mem, args...);			      \
+    else if (sizeof (*mem) == 4)					      \
+      __result = pre##_32_##post (mem, args...);			      \
+    else if (sizeof (*mem) == 8)					      \
+      __result = pre##_64_##post (mem, args...);			      \
+    else								      \
+      abort ();								      \
+    __result;								      \
+  })
+
+#else
+  
 #define __atomic_val_bysize(pre, post, mem, ...)			      \
   ({									      \
     __typeof (*mem) __result;						      \
@@ -56,7 +93,10 @@
       abort ();								      \
     __result;								      \
   })
-
+  
+  
+#endif
+  
 
 /* Atomically store NEWVAL in *MEM if *MEM is equal to OLDVAL.
    Return the old *MEM value.  */
