@@ -88,6 +88,15 @@ jthread_spinoff(int dummy)
 {
 }
 
+struct _exceptionFrame;
+typedef void (*exchandler_t)(struct _exceptionFrame*);
+
+/*                                                                      
+ * Initialize handlers for null pointer accesses and div by zero        
+ */             
+extern void jthread_initexceptions(exchandler_t _nullHandler,
+				   exchandler_t _floatingHandler);
+
 extern void jthread_init(
         int preemptive,                 /* preemptive scheduling */
         int maxpr,                      /* maximum priority */
@@ -119,6 +128,21 @@ jthread_on_current_stack(void* p)
   else {
 	return (false);
   }
+}
+
+/* 
+ * Check for room on stack.
+ */
+static inline
+int jthread_stackcheck(int left)
+{
+	int rc;
+#if defined(STACK_GROWS_UP)
+        rc = jthread_on_current_stack((char*)&rc + left);
+#else
+        rc = jthread_on_current_stack((char*)&rc - left);
+#endif
+	return (rc);
 }
 
 static inline
