@@ -127,14 +127,14 @@ int              nonDaemons;
 
 /* Number of system threads (either running (activeThreads) or
  * blocked (cache). We need this to implement our own barrier, since
- * many kernel thread systems don't behave graceful on exceeding their limit */ 
+ * many kernel thread systems don't behave graceful on exceeding their limit */
 int              nSysThreads;
 
 /* number of currently cached threads */
 int              nCached;
 
 /* map the Java priority levels to whatever the pthreads impl gives us */
-int              priorities[java_lang_Thread_MAX_PRIORITY]; 
+int              priorities[java_lang_Thread_MAX_PRIORITY];
 
 /* thread-specific-data key to retrieve 'nativeData' */
 pthread_key_t    ntKey;
@@ -188,7 +188,7 @@ extern void nullException(int);
  * by a external "kill -s <SIG_DUMP> <proc-id>"
  */
 void
-dump_signal_handler ( int sig ) 
+dump_signal_handler ( int sig )
 {
   tDump();
 }
@@ -235,9 +235,9 @@ tDump (void)
 	void             *muxNat = tLock->mux ? unhand(tLock->mux)->PrivateInfo : 0;
 	void             *cv     = tLock->cv;
 	void             *cvNat  = tLock->cv ? unhand(tLock->cv)->PrivateInfo : 0;
-  
+
 	TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
-	
+
 	DBG( vm_thread,("\n======================== thread dump =========================\n"));
 
 	DBG( vm_thread, ("state:  nonDaemons: %d, critSection: %d\n",
@@ -253,7 +253,7 @@ tDump (void)
 	tDumpList( cur, cache);
 
 	DBG( vm_thread, ("====================== end thread dump =======================\n"));
-	
+
 	TUNLOCK( cur); /* ------------------------------------------------------ tLock */
   });
 }
@@ -379,7 +379,7 @@ tMapPriorities (void)
   max = sched_get_priority_max( SCHEDULE_POLICY);
 
   d = max - min;
-  n = sizeof( priorities);
+  n = sizeof(priorities) / sizeof(priorities[0]);
   r = (float)d / (float)n;
 
   for ( i=0; i<n; i++ ) {
@@ -491,10 +491,10 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
    * We already are executing in the right thread, so we can set the specific
    * data straight away
    */
-  pthread_setspecific( ntKey, nt); 
+  pthread_setspecific( ntKey, nt);
   unhand(thread)->PrivateInfo = (struct Hkaffe_util_Ptr*)nt;
   pthread_setcanceltype( PTHREAD_CANCEL_ASYNCHRONOUS, &oldCancelType);
-  
+
   /* if we aren't the first one, we are in trouble */
   assert( activeThreads == 0);
   activeThreads = firstThread = nt;
@@ -723,7 +723,7 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 
 	/* wait until the thread specific data has been set, and the new thread
 	 * is in a suspendable state */
-	sem_wait( &nt->sem); 
+	sem_wait( &nt->sem);
 
 	TUNLOCK( cur); /* ---------------------------------------------------- tLock */
   }
@@ -769,7 +769,7 @@ jthread_exit ( void )
    */
   cur->active = 0;
 
-  DBG( vm_thread, TMSG_SHORT( "exit ", cur));  
+  DBG( vm_thread, TMSG_SHORT( "exit ", cur));
 
   if ( !unhand(thread)->daemon ){
 	/* the last non daemon should shut down the process */
@@ -826,7 +826,7 @@ jthread_exit ( void )
 	assert( t != NULL);
 	t->next = 0;
 
-	TUNLOCK( cur); /* ---------------------------------------------------- tLock */  
+	TUNLOCK( cur); /* ---------------------------------------------------- tLock */
 
 	/*
 	 * Put us into a permanent freeze to avoid shut down of the whole process (it's
@@ -846,13 +846,13 @@ jthread_exit ( void )
 /*
  * Thread is being finalized - free any held resource.
  */
-void    
+void
 jthread_destroy (nativeThread* cur)
 {
   DBG_ACTION( vm_thread, {
 	DBG( vm_thread, TMSG_SHORT( "finalize ", cur));
   });
-}       
+}
 
 
 /***********************************************************************
@@ -863,7 +863,7 @@ jthread_destroy (nativeThread* cur)
  * Change the scheduler priority of a running thread. Since we aren't
  * called directly, we can assume that 'prio' is within [MIN_PRIORITY..MAX_PRIORITY]
  */
-void    
+void
 jthread_setpriority (nativeThread* cur, jint prio)
 {
   struct sched_param   sp;
@@ -875,7 +875,7 @@ jthread_setpriority (nativeThread* cur, jint prio)
 					 cur, cur->tid, cur->thread, prio, priorities[prio]));
 	pthread_setschedparam( cur->tid, SCHEDULE_POLICY, &sp);
   }
-}            
+}
 
 /*******************************************************************************
  * the suspend/resume mechanism
@@ -1075,7 +1075,7 @@ jthread_unsuspendall (void)
  *    Kaffe_ThreadInterface.GcWalkThreads == TwalkThreads
  *      walkMemory
  *        gcFunctions[..].walk == walkThread
- *        
+ *
  */
 void
 jthread_walkLiveThreads (void(*func)(void*))
@@ -1092,7 +1092,7 @@ jthread_walkLiveThreads (void(*func)(void*))
 }
 
 #if 0
-/*      
+/*
  * Walk the thread's internal context. The stack is actually "walked down"
  * [base+size..base].
  * ? how useful is this for the GC thread itself ?
@@ -1136,7 +1136,7 @@ TwalkThread ( Hjava_lang_Thread* thread )
 	nt->stackCur = nt->stackMax;
 #else
 	nt->stackCur = nt->stackMin;
-#endif	
+#endif
   }
 
   if ( ((uintp) nt->stackCur < (uintp) nt->stackMin) ||
