@@ -1,6 +1,11 @@
 2004-04-16  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/io/FileOutputStream.java
+	(FileOutputStream): Fixed a wrong call to checkWrite.
+
+2004-04-16  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/io/FileOutputStream.java
 	(FileOutputStream): Reorganized constructors. Check whether the
 	given path is a directory now.
 

@@ -81,7 +81,7 @@ public class FileOutputStream extends OutputStream
   public FileOutputStream (String path, boolean append)
     throws SecurityException, FileNotFoundException
   {
-    this(new File(path), append);
+    this (new File(path), append);
   }
 
   /**
@@ -124,7 +124,7 @@ public class FileOutputStream extends OutputStream
   public FileOutputStream (File file)
     throws SecurityException, FileNotFoundException
   {
-    this(file, false);
+    this (file, false);
   }
 
   /**
@@ -152,7 +152,7 @@ public class FileOutputStream extends OutputStream
   {
     SecurityManager s = System.getSecurityManager();
     if (s != null)
-      s.checkWrite(path);
+      s.checkWrite(file.getPath());
 
     if (file.isDirectory())
       throw new FileNotFoundException(file.getPath() + " is a directory");
