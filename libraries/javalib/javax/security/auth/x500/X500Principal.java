@@ -1,20 +1,20 @@
 /* X500Principal.java -- X.500 principal.
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004 Free Software Foundation, Inc.
 
-This file is part of GNU Crypto.
+This file is part of GNU Classpath.
 
-GNU Crypto is free software; you can redistribute it and/or modify
+GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-GNU Crypto is distributed in the hope that it will be useful, but
+GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU Crypto; see the file COPYING.  If not, write to the
+along with GNU Classpath; see the file COPYING.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
@@ -38,10 +38,15 @@ exception statement from your version. */
 
 package javax.security.auth.x500;
 
+import gnu.java.security.OID;
+import gnu.java.security.der.DER;
+import gnu.java.security.der.DERReader;
+import gnu.java.security.der.DERValue;
+
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.EOFException;
 import java.io.NotActiveException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -52,7 +57,6 @@ import java.io.StringReader;
 import java.security.Principal;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -61,14 +65,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-
-import gnu.crypto.der.BitString;
-import gnu.crypto.der.DER;
-import gnu.crypto.der.DEREncodingException;
-import gnu.crypto.der.DERReader;
-import gnu.crypto.der.DERValue;
-import gnu.crypto.der.OID;
 
 public final class X500Principal implements Principal, Serializable
 {
