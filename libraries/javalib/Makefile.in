@@ -1565,8 +1565,10 @@ java_util_SRCS = \
 	java/util/HashMap.java \
 	java/util/HashSet.java \
 	java/util/Hashtable.java \
+	java/util/IdentityHashMap.java \
 	java/util/Iterator.java \
-	java/util/LinkedListIterator.java \
+	java/util/LinkedHashMap.java \
+	java/util/LinkedHashSet.java \
 	java/util/LinkedList.java \
 	java/util/ListIterator.java \
 	java/util/List.java \

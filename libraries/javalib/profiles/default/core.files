@@ -211,7 +211,9 @@ java/util/EventListener.java
 java/util/EventListenerProxy.java
 java/util/EventObject.java
 java/util/jar/JarOutputStream.java
-java/util/LinkedListIterator.java
+java/util/IdentityHashMap.java
+java/util/LinkedHashMap.java
+java/util/LinkedHashSet.java
 java/util/LinkedList.java
 java/util/ListResourceBundle.java
 java/util/Observable.java

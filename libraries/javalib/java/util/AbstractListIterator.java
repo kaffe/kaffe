@@ -23,7 +23,7 @@ class AbstractListIterator implements ListIterator {
 
 	AbstractListIterator(AbstractList list, int index) {
 		if (index < 0 || index > list.size()) {
-			throw new IllegalArgumentException();
+			throw new IndexOutOfBoundsException (); 
 		}
 		this.list = list;
 		this.index = index;

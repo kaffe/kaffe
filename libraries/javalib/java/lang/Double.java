@@ -53,8 +53,12 @@ public final class Double extends Number implements Comparable {
   }
 
   public int compareTo(Double that) {
-    final long bits1 = doubleToLongBits(this.value);
-    final long bits2 = doubleToLongBits(that.value);
+    return compare(this.value, that.value);
+  }
+
+  public static int compare(double d1, double d2) {
+    final long bits1 = doubleToLongBits(d1);
+    final long bits2 = doubleToLongBits(d2);
 
     if ((bits1>>>63)==1 && (bits2>>>63)==1) {
       return (bits1 < bits2) ?  1 : (bits1 == bits2) ? 0 : -1;
