@@ -1,3 +1,8 @@
+Fri May 24 17:25:45 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/lang/Thread.java:
+	(countStackFrames) implemented.
+
 Fri May 24 17:20:51 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/security/SecureClassLoader.java:

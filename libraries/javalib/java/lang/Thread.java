@@ -143,7 +143,9 @@ public void checkAccess() {
 		sm.checkAccess(this);
 }
 
-native public int countStackFrames();
+public int countStackFrames() {
+	return SecurityManager.getClassContext0().length - 2;
+}
 
 native public static Thread currentThread();
 
