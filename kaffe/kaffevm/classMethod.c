@@ -329,7 +329,20 @@ retry:
 	assert((class == ObjectClass) || (class->superclass != NULL));
 
 	DO_CLASS_STATE(CSTATE_LINKED) {
-
+		
+		if (class->state == CSTATE_DOING_LINK) {
+			if (THREAD_NATIVE() == class->processingThread) {
+				goto done;
+			} else {
+				while (class->state == CSTATE_DOING_LINK) {
+					waitOnClass(class);
+					goto retry;
+				}
+			}
+		}
+		
+		SET_CLASS_STATE(CSTATE_DOING_LINK);
+		
 		/* Third stage verification - check the bytecode is okay */
 		success = verify3(class, einfo);
 		if (success == false) {
