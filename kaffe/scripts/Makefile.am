@@ -8,6 +8,8 @@
 
 DIST_SUBDIRS = bat compat
 
+EXTRA_DIST = nm2as.awk
+
 SCRIPTFILES_KJC=\
 		kjc kopi
 

@@ -1027,11 +1027,43 @@ serialized_converters = \
 
 
 EXTRA_DIST = $(class_DATA) $(Klasses_jar_SRCS) \
+	$(java_awt_win32_SRCS) \
 	$(serialized_converters) \
 	kaffe/io/ByteToCharEUC_JP.tbl \
 	kaffe/io/CharToByteEUC_JP.tbl \
 	kaffe/lang/unicode.idx \
 	kaffe/lang/unicode.tbl
+
+
+java_awt_win32_SRCS = \
+	java/awt/win32/ActionEvt.java \
+	java/awt/win32/Button.java \
+	java/awt/win32/Canvas.java \
+	java/awt/win32/Checkbox.java \
+	java/awt/win32/CheckboxMenuItem.java \
+	java/awt/win32/Choice.java \
+	java/awt/win32/Defaults.java \
+	java/awt/win32/FileDialog.java \
+	java/awt/win32/Frame.java \
+	java/awt/win32/Label.java \
+	java/awt/win32/List.java \
+	java/awt/win32/Menu.java \
+	java/awt/win32/MenuBar.java \
+	java/awt/win32/MenuItem.java \
+	java/awt/win32/NativeComponent.java \
+	java/awt/win32/NativeContainer.java \
+	java/awt/win32/NativeGraphics.java \
+	java/awt/win32/Panel.java \
+	java/awt/win32/PopupMenu.java \
+	java/awt/win32/ScrollPane.java \
+	java/awt/win32/Scrollbar.java \
+	java/awt/win32/SystemColor.java \
+	java/awt/win32/TextArea.java \
+	java/awt/win32/TextComponent.java \
+	java/awt/win32/TextField.java \
+	java/awt/win32/Toolkit.java \
+	java/awt/win32/WMEvent.java \
+	java/awt/win32/Window.java
 
 
 LIBDIR = lib
@@ -1089,18 +1121,19 @@ distdir: $(DISTFILES)
 	$(mkinstalldirs) $(distdir)/java/applet $(distdir)/java/awt \
 	   $(distdir)/java/awt/datatransfer $(distdir)/java/awt/event \
 	   $(distdir)/java/awt/image $(distdir)/java/awt/peer \
-	   $(distdir)/java/awt/widgets $(distdir)/java/beans \
-	   $(distdir)/java/io $(distdir)/java/lang \
-	   $(distdir)/java/lang/ref $(distdir)/java/lang/reflect \
-	   $(distdir)/java/math $(distdir)/java/net \
-	   $(distdir)/java/security $(distdir)/java/sql \
-	   $(distdir)/java/text $(distdir)/java/util \
-	   $(distdir)/java/util/jar $(distdir)/java/util/mime \
-	   $(distdir)/java/util/zip $(distdir)/kaffe/applet \
-	   $(distdir)/kaffe/awt $(distdir)/kaffe/beans/editors \
-	   $(distdir)/kaffe/io $(distdir)/kaffe/jar \
-	   $(distdir)/kaffe/lang $(distdir)/kaffe/management \
-	   $(distdir)/kaffe/net $(distdir)/kaffe/net/www/protocol \
+	   $(distdir)/java/awt/widgets $(distdir)/java/awt/win32 \
+	   $(distdir)/java/beans $(distdir)/java/io \
+	   $(distdir)/java/lang $(distdir)/java/lang/ref \
+	   $(distdir)/java/lang/reflect $(distdir)/java/math \
+	   $(distdir)/java/net $(distdir)/java/security \
+	   $(distdir)/java/sql $(distdir)/java/text \
+	   $(distdir)/java/util $(distdir)/java/util/jar \
+	   $(distdir)/java/util/mime $(distdir)/java/util/zip \
+	   $(distdir)/kaffe/applet $(distdir)/kaffe/awt \
+	   $(distdir)/kaffe/beans/editors $(distdir)/kaffe/io \
+	   $(distdir)/kaffe/jar $(distdir)/kaffe/lang \
+	   $(distdir)/kaffe/management $(distdir)/kaffe/net \
+	   $(distdir)/kaffe/net/www/protocol \
 	   $(distdir)/kaffe/net/www/protocol/file \
 	   $(distdir)/kaffe/net/www/protocol/ftp \
 	   $(distdir)/kaffe/net/www/protocol/http \

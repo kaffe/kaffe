@@ -1,5 +1,13 @@
 2001-04-01  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
+	* Makefile.am, config/Makefile.am, kaffe/kaffe/Makefile.am,
+	kaffe/kaffeh/Makefile.am,
+	kaffe/kaffevm/systems/beos-native/Makefile.am,
+	kaffe/scripts/Makefile.am, libraries/clib/awt/Makefile.am,
+	libraries/javalib/Makefile.am, test/regression/Makefile.am: Added
+	files to the distributions.
+	* */Makefile.in: Rebuilt.
+
 	* kaffe/kaffevm/support.c (do_execute_java_method_v): Don't fail
 	on already-resolved static calls.
 

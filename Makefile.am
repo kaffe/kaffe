@@ -47,6 +47,10 @@ EXTRA_DIST = \
 	FAQ/FAQ.win32 \
 	FAQ/FAQ.xdebugging \
 	FAQ/FAQ.xprofiler \
+	compat-include/ansidecl.h \
+	compat-include/eh-common.h \
+	compat-include/frame.h \
+	compat-include/gansidecl.h \
 	developers/Encode.java \
 	developers/EncodeEUC_JP.java \
 	developers/GCJ.note.1 \

@@ -6,5 +6,5 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-ENGINE_INCLUDES = -Ijit3 -I$(srcdir)/jit3
+ENGINE_INCLUDES = -I$(top_builddir)/kaffe/kaffevm/jit3 -I$(top_srcdir)/kaffe/kaffevm/jit3
 ENGINE_DEFS = -DTRANSLATOR -DJIT3

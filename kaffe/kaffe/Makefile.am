@@ -11,7 +11,7 @@ libexec_PROGRAMS = Kaffe
 INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kaffe/xprof
 
-Kaffe_SOURCES = main.c version.c
+Kaffe_SOURCES = main.c version.c version.h
 
 LIBKAFFEVM = ../kaffevm/libkaffevm.la ../xprof/libkaffexprof.la
 

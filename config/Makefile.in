@@ -205,6 +205,11 @@ EXTRA_DIST = \
 	i386/freebsd2/jit3-md.h \
 	i386/freebsd2/md.c \
 	i386/freebsd2/md.h \
+	i386/gnu/config.frag \
+	i386/gnu/jit-md.h \
+	i386/gnu/jit3-md.h \
+	i386/gnu/md.c \
+	i386/gnu/md.h \
 	i386/jit-i386.def \
 	i386/jit-icode.h \
 	i386/jit.h \
@@ -230,6 +235,7 @@ EXTRA_DIST = \
 	i386/oskit/README \
 	i386/oskit/config.frag \
 	i386/oskit/jit-md.h \
+	i386/oskit/jit3-md.h \
 	i386/oskit/ld-oskit.sh \
 	i386/oskit/md.c \
 	i386/oskit/md.h \
@@ -251,6 +257,7 @@ EXTRA_DIST = \
 	i386/trampolines.c \
 	i386/univel_svr4/config.frag \
 	i386/univel_svr4/jit-md.h \
+	i386/univel_svr4/jit3-md.h \
 	i386/univel_svr4/md.c \
 	i386/univel_svr4/md.h \
 	i386/win32/jit-md.h \
@@ -302,6 +309,7 @@ EXTRA_DIST = \
 	mips/jit3-mips.def \
 	mips/linux/config.frag \
 	mips/linux/jit-md.h \
+	mips/linux/jit3-md.h \
 	mips/linux/md.c \
 	mips/linux/md.h \
 	mips/mips.c \
@@ -470,18 +478,19 @@ distdir: $(DISTFILES)
 	   $(distdir)/arm/linux $(distdir)/arm/netbsd1 $(distdir)/i386 \
 	   $(distdir)/i386/beos $(distdir)/i386/bsdi \
 	   $(distdir)/i386/cygwin32 $(distdir)/i386/dgux \
-	   $(distdir)/i386/freebsd2 $(distdir)/i386/linux \
-	   $(distdir)/i386/netbsd1 $(distdir)/i386/nextstep3 \
-	   $(distdir)/i386/openbsd2 $(distdir)/i386/oskit \
-	   $(distdir)/i386/qnx $(distdir)/i386/sco3.2v5 \
-	   $(distdir)/i386/solaris2 $(distdir)/i386/univel_svr4 \
-	   $(distdir)/i386/win32 $(distdir)/m68k $(distdir)/m68k/a-ux \
-	   $(distdir)/m68k/amigaos $(distdir)/m68k/linux \
-	   $(distdir)/m68k/netbsd1 $(distdir)/m68k/nextstep3 \
-	   $(distdir)/m68k/openbsd2 $(distdir)/m68k/sunos4 \
-	   $(distdir)/mips $(distdir)/mips/irix5 $(distdir)/mips/linux \
-	   $(distdir)/mips/netbsd1 $(distdir)/mips/ultrix4 \
-	   $(distdir)/parisc $(distdir)/parisc/hpux $(distdir)/powerpc \
+	   $(distdir)/i386/freebsd2 $(distdir)/i386/gnu \
+	   $(distdir)/i386/linux $(distdir)/i386/netbsd1 \
+	   $(distdir)/i386/nextstep3 $(distdir)/i386/openbsd2 \
+	   $(distdir)/i386/oskit $(distdir)/i386/qnx \
+	   $(distdir)/i386/sco3.2v5 $(distdir)/i386/solaris2 \
+	   $(distdir)/i386/univel_svr4 $(distdir)/i386/win32 \
+	   $(distdir)/m68k $(distdir)/m68k/a-ux $(distdir)/m68k/amigaos \
+	   $(distdir)/m68k/linux $(distdir)/m68k/netbsd1 \
+	   $(distdir)/m68k/nextstep3 $(distdir)/m68k/openbsd2 \
+	   $(distdir)/m68k/sunos4 $(distdir)/mips $(distdir)/mips/irix5 \
+	   $(distdir)/mips/linux $(distdir)/mips/netbsd1 \
+	   $(distdir)/mips/ultrix4 $(distdir)/parisc \
+	   $(distdir)/parisc/hpux $(distdir)/powerpc \
 	   $(distdir)/powerpc/aix $(distdir)/powerpc/linux \
 	   $(distdir)/powerpc/machten $(distdir)/sparc \
 	   $(distdir)/sparc/bsdi3 $(distdir)/sparc/linux \

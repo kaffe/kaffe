@@ -80,6 +80,11 @@ EXTRA_DIST = \
 	i386/freebsd2/jit3-md.h \
 	i386/freebsd2/md.c \
 	i386/freebsd2/md.h \
+	i386/gnu/config.frag \
+	i386/gnu/jit-md.h \
+	i386/gnu/jit3-md.h \
+	i386/gnu/md.c \
+	i386/gnu/md.h \
 	i386/jit-i386.def \
 	i386/jit-icode.h \
 	i386/jit.h \
@@ -105,6 +110,7 @@ EXTRA_DIST = \
 	i386/oskit/README \
 	i386/oskit/config.frag \
 	i386/oskit/jit-md.h \
+	i386/oskit/jit3-md.h \
 	i386/oskit/ld-oskit.sh \
 	i386/oskit/md.c \
 	i386/oskit/md.h \
@@ -126,6 +132,7 @@ EXTRA_DIST = \
 	i386/trampolines.c \
 	i386/univel_svr4/config.frag \
 	i386/univel_svr4/jit-md.h \
+	i386/univel_svr4/jit3-md.h \
 	i386/univel_svr4/md.c \
 	i386/univel_svr4/md.h \
 	i386/win32/jit-md.h \
@@ -177,6 +184,7 @@ EXTRA_DIST = \
 	mips/jit3-mips.def \
 	mips/linux/config.frag \
 	mips/linux/jit-md.h \
+	mips/linux/jit3-md.h \
 	mips/linux/md.c \
 	mips/linux/md.h \
 	mips/mips.c \

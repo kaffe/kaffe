@@ -16,7 +16,10 @@ DISTCLEANFILES = $(GEN_SRCS)
 
 kaffeh_SOURCES = $(GEN_SRCS) constants.c sigs.c support.c main.c
 
-noinst_HEADERS = constants.h file.h kaffeh-support.h readClassConfig.h
+noinst_HEADERS = constants.h file.h kaffeh-support.h readClassConfig.h \
+	java_lang_ClassLoader.h \
+	java_lang_Object.h \
+	java_lang_String.h
 
 kaffeh_LDADD = $(KAFFE_LIBS)
 

@@ -857,11 +857,44 @@ serialized_converters = \
 	kaffe/io/CharToByteKOI8_R.ser
 
 EXTRA_DIST = $(class_DATA) $(Klasses_jar_SRCS) \
+	$(java_awt_win32_SRCS) \
 	$(serialized_converters) \
 	kaffe/io/ByteToCharEUC_JP.tbl \
 	kaffe/io/CharToByteEUC_JP.tbl \
 	kaffe/lang/unicode.idx \
 	kaffe/lang/unicode.tbl
+
+## These are not built into Klasses.jar, they're only used in
+## MS-Windows native builds.
+java_awt_win32_SRCS = \
+	java/awt/win32/ActionEvt.java \
+	java/awt/win32/Button.java \
+	java/awt/win32/Canvas.java \
+	java/awt/win32/Checkbox.java \
+	java/awt/win32/CheckboxMenuItem.java \
+	java/awt/win32/Choice.java \
+	java/awt/win32/Defaults.java \
+	java/awt/win32/FileDialog.java \
+	java/awt/win32/Frame.java \
+	java/awt/win32/Label.java \
+	java/awt/win32/List.java \
+	java/awt/win32/Menu.java \
+	java/awt/win32/MenuBar.java \
+	java/awt/win32/MenuItem.java \
+	java/awt/win32/NativeComponent.java \
+	java/awt/win32/NativeContainer.java \
+	java/awt/win32/NativeGraphics.java \
+	java/awt/win32/Panel.java \
+	java/awt/win32/PopupMenu.java \
+	java/awt/win32/ScrollPane.java \
+	java/awt/win32/Scrollbar.java \
+	java/awt/win32/SystemColor.java \
+	java/awt/win32/TextArea.java \
+	java/awt/win32/TextComponent.java \
+	java/awt/win32/TextField.java \
+	java/awt/win32/Toolkit.java \
+	java/awt/win32/WMEvent.java \
+	java/awt/win32/Window.java
 
 LIBDIR = lib
 

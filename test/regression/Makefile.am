@@ -25,6 +25,7 @@ ALWAYS_TESTS = \
 	ModuloTest.java \
 	LongNeg.java \
 	FPUStack.java \
+	divtest.java \
 ## Test strings
 	Str.java \
 	Str2.java \
@@ -144,9 +145,11 @@ else
 TESTS = $(ALWAYS_TESTS)
 endif
 
-XFAIL_TESTS =
+XFAIL_TESTS = divtest.java
 
-EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow)
+EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
+	CLTestConc_run.java \
+	ZipVerifyUtils.java
 
 CLEANFILES = *.class *.fail *.out core *.core ExceptionTest
 

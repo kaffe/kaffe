@@ -150,6 +150,7 @@ ALWAYS_TESTS = \
 	ModuloTest.java \
 	LongNeg.java \
 	FPUStack.java \
+	divtest.java \
 	Str.java \
 	Str2.java \
 	InternHog.java \
@@ -252,9 +253,12 @@ TEST_Overflow = Overflow.java
 @HAVE_GCJ_SUPPORT_TRUE@TESTS = @HAVE_GCJ_SUPPORT_TRUE@$(ALWAYS_TESTS) $(TEST_Overflow)
 @HAVE_GCJ_SUPPORT_FALSE@TESTS = @HAVE_GCJ_SUPPORT_FALSE@$(ALWAYS_TESTS)
 
-XFAIL_TESTS = 
+XFAIL_TESTS = divtest.java
 
-EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow)
+EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
+	CLTestConc_run.java \
+	ZipVerifyUtils.java
+
 
 CLEANFILES = *.class *.fail *.out core *.core ExceptionTest
 subdir = test/regression
