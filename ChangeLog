@@ -1,3 +1,8 @@
+Tue Apr  6 13:21:34 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/lang/reflect/Field.java:
+	pretty print type name for a field just like Sun does
+
 Mon Apr  5 16:50:53 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/PushbackInputStream.java: fix bug
