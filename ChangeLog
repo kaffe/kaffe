@@ -5,6 +5,7 @@ Wed Feb  3 17:54:03 1999  Jose Orlando Pereira <jop@di.uminho.pt>
 	self referencing structures
 	* test/regression/Alias.java: new test
 	* test/regression/TestScript.in (Alias): ditto
+	* test/regression/Alias.out: the expected output
 
 Wed Feb  3 05:46:52 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
