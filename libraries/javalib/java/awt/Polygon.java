@@ -12,8 +12,14 @@ package java.awt;
  *
  * @author P.C.Mehlitz
  */
+import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
+
 public class Polygon
-  implements Shape, java.io.Serializable
+  implements Shape, Serializable
 {
 	/** @serial The total number of points. This value can be NULL. */
 	public int npoints;
@@ -71,8 +77,27 @@ public boolean contains ( Point p ) {
 	return contains( p.x, p.y);
 }
 
+public boolean contains ( Point2D p ) {
+	return contains( p.getX(), p.getY());
+}
+
+public boolean contains ( Rectangle2D r ) {
+	return contains( r.getX(), r.getY(), r.getWidth(), r.getHeight());
+}
+
 public boolean contains ( int x, int y ) {
 	return (inside( x, y ));
+}
+
+public boolean contains(double x, double y) {
+	return contains ((int) x, (int) y);
+}
+
+public boolean contains(double x, double y, double w, double h) {
+	return contains (x, y)
+		&& contains(x + w, y)
+		&& contains(x, y + h)
+		&& contains(x + w, y + h);
 }
 
 /**
@@ -117,6 +142,55 @@ public Rectangle getBounds() {
 	return (getBoundingBox());
 }
 
+public Rectangle2D getBounds2D() {
+	return (getBounds());
+}
+
+/** taken from GNU Classpath */
+public PathIterator getPathIterator(final AffineTransform transform) {
+	return new PathIterator() {
+			/** The current vertex of iteration. */
+			private int vertex;
+			
+			public int getWindingRule() {
+				return WIND_EVEN_ODD;
+			}
+
+			public boolean isDone() {
+				return vertex > npoints;
+			}
+
+			public void next() {
+				vertex++;
+			}
+
+			public int currentSegment(float[] coords) {
+				if (vertex >= npoints)
+					return SEG_CLOSE;
+				coords[0] = xpoints[vertex];
+				coords[1] = ypoints[vertex];
+				if (transform != null)
+					transform.transform(coords, 0, coords, 0, 1);
+				return vertex == 0 ? SEG_MOVETO : SEG_LINETO;
+			}
+
+			public int currentSegment(double[] coords) {
+				if (vertex >= npoints)
+					return SEG_CLOSE;
+				coords[0] = xpoints[vertex];
+				coords[1] = ypoints[vertex];
+				if (transform != null)
+					transform.transform(coords, 0, coords, 0, 1);
+				return vertex == 0 ? SEG_MOVETO : SEG_LINETO;
+			}
+		};
+}
+
+/* taken from GNU Classpath */
+public PathIterator getPathIterator(AffineTransform transform, double flatness) {
+	return getPathIterator(transform);
+}
+
 /**
  * @deprecated , use getBounds()
  */
@@ -156,6 +230,26 @@ void grow () {
 	a = new int[n];
 	System.arraycopy( ypoints, 0, a, 0, npoints);
 	ypoints = a;
+}
+
+public boolean intersects(double x, double y, double w, double h) {
+	return contains(x, y)
+		|| contains(x + w, y)
+		|| contains(x, y + h)
+		|| contains (x + w, y + h);
+}
+
+public boolean intersects(Rectangle2D r) {
+	return intersects(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+}
+
+public void invalidate() {
+	bounds = null;
+}
+
+public void reset() {
+	invalidate();
+	npoints = 0;
 }
 
 public void translate ( int dx, int dy ) {

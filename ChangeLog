@@ -1,3 +1,179 @@
+Wed Nov  6 11:13:42 CET 2002 Dalibor Topic
+	*  libraries/javalib/java/awt/image/DirectColorModel.java:
+	(getAlpha, getShift) fixed bugs that prevented pure java MPEG
+	decoder MPEG_Play from working. Now the demo movie runs without
+	problems.
+
+	Patch by: Nicolas Le Sommer <Nicolas.LeSommer@univ-ubs.fr>
+
+	* libraries/javalib/java/awt/Polygon.java:
+	(contains, getBounds2D, getPathIterator, intersects, invalidate,
+	reset) new methods. getPathIterator comes from the GNU Classpath
+	implementation.
+	
+	* libraries/javalib/java/awt/Rectangle.java:
+	Now extends java.geom.Rectangle2D.
+	(Rectangle) simplified constructors.
+	(contains, createIntersection, createUnion, getBounds2D,
+	getHeight, getWidth, getX, getY, outcode, setRect) new
+	methods. outcode comes from the GNU Classpath implementation,
+	createIntersection and createUnion are derived from GNU Classpath
+	implementations.
+	(getBounds) simplified.
+
+	* libraries/javalib/java/awt/Shape.java:
+	(contains, getBounds, getBounds2D, getPathIterator, intersects)
+	new methods.
+
+	* libraries/javalib/java/awt/color/CMMException.java,
+	libraries/javalib/java/awt/color/ColorSpace.java,
+	libraries/javalib/java/awt/color/ICC_ColorSpace.java,
+	libraries/javalib/java/awt/color/ICC_Profile.java,
+	libraries/javalib/java/awt/color/ProfileDataException.java:
+	new files. Imported java.awt.color package implementation from GNU
+	Classpath.
+
+	* libraries/javalib/java/awt/datatransfer/FlavorMap.java: new
+	file. Imported from GNU Classpath.
+
+	* libraries/javalib/java/awt/dnd/Autoscroll.java,
+	libraries/javalib/java/awt/dnd/DnDConstants.java,
+	libraries/javalib/java/awt/dnd/DragGestureEvent.java,
+	libraries/javalib/java/awt/dnd/DragGestureListener.java,
+	libraries/javalib/java/awt/dnd/DragGestureRecognizer.java,
+	libraries/javalib/java/awt/dnd/DragSource.java,
+	libraries/javalib/java/awt/dnd/DragSourceAdapter.java,
+	libraries/javalib/java/awt/dnd/DragSourceContext.java,
+	libraries/javalib/java/awt/dnd/DragSourceDragEvent.java,
+	libraries/javalib/java/awt/dnd/DragSourceDropEvent.java,
+	libraries/javalib/java/awt/dnd/DragSourceEvent.java,
+	libraries/javalib/java/awt/dnd/DragSourceListener.java,
+	libraries/javalib/java/awt/dnd/DragSourceMotionListener.java,
+	libraries/javalib/java/awt/dnd/DropTarget.java,
+	libraries/javalib/java/awt/dnd/DropTargetAdapter.java,
+	libraries/javalib/java/awt/dnd/DropTargetContext.java,
+	libraries/javalib/java/awt/dnd/DropTargetDragEvent.java,
+	libraries/javalib/java/awt/dnd/DropTargetDropEvent.java,
+	libraries/javalib/java/awt/dnd/DropTargetEvent.java,
+	libraries/javalib/java/awt/dnd/DropTargetListener.java,
+	libraries/javalib/java/awt/dnd/InvalidDnDOperationException.java,
+	libraries/javalib/java/awt/dnd/MouseDragGestureRecognizer.java,
+	libraries/javalib/java/awt/dnd/peer/DragSourceContextPeer.java,
+	libraries/javalib/java/awt/dnd/peer/DropTargetContextPeer.java:
+	new files. Imported java.awt.dnd package impementation from GNU
+	Classpath.
+
+	* libraries/javalib/java/awt/event/InputEvent.java:
+	Added missing constants.
+
+	* libraries/javalib/java/awt/font/TextHitInfo.java:
+	new file. Imported java.awt.font package implementation from GNU
+	Classpath.
+
+	* libraries/javalib/java/awt/geom/AffineTransform.java, 
+	libraries/javalib/java/awt/geom/Arc2D.java,
+	libraries/javalib/java/awt/geom/Area.java,
+	libraries/javalib/java/awt/geom/CubicCurve2D.java,
+	libraries/javalib/java/awt/geom/Dimension2D.java,
+	libraries/javalib/java/awt/geom/Ellipse2D.java,
+	libraries/javalib/java/awt/geom/FlatteningPathIterator.java,
+	libraries/javalib/java/awt/geom/GeneralPath.java,
+	libraries/javalib/java/awt/geom/IllegalPathStateException.java,
+	libraries/javalib/java/awt/geom/Line2D.java,
+	libraries/javalib/java/awt/geom/NoninvertibleTransformException.java,
+	libraries/javalib/java/awt/geom/PathIterator.java, 
+	libraries/javalib/java/awt/geom/Point2D.java,
+	libraries/javalib/java/awt/geom/QuadCurve2D.java,
+	libraries/javalib/java/awt/geom/Rectangle2D.java,
+	libraries/javalib/java/awt/geom/RectangularShape.java,
+	libraries/javalib/java/awt/geom/RoundRectangle2D.java: new
+	files. Imported java.awt.geom package implementation from GNU
+	Classpath.
+
+	* libraries/javalib/java/awt/print/Book.java,
+	libraries/javalib/java/awt/print/PageFormat.java,
+	libraries/javalib/java/awt/print/Pageable.java,
+	libraries/javalib/java/awt/print/Paper.java,
+	libraries/javalib/java/awt/print/Printable.java,
+	libraries/javalib/java/awt/print/PrinterAbortException.java,
+	libraries/javalib/java/awt/print/PrinterException.java,
+	libraries/javalib/java/awt/print/PrinterGraphics.java,
+	libraries/javalib/java/awt/print/PrinterIOException.java,
+	libraries/javalib/java/awt/print/PrinterJob.java: new
+	files. Imported java.awt.print implementation from GNU Classpath.
+
+	* libraries/javalib/java/beans/DesignMode.java: new file. Imported
+	from GNU Classpath.
+
+	* libraries/javalib/java/beans/PropertyChangeSupport.java:
+	(listeners) removed.
+	(PROPERTY_LISTENERS) new private field.
+	(PropertyChangeListener) simplified.
+	(addPropertyChangeListener) register a listener with a property,
+	or with all. new method.
+	(firePropertyChange) adapted to handle new internal data
+	structure.
+	(removePropertyChangeListener) deregister a listener with a
+	property, or with all. new method.
+
+	* libraries/javalib/java/beans/VetoableChangeSupport.java:
+	(listeners) removed.
+	(PROPERTY_LISTENERS) new private field.
+	(VetoableChangeListener) simplified.
+	(addVetoableChangeListener) register a listener with a property,
+	or with all. new method.
+	(fireVetoableChange) adapted to handle new internal data
+	structure.
+	(removeVetoableChangeListener) deregister a listener with a
+	property, or with all. new method.
+
+	* libraries/javalib/java/beans/beancontext/BeanContext.java,
+	libraries/javalib/java/beans/beancontext/BeanContextChild.java,
+	libraries/javalib/java/beans/beancontext/BeanContextChildComponentProxy.java,
+	libraries/javalib/java/beans/beancontext/BeanContextChildSupport.java,
+	libraries/javalib/java/beans/beancontext/BeanContextContainerProxy.java,
+	libraries/javalib/java/beans/beancontext/BeanContextEvent.java,
+	libraries/javalib/java/beans/beancontext/BeanContextMembershipEvent.java,
+	libraries/javalib/java/beans/beancontext/BeanContextMembershipListener.java,
+	libraries/javalib/java/beans/beancontext/BeanContextProxy.java,
+	libraries/javalib/java/beans/beancontext/BeanContextServiceAvailableEvent.java,
+	libraries/javalib/java/beans/beancontext/BeanContextServiceProvider.java,
+	libraries/javalib/java/beans/beancontext/BeanContextServiceProviderBeanInfo.java,
+	libraries/javalib/java/beans/beancontext/BeanContextServiceRevokedEvent.java,
+	libraries/javalib/java/beans/beancontext/BeanContextServiceRevokedListener.java,
+	libraries/javalib/java/beans/beancontext/BeanContextServices.java,
+	libraries/javalib/java/beans/beancontext/BeanContextServicesListener.java:
+	new files. Imported java.beans.beancontext implementation from GNU
+	Classpath.
+
+	* libraries/javalib/java/io/FilePermission.java,
+	libraries/javalib/java/io/SerializablePermission.java: new
+	files. Imported from GNU Classpath.
+
+	* libraries/javalib/java/lang/AssertionError.java,
+	libraries/javalib/java/lang/CharSequence.java,
+	libraries/javalib/java/lang/StackTraceElement.java,
+	libraries/javalib/java/lang/UnsupportedClassVersionError.java: new
+	files. Imported from GNU Classpath.
+
+	* libraries/javalib/java/lang/Throwable.java:
+	(cause) new private field.
+	(Throwable) simplified.
+	(causeIsSet) new private method.
+	(getCause, initCause) new methods.
+	
+	* libraries/javalib/java/security/cert/CertStoreException.java:
+	new file. Imported from GNU Classpath.
+
+	* libraries/javalib/java/util/WeakHashMap.java: new file. Imported
+	from GNU Classpath. Includes compilation fixes to run on kaffe.
+
+	* libraries/javalib/gnu/java/awt/EventModifier.java: new
+	file. Imported from GNU Classpath.
+
+	* Makefile.am, Makefile.in: included all the new files and
+	packages.
+
 Wed Nov  6 06:49:43 CET 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/lang/System.java:

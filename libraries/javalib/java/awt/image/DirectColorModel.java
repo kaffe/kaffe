@@ -66,7 +66,7 @@ public DirectColorModel( int bits, int rmask, int gmask, int bmask, int amask) {
 
 final public int getAlpha( int pixel) {
 	if ( amask == 0 )
-		return 0;
+		return 0xff;
 
 	return ((ashift > 0) ? ((pixel&amask)>>ashift) : ((pixel&amask)<< -ashift)) * 255 / amax;
 }
@@ -119,10 +119,10 @@ int getShift ( int mask ) {
 	int i, j;
 	
 	for ( i=0; ((mask & 1) == 0); i++ )
-		mask >>= 1;
+		mask >>>= 1;
 
 	for ( j=0; ((mask & 1) != 0); j++ )
-		mask >>= 1;
+		mask >>>= 1;
 
 	return (i + (j - 8));
 }

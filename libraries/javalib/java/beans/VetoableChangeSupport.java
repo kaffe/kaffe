@@ -11,28 +11,44 @@
 package java.beans;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Vector;
 
 public class VetoableChangeSupport implements Serializable {
 
   private static final long serialVersionUID = -5090210921595982017L;
-  private Vector listeners;
+  private final HashMap PROPERTY_LISTENERS = new HashMap();
   private Object source;
 
   public VetoableChangeSupport(Object sourceBean)
   {
-    listeners = new Vector();
     source = sourceBean;
+  }
+
+  public synchronized void addVetoableChangeListener(String property, VetoableChangeListener listener)
+  {
+      if (!PROPERTY_LISTENERS.containsKey(property)) {
+	  PROPERTY_LISTENERS.put(property, new Vector());
+      }
+
+      ((Vector) PROPERTY_LISTENERS.get(property)).addElement(listener);
   }
 
   public synchronized void addVetoableChangeListener(VetoableChangeListener listener)
   {
-    listeners.addElement(listener);
+      addVetoableChangeListener(null, listener);
   }
 
   public synchronized void removeVetoableChangeListener(VetoableChangeListener listener)
   {
-    listeners.removeElement(listener);
+      removeVetoableChangeListener(null, listener);
+  }
+
+  public synchronized void removeVetoableChangeListener(String property, VetoableChangeListener listener)
+  {
+      if (PROPERTY_LISTENERS.containsKey(property)) {
+	  ((Vector) PROPERTY_LISTENERS.get(property)).removeElement(listener);
+      }
   }
 
   public void fireVetoableChange(String propertyName, Object oldValue, Object newValue) throws PropertyVetoException
@@ -42,8 +58,14 @@ public class VetoableChangeSupport implements Serializable {
       return;
     }
 
-    // Clone the set of listeners to avoid synchrnization problems.
-    Vector vec = (Vector)listeners.clone();
+    if (!PROPERTY_LISTENERS.containsKey(null)
+	&& !PROPERTY_LISTENERS.containsKey(propertyName)) { 
+	    return;
+    }
+
+    // Clone the set of listeners to avoid synchronization problems.
+    Vector vec = (Vector) ((Vector) PROPERTY_LISTENERS.get(propertyName)).clone();
+    vec.addAll((Vector) PROPERTY_LISTENERS.get(null));
 
     // Dispatch.  We catch the Veto exception so we can undo our changes
     int dispatch = 0;

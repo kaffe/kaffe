@@ -18,12 +18,19 @@ toolslib_DATA = kjc.jar
 Klasses_jar_SRCS = \
 	$(java_applet_SRCS) \
 	$(java_awt_SRCS) \
+	$(java_awt_color_SRCS) \
 	$(java_awt_datatransfer_SRCS) \
+	$(java_awt_dnd_SRCS) \
+	$(java_awt_dnd_peer_SRCS) \
 	$(java_awt_event_SRCS) \
+	$(java_awt_font_SRCS) \
+	$(java_awt_geom_SRCS) \
 	$(java_awt_image_SRCS) \
 	$(java_awt_peer_SRCS) \
+	$(java_awt_print_SRCS) \
 	$(java_awt_widgets_SRCS) \
 	$(java_beans_SRCS) \
+	$(java_beans_beancontext_SRCS) \
 	$(java_io_SRCS) \
 	$(java_lang_SRCS) \
 	$(java_lang_ref_SRCS) \
@@ -41,6 +48,7 @@ Klasses_jar_SRCS = \
 	$(java_util_jar_SRCS) \
 	$(java_util_mime_SRCS) \
 	$(java_util_zip_SRCS) \
+	$(gnu_java_awt_SRCS) \
 	$(kaffe_applet_SRCS) \
 	$(kaffe_awt_SRCS) \
 	$(kaffe_beans_editors_SRCS) \
@@ -152,13 +160,46 @@ java_awt_SRCS = \
 	java/awt/WMEvent.java \
 	java/awt/Window.java \
 	java/awt/WindowEvt.java
+java_awt_color_SRCS = \
+	java/awt/color/CMMException.java \
+	java/awt/color/ColorSpace.java \
+	java/awt/color/ICC_ColorSpace.java \
+	java/awt/color/ICC_Profile.java \
+	java/awt/color/ProfileDataException.java
 java_awt_datatransfer_SRCS = \
 	java/awt/datatransfer/Clipboard.java \
 	java/awt/datatransfer/ClipboardOwner.java \
 	java/awt/datatransfer/DataFlavor.java \
+	java/awt/datatransfer/FlavorMap.java \
 	java/awt/datatransfer/StringSelection.java \
 	java/awt/datatransfer/Transferable.java \
 	java/awt/datatransfer/UnsupportedFlavorException.java
+java_awt_dnd_SRCS = \
+	java/awt/dnd/Autoscroll.java \
+	java/awt/dnd/DnDConstants.java \
+	java/awt/dnd/DragGestureEvent.java \
+	java/awt/dnd/DragGestureListener.java \
+	java/awt/dnd/DragGestureRecognizer.java \
+	java/awt/dnd/DragSource.java \
+	java/awt/dnd/DragSourceAdapter.java \
+	java/awt/dnd/DragSourceContext.java \
+	java/awt/dnd/DragSourceDragEvent.java \
+	java/awt/dnd/DragSourceDropEvent.java \
+	java/awt/dnd/DragSourceEvent.java \
+	java/awt/dnd/DragSourceListener.java \
+	java/awt/dnd/DragSourceMotionListener.java \
+	java/awt/dnd/DropTarget.java \
+	java/awt/dnd/DropTargetAdapter.java \
+	java/awt/dnd/DropTargetContext.java \
+	java/awt/dnd/DropTargetDragEvent.java \
+	java/awt/dnd/DropTargetDropEvent.java \
+	java/awt/dnd/DropTargetEvent.java \
+	java/awt/dnd/DropTargetListener.java \
+	java/awt/dnd/InvalidDnDOperationException.java \
+	java/awt/dnd/MouseDragGestureRecognizer.java
+java_awt_dnd_peer_SRCS = \
+	java/awt/dnd/peer/DragSourceContextPeer.java \
+	java/awt/dnd/peer/DropTargetContextPeer.java
 java_awt_event_SRCS = \
 	java/awt/event/AWTEventListener.java \
 	java/awt/event/ActionEvent.java \
@@ -191,6 +232,26 @@ java_awt_event_SRCS = \
 	java/awt/event/WindowAdapter.java \
 	java/awt/event/WindowEvent.java \
 	java/awt/event/WindowListener.java
+java_awt_font_SRCS = \
+	java/awt/font/TextHitInfo.java
+java_awt_geom_SRCS = \
+	java/awt/geom/AffineTransform.java \
+	java/awt/geom/Arc2D.java \
+	java/awt/geom/Area.java \
+	java/awt/geom/CubicCurve2D.java \
+	java/awt/geom/Dimension2D.java \
+	java/awt/geom/Ellipse2D.java \
+	java/awt/geom/FlatteningPathIterator.java \
+	java/awt/geom/GeneralPath.java \
+	java/awt/geom/IllegalPathStateException.java \
+	java/awt/geom/Line2D.java \
+	java/awt/geom/NoninvertibleTransformException.java \
+	java/awt/geom/PathIterator.java \
+	java/awt/geom/Point2D.java \
+	java/awt/geom/QuadCurve2D.java \
+	java/awt/geom/Rectangle2D.java \
+	java/awt/geom/RectangularShape.java \
+	java/awt/geom/RoundRectangle2D.java
 java_awt_image_SRCS = \
 	java/awt/image/AreaAveragingScaleFilter.java \
 	java/awt/image/ColorModel.java \
@@ -213,6 +274,17 @@ java_awt_peer_SRCS = \
 	java/awt/peer/LightweightPeer.java \
 	java/awt/peer/MenuComponentPeer.java \
 	java/awt/peer/WindowPeer.java
+java_awt_print_SRCS = \
+	java/awt/print/Book.java \
+	java/awt/print/PageFormat.java \
+	java/awt/print/Pageable.java \
+	java/awt/print/Paper.java \
+	java/awt/print/Printable.java \
+	java/awt/print/PrinterAbortException.java \
+	java/awt/print/PrinterException.java \
+	java/awt/print/PrinterGraphics.java \
+	java/awt/print/PrinterIOException.java \
+	java/awt/print/PrinterJob.java
 java_awt_widgets_SRCS = \
 	java/awt/widgets/Button.java \
 	java/awt/widgets/Checkbox.java \
@@ -232,6 +304,7 @@ java_beans_SRCS = \
 	java/beans/BeanInfo.java \
 	java/beans/Beans.java \
 	java/beans/Customizer.java \
+	java/beans/DesignMode.java \
 	java/beans/EventSetDescriptor.java \
 	java/beans/FeatureDescriptor.java \
 	java/beans/GenericBeanInfo.java \
@@ -252,6 +325,23 @@ java_beans_SRCS = \
 	java/beans/VetoableChangeListener.java \
 	java/beans/VetoableChangeSupport.java \
 	java/beans/Visibility.java
+java_beans_beancontext_SRCS = \
+	java/beans/beancontext/BeanContext.java \
+	java/beans/beancontext/BeanContextChild.java \
+	java/beans/beancontext/BeanContextChildComponentProxy.java \
+	java/beans/beancontext/BeanContextChildSupport.java \
+	java/beans/beancontext/BeanContextContainerProxy.java \
+	java/beans/beancontext/BeanContextEvent.java \
+	java/beans/beancontext/BeanContextMembershipEvent.java \
+	java/beans/beancontext/BeanContextMembershipListener.java \
+	java/beans/beancontext/BeanContextProxy.java \
+	java/beans/beancontext/BeanContextServiceAvailableEvent.java \
+	java/beans/beancontext/BeanContextServiceProvider.java \
+	java/beans/beancontext/BeanContextServiceProviderBeanInfo.java \
+	java/beans/beancontext/BeanContextServiceRevokedEvent.java \
+	java/beans/beancontext/BeanContextServiceRevokedListener.java \
+	java/beans/beancontext/BeanContextServices.java \
+	java/beans/beancontext/BeanContextServicesListener.java
 java_io_SRCS = \
 	java/io/BufferedInputStream.java \
 	java/io/BufferedOutputStream.java \
@@ -274,6 +364,7 @@ java_io_SRCS = \
 	java/io/FileInputStream.java \
 	java/io/FileNotFoundException.java \
 	java/io/FileOutputStream.java \
+	java/io/FilePermission.java \
 	java/io/FileReader.java \
 	java/io/FileWriter.java \
 	java/io/FilenameFilter.java \
@@ -315,6 +406,7 @@ java_io_SRCS = \
 	java/io/Reader.java \
 	java/io/SequenceInputStream.java \
 	java/io/Serializable.java \
+	java/io/SerializablePermission.java \
 	java/io/StreamCorruptedException.java \
 	java/io/StreamTokenizer.java \
 	java/io/StringBufferInputStream.java \
@@ -330,9 +422,11 @@ java_lang_SRCS = \
 	java/lang/ArithmeticException.java \
 	java/lang/ArrayIndexOutOfBoundsException.java \
 	java/lang/ArrayStoreException.java \
+	java/lang/AssertionError.java \
 	java/lang/Boolean.java \
 	java/lang/Byte.java \
 	java/lang/Character.java \
+	java/lang/CharSequence.java \
 	java/lang/Class.java \
 	java/lang/ClassCastException.java \
 	java/lang/ClassCircularityError.java \
@@ -388,6 +482,7 @@ java_lang_SRCS = \
 	java/lang/SecurityManager.java \
 	java/lang/Short.java \
 	java/lang/StackOverflowError.java \
+	java/lang/StackTraceElement.java \
 	java/lang/String.java \
 	java/lang/StringBuffer.java \
 	java/lang/StringIndexOutOfBoundsException.java \
@@ -399,6 +494,7 @@ java_lang_SRCS = \
 	java/lang/Throwable.java \
 	java/lang/UnknownError.java \
 	java/lang/UnsatisfiedLinkError.java \
+	java/lang/UnsupportedClassVersionError.java \
 	java/lang/UnsupportedOperationException.java \
 	java/lang/VerifyError.java \
 	java/lang/VirtualMachineError.java \
@@ -542,6 +638,7 @@ java_security_cert_SRCS = \
 	java/security/cert/CertificateFactorySpi.java \
 	java/security/cert/CertificateNotYetValidException.java \
 	java/security/cert/CertificateParsingException.java \
+	java/security/cert/CertStoreException.java \
 	java/security/cert/X509CRL.java \
 	java/security/cert/X509CRLEntry.java \
 	java/security/cert/X509Certificate.java \
@@ -672,7 +769,8 @@ java_util_SRCS = \
 	java/util/TooManyListenersException.java \
 	java/util/TreeMap.java \
 	java/util/TreeSet.java \
-	java/util/Vector.java
+	java/util/Vector.java \
+	java/util/WeakHashMap.java
 java_util_jar_SRCS = \
 	java/util/jar/Attributes.java \
 	java/util/jar/JarEntry.java \
@@ -704,6 +802,8 @@ java_util_zip_SRCS = \
 	java/util/zip/ZipFile.java \
 	java/util/zip/ZipInputStream.java \
 	java/util/zip/ZipOutputStream.java
+gnu_java_awt_SRCS = \
+	gnu/java/awt/EventModifier.java
 kaffe_applet_SRCS = \
 	kaffe/applet/AppletTag.java \
 	kaffe/applet/AppletViewer.java \

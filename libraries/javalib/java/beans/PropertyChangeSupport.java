@@ -1,6 +1,7 @@
 package java.beans;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Vector;
 
 /*
@@ -16,16 +17,23 @@ public class PropertyChangeSupport
   implements Serializable
 {
 	private static final long serialVersionUID = 6401253773779951803L;
-	private Vector listeners;
+	private final HashMap PROPERTY_LISTENERS = new HashMap();
 	private Object source;
 
 public PropertyChangeSupport(Object sourceBean) {
-	listeners = new Vector();
 	source = sourceBean;
 }
 
+public synchronized void addPropertyChangeListener(String property, PropertyChangeListener listener) {
+	if (!PROPERTY_LISTENERS.containsKey(property)) {
+			PROPERTY_LISTENERS.put(property, new Vector());
+	}
+	
+	((Vector) PROPERTY_LISTENERS.get(property)).addElement(listener);
+}
+
 public synchronized void addPropertyChangeListener(PropertyChangeListener listener) {
-	listeners.addElement(listener);
+	addPropertyChangeListener(null, listener);
 }
 
 public void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
@@ -34,16 +42,20 @@ public void firePropertyChange(String propertyName, Object oldValue, Object newV
 		return;
 	}
 
+	if (!PROPERTY_LISTENERS.containsKey(null)
+	    && !PROPERTY_LISTENERS.containsKey(propertyName)) { 
+		return;
+	}
+
 	// Is anyone interested ?
-	Vector vec;
+	Vector vec = (Vector) ((Vector) PROPERTY_LISTENERS.get(propertyName)).clone();
+	vec.addAll((Vector) PROPERTY_LISTENERS.get(null));
 	int size;
 	synchronized (this) {
-		size = listeners.size();
+		size = vec.size();
 		if (size == 0) {
 			return;
 		}
-		// Clone the set of listeners to avoid synchronization problems.
-		vec = (Vector)listeners.clone();
 	}
 	PropertyChangeEvent evt = new PropertyChangeEvent(source, propertyName, oldValue, newValue);
 	for (int dis = 0; dis < size; dis++) {
@@ -52,6 +64,12 @@ public void firePropertyChange(String propertyName, Object oldValue, Object newV
 }
 
 public synchronized void removePropertyChangeListener(PropertyChangeListener listener) {
-	listeners.removeElement(listener);
+	removePropertyChangeListener(null, listener);
+}
+
+public synchronized void removePropertyChangeListener(String property, PropertyChangeListener listener) {
+	if (PROPERTY_LISTENERS.containsKey(property)) {
+		((Vector) PROPERTY_LISTENERS.get(property)).removeElement(listener);
+	}
 }
 }

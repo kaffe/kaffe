@@ -11,8 +11,12 @@ package java.awt;
  * of this file.
  * @author P.C.Mehlitz
  */
-public class Rectangle
-  implements Shape, java.io.Serializable
+
+import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
+
+public class Rectangle extends Rectangle2D
+  implements Shape, Serializable
 {
 	private static final long serialVersionUID = -4345857070255674764L;
 
@@ -29,48 +33,27 @@ public Rectangle() {
 }
 
 public Rectangle ( Dimension d ) {
-	x = 0;
-	y = 0;
-	width  = d.width;
-	height = d.height;
+	setSize(d.width, d.height);
 }
 
 public Rectangle ( Point pt ) {
-	x = pt.x;
-	y = pt.y;
-
-	width = 0;
-	height = 0;
+	setLocation(pt.x, pt.y);
 }
 
 public Rectangle ( Point pt, Dimension d ) {
-	x = pt.x;
-	y = pt.y;
-	
-	width  = d.width;
-	height = d.height;
+	setBounds(pt.x, pt.y, d.width, d.height);
 }
 
 public Rectangle ( Rectangle r ) {
-	x      = r.x;
-	y      = r.y;
-	width  = r.width;
-	height = r.height;
+	setBounds(r.x, r.y, r.width, r.height);
 }
 
 public Rectangle ( int width, int height ) {
-	x = 0;
-	y = 0;
-	
-	this.width  = width;
-	this.height = height;
+	setSize(width, height);
 }
 
 public Rectangle ( int x, int y, int width, int height ) {
-	this.x      = x;
-	this.y      = y;
-	this.width  = width;
-	this.height = height;
+	setBounds(x, y, width, height);
 }
 
 public void add ( Point pt ) {
@@ -109,8 +92,28 @@ public boolean contains ( Point p ) {
 	return contains( p.x, p.y);
 }
 
+public boolean contains (Rectangle r) {
+	return contains (r.x, r.y, r.width, r.height);
+}
+
 public boolean contains ( int x, int y ) {
 	return (inside(x, y));
+}
+
+public boolean contains ( int x, int y, int w, int h ) {
+	return (inside(x, y) && inside(x + width, y + height));
+}
+
+public Rectangle2D createIntersection(Rectangle2D r) {
+	Rectangle2D result = getBounds2D();
+	Rectangle2D.intersect(this, r, result);
+	return result;
+}
+
+public Rectangle2D createUnion(Rectangle2D r) {
+	Rectangle2D result = getBounds2D();
+	Rectangle2D.union(this, r, result);
+	return result;
 }
 
 public boolean equals ( Object obj ) {
@@ -123,7 +126,15 @@ public boolean equals ( Object obj ) {
 }
 
 public Rectangle getBounds () {
-	return new Rectangle( x, y, width, height);
+	return new Rectangle(this);
+}
+
+public Rectangle2D getBounds2D() {
+	return getBounds();
+}
+
+public double getHeight() {
+	return height;
 }
 
 public Point getLocation () {
@@ -132,6 +143,18 @@ public Point getLocation () {
 
 public Dimension getSize () {
 	return new Dimension( width, height);
+}
+
+public double getWidth() {
+	return width;
+}
+
+public double getX() {
+	return x;
+}
+
+public double getY() {
+	return y;
 }
 
 public void grow ( int xDelta, int yDelta ) {
@@ -195,6 +218,24 @@ public void move ( int xNew, int yNew ) {
 	y = yNew;
 }
 
+/* taken from GNU Classpath */
+public int outcode(double x, double y) {
+	int result = 0;
+	if (width <= 0)
+		result |= OUT_LEFT | OUT_RIGHT;
+	else if (x < this.x)
+		result |= OUT_LEFT;
+	else if (x > this.x + width)
+		result |= OUT_RIGHT;
+	if (height <= 0)
+		result |= OUT_BOTTOM | OUT_TOP;
+	else if (y < this.y) // Remember that +y heads top-to-bottom.
+		result |= OUT_TOP;
+	else if (y > this.y + height)
+		result |= OUT_BOTTOM;
+	return result;
+}
+
 /**
  * @deprecated (use setBounds() )
  */
@@ -225,6 +266,10 @@ public void setBounds ( int x, int y, int width, int height ) {
 public void setLocation ( Point pt ) {
 	x = pt.x;
 	y = pt.y;
+}
+
+public void setRect(double x, double y, double width, double height) {
+	setBounds((int) x, (int) y, (int) width, (int) height);
 }
 
 public void setLocation ( int xNew, int yNew ) {
