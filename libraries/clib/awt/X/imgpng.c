@@ -10,7 +10,11 @@
 
 #include "toolkit.h"
 
-#if defined(HAVE_PNG_H) && defined(HAVE_LIBZ)
+#if defined(HAVE_PNG_H) && defined(HAVE_LIBPNG) && defined(HAVE_LIBZ)
+#define INCLUDE_PNG
+#endif
+
+#if defined(INCLUDE_PNG)
 
 #include "png.h"
 
@@ -269,7 +273,7 @@ bufferRead ( png_structp png_ptr, png_bytep data, png_size_t length )
 }
 
 
-#endif /* HAVE_PNG_H */
+#endif /* INCLUDE_PNG */
 
 /**************************************************************************************
  * these are the "exported" production interface functions
@@ -279,7 +283,7 @@ Image*
 readPngFile ( FILE* infile )
 {
   Image          *img = 0;
-#ifdef HAVE_PNG_H
+#if defined(INCLUDE_PNG)
   png_structp    png_ptr;
   png_infop      info_ptr;
 
@@ -294,7 +298,7 @@ readPngFile ( FILE* infile )
   img = readPng( png_ptr, info_ptr);
 
   png_destroy_read_struct( &png_ptr, &info_ptr, (png_infopp)NULL);
-#endif /* HAVE_PNG_H */
+#endif /* INCLUDE_PNG */
 
   return img;
 }
@@ -304,7 +308,7 @@ Image*
 readPngData ( unsigned char* buf, long len )
 {
   Image          *img = 0;
-#ifdef HAVE_PNG_H
+#if defined(INCLUDE_PNG)
   png_structp    png_ptr;
   png_infop      info_ptr;
   BufferSource   source;
@@ -323,7 +327,7 @@ readPngData ( unsigned char* buf, long len )
   img = readPng( png_ptr, info_ptr);
 
   png_destroy_read_struct( &png_ptr, &info_ptr, (png_infopp)NULL);
-#endif /* HAVE_PNG_H */
+#endif /* INCLUDE_PNG */
 
   return img;
 }
