@@ -7,7 +7,7 @@
 # of this file. 
 
 noinst_LTLIBRARIES = libkthread.la
-libkthread_la_SOURCES = internal.c pjthread.c syscalls.c
+libkthread_la_SOURCES = pjthread.c signal.c syscalls.c
 EXTRA_DIST = Makefile.frag jthread.h
 
 @engine_frag@
