@@ -5,3 +5,5 @@ config.log
 config.status
 BUILD_ENVIRONMENT
 .deps
+autom4te.cache
+
