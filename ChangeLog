@@ -1,7 +1,7 @@
 2001-04-21  Edouard G. Parmelan  <egp@free.fr>
 
-	* libraries/javalib/java/lang/Class.java (getModifiers): InnerTest
-	proves that JDK1.2 and JDK1.3 reset ACC_SUPER.
+	* libraries/native/clib/Class.c (getModifiers): InnerTest proves
+	that JDK1.2 and JDK1.3 reset ACC_SUPER.
 
 	* test/regression/InnerTest.java, test/regression/Makefile.am,
 	test/regression/Makefile.in: new testcase for InnerClasses
