@@ -6,34 +6,22 @@
 #
 # This script contains tests for the new internal threading system
 #
-# Copyright (c) 1996, 1997
+# Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-RESULT=/tmp/kaffer.$$
-CHECK=/tmp/kaffec.$$
-JAVA=kaffe
-SRCDIR=@srcdir@
-JIKES=@JIKES@
+: ${RESULT=/tmp/kaffer.$$} ${CHECK=/tmp/kaffec.$$}
+: ${JAVA=kaffe} ${SRCDIR=@srcdir@} ${PATHSEP='@PATHSEP@'}
+test -z "@JIKES@" || : ${JIKES="@JIKES@"}
+: ${JAVAC=${JIKES-"$JAVA pizza.compiler.Main"}" -classpath .$PATHSEP$SRCDIR$PATHSEP$SRCDIR/../../libraries/javalib/Klasses.jar$PATHSEP$CLASSPATH"}
 overallerror=0
 error=0
 
-# If we have a destination directory, clean it and make sure we use it
-# for later compilations.
-if test "$DESTDIR" != "" ; then
-	rm -f $DESTDIR/*.class $DESTDIR/*.fail
-else
-	DESTDIR="."
-fi
+cd `echo $0 | sed -e 's,^[^/]*$,.,' -e 's,/[^/]*$,,'`
 
-# Use jikes if available
-if test "$JIKES" = "" ; then
-	JAVAC="javac"
-else
-        JAVAC="jikes -nowarn -classpath $DESTDIR:$SRCDIR:$SRCDIR/../../libraries/javalib/Klasses.jar"
-fi
+trap "rm -f $RESULT $CHECK; exit 1" 1 2 15
 
 echo_n_sp ()
 {
@@ -43,7 +31,7 @@ echo_n_sp ()
 compile()
 {
 	echo ERROR > $RESULT
-	$JAVAC -d $DESTDIR $SRCDIR/$1.java > $RESULT 2>&1
+	$JAVAC -d . $SRCDIR/$1.java > $RESULT 2>&1
 	if test "`cat $RESULT`" != "" ; then
 		echo "error compiling"
 		cat $RESULT
@@ -56,11 +44,11 @@ run()
 {
 	echo "$2" > $CHECK
 	echo ERROR > $RESULT
-	(cd $DESTDIR ; $JAVA $1 > $RESULT 2>&1)
+	$JAVA $1 > $RESULT 2>&1
 	if cmp -s $RESULT $SRCDIR/$1.out ; then
 		:
 	else
-		cp $RESULT $DESTDIR/$1.fail
+		cp $RESULT $1.fail
 		echo "ERROR: output saved to $1.fail"
 		error=1
 	fi

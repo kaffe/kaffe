@@ -1,7 +1,19 @@
+# Makefile.in generated automatically by automake 1.3e from Makefile.am
+
+# Copyright (C) 1994, 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
 #
 # Java core library component.
 #
-# Copyright (c) 1997, 1998
+# Copyright (c) 1997, 1998, 1999
 #      Transvirtual Technologies, Inc.  All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution
@@ -10,59 +22,256 @@
 # Class library's are not currently part of the integrate Make cycle.
 #
 
-srcdir=         @srcdir@
-prefix=		@prefix@
-classdir=	@datadir@/kaffe
-INSTROOT=	@INSTROOT@
 
-INSTALL=        @INSTALL@
-INSTALL_DATA=	@INSTALL_DATA@
-MKDIR=		@MKDIR@
-TOUCH=		touch
-MAKEJAVA=	$(srcdir)/makeJava
-ZIP=		zip
-JAVAC=		javac
-JARS=		Klasses.jar pizza.jar
+SHELL = @SHELL@
 
-CLASSFILE=	Klasses.jar
-SRCDIR=		$(srcdir)
-LIBDIR=		lib
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
 
-all:
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
 
-install:
-		test -d $(INSTROOT)$(classdir) || $(MKDIR) $(INSTROOT)$(classdir)
-		for i in $(JARS) ;\
-		do \
-			if test -f $(srcdir)/$$i ; then $(INSTALL_DATA) $(srcdir)/$$i $(INSTROOT)$(classdir)/$$i ; fi ;\
-		done
+DESTDIR =
 
-clean:
-		rm -rf $(LIBDIR)
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
 
-distclean:
-		rm -rf $(LIBDIR)
-		rm -f Makefile .dir-stamp rebuildLib .depend
+top_builddir = ../..
 
-classes:	.dir-stamp
-		sh rebuildLib
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
 
-.dir-stamp:
-		test -d $(LIBDIR) || $(MKDIR) $(LIBDIR)
-		$(TOUCH) .dir-stamp
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+AS = @AS@
+AWT_DIR = @AWT_DIR@
+AWT_LIBS = @AWT_LIBS@
+CC = @CC@
+CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
+CONFIG_MD_H = @CONFIG_MD_H@
+CPP = @CPP@
+DIRSEP = @DIRSEP@
+DLLTOOL = @DLLTOOL@
+ENGINE_NAME = @ENGINE_NAME@
+EXEEXT = @EXEEXT@
+GIF_LIBS = @GIF_LIBS@
+HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
+JAVA_LIBS = @JAVA_LIBS@
+JIKES = @JIKES@
+JPEG_LIBS = @JPEG_LIBS@
+KAFFEH_FOR_HOST = @KAFFEH_FOR_HOST@
+KAFFEVM_ICODE_H = @KAFFEVM_ICODE_H@
+KAFFEVM_JIT_DEF = @KAFFEVM_JIT_DEF@
+KAFFEVM_MD_C = @KAFFEVM_MD_C@
+KAFFEVM_TRAMPOLINES_C = @KAFFEVM_TRAMPOLINES_C@
+KAFFE_ARCHOS = @KAFFE_ARCHOS@
+KLIBFLAGS = @KLIBFLAGS@
+KPREFIX = @KPREFIX@
+KVER = @KVER@
+KVMLIBFLAGS = @KVMLIBFLAGS@
+LD = @LD@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+MAKE_KAFFEH_FOR_HOST = @MAKE_KAFFEH_FOR_HOST@
+MATH_LIBS = @MATH_LIBS@
+NET_LIBS = @NET_LIBS@
+NM = @NM@
+PACKAGE = @PACKAGE@
+PATHSEP = @PATHSEP@
+PNG_LIBS = @PNG_LIBS@
+RANLIB = @RANLIB@
+REGEN_FORWARD = @REGEN_FORWARD@
+THREAD_DIR = @THREAD_DIR@
+THREAD_SYSTEM = @THREAD_SYSTEM@
+USE_SYMBOL_UNDERSCORE = @USE_SYMBOL_UNDERSCORE@
+VERSION = @VERSION@
+VM_LIBS = @VM_LIBS@
+ZIP_LIBS = @ZIP_LIBS@
+classdir = @classdir@
+host_cpu = @host_cpu@
+host_os = @host_os@
+nativedir = @nativedir@
+with_engine = @with_engine@
+
+CLASSFILE = Klasses.jar
+
+class_DATA = $(CLASSFILE) pizza.jar
+
+EXTRA_DIST = `find java kaffe -name \*.java -print`
+
+LIBDIR = lib
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
+CONFIG_CLEAN_FILES =  rebuildLib
+DATA =  $(class_DATA)
+
+DIST_COMMON =  Makefile.am Makefile.in rebuildLib.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = tar
+GZIP_ENV = --best
+all: all-redirect
+.SUFFIXES:
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu libraries/javalib/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+rebuildLib: $(top_builddir)/config.status rebuildLib.in
+	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+install-classDATA: $(class_DATA)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(classdir)
+	@list='$(class_DATA)'; for p in $$list; do \
+	  if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(classdir)/$$p"; \
+	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(classdir)/$$p; \
+	  else if test -f $$p; then \
+	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(classdir)/$$p"; \
+	    $(INSTALL_DATA) $$p $(DESTDIR)$(classdir)/$$p; \
+	  fi; fi; \
+	done
+
+uninstall-classDATA:
+	@$(NORMAL_UNINSTALL)
+	list='$(class_DATA)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(classdir)/$$p; \
+	done
+tags: TAGS
+TAGS:
+
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = libraries/javalib
+
+distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu libraries/javalib/Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file; \
+	  fi; \
+	done
+info-am:
+info: info-am
+dvi-am:
+dvi: dvi-am
+check-am: all-am
+check: check-am
+installcheck-am:
+installcheck: installcheck-am
+install-exec-am:
+install-exec: install-exec-am
+
+install-data-am: install-classDATA
+install-data: install-data-am
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-am
+uninstall-am: uninstall-classDATA
+uninstall: uninstall-am
+all-am: Makefile $(DATA)
+all-redirect: all-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+installdirs:
+	$(mkinstalldirs)  $(DESTDIR)$(classdir)
+
+
+mostlyclean-generic:
+
+clean-generic:
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+mostlyclean-am:  mostlyclean-generic
+
+mostlyclean: mostlyclean-am
+
+clean-am:  clean-generic mostlyclean-am
+
+clean: clean-am
+
+distclean-am:  distclean-generic clean-am
+	-rm -f libtool
+
+distclean: distclean-am
+
+maintainer-clean-am:  maintainer-clean-generic distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-am
+
+.PHONY: uninstall-classDATA install-classDATA tags distdir info-am info \
+dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
+install-exec install-data-am install-data install-am install \
+uninstall-am uninstall all-redirect all-am all installdirs \
+mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+
+
+clean-hook:
+	rm -rf $(LIBDIR)
+
+$(srcdir)/Klasses.jar:
+	$(MAKE) classes build-classes
+
+classes:
+	$(SHELL) ./rebuildLib
 
 build-classes:
-		rm -f $(srcdir)/$(CLASSFILE) $(LIBDIR)/$(CLASSFILE)
-		(cd $(LIBDIR) && $(ZIP) -r $(CLASSFILE) java kaffe)
-		mv $(LIBDIR)/$(CLASSFILE) $(srcdir)/$(CLASSFILE)
+	rm -f $(srcdir)/$(CLASSFILE) $(LIBDIR)/$(CLASSFILE)
+	(cd $(LIBDIR) && $(ZIP) -r $(CLASSFILE) java kaffe)
+	mv $(LIBDIR)/$(CLASSFILE) $(srcdir)/$(CLASSFILE)
 
-install-classes:
-		test -d $(INSTROOT)$(classdir) || $(MKDIR) $(INSTROOT)$(classdir)
-		$(INSTALL_DATA) $(srcdir)/$(CLASSFILE) $(INSTROOT)$(classdir)/$(CLASSFILE)
-
-derived-files:	classes build-classes
-
-# not yet implemented, but must stay to not break make depend
-depend:
-
-
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

@@ -20,6 +20,7 @@
 #include "errors.h"
 #include "thread.h"
 #include "md.h"
+#include "ltdl.h"
 
 extern char* engine_name;
 extern char* engine_version;
@@ -62,6 +63,8 @@ main(int argc, char* argv[])
 	vmargs.version = 0x00010001;
 
 	JNI_GetDefaultJavaVMInitArgs(&vmargs);
+
+	lt_dlpreopen_default();
 
 	cp = getenv(CLASSPATH1);
 	if (cp == 0) {

@@ -1,0 +1,12 @@
+# Native support for Management Java library
+#
+# Copyright (c) 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+native_LTLIBRARIES = libmanagement.la
+
+libmanagement_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER)
+libmanagement_la_SOURCES = Classpath.c

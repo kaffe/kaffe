@@ -1,5 +1,5 @@
 #
-# We do not support shared libraries yet
-#
-dynamic_libraries=no
-
+# Arm/netbsd1 configuration 
+#     
+host_cpu=arm
+host_os=netbsd1

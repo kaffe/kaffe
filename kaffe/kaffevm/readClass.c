@@ -2,7 +2,7 @@
  * readClass.c
  * Read in a new class.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -15,13 +15,17 @@
 #include "config-std.h"
 #include "config-io.h"
 #include "config-mem.h"
-#include <gtypes.h>			/* Ugh! */
-#include <file.h>			/* Ugh! */
-#include <access.h>			/* Ugh! */
+#include "gtypes.h"
+#include "file.h"
+#include "access.h"
 #include "object.h"
-#include <constants.h>			/* Ugh! */
-#include <readClassConfig.h>		/* Ugh! */
-#include <stringSupport.h>		/* Ugh! */
+#include "constants.h"
+#ifdef KAFFEH
+#include <readClassConfig.h>
+#else
+#include "readClassConfig.h"
+#endif
+#include "stringSupport.h"
 #include "readClass.h"
 
 Hjava_lang_Class*

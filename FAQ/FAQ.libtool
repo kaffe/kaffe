@@ -1,0 +1,47 @@
+Kaffe has adopted GNU libtool to ease the creation of shared
+libraries, where available, and static libraries, where shared
+libraries are unavailable or undesirable.  Whether a library is shared
+or static is totally transparent to the application that uses libtool
+and to the user.
+
+Any libtool library can be made static by adding -static to its link
+command.  You can do that manually by removing the .la file in the
+corresponding directory and running `make AM_CFLAGS=-static' within
+that directory, then running make in the top-level directory.
+
+In order to provide dynamic linking, or simulate it, Kaffe uses
+libltdl, a library that is part of libtool.  It currently supports the
+following dlopening mechanisms: dlopen, shl_load, GNU DLD and Windows'
+LoadLibrary.
+
+Additionally, it supports dlopening simulation for platforms that lack
+shared libraries (or have shared libraries disabled) through the
+dlpreopen mechanism, in which a symbol table is created when the
+program is linked and it -dlopens a set of libraries.  If any of these
+libraries is static, libtool will link the library into the program
+and add its symbols to the dlpreopening symbol table.  It's that
+simple.
+
+In order to implement this dlpreopening mechanism, libltdl needs some
+help from the main application.  Therefore, a call to
+lt_dlpreopen_default() was added to kaffe/kaffe/main.c.  In order to
+support dlopening simulation, any other application that links with
+libkaffevm should also be linked using libtool, and it should be
+created with the flag -export-dynamic, so that the symbol table is
+created.
+
+By default, on platforms that lack dlopening mechanisms, Kaffe will be
+linked with its own libraries only.  You may extend this list of
+libraries by setting the JAVA_LIBS flag to a list of *libtool* (.la)
+libraries.
+
+If the same symbol is defined in more than one library, it is possible
+that linking (either static or dynamic) fails.  If it does not fail,
+which symbol libltdl will select for a given name depends on the
+sequence of dlopening of the libraries, and the mechanism libltdl uses
+to dlopen them.
+
+
+You may notice that, on some platforms, libtool compiles each file
+that may become part of a library twice.  It does so because, if a
+library is linked statically,

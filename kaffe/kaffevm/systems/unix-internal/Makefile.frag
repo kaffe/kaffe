@@ -5,7 +5,3 @@
 #
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
-
-THREAD=\
-		internal$(OBJEXT) \
-		internalCalls$(OBJEXT)

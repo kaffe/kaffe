@@ -1,3 +1,37 @@
+Thu Jan  7 18:30:35 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* FAQ/FAQ.automake, FAQ/FAQ.libtool: some comments about the
+	adoption of automake and libtool
+	* */Makefile.in: converted to automake makefiles
+	* */Makefile.am: the converted files
+	* AUTHORS, INSTALL, missing, mkinstalldirs: new files, suggested
+ 	by automake; should we rename WHATSNEW to NEWS and license.terms
+ 	to COPYING?
+	* config.guess, config.sub: updated
+	* acconfig.h: used to build config/config.h.in
+	* acinclude.m4: copied from libtool's libtool.m4
+	* aclocal.m4: build from acinclude.m4
+	* ltconfig, ltmain.sh: copied from libtool
+	* config/regen-forward: script used to generate #include-style
+	pseudo-link files
+	* config/stamp-h1.in, include/stamp-h2.in: timestamp files for
+	config/config.h.in and include/jtypes.h.in, created by automake
+	* config/*/*/config.frag: removed all object and shared-library
+	related configurations; they're all left up to libtool now.
+	* */lib*.def: removed, libtool takes care of everything
+	* configure.in: major simplifications with the addition of libtool
+	* configure, config/config.h.in, include/java_lang_Thread.h: regen 
+	* libltdl: new directory, with libtool portable dlopening library
+	* kaffe/kaffe/main.c: added call to libltdl function to allow for
+	dlopening simulation in case of static linking
+	* kaffe/kaffevm/external.c: use libltdl for dynamic linking
+	* libraries/clib/native/Runtime.c: look for libtool archives
+	* kaffe/kaffevm/readClass.c: adapted to #include forwarder
+	* kaffe/scripts/kaffe.in: moved the Kaffe binary into libexec, to
+	avoid clashes with the script on MS-Windows
+	* test/regression/TestScript.in: may run before installation now
+	* test/regression/TestScriptThread.in: likewise
+	
 Thu Jan  7 01:47:59 1999  Raffaele Sena <raff@aromatic.com>,
 			  Dirk Grunwald <grunwald@pa.dec.com>
 	

@@ -1,7 +1,15 @@
 AC_INIT(kaffe)
+AM_INIT_AUTOMAKE(kaffe, 1.0b3)
 
 dnl Setup version number.
-KVER=1.00
+KVER=$VERSION
+
+dnl =========================================================================
+dnl Allow specification of header-file and library directories
+dnl -------------------------------------------------------------------------
+
+AC_ARG_WITH(includes,[  --with-includes=dirs     Search specified directories for header files], CPPFLAGS="$CPPFLAGS"`echo " $withval" | sed 's/ / -I/g'`)
+AC_ARG_WITH(libraries,[  --with-libraries=dirs   Search specified directories for libraries], LDFLAGS="$LDFLAGS"`echo " $withval" | sed 's/ / -L/g'`)
 
 dnl Find the compiler early on in case we need to override.
 AC_PROG_CC
@@ -13,6 +21,7 @@ fi
 
 dnl Find the machine type and setup the relevant links
 AC_CANONICAL_HOST
+AC_EXEEXT
 
 dnl =========================================================================
 dnl By default we use dynamic libraries for everything
@@ -21,6 +30,12 @@ dnl -------------------------------------------------------------------------
 dynamic_libraries=yes
 vm_dynamic_library=yes
 
+AM_PROG_LIBTOOL
+
+if test x"$ac_cv_sys_symbol_underscore" = x"yes"; then
+    AC_DEFINE(HAVE_UNDERSCORED_C_NAMES, 1, [Define if C symbol names start with underscore])
+fi
+
 dnl -------------------------------------------------------------------------
 
 dnl =========================================================================
@@ -28,11 +43,17 @@ dnl Force use of static libraries
 dnl -------------------------------------------------------------------------
 
 AC_ARG_WITH(staticlib,[  --with-staticlib        Force the use of static libraries rather than shared])
-if test "$with_staticlib" = "yes" ; then
+if test x"$with_staticlib" = x"yes" ; then
 	dynamic_libraries=no
+	if test x"${with_staticvm+set}" != x"set"; then
+		with_staticvm=yes
+	fi
 fi
 
-changequote(<<, >>)dnl
+AC_ARG_WITH(staticvm,[  --with-staticvm         Force the creation of a static virtual machine])
+if test x"$with_staticvm" = x"yes" ; then
+	vm_dynamic_library=no
+fi
 
 dnl =========================================================================
 dnl Look for the configuration information
@@ -58,38 +79,6 @@ dnl =========================================================================
 dnl Start of default configurations
 dnl -------------------------------------------------------------------------
 
-if test "$dynamic_libraries" = "no" ; then
-	KAFFEVMFLAGS="-DNO_SHARED_LIBRARIES"
-	LIBEXT=".a"
-fi
-if test "$OBJEXT" = "" ; then
-	OBJEXT=".o"
-fi
-if test "$LIBEXT" = "" ; then
-	LIBEXT=".a"
-fi
-if test "$SCREXT" = "" ; then
-	SCREXT=""
-fi
-if test "$LD" = "" ; then
-	LD=ld
-fi
-if test "$LINKLIB" = "" ; then
-	if test "$LIBEXT" = ".a" ; then
-		LINKLIB='$(AR) $(LIB) $(OBJECT)\
-		$(RANLIB) $(LIB)'
-	else
-		LINKLIB='$(LD) $(LDFLAGS) -o $(LIB) $(OBJECT) $(LDTAIL)'
-	fi
-fi
-
-if test "$VPATHSEP" = "" ; then
-	VPATHSEP=":"
-fi
-if test "$VPATHOPT" = "" ; then
-	VPATHOPT="VPATH"
-fi
-
 dnl What kind of system are we using?
 case $host_os in
 win32*)
@@ -102,14 +91,24 @@ dnl -------------------------------------------------------------------------
 dnl End of default configurations
 dnl =========================================================================
 
-changequote([, ])dnl
-
 dnl =========================================================================
-dnl Set the base set of link files - there may be more added later
+dnl This is a hack to ease the generation of forward-sources, i.e.,
+dnl sources that just #include others, because automake can't use
+dnl sources from other directories
 dnl -------------------------------------------------------------------------
 
-link_from="config/$host_cpu/$host_os/md.h config/$host_cpu/$host_os/md.c"
-link_to="config/md.h kaffe/kaffevm/md.c"
+AC_SUBST(REGEN_FORWARD)
+REGEN_FORWARD="\$(top_srcdir)/config/regen-forward"
+
+dnl =========================================================================
+dnl Set the base set of platform-dependent files 
+dnl One-liners with #include directives will be created in the Makefiles
+dnl -------------------------------------------------------------------------
+
+CONFIG_MD_H="\$(srcdir)/$host_cpu/$host_os/md.h"
+KAFFEVM_MD_C="\$(top_srcdir)/config/$host_cpu/$host_os/md.c"
+AC_SUBST(CONFIG_MD_H)
+AC_SUBST(KAFFEVM_MD_C)
 
 dnl =========================================================================
 
@@ -139,13 +138,13 @@ dnl -------------------------------------------------------------------------
 AC_ARG_WITH(engine,[  --with-engine=ENGINE    Force use of a specific execution engine])
 
 dnl Translate 'interpreter' to 'intrp'
-if test "$with_engine" = "interpreter" ; then
+if test x"$with_engine" = x"interpreter" ; then
 	with_engine=intrp
 fi
 
 dnl Save the requested engine and set the default to 'jit'
-want_engine=$with_engine
-if test "$with_engine" = "" ; then
+want_engine="$with_engine"
+if test x"${with_engine+set}" != x"set" ; then
 	with_engine="jit"
 fi
 
@@ -154,18 +153,32 @@ dnl Check for JIT support and add in the necessary configuration files
 dnl -------------------------------------------------------------------------
 
 if test -f $srcdir/config/$host_cpu/$host_os/${with_engine}-md.h ; then
-	link_from="$link_from config/$host_cpu/${with_engine}-$host_cpu.def config/$host_cpu/${with_engine}-icode.h config/$host_cpu/$host_os/${with_engine}-md.h"
-	link_to="$link_to kaffe/kaffevm/jit.def kaffe/kaffevm/icode.h config/jit-md.h"
+	HAVE_CONFIG_JIT_MD_H=1
+	CONFIG_JIT_MD_H="\$(top_srcdir)/config/$host_cpu/$host_os/$with_engine-md.h"
+	AC_SUBST(CONFIG_JIT_MD_H)
+	KAFFEVM_JIT_DEF="\$(top_srcdir)/config/$host_cpu/$with_engine-$host_cpu.def"
+	AC_SUBST(KAFFEVM_JIT_DEF)
+	KAFFEVM_ICODE_H="\$(top_srcdir)/config/$host_cpu/$with_engine-icode.h"
+	AC_SUBST(KAFFEVM_ICODE_H)
+	
 	jitsupport=yes
 else
+	HAVE_CONFIG_JIT_MD_H=0
 	with_engine="intrp"
+	jitsupport=
 fi
+AC_SUBST(HAVE_CONFIG_JIT_MD_H)
+
 dnl Make sure we support jit mode if requested.
-if test "$jitsupport" = "" && test "$want_engine" != "" && test "$want_engine" != "intrp" ; then
+if test "$jitsupport" = "" && test x"$want_engine" != x"" && test x"$want_engine" != x"intrp" ; then
 	AC_MSG_ERROR(Configuration $host_cpu-$host_os does not support $want_engine mode)
 fi
 AC_MSG_CHECKING(execution engine)
 AC_MSG_RESULT($with_engine)
+AM_CONDITIONAL(USE_JIT, test x"$with_engine" = x"jit")
+
+ENGINE_NAME="$with_engine"
+AC_SUBST(ENGINE_NAME)
 
 AC_SUBST_FILE(engine_frag)dnl
 engine_frag=$srcdir/kaffe/kaffevm/$with_engine/Makefile.frag
@@ -173,27 +186,15 @@ engine_frag=$srcdir/kaffe/kaffevm/$with_engine/Makefile.frag
 AC_CHECK_FUNCS(getpagesize)
 
 dnl =========================================================================
-
-AC_MSG_CHECKING(library type)
-if test "$dynamic_libraries" = "no" ; then
-	AC_MSG_RESULT(static)
-else
-	AC_MSG_RESULT(shared)
-fi
-
-dnl =========================================================================
 dnl Do we include our Sun compatibility scripts?
 dnl -------------------------------------------------------------------------
 
 AC_ARG_WITH(suncompat,[  --without-suncompat     Don't include Sun compatibility scripts])
 AC_MSG_CHECKING(sun compatibility mode)
-if test "$with_suncompat" = "" ; then
+if test x"${with_suncompat+set}" != x"set" ; then
 	with_suncompat=yes
 fi
-if test "$with_suncompat" = "yes" ; then
-	suncompatible="install-compat"
-	AC_SUBST(suncompatible)
-fi
+AM_CONDITIONAL(SUN_COMPAT, test x"$with_suncompat" = x"yes")
 AC_MSG_RESULT($with_suncompat)
 
 dnl =========================================================================
@@ -202,7 +203,7 @@ dnl -------------------------------------------------------------------------
 
 AC_ARG_WITH(threads,[  --with-threads=SYSTEM   Define which threading system to use])
 AC_MSG_CHECKING(thread system)
-if test "$with_threads" = "" ; then
+if test x"$with_threads" = x"" ; then
 	with_threads=unix-jthreads
 fi
 if test ! -d $srcdir/kaffe/kaffevm/systems/${with_threads} ; then
@@ -212,6 +213,8 @@ THREAD_SYSTEM=$with_threads
 AC_MSG_RESULT($THREAD_SYSTEM)
 AC_SUBST_FILE(threads_frag)dnl
 threads_frag=$srcdir/kaffe/kaffevm/systems/$with_threads/Makefile.frag
+AC_SUBST(THREAD_DIR)
+THREAD_DIR=systems/$with_threads
 
 dnl =========================================================================
 dnl Look for trampoline code if in JIT mode
@@ -219,8 +222,8 @@ dnl -------------------------------------------------------------------------
 if test "$with_engine" != "intrp" ; then
 	AC_MSG_CHECKING(for trampolines)
 	if test -f $srcdir/config/$host_cpu/trampolines.c ; then
-		link_from="$link_from config/$host_cpu/trampolines.c"
-		link_to="$link_to kaffe/kaffevm/trampolines.c"
+		KAFFEVM_TRAMPOLINES_C="\$(top_srcdir)/config/$host_cpu/trampolines.c"
+		AC_SUBST(KAFFEVM_TRAMPOLINES_C)
 		AC_MSG_RESULT(yes)
 	else
 		AC_MSG_ERROR(does not support trampolines - now mandatory)
@@ -231,82 +234,32 @@ dnl =========================================================================
 dnl Set install root directory which prefixes all install target dirs
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(installroot,[  --with-installroot=DIR  Install everything under DIR])
-INSTROOT="$with_installroot"
-
-dnl =========================================================================
-
-dnl =========================================================================
-dnl Setup for generating a depend make target
-dnl -------------------------------------------------------------------------
-
-AC_MSG_CHECKING(how to generate depend files)
-if test "$DEPTOOL" = ""; then
-	dnl This should just generate harmless
-	dnl .d files
-	DEPTOOL="true"
-	INC_DEPEND="# automatic dependency generation not enabled in configure"
-
-	dnl If DEPTOOL is undefined, we can use gcc,
-	dnl otherwise, I'm at a loss, as the switch is
-	dnl very compiler specific (if avail, at all.)
-        if test "$ac_cv_prog_gcc" = "yes" ; then
-		DEPTOOL="$CC -M"
-		INC_DEPEND="include .depend"
-	fi
+if test x"$with_installroot" != x""; then
+    AC_MSG_ERROR([--with-installroot is deprecated, use \`make install DESTDIR=...'])
 fi
-AC_MSG_RESULT($DEPTOOL)
+
+dnl =========================================================================
 
 dnl =========================================================================
 dnl Make the necessary substitutions
 dnl -------------------------------------------------------------------------
 
 AC_SUBST(KVER)
-AC_SUBST(LIBSHARE)
-AC_SUBST(PIC)
-AC_SUBST(PICVM)
-AC_SUBST(JAVA_LIBRARIES)
-AC_SUBST(NOSHAREDLIBS)
-AC_SUBST(LDFLAGS)
-AC_SUBST(KAFFELINK)
-AC_SUBST(LIBEXT)
-AC_SUBST(LIBVMEXT)
-AC_SUBST(OBJEXT)
-AC_SUBST(EXEEXT)
-AC_SUBST(SCREXT)
+AC_SUBST(JAVA_LIBS)
 AC_SUBST(with_engine)
 AC_SUBST(host_cpu)
 AC_SUBST(host_os)
-AC_SUBST(KAFFEFLAGS)
-AC_SUBST(KAFFEVMFLAGS)
-AC_SUBST(VPATHSEP)
-AC_SUBST(VPATHOPT)
-AC_SUBST(LINKLIB)
-AC_SUBST(LINKVMLIB)
-AC_SUBST(LD)
 AC_SUBST(THREAD_SYSTEM)
-AC_SUBST(DEPTOOL)
-AC_SUBST(INC_DEPEND)
-AC_DEFINE_UNQUOTED(LIBRARYSUFFIX, "$LIBEXT")
-AC_DEFINE_UNQUOTED(KAFFEVERSION, "$KVER")
+AC_DEFINE_UNQUOTED(KAFFEVERSION, "$KVER", [Kaffe version number])
 if test "$program_prefix" = "NONE" ; then
 	KPREFIX=""
 else
 	KPREFIX=$program_prefix
 fi
 AC_SUBST(KPREFIX)
-AC_SUBST(INSTROOT)
 KAFFE_ARCHOS="$host_cpu-$host_os"
-AC_DEFINE_UNQUOTED(ARCHOS, "$KAFFE_ARCHOS")
+AC_DEFINE_UNQUOTED(ARCHOS, "$KAFFE_ARCHOS", [Define the version we're compiling for])
 AC_SUBST(KAFFE_ARCHOS)
-
-dnl =========================================================================
-
-dnl =========================================================================
-dnl Make the links required
-dnl -------------------------------------------------------------------------
-
-AC_LINK_FILES($link_from, $link_to)
 
 dnl =========================================================================
 
@@ -316,14 +269,8 @@ dnl -------------------------------------------------------------------------
 
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
-AC_CHECK_PROG(AR, ar, ar cr)
-AC_CHECK_PROGS(MKDIR, mkdirs 'mkdir -p', mkdir -p)
-AC_CHECK_PROG(DLLTOOL, dlltool, dlltool)
 AC_CHECK_PROG(JIKES, jikes, jikes)
 dnl We also need to install scripts
-INSTALL_SCRIPT='${INSTALL} -m 755'
-AC_SUBST(INSTALL_SCRIPT)
 
 dnl If symlink is overridden then don't bother with the test.
 if test "$LN_S" = "" ; then
@@ -338,17 +285,6 @@ ln() {
 		ln $1 $2
 	fi
 }
-
-dnl If dlltool is found then we must generate and use the 'lib.exp' file.
-dnl  If not found then just use true to avoid the command erroring.
-
-if test "$DLLTOOL" != "" ; then
-	LDTAIL='lib.exp '$LDTAIL
-else
-	DLLTOOL="true"
-fi
-AC_SUBST(LDTAIL)
-dnl -------------------------------------------------------------------------
 
 dnl =========================================================================
 dnl Checks for types
@@ -375,7 +311,7 @@ main() { struct { char c; void *p; } t; FILE *f;
   fclose(f); exit (0); }],
 ac_cv_alignmentof_voidp=`cat conftestdata`, ac_cv_alignmentof_voidp=1,
 ac_cv_alignmentof_voidp=1))
-AC_DEFINE_UNQUOTED(ALIGNMENTOF_VOIDP,$ac_cv_alignmentof_voidp)
+AC_DEFINE_UNQUOTED(ALIGNMENTOF_VOIDP,$ac_cv_alignmentof_voidp, [How are pointers aligned])
 
 dnl -------------------------------------------------------------------------
 
@@ -385,15 +321,13 @@ AC_CHECK_TYPE(ssize_t,int)
 
 dnl -------------------------------------------------------------------------
 
-AC_DEFUN(AC_CHECK_LIBRARY,
-AC_CHECK_LIB($1,$2,
-  changequote(, )dnl
-  $3="-l$1 $$3";
-  LIBS="-l$1 $LIBS"
-  ac_tr_lib=HAVE_LIB`echo $1 | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
-changequote([, ])dnl
-  AC_DEFINE_UNQUOTED($ac_tr_lib)
-))
+AC_DEFUN(AC_CHECK_LIBRARY, [dnl
+KSAVE_LIBS="$LIBS"
+LIBS="$$3 $SAVE_LIBS"
+AC_CHECK_LIB($1,$2)
+$3=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+LIBS="$KSAVE_LIBS"
+])
 
 dnl =========================================================================
 dnl Checks for libraries
@@ -401,29 +335,18 @@ dnl -------------------------------------------------------------------------
 
 dnl Checks for standard libraries
 
-AC_CHECK_LIBRARY(c,printf,STD_LIBRARIES)
-AC_CHECK_LIBRARY(mw,_mwvalidcheckl,STD_LIBRARIES)
-AC_CHECK_LIBRARY(m,sin,STD_LIBRARIES)
-AC_CHECK_LIBRARY(gmp,mpz_abs,STD_LIBRARIES)
-AC_SUBST(STD_LIBRARIES)
+AC_CHECK_LIB(c,printf)
+AC_CHECK_LIB(mw,_mwvalidcheckl)
+AC_CHECK_LIB(m,sin)
 
 dnl Checks for libraries for vm library.
 dnl Include work around FreeBSD modulo bug.
 
-if test "$dynamic_libraries" = "yes" ; then
-	dnl Don't bother with dynamic loaders if we're using static linking
-	AC_CHECK_LIBRARY(dl,dlopen,VM_LIBRARIES)
-	if test "$ac_cv_lib_dl_dlopen" = "no" ; then
-		AC_CHECK_LIBRARY(dl,_dlopen,VM_LIBRARIES)
-		if test "$ac_cv_lib_dl__dlopen" = "no" ; then
-			AC_CHECK_LIBRARY(dld,dld_init,VM_LIBRARIES)
-		fi
-	fi
-fi
 if test "$host_os" = "freebsd2" -o "$host_os" = "netbsd1" ; then
-	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBRARIES)
+	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBS)
 fi
-AC_SUBST(VM_LIBRARIES)
+
+AC_SUBST(VM_LIBS)
 
 dnl Check libraries for native library.
 dnl None required.
@@ -431,62 +354,50 @@ dnl None required.
 dnl Check for libraries for net library.
 AC_CHECK_FUNC(gethostname)
 if test $ac_cv_func_gethostname = no; then
-      AC_CHECK_LIBRARY(nsl, gethostname, NET_LIBRARIES)
+      AC_CHECK_LIBRARY(nsl, gethostname, NET_LIBS)
 fi
 AC_CHECK_FUNC(gethostbyname)
 if test $ac_cv_func_gethostbyname = no; then
-      AC_CHECK_LIBRARY(nsl, gethostbyname, NET_LIBRARIES)
+      AC_CHECK_LIBRARY(nsl, gethostbyname, NET_LIBS)
 fi
 AC_CHECK_FUNC(connect)
 if test $ac_cv_func_connect = no; then
-  AC_CHECK_LIBRARY(socket, connect, NET_LIBRARIES)
+  AC_CHECK_LIBRARY(socket, connect, NET_LIBS)
 fi
-AC_SUBST(NET_LIBRARIES)
+AC_SUBST(NET_LIBS)
 
 dnl Check for libraries for zip library.
-AC_CHECK_LIBRARY(z,deflate,ZIP_LIBRARIES)
-AC_SUBST(ZIP_LIBRARIES)
+AC_CHECK_LIBRARY(z,deflate,ZIP_LIBS)
+AC_SUBST(ZIP_LIBS)
 
 dnl Check for libraries for math library.
-AC_CHECK_LIBRARY(gmp,mpz_add,MATH_LIBRARIES)
-AC_SUBST(MATH_LIBRARIES)
+AC_CHECK_LIBRARY(gmp,mpz_add,MATH_LIBS)
+AC_SUBST(MATH_LIBS)
 
 dnl Checks for libraries for X related libraries.
-AC_PATH_X
-if test "$have_x" = "yes" ; then
-	AC_DEFINE(HAVE_X)
-	if test "${x_libraries}" != NONE && test -n "${x_libraries}"; then
-		X_LIBRARIES=-L`echo ${x_libraries} | sed -e "s/:/ -L/g"`
-	fi
-	X_LIBRARIES="$X_LIBRARIES -lX11 -L/usr/local/lib"
-	if test "${x_includes}" != NONE && test -n "${x_includes}"; then
-		X_INCLUDES=-I`echo ${x_includes} | sed -e "s/:/ -I/g"`
-	fi
-fi
-AC_SUBST(X_INCLUDES)
-AC_SUBST(X_LIBRARIES)
-AC_CHECK_LIBRARY(ipc,shmat,X_LIBRARIES)
+AC_PATH_XTRA
+AC_CHECK_LIBRARY(ipc,shmat,X_LIBS)
 
 OLIBS=$LIBS
-LIBS="$LIBS $X_LIBRARIES"
-AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBRARIES)
-AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBRARIES)
-AC_CHECK_LIBRARY(gif,DGifOpenFileHandle,GIF_LIBRARIES)
+LIBS="$LIBS $X_LIBS"
+AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
+AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
+AC_CHECK_LIBRARY(gif,DGifOpenFileHandle,GIF_LIBS)
 LIBS=$OLIBS
 dnl If libpng is included, we also need libz - if we don't have it then
 dnl we can't include png support.
-if test "$PNG_LIBRARIES" != "" ; then
-	if test "$ZIP_LIBRARIES" != "" ; then
-		PNG_LIBRARIES="$PNG_LIBRARIES $ZIP_LIBRARIES"
+if test "$PNG_LIBS" != "" ; then
+	if test "$ZIP_LIBS" != "" ; then
+		PNG_LIBS="$PNG_LIBS $ZIP_LIBS"
 	else
-		PNG_LIBRARIES=""
+		PNG_LIBS=""
 	fi
 fi
-AC_SUBST(JPEG_LIBRARIES)
-AC_SUBST(PNG_LIBRARIES)
-AC_SUBST(GIF_LIBRARIES)
-AWTLIB="$X_LIBRARIES $JPEG_LIBRARIES $PNG_LIBRARIES $GIF_LIBRARIES"
-AC_SUBST(AWTLIB)
+AC_SUBST(JPEG_LIBS)
+AC_SUBST(PNG_LIBS)
+AC_SUBST(GIF_LIBS)
+AWT_LIBS="$X_LIBS $JPEG_LIBS $PNG_LIBS $GIF_LIBS"
+AC_SUBST(AWT_LIBS)
 
 dnl -------------------------------------------------------------------------
 
@@ -510,10 +421,10 @@ dnl -------------------------------------------------------------------------
 AC_ARG_WITH(timing,[  --with-timing              Time vm execution])
 
 if test "$with_timing" = "yes" ; then
-	if test have_rusage = "no" ; then
+	if test $have_rusage = "no" ; then
 		echo "Can't build with timing but no rusage"
 	else
-		AC_DEFINE(TIMING)
+		AC_DEFINE(TIMING, 1, [Do we time various pieces of the vm?])
 	fi
 fi
 
@@ -541,7 +452,7 @@ AC_CACHE_CHECK([for struct sigcontext],
 [struct sigcontext t;],
   ac_cv_struct_sigcontext=yes, ac_cv_struct_sigcontext=no)])
 if test $ac_cv_struct_sigcontext = yes; then
-  AC_DEFINE(HAVE_STRUCT_SIGCONTEXT)
+  AC_DEFINE(HAVE_STRUCT_SIGCONTEXT, 1, [Do we have sigcontext])
 fi
 
 dnl Check for struct sigcontext_struct.
@@ -562,7 +473,7 @@ AC_CACHE_CHECK([for struct sigcontext_struct (with asm/sigcontext.h)],
   ac_cv_struct_sigcontext_struct_with=yes, ac_cv_struct_sigcontext_struct_with=no)])
 
 if test $ac_cv_struct_sigcontext_struct = yes -o $ac_cv_struct_sigcontext_struct_with = yes; then
-  AC_DEFINE(HAVE_STRUCT_SIGCONTEXT_STRUCT)
+  AC_DEFINE(HAVE_STRUCT_SIGCONTEXT_STRUCT, 1, [Do we have sigcontext_struct])
 fi
 
 dnl -------------------------------------------------------------------------
@@ -585,35 +496,8 @@ AC_CHECK_FUNCS(sigprocmask sigsetmask sigemptyset sigaddset signal sigaction)
 AC_CHECK_FUNCS(sbrk valloc memalign mallopt)
 AC_CHECK_FUNCS(mprotect madvise)
 AC_CHECK_FUNCS(waitpid kill fork execve execvp)
-AC_CHECK_FUNCS(rld_load shl_load LoadLibrary dld_link)
 AC_CHECK_FUNCS(sync fsync)
 AC_CHECK_FUNCS(atexit on_exit vsnprintf snprintf)
-
-dnl Some systems must include dlfcn to get these right.
-AC_CACHE_CHECK([for dlopen], ac_cv_func_dlopen,
-[AC_TRY_LINK([#ifdef HAVE_DLFCN_H
-#include <dlfcn.h>
-#else
-char dlopen();
-#endif], [dlopen(0, 0)],
-ac_cv_func_dlopen=yes, ac_cv_func_dlopen=no)
-])
-if test "$ac_cv_func_dlopen" = "yes" ; then
-  AC_DEFINE(HAVE_DLOPEN)
-fi
-
-AC_CACHE_CHECK([for dlerror], ac_cv_func_dlerror,
-[AC_TRY_LINK([#ifdef HAVE_DLFCN_H
-#include <dlfcn.h>
-#else
-char dlerror();
-#endif], [dlerror()],
-  ac_cv_func_dlerror=yes, ac_cv_func_dlerror=no)
-])
-if test "$ac_cv_func_dlerror" = "yes" ; then
-  AC_DEFINE(HAVE_DLERROR)
-fi
-
 
 if test "$host_cpu" = "alpha" ; then
   AC_CACHE_CHECK([for alpha support of amask instruction],
@@ -622,7 +506,7 @@ if test "$host_cpu" = "alpha" ; then
     ac_cv_alpha_asm_amask=yes, ac_cv_alpha_asm_amask=no)
   ])
   if test "$ac_cv_alpha_asm_amask" = "yes" ; then
-    AC_DEFINE(HAVE_ALPHA_ASM_AMASK)
+    AC_DEFINE(HAVE_ALPHA_ASM_AMASK, 1, [Do we have amask instruction on alpha])
   fi
 fi
 
@@ -645,114 +529,60 @@ AC_CACHE_CHECK([for declaration of select],
 #include <sys/select.h>
 #endif
 ], [ void *foo = select; ],
-  ac_cv_declared_select=yes; AC_DEFINE(HAVE_DECLARED_SELECT), ac_cv_declared_select=no)
+  ac_cv_declared_select=yes; AC_DEFINE(HAVE_DECLARED_SELECT, 1, [Is function select declared]), ac_cv_declared_select=no)
 ])
 
 dnl -------------------------------------------------------------------------
 
-dnl =========================================================================
-dnl Some dynamic library need an underscore on the loading name, some don't
-dnl -------------------------------------------------------------------------
-
-AC_CACHE_CHECK(for underscore in dlsym, ac_cv_underscore,
-echo "#define _LIBC_ \"`ls /lib/lib*c.so* /usr/lib/lib*c.so.* 2>/dev/null | head -1`\"" >> confdefs.h
-AC_TRY_RUN(main()
-{[void* lib = (void*)dlopen(_LIBC_);
-  if (dlsym(lib, "_printf") != 0) { exit(0); } else { exit(1); } }],
-ac_cv_underscore=yes, ac_cv_underscore=no, ac_cv_underscore=cross))
-if test "$ac_cv_underscore" = "yes"; then
-  AC_DEFINE(HAVE_DYN_UNDERSCORE)
-fi
-
-dnl =========================================================================
-dnl Some C compilers add '_' to C names.
-dnl -------------------------------------------------------------------------
-AC_CACHE_CHECK(for underscore in C assembly names, ac_cv_underscore_c_names,
-AC_TRY_LINK([extern int foo_alias();asm("\n_foo_alias:");void foo() {};],
-	[foo_alias();], 
-ac_cv_underscore_c_names=yes, ac_cv_underscore_c_names=no))
-if test "$ac_cv_underscore_c_names" = "yes"; then
-  AC_DEFINE(HAVE_UNDERSCORED_C_NAMES)
-fi
-
-dnl -------------------------------------------------------------------------
-
-changequote(<<, >>)dnl
-subdirs="config include libraries kaffe test"
-make_output="\
-Makefile \
-config/Makefile include/Makefile kaffe/Makefile test/Makefile \
-libraries/Makefile \
-kaffe/kaffevm/Makefile kaffe/kaffe/Makefile kaffe/kaffeh/Makefile \
-kaffe/man/Makefile kaffe/scripts/Makefile \
-"
-
-dnl Default packages
-make_output="$make_output \
-libraries/javalib/Makefile \
-libraries/clib/Makefile \
-libraries/clib/native/Makefile \
-libraries/clib/io/Makefile \
-libraries/clib/net/Makefile \
-libraries/clib/zip/Makefile \
-libraries/clib/math/Makefile \
-libraries/clib/management/Makefile \
-"
-JAVA_LIBRARIES=" \
-../../libraries/clib/native/libnative$LIBEXT \
-../../libraries/clib/net/libnet$LIBEXT \
-../../libraries/clib/io/libio$LIBEXT \
-../../libraries/clib/zip/libzip$LIBEXT \
-../../libraries/clib/math/libmath$LIBEXT \
-../../libraries/clib/management/libmanagement$LIBEXT \
-"
-
 dnl If we have X then include AWT support.
 if test "$have_x" = "yes" ; then
-make_output="$make_output \
-libraries/clib/awt/Makefile \
-"
-JAVA_LIBRARIES="$JAVA_LIBRARIES \
-../../libraries/clib/awt/libawt$LIBEXT \
-"
+  AWT_DIR=X
 fi
 
-changequote([, ])dnl
-
-dnl If we have share libraries, cancel all the non-shared ones.
-dnl  Otherwise, add on the machine again to help linking.
-if test "$dynamic_libraries" = "yes" ; then
-	NOSHAREDLIBS="-L../kaffevm -lkaffevm $VM_LIBRARIES $STD_LIBRARIES"
-	KAFFE_LIBDEP=""
+if test x"${AWT_DIR+set}" = x"set"; then
+  AWT_LIB="\$(top_builddir)/libraries/clib/awt/$AWT_DIR/libawt.la"
 else
-	NOSHAREDLIBS="../kaffevm/libkaffevm$LIBEXT $VM_LIBRARIES $JAVA_LIBRARIES $STD_LIBRARIES $ZIP_LIBRARIES $NET_LIBRARIES $X_LIBRARIES $AWTLIB"
-	KAFFE_LIBDEP="$KAFFE_LIBDEP ../kaffevm/libkaffevm$LIBEXT $JAVA_LIBRARIES"
-	PIC=""
-	PICVM=""
-	LIBSHARE=""
+  AWT_DIR=
+  AWT_LIB=
 fi
 
-dnl If the vm is to be static but everything else isn't, set it up.
-if test "$vm_dynamic_library" = "no" -a "$dynamic_libraries" = "yes"; then
-	LINKVMLIB='ld -r -o $(LIB) $(OBJECT)'
-	PICVM=""
-	LIBVMEXT=.o
-	NOSHAREDLIBS="../kaffevm/libkaffevm.o $VM_LIBRARIES $STD_LIBRARIES"
-	KAFFE_LIBDEP="$KAFFE_LIBDEP ../kaffevm/libkaffevm.o"
+AC_SUBST(AWT_DIR)
+
+JAVA_LIBS=" \
+$JAVA_LIBS \
+\$(top_builddir)/libraries/clib/native/libnative.la \
+\$(top_builddir)/libraries/clib/net/libnet.la \
+\$(top_builddir)/libraries/clib/io/libio.la \
+\$(top_builddir)/libraries/clib/zip/libzip.la \
+\$(top_builddir)/libraries/clib/math/libmath.la \
+\$(top_builddir)/libraries/clib/management/libmanagement.la \
+$AWT_LIB \
+"
+
+if test "$dynamic_libraries" = no; then
+	KLIBFLAGS=-static
 else
-	LINKVMLIB=$LINKLIB
-	PICVM=$PIC
-	LIBVMEXT=$LIBEXT
+	KLIBFLAGS=
 fi
-dnl If the vm is static or all libraries are static then make sure we set
-dnl the no-share-vmlibrary flag.
-if test "$vm_dynamic_library" = "no" -o "$dynamic_libraries" = "no"; then
-	KAFFEVMFLAGS="$KAFFEVMFLAGS -DNO_SHARED_VMLIBRARY"
-fi
+AC_SUBST(KLIBFLAGS)
 
-AC_SUBST(subdirs)
-AC_SUBST(packages)
-AC_SUBST(KAFFE_LIBDEP)
+AC_SUBST(KLIBFLAGS)
+if test "$vm_dynamic_library" = no; then
+	KVMLIBFLAGS=-static
+else
+	KVMLIBFLAGS=
+fi
+AC_SUBST(KVMLIBFLAGS)
+
+dnl =========================================================================
+dnl Whenever we prepare KAFFEH for cross builds, this should be fixed
+dnl -------------------------------------------------------------------------
+
+KAFFEH_FOR_HOST="\$(top_builddir)/kaffe/kaffeh/kaffeh\$(EXEEXT)"
+MAKE_KAFFEH_FOR_HOST="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE)"
+
+AC_SUBST(KAFFEH_FOR_HOST)
+AC_SUBST(MAKE_KAFFEH_FOR_HOST)
 
 dnl =========================================================================
 dnl Define directory to put native library support
@@ -764,39 +594,21 @@ test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
 nativedir=$libdir/kaffe
 AC_SUBST(nativedir)
 
-dnl A few extra files to process.
-output="$make_output \
-kaffe/man/kaffe.1 \
-libraries/javalib/rebuildLib \
-kaffe/scripts/install-jar \
-kaffe/scripts/kaffe \
-kaffe/scripts/javac \
-kaffe/scripts/javakey \
-kaffe/scripts/jar \
-kaffe/scripts/javap \
-kaffe/scripts/jdb \
-kaffe/scripts/pizza \
-kaffe/scripts/javadoc \
-kaffe/scripts/pizzadoc \
-kaffe/scripts/appletviewer \
-kaffe/scripts/rmic \
-kaffe/scripts/rmiregistry \
-kaffe/scripts/serialver \
-kaffe/scripts/native2ascii \
-kaffe/scripts/compat/java \
-kaffe/scripts/compat/javac \
-kaffe/scripts/compat/appletviewer \
-kaffe/scripts/compat/javadoc \
-test/regression/TestScript \
-test/regression/TestScriptThread \
-"
-
 dnl =========================================================================
-dnl Define default classpath (not needed), kaffehome and libraryhome.
+dnl Define kaffehome.
 dnl -------------------------------------------------------------------------
 
-kaffehome=`eval echo $datadir`/kaffe
-AC_DEFINE_UNQUOTED(DEFAULT_KAFFEHOME, "$kaffehome")
+classdir=`eval echo $datadir`/kaffe
+AC_DEFINE_UNQUOTED(DEFAULT_KAFFEHOME, "$classdir", [Define default KAFFEHOME])
+AC_SUBST(classdir)
+
+dnl -------------------------------------------------------------------------
+
+dnl =========================================================================
+dnl Extract path and dir separator information from paths.h
+dnl -------------------------------------------------------------------------
+
+AC_PROG_CPP
 
 AC_CACHE_CHECK([for path separator],ac_cv_kaffe_pathsep,
 [	rm -f conftest.c
@@ -818,39 +630,54 @@ AC_CACHE_CHECK([for directory separator],ac_cv_kaffe_dirsep,
 DIRSEP=$ac_cv_kaffe_dirsep
 AC_SUBST(DIRSEP)
 
-AC_CONFIG_HEADER(config/config.h include/jtypes.h)
-AC_OUTPUT($output)
+dnl These are not to be used during configuration, only during build.
+CPPFLAGS="$CPPFLAGS -DKVER='\"\$(KVER)\"' -I\$(top_srcdir)/config -I\$(top_srcdir)/include"
 
-dnl =========================================================================
-dnl Create empty .depend files to ensure that make works even 
-dnl when the depend target is not executed.
-dnl -------------------------------------------------------------------------
-
-changequote(<<, >>)dnl
-for makefile in $make_output
-do
-	makepath=`echo "$makefile" | sed 's,[^/]*$,,'`
-	dependfile=$makepath.depend
-	echo creating $dependfile
-	touch $dependfile
-done
-changequote([, ])dnl
-
-dnl =========================================================================
-dnl Generate example environment
-dnl -------------------------------------------------------------------------
-
-libdir=`eval echo $libdir` ; libdir=`eval echo $libdir`
-bindir=`eval echo $bindir` ; bindir=`eval echo $bindir`
-datadir=`eval echo $datadir`; nativedir=`eval echo $nativedir`
-
-cp /dev/null ENVIRONMENT
-if test "$dynamic_libraries" = "yes" ; then
-	echo LD_LIBRARY_PATH=$libdir:\$LD_LIBRARY_PATH >> ENVIRONMENT
-	echo KAFFELIBRARYPATH=$nativedir:\$LD_LIBRARY_PATH >> ENVIRONMENT
-	echo export LD_LIBRARY_PATH KAFFELIBRARYPATH >> ENVIRONMENT
-fi
-echo PATH=$bindir:\$PATH >> ENVIRONMENT
-echo export PATH >> ENVIRONMENT
-
-dnl -------------------------------------------------------------------------
+AC_CONFIG_SUBDIRS(libltdl)
+AM_CONFIG_HEADER(config/config.h include/jtypes.h)
+AC_OUTPUT(Makefile \
+config/Makefile include/Makefile kaffe/Makefile 
+libraries/Makefile kaffe/kaffevm/Makefile \
+kaffe/kaffevm/intrp/Makefile kaffe/kaffevm/jit/Makefile \
+kaffe/kaffevm/systems/Makefile \
+kaffe/kaffevm/systems/unix-internal/Makefile \
+kaffe/kaffevm/systems/unix-jthreads/Makefile \
+kaffe/kaffe/Makefile kaffe/kaffeh/Makefile \
+kaffe/man/Makefile kaffe/scripts/Makefile \
+kaffe/scripts/bat/Makefile kaffe/scripts/compat/Makefile \
+libraries/javalib/Makefile \
+libraries/clib/Makefile \
+libraries/clib/native/Makefile \
+libraries/clib/io/Makefile \
+libraries/clib/net/Makefile \
+libraries/clib/zip/Makefile \
+libraries/clib/math/Makefile \
+libraries/clib/management/Makefile \
+libraries/clib/awt/Makefile \
+libraries/clib/awt/X/Makefile \
+kaffe/man/kaffe.1 \
+libraries/javalib/rebuildLib \
+kaffe/scripts/install-jar \
+kaffe/scripts/kaffe \
+kaffe/scripts/javac \
+kaffe/scripts/javakey \
+kaffe/scripts/jar \
+kaffe/scripts/javap \
+kaffe/scripts/jdb \
+kaffe/scripts/pizza \
+kaffe/scripts/javadoc \
+kaffe/scripts/pizzadoc \
+kaffe/scripts/appletviewer \
+kaffe/scripts/rmic \
+kaffe/scripts/rmiregistry \
+kaffe/scripts/serialver \
+kaffe/scripts/native2ascii \
+kaffe/scripts/compat/java \
+kaffe/scripts/compat/javac \
+kaffe/scripts/compat/appletviewer \
+kaffe/scripts/compat/javadoc \
+test/Makefile \
+test/regression/Makefile \
+test/regression/TestScript \
+test/regression/TestScriptThread \
+)

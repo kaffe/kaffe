@@ -3,9 +3,6 @@
 #
 host_cpu=m68k
 host_os=sunos4
-PIC=-fPIC
-LIBSHARE=-Bdynamic
-LIBEXT=.so
 if [ "$cross_compiling" = yes ]; then
 # if we use cross environment, following values may not be detected.
   ac_cv_alignmentof_voidp=${ac_cv_alignmentof_voidp='2'}

@@ -1,63 +1,398 @@
+# Makefile.in generated automatically by automake 1.3e from Makefile.am
+
+# Copyright (C) 1994, 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
 # Makefile.in for kaffe - a Java(tm) compatible virtual machine wrapper.
 #
-# Copyright (c) 1996, 1997
+# Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-@VPATHOPT@=	@srcdir@
-srcdir=		@srcdir@
-prefix=		@prefix@
-exec_prefix=	@exec_prefix@
-bindir=		@bindir@
-libdir=         @libdir@
-INSTROOT=	@INSTROOT@
-INSTALL=	@INSTALL@
-INSTALL_PROGRAM=@INSTALL_PROGRAM@
-MKDIR=		@MKDIR@
-CC=		@CC@
-DEPTOOL=	@DEPTOOL@
-INCLUDES=	-I. -I$(srcdir)/../kaffevm -I../../config -I$(srcdir)/../../config -I../../include -I$(srcdir)/../../include
-CFLAGS=		@CFLAGS@
-LDFLAGS=	@KAFFELINK@ @LDFLAGS@
-ALL_CFLAGS=	$(CFLAGS) @KAFFEFLAGS@ $(INCLUDES) $(EXTRA_CFLAGS)
-LIBS=		@NOSHAREDLIBS@
-OBJEXT=		@OBJEXT@
-EXEEXT=		@EXEEXT@
 
-OBJECT=		main$(OBJEXT)
-DEPENDS=	$(OBJECT:@OBJEXT@=.d)
+SHELL = @SHELL@
 
-all:		Kaffe$(EXEEXT)
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
 
-Kaffe$(EXEEXT):	$(OBJECT) @KAFFE_LIBDEP@
-		$(CC) $(ALL_CFLAGS) $(LDFLAGS) -o Kaffe$(EXEEXT) $(OBJECT) $(LIBS)
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
 
-.c$(OBJEXT):
-		$(CC) $(ALL_CFLAGS) -c $<
+DESTDIR =
 
-clean:
-		rm -f $(LIB) Kaffe$(EXEEXT) Kaffe.core $(OBJECT)
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
 
-distclean:	clean
-		rm -f $(DEPENDS)
-		rm -f Makefile
-		rm -f .depend
+top_builddir = ../..
 
-install:
-		test -d $(INSTROOT)$(bindir) || $(MKDIR) $(INSTROOT)$(bindir)
-		$(INSTALL_PROGRAM) Kaffe$(EXEEXT) $(INSTROOT)$(bindir)/Kaffe$(EXEEXT)
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
 
-derived-files:
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
 
-.SUFFIXES:	.d
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+AS = @AS@
+AWT_DIR = @AWT_DIR@
+AWT_LIBS = @AWT_LIBS@
+CC = @CC@
+CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
+CONFIG_MD_H = @CONFIG_MD_H@
+CPP = @CPP@
+DIRSEP = @DIRSEP@
+DLLTOOL = @DLLTOOL@
+ENGINE_NAME = @ENGINE_NAME@
+EXEEXT = @EXEEXT@
+GIF_LIBS = @GIF_LIBS@
+HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
+JAVA_LIBS = @JAVA_LIBS@
+JIKES = @JIKES@
+JPEG_LIBS = @JPEG_LIBS@
+KAFFEH_FOR_HOST = @KAFFEH_FOR_HOST@
+KAFFEVM_ICODE_H = @KAFFEVM_ICODE_H@
+KAFFEVM_JIT_DEF = @KAFFEVM_JIT_DEF@
+KAFFEVM_MD_C = @KAFFEVM_MD_C@
+KAFFEVM_TRAMPOLINES_C = @KAFFEVM_TRAMPOLINES_C@
+KAFFE_ARCHOS = @KAFFE_ARCHOS@
+KLIBFLAGS = @KLIBFLAGS@
+KPREFIX = @KPREFIX@
+KVER = @KVER@
+KVMLIBFLAGS = @KVMLIBFLAGS@
+LD = @LD@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+MAKE_KAFFEH_FOR_HOST = @MAKE_KAFFEH_FOR_HOST@
+MATH_LIBS = @MATH_LIBS@
+NET_LIBS = @NET_LIBS@
+NM = @NM@
+PACKAGE = @PACKAGE@
+PATHSEP = @PATHSEP@
+PNG_LIBS = @PNG_LIBS@
+RANLIB = @RANLIB@
+REGEN_FORWARD = @REGEN_FORWARD@
+THREAD_DIR = @THREAD_DIR@
+THREAD_SYSTEM = @THREAD_SYSTEM@
+USE_SYMBOL_UNDERSCORE = @USE_SYMBOL_UNDERSCORE@
+VERSION = @VERSION@
+VM_LIBS = @VM_LIBS@
+ZIP_LIBS = @ZIP_LIBS@
+classdir = @classdir@
+host_cpu = @host_cpu@
+host_os = @host_os@
+nativedir = @nativedir@
+with_engine = @with_engine@
 
-.c.d:
-		$(DEPTOOL) $(ALL_CFLAGS) $< > $@
+libexec_PROGRAMS = Kaffe
 
-depend:	$(DEPENDS)
-		rm -f .depend
-		cat $(DEPENDS) > .depend
+INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl
 
-@INC_DEPEND@
+Kaffe_SOURCES = main.c
+
+Kaffe_LDFLAGS = $(LDFLAGS) -export-dynamic 	`for lib in $(JAVA_LIBS); do echo -dlopen $$lib; done`
+
+
+Kaffe_LDADD = ../kaffevm/libkaffevm.la
+
+Kaffe_DEPENDENCIES = $(JAVA_LIBS) $(Kaffe_LDADD)
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
+CONFIG_CLEAN_FILES = 
+libexec_PROGRAMS =  Kaffe$(EXEEXT)
+PROGRAMS =  $(libexec_PROGRAMS)
+
+
+DEFS = @DEFS@ -I. -I$(srcdir) -I../../config -I../../include
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+X_CFLAGS = @X_CFLAGS@
+X_LIBS = @X_LIBS@
+X_EXTRA_LIBS = @X_EXTRA_LIBS@
+X_PRE_LIBS = @X_PRE_LIBS@
+Kaffe_OBJECTS =  main.o
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+DIST_COMMON =  Makefile.am Makefile.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = tar
+GZIP_ENV = --best
+DEP_FILES =  .deps/main.P
+SOURCES = $(Kaffe_SOURCES)
+OBJECTS = $(Kaffe_OBJECTS)
+
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .lo .o .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu kaffe/kaffe/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+mostlyclean-libexecPROGRAMS:
+
+clean-libexecPROGRAMS:
+	-test -z "$(libexec_PROGRAMS)" || rm -f $(libexec_PROGRAMS)
+
+distclean-libexecPROGRAMS:
+
+maintainer-clean-libexecPROGRAMS:
+
+install-libexecPROGRAMS: $(libexec_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(libexecdir)
+	@list='$(libexec_PROGRAMS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(libexecdir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(libexecdir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	  else :; fi; \
+	done
+
+uninstall-libexecPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(libexec_PROGRAMS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(libexecdir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	done
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+Kaffe$(EXEEXT): $(Kaffe_OBJECTS) $(Kaffe_DEPENDENCIES)
+	@rm -f Kaffe$(EXEEXT)
+	$(LINK) $(Kaffe_LDFLAGS) $(Kaffe_OBJECTS) $(Kaffe_LDADD) $(LIBS)
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = kaffe/kaffe
+
+distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu kaffe/kaffe/Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file; \
+	  fi; \
+	done
+
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+
+maintainer-clean-depend:
+	-rm -rf .deps
+
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
+
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
+info-am:
+info: info-am
+dvi-am:
+dvi: dvi-am
+check-am: all-am
+check: check-am
+installcheck-am:
+installcheck: installcheck-am
+install-exec-am: install-libexecPROGRAMS
+install-exec: install-exec-am
+
+install-data-am:
+install-data: install-data-am
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-am
+uninstall-am: uninstall-libexecPROGRAMS
+uninstall: uninstall-am
+all-am: Makefile $(PROGRAMS)
+all-redirect: all-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+installdirs:
+	$(mkinstalldirs)  $(DESTDIR)$(libexecdir)
+
+
+mostlyclean-generic:
+
+clean-generic:
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+mostlyclean-am:  mostlyclean-libexecPROGRAMS mostlyclean-compile \
+		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
+		mostlyclean-generic
+
+mostlyclean: mostlyclean-am
+
+clean-am:  clean-libexecPROGRAMS clean-compile clean-libtool clean-tags \
+		clean-depend clean-generic mostlyclean-am
+
+clean: clean-am
+
+distclean-am:  distclean-libexecPROGRAMS distclean-compile \
+		distclean-libtool distclean-tags distclean-depend \
+		distclean-generic clean-am
+	-rm -f libtool
+
+distclean: distclean-am
+
+maintainer-clean-am:  maintainer-clean-libexecPROGRAMS \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-tags maintainer-clean-depend \
+		maintainer-clean-generic distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-am
+
+.PHONY: mostlyclean-libexecPROGRAMS distclean-libexecPROGRAMS \
+clean-libexecPROGRAMS maintainer-clean-libexecPROGRAMS \
+uninstall-libexecPROGRAMS install-libexecPROGRAMS mostlyclean-compile \
+distclean-compile clean-compile maintainer-clean-compile \
+mostlyclean-libtool distclean-libtool clean-libtool \
+maintainer-clean-libtool tags mostlyclean-tags distclean-tags \
+clean-tags maintainer-clean-tags distdir mostlyclean-depend \
+distclean-depend clean-depend maintainer-clean-depend info-am info \
+dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
+install-exec install-data-am install-data install-am install \
+uninstall-am uninstall all-redirect all-am all installdirs \
+mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

@@ -4,36 +4,22 @@
 # be built up as we add more test and so, hopefully, avoid re-releasing
 # bugs which have been fixed.
 #
-# Copyright (c) 1996, 1997
+# Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-RESULT=/tmp/kaffer.$$
-CHECK=/tmp/kaffec.$$
-JAVA=kaffe
-JIKES=@JIKES@
-SRCDIR=@srcdir@
+: ${RESULT=/tmp/kaffer.$$} ${CHECK=/tmp/kaffec.$$}
+: ${JAVA=kaffe} ${SRCDIR=@srcdir@} ${PATHSEP='@PATHSEP@'}
+test -z "@JIKES@" || : ${JIKES="@JIKES@"}
+: ${JAVAC=${JIKES-"$JAVA pizza.compiler.Main"}" -classpath .$PATHSEP$SRCDIR$PATHSEP$SRCDIR/../../libraries/javalib/Klasses.jar$PATHSEP$CLASSPATH"}
 overallerror=0
 error=0
-unset KAFFE_DEBUG
-unset CLASSPATH
 
-# If we have a destination directory, clean it and make sure we use it
-# for later compilations.
-if test "$DESTDIR" != "" ; then
-	rm -f $DESTDIR/*.class $DESTDIR/*.fail
-else
-	DESTDIR="."
-fi
+cd `echo $0 | sed -e 's,^[^/]*$,.,' -e 's,/[^/]*$,,'`
 
-# Use jikes if available
-if test "$JIKES" = "" ; then
-	JAVAC="javac"
-else
-        JAVAC="jikes -nowarn -classpath $DESTDIR:$SRCDIR:$SRCDIR/../../libraries/javalib/Klasses.jar"
-fi
+trap "rm -f $RESULT $CHECK; exit 1" 1 2 15
 
 echo_n_sp ()
 {
@@ -42,14 +28,14 @@ echo_n_sp ()
 
 compile()
 {
-	FILES=`echo $* | awk -v SRCDIR=$SRCDIR '{ for (i = 1; i <= NF; i++) printf "%s/%s.java ", SRCDIR, $i }'`
+	FILES=`for f in ${1+"$@"}; do echo $SRCDIR/$f.java; done`
 	echo ERROR > ${RESULT}
 	if test "$DEPRECATED" = "yes" ; then
 		NOWARN="-nowarn"
 	else
 		NOWARN=""
 	fi
-	${JAVAC} ${NOWARN} -d ${DESTDIR} ${FILES} >${RESULT} 2>&1
+	${JAVAC} ${NOWARN} -d . ${FILES} >${RESULT} 2>&1
 	if test "$DEPRECATED" = "yes" ; then
 		OUTPUT=`cat ${RESULT} | grep -v warning`
 	else
@@ -71,14 +57,14 @@ run()
 {
 	echo ERROR > $RESULT
 	if test "x$2" = "xsort"; then
-	    (cd $DESTDIR ; $JAVA $1 2>&1 | sort > $RESULT)
+	    $JAVA $1 2>&1 | sort > $RESULT
 	else
-	    (cd $DESTDIR ; $JAVA $1 > $RESULT 2>&1)
+	    $JAVA $1 > $RESULT 2>&1
 	fi
 	if cmp -s $RESULT $SRCDIR/$1.out ; then
 		:
 	else
-		cp $RESULT $DESTDIR/$1.fail
+		cp $RESULT $1.fail
 		error=1
 	fi
 	rm -f $RESULT
@@ -118,11 +104,11 @@ ignoretest()
 }
 
 # Simple health check
-cp $SRCDIR/HelloWorldApp.class.save $DESTDIR/HelloWorldApp.class
+cp $SRCDIR/HelloWorldApp.class.save HelloWorldApp.class
 run HelloWorldApp
 
 # Now test the compiler
-rm -f $DESTDIR/HelloWorldApp.class
+rm -f HelloWorldApp.class
 runtest HelloWorldApp
 
 # Test ints, longs, floats and doubles

@@ -26,6 +26,10 @@
 
 #define	LIBRARY_PREFIX	"/lib"
 
+#ifndef LIBRARYSUFFIX
+#define LIBRARYSUFFIX ".la"
+#endif
+
 extern char* libraryPath;
 extern size_t gc_heap_limit;
 extern size_t gc_heap_total;
@@ -38,11 +42,7 @@ extern jbool runFinalizerOnExit;
 struct Hjava_lang_String*
 java_lang_Runtime_initializeLinkerInternal(struct Hjava_lang_Runtime* this)
 {
-#if defined(NO_SHARED_LIBRARIES)
-	return (0);
-#else
 	return (stringC2Java(libraryPath));
-#endif
 }
 
 /*

@@ -6,8 +6,5 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-ENGINE_CFLAGS=	-DINTERPRETER -I$(srcdir)/intrp  
-
-ENGINE_OBJECTS= machine$(OBJEXT)
-
-machine.o:	machine.c kaffe.def
+ENGINE_INCLUDES = -Iintrp -I$(srcdir)/intrp
+ENGINE_DEFS = -DINTERPRETER

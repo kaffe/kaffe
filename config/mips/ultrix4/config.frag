@@ -3,4 +3,3 @@
 #
 host_cpu=mips
 host_os=ultrix4
-dynamic_libraries=no

@@ -2,7 +2,7 @@
  * external.c
  * Handle method calls to other languages.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -28,30 +28,36 @@
 #include "system.h"
 #include "support.h"
 #include "md.h"
-#if defined(NO_SHARED_LIBRARIES)
-#include "../../libraries/clib/external_native.h"
-#endif
 #include "system.h"
+#include "ltdl.h"
 
-#if defined(NO_SHARED_LIBRARIES)
-
-#define	STUB_PREFIX		""
-#define	STUB_PREFIX_LEN		0
-#define	STUB_POSTFIX		""
-
-#else
-/*
- * Some version of dlsym need an underscore, some don't.
- */
-#if defined(HAVE_DYN_UNDERSCORE)
-#define	STUB_PREFIX		"_"
-#define	STUB_PREFIX_LEN		1
-#else
-#define	STUB_PREFIX		""
-#define	STUB_PREFIX_LEN		0
+#ifndef STUB_PREFIX
+#define STUB_PREFIX ""
+#define STUB_PREFIX_LEN 0
 #endif
-#define	STUB_POSTFIX		""
 
+#ifndef STUB_POSTFIX
+#define STUB_POSTFIX ""
+#endif
+
+#ifndef LIBRARYHANDLE
+#define LIBRARYHANDLE lt_dlhandle
+#endif
+
+#ifndef LIBRARYINIT
+#define LIBRARYINIT() lt_dlinit()
+#endif
+
+#ifndef LIBRARYSUFFIX
+#define LIBRARYSUFFIX ".la"
+#endif
+
+#ifndef LIBRARYLOAD
+#define LIBRARYLOAD(desc,filename) ((desc)=lt_dlopen((filename)))
+#endif
+
+#ifndef LIBRARYERROR
+#define LIBRARYERROR() "unknown failure"
 #endif
 
 static struct {
@@ -59,6 +65,22 @@ static struct {
 	char*		name;
 	int		ref;
 } libHandle[MAXLIBS];
+
+#ifndef LIBRARYFUNCTION
+static inline lt_ptr_t findLibraryFunction(const char *name) {
+  int i = 0;
+  lt_ptr_t ptr = 0;
+
+  while (!ptr && libHandle[i].ref && i < MAXLIBS) {
+    ptr = lt_dlsym(libHandle[i].desc, name);
+    ++i;
+  }
+
+  return ptr;
+}
+
+#define LIBRARYFUNCTION(ptr,name) ((ptr)=findLibraryFunction(name))
+#endif
 
 char* libraryPath = "";
 
@@ -79,7 +101,6 @@ error_stub(void)
 void
 initNative(void)
 {
-#if !defined(NO_SHARED_LIBRARIES)
 	char lib[MAXLIBPATH];
 	char* lpath;
 	char* nptr;
@@ -135,14 +156,6 @@ initNative(void)
 	fprintf(stderr, "Aborting.\n");
 	fflush(stderr);
 	EXIT(1);
-#else
-	int i;
-
-	/* Initialise the native function table */
-	for (i = 0; default_natives[i].name != 0; i++) {
-		addNativeMethod(default_natives[i].name, default_natives[i].func);
-	}
-#endif
 }
 
 int

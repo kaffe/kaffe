@@ -1,0 +1,79 @@
+dnl Process this file with autoconf to create configure.
+dnl Initialize the libltdl package.
+AC_INIT(ltdl.c)
+AM_INIT_AUTOMAKE(libltdl,0.1)
+
+AC_ARG_ENABLE(ltdl-install,
+  [--enable-ltdl-install     install libltdl (breaks check before install)])
+AM_CONDITIONAL(INSTALL_LTDL, test x$enable_ltdl_install = xyes)
+if test x$enable_ltdl_install = xyes; then
+  LIBLIBS=libltdl.la
+  NOINSTLIBS=
+else
+  LIBLIBS=
+  NOINSTLIBS=libltdl.la
+fi
+AC_SUBST(LIBLIBS)
+AC_SUBST(NOINSTLIBS)
+
+AC_PROG_CC
+AM_PROG_LIBTOOL
+
+AC_HEADER_STDC
+AC_CHECK_HEADERS(malloc.h memory.h stdlib.h unistd.h stdio.h ctype.h dlfcn.h dl.h)
+AC_CHECK_HEADERS(string.h strings.h, break)
+AC_CHECK_FUNCS(strdup strchr strrchr index rindex)
+
+AC_CACHE_CHECK([whether libtool supports -dlopen/-dlpreopen],
+	libltdl_cv_dlpreopen, [dnl
+  if grep '^global_symbol_pipe=..*$' ./libtool >/dev/null; then
+    libltdl_cv_dlpreopen=yes
+  else
+    libltdl_cv_dlpreopen=no
+  fi
+])
+if test x"$libltdl_cv_dlpreopen" = x"yes"; then
+  AC_DEFINE(HAVE_DLPREOPEN)
+fi
+
+supported=yes
+LIBADD_DL=
+AC_CHECK_FUNCS(dlopen, AC_DEFINE(HAVE_LIBDL),
+[AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL) LIBADD_DL="-ldl"],
+ [AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD) LIBADD_DL="-ldld"],
+   [AC_CHECK_FUNCS(shl_load, AC_DEFINE(HAVE_SHL_LOAD))]
+  )]
+ )]
+)
+AC_SUBST(LIBADD_DL)
+
+AM_SYS_SYMBOL_UNDERSCORE
+if test x"$USE_SYMBOL_UNDERSCORE" = xyes; then
+  if test x"$ac_cv_func_dlopen" = xyes ||
+     test x"$ac_cv_lib_dl_dlopen" = xyes ; then
+	AC_CACHE_CHECK([whether we have to add an underscore for dlsym],
+		libltdl_cv_need_uscore, [dnl
+		AC_TRY_RUN([
+#include <dlfcn.h>
+#include <stdio.h>
+fnord() { int i=42;}
+main() { void *self, *ptr1, *ptr2; self=dlopen(0,RTLD_LAZY);
+    if(self) { ptr1=dlsym(self,"fnord"); ptr2=dlsym(self,"_fnord");
+    if(ptr1 && !ptr2) exit(0); } exit(1); } 
+],	libltdl_cv_need_uscore=no, libltdl_cv_need_uscore=yes,
+	libltdl_cv_need_uscore=no
+)])
+  fi
+fi
+
+if test x"$libltdl_cv_need_uscore" = xyes; then
+  AC_DEFINE(NEED_USCORE)
+fi
+
+dnl Output the makefile
+AC_OUTPUT(Makefile)
+
+# Local Variables:
+# mode:shell-script
+# sh-indentation:2
+# End:
