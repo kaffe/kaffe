@@ -1,6 +1,15 @@
 2005-03-26  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/lookup.c
+	(getField): Update cname with the class name contained in the pool
+	if getClass fails.
+
+	* kaffe/kaffevm/constants.h: ConstSlot should be uintp as most of
+	constants are pointers.
+
+2005-03-26  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/lookup.c
 	(getField): Use the resolved class name to get the name.
 
 	Reported by:  Daniel Bonniot  <Daniel.Bonniot@inria.fr>

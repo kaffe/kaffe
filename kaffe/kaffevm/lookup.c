@@ -270,6 +270,7 @@ DBG(RESERROR,	dprintf("No Fieldref found\n");				);
 
 	class = getClass(ci, this, einfo);
 	if (class == NULL) {
+		ret->cname = WORD2UTF(pool->data[ci]);
 		return (false);
 	}
 

@@ -39,7 +39,7 @@
 
 #define WORD2UTF(WORD) ((Utf8Const*) (WORD))
 
-typedef jword ConstSlot;
+typedef uintp ConstSlot;
 
 typedef struct _constants {
 	u4		size;
