@@ -52,7 +52,9 @@ xErrorHandler ( Display *dsp, XErrorEvent *err )
   DBG( awt, ("  request:    %s\n", buf));
   DBG( awt, ("  resource:   %X\n", err->resourceid));
 
-  //DBG_ACTION( awt, (*JniEnv)->ThrowNew( JniEnv, AWTError, "X error occured"));
+#if 0
+  DBG_ACTION( awt, (*JniEnv)->ThrowNew( JniEnv, AWTError, "X error occured"));
+#endif
 
   return 0;
 }
