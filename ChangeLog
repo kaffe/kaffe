@@ -1,3 +1,10 @@
+2003-07-11  Guilhem Lavaux <guilhem.lavaux@free.fr>
+
+       * libraries/javalib/java/util/LinkedList.java (addAll#1, addAll#2):
+       Changed the behaviour of addAll to comply with Sun's spec.
+       addAll must add the collection after the precised element or
+       at the end of the list.
+
 2003-07-11  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
         * test/regression/TestScript.in:

@@ -139,7 +139,7 @@ public class LinkedList extends AbstractSequentialList
 	}
 
 	public boolean addAll(Collection c) {
-		return addAll(0, c);
+		return addAll(length, c);
 	}
 
 	public boolean addAll(int index, Collection c) {
@@ -155,8 +155,14 @@ public class LinkedList extends AbstractSequentialList
 
 		// Locate "before" and "after" elements
 		Elem before, after;
-		for (before = head; index-- > 0; before = before.next);
-		after = (before == null) ? null : before.next;
+		if (index == 0) {
+	        	before = null;
+			after = tail;
+		} else {
+			index--;
+			for (before = head; index-- > 0; before = before.next);
+			after = (before == null) ? null : before.next;
+		}
 
 		// Insert clist in between before and after
 		modCount++;
