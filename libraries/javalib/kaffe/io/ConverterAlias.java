@@ -18,9 +18,10 @@ import java.util.Hashtable;
  * @author Godmar Back <gback@cs.utah.edu>
  */
 public class ConverterAlias {
-    private static Hashtable alias = new Hashtable();
+    private static final Hashtable alias = new Hashtable();
 
     static {
+	alias.put("DEFAULT",		"Default");
 	alias.put("ISO-8859-1", 	"8859_1");
 	alias.put("LATIN1",	 	"8859_1");
 	alias.put("IBM819",	 	"8859_1");
@@ -47,12 +48,7 @@ public class ConverterAlias {
      * @return alias if found, name if not.
      */
     static String alias(String name) {
-	name = name.toUpperCase();
-	String alternate = (String)alias.get(name);
-	if (alternate == null) {
-	    return (name);
-	} else {
-	    return (alternate);
-	}
+	String alternate = (String)alias.get(name.toUpperCase());
+	return alternate != null ? alternate : name;
     }
 }
