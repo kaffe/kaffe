@@ -46,6 +46,7 @@ Fri Sep 17 15:11:49 PDT 1999  Archie Cobbs <archie@whistle.com>
 	* test/regression/Makefile.am: add new test
 	* kaffe/kaffevm/Makefile.am: add "jit3" to DIST_SUBDIRS
 	* developers/autogen.sh: run update-class-list first
+	* include/Makefile.am: generate kaffe_lang_SystemClassLoader.h
 	* libraries/javalib/Makefile.am: regen to add new classes
 	* */Makefile.in, libraries/javalib/Klasses.jar: regen
 
