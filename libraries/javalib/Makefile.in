@@ -132,7 +132,7 @@ CLASSFILE = Klasses.jar
 
 class_DATA = $(CLASSFILE) pizza.jar
 
-Klasses_jar_SRCS =  	$(java_applet_SRCS) 	$(java_awt_SRCS) 	$(java_awt_datatransfer_SRCS) 	$(java_awt_event_SRCS) 	$(java_awt_image_SRCS) 	$(java_awt_peer_SRCS) 	$(java_awt_widgets_SRCS) 	$(java_beans_SRCS) 	$(java_io_SRCS) 	$(java_lang_SRCS) 	$(java_lang_ref_SRCS) 	$(java_lang_reflect_SRCS) 	$(java_math_SRCS) 	$(java_net_SRCS) 	$(java_sql_SRCS) 	$(java_text_SRCS) 	$(java_util_SRCS) 	$(java_util_mime_SRCS) 	$(java_util_zip_SRCS) 	$(kaffe_applet_SRCS) 	$(kaffe_awt_SRCS) 	$(kaffe_beans_editors_SRCS) 	$(kaffe_io_SRCS) 	$(kaffe_jar_SRCS) 	$(kaffe_lang_SRCS) 	$(kaffe_management_SRCS) 	$(kaffe_net_SRCS) 	$(kaffe_net_www_protocol_SRCS) 	$(kaffe_net_www_protocol_file_SRCS) 	$(kaffe_net_www_protocol_http_SRCS) 	$(kaffe_net_www_protocol_system_SRCS) 	$(kaffe_text_collator_SRCS) 	$(kaffe_text_dateformat_SRCS) 	$(kaffe_text_numberformat_SRCS) 	$(kaffe_util_SRCS) 	$(kaffe_util_log_SRCS) 	$(kaffe_util_zip_SRCS)
+Klasses_jar_SRCS =  	$(java_applet_SRCS) 	$(java_awt_SRCS) 	$(java_awt_datatransfer_SRCS) 	$(java_awt_event_SRCS) 	$(java_awt_image_SRCS) 	$(java_awt_peer_SRCS) 	$(java_awt_widgets_SRCS) 	$(java_beans_SRCS) 	$(java_io_SRCS) 	$(java_lang_SRCS) 	$(java_lang_ref_SRCS) 	$(java_lang_reflect_SRCS) 	$(java_math_SRCS) 	$(java_net_SRCS) 	$(java_sql_SRCS) 	$(java_text_SRCS) 	$(java_util_SRCS) 	$(java_util_mime_SRCS) 	$(java_util_zip_SRCS) 	$(kaffe_applet_SRCS) 	$(kaffe_awt_SRCS) 	$(kaffe_beans_editors_SRCS) 	$(kaffe_io_SRCS) 	$(kaffe_jar_SRCS) 	$(kaffe_lang_SRCS) 	$(kaffe_management_SRCS) 	$(kaffe_net_SRCS) 	$(kaffe_net_www_protocol_SRCS) 	$(kaffe_net_www_protocol_file_SRCS) 	$(kaffe_net_www_protocol_http_SRCS) 	$(kaffe_net_www_protocol_ftp_SRCS) 	$(kaffe_net_www_protocol_system_SRCS) 	$(kaffe_text_collator_SRCS) 	$(kaffe_text_dateformat_SRCS) 	$(kaffe_text_numberformat_SRCS) 	$(kaffe_util_SRCS) 	$(kaffe_util_log_SRCS) 	$(kaffe_util_zip_SRCS)
 
 java_applet_SRCS =  	java/applet/Applet.java 	java/applet/AppletContext.java 	java/applet/AppletStub.java 	java/applet/AudioClip.java
 
@@ -193,6 +193,8 @@ kaffe_net_www_protocol_SRCS =  	kaffe/net/www/protocol/BasicURLConnection.java
 kaffe_net_www_protocol_file_SRCS =  	kaffe/net/www/protocol/file/FileURLConnection.java 	kaffe/net/www/protocol/file/Handler.java
 
 kaffe_net_www_protocol_http_SRCS =  	kaffe/net/www/protocol/http/Handler.java 	kaffe/net/www/protocol/http/HttpURLConnection.java
+
+kaffe_net_www_protocol_ftp_SRCS =  	kaffe/net/www/protocol/ftp/Handler.java 	kaffe/net/www/protocol/ftp/FtpURLConnection.java
 
 kaffe_net_www_protocol_system_SRCS =  	kaffe/net/www/protocol/system/Handler.java 	kaffe/net/www/protocol/system/SystemURLConnection.java
 
@@ -283,6 +285,7 @@ distdir: $(DISTFILES)
 	   $(distdir)/kaffe/management $(distdir)/kaffe/net \
 	   $(distdir)/kaffe/net/www/protocol \
 	   $(distdir)/kaffe/net/www/protocol/file \
+	   $(distdir)/kaffe/net/www/protocol/ftp \
 	   $(distdir)/kaffe/net/www/protocol/http \
 	   $(distdir)/kaffe/net/www/protocol/system \
 	   $(distdir)/kaffe/text/collator \

@@ -45,6 +45,7 @@ Klasses_jar_SRCS = \
 	$(kaffe_net_www_protocol_SRCS) \
 	$(kaffe_net_www_protocol_file_SRCS) \
 	$(kaffe_net_www_protocol_http_SRCS) \
+	$(kaffe_net_www_protocol_ftp_SRCS) \
 	$(kaffe_net_www_protocol_system_SRCS) \
 	$(kaffe_text_collator_SRCS) \
 	$(kaffe_text_dateformat_SRCS) \
@@ -603,6 +604,9 @@ kaffe_net_www_protocol_file_SRCS = \
 kaffe_net_www_protocol_http_SRCS = \
 	kaffe/net/www/protocol/http/Handler.java \
 	kaffe/net/www/protocol/http/HttpURLConnection.java
+kaffe_net_www_protocol_ftp_SRCS = \
+	kaffe/net/www/protocol/ftp/Handler.java \
+	kaffe/net/www/protocol/ftp/FtpURLConnection.java
 kaffe_net_www_protocol_system_SRCS = \
 	kaffe/net/www/protocol/system/Handler.java \
 	kaffe/net/www/protocol/system/SystemURLConnection.java
