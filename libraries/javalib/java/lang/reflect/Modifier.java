@@ -89,38 +89,47 @@ public class Modifier {
     StringBuffer str = new StringBuffer();
 
     if ((mod & PUBLIC) != 0) {
-      str.append("public ");
+      append(str, "public");
     }
     if ((mod & PRIVATE) != 0) {
-      str.append("private ");
+      append(str, "private");
     }
     if ((mod & PROTECTED) != 0) {
-      str.append("protected ");
+      append(str, "protected");
     }
     if ((mod & STATIC) != 0) {
-      str.append("static ");
+      append(str, "static");
     }
     if ((mod & FINAL) != 0) {
-      str.append("final ");
+      append(str, "final");
     }
     if ((mod & SYNCHRONIZED) != 0) {
-      str.append("synchronized ");
+      append(str, "synchronized");
     }
     if ((mod & VOLATILE) != 0) {
-      str.append("volatile ");
+      append(str, "volatile");
     }
     if ((mod & TRANSIENT) != 0) {
-      str.append("transient ");
+      append(str, "transient");
     }
     if ((mod & NATIVE) != 0) {
-      str.append("native ");
+      append(str, "native");
     }
     if ((mod & INTERFACE) != 0) {
-      str.append("interface ");
+      append(str, "interface");
     }
     if ((mod & ABSTRACT) != 0) {
-      str.append("abstract ");
+      append(str, "abstract");
     }
     return (new String(str));
   }
-};
+
+  private static void append(StringBuffer buf, String str)
+  {
+    if (buf.length() != 0) {
+      buf.append(" ");
+    }
+    buf.append(str);
+  }
+
+}
