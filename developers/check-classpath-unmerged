@@ -1,0 +1,6 @@
+# Script to check which files haven't been merged with GNU Classpath
+# yet.
+#
+# Run from libraries/javalib directory.
+#
+find . -name "*.java" | xargs -n 1 grep -L "GNU Classpath is free software"
