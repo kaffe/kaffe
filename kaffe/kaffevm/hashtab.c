@@ -45,7 +45,7 @@ static int		hashFindSlot(hashtab_t, const void *ptr);
 static void		hashResize(hashtab_t tab);
 
 /* Indicates a deleted pointer */
-static const void	*DELETED = (const void *)hashInit;
+static const void	*const DELETED = (const void *)&DELETED;
 
 /*
  * Create a new hashtable

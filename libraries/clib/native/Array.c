@@ -772,7 +772,7 @@ java_lang_reflect_Array_multiNewArray(struct Hjava_lang_Class* clazz, HArrayOfIn
 	for( i = 0; i < s; i++ ) {
 		dims[i] = unhand(sizes)->body[i];
 	}
-	dims[i] = 0;
+	dims[i] = -1;
 
 	/* Create multi-dimension array */
 	array = newMultiArray(clazz, dims);

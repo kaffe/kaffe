@@ -1,3 +1,15 @@
+Mon Dec 28 17:40:44 1998  Edouard Parmelan <EP510777@exchange.FRANCE.NCR.com>
+
+	* kaffe/kaffevm/findInJar.c: avoid KMALLOC() of zero bytes
+	* kaffe/kaffevm/hashtab.c: make DELETED compiler optimizable constant
+	* kaffe/kaffevm/utf8const.c: fix typo
+	* libraries/clib/native/Array.c: terminate array with -1, not zero
+	* libraries/javalib/java/io/FilterInputStream.java: reapply
+	bug fix clobbered by TVT merge
+	* libraries/javalib/kaffe/applet/AppletViewer.java: avoid null
+	* libraries/clib/io/FileInputStream.c: don't use st_size unless
+	the file is a regular file.
+
 Mon Dec 28 17:18:40 1998  Archie Cobbs <archie@whistle.com>
 
 	* configure configure.in test/regression/TestScript{Thread}.in

@@ -131,7 +131,8 @@ java_io_FileInputStream_available(struct Hjava_io_FileInputStream* fh)
 	cur = KLSEEK(fd, cur, SEEK_CUR);
 	if (cur != (off_t)-1) {
 		struct stat statbuf;
-		if (KFSTAT(fd, &statbuf) != -1) {
+		if ((KFSTAT(fd, &statbuf) != -1) &&
+		    S_ISREG(statbuf.st_mode)) {
 			return (statbuf.st_size - cur);
 		}
 	}

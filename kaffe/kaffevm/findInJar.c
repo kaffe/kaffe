@@ -229,7 +229,7 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 			}
 			hand.size = sbuf.st_size;
 
-			hand.base = KMALLOC(hand.size);
+			hand.base = hand.size == 0 ? NULL : KMALLOC(hand.size);
 			hand.buf = hand.base;
 
 			i = 0;

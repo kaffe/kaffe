@@ -137,7 +137,8 @@ public void actionPerformed ( ActionEvent e ) {
 		showStatus( "applet stopped");
 	}
 	else if ( "Start".equals( cmd)) {
-		app.start();
+		if (app != null)
+			app.start();
 		showStatus( "applet started");
 	}
 }

@@ -91,7 +91,7 @@ utf8ConstNew(const char *s, int len)
 	}
 
 #ifdef DEBUG
-	assert(utf8ConstIsValidUtf8(s, len);
+	assert(utf8ConstIsValidUtf8(s, len));
 #endif
 
 	/* Precompute hash value using String.hashCode() algorithm */
