@@ -1,3 +1,9 @@
+1999-10-17  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* configure.in (HAVE_DECLARED_SELECT): Don't let the cache prevent
+	us from defining it.
+	* configure: Rebuilt.
+
 Sun Oct 17 14:14:21 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/clib/management/Classpath.c, kaffe/kaffevm/findInJar.c,

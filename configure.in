@@ -875,8 +875,11 @@ AC_CACHE_CHECK([for declaration of select],
 #include <sys/select.h>
 #endif
 ], [ void *foo = select; ],
-  ac_cv_declared_select=yes; AC_DEFINE(HAVE_DECLARED_SELECT, 1, [Is function select declared]), ac_cv_declared_select=no)
+  ac_cv_declared_select=yes, ac_cv_declared_select=no)
 ])
+if test "x$ac_cv_declared_select"= "xyes"; then
+  AC_DEFINE(HAVE_DECLARED_SELECT, 1, [Is function select declared])
+fi
 
 dnl =========================================================================
 dnl Work out if swab is declared
