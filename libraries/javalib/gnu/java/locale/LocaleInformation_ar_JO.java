@@ -44,42 +44,55 @@ import java.util.ListResourceBundle;
 
 public class LocaleInformation_ar_JO extends ListResourceBundle
 {
-  static final String decimalSeparator = ".";
-  static final String groupingSeparator = ",";
-  static final String numberFormat = "#,##0.###";
-  static final String percentFormat = "#,##0%";
-  static final String[] weekdays = { null, "\u0627\u0644\u0623\u062D\u062F", "\u0627\u0644\u0627\u062B\u0646\u064A\u0646", "\u0627\u0644\u062B\u0644\u0627\u062B\u0627\u0621", "\u0627\u0644\u0623\u0631\u0628\u0639\u0627\u0621", "\u0627\u0644\u062E\u0645\u064A\u0633", "\u0627\u0644\u062C\u0645\u0639\u0629", "\u0627\u0644\u0633\u0628\u062A" };
+  private static final String[] shortMonths = {
+    "\u0643\u0627\u0646\u0648\u0646 \u0627\u0644\u062b\u0627\u0646\u064a",
+    "\u0634\u0628\u0627\u0637",
+    "\u0622\u0630\u0627\u0631",
+    "\u0646\u064a\u0633\u0627\u0646",
+    "\u0623\u064a\u0627\u0631",
+    "\u062d\u0632\u064a\u0631\u0627\u0646",
+    "\u062a\u0645\u0648\u0632",
+    "\u0622\u0628",
+    "\u0623\u064a\u0644\u0648\u0644",
+    "\u062a\u0634\u0631\u064a\u0646 \u0627\u0644\u0623\u0648\u0644",
+    "\u062a\u0634\u0631\u064a\u0646 \u0627\u0644\u062b\u0627\u0646\u064a",
+    "\u0643\u0627\u0646\u0648\u0646 \u0627\u0644\u0623\u0648\u0644",
+    null,
+  };
 
-  static final String[] shortWeekdays = { null, "\u0627\u0644\u0623\u062D\u062F", "\u0627\u0644\u0627\u062B\u0646\u064A\u0646", "\u0627\u0644\u062B\u0644\u0627\u062B\u0627\u0621", "\u0627\u0644\u0623\u0631\u0628\u0639\u0627\u0621", "\u0627\u0644\u062E\u0645\u064A\u0633", "\u0627\u0644\u062C\u0645\u0639\u0629", "\u0627\u0644\u0633\u0628\u062A" };
+  private static final String[] months = {
+    "\u0643\u0627\u0646\u0648\u0646 \u0627\u0644\u062b\u0627\u0646\u064a",
+    "\u0634\u0628\u0627\u0637",
+    "\u0622\u0630\u0627\u0631",
+    "\u0646\u064a\u0633\u0627\u0646",
+    "\u0623\u064a\u0627\u0631",
+    "\u062d\u0632\u064a\u0631\u0627\u0646",
+    "\u062a\u0645\u0648\u0632",
+    "\u0622\u0628",
+    "\u0623\u064a\u0644\u0648\u0644",
+    "\u062a\u0634\u0631\u064a\u0646 \u0627\u0644\u0623\u0648\u0644",
+    "\u062a\u0634\u0631\u064a\u0646 \u0627\u0644\u062b\u0627\u0646\u064a",
+    "\u0643\u0627\u0646\u0648\u0646 \u0627\u0644\u0623\u0648\u0644",
+    null,
+  };
 
-  static final String[] shortMonths = { "\u0643\u0627\u0646\u0648\u0646 \u0627\u0644\u062B\u0627\u0646\u064A", "\u0634\u0628\u0627\u0637", "\u0622\u0630\u0627\u0631", "\u0646\u064A\u0633\u0627\u0646", "\u0646\u0648\u0627\u0631", "\u062D\u0632\u064A\u0631\u0627\u0646", "\u062A\u0645\u0648\u0632", "\u0622\u0628", "\u0623\u064A\u0644\u0648\u0644", "\u062A\u0634\u0631\u064A\u0646 \u0627\u0644\u0623\u0648\u0644", "\u062A\u0634\u0631\u064A\u0646 \u0627\u0644\u062B\u0627\u0646\u064A", "\u0643\u0627\u0646\u0648\u0646 \u0627\u0644\u0623\u0648\u0644", null };
-
-  static final String[] months = { "\u0643\u0627\u0646\u0648\u0646 \u0627\u0644\u062B\u0627\u0646\u064A", "\u0634\u0628\u0627\u0637", "\u0622\u0630\u0627\u0631", "\u0646\u064A\u0633\u0627\u0646", "\u0646\u0648\u0627\u0631", "\u062D\u0632\u064A\u0631\u0627\u0646", "\u062A\u0645\u0648\u0632", "\u0622\u0628", "\u0623\u064A\u0644\u0648\u0644", "\u062A\u0634\u0631\u064A\u0646 \u0627\u0644\u0623\u0648\u0644", "\u062A\u0634\u0631\u064A\u0646 \u0627\u0644\u062B\u0627\u0646\u064A", "\u0643\u0627\u0646\u0648\u0646 \u0627\u0644\u0623\u0648\u0644", null };
-
-  static final String[] ampms = { "\u0635", "\u0645" };
-
-  static final String shortDateFormat = "dd MMM, yyyy";
-  static final String defaultTimeFormat = "z hh:m:s a";
-  static final String currencySymbol = "\u062F.\u0623.";
-  static final String intlCurrencySymbol = "JOD";
-  static final String currencyFormat = "$ #,##0.000;$ #,##0.000-";
+  private static final String[] shortWeekdays = {
+    null,
+    "\u0627\u0644\u0623\u062d\u062f",
+    "\u0627\u0644\u0627\u062b\u0646\u064a\u0646",
+    "\u0627\u0644\u062b\u0644\u0627\u062b\u0627\u0621",
+    "\u0627\u0644\u0623\u0631\u0628\u0639\u0627\u0621",
+    "\u0627\u0644\u062e\u0645\u064a\u0633",
+    "\u0627\u0644\u062c\u0645\u0639\u0629",
+    "\u0627\u0644\u0633\u0628\u062a",
+  };
 
   private static final Object[][] contents =
   {
-    { "weekdays", weekdays },
-    { "shortWeekdays", shortWeekdays },
+    { "currencyFormat", "\u00a4 #,##0.000;\u00a4 #,##0.000-" },
     { "shortMonths", shortMonths },
     { "months", months },
-    { "ampms", ampms },
-    { "shortDateFormat", shortDateFormat },
-    { "defaultTimeFormat", defaultTimeFormat },
-    { "currencySymbol", currencySymbol },
-    { "intlCurrencySymbol", intlCurrencySymbol },
-    { "currencyFormat", currencyFormat },
-    { "decimalSeparator", decimalSeparator },
-    { "groupingSeparator", groupingSeparator },
-    { "numberFormat", numberFormat },
-    { "percentFormat", percentFormat },
+    { "shortWeekdays", shortWeekdays },
   };
 
   public Object[][] getContents() { return contents; }

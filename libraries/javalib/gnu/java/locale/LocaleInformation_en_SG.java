@@ -44,42 +44,22 @@ import java.util.ListResourceBundle;
 
 public class LocaleInformation_en_SG extends ListResourceBundle
 {
-  static final String decimalSeparator = ".";
-  static final String groupingSeparator = ",";
-  static final String numberFormat = "#,##0.###";
-  static final String percentFormat = "#,##0%";
-  static final String[] weekdays = { null, "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
-
-  static final String[] shortWeekdays = { null, "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-
-  static final String[] shortMonths = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", null };
-
-  static final String[] months = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", null };
-
-  static final String[] ampms = { "AM", "PM" };
-
-  static final String shortDateFormat = "EEEE dd,MMMM,yyyy";
-  static final String defaultTimeFormat = "hh:m:s a z";
-  static final String currencySymbol = "$";
-  static final String intlCurrencySymbol = "SGD";
-  static final String currencyFormat = "$#,##0.00;($#,##0.00)";
+  private static final String[][] zoneStrings =
+  {
+    { "Pacific/Guadalcanal", "Singapore Standard Time", "SST", "Singapore Standard Time", "SST" },
+  };
 
   private static final Object[][] contents =
   {
-    { "weekdays", weekdays },
-    { "shortWeekdays", shortWeekdays },
-    { "shortMonths", shortMonths },
-    { "months", months },
-    { "ampms", ampms },
-    { "shortDateFormat", shortDateFormat },
-    { "defaultTimeFormat", defaultTimeFormat },
-    { "currencySymbol", currencySymbol },
-    { "intlCurrencySymbol", intlCurrencySymbol },
-    { "currencyFormat", currencyFormat },
-    { "decimalSeparator", decimalSeparator },
-    { "groupingSeparator", groupingSeparator },
-    { "numberFormat", numberFormat },
-    { "percentFormat", percentFormat },
+    { "shortDateFormat", "dd/MM/yyyy" },
+    { "mediumDateFormat", "dd MMM yyyy" },
+    { "longDateFormat", "dd MMMM yyyy" },
+    { "fullDateFormat", "EEEE, dd MMMM yyyy" },
+    { "shortTimeFormat", "h:mm a" },
+    { "mediumTimeFormat", "h:mm:ss a" },
+    { "longTimeFormat", "h:mm:ss a z" },
+    { "fullTimeFormat", "h:mm:ss a z" },
+    { "zoneStrings", zoneStrings },
   };
 
   public Object[][] getContents() { return contents; }

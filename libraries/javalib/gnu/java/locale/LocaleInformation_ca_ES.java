@@ -44,42 +44,9 @@ import java.util.ListResourceBundle;
 
 public class LocaleInformation_ca_ES extends ListResourceBundle
 {
-  static final String decimalSeparator = ",";
-  static final String groupingSeparator = "";
-  static final String numberFormat = "#.###";
-  static final String percentFormat = "#%";
-  static final String[] weekdays = { null, "diumenge", "dilluns", "dimarts", "dimecres", "dijous", "divendres", "dissabte" };
-
-  static final String[] shortWeekdays = { null, "dg", "dl", "dt", "dc", "dj", "dv", "ds" };
-
-  static final String[] shortMonths = { "gen", "feb", "mar", "abr", "mai", "jun", "jul", "ago", "set", "oct", "nov", "des", null };
-
-  static final String[] months = { "gener", "febrer", "mar\u00E7", "abril", "maig", "juny", "juliol", "agost", "setembre", "octubre", "novembre", "desembre", null };
-
-  static final String[] ampms = { "", "" };
-
-  static final String shortDateFormat = "dd/MM/yy";
-  static final String defaultTimeFormat = "";
-  static final String currencySymbol = "Pts";
-  static final String intlCurrencySymbol = "ESP";
-  static final String currencyFormat = "$ #,###,#0.;-$ #,###,#0.";
-
   private static final Object[][] contents =
   {
-    { "weekdays", weekdays },
-    { "shortWeekdays", shortWeekdays },
-    { "shortMonths", shortMonths },
-    { "months", months },
-    { "ampms", ampms },
-    { "shortDateFormat", shortDateFormat },
-    { "defaultTimeFormat", defaultTimeFormat },
-    { "currencySymbol", currencySymbol },
-    { "intlCurrencySymbol", intlCurrencySymbol },
-    { "currencyFormat", currencyFormat },
-    { "decimalSeparator", decimalSeparator },
-    { "groupingSeparator", groupingSeparator },
-    { "numberFormat", numberFormat },
-    { "percentFormat", percentFormat },
+    { "currencyFormat", "#,##0.00 \u00a4;-#,##0.00 \u00a4" },
   };
 
   public Object[][] getContents() { return contents; }

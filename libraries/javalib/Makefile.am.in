@@ -147,18 +147,6 @@ gnu_regexp_message_bundles = \
 	gnu/regexp/MessagesBundle_it.properties \
 	gnu/regexp/MessagesBundle.properties
 
-gnu_java_locale_bundles = \
-	gnu/java/locale/iso3166-a3.properties \
-	gnu/java/locale/iso3166_de.properties \
-	gnu/java/locale/iso3166.properties \
-	gnu/java/locale/iso639-a2-old.properties \
-	gnu/java/locale/iso639-a3.properties \
-	gnu/java/locale/iso639_de.properties \
-	gnu/java/locale/iso639_fr.properties \
-	gnu/java/locale/iso639_ga.properties \
-	gnu/java/locale/iso639.properties \
-	gnu/java/locale/iso4217.properties
-
 gnu_getopt_message_bundles = \
 	gnu/getopt/MessagesBundle_cs.properties \
        	gnu/getopt/MessagesBundle_ja.properties \
@@ -185,7 +173,6 @@ EXTRA_DIST = \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
 	$(gnu_regexp_message_bundles) \
-	$(gnu_java_locale_bundles) \
 	$(gnu_getopt_message_bundles)
 
 dist-hook:
@@ -232,16 +219,14 @@ if HAVE_ZIP
 JAR_CMD1 = (cd $(srcdir) && $(ZIP) -q -r $(CURDIR)/$@.new META-INF)
 JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS))
 JAR_CMD3 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_regexp_message_bundles))
-JAR_CMD4 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_java_locale_bundles))
-JAR_CMD5 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(serialized_converters))
-JAR_CMD6 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_getopt_message_bundles))
+JAR_CMD4 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(serialized_converters))
+JAR_CMD5 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_getopt_message_bundles))
 else
 JAR_CMD1 = $(JAR) -cf $@.new -C $(LIBDIR) $(SRCDIRS)
 JAR_CMD2 = $(JAR) -uf $@.new -C $(srcdir) META-INF/
 JAR_CMD3 = $(JAR) -uf $@.new -C $(srcdir) $(gnu_regexp_message_bundles)
-JAR_CMD4 = $(JAR) -uf $@.new -C $(srcdir) $(gnu_java_locale_bundles)
-JAR_CMD5 = $(JAR) -uf $@.new -C $(srcdir) $(serialized_converters)
-JAR_CMD6 = $(JAR) -uf $@.new -C $(srcdir) $(gnu_getopt_message_bundles)
+JAR_CMD4 = $(JAR) -uf $@.new -C $(srcdir) $(serialized_converters)
+JAR_CMD5 = $(JAR) -uf $@.new -C $(srcdir) $(gnu_getopt_message_bundles)
 endif
 
 .PHONY: jar-classes
@@ -258,7 +243,6 @@ rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 	$(JAR_CMD3)
 	$(JAR_CMD4)
 	$(JAR_CMD5)
-	$(JAR_CMD6)
 	mv $@.new $@
 endif
 

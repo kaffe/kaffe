@@ -38,10 +38,88 @@ exception statement from your version. */
 
 package gnu.java.locale;
 
-/**
-  * This is the resource bundle for the default locale, which right now is 
-  * hardcoded to US English.
-  */
-public class LocaleInformation extends LocaleInformation_en
+import java.util.ListResourceBundle;
+
+public class LocaleInformation extends ListResourceBundle
 {
+  private static final String[] ampms = { "AM", "PM" };
+
+  private static final String[][] zoneStrings =
+  {
+    { "GMT", "Greenwich Mean Time", "GMT",
+      /**/   "Greenwich Mean Time", "GMT", "GMT" },
+    { "PST", "Pacific Standard Time", "PST",
+      /**/   "Pacific Daylight Time", "PDT", "San Francisco" },
+    { "MST", "Mountain Standard Time", "MST",
+      /**/   "Mountain Daylight Time", "MDT", "Denver" },
+    { "PNT", "Mountain Standard Time", "MST",
+      /**/   "Mountain Standard Time", "MST", "Phoenix" },
+    { "CST", "Central Standard Time", "CST",
+      /**/   "Central Daylight Time", "CDT", "Chicago" },
+    { "EST", "Eastern Standard Time", "EST",
+      /**/   "Eastern Daylight Time", "EDT", "Boston" },
+    { "IET", "Eastern Standard Time", "EST",
+      /**/   "Eastern Standard Time", "EST", "Indianapolis" },
+    { "PRT", "Atlantic Standard Time", "AST",
+      /**/   "Atlantic Daylight Time", "ADT", "Halifax" },
+    { "CNT", "Newfoundland Standard Time", "NST",
+      /**/   "Newfoundland Daylight Time", "NDT", "St. Johns" },
+    { "ECT", "Central European Standard Time", "CET",
+      /**/   "Central European Daylight Time", "CEST", "Paris" },
+    { "CTT", "China Standard Time", "CST",
+      /**/   "China Standard Time", "CST", "Shanghai" },
+    { "JST", "Japan Standard Time", "JST",
+      /**/   "Japan Standard Time", "JST", "Tokyo" },
+    { "HST", "Hawaii Standard Time", "HST",
+      /**/   "Hawaii Standard Time", "HST", "Honolulu" },
+    { "AST", "Alaska Standard Time", "AKST",
+      /**/   "Alaska Daylight Time", "AKDT", "Anchorage" }
+  };
+
+  private static final class HashtableCurrencySymbols extends java.util.Hashtable
+  {
+    public HashtableCurrencySymbols()
+    {
+      super();
+      put("EUR", "\u20ac");
+      put("GBP", "\u00a3");
+      put("INR", "=0#Rs.|1#Re.|1<Rs.");
+      put("ITL", "\u20A4");
+      put("JPY", "\u20A5");
+      put("USD", "US$");
+    }
+  }
+
+  private static final Object currencySymbols = new HashtableCurrencySymbols();
+  
+  private static final Object[][] contents =
+  {
+    { "localPatternChars", "GyMdkHmsSEDFwWahKz" },
+    { "currencySymbols", currencySymbols },
+    { "decimalSeparator", "." },
+    { "groupingSeparator", "," },
+    { "patternSeparator", ";" },
+    { "percent", "%" },
+    { "zeroDigit", "0" },
+    { "digit", "#" },
+    { "minusSign", "-" },
+    { "exponential", "E" },
+    { "perMill", "\u2030" },
+    { "infinity", "\u221e" },
+    { "NaN", "\ufffd" },
+    { "numberFormat", "#,##0.###;-#,##0.###" },
+    { "percentFormat", "#,##0%" },
+    { "shortDateFormat", "M/d/yy" },
+    { "mediumDateFormat", "MMM d, yyyy" },
+    { "longDateFormat", "MMMM d, yyyy" },
+    { "fullDateFormat", "EEEE, MMMM d, yyyy" },
+    { "shortTimeFormat", "h:mm a" },
+    { "mediumTimeFormat", "h:mm:ss a" },
+    { "longTimeFormat", "h:mm:ss a z" },
+    { "fullTimeFormat", "h:mm:ss a z" },
+    { "ampms", ampms },
+    { "zoneStrings", zoneStrings },
+  };
+
+  public Object[][] getContents() { return contents; }
 }

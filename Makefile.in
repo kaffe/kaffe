@@ -57,7 +57,7 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/project.properties.in \
 	$(srcdir)/project.xml.in $(top_srcdir)/configure \
 	$(top_srcdir)/include/kaffe/jni_md.h.in ABOUT-NLS AUTHORS \
-	ChangeLog INSTALL scripts/compile scripts/config.guess \
+	ChangeLog INSTALL TODO scripts/compile scripts/config.guess \
 	scripts/config.rpath scripts/config.sub scripts/depcomp \
 	scripts/install-sh scripts/ltmain.sh scripts/missing \
 	scripts/mkinstalldirs

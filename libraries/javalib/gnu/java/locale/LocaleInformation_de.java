@@ -105,12 +105,12 @@ public class LocaleInformation_de extends ListResourceBundle
 
   private static final String[] eras = {
     "v. Chr.",
-    "n. Chr."
+    "n. Chr.",
   };
 
   private static final String[] ampms = {
     "vorm.",
-    "nachm."
+    "nachm.",
   };
 
   private static final String[][] zoneStrings =
@@ -369,30 +369,11 @@ public class LocaleInformation_de extends ListResourceBundle
   }
 
   private static final Object territories = new Hashtableterritories();
-  
-  private static final String defaultDateFormat = "dd.MM.yy";
-
-  private static final String shortTimeFormat = "H:mm";
-
-  private static final String mediumTimeFormat = "H:mm:ss";
-
-  private static final String longTimeFormat = "H:mm:ss z";
-
-  private static final String defaultTimeFormat = "H:mm:ss";
-
-  private static final String currencySymbol = "DM";
-
-  private static final String intlCurrencySymbol = "DEM";
-
-  private static final String decimalSeparator = ",";
-
-  private static final String monetarySeparator = ",";
 
   private static final Object[][] contents =
   {
     { "decimalSeparator", "," },
     { "groupingSeparator", "." },
-    { "localPatternChars", "GjMtkHmsSEDFwWahKzJeugAZ" },
     { "shortMonths", shortMonths },
     { "collation_rules", collation_rules },
     { "months", months },
@@ -406,14 +387,7 @@ public class LocaleInformation_de extends ListResourceBundle
     { "fullDateFormat", "EEEE, d. MMMM yyyy" },
     { "fullTimeFormat", "H:mm' Uhr 'z" },
     { "zoneStrings", zoneStrings },
-    { "defaultDateFormat", defaultDateFormat },
-    { "shortTimeFormat", shortTimeFormat },
-    { "mediumTimeFormat", mediumTimeFormat },
-    { "defaultTimeFormat", defaultTimeFormat },
-    { "currencySymbol", currencySymbol },
-    { "intlCurrencySymbol", intlCurrencySymbol },
-    { "monetarySeparator", monetarySeparator },
-    { "territories", territories }
+    { "territories", territories },
   };
 
   public Object[][] getContents() { return contents; }

@@ -100,7 +100,7 @@ public class LocaleInformation_pa extends ListResourceBundle
 
   private static final String[] ampms = {
     "\u0a38\u0a35\u0a47\u0a30\u0a47",
-    "\u0a36\u0a3e\u0a2e"
+    "\u0a36\u0a3e\u0a2e",
   };
 
   private static final class Hashtableterritories extends java.util.Hashtable
@@ -124,7 +124,7 @@ public class LocaleInformation_pa extends ListResourceBundle
     { "shortWeekdays", shortWeekdays },
     { "weekdays", weekdays },
     { "ampms", ampms },
-    { "territories", territories }
+    { "territories", territories },
   };
 
   public Object[][] getContents() { return contents; }

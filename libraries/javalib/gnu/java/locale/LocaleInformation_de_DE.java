@@ -44,28 +44,9 @@ import java.util.ListResourceBundle;
 
 public class LocaleInformation_de_DE extends ListResourceBundle
 {
-  static final String decimalSeparator = ",";
-  static final String groupingSeparator = ".";
-  static final String numberFormat = "#,###,##0.###";
-  static final String percentFormat = "#,###,##0%";
-  static final String[] ampms = { "", "" };
-  static final String shortDateFormat = "dd.MM.yyyy";
-  static final String defaultTimeFormat = "";
-  static final String currencySymbol = "DM";
-  static final String intlCurrencySymbol = "DEM";
-
   private static final Object[][] contents =
   {
-    { "ampms", ampms },
-    { "shortDateFormat", shortDateFormat },
-    { "defaultTimeFormat", defaultTimeFormat },
-    { "currencySymbol", currencySymbol },
-    { "intlCurrencySymbol", intlCurrencySymbol },
-    { "decimalSeparator", decimalSeparator },
-    { "groupingSeparator", groupingSeparator },
-    { "numberFormat", numberFormat },
-    { "percentFormat", percentFormat },
-    { "currencyFormat", "#,##0.00 \u00a4;-#,##0.00 \u00a4" }
+    { "currencyFormat", "#,##0.00 \u00a4;-#,##0.00 \u00a4" },
   };
 
   public Object[][] getContents() { return contents; }

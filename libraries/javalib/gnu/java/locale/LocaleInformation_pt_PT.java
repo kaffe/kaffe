@@ -44,42 +44,81 @@ import java.util.ListResourceBundle;
 
 public class LocaleInformation_pt_PT extends ListResourceBundle
 {
-  static final String decimalSeparator = ",";
-  static final String groupingSeparator = "";
-  static final String numberFormat = "#.###";
-  static final String percentFormat = "#%";
-  static final String[] weekdays = { null, "Domingo", "Segunda", "Ter\u00E7a", "Quarta", "Quinta", "Sexta", "S\u00E1bado" };
+  private static final class Hashtableterritories extends java.util.Hashtable
+  {
+    public Hashtableterritories()
+      {
+        super();
+        put("PS", "Territ\u00f3rio Palestiniano");
+        put("MP", "Ilhas Mariana do Norte");
+        put("GL", "Gronel\u00e2ndia");
+        put("MO", "Macau - Regi\u00e3o Administrativa Especial da China");
+        put("YU", "Jugosl\u00e1via");
+        put("AE", "Emiratos \u00c1rabes Unidos");
+        put("MK", "Maced\u00f3nia, Rep\u00fablica da");
+        put("PL", "Pol\u00f3nia");
+        put("SM", "S\u00e3o Marino");
+        put("VN", "Vietname");
+        put("MG", "Madag\u00e1scar");
+        put("SI", "Eslov\u00e9nia");
+        put("PG", "Papua Nova Guin\u00e9");
+        put("MD", "Mold\u00e1via, Rep\u00fablica da");
+        put("VI", "Ilhas Virgin E.U.A.");
+        put("SG", "Singapura");
+        put("MC", "M\u00f3naco");
+        put("VG", "Ilhas Virgin Brit\u00e2nicas");
+        put("CZ", "Rep\u00fablica Checa");
+        put("SC", "Seicheles");
+        put("CX", "Ilha do Natal");
+        put("YE", "I\u00e9men");
+        put("VC", "Saint Vincent e Grenadines");
+        put("VA", "Santa S\u00e9 (Estado da Cidade do Vaticano)");
+        put("LV", "Let\u00f3nia");
+        put("UZ", "Uzbaquist\u00e3o");
+        put("CM", "Camar\u00f5es");
+        put("FK", "Ilhas Falkland");
+        put("RO", "Rom\u00e9nia");
+        put("UM", "Ilhas Minor Outlying (E.U.A)");
+        put("RE", "Reunion");
+        put("LA", "Lao, Rep\u00fablica Popular Democr\u00e1tica");
+        put("BY", "Bielorr\u00fassia");
+        put("KZ", "Cazaquist\u00e3o");
+        put("KY", "Ilhas Caim\u00e3o");
+        put("ER", "Eritreia");
+        put("KR", "Coreia do Sul");
+        put("KP", "Coreia do Norte");
+        put("BJ", "Benim");
+        put("KN", "Saint Kitts e Nevis");
+        put("HK", "Hong Kong - Regi\u00e3o Administrativa Especial da China");
+        put("EH", "Sahara Ocidental");
+        put("EG", "Egipto");
+        put("EE", "Est\u00f3nia");
+        put("TM", "Turquemenist\u00e3o");
+        put("KG", "Quirguizist\u00e3o");
+        put("BA", "B\u00f3snia-Herzegovina");
+        put("KE", "Qu\u00e9nia");
+        put("TJ", "Tajiquist\u00e3o");
+        put("NC", "Nova Caled\u00f3nia");
+        put("AZ", "Azerbeij\u00e3o");
+        put("TF", "Territ\u00f3rios Franceses a Sul");
+        put("TD", "Tchade");
+        put("TC", "Ilhas Turcas e Caicos");
+        put("GW", "Guin\u00e9-Bissau");
+        put("AQ", "Ant\u00e1rctica");
+        put("GS", "Ilhas South Georgia e South Sandwich");
+        put("MU", "Maur\u00edcias");
+        put("AM", "Arm\u00e9nia");
+      }
+  }
 
-  static final String[] shortWeekdays = { null, "Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "S\u00E1b" };
-
-  static final String[] shortMonths = { "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez", null };
-
-  static final String[] months = { "Janeiro", "Fevereiro", "Mar\u00E7o", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro", null };
-
-  static final String[] ampms = { "", "" };
-
-  static final String shortDateFormat = "dd-MM-yyyy";
-  static final String defaultTimeFormat = "";
-  static final String currencySymbol = "Esc";
-  static final String intlCurrencySymbol = "PTE";
-  static final String currencyFormat = "#,###,##0.00 $;-#,###,##0.00 $";
+  private static final Object territories = new Hashtableterritories();
 
   private static final Object[][] contents =
   {
-    { "weekdays", weekdays },
-    { "shortWeekdays", shortWeekdays },
-    { "shortMonths", shortMonths },
-    { "months", months },
-    { "ampms", ampms },
-    { "shortDateFormat", shortDateFormat },
-    { "defaultTimeFormat", defaultTimeFormat },
-    { "currencySymbol", currencySymbol },
-    { "intlCurrencySymbol", intlCurrencySymbol },
-    { "currencyFormat", currencyFormat },
-    { "decimalSeparator", decimalSeparator },
-    { "groupingSeparator", groupingSeparator },
-    { "numberFormat", numberFormat },
-    { "percentFormat", percentFormat },
+    { "currencyFormat", "#,##0.00 \u00a4;-#,##0.00 \u00a4" },
+    { "shortDateFormat", "yy/MM/dd" },
+    { "mediumDateFormat", "yyyy/MM/dd" },
+    { "territories", territories },
   };
 
   public Object[][] getContents() { return contents; }

@@ -54,7 +54,7 @@ public class LocaleInformation_pa_IN extends ListResourceBundle
     { "shortTimeFormat", "hh:mm a" },
     { "mediumTimeFormat", "hh:mm:ss a" },
     { "longTimeFormat", "hh:mm:ss a z" },
-    { "fullTimeFormat", "hh:mm:ss a z" }
+    { "fullTimeFormat", "hh:mm:ss a z" },
   };
 
   public Object[][] getContents() { return contents; }

@@ -35,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.util;
 
 import gnu.classpath.SystemProperties;
@@ -76,56 +77,56 @@ import java.io.Serializable;
  * @see java.text.Collator
  * @author Jochen Hoenicke
  * @author Paul Fisher
- * @author Eric Blake <ebb9@email.byu.edu>
+ * @author Eric Blake (ebb9@email.byu.edu)
  * @since 1.1
  * @status updated to 1.4
  */
 public final class Locale implements Serializable, Cloneable
 {
   /** Locale which represents the English language. */
-  public static final Locale ENGLISH = new Locale("en");
+  public static final Locale ENGLISH = getLocale("en");
 
   /** Locale which represents the French language. */
-  public static final Locale FRENCH = new Locale("fr");
+  public static final Locale FRENCH = getLocale("fr");
 
   /** Locale which represents the German language. */
-  public static final Locale GERMAN = new Locale("de");
+  public static final Locale GERMAN = getLocale("de");
 
   /** Locale which represents the Italian language. */
-  public static final Locale ITALIAN = new Locale("it");
+  public static final Locale ITALIAN = getLocale("it");
 
   /** Locale which represents the Japanese language. */
-  public static final Locale JAPANESE = new Locale("ja");
+  public static final Locale JAPANESE = getLocale("ja");
 
   /** Locale which represents the Korean language. */
-  public static final Locale KOREAN = new Locale("ko");
+  public static final Locale KOREAN = getLocale("ko");
 
   /** Locale which represents the Chinese language. */
-  public static final Locale CHINESE = new Locale("zh");
+  public static final Locale CHINESE = getLocale("zh");
 
   /** Locale which represents the Chinese language as used in China. */
-  public static final Locale SIMPLIFIED_CHINESE = new Locale("zh", "CN");
+  public static final Locale SIMPLIFIED_CHINESE = getLocale("zh", "CN");
 
   /**
    * Locale which represents the Chinese language as used in Taiwan.
    * Same as TAIWAN Locale.
    */
-  public static final Locale TRADITIONAL_CHINESE = new Locale("zh", "TW");
+  public static final Locale TRADITIONAL_CHINESE = getLocale("zh", "TW");
 
   /** Locale which represents France. */
-  public static final Locale FRANCE = new Locale("fr", "FR");
+  public static final Locale FRANCE = getLocale("fr", "FR");
 
   /** Locale which represents Germany. */
-  public static final Locale GERMANY = new Locale("de", "DE");
+  public static final Locale GERMANY = getLocale("de", "DE");
 
   /** Locale which represents Italy. */
-  public static final Locale ITALY = new Locale("it", "IT");
+  public static final Locale ITALY = getLocale("it", "IT");
 
   /** Locale which represents Japan. */
-  public static final Locale JAPAN = new Locale("ja", "JP");
+  public static final Locale JAPAN = getLocale("ja", "JP");
 
   /** Locale which represents Korea. */
-  public static final Locale KOREA = new Locale("ko", "KR");
+  public static final Locale KOREA = getLocale("ko", "KR");
 
   /**
    * Locale which represents China.
@@ -146,16 +147,16 @@ public final class Locale implements Serializable, Cloneable
   public static final Locale TAIWAN = TRADITIONAL_CHINESE;
 
   /** Locale which represents the United Kingdom. */
-  public static final Locale UK = new Locale("en", "GB");
+  public static final Locale UK = getLocale("en", "GB");
 
   /** Locale which represents the United States. */
-  public static final Locale US = new Locale("en", "US");
+  public static final Locale US = getLocale("en", "US");
 
   /** Locale which represents the English speaking portion of Canada. */
-  public static final Locale CANADA = new Locale("en", "CA");
+  public static final Locale CANADA = getLocale("en", "CA");
 
   /** Locale which represents the French speaking portion of Canada. */
-  public static final Locale CANADA_FRENCH = new Locale("fr", "CA");
+  public static final Locale CANADA_FRENCH = getLocale("fr", "CA");
 
   /**
    * Compatible with JDK 1.1+.
@@ -191,15 +192,54 @@ public final class Locale implements Serializable, Cloneable
   private transient int hashcode;
 
   /**
+   * Array storing all available locales.
+   */
+  private transient static Locale[] availableLocales;
+
+  /**
+   * Locale cache. Only created locale objects are stored.
+   * Contains all supported locales when getAvailableLocales()
+   * got called.
+   */
+  private transient static HashMap localeMap;
+  
+  /**
    * The default locale. Except for during bootstrapping, this should never be
    * null. Note the logic in the main constructor, to detect when
    * bootstrapping has completed.
    */
   private static Locale defaultLocale =
-    new Locale(SystemProperties.getProperty("user.language", "en"),
-               SystemProperties.getProperty("user.region", ""),
-               SystemProperties.getProperty("user.variant", ""));
+    getLocale(SystemProperties.getProperty("user.language", "en"),
+              SystemProperties.getProperty("user.region", ""),
+              SystemProperties.getProperty("user.variant", ""));
+ 
+  private static Locale getLocale(String language)
+  {
+    return getLocale(language, "", "");
+  }
+  
+  private static Locale getLocale(String language, String region)
+  {
+    return getLocale(language, region, "");
+  }
+  
+  private static Locale getLocale(String language, String region, String variant)
+  {
+    if (localeMap == null)
+      localeMap = new HashMap(256);
 
+    String name = language + "_" + region + "_" + variant;
+    Locale locale = (Locale) localeMap.get(name);
+
+    if (locale == null)
+      {
+	locale = new Locale(language, region, variant);
+	localeMap.put(name, locale);
+      }
+
+    return locale;
+  }
+  
   /**
    * Convert new iso639 codes to the old ones.
    *
@@ -306,24 +346,44 @@ public final class Locale implements Serializable, Cloneable
    *
    * @return the installed locales
    */
-  public static Locale[] getAvailableLocales()
+  public synchronized static Locale[] getAvailableLocales()
   {
-    /* I only return those for which localized language
-     * or country information exists.
-     * XXX - remove hard coded list, and implement more locales (Sun's JDK 1.4
-     * has 148 installed locales!).
-     */
-    return new Locale[]
-    {
-      ENGLISH, FRENCH, GERMAN, new Locale("ga", "")
-    };
+    if (availableLocales == null)
+      {
+	String[] localeNames = LocaleData.localeNames;
+        availableLocales = new Locale[localeNames.length];
+
+        for (int i = 0; i < localeNames.length; i++)
+          {
+            String language;
+            String region = "";
+            String variant = "";
+            String name = localeNames[i];
+
+            language = name.substring(0, 2);
+
+            if (name.length() > 2)
+              region = name.substring(3);
+
+	    int index = region.indexOf("_");
+	    if (index > 0)
+	      {
+		variant = region.substring(index + 1);
+		region = region.substring(0, index - 1);
+	      }
+
+            availableLocales[i] = getLocale(language, region, variant);
+          }
+      }
+    
+    return availableLocales;
   }
 
   /**
    * Returns a list of all 2-letter uppercase country codes as defined
    * in ISO 3166.
    *
-   * @return a list of acceptible country codes
+   * @return a list of acceptable country codes
    */
   public static String[] getISOCountries()
   {
@@ -542,7 +602,7 @@ public final class Locale implements Serializable, Cloneable
     try
       {
         ResourceBundle bundle
-          = ResourceBundle.getBundle("gnu.java.locale.iso639", locale);
+          = ResourceBundle.getBundle("java.util.iso639", locale);
         return bundle.getString(language);
       }
     catch (MissingResourceException ex)
@@ -580,7 +640,7 @@ public final class Locale implements Serializable, Cloneable
     try
       {
         ResourceBundle bundle =
-          ResourceBundle.getBundle("gnu.java.locale.iso3166", locale);
+          ResourceBundle.getBundle("java.util.iso3166", locale);
         return bundle.getString(country);
       }
     catch (MissingResourceException ex)

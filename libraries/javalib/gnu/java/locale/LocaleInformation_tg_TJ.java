@@ -59,7 +59,6 @@ public class LocaleInformation_tg_TJ extends ListResourceBundle
   static final String[] ampms = { "", "" };
 
   static final String shortDateFormat = "dd.MM.yyyy";
-  static final String defaultTimeFormat = "";
   static final String currencySymbol = "\u0440\u0443\u0431";
   static final String intlCurrencySymbol = "RUR";
   static final String currencyFormat = "#,###,##0.00 $;-#,###,##0.00 $";
@@ -72,7 +71,6 @@ public class LocaleInformation_tg_TJ extends ListResourceBundle
     { "months", months },
     { "ampms", ampms },
     { "shortDateFormat", shortDateFormat },
-    { "defaultTimeFormat", defaultTimeFormat },
     { "currencySymbol", currencySymbol },
     { "intlCurrencySymbol", intlCurrencySymbol },
     { "currencyFormat", currencyFormat },

@@ -124,7 +124,7 @@ Java_gnu_classpath_VMSystemProperties_getLocale (JNIEnv *env,
   locale = "";
 #endif
 
-  return (*env)->NewStringUTF(env, getLibraryPath());
+  return (*env)->NewStringUTF(env, locale);
 }
 
 JNIEXPORT jstring JNICALL

@@ -44,42 +44,14 @@ import java.util.ListResourceBundle;
 
 public class LocaleInformation_en_ZW extends ListResourceBundle
 {
-  static final String decimalSeparator = LocaleInformation_en_ZA.decimalSeparator;
-  static final String groupingSeparator = LocaleInformation_en_ZA.groupingSeparator;
-  static final String numberFormat = LocaleInformation_en_ZA.numberFormat;
-  static final String percentFormat = LocaleInformation_en_ZA.percentFormat;
-  static final String[] weekdays = LocaleInformation_en_ZA.weekdays;
-
-  static final String[] shortWeekdays = LocaleInformation_en_ZA.shortWeekdays;
-
-  static final String[] shortMonths = LocaleInformation_en_ZA.shortMonths;
-
-  static final String[] months = LocaleInformation_en_ZA.months;
-
-  static final String[] ampms = LocaleInformation_en_ZA.ampms;
-
-  static final String shortDateFormat = LocaleInformation_en_ZA.shortDateFormat;
-  static final String defaultTimeFormat = LocaleInformation_en_ZA.defaultTimeFormat;
-  static final String currencySymbol = "Z$";
-  static final String intlCurrencySymbol = "ZWD";
-  static final String currencyFormat = "$#,###,##0.00;-$#,###,##0.00";
-
   private static final Object[][] contents =
   {
-    { "weekdays", weekdays },
-    { "shortWeekdays", shortWeekdays },
-    { "shortMonths", shortMonths },
-    { "months", months },
-    { "ampms", ampms },
-    { "shortDateFormat", shortDateFormat },
-    { "defaultTimeFormat", defaultTimeFormat },
-    { "currencySymbol", currencySymbol },
-    { "intlCurrencySymbol", intlCurrencySymbol },
-    { "currencyFormat", currencyFormat },
-    { "decimalSeparator", decimalSeparator },
-    { "groupingSeparator", groupingSeparator },
-    { "numberFormat", numberFormat },
-    { "percentFormat", percentFormat },
+    { "shortDateFormat", "d/M/yyyy" },
+    { "mediumDateFormat", "dd MMM,yy" },
+    { "longDateFormat", "dd MMMM yyyy" },
+    { "fullDateFormat", "EEEE dd MMMM yyyy" },
+    { "longTimeFormat", "h:mm:ss a" },
+    { "fullTimeFormat", "h:mm:ss a" },
   };
 
   public Object[][] getContents() { return contents; }
