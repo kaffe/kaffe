@@ -426,6 +426,17 @@ public class JTable extends JComponent
     this(new DefaultTableModel(data, columnNames));
   }
 
+  public void addColumn(TableColumn column)
+  {
+    if (column.getHeaderValue() == null)
+      {
+	String name = getColumnName(column.getModelIndex());
+	column.setHeaderValue(name);
+      }
+    
+    columnModel.addColumn(column);
+  }
+  
   /**
    * @deprecated 1.0.2, replaced by <code>new JScrollPane(JTable)</code>
    */
@@ -1593,4 +1604,13 @@ public class JTable extends JComponent
     repaint();
   }
 
+  public Class getColumnClass(int column)
+  {
+    return dataModel.getColumnClass(column);
+  }
+  
+  public String getColumnName(int column)
+  {
+    return dataModel.getColumnName(column);
+  }
 }
