@@ -1,3 +1,7 @@
+Mon Jun  7 12:53:20 PDT 1999  Jiro KANAYAMA <majiro@distribution.co.jp>
+
+	* libraries/javalib/java/util/Date.java: tweaks to to{GMT}String()
+
 Mon Jun  7 12:43:54 PDT 1999  Pavel Roskin <pavel_roskin@geocities.com>
 
 	* libraries/javalib/rebuildLib.in: Don't use the existing
