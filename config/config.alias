@@ -13,6 +13,7 @@ mipsel)		Khost_cpu=mips ;;
 alpha*)		Khost_cpu=alpha ;;
 sparc*)		Khost_cpu=sparc ;;
 powerpc*)	Khost_cpu=powerpc ;;
+s390*)		Khost_cpu=s390 ;;
 
 esac
 

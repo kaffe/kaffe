@@ -1,5 +1,12 @@
 2004-06-11  Dalibor Topic  <robilad@kaffe.org>,
 
+	* config/config.alias:
+	Added support for s390x.
+
+	Reported by: Bastian Blank <waldi@debian.org>
+
+2004-06-11  Dalibor Topic  <robilad@kaffe.org>,
+
         * config/alpha/common.h,
         config/arm/sysdepCallMethod.h,
         config/ia64/common.h,
