@@ -44,7 +44,7 @@
 		
 extern struct JNINativeInterface Kaffe_JNINativeInterface;
 
-static int threadStackSize;	/* native stack size */
+static size_t threadStackSize;	/* native stack size */
 
 /* referenced by native/Runtime.c */
 jbool runFinalizerOnExit;	/* should we run finalizers? */
@@ -152,12 +152,12 @@ initThreads(void)
 
 
 static jthread_t
-createThread(Hjava_lang_Thread* tid, void* func, size_t stacksize,
+createThread(Hjava_lang_Thread* tid, void (*func)(void *), size_t stacksize,
 	     struct _errorInfo *einfo)
 {
 	jthread_t nativeThread;
 
-	nativeThread = jthread_create(unhand(tid)->priority,
+	nativeThread = jthread_create((unsigned char)unhand(tid)->priority,
 			       func,
 			       unhand(tid)->daemon,
 			       tid,
@@ -285,7 +285,7 @@ attachFakedThreadInstance(const char* nm)
  */
 static
 void
-startSpecialThread(void *arg)
+startSpecialThread(void *arg UNUSED)
 {
 	void (*func)(void *);
 	void *argument;
@@ -358,7 +358,8 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
  */
 static
 void
-firstStartThread(void* arg)
+NONRETURNING
+firstStartThread(void* arg UNUSED)
 {
 	Hjava_lang_Thread* tid;
 	jthread_t cur;
@@ -651,10 +652,10 @@ dumpThreads(void)
  * Return the name of a java thread, given its native thread pointer.
  */
 char*
-nameNativeThread(void* native)
+nameNativeThread(void* native_data)
 {
 	return nameThread((Hjava_lang_Thread*)
-		jthread_get_data((jthread_t)native)->jlThread);
+		jthread_get_data((jthread_t)native_data)->jlThread);
 }
 
 /*
@@ -713,7 +714,7 @@ initNativeThreads(int nativestacksize)
 	 * Since everything is stored in the threadData struct now, we can simply
 	 * attach a faked java.lang.Thread instance later on.
 	 */
-	jthread_createfirst(MAINSTACKSIZE, java_lang_Thread_NORM_PRIORITY, 0);
+	jthread_createfirst(MAINSTACKSIZE, (unsigned char)java_lang_Thread_NORM_PRIORITY, 0);
 
 	/*
 	 * initialize some things that are absolutely necessary:

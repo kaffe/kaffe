@@ -246,12 +246,12 @@ hashResize(hashtab_t tab)
 		if (ptr != NULL && ptr != DELETED) {
 			const int hash = (*tab->hash)(ptr);
 			const int step = LIST_STEP(hash);
-			int index;
+			int i;
 
-			for (index = hash & (newSize - 1);
-			    newList[index] != NULL;
-			    index = (index + step) & (newSize - 1));
-			newList[index] = ptr;
+			for (i = hash & (newSize - 1);
+			    newList[i] != NULL;
+			    i = (i + step) & (newSize - 1));
+			newList[i] = ptr;
 		}
 	}
 

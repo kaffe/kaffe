@@ -14,6 +14,7 @@
  *            Tim Wilkinson <tim@transvirtual.com>
  */
 
+#include "config.h"
 #include "jthread.h"
 #include "jsignal.h"
 #include "xprofiler.h"
@@ -538,7 +539,7 @@ interrupt(SIGNAL_ARGS(sig, sc))
  * priority.
  */
 static void 
-handleVtAlarm(int sig, SIGNAL_CONTEXT_POINTER(sc))
+handleVtAlarm(int sig UNUSED, SIGNAL_CONTEXT_POINTER(sc UNUSED))
 {
 	static int c;
 
@@ -570,11 +571,11 @@ static void
 alarmException(void)
 {
 	jthread* jtid;
-	jlong time;
+	jlong curTime;
 
 	/* Wake all the threads which need waking */
-	time = currentTime();
-	while (alarmList != 0 && JTHREADQ(alarmList)->time <= time) {
+	curTime = currentTime();
+	while (alarmList != 0 && JTHREADQ(alarmList)->time <= curTime) {
 	        KaffeNodeQueue* node = alarmList;
 		/* Restart thread - this will tidy up the alarm and blocked
 		 * queues.
@@ -588,7 +589,7 @@ alarmException(void)
 
 	/* Restart alarm */
 	if (alarmList != 0) {
-		MALARM(JTHREADQ(alarmList)->time - time);
+		MALARM(JTHREADQ(alarmList)->time - curTime);
 	}
 }
 
@@ -601,7 +602,7 @@ printflags(unsigned i)
 	static char b[256];	/* plenty */
 	struct {
 		int flagvalue;
-		char *flagname;
+		const char *flagname;
 	} flags[] = {
 	    { THREAD_FLAGS_GENERAL, "GENERAL" },
 	    { THREAD_FLAGS_NOSTACKALLOC, "NOSTACKALLOC" },
@@ -858,14 +859,14 @@ cleanupWaitQ(jthread *jtid)
  * Return true if thread was interrupted.
  */
 static int
-suspendOnQThread(jthread* jtid, KaffeNodeQueue** queue, jlong timeout)
+suspendOnQThread(jthread* jtid, KaffeNodeQueue** queue, long timeout)
 {
 	int rc = false;
 	KaffeNodeQueue** ntid;
 	KaffeNodeQueue* last;
 
 DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%ld) bI %d\n",
-	jtid, queue, (long) timeout, blockInts); )
+	jtid, queue, timeout, blockInts); )
 
 	assert(timeout >= 0 || timeout == NOTIMEOUT);
 	assert(intsDisabled()); 
@@ -902,7 +903,7 @@ DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%ld) bI %d\n",
 
 				/* If I have a timeout, insert into alarmq */
 				if (timeout != NOTIMEOUT) {
-				  addToAlarmQ(jtid, timeout);
+				  addToAlarmQ(jtid, (jlong)timeout);
 				}
 
 				/* If I was running, reschedule */
@@ -1010,7 +1011,7 @@ DBG(JTHREAD,
  * Allocate a new thread context and stack.
  */
 static jthread*
-newThreadCtx(int stackSize)
+newThreadCtx(size_t stackSize)
 {
 	jthread *ct;
 
@@ -1083,7 +1084,7 @@ jthread_extract_stack(jthread *jtid, void **from, unsigned *len)
  * XXX this is supposed to count the number of stack frames 
  */
 int
-jthread_frames(jthread *thrd)
+jthread_frames(jthread *thrd UNUSED)
 {
         return (0);
 }
@@ -1470,7 +1471,7 @@ start_this_sucker_on_a_new_frame(void)
  * create a new jthread
  */
 jthread *
-jthread_create(unsigned char pri, void (*func)(void *), int daemon,
+jthread_create(unsigned char pri, void (*func)(void *), int isDaemon,
         void *jlThread, size_t threadStackSize)
 {
         KaffeNodeQueue *liveQ;
@@ -1513,11 +1514,11 @@ jthread_create(unsigned char pri, void (*func)(void *), int daemon,
 	liveThreads = liveQ;
 
         talive++;       
-        if ((jtid->daemon = daemon) != 0) {
+        if ((jtid->daemon = isDaemon) != 0) {
                 tdaemon++;
         }
 DBG(JTHREAD,
-	dprintf("creating thread %p, daemon=%d\n", jtid, daemon); )
+	dprintf("creating thread %p, daemon=%d\n", jtid, isDaemon); )
 	jmutex_unlock(&threadLock);
 
         assert(func != 0); 
@@ -1700,14 +1701,14 @@ jthread_stacklimit(void)
 /* Spinlocks: simple since we're uniprocessor */
 /* ARGSUSED */
 void
-jthread_spinon(void *arg)
+jthread_spinon(void *arg UNUSED)
 {
        jthread_suspendall();
 }
 
 /* ARGSUSED */
 void
-jthread_spinoff(void *arg)
+jthread_spinoff(void *arg UNUSED)
 {
        jthread_unsuspendall();
 }
@@ -1727,14 +1728,14 @@ jthread_yield(void)
  * sleep for time milliseconds
  */     
 void
-jthread_sleep(jlong time)
+jthread_sleep(jlong millis)
 {
-        if (time == 0) {
+        if (millis == 0) {
                 return; 
         }
         intsDisable();
 	BLOCKED_ON_EXTERNAL(currentJThread);
-        suspendOnQThread(currentJThread, 0, time);
+        suspendOnQThread(currentJThread, 0, (long)millis);
         intsRestore();
 }
 
@@ -1905,7 +1906,7 @@ DBG(JTHREAD,
 	intsDisable();
 	for (;;) {
 		killThread(currentJThread);
-		jthread_sleep(1000);
+		jthread_sleep((jlong) 1000);
 	}
 }
 
@@ -2077,13 +2078,13 @@ resumeQueue(KaffeNodeQueue *queue)
  */
 static
 void
-handleIO(int sleep)
+handleIO(int canSleep)
 {
 	int r;
 	/* NB: both pollarray and rd, wr are thread-local */
 #if USE_POLL
 	/* for poll(2) */
-	int nfd;
+	unsigned int nfd, i;
 #if DONT_USE_ALLOCA
 	struct pollfd pollarray[FD_SETSIZE];	/* huge (use alloca?) */
 #else
@@ -2094,19 +2095,20 @@ handleIO(int sleep)
 	fd_set rd;
 	fd_set wr;
 	struct timeval zero = { 0, 0 };
+	int i;
 #endif
-	int i, b = 0;
+	int b = 0;
 
 	assert(intsDisabled());
 
 DBG(JTHREADDETAIL,
-	dprintf("handleIO(sleep=%d)\n", sleep);		)
+	dprintf("handleIO(sleep=%d)\n", canSleep);		)
 
 #if USE_POLL
 	/* Build pollarray from fd_sets.
 	 * This is probably not the most efficient way to handle this.
 	 */
-	for (nfd = 0, i = 0; i <= maxFd; i++) {
+	for (nfd = 0, i = 0; (int)i <= maxFd; i++) {
 		short ev = 0;
 		if (readQ[i] != 0) { 	/* FD_ISSET(i, &readsPending) */
 			/* Check for POLLIN and POLLHUP for portability.
@@ -2134,7 +2136,7 @@ DBG(JTHREADDETAIL,
 	 * figure out which fds are ready
 	 */
 retry:
-	if (sleep) {
+	if (canSleep) {
 		b = blockInts;
 		/* NB: BEGIN unprotected region */
 		blockInts = 0;
@@ -2148,14 +2150,14 @@ retry:
 #endif
 	}
 #if USE_POLL
-	r = poll(pollarray, nfd, sleep ? -1 : 0);
+	r = poll(pollarray, nfd, canSleep ? -1 : 0);
 #else
-	r = select(maxFd+1, &rd, &wr, 0, sleep ? 0 : &zero);
+	r = select(maxFd+1, &rd, &wr, 0, canSleep ? 0 : &zero);
 #endif
 	/* Reset wouldlosewakeup here */
 	wouldlosewakeup = 0; 
 
-	if (sleep) {
+	if (canSleep) {
 		int can_read_from_pipe = 0;
 		blockInts = b;
 		/* NB: END unprotected region */
@@ -2366,7 +2368,7 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 
 	/* wait to be signaled */
 	current->flags |= THREAD_FLAGS_WAIT_CONDVAR;
-	r = suspendOnQThread(current, cv, timeout);
+	r = suspendOnQThread(current, cv, (long) timeout);
 	current->flags &= ~THREAD_FLAGS_WAIT_CONDVAR;
 	/* reacquire mutex */
 	current->flags |= THREAD_FLAGS_WAIT_MUTEX;
@@ -2554,7 +2556,7 @@ restore_fds(void)
     	}
 }
 
-static void
+static void NONRETURNING
 restore_fds_and_exit()
 {
 	restore_fds();
@@ -2710,7 +2712,7 @@ jthreadedConnect(int fd, struct sockaddr* addr, int len, int timeout)
 	intsDisable();
 	SET_DEADLINE(deadline, timeout)
 	for (;;) {
-		r = connect(fd, addr, len);
+		r = connect(fd, addr, (socklen_t)len);
 		if (r == 0 || !(errno == EINPROGRESS 
 				|| errno == EINTR || errno == EISCONN)) {
 			break;	/* success or real error */
@@ -2821,7 +2823,7 @@ jthreadedTimedWrite(int fd, const void* buf, size_t len, int timeout, ssize_t *o
 	ssize_t r = 1;
 	/* absolute time at which timeout is reached */
 	jlong deadline = 0;
-	const void *ptr = buf;
+	const char *ptr = buf;
 
 	assert(timeout >= 0 || timeout == NOTIMEOUT);
 	intsDisable();
@@ -2829,9 +2831,9 @@ jthreadedTimedWrite(int fd, const void* buf, size_t len, int timeout, ssize_t *o
 	while (len > 0 && r > 0) {
 		r = write(fd, ptr, len);
 		if (r >= 0) {
-			(char *) ptr += r;
+			ptr += r;
 			len -= r;
-			r = (char *) ptr - (char *) buf;
+			r = ptr - (const char *) buf;
 			continue;
 		}
 		if (!(errno == EWOULDBLOCK || errno == EINTR 
@@ -2845,7 +2847,7 @@ jthreadedTimedWrite(int fd, const void* buf, size_t len, int timeout, ssize_t *o
 		if (blockOnFile(fd, TH_WRITE, timeout)) {
 			/* interrupted by jthread_interrupt() */
 			errno = EINTR;
-			*out = (char *) ptr - (char *) buf;
+			*out = ptr - (const char *) buf;
 			break;
 		}
 		BREAK_IF_LATE(deadline, timeout)
@@ -2872,7 +2874,7 @@ int
 jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *out)
 {
 	ssize_t r = 1;
-	const void* ptr;
+	const char* ptr;
 
 	ptr = buf;
 
@@ -2880,9 +2882,9 @@ jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *out)
 	while (len > 0 && r > 0) {
 		r = (ssize_t)write(fd, ptr, len);
 		if (r >= 0) {
-			(char *) ptr += r;
+			ptr += r;
 			len -= r;
-			r = (char *) ptr - (char *) buf;
+			r = ptr - (const char *) buf;
 			continue;
 		}
 		if (errno == EINTR) {
@@ -2897,13 +2899,13 @@ jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *out)
 		/* must be EWOULDBLOCK or EAGAIN */
 		if (!blockingFD[fd]) {
 			errno = EWOULDBLOCK;
-			*out = (char *) ptr - (char *) buf;
+			*out = ptr - (const char *) buf;
 			break;
 		}
 		if (blockOnFile(fd, TH_WRITE, NOTIMEOUT)) {
 			/* interrupted by jthread_interrupt() */
 			errno = EINTR;
-			*out = (char *) ptr - (char *) buf;
+			*out = ptr - (const char *) buf;
 			break;
 		}
 		r = 1;
@@ -3166,7 +3168,7 @@ jthreadedSelect(int a, fd_set* b, fd_set* c, fd_set* d,
 	int rc = 0;
 	struct timeval tval;
 	int i;
-	jlong time_milli;
+	long time_milli;
 	int second_time = 0;
 	
 	assert(a < FD_SETSIZE);

@@ -429,7 +429,7 @@ stringCharArray2Java(const jchar *data, int len)
 
 	/* Look for it already in the intern hash table */
 	if (hashTable != NULL) {
-		Hjava_lang_String *string, fakeString;
+		Hjava_lang_String fakeString;
 		HArrayOfChar *fakeAry;
 		unsigned char buf[200];
 

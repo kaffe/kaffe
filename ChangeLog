@@ -1,5 +1,18 @@
 2004-04-02  Adam Heath <doogie@debian.org>
 
+        * kaffe/kaffe/main.c, kaffe/kaffevm/exception.h,
+	  kaffe/kaffevm/external.c, kaffe/kaffevm/external.h,
+	  kaffe/kaffevm/hashtab.c, kaffe/kaffevm/jni.c,
+	  kaffe/kaffevm/sha-1.c, kaffe/kaffevm/soft.h,
+	  kaffe/kaffevm/string.c, kaffe/kaffevm/thread.c,
+	  kaffe/kaffevm/systems/unix-jthreads/config-jthreads.h,
+	  kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	  kaffe/kaffevm/systems/unix-jthreads/jthread.h,
+	  libraries/clib/native/Class.c:
+	Lots and lots of warnings fixed(over 350 this time around).
+
+2004-04-02  Adam Heath <doogie@debian.org>
+
 	* kaffe/kaffevm/soft.c, kaffe/kaffevm/stackTrace.c,
 	  kaffe/kaffevm/string.c, kaffe/kaffevm/mem/gc-incremental.c,
 	  kaffe/kaffevm/mem/gc-mem.c, libraries/clib/awt/X/cbd.c,

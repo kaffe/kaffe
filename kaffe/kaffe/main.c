@@ -42,12 +42,12 @@ extern int profFlag;
 #include "jni.h"
 
 JavaVMInitArgs vmargs;
-JNIEnv* env;
-JavaVM* vm;
+JNIEnv* global_env;
+JavaVM* global_vm;
 static int isJar = 0;
 static char *jvm_onload;
 
-static int options(char**);
+static int options(char**, int);
 static void usage(void);
 static size_t parseSize(char*);
 static int checkException(void);
@@ -69,7 +69,7 @@ int
 main(int argc, char* argv[])
 {
 	int farg;
-	char* cp;
+	const char* cp;
 
 #if defined(MAIN_MD)
 	/* Machine specific main first */
@@ -121,7 +121,7 @@ main(int argc, char* argv[])
         vmargs.classhome = cp;
 
 	/* Process program options */
-	farg = options(argv);
+	farg = options(argv, argc);
 	argc = argc - farg;
 
 #if defined(KAFFE_XPROFILER)
@@ -144,14 +144,14 @@ main(int argc, char* argv[])
 	}
 
 	/* Initialise */
-	JNI_CreateJavaVM(&vm, &env, &vmargs);
+	JNI_CreateJavaVM(&global_vm, &global_env, &vmargs);
 
 	/* Handle the '-Xrun' argument. */
 	if( jvm_onload != NULL )
 	{
 		char *libpath, *libargs;
 		char errbuf[512];
-		int index;
+		int i;
 
 		/* XXX Pull findLibrary() from the JanosVM. */
 		libpath = &jvm_onload[2];
@@ -165,15 +165,15 @@ main(int argc, char* argv[])
 			libargs += 1;
 		}
 		
-		index = loadNativeLibrary(libpath, errbuf, sizeof(errbuf));
-		if( index > 0 )
+		i = loadNativeLibrary(libpath, errbuf, sizeof(errbuf));
+		if( i > 0 )
 		{
 			jint (*onload_func)(JavaVM *jvm, char *, void *);
 
 			if( (onload_func =
 			     loadNativeLibrarySym("JVM_OnLoad")) != NULL )
 			{
-				(void)onload_func(vm, libargs, NULL);
+				(void)onload_func(global_vm, libargs, NULL);
 			}
 		}
 		else
@@ -186,7 +186,7 @@ main(int argc, char* argv[])
 		}
 	}
 
-	return (main2(env, argv, farg, argc));
+	return (main2(global_env, argv, farg, argc));
 }
 
 /*
@@ -236,7 +236,7 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 	jobject str;
 	jobject loader;
 	int i;
-	char* exec;
+	const char* exec;
 
 	/* make sure no compiler optimizes this away */
 	gc_safe_zone[0] = gc_safe_zone[sizeof gc_safe_zone - 1] = 0;
@@ -306,14 +306,14 @@ DBG(VMCLASSLOADER,
 	cls = (*env)->FindClass(env, "java/lang/String");
 	if (checkException())
 		goto done;
-	args = (*env)->NewObjectArray(env, argc, cls, 0);
+	args = (*env)->NewObjectArray(env, (unsigned)argc, cls, 0);
 	if (checkException())
 		goto done;
 	for (i = 0; i < argc; i++) {
 		str = (*env)->NewStringUTF(env, argv[farg+i]);
 		if (checkException())
 			goto done;
-		(*env)->SetObjectArrayElement(env, args, i, str);
+		(*env)->SetObjectArrayElement(env, args, (unsigned)i, str);
 		if (checkException())
 			goto done;
 	}
@@ -325,7 +325,7 @@ DBG(VMCLASSLOADER,
 done:
 	/* We're done. We are the "main thread" and so are required to call
 	   (*vm)->DestroyJavaVM() instead of (*vm)->DetachCurrentThread() */
-	(*vm)->DestroyJavaVM(vm);
+	(*global_vm)->DestroyJavaVM(global_vm);
 	return (0);
 }
 
@@ -336,27 +336,27 @@ checkException(void)
 	jclass eiic;
 
 	/* Display exception stack trace */
-	if ((e = (*env)->ExceptionOccurred(env)) == NULL)
+	if ((e = (*global_env)->ExceptionOccurred(global_env)) == NULL)
 		return (0);
-	(*env)->ExceptionDescribe(env);
-	(*env)->ExceptionClear(env);
+	(*global_env)->ExceptionDescribe(global_env);
+	(*global_env)->ExceptionClear(global_env);
 
 	/* Display inner exception in ExceptionInInitializerError case */
-	eiic = (*env)->FindClass(env, "java/lang/ExceptionInInitializerError");
-	if ((*env)->ExceptionOccurred(env) != NULL) {
-		(*env)->ExceptionClear(env);
+	eiic = (*global_env)->FindClass(global_env, "java/lang/ExceptionInInitializerError");
+	if ((*global_env)->ExceptionOccurred(global_env) != NULL) {
+		(*global_env)->ExceptionClear(global_env);
 		return (1);
 	}
-	if ((*env)->IsInstanceOf(env, e, eiic)) {
-		e = (*env)->CallObjectMethod(env, e,
-		    (*env)->GetMethodID(env, (*env)->GetObjectClass(env, e),
+	if ((*global_env)->IsInstanceOf(global_env, e, eiic)) {
+		e = (*global_env)->CallObjectMethod(global_env, e,
+		    (*global_env)->GetMethodID(global_env, (*global_env)->GetObjectClass(global_env, e),
 			"getException", "()Ljava/lang/Throwable;"));
-		if ((*env)->ExceptionOccurred(env) != NULL) {
-			(*env)->ExceptionClear(env);
+		if ((*global_env)->ExceptionOccurred(global_env) != NULL) {
+			(*global_env)->ExceptionClear(global_env);
 			return (1);
 		}
 		if (e != NULL) {
-			(*env)->Throw(env, e);
+			(*global_env)->Throw(global_env, e);
 			return (checkException());
 		}
 	}
@@ -368,13 +368,14 @@ checkException(void)
  */
 static
 int
-options(char** argv)
+options(char** argv, int argc)
 {
-	int i,j;
-	int sz;
+	int i;
+	unsigned int j;
+	size_t sz;
 	userProperty* prop;
 
-	for (i = 1; argv[i] != 0; i++) {
+	for (i = 1; i < argc; i++) {
 		if (argv[i][0] != '-') {
 			break;
 		}
@@ -401,7 +402,7 @@ options(char** argv)
 			 || (strcmp(argv[i], "-classpath") == 0)
 			 || (strcmp(argv[i], "-cp") == 0)) {
 			char	*newcpath;
-			int      cpathlength;
+			unsigned int      cpathlength;
 
 			i++;
 			if (argv[i] == 0) {
@@ -435,7 +436,7 @@ options(char** argv)
 		}
 		else if (strncmp(argv[i], "-Xbootclasspath/p:", (j=18)) == 0) {
 			char	*newbootcpath;
-			int      bootcpathlength;
+			unsigned int      bootcpathlength;
 
 			bootcpathlength = strlen(&argv[i][j])
 				+ strlen(path_separator)

@@ -137,9 +137,6 @@ static jlong currentTime()
     return (((jlong)tm.tv_sec * 1000L) + ((jlong)tm.tv_usec / 1000L));
 }
 
-/* let main thread loop until all threads finish, for tests */
-void 	jthread_exit_when_done() NONRETURNING;
-
 /* debug.h stuff */
 #ifdef KAFFE_VMDEBUG
 #define DBG(x, y)       	y

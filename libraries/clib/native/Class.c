@@ -861,7 +861,6 @@ checkForField(struct Hjava_lang_Class* clazz, struct Hjava_lang_String* name, jb
 	do {
 		Field* fld = CLASS_FIELDS(clas);
 		int n = CLASS_NFIELDS(clas);
-		int i;
 		for (i = 0;  i < n;  ++fld, ++i) {
 			if (((fld->accflags & ACC_PUBLIC) || declared)
 			    && utf8ConstEqualJavaString(fld->name, name)) {

@@ -103,7 +103,7 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
  */
 #if defined(TRANSLATOR)
 #define KAFFE_JNI_SETEXCEPTFP(ebufp) {				\
-        vmExcept_setJNIFrame(ebufp,(uintp)__builtin_frame_address(0));\
+        vmExcept_setJNIFrame(ebufp, __builtin_frame_address(0));\
         }
 #else
 /*
@@ -113,7 +113,7 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
  * a JNIFrame so the stack trace code can ignore it.
  */
 #define KAFFE_JNI_SETEXCEPTFP(ebufp) {   \
-	vmExcept_setJNIFrame(ebufp, (uintp)ebufp); \
+	vmExcept_setJNIFrame(ebufp, ebufp); \
         }
 #endif 
 
@@ -3574,12 +3574,12 @@ Kaffe_GetJavaVM(JNIEnv* env UNUSED, JavaVM** vm)
 }
 
 static jint
+NONRETURNING
 Kaffe_DestroyJavaVM(JavaVM* vm UNUSED)
 {
 	/* Right now, calling this from main2 is what prevents us from 
 	   exiting there */
 	exitThread();
-	return (0);
 }
 
 static jint

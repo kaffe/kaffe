@@ -389,7 +389,7 @@ DBG(NATIVELIB,
  * Get pointer to symbol from symbol name.
  */
 void*
-loadNativeLibrarySym(char* name)
+loadNativeLibrarySym(const char* name)
 {
 	void* func;
 

@@ -105,8 +105,8 @@ void unhandledException(struct Hjava_lang_Throwable *eobj) NONRETURNING;
 extern void initExceptions(void);
 
 static inline bool vmExcept_isJNIFrame(VmExceptHandler* eh) __UNUSED__;
-static inline bool vmExcept_JNIContains(VmExceptHandler* eh, uintp pc) __UNUSED__;
-static inline void vmExcept_setJNIFrame(VmExceptHandler* eh, uintp fp) __UNUSED__;
+static inline bool vmExcept_JNIContains(VmExceptHandler* eh, void *pc) __UNUSED__;
+static inline void vmExcept_setJNIFrame(VmExceptHandler* eh, void *fp) __UNUSED__;
 static inline struct _methods* vmExcept_getMeth(VmExceptHandler* eh) __UNUSED__;
 static inline void vmExcept_setMeth(VmExceptHandler* eh, struct _methods* m) __UNUSED__;
 static inline void vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj) __UNUSED__;
@@ -123,7 +123,7 @@ vmExcept_isJNIFrame(VmExceptHandler* eh)
 }
 
 static inline bool
-vmExcept_JNIContains(VmExceptHandler* eh, uintp fp)
+vmExcept_JNIContains(VmExceptHandler* eh, void *fp)
 {
 	assert(eh);
 	assert(eh->meth == VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
@@ -133,7 +133,7 @@ vmExcept_JNIContains(VmExceptHandler* eh, uintp fp)
 }
 
 static inline void 
-vmExcept_setJNIFrame(VmExceptHandler* eh, uintp fp)
+vmExcept_setJNIFrame(VmExceptHandler* eh, void *fp)
 {
 	assert(eh);
 	assert(fp != 0);

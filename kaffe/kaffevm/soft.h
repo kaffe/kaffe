@@ -29,7 +29,7 @@ void*	soft_lookupinterfacemethod(struct Hjava_lang_Object*, struct Hjava_lang_Cl
 void*	soft_checkcast(struct Hjava_lang_Class*, struct Hjava_lang_Object*);
 jint	soft_instanceof(struct Hjava_lang_Class*, struct Hjava_lang_Object*);
 
-void	soft_athrow(struct Hjava_lang_Object*);
+void	soft_athrow(struct Hjava_lang_Object*) NONRETURNING;
 void	soft_badarrayindex(void) NONRETURNING;
 void	soft_nullpointer(void) NONRETURNING;
 void	soft_divzero(void) NONRETURNING;

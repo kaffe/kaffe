@@ -122,7 +122,6 @@ unsigned long len;
 			}
 		else
 			{
-			int ew,ec;
 
 			c->num+=(int)len;
 			if ((sc+len) < 4) /* ugly, add char's to a word */
