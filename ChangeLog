@@ -4,6 +4,18 @@
 	
 	2005-01-20  Mark Wielaard  <mark@klomp.org>
 
+	* javax/naming/directory/BasicAttributes.java (equals): Compare to any
+	Attributes and attribute order doesn't matter.
+	(BasicAttributesEnumeration.where): Initialize to zero.
+	(BasicAttributesEnumeration.nextElement): Update and compare where
+	appropriately (zero based).
+
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-01-20  Mark Wielaard  <mark@klomp.org>
+
 	* native/jni/gtk-peer/gtkpeer.h (gdk_env): Fix prototype.
 
 2005-01-22  Dalibor Topic  <robilad@kaffe.org>
