@@ -162,13 +162,13 @@ java_lang_Runtime_linkLibrary(struct Hjava_lang_String *jpath, struct Hjava_lang
 }
 
 struct Hjava_lang_String*
-java_lang_Runtime_getLibPrefix()
+java_lang_Runtime_getLibPrefix(void)
 {
 	return checkPtr(stringC2Java(LIBRARYPREFIX));
 }
 
 struct Hjava_lang_String*
-java_lang_Runtime_getLibSuffix()
+java_lang_Runtime_getLibSuffix(void)
 {
 	return checkPtr(stringC2Java(LIBRARYSUFFIX));
 }
