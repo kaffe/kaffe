@@ -33,11 +33,14 @@ freevec(char **v)
 }
 
 jint
-Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, jarray envs)
+Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env,
+	jobject proc, jarray args, jarray envs, jstring dir)
 {
 	jint pid;
 	char** argv;
 	char** arge;
+	const jbyte *dirchars;
+	char *dirbuf;
 	jint ioes[4];
 	int arglen;
 	int envlen;
@@ -191,12 +194,32 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 	else if (access (argv[0], X_OK) != -1) {
 		rc = 0;
 	}
+
+	/* Get working directory for new process */
+	dirchars = (*env)->GetStringUTFChars(env, dir, NULL);
+	dirbuf = KMALLOC(strlen(dirchars) + 1);
+	if (dirbuf != 0) {
+		strcpy(dirbuf, dirchars);
+	}
+	(*env)->ReleaseStringUTFChars(env, dir, dirchars);
+	if (dirbuf == 0) {
+		errorInfo info;
+
+		freevec(argv);
+		freevec(arge);
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
+
+	/* Do the fork & exec */
 	if (!rc) {
-		rc = KFORKEXEC(argv, arge, ioes, &pid);
+		rc = KFORKEXEC(argv, arge, ioes, &pid, dirbuf);
 	}
 
 	freevec(argv);
 	freevec(arge);
+	KFREE(dirbuf);
+
 	if (rc) {
 		(*env)->ThrowNew(env, ioexc_class, SYS_ERROR(rc));
 		return (-1);

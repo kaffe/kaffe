@@ -26,11 +26,17 @@ public class UNIXProcess extends Process {
 	InputStream raw_stderr;
 	Throwable throwable;		// saved to rethrow in correct thread
 
-public UNIXProcess(final String argv[], final String arge[]) throws Throwable {
+public UNIXProcess(final String argv[], final String arge[], File dir)
+		throws Throwable {
 	stdin_fd = new FileDescriptor();
 	stdout_fd = new FileDescriptor();
 	stderr_fd = new FileDescriptor();
 	sync_fd = new FileDescriptor();
+
+	/*
+	 * Use supplied directory, or current directory if null
+	 */
+	final String dirPath = (dir != null) ? dir.toString() : ".";
 
 	/* We first create a thread to start the new process in.  This
 	 * is because on some system we can only wait for the child from
@@ -41,7 +47,7 @@ public UNIXProcess(final String argv[], final String arge[]) throws Throwable {
 		public void run() {
 			int fae = 0;
 			try {
-				fae = forkAndExec(argv, arge);
+				fae = forkAndExec(argv, arge, dirPath);
 			}
 			catch (Throwable t) {
 				// save it to rethrow in correct thread
@@ -145,7 +151,7 @@ public static void sendSignal(int pid, int signum) {
 	sendSignal0(pid, signum);
 }
 
-private native int forkAndExec(Object cmd[], Object env[]);
+private native int forkAndExec(Object cmd[], Object env[], String dirPath);
 private native int execWait();
 private native static void sendSignal0(int pid, int signum);
 private native static int getKillSignal();

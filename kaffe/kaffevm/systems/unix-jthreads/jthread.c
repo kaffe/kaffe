@@ -2397,7 +2397,8 @@ close_fds(int fd[], int n)
 }
 
 int 
-jthreadedForkExec(char **argv, char **arge, int ioes[4], int *outpid)
+jthreadedForkExec(char **argv, char **arge,
+	int ioes[4], int *outpid, const char *dir)
 {
 /* these defines are indices in ioes */
 #define IN_IN		0
@@ -2488,6 +2489,11 @@ DBG(JTHREAD,
 		/* now close all pipe fds */
 		close_fds(fds, 8);
 
+		/* change working directory */
+#if defined(HAVE_CHDIR)
+		(void)chdir(dir);
+#endif
+ 
 		/*
 		 * If no environment was given and we have execvp, we use it.
 		 * If an environment was given, we use execve.

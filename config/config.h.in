@@ -88,6 +88,9 @@
 /* Define if you have the ceil function.  */
 #undef HAVE_CEIL
 
+/* Define if you have the chdir function.  */
+#undef HAVE_CHDIR
+
 /* Define if you have the drem function.  */
 #undef HAVE_DREM
 

@@ -322,7 +322,8 @@ close_fds(int fd[], int n)
 }
 
 static int
-beos_native_forkexec(char *argv[], char *env[], int ioes[4], int *outpid)
+beos_native_forkexec(char *argv[], char *env[],
+	int ioes[4], int *outpid, const char *dir)
 {
 /* Adapted from unix-jthreads/jthread.c */
 /* these defines are indices in ioes */
@@ -409,6 +410,11 @@ DBG(JTHREAD,
 
 		/* now close all pipe fds */
 		close_fds(fds, 8);
+
+		/* change working directory */
+#if defined(HAVE_CHDIR)
+		(void)chdir(dir);
+#endif
 
 		/*
 		 * If no environment was given and we have execvp, we use it.

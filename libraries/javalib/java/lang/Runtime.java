@@ -10,6 +10,7 @@
 
 package java.lang;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,13 +33,15 @@ public static final int RED = 3;
 
 private static Runtime currentRuntime = new Runtime();
 private String[] paths = null;
-private static kaffe.lang.MemoryAdvice advice = kaffe.lang.MemoryAdvice.getInstance();
+private static kaffe.lang.MemoryAdvice advice
+	= kaffe.lang.MemoryAdvice.getInstance();
 
 private Runtime () {
 	String pathSpec = initializeLinkerInternal();
 
 	if ( pathSpec != null ) {
-		StringTokenizer tk = new StringTokenizer( pathSpec, System.getProperty("path.separator"));
+		StringTokenizer tk = new StringTokenizer(
+			pathSpec, System.getProperty("path.separator"));
 		paths = new String[tk.countTokens()];
 
 		for (int pos = 0; tk.hasMoreTokens(); pos++) {
@@ -50,10 +53,15 @@ private Runtime () {
 native private String  buildLibName(String path, String name);
 
 public Process exec(String command) throws IOException {
-	return exec(command, null);
+	return exec(command, null, null);
 }
 
 public Process exec(String command, String envp[]) throws IOException {
+	return exec(command, envp, null);
+}
+
+public Process exec(String command, String envp[], File dir)
+		throws IOException {
 	StringTokenizer tokenizer=new StringTokenizer(command);
 
 	int count=tokenizer.countTokens();
@@ -63,19 +71,25 @@ public Process exec(String command, String envp[]) throws IOException {
 		cmdarray[pos]=tokenizer.nextToken();
 	}
 
-	return exec(cmdarray, envp);
+	return exec(cmdarray, envp, dir);
 }
 
 public Process exec(String cmdarray[]) throws IOException {
-	return exec(cmdarray, null);
+	return exec(cmdarray, null, null);
 }
 
 public Process exec(String cmdarray[], String envp[]) throws IOException {
-	System.getSecurityManager().checkExec(cmdarray[0]);
-	return execInternal(cmdarray, envp);
+	return exec(cmdarray, envp, null);
 }
 
-native private Process execInternal(String cmdarray[], String envp[]) throws IOException;
+public Process exec(String[] cmdarray, String[] envp, File dir)
+		throws IOException {
+	System.getSecurityManager().checkExec(cmdarray[0]);
+	return execInternal(cmdarray, envp, dir);
+}
+
+private native Process execInternal(String cmdary[], String envp[], File dir)
+	throws IOException;
 
 public void exit(int status) {
 	System.getSecurityManager().checkExit(status);
@@ -114,7 +128,8 @@ public static Runtime getRuntime() {
 }
 
 private void initPaths() {
-	StringTokenizer tk = new StringTokenizer(initializeLinkerInternal(), System.getProperty("path.separator"));
+	StringTokenizer tk = new StringTokenizer(initializeLinkerInternal(),
+		System.getProperty("path.separator"));
 
 	paths = new String[tk.countTokens()];
 

@@ -1,6 +1,23 @@
+Sat Feb 12 16:36:00 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* configure, configure.in, config/config.h.in: detect chdir()
+	* include/jsyscall.h, kaffe/kaffevm/systems/beos-native/syscalls.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.h,
+	kaffe/kaffevm/systems/unix-pthreads/syscalls.c,
+	libraries/clib/native/Runtime.c, libraries/clib/native/UNIXProcess.c,
+	libraries/javalib/kaffe/lang/UNIXProcess.java,
+	libraries/javalib/java/lang/Runtime.java: add missing exec() methods
+	that take a directory argument
+	* libraries/javalib/java/net/PlainSocketImpl.java,
+	libraries/javalib/java/net/SocketImpl.java,
+	libraries/javalib/java/net/SocketInputStream.java: prevent re-use
+	of a closed socket
+	* libraries/javalib/Klasses.jar: regen
+
 Fri Feb 11 17:26:23 CET 2000  Pavel Roskin  <pavel_roskin@geocities.com>
 
-	* kaffe/kaffevm/classPool.c: compile walkClassPool() if                      
+	* kaffe/kaffevm/classPool.c: compile walkClassPool() if
         DEBUG is defined.
 
 Fri Feb 11 12:07:40 CET 2000  Edouard G. Parmelan  <egp@free.fr>

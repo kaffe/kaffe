@@ -345,7 +345,8 @@ int jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *);
 int jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
         struct sockaddr* from, int* fromlen, int timeout, ssize_t *);
 int jthreadedWaitpid(int wpid, int* status, int options, int *);
-int jthreadedForkExec(char **argv, char **arge, int ioes[4], int *);
+int jthreadedForkExec(char **argv, char **arge,
+	int ioes[4], int *, const char *);
 
 /* restore an fd, i.e., put it in blocking state without async I/O */
 #define JTHREAD_RESTORE_FD

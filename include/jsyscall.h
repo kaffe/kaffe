@@ -61,7 +61,7 @@ typedef struct SystemCallInterface {
 
 	int	(*_select)(int, fd_set*, fd_set*, fd_set*, struct timeval*, 
 		int*);
-	int	(*_forkexec)(char**, char**, int[4], int*);
+	int	(*_forkexec)(char**, char**, int[4], int*, const char*);
 	int	(*_waitpid)(int, int*, int, int*);
 	int	(*_kill)(int, int);
 
@@ -121,8 +121,8 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
 
 #define	KWAITPID(A,B,C,D) \
 			(*Kaffe_SystemCallInterface._waitpid)(A,B,C,D)
-#define	KFORKEXEC(A,B,C,D) \
-			(*Kaffe_SystemCallInterface._forkexec)(A,B,C,D)
+#define	KFORKEXEC(A,B,C,D,E) \
+			(*Kaffe_SystemCallInterface._forkexec)(A,B,C,D,E)
 #define	KKILL(A,B)	(*Kaffe_SystemCallInterface._kill)(A,B)
 
 #endif

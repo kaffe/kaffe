@@ -794,7 +794,7 @@ AC_CHECK_FUNCS([dnl
 select socket getsockname getpagesize dnl
 memcpy memmove dnl
 mkdir dnl
-getcwd getwd gettimeofday ftime time uname getuid dnl
+getcwd chdir getwd gettimeofday ftime time uname getuid dnl
 localtime dnl
 ])
 

@@ -18,6 +18,7 @@
 #include <native.h>
 #include "files.h"
 #include "defs.h"
+#include "java_io_File.h"
 #include "java_lang_Runtime.h"
 #include "../../../kaffe/kaffevm/external.h"
 #include "../../../kaffe/kaffevm/gc.h"
@@ -103,13 +104,13 @@ java_lang_Runtime_exitInternal(struct Hjava_lang_Runtime* r, jint v)
  * Exec another program.
  */
 struct Hjava_lang_Process*
-java_lang_Runtime_execInternal(struct Hjava_lang_Runtime* this, HArrayOfObject* argv, HArrayOfObject* arge)
+java_lang_Runtime_execInternal(struct Hjava_lang_Runtime* this,
+		HArrayOfObject* argv, HArrayOfObject* arge, Hjava_io_File* dir)
 {
-	struct Hjava_lang_Process* child;
-
-	child = (struct Hjava_lang_Process*)execute_java_constructor("kaffe.lang.UNIXProcess", 0, "([Ljava/lang/String;[Ljava/lang/String;)V", argv, arge);
-
-	return (child);
+	return (struct Hjava_lang_Process*)execute_java_constructor(
+	    "kaffe.lang.UNIXProcess", 0,
+	    "([Ljava/lang/String;[Ljava/lang/String;Ljava/io/File;)V",
+	    argv, arge, dir);
 }
 
 /*
