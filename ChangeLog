@@ -7,6 +7,8 @@ Thu Mar 11 13:54:19 PST 1999  Archie Cobbs <archie@whistle.com>
 	* FAQ/FAQ.Known-Bugs: remove description of 0.0/0.0 problem.
 	* include/system.h, libraries/clib/native/System.c: add
 	definitions of new JDK 1.2 properties. Some still need values.
+	* libraries/javalib/Makefile.{am,in}: add backslashes
+	* libraries/clib/awt/X/Makefile.in: regen
 
 Thu Mar 11 13:54:19 PST 1999  Archie Cobbs <archie@whistle.com>
 
