@@ -19,11 +19,13 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#if defined(HAVE_LIBXEXT) && defined(HAVE_SYS_IPC_H) && defined(HAVE_SYS_SHM_H) && defined(HAVE_X11_EXTENSIONS_XSHM_H)
+#define USE_XSHM_EXTENSION 1
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#if defined(HAVE_LIBXEXT)
 #include <X11/extensions/XShm.h>
 #else
+#undef USE_XSHM_EXTENSION
 #define	XShmGetImage(A,B,C,D,E,F)		0
 #define	XShmPutImage(A,B,C,D,E,F,G,H,I,J,K)	0
 #define	XShmSegmentInfo				void
