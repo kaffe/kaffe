@@ -1,3 +1,9 @@
+1999-09-18  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c (TLOCK,
+	TUNLOCK): Protect macro argument with parentheses.  Make them a
+	single statement.
+
 Fri Sep 17 15:11:49 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* test/regression/forNameTest.java, libraries/clib/native/Makefile.am,

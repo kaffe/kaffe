@@ -168,13 +168,15 @@ static void (*thread_free)(void*);
 extern void nullException(int);
 
 #define LOCKSLOT  int iLockRoot
-#define TLOCK(_nt)                \
-  _nt->blockState |= BS_THREAD;  \
-  lockStaticMutex( &tLock)
+#define TLOCK(_nt) do {            \
+  (_nt)->blockState |= BS_THREAD;  \
+  lockStaticMutex(&tLock);         \
+} while (0)
 
-#define TUNLOCK(_nt)              \
-  unlockStaticMutex( &tLock);    \
-  _nt->blockState &= ~BS_THREAD
+#define TUNLOCK(_nt) do {          \
+  unlockStaticMutex(&tLock);       \
+  (_nt)->blockState &= ~BS_THREAD; \
+} while (0)
 
 
 /***********************************************************************
