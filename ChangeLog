@@ -4,6 +4,23 @@
 
 	2004-12-30  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
+	* java/text/DecimalFormatSymbols.java
+	New transient currency variable.
+	(getCurrency()): uses local variable instead
+	(getExponential()): documentation
+	(setExponential(char)): documentation
+	(getInternationalCurrencySymbol()): documentation fix
+	(setInternationalCurrencySymbol(String)): sets currency
+	* java/text/NumberFormat.java
+	(getCurrencyInstance(java.util.Locale)): sets fraction digits
+	from the currency after creation of the format.
+
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-12-30  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
 	* java/util/Locale.java
 	(getDisplayLanguage(java.util.Locale)): more documentation,
 	uses getDisplayString
