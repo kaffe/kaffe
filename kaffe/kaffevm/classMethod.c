@@ -199,11 +199,13 @@ retry:
 		j = class->interface_len;
 		nclass = class->superclass;
 		if (nclass != 0 && nclass != ObjectClass) {
-			/* If class is an interface, include the superclass
-			 * as well.
+			/* If class is an interface, its superclass must
+			 * be java.lang.Object or the class file is broken.
 			 */
 			if (CLASS_IS_INTERFACE(class)) {
-				j += 1;
+				SET_LANG_EXCEPTION(einfo, VerifyError)
+				success = false;
+				goto done;
 			}
 			j += class->superclass->total_interface_len;
 		}
@@ -228,10 +230,6 @@ retry:
 			}
 			nclass = class->superclass;
 			if (nclass != 0 && nclass != ObjectClass) {
-				if (CLASS_IS_INTERFACE(class)) {
-					newifaces[i] = nclass;
-					i++;
-				}
 				for (j = 0; j < nclass->total_interface_len; j++, i++) {
 					newifaces[i] = nclass->interfaces[j];
 				}
@@ -335,6 +333,7 @@ retry:
 
 		/* every class must have one since java.lang.Object has one */
 		if (meth == NULL) {
+			SET_LANG_EXCEPTION(einfo, InternalError);
 			success = false;
 			goto done;
 		}
@@ -1197,6 +1196,7 @@ buildDispatchTable(Hjava_lang_Class* class)
 	Method* meth;
 	void** mtab;
 	int i;
+	int j;
 #if defined(TRANSLATOR)
 	int ntramps = 0;
 	methodTrampoline* tramp;
@@ -1292,6 +1292,79 @@ buildDispatchTable(Hjava_lang_Class* class)
 		}
 	}
 #endif
+	/* Construct two tables:
+	 * This first table maps interfaces to indices in itable.
+	 * The itable maps the indices for each interface method to the
+	 * index in the dispatch table that corresponds to this interface
+	 * method.  If a class does not implement an interface it declared,
+	 * of if it attempts to implement it with improper methods, the second 
+	 * table will have a -1 index.  This will cause a NoSuchMethodError
+	 * to be thrown later, in soft_lookupmethod.
+	 */
+	/* don't bother if we don't implement interfaces */
+	if (class->total_interface_len == 0) {
+		return;
+	}
+
+	class->if2itable = gc_malloc(class->total_interface_len * sizeof(short), GC_ALLOC_NOWALK);
+
+	/* first count how many indices we need */
+	j = 0;
+	for (i = 0; i < class->total_interface_len; i++) {
+		class->if2itable[i] = j;
+		j += CLASS_NMETHODS(class->interfaces[i]);
+	}
+	if (j == 0) {	/* this means only pseudo interfaces without methods
+			 * are implemented, such as Serializable or Cloneable
+			 */
+		return;
+	}
+	class->itable2dtable = gc_malloc(j * sizeof(short), GC_ALLOC_NOWALK);
+	j = 0;
+	for (i = 0; i < class->total_interface_len; i++) {
+		int nm = CLASS_NMETHODS(class->interfaces[i]);
+		Method *meth = CLASS_METHODS(class->interfaces[i]);
+		for (; nm--; meth++) {
+			Hjava_lang_Class* ncl;
+			Method *mt = 0;
+			int idx = -1;
+
+			/* ignore static methods in interface --- can an
+			 * interface have any beside <clinit>?
+			 */
+			if (meth->accflags & ACC_STATIC) {
+				j++;		/* skip their entry */
+				continue;
+			}
+
+			/* Search the real method that implements this
+			 * interface method by name.
+			 */
+			for (ncl = class; ncl != NULL;  ncl = ncl->superclass) {
+				int k = CLASS_NMETHODS(ncl);
+				mt = CLASS_METHODS(ncl);
+				for (; --k >= 0;  ++mt) {
+					if (equalUtf8Consts (mt->name, 
+							     meth->name)
+					    && equalUtf8Consts (mt->signature,
+							meth->signature)) 
+					{
+						idx = mt->idx;
+						goto found;
+					}
+				}
+			}
+
+		    found:;
+			/* idx may be -1 here if 
+			 * a) class attempts to implement an interface 
+			 *    method with a static method or constructor.
+			 * b) class does not implement the interface at all.
+			 */
+			/* store method table index of real method */
+			class->itable2dtable[j++] = idx;
+		}
+	}
 }
 
 /* Check for undefined abstract methods if class is not abstract.
@@ -1322,29 +1395,28 @@ static
 void
 buildInterfaceDispatchTable(Hjava_lang_Class* class)
 {
-#if defined(TRANSLATOR)
 	Method* meth;
 	int i;
 
 	meth = CLASS_METHODS(class);
-	i = CLASS_NMETHODS(class);
 
-	/* Search methods for <clinit> */
-	for (; i > 0; i--, meth++) {
-		if (equalUtf8Consts(meth->name, init_name)) {
-			goto found;
+	/* enumerate indices and store them in meth->idx */
+	for (i = 0; i < CLASS_NMETHODS(class); i++, meth++) {
+		meth->idx = i;
+#if defined(TRANSLATOR)
+		/* Handle <clinit> */
+		if (equalUtf8Consts(meth->name, init_name) && 
+			METHOD_NEEDS_TRAMPOLINE(meth)) 
+		{
+			methodTrampoline* tramp = (methodTrampoline*)gc_malloc(sizeof(methodTrampoline), GC_ALLOC_DISPATCHTABLE);
+			FILL_IN_TRAMPOLINE(tramp, meth);
+			METHOD_NATIVECODE(meth) = (nativecode*)tramp;
+			FLUSH_DCACHE(tramp, tramp+1);
 		}
+#endif
 	}
 	return;
 
-	found:;
-	if (METHOD_NEEDS_TRAMPOLINE(meth)) {
-		methodTrampoline* tramp = (methodTrampoline*)gc_malloc(sizeof(methodTrampoline), GC_ALLOC_DISPATCHTABLE);
-		FILL_IN_TRAMPOLINE(tramp, meth);
-		METHOD_NATIVECODE(meth) = (nativecode*)tramp;
-		FLUSH_DCACHE(tramp, tramp+1);
-	}
-#endif
 }
 
 /*

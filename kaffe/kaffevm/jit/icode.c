@@ -3279,8 +3279,9 @@ softcall_lookupmethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
 {
 	/* 'obj' must be written back since it will be reused */
 	prepare_function_call();
-	pusharg_utf8_const(meth->signature, 2);
-	pusharg_utf8_const(meth->name, 1);
+	/* FIXME: should there be a pusharg_int_const? */
+	pusharg_ref_const((void*)meth->idx, 2);		
+	pusharg_class_const(meth->class, 1);
 	pusharg_ref(obj, 0);
 	call_soft(soft_lookupmethod);
 	popargs();

@@ -82,7 +82,10 @@ struct Hjava_lang_Class {
 
 	struct _dispatchTable*	dtable;
 
+	/* all interfaces supported by this class */
         struct Hjava_lang_Class** interfaces;
+	short*			if2itable;
+	short*			itable2dtable;
 	short			interface_len;
 	short			total_interface_len;
 	Hjava_lang_ClassLoader*	loader;

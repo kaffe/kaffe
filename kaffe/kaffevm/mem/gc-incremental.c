@@ -326,10 +326,16 @@ walkObject(void* base, uint32 size)
 	if (obj->dtable == 0)
 		return;
 
-	MARK_OBJECT_PRECISE(obj->dtable->class);
-
 	/* retrieve the layout of this object from its class */
 	clazz = obj->dtable->class;
+
+	/* class without a loader, i.e., system classes are anchored so don't
+	 * bother marking them.
+	 */
+	if (clazz->loader != 0) {
+		MARK_OBJECT_PRECISE(clazz);
+	}
+
 	layout = clazz->gc_layout;
 	nbits = CLASS_FSIZE(clazz)/ALIGNMENTOF_VOIDP;
 
@@ -503,6 +509,8 @@ walkClass(void* base, uint32 size)
 	}
 	MARK_IFNONZERO(class, loader);
 	MARK_IFNONZERO(class, gc_layout);
+	MARK_IFNONZERO(class, if2itable);
+	MARK_IFNONZERO(class, itable2dtable);
 
 	/* Walk the static data elements */
 	if (class->state >= CSTATE_DOING_PREPARE) {
@@ -535,7 +543,12 @@ walkRefArray(void* base, uint32 size)
 	}
 
 	ptr = OBJARRAY_DATA(arr);
-	MARK_OBJECT_PRECISE(arr->dtable->class);
+	/* mark class only if not a system class (which would be anchored
+	 * anyway.)  */
+	if (arr->dtable->class->loader != 0) {
+		MARK_OBJECT_PRECISE(arr->dtable->class);
+	}
+
 	for (i = ARRAY_SIZE(arr); --i>= 0; ) {
 		Hjava_lang_Object* el = *ptr++;
 		MARK_OBJECT_PRECISE(el);

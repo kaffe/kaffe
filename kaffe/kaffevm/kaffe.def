@@ -2291,7 +2291,11 @@ define_insn(INVOKEINTERFACE)
 
 	get_method_info(idx);
 
-	/* If method doesn't exists, call 'NoSuchMethodError' */
+	/* If method doesn't exist, call 'NoSuchMethodError' */
+	/* NB: This means that the interface class does not have the method
+	 * that is asked for, not that this class does not implement the
+	 * interface method.
+	 */
 	if (method_method() == 0) {
 		softcall_nosuchmethod(method_class(), method_name(), method_sig());
 		low = method_returntype();

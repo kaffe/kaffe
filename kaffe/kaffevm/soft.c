@@ -195,23 +195,48 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
  * soft_lookupmethod.
  */
 void*
-soft_lookupmethod(Hjava_lang_Object* obj, Utf8Const* name, Utf8Const* sig)
+soft_lookupmethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, int idx)
 {
 	Hjava_lang_Class* cls;
+	Hjava_lang_Class** c;
 	Method* meth;
+	int i;
+	int dtableidx;
 	errorInfo info;
 
 	cls = OBJECT_CLASS(obj);
-	meth = findMethod(cls, name, sig, &info);
-	if (meth == 0) {
-		throwError(&info);
+	/* initialize class if necessary */
+        if (cls->state < CSTATE_USABLE) {
+		if (processClass(cls, CSTATE_COMPLETE, &info) == false) {
+			throwError(&info);
+		}
 	}
 
-#if defined(TRANSLATOR)
-	return (METHOD_NATIVECODE(meth));
-#else
+	c = cls->interfaces;
+	i = 0;
+	while (*c != ifclass) {
+		c++;
+		/* do this check inside the loop to avoid loading 
+		 * total_interface_len from memory if we hit the first one. 
+		 */
+		if (++i == cls->total_interface_len) {
+			goto notfound;
+		}
+	}
+
+	dtableidx = cls->itable2dtable[cls->if2itable[i] + idx];
+	if (dtableidx == -1) {
+		goto notfound;
+	}
+
+	meth = *(Method**)((void*)cls->dtable 
+			+ DTABLE_METHODOFFSET + dtableidx * DTABLE_METHODSIZE);
 	return (meth);
-#endif
+
+notfound:
+	meth = CLASS_METHODS(ifclass) + idx;
+	soft_nosuchmethod(cls, meth->name, meth->signature);
+	return (0);
 }
 
 #if 0

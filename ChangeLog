@@ -1,4 +1,18 @@
-Fri Dec 18 17:05:52 1998  Jason Baker  <jbaker@marker.cs.utah.edu>
+Sat Dec 19 12:12:22 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/classMethod.[ch], kaffe/kaffevm/kaffe.def,
+	kaffe/kaffevm/soft.[ch], kaffe/kaffevm/intrp/icode.h,
+	kaffe/kaffevm/jit/icode.c, kaffe/kaffevm/mem/gc-incremental.c:
+	compute and store dispatch method indices in table to allow for
+	faster lookup in soft_lookupmethod.  This avoids the sillyness of
+	calling findMethod every time an INVOKEINTERFACE bytecode instruction
+	is executed.
+	Also, added throw statements if we find a class without finalizer or
+	if an interface class does not have java.lang.Object as its superclass,
+	as the JLS says it should.
+	Don't mark classes if they don't have a loader -- they're anchored.
+
+Fri Dec 18 17:05:52 1998  Jason Baker  <jbaker@cs.utah.edu>
 
         * New improved version of gc-block mmap scheme.
         kaffe/kaffevm/slib.h: removed LIBRARYADDR, it's no longer needed.
@@ -8,6 +22,7 @@ Fri Dec 18 17:05:52 1998  Jason Baker  <jbaker@marker.cs.utah.edu>
         kaffe/kaffevm/mem/gc-block-mmap.[ch]: new, more portable, scheme.
 	configure.in: config/config.h.in: check for mprotect and madvise.
 	Remove test for mmap.
+	FAQ/FAQ.gcblock: update to describe the latest changes.
 
 Fri Dec 18 09:01:07 1998  Jim Flowers <flowers@aligninc.com>
 
