@@ -1,3 +1,26 @@
+2004-01-27  Dalibor Topic <robilad@kaffe.org>
+
+        * FAQ/FAQ.automake:
+	Updated to mention gettext 0.13.1 and 
+	libtool 1.5.2
+
+        * developers/autogen.sh:
+	Removed patches to libtool.
+
+        * configure,
+        libltdl/Makefile.in,
+        libltdl/acinclude.m4,
+        libltdl/config-h.in,
+        libltdl/config.guess,
+        libltdl/config.sub,
+        libltdl/configure,
+        libltdl/ltdl.c,
+        libltdl/ltdl.h,
+        libltdl/ltmain.sh,
+        m4/libtool.m4,
+        scripts/ltmain.sh:
+	Regenerated.
+
 2004-01-25  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffe/Makefile.am:

@@ -20,7 +20,7 @@ if [ "$1" != "--override" ]; then
 
 WANTED_AUTOMAKE_VERS="1.8.2"
 WANTED_AUTOCONF_VERS="2.59"
-WANTED_LIBTOOL_VERS="1.5"
+WANTED_LIBTOOL_VERS="1.5.2"
 WANTED_AUTOPOINT_VERS="0.13.1"
 
 ACLOCAL_VERS=`aclocal --version | 
@@ -113,11 +113,6 @@ find . -type f -name 'Makefile.in' | xargs rm -f
 
 # Now regenerate autotools
 libtoolize --automake --ltdl --copy --force
-patch -p0 < developers/patch-libtool-amiga.diff
-patch -p0 < developers/patch-libtool-openbsd.diff
-patch -p0 < developers/patch-libtool-realloc.diff
-patch -p0 < developers/patch-libtool-amiga-max-command-line-length.diff
-patch -p0 < developers/patch-libtool-ltdl-memory-header-warning.diff
 cp libltdl/acinclude.m4 m4/libtool.m4
 
 autopoint -f
@@ -131,15 +126,3 @@ autoconf -Wall
  patch < ../developers/patch-config.sub-superh.diff
  cd ..
 )
-
-(
- cd libltdl
- # Need to regenerate things because patching
- # screws up timestamps
- aclocal -I .
- automake --add-missing --force-missing --copy -Wall
- touch config-h.in
- autoconf -Wall
- patch < ../developers/patch-config.sub-superh.diff
-)
-
