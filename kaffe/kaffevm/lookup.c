@@ -150,8 +150,8 @@ getClass(constIndex idx, Hjava_lang_Class* this, errorInfo *einfo)
 		return NULL;
 	}
 
-	/* Find the specified class.  We cannot use 'loadClassOrArray' here
-	 * because the name is *not* a signature.
+	/* Find the specified class.
+	 * NB: the name is *not* a signature.
 	 */
 	if (name->data[0] == '[') {
 		class = loadArray(name, this->loader, einfo);
