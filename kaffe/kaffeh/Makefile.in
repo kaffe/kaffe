@@ -88,5 +88,7 @@ install:
 		test -d $(INSTROOT)$(bindir) || $(MKDIR) $(INSTROOT)$(bindir)
 		$(INSTALL_PROGRAM) $(KPREFIX)kaffeh$(EXEEXT) $(INSTROOT)$(bindir)/$(KPREFIX)kaffeh$(EXEEXT)
 
+derived-files:
+
 @INC_DEPEND@
 

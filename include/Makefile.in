@@ -49,5 +49,7 @@ install:
 			$(INSTALL_DATA) $(srcdir)/$$i $(INSTROOT)$(incdir)/$$i ;\
 		done
 
+derived-files:
+
 depend:
 

@@ -120,6 +120,8 @@ install:
 		rm -f $(INSTROOT)$(libdir)/$(LLIB)
 		$(LN) $(LIB) $(INSTROOT)$(libdir)/$(LLIB)
 
+derived-files:	wrappers
+
 depend:		$(DEPENDS)
 		rm -f .depend
 		cat $(DEPENDS) > .depend

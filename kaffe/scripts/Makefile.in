@@ -63,5 +63,7 @@ install-jars:
 			$(INSTALL_SCRIPT) $$i $(INSTROOT)$(bindir)/$(KPREFIX)$$i ;\
 		done
 
+derived-files:
+
 depend:
 

@@ -26,5 +26,7 @@ install:
 		test -d $(INSTROOT)$(mandir)/man1 || $(MKDIR) $(INSTROOT)$(mandir)/man1
 		$(INSTALL_DATA) $(srcdir)/kaffe.1 $(INSTROOT)$(mandir)/man1/kaffe.1
 
+derived-files:
+
 depend:
 

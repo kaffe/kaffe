@@ -29,6 +29,10 @@ install:
 	@(cd $(csubdir) && $(MAKE) install)
 	@(cd $(jsubdir) && $(MAKE) install)
 
+derived-files:
+	@(cd $(csubdir) && $(MAKE) derived-files)
+	@(cd $(jsubdir) && $(MAKE) derived-files)
+
 depend:
 	@(cd $(csubdir) && $(MAKE) depend)
 	@(cd $(jsubdir) && $(MAKE) depend)

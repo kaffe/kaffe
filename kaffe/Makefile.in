@@ -27,5 +27,8 @@ distclean:
 install:
 	@for i in $(subdirs); do (cd $$i && $(MAKE) install) || exit 1 ; done
 
+derived-files:
+	@for i in $(subdirs); do (cd $$i && $(MAKE) derived-files) || exit 1 ; done
+
 depend:
 	@for i in $(subdirs); do (cd $$i && $(MAKE) depend) || exit 1 ; done

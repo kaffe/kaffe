@@ -41,7 +41,7 @@ clean:
 		rm -rf $(LIBDIR)
 
 distclean:
-		rm -rf $(LIBDIR) $(CLASSFILE)
+		rm -rf $(LIBDIR)
 		rm -f Makefile .dir-stamp rebuildLib .depend
 
 classes:	.dir-stamp
@@ -58,6 +58,8 @@ build-classes:
 install-classes:
 		test -d $(INSTROOT)$(classdir) || $(MKDIR) $(INSTROOT)$(classdir)
 		$(INSTALL_DATA) $(CLASSFILE) $(INSTROOT)$(classdir)/$(CLASSFILE)
+
+derived-files:	classes build-classes
 
 # not yet implemented, but must stay to not break make depend
 depend:

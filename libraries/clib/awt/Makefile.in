@@ -90,6 +90,8 @@ install:
 		$(INSTALL_DATA) $(LIB) $(INSTROOT)$(nativedir)/$(LIBV)
 		$(LN) $(LIBV) $(INSTROOT)$(nativedir)/$(LIB)
 
+derived-files:
+
 depend:         .dir-stamp external_wrappers.h $(DEPENDS)
 		rm -f .depend
 		cat $(DEPENDS) > .depend

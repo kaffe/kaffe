@@ -44,5 +44,7 @@ distclean:
 
 install:
 
+derived-files:
+
 depend:
 

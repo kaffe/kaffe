@@ -33,6 +33,10 @@ install:
 	for i in $(subdirs); do \
 		(test ! -f $$i/Makefile || (cd $$i && $(MAKE) install)) || exit 1 ; done
 
+derived-files:
+	for i in $(subdirs); do \
+		(test ! -f $$i/Makefile || (cd $$i && $(MAKE) derived-files)) || exit 1 ; done
+
 depend:
 	for i in $(subdirs); do \
 		(test ! -f $$i/Makefile || (cd $$i && $(MAKE) depend)) || exit 1 ; done

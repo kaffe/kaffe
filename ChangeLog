@@ -1,3 +1,13 @@
+Fri Aug 28 13:34:59 1998  Archie Cobbs <archie@whistle.com>
+
+	* Makefile.in, */Makefile.in, */*/Makefile.in, */*/*/Makefile.in,
+	libraries/clib/native/external_wrappers.h.debug (new file):
+	add "make derived-files" target, used to regenerate files
+	that are derived from other files but checked into the repository
+	* libraries/javalib/Makefile.in: "make distclean" shouldn't
+	remove Klasses.jar
+	* test/HelloWorldApp.class: removed (not used)
+
 Fri Aug 28 10:57:38 1998  Archie Cobbs <archie@whistle.com>
 
 	* libraries/clib/native/ResourceBundle.[ch],

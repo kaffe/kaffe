@@ -49,6 +49,8 @@ install:
 		test -d $(INSTROOT)$(bindir) || $(MKDIR) $(INSTROOT)$(bindir)
 		$(INSTALL_PROGRAM) Kaffe$(EXEEXT) $(INSTROOT)$(bindir)/Kaffe$(EXEEXT)
 
+derived-files:
+
 .SUFFIXES:	.d
 
 .c.d:
