@@ -16,7 +16,7 @@ import java.lang.Class;
 import java.net.InetAddress;
 import java.security.Permission;
 
-public abstract class SecurityManager {
+public class SecurityManager {
 
 public SecurityManager() {
 	SecurityManager current = System.getSecurityManager();
