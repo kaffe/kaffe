@@ -44,7 +44,12 @@ static Type  verify_LONG;
 Type* TLONG = &verify_LONG;
        
 static Type  verify_DOUBLE;
-Type* TDOUBLE = &verify_DOUBLE;
+static Type* TDOUBLE = &verify_DOUBLE;
+
+Type* getTDOUBLE(void)
+{
+  return TDOUBLE;
+}
 
 /* used for the second space of LONGs and DOUBLEs
  * in local variables or on the operand stack

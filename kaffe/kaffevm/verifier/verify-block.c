@@ -513,7 +513,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 		case DCONST_0:
 		case DCONST_1:
-			OPSTACK_WPUSH(TDOUBLE);
+			OPSTACK_WPUSH(getTDOUBLE());
 			break;
 			
 			
@@ -543,7 +543,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			if (tag == CONSTANT_Long) {
 				OPSTACK_WPUSH(TLONG);
 			} else {
-				OPSTACK_WPUSH(TDOUBLE);
+				OPSTACK_WPUSH(getTDOUBLE());
 			}
 			break;
 			
@@ -688,8 +688,8 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case DLOAD:
 			GET_CONST_INDEX;
 		DLOAD_common:
-			ENSURE_LOCAL_WTYPE(idx, TDOUBLE);
-			OPSTACK_WPUSH(TDOUBLE);
+			ENSURE_LOCAL_WTYPE(idx, getTDOUBLE());
+			OPSTACK_WPUSH(getTDOUBLE());
 			break;
 			
 			
@@ -701,8 +701,8 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case DSTORE:
 			GET_CONST_INDEX;
 		DSTORE_common:
-			OPSTACK_WPOP_T(TDOUBLE);
-			block->locals[idx] = *TDOUBLE;
+			OPSTACK_WPOP_T(getTDOUBLE());
+			block->locals[idx] = *getTDOUBLE();
 			block->locals[idx + 1] = *TWIDE;
 			break;
 			
@@ -787,7 +787,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case SALOAD: ARRAY_LOAD(TINT,   getTSHORTARR()); break;
 			
 		case LALOAD: ARRAY_WLOAD(TLONG,   getTLONGARR());   break;
-		case DALOAD: ARRAY_WLOAD(TDOUBLE, getTDOUBLEARR()); break;
+		case DALOAD: ARRAY_WLOAD(getTDOUBLE(), getTDOUBLEARR()); break;
 #undef ARRAY_LOAD
 #undef ARRAY_WLOAD
 
@@ -872,7 +872,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case SASTORE: ARRAY_STORE(TINT,   getTSHORTARR()); break;
 			
 		case LASTORE: ARRAY_WSTORE(TLONG,   getTLONGARR());   break;
-		case DASTORE: ARRAY_WSTORE(TDOUBLE, getTDOUBLEARR()); break;
+		case DASTORE: ARRAY_WSTORE(getTDOUBLE(), getTDOUBLEARR()); break;
 #undef ARRAY_STORE
 #undef ARRAY_WSTORE
 
@@ -929,10 +929,10 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 			
 		case DADD: case DSUB: case DDIV: case DMUL: case DREM:
-			OPSTACK_WPOP_T(TDOUBLE);
+			OPSTACK_WPOP_T(getTDOUBLE());
 			break;
 		case DNEG:
-			OPSTACK_WPEEK_T(TDOUBLE);
+			OPSTACK_WPEEK_T(getTDOUBLE());
 			break;
 			
 			
@@ -951,8 +951,8 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				
 		case DCMPG:
 		case DCMPL:
-			OPSTACK_WPOP_T(TDOUBLE);
-			OPSTACK_WPOP_T(TDOUBLE);
+			OPSTACK_WPOP_T(getTDOUBLE());
+			OPSTACK_WPOP_T(getTDOUBLE());
 			opstackPushBlind(block, TINT);
 			break;
 			
@@ -992,7 +992,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case I2D:
 			OPSTACK_POP_T(TINT);
 			CHECK_STACK_OVERFLOW(2);
-			opstackWPushBlind(block, TDOUBLE);
+			opstackWPushBlind(block, getTDOUBLE());
 			break;
 			
 		case F2I:
@@ -1005,7 +1005,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			break;
 		case F2D:
 			OPSTACK_POP_T(TFLOAT);
-			OPSTACK_WPUSH(TDOUBLE);
+			OPSTACK_WPUSH(getTDOUBLE());
 			break;
 			
 		case L2I:
@@ -1018,19 +1018,19 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			break;
 		case L2D:
 			OPSTACK_WPOP_T(TLONG);
-			opstackWPushBlind(block, TDOUBLE);
+			opstackWPushBlind(block, getTDOUBLE());
 			break;
 			
 		case D2I:
-			OPSTACK_WPOP_T(TDOUBLE);
+			OPSTACK_WPOP_T(getTDOUBLE());
 			opstackPushBlind(block, TINT);
 			break;
 		case D2F:
-			OPSTACK_WPOP_T(TDOUBLE);
+			OPSTACK_WPOP_T(getTDOUBLE());
 			opstackPushBlind(block, TFLOAT);
 			break;
 		case D2L:
-			OPSTACK_WPOP_T(TDOUBLE);
+			OPSTACK_WPOP_T(getTDOUBLE());
 			opstackWPushBlind(block, TLONG);
 			break;
 			
@@ -1199,7 +1199,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				
 			case 'F': opstackPushBlind(block, TFLOAT); break;
 			case 'J': OPSTACK_WPUSH(TLONG); break;
-			case 'D': OPSTACK_WPUSH(TDOUBLE); break;
+			case 'D': OPSTACK_WPUSH(getTDOUBLE()); break;
 				
 			case '[':
 			case 'L':
@@ -1239,7 +1239,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				
 			case 'F': OPSTACK_POP_T_BLIND(TFLOAT);   break;
 			case 'J': OPSTACK_WPOP_T_BLIND(TLONG);   break;
-			case 'D': OPSTACK_WPOP_T_BLIND(TDOUBLE); break;
+			case 'D': OPSTACK_WPOP_T_BLIND(getTDOUBLE()); break;
 				
 			case '[':
 			case 'L':
@@ -1286,7 +1286,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				
 			case 'F': OPSTACK_POP_T_BLIND(TFLOAT);   break;
 			case 'J': OPSTACK_WPOP_T_BLIND(TLONG);   break;
-			case 'D': OPSTACK_WPOP_T_BLIND(TDOUBLE); break;
+			case 'D': OPSTACK_WPOP_T_BLIND(getTDOUBLE()); break;
 				
 			case '[':
 			case 'L':
@@ -1406,7 +1406,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			}
 			break;
 		case DRETURN:
-			OPSTACK_WPEEK_T(TDOUBLE);
+			OPSTACK_WPEEK_T(getTDOUBLE());
 			sig = getMethodReturnSig(v->method);
 			if (strcmp(sig, "D")) {
 				return verifyError(v, "dreturn: method doesn't return a double");

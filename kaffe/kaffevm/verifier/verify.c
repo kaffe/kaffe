@@ -701,7 +701,7 @@ checkMethodCall(Verifier* v,
 			break;
 			
 		case 'D':
-			if (binfo->opstack[paramIndex].data.class != TDOUBLE->data.class ||
+			if (binfo->opstack[paramIndex].data.class != getTDOUBLE()->data.class ||
 			    !isWide(&binfo->opstack[paramIndex + 1])) {
 				return typeErrorInCheckMethodCall(v, argbuf, pc, idx, pool, methSig);
 			}
@@ -759,7 +759,7 @@ checkMethodCall(Verifier* v,
 		break;
 		
 	case 'D':
-		binfo->opstack[binfo->stacksz]     = *TDOUBLE;
+		binfo->opstack[binfo->stacksz]     = *getTDOUBLE();
 		binfo->opstack[binfo->stacksz + 1] = *TWIDE;
 		binfo->stacksz += 2;
 		break;
@@ -868,7 +868,7 @@ loadInitialArgs(Verifier* v)
 			if (paramCount + 1 > v->method->localsz) {
 				return localOverflowErrorInLoadInitialArgs(v, argbuf);
 			}
-			locals[paramCount] = *TDOUBLE;
+			locals[paramCount] = *getTDOUBLE();
 			locals[paramCount+1] = *TWIDE;
 			paramCount += 2;
 			break;
