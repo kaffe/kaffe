@@ -1,3 +1,7 @@
+Thu Oct  8 12:34:22 PDT 1998 James Lundblad <jamesl@eecs.berkeley.edu>
+
+	* kaffe/kaffevm/jni.c: fix bug in JNI_GetCreatedJavaVMs()
+
 Mon Oct  5 14:16:04 PDT 1998 Transvirtual Technologies <info@transvirtual.com>
 
         * Version 1.0-b2 of Kaffe OpenVM released.

@@ -56,6 +56,12 @@ static int java_major_version = 1;
 static int java_minor_version = 1;
 
 /*
+ * Keep track of how many VM's are active. Right now
+ * we only support one at a time.
+ */
+static int Kaffe_NumVM = 0;
+
+/*
  * If we must manage the JNI references for the native layer then we
  * add extra functions to the JNI calls and returns to manage the
  * referencing.
@@ -143,15 +149,12 @@ JNI_GetDefaultJavaVMInitArgs(JavaVMInitArgs* args)
 jint
 JNI_CreateJavaVM(JavaVM** vm, JNIEnv** env, JavaVMInitArgs* args)
 {
-	static int doneinit = 0;
-
 	if (args->version != ((java_major_version << 16) | java_minor_version)) {
 		return (-1);
 	}
 
 	/* We can only init. one KVM */
-	doneinit++;
-	if (doneinit > 1) {
+	if (Kaffe_NumVM != 0) {
 		return (-1);
 	}
 
@@ -171,7 +174,7 @@ JNI_CreateJavaVM(JavaVM** vm, JNIEnv** env, JavaVMInitArgs* args)
 	/* Return the VM and JNI we're using */
 	*vm = &Kaffe_JavaVM;
 	*env = (JNIEnv*)&Kaffe_JNIEnv;
-
+	Kaffe_NumVM++;
 	return (0);
 }
 
@@ -179,8 +182,8 @@ jint
 JNI_GetCreatedJavaVMs(JavaVM** vm, jsize buflen, jsize* nvm)
 {
 	vm[0] = &Kaffe_JavaVM;
-	*nvm = 1;
-	
+	*nvm = Kaffe_NumVM;
+
 	return (0);
 }
 
