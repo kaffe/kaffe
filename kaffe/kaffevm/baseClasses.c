@@ -93,6 +93,7 @@ Hjava_lang_Class* javaIoIOException;
 void initClasspath(void);
 void initNative(void);
 void initThreads(void);
+static void checkCorrectVersion(void);
 
 /*
  * Initialise the machine.
@@ -218,10 +219,7 @@ initialiseKaffe(void)
 void
 initBaseClasses(void)
 {
-	Field *f;
 	errorInfo einfo;
-	Utf8Const *utf8;
-	extern char* realClassPath;
 
 	/* Primitive types */
 	initTypes();
@@ -230,6 +228,7 @@ initBaseClasses(void)
 	loadStaticClass(&ObjectClass, OBJECTCLASS);
 	loadStaticClass(&SerialClass, SERIALCLASS);
 	loadStaticClass(&CloneClass, CLONECLASS);
+	checkCorrectVersion();
 	loadStaticClass(&ClassClass, CLASSCLASS);
 	loadStaticClass(&StringClass, STRINGCLASS);
 	loadStaticClass(&SystemClass, SYSTEMCLASS);
@@ -263,6 +262,15 @@ initBaseClasses(void)
 	/* Fixup primitive types */
 	finishTypes();
 	processClass(StringClass, CSTATE_COMPLETE, &einfo);
+}
+
+static void
+checkCorrectVersion(void) 
+{
+	Field *f;
+	errorInfo einfo;
+	Utf8Const *utf8;
+	extern char* realClassPath;
 
 	/*
 	 * To make sure we have some ground to stand on, we doublecheck
@@ -283,8 +291,10 @@ initBaseClasses(void)
 		    "It's likely that your CLASSPATH settings are wrong.  "
 		    "Please make sure\nyour CLASSPATH does not include any "
 		    "java.lang.* classes from other JVM\nvendors, such as "
-		    "Sun's classes.zip, BEFORE Kaffe's Klasses.jar.\n"
-		    "It is okay to have classes.zip AFTER Klasses.jar\n\n"
+		    "Sun's or IBM's rt.jar (or classes.zip), BEFORE Kaffe's "
+		    "rt.jar.\n"
+		    "It should be okay to have Sun's rt.jar AFTER Kaffe's "
+		    "rt.jar\n\n"
 		    "The current effective classpath is `%s'\n\n",
 		    realClassPath
 		);
@@ -294,7 +304,7 @@ initBaseClasses(void)
 	if (*(jint*)FIELD_ADDRESS(f) != java_lang_Cloneable_KAFFE_VERSION) {
 		dprintf(
 		    "\nCould not initialize Kaffe.\n"
-		    "Your Klasses.jar version is %3.2f, but this VM "
+		    "Your rt.jar version is %3.2f, but this VM "
 		    "was compiled with version %3.2f\n\n"
 		    "The current effective classpath is `%s'\n\n",
 		    *(jint*)FIELD_ADDRESS(f)/100.0,
