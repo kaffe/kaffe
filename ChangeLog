@@ -1,3 +1,8 @@
+2004-06-01 Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/io/File.java
+	(toURI): Use new URI(scheme, authority, path, query, fragment).
+
 2004-05-31  Casey Marshall <csm@gnu.org>
 
 	* include/Makefile.am: added java_security_VMAccessController.h.

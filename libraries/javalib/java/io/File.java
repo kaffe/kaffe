@@ -800,7 +800,8 @@ public class File implements Serializable, Comparable
         
     try
       {
-	return new URI("file", "", abspath.replace(separatorChar, '/'));
+	return new URI("file", null, abspath.replace(separatorChar, '/'),
+	null, null);
       }
     catch (URISyntaxException use)
       {
