@@ -17,6 +17,9 @@
 #include <assert.h>
 #include <native.h>
 #include <jsyscall.h>
+#ifdef HAVE_UTIME_H
+#include <utime.h>
+#endif
 #include "defs.h"
 #include "files.h"
 #include "../../../include/system.h"
@@ -74,18 +77,11 @@ java_io_File_exists0(struct Hjava_io_File* this)
 {
 	struct stat buf;
 	char str[MAXPATHLEN];
-	int r;
 
 	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 
-	/* a file exists if I can stat it */
-	r = KSTAT(str, &buf);
-	if (r) {
-		return (0);
-	}
-	else {
-		return (1);
-	}
+	/* A file exists if I can stat it */
+	return (KSTAT(str, &buf) == 0);
 }
 
 /*
@@ -318,11 +314,63 @@ java_io_File_isAbsolute(struct Hjava_io_File* this)
 	char str[2];
 
 	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
-
-	if (str[0] == file_separator[0]) {
-		return (1);
-	}
-	else {
-		return (0);
-	}
+	return (str[0] == file_separator[0]);
 }
+
+jboolean
+java_io_File_createNewFile0(struct Hjava_io_File* this)
+{
+	char str[MAXPATHLEN];
+	int fd;
+	int rc;
+
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
+
+	rc = KOPEN(str, O_EXCL|O_WRONLY|O_CREAT, 0666, &fd);
+	switch (rc) {
+	case 0:
+		break;
+	case EEXIST:
+		return 0;
+	default:
+		SignalError("java.io.IOException", SYS_ERROR(rc));
+	}
+	rc = KCLOSE(fd);
+	if (rc != 0)
+		SignalError("java.io.IOException", SYS_ERROR(rc));
+	return 1;
+}
+
+jboolean
+java_io_File_setLastModified0(struct Hjava_io_File* this, jlong thetime)
+{
+#ifdef HAVE_UTIME_H
+	char path[MAXPATHLEN];
+	struct utimbuf ub;
+
+	stringJava2CBuf(unhand(this)->path, path, sizeof(path));
+	ub.actime = (time_t)(thetime / 1000);
+	ub.modtime = ub.actime;
+	return (utime(path, &ub) >= 0);
+#else
+	return 0;
+#endif
+}
+
+jboolean
+java_io_File_setReadOnly0(struct Hjava_io_File* this)
+{
+	struct stat buf;
+	char str[MAXPATHLEN];
+	int r;
+
+	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
+
+	r = KSTAT(str, &buf);
+	if (r != 0)
+		return 0;
+
+	r = chmod(str, buf.st_mode & ~(S_IWOTH|S_IWGRP|S_IWUSR));
+	return (r == 0);
+}
+
