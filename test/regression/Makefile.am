@@ -104,6 +104,7 @@ TESTS = \
 ## Test interrupting I/O
 ## This is kind of tricky, and Sun doesn't support it.
 	SoInterrupt.java \
+	sysdepCallMethod.java \
 	TestNative.java
 
 EXTRA_DIST = $(TESTS)

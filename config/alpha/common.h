@@ -41,26 +41,20 @@
     ((CALL)->callsize[n] == 2) ? (CALL)->args[n].j : (long)((CALL)->args[n].i)\
 )
 
-
-#undef getSingleJavaArg
-#define getSingleJavaArg(CALL, n) (CALL) -> args[n].j
-
 /*									      \
 *  Sign-extend short arguments:					      \
 *									      \
 *  This macro sign extends short (i.e, 32-bit or less) arguments to a    \
 *  64-bit "long" that can be inserted directly into a 64-bit register.   \
 */									      \
-#define getJavaArg(CALL, n, iarg, farg) \
-{ \
+#define getJavaArg(CALL, n, iarg, farg) do { \
     if ( (CALL) -> callsize[n] == 1 ) { \
       iarg = (long)   ((CALL) -> args[n].i); \
       farg = (double) ((CALL) ->  args[n].f); \
     } else { \
       iarg = (long)   ((CALL) -> args[n].j); \
       farg = (double) ((CALL) -> args[n].d); \
-    } \
-}
+    } } while (0)
 
 #define javaArgCase(CALL,_x_,_y_) case _x_: getJavaArg(CALL, (_x_-1), r ## _y_, f ## _y_)
 
@@ -103,8 +97,9 @@
 \
     if ((CALL)->callsize[x] > 0) \
       { \
-	if (x > rags) (CALL)->args[rags] = (CALL)->args[x]; \
-	rags += 1; \
+	if (x > rags) \
+	  (CALL)->args[rags] = (CALL)->args[x]; \
+	rags++; \
       } \
   } \
   { \
@@ -117,8 +112,8 @@
 	 * We're doing to hack the frame buffer the difficult way.. \
 	 */ \
 	/* Copy arguments to the stack we allocated */ \
-	for (; rags > 6; --rags) { \
-	  xargs[rags-6] = getSingleJavaArg(CALL, rags); \
+	for (x=0; rags > 6; --rags) { \
+	  xargs[x++] = getSingleJavaArg(CALL, rags); \
 	} \
       } \
 \

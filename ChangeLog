@@ -1,3 +1,15 @@
+Fri Apr  2 07:45:23 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* config/alpha/common.h (getSingleJavaArg): remove ``optimized''
+	version that wouldn't sign-extend 32bit values to 64bits, it
+	wouldn't work
+	(sysdepCallMethod): arguments passed on the stack were off by one
+	and reversed, corrupting the stack frame and crashing
+	* test/regression/sysdepCallMethod.java: new test; calls native
+	method from CharToByteDefault with 8 arguments
+	* test/regression/Makefile.am (TESTS): added it
+	* test/regression/Makefile.in: regen
+
 Thu Apr  1 23:03:51 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffe/main.c, kaffe/kaffevm/classMethod.c,
