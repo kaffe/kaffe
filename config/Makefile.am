@@ -34,8 +34,10 @@ DISTCLEANFILES = \
 	stamp-h03 \
 	stamp-h04
 
+nodist_noinst_HEADERS = \
+	$(GEN_HDRS)
+
 noinst_HEADERS = \
-	$(GEN_HDRS) \
 	config-hacks.h \
 	config-io.h \
 	config-math.h \

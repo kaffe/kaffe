@@ -1,5 +1,15 @@
 2004-01-12  Dalibor Topic <robilad@kaffe.org>
 
+        * config/Makefile.am:
+	(nodist_noinst_HEADERS) New variable.
+	(noinst_HEADERS) Moved GEN_HDRS to
+	nodist_noinst_HEADERS.
+
+        * config/Makefile.in:
+	Regenerated.
+
+2004-01-12  Dalibor Topic <robilad@kaffe.org>
+
         * m4/esd.m4:
 	New file.
 

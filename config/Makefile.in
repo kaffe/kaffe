@@ -47,7 +47,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
 subdir = config
-DIST_COMMON = $(am__noinst_HEADERS_DIST) $(srcdir)/Makefile.am \
+DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 $(top_srcdir)/m4/esd.m4 \
@@ -65,10 +65,7 @@ CONFIG_HEADER = config.h $(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
-am__noinst_HEADERS_DIST = md.h callKaffeException.h xprofile-md.h \
-	jit-md.h config-hacks.h config-io.h config-math.h config-mem.h \
-	config-net.h config-setjmp.h config-signal.h config-std.h
-HEADERS = $(noinst_HEADERS)
+HEADERS = $(nodist_noinst_HEADERS) $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -310,8 +307,10 @@ DISTCLEANFILES = \
 	stamp-h03 \
 	stamp-h04
 
+nodist_noinst_HEADERS = \
+	$(GEN_HDRS)
+
 noinst_HEADERS = \
-	$(GEN_HDRS) \
 	config-hacks.h \
 	config-io.h \
 	config-math.h \
