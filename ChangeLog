@@ -1,5 +1,18 @@
 2004-05-18  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/ java/util/SimpleTimeZone.java:
+	Resynced with GNU Classpath.
+	
+	2004-05-07  Jerry Quinn  <jlquinn@optonline.net>
+
+	* java/util/SimpleTimeZone.java (startTimeMode, endTimeMode,
+	WALL_TIME, STANDARD_TIME, UTC_TIME): New members.
+	(SimpleTimeZone): Tweak docs.  Add new variation.
+	(setStartRule,setEndRule): Add new variations.  Use
+        startTimeMode and endTimeMode.
+	
+2004-05-18  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/image/DataBufferDouble.java,
         libraries/javalib/java/awt/image/DataBufferFloat.java,
         libraries/javalib/java/awt/image/DataBufferShort.java:
