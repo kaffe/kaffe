@@ -255,7 +255,7 @@ markObject(void* mem)
 	}
 }
 
-#define MARK_OBJECT(obj) do { \
+#define MARK_OBJECT_PRECISE(obj) do { \
   void *objp = obj; \
   if (objp) { \
     gc_unit *unit = UTOUNIT(objp); \
@@ -323,7 +323,7 @@ walkObject(void* base, uint32 size)
 	if (obj->dtable == 0)
 		return;
 
-	MARK_OBJECT(obj->dtable->class);
+	MARK_OBJECT_PRECISE(obj->dtable->class);
 
 	/* retrieve the layout of this object from its class */
 	clazz = obj->dtable->class;
@@ -361,7 +361,7 @@ DBG(GCWALK,
 				 * mark it.  Note that p may or may not point
 				 * to a "real" Java object.
 				 */
-				MARK_OBJECT(*(void **)mem);
+				MARK_OBJECT_PRECISE(*(void **)mem);
 			}
 			i++;
 			l <<= 1;
@@ -409,7 +409,7 @@ walkMemory(void* mem)
 	(*gcFunctions[GC_GET_FUNCS(info, idx)].walk)(mem, GCBLOCKSIZE(info));
 }
 
-#define MARK_IFNONZERO(f, field) /* should be just MARK_OBJECT(f->field) */ \
+#define MARK_IFNONZERO(f, field) /* should be just MARK_OBJECT_PRECISE(f->field) */ \
 do {                                  \
   void *mem = f->field;               \
   if (mem) {                          \
@@ -463,7 +463,7 @@ walkFields(void* base, uint32 size)
 	while (nf-- > 0) {
 		MARK_IFNONZERO(fld, name);
 		MARK_IFNONZERO(fld, type);
-		markObject(*(void**)&fld->info); /* should be MARK_OBJECT */
+		markObject(*(void**)&fld->info); /* should be MARK_OBJECT_PRECISE */
 		fld++;
 	}
 }
@@ -493,6 +493,7 @@ walkClass(void* base, uint32 size)
 	if (!CLASS_IS_PRIMITIVE(class)) {
 		MARK_IFNONZERO(class, dtable);
 	}
+	/* The interface table for array classes points to static memory */
 	if (!CLASS_IS_ARRAY(class)) {
 		MARK_IFNONZERO(class, interfaces);
 	}
@@ -505,7 +506,7 @@ walkClass(void* base, uint32 size)
         	n = CLASS_NSFIELDS(class);
         	for (; --n >= 0; fld++) {
 			if (FIELD_ISREF(fld)) {
-				MARK_OBJECT(*(void**)FIELD_ADDRESS(fld));
+				MARK_OBJECT_PRECISE(*(void**)FIELD_ADDRESS(fld));
 			}
         	}
 	}
@@ -527,10 +528,10 @@ walkRefArray(void* base, uint32 size)
 	arr = (Hjava_lang_Object*)base;
 
 	ptr = OBJARRAY_DATA(arr);
-	MARK_OBJECT(arr->dtable->class);
+	MARK_OBJECT_PRECISE(arr->dtable->class);
 	for (i = ARRAY_SIZE(arr); --i>= 0; ) {
 		Hjava_lang_Object* el = *ptr++;
-		MARK_OBJECT(el);
+		MARK_OBJECT_PRECISE(el);
 	}
 }
 
@@ -623,7 +624,7 @@ startGC(void)
 	/* Walk the referenced objects */
 	for (i = 0; i < REFOBJHASHSZ; i++) {
 		for (robj = refObjects.hash[i]; robj != 0; robj = robj->next) {
-			MARK_OBJECT(robj->mem);
+			MARK_OBJECT_PRECISE(robj->mem);
 		}
 	}
 
@@ -631,7 +632,7 @@ startGC(void)
 	for (unit = gclists[finalise].cnext;
 	     unit != &gclists[finalise]; unit = nunit) {
 		nunit = unit->cnext;
-		MARK_OBJECT(UTOMEM(unit));
+		MARK_OBJECT_PRECISE(UTOMEM(unit));
 	}
 
 	/* Walk the thread objects */
