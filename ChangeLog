@@ -1,5 +1,21 @@
 2005-03-03  Dalibor Topic  <robilad@kaffe.org>
 
+        * kaffe/scripts/native2ascii.in: 
+	Use gnu.classpath.tools.native2ascii.Native2Ascii.
+
+        * libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        libraries/javalib/all.files:
+	Regenerated.
+
+        * libraries/javalib/gnu/classpath/tools/native2ascii/Native2ASCII.java:
+	New file taken from GNU Classpath tools project.
+
+        * libraries/javalib/kaffe/tools/native2ascii/Native2ASCII.java:
+	Removed.
+
+2005-03-03  Dalibor Topic  <robilad@kaffe.org>
+
         * THIRDPARTY: Added gnu.bytecode and cp-tools javap.
 
         * developers/gdbinit (pStr): fixed field name.

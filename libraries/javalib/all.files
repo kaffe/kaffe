@@ -66,6 +66,7 @@ gnu/classpath/tools/Util.java
 gnu/classpath/tools/javap/GnuByteCodeJavap.java
 gnu/classpath/tools/javap/Javap.java
 gnu/classpath/tools/javap/JavapMain.java
+gnu/classpath/tools/native2ascii/Native2ASCII.java
 gnu/crypto/Properties.java
 gnu/crypto/Registry.java
 gnu/crypto/assembly/Assembly.java
@@ -3536,7 +3537,6 @@ kaffe/tools/jar/XPFileInputStream.java
 kaffe/tools/jar/XPFileOutputStream.java
 kaffe/tools/jar/XPFileReader.java
 kaffe/tools/jar/XPFileWriter.java
-kaffe/tools/native2ascii/Native2ASCII.java
 kaffe/tools/serialver/SerialVer.java
 kaffe/util/Assert.java
 kaffe/util/Base64.java

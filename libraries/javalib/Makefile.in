@@ -407,6 +407,7 @@ Klasses_jar_SRCS = \
 	$(gnu_classpath_SRCS) \
 	$(gnu_classpath_tools_SRCS) \
 	$(gnu_classpath_tools_javap_SRCS) \
+	$(gnu_classpath_tools_native2ascii_SRCS) \
 	$(gnu_crypto_SRCS) \
 	$(gnu_crypto_assembly_SRCS) \
 	$(gnu_crypto_auth_SRCS) \
@@ -633,7 +634,6 @@ Klasses_jar_SRCS = \
 	$(kaffe_security_SRCS) \
 	$(kaffe_security_provider_SRCS) \
 	$(kaffe_tools_jar_SRCS) \
-	$(kaffe_tools_native2ascii_SRCS) \
 	$(kaffe_tools_serialver_SRCS) \
 	$(kaffe_util_SRCS) \
 	$(kaffe_util_locale_SRCS) \
@@ -758,6 +758,9 @@ gnu_classpath_tools_javap_SRCS = \
 	gnu/classpath/tools/javap/GnuByteCodeJavap.java \
 	gnu/classpath/tools/javap/Javap.java \
 	gnu/classpath/tools/javap/JavapMain.java
+
+gnu_classpath_tools_native2ascii_SRCS = \
+	gnu/classpath/tools/native2ascii/Native2ASCII.java
 
 gnu_crypto_SRCS = \
 	gnu/crypto/Properties.java \
@@ -4680,9 +4683,6 @@ kaffe_tools_jar_SRCS = \
 	kaffe/tools/jar/XPFileOutputStream.java \
 	kaffe/tools/jar/XPFileReader.java \
 	kaffe/tools/jar/XPFileWriter.java
-
-kaffe_tools_native2ascii_SRCS = \
-	kaffe/tools/native2ascii/Native2ASCII.java
 
 kaffe_tools_serialver_SRCS = \
 	kaffe/tools/serialver/SerialVer.java
