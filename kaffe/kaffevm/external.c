@@ -204,6 +204,8 @@ initNative(void)
 		strcat(lib, NATIVELIBRARY);
 		strcat(lib, LIBRARYSUFFIX);
 
+	       	DBG(INIT, dprintf("trying to load %s\n", lib); )
+
 		if (loadNativeLibrary(lib, NULL, 0) >= 0) {
 			DBG(INIT, dprintf("initNative() done\n"); )
 			return;
