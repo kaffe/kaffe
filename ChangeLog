@@ -1,5 +1,16 @@
 2004-12-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/swing/plaf/metal/MetalTheme.java:
+	Resynced with GNU Classpath.
+	
+	2004-12-23  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/metal/MetalTheme.java
+	(getControlTextColor): Return getControlInfo().
+	(getHighlightedTextColor): Return getControlTextColor().
+	
+2004-12-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/plaf/basic/BasicButtonListener.java,
 	libraries/javalib/javax/swing/plaf/basic/BasicButtonUI.java:
 	Resynced with GNU Classpath.

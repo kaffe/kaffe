@@ -102,7 +102,7 @@ public abstract class MetalTheme
 
   public ColorUIResource getControlTextColor()
   {
-    return getBlack();
+    return getControlInfo();
   }
 
   public ColorUIResource getDesktopColor()
@@ -117,7 +117,7 @@ public abstract class MetalTheme
 
   public ColorUIResource getHighlightedTextColor()
   {
-    return getBlack();
+    return getControlTextColor();
   }
 
   public ColorUIResource getInactiveControlTextColor()

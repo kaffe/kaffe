@@ -133,7 +133,7 @@ public class BasicButtonUI extends ButtonUI
 
   protected BasicButtonListener createButtonListener(AbstractButton b)
   {
-    return new BasicButtonListener();
+    return new BasicButtonListener(b);
   }
 
   public void installListeners(AbstractButton b)
