@@ -1,3 +1,18 @@
+Sat Oct 19 21:12:10 CEST 2002 Jukka Santala <jsantala@tml.hut.fi>
+	* kaffe/kaffe/version.c: fixed a typo.
+	* kaffe/kaffevm/jit3/machine.c, kaffe/kaffevm/jit3/registers.c:
+	Turns off the so-called "Sanity check" code from the VM core by
+	default. These checks are no doubt useful, if something goes
+	drastically wrong, but considering things don't usually go wrong
+	(that way), they instead drastically slow down the VM core. Most
+	users want to run with these disabled; the only reason to have
+	them turned on is if you're porting or doing other critical VM
+	rework, and want to catch problems as soon as they occur. If you
+	want, you could replace SCHK(s) macro with one to check a
+	debug-flag and execute the check dependent on that, but it would
+	still add some non-trivial work to the core, so I propose using
+	this patch as is.
+
 Sat Oct 19 20:11:39 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	*  kaffe/scripts/javap.in:
 	use kjc's dissasembler instead of our own implementation.

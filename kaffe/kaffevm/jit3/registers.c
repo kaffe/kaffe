@@ -8,6 +8,8 @@
  * of this file.
  */
 
+#define SCHK(s)
+
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
@@ -264,7 +266,7 @@ slotRegister(SlotData* slot, int type, int use, int idealreg)
 	int needreload;
 	int oldmod;
 
-	sanityCheck();
+SCHK(	sanityCheck();						)
 
 	reg = slot->regno;
 	regi = &reginfo[reg];
@@ -319,7 +321,7 @@ slotRegister(SlotData* slot, int type, int use, int idealreg)
 		reg = allocRegister(idealreg, type);
 		clobberRegister(reg);
 
-		sanityCheck();
+SCHK(		sanityCheck();					)
 
 		/* If we're modifying this slot, clear the modified bits
 		 * so when we clobber it, it won't get written back.
@@ -373,7 +375,7 @@ slotRegister(SlotData* slot, int type, int use, int idealreg)
 			}
 		}
 
-		sanityCheck();
+SCHK(		sanityCheck();					)
 
 		/* Setup the new slot/register mapping and delete old one */
 		regi = &reginfo[reg];
@@ -401,7 +403,7 @@ slotRegister(SlotData* slot, int type, int use, int idealreg)
 		slot_invalidate(slot);
 	}
 
-	sanityCheck();
+SCHK(	sanityCheck();						)
 
 	/* Return register */
 	return (regi->regno);
@@ -419,7 +421,7 @@ clobberRegister(int reg)
 	SlotData* nslot;
 	kregs* regi;
 
-	sanityCheck();
+SCHK(	sanityCheck();						)
 
 	if (reg != NOREG) {
 		regi = &reginfo[reg];
@@ -441,7 +443,7 @@ clobberRegister(int reg)
 		regi->used = ++usecnt;
 	}
 
-	sanityCheck();
+SCHK(	sanityCheck();						)
 }
 
 /*
@@ -453,7 +455,7 @@ forceRegister(SlotData* slot, int reg, int type)
 {
 	kregs* regi;
 
-	sanityCheck();
+SCHK(	sanityCheck();						)
 
 	if (slot->regno != reg) {
 		assert(!isGlobal(slot));
@@ -487,7 +489,7 @@ DBG(REGFORCE,
 
 	/* Finally, we assume the copy is done elsewhere */
 
-	sanityCheck();
+SCHK(	sanityCheck();						)
 }
 
 /*
@@ -497,7 +499,7 @@ DBG(REGFORCE,
 int
 slotOffset(SlotData* slot, int type, int use)
 {
-	sanityCheck();
+SCHK(	sanityCheck();						)
 
 	/* If slot is in a register, clobber the register to force it back
 	 * into memory.
@@ -507,7 +509,7 @@ slotOffset(SlotData* slot, int type, int use)
 		clobberRegister(slot[1].regno);
 	}
 
-	sanityCheck();
+SCHK(	sanityCheck();						)
 
 	return (slotOffsetNoSpill(slot, type));
 }
@@ -544,7 +546,7 @@ slot_invalidate(SlotData* sdata)
 	SlotData** ptr;
 	int reg;
 
-	sanityCheck();
+SCHK(	sanityCheck();						)
 
 	reg = sdata->regno;
 
@@ -571,7 +573,7 @@ slot_invalidate(SlotData* sdata)
 	}
 	sdata->modified = 0;
 
-	sanityCheck();
+SCHK(	sanityCheck();						)
 }
 
 /*

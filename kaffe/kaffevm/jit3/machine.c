@@ -12,7 +12,7 @@
  * of this file.
  */
 
-#define SCHK(s) s
+#define SCHK(s)
 #define	SUSE(s)
 
 #include "config.h"
