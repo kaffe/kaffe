@@ -47,7 +47,7 @@ KaffeJNI_ToReflectedMethod (JNIEnv *env UNUSED, jclass cls, jmethodID mid, jbool
 	Method *allMethods;
 	int i;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 	
 	clazz = (Hjava_lang_Class *)cls;
 	refMeth = NULL;
@@ -74,7 +74,7 @@ KaffeJNI_ToReflectedField (JNIEnv *env UNUSED, jclass cls, jfieldID fid, jboolea
 	Field *allFields;
 	int i;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 
 	clazz = (Hjava_lang_Class *)cls;
 	refField = NULL;

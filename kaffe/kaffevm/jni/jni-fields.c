@@ -36,7 +36,7 @@ KaffeJNI_GetObjectField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
   jobject nobj;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   nobj = GET_FIELD(jobject, obj, fld);
 
@@ -248,7 +248,7 @@ KaffeJNI_GetStaticObjectField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fl
 {
   jobject obj;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   obj = GET_STATIC_FIELD(jobject, fld);
 

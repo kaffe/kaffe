@@ -46,7 +46,7 @@ JNI_GetDefaultJavaVMInitArgs(void* args)
       break;
     case JNI_VERSION_1_2:
       vm_args->ignoreUnrecognized = JNI_FALSE;
-      vm_args->options = JNI_FALSE;
+      vm_args->options = NULL;
       vm_args->nOptions = 0;
       break;
     default:

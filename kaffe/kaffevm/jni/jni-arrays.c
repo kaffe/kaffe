@@ -26,7 +26,7 @@ KaffeJNI_GetObjectArrayElement(JNIEnv* env UNUSED, jobjectArray arr, jsize elem)
 {
   jobject obj;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   if (elem >= (jsize)obj_length((HArrayOfObject*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
@@ -57,7 +57,7 @@ KaffeJNI_NewObjectArray(JNIEnv* env UNUSED, jsize len, jclass cls, jobject init)
   HArrayOfObject* obj;
   jsize i;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   obj = (HArrayOfObject*)newArray((Hjava_lang_Class*)cls, len);
 
@@ -76,7 +76,7 @@ KaffeJNI_NewBooleanArray(JNIEnv* env UNUSED, jsize len)
 {
   jbooleanArray arr;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   arr = newArray(booleanClass, len);
 
@@ -90,7 +90,7 @@ KaffeJNI_NewByteArray(JNIEnv* env UNUSED, jsize len)
 {
   jbyteArray arr;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   arr = newArray(byteClass, len);
 
@@ -104,7 +104,7 @@ KaffeJNI_NewCharArray(JNIEnv* env UNUSED, jsize len)
 {
   jcharArray arr;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   arr = newArray(charClass, len);
 
@@ -118,7 +118,7 @@ KaffeJNI_NewShortArray(JNIEnv* env UNUSED, jsize len)
 {
   jshortArray arr;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   arr = newArray(shortClass, len);
 
@@ -132,7 +132,7 @@ KaffeJNI_NewIntArray(JNIEnv* env UNUSED, jsize len)
 {
   jintArray arr;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   arr = newArray(intClass, len);
 
@@ -146,7 +146,7 @@ KaffeJNI_NewLongArray(JNIEnv* env UNUSED, jsize len)
 {
   jlongArray arr;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   arr = newArray(longClass, len);
 
@@ -160,7 +160,7 @@ KaffeJNI_NewFloatArray(JNIEnv* env UNUSED, jsize len)
 {
   jfloatArray arr;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   arr = newArray(floatClass, len);
 
@@ -174,7 +174,7 @@ KaffeJNI_NewDoubleArray(JNIEnv* env UNUSED, jsize len)
 {
   jdoubleArray arr;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   arr = newArray(doubleClass, len);
 
@@ -187,7 +187,7 @@ jboolean*
 KaffeJNI_GetBooleanArrayElements(JNIEnv* env UNUSED, jbooleanArray arr, jbool* iscopy)
 {
   jboolean* array;
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
@@ -202,7 +202,7 @@ jbyte*
 KaffeJNI_GetByteArrayElements(JNIEnv* env UNUSED, jbyteArray arr, jbool* iscopy)
 {
   jbyte* array;
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
@@ -223,7 +223,7 @@ jchar*
 KaffeJNI_GetCharArrayElements(JNIEnv* env UNUSED, jcharArray arr, jbool* iscopy)
 {
   jchar* array;
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
@@ -238,7 +238,7 @@ jshort*
 KaffeJNI_GetShortArrayElements(JNIEnv* env UNUSED, jshortArray arr, jbool* iscopy)
 {
   jshort* array;
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
@@ -253,7 +253,7 @@ jint*
 KaffeJNI_GetIntArrayElements(JNIEnv* env UNUSED, jintArray arr, jbool* iscopy)
 {
   jint* array;
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
@@ -268,7 +268,7 @@ jlong*
 KaffeJNI_GetLongArrayElements(JNIEnv* env UNUSED, jlongArray arr, jbool* iscopy)
 {
   jlong* array;
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
@@ -283,7 +283,7 @@ jfloat*
 KaffeJNI_GetFloatArrayElements(JNIEnv* env UNUSED, jfloatArray arr, jbool* iscopy)
 {
   jfloat* array;
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
@@ -298,7 +298,7 @@ jdouble*
 KaffeJNI_GetDoubleArrayElements(JNIEnv* env UNUSED, jdoubleArray arr, jbool* iscopy)
 {
   jdouble* array;
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;

@@ -35,7 +35,7 @@ KaffeJNI_NewString(JNIEnv* env UNUSED, const jchar* data, jsize len)
 {
   Hjava_lang_String* str;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   str = (Hjava_lang_String*)newObject(StringClass);
   unhand(str)->offset = 0;
@@ -63,7 +63,7 @@ const jchar*
 KaffeJNI_GetStringChars(JNIEnv* env UNUSED, jstring data, jboolean* copy)
 {
   jchar* c;
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   if (copy != NULL) {
     *copy = JNI_FALSE;
@@ -81,7 +81,7 @@ KaffeJNI_NewStringUTF(JNIEnv* env UNUSED, const char* data)
   Utf8Const* utf8;
   size_t len;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   len = strlen(data);
   if (!utf8ConstIsValidUtf8(data, len)) {
@@ -142,7 +142,7 @@ KaffeJNI_GetStringUTFChars(JNIEnv* env, jstring data, jbool* copy)
   jsize i;
   jsize j;
 
-  BEGIN_EXCEPTION_HANDLING(0);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
   /* We always copy data */
   if (copy != NULL) {

@@ -1,5 +1,13 @@
 2004-12-19  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/jni/jni-arrays.c, kaffe/kaffevm/jni/jni-base.c
+	  kaffe/kaffevm/jni/jni-callmethod.c, kaffe/kaffevm/jni/jni-fields.c,
+	  kaffe/kaffevm/jni/jni-helpers.c, kaffe/kaffevm/jni/jni-string.c,
+	  kaffe/kaffevm/jni/jni.c: 
+	  Sparse NULL-constant fixes.
+
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
 	* config/i386/jit-i386.def, kaffe/kaffevm/intrp/machine.c,
 	  kaffe/kaffevm/jit/machine.c:
 	  With recent DBG() macro now behaving like a real statement, all

@@ -163,7 +163,7 @@ postError(JNIEnv* env, errorInfo* info)
 static jref
 Kaffe_NewGlobalRef(JNIEnv* env, jref obj)
 {
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 	if (!gc_add_ref(obj)) {
 		errorInfo info;
 		postOutOfMemory(&info);
@@ -191,7 +191,7 @@ Kaffe_DefineClass(JNIEnv* env, jobject loader, const jbyte* buf, jsize len)
 	classFile hand;
 	errorInfo info;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 
 	classFileInit(&hand, buf, len, CP_BYTEARRAY);
 
@@ -223,7 +223,7 @@ Kaffe_FindClass(JNIEnv UNUSED *env, const char* name)
 	Utf8Const* utf8;
 	jvalue retval;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 
 	/* We accepts slashes, but Class.forName() does not */
 	utf8 = checkPtr(utf8ConstNew(name, -1));
@@ -244,7 +244,7 @@ Kaffe_GetSuperClass(JNIEnv* env UNUSED, jclass cls)
 {
 	jclass clz;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 
 	clz = ((Hjava_lang_Class*)cls)->superclass;
 
@@ -307,7 +307,7 @@ Kaffe_ExceptionOccurred(JNIEnv* env UNUSED)
 {
 	jobject obj;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 
 	obj = thread_data->exceptObj;
 
@@ -338,7 +338,7 @@ Kaffe_ExceptionDescribe(JNIEnv* env UNUSED)
 
 	if (thread_data->exceptObj != 0) {
 		do_execute_java_method(NULL, thread_data->exceptObj, "printStackTrace", "()V",
-				       0, 0, thread_data->exceptObj); 
+				       NULL, 0, thread_data->exceptObj); 
 	}
 	END_EXCEPTION_HANDLING();
 }
@@ -348,7 +348,7 @@ Kaffe_ExceptionClear(JNIEnv* env UNUSED)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
-	thread_data->exceptObj = 0;
+	thread_data->exceptObj = NULL;
 
 	END_EXCEPTION_HANDLING();
 }
@@ -359,7 +359,7 @@ Kaffe_AllocObject(JNIEnv* env UNUSED, jclass cls)
 	jobject obj;
 	Hjava_lang_Class* clazz;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 
 	clazz = (Hjava_lang_Class*)cls;
 
@@ -381,7 +381,7 @@ Kaffe_NewObjectV(JNIEnv* env UNUSED, jclass cls, jmethodID meth, va_list args)
 	jvalue retval;
 	Method* m = (Method*)meth;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 
 	clazz = (Hjava_lang_Class*)cls;
 
@@ -403,7 +403,7 @@ Kaffe_NewObject(JNIEnv* env UNUSED, jclass cls, jmethodID meth, ...)
 	jobject obj;
 	va_list args;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 
 	va_start(args, meth);
 	obj = Kaffe_NewObjectV(env, cls, meth, args);
@@ -421,7 +421,7 @@ Kaffe_NewObjectA(JNIEnv* env UNUSED, jclass cls, jmethodID meth, jvalue* args)
 	jvalue retval;
 	Method* m = (Method*)meth;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 
 	clazz = (Hjava_lang_Class*)cls;
 
@@ -442,7 +442,7 @@ Kaffe_GetObjectClass(JNIEnv* env UNUSED, jobject obj)
 {
 	jclass cls;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 
 	cls = ((Hjava_lang_Object*)obj)->vtable->class;
 
@@ -474,15 +474,15 @@ Kaffe_GetMethodID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 	Method* meth;
 	errorInfo info;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 	meth = lookupClassMethod((Hjava_lang_Class*)cls, (char*)name, (char*)sig, &info);
-	if (meth == 0) {
+	if (meth == NULL) {
 		postError(env, &info);
 	} 
 	else if (METHOD_IS_STATIC(meth)) {
 		postExceptionMessage(&info, JAVA_LANG(NoSuchMethodError), "%s", name);
 		postError(env, &info);
-		meth = 0;
+		meth = NULL;
 	}
 	END_EXCEPTION_HANDLING();
 	
@@ -497,7 +497,7 @@ Kaffe_GetFieldID(JNIEnv* env, jclass cls, const char* name, const char* sig UNUS
 	errorInfo info;
 	Utf8Const* utf8;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 	utf8 = checkPtr(utf8ConstNew(name, -1));
 	fld = lookupClassField((Hjava_lang_Class*)cls, utf8, false, &info);
 	utf8ConstRelease(utf8);
@@ -514,14 +514,14 @@ Kaffe_GetStaticMethodID(JNIEnv* env, jclass cls, const char* name, const char* s
 	Method* meth;
 	errorInfo info;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 	meth = lookupClassMethod((Hjava_lang_Class*)cls, (char*)name, (char*)sig, &info);
-	if (meth == 0) {
+	if (meth == NULL) {
 		postError(env, &info);
 	} else if (!METHOD_IS_STATIC(meth)) {
 		postExceptionMessage(&info, JAVA_LANG(NoSuchMethodError), "%s", name);
 		postError(env, &info);
-		meth = 0;
+		meth = NULL;
 	}
 	END_EXCEPTION_HANDLING();
 
@@ -535,7 +535,7 @@ Kaffe_GetStaticFieldID(JNIEnv* env, jclass cls, const char* name, const char* si
 	errorInfo info;
 	Utf8Const* utf8;
 
-	BEGIN_EXCEPTION_HANDLING(0);
+	BEGIN_EXCEPTION_HANDLING(NULL);
 	utf8 = checkPtr(utf8ConstNew(name, -1));
 	fld = lookupClassField((Hjava_lang_Class*)cls, utf8, true, &info);
 	utf8ConstRelease(utf8);
@@ -983,7 +983,7 @@ JavaVM Kaffe_JavaVM = {
 
 KaffeVM_Arguments Kaffe_JavaVMInitArgs = {
 	0,		/* Version */
-	0,		/* Properties */
+	NULL,		/* Properties */
 	0,		/* Check source */
 	THREADSTACKSIZE,/* Native stack size */
 	0,		/* Java stack size */
@@ -992,7 +992,7 @@ KaffeVM_Arguments Kaffe_JavaVMInitArgs = {
 	/*	2,	*/	/* Verify mode ... verify remote by default */
 	0,		/* Verify mode ... noverify by default */
 	".",		/* Classpath */
-	0,		/* Bootclasspath */
+	NULL,		/* Bootclasspath */
 	(void*)&vfprintf,/* Vprintf */
 	(void*)&exit,	/* Exit */
 	(void*)&abort,	/* Abort */
@@ -1003,8 +1003,8 @@ KaffeVM_Arguments Kaffe_JavaVMInitArgs = {
 	0,		/* Enable verbose JIT */
 	0,		/* Enable verbose calls */
 	ALLOC_HEAPSIZE,	/* Inc heap size */
-	0,		/* Class home */
-	0,		/* Library home */
+	NULL,		/* Class home */
+	NULL,		/* Library home */
 };
 
 /*
