@@ -1,0 +1,29 @@
+Here is a brief summary of locking in kaffe.  jmutex's  and jcondvar's
+are a thin veneer over the locks provided by the threading system.
+(In the case of unix-jthreads, these actually are the locks provided
+by the threading system.)  jmutex's are not recursive.
+
+The locks defined in kaffe/kaffevm/locks.h are closer to java
+monitors:  they including both lock and condition variable features,
+and are recursive.  Here is a table of the available functions:
+
+waitCond	waitStaticCond		
+signalCond	signalStaticCond	
+broadcastCond	broadcastStaticCond	
+lockMutex	lockStaticMutex		lockJavaMutex	
+unlockMutex	unlockStaticMutex	unlockJavaMutex	
+unlockKnownMutex 			unlockKnownJavaMutex 
+
+The plain and Java variants of this interface take an arbitrary
+address, and look up the corresponding iLock, while the Static
+variants take an iLock pointer.  unlockKnownMutex and
+unlockKnownJavaMutex take an iLock pointer, but will free the lock if
+it is no longer referenced.
+
+The Java locking functions exist because of asynchronous exceptions:
+They should only be used for synchronized methods and java synchronized
+blocks.  Asynchronous exceptions are deferred until non Java locks are
+released, while Java locks are released as the stack is unwound.
+
+Jason Baker <jbaker@cs.utah.edu>
+Jun 29, 1999
