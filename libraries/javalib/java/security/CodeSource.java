@@ -5,7 +5,7 @@
  * Copyright (c) 1999
  *	Archie L. Cobbs.  All rights reserved.
  * Copyright (c) 1999
- *	Transvirtual Technologies, Inc.  All rights reserved.
+ *	Transvirtual Technologies, Inc.	 All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -24,12 +24,16 @@ import java.util.Set;
 
 public class CodeSource implements Serializable {
 
-    private URL location;
-    private java.security.cert.Certificate [] certificates;
+    private final URL location;
+    private final java.security.cert.Certificate [] certificates;
 
-    public CodeSource(URL location, java.security.cert.Certificate[] certificates) {
+    public CodeSource(final URL location, final java.security.cert.Certificate[] certificates) {
 	this.location = location;
-	this.certificates = certificates;
+	if (certificates != null) {
+	    this.certificates = (java.security.cert.Certificate[]) certificates.clone();
+	} else {
+	    this.certificates = null;
+	}
     }
 
     public boolean equals(Object obj) {
@@ -42,12 +46,30 @@ public class CodeSource implements Serializable {
 
 	CodeSource that = (CodeSource) obj;
 
-	return getLocation().equals(that.getLocation())
-	    && getCertSet().equals(that.getCertSet());
+	if (location == null) {
+	    if (that.location != null) {
+		return false;
+	    }
+	} else if (!location.equals(that.location)) {
+	    return false;
+	}
+	if (certificates == null) {
+	    if (that.certificates != null) {
+		return false;
+	    }
+	} else {
+	    if (!getCertSet().equals(that.getCertSet())) {
+		return false;
+	    }
+	}
+	return true;
     }
 
     public final java.security.cert.Certificate[] getCertificates() {
-	return certificates;
+	if (certificates == null) {
+	    return null;
+	}
+	return (java.security.cert.Certificate[]) certificates.clone();
     }
 
     private Set getCertSet() {
@@ -59,8 +81,16 @@ public class CodeSource implements Serializable {
     }
 
     public int hashCode() {
-	return getLocation().hashCode()
-	    ^ getCertSet().hashCode();
+	int sum = 0;
+	if (location != null) {
+	    sum += location.hashCode();
+	}
+	if (certificates != null) {
+	    for (int i = 0; i < certificates.length; i++) {
+		sum += certificates[i].hashCode();
+	    }
+	}
+	return sum;
     }
 
     public boolean implies(CodeSource other) {
@@ -99,7 +129,7 @@ public class CodeSource implements Serializable {
 	    }
 
 	    /* Check 3.4 */
-	    if  (getLocation().getHost() != null) {
+	    if	(getLocation().getHost() != null && ! getLocation().getHost().equals("")) {
 		if (! new SocketPermission(getLocation().getHost(), "")
 		    .implies(new SocketPermission(other.getLocation().getHost(), ""))) {
 		    return false;
@@ -151,7 +181,7 @@ public class CodeSource implements Serializable {
     public String toString() {
 	return getClass().getName()
 	    + "[location=" + getLocation()
-	    + ",certificates=" + getCertSet()
+	    + ",certificates=" + (certificates != null ? getCertSet().toString() : "none")
 	    + ']';
     }
 }

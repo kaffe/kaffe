@@ -1,3 +1,16 @@
+2004-03-12  Casey Marshall <rsdio@metastatic.org>
+
+        * libraries/javalib/java/security/CodeSource.java
+        (location): marked final.
+        (certificates): marked final.
+        (<init>): clone the certificate array.
+        (getCertificates): clone the certificate array.
+        (equals): handle null components.
+        (hashCode): handle null components.
+        (toString): handle null components.
+        (implies): don't check SocketPermission if the host field of
+        `location' is empty.
+
 2004-03-12  Jon Nall <nall@themountaingoats.net>
 
 	* kaffe/jvmpi/jvmpi_kaffe.c:
