@@ -311,6 +311,7 @@ jniType(const char *sig)
 		case 'D':
 			return "jdoubleArray";
 		case 'L':
+		case '[':
 			return "jobjectArray";
 		default:
 			dprintf("bogus array type `%c'", sig[1]);
