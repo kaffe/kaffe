@@ -46,7 +46,9 @@ public URL(String protocol, String host, int port, String file)
 
 public URL(String protocol, String host, int port, String file,
 		URLStreamHandler handler) throws MalformedURLException {
-	if (protocol == null || host == null || file == null) {
+	if (protocol == null
+	    || (host == null && !protocol.equals("file"))
+	    || file == null) {
 		throw new NullPointerException();
 	}
 	setHandler(protocol, handler);
