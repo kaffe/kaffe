@@ -64,6 +64,15 @@
 /* The number of bytes in a void*.  */
 #undef SIZEOF_VOIDP
 
+/* Define if you have the MD2Init function.  */
+#undef HAVE_MD2INIT
+
+/* Define if you have the MD4Init function.  */
+#undef HAVE_MD4INIT
+
+/* Define if you have the MD5Init function.  */
+#undef HAVE_MD5INIT
+
 /* Define if you have the __get_eh_info function.  */
 #undef HAVE___GET_EH_INFO
 
@@ -405,6 +414,9 @@
 
 /* Define if you have the m library (-lm).  */
 #undef HAVE_LIBM
+
+/* Define if you have the md library (-lmd).  */
+#undef HAVE_LIBMD
 
 /* Define if you have the mw library (-lmw).  */
 #undef HAVE_LIBMW

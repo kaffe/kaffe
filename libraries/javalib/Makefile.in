@@ -108,6 +108,7 @@ PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
 RANLIB = @RANLIB@
 REGEN_FORWARD = @REGEN_FORWARD@
+SECURITY_LIBS = @SECURITY_LIBS@
 THREAD_DIR = @THREAD_DIR@
 THREAD_SYSTEM = @THREAD_SYSTEM@
 VERSION = @VERSION@
@@ -154,6 +155,7 @@ Klasses_jar_SRCS = \
 	$(java_lang_reflect_SRCS) \
 	$(java_math_SRCS) \
 	$(java_net_SRCS) \
+	$(java_security_SRCS) \
 	$(java_sql_SRCS) \
 	$(java_text_SRCS) \
 	$(java_util_SRCS) \
@@ -173,6 +175,7 @@ Klasses_jar_SRCS = \
 	$(kaffe_net_www_protocol_ftp_SRCS) \
 	$(kaffe_net_www_protocol_http_SRCS) \
 	$(kaffe_net_www_protocol_system_SRCS) \
+	$(kaffe_security_provider_SRCS) \
 	$(kaffe_text_collator_SRCS) \
 	$(kaffe_text_dateformat_SRCS) \
 	$(kaffe_text_numberformat_SRCS) \
@@ -505,6 +508,7 @@ java_lang_SRCS = \
 	java/lang/Runnable.java \
 	java/lang/Runtime.java \
 	java/lang/RuntimeException.java \
+	java/lang/RuntimePermission.java \
 	java/lang/SecurityException.java \
 	java/lang/SecurityManager.java \
 	java/lang/Short.java \
@@ -580,6 +584,29 @@ java_net_SRCS = \
 	java/net/UnknownHostException.java \
 	java/net/UnknownServiceException.java
 
+java_security_SRCS = \
+	java/security/AccessControlContext.java \
+	java/security/AccessControlException.java \
+	java/security/AccessController.java \
+	java/security/BasicPermission.java \
+	java/security/DigestException.java \
+	java/security/DigestInputStream.java \
+	java/security/DigestOutputStream.java \
+	java/security/GeneralSecurityException.java \
+	java/security/Guard.java \
+	java/security/GuardedObject.java \
+	java/security/MessageDigest.java \
+	java/security/MessageDigestSpi.java \
+	java/security/NoSuchAlgorithmException.java \
+	java/security/NoSuchProviderException.java \
+	java/security/Permission.java \
+	java/security/PrivilegedAction.java \
+	java/security/PrivilegedActionException.java \
+	java/security/PrivilegedExceptionAction.java \
+	java/security/Provider.java \
+	java/security/Security.java \
+	java/security/SecurityPermission.java
+
 java_sql_SRCS = \
 	java/sql/CallableStatement.java \
 	java/sql/Connection.java \
@@ -628,6 +655,7 @@ java_util_SRCS = \
 	java/util/AbstractList.java \
 	java/util/AbstractListIterator.java \
 	java/util/AbstractMap.java \
+	java/util/AbstractMapEntry.java \
 	java/util/AbstractMapEntrySet.java \
 	java/util/AbstractSequentialList.java \
 	java/util/AbstractSet.java \
@@ -647,6 +675,7 @@ java_util_SRCS = \
 	java/util/EventObject.java \
 	java/util/GregorianCalendar.java \
 	java/util/HashMap.java \
+	java/util/HashSet.java \
 	java/util/Hashtable.java \
 	java/util/Iterator.java \
 	java/util/LinkedList.java \
@@ -788,6 +817,14 @@ kaffe_net_www_protocol_system_SRCS = \
 	kaffe/net/www/protocol/system/Handler.java \
 	kaffe/net/www/protocol/system/SystemURLConnection.java
 
+kaffe_security_provider_SRCS = \
+	kaffe/security/provider/Kaffe.java \
+	kaffe/security/provider/MD2.java \
+	kaffe/security/provider/MD4.java \
+	kaffe/security/provider/MD5.java \
+	kaffe/security/provider/SHA.java \
+	kaffe/security/provider/UpdateDigest.java
+
 kaffe_text_collator_SRCS = \
 	kaffe/text/collator/locale.java \
 	kaffe/text/collator/locale_en_US.java
@@ -887,7 +924,8 @@ distdir: $(DISTFILES)
 	   $(distdir)/java/awt/widgets $(distdir)/java/beans \
 	   $(distdir)/java/io $(distdir)/java/lang \
 	   $(distdir)/java/lang/ref $(distdir)/java/lang/reflect \
-	   $(distdir)/java/math $(distdir)/java/net $(distdir)/java/sql \
+	   $(distdir)/java/math $(distdir)/java/net \
+	   $(distdir)/java/security $(distdir)/java/sql \
 	   $(distdir)/java/text $(distdir)/java/util \
 	   $(distdir)/java/util/jar $(distdir)/java/util/mime \
 	   $(distdir)/java/util/zip $(distdir)/kaffe/applet \
@@ -899,6 +937,7 @@ distdir: $(DISTFILES)
 	   $(distdir)/kaffe/net/www/protocol/ftp \
 	   $(distdir)/kaffe/net/www/protocol/http \
 	   $(distdir)/kaffe/net/www/protocol/system \
+	   $(distdir)/kaffe/security/provider \
 	   $(distdir)/kaffe/text/collator \
 	   $(distdir)/kaffe/text/dateformat \
 	   $(distdir)/kaffe/text/numberformat $(distdir)/kaffe/util \
