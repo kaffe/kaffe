@@ -321,6 +321,7 @@ EXTRA_DIST = \
 	parisc/hpux/md.c \
 	parisc/hpux/md.h \
 	parisc/threads.h \
+	powerpc/common.h \
 	powerpc/aix/config.frag \
 	powerpc/aix/md.c \
 	powerpc/aix/md.h \

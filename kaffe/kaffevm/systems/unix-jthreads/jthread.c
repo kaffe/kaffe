@@ -1310,6 +1310,10 @@ DBG(JTHREAD,
 	memcpy(newstack, oldstack, STACK_COPY);
 #endif /* !STACK_GROWS_UP */
 
+#if defined(NEED_STACK_ALIGN)
+        newstack = (void *) STACK_ALIGN(newstack);
+#endif
+
 	SET_SP(jtid->env, newstack);
 
 #if defined(SET_BP)

@@ -1,3 +1,16 @@
+Tue Jul 25 12:33:25 MDT 2000  Kevin B. Hendricks <khendricks@ivey.uwo.ca>
+
+	* acinclude.m4, aclocal.m4: added powerpc
+	* configure, config/Makefile.in: regen
+	* config/Makefile.am: added powerpc/co
+	* config/powerpc/callmethod_ppc.h, config/powerpc/common.h: new files
+	* config/powerpc/threads.h, config/powerpc/linux/config.frag,
+	config/powerpc/linux/md.h: some powerpc updates
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: added NEED_STACK_ALIGN
+	and STACK_ALIGN macro to support architectures that need stack
+	alignment.
+
 Mon Jul 24 18:32:41 MDT 2000  Godmar Back <gback@cs.utah.edu>
 
     	* libraries/javalib/kaffe/util/UNIXTimeZone.java: close()

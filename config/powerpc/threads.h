@@ -1,6 +1,6 @@
 /*
  * powerpc/threads.h
- * Sparc threading information.
+ * powerpc threading information.
  *
  * Copyright (c) 1996, 1997, 1998
  *	Transvirtual Technologies, Inc.  All rights reserved.
@@ -17,13 +17,16 @@
 /**/
 #define	USE_INTERNAL_THREADS
 
-#define	THREADSTACKSIZE		(32 * 1024)
+#define	THREADSTACKSIZE		(128 * 1024)
 
 /*
  * Stack offset.
  * This is the offset into the setjmp buffer where the stack pointer is
  * stored.  This may be different with different OSes.
  */
-#define	SP_OFFSET		?
-
+#if defined(__linux__) && defined(__powerpc__)
+#define	SP_OFFSET  0
+#else
+#define	SP_OFFSET  ?
+#endif
 #endif

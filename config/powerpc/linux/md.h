@@ -12,7 +12,9 @@
 #ifndef __powerpc_linux_md_h
 #define __powerpc_linux_md_h
 
+#include "powerpc/common.h"
 #include "powerpc/threads.h"
+
 
 /* Linux requires a little initialisation */
 extern void init_md(void);

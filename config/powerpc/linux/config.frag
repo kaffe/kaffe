@@ -3,7 +3,7 @@
 #
 Khost_cpu=powerpc
 Khost_os=linux
-CFLAGS="-g -fsigned-char"
+CFLAGS="-g -O2 -fsigned-char"
 
-# PowerPC needs libffi for sysdepCallMethod
-with_libffi=yes
+# PowerPC does not need libffi for sysdepCallMethod
+with_libffi=no
