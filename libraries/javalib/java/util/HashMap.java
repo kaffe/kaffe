@@ -18,7 +18,7 @@ package java.util;
 import java.io.Serializable;
 
 // Simple implementation of a hash table. We keep an array of buckets,
-// where each bucket points to a singly linked list of Map.Entries.
+// where each bucket points to a singly linked list of Entry's (see below).
 
 public class HashMap extends AbstractMap
 		implements Map, Cloneable, Serializable {
@@ -29,45 +29,17 @@ public class HashMap extends AbstractMap
 	private int modCount;
 	private int size;
 
-	private static class Entry implements Map.Entry {
-		Object key;
-		Object val;
-		Entry next;
+	// The buckets point to a linked list of these
+	private class Entry extends AbstractMapEntry {
+		private Entry next;
 
-		Entry(Object key, Object val) {
-			this.key = key;
-			this.val = val;
-			this.next = null;
+		Entry(Object key, Object value) {
+			super(key, value);
+			next = null;
 		}
 
-		public Object getKey() {
-			return key;
-		}
-
-		public Object getValue() {
-			return val;
-		}
-
-		public Object setValue(Object val) {
-			Object old = val;
-			this.val = val;
-			return old;
-		}
-
-		public boolean equals(Object o) {
-			if (!(o instanceof Map.Entry)) {
-				return false;
-			}
-			Map.Entry me = (Map.Entry)o;
-			return (this.key == null ? me.getKey() == null
-				: this.key.equals(me.getKey()))
-			    && (this.val == null ? me.getValue() == null
-				: this.val.equals(me.getValue()));
-		}
-
-		public int hashCode() {
-			return (key == null ? 0 : key.hashCode())
-			    ^ (val == null ? 0 : val.hashCode());
+		public void changeValue(Object newValue) {
+			HashMap.this.put(key, newValue);
 		}
 	}
 
@@ -109,7 +81,7 @@ public class HashMap extends AbstractMap
 		for (int bucket = 0; bucket < table.length; bucket++) {
 			for (Entry e = table[bucket]; e != null; e = e.next) {
 				if (val == null ?
-				    e.val == null : val.equals(e.val)) {
+				    e.value == null : val.equals(e.value)) {
 					return true;
 				}
 			}
@@ -123,7 +95,7 @@ public class HashMap extends AbstractMap
 
 	public Object get(Object key) {
 		Entry e = find(key);
-		return e == null ? null : e.val;
+		return e == null ? null : e.value;
 	}
 
 	public Object put(Object key, Object val) {
@@ -132,8 +104,8 @@ public class HashMap extends AbstractMap
 		int bucket = bucket(key, table.length);
 		Entry e = find(key, bucket);
 		if (e != null) {
-			Object old = e.val;
-			e.val = val;
+			Object old = e.value;
+			e.value = val;
 			return old;
 		}
 
@@ -172,7 +144,7 @@ public class HashMap extends AbstractMap
 
 		// Special case first entry in chain
 		if (key == null ? first.key == null : key.equals(first.key)) {
-			Object val = first.val;
+			Object val = first.value;
 			table[bucket] = first.next;
 			modCount++;
 			size--;
@@ -183,7 +155,7 @@ public class HashMap extends AbstractMap
 		for (Entry e = first; e.next != null; e = e.next) {
 			if (key == null ?
 			    e.next.key == null : key.equals(e.next.key)) {
-				Object val = e.next.val;
+				Object val = e.next.value;
 				e.next = e.next.next;
 				modCount++;
 				size--;
@@ -213,10 +185,10 @@ public class HashMap extends AbstractMap
 			if (first == null) {
 				continue;
 			}
-			Entry newent = new Entry(first.key, first.val);
+			Entry newent = new Entry(first.key, first.value);
 			newmap.table[bucket] = newent;
 			for (Entry e = first.next; e != null; e = e.next) {
-				newent.next = new Entry(e.key, e.val);
+				newent.next = new Entry(e.key, e.value);
 				newent = newent.next;
 			}
 		}
