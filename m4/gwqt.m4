@@ -7,7 +7,13 @@ AC_REQUIRE([AC_PATH_X])
 AC_MSG_CHECKING([QTDIR])
 AC_ARG_WITH([qtdir], [  --with-qtdir=DIR        Qt installation directory [default=$QTDIR]], QTDIR=$withval)
 # Check that QTDIR is defined or that --with-qtdir given
-if test x"$QTDIR" = x"" ; then
+if test x"$QTDIR" = x ; then
+    QT_SEARCH="/usr/lib/qt31 /usr/local/qt31 /usr/lib/qt3 /usr/local/qt3 /usr/lib/qt2 /usr/local/qt2 /usr/lib/qt /usr/local/qt /usr/share/qt  /usr/share/qt3"
+    for i in $QT_SEARCH; do
+        if test -f $i/include/qglobal.h -a x$QTDIR = x; then QTDIR=$i; fi
+    done
+fi
+if test x"$QTDIR" = x ; then
     AC_MSG_ERROR([*** QTDIR must be defined, or --with-qtdir option given])
 fi
 AC_MSG_RESULT([$QTDIR])
@@ -133,6 +139,7 @@ if test x$QT_IS_EMBEDDED = xyes ; then
 fi
 
 QT_GUILINK=""
+QASSISTANTCLIENT_LDADD="-lqassistantclient"
 case "${host}" in
     *irix*)
         QT_LIBS="$QT_LIB"
@@ -189,9 +196,19 @@ case "${host}" in
                 QT_LIBS="$QT_LIBS qtmain.lib qui.lib user32.lib netapi32.lib"
             fi
         fi
+        QASSISTANTCLIENT_LDADD="qassistantclient.lib"
         ;;
 
 esac
+
+
+if test x"$QT_IS_EMBEDDED" = "xyes" ; then
+        QT_CXXFLAGS="-DQWS $QT_CXXFLAGS"
+fi
+
+if test x"$QT_IS_MT" = "xyes" ; then
+        QT_CXXFLAGS="$QT_CXXFLAGS -D_REENTRANT -DQT_THREAD_SUPPORT"
+fi
 
 QT_LDADD="-L$QTDIR/lib $QT_LIBS"
 
@@ -210,5 +227,6 @@ AC_MSG_RESULT([$QT_LDADD])
 AC_SUBST(QT_CXXFLAGS)
 AC_SUBST(QT_LDADD)
 AC_SUBST(QT_GUILINK)
+AC_SUBST(QASSISTANTCLIENT_LDADD)
 
 ])
