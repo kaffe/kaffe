@@ -33,6 +33,7 @@ extern void __mipsGetNextFrame(struct _exceptionFrame*);
 				__mipsGetNextFrame(&F)
 #define	NEXTFRAME(F)		((F)->return_frame)
 #define	PCFRAME(F)		((F)->return_pc)
+#define	FPFRAME(F)		((F)->return_frame)
 
 /* Extract the object argument from given frame */
 #define FRAMEOBJECT(f)							\
@@ -46,7 +47,7 @@ extern void __mipsGetNextFrame(struct _exceptionFrame*);
 		move $fp,%0						\n\
 		jr %1							\n\
 		nop							\n\
-	" : : "r" ((F)->return_frame), "r" ((H).handler), "r" (O) : "$2")
+	" : : "r" ((F)), "r" ((H)), "r" (O) : "$2")
 
 /**/
 /* Method dispatch.  */

@@ -107,14 +107,18 @@ doubleDivide(jdouble v1, jdouble v2)
 {
 	jlong v1bits, v2bits;
 
-	if (v2 != 0.0)
-		return (v1 / v2);
-	if (v1 == 0.0)
-		return longToDouble(DNANBITS);
 	v1bits = doubleToLong(v1);
-	if (DISNAN(v1bits))
-		return longToDouble(DNANBITS);
 	v2bits = doubleToLong(v2);
+
+	if (DISNAN(v1bits) || DISNAN(v2bits)) {
+		return longToDouble(DNANBITS);
+	}
+	if (v2 != 0.0) {
+		return (v1 / v2);
+	}
+	if (v1 == 0.0) {
+		return longToDouble(DNANBITS);
+	}
 	return longToDouble(DINFBITS | ((v1bits ^ v2bits) & DSIGNBIT));
 }
 
@@ -126,14 +130,18 @@ floatDivide(jfloat v1, jfloat v2)
 {
 	jint v1bits, v2bits;
 
-	if (v2 != 0.0)
-		return (v1 / v2);
-	if (v1 == 0.0)
-		return intToFloat(FNANBITS);
 	v1bits = floatToInt(v1);
-	if (FISNAN(v1bits))
-		return intToFloat(FNANBITS);
 	v2bits = floatToInt(v2);
+
+	if (FISNAN(v1bits) || FISNAN(v2bits)) {
+		return intToFloat(FNANBITS);
+	}
+	if (v2 != 0.0) {
+		return (v1 / v2);
+	}
+	if (v1 == 0.0) {
+		return intToFloat(FNANBITS);
+	}
 	return intToFloat(FINFBITS | ((v1bits ^ v2bits) & FSIGNBIT));
 }
 

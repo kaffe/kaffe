@@ -45,7 +45,7 @@ static Method* findExceptionInMethod(uintp, Hjava_lang_Class*, exceptionInfo*);
 
 static void nullException(struct _exceptionFrame *);
 static void floatingException(struct _exceptionFrame *);
-static void dispatchException(Hjava_lang_Throwable*, struct _exceptionFrame*) __NORETURN__;
+static void dispatchException(Hjava_lang_Throwable*, stackTraceInfo*) __NORETURN__;
 
 Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
 
@@ -199,14 +199,12 @@ throwError(errorInfo* einfo)
 void
 throwExternalException(Hjava_lang_Throwable* eobj)
 {
-	struct _exceptionFrame frame;
 	if (eobj == 0) {
 		fprintf(stderr, "Exception thrown on null object ... aborting\n");
 		ABORT();
 		EXIT(1);
 	}
-	FIRSTFRAME(frame, eobj);
-	dispatchException(eobj, &frame);
+	dispatchException(eobj, (stackTraceInfo*)buildStackTrace(0));
 }
 
 void
@@ -260,7 +258,7 @@ nextFrame(void* fm)
 
 static
 void
-dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
+dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 {
 	const char* cname;
 	Hjava_lang_Class* class;
@@ -330,15 +328,15 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 	}
 #elif defined(TRANSLATOR)
 	{
-		exceptionFrame* frame;
+		stackTraceInfo* frame;
 		exceptionInfo einfo;
 
-		for (frame = baseframe; frame != 0; frame = nextFrame(frame)) {
+		for (frame = baseframe; frame->meth != ENDOFSTACK; frame++) {
 			Method *meth;
 			
-			meth = findExceptionInMethod(PCFRAME(frame), class, &einfo);
+			meth = findExceptionInMethod(frame->pc, class, &einfo);
 
-                        if (einfo.method == 0 && PCFRAME(frame) >= Kaffe_JNI_estart && PCFRAME(frame) < Kaffe_JNI_eend) {
+                        if (einfo.method == 0 && frame->pc >= Kaffe_JNI_estart && frame->pc < Kaffe_JNI_eend) {
 				Kaffe_JNIExceptionHandler();
                         }
 
@@ -351,7 +349,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 			}
 			else {
 #if defined(FRAMEOBJECT)	/* does this arch support a FRAMEOBJECT macro */
-				obj = FRAMEOBJECT(frame);
+				obj = FRAMEOBJECT(frame->fp);
 #else
 				/* otherwise, do it the hard way... */
 				{
@@ -389,7 +387,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 			if (einfo.handler != 0) {
 				unhand(ct)->exceptObj = 0;
 				unhand(ct)->needOnStack = STACK_HIGH;
-				CALL_KAFFE_EXCEPTION(frame, einfo, eobj);
+				CALL_KAFFE_EXCEPTION(frame->fp, einfo.handler, eobj);
 			}
 
 			/* If method found and synchronised, unlock the lock */
@@ -461,9 +459,9 @@ nullException(struct _exceptionFrame *frame)
 {
 	Hjava_lang_Throwable* npe;
 
-	npe = (Hjava_lang_Throwable*)NullPointerException;
+	npe = (Hjava_lang_Throwable*)newObject(javaLangNullPointerException);
 	unhand(npe)->backtrace = buildStackTrace(frame);
-	dispatchException(npe, frame);
+	dispatchException(npe, (stackTraceInfo*)unhand(npe)->backtrace);
 }
 
 /*
@@ -474,9 +472,9 @@ floatingException(struct _exceptionFrame *frame)
 {
 	Hjava_lang_Throwable* ae;
 
-	ae = (Hjava_lang_Throwable*)ArithmeticException;
+	ae = (Hjava_lang_Throwable*)newObject(javaLangArithmeticException);
 	unhand(ae)->backtrace = buildStackTrace(frame);
-	dispatchException(ae, frame);
+	dispatchException(ae, (stackTraceInfo*)unhand(ae)->backtrace);
 }
 
 #if defined(TRANSLATOR)

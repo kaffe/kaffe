@@ -23,28 +23,25 @@ typedef struct _exceptionFrame {
 } exceptionFrame;
 
 /* Get the next frame in the chain */
-#define	NEXTFRAME(f)							\
-	(((exceptionFrame*)(f))->retbp)
+#define	NEXTFRAME(f)	(((exceptionFrame*)(f))->retbp)
 
-/* Extract the PC from the given frame */
-#define	PCFRAME(f)							\
-	((f)->retpc-1)
+/* Extract the PC & FP from the given frame */
+#define	PCFRAME(f)	((f)->retpc-1)
+#define	FPFRAME(f)	((f)->retbp)
 
 /* Extract a local argument from given frame */
-#define	FRAMEOBJECT(f)							\
-	(*(Hjava_lang_Object**)(f->retbp + 8))
+#define	FRAMEOBJECT(f)	(*(Hjava_lang_Object**)(f->retbp + 8))
 
 /* Get the first exception frame from a subroutine call */
-#define	FIRSTFRAME(f, o)						\
-	(f) = *((exceptionFrame*)(((uintp)&(o))-8))
+#define	FIRSTFRAME(f, o) (f) = *((exceptionFrame*)(((uintp)&(o))-8))
 
 /* Call the relevant exception handler (rewinding the stack as
    necessary). */
-#define CALL_KAFFE_EXCEPTION(frame, info, obj)				\
+#define CALL_KAFFE_EXCEPTION(F, H, O)					\
         asm("   movl %2,%%eax						\n\
 		movl %0,%%ebp						\n\
 		jmp *%1							\n\
-		" : : "g" (frame->retbp), "r" (info.handler), "g" (obj) : "eax")
+		" : : "g" (F), "r" (H), "g" (O) : "eax")
 
 
 /**/

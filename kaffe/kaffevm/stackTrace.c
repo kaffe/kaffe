@@ -39,8 +39,9 @@ buildStackTrace(struct _exceptionFrame* base)
 	int cnt;
 	struct _stackTrace trace;
 	stackTraceInfo* info;
+	struct _exceptionFrame orig;
 
-	STACKTRACEINIT(trace, base, base);
+	STACKTRACEINIT(trace, base, base, orig);
 	cnt = 0;
 	while(!STACKTRACEEND(trace)) {
 		STACKTRACESTEP(trace);
@@ -53,10 +54,11 @@ buildStackTrace(struct _exceptionFrame* base)
 
 	cnt = 0;
 
-	STACKTRACEINIT(trace,base,base);
+	STACKTRACEINIT(trace, &orig, 0, orig);
 
 	for(; !STACKTRACEEND(trace); STACKTRACESTEP(trace)) {
 		info[cnt].pc = STACKTRACEPC(trace);
+		info[cnt].fp = STACKTRACEFP(trace);
 		info[cnt].meth = STACKTRACEMETHCREATE(trace);
 		cnt++;
 	}

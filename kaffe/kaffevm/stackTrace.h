@@ -28,9 +28,10 @@ typedef struct _stackTrace {
 	vmException* frame;
 } stackTrace;
 
-#define STACKTRACEINIT(S,I,O)	((S).frame = (vmException*)unhand(getCurrentThread())->exceptPtr)
+#define STACKTRACEINIT(S,I,O,R)	((S).frame = (vmException*)unhand(getCurrentThread())->exceptPtr)
 #define	STACKTRACESTEP(S)	((S).frame = nextFrame((S).frame))
 #define STACKTRACEPC(S)		((S).frame->pc)
+#define STACKTRACEFP(S)		(0)
 #define STACKTRACEMETHCREATE(S)	((S).frame->meth)
 #define STACKTRACEEND(S)	((S).frame == 0 || (S).frame->meth == (Method*)1)
 
@@ -41,7 +42,7 @@ typedef struct _stackTrace {
 	struct _exceptionFrame* frame;
 } stackTrace;
 
-#define STACKTRACEINIT(S, I, O)				\
+#define STACKTRACEINIT(S, I, O, R)			\
 	{						\
 		if ((I) == NULL) {			\
 			FIRSTFRAME((S).nframe, O);	\
@@ -49,9 +50,11 @@ typedef struct _stackTrace {
 		} else {				\
 			(S).frame = (I);		\
 		}					\
+		(R) = *(S).frame;			\
 	}
 #define	STACKTRACESTEP(S)	((S).frame = nextFrame((S).frame))
 #define STACKTRACEPC(S)		(PCFRAME((S).frame))
+#define STACKTRACEFP(S)		(FPFRAME((S).frame))
 #define	STACKTRACEMETHCREATE(S)	(NULL)
 #define	STACKTRACEEND(S)	((S).frame == 0)
 
@@ -61,6 +64,7 @@ struct _methods;
 
 typedef struct _stackTraceInfo {
 	uintp   pc;
+	uintp	fp;
 	struct _methods* meth;
 } stackTraceInfo;
 

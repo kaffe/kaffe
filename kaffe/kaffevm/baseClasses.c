@@ -65,6 +65,7 @@ Hjava_lang_Class* javaLangDoubleClass;
 
 Hjava_lang_Class* javaLangArrayIndexOutOfBoundsException;
 Hjava_lang_Class* javaLangNullPointerException;
+Hjava_lang_Class* javaLangArithmeticException;
 
 /* Let's not load this if we can't open Klasses.jar */
 Hjava_lang_Class* javaIoIOException;
@@ -204,6 +205,7 @@ initBaseClasses(void)
 	/* Exception handling types */
 	loadStaticClass(&javaLangArrayIndexOutOfBoundsException, "java/lang/ArrayIndexOutOfBoundsException");
 	loadStaticClass(&javaLangNullPointerException, "java/lang/NullPointerException");
+	loadStaticClass(&javaLangArithmeticException, "java/lang/ArithmeticException");
 	loadStaticClass(&javaIoIOException, "java/io/IOException");
 
 	/* Fixup primitive types */

@@ -18,4 +18,12 @@
 /**/
 #include "mips/jit.h"
 
+/*
+ * newer Linux kernel actually implement SA_SIGINFO.
+ * But we don't need it, so let's turn it off
+ */
+#if defined(SA_SIGINFO)
+#undef SA_SIGINFO
+#endif
+
 #endif

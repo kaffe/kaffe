@@ -77,12 +77,12 @@
 #define	HAVE_add_float			fadd_RRR
 #define	HAVE_sub_float			fsub_RRR
 #define	HAVE_mul_float			fmul_RRR
-#define	HAVE_div_float			fdiv_RRR
+#undef	HAVE_div_float
 
 #define	HAVE_add_double			faddl_RRR
 #define	HAVE_sub_double			fsubl_RRR
 #define	HAVE_mul_double			fmull_RRR
-#define	HAVE_div_double			fdivl_RRR
+#undef	HAVE_div_double
 
 #define	HAVE_add_ref			addu_RRR /* new */
 #define	HAVE_sub_ref			subu_RRR /* new */
