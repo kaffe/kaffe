@@ -184,6 +184,7 @@ TESTS = \
 	Bean.java \
 	SortTest.java \
 	HashTest.java \
+	MapTest.java \
 	ReflectInvoke.java \
 	InvTarExcTest.java \
 	CLTest.java \

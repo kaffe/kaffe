@@ -66,6 +66,7 @@ TESTS = \
 	Bean.java \
 	SortTest.java \
 	HashTest.java \
+	MapTest.java \
 ## simple test for Method.invoke
 	ReflectInvoke.java \
 ## simple test for InvocationTargetExceptions
