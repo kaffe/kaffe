@@ -6,6 +6,7 @@ host_os=hpux
 if test "$ac_cv_prog_gcc" = "yes" ; then
 	PIC=-fpic
 	LIBEXT=.sl
+	LIBSHARE=-b
 	INSTALL_DATA='${INSTALL} -m 555'
 else
 	# for the HP-UX c compiler only
