@@ -471,7 +471,7 @@ printType(const Type* t)
 		else if (type == TINTARR->data.class) {
 			dprintf("TINTARR");
 		}
-		else if (type == TLONGARR->data.class) {
+		else if (type == getTLONGARR()->data.class) {
 			dprintf("TLONGARR");
 		}
 		else if (type == getTFLOATARR()->data.class) {

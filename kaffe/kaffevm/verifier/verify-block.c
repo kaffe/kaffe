@@ -727,7 +727,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			case TYPE_Byte:    OPSTACK_PUSH(TBYTEARR);   break;
 			case TYPE_Short:   OPSTACK_PUSH(TSHORTARR);  break;
 			case TYPE_Int:     OPSTACK_PUSH(TINTARR);    break;
-			case TYPE_Long:    OPSTACK_PUSH(TLONGARR);   break;
+			case TYPE_Long:    OPSTACK_PUSH(getTLONGARR());   break;
 			default: return verifyError(v, "newarray of unknown type");
 			}
 			break;
@@ -786,7 +786,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case CALOAD: ARRAY_LOAD(TINT,   TCHARARR);  break;
 		case SALOAD: ARRAY_LOAD(TINT,   TSHORTARR); break;
 			
-		case LALOAD: ARRAY_WLOAD(TLONG,   TLONGARR);   break;
+		case LALOAD: ARRAY_WLOAD(TLONG,   getTLONGARR());   break;
 		case DALOAD: ARRAY_WLOAD(TDOUBLE, getTDOUBLEARR()); break;
 #undef ARRAY_LOAD
 #undef ARRAY_WLOAD
@@ -871,7 +871,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case CASTORE: ARRAY_STORE(TINT,   TCHARARR);  break;
 		case SASTORE: ARRAY_STORE(TINT,   TSHORTARR); break;
 			
-		case LASTORE: ARRAY_WSTORE(TLONG,   TLONGARR);   break;
+		case LASTORE: ARRAY_WSTORE(TLONG,   getTLONGARR());   break;
 		case DASTORE: ARRAY_WSTORE(TDOUBLE, getTDOUBLEARR()); break;
 #undef ARRAY_STORE
 #undef ARRAY_WSTORE
