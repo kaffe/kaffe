@@ -1,3 +1,10 @@
+Thu Dec  3 07:15:53 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/javalib/java/awt/MediaTracker.java (COMPLETED): the
+	correct spelling is COMPLETE
+	* libraries/javalib/Klasses.jar: regen
+	Reported by Alice Dubois <alice.dubois@lemel.fr>
+
 Thu Dec  3 04:52:14 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/clib/native/Throwable.c: include stdlib.h before

@@ -21,7 +21,7 @@ public class MediaTracker
 	final public static int LOADING = 1;
 	final public static int ABORTED = 2;
 	final public static int ERRORED = 4;
-	final public static int COMPLETED = 8;
+	final public static int COMPLETE = 8;
 	final static int LOADED = ImageObserver.ALLBITS | ImageObserver.ABORT;
 
 public MediaTracker(Component comp)
@@ -172,7 +172,7 @@ public synchronized int statusAll ( boolean load ) {
 		ic = Image.checkImage( e.img, e.w, e.h, e, load);
 
 		if ( (ic & ImageObserver.ALLBITS) != 0 )
-			ret |= COMPLETED;
+			ret |= COMPLETE;
 		else if ( (ic & ImageObserver.ABORT) != 0 )
 			ret |= ABORTED;
 		else if ( (ic & Image.PRODUCING) != 0 )
@@ -192,7 +192,7 @@ public synchronized int statusID ( int id, boolean load ) {
 		ic = Image.checkImage( e.img, e.w, e.h, e, load);
 
 		if ( (ic & ImageObserver.ALLBITS) != 0 )
-			ret |= COMPLETED;
+			ret |= COMPLETE;
 		else if ( (ic & ImageObserver.ABORT) != 0 )
 			ret |= ABORTED;
 		else if ( (ic & Image.PRODUCING) != 0 )
