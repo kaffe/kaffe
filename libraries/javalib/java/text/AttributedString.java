@@ -219,8 +219,8 @@ AttributedString(AttributedCharacterIterator aci, int begin_index,
 
   // Get the valid attribute list
   Set all_attribs = aci.getAllAttributeKeys();
-   if (attributes != null)
-     all_attribs.retainAll(Arrays.asList(attributes));
+  if (attributes != null)
+    all_attribs.retainAll(Arrays.asList(attributes));
 
   // Loop through and extract the attributes
   char c = aci.setIndex(begin_index);
@@ -371,8 +371,7 @@ addAttributes(Map attributes, int begin_index, int end_index)
 public AttributedCharacterIterator
 getIterator()
 {
-  return(new AttributedStringIterator(sci, attribs, 0, sci.getEndIndex(),
-				      null));
+  return(new AttributedStringIterator(sci, attribs, 0, sci.getEndIndex(), null));
 }
 
 /*************************************************************************/

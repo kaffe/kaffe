@@ -1,5 +1,5 @@
 /* Collator.java -- Perform locale dependent String comparisons.
-   Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2001, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -183,10 +183,10 @@ public abstract class Collator implements Comparator, Cloneable
    * object.  This will be true if and only if the following conditions are
    * met:
    * <ul>
-   * <li>The specified object is not <code>null</code>.
-   * <li>The specified object is an instance of <code>Collator</code>.
+   * <li>The specified object is not <code>null</code>.</li>
+   * <li>The specified object is an instance of <code>Collator</code>.</li>
    * <li>The specified object has the same strength and decomposition
-   * settings as this object.
+   * settings as this object.</li>
    * </ul>
    *
    * @param obj The <code>Object</code> to test for equality against

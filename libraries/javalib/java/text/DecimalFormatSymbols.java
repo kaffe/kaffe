@@ -1,5 +1,5 @@
 /* DecimalFormatSymbols.java -- Format symbols used by DecimalFormat
-   Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2001, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -167,9 +167,9 @@ public final class DecimalFormatSymbols implements Cloneable, Serializable
    * regard to the specified object:
    * <p>
    * <ul>
-   * <li>It is not <code>null</code>.
-   * <li>It is an instance of <code>DecimalFormatSymbols</code>
-   * <li>All of its symbols are identical to the symbols in this object.
+   * <li>It is not <code>null</code>.</li>
+   * <li>It is an instance of <code>DecimalFormatSymbols</code>.</li>
+   * <li>All of its symbols are identical to the symbols in this object.</li>
    * </ul>
    *
    * @return <code>true</code> if the specified object is equal to this

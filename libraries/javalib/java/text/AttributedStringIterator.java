@@ -1,5 +1,5 @@
 /* AttributedStringIterator.java -- Class to iterate over AttributedString
-   Copyright (C) 1998, 1999 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -277,20 +277,20 @@ getRunStart(Set attribute_set)
   boolean hit = false;
   int runBegin = 0;
   int pos = ci.getIndex ();
-  
+
   for (int i = 0; i < attribs.length; ++i)
     {
       if (pos >= attribs[i].begin_index &&
           pos <= attribs[i].end_index)
-	{	  
-	  Iterator iter = attribute_set.iterator();
-	  while(iter.hasNext())
+        {
+          Iterator iter = attribute_set.iterator();
+          while(iter.hasNext()) 
             if (attribs[i].attribs.containsKey(iter.next()))
               {
                 hit = true;
                 runBegin = Math.max(runBegin, attribs[i].begin_index);
-	      }
-	}
+              }
+        }
     }
   if (hit)
     return runBegin;

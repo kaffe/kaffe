@@ -60,7 +60,7 @@ public interface AttributedCharacterIterator extends CharacterIterator
   /**
    * This class defines attribute keys that are used as text attributes.
    */
-  class Attribute implements Serializable
+  public static class Attribute implements Serializable
   {
     private static final long serialVersionUID = -9142742483513960612L;
 
