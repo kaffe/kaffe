@@ -8,8 +8,6 @@
  * of this file. 
  */
 
-#define	DBG(s)
-
 #include "config.h"
 #include "config-std.h"
 #include "config-io.h"
