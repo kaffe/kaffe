@@ -340,8 +340,8 @@ addToSHA(SHA1_CTX* c, uidItem* base, int len)
 }
 
 /*
- * Take a class name of the form pkg/subpkg/name, return a newly
- * allocated one of the form pkg.subpkg.name.
+ * Take a class name in slashed form pkg/subpkg/name, returns 
+ * a newly allocated one in dot form pkg.subpkg.name.
  * Caller must free using KFREE.
  */
 static char*
@@ -353,20 +353,44 @@ pathname2ClassnameCopy(const char *orig)
 	return (str);
 }
 
+/* Return field description in slashed form, like Ljava/lang/String;
+ * or like [I or like C or like [[Ljava/lang/String;
+ * Caller frees with KFREE.
+ */
 static
 const char*
 getFieldDesc(Field* fld)
 {
+	char* str;
+	const char* orig;
+
 	if (!FIELD_RESOLVED(fld)) {
-		/* XXX: is this right?  Is it dotted as opposed to slashed? */
-		return (((Utf8Const*)(void*)fld->type)->data);
+		/* This is like so: Ljava/lang/String; */
+		orig = ((Utf8Const*)(void*)fld->type)->data;
+		str = KMALLOC(strlen(orig) + 1);
+		return (strcpy(str, orig));
 	}
 	else if (!CLASS_IS_PRIMITIVE(FIELD_TYPE(fld))) {
-		/* XXX: should that be pathname2ClassnameCopy ??? */
-		return (FIELD_TYPE(fld)->name->data);
+		/* This is like so: java.lang.String */
+		orig = FIELD_TYPE(fld)->name->data;
+		if (orig[0] == '[') {
+			/* arrays should be fine */
+			str = KMALLOC(strlen(orig) + 1);
+			classname2pathname(orig, str);
+			return (str);
+		} else {
+			str = KMALLOC(strlen(orig) + 3);
+			strcpy(str, "L");
+			strcat(str, orig);
+			strcat(str, ";");
+			classname2pathname(str, str);
+			return (str);
+		}
 	}
 	else {
-		return (CLASS_PRIM_NAME(FIELD_TYPE(fld))->data);
+		orig = CLASS_PRIM_NAME(FIELD_TYPE(fld))->data;
+		str = KMALLOC(strlen(orig) + 1);
+		return (strcpy(str, orig));
 	}
 }
 
@@ -464,6 +488,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 		for (i--; i >= 0; i--, fld++) {
 			if ((fld->accflags & ACC_PRIVATE) != 0 && ((fld->accflags & (ACC_STATIC|ACC_TRANSIENT)) != 0)) {
 				base[i].name = 0;
+				base[i].desc = 0;
 			}
 			else {
 				base[i].name = fld->name->data;
@@ -472,6 +497,12 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 			}
 		}
 		addToSHA(&c, base, CLASS_NFIELDS(cls));
+
+		/* free descriptors */
+		i = CLASS_NFIELDS(cls);
+		for (i--; i >= 0; i--) {
+			KFREE((char*)base[i].desc);
+		}
 	}
 
 	if (CLASS_NMETHODS(cls) > 0) {
