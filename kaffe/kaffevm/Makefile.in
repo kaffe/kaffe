@@ -82,7 +82,7 @@ $(LIB):		$(OBJECT) lib.exp
 		@LINKVMLIB@
 
 .c$(OBJEXT):
-		$(CC) $(ALL_CFLAGS) -c $(PIC) $<
+		$(CC) $(ALL_CFLAGS) -c $(PIC) $< -o $@
 
 gc.o:		gc.h gc.c gc-incremental.c gc-incremental.h
 

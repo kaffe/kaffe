@@ -939,7 +939,7 @@ define_insn(branch, branch_xCC)
 		debug(("bul ?\n"));
 		break;
 	case bugt:
-		insn_branch(0x0a, 0, 0);		/* WRONG!!! SIGNED!!! */
+		insn_branch(0x0c, 0, 0);
 		debug(("bugt ?\n"));
 		break;
 	default:

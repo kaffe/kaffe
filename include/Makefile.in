@@ -13,6 +13,11 @@ INSTALL=	@INSTALL@
 INSTALL_DATA=	@INSTALL_DATA@
 MKDIR=		@MKDIR@
 
+SHELL=		/bin/sh
+
+BUILT_INCLUDEFILES= \
+		jtypes.h
+
 INCLUDEFILES= \
 		native.h \
 		jsyscall.h \
@@ -23,17 +28,19 @@ INCLUDEFILES= \
 		java_lang_Thread.h \
 		java_lang_ThreadGroup.h \
 
-
-all:
+all: $(BUILT_INCLUDEFILES)
 
 clean:
 
 distclean:
-		rm -f Makefile jtypes.h
+		rm -f Makefile $(BUILT_INCLUDEFILES)
 
 install:
 		test -d $(incdir) || $(MKDIR) $(incdir)
-		$(INSTALL_DATA) jtypes.h $(incdir)/jtypes.h
+		for i in $(BUILT_INCLUDEFILES) ;\
+		do \
+			$(INSTALL_DATA) $$i $(incdir)/$$i ;\
+		done
 		for i in $(INCLUDEFILES) ;\
 		do \
 			$(INSTALL_DATA) $(srcdir)/$$i $(incdir)/$$i ;\

@@ -122,13 +122,16 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, slots* args)
 		arraydims = gc_calloc_fixed(dims+1, sizeof(int));
 	}
 
+	/* stack grows up, so move to the first dimension */
+	args -= dims-1;
+
         /* Extract the dimensions into an array */
         for (i = 0; i < dims; i++) {
 		arg = args[i].v.tint;
                 if (arg < 0) {
                         throwException(NegativeArraySizeException);
 		}
-                arraydims[dims-i-1] = arg;
+                arraydims[i] = arg;
         }
         arraydims[i] = 0;
 

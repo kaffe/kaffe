@@ -9,3 +9,5 @@
 ENGINE_CFLAGS=	-DINTERPRETER -I$(srcdir)/intrp  
 
 ENGINE_OBJECTS= machine$(OBJEXT)
+
+machine.o:	machine.c kaffe.def

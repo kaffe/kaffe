@@ -1,3 +1,32 @@
+Sun May 10 17:33:21 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+        * libraries/clib/native/Field.c (java_lang_reflect_Field_get):
+        wrap shorts as shorts, not booleans
+        (java_lang_reflect_Field_set): handle references before other
+        types, for speed and because val may be null.  Compare the class
+        of val with javaLang*Class objects, instead of class names.
+        * libraries/clib/native/Array.c: full reimplementation of all
+        get and set methods, with error checking and wrapping.
+        (java_lang_reflect_Array_multiNewArray): dims array must be large
+        enough to contain the trailing zero.
+
+        * kaffe/kaffevm/Makefile.in: specify output file in .c.o rule
+        * kaffe/kaffevm/soft.c: (soft_multianewarray) interpreter
+        would incorrectly set up the array of dimensions.
+
+        * kaffe/kaffevm/kaffe.def: (INVOKESTATIC) mtable is no longer used
+        here, do not alloc it
+
+        * config/sparc/jit-sparc.def: (branch) fix opcode for bugt
+
+        * config/sparc/sunos4/md.h: declare several internal functions not
+        declared in standard header files
+
+        * include/Makefile.in: (BUILT_INCLUDEFILES) new variable
+
+        * kaffe/kaffevm/intrp/Makefile.frag: ensure that machine.o depends
+        on machine.c and kaffe.def
+
 Wed May  6 14:48:49 PDT 1998	Alexandre Oliva  <oliva@dcc.unicamp.br>
 
         * config/sparc/jit-sparc.def: (build_key) add missing semicolon.
