@@ -118,14 +118,18 @@ with_engine = @with_engine@
 
 AUTOMAKE_OPTIONS = foreign 1.3e
 
-SUBDIRS = config include libltdl libraries kaffe test
+SUBDIRS = . config include libltdl libraries kaffe test
 
 EXTRA_DIST = license.terms WHATSNEW 	FAQ/FAQ.Known-Bugs 	FAQ/FAQ.amigaos 	FAQ/FAQ.automake 	FAQ/FAQ.awt 	FAQ/FAQ.class-states 	FAQ/FAQ.depend 	FAQ/FAQ.gcblock 	FAQ/FAQ.gcstrategy 	FAQ/FAQ.install-root 	FAQ/FAQ.libtool 	FAQ/FAQ.linux 	FAQ/FAQ.nativemethods 	FAQ/FAQ.timing 	FAQ/FAQ.win32
 
+
+noinst_SCRIPTS = BUILD_ENVIRONMENT
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ./config/config.h ./include/jtypes.h
 CONFIG_CLEAN_FILES = 
+SCRIPTS =  $(noinst_SCRIPTS)
+
 DIST_COMMON =  README AUTHORS ChangeLog INSTALL Makefile.am Makefile.in \
 acinclude.m4 aclocal.m4 config.guess config.sub config/config.h.in \
 config/stamp-h1.in configure configure.in include/jtypes.h.in \
@@ -372,7 +376,7 @@ install-am: all-am
 install: install-recursive
 uninstall-am:
 uninstall: uninstall-recursive
-all-am: Makefile
+all-am: Makefile $(SCRIPTS)
 all-redirect: all-recursive
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
@@ -427,6 +431,16 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 depend:
 	@echo \`make depend\' is no longer needed
+
+BUILD_ENVIRONMENT: Makefile
+	$(MAKE) top_srcdir=`cd $(top_srcdir) >/dev/null; pwd` \
+		top_builddir=`cd $(top_builddir) >/dev/null; pwd` \
+		"DEBUG_ENV=$(DEBUG_ENV)" BUILD_ENVIRONMENT-make
+
+BUILD_ENVIRONMENT-make: Makefile
+	echo CLASSPATH=\$${CLASSPATH-.}\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/Klasses.jar\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/pizza.jar\; export CLASSPATH > BUILD_ENVIRONMENT; \
+	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' '$(PATHSEP)'; echo) | sed s/.$$//`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT; \
+	echo JAVA=$(top_builddir)/kaffe/kaffe/Kaffe$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -57,7 +57,7 @@
 #endif
 
 #ifndef LIBRARYERROR
-#define LIBRARYERROR() "unknown failure"
+#define LIBRARYERROR() (lt_dlerror())
 #endif
 
 static struct {

@@ -18,7 +18,7 @@
 
 /* Default library info. */
 #if !defined(LIBRARYPATH)
-#define	LIBRARYPATH	"LD_LIBRARY_PATH"
+#define	LIBRARYPATH	"KAFFELIBRARYPATH"
 #endif
 #define	NATIVELIBRARY	"libnative"
 

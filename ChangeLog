@@ -1,3 +1,22 @@
+Wed Jan 13 11:13:02 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/external.h (LIBRARYPATH): default to
+	KAFFELIBRARYPATH, not LD_LIBRARY_PATH
+
+	* kaffe/kaffevm/external.c (LIBRARYERROR): ltdl implements
+	lt_dlerror() now
+
+	* Makefile.am (BUILD_ENVIRONMENT): script that sets variables that 
+	were originally set in TESTS_ENVIRONMENT, with full pathnames
+	* test/regression/Makefile.am (SETUP_ENVIRONMENT): use
+	the BUILD_ENVIRONMENT script instead of duplicating things here
+	(TESTS_ENVIRONMENT): defined in terms of SETUP_ENVIRONMENT
+	
+	* test/regression/Makefile.am (TESTS_ENVIRONMENT,
+	KAFFELIBRARYPATH): ensure that, after `tr' transforms newlines in
+	$(PATHSEP), a new-line is appeneded
+	From Edouard Parmelan <EP510777@exchange.FRANCE.NCR.com>
+
 Wed Jan 13 07:20:37 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in, libltdl/configure.in: removed macro to check

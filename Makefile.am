@@ -8,7 +8,7 @@
 
 AUTOMAKE_OPTIONS = foreign 1.3e
 
-SUBDIRS = config include libltdl libraries kaffe test
+SUBDIRS = . config include libltdl libraries kaffe test
 
 EXTRA_DIST = license.terms WHATSNEW \
 	FAQ/FAQ.Known-Bugs \
@@ -28,3 +28,15 @@ EXTRA_DIST = license.terms WHATSNEW \
 
 depend:
 	@echo \`make depend\' is no longer needed
+
+noinst_SCRIPTS = BUILD_ENVIRONMENT
+
+BUILD_ENVIRONMENT: Makefile
+	$(MAKE) top_srcdir=`cd $(top_srcdir) >/dev/null; pwd` \
+		top_builddir=`cd $(top_builddir) >/dev/null; pwd` \
+		"DEBUG_ENV=$(DEBUG_ENV)" BUILD_ENVIRONMENT-make
+
+BUILD_ENVIRONMENT-make: Makefile
+	echo CLASSPATH=\$${CLASSPATH-.}\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/Klasses.jar\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/pizza.jar\; export CLASSPATH > BUILD_ENVIRONMENT; \
+	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' '$(PATHSEP)'; echo) | sed s/.$$//`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT; \
+	echo JAVA=$(top_builddir)/kaffe/kaffe/Kaffe$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT
