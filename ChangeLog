@@ -1,5 +1,10 @@
 2004-12-19  Adam Heath  <doogie@brainfood.com>
 
+	* TODO:
+	  Added.
+
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/systems/unix-jthreads/syscalls.c,
 	  kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
 	  s/stat/lstat/, to fix symlink deletion.
