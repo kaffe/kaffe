@@ -33,7 +33,7 @@ public class TreeMap extends AbstractMap
 	private int size = 0;
 
 	// Tree nodes look like this
-	private static class Node implements Map.Entry {
+	private static class Node implements Map.Entry, Cloneable {
 		int color;
 		Node left;
 		Node right;
