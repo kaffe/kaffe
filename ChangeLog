@@ -1,3 +1,8 @@
+Fri Sep 24 11:41:51 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/findInJar.c: rename findInJar() as findClassInJar()
+	and make it private to this file
+
 Fri Sep 24 19:17:02 CEST 1999 Edouard G. Parmelan <edouard.parmelan@quadratec.fr>
 
 	* kaffe/kaffevm/findInJar.c (findInJar): Don't cut off ".class" if
