@@ -1,3 +1,9 @@
+2003-10-23  Marc Kleine-Budde <kleine-budde@gmx.de>
+
+	* kaffe/kaffevm/systems/win32/winthread.c
+	(jthread_setpriority)
+	added missing break statement in switch-case
+
 2003-10-22  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/text/DecimalFormat.java:

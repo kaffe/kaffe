@@ -113,6 +113,7 @@ jthread_setpriority(jthread_t tid, jint prio)
 		break;
 	case 2:
 		prio = THREAD_PRIORITY_LOWEST;
+		break;
 	case 3:
 	case 4:
 		prio = THREAD_PRIORITY_BELOW_NORMAL;
