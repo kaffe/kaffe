@@ -10,6 +10,7 @@
  */     
                 
 #include "config.h"
+#include "md.h"
 #include <malloc.h>
 #include <sched.h>
 #include <asm/unistd.h>
