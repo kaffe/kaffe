@@ -18,8 +18,9 @@ to update Makefile.am, Makefile.in and Makefile. Do this as follows:
     $ sh developers/autogen.sh
     $ ./configure
 
-You'll need automake 1.4 or newer, and you'll have to configure
-with --enable-maintainer-mode or run automake by hand.
+Please use the version of automake as described in FAQ.automake.
+This version will minimize your diffs with the CVS tree as it is 
+the version used by the kaffe developers.
 
 If you want to rebuild not only Klasses.jar, but also the jar-files of
 Kaffe extensions, type "make CLASSDIRS=all Klasses".
