@@ -40,6 +40,8 @@ exception statement from your version. */
 #include "gnu_java_awt_peer_gtk_GtkToolkit.h"
 #include "gthread-jni.h"
 
+#include <sys/time.h>
+
 #ifdef JVM_SUN
   struct state_table *native_state_table;
   struct state_table *native_global_ref_table;
@@ -298,12 +300,27 @@ dpi_changed_cb (GtkSettings  *settings,
     dpi_conversion_factor = PANGO_SCALE * 72.0 / (int_dpi / PANGO_SCALE);
 }
 
+static int
+within_human_latency_tolerance(struct timeval *init)
+{
+  struct timeval curr;
+  unsigned long milliseconds_elapsed;
+
+  gettimeofday(&curr, NULL);
+  
+  milliseconds_elapsed = (((curr.tv_sec * 1000) + (curr.tv_usec / 1000))
+			  - ((init->tv_sec * 1000) + (init->tv_usec / 1000)));
+  
+  return milliseconds_elapsed < 100;
+}
+
 
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkToolkit_iterateNativeQueue
 (JNIEnv *env, 
  jobject self __attribute__((unused)),
- jobject lockedQueue)
+ jobject lockedQueue,
+ jboolean block)
 {
   /* We're holding an EventQueue lock, and we're about to acquire the GDK
    * lock before dropping the EventQueue lock. This can deadlock if someone
@@ -313,21 +330,30 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_iterateNativeQueue
    * acquiring the GDK lock and calling back into
    * EventQueue.getNextEvent().
    */
+
+  struct timeval init;
+  gettimeofday(&init, NULL);
+
   gdk_threads_enter ();
   (*env)->MonitorExit (env, lockedQueue);
 
-  /* It is quite important that this be a do .. while loop. The first pass
-   * should do an iteration w/o a test so that it sleeps when there really
-   * aren't any events; and the loop should continue for as many events as
-   * there are to avoid pointless thrashing up and down through JNI (it
-   * runs very slowly when this is not a loop).
-   */
-  do 
+  if (block)
     {
-      gtk_main_iteration();
+      
+      /* If we're blocking-when-empty, we want a do .. while loop. */
+      do 
+	gtk_main_iteration ();
+      while (within_human_latency_tolerance (&init) 
+	     && gtk_events_pending ());
     }
-  while (gtk_events_pending());
-
+  else
+    {
+      /* If we're not blocking-when-empty, we want a while loop. */
+      while (within_human_latency_tolerance (&init) 
+	     && gtk_events_pending ())
+	gtk_main_iteration ();      
+    }
+  
   (*env)->MonitorEnter (env, lockedQueue);
   gdk_threads_leave ();
 }

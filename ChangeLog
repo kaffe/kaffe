@@ -2,6 +2,48 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-01-18  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/io/Externalizable.java,
+	java/io/Serializable.java
+	(serialVersionUID): Removed.
+	* java/rmi/server/RemoteObject.java,
+	java/rmi/server/UID.java
+	(serialVersionUID): Made private.
+	* java/rmi/server/RemoteRef.java,
+	java/rmi/server/ServerRef.java
+	(serialVersionUID): Set proper value.
+	* java/security/interfaces/DSAPrivateKey.java,
+	java/security/interfaces/DSAPublicKey.java,
+	java/security/interfaces/RSAMultiPrimePrivateCrtKey.java,
+	java/security/interfaces/RSAPrivateCrtKey.java,
+	java/security/interfaces/RSAPrivateKey.java,
+	java/security/interfaces/RSAPublicKey.java,
+	javax/crypto/SecretKey.java
+	(serialVersionUID): Added.
+
+2005-01-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-01-18  Graydon Hoare  <graydon@redhat.com>
+
+	* gnu/java/awt/ClasspathToolkit.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java: Likewise.
+	* java/awt/EventQueue.java (getNextEvent):
+	Adjust event loop to switch to native mode after 100ms.
+	* javax/swing/Timer.java (drainEvents): Reuse Runnable.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GtkGenericPeer.c
+	(Java_gnu_java_awt_peer_gtk_GtkGenericPeer_dispose):
+	Wake up event thread.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c
+	(Java_gnu_java_awt_peer_gtk_GtkToolkit_iterateNativeQueue):
+	Adjust event loop to switch to java mode after 100ms.
+
+2005-01-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-01-17  Tom Tromey  <tromey@redhat.com>
 
 	* java/text/MessageFormat.java (scanString): Changed how quoting

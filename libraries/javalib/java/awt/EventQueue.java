@@ -76,6 +76,9 @@ public class EventQueue
   private EventDispatchThread dispatchThread = new EventDispatchThread(this);
   private boolean shutdown = false;
 
+  private long lastNativeQueueAccess = 0;
+  private long humanLatencyThreshold = 100;
+
   synchronized void setShutdown (boolean b) 
   {
     shutdown = b;
@@ -122,6 +125,16 @@ public class EventQueue
   {
     if (next != null)
       return next.getNextEvent();
+    
+    ClasspathToolkit tk = ((ClasspathToolkit) Toolkit.getDefaultToolkit());
+    long curr = System.currentTimeMillis();
+
+    if (! tk.nativeQueueEmpty() &&
+        (curr - lastNativeQueueAccess > humanLatencyThreshold))
+      {
+        tk.iterateNativeQueue(this, false);
+        lastNativeQueueAccess = curr;
+      }
 
     while (next_in == next_out)
       {
@@ -143,7 +156,8 @@ public class EventQueue
             if (isShutdown())
               throw new InterruptedException();
 
-            ((ClasspathToolkit) Toolkit.getDefaultToolkit()).iterateNativeQueue(this);
+            tk.iterateNativeQueue(this, true);
+            lastNativeQueueAccess = System.currentTimeMillis();
           }
         else
           {

@@ -367,5 +367,5 @@ public abstract class ClasspathToolkit
 
   public abstract boolean nativeQueueEmpty();
   public abstract void wakeNativeQueue();  
-  public abstract void iterateNativeQueue(EventQueue locked);
+  public abstract void iterateNativeQueue(EventQueue locked, boolean block);
 }

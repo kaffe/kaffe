@@ -656,6 +656,6 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
   public native boolean nativeQueueEmpty();
   public native void wakeNativeQueue();  
-  public native void iterateNativeQueue(EventQueue locked);
+  public native void iterateNativeQueue(EventQueue locked, boolean block);
 
 } // class GtkToolkit
