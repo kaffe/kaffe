@@ -1,3 +1,10 @@
+1999-06-22  Tim Wilkinson  <tim@transvirtual.com>
+
+	* kaffe/kaffevm/jit/icode.c (check_array_index,
+	check_array_constindex): Use end_sub_block instead of
+	sync_registers in normal control flow, as sync_registers() would
+	break x86's FP stack.
+
 1999-06-22  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/scripts/report-kaffe-bug: Removed.
