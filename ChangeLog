@@ -1,3 +1,9 @@
+2003-06-14 Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* include/dummyin6.h:
+	Changed uint32_t to int because such systems that needs dummyin6.h
+	may not have uint32_t.
+
 2003-06-13 Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* include/dummyin6.h:
