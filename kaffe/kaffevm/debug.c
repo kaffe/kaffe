@@ -63,6 +63,7 @@ static struct debug_opts
 	D(VMTHREAD, "Show some java.lang.Thread operations called by VM"),
 	D(JTHREAD,  "Show jthread operations--jthreads only"),
 	D(JTHREADDETAIL,  "Show jthread operations (more detail)"),
+	D(JTHREADNOPREEMPT,  "Disable preemption in--jthreads only"),
 	D(DETECTDEADLOCK,  "Show when jthread system deadlocks--jthreads only"),
 	D(EXCEPTION, "Debug exceptions, don't catch traps"),
 	D(INIT,     "Show initialization steps."),
@@ -78,10 +79,22 @@ static struct debug_opts
 	D(ASYNCSTDIO, "Make stdio fds asynchronous despite debugging."),
 	D(CATCHOUTOFMEM, "Catch recursive out of memory exceptions."),
 	D(JARFILES, "Debug reading JAR files in jar.c."),
+	D(INT_INSTR, "Show instructions. (interpreter)"),
+	D(INT_NATIVE, "Show call to native methods. (interpreter)"),
+	D(INT_RETURN, "Show return from function. (interpreter)"),
+	D(INT_VMCALL, "Show call to virtualMachine. (interpreter)"),
+	D(INT_CHECKS, "Show various checks. (interpreter)"),
 
 	/* an example of how to define combinations */
 	{ "thread", DBG_JTHREAD|DBG_VMLOCKS|DBG_VMCONDS, 
 			"Thread operations and locking operations" },
+
+	{ "intrp", DBG_INT_NATIVE|DBG_INT_RETURN|DBG_INT_VMCALL, 
+			"Calls of interpreter (without instructions)" },
+	{ "intrpA", 
+		DBG_INT_CHECKS|DBG_INT_INSTR|DBG_INT_NATIVE|
+		DBG_INT_RETURN|DBG_INT_VMCALL, 
+			"Complete interpreter trace" },
 
 	/* special options */
 	{ "buffer", 0, "Log output to an internal buffer instead of stderr" },

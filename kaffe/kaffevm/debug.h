@@ -48,6 +48,12 @@
 # define DBG_ASYNCSTDIO		DBG_BIT(15) 
 # define DBG_CATCHOUTOFMEM	DBG_BIT(16) 
 # define DBG_JARFILES		DBG_BIT(17) 
+# define DBG_INT_INSTR		DBG_BIT(18) 
+# define DBG_INT_NATIVE		DBG_BIT(19) 
+# define DBG_INT_RETURN		DBG_BIT(20) 
+# define DBG_INT_VMCALL		DBG_BIT(21) 
+# define DBG_INT_CHECKS		DBG_BIT(22) 
+# define DBG_JTHREADNOPREEMPT	DBG_BIT(23) 
 
 /* let's reserve 50-63 for temporary uses */
 # define DBG_SLACKANAL		DBG_BIT(50) 
