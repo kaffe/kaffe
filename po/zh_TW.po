@@ -6,7 +6,6 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Kaffe Virtual Machine 1.1.x-cvs\n"
-"Report-Msgid-Bugs-To: kaffe@kaffe.org\n"
 "POT-Creation-Date: 2004-06-18 21:41+0200\n"
 "PO-Revision-Date: 2004-06-05 12:00+0800\n"
 "Last-Translator: Jim Huang <jserv@kaffe.org>\n"
@@ -14,6 +13,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=big5\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: kaffe@kaffe.org\n"
 
 #: kaffe/kaffe/main.c:393 kaffe/kaffe/main.c:420 kaffe/kaffe/main.c:445
 #: kaffe/kaffe/main.c:467

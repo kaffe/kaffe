@@ -180,12 +180,12 @@ ifaddrs_compat = #
 endif
 
 nodist_noinst_HEADERS = \
+	$(ifaddrs_compat) \
 	$(NOINSTALL_DERIVED_HDRS) \
 	$(NOINSTALL_JNI_DERIVED_HDRS)
 
 noinst_HEADERS = \
 	ifaddrs_compat.h \
-	$(ifaddrs_compat) \
 	defs.h \
 	dummyin6.h \
 	files.h \
