@@ -144,14 +144,11 @@ void jthread_stop(UNUSED jthread_t tid)
 void jthread_interrupt(jthread_t tid);
 
 /**
- * Register a function to be called when the vm exits.
+ * Register a function to be called when the all non-daemon threads have exited.
  * 
  * @param func the func to execute.
  */
-static inline
-void jthread_atexit(UNUSED void (* func)(void))
-{
-}
+void jthread_atexit(void (* func)(void));
 
 /**
  * Dump some information about a thread to stderr.
@@ -264,26 +261,20 @@ void jthread_relaxstack(int yes);
 static inline
 void jthread_yield (void)
 {
-  sched_yield();
+  pthread_yield();
 }
 
 /**
  * Acquire a spin lock.
  *
  */
-static inline
-void jthread_spinon(UNUSED int dummy)
-{
-}
+void jthread_spinon(UNUSED void *dummy);
 
 /**
  * Release a spin lock.
  *
  */
-static inline
-void jthread_spinoff(UNUSED int dummy)
-{
-}
+void jthread_spinoff(UNUSED void *dummy);
 
 struct _exceptionFrame;
 typedef void (*exchandler_t)(struct _exceptionFrame*);

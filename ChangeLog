@@ -1,3 +1,33 @@
+2004-11-02  Eric Anholt  <eta@lclark.edu>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.h
+	(jthread_atexit, jthread_spinon, jthread_spinoff): Implemented.
+	(jthread_create, jthread_exit): Protect nonDaemons, pendingExits,
+	execute runOnExit.
+	
+2004-11-02  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/java/io/Vector.java,
+	libraries/javalib/java/io/ObjectOutputStream.java:
+	Resynced with GNU Classpath.	
+
+	2004-11-02  Mattias Rehnberg  <Mattias.Rehnberg@home.se>
+
+        * java/io/Vector.java
+        (readObject, writeObject): New function to match Sun's
+        serialized output for Vector.
+
+        * java/io/ObjectOutputStream.java
+        (writeObject): Move the assignment of the class handle to after
+        the assignment of class descriptor handle.
+
+2004-11-02 Mattias Rehnberg <Mattias.Rehnberg@home.se>
+
+	* libraries/clib/io/ObjectInputStream.c
+	(getFieldAddress): Use the class decriptor from the field object
+	instead of using the class of the target object.
+	
 2004-11-01  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/xml/dom/DomNode.java:

@@ -117,6 +117,10 @@ static jthread_t	activeThreads;
  */
 pthread_mutex_t		activeThreadsLock = PTHREAD_MUTEX_INITIALIZER;
 
+/** This mutex lock protects calls into non-reentrant system services.
+ */
+pthread_mutex_t		systemMutex = PTHREAD_MUTEX_INITIALIZER;
+
 /** We don't throw away threads when their user func terminates, but suspend
  * and cache them for later re-use */
 static jthread_t	cache;
@@ -157,6 +161,9 @@ static sigset_t		suspendSet;
 
 /** This callback is to be called when a thread exits. */
 static void (*threadDestructor)(void *);
+
+/** This callback is called when all non-daemon threads exit. */
+static void (*runOnExit)(void);
 
 #ifdef KAFFE_VMDEBUG
 /** an optional deadlock watchdog thread (not in the activeThread list),
@@ -827,8 +834,10 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 
   sp.sched_priority = priorities[pri];
 
+  protectThreadList(cur);
   if ( !isDaemon ) 
 	nonDaemons++;
+  unprotectThreadList(cur);
 
   if ( cache ) {
 	protectThreadList(cur);
@@ -980,10 +989,14 @@ jthread_exit ( void )
 
   if ( !cur->daemon ) {
 	/* the last non daemon should shut down the process */
+	protectThreadList(cur);
 	if ( --nonDaemons == 0 ) {
-	  protectThreadList(cur);
-
 	  DBG( JTHREAD, dprintf("exit on last nonDaemon\n"))
+	  if (runOnExit != NULL) {
+	    unprotectThreadList(cur);
+	    runOnExit();
+	    protectThreadList(cur);
+	  }
 
 	  /*
 	   * be a nice citizen, try to cancel all other threads before we
@@ -1018,6 +1031,7 @@ jthread_exit ( void )
 	  /* we shouldn't get here, this is a last safeguard */
 	  EXIT(0);
 	}
+	unprotectThreadList(cur);
   }
 
   if ( cur == firstThread ) {
@@ -1047,7 +1061,9 @@ jthread_exit ( void )
   else {
 	/* flag that we soon will get a new cache entry (would be annoying to
 	 * create a new thread in the meantime) */
+	protectThreadList(cur);
 	pendingExits++;
+	unprotectThreadList(cur);
   }
 }
 
@@ -1480,3 +1496,35 @@ DBG(JTHREADDETAIL, dprintf(" no\n"); )
   }
 }
 
+
+/**
+ * Lock a mutex which will be used for critical sections when entering
+ * non-reentrant system code, for example.
+ *
+ * @param dummy unused pointer
+ */
+void jthread_spinon(UNUSED void *dummy)
+{
+  pthread_mutex_lock(&systemMutex);
+}
+
+/**
+ * Unock a mutex used for critical sections when entering non-reentrant system
+ * code.
+ *
+ * @param dummy unused pointer
+ */
+void jthread_spinoff(UNUSED void *dummy)
+{
+  pthread_mutex_unlock(&systemMutex);
+}
+
+/**
+ * Sets a function to be run when all non-daemon threads have exited.
+ *
+ * @param func the function to be called when exiting.
+ */
+void jthread_atexit(void (* func)(void))
+{
+  runOnExit = func;
+}
