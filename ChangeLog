@@ -1,3 +1,12 @@
+Thu Mar  9 16:51:38 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/lang/Class.java: don't prepend primitive
+	types with "class" in toString()
+	* libraries/javalib/java/beans/Introspector.java: handle some
+	corner cases same was as JDK does
+	* libraries/javalib/java/beans/Introspector.java: eliminate methods
+	when the get() return type and the and set() parameter type disagree
+
 Thu Mar  9 13:50:06 PST 2000  Patrick Tullmann <tullmann@cs.utah.edu>
 
 	* kaffe/kaffe/main.c: update copyright
@@ -8,6 +17,11 @@ Thu Mar  9 13:50:06 PST 2000  Patrick Tullmann <tullmann@cs.utah.edu>
 	* kaffe/kaffevm/findInJar.c: drop old-style debugging, use
 	DBG_INITCLASSPATH and DBG_CLASSLOOKUP for debugging rumaging 
 	around in jar files.
+	* kaffe/kaffevm/systems/oskit-pthreads/pjthread.c: Check for
+	newborn/dead thread before getting stack state.  Initialize
+	cookie for main thread correctly.  Misc. cleanup.
+	* kaffe/kaffevm/systems/oskit-pthreads/signal.c: remove some
+	bogus asserts().
 
 Thu Mar  9 12:45:14 CET 2000  Edouard G. Parmelan  <egp@free.fr>
 
