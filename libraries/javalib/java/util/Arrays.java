@@ -15,6 +15,8 @@
 
 package java.util;
 
+import java.io.Serializable;
+
 public class Arrays {
 
   // This class is not instantiable
@@ -22,12 +24,12 @@ public class Arrays {
   }
 
   // The "default" Comparator
-  static final Comparator DEFAULT_COMPARATOR =
-	new Comparator() {
-	      public int compare(Object o1, Object o2) {
-		      return ((Comparable)o1).compareTo(o2);
-	      }
-	};
+  private static class DefCmp implements Serializable, Comparator {
+	public int compare(Object o1, Object o2) {
+		return ((Comparable)o1).compareTo(o2);
+	}
+  }
+  static final Comparator DEFAULT_COMPARATOR = new DefCmp();
 
   public static List asList(Object[] a) {
 	return new ArrayList(a);
