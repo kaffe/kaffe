@@ -220,7 +220,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --with-stats            Gather statistics on vm execution"
 ac_help="$ac_help
-  --disable-gcj           Disable GCJ support"
+  --enable-gcj            Enable GCJ support"
 ac_help="$ac_help
   --disable-mips2         Disable MIPS II instructions"
 
@@ -9053,7 +9053,7 @@ fi
 
 
 
-if test "x$enable_gcj" != "xno"; then
+if test "x$enable_gcj" = "xyes"; then
   enable_gcj=no # pessimist
 
   have_recent_gcc=yes # optimist
