@@ -86,6 +86,13 @@ here:;
 		break;
 	}
 #endif
+
+	if (!jthread_on_current_stack(fp)) {
+		pfp = 0;
+		ppc = 0;
+		goto end;
+	}
+
 	/* Walk backwards down the code looking for where the return
 	 * pc is stored.
 	 */

@@ -40,6 +40,8 @@ l1:	.word	" C_FUNC_NAME(soft_fixup_trampoline) "		\n
 	.ent	mips_do_fixup_trampoline			\n
 mips_do_fixup_trampoline:					\n
 	addi	$sp, $sp, -48					\n
+	# needed by the backtracer 				\n
+	sw	$31, 0($sp)					\n
 	sw	$2, 0($sp)					\n
 	sw	$4, 8($sp)					\n
 	sw	$5, 12($sp)					\n
@@ -50,8 +52,9 @@ mips_do_fixup_trampoline:					\n
 	swc1	$f15, 32($sp)					\n
 	swc1	$f14, 36($sp)					\n
 	sw	$30, 40($sp)					\n
+        sw      $gp, 4($sp)                                     \n
+        # $fp = $sp                                             \n
 	move	$30, $sp					\n
-	sw	$gp, 4($sp)					\n
 	lw	$4, 0($31)					\n
 	lw	$5, 4($31)					\n
 	lw	$25, -4($25)					\n
