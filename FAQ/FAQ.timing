@@ -1,0 +1,29 @@
+The new timing mechanism allows arbitrary portions of vm execution to
+be measured.  When configured --with-timing, kaffe will print a
+summary of all timings measured on exit.
+ 
+Usage is simple:
+#include "support.h"
+ 
+foo()
+{
+        static timespent spent;
+ 
+        startTiming(&spent, "foo");
+        ...
+        stopTiming(&spent);
+}
+ 
+When kaffe is configured for timing, the macro TIMING is defined and
+this code does something useful.  When not configured for timing,
+these statements are mostly harmless:
+/* We either can't or wont perform timing:  The first macro suppresses
+   unused variable warnings. */
+typedef char timespent;
+ 
+#define startTiming(C,N) (*(C) = 0)
+#define stopTiming(C)
+ 
+The timing mechanism counts the number of calls to startTiming for
+each timespent structure, and measures user time with getrusage.
+ 
