@@ -27,4 +27,4 @@ else
     if test -x "$basedir/$runme"; then runme="$basedir/$runme"; fi
     # otherwise, it will be searched in the PATH...
 fi
-exec "$runme" kaffe.applet.AppletViewer ${1+"$@"}
+exec "$runme" kaffe.awt.AppletViewer ${1+"$@"}

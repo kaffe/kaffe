@@ -36,6 +36,7 @@
 #include <sigcontext.h>
 #endif
 
+#if !defined (SA_SIGINFO)
 /* Function prototype for signal handlers */
 #if defined(HAVE_STRUCT_SIGCONTEXT_STRUCT) && !defined(__GLIBC__)
 /* Linux < 2.1.1 */
@@ -52,5 +53,19 @@
 #define	EXCEPTIONFRAME(f, c)						\
 	(f).retbp = (c).ebp;						\
 	(f).retpc = (c).eip + 1
+
+#else
+
+#include <asm/ucontext.h>
+
+/* Function prototype for signal handlers */
+#define	EXCEPTIONPROTO							\
+	int sig, struct siginfo *sip, struct ucontext *ctx
+
+/* Get the first exception frame from a signal handler */
+#define	EXCEPTIONFRAME(f, c)						\
+	(f).retbp = (c)->uc_mcontext.ebp;				\
+	(f).retpc = (c)->uc_mcontext.eip + 1
+#endif
 
 #endif

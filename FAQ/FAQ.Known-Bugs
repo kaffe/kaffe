@@ -1,9 +1,6 @@
 This file is a list of known bugs, short-comings and oddities.  
 Treat it as an TODO list.
 
-* javap java.lang.ThreadGroup outputs 'NUL' characters when used with
-  Klasses.jar.
-
 * java.net.Socket:
 
      getSoTimeout() 

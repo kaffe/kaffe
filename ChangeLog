@@ -1,4 +1,18 @@
-Wed Sep  9 16:27:16 1998  Godmar Back  <gback@marker.cs.utah.edu>
+Thu Sep 10 14:12:27 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
+
+	* config/i386/linux/jit-md.h: handle SA_SIGINFO which is provided
+	on more recent Linuxes.
+	* kaffe/scripts/compat/appletviewer: it's kaffe.awt.Appletviewer,
+	not kaffe.applet.Appletviewer.
+	* libraries/clib/awt/X/clr.c: use java.awt.Defaults instead of
+	java.awt.DefaultsRGB.
+	* libraries/javalib/rebuildLib.in: remove kaffe/applet/*
+	* libraries/javalib/java/io/ObjectOutputStream.java: fixed typo.
+	* libraries/javalib/java/lang/Math.java: fix to pass Java lint.
+	* libraries/javalib/java/util/Random.java: ditto.
+	* libraries/javalib/java/awt/event/ContainerEvent.java: added break
+
+Wed Sep  9 16:27:16 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* test/regression/TestScript: fixed output for BeanTest
 	libraries/javalib/java/net/PlainSocketImpl.java: removed unneeded

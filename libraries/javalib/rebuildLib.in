@@ -40,7 +40,6 @@ CLASSES="\
  $SRCDIR/java/util/mime/*.java \
  $SRCDIR/java/util/zip/*.java \
  $SRCDIR/kaffe/awt/*.java \
- $SRCDIR/kaffe/applet/*.java \
  $SRCDIR/kaffe/beans/editors/*.java \
  $SRCDIR/kaffe/io/*.java \
  $SRCDIR/kaffe/jar/*.java \

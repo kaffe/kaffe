@@ -246,8 +246,8 @@ initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
 
   memset( *mp, 0, 8*8*8);
 
-  /* get the java.awt.DefaultsRGB.RgbRequests field */
-  if ( (clazz = (*env)->FindClass( env, "java/awt/DefaultsRGB")) ){
+  /* get the java.awt.Defaults.RgbRequests field */
+  if ( (clazz = (*env)->FindClass( env, "java/awt/Defaults")) ){
 	if ( (fid = (*env)->GetStaticFieldID( env, clazz, "RgbRequests", "[I")) ){
 	  if ( (rgbRequests = (*env)->GetStaticObjectField( env, clazz, fid)) ){
 		jrgbs = (*env)->GetIntArrayElements( env, rgbRequests, &isCopy);
