@@ -54,9 +54,9 @@ public class Reflect {
 
 // Sort output
 /* Expected Output:
-Field: public static java.io.InputStream java.lang.System.in
-Field: public static java.io.PrintStream java.lang.System.err
-Field: public static java.io.PrintStream java.lang.System.out
+Field: public static final java.io.InputStream java.lang.System.in
+Field: public static final java.io.PrintStream java.lang.System.err
+Field: public static final java.io.PrintStream java.lang.System.out
 Method: public boolean java.lang.Object.equals(java.lang.Object)
 Method: public java.lang.String java.lang.Object.toString()
 Method: public native int java.lang.Object.hashCode()

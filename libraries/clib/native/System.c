@@ -34,6 +34,7 @@
 #include "java_io_PrintStream.h"
 #include "java_lang_System.h"
 #include <native.h>
+#include <jni.h>
 
 static char cwdpath[MAXPATHLEN];
 
@@ -296,6 +297,42 @@ jlong
 java_lang_System_currentTimeMillis(void)
 {
 	return (currentTime());
+}
+
+/*
+ * Set the stdin stream.
+ */
+void
+Java_java_lang_System_setIn0(JNIEnv *env, jclass system, jobject stream)
+{
+	jfieldID in = (*env)->GetStaticFieldID(env, system, 
+					"in", "Ljava/io/InputStream;");
+	assert(in);
+	(*env)->SetStaticObjectField(env, system, in, stream);
+}
+
+/*
+ * Set the stdout stream.
+ */
+void
+Java_java_lang_System_setOut0(JNIEnv *env, jclass system, jobject stream)
+{
+	jfieldID out = (*env)->GetStaticFieldID(env, system, 
+					"out", "Ljava/io/PrintStream;");
+	assert(out);
+	(*env)->SetStaticObjectField(env, system, out, stream);
+}
+
+/*
+ * Set the error stream.
+ */
+void
+Java_java_lang_System_setErr0(JNIEnv *env, jclass SystemClass, struct Hjava_io_PrintStream* stream)
+{
+	jfieldID err = (*env)->GetStaticFieldID(env, system, 
+					"err", "Ljava/io/PrintStream;");
+	assert(err);
+	(*env)->SetStaticObjectField(env, system, err, stream);
 }
 
 jint

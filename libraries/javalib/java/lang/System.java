@@ -24,9 +24,9 @@ import java.util.SimpleTimeZone;
 final public class System
 {
 	final static SecurityManager defaultSecurityManager = new NullSecurityManager();
-	public static InputStream in;
-	public static PrintStream out;
-	public static PrintStream err;
+	final public static InputStream in;
+	final public static PrintStream out;
+	final public static PrintStream err;
 	private static Properties props;
 	private static SecurityManager security;
 
@@ -109,16 +109,23 @@ public static void runFinalizersOnExit(boolean value) {
 	Runtime.getRuntime().runFinalizersOnExit(value);
 }
 
+native private static void setIn0(InputStream in);
+native private static void setOut0(PrintStream out);
+native private static void setErr0(PrintStream err);
+
 public static void setErr(PrintStream err) {
-	System.err = err;
+	// XXX call security manager for RuntimePermission("SetIO")
+	setErr0(err);
 }
 
 public static void setIn(InputStream in) {
-	System.in = in;
+	// XXX call security manager for RuntimePermission("SetIO")
+	setIn0(in);
 }
 
 public static void setOut(PrintStream out) {
-	System.out = out;
+	// XXX call security manager for RuntimePermission("SetIO")
+	setOut0(out);
 }
 
 public static void setProperties(Properties prps) {
