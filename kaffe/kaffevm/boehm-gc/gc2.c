@@ -1,7 +1,7 @@
 /*
  * gc2.c
  * This interfaces the VM to the Hans-J. Boehm Incremental Garbage
- * Collector (version 6.0 alpha 7).
+ * Collector (version 6.3)
  *
  * Copyright (c) 2001
  *	Transvirtual Technologies, Inc.  All rights reserved.
@@ -30,6 +30,7 @@
 #include "thread.h"
 #include "gc-refs.h"
 #include "gc-kaffe.h"
+#include "gc2.h"
 
 extern void *GC_kaffe_malloc(size_t s);
 
@@ -44,11 +45,6 @@ typedef struct _gcFuncs {
         int                     nr;		/* only used ifdef STATS */
         int                     mem;		/* only used ifdef STATS */
 } gcFuncs;
-
-typedef struct _gcMark {
-  struct GC_ms_entry *mark_current;
-  struct GC_ms_entry *mark_limit;
-} gcMark;
 
 static iStaticLock	gcman_lock = KAFFE_STATIC_LOCK_INITIALIZER;
 static iStaticLock	gcmanend_lock = KAFFE_STATIC_LOCK_INITIALIZER;
@@ -69,24 +65,12 @@ typedef struct
 
 static BoehmGarbageCollector boehm_gc;
 
-typedef struct {
-	uint8 memtype;
-	size_t memsize;
-} MemDescriptor;
-
-#define SIZEOF_DESC (((sizeof(MemDescriptor) + ALIGNMENTOF_VOIDP - 1) / ALIGNMENTOF_VOIDP) * ALIGNMENTOF_VOIDP)
-
-#define SYSTEM_SIZE(s) ((s) + SIZEOF_DESC)
-#define USER_SIZE(s) ((s) - SIZEOF_DESC)
-#define ALIGN_FORWARD(p) ((void *)((uintp)(p) + SIZEOF_DESC))
-#define ALIGN_BACKWARD(p) ((void *)((uintp)(p) - SIZEOF_DESC))
-
 static inline void
 clearAndAddDescriptor(void *mem, MemDescriptor *desc)
 {
     MemDescriptor *idx = (MemDescriptor *)mem;
-    idx[0] = *desc;
-    memset(&idx[1], 0, desc->memsize);
+    *idx = *desc;
+    memset(ALIGN_FORWARD(idx), 0, desc->memsize);
 }
 
 static void KaffeGC_InvokeGC(Collector* gcif, int mustgc);
@@ -154,8 +138,13 @@ void
 finalizeObject(void* ob, UNUSED void* descriptor)
 {
   MemDescriptor *desc = (MemDescriptor *)ob;
+  gcFuncs *f = &gcFunctions[desc->memtype];
+  
+  if (f->final != KGC_OBJECT_NORMAL && f->final != NULL)
+    f->final(&boehm_gc.collector, ALIGN_FORWARD(ob));
 
-  gcFunctions[desc->memtype].final(&boehm_gc.collector, ALIGN_FORWARD(ob));
+  if (f->destroy != NULL)
+    f->destroy(&boehm_gc.collector, ALIGN_FORWARD(ob));
 }
 
 static void NONRETURNING
@@ -169,7 +158,6 @@ finaliserMan(void* arg UNUSED)
     finalRunning = 0;
     while (finalRunning == 0) {
       waitStaticCond(&finman_lock, (jlong)0);
-      jthread_yield();
     }
     assert(finalRunning == 1);
 
@@ -178,6 +166,7 @@ finaliserMan(void* arg UNUSED)
     /* Wake up anyone waiting for the finalizer to finish */
     broadcastStaticCond(&finman_lock);
   }
+  unlockStaticMutex(&finman_lock);
 }
 
 
@@ -231,7 +220,6 @@ KaffeGC_InvokeGC(Collector* gcif UNUSED, int mustgc)
   unlockStaticMutex(&gcman_lock);
   while (gcRunning != 0) {
     waitStaticCond(&gcmanend_lock, (jlong)0);
-    jthread_yield();
   }
   unlockStaticMutex(&gcmanend_lock);
 }
@@ -301,9 +289,11 @@ KaffeGC_realloc(Collector *gcif, void* mem, size_t sz, gc_alloc_type_t type)
     }
     desc->memtype = type;
     desc->memsize = sz;
+
+    return ALIGN_FORWARD(new_ptr);
   }
 
-  return ALIGN_FORWARD(new_ptr);
+  return NULL;
 }
 
 static void
@@ -337,17 +327,19 @@ KaffeGC_malloc(Collector *gcif UNUSED, size_t sz, gc_alloc_type_t type)
   else
     mem = GC_kaffe_malloc(SYSTEM_SIZE(sz));
 
-  clearAndAddDescriptor(mem, &desc);
-	  
   // Attach finalizer
   if (mem != 0) {
-    if (gcFunctions[type].final != KGC_OBJECT_FIXED && 
-	gcFunctions[type].final != KGC_OBJECT_NORMAL) {
-      GC_REGISTER_FINALIZER_NO_ORDER(mem, finalizeObject, &gcFunctions[type], 0, 0);
+    clearAndAddDescriptor(mem, &desc);
+	  
+    if ( gcFunctions[type].final != KGC_OBJECT_FIXED
+	 && (gcFunctions[type].final != KGC_OBJECT_NORMAL
+	     || gcFunctions[type].destroy != NULL)) {
+      GC_REGISTER_FINALIZER_NO_ORDER(mem, finalizeObject, 0, 0, 0);
     }
+    return ALIGN_FORWARD(mem);
   }
 
-  return ALIGN_FORWARD(mem);
+  return NULL;
 }
 
 
@@ -448,7 +440,7 @@ KaffeGC_MarkAddress(UNUSED Collector* gcif, void *gc_info, const void* mem)
 
   info_mark->mark_current =
     GC_mark_and_push(ALIGN_BACKWARD(mem), info_mark->mark_current, info_mark->mark_limit,
-		     (GC_PTR *)&mem);
+		     (GC_PTR *) info_mark->original_object);
 }
 
 static struct GC_ms_entry *
@@ -462,6 +454,7 @@ onObjectMarking(GC_word *addr, struct GC_ms_entry * mark_stack_ptr,
   
   info_mark.mark_current = mark_stack_ptr;
   info_mark.mark_limit = mark_stack_limit;
+  info_mark.original_object = addr;
 
   walkf = gcFunctions[type].walk;
   if (walkf != NULL)
@@ -486,7 +479,6 @@ DBG(GCDIAG, dprintf(msg, arg); )
 static void
 KaffeGC_Init(Collector *collector UNUSED)
 {
-  //  KGC_init = 1;
   GC_all_interior_pointers = 0;
   GC_finalizer_notifier = KaffeGC_SignalFinalizer;
   GC_java_finalization = 1;
@@ -499,7 +491,6 @@ KaffeGC_Init(Collector *collector UNUSED)
     GC_expand_hp( Kaffe_JavaVMArgs.minHeapSize - GC_get_heap_size());
 
   GC_kaffe_init(onObjectMarking);
-  // KGC_init = 0;
 }
 
 

@@ -343,7 +343,7 @@ DBG(GCPRECISE,
  * http://sourceware.cygnus.com/ml/java-discuss/1999-q4/msg00379.html
  */
 				if (FIELD_TYPE(fld) == StringClass) {
-					KGC_markAddress(collector, *faddr);
+					KGC_markAddress(collector, gc_info, *faddr);
 				} else {
 					KGC_markObject(collector, gc_info, *faddr);
 				}

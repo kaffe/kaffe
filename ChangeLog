@@ -1,3 +1,34 @@
+2004-08-03  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/gcFuncs.c
+	(walkClass): Updated function call.
+
+	* kaffe/kaffevm/boehm-gc/gc2.c,
+	kaffe/kaffevm/boehm-gc/gc2.h
+	(gcMark): New field "original_object"
+	(clearAndAddDescriptor): Cleaned up.
+	(finalizeObject): Call destroy function after
+	having finalized.
+	(finaliserMan): Removed call to jthread_yield. Added a dummy
+	unlockStaticMutex.
+	(gcMan): Likewise.
+	(KaffeGC_realloc): Really return NULL if realloc fails.
+	(KaffeGC_malloc): Return NULL if alloc fails.
+	(KaffeGC_markAddress): Fixed call to GC_mark_and_push.
+	(onObjectMarking): Initialize original_object.
+	(KaffeGC_Init): Removed dead code.
+	Include gc2.h. Moved some macros and structures to gc2.h
+
+	* kaffe/kaffevm/boehm-gc/gcRefs.c:
+	(KaffeGC_addRef): Take the object base to mark the object.
+	(KaffeGC_rmRef): Likewise.
+	Include gc2.h
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	(tInitSignalHandler): Define a new signal SIG_INTERRUPT to
+	interrupt syscall.
+	(jthread_interrupt): Use SIG_INTERRUPT.
+	
 2004-08-02  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/Makefile.am

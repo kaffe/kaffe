@@ -66,7 +66,7 @@ KaffeGC_addRef(Collector *collector, const void* mem)
   if (!obj)
     return false;
 	
-  obj->mem = mem;
+  obj->mem = ALIGN_BACKWARD(mem);
   obj->ref = 1;
   obj->next = refObjects.hash[idx];
   refObjects.hash[idx] = obj;
@@ -85,6 +85,8 @@ KaffeGC_rmRef(Collector *collector, const void* mem)
   refObject* obj;
 
   idx = REFOBJHASH(mem);
+  mem = ALIGN_BACKWARD(mem);
+
   for (objp = &refObjects.hash[idx]; *objp != 0; objp = &obj->next) {
     obj = *objp;
     /* Found it - just decrease reference */

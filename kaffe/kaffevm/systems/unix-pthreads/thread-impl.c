@@ -114,6 +114,8 @@ static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', '
 
 #endif
 
+#define SIG_INTERRUPT (__SIGRTMIN+2)
+
 
 /***********************************************************************
  * global data
@@ -328,7 +330,7 @@ void tStartDeadlockWatchdog (void)
 void
 tInitSignalHandlers (void)
 {
-  struct sigaction sigSuspend, sigResume, sigDump;
+  struct sigaction sigSuspend, sigResume, sigInterrupt, sigDump;
   unsigned int flags = 0;
 
 #if defined(SA_RESTART)
@@ -361,6 +363,11 @@ tInitSignalHandlers (void)
 #ifndef KAFFE_BOEHM_GC
   sigaction( SIG_RESUME, &sigResume, NULL);
 #endif
+
+  sigInterrupt.sa_flags = flags;
+  sigInterrupt.sa_handler = SIG_IGN;
+  sigemptyset(&sigInterrupt.sa_mask);
+  sigaction( SIG_INTERRUPT, &sigInterrupt, NULL);
 
 #if defined(SIG_DUMP)
   sigDump.sa_flags = flags;
@@ -517,7 +524,7 @@ void jthread_interrupt(jthread_t tid)
 {
   tid->interrupting = 1;
   /* We need to send some signal to interrupt syscalls. */
-  pthread_kill(tid->tid, SIG_RESUME);
+  pthread_kill(tid->tid, SIG_INTERRUPT);
 }
 
 int jthread_is_interrupted(jthread_t jt)
