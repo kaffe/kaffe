@@ -50,10 +50,10 @@ typedef struct _exceptionFrame {
 	}
 
 /* Extract the object argument from given frame */
-#define FRAMEOBJECT(f)							\
-	(*(Hjava_lang_Object**)						\
-	 (((exceptionFrame*)(((exceptionFrame*)(f))->retbp)		\
-	   )->retbp+68))
+#define FRAMEOBJECT(obj, f, einfo)					\
+	(obj) = (*(Hjava_lang_Object**)					\
+		 (((exceptionFrame*)(((exceptionFrame*)(f))->retbp)	\
+		  )->retbp+68))
 
 /* Call the relevant exception handler (rewinding the stack as
    necessary). */

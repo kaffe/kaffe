@@ -36,8 +36,8 @@ extern void __mipsGetNextFrame(struct _exceptionFrame*);
 #define	FPFRAME(F)		((F)->return_frame)
 
 /* Extract the object argument from given frame */
-#define FRAMEOBJECT(f)							\
-	(*(Hjava_lang_Object**)(f))
+#define FRAMEOBJECT(obj, f, einfo)					\
+	(obj) = (*(Hjava_lang_Object**)(f))
 
 /* Call the relevant exception handler (rewinding the stack as
    necessary). */

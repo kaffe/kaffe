@@ -50,10 +50,24 @@ typedef struct _exceptionFrame {
 	({ char* v ; asm volatile("mov %0,fp" : "=r" (v)) ; 	\
 	    (f) = *(exceptionFrame*)(v - sizeof(exceptionFrame)); })
 
-/* extract the value of $fp given an exceptionFrame struct */
-static inline void** fpframe(exceptionFrame *f) {
-	return ((void **)(f->retfp));
-}
+/* Extract the object argument from given frame */
+#define FRAMEOBJECT(obj, f, einfo)	do {				\
+	const char *str;						\
+	int maxLocal, maxStack, maxArgs, maxTemp;			\
+	/* Set up the necessary state for the SLOT2 macros to work	\
+	 * in local variables to not get the translator lock.  */	\
+	maxLocal = einfo.method->localsz;				\
+	maxStack = einfo.method->stacksz;				\
+	str = einfo.method->signature->data;				\
+	maxArgs = sizeofSig(&str, false);				\
+	maxTemp = MAXTEMPS - 1;						\
+	/* NB: we assume that the JIT will have				\
+	 * spilled the 'this' object in the				\
+	 * stack location for slot zero.				\
+	 */								\
+	obj = ((Hjava_lang_Object**)(f))[SLOT2ARGOFFSET(0)/SLOTSIZE];	\
+} while (0)
+
 	
 /* Call the relevant exception handler (rewinding the stack as
    necessary). */

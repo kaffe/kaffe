@@ -30,7 +30,8 @@ typedef struct _exceptionFrame {
 #define	FPFRAME(f)	((f)->retbp)
 
 /* Extract a local argument from given frame */
-#define	FRAMEOBJECT(f)	(*(Hjava_lang_Object**)((f) + 8))
+#define	FRAMEOBJECT(obj, f, einfo)					\
+	(obj) = (*(Hjava_lang_Object**)((f) + 8))
 
 /* Get the first exception frame from a subroutine call */
 #define	FIRSTFRAME(f, o) (f) = *((exceptionFrame*)(((uintp)&(o))-8))
