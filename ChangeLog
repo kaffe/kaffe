@@ -1,3 +1,9 @@
+1999-08-17  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test/regression/TestScript.in (JAVAC): Enclose classpath
+	argument in quotes, to avoid lossage if PATHSEP=";".
+	(run): Pipe output through `grep' to strip `\r's on Cygwin.
+
 1999-08-16  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in: Rewrite SupportedEngine() as autoconf function.

@@ -12,7 +12,7 @@
 
 : ${JAVA=kaffe} ${SRCDIR=@srcdir@} ${PATHSEP='@PATHSEP@'}
 test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn"}
-: ${JAVAC=${JIKES-"$JAVA pizza.compiler.Main"}" -classpath .$PATHSEP$SRCDIR$PATHSEP$SRCDIR/../../libraries/javalib/Klasses.jar$PATHSEP$CLASSPATH"}
+: ${JAVAC=${JIKES-"$JAVA pizza.compiler.Main"}" -classpath \".$PATHSEP$SRCDIR$PATHSEP$SRCDIR/../../libraries/javalib/Klasses.jar$PATHSEP$CLASSPATH\""}
 overallerror=0
 error=0
 
@@ -61,7 +61,8 @@ run()
 	    $JAVA $* 2>&1 | sort > $RESULT
 	    error=$?
 	else
-	    $JAVA $* > "$RESULT" 2>&1
+	    # grep will take care of stripping \r from DOS-like output
+	    $JAVA $* 2>&1 | grep . > "$RESULT"
 	    error=$?
 	fi
 	if test ! -f "$1.out"; then
