@@ -43,7 +43,7 @@
 #define DARWIN
 
 #undef HAVE_SIGALTSTACK
-#define STACK_T struct sigaltstack
+#define STACK_STRUCT struct sigaltstack
 
 #include "kaffe-unix-stack.h"
 

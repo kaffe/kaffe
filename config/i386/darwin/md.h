@@ -41,7 +41,7 @@
 #define STACK_POINTER(scp) ((scp)->sc_esp)
 
 #undef HAVE_SIGALTSTACK
-#define STACK_T struct sigaltstack
+#define STACK_STRUCT struct sigaltstack
 
 #define DARWIN
 

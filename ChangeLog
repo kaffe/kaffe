@@ -69,6 +69,11 @@
         (readtzFile): Likewise.
         (skipFully): Likewise.
 
+2004-09-11  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/powerpc/darwin/md.h
+	config/i386/darwin/md.h
+	(STACK_STRUCT):  Fixed macro name (was STACK_T)
 
 2004-09-11  Guilhem Lavaux  <guilhem@kaffe.org>
 
