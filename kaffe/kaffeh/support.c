@@ -323,7 +323,7 @@ readField(classFile* fp, Hjava_lang_Class* this, constants* cpool)
 				sprintf(cval, "%d", (int)cpool->data[idx]);
 				break;
 			case CONSTANT_Float:
-				sprintf(cval, "%g", *(float*)&cpool->data[idx]);
+				sprintf(cval, "%.7e", *(float*)&cpool->data[idx]);
 				break;
 			case CONSTANT_Long:
 #if SIZEOF_VOIDP == 8
@@ -339,7 +339,7 @@ readField(classFile* fp, Hjava_lang_Class* this, constants* cpool)
 			case CONSTANT_Double:
 				u.i[0] = cpool->data[idx];
 				u.i[1] = cpool->data[idx + 1];
-				sprintf(cval, "%g", u.d);
+				sprintf(cval, "%.16e", u.d);
 				break;
 			case CONSTANT_String:
 				sprintf(cval, "\"%s\"", (char*)cpool->data[cpool->data[idx]]);
