@@ -21,7 +21,17 @@
 #
 #   Makefile.am.in -> Makefile.am -> Makefile.in -> Makefile
 
-SUBDIRS = . awt-implementations gmp-math
+# Only build the peerless AWT libraries if kaffe is configured to
+# build the native libraries as well.
+if COND_KAFFE_QT_AWT
+MAYBE_PEERLESS_KAFFE_AWT=awt-implementations
+else
+if COND_KAFFE_X_AWT
+MAYBE_PEERLESS_KAFFE_AWT=awt-implementations
+endif
+endif
+
+SUBDIRS = . $(MAYBE_PEERLESS_KAFFE_AWT) gmp-math
 
 SRCDIRS = com gnu java javax kaffe org
 

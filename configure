@@ -1130,11 +1130,11 @@ Optional Packages:
   --with-libffi           Use libffi for sysdepCallMethod
   --without-gmp           don't use GNU multiple precision arithmetic library
   --with-stats            Gather statistics on vm execution
-  --without-kaffe-x-awt   disable build of Kaffe's Xlib-based AWT engine
-                          (built by default)
+  --with-kaffe-x-awt      enable build of Kaffe's Xlib-based AWT engine (not
+                          built by default)
   --with-x                use the X Window System
-  --without-kaffe-qt-awt  disable build of Kaffe's Qt2/3/embedded-based AWT
-                          engine (built by default)
+  --with-kaffe-qt-awt     enable build of Kaffe's Qt2/3/embedded-based AWT
+                          engine (not built by default)
   --with-qtdir=DIR        Qt installation directory default=$QTDIR
   --without-classpath-gtk-awt
                           disable build of GNU Classpath's Gtk+-based AWT
@@ -50901,7 +50901,7 @@ if test "${with_kaffe_x_awt+set}" = set; then
   withval="$with_kaffe_x_awt"
 
 else
-  with_kaffe_x_awt=yes
+  with_kaffe_x_awt=no
 
 fi;
 
@@ -53176,7 +53176,7 @@ if test "${with_kaffe_qt_awt+set}" = set; then
   withval="$with_kaffe_qt_awt"
 
 else
-  with_kaffe_qt_awt=yes
+  with_kaffe_qt_awt=no
 
 fi;
 

@@ -1546,10 +1546,10 @@ AC_ARG_ENABLE([native-awt],
 AM_CONDITIONAL(COND_NATIVE_AWT, test x"$enable_native_awt" != x"no")
 
 AC_ARG_WITH([kaffe-x-awt],
-	AS_HELP_STRING([--without-kaffe-x-awt],
-		       [disable build of Kaffe's Xlib-based AWT engine (built by default)]),
+	AS_HELP_STRING([--with-kaffe-x-awt],
+		       [enable build of Kaffe's Xlib-based AWT engine (not built by default)]),
 	[],
-	[with_kaffe_x_awt=yes]
+	[with_kaffe_x_awt=no]
 )
 
 AM_CONDITIONAL(COND_KAFFE_X_AWT, test x"$with_kaffe_x_awt" != x"no")
@@ -1626,10 +1626,10 @@ if test x"$enable_native_awt" = x"yes"; then
 fi
 
 AC_ARG_WITH([kaffe-qt-awt],
-            AS_HELP_STRING([--without-kaffe-qt-awt],
-                           [disable build of Kaffe's Qt2/3/embedded-based AWT engine (built by default)]),
+            AS_HELP_STRING([--with-kaffe-qt-awt],
+                           [enable build of Kaffe's Qt2/3/embedded-based AWT engine (not built by default)]),
         [],
-        [with_kaffe_qt_awt=yes]
+        [with_kaffe_qt_awt=no]
 )
 
 AM_CONDITIONAL(COND_KAFFE_QT_AWT, test x"$with_kaffe_qt_awt" != x"no")

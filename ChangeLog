@@ -1,3 +1,17 @@
+2004-09-06  Dalibor Topic  <robilad@kaffe.org>
+
+        * configure.ac:
+	Do not build the X and QT AWT backends by default.
+
+        * libraries/javalib/Makefile.am.in:
+	Do not build peerless AWT class library unless
+	a peerless AWT backend is chosen.
+
+        * configure,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in:
+	Regenerated.
+
 2004-09-05  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffeh/support.c:

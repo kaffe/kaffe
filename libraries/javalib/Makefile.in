@@ -107,7 +107,7 @@ toolslibDATA_INSTALL = $(INSTALL_DATA)
 DATA = $(jrelib_DATA) $(toolslib_DATA)
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = $(SUBDIRS)
+DIST_SUBDIRS = . awt-implementations gmp-math
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -371,7 +371,12 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-SUBDIRS = . awt-implementations gmp-math
+@COND_KAFFE_QT_AWT_FALSE@@COND_KAFFE_X_AWT_TRUE@MAYBE_PEERLESS_KAFFE_AWT = awt-implementations
+
+# Only build the peerless AWT libraries if kaffe is configured to
+# build the native libraries as well.
+@COND_KAFFE_QT_AWT_TRUE@MAYBE_PEERLESS_KAFFE_AWT = awt-implementations
+SUBDIRS = . $(MAYBE_PEERLESS_KAFFE_AWT) gmp-math
 SRCDIRS = com gnu java javax kaffe org
 JAVA = $(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
 KAFFELIBRARYPATH = $(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/:$(top_builddir)/libraries/clib/nio/
