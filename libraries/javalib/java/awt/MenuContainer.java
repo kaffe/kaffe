@@ -9,9 +9,6 @@
 
 package java.awt;
 
-import java.awt.Font;
-import java.awt.Event;
-
 public interface MenuContainer {
 
 Font getFont();

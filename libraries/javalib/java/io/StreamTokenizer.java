@@ -13,12 +13,13 @@ package java.io;
 
 public class StreamTokenizer {
 
-final public static int TT_EOF = -1;
-final public static int TT_EOL = '\n';
-final public static int TT_NUMBER = -2;
-final public static int TT_WORD = -3;
+public static final int TT_EOF = -1;
+public static final int TT_EOL = '\n';
+public static final int TT_NUMBER = -2;
+public static final int TT_WORD = -3;
+private static final int TT_INITIAL = -4;
 
-public int ttype;
+public int ttype = TT_INITIAL;
 public String sval;
 public double nval;
 
@@ -123,14 +124,12 @@ private void nextTokenType() throws IOException {
 		/* Parse the word and return */
 		parseAlphabeticChars(chr);
 	}
-	else if (e.isComment) {
-		/* skip comment and return nextTokenType() */
-		parseCommentChars();
-	}
-	else if (e.isStringQuote) {
-		/* Parse string and return word */
-		parseStringQuoteChars(chr);
-	}
+	/* Contrary to the description in JLS 1.ed,
+	   C & C++ comments seem to be checked
+	   before other comments. That actually
+	   make sense, since the default comment
+	   character is '/'.
+	*/
 	else if (chr=='/' && CPlusPlusComments
 	    && parseCPlusPlusCommentChars()) {
 		/* Check for C++ comments */
@@ -138,6 +137,14 @@ private void nextTokenType() throws IOException {
 	else if (chr=='/' && CComments
 	    && parseCCommentChars()) {
 		/* Check for C comments */
+	}
+	else if (e.isComment) {
+	        /* skip comment and return nextTokenType() */
+	        parseCommentChars();
+	}
+	else if (e.isStringQuote) {
+	        /* Parse string and return word */
+	        parseStringQuoteChars(chr);
 	}
 	else {
 		/* Just return it as a token */
@@ -517,8 +524,11 @@ public String toString() {
 	else if (ttype == TT_NUMBER) {
 		return ("Token[n="+nval+"], line "+lineno());
 	}
-	else if (ttype == TT_WORD) {
+	    else if (ttype == TT_WORD || lookup(ttype).isStringQuote) {
 		return ("Token["+sval+"], line "+lineno());
+	}
+	else if (ttype == TT_INITIAL) {
+		return("Token[NOTHING], line " + lineno());
 	}
 	else {
 		return ("Token[\'"+ (char) ttype +"\'], line "+lineno());

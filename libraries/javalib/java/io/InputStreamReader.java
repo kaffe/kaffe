@@ -18,7 +18,7 @@ public class InputStreamReader
 	private static final int BUFDEFAULT = 128;
 	private ByteToCharConverter encoding;
 	private InputStream strm;
-	private final byte[] inbuf = new byte[BUFDEFAULT];
+	private byte[] inbuf = new byte[BUFDEFAULT];
 
 public InputStreamReader(InputStream in) {
 	strm = in;
@@ -30,9 +30,23 @@ public InputStreamReader(InputStream in, String enc) throws UnsupportedEncodingE
 	encoding = ByteToCharConverter.getConverter(enc);
 }
 
+/* Internal function used to check whether the
+   InputStreamReader has been closed already, throws
+   an IOException in that case.
+*/
+private void checkIfStillOpen() throws IOException {
+	if (strm == null) {
+		throw new IOException("Stream closed");
+	}
+}
+
 public void close() throws IOException {
-	if (strm != null) {
-		strm.close();
+	synchronized(lock) {
+		if (strm != null) {
+			strm.close();
+			strm = null;
+			inbuf = null;
+		}
 	}
 }
 
@@ -45,6 +59,8 @@ public int read ( char cbuf[], int off, int len ) throws IOException {
 	boolean seenEOF = false;
 
 	synchronized ( lock ) {
+		checkIfStillOpen();
+
 		while (len > outlen) {
 			// First we retreive anything left in the converter
 			final int inpos = encoding.withdraw(inbuf, 0, inbuf.length);
@@ -71,6 +87,10 @@ public int read ( char cbuf[], int off, int len ) throws IOException {
 }
 
 public boolean ready() throws IOException {
-	return ((encoding.havePending() || (strm.available() > 0)) ? true : false);
+	synchronized (lock) {
+		checkIfStillOpen();
+
+		return ((encoding.havePending() || (strm.available() > 0)) ? true : false);
+	}
 }
 }

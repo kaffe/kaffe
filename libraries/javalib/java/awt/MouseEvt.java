@@ -1,9 +1,5 @@
 package java.awt;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.util.Stack;
 

@@ -12,7 +12,6 @@ package java.net;
 
 import java.io.IOException;
 import kaffe.net.DefaultSocketImplFactory;
-import java.net.SocketOptions;
 
 public class ServerSocket {
 

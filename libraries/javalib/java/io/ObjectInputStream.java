@@ -10,15 +10,6 @@
 
 package java.io;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectStreamConstants;
-import java.io.StreamCorruptedException;
-import java.io.ObjectInputValidation;
-import java.io.NotActiveException;
-import java.io.OptionalDataException;
-import java.io.InvalidObjectException;
 import kaffe.io.ObjectInputStreamImpl;
 
 public class ObjectInputStream

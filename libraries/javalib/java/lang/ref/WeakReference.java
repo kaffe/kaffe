@@ -10,8 +10,6 @@
 
 package java.lang.ref;
 
-import java.lang.ref.ReferenceQueue;
-
 public class WeakReference extends Reference {
 
 public WeakReference(Object obj) {

@@ -1,3 +1,91 @@
+Mon Feb 18 16:24:55 PST 2002  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/awt/Component.java,
+	libraries/javalib/java/awt/Frame.java,
+	libraries/javalib/java/awt/MenuContainer.java,
+	libraries/javalib/java/awt/MouseEvt.java,
+	libraries/javalib/java/awt/PaintEvt.java,
+	libraries/javalib/java/awt/Toolkit.java,
+	libraries/javalib/java/awt/Window.java,
+	libraries/javalib/java/awt/widgets/List.java,
+	libraries/javalib/java/awt/widgets/TextField.java,
+	libraries/javalib/java/io/ObjectInputStream.java,
+	libraries/javalib/java/io/ObjectOutputStream.java,
+	libraries/javalib/java/lang/ref/PhantomReference.java,
+	libraries/javalib/java/lang/ref/Reference.java,
+	libraries/javalib/java/lang/ref/ReferenceQueue.java,
+	libraries/javalib/java/lang/ref/SoftReference.java,
+	libraries/javalib/java/lang/ref/WeakReference.java,
+	libraries/javalib/java/net/HttpURLConnection.java,
+	libraries/javalib/java/net/ServerSocket.java,
+	libraries/javalib/java/net/Socket.java,
+	libraries/javalib/kaffe/lang/Application.java,
+	libraries/javalib/kaffe/lang/DummyClassLoader.java,
+	libraries/javalib/kaffe/lang/MemoryAdvice.java,
+	libraries/javalib/kaffe/net/DefaultStreamMap.java,
+	libraries/javalib/kaffe/util/log/SimpleLogViewer.java:
+	removed imports from the file's package.
+	* libraries/javalib/java/io/ObjectStreamClass.java:
+	removed redundant imports.
+	* libraries/javalib/java/awt/ClassAnalyzer.java,
+	libraries/javalib/java/util/jar/Manifest.java: removed unused vars.
+	* libraries/javalib/java/io/StreamTokenizer.java:
+	(TT_EOF, etc): changed access modifier order to standard one.
+	TT_INITIAL): new constant.
+	(ttype): set initial value to TT_INITIAL.
+	(nextTokenType): parse C++ & C comments before single line comments.
+	(toString): print parsed quoted strings just like parsed
+	words. Added printing of initial state.
+	* libraries/javalib/java/io/InputStreamReader.java: fixed spelling.
+	(inbuf) made non-final, so it can be deleted when the reader is closed.
+	(checkIfStillOpen) new method.
+	(close) synchronized on lock. Now sets no longer used fields to null.
+	(read) added openness check.
+	(ready) synchronized on lock. Added openness check.
+	* libraries/javalib/Makefile.in:
+	added new source file kaffe/io/CircularBuffer.java.
+	* libraries/javalib/java/io/PipedReader.java:
+	use a CircularBuffer instead of manually converting bytes into
+	chars.
+	(rawInput) removed.
+	(buffer) new field for the pipe buffer.
+	(PIPE_SIZE) new constant for pipe size.
+	(checkIfConnected) new method.
+	(connect) synchronized. Uses the circular buffer.
+	(isConnected) new method.
+	(read) new method.
+	(read) check if we are connected first. Uses the circular
+	buffer. Synchronized to avoid races. Notify writer, so he can
+	continue writing.
+	(ready) new method.
+	(close) synchronized to avoid races. Notify all waiting threads,
+	so they can get their exceptions.
+	* libraries/javalib/java/io/PipedWriter.java:
+	use a CircularBuffer instead of manually converting bytes into chars.
+	(rawOutput) removed.
+	(buffer) new field.
+	(checkIfStillOpen) new method.
+	(checkIfConnected) new method.
+	(connect) synchronized to avoid races. Uses PipedReader to do the job.
+	(isConnected) new method.
+	(write) new method.
+	(write) check if connected first. Synchronized to avoid
+	races. Checks if still open. Waits until it can write
+	again. Notifies the reader thread so it can continue reading.
+	(flush) flush only if we are connected. Checks if it is still
+	open. Notifies the reader.
+	(close) synchronized to avoid races. Notifies all waiting threads,
+	so they can receive the responding exceptions.
+	* libraries/javalib/kaffe/io/CircularBuffer.java: new class.
+	* libraries/javalib/java/io/PipedWriter.java:
+	(write): fixed deadlock. If buffer was closed while we were
+	waiting, we would fill it up, and wait again. But since the buffer
+	was closed, we would never wake up. 
+	* libraries/javalib/java/io/LineNumberInputStream.java:
+	(read): always convert \r & \r\n to \n.  
+	* libraries/javalib/java/DatagramPacket.java:
+	(setData) throw a NullPointerException if buf is null.
+
 Thu Jan  3 21:05:45 PST 2002  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/io/InvalidClassException.java:

@@ -11,7 +11,6 @@ class ClassAnalyzer
 	private static Class[] sig_Event_Object = new Class[] { Event.class, Object.class };
 	private static Class[] sig_Event_int = new Class[] { Event.class, Integer.TYPE };
 	private static Class[] sig_Event_int_int = new Class[] { Event.class, Integer.TYPE, Integer.TYPE };
-	private static Class[] sig_none = new Class[] {};
 	private static String[] oldEventMethodName = {
 	"handleEvent",
 	"action",

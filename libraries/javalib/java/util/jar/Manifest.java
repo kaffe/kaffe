@@ -87,7 +87,6 @@ public class Manifest implements Cloneable {
 		// Do per-entry attributes, ``Name: '' header first
 		for (Iterator i = ents.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry e = (Map.Entry)i.next();
-			String name = (String)e.getKey();
 			Attributes attr = (Attributes)e.getValue();
 
 			out.println("Name: " + attr.getValue(NAME));

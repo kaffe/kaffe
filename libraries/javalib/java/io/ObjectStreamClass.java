@@ -10,10 +10,7 @@
 
 package java.io;
 
-import java.io.Serializable;
-import java.io.Externalizable;
 import java.util.Hashtable;
-import java.io.ObjectStreamConstants;
 import kaffe.io.SerializationFactory;
 import kaffe.io.DefaultSerializationFactory;
 

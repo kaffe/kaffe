@@ -22,8 +22,6 @@ import java.awt.Insets;
 import java.awt.event.WindowEvent;
 import java.io.PrintStream;
 import kaffe.util.DoubleLinkedObject;
-import kaffe.util.log.LogClient;
-import kaffe.util.log.LogStream;
 
 public class SimpleLogViewer
   extends Frame

@@ -78,6 +78,9 @@ public synchronized void setAddress(InetAddress addr) {
 }
 
 public synchronized void setData(byte[] newbuf) {
+	if (buf == null) {
+		throw new NullPointerException();
+	}
 	buf = newbuf;
 }
 

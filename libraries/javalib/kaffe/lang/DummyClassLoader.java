@@ -10,8 +10,6 @@
 
 package kaffe.lang;
 
-import kaffe.lang.SystemClassLoader;
-
 /**
  * This isn't really a class loader - but it enables us to get hold
  * of the current class loader.

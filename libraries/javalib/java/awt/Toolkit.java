@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.awt.ImageNativeProducer;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.InputEvent;

@@ -10,9 +10,13 @@
 
 package java.io;
 
+import kaffe.io.CircularBuffer;
+
 public class PipedReader extends Reader {
 
-  final PipedInputStream rawInput = new PipedInputStream();
+  CircularBuffer buffer;
+
+  private static final int PIPE_SIZE = 2048;
 
   public PipedReader() {
   }
@@ -21,36 +25,64 @@ public class PipedReader extends Reader {
     connect(writer);
   }
 
+  private void checkIfConnected() throws IOException {
+    synchronized(this) {
+      if (!isConnected()) {
+	throw new IOException("Pipe not connected");
+      }
+    }
+  }
+
   public void connect(PipedWriter writer) throws IOException {
-    rawInput.connect(writer.rawOutput);
+    synchronized(this) {
+      if (isConnected()) {
+	throw new IOException("Already connected");
+      }
+      else {
+	writer.buffer = buffer = new CircularBuffer(PIPE_SIZE);
+      }
+    }
+  }
+
+  private boolean isConnected() {
+    return buffer != null;
+  }
+
+  public int read() throws IOException {
+    return super.read();
   }
 
   public int read(char cbuf[], int off, int len) throws IOException {
+    checkIfConnected();
 
-    // Read each character as two bytes big endian
-    len = Math.min(len, rawInput.PIPE_SIZE >> 1) << 1;
-    final byte[] buf = new byte[len];
-    final int num = rawInput.read(buf, 0, len);
-    if (num == -1) {
-      return(-1);
-    }
+    synchronized(buffer) {
+      int nread;
+      while ((nread = buffer.read(cbuf, off, len)) == 0) {
+	try {
+	  buffer.wait();
+	}
+	catch (InterruptedException e) {
+	  continue;
+	}
+      }
 
-    // XXX Assume we won't ever read an odd length
-    if ((num & 0x1) != 0) {
-      throw new Error("rec'd odd length");
+      buffer.notify(); // notify the writer.
+      return nread;
     }
+  }
 
-    // Convert pairs of bytes to characters
-    for (int i = 0; i < num; i += 2) {
-      cbuf[off++] = (char) ((buf[i] << 8) | (buf[i + 1] & 0xff));
-    }
-    return (num >> 1);
+  public boolean ready() throws IOException {
+    checkIfConnected();
+
+    return !buffer.isEmpty();
   }
 
   public void close() throws IOException {
-    rawInput.close();
+    synchronized(buffer) {
+      buffer.close();
+      buffer.notifyAll(); // notify reader and writer.
+    }
   }
-
 }
 
 

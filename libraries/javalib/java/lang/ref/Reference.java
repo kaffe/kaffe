@@ -10,8 +10,6 @@
 
 package java.lang.ref;
 
-import java.lang.ref.ReferenceQueue;
-
 public abstract class Reference extends Object {
 
 final static protected int PHANTOM = 0;

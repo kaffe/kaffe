@@ -21,8 +21,6 @@ import java.io.InputStream;
 import java.io.FilterInputStream;
 import java.io.PrintStream;
 import java.net.URL;
-import kaffe.lang.ApplicationException;
-import kaffe.lang.ApplicationResource;
 
 public class Application extends ClassLoader implements Runnable {
 

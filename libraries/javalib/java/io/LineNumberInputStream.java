@@ -66,7 +66,11 @@ public int read() throws IOException {
 	if (chr=='\r') {
 		/* Read ahead */
 		final int next=pushBackRead();
-		if (next=='\n') chr=next; else pushBack(next);
+		if (next !='\n') {
+		    pushBack(next);
+		}
+		/* Return \r and \r\n as a single \n */
+		chr = '\n';
 	}
 
 	//System.out.println("LINENo: "+lineNo);

@@ -10,9 +10,11 @@
 
 package java.io;
 
+import kaffe.io.CircularBuffer;
+
 public class PipedWriter extends Writer {
 
-  final PipedOutputStream rawOutput = new PipedOutputStream();
+  CircularBuffer buffer;
 
   public PipedWriter() {
   }
@@ -21,30 +23,76 @@ public class PipedWriter extends Writer {
     connect(reader);
   }
 
+  private void checkIfStillOpen() throws IOException {
+    if (buffer.isClosed()) {
+      throw new IOException("Pipe closed");
+    }
+  }
+
+  private void checkIfConnected() throws IOException {
+    synchronized(this) {
+      if (!isConnected()) {
+	throw new IOException("Pipe not connected");
+      }
+    }
+  }
+
   public void connect(PipedReader reader) throws IOException {
-    rawOutput.connect(reader.rawInput);
+    synchronized(this) {
+      /* connect using the reader to avoid racing conditions. */
+      reader.connect(this);
+    }
+  }
+
+  private boolean isConnected() {
+    return buffer != null;
+  }
+
+  public void write(int c) throws IOException {
+    super.write(c);
   }
 
   public void write(char cbuf[], int off, int len) throws IOException {
+    checkIfConnected();
 
-    // Convert pairs of bytes to characters
-    len = (len << 1);
-    byte[] buf = new byte[len];
-    for (int i = 0; i < len; off++) {
-      buf[i++] = (byte) (cbuf[off] >> 8);
-      buf[i++] = (byte) (cbuf[off] & 0xff);
+    synchronized(buffer) {
+      while(len > 0) {
+	checkIfStillOpen();
+
+	if (buffer.isFull()) {
+	  try {
+	    buffer.wait();
+	  }
+	  catch (InterruptedException e) {
+	    continue;
+	  }
+	}
+	else {
+	  int written = buffer.write(cbuf, off, len);
+	  off += written;
+	  len -= written;
+
+	  buffer.notify(); // notify the reader.
+	}
+      }
     }
-
-    // Write each character as two bytes big endian
-    rawOutput.write(buf, 0, len);
   }
 
   public void flush() throws IOException {
-    rawOutput.flush();
+    if (isConnected()) {
+      synchronized(buffer) {
+	checkIfStillOpen();
+
+	buffer.notify();
+      }
+    }
   }
 
   public void close() throws IOException {
-    rawOutput.close();
+    synchronized(buffer) {
+      buffer.close();
+      buffer.notifyAll(); // notify reader and writer.
+    }
   }
 }
 

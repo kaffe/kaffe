@@ -10,11 +10,6 @@
 
 package java.io;
 
-import java.io.OutputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectStreamConstants;
-import java.io.IOException;
-import java.io.NotActiveException;
 import kaffe.io.ObjectOutputStreamImpl;
 
 public class ObjectOutputStream

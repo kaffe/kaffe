@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.awt.Cursor;
 import java.awt.event.WindowEvent;
 
 /**

@@ -10,8 +10,6 @@
 
 package java.net;
 
-import java.net.URLConnection;
-import java.net.ProtocolException;
 import java.io.IOException;
 
 abstract public class HttpURLConnection extends URLConnection {

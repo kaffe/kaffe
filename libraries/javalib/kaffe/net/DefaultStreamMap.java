@@ -10,7 +10,6 @@
 
 package kaffe.net;
 
-import kaffe.net.StreamMap;
 import java.io.InputStream;
 import java.io.IOException;
 

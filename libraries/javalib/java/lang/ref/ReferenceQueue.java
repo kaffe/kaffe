@@ -10,7 +10,6 @@
 
 package java.lang.ref;
 
-import java.lang.ref.Reference;
 import java.util.Vector;
 
 public class ReferenceQueue extends Object {
