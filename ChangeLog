@@ -1,5 +1,10 @@
 2002-11-22  Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>
 
+	* kaffe/scripts/compat/javac.in: fixed some syntactical
+	error to avoid the message '[: ==: binary operator expected'.
+
+2002-11-22  Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>
+
 	* libraries/clib/native/ByteToCharIconv.c: 
 	(Java_kaffe_io_ByteToCharIconv_convert): convert the
 	begining of an invalid multibyte sequence to '?'. Fixes

@@ -6,11 +6,11 @@ lib_path=@prefix@
 
 # Ensure that /usr/lib/rt.jar is in the classpath. 
 for opt in ${1+"$@"}; do 
-    if [ "x$classpath" == "xtrue" ]; then
+    if [ "x$classpath" = "xtrue" ]; then
         classpath=$opt
         continue
     fi
-    if [ $opt == "-classpath" ]; then
+    if [ $opt = "-classpath" ]; then
         classpath="true"
         continue
     fi
