@@ -1,10 +1,3 @@
-/*
- *
- * Imported from GNU Classpath by M.Negovanovic
- *
- */
-
-
 /* java.beans.Beans
    Copyright (C) 1998, 1999 Free Software Foundation, Inc.
 

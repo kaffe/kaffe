@@ -1,10 +1,3 @@
-/*
- *
- * Imported from GNU Classpath by M.Negovanovic
- *
- */
-
-
 /* gnu.java.beans.editors.NativeBooleanEditor
    Copyright (C) 1998, 2002 Free Software Foundation, Inc.
 

@@ -1,10 +1,3 @@
-/*
- *
- * Imported from GNU Classpath by M.Negovanovic
- *
- */
-
-
 /* java.beans.PropertyEditorSupport
    Copyright (C) 1998 Free Software Foundation, Inc.
 

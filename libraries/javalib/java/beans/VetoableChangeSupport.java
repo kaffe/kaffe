@@ -1,10 +1,3 @@
-/*
- *
- * Imported from GNU Classpath by M.Negovanovic
- *
- */
-
-
 /* VetoableChangeSupport.java -- support to manage vetoable change listeners
    Copyright (C) 1998, 1999, 2000, 2002 Free Software Foundation, Inc.
 

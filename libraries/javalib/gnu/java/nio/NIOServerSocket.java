@@ -1,5 +1,5 @@
-/* Referenceable.java --
-   Copyright (C) 2000 Free Software Foundation, Inc.
+/* NIOServerSocket.java -- 
+   Copyright (C) 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,9 +36,45 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package javax.naming;
+package gnu.java.nio;
 
-public interface Referenceable
+import gnu.java.net.PlainSocketImpl;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+
+/**
+ * @author Michael Koch
+ */
+public final class NIOServerSocket extends ServerSocket
 {
-  Reference getReference() throws NamingException;
+  private PlainSocketImpl impl;
+  private ServerSocketChannelImpl channel;
+    
+  protected NIOServerSocket (ServerSocketChannelImpl channel)
+    throws IOException
+  {
+    super();
+    this.channel = channel;
+  }
+
+  public native PlainSocketImpl getPlainSocketImpl();
+
+  public ServerSocketChannel getChannel()
+  {
+    return channel;
+  }
+
+  public Socket accept() throws IOException
+  {
+    SecurityManager sm = System.getSecurityManager();
+    if (sm != null)
+      sm.checkListen (getLocalPort());
+
+    SocketChannel socketChannel = channel.provider().openSocketChannel();
+    implAccept (socketChannel.socket());
+    return socketChannel.socket();
+  }
 }

@@ -74,6 +74,27 @@ public class ServerSocket
   private SocketImpl impl;
 
   private boolean closed = false;
+
+  /*
+   * This constructor is only used by java.nio.
+   */
+  // FIXME: Workaround a bug in gcj.
+  //ServerSocket (PlainSocketImpl impl) throws IOException
+  ServerSocket (SocketImpl impl) throws IOException
+  {
+    this.impl = impl;
+    this.impl.create (true);
+  }
+
+  /*
+   * This method is only used by java.nio.
+   */
+  // FIXME: Workaround a bug in gcj.
+  //PlainSocketImpl getImpl()
+  SocketImpl getImpl()
+  {
+    return impl;
+  }
   
   /**
    * Constructor that simply sets the implementation.

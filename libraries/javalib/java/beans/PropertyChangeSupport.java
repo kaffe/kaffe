@@ -1,10 +1,3 @@
-/*
- *
- * Imported from GNU Classpath by M.Negovanovic
- *
- */
-
-
 /* PropertyChangeSupport.java -- support to manage property change listeners
    Copyright (C) 1998, 1999, 2000, 2002 Free Software Foundation, Inc.
 

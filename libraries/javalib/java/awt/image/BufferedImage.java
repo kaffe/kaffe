@@ -1,4 +1,4 @@
-/* Copyright (C) 2000, 2002  Free Software Foundation
+/* Copyright (C) 2000, 2002, 2003  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -267,9 +267,16 @@ public class BufferedImage extends Image
       raster.createWritableChild(x, y, w, h, x, y,
 				 null  // same bands
 				 );
-    
-    // Refer to ComponentDataBlitOp for optimized data blitting:
-    ComponentDataBlitOp.INSTANCE.filter(src, dest);
+    if (src.getSampleModel () instanceof ComponentSampleModel
+        && dest.getSampleModel () instanceof ComponentSampleModel)
+      // Refer to ComponentDataBlitOp for optimized data blitting:
+      ComponentDataBlitOp.INSTANCE.filter(src, dest);
+    else
+      {
+        // slower path
+        int samples[] = src.getPixels (x, y, w, h, (int [])null);
+        dest.setPixels (x, y, w, h, samples);
+      }
     return dest;
   }
 
@@ -540,9 +547,18 @@ public class BufferedImage extends Image
       raster.createWritableChild(x, y, w, h, x, y,
 				 null  // same bands
 				 );
-    
-    // Refer to ComponentDataBlitOp for optimized data blitting:
-    ComponentDataBlitOp.INSTANCE.filter(src, dest);
+
+    if (src.getSampleModel () instanceof ComponentSampleModel
+        && dest.getSampleModel () instanceof ComponentSampleModel)
+
+      // Refer to ComponentDataBlitOp for optimized data blitting:
+      ComponentDataBlitOp.INSTANCE.filter(src, dest);
+    else
+      {
+        // slower path
+        int samples[] = src.getPixels (x, y, w, h, (int [])null);
+        dest.setPixels (x, y, w, h, samples);
+      }
   }
 
   public void setRGB(int x, int y, int argb)
@@ -573,9 +589,21 @@ public class BufferedImage extends Image
     
   public String toString()
   {
-    // FIXME: implement:
-    return super.toString();
+    StringBuffer buf;
+
+    buf = new StringBuffer(/* estimated length */ 120);
+    buf.append("BufferedImage@");
+    buf.append(Integer.toHexString(hashCode()));
+    buf.append(": type=");
+    buf.append(type);
+    buf.append(' ');
+    buf.append(colorModel);
+    buf.append(' ');
+    buf.append(raster);
+
+    return buf.toString();
   }
+
 
   /**
    * Adds a tile observer. If the observer is already present, it receives

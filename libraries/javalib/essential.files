@@ -22,12 +22,14 @@ gnu/java/nio/DatagramChannelSelectionKey.java
 gnu/java/nio/FileLockImpl.java
 gnu/java/nio/NIOConstants.java
 gnu/java/nio/NIODatagramSocket.java
+gnu/java/nio/NIOServerSocket.java
 gnu/java/nio/NIOSocket.java
 gnu/java/nio/PipeImpl.java
 gnu/java/nio/SelectionKeyImpl.java
 gnu/java/nio/SelectorImpl.java
 gnu/java/nio/SelectorProviderImpl.java
 gnu/java/nio/ServerSocketChannelImpl.java
+gnu/java/nio/ServerSocketChannelSelectionKey.java
 gnu/java/nio/SocketChannelImpl.java
 gnu/java/nio/SocketChannelSelectionKey.java
 gnu/regexp/CharIndexed.java

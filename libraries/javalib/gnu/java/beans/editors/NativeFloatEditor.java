@@ -1,10 +1,3 @@
-/*
- *
- * Imported from GNU Classpath by M.Negovanovic
- *
- */
-
-
 /* gnu.java.beans.editors.NativeFloatEditor
    Copyright (C) 1998 Free Software Foundation, Inc.
 

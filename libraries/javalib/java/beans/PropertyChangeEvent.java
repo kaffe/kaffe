@@ -1,10 +1,3 @@
-/*
- *
- * Imported from GNU Classpath by M.Negovanovic
- *
- */
-
-
 /* PropertyChangeEvent.java -- describes a change in a property
    Copyright (C) 1998, 2000, 2002 Free Software Foundation, Inc.
 

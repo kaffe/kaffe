@@ -1,10 +1,3 @@
-/*
- *
- * Imported from GNU Classpath by M.Negovanovic
- *
- */
-
-
 /* ClassHelper.java -- Utility methods to augment java.lang.Class
    Copyright (C) 1998, 2002 Free Software Foundation, Inc.
 

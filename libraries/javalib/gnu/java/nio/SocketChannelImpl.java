@@ -63,6 +63,7 @@ import gnu.classpath.Configuration;
 
 public final class SocketChannelImpl extends SocketChannel
 {
+  private PlainSocketImpl impl;
   private NIOSocket socket;
   private boolean blocking = true;
   private boolean connected = false;
@@ -72,7 +73,8 @@ public final class SocketChannelImpl extends SocketChannel
     throws IOException
   {
     super (provider);
-    socket = new NIOSocket (new PlainSocketImpl(), this);
+    impl = new PlainSocketImpl();
+    socket = new NIOSocket (impl, this);
   }
   
   SocketChannelImpl (SelectorProvider provider,
@@ -80,6 +82,7 @@ public final class SocketChannelImpl extends SocketChannel
     throws IOException
   {
     super (provider);
+    this.impl = socket.getImpl();
     this.socket = socket;
     this.connected = socket.isConnected();
   }
@@ -96,6 +99,11 @@ public final class SocketChannelImpl extends SocketChannel
           {
           }
       }
+  }
+
+  PlainSocketImpl getImpl()
+  {
+    return impl;
   }
 
   int getNativeFD()

@@ -1,10 +1,3 @@
-/*
- *
- * Imported from GNU Classpath by M.Negovanovic
- *
- */
-
-
 /* java.beans.PropertyDescriptor
    Copyright (C) 1998, 2001 Free Software Foundation, Inc.
 
