@@ -407,6 +407,10 @@ shl = { LTDL_TYPE_TOP, 0, shl_init, shl_exit,
 
 /* dynamic linking with dld */
 
+#if HAVE_DLD_H
+#include <dld.h>
+#endif
+
 static int
 dld_init ()
 {
@@ -426,7 +430,7 @@ dld_open (handle, filename)
 {
 	handle->handle = strdup(filename);
 	if (!handle->handle) {
-		last_error = no_memory_error;
+		last_error = memory_error;
 		return 1;
 	}
 	if (dld_link(filename) != 0) {
@@ -1048,8 +1052,8 @@ lt_dlopen (filename)
 		}
 		handle->usage = 0;
 		newhandle = handle;
-		if (tryall_dlopen(&handle, 0) != 0) {
-			lt_dlfree(newhandle);
+		if (tryall_dlopen(&newhandle, 0) != 0) {
+			lt_dlfree(handle);
 			return 0;
 		}
 		goto register_handle;

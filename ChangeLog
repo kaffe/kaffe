@@ -1,3 +1,11 @@
+Mon Feb 22 09:38:44 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in: test whether signal handlers are one-shot
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c (interrupt): 
+	only restoreAsyncSignalHandlers if they are
+	* acinclude.m4, ltconfig, ltmain.sh, libltdl/*: update
+	* aclocal.m4, configure, config/config.h.in: regen
+
 Sun Feb 21 19:14:02 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/external.c: fix broken DBG(LIBTOOL, ..) macro

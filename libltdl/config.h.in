@@ -39,6 +39,9 @@
 /* Define if you have the <dl.h> header file.  */
 #undef HAVE_DL_H
 
+/* Define if you have the <dld.h> header file.  */
+#undef HAVE_DLD_H
+
 /* Define if you have the <dlfcn.h> header file.  */
 #undef HAVE_DLFCN_H
 

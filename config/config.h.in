@@ -430,6 +430,9 @@
 /* How are pointers aligned */
 #undef ALIGNMENTOF_VOIDP
 
+/* Define if signal handlers must be reset upon delivery */
+#undef KAFFE_SIGNAL_ONE_SHOT
+
 /* Do we have the right version of giflib */
 #undef HAVE_GIF_LIB_H
 

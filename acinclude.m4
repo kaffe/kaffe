@@ -121,21 +121,21 @@ exec 5>>./config.log
 # AC_LIBTOOL_DLOPEN - check for dlopen support
 AC_DEFUN(AC_LIBTOOL_DLOPEN,
 [AC_CACHE_VAL(lt_cv_dlopen,
-[lt_cv_dlopen=no lt_cv_dlopen_LIBS=
-AC_CHECK_FUNC(dlopen, [lt_cv_dlopen="yes: dlopen"],
-  [AC_CHECK_LIB(dl, dlopen, [lt_cv_dlopen="yes: dlopen" lt_cv_dlopen_LIBS="-ldl"],
-    [AC_CHECK_LIB(dld, dld_link, [lt_cv_dlopen="yes: dld_link" lt_cv_dlopen_LIBS="-ldld"],
-      [AC_CHECK_FUNC(shl_load, [lt_cv_dlopen="yes: shl_load"],
-        [AC_CHECK_FUNC(LoadLibrary, [lt_cv_dlopen="yes: LoadLibrary"])]
+[lt_cv_dlopen=no lt_cv_dlopen_libs=
+AC_CHECK_FUNC(dlopen, [lt_cv_dlopen="dlopen"],
+  [AC_CHECK_LIB(dl, dlopen, [lt_cv_dlopen="dlopen" lt_cv_dlopen_libs="-ldl"],
+    [AC_CHECK_LIB(dld, dld_link, [lt_cv_dlopen="dld_link" lt_cv_dlopen_libs="-ldld"],
+      [AC_CHECK_FUNC(shl_load, [lt_cv_dlopen="shl_load"],
+        [AC_CHECK_FUNC(LoadLibrary, [lt_cv_dlopen="LoadLibrary"])]
       )]
     )]
   )]
 )])
 
 case "$lt_cv_dlopen" in
-"yes: dlopen")
+dlopen)
   AC_CACHE_CHECK([whether a program can dlopen itself], lt_cv_dlopen_self,
-    [LT_SAVE_LIBS="$LIBS"; LIBS="$lt_cv_dlopen_LIBS $LIBS"
+    [LT_SAVE_LIBS="$LIBS"; LIBS="$lt_cv_dlopen_libs $LIBS"
     AC_TRY_RUN([
 #include <dlfcn.h>
 #include <stdio.h>

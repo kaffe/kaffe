@@ -339,6 +339,31 @@ AC_DEFINE_UNQUOTED(ALIGNMENTOF_VOIDP,$ac_cv_alignmentof_voidp, [How are pointers
 dnl -------------------------------------------------------------------------
 
 AC_TYPE_SIGNAL
+
+AC_CACHE_CHECK([whether signal handlers are one-shot],
+	kaffe_cv_signal_one_shot, [ dnl
+	AC_TRY_RUN([
+#include <signal.h>
+int counter = 0;
+RETSIGTYPE hup_handler () { ++counter; }
+int get_counter () { return counter; }
+int main() {
+  signal(1, hup_handler);
+  kill(getpid(), 1);
+  if (get_counter() == 0)
+    exit(1); /* signal was not delivered, can't test reliably */
+  kill(getpid(), 1);
+  if (get_counter() != 2)
+    exit(1); /* signal was not delivered, seems to be one-shot */
+  exit(0);
+}
+], kaffe_cv_signal_one_shot=no, kaffe_cv_signal_one_shot=yes,
+	kaffe_cv_signal_one_shot=cross)
+])
+if test "$kaffe_cv_signal_one_shot" != "no"; then
+  AC_DEFINE(KAFFE_SIGNAL_ONE_SHOT, 1, [Define if signal handlers must be reset upon delivery])
+fi
+
 AC_TYPE_SIZE_T
 AC_CHECK_TYPE(ssize_t,int)
 

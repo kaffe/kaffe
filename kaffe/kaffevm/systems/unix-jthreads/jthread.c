@@ -421,11 +421,13 @@ interrupt(int sig)
 			wouldlosewakeup = 0;
 		}
 
+#if KAFFE_SIGNAL_ONE_SHOT
 		/*
 		 * On some systems, signal handlers are a one-shot deal.
 		 * Re-install the signal handler for those systems.
 		 */
 		restoreAsyncSignalHandler(sig, interrupt);
+#endif
 
 		/*
 		 * Returning from the signal handler should restore
@@ -444,8 +446,10 @@ interrupt(int sig)
 
 	intsDisable();
 
+#if KAFFE_SIGNAL_ONE_SHOT
 	/* Re-enable signal if necessary */
         restoreAsyncSignalHandler(sig, interrupt);
+#endif
 
 	/*
 	 * Restore the signal state.  This means unblock all
