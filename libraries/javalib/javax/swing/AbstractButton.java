@@ -303,7 +303,7 @@ public abstract class AbstractButton extends JComponent
    * A Java Accessibility extension of the AbstractButton.
      */
   protected abstract class AccessibleAbstractButton
-    extends AccessibleJComponent implements AccessibleAction, AccessibleValue,
+    extends JComponent.AccessibleJComponent implements AccessibleAction, AccessibleValue,
                                             AccessibleText
   {
     private static final long serialVersionUID = -5673062525319836790L;

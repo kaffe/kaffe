@@ -107,6 +107,33 @@ public class AWTKeyStroke implements Serializable
    */
   private static Constructor ctor;
 
+  private static class KeycodeInitializer implements PrivilegedAction
+  {
+    // Using reflection saves the hassle of keeping this in sync with KeyEvent,
+    // at the price of an expensive initialization.
+
+    public Object run()
+    {
+      Field[] fields = KeyEvent.class.getFields();
+      int i = fields.length;
+      try
+	{
+	  while (--i >= 0)
+	    {
+	      Field f = fields[i];
+	      String name = f.getName();
+	      if (name.startsWith("VK_"))
+		vktable.put(name.substring(3), f.get(null));
+	    }
+	}
+      catch (Exception e)
+	{
+	  throw (Error) new InternalError().initCause(e);
+	}
+      return null;
+    }
+  }
+
   /**
    * A table of keyCode names to values.
    *
@@ -115,31 +142,7 @@ public class AWTKeyStroke implements Serializable
   private static final HashMap vktable = new HashMap();
   static
   {
-    // Using reflection saves the hassle of keeping this in sync with KeyEvent,
-    // at the price of an expensive initialization.
-    AccessController.doPrivileged(new PrivilegedAction()
-      {
-        public Object run()
-        {
-          Field[] fields = KeyEvent.class.getFields();
-          int i = fields.length;
-          try
-            {
-              while (--i >= 0)
-                {
-                  Field f = fields[i];
-                  String name = f.getName();
-                  if (name.startsWith("VK_"))
-                    vktable.put(name.substring(3), f.get(null));
-                }
-            }
-          catch (Exception e)
-            {
-              throw (Error) new InternalError().initCause(e);
-            }
-          return null;
-        }
-      });
+    AccessController.doPrivileged(new KeycodeInitializer());
   }
 
   /**
@@ -216,6 +219,28 @@ public class AWTKeyStroke implements Serializable
     this.onKeyRelease = onKeyRelease;
   }
 
+  private static class KeyStrokeConstructor implements PrivilegedExceptionAction
+  {
+    private final Class subclass;
+
+    public KeyStrokeConstructor(final Class subclass)
+    {
+      this.subclass = subclass;
+    }
+
+    public Object run()
+      throws NoSuchMethodException, InstantiationException,
+      IllegalAccessException, InvocationTargetException
+    {
+      Constructor c = subclass.getDeclaredConstructor(null);
+      c.setAccessible(true);
+      // Create a new instance, to make sure that we can, and
+      // to cause any ClassCastException.
+      AWTKeyStroke dummy = (AWTKeyStroke) c.newInstance(null);
+      return c;
+    }
+  }
+
   /**
    * Registers a new subclass as being the type of keystrokes to generate in
    * the factory methods. This operation flushes the cache of stored keystrokes
@@ -243,21 +268,7 @@ public class AWTKeyStroke implements Serializable
        }
     try
       {
-        ctor = (Constructor) AccessController.doPrivileged
-          (new PrivilegedExceptionAction()
-            {
-              public Object run()
-                throws NoSuchMethodException, InstantiationException,
-                       IllegalAccessException, InvocationTargetException
-              {
-                Constructor c = subclass.getDeclaredConstructor(null);
-                c.setAccessible(true);
-                // Create a new instance, to make sure that we can, and
-                // to cause any ClassCastException.
-                AWTKeyStroke dummy = (AWTKeyStroke) c.newInstance(null);
-                return c;
-              }
-            });
+        ctor = (Constructor) AccessController.doPrivileged(new KeyStrokeConstructor(subclass));
       }
     catch (PrivilegedActionException e)
       {

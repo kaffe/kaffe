@@ -40,9 +40,9 @@ if [ -z "${JIKES:-}" ] ; then
 	fi
 	if [ -z "${JAVAC:-}" ]; then
 # Kaffe needs more than 64 M of memory to compile all of the
-# class library at once using kjc. Set maximal memory to 256 M
-# to be on the safe side. Actual usage is around 80M.
-		JAVAC="$JAVA -ss 500k -mx 256M at.dms.kjc.Main"
+# class library at once using kjc. Set maximal memory to 512 M
+# to be on the safe side. Actual usage is around 200M.
+		JAVAC="$JAVA -ss 500k -mx 512M at.dms.kjc.Main"
 		VERBOSE=-v
 	fi
 	BOOTCLASSPATH=${SRCDIR}/Klasses.jar.bootstrap:$BOOTCLASSPATH; export BOOTCLASSPATH
