@@ -10,6 +10,7 @@ Thu Feb  4 10:49:33 1999  Archie Cobbs <archie@whistle.com>
 	* libraries/javalib/java/io/ObjectInputStream.java: don't
 	multiply define the variable "key" to work around jikes
 	compilation error
+	* libraries/javalib/java/net/Socket.java: add getLocalAddress()
 
 Thu Feb  4 10:10:34 1999  Godmar Back  <gback@cs.utah.edu>
 
