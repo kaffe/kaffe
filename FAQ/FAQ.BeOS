@@ -1,0 +1,68 @@
+NOTES ABOUT THE BeOS PORT
+=========================
+The BeOS port requires BeOS R4 or higher.  It uses its own threading
+system designated "beos-native".  The "unix-jthreads" system can be
+made to work for the most part; however, that system relies on
+asynchronous I/O notifications, as well as virtual timer alarms, both
+of which are absent on BeOS R4.
+
+beos-native was modeled upon the oskit-pthreads system, which relies
+on mutexes and condition variables.  BeOS has the former, but not the
+latter, so I defined a condition variable type based upon an article I
+found posted on the Web [1].  The implementation currently ignores the
+'timeout' parameter passed to jcondvar_wait().
+
+To build Kaffe for BeOS, you must configure Kaffe as follows:
+
+	./configure --with-staticlib --with-staticvm --disable-shared
+
+as there is a known problem with building shared libs on R4 (yes, I
+realize that the fix is documented in the R4 release notes, but I'll
+let someone else muck with the Makefiles accordingly).
+
+As of 27 January 1999, Kaffe has not been built or tested with AWT at all.
+Also, the following entry points in the jthread interface have been stubbed
+but not fleshed out:
+
+	jthread_suspendall
+	jthread_unsuspendall
+	jthread_spinon
+	jthread_spinoff
+
+KNOWN PROBLEMS
+==============
+The jthread interface requires that the macros GET_JTHREAD/SET_JTHREAD
+and GET_COOKIE/SET_COOKIE store and retrieve per-thread information.
+Right now, this information is maintained in a large BeOS "area" containing
+an array of per_thread_info_t structures.  The info for a given thread
+with thread id 'T' is simply (T % MAX_THREADS).  Naturally, since
+successive calls to spawn_thread (invoked by jthread_create) will not
+necessarily yield contiguous thread ids, the maximum number of jthreads
+that can be successfully created will be somewhat less than MAX_THREADS.
+
+The following tests in the regression test suite currently fail:
+
+	ThreadInterrupt:	apparent deadlock*
+	UncaughtException:	SEGV in callMethodV**
+	UDPTest:		SEGV in find_directory
+	ProcessClassTest:	SEGV in callMethodV**
+	ProcessClassInst:	SEGV in callMethodA**
+	ProcessTest:		requires execvp (UNIXism)
+	ExecTest:		requires waitpid/kill (UNIXism)
+
+*  Probably owing to a defective jcondvar implementation on my part.
+   I'm looking into it.
+
+** The segmentation violations in callMethodV and callMethodA may be
+   due to something goofy with sysdepMethodCall.  I'm not particularly
+   familiar with i386 assembly language and gcc internals, so I'll
+   have to leave it to someone else to figure these out.
+
+REFERENCES
+==========
+[1] "Locks and Condition Variables",
+    http://www.cs.umd.edu/~hollings/cs412/s96/synch/locks.html
+
+REV HISTORY
+===========
+27 Jan 99 -- Submitted for inclusion into Kaffe, alanlb@cs.vt.edu
