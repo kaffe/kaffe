@@ -11,6 +11,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
+#include "config-net.h"
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/lookup.h"
 #include "../../../kaffe/kaffevm/access.h"
@@ -19,6 +20,7 @@
 #include "java_io_ObjectInputStream.h"
 #include "java_io_ObjectOutputStream.h"
 #include "kaffe_io_ObjectStreamClassImpl.h"
+#include "sha-1.h"
 
 extern jclass Kaffe_FindClass(JNIEnv*, const char*);
 extern void Kaffe_ExceptionClear(JNIEnv*);
@@ -33,6 +35,16 @@ static Utf8Const* readObjectName;
 static Utf8Const* ObjectOutputStreamSig;
 static Utf8Const* ObjectInputStreamSig;
 static Hjava_lang_Class* ptrType;
+
+/*
+ * Used to hold a descriptor item while calculating the serialUID.
+ */
+typedef struct {
+	const char*	name;
+	const char*	desc;
+	int		modifier;
+} uidItem;
+
 
 void
 kaffe_io_ObjectStreamClassImpl_init(void)
@@ -275,17 +287,215 @@ kaffe_io_ObjectStreamClassImpl_invokeObjectWriter0(struct Hkaffe_io_ObjectStream
 	return (true);
 }
 
+static
+int
+compareUidItem(const void* one, const void* two)
+{
+	int r;
+	uidItem* o = (uidItem*)one;
+	uidItem* t = (uidItem*)two;
+
+	/* Null entries are not considered */
+	if (o->name == 0 || t->name == 0) {
+		return (0);
+	}
+
+	r = strcmp(o->name, t->name);
+	if (r == 0) {
+		r = strcmp(o->desc, t->desc);
+	}
+	return (r);
+}
+
+static
+void
+addToSHA(SHA1_CTX* c, uidItem* base, int len)
+{
+	int i;
+	int mod;
+
+	/* Sort the items into the required order */
+	if (len > 1) {
+		qsort(base, len, sizeof(uidItem), compareUidItem);
+	}
+
+	/* Now enter the data into the SHA */
+	for (i = 0; i < len; i++) {
+		if (base[i].name != 0) {
+			SHA1Update(c, base[i].name, strlen(base[i].name));
+			if (base[i].modifier != -1) {
+				/* Java is in 'network' order - bad but handy */
+				mod = htonl(base[i].modifier & ACC_MASK);
+				SHA1Update(c, (char*)&mod, sizeof(mod));
+				SHA1Update(c, base[i].desc, strlen(base[i].desc));
+			}
+		}
+	}
+}
+
+static
+const char*
+getFieldDesc(Field* fld)
+{
+	if (!FIELD_RESOLVED(fld)) {
+		return (((Utf8Const*)(void*)fld->type)->data);
+	}
+	else if (!CLASS_IS_PRIMITIVE(FIELD_TYPE(fld))) {
+		return (FIELD_TYPE(fld)->name->data);
+	}
+	else {
+		return (CLASS_PRIM_NAME(FIELD_TYPE(fld))->data);
+	}
+}
+
+static
+char*
+getMethodDesc(Method* mth)
+{
+	const char* orig;
+	char* str;
+	int i;
+
+	orig = mth->signature->data;
+	str = KMALLOC(strlen(orig) + 1);
+	for (i = strlen(orig); i >= 0; i--) {
+		if (orig[i] == '/') {
+			str[i] = '.';
+		}
+		else {
+			str[i] = orig[i];
+		}
+	}
+	return (str);
+}
+
 jlong
-kaffe_io_ObjectStreamClassImpl_getSerialVersionUID(struct Hkaffe_io_ObjectStreamClassImpl* cls)
+kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 {
 	Field* fld;
+	Method* mth;
+	SHA1_CTX c;
+	unsigned char md[SHA_DIGEST_LENGTH];
+	int mod;
+	int i;
+	uidItem* base;
+	int len;
 	errorInfo einfo;
 
-	fld = lookupClassField(unhand(cls)->clazz, serialVersionUIDName, true, &einfo);
-	if (fld == 0) {
-		return (0L);
+	fld = lookupClassField(cls, serialVersionUIDName, true, &einfo);
+	if (fld != 0) {
+		return (*(jlong*)FIELD_ADDRESS((Field*)fld));
 	}
-	return (*(jlong*)FIELD_ADDRESS((Field*)fld));
+
+	/* Okay - since there's no field we have to compute the UID */
+
+	/* Allocate enough uidItem space for all our needs */
+	len = CLASS_NMETHODS(cls);
+	if (len < CLASS_NFIELDS(cls)) {
+		len = CLASS_NFIELDS(cls);
+	}
+	if (len < cls->interface_len) {
+		len = cls->interface_len;
+	}
+	base = KMALLOC(sizeof(uidItem) * len);
+
+	SHA1Init(&c);
+
+	/* Class -> name(UTF), modifier(INT) */
+	SHA1Update(&c, cls->name->data, strlen(cls->name->data));
+	mod = htonl((int)cls->accflags & (ACC_ABSTRACT|ACC_FINAL|ACC_INTERFACE|ACC_PUBLIC));
+	SHA1Update(&c, (char*)&mod, sizeof(mod));
+
+	/* Name of each interface (sorted): UTF */
+
+	if (cls->interface_len > 0) {
+		for (i = cls->interface_len-1; i >= 0; i--) {
+			base[i].name = cls->interfaces[i]->name->data;
+			base[i].modifier = -1;
+			base[i].desc = 0;
+		}
+		addToSHA(&c, base, cls->interface_len);
+	}
+
+	/* Each field (sorted) -> */
+
+	i = CLASS_NFIELDS(cls);
+	if (i > 0) { 
+		fld = CLASS_FIELDS(cls);
+		for (i--; i >= 0; i--, fld++) {
+			if ((fld->accflags & ACC_PRIVATE) != 0 && ((fld->accflags & (ACC_STATIC|ACC_TRANSIENT)) != 0)) {
+				base[i].name = 0;
+			}
+			else {
+				base[i].name = fld->name->data;
+				base[i].modifier = (int)fld->accflags & ACC_MASK;
+				base[i].desc = getFieldDesc(fld);
+			}
+		}
+		addToSHA(&c, base, CLASS_NFIELDS(cls));
+	}
+
+	if (CLASS_NMETHODS(cls) > 0) {
+
+		/* Class initializer -> */
+
+		if (findMethodLocal(cls, init_name, void_signature) != 0) {
+			base[0].name = "<clinit>";
+			base[0].modifier = ACC_STATIC;
+			base[0].desc = "()V";
+			addToSHA(&c, base, 1);
+		}
+
+		/* Each non-private constructor (sorted) -> */
+
+		i = CLASS_NMETHODS(cls);
+		mth = CLASS_METHODS(cls);
+		for (i--; i >= 0; i--, mth++) {
+			if ((mth->accflags & (ACC_CONSTRUCTOR|ACC_PRIVATE)) != ACC_CONSTRUCTOR) { 
+				base[i].name = 0;
+			}
+			else {
+				base[i].name = mth->name->data;
+			}
+			/* We do these all the time so we don't do them again */
+			base[i].modifier = (int)mth->accflags & ACC_MASK;
+			base[i].desc = getMethodDesc(mth);
+		}
+		addToSHA(&c, base, CLASS_NMETHODS(cls));
+
+		/* Each non-private method (sorted) -> */
+
+		i = CLASS_NMETHODS(cls);
+		mth = CLASS_METHODS(cls);
+		for (i--; i >= 0; i--, mth++) {
+			if ((mth->accflags & (ACC_CONSTRUCTOR|ACC_PRIVATE)) != 0) { 
+				base[i].name = 0;
+			}
+			else {
+				base[i].name = mth->name->data;
+			}
+		}
+		addToSHA(&c, base, CLASS_NMETHODS(cls));
+
+		/* Free all the descriptor strings */
+		i = CLASS_NMETHODS(cls);
+		for (i--; i >= 0; i--) {
+			KFREE((char*)base[i].desc);
+		}
+	}
+	
+	SHA1Final(md, &c);
+
+	KFREE(base);
+
+	return ( (jlong)md[0]        |
+		((jlong)md[1] <<  8) |
+		((jlong)md[2] << 16) |
+		((jlong)md[3] << 24) |
+		((jlong)md[4] << 32) |
+		((jlong)md[5] << 40) |
+		((jlong)md[6] << 48) |
+		((jlong)md[7] << 56) );
 }
 
 jbool

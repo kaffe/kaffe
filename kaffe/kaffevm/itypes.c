@@ -43,6 +43,7 @@ initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 	clazz->dtable = _PRIMITIVE_DTABLE;
 	clazz->name = utf8ConstNew(name, -1);
 	CLASS_PRIM_SIG(clazz) = sig;
+        CLASS_PRIM_NAME(clazz) = utf8ConstNew(&sig, 1);
 	TYPE_PRIM_SIZE(clazz) = len;
 }
 

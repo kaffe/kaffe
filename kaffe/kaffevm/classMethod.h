@@ -238,6 +238,7 @@ struct _classFile;
 
 /* Assuming CLASS_IS_PRIMITIVE(CL), return the 1-letter signature code. */
 #define CLASS_PRIM_SIG(CL) ((CL)->msize)
+#define	CLASS_PRIM_NAME(CL) (*(Utf8Const**)&(CL)->fields)
 
 /* A freshly born class that does have its name set, but the collector
  * may already want to know whether it'll be a boy or a girl.

@@ -347,6 +347,16 @@ private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundE
 
 	// Resolve the class
 	clazz = in.resolveClassInternal(this);
+
+/*
+	if (serialVersionUID != getSerialVersionUID0(clazz)) {
+		throw new StreamCorruptedException("serial verion uid mismatch");
+	}
+ */
+}
+
+public long getSerialVersionUID() {
+	return (getSerialVersionUID0(clazz));
 }
 
 private void writeObject(ObjectOutputStream out) throws IOException {
@@ -371,6 +381,6 @@ private native void outputClassFields(Object obj, ObjectOutputStream out);
 private native boolean invokeObjectReader0(Object obj, ObjectInputStream in);
 private native boolean invokeObjectWriter0(Object obj, ObjectOutputStream out);
 private native void outputClassFieldInfo(ObjectOutputStream out);
-native public long getSerialVersionUID();
+public native static long getSerialVersionUID0(Class cls);
 
 }
