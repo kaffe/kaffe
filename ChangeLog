@@ -1,3 +1,24 @@
+2005-02-05  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/jni/jni.c
+	(Kaffe_ExceptionOccured): Do not add the exception to the local
+	reference pool if it is NULL.
+	(KaffeJNI_EnsureLocalCapacity): Ensure the local JNI frame has
+	sufficient capacity.
+	(KaffeJNI_addJNIref): Call FatalError with a right JNI
+	environment.
+
+	* kaffe/kaffe/main.c
+	(checkException): Delete the local reference to the retrieved
+	exception.
+
+	* libraries/clib/native/UNIXProcess.c
+	(forkAndExec): Delete local references to the elements in the
+	array.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h:
+	Removed spurious jthread_get_stack_limits.
+	
 2005-02-05  Jim Huang  <jserv@kaffe.org>
 
 	* configure.ac,
