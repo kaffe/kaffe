@@ -31,13 +31,16 @@
  * significant (and therefore should be displayed).
  *
  * This assumes printf(3) conforms to ISO 9899: 1990 (``ISO C'').
+ *
+ * XXX We still seem to pring e.g., 3.39999999 instead of 3.4,
+ * XXX so this isn't completely working yet.
  */
 struct Hjava_lang_String*
 java_lang_Double_normalToString(jdouble val, jint maxPrecision)
 {
 	static const jlong negBit = 0x8000000000000000LL; /* "LL" gcc-ism */
 	const jlong bits = java_lang_Double_doubleToLongBits(val);
-	char *s, *t, buf[MAXNUMLEN];
+	char *s, buf[MAXNUMLEN];
 	int k;
 
 	/* Deal with negative numbers manually so negative zero is "-0.0" */
@@ -52,27 +55,42 @@ java_lang_Double_normalToString(jdouble val, jint maxPrecision)
 		/* Print in decimal notation */
 		sprintf(s, "%.*f", (int) maxPrecision, (double) val);
 
-		/* Trim off trailing zeroes after the decimal point */
+		/* Remove trailing zeroes after the decimal point */
 		for (k = strlen(buf) - 1;
 		    buf[k] == '0' && buf[k - 1] != '.';
 		    k--) {
 			buf[k] = '\0';
 		}
 	} else {
+		char *t, *eptr, *eval;
 
 		/* Print in exponential notation */
 		sprintf(s, "%.*E", (int) maxPrecision, (double) val);
 
-		/* Trim off the leading zero in the exponent, if any */
-		s = strchr(buf, 'E');
-		assert(s != NULL && (s[1] == '-' || s[1] == '+'));
-		if (s[2] == '0' && s[3] != '\0') {
-			memmove(s + 2, s + 3, strlen(s + 2));
+		/* Find the exponent */
+		eptr = strchr(buf, 'E');
+		assert(eptr != NULL);
+
+		/* Remove a '+' sign, but leave a '-' sign */
+		switch (eptr[1]) {
+		case '-':
+			eval = &eptr[2];
+			break;
+		case '+':			/* remove '+' */
+			memmove(eptr + 1, eptr + 2, strlen(eptr + 1));
+			/* fall through */
+		default:			/* shouldn't ever happen */
+			eval = &eptr[1];
+			break;
 		}
 
-		/* Trim off trailing zeroes after the decimal point */
-		for (t = s - 1; *t == '0' && t[-1] != '.'; t--);
-		memmove(t + 1, s, strlen(s) + 1);
+		/* Remove leading zeroes in the exponent, if any */
+		for (t = eval; t[0] == '0' && t[1] != '\0'; t++);
+		memmove(eval, t, strlen(t) + 1);
+
+		/* Remove trailing zeroes after the decimal point */
+		for (t = eptr - 1; *t == '0' && t[-1] != '.'; t--);
+		memmove(t + 1, eptr, strlen(eptr) + 1);
 	}
 	return (stringC2Java(buf));
 }
