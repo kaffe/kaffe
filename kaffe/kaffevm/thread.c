@@ -116,11 +116,22 @@ stopThread(Hjava_lang_Thread* tid, Hjava_lang_Object* obj)
 		SignalError("java.lang.ThreadDeath", "");
 	}
 	else {
+#ifdef LET_TIM_DECIDE_IF_HE_REALLY_WANTS_THAT
 		/* Stop the thread - and wait for it to terminate */
 		lockMutex(tid);
 		(*Kaffe_ThreadInterface.stop)(tid);
 		waitCond(tid, 0);
 		unlockMutex(tid);
+#else
+		/* 
+		 * Waiting for the thread to exit could cause a deadlock,
+		 * especially if the thread to be terminated waits to reacquire
+		 * a lock before it can exit.
+		 * See the ThreadStop example (ThreadStop_BlockThread)
+		 * It's also not necessary - or is it? What's the rationale?
+		 */
+		(*Kaffe_ThreadInterface.stop)(tid);
+#endif
 	}
 }
 
