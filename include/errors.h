@@ -12,6 +12,7 @@
 #ifndef __errors_h
 #define __errors_h
 
+#include "config-std.h"
 #include <stdarg.h>
 
 #define KERR_EXCEPTION			0x0001

@@ -1,5 +1,41 @@
 2004-02-28  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffevm/verify-debug.c,
+	kaffe/kaffevm/verify-debug.h:
+	New files.
+
+	* include/errors.h,
+	kaffe/kaffevm/verify.h:
+	Added missing includes.
+
+	* kaffe/kaffevm/verify.h
+	(TUNSTABLE, TFLOAT, TLONG, TDOUBLE, TNULL, TOBJARR,
+	TCHARARR, TBYTEARR, TBOOLARR, TSHORTARR, TINTARR,
+	TLONGARR, TFLOATARR, TDOUBLEARR, isNull, isWide):
+	Export symbols.
+	
+	* kaffe/kaffevm/verify.c:
+	Include verify-debug.h.
+	(TUNSTABLE, TFLOAT, TLONG, TDOUBLE, TNULL, TOBJARR,
+        TCHARARR, TBYTEARR, TBOOLARR, TSHORTARR, TINTARR,
+        TLONGARR, TFLOATARR, TDOUBLEARR, isNull, isWide):
+        Export symbols.
+	(printInstruction, printType, printBlock): Move to 
+	kaffe/kaffevm/verify-debug.c. Move prototypes to
+	kaffe/kaffevm/verify-debug.h.
+
+	* kaffe/kaffevm/Makefile.am
+	(libkaffevm_la_SOURCES): Added verify-debug.c.
+	(noinst_HEADERS): Added verify-debug.h.
+
+	* kaffe/kaffevm/Makefile.in,
+	libltdl/configure,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
+2004-02-28  Dalibor Topic <robilad@kaffe.org>
+
         * kaffe/kaffevm/verify.c
         Use getIdx and getWIdx consistently.
 

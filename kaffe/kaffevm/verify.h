@@ -10,6 +10,9 @@
 #ifndef __verify_h
 #define __verify_h
 
+#include "classMethod.h"
+#include "errors.h"
+#include "gtypes.h"
 
 /**********************************************************
  * Pass 2
@@ -151,5 +154,28 @@ typedef struct sig_stack
 void initVerifierPrimTypes(void);
 bool verify3(Hjava_lang_Class* class, errorInfo *einfo);
 
+/*
+ * types for type checking (pass 3b)
+ */
+extern Type* TUNSTABLE;
+
+extern Type* TINT;
+extern Type* TFLOAT;
+extern Type* TLONG;
+extern Type* TDOUBLE;
+extern Type* TNULL;
+
+extern Type* TOBJARR;
+extern Type* TCHARARR;
+extern Type* TBYTEARR;
+extern Type* TBOOLARR;
+extern Type* TSHORTARR;
+extern Type* TINTARR;
+extern Type* TLONGARR;
+extern Type* TFLOATARR;
+extern Type* TDOUBLEARR;
+
+extern bool isNull(const Type * tinfo);
+extern bool isWide(const Type * tinfo);
 
 #endif /* __verify_h */

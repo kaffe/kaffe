@@ -79,7 +79,8 @@ am_libkaffevm_la_OBJECTS = access.lo baseClasses.lo classMethod.lo \
 	fp.lo gc.lo hashtab.lo inflate.lo itypes.lo jar.lo jni.lo \
 	locks.lo lookup.lo object.lo readClass.lo sha-1.lo soft.lo \
 	stackTrace.lo stats.lo string.lo stringParsing.lo support.lo \
-	thread.lo utf8const.lo gcFuncs.lo gcRefs.lo verify.lo
+	thread.lo utf8const.lo gcFuncs.lo gcRefs.lo verify.lo \
+	verify-debug.lo
 am__objects_1 = gc-mem.lo md.lo
 nodist_libkaffevm_la_OBJECTS = $(am__objects_1)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
@@ -107,7 +108,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/stats.Plo ./$(DEPDIR)/string.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/stringParsing.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/support.Plo ./$(DEPDIR)/thread.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/utf8const.Plo ./$(DEPDIR)/verify.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/utf8const.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/verify-debug.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/verify.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -431,7 +434,8 @@ libkaffevm_la_SOURCES = \
 	utf8const.c \
 	gcFuncs.c \
 	gcRefs.c \
-	verify.c
+	verify.c \
+	verify-debug.c
 
 noinst_HEADERS = \
 	access.h \
@@ -473,7 +477,8 @@ noinst_HEADERS = \
 	thread.h \
 	threadData.h \
 	utf8const.h \
-	verify.h
+	verify.h \
+	verify-debug.h
 
 CLEANFILES = so_locations
 DISTCLEANFILES = gc-mem.c md.c stamp-h01 stamp-h02
@@ -582,6 +587,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/support.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utf8const.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify-debug.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify.Plo@am__quote@
 
 .c.o:

@@ -92,7 +92,8 @@ libkaffevm_la_SOURCES = \
 	utf8const.c \
 	gcFuncs.c \
 	gcRefs.c \
-	verify.c
+	verify.c \
+	verify-debug.c
 
 noinst_HEADERS = \
 	access.h \
@@ -134,7 +135,8 @@ noinst_HEADERS = \
 	thread.h \
 	threadData.h \
 	utf8const.h \
-	verify.h
+	verify.h \
+	verify-debug.h
 
 gc-mem.c: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
