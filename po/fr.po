@@ -1,0 +1,247 @@
+# French translations for Kaffe Virtual Machine package.
+# Copyright (C) 2004 Kaffe.org contributors.
+# This file is distributed under the same license as the Kaffe Virtual Machine package.
+# Guilhem Lavaux <guilhem.lavaux@free.fr>, 2004.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Kaffe Virtual Machine 1.1.x-cvs\n"
+"Report-Msgid-Bugs-To: kaffe@kaffe.org\n"
+"POT-Creation-Date: 2004-06-03 21:51+0200\n"
+"PO-Revision-Date: 2004-06-03 22:00+0200\n"
+"Last-Translator: Guilhem Lavaux <guilhem.lavaux@free.fr>\n"
+"Language-Team: French <kaffe@kaffe.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: kaffe/kaffe/main.c:436 kaffe/kaffe/main.c:463 kaffe/kaffe/main.c:488
+#: kaffe/kaffe/main.c:510
+#, c-format
+msgid "Error: out of memory.\n"
+msgstr "Erreur: pas assez de mémoire.\n"
+
+#: kaffe/kaffe/main.c:525
+#, c-format
+msgid "Error: No stack size found for -ss option.\n"
+msgstr ""
+"Erreur: La taille de la pile n'a pas été trouvé après l'argument -ss.\n"
+
+#: kaffe/kaffe/main.c:533
+#, c-format
+msgid "Warning: Attempt to set stack size smaller than %d - ignored.\n"
+msgstr ""
+"Avertissement: Vous ne pouvez pas spécifer une taille de pile plus petite "
+"que %d - valeur ignorée.\n"
+
+#: kaffe/kaffe/main.c:544
+#, c-format
+msgid "Error: No heap size found for -mx option.\n"
+msgstr "Erreur: Pas de taille de tas trouvée après l'argument -mx.\n"
+
+#: kaffe/kaffe/main.c:557
+#, c-format
+msgid "Error: No heap size found for -ms option.\n"
+msgstr "Erreur: Pas de taille du tas trouvée après l'argument -ms.\n"
+
+#: kaffe/kaffe/main.c:569
+#, c-format
+msgid "Error: No heap size found for -as option.\n"
+msgstr "Erreur: Pas de taille de tas trouvée après l'argument -as.\n"
+
+#: kaffe/kaffe/main.c:625
+#, c-format
+msgid "Error: -Xxprof_syms option requires a file name.\n"
+msgstr "Erreur: L'argument -Xxprof_syms nécessite un nom de fichier.\n"
+
+#: kaffe/kaffe/main.c:631
+#, c-format
+msgid "Unable to create profiler symbol file %s.\n"
+msgstr ""
+"Impossible de créer le fichier %s devant contenir les symboles de "
+"profilage.\n"
+
+#: kaffe/kaffe/main.c:640
+#, c-format
+msgid "Error: -Xxprof_gmon option requires a file name.\n"
+msgstr "Erreur: L'argument -Xxprof_gmon nécessite un nom de fichier.\n"
+
+#: kaffe/kaffe/main.c:646
+#, c-format
+msgid "Unable to create gmon file %s.\n"
+msgstr "Impossible de créer le fichier gmon nommé %s.\n"
+
+#: kaffe/kaffe/main.c:660
+#, c-format
+msgid "Error: -Xxdebug_file option requires a file name.\n"
+msgstr "Erreur: L'option -Xxdebug_file requiert un nom de fichier.\n"
+
+#: kaffe/kaffe/main.c:674
+#, c-format
+msgid "Error: -Xfeedback option requires a file name.\n"
+msgstr "Erreur: L'option -Xfeedback requiert un nom de fichier.\n"
+
+#: kaffe/kaffe/main.c:692
+#, c-format
+msgid "Error: -vmstats option requires a second arg.\n"
+msgstr "Erreur: L'option -vmstats requiert un second argument.\\n\n"
+
+#: kaffe/kaffe/main.c:704
+#, c-format
+msgid "Error: -vmdebug option requires a debug flag. Use `list' for a list.\n"
+msgstr ""
+"Erreur: L'option -vmdebug requiert un paramètre. Utilisez 'list' pour avoir "
+"une liste des paramètres.\n"
+
+#: kaffe/kaffe/main.c:730
+#, c-format
+msgid "Error: Unrecognized JVM specific option `%s'.\n"
+msgstr "Erreur: L'option '%s' spécifique à la JVM n'est pas connue.\n"
+
+#: kaffe/kaffe/main.c:745
+#, c-format
+msgid "Unknown flag: %s\n"
+msgstr "Paramètre inconnu: %s\n"
+
+#: kaffe/kaffe/main.c:761
+#, c-format
+msgid ""
+"usage: kaffe [-options] class\n"
+"Options are:\n"
+"\t-help\t\t\t Print this message\n"
+"\t-version\t\t Print version number\n"
+"\t-fullversion\t\t Print verbose version info\n"
+msgstr ""
+"Usage: kaffe [-options] classe\n"
+"Les options sont:\n"
+"\t-help\t\t\t   Affiche ce message\n"
+"\t-version\t\t   Affiche le numéro de version\n"
+"\t-fullversion\t\t   Affiche plus d'information sur la version\n"
+
+#: kaffe/kaffe/main.c:767
+#, c-format
+msgid "\t-ia32\t\t\t Execute the ia32 version of Kaffe\n"
+msgstr "\t-ia32\t\t\t   Exécute la version ia32 de kaffe\n"
+
+#: kaffe/kaffe/main.c:769
+#, c-format
+msgid ""
+"\t-ss <size>\t\t Maximum native stack size\n"
+"\t-mx <size> \t\t Maximum heap size\n"
+"\t-ms <size> \t\t Initial heap size\n"
+"\t-as <size> \t\t Heap increment\n"
+"\t-classpath <path>        Set classpath\n"
+"\t-Xbootclasspath:<path>   Set bootclasspath\n"
+"\t-Xbootclasspath/a:<path> Append path to bootclasspath\n"
+"\t-Xbootclasspath/p:<path> Prepend path to bootclasspath\n"
+"\t-D<property>=<value>     Set a property\n"
+"\t-verify *\t\t Verify all bytecode\n"
+"\t-verifyremote *\t\t Verify bytecode loaded from network\n"
+"\t-noverify\t\t Do not verify any bytecode\n"
+"\t-noclassgc\t\t Disable class garbage collection\n"
+"\t-verbosegc\t\t Print message during garbage collection\n"
+"\t-v, -verbose\t\t Be verbose\n"
+"\t-verbosejit\t\t Print message during JIT code generation\n"
+"\t-verbosemem\t\t Print detailed memory allocation statistics\n"
+"\t-verbosecall\t\t Print detailed call flow information\n"
+"\t-nodeadlock\t\t Disable deadlock detection\n"
+msgstr ""
+"\t-ss <taille> \t\t   Taille maximum de la pile native\n"
+"\t-mx <taille> \t\t   Taille maximum du tas\n"
+"\t-ms <taille> \t\t   Taille initiale du tas\n"
+"\t-as <taille> \t\t   Valeur de l'incrément pour le tas\n"
+"\t-classpath <chemin>\t   Spécifie le chemin d'accès aux classes\n"
+"\t-Xbootclasspath:<chemin>   Spécifie le bootclasspath\n"
+"\t-Xbootclasspath/a:<chemin> Ajoute le chemin à la suite du bootclasspath\n"
+"\t-Xbootclasspath/p:<chemin> Ajoute le chemin en tête du bootclasspath\n"
+"\t-D<propriété>=<valeur>     Specifie une propriété\n"
+"\t-verify *\t\t   Vérifie tout le bytecode\n"
+"\t-verifyremote *\t\t   Vérifie le bytecode chargé depuis un réseau\n"
+"\t-noverify\t\t   N'effectue aucune vérification du bytecode\n"
+"\t-noclassgc\t\t   Désactive le nettoyeur de mémoire\n"
+"\t-verbosegc\t\t   Affiche un message pendant le nettoyage\n"
+"\t-v, -verbose\t\t   Affiche plus de messages\n"
+"\t-verbosejit\t\t   Affiche un message pendant la génération de code JIT\n"
+"\t-verbosemem\t\t   Affiche des statistiques sur la mémoire utilisée\n"
+"\t-verbosecall\t\t   Affiche des information sur les méthodes appelées\n"
+"\t-nodeadlock\t\t   Désactive la détection des deadlock\n"
+
+#: kaffe/kaffe/main.c:789
+#, c-format
+msgid "\t-prof\t\t\t Enable profiling of Java methods\n"
+msgstr "\t-prof\t\t\t   Active le profilage des méthodes Java\n"
+
+#: kaffe/kaffe/main.c:792
+#, c-format
+msgid ""
+"\t-Xxprof\t\t\t Enable cross language profiling\n"
+"\t-Xxprof_syms <file>\t Name of the profiling symbols file [Default: kaffe-"
+"jit-symbols.s]\n"
+"\t-Xxprof_gmon <file>\t Base name for gmon files [Default: xgmon.out]\n"
+msgstr ""
+"\t-Xxprof\t\t\t   Active le profilage inter-langage\n"
+"\t-Xxprof_syms <fichier>\t   Fichier contenant les symboles de profilages "
+"[Défaut: kaffe-jit-symbols.s]\n"
+"\t-Xxprof_gmon <fichier>\t   Nom de base pour les fichiers gmon [Défaut: "
+"xgmon.out]\n"
+
+#: kaffe/kaffe/main.c:797
+#, c-format
+msgid "\t-Xxdebug_file <file>\t Name of the debugging symbols file\n"
+msgstr ""
+"\t-Xxdebug_file <fichier>\t   Fichier pour les symboles de débogages.\n"
+
+#: kaffe/kaffe/main.c:800
+#, c-format
+msgid "\t-Xfeedback <file>\t The file name to write feedback data to\n"
+msgstr ""
+"\t-Xfeedback <fichier>\t   Le fichier devant contenir les données feedback\n"
+
+#: kaffe/kaffe/main.c:802
+#, c-format
+msgid ""
+"\t-debug * \t\t Trace method calls\n"
+"\t-noasyncgc *\t\t Do not garbage collect asynchronously\n"
+"\t-cs, -checksource *\t Check source against class files\n"
+"\t-oss <size> *\t\t Maximum java stack size\n"
+"\t-jar                     Executable is a JAR\n"
+msgstr ""
+"\t-debug * \t\t   Trace les appels de méthodes\n"
+"\t-noasyncgc *\t\t   Ne pas nettoyer en arrière-plan\n"
+"\t-cs, -checksource *\t   Vérifie le code source\n"
+"\t-oss <taille> *\t\t   Taille maximale de la pile\n"
+"\t-jar\t\t\t   L'exécutable est un JAR\n"
+
+#: kaffe/kaffe/main.c:808
+#, c-format
+msgid ""
+"\t-vmdebug <flag{,flag}>\t Internal VM debugging.  Set flag=list for a list\n"
+msgstr ""
+"\t-vmdebug <flag{,flag}>\t   Débogage interne de la VM. Utilisez flag=list "
+"pour avoir la liste\n"
+
+#: kaffe/kaffe/main.c:811
+#, c-format
+msgid "\t-vmstats <flag{,flag}>\t Print VM statistics.  Set flag=all for all\n"
+msgstr ""
+"\t-vmstats <flag{,flag>\t Affiche des statistiques sur la VM. Utilisez "
+"flag=all pour les avoir toutes.\n"
+
+#: kaffe/kaffe/main.c:813
+#, c-format
+msgid ""
+"  * Option currently ignored.\n"
+"\n"
+"Compatibility options:\n"
+"\t-Xss <size>\t\t Maximum native stack size\n"
+"\t-Xmx <size> \t\t Maximum heap size\n"
+"\t-Xms <size> \t\t Initial heap size\n"
+"\t-cp <path> \t\t Set classpath\n"
+msgstr ""
+"  * Options pour le moment ignorées.\n"
+"\n"
+"Options de compatibilitité:\n"
+"\t-Xss <taille>\t\t   Taille maximum de la pile native\n"
+"\t-Xmx <taille>\t\t   Taille maximum du tas\n"
+"\t-Xms <taille>\t\t   Taille initiale du tas\n"
+"\t-cp <chemin>\t\t   Spécifie le classpath\n"

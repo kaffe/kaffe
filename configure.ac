@@ -250,6 +250,10 @@ AC_SUBST(CCLD)
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION(0.14.1)
 
+KAFFE_LOCALEDIR="${datadir}/locale"
+eval KAFFE_LOCALEPATH=$KAFFE_LOCALEDIR
+AC_DEFINE_UNQUOTED(KAFFE_LOCALEDIR, "$KAFFE_LOCALEPATH", [Full path to the directory containing kaffe's locales])
+
 dnl =========================================================================
 dnl Do we need underscore?
 dnl -------------------------------------------------------------------------

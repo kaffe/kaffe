@@ -25840,6 +25840,14 @@ _ACEOF
 
 
 
+KAFFE_LOCALEDIR="${datadir}/locale"
+eval KAFFE_LOCALEPATH=$KAFFE_LOCALEDIR
+
+cat >>confdefs.h <<_ACEOF
+#define KAFFE_LOCALEDIR "$KAFFE_LOCALEPATH"
+_ACEOF
+
+
 
 
 
