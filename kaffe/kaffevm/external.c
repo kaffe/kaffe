@@ -46,7 +46,9 @@
 #endif
 
 #ifndef LIBRARYINIT
-#define LIBRARYINIT() lt_dlinit()
+static inline lt_ptr_t kdlmalloc(size_t len) { return KMALLOC(len); }
+static inline void kdlfree(lt_ptr_t ptr) { KFREE(ptr); }
+#define LIBRARYINIT() ((lt_dlmalloc=kdlmalloc),(lt_dlfree=kdlfree),lt_dlinit())
 #endif
 
 #ifndef LIBRARYSUFFIX

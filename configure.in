@@ -88,6 +88,8 @@ esac
 AC_LIBTOOL_DLOPEN
 AM_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
+AC_LIBLTDL_CONVENIENCE
+AC_SUBST(LIBLTDL)
 
 dnl =========================================================================
 dnl Do we need underscore?
@@ -448,7 +450,7 @@ if test x"$no_x" = x"yes"; then
 else
   OLIBS=$LIBS
   LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
-  AC_CHECK_LIBRARY(Xext,XShmQueryExtension,X_LIBS)
+  AC_CHECK_LIBRARY(Xext,XShmQueryExtension,X_PRE_LIBS)
   AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
   AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
   AC_CHECK_LIBRARY(gif,DGifOpenFileHandle,GIF_LIBS)
@@ -476,6 +478,7 @@ dnl Checks for header files.
 dnl -------------------------------------------------------------------------
 
 CPPFLAGS="$CPPFLAGS -I/usr/local/include"
+LDFLAGS="$LDFLAGS -L/usr/local/lib"
 AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/socket.h winnt.h wintypes.h wtypes.h winbase.h windows.h winsock.h dlfcn.h sys/ioctl.h sys/filio.h malloc.h alloca.h sys/param.h sys/utsname.h pwd.h asm/sigcontext.h sigcontext.h asm/signal.h signal.h mach-o/rld.h sys/types.h sys/stat.h string.h sys/select.h poll.h sys/poll.h memory.h bsd/libc.h dl.h features.h sys/wait.h zlib.h netinet/tcp.h netinet/in_systm.h netinet/in.h netdb.h jpeglib.h png.h gmp.h kernel/OS.h)
 AC_HEADER_DIRENT

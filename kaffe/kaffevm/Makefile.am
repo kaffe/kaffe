@@ -27,11 +27,12 @@ lib_LTLIBRARIES = libkaffevm.la
 @threads_frag@
 
 libkaffevm_la_LDFLAGS = $(KVMLIBFLAGS) -export-dynamic -release $(KVER)
-libkaffevm_la_LIBADD = \
-	$(top_builddir)/libltdl/libltdl.la \
+libkaffevm_la_DEPENDENCIES = \
+	$(LIBLTDL) \
 	$(ENGINE_NAME)/libengine.la \
 	gcj/libgcj.la \
-	systems/$(THREAD_SYSTEM)/libkthread.la $(VM_LIBS) $(M_LIBS)
+	systems/$(THREAD_SYSTEM)/libkthread.la
+libkaffevm_la_LIBADD = $(libkaffevm_la_DEPENDENCIES) $(VM_LIBS) $(M_LIBS)
 
 libkaffevm_la_GEN_SRCS = \
 	gc-mem.c \

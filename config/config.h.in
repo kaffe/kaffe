@@ -415,6 +415,9 @@
 /* Define if you have the socket library (-lsocket).  */
 #undef HAVE_LIBSOCKET
 
+/* Define if you have the ungif library (-lungif).  */
+#undef HAVE_LIBUNGIF
+
 /* Define if you have the z library (-lz).  */
 #undef HAVE_LIBZ
 

@@ -95,6 +95,7 @@ KVER = @KVER@
 KVMLIBFLAGS = @KVMLIBFLAGS@
 Kaffe_TRANSF = @Kaffe_TRANSF@
 LD = @LD@
+LIBLTDL = @LIBLTDL@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
@@ -134,8 +135,9 @@ INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(to
 lib_LTLIBRARIES = libkaffevm.la
 
 libkaffevm_la_LDFLAGS = $(KVMLIBFLAGS) -export-dynamic -release $(KVER)
-libkaffevm_la_LIBADD =  	$(top_builddir)/libltdl/libltdl.la 	$(ENGINE_NAME)/libengine.la 	gcj/libgcj.la 	systems/$(THREAD_SYSTEM)/libkthread.la $(VM_LIBS) $(M_LIBS)
+libkaffevm_la_DEPENDENCIES =  	$(LIBLTDL) 	$(ENGINE_NAME)/libengine.la 	gcj/libgcj.la 	systems/$(THREAD_SYSTEM)/libkthread.la
 
+libkaffevm_la_LIBADD = $(libkaffevm_la_DEPENDENCIES) $(VM_LIBS) $(M_LIBS)
 
 libkaffevm_la_GEN_SRCS =  	gc-mem.c 	md.c
 
@@ -162,9 +164,6 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-libkaffevm_la_DEPENDENCIES =  $(top_builddir)/libltdl/libltdl.la \
-$(ENGINE_NAME)/libengine.la gcj/libgcj.la \
-systems/$(THREAD_SYSTEM)/libkthread.la
 libkaffevm_la_OBJECTS =  gc-mem.lo md.lo baseClasses.lo classMethod.lo \
 code-analyse.lo code.lo constants.lo debug.lo exception.lo external.lo \
 findInJar.lo fp.lo gc.lo hashtab.lo inflate.lo itypes.lo jar.lo jni.lo \

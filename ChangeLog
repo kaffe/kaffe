@@ -1,3 +1,15 @@
+Sun Mar 14 07:14:46 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* acinclude.m4, ltconfig, ltmain.sh: update from libtool
+	* config.guess, config.sub, libltdl/*: ditto
+	* configure.in: explicitly specify that we want to use libltdl as
+	a libtool convenience library; move Xext to X_PRE_LIBS, add
+	-L/usr/local/lib to LDFLAGS
+	* kaffe/kaffevm/Makefile.am: link with $(LIBLTDL); rearrange
+	dependencies
+	* kaffe/kaffevm/external.c: use KMALLOC and KFREE within libltdl
+	* configure, config/config.h.in, */Makefile.in: regen
+
 Sat Mar 13 11:17:19 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* configure.in, config/config-io.h, config/config.h.in: add tests for
