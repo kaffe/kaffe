@@ -30,6 +30,7 @@
 #include "external.h"
 #include "errors.h"
 #include "gc.h"
+#include "jni.h"
 #include "md.h"
 
 Hjava_lang_Class* ThreadClass;
@@ -51,6 +52,9 @@ void
 initThreads(void)
 {
 	/* Set default thread stack size if not set */
+	extern JavaVMInitArgs Kaffe_JavaVMArgs[];
+	threadStackSize = Kaffe_JavaVMArgs[0].nativeStackSize;
+
 	if (threadStackSize == 0) {
 		threadStackSize = THREADSTACKSIZE;
 	}
