@@ -8,7 +8,13 @@
  * of this file. 
  */
 
-struct Hjava_lang_String;
+#include "config.h"
+#include "config-std.h"
+#include <native.h>
+#include "../../../kaffe/kaffevm/gtypes.h"
+#include "../../../kaffe/kaffevm/support.h"
+
+extern int addClasspath(char*);
 
 /*
  * Add a JAR/ZIP to the classpath.
