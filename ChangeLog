@@ -1,4 +1,11 @@
 2004-12-10  Adam Heath  <doogie@brainfood.com>
+
+	* libraries/javalib/gnu/regexp/RE.java,
+	  libraries/javalib/java/util/regex/Pattern.java:
+	  Use braces around assignments in conditions.
+
+2004-12-10  Adam Heath  <doogie@brainfood.com>
+
 	* libraries/javalib/gnu/crypto/der/DERReader.java,
 	  libraries/javalib/gnu/xml/util/SAXNullTransformerFactory.java,
 	  libraries/javalib/gnu/xml/xpath/Predicate.java,

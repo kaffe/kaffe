@@ -806,7 +806,7 @@ public class RE extends REToken {
 
   private static int getCharUnit(char[] input, int index, CharUnit unit) throws REException {
     unit.ch = input[index++];
-    if (unit.bk = (unit.ch == '\\'))
+    if ((unit.bk = (unit.ch == '\\')))
       if (index < input.length)
 	unit.ch = input[index++];
       else throw new REException(getLocalizedMessage("ends.with.backslash"),REException.REG_ESCAPE,index);

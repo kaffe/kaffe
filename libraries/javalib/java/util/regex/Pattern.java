@@ -190,7 +190,7 @@ public final class Pattern implements Serializable
     int end;
     boolean matched;
 
-    while (matched = matcher.find() && (limit <= 0 || count < limit - 1))
+    while ((matched = matcher.find()) && (limit <= 0 || count < limit - 1))
       {
 	++count;
 	end = matcher.start();
