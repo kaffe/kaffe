@@ -131,7 +131,7 @@ public String toString()
 	}
 
 	// Type
-	str.append(type.getName());
+	str.append(Method.getPrettyName(type));
 	str.append(' ');
 
 	// Class name
