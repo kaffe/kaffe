@@ -49,7 +49,8 @@ import java.util.HashMap;
 import java.util.Locale;
 
 /**
- * @author Tom Tromey <tromey@cygnus.com>
+ * @author Tom Tromey (tromey@cygnus.com)
+ * @author Andrew John Hughes (gnu_andrew@member.fsf.org)
  * @date March 4, 1999
  */
 /* Written using "Java Class Libraries", 2nd edition, plus online
@@ -65,7 +66,7 @@ public class DecimalFormat extends NumberFormat
   private int scanFix (String pattern, int index, FormatBuffer buf,
                        String patChars, DecimalFormatSymbols syms,
                        boolean is_suffix)
-  {
+    {
     int len = pattern.length();
     boolean quoteStarted = false;
     buf.clear();
@@ -97,14 +98,9 @@ public class DecimalFormat extends NumberFormat
 	  }
 	else if (c == '\u00a4')
 	  {
-	    if (index + 1 < len && pattern.charAt(index + 1) == '\u00a4')
-	      {
-		buf.append(syms.getInternationalCurrencySymbol(), NumberFormat.Field.CURRENCY);
-		index++;
-	      }
-	    else
-	      buf.append(syms.getCurrencySymbol(), NumberFormat.Field.CURRENCY);
-	  }
+			/* Currency interpreted later */
+			buf.append(c);
+		}
 	else if (c == syms.getPercent())
 	  {
 	    if (multiplierSet)
@@ -129,7 +125,9 @@ public class DecimalFormat extends NumberFormat
 	    break;
 	  }
 	else
-	  buf.append(c);
+		{
+			buf.append(c);
+		}
 	index++;
       }
 
@@ -407,20 +405,46 @@ public class DecimalFormat extends NumberFormat
     return c;
   }
 
+  /**
+   * Constructs a <code>DecimalFormat</code> which uses the default
+   * pattern and symbols.
+   */
   public DecimalFormat ()
   {
     this ("#,##0.###");
   }
 
+  /**
+   * Constructs a <code>DecimalFormat</code> which uses the given
+   * pattern and the default symbols for formatting and parsing.
+   *
+   * @param pattern the non-localized pattern to use.
+   * @throws NullPointerException if any argument is null.
+   * @throws IllegalArgumentException if the pattern is invalid.
+   */
   public DecimalFormat (String pattern)
   {
     this (pattern, new DecimalFormatSymbols ());
   }
 
+  /**
+   * Constructs a <code>DecimalFormat</code> using the given pattern
+   * and formatting symbols.  This construction method is used to give
+   * complete control over the formatting process.  
+   *
+   * @param pattern the non-localized pattern to use.
+   * @param symbols the set of symbols used for parsing and formatting.
+   * @throws NullPointerException if any argument is null.
+   * @throws IllegalArgumentException if the pattern is invalid.
+   */
   public DecimalFormat (String pattern, DecimalFormatSymbols symbols)
   {
+    if (symbols == null)
+      {
+        throw new NullPointerException("Supplied set of symbols is null.");
+      }
     this.symbols = symbols;
-    applyPattern (pattern);
+    applyPattern(pattern);
   }
 
   private boolean equals(String s1, String s2)
@@ -464,26 +488,32 @@ public class DecimalFormat extends NumberFormat
 	  }
 	return;
       }
-
+		
     boolean is_neg = number < 0;
     if (is_neg)
       {
 	if (negativePrefix != null)
-	  dest.append(negativePrefix, negativePrefixRanges, negativePrefixAttrs);
+	  {
+	    dest.append(substituteCurrency(negativePrefix, number),
+			negativePrefixRanges, negativePrefixAttrs);
+	  }
 	else
 	  {
 	    dest.append(symbols.getMinusSign(), NumberFormat.Field.SIGN);
-	    dest.append(positivePrefix, positivePrefixRanges, positivePrefixAttrs);
+	    dest.append(substituteCurrency(positivePrefix, number),
+			positivePrefixRanges, positivePrefixAttrs);
 	  }
 	number = - number;
       }
     else
-      dest.append(positivePrefix, positivePrefixRanges, positivePrefixAttrs);
-
+      {
+	dest.append(substituteCurrency(positivePrefix, number),
+		    positivePrefixRanges, positivePrefixAttrs);
+      }
     int integerBeginIndex = dest.length();
     int integerEndIndex = 0;
     int zeroStart = symbols.getZeroDigit() - '0';
-
+		
     if (Double.isInfinite (number))
       {
 	dest.append(symbols.getInfinity());
@@ -492,7 +522,7 @@ public class DecimalFormat extends NumberFormat
     else
       {
 	number *= multiplier;
-
+	
 	// Compute exponent.
 	long exponent = 0;
 	double baseNumber;
@@ -630,11 +660,17 @@ public class DecimalFormat extends NumberFormat
 	fieldPos.setBeginIndex(integerBeginIndex);
 	fieldPos.setEndIndex(integerEndIndex);
       }
-
+		
     if (is_neg && negativeSuffix != null)
-      dest.append(negativeSuffix, negativeSuffixRanges, negativeSuffixAttrs);
+      {
+	dest.append(substituteCurrency(negativeSuffix, number),
+		    negativeSuffixRanges, negativeSuffixAttrs);
+      }
     else
-      dest.append(positiveSuffix, positiveSuffixRanges, positiveSuffixAttrs);
+      {
+	dest.append(substituteCurrency(positiveSuffix, number),
+		    positiveSuffixRanges, positiveSuffixAttrs);
+      }
   }
 
   public StringBuffer format (double number, StringBuffer dest,
@@ -671,16 +707,16 @@ public class DecimalFormat extends NumberFormat
     if (is_neg)
       {
 	if (negativePrefix != null)
-	  dest.append(negativePrefix);
+	  dest.append(substituteCurrency(negativePrefix, number));
 	else
 	  {
 	    dest.append(symbols.getMinusSign());
-	    dest.append(positivePrefix);
+	    dest.append(substituteCurrency(positivePrefix, number));
 	  }
 	number = - number;
       }
     else
-      dest.append(positivePrefix);
+      dest.append(substituteCurrency(positivePrefix, number));
 
     int integerBeginIndex = dest.length();
     int index = dest.length();
@@ -730,8 +766,8 @@ public class DecimalFormat extends NumberFormat
       dest.append(symbols.getZeroDigit());
 
     dest.append((is_neg && negativeSuffix != null)
-		? negativeSuffix
-		: positiveSuffix);
+		? substituteCurrency(negativeSuffix, number)
+		: substituteCurrency(positiveSuffix, number));
     return dest;
   }
 
@@ -955,7 +991,7 @@ public class DecimalFormat extends NumberFormat
       }
 
     String suffix = is_neg ? ns : positiveSuffix;
-    long multiplier = 1;
+    long parsedMultiplier = 1;
     boolean use_long;
 
     if (is_neg)
@@ -1264,4 +1300,104 @@ public class DecimalFormat extends NumberFormat
   // the US symbols.
   private static final DecimalFormatSymbols nonLocalizedSymbols
     = new DecimalFormatSymbols (Locale.US);
+
+  /**
+   * <p>
+   * Substitutes the currency symbol into the given string,
+   * based on the value used.  Currency symbols can either
+   * be a simple series of characters (e.g. '$'), which are
+   * simply used as is, or they can be of a more complex
+   * form:
+   * </p>
+   * <p>
+   * (lower bound)|(mid value)|(upper bound)
+   * </p>
+   * <p>
+   * where each bound has the syntax '(value)(# or <)(symbol)',
+   * to indicate the bounding value and the symbol used.
+   * </p>
+   * <p>
+   * The currency symbol replaces the currency specifier, '\u00a4',
+   * an unlocalised character, which thus is used as such in all formats.
+   * If this symbol occurs twice, the international currency code is used
+   * instead.
+   * </p>
+   *
+   * @param string The string containing the currency specifier, '\u00a4'.
+   * @param number the number being formatted.
+   * @return a string formatted for the correct currency.
+   */
+  private String substituteCurrency(String string, double number)
+  {
+    int index;
+    int length;
+    char currentChar;
+    StringBuffer buf;
+    
+    index = 0;
+    length = string.length();
+    buf = new StringBuffer();
+    
+    while (index < length)
+      {
+	currentChar = string.charAt(index);
+	if (string.charAt(index) == '\u00a4')
+	  {
+	    if ((index + 1) < length && string.charAt(index + 1) == '\u00a4')
+	      {
+		buf.append(symbols.getInternationalCurrencySymbol());
+		index += 2;
+	      }
+	    else
+	      {
+		String symbol;
+		
+		symbol = symbols.getCurrencySymbol();
+		if (symbol.startsWith("="))
+		  {
+		    String[] bounds;
+		    int[] boundValues;
+		    String[] boundSymbols;
+		    
+		    bounds = symbol.substring(1).split("\\|");
+		    boundValues = new int[3];
+		    boundSymbols = new String[3];
+		    for (int a = 0; a < 3; ++a)
+		      {
+			String[] bound;
+			
+			bound = bounds[a].split("[#<]");
+			boundValues[a] = Integer.parseInt(bound[0]);
+			boundSymbols[a] = bound[1];
+		      }
+		    if (number <= boundValues[0])
+		      {
+			buf.append(boundSymbols[0]);
+		      }
+		    else if (number >= boundValues[2])
+		      {
+			buf.append(boundSymbols[2]);
+		      }
+		    else 
+		      {
+			buf.append(boundSymbols[1]);
+		      }
+		    ++index;
+		  }
+		else
+		  {
+		    buf.append(symbol);
+		    ++index;
+		  }
+	      }
+	  }
+	else
+	  {
+	    buf.append(string.charAt(index));
+	    ++index;
+	  }
+      }
+    return buf.toString();
+  }
+  
 }

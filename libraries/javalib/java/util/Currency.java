@@ -35,7 +35,10 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.util;
+
+import gnu.java.locale.LocaleInformation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,10 +54,10 @@ import java.util.Properties;
  * a constructor.
  *
  * @see java.util.Locale
- * @author Guilhem Lavaux  <guilhem.lavaux@free.fr>
- * @author Dalibor Topic <robilad@kaffe.org>
- * @author Bryce McKinlay <mckinlay@redhat.com>
- * @author Andrew John Hughes <gnu_andrew@member.fsf.org>
+ * @author Guilhem Lavaux  (guilhem.lavaux@free.fr)
+ * @author Dalibor Topic (robilad@kaffe.org)
+ * @author Bryce McKinlay (mckinlay@redhat.com)
+ * @author Andrew John Hughes (gnu_andrew@member.fsf.org)
  * @since 1.4
  */
 public final class Currency 
@@ -93,6 +96,17 @@ public final class Currency
    */
   private transient int fractionDigits;
 
+  /**
+   * The currency symbol used when formatting currency strings.
+   * When this field is <code>null</code> the <code>currencyCode</code>
+   * has to be used instead.
+   *
+   * @see #getSymbol()
+   * @see #getSymbol(java.util.Locale)
+   * @serial the currency symbol, or <code>null</code>
+   */
+  private transient String currencySymbol;
+  
   /**
    * A cache of <code>Currency</code> instances to
    * ensure the singleton nature of this class.  The key
@@ -178,6 +192,9 @@ public final class Currency
       }
     /* Retrieve the fraction digits */
     fractionDigits = Integer.parseInt(properties.getProperty(fractionDigitsKey));
+    /* Get currency symbol */
+    currencySymbol =
+      (String) LocaleInformation.getCurrencySymbols().get(currencyCode);
   }
 
   /**
@@ -309,11 +326,7 @@ public final class Currency
    */
   public String getSymbol()
   {
-    /* 
-       We don't currently have the currency symbols, so we always
-       return the currency code.
-    */
-    return getCurrencyCode();
+    return currencySymbol == null ? getCurrencyCode() : currencySymbol;
   }
 
   /**

@@ -48,13 +48,16 @@ import java.util.ResourceBundle;
 
 /**
  * This class is a container for the symbols used by 
- * <code>DecimalFormat</code> to format numbers and currency.  These are
+ * <code>DecimalFormat</code> to format numbers and currency
+ * for a particular locale.  These are
  * normally handled automatically, but an application can override
  * values as desired using this class.
  *
- * @author Tom Tromey <tromey@cygnus.com>
+ * @author Tom Tromey (tromey@cygnus.com)
  * @author Aaron M. Renn (arenn@urbanophile.com)
+ * @author Andrew John Hughes (gnu_andrew@member.fsf.org)
  * @date February 24, 1999
+ * @see java.text.DecimalFormat
  */
 /* Written using "Java Class Libraries", 2nd edition, plus online
  * API docs for JDK 1.2 from http://www.javasoft.com.
@@ -83,6 +86,14 @@ public final class DecimalFormatSymbols implements Cloneable, Serializable
     this (Locale.getDefault());
   }
 
+  /**
+   * Retrieves a valid string, either using the supplied resource
+   * bundle or the default value.
+   *
+   * @param bundle the resource bundle to use to find the string.
+   * @param name key for the string in the resource bundle.
+   * @param def default value for the string.
+   */
   private String safeGetString(ResourceBundle bundle,
                                String name, String def)
   {
@@ -123,6 +134,7 @@ public final class DecimalFormatSymbols implements Cloneable, Serializable
    * <code>DecimalFormatSymbols</code> for the specified locale.
    *
    * @param locale The local to load symbols for.
+   * @throws NullPointerException if the locale is null.
    */
   public DecimalFormatSymbols (Locale loc)
   {
@@ -136,14 +148,12 @@ public final class DecimalFormatSymbols implements Cloneable, Serializable
       {
 	res = null;
       }
-    currencySymbol = safeGetString (res, "currencySymbol", "$");
+    setCurrency(Currency.getInstance(loc));
     decimalSeparator = safeGetChar (res, "decimalSeparator", '.');
     digit = safeGetChar (res, "digit", '#');
     exponential = safeGetChar (res, "exponential", 'E');
     groupingSeparator = safeGetChar (res, "groupingSeparator", ',');
     infinity = safeGetString (res, "infinity", "\u221e");
-    // FIXME: default?
-    intlCurrencySymbol = safeGetString (res, "intlCurrencySymbol", "$");
     try
       {
 	monetarySeparator = safeGetChar (res, "monetarySeparator", '.');
@@ -205,7 +215,7 @@ public final class DecimalFormatSymbols implements Cloneable, Serializable
    */
   public Currency getCurrency ()
   {
-    return Currency.getInstance (currencySymbol);
+    return Currency.getInstance(currencySymbol);
   }
 
   /**
@@ -368,13 +378,16 @@ public final class DecimalFormatSymbols implements Cloneable, Serializable
   }
 
   /**
-   * This method sets the currency to the specified value.
+   * This method sets the currency symbol and ISO 4217 currency
+   * code to the values obtained from the supplied currency.
    *
-   * @param currency The new currency
+   * @param currency the currency from which to obtain the values.
+   * @throws NullPointerException if the currency is null.
    */
   public void setCurrency (Currency currency)
   {
-    setCurrencySymbol (currency.getSymbol());
+    intlCurrencySymbol = currency.getCurrencyCode();
+    currencySymbol = currency.getSymbol();
   }
 
   /**
@@ -435,14 +448,30 @@ public final class DecimalFormatSymbols implements Cloneable, Serializable
   }
 
   /**
-   * This method sets the international currency symbols to the
-   * specified value. 
+   * This method sets the international currency symbol to the
+   * specified value. The currency symbol is also modified if a
+   * valid symbol exists for the supplied currency in the locale
+   * used by this instance.
    *
-   * @param intlCurrencySymbol The new international currency symbol.
+   * @param currencyCode The new international currency symbol.
    */
-  public void setInternationalCurrencySymbol (String currency)
+  public void setInternationalCurrencySymbol (String currencyCode)
   {
-    intlCurrencySymbol = currency;
+    Currency currency;
+
+    intlCurrencySymbol = currencyCode;
+		try
+			{
+				currency = Currency.getInstance(currencyCode);
+			}
+		catch (IllegalArgumentException exception)
+			{
+				currency = null;
+			}
+    if (currency != null)
+      {
+        setCurrencySymbol(currency.getSymbol(locale));
+      }
   }
 
   /**
