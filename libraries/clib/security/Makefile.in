@@ -135,7 +135,7 @@ with_engine = @with_engine@
 
 native_LTLIBRARIES = libsecurity.la
 
-EXTRA_DIST =  		kaffe_md5.h
+EXTRA_DIST =  		kaffe_md5.h 		java.security
 
 
 SECURITY_SRCS =  		digest.c 		kaffe_md5.c
