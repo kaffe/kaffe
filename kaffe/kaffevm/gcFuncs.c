@@ -63,11 +63,6 @@ destroyClass(Collector *collector, void* c)
 DBG(CLASSGC,
         dprintf("destroying class %s @ %p\n", clazz->name->data, c);
    )
-	if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
-		fprintf(stderr, "<GC: unloading class `%s'>\n", 
-			CLASS_CNAME(clazz));
-	}
-
 	assert(!CLASS_IS_PRIMITIVE(clazz));
 
 	/* Make sure that we don't unload fully loaded classes without
@@ -77,6 +72,11 @@ DBG(CLASSGC,
 	 * state, and the discarded class objects destroyed.
 	 */
 	assert(clazz->state != CSTATE_COMPLETE || clazz->loader != 0);
+
+	if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0 && clazz->name) {
+		fprintf(stderr, "<GC: unloading class `%s'>\n", 
+			CLASS_CNAME(clazz));
+	}
 
         /* destroy all fields */
         if (CLASS_FIELDS(clazz) != 0) {
