@@ -13,6 +13,7 @@
 #include "config-mem.h"
 #include "config-net.h"
 #include "../../../kaffe/kaffevm/classMethod.h"
+#include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/lookup.h"
 #include "../../../kaffe/kaffevm/access.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
@@ -89,31 +90,46 @@ svun: 		utf8ConstRelease(serialVersionUIDName);
 struct Hjava_lang_Object*
 kaffe_io_ObjectStreamClassImpl_allocateNewObject(struct Hkaffe_io_ObjectStreamClassImpl* cls)
 {
-	return (newObject(unhand(cls)->clazz));
+	Hjava_lang_Object* obj;
+	Hjava_lang_Class* clazz;
+	Method* meth;
+
+	/* Get the class and create an empty object of that type */
+	clazz = unhand(cls)->clazz;
+	obj = newObject(clazz);
+
+	/* Work our way down the superstreams until we get to the point where
+	 * we no longer are serializing.  We get the superclass at that point
+	 * and invoke the <init>() constructor.
+	 */
+	do {
+		clazz = clazz->superclass;
+		cls = unhand(cls)->superstream;
+	} while (cls != 0);
+
+	meth = findMethodLocal(clazz, constructor_name, void_signature);
+	if (meth == 0) {
+		SignalErrorf("java.io.InvalidClassException",
+			     "%s; Missing no-arg constructor for class",
+			     CLASS_CNAME(clazz));
+		return (0);
+	}
+	else if ((meth->accflags & (ACC_CONSTRUCTOR|ACC_PRIVATE)) != ACC_CONSTRUCTOR) {
+		SignalErrorf("java.io.InvalidClassException",
+			     "%s; IllegalAccessException",
+			     CLASS_CNAME(clazz));
+		return (0);
+	}
+	else {
+		do_execute_java_method(obj, 0, 0, meth, 0);
+		return (obj);
+	}
 }
 
 struct Hjava_lang_Object*
 kaffe_io_ObjectStreamClassImpl_allocateNewArray(struct Hkaffe_io_ObjectStreamClassImpl* cls, jint sz)
 {
 	return (newArray(CLASS_ELEMENT_TYPE(unhand(cls)->clazz), sz));
-}
-
-void
-kaffe_io_ObjectStreamClassImpl_invokeSuperclassInitV(struct Hkaffe_io_ObjectStreamClassImpl* cls, struct Hjava_lang_Object* obj, struct Hjava_lang_Class* sc)
-{
-	Method* meth;
-
-	if (sc == NULL) {
-		return;
-	}
-
-	meth = findMethodLocal(sc, constructor_name, void_signature);
-	if (meth == NULL) {
-		SignalErrorf("java.io.InvalidClassException",
-			     "%s; <init>",
-			     sc->name->data);
-	}
-	do_execute_java_method(obj, 0, 0, meth, 0);
 }
 
 void
@@ -488,12 +504,35 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	if (cls == ClassClass) {
 		return (3206093459760846163LL);
 	}
-	fld = lookupClassField(cls, serialVersionUIDName, true, &einfo);
 
-	if (fld != 0 && (fld->accflags & (ACC_STATIC|ACC_FINAL)) == (ACC_STATIC|ACC_FINAL)) {
-		return (*(jlong*)FIELD_ADDRESS((Field*)fld));
-	} else {
-		discardErrorInfo(&einfo);
+	/* Lookup _local_ field serialVersionUID */
+	for (fld = CLASS_SFIELDS(cls), i = CLASS_NSFIELDS(cls); i-- > 0; fld++) {
+		if (utf8ConstEqual (serialVersionUIDName, fld->name) &&
+		    (fld->accflags & (ACC_STATIC|ACC_FINAL)) == (ACC_STATIC|ACC_FINAL)) {
+			Hjava_lang_Class* ftype;
+
+			ftype = resolveFieldType(fld, cls, &einfo);
+			if (ftype == 0) {
+				throwError(&einfo);
+			}
+
+			/* See JDC Bug 4431318:  The serialization spec does
+			 * not state what should occur if serialVersionUID is
+			 * declared to be of a type other than long; throwing
+			 * an IllegalArgumentException, while not particularly
+			 * graceful, is not strictly in violation of the spec.
+			 * A reasonable solution may be for serialization to
+			 * throw InvalidClassExceptions in cases like this.
+			 *
+			 * Use JDK1.1 behavior until serialization spec states what
+			 * should occur.  */
+			if (ftype == longClass) {
+				return (*(jlong*)FIELD_ADDRESS(fld));
+			}
+			else {
+				break;
+			}
+		}
 	}
 
 	/* Okay - since there's no field we have to compute the UID */
@@ -693,13 +732,13 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 }
 
 jbool
-kaffe_io_ObjectStreamClassImpl_hasWriteObject(struct Hjava_lang_Class* clazz)
+kaffe_io_ObjectStreamClassImpl_hasWriteObject0(struct Hjava_lang_Class* clazz)
 {
-	if (findMethodLocal(clazz, writeObjectName, ObjectOutputStreamSig)) {
-		return (true);
+	if (findMethodLocal(clazz, writeObjectName, ObjectOutputStreamSig) == 0) {
+		return (false);
 	}
 	else {
-		return (false);
+		return (true);
 	}
 }
 
