@@ -1,3 +1,8 @@
+Fri Oct 23 12:28:47 1998  Dirk Grunwald <grunwald@pa.dec.com>
+
+	* config/alpha/common.h: fixes for alpha port.
+	test/regression/TestNative.java: improvements.
+
 Wed Oct 21 18:30:12 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/baseClasses.[ch], kaffe/kaffevm/classMethod.c:
