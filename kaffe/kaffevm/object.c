@@ -151,19 +151,43 @@ newArray(Hjava_lang_Class* elclass, int count)
  * Allocate a new multi-dimensional array.
  */
 Hjava_lang_Object*
-newMultiArray(Hjava_lang_Class* clazz, int* dims)
+newMultiArrayChecked(Hjava_lang_Class* clazz, int* dims, errorInfo *einfo)
 {
 	Hjava_lang_Object* obj;
 	Hjava_lang_Object** array;
 	int i;
 
-	obj = newArray(CLASS_ELEMENT_TYPE(clazz), dims[0]);
+	obj = newArrayChecked(CLASS_ELEMENT_TYPE(clazz), dims[0], einfo);
+	if (!obj) {
+	    return NULL;
+	}
+	
 	if (dims[1] >= 0) {
 		array = OBJARRAY_DATA(obj);
 		for (i = 0; i < dims[0]; i++) {
-			array[i] = newMultiArray(CLASS_ELEMENT_TYPE(clazz), &dims[1]);
+			array[i] = newMultiArrayChecked(CLASS_ELEMENT_TYPE(clazz), &dims[1], einfo);
+			if (!array[i]) {
+			    return NULL;
+			}
 		}
 	}
 
 	return (obj);
 }
+
+/*
+ * Allocate a new multi-dimensional array.
+ */
+Hjava_lang_Object*
+newMultiArray(Hjava_lang_Class* clazz, int* dims)
+{
+	Hjava_lang_Object* obj;
+	errorInfo einfo;
+
+	obj = newMultiArrayChecked(clazz, dims, &einfo);
+	if (!obj) {
+		throwError(&einfo);
+	}
+	return (obj);
+}
+

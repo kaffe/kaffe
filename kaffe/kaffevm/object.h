@@ -43,6 +43,8 @@ struct Hjava_lang_Class* newClass(void);
 Hjava_lang_Object*	newArrayChecked(struct Hjava_lang_Class*, int,
 					struct _errorInfo *);
 Hjava_lang_Object*	newArray(struct Hjava_lang_Class*, int);
+Hjava_lang_Object*	newMultiArrayChecked(struct Hjava_lang_Class*, int*,
+					     struct _errorInfo *);
 Hjava_lang_Object*	newMultiArray(struct Hjava_lang_Class*, int*);
 
 #endif
