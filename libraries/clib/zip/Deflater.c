@@ -111,8 +111,22 @@ java_util_zip_Deflater_end(struct Hjava_util_zip_Deflater* this)
 	z_stream* dstream;
 
 	dstream = GET_STREAM(this);
+	GET_STREAM(this) = 0;
+
 	deflateEnd(dstream);
 	free(dstream);
+}
+
+static voidpf
+kaffe_zalloc(voidpf opaque, uInt items, uInt size) {
+  /* allocate through the garbage collector interface */
+  return malloc(items*size);
+}
+
+static void
+kaffe_zfree(voidpf opaque, voidpf address) {
+  /* dispose through the garbage collector interface */
+  free(address);
 }
 
 void
@@ -121,10 +135,10 @@ java_util_zip_Deflater_init(struct Hjava_util_zip_Deflater* this, jbool val)
 	int r;
         z_stream* dstream;
 
-	dstream = malloc(sizeof(dstream));
+	dstream = malloc(sizeof(*dstream));
 	dstream->next_in = 0;
-	dstream->zalloc = 0;
-	dstream->zfree = 0;
+	dstream->zalloc = kaffe_zalloc;
+	dstream->zfree = kaffe_zfree;
 	dstream->opaque = 0;
 
 	r = deflateInit2(dstream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -WSIZEBITS, 9, Z_DEFAULT_STRATEGY);

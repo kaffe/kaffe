@@ -1,3 +1,12 @@
+Mon Sep 14 15:37:04 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/clib/zip/Deflater.c
+	(java_util_zip_Deflater_end): nullify this.dtream when it is freed
+	(kaffe_zalloc, kaffe_zfree): new functions for zlib to properly
+	interface with the garbage collector
+	(java_util_zip_Deflater_init): allocate dstream with the right
+	size; set up kaffe_zalloc and kaffe_zfree for zalloc and zfree
+
 Fri Sep 11 22:46:26 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* kaffe/scripts/: replaced all scripts with .in files,
