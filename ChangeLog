@@ -1,3 +1,25 @@
+2001-06-18  Edouard G. Parmelan  <egp@free.fr>
+
+	* config/alpha/netbsd1/jit-md.h, config/alpha/netbsd1/md.c,
+	config/alpha/linux/jit-md.h, config/alpha/linux/md.c: Use new
+	stack inspection function.  Enable JIT compilation.
+
+	* config/alpha/trampolines.c: Add dummy ret $31,($26),1 to help
+	__alpha_nextFrame().
+
+	* config/alpha/alpha.c: New stack inspection function that
+	disassemble code to unwind stack frame.
+
+	* config/alpha/osf/config.frag, config/alpha/osf/jit-md.h,
+	config/alpha/osf/md.c: Use new stack inspection function and get
+	ride of libexc.
+
+	* config/sparc/common.h (ATOMIC_EXCHANGE): mark output register as
+	early clobber.
+
+	* developers/update-class-list, libraries/javalib/Makefile.am: new
+	framework to exclude packages, java/awt/win32 for now.
+
 2001-06-17  Edouard G. Parmelan  <egp@free.fr>
 
 	* kaffe/kaffevm/jni.c, kaffe/kaffevm/kaffe.def,
@@ -41,7 +63,7 @@
 	McMahill <mcmahill@mtl.mit.edu> patches send to port-pmax
 	mailing-list.
 
-	* config/m68k/netbsd1/jit3-md.h: add JIT3 to NetBSD/m68k.
+	* config/i386/netbsd1/jit3-md.h: add JIT3 to NetBSD/Intel.
 
 	* config/config.alias: New alias for sparc.  Found in Debian
 	package.
