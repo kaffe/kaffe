@@ -101,6 +101,10 @@ public class HashMap extends AbstractMap
 		return e == null ? null : e.value;
 	}
 
+	int getTableLength() {
+		return table.length;
+	}
+
 	public Object put(Object key, Object val) {
 
 		// See if key already exists

@@ -166,7 +166,7 @@ public class Hashtable extends Dictionary
 
 	private void writeDefaultObject() {
 		loadFactor = map.loadFactor;
-		threshold = (int)(map.table.length * loadFactor);
+		threshold = (int)(map.getTableLength() * loadFactor);
 	}
 
 	}
@@ -198,7 +198,7 @@ public class Hashtable extends Dictionary
 		stream.defaultWriteObject();
 
 		// remember how many buckets there were
-		stream.writeInt(map.table.length);
+		stream.writeInt(map.getTableLength());
 		stream.writeInt(map.size());
 
 		Iterator i = map.entrySet().iterator();
