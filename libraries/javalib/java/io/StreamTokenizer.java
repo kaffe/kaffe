@@ -124,6 +124,7 @@ private int nextTokenType() throws IOException {
 	}
 
 	if (chr=='\n' && EOLSignificant) {
+		sval = null;
 		ttype = TT_EOL;
 		return (ttype);
 	}
