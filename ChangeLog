@@ -1,3 +1,22 @@
+Thu Jun 24 10:27:38 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/locks.h: new locking macros
+	(lock|unlock|unlockKnown)JavaMutex work like previous lockMutex.
+	Other locking macros now defer ThreadDeath while lock is held
+
+	* kaffe/kaffevm/thread.c: dontStopThread and canStopThread,
+	interface to jthread_disable_stop and jthread_enable_stop which
+	allows nesting.
+
+	* kaffe/kaffevm/exception.c, kaffe/kaffevm/support.c,
+	kaffe/kaffevm/intrp/icode.h, kaffe/kaffevm/intrp/machine.c,
+	kaffe/kaffevm/jit/icode.c: Use lockJavaMutex and friends for all
+	locks dispatchException unlocks as it unwinds the stack
+
+	* libraries/javalib/Klasses.jar,
+	libraries/javalib/java/lang/Thread.java: Added new field
+	(noStopCount) to Thread.
+
 Tue Jun 22 16:44:52 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/Locale.java: languages codes
