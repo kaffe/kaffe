@@ -358,6 +358,9 @@ true 1"
 
 runtest SignedShort "-1"
 
+runtest CharCvt "65535
+-1"
+
 runtest BadFloatTest "1.2345 9.8765"
 
 runtest ExecTest "Okay
