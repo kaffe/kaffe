@@ -1,3 +1,151 @@
+2000-12-20  Edouard G. Parmelan  <egp@free.fr>
+
+	* kaffe/kaffevm/utf8const.c (utf8ConstNew): fix bad unlockUTF()
+	call chain.  Replace jfree() by gc_free() as allocator is
+	gc_malloc().
+
+	* config/m68k/jit.h (FILL_IN_TRAMPOLINE): Add third parameter
+	where.  **MAY** Close Debian Bug#74589.
+
+	* config/arm/jit-arm.def, config/arm/jit3-arm.def: Use ALU_SETCC
+	in op_add_const() and op_sub_const().
+	Reported by Guillaume Jaunet <jaunet@lep-philips.fr> and Rauli
+	Ruohonen <rruohone@cc.hut.fi> on pocketlinux-devel.
+	
+	* kaffe/kaffevm/jit3/icode.c (add_int): don't optimize const +
+	const as it will not clear Carry bit and breaks add_long on ARM.
+	Reported by Guillaume Jaunet <jaunet@lep-philips.fr>.
+	
+	* config/arm/jit.h (FILL_IN_TRAMPOLINE): Use `ldr pc, [pc, #4]'.
+	Reported by Marcus Smith <marcus@ridgerun.com>. 
+
+	* config/i386/linux/md.h (SIGNAL_ARGS): fix prototype.
+
+	* config/i386/win32/win32-md.asm (__compareAndExchange): use lock
+	prefix to be SMP safe.
+
+	* developers/alignment_of_size.c: add `long' case.
+	
+	* libraries/clib/native/System.c (initProxyProperties): Cast
+	parameter of tolower() as int.
+
+	* libraries/clib/native/Double.c (java_lang_Double_valueOf0): Cast
+	parameter of isspace() as int.
+
+	* kaffe/xprof/memorySamples.c: Use jword (aka uintp) to cast
+	pointer to integer.
+
+	* kaffe/kaffevm/debug.h: #undef dprintf before defines it to avoid
+	warnings.
+
+	* kaffe/kaffevm/debug.c, kaffe/kaffevm/ksem.h,
+	kaffe/kaffevm/string.c, kaffe/kaffevm/thread.c,
+	libraries/clib/net/PlainDatagramSocketImpl.c: Avoid warnings on
+	assert(ptr).
+
+	* config/alpha/threads.h (THREADSTACKSIZE): Dump it to 128Kb for
+	interpreter engine.
+
+	* config/alpha/osf/md.c: Protect stack frame functions with static
+	mutex as libc functions are not thread safe.
+	(__alpha_osf_firstFrame): Retreive caller frame, as current will
+	be invalidate after function exit.
+	(__alpha_osf_nextFrame): Let's exc_virtual_unwind() lookup the RPD
+	as exc_lookup_function_table() return the _table_ base, not the
+	entry.
+	(__alpha_osf_register_jit_exc, __alpha_osf_unregister_jit_exc):
+	Third parameter is now end of code.
+	
+	* config/alpha/jit.h: Define PUSHARG_FORWARDS.  This workaround
+	bad stack offset for double and long in Kaffe_wrapper().
+	(FILL_IN_TRAMPOLINE): Add third parameter where.
+	(LABEL_Lrsa): frameoffset is a byte offset.
+	(FRAMEOBJECT): Object argument is now at fixed offset from $fp.
+	
+	* config/alpha/trampolines.c (alpha_do_fixup_trampoline): 
+	Handle new third parameter of FILL_IN_TRAMPOLINE.
+
+	* config/alpha/osf/jit-md.h (MD_REGISTER_JIT_EXCEPTION_INFO,
+	MD_UNREGISTER_JIT_EXCEPTION_INFO): Third parameter is now end of
+	code.
+	(SPFRAME): new macro used by nextFrame().
+	
+	* config/alpha/jit-alpha.def (prologue): Reverse order of spilled
+	arguments to speedup FRAMEOBJECT() macro.
+	(op_cpysn, op_mov): Use canonical formes describe in `Alpha
+	Architecture Handbook' section `A.4.6 Pseudo-Operations (Stylized
+	Code Forms)'.
+	(load-load): use wreg_load() for result register.
+	(alpha_cbranch_const): It's not the test that must be negate but
+	the offset.
+	
+	* kaffe/kaffevm/exception.c (nextFrame): Use NEXTFRAME() only
+	_one_ time as it modifies exceptionFrame parameter on Alpha OSF/1.
+	Use SP to check current stack (some Alpha function does not have
+	call frame).
+
+	* kaffe/kaffevm/gcFuncs.c (destroyClass): Update last parameter of
+	MD_UNREGISTER_JIT_EXCEPTION_INFO() and use macro
+	METHOD_NATIVECODE().
+
+	* kaffe/kaffevm/classMethod.c (processClass): Update last
+	parameter of MD_UNREGISTER_JIT_EXCEPTION_INFO() and use macro
+	METHOD_NATIVECODE().
+	(buildInterfaceDispatchTable): Proper handle bad method marker
+	(-1) with 64bit arch.
+
+	* kaffe/kaffevm/jni.c (Kaffe_wrapper): Use pusharg_long_idx_inc
+	for long and double parameter.  This is only done for
+	PUSHARG_FORWARDS case.
+	
+	* kaffe/kaffevm/kaffe.def, kaffe/kaffevm/jit3/kaffe-jit.def: Merge
+	into kaffe/kaffevm/kaffe.def for INTRP, JIT2 and JIT3 engines.
+	Add JCODE debug traces.
+	(IF_ACMPEQ): use cbranch_ref_eq() in place of cbranch_int_eq().
+
+	* kaffe/kaffevm/object.c, kaffe/kaffevm/object.h: Create new
+	function newMultiArrayChecked().
+	
+	* kaffe/kaffevm/soft.c (soft_vmultianewarray,
+	soft_multianewarray): Use newMultiArrayChecked().
+	(soft_lookupinterfacemethod): Proper handle bad method marker (-1)
+	with 64bit arch.
+	
+	* kaffe/kaffevm/jit/icode.c, kaffe/kaffevm/jit3/icode.c: Fix all
+	call places of add_ref(), third parameter is the offset, not the
+	reference.
+	(load_offset_scaled_long, store_offset_scaled_long): don't split
+	long slot as two int slots, it's not true for Alpha.
+	
+	* kaffe/kaffevm/intrp/icode.h, kaffe/kaffevm/intrp/machine.c,
+	kaffe/kaffevm/intrp/machine.h, kaffe/kaffevm/intrp/slots.h,
+	kaffe/kaffevm/jit/basecode.h, kaffe/kaffevm/jit/codeproto.h,
+	kaffe/kaffevm/jit/icode_internal.h, kaffe/kaffevm/jit/machine.h:
+	define (or create) JIT3 compatibility macros (or functions) for
+	new merged kaffe.def.
+	
+	* kaffe/kaffevm/jit/machine.c: define JIT3 compatibility macros
+	for new merged kaffe.def.
+	(finishInsnSequence): Don't forget exc_len.
+	(installMethodCode): Update last parameter of
+	MD_REGISTER_JIT_EXCEPTION_INFO() and use macro
+	METHOD_NATIVECODE().
+
+	* kaffe/kaffevm/jit3/machine.c: rename explict_check_null() to
+	explicit_check_null().  Include merged kaffe.def.
+	(jit_soft_multianewarray): Use newMultiArrayChecked() and free
+	temp array.  Maybe it could be change to use
+	soft_multianewmultiarray() ?
+
+	* kaffe/kaffevm/jit3/machine.h: Use macro parameter IDX in place
+	of variable idx.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: use dprintf() and
+	%p for tid output.
+
+	* test/regression/DoublePrint.java: catch ArithmeticException to
+	avoid abort.
+	
 Thu Dec  7 17:41:44 MST 2000  Godmar Back <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.c: fix race condition in resolveFieldType
@@ -20,7 +168,6 @@ Thu Dec  7 17:41:44 MST 2000  Godmar Back <gback@cs.utah.edu>
 	* test/regression/IndexTest.java,
 	test/regression/InvTarExcTest.java: Roll-back side effect of
 	throwFreshException().
-
 
 Fri Dec  1 18:41:36 MST 2000  Godmar Back <gback@cs.utah.edu>
 
