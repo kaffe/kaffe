@@ -56,11 +56,30 @@ JNI_GetDefaultJavaVMInitArgs(void* args)
   return 0;
 }
 
+static char *
+concatString(const char *s1, const char *s2)
+{
+  char *s;
+
+  assert(s1 != NULL || s2 != NULL);
+
+  if (s1 == NULL)
+    s1 = "";
+  if (s2 == NULL)
+    s2 = "";
+  
+  s = (char *)malloc(strlen(s1) + strlen(s2) + 1);
+
+  return strcat(strcpy(s, s1), s2);
+}
+
 static jint
 KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions)
 {
   int i;
-  
+  char *classpath = NULL;
+  char *bootClasspath = NULL;  
+
   for (i = 0; i < nOptions; i++)
     {
       char *opt = options[i].optionString;
@@ -109,7 +128,57 @@ KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions
 	  prop->key = &internalOpt[2];
 	  prop->value = &internalOpt[sz];
 	}
+      else if (!strncmp(opt, "-Xbootclasspath:", 16))
+        {
+	  bootClasspath = strdup(opt + 16);
+        }
+      else if (!strncmp(opt, "-Xbootclasspath/a:", 18))
+	{
+	  char *newBootPath = concatString(bootClasspath, 
+					   concatString(":", opt + 18));
+	  
+	  if (bootClasspath != NULL)
+	    free(bootClasspath);
+
+	  bootClasspath = newBootPath;
+	}
+      else if (!strncmp(opt, "-Xbootclasspath/p:", 18))
+	{
+	  char *newBootPath = concatString(opt + 18, 
+					   concatString(":", bootClasspath));
+	  
+	  if (bootClasspath != NULL)
+	    free(bootClasspath);
+
+	  bootClasspath = newBootPath;
+	}
+      else if (!strncmp(opt, "-Xclasspath:", 12))
+        {
+	  classpath = strdup(opt + 12);
+        }
+      else if (!strncmp(opt, "-Xclasspath/a:", 14))
+	{
+	  char *newPath = concatString(classpath, 
+				       concatString(":", opt + 14));
+	  
+	  if (classpath != NULL)
+	    free(classpath);
+
+	  classpath = newPath;
+	}
+      else if (!strncmp(opt, "-Xclasspath/p:", 14))
+	{
+	  char *newPath = concatString(opt + 14, 
+				       concatString(":", classpath));
+	  
+	  if (classpath != NULL)
+	    free(classpath);
+
+	  classpath = newPath;
+	}
     }
+  args->bootClasspath = bootClasspath;
+  args->classpath = classpath;
 
   return 1;
 }

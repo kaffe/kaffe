@@ -10,9 +10,9 @@ if HAVE_JIKES
 INTERNAL_TEST = internal
 endif
 
-SUBDIRS = $(INTERNAL_TEST) regression
+SUBDIRS = $(INTERNAL_TEST) regression jni
 
-DIST_SUBDIRS = internal regression
+DIST_SUBDIRS = internal regression jni
 
 EXTRA_DIST = \
 	awt/Calc/Calc.java \

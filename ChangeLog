@@ -1,5 +1,19 @@
 2004-07-09  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/jni/jni-base.c
+	(KaffeJNI_ParseArgs): Added support for '-Xbootclasspath' family.
+
+	* test/jni/Makefile.am, test/jni/jniBase.c,
+	test/jni/jniExecClass.c, test/jni/HelloWorldApp.class: New files.
+
+	* configure.ac: Added test/jni/Makefile.
+
+	* test/Makefile.am: Added 'jni' subdirectory.
+
+	* test/jni/Makefile.in, test/Makefile.in, configure: Regenerated.
+
+2004-07-09  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/external.c
 	(discoverLibraryHome): Embrace between ENABLE_BINRELOC.
 

@@ -2052,5 +2052,6 @@ AC_CONFIG_FILES([test/regression/compiler/Makefile])
 AC_CONFIG_FILES([test/regression/compiler/CompileScript])
 AC_CONFIG_FILES([test/regression/run_time/Makefile])
 AC_CONFIG_FILES([test/regression/run_time/CompileScript])
+AC_CONFIG_FILES([test/jni/Makefile])
 
 AC_OUTPUT
