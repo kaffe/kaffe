@@ -122,11 +122,11 @@ public class JLayeredPane extends JComponent implements Accessible
    * @return the layer the component is currently assigned to, in this container.
    * @throws IllegalArgumentException if the component is not a child of this container.
    */
-  protected Integer getLayer (Component c)
+  public int getLayer(Component c)
   {
     if (! componentToLayer.containsKey (c))
 	    throw new IllegalArgumentException ();
-    return (Integer) componentToLayer.get (c);
+    return ((Integer) componentToLayer.get(c)).intValue();
   }
 
   /**
@@ -270,8 +270,8 @@ public class JLayeredPane extends JComponent implements Accessible
    */
   public int getPosition(Component c)
   {
-    Integer layer = getLayer (c);
-    int[] range = layerToRange (layer);
+    int layer = getLayer (c);
+    int[] range = layerToRange(new Integer(layer));
     int top = range[0];
     int bot = range[1];
     Component[] comps = getComponents ();
@@ -297,8 +297,8 @@ public class JLayeredPane extends JComponent implements Accessible
    */
   public void setPosition(Component c, int position)
   {
-    Integer layer = getLayer (c);
-    int[] range = layerToRange (layer);
+    int layer = getLayer (c);
+    int[] range = layerToRange(new Integer(layer));
     if (range[0] == range[1])
       throw new IllegalArgumentException ();
 
@@ -389,8 +389,8 @@ public class JLayeredPane extends JComponent implements Accessible
    */
   public int getIndexOf(Component c) 
   {
-    Integer layer = getLayer (c);
-    int[] range = layerToRange (layer);
+    int layer = getLayer (c);
+    int[] range = layerToRange(new Integer(layer));
     Component[] comps = getComponents();
     for (int i = range[0]; i < range[1]; ++i)
 	    {
@@ -475,8 +475,8 @@ public class JLayeredPane extends JComponent implements Accessible
   public void remove (int index)
   {
     Component c = getComponent (index);
-    Integer layer = getLayer (c);
-    decrLayer (layer);
+    int layer = getLayer (c);
+    decrLayer (new Integer(layer));
     componentToLayer.remove (c);
     super.remove (index);
     revalidate();

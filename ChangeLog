@@ -1,5 +1,22 @@
 2004-12-14  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/swing/JLayeredPane.java,
+	libraries/javalib/javax/swing/JInternalFrame.java:
+        Resynced with GNU Classpath.
+
+	2004-12-13  Michael Koch  <konqueror@gmx.de>
+
+        * javax/swing/JLayeredPane.java
+        (getLayer): Fixed return type, made public.
+        (getPosition): Use new getLayer().
+        (SetPosition): Likewise.
+        (getIndexOf): Likewise.
+        (remove): Likewise.
+        * javax/swing/JInternalFrame.java
+        (getLayer): Use new JLayeredPane.getLayer().
+
+2004-12-14  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffe/main.c:
 	Fixed broken .class ending detection to make gjdoc run again.
 

@@ -860,7 +860,7 @@ public class JInternalFrame extends JComponent implements Accessible,
   {
     JDesktopPane pane = getDesktopPane();
     if (pane != null)
-      return pane.getLayer(this).intValue();
+      return pane.getLayer(this);
     return -1;
   }
 
