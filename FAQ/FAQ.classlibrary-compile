@@ -25,6 +25,16 @@ the version used by the kaffe developers.
 If you want to rebuild not only Klasses.jar, but also the jar-files of
 Kaffe extensions, type "make CLASSDIRS=all Klasses".
 
+Why don't I get a working rt.jar even though the 'make' went fine?
+------------------------------------------------------------------
+
+There is a bug in kaffe's libraries/javalib/Makefile.am so that it
+creates a rt.jar file even if the class library compilation step
+doesn't succeed, leading to missing classes in rt.jar. A fix for that
+one would be most welcome.
+
+As a workaround, you can grep the output of 'make' for "error".
+
 How do I set the compiler?
 --------------------------
 

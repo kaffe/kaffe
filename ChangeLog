@@ -1,3 +1,12 @@
+2003-05-13 Benja Fallenstein <b.fallenstein@gmx.de>
+
+	* libraries/javalib/java/security/MessageDigest.java:
+	Fixed problems with classes extending MessageDigest instead of
+	MessageDigestSpi.
+
+	* FAQ/FAQ.classlibrary-compile:
+	Added FAQ entry on detecting compilation errors.
+
 2003-05-12  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/jit3/slots.c,

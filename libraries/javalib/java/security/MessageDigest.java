@@ -19,16 +19,23 @@ import java.util.Arrays;
 
 // Note: it is a historical screwup that this class extends MessageDigestSpi.
 // It should not but does. Unfortunately, MessageDigestSpi is abstract, and
-// this class inherits that abstractness. That is why we must be able to
-// cast the engine we get from the provider to a MessageDigest object instead
-// of a MessageDigestSpi object (see ***note below). Normally this class
-// would keep an instance of MessageDigestSpi in a private field, but instead
-// 'this' is that instance, so we don't need a separate field for it.
+// this class inherits that abstractness. As a consequence, a number of classes
+// that should extend MessageDigestSpi extend MessageDigest instead.
+
+// On the other hand, *some* classes that should extend MessageDigestSpi
+// *do* extend it. We need to handle that too.
+
+// Therefore, this class proxies all calls to its engine-- but the engine is,
+// by default, 'this'. When we need to construct a MessageDigest object
+// wrapping a MessageDigestSpi object, we use a concrete subclass of
+// MessageDigest, NonSpiMessageDigest, and change its 'engine' field
+// to the actual MessageDigestSpi. Calling engine methods on a
+// NonSpiMessageDigest object throws an UnsupportedOperationException.
 
 public abstract class MessageDigest extends MessageDigestSpi {
 	private static final String ENGINE_CLASS = "MessageDigest";
 	private final String algorithm;
-   /**	private MessageDigestSpi engine; **/
+        private MessageDigestSpi engine = this;
 	private Provider provider;
 
 	protected MessageDigest(String algorithm) {
@@ -49,9 +56,15 @@ public abstract class MessageDigest extends MessageDigestSpi {
 	}
 
 	private static MessageDigest getInstance(Security.Engine e) {
-		MessageDigest md = (MessageDigest)e.getEngine(); // ***note
-		// should be: md = new MessageDigest(e.algorithm);
-	  /**	md.engine = (MessageDigestSpi)e.engine;	  **/
+		MessageDigest md;
+		Object o = e.getEngine();
+		if(o instanceof MessageDigest) {
+			md = (MessageDigest)o;
+		} else {
+			md = new NonSpiMessageDigest(e.algorithm);
+			md.engine = (MessageDigestSpi)o;
+		}
+
 		md.provider = e.getProvider();
 		return md;
 	}
@@ -61,11 +74,11 @@ public abstract class MessageDigest extends MessageDigestSpi {
 	}
 
 	public void update(byte input) {
-		/*engine.*/engineUpdate(input);
+		engine.engineUpdate(input);
 	}
 
 	public void update(byte[] input, int offset, int len) {
-		/*engine.*/engineUpdate(input, offset, len);
+		engine.engineUpdate(input, offset, len);
 	}
 
 	public void update(byte[] input) {
@@ -73,14 +86,14 @@ public abstract class MessageDigest extends MessageDigestSpi {
 	}
 
 	public byte[] digest() {
-		byte[] rtn = /*engine.*/engineDigest();
-		/*engine.*/engineReset();
+		byte[] rtn = engine.engineDigest();
+		engine.engineReset();
 		return rtn;
 	}
 
 	public int digest(byte[] buf, int offset, int len)
 			throws DigestException {
-		int digestLen = /*engine.*/engineGetDigestLength();
+		int digestLen = engine.engineGetDigestLength();
 		if (len < digestLen) {
 			throw new DigestException("buf.length < " + digestLen);
 		}
@@ -103,7 +116,7 @@ public abstract class MessageDigest extends MessageDigestSpi {
 	}
 
 	public void reset() {
-		/*engine.*/engineReset();
+		engine.engineReset();
 	}
 
 	public final String getAlgorithm() {
@@ -111,11 +124,40 @@ public abstract class MessageDigest extends MessageDigestSpi {
 	}
 
 	public final int getDigestLength() {
-		return /*engine.*/engineGetDigestLength();
+		return engine.engineGetDigestLength();
 	}
 
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	private static String NONSPI_MSG =
+		"This MessageDigest is not a MessageDigestSpi. "+
+		"MessageDigestSpi methods should not be used "+
+		"on MessageDigest objects."; 
+
+	private static class NonSpiMessageDigest extends MessageDigest {
+		protected NonSpiMessageDigest(String algorithm) {
+			super(algorithm);
+		}
+		protected int engineGetDigestLength() {
+			throw new UnsupportedOperationException(NONSPI_MSG);
+		}
+		protected void engineUpdate(byte input) {
+			throw new UnsupportedOperationException(NONSPI_MSG);
+		}
+		protected void engineUpdate(byte[] input, int offset, int len) {
+			throw new UnsupportedOperationException(NONSPI_MSG);
+		}
+		protected byte[] engineDigest() {
+			throw new UnsupportedOperationException(NONSPI_MSG);
+		}
+		protected int engineDigest(byte[] buf, int offset, int len) {
+			throw new UnsupportedOperationException(NONSPI_MSG);
+		}
+		protected void engineReset() {
+			throw new UnsupportedOperationException(NONSPI_MSG);
+		}
 	}
 }
 
