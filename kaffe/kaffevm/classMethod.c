@@ -1374,6 +1374,13 @@ Hjava_lang_Class *loadClass(Utf8Const *name,
 				/* Loading is this thread's responsibility. */
 				if( loader )
 				{
+DBG(VMCLASSLOADER,
+	/* Announce when VM calls class loaders.. */
+	dprintf("Calling user-defined class loader %s - loadClass(%s)\n",
+		CLASS_CNAME(OBJECT_CLASS(&loader->base)),
+		ce->name->data);
+)
+
 					/* Use a user defined loader. */
 					retval = userLoadClass(ce,
 							       loader,
@@ -1381,6 +1388,12 @@ Hjava_lang_Class *loadClass(Utf8Const *name,
 				}
 				else
 				{
+DBG(VMCLASSLOADER,
+	/* Announce when VM calls class loaders.. */
+	dprintf("Calling internal class loader for %s\n",
+		ce->name->data);
+)
+
 					/* Use the primordial loader. */
 					retval = findClass(ce, einfo);
 				}
@@ -1467,6 +1480,13 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 	lockMutex(centry);
 	if (centry->data.cl == 0) {
 		centry->state = NMS_LOADING;
+
+DBG(VMCLASSLOADER,
+	/* Announce when VM calls class loaders.. */
+	dprintf("Calling internal class loader for startup class %s\n",
+		name);
+)
+
 		clazz = findClass(centry, &info);
 		if (clazz == 0) {
 			goto bad;

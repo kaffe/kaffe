@@ -239,6 +239,12 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 	if (checkException())
 		goto done;
 
+DBG(VMCLASSLOADER,
+	/* Announce when VM calls class loaders.. */
+	dprintf("Calling user-defined \"startup\" class loader "
+		"kaffe/lang/AppClassLoader - loadClass(%s)\n", exec);
+)
+
 	mcls = (*env)->CallObjectMethod(env,
 					loader,
 					lmth,

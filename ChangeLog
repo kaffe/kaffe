@@ -1,3 +1,10 @@
+2003-05-25 Jim Pick <jim@kaffe.org>
+
+	* kaffe/kaffe/main.c,
+	kaffe/kaffevm/classMethod.c:
+	Implement "-vmdebug VMCLASSLOADER" flag to show what class loader
+	is being used to load classes.	
+
 2003-05-24 Tim Stack <stack@cs.utah.edu>
 
 	* include/Makefile.am:
