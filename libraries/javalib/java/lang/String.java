@@ -15,6 +15,8 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Comparator;
 import java.util.Locale;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import kaffe.io.ByteToCharConverter;
 import kaffe.io.CharToByteConverter;
 
@@ -657,4 +659,121 @@ final native public static synchronized void unintern0(String str);
     return value;
   }
 
+  /**
+   * Test if this String matches a regular expression. This is shorthand for
+   * <code>{@link Pattern}.matches(regex, this)</code>.
+   *
+   * @param regex the pattern to match
+   * @return true if the pattern matches
+   * @throws NullPointerException if regex is null
+   * @throws PatternSyntaxException if regex is invalid
+   * @see Pattern#matches(String, CharSequence)
+   * @since 1.4
+   */
+  public boolean matches(String regex)
+  {
+    return Pattern.matches(regex, this);
+  }
+
+  /**
+   * Replaces the first substring match of the regular expression with a
+   * given replacement. This is shorthand for <code>{@link Pattern}
+   *   .compile(regex).matcher(this).replaceFirst(replacement)</code>.
+   *
+   * @param regex the pattern to match
+   * @param replacement the replacement string
+   * @return the modified string
+   * @throws NullPointerException if regex or replacement is null
+   * @throws PatternSyntaxException if regex is invalid
+   * @see #replaceAll(String, String)
+   * @see Pattern#compile(String)
+   * @see Pattern#matcher(CharSequence)
+   * @see Matcher#replaceFirst(String)
+   * @since 1.4
+   */
+  public String replaceFirst(String regex, String replacement)
+  {
+    return Pattern.compile(regex).matcher(this).replaceFirst(replacement);
+  }
+
+  /**
+   * Replaces all matching substrings of the regular expression with a
+   * given replacement. This is shorthand for <code>{@link Pattern}
+   *   .compile(regex).matcher(this).replaceAll(replacement)</code>.
+   *
+   * @param regex the pattern to match
+   * @param replacement the replacement string
+   * @return the modified string
+   * @throws NullPointerException if regex or replacement is null
+   * @throws PatternSyntaxException if regex is invalid
+   * @see #replaceFirst(String, String)
+   * @see Pattern#compile(String)
+   * @see Pattern#matcher(CharSequence)
+   * @see Matcher#replaceAll(String)
+   * @since 1.4
+   */
+  public String replaceAll(String regex, String replacement)
+  {
+    return Pattern.compile(regex).matcher(this).replaceAll(replacement);
+  }
+
+  /**
+   * Split this string around the matches of a regular expression. Each
+   * element of the returned array is the largest block of characters not
+   * terminated by the regular expression, in the order the matches are found.
+   *
+   * <p>The limit affects the length of the array. If it is positive, the
+   * array will contain at most n elements (n - 1 pattern matches). If
+   * negative, the array length is unlimited, but there can be trailing empty
+   * entries. if 0, the array length is unlimited, and trailing empty entries
+   * are discarded.
+   *
+   * <p>For example, splitting "boo:and:foo" yields:<br>
+   * <table border=0>
+   * <th><td>Regex</td> <td>Limit</td> <td>Result</td></th>
+   * <tr><td>":"</td>   <td>2</td>  <td>{ "boo", "and:foo" }</td></tr>
+   * <tr><td>":"</td>   <td>t</td>  <td>{ "boo", "and", "foo" }</td></tr>
+   * <tr><td>":"</td>   <td>-2</td> <td>{ "boo", "and", "foo" }</td></tr>
+   * <tr><td>"o"</td>   <td>5</td>  <td>{ "b", "", ":and:f", "", "" }</td></tr>
+   * <tr><td>"o"</td>   <td>-2</td> <td>{ "b", "", ":and:f", "", "" }</td></tr>
+   * <tr><td>"o"</td>   <td>0</td>  <td>{ "b", "", ":and:f" }</td></tr>
+   * </table>
+   *
+   * <p>This is shorthand for
+   * <code>{@link Pattern}.compile(regex).split(this, limit)</code>.
+   *
+   * @param regex the pattern to match
+   * @param limit the limit threshold
+   * @return the array of split strings
+   * @throws NullPointerException if regex or replacement is null
+   * @throws PatternSyntaxException if regex is invalid
+   * @see Pattern#compile(String)
+   * @see Pattern#split(CharSequence, int)
+   * @since 1.4
+   */
+  public String[] split(String regex, int limit)
+  {
+    return Pattern.compile(regex).split(this, limit);
+  }
+
+  /**
+   * Split this string around the matches of a regular expression. Each
+   * element of the returned array is the largest block of characters not
+   * terminated by the regular expression, in the order the matches are found.
+   * The array length is unlimited, and trailing empty entries are discarded,
+   * as though calling <code>split(regex, 0)</code>.
+   *
+   * @param regex the pattern to match
+   * @return the array of split strings
+   * @throws NullPointerException if regex or replacement is null
+   * @throws PatternSyntaxException if regex is invalid
+   * @see #split(String, int)
+   * @see Pattern#compile(String)
+   * @see Pattern#split(CharSequence, int)
+   * @since 1.4
+   */
+  public String[] split(String regex)
+  {
+    return Pattern.compile(regex).split(this, 0);
+  }
 }
