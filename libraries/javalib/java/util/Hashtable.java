@@ -234,7 +234,7 @@ public class Hashtable extends Dictionary
   public Hashtable(Map m)
   {
     this(Math.max(m.size() * 2, DEFAULT_CAPACITY), DEFAULT_LOAD_FACTOR);
-    putAllInternal(m);
+    putAll(m);
   }
 
   /**
@@ -333,11 +333,22 @@ public class Hashtable extends Dictionary
    */
   public synchronized boolean contains(Object value)
   {
-    /* delegate to non-overridable worker method 
-     * to avoid blowing up the stack, when called 
-     * from overridden contains[Value]() method.
-     */
-    return internalContainsValue(value);
+    for (int i = buckets.length - 1; i >= 0; i--)
+      {
+        HashEntry e = buckets[i];
+        while (e != null)
+          {
+            if (value.equals(e.value))
+              return true;
+            e = e.next;
+          }
+      }
+
+    // Must throw on null argument even if the table is empty
+    if (value == null)
+      throw new NullPointerException();
+ 
+    return false;  
   }
 
   /**
@@ -354,41 +365,9 @@ public class Hashtable extends Dictionary
    */
   public boolean containsValue(Object value)
   {
-    /* delegate to older method to make sure code overwriting it 
-     * continues to work.
-     */
+    // Delegate to older method to make sure code overriding it continues 
+    // to work.
     return contains(value);
-  }
-
-  /**
-   * Returns true if this Hashtable contains a value <code>o</code>, such that
-   * <code>o.equals(value)</code>. This is an internal worker method
-   * called by <code>contains()</code> and <code>containsValue()</code>.
-   *
-   * @param value the value to search for in this Hashtable
-   * @return true if at least one key maps to the value
-   * @see #contains(Object)
-   * @see #containsKey(Object)
-   * @throws NullPointerException if <code>value</code> is null
-   */
-  private boolean internalContainsValue(Object value)
-  {
-    for (int i = buckets.length - 1; i >= 0; i--)
-      {
-        HashEntry e = buckets[i];
-        while (e != null)
-          {
-            if (value.equals(e.value))
-              return true;
-            e = e.next;
-          }
-      }
-
-    // Must throw on null argument even if the table is empty
-    if (value == null)
-      throw new NullPointerException();
- 
-    return false;
   }
 
   /**
@@ -873,9 +852,9 @@ public class Hashtable extends Dictionary
   }
 
   /**
-   * A simplified, more efficient internal implementation of putAll(). The 
-   * Map constructor and clone() should not call putAll or put, in order to 
-   * be compatible with the JDK implementation with respect to subclasses.
+   * A simplified, more efficient internal implementation of putAll(). clone() 
+   * should not call putAll or put, in order to be compatible with the JDK 
+   * implementation with respect to subclasses.
    *
    * @param m the map to initialize this from
    */
