@@ -431,32 +431,13 @@ dnl Checks for libraries for X related libraries.
 AC_PATH_X
 if test "$have_x" = "yes" ; then
 	AC_DEFINE(HAVE_X)
-fi
-if test "${x_libraries}" != NONE && test -n "${x_libraries}"; then
-	X_LIBRARIES=-L`echo ${x_libraries} | sed -e "s/:/ -L/g"`
-fi
-# we must add -lX11 even if x_libraries is empty
-if test "$have_x" = "yes" ; then
+	if test "${x_libraries}" != NONE && test -n "${x_libraries}"; then
+		X_LIBRARIES=-L`echo ${x_libraries} | sed -e "s/:/ -L/g"`
+	fi
 	X_LIBRARIES="$X_LIBRARIES -lX11"
-fi
-if test "${x_includes}" != NONE && test -n "${x_includes}"; then
-	X_INCLUDES=-I`echo ${x_includes} | sed -e "s/:/ -I/g"`
-	# This hack looks for libjpeg.a in /usr/local/lib and for
-	# jpeglib.h in /usr/local/include.
-	# It is intended for users who do not set their LDFLAGS env
-	# variable properly before invoking configure.
-	#
-	# The reason is that the config files are currently missing a 
-	# HAVE_JPEGLIB flag which would allow conditional reference to
-	# the functions in this library.
-	GUESSWHEREJPEGLIBIS="/usr/local"
-	for DIR in $GUESSWHEREJPEGLIBIS
-	do
-		if test -r $DIR/include/jpeglib.h -a -r $DIR/lib/libjpeg.a; then
-			X_INCLUDES="$X_INCLUDES -I$DIR/include"
-			JPEG_LIBRARIES="-L$DIR/lib -ljpeg"
-		fi
-	done
+	if test "${x_includes}" != NONE && test -n "${x_includes}"; then
+		X_INCLUDES=-I`echo ${x_includes} | sed -e "s/:/ -I/g"`
+	fi
 fi
 AC_SUBST(X_INCLUDES)
 AC_SUBST(X_LIBRARIES)
@@ -465,9 +446,13 @@ AC_CHECK_LIBRARY(ipc,shmat,X_LIBRARIES)
 OLIBS=$LIBS
 LIBS="$LIBS $X_LIBRARIES"
 AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBRARIES)
+AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBRARIES)
+AC_CHECK_LIBRARY(gif,DGifOpenFileHandle,GIF_LIBRARIES)
 LIBS=$OLIBS
 AC_SUBST(JPEG_LIBRARIES)
-AWTLIB="$X_LIBRARIES $JPEG_LIBRARIES"
+AC_SUBST(PNG_LIBRARIES)
+AC_SUBST(GIF_LIBRARIES)
+AWTLIB="$X_LIBRARIES $JPEG_LIBRARIES $PNG_LIBRARIES $GIF_LIBRARIES"
 AC_SUBST(AWTLIB)
 
 dnl -------------------------------------------------------------------------
@@ -476,9 +461,12 @@ dnl =========================================================================
 dnl Checks for header files.
 dnl -------------------------------------------------------------------------
 
+OCPPFLAGS=$CPPFLAGS
+CPPFLAGS="$CPPFLAGS -I/usr/local/include"
 AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/socket.h winnt.h wintypes.h wtypes.h winbase.h windows.h winsock.h dlfcn.h sys/ioctl.h sys/filio.h malloc.h alloca.h sys/param.h sys/utsname.h pwd.h asm/sigcontext.h sigcontext.h asm/signal.h signal.h mach-o/rld.h sys/types.h sys/stat.h string.h sys/select.h memory.h bsd/libc.h dl.h features.h sys/wait.h zlib.h netinet/tcp.h)
+AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/socket.h winnt.h wintypes.h wtypes.h winbase.h windows.h winsock.h dlfcn.h sys/ioctl.h sys/filio.h malloc.h alloca.h sys/param.h sys/utsname.h pwd.h asm/sigcontext.h sigcontext.h asm/signal.h signal.h mach-o/rld.h sys/types.h sys/stat.h string.h sys/select.h memory.h bsd/libc.h dl.h features.h sys/wait.h zlib.h netinet/tcp.h jpeglib.h gif.h png.h)
 AC_HEADER_DIRENT
+CPPFLAGS=$OCPPFLAGS
 
 dnl -------------------------------------------------------------------------
 
