@@ -1,3 +1,32 @@
+2000-06-22  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/clib/math/BigInteger.c
+	(Java_java_math_BigInteger_modpow0): mpz_powm() does not work with
+	negative exponent.
+	(Java_java_math_BigInteger_modinv0): convert negative remainder to
+	positive equivalent.
+	This fix Volano License bug.
+	
+	* libraries/javalib/java/math/BigInteger.java (toByteArray): don't
+	modify this by copy.  Close PR#627.
+
+	* libraries/javalib/java/text/SimpleDateFormat.java (parse): avoid
+	ArrayOutOfBoundException.
+
+	* libraries/javalib/java/util/GregorianCalendar.java
+	(computeDateTime): if YEAR is not set, default it to start of
+	epoch 1 January 1970.
+	TODO: does the same with other fields.
+
+	* libraries/javalib/java/sql/Timestamp.java
+	libraries/javalib/java/sql/Date.java
+	libraries/javalib/java/sql/Time.java: format and parse with
+	SimpleDateFormat and DecimalFormat.
+
+	* libraries/clib/native/System.c (initProxyProperties): build
+	properties http.proxyHost, http.proxyPort and http.nonProxyHosts
+	from environment variables $http_proxy and $no_proxy.
+
 2000-06-21  Edouard G. Parmelan  <egp@free.fr>
 
 	* kaffe/kaffevm/locks.h (unlockMutex, unlockStaticMutex): enclose
