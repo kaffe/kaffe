@@ -11,6 +11,8 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <native.h>
+#include "../../../kaffe/kaffevm/baseClasses.h"
+#include "../../../kaffe/kaffevm/support.h"
 #include "Compiler.h"
 
 void

@@ -15,6 +15,7 @@
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "../../../kaffe/kaffevm/itypes.h"
+#include "../../../kaffe/kaffevm/soft.h"
 #include "Array.h"
 #include "Boolean.h"
 #include "Byte.h"
