@@ -1052,7 +1052,7 @@ public class Container extends Component
    */
   protected String paramString()
   {
-    if (layoutMgr != null)
+    if (layoutMgr == null)
       return super.paramString();
 
     StringBuffer sb = new StringBuffer();
