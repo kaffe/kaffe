@@ -1,3 +1,7 @@
+Sat Sep 18 16:04:46 1998  Petter Reinholdtsen <pere@td.org.uit.no>
+
+	* libraries/javalib/java/lang/Byte.java: add missing shortValue()
+
 Mon Sep 14 15:37:04 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/clib/zip/Deflater.c
