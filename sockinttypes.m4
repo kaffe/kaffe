@@ -90,7 +90,7 @@ if test "$ac_cv_type_in_port_t" != yes; then
 	return (sizeof(addr.sin_port) == sizeof(char)) ? 0 : 1;
     }
     ], [ac_cv_sin_port_size=char])
-    if test "ac_cv_sin_port_size" = unknown; then
+    if test "$ac_cv_sin_port_size" = unknown; then
 	AC_MSG_ERROR([Failed to get size of sin_port in struct sockaddr_in.])
     fi
     AC_DEFINE_UNQUOTED(in_port_t, unsigned $ac_cv_sin_port_size,
@@ -144,7 +144,7 @@ if test "$ac_cv_type_sa_family_t" != yes; then
 	return (sizeof(addr.sa_family) == sizeof(char)) ? 0 : 1;
     }
     ], [ac_cv_sa_family_size=char])
-    if test "ac_cv_sa_family_size" = unknown; then
+    if test "$ac_cv_sa_family_size" = unknown; then
 	AC_MSG_ERROR([Failed to get size of sa_family in struct sockaddr.])
     fi
     AC_DEFINE_UNQUOTED(sa_family_t, unsigned $ac_cv_sa_family_size,

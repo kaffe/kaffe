@@ -970,7 +970,6 @@ AC_CHECK_FUNCS([getcwd chdir getwd gettimeofday ftime time uname getuid])
 AC_CHECK_FUNCS([localtime])
 
 AM_ICONV
-LIBS="$LIBS $LIBICONV"
 
 dnl getifaddrs replacement for linux
 AC_REPLACE_FUNCS([getifaddrs])

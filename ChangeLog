@@ -1,3 +1,15 @@
+2003-06-26  Motoyuki Kasahara <m-kasahr@sra.co.jp>
+
+	* configure.in:
+	Don't add $LIBICONV to LIBS, it can break other tests.
+
+	* libraries/clib/native/Makefile.am:
+	(libnative_la_LIBADD) added LTLIBICONV
+
+	* sockinttypes.m4:
+	If configure fails to get size of sin_port in struct sockaddr_in,
+	it outputs an error message and exits immediately.
+	
 2003-06-26  Dalibor Topic <robilad@yahoo.com>
 
 	Updated iconv detection to GNU gettext release 0.11.3. The new
