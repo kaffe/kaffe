@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # depcomp - compile a program generating dependencies as side-effects
-# Copyright 1999, 2000 Free Software Foundation, Inc.
+# Copyright 1999, 2000, 2003 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -172,19 +172,25 @@ sgi)
 
 aix)
   # The C for AIX Compiler uses -M and outputs the dependencies
-  # in a .u file.  This file always lives in the current directory.
-  # Also, the AIX compiler puts `$object:' at the start of each line;
-  # $object doesn't have directory information.
-  stripped=`echo "$object" | sed -e 's,^.*/,,' -e 's/\(.*\)\..*$/\1/'`
+  # in a .u file.  In older versions, this file always lives in the
+  # current directory.  Also, the AIX compiler puts `$object:' at the
+  # start of each line; $object doesn't have directory information.
+  # Version 6 uses the directory in both cases.
+  stripped=`echo "$object" | sed 's/\(.*\)\..*$/\1/'`
   tmpdepfile="$stripped.u"
-  outname="$stripped.o"
   if test "$libtool" = yes; then
     "$@" -Wc,-M
   else
     "$@" -M
   fi
-
   stat=$?
+
+  if test -f "$tmpdepfile"; then :
+  else
+    stripped=`echo "$stripped" | sed 's,^.*/,,'`
+    tmpdepfile="$stripped.u"
+  fi
+
   if test $stat -eq 0; then :
   else
     rm -f "$tmpdepfile"
@@ -192,6 +198,7 @@ aix)
   fi
 
   if test -f "$tmpdepfile"; then
+    outname="$stripped.o"
     # Each line is of the form `foo.o: dependent.h'.
     # Do two passes, one to just change these to
     # `$object: dependent.h' and one to simply `dependent.h:'.
@@ -278,8 +285,8 @@ tru64)
    fi
    if test -f "$tmpdepfile"; then
       sed -e "s,^.*\.[a-z]*:,$object:," < "$tmpdepfile" > "$depfile"
-      # That's a space and a tab in the [].
-      sed -e 's,^.*\.[a-z]*:[ 	]*,,' -e 's,$,:,' < "$tmpdepfile" >> "$depfile"
+      # That's a tab and a space in the [].
+      sed -e 's,^.*\.[a-z]*:[	 ]*,,' -e 's,$,:,' < "$tmpdepfile" >> "$depfile"
    else
       echo "#dummy" > "$depfile"
    fi
@@ -292,7 +299,7 @@ tru64)
 
 dashmstdout)
   # Important note: in order to support this mode, a compiler *must*
-  # always write the proprocessed file to stdout, regardless of -o.
+  # always write the preprocessed file to stdout, regardless of -o.
   "$@" || exit $?
 
   # Remove the call to Libtool.
@@ -388,7 +395,7 @@ makedepend)
 
 cpp)
   # Important note: in order to support this mode, a compiler *must*
-  # always write the proprocessed file to stdout.
+  # always write the preprocessed file to stdout.
   "$@" || exit $?
 
   # Remove the call to Libtool.
@@ -430,7 +437,7 @@ cpp)
 
 msvisualcpp)
   # Important note: in order to support this mode, a compiler *must*
-  # always write the proprocessed file to stdout, regardless of -o,
+  # always write the preprocessed file to stdout, regardless of -o,
   # because we must use -o when running libtool.
   "$@" || exit $?
   IFS=" "
