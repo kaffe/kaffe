@@ -16,6 +16,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.lang.Character;
 import java.lang.String;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.jar.*;
 import kaffe.management.Classpath;
@@ -67,9 +68,11 @@ public static void main(String[] args)
 		/* Get method and invoke */
 		Method meth = commandClass.getDeclaredMethod("main", params);
 		meth.invoke(null, iargs);
-	}
-	catch (Exception misc) {
-		misc.printStackTrace();
+	} catch (InvocationTargetException e) {
+		e.getTargetException().printStackTrace();
+		System.exit(1);
+	} catch (Exception e) {
+		e.printStackTrace();
 		System.exit(1);
 	}
 }
