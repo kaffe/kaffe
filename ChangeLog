@@ -1,3 +1,8 @@
+2004-08-28  Alexander Boettcher  <ab764283@os.inf.tu-dresden.de>
+
+	* kaffe/kaffevm/debug.c
+	(kaffe_dprintf): Use KWRITE instead of write.
+
 2004-08-27  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/support.c: moved libffi related stuff ...

@@ -36,6 +36,7 @@
 #include "gtypes.h"
 #include "gc.h"
 #include "debug.h"
+#include "jsyscall.h"
 
 /* Default debugging mask to use (if debug is enabled) */
 #define DEFAULT_DEBUG_MASK	DBG_NONE
@@ -388,6 +389,8 @@ kaffe_dprintf(const char *fmt, ...)
 	int n;
 	int max;
 	va_list args;
+	ssize_t w = 0;
+	int rc;
 
 	va_start(args, fmt);
 	if (!debugBuffer)
@@ -417,13 +420,14 @@ kaffe_dprintf(const char *fmt, ...)
 		 */
 		max = 0;
 		while (max < n) {
-			int w =  write(2,
-				       debugBuffer + max,
-				       (size_t)(n - max));
+                        rc = KWRITE(2,
+                                       debugBuffer + max,
+                                       (size_t)n - max,&w);
+
 			if (w >= 0)
 				/* ignore errors */
 				max += w;
-			else if (errno != SIGINT)
+			else if (rc != SIGINT)
 			  {
 		            /* Stderr should have been closed by another thread.
 			     * We may only exit without printing anything.
