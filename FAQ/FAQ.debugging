@@ -47,6 +47,31 @@ symbols in backtraces in GDB. If you're going to debug Kaffe on a
 regular basis, you should always include the xdebugging support.
 
 
+Regression Tests
+================
+
+Regression tests are kept in test/regression/.  Regression tests are
+just simple stand-alone .java programs. They have special comments at
+the end that influence how the tester treats their output.  Generally,
+the "correct" output is included in the comment, and the test script
+simply compares the output generated.  
+
+To add a new test, just add it to the list of tests in aMakefile.am,
+regenerate the Makefile.in, re-configure, and run 'make check'.  (Ugh,
+the need to re-generate Makefile.in is awkward and lame.)
+
+To run a single test (or a subset of tests) set the TEST variable,
+like so:
+	cd test/regression
+	make check TESTS="ThreadInterrupt.java IndexTest.java"
+
+Note, you can test new tests without doing the whole Makefile.am thing
+by just including the test in the test/regression directory and then
+setting the TESTS environment variable to that test.  For example:
+
+	$ vi test/regression/OneOffHackTest.java
+	$ make check TESTS="OneOffHackTest.java"
+
 
 Other Stuff
 ===========
@@ -54,9 +79,4 @@ Other Stuff
 Debugging Performance: Look at FAQ.timing and FAQ.xprofiling for
 details on getting performance information out of the VM.
 
-Regression Testing: Regression tests are kept in test/regression/.
-Regression tests are just simple stand-alone .java programs. They
-have special comments at the end that influence how the tester treats
-their output. To add a new test, just add it to Makefile.am and
-regenerate the Makefile.in, and re-configure.
 
