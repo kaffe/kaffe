@@ -62,8 +62,10 @@ public final class DataBufferInt extends DataBuffer
    */
   public DataBufferInt(int size)
   {
-    super(TYPE_INT, size);
+    super(TYPE_INT, size, 1, 0);
+    bankData = new int[1][];
     data = new int[size];
+    bankData[0] = data;
   }
 
   /**
@@ -92,8 +94,10 @@ public final class DataBufferInt extends DataBuffer
    */
   public DataBufferInt(int[] dataArray, int size)
   {
-    super(TYPE_INT, size);
+    super(TYPE_INT, size, 1, 0);
+    bankData = new int[1][];
     data = dataArray;
+    bankData[0] = data;
   }
     
   /**
@@ -111,7 +115,9 @@ public final class DataBufferInt extends DataBuffer
   public DataBufferInt(int[] dataArray, int size, int offset)
   {
     super(TYPE_INT, size, 1, offset);
+    bankData = new int[1][];
     data = dataArray;
+    bankData[0] = data;
   }
   
   /**

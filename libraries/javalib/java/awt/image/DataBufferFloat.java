@@ -64,8 +64,10 @@ public final class DataBufferFloat
    */
   public DataBufferFloat(int size)
   {
-    super(TYPE_FLOAT, size);
+    super(TYPE_FLOAT, size, 1, 0);
+    bankData = new float[1][];
     data = new float[size];
+    bankData[0] = data;
   }
 
   /**
@@ -94,8 +96,10 @@ public final class DataBufferFloat
    */
   public DataBufferFloat(float[] dataArray, int size)
   {
-    super(TYPE_FLOAT, size);
+    super(TYPE_FLOAT, size, 1, 0);
+    bankData = new float[1][];
     data = dataArray;
+    bankData[0] = data;
   }
     
   /**
@@ -113,7 +117,9 @@ public final class DataBufferFloat
   public DataBufferFloat(float[] dataArray, int size, int offset)
   {
     super(TYPE_FLOAT, size, 1, offset);
+    bankData = new float[1][];
     data = dataArray;
+    bankData[0] = data;
   }
 
   /**

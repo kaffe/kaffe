@@ -62,8 +62,10 @@ public final class DataBufferByte extends DataBuffer
    */
   public DataBufferByte(int size)
   {
-    super(TYPE_BYTE, size);
+    super(TYPE_BYTE, size, 1, 0);
+    bankData = new byte[1][];
     data = new byte[size];
+    bankData[0] = data;
   }
 
   /**
@@ -92,8 +94,10 @@ public final class DataBufferByte extends DataBuffer
    */
   public DataBufferByte(byte[] dataArray, int size)
   {
-    super(TYPE_BYTE, size);
+    super(TYPE_BYTE, size, 1, 0);
+    bankData = new byte[1][];
     data = dataArray;
+    bankData[0] = data;
   }
     
   /**
@@ -111,7 +115,9 @@ public final class DataBufferByte extends DataBuffer
   public DataBufferByte(byte[] dataArray, int size, int offset)
   {
     super(TYPE_BYTE, size, 1, offset);
+    bankData = new byte[1][];
     data = dataArray;
+    bankData[0] = data;
   }
 
   /**

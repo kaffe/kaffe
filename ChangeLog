@@ -1,5 +1,25 @@
 2004-10-14  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/image/DataBufferByte.java,
+	libraries/javalib/java/awt/image/DataBufferDouble.java,
+	libraries/javalib/java/awt/image/DataBufferFloat.java,
+	libraries/javalib/java/awt/image/DataBufferInt.java,
+	libraries/javalib/java/awt/image/DataBufferShort.java,
+	libraries/javalib/java/awt/image/DataBufferUShort.java:
+	Resynced with GNU Classpath.
+
+	2004-10-13  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/image/DataBufferByte.java,
+        java/awt/image/DataBufferDouble.java,
+        java/awt/image/DataBufferFloat.java,
+        java/awt/image/DataBufferInt.java,
+        java/awt/image/DataBufferShort.java,
+        java/awt/image/DataBufferUShort.java:
+        Fix initialization of bankData in constructors.
+
+2004-10-14  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/BindException.java,
 	libraries/javalib/java/net/ConnectException.java,
 	libraries/javalib/java/net/ContentHandler.java,

@@ -66,8 +66,10 @@ public final class DataBufferDouble
    */
   public DataBufferDouble(int size)
   {
-    super(TYPE_DOUBLE, size);
+    super(TYPE_DOUBLE, size, 1, 0);
+    bankData = new double[1][];
     data = new double[size];
+    bankData[0] = data;
   }
 
   /**
@@ -96,8 +98,10 @@ public final class DataBufferDouble
    */
   public DataBufferDouble(double[] dataArray, int size)
   {
-    super(TYPE_DOUBLE, size);
+    super(TYPE_DOUBLE, size, 1, 0);
+    bankData = new double[1][];
     data = dataArray;
+    bankData[0] = data;
   }
     
   /**
@@ -115,7 +119,9 @@ public final class DataBufferDouble
   public DataBufferDouble(double[] dataArray, int size, int offset)
   {
     super(TYPE_DOUBLE, size, 1, offset);
+    bankData = new double[1][];
     data = dataArray;
+    bankData[0] = data;
   }
 
   /**

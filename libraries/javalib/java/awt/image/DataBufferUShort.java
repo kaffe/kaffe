@@ -62,8 +62,10 @@ public final class DataBufferUShort extends DataBuffer
    */
   public DataBufferUShort(int size)
   {
-    super(TYPE_USHORT, size);
+    super(TYPE_USHORT, size, 1, 0);
+    bankData = new short[1][];
     data = new short[size];
+    bankData[0] = data;
   }
 
   /**
@@ -88,8 +90,10 @@ public final class DataBufferUShort extends DataBuffer
    */
   public DataBufferUShort(short[] dataArray, int size)
   {
-    super(TYPE_USHORT, size);
+    super(TYPE_USHORT, size, 1, 0);
+    bankData = new short[1][];
     data = dataArray;
+    bankData[0] = data;
   }
     
   /**
@@ -103,7 +107,9 @@ public final class DataBufferUShort extends DataBuffer
   public DataBufferUShort(short[] dataArray, int size, int offset)
   {
     super(TYPE_USHORT, size, 1, offset);
+    bankData = new short[1][];
     data = dataArray;
+    bankData[0] = data;
   }
 
   /**
