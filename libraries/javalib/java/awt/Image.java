@@ -413,6 +413,7 @@ public void runINPLoop () {
 		}
 
 		img.nativeData = ptr;
+/*
 		w = Toolkit.imgGetWidth( img.nativeData);
 		h = Toolkit.imgGetHeight( img.nativeData);
 		if ( (img.width != w) || (img.height != h) ){
@@ -420,6 +421,7 @@ public void runINPLoop () {
 			img.height = h;
 			img.stateChange( ImageObserver.WIDTH|ImageObserver.HEIGHT, 0, 0, img.width, img.height);
 		}
+*/
 
 		img.flags |= Image.BLOCK_FRAMELOADER;
 		img.stateChange( ImageObserver.FRAMEBITS, 0, 0, img.width, img.height);

@@ -107,11 +107,12 @@ readGif ( GifFileType *gf )
 		createXMaskImage( X, img);
 		trans = -1;
 	  }
-
+/*
 	  if ( delay == 0 )
 		delay = 1000;
 	  else if ( delay < 100 )
 		delay = 100;
+*/
 
 	  img->latency = delay;
 	  img->left = gf->Image.Left;
@@ -155,8 +156,8 @@ readGif ( GifFileType *gf )
 		 */
 		if ( ext[1] & 1 ) {      /* transparent index following */
 		  trans = ext[4];
-		  delay = ((ext[3] << 8) | ext[2]) * 10; /* delay in 1/100 secs */
 		}
+		delay = ((ext[3] << 8) | ext[2]) * 10; /* delay in 1/100 secs */
 	  }
 	  else if ( extCode == 0xff ) {  /* application extension block */
 	  }
