@@ -1,3 +1,9 @@
+2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/net/URL.java,
+	libraries/javalib/java/net/URLStreamHandler.java:
+	Fixed handling of URL given relative to a context URL.
+
 2003-12-30  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* tests/regression/BufferedReaderTest.java: Removed too strict
