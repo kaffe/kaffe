@@ -346,27 +346,28 @@ libengine_la_LDFLAGS = \
 
 libengine_la_SOURCES = \
 	basecode.c \
-	constpool.c \
-	funcs.c \
-	icode.c \
-	labels.c \
-	machine.c \
-	registers.c \
-	seq.c \
-	slots.c
-
-EXTRA_DIST = \
-	Makefile.frag \
 	basecode.h \
 	checks.h \
 	codeproto.h \
+	constpool.c \
 	constpool.h \
+	funcs.c \
+	funcs.h \
+	icode.c \
+	labels.c \
 	labels.h \
+	machine.c \
 	machine.h \
+	registers.c \
 	registers.h \
+	seq.c \
 	seq.h \
+	slots.c \
 	slots.h \
 	stackTrace-impl.h
+
+EXTRA_DIST = \
+	Makefile.frag
 
 DISTCLEANFILES = icode.h jit.def trampolines.c stamp-h01 stamp-h02 stamp-h03
 all: all-am
