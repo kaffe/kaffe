@@ -2,6 +2,8 @@ Thu Aug 12 15:11:31 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/intrp/machine.c: add profFlag definition
 	in order to fix build failure when configured with "intrp"
+	* libraries/javalib/java/io/DataInputStream.java: make skipBytes()
+	always skip the number of bytes requested
 
 Thu Aug 12 14:50:12 PDT 1999 Edouard G. Parmelan <Edouard.Parmelan@quadratec.fr>
 
