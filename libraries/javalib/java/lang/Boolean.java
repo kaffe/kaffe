@@ -19,7 +19,7 @@ final public class Boolean
 
 public Boolean(String s)
 	{
-	value = (s != null && s.toLowerCase.equals("true"));
+	value = (s != null && s.toLowerCase().equals("true"));
 }
 
 public Boolean(boolean value)
