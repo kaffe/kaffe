@@ -82,6 +82,13 @@ thread_free(void *p)
 	gc_free(p);
 }
 
+static
+void *
+thread_realloc(void *p, size_t s)
+{
+	return gc_realloc(p, s, GC_ALLOC_THREADCTX);
+}
+
 /*
  * Initialise threads.
  */
@@ -687,6 +694,7 @@ initNativeThreads(int nativestacksize)
 		java_lang_Thread_MIN_PRIORITY,
 		thread_malloc,
 		thread_free,
+		thread_realloc,
 		broadcastDeath,
 		throwDeath,
 		onDeadlock);

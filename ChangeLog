@@ -1,5 +1,22 @@
 2003-08-24  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-jthreads/jqueue.c,
+	kaffe/kaffevm/systems/unix-jthreads/jqueue.h: Loads of compilation
+	fixes. (Sorry I have not checked what I have commited).
+
+	* kaffe/kaffevm/thread.c: Added thread_realloc.
+	(initNativeThreads) Add thread_realloc in the parameter list to
+	jthread_init
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.h,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.h:
+	(jthread_init) added a new parameter _reallocator to be able to
+	reallocate some memory.
+
+2003-08-24  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/essential.files: Added
 	AttributedCharacterIterator.java and CharacterIterator.java for KJC.
 

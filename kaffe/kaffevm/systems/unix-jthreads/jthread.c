@@ -1202,6 +1202,7 @@ jthread_init(int pre,
 	int maxpr, int minpr,
 	void *(*_allocator)(size_t), 
 	void (*_deallocator)(void*),
+	void *(*_reallocator)(void*,size_t),
 	void (*_destructor1)(void*),
 	void (*_onstop)(void),
 	void (*_ondeadlock)(void))
@@ -1216,7 +1217,7 @@ jthread_init(int pre,
 	 */
 	ignoreSignal(SIGHUP);
 
-	KaffeSetDefaultAllocator(_allocator, _deallocator);
+	KaffeSetDefaultAllocator(_allocator, _deallocator, _reallocator);
 	queuePool = KaffeCreatePool();
 
 #if defined(SIGVTALRM)

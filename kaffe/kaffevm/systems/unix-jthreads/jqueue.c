@@ -12,7 +12,7 @@
 
 static KaffeAllocator gs_default_allocator;
 static KaffeDeallocator gs_default_deallocator;
-static KaffeDeallocator gs_default_reallocator;
+static KaffeReallocator gs_default_reallocator;
 
 void KaffeSetDefaultAllocator(KaffeAllocator allocator,
 			      KaffeDeallocator deallocator,
@@ -75,7 +75,7 @@ KaffeNodeQueue *KaffePoolNewNode(KaffePool *pool)
   if (pool->num_free_nodes == 0)
   {
     int old_free = pool->num_free_nodes;
-    int i;
+    int i, j;
 
     /* We need to increment the number of internal pool nodes.
      * The array of free nodes is reallocated, a new pool 
@@ -98,11 +98,11 @@ KaffeNodeQueue *KaffePoolNewNode(KaffePool *pool)
     /* No more memory to handle threads, abort */
     assert(pool->pools != NULL);
     
-    pool->pools[num_pools-1] = (KaffeNodeQueue *)
-      pool->allocator(sizeof(KaffeNodeQueue)*DEFAULT_NUMBER_NODES_IN_POOL);
+    pool->pools[pool->num_pools-1] = (KaffeNodeQueue *)
+      pool->allocator(sizeof(KaffeNodeQueue)*DEFAULT_NUMBER_OF_NODES_IN_POOL);
 
-    for (i=old_free;i<pool->num_free_nodes;i++)
-      pool->free_nodes[i] = &pool->pools[num_pools-1][i];
+    for (j=0,i=old_free;i<pool->num_free_nodes;j++,i++)
+      pool->free_nodes[i] = &pool->pools[pool->num_pools-1][j];
   }
   assert(pool->num_free_nodes != 0);
 

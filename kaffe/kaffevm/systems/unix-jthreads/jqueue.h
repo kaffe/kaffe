@@ -35,10 +35,12 @@ typedef struct {
 
   KaffeAllocator allocator;
   KaffeDeallocator deallocator;
+  KaffeReallocator reallocator;
 } KaffePool;
 
 void KaffeSetDefaultAllocator(KaffeAllocator allocator,
-			      KaffeDeallocator deallocator);
+			      KaffeDeallocator deallocator,
+			      KaffeReallocator reallocator);
 KaffePool *KaffeCreatePool(void);
 void KaffeDestroyPool(KaffePool *pool);
 KaffeNodeQueue *KaffePoolNewNode(KaffePool *pool);

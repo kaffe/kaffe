@@ -308,11 +308,12 @@ void jthread_initexceptions(exchandler_t _nullHandler,
  * Initialize the thread subsystem.
  *
  */
-void jthread_init(int preemptive,                 /* preemptive scheduling */
-		  int maxpr,                      /* maximum priority */
-		  int minpr,                      /* minimum priority */
-		  void *(*_allocator)(size_t),    /* memory allocator */
-		  void (*_deallocator)(void*),    /* memory deallocator */
+void jthread_init(int preemptive,                	/* preemptive scheduling */
+		  int maxpr,                     	/* maximum priority */
+		  int minpr,                     	/* minimum priority */
+		  void *(*_allocator)(size_t),   	/* memory allocator */
+		  void (*_deallocator)(void*),    	/* memory deallocator */
+		  void *(*_reallocator)(void*,size_t),  /* memory reallocator */
 		  void (*_destructor1)(void*),    /* called when a thread exits */
 		  void (*_onstop)(void),          /* called when a thread is stopped */
 		  void (*_ondeadlock)(void));     /* called when we detect deadlock */
