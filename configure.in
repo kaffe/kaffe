@@ -1279,30 +1279,24 @@ dnl  Use native implementation
 esac],
 [
 dnl  If nothing is set, use native implementation if GNU MP can be found.
-dnl  Otherwise use pure java implementation.
 	if test $ac_cv_lib_gmp_mpz_get_d = no; then
 		if test $ac_cv_lib_gmp___gmpz_get_d = no; then
-		   pure_java_math=true
-		else
-			AC_CHECK_HEADER([gmp.h],
-					[pure_java_math=false],
-					[AC_MSG_WARN([Found GNU MP library, but can't find gmp.h. Using pure java implementation.])
-					pure_java_math=true])
+			AC_MSG_ERROR([Could not find GNU MP library.  Install the gmp development package, or pass --enable-pure-java-math to configure.])
 		fi
-	else
-		AC_CHECK_HEADER([gmp.h],
-				[pure_java_math=false],
-				[AC_MSG_WARN([Found GNU MP library, but can't find gmp.h. Using pure java implementation.])
-				pure_java_math=true])
 	fi
+	AC_CHECK_HEADER([gmp.h],
+			[pure_java_math=false],
+			[AC_MSG_ERROR([Found GNU MP library, but can't find gmp.h.  Install the gmp development package, or pass --enable-pure-java-math to configure.])])
 ]
 )
 
 AM_CONDITIONAL([COND_PURE_JAVA_MATH], [test "$enable_pure_java_math" = yes])
 
 if test x"$pure_java_math" = x"true" ; then
+	AC_MSG_RESULT(Information: Using pure Java math library)
 	MATH_LIB=""
 else
+	AC_MSG_RESULT(Information: Using native math library)
 	MATH_LIB="\$(top_builddir)/libraries/clib/math/libmath.la"
 fi
 
