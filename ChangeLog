@@ -1,3 +1,11 @@
+2003-10-31  Helmer Kraemer <hkraemer@freenet.de>
+	    Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/intrp/icode.h
+	(lcd) Fixed underflow on i686-linux. Use straight
+	< comparisons for longs instead of substracting 
+	one number from the other.
+ 
 2003-10-31  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/net/InetAddress.java:

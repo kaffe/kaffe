@@ -28,8 +28,8 @@
 #define	ashr_long(t, f1, f2)			(t)[0].v.tlong = ((int64)(f1)[0].v.tlong) >> ((f2)[0].v.tint & 63)
 #define	lshr_long(t, f1, f2)			(t)[0].v.tlong = ((uint64)(f1)[0].v.tlong) >> ((f2)[0].v.tint & 63)
 
-#define	lcmp(t, f1, f2)				lcc = ((f2)[0].v.tlong) - ((f1)[0].v.tlong); \
-						(t)[0].v.tint = (lcc < 0 ? -1 : lcc > 0 ? 1 : 0)
+#define	lcmp(t, f1, f2)				do { jlong l2 = ((f2)[0].v.tlong); jlong l1 = ((f1)[0].v.tlong); \
+						(t)[0].v.tint = ((l1 == l2)? 0 : ((l1 > l2) ? -1 : 1)); } while(0);
 
 #define	cvt_int_long(t, f)			(t)[0].v.tlong = (f)[0].v.tint
 #define	cvt_long_int(t, f)			(t)[0].v.tint = (f)[0].v.tlong
