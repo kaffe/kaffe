@@ -10,19 +10,6 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-#
-# Microsoft extension library component.
-#
-# Copyright (c) 1999
-#      Transvirtual Technologies, Inc.  All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution
-# of this file.
-#
-# Class libraries are not currently part of the integrate Make cycle.
-#
-
-
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -72,6 +59,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
+AMDEP = @AMDEP@
+AMTAR = @AMTAR@
 AS = @AS@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
@@ -79,6 +68,9 @@ CC = @CC@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
 CPP = @CPP@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+DEPDIR = @DEPDIR@
 DIRSEP = @DIRSEP@
 DLLTOOL = @DLLTOOL@
 DLOPEN_JAVA_LIBS = @DLOPEN_JAVA_LIBS@
@@ -129,14 +121,31 @@ kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
+#
+# Microsoft extension library component.
+#
+# Copyright (c) 1999
+#      Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file.
+#
+# Class libraries are not currently part of the integrate Make cycle.
+#
+
+
 CLASSFILE = microsoft.jar
 SRCDIRS = com
 
 class_DATA = $(CLASSFILE)
 
-microsoft_jar_SRCS =  	$(com_ms_lang_SRCS)
+microsoft_jar_SRCS = \
+	$(com_ms_lang_SRCS)
 
-com_ms_lang_SRCS =  	com/ms/lang/Delegate.java 	com/ms/lang/MulticastNotSupportedException.java 	com/ms/lang/MulticastDelegate.java
+com_ms_lang_SRCS = \
+	com/ms/lang/Delegate.java \
+	com/ms/lang/MulticastNotSupportedException.java \
+	com/ms/lang/MulticastDelegate.java
 
 
 EXTRA_DIST = $(class_DATA) $(microsoft_jar_SRCS)
@@ -148,14 +157,14 @@ Klasses_jar = $(top_srcdir)/libraries/javalib/Klasses.jar
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../../config/config.h ../../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
+DIST_SOURCES = 
 DATA =  $(class_DATA)
 
-DIST_COMMON =  Makefile.am Makefile.in
+DIST_COMMON =  $(class_DATA) Makefile.am Makefile.in
 
 
-DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -171,19 +180,18 @@ install-classDATA: $(class_DATA)
 	@$(NORMAL_INSTALL)
 	$(mkinstalldirs) $(DESTDIR)$(classdir)
 	@list='$(class_DATA)'; for p in $$list; do \
-	  if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(classdir)/$$p"; \
-	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(classdir)/$$p; \
-	  else if test -f $$p; then \
-	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(classdir)/$$p"; \
-	    $(INSTALL_DATA) $$p $(DESTDIR)$(classdir)/$$p; \
-	  fi; fi; \
+	  if test -f "$$p"; then d= ; else d="$(srcdir)/"; fi; \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(classdir)/$$f"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(classdir)/$$f; \
 	done
 
 uninstall-classDATA:
 	@$(NORMAL_UNINSTALL)
-	list='$(class_DATA)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(classdir)/$$p; \
+	@list='$(class_DATA)'; for p in $$list; do \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " rm -f $(DESTDIR)$(classdir)/$$f"; \
+	  rm -f $(DESTDIR)$(classdir)/$$f; \
 	done
 tags: TAGS
 TAGS:
@@ -194,11 +202,6 @@ distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 subdir = libraries/extensions/microsoft/javalib
 
 distdir: $(DISTFILES)
-	here=`cd $(top_builddir) && pwd`; \
-	top_distdir=`cd $(top_distdir) && pwd`; \
-	distdir=`cd $(distdir) && pwd`; \
-	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu libraries/extensions/microsoft/javalib/Makefile
 	$(mkinstalldirs) $(distdir)/com/ms/lang
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
@@ -268,8 +271,8 @@ maintainer-clean: maintainer-clean-am
 .PHONY: uninstall-classDATA install-classDATA tags distdir info-am info \
 dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
 install-exec install-data-am install-data install-am install \
-uninstall-am uninstall all-redirect all-am all installdirs \
-mostlyclean-generic distclean-generic clean-generic \
+uninstall-am uninstall all-redirect all-am all install-strip \
+installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 

@@ -449,7 +449,15 @@ AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
 AM_MISSING_PROG(AUTOMAKE, automake, $missing_dir)
 AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
 AM_MISSING_PROG(MAKEINFO, makeinfo, $missing_dir)
-AC_REQUIRE([AC_PROG_MAKE_SET])])
+AM_MISSING_PROG(AMTAR, tar, $missing_dir)
+AC_REQUIRE([AC_PROG_MAKE_SET])
+AC_REQUIRE([AM_DEP_TRACK])
+AC_REQUIRE([AM_SET_DEPDIR])
+ifdef([AC_PROVIDE_AC_PROG_CC], [AM_DEPENDENCIES(CC)], [
+   define([AC_PROG_CC], defn([AC_PROG_CC])[AM_DEPENDENCIES(CC)])])
+ifdef([AC_PROVIDE_AC_PROG_CXX], [AM_DEPENDENCIES(CXX)], [
+   define([AC_PROG_CXX], defn([AC_PROG_CXX])[AM_DEPENDENCIES(CXX)])])
+])
 
 #
 # Check to make sure that the build environment is sane.
@@ -495,20 +503,146 @@ rm -f conftest*
 AC_MSG_RESULT(yes)])
 
 dnl AM_MISSING_PROG(NAME, PROGRAM, DIRECTORY)
-dnl The program must properly implement --version.
-AC_DEFUN(AM_MISSING_PROG,
-[AC_MSG_CHECKING(for working $2)
-# Run test in a subshell; some versions of sh will print an error if
-# an executable is not found, even if stderr is redirected.
-# Redirect stdin to placate older versions of autoconf.  Sigh.
-if ($2 --version) < /dev/null > /dev/null 2>&1; then
-   $1=$2
-   AC_MSG_RESULT(found)
-else
-   $1="$3/missing $2"
-   AC_MSG_RESULT(missing)
-fi
+AC_DEFUN(AM_MISSING_PROG, [$1=${$1-"$3/missing --run $2"}
 AC_SUBST($1)])
+
+dnl See how the compiler implements dependency checking.
+dnl Usage:
+dnl AM_DEPENDENCIES(NAME)
+dnl NAME is "CC", "CXX" or "OBJC".
+
+dnl We try a few techniques and use that to set a single cache variable.
+
+AC_DEFUN(AM_DEPENDENCIES,[
+AC_REQUIRE([AM_SET_DEPDIR])
+AC_REQUIRE([AM_OUTPUT_DEPENDENCY_COMMANDS])
+ifelse([$1],CC,[
+AC_REQUIRE([AC_PROG_CC])
+AC_REQUIRE([AC_PROG_CPP])
+depcc="$CC"
+depcpp="$CPP"],[$1],CXX,[
+AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([AC_PROG_CXXCPP])
+depcc="$CXX"
+depcpp="$CXXCPP"],[$1],OBJC,[
+am_cv_OBJC_dependencies_compiler_type=gcc],[
+AC_REQUIRE([AC_PROG_][$1])
+depcc="$[$1]"
+depcpp=""])
+AC_MSG_CHECKING([dependency style of $depcc])
+AC_CACHE_VAL(am_cv_[$1]_dependencies_compiler_type,[
+if test -z "$AMDEP"; then
+  echo '#include "conftest.h"' > conftest.c
+  echo 'int i;' > conftest.h
+
+  am_cv_[$1]_dependencies_compiler_type=none
+  for depmode in `sed -n 's/^#*\([a-zA-Z0-9]*\))$/\1/p' < "$am_depcomp"`; do
+    case "$depmode" in
+    nosideeffect)
+      # after this tag, mechanisms are not by side-effect, so they'll
+      # only be used when explicitly requested
+      if test "x$enable_dependency_tracking" = xyes; then
+	continue
+      else
+	break
+      fi
+      ;;
+    none) break ;;
+    esac
+    if depmode="$depmode" \
+       source=conftest.c object=conftest.o \
+       depfile=conftest.Po tmpdepfile=conftest.TPo \
+       $SHELL $am_depcomp $depcc -c conftest.c 2>/dev/null &&
+       grep conftest.h conftest.Po > /dev/null 2>&1; then
+      am_cv_[$1]_dependencies_compiler_type="$depmode"
+      break
+    fi
+  done
+
+  rm -f conftest.*
+else
+  am_cv_[$1]_dependencies_compiler_type=none
+fi
+])
+AC_MSG_RESULT($am_cv_[$1]_dependencies_compiler_type)
+[$1]DEPMODE="depmode=$am_cv_[$1]_dependencies_compiler_type"
+AC_SUBST([$1]DEPMODE)
+])
+
+dnl Choose a directory name for dependency files.
+dnl This macro is AC_REQUIREd in AM_DEPENDENCIES
+
+AC_DEFUN(AM_SET_DEPDIR,[
+if test -d .deps || mkdir .deps 2> /dev/null || test -d .deps; then
+  DEPDIR=.deps
+else
+  DEPDIR=_deps
+fi
+AC_SUBST(DEPDIR)
+])
+
+AC_DEFUN(AM_DEP_TRACK,[
+AC_ARG_ENABLE(dependency-tracking,
+[  --disable-dependency-tracking Speeds up one-time builds
+  --enable-dependency-tracking  Do not reject slow dependency extractors])
+if test "x$enable_dependency_tracking" = xno; then
+  AMDEP="#"
+else
+  am_depcomp="$ac_aux_dir/depcomp"
+  if test ! -f "$am_depcomp"; then
+    AMDEP="#"
+  else
+    AMDEP=
+  fi
+fi
+AC_SUBST(AMDEP)
+])
+
+dnl Generate code to set up dependency tracking.
+dnl This macro should only be invoked once -- use via AC_REQUIRE.
+dnl Usage:
+dnl AM_OUTPUT_DEPENDENCY_COMMANDS
+
+dnl
+dnl This code is only required when automatic dependency tracking
+dnl is enabled.  FIXME.  This creates each `.P' file that we will
+dnl need in order to bootstrap the dependency handling code.
+AC_DEFUN(AM_OUTPUT_DEPENDENCY_COMMANDS,[
+AC_OUTPUT_COMMANDS([
+for mf in $CONFIG_FILES; do
+  case "$mf" in
+  Makefile) dirpart=.;;
+  */Makefile) dirpart=`echo "$mf" | sed -e 's|/[^/]*$||'`;;
+  *) continue;;
+  esac
+  grep '^DEP_FILES *= *[^ #]' < "$mf" > /dev/null || continue
+  # Extract the definition of DEP_FILES from the Makefile without
+  # running `make'.
+  DEPDIR=`sed -n -e '/^DEPDIR = / s///p' < "$mf"`
+  test -z "$DEPDIR" && continue
+  # When using ansi2knr, U may be empty or an underscore; expand it
+  U=`sed -n -e '/^U = / s///p' < "$mf"`
+  test -d "$dirpart/$DEPDIR" || mkdir "$dirpart/$DEPDIR"
+  # We invoke sed twice because it is the simplest approach to
+  # changing $(DEPDIR) to its actual value in the expansion.
+  for file in `sed -n -e '
+    /^DEP_FILES = .*\\\\$/ {
+      s/^DEP_FILES = //
+      :loop
+	s/\\\\$//
+	p
+	n
+	/\\\\$/ b loop
+      p
+    }
+    /^DEP_FILES = / s/^DEP_FILES = //p' < "$mf" | \
+       sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g' -e 's/\$U/'"$U"'/g'`; do
+    test -f "$dirpart/$file" && continue
+    echo "creating $dirpart/$file"
+    echo '# dummy' > "$dirpart/$file"
+  done
+done
+])])
 
 # Add --enable-maintainer-mode option to configure.
 # From Jim Meyering

@@ -136,9 +136,6 @@
 /* Define if you have the getwd function.  */
 #undef HAVE_GETWD
 
-/* Define if you have the MERGESORT function.  */
-#undef HAVE_MERGESORT
-
 /* Define if you have the hstrerror function.  */
 #undef HAVE_HSTRERROR
 
@@ -168,6 +165,9 @@
 
 /* Define if you have the memmove function.  */
 #undef HAVE_MEMMOVE
+
+/* Define if you have the mergesort function.  */
+#undef HAVE_MERGESORT
 
 /* Define if you have the mkdir function.  */
 #undef HAVE_MKDIR

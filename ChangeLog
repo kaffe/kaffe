@@ -1,3 +1,8 @@
+Tue Jul 20 12:17:49 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* aclocal.m4, configure, config/config.h.in, */Makefile.in: regenerate
+	using our current official version of automake (see FAQ.automake).
+
 Mon Jul 19 22:43:16 PDT 1999  Aaron Place <beavis@ihug.co.nz>
 
 	* In libraries/javalib: java/io/ObjectInputStream.java,

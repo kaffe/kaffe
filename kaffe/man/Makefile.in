@@ -10,15 +10,6 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-# Manual pages
-#
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
-
-
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -68,6 +59,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
+AMDEP = @AMDEP@
+AMTAR = @AMTAR@
 AS = @AS@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
@@ -75,6 +68,9 @@ CC = @CC@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
 CPP = @CPP@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+DEPDIR = @DEPDIR@
 DIRSEP = @DIRSEP@
 DLLTOOL = @DLLTOOL@
 DLOPEN_JAVA_LIBS = @DLOPEN_JAVA_LIBS@
@@ -125,10 +121,20 @@ kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
+# Manual pages
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+
 man_MANS = kaffe.1
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES =  kaffe.1
+DIST_SOURCES = 
 man1dir = $(mandir)/man1
 MANS = $(man_MANS)
 
@@ -136,9 +142,8 @@ NROFF = nroff
 DIST_COMMON =  Makefile.am Makefile.in kaffe.1.in
 
 
-DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -199,11 +204,6 @@ distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 subdir = kaffe/man
 
 distdir: $(DISTFILES)
-	here=`cd $(top_builddir) && pwd`; \
-	top_distdir=`cd $(top_distdir) && pwd`; \
-	distdir=`cd $(distdir) && pwd`; \
-	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu kaffe/man/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -273,8 +273,9 @@ maintainer-clean: maintainer-clean-am
 distdir info-am info dvi-am dvi check check-am installcheck-am \
 installcheck install-exec-am install-exec install-data-am install-data \
 install-am install uninstall-am uninstall all-redirect all-am all \
-installdirs mostlyclean-generic distclean-generic clean-generic \
-maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+install-strip installdirs mostlyclean-generic distclean-generic \
+clean-generic maintainer-clean-generic clean mostlyclean distclean \
+maintainer-clean
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
