@@ -46,14 +46,14 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Properties;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.StringTokenizer;
+import java.lang.ref.WeakReference;
 
 /**
  * The <code>LogManager</code> maintains a hierarchical namespace
@@ -67,13 +67,12 @@ import java.util.StringTokenizer;
  * <code>java.util.logging.LogManager</code> is initialized.
  * The configuration process includes the subsequent steps:
  *
- * <ol>
+ * <ul>
  * <li>If the system property <code>java.util.logging.manager</code>
  *     is set to the name of a subclass of
  *     <code>java.util.logging.LogManager</code>, an instance of
  *     that subclass is created and becomes the global LogManager.
  *     Otherwise, a new instance of LogManager is created.</li>
- *     
  * <li>The <code>LogManager</code> constructor tries to create
  *     a new instance of the class specified by the system
  *     property <code>java.util.logging.config.class</code>.
@@ -91,14 +90,13 @@ import java.util.StringTokenizer;
  *     {@link #readConfiguration(java.io.InputStream)}.
  *     The name and location of this file are specified by the system
  *     property <code>java.util.logging.config.file</code>.</li>
- *
  * <li>If the system property <code>java.util.logging.config.file</code>
  *     is not set, however, the contents of the URL
  *     "{gnu.classpath.home.url}/logging.properties" are passed to
  *     {@link #readConfiguration(java.io.InputStream)}.
  *     Here, "{gnu.classpath.home.url}" stands for the value of
  *     the system property <code>gnu.classpath.home.url</code>.</li>
- * </ol>
+ * </ul>
  *
  * @author Sascha Brawer (brawer@acm.org)
  */
@@ -259,10 +257,10 @@ public class LogManager
    *
    * @param logger the logger to be added.
    *
-   * @return <code>true<code>if <code>logger</code> was added,
+   * @return <code>true</code>if <code>logger</code> was added,
    *         <code>false</code> otherwise.
    *
-   * @throws NullPointerException if <code>name<code> is
+   * @throws NullPointerException if <code>name</code> is
    *         <code>null</code>.
    */
   public synchronized boolean addLogger(Logger logger)

@@ -1,7 +1,7 @@
 /* SimpleFormatter.java
    -- a class for formatting log records into short human-readable messages
 
-Copyright (C) 2002 Free Software Foundation, Inc.
+Copyright (C) 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
