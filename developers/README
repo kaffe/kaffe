@@ -15,3 +15,6 @@ utf8munge.pl:	change the values of utf8 constants of a .class file
 		Note that both .pl scripts require /usr/local/bin/perl 
 		(or change the first line in the script)
 
+autogen.sh:	script to run all of the various auto* programs
+		in the correct order
+
