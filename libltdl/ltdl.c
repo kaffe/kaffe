@@ -697,7 +697,7 @@ lt_dlpreopen (preloaded)
 }
 
 int
-lt_dlpreopen_default (preloaded)
+lt_dlpreopen_default_ (preloaded)
 	const lt_dlsymlist *preloaded;
 {
 #if HAVE_DLPREOPEN
@@ -1213,9 +1213,9 @@ lt_dlsym (handle, symbol)
 	/* otherwise try "symbol" */
 	if (handle->type->sym_prefix) {
 		strcpy(sym, handle->type->sym_prefix);
-		strcat(sym, handle->name);
+		strcat(sym, symbol);
 	} else 
-		strcpy(sym, handle->name);
+		strcpy(sym, symbol);
 	address = handle->type->find_sym(handle, sym);
 	if (sym != lsym)
 		free(sym);

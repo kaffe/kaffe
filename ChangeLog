@@ -1,3 +1,16 @@
+Sat Jan 16 19:09:49 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in: adjust spaces in --help for includes and timing
+	From Edouard Parmelan
+
+	* libraries/clib/native/Class.c (checkParameters): add missing `{'
+
+	* FAQ/FAQ.automake: automake 1.4 was released
+
+	* kaffe/kaffe/main.c (main): revert Edouard's change to invocation 
+	of lt_dlpreopen_default; it was correct, the error was in:
+	* libltdl/ltdl.h, libltdl/ltdl.c: updated from libtool
+
 Fri Jan 15 14:46:17 1999 Moses DeJong <dejong@cs.umn.edu>
 
 	* kaffe/kaffeh/main.c, kaffe/kaffeh/support.c, include/jni.h:

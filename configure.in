@@ -13,7 +13,7 @@ dnl =========================================================================
 dnl Allow specification of header-file and library directories
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(includes,[  --with-includes=dirs     Search specified directories for header files], CPPFLAGS="$CPPFLAGS"`echo " $withval" | sed 's/ / -I/g'`)
+AC_ARG_WITH(includes, [  --with-includes=dirs    Search specified directories for header files], CPPFLAGS="$CPPFLAGS"`echo " $withval" | sed 's/ / -I/g'`)
 AC_ARG_WITH(libraries,[  --with-libraries=dirs   Search specified directories for libraries], LDFLAGS="$LDFLAGS"`echo " $withval" | sed 's/ / -L/g'`)
 
 dnl Find the compiler early on in case we need to override.
@@ -435,7 +435,7 @@ dnl =========================================================================
 dnl Do we build a timing measuring vm?
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(timing,[  --with-timing              Time vm execution])
+AC_ARG_WITH(timing,[  --with-timing           Time vm execution])
 
 if test "$with_timing" = "yes" ; then
 	if test $have_rusage = "no" ; then
