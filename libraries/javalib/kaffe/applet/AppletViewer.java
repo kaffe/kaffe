@@ -281,6 +281,10 @@ public final static Applet createApplet(AppletTag tag, AppletStub stub) {
 
 	AppletClassLoader loader = 
 	    new AppletClassLoader(tag.getCodebaseURL(), tag.getArchiveTag());
+	/* Set the contect loader of the current thread to the applet class loader,
+	 * to avoid problems between casting classes loaded by separate class loaders.
+	 */
+	Thread.currentThread().setContextClassLoader(loader);
 
 	Class c = loader.loadClass(code);
 	app = (Applet) c.newInstance();

@@ -1,3 +1,13 @@
+2003-08-21  Dalibor Topic <robilad@kaffe.org>,
+            Helmer Kraemer  <hkraemer@freenet.de>
+
+	Final fix for RMI getStarted example from
+	http://java.sun.com/j2se/1.4.2/docs/guide/rmi/getstart.doc.html
+	
+	* libraries/javalib/kaffe/applet/AppletViewer.java:
+	(createApplet) set context class loader of current thread to
+	applet class loader.
+	
 2003-08-21  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/clib/native/Class.c:
