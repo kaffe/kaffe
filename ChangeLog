@@ -1,5 +1,27 @@
 2004-12-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/imageio/stream/FileCacheImageInputStream.java,
+	libraries/javalib/javax/imageio/stream/FileCacheImageOutputStream.java,
+	libraries/javalib/javax/imageio/stream/FileImageInputStream.java,
+	libraries/javalib/javax/imageio/stream/ImageInputStreamImpl.java,
+	libraries/javalib/javax/imageio/stream/ImageOutputStreamImpl.java,
+	libraries/javalib/javax/imageio/stream/MemoryCacheImageInputStream.java,
+	libraries/javalib/javax/imageio/stream/MemoryCacheImageOutputStream.java:
+	Resynced with GNU Classpath.
+
+	2004-12-07  Michael Koch  <konqueror@gmx.de>
+
+	* javax/imageio/stream/FileCacheImageInputStream.java,
+	javax/imageio/stream/FileCacheImageOutputStream.java,
+	javax/imageio/stream/FileImageInputStream.java,
+	javax/imageio/stream/ImageInputStreamImpl.java,
+	javax/imageio/stream/ImageOutputStreamImpl.java,
+	javax/imageio/stream/MemoryCacheImageInputStream.java,
+	javax/imageio/stream/MemoryCacheImageOutputStream.java:
+	Added all missing methods in javax.imageio.stream.
+
+2004-12-08  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/BufferedInputStream.java:
 	Resynced with GNU Classpath.
 	
