@@ -552,24 +552,25 @@ public class MessageFormat extends Format
 
   /**
    * Creates a new MessageFormat object with
-   * the specified pattern. The locale resource bundle 
-   * is taken as the system default one.
+   * the specified pattern
    *
    * @param pattern The Pattern
    */
-  public MessageFormat (String pattern)
+  public MessageFormat(String pattern)
   {
     this(pattern, Locale.getDefault());
   }
 
   /**
    * Creates a new MessageFormat object with
-   * the specified pattern and Locale context.
+   * the specified pattern
    *
-   * @param pattern the pattern
-   * @param locale Locale environment to use
+   * @param pattern The Pattern
+   * @param locale The Locale to use
+   *
+   * @since 1.4
    */
-  public MessageFormat (String pattern, Locale locale)
+  public MessageFormat(String pattern, Locale locale)
   {
     this.locale = locale;
     applyPattern (pattern);

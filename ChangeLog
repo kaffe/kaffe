@@ -2,6 +2,15 @@
 
         Resynced with GNU Classpath.
 
+	2003-12-26  Michael Koch  <konqueror@gmx.de>
+
+        * java/text/MessageFormat.java
+        (MessageFormat): New constructor.
+
+2004-01-11  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2004-01-08  Michael Koch  <konqueror@gmx.de>
 
         * java/text/CollationKey.java
