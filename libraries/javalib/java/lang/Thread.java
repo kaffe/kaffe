@@ -31,6 +31,8 @@ private char[] name;
 private int priority;
 private Thread threadQ;
 private kaffe.util.Ptr PrivateInfo;
+private kaffe.util.Ptr sFunc;
+private kaffe.util.Ptr sArg;
 private boolean daemon;
 private boolean interrupting;
 private Runnable target;

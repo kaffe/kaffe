@@ -266,8 +266,8 @@ startSpecialThread(void* arg)
 	void *argument;
 
 	tid  = getCurrentThread();
-	func = (void*)tid->target;
-	argument = (void*)tid->group;
+	func = (void*)tid->sFunc;
+	argument = (void*)tid->sArg;
 	tid->target = 0;
 	tid->group = 0;
 	func(argument);
@@ -304,8 +304,8 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 	unhand(tid)->daemon = 1;
 	unhand(tid)->interrupting = 0;
 	/* we abuse these two variables as carriers */
-	unhand(tid)->target = (void*)func;
-	unhand(tid)->group = (void*)arg;
+	unhand(tid)->sFunc = (void*)func;
+	unhand(tid)->sArg = (void*)arg;
 
 	initThreadLock(tid);
 

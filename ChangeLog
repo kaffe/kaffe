@@ -1,3 +1,12 @@
+Wed Jul  3 23:31:43 CEST 2002 Timothy S Stack <stack@cs.utah.edu>
+
+	* libraries/jvmlib/java/lang/Thread.java,
+	kaffe/kaffevm/thread.c: Fixed a bug that left a
+	possibly cross process pointer, in an object if it threw an
+	exception during a wait().
+
+	Reported by Fang Weijian <wjfang@csis.hku.hk>
+
 Wed Jul  3 22:37:15 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* test/regression/FileChecks.java:
