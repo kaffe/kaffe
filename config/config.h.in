@@ -373,6 +373,9 @@
 /* Define if you have the <zlib.h> header file.  */
 #undef HAVE_ZLIB_H
 
+/* Define if you have the Xext library (-lXext).  */
+#undef HAVE_LIBXEXT
+
 /* Define if you have the gcc library (-lgcc).  */
 #undef HAVE_LIBGCC
 
