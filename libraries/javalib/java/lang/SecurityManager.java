@@ -185,7 +185,7 @@ public class SecurityManager
    *  are from system classes</li>
    * <li>A check of <code>java.security.AllPermission</code> succeeds.</li>
    * </ul>
-   *
+   * 
    * @return the most recent non-system ClassLoader on the execution stack
    * @deprecated use {@link #checkPermission(Permission)} instead
    */
@@ -207,7 +207,7 @@ public class SecurityManager
    *  are from system classes</li>
    * <li>A check of <code>java.security.AllPermission</code> succeeds.</li>
    * </ul>
-   *
+   * 
    * @return the most recent non-system Class on the execution stack
    * @deprecated use {@link #checkPermission(Permission)} instead
    */
@@ -246,7 +246,7 @@ public class SecurityManager
    *  are from system classes</li>
    * <li>A check of <code>java.security.AllPermission</code> succeeds.</li>
    * </ul>
-   *
+   * 
    * @return the index of the most recent non-system Class on the stack
    * @deprecated use {@link #checkPermission(Permission)} instead
    */
@@ -391,8 +391,8 @@ public class SecurityManager
    */
   public void checkAccess(Thread thread)
   {
-    if (thread.getThreadGroup() != null
-        && thread.getThreadGroup().getParent() != null)
+    if (thread.getThreadGroup() != null 
+	&& thread.getThreadGroup().getParent() != null)
       checkPermission(new RuntimePermission("modifyThread"));
   }
 
@@ -1027,7 +1027,7 @@ public class SecurityManager
              index != -1; index = list.indexOf(packageName, index + 1))
           {
             // Exploit package visibility for speed.
-            int packageNameCount = packageName.length();
+	    int packageNameCount = packageName.length();
             if (index + packageNameCount == list.length()
                 || list.charAt(index + packageNameCount) == ',')
               {
@@ -1043,8 +1043,8 @@ public class SecurityManager
 
 // XXX This class is unnecessary.
 class SecurityContext {
-        Class[] classes;
-        SecurityContext(Class[] classes) {
-                this.classes = classes;
-        }
+	Class[] classes;
+	SecurityContext(Class[] classes) {
+		this.classes = classes;
+	}
 }
