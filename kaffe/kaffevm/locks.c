@@ -220,7 +220,8 @@ slowLockMutex(iLock** lkp, iLock *heavyLock)
   iLock* volatile lk;
   jthread_t cur = KTHREAD(current) ();
   threadData *tdata;
-  
+  static timespent lockTime;
+
 DBG(SLOWLOCKS,
     dprintf("slowLockMutex(lk=%p, th=%p)\n",
 	    *lkp, KTHREAD(current)());

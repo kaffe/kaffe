@@ -1,3 +1,8 @@
+2005-03-13  Jim Huang  <jserv@kaffe.org>
+
+	* kaffe/kaffevm/locks.c:
+	(slowLockMutex): Added missing lockTime variable.
+
 2005-03-12  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/locks.c
