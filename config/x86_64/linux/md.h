@@ -28,8 +28,8 @@ extern void init_md(void);
 
 #include "sigcontextinfo.h"
 
-#define SIGNAL_ARGS(sig, scp)           int sig, siginfo_t *sip, struct sigcontext *scp
-#define SIGNAL_CONTEXT_POINTER(scp)     struct sigcontext *scp
+#define SIGNAL_ARGS(sig, scp)           int sig, siginfo_t *sip, ucontext_t *scp
+#define SIGNAL_CONTEXT_POINTER(scp)     ucontext_t *scp
 #define GET_SIGNAL_CONTEXT_POINTER(sc)  (sc)
 #define SIGNAL_PC(scp)                  (GET_PC((*scp)))
 #define STACK_POINTER(scp)		(GET_STACK((*scp)))

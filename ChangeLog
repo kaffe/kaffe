@@ -1,5 +1,13 @@
 2004-07-08  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
 
+	* config/x86_64//linux/md.h (SIGNAL_ARGS, SIGNAL_CONTEXT_POINTER):
+	Kernel sends an (ucontext_t *) to the signal handler.
+	* config/x86_64/linux/sigcontextinfo.h
+	(REG_RIP, REG_RBP, REG_RSP): Define.
+	(GET_PC, GET_FRAME, GET_STACK): Use uc_mcontext.gregs[].
+
+2004-07-08  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
+
 	* kaffe/kaffevm/systems/unix-jthreads/signal.c
 	(detectStackBoundaries): Fix initialization of guessPointer on
 	64-bit platforms.

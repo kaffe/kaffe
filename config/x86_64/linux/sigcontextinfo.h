@@ -16,6 +16,22 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
-#define GET_PC(ctx)	((void *) (ctx).rip)
-#define GET_FRAME(ctx)	((void *) (ctx).rbp)
-#define GET_STACK(ctx)	((void *) (ctx).rsp)
+#include <sys/ucontext.h>
+#include <stddef.h>
+
+/* Indices are defined if _GNU_SOURCE is set prior to include <sys/ucontext.h> */
+#define REG_INDEX(NAME)	(offsetof(struct sigcontext, NAME) / sizeof(greg_t))
+
+#ifndef REG_RIP
+#define REG_RIP		REG_INDEX(rip) /* 16 */
+#endif
+#ifndef REG_RBP
+#define REG_RBP		REG_INDEX(rbp) /* 10 */
+#endif
+#ifndef REG_RSP
+#define REG_RSP		REG_INDEX(rsp) /* 15 */
+#endif
+
+#define GET_PC(ctx)	((void *) (ctx).uc_mcontext.gregs[REG_RIP])
+#define GET_FRAME(ctx)	((void *) (ctx).uc_mcontext.gregs[REG_RBP])
+#define GET_STACK(ctx)	((void *) (ctx).uc_mcontext.gregs[REG_RSP])
