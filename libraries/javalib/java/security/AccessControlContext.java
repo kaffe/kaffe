@@ -31,7 +31,7 @@ public final class  AccessControlContext {
 	}
 
 	public int hashCode() {
-		return ((Object)this).hashCode();
+		return (super.hashCode());
 	}
 }
 

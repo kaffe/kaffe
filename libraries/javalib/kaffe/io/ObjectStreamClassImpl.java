@@ -10,8 +10,6 @@
 
 package kaffe.io;
 
-import java.lang.String;
-import java.io.Serializable;
 import java.io.Externalizable;
 import java.util.Hashtable;
 import java.io.ObjectStreamConstants;

@@ -16,7 +16,6 @@
 package java.util;
 
 import java.io.Serializable;
-import java.lang.Comparable;
 
 public class Collections {
 
@@ -41,7 +40,7 @@ public class Collections {
 				}
 			};
 		}
-	};
+	}
 
 	// An empty List
 	public static final List EMPTY_LIST = new EmptyList();
@@ -54,7 +53,7 @@ public class Collections {
 		public Object get(int index) {
 			throw new IndexOutOfBoundsException();
 		}
-	};
+	}
 
 	// An empty Map
 	public static final Map EMPTY_MAP = new EmptyMap();
@@ -64,7 +63,7 @@ public class Collections {
 		public Set entrySet() {
 			return EMPTY_SET;
 		}
-	};
+	}
 
 	// This class is not instantiable
 	private Collections() {
@@ -309,7 +308,7 @@ public class Collections {
 			}
 			return nCopies(toIndex - fromIndex, o);
 		}
-	};
+	}
 
 	private static final Comparator REVERSE_COMPARATOR = new Comparator() {
 		public int compare(Object o1, Object o2) {

@@ -12,9 +12,6 @@ package java.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.Class;
-import java.lang.String;
-import java.lang.System;
 import kaffe.lang.DummyClassLoader;
 
 public abstract class ResourceBundle {

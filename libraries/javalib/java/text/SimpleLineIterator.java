@@ -1,6 +1,5 @@
 package java.text;
 
-import java.lang.String;
 
 /*
  * Java core library component.

@@ -1,6 +1,5 @@
 package java.io;
 
-import java.lang.String;
 
 /*
  * Java core library component.

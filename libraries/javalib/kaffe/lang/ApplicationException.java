@@ -10,7 +10,6 @@
 
 package kaffe.lang;
 
-import java.lang.String;
 
 public class ApplicationException extends Exception {
 

@@ -12,7 +12,6 @@
 
 package java.math;
 
-import java.lang.Comparable;
 
 public class BigDecimal extends Number implements Comparable {
 

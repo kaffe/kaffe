@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.StreamCorruptedException;
 import java.io.ObjectStreamClass;
-import java.lang.ClassLoader;
-import java.lang.Class;
 
 public class ClassLoaderObjectInputStream extends ObjectInputStream {
 

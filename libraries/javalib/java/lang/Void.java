@@ -16,4 +16,4 @@ public final class Void {
 
   private Void() { /* this class is not instantiable by the general public */ }
 
-};
+}

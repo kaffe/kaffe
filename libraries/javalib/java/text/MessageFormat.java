@@ -10,7 +10,6 @@
 
 package java.text;
 
-import java.lang.String;
 import java.util.Locale;
 import kaffe.util.NotImplemented;
 
@@ -275,8 +274,7 @@ public Object[] parse(String str) throws ParseException {
 }
 
 public Object parseObject(String str, ParsePosition pos) {
-	Object objs = parse(str, pos);
-	return ((Object)objs);
+	return (parse(str, pos));
 }
 
 public void setFormat(int num, Format newformat) {

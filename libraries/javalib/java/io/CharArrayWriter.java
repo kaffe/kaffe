@@ -10,7 +10,6 @@
 
 package java.io;
 
-import java.lang.String;
 
 public class CharArrayWriter extends Writer {
 
@@ -98,4 +97,4 @@ public class CharArrayWriter extends Writer {
     // Does nothing.
   }
 
-};
+}

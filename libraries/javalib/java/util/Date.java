@@ -10,13 +10,10 @@
 
 package java.util;
 
-import java.lang.String;
-import java.lang.System;
 import java.text.ParseException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.io.Serializable;
-import java.lang.Comparable;
 
 public class Date implements Serializable, Cloneable, Comparable {
 

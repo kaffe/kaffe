@@ -15,7 +15,6 @@
 
 package kaffe.security.provider;
 
-import java.security.*;
 
 public final class MD5 extends UpdateDigest {
 	public static final String DIGEST_NAME = "MD5";

@@ -10,7 +10,6 @@
 
 package java.net;
 
-import java.io.FileDescriptor;
 import java.io.IOException;
 import kaffe.net.DefaultDatagramSocketImplFactory;
 

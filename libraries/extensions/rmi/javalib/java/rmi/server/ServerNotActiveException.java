@@ -8,7 +8,6 @@
 
 package java.rmi.server;
 
-import java.lang.Exception;
 
 public class ServerNotActiveException
 	extends Exception {

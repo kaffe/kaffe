@@ -109,4 +109,4 @@ public void run() {
 
 private native void register0();
 
-};
+}

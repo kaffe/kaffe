@@ -11,11 +11,7 @@
 
 package kaffe.jar;
 
-import java.io.DataInputStream;
-import java.io.EOFException;
 import java.io.IOException;
-import java.lang.Character;
-import java.lang.String;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.jar.*;
@@ -63,7 +59,7 @@ public static void main(String[] args)
 
 		/* Build the invoke arguments */
 		Object[] iargs = new Object[1];
-		iargs[0] = (Object)nargs;
+		iargs[0] = nargs;
 
 		/* Get method and invoke */
 		Method meth = commandClass.getDeclaredMethod("main", params);

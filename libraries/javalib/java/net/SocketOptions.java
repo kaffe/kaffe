@@ -27,5 +27,5 @@ public final static int SO_RCVBUF 		= 0x1002;
 void setOption(int option, Object data) throws SocketException;
 Object getOption(int option) throws SocketException;
 
-};
+}
 

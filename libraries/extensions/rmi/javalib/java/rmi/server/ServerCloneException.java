@@ -8,7 +8,6 @@
 
 package java.rmi.server;
 
-import java.lang.CloneNotSupportedException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 

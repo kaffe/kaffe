@@ -11,15 +11,10 @@
 
 package kaffe.net.www.protocol.system;
 
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.FileNameMap;
 import java.net.URL;
-import java.net.URLConnection;
 import kaffe.net.www.protocol.BasicURLConnection;
 import kaffe.lang.Application;
 

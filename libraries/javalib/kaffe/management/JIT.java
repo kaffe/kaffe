@@ -23,8 +23,6 @@ package kaffe.management;
  * classes and methods on demand.
  */
 
-import java.lang.ClassLoader;
-import java.lang.Runnable;
 import java.io.*;
 
 public class JIT implements Runnable {

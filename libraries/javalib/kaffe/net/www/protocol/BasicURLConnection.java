@@ -11,9 +11,7 @@
 
 package kaffe.net.www.protocol;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.awt.Toolkit;
@@ -28,7 +26,7 @@ public abstract class BasicURLConnection
 	"date",
 	"expiration",
 	"If-Modified-Since",
-	"lastModified",
+	"lastModified"
 };
 	protected String[] headersValue = new String[headers.length];
 	final protected static int ContentEncoding = 0;

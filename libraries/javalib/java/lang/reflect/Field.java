@@ -12,8 +12,6 @@
 
 package java.lang.reflect;
 
-import java.lang.String;
-import java.lang.Class;
 
 public final class Field
   extends AccessibleObject
@@ -30,7 +28,7 @@ private Field() {
 public boolean equals(Object obj)
 	{
 	// Quick test for identity
-	if ((Object)this == obj) {
+	if (this == obj) {
 		return (true);
 	}
 

@@ -18,9 +18,6 @@ import java.io.IOException;
 import java.io.InvalidClassException;
 import java.io.OptionalDataException;
 import java.io.ObjectInputStream;
-import java.io.NotActiveException;
-import java.io.Externalizable;
-import java.lang.ClassNotFoundException;
 import java.util.Vector;
 import java.io.ObjectStreamClass;
 

@@ -3,7 +3,6 @@ package java.awt;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.awt.event.PaintEvent;
-import kaffe.awt.OpaqueComponent;
 
 /**
  * Container - abstract base for all Components capable of having children
@@ -50,7 +49,7 @@ public Component add(Component child, int index) {
 }
 
 public Component add(String name, Component child) {
-	add(child, (Object)name, -1);
+	add(child, name, -1);
 	return (child);
 }
 

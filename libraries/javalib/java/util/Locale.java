@@ -1,8 +1,6 @@
 package java.util;
 
 import java.io.Serializable;
-import java.lang.String;
-import java.lang.System;
 
 /*
  * Java core library component.

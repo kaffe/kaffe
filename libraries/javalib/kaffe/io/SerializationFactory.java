@@ -1,6 +1,5 @@
 package kaffe.io;
 
-import java.lang.Class;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.ObjectInputStream;

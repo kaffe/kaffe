@@ -9,7 +9,6 @@
 package kaffe.rmi.server;
 
 import java.lang.reflect.Method;
-import java.lang.Class;
 
 /**
  * A little helper class to calculate the method hash numbers.

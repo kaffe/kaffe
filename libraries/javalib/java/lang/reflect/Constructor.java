@@ -12,8 +12,6 @@
 
 package java.lang.reflect;
 
-import java.lang.Class;
-import java.lang.String;
 
 public final class Constructor
   extends AccessibleObject
@@ -30,7 +28,7 @@ private Constructor() {
 public boolean equals(Object obj)
 	{
 	// Catch the simple case where they're really the same
-	if ((Object)this == obj) {
+	if (this == obj) {
 		return (true);
 	}
 

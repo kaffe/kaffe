@@ -19,4 +19,4 @@ public interface Cloneable {
 	 * wrong jar file.
 	 */
         final public static int KAFFE_VERSION = 106;
-};
+}

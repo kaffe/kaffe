@@ -14,4 +14,4 @@ public interface MemoryAdviceCallback {
 
 public void memoryAdvice(int newcolor);
 
-};
+}

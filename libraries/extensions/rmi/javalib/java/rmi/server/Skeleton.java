@@ -9,7 +9,6 @@
 package java.rmi.server;
 
 import java.rmi.Remote;
-import java.lang.Exception;
 import java.rmi.server.RemoteCall;
 
 public interface Skeleton {

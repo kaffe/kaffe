@@ -1,6 +1,5 @@
 package java.io;
 
-import java.lang.String;
 import kaffe.io.CharToByteConverter;
 
 /*

@@ -10,7 +10,6 @@
 
 package java.lang;
 
-import java.util.Enumeration;
 
 public class ThreadGroup
 {

@@ -10,12 +10,7 @@
 
 package kaffe.util;
 
-import java.lang.String;
-import java.io.Serializable;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.lang.ClassNotFoundException;
 
 /**
  * A simple hashtable using +ints as keys.

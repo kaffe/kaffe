@@ -11,7 +11,6 @@
 package java.net;
 
 import java.io.IOException;
-import java.io.FileDescriptor;
 
 /* XXX: This class should not be public!
  * It's public right now cause it's accessed from kaffe.net.

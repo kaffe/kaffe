@@ -10,7 +10,6 @@
 
 package java.text;
 
-import kaffe.util.NotImplemented;
 
 public class RuleBasedCollator extends Collator {
 	private final String rules;
@@ -33,7 +32,7 @@ public class RuleBasedCollator extends Collator {
 
 	public boolean equals(Object obj) {
 		// Do the simple stuff first.
-		if (obj == (Object)this) {
+		if (obj == this) {
 			return (true);
 		}
 		if (!(obj instanceof RuleBasedCollator)) {

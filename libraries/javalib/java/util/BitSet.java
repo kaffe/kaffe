@@ -11,8 +11,6 @@
  */
 package java.util;
 
-import java.lang.String;
-import java.lang.System;
 import java.io.Serializable;
 
 public class BitSet

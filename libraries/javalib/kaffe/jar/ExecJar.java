@@ -13,12 +13,7 @@
 
 package kaffe.jar;
 
-import java.io.DataInputStream;
-import java.io.EOFException;
 import java.io.IOException;
-import java.lang.Character;
-import java.lang.String;
-import java.lang.reflect.Method;
 import java.util.jar.*;
 
 public class ExecJar {

@@ -11,7 +11,6 @@ package java.io;
  * of this file.
  */
 
-import java.lang.String;
 
 public interface DataOutput {
 

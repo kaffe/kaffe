@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.awt.event.ActionEvent;
 
 class ActionEvt
   extends java.awt.event.ActionEvent

@@ -9,9 +9,6 @@
 package java.rmi;
 
 import java.io.FileDescriptor;
-import java.lang.Thread;
-import java.lang.Class;
-import java.lang.SecurityManager;
 import java.net.InetAddress;
 import java.security.Permission;
 

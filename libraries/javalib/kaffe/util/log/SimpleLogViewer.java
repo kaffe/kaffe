@@ -19,7 +19,6 @@ import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Insets;
-import java.awt.event.FocusEvent;
 import java.awt.event.WindowEvent;
 import java.io.PrintStream;
 import kaffe.util.DoubleLinkedObject;

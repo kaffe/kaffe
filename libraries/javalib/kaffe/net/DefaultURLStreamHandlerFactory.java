@@ -10,8 +10,6 @@
 
 package kaffe.net;
 
-import java.lang.String;
-import java.lang.System;
 import java.net.URLStreamHandlerFactory;
 import java.net.URLStreamHandler;
 import java.util.StringTokenizer;

@@ -10,7 +10,6 @@
 
 package java.io;
 
-import java.lang.String;
 
 public class FileWriter extends OutputStreamWriter {
 

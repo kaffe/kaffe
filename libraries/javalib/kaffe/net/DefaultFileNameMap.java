@@ -11,7 +11,6 @@
 package kaffe.net;
 
 import java.net.FileNameMap;
-import java.lang.String;
 
 public class DefaultFileNameMap implements FileNameMap {
 

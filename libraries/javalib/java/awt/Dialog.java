@@ -1,6 +1,5 @@
 package java.awt;
 
-import kaffe.util.Ptr;
 
 /**
  * Dialog - 

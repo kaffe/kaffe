@@ -10,9 +10,6 @@
 
 package java.io;
 
-import java.lang.String;
-import java.io.Serializable;
-import java.util.Hashtable;
 import java.io.OutputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectStreamConstants;

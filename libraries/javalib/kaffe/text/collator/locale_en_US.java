@@ -6,7 +6,7 @@ public class locale_en_US extends ListResourceBundle {
 
 private Object[][] contents = {
 
-	{ "rule",			"" },
+	{ "rule",			"" }
 };
 
 public Object[][] getContents() {

@@ -67,7 +67,6 @@ class ClassPathReader implements ResourceReader
 		    pathcomps.addElement(zip);
 		    pathcompsStr.addElement(s);
 		} catch (Exception ze) {
-		    ;
 		}
 	    } else {
 		if (f.isDirectory()) {

@@ -13,8 +13,6 @@ import java.io.DataOutput;
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.Random;
-import java.lang.Thread;
-import java.lang.InterruptedException;
 
 public final class UID
 	implements Serializable {

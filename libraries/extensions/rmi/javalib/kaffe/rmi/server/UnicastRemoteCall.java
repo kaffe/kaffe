@@ -8,7 +8,6 @@
 
 package kaffe.rmi.server;
 
-import java.lang.Exception;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectInput;

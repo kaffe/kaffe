@@ -11,7 +11,6 @@
 package java.net;
 
 import java.io.IOException;
-import java.lang.String;
 import java.util.StringTokenizer;
 
 abstract public class URLStreamHandler {

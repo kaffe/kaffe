@@ -9,7 +9,6 @@
  */
 package kaffe.util;
 
-import java.lang.String;
 
 public class SupportDisabled
     extends Error

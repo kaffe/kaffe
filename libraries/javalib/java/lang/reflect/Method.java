@@ -12,8 +12,6 @@
 
 package java.lang.reflect;
 
-import java.lang.Class;
-import java.lang.String;
 
 public final class Method
     extends AccessibleObject
@@ -32,7 +30,7 @@ private Method() {
 
 public boolean equals(Object obj) {
 	// Catch the simple case where they're really the same
-	if ((Object)this == obj) {
+	if (this == obj) {
 		return (true);
 	}
 	// if obj is null or not Method, then they are not the same

@@ -59,7 +59,7 @@ public synchronized int getHeight () {
 }
 
 public synchronized Object getPixels () {
-	return (Object) pels;
+	return pels;
 }
 
 public synchronized int getStatus () {

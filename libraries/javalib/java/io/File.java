@@ -1,7 +1,5 @@
 package java.io;
 
-import java.lang.Comparable;
-import java.lang.String;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
@@ -289,7 +287,7 @@ public String[] list(FilenameFilter filter) {
 	}
 
 	String result[] = new String[filtered.size()];
-	filtered.copyInto((Object [])result);
+	filtered.copyInto(result);
 
 	return (result);
 }

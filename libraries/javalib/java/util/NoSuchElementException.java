@@ -10,7 +10,6 @@
 
 package java.util;
 
-import java.lang.String;
 
 public class NoSuchElementException
   extends RuntimeException

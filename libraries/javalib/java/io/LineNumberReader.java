@@ -10,9 +10,6 @@
 
 package java.io;
 
-import java.lang.Math;
-import java.lang.String;
-import java.lang.StringBuffer;
 
 public class LineNumberReader extends BufferedReader {
 	private int     lineno;

@@ -12,17 +12,12 @@ package kaffe.lang;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.ClassLoader;
-import java.lang.ClassNotFoundException;
-import java.lang.String;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 public class SystemClassLoader extends ClassLoader {

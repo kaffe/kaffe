@@ -8,7 +8,6 @@
 
 package kaffe.rmi.server;
 
-import java.lang.Runnable;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.io.DataInputStream;

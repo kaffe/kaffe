@@ -10,8 +10,6 @@
 
 package kaffe.util;
 
-import java.lang.String;
-import java.util.NoSuchElementException;
 
 /* IdentityHashtable is a simplified java.util.Hashtable for use by
    java.io.ObjectOutputStream. It uses System.identityHashCode and

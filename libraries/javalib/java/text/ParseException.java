@@ -10,7 +10,6 @@
 
 package java.text;
 
-import java.lang.String;
 
 public class ParseException extends Exception {
 
@@ -25,4 +24,4 @@ public int getErrorOffset() {
 	return (offset);
 }
 
-};
+}

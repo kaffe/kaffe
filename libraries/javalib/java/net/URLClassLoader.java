@@ -28,8 +28,6 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Vector;
 import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 public class URLClassLoader extends SecureClassLoader {

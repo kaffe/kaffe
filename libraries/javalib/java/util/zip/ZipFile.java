@@ -63,7 +63,7 @@ public InputStream getInputStream(ZipEntry ze) throws IOException
 		throw new ZipException("no data");
 	}
 	ByteArrayInputStream strm = new ByteArrayInputStream(buf);
-	return ((InputStream)strm);
+	return (strm);
 }
 
 public String getName()

@@ -13,17 +13,10 @@
 
 package kaffe.lang;
 
-import java.lang.String;
-import java.lang.Class;
-import java.lang.ClassNotFoundException;
-import java.lang.Thread;
-import java.lang.InterruptedException;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.ClassLoader;
 import java.util.Vector;
 import java.util.Enumeration;
-import java.io.File;
 import java.io.InputStream;
 import java.io.FilterInputStream;
 import java.io.PrintStream;

@@ -10,7 +10,6 @@
 
 package java.text;
 
-import java.lang.String;
 import java.util.Hashtable;
 
 public class ChoiceFormat extends NumberFormat {

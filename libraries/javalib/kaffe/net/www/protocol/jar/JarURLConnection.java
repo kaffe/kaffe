@@ -23,9 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.jar.JarFile;
-import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
 
 public class JarURLConnection extends java.net.JarURLConnection {

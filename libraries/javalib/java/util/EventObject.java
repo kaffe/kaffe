@@ -11,7 +11,6 @@
 package java.util;
 
 import java.io.Serializable;
-import java.lang.String;
 
 public class EventObject extends Object
   implements Serializable

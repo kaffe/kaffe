@@ -8,7 +8,6 @@
 
 package java.rmi;
 
-import java.lang.SecurityException;
 
 public class RMISecurityException
 	extends SecurityException {

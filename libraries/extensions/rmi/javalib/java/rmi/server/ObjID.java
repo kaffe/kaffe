@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.io.ObjectOutput;
 import java.io.ObjectInput;
 import java.io.IOException;
-import java.lang.Math;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.util.Random;

@@ -2,7 +2,6 @@ package java.awt;
 
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
-import java.util.Stack;
 import kaffe.awt.FocusHook;
 import kaffe.awt.KeyHook;
 import kaffe.awt.MouseHook;

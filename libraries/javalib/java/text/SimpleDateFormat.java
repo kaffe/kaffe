@@ -9,15 +9,12 @@
  */
 package java.text;
 
-import java.lang.String;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.ResourceBundle;
-import kaffe.util.DateParser;
-import kaffe.util.NotImplemented;
 
 public class SimpleDateFormat
   extends DateFormat

@@ -14,12 +14,8 @@ package java.awt;
 
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import kaffe.awt.ExportTransferable;
-import kaffe.awt.FlavorConverter;
 import kaffe.util.Ptr;
 
 class NativeClipboard

@@ -10,7 +10,6 @@
 
 package java.text;
 
-import java.lang.String;
 import java.util.TimeZone;
 import java.util.Locale;
 import java.util.Date;

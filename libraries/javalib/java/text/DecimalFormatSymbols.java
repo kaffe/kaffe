@@ -10,7 +10,6 @@
 
 package java.text;
 
-import java.lang.String;
 import java.io.Serializable;
 import java.util.ResourceBundle;
 import java.util.Locale;

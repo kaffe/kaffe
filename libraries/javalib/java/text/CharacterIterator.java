@@ -25,4 +25,4 @@ public abstract int getEndIndex();
 public abstract int getIndex();
 public abstract Object clone();
 
-};
+}

@@ -1,10 +1,7 @@
 package java.awt;
 
 import java.awt.Cursor;
-import java.awt.event.InputEvent;
 import java.awt.event.WindowEvent;
-import java.util.Enumeration;
-import kaffe.util.Ptr;
 
 /**
  * Frame - 

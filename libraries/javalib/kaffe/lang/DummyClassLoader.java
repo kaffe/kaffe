@@ -10,8 +10,6 @@
 
 package kaffe.lang;
 
-import java.lang.SecurityManager;
-import java.lang.ClassLoader;
 import kaffe.lang.SystemClassLoader;
 
 /**

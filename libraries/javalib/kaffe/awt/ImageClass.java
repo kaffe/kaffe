@@ -15,7 +15,6 @@ import java.awt.Toolkit;
 import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.MemoryImageSource;
-import java.lang.String;
 
 public class ImageClass
 {

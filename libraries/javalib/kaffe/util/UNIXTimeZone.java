@@ -68,20 +68,20 @@ public class UNIXTimeZone extends TimeZone {
 	private static class Transition {
 		long time;
 		TimeInfo info;
-	};
+	}
 
 	// Info about a specific time offset
 	private static class TimeInfo {
 		int offset;
 		boolean isDST;
 		String abbrev;
-	};
+	}
 
 	// Info about a leap second adjustment
 	private static class Leap {
 		long time;
 		int numSeconds;
-	};
+	}
 
 	/**
 	 * Constructor.

@@ -2,7 +2,6 @@ package java.awt;
 
 import java.awt.peer.FontPeer;
 import java.io.Serializable;
-import java.util.Hashtable;
 import kaffe.util.Ptr;
 
 /**

@@ -1,9 +1,5 @@
 package java.awt;
 
-import java.awt.event.ComponentEvent;
-import java.awt.event.PaintEvent;
-import java.awt.event.WindowEvent;
-
 /**
  *
  * Copyright (c) 1998

@@ -60,7 +60,7 @@ protected void dispatch () {
 
 			we = WindowEvt.getEvent( newActiveWindow, WindowEvent.WINDOW_ACTIVATED);
 			newActiveWindow.process( we);
-			AWTEvent.activeWindow = (Window) newActiveWindow;
+			AWTEvent.activeWindow = newActiveWindow;
 		}
 
 		AWTEvent.keyTgt = src;

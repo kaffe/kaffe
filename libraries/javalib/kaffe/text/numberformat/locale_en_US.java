@@ -16,7 +16,7 @@ private Object[][] contents = {
 	{ "-",				"-" },
 	{ "\u221e",			"Infinity" },
 	{ "\ufffd",			"NaN" },
-	{ "\u00a4",			"$" },
+	{ "\u00a4",			"$" }
 };
 
 public Object[][] getContents() {

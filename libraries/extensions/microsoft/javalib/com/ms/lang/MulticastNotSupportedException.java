@@ -1,6 +1,5 @@
 package com.ms.lang;
 
-import java.lang.Exception;
 
 public class MulticastNotSupportedException extends Exception {
 

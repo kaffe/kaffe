@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.io.Externalizable;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.mime.MimeType;
-import java.util.mime.MimeTypeParameterList;
-import java.util.mime.MimeTypeParseException;
 
 /**
  * DataFlavor - 

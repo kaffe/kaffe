@@ -20,4 +20,4 @@ public interface ObjectInput extends DataInput {
   public abstract int available() throws IOException;
   public abstract void close() throws IOException;
 
-};
+}

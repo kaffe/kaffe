@@ -2,8 +2,6 @@ package java.awt.event;
 
 import java.awt.Component;
 import java.awt.Event;
-import java.awt.Frame;
-import java.awt.Window;
 
 /**
  *

@@ -14,4 +14,4 @@ public interface ObjectInputValidation {
 
   public abstract void validateObject() throws InvalidObjectException;
 
-};
+}

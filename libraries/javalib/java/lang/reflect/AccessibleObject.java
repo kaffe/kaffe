@@ -18,8 +18,6 @@
 
 package java.lang.reflect;
 
-import java.lang.SecurityException;
-import java.lang.Class;
 
 public class AccessibleObject
 {

@@ -10,8 +10,6 @@
 
 package java.text;
 
-import java.lang.String;
-import java.lang.Comparable;
 
 public final class CollationKey implements Comparable {
 

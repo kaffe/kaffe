@@ -122,7 +122,7 @@ public Object clone()
 	cal.isTimeSet = isTimeSet;
 	cal.areFieldsSet = areFieldsSet;
 
-	return ((Object)cal);
+	return (cal);
 }
 
 protected void complete()

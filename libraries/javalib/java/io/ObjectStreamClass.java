@@ -10,17 +10,12 @@
 
 package java.io;
 
-import java.lang.String;
 import java.io.Serializable;
 import java.io.Externalizable;
 import java.util.Hashtable;
 import java.io.ObjectStreamConstants;
-import java.io.StreamCorruptedException;
 import java.io.IOException;
-import java.io.OptionalDataException;
 import kaffe.io.ObjectInputStreamImpl;
-import kaffe.io.ObjectOutputStreamImpl;
-import kaffe.io.ObjectStreamClassImpl;
 import kaffe.io.SerializationFactory;
 import kaffe.io.DefaultSerializationFactory;
 

@@ -13,15 +13,12 @@ package kaffe.net.www.protocol.http;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
 import java.util.Vector;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.Socket;
-import java.io.FileInputStream;
 import java.awt.Toolkit;
 
 public class HttpURLConnection

@@ -10,7 +10,6 @@
 
 package java.net;
 
-import java.lang.String;
 import java.io.Serializable;
 import java.util.StringTokenizer;
 

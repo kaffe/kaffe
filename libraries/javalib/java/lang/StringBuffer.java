@@ -11,7 +11,7 @@
 package java.lang;
 
 public final class StringBuffer implements java.io.Serializable {
-	private final int SPARECAPACITY = 16;
+	private static final int SPARECAPACITY = 16;
 
 	char[] buffer;				// character buffer
 	int used;				// # chars used in buffer

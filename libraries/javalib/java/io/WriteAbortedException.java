@@ -1,6 +1,5 @@
 package java.io;
 
-import java.lang.String;
 
 /*
  * Java core library component.
@@ -25,10 +24,10 @@ public WriteAbortedException(String s, Exception e)
 public String getMessage()
 	{
 	if (detail != null) {
-		return (((Throwable)this).getMessage() + ":" + detail.getMessage());
+		return (super.getMessage() + ":" + detail.getMessage());
 	}
 	else {
-		return (((Throwable)this).getMessage());
+		return (super.getMessage());
 	}
 }
 }

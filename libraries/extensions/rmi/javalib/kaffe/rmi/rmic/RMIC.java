@@ -17,7 +17,6 @@ import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Arrays;
-import java.lang.Comparable;
 import kaffe.rmi.server.RMIHashes;
 import kaffe.tools.compiler.Compiler;
 

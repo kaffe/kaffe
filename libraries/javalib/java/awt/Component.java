@@ -2,16 +2,13 @@ package java.awt;
 
 import java.awt.Event;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -20,19 +17,13 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.PaintEvent;
 import java.awt.event.TextEvent;
 import java.awt.event.WindowEvent;
-import java.awt.image.ColorModel;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
-import java.awt.peer.ActiveEvent;
 import java.awt.peer.ComponentPeer;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.EventListener;
-import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Vector;
-import kaffe.awt.OpaqueComponent;
 import kaffe.util.Ptr;
 
 /**

@@ -11,7 +11,6 @@
 package java.util;
 
 import java.util.NoSuchElementException;
-import java.lang.String;
 
 public class StringTokenizer
   implements Enumeration
@@ -68,7 +67,7 @@ public boolean hasMoreTokens() {
 }
 
 public Object nextElement() {
-	return ((Object)nextToken());
+	return (nextToken());
 }
 
 public String nextToken(String delim) {

@@ -12,8 +12,6 @@
 
 package java.lang.reflect;
 
-import java.lang.Class;
-import java.lang.String;
 
 public interface Member {
 

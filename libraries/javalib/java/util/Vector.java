@@ -11,8 +11,6 @@
 package java.util;
 
 import java.io.Serializable;
-import java.lang.String;
-import java.lang.System;
 
 public class Vector extends AbstractList
 		implements List, Cloneable, Serializable {

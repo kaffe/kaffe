@@ -1,8 +1,5 @@
 package java.awt;
 
-import java.awt.event.KeyEvent;
-import java.util.Hashtable;
-
 /**
  * Defaults - adaption parameters of package java.awt. This is our way to
  * parameterize various settings like colors and fonts. We prefer a simple

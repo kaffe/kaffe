@@ -3,8 +3,6 @@ package java.awt;
 import java.awt.TextEvt;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.InputEvent;
@@ -328,7 +326,7 @@ void makeVisible( int idx) {
 	else {
 		int xp = tb.getPos( idx);
 		if ( width > 0 ) {
-			int mp = width - 2*db - 2*xOffs - tCursor.width;;
+			int mp = width - 2*db - 2*xOffs - tCursor.width;
 			for (; mp < xp - tb.getPos( first); first++ );
 		}
 	}

@@ -11,8 +11,6 @@
 package java.lang;
 
 import java.io.FileDescriptor;
-import java.lang.Thread;
-import java.lang.Class;
 import java.net.InetAddress;
 import java.security.Permission;
 

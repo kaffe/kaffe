@@ -10,7 +10,6 @@
 
 package kaffe.util;
 
-import java.lang.String;
 
 /**
  * This class consists of static methods that perform assertion checks.

@@ -10,7 +10,6 @@
 
 package java.io;
 
-import java.lang.String;
 
 public class BufferedWriter extends Writer {
 
@@ -87,4 +86,4 @@ public class BufferedWriter extends Writer {
     wr.close();
   }
 
-};
+}

@@ -20,14 +20,10 @@ import java.applet.AppletStub;
 import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.Label;
 import java.awt.Menu;
 import java.awt.MenuBar;
@@ -38,27 +34,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Reader;
-import java.io.StreamTokenizer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Observable;
 import java.util.Observer;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 public class AppletViewer
   extends Frame
@@ -323,10 +311,10 @@ public final static Applet createApplet(AppletTag tag, AppletStub stub) {
     return (app);
 }
 
-private final String TagMenu	= "Tag";
-private final String QuitMenu	= "Quit";
-private final String StopMenu	= "Stop";
-private final String StartMenu	= "Start";
+private static final String TagMenu	= "Tag";
+private static final String QuitMenu	= "Quit";
+private static final String StopMenu	= "Stop";
+private static final String StartMenu	= "Start";
 
 public void actionPerformed ( ActionEvent e ) {
 	String cmd = e.getActionCommand();

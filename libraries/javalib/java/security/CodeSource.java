@@ -15,7 +15,6 @@
 
 package java.security;
 
-import java.net.URL;
 
 public class CodeSource {
 

@@ -11,7 +11,6 @@
 package java.lang.ref;
 
 import java.lang.ref.ReferenceQueue;
-import kaffe.util.Ptr;
 
 public abstract class Reference extends Object {
 

@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.lang.String;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import kaffe.net.DefaultURLStreamHandlerFactory;

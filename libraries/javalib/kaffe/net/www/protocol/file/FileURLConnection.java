@@ -1,13 +1,11 @@
 package kaffe.net.www.protocol.file;
 
-import java.awt.Toolkit;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import kaffe.net.www.protocol.BasicURLConnection;
 
 /*

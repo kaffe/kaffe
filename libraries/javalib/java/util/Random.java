@@ -10,7 +10,6 @@
 
 package java.util;
 
-import java.lang.System;
 import java.io.Serializable;
 
 /**
@@ -26,9 +25,9 @@ public class Random implements Serializable
 	private double nextNextGaussian;
 
 	private static final long serialVersionUID = 3905348978240129619L;
-	final private long p1 = 0x5DEECE66DL;
-	final private long p2 = 0xBL;
-	final private long mask = ((1L << 48) - 1);
+	private static final long p1 = 0x5DEECE66DL;
+	private static final long p2 = 0xBL;
+	private static final long mask = ((1L << 48) - 1);
 
 public Random() {
 	this(System.currentTimeMillis());

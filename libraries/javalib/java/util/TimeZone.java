@@ -34,7 +34,7 @@ abstract public class TimeZone implements Serializable, Cloneable {
 
 	private static String[] zoneDirs = {
 		"/usr/share/zoneinfo",
-		"/usr/share/lib/zoneinfo",
+		"/usr/share/lib/zoneinfo"
 		// XXX others to try??
 	};
 

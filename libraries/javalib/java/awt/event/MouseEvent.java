@@ -1,10 +1,8 @@
 package java.awt.event;
 
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Event;
 import java.awt.Point;
-import java.awt.Toolkit;
 
 /**
  *

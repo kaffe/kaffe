@@ -1,7 +1,6 @@
 package java.awt;
 
 import java.awt.Component;
-import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.PaintEvent;
 

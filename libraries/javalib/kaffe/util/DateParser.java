@@ -1,6 +1,5 @@
 package kaffe.util;
 
-import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.util.Calendar;

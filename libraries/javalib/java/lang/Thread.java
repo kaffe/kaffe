@@ -10,7 +10,6 @@
 
 package java.lang;
 
-import java.lang.Throwable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.security.AccessController;

@@ -17,9 +17,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.PushbackInputStream;
-import java.io.Writer;
-import java.lang.String;
-import java.lang.System;
 
 public class Properties extends Hashtable {
 	private static final long serialVersionUID = 4112578634029874840L;
