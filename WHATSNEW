@@ -36,7 +36,8 @@ What's New in Kaffe 1.1.4
 * kjc bug fixes:
   * .this expressions
   * extra generated <clinit> methods
-  * temporary fix for static initializers
+  * static initializers fixed.  Circular
+    definitions of fields are now supported.
 * Build fixes:
   * m68k atomic compare and exchange
   * m68k-netbsd

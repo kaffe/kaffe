@@ -1,3 +1,247 @@
+2004-02-18  Jim Pick  <jim@kaffe.org>
+
+        (On Release 1.1.4 Branch)
+
+	* Merged updates from HEAD to 1.1.4 branch.
+
+	* WHATSNEW:
+	Comment on new changes.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
+2004-02-16  Jim Pick  <jim@kaffe.org>
+
+	* configure.in:
+	Don't link to libasound if not using pthreads.  Also, fix
+	--disable-sound and --without-alsa options.
+
+	* configure,
+	libltdl/configure:
+	Regenerated.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (verifyErrorInCheckMethodCall): Use gc_free instead of KFREE on
+	memory allocated by gc_malloc.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (verifyErrorInCheckMethodCall): New static inline function.
+        (VERIFY_ERROR) Removed.
+        Replaced use of VERIFY_ERROR by verifyErrorInCheckMethodCall.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (opstackPopNBlind): New static inline function.
+        (OPSTACK_POP_N_BLIND) Removed.
+        Replaced use of OPSTACK_POP_N_BLIND by opstackPopNBlind.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (opstackWPopBlind): New static inline function.
+        (OPSTACK_WPOP_BLIND) Removed.
+        Replaced use of OPSTACK_WPOP_BLIND by opstackWPopBlind.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (opstackPopBlind): New static inline function.
+        (OPSTACK_POP_BLIND) Removed.
+        Replaced use of OPSTACK_POP_BLIND by opstackPopBlind.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (opstackPeekTBlindErrorInVerifyBasicBlock): New static inline function.
+        (OPSTACK_PEEK_T_BLIND) Use opstackPeekTBlindErrorInVerifyBasicBlock.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (opstackWPushBlind): New static inline function.
+        (OPSTACK_WPUSH_BLIND) Removed.
+        Replaced use of OPSTACK_WPUSH_BLIND by opstackWPushBlind.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (opstackPushBlind): New static inline function.
+        (OPSTACK_PUSH_BLIND) Removed.
+        Replaced use of OPSTACK_PUSH_BLIND by opstackPushBlind.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+	(LOCALS_INFO, OPSTACK_INFO): Removed, since unused.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (checkStackOverflowErrorInVerifyBasicBlock): New static inline function.
+        (CHECK_STACK_OVERFLOW) Use checkStackOverflowErrorInVerifyBasicBlock.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (getOpstackWTop): New static inline function.
+        (OPSTACK_WTOP) Removed.
+        Replaced use of OPSTACK_WTOP by getOpstackWTop.
+
+2004-02-15  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (getOpstackTop): New static inline function.
+        (OPSTACK_TOP) Removed.
+        Replaced use of OPSTACK_TOP by getOpstackTop.
+
+2004-02-15  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (getOpstackItem): New static inline function.
+        (OPSTACK_ITEM) Removed.
+        Replaced use of OPSTACK_ITEM by getOpstackItem.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (branchInBoundsErrorInVerifyMethod3a,
+	checkLocalIndexErrorInVerifyMethod3a):
+	New static inline functions.
+        (BRANCH_IN_BOUNDS) Use branchInBoundsErrorInVerifyMethod3a.
+	(CHECK_LOCAL_INDEX) Use checkLocalIndexErrorInVerifyMethod3a.
+	
+2004-02-15  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (ensureOpstackSizeErrorInVerifyBasicBlock): New static inline function.
+        (ENSURE_OPSTACK_SIZE) Use ensureOpstackSizeErrorInVerifyBasicBlock.
+
+2004-02-15  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (ensureLocalTypeErrorInVerifyBasicBlock): New static inline function.
+        (ENSURE_LOCAL_TYPE) Use ensureLocalTypeErrorInVerifyBasicBlock.
+	Removed unnecessary undef for VERIFY_ERROR.
+
+2004-02-15  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (verifyErrorInVerifyBasicBlock): New static inline function.
+        (VERIFY_ERROR) Removed.
+        Replaced use of VERIFY_ERROR by verifyErrorInVerifyBasicBlock.
+
+2004-02-15  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (verifyErrorInMerge): New static inline function.
+        (VERIFY_ERROR) Removed.
+        Replaced use of VERIFY_ERROR by verifyErrorInMerge.
+
+2004-02-15  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+	Removed undef for unused macro RETURN_3b.
+
+2004-02-15  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (verifyErrorInVerifyMethod3b): New static inline function.
+        (VERIFY_ERROR) Removed.
+        Replaced use of VERIFY_ERROR by verifyErrorInVerifyMethod3b.
+
+2004-02-14  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/kjc.jar: Regenerated.
+
+2004-02-13  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (verifyErrorInVerifyMethod3a): New static inline function.
+        (VERIFY_ERROR) Removed.
+        Replaced use of VERIFY_ERROR by verifyErrorInVerifyMethod3a.
+
+2004-02-12  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (failInVerifyMethod): New static inline function.
+        (FAIL) Removed.
+        Replaced use of FAIL by failInVerifyMethod.
+	(cleanupInVerifyMethod) Always derefence numBlocks before use.
+
+2004-02-12  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (cleanupInVerifyMethod): New static inline function.
+        (CLEANUP) Removed.
+        Replaced use of CLEANUP by cleanupInVerifyMethod.
+
+2004-02-12  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+	(IS_PRIMITIVE_ARRAY): Removed unused macro.
+
+2004-02-12  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (isNull): New static inline function.
+        (IS_NULL) Removed.
+        Replaced use of IS_NULL by isNull.
+
+2004-02-11  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+	(isWide): New static inline function.
+	(IS_WIDE) Removed.
+	Replaced use of IS_WIDE by isWide.
+
+2004-02-11  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+	(abstractMethodError): New static inline function.
+	(ABSTRACT_METHOD_ERROR) Removed.
+	(checkAbstractMethod) Use abstractMethodError instead of
+	ABSTRACT_METHOD_ERROR macro.
+
+2004-02-11  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/verify.c
+	(poolError): New static inline function.
+	(POOLERROR): Removed.
+	(verify2) Use poolError instead of POOLERROR macro.
+
+2004-02-10  Dalibor Topic <robilad@kaffe.org>
+
+	* config/m68k/jit3-m68k.def:
+	Removed explicit definition of KAFFE_VMDEBUG.
+
+2004-02-10  Dalibor Topic <robilad@kaffe.org>
+
+	* config/m68k/netbsd1/jit-md.h:
+	Added missing includes for m68k_sync_icache.
+
+	* kaffe/kaffevm/intrp/machine.c:
+	Updated copyright notice.
+
+2004-02-10  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/intrp/machine.c:
+	Include support.h to avoid compiler warning.
+	Order includes alphabetically.
+
+	* kaffe/kaffevm/access.h:
+	Include gtypes.h.
+
+2004-02-10  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/clib/native/ObjectInputStream.c:
+	Include support.h to avoid compiler warning.
+	
 2004-02-09  Jim Pick  <jim@kaffe.org>
 
         (On Release 1.1.4 Branch)
