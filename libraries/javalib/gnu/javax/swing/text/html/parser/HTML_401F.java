@@ -38,17 +38,16 @@ exception statement from your version. */
 
 package gnu.javax.swing.text.html.parser;
 
-import java.io.IOException;
-
-import javax.swing.text.html.parser.DTDConstants;
-
 import gnu.javax.swing.text.html.parser.models.PCDATAonly_model;
 import gnu.javax.swing.text.html.parser.models.TableRowContentModel;
 import gnu.javax.swing.text.html.parser.models.noTagModel;
-import gnu.javax.swing.text.html.parser.models.node;
-import gnu.javax.swing.text.html.parser.models.transformer;
+
+import java.io.IOException;
 import java.io.Serializable;
+
 import javax.swing.text.html.parser.*;
+import javax.swing.text.html.parser.ContentModel;
+import javax.swing.text.html.parser.DTDConstants;
 
 /**
  * This class represents the java implementation of the HTML 4.01

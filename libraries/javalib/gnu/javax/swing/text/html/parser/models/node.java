@@ -40,9 +40,6 @@ package gnu.javax.swing.text.html.parser.models;
 
 import java.io.Serializable;
 
-import javax.swing.text.html.parser.Element;
-import javax.swing.text.html.parser.TagElement;
-
 /**
  * Part of the internal representation of the content model.
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)

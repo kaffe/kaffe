@@ -4,6 +4,17 @@
 	
 	2005-03-13  Michael Koch  <konqueror@gmx.de>
 
+	* gnu/javax/swing/text/html/parser/HTML_401F.java,
+	gnu/javax/swing/text/html/parser/gnuDTD.java,
+	gnu/javax/swing/text/html/parser/models/node.java:
+	Reworked import statements.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-03-13  Michael Koch  <konqueror@gmx.de>
+
 	* gnu/java/net/protocol/https/Handler.java:
 	Reworked import statements.
 	

@@ -49,7 +49,6 @@ import java.util.Vector;
 
 import javax.swing.text.html.parser.AttributeList;
 import javax.swing.text.html.parser.ContentModel;
-import javax.swing.text.html.parser.DTD;
 import javax.swing.text.html.parser.Element;
 import javax.swing.text.html.parser.Entity;
 
