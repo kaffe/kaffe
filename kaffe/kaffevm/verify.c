@@ -1402,6 +1402,16 @@ getWIdx(const unsigned char * code, const uint32 pc)
 }
 
 /*
+ * Helper function for pc access.
+ */
+static inline
+uint32
+getNextPC(const unsigned char * code, const uint32 pc)
+{
+	return (pc + insnLen[code[pc]]);
+}
+
+/*
  * verifyMethod3a()
  *     check static constraints.  section 4.8.1 of JVML Spec 2.
  *
@@ -1458,7 +1468,6 @@ verifyMethod3a(errorInfo* einfo,
 	unsigned char* code = METHOD_BYTECODE_CODE(method);
 	
 	uint32 pc = 0, newpc = 0, n = 0, idx = 0;
-#define NEXTPC (pc + insnLen[code[pc]])
 	int32 branchoffset = 0;
 	int32 low, high;
 	
@@ -1798,7 +1807,7 @@ verifyMethod3a(errorInfo* einfo,
 			ENSURE_NON_WIDE;
 			status[pc] |= END_BLOCK;
 			
-			newpc = NEXTPC;
+			newpc = getNextPC(code, pc);
 			BRANCH_IN_BOUNDS(newpc, "if<condition> = false");
 			status[newpc] |= START_BLOCK;
 			
@@ -1826,7 +1835,7 @@ verifyMethod3a(errorInfo* einfo,
 			status[newpc] |= START_BLOCK;
 			
 			/* the next instruction is a target for branching via RET */
-			pc = NEXTPC;
+			pc = getNextPC(code, pc);
 			BRANCH_IN_BOUNDS(pc, "jsr/ret");
 			status[pc] |= START_BLOCK;
 			continue;
@@ -1845,7 +1854,7 @@ verifyMethod3a(errorInfo* einfo,
 				pc += 2;
 			}
 			CHECK_LOCAL_INDEX(idx);
-			pc = NEXTPC;
+			pc = getNextPC(code, pc);
 			continue;
 			
 			
@@ -1958,7 +1967,7 @@ verifyMethod3a(errorInfo* einfo,
 			}
 		}
 		
-		pc = NEXTPC;
+		pc = getNextPC(code, pc);
 	}
 	
 	
@@ -2066,7 +2075,6 @@ verifyMethod3a(errorInfo* einfo,
 	
 	
 #undef CHECK_LOCAL_INDEX	
-#undef NEXTPC
 #undef BRANCH_IN_BOUNDS
 #undef GET_IDX
 #undef GET_WIDX

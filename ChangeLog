@@ -1,3 +1,10 @@
+2004-02-28  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
+        (getNextPC): New static inline function.
+        (NEXTPC) Removed.
+        Replaced use of NEXTPC by getNextPC.
+
 2004-02-28    Guilhem Lavaux <guilhem@kaffe.org>
 
 	* java/text/AttributedStringIterator.java
