@@ -1,49 +1,55 @@
 import java.util.*;
-import kaffe.util.Assert;
-import kaffe.util.NotImplemented;
 
 class MapTest {
+  static long seed = -1;
+  static int num = 30;
 
-  public static void main (String[] args) throws Exception {
-    long seed = -1;
-    int num = 100;
+  public static void main (String[] args) throws Throwable {
+    try {
+      switch (args.length) {
+	case 2:
+	  seed = Long.parseLong(args[1]);
+	  /* fall through */
+	case 1:
+	  num = Integer.parseInt(args[0]);
+	  /* fall through */
+	case 0:
+	  break;
+	default:
+	  throw new Exception("Usage: SortTest [#elem [randseed]]");
+      }
+      if (seed == -1) {
+	seed = System.currentTimeMillis();
+      }
+      final Random r = new Random(seed);
 
-    switch (args.length) {
-      case 2:
-	seed = Long.parseLong(args[1]);
-	/* fall through */
-      case 1:
-	num = Integer.parseInt(args[0]);
-	/* fall through */
-      case 0:
-	break;
-      default:
-	throw new Exception("Usage: SortTest [#elem [randseed]]");
+      // Test basic Map properties of HashMap
+      HashMap hm = new HashMap();
+      checkMap(hm, r, num);
+
+      // Test basic Map properties of TreeMap
+      TreeMap tm = new TreeMap(new Comparator() {
+	  public int compare(Object x, Object y) {
+	    return (x == null) ? ((y == null) ? 0 : -1) :
+		   (y == null) ? 1 : ((Comparable)x).compareTo(y);
+	  }
+	});
+      checkMap(tm, r, num);
+
+      assert(tm.entrySet().equals(new HashMap(tm).entrySet()));
+      assert(hm.entrySet().equals(new TreeMap(hm).entrySet()));
+    } catch (Throwable t) {
+      System.out.println("FAILURE: reproduce with these arguments: "
+	+ num + " " + seed);
+      throw t;
     }
-    final Random r = (seed == -1) ? new Random() : new Random(seed);
-
-    // Test basic Map properties of HashMap
-    HashMap hm = new HashMap();
-    checkMap(hm, r, num);
-
-    // Test basic Map properties of TreeMap
-    TreeMap tm = new TreeMap(new Comparator() {
-	public int compare(Object x, Object y) {
-	  return (x == null) ? ((y == null) ? 0 : -1) :
-		 (y == null) ? 1 : ((Comparable)x).compareTo(y);
-	}
-      });
-    checkMap(tm, r, num);
-
-    Assert.that(tm.entrySet().equals(new HashMap(tm).entrySet()));
-    Assert.that(hm.entrySet().equals(new TreeMap(hm).entrySet()));
   }
 
   // Check basic Map properties
   static void checkMap(Map map, Random r, int num) throws Exception {
 
     System.out.println("Checking " +map.getClass());
-    Assert.that(map.isEmpty());
+    assert(map.isEmpty());
 
     // Shadow copy of map
     int[] ary = new int[num];
@@ -59,35 +65,35 @@ class MapTest {
 	size++;
       }
       checkSorted(map);
-      Assert.that(map.size() == size);
+      assert(map.size() == size);
     }
-    Assert.that(!map.isEmpty());
+    assert(!map.isEmpty());
 
     // Check keys and their mappings
     for (int i = 0; i < num; i++) {
       if (ary[i] == -1) {
-	Assert.that(!map.containsKey(new Integer(i)));
-	Assert.that(map.get(new Integer(i)) == null);
+	assert(!map.containsKey(new Integer(i)));
+	assert(map.get(new Integer(i)) == null);
       } else {
-	Assert.that(map.containsKey(new Integer(i)));
-	Assert.that(map.get(new Integer(i)).equals(new Integer(ary[i])));
+	assert(map.containsKey(new Integer(i)));
+	assert(map.get(new Integer(i)).equals(new Integer(ary[i])));
       }
     }
 
     // Check values
     for (int i = 0; i < num; i++) {
       if (ary[i] != -1) {
-	Assert.that(map.containsValue(new Integer(ary[i])));
+	assert(map.containsValue(new Integer(ary[i])));
       }
     }
-    Assert.that(!map.containsValue(new Integer(-1)));
-    Assert.that(!map.containsValue(new Integer(num)));
+    assert(!map.containsValue(new Integer(-1)));
+    assert(!map.containsValue(new Integer(num)));
 
     // Check keySet();
     Set ks = map.keySet();
     Iterator tempi;
     for (tempi = ks.iterator(); tempi.hasNext(); ) {
-      Assert.that(ary[((Integer)tempi.next()).intValue()] != -1);
+      assert(ary[((Integer)tempi.next()).intValue()] != -1);
     }
     boolean exok = false;
     try {
@@ -95,43 +101,43 @@ class MapTest {
     } catch (NoSuchElementException _) {
       exok = true;
     }
-    Assert.that(exok);
+    assert(exok);
     for (int i = 0; i < num; i++) {
       if (ary[i] == -1) {
-	Assert.that(!ks.contains(new Integer(i)));
+	assert(!ks.contains(new Integer(i)));
       } else {
-	Assert.that(ks.contains(new Integer(i)));
+	assert(ks.contains(new Integer(i)));
       }
     }
 
     // Check clone(), equals(), and hashCode()
     int hash = map.hashCode();
-    Assert.that(map.equals(map));
+    assert(map.equals(map));
     Map clone = (Map)map.getClass().getMethod("clone", null).invoke(map, null);
-    Assert.that(map.equals(clone));
+    assert(map.equals(clone));
     checkSorted(clone);
     clone.put(new Integer(-1), new Integer(-1));
-    Assert.that(!map.equals(clone));
+    assert(!map.equals(clone));
     checkSorted(clone);
     clone.remove(new Integer(-1));
-    Assert.that(map.equals(clone));
-    Assert.that(clone.hashCode() == hash);
+    assert(map.equals(clone));
+    assert(clone.hashCode() == hash);
     checkSorted(map);
 
     // Check map can handle null keys and values
     map.put(null, new Integer(-1));
-    Assert.that(map.containsKey(null));
-    Assert.that(map.get(null).equals(new Integer(-1)));
+    assert(map.containsKey(null));
+    assert(map.get(null).equals(new Integer(-1)));
     checkSorted(map);
     map.remove(null);
-    Assert.that(!map.containsKey(null));
+    assert(!map.containsKey(null));
     checkSorted(map);
     map.put(new Integer(-1), null);
     checkSorted(map);
-    Assert.that(map.containsValue(null));
+    assert(map.containsValue(null));
     checkSorted(map);
     map.remove(new Integer(-1));
-    Assert.that(!map.containsValue(null));
+    assert(!map.containsValue(null));
     checkSorted(map);
 
     // Check entrySet()
@@ -141,21 +147,21 @@ class MapTest {
     Iterator esi;
     for (esi = es.iterator(); esi.hasNext(); ) {
       Map.Entry e = (Map.Entry)esi.next();
-      Assert.that(ary[((Integer)e.getKey()).intValue()]
+      assert(ary[((Integer)e.getKey()).intValue()]
 			== ((Integer)e.getValue()).intValue());
       ary2[((Integer)e.getKey()).intValue()] =
 		((Integer)e.getValue()).intValue();
       laste = e;
     }
-    Assert.that(Arrays.equals(ary, ary2));
+    assert(Arrays.equals(ary, ary2));
 
     // Check entrySet()'s iterator's remove() works and is backed by the map
     int key = ((Integer)laste.getKey()).intValue();
     int val = ((Integer)laste.getValue()).intValue();
     int osize = map.size();
     esi.remove();
-    Assert.that(!map.containsKey(new Integer(key)));
-    Assert.that(map.size() == osize - 1);
+    assert(!map.containsKey(new Integer(key)));
+    assert(map.size() == osize - 1);
     checkSorted(map);
     boolean rmok = false;
     try {
@@ -163,12 +169,12 @@ class MapTest {
     } catch (IllegalStateException _) {
       rmok = true;
     }
-    Assert.that(rmok);
+    assert(rmok);
     checkSorted(map);
     map.put(new Integer(key), new Integer(val));
-    Assert.that(map.containsKey(new Integer(key)));
-    Assert.that(map.containsValue(new Integer(val)));
-    Assert.that(map.size() == osize);
+    assert(map.containsKey(new Integer(key)));
+    assert(map.containsValue(new Integer(val)));
+    assert(map.size() == osize);
     checkSorted(map);
 
     // Check values() method
@@ -180,7 +186,7 @@ class MapTest {
     }
     for (int i = 0; i < num; i++) {
       if (ary[i] != -1) {
-	Assert.that(ary2[ary[i]] == 1);
+	assert(ary2[ary[i]] == 1);
       }
     }
     int[] ary3 = new int[num];
@@ -188,17 +194,17 @@ class MapTest {
     Arrays.sort(ary3);
     for (int i = 0; i < num; i++) {
       if (ary2[i] == 1) {
-	Assert.that(Arrays.binarySearch(ary3, i) >= 0);
+	assert(Arrays.binarySearch(ary3, i) >= 0);
       }
     }
 
     // Check entrySet clear()
     es.clear();
-    Assert.that(map.isEmpty());
-    Assert.that(map.size() == 0);
-    Assert.that(!map.values().iterator().hasNext());
-    Assert.that(!map.keySet().iterator().hasNext());
-    Assert.that(!map.entrySet().iterator().hasNext());
+    assert(map.isEmpty());
+    assert(map.size() == 0);
+    assert(!map.values().iterator().hasNext());
+    assert(!map.keySet().iterator().hasNext());
+    assert(!map.entrySet().iterator().hasNext());
     checkSorted(map);
 
     // Put back all entries
@@ -208,7 +214,7 @@ class MapTest {
 	checkSorted(map);
       }
     }
-    Assert.that(map.equals(clone));
+    assert(map.equals(clone));
   }
 
   // Check SortedMap properties
@@ -223,19 +229,21 @@ class MapTest {
     // Check sortedness
     checkIsSorted(map);
 
-    // Turn me on one SortedMap.subList() is implemented
+    // This will test SortedMap.subList() once it is implemented
     try {
 
-      int ary[] = new int[map.size()];
       int count = 0;
+      int ary[] = new int[map.size()];
       for (Iterator i = map.keySet().iterator(); i.hasNext(); ) {
-	Object next = i.next();
-	ary[count++] = (next == null) ? -1 : ((Integer)next).intValue();
+	Integer next = (Integer)i.next();
+	ary[count++] = (next == null) ? -1 : next.intValue();
       }
+      assert(count == map.size());
 
-      SortedMap map2 = map.tailMap(
-	new Integer(ary.length == 0 ? 0 : ary[count / 2]));
+      Integer halfKey = new Integer(count == 0 ? 0 : ary[count / 2]);
+      SortedMap map2 = map.tailMap(halfKey);
       SortedMap map3 = new TreeMap(map2);
+
       for (Iterator i = map2.entrySet().iterator(); i.hasNext(); ) {
 	i.next();
 	i.remove();
@@ -244,14 +252,30 @@ class MapTest {
       }
       try {
 	map2.firstKey();
-	throw new Exception("not empty");
+	assert(false);
       } catch (NoSuchElementException e) {
       }
+      assert(map.size() == count / 2);
+      assert(map.get(halfKey) == null);
 
-      Assert.that(map.size() == count / 2);
-      if (map.size() > 0) {
-	Assert.that(((Integer)map.firstKey()).intValue() == ary[0]);
-	Assert.that(((Integer)map.lastKey()).intValue() == ary[count / 2]);
+      int index = 0;
+      for (Iterator i = map.keySet().iterator(); i.hasNext(); index++) {
+	Integer next = (Integer)i.next();
+	assert(map.comparator().compare(next, halfKey) < 0);
+	assert(ary[index] == ((next == null) ? -1 : next.intValue()));
+      }
+
+      if (count > 1) {
+	try {
+	  assert(((Integer)map.firstKey()).intValue() == ary[0]);
+	} catch (NullPointerException e) {
+	  assert(ary[0] == -1);
+	}
+	try {
+	  assert(((Integer)map.lastKey()).intValue() == ary[count / 2 - 1]);
+	} catch (NullPointerException e) {
+	  assert(ary[count / 2 - 1] == -1);
+	}
       }
 
       for (Iterator i = map3.entrySet().iterator(); i.hasNext(); ) {
@@ -261,9 +285,28 @@ class MapTest {
 	checkIsSorted(map2);
       }
 
-      Assert.that(((Integer)map.firstKey()).intValue() == ary[0]);
-      Assert.that(((Integer)map.lastKey()).intValue() == ary[count - 1]);
-    } catch (NotImplemented e) {
+      if (count > 0) {
+	try {
+	  assert(((Integer)map.firstKey()).intValue() == ary[0]);
+	} catch (NullPointerException e) {
+	  assert(ary[0] == -1);
+	}
+	try {
+	  assert(((Integer)map.lastKey()).intValue() == ary[count - 1]);
+	} catch (NullPointerException e) {
+	  assert(ary[count - 1] == -1);
+	}
+      }
+
+      index = 0;
+      for (Iterator i = map.keySet().iterator(); i.hasNext(); ) {
+	Integer next = (Integer)i.next();
+	assert(ary[index++] == ((next == null) ? -1 : next.intValue()));
+      }
+    } catch (Error e) {
+      if (!e.getClass().getName().equals("kaffe.util.NotImplemented")) {
+	throw e;
+      }
     }
   }
 
@@ -275,7 +318,13 @@ class MapTest {
       ary[count++] = i.next();
     }
     for (int i = count - 1; i > 0; i--)
-      Assert.that(c.compare(ary[i - 1], ary[i]) < 0);
+      assert(c.compare(ary[i - 1], ary[i]) < 0);
+  }
+
+  public static void assert(boolean truth) {
+    if (!truth) {
+      throw new Error("assertion failure");
+    }
   }
 }
 
