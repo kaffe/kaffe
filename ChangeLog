@@ -1,3 +1,8 @@
+Mon Aug  9 13:07:21 PDT 1999  Patrick Tullmann <tullmann@cs.utah.edu>
+
+	* kaffe/kaffevm/classMethod.c: fix bug in class resolution
+	when superclass resolution fails (PR 535).
+
 Fri Aug  6 16:51:01 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* java/util/SimpleTimeZone.java: add DST aliases
