@@ -1,3 +1,28 @@
+2001-03-11  Edouard G. Parmelan  <egp@free.fr>
+
+	* config/mips/n32-sysdepCallMethod.h: Use correct index in
+	calltype array.
+
+	* config/mips/threads.h (THREADSTACKSIZE): Dump it to 128K for
+	intrp engine on n32 and 64K on o32.
+
+	* libraries/javalib/java/io/PrintStream.java: synchronized println
+	methods to ensure that lines are written as a whole.
+
+	* libraries/javalib/Klasses.jar: regen with Jiles 1.12-20012116.
+
+2001-03-09  Edouard G. Parmelan  <egp@free.fr>
+
+	* test/regression/Str2.java: Add substring lookup test with
+	lastIndexOf() for Oliver Lombart fix.
+
+2001-03-09  Olivier Lombart <olivier@envoii.com>
+
+	* libraries/javalib/java/lang/String.java (lastIndexOf): Handle
+	case where searched string is a substring.
+	Reported by Peter Graves <peter@armedbear.org>
+	Submitted by Olivier Lombart <olivier@envoii.com>
+	
 2001-03-06  Archie Cobbs <archie@dellroad.org>
 	
 	* java/util/zip/DeflateOutputStream.java (write): Throw
