@@ -48,7 +48,8 @@ static nativeFunction null_funcs[1];
 nativeFunction* native_funcs = null_funcs;
 #endif
 
-extern struct JNIEnv_ Kaffe_JNIEnv;	/* XXX put in include file??? */
+extern struct JNIEnv_ Kaffe_JNIEnv;
+
 
 /*
  * Call a Java method from native code.
