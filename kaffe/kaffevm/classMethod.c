@@ -429,7 +429,7 @@ DBG(STATICINIT,
 DBG(STATICINIT, 
 			dprintf("using callMethodA\n");	
     )
-			callMethodA(meth, METHOD_INDIRECTMETHOD(meth), 0, 0, 0);
+			callMethodA(meth, METHOD_INDIRECTMETHOD(meth), 0, 0, 0, 1);
 		}
 
 		classLock = lockMutex(class);

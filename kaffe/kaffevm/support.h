@@ -118,7 +118,7 @@ extern struct Hjava_lang_Object* execute_java_constructor_v(const char*, struct 
 extern jlong		currentTime(void);
 extern void		addNativeMethod(const char*, void*);
 
-extern void	callMethodA(struct _methods*, void*, void*, jvalue*, jvalue*);
+extern void	callMethodA(struct _methods*, void*, void*, jvalue*, jvalue*, int);
 extern void	callMethodV(struct _methods*, void*, void*, va_list, jvalue*);
 extern struct _methods*	lookupClassMethod(struct Hjava_lang_Class*, const char*, const char*, struct _errorInfo*);
 extern struct _methods*	lookupObjectMethod(struct Hjava_lang_Object*, const char*, const char*, struct _errorInfo*);

@@ -449,7 +449,7 @@ finalizeObject(Collector* collector, void* ob)
         Method* final = objclass->finalizer;               
   
         assert(final != 0);
-        callMethodA(final, METHOD_INDIRECTMETHOD(final), obj, 0, 0);
+        callMethodA(final, METHOD_INDIRECTMETHOD(final), obj, 0, 0, 1);
 } 
 
 /*

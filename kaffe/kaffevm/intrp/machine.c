@@ -115,10 +115,10 @@ CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, met
 	if (methaccflags & ACC_NATIVE) {
 NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name->data, meth->signature->data); )
 		if (methaccflags & ACC_STATIC) {
-			callMethodA(meth, meth, 0, (jvalue*)arg, (jvalue*)retval);
+			callMethodA(meth, meth, 0, (jvalue*)arg, (jvalue*)retval, 1);
 		}
 		else {
-			callMethodA(meth, meth, ((jvalue*)arg)[0].l, &((jvalue*)arg)[1], (jvalue*)retval);
+			callMethodA(meth, meth, ((jvalue*)arg)[0].l, &((jvalue*)arg)[1], (jvalue*)retval, 1);
 		}
 		return;
 	}

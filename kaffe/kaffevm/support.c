@@ -265,7 +265,8 @@ execute_java_constructor(const char* cname, Hjava_lang_Class* cc, const char* si
  * Generic routine to call a native or Java method (array style).
  */
 void
-callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
+callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
+	    int promoted)
 {
 	const char* sig;
 	int i;
@@ -339,21 +340,25 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 		call.calltype[i] = *sig;
 		switch (*sig) {
 		case 'Z':
+			if (promoted) goto use_int;
 			call.callsize[i] = 1;
 			in[i].PROM_i = args[i].z;
 			break;
 
 		case 'S':
+			if (promoted) goto use_int;
 			call.callsize[i] = 1;
 			in[i].PROM_i = args[i].s;
 			break;
 
 		case 'B':
+			if (promoted) goto use_int;
 			call.callsize[i] = 1;
 			in[i].PROM_i = args[i].b;
 			break;
 
 		case 'C':
+			if (promoted) goto use_int;
 			call.callsize[i] = 1;
 			in[i].PROM_i = args[i].c;
 			break;
@@ -366,6 +371,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 #endif
 			break;
 		case 'I':
+		use_int:
 			call.callsize[i] = 1;
 			in[i].PROM_i = args[i].i;
 			break;
@@ -467,6 +473,22 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 		}
 	}
 #endif
+	if (!promoted && call.retsize == 1) {
+		switch (call.rettype) {
+		case 'Z':
+			ret->z = ret->i;
+			break;
+		case 'S':
+			ret->s = ret->i;
+			break;
+		case 'B':
+			ret->b = ret->i;
+			break;
+		case 'C':
+			ret->c = ret->i;
+			break;
+		}
+	}
 }
 
 /*
