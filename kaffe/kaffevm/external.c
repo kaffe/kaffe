@@ -115,6 +115,8 @@ static char *libraryPath = "";
 
 extern jint Kaffe_JNI_native(Method*);
 
+extern JavaVM Kaffe_JavaVM;
+
 /*
  * Error stub function.  Point unresolved link errors here to avoid
  * problems.
@@ -316,6 +318,12 @@ DBG(NATIVELIB,
 #if defined(KAFFE_FEEDBACK)
 	feedbackLibrary(path, true);
 #endif
+
+	void *func = loadNativeLibrarySym("JNI_OnLoad");
+	if (func != NULL) {
+	    JavaVM *jvm = &Kaffe_JavaVM;
+	    jint vers = ((jint(JNICALL *)(JavaVM *, void *))func)(jvm, NULL);
+	}
 
 	return index;
 }

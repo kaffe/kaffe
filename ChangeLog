@@ -1,3 +1,18 @@
+2003-07-07  Mark Wielaard <mark@klomp.org>
+
+	* include/jni.h (JNINativeInterface): Mark reserved words which
+	are used in JNI 1.2/1.4. Add ExceptionCheck slot.
+	(JavaVMAttachArgs): Mark reserved3 word as future
+	AttachCurrentThreadAsDaemon.
+	(JNIEnv_): Add ExceptionCheck.
+	* include/jni_cpp.h (JNIEnv::CheckException): New inline
+	function.
+	* kaffe/kaffevm/jni.c (Kaffe_ExceptionCheck): New function.
+	(Kaffe_JNINativeInterface): Add Kaffe_ExceptionCheck function
+	and mark unsupported callbacks with NULL.
+	* kaffe/kaffevm/external.c (loadNativeLibrary2) Call JNI_OnLoad
+	function if it exists in the library.
+
 2003-07-07  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/classMethod.c: (lookupArray) set the state

@@ -75,26 +75,26 @@ struct JNINativeInterface {
 	jint	(*GetVersion)			(JNIEnv*);
 	jclass	(*DefineClass)			(JNIEnv*, jobject, const jbyte*, jsize);
 	jclass	(*FindClass)			(JNIEnv*, const char*);
-	void*	reserved4;
-	void*	reserved5;
-	void*	reserved6;
+	void*	reserved4; // FromReflectedMethod
+	void*	reserved5; // FromReflectedField
+	void*	reserved6; // ToReflectedMethod
 	jclass	(*GetSuperclass)		(JNIEnv*, jclass);
 	jboolean	(*IsAssignableFrom)		(JNIEnv*, jclass, jclass);
-	void*	reserved7;
+	void*	reserved7; // ToReflectedField
 	jint	(*Throw)			(JNIEnv*, jobject);
 	jint	(*ThrowNew)			(JNIEnv*, jclass, const char*);
 	jthrowable (*ExceptionOccurred)		(JNIEnv*);
 	void	(*ExceptionDescribe)		(JNIEnv*);
 	void	(*ExceptionClear)		(JNIEnv*);
 	void	(*FatalError)			(JNIEnv*, const char*);
-	void*	reserved8;
-	void*	reserved9;
+	void*	reserved8; // PushLocalFrame
+	void*	reserved9; // PopLocalFrame
 	jref	(*NewGlobalRef)			(JNIEnv*, jref);
 	void	(*DeleteGlobalRef)		(JNIEnv*, jref);
 	void	(*DeleteLocalRef)		(JNIEnv*, jref);
 	jboolean	(*IsSameObject)			(JNIEnv*, jobject, jobject);
-	void*	reserved10;
-	void*	reserved11;
+	void*	reserved10; // NewLocalRef
+	void*	reserved11; // EnsureLocalCapacity
 	jobject	(*AllocObject)			(JNIEnv*, jclass);
 	jobject	(*NewObject)			(JNIEnv*, jclass, jmethodID, ...);
 	jobject	(*NewObjectV)			(JNIEnv*, jclass, jmethodID, va_list);
@@ -289,6 +289,23 @@ struct JNINativeInterface {
 	jint	(*MonitorExit)			(JNIEnv*, jobject);
 	jint	(*GetJavaVM)			(JNIEnv*, JavaVM**);
 
+	// New JNI 1.2 functions
+	
+	void* reserved12; // GetStringRegion
+	void* reserved13; // GetStringUTFRegion
+	void* reserved14; // GetPrimitiveArrayCritical
+	void* reserved15; // ReleasePromitiveArrayCritical
+	void* reserved16; // GetStringCritical
+	void* reserved17; // ReleaseStringCritical
+	void* reserved18; // NewWeakGlobalRef
+	void* reserved19; // DeleteWeakGlobalRef
+	jboolean	(*ExceptionCheck)	(JNIEnv*);
+
+	// New JNI 1.4 functions
+	
+	void* reserved20; // NewDirectByteBuffer
+	void* reserved21; // GetDirectBufferAddress
+	void* reserved22; // GetDirectBufferCapacity
 };
 
 struct JavaVMAttachArgs {
@@ -309,6 +326,7 @@ struct JNIInvokeInterface {
 	jint	(*AttachCurrentThread)		(JavaVM*, JNIEnv**, ThreadAttachArgs*);
 	jint	(*DetachCurrentThread)		(JavaVM*);
 	jint	(*GetEnv)			(JavaVM*, void**, jint);
+	void*	reserved3; // AttachCurrentThreadAsDaemon
 };
 
 struct JNIEnv_ {
@@ -522,6 +540,7 @@ struct JNIEnv_ {
 	jint MonitorEnter(jobject);
 	jint MonitorExit(jobject);
 	jint GetJavaVM(JavaVM**);
+	jboolean ExceptionCheck(void);
 #endif
 };
 

@@ -435,6 +435,21 @@ Kaffe_ExceptionOccurred(JNIEnv* env)
 	return (obj);
 }
 
+static jboolean
+Kaffe_ExceptionCheck(JNIEnv* env)
+{
+	jboolean result;
+	jobject obj;
+
+	BEGIN_EXCEPTION_HANDLING(0);
+
+	obj = unhand(getCurrentThread())->exceptObj;
+	result = (obj == NULL) ? JNI_FALSE : JNI_TRUE;
+
+	END_EXCEPTION_HANDLING();
+	return (result);
+}
+
 static void
 Kaffe_ExceptionDescribe(JNIEnv* env)
 {
@@ -4347,6 +4362,18 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	Kaffe_MonitorEnter,
 	Kaffe_MonitorExit,
 	Kaffe_GetJavaVM,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	Kaffe_ExceptionCheck,
+	NULL,
+	NULL,
+	NULL,
 
 };
 
