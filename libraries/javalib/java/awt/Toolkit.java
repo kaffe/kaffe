@@ -83,7 +83,7 @@ public void run () {
 		if ( !Toolkit.tlkInit( System.getProperty( "awt.display")) ) {
 			throw new AWTError( "native layer init failed");
 		}
-  } catch ( Exception x ) {
+  } catch ( Throwable x ) {
 		x.printStackTrace();
   }
 }
