@@ -7,5 +7,6 @@ ziptest2.zip
 *.class
 *.out
 *.fail
+*.tmp
 ExceptionTest
 .gdb_history
