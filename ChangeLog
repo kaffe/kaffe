@@ -1,5 +1,16 @@
 2004-07-21  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/boehm-gc/gc2.c,
+	kaffe/kaffevm/boehm-gc/boehm/pthread_stop_world.c:
+	Made GC_stop_world and GC_start_world aliases for jthread_suspendall
+	jthread_unsuspendall.
+	Put the pointer to the GC vtable at the end of the object instead of
+	an integer at the start of the object.
+
+	* kaffe/kaffevm/boehm-gc/boehm-patch: New file.
+
+2004-07-21  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* configure.ac, m4/glibcver.m4, Makefile.am:
 	Go into the "po" directory only
 	we either have already the .gmo files or if msgfmt has been found.
