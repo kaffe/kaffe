@@ -18,12 +18,17 @@
  * 
  * This keeps a hash table consisting of pointers to whatever, where
  * whatever is some chunk of memory allocated from the GC. This is used
- * for intern'ing strings, etc.
+ * for intern'ing strings, etc.  Note that this hashtable implementation
+ * operates on pointers only, it can't be used for storing arbitrary
+ * (key, value) pairs.
  * 
- * The Hash table is not walked by the GC; however, you can optionally
- * specify that each pointer added to the hash table adds a GC reference
- * to the memory so it won't get collected (removing the pointer from
- * the hash table removes the GC reference).
+ * The Hash table is not walked by the GC.
+ * You can supply a function to allocate memory for the hashtable.
+ * If you do not, kaffe's default KCALLOC/KFREE will be used.
+ *
+ * You are responsible for providing appropriate synchronization.
+ * You are allowed to remove entries while more memory is being allocated
+ * when the table is being resized.
  * 
  * You supply the hashing function and the equality tester.
  *
@@ -35,12 +40,6 @@
  * argument is the pointer already in the hash table.
  */
 
-/* Flags to hashInit() */
-#define HASH_ADD_REFS		0x0001	/* gc_add_ref() for each pointer */
-#define HASH_SYNCHRONIZE	0x0002	/* make hash table thread-safe */
-#define HASH_REENTRANT		0x0004	/* make hash table reenterable 
-					   during alloc/free */
-
 struct _hashtab;
 typedef struct _hashtab	*hashtab_t;
 typedef int		(*hashfunc_t)(const void *ptr1);
@@ -49,7 +48,7 @@ typedef void*		(*allocfunc_t)(size_t);
 typedef void		(*freefunc_t)(const void *ptr);
 
 extern hashtab_t	hashInit(hashfunc_t, compfunc_t, 
-				 allocfunc_t, freefunc_t, int);
+				 allocfunc_t, freefunc_t);
 extern void*		hashAdd(hashtab_t, const void*);
 extern void		hashRemove(hashtab_t, const void*);
 extern void*		hashFind(hashtab_t, const void*);

@@ -32,7 +32,7 @@
 #undef  unlockStaticMutex
 #define unlockStaticMutex(x)
 #define lockStaticMutex(x)
-#define hashInit(a,b,c,d,e)	((hashtab_t)((u_int)utf8ConstCompare \
+#define hashInit(a,b,c,d)	((hashtab_t)((u_int)utf8ConstCompare \
 					+ (u_int)utf8ConstHashValueInternal))
 #define hashAdd(t, x)		(x)
 #define hashFind(t, x)		NULL
@@ -137,8 +137,7 @@ utf8ConstNew(const char *s, int len)
 		}
 	} else {
 		hashTable = hashInit(utf8ConstHashValueInternal,
-			utf8ConstCompare, 0 /* alloc */, 0 /* free */, 
-			0);
+			utf8ConstCompare, 0 /* alloc */, 0 /* free */); 
 	}
 
 	/* Not in table; create new Utf8Const struct */

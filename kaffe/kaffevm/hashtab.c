@@ -12,8 +12,6 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "gc.h"
-#include "jsyscall.h"
-#include "locks.h"
 #include "hashtab.h"
 
 /* Initial size */
@@ -21,9 +19,6 @@
 
 /* When to increase size of hash table */
 #define NEED_RESIZE(tab)	(4 * (tab)->count >= 3 * (tab)->size)
-
-/* Valid client-set flags */
-#define HASH_CLIENT_FLAGS	(HASH_ADD_REFS|HASH_SYNCHRONIZE|HASH_REENTRANT)
 
 /* Generate step from hash. Note that "step" must always be
    relatively prime to tab->size. */
@@ -34,8 +29,6 @@ struct _hashtab {
 	const void	**list;	/* List of pointers to whatever */
 	int		count;	/* Number of slots used in the list */
 	int		size;	/* Total size list; always a power of 2 */
-	int		flags;	/* Flags */
-	iLock		lock;	/* Mutex for synchronizing threads */
 	compfunc_t	comp;	/* Comparison function */
 	hashfunc_t	hash;	/* Hash function */
 	allocfunc_t	alloc;	/* Allocation function */
@@ -44,7 +37,7 @@ struct _hashtab {
 
 /* Internal functions */
 static int		hashFindSlot(hashtab_t, const void *ptr);
-static void		hashResize(hashtab_t tab);
+static hashtab_t	hashResize(hashtab_t tab);
 
 /* Indicates a deleted pointer */
 static const void	*const DELETED = (const void *)&DELETED;
@@ -53,7 +46,7 @@ static const void	*const DELETED = (const void *)&DELETED;
  * Create a new hashtable
  */
 hashtab_t
-hashInit(hashfunc_t hash, compfunc_t comp, allocfunc_t alloc, freefunc_t free, int flags)
+hashInit(hashfunc_t hash, compfunc_t comp, allocfunc_t alloc, freefunc_t free)
 {
 	hashtab_t tab;
 
@@ -65,30 +58,22 @@ hashInit(hashfunc_t hash, compfunc_t comp, allocfunc_t alloc, freefunc_t free, i
 	}
 	if (tab == 0) {
 		assert(!"hashInit out of memory"); /* XXX OutOfMemoryError? */
+		return (0);
 	}
 	tab->hash = hash;
 	tab->comp = comp;
 	tab->alloc = alloc;
 	tab->free = free;
-	tab->flags = (flags & HASH_CLIENT_FLAGS);
-	if (tab->flags & HASH_SYNCHRONIZE) {
-		initStaticLock(&tab->lock);
-	}
 	return(tab);
 }
 
 /*
  * Destroy a hash table.
  */
-extern void
+void
 hashDestroy(hashtab_t tab)
 {
 	int k;
-
-	/* Lock table */
-	if (tab->flags & HASH_SYNCHRONIZE) {
-		lockStaticMutex(&tab->lock);
-	}
 
 	/* Remove all entries in the table */
 	for (k = 0; k < tab->size; k++) {
@@ -98,7 +83,6 @@ hashDestroy(hashtab_t tab)
 	}
 
 	/* Nuke the table */
-	/* XXX should free the lock here */
 	if (tab->free) {
 		tab->free(tab->list);
 		tab->free(tab);
@@ -119,29 +103,21 @@ hashAdd(hashtab_t tab, const void *ptr)
 	int	index;
 	void	*rtn;
 
-	/* Lock table */
-	if (tab->flags & HASH_SYNCHRONIZE) {
-		lockStaticMutex(&tab->lock);
-	}
-
 	if (NEED_RESIZE(tab)) {
-		hashResize(tab);
+		if (hashResize(tab) == 0) {
+			assert(!"hashResize out of memory"); 
+			/* XXX OutOfMemoryError? */
+			return (0);
+		}
 	}
 	index = hashFindSlot(tab, ptr);
 	assert(index != -1);
 	if (tab->list[index] == NULL || tab->list[index] == DELETED) {
-		if (tab->flags & HASH_ADD_REFS) {
-			gc_add_ref(ptr);
-		}
 		tab->list[index] = ptr;
 		tab->count++;
 	}
 	rtn = (void *) tab->list[index];
 
-	/* Unlock table */
-	if (tab->flags & HASH_SYNCHRONIZE) {
-		unlockStaticMutex(&tab->lock);
-	}
 	return(rtn);
 }
 
@@ -154,11 +130,6 @@ hashRemove(hashtab_t tab, const void *ptr)
 {
 	int index;
 
-	/* Lock table */
-	if (tab->flags & HASH_SYNCHRONIZE) {
-		lockStaticMutex(&tab->lock);
-	}
-
 	index = hashFindSlot(tab, ptr);
 	assert(index != -1);
 	if (tab->list[index] != NULL
@@ -166,14 +137,6 @@ hashRemove(hashtab_t tab, const void *ptr)
 	    && tab->list[index] == ptr) {
 		tab->count--;
 		tab->list[index] = DELETED;
-		if (tab->flags & HASH_ADD_REFS) {
-			gc_rm_ref(ptr);
-		}
-	}
-
-	/* Unlock table */
-	if (tab->flags & HASH_SYNCHRONIZE) {
-		unlockStaticMutex(&tab->lock);
 	}
 }
 
@@ -186,27 +149,17 @@ hashFind(hashtab_t tab, const void *ptr)
 	int index;
 	void *rtn;
 
-	/* Lock table */
-	if (tab->flags & HASH_SYNCHRONIZE) {
-		lockStaticMutex(&tab->lock);
-	}
-
 	index = hashFindSlot(tab, ptr);
 	assert(index != -1);
 	rtn = (tab->list[index] == DELETED) ?
 		NULL : (void *) tab->list[index];
 
-	/* Unlock table */
-	if (tab->flags & HASH_SYNCHRONIZE) {
-		unlockStaticMutex(&tab->lock);
-	}
 	return(rtn);
 }
 
 /*
  * Find if an equal pointer is already in the table. If found,
  * return it; otherwise return a free slot for it.
- * Assumes the table is locked already (if HASH_SYNCHRONIZE).
  */
 static int
 hashFindSlot(hashtab_t tab, const void *ptr)
@@ -250,9 +203,12 @@ hashFindSlot(hashtab_t tab, const void *ptr)
 
 /*
  * Make the table bigger.
- * Assumes the table is locked already (if HASH_SYNCHRONIZE).
+ * Return the new table or null if the allocation failed.
+ *
+ * It is okay to remove entries from the table while the allocation
+ * function is invoked.
  */
-static void
+static hashtab_t
 hashResize(hashtab_t tab)
 {
 	const int newSize = (tab->size > 0) ? (tab->size * 2) : INITIAL_SIZE;
@@ -266,24 +222,21 @@ hashResize(hashtab_t tab)
 		newList = KCALLOC(newSize, sizeof(*newList));
 	}
 
-	/* If the hashtable is reentrant, it is possible that the table
-	 * no longer needs resizing.  This could happen if the CALLOC
-	 * caused a garbage collection which uninterned a lot of strings,
-	 * for instance.
+	/* It is possible that the table no longer needs resizing, for 
+	 * instance because a garbage collection happened and removed
+	 * entries, for instance when uninterning strings.
 	 */
-	if (tab->flags & HASH_REENTRANT) {
-		if (!NEED_RESIZE(tab)) {
-			if (tab->free) {
-				tab->free(newList);
-			} else {
-				KFREE(newList);
-			}
-			return;
+	if (!NEED_RESIZE(tab)) {
+		if (tab->free) {
+			tab->free(newList);
+		} else {
+			KFREE(newList);
 		}
+		return (tab);
 	}
 
 	if (newList == NULL) {
-		assert(!"hashResize out of memory"); /* XXX OutOfMemoryError? */
+		return (0);
 	}
 
 	/* Rehash old list contents into new list */
@@ -310,5 +263,6 @@ hashResize(hashtab_t tab)
 	}
 	tab->list = newList;
 	tab->size = newSize;
+	return (tab);
 }
 

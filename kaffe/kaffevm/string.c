@@ -230,7 +230,7 @@ stringInternString(Hjava_lang_String *string)
 			return(string2);
 		}
 	} else {
-		hashTable = hashInit(stringHashValue, stringCompare, stringAlloc, stringFree, 0);
+		hashTable = hashInit(stringHashValue, stringCompare, stringAlloc, stringFree);
 	}
 
 	/* Not in table, so add it */
