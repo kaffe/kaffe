@@ -31,7 +31,7 @@ synchronized void dropAll ( Object source ) {
 	AWTEvent del, last = null;
 
 	while ( e != null ) {
-		if ( AWTEvent.getSource( e) == source ) {
+		if ( e.getSource() == source ) {
 			if ( localEnd == e )
 				localEnd = last;
 
@@ -127,7 +127,7 @@ synchronized void dropPendingEvents ( Component src, int id ) {
 	}
 }
 
-public AWTEvent getNextEvent () {
+public AWTEvent getNextEvent () throws InterruptedException {
 	AWTEvent e;
 
 	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
@@ -137,9 +137,7 @@ public AWTEvent getNextEvent () {
 		synchronized ( this) {
 			// block until we get something in
 			while ( localQueue == null ) {
-				try {
-					wait();
-				} catch ( InterruptedException xx ) {}
+				wait();
 			}
 
 			e = localQueue;
@@ -181,9 +179,7 @@ public AWTEvent getNextEvent () {
 			// this point only in case it is not blocked, or evtGetNextEvent()
 			// returned 'null'
 			if ( !AWTEvent.accelHint ) {
-				try {
-					Thread.sleep( Defaults.EventPollingRate);
-				} catch ( InterruptedException xx ) {}
+				Thread.sleep( Defaults.EventPollingRate);
 			}
 		}
 	}

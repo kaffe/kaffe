@@ -156,8 +156,8 @@ public boolean metaDown() {
 }
 
 protected String paramString() {
-	return ("java.awt.Event [" + target + ", " + id + ", " + arg +
-	         ", " + x + "," + y);
+	return ("id=" + id + ",x=" + x + ",y=" + y
+		+ ",target=" + target + ",arg=" + arg);
 }
 
 public void recycle() {
@@ -180,7 +180,7 @@ public boolean shiftDown() {
 }
 
 public String toString() {
-	return (paramString());
+	return getClass().getName() + '[' + paramString() + ']';
 }
 
 public void translate(int x, int y) {

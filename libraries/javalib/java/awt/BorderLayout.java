@@ -318,6 +318,6 @@ public void setVgap ( int vgap ) {
  * Returns the String representation of this BorderLayout's values.
  */
 public String toString() {
-	return getClass().getName() + " [" + hGap + ',' + vGap + ']';
+	return getClass().getName() + "[hgap=" + hGap + ",vgap=" + vGap + ']';
 }
 }

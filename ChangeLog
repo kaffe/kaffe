@@ -1,3 +1,43 @@
+Wed Mar 13 08:25:11 PST 2002  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/awt/Canvas.java:
+	(counter) new variable. Used to give canvases distinct default
+	names.	
+	(Canvas) set default canvas name in constructor.
+	* libraries/javalib/java/awt/Component.java:
+	(getX) new method.
+	(getY) new method.
+	(paramString) removed unnecessary "". Removed flags output in
+	parameter string. Now uses 'x' to separate width from height.
+	(postEvent) commented out event x and y coordinate increase since
+	it resulted in wrong x and y on example code.
+	(toString) tweaked to JDK output format.
+	* libraries/javalib/java/awt/Event.java:
+	(paramString) now returns just the parameter string. The output
+	has been tweaked to JDK's format.
+	(toString) reimplemented according to spec.
+	* libraries/javalib/java/awt/event/KeyEvent.java:
+	(initOldEvent) set x and y coordinates of the converted event.
+	* libraries/javalib/java/awt/EventQueue.java:
+	(getNextEvent) Now throws InterruptedException. Try/catch
+	statements for InterruptedException removed.
+	* libraries/javalib/java/awt/AWTEvent.java:
+	(getID) removed unnecessary method.
+	(getSource) removed unnecessary method.
+	(toString) Improved compatibility with JDK.
+	* libraries/javalib/java/awt/EventQueue.java:
+	(dropAll) don't use static AWTEvent.getSource().
+	* libraries/javalib/java/awt/BorderLayout.java:
+	(toString) Improved comparability with JDK.
+	* libraries/javalib/java/awt/awt/image/DirectColorModel.java:
+	(toString) New method.
+	* libraries/javalib/java/awt/util/EventObject.java:
+	(toString) Improved comparability with JDK.
+	* libraries/javalib/java/util/Vector.java:
+	(elementAt) Updated exception message.
+	(indexOf) Fixed NullPointerException.
+	(toString) Fixed string conversion of nulls.
+
 Mon Feb 18 16:24:55 PST 2002  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/awt/Component.java,

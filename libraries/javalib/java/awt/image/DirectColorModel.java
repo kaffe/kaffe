@@ -126,4 +126,11 @@ int getShift ( int mask ) {
 
 	return (i + (j - 8));
 }
+
+public String toString() {
+	return "DirectColorModel: rmask=" + Integer.toHexString(getRedMask())
+		+ " gmask=" + Integer.toHexString(getGreenMask())
+		+ " bmask=" + Integer.toHexString(getBlueMask())
+		+ " amask=" + Integer.toHexString(getAlphaMask());
+}
 }

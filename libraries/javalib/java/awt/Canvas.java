@@ -16,11 +16,14 @@ public class Canvas
   extends Component
 {
 	final private static long serialVersionUID = -2284879212465893870L;
-
+	private static int counter;
+ 
 public Canvas() {
 	// Canvases usually get their own update events, not being updated
 	// sync within their parents
 	flags |= IS_ASYNC_UPDATED;
+
+	setName("canvas" + counter++);
 }
 
 ClassProperties getClassProperties () {

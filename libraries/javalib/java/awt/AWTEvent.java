@@ -75,14 +75,6 @@ public int getID () {
 	return id;
 }
 
-static int getID ( AWTEvent evt ) {
-	return evt.id;
-}
-
-static Object getSource ( AWTEvent evt ) {
-	return evt.source;
-}
-
 protected static Component getToplevel ( Component c ) {
 	// Note that this will fail in case 'c' is already removeNotified (has no parent,
 	// anymore). But returning 'null' would just shift the problem into the caller -
@@ -146,7 +138,22 @@ static void setSource ( AWTEvent evt, Object newSource ) {
 }
 
 public String toString () {
-	return getClass().getName() + ':' + paramString() + ", source: " + source;
+	StringBuffer result = new StringBuffer(getClass().getName());
+
+	result.append('[').append(paramString()).append("] on ");
+
+	Object src = getSource();
+	if (src instanceof Component) {
+		result.append(((Component) src).getName());
+	}
+	else if (src instanceof MenuComponent) {
+		result.append(((MenuComponent) src).getName());
+	}
+	else {
+		result.append(src);
+	}
+
+	return result.toString();
 }
 
 static void unregisterSource ( Component c, Ptr nativeData ) {

@@ -107,8 +107,9 @@ public synchronized Object elementAt ( int index ) {
   // required because we might have a large enough, pre-allocated, empty element
   // array that doesn't give us (physical) access errors
   if ( index >= elementCount )
-    throw new ArrayIndexOutOfBoundsException(Integer.toString(index)
-			+ " >= " + elementCount);
+	  throw new ArrayIndexOutOfBoundsException("Array index out of range: " 
+						   + Integer.toString(index));
+
   return elementData[index];
 }
 
@@ -168,7 +169,7 @@ public int indexOf(Object elem) {
 public synchronized int indexOf(Object elem, int index) {
 	for (int pos = index; pos < elementCount; pos++) {
 		Object obj = elementData[pos];
-		if (elem == obj || elem.equals(obj)) {
+		if (elem == obj || (elem != null && elem.equals(obj))) {
 			return (pos);
 		}
 	}
@@ -287,7 +288,13 @@ public synchronized String toString() {
 		if (pos > 0) {
 			result.append(", ");
 		}
-		result.append(elementData[pos].toString());
+
+		Object data = elementData[pos];
+		/* if data is null, it is represented as "null".
+		 * otherwise its toString() method is called.
+		 */
+		String data_as_string = (data == null) ? "null" : data.toString();
+		result.append(data_as_string);
 	}
 	result.append("]");
 	return (result.toString());

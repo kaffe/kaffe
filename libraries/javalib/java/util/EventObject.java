@@ -26,6 +26,6 @@ public Object getSource() {
 }
 
 public String toString() {
-	return (source.toString());
+	return (getClass().getName() + "[source=" + source.toString() + ']');
 }
 }

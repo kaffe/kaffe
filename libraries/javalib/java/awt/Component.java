@@ -543,6 +543,14 @@ final public Object getTreeLock() {
 	return treeLock;
 }
 
+public int getX() {
+	return x;
+}
+
+public int getY() {
+	return y;
+}
+
 /**
  * @deprecated
  */
@@ -903,10 +911,8 @@ void kaffePaintBorder ( Graphics g, int left, int top, int right, int bottom ) {
 }
 
 protected String paramString () {
-	String s = "" + name + ',' + ' ' + x + ',' + y + ',' + width + ',' + height;
+	String s = name + ',' + x + ',' + y + ',' + width + 'x' + height;
 	
-	s += " flags: " + Integer.toHexString( flags);
-
 	if ( !isValid() )   s += " invalid";	
 	if ( !isVisible() ) s += " hidden";
 	if ( !isEnabled() ) s += " disabled";
@@ -925,9 +931,12 @@ public boolean postEvent ( Event evt ) {
 				evt.recycle();
 				return (true);
 			}
-			
-			evt.x += c.x;
-			evt.y += c.y;
+
+// Commented out since it doubles an event's x
+// and y coordinates with the Main example for java.awt.Component
+// from the Java Class Libraries book.
+//			    evt.x += c.x;
+//			    evt.y += c.y;
 		}
 		
 		evt.recycle();
@@ -1675,7 +1684,7 @@ public Dimension size () {
 }
 
 public String toString () {
-	return (getClass().getName() + " [" + paramString() + ']');
+	return (getClass().getName() + '[' + paramString() + ']');
 }
 
 /**

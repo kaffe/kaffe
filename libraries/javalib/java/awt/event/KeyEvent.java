@@ -270,7 +270,12 @@ protected Event initOldEvent ( Event e ) {
 	e.when = when;
 	e.modifiers = modifiers;
 	e.key = keyChar;
-	
+
+	// we need to set x & y coordinates too,
+	// since some events may be cached.
+	e.x = ((Component) getSource()).getX();
+	e.y = ((Component) getSource()).getY();
+
 	return e;
 }
 
