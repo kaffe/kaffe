@@ -22,8 +22,6 @@
 #include "stats.h"
 #include "files.h"
 
-#undef HAVE_MMAP
-
 static inline int
 jar_read(jarFile* file, char *buf, off_t len)
 {
