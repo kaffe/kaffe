@@ -1,3 +1,14 @@
+Mon Dec  6 16:14:50 CET 1999  Edouard G. Parmelan  <egp@free.fr>
+
+	* configure.in: call AC_PROG_CXX when gcj is not disabled and define
+	automake conditional HAVE_GCJ_SUPPORT.
+	
+	* kaffe/kaffevm/Makefile.am kaffe/kaffevm/gcj/Makefile.am: use automake
+	conditional HAVE_GCJ_SUPPORT to enclose build/link of libgcj.la.
+
+	* configure kaffe/kaffevm/Makefile.in kaffe/kaffevm/gcj/Makefile.in:
+	regen.
+
 Sun Dec  5 02:44:43 CET 1999  Edouard G. Parmelan  <egp@free.fr>
 
 	* config/i386/jit-i386.def config/i386/jit3-i386.def
@@ -18,7 +29,7 @@ Sun Dec  5 02:44:43 CET 1999  Edouard G. Parmelan  <egp@free.fr>
 	kaffe/kaffevm/string.c: avoid cast in call of KFREE().
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.h (jthread_stacklimit):
-	Use uintp in place of log.
+	Use uintp in place of long.
 
 	* kaffe/kaffevm/jit3/basecode.h: fix compilation for NCR MP-RAS.
 
