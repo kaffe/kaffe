@@ -110,11 +110,10 @@ static int bytecode_processed;
 static int codeperbytecode;
 
 int CODEPC;
+Method *globalMethod;
 
 #if defined(KAFFE_PROFILER)
 int profFlag; /* flag to control profiling */
-Method *globalMethod;
-
 static void printProfilerStats(void);
 #endif
 

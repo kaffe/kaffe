@@ -179,10 +179,10 @@ extern int CODEPC;
 extern nativecode* codeblock;
 extern uint32 pc;
 extern uint32 npc;
+extern Method *globalMethod;
 
 #if defined(KAFFE_PROFILER)
 extern int profFlag;
-extern Method *globalMethod;
 #endif
 
 #endif
