@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import kaffe.net.www.protocol.BasicURLConnection;
+import java.io.FilePermission;
+import java.security.Permission;
 
 /*
  * FileURLConnection -
@@ -23,6 +25,7 @@ public class FileURLConnection
   extends BasicURLConnection
 {
 	private InputStream file;
+	private FilePermission permission;
 
 public FileURLConnection(URL url) {
 	super(url);
@@ -39,6 +42,8 @@ public void connect() throws IOException {
 	}
 
 	File fl = new File(fn);
+
+	permission = new FilePermission (fl.getPath(), "read");
 
 	if( fl.isDirectory() )
 	{
@@ -72,6 +77,10 @@ public void connect() throws IOException {
 		setHeaderField("content-length", Long.toString(fl.length()));
 		file = new BufferedInputStream(new FileInputStream( fl));
 	}
+}
+
+public Permission getPermission () throws IOException {
+	return permission;
 }
 
 public InputStream getInputStream() throws IOException {
