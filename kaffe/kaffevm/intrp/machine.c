@@ -69,7 +69,6 @@ char* engine_version = KVER;
 
 #if defined(KAFFE_PROFILER)
 int profFlag;			 /* flag to control profiling */
-Method *globalMethod;
 #endif
 
 void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile vmException *mjbuf, Hjava_lang_Thread *tid);
