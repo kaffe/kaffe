@@ -26,10 +26,12 @@ public class ThreadLocalTest {
     public void run() {
       for (int k = 0; k < 4; k++) {
 
-	System.out.println(getName()+ " I" +k+ "\t TL: "
-	  + ThreadLocalTest.tl.get());
-	System.out.println(getName()+ " I" +k+ "\tITL: "
-	  + ThreadLocalTest.itl.get());
+	synchronized (System.out) {
+	  System.out.println(getName()+ " I" +k+ "\t TL: "
+	    + ThreadLocalTest.tl.get());
+	  System.out.println(getName()+ " I" +k+ "\tITL: "
+	    + ThreadLocalTest.itl.get());
+	}
 
 	if (spawn && (k & 1) == 1) {
 	  TestThread t1 = new TestThread(false, getName() + "x");
