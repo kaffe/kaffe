@@ -4,6 +4,19 @@
 
 	2004-01-08  Michael Koch  <konqueror@gmx.de>
 
+        * gnu/java/nio/SocketChannelImpl.java
+        (blocking): Removed.
+        (connectionPending): Don't re-initialize with default value.
+        (SocketChannelImpl): Call configureBlocking().
+        (implConfigureBlocking): Dont initialize blocking.
+        (connect): Use isBlocking().
+
+2004-01-08  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-01-08  Michael Koch  <konqueror@gmx.de>
+
         * gnu/java/nio/ServerSocketChannelImpl.java
         (serverSocket): Made private.
         (connected): Made private, don't re-initialize with default value.
