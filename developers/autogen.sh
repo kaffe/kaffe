@@ -6,6 +6,8 @@ set -e
 # You should run this from the top-level directory.
 # Written by Mo DeJong.
 
+export LC_ALL=C
+
 # Check for versions of various tools to use when regenerating 
 # Makefiles and configure scripts - if you want to use different
 # versions, use --override.  The purpose of these checks is to just

@@ -1,5 +1,13 @@
 2005-01-29  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/autogen.sh:
+	Set locale to C tp avoid different locales interfering 
+	with sorting of class lists.
+
+	Reported by:  Guilhem Lavaux  <guilhem@kaffe.org>
+
+2005-01-29  Dalibor Topic  <robilad@kaffe.org>
+
 	* test/regression/Makefile.am (EXTRA_DIST): Added 
 	HelloWorldApp.class.
 	(CLEANFILES) Removed *.class.
