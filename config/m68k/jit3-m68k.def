@@ -1273,7 +1273,7 @@ define_insn(prologue, prologue_xxC)
 
 define_insn(epilogue, epilogue_xxx)
 {
-	setEpilogueLabel ((uintp)CODEPC);
+	KaffeJIT3_setEpilogueLabel ((uintp)CODEPC);
 
 	/* Restore the callee saved registers */
 #if defined(HAVE_NO_MOVEM)

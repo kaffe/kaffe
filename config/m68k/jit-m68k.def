@@ -1253,7 +1253,7 @@ define_insn(prologue, prologue_xxC)
 
 define_insn(epilogue, epilogue_xxx)
 {
-	setEpilogueLabel ((uintp)CODEPC);
+	KaffeJIT_setEpilogueLabel ((uintp)CODEPC);
 
 	op_unlk_a(REG_fp);
 	op_rts();

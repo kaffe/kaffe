@@ -1,3 +1,9 @@
+2005-01-09  Kiyo Inaba  <inaba@src.ricoh.co.jp>
+
+        * config/m68k/jit-m68k.def,
+        config/m68k/jit3-m68k.def: Adjusted calls to the new name of
+        some JIT compiler symbols (for m68k).
+	
 2005-01-09  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/jit3/constpool.h: 
