@@ -705,6 +705,7 @@ kaffe/kaffevm/systems/Makefile \
 kaffe/kaffevm/systems/unix-jthreads/Makefile \
 kaffe/kaffevm/systems/oskit-pthreads/Makefile \
 kaffe/kaffevm/systems/linux-threads/Makefile \
+kaffe/kaffevm/systems/beos-native/Makefile \
 kaffe/kaffe/Makefile kaffe/kaffeh/Makefile \
 kaffe/man/Makefile kaffe/scripts/Makefile \
 kaffe/scripts/bat/Makefile kaffe/scripts/compat/Makefile \
