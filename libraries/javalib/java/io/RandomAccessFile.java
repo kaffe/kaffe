@@ -25,7 +25,7 @@ public RandomAccessFile(File file, String mode) throws IOException {
 	this(file.getPath(), mode);
 }
 
-public RandomAccessFile(String name, String mode) throws IOException {
+public RandomAccessFile(String name, String mode) throws FileNotFoundException {
 	boolean writable;
 	if (mode.equalsIgnoreCase("r")) writable=false;
 	else if (mode.equalsIgnoreCase("rw")) writable=true;
