@@ -20,6 +20,7 @@ public class BufferedReader
 	private char[] inbuf;
 	private int pos;	// position of next char in buffer
 	private int size;	// total length of valid chars in buffer
+				//  invariant: 0 <= pos <= size <= inbuf.length
 	private boolean markset;
 
 public BufferedReader(Reader in) {
@@ -61,12 +62,16 @@ public boolean markSupported() {
 
 //Used in java.io.BufferedLineReader
 void pushback() {
-	pos--;
+	synchronized (lock) {
+		pos--;
+	}
 }
 
 public int read () throws IOException {
-	if (pos < size || refillBuffer() > 0) {
-		return (inbuf[pos++]);
+	synchronized (lock) {
+		if (pos < size || fillOutBuffer() > 0) {
+			return (inbuf[pos++]);
+		}
 	}
 	return (-1);
 }
@@ -87,15 +92,15 @@ public int read ( char cbuf[], int off, int len ) throws IOException {
 					return nread;
 				}
 				// Try to fill buffer
-				if (refillBuffer() <= 0) {
+				if (fillOutBuffer() <= 0) {
 					return (nread > 0) ? nread : -1;
 				}
 			}
 
 			// Copy next chunk of chars from buffer to output array
 			chunk = len - nread;
-			if (chunk > size) {
-				chunk = size;
+			if (chunk > size - pos) {
+				chunk = size - pos;
 			}
 			System.arraycopy(inbuf, pos, cbuf, off, chunk);
 			pos += chunk;
@@ -128,7 +133,7 @@ public String readLine () throws IOException {
 						s += new String(inbuf, start, pos-start);
 					}
 				}
-				if (refillBuffer() <= 0) {
+				if (fillOutBuffer() <= 0) {
 					return (s);
 				}
 				start = 0;
@@ -158,20 +163,31 @@ public boolean ready() throws IOException {
 	}
 }
 
-private int refillBuffer () throws IOException {
+// This only gets called when pos == size. It fills as much of the buffer
+// beyond position "size" as possible. If no mark is set, we shift "pos"
+// back to zero; otherwise, don't shift the buffer unless the mark overflows.
+
+private int fillOutBuffer () throws IOException {
 	synchronized ( lock ) {
 		int n;
 
-		n = rd.read( inbuf, 0, inbuf.length);
-		pos = 0;
-		markset = false;
-			
+		if (markset) {
+			if (pos == inbuf.length) {	// mark overflow
+				markset = false;
+				pos = 0;
+			}
+		} else {
+			pos = 0;
+		}
+
+		n = rd.read(inbuf, pos, inbuf.length - pos);
+
 		if (n > 0) {
-			size = n;
+			size = pos + n;
 			return (n);
 		}
 		else {
-			size = 0;
+			size = pos;
 			return (-1);
 		}
 	}
@@ -183,7 +199,6 @@ public void reset() throws IOException {
 			throw new IOException("invalid mark");
 		}
 		pos = 0;
-
 	}
 }
 
