@@ -75,9 +75,9 @@
  *   fi
  */
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
-
-#if !defined(HAVE_GETADDRINFO) || !defined(HAVE_GETNAMEINFO)
+#endif
 
 #include <sys/types.h>
 #include <stdio.h>
@@ -103,7 +103,9 @@
 #include <pthread.h>
 #endif
 
-#include "gettext.h"
+#ifdef ENABLE_NLS
+#include <libintl.h>
+#endif
 
 #ifndef HAVE_MEMCPY
 #define memcpy(d, s, n) bcopy((s), (d), (n))
@@ -589,4 +591,3 @@ getnameinfo(sa, salen, node, nodelen, serv, servlen, flags)
     return result;
 }
 
-#endif /* !defined(HAVE_GETADDRINFO) || !defined(HAVE_GETNAMEINFO) */

@@ -26,15 +26,25 @@
  * SUCH DAMAGE.
  */
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #if !defined(HAVE_MEMSET)
-
 #include <sys/types.h>
 #include <stdio.h>
 
-void *
-memset(void * s, int c, size_t len)
+#ifdef __STDC__
+#define VOID void
+#else
+#define VOID char
+#endif
+
+VOID *
+memset(s, c, len)
+    VOID *s;
+    int c;
+    size_t len;
 {
     unsigned char *us = (unsigned char *)s;
     unsigned char uc = (unsigned char)uc;
@@ -44,5 +54,4 @@ memset(void * s, int c, size_t len)
 
     return s;
 }
-
-#endif /* ! HAVE_MEMSET */
+#endif /* !defined(HAVE_MEMSET) */

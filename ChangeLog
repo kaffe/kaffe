@@ -1,3 +1,26 @@
+2004-06-30  Dalibor Topic  <robilad@kaffe.org>
+
+        * libraries/extensions/microsoft/clib/Makefile.am:
+	(AM_CPPFLAGS) Added jni to fix make dist.
+
+        * libraries/extensions/microsoft/clib/Makefile.in:
+	Regenerated.
+
+        * configure.ac:
+	Removed check for AC_STRUCT_ADDRINFO.
+
+        * configure,
+        config/config.h.in:
+	Regenerated.
+
+        * include/getaddrinfo.h,
+        m4/in6addr.m4,
+        m4/sockaddrin6.m4,
+        m4/sockinttypes.m4,
+        replace/getaddrinfo.c,
+        replace/memset.c:
+	Updated to getaddrinfo 1.6.2.
+
 2004-06-29  Dalibor Topic  <robilad@kaffe.org>
 
         * config/alpha/linux/md.h:

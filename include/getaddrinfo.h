@@ -131,7 +131,7 @@
  * Fake struct and function names.
  * <netdb.h> might declares all or some of them.
  */
-#if defined(HAVE_GETADDRINFO) || defined(HAVE_GETNAMEINFO) || defined(HAVE_STRUCT_ADDRINFO)
+#if defined(HAVE_GETADDRINFO) || defined(HAVE_GETNAMEINFO)
 #define addrinfo my_addrinfo
 #define gai_strerror my_gai_strerror
 #define freeaddrinfo my_freeaddrinfo
