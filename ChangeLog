@@ -1,3 +1,24 @@
+Tue Aug 25 14:39:35 1998  Lee Iverson  <leei@Canada.AI.SRI.COM>
+
+        * configure.in (LD): Define to $CC when $GCC = yes.
+          (NET_LIBRARIES): Insert -lnsl and -lsocket only if functions not
+          already provided by libc.
+
+        * include/jmalloc.h: Change references to __malloc and __free to
+          jmalloc and jfree.
+        * kaffe/kaffevm/gc.c (jmalloc): New name for __malloc.
+          (jfree): New name for __free.
+        
+        * config/mips/common.h (sysdepCallMethod): Call
+          mipsN32CallMethod() for MIPS N32 ABI.
+        * config/mips/mips.c (mipsN32CallMethod): Define method for
+          calling external functions for MIPS N32 ABI.
+        * config/mips/threads.h: #define SP_OFFSET and FP_OFFSET for MIPS
+          N32 and N64 ABIs.
+        
+        * config/mips/irix5/md.c: #include "mips/mips.c"
+        * config/mips/irix5/md.h: #include "mips/common.h"
+
 Tue Aug 25 01:08:03 1998  Pavel Roskin <pavel.roskin@ecsoft.co.uk>
 
 	* config/parisc/hpux/md.h: include common.h:
