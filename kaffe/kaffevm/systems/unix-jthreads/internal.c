@@ -1,11 +1,13 @@
 /*
- * internal.c
- *
+ * Copyright (c) 1998 The University of Utah. All rights reserved.
  * Copyright (c) 1996, 1997
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
+ *
+ * Contributed by the Flux Research Group at the University of Utah.
+ * Authors: Godmar Back, Leigh Stoller
  */
 
 /*
@@ -48,6 +50,11 @@
 #include "jsyscall.h"
 
 #include "jthread.h"
+
+/* If not otherwise specified, assume at least 1MB for main thread */
+#ifndef MAINSTACKSIZE
+#define MAINSTACKSIZE (1024*1024)
+#endif
 
 /* 
  * store the native thread for the main thread here 
@@ -118,13 +125,18 @@ static
 void
 Tinit(int nativestacksize)
 {
+	/* Even though the underlying operating or threading system could
+	 * probably extend the main thread's stack, we must impose this 
+	 * artificial boundary, because otherwise we wouldn't be able to 
+	 * catch stack overflow exceptions thrown by the main thread.
+	 */
 	threadStackSize = nativestacksize;
 	mainthread = (struct Hkaffe_util_Ptr*)jthread_init(
 		DBGEXPR(JTHREADNOPREEMPT, false, true),
 		java_lang_Thread_MAX_PRIORITY+1,
 		java_lang_Thread_MIN_PRIORITY,
 		java_lang_Thread_NORM_PRIORITY,
-		(1024*1024),	/* assume at least 1MB for main thread */
+		MAINSTACKSIZE,
 		thread_malloc,
 		thread_free,
 		broadcastDeath,
@@ -140,14 +152,9 @@ TcreateFirst(Hjava_lang_Thread* tid)
 {
 	jthread_atexit(runfinalizer);
 	/* set Java thread associated with main thread */
-	GET_COOKIE() = tid;
+	SET_COOKIE(tid);
 	GC_WRITE(tid, mainthread);
 	unhand(tid)->PrivateInfo = mainthread;
-	/* Even though the underlying threading system would probably 
-	 * extend the main thread's stack, we must impose this artificial
-	 * boundary, because otherwise we wouldn't be able to catch
-	 * stack overflow exceptions thrown by the main thread.
-	 */
 	unhand(tid)->stackOverflowError = 
 		(Hjava_lang_Throwable*)StackOverflowError;
 	unhand(tid)->needOnStack = STACK_HIGH;
@@ -325,7 +332,7 @@ void
 Llock(iLock* lk)
 {
 	jmutex_lock(lk->mux);
-	lk->holder = jthread_current();
+	lk->holder = (void *)jthread_current();
 }
 
 static  
@@ -348,7 +355,7 @@ Lwait(iLock* lk, jlong timeout)
 	count = lk->count;
 	lk->count = 0;
 	jcondvar_wait(lk->cv, lk->mux, timeout);
-	lk->holder = jthread_current();
+	lk->holder = (void *)jthread_current();
 	lk->count = count;
 
 	/* now it's safe to start dying */ 
@@ -387,31 +394,21 @@ Tspinoffall(void* arg)
 	intsRestoreAll();
 }       
 
-int mkdir_with_int(const char *path, int m)
-{
-	return mkdir(path, m);
-}
-
 /*
  * check whether we have at least `left' bytes left on the stack
  */
 static
 Hjava_lang_Throwable*
-TcheckStack(int left) 
+TcheckStack(int left)
 {
-	int rc;
-	/* XXX should probably not be in internal.c */
-#if defined(STACK_GROWS_UP) 
-	rc = jthread_on_current_stack((void*)&rc + left);
-#else
-	rc = jthread_on_current_stack((void*)&rc - left);
-#endif
+	int rc = jthread_stackcheck(left);
+
 DBG(VMTHREAD,
 	if (rc == false) {
 		dprintf("%s doesn't have %d bytes left\n", 
 			nameThread(GET_COOKIE()), left);
 	}
-    )
+   )
 	return (Hjava_lang_Throwable*)
 		(rc == true ? 0 : unhand(TcurrentJava())->stackOverflowError);
 }
@@ -457,38 +454,4 @@ LockInterface Kaffe_LockInterface = {
         Tspinon,
         Tspinoff,
 
-};
-
-SystemCallInterface Kaffe_SystemCallInterface = {
-
-        jthreadedOpen,
-        jthreadedRead,	
-        jthreadedWrite, 
-        lseek,
-        close,
-        fstat,
-        stat,
-
-        mkdir_with_int,		/* the real mkdir takes a mode_t */
-        rmdir,
-        rename,
-        remove,
-
-        jthreadedSocket,
-        jthreadedConnect,
-        jthreadedAccept, 
-        jthreadedRead,	
-        jthreadedRecvfrom,
-        jthreadedWrite, 
-        sendto,	
-        setsockopt,	
-        getsockopt,
-        getsockname, 
-        getpeername,
-
-        select,	
-
-        jthreadedForkExec,
-        jthreadedWaitpid,
-        kill
 };

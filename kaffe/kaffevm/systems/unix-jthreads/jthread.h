@@ -109,6 +109,7 @@ typedef struct _jthread {
 } jthread, *jthread_t;
 
 #define GET_COOKIE()	(jthread_current()->jlThread)
+#define SET_COOKIE(x)	(jthread_current()->jlThread = (void*)(x))
 extern jthread_t currentJThread;
 
 /****************************************************************************
@@ -216,6 +217,21 @@ static inline int
 jthread_on_current_stack(void *bp)      
 {
         return bp >= currentJThread->stackBase && bp < currentJThread->stackEnd;
+}
+
+/* 
+ * Check for room on stack.
+ */
+static inline int     
+jthread_stackcheck(int left)
+{
+	int rc;
+#if defined(STACK_GROWS_UP)
+        rc = jthread_on_current_stack((void*)&rc + left);
+#else
+        rc = jthread_on_current_stack((void*)&rc - left);
+#endif
+	return (rc);
 }
 
 /*

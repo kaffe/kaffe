@@ -8,4 +8,5 @@
 
 THREAD=\
 		internal$(OBJEXT) \
+		syscalls$(OBJEXT) \
 		jthread$(OBJEXT)
