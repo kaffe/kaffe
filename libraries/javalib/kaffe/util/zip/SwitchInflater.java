@@ -87,7 +87,7 @@ public class SwitchInflater extends Inflater {
     this.maxlen = len;
   }
 
-  protected void finalize() {
+  protected void finalize() throws Throwable {
     super.finalize();
   }
 

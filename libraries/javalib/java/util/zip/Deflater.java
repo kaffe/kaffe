@@ -109,9 +109,14 @@ public class Deflater {
     return (deflate(b, 0, b.length));
   }
 
-  protected void finalize()
+  protected void finalize() throws Throwable
   {
-    end();
+    try {
+      end();
+    }
+    finally {
+      super.finalize();
+    }
   }
 
   public native synchronized void setDictionary(byte b[], int off, int len);

@@ -90,9 +90,14 @@ public class Inflater {
     }
   }
 
-  protected void finalize()
+  protected void finalize() throws Throwable
   {
-    end();
+    try {
+      end();
+    }
+    finally {
+      super.finalize();
+    }
   }
 
   public native synchronized void setDictionary(byte b[], int off, int len);

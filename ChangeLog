@@ -1,3 +1,14 @@
+Fri May 24 17:07:32 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/util/zip/ZipFile.java:
+	(finalize) call super.finalize.
+	* libraries/javalib/java/util/zip/Inflater.java:
+	(finalize) call super.finalize.
+	* libraries/javalib/kaffe/util/zip/SwitchInflater.java:
+	(finalize) call super.finalize.
+	* libraries/javalib/java/util/zip/Deflater.java:
+	(finalize) call super.finalize.
+
 Fri May 24 17:01:48 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/util/TreeMap.java:

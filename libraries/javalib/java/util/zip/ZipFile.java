@@ -80,12 +80,19 @@ public int size()
 	return getZipFileSize0(zip);
 }
 
-protected void finalize()
+protected void finalize() throws IOException
 {
 	try {
 		close();
 	}
-	catch (IOException _) {
+	finally {
+		try {
+			super.finalize();
+		}
+		catch (Throwable t) {
+			/* just print the stack trace */
+			t.printStackTrace();
+		}
 	}
 }
 
