@@ -41,25 +41,19 @@ import java.util.Hashtable;
 
 
 /**
-  * This non-public class is used to implement the FileNameMap interface
-  * which defines a mechanism for mapping filenames to MIME types.
-  *
-  * @version 0.5
-  *
-  * @author Aaron M. Renn (arenn@urbanophile.com)
-  */
+ * This non-public class is used to implement the FileNameMap interface
+ * which defines a mechanism for mapping filenames to MIME types.
+ *
+ * @version 0.5
+ *
+ * @author Aaron M. Renn (arenn@urbanophile.com)
+ */
 class MimeTypeMapper implements FileNameMap
 {
-/*************************************************************************/
-
-/*
- * Class Variables
- */
-
-/**
-  * This array of strings is used to identify a MIME type based on a file
-  * extension.  This is list is based on the Apache mime.types file.
-  */
+  /**
+   * This array of strings is used to identify a MIME type based on a file
+   * extension.  This is list is based on the Apache mime.types file.
+   */
   protected static final String[][] mime_strings =
     {
       { "application/mac-binhex40", "hqx" },
@@ -169,63 +163,51 @@ class MimeTypeMapper implements FileNameMap
       { "x-world/x-vrml", "vrml" }
     };
 
-/**
-  * The MIME types above are put into this Hashtable for faster lookup.
-  */
+  /**
+   * The MIME types above are put into this Hashtable for faster lookup.
+   */
   private static Hashtable mime_types = new Hashtable(150);
 
-// Static initializer to load MIME types into Hashtable
+  // Static initializer to load MIME types into Hashtable
   static
-    {
-      for (int i = 0; i < mime_strings.length; i++)
-	mime_types.put(mime_strings[i][1], mime_strings[i][0]);
-    }
-
-/*************************************************************************/
-
-/*
- * Constructors
- */
-
-/**
-  * A do nothing constructor
-  */
-  public MimeTypeMapper()
   {
-    ;
+    for (int i = 0; i < mime_strings.length; i++)
+      mime_types.put(mime_strings[i][1], mime_strings[i][0]);
   }
 
-/*************************************************************************/
+  /**
+   * Create a new <code>MimeTypeMapper</code> object.
+   */
+  public MimeTypeMapper()
+  {
+    // Do nothing here.
+  }
 
-/*
- * Instance Variables
- */
-
-/**
-  * The method returns the MIME type of the filename passed as an argument.
-  * The value returned is based on the extension of the filename.  The
-  * default content type returned if this method cannot determine the
-  * actual content type is "application/octet-stream"
-  *
-  * @param filename The name of the file to return the MIME type for
-  *
-  * @return The MIME type
-  */
+  /**
+   * The method returns the MIME type of the filename passed as an argument.
+   * The value returned is based on the extension of the filename.  The
+   * default content type returned if this method cannot determine the
+   * actual content type is "application/octet-stream"
+   *
+   * @param filename The name of the file to return the MIME type for
+   *
+   * @return The MIME type
+   */
   public String getContentTypeFor(String filename)
   {
     int index = filename.lastIndexOf(".");
     if (index != -1)
       {
 	if (index == filename.length())
-	  return ("application/octet-stream");
+	  return "application/octet-stream";
 	else
 	  filename = filename.substring(index + 1);
       }
 
     String type = (String) mime_types.get(filename);
     if (type == null)
-      return ("application/octet-stream");
+      return "application/octet-stream";
     else
-      return (type);
+      return type;
   }
-} // class MimeTypeMapper
+}

@@ -1,5 +1,32 @@
 2004-10-15  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/net/HttpURLConnection.java,
+	libraries/javalib/java/net/MimeTypeMapper.java,
+	libraries/javalib/java/net/NetworkInterface.java,
+	libraries/javalib/java/net/PasswordAuthentication.java,
+	libraries/javalib/java/net/ServerSocket.java,
+	libraries/javalib/java/net/Socket.java,
+	libraries/javalib/java/net/SocketPermission.java,
+	libraries/javalib/java/net/URI.java,
+	libraries/javalib/java/net/URL.java,
+	libraries/javalib/java/net/URLStreamHandler.java:
+	Resynced with GNU Classpath.
+
+	2004-10-15  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/HttpURLConnection.java: Removed redundant parenthesis.
+        * java/net/MimeTypeMapper.java: Reformatted.
+        * java/net/NetworkInterface.java: Added comment to empty catch block.
+        * java/net/PasswordAuthentication.java: Reformatted.
+        * java/net/ServerSocket.java: Added comment to empty catch block.
+        * java/net/Socket.java: Reworked import statements.
+        * java/net/SocketPermission.java: Removed redundant parenthesis.
+        * java/net/URI.java: Removed redundant parenthesis.
+        * java/net/URL.java: Reworked import statements.
+        * java/net/URLStreamHandler.java: Removed redundant semicolon.
+
+2004-10-15  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/clib/net/PlainDatagramSocketImpl.c:
 	(gnu_java_net_PlainDatagramSocketImpl_receive0) Adapted
 	to use public constructor.
