@@ -63,6 +63,9 @@
     throwError(&einfo); \
   }
 
+#define	get_static_field_info_noerror(IDX) \
+  getField((constIndex)(IDX), meth->class, true, &finfo, &einfo)
+
 #define	get_static_field_info(IDX) \
   if (getField(IDX, meth->class, true, &finfo, &einfo) == false) { \
     throwError(&einfo); \

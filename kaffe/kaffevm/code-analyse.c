@@ -1395,14 +1395,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case GETSTATIC:
 			if (getField(WORD(pc+1), meth->class, true, &finfo, einfo) == 0) {
-				failed = true;
-				goto done;
+				if (!checkNoClassDefFoundError(einfo)) {
+					failed = true;
+					goto done;
+				}
 			}
-			if (!FIELD_ISPRIM(finfo.field)) {
-				STKPUSH(1);
-				STACKOUT(0, TOBJ);
-			}
-			else switch (CLASS_PRIM_SIG(FIELD_TYPE(finfo.field))){
+			switch (finfo.signature->data[0]){
 			case 'I':
 			case 'Z':
 			case 'S':
@@ -1425,6 +1423,11 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 				STACKOUT(0, TDOUBLE);
 				STACKOUT(1, TVOID);
 				break;
+			case '[':
+			case 'L':
+				STKPUSH(1);
+				STACKOUT(0, TOBJ);
+				break;
 			default:
 				ABORT();
 				break;
@@ -1434,14 +1437,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case PUTSTATIC:
 			if (getField(WORD(pc+1), meth->class, true, &finfo, einfo) == 0) {
-				failed = true;
-				goto done;
+				if (!checkNoClassDefFoundError(einfo)) {
+					failed = true;
+					goto done;
+				}
 			}
-			if (!FIELD_ISPRIM(finfo.field)) {
-				STACKIN(0, TOBJ);
-				STKPOP(1);
-			}
-			else switch (CLASS_PRIM_SIG(FIELD_TYPE(finfo.field))){
+			switch (finfo.signature->data[0]){
 			case 'I':
 			case 'Z':
 			case 'S':
@@ -1463,6 +1464,11 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 				STACKIN(0, TDOUBLE);
 				STACKIN(1, TVOID);
 				STKPOP(2);
+				break;
+			case '[':
+			case 'L':
+				STACKIN(0, TOBJ);
+				STKPOP(1);
 				break;
 			default:
 				ABORT();

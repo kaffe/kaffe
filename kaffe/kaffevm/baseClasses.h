@@ -51,6 +51,8 @@ extern struct Hjava_lang_Class* javaLangThrowable;
 extern struct Hjava_lang_Class*	javaLangNullPointerException;
 extern struct Hjava_lang_Class*	javaLangArithmeticException;
 extern struct Hjava_lang_Class* javaLangArrayIndexOutOfBoundsException;
+extern struct Hjava_lang_Class* javaLangClassNotFoundException;
+extern struct Hjava_lang_Class* javaLangNoClassDefFoundError;
 extern struct Hjava_lang_Class* javaLangStackOverflowError;
 
 #endif

@@ -74,6 +74,8 @@ Hjava_lang_Class* javaLangThrowable;
 Hjava_lang_Class* javaLangArrayIndexOutOfBoundsException;
 Hjava_lang_Class* javaLangNullPointerException;
 Hjava_lang_Class* javaLangArithmeticException;
+Hjava_lang_Class* javaLangClassNotFoundException;
+Hjava_lang_Class* javaLangNoClassDefFoundError;
 Hjava_lang_Class* javaLangStackOverflowError;
 /* Let's not load this if we can't open Klasses.jar */
 Hjava_lang_Class* javaIoIOException;
@@ -273,6 +275,8 @@ initBaseClasses(void)
 	loadStaticClass(&javaLangArrayIndexOutOfBoundsException, "java/lang/ArrayIndexOutOfBoundsException");
 	loadStaticClass(&javaLangNullPointerException, "java/lang/NullPointerException");
 	loadStaticClass(&javaLangArithmeticException, "java/lang/ArithmeticException");
+	loadStaticClass(&javaLangClassNotFoundException, "java/lang/ClassNotFoundException");
+	loadStaticClass(&javaLangNoClassDefFoundError, "java/lang/NoClassDefFoundError");
 	loadStaticClass(&javaLangStackOverflowError, "java/lang/StackOverflowError");
 	loadStaticClass(&javaIoIOException, "java/io/IOException");
 

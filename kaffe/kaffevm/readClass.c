@@ -157,7 +157,8 @@ readFields(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 	    dprintf("%s: fields_count=%d\n", CLASS_CNAME(this), fields_count);
 		);
 
-	startFields(this, fields_count);
+	if( !startFields(this, fields_count, einfo) )
+		return false;
 
 	for (i = 0; i < fields_count; i++) {
 		Field* fieldThis;
@@ -310,7 +311,8 @@ readMethods(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 	    dprintf("%s: methods_count=%d\n", CLASS_CNAME(this), methods_count);
 		);
 
-	startMethods(this, methods_count);
+	if( !startMethods(this, methods_count, einfo) )
+		return false;
 
 	for (i = 0; i < methods_count; i++) {
 		Method* methodThis;

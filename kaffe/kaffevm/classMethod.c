@@ -769,16 +769,26 @@ addInnerClasses(Hjava_lang_Class* c, uint32 len, classFile* fp,
 	return true;
 }
 
-void
-startMethods(Hjava_lang_Class* this, u2 methct)
+int
+startMethods(Hjava_lang_Class* this, u2 methct, errorInfo *einfo)
 {
 	if (methct == 0)
+	{
 		this->methods = NULL;
+	}
 	else
+	{
 		this->methods = gc_malloc(sizeof(Method)*(methct), GC_ALLOC_METHOD);
+		if (this->methods == NULL)
+		{
+			postOutOfMemory(einfo);
+			return false;
+		}
+	}
 	GC_WRITE(this, this->methods);
 
 	this->nmethods = 0; /* updated in addMethod */
+	return true;
 }
 
 Method*
@@ -804,12 +814,19 @@ addMethod(Hjava_lang_Class* c,
 	if (pool->tags[nc] != CONSTANT_Utf8) {
 		/* XXX fill in einfo! */
 DBG(RESERROR,	dprintf("addMethod: no method name.\n");		)
+		postExceptionMessage(einfo,
+				     JAVA_LANG(ClassFormatError),
+				     "No method name");
 		return (0);
 	}
 	sc = signature_index;
 	if (pool->tags[sc] != CONSTANT_Utf8) {
 		/* XXX fill in einfo! */
 DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	)
+		postExceptionMessage(einfo,
+				     JAVA_LANG(ClassFormatError),
+				     "No signature for method: %s",
+				     WORD2UTF (pool->data[nc])->data);
 		return (0);
 	}
 	name = WORD2UTF (pool->data[nc]);
@@ -870,6 +887,9 @@ addField(Hjava_lang_Class* c,
 	nc = name_index;
 	if (pool->tags[nc] != CONSTANT_Utf8) {
 DBG(RESERROR,	dprintf("addField: no field name.\n");			)
+		postExceptionMessage(einfo,
+				     JAVA_LANG(ClassFormatError),
+				     "No field name");
 		return (0);
 	}
 
@@ -890,6 +910,10 @@ DBG(CLASSFILE,
 	sc = signature_index;
 	if (pool->tags[sc] != CONSTANT_Utf8) {
 DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
+		postExceptionMessage(einfo,
+				     JAVA_LANG(ClassFormatError),
+				     "No signature name for field: %s",
+				     CLASS_CONST_UTF8(c, nc)->data);
 		CLASS_NFIELDS(c)++;
 		return (0);
 	}
@@ -932,8 +956,8 @@ setFieldValue(Hjava_lang_Class* unused, Field* ft, u2 idx)
 	ft->accflags |= FIELD_CONSTANT_VALUE;
 }
 
-void
-startFields(Hjava_lang_Class* this, u2 fieldct)
+int
+startFields(Hjava_lang_Class* this, u2 fieldct, errorInfo *einfo)
 {
 	CLASS_NFIELDS(this) = 0; /* updated in addField() */
 	CLASS_FSIZE(this) = fieldct;
@@ -943,9 +967,14 @@ startFields(Hjava_lang_Class* this, u2 fieldct)
 	else {
 		CLASS_FIELDS(this) = (Field*) gc_malloc(sizeof(Field) * fieldct,
 							GC_ALLOC_FIELD);
+		if (!CLASS_FIELDS(this)) {
+			postOutOfMemory(einfo);
+			return false;
+		}
 	}
 	GC_WRITE(this, CLASS_FIELDS(this)); /* XXX */
 	
+	return true;
 }
 
 void
@@ -1074,6 +1103,15 @@ DBG(VMCLASSLOADER,
     )
 				einfo->type = KERR_RETHROW;
 				einfo->throwable = excobj;
+				if( (einfo->throwable->base.dtable->class ==
+				     javaLangClassNotFoundException) )
+				{
+					postNoClassDefFoundError(
+						einfo,
+						stringJava2C(einfo->
+							     throwable->
+							     message));
+				}
 				clazz = NULL;
 			} else
 			if (clazz == NULL) {

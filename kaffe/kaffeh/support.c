@@ -336,11 +336,12 @@ jniType(const char *sig)
 	}
 }
 
-void
-startFields(Hjava_lang_Class* this, u2 fct)
+int
+startFields(Hjava_lang_Class* this, u2 fct, errorInfo *einfo)
 {
 	this->fields = malloc(fct * sizeof(Field));
 	this->nfields = 0; // incremented by addField()
+	return true;
 }
 
 Field*
@@ -487,9 +488,10 @@ finishFields(Hjava_lang_Class* this)
 	}
 }
 
-void
-startMethods(Hjava_lang_Class* this, u2 mct)
+int
+startMethods(Hjava_lang_Class* this, u2 mct, errorInfo *einfo)
 {
+	return true;
 }
 
 Method*

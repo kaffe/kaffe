@@ -76,6 +76,9 @@
     success = false; goto done; \
   }
 
+#define	get_static_field_info_noerror(IDX) \
+  getField((constIndex)(IDX), xmeth->class, true, &finfo, einfo)
+
 #define	get_static_field_info(IDX) \
   if (getField((IDX), meth->class, true, &finfo, einfo) == false) { \
     success = false; goto done; \

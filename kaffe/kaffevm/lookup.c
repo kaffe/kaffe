@@ -207,6 +207,9 @@ getField(constIndex idx, Hjava_lang_Class* this, bool isStatic, fieldInfo* ret, 
 	Field* field;
 	Hjava_lang_Class* class;
 
+	ret->field = 0;
+	ret->class = 0;
+	
 	pool = CLASS_CONSTANTS(this);
 	if (pool->tags[idx] != CONSTANT_Fieldref) {
 DBG(RESERROR,	dprintf("No Fieldref found\n");				)
@@ -217,16 +220,16 @@ DBG(RESERROR,	dprintf("No Fieldref found\n");				)
 
 	ci = FIELDREF_CLASS(idx, pool);
 
+	ni = FIELDREF_NAMEANDTYPE(idx, pool);
+
+	ret->cname = WORD2UTF(pool->data[ci]);
+	ret->name = WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]);
+	ret->signature = WORD2UTF(pool->data[NAMEANDTYPE_SIGNATURE(ni, pool)]);
+
 	class = getClass(ci, this, einfo);
 	if (class == NULL) {
 		return (false);
 	}
-
-	ni = FIELDREF_NAMEANDTYPE(idx, pool);
-
-	ret->cname = class->name;
-	ret->name = WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]);
-	ret->signature = WORD2UTF(pool->data[NAMEANDTYPE_SIGNATURE(ni, pool)]);
 
 DBG(FLOOKUP,	dprintf("*** getField(%s,%s,%s)\n",
 		class->name->data, 
@@ -238,6 +241,8 @@ DBG(FLOOKUP,	dprintf("*** getField(%s,%s,%s)\n",
 	if (field == 0) {
 		return (false);
 	}
+
+	/* XXX Should we verify that ret->signature matches field? */
 
 	ret->field = field;
 	ret->class = class;

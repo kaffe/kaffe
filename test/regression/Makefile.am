@@ -92,12 +92,14 @@ ALWAYS_TESTS = \
 	ReaderReadVoidTest.java \
 	PipeTest.java \
 	GetField.java \
+	LostTrampolineFrame.java \
 ## simple test for Method.invoke
 	ReflectInvoke.java \
 ## simple test for InvocationTargetExceptions
 	InvTarExcTest.java \
 ## tests for ClassLoader
 	SystemLoaderTest.java \
+	NoClassDefTest.java \
 	CLTest.java \
 	CLTestConc.java \
 	CLTestJLock.java \

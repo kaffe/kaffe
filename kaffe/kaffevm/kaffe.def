@@ -2190,7 +2190,20 @@ define_insn(GETSTATIC)
 
 	trace_jcode (("getstatic %d\n", idx));
 
-	get_static_field_info(idx);
+	get_static_field_info_noerror(idx);
+	if (field_class() == 0) {
+		softcall_nosuchclass(field_classname());
+		switch (field_sig()->data[0]) {
+		case 'J':
+		case 'D':
+			push(2);
+			break;
+		default:
+			push(1);
+			break;
+		}
+		break;
+	}
 	INIT_STATIC_CLASS(field_class());
 
 	if (field_field() == 0) {
@@ -2256,7 +2269,20 @@ define_insn(PUTSTATIC)
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 	trace_jcode (("putstatic %d\n", idx));
 
-	get_static_field_info(idx);
+	get_static_field_info_noerror(idx);
+	if (field_class() == 0) {
+		softcall_nosuchclass(field_classname());
+		switch (field_sig()->data[0]) {
+		case 'J':
+		case 'D':
+			pop(2);
+			break;
+		default:
+			pop(1);
+			break;
+		}
+		break;
+	}
 	INIT_STATIC_CLASS(field_class());
 
 	if (field_field() == 0) {

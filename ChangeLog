@@ -1,3 +1,47 @@
+Thu Aug 15 13:18:58 CEST 2002 Timothy S Stack <stack@cs.utah.edu>
+
+	* config/i386/trampolines.c:  Create a real stack frame for
+	i386_do_fixup_trampoline so it doesn't mask the caller's frame.
+
+	* kaffe/kaffeh/support.c: startFields/startMethods now return
+	success/failure and take errorInfo's.
+
+	* kaffe/kaffevm/baseClasses.[ch]: Load in ClassNotFoundException and
+	NoClassDefFoundError.
+
+	* kaffe/kaffevm/classMethod.[ch]: startFields/startMethods now return
+	success/failure and take errorInfo's.  Use postExceptionMessage in
+	addMethod/addField before returning failure.  Post a
+	NoClassDefFoundError if ClassLoader.loadClass() throws a
+	ClassNotFoundException.
+
+	* kaffe/kaffevm/code-analyse.c: Check for NoClassDefFoundErrors in
+	PUTSTATIC/GETSTATIC handlers.
+
+	* kaffe/kaffevm/kaffe.def: Handle unknown classes in field references
+	using softcall_nosuchclass() instead of failing/throwing an
+	exception.
+
+	* kaffe/kaffevm/lookup.c: For getField(), set ret->field/ret->class to
+	NULL and set ret->cname/name/signature from the information
+	available in the current class so that a failure will not leave
+	these fields undefined.
+
+	* kaffe/kaffevm/readClass.c: check return values of
+	startFields()/startMethods()
+
+	* kaffe/kaffevm/[intrp/jit/jit3]/machine.h: Add
+	get_static_field_info_noerror() define.
+
+	* test/regression/LostTrampolineFrame.java: Test for x86 lost
+	trampoline frame bug.
+
+	* test/regression/NoClassDefTest.java: Tests for NoClassDefFoundErrors
+	in combination with ClassLoaders.
+
+	* test/regression/Makefile.[am|in]: Add LostTrampolineFrame.java and
+	NoClassDefTest.java tests.
+
 Thu Aug 15 11:53:08 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/kaffe/lang/SystemClassLoader.java:
