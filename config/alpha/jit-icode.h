@@ -277,7 +277,9 @@ extern int alpha_andconst_rangecheck(long v);
 #else
 
 #undef HAVE_cvt_float_int
+#undef HAVE_cvt_float_int_ieee
 #undef HAVE_cvt_double_int
+#undef HAVE_cvt_double_int_ieee
 #undef HAVE_cvt_float_long
 #undef HAVE_cvt_double_long
 

@@ -222,11 +222,26 @@ int internal_test(parsedString *ps)
 		for( lpc = 0; (lpc < CLASS_NSFIELDS(cl)) && retval; lpc++ )
 		{
 			Field *field;
+			uint32 expected_value;
 			
 			field = &CLASS_SFIELDS(cl)[lpc];
-			kaffe_dprintf("  field: %s = 0x%08x\n",
-				      field->name->data,
-				      ((int *)field->info.addr)[0]);
+
+			switch (field->bsize) {
+			case 1:
+			  expected_value = ((uint8 *)field->info.addr)[0];
+			  break;
+			case 2:
+			  expected_value = ((uint16 *)field->info.addr)[0];
+			  break;
+			case 4:
+			  expected_value = ((uint32 *)field->info.addr)[0];
+			  break;
+			default:
+			  expected_value = 0;
+			}
+                        kaffe_dprintf("  field: %s = 0x%08x\n",
+                                      field->name->data,
+				      expected_value);
 			if( !strncmp("test_", field->name->data, 5) )
 			{
 				retval = testMethod(cl, field);

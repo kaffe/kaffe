@@ -124,7 +124,9 @@
 #define	HAVE_cvt_float_double		cvtfd_RxR
 #define	HAVE_cvt_double_float		cvtdf_RxR
 #undef	HAVE_cvt_float_int
+#undef  HAVE_cvt_float_int_ieee
 #undef	HAVE_cvt_double_int
+#undef  HAVE_cvt_double_int_ieee
 #undef	HAVE_cvt_float_long
 #undef	HAVE_cvt_double_long
 

@@ -14,6 +14,22 @@ class TypeConversion
     {
 	return (int)a;
     }
+
+    public static final int test__float_nan_to_int = 0;
+    public static float mynanf = Float.NaN;
+
+    public static int float_nan_to_int()
+    {
+      return (int)mynanf;
+    }
+
+    public static final int test__double_nan_to_int = 0;
+    public static double mynand = Double.NaN;
+
+    public static int double_nan_to_int()
+    {
+      return (int)mynand;
+    }
     
     public static final float test_1__int_to_float = 1.0F;
     public static final float test_255__int_to_float = 255.0F;

@@ -110,8 +110,10 @@
 #define	HAVE_build_code_ref		set_wordpc_xxC
 
 #define	HAVE_cvt_int_double		cvtid_RxR
-#define	HAVE_cvt_float_int		cvtfi_RxR
-#define	HAVE_cvt_double_int		cvtdi_RxR
+#define	HAVE_cvt_float_int_ieee		cvtfi_RxR
+#undef HAVE_cvt_float_int
+#define	HAVE_cvt_double_int_ieee	cvtdi_RxR
+#undef HAVE_cvt_double_int
 #define	HAVE_cvt_int_float		cvtif_RxR
 #define	HAVE_cvt_float_double		cvtfd_RxR
 #define	HAVE_cvt_double_float		cvtdf_RxR

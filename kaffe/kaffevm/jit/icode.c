@@ -33,6 +33,7 @@
 #include "locks.h"
 #include "machine.h"
 #include "codeproto.h"
+#include "fp.h"
 
 #if defined(WORDS_BIGENDIAN)
 #define	LSLOT(_s)	((_s)+1)
@@ -465,6 +466,26 @@ move_long_const(SlotInfo* dst, jlong val)
 	move_int_const(LSLOT(dst), (jint)(val & 0xFFFFFFFF));
 	move_int_const(HSLOT(dst), (jint)((val >> 32) & 0xFFFFFFFF));
 #endif
+}
+
+void
+move_float_const_bits(SlotInfo* dst, int val)
+{
+	constpool *c;
+        label* l;
+        SlotInfo* tmp;
+
+        c = newConstant(CPint, val);
+        l = newLabel();
+        l->type = Lconstant;
+        l->at = 0;
+        l->to = (uintp)c;
+        l->from = 0;
+
+        slot_alloctmp(tmp);
+        move_label_const(tmp, l);
+        load_float(dst, tmp);
+        slot_freetmp(tmp);
 }
 
 void
@@ -1157,14 +1178,15 @@ and_long(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 #endif
 }
 
-#if defined(HAVE_and_long_const)
 void
 and_long_const(SlotInfo* dst, SlotInfo* src, jlong val)
 {
+#if defined(HAVE_and_long_const)
 	if (HAVE_and_long_const_rangecheck(val)) {
 		lslot_lslot_lconst(dst, src, val, HAVE_and_long_const, Tcomplex);
 	}
 	else
+#endif
 	{
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
@@ -1173,7 +1195,6 @@ and_long_const(SlotInfo* dst, SlotInfo* src, jlong val)
 		slot_freetmp(tmp);
 	}
 }
-#endif
 
 void
 or_int_const(SlotInfo* dst, SlotInfo* src, jint val)
@@ -2791,7 +2812,7 @@ set_label(int i, int n)
 	}
 	else {
 		assert(labtab[n]->type == Lnull);
-		labtab[n]->type = Linternal;
+		labtab[n]->type = Linternal | (labtab[n]->type & ~Ltomask);
 		slot_slot_const(0, 0, (jword)labtab[n], HAVE_set_label, Tnull);
 		labtab[n] = 0;
 	}
@@ -3049,6 +3070,36 @@ cvt_float_int(SlotInfo* dst, SlotInfo* src)
 	used_ieee_rounding = true;
 #if defined(HAVE_cvt_float_int)
 	slot_slot_slot(dst, 0, src, HAVE_cvt_float_int, Tcomplex);
+#elif defined(HAVE_cvt_float_int_ieee)
+	{
+	  SlotInfo *tmp;
+	  
+	  slot_alloctmp(tmp);
+
+	  end_sub_block();
+	  and_int_const(tmp, src, FEXPMASK);
+	  cbranch_int_const_ne(tmp, FEXPMASK, reference_label(1, 1));
+	  
+	  and_int_const(tmp, src, FMANMASK);
+	  cbranch_int_const_eq(tmp, 0, reference_label(1, 2));
+
+          start_sub_block();
+	  move_int_const(dst, 0);
+	  end_sub_block();
+	  branch_a(reference_label(1, 3));
+
+	  set_label(1, 1);
+	  set_label(1, 2);
+	  start_sub_block();
+	  slot_slot_lslot(dst, 0, src, HAVE_cvt_float_int_ieee, Tcomplex);
+	  end_sub_block();
+
+	  set_label(1, 3);
+
+	  start_sub_block();
+
+	  slot_freetmp(tmp);
+	}
 #else
 	end_sub_block();
 	pusharg_float(src, 0);
@@ -3096,6 +3147,39 @@ cvt_double_int(SlotInfo* dst, SlotInfo* src)
 	used_ieee_rounding = true;
 #if defined(HAVE_cvt_double_int)
 	slot_slot_lslot(dst, 0, src, HAVE_cvt_double_int, Tcomplex);
+#elif defined(HAVE_cvt_double_int_ieee)
+	{
+	  SlotInfo *tmp;
+	  int i;
+	  
+	  end_sub_block();
+	  slot_alloc2tmp(tmp);
+
+	  and_long_const(tmp, src, DEXPMASK);
+	  cbranch_int_const_ne(LSLOT(tmp), (jint)(DEXPMASK & 0xffffffff), reference_label(1, 1));
+	  cbranch_int_const_ne(HSLOT(tmp), (jint)((DEXPMASK >> 32) & 0xffffffff), reference_label(1, 2));
+	  
+	  and_long_const(tmp, src, DMANMASK);
+	  cbranch_int_const_ne(LSLOT(tmp), 0, reference_label(1, 3));
+	  cbranch_int_const_eq(HSLOT(tmp), 0, reference_label(1, 4));
+
+	  set_label(1, 3);
+	  start_sub_block();
+	  move_int_const(dst, 0);
+	  end_sub_block();
+	  branch_a(reference_label(1, 5));
+
+	  set_label(1, 4);
+	  set_label(1, 1);
+	  set_label(1, 2);
+	  start_sub_block();
+	  slot_slot_lslot(dst, 0, src, HAVE_cvt_double_int_ieee, Tcomplex);
+	  end_sub_block();
+
+	  set_label(1, 5);
+	  slot_free2tmp(tmp);
+	  start_sub_block();
+	}
 #else
 	end_sub_block();
 	pusharg_double(src, 0);

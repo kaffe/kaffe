@@ -1,3 +1,22 @@
+2004-08-22  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/sparc/jit-icode.h, config/i386/jit-icode.h,
+	config/alpha/jit-icode.h, config/arm/jit-icode.h,
+	config/m68k/jit-icode.h
+	(HAVE_cvt_double_int_ieee, HAVE_cvt_float_int_ieee): New define
+	symbols.
+
+	* kaffe/kaffevm/jit/icode.c
+	(cvt_double_int): New JIT codelet to use non Java-compatible
+	floating point to integer converting instruction.
+	(cvt_float_int): New JIT codelet to use non Java-compatible
+	floating point to integer converting instruction.
+
+	* test/internal/TypeConversion.java: Check for NaN (float or
+	double) to int conversion.
+
+	* test/internal/jitBasic.c: Fixed a memory overreading.
+	
 2004-08-21  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/powerpc/sysdepCallMethod.h:
@@ -20,7 +39,7 @@
         * config/alpha/sysdepCallMethod.h:
 	Include missing file.
 
-        * kaffe/kaffevm/jit/methodcalls.c,
+      h  * kaffe/kaffevm/jit/methodcalls.c,
         kaffe/kaffevm/jit/methodcalls.h:
 	Export soft_fixup_trampoline.
 
