@@ -285,6 +285,11 @@ kaffe_io_ObjectStreamClassImpl_invokeObjectReader0(struct Hkaffe_io_ObjectStream
 	unhand(in)->currentStreamClass = (struct Hjava_io_ObjectStreamClass*)cls;
 
 	meth = findMethodLocal(unhand(cls)->clazz, readObjectName, ObjectInputStreamSig);
+	if (meth == 0) {
+		errorInfo info;
+		postExceptionMessage(&info, JAVA_LANG(NoSuchMethodError), readObjectName->data);
+		throwError(&info);
+	}
 	do_execute_java_method(obj, 0, 0, meth, 0, in);
 
 	unhand(in)->currentObject = oldObj;
