@@ -1,5 +1,21 @@
 2004-09-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/applet/Applet.java,
+	libraries/javalib/java/applet/AppletContext.java,
+	libraries/javalib/java/applet/AppletStub.java,
+	libraries/javalib/java/applet/AudioClip.java:
+	Resynced with GNU Classpath.
+
+	2004-09-21  Michael Koch  <konqueror@gmx.de>
+
+        * java/applet/Applet.java,
+        java/applet/AppletContext.java,
+        java/applet/AppletStub.java,
+        java/applet/AudioClip.java:
+        Jalopied and checkstyle clean.
+
+2004-09-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/im/spi/package.html,
 	libraries/javalib/javax/crypto/package.html,
 	libraries/javalib/javax/crypto/interfaces/package.html,
