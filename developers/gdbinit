@@ -496,6 +496,8 @@ define btThread
   set $jbuf = (int*)($th.env)
 
   btThreadBSDjmpbuf $jbuf
+  #btThreadLinuxjmpbuf $jbuf
+  #btThreadOSKitUnixjmpbuf $jbuf
 end
 document btThread
   Print a backtrace for the given JTHREAD
@@ -528,7 +530,46 @@ document btThreadBSDjmpbuf
 end
 
 
-define btThreadOSKitUnixbuf
+define btThreadLinuxjmpbuf
+  set $jbuf = (int*)($arg0)
+
+  set $saveEIP = $eip
+  set $saveESP = $esp
+  set $saveEBP = $ebp
+  set $saveEDI = $edi
+  set $saveESI = $esi
+  set $saveEBX = $ebx
+
+  ## jmpbuf[0] = %ebx
+  ## jmpbuf[1] = %esi
+  ## jmpbuf[2] = %edi
+  ## jmpbuf[3] = base pointer
+  ## jmpbuf[4] = stack pointer
+  ## jmpbuf[5] = instruction pointer
+  set $eip = $jbuf[5]
+  set $esp = $jbuf[4]
+  set $ebp = $jbuf[3]
+  set $edi = $jbuf[2]
+  set $esi = $jbuf[1]
+  set $ebx = $jbuf[0]
+
+  # printf "btThreadLinuxjmpbuf: .esp=%x .ebp=%x\n", $esp, $ebp
+
+  bt
+
+  set $eip = $saveEIP
+  set $esp = $saveESP
+  set $ebp = $saveEBP
+  set $edi = $saveEDI
+  set $esi = $saveESI
+  set $ebx = $saveEBX
+end
+document btThreadLinuxjmpbuf
+  Print a backtrace based on the given Linuxish JMPBUF
+end
+
+
+define btThreadOSKitUnixjmpbuf
   set $jbuf = (pcb_t*)($arg0)
 
   set $saveEIP = $eip
@@ -542,7 +583,7 @@ define btThreadOSKitUnixbuf
   set $esp = $jbuf.esp
   set $ebp = $jbuf.ebp
 
-  # printf "btThreadOSKitUnixbuf: .esp=%x .ebp=%x\n", $esp, $ebp
+  # printf "btThreadOSKitUnixjmpbuf: .esp=%x .ebp=%x\n", $esp, $ebp
 
   bt
 
@@ -550,8 +591,8 @@ define btThreadOSKitUnixbuf
   set $esp = $saveESP
   set $ebp = $saveEBP
 end
-document btThreadOSKitUnixbuf
-  Print a backtrace based on the given JMPBUF
+document btThreadOSKitUnixjmpbuf
+  Print a backtrace based on the given OSKit/UNIX JMPBUF
 end
 
 
