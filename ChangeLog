@@ -3,6 +3,8 @@ Mon Nov 16 17:36:49 1998  Godmar Back  <gback@cs.utah.edu>
 	* libraries/javalib/java/awt/ScrollPane.java: make sure we don't 
 	pick up the private ScrollPane$Adjustable instead of 
 	java.awt.Adjustable.
+	* libraries/javalib/java/awt/MenuBar.java: added deprecated 
+	countMenus method for HotJava.
 
 Wed Nov 11 13:34:57 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
 
