@@ -1,3 +1,20 @@
+2003-07-29  Helmer Kraemer <hkraemer@freenet.de>
+
+	* libraries/javalib/essential.files:
+	Removed gnu/java/locale/Calendar.java,
+	gnu/java/locale/Calendar_de.java, gnu/java/locale/Calendar_en.java and
+	gnu/java/locale/Calendar_nl.java
+
+	* libraries/javalib/profiles/default/rest.files,
+	libraries/javalib/profiles/allatonce/all.files:
+	Added gnu/java/locale/Calendar.java,
+	gnu/java/locale/Calendar_de.java, gnu/java/locale/Calendar_en.java and
+	gnu/java/locale/Calendar_nl.java
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated
+	
 2003-07-28  Rob Gonzalez <rob@kaffe.org>
 
 	* libraries/javalib/essential.files

@@ -50,6 +50,7 @@ Klasses_jar_SRCS = \
 	$(gnu_java_awt_SRCS) \
 	$(gnu_java_lang_SRCS) \
 	$(gnu_java_lang_reflect_SRCS) \
+	$(gnu_java_locale_SRCS) \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
 	$(gnu_java_security_provider_SRCS) \
@@ -199,6 +200,11 @@ gnu_java_lang_SRCS = \
 	gnu/java/lang/CharData.java
 gnu_java_lang_reflect_SRCS = \
 	gnu/java/lang/reflect/TypeSignature.java
+gnu_java_locale_SRCS = \
+	gnu/java/locale/Calendar_de.java \
+	gnu/java/locale/Calendar_en.java \
+	gnu/java/locale/Calendar.java \
+	gnu/java/locale/Calendar_nl.java
 gnu_java_nio_SRCS = \
 	gnu/java/nio/DatagramChannelImpl.java \
 	gnu/java/nio/FileChannelImpl.java \
@@ -834,6 +840,7 @@ java_lang_SRCS = \
 	java/lang/UnsupportedOperationException.java \
 	java/lang/VerifyError.java \
 	java/lang/VirtualMachineError.java \
+	java/lang/VMThrowable.java \
 	java/lang/Void.java
 java_lang_ref_SRCS = \
 	java/lang/ref/PhantomReference.java \
