@@ -102,6 +102,7 @@ public URL(String spec) throws MalformedURLException {
 			file = "";
 		}
 	}
+	handler = getURLStreamHandler(protocol);
 //System.out.println("URL = " + this);
 }
 
@@ -117,6 +118,7 @@ public URL(String protocol, String host, int port, String file) throws Malformed
 	this.host = host;
 	this.file = file;
 	this.port = port;
+	handler = getURLStreamHandler(protocol);
 }
 
 public URL(URL context, String spec) throws MalformedURLException {
@@ -179,7 +181,7 @@ private static URLStreamHandler getURLStreamHandler(String protocol) throws Malf
 		return (handler);
 	}
 
-	throw new MalformedURLException("failed to find handler");
+	throw new MalformedURLException("unknown protocol: " + protocol);
 }
 
 public int hashCode() {
@@ -213,9 +215,6 @@ private static String merge(URL context, String spec) {
 
 public URLConnection openConnection() throws IOException {
 	if (conn == null) {
-		if (handler == null) {
-			handler = getURLStreamHandler(protocol);
-		}
 		conn = handler.openConnection(this);
 		conn.connect();
 	}
