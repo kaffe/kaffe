@@ -253,14 +253,10 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 {
 	char gc_safe_zone[1024];
 	jarray args;
-	jclass lcls;
 	jclass cls;
 	jclass mcls;
-	jmethodID cmth;
-	jmethodID lmth;
 	jmethodID mmth;
 	jobject str;
-	jobject loader;
 	int i;
 	const char* exec;
 
