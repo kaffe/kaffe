@@ -1,3 +1,11 @@
+Mon Aug  9 14:23:55 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/io/RandomAccessFile.java: fix for PR #523
+	(actually, workaround a bug in jikes)
+	* test/regression/LongAdd.java: new regression test for the above PR
+	* test/regression/Makefile.am: add LongAdd.java
+	* test/regression/Makefile.in: regen
+
 Mon Aug  9 13:07:21 PDT 1999  Patrick Tullmann <tullmann@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.c: fix bug in class resolution
