@@ -135,7 +135,7 @@ case $basic_machine in
 		| alpha | we32k | ns16k | clipper | sparclite | i370 | sh \
 		| powerpc | powerpcle | sparc64 | 1750a | dsp16xx | mips64 | mipsel \
 		| pdp11 | mips64el | mips64orion | mips64orionel \
-		| sparc)
+		| sparc | arm32)
 		basic_machine=$basic_machine-unknown
 		;;
 	# Object if more than one company name word.
@@ -151,7 +151,7 @@ case $basic_machine in
 	      | hppa1.0-* | hppa1.1-* | alpha-* | we32k-* | cydra-* | ns16k-* \
 	      | pn-* | np1-* | xps100-* | clipper-* | orion-* | sparclite-* \
 	      | pdp11-* | sh-* | powerpc-* | powerpcle-* | sparc64-* | mips64-* | mipsel-* \
-	      | mips64el-* | mips64orion-* | mips64orionel-*)
+	      | mips64el-* | mips64orion-* | mips64orionel-* | arm32-*)
 		;;
 	# Recognize the various machine names and aliases which stand
 	# for a CPU type and a company and sometimes even an OS.

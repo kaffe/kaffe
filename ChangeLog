@@ -1,3 +1,33 @@
+Thu Jun  4 18:47:51 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* config/config-hacks.h: added DOUBLE_ORDER_OPPOSITE for arm32
+	  software floating point emul where the order of double is the
+	  opposite of the order of long long.
+	  kaffe/kaffevm/constants.c: take DOUBLE_ORDER_OPPOSITE into account
+	  when reading doubles from class files
+	  libraries/clib/native/Double.c: fixed longBitsToDouble & Co. for
+	  arm32; libraries/clib/native/Float.c: made BitToFloat more portable.
+
+	* libraries/clib/native/TestNative.c: new tests that test calling
+	  test/regression/TestNative.java:    native methods, only in DEBUG mode
+	  libraries/clib/native/Makefile.in: added TestNative.c
+	  libraries/clib/native/external_wrappers.h: added TestNative_ 
+	  functions (only when debugging enabled.)
+
+	* kaffe/kaffevm/debug.[ch]: added more debug options.
+	  kaffe/kaffevm/intrp/machine.c: converted to new debugging scheme.
+
+	* kaffe/kaffevm/systems/unix-internal/internal.c: removed flag_preempt
+	  kaffe/kaffe/main.c, kaffe/kaffevm/systems/unix-jthreads/internal.c: 
+	  got rid of flag_preemption (formerly -nopreempt), use 
+	  JTHREADNOPREEMPT vmdebug option instead.
+
+	* kaffe/kaffevm/support.h: upped MAXMARGS to 64 for TestNative and
+	  added comment explaining callMethodInfo for other porters.	  
+	  kaffe/kaffevm/support.c: added XXX to check for callsize overflow.
+
+	* config.sub, config/arm32/*:	added NetBSD/arm32 port.
+
 Wed Jun  3 11:48:15 1998  Kiyo Inaba  <inaba@snoopy.src.ricoh.co.jp>
 	 		  Godmar Back  <gback@marker.cs.utah.edu>
 
