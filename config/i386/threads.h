@@ -20,7 +20,11 @@
 /*
  * Set a default size for the stack.
  */
+#if defined(INTERPRETER)
+#define	THREADSTACKSIZE		(64 * 1024)
+#else
 #define	THREADSTACKSIZE		(32 * 1024)
+#endif
 
 /*
  * Stack offset.
