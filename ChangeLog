@@ -1,5 +1,10 @@
 2003-05-17 Benja Fallenstein <b.fallenstein@gmx.de>
 
+	* libraries/javalib/java/awt/Dimension.java:
+	extend and implement java.awt.geom.Dimension2D.
+	
+2003-05-17 Benja Fallenstein <b.fallenstein@gmx.de>
+
 	* libraries/javalib/java/awt/event/MouseEvent.java:
 	(MOUSE_WHEEL) new constant.
 	(MOUSE_LAST) increased to make space for MOUSE_WHEEL.

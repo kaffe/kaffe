@@ -1,4 +1,5 @@
 package java.awt;
+import java.awt.geom.Dimension2D;
 
 
 /**
@@ -12,7 +13,7 @@ package java.awt;
  *
  * @author P.C.Mehlitz
  */
-public class Dimension implements java.io.Serializable
+public class Dimension extends Dimension2D implements java.io.Serializable
 {
 	private static final long serialVersionUID = 4723952579491349524L;
 	/** @serial The width dimension. Negative values can be used. */
@@ -43,6 +44,14 @@ public boolean equals ( Object obj ) {
 		return false;
 }
 
+public double getWidth() {
+	return width;
+}
+
+public double getHeight() {
+	return height;
+}
+
 public Dimension getSize () {
 	return new Dimension( width, height);
 }
@@ -52,9 +61,19 @@ public void setSize ( Dimension d ) {
 	height = d.height;
 }
 
+public void setSize ( Dimension2D d ) {
+	width  = (int)d.getWidth();
+	height = (int)d.getHeight();
+}
+
 public void setSize ( int w, int h ) {
 	width  = w;
 	height = h;
+}
+
+public void setSize ( double w, double h ) {
+	width  = (int)w;
+	height = (int)h;
 }
 
 public String toString() {
