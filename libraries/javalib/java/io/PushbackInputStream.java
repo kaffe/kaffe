@@ -36,14 +36,7 @@ public boolean markSupported() {
 }
 
 public int read() throws IOException {
-	int b;
-	if (pos < buf.length) {
-		b = (int)buf[pos++];
-	}
-	else {
-		b = super.read();
-	}
-	return (b & 0xFF);
+	return (pos < buf.length) ? (buf[pos++] & 0xff) : super.read();
 }
 
 public int read(byte cbuf[], int off, int len) throws IOException {
