@@ -1,3 +1,7 @@
+1999-04-25  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/javalib/Klasses.jar: Regen.
+
 1999-04-25  Aaron Place  <beavis@ihug.co.nz>
 
 	* libraries/clib/io/RandomAccessFile.c: change constructor to
