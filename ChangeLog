@@ -1,5 +1,7 @@
 Sat Feb 13 23:12:25 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* update from libtool
+
 	* configure.in (HAVE_GIF_LIB_H): improve Godmar's gif_lib test, so 
 	that the result gets cached
 	* configure: regen
