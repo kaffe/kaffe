@@ -1,3 +1,8 @@
+2005-02-06  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/gcFuncs.c (destroyClass, walkClass, 
+	finalizeObject): Removed unused variables.
+
 2005-02-06  Jim Huang  <jserv@kaffe.org>
 
 	* test/awt/WidgetsDemo/WidgetsDemo.java,
@@ -10,7 +15,7 @@
 
 2005-02-06  Dalibor Topic  <robilad@kaffe.org>
 
-	* kaffe/kaffe/kaffevm/classMethod.c
+	* kaffe/kaffevm/classMethod.c
 	(userLoadClass): Removed unused variable.
 
 2005-02-06  Dalibor Topic  <robilad@kaffe.org>

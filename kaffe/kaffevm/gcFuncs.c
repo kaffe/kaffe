@@ -57,7 +57,7 @@ static void
 /* ARGSUSED */
 destroyClass(Collector *collector, void* c)
 {
-        int i, j;
+        int i;
 	int idx;
 	Hjava_lang_Class* clazz = c;
 	constants* pool;
@@ -432,8 +432,6 @@ DBG(GCPRECISE,
 	/* Now we walk the interface table pointer. */
 	if (class->itable2dtable != NULL)
 	  {
-	    unsigned int num_interfaces;
-
 	    KGC_markObject(collector, gc_info, class->itable2dtable);
 	    /* We want the number of interfaces registered in the table. As
 	     * this number is not recorded in the table we recompute it
@@ -582,10 +580,7 @@ static void
 /* ARGSUSED */
 finalizeObject(Collector* collector UNUSED, void* ob)
 {
-	JNIEnv *env = THREAD_JNIENV();
-	Hjava_lang_Class* objclass;
         Hjava_lang_Object* obj = (Hjava_lang_Object*)ob;
-	Method* final;
 
 	if (!obj->vtable) {
 		/* Suppose we catch ThreadDeath inside newObject() */
