@@ -1,5 +1,7 @@
 #include "i386/jit-icode.h"
 
+#define	HAVE_check_stack_limit		check_stack_limit_xRC
+
 #define	HAVE_spill_ref			HAVE_spill_int
 #define	HAVE_reload_ref			HAVE_reload_int
 

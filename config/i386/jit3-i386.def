@@ -401,16 +401,25 @@ define_insn(move_int, move_RxR)
 
 define_insn(move_float_const, fmove_RxC)
 {
-	double val = const_float(2);
+	jvalue d;
+
+	d.d = const_float(2);
 	wreg_float(0);
 
-	if (val == 0.0) {
+	if (d.d == 0.0) {
 		OUT = 0xD9;
 		OUT = 0xEE;
 
 		debug(("fldz\n"));
+
+		if (((d.j >> 63) & 1) != 0) {
+			OUT = 0xD9;
+			OUT = 0xE0;
+
+			debug(("fchsl\n"));
+		}
 	}
-	else if (val == 1.0) {
+	else if (d.d == 1.0) {
 		OUT = 0xD9;
 		OUT = 0xE8;
 
@@ -439,16 +448,25 @@ define_insn(move_float, fmove_RxR)
 
 define_insn(move_double_const, fmovel_RxC)
 {
-	double val = const_double(2);
+	jvalue d;
+
+	d.d = const_double(2);
 	wreg_double(0);
 
-	if (val == 0.0) {
+	if (d.d == 0.0) {
 		OUT = 0xD9;
 		OUT = 0xEE;
 
 		debug(("fldz\n"));
+
+		if (((d.j >> 63) & 1) != 0) {
+			OUT = 0xD9;
+			OUT = 0xE0;
+
+			debug(("fchsl\n"));
+		}
 	}
-	else if (val == 1.0) {
+	else if (d.d == 1.0) {
 		OUT = 0xD9;
 		OUT = 0xE8;
 

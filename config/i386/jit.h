@@ -95,15 +95,18 @@ extern void i386_do_fixup_trampoline(void);
 	{ /* eax */	0, 0, Rint|Rref,	0, 0, 0    },		\
 	{ /* ecx */	0, 0, Rint|Rref,	0, 0, 1    },		\
 	{ /* edx */	0, 0, Rint|Rref,	0, 0, 2    },		\
-	{ /* ebx */	0, 0, Rint|Rref,	0, 0, 3    },		\
+	{ /* ebx */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 3 },\
 	{ /* esp */	0, 0, Reserved,		0, 0, 4    },		\
 	{ /* ebp */	0, 0, Reserved,		0, 0, 5    },		\
-	{ /* esi */	0, 0, Rint|Rref,	0, 0, 6    },		\
-	{ /* edi */	0, 0, Rint|Rref,	0, 0, 7    },		\
-	{ /* f0  */	0, 0, Rfloat|Rdouble,	1, 0, 8    },
+	{ /* esi */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 6 },\
+	{ /* edi */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 7 },\
+	{ /* f0  */	0, 0, Rfloat|Rdouble,	Rreadonce, 0, 8    },
 
 /* Number of registers in the register set */
 #define	NR_REGISTERS	9
+
+/* Number of function globals in register set - JIT3 */
+#define	NR_GLOBALS	3
 
 /**/
 /* Opcode generation. */
@@ -134,6 +137,11 @@ extern void i386_do_fixup_trampoline(void);
 
 /* Generate slot offset for a local (non-argument) */
 #define SLOT2LOCALOFFSET(_n)	(-SLOTSIZE * (maxTemp+maxLocal+maxStack - (_n)))
+
+#if defined(JIT3)
+/* Generate the slot offset to the stack limit */
+#define	STACK_LIMIT()		SLOT2ARGOFFSET(maxArgs)
+#endif
 
 /* Wrap up a native call for the JIT */
 #define KAFFEJIT_TO_NATIVE(_m)

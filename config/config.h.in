@@ -160,6 +160,9 @@
 /* Define if you have the kill function.  */
 #undef HAVE_KILL
 
+/* Define if you have the localtime function.  */
+#undef HAVE_LOCALTIME
+
 /* Define if you have the madvise function.  */
 #undef HAVE_MADVISE
 
@@ -510,4 +513,3 @@
 
 /* Define default KAFFEHOME */
 #undef DEFAULT_KAFFEHOME
-
