@@ -1,3 +1,12 @@
+2004-01-10  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
+	2004-01-09  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/image/SinglePixelPackedSampleModel.java:
+        Removed redundant semicolon.
+
 2004-01-09  Dalibor Topic <robilad@kaffe.org>
 
         Resynced with GNU Classpath.
