@@ -18,7 +18,9 @@ public class Preempt implements Runnable
 	for (int i = 0; i < 5; i++)
 	    new Thread(new Preempt(), "thread " + i).start();
 
-	System.out.println("started 5 threads");
+	synchronized(Preempt.class) {
+	    System.out.println("started 5 threads");
+	}
     }
 
     public void run()
