@@ -54,8 +54,8 @@ modename="$progname"
 # Constants.
 PROGRAM=ltmain.sh
 PACKAGE=libtool
-VERSION=1.3
-TIMESTAMP=" (1.385.2.117 1999/04/29 13:07:13)"
+VERSION=1.3.2a
+TIMESTAMP=" (1.385.2.156 1999/05/27 11:41:01)"
 
 default_mode=
 help="Try \`$progname --help' for more information."
@@ -466,6 +466,7 @@ compiler."
 	command="$command -o $output_obj"
       fi
 
+      $run $rm "$output_obj"
       $show "$command"
       if $run eval "$command"; then :
       else
@@ -545,6 +546,7 @@ compiler."
 
       # Suppress compiler output if we already did a PIC compilation.
       command="$command$suppress_output"
+      $run $rm "$output_obj"
       $show "$command"
       if $run eval "$command"; then :
       else
@@ -1021,8 +1023,9 @@ compiler."
 	*)
 	  absdir=`cd "$dir" && pwd`
 	  if test -z "$absdir"; then
-	    $echo "$modename: cannot determine absolute directory name of \`$dir'" 1>&2
-	    exit 1
+	    $echo "$modename: warning: cannot determine absolute directory name of \`$dir'" 1>&2
+	    $echo "$modename: passing it literally to the linker, although it might fail" 1>&2
+	    absdir="$dir"
 	  fi
 	  dir="$absdir"
 	  ;;
@@ -1294,8 +1297,9 @@ compiler."
 	  *)
 	    absdir=`cd "$dir" && pwd`
 	    if test -z "$absdir"; then
-	      $echo "$modename: cannot determine absolute directory name of \`$dir'" 1>&2
-	      exit 1
+	      $echo "$modename: warning: cannot determine absolute directory name of \`$dir'" 1>&2
+	      $echo "$modename: passing it literally to the linker, although it might fail" 1>&2
+	      absdir="$dir"
 	    fi
 	    ;;
 	  esac
@@ -1902,7 +1906,7 @@ EOF
 		    potential_libs=`ls $i/$libname[.-]* 2>/dev/null`
 		    for potent_lib in $potential_libs; do
 		      # Follow soft links.
-		      if ls -lLd "$potlib" 2>/dev/null \
+		      if ls -lLd "$potent_lib" 2>/dev/null \
 			 | grep " -> " >/dev/null; then
 			continue 
 		      fi
@@ -2033,51 +2037,6 @@ EOF
 	# Use standard objects if they are pic
 	test -z "$pic_flag" && libobjs=`$echo "X$libobjs" | $SP2NL | $Xsed -e "$lo2o" | $NL2SP`
 
-	if test -n "$whole_archive_flag_spec"; then
-	  if test -n "$convenience"; then
-	    eval libobjs=\"\$libobjs $whole_archive_flag_spec\"
-	  fi
-	else
-	  gentop="$output_objdir/${outputname}x"
-	  $show "${rm}r $gentop"
-	  $run ${rm}r "$gentop"
-	  $show "mkdir $gentop"
-	  $run mkdir "$gentop"
-	  status=$?
-	  if test $status -ne 0 && test ! -d "$gentop"; then
-	    exit $status
-	  fi
-	  generated="$generated $gentop"
-	  
-	  for xlib in $convenience; do
-	    # Extract the objects.
-	    case "$xlib" in
-	    [\\/]* | [A-Za-z]:[\\/]*) xabs="$xlib" ;;
-	    *) xabs=`pwd`"/$xlib" ;;
-	    esac
-	    xlib=`$echo "X$xlib" | $Xsed -e 's%^.*/%%'`
-	    xdir="$gentop/$xlib"
-
-	    $show "${rm}r $xdir"
-	    $run ${rm}r "$xdir"
-	    $show "mkdir $xdir"
-	    $run mkdir "$xdir"
-	    status=$?
-	    if test $status -ne 0 && test ! -d "$xdir"; then
-	      exit $status
-	    fi
-	    $show "(cd $xdir && $AR x $xabs)"
-	    $run eval "(cd \$xdir && $AR x \$xabs)" || exit $?
-
-	    libobjs="$libobjs "`find $xdir -name \*.o -print -o -name \*.lo -print | $NL2SP`
-	  done
-	fi
-
-	if test "$thread_safe" = yes && test -n "$thread_safe_flag_spec"; then
-	  eval flag=\"$thread_safe_flag_spec\"
-	  linkopts="$linkopts $flag"
-	fi
-
 	# Prepare the list of exported symbols
 	if test -z "$export_symbols"; then
 	  if test "$always_export_symbols" = yes || test -n "$export_symbols_regex"; then
@@ -2103,6 +2062,51 @@ EOF
 
 	if test -n "$export_symbols" && test -n "$include_expsyms"; then
 	  $run eval '$echo "X$include_expsyms" | $SP2NL >> "$export_symbols"'
+	fi
+
+	if test -n "$convenience"; then
+	  if test -n "$whole_archive_flag_spec"; then
+	    eval libobjs=\"\$libobjs $whole_archive_flag_spec\"
+	  else
+	    gentop="$output_objdir/${outputname}x"
+	    $show "${rm}r $gentop"
+	    $run ${rm}r "$gentop"
+	    $show "mkdir $gentop"
+	    $run mkdir "$gentop"
+	    status=$?
+	    if test $status -ne 0 && test ! -d "$gentop"; then
+	      exit $status
+	    fi
+	    generated="$generated $gentop"
+
+	    for xlib in $convenience; do
+	      # Extract the objects.
+	      case "$xlib" in
+	      [\\/]* | [A-Za-z]:[\\/]*) xabs="$xlib" ;;
+	      *) xabs=`pwd`"/$xlib" ;;
+	      esac
+	      xlib=`$echo "X$xlib" | $Xsed -e 's%^.*/%%'`
+	      xdir="$gentop/$xlib"
+
+	      $show "${rm}r $xdir"
+	      $run ${rm}r "$xdir"
+	      $show "mkdir $xdir"
+	      $run mkdir "$xdir"
+	      status=$?
+	      if test $status -ne 0 && test ! -d "$xdir"; then
+		exit $status
+	      fi
+	      $show "(cd $xdir && $AR x $xabs)"
+	      $run eval "(cd \$xdir && $AR x \$xabs)" || exit $?
+
+	      libobjs="$libobjs "`find $xdir -name \*.o -print -o -name \*.lo -print | $NL2SP`
+	    done
+	  fi
+	fi
+
+	if test "$thread_safe" = yes && test -n "$thread_safe_flag_spec"; then
+	  eval flag=\"$thread_safe_flag_spec\"
+	  linkopts="$linkopts $flag"
 	fi
 
 	# Do each of the archive commands.
@@ -2183,8 +2187,58 @@ EOF
       # Delete the old objects.
       $run $rm $obj $libobj
 
+      # Objects from convenience libraries.  This assumes
+      # single-version convenience libraries.  Whenever we create
+      # different ones for PIC/non-PIC, this we'll have to duplicate
+      # the extraction.
+      reload_conv_objs=
+      gentop=
+      # reload_cmds runs $LD directly, so let us get rid of
+      # -Wl from whole_archive_flag_spec
+      wl= 
+
+      if test -n "$convenience"; then
+	if test -n "$whole_archive_flag_spec"; then
+	  eval reload_conv_objs=\"\$reload_objs $whole_archive_flag_spec\"
+	else
+	  gentop="$output_objdir/${obj}x"
+	  $show "${rm}r $gentop"
+	  $run ${rm}r "$gentop"
+	  $show "mkdir $gentop"
+	  $run mkdir "$gentop"
+	  status=$?
+	  if test $status -ne 0 && test ! -d "$gentop"; then
+	    exit $status
+	  fi
+	  generated="$generated $gentop"
+
+	  for xlib in $convenience; do
+	    # Extract the objects.
+	    case "$xlib" in
+	    [\\/]* | [A-Za-z]:[\\/]*) xabs="$xlib" ;;
+	    *) xabs=`pwd`"/$xlib" ;;
+	    esac
+	    xlib=`$echo "X$xlib" | $Xsed -e 's%^.*/%%'`
+	    xdir="$gentop/$xlib"
+
+	    $show "${rm}r $xdir"
+	    $run ${rm}r "$xdir"
+	    $show "mkdir $xdir"
+	    $run mkdir "$xdir"
+	    status=$?
+	    if test $status -ne 0 && test ! -d "$xdir"; then
+	      exit $status
+	    fi
+	    $show "(cd $xdir && $AR x $xabs)"
+	    $run eval "(cd \$xdir && $AR x \$xabs)" || exit $?
+
+	    reload_conv_objs="$reload_objs "`find $xdir -name \*.o -print -o -name \*.lo -print | $NL2SP`
+	  done
+	fi
+      fi
+
       # Create the old-style object.
-      reload_objs="$objs "`$echo "X$libobjs" | $SP2NL | $Xsed -e '/\.'${libext}$'/d' -e '/\.lib$/d' -e "$lo2o" | $NL2SP`
+      reload_objs="$objs "`$echo "X$libobjs" | $SP2NL | $Xsed -e '/\.'${libext}$'/d' -e '/\.lib$/d' -e "$lo2o" | $NL2SP`" $reload_conv_objs"
 
       output="$obj"
       eval cmds=\"$reload_cmds\"
@@ -2197,9 +2251,21 @@ EOF
       IFS="$save_ifs"
 
       # Exit if we aren't doing a library object file.
-      test -z "$libobj" && exit 0
+      if test -z "$libobj"; then
+	if test -n "$gentop"; then
+	  $show "${rm}r $gentop"
+	  $run ${rm}r $gentop
+	fi
+
+	exit 0
+      fi
 
       if test "$build_libtool_libs" != yes; then
+	if test -n "$gentop"; then
+	  $show "${rm}r $gentop"
+	  $run ${rm}r $gentop
+	fi
+
 	# Create an invalid libtool object if no PIC, so that we don't
 	# accidentally link it into a program.
 	$show "echo timestamp > $libobj"
@@ -2209,7 +2275,7 @@ EOF
 
       if test -n "$pic_flag"; then
 	# Only do commands if we really have different PIC objects.
-	reload_objs="$libobjs"
+	reload_objs="$libobjs $reload_conv_objs"
 	output="$libobj"
 	eval cmds=\"$reload_cmds\"
 	IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
@@ -2225,6 +2291,11 @@ EOF
 	$run $rm $libobj
 	$show "$LN_S $obj $libobj"
 	$run $LN_S $obj $libobj || exit $?
+      fi
+
+      if test -n "$gentop"; then
+	$show "${rm}r $gentop"
+	$run ${rm}r $gentop
       fi
 
       exit 0

@@ -26,3 +26,19 @@ ltdl.lo: ltdl.h config.h
 $(OBJECTS): libtool
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
+
+## This allows us to install libltdl without using ln and without creating
+## a world writeable directory.
+## FIXME:  Removed this rule once automake can do this properly by itself.
+local-install-files: $(DISTFILES)
+	-rm -rf $(DESTDIR)$(datadir)/libtool/libltdl
+	$(mkinstalldirs) $(DESTDIR)$(datadir)/libtool/libltdl
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$d/$$file $(DESTDIR)$(datadir)/libtool/libltdl/$$file; \
+	  else \
+	    test -f $(DESTDIR)$(datadir)/libtool/libltdl/$$file \
+	    || cp -p $$d/$$file $(DESTDIR)$(datadir)/libtool/libltdl/$$file || :; \
+	  fi; \
+	done
