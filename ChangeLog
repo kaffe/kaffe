@@ -1,5 +1,10 @@
 2005-03-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/classpath/Makefile.am: Added classpath_jawt.h
+	to sources. Fixes a make distcheck problem.
+
+2005-03-23  Dalibor Topic  <robilad@kaffe.org>
+
         * kaffe/scripts/javadoc.in,
         kaffe/scripts/compat/javadoc.in: Append installed antlr to
 	bootclasspath. Now gjdoccing all of Kaffe's class library
