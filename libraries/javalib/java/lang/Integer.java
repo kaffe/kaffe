@@ -18,6 +18,9 @@ final public class Integer
 	final public static int MIN_VALUE = 0x80000000;
 	final public static int MAX_VALUE = 0x7fffffff;
 
+	/* This is what Sun's JDK1.1 "serialver java.lang.Integer" spits out */
+	private static final long serialVersionUID = 1360826667806852920L;
+
 public Integer(String s) throws NumberFormatException
 {
 	this(parseInt(s));

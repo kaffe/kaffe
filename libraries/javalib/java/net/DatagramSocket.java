@@ -15,7 +15,7 @@ import java.io.IOException;
 public class DatagramSocket
 {
 	private int localPort;
-	private FileDescriptor fd = new FileDescriptor();
+	private DatagramSocketImpl impl;
 
 static {
 	System.loadLibrary("net");
@@ -28,26 +28,39 @@ public DatagramSocket() throws SocketException {
 public DatagramSocket(int port) throws SocketException {
 	System.getSecurityManager().checkListen(port);
 
-	datagramSocketCreate();
+	impl = new PlainDatagramSocketImpl();
+	impl.create();
 	localPort=port;
-	datagramSocketBind(localPort);
+	impl.bind(localPort, InetAddress.anyLocalAddress);
 }
 
 public synchronized void close() {
-	datagramSocketClose();
+	impl.close();
 }
 
-native private int datagramSocketBind(int port);
+public void setSoTimeout(boolean on, int timeout) throws SocketException {
+	impl.setOption(SocketOptions.SO_TIMEOUT, new Integer(on ? timeout : 0));
+}
 
-native private void datagramSocketClose();
+public int getSoTimeout() throws SocketException {
+	return ((Integer) impl.getOption(SocketOptions.SO_TIMEOUT)).intValue();
+}
 
-native private void datagramSocketCreate();
+public void setSendBufferSize(int size) throws SocketException {
+	impl.setOption(SocketOptions.SO_SNDBUF, new Integer(size));
+}
 
-native private int datagramSocketPeek(InetAddress iaddr);
+public int getSendBufferSize() throws SocketException {
+	return ((Integer) impl.getOption(SocketOptions.SO_SNDBUF)).intValue();
+}
 
-native private void datagramSocketReceive(DatagramPacket pkt);
+public void setReceiveBufferSize(int size) throws SocketException {
+	impl.setOption(SocketOptions.SO_RCVBUF, new Integer(size));
+}
 
-native private void datagramSocketSend(DatagramPacket pkt);
+public int getReceiveBufferSize() throws SocketException {
+	return ((Integer) impl.getOption(SocketOptions.SO_RCVBUF)).intValue();
+}
 
 protected synchronized void finalize() {
 	close();
@@ -58,14 +71,13 @@ public int getLocalPort() {
 }
 
 public synchronized void receive(DatagramPacket p) throws IOException {
-	System.getSecurityManager().checkConnect(p.getAddress().getHostName(), p.getPort());
-
-	datagramSocketReceive(p);
+	System.getSecurityManager().checkRead(impl.fd);	// is this correct?
+	impl.receive(p);
 }
 
 public void send(DatagramPacket p) throws IOException  {
 	System.getSecurityManager().checkConnect(p.getAddress().getHostName(), p.getPort());
 
-	datagramSocketSend(p);
+	impl.send(p);
 }
 }

@@ -15,6 +15,7 @@ import java.io.OutputStream;
  * of this file.
  */
 abstract public class SocketImpl
+  implements SocketOptions
 {
 	protected FileDescriptor fd;
 	protected InetAddress address;
@@ -40,7 +41,11 @@ protected FileDescriptor getFileDescriptor() {
 }
 
 protected InetAddress getInetAddress() {
-	return address;
+	try {
+		return (InetAddress) getOption(SO_BINDADDR);
+	} catch (SocketException e) {
+		return address;
+	}
 }
 
 abstract protected InputStream getInputStream() throws IOException;

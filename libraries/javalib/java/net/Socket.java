@@ -76,6 +76,46 @@ public static synchronized void setSocketImplFactory(SocketImplFactory fac) thro
 	factory=fac;
 }
 
+public void setSoLinger(int timeout) throws SocketException {
+	impl.setOption(SocketOptions.SO_LINGER, new Integer(timeout));
+}
+
+public int getSoLinger() throws SocketException {
+	return ((Integer) impl.getOption(SocketOptions.SO_LINGER)).intValue();
+}
+
+public void setSoTimeout(boolean on, int timeout) throws SocketException {
+	impl.setOption(SocketOptions.SO_TIMEOUT, new Integer(on ? timeout : 0));
+}
+
+public int getSoTimeout() throws SocketException {
+	return ((Integer) impl.getOption(SocketOptions.SO_TIMEOUT)).intValue();
+}
+
+public void setSendBufferSize(int size) throws SocketException {
+	impl.setOption(SocketOptions.SO_SNDBUF, new Integer(size));
+}
+
+public int getSendBufferSize() throws SocketException {
+	return ((Integer) impl.getOption(SocketOptions.SO_SNDBUF)).intValue();
+}
+
+public void setReceiveBufferSize(int size) throws SocketException {
+	impl.setOption(SocketOptions.SO_RCVBUF, new Integer(size));
+}
+
+public int getReceiveBufferSize() throws SocketException {
+	return ((Integer) impl.getOption(SocketOptions.SO_RCVBUF)).intValue();
+}
+
+public void setTcpNoDelay(boolean on) throws SocketException {
+	impl.setOption(SocketOptions.TCP_NODELAY, new Boolean(on));
+}
+
+public boolean getTcpNoDelay() throws SocketException {
+	return ((Boolean) impl.getOption(SocketOptions.TCP_NODELAY)).booleanValue();
+}
+
 public String toString() {
 	return impl.toString();
 }

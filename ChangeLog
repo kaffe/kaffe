@@ -1,3 +1,18 @@
+Thu Jul 30 22:00:49 1998  Archie Cobbs  <archie@whistle.com>
+
+	* libraries/clib/net/Plain*SocketImpl.[ch]|SocketOptions.h:
+	libraries/javalib/java/net/PlainDatagramSocketImpl.java,
+	PlainSocketImpl.java, Socket.java, SocketImpl.java,
+	SocketOptions.java:  implemented various socket options.
+
+Thu Jul 30 22:00:49 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/javalib/java/lang/Integer.java|Number.java: 
+	added support for serialization.
+
+	* libraries/javalib/java/net/DatagramSocket.java: for now, use 
+	PlainDatagramSocketImpl.java to implement a socket.
+
 Thu Jul 30 14:47:55 1998  Archie Cobbs  <archie@whistle.com>
 
 	* kaffe/kaffevm/locks.c: fix for throwing IllegalMonitorStateException 

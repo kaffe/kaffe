@@ -10,11 +10,17 @@
 
 package java.net;
 
-// Not documented ... !!!
-
 public interface SocketOptions {
+  static final int SO_SNDBUF = 1;
+  static final int SO_RCVBUF = 2;
+  static final int SO_LINGER = 3;
+  static final int SO_TIMEOUT = 4;
+  static final int SO_BINDADDR = 5;
+  static final int SO_REUSEADDR = 6;
+  static final int TCP_NODELAY = 7;
+  static final int IP_MULTICAST_IF = 8;
 
-  public abstract void socketSetOption(int option, Object data);
-  public abstract int socketGetOption(int option);
-
+  public void setOption(int option, Object data) throws SocketException;
+  public Object getOption(int option) throws SocketException;
 };
+

@@ -25,10 +25,10 @@ extern void java_net_PlainDatagramSocketImpl_setTTL(struct Hjava_net_PlainDatagr
 extern jbyte java_net_PlainDatagramSocketImpl_getTTL(struct Hjava_net_PlainDatagramSocketImpl*);
 extern void java_net_PlainDatagramSocketImpl_join(struct Hjava_net_PlainDatagramSocketImpl*, struct Hjava_net_InetAddress*);
 extern void java_net_PlainDatagramSocketImpl_leave(struct Hjava_net_PlainDatagramSocketImpl*, struct Hjava_net_InetAddress*);
-extern void java_net_PlainDatagramSocketImpl_datagramSocketCreate(struct Hjava_net_PlainDatagramSocketImpl*);
-extern void java_net_PlainDatagramSocketImpl_datagramSocketClose(struct Hjava_net_PlainDatagramSocketImpl*);
 extern void java_net_PlainDatagramSocketImpl_socketSetOption(struct Hjava_net_PlainDatagramSocketImpl*, jint, struct Hjava_lang_Object*);
 extern jint java_net_PlainDatagramSocketImpl_socketGetOption(struct Hjava_net_PlainDatagramSocketImpl*, jint);
+extern void java_net_PlainDatagramSocketImpl_datagramSocketCreate(struct Hjava_net_PlainDatagramSocketImpl*);
+extern void java_net_PlainDatagramSocketImpl_datagramSocketClose(struct Hjava_net_PlainDatagramSocketImpl*);
 
 #ifdef __cplusplus
 }

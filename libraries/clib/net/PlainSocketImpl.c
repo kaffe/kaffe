@@ -25,6 +25,31 @@
 #include <jsyscall.h>
 
 /*
+ * Supported socket options
+ */
+  static const struct {
+	  int jopt;
+	  int level;
+	  int copt;
+  } socketOptions[] = {
+#ifdef SO_SNDBUF
+    { java_net_SocketOptions_SO_SNDBUF,		SOL_SOCKET,	SO_SNDBUF },
+#endif
+#ifdef SO_RCVBUF
+    { java_net_SocketOptions_SO_RCVBUF,		SOL_SOCKET,	SO_RCVBUF },
+#endif
+#ifdef SO_LINGER
+    { java_net_SocketOptions_SO_LINGER,		SOL_SOCKET,	SO_LINGER },
+#endif
+#ifdef SO_REUSEADDR
+    { java_net_SocketOptions_SO_REUSEADDR,	SOL_SOCKET,	SO_REUSEADDR },
+#endif
+#ifdef TCP_NODELAY
+    { java_net_SocketOptions_TCP_NODELAY,	IPPROTO_TCP,	TCP_NODELAY },
+#endif
+  };
+
+/*
  * Create a stream or datagram socket.
  */
 void
@@ -233,36 +258,31 @@ java_net_PlainSocketImpl_initProto(struct Hjava_net_PlainSocketImpl* this)
 }
 
 void
-java_net_PlainSocketImpl_socketSetOption(struct Hjava_net_PlainSocketImpl* this, jint v1, jbool v2, struct Hjava_lang_Object* v3)
+java_net_PlainSocketImpl_socketSetOption(struct Hjava_net_PlainSocketImpl* this, jint opt, struct Hjava_lang_Object* arg)
 {
-	struct Hjava_net_InetAddress* addrp;
-	struct Hjava_lang_Integer* intp;
-	int v;
-	int r;
-	struct sockaddr_in addr;
+	int k, r, v;
 
-	switch(v1) {
-	case java_net_SocketOptions_SO_REUSEADDR:
-		intp = (struct Hjava_lang_Integer*)v3;
-		v = unhand(intp)->value;
-		r = setsockopt(unhand(unhand(this)->fd)->fd, SOL_SOCKET, SO_REUSEADDR, &v, sizeof(v));
-		if(r < 0) {
-			SignalError("java.net.SocketException", SYS_ERROR);    
+	/* Do easy cases */
+	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
+		if (opt == socketOptions[k].jopt) {
+			v = unhand((struct Hjava_lang_Integer*)arg)->value;
+			r = setsockopt(unhand(unhand(this)->fd)->fd,
+				socketOptions[k].level, socketOptions[k].copt,
+				&v, sizeof(v));
+			if (r < 0) {
+				SignalError("java.net.SocketException", SYS_ERROR);    
+			}
+			return;
 		}
-		break;
+	}
 
-	case java_net_SocketOptions_TCP_NODELAY:
-		intp = (struct Hjava_lang_Integer*)v3;
-		v = unhand(intp)->value;
-		r = setsockopt(unhand(unhand(this)->fd)->fd, IPPROTO_TCP, TCP_NODELAY, &v, sizeof(v));
-		if(r < 0) {
-			SignalError("java.net.SocketException", SYS_ERROR);
-		}
+	/* Do harder cases */
+	switch(opt) {
+	case java_net_SocketOptions_SO_BINDADDR:
+		SignalError("java.net.SocketException", "Read-only socket option");    
 		break;
-
+	case java_net_SocketOptions_SO_TIMEOUT: /* java takes care */
 	case java_net_SocketOptions_IP_MULTICAST_IF:
-	case java_net_SocketOptions_SO_BINDADDR: /* JAVA takes care */
-	case java_net_SocketOptions_SO_TIMEOUT: /* JAVA takes care */
 	default:
 		SignalError("java.net.SocketException", "Unimplemented socket option");    
 		break;
@@ -270,36 +290,36 @@ java_net_PlainSocketImpl_socketSetOption(struct Hjava_net_PlainSocketImpl* this,
 }
 
 jint
-java_net_PlainSocketImpl_socketGetOption(struct Hjava_net_PlainSocketImpl* this, jint val)
+java_net_PlainSocketImpl_socketGetOption(struct Hjava_net_PlainSocketImpl* this, jint opt)
 {
-	int r;
-	int v;
-	int s;
 	struct sockaddr_in addr;
+	int alen = sizeof(addr);
+	int k, r, v;
+	int vsize = sizeof(v);
 
-	switch(val) {
+	/* Do easy cases */
+	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
+		if (opt == socketOptions[k].jopt) {
+			r = getsockopt(unhand(unhand(this)->fd)->fd,
+				socketOptions[k].level, socketOptions[k].copt,
+				&v, &vsize);
+			if (r < 0) {
+				SignalError("java.net.SocketException", SYS_ERROR);    
+			}
+			return v;
+		}
+	}
+
+	/* Do harder cases */
+	switch(opt) {
 	case java_net_SocketOptions_SO_BINDADDR:
-		r = ntohl(INADDR_ANY);
-		break;
-
-	case java_net_SocketOptions_SO_REUSEADDR:
-		s = sizeof(v);
-		r = getsockopt(unhand(unhand(this)->fd)->fd, SOL_SOCKET, SO_REUSEADDR, &v, &s);
-		if(r < 0) {
+		r = getsockname(unhand(unhand(this)->fd)->fd,
+			(struct sockaddr*)&addr, &alen);
+		if (r < 0) {
 			SignalError("java.net.SocketException", SYS_ERROR);    
 		}
-		r = v;
+		r = htonl(addr.sin_addr.s_addr);
 		break;
-
-	case java_net_SocketOptions_TCP_NODELAY:
-		s = sizeof(v);
-		r = getsockopt(unhand(unhand(this)->fd)->fd, IPPROTO_TCP, TCP_NODELAY, &v, &s);
-		if(r < 0) {
-			SignalError("java.net.SocketException", SYS_ERROR);
-		}
-		r = v;
-		break;
-
 	case java_net_SocketOptions_IP_MULTICAST_IF:
 	case java_net_SocketOptions_SO_TIMEOUT: /* java takes care */
 	default:

@@ -11,12 +11,14 @@ extern "C" {
 /* Header for class java_net_SocketOptions */
 
 typedef struct Classjava_net_SocketOptions {
-#define java_net_SocketOptions_TCP_NODELAY 1
-#define java_net_SocketOptions_SO_BINDADDR 15
-#define java_net_SocketOptions_SO_REUSEADDR 4
-#define java_net_SocketOptions_IP_MULTICAST_IF 16
-#define java_net_SocketOptions_SO_LINGER 128
-#define java_net_SocketOptions_SO_TIMEOUT 4102
+#define java_net_SocketOptions_SO_SNDBUF 1
+#define java_net_SocketOptions_SO_RCVBUF 2
+#define java_net_SocketOptions_SO_LINGER 3
+#define java_net_SocketOptions_SO_TIMEOUT 4
+#define java_net_SocketOptions_SO_BINDADDR 5
+#define java_net_SocketOptions_SO_REUSEADDR 6
+#define java_net_SocketOptions_TCP_NODELAY 7
+#define java_net_SocketOptions_IP_MULTICAST_IF 8
 	int __DUMMY__;
 } Classjava_net_SocketOptions;
 HandleTo(java_net_SocketOptions);
