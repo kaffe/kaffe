@@ -44,8 +44,12 @@ public abstract StringBuffer format(Object obj, StringBuffer buf, FieldPosition 
 
 public abstract Object parseObject(String source, ParsePosition status);
 
-public Object parseObject(String source) {
-	return parseObject(source, new ParsePosition(0));
+public Object parseObject(String source) throws ParseException {
+	ParsePosition pp = new ParsePosition(0);
+	Object obj = parseObject(source, pp);
+	if (obj == null || pp.getIndex() == 0)
+		throw new ParseException("parse failed", pp.getErrorIndex());
+	return obj;
 }
 
 static ResourceBundle getResources(String name, Locale loc) {
