@@ -2,6 +2,27 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-01-21  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/text/SimpleDateFormat.java:
+	(parse(String, java.text.ParsePosition)):
+	Changed 'E' and 'M' cases to use both
+	short and long names.  Extended 'z'
+	case to also handle 'Z', and deal
+	with simple GMT offsets such as +0100.
+	(computeOffset(String)): New private method,
+	which converts a GMT offset specification,
+	such as GMT-0500 to a numeric offset in
+	milliseconds.
+	* java/util/TimeZone.java:
+	(timezones()): Added "CEST", the daylight
+	savings time version of "CET", or Central
+	European Time.
+	
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-01-21  Sven de Marothy <sven@physto.se>
 
 	* java/util/Calendar.java: Reformatted.

@@ -55,6 +55,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * SimpleDateFormat provides convenient methods for parsing and formatting
@@ -673,9 +675,11 @@ public class SimpleDateFormat extends DateFormat
 	    // initial index into the string array.
 	    int calendar_field;
 	    boolean is_numeric = true;
-	    String[] match = null;
 	    int offset = 0;
 	    boolean maybe2DigitYear = false;
+	    Integer simpleOffset;
+	    String[] set1 = null;
+	    String[] set2 = null;
 	    switch (ch)
 	      {
 	      case 'd':
@@ -691,9 +695,8 @@ public class SimpleDateFormat extends DateFormat
 		is_numeric = false;
 		offset = 1;
 		calendar_field = Calendar.DAY_OF_WEEK;
-		match = (fmt_count <= 3
-			 ? formatData.getShortWeekdays()
-			 : formatData.getWeekdays());
+		set1 = formatData.getWeekdays();
+		set2 = formatData.getShortWeekdays();
 		break;
 	      case 'w':
 		calendar_field = Calendar.WEEK_OF_YEAR;
@@ -708,9 +711,8 @@ public class SimpleDateFormat extends DateFormat
 		else
 		  {
 		    is_numeric = false;
-		    match = (fmt_count == 3
-			     ? formatData.getShortMonths()
-			     : formatData.getMonths());
+		    set1 = formatData.getMonths();
+		    set2 = formatData.getShortMonths();
 		  }
 		break;
 	      case 'y':
@@ -742,9 +744,10 @@ public class SimpleDateFormat extends DateFormat
 	      case 'a':
 		is_numeric = false;
 		calendar_field = Calendar.AM_PM;
-		match = formatData.getAmPmStrings();
+		set1 = formatData.getAmPmStrings();
 		break;
 	      case 'z':
+	      case 'Z':
 		// We need a special case for the timezone, because it
 		// uses a different data structure than the other cases.
 		is_numeric = false;
@@ -753,42 +756,47 @@ public class SimpleDateFormat extends DateFormat
 		int zoneCount = zoneStrings.length;
 		int index = pos.getIndex();
 		boolean found_zone = false;
-		for (int j = 0;  j < zoneCount;  j++)
+		simpleOffset = computeOffset(dateStr.substring(index));
+		if (simpleOffset != null)
 		  {
-		    String[] strings = zoneStrings[j];
-		    int k;
-		    for (k = 1; k < strings.length; ++k)
+		    found_zone = true;
+		    saw_timezone = true;
+		    offset = simpleOffset.intValue();
+		  }
+		else
+		  {
+		    for (int j = 0;  j < zoneCount;  j++)
 		      {
-			if (dateStr.startsWith(strings[k], index))
-			  break;
-		      }
-		    if (k != strings.length)
-		      {
-			found_zone = true;
-			saw_timezone = true;
-			TimeZone tz = TimeZone.getTimeZone (strings[0]);
-			calendar.set (Calendar.ZONE_OFFSET, tz.getRawOffset ());
-			offset = 0;
-			if (k > 2 && tz instanceof SimpleTimeZone)
+			String[] strings = zoneStrings[j];
+			int k;
+			for (k = 0; k < strings.length; ++k)
 			  {
-			    SimpleTimeZone stz = (SimpleTimeZone) tz;
-			    offset = stz.getDSTSavings ();
+			    if (dateStr.startsWith(strings[k], index))
+			      break;
 			  }
-			pos.setIndex(index + strings[k].length());
-			break;
+			if (k != strings.length)
+			  {
+			    found_zone = true;
+			    saw_timezone = true;
+			    TimeZone tz = TimeZone.getTimeZone (strings[0]);
+			    calendar.set (Calendar.ZONE_OFFSET, tz.getRawOffset ());
+			    offset = tz.getDSTSavings();
+			    pos.setIndex(index + strings[k].length());
+			    break;
+			  }
 		      }
 		  }
 		if (! found_zone)
 		  {
-		    pos.setErrorIndex(pos.getIndex());
-		    return null;
+			pos.setErrorIndex(pos.getIndex());
+			return null;
 		  }
 		break;
 	      default:
 		pos.setErrorIndex(pos.getIndex());
 		return null;
 	      }
-	    
+      
 	    // Compute the value we should assign to the field.
 	    int value;
 	    int index = -1;
@@ -804,23 +812,41 @@ public class SimpleDateFormat extends DateFormat
 		  return null;
 		value = n.intValue() + offset;
 	      }
-	    else if (match != null)
+	    else if (set1 != null)
 	      {
 		index = pos.getIndex();
 		int i;
-		for (i = offset; i < match.length; ++i)
+		boolean found = false;
+		for (i = offset; i < set1.length; ++i)
 		  {
-		    if (match[i] != null)
-		      if (dateStr.toUpperCase().startsWith(match[i].toUpperCase(),
+		    if (set1[i] != null)
+		      if (dateStr.toUpperCase().startsWith(set1[i].toUpperCase(),
 							   index))
-			break;
+			{
+			  found = true;
+			  pos.setIndex(index + set1[i].length());
+			  break;
+			}
 		  }
-		if (i == match.length)
+		if (!found && set2 != null)
+		  {
+		    for (i = offset; i < set2.length; ++i)
+		      {
+			if (set2[i] != null)
+			  if (dateStr.toUpperCase().startsWith(set2[i].toUpperCase(),
+							       index))
+			    {
+			      found = true;
+			      pos.setIndex(index + set2[i].length());
+			      break;
+			    }
+		      }
+		  }
+		if (!found)
 		  {
 		    pos.setErrorIndex(index);
 		    return null;
 		  }
-		pos.setIndex(index + match[i].length());
 		value = i;
 	      }
 	    else
@@ -862,6 +888,69 @@ public class SimpleDateFormat extends DateFormat
         pos.setErrorIndex(pos.getIndex());
 	return null;
       }
+      }
+
+  /**
+   * <p>
+   * Computes the time zone offset in milliseconds
+   * relative to GMT, based on the supplied
+   * <code>String</code> representation.
+   * </p>
+   * <p>
+   * The supplied <code>String</code> must be a three
+   * or four digit signed number, with an optional 'GMT'
+   * prefix.  The first one or two digits represents the hours,
+   * while the last two represent the minutes.  The
+   * two sets of digits can optionally be separated by
+   * ':'.  The mandatory sign prefix (either '+' or '-')
+   * indicates the direction of the offset from GMT.
+   * </p>
+   * <p>
+   * For example, 'GMT+0200' specifies 2 hours after
+   * GMT, while '-05:00' specifies 5 hours prior to
+   * GMT.  The special case of 'GMT' alone can be used
+   * to represent the offset, 0.
+   * </p>
+   * <p>
+   * If the <code>String</code> can not be parsed,
+   * the result will be null.  The resulting offset
+   * is wrapped in an <code>Integer</code> object, in
+   * order to allow such failure to be represented.
+   * </p>
+   *
+   * @param zoneString a string in the form 
+   *        (GMT)? sign hours : minutes
+   *        where sign = '+' or '-', hours
+   *        is a one or two digits representing
+   *        a number between 0 and 23, and
+   *        minutes is two digits representing
+   *        a number between 0 and 59.
+   * @return the parsed offset, or null if parsing
+   *         failed.
+   */
+  private Integer computeOffset(String zoneString)
+  {
+    Pattern pattern =
+      Pattern.compile("(GMT)?([+-])([012])?([0-9]):?([0-9]{2})");
+    Matcher matcher = pattern.matcher(zoneString);
+    if (matcher.matches())
+      {
+	int sign = matcher.group(2).equals("+") ? 1 : -1;
+	int hour = (Integer.parseInt(matcher.group(3)) * 10)
+	  + Integer.parseInt(matcher.group(4));
+	int minutes = Integer.parseInt(matcher.group(5));
+
+	if (hour > 23)
+	  return null;
+
+	int offset = sign * ((hour * 60) + minutes) * 60000;
+	return new Integer(offset);
+      }
+    else if (zoneString.startsWith("GMT"))
+      {
+	return new Integer(0);
+      }
+    return null;
   }
 
   // Compute the start of the current century as defined by
