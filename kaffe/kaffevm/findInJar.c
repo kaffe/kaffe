@@ -360,12 +360,11 @@ DBG(INITCLASSPATH,
     	dprintf("initClasspath(): '%s'\n", cp); )
 
 	for (;;) {
-		/* FIXME: requires path_separator to have length 1 */
-		end = strchr(cp, path_separator[0]);
+		end = strstr(cp, path_separator);
 		if (end != 0) {
-			*end = 0;
+			*end = '\0';
 			addClasspath(cp);
-			cp = end + 1;
+			cp = end + strlen(path_separator);
 		}
 		else {
 			addClasspath(cp);
@@ -447,6 +446,9 @@ insertClasspath(const char* cp, int prepend)
 
 DBG(INITCLASSPATH,
 	dprintf("insertClasspath(): '%s' %spend\n", cp, prepend ? "pre" : "ap"); )
+
+	if (*cp == '\0')
+		return;
 
 	lptr = 0;
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {

@@ -144,19 +144,18 @@ initNative(void)
 
 	/* Find the default library */
 	for (ptr = libraryPath; ptr != 0; ptr = nptr) {
-		/* FIXME: requires path_separator to have length 1 */
-		nptr = strchr(ptr, path_separator[0]);
+		nptr = strstr(ptr, path_separator);
 		if (nptr == 0) {
 			strcpy(lib, ptr);
 		}
 		else if (nptr == ptr) {
-			nptr++;
+			nptr += strlen(path_separator);
 			continue;
 		}
 		else {
 			strncpy(lib, ptr, nptr - ptr);
-			lib[nptr-ptr] = 0;
-			nptr++;
+			lib[nptr-ptr] = '\0';
+			nptr += strlen(path_separator);
 		}
 		strcat(lib, "/"); /* should be file_separator, libltdl
 				     does not handle backslashes yet */
