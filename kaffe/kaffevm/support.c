@@ -201,7 +201,9 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 	char* sig;
 	int i;
 	int s;
-	callMethodInfo call;
+	/* XXX call.callsize and call.calltype arrays are statically sized 
+	   and are not checked for running out of bounds */
+	callMethodInfo call;	
 	jvalue in[MAXMARGS];
 	jvalue tmp;
 	Hjava_lang_Object* sync;
@@ -344,6 +346,8 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	char* sig;
 	int i;
 	int s;
+	/* XXX call.callsize and call.calltype arrays are statically sized 
+	   and are not checked for running out of bounds */
 	callMethodInfo call;
 	jvalue in[MAXMARGS];
 	jvalue tmp;
