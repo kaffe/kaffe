@@ -159,15 +159,18 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
   {
     BufferedImage bufferedImage;
     ColorModel defaultModel;
+    int width;
+    int height;
 
     public BufferedImage getBufferedImage()
     {
       return bufferedImage;
     }
 
-    public void setDimensions(int width, int height)
+    public void setDimensions(int w, int h)
     {
-      bufferedImage = new BufferedImage (width, height, BufferedImage.TYPE_INT_ARGB);
+      width = w;
+      height = h;
     }
     
     public void setProperties(Hashtable props) {}
@@ -189,28 +192,28 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
                           ColorModel model, int[] pixels, 
                           int offset, int scansize)
     {
-      if (bufferedImage != null)
+      if (model == null)
+        model = defaultModel;
+      
+      if (bufferedImage == null)
+        bufferedImage = new BufferedImage (width, height, (model != null && model.hasAlpha() ? 
+                                                           BufferedImage.TYPE_INT_ARGB
+                                                           : BufferedImage.TYPE_INT_RGB));
+      int pixels2[];
+      if (model != null)
         {
-
-          if (model == null)
-            model = defaultModel;
-
-          int pixels2[];
-          if (model != null)
-            {
-              pixels2 = new int[pixels.length];
-              for (int yy = 0; yy < h; yy++)
-                for (int xx = 0; xx < w; xx++)
-                  {
-                    int i = yy * scansize + xx;
-                    pixels2[i] = model.getRGB (pixels[i]);
-                  }
-            }
-          else
-            pixels2 = pixels;
-
-          bufferedImage.setRGB (x, y, w, h, pixels2, offset, scansize);
+          pixels2 = new int[pixels.length];
+          for (int yy = 0; yy < h; yy++)
+            for (int xx = 0; xx < w; xx++)
+              {
+                int i = yy * scansize + xx;
+                pixels2[i] = model.getRGB (pixels[i]);
+              }
         }
+      else
+        pixels2 = pixels;
+
+      bufferedImage.setRGB (x, y, w, h, pixels2, offset, scansize);
     }
 
     public void imageComplete(int status) {}
