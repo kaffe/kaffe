@@ -472,6 +472,8 @@ java_security_SRCS = \
 	java/security/ProtectionDomain.java \
 	java/security/Provider.java \
 	java/security/SecureClassLoader.java \
+	java/security/SecureRandom.java \
+	java/security/SecureRandomSpi.java \
 	java/security/Security.java \
 	java/security/SecurityPermission.java
 java_sql_SRCS = \
@@ -699,6 +701,7 @@ kaffe_security_provider_SRCS = \
 	kaffe/security/provider/MD4.java \
 	kaffe/security/provider/MD5.java \
 	kaffe/security/provider/SHA.java \
+	kaffe/security/provider/SHA1PRNG.java \
 	kaffe/security/provider/UpdateDigest.java
 kaffe_text_collator_SRCS = \
 	kaffe/text/collator/locale.java \

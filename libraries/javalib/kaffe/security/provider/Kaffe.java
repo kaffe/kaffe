@@ -39,6 +39,8 @@ public final class Kaffe extends Provider {
 				    "kaffe.security.provider.MD5");
 			    put("MessageDigest.SHA",
 				    "kaffe.security.provider.SHA");
+			    put("SecureRandom.SHA1PRNG",
+				    "kaffe.security.provider.SHA1PRNG");
 			    return null;
 			}
 		    });
