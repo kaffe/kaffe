@@ -11,6 +11,7 @@
                 
 #include "config.h"
 #include <malloc.h>
+#include <sched.h>
 
 void            
 init_md(void)

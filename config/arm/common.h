@@ -40,7 +40,9 @@
     {									\
       int *args = extraargs;						\
       int argidx = 4; 							\
-      if ((CALL)->callsize[3] == 2) args++;				\
+      if ((CALL)->callsize[3] == 2) {					\
+	*args++ = ((CALL)->args[argidx].j) >> 32;			\
+	}								\
       for(; argidx < (CALL)->nrargs; ++argidx) {			\
 	if ((CALL)->callsize[argidx]) { 				\
 	  *args++ = (CALL)->args[argidx].i;				\
@@ -88,6 +90,9 @@
 	break;								\
     case 'F':								\
 	asm("stfs %1,%0" : "=m" ((CALL)->ret->f) : "f" (f0));		\
+	break;								\
+    case 'L':								\
+	(CALL)->ret->l = r0;						\
 	break;								\
     case 'J':								\
 	(&(CALL)->ret->i)[1] = r1;					\

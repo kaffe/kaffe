@@ -1,3 +1,8 @@
+Sat Oct 19 13:18:05 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* config/arm/common.h, config/arm/linux/md.c:
+	fixed several ARM/Linux interpreter bugs. Kaffe now builds again
+	on the skiff cluster.
+
 Sat Oct 19 12:24:24 CEST 2002 Kevin D. Kissell <kevink@mips.com>
 	config/mips/common.h, config/mips/jit3-mips.def,
 	config/mips/linux/md.c, config/mips/linux/md.h,
