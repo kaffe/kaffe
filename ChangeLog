@@ -1,6 +1,7 @@
 Fri Nov 12 15:35:40 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* config/config-mem.h: precede <mmap.h> include with <sys/types.h>
+	* libraries/javalib/kjc.jar: update to version 1.3E
 
 Thu Nov 11 13:17:02 PST 1999  Benny <benny.sjostrand@framfab.se>
 
