@@ -90,10 +90,13 @@ public class UNIXTimeZone extends TimeZone {
 	 *	The binary time zone data file in <code>tzfile(5)</code> format.
 	 * @throws IOException
 	 *	If there is an error processing the file
+	 * @throws NullPointerException
+	 *	If either argument is equal to <code>null</code>
 	 */
-	public UNIXTimeZone(File zoneFile) throws IOException {
+	public UNIXTimeZone(String id, File zoneFile) throws IOException {
 		if (!read(new DataInputStream(new FileInputStream(zoneFile))))
 			throw new IOException("invalid file contents");
+		setID(id.toString());	// to generate NullPointerException
 	}
 
 	public int getOffset(int era, int year, int month,
@@ -327,7 +330,7 @@ public class UNIXTimeZone extends TimeZone {
 			System.err.println("Usage: UNIXTimeZone filename");
 			System.exit(1);
 		}
-		UNIXTimeZone tz = new UNIXTimeZone(file);
+		UNIXTimeZone tz = new UNIXTimeZone("foobar", file);
 
 		// Do tests
 		System.out.println("Time zone uses daylight savings = "
