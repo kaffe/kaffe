@@ -192,6 +192,7 @@ startThread(Hjava_lang_VMThread* tid)
 
 	linkNativeAndJavaThread (nativeTid, tid);
 	
+	waitStaticCond(&thread_start_lock, (jlong)0);
 	unlockStaticMutex(&thread_start_lock);
 
 	if (nativeTid == NULL) {
@@ -369,9 +370,9 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
   jthread_get_data(nativeTid)->exceptPtr = NULL;
   jthread_get_data(nativeTid)->exceptObj = NULL;
   
-  linkNativeAndJavaThread (nativeTid, vmtid);
-
   waitStaticCond(&thread_start_lock, (jlong)0);
+
+  linkNativeAndJavaThread (nativeTid, vmtid);
   
   unlockStaticMutex(&thread_start_lock);
   
@@ -396,6 +397,7 @@ firstStartThread(void* arg UNUSED)
 	ksemInit(&jthread_get_data(cur)->sem);
  
 	lockStaticMutex(&thread_start_lock);
+	signalStaticCond(&thread_start_lock);
 	unlockStaticMutex(&thread_start_lock);
 
 	tid = (Hjava_lang_VMThread *)(jthread_get_data(cur)->jlThread);

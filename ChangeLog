@@ -1,3 +1,12 @@
+2004-10-18  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/thread.c
+	(firstStartThread, createThread): Improved thread start
+	synchronization.
+	(createDaemon): Switched linkNativeAndJavaThread with waitStaticCond
+	to prevent inconsistencies. 
+	(Reported by Helmer Kraemer <hkraemer@freenet.de>)
+
 2004-10-17  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
