@@ -1,5 +1,15 @@
 2004-12-08  Adam Heath  <doogie@brainfood.com>
 
+	* libraries/javalib/Makefile.am,
+	  libraries/javalib/Makefile.in,
+	  libraries/javalib/rebuildLib.in:
+ 	  No longer sed the Makefile, looking for our vars.  Instead,
+	  the makefile now exports what we need.  This allows
+	  --with-jikes="jikes +Pno-shadow +Pno-switchcheck" to be used,
+	  and the classes compiled accordingly.
+
+2004-12-08  Adam Heath  <doogie@brainfood.com>
+
 	* test/regression/SoTimeout.java: No longer use buffered
 	  anything, nor any encoder/decoder stuff.  It's not specified
 	  what should happen to buffered data when an IOException

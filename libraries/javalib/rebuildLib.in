@@ -13,28 +13,20 @@ if [ -z "$1" ] ; then
     exit 0
 fi
 
-SRCDIR=${srcdir-`sed -n '/^srcdir *= */ s///p' < Makefile`}
-LIBDIR=${LIBDIR-`sed -n '/^LIBDIR *= */ s///p' < Makefile`}
-LIBDIR=${LIBDIR-lib}
-TOPBLD=${top_builddir-`sed -n '/^top_builddir *= */ s///p' < Makefile`}
-
 # We now rebuild the class library using kjc and Klasses.jar.bootstrap 
-JIKES="@JIKES@"
-: ${JAVAC_FLAGS=@JAVAC_FLAGS@}
 # JIKES=
 
 LIBDIR=`CDPATH=: && cd $LIBDIR && pwd`
 VERBOSE=
 
-ISSRCDIR=`echo $SRCDIR | egrep '^/.*'`
-if [ -z "${ISSRCDIR:-}" ]; then
-	SRCDIR="`pwd`/$SRCDIR"
+issrcdir=`echo $srcdir | egrep '^/.*'`
+if [ -z "${issrcdir:-}" ]; then
+	srcdir="`pwd`/$srcdir"
 fi
 
 if [ -z "${JIKES:-}" ] ; then
 	if [ -z "${JAVA:-}" ]; then
-		test -f ${TOPBLD}/BUILD_ENVIRONMENT &&
-		. ${TOPBLD}/BUILD_ENVIRONMENT
+		test -f ${top_builddir}/BUILD_ENVIRONMENT && . ${top_builddir}/BUILD_ENVIRONMENT
 		BOOTCLASSPATH=${BOOTCLASSPATH}:${CLASSPATH}:${LIBDIR}; export BOOTCLASSPATH
 		JAVA="$JAVA -verbosegc"
 	fi
@@ -45,16 +37,16 @@ if [ -z "${JIKES:-}" ] ; then
 		JAVAC="$JAVA -ss 500k -mx 512M at.dms.kjc.Main"
 		VERBOSE=-v
 	fi
-	BOOTCLASSPATH=${SRCDIR}/Klasses.jar.bootstrap:$BOOTCLASSPATH; export BOOTCLASSPATH
+	BOOTCLASSPATH=${srcdir}/Klasses.jar.bootstrap:$BOOTCLASSPATH; export BOOTCLASSPATH
 else
-	test -f ${TOPBLD}/BUILD_ENVIRONMENT && . ${TOPBLD}/BUILD_ENVIRONMENT
+	test -f ${top_builddir}/BUILD_ENVIRONMENT && . ${top_builddir}/BUILD_ENVIRONMENT
 	CLASSPATH=${CLASSPATH}:${LIBDIR}
 	JAVAC="$JIKES"
 	CPATH="${CPATH+-classpath $CLASSPATH:$BOOTCLASSPATH}"
 #	VERBOSE=${VERBOSE-"-verbose"}
 fi
 
-cd $SRCDIR
+cd $srcdir
 
 echo "Compiling classes from " ${1+"$@"} " using " $JAVAC $JAVAC_FLAGS
 $JAVAC $VERBOSE $JAVAC_FLAGS -d $LIBDIR $CPATH ${1+"$@"}

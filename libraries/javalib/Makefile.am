@@ -4678,3 +4678,4 @@ endif
 build-classes Klasses: rt.jar
 
 all-am: rebuildLib
+export JIKES top_builddir LIBDIR srcdir
