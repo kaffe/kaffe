@@ -236,9 +236,9 @@ public class URLClassLoader extends SecureClassLoader
     {
       Certificate[] certs = getCertificates();
       if (certs == null)
-	return loader.noCertCodeSource;
+        return loader.noCertCodeSource;
       else
-	return new CodeSource(loader.baseURL, certs);
+        return new CodeSource(loader.baseURL, certs);
     }
 
     /**
@@ -293,15 +293,15 @@ public class URLClassLoader extends SecureClassLoader
       JarFile jarfile = null;
       try
         {
-	  baseJarURL =
-	    new URL(null, jarURL, classloader.getURLStreamHandler("jar"));
+          baseJarURL =
+            new URL(null, jarURL, classloader.getURLStreamHandler("jar"));
 
-	  jarfile =
-	    ((JarURLConnection) baseJarURL.openConnection()).getJarFile();
+          jarfile =
+            ((JarURLConnection) baseJarURL.openConnection()).getJarFile();
         }
       catch (IOException ioe)
         {
-	  /* ignored */
+          /* ignored */
         }
 
       this.baseJarURL = baseJarURL;
@@ -312,27 +312,27 @@ public class URLClassLoader extends SecureClassLoader
     Resource getResource(String name)
     {
       if (jarfile == null)
-	return null;
+        return null;
 
       if (name.startsWith("/"))
-	name = name.substring(1);
+        name = name.substring(1);
 
       JarEntry je = jarfile.getJarEntry(name);
       if (je != null)
-	return new JarURLResource(this, name, je);
+        return new JarURLResource(this, name, je);
       else
-	return null;
+        return null;
     }
 
     Manifest getManifest()
     {
       try
         {
-	  return (jarfile == null) ? null : jarfile.getManifest();
+          return (jarfile == null) ? null : jarfile.getManifest();
         }
       catch (IOException ioe)
         {
-	  return null;
+          return null;
         }
     }
   }
@@ -359,21 +359,25 @@ public class URLClassLoader extends SecureClassLoader
 
     Certificate[] getCertificates()
     {
-      return entry.getCertificates();
+      // We have to get the entry from the jar file again, because the
+      // certificates will not be available until the entire entry has
+      // been read.
+      return ((JarEntry) ((JarURLLoader) loader).jarfile.getEntry(name))
+        .getCertificates();
     }
 
     URL getURL()
     {
       try
         {
-	  return new URL(((JarURLLoader) loader).baseJarURL, name,
-	                 loader.classloader.getURLStreamHandler("jar"));
+          return new URL(((JarURLLoader) loader).baseJarURL, name,
+                         loader.classloader.getURLStreamHandler("jar"));
         }
       catch (MalformedURLException e)
         {
-	  InternalError ie = new InternalError();
-	  ie.initCause(e);
-	  throw ie;
+          InternalError ie = new InternalError();
+          ie.initCause(e);
+          throw ie;
         }
     }
   }
@@ -399,32 +403,32 @@ public class URLClassLoader extends SecureClassLoader
     {
       try
         {
-	  URL url =
-	    new URL(baseURL, name, classloader.getURLStreamHandler(protocol));
-	  URLConnection connection = url.openConnection();
+          URL url =
+            new URL(baseURL, name, classloader.getURLStreamHandler(protocol));
+          URLConnection connection = url.openConnection();
 
-	  // Open the connection and check the stream
-	  // just to be sure it exists.
-	  int length = connection.getContentLength();
-	  InputStream stream = connection.getInputStream();
+          // Open the connection and check the stream
+          // just to be sure it exists.
+          int length = connection.getContentLength();
+          InputStream stream = connection.getInputStream();
 
-	  // We can do some extra checking if it is a http request
-	  if (connection instanceof HttpURLConnection)
-	    {
-	      int response =
-		((HttpURLConnection) connection).getResponseCode();
-	      if (response / 100 != 2)
-		return null;
-	    }
+          // We can do some extra checking if it is a http request
+          if (connection instanceof HttpURLConnection)
+            {
+              int response =
+                ((HttpURLConnection) connection).getResponseCode();
+              if (response / 100 != 2)
+                return null;
+            }
 
-	  if (stream != null)
-	    return new RemoteResource(this, name, url, stream, length);
-	  else
-	    return null;
+          if (stream != null)
+            return new RemoteResource(this, name, url, stream, length);
+          else
+            return null;
         }
       catch (IOException ioe)
         {
-	  return null;
+          return null;
         }
     }
   }
@@ -482,7 +486,7 @@ public class URLClassLoader extends SecureClassLoader
     {
       File file = new File(dir, name);
       if (file.exists() && ! file.isDirectory())
-	return new FileResource(this, name, file);
+        return new FileResource(this, name, file);
       return null;
     }
   }
@@ -511,14 +515,14 @@ public class URLClassLoader extends SecureClassLoader
     {
       try
         {
-	  return new URL(loader.baseURL, name,
-	                 loader.classloader.getURLStreamHandler("file"));
+          return new URL(loader.baseURL, name,
+                         loader.classloader.getURLStreamHandler("file"));
         }
       catch (MalformedURLException e)
         {
-	  InternalError ie = new InternalError();
-	  ie.initCause(e);
-	  throw ie;
+          InternalError ie = new InternalError();
+          ie.initCause(e);
+          throw ie;
         }
     }
   }
@@ -623,12 +627,12 @@ public class URLClassLoader extends SecureClassLoader
     addURLs(urls);
 
     // If this factory is still not in factoryCache, add it,
-    //   since we only support three protocols so far, 5 is enough 
+    //   since we only support three protocols so far, 5 is enough
     //   for cache initial size
     synchronized (factoryCache)
       {
-	if (factory != null && factoryCache.get(factory) == null)
-	  factoryCache.put(factory, new HashMap(5));
+        if (factory != null && factoryCache.get(factory) == null)
+          factoryCache.put(factory, new HashMap(5));
       }
   }
 
@@ -647,31 +651,31 @@ public class URLClassLoader extends SecureClassLoader
   {
     synchronized (urlloaders)
       {
-	if (newUrl == null)
-	  return; // Silently ignore...
+        if (newUrl == null)
+          return; // Silently ignore...
 
-	// Check global cache to see if there're already url loader
-	// for this url.
-	URLLoader loader = (URLLoader) urlloaders.get(newUrl);
-	if (loader == null)
-	  {
-	    String file = newUrl.getFile();
-	    String protocol = newUrl.getProtocol();
+        // Check global cache to see if there're already url loader
+        // for this url.
+        URLLoader loader = (URLLoader) urlloaders.get(newUrl);
+        if (loader == null)
+          {
+            String file = newUrl.getFile();
+            String protocol = newUrl.getProtocol();
 
-	    // Check that it is not a directory
-	    if (! (file.endsWith("/") || file.endsWith(File.separator)))
-	      loader = new JarURLLoader(this, newUrl);
-	    else if ("file".equals(protocol))
-	      loader = new FileURLLoader(this, newUrl);
-	    else
-	      loader = new RemoteURLLoader(this, newUrl);
+            // Check that it is not a directory
+            if (! (file.endsWith("/") || file.endsWith(File.separator)))
+              loader = new JarURLLoader(this, newUrl);
+            else if ("file".equals(protocol))
+              loader = new FileURLLoader(this, newUrl);
+            else
+              loader = new RemoteURLLoader(this, newUrl);
 
-	    // Cache it.
-	    urlloaders.put(newUrl, loader);
-	  }
+            // Cache it.
+            urlloaders.put(newUrl, loader);
+          }
 
-	urls.add(newUrl);
-	urlinfos.add(loader);
+        urls.add(newUrl);
+        urlinfos.add(loader);
       }
   }
 
@@ -747,89 +751,93 @@ public class URLClassLoader extends SecureClassLoader
     // construct the class (and watch out for those nasty IOExceptions)
     try
       {
-	byte[] data;
-	InputStream in = resource.getInputStream();
-	try
-	  {
-	    int length = resource.getLength();
-	    if (length != -1)
-	      {
-		// We know the length of the data.
-		// Just try to read it in all at once
-		data = new byte[length];
-		int pos = 0;
-		while (length - pos > 0)
-		  {
-		    int len = in.read(data, pos, length - pos);
-		    if (len == -1)
-		      throw new EOFException("Not enough data reading from: "
-		                             + in);
-		    pos += len;
-		  }
-	      }
-	    else
-	      {
-		// We don't know the data length.
-		// Have to read it in chunks.
-		ByteArrayOutputStream out = new ByteArrayOutputStream(4096);
-		byte[] b = new byte[4096];
-		int l = 0;
-		while (l != -1)
-		  {
-		    l = in.read(b);
-		    if (l != -1)
-		      out.write(b, 0, l);
-		  }
-		data = out.toByteArray();
-	      }
-	  }
-	finally
-	  {
-	    in.close();
-	  }
-	final byte[] classData = data;
+        byte[] data;
+        InputStream in = resource.getInputStream();
+        try
+          {
+            int length = resource.getLength();
+            if (length != -1)
+              {
+                // We know the length of the data.
+                // Just try to read it in all at once
+                data = new byte[length];
+                int pos = 0;
+                while (length - pos > 0)
+                  {
+                    int len = in.read(data, pos, length - pos);
+                    if (len == -1)
+                      throw new EOFException("Not enough data reading from: "
+                                             + in);
+                    pos += len;
+                  }
+              }
+            else
+              {
+                // We don't know the data length.
+                // Have to read it in chunks.
+                ByteArrayOutputStream out = new ByteArrayOutputStream(4096);
+                byte[] b = new byte[4096];
+                int l = 0;
+                while (l != -1)
+                  {
+                    l = in.read(b);
+                    if (l != -1)
+                      out.write(b, 0, l);
+                  }
+                data = out.toByteArray();
+              }
+          }
+        finally
+          {
+            in.close();
+          }
+        final byte[] classData = data;
 
-	// Now get the CodeSource
-	final CodeSource source = resource.getCodeSource();
+        // Now get the CodeSource
+        final CodeSource source = resource.getCodeSource();
 
-	// Find out package name
-	String packageName = null;
-	int lastDot = className.lastIndexOf('.');
-	if (lastDot != -1)
-	  packageName = className.substring(0, lastDot);
+        // Find out package name
+        String packageName = null;
+        int lastDot = className.lastIndexOf('.');
+        if (lastDot != -1)
+          packageName = className.substring(0, lastDot);
 
-	if (packageName != null && getPackage(packageName) == null)
-	  {
-	    // define the package
-	    Manifest manifest = resource.loader.getManifest();
-	    if (manifest == null)
-	      definePackage(packageName, null, null, null, null, null, null,
-	                    null);
-	    else
-	      definePackage(packageName, manifest, resource.loader.baseURL);
-	  }
+        if (packageName != null && getPackage(packageName) == null)
+          {
+            // define the package
+            Manifest manifest = resource.loader.getManifest();
+            if (manifest == null)
+              definePackage(packageName, null, null, null, null, null, null,
+                            null);
+            else
+              definePackage(packageName, manifest, resource.loader.baseURL);
+          }
 
-	// And finally construct the class!
-	SecurityManager sm = System.getSecurityManager();
-	if (sm != null && securityContext != null)
-	  {
-	    return (Class)AccessController.doPrivileged
-	      (new PrivilegedAction()
-		{
-		  public Object run()
-		  {
-		    return defineClass(className, classData,
-				       0, classData.length,
-				       source);
-		  }
-		}, securityContext);
-	  }
-	else
-	  return defineClass(className, classData, 0, classData.length, source);
+        // And finally construct the class!
+        SecurityManager sm = System.getSecurityManager();
+        Class result = null;
+        if (sm != null && securityContext != null)
+          {
+            result = (Class)AccessController.doPrivileged
+              (new PrivilegedAction()
+                {
+                  public Object run()
+                  {
+                    return defineClass(className, classData,
+                                       0, classData.length,
+                                       source);
+                  }
+                }, securityContext);
+          }
+        else
+          result = defineClass(className, classData, 0, classData.length, source);
+
+        super.setSigners(result, resource.getCertificates());
+        return result;
       }
     catch (IOException ioe)
       {
-	throw new ClassNotFoundException(className, ioe);
+        throw new ClassNotFoundException(className, ioe);
       }
   }
 
@@ -845,13 +853,13 @@ public class URLClassLoader extends SecureClassLoader
     int max = urls.size();
     for (int i = 0; i < max; i++)
       {
-	URLLoader loader = (URLLoader) urlinfos.elementAt(i);
-	if (loader == null)
-	  continue;
+        URLLoader loader = (URLLoader) urlinfos.elementAt(i);
+        if (loader == null)
+          continue;
 
-	Resource resource = loader.getResource(resourceName);
-	if (resource != null)
-	  return resource;
+        Resource resource = loader.getResource(resourceName);
+        if (resource != null)
+          return resource;
       }
     return null;
   }
@@ -887,15 +895,15 @@ public class URLClassLoader extends SecureClassLoader
     URLStreamHandler handler;
     synchronized (factoryCache)
       {
-	// Check if there're handler for the same protocol in cache.
-	HashMap cache = (HashMap) factoryCache.get(factory);
-	handler = (URLStreamHandler) cache.get(protocol);
-	if (handler == null)
-	  {
-	    // Add it to cache.
-	    handler = factory.createURLStreamHandler(protocol);
-	    cache.put(protocol, handler);
-	  }
+        // Check if there're handler for the same protocol in cache.
+        HashMap cache = (HashMap) factoryCache.get(factory);
+        handler = (URLStreamHandler) cache.get(protocol);
+        if (handler == null)
+          {
+            // Add it to cache.
+            handler = factory.createURLStreamHandler(protocol);
+            cache.put(protocol, handler);
+          }
       }
     return handler;
   }
@@ -916,10 +924,10 @@ public class URLClassLoader extends SecureClassLoader
     int max = urls.size();
     for (int i = 0; i < max; i++)
       {
-	URLLoader loader = (URLLoader) urlinfos.elementAt(i);
-	Resource resource = loader.getResource(resourceName);
-	if (resource != null)
-	  resources.add(resource.getURL());
+        URLLoader loader = (URLLoader) urlinfos.elementAt(i);
+        Resource resource = loader.getResource(resourceName);
+        if (resource != null)
+          resources.add(resource.getURL());
       }
     return resources.elements();
   }
@@ -956,28 +964,28 @@ public class URLClassLoader extends SecureClassLoader
     String protocol = url.getProtocol();
     if (protocol.equals("file"))
       {
-	String file = url.getFile();
+        String file = url.getFile();
 
-	// If the file end in / it must be an directory.
-	if (file.endsWith("/") || file.endsWith(File.separator))
-	  {
-	    // Grant permission to read everything in that directory and
-	    // all subdirectories.
-	    permissions.add(new FilePermission(file + "-", "read"));
-	  }
-	else
-	  {
-	    // It is a 'normal' file.
-	    // Grant permission to access that file.
-	    permissions.add(new FilePermission(file, "read"));
-	  }
+        // If the file end in / it must be an directory.
+        if (file.endsWith("/") || file.endsWith(File.separator))
+          {
+            // Grant permission to read everything in that directory and
+            // all subdirectories.
+            permissions.add(new FilePermission(file + "-", "read"));
+          }
+        else
+          {
+            // It is a 'normal' file.
+            // Grant permission to access that file.
+            permissions.add(new FilePermission(file, "read"));
+          }
       }
     else
       {
-	// Grant permission to connect to and accept connections from host
-	String host = url.getHost();
-	if (host != null)
-	  permissions.add(new SocketPermission(host, "connect,accept"));
+        // Grant permission to connect to and accept connections from host
+        String host = url.getHost();
+        if (host != null)
+          permissions.add(new SocketPermission(host, "connect,accept"));
       }
 
     return permissions;
@@ -1031,24 +1039,24 @@ public class URLClassLoader extends SecureClassLoader
       return new URLClassLoader(urls, parent);
     else
       {
-	final Object securityContext = sm.getSecurityContext();
+        final Object securityContext = sm.getSecurityContext();
 
-	// XXX - What to do with anything else then an AccessControlContext?
-	if (! (securityContext instanceof AccessControlContext))
-	  throw new SecurityException("securityContext must be AccessControlContext: "
-	                              + securityContext);
+        // XXX - What to do with anything else then an AccessControlContext?
+        if (! (securityContext instanceof AccessControlContext))
+          throw new SecurityException("securityContext must be AccessControlContext: "
+                                      + securityContext);
 
-	URLClassLoader loader =
-	  (URLClassLoader) AccessController.doPrivileged(new PrivilegedAction()
-	      {
-		public Object run()
-		{
-		  return new URLClassLoader(parent,
-		                            (AccessControlContext) securityContext);
-		}
-	      });
-	loader.addURLs(urls);
-	return loader;
+        URLClassLoader loader =
+          (URLClassLoader) AccessController.doPrivileged(new PrivilegedAction()
+              {
+                public Object run()
+                {
+                  return new URLClassLoader(parent,
+                                            (AccessControlContext) securityContext);
+                }
+              });
+        loader.addURLs(urls);
+        return loader;
       }
   }
 }

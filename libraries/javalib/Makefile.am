@@ -142,7 +142,9 @@ Klasses_jar_SRCS = \
 	$(gnu_java_rmi_server_SRCS) \
 	$(gnu_java_security_SRCS) \
 	$(gnu_java_security_action_SRCS) \
+	$(gnu_java_security_ber_SRCS) \
 	$(gnu_java_security_der_SRCS) \
+	$(gnu_java_security_pkcs_SRCS) \
 	$(gnu_java_security_provider_SRCS) \
 	$(gnu_java_security_util_SRCS) \
 	$(gnu_java_security_x509_SRCS) \
@@ -1295,6 +1297,11 @@ gnu_java_security_action_SRCS = \
 	gnu/java/security/action/GetPropertyAction.java \
 	gnu/java/security/action/GetSecurityPropertyAction.java \
 	gnu/java/security/action/SetAccessibleAction.java
+gnu_java_security_ber_SRCS = \
+	gnu/java/security/ber/BER.java \
+	gnu/java/security/ber/BEREncodingException.java \
+	gnu/java/security/ber/BERReader.java \
+	gnu/java/security/ber/BERValue.java
 gnu_java_security_der_SRCS = \
 	gnu/java/security/der/BitString.java \
 	gnu/java/security/der/DER.java \
@@ -1302,6 +1309,9 @@ gnu_java_security_der_SRCS = \
 	gnu/java/security/der/DERReader.java \
 	gnu/java/security/der/DERValue.java \
 	gnu/java/security/der/DERWriter.java
+gnu_java_security_pkcs_SRCS = \
+	gnu/java/security/pkcs/PKCS7SignedData.java \
+	gnu/java/security/pkcs/SignerInfo.java
 gnu_java_security_provider_SRCS = \
 	gnu/java/security/provider/CollectionCertStoreImpl.java \
 	gnu/java/security/provider/DSAKeyFactory.java \

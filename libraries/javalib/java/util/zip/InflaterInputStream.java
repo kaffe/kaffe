@@ -247,4 +247,18 @@ public class InflaterInputStream extends FilterInputStream
 
     return skipped;
  }
+
+  public boolean markSupported()
+  {
+    return false;
+  }
+
+  public void mark(int readLimit)
+  {
+  }
+
+  public void reset() throws IOException
+  {
+    throw new IOException("reset not supported");
+  }
 }

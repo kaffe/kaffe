@@ -7,6 +7,93 @@
 
 2004-11-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/util/jar/JarFile.java (EntryInputStream): Add actual
+        JarFile as argument.
+        (getInputStream): Construct a new EntryInputStream with this JarFile.
+	(verified) New field.
+
+	* libraries/javalib/gnu/java/security/ber/BER.java,
+	libraries/javalib/gnu/java/security/ber/BEREncodingException.java,
+	libraries/javalib/gnu/java/security/ber/BERReader.java,
+	libraries/javalib/gnu/java/security/ber/BERValue.java,
+	libraries/javalib/gnu/java/security/der/DERReader.java,
+	libraries/javalib/gnu/java/security/pkcs/PKCS7SignedData.java,
+	libraries/javalib/gnu/java/security/pkcs/SignerInfo.java:
+	New files. Taken from GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/gnu/java/io/Base64InputStream.java,
+	libraries/javalib/java/net/URLClassLoader.java,
+	libraries/javalib/java/util/jar/JarFile.java,
+	libraries/javalib/java/util/zip/InflaterInputStream.java:
+	Resynced with GNU Classpath.
+
+	2004-11-07  Mark Wielaard  <mark@klomp.org>
+
+        * java/util/jar/JarFile.java (EntryInputStream): Add actual
+        InputStream as argument.
+        (getInputStream): Construct a new EntryInputStream with the result of
+        super.getInputStream(entry).
+
+	2004-11-07  Casey Marshall  <csm@gnu.org>
+
+        Signed JAR file support.
+        * java/net/URLClassLoader.java
+        (JarURLResource.getCertificates): re-read jar entry to ensure
+        certificates are picked up.
+        (findClass): fill in class `signers' field, too.
+        * java/util/jar/JarFile.java (META_INF): new constant.
+        (PKCS7_DSA_SUFFIX): new constant.
+        (PKCS7_RSA_SUFFIX): new constant.
+        (DIGEST_KEY_SUFFIX): new constant.
+        (SF_SUFFIX): new constant.
+        (MD2_OID): new constant.
+        (MD4_OID): new constant.
+        (MD5_OID): new constant.
+        (SHA1_OID): new constant.
+        (DSA_ENCRYPTION_OID): new constant.
+        (RSA_ENCRYPTION_OID): new constant.
+        (signaturesRead): new field.
+        (verified): new field.
+        (entryCerts): new field.
+        (DEBUG): new constant.
+        (debug): new method.
+        (JarEnumeration.nextElement): fill in entry certificates, read
+        signatures if they haven't been read.
+        (getEntry): likewise.
+        (getInputStream): verify stream if it hasn't been verified
+        yet.
+        (readSignatures): new method.
+        (verify): new method.
+        (verifyHashes): new method.
+        (readManifestEntry): new method.
+        (EntryInputStream): new class.
+        * java/util/zip/InflaterInputStream.java
+        Don't defer to underlying stream for mark/reset.
+        (markSupported): new method; return `false'.
+        (mark): new method.
+        (reset): new method.
+        * gnu/java/io/Base64InputStream.java (decode): new class
+        method.
+        * gnu/java/security/der/DERReader.java don't make class
+        final.
+        (in): made protected.
+        (encBuf): likewise.
+        (readLength): likewise.
+        * gnu/java/security/ber/BER.java,
+        * gnu/java/security/ber/BEREncodingException.java,
+        * gnu/java/security/ber/BERReader.java,
+        * gnu/java/security/ber/BERValue.java,
+        * gnu/java/security/pkcs/PKCS7SignedData.java,
+        * gnu/java/security/pkcs/SignerInfo.java:
+        new files.
+
+2004-11-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/security/provider/CollectionCertStoreImpl.java,
 	libraries/javalib/gnu/java/security/provider/EncodedKeyFactory.java,
 	libraries/javalib/gnu/java/security/provider/GnuDHPublicKey.java,
