@@ -12,13 +12,6 @@
 #ifndef __native_h
 #define __native_h
 
-#undef	__NORETURN__
-#if defined(__GNUC__)
-#define	__NORETURN__	__attribute__((noreturn))
-#else
-#define	__NORETURN__
-#endif
-
 #include <kaffe/jtypes.h>
 
 struct _methods;

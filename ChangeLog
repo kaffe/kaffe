@@ -1,7 +1,11 @@
 2004-03-29  Adam Heath <doogie@debian.org>
 
+	First pass at adding __attribute__ to various places.
+
+2004-03-29  Adam Heath <doogie@debian.org>
+
 	* configure.ac:
-	Enabled checking of __attribute__ inc onfigure.
+	Enabled checking of __attribute__ in configure.
 
 	* m4/gcc_attribute.m4: New file.
 

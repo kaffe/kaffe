@@ -12,6 +12,7 @@
 #ifndef __errors_h
 #define __errors_h
 
+#include "config.h"
 #include "config-std.h"
 #include <stdarg.h>
 
@@ -42,11 +43,11 @@ extern void postException(errorInfo *, const char *name);
 
 /* post an exception with a print like message */
 extern void postExceptionMessage(errorInfo *, 
-	const char *name, const char *msgfmt, ...);
+	const char *name, const char *msgfmt, ...) PRINTFFORMAT(3,4);
 
 /* va_list version of postExceptionMessage */
 extern void vpostExceptionMessage(errorInfo *einfo,
-        const char * fullname, const char * fmt, va_list args);
+        const char * fullname, const char * fmt, va_list args) PRINTFFORMAT(3,0);
 
 /* post an out of memory condition */
 extern void postOutOfMemory(errorInfo *einfo);
@@ -108,7 +109,7 @@ extern void dumpErrorInfo(errorInfo *);
 
 #if !defined(KAFFEH)
 
-void throwError(struct _errorInfo*) __NORETURN__;
+void throwError(struct _errorInfo*) NONRETURNING;
 
 /*
  * KMALLOC and all the allocating string functions return null on

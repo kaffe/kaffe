@@ -222,7 +222,7 @@ void 	jthread_interrupt(jthread_t jtid);
 /*
  * have the current thread exit
  */
-void 	jthread_exit(void) __NORETURN__;
+void 	jthread_exit(void) NONRETURNING;
 
 /*
  * determine whether a location is on the stack of the current thread

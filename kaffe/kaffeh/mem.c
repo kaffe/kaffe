@@ -28,6 +28,7 @@ static void* gcMalloc(struct _Collector*, size_t, gc_alloc_type_t);
 static void* gcRealloc(struct _Collector*, void*, size_t, gc_alloc_type_t);
 static void  gcFree(struct _Collector*, void*);
 
+extern void postExceptionMessage(struct _errorInfo *e, const char *name, const char *msgfmt, ...) PRINTFFORMAT(3,4);
 /*
  * We use a very simple 'fake' garbage collector interface
  */

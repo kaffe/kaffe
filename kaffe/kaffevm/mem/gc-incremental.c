@@ -1001,7 +1001,7 @@ gcInvokeFinalizer(Collector* gcif)
  * collector.
  */
 
-void throwOutOfMemory(void) __NORETURN__;
+void throwOutOfMemory(void) NONRETURNING;
 
 static
 void*

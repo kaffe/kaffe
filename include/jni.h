@@ -18,15 +18,12 @@
 #include "kaffe/jtypes.h"
 #include "kaffe/jmalloc.h"
 
-#undef  __NORETURN__
-#if defined(__GNUC__)
-#define __NORETURN__ __attribute__((noreturn))
-#else
-#define __NORETURN__
-#endif
-
 #if defined(__cplusplus)
 extern "C" {
+#endif
+
+#ifndef NONRETURNING
+#define NONRETURNING
 #endif
 
 #define	JNIEXPORT extern
@@ -59,8 +56,8 @@ typedef struct JavaVMInitArgs {
 	const char*	classpath;
 	const char*     bootClasspath;
 	jint		(*vfprintf)(FILE*, const char*, va_list);
-	void		(*exit)(jint) __NORETURN__;
-	void		(*abort)(void) __NORETURN__;
+	void		(*exit)(jint) NONRETURNING;
+	void		(*abort)(void) NONRETURNING;
 	jint		enableClassGC;
 	jint		enableVerboseGC;
 	jint		disableAsyncGC;

@@ -96,11 +96,11 @@ typedef struct VmExceptHandler {
 
 #define VMEXCEPTHANDLER_KAFFEJNI_HANDLER ((struct _methods*)1)
 
-void throwException(struct Hjava_lang_Throwable*) __NORETURN__;
-void throwExternalException(struct Hjava_lang_Throwable*) __NORETURN__;
+void throwException(struct Hjava_lang_Throwable*) NONRETURNING; 
+void throwExternalException(struct Hjava_lang_Throwable*) NONRETURNING;
 struct Hjava_lang_Throwable* error2Throwable(struct _errorInfo* einfo);
 
-void unhandledException(struct Hjava_lang_Throwable *eobj) __NORETURN__;
+void unhandledException(struct Hjava_lang_Throwable *eobj) NONRETURNING;
 
 extern void initExceptions(void);
 
@@ -113,7 +113,7 @@ static inline void vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Ob
 static inline struct Hjava_lang_Object* vmExcept_getSyncObj(VmExceptHandler* eh) __UNUSED__;
 static inline void vmExcept_setPC(volatile VmExceptHandler* eh, u4 pc) __UNUSED__;
 static inline u4 vmExcept_getPC(const VmExceptHandler* eh) __UNUSED__;
-static inline void vmExcept_jumpToHandler(VmExceptHandler* frame) __UNUSED__ __NORETURN__;
+static inline void vmExcept_jumpToHandler(VmExceptHandler* frame) __UNUSED__ NONRETURNING;
 
 static inline bool
 vmExcept_isJNIFrame(VmExceptHandler* eh)
