@@ -1,5 +1,9 @@
 2005-03-31  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Removed completed tasks.
+
+2005-03-31  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/i386/threads.h (THREADSTACKSIZE): Doubled to fix
 	stack size problem with nice's bootstrap.
 

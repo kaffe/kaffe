@@ -13,8 +13,6 @@
    with older versions of APIs as well, which is needed for DOM.
 
 * Integration issues
- * Move cp-tools and supporting packages to tools.jar, and take them 
-   out of the bootclasspath. Reported by Daniel Bonniot.
  * Add support for using an external gjdoc.
 
 * Merging work:
@@ -28,7 +26,5 @@
   * Non-recursive build, single Makefile.am for kaffe.
 
 * Pending patches (dalibor)
-  * Gerrit Haase's Cygwin patches 
   * L4 port from Ronald Aigner ?
-  * Whatever got dropped on the list
   * Regular resyncing with GNU Classpath, gjdoc.
