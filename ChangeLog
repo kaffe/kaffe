@@ -1,3 +1,16 @@
+Tue Mar 23 17:09:12 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/*: fixed serial form for several classes
+	by renaming variables and/or changing modifiers.  Many still don't
+	conform, especially in java.awt and java.text
+
+	* libraries/clib/native/Class.c,
+	test/regression/TestSerializable.java: report array interfaces
+	in Class.getInterfaces() just like 1.2 does.
+	* kaffe/kaffevm/itypes.c: make primitive classes public.
+
+	* libraries/javalib/* add serial version id where necessary.
+
 Tue Mar 23 13:50:25 1999  Robert Zawiasa <bozo@bibl.u-szeged.hu>
 
 	* libraries/javalib/java/lang/:
