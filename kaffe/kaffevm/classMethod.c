@@ -1071,6 +1071,7 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 		if (equalUtf8Consts(name, (*entryp)->name) && loader == (*entryp)->loader) {
 			/* Someone else added it - discard ours and return
 			   the new one. */
+			unlockStaticMutex(&classHashLock);
 			gc_free_fixed(entry);
 			return (*entryp);
 		}
