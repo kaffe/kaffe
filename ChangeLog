@@ -1,3 +1,10 @@
+2004-04-12  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/bootstrap.classlist: Added some missing classes
+	needed to run kjc with the new NIO structure.
+
+	* libraries/javalib/Klasses.jar.bootstrap: Regenerated.
+
 2004-04-11  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* configure.ac: Added libraries/clib/nio to KAFFELIBRARYPATH.
