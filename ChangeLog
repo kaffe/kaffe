@@ -1,5 +1,10 @@
 2004-12-09  Adam Heath  <doogie@brainfood.com>
 
+	* scripts/sort-warnings.pl: Several new warnings detected, including
+	  some from jikes.
+
+2004-12-09  Adam Heath  <doogie@brainfood.com>
+
 	* configure, configure.ac: If --with-jikes is given with no value,
 	  then use "$JIKESPROG +Pno-switchcheck +Pno-shadow +E."
 
