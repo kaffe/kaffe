@@ -92,6 +92,14 @@ protected void finalize() throws Throwable {
 	super.finalize();
 }
 
+protected void setTimeToLive(byte ttl) throws IOException {
+	setTTL(ttl);
+}
+
+protected byte getTimeToLive() throws IOException {
+	return getTTL();
+}
+
 protected native void bind(int lport, InetAddress laddr) throws SocketException;
 protected native void send(DatagramPacket p) throws IOException;
 protected native int peek(InetAddress i) throws IOException;

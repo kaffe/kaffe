@@ -36,11 +36,13 @@ abstract protected void bind(int lport, InetAddress laddr) throws SocketExceptio
 abstract protected void close();
 abstract protected void create() throws SocketException;
 abstract protected byte getTTL() throws IOException;
+abstract protected byte getTimeToLive() throws IOException;
 abstract protected void join(InetAddress inetaddr) throws IOException;
 abstract protected void leave(InetAddress inetaddr) throws IOException;
 abstract protected int peek(InetAddress i) throws IOException;
 abstract protected void receive(DatagramPacket p) throws IOException;
 abstract protected void send(DatagramPacket p) throws IOException;
 abstract protected void setTTL(byte ttl) throws IOException;
+abstract protected void setTimeToLive(byte ttl) throws IOException;
 
 }
