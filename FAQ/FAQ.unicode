@@ -29,6 +29,14 @@ Small character proteries format:
 
 xFFCCCCC GGGGGGGG GGGGGGGG
 
+F: field of the generic value
+    00 none
+    01 uppercase
+    10 lowercase
+    11 numerical
+C: Java category (with 31 as ``no-Break space separator ("Zs" <noBreak>)''
+G: generic value
+
 Extended character properties format:
 . the category
 . the numeric value
@@ -38,6 +46,12 @@ Extended character properties format:
 
 xxxCCCCC NNNNNNNN NNNNNNNN UUUUUUUU UUUUUUUU
 LLLLLLLL LLLLLLLL TTTTTTTT TTTTTTTT
+
+C: Java category (with 31 as ``no-Break space separator ("Zs" <noBreak>)''
+N: numerical
+U: uppercase
+L: lowercase
+T: titlecase
 
 Consecutives entries in the Unicode 2.1 database could be grouped with
 the following rules:
@@ -64,13 +78,33 @@ SSSSSSSS SSSSSSSS EEEEEEEE EEEEEEEE xxMMOOOO OOOOOOOO OOOOOOOO
 S: start unicode value for this range
 E: end unicode value for this range
 M: compression method
+    00 not compressed
+    01 compressed zero or one field, same value
+    10 compressed zero or one field,one increment
+    11 not compressed, extended entry
 O: offset in the properties table.
 
 
-The Perl script unicode.pl creates two files
+The Perl script developers/unicode.pl creates two files in the current
+directory from the Unicode Character Database file UnicodeData.txt:
 . unicode.idx the ranges index
 . unicode.tbl the properties tables
 
+Usage:
+$ perl unicode.pl UnicodeData.txt
 
-Edouard G. Parmelan <egp@quadratec.fr>
+Latest version of UnicodeData.txt should be download from
+    ftp://ftp.unicode.org/Public/UNIDATA/UnicodeData.txt
+previous version should match this URL:
+    ftp://ftp.unicode.org/Public/*-Update*/UnicodeData-*.txt
+
+Current unicode.idx and unicode.tbl (in libraries/javalib/kaffe/lang) are
+build from UnicodeData-2.1.8.txt.
+
+As of March 29, 1999, Mauve reports 156 failed tests on java.lang.Character.
+There are explains in developers/README.unicode.
+
+
+Edouard G. Parmelan <egp@free.fr>
 March 27, 1999
+Last edit May 2, 2000.
