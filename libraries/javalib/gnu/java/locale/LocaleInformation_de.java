@@ -49,7 +49,7 @@ public class LocaleInformation_de extends ListResourceBundle
     "<l,L<m,M<n,N<o,O<p,P<q,Q<r,R<s,S<t,T<u,U<v,V<w,W<x,X<y,Y<z,Z" + 
     "&ae,\u00e4&Ae,\u00c4&oe,\u00f6&Oe,\u00d6&ue,\u00fc&Ue,\u00dc&ss,\u00df";
 
-  private static final Object[] shortMonths = {
+  private static final String[] shortMonths = {
     "Jan",
     "Feb",
     "Mrz",
@@ -65,7 +65,7 @@ public class LocaleInformation_de extends ListResourceBundle
     null,
   };
 
-  private static final Object[] months = {
+  private static final String[] months = {
     "Januar",
     "Februar",
     "M\u00e4rz",
@@ -81,7 +81,7 @@ public class LocaleInformation_de extends ListResourceBundle
     null,
   };
 
-  private static final Object[] shortWeekdays = {
+  private static final String[] shortWeekdays = {
     null,
     "So",
     "Mo",
@@ -89,10 +89,10 @@ public class LocaleInformation_de extends ListResourceBundle
     "Mi",
     "Do",
     "Fr",
-    "Sa"
+    "Sa",
   };
 
-  private static final Object[] weekdays = {
+  private static final String[] weekdays = {
     null,
     "Sonntag",
     "Montag",
@@ -100,15 +100,15 @@ public class LocaleInformation_de extends ListResourceBundle
     "Mittwoch",
     "Donnerstag",
     "Freitag",
-    "Samstag"
+    "Samstag",
   };
 
-  private static final Object[] eras = {
+  private static final String[] eras = {
     "v. Chr.",
     "n. Chr."
   };
 
-  private static final Object[] ampms = {
+  private static final String[] ampms = {
     "vorm.",
     "nachm."
   };
@@ -410,7 +410,6 @@ public class LocaleInformation_de extends ListResourceBundle
     { "defaultDateFormat", defaultDateFormat },
     { "shortTimeFormat", shortTimeFormat },
     { "mediumTimeFormat", mediumTimeFormat },
-    { "longTimeFormat", longTimeFormat },
     { "defaultTimeFormat", defaultTimeFormat },
     { "currencySymbol", currencySymbol },
     { "intlCurrencySymbol", intlCurrencySymbol },
