@@ -137,9 +137,9 @@ int gc_system_alloc_cnt;
  * Evaluates to the size of the object that contains address @M.
  *
  */
-#define	KGC_OBJECT_SIZE(M)	GCMEM2BLOCK(M)->size
+#define	KGC_OBJECT_SIZE(M)	gc_mem2block(M)->size
 
-#define ASSERT_ONBLOCK(OBJ, BLK) assert(GCMEM2BLOCK(OBJ) == BLK)
+#define ASSERT_ONBLOCK(OBJ, BLK) assert(gc_mem2block(OBJ) == BLK)
 
 #if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 /* Magic constant used to mark blocks under gc's management */
@@ -456,7 +456,7 @@ gc_heap_free(void* mem)
 	int idx;
 	int iLockRoot;
 
-	info = GCMEM2BLOCK(mem);
+	info = gc_mem2block(mem);
 	idx = GCMEM2IDX(info, mem);
 
 	DBG(GCDIAG,
@@ -1070,7 +1070,7 @@ gc_block_alloc(size_t size)
 		gc_heap_base = heap_addr;
 	}
 
-	if (GCMEM2BLOCK(heap_addr + size)
+	if (gc_mem2block((void *) (heap_addr + size))
 	    > ((gc_block *)gc_block_base) + nblocks
 	    || heap_addr < gc_heap_base) {
 		uintp old_blocks = gc_block_base;
@@ -1156,7 +1156,7 @@ gc_block_alloc(size_t size)
 #if defined(KAFFE_VMDEBUG)
 	mprotect((void *) heap_addr, size, NO_PROT);
 #endif
-	return GCMEM2BLOCK(heap_addr);
+	return gc_mem2block((void *) heap_addr);
 }
 
 /**
@@ -1231,4 +1231,13 @@ gc_heap_grow(size_t sz)
 	unlockStaticMutex(&gc_heap_lock);
 
 	return (blk);
+}
+
+/**
+ * Evaluates to the gc_block that contains address @M.
+ *
+ */
+gc_block *
+gc_mem2block(const void * mem) {
+  return (KGC_BLOCKS + ( ( ((uintp) (mem)) - gc_heap_base) >> gc_pgbits));
 }

@@ -301,7 +301,7 @@ gcMarkAddress(Collector* gcif UNUSED, void *gc_info UNUSED, const void* mem)
 	 */
 
 	/* Get block info for this memory - if it exists */
-	info = GCMEM2BLOCK(mem);
+	info = gc_mem2block(mem);
 	unit = UTOUNIT(mem);
 	if (gc_heap_isobject(info, unit)) {
 		markObjectDontCheck(unit, info, GCMEM2IDX(info, unit));
@@ -316,7 +316,7 @@ static void
 gcMarkObject(Collector* gcif UNUSED, void *gc_info UNUSED, const void* objp)
 {
   gc_unit *unit = UTOUNIT(objp);
-  gc_block *info = GCMEM2BLOCK(unit);
+  gc_block *info = gc_mem2block(unit);
   DBG(GCDIAG, assert(gc_heap_isobject(info, unit)));
   markObjectDontCheck(unit, info, GCMEM2IDX(info, unit));
 }
@@ -353,7 +353,7 @@ static
 uint32
 gcGetObjectSize(Collector* gcif UNUSED, const void* mem)
 {
-	return (GCBLOCKSIZE(GCMEM2BLOCK(UTOUNIT(mem))));
+	return (GCBLOCKSIZE(gc_mem2block(UTOUNIT(mem))));
 }
 
 static
@@ -361,7 +361,7 @@ int
 gcGetObjectIndex(Collector* gcif UNUSED, const void* mem)
 {
 	gc_unit* unit = UTOUNIT(mem);
-	gc_block* info = GCMEM2BLOCK(unit);
+	gc_block* info = gc_mem2block(unit);
 	if (!gc_heap_isobject(info, unit)) {
 		return (-1);
 	} else {
@@ -375,7 +375,7 @@ gcGetObjectIndex(Collector* gcif UNUSED, const void* mem)
  *
  * This method uses many details of the allocator implementation.
  * Specifically, it relies on the contiguous layout of block infos
- * and the way GCMEM2BLOCK and GCMEM2IDX are implemented.
+ * and the way gc_mem2block and GCMEM2IDX are implemented.
  */
 static
 void*
@@ -397,7 +397,7 @@ gcGetObjectBase(Collector *gcif UNUSED, void* mem)
 	   even for large blocks
 	  */
 
-	info = GCMEM2BLOCK(mem);
+	info = gc_mem2block(mem);
 	idx = GCMEM2IDX(info, mem);
 
 	/* report fixed objects as well */
@@ -433,7 +433,7 @@ KaffeGC_WalkMemory(Collector* gcif, void* mem)
 	walk_func_t walkf;
 
 	unit = UTOUNIT(mem);
-	info = GCMEM2BLOCK(unit);
+	info = gc_mem2block(unit);
 	idx = GCMEM2IDX(info, unit);
 
 	if (KGC_GET_COLOUR(info, idx) == KGC_COLOUR_BLACK) {
@@ -590,7 +590,7 @@ DBG(GCSTAT,
 		 */
 		while (gclists[fin_white].cnext != &gclists[fin_white]) {
 			unit = gclists[fin_white].cnext;
-			info = GCMEM2BLOCK(unit);
+			info = gc_mem2block(unit);
 			idx = GCMEM2IDX(info, unit);
 		
 			assert (KGC_GET_STATE(info, idx) == KGC_STATE_NEEDFINALIZE);
@@ -706,7 +706,7 @@ startGC(Collector *gcif)
 	 */
 	while (gclists[finalise].cnext != &gclists[finalise]) {
 		unit = gclists[finalise].cnext;
-		info = GCMEM2BLOCK(unit);
+		info = gc_mem2block(unit);
 		idx = GCMEM2IDX(info, unit);
 
 		KGC_SET_COLOUR (info, idx, KGC_COLOUR_WHITE);
@@ -762,7 +762,7 @@ finishGC(Collector *gcif)
 			unit = gclists[i].cnext;
 			UREMOVELIST(unit);
 
-			info = GCMEM2BLOCK(unit);
+			info = gc_mem2block(unit);
 			idx = GCMEM2IDX(info, unit);
 
 			assert(KGC_GET_COLOUR(info, idx) == KGC_COLOUR_BLACK);
@@ -778,7 +778,7 @@ finishGC(Collector *gcif)
 	while (toRemove.cnext != &toRemove) {
 		destroy_func_t destroy;
 		unit = toRemove.cnext; 
-		info = GCMEM2BLOCK(unit);
+		info = gc_mem2block(unit);
 		idx = GCMEM2IDX(info, unit);
 
 		gcStats.freedmem += GCBLOCKSIZE(info);
@@ -797,7 +797,7 @@ finishGC(Collector *gcif)
 #endif
 
 		/* invoke destroy function before freeing the object */
-		info = GCMEM2BLOCK(unit);
+		info = gc_mem2block(unit);
 		idx = GCMEM2IDX(info, unit);
 		destroy = gcFunctions[KGC_GET_FUNCS(info,idx)].destroy;
 		if (destroy != 0) {
@@ -901,7 +901,7 @@ finaliserMan(void* arg)
 		 */
 		while (gclists[finalise].cnext != &gclists[finalise]) {
 			unit = gclists[finalise].cnext;
-			info = GCMEM2BLOCK(unit);
+			info = gc_mem2block(unit);
 			idx = GCMEM2IDX(info, unit);
 
 			/* Call finaliser */
@@ -1081,7 +1081,7 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 		}
 	}
 
-	info = GCMEM2BLOCK(mem);
+	info = gc_mem2block(mem);
 	i = GCMEM2IDX(info, unit);
 
 	bsz = GCBLOCKSIZE(info);
@@ -1219,7 +1219,7 @@ gcRealloc(Collector* gcif, void* mem, size_t size, gc_alloc_type_t fidx)
 
 	lockStaticMutex(&gc_lock);
 	unit = UTOUNIT(mem);
-	info = GCMEM2BLOCK(unit);
+	info = gc_mem2block(unit);
 	idx = GCMEM2IDX(info, unit);
 	osize = GCBLOCKSIZE(info) - sizeof(gc_unit);
 
@@ -1258,7 +1258,7 @@ gcFree(Collector* gcif UNUSED, void* mem)
 	if (mem != 0) {
 		lockStaticMutex(&gc_lock);
 		unit = UTOUNIT(mem);
-		info = GCMEM2BLOCK(unit);
+		info = gc_mem2block(unit);
 		idx = GCMEM2IDX(info, unit);
 
 		if (KGC_GET_COLOUR(info, idx) == KGC_COLOUR_FIXED) {
@@ -1322,7 +1322,7 @@ objectStatsChange(gc_unit* unit, int diff)
 	gc_block* info;
 	int idx;
 
-	info = GCMEM2BLOCK(unit);
+	info = gc_mem2block(unit);
 	idx = KGC_GET_FUNCS(info, GCMEM2IDX(info, unit));
 
 	assert(idx >= 0 && gcFunctions[idx].description!=NULL);

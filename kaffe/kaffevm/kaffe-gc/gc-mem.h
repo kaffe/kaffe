@@ -93,6 +93,8 @@ typedef struct _gc_block {
 
 extern gc_block	* gc_primitive_reserve(void);
 extern void	gc_primitive_free(gc_block* mem);
+extern gc_block * gc_mem2block(const void * mem);
+
 
 /* ------------------------------------------------------------------------ */
 
@@ -139,11 +141,5 @@ extern void	gc_primitive_free(gc_block* mem);
  *
  */
 #define	GCMEM2IDX(B, M)		(((uint8*)(uintp)(M) - (B)->data) / (B)->size)
-
-/**
- * Evaluates to the gc_block that contains address @M.
- *
- */
-#define GCMEM2BLOCK(M)		(KGC_BLOCKS + ( ( ((uintp) (M)) - gc_heap_base) >> gc_pgbits))
 
 #endif

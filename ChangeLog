@@ -1,3 +1,12 @@
+2004-09-03  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c, 
+	kaffe/kaffevm/kaffe-gc/gc-mem.c: 
+	Use gc_mem2block instead of GCMEM2BLOCK.
+	(gc_mem2block) New function.
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.h: (GCMEM2BLOCK) Removed.
+
 2004-09-01  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* config/m68k/jit-m68k.def,
