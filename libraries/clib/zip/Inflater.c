@@ -60,7 +60,7 @@ java_util_zip_Inflater_inflate(struct Hjava_util_zip_Inflater* this, HArrayOfByt
 	dstream->next_out = &unhand_array(buf)->body[off];
 	dstream->avail_out = len;
 
-	r = inflate(dstream, Z_PARTIAL_FLUSH);
+	r = inflate(dstream, Z_SYNC_FLUSH);
 
 	switch (r) {
 	case Z_OK:
@@ -121,6 +121,18 @@ java_util_zip_Inflater_end(struct Hjava_util_zip_Inflater* this)
 	KFREE(dstream);
 }
 
+static voidpf
+kaffe_zalloc(voidpf opaque, uInt items, uInt size) {
+  /* allocate through the garbage collector interface */
+  return KMALLOC(items*size);
+}
+
+static void
+kaffe_zfree(voidpf opaque, voidpf address) {
+  /* dispose through the garbage collector interface */
+  KFREE(address);
+}
+
 void
 java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jbool val)
 {
@@ -134,13 +146,13 @@ java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jbool val)
 		throwError(&info);
 	}
 	dstream->next_out = 0;
-	dstream->zalloc = 0;
-	dstream->zfree = 0; 
+	dstream->zalloc = kaffe_zalloc;
+	dstream->zfree = kaffe_zfree;
 	dstream->opaque = 0;
 
 	r = inflateInit2(dstream, val ? -WSIZEBITS : WSIZEBITS);
 	if (r != Z_OK) {
-		SignalError("java.lang.Error", dstream ? dstream->msg : "");
+		SignalError("java.lang.Error", dstream->msg ? dstream->msg : "");
 	}
 	GET_STREAM(this) = dstream;
 }

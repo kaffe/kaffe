@@ -94,7 +94,12 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
 
   public void closeEntry() throws IOException {
 	if (closed == false) {
+		/* skip remaining compressed data */
+		byte[] buf = new byte[512];
+		while (read (buf, 0, 512) != -1) {}
+
 		closed = true;
+		/* reset inflate state machine */
 		sinf.reset();
 		sinf.setMode(true);
 		sinf.setLength(Integer.MAX_VALUE);
