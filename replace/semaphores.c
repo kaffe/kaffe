@@ -39,11 +39,13 @@
 
 #include "repsemaphore.h"
 
-int repsem_init(sem_t *sem, int pshared, int value)
+#define REPSEM_VALUE_MAX 32767
+
+int repsem_init(repsem_t *sem, int pshared, int value)
 {
   int ret;
   
-  if (value > SEM_VALUE_MAX)
+  if (value > REPSEM_VALUE_MAX)
     {
       errno = EINVAL;
       return -1;
@@ -68,12 +70,12 @@ int repsem_init(sem_t *sem, int pshared, int value)
   return 0;
 }
 
-int repsem_post(sem_t *sem)
+int repsem_post(repsem_t *sem)
 {
   if (pthread_mutex_lock(&sem->mutex) < 0)
     return -1;
   
-  if (sem->value == SEM_VALUE_MAX)
+  if (sem->value == REPSEM_VALUE_MAX)
     {
       errno = ERANGE;
       return -1;
@@ -92,7 +94,7 @@ int repsem_post(sem_t *sem)
   return 0;
 }
 
-int repsem_wait(sem_t *sem)
+int repsem_wait(repsem_t *sem)
 {
   if (pthread_mutex_lock(&sem->mutex) < 0)
     return -1;
@@ -109,7 +111,7 @@ int repsem_wait(sem_t *sem)
   return 0;
 }
 
-int repsem_trywait(sem_t *sem)
+int repsem_trywait(repsem_t *sem)
 {
   if (pthread_mutex_lock(&sem->mutex) < 0)
     return -1;
@@ -130,13 +132,13 @@ int repsem_trywait(sem_t *sem)
   return 0;
 }
 
-int repsem_getvalue(sem_t *sem, int *sval)
+int repsem_getvalue(repsem_t *sem, int *sval)
 {
   *sval = sem->value;
   return 0;
 }
 
-int repsem_destroy(sem_t *sem)
+int repsem_destroy(repsem_t *sem)
 {
   int ret;
   

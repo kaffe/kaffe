@@ -1,5 +1,13 @@
 2004-11-22  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h:
+	Replaced sem_t by repsem_t where needed.
+
+	* replace/semaphores.c: Use repsem_t instead of sem_t and 
+	define REPSEM_VALUE_MAX.
+	
+2004-11-22  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* configure.ac:
 	Call KAFFE_CHECK_SEMAPHORES.
 

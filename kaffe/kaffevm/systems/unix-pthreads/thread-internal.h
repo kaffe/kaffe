@@ -68,7 +68,7 @@ typedef struct _jthread {
   int                   interrupting;
 
   /* convars and mutexes aren't useful in signal handlers, semaphores are */
-  sem_t                 sem;
+  repsem_t                 sem;
 
   /* the following fields hold our extensions */
   int                   active;         /* are we in our user thread function 'func'? */
