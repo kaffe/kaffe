@@ -1,5 +1,10 @@
 2004-09-20  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	Doxified a few functions.
+
+2004-09-20  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/thread.c
 	(startSpecialThread, createDaemon): Better synchronisation with
 	waitStaticCond and signalStaticCond.

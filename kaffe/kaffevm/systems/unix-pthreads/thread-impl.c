@@ -101,47 +101,48 @@ static int psigCancel;
  * global data
  */
 
-/* We keep a list of all active threads, so that we can enumerate them */
+/** We keep a list of all active threads, so that we can enumerate them */
 static jthread_t	activeThreads;
 
-/* We don't throw away threads when their user func terminates, but suspend
+/** We don't throw away threads when their user func terminates, but suspend
  * and cache them for later re-use */
 static jthread_t	cache;
 
-/* The notorious first thread, which has to be handled differently because
+/** The notorious first thread, which has to be handled differently because
  * it isn't created explicitly */
 static jthread_t	firstThread;
 
-/* Number of active non-daemon threads (the last terminating nonDaemon
+/** Number of active non-daemon threads (the last terminating nonDaemon
  * causes the process to shut down */
 static int		nonDaemons;
 
-/* Number of system threads (either running (activeThreads) or
+/** Number of system threads (either running (activeThreads) or
  * blocked (cache). We need this to implement our own barrier, since
  * many kernel thread systems don't behave graceful on exceeding their limit */
 static int		nSysThreads;
 
-/* number of currently cached threads */
+/** number of currently cached threads */
 static int		nCached;
 
-/* map the Java priority levels to whatever the pthreads impl gives us */
+/** map the Java priority levels to whatever the pthreads impl gives us */
 static int		*priorities;
 
-/* thread-specific-data key to retrieve 'nativeData' */
+/** thread-specific-data key to retrieve 'nativeData' */
 pthread_key_t		ntKey;
 
-/* our lock to protect list manipulation/iteration */
+/** our lock to protect list manipulation/iteration */
 static iStaticLock	tLock;
 
-/* a hint to avoid unnecessary pthread_creates (with pending exits) */
+/** a hint to avoid unnecessary pthread_creates (with pending exits) */
 static volatile int	pendingExits;
 
-/* level of critical sections (0 = none) */
+/** level of critical sections (0 = none) */
 static int		critSection;
 
-/* helper semaphore to signal completion of critical section enter/exit */
+/** helper semaphore to signal completion of critical section enter/exit */
 static sem_t		critSem;
 
+/** Signal set which contains important signals for suspending threads. */
 static sigset_t		suspendSet;
 
 /* an optional deadlock watchdog thread (not in the activeThread list),
@@ -307,8 +308,8 @@ void tStartDeadlockWatchdog (void)
  * thread system initialization
  */
 
-/*
- * static init of signal handlers
+/**
+ * Static initialisation of signal handlers. This function is called once.
  */
 static void
 tInitSignalHandlers (void)
@@ -357,7 +358,7 @@ tInitSignalHandlers (void)
   sigaction( sigDump, &saDump, NULL);
 }
 
-/*
+/**
  * Initialize signal numbers to use depending of realtime signal availabilities.
  *
  * ORIGINAL NOTE:
@@ -482,7 +483,7 @@ tSetupFirstNative(void)
   nt->stackMax  = (void*)-1;
 }
 
-/*
+/**
  * The global, one-time initialization goes here. This is a
  * alternative to scattered pthread_once() calls
  */
@@ -1037,6 +1038,16 @@ jthread_setpriority (jthread_t cur, jint prio)
  * the suspend/resume mechanism
  */
 
+/**
+ * This function make the enters in deep suspend mode. It is generally called
+ * suspend_signal_handler() and the locking mechanism when a thread has called
+ * jthread_suspendall(). It temporarily changes the state of the signal mask
+ * for the current thread.
+ *
+ * @param releaseMutex If true, the function is requested to change the signal
+ * mask and to release the suspendLock mutex only after this. In that case we
+ * keep in sync with jthread_suspendall()
+ */
 void KaffePThread_WaitForResume(int releaseMutex)
 {
   volatile jthread_t cur = jthread_current();
@@ -1067,7 +1078,7 @@ void KaffePThread_WaitForResume(int releaseMutex)
     }
 }
 
-/*
+/**
  * The suspend signal handler, which we need to implement critical sections.
  * It is used for two purposes: (a) to block all active threads which might
  * get rescheduled during a critical section (we can't rely on priority-fifo
@@ -1107,7 +1118,7 @@ suspend_signal_handler ( UNUSED int sig )
   }
 }
 
-/*
+/**
  * The resume signal handler, which we mainly need to get the implicit sigreturn
  * call (i.e. to unblock a preceeding sigwait).
  */
@@ -1117,7 +1128,7 @@ resume_signal_handler ( UNUSED int sig )
   /* we don't do anything, here - all the action is in the suspend handler */
 }
 
-/*
+/**
  * Temporarily suspend all threads but the current one. This is
  * a dangerous operation, but it is more safe than to rely on
  * fixed priority scheduling (which most desktop OSes don't provide).
@@ -1203,7 +1214,7 @@ jthread_suspendall (void)
 }
 
 
-/*
+/**
  * Resume all temporarily suspended threads. Just take action if this
  * is the outmost exit
  */
@@ -1276,7 +1287,7 @@ jthread_unsuspendall (void)
  * GC related stuff
  */
 
-/*
+/**
  * Walk stacks of all threads, except of the current one (doesn't
  * make much sense since that's the GC itself, and it's task is to
  * get rid of garbage, not to pin it down - besides the fact that
@@ -1340,11 +1351,25 @@ jthread_set_blocking (int fd, int blocking)
  * Adapted from kaffe/kaffevm/systems/unix-jthreads/jthread.h
  */
 
+/**
+ * This function increments the pointer stored in "p" by "inc" bytes.
+ * 
+ * @param p Pointer to be incremented.
+ * @param inc Amount of bytes to increment the pointer.
+ */
 static inline void incrPointer(void **p, int inc)
 {
   *p = (void *)((uintp)*p + inc);
 }
 
+
+/**
+ * This function is meant to relax stack boundaries so the virtual machine
+ * may execute some task before the final abort.
+ *
+ * @param yes If it is true, it relaxes the boundaries. If false, it shortens
+ * the stack.
+ */
 void jthread_relaxstack(int yes)
 {
   if( yes )
