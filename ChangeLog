@@ -15,7 +15,8 @@
 	java/security/Policy.java.
 
 	* libraries/javalib/essential.files:
-	Add Permissions.java.
+	Add Permissions.java, AllPermission.java, and
+	EmptyEnumeration.java.
 
 	* libraries/javalib/gnu/java/security/provider/DefaultPolicy.java:
 	Borrowed from classpath.
@@ -39,7 +40,8 @@
 
 	* libraries/javalib/profiles/default/core.files:
 	Add gnu/java/security/provider/DefaultPolicy.java and
-	java/security/Policy.java.
+	java/security/Policy.java.  Moved AllPermission.java and
+	EmptyEnumeration.java to essential.files.
 
 2003-05-30 Kiyo Inaba <inaba@src.ricoh.co.jp>
 

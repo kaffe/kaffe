@@ -1,6 +1,5 @@
 gnu/classpath/Configuration.java
 gnu/java/lang/reflect/TypeSignature.java
-gnu/java/util/EmptyEnumeration.java
 gnu/regexp/REFilterInputStream.java
 gnu/regexp/REFilterReader.java
 gnu/regexp/UncheckedRE.java
@@ -97,7 +96,6 @@ java/security/AlgorithmParameterGenerator.java
 java/security/AlgorithmParameterGeneratorSpi.java
 java/security/AlgorithmParameters.java
 java/security/AlgorithmParametersSpi.java
-java/security/AllPermission.java
 java/security/cert/CertificateEncodingException.java
 java/security/cert/CertificateException.java
 java/security/cert/CertificateExpiredException.java

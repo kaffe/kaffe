@@ -1,4 +1,5 @@
 gnu/java/lang/CharData.java
+gnu/java/util/EmptyEnumeration.java
 gnu/regexp/CharIndexed.java
 gnu/regexp/CharIndexedCharArray.java
 gnu/regexp/CharIndexedInputStream.java
@@ -175,6 +176,7 @@ java/net/URLStreamHandlerFactory.java
 java/security/AccessControlContext.java
 java/security/AccessControlException.java
 java/security/AccessController.java
+java/security/AllPermission.java
 java/security/BasicPermission.java
 java/security/Certificate.java
 java/security/CodeSource.java
