@@ -44,7 +44,6 @@ import gnu.java.awt.peer.ClasspathFontPeer;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.font.LineMetrics;
-import java.awt.font.TextAttribute;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.peer.FontPeer;

@@ -1,5 +1,23 @@
 2004-10-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/Container.java,
+	libraries/javalib/java/awt/Font.java,
+	libraries/javalib/java/awt/font/TextLayout.java,
+	libraries/javalib/java/util/zip/CheckedInputStream.java,
+	libraries/javalib/java/util/zip/InflaterInputStream.java:
+	Resynced with GNU Classpath.
+
+	2004-10-21  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/Container.java,
+        java/awt/Font.java,
+        java/awt/font/TextLayout.java,
+        java/util/zip/CheckedInputStream.java,
+        java/util/zip/InflaterInputStream.java:
+        Import cleanups.
+
+2004-10-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/NetworkInterface.java,
 	libraries/javalib/javax/security/auth/x500/X500PrivateCredential.java,
 	libraries/javalib/javax/security/cert/X509CertBridge.java,

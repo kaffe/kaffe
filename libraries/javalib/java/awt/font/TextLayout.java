@@ -1,4 +1,4 @@
-/* TextLayout.java
+/* TextLayout.java --
    Copyright (C) 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,6 +38,9 @@ exception statement from your version. */
 
 package java.awt.font;
 
+import gnu.java.awt.ClasspathToolkit;
+import gnu.java.awt.peer.ClasspathTextLayoutPeer;
+
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -46,12 +49,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
-import java.text.CharacterIterator;
 import java.util.Map;
-import java.awt.font.TextAttribute;
-
-import gnu.java.awt.ClasspathToolkit;
-import gnu.java.awt.peer.ClasspathTextLayoutPeer;
 
 /**
  * @author Michael Koch
