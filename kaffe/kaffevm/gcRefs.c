@@ -92,14 +92,62 @@ gc_rm_ref(const void* mem)
 	return (false);
 }
 
+/*      
+ * Walk the thread's internal context.
+ * This is invoked by the garbage collector thread, which is not
+ * stopped.
+ *      
+ * We will iterate through all threads, including the garbage collector
+ * and those threads that haven't been started yet.
+ */     
+static  
+void    
+TwalkThread(Collector* collector, Hjava_lang_Thread* tid)
+{       
+        void *from;
+        unsigned len;  
+        jthread_t jtid = (jthread_t)unhand(tid)->PrivateInfo;
+        
+        /* Don't walk the gc thread's stack.  It was not stopped and
+         * we hence don't have valid sp information.  In addition, there's
+         * absolutely no reason why we should walk it at all.
+         */
+        if (jtid == 0 || tid == jthread_getcookie((void*)jthread_current())) {
+DBG(JTHREAD,
+                dprintf("%d NOT walking jtid %p\n", jthread_current(), jtid);
+    )   
+                return;
+        }
+        
+        /* Ask threading system what the interesting stack range is;
+         * If the thread is too young, the threading system will return
+         * 0 from extract_stack.  In that case, we don't have walk anything.
+         */
+        if (jthread_extract_stack(jtid, &from, &len)) {
+DBG(JTHREAD|DBG_GCWALK,
+                dprintf("walking stack of `%s' thread\n", nameThread(tid));
+    )
+                /* and walk it if needed */
+                GC_walkConservative(collector, from, len);
+        }
+}
+
+static Collector *running_collector;	
+
 /* XXX will be fixed on thread interface gets fixed.
  * The best way to fix this is not to use walkThreads at all.
+ *
+ * That very much depends on what best means.  If we don't explicitly
+ * walk threads while pushing roots, we are stuck calling
+ * soft_instanceof in walkObject, which is a big source of overhead.
  */
-static Collector *running_collector;	
 static void
-walkMemory(void *mem)
+liveThreadWalker(void *tid)
 {
-	GC_walkMemory(running_collector, mem);
+  Collector *c = running_collector;
+
+  GC_walkMemory(c, tid);
+  TwalkThread(c, (Hjava_lang_Thread *)tid);
 }
 
 /*
@@ -109,6 +157,7 @@ walkMemory(void *mem)
 void
 gc_walk_refs(Collector* collector)
 {
+	extern void liveThreadWalker(void*); /* do we need two files here? */
         int i;
 	refObject* robj;
 
@@ -131,7 +180,7 @@ DBG(GCWALK,
          * registered.  Terminating a thread will remove it from the
          * threading system, and then we won't walk it here anymore
          */
-	jthread_walkLiveThreads(walkMemory);
+	jthread_walkLiveThreads(liveThreadWalker);
 DBG(GCWALK,
 	dprintf("Following references now...\n");
     )

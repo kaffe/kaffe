@@ -187,29 +187,7 @@ gc_heap_isobject(gc_block *info, gc_unit *unit)
 	return 0;
 }
 
-/*
- * Mark the memory given by an address if it really is an object.
- */
-static void
-gcMarkAddress(Collector* gcif, const void* mem)
-{
-	gc_block* info;
-	gc_unit* unit;
-
-	/*
-	 * First we check to see if the memory 'mem' is in fact the
-	 * beginning of an object.  If not we just return.
-	 */
-
-	/* Get block info for this memory - if it exists */
-	info = GCMEM2BLOCK(mem);
-	unit = UTOUNIT(mem);
-	if (gc_heap_isobject(info, unit)) {
-		markObjectDontCheck(unit, info, GCMEM2IDX(info, unit));
-	}
-}
-
-static void
+static inline void
 markObjectDontCheck(gc_unit *unit, gc_block *info, int idx)
 {
 	/* If object's been traced before, don't do it again */
@@ -233,28 +211,47 @@ DBG(GCWALK,
 	    }});
 	    
 
-	    /* If we found a new white object, mark it as grey and
-	     * move it into the grey list.
-	     */
-	    GC_SET_COLOUR(info, idx, GC_COLOUR_GREY);
-	    UREMOVELIST(unit);
-	    UAPPENDLIST(gclists[grey], unit);
-	    }
+	/* If we found a new white object, mark it as grey and
+	 * move it into the grey list.
+	 */
+	GC_SET_COLOUR(info, idx, GC_COLOUR_GREY);
+	UREMOVELIST(unit);
+	UAPPENDLIST(gclists[grey], unit);
+}
 
 /*
- * Mark an object.  Argument is assumed to point to a valid object.
+ * Mark the memory given by an address if it really is an object.
+ */
+static void
+gcMarkAddress(Collector* gcif, const void* mem)
+{
+	gc_block* info;
+	gc_unit* unit;
+
+	/*
+	 * First we check to see if the memory 'mem' is in fact the
+	 * beginning of an object.  If not we just return.
+	 */
+
+	/* Get block info for this memory - if it exists */
+	info = GCMEM2BLOCK(mem);
+	unit = UTOUNIT(mem);
+	if (gc_heap_isobject(info, unit)) {
+		markObjectDontCheck(unit, info, GCMEM2IDX(info, unit));
+	}
+}
+
+/*
+ * Mark an object.  Argument is assumed to point to a valid object,
+ * and never, ever, be null.
  */
 static void
 gcMarkObject(Collector* gcif, const void* objp)
 {
-	if (objp != 0) {
-		gc_unit *unit = UTOUNIT(objp);
-		gc_block *info = GCMEM2BLOCK(unit);
-#if defined(DEBUG)
-		assert(gc_heap_isobject(info, unit));
-#endif
-		markObjectDontCheck(unit, info, GCMEM2IDX(info, unit));
-	}
+  gc_unit *unit = UTOUNIT(objp);
+  gc_block *info = GCMEM2BLOCK(unit);
+  DBG(GCDIAG, assert(gc_heap_isobject(info, unit)));
+  markObjectDontCheck(unit, info, GCMEM2IDX(info, unit));
 }
 
 static void

@@ -125,8 +125,13 @@ Collector* createGC(void (*_walkRootSet)(Collector*));
     ((G)->ops->throwOOM)((Collector*)(G))
 #define GC_markAddress(G, addr)		\
     ((G)->ops->markAddress)((Collector*)(G), (addr))
-#define GC_markObject(G, addr)		\
-    ((G)->ops->markObject)((Collector*)(G), (addr))
+
+static inline void GC_markObject(void *g, void *addr)
+{
+	if (addr)
+		((Collector*) g)->ops->markObject((Collector*) g, addr);
+}
+
 #define GC_getObjectSize(G, obj)	\
     ((G)->ops->getObjectSize)((Collector*)(G), (obj))
 #define GC_getObjectDescription(G, obj)	\
