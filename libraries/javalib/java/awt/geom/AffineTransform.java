@@ -1234,17 +1234,7 @@ public class AffineTransform implements Cloneable, Serializable
   public Point2D inverseTransform(Point2D src, Point2D dst)
     throws NoninvertibleTransformException
   {
-    double det = getDeterminant();
-    if (det == 0)
-      throw new NoninvertibleTransformException("couldn't invert transform");
-    if (dst == null)
-      dst = new Point2D.Double();
-    double x = src.getX();
-    double y = src.getY();
-    double nx = (m11 * x + -m10 * y) / det - m02;
-    double ny = (m01 * x + -m00 * y) / det - m12;
-    dst.setLocation(nx, ny);
-    return dst;
+    return createInverse().transform(src, dst);
   }
 
   /**
@@ -1268,23 +1258,7 @@ public class AffineTransform implements Cloneable, Serializable
                                double[] dstPts, int dstOff, int num)
     throws NoninvertibleTransformException
   {
-    double det = getDeterminant();
-    if (det == 0)
-      throw new NoninvertibleTransformException("couldn't invert transform");
-    if (srcPts == dstPts && dstOff > srcOff
-        && num > 1 && srcOff + 2 * num > dstOff)
-      {
-        double[] d = new double[2 * num];
-        System.arraycopy(srcPts, srcOff, d, 0, 2 * num);
-        srcPts = d;
-      }
-    while (--num >= 0)
-      {
-        double x = srcPts[srcOff++];
-        double y = srcPts[srcOff++];
-        dstPts[dstOff++] = (m11 * x + -m10 * y) / det - m02;
-        dstPts[dstOff++] = (m01 * x + -m00 * y) / det - m12;
-      }
+    createInverse().transform(srcPts, srcOff, dstPts, dstOff, num);
   }
 
   /**
@@ -1359,12 +1333,14 @@ public class AffineTransform implements Cloneable, Serializable
    * which only stores points in float precision.
    *
    * @param src the shape source to transform
-   * @return the shape, transformed by this
-   * @throws NullPointerException if src is null
+   * @return the shape, transformed by this, <code>null</code> if src is 
+   * <code>null</code>.
    * @see GeneralPath#transform(AffineTransform)
    */
   public Shape createTransformedShape(Shape src)
   {
+    if(src == null) 
+      return null;
     GeneralPath p = new GeneralPath(src);
     p.transform(this);
     return p;
