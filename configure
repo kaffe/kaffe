@@ -467,7 +467,7 @@ ac_includes_default="\
 #endif"
 
 ac_subdirs_all="$ac_subdirs_all libltdl"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD REGEN_FORWARD CONFIG_MD_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME BCEL_JAR HAVE_BCEL_TRUE HAVE_BCEL_FALSE ENABLE_JVMPI_TRUE ENABLE_JVMPI_FALSE DNSJAVA_JAR HAVE_DNSJAVA_TRUE HAVE_DNSJAVA_FALSE ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C KVER JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP MKTEMP JASMIN HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE HAVE_MKTEMP_TRUE HAVE_MKTEMP_FALSE HAVE_JASMIN_TRUE HAVE_JASMIN_FALSE KAFFE_LIBS M_LIBS VM_LIBS NET_LIBS ZIP_LIBS MATH_LIBS SECURITY_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS LIBICONV LTLIBICONV USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK AWT_DIR COND_SOUND_ALSA_TRUE COND_SOUND_ALSA_FALSE COND_SOUND_ESD_TRUE COND_SOUND_ESD_FALSE COND_PURE_JAVA_MATH_TRUE COND_PURE_JAVA_MATH_FALSE MATH_LIB INCLUDED_EXTENSIONS PROFILE USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffeh_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG subdirs LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD REGEN_FORWARD CONFIG_MD_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME BCEL_JAR HAVE_BCEL_TRUE HAVE_BCEL_FALSE ENABLE_JVMPI_TRUE ENABLE_JVMPI_FALSE DNSJAVA_JAR HAVE_DNSJAVA_TRUE HAVE_DNSJAVA_FALSE ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C KVER JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP MKTEMP JASMIN HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE HAVE_MKTEMP_TRUE HAVE_MKTEMP_FALSE HAVE_JASMIN_TRUE HAVE_JASMIN_FALSE KAFFE_LIBS M_LIBS VM_LIBS NET_LIBS ZIP_LIBS MATH_LIBS SECURITY_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS LIBICONV LTLIBICONV USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK AWT_DIR COND_SOUND_ALSA_TRUE COND_SOUND_ALSA_FALSE COND_SOUND_ESD_TRUE COND_SOUND_ESD_FALSE COND_PURE_JAVA_MATH_TRUE COND_PURE_JAVA_MATH_FALSE MATH_LIB INCLUDED_EXTENSIONS GNU_CRYPTO_HOME GNU_CRYPTO_JAR JAVAX_CRYPTO_JAR JAVAX_SECURITY_JAR USER_WANT_GNU_CRYPTO_TRUE USER_WANT_GNU_CRYPTO_FALSE PROFILE USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffeh_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG subdirs LTLIBOBJS'
 ac_subst_files='cpu_os_frag cpu_frag engine_frag threads_frag'
 
 # Initialize some variables set by options.
@@ -1090,6 +1090,10 @@ Optional Packages:
   --with-extensions       the extensions (like the servlet API) to include [default=none]
   --with-dmalloc          use dmalloc, as in
                           http://www.dmalloc.com/dmalloc.tar.gz
+  --with-gnu-crypto       path to GNU Crypto install directory. if
+                          unspecified, /usr/local/gnu-crypto, /usr/local,
+                          /usr, /opt/gnu-crypto, and /opt are considered, in
+                          that order
   --with-class-library-profile=PROFILE	specify class library profile
   --with-rt-jar=ABS.PATH	use precompiled kaffe class library
 
@@ -4303,7 +4307,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4306 "configure"' > conftest.$ac_ext
+  echo '#line 4310 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5411,7 +5415,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:5414:" \
+echo "$as_me:5418:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6444,11 +6448,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6447: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6451: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6451: \$? = $ac_status" >&5
+   echo "$as_me:6455: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6676,11 +6680,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6679: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6683: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6683: \$? = $ac_status" >&5
+   echo "$as_me:6687: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6743,11 +6747,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6746: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6750: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:6750: \$? = $ac_status" >&5
+   echo "$as_me:6754: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -8861,7 +8865,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 8864 "configure"
+#line 8868 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -8959,7 +8963,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 8962 "configure"
+#line 8966 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11111,11 +11115,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11114: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11118: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:11118: \$? = $ac_status" >&5
+   echo "$as_me:11122: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -11178,11 +11182,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11181: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11185: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:11185: \$? = $ac_status" >&5
+   echo "$as_me:11189: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12507,7 +12511,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12510 "configure"
+#line 12514 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12605,7 +12609,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12608 "configure"
+#line 12612 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13427,11 +13431,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13430: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13434: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13434: \$? = $ac_status" >&5
+   echo "$as_me:13438: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -13494,11 +13498,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13497: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13501: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13501: \$? = $ac_status" >&5
+   echo "$as_me:13505: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15456,11 +15460,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15459: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15463: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15463: \$? = $ac_status" >&5
+   echo "$as_me:15467: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -15688,11 +15692,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15691: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15695: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15695: \$? = $ac_status" >&5
+   echo "$as_me:15699: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -15755,11 +15759,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15758: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15762: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15762: \$? = $ac_status" >&5
+   echo "$as_me:15766: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17873,7 +17877,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 17876 "configure"
+#line 17880 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -17971,7 +17975,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 17974 "configure"
+#line 17978 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -45334,6 +45338,88 @@ fi;
 
 
 
+
+
+# Check whether --with-gnu-crypto or --without-gnu-crypto was given.
+if test "${with_gnu_crypto+set}" = set; then
+  withval="$with_gnu_crypto"
+  if test "x${withval}" != x && test "x${withval}" != xyes && test "x${withval}" != xno; then
+              echo "$as_me:$LINENO: checking ${withval}" >&5
+echo $ECHO_N "checking ${withval}... $ECHO_C" >&6
+              if test -r ${withval}/lib/lib-gnu-crypto.so || test -r ${withval}/share/gnu-crypto.jar ; then
+  GNU_CRYPTO_HOME=${withval}
+fi
+              if test x$GNU_CRYPTO_HOME = x ; then
+                echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+                { { echo "$as_me:$LINENO: error: cannot find designated GNU Crypto install directory" >&5
+echo "$as_me: error: cannot find designated GNU Crypto install directory" >&2;}
+   { (exit 1); exit 1; }; }
+              else
+                echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+                with_gnu_crypto=true
+              fi
+            elif test "x${withval}" != xno; then
+              { echo "$as_me:$LINENO: no value supplied --with-gnu-crypto.  will look in default locations" >&5
+echo "$as_me: no value supplied --with-gnu-crypto.  will look in default locations" >&6;}
+
+echo "$as_me:$LINENO: checking for GNU Crypto installation directory" >&5
+echo $ECHO_N "checking for GNU Crypto installation directory... $ECHO_C" >&6
+for _F in /usr/local/gnu-crypto /usr/local /usr /opt/gnu-crypto /opt ; do
+  if test -r ${_F}/lib/lib-gnu-crypto.so || test -r ${_F}/share/gnu-crypto.jar ; then
+  GNU_CRYPTO_HOME=${_F}
+fi
+  if test x$GNU_CRYPTO_HOME != x ; then
+    break
+  fi
+done
+if test x${GNU_CRYPTO_HOME} = x ; then
+  echo "$as_me:$LINENO: result: not found" >&5
+echo "${ECHO_T}not found" >&6
+else
+  echo "$as_me:$LINENO: result: ${GNU_CRYPTO_HOME}" >&5
+echo "${ECHO_T}${GNU_CRYPTO_HOME}" >&6
+fi
+              if test x$GNU_CRYPTO_HOME = x ; then
+                { { echo "$as_me:$LINENO: error: cannot find GNU Crypto install directory.  install it and/or specify its location using --with-gnu-crypto" >&5
+echo "$as_me: error: cannot find GNU Crypto install directory.  install it and/or specify its location using --with-gnu-crypto" >&2;}
+   { (exit 1); exit 1; }; }
+              fi
+              with_gnu_crypto=true
+            else
+              with_gnu_crypto=false
+            fi
+else
+  with_gnu_crypto=false
+fi;
+GNU_CRYPTO_HOME=`(cd ${GNU_CRYPTO_HOME}; pwd)`
+
+if test -r ${GNU_CRYPTO_HOME}/share/gnu-crypto.jar ; then
+  GNU_CRYPTO_JAR=${GNU_CRYPTO_HOME}/share/gnu-crypto.jar
+
+fi
+if test -r ${GNU_CRYPTO_HOME}/share/javax-crypto.jar ; then
+  JAVAX_CRYPTO_JAR=${GNU_CRYPTO_HOME}/share/javax-crypto.jar
+
+fi
+if test -r ${GNU_CRYPTO_HOME}/share/javax-security.jar ; then
+  JAVAX_SECURITY_JAR=${GNU_CRYPTO_HOME}/share/javax-security.jar
+
+fi
+
+
+if test "x${with_gnu_crypto}" = xtrue; then
+  USER_WANT_GNU_CRYPTO_TRUE=
+  USER_WANT_GNU_CRYPTO_FALSE='#'
+else
+  USER_WANT_GNU_CRYPTO_TRUE='#'
+  USER_WANT_GNU_CRYPTO_FALSE=
+fi
+
+
+
+
 # Check whether --with-class_library_profile or --without-class_library_profile was given.
 if test "${with_class_library_profile+set}" = set; then
   withval="$with_class_library_profile"
@@ -46224,6 +46310,13 @@ echo "$as_me: error: conditional \"COND_PURE_JAVA_MATH\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${USER_WANT_GNU_CRYPTO_TRUE}" && test -z "${USER_WANT_GNU_CRYPTO_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"USER_WANT_GNU_CRYPTO\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"USER_WANT_GNU_CRYPTO\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${USE_PRECOMPILED_RT_JAR_TRUE}" && test -z "${USE_PRECOMPILED_RT_JAR_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"USE_PRECOMPILED_RT_JAR\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -46994,6 +47087,12 @@ s,@COND_PURE_JAVA_MATH_TRUE@,$COND_PURE_JAVA_MATH_TRUE,;t t
 s,@COND_PURE_JAVA_MATH_FALSE@,$COND_PURE_JAVA_MATH_FALSE,;t t
 s,@MATH_LIB@,$MATH_LIB,;t t
 s,@INCLUDED_EXTENSIONS@,$INCLUDED_EXTENSIONS,;t t
+s,@GNU_CRYPTO_HOME@,$GNU_CRYPTO_HOME,;t t
+s,@GNU_CRYPTO_JAR@,$GNU_CRYPTO_JAR,;t t
+s,@JAVAX_CRYPTO_JAR@,$JAVAX_CRYPTO_JAR,;t t
+s,@JAVAX_SECURITY_JAR@,$JAVAX_SECURITY_JAR,;t t
+s,@USER_WANT_GNU_CRYPTO_TRUE@,$USER_WANT_GNU_CRYPTO_TRUE,;t t
+s,@USER_WANT_GNU_CRYPTO_FALSE@,$USER_WANT_GNU_CRYPTO_FALSE,;t t
 s,@PROFILE@,$PROFILE,;t t
 s,@USE_PRECOMPILED_RT_JAR_TRUE@,$USE_PRECOMPILED_RT_JAR_TRUE,;t t
 s,@USE_PRECOMPILED_RT_JAR_FALSE@,$USE_PRECOMPILED_RT_JAR_FALSE,;t t

@@ -1,5 +1,9 @@
 #
 # Security configuration file for Kaffe
 #
-security.provider.1=kaffe.security.provider.Kaffe
-security.provider.2=sun.security.provider.Sun
+# You'll need to have kaffe configured to use 
+# GNU Crypto for the GNU Crypto provider 
+# to be picked up.
+
+security.provider.1=gnu.crypto.jce.GnuCrypto
+security.provider.2=kaffe.security.provider.Kaffe

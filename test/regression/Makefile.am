@@ -30,7 +30,8 @@ ALWAYS_TESTS = \
 	$(TEST_INTERRUPTING_IO) \
 	$(TEST_NATIVE) \
 	$(JASMIN_TESTS) \
-	$(BCEL_TESTS)
+	$(BCEL_TESTS) \
+	$(TEST_GNU_CRYPTO)
 
 ## Simple health check
 SIMPLE_HEALTH_CHECK = \
@@ -271,6 +272,13 @@ BCEL_TESTS =
 endif
 
 
+## Test for GNU Crypto classes
+if USER_WANT_GNU_CRYPTO
+TEST_GNU_CRYPTO = \
+	TestGnuCrypto.java
+else
+TEST_GNU_CRYPTO = 
+endif
 
 TEST_Overflow = Overflow.java
 
@@ -282,7 +290,8 @@ endif
 
 XFAIL_TESTS =
 
-EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
+EXTRA_DIST = $(ALWAYS_TESTS) \
+	$(TEST_Overflow) \
 	CLTestConc_run.java \
 	ZipVerifyUtils.java \
 	ClassGCTest.java \

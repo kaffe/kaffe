@@ -1,3 +1,87 @@
+2003-11-29  Dalibor Topic <robilad@kaffe.org>
+
+	* Makefile.in,
+	aclocal.m4,
+	config/Makefile.in,
+	configure,
+	include/Makefile.in,
+	kaffe/Makefile.in,
+	kaffe/jvmpi/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	kaffe/kaffeh/Makefile.in,
+	kaffe/kaffevm/Makefile.in,
+	kaffe/kaffevm/gcj/Makefile.in,
+	kaffe/kaffevm/intrp/Makefile.in,
+	kaffe/kaffevm/jit/Makefile.in,
+	kaffe/kaffevm/jit3/Makefile.in,
+	kaffe/kaffevm/systems/Makefile.in,
+	kaffe/kaffevm/systems/beos-native/Makefile.in,
+	kaffe/kaffevm/systems/oskit-pthreads/Makefile.in,
+	kaffe/kaffevm/systems/unix-jthreads/Makefile.in,
+	kaffe/kaffevm/systems/unix-pthreads/Makefile.in,
+	kaffe/man/Makefile.in,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/bat/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	kaffe/xprof/Makefile.in,
+	libraries/Makefile.in,
+	libraries/clib/Makefile.in,
+        libraries/clib/awt/Makefile.in,
+        libraries/clib/awt/X/Makefile.in,
+        libraries/clib/awt/qt/Makefile.in,
+        libraries/clib/io/Makefile.in,
+        libraries/clib/management/Makefile.in,
+        libraries/clib/math/Makefile.in,
+        libraries/clib/native/Makefile.in,
+        libraries/clib/net/Makefile.in,
+        libraries/clib/nio/Makefile.in,
+        libraries/clib/security/Makefile.in,
+        libraries/clib/zip/Makefile.in,
+        libraries/extensions/Makefile.in,
+        libraries/extensions/comm/Makefile.in,
+        libraries/extensions/comm/javalib/Makefile.in,
+        libraries/extensions/microsoft/Makefile.in,
+        libraries/extensions/microsoft/clib/Makefile.in,
+        libraries/extensions/microsoft/javalib/Makefile.in,
+        libraries/extensions/pjava/Makefile.in,
+        libraries/extensions/pjava/javalib/Makefile.in,
+        libraries/extensions/servlet/Makefile.in,
+        libraries/extensions/servlet/javalib/Makefile.in,
+        libraries/extensions/sound/Makefile.in,
+        libraries/extensions/sound/alsa/Makefile.in,
+        libraries/extensions/sound/common/Makefile.in,
+        libraries/extensions/sound/esd/Makefile.in,
+        libraries/javalib/Makefile.in,
+        replace/Makefile.in,
+        test/Makefile.in,
+        test/internal/Makefile.in,
+        test/regression/Makefile.in,
+        test/regression/TestScript.in,
+        test/regression/compile_time/Makefile.in,
+        test/regression/run_time/Makefile.in:
+	Regenerated.
+
+        * libraries/clib/security/java.security: 
+	Removed Sun's provider from list. Added GNU Crypto provider.
+
+2003-11-29  Raif S. Naffah <raif@fl.net.au>
+
+	* Makefile.am 
+	(BUILD_ENVIRONMENT-make): Added JAVAX_CRYPTO_JAR to BOOTCLASSPATH. 
+	Added GNU_CRYPTO_JAR, JAVAX_SECURITY_JAR to CLASSPATH.
+
+	* configure.in:	Added --with-gnu-crypto.
+
+	* developers/update-class-list: Added gnu/crypto to list of classes
+	not to update.
+
+	* gnu-crypto.m4: New file.
+
+        * test/regression/Makefile.am:
+	(TEST_GNU_CRYPTO) Added GNU Crypto test.
+
+        * test/regression/TestGnuCrypto.java: New file.
+
 2003-11-28  Dalibor Topic <robilad@kaffe.org>
 
 	Reported by: Mark Wielaard  <mark@klomp.org>

@@ -1435,6 +1435,12 @@ dnl -----------------------------------------------------------------------
 AM_WITH_DMALLOC
 
 dnl -----------------------------------------------------------------------
+dnl Pull in definitions from gnu-crypto.m4
+dnl -----------------------------------------------------------------------
+
+CHECK_GNU_CRYPTO
+ 
+dnl -----------------------------------------------------------------------
 dnl                    Support for different class library profiles
 dnl -----------------------------------------------------------------------
 AC_ARG_WITH(class_library_profile, [  --with-class-library-profile=PROFILE	specify class library profile])
