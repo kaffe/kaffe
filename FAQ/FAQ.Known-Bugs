@@ -79,10 +79,6 @@ Treat it as an TODO list.
   Example:	Kaffe:	-mx 32m  Sun:  -mx32m
   Pointed out by David Tucker <dbtucker@acm.jhu.edu> on Sat, 21 Nov 1998
 
-* There is a problem with long remainders under FreeBSD.  The problems lies
-  in FreeBSD's libc, and concerns versions up to and including 2.2.8 and 3.0.
-  You will see wrong signs in the result.
-
 * java.util.Random produces different results than Sun's.  While the basic
   algorithm is the same, Kaffe uses different multipliers and modulos.
 
