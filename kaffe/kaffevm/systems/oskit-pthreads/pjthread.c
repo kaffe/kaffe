@@ -229,8 +229,7 @@ DBG(JTHREAD,
     )
 	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldstate);
 	pthread_join(tid->native_thread, &status);
-	/* XXX ??? XXX */
-	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &oldstate);
+	pthread_setcancelstate(oldstate, 0);
 	deallocator(tid);
 }
 
