@@ -18,7 +18,6 @@ import java.util.Hashtable;
 public class DefaultURLStreamHandlerFactory implements URLStreamHandlerFactory {
 
 final private static String defaultName = "kaffe.net.www.protocol.";
-final private static String tvtName = "com.transvirtual.net.www.protocol.";
 
 private Hashtable cache = new Hashtable();
 
@@ -44,16 +43,8 @@ public URLStreamHandler createURLStreamHandler(String protocol)
 		}
 	}
 
-	/* Try the TVT default name */
-	String classPath = tvtName + protocol + ".Handler";
-	handler = tryClass(classPath);
-	if (handler != null) {
-		cache.put(protocol, handler);
-		return (handler);
-	}
-
 	/* Try the default name */
-	classPath = defaultName + protocol + ".Handler";
+	String classPath = defaultName + protocol + ".Handler";
 	handler = tryClass(classPath);
 	if (handler != null) {
 		cache.put(protocol, handler);
