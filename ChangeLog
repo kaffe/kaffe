@@ -1,3 +1,7 @@
+Thu Jul 13 12:17:42 PDT 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/Klasses.jar: regen
+
 Thu Jul  6 10:28:25 EDT 2000 Alan L. Batongbacal <alanlb@vt.edu>
 
 	* kaffe/kaffevm/systems/beos-native/{bjthread.c,jthread.h}: updated
