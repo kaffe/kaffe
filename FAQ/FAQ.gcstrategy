@@ -1,0 +1,144 @@
+
+Kaffe's garbage collector is a classical conservative collector that follows
+the tricolor scheme, and it is not very sophisticated.  However, by tweaking 
+its parameters, it is sometimes possible to speed up applications 
+significantly.
+
+This FAQ explains an gc strategy I implemented for Kaffe and it should
+answer the following questions:
+
++ How does Kaffe decide when to garbage collect and when to get more memory
+  from the operating system instead?
+
++ How does Kaffe use the parameters specified by the -ms and -mx switches?  
+  What's that -as switch for?  What values should I choose for what 
+  applications?
+
+Kaffe recognizes the following three switches, which can be followed by
+a numerical argument (either immediately following the switch, as in
+``-mx32M'', or separated by a space as in ``-mx 32M'') specifying a byte amount.
+K/k and M/m suffixes denote Kilo and Mega bytes, respectively.
+
+	Default
+-ms:	 5M	This value specifies the initial heap size.  When Kaffe
+		starts up, it will request this amount of memory upfront
+		from the operating system and add it to the heap it
+		manages.
+
+-mx:	64M	This value specifies the maximum heap size.  Kaffe will
+		never request more memory than that from the operating
+		system.  Note that the total memory usage of kaffe may be 
+		higher since libraries such as Xlib may obtain memory from 
+		the operating system without consulting Kaffe's allocator.
+
+		Note further that Kaffe's internal data structures will
+		be allocated from that heap as well (not only the garbage
+		collectable objects produced by your application.)
+
+-as:	 1M	This value specifies the heap increment.  The heap increment
+		is the amount of memory Kaffe will request from the operating 
+		system to add to the heap it manages if it decides to postpone
+		a collection.  See below what ``postponing'' means.
+
+If kaffe's allocator is asked to provide some memory, it follows a simple
+strategy.  First, it checks whether there is some free memory of the 
+corresponding size in the heap it manages.  If so, this memory is returned.
+
+This means that kaffe won't ever invoke the garbage collector until it
+uses more memory than the initial heap size specified using the -ms switch!
+
+Therefore, increasing the initial heap size using -ms will make short-lived
+applications, such as pizza, run faster.  Garbage collection can be avoided 
+if an application does not allocate more memory than the initial heap size
+during its lifetime.
+
+If there is no memory left in the heap when an allocation is attempted, 
+Kaffe will invoke the garbage collector.  The collector uses a heuristics to 
+decide whether it should perform a collection or whether it should postpone it.
+
+Postponing a collection means that Kaffe asks the operating system for
+more memory, growing its heap.  Every time it decides to postpone a collection, 
+it will ask for the amount of memory specified by the heap increment (-as) 
+cmdline switch, which defaults to 1MB.  Of course, postponing gc is only an 
+option if the current size of the heap is less than the maximum heap size 
+specified.  If the maximum heap size has already been reached, a collection
+will be performed.
+
+If the maximum heap size has not been reached, how does Kaffe decide whether
+to grow its heap or whether to garbage collect?  Like many things in CS,
+it's a classical space-time trade-off.  Consider the two extremes:
+
+First, suppose Kaffe always postponed collection until it obtained the 
+maximum amount of memory from the system.  This would mean that collections
+would occur less frequently, but it would also mean that most long-running 
+applications will actually require the full amount of memory specified as
+the maximum heap size.  This would mean to trade memory for speed.
+
+Trading memory for speed is not always desirable, for instance if the
+machine on which you're running has little memory, or if you can't afford
+to set the necessary amount of memory aside.  In systems using virtual
+memory, specifying heap sizes that are too large may lead to the well-known 
+thrashing effect.
+
+On the other hand, if Kaffe always collected if it ran out, it would collect 
+more often, but it won't ever use much more memory than the amount of memory 
+occupied by long-lived and fixed data.  This would mean to trade speed for
+memory.
+
+Let's look at a hypothetical example:
+Suppose an application uses 16MB of long-lived data, and produces
+160 MB of short-lived data.  Suppose the initial heap size is 5MB and the 
+maximum heap size is 64MB.  The heap increment is also the default, 1MB.
+
+If we always collected, then this application won't ever take more than
+17MB, but it will perform 160/(17-16) = 160 collections!  On the other hand, if 
+we used all the available memory, then the application would use 64MB, but 
+only perform 160/(64-16) = 4 collections.
+
+[ You might say: but wait, the cost of each of the 160 collections will be 
+lower than the cost of the 4 collections in the second case.  This is not
+true, however.  The costs of Kaffe's mark-and-sweep algorithm is the sum
+of the costs of marking the heap and sweeping it.  The costs of sweeping
+is linear in the total number of objects freed --- which is the same no
+matter how frequently you collect.  However, the costs of marking only
+depends on the amount of live data, which is roughly equivalent to the
+amount of long-lived data.  Hence, this cost is the same in both cases,
+but since this cost must be paid per collection, fewer collections will
+be faster. ]
+
+So, what does Kaffe do to find the sweet spot between not collecting too
+often and not using too much memory?  It looks at how much memory has been
+allocated since the last time a collection happened.  If this amount of
+memory is less than 1/3 of the total amount of memory in use, then the
+collection is skipped.  In our hypothetical example above, Kaffe would 
+use 24MB (since it will grow to 24MB in 1MB increments.)  Every time 8MB 
+of short-lived data have been added to the long-lived data occupying 16MB,
+kaffe will collect and free 8MB.  Hence, it will perform 160/(24-16) = 20 
+collections instead of 160 or 4.  
+
+Of course, if you have 64MB to spare, running Kaffe with '-ms 64M' is
+always your option and will require only 4 collections.
+
+Why 1/3?  It's just a number I pulled out of my hat.  Asymptotically, the
+number means that Kaffe's heap will always have 33% free memory after a
+gc.  Using the -verbosegc option will tell you how much it actually is.
+
+If you know of a better heuristics --- maybe one that takes other factors
+than the amount of memory allocated since the last collection into account,
+we'd certainly all like to know about it.  Possible candidates for such 
+factors are the time elapsed since the start of the program, the time it 
+takes to mark the heap, the time it takes to sweep freed objects, the length
+of the finalizer list, and the phase of the moon.
+
+Note that the discussion and the number in this FAQ are somewhat hypothetical
+and do not take various overheads into account.  In particular, they do not
+account for Kaffe's unfortunate tendency to keep more temporary garbage afloat
+than it probably should.  However, we're still working on improving Kaffe's
+collector.
+
+Thanks to Jason Baker and Archie Cobbs for contributing to the discussion 
+above.  Any comments and suggestions for improvements are welcome.
+
+	- Godmar Back <gback@cs.utah.edu> 
+
+1/5/99

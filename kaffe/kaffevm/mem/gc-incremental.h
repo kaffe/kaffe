@@ -66,6 +66,8 @@ extern struct _gcStats {
         uint32  markedmem;
         uint32  allocobj;
         uint32  allocmem;
+        uint32  finalobj;
+        uint32  finalmem;
 } gcStats;
 
 #if defined(GC_INCREMENTAL)

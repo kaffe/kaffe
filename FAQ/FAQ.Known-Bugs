@@ -105,7 +105,10 @@ MISCELLANEOUS & TODO
   verification succeeds.  This could lead to deadlock.
   
 * OutOfMemoryErrors are not handled properly.  Don't even try to write 
-  applications that attempt catch and recover from them.
+  applications that attempt catch and recover from them.  Running out of
+  memory may cause seemingly unrelated assertion failures, such as
+  "Assertion `jitting == 0 || !!!"reentered jitter"' failed."
+  Try increasing the total heap size using "-mx" in this case.
 
 * Stopping threads at inopportune times may corrupt the VM.
 

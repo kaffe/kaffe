@@ -2,8 +2,10 @@ Tue Jan  5 11:33:02 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffe/main.c: made -ms/-mx/-ss sun-compatible, added -as
 	to allow specifying heap increment.
-	* kaffe/kaffevm/mem/gc-mem.[ch] implemented -ms properly, setting
-	default to 5MB.
+	* kaffe/kaffevm/mem/gc-incremental.c,
+	kaffe/kaffevm/mem/gc-mem.[ch] implemented -ms properly, setting
+	default to 5MB.  Improved gc strategy some more, as described in
+	FAQ/FAQ.gcstrategy.
 
 Tue Jan  5 10:31:41 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 

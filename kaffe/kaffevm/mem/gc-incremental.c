@@ -174,6 +174,7 @@ static refTable			refObjects;
 
 struct _gcStats gcStats;
 extern size_t gc_heap_total;
+extern size_t gc_heap_limit;
 extern Hjava_lang_Class* ThreadClass;
 
 static void startGC(void);
@@ -390,7 +391,7 @@ walkMethods(Method* m, int nm)
 #if defined(TRANSLATOR)
 		/* walk the block of jitted code conservatively.
 		 * Is this really needed? 
-		 * XXX: this breaks encapsulation */
+		 * XXX: this will break encapsulation later on */
 		if (METHOD_TRANSLATED(m) && (m->accflags & ACC_NATIVE) == 0) {
 			void *mem = m->c.ncode.ncode_start;
 			if (mem != 0) {
@@ -567,17 +568,53 @@ gcMan(void* arg)
 		assert(gcRunning == true);
 
 		/*
-		 * Since multiple thread can wake us up without 
+		 * Let's try to define some heuristics for when we skip a 
+		 * collection.
+		 */
+		/* First, since multiple thread can wake us up without 
 		 * coordinating with each other, we must make sure that we
-		 * don't collect multiple times.
+		 * don't collect multiple times in a row.
 		 */
                 if (gcStats.allocmem == 0) {
+			/* XXX: If an application runs out of memory, it may be 
+			 * possible that an outofmemory error was raised and the
+			 * application in turn dropped some references.  Then
+			 * allocmem will be 0, yet a gc would be in order.
+			 * Once we implement OOM Errors properly, we will fix 
+			 * this; for now, this guards against wakeups by 
+			 * multiple threads.
+			 */
 DBG(GCSTAT,
-			dprintf("skipping collection...\n");
+			dprintf("skipping collection cause allocmem==0...\n");
     )
 			continue;
                 }
 
+		/*
+		 * Now try to decide whether we should postpone the gc and get
+		 * some memory from the system instead.
+		 *
+		 * If we already use the maximum amount of memory, we must gc.
+		 *
+		 * Otherwise, wait until the newly allocated memory is at 
+		 * least 1/3 of the total memory in use.  Assuming that the
+		 * gc will collect all newly allocated memory, this would 
+		 * asymptotically converge to a memory usage of approximately
+		 * 3/2 the amount of long-lived and fixed data combined.
+		 *
+		 * Feel free to tweak this parameter.
+		 */
+		if (gc_heap_total < gc_heap_limit && 
+		    gcStats.allocmem * 3 < gcStats.totalmem * 1) {
+DBG(GCSTAT,
+			dprintf("skipping collection since alloc/total "
+				"%dK/%dK = %.2f < 1/3\n",
+				gcStats.allocmem/1024, 
+				gcStats.totalmem/1024,
+				gcStats.allocmem/(double)gcStats.totalmem);
+    )
+			continue;
+		}
 		startGC();
 
 		for (unit = gclists[grey].cnext; unit != &gclists[grey]; unit = gclists[grey].cnext) {
@@ -611,8 +648,9 @@ DBG(GCSTAT,
 			fprintf(stderr, 
 			    "<GC: heap %dK, total before %dK,"
 			    " after %dK (%d/%d objs)\n %2.1f%% free,"
-			    " grown by %dK (#%d), marked %dK, "
-			    "swept %dK (#%d)>\n", 
+			    " alloced %dK (#%d), marked %dK, "
+			    "swept %dK (#%d)\n"
+			    " %d objs (%dK) awaiting finalization>\n",
 			gc_heap_total/1024, 
 			gcStats.totalmem/1024, 
 			(gcStats.totalmem-gcStats.freedmem)/1024, 
@@ -624,7 +662,9 @@ DBG(GCSTAT,
 			gcStats.allocobj,
 			gcStats.markedmem/1024, 
 			gcStats.freedmem/1024,
-			gcStats.freedobj);
+			gcStats.freedobj,
+			gcStats.finalobj,
+			gcStats.finalmem/1024);
 		}
 		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 1) {
 			OBJECTSTATSPRINT();
@@ -733,6 +773,8 @@ finishGC(void)
 		assert(GC_GET_COLOUR(info, idx) == GC_COLOUR_BLACK);
 
 		if (GC_GET_STATE(info, idx) == GC_STATE_INFINALIZE) {
+			gcStats.finalmem += GCBLOCKSIZE(info);
+			gcStats.finalobj += 1;
 			UAPPENDLIST(gclists[finalise], unit);
 		}
 		else {
@@ -819,6 +861,8 @@ finaliserMan(void* arg)
 
 			info = GCMEM2BLOCK(unit);
 			idx = GCMEM2IDX(info, unit);
+			gcStats.finalmem -= GCBLOCKSIZE(info);
+			gcStats.finalobj -= 1;
 
 			assert(GC_GET_STATE(info,idx) == GC_STATE_INFINALIZE);
 			/* Objects are only finalised once */
@@ -853,7 +897,7 @@ gcInvokeGC(void)
 }
 
 /*
- * Explicity invoke the finalizer.
+ * GC and invoke the finalizer.  Used to run finalizers on exit.
  */
 static
 void
@@ -872,7 +916,7 @@ gcInvokeFinalizer(void)
 	}
 	waitStaticCond(&finman, 0);
 	unlockStaticMutex(&finman);
-}       
+}
 
 /*
  * Allocate a new object.  The object is attached to the white queue.
@@ -907,6 +951,7 @@ gcMalloc(size_t size, int fidx)
 	/* keep pointer to object */
 	mem = UTOMEM(unit);
 	if (unit == 0) {
+		unlockStaticMutex(&gc_lock);
 		throwOutOfMemory();
 	}
 
