@@ -52,7 +52,7 @@ public URL(String protocol, String host, int port, String file,
 	    || file == null) {
 		throw new NullPointerException();
 	}
-	if (protocol.equals("file") && host != null) {
+	if (protocol.equals("file") && host != null && host.length() != 0) {
 		setHandler("ftp", handler);
 	} else {
 		setHandler(protocol, handler);
