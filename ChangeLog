@@ -1,3 +1,12 @@
+Wed Feb 24 23:46:58 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* config/alpha/common.h (sysdepCallMethod): rewrite so as to build 
+	with egcs 1.1.1 on Linux; some tests already pass!
+	* kaffe/kaffevm/findInJar.c: comment out the declaration of the
+	undefined static function generateMangledName, make some int
+	variables ssize_t, as in the functions they're passed to, to fix
+	alignment problems on alpha
+
 Wed Feb 24 11:54:30 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffeh/main.c: increase buffer sizes

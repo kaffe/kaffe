@@ -44,7 +44,9 @@ char* realClassPath;
 void initClasspath(void);
 
 static int getClasspathType(const char*);
+#if 0
 static void generateMangledName(char*, const char*);
+#endif
 static void discoverClasspath(const char*);
 static void makeClasspath(char*);
 
@@ -127,7 +129,7 @@ findInJar(char* cname, errorInfo *einfo)
 	int fp;
 	struct stat sbuf;
 	classFile hand;
-	int j;
+	ssize_t j;
 	jarEntry* entry;
 	static iLock jarlock;
 	classpathEntry* ptr;
@@ -394,7 +396,7 @@ int
 getClasspathType(const char* path)
 {
 	int h;
-	int c;
+	ssize_t c;
 	int rc;
 	char buf[4];
 	struct stat sbuf;
