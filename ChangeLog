@@ -1,3 +1,10 @@
+Wed Mar 24 09:44:03 1999  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/i386/jit.h, config/m68k/jit.h, config/m68k/netbsd1/jit-md.h
+	config/m68k/netbsd1/jit.h, config/sparc/jit.h,
+	kaffe/kaffevm/exception.c: hide exceptionFrame struct members 
+	in macro.
+
 Wed Mar 24 11:44:04 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* config/sparc/jit-icode.h (HAVE_move_ref_const): it's just like

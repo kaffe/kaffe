@@ -35,7 +35,7 @@ typedef struct _exceptionFrame {
 
 /* Get the next frame in the chain */
 #define	NEXTFRAME(f)							\
-	((f) = (exceptionFrame*)(f)->retfp)
+	(((exceptionFrame*)(f))->retfp)
 
 /* Extract the PC from the given frame */
 #define	PCFRAME(f)		((f)->retpc)

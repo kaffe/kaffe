@@ -25,37 +25,37 @@
 
 /* Structure of exception frame on stack */
 typedef struct _exceptionFrame {
-        uintp   retbp;
+        uintp	retfp;
         uintp	retpc;
 } exceptionFrame;
 
 /* Is this frame valid (ie. is it on the current stack) ? */
 #define	FRAMEOKAY(f)							\
-	((f) && (f)->retbp >= (uintp)TCTX(currentThread)->stackBase &&	\
-	 (f)->retbp < (uintp)TCTX(currentThread)->stackEnd)
+	((f) && (f)->retfp >= (uintp)TCTX(currentThread)->stackBase &&	\
+	 (f)->retfp < (uintp)TCTX(currentThread)->stackEnd)
 
 /* Get the next frame in the chain */
 #define	NEXTFRAME(f)							\
-	((f) = (exceptionFrame*)(f)->retbp)
+	(((exceptionFrame*)(f))->retfp)
 
 /* Extract the PC from the given frame */
 #define	PCFRAME(f)		((f)->retpc)
-
-/* Extract the object argument from given frame */
-#define FRAMEOBJECT(f) 		(*(Hjava_lang_Object**)((f)->retbp + 8))
 
 /* Get the first exception frame from a subroutine call */
 #define	FIRSTFRAME(f, o)						\
 	((f) = *(exceptionFrame*)__builtin_frame_address(0))
 
+/* Extract the object argument from given frame */
+#define FRAMEOBJECT(f) 		(*(Hjava_lang_Object**)((f)->retfp + 8))
+
 /* Call the relevant exception handler (rewinding the stack as
    necessary). */
 #define CALL_KAFFE_EXCEPTION(frame, info, obj)				\
 	__asm__ __volatile__(						\
-		"move%.l %0,%/a6\n\t"					\
 		"move%.l %1,%/d0\n\t"					\
+		"move%.l %0,%/a6\n\t"					\
 		"jmp %2@"						\
-		: : "g"(frame->retbp), "g"(obj), "a"(info.handler)	\
+		: : "g"(frame->retfp), "g"(obj), "a"(info.handler)	\
 		: "d0", "cc", "memory")
 
 /**/

@@ -136,9 +136,9 @@ nextFrame(void* fm)
 #if defined(TRANSLATOR)
         exceptionFrame* nfm;
 
-        nfm = (exceptionFrame*)(((exceptionFrame*)fm)->retbp);
+        nfm = (exceptionFrame*)NEXTFRAME(fm);
         /* Note: this should obsolete the FRAMEOKAY macro */
-        if (nfm && jthread_on_current_stack((void *)nfm->retbp)) {
+        if (nfm && jthread_on_current_stack((void *)NEXTFRAME(nfm))) {
                 return (nfm);
         }
         else {
