@@ -13,8 +13,9 @@ import java.util.Vector;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class File implements Serializable
-{
+
+public class File implements Serializable, Comparable {
+
 	private static final long serialVersionUID = 301077366599181567L;
 	final public static String separator = System.getProperty("file.separator");
 	final public static char separatorChar = separator.charAt(0);
@@ -85,13 +86,18 @@ public boolean delete() {
 
 native private boolean delete0();
 
-public boolean equals(Object obj) {
-	if (obj instanceof File) {
-		return (((File)obj).getPath().equals( getPath() ) );
-	}
-	else {
-		return (false);
-	}
+public int compareTo(Object that) {
+	return compareTo((File)that);
+}
+
+// XXX some filesystems are case-insensitive
+public int compareTo(File that) {
+	return this.path.compareTo(that.path);
+}
+
+// XXX some filesystems are case-insensitive
+public boolean equals(Object that) {
+	return (that instanceof File) ? path.equals(((File)that).path) : false;
 }
 
 public boolean exists() {

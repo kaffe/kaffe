@@ -16,7 +16,7 @@ import java.io.ObjectOutputStream;
 import java.io.IOException;
 import kaffe.util.Ptr;
 
-public class BigInteger extends Number {
+public class BigInteger extends Number implements Comparable {
 
 private static final long serialVersionUID = -8287574255936472291L;
 private Ptr number;
@@ -325,29 +325,20 @@ public boolean isProbablePrime(int certainty) {
 	return (true);
 }
 
+public int compareTo(Object obj) {
+	return compareTo((BigInteger)obj);
+}
+
 public int compareTo(BigInteger val) {
 	int r = cmp0(this, val);
 
 	// compute sign since JDK spec asks us to return -1/0/1, 
 	// but the GMP doc does not guarantee that.
-	if (r == 0) {
-	    return (0);
-	} else
-	if (r < 0) {
-	    return (-1);
-	} else {
-	    return (1);
-	}
+	return (r == 0) ? 0 : (r < 0) ? -1 : 1;
 }
 
 public boolean equals(Object o) {
-	if (!(o instanceof BigInteger)) {
-		return (false);
-	}
-	if (compareTo((BigInteger)o) == 0) {
-		return (true);
-	}
-	return (false);
+	return (o instanceof BigInteger) && compareTo((BigInteger)o) == 0;
 }
 
 public BigInteger min(BigInteger val) {

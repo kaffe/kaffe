@@ -10,7 +10,7 @@
 
 package java.math;
 
-public class BigDecimal extends Number {
+public class BigDecimal extends Number implements Comparable {
 
 private static final long serialVersionUID = 6108874887143696463L;
 public static final int ROUND_UP = 1;
@@ -96,6 +96,10 @@ public BigDecimal movePointLeft(int n) {
 
 public BigDecimal movePointRight(int n) {
 	throw new kaffe.util.NotImplemented();
+}
+
+public int compareTo(Object obj) {
+	return compareTo((BigDecimal)obj);
 }
 
 public int compareTo(BigDecimal val) {
