@@ -54,6 +54,11 @@ void* nextFrame(void*);
 struct Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
 struct _methods* unwindStackFrame(struct _stackTraceInfo* frame, 
 				  struct Hjava_lang_Throwable *eobj);
+void unhandledException(struct Hjava_lang_Throwable *eobj) __NORETURN__;
+
+extern uintp Kaffe_JNI_estart;
+extern uintp Kaffe_JNI_eend;
+#define	IS_IN_JNI_RANGE(pc) ((pc) >= Kaffe_JNI_estart && (pc) < Kaffe_JNI_eend)
 
 extern void initExceptions(void);
 

@@ -48,10 +48,6 @@ static void nullException(struct _exceptionFrame *);
 static void floatingException(struct _exceptionFrame *);
 static void dispatchException(Hjava_lang_Throwable*, stackTraceInfo*) __NORETURN__;
 
-Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
-
-extern uintp Kaffe_JNI_estart;
-extern uintp Kaffe_JNI_eend;
 extern void Kaffe_JNIExceptionHandler(void);
 
 extern void printStackTrace(struct Hjava_lang_Throwable*, struct Hjava_lang_Object*, int);
@@ -320,9 +316,7 @@ unwindStackFrame(stackTraceInfo* frame, Hjava_lang_Throwable *eobj)
 
 	meth = findExceptionInMethod(frame->pc, class, &einfo);
 
-	if (einfo.method == 0 
-	    && frame->pc >= Kaffe_JNI_estart && frame->pc < Kaffe_JNI_eend) 
-	{
+	if (einfo.method == 0 && IS_IN_JNI_RANGE(frame->pc)) {
 		Kaffe_JNIExceptionHandler();
 	}
 
@@ -358,8 +352,6 @@ static
 void
 dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 {
-	const char* cname;
-	Hjava_lang_Class* class;
 	Hjava_lang_Thread* ct;
 
 #if defined(INTS_DISABLED)
@@ -370,16 +362,16 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 	 */
 	assert(!INTS_DISABLED());
 #endif
+	ct = getCurrentThread();
+
+	/* Save exception object */
+	unhand(ct)->exceptObj = eobj;
 
 #if defined (HAVE_GCJ_SUPPORT)
 	/* XXX */
 	_Jv_Throw(eobj);
 	/* no return */	
 #endif
-	ct = getCurrentThread();
-
-	/* Save exception object */
-	unhand(ct)->exceptObj = eobj;
 
 	/* Search down exception stack for a match */
 #if defined(INTERPRETER)
@@ -444,6 +436,18 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 		}
 	}
 #endif
+	unhandledException(eobj);
+	/* Should not return */
+}
+
+void
+unhandledException(Hjava_lang_Throwable *eobj)
+{
+	const char* cname;
+	Hjava_lang_Class* class;
+	Hjava_lang_Thread* ct;
+
+	ct = getCurrentThread();
 
 	/* Clear held exception object */
 	unhand(ct)->exceptObj = 0;
@@ -456,7 +460,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 	 */
 	if (strcmp(cname, THREADDEATHCLASS) == 0) {
 		exitThread();
-	} 
+	}
 
 	/* We don't know what to do here. */
 	fprintf(stderr, "Internal error: caught an unexpected exception.\n"
