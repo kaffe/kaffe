@@ -5,8 +5,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #if defined(TRAMPOLINE_FUNCTION)
@@ -31,7 +31,7 @@ TRAMPOLINE_FUNCTION()
 #define	C_FUNC_NAME(FUNC) #FUNC
 #endif
 
-#if 1 /* defined(NO_SHARED_VMLIBRARY) */
+#if defined(NO_SHARED_VMLIBRARY)
 
 asm(
 	START_ASM_FUNC() C_FUNC_NAME(arm_do_fixup_trampoline) "\n"
