@@ -22,6 +22,7 @@ aux*)		Khost_os=a-ux ;;
 bsdi3*)		Khost_os=bsdi3 ;;
 bsdi*)		Khost_os=bsdi ;;
 cygwin*)	Khost_os=cygwin32 ;;
+darwin*)	Khost_os=darwin ;;
 freebsd*)	Khost_os=freebsd2 ;;
 hpux*)		Khost_os=hpux ;;
 gnu*)		Khost_os=gnu ;;
