@@ -134,7 +134,7 @@ final public String readLine() throws IOException {
 			break;
 		if (ch == '\r') {       // Check for '\r\n'
 			final int data2 = read();
-			final char ch2 = (char) (data & 0xff);
+			final char ch2 = (char) (data2 & 0xff);
 
 			if (data2 != -1 && ch2 != '\n')
 				seek(getFilePointer() - 1);
