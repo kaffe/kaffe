@@ -300,7 +300,7 @@ DBG(GCJ,
 	
 DBG(GCJ,	
 	if (!is_trampoline) {
-		dprintf(__FUNCTION__": %s.%s%s framesize is %d, %s\n", 
+		dprintf(__FUNCTION__": %s.%s%s framesize is %d\n", 
 			CLASS_CNAME(meth->class), meth->name->data, 
 			PSIG_DATA(METHOD_PSIG(meth)), meth->framesize);
 	} else {
