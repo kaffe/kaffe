@@ -160,7 +160,9 @@ noinst_HEADERS = \
 	ifaddrs_compat.h \
 	$(ifaddrs_compat) \
 	defs.h \
+	dummyin6.h \
 	files.h \
+	getaddrinfo.h \
 	nets.h \
 	system.h
 

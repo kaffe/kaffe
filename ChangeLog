@@ -1,3 +1,8 @@
+2003-06-13 Dalibor Topic <robilad@yahoo.com>
+
+	* Makefile.am, include/Makefile.am:
+	Add missing new files to make 'make distcheck' work.
+
 2003-06-12 Florian La Roche <laroche@redhat.com>
 
 	* config/s390/linux/md.h:

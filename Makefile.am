@@ -3,6 +3,9 @@
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
+# Copyright (c) 2003
+# 	Kaffe.org contributors. All rights reserved.
+#
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
@@ -24,8 +27,12 @@ EXTRA_DIST = \
 	license-lesser.terms \
 	license-w3c.terms \
 	gwqt.m4 \
+	herrno.m4 \
+	in6addr.m4 \
 	iconv.m4 \
 	libtool.m4 \
+	sockaddrin6.m4 \
+	sockinttypes.m4 \
 	FAQ/FAQ.BeOS \
 	FAQ/FAQ.Known-Bugs \
 	FAQ/FAQ.amigaos \
@@ -34,6 +41,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.benchmarking \
 	FAQ/FAQ.class-states \
 	FAQ/FAQ.classlibrary-compile \
+	FAQ/FAQ.code-layout \
 	FAQ/FAQ.coding-style \
 	FAQ/FAQ.cross-compiling \
 	FAQ/FAQ.debugging \
@@ -87,6 +95,7 @@ EXTRA_DIST = \
 	developers/dumpClass.pl \
 	developers/gdbinit \
 	developers/fixup.c \
+	developers/getaddrinfo-socketinttypes-glibc2.diff \
 	developers/geteh_from_libgcc2 \
 	developers/glibc-2.1.1-signal.patch \
 	developers/mangleNative.pl \
