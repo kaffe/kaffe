@@ -1,1 +1,1 @@
-#include "mips/irix/jit-md.h"
+#include "mips/irix5/jit-md.h"

@@ -1,5 +1,9 @@
 2004-12-18  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* config/mips/irix5/jit3-md.h: Fixed a path.
+
+2004-12-18  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/mips/irix5/jit-md.h, config/mips/irix5/jit3-md.h:
 	Copied from mips/linux as the sigcontext structure looks similar.
 	
