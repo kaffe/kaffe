@@ -646,6 +646,8 @@ java_awt_SRCS = \
 	java/awt/ItemEvt.java \
 	java/awt/ItemSelectable.java \
 	java/awt/JobAttributes.java \
+	java/awt/KeyEventDispatcher.java \
+	java/awt/KeyEventPostProcessor.java \
 	java/awt/KeyEvt.java \
 	java/awt/LayoutManager2.java \
 	java/awt/LayoutManager.java \
@@ -789,6 +791,8 @@ java_awt_font_SRCS = \
 	java/awt/font/GlyphJustificationInfo.java \
 	java/awt/font/GlyphMetrics.java \
 	java/awt/font/GlyphVector.java \
+	java/awt/font/MultipleMaster.java \
+	java/awt/font/OpenType.java \
 	java/awt/font/TextHitInfo.java
 
 java_awt_geom_SRCS = \

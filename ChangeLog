@@ -1,3 +1,51 @@
+2003-08-07  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/Makefile.am,
+	Regenerated to include new files.
+	
+	* libraries/javalib/java/applet/AppletStub.java,
+	libraries/javalib/java/applet/AudioClip.java,
+	libraries/javalib/java/awt/ActiveEvent.java,
+	libraries/javalib/java/awt/Adjustable.java,
+	libraries/javalib/java/awt/ItemSelectable.java,
+	libraries/javalib/java/awt/KeyEventDispatcher.java,
+	libraries/javalib/java/awt/KeyEventPostProcessor.java,
+	libraries/javalib/java/awt/LayoutManager.java,
+	libraries/javalib/java/awt/LayoutManager2.java,
+	libraries/javalib/java/awt/MenuContainer.java,
+	libraries/javalib/java/awt/PrintGraphics.java,
+	libraries/javalib/java/awt/Shape.java,
+	libraries/javalib/java/awt/datatransfer/ClipboardOwner.java,
+	libraries/javalib/java/awt/datatransfer/Transferable.java,
+	libraries/javalib/java/awt/datatransfer/UnsupportedFlavorException.java,
+	libraries/javalib/java/awt/event/AWTEventListener.java,
+	libraries/javalib/java/awt/event/ActionListener.java,
+	libraries/javalib/java/awt/event/AdjustmentListener.java,
+	libraries/javalib/java/awt/event/ComponentListener.java,
+	libraries/javalib/java/awt/event/ContainerListener.java,
+	libraries/javalib/java/awt/event/FocusListener.java,
+	libraries/javalib/java/awt/event/ItemListener.java,
+	libraries/javalib/java/awt/event/KeyListener.java,
+	libraries/javalib/java/awt/event/MouseListener.java,
+	libraries/javalib/java/awt/event/MouseMotionListener.java,
+	libraries/javalib/java/awt/event/TextListener.java,
+	libraries/javalib/java/awt/event/WindowListener.java,
+	libraries/javalib/java/awt/font/MultipleMaster.java,
+	libraries/javalib/java/awt/font/OpenType.java,
+	libraries/javalib/java/beans/BeanInfo.java,
+	libraries/javalib/java/beans/Customizer.java,
+	libraries/javalib/java/beans/PropertyChangeListener.java,
+	libraries/javalib/java/beans/PropertyEditor.java,
+	libraries/javalib/java/beans/VetoableChangeListener.java,
+	libraries/javalib/java/beans/Visibility.java,
+	libraries/javalib/java/util/ConcurrentModificationException.java,
+	libraries/javalib/java/util/EmptyStackException.java,
+	libraries/javalib/java/util/NoSuchElementException.java,
+	libraries/javalib/java/util/TooManyListenersException.java,
+	libraries/javalib/java/util/jar/JarException.java,
+	libraries/javalib/java/util/zip/DataFormatException.java:
+	Merged in from GNU Classpath.
+	
 2003-08-07  Rob Gonzalez <rob@kaffe.org>
 
 	Fixed the verifier so that -verify works properly.

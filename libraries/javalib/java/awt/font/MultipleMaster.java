@@ -1,5 +1,5 @@
-/* AdjustmentListener.java -- listen for adjustment events
-   Copyright (C) 1999, 2002 Free Software Foundation, Inc.
+/* MultipleMaster.java
+   Copyright (C) 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,23 +36,26 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package java.awt.event;
+package java.awt.font;
 
-import java.util.EventListener;
+import java.awt.Font;
 
 /**
- * Interface for classes that listen for adjustment events.
- *
- * @author Aaron M. Renn <arenn@urbanophile.com>
- * @since 1.1
- * @status updated to 1.4
+ * @author Michael Koch
  */
-public interface AdjustmentListener extends EventListener
+public interface MultipleMaster
 {
-  /**
-   * This method is called when an adjustable value changes.
-   *
-   * @param event the <code>AdjustmentEvent</code> that occurred
-   */
-  void adjustmentValueChanged(AdjustmentEvent event);
-} // interface AdjustmentListener
+  public Font deriveMMFont (float[] axes);
+  
+  public Font deriveMMFont (float[] glyphWidths, float avgStemWidth,
+                            float typicalCapHeight, float typicalXHeight,
+                            float italicAngle);
+  
+  public float[] getDesignAxisDefaults ();
+  
+  public String[] getDesignAxisNames ();
+  
+  public float[] getDesignAxisRanges ();
+  
+  public int getNumDesignAxes ();
+}
