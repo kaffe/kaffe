@@ -5,7 +5,8 @@
 	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c,
 	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c,
 	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkLabelPeer.c,
-	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c:
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c:
 	  Sparse NULL-constant fixes.
 
 2004-12-19  Adam Heath  <doogie@brainfood.com>

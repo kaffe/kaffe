@@ -109,7 +109,7 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_create
   int right = 0;
   jint *insets;
 
-  insets = (*env)->GetIntArrayElements (env, jinsets, 0);
+  insets = (*env)->GetIntArrayElements (env, jinsets, NULL);
   insets[0] = insets[1] = insets[2] = insets[3] = 0;
 
   NSA_SET_GLOBAL_REF (env, obj);
