@@ -38,16 +38,38 @@ exception statement from your version. */
 
 package javax.swing.plaf.metal;
 
+import java.awt.Font;
+
 import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.FontUIResource;
 
 public class DefaultMetalTheme extends MetalTheme
 {
-  private static final ColorUIResource PRIMARY1 = new ColorUIResource(102, 102, 153);
-  private static final ColorUIResource PRIMARY2 = new ColorUIResource(153, 153, 204);
-  private static final ColorUIResource PRIMARY3 = new ColorUIResource(204, 204, 255);
-  private static final ColorUIResource SECONDARY1 = new ColorUIResource(102, 102, 102);
-  private static final ColorUIResource SECONDARY2 = new ColorUIResource(153, 153, 153);
-  private static final ColorUIResource SECONDARY3 = new ColorUIResource(204, 204, 204);
+  private static final ColorUIResource PRIMARY1 =
+    new ColorUIResource(102, 102, 153);
+  private static final ColorUIResource PRIMARY2 =
+    new ColorUIResource(153, 153, 204);
+  private static final ColorUIResource PRIMARY3 = 
+    new ColorUIResource(204, 204, 255);
+  private static final ColorUIResource SECONDARY1 = 
+    new ColorUIResource(102, 102, 102);
+  private static final ColorUIResource SECONDARY2 = 
+    new ColorUIResource(153, 153, 153);
+  private static final ColorUIResource SECONDARY3 = 
+    new ColorUIResource(204, 204, 204);
+  
+  private static final FontUIResource CONTROL_TEXT_FONT =
+    new FontUIResource("Dialog", Font.BOLD, 12);
+  private static final FontUIResource MENU_TEXT_FONT =
+    new FontUIResource("Dialog", Font.BOLD, 12);
+  private static final FontUIResource SUB_TEXT_FONT =
+    new FontUIResource("Dialog", Font.PLAIN, 10);
+  private static final FontUIResource SYSTEM_TEXT_FONT =
+    new FontUIResource("Dialog", Font.PLAIN, 12);
+  private static final FontUIResource USER_TEXT_FONT =
+    new FontUIResource("Dialog", Font.PLAIN, 12);
+  private static final FontUIResource WINDOW_TITLE_FONT =
+    new FontUIResource("Dialog", Font.BOLD, 12);
   
   public DefaultMetalTheme()
   {
@@ -87,5 +109,35 @@ public class DefaultMetalTheme extends MetalTheme
   protected ColorUIResource getSecondary3()
   {
     return SECONDARY3;
+  }
+
+  public FontUIResource getControlTextFont()
+  {
+    return CONTROL_TEXT_FONT;
+  }
+
+  public FontUIResource getMenuTextFont()
+  {
+    return MENU_TEXT_FONT;
+  }
+  
+  public FontUIResource getSubTextFont()
+  {
+    return SUB_TEXT_FONT;
+  }
+  
+  public FontUIResource getSystemTextFont()
+  {
+    return SYSTEM_TEXT_FONT;
+  }
+  
+  public FontUIResource getUserTextFont()
+  {
+    return USER_TEXT_FONT;
+  }
+  
+  public FontUIResource getWindowTitleFont()
+  {
+    return WINDOW_TITLE_FONT;
   }
 }

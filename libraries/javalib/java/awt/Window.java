@@ -218,12 +218,11 @@ public class Window extends Container implements Accessible
         && gc.getDevice().getType() != GraphicsDevice.TYPE_RASTER_SCREEN)
       throw new IllegalArgumentException ("gc must be from a screen device");
 
-    // FIXME: until we implement this, it just causes AWT to crash.
-//     if (gc == null)
-//       graphicsConfiguration = GraphicsEnvironment.getLocalGraphicsEnvironment()
-//         .getDefaultScreenDevice()
-//         .getDefaultConfiguration();
-//     else
+    if (gc == null)
+      graphicsConfiguration = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                                                 .getDefaultScreenDevice()
+                                                 .getDefaultConfiguration();
+    else
       graphicsConfiguration = gc;
   }
 

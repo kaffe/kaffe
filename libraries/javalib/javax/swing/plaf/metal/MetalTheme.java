@@ -39,13 +39,16 @@ exception statement from your version. */
 
 package javax.swing.plaf.metal;
 
+import java.awt.Color;
+
 import javax.swing.UIDefaults;
 import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.FontUIResource;
 
 public abstract class MetalTheme
 {
-  private ColorUIResource BLACK = new ColorUIResource(0, 0, 0);
-  private ColorUIResource WHITE = new ColorUIResource(255, 255, 255);
+  private ColorUIResource BLACK = new ColorUIResource(Color.BLACK);
+  private ColorUIResource WHITE = new ColorUIResource(Color.WHITE);
 
   public MetalTheme()
   {
@@ -122,7 +125,7 @@ public abstract class MetalTheme
 
   public ColorUIResource getInactiveControlTextColor()
   {
-    return getSecondary2();
+    return getControlDisabled();
   }
 
   public ColorUIResource getInactiveSystemTextColor()
@@ -137,7 +140,7 @@ public abstract class MetalTheme
 
   public ColorUIResource getMenuDisabledForeground()
   {
-    return getSecondary2();
+    return getSecondary3();
   }
 
   public ColorUIResource getMenuForeground()
@@ -246,4 +249,11 @@ public abstract class MetalTheme
   protected abstract ColorUIResource getSecondary1();
   protected abstract ColorUIResource getSecondary2();
   protected abstract ColorUIResource getSecondary3();
+
+  public abstract FontUIResource getControlTextFont();
+  public abstract FontUIResource getMenuTextFont();
+  public abstract FontUIResource getSubTextFont();
+  public abstract FontUIResource getSystemTextFont();
+  public abstract FontUIResource getUserTextFont();
+  public abstract FontUIResource getWindowTitleFont();
 }

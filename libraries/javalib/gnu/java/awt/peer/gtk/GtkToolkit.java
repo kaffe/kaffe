@@ -59,12 +59,14 @@ import java.awt.image.ImageConsumer;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 import java.awt.peer.*;
+import java.io.InputStream;
 import java.net.URL;
 import java.text.AttributedString;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
@@ -313,7 +315,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 			   "SansSerif" });
   }
 
-  private class LRUCache extends java.util.LinkedHashMap
+  private class LRUCache extends LinkedHashMap
   {    
     int max_entries;
     public LRUCache(int max)
@@ -613,15 +615,11 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
   public GraphicsEnvironment getLocalGraphicsEnvironment()
   {
-    GraphicsEnvironment ge;
-    ge = new GdkGraphicsEnvironment ();  
-    return ge;
+    return new GdkGraphicsEnvironment();
   }
 
-  public Font createFont(int format, java.io.InputStream stream)
+  public Font createFont(int format, InputStream stream)
   {
-    throw new java.lang.UnsupportedOperationException ();
+    throw new UnsupportedOperationException();
   }
-
-
-} // class GtkToolkit
+}

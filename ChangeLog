@@ -4,6 +4,49 @@
 
 	2004-12-30  Michael Koch  <konqueror@gmx.de>
 
+	* gnu/java/awt/peer/gtk/GtkToolkit.java:
+	Explicitely import used classes.
+	(getLocalGraphicsEnvironment): Simplify.
+	* java/awt/Window.java (Window):
+	Enable code to get the default GraphicsConfiguration.
+	
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-12-30  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/metal/DefaultMetalTheme.java
+	(CONTROL_TEXT_FONT): New static field.
+	(MENU_TEXT_FONT): Likewise.
+	(SUB_TEXT_FONT): Likewise.
+	(SYSTEM_TEXT_FONT): Likewise.
+	(USER_TEXT_FONT): Likewise.
+	(WINDOW_TITLE_FONT): Likewise.
+	(getControlTextFont): New method.
+	(getMenuTextFont): Likewise.
+	(getSubTextFont): Likewise.
+	(getSystemTextFont): Likewise.
+	(getUserTextFont): Likewise.
+	(getWindowTitleFont): Likewise.
+	* javax/swing/plaf/metal/MetalTheme.java
+	(BLACK): Initialize with Color.BLACK.
+	(WHITE): Initialize with Color.WHITE.
+	(getInactiveControlTextColor): Return getControlDisabled().
+	(getMenuDisabledForeground): Return getSecondary3().
+	(getControlTextFont): New abstract method.
+	(getMenuTextFont): Likewise.
+	(getSubTextFont): Likewise.
+	(getSystemTextFont): Likewise.
+	(getUserTextFont): Likewise.
+	(getWindowTitleFont): Likewise.
+	
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-12-30  Michael Koch  <konqueror@gmx.de>
+
 	* java/text/DateFormat.java
 	(getAvailableLocales): Implemented.
 	* java/util/Locale.java
