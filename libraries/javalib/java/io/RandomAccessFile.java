@@ -19,7 +19,7 @@ static {
 	System.loadLibrary("io");
 }
 
-public RandomAccessFile(File file, String mode) throws IOException {
+public RandomAccessFile(File file, String mode) throws FileNotFoundException {
 	this(file.getPath(), mode);
 }
 
