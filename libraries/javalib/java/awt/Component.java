@@ -2270,7 +2270,7 @@ public abstract class Component
   {
     boolean handled = handleEvent (e);
 
-    if (!handled)
+    if (!handled && getParent() != null)
       // FIXME: need to translate event coordinates to parent's
       // coordinate space.
       handled = getParent ().postEvent (e);
