@@ -170,6 +170,10 @@ java_util_Arrays_sortObject(HArrayOfObject *a, jint fromIndex, jint toIndex, str
 	errorInfo info;
 	int k;
 
+	if (len == 0) {
+		return;
+	}
+
 	/* Prepare shadow array */
 	ilist = KMALLOC(len * sizeof(*ilist));
 	if (ilist == NULL) {
