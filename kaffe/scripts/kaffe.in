@@ -1,10 +1,29 @@
 #! /bin/sh
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-KAFFE_LIB=@libdir@
-# Pretend Kaffe is Java
-LD_LIBRARY_PATH=$KAFFE_LIB:$LD_LIBRARY_PATH
+#
+# Driver script for Kaffe.
+# This script invokes the "Kaffe" executable after modifying
+# CLASSPATH and LD_LIBRARY_PATH as needed.
+#
+# We prepend kaffe's lib directory to LD_LIBRARY_PATH.
+#
+# The effective CLASSPATH is made up of four parts, which 
+# are composed in the following order:
+#
+#	1. a user-specified CLASSPATH or .
+#	2. Klasses.jar in $prefix/share/kaffe
+#	3. pizza.jar in $prefix/share/kaffe
+#	4. classes.zip in $prefix/share/kaffe iff it exists.
+#
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+: ${KAFFE_BINDIR="@bindir@"}
+: ${KAFFE_CLASSDIR="@datadir@/kaffe"}
+: ${KAFFE_LIB="@libdir@"}
+CLASSPATH="${CLASSPATH-.}:$KAFFE_CLASSDIR/Klasses.jar:$KAFFE_CLASSDIR/pizza.jar"`test -f $KAFFE_CLASSDIR/classes.zip && echo ":$KAFFE_CLASSDIR/classes.zip"`
+export CLASSPATH
+LD_LIBRARY_PATH="$KAFFE_LIB"${LD_LIBRARY_PATH+":$LD_LIBRARY_PATH"}
 export LD_LIBRARY_PATH
 
-exec Kaffe "$@"
+exec $KAFFE_BINDIR/Kaffe ${1+"$@"}

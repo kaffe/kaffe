@@ -1,3 +1,12 @@
+Thu Aug 27 13:53:40 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/scripts/kaffe.in: improve CLASSPATH handling in driver 
+
+Thu Aug 27 13:16:01 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/stackTrace.h: fix STACKTRACEEND for intr to
+	take JNI methods into account.
+
 Wed Aug 26 14:27:44 1998  Benjamin Reed  <breed@almaden.ibm.com>
 
 	* libraries/javalib/kaffe/lang/UNIXProcess.java: throw 
