@@ -1,5 +1,6 @@
 Wed Jul 22 22:52:09 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
+	* libraries/javalib/java/lang/reflect/Field.java: fixed Field.getType()
 	* libraries/javalib/java/util/Hashtable.java: fixed clone method
 	  to properly clone subclasses.
 
