@@ -129,10 +129,23 @@ longSysdepCallMethod(callMethodInfo *call,
       break;
 
     case 1:
-      if (call->rettype == 'F')
+      switch(call->rettype) {
+      case 'F':
 	call->ret->f = ((jfloat (*)(ARG_TYPES))(func))(ARG_LIST);
-      else /* Must be 32-bit or smaller int.  */
+	break;
+      case 'Z':
+      case 'B':
+	call->ret->b = ((jint (*)(ARG_TYPES))(func))(ARG_LIST);
+	break;
+      case 'C':
+      case 'S':
+	call->ret->s = ((jint (*)(ARG_TYPES))(func))(ARG_LIST);
+	break;
+      default:
 	call->ret->i = ((jint (*)(ARG_TYPES))(func))(ARG_LIST);
+        break;
+      }
+
       break;
 
     default:

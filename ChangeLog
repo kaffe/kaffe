@@ -1,5 +1,10 @@
 2004-08-26  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/sparc/sysdepCallMethod.h:
+	Cast correctly the return argument to the right type.
+
+2004-08-26  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* test/regression/compiler/InnerTest1_A.java,
 	test/regression/compiler/InnerTest1_B.java:
 	New test for KJC.
