@@ -17,27 +17,6 @@ See license-lesser.terms for details.
 
 More information on tritonus is available from http://tritonus.org.
 
-* JAXP
-
-This code has been merged in from the GNU JAXP project. Kaffe is
-tracking this project's CVS HEAD.
-
-GNU JAXP is distributed under the GNU General Public License, with 
-the "library exception" which permits its use as a library in 
-conjunction with non-Free software:
-
-  "As a special exception, if you link this library with other 
-   files to produce an executable, this library does not by itself 
-   cause the resulting executable to be covered by the GNU General 
-   Public License. This exception does not however invalidate any 
-   other reasons why the executable file might be covered by the GNU 
-   General Public License."
-
-See license.terms for the text of the GNU General Public License.
-
-More information on GNU JAXP can be found at 
-http://www.gnu.org/software/classpathx/jaxp/.
-
 * gjdoc
 
 This code has been merged in from the GNU Classpath tools project.
@@ -49,20 +28,6 @@ See license.terms for the text of the GNU General Public License.
 
 More information on gjdoc can be found at
 http://www.gnu.org/software/cp-tools/.
-
-* java.util.regex
-
-This code has been merged in from GNU regexp. Kaffe tracks this
-project's CVS HEAD.
-
-Thanks to Wes Biggs for providing kaffe with a working java.util.regex
-implementation over GNU regexp.
-
-The GNU regexp library is distributed under the terms of the GNU 
-Lesser General Public License. See license-lesser.terms for details.
-
-More information on GNU regexp can be found at 
-http://www.cacas.org/java/gnu/regexp/.
 
 * gnu.crypto, javax.crypto, javax.security.auth, javax.security.sasl,
   org.ietf.jgss
