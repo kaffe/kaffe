@@ -2,7 +2,6 @@ package java.awt;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.lang.String;
 
 /**
  * CheckboxMenuItem
@@ -61,10 +60,20 @@ int getWidth() {
 	return sw;
 }
 
+public void handleShortcut( MenuShortcut ms) {
+	setState( !isChecked );
+	if ( hasToNotify( iListener) ) {
+		ItemEvt ie = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, getLabel(),
+                     isChecked ? ItemEvent.SELECTED : ItemEvent.DESELECTED );
+		Toolkit.eventQueue.postEvent( ie);
+	}
+}
+
 int paint ( Graphics g, int xoff, int y, int width, Color back, Color fore, boolean sel) {
 	int cm = getHeight();
-	g.setColor( isChecked ? Defaults.FocusClr : Defaults.BtnClr);
-	g.fill3DRect( xoff, y + cm/4, cm/2, cm/2, !isChecked);
+//	g.setColor( isChecked ? Defaults.FocusClr : Defaults.BtnClr);
+	g.setColor( Defaults.BtnClr);
+	g.fill3DRect( xoff, y + cm/5, cm/2, cm/2, !isChecked);
 	xoff += 3*cm/4;
 
 	return super.paint( g, xoff, y, width, back, fore, sel);
@@ -72,15 +81,6 @@ int paint ( Graphics g, int xoff, int y, int width, Color back, Color fore, bool
 
 public String paramString() {
 	return super.paramString() + ", " + (isChecked ? "checked" : "unchecked");
-}
-
-void process() {
-	setState( !isChecked );
-	if ( hasToNotify( iListener) ) {
-		ItemEvt ie = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, getLabel(),
-                     isChecked ? ItemEvent.SELECTED : ItemEvent.DESELECTED );
-		Toolkit.eventQueue.postEvent( ie);
-	}
 }
 
 protected void processItemEvent ( ItemEvent ie ) {

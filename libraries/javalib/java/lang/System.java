@@ -45,6 +45,9 @@ static {
 	in = new BufferedInputStream(new FileInputStream(FileDescriptor.in), 128);
 	out = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true);
 	err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);
+        // in = new BufferedInputStream(new kaffe.io.StdInputStream(), 128);
+        // out = new PrintStream(new BufferedOutputStream(new kaffe.io.StdOutputStream(), 128), true);
+        // err = new PrintStream(new BufferedOutputStream(new kaffe.io.StdErrorStream(), 128), true);	
 }
 
 private static void checkPropertyAccess() {

@@ -1,6 +1,5 @@
 package java.awt.event;
 
-import java.lang.String;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Event;
@@ -38,7 +37,7 @@ public MouseEvent ( Component src, int evtId, long time, int modifiers,
 	     int x, int y, int clickCount, boolean isPopupTrigger) {
 	super( src, evtId);
 	
-	this.when = when;
+	this.when = time;
 	this.modifiers = modifiers;
 
 	this.x = x;

@@ -23,15 +23,16 @@ import java.util.Vector;
  */
 public class Choice
   extends Container
-  implements ItemSelectable, ActionListener, ItemListener, MouseListener, KeyListener
+  implements ItemSelectable, ActionListener, ItemListener, MouseListener, KeyListener, FocusListener
 {
 	Vector items = new Vector();
 	Object selection;
 	ItemListener iListener;
 	ChoiceWindow prompter;
 	TextField entry = new TextField();
-	boolean hilight;
+	int state;
 	static int BTN_WIDTH = 15;
+	static int HILIGHTED = 1;
 
 class ChoiceWindow
   extends Window
@@ -93,22 +94,33 @@ public synchronized void addItemListener ( ItemListener il) {
 	eventMask |= AWTEvent.ITEM_EVENT_MASK;
 }
 
-void closePrompt() {
+void closePrompt( boolean resetFocus) {
 	if ( prompter != null) {
 		prompter.list.removeItemListener( this);
 		prompter.list.removeActionListener( this);
+		prompter.list.removeFocusListener( this);
 
 		prompter.dispose();
 		prompter = null;
-		repaint();
+		paintButton();
 		
-		entry.requestFocus();
+		if ( resetFocus)
+			entry.requestFocus();
 	}
 }
 
 public void doLayout () {
 	int d = BORDER_WIDTH;
 	entry.setBounds( 0, 0, width-BTN_WIDTH-2*d, height);
+}
+
+public void focusGained ( FocusEvent e) {
+}
+
+public void focusLost ( FocusEvent e) {
+	if ( (prompter != null) && (e.getSource() == prompter.list) ) {
+		closePrompt( false);
+	}
 }
 
 ClassProperties getClassProperties () {
@@ -181,12 +193,12 @@ public void mouseClicked ( MouseEvent e) {
 }
 
 public void mouseEntered ( MouseEvent e) {
-	hilight = true;
+	state |= HILIGHTED;
 	paintButton();
 }
 
 public void mouseExited ( MouseEvent e) {
-	hilight = false;
+	state &= ~HILIGHTED;
 	paintButton();
 }
 
@@ -194,7 +206,7 @@ public void mousePressed ( MouseEvent e) {
 	if ( prompter == null)
 		openPrompt();
 	else
-		closePrompt();
+		closePrompt( true);
 }
 
 public void mouseReleased ( MouseEvent e) {
@@ -209,16 +221,18 @@ void notifyItem() {
 }
 
 void openPrompt() {
-	if ( prompter != null)
-		return;
-	Frame fr = (Frame)entry.getToplevel();
-	prompter = new ChoiceWindow( fr );
-	Point p = getLocationOnScreen();
-	prompter.popUpAt( p.x, p.y+height+1, width,
-	                  Math.min( items.size() + 1, 8)*Defaults.WndFontMetrics.getHeight());
-	prompter.list.addItemListener( this);
-	prompter.list.addActionListener( this);
-	repaint();
+	if ( prompter == null) {
+		Frame fr = (Frame)entry.getToplevel();
+		prompter = new ChoiceWindow( fr );
+		Point p = getLocationOnScreen();
+		prompter.popUpAt( p.x, p.y+height+1, width,
+		                  Math.min( items.size() + 1, 8)*Defaults.WndFontMetrics.getHeight());
+		prompter.list.addItemListener( this);
+		prompter.list.addActionListener( this);
+		prompter.list.addFocusListener( this);
+		
+		repaint();
+	}
 }
 
 public void paint ( Graphics g) {
@@ -239,7 +253,7 @@ void paintButton( Graphics g) {
 	int d = BORDER_WIDTH;
 	int db = BTN_WIDTH;
 
-	g.setColor( hilight ? Defaults.BtnPointClr : Defaults.BtnClr);
+	g.setColor( ((state & HILIGHTED) > 0) ? Defaults.BtnPointClr : Defaults.BtnClr);
 	g.fill3DRect ( width-db-d, d, db, height-2*d, prompter == null );
 	
 	//draw button marker
@@ -249,7 +263,7 @@ void paintButton( Graphics g) {
 	g.drawLine( x, y, x-3, y-7);
 	g.drawLine( x, y, x+3, y-7);
 	x--;
-	g.setColor( hilight ? Defaults.FocusClr : Color.black);
+	g.setColor( ((state & HILIGHTED) > 0) ? Defaults.FocusClr : Color.black);
 	g.drawLine( x, y, x-3, y-7);
 	g.drawLine( x, y, x+3, y-7);
 	
@@ -294,7 +308,7 @@ public void requestFocus () {
 }
 
 public synchronized void select ( String item) {
-	closePrompt();
+	closePrompt( true);
 	if ( items.contains( item) ) {
 		selection = item;
 		if ( ! entry.getText().equals( item) )

@@ -1,3 +1,9 @@
+package java.text;
+
+import java.lang.String;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 /*
  * Java core library component.
  *
@@ -7,24 +13,18 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.text;
-
-import java.lang.String;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-public abstract class NumberFormat extends Format implements Cloneable {
-
-public static final int INTEGER_FIELD = 0;
-public static final int FRACTION_FIELD = 1;
-
-boolean grouping;
-boolean intonly;
-int maxfrac;
-int maxint;
-int minfrac;
-int minint;
+abstract public class NumberFormat
+  extends Format
+  implements Cloneable
+{
+	final public static int INTEGER_FIELD = 0;
+	final public static int FRACTION_FIELD = 1;
+	boolean grouping;
+	boolean intonly;
+	int maxfrac;
+	int maxint;
+	int minfrac;
+	int minint;
 
 public NumberFormat() {
 	grouping = false;
@@ -51,18 +51,7 @@ public boolean equals(Object obj) {
 	return (false);
 }
 
-public final String format(double num) {
-	return (format(num, new StringBuffer(), new FieldPosition(0)).toString());
-}
-
-public final String format(long num) {
-	return (format(num, new StringBuffer(), new FieldPosition(0)).toString());
-}
-
-public abstract StringBuffer format(double num, StringBuffer buf, FieldPosition pos);
-public abstract StringBuffer format(long num, StringBuffer buf, FieldPosition pos);
-
-public final StringBuffer format(Object num, StringBuffer buf, FieldPosition pos) {
+final public StringBuffer format(Object num, StringBuffer buf, FieldPosition pos) {
 	if (num instanceof Double) {
 		return (format(((Double)num).doubleValue(), buf, pos));
 	}
@@ -75,20 +64,33 @@ public final StringBuffer format(Object num, StringBuffer buf, FieldPosition pos
 	}
 }
 
+final public String format(double num) {
+	return (format(num, new StringBuffer(), new FieldPosition(0)).toString());
+}
+
+abstract public StringBuffer format(double num, StringBuffer buf, FieldPosition pos);
+
+final public String format(long num) {
+	return (format(num, new StringBuffer(), new FieldPosition(0)).toString());
+}
+
+abstract public StringBuffer format(long num, StringBuffer buf, FieldPosition pos);
+
 public static synchronized Locale[] getAvailableLocales() {
 	return (Format.getAvailableLocales("numberformat"));
 }
 
-public static final NumberFormat getCurrencyInstance() {
+final public static NumberFormat getCurrencyInstance() {
 	return (getCurrencyInstance(Locale.getDefault()));
 }
 
 public static NumberFormat getCurrencyInstance(Locale loc) {
 	ResourceBundle bundle = getResources("numberformat", loc);
-	return (new DecimalFormat("\u00a40.00", loc));
+	String cs = bundle.getString("\u00a40");
+	return (new DecimalFormat(cs + "#,##0.00;(" + cs + "#,##0.00)", loc));
 }
 
-public static final NumberFormat getInstance() {
+final public static NumberFormat getInstance() {
 	return (getInstance(Locale.getDefault()));
 }
 
@@ -112,22 +114,23 @@ public int getMinimumIntegerDigits() {
 	return (minint);
 }
 
-public static final NumberFormat getNumberInstance() {
+final public static NumberFormat getNumberInstance() {
 	return (getNumberInstance(Locale.getDefault()));
 }
 
 public static NumberFormat getNumberInstance(Locale loc) {
 	ResourceBundle bundle = getResources("numberformat", loc);
-	return (new DecimalFormat("0.#", loc));
+	return (new DecimalFormat("#,##0.###;-#,##0.###", loc));
 }
 
-public static final NumberFormat getPercentageInstance() {
+final public static NumberFormat getPercentageInstance() {
 	return (getPercentageInstance(Locale.getDefault()));
 }
 
 public static NumberFormat getPercentageInstance(Locale loc) {
 	ResourceBundle bundle = getResources("numberformat", loc);
-	return (new DecimalFormat("0%", loc));
+	String cs = bundle.getString("%");
+	return (new DecimalFormat("#,##0" + cs, loc));
 }
 
 public int hashCode() {
@@ -142,8 +145,6 @@ public boolean isParseIntegerOnly() {
 	return (intonly);
 }
 
-public abstract Number parse(String str, ParsePosition pos);
-
 public Number parse(String str) throws ParseException {
 	ParsePosition pos = new ParsePosition(0);
 	Number num = parse(str, pos);
@@ -153,7 +154,9 @@ public Number parse(String str) throws ParseException {
 	return (num);
 }
 
-public final Object parseObject(String str, ParsePosition pos) {
+abstract public Number parse(String str, ParsePosition pos);
+
+final public Object parseObject(String str, ParsePosition pos) {
 	return (parse(str, pos));
 }
 
@@ -180,5 +183,4 @@ public void setMinimumIntegerDigits(int val) {
 public void setParseIntegerOnly(boolean val) {
 	intonly = val;
 }
-
 }

@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.lang.String;
 import java.util.Properties;
 
 /**

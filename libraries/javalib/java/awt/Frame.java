@@ -3,7 +3,6 @@ package java.awt;
 import java.awt.event.InputEvent;
 import java.util.Enumeration;
 import kaffe.util.Ptr;
-import java.lang.String;
 
 /**
  * Frame - 
@@ -21,7 +20,6 @@ public class Frame
 {
 	String title;
 	Image icon;
-	boolean isResizable = true;
 	BarMenu bMenu;
 	static Insets frameInsets;
 	static Insets menuFrameInsets;
@@ -48,6 +46,7 @@ public Frame () {
 Frame ( Frame owner, String title ) {
 	super( owner);
 	
+	flags |= IS_RESIZABLE;
 	this.title = (title == null) ? "" : title;	
 	deco = frameDeco;
 }
@@ -57,6 +56,8 @@ public Frame ( String title ) {
 }
 
 public int countComponents() {
+	// DEP - should be in getComponentCount()
+
 	if ( bMenu == null )
 		return nChildren;
 	
@@ -75,7 +76,8 @@ Ptr createNativeWindow () {
 	return Toolkit.wndCreateFrame( title, x + deco.x, y + deco.y,
                                  width - deco.width,
                                  height - deco.height,
-	                               cursor.type, bgClr.nativeValue, isResizable);
+	                               cursor.type, bgClr.nativeValue,
+	                               ((flags & IS_RESIZABLE) != 0));
 }
 
 public Component getComponent( int index) {
@@ -119,16 +121,41 @@ public String getTitle() {
 }
 
 public boolean isResizable () {
-	return isResizable;
+	return ((flags & IS_RESIZABLE) != 0);
 }
 
 public void layout () {
+	// DEP - should be in doLayout()
+
 	super.layout();
 
 	if ( bMenu != null){
 		bMenu.setBounds( frameDeco.x, frameDeco.y,
 		                 width-(frameDeco.width), Defaults.MenuBarHeight);
   }		
+}
+
+public void paint ( Graphics g ) {
+//synchronized ( treeLock ) {
+		int n = 0;
+
+		// we should treat the bMenu special because (a) it avoids flicker, and (b)
+		// some careless apps have components painting over the menu (we have to clip)
+		if ( ((flags & IS_IN_UPDATE) == 0) && (bMenu != null) ) {
+			// otherwise the menu has already been drawn by update()
+			g.paintChild( bMenu, false);
+			n = 1;
+			g.clipRect( deco.x, insets.top, width - (deco.width), height - (deco.height));
+		}
+
+		for ( int i=nChildren-1; i>=n; i-- ) {
+			Component c = children[i];
+
+			if ( (c.flags & IS_VISIBLE) != 0 ) {
+				g.paintChild( c, (flags & IS_IN_UPDATE) != 0);
+			}
+		}
+//}
 }
 
 /**
@@ -157,7 +184,7 @@ public void setCursor(int cursorType) {
 	setCursor(Cursor.getPredefinedCursor(cursorType));
 }
 
-static void setDecoInsets ( int top, int left, int bottom, int right ){
+static void setDecoInsets ( int top, int left, int bottom, int right, int srcIdx ){
 	// this is the native callBack to set exact (calculated) Frame deco extends
 
 	frameInsets.top    = top;
@@ -174,6 +201,14 @@ static void setDecoInsets ( int top, int left, int bottom, int right ){
 	frameDeco.y = top;
 	frameDeco.width = left + right;
 	frameDeco.height = top + bottom;
+	
+	// if we got the correction in the context of a initial Window positioning
+	// we have to make sure a subsequent ComponentEvt.getEvent() invalidates
+	// this instance (which wouldn't be the case if we let its (faked) dimension alone)
+	if ( srcIdx != -1 ) {
+		Component src = AWTEvent.sources[srcIdx];
+		src.width = src.height = 0;
+	}
 }
 
 public void setIconImage ( Image icon ) {
@@ -204,21 +239,16 @@ public void setMenuBar ( MenuBar mb ) {
 
 	if ( nativeData != null ) {
 		insets = menuFrameInsets;
+		bMenu.addNotify();
 		doLayout();
-	}
-		
-	for ( Enumeration e = mb.shortcuts(); e.hasMoreElements(); ) {
-		MenuShortcut s = (MenuShortcut) e.nextElement();
-		MenuItem mi = mb.getShortcutMenuItem( s);
-		int mods = InputEvent.CTRL_MASK;
-		if ( s.usesShiftMod )
-			mods |= InputEvent.SHIFT_MASK;
-		HotKeyHandler.addHotKey( bMenu, mi, s.key, mods, mi.getActionCommand() );
 	}
 }
 
 public void setResizable ( boolean isResizable ) {
-	this.isResizable = isResizable;
+	if ( isResizable )
+		flags |= IS_RESIZABLE;
+	else
+		flags &= ~IS_RESIZABLE;
 	
 	if ( nativeData != null )
 		Toolkit.wndSetResizable( nativeData, isResizable, x, y, width, height);
@@ -229,5 +259,21 @@ public void setTitle ( String newTitle ) {
 	
 	if ( nativeData != null )
 		Toolkit.wndSetTitle( nativeData, newTitle);
+}
+
+public void update ( Graphics g ) {
+	flags |= IS_IN_UPDATE;
+
+	// we should treat the bMenu special because (a) it avoids flicker, and (b)
+	// some careless apps have components painting over the menu (we have to clip)
+	if ( bMenu != null ) {
+		g.paintChild( bMenu, false);
+		g.clipRect( deco.x, insets.top, width - (deco.width), height - (deco.height));
+	}
+
+	g.clearRect( deco.x, insets.top, width, height);
+	paint( g);
+
+	flags &= ~IS_IN_UPDATE;
 }
 }

@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.lang.String;
 import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.ComponentEvent;
@@ -44,9 +43,9 @@ public class AWTEvent
 	final public static int TEXT_EVENT_MASK = 0x400;
 	final public static int RESERVED_ID_MAX = 1999;
 	final static int DISABLED_MASK = 0x80000000;
-	protected static Component keyTgt;
-	protected static Window activeWindow;
-	protected static Component mouseTgt;
+	static Component keyTgt;
+	static Window activeWindow;
+	static Component mouseTgt;
 	protected static int inputModifier;
 	protected static boolean accelHint;
 	protected static Component[] sources;
@@ -87,9 +86,15 @@ static Object getSource ( AWTEvent evt ) {
 }
 
 protected static Component getToplevel ( Component c ) {
-	while ( ! (c instanceof Window) )
+	// Note that this will fail in case 'c' is already removeNotified (has no parent,
+	// anymore). But returning 'null' would just shift the problem into the caller -
+	// a dispatch() method - and that would slow down dispatching. Since it also would be
+	// difficult to decide what to do (because of inconsistent global state), we prefer a
+	// clean cut and rely on no events being dispatched on removeNotified Components
+	while ( ! (c instanceof Window) ){
 		c = c.parent;
-		
+	}
+
 	return c;
 }
 
@@ -100,6 +105,14 @@ protected Event initOldEvent ( Event e ) {
 
 protected boolean isConsumed () {
 	return consumed;
+}
+
+protected boolean isLiveEventFor( Object src ) {
+	return false;
+}
+
+protected boolean isObsoletePaint( Object src, int x, int y, int w, int h ) {
+	return false;
 }
 
 public String paramString () {
@@ -117,6 +130,10 @@ static void registerSource ( Component c, Ptr nativeData ) {
 
 	if ( ++nSources	== 1 )
 		Toolkit.startDispatch();
+}
+
+MouseEvent retarget ( Component target, int dx, int dy ) {
+	return null;
 }
 
 protected static void sendEvent ( AWTEvent e, boolean sync ) {

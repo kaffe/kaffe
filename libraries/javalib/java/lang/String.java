@@ -20,8 +20,7 @@ import java.util.Locale;
 import kaffe.io.ByteToCharConverter;
 import kaffe.io.CharToByteConverter;
 
-final public class String implements Serializable
-{
+final public class String implements Serializable {
 	char[] value;
 	int offset;
 	int count;
@@ -307,28 +306,28 @@ public int lastIndexOf( String str) {
 }
 
 public int lastIndexOf( String str, int eIdx) {
-        int ic = str.offset+str.count-1;
-        int it = offset+eIdx+ic;
-        int ma = 0;
+	int ic = str.offset+str.count-1;
+	int it = offset+eIdx+ic;
+	int ma = 0;
 
-        if (it >= offset+count) {       // clip index
-                it = offset+count-1;
-        }
+	if (it >= offset+count) {       // clip index
+		it = offset+count-1;
+	}
 
-        for ( ; it>=offset; it--) {
-                if ( value[it] == str.value[ic] ) {
-                        ic--;
-                        if ( ++ma == str.count) {
-                                return (it-offset);
-                        }
-                }
-                else if (ma > 0) {
-                        it++;
-                        ma = 0;
-                        ic = str.offset+str.count-1;
-                }
-        }
-        return -1;
+	for ( ; it>=offset; it--) {
+		if ( value[it] == str.value[ic] ) {
+			ic--;
+			if ( ++ma == str.count) {
+				return (it-offset);
+			}
+		}
+		else if (ma > 0) {
+			it++;
+			ma = 0;
+			ic = str.offset+str.count-1;
+		}
+	}
+	return -1;
 }
 
 public int lastIndexOf( int ch) {

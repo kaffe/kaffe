@@ -13,7 +13,6 @@
 
 package java.awt;
 
-import java.lang.String;
 import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.InputEvent;

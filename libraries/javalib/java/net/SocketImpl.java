@@ -25,23 +25,19 @@ protected int port;
 protected int localport;
 
 protected FileDescriptor getFileDescriptor() {
-	return fd;
+	return (fd);
 }
 
 protected InetAddress getInetAddress() {
-	try {
-		return (InetAddress) getOption(SO_BINDADDR);
-	} catch (SocketException e) {
-		return address;
-	}
+	return (address);
 }
 
 protected int getLocalPort() {
-	return localport;
+	return (localport);
 }
 
 protected int getPort() {
-	return port;
+	return (port);
 }
 
 public String toString() {

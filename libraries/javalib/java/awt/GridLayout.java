@@ -11,7 +11,6 @@
 
 package java.awt;
 
-import java.lang.String;
 
 public class GridLayout
   implements LayoutManager
@@ -87,8 +86,8 @@ Dimension getLayoutSize ( Container parent, boolean preferred) {
 		maxW = Math.max( maxW, cd.width);
 		maxH = Math.max( maxH, cd.height );
 	}
-	
-	Insets in = parent.insets;
+
+	Insets in = parent.getInsets(); // getInsets() might be reimplemented (swing)
 	return new Dimension(	in.left + in.right + maxW * d.width + hgap * ( d.width + 1),
 												in.top + in.bottom + maxH * d.height + vgap * ( d.height + 1) );
 }
@@ -102,7 +101,7 @@ public int getVgap () {
 }
 
 public void layoutContainer ( Container parent) {
-	Insets in = parent.insets;
+	Insets in = parent.getInsets(); // getInsets() might be reimplemented (swing)
 	int tw = parent.width - in.left - in.right - hgap;
 	int th = parent.height - in.top - in.bottom - vgap;
 	

@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.lang.String;
 
 /**
  * class Rectangle - represents a (point, extension) tuple

@@ -18,8 +18,19 @@ import java.util.StringTokenizer;
 public class Runtime
 {
 
+public static interface MemoryAdvice {
+
+// These should match those in kaffe.lang.MemoryAdvice
+public static final int GREEN = 0;
+public static final int YELLOW = 1;
+public static final int ORANGE = 2;
+public static final int RED = 3;
+
+}
+
 private static Runtime currentRuntime = new Runtime();
 private String[] paths = null;
+private static kaffe.lang.MemoryAdvice advice = kaffe.lang.MemoryAdvice.getInstance();
 
 private Runtime () {
 	String pathSpec = initializeLinkerInternal();
@@ -131,6 +142,14 @@ public synchronized void loadLibrary(String libname) {
 		throw new UnsatisfiedLinkError(libname);
 	}
 	// otherwise we don't have external libraries at all
+}
+
+public int getMemoryAdvice() {
+	return (advice.getColor());
+}
+
+public int waitForMemoryAdvice(int level) throws InterruptedException {
+	return (advice.waitForOtherColor(level));
 }
 
 native public void runFinalization();

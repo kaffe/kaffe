@@ -1,3 +1,14 @@
+package java.text;
+
+import java.lang.String;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
+import kaffe.util.DateParser;
+import kaffe.util.NotImplemented;
+
 /*
  * Java core library component.
  *
@@ -7,23 +18,12 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.text;
-
-import java.lang.String;
-import java.util.Date;
-import java.util.Locale;
-import java.util.GregorianCalendar;
-import java.util.Calendar;
-import java.util.TimeZone;
-import kaffe.util.NotImplemented;
-
-public class SimpleDateFormat extends DateFormat {
-
-private static final String DEFAULTPATTERNCHARS = "GyMdkHmsSEDFwWahKz";
-
-private DateFormatSymbols syms;
-private String pattern;
+public class SimpleDateFormat
+  extends DateFormat
+{
+	final private static String DEFAULTPATTERNCHARS = "GyMdkHmsSEDFwWahKz";
+	private DateFormatSymbols syms;
+	private String pattern;
 
 public SimpleDateFormat() {
 	this("", Locale.getDefault());
@@ -33,18 +33,18 @@ public SimpleDateFormat(String pattern) {
 	this(pattern, Locale.getDefault());
 }
 
-public SimpleDateFormat(String pattern, java.util.Locale loc) {
-	this.syms = new DateFormatSymbols(loc);
-	this.pattern = pattern;
-	this.calendar = new GregorianCalendar(loc);
-	this.format = new DecimalFormat("0", loc);
-}
-
 public SimpleDateFormat(String pattern, DateFormatSymbols syms) {
 	this.syms = syms;
 	this.pattern = pattern;
 	this.calendar = new GregorianCalendar();
 	this.format = new DecimalFormat("0");
+}
+
+public SimpleDateFormat(String pattern, java.util.Locale loc) {
+	this.syms = new DateFormatSymbols(loc);
+	this.pattern = pattern;
+	this.calendar = new GregorianCalendar(loc);
+	this.format = new DecimalFormat("0", loc);
 }
 
 public void applyLocalizedPattern(String pattern) {
@@ -253,6 +253,8 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 			if (val == 0) {
 				val = 12;
 			}
+			if ( (plen > 1) && (val < 10) )
+				buf.append('0');
 			buf.append(val);
 			if (pos.field == HOUR1_FIELD) {
 				pos.begin = cpos;
@@ -351,8 +353,14 @@ public int hashCode() {
 }
 
 public Date parse(String source, ParsePosition pos) {
-	throw new NotImplemented();
+	try {
+		return DateParser.parse( source, syms);
+	}
+	catch ( ParseException _x) {
+		return null;
+	}
 }
+
 
 public void setDateFormatSymbols(DateFormatSymbols syms) {
 	this.syms = syms;
@@ -378,5 +386,4 @@ public String toLocalizePattern() {
 public String toPattern() {
 	return (pattern);
 }
-
 }

@@ -16,35 +16,53 @@ import kaffe.util.NotImplemented;
 public class RuleBasedCollator extends Collator {
 
 public RuleBasedCollator(String rules) {
-	throw new NotImplemented();
+	/* NotImplemented */
 }
 
 public Object clone() {
-	throw new NotImplemented();
+	return (super.clone());
 }
 
 public int compare(String src, String target) {
-	throw new NotImplemented();
+	/*
+ 	 * XXX - this provide simple comparisons before we don't implement
+	 * this yet.
+	 */
+	return (src.compareTo(target));
 }
 
 public boolean equals(Object obj) {
-	throw new NotImplemented();
+	// Do the simple stuff first.
+	if (obj == (Object)this) {
+		return (true);
+	}
+	if (!(obj instanceof RuleBasedCollator)) {
+		return (false);
+	}
+	RuleBasedCollator other = (RuleBasedCollator)obj;
+
+	// Now we have to do the hard stuff ...
+
+	return (false);
 }
 
 public CollationElementIterator getCollationElementIterator(String src) {
-	throw new NotImplemented();
+	/* NotImplemented */
+	return (null);
 }
 
 public CollationKey getCollationKey(String src) {
-	throw new NotImplemented();
+	/* NotImplemented */
+	return (null);
 }
 
 public String getRules() {
-	throw new NotImplemented();
+	/* NotImplemented */
+	return (null);
 }
 
 public int hashCode() {
-	throw new NotImplemented();
+	return (System.identityHashCode(this));
 }
 
 }

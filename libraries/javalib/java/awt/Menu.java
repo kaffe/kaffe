@@ -1,3 +1,8 @@
+package java.awt;
+
+import java.awt.event.KeyEvent;
+import java.util.Vector;
+
 /**
  * class Menu -
  *
@@ -9,13 +14,6 @@
  *
  * @author J.Mehlitz
  */
-
-package java.awt;
-
-import java.lang.String;
-import java.awt.event.KeyEvent;
-import java.util.Vector;
-
 public class Menu
   extends MenuItem
   implements MenuContainer
@@ -53,7 +51,25 @@ public void add( String label) {
 	}
 }
 
+void addAll( Menu mAdd) {
+	int ms = mAdd.items.size();
+	for ( int i=0; i<ms; i++) {
+		add( (MenuItem)mAdd.items.elementAt( i));
+	}
+}
+
 public void addNotify() {
+	if ( (flags & IS_ADD_NOTIFIED) == 0 ) {
+		super.addNotify();
+	
+		int is = items.size();
+		for ( int i=0; i<is; i++) {
+			MenuItem mi = (MenuItem)items.elementAt(i);
+			mi.parent = this;
+			mi.owner = owner;
+			mi.addNotify();
+		}
+	}
 }
 
 public void addSeparator() {
@@ -106,16 +122,6 @@ MenuItem getShortcutMenuItem( MenuShortcut s) {
 			
 }
 
-boolean handleShortcut ( KeyEvent e) {
-	int s = items.size();
-	for ( int i=0; i<s; i++){
-		MenuItem mi = (MenuItem)items.elementAt( i);
-		if ( mi.handleShortcut( e) )
-			return true;
-	}
-	return false;
-}
-
 public synchronized void insert( MenuItem mi, int idx) {
 	try { 
 		items.insertElementAt( mi, idx > -1 ? idx : items.size());
@@ -165,5 +171,13 @@ public synchronized void removeAll() {
 }
 
 public void removeNotify() {
+	if ((flags & IS_ADD_NOTIFIED) > 0) {
+		int is = items.size();
+		for ( int i=0; i<is; i++) {
+			MenuItem mi = (MenuItem)items.elementAt(i);
+			mi.removeNotify();
+		}
+		super.removeNotify();
+	}
 }
 }

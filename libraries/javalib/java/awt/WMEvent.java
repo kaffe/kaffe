@@ -20,6 +20,7 @@ class WMEvent
 	final static int WM_DESTROY = 1902;
 	final static int WM_DISPATCH_MODAL = 1903;
 	final static int WM_SHOW = 1904;
+	final static int WM_KILLED = 1905;
 	static WMEvent cache;
 
 WMEvent ( Window source, int id ) {
@@ -52,12 +53,38 @@ protected void dispatch () {
 		Toolkit.eventThread.show( w);
 		synchronized (this) { this.notifyAll(); }
 		break;
+	
+	case WM_KILLED:
+		// we got an external kill on one of our windows, clean up so
+		// that we don't get danglingwindows
+		w.cleanUp();
+		break;	
 	}
 	
 	recycle();
 }
 
 static synchronized WMEvent getEvent ( Window source, int id ) {
+	if ( cache == null ){
+		return new WMEvent( source, id);
+	}
+	else {
+		WMEvent e = cache;
+		cache = (WMEvent) e.next;
+		e.next = null;
+		
+		e.id = id;
+		e.source = source;
+		
+		return e;
+	}
+}
+
+static synchronized WMEvent getEvent ( int srcIdx, int id ) {
+	Window source = (Window) sources[srcIdx];
+
+	if ( source == null ) return null;
+
 	if ( cache == null ){
 		return new WMEvent( source, id);
 	}

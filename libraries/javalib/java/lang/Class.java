@@ -11,14 +11,15 @@
 package java.lang;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.SystemClassLoader;
+import kaffe.lang.SystemClassLoader;
 
-final public class Class {
+final public class Class implements Serializable {
 
 native public static Class forName(String className) throws ClassNotFoundException;
 
@@ -181,12 +182,10 @@ native public static Class getPrimitiveClass(String name);
  */
 public URL getResource(String name) {
 	ClassLoader loader = getClassLoader();
-	if (loader != null)  {
-		return (loader.getResource(fullResourceName(name)));
+	if (loader == null) {
+		loader = SystemClassLoader.getClassLoader();
 	}
-	else {
-		return (SystemClassLoader.getClassLoader().getResource(fullResourceName(name)));
-	}
+	return (loader.getResource(fullResourceName(name)));
 }
 
 /**
@@ -206,12 +205,10 @@ public URL getResource(String name) {
  */
 public InputStream getResourceAsStream(String name) {
 	ClassLoader loader = getClassLoader();
-	if (loader != null)  {
-		return (loader.getResourceAsStream(fullResourceName(name)));
+	if (loader == null)  {
+		loader = SystemClassLoader.getClassLoader();
 	}
-	else {
-		return (SystemClassLoader.getClassLoader().getResourceAsStream(fullResourceName(name)));
-	}
+	return (loader.getResourceAsStream(fullResourceName(name)));
 }
 
 native public Object[] getSigners();
@@ -258,4 +255,5 @@ public String getPrettyName() {
 		cls = cls.getComponentType();
 	}
 }
+
 }

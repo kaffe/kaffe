@@ -1,14 +1,12 @@
 package java.awt;
 
-import java.lang.String;
-import java.awt.ImageDataProducer;
-import java.awt.ImageFileProducer;
-import java.awt.ImageURLProducer;
 import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
+import java.awt.image.ImageConsumer;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 import java.awt.image.IndexColorModel;
+import java.awt.image.MemoryImageSource;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,6 +18,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import kaffe.io.AccessibleBAOStream;
 import kaffe.util.Ptr;
+import kaffe.util.VectorSnapshot;
 
 /**
  * Copyright (c) 1998
@@ -33,28 +32,30 @@ import kaffe.util.Ptr;
 public class Image
 {
 	Ptr nativeData;
-	int width = 0;
-	int height = 0;
+	int width = -1;
+	int height = -1;
 	ImageProducer producer;
-	Vector observers;
+	Object observers;
 	int flags;
+	Hashtable props;
 	Image next;
 	final public static int SCALE_DEFAULT = 1;
 	final public static int SCALE_FAST = 2;
 	final public static int SCALE_SMOOTH = 4;
 	final public static int SCALE_REPLICATE = 8;
 	final public static int SCALE_AREA_AVERAGING = 16;
-	final static int READY = ImageObserver.WIDTH|ImageObserver.HEIGHT|
-			 ImageObserver.ALLBITS;
 	final static int MASK = ImageObserver.WIDTH|ImageObserver.HEIGHT|
 			ImageObserver.PROPERTIES|ImageObserver.SOMEBITS|
 			ImageObserver.FRAMEBITS|ImageObserver.ALLBITS|
 			ImageObserver.ERROR|ImageObserver.ABORT;
 	final static int PRODUCING = 1 << 8;
+	final static int READY = ImageObserver.WIDTH | ImageObserver.HEIGHT | ImageObserver.ALLBITS | PRODUCING;
 	final static int SCREEN = 1 << 10;
+	final static int BLOCK_FRAMELOADER = 1 << 11;
+	final public static Object UndefinedProperty = ImageLoader.class;
 
 Image ( File file ) {
-	producer = new ImageFileProducer(file);
+	producer = new ImageNativeProducer( this, file);
 }
 
 Image ( Image img, int w, int h ) {
@@ -66,14 +67,24 @@ Image ( Image img, int w, int h ) {
 
 Image ( ImageProducer ip ) {
 	producer = ip;
+
+	// there currently is no way to check the size of a MemoryImageSource, 
+	// so everything != 0 causes async production
+	if ( (Defaults.MemImageSrcThreshold == 0) && (producer instanceof MemoryImageSource) ) {
+		flags |= PRODUCING;
+		synchronized ( ImageLoader.syncLoader ) {
+			ImageLoader.syncLoader.img = this;
+			ip.startProduction( ImageLoader.syncLoader);
+		}
+	}
 }
 
 Image ( URL url ) {
-	producer = new ImageURLProducer(url);
+	producer = new ImageNativeProducer( url);
 }
 
 Image ( byte[] data, int offs, int len) {
-	producer = new ImageDataProducer(data, offs, len);
+	producer = new ImageNativeProducer( this, data, offs, len);
 }
 
 Image ( int w, int h ) {
@@ -83,33 +94,52 @@ Image ( int w, int h ) {
 	flags = READY | SCREEN;
 }
 
+synchronized void activateFrameLoader () {
+  // activate waiting FrameLoader
+	if ( (flags & BLOCK_FRAMELOADER) != 0 ){
+		flags &= ~BLOCK_FRAMELOADER;
+		notify();
+	}
+}
+
 // -------------------------------------------------------------------------
 void addObserver ( ImageObserver observer ) {
 	if ( observer == null ) {
 		return;
 	}
-	if (observers == null) {
-		observers = new Vector(1);
-		observers.addElement(observer);
-	} else if (!observers.contains(observer)) {
-		observers.addElement(observer);
+
+	if ( observers == null ) {
+		observers = observer;
+	}	
+	else if ( observers instanceof Vector ) {
+		Vector v = (Vector) observers;
+		if ( !v.contains(observer) )
+			v.addElement(observer);
 	}
-}
-
-int checkImage(int width, int height, ImageObserver obs) {
-	return (checkImage(width, height, obs, false) & MASK);
-}
-
-synchronized int checkImage (int width, int height, ImageObserver obs, boolean load ){
-	if ( (flags & ImageObserver.ALLBITS) != 0 ) {
-		if (width > 0 && height > 0) {
-			scale( width, height);
+	else {
+		if ( observer != observers ) {
+			Vector v = new Vector( 3);
+			v.addElement( observers);
+			v.addElement( observer);
+			observers = v;
 		}
 	}
-	else if (load) {
-		loadImageAsync(width, height, obs);
-	}	
-	return (flags);
+}
+
+synchronized int checkImage ( int w, int h, ImageObserver obs, boolean load ){
+	if ( (flags & (ImageObserver.ALLBITS | ImageObserver.FRAMEBITS)) != 0 ) {
+		if ( (w > 0) || (h > 0) && (w != width) && (h != height) ){
+			scale( w, h);
+		}
+		
+		if ( load && (flags & ImageObserver.FRAMEBITS) != 0 )
+			addObserver( obs);
+	}
+	else if ( load && ((flags & PRODUCING) == 0) ) {
+		loadImage( w, h, obs);
+	}
+
+	return (flags & MASK);
 }
 
 protected void finalize () throws Throwable {
@@ -118,10 +148,24 @@ protected void finalize () throws Throwable {
 }
 
 public void flush () {
+	// This is the bad guy - the spec demands that it reverts us into a "not-yet-loaded"
+	// state, "to be recreated or fetched again from its source" when a subsequent
+	// rendering takes place. Since "its source" doesn't mean the *original* source
+	// (see getSource() - "an object that *produces* the image"), we could stay with the
+	// native representation (probably the most efficient storage and prod environment),
+	// but apps explicitly using flush most probably use it because the original
+	// image source has changed, i.e. they use flush() as a way to in-situ modify
+	// otherwise constant images (by means of changed sources). Only heaven knows why
+	// they don't replace the image (this is like a Graphics that can be brought back
+	// to life after a dispose()). That means we have to keep a ref of byte[] data, and
+	// we can't produce on-screen images
+
 	if ( nativeData != null && (flags & ImageObserver.ALLBITS) != 0){
 		Toolkit.imgFreeImage( nativeData);
 		nativeData = null;
-		flags &= ~(ImageObserver.ALLBITS|PRODUCING);
+		flags = 0;
+		width = -1;
+		height = -1;
 	}
 }
 
@@ -148,7 +192,21 @@ public synchronized int getHeight ( ImageObserver observer ) {
 }
 
 public Object getProperty ( String name, ImageObserver observer ) {
-	return (null);
+	if ( props == null ) {
+		if ( (flags & (ImageObserver.FRAMEBITS | ImageObserver.ALLBITS)) != 0 )
+			return UndefinedProperty;
+		else if ( (flags & PRODUCING) == 0 )
+			loadImage( -1, -1, observer);
+
+		return null;
+	}
+	else {
+		Object val = props.get( name);
+		if ( val == null )
+			return UndefinedProperty;
+			
+		return val;
+	}
 }
 
 public Image getScaledInstance (int width, int height, int hints) {
@@ -172,52 +230,52 @@ public synchronized int getWidth ( ImageObserver observer ) {
 	}
 }
 
-synchronized boolean loadImage(int width, int height, ImageObserver obs) {
-	for (;;) {
-		if ((flags & ImageObserver.ALLBITS) != 0) {
-			if (width > 0 && height > 0) {
-				scale(width, height);
-			}
-			return (true);
+synchronized boolean loadImage ( int w, int h, ImageObserver obs ) {
+	// it's (partly?) loaded already
+	if ( (flags & (ImageObserver.FRAMEBITS|ImageObserver.ALLBITS)) != 0 ){
+		if ( (w > 0) || (h > 0) && (w != width) && (h != height) ) {
+		        // but do we have to scale it? 
+			scale( w, h);
 		}
-		else if ((flags & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0) {
-			return (false);
-		}
-		else if ((flags & PRODUCING) == 0) {
-			flags |= PRODUCING;
-			addObserver(obs);
-			producer.startProduction(new ImageNativeConsumer(this));
-		}
-		else {
-			return (false);
-		}
-	}
-}
-
-synchronized boolean loadImageAsync(int width, int height, ImageObserver obs) {
-	if ((flags & ImageObserver.ALLBITS) != 0) {
-		if (width > 0 && height > 0) {
-			scale(width, height);
+		if ( (flags & ImageObserver.FRAMEBITS) != 0 ) {
+			addObserver( obs);
 		}
 		return (true);
 	}
-	else if ((flags & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0) {
-		/* Do nothing */
+	// we ultimately failed
+	else if ( (flags & ImageObserver.ABORT) != 0 ) {
+		return (false);
 	}
-	else if ((flags & PRODUCING) == 0) {
+        // there's work ahead, kick it off
+	else if ( (flags & PRODUCING) == 0 ) {
 		flags |= PRODUCING;
-		addObserver(obs);
-		ImageNativeThread.startAsyncProduction(this);
+		if ( obs != null ) {
+			addObserver( obs);
+		}
+		/*
+		 * We now load the image data synchronously - it's not clear
+		 * that's what you should actually do but it fixes a problem
+		 * with the Citrix ICA client. (Tim 1/18/99)
+		 */
+		ImageLoader.loadSync( this);
+		return (true);
 	}
 	return (false);
 }
 
 void removeObserver ( ImageObserver observer ) {
-	if (observers != null) {
-		observers.removeElement(observer);
-		if (observers.size() == 0) {
-			observers = null;
-		}
+	if ( (observers == null) || (observer == null) )
+		return;
+
+	if ( observers == observer ){
+		observers = null;
+	}
+	else if ( observers instanceof Vector ) {
+		Vector v = (Vector)observers;
+		v.removeElement( observer);
+		
+		if ( v.size() == 1 )
+			observers = v.firstElement();
 	}
 }
 
@@ -236,8 +294,7 @@ private boolean scale (int w, int h) {
 }
 
 synchronized void stateChange(int flags, int x, int y, int w, int h) {
-
-	// System.out.println("stateChange: " + this + ", f="+flags + ", x="+x + ", y="+y + ", w="+w + ", h="+h);
+	ImageObserver obs;
 
 	this.flags |= flags;
 
@@ -245,20 +302,547 @@ synchronized void stateChange(int flags, int x, int y, int w, int h) {
 		return;
 	}
 
-	for ( Enumeration e = observers.elements(); e.hasMoreElements(); ) {
-		ImageObserver obs = (ImageObserver)e.nextElement();
-		/* We get false if they're no longer interested in updates. 
-		 * This is *NOT* what is says in the Addison-Wesley
-		 * documentation, but is what is says in the JDK javadoc
-		 * documentation.
-		 */
-		if (obs.imageUpdate(this, flags, x, y, w, h) == false) {
-			observers.removeElement(obs);
+	// We get false if they're no longer interested in updates. This is *NOT* what is said in the
+	// Addison-Wesley documentation, but is what is says in the JDK javadoc documentation.	
+	if ( observers instanceof ImageObserver ){
+		obs = (ImageObserver) observers;
+		if ( obs.imageUpdate( this, flags, x, y, w, h) == false ) {
+			observers = null;
+		}
+	}
+	else if ( observers instanceof Vector ){
+		// we can't use a (index-based) standard Vector enumerator because we have
+		// to notify *all* elements regardless of any removals
+		for ( Enumeration e=VectorSnapshot.getCached( (Vector)observers); e.hasMoreElements(); ) {
+			obs = (ImageObserver) e.nextElement();
+			if ( obs.imageUpdate( this, flags, x, y, w, h) == false )
+				removeObserver( obs);
 		}
 	}
 }
 
 public String toString() {
-	return getClass().getName() + " [" + width + ',' + height + ", flags: "  + flags + ']';
+	String s = getClass().getName() + " [" + width + ',' + height + 
+	              ((nativeData != null) ? ", native" : ", non-native") +
+                ", flags: "  + Integer.toHexString( flags);
+
+	if ( (flags & PRODUCING) != 0 )
+		s += " producing";
+	if ( (flags & ImageObserver.ALLBITS) != 0 )
+		s += " allbits";
+	else if ( (flags & ImageObserver.FRAMEBITS) != 0 )
+		s += " framebits";
+	else if ( (flags & ImageObserver.ERROR) != 0 )
+		s += " error";
+
+	s += "]";
+
+	return s;		
+}
+}
+
+class ImageFrameLoader
+  extends Thread
+{
+	Image img;
+
+ImageFrameLoader ( Image img ) {
+	this.img = img;
+
+	img.flags |= Image.BLOCK_FRAMELOADER;
+
+	setPriority( NORM_PRIORITY - 3);
+	start();
+}
+
+public void run () {
+
+	// Note that we get started *after* the first SINGLEFRAMEDONE, i.e. our image observers
+	// already got the preceeding dimension notification
+
+	if ( img.producer instanceof ImageNativeProducer ) {
+		runINPLoop();
+	}
+	else {
+		for (;;) {
+		}
+	}
+}
+
+public void runINPLoop () {
+	int w, h, latency;
+	Ptr ptr;
+
+	// we already have the whole thing physically read in, so just start to notify round-robin. We also
+	// got the first frame propperly reported, i.e. we start with flipping to the next one
+	do {
+	  // wait until we get requested the next time (to prevent being spinned around by a MediaTracker)
+		synchronized ( img ) {
+			try {
+				while ( (img.flags & Image.BLOCK_FRAMELOADER) != 0 ){
+					img.wait();
+				}
+			} catch ( InterruptedException _ ) {}
+		}
+		latency = Toolkit.imgGetLatency( img.nativeData);
+		try { Thread.sleep( latency); } catch ( Exception _ ) {}
+
+		if ( (ptr = Toolkit.imgGetNextFrame( img.nativeData)) == null )
+
+			break;
+		img.nativeData = ptr;
+		w = Toolkit.imgGetWidth( img.nativeData);
+		h = Toolkit.imgGetHeight( img.nativeData);
+		if ( (img.width != w) || (img.height != h) ){
+			img.width = w;
+			img.height = h;
+			img.stateChange( ImageObserver.WIDTH|ImageObserver.HEIGHT, 0, 0, img.width, img.height);
+		}
+
+		img.flags |= Image.BLOCK_FRAMELOADER;
+		img.stateChange( ImageObserver.FRAMEBITS, 0, 0, img.width, img.height);
+
+	} while ( img.observers != null );
+}
+}
+
+class ImageLoader
+  implements ImageConsumer, Runnable
+{
+	Image queueHead;
+	Image queueTail;
+	Image img;
+	static ImageLoader asyncLoader;
+	static ImageLoader syncLoader = new ImageLoader();
+
+public synchronized void imageComplete ( int status ) {
+	int s = 0;
+
+	if ( status == STATICIMAGEDONE ){
+	  s = ImageObserver.ALLBITS;
+		// give native layer a chance to do alpha channel reduction
+		if ( !(img.producer instanceof ImageNativeProducer) )
+			Toolkit.imgComplete( img.nativeData, status);
+	}
+	else if ( status == SINGLEFRAMEDONE ) {
+		s = ImageObserver.FRAMEBITS;
+
+		// This is a (indefinite) movie production - move it out of the way (in its own thread)
+		// so that we can go on with useful work. Note that if our producer was a ImageNativeProducer,
+		// the whole external image has been read in already (no IO required, anymore)
+		new ImageFrameLoader( img);
+	}
+	else {
+		if ( (status & IMAGEERROR) != 0 )       s |= ImageObserver.ERROR;
+		if ( (status & IMAGEABORTED) != 0 )     s |= ImageObserver.ABORT;
+	}
+
+	img.stateChange( s, 0, 0, img.width, img.height);
+
+	// this has to be called *after* a optional ImageFrameLoader went into action, since
+	// the producer might decide to stop if it doesn't have another consumer
+	img.producer.removeConsumer( this);
+	
+	img = null; 	// we are done with it, prevent memory leaks
+	if ( this == asyncLoader )
+		notify();     // in case we had an async producer
+}
+
+static void loadSync( Image img ) {
+	synchronized ( syncLoader ) {
+		syncLoader.img = img;
+		img.producer.startProduction(syncLoader);
+	}
+}
+
+static synchronized void load ( Image img ) {
+	if ( asyncLoader == null ){
+		asyncLoader = new ImageLoader();
+		asyncLoader.queueHead = asyncLoader.queueTail = img;
+
+		Thread t = new Thread( asyncLoader);
+		t.setPriority( Thread.NORM_PRIORITY - 1);
+		t.start();
+	}
+	else {
+		if ( asyncLoader.queueTail == null ) {
+			asyncLoader.queueHead = asyncLoader.queueTail = img;
+		}
+		else {
+			asyncLoader.queueTail.next = img;
+			asyncLoader.queueTail = img;
+		}
+		
+		ImageLoader.class.notify();
+	}
+}
+
+public void run () {
+	for (;;) {
+		synchronized ( ImageLoader.class ) {
+			if ( queueHead != null ) {
+				img = queueHead;
+				queueHead = img.next;
+				img.next = null;
+				if ( img == queueTail )
+					queueTail = null;
+			}
+			else {
+				try {
+					ImageLoader.class.wait( 20000);
+					if ( queueHead == null ) {
+						// Ok, we waited for too long, lets do suicide
+						asyncLoader = null;
+						return;
+					}
+					else {
+						continue;
+					}
+				}
+				catch ( InterruptedException xx ) { xx.printStackTrace(); }
+			}
+		}
+		
+		try {
+			// this is hopefully sync, but who knows what kinds of producers are out there
+			img.producer.startProduction( this);
+
+			if ( img != null ) {
+				synchronized ( this ){
+					wait();
+				}
+			}
+		}
+		catch ( Throwable x ) {
+			x.printStackTrace();
+			imageComplete( IMAGEERROR | IMAGEABORTED);
+		}
+	}
+}
+
+public void setColorModel ( ColorModel model ) {
+	// No way to pass this to ImageObservers. Since we also get it in setPixels, we
+	// just ignore it
+}
+
+public void setDimensions ( int width, int height ) {
+	img.width = width;
+	img.height = height;
+
+	// If we were notified by a ImageNativeProducer, the nativeData field is already
+	// set. In case this is just an arbitrary producer, create it so that we have a
+	// target for subsequent setPixel() calls
+	if ( img.nativeData == null ){
+		img.nativeData = Toolkit.imgCreateImage( width, height);
+	}
+
+	img.stateChange( ImageObserver.WIDTH|ImageObserver.HEIGHT, 0, 0, width, height);
+}
+
+public void setHints ( int hints ) {
+	// we don't honor them
+}
+
+public void setPixels ( int x, int y, int w, int h,
+                        ColorModel model, byte pixels[], int offset, int scansize ) {
+	if ( img.nativeData == null ) {
+		// producer trouble, we haven't got dimensions yet
+		return;
+	}
+
+	if ( model instanceof IndexColorModel ) {
+		IndexColorModel icm = (IndexColorModel) model;
+		Toolkit.imgSetIdxPels( img.nativeData, x, y, w, h, icm.rgbs,
+		                       pixels, icm.trans, offset, scansize);
+		img.stateChange( ImageObserver.SOMEBITS, x, y, w, h);
+	}
+	else {
+		System.err.println("Unhandled colorModel: " + model.getClass());
+	}
+}
+
+public void setPixels ( int x, int y, int w, int h,
+                        ColorModel model, int pixels[], int offset, int scansize ) {
+	if ( img.nativeData == null ) {
+		// producer trouble, we haven't got dimensions yet
+		return;
+	}
+
+	if ( model instanceof DirectColorModel ) {
+		// in case our pels aren't default RGB yet, convert them using the ColorModel
+		if ( model != ColorModel.getRGBdefault() ){
+			int xw = x + w;
+			int yh = y + h;
+			int i, j, idx;
+			int i0 = y * scansize + offset;
+			for ( j = y; j < yh; j++, i0 += scansize ) {
+				for ( i = x, idx = i+i0; i < xw; i++, idx++) {
+					// are we allowed to in-situ change the array?
+					pixels[idx] = model.getRGB( pixels[idx]);
+				}
+			}
+		}
+
+		Toolkit.imgSetRGBPels( img.nativeData, x, y, w, h, pixels, offset, scansize);
+		img.stateChange( ImageObserver.SOMEBITS, x, y, w, h);
+	}
+	else {
+		System.out.println("Unhandled colorModel: " + model.getClass());
+	}
+}
+
+public void setProperties ( Hashtable properties ) {
+	img.props = properties;
+  img.stateChange( img.flags | ImageObserver.PROPERTIES, 0, 0, img.width, img.height);
+}
+}
+
+/**
+ * This shouldn't be a inner class since you can easily grab the source of an
+ * image and use it outside of this image (e.g. to create other images - whatever
+ * it might be good for)
+ */
+class ImageNativeProducer
+  implements ImageProducer
+{
+	Object consumer;
+	Object src;
+	int off;
+	int len;
+
+ImageNativeProducer ( Image img, File file ) {
+	src = file;
+
+	// check if we can produce immediately
+	if ( file.exists() ) {
+		if  ( file.length() < Defaults.FileImageThreshold ){
+		  img.flags |= Image.PRODUCING;
+			synchronized ( ImageLoader.syncLoader ) {
+				ImageLoader.syncLoader.img = img;
+				img.producer = this;
+				startProduction( ImageLoader.syncLoader);
+			}
+		}
+	}
+	else {
+		img.flags = ImageObserver.ERROR | ImageObserver.ABORT;
+	}
+}
+
+ImageNativeProducer ( Image img, byte[] data, int off, int len ) {
+	src = data;
+	this.off = off;
+	this.len = len;
+	
+	if ( len < Defaults.DataImageThreshold ) {
+	  img.flags |= Image.PRODUCING;
+		synchronized ( ImageLoader.syncLoader ) {
+			ImageLoader.syncLoader.img = img;
+			img.producer = this;
+			startProduction( ImageLoader.syncLoader);
+		}
+	}
+}
+
+ImageNativeProducer ( URL url ) {
+	src = url;
+}
+
+public void addConsumer ( ImageConsumer ic ) {
+	if ( consumer == null ){
+		consumer = ic;
+	}
+	else if ( this.consumer instanceof Vector ) {
+		((Vector)consumer).addElement( ic);
+	}
+	else {
+		Vector v = new Vector(3);
+		v.addElement( consumer);
+		v.addElement( ic);
+		consumer = v;
+	}
+}
+
+void imageComplete ( int flags ){
+	if ( consumer instanceof ImageConsumer ){
+		((ImageConsumer)consumer).imageComplete( flags);
+	}
+	else if ( consumer instanceof Vector) {
+		Vector v = (Vector) consumer;
+		int i, n = v.size();
+		for ( i=0; i<n; i++ ){
+			((ImageConsumer)v.elementAt( i)).imageComplete( flags);
+		}
+	}
+}
+
+public boolean isConsumer ( ImageConsumer ic ) {
+	if ( consumer instanceof ImageConsumer )
+		return (consumer == ic);
+	else if ( consumer instanceof Vector )
+		return ((Vector)consumer).contains( ic);
+	else
+		return false;
+}
+
+void produceFrom ( File file ) {
+	Ptr ptr;
+
+	if ( file.exists() &&
+	     (ptr = Toolkit.imgCreateFromFile( file.getAbsolutePath())) != null ){
+		produceFrom( ptr);
+	}
+	else {
+		imageComplete( ImageConsumer.IMAGEERROR | ImageConsumer.IMAGEABORTED);
+	}
+}
+
+void produceFrom ( Ptr ptr ) {
+	if ( consumer instanceof ImageLoader ) {
+		ImageLoader loader = (ImageLoader)consumer;
+		Image img = loader.img;
+	
+		img.nativeData = ptr;
+		img.width = Toolkit.imgGetWidth( ptr);
+		img.height = Toolkit.imgGetHeight( ptr);
+
+		loader.setDimensions( img.width, img.height);
+		loader.imageComplete( Toolkit.imgIsMultiFrame( ptr) ?
+		                           ImageConsumer.SINGLEFRAMEDONE : ImageConsumer.STATICIMAGEDONE);
+	}
+	else {
+		Toolkit.imgProduceImage( this, ptr);
+		Toolkit.imgFreeImage( ptr);
+	}
+}
+
+void produceFrom ( URL url ) {
+	Ptr    ptr;
+	byte[] buf = new byte[1024];
+	int    n;
+
+	// since this is most likely used in a browser context (no file
+	// system), the only thing we can do (in the absence of a suspendable
+	// native image production) is to temporarily store the data in
+	// memory. Note that this is done via kaffe.io.AccessibleBAOStream,
+	// to prevent the inacceptable memory consumption duplication of
+	// "toByteArray()".
+	// Ideally, we would have a suspendable image production (that can
+	// deal with reading and processing "incomplete" data), but that
+	// simply isn't supported by many native image conversion libraries.
+	// Some could be done in Java (at the expense of a significant speed
+	// degradation - this is the classical native functionality), but
+	// things like Jpeg ?
+	try {
+		InputStream in = url.openStream();
+		if ( in != null ) {
+			AccessibleBAOStream out = new AccessibleBAOStream(8192);
+			while ((n = in.read(buf)) >= 0) {
+				out.write(buf, 0, n);
+			}
+			in.close();
+			if ( (ptr = Toolkit.imgCreateFromData(out.getBuffer(), 0, out.size())) != null ){
+				produceFrom( ptr);
+				return;
+			}
+		}
+	}
+	catch ( Exception x ) {}
+	
+	imageComplete( ImageConsumer.IMAGEERROR|ImageConsumer.IMAGEABORTED);
+}
+
+void produceFrom ( byte[] data, int off, int len ) {
+	Ptr ptr;
+
+	if ( (ptr = Toolkit.imgCreateFromData( data, off, len)) != null )
+		produceFrom( ptr);
+	else
+		imageComplete( ImageConsumer.IMAGEERROR | ImageConsumer.IMAGEABORTED);
+}
+
+public void removeConsumer ( ImageConsumer ic ) {
+	if ( consumer == ic ){
+		consumer = null;
+	}
+	else if ( consumer instanceof Vector ) {
+		Vector v = (Vector) consumer;		
+		v.removeElement( ic);
+		if ( v.size() == 1 )
+			consumer = v.elementAt( 0);
+	}
+}
+
+public void requestTopDownLeftRightResend ( ImageConsumer consumer ) {
+	// ignored
+}
+
+void setColorModel ( ColorModel model ){
+	if ( consumer instanceof ImageConsumer ){
+		((ImageConsumer)consumer).setColorModel( model);
+	}
+	else if ( consumer instanceof Vector) {
+		Vector v = (Vector)consumer;
+		int i, n = v.size();
+		for ( i=0; i<n; i++ ){
+			((ImageConsumer)v.elementAt( i)).setColorModel( model);
+		}
+	}
+}
+
+void setDimensions ( int width, int height ){
+	if ( consumer instanceof ImageConsumer ){
+		((ImageConsumer)consumer).setDimensions( width, height);
+	}
+	else if ( consumer instanceof Vector) {
+		Vector v = (Vector)consumer;
+		int i, n = v.size();
+		for ( i=0; i<n; i++ ){
+			((ImageConsumer)v.elementAt( i)).setDimensions( width, height);
+		}
+	}
+}
+
+void setHints ( int hints ){
+	if ( consumer instanceof ImageConsumer ){
+		((ImageConsumer)consumer).setHints( hints);
+	}
+	else if ( consumer instanceof Vector) {
+		Vector v = (Vector)consumer;
+		int i, n = v.size();
+		for ( i=0; i<n; i++ ){
+			((ImageConsumer)v.elementAt( i)).setHints( hints);
+		}
+	}
+}
+
+void setPixels ( int x, int y, int w, int h,
+                       ColorModel model, int pixels[], int offset, int scansize ) {
+	if ( consumer instanceof ImageConsumer ){
+		((ImageConsumer)consumer).setPixels( x, y, w, h, model, pixels, offset, scansize);
+	}
+	else if ( consumer instanceof Vector) {
+		Vector v = (Vector)consumer;
+		int i, n = v.size();
+		for ( i=0; i<n; i++ ){
+			((ImageConsumer)v.elementAt( i)).setPixels( x, y, w, h,
+			                                            model, pixels, offset, scansize);
+		}
+	}
+}
+
+public void startProduction ( ImageConsumer ic ) {
+	addConsumer( ic);
+
+	if ( src instanceof File )
+		produceFrom( (File)src);
+	else if ( src instanceof URL )
+		produceFrom( (URL)src);
+	else if ( src instanceof byte[] )
+		produceFrom( (byte[])src, off, len);
+	else
+		System.err.println( "unsupported production source: " + src.getClass());
+		
+	removeConsumer( ic);
 }
 }

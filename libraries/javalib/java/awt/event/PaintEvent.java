@@ -1,6 +1,5 @@
 package java.awt.event;
 
-import java.lang.String;
 import java.awt.Component;
 import java.awt.Rectangle;
 
@@ -36,6 +35,10 @@ protected PaintEvent ( Component src, int evtId, int x, int y, int width, int he
 
 public Rectangle getUpdateRect() {
 	return new Rectangle( x, y, width, height);
+}
+
+protected boolean isLiveEventFor ( Object src ) {
+	return (source == src);
 }
 
 public String paramString () {

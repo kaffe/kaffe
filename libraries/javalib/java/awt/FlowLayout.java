@@ -10,7 +10,6 @@
 
 package java.awt;
 
-import java.lang.String;
 
 public class FlowLayout
   implements LayoutManager
@@ -40,8 +39,7 @@ public void addLayoutComponent( String name, Component comp) {
 }
 
 private int alignComps( Container target, int start, int end, int w, int y) {
-
-	Insets in = target.insets;
+	Insets in = target.getInsets(); // getInsets() might be reimplemented (swing)
 	int wm = target.width - in.left - in.right;
 	int startx;
 	int hMax = 0;
@@ -81,7 +79,7 @@ public int getVgap() {
 }
 
 public void layoutContainer( Container target) {
-	Insets in = target.insets;
+	Insets in = target.getInsets(); // getInsets() might be reimplemented (swing)
 	int mw = target.width - in.left - in.right;
 	int width = hgap;
 	int ypos = vgap + in.top;
@@ -90,7 +88,7 @@ public void layoutContainer( Container target) {
 
 	for ( int i = 0; i < cc; i++) {
 		Component c = target.getComponent(i);
-		if ( ! c.isVisible) {
+		if ( (c.flags & Component.IS_VISIBLE) == 0 ) {
 			continue;
 		}
 		c.setSize( c.getPreferredSize() );
@@ -129,7 +127,7 @@ private Dimension preferredSize( Container parent, boolean min) {
 
 	for ( int i=0; i<cc; i++) {
 		Component c = parent.getComponent(i);
-		if ( c.isVisible) {
+		if ( (c.flags & Component.IS_VISIBLE) != 0 ) {
 			Dimension dc = min ? c.getMinimumSize() : c.getPreferredSize();
 			w += dc.width + hgap;
 			if ( h < dc.height) {
@@ -138,8 +136,9 @@ private Dimension preferredSize( Container parent, boolean min) {
 		}
 	}
 
-	w += parent.insets.left + parent.insets.right + hgap;
-	h += parent.insets.top + parent.insets.bottom + 2*vgap;
+	Insets in = parent.getInsets(); // getInsets() might be reimplemented (swing)
+	w += in.left + in.right + hgap;
+	h += in.top + in.bottom + 2*vgap;
 
 	return new Dimension( w, h);
 }

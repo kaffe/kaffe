@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.lang.String;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -32,14 +31,8 @@ PaintEvt ( Component src, int evtId, long ms, int x, int y, int width, int heigh
 }
 
 protected void dispatch () {
-	Component src = (Component)source;
-	NativeGraphics g = NativeGraphics.getClippedGraphics( null, src, 0,0,
-	                                                      x, y, width, height, true);	
-	if ( g != null ){
-		src.update( g);
-		g.dispose();
-	}
-	
+	((Component)source).processPaintEvent( id, x, y, width, height);
+
 	recycle();
 }
 
@@ -100,6 +93,13 @@ public Rectangle getUpdateRect () {
 	return new Rectangle( x, y, width, height);
 }
 
+protected boolean isObsoletePaint( Object src, int x, int y, int w, int h ){
+	return ((src == source) &&
+	        (x <= this.x) && (y <= this.y) &&
+	        ((x+w) >= (this.x + this.width)) &&
+	        ((y+h) >= (this.y + this.height)));
+}
+
 public String paramString() {
 	String ps;
 	
@@ -135,9 +135,9 @@ boolean solicitRepaint ( Component c, int cx, int cy, int cw, int ch ) {
 	// our policy is not to propagate repaints upwards in the parent chain, since
 	// this can cause rather big repaint areas, resulting in flicker
 	if ( c != source ) return false;
-	
+
 	int xw = x + width;
-	int yh = x + height;
+	int yh = y + height;
 	int cxw = cx + cw;
 	int cyh = cy + ch;
 	

@@ -11,8 +11,6 @@ import java.awt.Component;
  * of this file.
  * @author P.C.Mehlitz
  */
-
-
 public class InputEvent
   extends ComponentEvent
 {
@@ -42,8 +40,16 @@ public boolean isAltDown() {
 	return ((modifiers & ALT_MASK) != 0);
 }
 
+public boolean isConsumed() {
+	return consumed;
+}
+
 public boolean isControlDown() {
 	return ((modifiers & CTRL_MASK) != 0);
+}
+
+protected boolean isLiveEventFor ( Object src ) {
+	return (src == source);
 }
 
 public boolean isMetaDown() {

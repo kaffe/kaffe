@@ -74,7 +74,7 @@ public void paint( Graphics g) {
 	if ( hasBorder )
 		paintBorder( g);
 			
-	if ( Defaults.LabelsCarved ) {
+	if ( Defaults.LabelTxtCarved ) {
 		g.setColor( Color.white);
 		g.drawString( label, x0+1, y0+1 );
 	}
@@ -125,8 +125,13 @@ public void setText( String label) {
 	if ( (this.label == null ) || ! (this.label.equals( label)) ){
 		this.label = label;
 		hasBorder = label.startsWith(" ") && label.endsWith( " ");
-		if ( isShowing() ) {
-			repaint();
+		if ( (flags & IS_SHOWING) == IS_SHOWING ) {
+			Graphics g = getGraphics();
+			if ( g != null ) {
+				paint( g);
+				g.dispose();
+			}
+			//repaint();
 		}
 	}
 }

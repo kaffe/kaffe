@@ -1,3 +1,9 @@
+package java.text;
+
+import java.lang.String;
+import java.util.Locale;
+import kaffe.util.NotImplemented;
+
 /*
  * Java core library component.
  *
@@ -7,40 +13,33 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.text;
-
-import java.lang.String;
-import java.util.Locale;
-import kaffe.util.NotImplemented;
-
-public class DecimalFormat extends NumberFormat {
-
-private DecimalFormatSymbols syms;
-
-private int groupsize;
-private int multiplier;
-private String negativeprefix;
-private String negativesuffix;
-private String positiveprefix;
-private String positivesuffix;
-private boolean decsepshown;
+public class DecimalFormat
+  extends NumberFormat
+{
+	private DecimalFormatSymbols syms;
+	private int groupsize;
+	private int multiplier;
+	private String negativeprefix;
+	private String negativesuffix;
+	private String positiveprefix;
+	private String positivesuffix;
+	private boolean decsepshown;
 
 public DecimalFormat() {
-	this("0.#", Locale.getDefault());
+	this("#,##0.###;-#,##0.###", Locale.getDefault());
 }
 
 public DecimalFormat(String pattern) {
 	this(pattern, Locale.getDefault());
 }
 
-public DecimalFormat(String pattern, Locale loc) {
-	this(pattern, new DecimalFormatSymbols(loc));
-}
-
 public DecimalFormat(String pattern, DecimalFormatSymbols syms) {
 	this.syms = syms;
 	applyPattern(pattern);
+}
+
+public DecimalFormat(String pattern, Locale loc) {
+	this(pattern, new DecimalFormatSymbols(loc));
 }
 
 public void applyLocalizedPattern(String pattern) {
@@ -136,6 +135,9 @@ public void applyPattern(String pattern) {
 			break;
 
 		case ';':
+			if ( want == 2 ) {
+				positivesuffix = new String(patt, si, i-si);
+			}
 			si = i+1;
 			formatend = i;
 			want = 4;
@@ -223,10 +225,13 @@ public void applyPattern(String pattern) {
 	if (dec == true) {
 		intonly = false;
 		minfrac = zerocount;
-		maxfrac = Integer.MAX_VALUE;
-		if (zerocount == 0 && hashcount == 0) {
+		maxfrac = minfrac + hashcount;
+		if (zerocount > 0) {
 			decsepshown = true;
 		}
+	}
+	else {
+		minint = zerocount;
 	}
 }
 
@@ -236,15 +241,6 @@ public Object clone() {
 
 public boolean equals(Object obj) {
 	return (super.equals(obj));
-}
-
-public StringBuffer format(double num, StringBuffer buf, FieldPosition pos) {
-	return (format(Double.toString(num), buf, pos));
-
-}
-
-public StringBuffer format(long num, StringBuffer buf, FieldPosition pos) {
-	return (format(Long.toString(num), buf, pos));
 }
 
 private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
@@ -276,14 +272,15 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 		buf.append(syms.zeroDigit);
 	}
 
+	buf.reverse();
+
 	if (val[0] == '-') {
-		buf.append(negativeprefix);
+		buf.insert(0, negativeprefix);
 	}
 	else {
-		buf.append(positiveprefix);
+		buf.insert(0, positiveprefix);
 	}
 
-	buf.reverse();
 
 	if (pos.field == INTEGER_FIELD) {
 		pos.begin = app.length();
@@ -295,7 +292,7 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 	}
 	buf.setLength(0);
 
-	if (intonly == false && minfrac > 0) {
+	if (intonly == false) {
 
 		count = 0;
 
@@ -337,6 +334,15 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 	return (app);
 }
 
+public StringBuffer format(double num, StringBuffer buf, FieldPosition pos) {
+	return (format(Double.toString(num), buf, pos));
+
+}
+
+public StringBuffer format(long num, StringBuffer buf, FieldPosition pos) {
+	return (format(Long.toString(num), buf, pos));
+}
+
 public DecimalFormatSymbols getDecimalFormatSymbols() {
 	return (syms);
 }
@@ -374,7 +380,44 @@ public boolean isDecimalSeperatorAlwaysShown() {
 }
 
 public Number parse(String source, ParsePosition pos) {
-	throw new NotImplemented();
+	char[] ca = source.toCharArray();
+	int ppl = positiveprefix.length();
+	int npl = negativeprefix.length();
+	boolean neg = false;
+	int cl = 0;
+	int si, ei;
+	char[] can;
+	
+	if ( (ppl > 0) && (source.startsWith( positiveprefix)) ) {
+		si = ppl; ei = ca.length - positivesuffix.length();
+	}
+	else if ( (npl > 0) && (source.startsWith( negativeprefix)) ) {
+		si = npl; ei = ca.length - negativesuffix.length();
+		neg = true;
+	}
+	else {
+		si = 0; ei = ca.length;
+	}
+
+	if ( neg ) {
+		can = new char[ei-si+1];
+		can[cl++] = '-';
+	}
+	else {
+		can = new char[ei-si];
+	}
+	
+	for ( int idx=si; idx<ei; idx++) {
+		char c = ca[idx];
+		if ( Character.isDigit( c) ) {
+			can[cl++] = c;
+		}
+		else if ( c == syms.decimalSeperator) {
+			can[cl++] = '.';
+		}
+	}
+	
+	return Double.valueOf( new String( can, 0, cl));
 }
 
 public void setDecimalFormatSymbols(DecimalFormatSymbols syms) {
@@ -416,5 +459,4 @@ public String toLocalizePattern() {
 public String toPattern() {
 	throw new NotImplemented();
 }
-
 }

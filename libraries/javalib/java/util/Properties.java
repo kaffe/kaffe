@@ -1,3 +1,14 @@
+package java.util;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.lang.String;
+import java.lang.System;
+
 /*
  * Java core library component.
  *
@@ -7,18 +18,6 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.util;
-
-import java.lang.String;
-import java.lang.System;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.Writer;
-
 public class Properties
   extends Hashtable
 {
@@ -59,7 +58,7 @@ public String getProperty(String key) {
 	// Apparently we should use the superclass get method rather than
 	// our own because it may be overridden
 	// Software: HotJava
-// if (System.out != null) System.out.println("getProperty: " + key);
+  // if (System.out != null) System.out.println("getProperty: " + key);
 	Object propSearch = super.get(key);
 	if (propSearch != null) {
 		return ((String)propSearch);
@@ -100,10 +99,8 @@ public synchronized void load(InputStream in) throws IOException {
 			// Skip empty and commented lines.
 		}
 		else if ((index = line.indexOf('=')) > 0) {
-			String key = line.substring(0, index);
-			// Strip off whitespace.
-			for (index++; (index < len) && Character.isSpace(line.charAt(index)); index++);
-			String value = line.substring(index);
+			String key = line.substring(0, index).trim();
+			String value = line.substring(index+1).trim();
 			put(key, value);
 		}
 		else {
@@ -208,7 +205,6 @@ private synchronized void save(Writer out, String header) {
 		System.err.println("Unable to save properties: "+header);
 	}
 }
-
 }
 
 class PropertyEnumeration
@@ -231,5 +227,4 @@ public Object nextElement() {
 
 	return vector.elementAt(posn++);
 }
-
 }

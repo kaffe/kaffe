@@ -1,36 +1,57 @@
 package java.awt;
 
-import java.lang.String;
+import java.awt.event.KeyEvent;
 
 public class MenuShortcut
 {
-	int key;
-	boolean usesShiftMod;
+	int mods;
+	int keyCode;
+	MenuShortcut next;
+	MenuShortcut nextMod;
+	ShortcutConsumer consumer;
 
-public MenuShortcut( int key) {
-	this( key, false);
+MenuShortcut( MenuShortcut ms) {
+	mods = ms.mods;
+	keyCode = ms.keyCode;
 }
 
-public MenuShortcut( int key, boolean useShiftMod) {
-	this.key = key;
-	usesShiftMod = useShiftMod;
+MenuShortcut( ShortcutConsumer consumer, int keyCode, int mods) {
+	this.consumer = consumer;
+	this.keyCode = keyCode;
+	this.mods = mods;
+}
+
+public MenuShortcut( int keyCode) {
+	this( keyCode, false);
+}
+
+public MenuShortcut( int keyCode, boolean useShiftMod) {
+	this.keyCode = keyCode;
+	
+	mods = KeyEvent.CTRL_MASK;
+	if ( useShiftMod )
+		mods |= KeyEvent.SHIFT_MASK;
 }
 
 public boolean equals( MenuShortcut s) {
 	if ( s == null )
 		return false;
-	return ( (s.key == key) && (s.usesShiftMod == usesShiftMod) );
+	return ( (s.keyCode == keyCode) && (s.mods == mods) );
 }
 
 public int getKey() {
-	return key;
+	return keyCode;
+}
+
+void process() {
+	consumer.handleShortcut( this);
 }
 
 public String toString() {
-	return ( " " + key);
+	return ( getClass().getName() + " code: " + keyCode + ", mods: " + mods);
 }
 
 public boolean usesShiftModifier() {
-	return usesShiftMod;
+	return ((mods & KeyEvent.SHIFT_MASK) > 0);
 }
 }

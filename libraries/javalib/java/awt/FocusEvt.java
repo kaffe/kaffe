@@ -9,6 +9,7 @@ class FocusEvt
 	static FocusEvt cache;
 	static Component keyTgtRequest;
 	static Window newActiveWindow;
+	static boolean temporaryHint;
 
 FocusEvt ( Component src, int evtId ) {
 	super( src, evtId);
@@ -17,7 +18,7 @@ FocusEvt ( Component src, int evtId ) {
 static void checkActiveWindow( Component c) {
 	Component top = c.getToplevel();
 
-	if ( (top != activeWindow) && (top != null) ) {
+	if ( (top != AWTEvent.activeWindow) && (top != null) ) {
 		FocusEvt e = getEvent( top, FocusEvent.FOCUS_GAINED);
 		e.dispatch();
 	}
@@ -28,18 +29,34 @@ protected void dispatch () {
 	Component  src = (Component) source;
 	Component  lastTgt;
 
+	// We don't support 'isTemporary' in the native layer. The spec says that it
+	// should be set for events where the focus is changed as "a indirect result
+	// of another operation.. and will automatically be restored once this operation
+	// is finished". Oh, great! That is exactly were the native windowing system
+	// kicks in, and there are not even two of them doing this in the same way. The best
+	// approximation we can do is to set this if we show owned Windows, but even here the
+	// focus could wander away to a external toplevel, never to be restored. Anyway, this
+	// simple approach makes Swing happy for the moment
+	if ( temporaryHint ) {
+		isTemporary = true;
+		temporaryHint = false;
+	}
+
 	if ( id == FOCUS_GAINED ) {
-		if ( keyTgtRequest != null ) {
-			src = keyTgtRequest;
+		if ( (keyTgtRequest != null) ) {
+			// There is an obscure WM behavior (e.g. in KWM), first sending
+			// a FOCUS_LOST to a freshly opened window. If we just reset keyTgtRequest
+			// on FOCUS_LOST, we loose the forwarding. If we don't do that, we better
+			// check here that the keyTgtRequest is for us
+			if ( getToplevel( keyTgtRequest) == src )
+				src = keyTgtRequest;
 			keyTgtRequest = null;
-		}
-		
-		if ( keyTgt == src ) return; // nothing to do
-		
-		if ( (keyTgt != null) && (keyTgt != src) ) {
+		}		
+
+		if ( (AWTEvent.keyTgt != null) && (AWTEvent.keyTgt != src) ) {
 			id = FOCUS_LOST;
-			source = lastTgt = keyTgt;
-			keyTgt = src;
+			source = lastTgt = AWTEvent.keyTgt;
+			AWTEvent.keyTgt = src;
 			lastTgt.processEvent( this);
 		  id = FOCUS_GAINED;
 		}
@@ -48,45 +65,50 @@ protected void dispatch () {
 		// prior to sending the DEACTIVATED messages because RootWindow
 		// instances might have to react on this
 		newActiveWindow = (Window) getToplevel( src);
-		if ( (activeWindow != null) && (newActiveWindow != activeWindow)
+		if ( (AWTEvent.activeWindow != null) && (newActiveWindow != AWTEvent.activeWindow)
 		       && ((newActiveWindow instanceof Frame) || (newActiveWindow == root)) ) {
-			we = WindowEvt.getEvent( activeWindow, WindowEvent.WINDOW_DEACTIVATED);
-			activeWindow.processEvent( we);
+			we = WindowEvt.getEvent( AWTEvent.activeWindow, WindowEvent.WINDOW_DEACTIVATED);
+			AWTEvent.activeWindow.processEvent( we);
 		}
 
-		keyTgt = src;
+		AWTEvent.keyTgt = src;
 		source = src;
 		src.processEvent( this);
 		
-		if ( (newActiveWindow != activeWindow) && (newActiveWindow instanceof Frame) ) {
+		ShortcutHandler.buildCodeTable( src);
+		
+		if ( (newActiveWindow != AWTEvent.activeWindow) && (newActiveWindow instanceof Frame) ) {
 			we = WindowEvt.getEvent( newActiveWindow, WindowEvent.WINDOW_ACTIVATED);
 			newActiveWindow.processEvent( we);
-			activeWindow = (Window) newActiveWindow;
+			AWTEvent.activeWindow = (Window) newActiveWindow;
 		}
 		else if ( newActiveWindow == root )
-			activeWindow = null;
+			AWTEvent.activeWindow = null;
 	}
 	else if ( id == FOCUS_LOST ) {
-		if ( src == activeWindow ) { // native generated focus lost
-			we = WindowEvt.getEvent( activeWindow, WindowEvent.WINDOW_DEACTIVATED);
-			activeWindow.processEvent( we);
-			activeWindow = null;
+		if ( src == AWTEvent.activeWindow ) { // native generated focus lost
+			we = WindowEvt.getEvent( AWTEvent.activeWindow, WindowEvent.WINDOW_DEACTIVATED);
+			AWTEvent.activeWindow.processEvent( we);
+			AWTEvent.activeWindow = null;
+			
+			// seems to be silly, but JDK marks *all* toplevel losts as temporary
+			// we wouldn't need that for swing, since we try harder with 'temporaryHint', but
+			// there are some native window managers (Enlightenment) having trouble with
+			// 'owned' window focus
+			isTemporary = true;
 		}
 
-		if ( keyTgt != null ) {
-			src    = keyTgt;
+		if ( AWTEvent.keyTgt != null ) {
+			src    = AWTEvent.keyTgt;
 			source = src;
-			keyTgt = null;
+			AWTEvent.keyTgt = null;
 			inputModifier = 0; // just a matter of safety (a reset point)
 
 			src.processEvent( this);			
 		}
-		
-		// sledge hammer for (buggy?) WMs sending focus losts without prior gains
-		keyTgtRequest = null;
 	}
 	
-	recycle();
+	if ( (Defaults.RecycleEvents & AWTEvent.FOCUS_EVENT_MASK) != 0 )	recycle();
 }
 
 static synchronized FocusEvt getEvent ( Component source, int id ) {
@@ -100,13 +122,16 @@ static synchronized FocusEvt getEvent ( Component source, int id ) {
 		
 		e.id = id;
 		e.source = source;
-		
+		e.isTemporary = false;
+
 		return e;
 	}
 }
 
 static synchronized FocusEvt getEvent ( int srcIdx, int id ) {
 	Component source = sources[srcIdx];
+
+	if ( source == null ) return null;
 
 	if ( cache == null ){
 		return new FocusEvt( source, id);
@@ -118,9 +143,14 @@ static synchronized FocusEvt getEvent ( int srcIdx, int id ) {
 		
 		e.id = id;
 		e.source = source;
-		
+		e.isTemporary = false;
+
 		return e;
 	}
+}
+
+protected boolean isLiveEventFor ( Object src ) {
+	return (source == src);
 }
 
 protected void recycle () {

@@ -22,7 +22,7 @@ public DataOutputStream(OutputStream out) {
 }
 
 public void flush() throws IOException {
-	out.flush();
+	super.flush();
 }
 
 final public int size() {
@@ -30,12 +30,12 @@ final public int size() {
 }
 
 public synchronized void write(byte b[], int off, int len) throws IOException {
-	out.write(b, off, len);
+	super.write(b, off, len);
 	written += len;
 }
 
 public synchronized void write(int b) throws IOException {
-	out.write(b);
+	super.write(b);
 	written++;		
 }
 

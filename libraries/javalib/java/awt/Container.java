@@ -1,8 +1,8 @@
 package java.awt;
 
-import java.lang.String;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
+import java.awt.event.PaintEvent;
 import kaffe.awt.OpaqueComponent;
 
 /**
@@ -22,7 +22,6 @@ abstract public class Container
 	Component[] children;
 	int nChildren;
 	LayoutManager layoutm;
-	boolean isLayouting;
 	ContainerListener cntrListener;
 	Insets insets = Insets.noInsets;
 
@@ -35,25 +34,13 @@ public Component add (Component child) {
 }
 
 public void add(Component child, Object constraints) {
+	// seems to be mapped to add(Component,Object,int) - since this is public
+	// (and can be redefined) we have to do the same <sigh>
 	add(child, constraints, -1);
 }
 
 public void add(Component child, Object constraints, int index) {
-
-	if ( child.parent != null ) {
-		child.parent.remove(child);
-	}
-
 	addImpl(child, constraints, index);
-	
-	if ( layoutm != null ) {
-		if ( layoutm instanceof LayoutManager2 ) {
-			((LayoutManager2)layoutm).addLayoutComponent( child, constraints);
-		}
-		if (constraints instanceof String) {
-			layoutm.addLayoutComponent( (String)constraints, child);
-		}
-	}
 }
 
 public Component add(Component child, int index) {
@@ -74,56 +61,87 @@ public void addContainerListener ( ContainerListener newListener ) {
 
 protected void addImpl(Component child, Object constraints, int index ) {
 
-	if (index < -1 || index > nChildren) {
-		throw new IllegalArgumentException("bad index: " + index);
-	}
-	// This test isn't done because we actually need this functionality
-	// for the native windowing system
-	//else if (child instanceof Window) {
-	//	throw new IllegalArgumentException("component is Window");
-	//}
-	else if (child instanceof Container && this.parent == child) {
-		throw new IllegalArgumentException("child is a bad container");
-	}
+	synchronized ( treeLock ) {
+		if (index < -1 || index > nChildren) {
+			throw new IllegalArgumentException("bad index: " + index);
+		}
+		// This test isn't done because we actually need this functionality
+		// for the native windowing system
+		//else if (child instanceof Window) {
+		//	throw new IllegalArgumentException("component is Window");
+		//}
+		else if (child instanceof Container && this.parent == child) {
+			throw new IllegalArgumentException("child is a bad container");
+		}
 
-	if ( children == null ) {
-		children= new Component[3];
-	}
-	else if ( nChildren == children.length ) {
-		Component[] old = children;
-		children = new Component[ nChildren * 2];
-		System.arraycopy( old, 0, children, 0, nChildren);
-	}
+		if ( child.parent != null ) {
+			child.parent.remove(child);
+		}
+
+		if ( children == null ) {
+			children= new Component[3];
+		}
+		else if ( nChildren == children.length ) {
+			Component[] old = children;
+			children = new Component[ nChildren * 2];
+			System.arraycopy( old, 0, children, 0, nChildren);
+		}
 		
-	if (index < 0 || nChildren == 0 || index == nChildren) {  // append
-		children[nChildren] = child;
-	}
-	else if (index < nChildren) {     // insert at index
-		System.arraycopy( children, index, children, index+1, nChildren - index);
-		children[index] = child;
-	}
+		if (index < 0 || nChildren == 0 || index == nChildren) {  // append
+			children[nChildren] = child;
+		}
+		else if (index < nChildren) {     // insert at index
+			System.arraycopy( children, index, children, index+1, nChildren - index);
+			children[index] = child;
+		}
 	
-	nChildren++;
-	child.parent = this;
+		nChildren++;
+		child.parent = this;
 
-	if ( isValid )
-		invalidate();
+		if ( (flags & IS_VALID) != 0 )
+			invalidate();
 
-	// if we are already addNotified (this is a subsequent add),
-	// we immediately have to addNotify the child, too
-	if (peer != null) {
-		child.addNotify();
+		// if we are already addNotified (this is a subsequent add),
+		// we immediately have to addNotify the child, too
+		if ( (flags & IS_ADD_NOTIFIED) != 0 ) {
+			child.addNotify();
 		
-		// This isn't required in case we are subsequently validated (what is the
-		// correct thing to do), but native widgets would cause a repaint regardless
-		// of that. Comment this out if you believe in correct apps
-		if ( child.props.isNativeLike )
-			child.repaint();
-	}
+			// This isn't required in case we are subsequently validated (what is the
+			// correct thing to do), but native widgets would cause a repaint regardless
+			// of that. Comment this out if you believe in correct apps
+			if ( (child.flags & IS_NATIVE_LIKE) != 0 )
+				child.repaint();
+		}
 
-	if ( hasToNotify( this, AWTEvent.CONTAINER_EVENT_MASK, cntrListener) ){
-		AWTEvent.sendEvent( ContainerEvt.getEvent( this,
-		                       ContainerEvent.COMPONENT_ADDED, child), false);
+		// inherit parent attributes (if not overriden by child)
+		if ( (flags & (IS_PARENT_SHOWING | IS_VISIBLE)) == (IS_PARENT_SHOWING | IS_VISIBLE) ){
+			child.flags |= IS_PARENT_SHOWING;
+			child.propagateParentShowing();
+		}
+		if ( (child.flags & IS_BG_COLORED) == 0 )
+			child.propagateBgClr( bgClr);
+		if ( (child.flags & IS_FG_COLORED) == 0 )
+			child.propagateFgClr( fgClr);
+		if ( (child.flags & IS_FONTIFIED) == 0 )
+			child.propagateFont( font);
+			
+
+		// Some LayoutManagers track adding/removing components. Since this seems to be
+		// done after a potential addNotify, inform them here
+		// (wouldn't it be nice to have a single LayoutManager interface?)
+		if ( layoutm != null ) {
+			if ( layoutm instanceof LayoutManager2 ) {
+				((LayoutManager2)layoutm).addLayoutComponent( child, constraints);
+			}
+			if (constraints instanceof String) {
+				layoutm.addLayoutComponent( (String)constraints, child);
+			}
+		}
+	
+		if ( hasToNotify( this, AWTEvent.CONTAINER_EVENT_MASK, cntrListener) ){
+			AWTEvent.sendEvent( ContainerEvt.getEvent( this,
+			                       ContainerEvent.COMPONENT_ADDED, child), false);
+		}
 	}
 }
 
@@ -138,10 +156,10 @@ Graphics clipSiblings ( Component child, NativeGraphics g ) {
 	int        i, xClip, yClip, xwClip, yhClip, cxw, cyh;
 	Component  c;
 
-	xClip = g.clip.x + g.xOffset;
-	yClip = g.clip.y + g.yOffset;
-	xwClip = xClip + g.clip.width;
-	yhClip = yClip + g.clip.height;
+	xClip = g.xClip + g.xOffset;
+	yClip = g.yClip + g.yOffset;
+	xwClip = xClip + g.wClip;
+	yhClip = yClip + g.hClip;
 	
 	for ( i=nChildren-1; (i >= 0) && (children[i] != child) ; i-- );
 	for ( i--; i >= 0; i-- ) {
@@ -170,11 +188,43 @@ public void doLayout() {
 	layout();
 }
 
-void dumpChildren () {
+void dump ( String prefix ) {
+	String prfx = prefix + "  ";
+
+	super.dump( prefix);
+	
 	for ( int i=0; i<nChildren; i++ ) {
-		System.out.print( i);
-		System.out.print( ": ");
-		System.out.println( children[i]);
+		children[i].dump( prfx + i + " ");
+	}
+}
+
+void emitRepaints ( int ux, int uy, int uw, int uh ) {
+	// This looks too similiar to NativeGraphics.paintChild(), but we can't
+	// move that one (because of clip bounds access). On the other hand, we
+	// don't want to give up precise clipping here (flicker)
+
+	for ( int i=0; i<nChildren; i++ ) {
+		Component c = children[i];
+		
+		if ( (c.flags & (IS_VISIBLE|IS_DIRTY)) == (IS_VISIBLE|IS_DIRTY) ) {
+			int xw = c.x + c.width;
+			int yh = c.y + c.height;
+			int uxw = ux + uw;
+			int uyh = uy + uh;
+
+			int clx = (c.x > ux) ? c.x : ux;
+			int cly = (c.y > uy) ? c.y : uy;
+			int clw = ((xw > uxw) ? uxw : xw) - clx;
+			int clh = ((yh > uyh) ? uyh : yh) - cly;
+
+			clx -= c.x;
+			cly -= c.y;
+
+			c.repaint( clx, cly, clw, clh);
+		
+			if ( c instanceof Container )
+				((Container)c).emitRepaints( clx, cly, clw, clh);
+		}
 	}
 }
 
@@ -246,6 +296,36 @@ public Dimension getPreferredSize () {
 	return (preferredSize());
 }
 
+boolean hasDirties () {
+	for ( int i=0; i<nChildren; i++ ) {
+		Component c = children[i];
+		
+		if ( (c.flags & IS_DIRTY) != 0 )
+			return true;
+
+		if ( c instanceof Container ) {
+			if ( ((Container)c).hasDirties() )
+				return true;
+		}
+	}
+	
+	return false;
+}
+
+public void hide () {
+	if ( (flags & IS_PARENT_SHOWING) != 0){
+		for ( int i=0; i<nChildren; i++ ) {
+			Component c = children[i];
+			
+			c.flags &= ~IS_PARENT_SHOWING;
+			if ( (c.flags & IS_VISIBLE) != 0 )
+				c.propagateParentShowing();
+		}
+	}
+
+	super.hide();
+}
+
 /**
  * @deprecated, use getInsets()
  */
@@ -259,17 +339,19 @@ public Insets insets () {
 
 public void invalidate () {
 
-	if ( isValid ) {
-		// apparently, the JDK does inform the layout *before* invalidation
-		if ( layoutm instanceof LayoutManager2 ) {
-			((LayoutManager2)layoutm).invalidateLayout( this);
+	synchronized ( treeLock ) {
+		if ( (flags & IS_VALID) != 0 ) {
+			// apparently, the JDK does inform the layout *before* invalidation
+			if ( layoutm instanceof LayoutManager2 ) {
+				((LayoutManager2)layoutm).invalidateLayout( this);
+			}
+		
+			flags &= ~IS_VALID;
+		
+			// we have to check the parent since we might be a Window
+			if ( (parent != null) && ((parent.flags & IS_VALID) != 0) )
+				parent.invalidate();
 		}
-		
-		isValid = false;
-		
-		// we have to check the parent since we might be a Window
-		if ( (parent != null) && !parent.isValid )
-			parent.invalidate();
 	}
 }
 
@@ -283,32 +365,16 @@ public boolean isAncestorOf ( Component c ) {
 
 public void layout() {
 	// DEP - this should be in doLayout() (another nasty compat issue)
-	// We keep the 'isLayouting' regardless of the validation scheme, since it is
-	// the way to prevent lots of redraws during recursive layout descents
+	// We keep the 'isLayouting' state regardless of the validation scheme, since
+	// it is the way to prevent lots of redraws during recursive layout descents
 
-	if ( (layoutm != null) && (nChildren > 0) && !isLayouting ) {
-		isLayouting = true;
-		layoutm.layoutContainer( this);
-		isLayouting = false;
-
-/*
-		if ( isShowing() ) {
-			if ( parent != null ){
-				// no need to traverse upwards
-				if ( !parent.isLayouting ) {
-					if (this instanceof OpaqueComponent) {
-						repaint();
-					}
-					else {
-						parent.repaint( x, y, width, height);
-					}
-				}
-			}
-			else {
-				repaint();
-			}
+	// another slow-downer: the async validation of swing forces us to sync on treeLock
+	synchronized ( treeLock ) {
+		if ( (layoutm != null) && (nChildren > 0) && ((flags & IS_LAYOUTING) == 0) ) {
+			flags |= IS_LAYOUTING;
+			layoutm.layoutContainer( this);
+			flags &= ~IS_LAYOUTING;
 		}
-*/
 	}
 }
 
@@ -331,6 +397,25 @@ public Component locate ( int x, int y ) {
 	return this;
 }
 
+void markRepaints ( int ux, int uy, int uw, int uh ) {
+	for ( int i=0; i<nChildren; i++ ) {
+		Component c = children[i];
+		
+		if ( (c.flags & IS_VISIBLE) != 0 ){
+			if ( ((c.flags & IS_NATIVE_LIKE) != 0) &&
+			  	 (ux < (c.x + c.width)) &&
+			     (uy < (c.y + c.height)) &&
+			     (c.x < (ux + uw)) &&
+			     (c.y < (uy + uh)) ){
+				c.flags |= IS_DIRTY;
+			}
+		
+			if ( c instanceof Container )
+				((Container)c).markRepaints( ux+ x, uy+ y, uw, uh);
+		}
+	}
+}
+
 /**
  * @deprecated, use getMinimumSize()
  */
@@ -344,70 +429,15 @@ public Dimension minimumSize () {
 }
 
 public void paint ( Graphics g ) {
-	paintChildren( g);
-}
-
-void paintChildren ( Graphics g ) {
-
-	if ( g == null ) return;  // not visible
-
-	int         i;
-	Component   c;
-	Rectangle   clip = g.getClipBounds();
-	int         xClip  = clip.x;
-	int         yClip  = clip.y;
-	int         xwClip = xClip + clip.width;
-	int         yhClip = yClip + clip.height;
-	int         cx, cy, cxw, cyh, clx, cly, clw, clh;
-	Font        fnt = g.getFont();
-	Color       fg = g.getColor();
-	Color       bg = g.getBackColor();
-
 	// standard JDK behavior is to paint last added childs first, simulating
 	// a first-to-last z order
-	for ( i=nChildren-1; i>=0; i-- ) {
-		c = children[i];
+	for ( int i=nChildren-1; i>=0; i-- ) {
+		Component c = children[i];
 
-		if ( !c.isVisible )
-			continue;
-
-		cx = c.x;
-		cy = c.y;
-		cxw = cx + c.width;
-		cyh = cy + c.height;
-
-		// do we have an intersection ?
-		if ( (cxw < xClip) || (cyh < yClip) || (xwClip < cx) || (yhClip < cy) )
-			continue;
-		
-		clx = (xClip < cx) ? 0 : xClip - cx;
-		cly = (yClip < cy) ? 0 : yClip - cy;
-		
-		clw = ((xwClip < cxw) ? xwClip : cxw) - cx - clx;
-		clh = ((yhClip < cyh) ? yhClip : cyh) - cy - cly;
-		
-		g.translate( cx, cy);
-		g.setClip( clx, cly, clw, clh);
-		if ( c.font != null ) g.setFont( c.font);
-		if ( c.fgClr != null ) g.setColor( c.fgClr);
-		if ( c.bgClr != null ) g.setBackColor( c.bgClr);
-
-		// we can't call paint directly in case we have a Panel
-		// (which wouldn't get its children drawn)
-
-		if ( c instanceof Panel ) {
-			c.paintChild( g);
+		if ( (c.flags & IS_VISIBLE) != 0 ) {
+			g.paintChild( c, (flags & IS_IN_UPDATE) != 0);
 		}
-		else
-			c.paint( g);
-		
-		g.translate( -cx, -cy);
-		g.setFont( fnt);
-		g.setColor( fg);
-		g.setBackColor( bg);
 	}
-	
-	g.setClip( xClip, yClip, (xwClip - xClip), (yhClip - yClip));
 }
 
 /**
@@ -438,6 +468,77 @@ public void processContainerEvent ( ContainerEvent event ) {
 	}
 }
 
+void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
+	NativeGraphics g = NativeGraphics.getClippedGraphics( null, this, 0,0,
+	                                                      ux, uy, uw, uh,
+	                                                      false);
+	if ( g != null ){
+		markRepaints( ux, uy, uw, uh);
+	
+		if ( id == PaintEvent.UPDATE ) {
+			update( g);
+		}
+		else {
+		  paint( g);
+		}
+		g.dispose();
+		
+		if ( hasDirties() )
+			emitRepaints( ux, uy, uw, uh);
+	}
+}
+
+void propagateBgClr ( Color clr ) {
+	bgClr = clr;
+
+	for ( int i=0; i<nChildren; i++ ){
+		Component c = children[i];
+		if ( (c.flags & IS_BG_COLORED) == 0 ){
+			c.propagateBgClr( clr);
+		}
+	}
+}
+
+void propagateFgClr ( Color clr ) {
+	fgClr = clr;
+
+	for ( int i=0; i<nChildren; i++ ){
+		Component c = children[i];
+		if ( (c.flags & IS_FG_COLORED) == 0 ){
+			c.propagateFgClr( clr);
+		}
+	}
+}
+
+void propagateFont ( Font fnt ) {
+	font = fnt;
+
+	for ( int i=0; i<nChildren; i++ ){
+		Component c = children[i];
+		if ( (c.flags & IS_FONTIFIED) == 0 ){
+			c.propagateFont( fnt);
+		}
+	}
+}
+
+void propagateParentShowing () {
+	if ( (flags & IS_VISIBLE) == 0 ) // nothing to do, we are a visibility leaf
+		return;
+
+	if ( (flags & IS_PARENT_SHOWING) != 0 ) {
+		for ( int i=0; i<nChildren; i++ ){
+			children[i].flags |= IS_PARENT_SHOWING;
+			children[i].propagateParentShowing();
+		}
+	}
+	else {
+		for ( int i=0; i<nChildren; i++ ){
+			children[i].flags &= ~IS_PARENT_SHOWING;
+			children[i].propagateParentShowing();
+		}
+	}
+}
+
 public void remove ( Component c ) {
 	// usually children are added/removed in a stack like fashion
 	for ( int i=nChildren-1; i>=0; i-- ){
@@ -449,43 +550,48 @@ public void remove ( Component c ) {
 }
 
 public void remove ( int index ) {
-	int n = nChildren - 1;
+	synchronized ( treeLock ) {
+		int n = nChildren - 1;
 
-	if (index < 0 && index > n) {
-		return;
-	}
+		if (index < 0 && index > n) {
+			return;
+		}
 		
-	Component c = children[index];
+		Component c = children[index];
+
+		if ( (c.flags & IS_ADD_NOTIFIED) != 0 ){
+			c.removeNotify();
+		}
+
+		if ( layoutm != null ) {
+			layoutm.removeLayoutComponent( c);
+		}
+
+		// Remove from container
+		c.parent = null;
+		if (index > -1 && index < n) {
+			System.arraycopy(children, index+1, children, index, n-index);
+		}
+		children[n] = null;
+		nChildren--;
 	
-	if ( c.peer != null ) {
-		c.removeNotify();
-	}
+		if ( hasToNotify( this, AWTEvent.CONTAINER_EVENT_MASK, cntrListener) ){
+			AWTEvent.sendEvent( ContainerEvt.getEvent( this,
+			                       ContainerEvent.COMPONENT_REMOVED, c), false);
+		}
 
-	if ( layoutm != null ) {
-		layoutm.removeLayoutComponent( c);
-	}
+		if ( (flags & IS_VALID) != 0 )
+			invalidate();
 
-	// Remove from container
-	c.parent = null;
-	if (index > -1 && index < n) {
-		System.arraycopy(children, index+1, children, index, n-index);
-	}
-	children[n] = null;
-	nChildren--;
-	
-	if ( hasToNotify( this, AWTEvent.CONTAINER_EVENT_MASK, cntrListener) ){
-		AWTEvent.sendEvent( ContainerEvt.getEvent( this,
-		                       ContainerEvent.COMPONENT_REMOVED, c), false);
-	}
+		c.flags &= ~IS_PARENT_SHOWING;
+		c.propagateParentShowing();
 
-	if ( isValid )
-		invalidate();
-		
-	// Like in addImpl, this wouldn't be required in case we are subsequently
-	// validated, again. However, native widgets cause a repaint regardless
-	// of this validation
-	if ( c.props.isNativeLike )
-		repaint( c.x, c.y, c.width, c.height);
+		// Like in addImpl, this wouldn't be required in case we are subsequently
+		// validated, again. However, native widgets cause a repaint regardless
+		// of this validation
+		if ( (c.flags & IS_NATIVE_LIKE) != 0 )
+			repaint( c.x, c.y, c.width, c.height);
+	}
 }
 
 public void removeAll () {
@@ -502,35 +608,54 @@ public void removeContainerListener ( ContainerListener listener ) {
 }
 
 public void removeNotify() {
+	// removeNotify children first (symmetric to addNotify)
 	for ( int i=0; i<nChildren; i++ ) {
-		if (children[i].peer != null) {
+		if ( (children[i].flags & IS_ADD_NOTIFIED) != 0 ) {
 			children[i].removeNotify();
 		}
 	}
 	super.removeNotify();
 }
 
-public void setEnabled ( boolean isEnable ) {
-	super.setEnabled( isEnable);
-	
-	for ( int i=0; i<nChildren; i++ )
-		children[i].setEnabled( isEnable);
-}
-
 public void setLayout ( LayoutManager newLayout ) {
 	layoutm = newLayout;
 	
 	// this doesn't directly cause a doLayout in JDK, it just enables it
-	if ( isValid )
+	if ( (flags & IS_VALID) != 0)
 		invalidate();
 }
 
+public void show () {
+	// we have to propagate first to enable subsequent child drawing by super.show()
+	if ( (flags & IS_PARENT_SHOWING) != 0){
+		for ( int i=0; i<nChildren; i++ ) {
+			Component c = children[i];
+			
+			c.flags |= IS_PARENT_SHOWING;
+			if ( (c.flags & IS_VISIBLE) != 0 )
+				c.propagateParentShowing();
+		}
+	}
+	
+	super.show();
+}
+
+public void update ( Graphics g ) {
+	flags |= IS_IN_UPDATE;
+
+	// clear and draw yourself
+	g.clearRect( 0, 0, width, height);
+	paint( g);
+
+	flags &= ~IS_IN_UPDATE;
+}
+
 public void validate() {
-	synchronized (getTreeLock()) {
-		if ( !isValid && (peer != null) ){
+	synchronized ( treeLock ) {
+		if ( (flags & (IS_VALID | IS_ADD_NOTIFIED)) == IS_ADD_NOTIFIED ){
 			// we have to descent before validating ourself
 			validateTree();
-			isValid = true;
+			flags |= IS_VALID;
 		}
 	}
 }

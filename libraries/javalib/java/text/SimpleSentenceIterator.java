@@ -1,3 +1,7 @@
+package java.text;
+
+import java.lang.String;
+
 /*
  * Java core library component.
  *
@@ -7,11 +11,6 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.text;
-
-import java.lang.String;
-
 class SimpleSentenceIterator
   extends BreakIterator
 {
@@ -27,9 +26,10 @@ public int first() {
 }
 
 public int following( int offs) {
+System.out.println( "following: " + offs);
 	int pos = iterator.getIndex();
 	iterator.setIndex( iterator.getBeginIndex() + offs);
-	if ( iterator.current() == DONE ) {
+	if ( iterator.current() == CharacterIterator.DONE ) {
 		iterator.setIndex( pos);
 		return DONE;
 	}
@@ -50,7 +50,7 @@ public int next() {
 	boolean nl = false;
 	
 	for ( char c = iterator.next();;c = iterator.next() ) {
-		if ( c == DONE )
+		if ( c == CharacterIterator.DONE )
 			break;
 		if ( c == '.' )
 			nl = true;
@@ -66,7 +66,7 @@ public int next( int num) {
 	int max = (num > 0) ? num : -num;
 	
 	for ( int idx=0; idx<max; idx++) {
-		if ( DONE == ((num > 0) ? next() : previous()) )
+		if ( CharacterIterator.DONE == ((num > 0) ? next() : previous()) )
 			return (DONE);
 	}
 	
@@ -77,7 +77,7 @@ public int previous() {
 	int nl = 0;
 	
 	for ( char c = iterator.previous();;c = iterator.previous() ) {
-		if ( c == DONE )
+		if ( c == CharacterIterator.DONE )
 			break;
 		if ( c == '.' ) {
 			nl++;

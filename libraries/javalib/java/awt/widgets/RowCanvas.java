@@ -2,6 +2,8 @@ package java.awt;
 
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Vector;
@@ -17,7 +19,7 @@ import java.util.Vector;
  */
 class RowCanvas
   extends Component
-  implements AdjustmentListener, FocusListener
+  implements AdjustmentListener, FocusListener, ComponentListener
 {
 	Scrollbar hScroll;
 	Scrollbar vScroll;
@@ -28,13 +30,16 @@ class RowCanvas
 	int xOffsInit;
 	FontMetrics fm;
 	int initVis = -1;
-	Graphics rgr;
+	NativeGraphics rgr;
 
 public void addNotify() {
 	super.addNotify();
+	
 	if ( rgr == null ) {
-		rgr = getGraphics();
-		updateClip( rgr);
+		setResGraphics();
+		
+		for ( Component c = this; c != null; c = c.parent )
+			c.addComponentListener( this);
 	}
 }
 
@@ -60,6 +65,20 @@ public void adjustmentValueChanged( AdjustmentEvent e) {
 
 }
 
+public void componentHidden ( ComponentEvent evt ) {
+}
+
+public void componentMoved ( ComponentEvent evt ) {
+	setResGraphics();
+}
+
+public void componentResized ( ComponentEvent evt ) {
+	setResGraphics();
+}
+
+public void componentShown ( ComponentEvent evt ) {
+}
+
 public void focusGained( FocusEvent e) {
 	paintBorder();
 	
@@ -69,6 +88,8 @@ public void focusGained( FocusEvent e) {
 		if ( vScroll != null )
 			vScroll.setBackground( Defaults.FocusClr);	
 	}
+	
+	redirectFocusEvent( e);
 }
 
 public void focusLost( FocusEvent e) {
@@ -80,14 +101,8 @@ public void focusLost( FocusEvent e) {
 		if ( vScroll != null )
 			vScroll.setBackground( Defaults.BtnClr);	
 	}
-}
-
-public Graphics getGraphics() {
-	Graphics g = super.getGraphics();
-	if ( g != null ) {
-		g.setTarget( this);
-	}
-	return g;
+	
+	redirectFocusEvent( e);
 }
 
 int getRowIdx( int yPos) {
@@ -189,42 +204,65 @@ void makeVisible ( int row) {
 	}
 }
 
+void paintBorder () {
+  // not nice to resolve this, but our getGraphics() is more expensive
+
+	Graphics g = super.getGraphics();
+	if ( g != null ){
+		paintBorder( g);
+		g.dispose();
+	}
+}
+
+void redirectFocusEvent( FocusEvent e) {
+	if ( hasToNotify( parent, AWTEvent.FOCUS_EVENT_MASK, parent.focusListener) ){
+		e.setSource( parent);
+		parent.processFocusEvent( e);
+	}
+}
+
 public void removeNotify() {
 	super.removeNotify();
+
 	if ( rgr != null ) {
+		for ( Component c = this; c != null; c = c.parent )
+			c.removeComponentListener( this);
+	
 		rgr.dispose();
 		rgr = null;
 	}
 }
 
-void repaintRow( int idx) {
+void repaintRow( Graphics g, int idx) {
 }
 
-int repaintRows( int sIdx, int len) {
+void repaintRow( int idx) {
+	repaintRow( rgr, idx);
+}
+
+int repaintRows( Graphics g, int sIdx, int len) {
 	int rs = rows.size();
 	int d = BORDER_WIDTH;
 	int y = d;
 	
 	for ( int i=first; i<rs; i++) {
 		if ( (i >= sIdx) && (i <= sIdx + len) )
-			repaintRow( i);
+			repaintRow( g, i);
 		y += rowHeight;
 		if ( y > height)
 			break;
 	}
 	
 	if (y < height) {
-		rgr.setColor( getBackground()  );
-		rgr.fillRect( d, y, width- 2*d , height - y -d);
+		g.setColor( getBackground()  );
+		g.fillRect( d, y, width- 2*d , height - y -d);
 	}
 	
 	return y;
-
 }
 
-public void reshape( int x, int y, int w, int h) {
-	super.reshape( x, y, w, h);
-	updateClip( rgr);
+int repaintRows( int sIdx, int len) {
+	return repaintRows( rgr, sIdx, len);
 }
 
 void setListeners() {
@@ -233,6 +271,12 @@ void setListeners() {
 	if ( vScroll != null )
 		vScroll.addAdjustmentListener( this);
 	addFocusListener( this);
+}
+
+void setResGraphics () {
+	rgr = NativeGraphics.getClippedGraphics( rgr, this, 0, 0,
+                                           BORDER_WIDTH, BORDER_WIDTH,
+		                                       width - 2*BORDER_WIDTH, height - 2*BORDER_WIDTH, false);
 }
 
 void shiftVertical( int rows, boolean updScroll) {
@@ -245,34 +289,53 @@ void shiftVertical( int rows, boolean updScroll) {
 
 	int d = BORDER_WIDTH;
 
-	// hjb, 01-28-1999: only move the area that will fall in
-	// pane after the copy.
-	// otherwise text is displayed above or under the pane
-	// obscuring the scrollbar and/or other fields
-	
-	if (rows < 0)
-	    rgr.copyArea( d, d + rows * rowHeight, width- 2*d, height- 2*d,
-			  0, rows * rowHeight );
-	else
-	    rgr.copyArea( d, d, width- 2*d, height- 2*d - rows * rowHeight,
-			  0, rows * rowHeight );
-	    
-	if ( rows < 0 ){
-		int sIdx = first + getVisibleRows() + rows;
-		int len = -rows + 1;
-		repaintRows( sIdx, len ); 
-	}
-	else {
-		repaintRows( first, rows-1);
-	}
+/**************************************************************************
+
+        // hjb, 01-28-1999: only move the area that will fall in
+        // pane after the copy.
+        // otherwise text is displayed above or under the pane
+        // obscuring the scrollbar and/or other fields
+
+        if (rows < 0)
+            rgr.copyArea( d, d + rows * rowHeight, width- 2*d, height- 2*d,
+                          0, rows * rowHeight );
+        else
+            rgr.copyArea( d, d, width- 2*d, height- 2*d - rows * rowHeight,
+                          0, rows * rowHeight );
+
+        if ( rows < 0 ){
+                int sIdx = first + getVisibleRows() + rows;
+                int len = -rows + 1;
+                repaintRows( sIdx, len );
+        }
+        else {
+                repaintRows( first, rows-1);
+        }
+
+
+ **************************************************************************/
+
+        int d2 = d*2;
+        int dy = rows * rowHeight;
+
+        if ( rows < 0 ){
+                rgr.copyArea( d, d-dy, width -d2, height-d2+dy-1, 0, dy);
+
+                int sIdx = first + getVisibleRows() + rows;
+                int len = -rows + 1;
+                repaintRows( sIdx, len );
+        }
+        else {
+		rgr.copyArea( d, d, width -d2, height-d2-dy-1, 0, dy);
+
+                repaintRows( first, rows-1);
+        }
 
 }
 
-void updateClip( Graphics g) {
-	if ( g != null ) {
-		g.setClip( BORDER_WIDTH, BORDER_WIDTH,
-							 width-2*BORDER_WIDTH, height-2*BORDER_WIDTH);
-	}
+public void update ( Graphics g ){
+	// we don't need background blanking
+	paint( g);
 }
 
 void updateVScroll() {
@@ -281,7 +344,7 @@ void updateVScroll() {
 	if ( vScroll != null ) {
 		v1 = vScroll.isSliderShowing();
 		int vr = getVisibleRows();
-		vScroll.setValues( first, vr, 0, rows.size() - vr);
+		vScroll.setValues( first, vr, 0, rows.size() );
 		v2 = vScroll.isSliderShowing();
 	}
 	

@@ -47,7 +47,7 @@ public Scrollbar( int ori) throws IllegalArgumentException {
 }
 
 public Scrollbar( int ori, int value, int visible, int min, int max) throws IllegalArgumentException{
-	bgClr = Defaults.BtnClr;
+	setBackground( Defaults.BtnClr);
 	setOrientation( ori);
 	setValues( value, visible, min, max);
 
@@ -167,13 +167,13 @@ public void mouseDragged( MouseEvent e) {
 		return;
 
 	int dx, dy;
-	Color cp = parent.getBackground();
+	Color cp = parent.bgClr;
 
 	if ( ori == VERTICAL ) {
 		int y0 = e.getY() - dragOffs.y;
 		int maxY = height - slRect.height;
 		if ( y0 <= 0) {
-			if ( slRect.y >= 0 ){
+			if ( slRect.y > 0 ){
 				slRect.y = 0;
 				dy = dragRect.y;
 				if ( dy > 0 ) {
@@ -188,7 +188,7 @@ public void mouseDragged( MouseEvent e) {
 			}
 		}
 		else if ( y0 >= maxY) {
-			if ( slRect.y <= maxY) {
+			if ( slRect.y < maxY) {
 				slRect.y = maxY;
 				dy = slRect.y - dragRect.y;
 				if ( dy > 0 ) {
@@ -197,8 +197,8 @@ public void mouseDragged( MouseEvent e) {
 				}
 				paint( dragGr);
 			}
-			if ( val < max) {
-				val = max;
+			if ( val < max - vis) {
+				val = max - vis;
 				notifyAdjust();
 			}
 		}
@@ -235,7 +235,7 @@ public void mouseDragged( MouseEvent e) {
 			}
 		}
 		else if ( x0 >= maxX) {
-			if ( slRect.x <= maxX ) {
+			if ( slRect.x < maxX ) {
 				slRect.x = maxX;
 				dx = slRect.x - dragRect.x;
 				if ( dx > 0 ) {
@@ -244,8 +244,8 @@ public void mouseDragged( MouseEvent e) {
 				}
 				paint( dragGr);
 			}					
-			if ( val < max) {
-				val = max;
+			if ( val < max - vis) {
+				val = max - vis;
 				notifyAdjust();
 			}
 		}
@@ -278,7 +278,7 @@ public void mousePressed( MouseEvent e) {
 	currentOp = getCurrentOp( e.getX(), e.getY() );
 	
 	if ( (dragGr = getGraphics()) != null )
-		dragGr.setColor( getBackground());
+		dragGr.setColor( bgClr);
 	
 	dragRect.x = slRect.x;
 	dragRect.y = slRect.y;
@@ -314,7 +314,8 @@ public void mouseReleased( MouseEvent e) {
 }
 
 void notifyAdjust() {
-	if ( hasToNotify( this, AWTEvent.ADJUSTMENT_EVENT_MASK, aListener) || oldEvents ) {
+	if ( hasToNotify( this, AWTEvent.ADJUSTMENT_EVENT_MASK, aListener) ||
+	     ((flags & IS_OLD_EVENT) != 0) ) {
 		AdjustmentEvt ae = AdjustmentEvt.getEvent( this, AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED,
 		                                           currentOp, val);
 		Toolkit.eventQueue.postEvent( ae);
@@ -325,12 +326,12 @@ public void paint ( Graphics g ) {
 	int x, y, xw, yh;
 
 	if ( slRect.width == 0 ) {
-		g.setColor( parent.getBackground() );
+		g.setColor( parent.bgClr );
 		g.fillRect( 0, 0, width, height);
 		return;
 	}
 	
-	g.setColor( getBackground());
+	g.setColor( bgClr);
 
 	if ( ori == HORIZONTAL) {
 		y = height/2 -1;
@@ -381,21 +382,22 @@ protected void processAdjustmentEvent ( AdjustmentEvent e) {
 	if (  hasToNotify( this, AWTEvent.ADJUSTMENT_EVENT_MASK, aListener) ) {
 		aListener.adjustmentValueChanged( e);
 	}
-
-	if ( oldEvents ) postEvent( Event.getEvent( e));
+	if ( (flags & IS_OLD_EVENT) != 0 ) {
+		postEvent( Event.getEvent( e));
+	}
 }
 
 public synchronized void removeAdjustmentListener( AdjustmentListener al) {
 	aListener = AWTEventMulticaster.remove( aListener, al);
 }
 
-public synchronized void setBlockIncrement( int inc) {
-	setPageIncremental(inc);
+public void reshape( int x, int y, int width, int height) {
+	super.reshape( x, y, width, height);
+	updateSliderRect();
 }
 
-public void setBounds( int x, int y, int width, int height) {
-	super.setBounds( x, y, width, height);
-	updateSliderRect();
+public synchronized void setBlockIncrement( int inc) {
+	setPageIncremental(inc);
 }
 
 /**
@@ -439,40 +441,24 @@ public synchronized void setValue( int value) {
 public synchronized void setValues( int value, int visible, int min, int max) {
 	int lastVal = this.val;
 
+	if ( (value == val) && (visible == vis) && (min == this.min) && (max == this.max) )
+		return;
+
 	// Make size adjustments.
-	if (max < min) {
-		max = min;
-	}
-	if (value > max) {
-		value = max;
-	}
-	if (value < min) {
-		value = min;
-	}
-	if (visible > max-min) {
-		visible = max-min;
-	}
-	
+	if (max < min)								max = min;
+	if (visible > max-min)				visible = max-min;
+	if ( value > max - visible )	value = max - visible;
+	else if ( value < min )				value = min;
+			
 	this.min = min;
 	this.max = max;
 	this.val = value;
 	this.vis = visible;
 	this.blockInc = visible;
 	
-	if ( this.val < min ) {
-		if ( this.val == min )
-			return;
-		this.val = min;
-	}
-	else if ( this.val > this.max ) {
-		if ( this.val == this.max )
-			return;
-		this.val = this.max;
-	}
-		
 	update();
-	
-	if ( this.val != lastVal)
+
+	if ( val != lastVal)
 		notifyAdjust();
 }
 
@@ -502,11 +488,11 @@ void update() {
 	
 	if ( dragGr != null )
 		g = dragGr;
-	else if ( isVisible )
+	else if ( (flags & IS_VISIBLE) != 0 )
 		g = getGraphics();
 	
 	if ( g != null ){
-		g.setColor( parent.getBackground());
+		g.setColor( parent.bgClr);
 		g.fillRect( slRect.x, slRect.y, slRect.width, slRect.height);
 
 		updateSliderRect();
@@ -521,28 +507,33 @@ void update() {
 	}
 }
 
+public void update ( Graphics g ) {
+	g.setColor( parent.bgClr );
+	g.fillRect( 0, 0, width, height);
+	paint( g);
+}
+
 void updateSliderRect () {
 	int delta = max - min;
 
 	//entire contents visible
-	if ( delta <= 0 || vis <= 0) {
+	if ( delta <= 0 || vis <= 0 || max == vis) {
 		slRect.setBounds( 0, 0, 0, 0);
 		return;
 	}
 
 	//slider position from value
 	if ( ori == HORIZONTAL ) {
-		int dx = Math.max( vis * width / (delta + vis), 10);
-		int x0 = (val - min) * ( width - dx ) / delta;
+		int dx = Math.max( vis * width / delta, 10);
+		int x0 = (val - min) * ( width - dx ) / (max - vis);
 		if ( x0 >= 0 )
 			slRect.setBounds( x0, 2, dx, height-4);
 		else
 			slRect.setBounds( 0, 0, 0, 0);
 	}
 	else {
-		//total amount is max - min + vis, for contents cannot be scrolled out
-		int dy = Math.max( vis * height / (delta + vis), 10);
-		int y0 = (val - min) * ( height - dy ) / delta;	
+		int dy = Math.max (vis * height / delta, 10);
+		int y0 = (val - min) * (height - dy) / (max - vis);
 		if ( y0 >= 0 )
 			slRect.setBounds( 2, y0, width-4, dy);
 		else
@@ -555,10 +546,10 @@ void updateValue () {
 	int newVal;
 	
 	if ( ori == HORIZONTAL )
-		newVal = slRect.x * ( max - min) / (width - slRect.width ) + min;
-	else
-		newVal = slRect.y * ( max - min) / (height - slRect.height) + min;
-	
+		newVal = min + ( (max - vis) * slRect.x ) / (width - slRect.width);
+	else {
+		newVal = min + ( (max - vis) * slRect.y ) / (height - slRect.height);
+	}
 	if ( val != newVal ) {
 		val = newVal;
 		notifyAdjust();

@@ -10,64 +10,101 @@
 
 package java.util.zip;
 
+import java.lang.Integer;
 import java.io.InputStream;
 import java.io.IOException;
+import kaffe.util.zip.SwitchInflater;
 
 public class ZipInputStream extends InflaterInputStream implements ZipConstants {
 
+  private byte sigbuf[] = new byte[4];
   private byte zheader[] = new byte[LOC_RECSZ];
-  private InputStream strm;
+  private boolean closed;
+  private SwitchInflater sinf;
 
   public ZipInputStream(InputStream in) {
-    super(in);
-    strm = in;
+    super(in, new SwitchInflater(true, true));
+    closed = false;
+    sinf = (SwitchInflater)inf;
   }
 
   public ZipEntry getNextEntry() throws IOException {
 
+    closeEntry();
+
     synchronized (this) {
 
-      strm.read(zheader);
-  
-      long sig = get32(LOC_SIGNATURE);
-      if (sig != LOC_HEADSIG) {
-        if (sig == CEN_HEADSIG) {
-	    return (null);
-        }
-        throw new IOException("LOC header signature bad");
+      for (;;) {
+	if (readFully(sigbuf, 0, sigbuf.length) != sigbuf.length) {
+	  throw new IOException("signature not found");
+	}
+	long sig = get32(sigbuf, 0);
+
+	if (sig == CEN_HEADSIG) {
+	  return (null);
+	}
+	else if (sig == DATA_HEADSIG) {
+	  skip(DATA_RECSZ - sigbuf.length);
+	  continue;
+	}
+	else if (sig == LOC_HEADSIG) {
+	  if (readFully(zheader, sigbuf.length, zheader.length - sigbuf.length) == zheader.length - sigbuf.length) {
+	    break;
+	  }
+	}
+        throw new IOException("LOC header signature bad: " + Long.toHexString(sig));
       }
   
-      char[] name = new char[get16(LOC_FILENAMELEN)];
+      char[] name = new char[get16(zheader, LOC_FILENAMELEN)];
       for (int i = 0; i < name.length; i++) {
-        name[i] = (char)strm.read();	// So much for Unicode ...!
+        name[i] = (char)read();	// So much for Unicode ...!
       }
   
-      byte[] extra = new byte[get16(LOC_EXTRAFIELDLEN)];
-      for (int i = 0; i < extra.length; i++) {
-        extra[i] = (byte)strm.read();
-      }
+      byte[] extra = new byte[get16(zheader, LOC_EXTRAFIELDLEN)];
+      readFully(extra, 0, extra.length);
   
       ZipEntry entry = new ZipEntry(new String(name));
       entry.time = 0;
-      entry.crc = get32(LOC_CRC);
-      entry.size = (int)get32(LOC_UNCOMPRESSEDSIZE);
-      entry.method = get16(LOC_METHOD);
+      entry.crc = get32(zheader, LOC_CRC);
+      entry.size = (int)get32(zheader, LOC_UNCOMPRESSEDSIZE);
+      entry.method = get16(zheader, LOC_METHOD);
       entry.extra = extra;
       entry.comment = "";
-      entry.flag = (int)get32(LOC_FLAGS);
-      entry.version = get16(LOC_VERSIONEXTRACT);
-      entry.csize = (int)get32(LOC_COMPRESSEDSIZE);
+      entry.flag = (int)get32(zheader, LOC_FLAGS);
+      entry.version = get16(zheader, LOC_VERSIONEXTRACT);
+      entry.csize = (int)get32(zheader, LOC_COMPRESSEDSIZE);
       entry.offset = 0;
+
+      // Select the loader, simple or inflater.
+      if (entry.method == ZipConstants.STORED) {
+	sinf.setMode(true);
+	sinf.setLength((int)entry.csize);
+      }
+      else {
+	sinf.setMode(false);
+      }
+
+// System.out.println("ZipEntry: " + entry + ", meth=" + entry.method + ", size=" + entry.size + ", csize=" + entry.csize);
+
+      closed = false;
 
       return (entry);
     }
   }
 
   public void closeEntry() throws IOException {
+	if (closed == false) {
+		closed = true;
+		sinf.reset();
+		sinf.setMode(true);
+		sinf.setLength(Integer.MAX_VALUE);
+	}
   }
 
   public int read(byte b[], int off, int len) throws IOException {
-    return (super.read(b, off, len));
+    int r;
+    r = super.read(b, off, len);
+    return r;
   }
 
   public long skip(long n) throws IOException {
@@ -79,13 +116,32 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
     super.close();
   }
 
-  private int get16(int base) {
-    int val = ((int)zheader[base+0] << 0) | ((int)zheader[base+1] << 8);
+  private int get16(byte[] buf, int base) {
+    int val = (int)buf[base] & 0xFF;
+    val |= ((int)buf[base+1] & 0xFF) << 8;
     return (val);
   }
 
-  private long get32(int base) {
-    long val = ((long)zheader[base+0] << 0) | ((long)zheader[base+1] << 8) | ((long)zheader[base+2] << 16) | ((long)zheader[base+3] << 24);
+  private long get32(byte[] buf, int base) {
+    long val = (long)buf[base] & 0xFF;
+    val |= ((long)buf[base+1] & 0xFF) << 8;
+    val |= ((long)buf[base+2] & 0xFF) << 16;
+    val |= ((long)buf[base+3] & 0xFF) << 24;
     return (val);
   }
+
+  private int readFully(byte[] buf, int off, int len) throws IOException {
+    int count = 0;
+    while (len > 0) {
+      int i = read(buf, off, len);
+      if (i == -1) {
+	break;
+      }
+      count += i;
+      off += i;
+      len -= i;
+    }
+    return (count);
+  }
+
 }

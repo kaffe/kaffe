@@ -93,7 +93,7 @@ public static InetAddress[] getAllByName(String host) throws UnknownHostExceptio
 }
 
 public static synchronized InetAddress getByName(String host) throws UnknownHostException {
-	if (host == null) {
+	if (host == null || host.equals("")) {
 		return (InetAddress.getLoopback());
 	}
 	int ip;

@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.lang.String;
 import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +17,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.PaintEvent;
 import java.awt.event.TextEvent;
 import java.awt.event.WindowEvent;
 import java.awt.image.ColorModel;
@@ -46,8 +46,11 @@ import kaffe.awt.OpaqueComponent;
  */
 abstract public class Component
   extends Object
-  implements ImageObserver
-{
+  implements ImageObserver, MenuContainer {
+
+
+	static final long serialVersionUID = -7644114512714619750L;
+
 	Container parent;
 	int x;
 	int y;
@@ -63,28 +66,39 @@ abstract public class Component
 	MouseListener mouseListener;
 	MouseMotionListener motionListener;
 	String name;
-	Vector popups;
 	int eventMask;
-	boolean isVisible;
-	boolean isValid = false;
-	ComponentPeer peer;
 	Locale locale;
+	PopupMenu popup;
 	Rectangle deco = noDeco;
-	ClassProperties props;
-	protected boolean oldEvents;
+	int flags = IS_VISIBLE;
 	final public static float TOP_ALIGNMENT = (float)0.0;
 	final public static float CENTER_ALIGNMENT = (float)0.5;
 	final public static float BOTTOM_ALIGNMENT = (float)1.0;
 	final public static float LEFT_ALIGNMENT = (float)0.0;
 	final public static float RIGHT_ALIGNMENT = (float)1.0;
 	final static int BORDER_WIDTH = 2;
+	static Object treeLock = Toolkit.class;
 	static Rectangle noDeco = new Rectangle();
+	final static int IS_VISIBLE = 0x01;
+	final static int IS_VALID = 0x02;
+	final static int IS_PARENT_SHOWING = 0x04;
+	final static int IS_LAYOUTING = 0x08;
+	final static int IS_IN_UPDATE = 0x10;
+	final static int IS_OLD_EVENT = 0x20;
+	final static int IS_RESIZABLE = 0x40;
+	final static int IS_MODAL = 0x80;
+	final static int IS_NATIVE_LIKE = 0x100;
+	final static int IS_OPENED = 0x200;
+	final static int IS_ADD_NOTIFIED = 0x400;
+	final static int IS_FG_COLORED = 0x800;
+	final static int IS_BG_COLORED = 0x1000;
+	final static int IS_FONTIFIED = 0x2000;
+	final static int IS_ASYNC_UPDATED = 0x4000;
+	final static int IS_DIRTY = 0x8000;
+	final static int IS_SHOWING = IS_ADD_NOTIFIED | IS_PARENT_SHOWING | IS_VISIBLE;
 
 protected Component () {
-	isVisible = true; // non Windows are visible by default
 	cursor = Cursor.defaultCursor;
-
-	props = getClassProperties();
 }
 
 /**
@@ -95,10 +109,21 @@ public boolean action(Event evt, Object what) {
 }
 
 public void add ( PopupMenu menu ) {
-	if ( popups == null)
-		popups = new Vector( 2);
-
-	popups.addElement( menu);
+	if ( menu.parent != null )
+		menu.parent.remove( menu);
+		
+	if ( (flags & IS_ADD_NOTIFIED) > 0 ) {
+		menu.parent = this;
+		menu.owner = this;
+		menu.addNotify();
+	}
+		
+	if ( popup == null )
+		popup = menu;
+	else {
+		popup.addSeparator();
+		popup.addAll( menu);
+	}
 }
 
 public void addComponentListener ( ComponentListener newListener ) {
@@ -127,19 +152,32 @@ public void addMouseMotionListener ( MouseMotionListener newListener ) {
 }
 
 public void addNotify () {
-	if (peer == null) {
-		peer = createPeer();
+	if ( (flags & IS_ADD_NOTIFIED) == 0 ) {
+		flags |= IS_ADD_NOTIFIED;
 	
+		ClassProperties props = getClassProperties();
+		if ( props.isNativeLike ){
+			flags |= IS_NATIVE_LIKE;
+		}
 		if ( parent != null ) {
 			// Note that this only works in case the parent is addNotified
 			// *before* its childs. The 'isNativeLike' test is just a
 			// proxy for the fact that the old 1.0.2 AWT did not allow
 			// lighweights (because of a missing protected ctor in Component/Container)
-			if ( props.isNativeLike && (parent.oldEvents || props.useOldEvents) )
-				oldEvents = true;
+			if ( props.isNativeLike &&
+			    (((parent.flags & IS_OLD_EVENT) != 0) || props.useOldEvents) ){
+				flags |= IS_OLD_EVENT;
+			}
 		}
-		else {
-			oldEvents = props.useOldEvents;
+		else { // Window
+			if ( props.useOldEvents )
+				flags |= IS_OLD_EVENT;
+		}
+		
+		if ( popup != null ) {
+			popup.parent = this;
+			popup.owner = this;
+			popup.addNotify();
 		}
 	}
 }
@@ -153,11 +191,11 @@ public Rectangle bounds () {
 }
 
 public int checkImage (Image image, ImageObserver obs) {
-	return (checkImage(image, -1, -1, obs));
+	return (image.checkImage( -1, -1, obs, false));
 }
 
 public int checkImage (Image image, int width, int height, ImageObserver obs) {
-	return (image.checkImage(width, height, obs));
+	return (image.checkImage( width, height, obs, false));
 }
 
 public boolean contains ( Point pt ) {
@@ -176,10 +214,6 @@ public Image createImage ( int width, int height ) {
 	return new Image( width, height);
 }
 
-ComponentPeer createPeer () {
-	return Toolkit.singleton.createLightweight( this);
-}
-
 /**
  * @deprecated
  */
@@ -188,7 +222,7 @@ final public void deliverEvent(Event evt) {
 }
 
 /**
- * @deprecated, use setEnable()
+ * @deprecated, use setEnabled()
  */
 public void disable() {
 	setEnabled(false);
@@ -221,6 +255,11 @@ public void doLayout () {
 	layout();
 }
 
+void dump ( String prefix ) {
+	System.out.print( prefix);
+	System.out.println( this);
+}
+
 /**
  * @deprecated, use setEnabled()
  */
@@ -248,6 +287,8 @@ public float getAlignmentY() {
 }
 
 public Color getBackground () {
+	return bgClr;
+/*
 	if ( bgClr != null )
 		return bgClr;
 
@@ -255,7 +296,11 @@ public Color getBackground () {
 		if ( c.bgClr != null ) return c.bgClr;
 	}
 	
-	return Color.white;
+	// even though not in the specs, some apps (e.g. swing) rely on the
+	// JDK behavior of returning 'null' if there isn't a parent yet
+	return null;
+	//return Color.white;
+*/
 }
 
 /**
@@ -284,14 +329,7 @@ public Cursor getCursor() {
 }
 
 public Font getFont () {
-	if ( font != null )
-		return font;
-
-	for ( Component c=parent; c != null; c = c.parent ) {
-		if ( c.font != null ) return c.font;
-	}
-	
-	return null;
+	return font;
 }
 
 public FontMetrics getFontMetrics ( Font font ) {
@@ -299,18 +337,11 @@ public FontMetrics getFontMetrics ( Font font ) {
 }
 
 public Color getForeground () {
-	if ( fgClr != null )
-		return fgClr;
-
-	for ( Component c=parent; c != null; c = c.parent ) {
-		if ( c.fgClr != null ) return c.fgClr;
-	}
-	
-	return Color.black;
+	return fgClr;
 }
 
 public Graphics getGraphics () {
-	if ( peer != null )
+	if ( (flags & IS_ADD_NOTIFIED) != 0 )
 		return NativeGraphics.getClippedGraphics( null, this, 0, 0, 0, 0, width, height, false);
 	else
 		return null;
@@ -365,7 +396,9 @@ public Container getParent() {
  * @deprecated, should not be called.
  */
 public ComponentPeer getPeer() {
-	return peer;
+	// this is just a dummy, i.e. we share a single object that can be used
+	// ONLY to "(getPeer() != null)" check if we already passed addNotify()
+	return ((flags & IS_ADD_NOTIFIED) != 0) ? Toolkit.lightweightPeer : null;
 }
 
 public Dimension getPreferredSize() {
@@ -392,9 +425,9 @@ Component getToplevel () {
 }
 
 final public Object getTreeLock() {
-	// this way, we sync with all graphic output, too
-	// (which is important for no-native WMs)
-	return Toolkit.class;
+	// treeLock is Toolkit.class - this way we sync on all graphics
+	// output, too
+	return treeLock;
 }
 
 /**
@@ -447,22 +480,25 @@ public void hide () {
 	// DEP this should be in setVisible !! But we have to keep it here
 	// for compatibility reasons (Swing etc.)
 
-	if ( isVisible ) {
-		isVisible = false;
+	if ( (flags & IS_VISIBLE) != 0 ) {
+		flags &= ~IS_VISIBLE;
 
-		if ( parent != null ) {
-			if ( parent.isShowing() && !parent.isLayouting ){
+		// if we are a toplevel, the native window manager will take care
+		// of repainting, otherwise we have to do it explicitly
+		if ( (parent != null) && ((parent.flags & IS_LAYOUTING) == 0) ) {
+			if ( (flags & IS_PARENT_SHOWING) != 0) {
 				parent.repaint( x, y, width, height);
 			}
+
+			if ( (parent.flags & IS_VALID) != 0 )
+				parent.invalidate();
 		}
-		// if we are a toplevel, the native window manager will take care
-		// of repainting
 		
-		if (((eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0) && (cmpListener !=null)){
-		  // sync because it might be used to control Graphics visibility
-		  // CAUTION: this might cause incompatibilities in ill-behaving apps
-		  // (doing explicit sync on show/hide/reshape), but otherwise we would have
-		  // to implement a completely redundant mechanism for Graphics updates
+	  // sync because it might be used to control Graphics visibility
+	  // CAUTION: this might cause incompatibilities in ill-behaving apps
+	  // (doing explicit sync on show/hide/reshape), but otherwise we would have
+	  // to implement a completely redundant mechanism for Graphics updates
+		if ( hasToNotify( this, AWTEvent.COMPONENT_EVENT_MASK, cmpListener) ){
 			AWTEvent.sendEvent(  ComponentEvt.getEvent( this,
 			                            ComponentEvent.COMPONENT_HIDDEN), true);
 		}
@@ -470,38 +506,41 @@ public void hide () {
 }
 
 public boolean imageUpdate (Image img, int infoflags, int x, int y, int width, int height ) {
-	if ((infoflags & ALLBITS) != 0) {
-		repaint();
-	}
-	/* We return false if we're no longer interested in updates.
-	 * This is *NOT* what is says in the Addison-Wesley documentation,
-	 * but is what is says in the JDK javadoc documentation.
-	 */
-	if ((infoflags & (ALLBITS|ABORT|ERROR)) != 0) {
-		return (false);
-	}
-	else {
-		return (true);
-	}
+  if ( (infoflags & (ALLBITS | FRAMEBITS)) != 0 ) {
+	if ( (flags & IS_SHOWING) == IS_SHOWING )
+	  repaint();
+  }
+ 
+  // We return false if we're no longer interested in updates.This is *NOT*
+  // what is said in the Addison-Wesley documentation, but is what is says
+  // in the JDK javadoc documentation.
+  if ( (infoflags & (ALLBITS | ABORT | ERROR)) != 0 ) {
+	return (false);
+  }
+  else {
+	return (true);
+  }
 }
 
 /**
  * @deprecated
  */
 public boolean inside ( int x, int y ) {
-	if ( !isVisible ) return false;
-	if ( x < 0 || y < 0 || x > width || y > height ) return false;
+	if ( (flags & IS_SHOWING) != IS_SHOWING ) return false;
+	if ( (x < 0) || (y < 0) || (x > width) || (y > height) ) return false;
 
+/***
+	// If we want to deal with components being bigger than their parents,
+	// we have to check for parent.contains(), too. However, this is not
+	// done by the JDK, and we therefor skip it for now
 	x += this.x; y += this.y;
 	for ( Container c=parent; c!= null; x += c.x, y += c.y, c = c.parent ) {
-		if ( !c.isVisible )
-			return false;
-
 		if ( (x < 0) || (y < 0) || (x > c.width) || (y > c.height) )
 			return false;
 	}
-	return true;
+***/
 
+	return true;
 }
 
 boolean intersects ( Component c ) {
@@ -526,14 +565,16 @@ public void invalidate () {
 	// invalidation means invalid yourself *and* all your parents (if they
 	// arent't already)
 
-	if ( isValid ) {
-		isValid = false;
+//	synchronized ( treeLock ) {
+		if ( (flags & IS_VALID) != 0 ) {
+			flags &= ~IS_VALID;
 		
-		// maybe, it's overloaded (we have to sacrifice speed fr compat, here)
-		// parent can't be null, because we can't get valid without being addNotifyed
-		if ( parent.isValid )
-			parent.invalidate();
-	}
+			// maybe, it's overloaded (we have to sacrifice speed for compat, here)
+			// parent can't be null, because we can't get valid without being addNotifyed
+			if ( (parent.flags & IS_VALID) != 0 )
+				parent.invalidate();
+		}
+//	}
 }
 
 /**
@@ -548,23 +589,22 @@ public boolean isEnabled () {
 }
 
 public boolean isFocusTraversable() {
-	return isShowing() && isEnabled();
+	return (((flags & (IS_SHOWING|IS_NATIVE_LIKE)) == (IS_SHOWING|IS_NATIVE_LIKE)) && 
+	        ((eventMask & AWTEvent.DISABLED_MASK) == 0));
 }
 
 public boolean isShowing () {
-	for ( Component c=this; c!= null; c = c.parent ) {
-		if ( !c.isVisible ) return false;
-	}
-	
-	return (peer != null);
+	// compare the costs of this with the standard upward iteration
+ return ((flags & (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED)) ==
+	                 (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED));
 }
 
 public boolean isValid () {
-	return isValid;
+	return ((flags & IS_VALID) != 0);
 }
 
 public boolean isVisible () {
-	return isVisible;
+	return ((flags & IS_VISIBLE) != 0);
 }
 
 /**
@@ -673,6 +713,7 @@ public void nextFocus() {
 }
 
 public void paint ( Graphics g ) {
+	// nothing to do here, that all has to be donw in subclasses
 }
 
 public void paintAll ( Graphics g ) {
@@ -700,19 +741,22 @@ void paintBorder ( Graphics g, int left, int top, int right, int bottom ) {
 	else
 		g.setColor( Defaults.BorderClr);
 
-	g.draw3DRect( left, top,  w-1, h-1, true);
-	g.draw3DRect( left+1, top+1, w-3, h-3, false);
-}
-
-void paintChild ( Graphics g ) {
-	paint( g);
+	if (w-1 > 0 && h-1 > 0) {
+		g.draw3DRect( left, top,  w-1, h-1, true);
+	}
+	if (w-3 > 0 && h-3 > 0) {
+		g.draw3DRect( left+1, top+1, w-3, h-3, false);
+	}
 }
 
 protected String paramString () {
 	String s = "" + name + ',' + ' ' + x + ',' + y + ',' + width + ',' + height;
 	
-	if ( !isVisible() ) s += ',' + " hidden";
-	if ( !isEnabled() ) s += ',' + " disabled";
+	s += " flags: " + Integer.toHexString( flags);
+
+	if ( !isValid() )   s += " invalid";	
+	if ( !isVisible() ) s += " hidden";
+	if ( !isEnabled() ) s += " disabled";
 	
 	return s;
 }
@@ -754,7 +798,7 @@ public boolean prepareImage ( Image image, ImageObserver obs ){
 }
 
 public boolean prepareImage ( Image image, int width, int height, ImageObserver obs ) {
-	return (image.loadImageAsync(width, height, obs));
+	return (image.loadImage( width, height, obs));
 }
 
 public void print ( Graphics g ) {
@@ -824,6 +868,12 @@ protected void processEvent ( AWTEvent e ) {
 	case FocusEvent.FOCUS_LOST:
 		processFocusEvent( (FocusEvent)e);
 		break;
+
+	case PaintEvent.PAINT:
+	case PaintEvent.UPDATE:
+		Rectangle r = ((PaintEvent)e).getUpdateRect();
+		processPaintEvent( e.id, r.x, r.y, r.width, r.height);
+		break;
 		
 	case ComponentEvent.COMPONENT_MOVED:	//100..103
 	case ComponentEvent.COMPONENT_RESIZED:
@@ -877,7 +927,7 @@ protected void processFocusEvent ( FocusEvent event ) {
 		}
 	}
 	
-	if ( oldEvents ) postEvent( Event.getEvent( event));
+	if ( (flags & IS_OLD_EVENT) != 0 ) postEvent( Event.getEvent( event));
 }
 
 protected void processItemEvent ( ItemEvent e ) {
@@ -885,7 +935,7 @@ protected void processItemEvent ( ItemEvent e ) {
 
 protected void processKeyEvent ( KeyEvent event ) {
 	if ( hasToNotify( this, AWTEvent.KEY_EVENT_MASK, keyListener) ) {
-		switch ( event.getID() ) {
+		switch ( event.id ) {
 		case KeyEvent.KEY_TYPED:
 			keyListener.keyTyped( event);
 			break;
@@ -898,12 +948,12 @@ protected void processKeyEvent ( KeyEvent event ) {
 		}
 	}
 
-	if ( oldEvents ) postEvent( Event.getEvent( event));
+	if ( (flags & IS_OLD_EVENT) != 0 ) postEvent( Event.getEvent( event));
 }
 
 protected void processMouseEvent ( MouseEvent event ) {
 	if ( hasToNotify( this, AWTEvent.MOUSE_EVENT_MASK, mouseListener) ) {
-		switch ( event.getID() ) {
+		switch ( event.id ) {
 			case MouseEvent.MOUSE_PRESSED:
 				mouseListener.mousePressed( event);
 				break;
@@ -922,7 +972,7 @@ protected void processMouseEvent ( MouseEvent event ) {
 		}
 	}
 
-	if ( oldEvents ) postEvent( Event.getEvent( event));
+	if ( (flags & IS_OLD_EVENT) != 0 ) postEvent( Event.getEvent( event));
 }
 
 protected void processMouseMotionEvent ( MouseEvent event ) {
@@ -936,14 +986,55 @@ protected void processMouseMotionEvent ( MouseEvent event ) {
 			return;
 		}
 	}
-	
-	if ( oldEvents ) postEvent( Event.getEvent( event));
+
+	if ( (flags & IS_OLD_EVENT) != 0 ) postEvent( Event.getEvent( event));
+}
+
+void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
+	NativeGraphics g = NativeGraphics.getClippedGraphics( null, this, 0,0,
+	                                                      ux, uy, uw, uh,
+	                                                      false);
+	if ( g != null ){
+		if ( id == PaintEvent.UPDATE )
+			update( g);
+		else
+			paint( g);
+		g.dispose();
+	}
 }
 
 protected void processTextEvent ( TextEvent e ) {
 }
 
 protected void processWindowEvent ( WindowEvent e ) {
+}
+
+void propagateBgClr ( Color clr ) {
+	// should be called *only* on Components with unset IS_BG_COLORED
+	bgClr = clr;
+}
+
+void propagateFgClr ( Color clr ) {
+	// should be called *only* on Components with unset IS_FG_COLORED
+	fgClr = clr;
+}
+
+void propagateFont ( Font fnt ) {
+	// should be called *only* on Components with unset IS_FONTIFIED
+	font = fnt;
+}
+
+void propagateParentShowing () {
+	// no kids, we don't have to propagate anything
+}
+
+public void remove( MenuComponent mc) {
+	mc.removeNotify();
+	mc.parent = null;
+	mc.owner = null;
+	
+	if ( popup != null)
+		popup.remove( mc);
 }
 
 public void removeComponentListener ( ComponentListener client ) {
@@ -967,8 +1058,28 @@ public void removeMouseMotionListener ( MouseMotionListener listener ) {
 }
 
 public void removeNotify () {
-	HotKeyHandler.removeHotKeys( this);
-	peer = null;
+	flags &= ~IS_ADD_NOTIFIED;
+
+	if ( popup != null ) {
+		popup.removeNotify();
+	}
+
+	// the inflight video program will be ceased by now, clean up any
+	// leftover global state (remember: removeNotify can be called anywhere, anytime)
+	if ( this == AWTEvent.mouseTgt )
+		AWTEvent.mouseTgt = null;
+	if ( this == AWTEvent.keyTgt )
+		AWTEvent.keyTgt = null;
+	if ( this == AWTEvent.activeWindow )
+		AWTEvent.activeWindow = null;
+	if ( this == FocusEvt.keyTgtRequest )
+		FocusEvt.keyTgtRequest = null;
+	
+	// this is arguable - we could also make the check in all relevant event dipatch()
+	// methods, but it's probably more efficient to do it once, at the source
+	// (note that we don't have to care for native events because of unregisterSource())
+	if ( Toolkit.eventQueue.localQueue != null )
+		Toolkit.eventQueue.dropLiveEvents( this);
 }
 
 public void repaint () {
@@ -984,7 +1095,9 @@ public void repaint ( long ms ) {
 }
 
 public void repaint ( long ms, int x, int y, int width, int height ) {
-	Toolkit.eventQueue.repaint( this, x, y, width, height);
+	if ( (flags & IS_SHOWING) == IS_SHOWING ){
+		Toolkit.eventQueue.repaint( this, x, y, width, height);
+	}
 }
 
 public void requestFocus () {
@@ -1004,8 +1117,10 @@ public void requestFocus () {
 	else {	
 		if ( AWTEvent.keyTgt != null )
 			topOld = AWTEvent.keyTgt.getToplevel();
+		else
+			topOld = AWTEvent.activeWindow;
 
-		if ( topNew != topOld ) {  // this involves a change of active toplevels
+		if (topNew != topOld ) {  // this involves a change of active toplevels
 			FocusEvt.keyTgtRequest = this;
 			topNew.requestFocus();
 		}
@@ -1025,21 +1140,17 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 	// for compatibility reasons (Swing etc.)
 
 	int      x0=0, x1=0, y0=0, y1=0, a, b;
-	boolean  isShowing;
-	boolean  hasParent = (parent != null);
 	boolean  sized = ( (width != wNew) || (height != hNew) );
 	boolean  moved = ( !sized && ((x != xNew) || (y != yNew)) );
+	int      id = sized ? ComponentEvent.COMPONENT_RESIZED : ComponentEvent.COMPONENT_MOVED;
 
 	// Don't do anything if we don't change anything.
 	if (sized || moved) {
-		isShowing = isShowing();
-		if ( hasParent ) {
-			if ( parent.isLayouting ) {
-				isShowing = false;           // parent will paint after completing layout
-			}
-			else {
-				// Strange, but happens (e.g. for Swing InternalFrames): somebody
-				// explicitly moved the mouseTgt or one of its parents
+
+		if ( parent != null ) {
+			// Strange, but happens (e.g. for Swing InternalFrames): somebody
+			// explicitly moved the mouseTgt or one of its parents (maybe in a mouse modal drag!)
+			if ( MouseEvt.mouseDragged ) {
 				for ( Component c=AWTEvent.mouseTgt; c!= null; c=c.parent ){
 					if ( c == this ) {
 						MouseEvt.moveMouseTgt( (xNew - x), (yNew - y));
@@ -1048,33 +1159,33 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 				}
 			}
 
-			if ( isShowing ) {             // get hull (to draw parent background in one sweep)
+			if ( (flags & IS_SHOWING) == IS_SHOWING ) {
 				x0 = (xNew < x) ? xNew : x;
 				y0 = (yNew < y) ? yNew : y;
 				x1 = (a = xNew + wNew) > (b = x + width)  ? a : b;
 				y1 = (a = yNew + hNew) > (b = y + height) ? a : b;
+			
+				x = xNew; y = yNew; width = wNew; height = hNew;
+				invalidate();
+				// this has to be done before issuing any PaintEvent (by repaint), since
+				// we might have some resident Graphics objects listening
+				if ( hasToNotify( this, AWTEvent.COMPONENT_EVENT_MASK, cmpListener) )
+					AWTEvent.sendEvent( ComponentEvt.getEvent( this, id), false);
+
+				// Redrawing the parent does not happen automatically, we can do it here
+				// (regardless of IS_LAYOUTING) since we have repaint - solicitation, anyway
+				parent.repaint( x0, y0, (x1-x0), (y1-y0));
+				
+				return;
 			}
 		}
-
 		x = xNew; y = yNew; width = wNew; height = hNew;
-
 		invalidate();
 
-		if ( isShowing ) {
-			if ( hasParent /*&& !(this instanceof OpaqueComponent)*/ )
-				parent.repaint( x0, y0, (x1-x0), (y1-y0));
-			else
-				repaint();
-		}
-	}
-	
-	if (((eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0) && (cmpListener !=null)){
-		int id = sized ? ComponentEvent.COMPONENT_RESIZED : ComponentEvent.COMPONENT_MOVED;
-	  // sync because it might be used to control Graphics visibility
-	  // CAUTION: this might cause incompatibilities in ill-behaving apps
-	  // (doing explicit sync on show/hide/reshape), but otherwise we would have
-	  // to implement a completely redundant mechanism for Graphics updates
-		AWTEvent.sendEvent( ComponentEvt.getEvent( this, id), true);
+		// be aware of that this is curently used to update resident nativelike Graphics
+		// objects (widgets, Panels, Canvases, ..)
+		if ( hasToNotify( this, AWTEvent.COMPONENT_EVENT_MASK, cmpListener) )
+			AWTEvent.sendEvent( ComponentEvt.getEvent( this, id), false);
 	}
 }
 
@@ -1097,8 +1208,17 @@ public void resize ( int wNew, int hNew ) {
 }
 
 public void setBackground ( Color clr ) {
-	bgClr = clr;
-	
+	if ( clr != null ){
+		flags |= IS_BG_COLORED;
+	}
+	else {
+		flags &= ~IS_BG_COLORED;
+		if ( parent != null )
+			clr = parent.bgClr;
+	}
+
+	propagateBgClr( clr);
+
 	if ( isShowing() )
 		repaint();
 }
@@ -1128,16 +1248,34 @@ public void setEnabled ( boolean isEnabled ) {
 		eventMask |= AWTEvent.DISABLED_MASK;
 }
 
-public void setFont ( Font newFont ) {
-	font = newFont;
-	
+public void setFont ( Font fnt ) {
+	if ( fnt != null ){
+		flags |= IS_FONTIFIED;
+	}
+	else {
+		flags &= ~IS_FONTIFIED;
+		if ( parent != null )
+			fnt = parent.font;
+	}
+
+	propagateFont( fnt);
+
 	if ( isShowing() )
 		repaint();
 }
 
 public void setForeground ( Color clr ) {
-	fgClr = clr;
-	
+	if ( clr != null ){
+		flags |= IS_FG_COLORED;
+	}
+	else {
+		flags &= ~IS_FG_COLORED;
+		if ( parent != null )
+			clr = parent.fgClr;
+	}
+
+	propagateFgClr( clr);
+
 	if ( isShowing() )
 		repaint();
 }
@@ -1177,28 +1315,39 @@ public void show () {
 	// DEP this should be in setVisible !! But we have to keep it here
 	// for compatibility reasons (Swing etc.)
 
-	if ( !isVisible ) {
-		isVisible = true;
+	if ( (flags & IS_VISIBLE) == 0 ) {
+		flags |= IS_VISIBLE;
 
-		if ( parent != null ) {
-			if ( parent.isShowing() && !parent.isLayouting ){
-				parent.repaint( x, y, width, height);
+	  // if we are a toplevel, the native window manager will take care
+	  // of repainting
+		if ( (parent != null) && ((parent.flags & IS_LAYOUTING) == 0) ) {
+			if ( (flags & (IS_ADD_NOTIFIED | IS_PARENT_SHOWING))
+			       == (IS_ADD_NOTIFIED | IS_PARENT_SHOWING) ){
+			  //parent.repaint( x, y, width, height);
+				repaint();
 			}
+			
+			if ( (parent.flags & IS_VALID) != 0 )
+				parent.invalidate();
 		}
-		// if we are a toplevel, the native window manager will take care
-		// of repainting
-		
-		if (((eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0) && (cmpListener !=null)){
-		  // sync because it might be used to control Graphics visibility, see hide, reshape
+
+	  // sync because it might be used to control Graphics visibility
+	  // (see hide, reshape)
+		if ( hasToNotify( this, AWTEvent.COMPONENT_EVENT_MASK, cmpListener) ){
 			AWTEvent.sendEvent( ComponentEvt.getEvent( this,
-			                         ComponentEvent.COMPONENT_SHOWN), true);
+				                         ComponentEvent.COMPONENT_SHOWN), true);
 		}
 	}
 }
 
 public void show ( boolean b ) {
-	if ( b) show();
-	else	hide();
+	// DEP this should map to setVisible but we have to keep it that way because of
+	// compatibility, which in this case requires a double indirection)
+
+	if ( b)
+		show();
+	else
+		hide();
 }
 
 /**
@@ -1211,7 +1360,7 @@ public Dimension size () {
 }
 
 public String toString () {
-	return (getClass().getName() + '[' + paramString() + ']');
+	return (getClass().getName() + " [" + paramString() + ']');
 }
 
 /**
@@ -1245,7 +1394,7 @@ public void transferFocus() {
 		/* Look for next focusable component after me */
 		for (start++; start < end; start++) {
 			Component c = parent.getComponent(start);
-			if (!(c.isEnabled() && c.isVisible() && c.isFocusTraversable())) {
+			if (!(c.isEnabled() && ((c.flags & IS_VISIBLE) !=0) && c.isFocusTraversable())) {
 				continue;
 			}
 			if (!(c instanceof Container)) {
@@ -1263,23 +1412,112 @@ public void transferFocus() {
 	}
 }
 
-PopupMenu triggerPopup ( int idx, int x, int y ) {
-	if ( popups != null && (popups.size() > idx) ){
-		PopupMenu p = (PopupMenu)popups.elementAt( idx);
-		p.show( this, x, y);
-		return p;
+PopupMenu triggerPopup ( int x, int y ) {
+	if ( popup != null ) {
+		popup.show( this, x, y);
+		return popup;
 	}
 	
 	return null;
 }
 
 public void update ( Graphics g ) {
+	g.clearRect( 0, 0, width, height);
 	paint( g);
 }
 
 public void validate () {
 	// we can't validate a not-yet-addNotifyed Component
-	if ( peer != null )
-		isValid = true;
+	if ( (flags & IS_ADD_NOTIFIED) != 0 ) {
+		flags |= IS_VALID;
+	}
 }
+
+/*
+ * JDK serialization.
+ *  While this is serializing something like what JDK expects, we don't handle the more complex
+ *  things like Properties or popupMenus yet (because I'm not sure how to convert what we do
+ *  into what they expect).
+ */
+class DefaultSerialization {
+
+private Color bgColor;
+private java.beans.PropertyChangeSupport changeSupport;
+private int componentSerializedDataVersion;
+private Cursor cursor;
+private boolean enabled;
+private long eventMask;
+private Font font;
+private Color foreground;
+private boolean hasFocus;
+private int height;
+private boolean isPacked;
+private Locale locale;
+private Dimension minSize;
+private String name;
+private boolean nameExplicitlySet;
+private boolean newEventsOnly;
+private Font peerFont;
+private Vector popups;
+private Dimension prefSize;
+private boolean valid;
+private boolean visible;
+private int width;
+private int x;
+private int y;
+
+private void readDefaultObject() {
+	setBackground(bgColor);
+	setCursor(cursor);
+	setEnabled(enabled);
+	enableEvents(eventMask);
+	setFont(font);
+	setForeground(foreground);
+	setSize(width, height);
+	setLocale(locale);
+	setName(name);
+	setLocation(x, y);
+	if (valid) {
+		validate();
+	}
+	else {
+		invalidate();
+	}
+	if (visible) {
+		show();
+	}
+	else {
+		hide();
+	}
+}
+
+private void writeDefaultObject() {
+	bgColor = Component.this.bgClr;
+	changeSupport = null;
+	componentSerializedDataVersion = 0;
+	cursor = Component.this.cursor;
+	enabled = isEnabled();
+	eventMask = Component.this.eventMask;
+	font = Component.this.font;
+	foreground = Component.this.fgClr;
+	hasFocus = false;
+	height = Component.this.height;
+	isPacked = false;
+	locale = Component.this.locale;
+	minSize = getMinimumSize();
+	name = Component.this.name;
+	nameExplicitlySet = true;
+	newEventsOnly = !getClassProperties().useOldEvents;
+	peerFont = Component.this.font;
+	popups = null;
+	prefSize = getPreferredSize();
+	valid = isValid();
+	visible = isVisible();
+	width = Component.this.width;
+	x = Component.this.x;
+	y = Component.this.y;
+}
+
+}
+
 }

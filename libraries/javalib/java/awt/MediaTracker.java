@@ -46,7 +46,7 @@ public boolean checkAll()
 
 public synchronized boolean checkAll ( boolean load ) {
 	for ( MediaTrackerEntry e = images; e != null; e = e.next) {
-		if ((e.img.checkImage( e.w, e.h, e, load) & LOADED) == 0) {
+		if ((e.img.checkImage( e.w, e.h, e, load) & (ImageObserver.ALLBITS|ImageObserver.FRAMEBITS)) == 0) {
 			return (false);
 		}
 	}
@@ -60,7 +60,7 @@ public boolean checkID(int id)
 
 public synchronized boolean checkID ( int id, boolean load ) {
 	for ( MediaTrackerEntry e = getNextEntry( id, null); e != null; e= getNextEntry( id, e) ) {
-		if ( (e.img.checkImage( e.w, e.h, e, load) & LOADED) == 0)
+		if ( (e.img.checkImage( e.w, e.h, e, load) & (ImageObserver.ALLBITS|ImageObserver.FRAMEBITS)) == 0)
 			return false;
 	}
 	return true;
@@ -190,7 +190,7 @@ public synchronized int statusID ( int id, boolean load ) {
 	for ( MediaTrackerEntry e = getNextEntry( id, null); e != null; e = getNextEntry( id, e) ) {
 		ic = e.img.checkImage( e.w, e.h, e, load);
 
-		if ( (ic & ImageObserver.ALLBITS) != 0 )
+		if ( (ic & (ImageObserver.ALLBITS|ImageObserver.FRAMEBITS)) != 0 )
 			ret |= COMPLETE;
 		else if ( (ic & ImageObserver.ABORT) != 0 )
 			ret |= ABORTED;
@@ -253,7 +253,7 @@ public synchronized boolean waitForID ( int id, long ms) throws InterruptedExcep
 			return false;
 		}
 	
-		if ((e.img.checkImage(e.w, e.h, e, true) & LOADED) == 0) {
+		if ((e.img.checkImage(e.w, e.h, e, true) & (ImageObserver.FRAMEBITS|ImageObserver.ALLBITS)) == 0) {
 			synchronized ( e ) {
 				e.wait( ms);
 			}
@@ -287,7 +287,7 @@ public synchronized boolean imageUpdate ( Image img, int infoflags, int x, int y
 		w = width;
 		h = height;
 	}
-	if ( (infoflags & (ALLBITS | ABORT)) != 0 ) {
+	if ( (infoflags & (ALLBITS | FRAMEBITS | ABORT)) != 0 ) {
 		notify();
 		return (false);
 	}

@@ -1,3 +1,16 @@
+package java.awt;
+
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.Vector;
+
 /**
  * Copyright (c) 1998
  *    Transvirtual Technologies, Inc.  All rights reserved.
@@ -7,101 +20,42 @@
  *
  * @author P.C.Mehlitz
  */
-
-package java.awt;
-
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.util.Vector;
-
-class BarMenu
+public class BarMenu
   extends Component
+  implements ShortcutConsumer
 {
 	static int Dx = 5;
 	Menu selection;
 	MenuBar mb;
 	PopupMenu current;
-
-class BarMenuListener
-  implements KeyListener, MouseListener, MouseMotionListener
-{
-public BarMenuListener () {
-	addMouseListener( this);
-	addMouseMotionListener( this);
-	addKeyListener( this);
-}
-
-public void keyPressed ( KeyEvent evt ) {
-	int cc = evt.getKeyCode();
-	switch( cc) {
-		case KeyEvent.VK_ENTER:
-			processSelection();
-			break;
-		case KeyEvent.VK_LEFT:
-			selectPrev();
-			break;
-		case KeyEvent.VK_RIGHT:
-			selectNext();
-			break;
-	}
-}
-
-public void keyReleased ( KeyEvent evt ) {
-}
-
-public void keyTyped ( KeyEvent evt ) {
-}
-
-public void mouseClicked ( MouseEvent evt ) {
-	//processSelection();
-}
-
-public void mouseDragged ( MouseEvent evt ) {
-}
-
-public void mouseEntered ( MouseEvent evt ) {
-	//requestFocus();
-	selectMenu( menuAt( evt.getX() ));
-}
-
-public void mouseExited ( MouseEvent evt ) {
-	selectMenu( null);
-}
-
-public void mouseMoved ( MouseEvent evt ) {
-	selectMenu( menuAt( evt.getX() ));
-}
-
-public void mousePressed ( MouseEvent evt ) {
-	processSelection();
-}
-
-public void mouseReleased ( MouseEvent evt ) {
-}
-}
+	WindowAdapter wa;
 
 public BarMenu ( MenuBar mb) {
 	this.mb = mb;
-	mb.bMenu = this;
 	
-	fgClr = Defaults.MenuTxtClr;
-	bgClr = Defaults.MenuBgClr;
-	font  = Defaults.MenuFont;
+	setForeground( Defaults.MenuTxtClr);
+	setBackground( Defaults.MenuBgClr);
+	setFont( Defaults.MenuFont);
 
-	new BarMenuListener();
+//	new BarMenuListener();
 }
 
 public void addNotify () {
-	super.addNotify();
+	if ( (flags & IS_ADD_NOTIFIED) == 0 ) {
+		super.addNotify();
 
-	mb.propagateOldEvents( oldEvents);
+		mb.owner = getToplevel();
+		mb.parent = this;
+		mb.addNotify();
+		mb.propagateOldEvents( ((flags & IS_OLD_EVENT) != 0));
+	
+		registerHandlers();
+	}
 }
 
 void disposeCurrent () {
 	if ( current != null){
+		unlinkCurrent();
 		current.dispose();
 		current = null;
 	}
@@ -113,7 +67,7 @@ public Graphics getGraphics () {
 	// this (to avoid getting clipped away)
 	return NativeGraphics.getGraphics( parent, ((Window)parent).nativeData,
 	                                   NativeGraphics.TGT_TYPE_WINDOW,
-	                                   0, 0,
+	                                   x - parent.deco.x, y - parent.deco.y,
 	                                   0, 0, width, height,
 	                                   parent.fgClr, parent.bgClr, parent.font, false);
 }
@@ -132,6 +86,25 @@ int getX ( Menu m) {
 	return -1;		
 }
 
+public void handleShortcut( MenuShortcut ms) {
+	switch ( ms.keyCode) {
+		case KeyEvent.VK_LEFT:
+			selectPrev();
+			break;
+		case KeyEvent.VK_RIGHT:
+			selectNext();
+			break;
+		case KeyEvent.VK_ENTER:
+			processSelection();
+			break;
+	}
+}
+
+public boolean isFocusTraversable () {
+	return false;
+//	return super.isFocusTraversable();
+}
+
 Menu menuAt ( int x) {
 	int sz = mb.menus.size();
 	int x0 = Dx;
@@ -140,12 +113,31 @@ Menu menuAt ( int x) {
 		Menu m = (Menu)mb.menus.elementAt( i);
 		int mw = m.getWidth();
 		x0 += mw+Dx;
-		if ( x0 > x)
+		if ( x0 > x) {
 			return m;
+		}
 		x0 += Dx;
 	}
 	
 	return null;
+}
+
+boolean openSelection () {
+	if ( (selection == null) || ((selection.getItemCount() == 0)) )
+		return false;
+	
+	disposeCurrent();
+	current = new PopupMenu( selection);
+	current.show( this, getX( selection), height);
+
+	MenuShortcut s1 = new MenuShortcut( this, KeyEvent.VK_LEFT, 0);
+	MenuShortcut s2 = new MenuShortcut( this, KeyEvent.VK_RIGHT, 0);
+	ShortcutHandler.addShortcut( s1, current.wnd, this);
+	ShortcutHandler.addShortcut( s2, current.wnd, this);
+	current.wnd.addWindowListener( wa);
+
+//System.out.println( "linked: " + current.wnd);
+	return true;		
 }
 
 public void paint ( Graphics g) {
@@ -187,38 +179,83 @@ void paintMenu ( Graphics g, Menu m) {
 
 void processSelection () {
 	if ( selection != null) {
-		disposeCurrent();
-		if ( selection.getItemCount() > 0) {
-			current = new PopupMenu( selection);
-			int x = getX( selection) + 1;
-			int y = height + 1;
-			current.show( this, x, y);
-			current.requestFocus();
+		if ( !openSelection() ) {
+			selection.handleShortcut( null);
+			selectMenu( null);
 		}
-		else
-			selection.process();
-	}
-		
+	}	
+}
+
+void registerHandlers () {
+	MenuShortcut s1 = new MenuShortcut( this, KeyEvent.VK_LEFT, 0);
+	MenuShortcut s2 = new MenuShortcut( this, KeyEvent.VK_RIGHT, 0);
+	MenuShortcut s3 = new MenuShortcut( this, KeyEvent.VK_ENTER, 0);
+	ShortcutHandler.addShortcut( s1, this, this);
+	ShortcutHandler.addShortcut( s2, this, this);
+	ShortcutHandler.addShortcut( s3, this, this);
+	
+	MouseMotionAdapter mma = new MouseMotionAdapter() {
+		public void mouseMoved( MouseEvent evt) {
+			if ( (AWTEvent.keyTgt == evt.getSource()) || (current != null) )
+				selectMenu( menuAt( evt.getX() ));
+		}
+	};
+	MouseAdapter ma = new MouseAdapter() {
+		public void mousePressed( MouseEvent evt) {
+			requestFocus();
+			selectMenu( menuAt( evt.getX() ));
+		}
+		public void mouseReleased( MouseEvent evt ) {
+			processSelection();
+		}
+		public void mouseExited( MouseEvent evt ) {
+			if ( current == null )
+				selectMenu( null);
+		}
+	};
+	
+	wa = new WindowAdapter() {
+		public void windowClosed( WindowEvent evt) {
+			selectMenu( null);
+		}
+	};
+	
+	addMouseMotionListener( mma);
+	addMouseListener( ma);
+}
+
+public void removeNotify () {
+	super.addNotify();
+	mb.removeNotify();
+	
+	ShortcutHandler.removeShortcuts( this);
 }
 
 void selectMenu ( Menu m) {
-	Menu ms;
+	Menu ms = selection;
+	
+	if ( m == selection )
+		return;
+	
 	Graphics g = getGraphics();
 
-	if ( m == null) {
-		if ( selection != null) {
-			ms = selection;
-			selection = null;
-			paintMenu( g, ms);
-		}
+	if ( m == null ) {
+		disposeCurrent();
+		selection = null;
+		paintMenu( g, ms);
 	}
-	else if ( m != selection) {
-		ms = selection;
+	else if ( selection == null ) {
+		selection = m;
+		paintMenu( g, m);
+		openSelection();
+	}
+	else {
 		selection = m;
 		paintMenu( g, ms);
-		paintMenu( g, selection);
+		paintMenu( g, m);
+		disposeCurrent();
+		openSelection();
 	}
-
 	g.dispose();
 }
 
@@ -250,5 +287,13 @@ void setMenus ( MenuBar mb) {
 	this.mb = mb;
 	if ( isShowing() )
 		repaint();
+}
+
+void unlinkCurrent () {
+	if ( (current != null) && (current.wnd != null ) ) {
+		ShortcutHandler.removeShortcuts( current.wnd);
+		current.wnd.removeWindowListener( wa);
+//System.out.println( "unlinked: " + current.wnd);
+	}
 }
 }

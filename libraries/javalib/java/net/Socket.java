@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import kaffe.net.DefaultSocketImplFactory;
+import java.net.SocketOptions;
 
 public class Socket {
 

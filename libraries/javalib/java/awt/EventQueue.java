@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.awt.event.PaintEvent;
 
 /**
  *
@@ -13,19 +14,95 @@ package java.awt;
 public class EventQueue
 {
 	AWTEvent localQueue;
+	AWTEvent localEnd;
 
 public EventQueue () {
 }
 
+synchronized void dropAll ( Object source ) {
+	AWTEvent e = localQueue;
+	AWTEvent del, last = null;
+
+	while ( e != null ) {
+		if ( AWTEvent.getSource( e) == source ) {
+			if ( localEnd == e )
+				localEnd = last;
+
+			if ( last == null )
+				localQueue = e.next;
+			else
+				last.next = e.next;
+
+			del = e;
+			e = e.next;
+			del.recycle();  // watch out - recycle mutates the 'next' field
+		}
+		else {
+			last = e;
+			e = e.next;
+		}
+	}
+}
+
+synchronized void dropLiveEvents ( Object source ) {
+	AWTEvent e = localQueue;
+	AWTEvent del, last = null;
+
+	while ( e != null ) {
+		if ( e.isLiveEventFor( source) ) {
+			if ( localEnd == e )
+				localEnd = last;
+
+			if ( last == null )
+				localQueue = e.next;
+			else
+				last.next = e.next;
+
+			del = e;
+			e = e.next;
+			del.recycle();  // watch out - recycle mutates the 'next' field
+		}
+		else {
+			last = e;
+			e = e.next;
+		}
+	}
+}
+
+synchronized void dropPaintEvents ( Object source, int x, int y, int w, int h ) {
+	AWTEvent e = localQueue;
+	AWTEvent del, last = null;
+
+	while ( e != null ) {
+		if ( (e.id == PaintEvent.UPDATE) && e.isObsoletePaint( source, x, y, w, h) ) {
+			if ( localEnd == e )
+				localEnd = last;
+
+	 		if ( last == null )
+				localQueue = e.next;
+			else
+				last.next = e.next;
+
+			del = e;
+			e = e.next;
+			del.recycle();  // watch out - recycle mutates the 'next' field
+		}
+		else {
+			last = e;
+			e = e.next;
+		}
+	}
+}
+
 public AWTEvent getNextEvent () {
 	AWTEvent e;
-
 	while ( true ) {
 		synchronized ( this ) {
 			if ( localQueue != null ) {
 				e = localQueue;
 				localQueue = e.next;
 				e.next = null;
+				if ( e == localEnd ) localEnd = null; // just to avoid a temp mem leak
 				return e;
 			}
 		}
@@ -72,7 +149,7 @@ public synchronized AWTEvent peekEvent ( int id ) {
 
 public synchronized void postEvent ( AWTEvent e ) {
 	if ( localQueue == null ) {
-		localQueue = e;
+		localQueue = localEnd = e;
 
 		// if we use blocked IO, and this is not the eventThread, wake it
 		// by creating some IO traffic
@@ -80,9 +157,11 @@ public synchronized void postEvent ( AWTEvent e ) {
 			Toolkit.evtWakeup();
 	}
 	else {
-		AWTEvent q;
-		for ( q=localQueue; q.next != null; q = q.next );
-		q.next = e;
+		localEnd.next = e;
+		localEnd = e;
+		//AWTEvent q;
+		//for ( q=localQueue; q.next != null; q = q.next );
+		//q.next = e;
 		
 		// there is no need to wakeup the eventThread, since local events are
 		// always processed *before* blocking on a native event inquiry (and
@@ -97,19 +176,21 @@ synchronized void repaint ( Component c, int x, int y, int width, int height ) {
 	// scan the localQueue twice (it might get long)
 	if ( e != null ) {
 		do {
-			if ( (e.id == PaintEvt.REPAINT) &&
-           ((PaintEvt)e).solicitRepaint( c, x, y, width, height) )
+			if ( (e.id == PaintEvt.UPDATE) &&
+           ((PaintEvt)e).solicitRepaint( c, x, y, width, height) ){
 				return;
+			}
 			if ( e.next == null )
 				break;
 			else
 				e = e.next;
 		} while ( true );
 		
-		e.next = PaintEvt.getEvent( c, PaintEvt.REPAINT, 0, x, y, width, height);
+		e.next = localEnd = PaintEvt.getEvent( c, PaintEvt.UPDATE, 0, x, y, width, height);
 	}
 	else {
-		localQueue = PaintEvt.getEvent( c, PaintEvt.REPAINT, 0, x, y, width, height);
+		localQueue = localEnd = PaintEvt.getEvent( c, PaintEvt.UPDATE, 0, x, y, width, height);
+
 		if ( Toolkit.isBlocking && (Thread.currentThread() != Toolkit.eventThread) )
 			Toolkit.evtWakeup();
 	}

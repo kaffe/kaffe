@@ -1,3 +1,7 @@
+package java.awt;
+
+import java.awt.peer.MenuComponentPeer;
+
 /**
  * Copyright (c) 1998
  *    Transvirtual Technologies, Inc.  All rights reserved.
@@ -6,22 +10,17 @@
  * of this file.
  *
  */
-
-package java.awt;
-
-import java.awt.peer.MenuComponentPeer;
-import java.lang.String;
-
 abstract public class MenuComponent
 {
 	Font fnt;
 	String name;
 	MenuContainer parent;
 	FontMetrics fm;
-	MenuComponentPeer peer;
 	static Font defFnt = Defaults.MenuFont;
-	BarMenu bMenu;
-	protected boolean oldEvents;
+	final static int IS_ADD_NOTIFIED = 0x400;
+	final static int IS_OLD_EVENT = 0x20;
+	int flags;
+	Component owner;
 
 public MenuComponent () {
 	setFont( defFnt);
@@ -63,8 +62,8 @@ public boolean postEvent ( Event evt ) {
 		if (parent != null) {
 			ret = parent.postEvent( evt);
 		}
-		else if ( bMenu != null ) {
-			ret = bMenu.postEvent( evt);
+		else if ( owner != null ) {
+			ret = owner.postEvent( evt);
     }
 
 		evt.recycle();
@@ -74,14 +73,16 @@ public boolean postEvent ( Event evt ) {
 }
 
 protected void propagateOldEvents ( boolean isOldEventClient ) {
-	oldEvents = isOldEventClient;
+	if ( isOldEventClient )
+		flags |= IS_OLD_EVENT;
+	else {
+		flags &= ~IS_OLD_EVENT;
 	
-	// we're not set yet - this might be a subclassed MenuComponent with a
-	// resolved postEvent (call it a zombie)
-	if ( !oldEvents ) {
+		// we're not set yet - this might be a subclassed MenuComponent with a
+		// resolved postEvent (call it a zombie)
 		ClassProperties props = ClassAnalyzer.analyzePostEvent( getClass());
 		if ( props.useOldEvents )
-			oldEvents = true;
+			flags |= IS_OLD_EVENT;
 	}
 }
 

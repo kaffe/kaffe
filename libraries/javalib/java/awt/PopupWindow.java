@@ -1,7 +1,5 @@
 package java.awt;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -28,29 +26,15 @@ class PopupWindow
 	Vector items;
 	Component client;
 	PopupWindow sub;
-	static boolean disposeOnLost;
-	static Window popup;
+	static Window current;
 
 class PopupListener
-  implements MouseListener, MouseMotionListener, KeyListener, FocusListener
+  implements MouseListener, MouseMotionListener, KeyListener
 {
-	boolean firstEvent = true;
-
 public PopupListener () {
 	addMouseListener( this);
 	addMouseMotionListener( this);
 	addKeyListener( this);
-	addFocusListener( this);
-}
-
-public void focusGained ( FocusEvent evt ) {
-}
-
-public void focusLost ( FocusEvent evt ) {
-/*
-	if ( disposeOnLost)
-		disposeAll();
-*/
 }
 
 public void keyPressed ( KeyEvent evt ) {
@@ -58,21 +42,27 @@ public void keyPressed ( KeyEvent evt ) {
 	switch( cc) {
 		case KeyEvent.VK_ENTER:
 			processSelection();
+			evt.consume();
 			break;
 		case KeyEvent.VK_UP:
-			selectPrev();
+			if ( selectPrev() )
+				evt.consume();
 			break;
 		case KeyEvent.VK_DOWN:
-			selectNext();
+			if ( selectNext() )
+				evt.consume();
 			break;
 		case KeyEvent.VK_ESCAPE:
 			disposeAll();
+			evt.consume();
 			break;
 		case KeyEvent.VK_LEFT:
-			selectUpper();
+			if ( selectUpper() )
+				evt.consume();
 			break;
 		case KeyEvent.VK_RIGHT:
-			selectLower();
+			if ( selectLower() )
+				evt.consume();
 			break;
 	}
 }
@@ -84,14 +74,11 @@ public void keyTyped ( KeyEvent evt ) {
 }
 
 public void mouseClicked ( MouseEvent evt ) {
-	//processSelection();
 }
 
 public void mouseDragged ( MouseEvent evt ) {
 	int u = evt.getX();
 	int v = evt.getY();
-
-	firstEvent = false;
 
 	if ( contains( u, v) ) {
 		selectItem( itemAt( v ));
@@ -111,23 +98,17 @@ public void mouseDragged ( MouseEvent evt ) {
 }
 
 public void mouseEntered ( MouseEvent evt ) {
-	disposeOnLost = false;
 	requestFocus();
-	
-	//selectItem( itemAt( evt.getY() ));
 }
 
 public void mouseExited ( MouseEvent evt ) {
-	disposeOnLost = true;
 }
 
 public void mouseMoved ( MouseEvent evt ) {
-	firstEvent = false;
 	selectItem( itemAt( evt.getY() ));
 }
 
 public void mousePressed ( MouseEvent evt ) {
-	firstEvent = false;
 	selectItem( itemAt( evt.getY() ));
 }
 
@@ -155,16 +136,27 @@ public PopupWindow ( Component client, Frame fr, Vector items) {
 }
 
 static boolean checkPopup ( Object src ) {
-	if ( popup == null ) {
+	if ( current == null ) {
 		return true;
 	}
-	if ( (src instanceof PopupWindow) && (((PopupWindow)src).rootWnd() == popup) ) {
+	if ( (src != null) &&
+	     (src instanceof PopupWindow) && (((PopupWindow)src).rootWnd() == current) ) {
 		return true;
 	}
 
-	popup.dispose();
-	popup = null;
+	current.dispose();
+	current = null;
 	return false;
+}
+
+static boolean closePopup () {
+	if ( current == null ) {
+		return false;
+	}
+
+	current.dispose();
+	current = null;
+	return true;
 }
 
 public void dispose () {
@@ -226,11 +218,6 @@ MenuItem itemAt ( int yPos) {
 	return null;
 }
 
-public void notifyLost( Component newFocus) {
-	if ( !( newFocus instanceof PopupWindow))
-		disposeAll();
-}
-
 boolean openSubMenu () {
 	if ( sub != null )
 		return false;
@@ -260,7 +247,6 @@ public void paint( Graphics g) {
 		MenuItem mi = (MenuItem)items.elementAt( i);
 		y += paintItem( mi, g, y);
 	}
-
 }
 
 int paintItem ( MenuItem mi, Graphics g, int y) {
@@ -325,15 +311,15 @@ void processSelection () {
 	}
 	else {
 		disposeAll(); // clean up before doing any popup triggered actions
-		selection.process();
+		selection.handleShortcut( null);
 	}
 }
 
 static void resetPopup ( Window oldPopup ) {
 
 	// just reset if this is the one that is still active
-	if ( (popup != null) && (popup == oldPopup) ) {
-		popup = null;
+	if ( (current != null) && (current == oldPopup) ) {
+		current = null;
 	}
 }
 
@@ -368,63 +354,79 @@ boolean selectItem ( MenuItem nmi) {
 	return true;	
 }
 
-void selectLower() {
-	if ( sub != null) {
-		sub.requestFocus();
-		Vector v = sub.items;
-		if ( (v != null) && (v.size() > 0) )
-			sub.selectItem ((MenuItem) v.firstElement());
+boolean selectLower() {
+	if ( sub == null )
+		return false;
+
+	sub.requestFocus();
+	Vector v = sub.items;
+	if ( (v != null) && (v.size() > 0) ) {
+		sub.selectItem ((MenuItem) v.firstElement());
+		return true;
 	}
+	
+	return false;
 }
 
-void selectNext () {
-	try {
-		if ( selection == null)
-			selectItem( (MenuItem)items.firstElement() );
-		else {
-			for ( int idx = items.indexOf( selection)+1; idx<items.size(); idx++) {
-				MenuItem mi = (MenuItem)items.elementAt( idx);
-				if ( ! mi.isSeparator() ){
-					selectItem( mi);
-					return;
-				}
-			}
+boolean selectNext () {
+	int isz = (items != null) ? items.size() : 0;
+	int ci = 0;
+	
+	if ( isz == 0 )
+		return false;
+		
+	if ( selection != null )
+		ci = items.indexOf( selection) + 1;
+	
+	for ( int idx = ci; idx<isz; idx++) {
+		MenuItem mi = (MenuItem)items.elementAt( idx);
+		if ( ! mi.isSeparator() ){
+			selectItem( mi);
+			return true;
 		}
 	}
-	catch ( Exception e) {}
+	
+	return false;
 }
 
-void selectPrev () {
-	try {
-		if ( selection == null)
-			selectItem( (MenuItem)items.lastElement() );
-		else {
-			for ( int idx = items.indexOf( selection)-1; idx>=0; idx--) {
-				MenuItem mi = (MenuItem)items.elementAt( idx);
-				if ( ! mi.isSeparator() ){
-					selectItem( mi);
-					return;
-				}
-			}
+boolean selectPrev () {
+	int isz = (items != null) ? items.size() : 0;
+	int ci = isz-1;
+	
+	if ( isz == 0 )
+		return false;
+		
+	if ( selection != null )
+		ci = items.indexOf( selection) -1;
+	
+	for ( int idx = ci; idx>=0; idx--) {
+		MenuItem mi = (MenuItem)items.elementAt( idx);
+		if ( ! mi.isSeparator() ){
+			selectItem( mi);
+			return true;
 		}
 	}
-	catch ( Exception e) {}
+	
+	return false;
 }
 
-void selectUpper() {
-	if ( client instanceof PopupWindow) {
-		PopupWindow p = (PopupWindow)client;
-		dispose();
-		p.requestFocus();
-		p.sub = null;
-	}
+boolean selectUpper() {
+	if ( ! (client instanceof PopupWindow))
+		return false;
+		
+	PopupWindow p = (PopupWindow)client;
+	dispose();
+	p.requestFocus();
+	p.sub = null;
+	
+	return true;
 }
 
 static void setPopup ( Window newPopup ) {
-	if ( popup != null ) { // it has to be one
-		popup.dispose();
+	if ( current != null ) { // it has to be one
+		current.dispose();
 	}
 	
-	popup = newPopup;
+	current = newPopup;
 }
 }

@@ -18,7 +18,7 @@ public class RandomAccessFile
 	private FileDescriptor fd = new FileDescriptor();
 
 static {
-        System.loadLibrary("io");
+	System.loadLibrary("io");
 }
 
 public RandomAccessFile(File file, String mode) throws IOException {

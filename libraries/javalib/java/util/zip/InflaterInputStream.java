@@ -21,31 +21,26 @@ public class InflaterInputStream
 	protected byte[] buf;
 	protected int len;
 
-public InflaterInputStream(InputStream in)
-	{
+public InflaterInputStream(InputStream in) {
 	this(in, new Inflater(), DEFAULT);
 }
 
-public InflaterInputStream(InputStream in, Inflater inf)
-	{
+public InflaterInputStream(InputStream in, Inflater inf) {
 	this(in, inf, DEFAULT);
 }
 
-public InflaterInputStream(InputStream in, Inflater inf, int size)
-	{
+public InflaterInputStream(InputStream in, Inflater inf, int size) {
 	super(in);
 	this.inf = inf;
 	buf = new byte[size];
 	len = 0;
 }
 
-protected void fill() throws IOException
-{
+protected void fill() throws IOException {
 	len = super.read(buf, 0, buf.length);
 }
 
-public int read() throws IOException
-{
+public int read() throws IOException {
 	byte[] b = new byte[1];
 	int r = read(b, 0, 1);
 	if (r == -1) {
@@ -56,8 +51,7 @@ public int read() throws IOException
 	}
 }
 
-public int read(byte b[], int off, int lenx) throws IOException
-{
+public int read(byte b[], int off, int lenx) throws IOException {
 	if (inf.finished()) {
 		return (-1);
 	}
@@ -76,8 +70,7 @@ public int read(byte b[], int off, int lenx) throws IOException
 	}
 }
 
-public long skip(long n) throws IOException
-{
+public long skip(long n) throws IOException {
 	// This is a terribly inefficient way to skip ...
 	long cnt;
 	for (cnt = 0; cnt < n; cnt++) {

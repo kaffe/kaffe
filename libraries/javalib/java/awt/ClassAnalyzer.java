@@ -2,7 +2,6 @@ package java.awt;
 
 import java.lang.reflect.Method;
 import java.util.Hashtable;
-import java.lang.String;
 
 class ClassAnalyzer
 {
@@ -61,24 +60,6 @@ static ClassProperties analyzeAll ( Class clazz, boolean isNativeLike ) {
 	return props;
 }
 
-static ClassProperties analyzeProcessEvent ( Class clazz, boolean isNativeLike ) {
-	ClassProperties props = (ClassProperties) dict.get( clazz);
-	
-	if ( props == null ) {
-		props = new ClassProperties();
-	
-		props.useOldEvents    = false;
-		props.hasProcessEvent = checkProcessEvent( clazz);
-		props.isNativeLike    = isNativeLike;
-
-		dict.put( clazz, props);
-//System.out.println( "" + clazz + ", oe: " + props.useOldEvents +
-//                        ", pe: " + props.hasProcessEvent);
-	}
-
-	return props;
-}
-
 static ClassProperties analyzePostEvent ( Class clazz ) {
 	ClassProperties props = (ClassProperties) dict.get( clazz);
 	
@@ -97,6 +78,40 @@ static ClassProperties analyzePostEvent ( Class clazz ) {
 	return props;
 }
 
+static ClassProperties analyzeProcessEvent ( Class clazz, boolean isNativeLike ) {
+	ClassProperties props = (ClassProperties) dict.get( clazz);
+	
+	if ( props == null ) {
+		props = new ClassProperties();
+	
+		props.useOldEvents    = false;
+		props.hasProcessEvent = checkProcessEvent( clazz);
+		props.isNativeLike    = isNativeLike;
+
+		dict.put( clazz, props);
+//System.out.println( "" + clazz + ", oe: " + props.useOldEvents +
+//                        ", pe: " + props.hasProcessEvent);
+	}
+
+	return props;
+}
+
+static boolean checkOldEventMenuMethods ( Class clazz ) {
+	Method m;
+
+	try {
+	  m = clazz.getMethod( "postEvent", sig_Event);
+	  if ( m.getDeclaringClass() != MenuComponent.class )
+		return true; // Another zombie
+	}
+	catch ( NoSuchMethodException _ ) {
+System.err.println( "ouch!! " + clazz + " has no postEvent");
+		return false; // no MenuComponent subclass!
+	}
+	
+	return false;
+}
+
 static boolean checkOldEventMethods ( Class clazz ) {
 	int i=0;
 	Method m;
@@ -113,22 +128,6 @@ static boolean checkOldEventMethods ( Class clazz ) {
 	catch ( NoSuchMethodException _ ) {
 System.err.println( "ouch!! " + clazz + " has no " + oldEventMethodName[i]);
 		return false; // no Component subclass!
-	}
-	
-	return false;
-}
-
-static boolean checkOldEventMenuMethods ( Class clazz ) {
-	Method m;
-
-	try {
-	  m = clazz.getMethod( "postEvent", sig_Event);
-	  if ( m.getDeclaringClass() != MenuComponent.class )
-		return true; // Another zombie
-	}
-	catch ( NoSuchMethodException _ ) {
-System.err.println( "ouch!! " + clazz + " has no postEvent");
-		return false; // no MenuComponent subclass!
 	}
 	
 	return false;

@@ -12,7 +12,6 @@
 
 package java.awt;
 
-import java.lang.String;
 
 public class AWTError
   extends Error

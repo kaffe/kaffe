@@ -65,4 +65,9 @@ public interface ZipConstants {
 
   public final static long LOC_HEADSIG = 0x04034b50;
 
+  public final static long DATA_HEADSIG = 0x08074b50;
+  public final static int DATA_RECSZ = 16;
+
+  public static final int DEFLATED = 8;
+  public static final int STORED = 0;
 }

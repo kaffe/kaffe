@@ -3,6 +3,8 @@ package java.beans;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import kaffe.io.ClassLoaderObjectInputStream;
+import kaffe.lang.SystemClassLoader;
 
 /*
  * Java core library component.
@@ -18,31 +20,37 @@ public class Beans
 	private static boolean designtime = false;
 	private static boolean guiavailable = false;
 
-public Beans()
-	{
+public Beans() {
 }
 
-public static Object getInstanceOf(Object bean, Class targetType)
-	{
+public static Object getInstanceOf(Object bean, Class targetType) {
 	return (bean);
 }
 
-public static Object instantiate(ClassLoader cls, String beanName) throws IOException, ClassNotFoundException
-{
-	InputStream in = cls.getSystemResourceAsStream(beanName.replace('.', '/') + ".ser");
+public static Object instantiate(ClassLoader cld, String beanName) throws IOException, ClassNotFoundException {
+System.out.println("Beans:instantiate: name=" + beanName + ", loader=" + cld);
+	if (cld == null) {
+		cld = SystemClassLoader.getClassLoader();
+	}
+
+	InputStream in = cld.getResourceAsStream(beanName.replace('.', '/') + ".ser");
 
 	Object obj;
 	if (in != null) {
-		obj = (new ObjectInputStream(in)).readObject();
+System.out.println("Reading serialized object");
+		obj = (new ClassLoaderObjectInputStream(in, cld)).readObject();
 	}
 	else {
 		try {
-			obj = cls.loadClass(beanName).newInstance();
+System.out.println("Creating new instance");
+			obj = cld.loadClass(beanName).newInstance();
 		}
 		catch (InstantiationException _) {
+System.out.println("InstantiationException");
 			throw new ClassNotFoundException(beanName);
 		}
 		catch (IllegalAccessException _) {
+System.out.println("IllegalAccessException");
 			throw new ClassNotFoundException(beanName);
 		}
 	}

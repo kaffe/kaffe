@@ -11,56 +11,23 @@ package java.awt;
  * of this file.
  * @author P.C.Mehlitz
  */
-
-import java.lang.String;
-
 public class Color
 {
 	int rgbValue;
 	int nativeValue = 0xffffffff;
-	final public static Color lightGray = new Color( (byte)192, (byte)192, (byte)192);
-	final public static Color gray = new Color( (byte)128, (byte)128, (byte)128);
-	final public static Color darkGray = new Color( (byte)64, (byte)64, (byte)64);
-	final public static Color black = new Color( (byte)0, (byte)0, (byte)0);
-	final public static Color red = new Color( (byte)255, (byte)0, (byte)0);
-	final public static Color pink = new Color( (byte)255, (byte)175, (byte)175);
-	final public static Color orange = new Color( (byte)255, (byte)200, (byte)0);
-	final public static Color yellow = new Color( (byte)255, (byte)255, (byte)0);
-	final public static Color green = new Color( (byte)0, (byte)255, (byte)0);
-	final public static Color magenta = new Color( (byte)255, (byte)0, (byte)255);
-	final public static Color cyan = new Color( (byte)0, (byte)255, (byte)255);
-	final public static Color blue = new Color( (byte)0, (byte)0, (byte)255);
-	final public static Color white = new Color( (byte)255, (byte)255, (byte)255);
-
-static {
-	// Make sure that standard Color fields are native initialized.
-	// This rather obscure mechanism is required to overcome recursive
-	// init problems in Defaults (X->Color->Toolkit->Defaults->Color).
-	// (they already might have been referred by Defaults.java and other places)
-
-  gray.setNativeValue();
-  darkGray.setNativeValue();
-  black.setNativeValue();
-  red.setNativeValue();
-  pink.setNativeValue();
-  orange.setNativeValue();
-  yellow.setNativeValue();
-  green.setNativeValue();
-  magenta.setNativeValue();
-  cyan.setNativeValue();
-  blue.setNativeValue();
-  white.setNativeValue();
-  lightGray.setNativeValue();
-}
-
-private Color ( byte r, byte g, byte b ) {
-	// This ctor is used ONLY for deferred native init. Its only use is to init
-	// the static Color fields, which might be used in Defaults / Toolkit and
-	// other places where recursive class initmight occur. Make sure all
-	// instances get a subsequent native init (e.g. in clinit), because we don't
-	// want to add the overhead to every native color ref
-	rgbValue = 0xff000000 | ((r & 0xff) << 16) | ((g & 0xff) << 8)  | (b & 0xff);
-}
+	final public static Color gray = new Color( 128, 128, 128);
+	final public static Color darkGray = new Color( 64, 64, 64);
+	final public static Color black = new Color( 0, 0, 0);
+	final public static Color red = new Color( 255, 0, 0);
+	final public static Color pink = new Color( 255, 175, 175);
+	final public static Color orange = new Color( 255, 200, 0);
+	final public static Color yellow = new Color( 255, 255, 0);
+	final public static Color green = new Color( 0, 255, 0);
+	final public static Color magenta = new Color( 255, 0, 255);
+	final public static Color cyan = new Color( 0, 255, 255);
+	final public static Color blue = new Color( 0, 0, 255);
+	final public static Color white = new Color( 255, 255, 255);
+	final public static Color lightGray = new Color( 192, 192, 192);
 
 public Color ( float r, float g, float b ) {
 	rgbValue = 0xff000000 |                      // const alpha channel

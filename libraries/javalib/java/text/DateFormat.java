@@ -174,7 +174,7 @@ public void setCalendar(Calendar cal) {
 }
 
 public Calendar getCalendar() {
-	return calendar;
+	return (calendar);
 }
 
 public void setLenient(boolean val) {

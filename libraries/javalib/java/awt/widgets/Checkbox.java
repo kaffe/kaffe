@@ -23,10 +23,11 @@ public class Checkbox
   implements ItemSelectable, MouseListener, FocusListener, KeyListener
 {
 	CheckboxGroup group;
-	boolean state;
+	int state;
 	String label;
 	ItemListener iListener;
-	boolean hilight;
+	static int CHECKED = 1;
+	static int HILIGHTED = 2;
 
 public Checkbox () {
 	this( "", false, null);
@@ -45,7 +46,7 @@ public Checkbox ( String label, boolean state) {
 }
 
 public Checkbox ( String label, boolean state, CheckboxGroup group) {
-	this.label = label;
+	this.label = (label == null) ? "" : label;
 	setCheckboxGroup( group);
 	setState( state);
 	
@@ -63,7 +64,7 @@ public synchronized void addItemListener ( ItemListener il) {
 }
 
 void drawButton( Graphics g, int ext, int x0, int y0 ) {
-	g.setColor( hilight ? Defaults.BtnPointClr : Defaults.BtnClr);
+	g.setColor( ((state & HILIGHTED) > 0) ? Defaults.BtnPointClr : Defaults.BtnClr);
 	g.fill3DRect( x0, y0, ext, ext, true);
 
 	if ( label.endsWith( " " ) )
@@ -86,12 +87,12 @@ void drawCheckMark( Graphics g, int ext, int x0, int y0 ) {
 }
 
 public void focusGained ( FocusEvent e) {
-	hilight = true;
+	state |= HILIGHTED;
 	repaint();
 }
 
 public void focusLost ( FocusEvent e) {
-	hilight = false;
+	state &= ~HILIGHTED;
 	repaint();
 }
 
@@ -109,7 +110,7 @@ public String getLabel () {
 
 public Object[] getSelectedObjects () {
 	Object[] oa;
-	if ( state ) {
+	if ( (state & CHECKED) > 0 ) {
 		oa = new Object[1];
 		oa[0] = this;
 	}
@@ -120,7 +121,7 @@ public Object[] getSelectedObjects () {
 }
 
 public boolean getState () {
-	return state;
+	return ((state & CHECKED) > 0);
 }
 
 public void keyPressed ( KeyEvent e) {
@@ -135,9 +136,9 @@ public void keyTyped ( KeyEvent e) {
 	switch ( c) {
 		case ' ':
 		case 0xA:	//ENTER
-			if ( state && (group != null) )
+			if ( ((state & CHECKED) > 0) && (group != null) )
 				return;
-			setState ( ! state );
+			setState ( (state & CHECKED) == 0 );
 			break;
 	}
 
@@ -147,20 +148,20 @@ public void mouseClicked ( MouseEvent e) {
 }
 
 public void mouseEntered ( MouseEvent e) {
-	hilight = true;
+	state |= HILIGHTED;
 	repaint();
 }
 
 public void mouseExited ( MouseEvent e) {
-	hilight = false;
+	state &= ~HILIGHTED;
 	repaint();
 }
 
 public void mousePressed ( MouseEvent e) {
 	requestFocus();
-	if ( state && (group != null) )
+	if ( ((state & CHECKED) > 0) && (group != null) )
 		return;
-	setState( !state);
+	setState( (state & CHECKED) == 0);
 }
 
 public void mouseReleased ( MouseEvent e) {
@@ -168,8 +169,8 @@ public void mouseReleased ( MouseEvent e) {
 
 void notifyItem () {
 	if ( hasToNotify( this, AWTEvent.ITEM_EVENT_MASK, iListener) ){
-		ItemEvt ie = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, label,
-		                         (state ? ItemEvent.SELECTED : ItemEvent.DESELECTED));
+		int id = ((state & CHECKED) > 0) ? ItemEvent.SELECTED : ItemEvent.DESELECTED;
+		ItemEvt ie = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, label, id);
 		Toolkit.eventQueue.postEvent( ie);
 	}
 }
@@ -189,13 +190,13 @@ public void paint ( Graphics g) {
 	
 	drawButton( g, ext, x0, y0);
 	
-	if ( state)
+	if ( (state & CHECKED) > 0)
 		drawCheckMark( g, ext, x0, y0);
 
 	x0 += ext + dx;
 	y0 += ext/2 + fh/2 - dc;
 	
-	c1 = hilight ? Defaults.FocusClr : getForeground();
+	c1 = ((state & HILIGHTED) > 0) ? Defaults.FocusClr : getForeground();
 	c2 = Color.white;
 	
 	g.setColor( c2);
@@ -245,18 +246,22 @@ public void setCheckboxGroup ( CheckboxGroup group) {
 }
 
 public synchronized void setLabel ( String label) {
-	this.label = label;
+	this.label = (label == null) ? "" : label;
 	if ( isShowing() )
 		repaint();
 }
 
 public void setState ( boolean state) {
-	if ( this.state == state )
+	boolean curState = ((this.state & CHECKED) > 0);
+	if ( curState == state )
 		return;
 	if ( state && (group != null) )
 		group.setSelectedCheckbox( this);
 	else {
-		this.state = state;
+		if ( state)	
+			this.state |= CHECKED;
+		else
+			this.state &= ~CHECKED;
 		if ( isShowing() )
 			repaint();
 		notifyItem();

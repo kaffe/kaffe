@@ -84,16 +84,18 @@ public static Integer getInteger(String nm) {
 public static Integer getInteger(String nm, Integer val) {
 	String arg;
 
-	if (val==null) arg=null; else arg=val.toString();
-
-	String prop=System.getProperty(nm, arg);
-	if (prop==null) return val;
-
+	String prop = System.getProperty(nm);
+	if (prop == null) {
+		if (val == null) {
+			return (null);
+		}
+		prop = val.toString();
+	}
 	try {
-		return decode(prop);
+		return (decode(prop));
 	}
 	catch (NumberFormatException e) {
-		return val;
+		return (val);
 	}
 }
 

@@ -2,7 +2,6 @@ package java.awt;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.lang.String;
 
 public class CardLayout
   implements LayoutManager2
@@ -46,7 +45,7 @@ public void first ( Container parent) {
 		Component c = parent.getComponent(i);
 		if ( fc == null )
 			fc = c;
-		if ( c.isVisible() ) {
+		if ( (c.flags & Component.IS_VISIBLE) != 0 ) {
 			if ( c != fc ) {
 				c.setVisible( false);
 				fc.setVisible( true);
@@ -78,7 +77,9 @@ Dimension getLayoutSize (  Container parent, boolean preferred) {
 		d.width = Math.max( d.width, cd.width );
 		d.height = Math.max( d.height, cd.height );
 	}
-	Insets in = parent.insets;
+	
+	// use getInsets() instead of fields (might be redefined)
+	Insets in = parent.getInsets();
 	d.width += in.left + in.right;
 	d.height += in.top + in.bottom;
 	
@@ -100,7 +101,7 @@ public void last ( Container parent) {
 		Component c = parent.getComponent(i);
 		if ( lc == null )
 			lc = c;
-		if ( c.isVisible() ) {
+		if ( (c.flags & Component.IS_VISIBLE) != 0) {
 			if ( c != lc ) {
 				c.setVisible( false);
 				lc.setVisible( true);
@@ -111,7 +112,7 @@ public void last ( Container parent) {
 }
 
 public void layoutContainer ( Container parent) {
-	Insets in = parent.insets;
+	Insets in = parent.getInsets();  // getInsets() might be redefined (swing)
 	int cc = parent.getComponentCount();
 
 	for ( int i=0; i<cc; i++) {
@@ -136,7 +137,7 @@ public void next ( Container parent) {
 
 	for ( int i=0; i<cc; i++) {
 		Component c = parent.getComponent(i);
-		if ( c.isVisible() )
+		if ( (c.flags & Component.IS_VISIBLE) != 0 )
 			lc = c;
 		else if ( lc != null) {
 			lc.setVisible( false);
@@ -156,7 +157,7 @@ public void previous ( Container parent) {
 
 	for ( int i=cc-1; i>=0; i--) {
 		Component c = parent.getComponent(i);
-		if ( c.isVisible() )
+		if ( (c.flags & Component.IS_VISIBLE) != 0 )
 			lc = c;
 		else if ( lc != null) {
 			lc.setVisible( false);
@@ -191,7 +192,7 @@ public void show ( Container parent, String name) {
 	
 	for ( int i=0; i<cc; i++) {
 		Component c = parent.getComponent(i);
-		if ( c.isVisible() ) {
+		if ( (c.flags & Component.IS_VISIBLE) != 0 ) {
 			if ( c != nc) {
 				c.setVisible( false);
 				nc.setVisible( true);

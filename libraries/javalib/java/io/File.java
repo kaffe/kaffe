@@ -1,3 +1,8 @@
+package java.io;
+
+import java.lang.String;
+import java.util.Vector;
+
 /*
  * Java core library component.
  *
@@ -7,14 +12,8 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.io;
-
-import java.util.Vector;
-import java.lang.String;
-
-public class File {
-
+public class File
+{
 	final public static String separator = System.getProperty("file.separator");
 	final public static char separatorChar = separator.charAt(0);
 	final public static String pathSeparator = System.getProperty("path.separator");
@@ -144,7 +143,7 @@ public int hashCode() {
 	return path.hashCode();
 }
 
-public native boolean isAbsolute();
+native public boolean isAbsolute();
 
 public boolean isDirectory() {
 	checkReadAccess();
@@ -185,16 +184,17 @@ public String[] list() {
 }
 
 public String[] list(FilenameFilter filter) {
-	Vector filtered = new Vector();
 	String all[] = list();
 
-	if (all == null) {
-		return (null);
+	if ((all == null) || (filter == null) ) {
+		return (all);
 	}
 
+	Vector filtered = new Vector();
+	
 	for (int idx = 0; idx < all.length; idx++) {
 		String fn = all[idx];
-		if (filter != null && filter.accept(this, fn)) {
+		if (filter.accept(this, fn)) {
 			filtered.addElement(fn);
 		}
 	}
@@ -245,5 +245,4 @@ native private boolean renameTo0(File that);
 public String toString() {
 	return path;
 }
-
 }

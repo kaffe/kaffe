@@ -14,7 +14,7 @@ AdjustmentEvt ( Adjustable src, int evtId, int adjType, int adjVal ) {
 protected void dispatch () {
 	((Component)source).processEvent( this);
 	
-	recycle();
+	if ( (Defaults.RecycleEvents & AWTEvent.ADJUSTMENT_EVENT_MASK) != 0 ) recycle();
 }
 
 static synchronized AdjustmentEvt getEvent ( Adjustable source, int id, int adjType, int adjVal ){

@@ -12,13 +12,19 @@ WindowEvt ( Window src, int evtId ){
 }
 
 protected void dispatch () {
-	Component src = (Component)source;
+	Window src = (Window)source;
 
-	if ( id == WINDOW_CLOSED )
-		src.removeNotify();
+	if ( id == WINDOW_ICONIFIED ) {
+		src.flags &= ~Component.IS_PARENT_SHOWING;
+		src.propagateParentShowing();
+	}
+	else if ( id == WINDOW_DEICONIFIED ) {
+		src.flags |= Component.IS_PARENT_SHOWING;
+		src.propagateParentShowing();
+	}
 
 	src.processEvent( this);
-	recycle();
+	if ( (Defaults.RecycleEvents & AWTEvent.WINDOW_EVENT_MASK) != 0 )	recycle();
 }
 
 static synchronized WindowEvt getEvent ( Window source, int id ) {
@@ -39,6 +45,12 @@ static synchronized WindowEvt getEvent ( Window source, int id ) {
 
 static synchronized WindowEvt getEvent ( int srcIdx, int id ) {
 	Component source = sources[srcIdx];
+
+	// this protects us from "normal" window destruction triggered by removeNotify()
+	if ( source == null ) return null;
+
+	if ( (id == WINDOW_ICONIFIED) || (id == WINDOW_DEICONIFIED) )
+		PopupWindow.checkPopup( source); // close any open popups
 
 	if ( cache == null ){
 		return new WindowEvt( (Window)source, id);

@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.lang.String;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
@@ -38,8 +37,8 @@ import java.util.EventListener;
 public class AWTEventMulticaster
   implements ComponentListener, ContainerListener, FocusListener, KeyListener, MouseListener, MouseMotionListener, WindowListener, ActionListener, ItemListener, AdjustmentListener, TextListener
 {
-	protected EventListener a;
-	protected EventListener b;
+	final protected EventListener a;
+	final protected EventListener b;
 
 protected AWTEventMulticaster ( EventListener head, EventListener tail ) {
 	a = head;
@@ -107,38 +106,14 @@ public static WindowListener add ( WindowListener listeners,
 
 protected static EventListener addInternal ( EventListener listeners,
                             EventListener newListener ) {
-	EventListener       l;
-	AWTEventMulticaster mc;
 
-	if ( listeners == null )            // first time
+	if ( listeners == null )      // first time
 		return newListener;
-	if ( newListener == listeners )     // don't add same listener twice consecutively
+
+	if ( newListener == null )    // strange, but check it (wrong order of args?)
 		return listeners;
-	if ( newListener == null )            // strange, but check it (wrong order of args?)
-		return listeners;
 
-	// check if newListener is already contained in the list
-	if ( listeners instanceof AWTEventMulticaster ) {
-		mc = (AWTEventMulticaster) listeners;
-		if ( mc.a == newListener )
-			return listeners;
-		l = mc.b;
-
-		while ( true ) {
-			if ( l == newListener )
-				return listeners;
-			if ( l instanceof AWTEventMulticaster ) {
-				mc = (AWTEventMulticaster) l;
-				if ( mc.a == newListener )
-					return listeners;
-				l = mc.b;
-			}
-			else
-				break;
-		}
-	}
-
-	return new AWTEventMulticaster( newListener, listeners);
+	return new AWTEventMulticaster( listeners, newListener);
 }
 
 public void adjustmentValueChanged ( AdjustmentEvent evt ) {
@@ -327,6 +302,22 @@ public static ContainerListener remove ( ContainerListener listeners,
 	return (ContainerListener) removeInternal( listeners, remListener);
 }
 
+protected EventListener remove( EventListener remListener) {
+	if ( remListener == a )
+		return b;
+	if ( remListener == b )
+		return a;
+		
+	EventListener l1, l2;
+	l1 = removeInternal( a, remListener);
+	l2 = removeInternal( b, remListener);
+	
+	if ( (l1 == a) && (l2 == b) )
+		return this;
+		
+	return addInternal( l1, l2);
+}
+
 public static FocusListener remove ( FocusListener listeners,
                        FocusListener remListener) {
 	return (FocusListener) removeInternal( listeners, remListener);
@@ -364,32 +355,12 @@ public static WindowListener remove ( WindowListener listeners,
 
 protected static EventListener removeInternal ( EventListener list,
                                EventListener remListener ) {
-	AWTEventMulticaster mc, mcLast;
 
 	if ( (list == null) || (list == remListener) ) // empty list or only listener
 		return null;
 
-	if ( list instanceof AWTEventMulticaster ) {   // traverse the list
-		mc = (AWTEventMulticaster) list;
-		if ( mc.a == remListener )
-			return mc.b;
-		if ( mc.b == remListener )
-			return mc.a;
-
-		while ( mc.b instanceof AWTEventMulticaster ) {
-			mcLast = mc;
-			mc = (AWTEventMulticaster) mc.b;
-
-			if ( mc.a == remListener ){
-				mcLast.b = mc.b;
-				return list;
-			}
-			if ( mc.b == remListener ) {
-				mcLast.b = mc.a;
-				return list;
-			}
-		}
-	}
+	if ( list instanceof AWTEventMulticaster )
+		return ((AWTEventMulticaster)list).remove( remListener);
 	
 	return list;
 }

@@ -14,6 +14,7 @@ import java.lang.String;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import kaffe.net.DefaultSocketImplFactory;
+import java.net.SocketOptions;
 
 public class ServerSocket {
 
@@ -69,7 +70,17 @@ public void close() throws IOException {
 }
 
 public InetAddress getInetAddress() {
-	return (impl.getInetAddress());
+        try {
+                return ((InetAddress)impl.getOption(SocketOptions.SO_BINDADDR));
+        }
+        catch (SocketException e1) {
+                try {
+                        return (InetAddress.getLocalHost());
+                }
+                catch (UnknownHostException e2) {
+                        return (InetAddress.getLoopback());
+                }
+        }
 }
 
 public int getLocalPort() {

@@ -1,3 +1,10 @@
+package java.util;
+
+import java.lang.String;
+import java.lang.System;
+import java.text.DateFormat;
+import java.text.ParseException;
+
 /*
  * Java core library component.
  *
@@ -7,17 +14,9 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.util;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.lang.String;
-import java.lang.System;
-
-public class Date {
-
-private long time = 0;
+public class Date
+{
+	private long time = 0;
 
 public Date() {
 	this(System.currentTimeMillis());
@@ -113,7 +112,7 @@ public int getDay() {
 public int getHours() {
 	Calendar cal = Calendar.getInstance();
 	cal.setTime(this);
-	return (cal.get(Calendar.HOUR));
+	return (cal.get(Calendar.HOUR_OF_DAY));
 }
 
 /**
@@ -208,7 +207,7 @@ private void setDay(int day) {
 public void setHours(int hours) {
 	Calendar cal = Calendar.getInstance();
 	cal.setTime(this);
-	cal.set(Calendar.HOUR, hours);
+	cal.set(Calendar.HOUR_OF_DAY, hours);
 	time = cal.getTime().getTime();
 }
 
@@ -275,7 +274,7 @@ public String toLocaleString() {
 }
 
 public String toString() {
-	DateFormat form = DateFormat.getDateTimeInstance();
+	DateFormat form = DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.LONG);
 	return (form.format(this));
 }
 }

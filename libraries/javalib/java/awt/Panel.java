@@ -1,3 +1,6 @@
+package java.awt;
+
+
 /**
  *
  * Copyright (c) 1998
@@ -7,10 +10,6 @@
  * of this file.
  *
  */
-
-package java.awt;
-
-
 public class Panel
   extends Container
 {
@@ -21,6 +20,10 @@ public Panel() {
 }
 
 public Panel( LayoutManager layout) {
+	// Panels usually get their own update events, not being updated
+	// sync within their parents
+	flags |= IS_ASYNC_UPDATED;
+
 	setLayout( layout);
 }
 
@@ -34,18 +37,5 @@ public Graphics getGraphics () {
 		g.setTarget( this);
 	
 	return g;
-}
-
-void paintChild ( Graphics g ) {
-	g.setColor( getBackground() );
-	g.fillRect( 0, 0, width, height);
-	g.setColor( getForeground() );
-
-	paint( g);
-	paintChildren( g);
-}
-
-public void update( Graphics g) {
-	paintChild( g);
 }
 }

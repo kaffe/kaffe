@@ -4,6 +4,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
@@ -19,12 +21,32 @@ import java.awt.event.TextListener;
  */
 abstract public class TextComponent
   extends Container
+  implements ActionListener
 {
 	protected transient TextListener textListener;
 	boolean isEditable = true;
 	protected static TextEvent tEvt = new TextEvent( null, TextEvent.TEXT_VALUE_CHANGED);
 
+public void actionPerformed( ActionEvent e) {
+	String cmd = e.getActionCommand();
+	
+	if ( "Copy".equals( cmd) ) {
+		copyToClipboard();
+		//reset selection
+		setCaretPosition( getCaretPosition() );
+	}
+	else if ( "Paste".equals( cmd) )
+		pasteFromClipboard();
+	else if ( "Select All".equals( cmd) )
+		selectAll();
+	else if ( "Cut".equals( cmd) ) {
+		copyToClipboard();
+		replaceSelectionWith( null);
+	}
+}
+
 public void addTextListener( TextListener l) {
+	eventMask |= AWTEvent.TEXT_EVENT_MASK;
 	textListener = AWTEventMulticaster.add( textListener, l);
 }
 
@@ -50,24 +72,6 @@ abstract public int getSelectionEnd();
 abstract public int getSelectionStart();
 
 abstract public String getText();
-
-boolean handleClipboard( KeyEvent e) {
-	int code = e.getKeyCode();
-	int mods = e.getModifiers();
-	
-	if ( mods == e.CTRL_MASK ) {
-		if ( code == 15 ){ //ctrl-o
-			copyToClipboard();
-			return true;
-		}
-		if ( code == 1 ) { //ctrl-a
-			pasteFromClipboard();
-			return true;
-		}
-	}
-
-	return false;			
-}
 
 public boolean isEditable() {
 	return isEditable;

@@ -13,27 +13,30 @@
 package java.awt;
 
 import java.util.Hashtable;
-import java.lang.String;
 
 public class GridBagLayout
   implements LayoutManager2
 {
-
-final protected static int MINSIZE = 1;
-final protected static int PREFERREDSIZE = 2;
-final protected static int ACTUALSIZE = 3;
-final protected static int MAXGRIDSIZE = 512;
-
-protected Hashtable comptable = new Hashtable();
-protected GridBagConstraints defaultConstraints = new GridBagConstraints();
+	final protected static int MINSIZE = 1;
+	final protected static int PREFERREDSIZE = 2;
+	final protected static int ACTUALSIZE = 3;
+	final protected static int MAXGRIDSIZE = 512;
+	protected Hashtable comptable = new Hashtable();
+	protected GridBagConstraints defaultConstraints = new GridBagConstraints();
 //protected GridBagLayoutInfo layoutInfo;
+	public int[] columnWidths;
+	public int[] rowHeights;
+	public double[] columnWeights;
+	public double[] rowWeights;
+	Point offset = new Point();
 
-public int[] columnWidths;
-public int[] rowHeights;
-public double[] columnWeights;
-public double[] rowWeights;
+protected void AdjustForGravity(GridBagConstraints cons, Rectangle display) {
+	throw new kaffe.util.NotImplemented();
+}
 
-Point offset = new Point();
+protected void ArrangeGrid(Container container) {
+	layoutContainer(container);
+}
 
 public GridBagLayout() {
 }
@@ -53,6 +56,10 @@ public void addLayoutComponent( String name, Component c) {
 }
 
 void adjustWeightsRelative( Container parent) {
+	// Don't use the insets field directly, since getInsets() might be resolved (e.g. in
+	// swing popups). Remember BorderLayout isVisible? It's spelled c o n s i s t e n c y
+	Insets pin = parent.getInsets();
+
 	int i;
 	int nxw = 0;
 	int nyw = 0;
@@ -74,8 +81,8 @@ void adjustWeightsRelative( Container parent) {
 		}
 	}		
 	
-	int piw = parent.insets.left + parent.insets.right;
-	int pih = parent.insets.top + parent.insets.bottom;
+	int piw = pin.left + pin.right;
+	int pih = pin.top + pin.bottom;
 	
 	if ( nxw > 0) {
 		int dx = parent.width - sw - piw;
@@ -118,7 +125,6 @@ void adjustWeightsRelative( Container parent) {
 	else {
 		offset.y = (parent.height - sh - pih) / 2;
 	}
-
 }
 
 int columnStart( int idx) {
@@ -341,7 +347,9 @@ public void invalidateLayout( Container parent) {
 }
 
 public void layoutContainer( Container parent) {
-	Insets pin = parent.insets;
+	// Don't use the insets field directly, since getInsets() might be resolved (e.g. in
+	// swing popups). Remember BorderLayout isVisible? It's spelled c o n s i s t e n c y
+	Insets pin = parent.getInsets();
 	int ix = -1, iy = 0;
 	int x  = pin.left, y  = pin.top;
 	int dx = 0, dy = 0;
@@ -567,13 +575,19 @@ public Dimension maximumLayoutSize( Container parent) {
 }
 
 public Dimension minimumLayoutSize( Container parent) {
-	Insets in = parent.insets;
+	// Don't use the insets field directly, since getInsets() might be resolved (e.g. in
+	// swing popups). Remember BorderLayout isVisible? It's spelled c o n s i s t e n c y
+	Insets in = parent.getInsets();
+	
 	getCellDims( parent, MINSIZE);
 	return new Dimension( sumWidths()+in.left+in.right, sumHeights()+in.top+in.bottom );
 }
 
 public Dimension preferredLayoutSize( Container parent) {
-	Insets in = parent.insets;
+	// Don't use the insets field directly, since getInsets() might be resolved (e.g. in
+	// swing popups). Remember BorderLayout isVisible? It's spelled c o n s i s t e n c y
+	Insets in = parent.getInsets();
+	
 	getCellDims( parent, PREFERREDSIZE);
 	return new Dimension( sumWidths()+in.left+in.right, sumHeights()+in.top+in.bottom );
 }
@@ -615,16 +629,4 @@ public String toString() {
 	int h = (rowHeights != null) ? rowHeights.length : 0;
 	return ("GridBagLayout columns: " + w + ",rows: " + h);
 }
-
-protected void AdjustForGravity(GridBagConstraints cons, Rectangle display) {
-	throw new kaffe.util.NotImplemented();
-}
-
-protected void ArrangeGrid(Container container) {
-	layoutContainer(container);
-}
-
-//protected Dimensions GetMinSize(Container con, GridBagLayoutInfo info) {
-//}
-
 }

@@ -2,6 +2,8 @@ package java.awt;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.InputEvent;
@@ -22,7 +24,7 @@ import java.awt.event.MouseMotionListener;
  */
 public class TextField
   extends TextComponent
-  implements MouseMotionListener, KeyListener, FocusListener, MouseListener
+  implements MouseMotionListener, KeyListener, FocusListener, MouseListener, ComponentListener
 {
 	char echoChar;
 	ActionListener aListener;
@@ -35,7 +37,7 @@ public class TextField
 	TextBuffer textBuf = new TextBuffer();
 	TextBuffer hiddenBuf;
 	int first;
-	Graphics rgr;
+	NativeGraphics rgr;
 
 public TextField() {
 	this( "", 1);
@@ -55,6 +57,8 @@ public TextField( String text, int cols) {
 	setForeground( Defaults.TextFieldTxtClr);
 	setText( text);
 	
+	buildMenu();
+	
 	addKeyListener( this);
 	addFocusListener( this);
 	addMouseListener( this);
@@ -73,14 +77,42 @@ public void addActionListener ( ActionListener al) {
 public void addNotify () {
 	super.addNotify();
 	if ( rgr == null ) {
-		rgr = getGraphics();
-		updateClip( rgr);
+		setResGraphics();
+		
+		for ( Component c = parent; c != null; c = c.parent )
+			c.addComponentListener( this);
 	}
 }
 
 void blankSelection() {
 	if ( selStart != selEnd)
 		setTextCursor( selStart, true, false);
+}
+
+protected void buildMenu() {
+	PopupMenu p = new PopupMenu();
+	p.add( new MenuItem("Cut")).setShortcut( new MenuShortcut( KeyEvent.VK_U, false) );
+	p.add( new MenuItem("Copy")).setShortcut( new MenuShortcut( KeyEvent.VK_O, false) );
+	p.add( new MenuItem("Paste")).setShortcut( new MenuShortcut( KeyEvent.VK_A, false) );
+	p.addSeparator();
+	p.add( new MenuItem("Select All")).setShortcut( new MenuShortcut( KeyEvent.VK_S, false) );
+	p.addActionListener( this);
+	
+	add( p);
+}
+
+public void componentHidden ( ComponentEvent evt ) {
+}
+
+public void componentMoved ( ComponentEvent evt ) {
+	setResGraphics();
+}
+
+public void componentResized ( ComponentEvent evt ) {
+	setResGraphics();
+}
+
+public void componentShown ( ComponentEvent evt ) {
 }
 
 public void deleteSelection() {
@@ -129,11 +161,8 @@ public void focusLost( FocusEvent e) {
 		paintInactiveCursor();
 	}
 	else {
-		repaint( 0);
+		repaintFrom( 0);
 	}
-	
-	if ( selStart < selEnd )
-		copyToClipboard();
 }
 
 TextBuffer getBuffer() {
@@ -158,14 +187,6 @@ int getCursorPos( TextBuffer tb, int idx) {
 
 public char getEchoChar() {
 	return echoChar;
-}
-
-public Graphics getGraphics() {
-	Graphics g = super.getGraphics();
-	if ( g != null ) {
-		g.setTarget( this);
-	}
-	return g;
 }
 
 public Dimension getMinimumSize() {
@@ -204,15 +225,10 @@ public void keyPressed( KeyEvent e) {
 	boolean shift = e.isShiftDown();
 	int code = e.getKeyCode();
 
-	if ( handleClipboard( e) ) {
-		e.consume();
-	  return;
-	}
-
-	// do not consume unused keys for HotKeyHandler
+	// do not consume unused keys for ShortcutHandler
 	if ( (mods != 0) && (mods != e.SHIFT_MASK) )
 		return;
-		
+
 	switch( code ){
 		case KeyEvent.VK_ENTER:
 			notifyAction();
@@ -350,16 +366,16 @@ public void mouseMoved( MouseEvent e) {
 }
 
 public void mousePressed( MouseEvent e) {
+	if ( e.isPopupTrigger() ){
+		if ( (triggerPopup( e.getX(), e.getY())) != null )
+			return;
+	}
+
 	TextBuffer tb = getBuffer();
 	int cIdx = tb.getIdxFrom( first, e.getX() - xOffs - BORDER_WIDTH);
 	blankSelection();
 	setTextCursor( cIdx, true, false);
 	requestFocus();
-
-	if ( e.isPopupTrigger() ){
-		if ( (triggerPopup( 0, e.getX(), e.getY())) != null )
-			return;
-	}
 
 	if ( e.getModifiers() == InputEvent.BUTTON2_MASK )
 		pasteFromClipboard();
@@ -383,7 +399,7 @@ public void paint( Graphics g) {
 	g.setColor( bgClr);
 	g.fillRect( d, d, width-2*d, height-2*d);
 
-	repaint( 0);	
+	repaintFrom( 0);
 }
 
 public void paintInactiveCursor() {
@@ -422,12 +438,39 @@ public void removeNotify () {
 	super.removeNotify();
 
 	if ( rgr != null ) {
+		for ( Component c = parent; c != null; c = c.parent )
+			c.removeComponentListener( this);
+
 		rgr.dispose();
 		rgr = null;
 	}
 }
 
-void repaint( TextBuffer tb, int start, int end, boolean invert) {
+void repaintFrom( int start){
+	TextBuffer tb = getBuffer();
+
+	if ( start > 0 )
+		start = start -1;
+
+	if ( (selStart == selEnd) || (start > selEnd) )
+		repaintRange( tb, start, tb.len, false);
+	else {
+		if ( selStart > start) 
+			repaintRange( tb, start, selStart, false);
+		if ( selEnd > start)
+			repaintRange( tb, Math.max( selStart, start), selEnd, true);
+		if ( textBuf.len > selEnd)
+			repaintRange( tb, selEnd, textBuf.len, false);
+	}
+
+	if ( AWTEvent.keyTgt == this)
+		tCursor.paint( rgr);
+	else if ( Defaults.ShowInactiveCursor )
+		paintInactiveCursor();
+
+}
+
+void repaintRange( TextBuffer tb, int start, int end, boolean invert) {
 	int x0, x1;
 	int db = BORDER_WIDTH;
 	
@@ -458,41 +501,19 @@ void repaint( TextBuffer tb, int start, int end, boolean invert) {
 	tb.paintFrom( rgr, db + xOffs, 0, height, first, start, end-start);
 }
 
-void repaint( int start){
-	TextBuffer tb = getBuffer();
-
-	if ( start > 0 )
-		start = start -1;
-		
-	if ( (selStart == selEnd) || (start > selEnd) )
-		repaint( tb, start, tb.len, false);
-	else {
-		if ( selStart > start)
-			repaint( tb, start, selStart, false);
-		if ( selEnd > start)
-			repaint( tb, Math.max( selStart, start), selEnd, true);
-		if ( textBuf.len > selEnd)
-			repaint( tb, selEnd, textBuf.len, false);
-	}
-
-	if ( AWTEvent.keyTgt == this)
-		tCursor.paint( rgr);
-	else if ( Defaults.ShowInactiveCursor )
-		paintInactiveCursor();
-
-}
-
 void repaintTrailing() {
-	repaint( tCursor.index);
+	repaintFrom( tCursor.index);
 }
 
 void replaceSelectionWith ( String s ) {
 	deleteSelection();
-	textBuf.insert( selEnd, s);
-	selStart = selEnd + s.length();
-	selEnd = selStart;
-	setCaretPosition( selStart);
-	repaint();
+	if ( s != null ) {
+		textBuf.insert( selEnd, s);
+		selStart = selEnd + s.length();
+		selEnd = selStart;
+		setCaretPosition( selStart);
+		repaint();
+	}
 }
 
 void resetSelIdxs( int idx) {
@@ -502,24 +523,24 @@ void resetSelIdxs( int idx) {
 
 public void reshape( int x, int y, int w, int h) {
 	super.reshape( x, y, w, h);
-	updateClip( rgr);
+	
+	setResGraphics();
+
+	int fh = fm.getHeight();
+	tCursor.setPos( (height - fh)/2, fh);
 }
 
 public void select( int start, int end) {
 	selStart = start;
 	selEnd = end;
-	if ( isShowing() )
-		repaint();
+	setTextCursor( selStart, false, true);
+	
+//	if ( isShowing() )
+//		repaint();
 }
 
 public void selectAll() {
 	select( 0, textBuf.len);
-}
-
-public void setBounds( int x, int y, int width, int height) {
-	int h = fm.getHeight();
-	tCursor.setPos( (height - h)/2, h);
-	super.setBounds( x, y, width, height);
 }
 
 public void setCaretPosition( int pos) {
@@ -563,8 +584,17 @@ public void setFont( Font f) {
 	TextBuffer tb = (hiddenBuf != null ) ? hiddenBuf : textBuf;
 	tCursor.setPos( (height - h)/2, h);
 	tCursor.setIndex( tCursor.index, getCursorPos( tb, tCursor.index) );
+
+	if ( rgr != null )
+		rgr.setFont( f);
 	
 	super.setFont( f);
+}
+
+void setResGraphics () {
+	rgr = NativeGraphics.getClippedGraphics( rgr, this, 0, 0,
+                                           BORDER_WIDTH, BORDER_WIDTH,
+		                                       width - 2*BORDER_WIDTH, height - 2*BORDER_WIDTH, false);
 }
 
 public void setSelectionEnd( int end) {
@@ -603,7 +633,7 @@ protected void setTextCursor( int xIdx, boolean resetSel, boolean repaintAll) {
 
 	tCursor.setIndex( xIdx, getCursorPos( tb, xIdx) );
 
-	repaint( repIdx);
+	repaintFrom( repIdx);
 }
 
 protected void shiftTextCursor( int d, boolean resetSel) {
@@ -613,12 +643,5 @@ protected void shiftTextCursor( int d, boolean resetSel) {
 		setTextCursor( textBuf.len, resetSel, false);
 	else
 		setTextCursor( tCursor.index + d, resetSel, false);
-}
-
-void updateClip( Graphics g) {
-	if ( g != null ) {
-		g.setClip( BORDER_WIDTH+xOffs, BORDER_WIDTH,
-							 width-2*BORDER_WIDTH-xOffs, height-2*BORDER_WIDTH);
-	}
 }
 }

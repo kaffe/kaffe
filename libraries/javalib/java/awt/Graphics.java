@@ -1,3 +1,7 @@
+package java.awt;
+
+import java.awt.image.ImageObserver;
+
 /**
  * Graphics - abstract draw object
  *
@@ -13,17 +17,8 @@
  *
  * @author P.C.Mehlitz
  */
-
-package java.awt;
-
-import java.lang.String;
-import java.awt.image.ImageObserver;
-
 abstract public class Graphics
 {
-	int xOffset;
-	int yOffset;
-
 protected Graphics () {
 }
 
@@ -128,7 +123,15 @@ abstract public void drawPolygon ( int xPoints[], int yPoints[], int nPoints );
 abstract public void drawPolyline ( int xPoints[], int yPoints[], int nPoints );
 
 public void drawRect ( int x, int y, int width, int height ) {
-	drawRoundRect( x, y, width, height, 0, 0 );
+	// Awefully slow generic version. Be aware of possible xor mode
+	// (don't overdraw corners)
+	int xw = x + width;
+	int yh = y + height;
+	
+	drawLine( x, y, xw, y);
+	drawLine( x, y+1, x, yh);
+	drawLine( xw, y+1, xw, yh);
+	drawLine( x+1, yh, xw-1, yh);
 }
 
 abstract public void drawRoundRect ( int x, int y, int width, int height,
@@ -138,8 +141,8 @@ abstract public void drawString ( String str, int x, int y );
 
 public void fill3DRect ( int x, int y, int width, int height, boolean raised ){
 	// slow, generic version
-	draw3DRect( x, y, width, height, raised);
 	fillRect( x+1, y+1, width-2, height-2);
+	draw3DRect( x, y, width, height, raised);
 }
 
 abstract public void fillArc ( int x, int y, int width, int height,
@@ -170,12 +173,32 @@ abstract public Shape getClip ();
 
 abstract public Rectangle getClipBounds();
 
+int getClipHeight () {
+	// this is only here to be resolved in concrete subclasses
+	return getClipBounds().height;
+}
+
 /**
  * @deprecated, use getClipBounds()
  */
 public Rectangle getClipRect() {
 	// finally, at least one deprecated that refers to the new method
 	return getClipBounds();
+}
+
+int getClipWidth () {
+	// this is only here to be resolved in concrete subclasses
+	return getClipBounds().width;
+}
+
+int getClipX () {
+	// this is only here to be resolved in concrete subclasses
+	return getClipBounds().x;
+}
+
+int getClipY () {
+	// this is only here to be resolved in concrete subclasses
+	return getClipBounds().y;
 }
 
 abstract public Color getColor();
@@ -187,6 +210,35 @@ public FontMetrics getFontMetrics () {
 }
 
 abstract public FontMetrics getFontMetrics ( Font fnt );
+
+void paintChild ( Component c, boolean isUpdate ) {
+	Rectangle clip = getClipBounds();
+
+	if ( (clip.x > (c.x + c.width))  ||
+	     (clip.y > (c.y + c.height)) ||
+	     (c.x > (clip.x + clip.width)) ||
+	     (c.y > (clip.y + clip.height)) )
+		return;
+
+	// a nasty app problem with Canvases and Panels, see NativeGraphics
+	if ( (c.flags & Component.IS_ASYNC_UPDATED) != 0 ){
+		c.repaint();
+		return;
+	}
+
+	Graphics g = create( c.x, c.y, c.width, c.height);
+	if ( g != null ) {
+		if ( isUpdate )
+			c.update( g);
+		else
+			c.paint( g);
+
+		g.dispose();
+	}
+	
+	c.flags &= ~Component.IS_DIRTY; // no need for subsequent repaints anymore
+
+}
 
 void setBackColor ( Color c ) {
 }
@@ -205,6 +257,10 @@ void setTarget ( Component tgt ) {
 }
 
 abstract public void setXORMode ( Color newXorClr );
+
+Graphics subGraphics () {
+	return this;
+}
 
 public String toString() {
 	return (getClass().getName() + " [" + getFont() + "," + getColor() + ']');

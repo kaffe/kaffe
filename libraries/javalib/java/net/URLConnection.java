@@ -16,10 +16,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Hashtable;
 import kaffe.net.DefaultFileNameMap;
+import kaffe.net.StreamMap;
+import kaffe.net.DefaultStreamMap;
 
 abstract public class URLConnection
 {
 	public static FileNameMap fileNameMap = new DefaultFileNameMap();
+	public static StreamMap streamMap = new DefaultStreamMap();
 
 	protected boolean allowUserInteraction = defaultAllowUserInteraction;
 	protected boolean connected = false;
@@ -156,7 +159,10 @@ protected static String guessContentTypeFromName(String fname)
 }
 
 public static String guessContentTypeFromStream(InputStream is) throws IOException {
-	return null;
+	if (streamMap != null) {
+		return (streamMap.getContentTypeFor(is));
+	}
+	return (null);
 }
 
 public void setAllowUserInteraction(boolean allowuserinteraction) {

@@ -15,7 +15,6 @@
 
 package java.awt;
 
-import java.lang.String;
 import java.awt.ImageNativeProducer;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
@@ -33,6 +32,8 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.util.Properties;
 import kaffe.util.Ptr;
+import kaffe.util.log.LogClient;
+import kaffe.util.log.LogStream;
 
 class FlushThread
   extends Thread
@@ -84,8 +85,7 @@ static {
 	System.loadLibrary( "awt");
 
 	String tkName = System.getProperty( "display");
-	String banner = System.getProperty( "banner", "banner.gif");
-	tlkInit( tkName, banner);
+	tlkInit( tkName );
 
 	screenSize = new Dimension( tlkGetScreenWidth(), tlkGetScreenHeight());
 	resolution = tlkGetResolution();
@@ -99,13 +99,14 @@ static {
 	// deviation from the normal Singleton (which initializes the singleton
 	// instance upon request)
 	singleton = new Toolkit();
+	
+	eventQueue = new EventQueue();
 
 	// we should refer to Defaults as late as possible (since it may
 	// directly or indirectly refer to Toolkit.singleton)
-	if ( Defaults.RedirectStreams )
+	if ( Defaults.ConsoleClass != null ) {
 		redirectStreams();
-	
-	eventQueue = new EventQueue();
+	}
 }
 
 Toolkit () {
@@ -124,7 +125,7 @@ native static synchronized Ptr cbdInitClipboard ();
 native static synchronized boolean cbdSetOwner ( Ptr cbdData );
 
 public int checkImage(Image image, int width, int height, ImageObserver observer) {
-	return (image.checkImage(width, height, observer));
+	return (image.checkImage( width, height, observer, false));
 }
 
 native static synchronized long clrBright ( int rgbValue );
@@ -177,7 +178,7 @@ native static synchronized int evtRegisterSource ( Ptr wndData );
 
 native static synchronized int evtUnregisterSource ( Ptr wndData );
 
-native static void evtWakeup ();
+native static synchronized void evtWakeup ();
 
 native static synchronized int fntBytesWidth ( Ptr fmData, byte[] data, int off, int len );
 
@@ -343,6 +344,8 @@ native static synchronized void graSetVisible ( Ptr grData, boolean isVisible );
 
 native static synchronized void graSetXORMode ( Ptr grData, int xClr );
 
+native static synchronized void imgComplete ( Ptr imgData, int status );
+
 native static synchronized Ptr imgCreateFromData( byte[] buf, int offset, int len);
 
 native static synchronized Ptr imgCreateFromFile( String gifPath);
@@ -355,31 +358,42 @@ native static synchronized Ptr imgCreateScreenImage( int w, int h);
 
 native static synchronized void imgFreeImage ( Ptr imgData );
 
-native static int imgGetHeight( Ptr imgData);
+native static synchronized int imgGetHeight( Ptr imgData);
 
-native static int imgGetWidth( Ptr imgData);
+native static synchronized int imgGetLatency ( Ptr imgData );
 
-native static void imgProduceImage( ImageNativeProducer prod, Ptr imgData);
+native static synchronized Ptr imgGetNextFrame ( Ptr imgData );
 
-native static void imgSetIdxPels( Ptr imgData, int x, int y, int w, int h, int[] rgbs, byte[] pels, int trans, int off, int scans);
+native static synchronized int imgGetWidth( Ptr imgData);
 
-native static void imgSetRGBPels( Ptr imgData, int x, int y, int w, int h, int[] rgbs, int off, int scans);
+native static synchronized boolean imgIsMultiFrame( Ptr imgData);
+
+native static synchronized void imgProduceImage( ImageNativeProducer prod, Ptr imgData);
+
+native static synchronized void imgSetIdxPels( Ptr imgData, int x, int y, int w, int h, int[] rgbs, byte[] pels, int trans, int off, int scans);
+
+native static synchronized void imgSetRGBPels( Ptr imgData, int x, int y, int w, int h, int[] rgbs, int off, int scans);
 
 protected void loadSystemColors ( int[] sysColors ) {
 	clrSetSystemColors( sysColors);
 }
 
 public boolean prepareImage ( Image image, int width, int height, ImageObserver observer ) {
-	return (image.loadImageAsync(width, height, observer));
+	return (image.loadImage( width, height, observer));
 }
 
 static void redirectStreams () {
 	try {
-		System.setOut( new PrintStream( new FileOutputStream( "sysout")));
+		LogClient lv = (LogClient) Class.forName( Defaults.ConsoleClass).newInstance();
+		LogStream ls = new LogStream( 1, lv);
+		lv.enable();
+	
+		System.setOut( new PrintStream( ls) );
 		System.setErr( System.out);
 	}
-	catch ( IOException x ) {
+	catch ( Exception x ) {
 		System.err.println( "unable to redirect out, err");
+		x.printStackTrace();
 	}
 }
 
@@ -421,6 +435,8 @@ static void terminate () {
 
 native static synchronized void tlkBeep ();
 
+native static synchronized void tlkDisplayBanner ( String banner );
+
 native static synchronized void tlkFlush ();
 
 native static synchronized int tlkGetResolution ();
@@ -429,7 +445,7 @@ native static synchronized int tlkGetScreenHeight ();
 
 native static synchronized int tlkGetScreenWidth ();
 
-native static synchronized void tlkInit ( String displayName, String bannerFile );
+native static synchronized void tlkInit ( String displayName );
 
 native static synchronized boolean tlkIsBlocking();
 
@@ -458,7 +474,7 @@ native static synchronized void wndRepaint ( Ptr wndData, int x, int y, int widt
 
 native static synchronized void wndRequestFocus ( Ptr wndData );
 
-native static synchronized void wndSetBounds ( Ptr wndData, int x, int y, int width, int height );
+native static synchronized void wndSetBounds ( Ptr wndData, int x, int y, int width, int height, boolean isResizable );
 
 native static synchronized void wndSetCursor ( Ptr wndData, int cursorType );
 

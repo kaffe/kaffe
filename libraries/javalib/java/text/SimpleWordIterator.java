@@ -1,3 +1,7 @@
+package java.text;
+
+import java.lang.String;
+
 /*
  * Java core library component.
  *
@@ -7,35 +11,41 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.text;
-
-import java.lang.String;
-
 class SimpleWordIterator
   extends BreakIterator
 {
 	CharacterIterator iterator = new StringCharacterIterator("");
 
 public int current() {
-	return iterator.getIndex();
-}
-
-public int first() {
-	iterator.first();
 	return (iterator.getIndex());		
 }
 
+public int first() {
+	int fi = iterator.getBeginIndex();
+	iterator.setIndex( fi);
+	return (fi);
+}
+
 public int following( int offs) {
-	int pos = iterator.getIndex();
-	int ret;
+	char c;
+	int bi = iterator.getBeginIndex();
+	int ei = iterator.getEndIndex();
 	
+	if ( (offs < bi) || (offs > ei) )
+		return (DONE);
+		
+	//get word end index from offset
 	iterator.setIndex( offs);
-	ret = next();
-	if ( ret == DONE ) {
-		iterator.setIndex( pos);
+	for ( c = iterator.current(); Character.isSpaceChar( c); c = iterator.next() ) {
+		if ( c == CharacterIterator.DONE )
+			return (ei);
 	}
-	return (ret);
+	for (; !Character.isSpaceChar( c); c = iterator.next() ) {
+		if ( c == CharacterIterator.DONE )
+			return (ei);
+	}
+	
+	return (iterator.getIndex());
 }
 
 public CharacterIterator getText() {
@@ -43,88 +53,69 @@ public CharacterIterator getText() {
 }
 
 public int last() {
-	iterator.last();
-	return (previous());
+	int li = iterator.getEndIndex();
+	iterator.setIndex( li);
+	return (li);
 }
 
 public int next() {
+	int pos = iterator.getIndex();
+	int ei  = iterator.getEndIndex();
+	
+	//already at end
+	if ( pos == ei )
+		return (DONE);
+		
 	char c = iterator.current();
-	if (c == CharacterIterator.DONE) {
-		return (BreakIterator.DONE);
-	}
-
-	boolean test;
-	if (Character.isSpaceChar(c)) {
-		test = false;
-	}
-	else {
-		test = true;
-	}
-
-	for (;;) {
-		c = iterator.next();
-		if (c == CharacterIterator.DONE) {
-			iterator.previous();
-			return (iterator.getIndex() + 1);
-		}
-		if (Character.isSpaceChar(c) == test) {
-			return (iterator.getIndex());
+	
+	if ( ! Character.isSpaceChar( c ) ) {
+		for ( ; !Character.isSpaceChar( c) ; c = iterator.next() ){
+			if ( c == CharacterIterator.DONE )
+				return (ei);
 		}
 	}
+	
+	for ( ; Character.isSpaceChar( c) ; c = iterator.next() ){
+			if ( c == CharacterIterator.DONE )
+				return (ei);
+	}
+	
+	return ( iterator.getIndex() );
 }
 
 public int next( int num) {
-	int idx;
-	int ret;
-	int max;
-
-	ret = current();
-	if ( num == 0 ) {
+	boolean fwd = num > 0;
+	int absn = Math.abs( num);
+	int ret = current();
+	
+	for ( int i=0; i<absn; i++) {
+		if ( ( ret = (fwd ? next() : previous()) ) == DONE )
+			return (DONE);
 	}
-	else if (num > 0) {
-		for ( idx = 0; idx < num; idx++ ) {
-			ret = next();
-			if ( ret == DONE ) {
-				break;
-			}
-		}
-	}
-	else {
-		for ( idx = num; idx < 0; idx++ ) {
-			ret = previous();
-			if ( ret == DONE ) {
-				break;
-			}
-		}
-	}
-	return (ret);
+	
+	return ret;
 }
 
 public int previous() {
 	char c;
 	int pos = iterator.getIndex();
+	int bi  = iterator.getBeginIndex();
 	
-	for ( c = iterator.previous(); ! Character.isSpaceChar( c) ; c = iterator.previous() ){
-		if ( c == DONE ) {
-			iterator.setIndex( pos);
-			return (DONE);
-		}
-	}
+	//already at start
+	if ( pos == bi )
+		return (DONE);
+		
 	for ( c = iterator.previous(); Character.isSpaceChar( c) ; c = iterator.previous() ){
-		if ( c == DONE ) {
-			iterator.setIndex( pos);
-			return (DONE);
-		}
+		if ( c == CharacterIterator.DONE )
+			return (bi);
 	}
-	for ( c = iterator.previous(); ! Character.isSpaceChar( c) ; c = iterator.previous() ){
-		if ( c == DONE ) {
-			iterator.setIndex( pos);
-			return (DONE);
-		}
+	for ( ; !Character.isSpaceChar( c) ; c = iterator.previous() ){
+		if ( c == CharacterIterator.DONE )
+			return (bi);
 	}
-				
+	
 	iterator.next();
-	return iterator.getIndex();
+	return (iterator.getIndex());
 }
 
 public void setText( CharacterIterator ci) {

@@ -1,6 +1,5 @@
 package java.awt.datatransfer;
 
-import java.lang.String;
 
 /**
  * Clipboard - 

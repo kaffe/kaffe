@@ -16,6 +16,9 @@ public class Canvas
   extends Component
 {
 public Canvas() {
+	// Canvases usually get their own update events, not being updated
+	// sync within their parents
+	flags |= IS_ASYNC_UPDATED;
 }
 
 ClassProperties getClassProperties () {
@@ -31,7 +34,8 @@ public Graphics getGraphics () {
 }
 
 public void paint( Graphics g) {
-	g.setColor( getBackground());
-	g.fillRect( 0, 0, width, height);
+	// Canvas is a nativeLike Component, i.e. its background would
+	// normally be blanked by the native window system
+	g.clearRect( 0, 0, width, height);
 }
 }

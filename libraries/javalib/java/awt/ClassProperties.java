@@ -14,9 +14,8 @@ package java.awt;
 
 class ClassProperties
 {
-        boolean useOldEvents;
-        boolean hasProcessEvent;
-        boolean isNativeLike;
+	boolean useOldEvents;
+	boolean hasProcessEvent;
+	boolean isNativeLike;
 
 }
-

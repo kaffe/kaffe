@@ -6,9 +6,7 @@
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
- */
-
-/**
+ *
  * @author Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
  */
 package java.util;

@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.lang.String;
 
 /**
  * class PopupMenu -
@@ -31,9 +30,6 @@ public PopupMenu( String label) {
 	super( label);
 }
 
-public synchronized void addNotify() {
-}
-
 void dispose() {
 	if ( (wnd != null) && (wnd.isShowing() )) {
 		wnd.disposeAll();
@@ -58,6 +54,5 @@ public void show( Component c, int x, int y) {
 	wnd.popupAt( x, y);
 	
 	wnd.requestFocus();
-	wnd.disposeOnLost = true;
 }
 }

@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.lang.String;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -79,6 +78,7 @@ public boolean accept ( File dir, String name) {
 
 public void actionPerformed( ActionEvent e) {
 	Object s = e.getSource();
+
 	if ( s == tFilt ) {
 		filtExt = tFilt.getText();
 		loadFiles( dir);
@@ -104,6 +104,17 @@ public void actionPerformed( ActionEvent e) {
 		tFile.setText("");
 		dispose();
 	}
+}
+
+public void addNotify() {
+	if ( (width == 0) || (height == 0) )
+		setBounds( (Defaults.ScreenWidth - 400) / 2,
+			 (Defaults.ScreenHeight - 300) / 2,
+			  400, 300 );
+	if (dir == null)
+		setUserDir();
+
+	super.addNotify();
 }
 
 static String getAbsolutePath( String path) {
@@ -263,7 +274,8 @@ void loadFiles( File dir) {
 	String[] all = dir.list( filter);
 	lFiles.removeAll();
 
-	lFiles.isVisible = false;
+	// fake visibility while filling in the new contents
+	lFiles.flags &= ~IS_VISIBLE;
 
 	for ( int i=0; i<all.length; i++) {
 		File f = new File ( dir + File.separator + all[i] );
@@ -271,6 +283,7 @@ void loadFiles( File dir) {
 			lFiles.addItem( all[i], sortIdx( lFiles.ip.rows, all[i] ) );
 	}
 	
+	// now dislay it again
 	lFiles.setVisible( true);
 }
 
@@ -287,8 +300,9 @@ void loadSubs( File dir) {
 	lFiles.removeAll();
 	lDirs.removeAll();
 	
-	lFiles.isVisible = false;
-	lDirs.isVisible = false;
+	// fake visibility to disable redraw while filling in new contents
+	lFiles.flags &= ~IS_VISIBLE;
+	lDirs.flags &= ~IS_VISIBLE;
 	
 	this.dir = dir;
 	tFile.setText( dir.getPath() );
@@ -306,6 +320,7 @@ void loadSubs( File dir) {
 			lFiles.addItem( all[i], sortIdx( lFiles.ip.rows, all[i]) );
 	}
 		
+	// display it again
 	lFiles.setVisible( true);
 	lDirs.setVisible( true);
 }
@@ -360,7 +375,7 @@ public void setDirectory( String dir) {
 
 public void setFile( String file) {
 	File f;
-	
+
 	if ( file == null ) {
 		if ( dir == null )
 			setUserDir();
@@ -404,17 +419,6 @@ public void setMode( int mode) throws IllegalArgumentException {
 
 void setUserDir() {
 	setDirectory( System.getProperty( "user.dir") );
-}
-
-public void addNotify() {
-	if ( (width == 0) || (height == 0) )
-		setBounds( (Defaults.ScreenWidth - 400) / 2,
-			 (Defaults.ScreenHeight - 300) / 2,
-			  400, 300 );
-	if (dir == null)
-		setUserDir();
-
-	super.addNotify();
 }
 
 static int sortIdx( Vector v, String pathName) {

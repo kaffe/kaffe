@@ -1,3 +1,9 @@
+package java.util;
+
+import java.io.Serializable;
+import java.lang.String;
+import java.lang.System;
+
 /*
  * Java core library component.
  *
@@ -7,19 +13,11 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.util;
-
-import java.lang.String;
-import java.lang.System;
-import java.io.Serializable;
-
 abstract public class TimeZone
   implements Serializable, Cloneable
 {
 	private static TimeZone defaultTimeZone;
 	private static Hashtable zones = new Hashtable();
-
 	private String timezoneID = null;
 
 public TimeZone()
@@ -132,6 +130,11 @@ public void setID(String ID)
 }
 
 abstract public void setRawOffset(int offsetMillis);
+
+public String toString()
+{
+	return (timezoneID);
+}
 
 abstract public boolean useDaylightTime();
 }

@@ -10,12 +10,12 @@ package java.lang;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-final public class Boolean
-{
-	public static final Boolean TRUE = new Boolean(true);
-	public static final Boolean FALSE = new Boolean(false);
-	public static final Class TYPE = Class.getPrimitiveClass("boolean");
-	private final boolean value;
+final public class Boolean {
+
+public static final Boolean TRUE = new Boolean(true);
+public static final Boolean FALSE = new Boolean(false);
+public static final Class TYPE = Class.getPrimitiveClass("boolean");
+private final boolean value;
 
 public Boolean(String s) {
 	value = (s != null && s.toLowerCase().equals("true"));
@@ -25,8 +25,7 @@ public Boolean(boolean value) {
 	this.value=value;
 }
 
-public boolean booleanValue()
-	{
+public boolean booleanValue() {
 	return (value);
 }
 
@@ -39,8 +38,7 @@ public boolean equals(Object obj) {
 	}
 }
 
-public static boolean getBoolean(String name)
-	{
+public static boolean getBoolean(String name) {
 	String value = System.getProperty(name);
 	if (value == null) {
 		return (false);
@@ -50,18 +48,15 @@ public static boolean getBoolean(String name)
 	}
 }
 
-public int hashCode()
-	{
+public int hashCode() {
 	return (value ? 1231 : 1237);
 }
 
-public String toString()
-	{
-	return (value ? new String("true") : new String("false"));
+public String toString() {
+	return (value ? "true" : "false");
 }
 
-public static Boolean valueOf(String s)
-	{
+public static Boolean valueOf(String s) {
 	return new Boolean(s);
 }
 }

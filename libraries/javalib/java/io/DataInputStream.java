@@ -25,7 +25,7 @@ final public int read(byte b[]) throws IOException {
 }
 
 final public int read(byte b[], int off, int len) throws IOException {
-	return in.read(b, off, len);
+	return super.read(b, off, len);
 }
 
 final public boolean readBoolean() throws IOException {
@@ -33,7 +33,7 @@ final public boolean readBoolean() throws IOException {
 }
 
 final public byte readByte() throws IOException {
-	int value = in.read();
+	int value = read();
 	if (value == -1) {
 		throw new EOFException();
 	}
@@ -41,8 +41,8 @@ final public byte readByte() throws IOException {
 }
 
 final public char readChar() throws IOException {
-	int val = in.read() << 8;
-	val |= in.read();
+	int val = read() << 8;
+	val |= read();
 	if (val == -1) {
 		throw new EOFException();
 	}
@@ -64,7 +64,7 @@ final public void readFully(byte b[]) throws IOException {
 final public void readFully(byte b[], int off, int len) throws IOException {
 	int total = 0;
 	while (total < len) {
-		int got = read(b, off + total, len + total);
+		int got = read(b, off + total, len - total);
 		if (got == -1) {
 			throw new EOFException();
 		}
@@ -73,10 +73,10 @@ final public void readFully(byte b[], int off, int len) throws IOException {
 }
 
 final public int readInt() throws IOException {
-	int v1 = in.read() << 24;
-	v1 |= in.read() << 16;
-	v1 |= in.read() << 8;
-	int v2 = in.read();
+	int v1 = read() << 24;
+	v1 |= read() << 16;
+	v1 |= read() << 8;
+	int v2 = read();
 	if (v2 == -1) {
 		throw new EOFException();
 	}
@@ -131,14 +131,14 @@ final public String readLine() throws IOException {
 }
 
 final public long readLong() throws IOException {
-	long v1 = (long)in.read() << 56;
-	v1 |= (long)in.read() << 48;
-	v1 |= (long)in.read() << 40;
-	v1 |= (long)in.read() << 32;
-	v1 |= (long)in.read() << 24;
-	v1 |= (long)in.read() << 16;
-	v1 |= (long)in.read() << 8;
-	int v2 = in.read();
+	long v1 = (long)read() << 56;
+	v1 |= (long)read() << 48;
+	v1 |= (long)read() << 40;
+	v1 |= (long)read() << 32;
+	v1 |= (long)read() << 24;
+	v1 |= (long)read() << 16;
+	v1 |= (long)read() << 8;
+	int v2 = read();
 	if (v2 == -1) {
 		throw new EOFException();
 	}
@@ -146,8 +146,8 @@ final public long readLong() throws IOException {
 }
 
 final public short readShort() throws IOException {
-	int val = in.read() << 8;
-	val |= in.read();
+	int val = read() << 8;
+	val |= read();
 	if (val == -1) {
 		throw new EOFException();
 	}
@@ -159,18 +159,18 @@ final public String readUTF() throws IOException {
 }
 
 final public static synchronized String readUTF(DataInput in) throws IOException {
-	int length=in.readUnsignedShort();
-	StringBuffer buffer=new StringBuffer();
+	int length = in.readUnsignedShort();
+	StringBuffer buffer = new StringBuffer();
 
 	int pos=0;
 	while (pos<length) {
-		int data=in.readUnsignedByte();
+		int data = in.readUnsignedByte();
 
 		if ((data & 0x80)==0x80) {
 			/* Hi-bit set, multi byte char */
 			if ((data & 0xE0)==0xC0) {
 				/* Valid 2 byte string '110' */
-				byte data2=in.readByte();
+				byte data2 = in.readByte();
 
 				if ((data2 & 0xC0) == 0x80) {
 					/* Valid 2nd byte */
@@ -181,11 +181,11 @@ final public static synchronized String readUTF(DataInput in) throws IOException
 				else throw new UTFDataFormatException();
 			} else if ((data & 0xF0)==0xE0) {
 				/* Valid 3 byte string '1110' */
-				byte data2=in.readByte();
+				byte data2 = in.readByte();
 
 				if ((data2 & 0xC0) == 0x80) {
 					/* Valid 2nd byte */
-					byte data3=in.readByte();
+					byte data3 = in.readByte();
 
 					if ((data3 & 0xC0) == 0x80) {
 						/* Valid 3rd byte */
@@ -211,7 +211,7 @@ final public static synchronized String readUTF(DataInput in) throws IOException
 }
 
 final public int readUnsignedByte() throws IOException {
-	int value=in.read();
+	int value=read();
 
 	if (value == -1) {
 		throw new EOFException();
@@ -220,8 +220,8 @@ final public int readUnsignedByte() throws IOException {
 }
 
 final public int readUnsignedShort() throws IOException {
-	int val = in.read() << 8;
-	val |= in.read();
+	int val = read() << 8;
+	val |= read();
 	if (val == -1) {
 		throw new EOFException();
 	}

@@ -1,3 +1,8 @@
+package java.util;
+
+import java.io.Serializable;
+import java.text.DateFormat;
+
 /*
  * Java core library component.
  *
@@ -7,12 +12,6 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.util;
-
-import java.io.Serializable;
-import java.text.DateFormat;
-
 abstract public class Calendar
   extends Object
   implements Serializable, Cloneable
@@ -58,9 +57,7 @@ abstract public class Calendar
 	final public static int UNDECIMBER = 12;
 	final public static int AM = 0;
 	final public static int PM = 1;
-
-	static private Vector calendars = new Vector();
-
+	private static Vector calendars = new Vector();
 	private TimeZone zone;
 	private Locale locale;
 	private boolean lenient;
@@ -188,12 +185,12 @@ public static synchronized Calendar getInstance(TimeZone zone, Locale aLocale)
 		while (e.hasMoreElements()) {
 			Calendar c = (Calendar)e.nextElement();
 			if (c.zone == zone && c.locale == aLocale) {
-				c = new GregorianCalendar(c.zone, c.locale);
+//				c = new GregorianCalendar(c.zone, c.locale);
 				return (c);
 			}
 		}
 	}
-	return (null);
+	return (new GregorianCalendar( zone, aLocale));
 }
 
 abstract public int getLeastMaximum(int field);
@@ -265,12 +262,12 @@ final public void set(int year, int month, int date, int hour, int minute)
 	fields[YEAR] = year;
 	fields[MONTH] = month;
 	fields[DATE] = date;
-	fields[HOUR] = hour;
+	fields[HOUR_OF_DAY] = hour;
 	fields[MINUTE] = minute;
 	isSet[YEAR] = true;
 	isSet[MONTH] = true;
 	isSet[DATE] = true;
-	isSet[HOUR] = true;
+	isSet[HOUR_OF_DAY] = true;
 	isSet[MINUTE] = true;
 	isTimeSet = false;
 }
@@ -280,13 +277,13 @@ final public void set(int year, int month, int date, int hour, int minute, int s
 	fields[YEAR] = year;
 	fields[MONTH] = month;
 	fields[DATE] = date;
-	fields[HOUR] = hour;
+	fields[HOUR_OF_DAY] = hour;
 	fields[MINUTE] = minute;
 	fields[SECOND] = second;
 	isSet[YEAR] = true;
 	isSet[MONTH] = true;
 	isSet[DATE] = true;
-	isSet[HOUR] = true;
+	isSet[HOUR_OF_DAY] = true;
 	isSet[MINUTE] = true;
 	isSet[SECOND] = true;
 	isTimeSet = false;

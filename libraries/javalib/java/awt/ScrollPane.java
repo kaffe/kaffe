@@ -1,3 +1,10 @@
+package java.awt;
+
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+
 /**
  * ScrollPane - widget for scrolling a child component
  *
@@ -9,21 +16,13 @@
  *
  * @author P.C.Mehlitz
  */
-
-package java.awt;
-
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-
 public class ScrollPane
   extends Container
-  implements AdjustmentListener, FocusListener
+  implements AdjustmentListener
 {
-	public final static int SCROLLBARS_AS_NEEDED = 0;
-	public final static int SCROLLBARS_ALWAYS = 1;
-	public final static int SCROLLBARS_NEVER = 2;
+	final public static int SCROLLBARS_AS_NEEDED = 0;
+	final public static int SCROLLBARS_ALWAYS = 1;
+	final public static int SCROLLBARS_NEVER = 2;
 	int policy;
 	SPAdjustable hScroll;
 	SPAdjustable vScroll;
@@ -65,6 +64,10 @@ ChildWrapper () {
 
 public void doLayout () {
 }
+
+public void paint( Graphics g) {
+	g.paintChild( child, false);
+}
 }
 
 public ScrollPane () {
@@ -91,15 +94,9 @@ public ScrollPane ( int policy ) {
 	hScroll.addAdjustmentListener( this);
 	vScroll.addAdjustmentListener( this);
 	
-	insets = new Insets( bw, bw, bw, bw);
-	
-	if ( policy == SCROLLBARS_ALWAYS ) {
-		insets.right  += Scrollbar.SCROLLBAR_WIDTH;
-		insets.bottom += Scrollbar.SCROLLBAR_WIDTH;
-	}
-	else {
-		hScroll.isVisible = false;
-		vScroll.isVisible = false;
+	if ( policy != SCROLLBARS_ALWAYS ) {
+		hScroll.flags &= ~IS_VISIBLE;
+		vScroll.flags &= ~IS_VISIBLE;
 	}
 }
 
@@ -113,7 +110,6 @@ final protected void addImpl ( Component child, Object constraint, int idx ){
 		wrapper.add( child);
 		super.addImpl( wrapper, constraint, idx);
 		
-		child.addFocusListener( this);
 	}
 	else {
 		super.addImpl( child, constraint, idx);
@@ -126,13 +122,10 @@ public void adjustmentValueChanged ( AdjustmentEvent e) {
 
 	Object   src = e.getSource();
 	int      val = e.getValue();
-	int      w = width - (insets.left + insets.right);
-	int      h = height - (insets.top + insets.bottom);
+	int      w = wrapper.width;
+	int      h = wrapper.height;
 	int      delta;
-	NativeGraphics g = NativeGraphics.getClippedGraphics( null, this,
-	                                                      0, 0,
-	                                                      insets.left, insets.top,
-														                            w, h, false);
+	
 	if ( src == vScroll){
 		delta = val - pos.y;
 		pos.y = val;
@@ -142,34 +135,39 @@ public void adjustmentValueChanged ( AdjustmentEvent e) {
 		pos.x = val;
 	}
 
-	child.isVisible = false;
-	child.setLocation( insets.left -pos.x, insets.top -pos.y);
-	child.isVisible = true;
+	// fake visibility while repositioning child
+	child.flags &= ~IS_VISIBLE;
+	child.setLocation( -pos.x, -pos.y);
+	child.flags |= IS_VISIBLE;
+
+	Graphics g = wrapper.getGraphics();
 
 	if ( g != null ) {
 		if ( src == vScroll ) {
 			if ( delta > 0 ) {  // scroll downwards
-				g.copyArea( insets.left, insets.top + delta, w, h - delta, 0, -delta);
-				g.setClip( insets.left, insets.top + h-delta, w, delta);
+				g.copyArea( 0, delta, w, h - delta, 0, -delta);
+				g.setClip( 0, h-delta, w, delta);
 			}
 			else {              // scroll upwards
-				g.copyArea( insets.left, insets.top, w, h+delta, 0, -delta);
-				g.setClip( insets.left, insets.top, w, -delta);
+				g.copyArea( 0, 0, w, h+delta, 0, -delta);
+				g.setClip( 0, 0, w, -delta);
 			}
 		}
 		else {
 			if ( delta > 0 ) {  // scroll right
-				g.copyArea( insets.left +delta, insets.top, w-delta, h, -delta, 0);
-				g.setClip( insets.left + w-delta, insets.top, delta, h);
+				g.copyArea( delta, 0, w-delta, h, -delta, 0);
+				g.setClip( w-delta, 0, delta, h);
 			}
 			else {              // scroll left
-				g.copyArea( insets.left, insets.top, w+delta, h, -delta, 0);
-				g.setClip( insets.left, insets.top, -delta, h);
+				g.copyArea( 0, 0, w+delta, h, -delta, 0);
+				g.setClip( 0, 0, -delta, h);
 			}
 		}
 
-		g.translate( child.x, child.y);
-		child.paint( g);			
+		wrapper.update( g);
+//		g.translate( child.x, child.y);
+//		child.paint( g);
+
 		g.dispose();
 	}
 }
@@ -179,49 +177,31 @@ void checkScrollbarVisibility ( Dimension cd ) {
 	int      w = width - 2*bw;
 	int      h = height -2*bw;
 
-	if ( hScroll.isVisible ) {
+	if ( (hScroll.flags & IS_VISIBLE) != 0 ) {
 		if ( cd.width <= w ) {
 			hScroll.setVisible( false);
-			insets.bottom -= Scrollbar.SCROLLBAR_WIDTH;
 		}
 	}
 	else {
 		if ( cd.width > w ){
 			hScroll.setVisible( true);
-			insets.bottom += Scrollbar.SCROLLBAR_WIDTH;
 		}
 	}
 	
-	if ( vScroll.isVisible ) {
+	if ( (vScroll.flags & IS_VISIBLE) != 0 ) {
 		if ( cd.height <= h ) {
 			vScroll.setVisible( false);
-			insets.right -= Scrollbar.SCROLLBAR_WIDTH;
 		}
 	}
 	else {
 		if ( cd.height > h ){
 			vScroll.setVisible( true);
-			insets.right += Scrollbar.SCROLLBAR_WIDTH;
 		}
 	}
 }
 
 public void doLayout () {
 	layout();
-}
-
-public void focusGained ( FocusEvent e ) {
-	if ( hScroll.isVisible )
-		hScroll.setBackground( Defaults.FocusClr);
-	if ( vScroll.isVisible )
-		vScroll.setBackground( Defaults.FocusClr);
-}
-
-public void focusLost ( FocusEvent e ) {
-	if ( hScroll.isVisible )
-		hScroll.setBackground( Defaults.BtnClr);
-	if ( vScroll.isVisible )
-		vScroll.setBackground( Defaults.BtnClr);
 }
 
 public Adjustable getHAdjustable () {
@@ -253,6 +233,10 @@ public Dimension getViewportSize () {
 	                      height - (insets.top + insets.bottom));
 }
 
+public boolean isFocusTraversable () {
+	return false;
+}
+
 /**
  * @deprecated
  */
@@ -260,68 +244,48 @@ public void layout() {
 	if ( child == null ) {
 		return;
 	}
-
+	int bw = BORDER_WIDTH;
 	int sw = Scrollbar.SCROLLBAR_WIDTH;
 	Dimension cd = child.getPreferredSize();
 	int w, h;
-	
-	isLayouting = true;	
+
+	flags |= IS_LAYOUTING;
 
 	if ( policy == SCROLLBARS_AS_NEEDED )
 		checkScrollbarVisibility( cd);
 		
-	w = width - (insets.left + insets.right);
-	h = height - (insets.top + insets.bottom);
+	int vw = ((vScroll.flags & IS_VISIBLE) != 0) ? sw : 0;
+	int hh = ((hScroll.flags & IS_VISIBLE) != 0) ? sw : 0;
 	
-	hScroll.setBounds( 0, height - sw,
-	                   (vScroll.isVisible) ? width - sw : width, sw);
 	
-	vScroll.setBounds( width - sw, 0,
-	                   sw, (hScroll.isVisible) ? height - sw : height);
+	w = width - (2*bw + vw);
+	h = height - (2*bw + hh);
+	
+	hScroll.setBounds( 0, height - sw, width - vw, sw);
+	vScroll.setBounds( width - sw, 0, sw, height - hh);
 
-	hScroll.setValues( 0, w, 0, cd.width - w);
-	vScroll.setValues( 0, h, 0, cd.height -h);
+	hScroll.setValues( 0, w, 0, cd.width);
+	vScroll.setValues( 0, h, 0, cd.height);
 
-	wrapper.setBounds( insets.left, insets.top, w, h);
+	wrapper.setBounds( bw, bw, width - vw -2*bw , height - hh -2*bw);
 	child.setBounds( 0, 0, cd.width, cd.height);
 
-	isLayouting = false;
+	flags &= ~IS_LAYOUTING;
 }
 
 public void paint ( Graphics g ) {
-	Rectangle clip = g.getClipBounds();
-	int       xClip = clip.x;
-	int       yClip = clip.y;
-	int       xwClip = xClip + clip.width;
-	int       yhClip = yClip + clip.height;
-	boolean   paintHS = (xwClip > width - insets.right);
-	boolean   paintVS = (yhClip > height - insets.bottom);
+	int sw = Scrollbar.SCROLLBAR_WIDTH;
+	int vw = ((vScroll.flags & IS_VISIBLE) != 0) ? sw : 0;
+	int hh = ((hScroll.flags & IS_VISIBLE) != 0) ? sw : 0;
 
-	if ( (xClip < insets.left) || (yClip < insets.top) || paintHS || paintVS ) {
-		paintBorder( g, 0, 0,
-		            (vScroll.isVisible) ? Scrollbar.SCROLLBAR_WIDTH : 0,
-		            (hScroll.isVisible) ? Scrollbar.SCROLLBAR_WIDTH : 0);
+	if ( wrapper != null )
+		g.paintChild( wrapper, false);
+	if ( hh != 0 )
+		g.paintChild( hScroll, false);
+	if ( vw != 0 )
+		g.paintChild( vScroll, false);
 		
-		if ( hScroll.isVisible && paintVS ) {
-			g.translate( hScroll.x, hScroll.y);
-			hScroll.paint( g);
-			g.translate( -hScroll.x, -hScroll.y);
-		}
-		if ( vScroll.isVisible && paintVS ) {
-			g.translate( vScroll.x, vScroll.y);
-			vScroll.paint( g);
-			g.translate( -vScroll.x, -vScroll.y);
-		}
-	}
-	
-	if ( child != null ) {
-		g.translate( insets.left, insets.top);
-		g.setClip( 0, 0,
-		           width - (insets.left+insets.right),
-		           height - (insets.top + insets.bottom));
-
-		child.paint( g);
-	}
+	paintBorder( g, 0, 0, vw, hh);
 }
 
 final public void setLayout ( LayoutManager mgr ) {

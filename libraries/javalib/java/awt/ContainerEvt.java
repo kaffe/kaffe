@@ -14,7 +14,7 @@ ContainerEvt ( Component src, int evtId, Component child ){
 protected void dispatch () {
 	((Component)source).processEvent( this);
 
-	recycle();
+	if ( (Defaults.RecycleEvents & AWTEvent.CONTAINER_EVENT_MASK) != 0 ) recycle();
 }
 
 static synchronized ContainerEvt getEvent ( Component source, int id, Component child ){

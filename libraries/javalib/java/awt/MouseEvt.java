@@ -59,65 +59,53 @@ static void clickToFocus ( Component newKeyTgt ) {
 }
 
 static Component computeMouseTarget ( Container toplevel, int x, int y ) {
-	Container cntr;
-	Component c;
-	int       i, u, v;
-
-  // Check no change / child change first
-	if ( mouseTgt != null ) {
-		u = x - xMouseTgt;
-		v = y - yMouseTgt;
-
-		if ( mouseTgt.contains( u, v ) ) {
-			if ( mouseTgt instanceof Container ){
-				cntr = (Container)mouseTgt;
-				x = u;
-				y = v;
-			}
-			else {
-				return mouseTgt;                      // shortcut, no change
-			}
-		}
-		else {
-			cntr = toplevel; xMouseTgt = 0; yMouseTgt = 0;
-		}
-	}
-	else {
-		cntr = toplevel; xMouseTgt = 0; yMouseTgt = 0;
-	}
+	Container  cntr;
+	Component  c, tgt;
+	int        i, xm = 0, ym = 0, u, v;
+	
+	tgt = cntr = toplevel;
+	xMouseTgt = yMouseTgt = 0;
 
 	// This is a workaround for no-native-wm Frames with childs extending the Frame size
 	// (the Frame deco border is no separate Component, just "protected" by the Frame insets)
-	// Note that we cannot include the top because this would disable Menubars, but since
-	// the Menubar is a child (and most layouts are top/left aligned anyway), we can ignore this
-	if ( cntr.insets != Insets.noInsets ) {
-		if ( (x >= (cntr.width - cntr.insets.right)) || (y >= (cntr.height - cntr.insets.bottom)) )
-			return cntr;
+	if ( (root != null) && (x < cntr.deco.x) || (y < cntr.deco.y) ||
+			 (x > (cntr.width - cntr.insets.right)) || (y > (cntr.height - cntr.insets.bottom)) ){
+		return cntr;
 	}
-	// depending on the native window manager, we can get mouse events for windows
-	// which already are in their dispose() processing (PopupWindow drag mode)
-	if ( !cntr.isVisible ) return null;
 
 	for ( i=0; i<cntr.nChildren; ) {
 		c = cntr.children[i];
-		u = x - c.x; v = y - c.y;
 
-		if ( c.contains( u, v) ){                 // contains() might be reimplemented
-			xMouseTgt += c.x; yMouseTgt += c.y;
-			if ( c instanceof Container ){
-				x = u; y = v;
-				cntr= (Container) c;
-				i=0;
-				continue;
+		if ( ((c.flags & Component.IS_SHOWING) == Component.IS_SHOWING) &&
+		     (x >= c.x) && (y >= c.y) && (x <= (c.x+c.width)) && (y <= (c.y+c.height)) ) {
+
+			u = x - c.x;
+			v = y - c.y;
+
+			if ( c.contains( u, v) ){  // contains() might be reimplemented
+				xm += c.x; ym += c.y;
+				if ( ((c.flags & Component.IS_NATIVE_LIKE) != 0) ||   // oh, these Panels..
+				     (c.mouseListener != null) || (c.motionListener != null) ) {
+					tgt = c;
+					xMouseTgt = xm; yMouseTgt = ym;
+				}
+				if ( c instanceof Container ){
+					cntr= (Container) c;
+					x = u;
+					y = v;
+					i=0;
+					continue;
+				}
+				else {
+					return tgt;
+				}
 			}
-			else {
-				return c;
-			}
+			
 		}
 		i++;
 	}
 
-	return cntr;
+	return tgt;
 }
 
 protected void dispatch () {
@@ -131,15 +119,22 @@ protected void dispatch () {
 
 	Component  newTgt;
 
-	//--- determine the target, handle enter/exit 
-	if ( mouseGrabbed || mouseDragged ) {
-		if ( source != mouseTgt ) { // lightweight / no-native grab
+	//--- the first phase handles mode setting and retargeting
+	if ( mouseGrabbed || mouseDragged || (buttonPressed && (id == MOUSE_MOVED)) ) {
+		// These modes (grab is a generalized drag) don't change the mouseTgt
+		// Note that the first mouseMove after a press is already handled like a drag
+		// (which is initiated by this), but releases might get a different mouseTgt
+		if ( source != AWTEvent.mouseTgt ) {
 			x -= xMouseTgt;
 			y -= yMouseTgt;
-			source = mouseTgt;
+			source = AWTEvent.mouseTgt;
 		}
 	}
-	else if ( id != MOUSE_CLICKED ){
+	else if ( id == MOUSE_CLICKED ){
+		// that one was synthetic, don't change any event fields
+	}
+	else {
+		// determine new target and do exit/enter processing
 		if ( (source instanceof Container) && (source != root) ) {
 			newTgt = (id == MOUSE_EXITED) ? null : computeMouseTarget( (Container)source, x, y);
 			source = newTgt;
@@ -151,29 +146,29 @@ protected void dispatch () {
 		}
 
 		// this handles the enter/exit processing
-		if ( newTgt != mouseTgt ) {
-			transferMouse( this, mouseTgt, mousePos.x, mousePos.y, newTgt, x, y);
+		if ( newTgt != AWTEvent.mouseTgt ) {
+			transferMouse( this, AWTEvent.mouseTgt, mousePos.x, mousePos.y, newTgt, x, y);
 		}
 
-		mouseTgt = newTgt;
+		AWTEvent.mouseTgt = newTgt;
 	}
 
 	//--- now dispatch all the remaining events
-	if ( mouseTgt != null ) {
+	if ( AWTEvent.mouseTgt != null ) {
 		switch ( id ) {
 		
 		case MOUSE_MOVED:
-			if ( buttonPressed ) {             // this starts drag mode
+			if ( buttonPressed ){
 				mouseDragged = true;
 				id = MOUSE_DRAGGED;
 			}
-			mouseTgt.processEvent( this);
+			AWTEvent.mouseTgt.processEvent( this);
 		  break;
 		
 		case MOUSE_PRESSED:
-			PopupWindow.checkPopup( mouseTgt);    // the old highlander theme..
-			if ( (mouseTgt != keyTgt) )  // decide upon focus policy
-				clickToFocus( mouseTgt);
+			PopupWindow.checkPopup( AWTEvent.mouseTgt);    // the old highlander theme..
+			if ( (AWTEvent.mouseTgt != AWTEvent.keyTgt) )  // decide upon focus policy
+				clickToFocus( AWTEvent.mouseTgt);
 			
 			buttonPressed = true;
 			modifiers = updateInputModifier( button, true);
@@ -186,9 +181,9 @@ protected void dispatch () {
 			accelHint = true;
 			clickCount = clicks;
 			lastPressed = when;
-			
-			mouseTgt.processEvent( this);
-			
+
+			AWTEvent.mouseTgt.processEvent( this);
+
 			// some apps might react on isPopupTrigger() for both pressed + released
 			isPopupTrigger = false;
 		  break;
@@ -204,19 +199,19 @@ protected void dispatch () {
 				// we can't do this sync because of possible recursion, but we
 				// need to provide a clicked event as the next event to follow
 				// a MOUSE_RELEASE
-				postMouseClicked( mouseTgt, when, x, y, modifiers, clickCount, button);
+				postMouseClicked( AWTEvent.mouseTgt, when, x, y, modifiers, clickCount, button);
 			}
 			else {
 				// check if we have to generate a enter event for a sibling
 				sendMouseEnterEvent( nativeSource, nativePos.x, nativePos.y, false);
 				mouseDragged = false;
 			}
-			mouseTgt.processEvent( this);
+			AWTEvent.mouseTgt.processEvent( this);
 		  break;
 		
 		case MOUSE_CLICKED:
 			clickCount = clicks;
-			mouseTgt.processEvent( this);
+			AWTEvent.mouseTgt.processEvent( this);
 			break;
 		}
 
@@ -230,7 +225,7 @@ protected void dispatch () {
 		mousePos.x = mousePos.y = 0;
 	}
 
-	recycle();
+	if ( (Defaults.RecycleEvents & AWTEvent.MOUSE_EVENT_MASK) != 0 )	recycle();
 }
 
 static synchronized MouseEvt getEvent ( Component source, int id, long when, int mods,
@@ -245,12 +240,24 @@ static synchronized MouseEvt getEvent ( Component source, int id, long when, int
 		
 		e.source = source;
 		e.id = id;
+		e.consumed = false;
 		e.when = when;
+		e.modifiers = mods;
 		e.x = x;
 		e.y = y;
 		e.clickCount = clickCount;
 		e.isPopupTrigger = isPopupTrigger;
+		e.button = 0;
 
+		if ( mods != 0 ) {
+			if ( (mods & BUTTON1_MASK) != 0 )
+				e.button = 1;
+			else if ( (mods & BUTTON2_MASK) != 0 )
+				e.button = 2;
+			else if ( (mods & BUTTON3_MASK) != 0 )
+				e.button = 3;
+		}
+		
 		return e;
 	}
 }
@@ -278,6 +285,7 @@ static synchronized MouseEvt getEvent ( int srcIdx, int id, int button, int x, i
 			
 		e.source     = source;
 		e.id         = id;
+		e.consumed   = false;
 		e.when       = when;
 		e.modifiers  = inputModifier;
 		e.x          = x;
@@ -287,6 +295,7 @@ static synchronized MouseEvt getEvent ( int srcIdx, int id, int button, int x, i
 	}
 
 	e.button = button;
+
 	return e;
 }
 
@@ -312,7 +321,7 @@ static void grabMouse ( Component grab ) {
 
 		xMouseTgt = x - nativeSource.x;
 		yMouseTgt = y - nativeSource.y;
-		mouseTgt  = grab;
+		AWTEvent.mouseTgt  = grab;
 
 		nativeSource.setNativeCursor( grab.cursor);
 
@@ -356,7 +365,7 @@ static void releaseMouse () {
 		grabStack.pop();
 		
 		if ( grabStack.isEmpty() ){
-			mouseTgt = null;
+			AWTEvent.mouseTgt = null;
 			xMouseTgt = yMouseTgt = 0;
 			curs = nativeSource.cursor;
 			mouseGrabbed = false;
@@ -365,12 +374,20 @@ static void releaseMouse () {
 			grab = (Component)grabStack.peek();
 			xMouseTgt = grab.x - nativeSource.x;
 			yMouseTgt = grab.y - nativeSource.y;
-			mouseTgt  = grab;
+			AWTEvent.mouseTgt  = grab;
 			curs = grab.cursor;
 		}
 
 		nativeSource.setNativeCursor( curs);
 	}
+}
+
+MouseEvent retarget ( Component target, int dx, int dy ) {
+	source = target;
+	x += dx;
+	y += dy;
+	
+	return this;
 }
 
 static void sendMouseEnterEvent ( Component src, int x, int y, boolean sync ) {

@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.awt.event.ComponentEvent;
 import java.awt.event.PaintEvent;
 import java.awt.event.WindowEvent;
 
@@ -72,13 +73,11 @@ void run ( Window modalWindow ) {
 			try {
 				while ( !stop ) {			
 					if ( (e = queue.getNextEvent()) != null ){
-						if ( (e.id == WindowEvent.WINDOW_CLOSED) &&
-						     (AWTEvent.getSource( e) == modalWindow) ){
-							e.dispatch();      // e.source is nulled after dispatch() !
+						e.dispatch();
+						// this is better than to rely on a WINDOW_CLOSED, since we can
+						// save postEvents AND make dispatching faster
+						if ( (modalWindow.flags & Component.IS_ADD_NOTIFIED) == 0 )
 							return;
-						}
-						else
-							e.dispatch();
 					}
 				}
 			}
@@ -99,6 +98,7 @@ void run ( Window modalWindow ) {
 
 void show ( Window window ) {
 	AWTEvent e;
+	Object   src;
 
 	// check if we are outside of the dispatcher thread (to prevent 
 	// race conditions)
@@ -122,13 +122,15 @@ void show ( Window window ) {
 			try {
 				while ( !stop ) {			
 					if ( (e = queue.getNextEvent()) != null ){
-						if ( (e.id == PaintEvent.PAINT)  &&
-						     (AWTEvent.getSource( e) == window)  ){
-							e.dispatch();      // e.source is nulled after dispatch() !
+						src = AWTEvent.getSource( e);
+						e.dispatch();
+						
+						if ( (e.id == PaintEvent.PAINT ||
+						      e.id == WindowEvent.WINDOW_CLOSED ||
+						      e.id == ComponentEvent.COMPONENT_HIDDEN)
+						     && (src == window)  ){
 							return;
 						}
-						else
-							e.dispatch();
 					}
 				}
 			}

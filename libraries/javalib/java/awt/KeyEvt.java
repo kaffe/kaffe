@@ -12,20 +12,29 @@ KeyEvt ( Component src, int evtId, long time, int mods, int kCode, char kChar ) 
 }
 
 protected void dispatch () {
-	if ( keyTgt != null )           // do we have a focus window?
-		source = keyTgt;
+
+//if ( (id == KEY_RELEASED) && (keyCode == VK_F12) )
+//	((Component)source).dump( " ");
+
+	if ( AWTEvent.keyTgt != null )           // do we have a focus window?
+		source = AWTEvent.keyTgt;
 	else
-		keyTgt = (Component)source;   // hmm, just a defense line
+		AWTEvent.keyTgt = (Component)source;   // hmm, just a defense line
 
 	if ( id == KEY_PRESSED ) {
 		accelHint = true;
-		keyTgt.processEvent( this);
+		AWTEvent.keyTgt.processEvent( this);
+
+		if ( !consumed && ShortcutHandler.handle( this) ) {
+			if ( (Defaults.RecycleEvents & AWTEvent.KEY_EVENT_MASK) != 0 ) recycle();
+			return;
+		}
 		
 		if ( keyChar != 0 ) {         // printable key
-			if ( keyTgt != null ) {     // maybe a fast finger pulled the keyTgt under our feet
+			if ( AWTEvent.keyTgt != null ) {     // maybe a fast finger pulled the keyTgt under our feet
 				id = KEY_TYPED;
 				keyCode = 0;
-				keyTgt.processEvent( this);
+				AWTEvent.keyTgt.processEvent( this);
 			}
 		}
 		else {                        // function key, update modifiers
@@ -39,7 +48,7 @@ protected void dispatch () {
 	}
 	else if ( id == KEY_RELEASED ) {
 		accelHint = false;
-		keyTgt.processEvent( this);
+		AWTEvent.keyTgt.processEvent( this);
 	
 	 	if ( keyChar == 0 ) {
 			switch ( keyCode ) {
@@ -51,10 +60,7 @@ protected void dispatch () {
 		}
 	}
 	
-	if ( !consumed )
-		HotKeyHandler.handle( this);
-	
-	recycle();
+	if ( (Defaults.RecycleEvents & AWTEvent.KEY_EVENT_MASK) != 0 )	recycle();
 }
 
 static synchronized KeyEvt getEvent ( int srcIdx, int id, int keyCode, int keyChar, int modifier ) {

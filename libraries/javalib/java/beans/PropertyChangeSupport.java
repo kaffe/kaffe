@@ -18,21 +18,23 @@ public class PropertyChangeSupport
 	private Vector listeners;
 	private Object source;
 
-public PropertyChangeSupport(Object sourceBean)
-	{
+public PropertyChangeSupport(Object sourceBean) {
 	listeners = new Vector();
 	source = sourceBean;
 }
 
-public synchronized void addPropertyChangeListener(PropertyChangeListener listener)
-	{
+public synchronized void addPropertyChangeListener(PropertyChangeListener listener) {
 	listeners.addElement(listener);
 }
 
-public void firePropertyChange(String propertyName, Object oldValue, Object newValue)
-	{
+public void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
 	// Check for equality.
 	if (oldValue != null && oldValue.equals(newValue)) {
+		return;
+	}
+
+	// Is anyone interested ?
+	if (listeners.size() == 0) {
 		return;
 	}
 
@@ -46,8 +48,7 @@ public void firePropertyChange(String propertyName, Object oldValue, Object newV
 
 }
 
-public synchronized void removePropertyChangeListener(PropertyChangeListener listener)
-	{
+public synchronized void removePropertyChangeListener(PropertyChangeListener listener) {
 	listeners.removeElement(listener);
 }
 }

@@ -19,27 +19,9 @@ import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.awt.Toolkit;
+import kaffe.net.www.protocol.BasicURLConnection;
 
-public class SystemURLConnection extends URLConnection {
-
-final static private String headers[] = {
-	"content-encoding",
-	"content-length",
-	"content-type",
-	"date",
-	"expiration",
-	"If-Modified-Since",
-	"lastModified",
-};
-private String headersValue[] = new String[headers.length];
-
-final static private int ContentEncoding = 0;
-final static private int ContentLength = 1;
-final static private int ContentType = 2;
-final static private int Date = 3;
-final static private int Expiration = 4;
-final static private int IfModifiedSince = 5;
-final static private int LastModified = 6;
+public class SystemURLConnection extends BasicURLConnection {
 
 private byte[] data;
 
@@ -52,7 +34,7 @@ public void connect() throws IOException
 {
 	String filename = url.getFile();
 	data = ClassLoader.getSystemResourceAsBytes0(filename);
-	headersValue[ContentEncoding] = fileNameMap.getContentTypeFor(filename);
+	setContentTypeFromName();
 }
 
 public InputStream getInputStream() throws IOException
@@ -63,49 +45,6 @@ public InputStream getInputStream() throws IOException
 	else {
 		return (new ByteArrayInputStream(data));
 	}
-}
-
-public Object getContent() throws IOException {
-	if (headersValue[ContentEncoding] == null) {
-		return (null);
-	}
-	/*
-	 * We only understand a limited number of things so far
-	 */
-	if (headersValue[ContentEncoding].equals("image/gif") ||
-	    headersValue[ContentEncoding].equals("image/jpeg") ||
-	    headersValue[ContentEncoding].equals("image/png")) {
-		return (Toolkit.getDefaultToolkit().createImage(data).getSource());
-	}
-
-	// Return null if we don't understand
-	return (null);
-}
-
-public String getHeaderField(int pos)
-{
-	if (pos < 0 || pos >= headersValue.length) {
-		return (null);
-	}
-	return (headersValue[pos]);
-}
-
-public String getHeaderField(String name)
-{
-	for (int i = 0; i < headers.length; i++) {
-		if (name == headers[i]) {
-			return (getHeaderField(i));
-		}
-	}
-	return (null);
-}
-
-public String getHeaderFieldKey(int pos)
-{
-	if (pos < 0 || pos >= headers.length) {
-		return (null);
-	}
-	return (headers[pos]);
 }
 
 }

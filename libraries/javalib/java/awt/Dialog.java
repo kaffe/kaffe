@@ -1,3 +1,7 @@
+package java.awt;
+
+import kaffe.util.Ptr;
+
 /**
  * Dialog - 
  *
@@ -9,16 +13,9 @@
  *
  * @author P. Mehlitz
  */
-
-package java.awt;
-
-import java.lang.String;
-import kaffe.util.Ptr;
-
 public class Dialog
   extends Frame
 {
-	boolean isModal;
 	static Insets dialogInsets;
 	static Rectangle dialogDeco;
 
@@ -46,7 +43,9 @@ public Dialog ( Frame owner, String title, boolean isModal) {
 	super( owner, title);
 
 	deco = dialogDeco;
-	this.isModal = isModal;
+
+	if ( isModal )
+		flags |= IS_MODAL;
 }
 
 public Dialog ( Frame owner, boolean isModal ) {
@@ -55,20 +54,21 @@ public Dialog ( Frame owner, boolean isModal ) {
 
 Ptr createNativeWindow () {
 	// this is the terminal class addNotify() part
-	
+
 	// insets seem to be set by the JDK during addNotify
 	// (no need to create fresh objects since they are insets()-copied anyway <sigh>)
 	insets = dialogInsets;
 
 	return Toolkit.wndCreateDialog( owner.nativeData, title,
 	                                x + deco.x, y + deco.y,
-                                  width - deco.width,
-                                  height - deco.height,
-	                                cursor.type, bgClr.nativeValue, isResizable);
+	                                width - deco.width,
+	                                height - deco.height,
+	                                cursor.type, bgClr.nativeValue,
+	                                ((flags & IS_RESIZABLE) != 0) );
 }
 
 public boolean isModal() {
-	return isModal;
+	return ((flags & IS_MODAL) != 0);
 }
 
 public Dimension preferredSize () {
@@ -80,9 +80,8 @@ public Dimension preferredSize () {
 	return (d);
 }
 
-static void setDecoInsets ( int top, int left, int bottom, int right ){
+static void setDecoInsets ( int top, int left, int bottom, int right, int srcIdx  ){
 	// this is the native callBack to set exact (calculated) dialog deco extends
-
 	dialogInsets.top    = top;
 	dialogInsets.left   = left;
 	dialogInsets.bottom = bottom;
@@ -92,16 +91,28 @@ static void setDecoInsets ( int top, int left, int bottom, int right ){
 	dialogDeco.y = top;
 	dialogDeco.width = left + right;
 	dialogDeco.height = top + bottom;
+
+	// if we got the correction in the context of a initial Window positioning
+	// we have to make sure a subsequent ComponentEvt.getEvent() invalidates
+	// this instance (which wouldn't be the case if we let its (faked) dimension alone)
+	if ( srcIdx != -1 ) {
+		Component src = AWTEvent.sources[srcIdx];
+		src.width = src.height = 0;
+	}
 }
 
 public void setModal ( boolean isModal ) {
-	this.isModal = isModal;
+	if ( isModal ) 
+		flags |= IS_MODAL;
+	else
+		flags &= ~IS_MODAL;
 }
 
 public void show () {
+	// DEP - should be in setVisible()
 	super.show ();
 	
-	if ( isModal ) {
+	if ( (flags & IS_MODAL) != 0 ) {
 		Toolkit.eventThread.run( this);
 	}
 }

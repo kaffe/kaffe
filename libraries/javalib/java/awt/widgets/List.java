@@ -137,7 +137,8 @@ public void mouseEntered( MouseEvent e) {
 }
 
 public void mouseExited( MouseEvent e) {
-	updateFlyOver( -1);
+	if ( rgr != null ) // otherwise we aren't visible anymore
+		updateFlyOver( -1);
 }
 
 public void mouseMoved( MouseEvent e) {
@@ -152,18 +153,21 @@ public void mousePressed( MouseEvent e) {
 		ip.requestFocus();
 		
 	if ( e.isPopupTrigger() )
-		triggerPopup( 0, e.getX(), e.getY());
+		triggerPopup( e.getX(), e.getY());
 }
 
 public void mouseReleased( MouseEvent e) {
 }
 
 public void paint ( Graphics g ) {
+	repaintRows( g, first, getVisibleRows() );
 	paintBorder( g);
-	repaintRows( first, getVisibleRows() );
 }
 
-void repaintItem( int idx) {
+void repaintItem( Graphics g, int idx) {
+	if ( g == null)
+		return;
+
 	int d = BORDER_WIDTH;		
 	int x0 = xOffs + d +2;
 	int y0 = d + ( idx - first) * rowHeight;
@@ -172,27 +176,30 @@ void repaintItem( int idx) {
 	String s = (String)rows.elementAt( idx);
 
 	if ( isIndexSelected( idx) ) {
-		rgr.setColor( Defaults.ListSelBgClr);
-		rgr.fill3DRect( d, y0, width-2*d, rowHeight, true);
-		rgr.setColor( Defaults.ListSelTxtClr);
+		g.setColor( Defaults.ListSelBgClr);
+		g.fill3DRect( d, y0, width-2*d, rowHeight, true);
+		g.setColor( Defaults.ListSelTxtClr);
 	}
 	else if ( idx == idxFlyOver ) {
-		rgr.setColor( Defaults.ListFlyOverBgClr);
-		rgr.fill3DRect( d, y0, width-2*d, rowHeight, !Defaults.ListFlyOverInset);
-		rgr.setColor( Defaults.ListFlyOverTxtClr);
+		g.setColor( Defaults.ListFlyOverBgClr);
+		g.fill3DRect( d, y0, width-2*d, rowHeight, !Defaults.ListFlyOverInset);
+		g.setColor( Defaults.ListFlyOverTxtClr);
 	}
 	else {
-		rgr.setColor( bgClr );
-		rgr.fillRect( d, y0, width-2*d, rowHeight);
-		rgr.setColor( fgClr );
+		g.setColor( bgClr );
+		g.fillRect( d, y0, width-2*d, rowHeight);
+		g.setColor( fgClr );
 	}
 	
-	rgr.drawString( s, x0, y1);
+	g.drawString( s, x0, y1);
 }
 
-void repaintRow( int idx) {
-	if ( rgr != null )
-		repaintItem( idx);
+void repaintItem( int idx) {
+	repaintItem( rgr, idx);
+}
+
+void repaintRow( Graphics g, int idx) {
+	repaintItem( g, idx);
 }
 
 public void setFont( Font fnt) {
@@ -209,9 +216,10 @@ void updateFlyOver( int newIdx) {
 	if ( lov == newIdx )
 		return;
 		
-	if ( (lov > -1) && (lov < rows.size() ) )
+	int rs = rows.size();
+	if ( (lov > -1) && (lov < rs) )
 		repaintItem( lov);
-	if ( (newIdx > -1) && (newIdx < rows.size() ) )
+	if ( (newIdx > -1) && (newIdx < rs) )
 		repaintItem( newIdx);
 }
 
@@ -235,8 +243,9 @@ public List ( int rows, boolean multipleMode) {
 	setMultipleMode( multipleMode);
 
 	setLayout( null);
-	ip.setForeground( Defaults.ListTxtClr);
-	ip.setBackground( Defaults.ListBgClr);
+
+	setForeground( Defaults.ListTxtClr);
+	setBackground( Defaults.ListBgClr);
 	setFont( Defaults.ListFont);
 
 	add( ip.vScroll = new Scrollbar( Scrollbar.VERTICAL));
@@ -370,8 +379,20 @@ public void doLayout () {
 	ip.innerLayout();
 }
 
+public Color getBackground () {
+	// some anomaly, we forward colors to our ip, so we should return its colors
+	// for consistencies sake
+	return ip.getBackground();
+}
+
 ClassProperties getClassProperties () {
 	return ClassAnalyzer.analyzeAll( getClass(), true);
+}
+
+public Color getForeground () {
+	// some anomaly, we forward colors to our ip, so we should return its colors
+	// for consistencies sake
+	return ip.getForeground();
 }
 
 public String getItem ( int index) {
@@ -572,19 +593,34 @@ void notifyItem ( Object item, int op) {
 	}
 }
 
+public void paint ( Graphics g ) {
+	// we know about our childs, we don't have to blank the background,
+	// so let's speed up things a little
+	g.paintChild( ip, false);
+	
+	if ( (ip.hScroll != null) && ((ip.hScroll.flags & IS_VISIBLE) != 0) )
+		g.paintChild( ip.hScroll, true);
+	if ( (ip.vScroll != null) && ((ip.vScroll.flags & IS_VISIBLE) != 0) )
+		g.paintChild( ip.vScroll, true);
+}
+
 protected String paramString() {
 	return super.paramString();
 }
 
 public Dimension preferredSize () {
-	return preferredSize(0);
+	int rows = ip.rows.size();
+	if ( rows < 5 )
+		rows = 5;
+	else if ( rows > 10 )
+		rows = 10;
+	return preferredSize( rows);
 }
 
 public Dimension preferredSize (int rows) {
-	if (rows <= 0) {
-		rows = getRows();
-	}
-	return new Dimension(ip.width, ip.rowHeight * rows);
+	int h = rows * ip.rowHeight;
+	int w = 25 * ip.fm.charWidth( 'x');
+	return new Dimension( w, h);
 }
 
 protected void processActionEvent( ActionEvent e) {
@@ -676,7 +712,11 @@ public void select ( int index ) {
 }
 
 public void setBackground ( Color c) {
-	super.setBackground( c);
+	// Ideally, we would just do a super.setBackground(), but that would give us
+	// a strange look for the scrollbar backgrounds. If we just forward here, we also
+	// have to resolve getBackground()
+	
+	//super.setBackground( c);
 	ip.setBackground( c);
 }
 
@@ -692,7 +732,7 @@ public void setFont ( Font fnt) {
 }
 
 public void setForeground ( Color c) {
-	super.setForeground( c);
+	//super.setForeground( c);
 	ip.setForeground( c);
 }
 
@@ -719,6 +759,10 @@ public synchronized void setMultipleSelections ( boolean b ) {
 		
 		multipleMode = true;
 	}
+}
+
+public void update ( Graphics g ) {
+	paint( g); // no background blanking required
 }
 
 void vPosChange ( int dy) {

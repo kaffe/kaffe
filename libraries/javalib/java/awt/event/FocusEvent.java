@@ -1,6 +1,5 @@
 package java.awt.event;
 
-import java.lang.String;
 import java.awt.Component;
 import java.awt.Event;
 import java.awt.Frame;
@@ -18,7 +17,7 @@ import java.awt.Window;
 public class FocusEvent
   extends ComponentEvent
 {
-	boolean isTemporary;
+	protected boolean isTemporary;
 	final public static int FOCUS_FIRST = 1004;
 	final public static int FOCUS_LAST = 1005;
 	final public static int FOCUS_GAINED = FOCUS_FIRST;
@@ -52,6 +51,9 @@ public String paramString() {
 		case FOCUS_LOST:    s = "FOCUS_LOST"; break;
 		default:            s = "unknown type"; break;
 	}
+	
+	if ( isTemporary )
+		s += ", temporary";
 	
 	return s;
 }

@@ -11,8 +11,6 @@ package java.awt;
  *
  */
 
-import java.lang.String;
-
 public class IllegalComponentStateException
   extends IllegalStateException
 {

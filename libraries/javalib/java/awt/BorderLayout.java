@@ -1,3 +1,6 @@
+package java.awt;
+
+
 /**
  * class BorderLayout - 
  *
@@ -9,11 +12,6 @@
  *
  * @author P.C.Mehlitz
  */
-
-package java.awt;
-
-import java.lang.String;
-
 public class BorderLayout
   implements LayoutManager2
 {
@@ -141,34 +139,36 @@ public void invalidateLayout ( Container cntr ) {
  * @see Container
  */
 public void layoutContainer ( Container cntr ) {
-	Insets insets = cntr.getInsets();
+	Insets insets = cntr.getInsets(); // getInsets() might be reimplemented (swing)
 	int top = insets.top;
 	int bottom = cntr.height - insets.bottom;
 	int left = insets.left;
 	int right = cntr.width - insets.right;
 	Dimension pd;
-	
-	if ((north != null) && north.isVisible ) {
+
+	// watch out - JDK seems to bypass isVisible() (which might be resolved, e.g. by Swing)
+
+	if ( (north != null) && ((north.flags & Component.IS_VISIBLE) != 0) ) {
 		pd = north.getPreferredSize();
 		north.setBounds(left, top, right - left, pd.height);
 		top += pd.height + vGap;
 	}
-	if ((south != null) && south.isVisible ) {
+	if ((south != null) && ((south.flags & Component.IS_VISIBLE) != 0) ) {
 		pd = south.getPreferredSize();
 		south.setBounds(left, bottom - pd.height, right - left, pd.height);
 		bottom -= pd.height + vGap;
 	}
-	if ((east != null) && east.isVisible ) {
+	if ((east != null) && ((east.flags & Component.IS_VISIBLE) != 0) ) {
 		pd = east.getPreferredSize();
 		east.setBounds(right - pd.width, top, pd.width, bottom - top);
 		right -= pd.width + hGap;
 	}
-	if ((west != null) && west.isVisible ) {
+	if ((west != null) && ((west.flags & Component.IS_VISIBLE) != 0) ) {
 		pd = west.getPreferredSize();
 		west.setBounds(left, top, pd.width, bottom - top);
 		left += pd.width + hGap;
 	}
-	if ((center != null) && center.isVisible )
+	if ((center != null) && ((center.flags & Component.IS_VISIBLE) != 0) )
 		center.setBounds(left, top, right - left, bottom - top);
 }
 
@@ -194,33 +194,35 @@ public Dimension maximumLayoutSize ( Container cntr ) {
 public Dimension minimumLayoutSize ( Container cntr ) {
 	Dimension md, d = new Dimension();
 
-	if ((east != null) && east.isVisible ) {
+	// watch out - JDK seems to ignore isVisible() (might be resolved, e.g. by swing)
+
+	if ((east != null) && ((east.flags & Component.IS_VISIBLE) != 0) ) {
 		md = east.getMinimumSize();
 		d.width += md.width + hGap;
 		d.height = Math.max( md.height, d.height);
 	}
-	if ((west != null) && west.isVisible ){
+	if ((west != null) && ((west.flags & Component.IS_VISIBLE) != 0) ){
 		md = west.getMinimumSize();
 		d.width += md.width + hGap;
 		d.height = Math.max( md.height, d.height);
 	}
-	if ((center != null) && center.isVisible ){
+	if ((center != null) && ((center.flags & Component.IS_VISIBLE) != 0) ){
 		md = center.getMinimumSize();
 		d.width += md.width;
 		d.height = Math.max( md.height, d.height);
 	}
-	if ((north != null) && north.isVisible ){
+	if ((north != null) && ((north.flags & Component.IS_VISIBLE) != 0) ){
 		md = north.getMinimumSize();
 		d.width = Math.max( md.width, d.width);
 		d.height += md.height + vGap;
 	}
-	if ((south != null) && south.isVisible ) {
+	if ((south != null) && ((south.flags & Component.IS_VISIBLE) != 0) ) {
 		md = south.getMinimumSize();
 		d.width = Math.max( md.width, d.width);
 		d.height += md.height + vGap;
 	}
 
-	Insets insets = cntr.getInsets();
+	Insets insets = cntr.getInsets(); // getInsets() might be reimplemented (swing)
 	d.width += insets.left + insets.right;
 	d.height += insets.top + insets.bottom;
 
@@ -237,33 +239,35 @@ public Dimension minimumLayoutSize ( Container cntr ) {
 public Dimension preferredLayoutSize ( Container cntr ) {
 	Dimension pd, d = new Dimension();
 
-	if ((east != null) && east.isVisible ) {
+	// watch out - JDK seems to ignore setVisible() (which might be resolved, e.g. by swing)
+
+	if ((east != null) && ((east.flags & Component.IS_VISIBLE) != 0) ) {
 		pd = east.getPreferredSize();
 		d.width += pd.width + hGap;
 		d.height = Math.max( pd.height, d.height);
 	}
-	if ((west != null) && west.isVisible ) {
+	if ((west != null) && ((west.flags & Component.IS_VISIBLE) != 0) ) {
 		pd = west.getPreferredSize();
 		d.width += pd.width + hGap;
 		d.height = Math.max( pd.height, d.height);
 	}
-	if ((center != null) && center.isVisible ) {
+	if ((center != null) && ((center.flags & Component.IS_VISIBLE) != 0) ) {
 		pd = center.getPreferredSize();
 		d.width += pd.width;
 		d.height = Math.max( pd.height, d.height);
 	}
-	if ((north != null) && north.isVisible ) {
+	if ((north != null) && ((north.flags & Component.IS_VISIBLE) != 0) ) {
 		pd = north.getPreferredSize();
 		d.width = Math.max( pd.width, d.width);
 		d.height += pd.height + vGap;
 	}
-	if ((south != null) && south.isVisible ){
+	if ((south != null) && ((south.flags & Component.IS_VISIBLE) != 0) ){
 		pd = south.getPreferredSize();
 		d.width = Math.max( pd.width, d.width);
 		d.height += pd.height + vGap;
 	}
 
-	Insets insets = cntr.getInsets();
+	Insets insets = cntr.getInsets(); // getInsets() might be reimplemented (swing)
 	d.width += insets.left + insets.right;
 	d.height += insets.top + insets.bottom;
 
@@ -314,5 +318,4 @@ public void setVgap ( int vgap ) {
 public String toString() {
 	return getClass().getName() + " [" + hGap + ',' + vGap + ']';
 }
-
 }

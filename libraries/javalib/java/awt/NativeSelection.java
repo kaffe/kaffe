@@ -12,7 +12,6 @@
 
 package java.awt;
 
-import java.lang.String;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;

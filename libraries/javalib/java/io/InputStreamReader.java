@@ -7,10 +7,11 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
 package java.io;
 
-import kaffe.io.ByteToCharConverter;
 import java.lang.String;
+import kaffe.io.ByteToCharConverter;
 
 public class InputStreamReader
   extends Reader
@@ -20,7 +21,7 @@ public class InputStreamReader
 	private InputStream strm;
 	private byte[] inbuf = new byte[BUFDEFAULT];
 
-public InputStreamReader(InputStream in) {
+public InputStreamReader(InputStream in) {	
 	strm = in;
 	encoding = ByteToCharConverter.getDefault();
 }
@@ -31,7 +32,9 @@ public InputStreamReader(InputStream in, String enc) throws UnsupportedEncodingE
 }
 
 public void close() throws IOException {
-	strm.close();
+	if (strm != null) {
+		strm.close();
+	}
 }
 
 public String getEncoding() {

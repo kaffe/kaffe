@@ -17,9 +17,9 @@ public class Inflater {
   }
 
   private int strm;
-  private byte[] buf;
-  private int off;
-  private int len;
+  protected byte[] buf;
+  protected int off;
+  protected int len;
   private boolean finished;
   private boolean needsDictionary;
 

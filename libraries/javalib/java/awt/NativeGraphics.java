@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.lang.String;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.ImageObserver;
@@ -38,22 +37,27 @@ class NativeGraphics
   implements ComponentListener
 {
 	Ptr nativeData;
-	Font fnt;
-	Color fg;
-	Color bg;
+	int xOffset;
+	int yOffset;
+	Color fgClr;
+	Color bgClr;
+	Font font;
+	int xClip;
+	int yClip;
+	int wClip;
+	int hClip;
 	Color xClr;
-	Rectangle clip = new Rectangle();
 /*
  * this field can be used to link a Graphics object to a non-native
  * Component (e.g. Panel, Canvas), so that it can be notified in case the
  * component changes visibility and/or location/size.
  */
 	Component target;
+	int xTarget;
+	int yTarget;
 	NativeGraphics next;
 	static NativeGraphics cache;
 	static Object lock = new Object();
-	int xTarget;
-	int yTarget;
 	final static int TGT_TYPE_WINDOW = 0;
 	final static int TGT_TYPE_IMAGE = 1;
 	final static int TGT_TYPE_GRAPHICS = 2;
@@ -67,11 +71,11 @@ public void clipRect ( int x, int y, int width, int height ) {
 	// intersection of the current region and the specified rect, i.e. it
 	// cannot be used to implement multi-rectangular clipping regions
 	
-	int xNew = (x > clip.x) ? x : clip.x;
-	int yNew = (y > clip.y) ? y : clip.y;
+	int xNew = (x > xClip) ? x : xClip;
+	int yNew = (y > yClip) ? y : yClip;
 	
-	int clipXw = clip.x + clip.width;
-	int clipYh = clip.y + clip.height;
+	int clipXw = xClip + wClip;
+	int clipYh = yClip + hClip;
 	int xw     = x + width;
 	int yh     = y + height;
 	
@@ -81,12 +85,12 @@ public void clipRect ( int x, int y, int width, int height ) {
 	if ( wNew < 0 ) wNew = 0;
 	if ( hNew < 0 ) hNew = 0;
 	
-	clip.x = xNew;
-	clip.y = yNew;
-	clip.width = wNew;
-	clip.height = hNew;
+	xClip = xNew;
+	yClip = yNew;
+	wClip = wNew;
+	hClip = hNew;
 	
-	Toolkit.graSetClip( nativeData, clip.x, clip.y, clip.width, clip.height);
+	Toolkit.graSetClip( nativeData, xClip, yClip, wClip, hClip);
 }
 
 public void componentHidden ( ComponentEvent evt ){
@@ -96,13 +100,13 @@ public void componentHidden ( ComponentEvent evt ){
 public void componentMoved ( ComponentEvent evt ){
 	getClippedGraphics( this, target,
 	                    xOffset - xTarget, yOffset - yTarget,
-	                    clip.x, clip.y, clip.width, clip.height, false);
+	                    xClip, yClip, wClip, hClip, false);
 }
 
 public void componentResized ( ComponentEvent evt ){
 	getClippedGraphics( this, target,
 	                    xOffset - xTarget, yOffset - yTarget,
-	                    clip.x, clip.y, clip.width, clip.height, false);
+	                    xClip, yClip, wClip, hClip, false);
 }
 
 public void componentShown ( ComponentEvent evt ){
@@ -116,8 +120,8 @@ public void copyArea ( int x, int y, int width, int height, int dx, int dy ){
 public Graphics create () {
 	NativeGraphics g = getGraphics( this, nativeData, TGT_TYPE_GRAPHICS,
 	                xOffset, yOffset,
-									clip.x, clip.y, clip.width, clip.height,
-									fg, bg, fnt, false);
+									xClip, yClip, wClip, hClip,
+									fgClr, bgClr, font, false);
 	if ( xClr != null )
 		g.setXORMode( xClr);
 		
@@ -130,18 +134,18 @@ public Graphics create ( int x, int y, int width, int height ) {
 
 	int xw = x + width;
 	int yh = y + height;
-	int cxw = clip.x + clip.width;
-	int cyh = clip.y + clip.height;
+	int cxw = xClip + wClip;
+	int cyh = yClip + hClip;
 	
-	int clx = (x > clip.x) ? x : clip.x;
-	int cly = (y > clip.y) ? y : clip.y;
+	int clx = (x > xClip) ? x : xClip;
+	int cly = (y > yClip) ? y : yClip;
 	int clw = ((xw > cxw) ? cxw : xw) - clx;
 	int clh = ((yh > cyh) ? cyh : yh) - cly;
 	
 	NativeGraphics g = getGraphics( this, nativeData, TGT_TYPE_GRAPHICS,
 	                x + xOffset, y + yOffset,
 									clx - x, cly - y, clw, clh,
-									fg, bg, fnt, false);
+									fgClr, bgClr, font, false);
 							
 	if ( xClr != null )
 		g.setXORMode( xClr);
@@ -150,7 +154,7 @@ public Graphics create ( int x, int y, int width, int height ) {
 }
 
 public void dispose () {
-	if ( bg == null ) {
+	if ( bgClr == null ) {
 		// We have to provide some protection against double disposes
 		// since it would make the whole cache inconsistent (leads to
 		// simultanous use). We shouldn't store the target here because
@@ -162,12 +166,13 @@ public void dispose () {
 
 	synchronized ( lock ) {
 		xClr = null;
-		fnt = null;
-		fg = null;
-		bg = null;
+		font = null;
+		fgClr = null;
+		bgClr = null;
 
 		if ( target != null ){
-			target.removeComponentListener( this);
+			for ( Component c=target; c != null; c = c.parent )
+				c.removeComponentListener( this);
 			target = null;
 		}
 
@@ -179,7 +184,7 @@ public void dispose () {
 public void draw3DRect ( int x, int y, int width, int height, boolean raised ){
 	// we pass the rgb color value because it might be stored on the native
 	// side as pixel value (requiring an additional color conversion)
-	Toolkit.graDraw3DRect( nativeData, x, y, width, height, raised, fg.rgbValue);
+	Toolkit.graDraw3DRect( nativeData, x, y, width, height, raised, fgClr.rgbValue);
 }
 
 public void drawArc ( int x, int y, int width, int height,
@@ -196,31 +201,35 @@ public void drawChars ( char data[], int offset, int length, int x, int y ){
 }
 
 public boolean drawImage (Image img, int x, int y, Color bgcolor, ImageObserver observer) {
-	/* We must check the image is loaded before we access it's height
-	 * and width.
-	 */
-	if (img.loadImage(-1, -1, observer) == false) {
+	// if the image isn't loaded yet, start production and return false
+	if ( img.loadImage(-1, -1, observer) == false ) {
 		return (false);
 	}
 	else {
-		return (drawImage(img, x, y, img.width, img.height, bgcolor, observer));
+		drawImg( img, x, y, 0, 0, img.width, img.height, bgcolor);
+		return true;
 	}
 }
 
 public boolean drawImage ( Image img, int x, int y, ImageObserver observer) {
-	return drawImage(img, x, y, null, observer);
+	if ( img.loadImage(-1, -1, observer) == false ) {
+		return (false);
+	}
+	else {
+		drawImg( img, x, y, 0, 0, img.width, img.height, null);
+		return true;
+	}
 }
 
 public boolean drawImage ( Image img, int x, int y, int width, int height, Color background, ImageObserver observer ) {
 
-	/* Load image if it's not loaded - we don't scale because we
-	 * can do this while drawing.
-	 */
+	// Load image if it's not loaded - we don't scale because we
+	// can do this while drawing.
 	if (img.loadImage(-1, -1, observer) == false) {
 		return (false);
 	}
 
-	/* Handle proportional widths and heights */
+	// Handle proportional widths and heights
 	if (width < 0) {
 		width = img.width;
 		if (height < 0) {
@@ -234,7 +243,7 @@ public boolean drawImage ( Image img, int x, int y, int width, int height, Color
 		height = (img.height * width) / img.width;
 	}
 
-	if (img.width != width || img.height != height) {
+	if ( (img.width != width) || (img.height != height) ){
 		drawImgScaled( img, x, y, x+width, y+height, 0, 0, img.width, img.height, background);
 	}
 	else {
@@ -252,14 +261,13 @@ public boolean drawImage ( Image img,
 		int sx0, int sy0, int sx1, int sy1,
 		Color bgColor, ImageObserver observer) {
 
-	/* Load image if it's not loaded - we don't scale because we
-	 * can do this while drawing.
-	 */
+	// Load image if it's not loaded - we don't scale because we
+	// can do this while drawing.
 	if (img.loadImage(-1, -1, observer) == false) {
 		return (false);
 	}
 
-	/* If any of the source points are negative then error */
+	// If any of the source points are negative then error
 	if (sx0 < 0 || sy0 < 0 || sx1 < 0 || sy1 < 0) {
 		return (false);
 	}
@@ -276,15 +284,13 @@ public boolean drawImage ( Image img,
 	return drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null, observer);
 }
 
-void drawImg ( Image img,
-		int x, int y, int sx, int sy,
-		int width, int height,
-		Color background ){
-	if ( img.nativeData != null ) {
-		Toolkit.graDrawImage( nativeData, img.nativeData,
-		                      sx, sy, x, y, width, height,
-			                    (background == null) ? -1 : background.nativeValue);
+void drawImg ( Image img,	int x, int y, int sx, int sy,	int width, int height, Color background ){
+	if ( (img.flags & Image.BLOCK_FRAMELOADER) != 0 ){
+		img.activateFrameLoader();
 	}
+	Toolkit.graDrawImage( nativeData, img.nativeData,
+	                      sx, sy, x, y, width, height,
+		                    (background == null) ? -1 : background.nativeValue);
 }
 
 void drawImgScaled ( Image img,
@@ -292,6 +298,9 @@ void drawImgScaled ( Image img,
 		int sx0, int sy0, int sx1, int sy1,
 		Color background ){
 	if ( img.nativeData != null ) {
+		if ( (img.flags & Image.BLOCK_FRAMELOADER) != 0 )
+			img.activateFrameLoader();
+
 		Toolkit.graDrawImageScaled( nativeData, img.nativeData,
 			dx0, dy0, dx1, dy1,
 			sx0, sy0, sx1, sy1,
@@ -319,14 +328,13 @@ public void drawPolyline ( int xPoints[], int yPoints[], int nPoints ){
 	Toolkit.graDrawPolyline( nativeData, xPoints, yPoints, nPoints);
 }
 
+public void drawRect ( int x, int y, int width, int height ) {
+	Toolkit.graDrawRect( nativeData, x, y, width, height);
+}
+
 public void drawRoundRect ( int x, int y, int width, int height,
 			    int arcWidth, int arcHeight){
-	if (arcWidth <= 0 || arcHeight <= 0) {
-		Toolkit.graDrawRect( nativeData, x, y, width, height);
-	}
-	else {
-		Toolkit.graDrawRoundRect( nativeData, x, y, width, height, arcWidth, arcHeight);
-	}
+	Toolkit.graDrawRoundRect( nativeData, x, y, width, height, arcWidth, arcHeight);
 }
 
 public void drawString ( String str, int x, int y ){
@@ -334,11 +342,10 @@ public void drawString ( String str, int x, int y ){
 }
 
 public void fill3DRect ( int x, int y, int width, int height, boolean raised ){
-	Toolkit.graFill3DRect( nativeData, x, y, width, height, raised, fg.rgbValue);
+	Toolkit.graFill3DRect( nativeData, x, y, width, height, raised, fgClr.rgbValue);
 }
 
-public void fillArc ( int x, int y, int width, int height,
-		      int startAngle, int arcAngle ){
+public void fillArc ( int x, int y, int width, int height, int startAngle, int arcAngle ){
 	Toolkit.graFillArc( nativeData, x, y, width, height, startAngle, arcAngle);
 }
 
@@ -355,16 +362,11 @@ public void fillPolygon ( int xPoints[], int yPoints[], int nPoints ){
 }
 
 public void fillRect ( int x, int y, int width, int height ){
-	fillRoundRect( x, y, width, height, 0, 0);
+	Toolkit.graFillRect( nativeData, x, y, width, height);
 }
 
 public void fillRoundRect ( int x, int y, int width, int height, int arcWidth, int arcHeight ){
-	if (arcWidth <= 0 || arcHeight <= 0) {
-		Toolkit.graFillRect( nativeData, x, y, width, height);
-	}
-	else {
-		Toolkit.graFillRoundRect( nativeData, x, y, width, height, arcWidth, arcHeight);
-	}
+	Toolkit.graFillRoundRect( nativeData, x, y, width, height, arcWidth, arcHeight);
 }
 
 protected void finalize () throws Throwable {
@@ -376,7 +378,7 @@ protected void finalize () throws Throwable {
 }
 
 Color getBackColor () {
-	return bg;
+	return bgClr;
 }
 
 public Shape getClip (){
@@ -385,7 +387,23 @@ public Shape getClip (){
 
 public Rectangle getClipBounds() {
 	// Another return object which is modified by Swing, causing more garbage <sigh>
-	return (new Rectangle(clip));
+	return (new Rectangle( xClip, yClip, wClip, hClip));
+}
+
+int getClipHeight () {
+	return hClip;
+}
+
+int getClipWidth () {
+	return wClip;
+}
+
+int getClipX () {
+	return xClip;
+}
+
+int getClipY () {
+	return yClip;
 }
 
 static NativeGraphics getClippedGraphics ( NativeGraphics g, Component c,
@@ -401,15 +419,13 @@ static NativeGraphics getClippedGraphics ( NativeGraphics g, Component c,
 	Color       fg, bg;
 	Font        fnt;
 
-	if ( c.peer == null ) return null;
+	if ( (c.flags & Component.IS_ADD_NOTIFIED) == 0 ) return null;
 
 	if ( g == null ) {
-		fg  = (c.fgClr != null) ? c.fgClr : c.getForeground();
-		bg  = (c.bgClr != null) ? c.bgClr : c.getBackground();
-		fnt = (c.font != null)  ? c.font  : c.getFont();
+		fg  = c.fgClr;	bg  = c.bgClr;	fnt = c.font;
 	}
 	else { // otherwise, the silly compiler complains about missing init
-		fg = g.fg; bg = g.bg; fnt = g.fnt;
+		fg = g.fgClr;   bg = g.bgClr;   fnt = g.font;
 	}
 
 	while ( true ) {
@@ -486,11 +502,11 @@ static NativeGraphics getClippedGraphics ( NativeGraphics g, Component c,
 }
 
 public Color getColor() {
-	return fg;
+	return fgClr;
 }
 
 public Font getFont() {
-	return fnt;
+	return font;
 }
 
 public FontMetrics getFontMetrics ( Font fnt ) {
@@ -520,13 +536,13 @@ static NativeGraphics getGraphics ( Object target, Ptr tgtData, int tgtType,
 
 	g.xOffset = xOffset;
 	g.yOffset = yOffset;
-	g.clip.x  = xClip;
-	g.clip.y  = yClip;
-	g.clip.width  = wClip;
-	g.clip.height = hClip;
-	g.fnt     = fnt;
-	g.fg      = fg;
-	g.bg      = bg;
+	g.xClip  = xClip;
+	g.yClip  = yClip;
+	g.wClip  = wClip;
+	g.hClip = hClip;
+	g.font     = fnt;
+	g.fgClr    = fg;
+	g.bgClr    = bg;
 
 	g.nativeData = Toolkit.graInitGraphics( g.nativeData, tgtData, tgtType,
 	                                        xOffset, yOffset,
@@ -537,11 +553,61 @@ static NativeGraphics getGraphics ( Object target, Ptr tgtData, int tgtType,
 	return g;
 }
 
+void paintChild ( Component c, boolean isUpdate ) {
+	// needs to be here because we are the only one knowing about the clip fields
+	// (a generic version would have to use the dreadful getClipBounds())
+
+	int xw = c.x + c.width;
+	int yh = c.y + c.height;
+	int cxw = xClip + wClip;
+	int cyh = yClip + hClip;
+
+	if ( (xClip > xw) || (yClip > yh) || (c.x > cxw) || (c.y > cyh) )
+		return;
+
+	int clx = (c.x > xClip) ? c.x : xClip;
+	int cly = (c.y > yClip) ? c.y : yClip;
+	int clw = ((xw > cxw) ? cxw : xw) - clx;
+	int clh = ((yh > cyh) ? cyh : yh) - cly;
+	
+	clx -= c.x;
+	cly -= c.y;
+
+	if ( (c.flags & Component.IS_ASYNC_UPDATED) != 0 ) {
+		// This is a really nasty problem with Panels and Canvases: they don't get
+		// drawn sync, but usually receive their own native update events *after* the
+		// parent got painted. We have to simulate this because - believe it or not - some
+		// apps rely on UPDATE vs. COMPONENT_RESIZED/SHOWN order (this is *bad*, since
+		// it heavily depends on unspecified behavior ofthe AWT *and* the
+		// underlying native window system).
+		// Note that we shouldn't leave the repaint up to the ragman (processPaintEvent)
+		// since some apps might even call update/paint explicitly (again, bad!). But
+		// we want to support at least those who call super.paint()
+		c.repaint( clx, cly, clw, clh);
+	}
+	else {
+		NativeGraphics g = getGraphics( this, nativeData, TGT_TYPE_GRAPHICS,
+										                c.x + xOffset, c.y + yOffset,
+																		clx, cly, clw, clh,
+																		c.fgClr, c.bgClr, c.font, false);
+		if ( g != null ) {
+			if ( isUpdate )
+				c.update( g);
+			else
+				c.paint( g);
+
+			g.dispose();
+		}
+	}
+	
+	c.flags &= ~Component.IS_DIRTY; // no need for subsequent repaints anymore
+}
+
 void setBackColor ( Color clr ){
-	if ( (clr != null) && (clr != bg) ) {
-		bg = clr;
+	if ( (clr != null) && (clr != bgClr) ) {
+		bgClr = clr;
 		
-		Toolkit.graSetBackColor( nativeData, bg.nativeValue);
+		Toolkit.graSetBackColor( nativeData, bgClr.nativeValue);
 	}
 }
 
@@ -551,26 +617,25 @@ public void setClip ( Shape clip ){
 }
 
 public void setClip ( int x, int y, int width, int height ) {
-	clip.x      = x;
-	clip.y      = y;
-	clip.width  = width;
-	clip.height = height;		
+	xClip      = x;
+	yClip      = y;
+	wClip  = width;
+	hClip = height;		
 
 	Toolkit.graSetClip ( nativeData, x, y, width, height);
 }
 
 public void setColor ( Color clr ){
-	if ( (clr != null) && (clr != fg) ) {
-		fg = clr;
-
-		Toolkit.graSetColor( nativeData, fg.nativeValue);
+	if ( (clr != null) && (clr != fgClr) ) {
+		fgClr = clr;
+		Toolkit.graSetColor( nativeData, fgClr.nativeValue);
 	}
 }
 
 public void setFont ( Font newFnt ) {
-	if ( newFnt != null && newFnt != fnt ){
-		fnt = newFnt;
-		Toolkit.graSetFont( nativeData, fnt.nativeData);
+	if ( (newFnt != null) && (newFnt != font) ){
+		font = newFnt;
+		Toolkit.graSetFont( nativeData, font.nativeData);
 	}
 }
 
@@ -580,27 +645,27 @@ void setGraphics ( Ptr tgtData, int tgtType, int xOffset, int yOffset,
 
 	this.xOffset = xOffset;
 	this.yOffset = yOffset;
-	this.clip.x  = xClip;
-	this.clip.y  = yClip;
-	this.clip.width  = wClip;
-	this.clip.height = hClip;
+	this.xClip  = xClip;
+	this.yClip  = yClip;
+	this.wClip  = wClip;
+	this.hClip = hClip;
 	
 	if ( fnt != null ) {
-		this.fnt = fnt;
+		font = fnt;
 	}
 	if ( fg != null ) {
-		this.fg = fg;
+		fgClr = fg;
 	}
 	if ( bg != null ) {
-		this.bg = bg;
+		bgClr = bg;
 	}
 
 	nativeData = Toolkit.graInitGraphics( nativeData, tgtData, tgtType,
 	                                      xOffset, yOffset,
 	                                      xClip, yClip, wClip, hClip,
-	                                      this.fnt.nativeData,
-	                                      this.fg.nativeValue,
-	                                      this.bg.nativeValue,
+	                                      font.nativeData,
+	                                      fgClr.nativeValue,
+	                                      bgClr.nativeValue,
 	                                      blank);
 }
 
@@ -613,14 +678,21 @@ public void setPaintMode() {
 
 void setTarget ( Component tgt ) {
 	target = tgt;
-	target.addComponentListener( this);
+
+	// We have to monitor not only reshapes of our target, but also of all of its
+	// parents (since this would cause a change in xOffset/yOffset, too). Note that we
+	// cannot simply stop at the last non-native, since some windowing systems 
+	// use screen coordinates for drawing (PEG)
+	for ( Component c = tgt; c != null; c = c.parent )
+		c.addComponentListener( this);
 	
-	// not safe in case this isn't directly following a Component.getGraphics
+	// We need this to update the relative offset after a target/parent move.
+	// Not safe in case this isn't directly following a Component.getGraphics
 	// (then again, it is just called by us)
 	xTarget = xOffset;
 	yTarget = yOffset;
 	
-	if ( !target.isVisible )
+	if ( (target.flags & Component.IS_VISIBLE) == 0 )
 		Toolkit.graSetVisible( nativeData, false);
 }
 
@@ -633,69 +705,16 @@ public void setXORMode ( Color newXorClr ) {
 
 public String toString() {
 	return getClass().getName() + " [" + xOffset + ',' + yOffset +
-	                     ", " + clip + ']';
+	                     " clip:" + xClip+','+yClip+' '+wClip+','+hClip + ']';
 }
 
 public void translate ( int x, int y ) {
 	xOffset += x;
 	yOffset += y;
-	
+
+	xClip -= x;
+	yClip -= y;
+
 	Toolkit.graSetOffset( nativeData, xOffset, yOffset);
-}
-
-void wrapChildPaint ( Component c, int dx, int dy,
-		             int xClip, int yClip, int wClip, int hClip,
-		             Color fg, Color bg, Font fnt, boolean blank ) {
-	// save current state
-	Color fgOld  = this.fg;
-	Color bgOld  = this.bg;
-	Font  fntOld = this.fnt;
-	int   cxOld  = clip.x;
-	int   cyOld  = clip.y;
-	int   cwOld  = clip.width;
-	int   chOld  = clip.height;
-
-	// set "child state"
-	xOffset += dx;
-	yOffset += dy;
-	clip.x  = xClip;
-	clip.y  = yClip;
-	clip.width  = wClip;
-	clip.height = hClip;
-	
-	// these parameters are optional, beware of "null" values
-	if ( fnt != null )	this.fnt     = fnt;
-	if ( fg != null )   this.fg      = fg;
-	if ( bg != null )   this.bg      = bg;
-
-	Toolkit.graInitGraphics( nativeData, null, 0,
-	                         xOffset, yOffset,
-	                         clip.x, clip.y, clip.width, clip.height,
-	                         this.fnt.nativeData,
-	                         this.fg.nativeValue,
-	                         this.bg.nativeValue,
-	                         blank);
-
-	// paint child
-	c.paint( this);
-	
-	// restore previous state
-	xOffset -= dx;
-	yOffset -= dy;
-	clip.x = cxOld;
-	clip.y = cyOld;
-	clip.width = cwOld;
-	clip.height = chOld;
-	this.fnt = fntOld;
-	this.fg = fgOld;
-	this.bg = bgOld;
-	
-	Toolkit.graInitGraphics( nativeData, null, 0,
-	                         xOffset, yOffset,
-	                         clip.x, clip.y, clip.width, clip.height,
-	                         this.fnt.nativeData,
-	                         this.fg.nativeValue,
-	                         this.bg.nativeValue,
-	                         false);
 }
 }

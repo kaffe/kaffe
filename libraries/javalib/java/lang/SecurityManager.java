@@ -14,7 +14,6 @@ import java.io.FileDescriptor;
 import java.lang.Thread;
 import java.lang.Class;
 import java.net.InetAddress;
-import java.util.SystemClassLoader;
 
 abstract public class SecurityManager {
 
@@ -170,7 +169,7 @@ protected int classLoaderDepth() {
 protected Class currentLoadedClass() {
 	Class[] classes = getClassContext();
 	for (int i = 0; i < classes.length; i++) {
-		if (classes[i].getClassLoader() != SystemClassLoader.getClassLoader()) {
+		if (classes[i].getClassLoader() != null) {
 			return (classes[i]);
 		}
 	}
@@ -229,7 +228,7 @@ protected ClassLoader currentClassLoader() {
 	Class[] classes = getClassContext0();
 	for (int i = 0; i < classes.length; i++) {
 		ClassLoader loader = classes[i].getClassLoader();
-		if (loader != SystemClassLoader.getClassLoader()) {
+		if (loader != null) {
 			return (loader);
 		}
 	}

@@ -1,4 +1,3 @@
-//if defined(DIST_unix)
 /*
  * Java core library component.
  *
@@ -104,4 +103,3 @@ public int waitFor() throws InterruptedException {
 	return (exit_code);
 }
 }
-//endif

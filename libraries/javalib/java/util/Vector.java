@@ -10,16 +10,19 @@
 
 package java.util;
 
+import java.io.Serializable;
 import java.lang.String;
 import java.lang.System;
-import java.io.Serializable;
 
-public class Vector extends AbstractList
-  implements Cloneable, Serializable
-{
-	protected Object[] elementData;
-	protected int elementCount;
-	protected int capacityIncrement;
+public class Vector
+  extends AbstractList
+  implements Cloneable, Serializable {
+
+static final long serialVersionUID = -2767605614048989439L;
+
+protected int capacityIncrement;
+protected int elementCount;
+protected Object[] elementData;
 
 class Enumerator
   implements Enumeration
@@ -135,6 +138,10 @@ final public synchronized Object firstElement () {
 	return elementData[0];
 }
 
+public Object get(int idx) {
+	return (elementAt(idx));
+}
+
 private void increaseCapacity() {
 	int newCapacity = elementData.length;
 	if (capacityIncrement > 0) {
@@ -207,6 +214,12 @@ final public synchronized int lastIndexOf(Object elem, int index) {
 	return (-1);
 }
 
+public Object remove(int idx) {
+	Object obj = elementAt(idx);
+	removeElementAt(idx);
+	return (obj);
+}
+
 final public synchronized void removeAllElements () {
 	for ( int i=elementCount-1; i>= 0; i-- ) {
 		elementData[i] = null;
@@ -257,6 +270,7 @@ final public synchronized String toString() {
 
 	for (int pos = 0; pos < elementCount; pos++) {
 		result.append(elementData[pos].toString());
+		result.append( " ");
 	}
 
 	return (result.toString());
@@ -268,16 +282,6 @@ final public synchronized void trimToSize() {
 		elementData = new Object[elementCount];
 		System.arraycopy(oldBuffer, 0, elementData, 0, elementCount);
 	}
-}
-
-public Object remove(int idx) {
-	Object obj = elementAt(idx);
-	removeElementAt(idx);
-	return (obj);
-}
-
-public Object get(int idx) {
-	return (elementAt(idx));
 }
 
 }

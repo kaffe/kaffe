@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.lang.String;
 import java.awt.event.ActionEvent;
 
 class ActionEvt
@@ -18,7 +17,7 @@ protected void dispatch () {
 	else if ( source instanceof MenuItem )
 		((MenuItem)source).processActionEvent( this);
 
-	recycle();
+	if ( (Defaults.RecycleEvents & AWTEvent.ACTION_EVENT_MASK) != 0 )	recycle();
 }
 
 static synchronized ActionEvt getEvent ( Object source, int id, String cmd, int mods ){

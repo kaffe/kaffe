@@ -1,3 +1,8 @@
+package java.awt;
+
+import java.util.Enumeration;
+import java.util.Vector;
+
 /**
  * class MenuBar -
  *
@@ -9,12 +14,6 @@
  *
  * @author J.Mehlitz
  */
-
-package java.awt;
-
-import java.util.Enumeration;
-import java.util.Vector;
-
 public class MenuBar
   extends MenuComponent
   implements MenuContainer
@@ -27,13 +26,27 @@ public MenuBar() {
 
 public Menu add( Menu m) {
 	menus.addElement( m);
-	m.parent = this;
+	if ( (flags & IS_ADD_NOTIFIED) > 0 ) {
+		m.parent = this;
+		m.owner = owner;
+		m.addNotify();
+	}
 	updateView();
 
 	return (m);
 }
 
 public void addNotify() {
+	if ( (flags & IS_ADD_NOTIFIED) == 0) {
+		int ms = menus.size();
+		for ( int i=0; i<ms; i++) {
+			Menu m = (Menu)menus.elementAt(i);
+			m.parent = this;
+			m.owner = owner;
+			m.addNotify();
+		}
+		flags |= IS_ADD_NOTIFIED;
+	}
 }
 
 /**
@@ -89,6 +102,8 @@ protected void propagateOldEvents ( boolean isOldEventClient ) {
 
 public void remove( MenuComponent m) {
 	if ( m instanceof Menu){
+		if ( (flags & IS_ADD_NOTIFIED) > 0 )
+			m.removeNotify();
 		menus.removeElement( m);
 		updateView();
 	}
@@ -100,6 +115,14 @@ public synchronized void remove( int idx) {
 }
 
 public void removeNotify() {
+	if ( (flags & IS_ADD_NOTIFIED) > 0) {
+		int ms = menus.size();
+		for ( int i=0; i<ms; i++) {
+			Menu m = (Menu)menus.elementAt(i);
+			m.removeNotify();
+		}
+		flags &= ~IS_ADD_NOTIFIED;
+	}
 }
 
 public synchronized void setHelpMenu( Menu m) {
@@ -109,9 +132,9 @@ public synchronized void setHelpMenu( Menu m) {
 
 public synchronized Enumeration shortcuts() {
 	Vector all = new Vector();
+	int ms = menus.size();
 	
-	int sz = menus.size();
-	for ( int i=0; i<sz; i++) {
+	for ( int i=0; i<ms; i++) {
 		Menu m = (Menu)menus.elementAt( i);
 		m.addShortcuts( all);
 	}

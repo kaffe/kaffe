@@ -1,3 +1,11 @@
+package java.awt;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.EventListener;
+import java.util.Vector;
+
 /**
  * class MenuItem -
  *
@@ -9,18 +17,9 @@
  *
  * @author J.Mehlitz
  */
-
-package java.awt;
-
-import java.lang.String;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.util.EventListener;
-import java.util.Vector;
-
 public class MenuItem
   extends MenuComponent
+  implements ShortcutConsumer
 {
 	MenuShortcut shortcut;
 	String label;
@@ -49,6 +48,11 @@ public synchronized void addActionListener( ActionListener l) {
 }
 
 public void addNotify() {
+	if ( (flags & IS_ADD_NOTIFIED) == 0 ) {
+		if ( shortcut != null )
+			ShortcutHandler.addShortcut( shortcut, owner, this);
+		flags |= IS_ADD_NOTIFIED;
+	}
 }
 
 Vector addShortcuts( Vector v) {
@@ -58,6 +62,10 @@ Vector addShortcuts( Vector v) {
 }
 
 public void deleteShortcut() {
+	if ( (flags & IS_ADD_NOTIFIED) > 0 ) {
+		if ( shortcut != null )
+			ShortcutHandler.removeFromOwner( owner, shortcut);
+	}
 	shortcut = null;
 }
 
@@ -108,15 +116,30 @@ int getWidth() {
 	return fm.stringWidth( label);
 }
 
-boolean handleShortcut ( KeyEvent e) {
-	if ( shortcut == null) {
-		return false;
+public void handleShortcut ( MenuShortcut ms) {
+	int mods = (ms != null) ? ms.mods : 0;
+	
+	if ( hasToNotify( aListener) || ((flags & IS_OLD_EVENT) > 0) ) {
+		ActionEvt ae = ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
+		                                   getActionCommand(), mods);
+		Toolkit.eventQueue.postEvent( ae);
+		return;
 	}
-	if ( shortcut.key != e.getKeyChar() + 96 ) {	//ctrl offset
-		return false;
+
+	MenuContainer mp = parent;
+	for (;;) {
+		if (!(mp instanceof Menu)) {
+			break;
+		}
+		Menu m = (Menu)mp;
+		if (m.hasToNotify(m.aListener)) {
+			ActionEvt ae = ActionEvt.getEvent( m, ActionEvent.ACTION_PERFORMED,
+			                                   getActionCommand(), mods);
+			Toolkit.eventQueue.postEvent( ae);
+			return;
+		}
+		mp = m.parent;
 	}
-	process();
-	return true;
 }
 
 boolean hasToNotify ( EventListener listener ) {
@@ -147,7 +170,7 @@ int paint ( Graphics g, int xoff, int y, int width, Color back, Color fore, bool
 				g.setColor( Color.white);
 				g.drawString( label, xoff+1, y+as+1);
 			}
-			g.setColor( sel ? Defaults.FocusClr : fore);
+			g.setColor( sel ? Defaults.MenuSelTxtClr : fore);
 		}
 		else {
 			g.setColor( back.darker() );
@@ -162,40 +185,27 @@ public String paramString() {
 	return getClass().getName() + "[Label: " + label + "]";
 }
 
-void process () {
-	if ( hasToNotify( aListener) || oldEvents ) {
-		ActionEvt ae = ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
-		                                   getActionCommand(), 0);
-		Toolkit.eventQueue.postEvent( ae);
-		return;
-	}
-
-	MenuContainer mp = parent;
-	for (;;) {
-		if (!(mp instanceof Menu)) {
-			break;
-		}
-		Menu m = (Menu)mp;
-		if (m.hasToNotify(m.aListener)) {
-			ActionEvt ae = ActionEvt.getEvent( m, ActionEvent.ACTION_PERFORMED,
-			                                   getActionCommand(), 0);
-			Toolkit.eventQueue.postEvent( ae);
-			return;
-		}
-		mp = m.parent;
-	}
-}
-
 void processActionEvent ( ActionEvent e ) {
 	if (aListener != null) {
 		aListener.actionPerformed( e);
 	}
 
-	if ( oldEvents ) postEvent( Event.getEvent( e));
+	if ( (flags & IS_OLD_EVENT) > 0 )
+		postEvent( Event.getEvent( e));
 }
 
 public synchronized void removeActionListener( ActionListener l) {
 	aListener = AWTEventMulticaster.remove( aListener, l);
+}
+
+public void removeNotify() {
+	if ( (flags & IS_ADD_NOTIFIED) > 0 ) {
+		if ( shortcut != null )
+				ShortcutHandler.removeFromOwner( owner, shortcut);
+		flags &= ~IS_ADD_NOTIFIED;
+		owner = null;
+		parent = null;
+	}
 }
 
 public void setActionCommand( String cmd) {
@@ -211,7 +221,16 @@ public synchronized void setLabel( String label) {
 }
 
 public void setShortcut( MenuShortcut s) {
-	if ( ! isSeparator() )
-		shortcut = s;
+	//has to be cloned due to existing links
+	MenuShortcut ms = ( s != null) ? new MenuShortcut( s) : null;
+	
+	if ((flags & IS_ADD_NOTIFIED) > 0 ) {
+		if ( shortcut != null ) {
+			ShortcutHandler.removeFromOwner( owner, shortcut);
+		}
+		if ( ms != null )
+			ShortcutHandler.addShortcut( ms, owner, this);
+	}
+	shortcut = ms;
 }
 }

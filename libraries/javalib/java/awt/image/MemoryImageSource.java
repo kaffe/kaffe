@@ -170,5 +170,4 @@ private void transferPels( ImageConsumer ic, int x, int y, int w, int h) {
 		ic.setPixels( x, y, w, h, model, ipels, offset, scan );
 	}
 }
-
 }

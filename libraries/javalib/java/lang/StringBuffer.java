@@ -58,7 +58,7 @@ public synchronized StringBuffer append(char c)
 		ensureCapacity(used+1);
 	}
 	buffer[used] = c;
-	used += 1;
+	used++;
 
 	return (this);
 }
