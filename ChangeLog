@@ -4,6 +4,20 @@
 
 	2004-01-08  Michael Koch  <konqueror@gmx.de>
 
+        * java/text/CollationKey.java
+        (equals): Directly compare parent collators.
+
+	2004-01-07  Michael Koch  <konqueror@gmx.de>
+
+        * java/text/CollationKey.java
+        (hashCode): Reimplemented. 
+
+2004-01-11  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
+	2004-01-08  Michael Koch  <konqueror@gmx.de>
+
         * java/text/CollationElementIterator.java
         (setText): Fixed argument name in documentation.
 

@@ -148,7 +148,7 @@ public final class CollationKey implements Comparable
 
     CollationKey ck = (CollationKey) obj;
 
-    if (!ck.collator.equals (collator))
+    if (ck.collator != collator)
       return false;
 
     if (!ck.getSourceString ().equals (getSourceString ()))
@@ -180,7 +180,11 @@ public final class CollationKey implements Comparable
    */
   public int hashCode()
   {
-    return key.hashCode();
+    // We just follow BitSet instead of thinking up something new.
+    long h = originalText.hashCode();
+    for (int i = key.length - 1; i >= 0; --i)
+      h ^= key[i] * (i + 1);
+    return (int) ((h >> 32) ^ h);
   }
   
   /**
