@@ -55,6 +55,9 @@
 # define DBG_INT_CHECKS		DBG_BIT(22) 
 # define DBG_JTHREADNOPREEMPT	DBG_BIT(23) 
 # define DBG_CODEATTR		DBG_BIT(24) 
+# define DBG_ELOOKUP		DBG_BIT(25) 
+# define DBG_FLOOKUP		DBG_BIT(26) 
+# define DBG_MLOOKUP		DBG_BIT(27) 
 
 /* let's reserve 50-63 for temporary uses */
 # define DBG_SLACKANAL		DBG_BIT(50) 

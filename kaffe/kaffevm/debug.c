@@ -85,8 +85,14 @@ static struct debug_opts
 	D(INT_RETURN, "Show return from function. (interpreter)"),
 	D(INT_VMCALL, "Show call to virtualMachine. (interpreter)"),
 	D(INT_CHECKS, "Show various checks. (interpreter)"),
+	D(ELOOKUP, "Debug exception lookup"),
+	D(FLOOKUP, "Debug field lookup"),
+	D(MLOOKUP, "Debug method lookup"),
 
-	/* an example of how to define combinations */
+	/* you can define combinations too */
+	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP, 
+			"Various lookup operations" },
+
 	{ "thread", DBG_JTHREAD|DBG_VMLOCKS|DBG_VMCONDS, 
 			"Thread operations and locking operations" },
 
@@ -189,7 +195,7 @@ static void
 debugToBuffer(int size)
 {
 	bufferSz = size;
-	debugBuffer = gc_malloc(size, GC_ALLOC_FIXED);
+	debugBuffer = malloc(size);
 	assert(debugBuffer);
 }
 
