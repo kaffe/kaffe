@@ -1,5 +1,12 @@
 2004-12-14  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffe/main.c:
+	Fixed broken .class ending detection to make gjdoc run again.
+
+	Reported by: Apache Gump.
+
+2004-12-14  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/external.c:
 	Improved native library lookup debug output in case of errors.
 

@@ -1,7 +1,7 @@
 #! /bin/sh
-# Script to run Sun's documenter
+# Script to run gjdoc
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 export CLASSPATH=$CLASSPATH:@prefix@/lib/gjdoc.jar
-exec @bindir@/@kaffe_TRANSF@ $JAVA_OPTS -Djavax.xml.transform.TransformerFactory=gnu.xml.libxmlj.transform.GnomeTransformerFactory gnu.classpath.tools.gjdoc.Main ${1+"$@"}
+exec @bindir@/@kaffe_TRANSF@ $JAVA_OPTS gnu.classpath.tools.gjdoc.Main ${1+"$@"}
 exit $?

@@ -169,7 +169,8 @@ main(int argc, char* argv[])
 		exit(1);
 	}
 
-	if (strstr(argv[farg], ".class") != NULL) {
+	if (strcmp(argv[farg] + strlen(argv[farg]) - strlen(".class"),
+		   ".class") == 0) {
 		fprintf(stderr,
 			"Please do not specify the .class extension\n");
 		exit(1);
