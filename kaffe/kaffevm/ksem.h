@@ -64,7 +64,7 @@ ksemInit(Ksem* sem)
 }
 
 /*
- * Use a stored wakeup from the sempahore.  Block if none
+ * Use a stored wakeup from the semaphore.  Block if none
  * are available.  Can wait with a timeout.  (If timeout is 0, then
  * do not timeout in wait.)
  * Returns true if the semaphore was acquired, returns false if
