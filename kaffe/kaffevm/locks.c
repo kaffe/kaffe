@@ -156,13 +156,14 @@ getHeavyLock(iLock* volatile * lkp, iLock *heavyLock)
   /* The lock is allocated and ready to use. */
   for (;;) {
     /* Try to acquire the lock. */
+    lk->num_wait++;
     if (!COMPARE_AND_EXCHANGE(&(lk->in_progress), 0, 1))
       {
-	lk->num_wait++;
 	KSEM(get)(&lk->sem, (jlong)0);
-	lk->num_wait--;
+        lk->num_wait--;
 	continue;
       }
+    lk->num_wait--;
     lk->lkp = lkp;
     return lk;
   }
@@ -205,7 +206,8 @@ putHeavyLock(iLock* volatile lk)
   
   lk->in_progress = 0;
   lk->lkp = NULL;
-  KSEM(put)(&(lk->sem));
+  if (lk->num_wait != 0)
+    KSEM(put)(&(lk->sem));
 }
 
 /*
@@ -223,6 +225,7 @@ DBG(SLOWLOCKS,
     dprintf("slowLockMutex(lk=%p, th=%p)\n",
 	    *lkp, KTHREAD(current)());
     );
+
  KTHREAD(disable_stop)(); /* protect the heavy lock, and its queues */
 
  tdata = KTHREAD(get_data)(cur);

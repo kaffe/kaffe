@@ -1,5 +1,26 @@
 2005-03-12  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/locks.c
+	(getHeavyLock): Changed order of heavy locking.
+	(putHeavyLock): Only call KSEM(put) if it is useful.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_exit): If it is called from the main thread it will wait
+	for all other non-daemon threads to exit before returning.
+
+	* kaffe/kaffevm/jni/jni-base.c
+	(KaffeJNI_DestroyJavaVM): New function.
+	(JNI_CreateJavaVM): Remember the thread which has built the VM object.
+	(startingThread): New variable.
+
+	* kaffe/kaffevm/jni/jni_funcs.h
+	(KaffeJNI_DestroyJavaVM): New function.
+
+	* kaffe/kaffevm/jni/jni.c
+	(Kaffe_DestroyJavaVM): Removed.
+	
+2005-03-12  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-jthreads/config-jthreads.h: Define
 	SIGALTSTACK_NEEDS_END if the system is IRIX.
 

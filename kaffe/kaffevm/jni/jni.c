@@ -736,14 +736,6 @@ Kaffe_GetJavaVM(JNIEnv* env UNUSED, JavaVM** vm)
 }
 
 static jint
-Kaffe_DestroyJavaVM(JavaVM* vm UNUSED)
-{
-	/* Right now, calling this from main2 is what prevents us from 
-	   exiting there */
-	exitThread();
-}
-
-static jint
 Kaffe_AttachCurrentThread(JavaVM* vm UNUSED, void** penv, void* args UNUSED)
 {
 	if (KTHREAD(attach_current_thread) (false)) {
@@ -1068,7 +1060,7 @@ const struct JNIInvokeInterface Kaffe_JNIInvokeInterface = {
 	NULL,
 	NULL,
 	NULL,
-	Kaffe_DestroyJavaVM,
+	KaffeJNI_DestroyJavaVM,
 	Kaffe_AttachCurrentThread,
 	Kaffe_DetachCurrentThread,
 	Kaffe_GetEnv,

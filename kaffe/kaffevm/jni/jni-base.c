@@ -32,6 +32,7 @@
  * we only support one at a time.
  */
 static int Kaffe_NumVM = 0;
+static jthread_t startingThread;
 
 extern struct JNINativeInterface Kaffe_JNINativeInterface;
 extern KaffeVM_Arguments Kaffe_JavaVMInitArgs;
@@ -303,6 +304,7 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
   /* Return the VM and JNI we're using */
   *vm = &Kaffe_JavaVM;
   *env = THREAD_JNIENV();
+  startingThread = KTHREAD(current)();
   Kaffe_NumVM++;
 
 #if defined(ENABLE_JVMPI)
@@ -314,7 +316,20 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
       jvmpiPostEvent(&ev);
     }
 #endif
-	
+
+  return 0;
+}
+
+jint
+KaffeJNI_DestroyJavaVM(JavaVM* vm UNUSED)
+{
+  /* The destroy function must be called by the same thread that has
+   * built the VM object
+   */
+  if (KTHREAD(current)() != startingThread)
+    return -1;
+
+  exitThread();
   return 0;
 }
 

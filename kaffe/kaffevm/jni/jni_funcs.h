@@ -12,6 +12,10 @@
 #ifndef KAFFE_JNI_FUNCTIONS_H
 #define KAFFE_JNI_FUNCTIONS_H
 
+/* ====== Invokation API ============================================================= */
+
+jint KaffeJNI_DestroyJavaVM(JavaVM* vm);
+
 /* ====== Helpers =================================================================== */
 
 jmethodID KaffeJNI_FromReflectedMethod (JNIEnv *, jobject);

@@ -1004,9 +1004,10 @@ void tDispose ( jthread_t nt )
    */
 }
 
-/*
+/**
  * Function to be called (by threads.c firstStartThread) when the thread leaves
- * the user thread function
+ * the user thread function. If the calling thread is the main thread then it
+ * suspend the thread until all other threads has exited.
  */
 void
 jthread_exit ( void )
@@ -1044,7 +1045,9 @@ jthread_exit ( void )
 	  }
 
 	  for ( t=activeThreads; t != NULL; t = t->next ){
-		if ( t != cur ) {
+		/* We must not kill the current thread and the main thread
+		 */
+		if ( t != cur && t != firstThread) {
 		  /* Mark the thread as to be killed. */
 		  t->status = THREAD_KILL;
 		  /* Send an interrupt event to the remote thread.
@@ -1066,27 +1069,32 @@ jthread_exit ( void )
 #endif
 
 	  if ( (cur != firstThread) && (firstThread->active == 0) ) {
-		/* if the firstThread has already been frozen, it's not in the cache list */
-		pthread_cancel( firstThread->tid);
+		/* if the firstThread has already been frozen,
+		 * it's not in the cache list. We must wake it up because
+		 * this thread is the last one alive and it is exiting. */
 		repsem_post (&firstThread->sem);
 	  }
 
-	  unprotectThreadList(cur);
-	  pthread_exit( NULL);
+	  /* This is not the main thread so we may kill it. */
+	  if (cur != firstThread)
+	  {
+	    unprotectThreadList(cur);
+	    pthread_exit( NULL);
 
-	  /* we shouldn't get here, this is a last safeguard */
-	  EXIT(0);
+	    /* we shouldn't get here, this is a last safeguard */
+	    EXIT(0);
+	  }
 	}
 	unprotectThreadList(cur);
   }
 
-  if ( cur == firstThread ) {
-	/*
-	 * We don't cache this one, but we have to remove it from the active list. Note
-	 * that the firstThread always has to be the last entry in the activeThreads list
-	 * (we just add new entries at the head)
-	 */
-	protectThreadList(cur);
+  /*
+   * We don't cache this one, but we have to remove it from the active list. Note
+   * that the firstThread always has to be the last entry in the activeThreads list
+   * (we just add new entries at the head)
+   */
+  protectThreadList(cur);
+  if ( cur == firstThread && nonDaemons != 0) {
 
 	/* if we would be the head, we would have been the last, too (and already exited) */
 	assert( cur != activeThreads);
@@ -1097,22 +1105,15 @@ jthread_exit ( void )
 
 	unprotectThreadList(cur);
 
-	/*
-	 * Put us into a permanent freeze to avoid shut down of the whole process (it's
-	 * not clear if this is common pthread behavior or just a implementation
-	 * linux-threads "feature")
+	/* Put the main thread in a frozen state waiting for the other
+	 * real threads to terminate. The main thread gets the control back
+	 * after that.
 	 */
 	repsem_wait( &cur->sem);
-
-	/* We put here a safe-guard in case the pthread_cancel has not managed
-	 * to do its job and that repsem_wait awakes.
-	 */
-	pthread_exit(NULL);
   }
-  else {
+  else if (cur != firstThread) {
 	/* flag that we soon will get a new cache entry (would be annoying to
 	 * create a new thread in the meantime) */
-	protectThreadList(cur);
 	pendingExits++;
 	unprotectThreadList(cur);
   }
