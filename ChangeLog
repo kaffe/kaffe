@@ -1,3 +1,36 @@
+Mon Jul 15 01:37:05 CEST 2002 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/awt/AWTEvent.java:
+	(INPUT_METHOD_EVENT_MASK) new constant.
+
+	* libraries/javalib/java/awt/BorderLayout.java:
+	(AFTER_LAST_LINE, AFTER_LINE_ENDS, BEFORE_FIRST_LINE,
+	BEFORE_LINE_BEGINS) new constants.
+
+	* libraries/javalib/java/awt/Canvas.java:
+	(paint) new method.
+
+	* libraries/javalib/java/awt/Component.java:
+	(list) flush on exit.
+
+	* libraries/javalib/java/awt/Container.java:
+	(list)  flush on exit.
+	(paint) validate children before painting.
+
+	* libraries/javalib/java/awt/Cursor.java:
+	(CUSTOM_CURSOR) new constant.
+
+	* libraries/javalib/java/awt/FlowLayout.java:
+	(LEADING, TRAILING) new constants.
+
+	* libraries/javalib/java/awt/Font.java:
+	(ROMAN_BASELINE, CENTER_BASELINE,  HANGING_BASELINE) new
+	constants.
+
+	* libraries/javalib/java/awt/Panel.java:
+	(counter) new private field.
+	(Panel) set a unique instance name for each panel.
+
 Fri Jul 12 15:26:03 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/io/PipedInputStream.java:

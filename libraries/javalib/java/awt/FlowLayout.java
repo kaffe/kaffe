@@ -19,6 +19,8 @@ public class FlowLayout
 	final public static int LEFT = 0;
 	final public static int CENTER = 1;
 	final public static int RIGHT = 2;
+	final public static int LEADING = 3;
+	final public static int TRAILING = 4;
 	int align;
 	int hgap;
 	int vgap;

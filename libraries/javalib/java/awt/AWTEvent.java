@@ -35,6 +35,7 @@ public class AWTEvent
 	final public static long ADJUSTMENT_EVENT_MASK = 0x100;
 	final public static long ITEM_EVENT_MASK = 0x200;
 	final public static long TEXT_EVENT_MASK = 0x400;
+        public static final long INPUT_METHOD_EVENT_MASK = 0x800;
 	final public static int RESERVED_ID_MAX = 1999;
 	final static long DISABLED_MASK = 0x80000000;
 	final static long TEMP_DISABLED_MASK = 0x40000000;

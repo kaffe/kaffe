@@ -814,9 +814,11 @@ public void list(PrintWriter out) {
 
 public void list(PrintWriter out, int indent) {
     for (int i = indent; i > 0; --i) {
-	out.println(' ');
+	out.print(' ');
     }
-    out.print(toString());
+    out.println(toString());
+
+    out.flush();
 }
 
 /**

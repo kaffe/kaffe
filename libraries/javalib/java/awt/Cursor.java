@@ -13,6 +13,7 @@ package java.awt;
  */
 public class Cursor implements java.io.Serializable
 {
+	final public static int CUSTOM_CURSOR = -1;
 	final public static int DEFAULT_CURSOR = 0;
 	final public static int CROSSHAIR_CURSOR = 1;
 	final public static int TEXT_CURSOR = 2;

@@ -403,6 +403,8 @@ public void list(PrintWriter out, int indent) {
     for (int i = comps.length - 1; i > 0; --i) {
 	comps[i].list(out, indent + 2);
     }
+
+    out.flush();
 }
 
 /**
@@ -468,6 +470,8 @@ public Dimension minimumSize () {
 public void paint ( Graphics g ) {
 	// standard JDK behavior is to paint last added childs first, simulating
 	// a first-to-last z order
+
+	validate();
 
 	for ( int i=nChildren-1; i>=0; i-- ) {
 		Component c = children[i];

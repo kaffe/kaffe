@@ -50,11 +50,21 @@ public boolean isFocusTraversable () {
 	return false;
 }
 
-//public void paint( Graphics g) {
-//	// Canvas is a nativeLike Component, i.e. its background would
-//	// normally be blanked by the native window system
-//	g.clearRect( 0, 0, width, height);
-//}
+public void paint( Graphics g) {
+	// Canvas blanks the background in its own background color.
+	// As the graphics context we got passed may not have the
+	// same background color as this Canvas, and you can't change
+	// the background color of a graphics context, we need
+	// a new graphics context.
+	// Unfortunately, there is no way to query the background color
+	// of a graphics context, so we can't optimize for the case
+	// when the parameter's background matches ours.
+
+	Graphics context = getGraphics();
+	context.clearRect( 0, 0, width, height);
+	context.dispose();
+}
+
 void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
 	NativeGraphics g = NativeGraphics.getClippedGraphics( null, this, 0,0,
 	                                                      ux, uy, uw, uh,

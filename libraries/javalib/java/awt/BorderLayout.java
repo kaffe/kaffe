@@ -29,6 +29,10 @@ public class BorderLayout
 	final public static String WEST = "West";
 	final public static String SOUTH = "South";
 	final public static String EAST = "East";
+	final public static String AFTER_LAST_LINE = "Last";
+	final public static String AFTER_LINE_ENDS = "After";
+	final public static String BEFORE_FIRST_LINE = "First";
+	final public static String BEFORE_LINE_BEGINS = "Before";
 
 /**
  * Constructs a new BorderLayout with no gaps between components.

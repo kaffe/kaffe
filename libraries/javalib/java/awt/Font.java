@@ -17,6 +17,9 @@ public class Font
 	final public static int PLAIN = 0;
 	final public static int BOLD = 1;
 	final public static int ITALIC = 2;
+	final public static int ROMAN_BASELINE = 0;
+	final public static int CENTER_BASELINE = 1;
+	final public static int HANGING_BASELINE = 2;
 	final private static long serialVersionUID = -4206021311591459213L;
 
 public Font ( String fntName, int fntStyle, int fntSize ) {

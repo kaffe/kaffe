@@ -15,6 +15,7 @@ public class Panel
 {
 	final private static long serialVersionUID = -2728009084054400034L;
 	private static LayoutManager defaultLayout = new FlowLayout();
+	private static int counter;
 
 public Panel() {
 	this( defaultLayout );
@@ -26,6 +27,7 @@ public Panel( LayoutManager layout) {
 	flags |= IS_ASYNC_UPDATED;
 
 	setLayout( layout);
+	setName("panel" + counter++);
 }
 
 ClassProperties getClassProperties () {
