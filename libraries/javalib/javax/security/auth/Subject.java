@@ -1,20 +1,20 @@
 /* Subject.java -- a single entity in the system.
    Copyright (C) 2004 Free Software Foundation, Inc.
 
-This file is part of GNU Crypto.
+This file is part of GNU Classpath.
 
-GNU Crypto is free software; you can redistribute it and/or modify
+GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-GNU Crypto is distributed in the hope that it will be useful, but
+GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU Crypto; see the file COPYING.  If not, write to the
+along with GNU Classpath; see the file COPYING.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
@@ -59,12 +59,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-/**
- *
- */
 public final class Subject implements Serializable
 {
-
   // Fields.
   // -------------------------------------------------------------------------
 
@@ -81,8 +77,8 @@ public final class Subject implements Serializable
    */
   private boolean readOnly;
 
-  private transient final SecureSet pubCred;
-  private transient final SecureSet privCred;
+  private final transient SecureSet pubCred;
+  private final transient SecureSet privCred;
 
   // Constructors.
   // -------------------------------------------------------------------------
@@ -371,7 +367,6 @@ public final class Subject implements Serializable
    */
   private static class SecureSet extends AbstractSet implements Serializable
   {
-
     // Fields.
     // -----------------------------------------------------------------------
 
@@ -383,7 +378,7 @@ public final class Subject implements Serializable
 
     private final Subject subject;
     private final LinkedList elements;
-    private transient final int type;
+    private final transient int type;
 
     // Constructors.
     // -----------------------------------------------------------------------
