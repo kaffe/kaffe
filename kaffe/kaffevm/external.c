@@ -275,8 +275,9 @@ DBG(NATIVELIB,
 							"Unknown error",
 							errsiz);
 				}
-				else if( (strstr(err, "ile not found") ||
-					  strstr(err, "annot open")) )
+				else if( (strstr(err, " not found") ||
+					  strstr(err, "annot open") ||
+					  strstr(err, "an't open")) )
 				{
                                 char *last_sep = strrchr (path, file_separator[0]);
 #ifdef HAVE_SNPRINTF
