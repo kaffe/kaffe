@@ -33,6 +33,14 @@ public Graphics getGraphics () {
 	return g;
 }
 
+// Sun's version of this class apparently has this method. So we put
+// one here so applets compiled against kaffe's version of this class
+// will call the right method when they do super.addNotify().
+
+public void addNotify () {
+	super.addNotify();
+}
+
 public void paint( Graphics g) {
 	// Canvas is a nativeLike Component, i.e. its background would
 	// normally be blanked by the native window system
