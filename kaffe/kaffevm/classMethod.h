@@ -37,8 +37,7 @@ typedef struct Hjava_lang_ClassLoader {
 	int	dummy;
 } Hjava_lang_ClassLoader;
 
-#define __DEFINED_CLASS
-typedef struct Hjava_lang_Class {
+struct Hjava_lang_Class {
 	Hjava_lang_Object	head;		/* A class is an object too */
 
 	/* Link to class entry */
@@ -86,7 +85,12 @@ typedef struct Hjava_lang_Class {
 	Hjava_lang_ClassLoader*	loader;
 	char			state;
 	char			final;
-} Hjava_lang_Class;
+};
+
+#ifndef __DEFINED_CLASS
+#define __DEFINED_CLASS
+typedef struct Hjava_lang_Class Hjava_lang_Class;
+#endif
 
 #define METHOD_TRANSLATED(M)		((M)->accflags & ACC_TRANSLATED)
 #define	METHOD_NATIVECODE(M)		((M)->ncode)
