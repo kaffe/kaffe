@@ -1,3 +1,8 @@
+2003-07-04  Mark Wielaard <mark@klomp.org>
+
+	* Makefile.am:
+	(SUBDIRS) fixed automake warning.
+
 2003-07-04  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* libraries/clib/native/String.c:
