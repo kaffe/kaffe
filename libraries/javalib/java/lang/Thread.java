@@ -349,7 +349,9 @@ public static void sleep(long millis) throws InterruptedException {
 	if (millis == 0) {
 		millis = 1;
 	}
-	curr.waitOn(curr.sleeper, millis);
+	synchronized(curr.sleeper) {
+		curr.waitOn(curr.sleeper, millis);
+	}
 }
 
 public static void sleep(long millis, int nanos) throws InterruptedException
@@ -410,7 +412,9 @@ final public void suspend() {
 	synchronized (suspendResume) {
 		for (;; ) {
 			try {
-				waitOn(suspendResume, 0);
+				synchronized(suspendResume) {
+					waitOn(suspendResume, 0);
+				}
 				break;
 			}
 			catch (InterruptedException _) {
@@ -438,22 +442,8 @@ void waitOn(Object hold, long timeout) throws InterruptedException {
 		throw t;
 	}
 	holder = hold;
-	try {
-		synchronized (hold) {
-			hold.wait0(timeout);
-		}
-	}
-	/* This is a hack to deal with the fact that Kaffe doesn't correctly
-	 * release the 'hold' lock when handing ThreadDeath - hence when it
-	 * exits the syncronized block we throw an exception.  Here we catch
-	 * this and throw a new ThreadDeath which is why it happens.
-	 */
-	catch (IllegalMonitorStateException _) {
-		throw new ThreadDeath();
-	}
-	finally {
-		holder = null;
-	}
+	hold.wait0(timeout);
+	holder = null;
 	if (interrupting) {
 		interrupting = false;
 		throw new InterruptedException();
