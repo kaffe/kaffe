@@ -1,3 +1,11 @@
+2003-07-10  Dalibor Topic  <robilad@yahoo.com>
+
+        * libraries/javalib/bootstrap.classlist:
+	Added java.util.Collections.$1
+
+        * libraries/javalib/Klasses.jar.bootstrap:
+        regenerated.
+
 2003-07-09  Rob Gonzalez <rob@kaffe.org>
 
 	* kaffe/kaffevm/constants.h

@@ -133,6 +133,7 @@ java/util/AbstractSet.class
 java/util/ArrayList.class
 java/util/Collection.class
 java/util/Collections.class
+java/util/Collections$1.class
 java/util/Collections$2.class
 java/util/Collections$EmptyList.class
 java/util/Collections$EmptyMap.class
