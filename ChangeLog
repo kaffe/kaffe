@@ -1,5 +1,21 @@
 Sat Feb 20 14:14:53 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* libraries/clib/awt/X/Makefile.am: export symbols starting
+	with kaffe too
+	* libraries/clib/io/Makefile.am: ditto
+	* libraries/clib/management/Makefile.am: ditto
+	* libraries/clib/math/Makefile.am: ditto
+	* libraries/clib/native/Makefile.am: ditto
+	* libraries/clib/net/Makefile.am: ditto
+	* libraries/clib/zip/Makefile.am: ditto
+	* libraries/clib/awt/X/Makefile.in: regen
+	* libraries/clib/io/Makefile.in: ditto
+	* libraries/clib/management/Makefile.in: ditto
+	* libraries/clib/math/Makefile.in: ditto
+	* libraries/clib/native/Makefile.in: ditto
+	* libraries/clib/net/Makefile.in: ditto
+	* libraries/clib/zip/Makefile.in: ditto
+
 	* acinclude.m4, ltconfig, ltmain.sh: update from libtool, it no
 	longer hard-codes build-dirs in programs, running a program in the 
 	build-dir will use libraries from the build-dir, introduced
