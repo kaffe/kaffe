@@ -79,6 +79,9 @@ typedef struct _gc_block {
 	uint8*			data;	/* Address of first object in */
 } gc_block;
 
+extern gc_block	* gc_primitive_reserve(void);
+extern void	gc_primitive_free(gc_block* mem);
+
 /* ------------------------------------------------------------------------ */
 
 #define	GC_MAGIC		0xD0DECADE
