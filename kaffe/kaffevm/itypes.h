@@ -41,4 +41,7 @@ extern struct Hjava_lang_Class* voidClass;
 
 #define	TYPE_CLASS(t)		types[t]
 
+extern void finishTypes(void);
+extern void initTypes(void);
+
 #endif

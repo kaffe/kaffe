@@ -102,16 +102,17 @@ static
 void
 gc_heap_initialise(void)
 {
-	int i;
-	int l;
-	int b;
-	int t;
-
 	gc_pgsize = getpagesize();
 	gc_heap_allocation_size = Kaffe_JavaVMArgs[0].allocHeapSize;
 	gc_heap_limit = Kaffe_JavaVMArgs[0].maxHeapSize;
 
 #ifndef PREDEFINED_NUMBER_OF_TILES
+    {
+	int i;
+	int l;
+	int b;
+	int t;
+
 	/* old scheme, where number of tiles was approximated by a series
 	 * of powers of two
 	 */
@@ -157,6 +158,7 @@ gc_heap_initialise(void)
 		sztable[l].list = i;
 	}
 	max_freelist = i;
+    }
 #else
 	/* PREDEFINED_NUMBER_OF_TILES */
 	{
@@ -177,11 +179,14 @@ gc_heap_initialise(void)
 #endif
 
 DBG(GCSTAT,
-	for (i = 0; i < max_small_object_size; i++)
-		printf("size %d list %d, list.size %d\n", i, sztable[i].list,
-			freelist[sztable[i].list].sz);
-	printf("max smobjsize %d, max freelist %d\n", 
-		max_small_object_size, max_freelist);
+	{
+		int i;
+		for (i = 0; i < max_small_object_size; i++)
+			printf("size %d list %d, list.size %d\n", i,
+				sztable[i].list, freelist[sztable[i].list].sz);
+		printf("max smobjsize %d, max freelist %d\n", 
+			max_small_object_size, max_freelist);
+	}
     )
 
 DBG(SLACKANAL,
@@ -555,7 +560,6 @@ gc_primitive_alloc(size_t sz)
 	gc_block* ptr;
 	gc_block** pptr;
 	int hidx;
-	size_t bsz;
 
 	assert(sz % gc_pgsize == 0);
 

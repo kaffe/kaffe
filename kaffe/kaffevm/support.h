@@ -121,5 +121,6 @@ extern void SignalError(char *, char *) __NORETURN__;
 extern void unimp(char*) __NORETURN__;
 extern struct Hjava_lang_String* Utf8Const2JavaString(struct _strconst*);
 extern void kprintf(FILE*, const char*, ...);
+extern int addClasspath(char*);
 
 #endif

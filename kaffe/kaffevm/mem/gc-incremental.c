@@ -26,6 +26,7 @@
 #include "exception.h"
 #include "external.h"
 #include "lookup.h"
+#include "soft.h"
 #include "md.h"
 #include "jni.h"
 
@@ -85,7 +86,6 @@ static struct {
 } objectStats;
 
 static void objectStatsChange(gc_unit*, int);
-void objectStatsPrint(void);
 
 #define	OBJECTSTATSADD(M)	objectStatsChange(M, 1)
 #define	OBJECTSTATSREMOVE(M)	objectStatsChange(M, -1)
@@ -115,7 +115,6 @@ static void gcFree(void*);
 
 static void finalizeObject(void*);
 
-void walkConservative(void*, uint32);
 void walkMemory(void*);
 
 static void walkNull(void*, uint32);
@@ -451,9 +450,6 @@ static
 void
 startGC(void)
 {
-	void* obj;
-	gc_block* info;
-	int idx;
 	int i;
 	refObject* robj;
 	gc_unit* unit;
@@ -557,6 +553,7 @@ finishGC(void)
 	 */
 	while (gclists[mustfree].cnext != &gclists[mustfree]) {
 		unit = gclists[mustfree].cnext;
+		info = GCMEM2BLOCK(unit);
 		UREMOVELIST(unit);
 FDBG(		printf("freeObject %p size %d\n", info, info->size);
 		fflush(stdout);					)

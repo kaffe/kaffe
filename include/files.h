@@ -17,6 +17,10 @@
 #include <jtypes.h>
 #include <errno.h>
 
+#if defined(HAVE_STRING_H)
+#include <string.h>
+#endif
+
 #if defined(HAVE_STRERROR)
 #define	SYS_ERROR	(char*)strerror(errno)
 #else

@@ -22,6 +22,4 @@ typedef struct Hjava_lang_Object {
 	/* Data follows on immediately */
 } Hjava_lang_Object;
 
-extern jint java_lang_Object_hashCode(struct Hjava_lang_Object*);
-
 #endif

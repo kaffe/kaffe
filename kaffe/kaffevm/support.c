@@ -57,8 +57,6 @@ extern struct JNIEnv_ Kaffe_JNIEnv;
 jvalue
 do_execute_java_method_v(void* obj, char* method_name, char* signature, Method* mb, int isStaticCall, va_list argptr)
 {
-	char* sig;
-	int args;
 	jvalue retval;
 
 	if (mb == 0) {
@@ -104,8 +102,6 @@ do_execute_java_method(void* obj, char* method_name, char* signature, Method* mb
 jvalue
 do_execute_java_class_method_v(char* cname, char* method_name, char* signature, va_list argptr)
 {
-	char* sig;
-	int args;
 	Method* mb;
 	jvalue retval;
 	char cnname[CLASSMAXSIG];	/* Unchecked buffer - FIXME! */
@@ -145,9 +141,7 @@ do_execute_java_class_method(char* cname, char* method_name, char* signature, ..
 Hjava_lang_Object*
 execute_java_constructor_v(char* cname, Hjava_lang_Class* cc, char* signature, va_list argptr)
 {
-	int args;
 	Hjava_lang_Object* obj;
-	char* sig;
 	Method* mb;
 	char buf[MAXEXCEPTIONLEN];
 	jvalue retval;
@@ -210,7 +204,6 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 	callMethodInfo call;	
 	jvalue in[MAXMARGS];
 	jvalue tmp;
-	Hjava_lang_Object* sync;
 
 	if (ret == 0) {
 		ret = &tmp;
@@ -347,6 +340,8 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, (*Kaffe_ThreadInterface.currentJava)());
 	}
 	else {
+		Hjava_lang_Object* sync;
+
 		if (meth->accflags & ACC_SYNCHRONISED) {
 			if (meth->accflags & ACC_STATIC) {
 				sync = &meth->class->head;
@@ -384,7 +379,6 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	callMethodInfo call;
 	jvalue in[MAXMARGS];
 	jvalue tmp;
-	Hjava_lang_Object* sync;
 
 	if (ret == 0) {
 		ret = &tmp;
@@ -522,6 +516,8 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, (*Kaffe_ThreadInterface.currentJava)());
 	}
 	else {
+		Hjava_lang_Object* sync;
+
 		if (meth->accflags & ACC_SYNCHRONISED) {
 			if (meth->accflags & ACC_STATIC) {
 				sync = &meth->class->head;

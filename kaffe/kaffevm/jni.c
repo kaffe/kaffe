@@ -61,6 +61,8 @@ static int java_minor_version = 1;
  * referencing.
  */
 #if defined(NEED_JNIREFS)
+static void addJNIref(jref);
+static void removeJNIref(jref);
 #define	ADD_REF(O)		addJNIref(O)
 #define	REMOVE_REF(O)		removeJNIref(O)
 #else
@@ -118,10 +120,10 @@ extern JavaVM Kaffe_JavaVM;
 extern struct JNIEnv_ Kaffe_JNIEnv;
 
 static void Kaffe_JNI_wrapper(Method*, void*);
+#if defined(TRANSLATOR)
 static void startJNIcall(void);
 static void finishJNIcall(void);
-static void addJNIref(jref);
-static void removeJNIref(jref);
+#endif
 
 void Kaffe_JNIExceptionHandler(void);
 jint Kaffe_GetVersion(JNIEnv*);
@@ -300,8 +302,6 @@ Kaffe_ExceptionOccured(JNIEnv* env)
 void
 Kaffe_ExceptionDescribe(JNIEnv* env)
 {
-	jmethodID meth;
-
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (unhand(getCurrentThread())->exceptObj != 0) {
@@ -3326,8 +3326,6 @@ Kaffe_RegisterNatives(JNIEnv* env, jclass cls, const JNINativeMethod* methods, j
 {
 	Method* meth;
 	int nmeth;
-	char* name;
-	char* sig;
 	int i;
 	int j;
 
@@ -3466,8 +3464,6 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	char* str;
 	int count;
 	nativeCodeInfo ncode;
-	int j;
-	int jcount;
 	SlotInfo* tmp;
 
 	/* Convert the signature into a simple string of types, and
@@ -3515,29 +3511,34 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	call_soft(startJNIcall);
 
 #if defined(NEED_JNIREFS)
-	/* Make the necesary JNI ref calls first */
-	if (!METHOD_IS_STATIC(xmeth)) {
-		pusharg_ref(local(0), 0);
-		end_sub_block();
-		call_soft(addJNIref);
-		popargs();
-	}
-	j = i;
-	jcount = count;
-	while (j > 0) {
-		j--;
-		jcount--;
-		if (buf[j] == '[' || buf[j] == 'L') {
-			pusharg_ref(local(jcount), 0);
+	{
+		int j;
+		int jcount;
+
+		/* Make the necesary JNI ref calls first */
+		if (!METHOD_IS_STATIC(xmeth)) {
+			pusharg_ref(local(0), 0);
 			end_sub_block();
 			call_soft(addJNIref);
 			popargs();
 		}
-		if (buf[j] == 'J' || buf[j] == 'D') {
+		j = i;
+		jcount = count;
+		while (j > 0) {
+			j--;
 			jcount--;
+			if (buf[j] == '[' || buf[j] == 'L') {
+				pusharg_ref(local(jcount), 0);
+				end_sub_block();
+				call_soft(addJNIref);
+				popargs();
+			}
+			if (buf[j] == 'J' || buf[j] == 'D') {
+				jcount--;
+			}
 		}
+		start_sub_block();
 	}
-	start_sub_block();
 #endif
 
 	/* Add synchronisation if necessary */
@@ -3694,15 +3695,16 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	SET_METHOD_NATIVECODE(xmeth, func);
 	xmeth->accflags |= ACC_JNI;
 }
-#endif
+#endif /* INTERPRETER */
 
+#if defined(TRANSLATOR)
 static
 void
 startJNIcall(void)
 {
+#if defined(NEED_JNIREFS)
 	jnirefs* table;
 
-#if defined(NEED_JNIREFS)
 	table = gc_malloc(sizeof(jnirefs), &gcNormal);
 	table->prev = unhand(getCurrentThread())->jnireferences;
 	unhand(getCurrentThread())->jnireferences = table;
@@ -3715,15 +3717,17 @@ static
 void
 finishJNIcall(void)
 {
-	jnirefs* table;
 	jref eobj;
-	int idx;
 	Hjava_lang_Thread* ct;
 
 	ct = getCurrentThread();
 #if defined(NEED_JNIREFS)
-	table = (jnirefs*)unhand(ct)->jnireferences;
-	unhand(ct)->jnireferences = table->prev;
+	{
+		jnirefs* table;
+
+		table = (jnirefs*)unhand(ct)->jnireferences;
+		unhand(ct)->jnireferences = table->prev;
+	}
 #endif
 	/* If we have a pending exception, throw it */
 	eobj = unhand(ct)->exceptObj;
@@ -3732,7 +3736,9 @@ finishJNIcall(void)
 		throwExternalException(eobj);
 	}
 }
+#endif /* TRANSLATOR */
 
+#if defined(NEED_JNIREFS)
 static
 void
 addJNIref(jref obj)
@@ -3775,6 +3781,7 @@ removeJNIref(jref obj)
 		}
 	}
 }
+#endif /* NEED_JNIREFS */
 
 /*
  * Look up a native function using the JNI interface system.

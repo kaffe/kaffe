@@ -74,4 +74,8 @@ extern struct _gcStats {
 #define	GC_WRITE(_o, _p)
 #endif
 
+extern void walkConservative(void*, uint32);
+extern void markObject(void* mem);
+extern void objectStatsPrint(void);
+
 #endif
