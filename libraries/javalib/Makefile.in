@@ -4248,7 +4248,9 @@ javax_swing_plaf_basic_SRCS = \
 	javax/swing/plaf/basic/ComboPopup.java
 
 javax_swing_plaf_metal_SRCS = \
-	javax/swing/plaf/metal/MetalLookAndFeel.java
+	javax/swing/plaf/metal/DefaultMetalTheme.java \
+	javax/swing/plaf/metal/MetalLookAndFeel.java \
+	javax/swing/plaf/metal/MetalTheme.java
 
 javax_swing_table_SRCS = \
 	javax/swing/table/AbstractTableModel.java \

@@ -1,5 +1,20 @@
 2004-12-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/swing/plaf/metal/MetalTheme.java
+	libraries/javalib/javax/swing/plaf/metal/DefaultMetalTheme.java,
+	libraries/javalib/javax/swing/plaf/metal/MetalLookAndFeel.java:
+	Resynced with GNU Classpath.
+	
+	2004-12-22  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/metal/MetalTheme.java,
+	javax/swing/plaf/metal/DefaultMetalTheme.java:
+	New files.
+	* javax/swing/plaf/metal/MetalLookAndFeel.java:
+	Implemented all color resource getter methods.
+	
+2004-12-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/JFileChooser.java:
 	Resynced with GNU Classpath.
 	

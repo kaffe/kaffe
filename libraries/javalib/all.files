@@ -3117,7 +3117,9 @@ javax/swing/plaf/LabelUI.java
 javax/swing/plaf/ListUI.java
 javax/swing/plaf/MenuBarUI.java
 javax/swing/plaf/MenuItemUI.java
+javax/swing/plaf/metal/DefaultMetalTheme.java
 javax/swing/plaf/metal/MetalLookAndFeel.java
+javax/swing/plaf/metal/MetalTheme.java
 javax/swing/plaf/OptionPaneUI.java
 javax/swing/plaf/PanelUI.java
 javax/swing/plaf/PopupMenuUI.java
