@@ -57,3 +57,8 @@ build-classes:
 install-classes:
 		test -d $(classdir) || $(MKDIR) $(classdir)
 		$(INSTALL_DATA) $(CLASSFILE) $(classdir)/$(CLASSFILE)
+
+# not yet implemented, but must stay to not break make depend
+depend:
+
+
