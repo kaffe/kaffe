@@ -62,7 +62,7 @@ run()
 	    error=$?
 	fi
 	if test ! -f "$1.out"; then
-		if test "$error" = 0; then
+		if test "$error" = 0 || test "$error" = 77; then
 		    mv "$RESULT" "$1.out"
 		    $VERBOSE output preserved in "$1.out"
 		else
@@ -93,12 +93,13 @@ runtest()
 	    fi
 	    sed '/^\/\* [Ee]xpected [Oo]utput:/,/\*\//p; d' < "$1" |
 	      sed '1d;$d' > $basename.out
+	    cmp -s $basename.out /dev/null && rm -f $basename.out
 	    JAVA_FLAGS=`sed 's/\/\/ java args://p;d' < "$1"`
 	    test -n "$JAVA_FLAGS" || JAVA_FLAGS='$basename'
 	    eval run $JAVA_FLAGS
 	fi
-	if test $error != 0 ; then
-	    overallerror=1
+	if test $error != 0 && test $overallerror != 1; then
+	    overallerror=$error
 	fi
 }
 

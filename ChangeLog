@@ -1,3 +1,10 @@
+Thu Feb 18 15:18:19 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test/regression/TestScript.in (run): accept exit status 77 as
+	SKIP, as does automake
+	* test/regression/TestNative.java (TestNative): skip if we get
+	UnsatisfiedLinkError
+
 Thu Feb 18 15:02:23 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* include/Makefile.am (pkginclude_HEADERS): renamed from

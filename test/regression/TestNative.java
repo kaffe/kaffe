@@ -51,22 +51,31 @@ public class TestNative
 
   public static void main(String av[])
   {
+    boolean fail = false;
     int i_should_be = 0x11111111 + 0x22222222 + 0x33333333 + 0x44444444 +
       0x55555555 + 0x66666666 + 0x77777777 + 0x88888888 +
       0x99999999 + 0xAAAAAAAA + 0xBBBBBBBB + 0xCCCCCCCC +
       0xDDDDDDDD + 0xEEEEEEEE + 0xFFFFFFFF + 0x12345678;
     System.out.println("Following test results should be " + i_should_be);
 
-    int i = test16int(0x11111111, 0x22222222, 0x33333333, 0x44444444,
+    int i;
+    try {
+	i = test16int(0x11111111, 0x22222222, 0x33333333, 0x44444444,
 		      0x55555555, 0x66666666, 0x77777777, 0x88888888,
 		      0x99999999, 0xAAAAAAAA, 0xBBBBBBBB, 0xCCCCCCCC,
 		      0xDDDDDDDD, 0xEEEEEEEE, 0xFFFFFFFF, 0x12345678
 		      );
+    } catch (UnsatisfiedLinkError _) {
+	System.out.println("...SKIPPED, native methods are not available");
+	System.exit(77);
+	return; /* never executed, but avoids compiler error */
+    }
     System.out.print("test16int returned " + i);
     if ( i == i_should_be ) {
       System.out.println("...SUCCESS");
     } else {
       System.out.println("...FAILURE");
+      fail = true;
     }
 
 
@@ -86,6 +95,7 @@ public class TestNative
       System.out.println("...SUCCESS");
     } else {
       System.out.println("...FAILURE");
+      fail = true;
     }
 
     long l2_should_be = 1 +(-1) + 2 + (-2) + 3 + (-3) + 4 + (-4) +
@@ -99,6 +109,7 @@ public class TestNative
       System.out.println("...SUCCESS");
     } else {
       System.out.println("...FAILURE");
+      fail = true;
     }
 
     float f_should_be =  -1.2f + 0.2f + 3.3f + 4.5f + 5.6f + 6 + 7 + 8 + 9 + 10 + 11 + 12 + 13 + 14 + 15 + 16;
@@ -110,6 +121,7 @@ public class TestNative
       System.out.println("...SUCCESS");
     } else {
       System.out.println("...FAILURE");
+      fail = true;
     }
 
     double d_should_be =  -1.2 + 0.2 + 3.3 + 4.5 + 5.6 + 6 + 7 + 8 + 9 + 10 + 11 + 12 + 13 + 14 + 15 + 16;
@@ -121,6 +133,7 @@ public class TestNative
       System.out.println("...SUCCESS");
     } else {
       System.out.println("...FAILURE");
+      fail = true;
     }
 
     d = test16floatdouble(-1.2f, 0.2, 3.3, 4.5,
@@ -132,6 +145,10 @@ public class TestNative
       System.out.println("...SUCCESS");
     } else {
       System.out.println("...FAILURE");
+      fail = true;
     }
+
+    if (fail)
+	System.exit(1);
   }
 }
