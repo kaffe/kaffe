@@ -245,17 +245,3 @@ usage(void)
 	fprintf(stderr, "	-o <file>		Generate all output to the given file\n");
 	fprintf(stderr, "	-d <directory>		Directory for the output\n");
 }
-
-
-void*
-gc_malloc_fixed(size_t sz)
-{
-	void* mem;
-
-	mem = malloc(sz);
-	if (mem == NULL) {
-		fprintf (stderr, "(Insufficient memory)\n");
-		exit (-1);
-	}
-	return (mem);
-}

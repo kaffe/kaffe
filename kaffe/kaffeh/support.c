@@ -542,3 +542,16 @@ findClass(char* nm)
 	fprintf(stderr, "Failed to open object '%s'\n", nm);
 	exit(1);
 }
+
+void*
+gc_malloc_fixed(size_t sz)
+{
+        void* mem;      
+
+        mem = malloc(sz);
+        if (mem == NULL) {
+                fprintf (stderr, "(Insufficient memory)\n");
+                exit (-1);
+        }
+        return (mem);   
+}

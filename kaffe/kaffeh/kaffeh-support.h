@@ -23,5 +23,6 @@ void startJniInclude(void);
 void endJniInclude(void);
 
 void findClass(char *nm);
+void* gc_malloc_fixed(size_t sz);
  
 #endif

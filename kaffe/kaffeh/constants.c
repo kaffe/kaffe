@@ -17,8 +17,7 @@
 #include "file.h"
 #include "itypes.h"
 #include "constants.h"
-
-extern void* gc_malloc_fixed(size_t);
+#include "kaffeh-support.h"
 
 constants* constant_pool;
 

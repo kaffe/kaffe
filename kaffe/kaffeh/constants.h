@@ -66,4 +66,6 @@ void readConstantPool(struct Hjava_lang_Class*, struct _classFile*);
    : ((PTR)++, -1))
 
 extern Utf8Const* makeUtf8Const (char*, int);
+extern int32 hashUtf8String(char*, int);
+
 #endif
