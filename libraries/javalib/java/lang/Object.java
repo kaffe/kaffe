@@ -22,14 +22,7 @@ public class Object {
   }
   
   public String toString() {
-    /* According to the 1.0.2 docs this uses the hashCode, but:
-
-       "the hex. string printed is based on the hash code, but may not 
-        be the actual hash code"
-
-       Nice one, Sun! */
-    
-    return "@"+((new Integer(hashCode())).toString());
+    return getClass().getName()+'@'+Integer.toHexString(hashCode());
   }
   
   public final void wait(long timeout, int nanos) throws InterruptedException {
