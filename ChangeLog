@@ -1,3 +1,8 @@
+2003-09-03  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/awt/BasicStroke.java:
+	(BasicStroke) Fixed illegal argument checking to follow 1.4.2 spec.
+
 2003-09-02  Jim Pick  <jim@kaffe.org>
 
 	* libraries/clib/net/PlainDatagramSocketImpl.c:
