@@ -1,3 +1,10 @@
+Tue Mar 21 18:40:27 MST 2000  Godmar Back <gback@cs.utah.edu>
+
+	* libraries/clib/native/Class.c: fix bug #17.
+	Report fields from implemented interfaces as well as inherited
+	classes in Class.getField().  NB: this means we're reporting
+	serialVersionUID in some cases now where JDK doesn't.
+
 Tue Mar 21 12:12:25 CET 2000  Edouard G. Parmelan <egp@free.fr>
 
 	* test/regression/ZipVerify.java: need to compile ZipVerifyUtils class

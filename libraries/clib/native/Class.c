@@ -639,34 +639,41 @@ java_lang_Class_getConstructors0(struct Hjava_lang_Class* this, jboolean declare
 	return (array);
 }
 
-HArrayOfObject*
-java_lang_Class_getFields0(struct Hjava_lang_Class* clazz, jboolean declared)
+/*
+ * Count all public fields of a class, including inherited fields and
+ * fields from implemented interfaces
+ */
+static int
+countPublicFields(Hjava_lang_Class* clazz) 
 {
-	int count;
 	Hjava_lang_Class* clas;
-	Field* fld;
-	Hjava_lang_reflect_Field** ptr;
-	HArrayOfObject* array;
-	int i;
+	int i, count;
 
-	if (declared) {
-		count = CLASS_NFIELDS((Hjava_lang_Class*)clazz);
-	}
-	else {
-		count = 0;
-		for (clas = clazz; clas != NULL; clas = clas->superclass) {
-			fld = CLASS_FIELDS(clas);
-			for (i = CLASS_NFIELDS(clas)-1; i >= 0; i--) {
-				if (fld[i].accflags & ACC_PUBLIC) {
-					count++;
-				}
+	count = 0;
+	for (clas = clazz; clas != NULL; clas = clas->superclass) {
+		Field *fld = CLASS_FIELDS(clas);
+		for (i = CLASS_NFIELDS(clas)-1; i >= 0; i--) {
+			if (fld[i].accflags & ACC_PUBLIC) {
+				count++;
 			}
 		}
 	}
-	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/reflect/Field;");
-	ptr = (Hjava_lang_reflect_Field**)&unhand_array(array)->body[0];
+
+	for (i = 0; i < clazz->total_interface_len; i++) {
+		count += countPublicFields(clazz->interfaces[i]);
+	}
+	return (count);
+}
+
+static void
+makePublicFields(Hjava_lang_Class* clazz, jboolean declared, Hjava_lang_reflect_Field*** pptr)
+{
+	Hjava_lang_Class* clas;
+	Hjava_lang_reflect_Field** ptr = *pptr;
+	int i;
+
 	for (clas = clazz; clas != NULL; clas = clas->superclass) {
-		fld = CLASS_FIELDS(clas);
+		Field *fld = CLASS_FIELDS(clas);
 		for (i = CLASS_NFIELDS(clas)-1; i >= 0;  i--) {
 			if ((fld[i].accflags & ACC_PUBLIC) || declared) {
 				*ptr = makeField(clas, i);
@@ -677,6 +684,39 @@ java_lang_Class_getFields0(struct Hjava_lang_Class* clazz, jboolean declared)
 			break;
 		}
 	}
+	if (!declared) {
+		for (i = 0; i < clazz->total_interface_len; i++) {
+			makePublicFields(clazz->interfaces[i], declared, &ptr);
+		}
+	}
+	*pptr = ptr;
+}
+
+/* 
+ * Below, "declared" means to include a field only if it is directly
+ * declared by that class (and not inherited from a superclass or defined
+ * by an interface the class implements.)  This applies to both private,
+ * protected, and public fields.
+ *
+ * On the other hand, if "declared" is false, we only include public 
+ * fields.  Weird semantics.
+ */
+HArrayOfObject*
+java_lang_Class_getFields0(struct Hjava_lang_Class* clazz, jboolean declared)
+{
+	int count;
+	Hjava_lang_reflect_Field** ptr;
+	HArrayOfObject* array;
+
+	if (declared) {
+		count = CLASS_NFIELDS((Hjava_lang_Class*)clazz);
+	}
+	else {
+		count = countPublicFields(clazz);
+	}
+	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/reflect/Field;");
+	ptr = (Hjava_lang_reflect_Field**)&unhand_array(array)->body[0];
+	makePublicFields(clazz, declared, &ptr);
 
 	return (array);
 }
@@ -774,11 +814,14 @@ java_lang_Class_getConstructor0(struct Hjava_lang_Class* this, HArrayOfObject* a
 	SignalError("java.lang.NoSuchMethodException", ""); /* FIXME */
 }
 
+static
 Hjava_lang_reflect_Field*
-java_lang_Class_getField0(struct Hjava_lang_Class* clazz, struct Hjava_lang_String* name, jboolean declared)
+checkForField(struct Hjava_lang_Class* clazz, struct Hjava_lang_String* name, jboolean declared)
 {
+	int i;
 	Hjava_lang_Class* clas;
 
+	/* first try this class's own or inherited fields */
 	clas = (Hjava_lang_Class*) clazz;
 	do {
 		Field* fld = CLASS_FIELDS(clas);
@@ -792,5 +835,25 @@ java_lang_Class_getField0(struct Hjava_lang_Class* clazz, struct Hjava_lang_Stri
 		}
 		clas = clas->superclass;
 	} while (!declared && clas != NULL);
+
+	/* then try this class's interfaces fields using the wonders of
+	 * recursion.  */
+	for (i = 0; i < clazz->total_interface_len; i++) {
+		Hjava_lang_reflect_Field *f;
+		f = checkForField(clazz->interfaces[i], name, declared);
+		if (f != 0) {
+			return (f);
+		}
+	}
+	return (0);
+}
+
+Hjava_lang_reflect_Field*
+java_lang_Class_getField0(struct Hjava_lang_Class* clazz, struct Hjava_lang_String* name, jboolean declared)
+{
+	Hjava_lang_reflect_Field* f = checkForField(clazz, name, declared);
+	if (f != 0) {
+		return (f);
+	}
 	SignalError("java.lang.NoSuchFieldException", ""); /* FIXME */
 }
