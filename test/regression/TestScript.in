@@ -155,6 +155,7 @@ runtest UncaughtException
 # Misc tests
 runtest ReflectInterfaces
 runtest TestSerializable
+runtest Alias
 runtest NullPointerTest
 runtest LostFrame
 runtest ConstructorTest

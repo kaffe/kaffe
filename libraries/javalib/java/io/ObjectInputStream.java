@@ -209,6 +209,8 @@ public final Object readObject() throws OptionalDataException, ClassNotFoundExce
 					throw new StreamCorruptedException("expected class desc");
 				}
 				currObject = allocateNewObject(currStreamClass.clazz, null);
+				Integer key = new Integer(++nextKey);
+				objectsDone.put(key, currObject);
 				if ((currStreamClass.method & ObjectStreamConstants.SC_EXTERNALIZABLE) != 0) {
                                         try {
                                                 ((Externalizable)currObject).readExternal(this);
@@ -217,7 +219,7 @@ public final Object readObject() throws OptionalDataException, ClassNotFoundExce
                                         }
 				}
 				else if ((currStreamClass.method & ObjectStreamConstants.SC_WRRD_METHODS) != 0) {
-					invokeObjectReader(currObject, ObjectStreamClass.class);
+					invokeObjectReader(currObject, currObject.getClass());
 				}
 				else if ((currStreamClass.method & ObjectStreamConstants.SC_SERIALIZABLE) != 0) {
 					defaultReadObject();
@@ -240,6 +242,8 @@ public final Object readObject() throws OptionalDataException, ClassNotFoundExce
 			case ObjectStreamConstants.TC_CLASSDESC:
 				ObjectStreamClass cls = new ObjectStreamClass();
 				currObject = (Object)cls;
+				Integer key = new Integer(++nextKey);
+				objectsDone.put(key, currObject);
 				invokeObjectReader(currObject, ObjectStreamClass.class);
 				cls.clazz = resolveClass(cls);
 				cls.buildFieldsAndOffset();
@@ -247,6 +251,8 @@ public final Object readObject() throws OptionalDataException, ClassNotFoundExce
 
 			case ObjectStreamConstants.TC_STRING:
 				currObject = readUTF();
+				Integer key = new Integer(++nextKey);
+				objectsDone.put(key, currObject);
 				break;
 
 			case ObjectStreamConstants.TC_RESET:
@@ -259,10 +265,6 @@ public final Object readObject() throws OptionalDataException, ClassNotFoundExce
 			default:
 				throw new StreamCorruptedException("unexpected token: " + tok);
 			}
-
-			// Insert into hash table.
-			Integer key = new Integer(++nextKey);
-			objectsDone.put(currObject, key);
 		}
 
 		Object obj = currObject;
@@ -312,6 +314,8 @@ private Object readArray() throws IOException, ClassNotFoundException
 {
 	int len = readInt();
 	Object obj = allocateNewArray(currStreamClass.clazz, len);
+	Integer key = new Integer(++nextKey);
+	objectsDone.put(key, obj);
 	Class elem = currStreamClass.clazz.getComponentType();
 
 	if (elem == Object.class) {
