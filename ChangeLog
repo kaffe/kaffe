@@ -1,3 +1,9 @@
+Tue May 26 17:03:18 PDT 1998	Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/libraries/clib/native/Method.c
+ 	(java_lang_reflect_Method_invoke): wrap non-Object return types
+ 	correctly
+
 Tue May 26 09:45:50 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/system/unix-internal/internalCalls.c

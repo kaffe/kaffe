@@ -49,7 +49,6 @@ struct Hjava_lang_Object*
 java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct Hjava_lang_Object* obj, HArrayOfObject* argobj)
 {
 	Hjava_lang_Class* clazz;
-	Hjava_lang_Class* retclazz;
 	Hjava_lang_Object* robj;
 	Method* meth;
 	jint slot;
@@ -220,34 +219,33 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 	}
 	callMethodA(meth, code, obj, args, &ret);
 
-	retclazz = unhand(this)->returnType;
 	switch (*++sig) {
 	case 'V':
 		robj = 0;
 		break;
 	case 'J':
-		robj = execute_java_constructor(0, retclazz, "(J)V", ret.j);
+		robj = execute_java_constructor(0, javaLangLongClass, "(J)V", ret.j);
 		break;
 	case 'F':
-		robj = execute_java_constructor(0, retclazz, "(F)V", ret.f);
+		robj = execute_java_constructor(0, javaLangFloatClass, "(F)V", ret.f);
 		break;
 	case 'D':
-		robj = execute_java_constructor(0, retclazz, "(D)V", ret.d);
+		robj = execute_java_constructor(0, javaLangDoubleClass, "(D)V", ret.d);
 		break;
 	case 'I':
-		robj = execute_java_constructor(0, retclazz, "(I)V", ret.i);
+		robj = execute_java_constructor(0, javaLangIntegerClass, "(I)V", ret.i);
 		break;
 	case 'S':
-		robj = execute_java_constructor(0, retclazz, "(S)V", ret.i);
+		robj = execute_java_constructor(0, javaLangShortClass, "(S)V", ret.i);
 		break;
 	case 'B':
-		robj = execute_java_constructor(0, retclazz, "(B)V", ret.i);
+		robj = execute_java_constructor(0, javaLangByteClass, "(B)V", ret.i);
 		break;
 	case 'Z':
-		robj = execute_java_constructor(0, retclazz, "(Z)V", ret.i);
+		robj = execute_java_constructor(0, javaLangBooleanClass, "(Z)V", ret.i);
 		break;
 	case 'C':
-		robj = execute_java_constructor(0, retclazz, "(C)V", ret.i);
+		robj = execute_java_constructor(0, javaLangCharacterClass, "(C)V", ret.i);
 		break;
 	case 'L':
 	case '[':
