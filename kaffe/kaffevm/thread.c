@@ -52,7 +52,18 @@ static size_t threadStackSize;	/* native stack size */
 /* referenced by native/Runtime.c */
 jbool runFinalizerOnExit;	/* should we run finalizers? */
 
-jbool deadlockDetection = 1;	/* abort if we detect deadlock */
+static jbool deadlockDetection = 1;	/* abort if we detect deadlock */
+
+/**
+ * Turn deadlock detection on or off.
+ *
+ * @param detect 0 to turn detection off, !0 to turn it on.
+ */
+void 
+KaffeVM_setDeadlockDetection(jbool detect) 
+{
+  deadlockDetection = detect;
+}
 
 Hjava_lang_Class* ThreadClass;
 Hjava_lang_Class* VMThreadClass;

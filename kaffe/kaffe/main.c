@@ -812,7 +812,7 @@ options(char** argv, int argc)
 		}
 #endif
 		else if (strcmp(argv[i], "-nodeadlock") == 0) {
-			deadlockDetection = 0;
+			KaffeVM_setDeadlockDetection(0);
 		}
 #if defined(KAFFE_STATS)
                 else if (strcmp(argv[i], "-vmstats") == 0) {

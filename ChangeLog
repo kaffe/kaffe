@@ -1,6 +1,19 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
-	* kaffe/kaffevm/debug.h: 
+	* kaffe/kaffevm/thread.c: 
+	(deadlockDetection) Made static.
+	(KaffeVM_setDeadlockDetection) New function.
+	
+	* kaffe/kaffevm/thread.h: 
+	(deadlockDetection) Removed prototype.
+	(KaffeVM_setDeadlockDetection) Added prototype.
+
+	* kaffe/kaffe/main.c (options): 
+	Replace use of deadlockDetection by KaffeVM_setDeadlockDetection.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/debug.c: 
 	(kaffe_dprintf_fd) Made static.
 	(dbgSetDprintfFD) New function.
 	
