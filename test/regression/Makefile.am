@@ -46,6 +46,7 @@ TEST_INTS_LONGS_FLOATS_DOUBLES = \
 	ModuloTest.java \
 	LongNeg.java \
 	FPUStack.java \
+	NegativeDivideConst.java \
 	divtest.java 
 
 ## Test strings
