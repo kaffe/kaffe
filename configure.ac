@@ -56,7 +56,7 @@ AC_SUBST(abssrcdir)
 
 dnl =========================================================================
 dnl Allow specification of header-file and library directories
-dnl -------------------------------------------------------------------------
+wdnl -------------------------------------------------------------------------
 
 AC_ARG_WITH([includes],
   	    AS_HELP_STRING([--with-includes=dirs],
@@ -863,6 +863,8 @@ if test x$with_threads = xunix-pthreads ; then
 	if test -z "$THREADLIBS"; then
 		AC_MSG_ERROR([Missing library libpthread, read FAQ/FAQ.pthreads])
 	fi
+
+	KAFFE_LIB_SOLARIS_PTHREAD
 
 	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
 fi
