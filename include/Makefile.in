@@ -54,7 +54,6 @@ install:
 
 derived-files:
 		$(KAFFEH) -d @srcdir@ -classpath $(INSTROOT)$(classdir)/Klasses.jar java/lang/Thread
-		$(KAFFEH) -d @srcdir@ -classpath $(INSTROOT)$(classdir)/Klasses.jar java/lang/Thread'$$'Finalizer
 		$(KAFFEH) -d @srcdir@ -classpath $(INSTROOT)$(classdir)/Klasses.jar java/lang/ThreadGroup
 		$(KAFFEH) -d @srcdir@ -classpath $(INSTROOT)$(classdir)/Klasses.jar java/lang/Throwable
 
