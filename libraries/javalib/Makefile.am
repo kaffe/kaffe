@@ -101,7 +101,6 @@ java_awt_SRCS = \
 	java/awt/HotKeyHandler.java \
 	java/awt/IllegalComponentStateException.java \
 	java/awt/Image.java \
-	java/awt/ImageNativeProducer.java \
 	java/awt/Insets.java \
 	java/awt/ItemEvt.java \
 	java/awt/ItemSelectable.java \
