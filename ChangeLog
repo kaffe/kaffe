@@ -1,5 +1,16 @@
 2004-06-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/Makefile.am.in
+	(gnu_regexp_message_bundles) Added missing '\'.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
+	Reported by: Max Gilead <gilead@yellowhedgehog.com>
+
+2004-06-10  Dalibor Topic  <robilad@kaffe.org>
+
 	Fixed build on i386-freebsd 5.2.
 
 	* config/config-signal.h:

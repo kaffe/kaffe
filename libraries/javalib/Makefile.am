@@ -2841,7 +2841,7 @@ serialized_converters = \
 
 gnu_regexp_message_bundles = \
 	gnu/regexp/MessagesBundle_fr.properties \
-	gnu/regexp/MessagesBundle_it.properties
+	gnu/regexp/MessagesBundle_it.properties \
 	gnu/regexp/MessagesBundle.properties
 
 gnu_java_locale_bundles = \
