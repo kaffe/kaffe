@@ -1,3 +1,8 @@
+Mon May 15 10:30:38 PDT 2000  Patrick Doyle <doylep@ecf.utoronto.ca>
+
+	* kaffe/kaffevm/external.c, kaffe/kaffevm/findInJar.c: handle
+	path separators that are longer than one character
+
 Sun May 14 15:53:49 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/itypes.c: supply message for NoClassDefFoundError
