@@ -127,6 +127,8 @@ bin_PROGRAMS = kaffeh
 
 GEN_SRCS = inflate.c jar.c utf8const.c readClass.c
 
+DISTCLEANFILES = $(GEN_SRCS)
+
 kaffeh_SOURCES = $(GEN_SRCS) constants.c sigs.c support.c main.c
 
 noinst_HEADERS = constants.h file.h kaffeh-support.h readClassConfig.h
@@ -357,6 +359,7 @@ clean-generic:
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 mostlyclean-am:  mostlyclean-binPROGRAMS mostlyclean-compile \

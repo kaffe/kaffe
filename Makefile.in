@@ -125,8 +125,10 @@ AUTOMAKE_OPTIONS = foreign 1.3e
 
 SUBDIRS = . config include libltdl libraries kaffe test
 
-EXTRA_DIST = license.terms WHATSNEW 	FAQ/FAQ.Known-Bugs 	FAQ/FAQ.amigaos 	FAQ/FAQ.automake 	FAQ/FAQ.awt 	FAQ/FAQ.class-states 	FAQ/FAQ.depend 	FAQ/FAQ.gcblock 	FAQ/FAQ.gcstrategy 	FAQ/FAQ.install-root 	FAQ/FAQ.libtool 	FAQ/FAQ.linux 	FAQ/FAQ.nativemethods 	FAQ/FAQ.timing 	FAQ/FAQ.win32
+EXTRA_DIST =  	ChangeLog.1 	WHATSNEW 	license.terms 	FAQ/FAQ.BeOS 	FAQ/FAQ.Known-Bugs 	FAQ/FAQ.amigaos 	FAQ/FAQ.automake 	FAQ/FAQ.awt 	FAQ/FAQ.class-states 	FAQ/FAQ.depend 	FAQ/FAQ.gcblock 	FAQ/FAQ.gcstrategy 	FAQ/FAQ.hotjava 	FAQ/FAQ.install-root 	FAQ/FAQ.jsignal 	FAQ/FAQ.libtool 	FAQ/FAQ.linux 	FAQ/FAQ.nativemethods 	FAQ/FAQ.requiredlibraries 	FAQ/FAQ.timing 	FAQ/FAQ.win32 	developers/JavaClass.pm 	developers/README 	developers/dumpClass.pl 	developers/gdbinit 	developers/sp_offset.c 	developers/update-class-list 	developers/utf8munge.pl
 
+
+CLEANFILES = BUILD_ENVIRONMENT
 
 noinst_SCRIPTS = libtool BUILD_ENVIRONMENT
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -293,7 +295,7 @@ distdir: $(DISTFILES)
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
 	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign Makefile
-	$(mkinstalldirs) $(distdir)/FAQ
+	$(mkinstalldirs) $(distdir)/FAQ $(distdir)/developers
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -344,6 +346,7 @@ installdirs-am:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)

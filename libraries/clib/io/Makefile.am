@@ -17,3 +17,4 @@ libio_la_SOURCES = \
 	RandomAccessFile.c \
 	AudioPlayer.c
 
+CLEANFILES = so_locations

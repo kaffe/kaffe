@@ -28,3 +28,5 @@ libawt_la_SOURCES = \
 noinst_HEADERS = \
 	keysyms.h \
 	toolkit.h
+
+CLEANFILES = so_locations

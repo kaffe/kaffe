@@ -128,7 +128,7 @@ noinst_LTLIBRARIES = libengine.la
 libengine_la_SOURCES =  	machine.c
 
 
-EXTRA_DIST =  	Makefile.am 	checks.h 	icode.h 	machine.h 	slots.h
+EXTRA_DIST =  	Makefile.frag 	checks.h 	icode.h 	machine.h 	slots.h
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h

@@ -126,6 +126,8 @@ native_LTLIBRARIES = libio.la
 libio_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER)
 libio_la_SOURCES =  	FileDescriptor.c 	File.c 	FileInputStream.c 	FileOutputStream.c 	RandomAccessFile.c 	AudioPlayer.c
 
+
+CLEANFILES = so_locations
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -343,6 +345,7 @@ installdirs:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)

@@ -36,6 +36,8 @@ EXTRA_DIST = \
 	seq.h \
 	slots.h
 
+DISTCLEANFILES = icode.h jit.def trampolines.c
+
 basecode.lo icode.lo machine.lo registers.lo: icode.h
 funcs.lo: jit.def trampolines.c
 

@@ -9,7 +9,6 @@
 SUBDIRS = regression
 
 EXTRA_DIST = \
-	awt/Calc/Calc.class \
 	awt/Calc/Calc.java \
 	awt/Calc/Calc.sh \
 	awt/TextEdit/README \
@@ -21,11 +20,8 @@ EXTRA_DIST = \
 	awt/Unico/readme.txt \
 	awt/Unico/unico.jar \
 	awt/Unico/unico.sh \
-	awt/WidgetsDemo/DemoImageDict.class \
 	awt/WidgetsDemo/DemoImageDict.java \
 	awt/WidgetsDemo/README \
-	awt/WidgetsDemo/WidgetsDemo$$Person.class \
-	awt/WidgetsDemo/WidgetsDemo.class \
 	awt/WidgetsDemo/WidgetsDemo.java \
 	awt/WidgetsDemo/WidgetsDemo.sh \
 	awt/WidgetsDemo/back.jpg \

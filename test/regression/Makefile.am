@@ -98,8 +98,11 @@ TESTS = \
 	tthrd1.java \
 ## Test interrupting I/O
 ## This is kind of tricky, and Sun doesn't support it.
-	SoInterrupt.java
+	SoInterrupt.java \
+	TestNative.java
 
-CLEANFILES = *.class *.fail *.out
+EXTRA_DIST = $(TESTS)
+
+CLEANFILES = *.class *.fail *.out core *.core
 
 check-TESTS: clean TestScript

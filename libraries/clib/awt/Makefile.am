@@ -8,3 +8,5 @@
 
 SUBDIRS = $(AWT_DIR)
 DIST_SUBDIRS = X
+
+include $(top_srcdir)/include/distclean-hack

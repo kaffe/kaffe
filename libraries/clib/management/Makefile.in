@@ -125,6 +125,8 @@ native_LTLIBRARIES = libmanagement.la
 
 libmanagement_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER)
 libmanagement_la_SOURCES = Classpath.c
+
+CLEANFILES = so_locations
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -339,6 +341,7 @@ installdirs:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)

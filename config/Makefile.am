@@ -14,6 +14,8 @@ endif
 
 GEN_HDRS = md.h $(ENGINE_GEN_HDRS)
 
+DISTCLEANFILES = $(GEN_HDRS)
+
 noinst_HEADERS = $(GEN_HDRS) \
 	config-hacks.h config-io.h config-math.h config-mem.h \
 	config-net.h config-setjmp.h config-signal.h config-std.h
@@ -48,6 +50,10 @@ EXTRA_DIST = \
 	arm/netbsd1/md.h \
 	i386/jit-i386.def \
 	i386/common.h \
+	i386/beos/config.frag \
+	i386/beos/jit-md.h \
+	i386/beos/md.c \
+	i386/beos/md.h \
 	i386/bsdi/config.frag \
 	i386/bsdi/jit-md.h \
 	i386/bsdi/md.c \

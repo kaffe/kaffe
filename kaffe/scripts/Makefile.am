@@ -24,6 +24,9 @@ endif
 
 PSCRIPTFILES=	install-jar kaffe
 
-bin_SCRIPTS = $(SCRIPTFILES_PIZZA) $(SCRIPTFILES_SUN) $(SCRIPTFILES_COMPAT) $(PSCRIPTFILES)
+bin_SCRIPTS = $(SCRIPTFILES_PIZZA) $(SCRIPTFILES_SUN) \
+	$(SCRIPTFILES_COMPAT) $(PSCRIPTFILES) report-kaffe-bug
 
+EXTRA_DIST = report-kaffe-bug
 
+include $(top_srcdir)/include/distclean-hack

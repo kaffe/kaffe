@@ -12,6 +12,8 @@ bin_PROGRAMS = kaffeh
 
 GEN_SRCS = inflate.c jar.c utf8const.c readClass.c
 
+DISTCLEANFILES = $(GEN_SRCS)
+
 kaffeh_SOURCES = $(GEN_SRCS) constants.c sigs.c support.c main.c
 
 noinst_HEADERS = constants.h file.h kaffeh-support.h readClassConfig.h

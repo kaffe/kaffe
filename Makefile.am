@@ -10,7 +10,11 @@ AUTOMAKE_OPTIONS = foreign 1.3e
 
 SUBDIRS = . config include libltdl libraries kaffe test
 
-EXTRA_DIST = license.terms WHATSNEW \
+EXTRA_DIST = \
+	ChangeLog.1 \
+	WHATSNEW \
+	license.terms \
+	FAQ/FAQ.BeOS \
 	FAQ/FAQ.Known-Bugs \
 	FAQ/FAQ.amigaos \
 	FAQ/FAQ.automake \
@@ -19,12 +23,24 @@ EXTRA_DIST = license.terms WHATSNEW \
 	FAQ/FAQ.depend \
 	FAQ/FAQ.gcblock \
 	FAQ/FAQ.gcstrategy \
+	FAQ/FAQ.hotjava \
 	FAQ/FAQ.install-root \
+	FAQ/FAQ.jsignal \
 	FAQ/FAQ.libtool \
 	FAQ/FAQ.linux \
 	FAQ/FAQ.nativemethods \
+	FAQ/FAQ.requiredlibraries \
 	FAQ/FAQ.timing \
-	FAQ/FAQ.win32
+	FAQ/FAQ.win32 \
+	developers/JavaClass.pm \
+	developers/README \
+	developers/dumpClass.pl \
+	developers/gdbinit \
+	developers/sp_offset.c \
+	developers/update-class-list \
+	developers/utf8munge.pl
+
+CLEANFILES = BUILD_ENVIRONMENT
 
 depend:
 	@echo \`make depend\' is no longer needed

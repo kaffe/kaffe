@@ -128,7 +128,7 @@ noinst_LTLIBRARIES = libgcj.la
 libgcj_la_SOURCES =  	gcj-class.c 	gcj-except.c 	gcj-soft.c
 
 
-EXTRA_DIST =  	Makefile.am 	gcj-except.h
+EXTRA_DIST =  	gcj-except.h 	gcj.h
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h

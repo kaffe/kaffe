@@ -123,7 +123,7 @@ with_engine = @with_engine@
 
 SUBDIRS = regression
 
-EXTRA_DIST =  	awt/Calc/Calc.class 	awt/Calc/Calc.java 	awt/Calc/Calc.sh 	awt/TextEdit/README 	awt/TextEdit/TextEdit.jar 	awt/TextEdit/TextEdit.sh 	awt/TextEdit/copyright.txt 	awt/Unico/README 	awt/Unico/Unico.class 	awt/Unico/readme.txt 	awt/Unico/unico.jar 	awt/Unico/unico.sh 	awt/WidgetsDemo/DemoImageDict.class 	awt/WidgetsDemo/DemoImageDict.java 	awt/WidgetsDemo/README 	awt/WidgetsDemo/WidgetsDemo$$Person.class 	awt/WidgetsDemo/WidgetsDemo.class 	awt/WidgetsDemo/WidgetsDemo.java 	awt/WidgetsDemo/WidgetsDemo.sh 	awt/WidgetsDemo/back.jpg 	awt/WidgetsDemo/forward.jpg 	awt/WidgetsDemo/hand.up.jpg 	awt/WidgetsDemo/transfer.jpg 	awt/WidgetsDemo/tvt.jpg
+EXTRA_DIST =  	awt/Calc/Calc.java 	awt/Calc/Calc.sh 	awt/TextEdit/README 	awt/TextEdit/TextEdit.jar 	awt/TextEdit/TextEdit.sh 	awt/TextEdit/copyright.txt 	awt/Unico/README 	awt/Unico/Unico.class 	awt/Unico/readme.txt 	awt/Unico/unico.jar 	awt/Unico/unico.sh 	awt/WidgetsDemo/DemoImageDict.java 	awt/WidgetsDemo/README 	awt/WidgetsDemo/WidgetsDemo.java 	awt/WidgetsDemo/WidgetsDemo.sh 	awt/WidgetsDemo/back.jpg 	awt/WidgetsDemo/forward.jpg 	awt/WidgetsDemo/hand.up.jpg 	awt/WidgetsDemo/transfer.jpg 	awt/WidgetsDemo/tvt.jpg
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config/config.h ../include/jtypes.h

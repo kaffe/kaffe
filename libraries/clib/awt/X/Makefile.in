@@ -132,6 +132,8 @@ libawt_la_SOURCES =  	tlk.c 	wnd.c 	evt.c 	gra.c 	fnt.c 	clr.c 	img.c 	imggif.c 
 
 noinst_HEADERS =  	keysyms.h 	toolkit.h
 
+
+CLEANFILES = so_locations
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../../config/config.h ../../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -350,6 +352,7 @@ installdirs:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)

@@ -1,3 +1,15 @@
+Wed Feb 17 10:13:13 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* */Makefile.am: update for make dist and make distclean to work
+	properly
+	* */Makefile.in: regen
+	* libraries/clib/awt/libawt.def,
+	libraries/clib/native/external_wrappers.h.debug,
+	test/awt/Calc/Calc.class,
+	test/awt/WidgetsDemo/DemoImageDict.class,
+	test/awt/WidgetsDemo/WidgetsDemo$Person.class, 
+	test/awt/WidgetsDemo/WidgetsDemo.class: removed
+
 Wed Feb 17 01:24:34 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c

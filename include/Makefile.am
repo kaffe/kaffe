@@ -8,6 +8,8 @@
 
 KLASSES_JAR = $(top_srcdir)/libraries/javalib/Klasses.jar
 
+EXTRA_DIST = distclean-hack
+
 INSTALL_DERIVED_HDRS = \
 	java_lang_Throwable.h \
 	java_lang_Thread.h \

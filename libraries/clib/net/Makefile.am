@@ -15,3 +15,4 @@ libnet_la_SOURCES = \
 	PlainDatagramSocketImpl.c \
 	PlainSocketImpl.c
 
+CLEANFILES = so_locations

@@ -16,3 +16,4 @@ libzip_la_SOURCES = \
 	Deflater.c \
 	Inflater.c
 
+CLEANFILES = so_locations

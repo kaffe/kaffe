@@ -16,7 +16,7 @@ libengine_la_SOURCES = \
 	machine.c
 
 EXTRA_DIST = \
-	Makefile.am \
+	Makefile.frag \
 	checks.h \
 	icode.h \
 	machine.h \

@@ -138,9 +138,14 @@ TEXT_SRCS =  		DateFormat.c
 TEST_SRCS =  		TestNative.c
 
 
+noinst_HEADERS =  		sha-1.h
+
+
 libnative_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER)
 libnative_la_LIBADD = $(M_LIBS)
 libnative_la_SOURCES = $(IO_SRCS) $(LANG_SRCS) $(REFLECT_SRCS) $(TEXT_SRCS) $(TEST_SRCS)
+
+CLEANFILES = so_locations
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -167,6 +172,8 @@ COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CF
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+HEADERS =  $(noinst_HEADERS)
+
 DIST_COMMON =  Makefile.am Makefile.in
 
 
@@ -356,7 +363,7 @@ install-am: all-am
 install: install-am
 uninstall-am: uninstall-nativeLTLIBRARIES
 uninstall: uninstall-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
@@ -367,6 +374,7 @@ installdirs:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)

@@ -127,6 +127,8 @@ libzip_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER)
 libzip_la_LIBADD = $(ZIP_LIBS)
 libzip_la_SOURCES =  	Adler32.c 	CRC32.c 	Deflater.c 	Inflater.c
 
+
+CLEANFILES = so_locations
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -342,6 +344,7 @@ installdirs:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)

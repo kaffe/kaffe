@@ -32,7 +32,13 @@ libkaffevm_la_LIBADD = \
 	$(ENGINE_NAME)/libengine.la \
 	gcj/libgcj.la \
 	systems/$(THREAD_SYSTEM)/libkthread.la $(VM_LIBS) $(M_LIBS)
+
+libkaffevm_la_GEN_SRCS = \
+	gc-mem.c \
+	md.c
+
 libkaffevm_la_SOURCES = \
+	$(libkaffevm_la_GEN_SRCS) \
 	baseClasses.c \
 	classMethod.c \
 	code-analyse.c \
@@ -42,7 +48,6 @@ libkaffevm_la_SOURCES = \
 	exception.c \
 	external.c \
 	findInJar.c \
-	gc-mem.c \
 	gc.c \
 	hashtab.c \
 	inflate.c \
@@ -51,7 +56,6 @@ libkaffevm_la_SOURCES = \
 	jni.c \
 	locks.c \
 	lookup.c \
-	md.c \
 	object.c \
 	readClass.c \
 	soft.c \
@@ -69,6 +73,7 @@ noinst_HEADERS = \
 	baseClasses.h \
 	bytecode.h \
 	classMethod.h \
+	classpath.h \
 	code-analyse.h \
 	code.h \
 	constants.h \
@@ -109,3 +114,8 @@ md.c: stamp-h02
 	else :; fi
 stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_MD_C) md.c $@
+
+CLEANFILES = so_locations
+DISTCLEANFILES = $(libkaffevm_la_GEN_SRCS)
+
+include $(top_srcdir)/include/distclean-hack

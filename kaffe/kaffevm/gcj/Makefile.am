@@ -16,5 +16,5 @@ libgcj_la_SOURCES = \
 	gcj-soft.c
 
 EXTRA_DIST = \
-	Makefile.am \
-	gcj-except.h
+	gcj-except.h \
+	gcj.h
