@@ -616,6 +616,7 @@ compiler."
     avoid_versioning=no
     dlfiles=
     dlprefiles=
+    dlpredeps=
     export_dynamic=no
     export_symbols=
     generated=
@@ -977,8 +978,7 @@ compiler."
 	  else
 	    # We should not create a dependency on this library, but we
 	    # may need any libraries it requires.
-	    compile_command="$compile_command$dependency_libs"
-	    finalize_command="$finalize_command$dependency_libs"
+	    dlpredeps="$dlpredeps$dependency_libs"
 	    prev=
 	    continue
 	  fi
@@ -1241,7 +1241,7 @@ compiler."
 	  $echo "$help" 1>&2
 	  exit 1
 	fi
-	if test "$need_lib_prefix" = yes; then
+	if test "$need_lib_prefix" != no; then
 	  # Add the "lib" prefix for modules if required
 	  name=`$echo "X$outputname" | $Xsed -e 's/\.la$//'`
 	  eval libname=\"$libname_spec\"
@@ -1425,13 +1425,12 @@ compiler."
 	# Clear the version info if we defaulted, and they specified a release.
 	if test -z "$vinfo" && test -n "$release"; then
 	  major=
-	  versuffix=
 	  verstring="0.0"
-	  case "$host" in
-	  *-*-sunos*)
+	  if test "$need_version" = no; then
+	    versuffix=
+	  else
 	    versuffix=".0.0"
-	    ;;
-	  esac
+	  fi
 	fi
 
 	# Remove version info from name if versioning should be avoided
@@ -1641,7 +1640,7 @@ EOF
 	    fi
 	  done # Gone through all deplibs.
 	  ;;
-	none | *)  deplibs="" ;;
+	none | unknown | *)  deplibs="" ;;
 	esac
 	versuffix=$versuffix_save
 	major=$major_save
@@ -2041,6 +2040,10 @@ lt_preloaded_symbols[] =
 	compile_command=`$echo "X$compile_command" | $Xsed -e 's%@OUTPUT@%'"$output"'%g'`
 	finalize_command=`$echo "X$finalize_command" | $Xsed -e 's%@OUTPUT@%'"$output"'%g'`
 
+	# Append dependencies from dlopened modules
+	compile_command="$compile_command$dlpredeps"
+	finalize_command="$finalize_command$dlpredeps"
+
 	# We have no uninstalled library dependencies, so finalize right now.
 	$show "$compile_command"
 	$run eval "$compile_command"
@@ -2050,6 +2053,10 @@ lt_preloaded_symbols[] =
       # Replace the output file specification.
       compile_command=`$echo "X$compile_command" | $Xsed -e 's%@OUTPUT@%'"$output_objdir/$outputname"'%g'`
       finalize_command=`$echo "X$finalize_command" | $Xsed -e 's%@OUTPUT@%'"$output_objdir/$outputname"'T%g'`
+
+      # Append dependencies from dlopened modules
+      compile_command="$compile_command$dlpredeps"
+      finalize_command="$finalize_command$dlpredeps"
 
       # Create the binary in the object directory, then wrap it.
       if test ! -d $output_objdir; then

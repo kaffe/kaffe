@@ -123,12 +123,12 @@ INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl
 
 Kaffe_SOURCES = main.c
 
-Kaffe_LDADD_ = ../kaffevm/libkaffevm.la
+Kaffe_LDADD = ../kaffevm/libkaffevm.la
 
-Kaffe_LDFLAGS = $(LDFLAGS) -export-dynamic $(Kaffe_LDADD_) 	`for lib in $(JAVA_LIBS); do echo -dlopen $$lib; done`
+Kaffe_LDFLAGS = -export-dynamic 	`for lib in $(JAVA_LIBS); do echo -dlopen $$lib; done`
 
 
-Kaffe_DEPENDENCIES = $(Kaffe_LDADD_) $(JAVA_LIBS)
+Kaffe_DEPENDENCIES = $(Kaffe_LDADD) $(JAVA_LIBS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -145,7 +145,6 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 Kaffe_OBJECTS =  main.o
-Kaffe_LDADD = $(LDADD)
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)

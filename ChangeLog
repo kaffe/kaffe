@@ -1,3 +1,11 @@
+Sun Jan 17 03:46:17 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* ltconfig, ltmain.sh, libltdl/ltdl.c: updated from libtool, to
+	fix some remaining FreeBSD/-dlopening issues
+	* kaffe/kaffe/Makefile.am: revert the LDADD_ hack below; libtool
+	now takes proper care of it
+	* kaffe/kaffe/Makefile.in: regen
+
 Sun Jan 17 01:25:11 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffe/Makefile.am (Kaffe_LDADD_): add libkaffevm before

@@ -792,7 +792,6 @@ tryall_dlopen (handle, filename)
 	return 0;
 }
 
-#undef	FILENAME_MAX
 /* max. filename length */
 #ifndef FILENAME_MAX
 #define FILENAME_MAX 1024
@@ -808,6 +807,12 @@ find_module (handle, dir, libdir, dlname, old_name)
 {
 	char	fullname[FILENAME_MAX];
 	
+	/* search for old library first; if it was dlpreopened, we
+           want the preopened version of it, even if a dlopenable
+           module is available */
+	if (*old_name && tryall_dlopen(handle, old_name) == 0)
+		return 0;
+
 	/* search a module */
 	if (*dlname) {
 		/* try to open the installed module */
@@ -833,8 +838,6 @@ find_module (handle, dir, libdir, dlname, old_name)
 				return 0;
 		}
 	}
-	if (*old_name && tryall_dlopen(handle, old_name) == 0)
-		return 0;
 	last_error = file_not_found_error;
 	return 1;
 }

@@ -590,8 +590,17 @@ if test "$with_gcc" = yes; then
   link_static_flag='-static'
 
   case "$host_os" in
-  aix3* | aix4* | beos* | irix5* | irix6* | osf3* | osf4*)
+  beos* | irix5* | irix6* | osf3* | osf4*)
     # PIC is the default for these OSes.
+    ;;
+  aix*)
+    # Below there is a dirty hack to force normal static linking with -ldl
+    # The problem is because libdl dynamically linked with both libc and
+    # libC (AIX C++ library), which obviously doesn't included in libraries
+    # list by gcc. This cause undefined symbols with -static flags.
+    # This hack allows C programs to be linked with "-static -ldl", but
+    # we not sure about C++ programs.
+    link_static_flag="$link_static_flag -Wl,-lC"
     ;;
   cygwin32* | mingw32* | os2*)
     # We can build DLLs from non-PIC.
@@ -681,22 +690,30 @@ if test -n "$pic_flag"; then
   echo "int some_variable = 0;" > conftest.c
   save_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS $pic_flag -DPIC"
-  echo "$progname:684: checking if $compiler PIC flag $pic_flag works" >&5
-  if { (eval echo $progname:685: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.$objext; then
+  echo "$progname:693: checking if $compiler PIC flag $pic_flag works" >&5
+  if { (eval echo $progname:694: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.$objext; then
     # Append any warnings to the config.log.
     cat conftest.err 1>&5
-
-    # On HP-UX, both CC and GCC only warn that PIC is supported... then they
-    # create non-PIC objects.  So, if there were any warnings, we assume that
-    # PIC is not supported.
-    if test -s conftest.err; then
-      echo "$ac_t"no 1>&6
-      can_build_shared=no
-      pic_flag=
-    else
+    
+    case "$host_os" in
+    hpux9* | hpux10* | hpux11*)
+      # On HP-UX, both CC and GCC only warn that PIC is supported... then they
+      # create non-PIC objects.  So, if there were any warnings, we assume that
+      # PIC is not supported.
+      if test -s conftest.err; then
+	echo "$ac_t"no 1>&6
+	can_build_shared=no
+	pic_flag=
+      else
+	echo "$ac_t"yes 1>&6
+	pic_flag=" $pic_flag"
+      fi
+      ;;
+    *)
       echo "$ac_t"yes 1>&6
       pic_flag=" $pic_flag"
-    fi
+      ;;
+    esac
   else
     # Append any errors to the config.log.
     cat conftest.err 1>&5
@@ -716,8 +733,8 @@ $rm conftest*
 echo "int some_variable = 0;" > conftest.c
 save_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -c -o conftest2.o"
-echo "$progname:719: checking if $compiler supports -c -o file.o" >&5
-if { (eval echo $progname:720: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest2.o; then
+echo "$progname:736: checking if $compiler supports -c -o file.o" >&5
+if { (eval echo $progname:737: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest2.o; then
 
   # The compiler can only warn and ignore the option if not recognized
   # So say no if there are warnings
@@ -744,8 +761,8 @@ if test x"$compiler_c_o" = x"yes"; then
   echo "int some_variable = 0;" > conftest.c
   save_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS -c -o conftest.lo"
-  echo "$progname:747: checking if $compiler supports -c -o file.lo" >&5
-if { (eval echo $progname:748: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.lo; then
+  echo "$progname:764: checking if $compiler supports -c -o file.lo" >&5
+if { (eval echo $progname:765: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.lo; then
 
     # The compiler can only warn and ignore the option if not recognized
     # So say no if there are warnings
@@ -796,8 +813,8 @@ if test "$with_gcc" = yes; then
   echo "int some_variable = 0;" > conftest.c
   save_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS -fno-rtti -fno-exceptions -c conftest.c"
-  echo "$progname:799: checking if $compiler supports -fno-rtti -fno-exceptions" >&5
-  if { (eval echo $progname:800: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.o; then
+  echo "$progname:816: checking if $compiler supports -fno-rtti -fno-exceptions" >&5
+  if { (eval echo $progname:817: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.o; then
 
     # The compiler can only warn and ignore the option if not recognized
     # So say no if there are warnings
@@ -840,8 +857,8 @@ $rm conftest*
 echo 'main(){return(0);}' > conftest.c
 save_LDFLAGS="$LDFLAGS"
 LDFLAGS="$LDFLAGS $link_static_flag"
-echo "$progname:843: checking if $compiler static flag $link_static_flag works" >&5
-if { (eval echo $progname:844: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+echo "$progname:860: checking if $compiler static flag $link_static_flag works" >&5
+if { (eval echo $progname:861: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
   echo "$ac_t$link_static_flag" 1>&6
 else
   echo "$ac_t"none 1>&6
@@ -873,7 +890,7 @@ if test -z "$LD"; then
   if test "$with_gcc" = yes; then
     # Check if gcc -print-prog-name=ld gives a path.
     echo $ac_n "checking for ld used by GCC... $ac_c" 1>&6
-    echo "$progname:876: checking for ld used by GCC" >&5
+    echo "$progname:893: checking for ld used by GCC" >&5
     ac_prog=`($CC -print-prog-name=ld) 2>&5`
     case "$ac_prog" in
     # Accept absolute paths.
@@ -927,10 +944,10 @@ if test -z "$LD"; then
     esac
   elif test "$with_gnu_ld" = yes; then
     echo $ac_n "checking for GNU ld... $ac_c" 1>&6
-    echo "$progname:930: checking for GNU ld" >&5
+    echo "$progname:947: checking for GNU ld" >&5
   else
     echo $ac_n "checking for non-GNU ld""... $ac_c" 1>&6
-    echo "$progname:933: checking for non-GNU ld" >&5
+    echo "$progname:950: checking for non-GNU ld" >&5
   fi
 
   if test -z "$LD"; then
@@ -979,8 +996,8 @@ echo $ac_n "checking whether the linker ($LD) supports shared libraries... $ac_c
 
 allow_undefined_flag=
 no_undefined_flag=
-need_lib_prefix=yes
-need_version=yes
+need_lib_prefix=unknown
+need_version=unknown
 archive_cmds=
 archive_sym_cmds=
 old_archive_from_new_cmds=
@@ -1112,13 +1129,24 @@ else
     ;;
 
   aix4*)
-    allow_undefined_flag=unsupported
-    archive_cmds='$NM $libobjs | $global_symbol_pipe | sed '\''s/.* //'\' | sort | uniq' > $lib.exp        else cat $export_symbols > $lib.exp~
-	$CC -o $objdir/$soname $libobjs $deplibs ${wl}-bE:$lib.exp ${wl}-bM:SRE ${wl}-bnoentry~$AR cru $lib $objdir/$soname'
-    archive_sym_cmds='$CC -o $objdir/$soname $libobjs $deplibs ${wl}-bE:$export_symbols ${wl}-bM:SRE ${wl}-bnoentry~$AR cru $lib $objdir/$soname'
+    allow_undefined_flag=
+    if test "$with_gcc" = yes; then
+      # collect2 in egcs and probably latest gcc has full support for
+      # -shared flag, so we feel much better.
+      archive_cmds='$CC -shared $thread_safe_flags -o $objdir/$soname $libobjs $deplibs'
+    else
+      archive_cmds='$NM $libobjs | $global_symbol_pipe | sed '\''s/.* //'\' | sort | uniq' > $lib.exp        else cat $export_symbols > $lib.exp~
+      $CC -o $objdir/$soname $libobjs $deplibs ${wl}-bE:$lib.exp ${wl}-bM:SRE ${wl}-bnoentry'
+      archive_sym_cmds='$CC -o $objdir/$soname $libobjs $deplibs ${wl}-bE:$export_symbols ${wl}-bM:SRE ${wl}-bnoentry'
+    fi
     hardcode_direct=yes
     hardcode_minus_L=yes
-    ;;
+    # Though LIBPATH variable hardcodes shlibpath into executable,
+    # it doesn't affect searching for -l* libraries; this confuses
+    # tests in mdemo.
+    hardcode_shlibpath_var=unsupported
+    hardcode_libdir_flag_spec='-L$libdir'
+   ;;
 
   amigaos*)
     archive_cmds='$rm $objdir/a2ixlibrary.data~$echo "#define NAME $libname" > $objdir/a2ixlibrary.data~$echo "#define LIBRARY_ID 1" >> $objdir/a2ixlibrary.data~$echo "#define VERSION $major" >> $objdir/a2ixlibrary.data~$echo "#define REVISION $revision" >> $objdir/a2ixlibrary.data~$AR cru $lib $libobjs~$RANLIB $lib~(cd $objdir && a2ixlibrary -32)'
@@ -1430,11 +1458,11 @@ void nm_test_func(){}
 main(){nm_test_var='a';nm_test_func();return(0);}
 EOF
 
-  echo "$progname:1433: checking if global_symbol_pipe works" >&5
-  if { (eval echo $progname:1434: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
+  echo "$progname:1461: checking if global_symbol_pipe works" >&5
+  if { (eval echo $progname:1462: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
     # Now try to grab the symbols.
     nlist=conftest.nm
-    if { echo "$progname:1437: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
+    if { echo "$progname:1465: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
 
       # Try sorting and uniquifying the output.
       if sort "$nlist" | uniq > "$nlist"T; then
@@ -1485,7 +1513,7 @@ EOF
 	  save_CFLAGS="$CFLAGS"
 	  LIBS="conftestm.$objext"
 	  CFLAGS="$CFLAGS$no_builtin_flag"
-	  if { (eval echo $progname:1488: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+	  if { (eval echo $progname:1516: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
 	    pipe_works=yes
 	  else
 	    echo "$progname: failed program was:" >&5
@@ -1562,10 +1590,11 @@ version_type=none
 dynamic_linker="$host_os ld.so"
 sys_lib_search_path="/lib /usr/lib /usr/local/lib"
 file_magic_command=
-deplibs_check_method='none'
+deplibs_check_method='unkwnon'
 # Need to set the preceding variable on all platforms that support
 # interlibrary dependencies.
 # 'none' -- dependencies not supported.
+# `unknown' -- same as none, but documents that we really don't known.
 # 'pass_all' -- all dependencies passed with no checks.
 # 'test_compile' -- check by making test program.
 # 'file_regex' -- check by looking for filenames that look like the shared
@@ -1577,13 +1606,25 @@ deplibs_check_method='none'
 # Notes: regexs are run through expr.
 echo $ac_n "checking dynamic linker characteristics... $ac_c" 1>&6
 case "$host_os" in
-aix3* | aix4*)
+aix3*)
   version_type=linux
   library_names_spec='${libname}${release}.so$versuffix $libname.a'
   shlibpath_var=LIBPATH
 
   # AIX has no versioning support, so we append a major version to the name.
   soname_spec='${libname}${release}.so$major'
+  ;;
+
+aix4*)
+  version_type=linux
+  # AIX has no versioning support, so currently we can not hardcode correct
+  # soname into executable. Probably we can add versioning support to
+  # collect2, so additional links can be useful in future.
+  # We preserve .a as extension for shared libraries though AIX4.2
+  # and later linker supports .so
+  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.a'
+  shlibpath_var=LIBPATH
+  deplibs_check_method=pass_all
   ;;
 
 amigaos*)
@@ -1624,9 +1665,10 @@ cygwin32* | mingw32*)
 freebsd2* | freebsd3*)
   objformat=`test -x /usr/bin/objformat && /usr/bin/objformat || echo aout`
   version_type=freebsd-$objformat
-  library_names_spec='${libname}${release}.so$versuffix $libname.so'
+  library_names_spec='${libname}${release}.so$versuffix $libname.so$versuffix'
   finish_cmds='PATH="$PATH:/sbin" OBJFORMAT="$objformat" ldconfig -m $libdir'
   shlibpath_var=LD_LIBRARY_PATH
+  need_version=yes
   ;;
 
 gnu*)
@@ -1753,6 +1795,7 @@ sunos4*)
   library_names_spec='${libname}${release}.so$versuffix ${libname}.so$versuffix'
   finish_cmds='PATH="\$PATH:/usr/etc" ldconfig $libdir'
   shlibpath_var=LD_LIBRARY_PATH
+  need_version=yes
   ;;
 
 sysv4.2uw2* | sysv4.3*)
@@ -1797,12 +1840,16 @@ test "$can_build_shared" = "no" && enable_shared=no
 # On AIX, shared libraries and static libraries use the same namespace, and
 # are all built from PIC.
 case "$host_os" in
-aix*)
+aix3*)
   test "$enable_shared" = yes && enable_static=no
   if test -n "$RANLIB"; then
     archive_cmds="$archive_cmds~\$RANLIB \$lib"
     postinstall_cmds='$RANLIB $lib'
   fi
+  ;;
+
+aix4*)
+  test "$enable_shared" = yes && enable_static=no
   ;;
 esac
 
