@@ -644,7 +644,7 @@ public class GregorianCalendar extends Calendar
    * @param gregorian <code>true</code>, if we should use the Gregorian rules.
    * @return the days since the epoch, may be negative.
    */
-  public long getLinearDay(int year, int dayOfYear, boolean gregorian)
+  private long getLinearDay(int year, int dayOfYear, boolean gregorian)
   {
     // The 13 is the number of days, that were omitted in the Gregorian
     // Calender until the epoch.
