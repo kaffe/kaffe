@@ -49,8 +49,8 @@ modename="$progname"
 # Constants.
 PROGRAM=ltmain.sh
 PACKAGE=libtool
-VERSION=1.2e
-TIMESTAMP=" (1.381 1999/03/14 10:56:17)"
+VERSION=1.2f
+TIMESTAMP=" (1.385 1999/03/15 17:24:54)"
 
 default_mode=
 help="Try \`$progname --help' for more information."
@@ -800,6 +800,7 @@ compiler."
     fi
     # now prepend the system-specific ones
     eval lib_search_path=\"$sys_lib_search_path_spec\$lib_search_path\"
+    eval sys_lib_dlsearch_path=\"$sys_lib_dlsearch_path_spec\"
     
     avoid_version=no
     dlfiles=
@@ -1240,14 +1241,27 @@ compiler."
 	  esac
 	  
 	  # This is the magic to use -rpath.
-	  case "$compile_rpath " in
-	  *" $absdir "*) ;;
-	  *) compile_rpath="$compile_rpath $absdir" ;;
-	  esac
-	  case "$finalize_rpath " in
-	  *" $libdir "*) ;;
-	  *) finalize_rpath="$finalize_rpath $libdir" ;;
-	  esac
+	  # Skip directories that are in the system default run-time
+	  # search path, unless they have been requested with -R.
+	  case " $sys_lib_dlsearch_path " in
+ 	  *" $absdir "*) ;;
+	  *)
+	    case "$compile_rpath " in
+	    *" $absdir "*) ;;
+	    *) compile_rpath="$compile_rpath $absdir" 
+	    esac
+	    ;;
+ 	  esac
+
+	  case " $sys_lib_dlsearch_path " in
+ 	  *" $libdir "*) ;;
+	  *)
+	    case "$finalize_rpath " in
+	    *" $libdir "*) ;;
+	    *) finalize_rpath="$finalize_rpath $libdir"
+	    esac
+	    ;;
+ 	  esac
 
 	  lib_linked=yes
 	  case "$hardcode_action" in
@@ -1868,8 +1882,8 @@ EOF
 	  done # Gone through all deplibs.
 	  ;;
 	none | unknown | *) newdeplibs=""
-	  if $echo "X $deplibs" |
-	     $Xsed -e 's/ -lc$//' -e 's/ -[LR][^ ]*//g' -e 's/[ 	]//g' |
+	  if $echo "X $deplibs" | $Xsed -e 's/ -lc$//' \
+	       -e 's/ -[LR][^ ]*//g' -e 's/[ 	]//g' |
 	     grep . >/dev/null; then
 	    echo
 	    if test "X$deplibs_check_method" = "Xnone"; then
@@ -2174,21 +2188,9 @@ EOF
       fi
 
       # Now hardcode the library paths
-      eval sys_lib_dlsearch_path=\"$sys_lib_dlsearch_path_spec\"
       rpath=
       hardcode_libdirs=
       for libdir in $compile_rpath $finalize_rpath; do
-	# Skip directories that are in the system default run-time
-	# search path, unless they have been requested with -R.
-	case " $sys_lib_dlsearch_path " in
-	*" $libdir "*)
-	  case " $xrpath " in
-	  *" $libdir "*) ;;
-	  *) continue ;;
-	  esac ;;
-	*) ;;
-	esac
-	
 	if test -n "$hardcode_libdir_flag_spec"; then
 	  if test -n "$hardcode_libdir_separator"; then
 	    if test -z "$hardcode_libdirs"; then
@@ -2226,17 +2228,6 @@ EOF
       rpath=
       hardcode_libdirs=
       for libdir in $finalize_rpath; do
-	# Skip directories that are in the system default run-time
-	# search path, unless they have been requested with -R.
-	case " $sys_lib_dlsearch_path " in
-	*" $libdir "*)
-	  case " $xrpath " in
-	  *" $libdir "*) ;;
-	  *) continue ;;
-	  esac ;;
-	*) ;;
-	esac
-	
 	if test -n "$hardcode_libdir_flag_spec"; then
 	  if test -n "$hardcode_libdir_separator"; then
 	    if test -z "$hardcode_libdirs"; then

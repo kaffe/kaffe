@@ -1,3 +1,7 @@
+Mon Mar 15 16:23:01 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* ltconfig, ltmain.sh: update from just-released libtool 1.2f
+
 Sun Mar 14 07:14:46 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* acinclude.m4, ltconfig, ltmain.sh: update from libtool

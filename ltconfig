@@ -163,8 +163,8 @@ progname=`$echo "X$0" | $Xsed -e 's%^.*/%%'`
 # Constants:
 PROGRAM=ltconfig
 PACKAGE=libtool
-VERSION=1.2e
-TIMESTAMP=" (1.381 1999/03/14 10:56:17)"
+VERSION=1.2f
+TIMESTAMP=" (1.385 1999/03/15 17:24:54)"
 ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.c 1>&5'
 ac_link='${CC-cc} -o conftest $CFLAGS $CPPFLAGS $LDFLAGS conftest.c $LIBS 1>&5'
 rm="rm -f"
