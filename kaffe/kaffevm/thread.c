@@ -74,7 +74,7 @@ initThreads(void)
 	unhand(standardGroup)->nthreads = 0;
 	unhand(standardGroup)->threads = 0;
 	unhand(standardGroup)->ngroups = 0;
-	unhand(standardGroup)->groups = 0;
+	unhand(standardGroup)->groups = (HArrayOfObject*)newArray(ThreadGroupClass, 0);
 
 	/* Allocate a thread to be the main thread */
 	createInitialThread("main");
