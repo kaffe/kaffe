@@ -30,10 +30,6 @@
 /* sizeof((((struct sockaddr_in *) 0) ->sin_port)) */
 #undef COMPILE_VALUE_SIZEOF_SIN_PORT
 
-/* Define to 1 if you want classpath's library runtime debugging code enabled
-   */
-#undef DEBUG
-
 /* Define default KAFFEHOME */
 #undef DEFAULT_KAFFEHOME
 

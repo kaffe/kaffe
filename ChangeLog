@@ -1,5 +1,18 @@
 2005-02-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac (LIBDEBUG): Removed now useless classpath debug option.
+
+	* libraries/javalib/gnu/classpath/Configuration.java.in
+	(HAVE_NATIVE_GET_PROXY_CLASS, HAVE_NATIVE_GET_PROXY_DATA,
+	HAVE_NATIVE_GENERATE_PROXY_CLASS): Removed.
+
+	* libraries/javalib/java/lang/reflect/Proxy.java: Use VMProxy for 
+	settings.
+
+	* libraries/javalib/java/lang/reflect/VMProxy.java: new file.
+	
+2005-02-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/lang/StrictMath.java (DEBUG): 
 	new constant.
 	(tan, cos, sin, scale, remPiOver2) Use internal debug switch.

@@ -2458,6 +2458,7 @@ java_lang_reflect_SRCS = \
 	java/lang/reflect/ReflectPermission.java \
 	java/lang/reflect/Type.java \
 	java/lang/reflect/UndeclaredThrowableException.java \
+	java/lang/reflect/VMProxy.java \
 	java/lang/reflect/WildcardType.java
 java_math_SRCS = \
 	java/math/BigDecimal.java \

@@ -1,5 +1,5 @@
-/* Configuration.java --
-   Copyright (C) 1998, 2001, 2003, 2005  Free Software Foundation, Inc.
+/* VMProxy.java --
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,44 +35,39 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package gnu.classpath;
+package java.lang.reflect;
 
 /**
  * This file defines compile-time constants that can be accessed by
- * java code. It is pre-processed by configure.  
+ * java code.
  */
-public interface Configuration
+
+interface VMProxy
 {
   /**
-   * The value of CLASSPATH_HOME is the location that the classpath
-   * libraries and support files where installed in. It is set according to
-   * the argument for --prefix given to configure and used to set the
-   * System property gnu.classpath.home.
+   * Set to true if the VM provides a native method to implement
+   * Proxy.getProxyClass completely, including argument verification.
+   * If this is true, HAVE_NATIVE_GET_PROXY_DATA and
+   * HAVE_NATIVE_GENERATE_PROXY_CLASS should be false.
+   * @see java.lang.reflect.Proxy
    */
-  String CLASSPATH_HOME = "@prefix@";
+  boolean HAVE_NATIVE_GET_PROXY_CLASS = false;
 
   /**
-   * The release version number of GNU Classpath.
-   * It is set according to the value of 'version' in the configure[.in] file
-   * and used to set the System property gnu.classpath.version.
+   * Set to true if the VM provides a native method to implement
+   * the first part of Proxy.getProxyClass: generation of the array
+   * of methods to convert, and verification of the arguments.
+   * If this is true, HAVE_NATIVE_GET_PROXY_CLASS should be false.
+   * @see java.lang.reflect.Proxy
    */
-  String CLASSPATH_VERSION = "@VERSION@";
+  boolean HAVE_NATIVE_GET_PROXY_DATA = false;
 
   /**
-   * The value of LOAD_LIBRARY is substituted according to whether the
-   * "--enable-load-library" or "--disable-load-library" argument was passed 
-   * to configure.  By default, configure should define this is as true.
-   * If set to false, loadLibrary() calls to load native function
-   * implementations, typically found in static initializers of classes
-   * which contain native functions, will be omitted.  This is useful for
-   * runtimes which pre-link their native function implementations and do
-   * not require additional shared libraries to be loaded.
+   * Set to true if the VM provides a native method to implement
+   * the second part of Proxy.getProxyClass: conversion of an array of
+   * methods into an actual proxy class.
+   * If this is true, HAVE_NATIVE_GET_PROXY_CLASS should be false.
+   * @see java.lang.reflect.Proxy
    */
-  boolean INIT_LOAD_LIBRARY = @INIT_LOAD_LIBRARY@;
-
-  /**
-   * Set to true if Cairo was found and enabled during configure,
-   * false otherwise.
-   */
-  boolean GTK_CAIRO_ENABLED = @GTK_CAIRO_ENABLED@;
+  boolean HAVE_NATIVE_GENERATE_PROXY_CLASS = false;
 }

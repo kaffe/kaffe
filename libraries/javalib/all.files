@@ -1997,6 +1997,7 @@ java/lang/reflect/Proxy.java
 java/lang/reflect/ReflectPermission.java
 java/lang/reflect/Type.java
 java/lang/reflect/UndeclaredThrowableException.java
+java/lang/reflect/VMProxy.java
 java/lang/reflect/WildcardType.java
 java/math/BigDecimal.java
 java/math/BigInteger.java

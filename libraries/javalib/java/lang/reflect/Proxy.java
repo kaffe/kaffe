@@ -263,15 +263,15 @@ public class Proxy implements Serializable
     Class clazz = (Class) proxyClasses.get(pt);
     if (clazz == null)
       {
-        if (Configuration.HAVE_NATIVE_GET_PROXY_CLASS)
+        if (VMProxy.HAVE_NATIVE_GET_PROXY_CLASS)
           clazz = getProxyClass0(loader, interfaces);
         else
           {
-            ProxyData data = (Configuration.HAVE_NATIVE_GET_PROXY_DATA
+            ProxyData data = (VMProxy.HAVE_NATIVE_GET_PROXY_DATA
                               ? getProxyData0(loader, interfaces)
                               : ProxyData.getProxyData(pt));
 
-            clazz = (Configuration.HAVE_NATIVE_GENERATE_PROXY_CLASS
+            clazz = (VMProxy.HAVE_NATIVE_GENERATE_PROXY_CLASS
 		     ? generateProxyClass0(loader, data)
                      : new ClassFactory(data).generate(loader));
           }
@@ -390,7 +390,7 @@ public class Proxy implements Serializable
   /**
    * Optional native method to replace (and speed up) the pure Java
    * implementation of getProxyClass.  Only needed if
-   * Configuration.HAVE_NATIVE_GET_PROXY_CLASS is true, this does the
+   * VMProxy.HAVE_NATIVE_GET_PROXY_CLASS is true, this does the
    * work of both getProxyData0 and generateProxyClass0 with no
    * intermediate form in Java. The native code may safely assume that
    * this class must be created, and does not already exist.
@@ -414,7 +414,7 @@ public class Proxy implements Serializable
   /**
    * Optional native method to replace (and speed up) the pure Java
    * implementation of getProxyData.  Only needed if
-   * Configuration.HAVE_NATIVE_GET_PROXY_DATA is true. The native code
+   * VMProxy.HAVE_NATIVE_GET_PROXY_DATA is true. The native code
    * may safely assume that a new ProxyData object must be created which
    * does not duplicate any existing ones.
    *
@@ -426,7 +426,7 @@ public class Proxy implements Serializable
    *         were violated, except for problems with null
    * @throws NullPointerException if `interfaces' is null or contains
    *         a null entry, or if handler is null
-   * @see Configuration.HAVE_NATIVE_GET_PROXY_DATA
+   * @see VMProxy.HAVE_NATIVE_GET_PROXY_DATA
    * @see #getProxyClass(ClassLoader, Class[])
    * @see #getProxyClass0(ClassLoader, Class[])
    * @see ProxyType#getProxyData()
@@ -437,7 +437,7 @@ public class Proxy implements Serializable
   /**
    * Optional native method to replace (and speed up) the pure Java
    * implementation of generateProxyClass.  Only needed if
-   * Configuration.HAVE_NATIVE_GENERATE_PROXY_CLASS is true. The native
+   * VMProxy.HAVE_NATIVE_GENERATE_PROXY_CLASS is true. The native
    * code may safely assume that a new Class must be created, and that
    * the ProxyData object does not describe any existing class.
    *

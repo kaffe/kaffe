@@ -2071,25 +2071,6 @@ fi
 AC_SUBST(KVMLIBFLAGS)
 
 dnl -----------------------------------------------------------
-dnl Enable debugging statements at compile time.  By default
-dnl these statements should be optimized out of the bytecode
-dnl produced by an optimizing Java compiler and not hinder 
-dnl performance because debugging is turned off by default.
-dnl -----------------------------------------------------------
-AC_ARG_ENABLE([classpath-debug],
-              [AS_HELP_STRING(--enable-classpath-debug,enable classpath's runtime debugging code)],
-              [case "${enableval}" in 
-                yes) 
-              	LIBDEBUG="true"
-                AC_DEFINE(DEBUG, 1, [Define to 1 if you want classpath's library runtime debugging code enabled]) 
-              	;;
-                no)   LIBDEBUG="false" ;;
-                *) 	AC_MSG_ERROR(bad value ${enableval} for --enable-classpath-debug) ;;
-              esac],
-              [LIBDEBUG="false"])
-AC_SUBST(LIBDEBUG)
-
-dnl -----------------------------------------------------------
 dnl Enable execution of all static initializer loadLibrary() 
 dnl calls at compile time.  By default most people will not
 dnl want to disable this, but some VMs (gcj) don't need or want 
