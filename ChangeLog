@@ -1,3 +1,114 @@
+2003-08-10  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	Regenerated.
+	
+	* libraries/javalib/gnu/java/nio/DatagramChannelImpl.java,
+	libraries/javalib/gnu/java/nio/FileChannelImpl.java,
+	libraries/javalib/gnu/java/nio/MappedByteFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedCharFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedDoubleFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedFloatFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedIntFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedLongFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedShortFileBuffer.java,
+	libraries/javalib/gnu/java/nio/SelectorImpl.java,
+	libraries/javalib/gnu/java/nio/ServerSocketChannelImpl.java,
+	libraries/javalib/gnu/java/nio/SocketChannelImpl.java,
+	libraries/javalib/java/awt/ScrollPaneAdjustable.java,
+	libraries/javalib/java/awt/color/ColorSpace.java,
+	libraries/javalib/java/awt/datatransfer/DataFlavor.java,
+	libraries/javalib/java/awt/dnd/DragSource.java,
+	libraries/javalib/java/awt/dnd/DragSourceContext.java,
+	libraries/javalib/java/awt/event/HierarchyEvent.java,
+	libraries/javalib/java/awt/event/MouseWheelEvent.java,
+	libraries/javalib/java/awt/geom/Arc2D.java,
+	libraries/javalib/java/awt/geom/CubicCurve2D.java,
+	libraries/javalib/java/awt/geom/Line2D.java,
+	libraries/javalib/java/awt/geom/QuadCurve2D.java,
+	libraries/javalib/java/awt/geom/Rectangle2D.java,
+	libraries/javalib/java/awt/im/InputSubset.java,
+	libraries/javalib/java/awt/image/BufferedImage.java,
+	libraries/javalib/java/awt/image/ColorModel.java,
+	libraries/javalib/java/awt/image/ComponentColorModel.java,
+	libraries/javalib/java/awt/image/DataBufferByte.java,
+	libraries/javalib/java/awt/image/DataBufferInt.java,
+	libraries/javalib/java/awt/image/DataBufferUShort.java,
+	libraries/javalib/java/awt/image/Raster.java,
+	libraries/javalib/java/awt/image/WritableRaster.java,
+	libraries/javalib/java/awt/print/PageFormat.java,
+	libraries/javalib/java/awt/print/PrinterJob.java,
+	libraries/javalib/java/io/FilePermission.java,
+	libraries/javalib/java/lang/StrictMath.java,
+	libraries/javalib/java/net/Authenticator.java,
+	libraries/javalib/java/net/PasswordAuthentication.java,
+	libraries/javalib/java/nio/Buffer.java,
+	libraries/javalib/java/nio/ByteBuffer.java,
+	libraries/javalib/java/nio/ByteBufferImpl.java,
+	libraries/javalib/java/nio/CharBuffer.java,
+	libraries/javalib/java/nio/CharBufferImpl.java,
+	libraries/javalib/java/nio/DirectByteBufferImpl.java,
+	libraries/javalib/java/nio/DoubleBuffer.java,
+	libraries/javalib/java/nio/DoubleBufferImpl.java,
+	libraries/javalib/java/nio/FloatBuffer.java,
+	libraries/javalib/java/nio/FloatBufferImpl.java,
+	libraries/javalib/java/nio/IntBuffer.java,
+	libraries/javalib/java/nio/IntBufferImpl.java,
+	libraries/javalib/java/nio/LongBuffer.java,
+	libraries/javalib/java/nio/LongBufferImpl.java,
+	libraries/javalib/java/nio/MappedByteBuffer.java,
+	libraries/javalib/java/nio/MappedByteBufferImpl.java,
+	libraries/javalib/java/nio/ShortBuffer.java,
+	libraries/javalib/java/nio/ShortBufferImpl.java,
+	libraries/javalib/java/nio/channels/Channels.java,
+	libraries/javalib/java/nio/channels/FileChannel.java,
+	libraries/javalib/java/nio/channels/FileChannelImpl.java,
+	libraries/javalib/java/nio/channels/FileLock.java,
+	libraries/javalib/java/nio/channels/ServerSocketChannel.java,
+	libraries/javalib/java/nio/channels/spi/AbstractSelector.java,
+	libraries/javalib/java/nio/charset/Charset.java,
+	libraries/javalib/java/sql/Timestamp.java,
+	libraries/javalib/java/util/logging/Handler.java,
+	libraries/javalib/java/util/prefs/AbstractPreferences.java,
+	libraries/javalib/java/util/prefs/Preferences.java,
+	libraries/javalib/java/util/prefs/PreferencesFactory.java,
+	libraries/javalib/javax/naming/CompositeName.java,
+	libraries/javalib/javax/naming/CompoundName.java,
+	libraries/javalib/javax/naming/InitialContext.java,
+	libraries/javalib/javax/naming/LinkRef.java,
+	libraries/javalib/javax/naming/NamingException.java,
+	libraries/javalib/javax/naming/NamingSecurityException.java,
+	libraries/javalib/javax/naming/ReferralException.java,
+	libraries/javalib/javax/naming/StringRefAddr.java,
+	libraries/javalib/javax/naming/directory/Attribute.java,
+	libraries/javalib/javax/naming/directory/BasicAttribute.java,
+	libraries/javalib/javax/naming/directory/BasicAttributes.java,
+	libraries/javalib/javax/naming/ldap/UnsolicitedNotificationEvent.java,
+	libraries/javalib/javax/naming/spi/NamingManager.java:
+	Resynced with GNU Classpath.
+
+	* libraries/javalib/java/net/Socket.java:
+	(Socket) made protected default constructor public as in JDK 1.4
+	API.
+	
+	* libraries/javalib/java/net/DatagramSocket.java:
+	(isConnected, connect) new methods from GNU Classpath.
+	
+	* libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/nio.files:
+	Removed gnu/java/nio/FileChannelImpl.java,
+	gnu/java/nio/MappedByteFileBuffer.java, 
+	gnu/java/nio/MappedCharFileBuffer.java,
+	gnu/java/nio/MappedDoubleFileBuffer.java,
+	gnu/java/nio/MappedFloatFileBuffer.java,
+	gnu/java/nio/MappedIntFileBuffer.java,
+	gnu/java/nio/MappedLongFileBuffer.java,
+	gnu/java/nio/MappedShortFileBuffer.java. Added
+	java/nio/channels/FileChannelImpl.java and
+	java/nio/MappedByteBufferImpl.java.
+
 2003-08-10  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/clib/native/Class.c:

@@ -47,7 +47,7 @@ public abstract class ShortBuffer extends Buffer
   int array_offset;
   short[] backing_buffer;
 
-  protected ShortBuffer (int capacity, int limit, int position, int mark)
+  ShortBuffer (int capacity, int limit, int position, int mark)
   {
     super (capacity, limit, position, mark);
     array_offset = 0;

@@ -23,6 +23,10 @@ private static SocketImplFactory factory = new DefaultSocketImplFactory();
 SocketImpl impl;
 boolean bound;
 
+public Socket() {
+	impl = factory.createSocketImpl();
+}
+
 public Socket(InetAddress address, int port) throws IOException {
     this(address, port, true);
 }
@@ -139,10 +143,6 @@ private void connect(InetAddress address, int port, boolean stream,
 protected Socket(SocketImpl simpl) throws SocketException {
 	impl = simpl;
 	bound = true;
-}
-
-protected Socket() {
-	impl = factory.createSocketImpl();
 }
 
 public synchronized void close() throws IOException {

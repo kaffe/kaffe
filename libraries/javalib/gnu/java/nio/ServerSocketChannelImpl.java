@@ -35,11 +35,13 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package gnu.java.nio;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -47,74 +49,52 @@ import java.nio.channels.spi.SelectorProvider;
 
 class ServerSocketChannelImpl extends ServerSocketChannel
 {
-  ServerSocket sock_object;
-  int fd;
-  int local_port;
+  ServerSocket serverSocket;
   boolean blocking = true;
   boolean connected = false;
-  InetSocketAddress sa;
-
-//   private static native int NioSocketAccept (ServerSocketChannelImpl server, 
-//                                              SocketChannelImpl s);
-
-  private static int NioSocketAccept (ServerSocketChannelImpl server, 
-                                      SocketChannelImpl s)
-  {
-    return 0;
-  }
 
   protected ServerSocketChannelImpl (SelectorProvider provider)
     throws IOException
   {
     super (provider);
-    fd = SocketChannelImpl.SocketCreate ();
-
-    try
-      {
-        sock_object = new ServerSocket ();
-      }
-    catch (IOException e)
-      {
-        System.err.println ("ServerSocket could not be created.");
-      }
+    serverSocket = new ServerSocket ();
   }
  
   public void finalizer()
   {
     if (connected)
-	    {
+      {
         try
           {
-            close();
+            close ();
           }
         catch (Exception e)
           {
           }
-	    }
+      }
   }
 
   protected void implCloseSelectableChannel () throws IOException
   {
     connected = false;
-    SocketChannelImpl.SocketClose (fd);
-    fd = SocketChannelImpl.SocketCreate ();
+    serverSocket.close();
   }
 
-  protected void implConfigureBlocking (boolean block) throws IOException
+  protected void implConfigureBlocking (boolean blocking) throws IOException
   {
-    blocking = block;
+    this.blocking = blocking; // FIXME
   }
 
-  public SocketChannel accept ()
+  public SocketChannel accept () throws IOException
   {
     SocketChannelImpl result = new SocketChannelImpl (provider ());
-    result.sa = new InetSocketAddress (0);
-    int res = NioSocketAccept (this, result);
+    Socket socket = serverSocket.accept();
+    //socket.setChannel (result); // FIXME
     return result;
   }
 
   public ServerSocket socket ()
   {
-    return sock_object;
+    return serverSocket;
   }
 }

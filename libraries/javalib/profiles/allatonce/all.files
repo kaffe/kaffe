@@ -19,14 +19,6 @@ gnu/java/nio/charset/UTF_16.java
 gnu/java/nio/charset/UTF_16LE.java
 gnu/java/nio/charset/UTF_8.java
 gnu/java/nio/DatagramChannelImpl.java
-gnu/java/nio/FileChannelImpl.java
-gnu/java/nio/MappedByteFileBuffer.java
-gnu/java/nio/MappedCharFileBuffer.java
-gnu/java/nio/MappedDoubleFileBuffer.java
-gnu/java/nio/MappedFloatFileBuffer.java
-gnu/java/nio/MappedIntFileBuffer.java
-gnu/java/nio/MappedLongFileBuffer.java
-gnu/java/nio/MappedShortFileBuffer.java
 gnu/java/nio/PipeImpl.java
 gnu/java/nio/SelectionKeyImpl.java
 gnu/java/nio/SelectorImpl.java
@@ -527,6 +519,7 @@ java/nio/channels/ClosedChannelException.java
 java/nio/channels/ClosedSelectorException.java
 java/nio/channels/ConnectionPendingException.java
 java/nio/channels/DatagramChannel.java
+java/nio/channels/FileChannelImpl.java
 java/nio/channels/FileChannel.java
 java/nio/channels/FileLockInterruptionException.java
 java/nio/channels/FileLock.java
@@ -585,6 +578,7 @@ java/nio/InvalidMarkException.java
 java/nio/LongBufferImpl.java
 java/nio/LongBuffer.java
 java/nio/LongViewBufferImpl.java
+java/nio/MappedByteBufferImpl.java
 java/nio/MappedByteBuffer.java
 java/nio/ReadOnlyBufferException.java
 java/nio/ShortBufferImpl.java

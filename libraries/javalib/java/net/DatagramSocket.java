@@ -132,7 +132,7 @@ public synchronized void receive(DatagramPacket p) throws IOException {
 
 public void send(DatagramPacket p) throws IOException  {
 	synchronized (p) {
-		if (this.address == null) {		// not connected
+		if (!isConnected()) {
 			if (p.getAddress() == null
 			    || p.getPort() == -1) {
 				throw new IOException("no destination");
@@ -161,5 +161,35 @@ private void checkRemote(InetAddress addr, int port) {
 		}
 	}
 }
+
+  /**
+   * Returns the connection state of the socket.
+   * 
+   * @since 1.4
+   */
+  public boolean isConnected()
+  {
+    return address != null;
+  }
+
+  /**
+   * Connects the datagram socket to a specified socket address.
+   *
+   * @param address The socket address to connect to.
+   *
+   * @exception SocketException If an error occurs.
+   * @exception IllegalArgumentException If address type is not supported.
+   *
+   * @since 1.4
+   */
+  public void connect (SocketAddress address) throws SocketException
+  {
+    if ( !(address instanceof InetSocketAddress) )
+      throw new IllegalArgumentException (
+		      "SocketAddress is not InetSocketAddress");
+
+    InetSocketAddress tmp = (InetSocketAddress) address;
+    connect( tmp.getAddress(), tmp.getPort());
+  }
 
 }

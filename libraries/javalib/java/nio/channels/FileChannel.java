@@ -51,7 +51,7 @@ public abstract class FileChannel extends AbstractInterruptibleChannel
 {
   public static class MapMode
   {
-    public int m;
+    int m;
 
     public static MapMode READ_ONLY  = new MapMode(0);
     public static MapMode READ_WRITE = new MapMode(1);
@@ -112,7 +112,7 @@ public abstract class FileChannel extends AbstractInterruptibleChannel
    *
    * @exception IOException If an I/O error occurs.
    */
-  public long write (ByteBuffer[] srcs) throws IOException
+  public final long write (ByteBuffer[] srcs) throws IOException
   {
     long result = 0;
     

@@ -47,7 +47,7 @@ public abstract class IntBuffer extends Buffer
   int array_offset;
   int[] backing_buffer;
 
-  protected IntBuffer (int capacity, int limit, int position, int mark)
+  IntBuffer (int capacity, int limit, int position, int mark)
   {
     super (capacity, limit, position, mark);
     array_offset = 0;

@@ -47,7 +47,7 @@ public abstract class LongBuffer extends Buffer
   int array_offset;
   long[] backing_buffer;
 
-  protected LongBuffer (int capacity, int limit, int position, int mark)
+  LongBuffer (int capacity, int limit, int position, int mark)
   {
     super (capacity, limit, position, mark);
     array_offset = 0;

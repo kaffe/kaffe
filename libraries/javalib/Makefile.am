@@ -150,7 +150,6 @@ Klasses_jar_SRCS = \
 	$(kaffe_rmi_registry_SRCS) \
 	$(kaffe_rmi_rmic_SRCS) \
 	$(kaffe_rmi_server_SRCS) \
-	$(kaffe_security_SRCS) \
 	$(kaffe_security_provider_SRCS) \
 	$(kaffe_text_collator_SRCS) \
 	$(kaffe_text_dateformat_SRCS) \
@@ -208,14 +207,6 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/Calendar_nl.java
 gnu_java_nio_SRCS = \
 	gnu/java/nio/DatagramChannelImpl.java \
-	gnu/java/nio/FileChannelImpl.java \
-	gnu/java/nio/MappedByteFileBuffer.java \
-	gnu/java/nio/MappedCharFileBuffer.java \
-	gnu/java/nio/MappedDoubleFileBuffer.java \
-	gnu/java/nio/MappedFloatFileBuffer.java \
-	gnu/java/nio/MappedIntFileBuffer.java \
-	gnu/java/nio/MappedLongFileBuffer.java \
-	gnu/java/nio/MappedShortFileBuffer.java \
 	gnu/java/nio/PipeImpl.java \
 	gnu/java/nio/SelectionKeyImpl.java \
 	gnu/java/nio/SelectorImpl.java \
@@ -948,6 +939,7 @@ java_nio_SRCS = \
 	java/nio/LongBufferImpl.java \
 	java/nio/LongBuffer.java \
 	java/nio/LongViewBufferImpl.java \
+	java/nio/MappedByteBufferImpl.java \
 	java/nio/MappedByteBuffer.java \
 	java/nio/ReadOnlyBufferException.java \
 	java/nio/ShortBufferImpl.java \
@@ -965,6 +957,7 @@ java_nio_channels_SRCS = \
 	java/nio/channels/ClosedSelectorException.java \
 	java/nio/channels/ConnectionPendingException.java \
 	java/nio/channels/DatagramChannel.java \
+	java/nio/channels/FileChannelImpl.java \
 	java/nio/channels/FileChannel.java \
 	java/nio/channels/FileLockInterruptionException.java \
 	java/nio/channels/FileLock.java \

@@ -35,7 +35,8 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package gnu.java.nio;
+
+package java.nio.channels;
 
 import java.io.EOFException;
 import java.io.FileDescriptor;
@@ -45,13 +46,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-import java.nio.channels.NonReadableChannelException;
-import java.nio.channels.NonWritableChannelException;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
+import java.nio.MappedByteBufferImpl;
 import gnu.classpath.RawData;
 
 /**
@@ -64,7 +59,7 @@ import gnu.classpath.RawData;
 
 public class FileChannelImpl extends FileChannel
 {
-  RawData map_address;
+  public RawData map_address;
   
   int length;
   FileDescriptor fd;
@@ -259,7 +254,7 @@ public class FileChannelImpl extends FileChannel
     int cmode = mode.m;
     map_address = nio_mmap_file (position, size, cmode);
     length = (int) size;
-    buf = new MappedByteFileBuffer (this);
+    buf = new MappedByteBufferImpl (this);
     return buf;
   }
 
@@ -270,16 +265,10 @@ public class FileChannelImpl extends FileChannel
     FileChannelImpl ch = new FileChannelImpl ();
     ch.map_address = map_address;
     ch.length = (int) length;
-    ch.buf = new MappedByteFileBuffer (ch);
+    ch.buf = new MappedByteBufferImpl (ch);
     return ch.buf;			 
   }
 
-  public long write (ByteBuffer[] srcs)
-    throws IOException
-  {
-    return write (srcs, 0, srcs.length);
-  }
-				   
   /**
    * msync with the disk
    */

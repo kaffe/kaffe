@@ -35,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.nio;
 
 /**
@@ -43,7 +44,7 @@ package java.nio;
  */
 public abstract class MappedByteBuffer extends ByteBuffer
 {
-  protected MappedByteBuffer (int capacity, int limit, int position, int mark)
+  MappedByteBuffer (int capacity, int limit, int position, int mark)
   {
     super (capacity, limit, position, mark);
   }

@@ -35,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package gnu.java.nio;
 
 import java.io.IOException;
@@ -50,172 +51,133 @@ import gnu.classpath.Configuration;
 
 public class SocketChannelImpl extends SocketChannel
 {
-  Socket sock_object;
-  int fd;
-  int local_port;
+  Socket socket;
   boolean blocking = true;
   boolean connected = false;
-  InetSocketAddress sa;
 
-  static native int SocketCreate();
-  static native int SocketConnect(int fd, InetAddress addr, int port);
-  static native int SocketBind(int fd, InetAddress addr, int port);
-  static native int SocketListen(int fd, int backlog);
-  static native int SocketAvailable(int fd);
-  static native int SocketClose(int fd);
-  static native int SocketRead(int fd, byte b[], int off, int len);
-  static native int SocketWrite(int fd, byte b[], int off, int len);
-
-  public SocketChannelImpl(SelectorProvider provider)		      
+  public SocketChannelImpl (SelectorProvider provider)		      
   {
-    super(provider);
-    fd = SocketCreate();
-	
-    if (fd == -1)
-	    {
-        System.err.println("failed to create socket:"+fd);
-	    }
+    super (provider);
+    socket = new Socket ();
   }
 
   public void finalizer()
   {
     if (connected)
-	    {
+      {
         try
           {
-            close();
+            close ();
           }
         catch (Exception e)
           {
           }
-	    }
+      }
   }
 
-  protected void implCloseSelectableChannel()
+  protected void implCloseSelectableChannel () throws IOException
   {
     connected = false;
-    SocketClose(fd);
-    fd = SocketCreate();
+    socket.close();
   }
 
-  protected void implConfigureBlocking(boolean  block)
+  protected void implConfigureBlocking (boolean blocking) throws IOException
   {
-    if (blocking == block)
-	    return;
+    this.blocking = blocking; // FIXME
   }   
 
-  public boolean connect(SocketAddress remote)
-    throws IOException
+  public boolean connect (SocketAddress remote) throws IOException
   {
     if (connected)
-	    {
-        throw new AlreadyConnectedException();
-	    }
-
-    // ok, lets connect !
+      throw new AlreadyConnectedException();
 	
-    sa = (InetSocketAddress) remote;
-	
-    InetAddress addr = sa.getAddress();
-    int port = sa.getPort();
-    int err = SocketConnect(fd, addr, port);
-	
-    if (err < 0) 
-	    {
-        throw new IOException("Connection refused:"+err + ", connect="+err);
-	    }
-
-    local_port = err;
+    socket.connect (remote, 50);
     connected = true;
-    return blocking;
+    return blocking; // FIXME
   }
     
-  public boolean finishConnect()
+  public boolean finishConnect ()
   {
     return false;
   }
 
-  public boolean isConnected()
+  public boolean isConnected ()
   {
     return connected;
   }
     
-  public boolean isConnectionPending()
+  public boolean isConnectionPending ()
   {
-    if (blocking)
-	    return true;
-
-    return false;
+    return blocking ? true : false;
   }
     
-  public Socket socket()
+  public Socket socket ()
   {
-    if (sock_object != null)
-	    {
-        //sock_object.ch = this;
-	    }
-
-    return sock_object;
+    return socket;
   }
 
-  public int read(ByteBuffer dst)
+  public int read (ByteBuffer dst) throws IOException
   {
+    byte[] data;
     int bytes = 0;
-    int len = 1024;
-    byte[]b = new byte[len];
+    int len = dst.remaining ();
 	
-    bytes = SocketRead(fd, b, 0, len);
-    dst.put(b, 0, bytes);
-
-    if (bytes == 0)
-	    {
-        // we've hit eof ?
-        return -1;
-	    }
-
-    return bytes;
+    if (!dst.hasArray ())
+      {
+        data = new byte [len];
+        dst.get (data, 0, len);
+      }
+    else
+      {
+        data = dst.array ();
+      }
+    
+    return socket.getInputStream().read (data, 0, len);
   }
     
-  public long read(ByteBuffer[] dsts, int offset, int length)
+  public long read (ByteBuffer[] dsts, int offset, int length)
+    throws IOException
   {
     long bytes = 0;
 
-    for (int i=offset; i<length; i++)
-	    {
-        bytes += read(dsts[i]);
-	    }
+    for (int i = offset; i < length; i++)
+      {
+        bytes += read (dsts [i]);
+      }
 
     return bytes;
   }
      
-  public int write(ByteBuffer src)
+  public int write (ByteBuffer src)
+    throws IOException
   {
+    byte[] data;
     int bytes = 0;
-    int len = src.position();
-
-    if (src.hasArray ())
+    int len = src.remaining ();
+    
+    if (!src.hasArray ())
       {
-        byte[] b = src.array ();
-        bytes = SocketWrite (fd, b, 0, len);
+        data = new byte [len];
+        src.get (data, 0, len);
       }
     else
       {
-        byte[] b = new byte [len];
-        src.get (b, 0, len);
-        bytes = SocketWrite (fd, b, 0, len);
+        data = src.array ();
       }
-		
-	  return bytes;
+   
+    socket.getOutputStream().write (data, 0, len);
+    return len;
   }
 
   public long write (ByteBuffer[] srcs, int offset, int length)
+    throws IOException
   {
     long bytes = 0;
 
-    for (int i=offset; i<length; i++)
-	    {
-        bytes += write(srcs[i]);
-	    }
+    for (int i = offset; i < length; i++)
+      {
+        bytes += write (srcs [i]);
+      }
 
     return bytes;
   }

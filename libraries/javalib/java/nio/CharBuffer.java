@@ -47,7 +47,7 @@ public abstract class CharBuffer extends Buffer
   int array_offset;
   char[] backing_buffer;
 
-  protected CharBuffer (int capacity, int limit, int position, int mark)
+  CharBuffer (int capacity, int limit, int position, int mark)
   {
     super (capacity, limit, position, mark);
     array_offset = 0;

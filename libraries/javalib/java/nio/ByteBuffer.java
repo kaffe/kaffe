@@ -49,7 +49,7 @@ public abstract class ByteBuffer extends Buffer
   int array_offset;
   byte[] backing_buffer;
 
-  protected ByteBuffer (int capacity, int limit, int position, int mark)
+  ByteBuffer (int capacity, int limit, int position, int mark)
   {
     super (capacity, limit, position, mark);
     array_offset = 0;

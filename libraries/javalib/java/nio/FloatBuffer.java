@@ -47,7 +47,7 @@ public abstract class FloatBuffer extends Buffer
   int array_offset;
   float[] backing_buffer;
 
-  protected FloatBuffer (int capacity, int limit, int position, int mark)
+  FloatBuffer (int capacity, int limit, int position, int mark)
   {
     super (capacity, limit, position, mark);
     array_offset = 0;

@@ -170,37 +170,31 @@ public class SelectorImpl extends AbstractSelector
   protected SelectionKey register (AbstractSelectableChannel ch, int ops,
                                    Object att)
   {
-    /*
-	  // filechannel is not selectable ?
-    if (ch instanceof FileChannelImpl)
-      {
-        FileChannelImpl fc = (FileChannelImpl) ch;
-        SelectionKeyImpl impl = new SelectionKeyImpl (ch, this, fc.fd);
-        keys.add (impl);
-        return impl;
-      }
-    else
-    */
-	
+    SelectionKeyImpl result;
+    
     if (ch instanceof SocketChannelImpl)
-	    {
+      {
         SocketChannelImpl sc = (SocketChannelImpl) ch;
-        SelectionKeyImpl impl = new SelectionKeyImpl (ch, this, sc.fd);
-        add (impl);
-        return impl;
-	    }
+        result = new SelectionKeyImpl (ch, this, 0); // FIXME: last argument
+      }
+    else if (ch instanceof DatagramChannelImpl)
+      {
+        DatagramChannelImpl dc = (DatagramChannelImpl) ch;
+        result = new SelectionKeyImpl (ch, this, 0); // FIXME: last argument
+      }
     else if (ch instanceof ServerSocketChannelImpl)
       {
         ServerSocketChannelImpl ssc = (ServerSocketChannelImpl) ch;
-        SelectionKeyImpl impl = new SelectionKeyImpl (ch, this, ssc.fd);
-        add (impl);
-        return impl;
+        result = new SelectionKeyImpl (ch, this, 0); // FIXME: last argument
       }
     else
-	    {
-        System.err.println ("INTERNAL ERROR, no known channel type");
-	    }
+      {
+        throw new InternalError ("No known channel type");
+      }
 
-    return null;
+    add (result);
+    result.interestOps (ops);
+    result.attach (att);
+    return result;
   }
 }

@@ -47,7 +47,7 @@ public abstract class DoubleBuffer extends Buffer
   int array_offset;
   double[] backing_buffer;
 
-  protected DoubleBuffer (int capacity, int limit, int position, int mark)
+  DoubleBuffer (int capacity, int limit, int position, int mark)
   {
     super (capacity, limit, position, mark);
     array_offset = 0;
