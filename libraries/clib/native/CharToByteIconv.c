@@ -39,7 +39,11 @@ Java_kaffe_io_CharToByteIconv_open0 (JNIEnv* env, jobject _this, jstring enc)
     iconv_t cd;
 
     str = (*env)->GetStringUTFChars(env, enc, 0);
-    cd = iconv_open ((char *)str, "UCS-2");
+#ifdef WORDS_BIGENDIAN
+    cd = iconv_open ((char *)str, "UCS-2BE");
+#else
+    cd = iconv_open ((char *)str, "UCS-2LE");
+#endif
     (*env)->ReleaseStringUTFChars(env, enc, str);
     if (cd != (iconv_t)-1) {
 	(*env)->SetObjectField(env, _this, cd_id, (jobject)cd);
@@ -72,32 +76,8 @@ Java_kaffe_io_CharToByteIconv_convert (JNIEnv* env, jobject _this,
     size_t	icv_outlen = toLen;
     iconv_t	cd = (iconv_t) (*env)->GetObjectField(env, _this, cd_id);
     int		ret;
-#ifndef WORDS_BIGENDIAN
-    char	*buffer;
-#endif
 
-#ifndef WORDS_BIGENDIAN
-    if (icv_inlen > 0) {
-	buffer = KMALLOC (icv_inlen);
-	if (!buffer) {
-	    jclass oom;
-	    
-	    (*env)->ReleaseCharArrayElements(env, fromChars, jc, JNI_ABORT);
-	    (*env)->ReleaseByteArrayElements(env, toBytes, jb, 0);
-	    oom = (*env)->FindClass(env, "java.lang.OutOfMemory");
-	    (*env)->ThrowNew(env, oom, "iconv()");
-	}
-	swab (icv_in, buffer, icv_inlen);
-	icv_in = buffer;
-    }
-    else {
-	buffer = NULL;
-    }
-#endif
     ret = iconv (cd, &icv_in, &icv_inlen, &icv_out, &icv_outlen);
-#ifndef WORDS_BIGENDIAN
-    KFREE (buffer);
-#endif
     if (icv_inlen > 0) {
 	/* In case we have some bytes left, save them */
 	(*env)->CallVoidMethod(env, _this, carry_id,
