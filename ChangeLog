@@ -4,6 +4,16 @@
 
 	2005-02-08  Michael Koch  <konqueror@gmx.de>
 
+        * javax/swing/tree/DefaultMutableTreeNode.java:
+        Reworked Javadocs all over.
+        (getPathToRoot): Fixed direction of result array initialization.
+
+2005-02-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-02-08  Michael Koch  <konqueror@gmx.de>
+
         * native/jni/java-nio/java_nio_VMDirectByteBuffer.c
         (NIOGetPointer): Handle case of pointer size != 32 bit.
         (NIOGetRawData): Likewise.

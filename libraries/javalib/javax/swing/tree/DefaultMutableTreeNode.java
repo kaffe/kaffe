@@ -87,7 +87,8 @@ public class DefaultMutableTreeNode
   protected boolean allowsChildren;
 
   /**
-   * Constructor DefaultMutableTreeNode
+   * Creates a <code>DefaultMutableTreeNode</code> object.
+   * This node allows to add child nodes.
    */
   public DefaultMutableTreeNode()
   {
@@ -95,9 +96,10 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * Constructor DefaultMutableTreeNode
+   * Creates a <code>DefaultMutableTreeNode</code> object with the given
+   * user object attached to it. This node allows to add child nodes.
    *
-   * @param userObject TODO
+   * @param userObject the user object
    */
   public DefaultMutableTreeNode(Object userObject)
   {
@@ -105,10 +107,12 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * Constructor DefaultMutableTreeNode
+   * Creates a <code>DefaultMutableTreeNode</code> object with the given
+   * user object attached to it.
    *
-   * @param userObject TODO
-   * @param allowsChildren TODO
+   * @param userObject the user object
+   * @param allowsChildren <code>true</code> if the code allows to add child
+   * nodes, <code>false</code> otherwise
    */
   public DefaultMutableTreeNode(Object userObject, boolean allowsChildren)
   {
@@ -136,9 +140,9 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * toString
+   * Returns a string representation of this node
    *
-   * @return String
+   * @return a human-readable String representing this node
    */
   public String toString()
   {
@@ -149,9 +153,9 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * add
+   * Adds a new child node to this node.
    *
-   * @param child TODO
+   * @param child the child node
    *
    * @throws IllegalArgumentException if <code>child</code> is null
    * @throws IllegalStateException if the node does not allow children
@@ -169,9 +173,9 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * getParent
+   * Returns the parent node of this node.
    *
-   * @return TreeNode
+   * @return the parent node
    */
   public TreeNode getParent()
   {
@@ -179,9 +183,9 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * remove
+   * Removes the child with the given index from this node
    *
-   * @param index TODO
+   * @param index the index
    */
   public void remove(int index)
   {
@@ -189,9 +193,9 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * remove
+   * Removes the given child from this node.
    *
-   * @param node TODO
+   * @param node the child node
    */
   public void remove(MutableTreeNode node)
   {
@@ -201,7 +205,7 @@ public class DefaultMutableTreeNode
   /**
    * writeObject
    *
-   * @param stream TODO
+   * @param stream the output stream
    *
    * @exception IOException If an error occurs
    */
@@ -214,7 +218,7 @@ public class DefaultMutableTreeNode
   /**
    * readObject
    *
-   * @param stream TODO
+   * @param stream the input stream
    *
    * @exception IOException If an error occurs
    * @exception ClassNotFoundException TODO
@@ -226,10 +230,10 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * insert
+   * Inserts given child node at the given index.
    *
-   * @param node TODO
-   * @param value TODO
+   * @param node the child node
+   * @param value the index.
    */
   public void insert(MutableTreeNode node, int index)
   {
@@ -237,7 +241,7 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * getPath
+   * Returns a path to this node from the root.
    *
    * @return an array of tree nodes
    */
@@ -247,7 +251,8 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * children
+   * Returns an enumeration containing all children of this node.
+   * <code>EMPTY_ENUMERATION</code> is returned if this node has no children.
    *
    * @return an enumeration of tree nodes
    */
@@ -260,9 +265,9 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * setParent
+   * Set the parent node for this node.
    *
-   * @param node TODO
+   * @param node the parent node
    */
   public void setParent(MutableTreeNode node)
   {
@@ -270,11 +275,11 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * getChildAt
+   * Returns the child node at a given index.
    *
-   * @param index TODO
+   * @param index the index
    *
-   * @return TreeNode
+   * @return the child node
    */
   public TreeNode getChildAt(int index)
   {
@@ -282,9 +287,9 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * getChildCount
+   * Returns the number of children of this node.
    *
-   * @return int
+   * @return the number of children
    */
   public int getChildCount()
   {
@@ -292,11 +297,11 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * getIndex
+   * Returns the child index for a given node.
    *
-   * @param node TODO
+   * @param node this node
    *
-   * @return int
+   * @return the index
    */
   public int getIndex(TreeNode node)
   {
@@ -324,9 +329,9 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * setUserObject
+   * Sets the user object for this node
    *
-   * @param userObject TODO
+   * @param userObject the user object
    */
   public void setUserObject(Object userObject)
   {
@@ -334,9 +339,10 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * getUserObject
+   * Returns the user object attached to this node. <code>null</code> is
+   * returned when no user object is set.
    *
-   * @return Object
+   * @return the user object
    */
   public Object getUserObject()
   {
@@ -344,15 +350,16 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * removeFromParent
+   * Removes this node from its parent.
    */
   public void removeFromParent()
   {
+    // FIXME: IS this implementation really correct ?
     parent = null;
   }
 
   /**
-   * removeAllChildren
+   * Removes all child nodes from this node.
    */
   public void removeAllChildren()
   {
@@ -541,7 +548,7 @@ public class DefaultMutableTreeNode
       }
 
     TreeNode[] path = getPathToRoot(node.getParent(), depth + 1);
-    path[depth] = node;
+    path[path.length - depth - 1] = node;
     return path;
   }
 
@@ -562,9 +569,9 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * getRoot
+   * Returns the root node by iterating the parents of this node.
    *
-   * @return TreeNode
+   * @return the root node
    */
   public TreeNode getRoot()
   {
@@ -581,13 +588,14 @@ public class DefaultMutableTreeNode
   }
 
   /**
-   * isRoot
+   * Tells whether this node is the root node or not.
    *
-   * @return boolean
+   * @return <code>true</code> if this is the root node,
+   * <code>false</code>otherwise
    */
   public boolean isRoot()
   {
-    return (parent == null);
+    return parent == null;
   }
 
   /**
