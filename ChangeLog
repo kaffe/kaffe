@@ -2,6 +2,47 @@
 
         Resynced with GNU Classpath.
 
+	2004-01-06  Sascha Brawer  <brawer@dandelis.ch>
+
+        * javax/swing/event/EventListenerList.java (toString): Implemented.
+
+	2004-01-06  Sascha Brawer  <brawer@dandelis.ch>
+
+        * javax/swing/event/EventListenerList.java: Document typical usage.
+        (getListeners): Re-written.
+
+	2004-01-06  Sascha Brawer  <brawer@dandelis.ch>
+
+        Fix for Classpath bug #7105.
+        * javax/swing/event/EventListenerList.java (remove): Re-written.
+
+	2004-01-06  Sascha Brawer  <brawer@dandelis.ch>
+
+        Fix for Classpath bug #7104.
+        * javax/swing/event/EventListenerList.java (add): Re-written.
+
+	2004-01-06  Sascha Brawer  <brawer@dandelis.ch>
+
+        * javax/swing/event/EventListenerList.java (NO_LISTENERS): New
+        singleton field.
+        (listenerList): Declare as transient; document.
+        (serialVersionUID): Document.
+
+	2004-01-06  Sascha Brawer  <brawer@dandelis.ch>
+
+        Fix for Classpath bug #7099.
+        * javax/swing/event/EventListenerList.java (getListenerCount(Class)):
+        More efficient implementation, also accepts null argument.
+        Improve Javadoc.
+
+	2004-01-06  Sascha Brawer  <brawer@dandelis.ch>
+
+        * javax/swing/event/EventListenerList.java: Reformatted.
+
+2004-01-09  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2004-01-04  Michael Koch  <konqueror@gmx.de>
 
         * java/util/HashMap.java (HashMap(Map)): As above.
