@@ -17,6 +17,15 @@
 #define DBG(s)		
 #define SDBG(s)	
 
+/*
+ * If defined, detect deadlocks.  A deadlock is defined as a situation where
+ * no thread is runnable and no threads is blocked on a timer, IO, or other
+ * external events.
+ */
+#ifndef DETECT_DEADLOCK
+#define DETECT_DEADLOCK		1
+#endif  DETECT_DEADLOCK
+
 #include "jthread.h"
 
 /* Flags used for threading I/O calls */
@@ -38,6 +47,23 @@
 #define THREAD_FLAGS_USERSUSPEND        8
 #define THREAD_FLAGS_DONTSTOP        	16
 #define THREAD_FLAGS_DYING        	32
+#define THREAD_FLAGS_BLOCKEDEXTERNAL   64
+
+#if DETECT_DEADLOCK
+#define BLOCKED_ON_EXTERNAL(t)						\
+	(tblocked_on_external++, t->flags |= THREAD_FLAGS_BLOCKEDEXTERNAL)
+
+#define CLEAR_BLOCKED_ON_EXTERNAL(t) 					\
+	({	if (t->flags & THREAD_FLAGS_BLOCKEDEXTERNAL) 		\
+			tblocked_on_external--, 			\
+			t->flags &= ~THREAD_FLAGS_BLOCKEDEXTERNAL;	\
+	})
+/* number of threads blocked on external events */
+static int tblocked_on_external; 
+#else
+#define BLOCKED_ON_EXTERNAL(t)
+#define CLEAR_BLOCKED_ON_EXTERNAL(t)
+#endif /* DETECT_DEADLOCK */
 
 /*
  * Variables.
@@ -160,11 +186,12 @@ internalYield()
    
         if (threadQhead[priority] != threadQtail[priority])
         {
-                /* Get the next thread and move me to the end */
-                threadQhead[priority] = currentJThread->nextQ;  
-                threadQtail[priority]->nextQ = currentJThread;
-                threadQtail[priority] = currentJThread;
-                currentJThread->nextQ = 0;
+                /* Get the first thread and move it to the end */
+		jthread *firstThread = threadQhead[priority];
+                threadQhead[priority] = firstThread->nextQ;  
+                threadQtail[priority]->nextQ = firstThread;
+                threadQtail[priority] = firstThread;
+                firstThread->nextQ = 0;
                 needReschedule = true;
         }
 }
@@ -232,6 +259,8 @@ DBG(	fprintf(stderr, "resumeThread %x\n", jtid);			)
 	intsDisable();
 
 	if (jtid->status != THREAD_RUNNING) {
+
+		CLEAR_BLOCKED_ON_EXTERNAL(jtid);
 
 		/* Remove from alarmQ if necessary */
 		if ((jtid->flags & THREAD_FLAGS_ALARM) != 0) {
@@ -650,7 +679,7 @@ jthread_extract_stack(jthread *jtid, void **from, unsigned *len)
     *len = jtid->restorePoint - jtid->stackBase;
 #else   
     *from = jtid->restorePoint;
-    *len = jtid->stackEnd - jtid->restorePoint;  
+    *len = jtid->stackEnd - jtid->restorePoint;
 #endif
 }
 
@@ -927,6 +956,7 @@ jthread_sleep(jlong time)
                 return; 
         }
         intsDisable();
+	BLOCKED_ON_EXTERNAL(currentJThread);
         suspendOnQThread(currentJThread, 0, time);
         intsRestore();
 }
@@ -1144,9 +1174,12 @@ DBG( fprintf(stderr, "switch from %p to %p\n", lastThread, currentJThread); )
 			}
 		}
 
-		{
-		    handleIO(true);
-		}
+#if DETECT_DEADLOCK
+		if (tblocked_on_external == 0)
+			assert(!!!"Deadlock: "
+			   " all threads blocked on internal events\n");
+#endif /* DETECT_DEADLOCK */
+		handleIO(true);
 	}
 }
 
@@ -1238,6 +1271,7 @@ DBG(	fprintf(stderr, "blockOnFile(%d,%s)\n",
 		fd, op == TH_READ ? "r":"w"); )
 
 	assert(intsDisabled());
+	BLOCKED_ON_EXTERNAL(currentJThread);
 
 	if (fd > maxFd) {
 		maxFd = fd;
@@ -1613,7 +1647,8 @@ DBG(	fprintf(stderr, "waitpid %d current=%p\n", wpid, currentJThread); )
 		if (npid > 0) {
 			break;
 		}
-		suspendOnQThread(jthread_current(), &waitForList, NOTIMEOUT);
+		BLOCKED_ON_EXTERNAL(currentJThread);
+		suspendOnQThread(currentJThread, &waitForList, NOTIMEOUT);
 	}
 	intsRestore();
 	return (npid);
