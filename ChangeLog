@@ -1,3 +1,16 @@
+2004-11-11  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/jar/JarFile.java
+	(manifest, verified): Made package-private.
+
+	Suggested by: Tom Tromey <tromey@redhat.com>
+
+        * libraries/javalib/java/util/jar/JarFile.java:
+	(EntryInputStream): Removed JarFile as argument.
+        (getInputStream): Reverted to use EntryInputStream without
+	JarFile paameter.
+        (verified) Removed field.
+
 2004-11-10  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* config/config-hacks.h (DOUBLE_ORDER_OPPOSITE): only define

@@ -119,7 +119,7 @@ public class JarFile extends ZipFile
    * The manifest of this file, if any, otherwise null.
    * Read when first needed.
    */
-  private Manifest manifest;
+  Manifest manifest;
 
   /** Whether to verify the manifest and all entries. */
   private boolean verify;
@@ -132,7 +132,7 @@ public class JarFile extends ZipFile
 
   /** A map between entry names and booleans, signaling whether or
       not that entry has been verified. */
-  private HashMap verified = new HashMap();
+  HashMap verified = new HashMap();
 
   /** A mapping from entry name to certificates, if any. */
   private HashMap entryCerts;
@@ -449,7 +449,7 @@ public class JarFile extends ZipFile
       {
         if (DEBUG)
           debug("reading and verifying " + entry);
-        return new EntryInputStream(entry, super.getInputStream(entry), this);
+        return new EntryInputStream(entry, super.getInputStream(entry));
       }
     else
       {
@@ -866,7 +866,7 @@ public class JarFile extends ZipFile
   /**
    * A utility class that verifies jar entries as they are read.
    */
-  private static class EntryInputStream extends FilterInputStream
+  private class EntryInputStream extends FilterInputStream
   {
     private final long length;
     private long pos;
@@ -874,19 +874,17 @@ public class JarFile extends ZipFile
     private final byte[][] hashes;
     private final MessageDigest[] md;
     private boolean checked;
-    private HashMap verified;
 
-    EntryInputStream(final ZipEntry entry, final InputStream in, final JarFile parent) throws IOException
+    EntryInputStream(final ZipEntry entry, final InputStream in) throws IOException
     {
       super(in);
       this.entry = entry;
-      this.verified = parent.verified;
 
       length = entry.getSize();
       pos = 0;
       checked = false;
 
-      Attributes attr = parent.manifest.getAttributes(entry.getName());
+      Attributes attr = manifest.getAttributes(entry.getName());
       if (DEBUG)
         debug("verifying entry " + entry + " attr=" + attr);
       if (attr == null)
