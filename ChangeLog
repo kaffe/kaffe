@@ -1,3 +1,9 @@
+Mon Dec  7 13:11:20 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/locks.c: fixed race condition in newLock where
+	uninitialized locks were used.  
+	Found by Leigh Stoller <stoller@cs.utah.edu>
+
 Sun Dec  6 22:52:10 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* include/java_lang_Thread.h, libraries/javalib/java/lang/Thread.java,

@@ -111,10 +111,14 @@ newLock(void* address)
 		lock = freelock;
 	}
 	else {
+		/* Both of these two function calls involve allocations. 
+		 * They can block and cause a thread switch.
+		 */
 		lock = gc_malloc(sizeof(iLock), GC_ALLOC_LOCK);
+		(*Kaffe_LockInterface.init)(lock);
+		/* insert into list after initializing it */
 		lock->next = lockHead->head;
 		lockHead->head = lock;
-		(*Kaffe_LockInterface.init)(lock);
 	}
 
 	/* Fill in the details */
