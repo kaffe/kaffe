@@ -75,7 +75,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = native io nio net zip math libxmlj security management \
-	awt
+	awt sound
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -324,7 +324,7 @@ with_engine = @with_engine@
 
 # Build libxmlj only desired
 @COND_LIBXMLJ_TRUE@MAYBE_LIBXMLJ = libxmlj
-SUBDIRS = native io nio net zip $(MAYBE_NATIVE_MATH) $(MAYBE_LIBXMLJ) security management awt
+SUBDIRS = native io nio net zip $(MAYBE_NATIVE_MATH) $(MAYBE_LIBXMLJ) security management awt sound
 all: all-recursive
 
 .SUFFIXES:

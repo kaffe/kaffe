@@ -1128,7 +1128,8 @@ Optional Packages:
                           default, is, to, use, it, if, present
   --without-esd           Don't use esd for sound
                           default, is, to, use, it, if, present
-  --with-extensions       the extensions (like the servlet API) to include
+  --with-extensions       the extensions to include
+                          (all|comm|microsoft|pjava|servlet) separated by ','
                           [default=none]
   --with-dmalloc          use dmalloc, as in
 			  http://www.dmalloc.com/dmalloc.tar.gz
@@ -8918,7 +8919,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 8921 "configure"' > conftest.$ac_ext
+  echo '#line 8922 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -10268,7 +10269,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:10271:" \
+echo "$as_me:10272:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -11306,11 +11307,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11309: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11310: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:11313: \$? = $ac_status" >&5
+   echo "$as_me:11314: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -11539,11 +11540,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11542: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11543: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:11546: \$? = $ac_status" >&5
+   echo "$as_me:11547: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -11599,11 +11600,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11602: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11603: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:11606: \$? = $ac_status" >&5
+   echo "$as_me:11607: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -13783,7 +13784,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 13786 "configure"
+#line 13787 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13881,7 +13882,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 13884 "configure"
+#line 13885 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -16064,11 +16065,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16067: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16068: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16071: \$? = $ac_status" >&5
+   echo "$as_me:16072: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -16124,11 +16125,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16127: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16128: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16131: \$? = $ac_status" >&5
+   echo "$as_me:16132: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17485,7 +17486,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 17488 "configure"
+#line 17489 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -17583,7 +17584,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 17586 "configure"
+#line 17587 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -18410,11 +18411,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18413: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18414: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18417: \$? = $ac_status" >&5
+   echo "$as_me:18418: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -18470,11 +18471,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18473: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18474: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:18477: \$? = $ac_status" >&5
+   echo "$as_me:18478: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -20508,11 +20509,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:20511: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:20512: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:20515: \$? = $ac_status" >&5
+   echo "$as_me:20516: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -20741,11 +20742,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:20744: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:20745: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:20748: \$? = $ac_status" >&5
+   echo "$as_me:20749: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -20801,11 +20802,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:20804: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:20805: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:20808: \$? = $ac_status" >&5
+   echo "$as_me:20809: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -22985,7 +22986,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 22988 "configure"
+#line 22989 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -23083,7 +23084,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 23086 "configure"
+#line 23087 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -52161,45 +52162,20 @@ fi;
 echo "$as_me:$LINENO: checking which extensions to include" >&5
 echo $ECHO_N "checking which extensions to include... $ECHO_C" >&6
 
-case "$enable_sound" in
-	no)
-		INCLUDED_EXTENSIONS=
-		;;
-	*)
-		INCLUDED_EXTENSIONS=sound
-		;;
-esac
-
 case $with_extensions in
-	'*')
-		for i in `( cd $srcdir/libraries/extensions ; echo * )` ; do
-			if test -d $srcdir/libraries/extensions/$i ; then
-				if test x"$i" != x"CVS" ; then
-					if test '(' x"$enable_sound" = x"no" ')' -o '(' x"$i" != x"sound" ')' ; then
-						INCLUDED_EXTENSIONS="$INCLUDED_EXTENSIONS $i"
-					fi
-				fi
-			fi
-		done
-		;;
+        *)
+                for i in `echo $with_extensions | sed -e 's/,/ /g'` ; do
+                        if test -d $srcdir/libraries/extensions/$i ; then
+                        	INCLUDED_EXTENSIONS="$INCLUDED_EXTENSIONS $i"
+                        fi
+                done
+                ;;
 
 	no | "")
 		;;
 
-	"yes")
-		{ { echo "$as_me:$LINENO: error: Please supply a comma seperated list of extensions that should be included" >&5
-echo "$as_me: error: Please supply a comma seperated list of extensions that should be included" >&2;}
-   { (exit 1); exit 1; }; }
-		;;
-
-	*)
-		for i in `echo $with_extensions | sed -e 's/,/ /g'` ; do
-			if test -d $srcdir/libraries/extensions/$i ; then
-				if test '(' x"$enable_sound" = x"no" ')' -o '(' x"$i" != x"sound" ')' ; then
-					INCLUDED_EXTENSIONS="$INCLUDED_EXTENSIONS $i"
-				fi
-			fi
-		done
+	"yes"| "all")
+		INCLUDED_EXTENSIONS="comm  microsoft  pjava  servlet"
 		;;
 esac
 
@@ -53520,6 +53496,14 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files libraries/clib/awt/qt/Makefile"
 
+          ac_config_files="$ac_config_files libraries/clib/sound/Makefile"
+
+          ac_config_files="$ac_config_files libraries/clib/sound/alsa/Makefile"
+
+          ac_config_files="$ac_config_files libraries/clib/sound/common/Makefile"
+
+          ac_config_files="$ac_config_files libraries/clib/sound/esd/Makefile"
+
           ac_config_files="$ac_config_files libraries/javalib/rebuildLib"
 
           ac_config_files="$ac_config_files libraries/extensions/Makefile"
@@ -53541,14 +53525,6 @@ subdirs="$subdirs libltdl"
           ac_config_files="$ac_config_files libraries/extensions/microsoft/javalib/Makefile"
 
           ac_config_files="$ac_config_files libraries/extensions/microsoft/clib/Makefile"
-
-          ac_config_files="$ac_config_files libraries/extensions/sound/Makefile"
-
-          ac_config_files="$ac_config_files libraries/extensions/sound/alsa/Makefile"
-
-          ac_config_files="$ac_config_files libraries/extensions/sound/common/Makefile"
-
-          ac_config_files="$ac_config_files libraries/extensions/sound/esd/Makefile"
 
           ac_config_files="$ac_config_files kaffe/man/kaffe.1"
 
@@ -54373,6 +54349,10 @@ do
   "libraries/clib/awt/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/Makefile" ;;
   "libraries/clib/awt/X/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/X/Makefile" ;;
   "libraries/clib/awt/qt/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/qt/Makefile" ;;
+  "libraries/clib/sound/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/Makefile" ;;
+  "libraries/clib/sound/alsa/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/alsa/Makefile" ;;
+  "libraries/clib/sound/common/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/common/Makefile" ;;
+  "libraries/clib/sound/esd/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/esd/Makefile" ;;
   "libraries/javalib/rebuildLib" ) CONFIG_FILES="$CONFIG_FILES libraries/javalib/rebuildLib" ;;
   "libraries/extensions/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/extensions/Makefile" ;;
   "libraries/extensions/comm/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/extensions/comm/Makefile" ;;
@@ -54384,10 +54364,6 @@ do
   "libraries/extensions/microsoft/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/extensions/microsoft/Makefile" ;;
   "libraries/extensions/microsoft/javalib/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/extensions/microsoft/javalib/Makefile" ;;
   "libraries/extensions/microsoft/clib/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/extensions/microsoft/clib/Makefile" ;;
-  "libraries/extensions/sound/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/extensions/sound/Makefile" ;;
-  "libraries/extensions/sound/alsa/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/extensions/sound/alsa/Makefile" ;;
-  "libraries/extensions/sound/common/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/extensions/sound/common/Makefile" ;;
-  "libraries/extensions/sound/esd/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/extensions/sound/esd/Makefile" ;;
   "kaffe/man/kaffe.1" ) CONFIG_FILES="$CONFIG_FILES kaffe/man/kaffe.1" ;;
   "kaffe/scripts/install-jar" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/install-jar" ;;
   "kaffe/scripts/kaffe" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/kaffe" ;;

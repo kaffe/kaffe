@@ -8,4 +8,4 @@
 
 SUBDIRS = @INCLUDED_EXTENSIONS@
 
-DIST_SUBDIRS = comm microsoft pjava servlet sound
+DIST_SUBDIRS = comm microsoft pjava servlet

@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Esd files for Tritonus javax.sound implementation
+# Alsa files for Tritonus javax.sound implementation
 #
 # Copyright (c) 2002, 2003, 2004
 #	Dalibor Topic <robilad@kaffe.org>
@@ -23,7 +23,7 @@
 # of this file. 
 
 
-SOURCES = $(libtritonusesd_la_SOURCES)
+SOURCES = $(libtritonusalsa_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -46,7 +46,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-subdir = libraries/extensions/sound/esd
+subdir = libraries/clib/sound/alsa
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -72,17 +72,51 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
-libtritonusesd_la_DEPENDENCIES =
-am_libtritonusesd_la_OBJECTS = common.lo \
-	org_tritonus_lowlevel_esd_EsdRecordingStream.lo \
-	org_tritonus_lowlevel_esd_EsdStream.lo
-libtritonusesd_la_OBJECTS = $(am_libtritonusesd_la_OBJECTS)
+libtritonusalsa_la_DEPENDENCIES =
+am_libtritonusalsa_la_OBJECTS = common.lo init.lo \
+	org_tritonus_lowlevel_alsa_Alsa.lo \
+	org_tritonus_lowlevel_alsa_AlsaCtl.lo \
+	org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.lo \
+	org_tritonus_lowlevel_alsa_AlsaMixer.lo \
+	org_tritonus_lowlevel_alsa_AlsaMixerElement.lo \
+	org_tritonus_lowlevel_alsa_AlsaPcm.lo \
+	org_tritonus_lowlevel_alsa_AlsaPcmHWParams.lo \
+	org_tritonus_lowlevel_alsa_AlsaPcmHWParamsFormatMask.lo \
+	org_tritonus_lowlevel_alsa_AlsaPcmSWParams.lo \
+	org_tritonus_lowlevel_alsa_AlsaSeq.lo \
+	org_tritonus_lowlevel_alsa_AlsaSeqClientInfo.lo \
+	org_tritonus_lowlevel_alsa_AlsaSeqEvent.lo \
+	org_tritonus_lowlevel_alsa_AlsaSeqPortInfo.lo \
+	org_tritonus_lowlevel_alsa_AlsaSeqPortSubscribe.lo \
+	org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo.lo \
+	org_tritonus_lowlevel_alsa_AlsaSeqQueueStatus.lo \
+	org_tritonus_lowlevel_alsa_AlsaSeqQueueTempo.lo \
+	org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.lo \
+	org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.lo
+libtritonusalsa_la_OBJECTS = $(am_libtritonusalsa_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/common.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_esd_EsdRecordingStream.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_esd_EsdStream.Plo
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/common.Plo ./$(DEPDIR)/init.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_Alsa.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaCtl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaMixer.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaMixerElement.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaPcm.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaPcmHWParams.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaPcmHWParamsFormatMask.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaPcmSWParams.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeq.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqClientInfo.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqEvent.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqPortInfo.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqPortSubscribe.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqQueueStatus.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqQueueTempo.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -90,8 +124,8 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
 	$(AM_CFLAGS) $(CFLAGS)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libtritonusesd_la_SOURCES)
-DIST_SOURCES = $(libtritonusesd_la_SOURCES)
+SOURCES = $(libtritonusalsa_la_SOURCES)
+DIST_SOURCES = $(libtritonusalsa_la_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -336,21 +370,40 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 AM_CPPFLAGS = -I$(top_builddir)/include
-native_LTLIBRARIES = libtritonusesd.la
-libtritonusesd_la_LDFLAGS = \
+native_LTLIBRARIES = libtritonusalsa.la
+libtritonusalsa_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|org)_"
 
-libtritonusesd_la_LIBADD = -lesd
-libtritonusesd_la_SOURCES = \
+libtritonusalsa_la_LIBADD = -lasound
+libtritonusalsa_la_SOURCES = \
 	common.c \
-	org_tritonus_lowlevel_esd_EsdRecordingStream.c \
-	org_tritonus_lowlevel_esd_EsdStream.c
+	init.c \
+	org_tritonus_lowlevel_alsa_Alsa.c \
+	org_tritonus_lowlevel_alsa_AlsaCtl.c \
+	org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.c \
+	org_tritonus_lowlevel_alsa_AlsaMixer.c \
+	org_tritonus_lowlevel_alsa_AlsaMixerElement.c \
+	org_tritonus_lowlevel_alsa_AlsaPcm.c \
+	org_tritonus_lowlevel_alsa_AlsaPcmHWParams.c \
+	org_tritonus_lowlevel_alsa_AlsaPcmHWParamsFormatMask.c \
+	org_tritonus_lowlevel_alsa_AlsaPcmSWParams.c \
+	org_tritonus_lowlevel_alsa_AlsaSeq.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqClientInfo.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqEvent.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqPortInfo.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqPortSubscribe.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqQueueStatus.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqQueueTempo.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.c
 
 noinst_HEADERS = \
-	common.h 
+	common.h \
+	constants_check.h
 
 CLEANFILES = so_locations
 all: all-am
@@ -366,9 +419,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  libraries/extensions/sound/esd/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  libraries/clib/sound/alsa/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  libraries/extensions/sound/esd/Makefile
+	  $(AUTOMAKE) --gnu  libraries/clib/sound/alsa/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -413,8 +466,8 @@ clean-nativeLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libtritonusesd.la: $(libtritonusesd_la_OBJECTS) $(libtritonusesd_la_DEPENDENCIES) 
-	$(LINK) -rpath $(nativedir) $(libtritonusesd_la_LDFLAGS) $(libtritonusesd_la_OBJECTS) $(libtritonusesd_la_LIBADD) $(LIBS)
+libtritonusalsa.la: $(libtritonusalsa_la_OBJECTS) $(libtritonusalsa_la_DEPENDENCIES) 
+	$(LINK) -rpath $(nativedir) $(libtritonusalsa_la_LDFLAGS) $(libtritonusalsa_la_OBJECTS) $(libtritonusalsa_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -423,8 +476,26 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/common.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_esd_EsdRecordingStream.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_esd_EsdStream.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/init.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_Alsa.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaCtl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaMixer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaMixerElement.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaPcm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaPcmHWParams.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaPcmHWParamsFormatMask.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaPcmSWParams.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeq.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqClientInfo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqEvent.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqPortInfo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqPortSubscribe.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqQueueStatus.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqQueueTempo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

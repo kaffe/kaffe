@@ -1592,48 +1592,24 @@ dnl -----------------------------------------------------------------------
 
 AC_ARG_WITH([extensions], 
             AS_HELP_STRING([--with-extensions],
-                           [the extensions (like the servlet API) to include @<:@default=none@:>@]))
+                           [the extensions to include (all|comm|microsoft|pjava|servlet) separated by ',' @<:@default=none@:>@]))
 
 AC_MSG_CHECKING([which extensions to include])
 
-dnl ouch
-case "$enable_sound" in
-	no)
-		INCLUDED_EXTENSIONS=
-		;;
-	*)
-		INCLUDED_EXTENSIONS=sound
-		;;
-esac
- 
 case $with_extensions in
-	'*')
-		for i in `( cd $srcdir/libraries/extensions ; echo * )` ; do
-			if test -d $srcdir/libraries/extensions/$i ; then
-				if test x"$i" != x"CVS" ; then
-					if test '(' x"$enable_sound" = x"no" ')' -o '(' x"$i" != x"sound" ')' ; then 
-						INCLUDED_EXTENSIONS="$INCLUDED_EXTENSIONS $i" 
-					fi
-				fi
-			fi 
-		done 
-		;;
+        *)
+                for i in `echo $with_extensions | sed -e 's/,/ /g'` ; do
+                        if test -d $srcdir/libraries/extensions/$i ; then
+                        	INCLUDED_EXTENSIONS="$INCLUDED_EXTENSIONS $i"
+                        fi
+                done
+                ;;
 
 	no | "")
 		;;
 
-	"yes")
-		AC_MSG_ERROR([Please supply a comma seperated list of extensions that should be included])
-		;;
-
-	*)
-		for i in `echo $with_extensions | sed -e 's/,/ /g'` ; do
-			if test -d $srcdir/libraries/extensions/$i ; then
-				if test '(' x"$enable_sound" = x"no" ')' -o '(' x"$i" != x"sound" ')' ; then
-					INCLUDED_EXTENSIONS="$INCLUDED_EXTENSIONS $i"
-				fi
-			fi
-		done
+	"yes"| "all")
+		INCLUDED_EXTENSIONS="comm  microsoft  pjava  servlet"
 		;;
 esac
 
@@ -1910,6 +1886,10 @@ AC_CONFIG_FILES([libraries/clib/security/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/X/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/qt/Makefile])
+AC_CONFIG_FILES([libraries/clib/sound/Makefile])
+AC_CONFIG_FILES([libraries/clib/sound/alsa/Makefile])
+AC_CONFIG_FILES([libraries/clib/sound/common/Makefile])
+AC_CONFIG_FILES([libraries/clib/sound/esd/Makefile])
 AC_CONFIG_FILES([libraries/javalib/rebuildLib])
 AC_CONFIG_FILES([libraries/extensions/Makefile])
 AC_CONFIG_FILES([libraries/extensions/comm/Makefile])
@@ -1921,10 +1901,6 @@ AC_CONFIG_FILES([libraries/extensions/servlet/javalib/Makefile])
 AC_CONFIG_FILES([libraries/extensions/microsoft/Makefile])
 AC_CONFIG_FILES([libraries/extensions/microsoft/javalib/Makefile])
 AC_CONFIG_FILES([libraries/extensions/microsoft/clib/Makefile])
-AC_CONFIG_FILES([libraries/extensions/sound/Makefile])
-AC_CONFIG_FILES([libraries/extensions/sound/alsa/Makefile])
-AC_CONFIG_FILES([libraries/extensions/sound/common/Makefile])
-AC_CONFIG_FILES([libraries/extensions/sound/esd/Makefile])
 AC_CONFIG_FILES([kaffe/man/kaffe.1])
 AC_CONFIG_FILES([kaffe/scripts/install-jar])
 AC_CONFIG_FILES([kaffe/scripts/kaffe])

@@ -20,4 +20,4 @@ else
   MAYBE_LIBXMLJ =
 endif
 
-SUBDIRS = native io nio net zip $(MAYBE_NATIVE_MATH) $(MAYBE_LIBXMLJ) security management awt
+SUBDIRS = native io nio net zip $(MAYBE_NATIVE_MATH) $(MAYBE_LIBXMLJ) security management awt sound

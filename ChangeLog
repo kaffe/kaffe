@@ -1,5 +1,117 @@
 2004-04-28  Dalibor Topic  <robilad@kaffe.org>
 
+        * configure.ac:
+	Build all extensions if none are specified. Moved sound support
+	into core native libraries to simplify extension handling.
+
+        * configure:
+	Regenerated.
+
+        * libraries/clib/Makefile.am:
+	(SUBDIRS) Added sound.
+
+        * libraries/clib/Makefile.in:
+	Regeenrated.
+
+        * libraries/clib/sound/.cvsignore,
+        libraries/clib/sound/Makefile.am,
+        libraries/clib/sound/Makefile.in,
+        libraries/clib/sound/alsa/.cvsignore,
+        libraries/clib/sound/alsa/Makefile.am,
+        libraries/clib/sound/alsa/Makefile.in,
+        libraries/clib/sound/alsa/common.c,
+        libraries/clib/sound/alsa/common.h,
+        libraries/clib/sound/alsa/constants_check.h,
+        libraries/clib/sound/alsa/init.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_Alsa.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaCtl.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaMixer.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaMixerElement.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaPcm.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaPcmHWParams.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaPcmHWParamsFormatMask.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaPcmSWParams.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeq.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqClientInfo.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqEvent.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqPortInfo.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqPortSubscribe.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqQueueStatus.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqQueueTempo.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.c,
+        libraries/clib/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.c,
+        libraries/clib/sound/common/.cvsignore,
+        libraries/clib/sound/common/HandleFieldHandler.h,
+        libraries/clib/sound/common/Makefile.am,
+        libraries/clib/sound/common/Makefile.in,
+        libraries/clib/sound/common/common.c,
+        libraries/clib/sound/common/common.h,
+        libraries/clib/sound/common/debug.h,
+        libraries/clib/sound/esd/.cvsignore,
+        libraries/clib/sound/esd/Makefile.am,
+        libraries/clib/sound/esd/Makefile.in,
+        libraries/clib/sound/esd/common.c,
+        libraries/clib/sound/esd/common.h,
+        libraries/clib/sound/esd/org_tritonus_lowlevel_esd_EsdRecordingStream.c,
+        libraries/clib/sound/esd/org_tritonus_lowlevel_esd_EsdStream.c:
+	New files. Moved over here from libraries/extensions since sound is not
+	an extension.
+
+        * libraries/extensions/Makefile.am:
+	(SUBDIRS) Removed sound.
+
+        * libraries/extensions/Makefile.in:
+	Regenerated.
+
+        * libraries/extensions/sound/.cvsignore,
+        libraries/extensions/sound/Makefile.am,
+        libraries/extensions/sound/Makefile.in,
+        libraries/extensions/sound/alsa/.cvsignore,
+        libraries/extensions/sound/alsa/Makefile.am,
+        libraries/extensions/sound/alsa/Makefile.in,
+        libraries/extensions/sound/alsa/common.c,
+        libraries/extensions/sound/alsa/common.h,
+        libraries/extensions/sound/alsa/constants_check.h,
+        libraries/extensions/sound/alsa/init.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_Alsa.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaCtl.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaMixer.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaMixerElement.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaPcm.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaPcmHWParams.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaPcmHWParamsFormatMask.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaPcmSWParams.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeq.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqClientInfo.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqEvent.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqPortInfo.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqPortSubscribe.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqQueueStatus.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqQueueTempo.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.c,
+        libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.c,
+        libraries/extensions/sound/common/.cvsignore,
+        libraries/extensions/sound/common/HandleFieldHandler.h,
+        libraries/extensions/sound/common/Makefile.am,
+        libraries/extensions/sound/common/Makefile.in,
+        libraries/extensions/sound/common/common.c,
+        libraries/extensions/sound/common/common.h,
+        libraries/extensions/sound/common/debug.h,
+        libraries/extensions/sound/esd/.cvsignore,
+        libraries/extensions/sound/esd/Makefile.am,
+        libraries/extensions/sound/esd/Makefile.in,
+        libraries/extensions/sound/esd/common.c,
+        libraries/extensions/sound/esd/common.h,
+        libraries/extensions/sound/esd/org_tritonus_lowlevel_esd_EsdRecordingStream.c,
+        libraries/extensions/sound/esd/org_tritonus_lowlevel_esd_EsdStream.c:
+	Removed.
+
+2004-04-28  Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/autogen.sh:
 	Ensure that config.h.in does not trigger
 	autoheader in libtldl.
