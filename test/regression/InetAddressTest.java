@@ -1,5 +1,6 @@
 
 import java.net.InetAddress;
+import java.net.Inet6Address;
 
 public class InetAddressTest
 {
@@ -9,18 +10,30 @@ public class InetAddressTest
 	InetAddress ia;
 
 	ia = InetAddress.getByName(null);
-	System.out.println("(null) = " + ia);
+	System.out.println("(null) = " + check(ia));
 	
 	ia = InetAddress.getByName("");
-	System.out.println("\"\" = " + ia);
-	
+	System.out.println("\"\" = " + check(ia));
+
 	ia = InetAddress.getByName("localhost");
-	System.out.println("localhost = " + ia);
+	System.out.println("localhost = " + check(ia));
 	if( !ia.isLoopbackAddress() )
 	{
 	    System.out.println("Not a loopback?");
 	}
     }
+
+    private static String check(InetAddress ia)
+         throws Throwable
+    {
+        String expected = (
+            ia instanceof Inet6Address ?
+                "localhost/::::::::1" :
+	        "localhost/127.0.0.1" );
+        if (ia.toString().equals(expected)) return "localhost/127.0.0.1";
+        return ia.toString();
+    }
+
 }
 
 /* Expected Output:
