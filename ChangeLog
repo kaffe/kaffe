@@ -1,5 +1,57 @@
 2004-10-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/security/AlgorithmParametersSpi.java,
+	libraries/javalib/java/security/AllPermission.java,
+	libraries/javalib/java/security/BasicPermission.java,
+	libraries/javalib/java/security/Certificate.java,
+	libraries/javalib/java/security/CodeSource.java,
+	libraries/javalib/java/security/DigestOutputStream.java,
+	libraries/javalib/java/security/GuardedObject.java,
+	libraries/javalib/java/security/KeyFactorySpi.java,
+	libraries/javalib/java/security/KeyStoreSpi.java,
+	libraries/javalib/java/security/Permissions.java,
+	libraries/javalib/java/security/Signer.java,
+	libraries/javalib/java/security/UnresolvedPermission.java,
+	libraries/javalib/java/security/cert/X509CRLSelector.java,
+	libraries/javalib/java/security/cert/X509CertSelector.java,
+	libraries/javalib/java/security/spec/DSAParameterSpec.java:
+	Resynced with GNU Classpath.
+
+	2004-10-21  Michael Koch  <konqueror@gmx.de>
+
+        * java/security/AlgorithmParameterGenerator.java,
+        java/security/AlgorithmParameters.java,
+        java/security/AlgorithmParametersSpi.java,
+        java/security/AllPermission.java,
+        java/security/BasicPermission.java,
+        java/security/Certificate.java,
+        java/security/CodeSource.java,
+        java/security/DigestInputStream.java,
+        java/security/DigestOutputStream.java,
+        java/security/GuardedObject.java,
+        java/security/KeyFactory.java,
+        java/security/KeyFactorySpi.java,
+        java/security/KeyPairGenerator.java,
+        java/security/KeyStore.java,
+        java/security/KeyStoreSpi.java,
+        java/security/Permissions.java,
+        java/security/Security.java,
+        java/security/Signature.java,
+        java/security/UnresolvedPermission.java,
+        java/security/cert/CertPathBuilder.java,
+        java/security/cert/CertPathValidator.java,
+        java/security/cert/CertStore.java,
+        java/security/cert/Certificate.java,
+        java/security/cert/CertificateFactory.java,
+        java/security/cert/PolicyQualifierInfo.java,
+        java/security/cert/TrustAnchor.java,
+        java/security/cert/X509CRL.java,
+        java/security/cert/X509CRLSelector.java,
+        java/security/cert/X509CertSelector.java:
+        Import cleanup.
+
+2004-10-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/rmi/MarshalledObject.java,
 	libraries/javalib/java/rmi/Naming.java,
 	libraries/javalib/java/rmi/activation/Activatable.java,

@@ -1,5 +1,5 @@
 /* Certificate.java -- deprecated interface for modeling digital certificates
-   Copyright (C) 1998, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2002, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
