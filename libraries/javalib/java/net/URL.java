@@ -121,7 +121,7 @@ import java.util.StringTokenizer;
 public final class URL implements Serializable
 {
   private static final String DEFAULT_SEARCH_PATH =
-    "gnu.java.net.protocol|gnu.inet|sun.net.www.protocol";
+    "gnu.java.net.protocol|gnu.inet";
 
   /**
    * The name of the protocol for this URL.
@@ -751,12 +751,11 @@ public final class URL implements Serializable
     this.host = host;
     this.userInfo = userInfo;
     this.port = port;
-    this.file = path;
     this.authority = authority;
     if (query == null)
-      this.file = file;
+      this.file = path;
     else
-      this.file = file + "?" + query;
+      this.file = path + "?" + query;
     this.ref = ref;
     hashCode = hashCode(); // Used for serialization.
   }
@@ -831,7 +830,9 @@ public final class URL implements Serializable
 
     // If a non-default factory has been set, use it to find the protocol.
     if (factory != null)
-      ph = factory.createURLStreamHandler(protocol);
+      {
+	ph = factory.createURLStreamHandler(protocol);
+      }
 
     // Non-default factory may have returned null or a factory wasn't set.
     // Use the default search algorithm to find a handler for this protocol.

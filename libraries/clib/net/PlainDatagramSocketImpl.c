@@ -376,7 +376,7 @@ DBG(NATIVENET,
 		memcpy(unhand_byte_array(array_address), &addr.addr4.sin_addr, sizeof(addr.addr4.sin_addr));
 		
 		unhand(pkt)->address = (struct Hjava_net_InetAddress*)
-			execute_java_constructor("java/net/InetAddress", 0, 0, "([B)V",
+			execute_java_constructor("java/net/Inet4Address", 0, 0, "([B)V",
 						 array_address);
 
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
