@@ -1,5 +1,10 @@
 2004-07-17  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/javalib/java/text/CollationElementIterator.java:
+	Use ArrayList instead of Vector.
+	
+2004-07-17  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* configure.ac:
 	New option --with-gc to chose the garbage collector.
 	Fixed Linuxthreads detection.
