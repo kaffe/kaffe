@@ -116,3 +116,12 @@ MISCELLANEOUS & TODO
 
 * Stopping threads at inopportune times may corrupt the VM.
 
+* Classloaders don't keep classes alive if they are only an initiating loader of
+  that class, but did not define that class.  This will cause problems with
+  class gc in the face of delegation if the loader to which the loading was 
+  delegated becomes unreachable before the loader that delegated it.
+  A possible fix is to walk the centry for each loader; this would also
+  allows us to get rid of the loadedClasses hashtable in 
+  java/lang/ClassLoader.java.
+
+
