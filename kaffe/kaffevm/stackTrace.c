@@ -33,11 +33,6 @@
 #include "md.h"
 #include "stackTrace.h"
 
-/* This file breaks the thread encapsulation model - best fixed by rewriting
- * the thread class.
- */
-#include "systems/unix-internal/internal.h"
-
 Hjava_lang_Object*
 getClassContext(void* bulk)
 {
