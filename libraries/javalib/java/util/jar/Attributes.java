@@ -12,187 +12,149 @@
 
 package java.util.jar;
 
-import java.io.*;
 import java.util.*;
 
 public class Attributes implements Map, Cloneable {
+    protected Map map;
 
-    public Attributes()
-    {
+    public Attributes() {
 	map = new HashMap();
     }
 
-    public Attributes(Attributes attr)
-    {
+    public Attributes(Attributes attr) {
 	map = new HashMap(attr.map);
     }
 
-    public Attributes(int size)
-    {
+    public Attributes(int size) {
 	map = new HashMap(size);
     }
     
-    public Object clone()
-    {
+    public Object clone() {
 	return new Attributes(this); 
     }
 
-    public Set entrySet()
-    {
+    public Set entrySet() {
 	return map.entrySet();
     }
 
-    public boolean equals(Object o)
-    {
-	// FIXME : should this check each attribute name ?
-	// could it use the uquals method of the Map?
-	return (o == null && (o instanceof Attributes) && (o == this));
+    public boolean equals(Object o) {
+	return map.equals(o);
     }
 
-    public Object get(Object name)
-    {
+    public Object get(Object name) {
 	return map.get(name);
     }
 
-    public String getValue(String name)
-    {
-	return (String) get( new Attributes.Name((String) name) );
+    public String getValue(String name) {
+	return getValue(new Attributes.Name(name));
     }
 
-    public String getValue(Attributes.Name name)
-    {
+    public String getValue(Attributes.Name name) {
 	return (String) get(name);
     }
 
-    public Object put(Object name, Object value)
-    {
-	return map.put(name,value);
+    public Object put(Object name, Object value) {
+	return map.put((Attributes.Name)name, (String)value);
     }
 
-    public String putValue(String name, String value)
-    {
-	return (String) put(new Attributes.Name(name), value);
+    public String putValue(String name, String value) {
+	return (String)put(new Attributes.Name(name), value);
     }
 
-    public Object remove(Object name)
-    {
+    public Object remove(Object name) {
 	return map.remove(name);
     }
 
-    public boolean containsValue(Object value)
-    {
+    public boolean containsValue(Object value) {
 	return map.containsValue(value);
     }
 
-    public boolean containsKey(Object name)
-    {
+    public boolean containsKey(Object name) {
 	return map.containsKey(name);
     }
 
-    public void putAll(Map attr)
-    {
+    public void putAll(Map attr) {
 	map.putAll(attr);
     }
 
-    public void clear()
-    {
+    public void clear() {
 	map.clear();
     }
 
-    public int size()
-    {
+    public int size() {
 	return map.size();
     }
 
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
 	return map.isEmpty();
     }
 
-    public Set keySet()
-    {
+    public Set keySet() {
 	return map.keySet();
     }
     
-    public Collection values()
-    {
+    public Collection values() {
 	return map.values();
     }
 
     public static class Name {
+	private final String name;
 
-	// FIXME : these need to be initializes to something, but what?
-	public static final Name MANIFEST_VERSION = null;
-	public static final Name SIGNATURE_VERSION = null;
-	public static final Name CONTENT_TYPE = null;
-	public static final Name CLASS_PATH = null;
-	public static final Name MAIN_CLASS = null;
-	public static final Name SEALED = null;
-	public static final Name IMPLEMENTATION_TITLE = null;
-	public static final Name IMPLEMENTATION_VERSION = null;
-	public static final Name IMPLEMENTATION_VENDOR = null;
-	public static final Name SPECIFICATION_TITLE = null;
-	public static final Name SPECIFICATION_VERSION = null;
-	public static final Name SPECIFICATION_VENDOR = null;
+	public static final Name
+		MANIFEST_VERSION	= new Name("Manifest-Version");
+	public static final Name
+		SIGNATURE_VERSION	= new Name("Signature-Version");
+	public static final Name
+		CONTENT_TYPE		= new Name("Content-Type");
+	public static final Name
+		CLASS_PATH		= new Name("Class-Path");
+	public static final Name
+		MAIN_CLASS		= new Name("Main-Class");
+	public static final Name
+		SEALED			= new Name("Sealed");
+	public static final Name
+		IMPLEMENTATION_TITLE	= new Name("Implementation-Title");
+	public static final Name
+		IMPLEMENTATION_VERSION	= new Name("Implementation-Version");
+	public static final Name
+		IMPLEMENTATION_VENDOR	= new Name("Implementation-Vendor");
+	public static final Name
+		SPECIFICATION_TITLE	= new Name("Specification-Title");
+	public static final Name
+		SPECIFICATION_VERSION	= new Name("Specification-Version");
+	public static final Name
+		SPECIFICATION_VENDOR	= new Name("Specification-Vendor");
 
-	public Name(String name)
-	{
-	    if (name == null) {
-		throw new NullPointerException("name");
+	public Name(String name) {
+	    if (name.length() == 0) {
+	    	throw new IllegalArgumentException("empty attribute name");
 	    }
-	    
-	    // the JDK docs say that an IllegalArgumentException is thrown
-	    // if attribute name was invalid. It also says that chars are
-	    // restricted to the ASCII characters in the set [0-9a-zA-Z_-]. 
+	    for (int i = 0; i < name.length(); i++) {
+		char c = name.charAt(i);
 
-	    checkName(name);
-
+		if (!((c >= '0' && c <= '9') ||
+		      (c >= 'A' && c <= 'Z') ||
+		      (c >= 'a' && c <= 'z') ||
+		       c == '_' || c == '-' )) {
+		    throw new IllegalArgumentException("bogus attribute name: "
+			+ name);
+		}
+	    }
 	    this.name = name;
 	}
 
-	public boolean equals(Object o)
-	{
-	    // The JDK docs say that attribute names are case insentive
-	    // so use String.equalsIgnoreCase() instead of String.equals()
-
-	    return (o != null && (o instanceof Name) &&
-		    name.equalsIgnoreCase(((Name) o).name));
+	public boolean equals(Object o) {
+	    return ((o instanceof Name) &&
+		    name.equalsIgnoreCase(((Name)o).name));
 	}
 
-	public int hashCode()
-	{
-	    // FIXME : does this depend on case of the name?
-	    return name.hashCode();
+	public int hashCode() {
+	    return name.toUpperCase().hashCode();
 	}
 
-	public String toString()
-	{
+	public String toString() {
 	    return name;
 	}
-
-	private static void checkName(String name)
-	{
-	    // valid chars [0-9a-zA-Z_-].
-
-	    for (int i=0; i < name.length(); i++) {
-		char c = name.charAt(i);
-
-		if ((c >= '0' && c <= '9') ||
-		    (c >= 'a' && c <= 'z') ||
-		    (c >= 'A' && c <= 'Z') ||
-		    (c == '_' && c == '-')) {
-		    // it is a valid char so do nothing
-		} else {
-		    throw new IllegalArgumentException(name);
-		}
-	    }
-	}
-
-	private String name;
     }
-
-
-    
-    protected Map map;
-
 }
+
