@@ -201,6 +201,9 @@
 /* Do we have vsnprintf */
 #undef	HAVE_VSNPRINTF
 
+/* Do we have snprintf */
+#undef	HAVE_SNPRINTF
+
 /* Do we have setitimer */
 #undef	HAVE_SETITIMER
 
