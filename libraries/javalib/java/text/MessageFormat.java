@@ -193,7 +193,10 @@ private void parseFormat(String argument, MessagePatternDescription desc,
 		}
 	}
 	else if (aformat.equals("number")) {
-		if (astyle.equals("currency")) {
+		if (astyle.equals("")) {
+			desc.formats[argcount] = NumberFormat.getInstance(locale);
+		}
+		else if (astyle.equals("currency")) {
 			desc.formats[argcount] = NumberFormat.getCurrencyInstance(locale);
 		}
 		else if (astyle.equals("percent")) {

@@ -1,3 +1,16 @@
+2003-07-17  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/text/MessageFormat.java:
+	(parseFormat) Added a missing case for astyle for the "number" format.
+
+	* test/regression/Makefile.am:
+	(TEST_MISC) Readded TestMessageFormat.java.
+
+	* test/regression/TestMessageFormat.java: Added free
+	TestMessageFormat.java. There is still a bug of behaviour
+	for NumberFormat as the outputs of JDK 1.4.2 and Kaffe are
+	different (the expected output has been built with JDK 1.4.2).
+
 2003-07-17  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/kjc.jar:
