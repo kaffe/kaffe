@@ -118,6 +118,8 @@ SystemCallInterface Kaffe_SystemCallInterface =
         kfstat,
         kstat,
 
+	NULL,		/* truncate */
+	NULL,		/* fsync */
         NULL,		/* mkdir */
         NULL,		/* rmdir */
         NULL,		/* rename */
@@ -147,7 +149,7 @@ SystemCallInterface Kaffe_SystemCallInterface =
         NULL,           /* msync */
         NULL,           /* pipecreate */
         NULL,           /* piperead */
-        NULL,           /* pipewrite */
+        NULL            /* pipewrite */
 };
 
 
@@ -266,17 +268,17 @@ endJniInclude(void)
 
 
 bool
-addSourceFile(Hjava_lang_Class* c, int idx, errorInfo *einfo)
+addSourceFile(Hjava_lang_Class* c UNUSED, int idx UNUSED, errorInfo *einfo UNUSED)
 {
 	return true;
 }
 
 bool
-addInnerClasses(Hjava_lang_Class* c, uint32 len, classFile* fp,
-		errorInfo *einfo)
+addInnerClasses(Hjava_lang_Class* c UNUSED, uint32 len, classFile* fp,
+		errorInfo *einfo UNUSED)
 {
 	/* checkBufSize() done in caller. */
-			seekm(fp, len);
+        seekm(fp, len);
 	return true;
 }
 
@@ -381,7 +383,7 @@ fprintfJni (FILE *f, const char *s)
 }
 
 int
-startFields(Hjava_lang_Class* this, u2 fct, errorInfo *einfo)
+startFields(Hjava_lang_Class* this, u2 fct, errorInfo *einfo UNUSED)
 {
 	this->fields = malloc(fct * sizeof(Field));
 	CLASS_NFIELDS(this) = 0; /* incremented by addField() */
@@ -391,7 +393,7 @@ startFields(Hjava_lang_Class* this, u2 fct, errorInfo *einfo)
 Field*
 addField(Hjava_lang_Class* this,
 	 u2 access_flags, u2 name_index, u2 signature_index,
-	 struct _errorInfo* einfo)
+	 struct _errorInfo* einfo UNUSED)
 {
 	Field* f;
 
@@ -443,7 +445,7 @@ addField(Hjava_lang_Class* this,
 
 static void
 constValueToString(Hjava_lang_Class* this, u2 idx,
-		   char *cval, int cvalsize)
+		   char *cval, int cvalsize UNUSED)
 {
 	/* XXX use snprintf() */
 
@@ -509,7 +511,7 @@ setFieldValue(Hjava_lang_Class* this, Field* f, u2 idx)
 }
 
 void
-finishFields(Hjava_lang_Class* this)
+finishFields(Hjava_lang_Class* this UNUSED)
 {
 	if (include == NULL) {
 		return;
@@ -523,7 +525,8 @@ finishFields(Hjava_lang_Class* this)
 }
 
 int
-startMethods(Hjava_lang_Class* this, u2 mct, errorInfo *einfo)
+startMethods(Hjava_lang_Class* this UNUSED, u2 mct UNUSED,
+	     errorInfo *einfo UNUSED)
 {
 	return true;
 }
@@ -611,13 +614,11 @@ addMethod(Hjava_lang_Class* this,
 		} while (i != methodRing);
 	
 		/* if we didn't find a suitable place, add it at the end of the list */	
-		if (i == methodRing) {
-			  i->prev->next = list;
-			  list->prev = i->prev;
+		i->prev->next = list;
+		list->prev = i->prev;
 
-			  i->prev = list;
-			  list->next = i;
-		}
+		i->prev = list;
+		list->next = i;
 	}
 
 	return (Method*)1;
@@ -715,7 +716,7 @@ finishMethods (Hjava_lang_Class *this)
 }
 
 bool 
-addCode(Method* m, uint32 len, classFile* fp, errorInfo *einfo)
+addCode(Method* m, uint32 len, classFile* fp, errorInfo *einfo UNUSED)
 {
 	/* Don't try dereferencing m! */
 	assert(m == (Method*)1);
@@ -726,7 +727,7 @@ addCode(Method* m, uint32 len, classFile* fp, errorInfo *einfo)
 }
 
 bool
-addLineNumbers(Method* m, uint32 len, classFile* fp, errorInfo *info)
+addLineNumbers(Method* m, uint32 len, classFile* fp, errorInfo *info UNUSED)
 {
 	/* Don't try dereferencing m! */
 	assert(m == (Method*)1);
@@ -737,7 +738,7 @@ addLineNumbers(Method* m, uint32 len, classFile* fp, errorInfo *info)
 }
 
 bool
-addLocalVariables(Method* m, uint32 len, classFile* fp, errorInfo *info)
+addLocalVariables(Method* m, uint32 len, classFile* fp, errorInfo *info UNUSED)
 {
 	/* Don't try dereferencing m! */
 	assert(m == (Method*)1);
@@ -749,7 +750,7 @@ addLocalVariables(Method* m, uint32 len, classFile* fp, errorInfo *info)
 
 bool
 addCheckedExceptions(Method* m, uint32 len, classFile* fp,
-		     errorInfo *info)
+		     errorInfo *info UNUSED)
 {
 	/* Don't try dereferencing m! */
 	assert(m == (Method*)1);
@@ -762,7 +763,7 @@ addCheckedExceptions(Method* m, uint32 len, classFile* fp,
 
 Hjava_lang_Class*
 setupClass(Hjava_lang_Class* this, u2 thisidx, u2 super, u2 access_flags,
-	   struct Hjava_lang_ClassLoader* loader, struct _errorInfo* einfo)
+	   struct Hjava_lang_ClassLoader* loader, errorInfo* einfo UNUSED)
 {
 	utf8ConstAssign(this->name, CLASS_CONST_UTF8(this, thisidx));
 	this->accflags = access_flags;
@@ -791,7 +792,8 @@ setupClass(Hjava_lang_Class* this, u2 thisidx, u2 super, u2 access_flags,
 }
 
 void
-addInterfaces(Hjava_lang_Class* this, u2 icount, Hjava_lang_Class** ifaces)
+addInterfaces(Hjava_lang_Class* this UNUSED, u2 icount UNUSED, 
+	      Hjava_lang_Class** ifaces UNUSED)
 {
 }
 

@@ -158,7 +158,7 @@ jthread_createfirst(size_t mainThreadStackSize,
 jthread_t
 jthread_create(unsigned char pri, 	/* initial priority */
 	void (*func)(void *), 		/* start function */
-	int daemon, 			/* is this thread a daemon? */
+	int isDaemon, 			/* is this thread a daemon? */
 	void *jlThread, 		/* cookie for this thread */
 	size_t threadStackSize);	/* stack size to be allocated */
 
@@ -349,7 +349,7 @@ void jthread_clear_run(jthread_t jt);
 int jthread_has_run(jthread_t jt);
 
 static inline
-bool jthread_attach_current_thread(bool daemon)
+bool jthread_attach_current_thread(bool isDaemon)
 {
 	return false;
 }

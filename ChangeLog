@@ -1,3 +1,15 @@
+2004-04-01  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* m4/gcc_attribute.m4: Really add the unused attribute.
+
+	* config/config.h.in: Regenerated.
+
+	* kaffe/kaffeh/support.c: Marked many variables as unused.
+	Added some missing initializer. Removed an extra if.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h: Renamed "daemon" to
+	"isDaemon". 
+
 2004-03-31  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/bootstrap.classlist: Added missing decoder

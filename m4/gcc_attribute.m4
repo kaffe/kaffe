@@ -73,7 +73,7 @@ AC_DEFUN([GCC_ATTRIBUTE_UNUSED],[
  AH_BOTTOM([/* GNU C unused functions, or null. */
 #ifndef ATTRUNUSED
 #ifdef HAVE_GNUC25_UNUSED
-#define ATTRUNUSED
+#define ATTRUNUSED unused
 #else
 #define ATTRUNUSED
 #endif
