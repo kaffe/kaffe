@@ -84,6 +84,10 @@ public int flush ( char[] to, int tpos, int tlen ) {
 	}
 }
 
+public boolean havePending() {
+	return blen != 0;
+}
+
 public int withdraw ( byte[] to, int tpos, int tlen ) {
 	int n = (tlen < blen ? tlen : blen);
 	System.arraycopy( buf, 0, to, 0, n);
