@@ -146,6 +146,7 @@ java/util/Collections$SynchronizedList.class
 java/util/Collections$SynchronizedSet.class
 java/util/Comparator.class
 java/util/ConcurrentModificationException.class
+java/util/Date.class
 java/util/Dictionary.class
 java/util/EmptyStackException.class
 java/util/Enumeration.class
@@ -224,6 +225,7 @@ java/text/FieldPosition.class
 java/text/SimpleDateFormat.class
 java/text/NumberFormat.class
 java/text/DecimalFormat.class
+java/text/DecimalFormatSymbols.class
 java/text/ChoiceFormat.class
 
 # Perhaps some additional classes are needed if kjc detects

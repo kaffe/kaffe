@@ -7,6 +7,11 @@
 	libraries/gnu/java/text/WordBreakIterator.java:
 	Added some missing files.
 
+	* libraries/javalib/bootstrap.classlist: Added java/util/Date.class
+	and java/text/DecimalFormatSymbols for "-v" in KJC.
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated.
+
 2003-08-16  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* java/text/Annotation.java,
