@@ -16,14 +16,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public abstract class SocketImpl implements SocketOptions {
+abstract public class SocketImpl
+  implements SocketOptions {
 
 protected FileDescriptor fd = new FileDescriptor();
 protected InetAddress address = new InetAddress();
 protected int port;
 protected int localport;
-
-boolean closed;
 
 protected FileDescriptor getFileDescriptor() {
 	return (fd);

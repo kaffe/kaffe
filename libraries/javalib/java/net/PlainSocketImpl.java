@@ -25,6 +25,7 @@ public class PlainSocketImpl
 private InputStream in;
 private OutputStream out;
 private int timeout;
+private boolean closed;
 
 static {
 	System.loadLibrary("net");
@@ -185,7 +186,10 @@ public Object getOption(int option) throws SocketException {
 	}
 }
 
-protected int read(byte[] buf, int offset, int len) throws IOException {
+protected synchronized int read(byte[] buf, int offset, int len)
+		throws IOException {
+	if (closed)
+		return -1;
 	int r = socketRead(buf, offset, len);
 	if (r > 0 || len == 0) {
 		return (r);
@@ -195,7 +199,10 @@ protected int read(byte[] buf, int offset, int len) throws IOException {
 	}
 }
 
-protected void write(byte[] buf, int offset, int len) throws IOException {
+protected synchronized void write(byte[] buf, int offset, int len)
+		throws IOException {
+	if (closed)
+		throw new IOException("socket closed");
 	socketWrite(buf, offset, len);
 }
 
