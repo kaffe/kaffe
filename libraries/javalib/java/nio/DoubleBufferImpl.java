@@ -1,5 +1,5 @@
 /* DoubleBufferImpl.java -- 
-   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -98,10 +98,17 @@ final class DoubleBufferImpl extends DoubleBuffer
   }
 
   /**
-   * Relative get method. Reads the next <code>double</code> from the buffer.
+   * Reads the <code>double</code> at this buffer's current position,
+   * and then increments the position.
+   *
+   * @exception BufferUnderflowException If there are no remaining
+   * <code>doubles</code> in this buffer.
    */
   public double get ()
   {
+    if (!hasRemaining())
+      throw new BufferUnderflowException();
+
     double result = backing_buffer [position ()];
     position (position () + 1);
     return result;

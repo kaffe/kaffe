@@ -1,5 +1,5 @@
 /* FloatBufferImpl.java -- 
-   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -98,10 +98,17 @@ final class FloatBufferImpl extends FloatBuffer
   }
 
   /**
-   * Relative get method. Reads the next <code>float</code> from the buffer.
+   * Reads the <code>float</code> at this buffer's current position,
+   * and then increments the position.
+   *
+   * @exception BufferUnderflowException If there are no remaining
+   * <code>floats</code> in this buffer.
    */
   public float get ()
   {
+    if (!hasRemaining())
+      throw new BufferUnderflowException();
+
     float result = backing_buffer [position ()];
     position (position () + 1);
     return result;

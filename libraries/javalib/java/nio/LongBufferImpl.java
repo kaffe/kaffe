@@ -1,5 +1,5 @@
 /* LongBufferImpl.java -- 
-   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -98,10 +98,17 @@ final class LongBufferImpl extends LongBuffer
   }
 
   /**
-   * Relative get method. Reads the next <code>long</code> from the buffer.
+   * Reads the <code>long</code> at this buffer's current position,
+   * and then increments the position.
+   *
+   * @exception BufferUnderflowException If there are no remaining
+   * <code>longs</code> in this buffer.
    */
   public long get ()
   {
+    if (!hasRemaining())
+      throw new BufferUnderflowException();
+
     long result = backing_buffer [position ()];
     position (position () + 1);
     return result;
