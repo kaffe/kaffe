@@ -208,6 +208,8 @@ pixelValue ( Toolkit* X, jint rgb )
 
   case PseudoColor:
 	return X->pclr->pix [JI8(JRED(rgb))] [JI8(JGREEN(rgb))] [JI8(JBLUE(rgb))];
+  default:
+	return 0;
   }
 }
 

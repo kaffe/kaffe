@@ -182,7 +182,7 @@ Java_java_awt_Toolkit_wndCreateDialog ( JNIEnv* env, jclass clazz, void* owner, 
 }
 
 
-jint
+void
 Java_java_awt_Toolkit_wndDestroyWindow ( JNIEnv* env, jclass clazz, void* wnd )
 {
   XSync( X->dsp, False); /* maybe we still have pending requests for wnd */

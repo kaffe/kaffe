@@ -48,6 +48,8 @@
 #endif
 #define	GETNEXTFRAME(F)		((*Kaffe_ThreadInterface.nextFrame)(F))
 
+static void nullException(EXCEPTIONPROTO);
+static void floatingException(EXCEPTIONPROTO);
 static void dispatchException(Hjava_lang_Throwable*, struct _exceptionFrame*) __NORETURN__;
 
 Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
@@ -57,7 +59,7 @@ extern uintp Kaffe_JNI_estart;
 extern uintp Kaffe_JNI_eend;
 extern void Kaffe_JNIExceptionHandler(void);
 
-extern void Tspinoffall();
+extern void Tspinoffall(void);
 
 /*
  * Throw an internal exception.
@@ -238,9 +240,33 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 }
 
 /*
- * Null exception - catches bad memory accesses.
+ * Setup the internal exceptions.
  */
 void
+initExceptions(void)
+{
+DBG(INIT,	printf("initExceptions()\n");			)
+	if (DBGEXPR(EXCEPTION, false, true)) {
+	/* Catch signals we need to convert to exceptions */
+#if defined(SIGSEGV)
+		catchSignal(SIGSEGV, nullException);
+#endif
+#if defined(SIGBUS)
+		catchSignal(SIGBUS, nullException);
+#endif
+#if defined(SIGFPE)
+		catchSignal(SIGFPE, floatingException);
+#endif
+#if defined(SIGPIPE)
+		catchSignal(SIGPIPE, SIG_IGN);
+#endif
+	}
+}
+
+/*
+ * Null exception - catches bad memory accesses.
+ */
+static void
 nullException(EXCEPTIONPROTO)
 {
 	Hjava_lang_Throwable* npe;
@@ -260,7 +286,7 @@ nullException(EXCEPTIONPROTO)
 /*
  * Division by zero.
  */
-void
+static void
 floatingException(EXCEPTIONPROTO)
 {
 	Hjava_lang_Throwable* ae;

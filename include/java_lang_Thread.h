@@ -29,8 +29,8 @@ typedef struct Classjava_lang_Thread {
 } Classjava_lang_Thread;
 HandleTo(java_lang_Thread);
 
-extern struct Hjava_lang_Thread* java_lang_Thread_currentThread();
-extern void java_lang_Thread_yield();
+extern struct Hjava_lang_Thread* java_lang_Thread_currentThread(void);
+extern void java_lang_Thread_yield(void);
 extern void java_lang_Thread_sleep(jlong);
 extern void java_lang_Thread_start(struct Hjava_lang_Thread*);
 extern jbool java_lang_Thread_isInterrupted(struct Hjava_lang_Thread*, jbool);

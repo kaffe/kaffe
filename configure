@@ -703,7 +703,7 @@ fi
 
 
 if test "$GCC" = "yes"; then
-	CFLAGS="$CFLAGS -Wall"
+	CFLAGS="$CFLAGS -Wall -Wstrict-prototypes"
 fi
 
 ac_aux_dir=

@@ -217,7 +217,6 @@ focusNotify ( JNIEnv* env, Toolkit* X )
 jobject
 expose ( JNIEnv* env, Toolkit* X )
 {
-  int     ret = 0;
   Window  wnd = X->event.xany.window;
   int     x   = X->event.xexpose.x;
   int     y   = X->event.xexpose.y;
@@ -278,7 +277,7 @@ jobject
 configureNotify ( JNIEnv* env, Toolkit* X )
 {
   Window  child;
-  int     x, y, w, h, dh, dw;
+  int     x, y, w, h;
 
   /*
    * some window managers are rather loquacious when doing opaque moves

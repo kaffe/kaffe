@@ -9,6 +9,7 @@
  */
 
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <string.h>
 #include "config.h"
 #include "toolkit.h"
@@ -51,6 +52,7 @@ Java_java_awt_Toolkit_graInitGraphics ( JNIEnv* env, jclass clazz,
 	case 1:  drw = ((Image*)tgt)->pix; break;     /* Image    */
 	case 2:  drw = ((Graphics*)tgt)->drw; break;  /* Graphics */
 	default: fprintf( stderr, "illegal Graphics target: %d\n", tgtType);
+		 drw = 0;
 	}
   }
   else {
@@ -568,7 +570,6 @@ Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz, Graphics* 
 										   jint dx0, jint dy0, jint dx1, jint dy1,
 										   jint sx0, jint sy0, jint sx1, jint sy1, jint bgval )
 {
-  XGCValues  values;
   int        x0, y0, x1, y1;
   int        iw = img->xImg->width;
   Image      tgt;

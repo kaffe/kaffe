@@ -51,7 +51,7 @@ xErrorHandler ( Display *dsp, XErrorEvent *err )
   XGetErrorDatabaseText( dsp, "XRequest", key, "", buf, sizeof( buf));
   fprintf( stderr, "  request:    %s\n", buf);
 
-  fprintf( stderr, "  resource:   %X\n", err->resourceid);
+  fprintf( stderr, "  resource:   %X\n", (unsigned int) err->resourceid);
 
   return 0;
 }

@@ -136,7 +136,7 @@ jthread_init(
         void *(*_allocator)(size_t),	/* memory allocator */
 	void (*_deallocator)(void*),	/* memory deallocator */
 	void (*_destructor1)(void*),	/* called when a thread exits */ 
-	void (*_onstop)());		/* called when a thread is stopped */
+	void (*_onstop)(void));		/* called when a thread is stopped */
 
 /*
  * create a thread with a given priority
@@ -152,7 +152,7 @@ jthread_create(unsigned char pri, 	/* initial priority */
  * set a function to be run when last non-daemon dies 
  * this is used to run the finalizer on exit.
  */
-void 	jthread_atexit(void (*f)());
+void 	jthread_atexit(void (*f)(void));
 
 /*
  * walk all live threads, and invoke `func', passing in their cookie
@@ -173,7 +173,7 @@ void	jthread_setpriority(jthread_t jtid, int prio);
 /*
  * yield to another thread
  */
-void 	jthread_yield();
+void 	jthread_yield(void);
 
 /*
  * sleep for time milliseconds
@@ -184,7 +184,7 @@ void 	jthread_sleep(jlong time);
  * return the current thread 
  */
 static inline jthread_t
-jthread_current() 
+jthread_current(void) 
 { 
 	extern jthread_t currentJThread;
 	return currentJThread; 
@@ -213,7 +213,7 @@ void 	jthread_interrupt(jthread_t jtid);
 /*
  * have the current thread exit
  */
-void 	jthread_exit() __NORETURN__;
+void 	jthread_exit(void) __NORETURN__;
 
 /*
  * determine whether a location is on the stack of the current thread
@@ -229,21 +229,21 @@ void jthread_extract_stack(jthread_t jtid, void **from, unsigned *len);
 /*
  * Disallow cancellation for current thread
  */
-void jthread_disable_stop();
+void jthread_disable_stop(void);
 
 /*
  * Reallow cancellation for current thread
  * If a cancellation is pending, the stop method will be called
  */
-void jthread_enable_stop();
+void jthread_enable_stop(void);
 
 /*
  * functions to disable and restore interrupts
  */
-void 	intsDisable();
-void 	intsRestore();
-void	intsRestoreAll();
-int 	intsDisabled();
+void 	intsDisable(void);
+void 	intsRestore(void);
+void	intsRestoreAll(void);
+int 	intsDisabled(void);
 
 /*
  * API related to I/O

@@ -15,7 +15,6 @@
 #include "config-mem.h"
 #include <errno.h>
 
-extern int errno;
 extern int h_errno;
 
 #define	MAXHOSTNAME	128

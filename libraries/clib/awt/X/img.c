@@ -13,11 +13,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include "jpeglib.h"
 
 #include "config.h"
 #include "toolkit.h"
 
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 
 /************************************************************************************
@@ -143,7 +148,7 @@ initScaledImage ( Toolkit* X, Image *tgt, Image *src,
 				  int sx0, int sy0, int sx1, int sy1 )
 {
   double         xScale, yScale, sX, sY, sxDelta, syDelta;
-  int            dx, dy, dxInc, dyInc, sx, sy, x, y, x0, y0;
+  int            dx, dy, dxInc, dyInc, sx, sy;
   long           c;
 
   dxInc = (dx1 > dx0) ? 1 : -1;
@@ -363,9 +368,9 @@ Java_java_awt_Toolkit_imgCreateGifImage ( JNIEnv* env, jclass clazz, jstring gif
 
 void*
 Java_java_awt_Toolkit_imgCreateJpegImage ( JNIEnv* env, jclass clazz, 
-										   jstring jpegPath, jint colors)
+										   jstring jpegPath, volatile jint colors)
 {
-  Image *img;
+  Image * volatile img;
   struct jpeg_decompress_struct cinfo;
   struct my_error_mgr jerr;
   FILE * infile;

@@ -15,12 +15,12 @@ typedef struct Classjava_lang_Compiler {
 } Classjava_lang_Compiler;
 HandleTo(java_lang_Compiler);
 
-extern void java_lang_Compiler_initialize();
+extern void java_lang_Compiler_initialize(void);
 extern jbool java_lang_Compiler_compileClass(struct Hjava_lang_Class*);
 extern jbool java_lang_Compiler_compileClasses(struct Hjava_lang_String*);
 extern struct Hjava_lang_Object* java_lang_Compiler_command(struct Hjava_lang_Object*);
-extern void java_lang_Compiler_enable();
-extern void java_lang_Compiler_disable();
+extern void java_lang_Compiler_enable(void);
+extern void java_lang_Compiler_disable(void);
 
 #ifdef __cplusplus
 }

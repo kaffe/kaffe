@@ -1,3 +1,17 @@
+Fri Aug 28 10:57:38 1998  Archie Cobbs <archie@whistle.com>
+
+	* libraries/clib/native/ResourceBundle.[ch],
+	libraries/clib/native/Makefile.in: remove no longer needed files
+	* include/java_lang_Object.h, include/java_lang_Thread.h,
+	include/nets.h,, kaffe/kaffevm/baseClasses.c,
+	kaffe/kaffevm/exception.*, kaffe/kaffevm/mem/gc-mem.c,
+	kaffe/kaffevm/systems/unix-*/internal.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.*,
+	libraries/clib/awt/X/*, libraries/clib/math/BigInteger.h,
+	libraries/clib/native/Compiler.h, libraries/clib/native/System.h:
+	minor fixes to eliminate gcc compiler warnings
+	* configure.in: add -Wstrict-prototypes to gcc flags
+
 Fri Aug 28 09:49:20 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* configure.in, config/config.h.in: 

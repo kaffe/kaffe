@@ -10,10 +10,16 @@
 
 
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <limits.h>
 #include <math.h>
 
+#include "config.h"
 #include "toolkit.h"
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 #define CLR_DIST 8.0
 
@@ -359,12 +365,10 @@ initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
 Rgb2Pseudo*
 initRgb2Pseudo ( JNIEnv* env, Toolkit* X )
 {
-  Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
   Colormap dcm;
-  int i, j, k, l, pix;
+  int i, j, k;
   XColor xclr;
   Rgb2Pseudo *map;
-  int rgb;
 
   dcm = DefaultColormapOfScreen( DefaultScreenOfDisplay( X->dsp));
   map = (Rgb2Pseudo*) malloc( sizeof(Rgb2Pseudo));
@@ -391,7 +395,6 @@ Rgb2True*
 initRgb2True ( Toolkit* X )
 {
   Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
-  register i;
   unsigned int n, m;
   int      nRed, nGreen, nBlue;
 

@@ -18,7 +18,7 @@ HandleTo(java_lang_System);
 extern void java_lang_System_setIn0(struct Hjava_io_InputStream*);
 extern void java_lang_System_setOut0(struct Hjava_io_PrintStream*);
 extern void java_lang_System_setErr0(struct Hjava_io_PrintStream*);
-extern jlong java_lang_System_currentTimeMillis();
+extern jlong java_lang_System_currentTimeMillis(void);
 extern void java_lang_System_arraycopy(struct Hjava_lang_Object*, jint, struct Hjava_lang_Object*, jint, jint);
 extern jint java_lang_System_identityHashCode(struct Hjava_lang_Object*);
 extern struct Hjava_util_Properties* java_lang_System_initProperties(struct Hjava_util_Properties*);

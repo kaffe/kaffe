@@ -1077,7 +1077,7 @@ Tspinoff(void* arg)
 }
 
 void
-Tspinoffall()
+Tspinoffall(void)
 {
 	blockInts = 1;
 	Tspinoff(0);

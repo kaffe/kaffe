@@ -20,7 +20,7 @@ typedef struct Classjava_math_BigInteger {
 } Classjava_math_BigInteger;
 HandleTo(java_math_BigInteger);
 
-extern void java_math_BigInteger_plumbInit();
+extern void java_math_BigInteger_plumbInit(void);
 extern HArrayOfByte* java_math_BigInteger_plumbAdd(HArrayOfByte*, HArrayOfByte*);
 extern struct Hjava_math_BigInteger* java_math_BigInteger_plumbSubtract(HArrayOfByte*, HArrayOfByte*);
 extern HArrayOfByte* java_math_BigInteger_plumbMultiply(HArrayOfByte*, HArrayOfByte*);

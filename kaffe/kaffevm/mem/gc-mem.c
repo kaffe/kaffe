@@ -87,7 +87,7 @@ static int totalslack;
 static int totalsmallobjs;
 
 static
-void printslack()
+void printslack(void)
 {
 	printf("allocated %d small objects, total slack %d, slack/per "
 		"object %8.2f\n", 

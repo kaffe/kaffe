@@ -68,7 +68,6 @@ Hjava_lang_Class* javaLangNullPointerException;
 
 /* Initialisation prototypes */
 void initClasspath(void);
-void initExceptions(void);
 void initNative(void);
 void initThreads(void);
 
@@ -165,26 +164,3 @@ initBaseClasses(void)
 	finishTypes();
 }
 
-/*
- * Setup the internal exceptions.
- */
-void
-initExceptions(void)
-{
-DBG(INIT,	printf("initExceptions()\n");			)
-	if (DBGEXPR(EXCEPTION, false, true)) {
-	/* Catch signals we need to convert to exceptions */
-#if defined(SIGSEGV)
-		catchSignal(SIGSEGV, nullException);
-#endif
-#if defined(SIGBUS)
-		catchSignal(SIGBUS, nullException);
-#endif
-#if defined(SIGFPE)
-		catchSignal(SIGFPE, floatingException);
-#endif
-#if defined(SIGPIPE)
-		catchSignal(SIGPIPE, SIG_IGN);
-#endif
-	}
-}

@@ -67,7 +67,7 @@ static int tblocked_on_external;
 static int preemptive = true;	/* enable preemptive scheduling */
 static int talive; 		/* number of threads alive */
 static int tdaemon;		/* number of daemons alive */
-static void (*runOnExit)();	/* function to run when all non-daemon die */
+static void (*runOnExit)(void);	/* function to run when all non-daemon die */
 
 static jthread**threadQhead;	/* double-linked run queue */ 
 static jthread**threadQtail;
@@ -112,15 +112,15 @@ jthread* currentJThread;
  */
 static void handleInterrupt(int sig);
 static void interrupt(int sig);
-static void childDeath();
+static void childDeath(void);
 static void handleIO(int);
 static void blockOnFile(int fd, int op);
 static void killThread(jthread *jtid);
 static void resumeThread(jthread* jtid);
 static void reschedule(void);
-static void restore_fds();
-static void restore_fds_and_exit();
-static void die();
+static void restore_fds(void);
+static void restore_fds_and_exit(void);
+static void die(void);
 static int jthreadedFileDescriptor(int fd);
 
 /*
@@ -164,7 +164,7 @@ static int jthreadedFileDescriptor(int fd);
  * yield to another thread
  */
 static inline void
-internalYield()
+internalYield(void)
 {
         int priority = currentJThread->priority; 
    
@@ -405,7 +405,7 @@ DBG(JTHREAD,
  * check whether interrupts are disabled
  */
 int
-intsDisabled()
+intsDisabled(void)
 {       
         return blockInts > 0;           
 }       
@@ -420,13 +420,13 @@ intsDisabled()
  * intsDisable may be invoked recursively. (is that really a good idea? - gb)
  */
 void 
-intsDisable()
+intsDisable(void)
 {
         blockInts++;
 }
 
 static void
-processSignals()
+processSignals(void)
 {
 	int i;
 	for (i = 1; i < NSIG; i++) {
@@ -444,7 +444,7 @@ processSignals()
  * signals that are pending.
  */
 void
-intsRestore()
+intsRestore(void)
 { 
         /* DEBUG */
         assert(blockInts >= 1);
@@ -464,7 +464,7 @@ intsRestore()
  * reenable interrupts, non-recursive version.
  */
 void
-intsRestoreAll()
+intsRestoreAll(void)
 {
 	blockInts = 1;
 	intsRestore();
@@ -534,7 +534,7 @@ interrupt(int sig)
  * priority.
  */
 static void 
-handleVtAlarm()
+handleVtAlarm(void)
 {
 	static int c;
 
@@ -557,7 +557,7 @@ handleVtAlarm()
  * handle a SIGALRM alarm.
  */
 static void 
-alarmException()
+alarmException(void)
 {
 	jthread* jtid;
 	jlong time;
@@ -705,7 +705,7 @@ jthread_frames(jthread *thrd)
  * set virtual timer for 10ms round-robin time-slicing
  */
 static void
-activate_time_slicing()
+activate_time_slicing(void)
 {
 	struct itimerval tm;
 	tm.it_interval.tv_sec = tm.it_value.tv_sec = 0;
@@ -717,7 +717,7 @@ activate_time_slicing()
  * deactivate virtual timer for 10ms round-robin time-slicing
  */
 static void
-deactivate_time_slicing()
+deactivate_time_slicing(void)
 {
 	struct itimerval tm;
 	tm.it_interval.tv_sec = tm.it_value.tv_sec = 0;
@@ -725,8 +725,8 @@ deactivate_time_slicing()
 	setitimer(ITIMER_VIRTUAL, &tm, 0);
 }
 #else
-static void activate_time_slicing() { }
-static void deactivate_time_slicing() { }
+static void activate_time_slicing(void) { }
+static void deactivate_time_slicing(void) { }
 #endif
 
 /*
@@ -739,7 +739,7 @@ jthread_init(int pre,
 	void *(*_allocator)(size_t), 
 	void (*_deallocator)(void*),
 	void (*_destructor1)(void*),
-	void (*_onstop)())
+	void (*_onstop)(void))
 {
         jthread *jtid; 
 	int i;
@@ -833,7 +833,7 @@ jthread_init(int pre,
  * set a function to be run when all non-daemon threads have exited
  */
 void 
-jthread_atexit(void (*f)())
+jthread_atexit(void (*f)(void))
 {
 	runOnExit = f;
 }
@@ -842,7 +842,7 @@ jthread_atexit(void (*f)())
  * disallow cancellation
  */
 void 
-jthread_disable_stop()
+jthread_disable_stop(void)
 {
 	intsDisable();
 	currentJThread->flags |= THREAD_FLAGS_DONTSTOP;
@@ -853,7 +853,7 @@ jthread_disable_stop()
  * reallow cancellation and stop if cancellation pending
  */
 void 
-jthread_enable_stop()
+jthread_enable_stop(void)
 {
 	intsDisable();
 	currentJThread->flags &= ~THREAD_FLAGS_DONTSTOP;
@@ -875,7 +875,7 @@ jthread_interrupt(jthread *jtid)
 }
 
 static void 
-die()
+die(void)
 {
 	currentJThread->flags &= ~THREAD_FLAGS_KILLED;
 	currentJThread->flags |= THREAD_FLAGS_DYING;
@@ -887,7 +887,7 @@ die()
 }
 
 static void
-start_this_sucker_on_a_new_frame()
+start_this_sucker_on_a_new_frame(void)
 {
 	/* I might be dying already */
 	if ((currentJThread->flags & THREAD_FLAGS_KILLED) != 0)
@@ -993,7 +993,7 @@ DBG(JTHREAD,
  * yield to a thread of equal priority
  */
 void
-jthread_yield()
+jthread_yield(void)
 {
         intsDisable();
         internalYield();
@@ -1157,7 +1157,7 @@ DBG(JTHREAD,
 /*
  * have main thread wait for all threads to finish
  */
-void jthread_exit_when_done()
+void jthread_exit_when_done(void)
 {
         while (talive > 1)
 		jthread_yield();
@@ -1557,7 +1557,7 @@ jthreadedFileDescriptor(int fd)
  * mode.  (as opposed to O_NONBLOCK)
  */
 static void
-restore_fds()
+restore_fds(void)
 {
 	int i;
 	/* clear non-blocking flag for file descriptor stdin, stdout, stderr */
@@ -1723,7 +1723,7 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
  */
 static
 void
-childDeath()
+childDeath(void)
 {
 	if (waitForList) {
 		resumeThread(waitForList);

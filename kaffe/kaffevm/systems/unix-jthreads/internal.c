@@ -71,7 +71,7 @@ broadcastDeath(void *jlThread)
 }
 
 static void 
-throwDeath()
+throwDeath(void)
 {
 	throwException(ThreadDeath);
 }
@@ -90,7 +90,7 @@ thread_free(void *p)
 
 static
 void
-runfinalizer()
+runfinalizer(void)
 {
 	if (runFinalizerOnExit)
 		invokeFinalizer();
