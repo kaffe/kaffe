@@ -4,6 +4,22 @@
 
 	2004-01-08  Michael Koch  <konqueror@gmx.de>
 
+        * gnu/java/nio/PipeImpl.java
+        (SourceChannelImpl): New inner class.
+        (SinkChannelImpl): New inner class.
+        (sink): New member variable.
+        (source): New member variable.
+        (PipeImpl): Add SelectorProvider argument, implemented.
+        (nativeInit): New method.
+        (sink): Return sink channel.
+        (source): Return source channel.
+
+2004-01-08  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-01-08  Michael Koch  <konqueror@gmx.de>
+
         * gnu/java/nio/DatagramChannelImpl.java
         (blocking): Removed.
         (DatagramChannelImpl): Call configureBlocking().
