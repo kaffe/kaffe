@@ -1,3 +1,13 @@
+Fri Feb 26 19:59:31 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: don't interrupt
+	dead threads.
+	* kaffe/kaffevm/mem/gc-incremental.c: took gcWalkObject out of the
+	game for now until problems with statically allocated objects are
+	fixed.
+	* libraries/javalib/java/io/DataInputStream.java: don't make
+	readUTF synchronized; we'd deadlock otherwise.
+
 Fri Feb 26 09:14:24 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/util/Vector.java: synchronize remove,
