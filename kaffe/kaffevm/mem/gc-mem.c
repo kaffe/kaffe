@@ -112,6 +112,23 @@ int gc_system_alloc_cnt;
 extern struct Hjava_lang_Thread* garbageman;
 
 #ifdef KAFFE_VMDEBUG
+/* Magic constant used to mark blocks under gc's management */
+static const uint32 gc_magic = 0xD0DECADE;
+
+/* Set the magic marker of a block */
+static inline void
+gc_set_magic_marker(gc_block *b)
+{
+  b->magic = gc_magic;
+}
+
+/* Check the magic marker of a block */
+static inline bool
+gc_check_magic_marker(gc_block *b)
+{
+  return b->magic == gc_magic;
+}
+
 /*
  * analyze the slack incurred by small objects
  */
@@ -332,7 +349,7 @@ DBG(GCALLOC,		dprintf("gc_heap_malloc: small block %ld at %p free %p\n",
 		mem = blk->free;
 
 		DBG(GCDIAG,
-		    assert(blk->magic == GC_MAGIC);
+		    assert(gc_check_magic_marker(blk));
 		    ASSERT_ONBLOCK(mem, blk);
 		    if (mem->next) ASSERT_ONBLOCK(mem->next, blk));
 
@@ -393,7 +410,7 @@ gc_heap_free(void* mem)
 
 	DBG(GCDIAG,
 	    gc_heap_check();
-	    assert(info->magic == GC_MAGIC);
+	    assert(gc_check_magic_marker(info));
 	    assert(GC_GET_COLOUR(info, idx) != GC_COLOUR_FREE));
 
 	GC_SET_COLOUR(info, idx, GC_COLOUR_FREE);
@@ -486,7 +503,7 @@ gc_small_block(size_t sz)
 	nr = (gc_pgsize-ROUNDUPALIGN(1))/(sz+2);
 
 	/* Setup the meta-data for the block */
-	DBG(GCDIAG, info->magic = GC_MAGIC);
+	DBG(GCDIAG, gc_set_magic_marker(info));
 
 	info->size = sz;
 	info->nr = nr;
@@ -536,7 +553,7 @@ gc_large_block(size_t sz)
 	}
 
 	/* Setup the meta-data for the block */
-	DBG(GCDIAG, info->magic = GC_MAGIC);
+	DBG(GCDIAG, gc_set_magic_marker(info));
 
 	info->size = sz;
 	info->nr = 1;
@@ -601,6 +618,17 @@ gc_block_rm(gc_block *b)
   b->nr = 0;
 }
 
+/* Get the end a gc block
+ *
+ * This is OK, gc_prim_(alloc|free) never assume GCBLOCKEND is really
+ * a valid block
+ */
+static inline gc_block*
+gc_block_end(gc_block *b)
+{
+  return b + ((b->size+gc_pgsize-1)>>gc_pgbits);
+}
+
 /* return the prim list blk belongs to */
 static inline gc_block **
 gc_get_prim_freelist (gc_block *blk)
@@ -609,6 +637,7 @@ gc_get_prim_freelist (gc_block *blk)
 
 	if (sz <= GC_PRIM_LIST_COUNT)
 	{
+	        assert (sz > 0);
 		return &gc_prim_freelist[sz-1];
 	}
 
@@ -708,13 +737,13 @@ gc_primitive_alloc(size_t sz)
 
 			best_fit->size = sz;
 		
-			nptr = GCBLOCKEND(best_fit);
+			nptr = gc_block_end(best_fit);
 			nptr->size = diff;
 			gc_block_rm (nptr);
 
 			DBG(GCPRIM, dprintf ("gc_primitive_alloc: splitted remaining 0x%x bytes @ %p\n", (unsigned int)diff, nptr); )
 
-			DBG(GCDIAG, nptr->magic = GC_MAGIC);
+			DBG(GCDIAG, gc_set_magic_marker(nptr));
 
 			/* maintain list of primitive blocks */
 			nptr->pnext = best_fit->pnext;
@@ -785,12 +814,12 @@ gc_primitive_free(gc_block* mem)
 
 	/*
 	 * Test whether this block is mergable with its successor.
-	 * We need to do the GCBLOCKEND check, since the heap may not be a continuous
+	 * We need to do the gc_block_end check, since the heap may not be a continuous
 	 * memory area and thus two consecutive blocks need not be mergable. 
 	 */
 	if ((blk=mem->pnext) &&
 	    !GCBLOCKINUSE(blk) &&
-	    GCBLOCKEND(mem)==blk) {
+	    gc_block_end(mem)==blk) {
 		DBG(GCPRIM, dprintf ("gc_primitive_free: merging %p with its successor (%p, %u)\n", mem, blk, blk->size);)
 
 		gc_remove_from_prim_freelist(blk);
@@ -800,7 +829,7 @@ gc_primitive_free(gc_block* mem)
 
 	if ((blk=mem->pprev) &&
 	    !GCBLOCKINUSE(blk) &&
-	    GCBLOCKEND(blk)==mem) {
+	    gc_block_end(blk)==mem) {
 		DBG(GCPRIM, dprintf ("gc_primitive_free: merging %p with its predecessor (%p, %u)\n", mem, blk, blk->size); )
 
 		gc_remove_from_prim_freelist(blk);
@@ -1075,7 +1104,7 @@ gc_heap_grow(size_t sz)
 	assert(gc_heap_total <= gc_heap_limit);
 
 	/* Place block into the freelist for subsequent use */
-	DBG(GCDIAG, blk->magic = GC_MAGIC);
+	DBG(GCDIAG, gc_set_magic_marker(blk));
 	blk->size = sz;
 
 	/* maintain list of primitive blocks */

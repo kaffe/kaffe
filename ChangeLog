@@ -1,3 +1,19 @@
+2003-11-11  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/mem/gc-mem.c:
+	(gc_magic) new constant.
+	(gc_set_magic_marker, gc_check_magic_marker) New inline functions.
+	(gc_heap_alloc) Use gc_check_magic_marker.
+	(gc_block_end) new function.
+	(gc_get_prim_freelist) Check that index is >= 0 before accessing
+	array.
+	(gc_primitive_alloc) Use gc_block_end. Use gc_set_magic_marker.
+	(gc_primitive_free) Use gc_block_end.
+	(gc_heap_grow) Use gc_set_magic_marker.
+
+	* kaffe/kaffevm/mem/gc-mem.h:
+	(GC_MAGIC, GCBLOCKEND) Removed.
+
 2003-11-06 Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	libraries/javalib/gnu/xml/aelfred2/SAXDriver.java,
@@ -15,7 +31,6 @@
 	(bind, connect) Same commentary.
 
 2003-11-03  Dalibor Topic  <robilad@kaffe.org>
-
 	* kaffe/kaffeh/support.c:
 	(kaffeh_findClass) Changed type of buf to unsigned char* to
 	fix -pedantic warnings.

@@ -110,8 +110,6 @@ extern void	gc_primitive_free(gc_block* mem);
 
 /* ------------------------------------------------------------------------ */
 
-#define	GC_MAGIC		0xD0DECADE
-
 #define GC_BLOCKS		((gc_block *) gc_block_base)
 
 /**
@@ -169,10 +167,6 @@ extern void	gc_primitive_free(gc_block* mem);
  */ 
 #define GCBLOCK2BASE(B)		(((char *)gc_heap_base) \
 					 + gc_pgsize * ((B) - GC_BLOCKS))
-
-/* This is OK, gc_prim_(alloc|free) never assume GCBLOCKEND is really
-   a valid block */
-#define GCBLOCKEND(B)		((B) + (((B)->size+gc_pgsize-1)>>gc_pgbits))
 
 #define ASSERT_ONBLOCK(OBJ, BLK) assert(GCMEM2BLOCK(OBJ) == BLK)
 
