@@ -72,12 +72,13 @@ CONFIG_HEADER = $(top_builddir)/config/config.h \
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libengine_la_LIBADD =
-am_libengine_la_OBJECTS = machine.lo
+am_libengine_la_OBJECTS = machine.lo native-wrapper.lo
 libengine_la_OBJECTS = $(am_libengine_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/machine.Plo
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/machine.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/native-wrapper.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -347,7 +348,8 @@ libengine_la_LDFLAGS = \
 	$(KVMLIBFLAGS)
 
 libengine_la_SOURCES = \
-	machine.c
+	machine.c \
+	native-wrapper.c
 
 EXTRA_DIST = \
 	Makefile.frag \
@@ -355,7 +357,8 @@ EXTRA_DIST = \
 	icode.h \
 	machine.h \
 	slots.h \
-	stackTrace-impl.h
+	stackTrace-impl.h \
+	native-wrapper.h
 
 all: all-am
 
@@ -409,6 +412,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/machine.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/native-wrapper.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

@@ -593,6 +593,7 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz,
 	initRegisters();
 	initSlots(stackno);
 	resetLabels();
+	resetConstants();
 
 	localinfo = &slotinfo[0];
 	tempinfo = &localinfo[stackno];

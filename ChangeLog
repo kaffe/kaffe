@@ -1,3 +1,38 @@
+2004-06-27  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/intrp/native-wrapper.h, kaffe/kaffevm/intrp/native-wrapper.c,
+	kaffe/kaffevm/jit/native-wrapper.h, kaffe/kaffevm/jit/native-wrapper.c,
+	kaffe/kaffevm/jit3/native-wrapper.h, kaffe/kaffevm/jit3/native-wrapper.c:
+	new files
+
+	* kaffe/kaffevm/intrp/Makefile.am, kaffe/kaffevm/jit/Makefile.am,
+	kaffe/kaffevm/jit3/Makefile.am:
+	added the new native-wrapper.[ch] files
+	
+	* kaffe/kaffevm/intrp/Makefile.in, kaffe/kaffevm/jit/Makefile.in,
+	kaffe/kaffevm/jit3/Makefile.in:
+	regenerated
+
+	* kaffe/kaffevm/jni/jni_native.h, kaffe/kaffevm/jni/jni-native.c:
+	removed
+
+	* kaffe/kaffevm/jni/Makefile.am, kaffe/kaffevm/jni/Makefile.in:
+	updated and regnerated
+	
+	* kaffe/kaffevm/jni/jni.c:
+	(addJNIRef, removeJNIRef) added
+	(Kaffe_RegisterNative) use engine_create_wrapper
+
+	* kaffe/kaffevm/external.c:
+	(strcatJNI, Kaffe_JNI_native) added
+	(native) call engine_create_wrapper
+
+	* kaffe/kaffevm/jit/constants.c:
+	(resetConstants) added
+
+	* kaffe/kaffevm/jit/machine.c:
+	(initInsnSequence) call resetConstants
+	
 2004-06-26  Rob Gonzalez <rob@kaffe.org>
 	* kaffe/kaffevm/verify*.[ch]
 	Finished adding support for multiple inheritence.

@@ -43,7 +43,9 @@ libengine_la_SOURCES = \
 	seq.h \
 	slots.c \
 	slots.h \
-	stackTrace-impl.h
+	stackTrace-impl.h \
+	native-wrapper.c \
+	native-wrapper.h
 
 EXTRA_DIST = \
 	Makefile.frag

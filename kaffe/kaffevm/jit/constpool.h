@@ -39,5 +39,6 @@ extern uint32 nConst;
 
 constpool* newConstant(int type, ...);
 void establishConstants(void *at);
+void resetConstants(void);
 
 #endif

@@ -33,21 +33,10 @@
 #include "locks.h"
 #include "md.h"
 #include "exception.h"
-#if defined(TRANSLATOR)
-#include "constpool.h"
-#include "seq.h"
-#include "slots.h"
-#include "registers.h"
-#include "labels.h"
-#include "codeproto.h"
-#include "basecode.h"
-#include "icode.h"
-#include "machine.h"
-#endif
 #include "jvmpi_kaffe.h"
 #include "jni_i.h"
 #include "jni_funcs.h"
-#include "jni_native.h"
+#include "native-wrapper.h"
 
 extern int Kaffe_Java_Major_Version;
 extern int Kaffe_Java_Minor_Version;
@@ -59,6 +48,50 @@ static jint Kaffe_GetVersion(JNIEnv*);
 static jclass Kaffe_FindClass(JNIEnv*, const char*);
 static jint Kaffe_ThrowNew(JNIEnv*, jclass, const char*);
 static jint Kaffe_Throw(JNIEnv* env, jobject obj);
+
+#if defined(NEED_JNIREFS)
+void
+addJNIref(jref obj)
+{
+	jnirefs* table;
+	int idx;
+
+	table = THREAD_DATA()->jnireferences;
+
+	if (table->used == JNIREFS) {
+		abort();	/* FIX ME */
+	}
+
+	idx = table->next;
+	for (;;) {
+		if (table->objects[idx] == 0) {
+			table->objects[idx] = obj;
+			table->used++;
+			table->next = (idx + 1) % JNIREFS;
+			return;
+		}
+		idx = (idx + 1) % JNIREFS;
+	}
+}
+
+void
+removeJNIref(jref obj)
+{
+	int idx;
+	jnirefs* table;
+
+	table = THREAD_DATA()->jnireferences;
+
+	for (idx = 0; idx < JNIREFS; idx++) {
+		if (table->objects[idx] == obj) {
+			table->objects[idx] = 0;
+			table->used--;
+			return;
+		}
+	}
+}
+#endif /* NEED_JNIREFS */
+
 
 /*
  * Everything from this point to Kaffe_GetVersion is not
@@ -797,7 +830,8 @@ Kaffe_RegisterNatives(JNIEnv* env UNUSED, jclass cls, const JNINativeMethod* met
 			if (strcmp(meth[i].name->data, methodArray[j].name) == 0 &&
 			    strcmp(METHOD_SIGD(&meth[i]), methodArray[j].signature) == 0 &&
 			    (meth[i].accflags & ACC_NATIVE) != 0) {
-				KaffeVM_JNI_wrapper(&meth[i], methodArray[j].fnPtr); 
+				meth[i].accflags |= ACC_JNI;
+				engine_create_wrapper(&meth[i], methodArray[j].fnPtr); 
 				goto found;
 			}
 		}

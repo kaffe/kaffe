@@ -73,7 +73,8 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libengine_la_LIBADD =
 am_libengine_la_OBJECTS = basecode.lo constpool.lo funcs.lo icode.lo \
-	labels.lo machine.lo registers.lo seq.lo slots.lo
+	labels.lo machine.lo registers.lo seq.lo slots.lo \
+	native-wrapper.lo
 libengine_la_OBJECTS = $(am_libengine_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -81,8 +82,10 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/basecode.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/constpool.Plo ./$(DEPDIR)/funcs.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/icode.Plo ./$(DEPDIR)/labels.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/machine.Plo ./$(DEPDIR)/registers.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/seq.Plo ./$(DEPDIR)/slots.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/machine.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/native-wrapper.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/registers.Plo ./$(DEPDIR)/seq.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/slots.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -373,7 +376,9 @@ libengine_la_SOURCES = \
 	seq.h \
 	slots.c \
 	slots.h \
-	stackTrace-impl.h
+	stackTrace-impl.h \
+	native-wrapper.c \
+	native-wrapper.h
 
 EXTRA_DIST = \
 	Makefile.frag
@@ -436,6 +441,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/icode.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/labels.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/machine.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/native-wrapper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/registers.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seq.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slots.Plo@am__quote@

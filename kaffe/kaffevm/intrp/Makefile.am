@@ -22,7 +22,8 @@ libengine_la_LDFLAGS = \
 	$(KVMLIBFLAGS)
 
 libengine_la_SOURCES = \
-	machine.c
+	machine.c \
+	native-wrapper.c
 
 EXTRA_DIST = \
 	Makefile.frag \
@@ -30,4 +31,5 @@ EXTRA_DIST = \
 	icode.h \
 	machine.h \
 	slots.h \
-	stackTrace-impl.h
+	stackTrace-impl.h \
+	native-wrapper.h

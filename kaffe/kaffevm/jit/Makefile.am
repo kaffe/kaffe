@@ -30,7 +30,8 @@ libengine_la_SOURCES = \
 	registers.c \
 	slots.c \
 	machine.c \
-	seq.c
+	seq.c \
+	native-wrapper.c
 
 EXTRA_DIST = \
 	Makefile.frag \
@@ -44,7 +45,8 @@ EXTRA_DIST = \
 	registers.h \
 	seq.h \
 	slots.h \
-	stackTrace-impl.h
+	stackTrace-impl.h \
+	native-wrapper.h
 
 DISTCLEANFILES = icode.h jit.def trampolines.c
 

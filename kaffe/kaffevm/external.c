@@ -40,6 +40,7 @@
 #include "jthread.h"
 #include "jsignal.h"
 #include "stats.h"
+#include "native-wrapper.h"
 #define LT_NON_POSIX_NAMESPACE
 #include "ltdl.h"
 #if defined(KAFFE_FEEDBACK)
@@ -385,6 +386,90 @@ loadNativeLibrarySym(const char* name)
 	return (func);
 }
 
+
+static void
+strcatJNI(char* to, const char* from)
+{
+	char* ptr;
+
+	ptr = &to[strlen(to)];
+	for (; *from != 0; from++) {
+		switch (*from) {
+		case '(':
+			/* Ignore */
+			break;
+		case ')':
+			/* Terminate here */
+			goto end;
+		case '_':
+			*ptr++ = '_';
+			*ptr++ = '1';
+			break;
+		case ';':
+			*ptr++ = '_';
+			*ptr++ = '2';
+			break;
+		case '[':
+			*ptr++ = '_';
+			*ptr++ = '3';
+			break;
+		case '/':
+			*ptr++ = '_';
+			break;
+		default:
+			*ptr++ = *from;
+			break;
+		}
+	}
+
+	end:;
+	*ptr = 0;
+}
+
+
+
+
+/*
+ * Look up a native function using the JNI interface system.
+ */
+static jint
+Kaffe_JNI_native(Method* meth)
+{
+	char name[1024];
+	void* func;
+
+	/* Build the simple JNI name for the method */
+#if defined(NO_SHARED_LIBRARIES)
+        strcpy(name, "Java_");
+#elif defined(HAVE_DYN_UNDERSCORE)
+	strcpy(name, "_Java_");
+#else
+	strcpy(name, "Java_");
+#endif
+	strcatJNI(name, meth->class->name->data);
+	strcat(name, "_");
+	strcatJNI(name, meth->name->data);
+
+	func = loadNativeLibrarySym(name);
+	if (func == NULL) {
+		/* Try the long signatures */
+		strcat(name, "__");
+		strcatJNI(name, METHOD_SIGD(meth));
+		func = loadNativeLibrarySym(name);
+		if (func == 0) {
+			return (JNI_FALSE);
+		}
+	}
+
+	meth->accflags |= ACC_JNI;
+
+	/* Wrap the function in a calling wrapper */
+	engine_create_wrapper(meth, func);
+
+	return (JNI_TRUE);
+}
+
+
 bool
 native(Method* m, errorInfo *einfo)
 {
@@ -419,12 +504,12 @@ DBG(NATIVELIB,
 	func = loadNativeLibrarySym(stub);
 	if (func != 0) {
 		/* Fill it in */
-		KaffeVM_KNI_wrapper(m, func);
+		engine_create_wrapper(m, func);
 		return (true);
 	}
 
 	/* Try to locate the nature function using the JNI interface */
-        if (KaffeVM_JNI_native(m)) {
+        if (Kaffe_JNI_native(m)) {
                 return (true);
         }
 

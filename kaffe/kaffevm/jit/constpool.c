@@ -109,7 +109,11 @@ establishConstants(void *at)
 		*(union _constpoolval*)at = c->val;
 		at = (void*)(((uintp)at) + sizeof(c->val));
 	}
+}
 
+void
+resetConstants (void)
+{
 	currConst = firstConst;
 	nConst = 0;
 }

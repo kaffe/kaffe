@@ -15,8 +15,8 @@
  * referencing.
  */
 #if defined(NEED_JNIREFS)
-static void addJNIref(jref);
-static void removeJNIref(jref);
+void addJNIref(jref);
+void removeJNIref(jref);
 #define	ADD_REF(O)		addJNIref(O)
 #define	REMOVE_REF(O)		removeJNIref(O)
 #else

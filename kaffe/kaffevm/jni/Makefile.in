@@ -75,7 +75,7 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libkaffejni_la_LIBADD =
 am_libkaffejni_la_OBJECTS = jni.lo jni-base.lo jni-callmethod.lo \
-	jni-fields.lo jni-arrays.lo jni-native.lo
+	jni-fields.lo jni-arrays.lo
 libkaffejni_la_OBJECTS = $(am_libkaffejni_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -83,8 +83,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/jni-arrays.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/jni-base.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/jni-callmethod.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/jni-fields.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/jni-native.Plo ./$(DEPDIR)/jni.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/jni-fields.Plo ./$(DEPDIR)/jni.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -363,14 +362,12 @@ libkaffejni_la_SOURCES = \
 	jni-base.c \
 	jni-callmethod.c \
 	jni-fields.c \
-	jni-arrays.c \
-	jni-native.c
+	jni-arrays.c
 
 noinst_HEADERS = \
 	jni_i.h \
 	jnirefs.h \
-	jni_funcs.h \
-	jni_native.h
+	jni_funcs.h
 
 all: all-am
 
@@ -427,7 +424,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jni-base.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jni-callmethod.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jni-fields.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jni-native.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jni.Plo@am__quote@
 
 .c.o:
