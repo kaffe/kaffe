@@ -93,7 +93,7 @@ printStackTrace(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
 			linenr = -1;
 			if (meth->lines != 0) {
 				for (j = 0; j < meth->lines->length; j++) {
-					if (pc >= meth->lines->entry[j].start_pc && linepc < meth->lines->entry[j].start_pc) {
+					if (pc >= meth->lines->entry[j].start_pc && linepc <= meth->lines->entry[j].start_pc) {
 						linenr = meth->lines->entry[j].line_nr;
 						linepc = meth->lines->entry[j].start_pc;
 					}

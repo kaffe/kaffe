@@ -1,5 +1,7 @@
 Sat Dec 12 19:04:18 1998  Godmar Back  <gback@cs.utah.edu>
 
+	* kaffe/kaffevm/stackTrace.c: make sure we find line numbers
+	even if start_pc == 0 (which can happen in the interpreter)
 	* libraries/javalib/java/io/StreamTokenizer.java: fixed bug where
 	whitespaces including \n were skipped even though EOL was significant.
 	Avoid pushing back EOF because it comes back as 65535.
