@@ -3519,7 +3519,9 @@ Kaffe_GetJavaVM(JNIEnv* env, JavaVM** vm)
 static jint
 Kaffe_DestroyJavaVM(JavaVM* vm)
 {
-	/* Does nothing */
+	/* Right now, calling this from main2 is what prevents us from 
+	   exiting there */
+	exitThread();
 	return (0);
 }
 
@@ -3533,9 +3535,7 @@ Kaffe_AttachCurrentThread(JavaVM* vm, JNIEnv** env, ThreadAttachArgs* args)
 static jint
 Kaffe_DetachCurrentThread(JavaVM* vm)
 {
-	/* Right now, calling this from main2 is what prevents us from 
-	   exiting there */
-	exitThread();	
+	/* Does nothing */
 	return (0);
 }
 
