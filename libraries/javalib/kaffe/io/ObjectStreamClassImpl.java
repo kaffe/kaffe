@@ -348,8 +348,13 @@ private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundE
 	// Resolve the class
 	clazz = in.resolveClassInternal(this);
 	// Check for matching serial version UIDs
-	if (serialVersionUID != getSerialVersionUID0(clazz)) {
-		throw new StreamCorruptedException("mismatched serial version UIDs");
+	long localUID = getSerialVersionUID0(clazz);
+	if (serialVersionUID != localUID) {
+		throw new StreamCorruptedException(
+			"mismatched serial version UIDs: expected " 
+			+ serialVersionUID 
+			+ " but local class `" + clazz.getName() 
+			+ "' has UID " + localUID);
 	}
 }
 
