@@ -11,7 +11,7 @@ public class PropertiesTest {
 		BufferedReader r = new BufferedReader(
 		    new InputStreamReader(
 		    new FileInputStream(
-		    new File("PropertiesTest.java"))));
+		    new File(args[0]))));
 		ByteArrayOutputStream data1 = new ByteArrayOutputStream();
 		PrintWriter p = new PrintWriter(
 		    new OutputStreamWriter(data1, "ISO_8859-1"));
@@ -89,6 +89,7 @@ public class PropertiesTest {
 	};
 }
 
+// java args: PropertiesTest $1
 /* Expected Output:
 Done.
 */
