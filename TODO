@@ -12,6 +12,11 @@
  * Implement support for extension override mechanism, and allow overriding
    with older versions of APIs as well, which is needed for DOM.
 
+* Integration issues
+ * Move cp-tools and supporting packages to tools.jar, and take them 
+   out of the bootclasspath. Reported by Daniel Bonniot.
+ * Add support for using an external gjdoc.
+
 * Merging work:
   * From GNU Classpath:
     java.util.zip, java.lang.reflect, java.lang
