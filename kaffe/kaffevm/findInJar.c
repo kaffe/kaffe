@@ -622,7 +622,7 @@ handleManifestClassPath (classpathEntry *ptr)
 	char *pathname;
 
 	classpathEntry* newEntry;
-	int i, last_one;
+	int last_one;
 
 	/* See if there's a Class-Path attribute in the Manifest and have a
 	   look there */
@@ -657,7 +657,6 @@ handleManifestClassPath (classpathEntry *ptr)
 		/* Manifest classpath entries can be either absolute or
 		   relative to the location of the jar file. */
 		if (pathname[0] != file_separator[0]) {
-			char *dir;
 			int len;
 
 			/* Path is relative. First, get the directory of

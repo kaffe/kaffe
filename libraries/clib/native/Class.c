@@ -177,19 +177,6 @@ java_lang_Class_getName(struct Hjava_lang_Class* c)
 }
 
 /*
- * Create a new instance of the derived class.
- */
-struct Hjava_lang_Object*
-java_lang_Class_newInstance(struct Hjava_lang_Class* this)
-{
-	if (CLASS_IS_PRIMITIVE(this)) {
-		SignalError("java.lang.InstantiationException",
-			    CLASS_CNAME(this));
-	}
-	return (execute_java_constructor(0, 0, this, "()V"));
-}
-
-/*
  * Return super class.
  *
  * Note that the specs demands to return null if the class object is an
@@ -776,8 +763,13 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 	 * parameter to all get(Declared){Method|Constructor} functions
 	 * is treated like passing an empty array "new Class [] {}"
 	 */
-	if ((argtypes == NULL) && METHOD_NARGS(mth) == 0) {
-		return (1);
+	if (argtypes == NULL) {
+		if (METHOD_NARGS(mth) == 0) {
+			return (1);
+		}
+		else {
+			return (0);
+		}
 	}
 
 	if (ARRAY_SIZE(argtypes) != METHOD_NARGS(mth)) {
@@ -800,6 +792,17 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 	return (1);
 }
 
+/* Check whether the loading of the class has failed. Throw an NoClassDefFoundError
+   in that the case.
+*/
+static
+void
+checkIfClassHasFailed(struct Hjava_lang_Class* clas)
+{
+	if (clas != NULL && clas->state == CSTATE_FAILED) {
+		SignalError("java.lang.NoClassDefFoundError", CLASS_CNAME(clas));
+	}
+}
 
 static
 Hjava_lang_reflect_Method*
@@ -827,6 +830,8 @@ java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_Stri
 	Hjava_lang_reflect_Method *rmeth;
 
 	clas = this;
+	checkIfClassHasFailed(clas);
+
 	do {
 		rmeth = findMatchingMethod(clas, name, arr, declared);
 		if (rmeth != 0) {
@@ -862,11 +867,17 @@ java_lang_Class_getConstructor0(struct Hjava_lang_Class* this, HArrayOfObject* a
 {
 	Hjava_lang_Class* clas = this;
 
-	Method* mth = CLASS_METHODS(clas);
-	int n = CLASS_NMETHODS(clas);
+	Method* mth;
+	int n;
 	int i;
+
+	checkIfClassHasFailed(clas);
+
+	mth = CLASS_METHODS(clas);
+	n = CLASS_NMETHODS(clas);
+
 	for (i = 0;  i < n;  ++mth, ++i) {
-		if (((mth->accflags & ACC_PUBLIC) || declared) && (mth->accflags & ACC_CONSTRUCTOR)) {
+		if (((mth->accflags & ACC_PUBLIC) || declared) && (METHOD_IS_CONSTRUCTOR(mth))) {
 			if (checkParameters(mth, arr))
 				return (makeConstructor(clas, i));
 		}

@@ -1,3 +1,103 @@
+Sat Mar 16 09:45:43 PST 2002  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/clib/native/Class.c:
+	(java_lang_Class_newInstance) removed.
+	(checkParameters) fixed NullPointerException if argtypes were
+	NULL, but the method didn't take 0 arguments.
+	(checkIfClassHasFailed) new function.
+	(java_lang_Class_getMethod0) added call to checkIfClassHasFailed,
+	to avoid fiddling with classes that didn't load and link properly.
+	(java_lang_Class_getConstructor0) added call to checkIfClassHasFailed,
+	to avoid fiddling with classes that didn't load and link
+	properly. Use METHOD_IS_CONSTRUCTOR instead of bit operations.
+	* libraries/javalib/java/lang/Class.java:
+	(newInstance) reimplemented in Java using reflection. Added checks
+	for interfaces and abstract classes.
+	* test/regression/ConstructorTest.java:
+	Changed expected exception to InstantiationException, since the
+	spec implies that an InstantiationException is thrown if the call
+	to newInstance fails for some reason.
+	* libraries/javalib/java/awt/CheckboxMenuItem.java:
+	(counter) new field used to count instances.
+	(CheckBoxMenuItem) set the name, including the instance.
+	(paramString) improved compatibility.
+	* libraries/javalib/java/awt/Menu.java:
+	(counter) new static field used as an instance counter.
+	(Menu) now sets menu name.
+	(getMenuBar) new method, used by isHelpMenu.
+	(isHelpMenu) new method, used to check is this menu is the help
+	menu.
+	(paramString) added state information and improved comparability
+	with JDK.	
+	* libraries/javalib/java/awt/MenuBar.java:
+	(counter) new static field used as an instance counter.
+	(MenuBar) now sets menu bar name.
+	(setHelpMenu) now removes old help menu before it sets the new one.
+	* libraries/javalib/java/awt/MenuComponent.java:
+	(toString) improved comparability with JDK.
+	* libraries/javalib/java/awt/MenuItem.java:
+	(paramString) improved comparability with JDK.
+	* libraries/javalib/java/awt/Container.java:
+	(paramString) improved comparability to JDK.
+	* libraries/javalib/java/awt/Frame.java
+	(counter) new static field. Used as an instance counter.
+	(Frame) now sets its name.
+	(paramString) new method.
+	* libraries/javalib/java/awt/Toolkit.java
+	(getScreenResolution) new method.
+	* libraries/javalib/java/awt/widgets/Checkbox.java
+	(counter) new static field. Used as an instance counter.
+	(Checkbox) now sets its name.
+	(paramString) improved comparability with JDK.
+	* libraries/javalib/java/awt/Color.java:
+	(toString) improved comparability with JDK.
+	* libraries/javalib/java/awt/Component.java:
+	(paramString) improved comparability with JDK.
+	* libraries/javalib/java/awt/Dimension.java:
+	(toString) improved comparability with JDK.
+	* libraries/javalib/java/awt/Font.java:
+	(toString) improved comparability with JDK.
+	* libraries/javalib/java/awt/Insets.java:
+	(toString) improved comparability with JDK.
+	* libraries/javalib/java/awt/MenuItem.java:
+	(counter) new static field. Used to count instances.
+	(MenuItem) now sets its name.
+	* libraries/javalib/java/awt/Point.java:
+	(toString) improved comparability with JDK.
+	* libraries/javalib/java/awt/PopupMenu.java:
+	(counter) new static field. Used as instance counter.
+	(PopupMenu) now sets its name. All constructors now call the super
+	class constuctor through a single point.
+	* libraries/javalib/java/awt/Rectangle.java:
+	(toString) improved comparability with JDK.
+	* libraries/javalib/java/awt/Window.java:
+	(counter) new static field. Used as instance counter.
+	(Window) now sets its name.
+	* libraries/javalib/java/awt/datatransfer/DataFlavor.java:
+	(toString) improved comparability with JDK.
+	* libraries/javalib/java/io/InvalidClassException.java:
+	(getMessage) fixed case where classname was "".
+	* kaffe/kaffevm/findInJar.c:
+	(handleManifestClassPath) removed unused variables.
+	* libraries/javalib/Makefile.in:
+	added java/text/AttributedCharacterIterator.java.
+	* libraries/javalib/java/net/DatagramPacket.java:
+	(DEFAULT_PORT) added constant.
+	(DatagramPacket) use common constructor.
+	(DatagramPacket) throw exception if length is out of range.
+	(getDefaultAddress) new method.
+	(getLength) always return real length.
+	(setData) throw an exception if data buffer is null.
+	(setLength) throw an exception if length is negative.
+	* libraries/javalib/java/text/AttributedCharacterIterator.java:
+	new class.
+	* libraries/javalib/java/lang/String.java:
+	(getBytes) added more cases when an exception should be thrown.
+	* libraries/javalib/java/lang/Long.java:
+	(hashCode) return the result specified in the API docs.
+	* libraries/javalib/java/io/ByteArrayOutputStream.java:
+	(toString) delegate the work to String constructors. 
+
 Wed Mar 13 08:25:11 PST 2002  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/awt/Canvas.java:
