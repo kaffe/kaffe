@@ -1,3 +1,11 @@
+Tue May 19 18:02:55 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/debug.[ch]: new files.  Support for debugging.
+	  kaffe/kaffevm/Makefile.in,baseClasses.c,exception.c,soft.c,locks.c
+	  thread.c: eliminated DBG macros and converted to new debugging scheme
+	  kaffe/kaffevm/system/unix-jthreads/*: ditto
+	  kaffe/kaffe/main.c: ditto, added support for -vmdebug flag
+	
 Mon May 18 18:00:00 1998  Stephen Crane <jsc@brillig.cs.city.ac.uk>
 
 	* kaffe/kaffevm/support.c: separated most of execute_java_constructor()

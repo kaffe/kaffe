@@ -117,4 +117,15 @@ static jlong currentTime()
 /* let main thread loop until all threads finish, for tests */
 void 	jthread_exit_when_done();
 
+/* debug.h stuff */
+#ifdef DEBUG
+#define DBG(x, y)       	y
+#define DBGEXPR(x, t, f)        t
+#define DBGIF(x)        	x
+#else
+#define DBG(x, y)
+#define DBGEXPR(x, t, f)        f
+#define DBGIF(x)      
+#endif
+
 #endif /* __config_jthreads_h */

@@ -9,9 +9,7 @@
  * of this file. 
  */
 
-#define	DBG(s)
-#define	FDBG(s)
-#define	WDBG(s)	
+#include "debug.h"
 #define THREAD_JAVA()	getCurrentThread()
 
 #include "config.h"
@@ -124,7 +122,7 @@ freeLock(iLock* lk)
 			lk->address, lk->count);
 		assert(lk->count == 0);
 		assert(lk->holder == NULL);
-FDBG(		printf("Freeing lock for 0x%x\n", lk->address);		)
+DBG(VMLOCKS,	dprintf("Freeing lock for addr=0x%x\n", lk->address);	)
 	}
 
 	(*Kaffe_LockInterface.spinoff)(lockHead->lock);
@@ -146,7 +144,7 @@ inline
 void
 __lockMutex(iLock* lk)
 {
-DBG(	printf("Lock 0x%x on 0x%x\n", THREAD_JAVA(), lk);		)
+DBG(VMLOCKS,	dprintf("Lock 0x%x on iLock=0x%x\n", THREAD_JAVA(), lk);	    )
 
 	if (lk->holder == (*Kaffe_ThreadInterface.currentNative)()) {
 		lk->count++;
@@ -165,7 +163,7 @@ _lockMutex(void* addr)
 {
 	iLock* lk;
 
-DBG(	printf("Lock 0x%x on 0x%x\n", THREAD_JAVA(), addr);		)
+DBG(VMLOCKS,	dprintf("Lock 0x%x on addr=0x%x\n", THREAD_JAVA(), addr);    )
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -186,7 +184,7 @@ inline
 void
 __unlockMutex(iLock* lk)
 {
-DBG(	printf("Unlock 0x%x on 0x%x\n", THREAD_JAVA(), lk);		)
+DBG(VMLOCKS,	dprintf("Unlock 0x%x on iLock=0x%x\n", THREAD_JAVA(), lk);   )
 
 	assert(lk->holder == (*Kaffe_ThreadInterface.currentNative)());
 	lk->count--;
@@ -203,7 +201,7 @@ _unlockMutex(void* addr)
 {
 	iLock* lk;
 
-DBG(	printf("Unlock 0x%x on 0x%x\n", THREAD_JAVA(), addr);		)
+DBG(VMLOCKS,	dprintf("Unlock 0x%x on addr=0x%x\n", THREAD_JAVA(), addr);  )
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -221,7 +219,7 @@ inline
 int
 __waitCond(iLock* lk, jlong timeout)
 {
-WDBG(	printf("Wait 0x%x on 0x%x\n", THREAD_JAVA(), lk);	)
+DBG(VMCONDS,	dprintf("Wait 0x%x on iLock=0x%x\n", THREAD_JAVA(), lk);	)
 
 	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
 		throwException(IllegalMonitorStateException);
@@ -240,7 +238,7 @@ _waitCond(void* addr, jlong timeout)
 	iLock* lk;
 	int count;
 
-DBG(	printf("Wait 0x%x on 0x%x\n", THREAD_JAVA(), addr);	)
+DBG(VMLOCKS,	dprintf("Wait 0x%x on addr=0x%x\n", THREAD_JAVA(), addr);    )
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -258,7 +256,7 @@ inline
 void
 __signalCond(iLock* lk)
 {
-WDBG(	printf("Signal 0x%x on 0x%x\n", THREAD_JAVA(), lk);)
+DBG(VMCONDS,	dprintf("Signal 0x%x on iLock=0x%x\n", THREAD_JAVA(), lk);)
 
 	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
 		throwException(IllegalMonitorStateException);
@@ -275,7 +273,7 @@ _signalCond(void* addr)
 {
 	iLock* lk;
 
-WDBG(	printf("Signal 0x%x on 0x%x\n", THREAD_JAVA(), addr);)
+DBG(VMCONDS,	dprintf("Signal 0x%x on addr=0x%x\n", THREAD_JAVA(), addr);)
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -292,7 +290,7 @@ inline
 void
 __broadcastCond(iLock* lk)
 {
-WDBG(	printf("Broadcast 0x%x on 0x%x 0x%x\n", THREAD_JAVA(), lk);	)
+DBG(VMCONDS,	dprintf("Broadcast 0x%x on iLock=0x%x\n", THREAD_JAVA(), lk);)
 
 	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
 		throwException(IllegalMonitorStateException);
@@ -306,7 +304,7 @@ _broadcastCond(void* addr)
 {
 	iLock* lk;
 
-WDBG(	printf("Broadcast 0x%x on 0x%x 0x%x\n", THREAD_JAVA(), addr);	)
+DBG(VMCONDS,	dprintf("Broadcast 0x%x on addr=0x%x\n", THREAD_JAVA(), addr);)
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;

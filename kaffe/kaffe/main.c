@@ -193,6 +193,19 @@ options(char** argv)
 		else if (strcmp(argv[i], "-verbose") == 0 || strcmp(argv[i], "-v") == 0) {
 			flag_classload = 1;
 		}
+#ifdef DEBUG
+                else if (strcmp(argv[i], "-vmdebug") == 0) {
+			extern void dbgSetMaskStr(char *);
+                        i++;
+                        if (argv[i] == 0) { /* forgot second arg */
+                                fprintf(stderr, 
+					"Error: -vmdebug option requires a "
+					"debug flag. Use `list' for a list.\n");
+                                exit(1);
+                        }
+                        dbgSetMaskStr(argv[i]);
+                }
+#endif
 		else if (argv[i][1] ==  'D') {
 			/* Set a property */
 			prop = malloc(sizeof(userProperty));
@@ -259,6 +272,9 @@ usage(void)
 	fprintf(stderr, "	-cs, -checksource *	Check source against class files\n");
 	fprintf(stderr, "	-oss <size> *		Maximum java stack size\n");
 	fprintf(stderr, "	-nopreempt 		Disable preemption\n");
+#ifdef DEBUG
+        fprintf(stderr, "	-vmdebug <flag{,flag}>	Internal VM debugging. Set flag=list for a list\n");                     
+#endif
 	fprintf(stderr, "	-prof *			?\n");
 	fprintf(stderr, "  * Option currently ignored.\n");
 }

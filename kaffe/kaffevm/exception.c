@@ -9,7 +9,7 @@
  * of this file. 
  */
 
-#define	DBG(s)
+#include "debug.h"
 
 #include "config.h"
 #include "config-std.h"
@@ -221,9 +221,9 @@ nullException(EXCEPTIONPROTO)
 
 	DEFINEFRAME();
 
-#if !defined(DEBUG)
-	catchSignal(sig, nullException);
-#endif
+	/* don't catch the signal if debugging exceptions */
+	if (DBGEXPR(EXCEPTION, false, true))
+		catchSignal(sig, nullException);
 
 	EXCEPTIONFRAME(frame, ctx);
 	npe = (Hjava_lang_Throwable*)NullPointerException;
@@ -241,9 +241,9 @@ arithmeticException(EXCEPTIONPROTO)
 	sigset_t nsig;
 	DEFINEFRAME();
 
-#if !defined(DEBUG)
-	catchSignal(sig, arithmeticException);
-#endif
+	/* don't catch the signal if debugging exceptions */
+	if (DBGEXPR(EXCEPTION, false, true))
+		catchSignal(sig, arithmeticException);
 	EXCEPTIONFRAME(frame, ctx);
 	ae = (Hjava_lang_Throwable*)ArithmeticException;
 	unhand(ae)->backtrace = buildStackTrace(EXCEPTIONFRAMEPTR);

@@ -9,8 +9,7 @@
  * of this file. 
  */
 
-#define	DBG(s)
-#define	SDBG(s)
+#include "debug.h"
 
 #include "config.h"
 #include "config-std.h"
@@ -172,7 +171,7 @@ createDaemon(void* func, char* nm, int prio)
 {
 	Hjava_lang_Thread* tid;
 
-DBG(	printf("createDaemon %s\n", nm);				)
+DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 
 	/* Keep daemon threads as root objects */
 	tid = (Hjava_lang_Thread*)newObject(ThreadClass);
@@ -202,7 +201,7 @@ firstStartThread(void* arg)
 
 	tid  = (*Kaffe_ThreadInterface.currentJava)();
 
-DBG(	printf("firstStartThread %x\n", tid);		)
+DBG(VMTHREAD,	dprintf("firstStartThread %x\n", tid);		)
 
 	/* Find the run()V method and call it */
 	do_execute_java_method(tid, "run", "()V", 0, 0);
@@ -268,7 +267,7 @@ aliveThread(Hjava_lang_Thread* tid)
 {
 	bool status;
 
-DBG(	printf("aliveThread: tid 0x%x\n", tid);				)
+DBG(VMTHREAD,	dprintf("aliveThread: tid 0x%x\n", tid);		)
 
 	status = (*Kaffe_ThreadInterface.alive)(tid);
 

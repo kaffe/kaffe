@@ -104,6 +104,7 @@ TcreateFirst(Hjava_lang_Thread* tid)
 		thread_free,
 		broadcastDeath,
 		throwDeath);	
+	assert(unhand(tid)->PrivateInfo);
 	jthread_atexit(runfinalizer);
 	GC_WRITE(tid, unhand(tid)->PrivateInfo);
 }

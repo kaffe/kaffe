@@ -61,6 +61,7 @@ COMMON=\
 		stackTrace$(OBJEXT) \
 		jar$(OBJEXT) \
 		inflate$(OBJEXT) \
+		debug$(OBJEXT) \
 		md$(OBJEXT)
 
 all:		mkkaffevm

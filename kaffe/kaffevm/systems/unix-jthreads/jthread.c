@@ -14,18 +14,6 @@
  *            Tim Wilkinson <tim@transvirtual.com>
  */
 
-#define DBG(s)		
-#define SDBG(s)	
-
-/*
- * If defined, detect deadlocks.  A deadlock is defined as a situation where
- * no thread is runnable and no threads is blocked on a timer, IO, or other
- * external events.
- */
-#ifndef DETECT_DEADLOCK
-#define DETECT_DEADLOCK		1
-#endif  DETECT_DEADLOCK
-
 #include "jthread.h"
 
 /* Flags used for threading I/O calls */
@@ -49,21 +37,28 @@
 #define THREAD_FLAGS_DYING        	32
 #define THREAD_FLAGS_BLOCKEDEXTERNAL	64
 
-#if DETECT_DEADLOCK
+/*
+ * If debug option DETECTDEADLOCK is given, detect deadlocks.  
+ * A deadlock is defined as a situation where no thread is runnable and 
+ * no threads is blocked on a timer, IO, or other external events.
+ */
+
 #define BLOCKED_ON_EXTERNAL(t)						\
-	(tblocked_on_external++, t->flags |= THREAD_FLAGS_BLOCKEDEXTERNAL)
+	if (DBGEXPR(DETECTDEADLOCK, true, false)) {			\
+	    tblocked_on_external++; 					\
+	    t->flags |= THREAD_FLAGS_BLOCKEDEXTERNAL;			\
+	}
 
 #define CLEAR_BLOCKED_ON_EXTERNAL(t) 					\
-	({	if (t->flags & THREAD_FLAGS_BLOCKEDEXTERNAL) 		\
-			tblocked_on_external--, 			\
+	if (DBGEXPR(DETECTDEADLOCK, true, false)) {			\
+		if (t->flags & THREAD_FLAGS_BLOCKEDEXTERNAL) { 		\
+			tblocked_on_external--; 			\
 			t->flags &= ~THREAD_FLAGS_BLOCKEDEXTERNAL;	\
-	})
+		}							\
+	}
+
 /* number of threads blocked on external events */
-static int tblocked_on_external; 
-#else
-#define BLOCKED_ON_EXTERNAL(t)
-#define CLEAR_BLOCKED_ON_EXTERNAL(t)
-#endif /* DETECT_DEADLOCK */
+static int tblocked_on_external;
 
 /*
  * Variables.
@@ -256,7 +251,7 @@ resumeThread(jthread* jtid)
 {
 	jthread** ntid;
 
-DBG(	fprintf(stderr, "resumeThread %x\n", jtid);			)
+DBG(JTHREAD,	dprintf("resumeThread %x\n", jtid);	)
 	intsDisable();
 
 	if (jtid->status != THREAD_RUNNING) {
@@ -296,10 +291,9 @@ DBG(	fprintf(stderr, "resumeThread %x\n", jtid);			)
 			threadQtail[jtid->priority] = jtid;
 		}
 		jtid->nextQ = 0;
+	} else {
+DBG(JTHREAD,		dprintf("Re-resuming 0x%x\n", jtid); )
 	}
-SDBG(	else {
-		fprintf(stderr, "Re-resuming 0x%x\n", jtid);
-	}							)
 	intsRestore();
 }
 
@@ -312,7 +306,7 @@ suspendOnQThread(jthread* jtid, jthread** queue, jlong timeout)
 	jthread** ntid;
 	jthread* last;
 
-SDBG(	fprintf(stderr, "suspendOnQThread %p %p (%qd) bI %d\n", 
+DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%qd) bI %d\n", 
 	jtid, queue, timeout, blockInts); )
 
 	assert(intsDisabled());
@@ -352,10 +346,10 @@ SDBG(	fprintf(stderr, "suspendOnQThread %p %p (%qd) bI %d\n",
 			}
 			last = *ntid;
 		}
+	} else {
+	DBG(JTHREAD,	
+		dprintf("Re-suspending 0x%x on %x\n", jtid, *queue); )
 	}
-SDBG(	else {
-		fprintf(stderr, "Re-suspending 0x%x on %x\n", jtid, *queue);
-	}							)
 }
 
 /*
@@ -374,7 +368,8 @@ killThread(jthread *tid)
 	if (destructor1)
 		(*destructor1)(tid->jlThread);
 
-DBG(	fprintf(stderr, "killThread %x kills %x\n", currentJThread, tid); )
+DBG(JTHREAD,	
+	dprintf("killThread %x kills %x\n", currentJThread, tid); )
 
 	if (tid->status != THREAD_DEAD) {
 
@@ -641,7 +636,8 @@ newThreadCtx(int stackSize)
 	ct->restorePoint = ct->stackEnd;
 	ct->status = THREAD_SUSPENDED;
 
-DBG( 	fprintf(stderr, "allocating new thread, stack base %p-%p\n", 
+DBG(JTHREAD,
+	dprintf("allocating new thread, stack base %p-%p\n", 
 	    ct->stackBase, ct->stackEnd); )
 
 	return (ct);
@@ -725,17 +721,21 @@ jthread_init(int pre,
 	struct itimerval tm;
 
 	/* set stdin, stdout, and stderr in async mode */
-	assert(0 == jthreadedFileDescriptor(0));
-	assert(1 == jthreadedFileDescriptor(1));
-#if (DBG(1) + 1) > 0
-	/* for debugging, you leave stderr in blocking mode */
-	assert(2 == jthreadedFileDescriptor(2));
-#endif
-	atexit(restore_fds);
+	if (0 != jthreadedFileDescriptor(0))
+		return 0;
+
+	if (1 != jthreadedFileDescriptor(1))
+		return 0;
+
+	/* for debugging, leave stderr in blocking mode */
+	if (DBGEXPR(ANY, false, true) && 2 != jthreadedFileDescriptor(2))
+		return 0;
+
 	/*
 	 * On some systems, it is essential that we put the fds back
 	 * in their non-blocking state
 	 */
+	atexit(restore_fds);
 	catchSignal(SIGINT, restore_fds_and_exit);
 	catchSignal(SIGHUP, restore_fds_and_exit);
 	catchSignal(SIGTERM, restore_fds_and_exit);
@@ -885,7 +885,8 @@ jthread_create(unsigned char pri, void (*func)(void *), int daemon,
         if ((jtid->daemon = daemon) != 0) {
                 tdaemon++;
         }
-DBG(	fprintf(stderr, "creating thread %p, daemon=%d\n", jtid, daemon); )
+DBG(JTHREAD,
+	dprintf("creating thread %p, daemon=%d\n", jtid, daemon); )
 	jmutex_unlock(&threadLock);
 
         assert(func != 0); 
@@ -1061,7 +1062,8 @@ jthread_exit(void)
 	jthread** ntid;
 	jthread* tid;
 
-DBG(	fprintf(stderr, "jthread_exit %x\n", currentJThread);		)
+DBG(JTHREAD,
+	dprintf("jthread_exit %x\n", currentJThread);		)
 
 	jmutex_lock(&threadLock);
 
@@ -1083,7 +1085,8 @@ DBG(	fprintf(stderr, "jthread_exit %x\n", currentJThread);		)
 
 	/* If we only have daemons left, then we should exit. */
 	if (talive == tdaemon) {
-DBG( 	fprintf(stderr, "all done, closing shop\n");	)
+DBG(JTHREAD,
+	dprintf("all done, closing shop\n");	)
 		if (runOnExit != 0) {
 		    runOnExit();
 		}
@@ -1135,7 +1138,8 @@ reschedule(void)
 					lastThread = currentJThread;
 					currentJThread = threadQhead[i];
 
-DBG( fprintf(stderr, "switch from %p to %p\n", lastThread, currentJThread); )
+DBG(JTHREADDETAIL,
+	dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 
 					if (setjmp(lastThread->env) == 0) {
 					    lastThread->restorePoint = 
@@ -1175,11 +1179,10 @@ DBG( fprintf(stderr, "switch from %p to %p\n", lastThread, currentJThread); )
 			}
 		}
 
-#if DETECT_DEADLOCK
-		if (tblocked_on_external == 0)
+		if (DBGEXPR(DETECTDEADLOCK, true, false) &&
+			tblocked_on_external == 0)
 			assert(!!!"Deadlock: "
 			   " all threads blocked on internal events\n");
-#endif /* DETECT_DEADLOCK */
 		handleIO(true);
 	}
 }
@@ -1208,7 +1211,8 @@ handleIO(int sleep)
 
 	assert(intsDisabled());
 
-SDBG(	fprintf(stderr, "handleIO(sleep=%d\n", sleep);		)
+DBG(JTHREADDETAIL,
+	dprintf("handleIO(sleep=%d)\n", sleep);		)
 
 	FD_COPY(&readsPending, &rd);
 	FD_COPY(&writesPending, &wr);
@@ -1233,7 +1237,8 @@ retry:
 	if (r <= 0)
 		return;
 
-SDBG(	fprintf(stderr, "Select returns %d\n", r);			)
+DBG(JTHREADDETAIL,
+	dprintf("Select returns %d\n", r);			)
 
 	for (i = 0; r > 0 && i <= maxFd; i++) {
 		if (readQ[i] != 0 && FD_ISSET(i, &rd)) {
@@ -1268,8 +1273,8 @@ SDBG(	fprintf(stderr, "Select returns %d\n", r);			)
 static void
 blockOnFile(int fd, int op)
 {
-DBG(	fprintf(stderr, "blockOnFile(%d,%s)\n", 
-		fd, op == TH_READ ? "r":"w"); )
+DBG(JTHREAD,
+	dprintf("blockOnFile(%d,%s)\n", fd, op == TH_READ ? "r":"w"); )
 
 	assert(intsDisabled());
 	BLOCKED_ON_EXTERNAL(currentJThread);
@@ -1640,7 +1645,8 @@ jthreadedWaitpid(int wpid, int* status, int options)
 #if defined(HAVE_WAITPID)
 	int npid;
 
-DBG(	fprintf(stderr, "waitpid %d current=%p\n", wpid, currentJThread); )
+DBG(JTHREAD,
+	dprintf("waitpid %d current=%p\n", wpid, currentJThread); )
 
 	intsDisable();
 	for (;;) {

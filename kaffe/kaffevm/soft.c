@@ -9,16 +9,8 @@
  * of this file. 
  */
 
-#define	MDBG(s)
-#define	ADBG(s)
-#define	CDBG(s)
-#define	IDBG(s)
+#include "debug.h"
 #define	TDBG(s)
-
-#if MDBG(1) - 1 == 0
-#undef CDBG
-#define	CDBG(s) s
-#endif
 
 #include "config.h"
 #include "config-std.h"
@@ -55,8 +47,9 @@ soft_new(Hjava_lang_Class* c)
 	processClass(c, CSTATE_OK);
 	obj = newObject(c);
 
-ADBG(	printf("New object of type %s (%d,%x)\n", c->name->data, c->fsize, obj);
-		fflush(stdout);						)
+DBG(NEWINSTR,	
+	dprintf("New object of type %s (%d,%x)\n", 
+		c->name->data, c->bfsize, obj); )
 
 	return (obj);
 }
@@ -75,8 +68,9 @@ soft_newarray(jint type, jint size)
 
 	obj = newArray(TYPE_CLASS(type), size);
 
-ADBG(	printf("New object of %d type (%d,%x)\n", type, size, obj);
-	fflush(stdout);							)
+DBG(NEWINSTR,	
+	dprintf("New array of %s [%d] (%x)\n", 
+		TYPE_CLASS(type)->name->data, size, obj); )
 
 	return (obj);
 }
@@ -95,8 +89,9 @@ soft_anewarray(Hjava_lang_Class* elclass, jint size)
 
 	obj = newArray(elclass, size);
 
-ADBG(	printf("New array object of %s type (%d,%x)\n", elclass->name->data, size, obj); fflush(stdout);							)
-
+DBG(NEWINSTR,	
+	dprintf("New array object [%d] of %s (%x)\n", size,
+		elclass->name->data, obj); )
 	return (obj);
 }
 

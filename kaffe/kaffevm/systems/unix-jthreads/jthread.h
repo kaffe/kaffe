@@ -28,6 +28,7 @@
 
 /*======== 	begin of definitions that apply to Kaffe 	     ========*/
 
+#include "debug.h"
 #include "config.h"
 #include "config-setjmp.h"
 #include "config-std.h"
