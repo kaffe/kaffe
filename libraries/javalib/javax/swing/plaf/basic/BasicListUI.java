@@ -53,6 +53,7 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.CellRendererPane;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
@@ -343,6 +344,11 @@ public class BasicListUI extends ListUI
   protected int updateLayoutStateNeeded;
 
   /**
+   * The {@link CellRendererPane} that is used for painting.
+   */
+  protected CellRendererPane rendererPane;
+
+  /**
    * Calculate the height of a particular row. If there is a fixed {@link
    * #cellHeight}, return it; otherwise return the specific row height
    * requested from the {@link #cellHeights} array. If the requested row
@@ -513,6 +519,7 @@ public class BasicListUI extends ListUI
     propertyChangeListener = new PropertyChangeHandler();
     componentListener = new ComponentHandler();
     updateLayoutStateNeeded = 1;
+    rendererPane = new CellRendererPane();
   }
 
   /**
@@ -676,10 +683,9 @@ public class BasicListUI extends ListUI
     Component comp = rend.getListCellRendererComponent(list,
                                                        data.getElementAt(row),
                                                        0, is_sel, has_focus);
-    g.translate(bounds.x, bounds.y);
-    comp.setBounds(new Rectangle(0, 0, bounds.width, bounds.height));
-    comp.paint(g);
-    g.translate(-bounds.x, -bounds.y);
+    //comp.setBounds(new Rectangle(0, 0, bounds.width, bounds.height));
+    //comp.paint(g);
+    rendererPane.paintComponent(g, comp, list, bounds);
   }
 
   /**
