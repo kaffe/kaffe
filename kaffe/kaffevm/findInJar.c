@@ -396,7 +396,7 @@ getClasspathType(const char* path)
 	int h;
 	int c;
 	int rc;
-	char buf[2];
+	char buf[4];
 	struct stat sbuf;
 
 	if (KSTAT(path, &sbuf) < 0) {
@@ -421,5 +421,9 @@ getClasspathType(const char* path)
 	if (IS_ZIP(buf)) {
 		return (CP_ZIPFILE);
 	}
+	if (IS_SOFILE(buf)) {
+		return (CP_SOFILE);
+	}
+
 	return (CP_INVALID);
 }

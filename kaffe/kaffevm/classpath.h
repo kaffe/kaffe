@@ -16,7 +16,10 @@
 #define CP_DIR          2
 #define CP_SOFILE       3
 
-#define IS_ZIP(B)       ((B)[0] == 'P' && (B)[1] == 'K')
+#define IS_ZIP(B) \
+	((B)[0] == 'P' && (B)[1] == 'K')
+#define	IS_SOFILE(B) \
+	((B)[0] == 0x7f && (B)[1] == 'E' && (B)[2] == 'L' && (B)[3] == 'F')
 
 typedef struct _classpathEntry {
         int     type;
