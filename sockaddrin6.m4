@@ -29,7 +29,7 @@ dnl *
 dnl * 
 dnl * Check for struct sockaddr_in6
 dnl *
-AC_DEFUN(AC_STRUCT_SOCKADDR_IN6,
+AC_DEFUN([AC_STRUCT_SOCKADDR_IN6],
 [AC_CACHE_CHECK(for struct sockaddr_in6, ac_cv_struct_sockaddr_in6,
 [AC_TRY_COMPILE([
 #include <sys/types.h>
@@ -45,7 +45,7 @@ fi])
 dnl * 
 dnl * Check for struct sockaddr_storage
 dnl * 
-AC_DEFUN(AC_STRUCT_SOCKADDR_STORAGE,
+AC_DEFUN([AC_STRUCT_SOCKADDR_STORAGE],
 [AC_CACHE_CHECK(for struct sockaddr_storage, ac_cv_struct_sockaddr_storage,
 [AC_TRY_COMPILE([
 #include <sys/types.h>
@@ -61,7 +61,7 @@ fi])
 dnl * 
 dnl * Check for struct addrinfo
 dnl * 
-AC_DEFUN(AC_STRUCT_ADDRINFO,
+AC_DEFUN([AC_STRUCT_ADDRINFO],
 [AC_CACHE_CHECK(for struct addrinfo, ac_cv_struct_addrinfo,
 [AC_TRY_COMPILE([
 #include <netdb.h>],[

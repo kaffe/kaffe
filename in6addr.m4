@@ -29,7 +29,7 @@ dnl *
 dnl * 
 dnl * Check for struct in6_addr
 dnl * 
-AC_DEFUN(AC_STRUCT_IN6_ADDR,
+AC_DEFUN([AC_STRUCT_IN6_ADDR],
 [AC_CACHE_CHECK(for struct in6_addr, ac_cv_struct_in6_addr,
 [AC_TRY_COMPILE([
 #include <sys/types.h>
@@ -45,7 +45,7 @@ fi])
 dnl * 
 dnl * Check for in6addr_any.
 dnl *
-AC_DEFUN(AC_DECL_IN6ADDR_ANY,
+AC_DEFUN([AC_DECL_IN6ADDR_ANY],
 [AC_REQUIRE([AC_STRUCT_IN6_ADDR])
 if test $ac_cv_struct_in6_addr = no ; then
     ac_cv_decl_in6addr_any=no
@@ -68,7 +68,7 @@ fi])
 dnl *
 dnl * Check for in6addr_loopback.
 dnl *
-AC_DEFUN(AC_DECL_IN6ADDR_LOOPBACK,
+AC_DEFUN([AC_DECL_IN6ADDR_LOOPBACK],
 [AC_REQUIRE([AC_STRUCT_IN6_ADDR])
 if test $ac_cv_struct_in6_addr = no ; then
     ac_cv_decl_in6addr_loopback=no

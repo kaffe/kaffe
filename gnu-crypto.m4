@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# $Id: gnu-crypto.m4,v 1.1 2003/11/30 23:49:17 dalibor Exp $
+# $Id: gnu-crypto.m4,v 1.2 2003/12/19 20:03:31 dalibor Exp $
 #
 # Copyright (C) 2003 Free Software Foundation, Inc.
 #
@@ -43,7 +43,7 @@
 #
 # GNU Crypto m4 macro for use by VM Providers
 #
-# $Revision: 1.1 $
+# $Revision: 1.2 $
 #
 
 # process --with-gnu-crypto configure option.
@@ -109,7 +109,7 @@ AM_CONDITIONAL(USER_WANT_GNU_CRYPTO, test "x${with_gnu_crypto}" = xtrue)
 # and (b) it contains under it both 'lib/lib-gnu-crypto.so' and
 # 'share/gnu-crypto.jar' files.
 # -----------------------------------------------------------------------------
-AC_DEFUN(_FIND_GNU_CRYPTO_HOME,[
+AC_DEFUN([_FIND_GNU_CRYPTO_HOME],[
 AC_MSG_CHECKING([for GNU Crypto installation directory])
 for _F in $1 ; do
   _CHECK_GNU_CRYPTO_HOME(${_F})

@@ -18,8 +18,8 @@ set -e
 
 if [ "$1" != "--override" ]; then
 
-WANTED_AUTOMAKE_VERS="1.7.9"
-WANTED_AUTOCONF_VERS="2.58"
+WANTED_AUTOMAKE_VERS="1.8"
+WANTED_AUTOCONF_VERS="2.59"
 WANTED_LIBTOOL_VERS="1.5"
 
 ACLOCAL_VERS=`aclocal --version | 
