@@ -5,8 +5,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "debug.h"
@@ -110,7 +110,7 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 		needOnStack = &unhand(tid)->needOnStack;
 
 		//		dprintf ("needOnStack [%p] %p -> %d\n", &needOnStack, needOnStack, *needOnStack);
-		
+
 		if (jthread_stackcheck(*needOnStack) == false) {
 			overflow = (Hjava_lang_Throwable*)
 				unhand(tid)->stackOverflowError;
@@ -154,6 +154,14 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	/* Allocate stack space and locals. */
 	lcl = alloca(sizeof(slots) * (meth->localsz + meth->stacksz));
 
+#if defined(DEBUG)
+	{
+	    int32 *p = (int32 *) &lcl[meth->localsz + meth->stacksz];
+	    while (p-- > (int32*)lcl)
+		*p = 0x00c0ffee;
+	}
+#endif
+
 	mobj = 0;
 	npc = 0;
 
@@ -174,6 +182,13 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
 			npc = mjbuf.pc;
 			sp = &lcl[meth->localsz];
+#if defined(DEBUG)
+			{
+			    int32 *p = (int32 *) &lcl[meth->localsz + meth->stacksz];
+			    while (p-- > (int32*)sp)
+				*p = 0xdeadbeef;
+			}
+#endif
 			sp->v.taddr = (void*)unhand(tid)->exceptObj;
 			unhand(tid)->exceptObj = 0;
 			runVirtualMachine(meth, lcl, sp, npc, retval, &mjbuf, tid);
@@ -195,7 +210,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	}
 
 	/* Sync. if required */
-	if (methaccflags & ACC_SYNCHRONISED) { 
+	if (methaccflags & ACC_SYNCHRONISED) {
 		if (methaccflags & ACC_STATIC) {
 			mobj = &meth->class->head;
 		}
@@ -209,7 +224,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 		 * won't find it.
 		 */
 		mjbuf.mobj = mobj;
-	}       
+	}
 
 	sp = &lcl[meth->localsz - 1];
 
@@ -219,7 +234,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	/* Unsync. if required */
 	if (mobj != 0) {
 		unlockObject(mobj);
-	}       
+	}
 	if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
 		unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)mjbuf.prev;
 	}
@@ -266,12 +281,12 @@ void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *r
 	}
  end:
 	return;
-}    
+}
 
 /*
  * say what engine we're using
  */
-char* 
+char*
 getEngine()
 {
 	return "kaffe.intr";
