@@ -321,6 +321,15 @@ run 97
 run 98
 run 99"
 
+runtest TestSerializable "0
+1041
+true
+true
+false
+true
+false
+true"
+
 runtest burford "Starting burford...
 Starting feeders...
 Feeders completed...
