@@ -757,15 +757,6 @@ jthread_extract_stack(jthread *jtid, void **from, unsigned *len)
 #endif
 }
 
-/*
- * determine whether an address lies on your current stack frame
- */
-int
-jthread_on_current_stack(void *bp)
-{
-        return bp >= currentJThread->stackBase && bp < currentJThread->stackEnd;
-}       
-
 /* 
  * XXX this is supposed to count the number of stack frames 
  */

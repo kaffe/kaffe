@@ -117,6 +117,7 @@ typedef struct _jthread {
 } jthread, *jthread_t;
 
 #define GET_COOKIE()	(jthread_current()->jlThread)
+extern jthread_t currentJThread;
 
 /****************************************************************************
  *
@@ -188,7 +189,6 @@ void 	jthread_sleep(jlong time);
 static inline jthread_t
 jthread_current(void) 
 { 
-	extern jthread_t currentJThread;
 	return currentJThread; 
 }
 
@@ -219,9 +219,12 @@ void 	jthread_exit(void) __NORETURN__;
 
 /*
  * determine whether a location is on the stack of the current thread
- * (was FRAMEOKAY)
  */
-int 	jthread_on_current_stack(void *bp);
+static inline int
+jthread_on_current_stack(void *bp)      
+{
+        return bp >= currentJThread->stackBase && bp < currentJThread->stackEnd;
+}
 
 /*
  * determine the "interesting" stack range a conservative gc must walk
