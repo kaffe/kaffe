@@ -1,3 +1,12 @@
+Tue May  2 12:01:15 CEST 2000  Edouard G. Parmelan <egp@free.fr>
+
+	* libraries/javalib/java/awt/GridBagConstraints.java: add missing
+	constructor.
+
+	* FAQ/FAQ.unicode developers/unicode.pl developers/README.unicode:
+	fix spelling and add comments about file format and where to find input
+	files.
+
 Fri Apr 28 12:37:09 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* developers/README.unicode: add email about input file
