@@ -138,7 +138,7 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
 		  (struct Hkaffe_util_Ptr*)ebuf.prev;	\
 		return X;				\
 	}						\
-	unhand(getCurrentThread())->exceptPtr = (struct Hkaffe_util_Ptr*)&ebuf
+	unhand(getCurrentThread())->exceptPtr = (void *) &ebuf
 
 #define	BEGIN_EXCEPTION_HANDLING_VOID()			\
 	VmExceptHandler ebuf; 				\
@@ -149,10 +149,10 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
 		  (struct Hkaffe_util_Ptr*)ebuf.prev;	\
 		return;					\
 	}						\
-	unhand(getCurrentThread())->exceptPtr = (struct Hkaffe_util_Ptr*)&ebuf
+	unhand(getCurrentThread())->exceptPtr = (void *) &ebuf
 
 #define	END_EXCEPTION_HANDLING()			\
-	unhand(getCurrentThread())->exceptPtr = (struct Hkaffe_util_Ptr*)ebuf.prev
+	unhand(getCurrentThread())->exceptPtr = (void *) ebuf.prev
 
 /*
  * Get and set fields.
