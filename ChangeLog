@@ -1,3 +1,9 @@
+2004-12-09  Adam Heath  <doogie@brainfood.com>
+
+	* tools/gjdoc/javalib/Makefile.am, tools/gjdoc/javalib/Makefile.in:
+	  Fix broken invocation of rebuildLib, by exporting vars in the
+	  Makefile.
+
 2004-12-08  Adam Heath  <doogie@brainfood.com>
 
 	* kaffe/xprof/debugFile.c: s/null/NULL/, I hand-applied a diff.
