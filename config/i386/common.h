@@ -15,6 +15,10 @@
 #ifndef __i386_h
 #define __i386_h
 
+#if defined(NEED_sysdepCallMethod)
+#include "sysdepCallMethod.h"
+#endif /* defined(NEED_sysdepCallMethod) */
+
 /* The 386 never aligns to more than a 4 byte boundary. */
 #define	ALIGNMENT_OF_SIZE(S)	((S) < 4 ? (S) : 4)
 

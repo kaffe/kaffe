@@ -15,7 +15,6 @@
 #define __i386_oskit_md_h
 
 #include "i386/common.h"
-#include "i386/sysdepCallMethod.h"
 #include "i386/threads.h"
 
 #if defined(HAVE_SYS_RESOURCE_H)

@@ -16,7 +16,6 @@
 #define __ki386_gnu_md_h
 
 #include "i386/common.h"
-#include "i386/sysdepCallMethod.h"
 #include "i386/threads.h"
 
 /**/

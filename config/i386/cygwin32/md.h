@@ -19,7 +19,6 @@
 /* Thread handling */
 /**/
 #include "i386/common.h"
-#include "i386/sysdepCallMethod.h"
 #include "i386/threads.h"
 
 /* Redefine the stack pointer offset */

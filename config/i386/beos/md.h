@@ -16,7 +16,6 @@
 #define __i386_beos_md_h
 
 #include "i386/common.h"
-#include "i386/sysdepCallMethod.h"
 #include "i386/threads.h"
 #if defined(HAVE_SYS_RESOURCE_H)
 #include <sys/resource.h>

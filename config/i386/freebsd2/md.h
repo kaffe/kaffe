@@ -16,7 +16,6 @@
 #define __i386_freebsd2_md_h
 
 #include "i386/common.h"
-#include "i386/sysdepCallMethod.h"
 #include "i386/threads.h"
 
 /* On FreeBSD <sys/time.h> needs to be included before

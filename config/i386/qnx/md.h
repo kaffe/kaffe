@@ -21,6 +21,8 @@
 #include <sys/mman.h>
 #define       getpagesize()   PAGESIZE
 #endif
+/* see notes below for why we don't NEED_sysdepCallMethod */
+#undef  NEED_sysdepCallMethod
 
 #include "i386/common.h"
 #include "i386/threads.h"

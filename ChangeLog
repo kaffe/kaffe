@@ -1,3 +1,23 @@
+2004-06-23  Michael Franz <developer.franz@verizon.net>
+
+        * config/i386/common.h,
+        config/i386/beos/md.h,
+        config/i386/bsdi/md.h,
+        config/i386/cygwin32/md.h,
+        config/i386/dgux/md.h,
+        config/i386/freebsd2/md.h,
+        config/i386/gnu/md.h,
+        config/i386/linux/md.h,
+        config/i386/netbsd1/md.h,
+        config/i386/nextstep3/md.h,
+        config/i386/openbsd2/md.h,
+        config/i386/oskit/md.h,
+        config/i386/qnx/md.h,
+        config/i386/sco3.2v5/md.h,
+        config/i386/solaris2/md.h,
+        config/i386/univel_svr4/md.h:
+	Cleaned up sysdepCallMethod.h handling.
+
 2004-07-30  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/jit3/registers.c (move_register): fixed passing of
