@@ -73,6 +73,7 @@ public class SoTimeout {
 	if (s.equals(foo)) {
 	    System.out.println("Success 4.");
 	}
+	System.exit(0);
     }
 }
 
