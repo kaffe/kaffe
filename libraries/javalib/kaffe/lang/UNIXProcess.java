@@ -65,20 +65,20 @@ public UNIXProcess(String argv[], String arge[])
 				// save it to rethrow in correct thread
 				throwable = t;
 				synchronized(this) {
-					notify();
+					this.notify();
 				}
 				return;
 			}
 			if (fae == 0) {
 				synchronized(this) {
 					isalive = true;
-					notify();
+					this.notify();
 				}
 				exit_code = execWait();
 			}
 			synchronized(this) {
 				isalive = false;
-				notifyAll();
+				this.notifyAll();
 			}
 			synchronized(UNIXProcess.this) {
 				UNIXProcess.this.notifyAll();

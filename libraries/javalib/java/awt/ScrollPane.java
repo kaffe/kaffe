@@ -60,7 +60,7 @@ class ChildWrapper
   extends Container
 {
 ChildWrapper () {
-	layoutm = null;
+	this.layoutm = null;
 }
 
 public void doLayout () {

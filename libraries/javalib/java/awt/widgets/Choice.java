@@ -44,26 +44,26 @@ class ChoiceWindow
 public ChoiceWindow ( Frame owner ) {
 	super( owner);
 
-	setLayout( null);
+	this.setLayout( null);
 	list.removeHScroll();
 	this.add( list);
 }
 
 public void doLayout() {
 	int db = 1;
-	list.setBounds( db, db, width-2*db, height-2*db);
+	list.setBounds( db, db, this.width-2*db, this.height-2*db);
 }
 
 void popUpAt( int x, int y, int width, int height) {
 	int is = items.size();
 
-	setBounds( x, y, width, height);
+	this.setBounds( x, y, width, height);
 	list.setFont( Choice.this.font);
 
 	for ( int i=0; i<is; i++)
 		list.add( (String)items.elementAt( i));
 
-	setVisible( true);
+	this.setVisible( true);
 	list.select( items.indexOf( selection));
 	
 	prompter.list.requestFocus();

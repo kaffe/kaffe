@@ -46,14 +46,14 @@ public TextPane () {
 	xOffsInit = 4;
 	xOffs = 4;
 
-	setCursor( Cursor.getPredefinedCursor( Cursor.TEXT_CURSOR));
+	this.setCursor( Cursor.getPredefinedCursor( Cursor.TEXT_CURSOR));
 	tCursor.setPos( xOffs, rowHeight + BORDER_WIDTH);
 	insertLine( "", 0);
 	
-	addKeyListener( this);
-	addMouseListener( this);
-	addMouseMotionListener( this);
-	addFocusListener( this);
+	this.addKeyListener( this);
+	this.addMouseListener( this);
+	this.addMouseMotionListener( this);
+	this.addFocusListener( this);
 }
 
 synchronized void append ( String s ) {
@@ -94,7 +94,7 @@ void backspace() {
 		TextBuffer tb1 = getCursorLine();
 		tb1.append( tb);
 		rows.removeElement( tb);
-		repaint();
+		this.repaint();
 		updateScrolls();
 	}
 }
@@ -103,9 +103,9 @@ void blankCursor() {
 	TextBuffer tb;
 		
 	if ( rgr != null ) {
-		rgr.setColor( bgClr );
+		rgr.setColor( this.bgClr );
 		tCursor.blank( rgr, xOffs, getRowYPos( tCursor.yindex) );
-		rgr.setColor( fgClr );
+		rgr.setColor( this.fgClr );
 		tb = (TextBuffer)rows.elementAt( tCursor.yindex );
 		tb.paint( rgr, xOffs, tCursor.y, rowHeight, tCursor.index, 1);
 	}
@@ -257,7 +257,7 @@ void del() {
 		tb.append( tb1);
 		rows.removeElement( tb1);
 		updateScrolls();
-		repaint();
+		this.repaint();
 	}
 }
 
@@ -290,7 +290,7 @@ void deleteSel() {
 		
 	setCursorPos( ps.x, ps.y, false, true);
 	updateScrolls();
-	repaint();
+	this.repaint();
 }
 
 public void focusGained( FocusEvent e) {
@@ -413,7 +413,7 @@ void insert( String s, boolean keepCursor) {
 	tb.append( le);
 
 	updateScrolls();
-	repaint();
+	this.repaint();
 }
 
 void insert( String s, int pos) {
@@ -455,7 +455,7 @@ void insertText(String s, int pos) {
 
 public void keyPressed( KeyEvent e) {
 
-	if ( parent.keyListener != null ){
+	if ( this.parent.keyListener != null ){
 		// give our parent a chance to intercept keystrokes
 		// check for keyListeners first, it's a rare case
 		redirectKeyEvent( e);
@@ -552,12 +552,12 @@ public void keyTyped( KeyEvent e) {
 	else
 		insertChar( c );
 
-  if ( parent.keyListener != null ) {
+  if ( this.parent.keyListener != null ) {
 		// check for keyListeners first, it's a rare case
 		redirectKeyEvent( e);
 	}
 
-	if ( (textListener != null) || (eventMask & AWTEvent.TEXT_EVENT_MASK) != 0 ) {
+	if ( (textListener != null) || (this.eventMask & AWTEvent.TEXT_EVENT_MASK) != 0 ) {
 		Toolkit.eventQueue.postEvent( TextEvt.getEvent( TextArea.this,
 		                                                TextEvt.TEXT_VALUE_CHANGED));		
 	}
@@ -579,9 +579,9 @@ int maxRowWidth() {
 }
 
 public void mouseClicked( MouseEvent e) {
-	if ( parent.mouseListener != null ){
+	if ( this.parent.mouseListener != null ){
 		// no need to retarget, already done by mousePressed
-		parent.process( e);
+		this.parent.process( e);
 	}
 }
 
@@ -590,7 +590,7 @@ public void mouseDragged( MouseEvent e) {
 	int x = getCol( y, e.getX() );
 	updateSel( x, y, true);
 	
-	if ( parent.motionListener != null ){
+	if ( this.parent.motionListener != null ){
 		// unlikely, check motionListener first
 		redirectMotionEvent( e);
 	}
@@ -605,7 +605,7 @@ public void mouseExited( MouseEvent e) {
 }
 
 public void mouseMoved( MouseEvent e) {
-	if ( parent.motionListener != null ){
+	if ( this.parent.motionListener != null ){
 		// unlikely, check listener first
 		redirectMotionEvent( e);
 	}
@@ -615,7 +615,7 @@ public void mousePressed( MouseEvent e) {
 	int mods = e.getModifiers();
 
 	if ( e.isPopupTrigger() ){
-		if ( (triggerPopup( e.getX(), e.getY())) != null )
+		if ( (this.triggerPopup( e.getX(), e.getY())) != null )
 			return;
 	}
 
@@ -678,7 +678,7 @@ void pageUp( boolean extend) {
 
 public void paint( Graphics g) {
 	repaintRows( g, first, rows.size()-first );
-	kaffePaintBorder( g);
+	this.kaffePaintBorder( g);
 }
 
 void paintInactiveCursor() {
@@ -721,19 +721,19 @@ void repaintLine( Graphics g, int row, int startX, TextBuffer tb) {
 	
 	if ( ss == se ) {
 		x0 = (startX == 0) ? 0 : tb.getPos( startX) + xOffs;
-		w = width - x0;
-		g.setColor( bgClr );
+		w = this.width - x0;
+		g.setColor( this.bgClr );
 		g.fillRect( x0, y0, w-d, rowHeight);
-		g.setColor( fgClr );
+		g.setColor( this.fgClr );
 		tb.paint( g, xOffs, y0, rowHeight, startX);
 	}
 	else {
 		if ( ss > startX ) {
 			x0 = tb.getPos( startX) + xOffs;
 			w = tb.getWidth( startX, ss);
-			g.setColor( bgClr );
+			g.setColor( this.bgClr );
 			g.fillRect( x0, y0, w, rowHeight);
-			g.setColor( fgClr );			
+			g.setColor( this.fgClr );			
 			tb.paint( g, xOffs, y0, rowHeight, startX, ss-startX);
 		}
 		if ( se > startX ) {
@@ -745,11 +745,11 @@ void repaintLine( Graphics g, int row, int startX, TextBuffer tb) {
 			tb.paint( g, xOffs, y0, rowHeight, ss, se-ss);
 		}
 		x0 = tb.getPos( se) + xOffs;
-		w = width - x0;
-		g.setColor( bgClr );
+		w = this.width - x0;
+		g.setColor( this.bgClr );
 		g.fillRect( x0, y0, w, rowHeight);
 		if ( se < tb.len ) {
-			g.setColor( fgClr );			
+			g.setColor( this.fgClr );			
 			tb.paint( g, xOffs, y0, rowHeight, se);
 		}
 	}
@@ -834,7 +834,7 @@ synchronized void setContents( String s) {
 		insertLine( sa[i], i);
 	setCursorPos( 0, 0, false, true);
 	updateScrolls();
-	repaint();
+	this.repaint();
 }
 
 void setCursorPos( int x, int y, boolean repaint, boolean resetSel) {
@@ -863,16 +863,16 @@ void setCursorPos( int x, int y, boolean repaint, boolean resetSel) {
 	if ( resetSel)
 		resetSel( false);
 
-	if ( width > 0) {
+	if ( this.width > 0) {
 		int dx = 10;
-		if ( (x > lastX) && (xPos - xOffs > width -dx) ){
-			xOffs = width - xPos - dx;
+		if ( (x > lastX) && (xPos - xOffs > this.width -dx) ){
+			xOffs = this.width - xPos - dx;
 			if (hScroll != null) {
 				if ( updateHScroll() )
 					rearrange();
 				hScroll.setValue( -xOffs);
 			}
-			repaint();
+			this.repaint();
 		}
 		else if ( xPos + xOffs < xOffsInit ) {
 			xOffs = -xPos + xOffsInit;
@@ -881,7 +881,7 @@ void setCursorPos( int x, int y, boolean repaint, boolean resetSel) {
 					rearrange();
 				hScroll.setValue( -xOffs);
 			}
-			repaint();
+			this.repaint();
 		}
 	}
 }
@@ -891,7 +891,7 @@ public void setFont( Font f) {
 	int s = rows.size();
 	
 	super.setFont( f);
-	fm = getFontMetrics( f);
+	fm = this.getFontMetrics( f);
 	
 	if ( rgr != null )
 		rgr.setFont( f);
@@ -909,8 +909,8 @@ public void setFont( Font f) {
 	tCursor.setYIndex( tCursor.yindex, getRowYPos( tCursor.yindex) );
 	tCursor.setIndex( tCursor.index, tb.getPos( tCursor.index) );
 
-	if ( isShowing() )
-		repaint();
+	if ( this.isShowing() )
+		this.repaint();
 }
 
 boolean updateSel( int x, int y, boolean repaint) {
