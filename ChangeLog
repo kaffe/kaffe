@@ -1,3 +1,8 @@
+2005-03-27  Gerrit P. Haase <gp@familiehaase.de>
+
+	* config/config-std.h: Removed whitespace from copyright header.
+	Don't include windows specific headers on Cygwin.
+
 2005-03-26  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
         * java/text/DecimalFormat.java (parse):

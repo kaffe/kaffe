@@ -4,8 +4,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 
@@ -37,12 +37,14 @@
 #if defined(HAVE_SYS_RESOURCE_H)
 #include <sys/resource.h>
 #endif
+#if !defined (__CYGWIN__)
 #if !defined(HAVE_WINDOWS_H) && defined(HAVE_WINNT_H)
 #include <winnt.h>
 #endif
 #if defined(HAVE_WINTYPES_H)
 #include <wintypes.h>
 #endif
+#endif /* ! __CYGWIN__ */
 #if defined(HAVE_BSD_LIBC_H)
 #include <bsd/libc.h>
 #endif
