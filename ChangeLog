@@ -1,3 +1,7 @@
+Wed Mar 31 17:48:40 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/io/File.java: add listFiles() methods
+
 Wed Mar 31 15:26:04 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/kaffe/io/ObjectStreamClassImpl.java: added
