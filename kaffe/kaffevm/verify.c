@@ -4051,6 +4051,36 @@ countSizeOfArgsInSignature(const char* sig)
 	return count;
 }
 
+/*
+ * Helper function for error reporting in checkMethodCall.
+ */
+static inline
+bool
+verifyErrorInCheckMethodCall(errorInfo* einfo,
+			     const Method* method,
+			     char* argbuf,
+			     uint32 pc,
+			     const uint32 idx,
+			     const constants* pool,
+			     const char* methSig,
+			     const char* msg)
+{
+	KFREE(argbuf);
+	DBG(VERIFY3,
+	    dprintf("                error with method invocation, pc = %d, method = %s%s\n",
+		    pc,
+		    METHODREF_NAMED(idx, pool),
+		    methSig);
+	    );
+	if (einfo->type == 0) {
+		postExceptionMessage(einfo, JAVA_LANG(VerifyError),
+				     "in method \"%s.%s\": %s",
+				     CLASS_CNAME(method->class),
+				     METHOD_NAMED(method),
+				     msg);
+	}
+	return(false);
+}
 
 /* 
  * checkMethodCall()
@@ -4071,18 +4101,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		BlockInfo* binfo, uint32 pc,
 		SigStack** sigs, UninitializedType** uninits)
 {
-#define VERIFY_ERROR(_MSG) \
-	KFREE(argbuf); \
-	DBG(VERIFY3, dprintf("                error with method invocation, pc = %d, method = %s%s\n", \
-			     pc, METHODREF_NAMED(idx, pool), methSig); ); \
-	if (einfo->type == 0) { \
-		postExceptionMessage(einfo, JAVA_LANG(VerifyError), \
-				     "in method \"%s.%s\": %s", \
-				     CLASS_CNAME(method->class), METHOD_NAMED(method), _MSG); \
-	} \
-	return(false)
-	
-#define TYPE_ERROR VERIFY_ERROR("parameters fail type checking in method invocation")
+#define TYPE_ERROR return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "parameters fail type checking in method invocation")
 	
 	const unsigned char* code        = METHOD_BYTECODE_CODE(method);
 	const uint32 opcode              = code[pc];
@@ -4108,20 +4127,20 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 	
 	
 	if (nargs > binfo->stacksz) {
-		VERIFY_ERROR("not enough stuff on opstack for method invocation");
+		return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "not enough stuff on opstack for method invocation");
 	}
 	
 	
 	/* make sure that the receiver is type compatible with the class being invoked */
 	if (opcode != INVOKESTATIC) {
 		if (nargs == binfo->stacksz) {
-			VERIFY_ERROR("not enough stuff on opstack for method invocation");
+			return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "not enough stuff on opstack for method invocation");
 		}
 		
 		
 		receiver = &binfo->opstack[binfo->stacksz - (nargs + 1)];
 		if (!(receiver->tinfo & TINFO_UNINIT) && !isReference(receiver)) {
-			VERIFY_ERROR("invoking a method on something that is not a reference");
+			return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "invoking a method on something that is not a reference");
 		}
 		
 		if (pool->tags[classIdx] == CONSTANT_Class) {
@@ -4145,13 +4164,13 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 					if (!sameType(methodRefClass, &uninit->type) &&
 					    uninit->type.data.class != TOBJ->data.class &&
 					    !sameType(methodRefClass, &t)) {
-						VERIFY_ERROR("incompatible receiving type for superclass constructor call");
+						return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "incompatible receiving type for superclass constructor call");
 					}
 				} else if (!sameType(methodRefClass, &uninit->type)) {
 					DBG(VERIFY3,
 					    dprintf("%smethodRefClass: ", indent); printType(methodRefClass);
 					    dprintf("\n%sreceiver: ", indent); printType(&uninit->type); dprintf("\n"); );
-					VERIFY_ERROR("incompatible receiving type for constructor call");
+					return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "incompatible receiving type for constructor call");
 				}
 				
 				/* fix front of list, if necessary */
@@ -4166,12 +4185,12 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 				popUninit(method, uninit, binfo);
 			}
 			else if (!sameType(methodRefClass, receiver)) {
-				VERIFY_ERROR("incompatible receiving type for constructor call");
+				return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "incompatible receiving type for constructor call");
 			}
 		}
 		else if (!typecheck(einfo, method->class, methodRefClass, receiver)) {
 			if (receiver->tinfo & TINFO_UNINIT) {
-				VERIFY_ERROR("invoking a method on an uninitialized object reference");
+				return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "invoking a method on an uninitialized object reference");
 			}
 			
 			DBG(VERIFY3,
@@ -4181,7 +4200,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			    printType(receiver);
 			    dprintf("\n");
 			    );
-			VERIFY_ERROR("expected method receiver does not typecheck with object on operand stack");
+			return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "expected method receiver does not typecheck with object on operand stack");
 		}
 	}
 	
@@ -4196,7 +4215,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		
 		if (paramIndex >= binfo->stacksz) {
 			KFREE(argbuf);
-			VERIFY_ERROR("error: not enough parameters on stack for method invocation");
+			return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "error: not enough parameters on stack for method invocation");
 		}
 		
 		
@@ -4277,12 +4296,12 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 	
 	if (*argbuf == 'J' || *argbuf == 'D') {
 		if (method->stacksz < binfo->stacksz + 2) {
-			VERIFY_ERROR("not enough room on operand stack for method call's return value");
+			return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "not enough room on operand stack for method call's return value");
 		}
 	}
 	else if (*argbuf != 'V') {
 		if (method->stacksz < binfo->stacksz + 1) {
-			VERIFY_ERROR("not enough room on operand stack for method call's return value");
+			return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "not enough room on operand stack for method call's return value");
 		}
 	}
 	

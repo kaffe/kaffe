@@ -1,6 +1,13 @@
 2004-02-16  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+        (verifyErrorInCheckMethodCall): New static inline function.
+        (VERIFY_ERROR) Removed.
+        Replaced use of VERIFY_ERROR by verifyErrorInCheckMethodCall.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (opstackPopNBlind): New static inline function.
         (OPSTACK_POP_N_BLIND) Removed.
         Replaced use of OPSTACK_POP_N_BLIND by opstackPopNBlind.
