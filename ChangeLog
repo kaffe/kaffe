@@ -1,3 +1,20 @@
+Sun Jun 13 17:42:33 1999  Godmar Back  <gback@pa.dec.com>
+
+	* config/config.alias, config/arm/jit-arm.def,
+	config/arm/jit-icode.h, config/arm/jit.h, config/arm/trampolines.c,
+	config/arm/linux/config.frag, config/arm/linux/jit-md.h,
+	config/arm/linux/md.c:	added JIT support for the ARM, written
+	by Tim, Dirk Grunwald <grunwald@pa.dec.com> and myself.
+	NB: this is ARM/Linux only.
+
+	* kaffe/kaffevm/exception.c, kaffe/kaffevm/jni.c, 
+	kaffe/kaffevm/jit/funcs.c, kaffe/kaffevm/jit/icode.c,
+	kaffe/kaffevm/jit/labels.c, kaffe/kaffevm/jit/machine.c,
+	kaffe/kaffevm/jit/machine.h, kaffe/kaffevm/jit/registers.c,
+	kaffe/kaffevm/jit/registers.h, kaffe/kaffevm/jit/slots.c,
+	kaffe/kaffevm/jit/slots.h:  various fixes to the JIT for bugs
+	that showed up during the ARM port.
+
 Sun Jun 13 15:19:42 PDT 1999  Pavel Roskin <pavel_roskin@geocities.com>
 
 	* libraries/javalib/java/awt/GridBagLayout.java: fix layout bug

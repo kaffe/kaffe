@@ -25,8 +25,6 @@ int maxslot;
 SlotInfo* localinfo;
 SlotInfo* tempinfo;
 
-extern int maxLocal;
-
 /*
  * Initiate slots.
  */

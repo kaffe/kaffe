@@ -3577,7 +3577,9 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	prologue(0);
 
 	/* Start a JNI call */
+	prepare_function_call();
 	call_soft(startJNIcall);
+	fixup_function_call();
 
 #if defined(NEED_JNIREFS)
 	{

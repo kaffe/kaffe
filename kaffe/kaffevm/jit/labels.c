@@ -21,17 +21,13 @@
 #include "gc.h"
 #include "md.h"
 #include "support.h"
+#include "errors.h"
+#include "machine.h"
 #include "stats.h"
 
 label* firstLabel;
 label* lastLabel;
 label* currLabel;
-
-extern int maxPush;
-extern int maxLocal;
-extern int maxArgs;
-extern int maxStack;
-extern int maxTemp;
 
 void
 resetLabels(void)

@@ -18,13 +18,9 @@
 #include "icode.h"
 #include "labels.h"
 #include "codeproto.h"
+#include "errors.h"
+#include "machine.h"
 #include "md.h"
-
-extern int maxArgs;
-extern int maxLocal;
-extern int maxStack;
-extern int maxTemp;
-extern int isStatic;
 
 /*
  * Define the registers.
@@ -45,6 +41,11 @@ int enable_readonce = Rreadonce;
  * to be reused.
  */
 int usecnt = 0;
+
+/*
+ * Set this if you prefer a given register for a slot.
+ */
+int idealReg = NOREG;
 
 /*
  * Initiate registers.
@@ -155,8 +156,8 @@ slowSlotRegister(SlotInfo* slot, int type, int use)
 	kregs* regi;
 	uint32 used;
 
-	/* Allocate a register - pick the the least recently used */
-	reg = NOREG;
+	/* Allocate a register - pick the least recently used */
+	reg = idealReg;
 	used = 0xFFFFFFFF;
 	for (creg = 0; creg < MAXREG; creg++) {
 		regi = &reginfo[creg];
@@ -169,6 +170,8 @@ slowSlotRegister(SlotInfo* slot, int type, int use)
 	}
 	assert(reg != NOREG);
 	regi = &reginfo[reg];
+        assert((regi->type & (Reserved|Rglobal)) == 0);
+        assert((regi->type & type) == type);
 
 	pslot = regi->slot;
 

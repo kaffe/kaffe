@@ -13,6 +13,7 @@
 
 /* Register types */
 #define	Reserved		0x80
+#define	Rglobal			0x40
 #define	Rint			0x01
 #define	Rlong			0x02
 #define	Rfloat			0x04
@@ -43,6 +44,10 @@ extern int usecnt;
 
 #define	register_invalidate(r)	reginfo[r].slot = NOSLOT
 
+/* reserve a register */
+#define        register_reserve(r)     (reginfo[r].type |= Reserved)
+#define        register_unreserve(r)   (reginfo[r].type &= ~Reserved)
+
 #define	MAXREG			NR_REGISTERS
 #define	NOREG			MAXREG
 
@@ -60,6 +65,9 @@ int	fastSlotRegister(SlotInfo*, int, int);
 void	clobberRegister(int);
 void	forceRegister(SlotInfo*, int, int);
 int	slowSlotOffset(SlotInfo*, int, int);
+
+extern int idealReg;
+extern int enable_readonce;
 
 #define	rread			1
 #define	rwrite			2

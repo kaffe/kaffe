@@ -50,15 +50,6 @@ void fixupFunctionCall(sequence*);
 void syncRegisters(sequence*);
 void nowritebackSlot(sequence*);
 
-extern uint32 pc;
-extern uint32 npc;
-extern int maxPush;
-extern int maxArgs;
-extern int maxTemp;
-extern int maxLocal;
-extern int maxStack;
-extern int isStatic;
-
 bool used_ieee_rounding;
 bool used_ieee_division;
 
@@ -1464,6 +1455,7 @@ load_offset_ref(SlotInfo* dst, SlotInfo* src, jint offset)
 		slot_alloctmp(tmp);
 		add_ref_const(tmp, src, offset);
 		load_ref(dst, tmp);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -1490,6 +1482,7 @@ load_long(SlotInfo* dst, SlotInfo* src)
 	/* Don't use LSLOT & HSLOT here */
 	load_int(dst, src);
 	load_int(dst+1, tmp);
+	slot_freetmp(tmp);
 #endif
 }
 
@@ -1638,6 +1631,7 @@ load_offset_byte(SlotInfo* dst, SlotInfo* src, jint offset)
 		slot_alloctmp(tmp);
 		add_ref_const(tmp, src, offset);
 		load_byte(dst, tmp);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -1659,6 +1653,7 @@ load_offset_char(SlotInfo* dst, SlotInfo* src, jint offset)
 		slot_alloctmp(tmp);
 		add_ref_const(tmp, src, offset);
 		load_char(dst, tmp);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -1680,6 +1675,7 @@ load_offset_short(SlotInfo* dst, SlotInfo* src, jint offset)
 		slot_alloctmp(tmp);
 		add_ref_const(tmp, src, offset);
 		load_short(dst, tmp);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -1701,6 +1697,7 @@ load_offset_float(SlotInfo* dst, SlotInfo* src, jint offset)
 		slot_alloctmp(tmp);
 		add_ref_const(tmp, src, offset);
 		load_float(dst, tmp);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -1722,6 +1719,7 @@ load_offset_double(SlotInfo* dst, SlotInfo* src, jint offset)
 		slot_alloctmp(tmp);
 		add_ref_const(tmp, src, offset);
 		load_double(dst, tmp);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -1860,6 +1858,7 @@ store_offset_int(SlotInfo* dst, jint offset, SlotInfo* src)
 		slot_alloctmp(tmp);
 		add_ref_const(tmp, dst, offset);
 		store_int(tmp, src);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -1899,6 +1898,7 @@ store_offset_ref(SlotInfo* dst, jint offset, SlotInfo* src)
 		slot_alloctmp(tmp);
 		add_ref_const(tmp, dst, offset);
 		store_ref(tmp, src);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -1984,6 +1984,7 @@ store_offset_float(SlotInfo* dst, jint offset, SlotInfo* src)
 		slot_alloctmp(tmp);
 		add_ref_const(tmp, dst, offset);
 		store_float(tmp, src);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -2023,6 +2024,7 @@ store_offset_double(SlotInfo* dst, jint offset, SlotInfo* src)
 		slot_alloctmp(tmp);
 		add_ref_const(tmp, dst, offset);
 		store_double(tmp, src);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -2053,6 +2055,8 @@ store_byte(SlotInfo* dst, SlotInfo* src)
 	and_int_const(tmp2, tmp2, -(1 << (8 * sizeof(jbyte))));
 	or_int(tmp2, tmp2, tmp);
 	store_int(dst, tmp2);
+	slot_freetmp(tmp2);
+	slot_freetmp(tmp);
 #endif
 }
 
@@ -2074,6 +2078,7 @@ store_offset_byte(SlotInfo* dst, jint offset, SlotInfo* src)
 		slot_alloctmp(tmp);
 		add_ref_const(tmp, dst, offset);
 		store_byte(tmp, src);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -2104,6 +2109,8 @@ store_char(SlotInfo* dst, SlotInfo* src)
 	and_int_const(tmp2, tmp2, -(1 << (8 * sizeof(jchar))));
 	or_int(tmp2, tmp2, tmp);
 	store_int(dst, tmp2);
+	slot_freetmp(tmp2);
+	slot_freetmp(tmp);
 #endif
 }
 
@@ -2125,6 +2132,7 @@ store_offset_char(SlotInfo* dst, jint offset, SlotInfo* src)
 		slot_alloctmp(tmp);
 		add_ref_const(tmp, dst, offset);
 		store_char(tmp, src);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -2155,6 +2163,8 @@ store_short(SlotInfo* dst, SlotInfo* src)
 	and_int_const(tmp2, tmp2, -(1 << (8 * sizeof(jshort))));
 	or_int(tmp2, tmp2, tmp);
 	store_int(dst, tmp2);
+	slot_freetmp(tmp2);
+	slot_freetmp(tmp);
 #endif
 }
 
@@ -2176,6 +2186,7 @@ store_offset_short(SlotInfo* dst, jint offset, SlotInfo* src)
 		slot_alloctmp(tmp);
 		add_ref_const(tmp, dst, offset);
 		store_short(tmp, src);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -2292,6 +2303,8 @@ store_const_offset_int(SlotInfo* dst, jint offset, jint val)
 		add_ref_const(tmp, dst, offset);
 		move_int_cosnt(tmp2, val);
 		store_int(tmp, tmp2);
+		slot_freetmp(tmp2);
+		slot_freetmp(tmp);
 	}
 }
 #endif
@@ -2312,6 +2325,8 @@ store_const_offset_byte(SlotInfo* dst, jint offset, jint val)
 		add_ref_const(tmp, dst, offset);
 		move_int_cosnt(tmp2, val);
 		store_byte(tmp, tmp2);
+		slot_freetmp(tmp2);
+		slot_freetmp(tmp);
 	}
 }
 #endif
@@ -2336,6 +2351,7 @@ pusharg_int_const(int val, int idx)
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
 		pusharg_int(tmp, idx);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -2372,6 +2388,7 @@ pusharg_ref_const(void* val, int idx)
 		slot_alloctmp(tmp);
 		move_ref_const(tmp, val);
 		pusharg_ref(tmp, idx);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -2480,6 +2497,7 @@ cbranch_int_const(SlotInfo* s1, jint val, label* dst, int type)
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
 		cbranch_int(s1, tmp, dst, type);
+		slot_freetmp(tmp);
 	}
 #else
 	cmp_int_const(0, s1, val);
@@ -2513,6 +2531,7 @@ cbranch_ref_const(SlotInfo* s1, void *val, label* dst, int type)
 		slot_alloctmp(tmp);
 		move_ref_const(tmp, val);
 		cbranch_ref(s1, tmp, dst, type);
+		slot_freetmp(tmp);
 	}
 #else
 	cmp_ref_const(0, s1, val);
@@ -2556,6 +2575,7 @@ call_indirect_method(Method *meth)
 		move_ref_const(tmp, ptr);
 		load_ref(tmp, tmp);
 		call(tmp);
+		slot_freetmp(tmp);
 	}
 #endif
 }
@@ -2596,6 +2616,7 @@ call_soft(void *routine)
 	move_label_const(tmp, l);
 	load_ref(tmp, tmp);
 	call(tmp);
+	slot_freetmp(tmp);
 #endif
 }
 
@@ -2827,6 +2848,7 @@ cmp_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 		slot_alloctmp(tmp);
 		move_int_const(tmp, val);
 		cmp_int(dst, src, tmp);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -2852,6 +2874,7 @@ cmp_ref_const(SlotInfo* dst, SlotInfo* src, void* val)
 		slot_alloctmp(tmp);
 		move_ref_const(tmp, val);
 		cmp_ref(dst, src, tmp);
+		slot_freetmp(tmp);
 	}
 }
 
@@ -3304,6 +3327,12 @@ check_array_index(SlotInfo* obj, SlotInfo* idx)
 #if defined(HAVE_ccall_ugt)
 	ccall_int_ugt(tmp, idx, soft_badarrayindex);
 #else
+	/* NB: note that the call_soft below may cause registers to be
+	 * spilled and reused, but the spill will not be executed if the
+	 * test is good.  Don't know how to fix this.  Put in a sledgehammer
+	 * for now.
+	 */
+	sync_registers();
 	cbranch_int_ult(idx, tmp, reference_label(1, 1));
 	if (canCatch(BADARRAYINDEX)) {
 		sync_registers();
@@ -3324,6 +3353,7 @@ check_array_constindex(SlotInfo* obj, jint idx)
 #if defined(HAVE_ccall_ugt)
 	ccall_int_const_ugt(tmp, idx, soft_badarrayindex);
 #else
+	sync_registers();	/* see check_array_index */
 	cbranch_int_const_ugt(tmp, idx, reference_label(1, 1));
 	if (canCatch(BADARRAYINDEX)) {
 		sync_registers();

@@ -45,6 +45,8 @@ struct SlotInfo {
 };
 typedef struct SlotInfo SlotInfo;
 
+#define REGSLOT SlotInfo
+
 extern SlotInfo* slotinfo;
 extern SlotInfo* localinfo;
 extern SlotInfo* tempinfo;

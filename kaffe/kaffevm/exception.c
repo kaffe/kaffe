@@ -33,6 +33,8 @@
 #include "md.h"
 #include "locks.h"
 #include "stackTrace.h"
+#include "machine.h"
+#include "slots.h"
 
 #if defined(INTERPRETER)
 struct _exceptionFrame { };
@@ -328,7 +330,32 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 				obj = &einfo.class->head;
 			}
 			else {
+#if defined(FRAMEOBJECT)	/* does this arch support a FRAMEOBJECT macro */
 				obj = FRAMEOBJECT(frame);
+#else
+				/* otherwise, do it the hard way... */
+				{
+					const char *str;
+					/* Set up the necessary state for
+					 * the SLOT2 macros to work ---
+					 * see jit/machine.c
+					 * Since we have the translator lock,
+					 * we can clobber the max* variables.
+					 */
+					enterTranslator();
+					maxLocal = einfo.method->localsz;
+					maxStack = einfo.method->stacksz;
+					str = einfo.method->signature->data;
+					maxArgs = sizeofSig(&str, false);
+					maxTemp = MAXTEMPS - 1;
+					/* NB: we assume that the JIT will have
+					 * spilled the 'this' object in the
+					 * stack location for slot zero.
+					 */
+					obj = (fpframe(frame))[SLOT2ARGOFFSET(0)/SLOTSIZE];
+					leaveTranslator();
+				}
+#endif
 			}
 
 #if defined(HAVE_GCJ_SUPPORT)

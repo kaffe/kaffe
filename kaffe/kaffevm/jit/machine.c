@@ -110,8 +110,6 @@ struct {
 	int time;
 } jitStats;
 
-extern int enable_readonce;
-
 static void generateInsnSequence(codeinfo* codeInfo);
 static void checkCaughtExceptions(Method* meth, int pc);
 
@@ -278,7 +276,9 @@ DBG(MOREJIT,
 	start_function();
 
 #if defined(CHECK_STACKOVERFLOW)
+	prepare_function_call();
 	call_soft(checkStackOverflow);
+	fixup_function_call();
 #endif
 
 	monitor_enter();

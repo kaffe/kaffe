@@ -143,4 +143,15 @@ leaveTranslator(void)
 	unlockStaticMutex(&translatorlock);
 }
 
+extern int maxLocal;
+extern int maxStack;
+extern int maxArgs;
+extern int maxTemp;
+extern int maxPush;
+extern int isStatic;
+extern int CODEPC;
+extern nativecode* codeblock;
+extern uint32 pc;
+extern uint32 npc;
+
 #endif
