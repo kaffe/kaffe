@@ -33,7 +33,10 @@ public class Object {
   }
   
   public final void wait(long timeout, int nanos) throws InterruptedException {
-    /* nanos? assume they are 0 and just wait for now */
+    /* Ignore nanos, except avoid clipping a non-zero quantity to zero */
+    if (timeout == 0 && nanos > 0)
+       timeout++;
+
     wait(timeout);    
   }
   
