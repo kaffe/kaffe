@@ -231,7 +231,7 @@ __waitCond(iLock* lk, jlong timeout)
 {
 DBG(VMCONDS,	dprintf("Wait 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);	)
 
-	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
+	if (lk == 0 || lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
 		throwException(IllegalMonitorStateException);
 	}
 
@@ -268,7 +268,7 @@ __signalCond(iLock* lk)
 {
 DBG(VMCONDS,	dprintf("Signal 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);)
 
-	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
+	if (lk == 0 || lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
 		throwException(IllegalMonitorStateException);
 	}
 
@@ -302,7 +302,7 @@ __broadcastCond(iLock* lk)
 {
 DBG(VMCONDS,	dprintf("Broadcast 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);)
 
-	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
+	if (lk == 0 || lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
 		throwException(IllegalMonitorStateException);
 	}
 
