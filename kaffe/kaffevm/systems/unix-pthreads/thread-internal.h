@@ -79,6 +79,8 @@ jthread_t jthread_current(void)
   return (jthread_t)pthread_getspecific(ntKey);
 }
 
+void jthread_sleep (jlong timeout);
+
 /**
  * Disable stopping the calling thread.
  *

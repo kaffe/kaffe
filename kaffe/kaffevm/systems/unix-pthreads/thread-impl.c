@@ -824,6 +824,17 @@ jthread_destroy (jthread_t cur)
 }
 
 
+void 
+jthread_sleep (jlong timeout) 
+{
+	struct timespec time;
+
+	time.tv_sec  = timeout / 1000;
+	time.tv_nsec = (timeout % 1000) * 1000000;
+
+	nanosleep (&time, NULL);
+}
+
 /***********************************************************************
  * scheduling and query
  */

@@ -36,29 +36,21 @@ public static final ResourceBundle getBundle(String baseName, Locale locale)
 
 public static ResourceBundle getBundle(String baseName, Locale locale,
 		ClassLoader loader) throws MissingResourceException {
-	String		key = baseName + locale;
-	ResourceBundle	ret = (ResourceBundle) cache.get (key);
+	
+	ResourceBundle defaultBundle = getSpecificBundle (baseName, loader);
+	if (defaultBundle != null) {
+		defaultBundle.parent = null;
+		defaultBundle.locale = new Locale ("");
+	}
 
-	if (ret == null) {
-		ResourceBundle defaultBundle = getSpecificBundle (baseName, loader);
-		if (defaultBundle != null) {
-			defaultBundle.parent = null;
-			defaultBundle.locale = new Locale ("");
-		}
+	ResourceBundle ret = getBundleWithLocale(baseName, defaultBundle, locale, loader);
 
-		ret = getBundleWithLocale(baseName, defaultBundle, locale, loader);
-
-		/* It would appear that if we fail to load a resource bundle
-		 * for a given locale, we just load the default one instead.
-		 */
-		if (ret == null && locale != Locale.getDefault()) {
-			ret = getBundleWithLocale(baseName, defaultBundle,
-			    Locale.getDefault(), loader);
-		}
-
-		if (ret != null)  {
-			cache.put(key, ret);
-		}
+	/* It would appear that if we fail to load a resource bundle
+	 * for a given locale, we just load the default one instead.
+	 */
+	if (ret==defaultBundle && locale != Locale.getDefault()) {
+		ret = getBundleWithLocale(baseName, defaultBundle,
+		    Locale.getDefault(), loader);
 	}
 
 	if (ret == null) {
@@ -141,6 +133,11 @@ public final Object getObject(String key) throws MissingResourceException {
 private static final ResourceBundle getSpecificBundle(String baseName,
 		ClassLoader loader) {
 
+	ResourceBundle ret = (ResourceBundle)cache.get (baseName);
+	if (ret != null) {
+		return ret;
+	}
+ 
 	// baseName = baseName.replace('.', '/');
 	if (loader == null)
 		loader = DummyClassLoader.getCurrentClassLoader();
@@ -152,24 +149,31 @@ private static final ResourceBundle getSpecificBundle(String baseName,
 		 * will indeed succeed.
 		 */
 		if (ResourceBundle.class.isAssignableFrom(cls)) {
-			return ((ResourceBundle)cls.newInstance());
+			ret = ((ResourceBundle)cls.newInstance());
 		}
 	}
 	catch (Exception _) {
 	}
 
 	// Okay, failed to load bundle - attempt to load properties as bundle.
-	InputStream strm;
-	strm = loader.getResourceAsStream(baseName.replace('.', '/')
-	    + ".properties");
-	if (strm != null) {
-		try {
-			return (new PropertyResourceBundle(strm));
-		}
-		catch (IOException _) {
+	if (ret == null) {
+		InputStream strm;
+		strm = loader.getResourceAsStream(baseName.replace('.', '/')
+	    		+ ".properties");
+		if (strm != null) {
+			try {
+				ret = (new PropertyResourceBundle(strm));
+			}
+			catch (IOException _) {
+			}
 		}
 	}
-	return null;
+
+	if (ret!=null) {
+		cache.put (baseName, ret);
+	}
+
+	return ret;
 }
 
 public final String getString(String key) throws MissingResourceException {

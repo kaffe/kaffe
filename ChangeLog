@@ -1,3 +1,18 @@
+2003-06-04  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_sleep): added missing method
+
+	* libraries/javalib/java/util/ResourceBundle.java:
+	(getBundle): don't forget to search the default locale
+	if necessary
+	(getSpecificBundle): moved caching of ResourceBundles to here
+	
+	* libraries/javalib/java/math/BigInteger.java:
+	(intValue, longValue): fixed my broken patch
+
+	* kaffe/scripts/kaffe.in: allow prepending stuff to BOOTCLASSPATH
+	
 2003-06-04 Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* config.sub, libltdl/config.sub:
