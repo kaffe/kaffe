@@ -1,8 +1,5 @@
 Tue Jun 30 23:47:14 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
-	* libraries/clib/native/Class.c: do not processClass a class
-	returned by Class.forName.
-
 	* libraries/clib/native/ObjectStreamClass.c: implement missing
 	methods and fixed methods returning signatures.
 
