@@ -46,16 +46,22 @@ soft_new(Hjava_lang_Class* c)
 	Hjava_lang_Object* obj;
 	errorInfo info;
 
-	if (processClass(c, CSTATE_COMPLETE, &info) == false) {
-		throwError(&info);
+	if (c->state != CSTATE_COMPLETE && processClass(c, CSTATE_COMPLETE, &info) == false) {
+		goto bad;
 	}
-	obj = newObject(c);
+	obj = newObjectChecked(c, &info);
+	if (obj == 0) {
+		goto bad;
+	}
 
 DBG(NEWINSTR,	
 	dprintf("New object of type %s (%d,%x)\n", 
 		c->name->data, c->bfsize, obj); )
 
 	return (obj);
+bad:
+	throwError(&info);
+	return (0);
 }
 
 /*
@@ -65,12 +71,16 @@ void*
 soft_newarray(jint type, jint size)
 {
 	Hjava_lang_Object* obj;
+	errorInfo info;
 
 	if (size < 0) {
 		throwException(NegativeArraySizeException);
 	}
 
-	obj = newArray(TYPE_CLASS(type), size);
+	obj = newArrayChecked(TYPE_CLASS(type), size, &info);
+	if (obj == 0) {
+		throwError(&info);
+	}
 
 DBG(NEWINSTR,	
 	dprintf("New array of %s [%d] (%x)\n", 
@@ -86,12 +96,16 @@ void*
 soft_anewarray(Hjava_lang_Class* elclass, jint size)
 {
 	Hjava_lang_Object* obj;
+	errorInfo info;
 
 	if (size < 0) {
 		throwException(NegativeArraySizeException);
 	}
 
-	obj = newArray(elclass, size);
+	obj = newArrayChecked(elclass, size, &info);
+	if (obj == 0) {
+		throwError(&info);
+	}
 
 DBG(NEWINSTR,	
 	dprintf("New array object [%d] of %s (%x)\n", size,
