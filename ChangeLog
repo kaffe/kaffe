@@ -54,7 +54,6 @@
         * javax/naming/CompoundName.java (endsWith): Look at correct
         element of source name.
 
->>>>>>> 1.2290
 2004-04-28  Dalibor Topic  <robilad@kaffe.org>
 
         * configure.ac:
