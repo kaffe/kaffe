@@ -2,5 +2,27 @@
 # We use kjc compiler rather than Sun's.
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-exec @bindir@/@kaffe_TRANSF@ at.dms.kjc.Main ${1+"$@"}
+lib_path=@prefix@
+
+# Ensure that /usr/lib/rt.jar is in the classpath. 
+for opt in ${1+"$@"}; do 
+    if [ "x$classpath" == "xtrue" ]; then
+        classpath=$opt
+        continue
+    fi
+    if [ $opt == "-classpath" ]; then
+        classpath="true"
+        continue
+    fi
+    args="${args} $opt"
+done
+if [ "x$classpath" != "x" ]; then
+    echo $classpath | grep -q ${lib_path}/rt.jar
+    if [ $? -eq 1 ]; then
+        classpath=${lib_path}/rt.jar:${classpath}
+    fi
+fi
+args="${args} -classpath $classpath"
+
+exec @bindir@/@kaffe_TRANSF@ at.dms.kjc.Main $args
 

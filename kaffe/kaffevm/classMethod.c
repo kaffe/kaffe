@@ -1607,6 +1607,7 @@ resolveStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 	return true;
 }
 
+#if defined(TRANSLATOR)
 /*
  * When do we need a trampoline?
  *
@@ -1652,6 +1653,9 @@ methodNeedsTrampoline(Method *meth)
 	}
 	return (false);
 }
+#endif /* TRANSLATOR */
+
+
 
 /*
  * Build a trampoline if necessary, return the address of the native code

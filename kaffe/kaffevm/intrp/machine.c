@@ -84,14 +84,14 @@ char* engine_version = KVER;
 int profFlag;			 /* flag to control profiling */
 #endif
 
-void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile vmException *mjbuf, Hjava_lang_Thread *tid);
+void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile VmExceptHandler *mjbuf, Hjava_lang_Thread *tid);
 
 void
 virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retval, Hjava_lang_Thread* volatile tid)
 {
 	methods *volatile const vmeth = meth;
 	Hjava_lang_Object* volatile mobj;
-	vmException mjbuf;
+	VmExceptHandler mjbuf;
 	accessFlags methaccflags;
 
 	slots* volatile lcl;
@@ -168,11 +168,9 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	/* If we have any exception handlers we must prepare to catch them.
 	 * We also need to catch if we are synchronised (so we can release it).
 	 */
-	mjbuf.pc = 0;
-	mjbuf.mobj = mobj;
-	mjbuf.meth = meth;
+	vmExcept_setIntrpFrame(&mjbuf, 0, meth, mobj);
 	if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
-		mjbuf.prev = (vmException*)unhand(tid)->exceptPtr;
+		mjbuf.prev = (VmExceptHandler*)unhand(tid)->exceptPtr;
 		unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
 	}
 
@@ -180,7 +178,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 		if (JTHREAD_SETJMP(mjbuf.jbuf) != 0) {
 			meth = vmeth;
 			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
-			npc = mjbuf.pc;
+			npc = vmExcept_getPC(&mjbuf);
 			sp = &lcl[meth->localsz];
 #if defined(DEBUG)
 			{
@@ -219,11 +217,13 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 		}
 		/* this lock is safe for Thread.stop() */
 		lockObject(mobj);
-		/* We must store the object on which we synchronized in
-		 * the mjbuf chain or else the exception handler routine
-		 * won't find it.
+
+		/*
+		 * We must store the object on which we synchronized
+		 * in the mjbuf chain for the exception handler
+		 * routine to find it (and unlock it when unwinding).
 		 */
-		mjbuf.mobj = mobj;
+		vmExcept_setSyncobj(&mjbuf, mobj);
 	}
 
 	sp = &lcl[meth->localsz - 1];
@@ -242,7 +242,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 RDBG(	dprintf("Returning from method %s%s.\n", meth->name->data, METHOD_SIGD(meth)); )
 }
 
-void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile vmException *mjbuf, Hjava_lang_Thread *tid) {
+void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile VmExceptHandler *mjbuf, Hjava_lang_Thread *tid) {
 	bytecode *code = (bytecode*)meth->c.bcode.code;
 
 	/* Misc machine variables */
@@ -268,7 +268,7 @@ void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *r
 		register uintp pc = npc;
 
 		assert(npc < meth->c.bcode.codelen);
-		mjbuf->pc = pc;
+		vmExcept_setPC(mjbuf, pc);
 		npc = pc + insnLen[code[pc]];
 
 		switch (code[pc]) {

@@ -48,8 +48,6 @@ static void nullException(struct _exceptionFrame *);
 static void floatingException(struct _exceptionFrame *);
 static void dispatchException(Hjava_lang_Throwable*, stackTraceInfo*) __NORETURN__;
 
-extern void Kaffe_JNIExceptionHandler(void);
-
 extern void printStackTrace(struct Hjava_lang_Throwable*, struct Hjava_lang_Object*, int);
 
 static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, exceptionInfo*);
@@ -297,9 +295,9 @@ nextFrame(void* fm)
                 return (0);
         }
 #endif
-#else
-        vmException* nfm;
-        nfm = ((vmException*)fm)->prev;
+#else	/* INTERPRETER */
+        VmExceptHandler* nfm;
+        nfm = ((VmExceptHandler*)fm)->prev;
 	return (nfm);
 #endif
 }
@@ -330,8 +328,22 @@ unwindStackFrame(stackTraceInfo* frame, Hjava_lang_Throwable *eobj)
 
 	meth = findExceptionInMethod(frame->pc, class, &einfo);
 
-	if (einfo.method == 0 && IS_IN_JNI_RANGE(frame->pc)) {
-		Kaffe_JNIExceptionHandler();
+	assert(meth == einfo.method);
+
+	/*
+	 * If no exception block found in method, perhaps
+	 * it is a Kaffe_JNI entrypoint?  If so, jump to
+	 * the provided handler.
+	 */
+	if (einfo.method == 0)
+	{
+		VmExceptHandler* ebuf = (VmExceptHandler*)(unhand(getCurrentThread())->exceptPtr);
+		if ((ebuf != 0)
+		    && vmExcept_isJNIFrame(ebuf)
+		    && vmExcept_JNIContains(ebuf, frame->fp))
+		{
+			vmExcept_jumpToHandler(ebuf); /* Does not return */
+		}
 	}
 
 	/* Find the sync. object */
@@ -404,18 +416,21 @@ DBG(ELOOKUP,
 	{
 		Hjava_lang_Object* obj;
 		exceptionInfo einfo;
-		vmException* frame;
+		VmExceptHandler* frame;
 		bool res;
 
-		for (frame = (vmException*)unhand(ct)->exceptPtr; frame != 0; frame = frame->prev) {
+		for (frame = (VmExceptHandler*)unhand(ct)->exceptPtr; frame != 0; frame = frame->prev) {
 
-			if (frame->meth == (Method*)1) {
+			if (vmExcept_isJNIFrame(frame)) {
 				unhand(ct)->exceptPtr = (struct Hkaffe_util_Ptr*)frame;
-				Kaffe_JNIExceptionHandler();
+				vmExcept_jumpToHandler(frame); /* Does not return */
 			}
 
 			/* Look for handler */
-			res = findExceptionBlockInMethod(frame->pc, eobj->base.dtable->class, frame->meth, &einfo);
+			res = findExceptionBlockInMethod(frame->frame.intrp.pc,
+							 eobj->base.dtable->class,
+							 frame->meth,
+							 &einfo);
 
 			/* Find the sync. object */
 			if (einfo.method == 0 || (einfo.method->accflags & ACC_SYNCHRONISED) == 0) {
@@ -425,14 +440,14 @@ DBG(ELOOKUP,
 				obj = &einfo.class->head;
 			}
 			else {
-				obj = frame->mobj;
+				obj = vmExcept_getSyncobj(frame);
 			}
 
 			/* If handler found, call it */
 			if (res == true) {
 				unhand(ct)->needOnStack = STACK_HIGH;
-				frame->pc = einfo.handler;
-				JTHREAD_LONGJMP(JTHREAD_ACCESS_JMPBUF(frame, jbuf), 1);
+				vmExcept_setPC(frame, einfo.handler);
+				vmExcept_jumpToHandler(frame); /* Does not return */
 			}
 
 			/* If not here, exit monitor if synchronised. */
@@ -569,6 +584,9 @@ findExceptionInMethod(uintp pc, Hjava_lang_Class* class, exceptionInfo* info)
 /*
  * Look for exception block in method.
  * Returns true if there is an exception handler, false otherwise.
+ *
+ * Passed 'pc' is the program counter where the exception entered
+ * the current frame (the 'throw' or from a nested method call).
  */
 static bool
 findExceptionBlockInMethod(uintp pc, Hjava_lang_Class* class, Method* ptr, exceptionInfo* info)

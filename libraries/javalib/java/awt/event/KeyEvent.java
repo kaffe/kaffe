@@ -16,6 +16,7 @@ public class KeyEvent
   extends InputEvent
 {
 	protected int keyCode;
+//	protected int keyLocation; // JDK 1.4
 	protected char keyChar;
 	private static final long serialVersionUID = -2352130953028126954L;
 	final public static int KEY_FIRST = 400;
@@ -44,6 +45,7 @@ public class KeyEvent
 	final public static int VK_RIGHT = 0x27;
 	final public static int VK_DOWN = 0x28;
 	final public static int VK_COMMA = 0x2C;
+	final public static int VK_MINUS = 0x2D; // 1.2
 	final public static int VK_PERIOD = 0x2E;
 	final public static int VK_SLASH = 0x2F;
 	final public static int VK_0 = 0x30;
@@ -99,10 +101,14 @@ public class KeyEvent
 	final public static int VK_NUMPAD9 = 0x69;
 	final public static int VK_MULTIPLY = 0x6A;
 	final public static int VK_ADD = 0x6B;
-	final public static int VK_SEPARATER = 0x6C;
+	final public static int VK_SEPARATER = 0x6C; // 1.1 compatibility (misspelled)
+	final public static int VK_SEPARATOR = 0x6C; // 1.4
 	final public static int VK_SUBTRACT = 0x6D;
 	final public static int VK_DECIMAL = 0x6E;
 	final public static int VK_DIVIDE = 0x6F;
+	final public static int VK_DELETE = 0x7F;
+	final public static int VK_NUM_LOCK = 0x90;
+	final public static int VK_SCROLL_LOCK = 0x91;
 	final public static int VK_F1 = 0x70;
 	final public static int VK_F2 = 0x71;
 	final public static int VK_F3 = 0x72;
@@ -115,15 +121,67 @@ public class KeyEvent
 	final public static int VK_F10 = 0x79;
 	final public static int VK_F11 = 0x7A;
 	final public static int VK_F12 = 0x7B;
-	final public static int VK_DELETE = 0x7F;
-	final public static int VK_NUM_LOCK = 0x90;
-	final public static int VK_SCROLL_LOCK = 0x91;
+
+	final public static int VK_F13 = 0xF000; // 1.2
+	final public static int VK_F14 = 0xF001; // 1.2
+	final public static int VK_F15 = 0xF002; // 1.2
+	final public static int VK_F16 = 0xF003; // 1.2
+	final public static int VK_F17 = 0xF004; // 1.2
+	final public static int VK_F18 = 0xF005; // 1.2
+	final public static int VK_F19 = 0xF006; // 1.2
+	final public static int VK_F20 = 0xF007; // 1.2
+	final public static int VK_F21 = 0xF008; // 1.2
+	final public static int VK_F22 = 0xF009; // 1.2
+	final public static int VK_F23 = 0xF00A; // 1.2
+	final public static int VK_F24 = 0xF00B; // 1.2
+
 	final public static int VK_PRINTSCREEN = 0x9A;
 	final public static int VK_INSERT = 0x9B;
 	final public static int VK_HELP = 0x9C;
 	final public static int VK_META = 0x9D;
 	final public static int VK_BACK_QUOTE = 0xC0;
 	final public static int VK_QUOTE = 0xDE;
+
+	final public static int VK_KP_UP = 0xE0; // 1.2
+	final public static int VK_KP_DOWN = 0xE1; // 1.2
+	final public static int VK_KP_LEFT = 0xE2; // 1.2
+	final public static int VK_KP_RIGHT = 0xE3; // 1.2
+	final public static int VK_DEAD_GRAVE = 0x80; // 1.2
+	final public static int VK_DEAD_ACUTE = 0x81; // 1.2
+	final public static int VK_DEAD_CIRCUMFLEX = 0x82; // 1.2
+	final public static int VK_DEAD_TILDE = 0x83; // 1.2
+	final public static int VK_DEAD_MACRON = 0x84; // 1.2
+	final public static int VK_DEAD_BREVE = 0x85; // 1.2
+	final public static int VK_DEAD_ABOVEDOT = 0x86; // 1.2
+	final public static int VK_DEAD_DIAERESIS = 0x87; // 1.2
+	final public static int VK_DEAD_ABOVERING = 0x88; // 1.2
+	final public static int VK_DEAD_DOUBLEACUTE = 0x89; // 1.2
+	final public static int VK_DEAD_CARON = 0x8A; // 1.2
+	final public static int VK_DEAD_CEDILLA = 0x8B; // 1.2
+	final public static int VK_DEAD_OGONEK = 0x8C; // 1.2
+	final public static int VK_DEAD_IOTA = 0x8D; // 1.2
+	final public static int VK_DEAD_VOICED_SOUND = 0x8E; // 1.2
+	final public static int VK_DEAD_SEMIVOICED_SOUND = 0x8F; // 1.2
+	final public static int VK_AMPERSAND = 0x96; // 1.2
+	final public static int VK_ASTERISK = 0x97; // 1.2
+	final public static int VK_QUOTEDBL = 0x98; // 1.2
+	final public static int VK_LESS = 0x99; // 1.2
+	final public static int VK_GREATER = 0xA0; // 1.2
+	final public static int VK_BRACELEFT = 0xA1; // 1.2
+	final public static int VK_BRACERIGHT = 0xA2; // 1.2
+	final public static int VK_AT = 0x200; // 1.2
+	final public static int VK_COLON = 0x201; // 1.2
+	final public static int VK_CIRCUMFLEX = 0x202; // 1.2
+	final public static int VK_DOLLAR = 0x203; // 1.2
+	final public static int VK_EURO_SIGN = 0x204; // 1.2
+	final public static int VK_EXCLAMATION_MARK = 0x205; // 1.2
+	final public static int VK_INVERTED_EXCLAMATION_MARK = 0x206; // 1.2
+	final public static int VK_LEFT_PARENTHESIS = 0x207; // 1.2
+	final public static int VK_NUMBER_SIGN = 0x208; // 1.2
+	final public static int VK_PLUS = 0x209; // 1.2
+	final public static int VK_RIGHT_PARENTHESIS = 0x20A; // 1.2
+	final public static int VK_UNDERSCORE = 0x20B; // 1.2
+
 	final public static int VK_FINAL = 0x18;
 	final public static int VK_CONVERT = 0x1C;
 	final public static int VK_NONCONVERT = 0x1D;
@@ -131,8 +189,40 @@ public class KeyEvent
 	final public static int VK_MODECHANGE = 0x1F;
 	final public static int VK_KANA = 0x15;
 	final public static int VK_KANJI = 0x19;
+
+	final public static int VK_ALPHANUMERIC = 0xF0; // 1.2
+	final public static int VK_KATAKANA = 0xF1; // 1.2
+	final public static int VK_HIRAGANA = 0xF2; // 1.2
+	final public static int VK_FULL_WIDTH = 0xF3; // 1.2
+	final public static int VK_HALF_WIDTH = 0xF4; // 1.2
+	final public static int VK_ROMAN_CHARACTERS = 0xF5; // 1.2
+	final public static int VK_ALL_CANDIDATES = 0x100; // 1.2
+	final public static int VK_PREVIOUS_CANDIDATE = 0x101; // 1.2
+	final public static int VK_CODE_INPUT = 0x102; // 1.2
+	final public static int VK_JAPANESE_KATAKANA = 0x103; // 1.2
+	final public static int VK_JAPANESE_HIRAGANA = 0x104; // 1.2
+	final public static int VK_JAPANESE_ROMAN = 0x105; // 1.2
+	final public static int VK_KANA_LOCK = 0x106; // 1.2
+	final public static int VK_INPUT_METHOD_ON_OFF = 0x107; // 1.2
+	final public static int VK_CUT = 0xFFD1; // 1.2
+	final public static int VK_COPY = 0xFFCD; // 1.2
+	final public static int VK_PASTE = 0xFFCF; // 1.2
+	final public static int VK_UNDO = 0xFFCB; // 1.2
+	final public static int VK_AGAIN = 0xFFC9; // 1.2
+	final public static int VK_FIND = 0xFFD0; // 1.2
+	final public static int VK_PROPS = 0xFFCA; // 1.2
+	final public static int VK_STOP = 0xFFC8; // 1.2
+	final public static int VK_COMPOSE = 0xFF20; // 1.2
+	final public static int VK_ALT_GRAPH = 0xFF7E; // 1.2
+
 	final public static int VK_UNDEFINED = 0x0;
 	final public static char CHAR_UNDEFINED = 0xffff;
+
+	final public static int KEY_LOCATION_UNKNOWN = 0; // 1.4
+	final public static int KEY_LOCATION_STANDARD = 1; // 1.4
+	final public static int KEY_LOCATION_LEFT = 2; // 1.4
+	final public static int KEY_LOCATION_RIGHT = 3; // 1.4
+	final public static int KEY_LOCATION_NUMPAD = 4; // 1.4
 
 public KeyEvent ( Component src, int evtId, long time, int mods, int kCode) {
 	super( src, evtId);
@@ -141,6 +231,7 @@ public KeyEvent ( Component src, int evtId, long time, int mods, int kCode) {
 	modifiers = mods;
 	keyCode = kCode;
 	keyChar = (char)kCode;
+//	keyLocation = KEY_LOCATION_UNKNOWN;
 }
 
 public KeyEvent ( Component src, int evtId, long time, int mods, int kCode, char kChar ) {
@@ -150,6 +241,17 @@ public KeyEvent ( Component src, int evtId, long time, int mods, int kCode, char
 	modifiers = mods;
 	keyCode = kCode;
 	keyChar = kChar;
+//	keyLocation = KEY_LOCATION_UNKNOWN;
+}
+
+public KeyEvent ( Component src, int evtId, long time, int mods, int kCode, char kChar, int kLoc ) {
+	super( src, evtId);
+	
+	when = time;
+	modifiers = mods;
+	keyCode = kCode;
+	keyChar = kChar;
+//	keyLocation = kLoc;
 }
 
 public char getKeyChar() {
@@ -215,6 +317,11 @@ public static String getKeyText ( int keyCode ) {
 	case VK_RIGHT:      return "Right";
 	case VK_DOWN:       return "Down";
 
+	case VK_KP_LEFT:    return "Left";
+	case VK_KP_UP:      return "Up";
+	case VK_KP_RIGHT:   return "Right";
+	case VK_KP_DOWN:    return "Down";
+
 	case VK_MULTIPLY:   return "NumPad *";
 	case VK_ADD:        return "NumPad +";
 	case VK_SEPARATER:  return "NumPad ,";
@@ -234,6 +341,20 @@ public static String getKeyText ( int keyCode ) {
 	case VK_F10:        return "F10";
 	case VK_F11:        return "F11";
 	case VK_F12:        return "F12";
+	// JDK 1.2+
+	case VK_F13:        return "F13";
+	case VK_F14:        return "F14";
+	case VK_F15:        return "F15";
+	case VK_F16:        return "F16";
+	case VK_F17:        return "F17";
+	case VK_F18:        return "F18";
+	case VK_F19:        return "F19";
+	case VK_F20:        return "F20";
+	case VK_F21:        return "F21";
+	case VK_F22:        return "F22";
+	case VK_F23:        return "F23";
+	case VK_F24:        return "F24";
+
 	case VK_DELETE:     return "Delete";
 	case VK_NUM_LOCK:   return "Num Lock";
 	case VK_SCROLL_LOCK: return "Scroll Lock";
@@ -251,6 +372,68 @@ public static String getKeyText ( int keyCode ) {
 	case VK_MODECHANGE: return "Mode Change";
 	case VK_KANA:       return "Kana";
 	case VK_KANJI:      return "Kanji";
+
+	// Java2 additions
+	case VK_AGAIN:		return "Again";
+	case VK_ALL_CANDIDATES:	return "All Candidates";
+	case VK_ALPHANUMERIC:	return "Alphanumeric";
+	case VK_ALT_GRAPH:	return "Alt Graph";
+	case VK_AMPERSAND:	return "Ampersand";
+	case VK_ASTERISK:	return "Asterisk";
+	case VK_AT:		return "At";
+	case VK_BRACELEFT:	return "Left Brace";
+	case VK_BRACERIGHT:	return "Right Brace";
+	case VK_CIRCUMFLEX:	return "Circumflex";
+	case VK_CODE_INPUT:	return "Code Input";
+	case VK_COLON:		return "Colon";
+	case VK_COMPOSE:	return "Compose ";
+	case VK_COPY:		return "Copy";
+	case VK_CUT:		return "Cut";
+	case VK_DEAD_ABOVEDOT:	return "Dead Above Dot";
+	case VK_DEAD_ABOVERING:	return "Dead Above Ring";
+	case VK_DEAD_ACUTE:	return "Dead Acute";
+	case VK_DEAD_BREVE:	return "Dead Breve";
+	case VK_DEAD_CARON:	return "Dead Caron";
+	case VK_DEAD_CEDILLA:	return "Dead Cedilla";
+	case VK_DEAD_CIRCUMFLEX: return "Dead Circumflex";
+	case VK_DEAD_DIAERESIS:	return "Dead Diaeresis";
+	case VK_DEAD_DOUBLEACUTE: return "Dead Double Acute";
+	case VK_DEAD_GRAVE:	return "Dead Grave";
+	case VK_DEAD_IOTA:	return "Dead Iota";
+	case VK_DEAD_MACRON:	return "Dead Macron";
+	case VK_DEAD_OGONEK:	return "Dead Ogonek";
+	case VK_DEAD_SEMIVOICED_SOUND: return "Dead Semivoiced Sound";
+	case VK_DEAD_TILDE:	return "Dead Tilde";
+	case VK_DEAD_VOICED_SOUND: return "Dead Voiced Sound";
+	case VK_DOLLAR:		return "Dollar";
+	case VK_EURO_SIGN:	return "Euro";
+	case VK_EXCLAMATION_MARK: return "Exclamation Mark";
+	case VK_FIND:		return "Find";
+	case VK_FULL_WIDTH:	return "Full-Width";
+	case VK_GREATER:	return "Greater";
+	case VK_HALF_WIDTH:	return "Half-Width";
+	case VK_HIRAGANA:	return "Hiragana";
+	case VK_INPUT_METHOD_ON_OFF: return "Input Method On/Off";
+	case VK_INVERTED_EXCLAMATION_MARK: return "Inverted Exclamation Mark";
+	case VK_JAPANESE_HIRAGANA: return "Japanese Hiragana";
+	case VK_JAPANESE_KATAKANA: return "Japanese Katakana";
+	case VK_JAPANESE_ROMAN:	return "Japanese Roman";
+	case VK_KANA_LOCK:	return "Kana Lock";
+	case VK_KATAKANA:	return "Katakana";
+	case VK_LEFT_PARENTHESIS: return "Left Parenthesis";
+	case VK_LESS:		return "Less";
+	case VK_MINUS:		return "Minus";
+	case VK_NUMBER_SIGN:	return "Number Sign";
+	case VK_PASTE:		return "Paste";
+	case VK_PLUS:		return "Plus";
+	case VK_PREVIOUS_CANDIDATE: return "Previous Candidate";
+	case VK_PROPS:		return "Props";
+	case VK_QUOTEDBL:	return "Double Quote";
+	case VK_RIGHT_PARENTHESIS: return "Right Parenthesis";
+	case VK_ROMAN_CHARACTERS: return "Roman Characters";
+	case VK_STOP:		return "Stop";
+	case VK_UNDERSCORE:	return "Underscore";
+	case VK_UNDO:		return "Undo";
 	}
 
 	if ( keyCode >= VK_NUMPAD0 && keyCode <= VK_NUMPAD9 ) {
@@ -282,10 +465,23 @@ protected Event initOldEvent ( Event e ) {
 public boolean isActionKey () {
 	int kc = keyCode;
 
-	if ( (kc >= VK_PAUSE) && (kc <= VK_CAPS_LOCK) ) return true;
-	if ( (kc >= VK_PAGE_UP) && (kc <= VK_DOWN) ) return true;
-	if ( (kc >= VK_F1) && (kc <= VK_F12) ) return true;
-	if ( (kc >= VK_NUM_LOCK) && (kc <= VK_INSERT) ) return true;
+	// Pop out most common alphanumerics first
+	if ( kc == VK_SPACE ) return false; // Space-bar
+	if ( (kc > VK_DOWN) && (kc < VK_F1) ) return false; // Alphanum
+	if ( kc < VK_PAUSE ) return false; // Newline
+	if ( (kc > VK_KANJI) && (kc < VK_CONVERT) ) return false; // Escape
+	if ( (kc > VK_KANA) && (kc < VK_FINAL) ) return false; // None
+	if ( kc <= VK_F12 ) return true; // Everything else common
+
+	if ( (kc >= VK_NUM_LOCK) && (kc <= VK_SCROLL_LOCK) ) return true;
+	if ( (kc >= VK_PRINTSCREEN) && (kc <= VK_HELP) ) return true;
+	if ( (kc >= VK_KP_UP) && (kc <= VK_KP_RIGHT) ) return true;
+	if ( (kc >= VK_ALPHANUMERIC) && (kc <= VK_ROMAN_CHARACTERS) ) return true;
+	if ( (kc >= VK_ALL_CANDIDATES) && (kc <= VK_INPUT_METHOD_ON_OFF) ) return true;
+	if ( (kc >= VK_F13) && (kc <= VK_F24) ) return true;
+	if ( (kc >= VK_STOP) && (kc <= VK_UNDO) ) return true;
+	if ( kc == VK_COPY ) return true;
+	if ( (kc >= VK_PASTE) && (kc <= VK_CUT) ) return true;
 
 	return false;
 }
@@ -321,6 +517,11 @@ public String paramString () {
 	}
 	
 	return s;
+}
+
+public int getKeyLocation() {
+//	return keyLocation;
+	return KEY_LOCATION_UNKNOWN;
 }
 
 public void setKeyChar ( char kChar ) {

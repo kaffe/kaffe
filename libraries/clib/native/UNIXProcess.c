@@ -131,7 +131,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env,
 
 		/* Search PATH variable */
 		ptr = NULL;
-		for (var = arge; var != NULL; var++) {
+		for (var = arge; var != NULL && *var != NULL; var++) {
 			if (strncmp (*var, "PATH=", 5) == 0) {
 				ptr = *var + 5;
 				break;

@@ -1,3 +1,37 @@
+Fri Oct 18 15:05:52 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* libraries/clib/native/UNIXProcess.c: fixed crash when calling
+	Runtime.exec with an array of strings for the environment
+	variable.
+	* test/regression/ExecTest.java: adapted test accordingly.
+
+	Patch by: Warwick Hunter <whunter@agile.tv>
+
+	* libraries/javalib/java/awt/event/KeyEvent.java:
+	implemented missing Java 1.4 functionality to get xsmiles to run.
+
+	Patch by: Jukka Santala <jsantala@tml.hut.fi>
+
+Fri Oct 18 13:59:11 CEST 2002 Patrick Tullmann  <pat@tullmann.org>
+	* kaffe/kaffevm/classMethod.c: methodNeedsTrampoline is JIT-only
+        * kaffe/kaffevm/exception.c, kaffe/kaffevm/exception.h,
+        kaffe/kaffevm/jni.c, kaffe/kaffevm/stackTrace.h:
+        Hide in-vm exception handling behind VmExceptHandler type (used to
+        be vmException).  Mostly used in the interpreter, also used in JIT
+        for catching errors at the JNI entry layer.  Update jni.c entry
+        layer to track exceptions on per-function basis (instead of a
+        fixed range of instruction addresses, fixes optimizer).
+
+Fri Oct 18 13:00:54 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* kaffe/scripts/compat/javac.in:
+	Ensure that rt.jar is in the classpath.
+
+	Patch by: Warwick Hunter <whunter@agile.tv>
+
+	* libraries/javalib/java/util/GregorianCalendar.java:
+	(computeFields) fixed calculation of weekdays.
+
+	Patch by: Helmer Kraemer <hkraemer@freenet.de>
+
 Thu Oct  3 2002 Patrick Tullmann  <pat@tullmann.org>
 	* kaffe/kaffevm/exception.c: The end of an exception
 	handler range is not inclusive.

@@ -26,7 +26,7 @@
 #if defined(INTERPRETER)
 
 typedef struct _stackTrace {
-	vmException* frame;
+	VmExceptHandler* frame;
 } stackTrace;
 
 /* Dummy exceptionFrame */
@@ -34,13 +34,13 @@ struct _exceptionFrame {
 	char	dummy;
 };
 
-#define STACKTRACEINIT(S,I,O,R)	((S).frame = (vmException*)unhand(getCurrentThread())->exceptPtr)
+#define STACKTRACEINIT(S,I,O,R)	((S).frame = (VmExceptHandler*)unhand(getCurrentThread())->exceptPtr)
 #define	STACKTRACESTEP(S)	((S).frame = nextFrame((S).frame))
-#define STACKTRACEPC(S)		((S).frame->pc)
+#define STACKTRACEPC(S)		(vmExcept_getPC((S).frame))
 #define STACKTRACEFP(S)		(0)
-#define STACKTRACEMETHCREATE(S)	((S).frame->meth)
+#define STACKTRACEMETHCREATE(S)	(vmExcept_getMeth((S).frame))
 #define STACKTRACEEND(S)	((S).frame == 0)
-#define STACKTRACESKIP(S)	((S).frame->meth == (Method*)1)
+#define STACKTRACESKIP(S)	(vmExcept_isJNIFrame((S).frame))
 
 #elif defined(TRANSLATOR)
 

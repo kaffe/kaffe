@@ -81,15 +81,39 @@ static void removeJNIref(jref);
 #define	JNI_METHOD_CODE(M)	METHOD_INDIRECTMETHOD(M)
 
 /*
+ * Define how to set the frame pointer in a VmExceptHandler.
+ */
+#if defined(TRANSLATOR)
+#define KAFFE_JNI_SETEXCEPTFP(ebufp) {				\
+	exceptionFrame currentFrameInfo;			\
+	FIRSTFRAME(currentFrameInfo, 0);			\
+	vmExcept_setJNIFrame(ebufp, FPFRAME(&currentFrameInfo));\
+	}
+#else
+/*
+ * Stack frame info isn't needed (and isn't available) in the
+ * interpreter (see dispatchException/unwindStackFrame in exception.c)
+ * However, we have to at least tag the VmExceptHandler as
+ * a JNIFrame so the stack trace code can ignore it.
+ */
+#define KAFFE_JNI_SETEXCEPTFP(ebufp) {   \
+	vmExcept_setJNIFrame(ebufp, -1); \
+        }
+#endif 
+
+
+/*
  * Define how we handle exceptions in JNI.
  *
- * XXX variable declarations in macros are nasty.
+ * Each BEGIN_EXCEPTION_HANDLING macro must be matched by an
+ * END_EXCEPTION_HANDLING macro call in the same scope.  Each should
+ * be used only once in a given JNI entrypoint.
  */
 #define	BEGIN_EXCEPTION_HANDLING(X)			\
-	vmException ebuf;				\
-	ebuf.prev = (vmException*)unhand(getCurrentThread())->exceptPtr;\
-	ebuf.meth = (Method*)1;				\
-	if (JTHREAD_SETJMP(ebuf.jbuf) != 0) {		\
+	VmExceptHandler ebuf;				\
+	KAFFE_JNI_SETEXCEPTFP(&ebuf); 			\
+	ebuf.prev = (VmExceptHandler*)(unhand(getCurrentThread())->exceptPtr);\
+	if (JTHREAD_SETJMP(JTHREAD_ACCESS_JMPBUF(&ebuf, jbuf)) != 0) {		\
 		unhand(getCurrentThread())->exceptPtr = \
 		  (struct Hkaffe_util_Ptr*)ebuf.prev;	\
 		return X;				\
@@ -97,10 +121,10 @@ static void removeJNIref(jref);
 	unhand(getCurrentThread())->exceptPtr = (struct Hkaffe_util_Ptr*)&ebuf
 
 #define	BEGIN_EXCEPTION_HANDLING_VOID()			\
-	vmException ebuf;				\
-	ebuf.prev = (vmException*)unhand(getCurrentThread())->exceptPtr;\
-	ebuf.meth = (Method*)1;				\
-	if (JTHREAD_SETJMP(ebuf.jbuf) != 0) {		\
+	VmExceptHandler ebuf; 				\
+	KAFFE_JNI_SETEXCEPTFP(&ebuf); 			\
+	ebuf.prev = (VmExceptHandler*)(unhand(getCurrentThread())->exceptPtr);\
+	if (JTHREAD_SETJMP(JTHREAD_ACCESS_JMPBUF(&ebuf, jbuf)) != 0) {		\
 		unhand(getCurrentThread())->exceptPtr = \
 		  (struct Hkaffe_util_Ptr*)ebuf.prev;	\
 		return;					\
@@ -118,9 +142,6 @@ static void removeJNIref(jref);
 #define	GET_STATIC_FIELD(T,F)	*(T*)FIELD_ADDRESS((Field*)F)
 #define	SET_STATIC_FIELD(T,F,V)	*(T*)FIELD_ADDRESS((Field*)F) = (V)
 
-uintp Kaffe_JNI_estart;
-uintp Kaffe_JNI_eend;
-
 extern struct JNINativeInterface Kaffe_JNINativeInterface;
 extern JavaVMInitArgs Kaffe_JavaVMInitArgs;
 extern JavaVM Kaffe_JavaVM;
@@ -133,7 +154,6 @@ static void finishJNIcall(void);
 static void Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI);
 #endif
 
-void Kaffe_JNIExceptionHandler(void);
 static jint Kaffe_GetVersion(JNIEnv*);
 static jclass Kaffe_FindClass(JNIEnv*, const char*);
 static jint Kaffe_ThrowNew(JNIEnv*, jclass, const char*);
@@ -166,10 +186,6 @@ JNI_CreateJavaVM(JavaVM** vm, JNIEnv** env, JavaVMInitArgs* args)
 	Kaffe_JavaVMArgs[0] = *args;
 	initialiseKaffe();
 
-	/* Setup the JNI Exception handler */
-	Kaffe_JNI_estart = (uintp)&Kaffe_GetVersion; /* First routine */
-	Kaffe_JNI_eend = (uintp)&Kaffe_JNIExceptionHandler; /* Last routine */
-
 	/* Setup JNI for main thread */
 #if defined(NEED_JNIREFS)
 	unhand(getCurrentThread())->jnireferences = gc_malloc(sizeof(jnirefs), &gcNormal);
@@ -196,10 +212,8 @@ JNI_GetCreatedJavaVMs(JavaVM** vm, jsize buflen, jsize* nvm)
  * exception-aware.  Asynchronous exceptions should not be delivered
  * to them.
  *
- * Everything from Kaffe_GetVersion to Kaffe_JNIExceptionHandler
+ * Everything from Kaffe_GetVersion to Kaffe_GetJavaVM
  * should be bracketed with BEGIN and END _EXCEPTION_HANDLING.
- * Question: what happens when an asynchronous exception occurs at the
- * very start or end of one of these calls.
  */
 static void
 Kaffe_FatalError(JNIEnv* env, const char* mess)
@@ -3498,24 +3512,6 @@ Kaffe_MonitorExit(JNIEnv* env, jobject obj)
 
 	END_EXCEPTION_HANDLING();
 	return (0);
-}
-
-/*
- * Handle exceptions which fall back to the JNI layer.
- */
-void
-Kaffe_JNIExceptionHandler(void)
-{
-	vmException* frame;
-
-	frame = (vmException*)unhand(getCurrentThread())->exceptPtr;
-	if (frame) {
-		/* Worry about window around BEGIN and END exception
-		 * handling, as well as functions which only delay
-		 * external exceptions.
-		 */
-		JTHREAD_LONGJMP(JTHREAD_ACCESS_JMPBUF(frame, jbuf), 1);
-	}
 }
 
 /*

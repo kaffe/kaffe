@@ -493,7 +493,7 @@ private void computeFields(long time) {
 	int secs = (int)(rem / MILLISECSPERSEC);
 	int millis = (int)(rem % MILLISECSPERSEC);
 
-	int wday = up ? (int)((EPOCH_WDAY + days + 1) % DAYSPERWEEK) : (int)(((EPOCH_WDAY - days + 1) % DAYSPERWEEK) + DAYSPERWEEK);
+	int wday = up ? (int)((EPOCH_WDAY + days) % DAYSPERWEEK + 1) : (int)((EPOCH_WDAY - days) % DAYSPERWEEK + 1);
 	/* correct weekday for days before gregorian change */
 	if (!up &&  dateChangeYear < EPOCH_YEAR && isBeforeGregorianChange(-time)) {
 		wday = (wday - 11) % DAYSPERWEEK + DAYSPERWEEK;
