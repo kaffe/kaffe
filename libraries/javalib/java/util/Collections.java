@@ -19,8 +19,11 @@ import java.io.Serializable;
 
 public class Collections {
 
-	// An empty set
-	public static final Set EMPTY_SET = new AbstractSet() {
+	// An empty Set
+	public static final Set EMPTY_SET = new EmptySet();
+
+	private static class EmptySet extends AbstractSet
+			implements Serializable {
 		public int size() {
 			return 0;
 		}
@@ -39,13 +42,26 @@ public class Collections {
 		}
 	};
 
-	// An empty list
-	public static final List EMPTY_LIST = new AbstractList() {
+	// An empty List
+	public static final List EMPTY_LIST = new EmptyList();
+
+	private static class EmptyList extends AbstractList
+			implements Serializable {
 		public int size() {
 			return 0;
 		}
 		public Object get(int index) {
 			throw new IndexOutOfBoundsException();
+		}
+	};
+
+	// An empty Map
+	public static final Map EMPTY_MAP = new EmptyMap();
+
+	private static class EmptyMap extends AbstractMap
+			implements Serializable {
+		public Set entrySet() {
+			return EMPTY_SET;
 		}
 	};
 
@@ -229,6 +245,16 @@ public class Collections {
 		};
 	}
 
+	public static List singletonList(Object o) {
+		return new CopyList(1, o);
+	}
+
+	public static Map singletonMap(Object key, Object value) {
+		HashMap map = new HashMap(1);
+		map.put(key, value);
+		return unmodifiableMap(map);
+	}
+
 	public static List nCopies(final int num, final Object o) {
 		if (num < 0) {
 			throw new IllegalArgumentException();
@@ -236,45 +262,54 @@ public class Collections {
 		if (num == 0) {
 			return EMPTY_LIST;
 		}
-		return new AbstractList() {
-			public int size() {
-				return num;
-			}
-			public Object get(int index) {
-				if (index < 0 || index >= num) {
-					throw new IndexOutOfBoundsException();
-				}
-				return o;
-			}
-			public int indexOf(Object o2) {
-				if (o == null ? o2 == null : o.equals(o2)) {
-					return 0;
-				}
-				return -1;
-			}
-			public int lastIndexOf(Object o2) {
-				if (o == null ? o2 == null : o.equals(o2)) {
-					return num - 1;
-				}
-				return -1;
-			}
-			public ListIterator listIterator(int index) {
-				if (index < 0 || index > num) {
-					throw new IndexOutOfBoundsException();
-				}
-				return new AbstractListIterator(this, num - index);
-			}
-			public List subList(int fromIndex, int toIndex) {
-				if (fromIndex < 0 || toIndex > num) {
-					throw new IndexOutOfBoundsException();
-				}
-				if (fromIndex > toIndex) {
-					throw new IllegalArgumentException();
-				}
-				return nCopies(toIndex - fromIndex, o);
-			}
-		};
+		return new CopyList(num, o);
 	}
+
+	private static class CopyList extends AbstractList
+			implements Serializable {
+		private final Object o;
+		private final int num;
+		CopyList(int num, Object o) {
+			this.num = num;
+			this.o = o;
+		}
+		public int size() {
+			return num;
+		}
+		public Object get(int index) {
+			if (index < 0 || index >= num) {
+				throw new IndexOutOfBoundsException();
+			}
+			return o;
+		}
+		public int indexOf(Object o2) {
+			if (o == null ? o2 == null : o.equals(o2)) {
+				return 0;
+			}
+			return -1;
+		}
+		public int lastIndexOf(Object o2) {
+			if (o == null ? o2 == null : o.equals(o2)) {
+				return num - 1;
+			}
+			return -1;
+		}
+		public ListIterator listIterator(int index) {
+			if (index < 0 || index > num) {
+				throw new IndexOutOfBoundsException();
+			}
+			return new AbstractListIterator(this, num - index);
+		}
+		public List subList(int fromIndex, int toIndex) {
+			if (fromIndex < 0 || toIndex > num) {
+				throw new IndexOutOfBoundsException();
+			}
+			if (fromIndex > toIndex) {
+				throw new IllegalArgumentException();
+			}
+			return nCopies(toIndex - fromIndex, o);
+		}
+	};
 
 	private static final Comparator REVERSE_COMPARATOR = new Comparator() {
 		public int compare(Object o1, Object o2) {
