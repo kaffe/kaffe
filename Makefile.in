@@ -49,32 +49,21 @@ host_triplet = @host@
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/project.properties.in \
 	$(srcdir)/project.xml.in $(top_srcdir)/configure \
-	$(top_srcdir)/include/kaffe/jtypes.h.in \
-	$(top_srcdir)/intl/Makefile.in ABOUT-NLS AUTHORS ChangeLog \
-	INSTALL scripts/config.guess scripts/config.rpath \
+	$(top_srcdir)/include/kaffe/jtypes.h.in ABOUT-NLS AUTHORS \
+	ChangeLog INSTALL scripts/config.guess scripts/config.rpath \
 	scripts/config.sub scripts/depcomp scripts/install-sh \
 	scripts/ltmain.sh scripts/missing scripts/mkinstalldirs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 \
-	$(top_srcdir)/m4/codeset.m4 $(top_srcdir)/m4/esd.m4 \
-	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/glibc21.m4 \
-	$(top_srcdir)/m4/gnu-crypto.m4 $(top_srcdir)/m4/gwqt.m4 \
-	$(top_srcdir)/m4/herrno.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/intdiv0.m4 \
-	$(top_srcdir)/m4/intmax.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
-	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
-	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/longdouble.m4 \
-	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/nls.m4 \
-	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/printf-posix.m4 \
-	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/signed.m4 \
-	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
-	$(top_srcdir)/m4/sockinttypes.m4 $(top_srcdir)/m4/stdint_h.m4 \
-	$(top_srcdir)/m4/uintmax_t.m4 $(top_srcdir)/m4/ulonglong.m4 \
-	$(top_srcdir)/m4/valist.m4 $(top_srcdir)/m4/wchar_t.m4 \
-	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/xsize.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 $(top_srcdir)/m4/esd.m4 \
+	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gnu-crypto.m4 \
+	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/herrno.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/sockinttypes.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -83,7 +72,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jtypes.h
-CONFIG_CLEAN_FILES = project.xml project.properties intl/Makefile
+CONFIG_CLEAN_FILES = project.xml project.properties
 SCRIPTS = $(noinst_SCRIPTS)
 SOURCES =
 DIST_SOURCES =
@@ -107,7 +96,6 @@ GZIP_ENV = --best
 distuninstallcheck_listfiles = find . -type f -print
 distcleancheck_listfiles = find . -type f -print
 ACLOCAL = @ACLOCAL@
-ALLOCA = @ALLOCA@
 ALSA_CFLAGS = @ALSA_CFLAGS@
 ALSA_LIBS = @ALSA_LIBS@
 AMDEP_FALSE = @AMDEP_FALSE@
@@ -122,8 +110,6 @@ AWK = @AWK@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 BCEL_JAR = @BCEL_JAR@
-BUILD_INCLUDED_LIBINTL = @BUILD_INCLUDED_LIBINTL@
-CATOBJEXT = @CATOBJEXT@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CCLD = @CCLD@
@@ -146,7 +132,6 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DATADIRNAME = @DATADIRNAME@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DIRSEP = @DIRSEP@
@@ -169,12 +154,9 @@ ESD_LIBS = @ESD_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
-GENCAT = @GENCAT@
-GLIBC21 = @GLIBC21@
 GMSGFMT = @GMSGFMT@
 GNU_CRYPTO_HOME = @GNU_CRYPTO_HOME@
 GNU_CRYPTO_JAR = @GNU_CRYPTO_JAR@
-HAVE_ASPRINTF = @HAVE_ASPRINTF@
 HAVE_BCEL_FALSE = @HAVE_BCEL_FALSE@
 HAVE_BCEL_TRUE = @HAVE_BCEL_TRUE@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
@@ -188,9 +170,6 @@ HAVE_JIKES_FALSE = @HAVE_JIKES_FALSE@
 HAVE_JIKES_TRUE = @HAVE_JIKES_TRUE@
 HAVE_MKTEMP_FALSE = @HAVE_MKTEMP_FALSE@
 HAVE_MKTEMP_TRUE = @HAVE_MKTEMP_TRUE@
-HAVE_POSIX_PRINTF = @HAVE_POSIX_PRINTF@
-HAVE_SNPRINTF = @HAVE_SNPRINTF@
-HAVE_WPRINTF = @HAVE_WPRINTF@
 HAVE_ZIP_FALSE = @HAVE_ZIP_FALSE@
 HAVE_ZIP_TRUE = @HAVE_ZIP_TRUE@
 INCLUDED_EXTENSIONS = @INCLUDED_EXTENSIONS@
@@ -198,11 +177,7 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-INSTOBJEXT = @INSTOBJEXT@
-INTLBISON = @INTLBISON@
 INTLLIBS = @INTLLIBS@
-INTLOBJS = @INTLOBJS@
-INTL_LIBTOOL_SUFFIX_PREFIX = @INTL_LIBTOOL_SUFFIX_PREFIX@
 JASMIN = @JASMIN@
 JAVAX_CRYPTO_JAR = @JAVAX_CRYPTO_JAR@
 JAVAX_SECURITY_JAR = @JAVAX_SECURITY_JAR@
@@ -280,7 +255,6 @@ USER_WANT_GNU_CRYPTO_FALSE = @USER_WANT_GNU_CRYPTO_FALSE@
 USER_WANT_GNU_CRYPTO_TRUE = @USER_WANT_GNU_CRYPTO_TRUE@
 USE_COMPAT_IFADDRS_FALSE = @USE_COMPAT_IFADDRS_FALSE@
 USE_COMPAT_IFADDRS_TRUE = @USE_COMPAT_IFADDRS_TRUE@
-USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_JIT_FALSE = @USE_JIT_FALSE@
 USE_JIT_TRUE = @USE_JIT_TRUE@
 USE_NLS = @USE_NLS@
@@ -353,7 +327,7 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTIONS = foreign 1.3e
-SUBDIRS = . config intl include replace libltdl libraries/clib libraries/extensions kaffe libraries/javalib test po
+SUBDIRS = . config include replace libltdl libraries/clib libraries/extensions kaffe libraries/javalib test po
 DIST_SUBDIRS = . config include replace libltdl intl kaffe libraries test po
 EXTRA_DIST = \
 	ChangeLog.1 \
@@ -507,8 +481,6 @@ project.xml: $(top_builddir)/config.status $(srcdir)/project.xml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 project.properties: $(top_builddir)/config.status $(srcdir)/project.properties.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-intl/Makefile: $(top_builddir)/config.status $(top_srcdir)/intl/Makefile.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -639,7 +611,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/compat-include $(distdir)/developers $(distdir)/include/kaffe $(distdir)/intl $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/m4 $(distdir)/po $(distdir)/scripts $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/compiler $(distdir)/test/regression/run_time
+	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/compat-include $(distdir)/developers $(distdir)/include/kaffe $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/m4 $(distdir)/po $(distdir)/scripts $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/compiler $(distdir)/test/regression/run_time
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -736,7 +708,6 @@ distcheck: dist
 	  && dc_destdir="$${TMPDIR-/tmp}/am-dc-$$$$/" \
 	  && cd $(distdir)/_build \
 	  && ../configure --srcdir=.. --prefix="$$dc_install_base" \
-	    --with-included-gettext \
 	    $(DISTCHECK_CONFIGURE_FLAGS) \
 	  && $(MAKE) $(AM_MAKEFLAGS) \
 	  && $(MAKE) $(AM_MAKEFLAGS) dvi \

@@ -6,14 +6,6 @@
 /* Define the version we're compiling for */
 #undef ARCHOS
 
-/* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
-   systems. This function is required for `alloca.c' support on those systems.
-   */
-#undef CRAY_STACKSEG_END
-
-/* Define to 1 if using `alloca.c'. */
-#undef C_ALLOCA
-
 /* Define default KAFFEHOME */
 #undef DEFAULT_KAFFEHOME
 
@@ -27,17 +19,11 @@
 /* Define to 1 if you have the `alarm' function. */
 #undef HAVE_ALARM
 
-/* Define to 1 if you have `alloca', as a function or macro. */
-#undef HAVE_ALLOCA
-
 /* Define to 1 if you have the <alloca.h> header file. */
 #undef HAVE_ALLOCA_H
 
 /* Do we have amask instruction on alpha */
 #undef HAVE_ALPHA_ASM_AMASK
-
-/* Define to 1 if you have the <argz.h> header file. */
-#undef HAVE_ARGZ_H
 
 /* Define to 1 if you have the <arpa/nameser.h> header file. */
 #undef HAVE_ARPA_NAMESER_H
@@ -47,9 +33,6 @@
 
 /* Define to 1 if you have the <asm/signal.h> header file. */
 #undef HAVE_ASM_SIGNAL_H
-
-/* Define to 1 if you have the `asprintf' function. */
-#undef HAVE_ASPRINTF
 
 /* Define to 1 if you have the `atexit' function. */
 #undef HAVE_ATEXIT
@@ -75,26 +58,6 @@
 
 /* Is function swab declared */
 #undef HAVE_DECLARED_SWAB
-
-/* Define to 1 if you have the declaration of `feof_unlocked', and to 0 if you
-   don't. */
-#undef HAVE_DECL_FEOF_UNLOCKED
-
-/* Define to 1 if you have the declaration of `fgets_unlocked', and to 0 if
-   you don't. */
-#undef HAVE_DECL_FGETS_UNLOCKED
-
-/* Define to 1 if you have the declaration of `getc_unlocked', and to 0 if you
-   don't. */
-#undef HAVE_DECL_GETC_UNLOCKED
-
-/* Define to 1 if you have the declaration of `_snprintf', and to 0 if you
-   don't. */
-#undef HAVE_DECL__SNPRINTF
-
-/* Define to 1 if you have the declaration of `_snwprintf', and to 0 if you
-   don't. */
-#undef HAVE_DECL__SNWPRINTF
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
@@ -148,9 +111,6 @@
 /* Define to 1 if you have the `ftruncate' function. */
 #undef HAVE_FTRUNCATE
 
-/* Define to 1 if you have the `fwprintf' function. */
-#undef HAVE_FWPRINTF
-
 /* Enable GCJ support. */
 #undef HAVE_GCJ_SUPPORT
 
@@ -159,15 +119,6 @@
 
 /* Define to 1 if you have the `getcwd' function. */
 #undef HAVE_GETCWD
-
-/* Define to 1 if you have the `getegid' function. */
-#undef HAVE_GETEGID
-
-/* Define to 1 if you have the `geteuid' function. */
-#undef HAVE_GETEUID
-
-/* Define to 1 if you have the `getgid' function. */
-#undef HAVE_GETGID
 
 /* Define to 1 if you have the `getifaddrs' function. */
 #undef HAVE_GETIFADDRS
@@ -235,15 +186,8 @@
 /* Define to 1 if the system has the type `int8'. */
 #undef HAVE_INT8
 
-/* Define if you have the 'intmax_t' type in <stdint.h> or <inttypes.h>. */
-#undef HAVE_INTMAX_T
-
-/* Define if <inttypes.h> exists and doesn't clash with <sys/types.h>. */
+/* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
-
-/* Define if <inttypes.h> exists, doesn't clash with <sys/types.h>, and
-   declares uintmax_t. */
-#undef HAVE_INTTYPES_H_WITH_UINTMAX
 
 /* Define to 1 if you have the `ioctl' function. */
 #undef HAVE_IOCTL
@@ -262,12 +206,6 @@
 
 /* Define to 1 if you have the `kill' function. */
 #undef HAVE_KILL
-
-/* Define if you have <langinfo.h> and nl_langinfo(CODESET). */
-#undef HAVE_LANGINFO_CODESET
-
-/* Define if your <locale.h> file defines LC_MESSAGES. */
-#undef HAVE_LC_MESSAGES
 
 /* Define to 1 if you have the `asound' library (-lasound). */
 #undef HAVE_LIBASOUND
@@ -329,17 +267,8 @@
 /* Define to 1 if you have the <linux/socket.h> header file. */
 #undef HAVE_LINUX_SOCKET_H
 
-/* Define to 1 if you have the <locale.h> header file. */
-#undef HAVE_LOCALE_H
-
 /* Define to 1 if you have the `localtime' function. */
 #undef HAVE_LOCALTIME
-
-/* Define if you have the 'long double' type. */
-#undef HAVE_LONG_DOUBLE
-
-/* Define if you have the 'long long' type. */
-#undef HAVE_LONG_LONG
 
 /* Define to 1 if you have the <mach-o/rld.h> header file. */
 #undef HAVE_MACH_O_RLD_H
@@ -374,9 +303,6 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
-/* Define to 1 if you have the `mempcpy' function. */
-#undef HAVE_MEMPCPY
-
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
 
@@ -391,9 +317,6 @@
 
 /* Define to 1 if you have a working `mmap' system call. */
 #undef HAVE_MMAP
-
-/* Define to 1 if you have the `munmap' function. */
-#undef HAVE_MUNMAP
 
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
@@ -413,9 +336,6 @@
 /* Define to 1 if you have the <netpacket/packet.h> header file. */
 #undef HAVE_NETPACKET_PACKET_H
 
-/* Define to 1 if you have the <nl_types.h> header file. */
-#undef HAVE_NL_TYPES_H
-
 /* Define to 1 if you have the `on_exit' function. */
 #undef HAVE_ON_EXIT
 
@@ -424,12 +344,6 @@
 
 /* Define to 1 if you have the <poll.h> header file. */
 #undef HAVE_POLL_H
-
-/* Define if your printf() function supports format strings with positions. */
-#undef HAVE_POSIX_PRINTF
-
-/* Define to 1 if you have the `putenv' function. */
-#undef HAVE_PUTENV
 
 /* Define to 1 if you have the <pwd.h> header file. */
 #undef HAVE_PWD_H
@@ -452,14 +366,8 @@
 /* Define to 1 if you have the `select' function. */
 #undef HAVE_SELECT
 
-/* Define to 1 if you have the `setenv' function. */
-#undef HAVE_SETENV
-
 /* Define to 1 if you have the `setitimer' function. */
 #undef HAVE_SETITIMER
-
-/* Define to 1 if you have the `setlocale' function. */
-#undef HAVE_SETLOCALE
 
 /* Define to 1 if you have the `sigaction' function. */
 #undef HAVE_SIGACTION
@@ -494,24 +402,11 @@
 /* Define to 1 if you have the <stdarg.h> header file. */
 #undef HAVE_STDARG_H
 
-/* Define to 1 if you have the <stddef.h> header file. */
-#undef HAVE_STDDEF_H
-
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 
-/* Define if <stdint.h> exists, doesn't clash with <sys/types.h>, and declares
-   uintmax_t. */
-#undef HAVE_STDINT_H_WITH_UINTMAX
-
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
-
-/* Define to 1 if you have the `stpcpy' function. */
-#undef HAVE_STPCPY
-
-/* Define to 1 if you have the `strcasecmp' function. */
-#undef HAVE_STRCASECMP
 
 /* Define to 1 if you have the `strdup' function. */
 #undef HAVE_STRDUP
@@ -633,9 +528,6 @@
    `HAVE_STRUCT_TM_TM_ZONE' instead. */
 #undef HAVE_TM_ZONE
 
-/* Define to 1 if you have the `tsearch' function. */
-#undef HAVE_TSEARCH
-
 /* Define to 1 if you don't have `tm_zone' but do have the external array
    `tzname'. */
 #undef HAVE_TZNAME
@@ -649,9 +541,6 @@
 /* Define to 1 if the system has the type `uint8'. */
 #undef HAVE_UINT8
 
-/* Define if you have the 'uintmax_t' type in <stdint.h> or <inttypes.h>. */
-#undef HAVE_UINTMAX_T
-
 /* Define to 1 if you have the `uname' function. */
 #undef HAVE_UNAME
 
@@ -663,9 +552,6 @@
 
 /* Define to 1 if the system has the type `unit64'. */
 #undef HAVE_UNIT64
-
-/* Define if you have the 'unsigned long long' type. */
-#undef HAVE_UNSIGNED_LONG_LONG
 
 /* Define to 1 if you have the <utime.h> header file. */
 #undef HAVE_UTIME_H
@@ -685,12 +571,6 @@
 /* Define to 1 if you have the `waitpid' function. */
 #undef HAVE_WAITPID
 
-/* Define if you have the 'wchar_t' type. */
-#undef HAVE_WCHAR_T
-
-/* Define to 1 if you have the `wcslen' function. */
-#undef HAVE_WCSLEN
-
 /* Define to 1 if you have the <winbase.h> header file. */
 #undef HAVE_WINBASE_H
 
@@ -706,9 +586,6 @@
 /* Define to 1 if you have the <wintypes.h> header file. */
 #undef HAVE_WINTYPES_H
 
-/* Define if you have the 'wint_t' type. */
-#undef HAVE_WINT_T
-
 /* Define to 1 if you have the <wtypes.h> header file. */
 #undef HAVE_WTYPES_H
 
@@ -720,18 +597,6 @@
 
 /* Define if __va_copy is available */
 #undef HAVE__VA_COPY
-
-/* Define to 1 if you have the `__argz_count' function. */
-#undef HAVE___ARGZ_COUNT
-
-/* Define to 1 if you have the `__argz_next' function. */
-#undef HAVE___ARGZ_NEXT
-
-/* Define to 1 if you have the `__argz_stringify' function. */
-#undef HAVE___ARGZ_STRINGIFY
-
-/* Define to 1 if you have the `__fsetlocking' function. */
-#undef HAVE___FSETLOCKING
 
 /* Define to 1 if you have the `__get_eh_info' function. */
 #undef HAVE___GET_EH_INFO
@@ -753,9 +618,6 @@
 
 /* Define to 1 if `in6addr_loopback' is declared by <netinet/in.h> */
 #undef IN6ADDR_LOOPBACK_DECLARED
-
-/* Define if integer division by zero raises signal SIGFPE. */
-#undef INTDIV0_RAISES_SIGFPE
 
 /* Define if signal handlers must be reset upon delivery */
 #undef KAFFE_SIGNAL_ONE_SHOT
@@ -784,9 +646,6 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* Define if <inttypes.h> exists and defines unusable PRI* macros. */
-#undef PRI_MACROS_BROKEN
-
 /* Define as the return type of signal handlers (`int' or `void'). */
 #undef RETSIGTYPE
 
@@ -807,18 +666,6 @@
 
 /* The size of a `__int64', as computed by sizeof. */
 #undef SIZEOF___INT64
-
-/* Define as the maximum value of type 'size_t', if the system doesn't define
-   it. */
-#undef SIZE_MAX
-
-/* If using the C implementation of alloca, define if you know the
-   direction of stack growth for your system; otherwise it will be
-   automatically deduced at run-time.
-	STACK_DIRECTION > 0 => grows toward higher addresses
-	STACK_DIRECTION < 0 => grows toward lower addresses
-	STACK_DIRECTION = 0 => direction of growth unknown */
-#undef STACK_DIRECTION
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
@@ -877,17 +724,10 @@
 /* Define to `int' if <sys/types.h> does not define. */
 #undef pid_t
 
-/* Define as the type of the result of subtracting two pointers, if the system
-   doesn't define it. */
-#undef ptrdiff_t
-
 /* Define to `unsigned char', `unsigned short', `unsigned int' or `unsigned
    long' according with size of `sa_family' in `struct sockaddr', if
    <sys/types.h> or <sys/socket.h> does not define `sa_family_t'. */
 #undef sa_family_t
-
-/* Define to empty if the C compiler doesn't support this keyword. */
-#undef signed
 
 /* Define to `unsigned' if <sys/types.h> does not define. */
 #undef size_t
@@ -897,7 +737,3 @@
 
 /* Define to `int' if <sys/types.h> does not define. */
 #undef ssize_t
-
-/* Define to unsigned long or unsigned long long if <stdint.h> and
-   <inttypes.h> don't define. */
-#undef uintmax_t

@@ -1,3 +1,131 @@
+2004-02-02  Dalibor Topic <robilad@kaffe.org>
+
+	* Makefile.am:
+	(SUBDIRS) Removed intl.
+
+	* configure.in
+	(AM_GETTEXT) Use external.
+	(AC_CONFIG_FILES) Removed intl/Makefile.
+
+	* developers/autogen.sh:
+	Removed gettext patch.
+
+	* intl/ChangeLog,
+	intl/Makefile.in,
+	intl/VERSION,
+	intl/bindtextdom.c,
+	intl/config.charset,
+	intl/dcgettext.c,
+	intl/dcigettext.c,
+	intl/dcngettext.c,
+	intl/dgettext.c,
+	intl/dngettext.c,
+	intl/eval-plural.h,
+	intl/explodename.c,
+	intl/finddomain.c,
+	intl/gettext.c,
+	intl/gettextP.h,
+	intl/gmo.h,
+	intl/hash-string.h,
+	intl/intl-compat.c,
+	intl/l10nflist.c,
+	intl/libgnuintl.h.in,
+	intl/loadinfo.h,
+	intl/loadmsgcat.c,
+	intl/localcharset.c,
+	intl/localcharset.h,
+	intl/locale.alias,
+	intl/localealias.c,
+	intl/localename.c,
+	intl/log.c,
+	intl/ngettext.c,
+	intl/os2compat.c,
+	intl/os2compat.h,
+	intl/osdep.c,
+	intl/plural-exp.c,
+	intl/plural-exp.h,
+	intl/plural.c,
+	intl/plural.y,
+	intl/printf-args.c,
+	intl/printf-args.h,
+	intl/printf-parse.c,
+	intl/printf-parse.h,
+	intl/printf.c,
+	intl/ref-add.sin,
+	intl/ref-del.sin,
+	intl/relocatable.c,
+	intl/relocatable.h,
+	intl/textdomain.c,
+	intl/vasnprintf.c,
+	intl/vasnprintf.h,
+	intl/vasnwprintf.h,
+	intl/wprintf-parse.h,
+	intl/xsize.h,
+	developers/patch-gettext-bad-config-h-dependency:
+	Removed.
+
+	* Makefile.in,
+	aclocal.m4,
+	configure,
+	config/Makefile.in,
+	config/config.h.in,
+	include/Makefile.in.
+	kaffe/Makefile.in,
+	kaffe/jvmpi/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	kaffe/kaffeh/Makefile.in,
+	kaffe/kaffevm/Makefile.in,
+	kaffe/kaffevm/gcj/Makefile.in,
+	kaffe/kaffevm/intrp/Makefile.in,
+	kaffe/kaffevm/jit/Makefile.in,
+	kaffe/kaffevm/jit3/Makefile.in,
+	kaffe/kaffevm/systems/Makefile.in,
+	kaffe/kaffevm/systems/beos-native/Makefile.in,
+	kaffe/kaffevm/systems/oskit-pthreads/Makefile.in,
+	kaffe/kaffevm/systems/unix-jthreads/Makefile.in,
+	kaffe/kaffevm/systems/unix-pthreads/Makefile.in,
+	kaffe/man/Makefile.in,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/bat/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	kaffe/xprof/Makefile.in,
+	libraries/Makefile.in,
+	libraries/clib/Makefile.in,
+	libraries/clib/awt/Makefile.in,
+	libraries/clib/awt/X/Makefile.in,
+	libraries/clib/awt/qt/Makefile.in,
+	libraries/clib/io/Makefile.in,
+	libraries/clib/management/Makefile.in,
+	libraries/clib/math/Makefile.in,
+	libraries/clib/native/Makefile.in,
+	libraries/clib/net/Makefile.in,
+	libraries/clib/nio/Makefile.in,
+	libraries/clib/security/Makefile.in,
+	libraries/clib/zip/Makefile.in,
+	libraries/extensions/Makefile.in,
+	libraries/extensions/comm/Makefile.in,
+	libraries/extensions/comm/javalib/Makefile.in,
+	libraries/extensions/microsoft/Makefile.in,
+	libraries/extensions/microsoft/clib/Makefile.in,
+	libraries/extensions/microsoft/javalib/Makefile.in,
+	libraries/extensions/pjava/Makefile.in,
+	libraries/extensions/pjava/javalib/Makefile.in,
+	libraries/extensions/servlet/Makefile.in,
+	libraries/extensions/servlet/javalib/Makefile.in,
+	libraries/extensions/sound/Makefile.in,
+	libraries/extensions/sound/alsa/Makefile.in,
+	libraries/extensions/sound/common/Makefile.in,
+	libraries/extensions/sound/esd/Makefile.in,
+	libraries/javalib/Makefile.in,
+	replace/Makefile.in,
+	test/Makefile.in,
+	test/internal/Makefile.in,
+	test/regression/Makefile.in,
+	test/regression/compile_time/Makefile.in,
+	test/regression/compiler/Makefile.in,
+	test/regression/run_time/Makefile.in:
+	Regenerated.
+
 2004-02-01  Helmer Kraemer <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/thread.c
@@ -10,10 +138,10 @@
 2004-02-01  Dalibor Topic <robilad@kaffe.org>
 
         include/gettext.h:
-	New file, taken from GNU gettext 0.14.1.
+	New file, taken froGNgettext 0.14.1.
 
 	* developers/patch-gettext-bad-config-h-dependency:
-	New file. Patch for a bug in a file managed by GNU gettext.
+	New file. Patch for a bug in a file managed by GNgettext.
 
         * include/Makefile.am:
 	Added gettext.h.
@@ -126,16 +254,16 @@
 
 2004-01-30  Helmer Kramer <hkraemer@freenet.de>
 
-	Checked in by Guilhem Lavaux <guilhem@kaffe.org>
+	Checked in by GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/security/SecureClassLoader.java
 	(SecureClassLoader): Class loader's parent should not be set.
 
-2004-01-30  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+2004-01-30  Ito Kazumits <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/io/InputStreamReader.java,
 	javalib/java/io/OutputStreamWriter.java:
-	Imported from GNU Classpath.
+	Imported froGNClasspath.
 
 	* libraries/javalib/gnu/java/io/EncodingManager.java:
 	Don't use static initializers because it causes stack overflow.
@@ -145,7 +273,7 @@
 
 	* libraries/javalib/bootstrap.classlist,
 	libraries/javalib/essential.files:
-	Added new files to compile files newly imported from GNU Classpath.
+	Added new files to compile files newly imported froGNClasspath.
 
 	* libraries/javalib/Klasses.jar.bootstrap:
 	Regenerated.
@@ -260,7 +388,7 @@
 
 	Reported by: Riccardo Mottola <zuse@libero.it>
 
-2004-01-25  Guilhem Lavaux <guilhem@kaffe.org>
+2004-01-25  GuilheLavaux <guilhem@kaffe.org>
 
 	* test/regression/compile_time/CompileScript.in: Make the script
 	accepts many parameters.
@@ -272,7 +400,7 @@
 
 	* test/regression/compile_time/Makefile.in: Regenerated.
 
-2004-01-24  Jim Pick  <jim@kaffe.org>
+2004-01-24  JiPick  <jim@kaffe.org>
 
 	* libraries/javalib/essential.files:
 	Add extra classes needed for kjc build.
@@ -297,14 +425,14 @@
 	libraries/javalib/java/security/Permissions.java,
 	libraries/javalib/java/security/ProtectionDomain.java,
 	libraries/javalib/java/security/cert/X509Certificate.java:
-	Replaced by implementations from GNU Classpath.
+	Replaced by implementations froGNClasspath.
 
 	* libraries/javalib/profiles/default/core.files,
 	libraries/javalib/profiles/allatonce/all.files:
 	Updated.
 
 	* libraries/javalib/javax/security/auth/x500/X500Principal.java:
-	New file from GNU Classpath.
+	New file froGNClasspath.
 
 	* libraries/javalib/Makefile.am,
 	libraries/javalib/Makefile.in:
@@ -404,7 +532,7 @@
 
 2004-01-21  gettextize  <bug-gnu-gettext@gnu.org>
 
-	* Makefile.am (SUBDIRS): Add intl.
+	* Makefile.a(SUBDIRS): Add intl.
 	* configure.in (AC_CONFIG_FILES): Add intl/Makefile.
 
 2004-01-20  Timothy S. Stack <stack@cs.utah.edu>
@@ -435,19 +563,19 @@
 	* config/arm/jit.h
 	(LABEL_Lframe): Removed unused variable orig.
 
-2004-01-19  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+2004-01-19  Ito Kazumits <kaz@maczuka.gcd.org>
 
 	* kaffe/libraries/javalib/gnu/java/io/EncodingManager.java:
-	Copied from GNU Classpath and modified for use with kaffe.
+	Copied froGNClasspath and modified for use with kaffe.
 
 	* kaffe/libraries/javalib/gnu/java/io/decode/Decoder.java,
 	kaffe/libraries/javalib/gnu/java/io/encode/Encoder.java:
-	Copied from GNU CLasspath.
+	Copied froGNCLasspath.
 
 	* kaffe/libraries/javalib/gnu/java/io/decode/KaffeDecoder.java, 
 	kaffe/libraries/javalib/gnu/java/io/encode/KaffeEncoder.java:
 	New files.  These are added as a preparation for importing
-	GNU Classpath's java.io.InputStreamReader and
+	GNClasspath's java.io.InputStreamReader and
 	java.io.OutputStreamWriter.
 
 2004-01-19  Alexander Boettcher <ab764283@os.inf.tu-dresden.de>
@@ -461,7 +589,7 @@
 2004-01-19  Dalibor Topic <robilad@kaffe.org>
 
 	* include/Makefile.am
-	[USE_COMPAT_IFADDRS]: Ignore errors from LN_S.
+	[USE_COMPAT_IFADDRS]: Ignore errors froLN_S.
 
 	* include/Makefile.in:
 	Regenerated.
@@ -483,18 +611,18 @@
 	po/POTFILES.in:
 	New files. Required to fix the build.
 
-	The problem is that gettext documentation is very lax with 
+	The probleis that gettext documentation is very lax with 
 	respect to the meaning of the words 'should' and 'must'.
 	Apparently these files *must* exist, otherwise the build
 	breaks, contrary to gettext documentation.
 
-        Reported by: Ito Kazumitsu <kaz@maczuka.gcd.org>
+        Reported by: Ito Kazumits<kaz@maczuka.gcd.org>
                      Matthias Pfisterer <Matthias.Pfisterer@web.de>
 
 2004-01-18  Dalibor Topic <robilad@kaffe.org>
 
 	* include/Makefile.am
-	[USE_COMPAT_IFADDRS]: Replaced GNU Make specific construct.
+	[USE_COMPAT_IFADDRS]: Replaced GNMake specific construct.
 
 	* include/Makefile.in:
 	Regenerated.
@@ -508,7 +636,7 @@
 	configure:
 	Regenerated.
 
-	Reported by: Ito Kazumitsu <kaz@maczuka.gcd.org>
+	Reported by: Ito Kazumits<kaz@maczuka.gcd.org>
                      Matthias Pfisterer <Matthias.Pfisterer@web.de>
 
 2004-01-17  Dalibor Topic <robilad@kaffe.org>
@@ -528,7 +656,7 @@
 	Added calls to autopoint.
 
         * configure.in:
-	Added check for GNU gettext.
+	Added check for GNgettext.
 
 	* ABOUT-NLS,
         Makefile.am,
@@ -637,7 +765,7 @@
 
 2004-01-17  gettextize  <bug-gnu-gettext@gnu.org>
 
-	* Makefile.am (ACLOCAL_AMFLAGS): New variable.
+	* Makefile.a(ACLOCAL_AMFLAGS): New variable.
 
 2004-01-15  Dalibor Topic <robilad@kaffe.org>
 
@@ -888,7 +1016,7 @@
 	* configure.in:
 	Moved AC_CONFIG_* entries before AM_INIT.
 
-	Reported by: Jim Pick <jim@kaffe.org>
+	Reported by: JiPick <jim@kaffe.org>
 
 	* configure:
 	Regenerated.
@@ -993,7 +1121,7 @@
 	New file.
 
         * THIRDPARTY:
-	Added information on GNU Inetlib and ESound m4 macros.
+	Added information on GNInetlib and ESound m4 macros.
 
         * Makefile.in,
         aclocal.m4,
@@ -1143,7 +1271,7 @@
 2004-01-12  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/java/util/logging/SocketHandler.java:
-	New file, taken from GNU Classpath.
+	New file, taken froGNClasspath.
 
 	* libraries/javalib/profiles/default/rest.files:
 	Added java/util/logging/SocketHandler.java.
@@ -1165,14 +1293,14 @@
 2004-01-12  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/java/awt/GridBagLayout.java:
-	Replaced by implementation from GNU Classpath. 
+	Replaced by implementation froGNClasspath. 
 
 	This fixes a bug with the Babylon Chat Server client.
 
-2004-01-11  Jim Pick  <jim@kaffe.org>
+2004-01-11  JiPick  <jim@kaffe.org>
 
 	* m4/alsa.m4:
-	From http://cvs.sourceforge.net/viewcvs.py/*checkout*/alsa/alsa-lib/utils/alsa.m4?rev=1.22
+	Frohttp://cvs.sourceforge.net/viewcvs.py/*checkout*/alsa/alsa-lib/utils/alsa.m4?rev=1.22
 
 	Used to detect ALSA version.
 
@@ -1270,7 +1398,7 @@
 
 2004-01-11  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2004-01-10  Michael Koch  <konqueror@gmx.de>
 
@@ -1279,7 +1407,7 @@
 
 2004-01-11  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2004-01-07  Michael Koch  <konqueror@gmx.de>
 
@@ -1291,11 +1419,11 @@
         * java/text/RuleBasedCollator.java:
         Fixed class documentation, reordered methods to match libgcj's
         version.
-        (CollationElement.key): Renamed from char_seq. 
+        (CollationElement.key): Renamed frochar_seq. 
 
 2004-01-11  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2003-12-26  Michael Koch  <konqueror@gmx.de>
 
@@ -1304,7 +1432,7 @@
 
 2004-01-11  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2004-01-08  Michael Koch  <konqueror@gmx.de>
 
@@ -1318,7 +1446,7 @@
 
 2004-01-11  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2004-01-08  Michael Koch  <konqueror@gmx.de>
 
@@ -1343,7 +1471,7 @@
 
 2004-01-11  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2003-10-15  Michael Koch  <konqueror@gmx.de>
 
@@ -1355,7 +1483,7 @@
         * java/text/AttributedCharacterIterator.java,
         Removed redundant modifiers.
 
-2004-01-11  Guilhem Lavaux <guilhem@kaffe.org>
+2004-01-11  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/text/FormatCharacterIterator.java
 	(addAttributes): Added a new helper function.
@@ -1385,12 +1513,12 @@
 	Resynced with Tritonus.org.
 
         * libraries/javalib/org/tritonus/share/sampled/convert/TAudioInputStream.java:
-	New file from Tritonus.
+	New file froTritonus.
 
         * libraries/javalib/profiles/default/sound.files:
 	Added org/tritonus/share/sampled/convert/TAudioInputStream.java.
 
-	Merged in FTP Handler from GNU Inetlib, licensed under GPL + linking exception.
+	Merged in FTP Handler froGNInetlib, licensed under GPL + linking exception.
 
         libraries/javalib/gnu/inet/ftp/ActiveModeDTP.java,
         libraries/javalib/gnu/inet/ftp/BlockInputStream.java,
@@ -1498,7 +1626,7 @@
 
 2004-01-10  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2004-01-09  Michael Koch  <konqueror@gmx.de>
 
@@ -1511,7 +1639,7 @@
 
 2004-01-10  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2004-01-09  Michael Koch  <konqueror@gmx.de>
 
@@ -1520,7 +1648,7 @@
 
 2004-01-10  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2004-01-09  Michael Koch  <konqueror@gmx.de>
 
@@ -1529,7 +1657,7 @@
 
 2004-01-09  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2004-01-09  Michael Koch  <konqueror@gmx.de>
 
@@ -1544,7 +1672,7 @@
 
 2004-01-09  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2004-01-06  Sascha Brawer  <brawer@dandelis.ch>
 
@@ -1585,7 +1713,7 @@
 
 2004-01-09  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2004-01-04  Michael Koch  <konqueror@gmx.de>
 
@@ -1599,7 +1727,7 @@
 
 2004-01-09  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2004-01-06  Per Bothner  <per@bothner.com>
 
@@ -1608,7 +1736,7 @@
 
 2004-01-09  Dalibor Topic <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+        Resynced with GNClasspath.
 
 	2004-01-08  Michael Koch  <konqueror@gmx.de>
 
@@ -1619,7 +1747,7 @@
 
 2004-01-09  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2004-01-06  Michael Koch  <konqueror@gmx.de>
 
@@ -1629,7 +1757,7 @@
 
 2004-01-09  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2004-01-07  Michael Koch  <konqueror@gmx.de>
 
@@ -1637,7 +1765,7 @@
 
 2004-01-08  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2004-01-06  Michael Koch  <konqueror@gmx.de>
 
@@ -1647,7 +1775,7 @@
 
 2004-01-08  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2004-01-05  Sascha Brawer  <brawer@dandelis.ch>
 
@@ -1658,7 +1786,7 @@
 
 2004-01-08  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2004-01-04  Michael Koch  <konqueror@gmx.de>
 
@@ -1670,7 +1798,7 @@
 
 2004-01-08  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2004-01-06  Michael Koch  <konqueror@gmx.de>
 
@@ -1679,7 +1807,7 @@
 
 2004-01-08  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2004-01-08  Michael Koch  <konqueror@gmx.de>
 
@@ -1692,7 +1820,7 @@
 
 2004-01-08  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2004-01-08  Michael Koch  <konqueror@gmx.de>
 
@@ -1705,7 +1833,7 @@
 
 2004-01-08  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2004-01-08  Michael Koch  <konqueror@gmx.de>
 
@@ -1721,7 +1849,7 @@
 
 2004-01-08  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2004-01-08  Michael Koch  <konqueror@gmx.de>
 
@@ -1732,7 +1860,7 @@
 
 2004-01-08  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2003-10-09  Michael Koch  <konqueror@gmx.de>
 
@@ -1753,7 +1881,7 @@
 	libraries/javalib/gnu/java/net/SocketOutputStream.java:
 	Removed.
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2003-10-09  Michael Koch  <konqueror@gmx.de>
 
@@ -1798,7 +1926,7 @@
 
         Reported by: Riccardo Mottola <zuse@libero.it>
 
-2004-01-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+2004-01-07  Ito Kazumits <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/io/ByteToCharConverter.java,
 	libraries/javalib/kaffe/io/CharToByteConverter.java:
@@ -1813,7 +1941,7 @@
 
         Reported by: Riccardo Mottola <zuse@libero.it>
 
-2004-01-06  Guilhem Lavaux <guilhem@kaffe.org>
+2004-01-06  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/kjc.jar: Regenerated. Removed checkInitializer
 	patch.
@@ -1843,7 +1971,7 @@
 
 	Reported by: Riccardo Mottola <zuse@libero.it>
 
-2004-01-06  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+2004-01-06  Ito Kazumits <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/io/ConverterAlias.java:
 	Added new Hashtable useIconv.  
@@ -1877,7 +2005,7 @@
 	libraries/javalib/Makefile.in:
 	Regenerated.
 
-2004-01-03  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+2004-01-03  Ito Kazumits <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/io/ConverterAlias.java:
 	Changed "EUC_JP" to "EUC-JP" so that iconv is directly called.
@@ -1888,7 +2016,7 @@
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2003-12-26  Michael Koch  <konqueror@gmx.de>
 
@@ -1899,9 +2027,9 @@
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
-	2003-11-28  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+	2003-11-28  Ito Kazumits <kaz@maczuka.gcd.org>
 
         * java/text/SimpleDateFormat.java (compileFormat):
         isLowerCase() and isUpperCase() allow too many characters.
@@ -1914,7 +2042,7 @@
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2003-12-26  Michael Koch  <konqueror@gmx.de>
 
@@ -1922,7 +2050,7 @@
         (getCurrency): New method.
         (setCurrency): New method.
 
-	2003-11-23  Guilhem Lavaux <guilhem@kaffe.org>
+	2003-11-23  GuilheLavaux <guilhem@kaffe.org>
 
         * java/text/NumberFormat.java:
         (getIntegerInstance) Added the java version in the comments.
@@ -1935,19 +2063,19 @@
         * java/text/NumberFormat.java: Import java.io.InvalidObjectException.
         (readResolve): Reformat.
 
-	2003-11-22  Guilhem Lavaux <guilhem@kaffe.org>
+	2003-11-22  GuilheLavaux <guilhem@kaffe.org>
 
         * java/text/NumberFormat.java
         (NumberFormat.Field): New implemented class to match Java 1.4.
         (getIntegerInstance): Two new Java 1.4 methods.o
 
-	2001-09-04  Tom Tromey  <tromey@redhat.com>
+	2001-09-04  ToTromey  <tromey@redhat.com>
 
         * java/text/NumberFormat.java: Merged with libgcj.
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2003-12-26  Michael Koch  <konqueror@gmx.de>
 
@@ -1955,7 +2083,7 @@
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2003-11-27  Dalibor Topic <robilad@kaffe.org>
 
@@ -1963,17 +2091,17 @@
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
-	2003-11-15  Guilhem Lavaux <guilhem@kaffe.org>
-            Jim Pick  <jim@kaffe.org>
+	2003-11-15  GuilheLavaux <guilhem@kaffe.org>
+            JiPick  <jim@kaffe.org>
 
         * java/text/DecimalFormat.java (getCurrency, setCurrency): New
         methods.
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2003-12-27  Michael Koch  <konqueror@gmx.de>
 
@@ -1985,7 +2113,7 @@
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2003-12-27  Michael Koch  <konqueror@gmx.de>
 
@@ -1994,23 +2122,23 @@
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
-	2003-12-29 Guilhem Lavaux <guilhem@kaffe.org>
+	2003-12-29 GuilheLavaux <guilhem@kaffe.org>
 
         * java/io/ObjectInputStream.java: Use if instead of catching
         NullPointerException.
 
-	2003-12-28  Guilhem Lavaux <guilhem@kaffe.org>
+	2003-12-28  GuilheLavaux <guilhem@kaffe.org>
 
         * java/io/ObjectInputStream.java: Reindented. Some exception message
         has been added.
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
-	2003-12-28  Guilhem Lavaux <guilhem@kaffe.org>
+	2003-12-28  GuilheLavaux <guilhem@kaffe.org>
 
         * java/io/LineNumberReader.java
         (countLines): Removed.
@@ -2022,7 +2150,7 @@
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2003-12-26  Michael Koch  <konqueror@gmx.de>
 
@@ -2037,7 +2165,7 @@
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2003-12-26  Michael Koch  <konqueror@gmx.de>
 
@@ -2046,7 +2174,7 @@
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2003-12-26  Michael Koch  <konqueror@gmx.de>
 
@@ -2055,7 +2183,7 @@
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
 	2003-12-26  Fernando Nasser  <fnasser@redhat.com>
 
@@ -2065,18 +2193,18 @@
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
-	2003-12-25  Guilhem Lavaux <guilhem@kaffe.org>
+	2003-12-25  GuilheLavaux <guilhem@kaffe.org>
 
         * gnu/java/net/protocol/jar/Handler.java
         (parseURL): Throw URLParseError if needed, fix '/' handling.
 
 2004-01-03  Dalibor Topic <robilad@kaffe.org>
 
-	Resynced with GNU Classpath.
+	Resynced with GNClasspath.
 
-	2003-12-25  Guilhem Lavaux <guilhem@kaffe.org>
+	2003-12-25  GuilheLavaux <guilhem@kaffe.org>
 
         * gnu/java/net/URLParseError.java: New file.
 
@@ -2142,7 +2270,7 @@
 	(jthread_get_data, jthread_get_status, 
 	jthread_is_intrerrupted, jthread_on_mutex,
 	jthread_on_condvar, jthread_clear_run,
-	jthread_has_run): New functions. Moved over from 
+	jthread_has_run): New functions. Moved over fro
 	kaffe/kaffevm/systems/unix-jthreads/jthread.h.
 
         * kaffe/kaffevm/systems/unix-jthreads/jthread.h
@@ -2252,18 +2380,18 @@
         test/regression/run_time/Makefile.in:
 	Regenerated.
 
-2004-01-01  Guilhem Lavaux <guilhem@kaffe.org>
+2004-01-01  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/io/ObjectOutputStream.java,
 	libraries/javalib/java/util/Random.java: Merged from
 	Classpath.
 
-2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-31  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/math/BigDecimal.java
 	(divide): Fixed rounding operations.
 
-2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-31  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/net/URL.java,
 	libraries/javalib/java/net/URLStreamHandler.java:
@@ -2276,12 +2404,12 @@
 	(gnu_java_net_SysInetAddressImpl_getHostByName):
 	Fixed compilation on FreeBSD 5.x.
 
-2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-31  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/io/ObjectStreamClass.java
-	(getClassUID): Commented out again GNU security provider.
+	(getClassUID): Commented out again GNsecurity provider.
 
-2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-31  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/io/ObjectStreamClass.java,
 	libraries/javalib/gnu/java/net/protocol/http/Connection.java,
@@ -2291,26 +2419,26 @@
 	Synchronized with Classpath.
 
 	* libraries/javalib/gnu/java/net/protocol/file/Handler.java:
-	Taken from GCJ. Complexity greatly reduced and fix many mauve failures.
+	Taken froGCJ. Complexity greatly reduced and fix many mauve failures.
 	
-2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-31  GuilheLavaux <guilhem@kaffe.org>
 	
 	* libraries/javalib/java/io/File.java: Merged case insensitivity
-	from classpath.
+	froclasspath.
 	(File): Fixed root directory handling on windows platform.
 
-2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-31  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/net/URL.java,
 	libraries/javalib/java/net/URLStreamHandler.java:
 	Fixed handling of URL given relative to a context URL.
 
-2003-12-30  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-30  GuilheLavaux <guilhem@kaffe.org>
 
 	* tests/regression/BufferedReaderTest.java: Removed too strict
 	testcases.
 
-2003-12-30  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+2003-12-30  Ito Kazumits <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/io/ByteToCharConverter.java
 	(getConverterInternal),
@@ -2319,19 +2447,19 @@
 	For an encoding name that cannot be a class name, directly
 	return an instance of the iconv based converter.
 
-2003-12-29  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+2003-12-29  Ito Kazumits <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/io/ConverterAlias.java:
 	Added "UnicodeBigUnmarked" and "UnicodeLittleUnmarked".
 
-2003-12-29  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-29  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/Klasses.jar.bootstrap: Regenerated.
 
 	* test/regression/LineNumberReaderTest.java: Adapted output to
 	new exception messages.
 
-2003-12-29  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-29  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/io/BufferedReader.java,
 	libraries/javalib/java/net/DatagramPacket.java,
@@ -2349,14 +2477,14 @@
 	* libraries/javalib/kaffe/tools/jar/Jar.java
 	(createJar): Removed extra "Name" attribute.
 
-2003-12-27  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-27  GuilheLavaux <guilhem@kaffe.org>
 
 	* configure, libraries/javalib/Makefile.am,
 	libraries/javalib/Makefile.in: Regenerated.
 
 	* configure.in, config/i386/cygwin32/md.h,
 	kaffe/kaffevm/systems/unix-jthreads/jthread.c:
-	Disable JVMPI and XPROF when the system is a cygwin.
+	Disable JVMPI and XPROF when the systeis a cygwin.
 
 	* libraries/javalib/essential.files: Added missing classes in NIO.
 
@@ -2417,9 +2545,9 @@
 	libraries/javalib/gnu/java/nio/InputStreamChannel.java,
 	libraries/javalib/gnu/java/nio/OutputStreamChannel.java,
 	libraries/javalib/gnu/java/nio/SelectorImpl.java:
-	Merged from GCJ/libjava.
+	Merged froGCJ/libjava.
 	
-2003-12-26  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-26  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/kjc.jar: Regenerated KJC to
 	include the latest patch concerning empty '<clinit>'.
@@ -2524,17 +2652,17 @@
         test/regression/run_time/Makefile.in:
 	Regenerated.
 
-2003-12-24  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-24  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/net/InetSocketAddress.java
 	(InetSocketAddress): Fix concerning "any address".
 
-2003-12-24  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-24  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/net/ServerSocket.java
 	(bind): Check whether the address to bind to is null.
 
-2003-12-23  Guilhem Lavaux <guilhem@kaffe.org>
+2003-12-23  GuilheLavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/kjc.jar: Regenerated a new KJC
 	with latest Ito's patch applied.
@@ -2769,7 +2897,7 @@
 	jthread_stackcheck, jthread_relaxstack, 
 	jthread_stacklimit, jthread_spinon, 
 	jthread_spinoff, jthread_get_usage): New functions, deinlined
-	from kaffe/kaffevm/systems/unix-jthreads/jthread.h.
+	frokaffe/kaffevm/systems/unix-jthreads/jthread.h.
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.h
 	(jthread_current, jthread_on_current_stack,
@@ -2808,7 +2936,7 @@
 	config/Makefile.in:
 	Regenerated.
 
-2003-12-14  Guilhem Lavaux <guilhem@kaffe.org>,
+2003-12-14  GuilheLavaux <guilhem@kaffe.org>,
 	Everton da Silva Marques <everton@lab.ipaccess.diveo.net.br>
 
 	* libraries/clib/net/PlainDatagramSocket.c:
@@ -2901,7 +3029,7 @@
 	config/parisc/linux/md.h:
 	Include config/m68k/sysdepCallMethod.h.
 
-2003-12-12  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+2003-12-12  Ito Kazumits <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/Makefile.am,
 	libraries/javalib/Makefile.in,
@@ -2915,7 +3043,7 @@
 	The endianness of UCS-2 varys depending on the version of
 	iconv. So we use UCS-2BE or UCS-2LE depending on the endianness
 	of the configuration.
-	Commited by Ito Kazumitsu  <kaz@maczuka.gcd.org>.
+	Commited by Ito Kazumits <kaz@maczuka.gcd.org>.
 
 2003-12-12  Dalibor Topic <robilad@kaffe.org>
 
@@ -2944,7 +3072,7 @@
 	* config/m68k/linux/md.h:
 	(sysdepCallMethod) Converted macro to inline function.
 
-2003-12-12  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+2003-12-12  Ito Kazumits <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/io/CharToByteEUC_JP.java,
 	libraries/javalib/kaffe/io/ByteToCharEUC_JP.java:
@@ -2958,7 +3086,7 @@
 	libraries/javalib/kaffe/io/ByteToCharEUC_JP.tbl:
 	Deleted.
 
-2003-12-11  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+2003-12-11  Ito Kazumits <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/io/CharToByteEUC_JP.java:
 	Corrected the typo "0x20E3" to "0x203E" (reported by
@@ -3038,7 +3166,7 @@
 	* config/m68k/common.h: Added missing include for 
 	support.h to fix compilation on m68k platforms.
 
-2003-12-09  Jim Pick <jim@kaffe.org>
+2003-12-09  JiPick <jim@kaffe.org>
 
 	* docs/src/docbook/port-kaffe/fdl.xml,
 	docs/src/docbook/port-kaffe/jit-icode.c,
@@ -3086,11 +3214,11 @@
 	* config/m68k/common.h
 	(sysdepCallMethod) Converted to inline function.
 	(COMPARE_AND_EXCHANGE) Call compare_and_swap inline function
-	from atomicity.h.
+	froatomicity.h.
 
-	* config/m68k/atomicity.h: New file from GNU libc.
+	* config/m68k/atomicity.h: New file froGNlibc.
 
-	* config/Makefile.am 
+	* config/Makefile.a
 	(EXTRA_DIST) Added config/m68k/atomicity.h.
 
 	* config/Makefile.in,
