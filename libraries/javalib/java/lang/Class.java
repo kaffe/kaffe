@@ -165,6 +165,7 @@ private String fullResourceName(String name) {
 		if (tail != -1) {
 			buf.append(cname.substring(0, tail).replace('.', '/'));
 		}
+		buf.append('/');
 		buf.append(name);
 		name = buf.toString();
 	}
