@@ -1,3 +1,9 @@
+2003-08-28  Herve Roussain <Herve.Roussain@univ-ubs.fr>
+
+	* kaffe/scripts/rmic.in:
+	Add kaffe's bin directory to PATH variable, in order to be able
+	to run rmic even if kjc is not in the path.
+
 2003-08-27  Jim Pick  <jim@kaffe.org>
 
 	* configure.in:
