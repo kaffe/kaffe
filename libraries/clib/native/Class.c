@@ -867,13 +867,15 @@ checkForField(struct Hjava_lang_Class* clazz, struct Hjava_lang_String* name, jb
 		clas = clas->superclass;
 	} while (!declared && clas != NULL);
 
-	/* then try this class's interfaces fields using the wonders of
-	 * recursion.  */
-	for (i = 0; i < clazz->total_interface_len; i++) {
-		Hjava_lang_reflect_Field *f;
-		f = checkForField(clazz->interfaces[i], name, declared);
-		if (f != 0) {
-			return (f);
+	if (!declared) {
+		/* then try this class's interfaces fields using the wonders of
+		 * recursion.  */
+		for (i = 0; i < clazz->total_interface_len; i++) {
+			Hjava_lang_reflect_Field *f;
+			f = checkForField(clazz->interfaces[i], name, declared);
+			if (f != 0) {
+				return (f);
+			}
 		}
 	}
 	return (0);

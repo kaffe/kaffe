@@ -1,3 +1,9 @@
+2003-08-10  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/clib/native/Class.c:
+	(checkForField) check for "declared" before looping on interfaces to
+	fetch imported fields.
+	
 2003-08-09  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
