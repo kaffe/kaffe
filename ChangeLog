@@ -1,8 +1,14 @@
-Fri Dec 18 08:56:10 1998  Godmar Back  <gback@marker.cs.utah.edu>
+Fri Dec 18 09:01:07 1998  Jim Flowers <flowers@aligninc.com>
+
+	* libraries/clib/management/Makefile.in, 
+	libraries/clib/net/Makefile.in: fixes for Win32/Cygwin.
+
+Fri Dec 18 08:56:10 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/mem/gc-incremental.c: rename MARK_OBJECT to
 	MARK_OBJECT_PRECISE to make clear that it marks objects precisely
 	without invoking gc_heap_isobject.
+	* kaffe/scripts/Makefile.in: create bindir in install-pizza target.
 
 Fri Dec 18 08:45:05 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
 
