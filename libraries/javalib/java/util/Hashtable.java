@@ -19,173 +19,213 @@ import java.lang.ClassNotFoundException;
 /* Hashtable (NOT tree) with simple clustering */
 
 public class Hashtable extends Dictionary implements Cloneable, Serializable {
-  transient private HashtableEntry bucket[];
+  transient private Object keys[];
+  transient private Object elements[];
   transient private float loadFactor;
   private int numberOfKeys;
+  transient private int rehashLimit;
 
-  private static final int DEFAULTCAPACITY=16;
+  private static final int DEFAULTCAPACITY = 101;
+  private static final float DEFAULTLOADFACTOR = (float)0.75;
 
   /* This is what Sun's JDK1.1 "serialver java.util.Hashtable" spits out */
   private static final long serialVersionUID = 1421746759512286392L;
 
-  public Hashtable(int initialCapacity, float loadFactor)
-  {
-    // We must always have at least one bucket.
-    if (initialCapacity <= 0) {
-      initialCapacity = 1;
-    }
-    this.loadFactor = loadFactor;
-    this.bucket = new HashtableEntry[initialCapacity];
-    this.numberOfKeys = 0;
+  public Hashtable() {
+    this(DEFAULTCAPACITY, DEFAULTLOADFACTOR);
   }
   
   public Hashtable(int initialCapacity) {
-    this(initialCapacity, (float)1.0);
+    this(initialCapacity, DEFAULTLOADFACTOR);
   }
   
-  public Hashtable() {
-    this(DEFAULTCAPACITY, (float)1.0);
+  public Hashtable(int initialCapacity, float loadFactor)
+  {
+    if (initialCapacity <= 0) {
+      throw new Error("Initial capacity is <= 0");
+    }
+    if (loadFactor <= 0.0) {
+      throw new Error("Load Factor is <= 0");
+    }
+    this.loadFactor = loadFactor;
+    this.keys = new Object[initialCapacity];
+    this.elements = new Object[initialCapacity];
+    this.numberOfKeys = 0;
+    this.rehashLimit = (int)(loadFactor * (float)initialCapacity);
   }
   
   public int size() {
-    return numberOfKeys;
+    return (numberOfKeys);
   }
   
   public boolean isEmpty() {
-    return (numberOfKeys==0);
+    return (numberOfKeys == 0);
   }
   
   public synchronized Enumeration keys() {
-    Vector vector=new Vector();
+    Vector vector = new Vector(numberOfKeys);
 
-    for (int pos=0; pos < bucket.length; pos++) {
-      for (HashtableEntry ptr = bucket[pos]; ptr != null; ptr = ptr.next) {
-	vector.addElement(ptr.getKey());
+    for (int pos = keys.length-1; pos >= 0; pos--) {
+      if (keys[pos] != null) {
+	vector.addElement(keys[pos]);
       }
     }
 
-    return new HashtableEnumeration(vector);
+    return (new HashtableEnumeration(vector));
   }
   
-  public synchronized Enumeration elements() {
-    Vector vector=new Vector();
 
-    for (int pos=0; pos < bucket.length; pos++) {
-      for (HashtableEntry ptr = bucket[pos]; ptr != null; ptr = ptr.next) {
-	vector.addElement(ptr.getData());
+  public synchronized Enumeration elements() {
+    Vector vector = new Vector(numberOfKeys);
+
+    for (int pos = elements.length-1; pos >= 0; pos--) {
+      if (keys[pos] != null) {
+	vector.addElement(elements[pos]);
       }
     }
 
-    return new HashtableEnumeration(vector);
+    return (new HashtableEnumeration(vector));
   }
   
   public synchronized boolean contains(Object value) {
-    /* No key therefore linear */
-    for (int pos=0; pos < bucket.length; pos++) {
-      for (HashtableEntry ptr = bucket[pos]; ptr != null; ptr = ptr.next) {
-        if (value.equals(ptr.getData())) return true;
+    for (int pos = elements.length-1; pos >= 0; pos--) {
+      if (value.equals(elements[pos])) {
+	  return (true);
       }
     }
     return false;
   }
   
   public synchronized boolean containsKey(Object key) {
-    /* Can lookup with the key */
-    return (get(key)!=null);
+    return (get(key) != null);
   }
   
+  private int calculateBucket(Object key) {
+    return ((key.hashCode() & Integer.MAX_VALUE) % keys.length);
+  }
+
   public synchronized Object get(Object key)
   {
     int posn = calculateBucket(key);
-    for (HashtableEntry ptr = bucket[posn]; ptr != null; ptr = ptr.next) {
-      if (key.equals(ptr.getKey())) {
-	return ptr.getData();
+    int limit = keys.length;
+    for (int i = posn; i < limit; i++) {
+      Object mkey = keys[i];
+      if (key.equals(mkey)) {
+	return (elements[i]);
+      }
+      if (mkey == null) {
+	return (null);
       }
     }
-    return null;
+    for (int i = 0; i < posn; i++) {
+      Object mkey = keys[i];
+      if (key.equals(mkey)) {
+	return (elements[i]);
+      }
+      if (mkey == null) {
+	return (null);
+      }
+    }
+    return (null);
   }
   
-  private int calculateBucket(Object key)
-  {
-    int hash = key.hashCode() % bucket.length;
-    if (hash < 0) {
-      return (-hash);
-    }
-    else {
-      return (hash);
-    }
-  }
-
   protected synchronized void rehash()
   {
-    int newCapacity = bucket.length * 2; /* double size, why not? */
-    HashtableEntry oldData[] = bucket;
+    int newCapacity = keys.length * 2;
+    Object oldKeys[] = keys;
+    Object oldElements[] = elements;
 
-    bucket = new HashtableEntry[newCapacity];
-    numberOfKeys=0;
+    keys = new Object[newCapacity];
+    elements = new Object[newCapacity];
+    rehashLimit = (int)(loadFactor * (float)newCapacity);
+    numberOfKeys = 0;
 
     /* Go through adding all the data to the new data */
-    for (int pos=0; pos<oldData.length; pos++) {
-      for (HashtableEntry ptr = oldData[pos]; ptr != null; ptr = ptr.next) {
-        put(ptr.getKey(), ptr.getData());
+    for (int pos = oldKeys.length-1; pos >= 0; pos--) {
+      if (keys[pos] != null) {
+	put(keys[pos], elements[pos]);
       }
     }
   }
   
-  public synchronized Object put(Object key, Object value)
-  {
-    if (loadFactor == 0.0) {
-      throw new Error("Load Factor is 0.0");
-    }
-
-    if (size() > ((int)(loadFactor*(float)bucket.length))) {
+  public synchronized Object put(Object key, Object value) {
+    if (numberOfKeys >= rehashLimit) {
       rehash();
     }
 
     int posn = calculateBucket(key);
-    for (HashtableEntry ptr = bucket[posn]; ptr != null; ptr = ptr.next) {
-      if (key.equals(ptr.getKey())) {
-	Object oldData = ptr.getData();
-	ptr.data = value;
-	return oldData;
+    int limit = keys.length;
+    for (int i = posn; i < limit; i++) {
+      Object mkey = keys[i];
+      if (key.equals(mkey)) {
+	Object oldElement = elements[i];
+	elements[i] = value;
+	return (oldElement);
+      }
+      if (mkey == null) {
+	keys[i] = key;
+	elements[i] = value;
+	numberOfKeys++;
+	return (null);
       }
     }
-
-    HashtableEntry entry = new HashtableEntry(key, value);
-    entry.next = bucket[posn];
-    bucket[posn] = entry;
-    numberOfKeys++;
-    return null;
+    for (int i = 0; i < posn; i++) {
+      Object mkey = keys[i];
+      if (key.equals(mkey)) {
+	Object oldElement = elements[i];
+	elements[i] = value;
+	return (oldElement);
+      }
+      if (mkey == null) {
+	keys[i] = key;
+	elements[i] = value;
+	numberOfKeys++;
+	return (null);
+      }
+    }
+    // We shouldn't get here.
+    throw new Error("Inconsistent Hashtable");
   }
   
   public synchronized Object remove(Object key) {
 
     int posn = calculateBucket(key);
-    HashtableEntry ptr = bucket[posn];
-    if (ptr == null) {
-      return null;
-    }
-    if (key.equals(ptr.getKey())) {
-      numberOfKeys--;
-      bucket[posn] = ptr.next;
-      return ptr.getData();
-    }
-    for (; ptr.next != null; ptr = ptr.next) {
-      if (key.equals(ptr.next.getKey())) {
+    int limit = keys.length;
+    for (int i = posn; i < limit; i++) {
+      Object mkey = keys[i];
+      if (key.equals(mkey)) {
+	Object oldElement = elements[i];
+	elements[i] = null;
+	keys[i] = null;
 	numberOfKeys--;
-	HashtableEntry entry = ptr.next;
-	ptr.next = entry.next;
-	return entry.getData();
+	return (oldElement);
+      }
+      if (mkey == null) {
+	return (null);
       }
     }
-    return null;
+    for (int i = 0; i < posn; i++) {
+      Object mkey = keys[i];
+      if (key.equals(mkey)) {
+	Object oldElement = elements[i];
+	elements[i] = null;
+	keys[i] = null;
+	numberOfKeys--;
+	return (oldElement);
+      }
+      if (mkey == null) {
+	return (null);
+      }
+    }
+    return (null);
   }
   
   public synchronized void clear() {
-    numberOfKeys=0;
-    for (int pos=0; pos<bucket.length; pos++) {
-      bucket[pos]=null;
+    for (int pos = keys.length; pos >= 0; pos--) {
+      keys[pos] = null;
+      elements[pos] = null;
     }
+    numberOfKeys = 0;
   }
   
   /**
@@ -209,15 +249,15 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
     }
     result.numberOfKeys = 0;
     result.loadFactor = loadFactor;
-    result.bucket = new HashtableEntry[bucket.length];
+    result.keys = new Object[keys.length];
+    result.elements = new Object[elements.length];
 
     /* copy our entries in new hashtable */ 
-    for (int pos=0; pos<bucket.length; pos++) {
-        for (HashtableEntry ptr = bucket[pos]; ptr != null; ptr = ptr.next) {
-	  result.put(ptr.getKey(), ptr.getData());
+    for (int pos = keys.length-1; pos >= 0; pos--) {
+      if (keys[pos] != null) {
+	result.put(keys[pos], elements[pos]);
       }
     }
-
     return ((Object)result);
   }
   
@@ -230,19 +270,21 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
 
     // read load factor
     loadFactor = stream.readFloat();
-    if (loadFactor == 0.0) {
-      throw new Error("Load Factor is 0.0");
-    }
 
     // create buckets
-    bucket = new HashtableEntry[stream.readInt()];
+    int len = stream.readInt();
+    keys = new Object[len];
+    elements = new Object[len];
+
+    // Set rehashLimit
+    rehashLimit = (int)(loadFactor * (float)len);
 
     // clear table, but remember how many entries are in the stream
     int nkeys = numberOfKeys;
     numberOfKeys = 0;
 
     // read entries
-    for (int i=0; i < nkeys; i++) {
+    for (int i = 0; i < nkeys; i++) {
       Object k = stream.readObject();
       Object o = stream.readObject();
       put(k, o);
@@ -260,70 +302,45 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
     stream.writeFloat(loadFactor);
 
     // remember how many buckets there were
-    stream.writeInt(bucket.length);
+    stream.writeInt(keys.length);
 
-    for (int pos = 0; pos < bucket.length; pos++) {
-      for (HashtableEntry ptr = bucket[pos]; ptr != null; ptr = ptr.next) {
-	stream.writeObject(ptr.getKey());
-	stream.writeObject(ptr.getData());
+    for (int pos = 0; pos < keys.length; pos++) {
+      if (keys[pos] != null) {
+	stream.writeObject(keys[pos]);
+	stream.writeObject(elements[pos]);
       }
     }
   }
 
   public synchronized String toString() {
-    boolean firstTime=true;
-    StringBuffer result=new StringBuffer();
+    boolean firstTime = true;
+    StringBuffer result = new StringBuffer();
 
     result.append('{');
-    for (int pos=0; pos<bucket.length; pos++) {
-      for (HashtableEntry ptr = bucket[pos]; ptr != null; ptr = ptr.next) {
-	if (!firstTime) result.append(", "); else firstTime=false;
-	result=result.append(ptr.getKey() + "=" + ptr.getData());
+    int pos = 0;
+    for (; pos < keys.length; pos++) {
+      if (keys[pos] != null) {
+	result.append(keys[pos]);
+	result.append("=");
+	result.append(elements[pos]);
+      }
+    }
+    for (; pos < keys.length; pos++) {
+      if (keys[pos] != null) {
+	result.append(", ");
+	result.append(keys[pos]);
+	result.append("=");
+	result.append(elements[pos]);
       }
     }
     result.append('}');
 
-    return result.toString();
+    return (result.toString());
   }
 }
 
-class HashtableEntry {
-  private Object key;
-  protected Object data;
-  private boolean spilled;
-  protected HashtableEntry next;
-  
-  public HashtableEntry() {
-    this(null, null);
-  }
-
-  public HashtableEntry(Object key, Object data) {
-    this.key=key;
-    this.data=data;
-  }
-
-  protected Object clone() {
-    return new HashtableEntry(key, data);
-  }
-
-  public Object getKey() {
-    return key;
-  }
-  
-  public Object getData() {
-    return data;
-  }
-
-  public boolean isSpilled() {
-    return spilled;
-  }
-
-  public void setSpilled() {
-    spilled=true;
-  }
-}
-
-class HashtableEnumeration implements Enumeration
+class HashtableEnumeration
+  implements Enumeration
 {
   private Vector vector;
   private int posn = 0;
@@ -332,13 +349,11 @@ class HashtableEnumeration implements Enumeration
     this.vector = vector;
   }
 
-  public boolean hasMoreElements()
-  {
+  public boolean hasMoreElements() {
     return (posn < vector.size());
   }
 
-  public Object nextElement()
-  {
+  public Object nextElement() {
     if (posn >= vector.size()) {
       throw new NoSuchElementException();
     }
