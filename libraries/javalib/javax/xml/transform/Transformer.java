@@ -48,106 +48,117 @@ import java.util.Properties;
  * @author	Andrew Selkirk, David Brownell
  * @version	1.0
  */
-public abstract class Transformer {
+public abstract class Transformer
+{
 
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Initialization ---------------------------------------------
+  //-------------------------------------------------------------
 
-	/** Default constructor, for use only by subclasses. */
-	protected Transformer() {
-	} // Transformer()
+  /** Default constructor, for use only by subclasses. */
+  protected Transformer()
+  {
+  } // Transformer()
 
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Methods ----------------------------------------------------
+  //-------------------------------------------------------------
 
-	/**
-	 * Clears all parameter settings.
-	 * @see #setParameter
-	 */
-	public abstract void clearParameters();
+  /**
+   * Clears all parameter settings.
+   * @see #setParameter
+   */
+  public abstract void clearParameters();
 
-	/** Returns the error handler used as documents are transformed. */
-	public abstract ErrorListener getErrorListener();
+  /** Returns the error handler used as documents are transformed. */
+  public abstract ErrorListener getErrorListener();
 
-	/**
-	 * Returns a copy of the transformer's non-default output properties.
-	 * That is, properties set in the stylesheet or through
-	 * methods on this class are not set.
-	 * @see OutputKeys
-	 * @see #setOutputProperties
-	 */
-	public abstract Properties getOutputProperties();
+  /**
+   * Returns a copy of the transformer's non-default output properties.
+   * That is, properties set in the stylesheet or through
+   * methods on this class are not set.
+   * @see OutputKeys
+   * @see #setOutputProperties
+   */
+  public abstract Properties getOutputProperties();
 
-	/**
-	 * Returns the value of a property applying to this transform.
-	 * Values returned by this method are only those that have
-	 * been set explicitly.
-	 * @see OutputKeys
-	 * @see #setOutputProperty
-	 */
-	public abstract String getOutputProperty(String name) 
-		throws IllegalArgumentException;
+  /**
+   * Returns the value of a property applying to this transform.
+   * Values returned by this method are only those that have
+   * been set explicitly.
+   * @see OutputKeys
+   * @see #setOutputProperty
+   */
+  public abstract String getOutputProperty(String name) 
+    throws IllegalArgumentException;
 
-	/**
-	 * Returns the value of a parameter passed to this transform.
-	 * These are primarily for use access within transformations
-	 * and extensions.
-	 * @see #setParameter
-	 */
-	public abstract Object getParameter(String name);
+  /**
+   * Returns the value of a parameter passed to this transform.
+   * These are primarily for use access within transformations
+   * and extensions.
+   * @see #setParameter
+   */
+  public abstract Object getParameter(String name);
 
-	/** Returns the resolver applied to documents being transformed. */
-	public abstract URIResolver getURIResolver();
+  /** Returns the resolver applied to documents being transformed. */
+  public abstract URIResolver getURIResolver();
 
-	/** Assigns the error handler used as documents are transformed. */
-	public abstract void setErrorListener(ErrorListener listener) 
-		throws IllegalArgumentException;
-	/**
-	 * Assigns a set of output properties, as if made by multiple
-	 * calls to {@link #setOutputProperty}.
-	 * @see OutputKeys
-	 * @param outputformat set of properties, or null to reset all
-	 *	properties to their default values
-	 */
-	public abstract void setOutputProperties(Properties outputformat) 
-		throws IllegalArgumentException;
+  /** Assigns the error handler used as documents are transformed. */
+  public abstract void setErrorListener(ErrorListener listener) 
+    throws IllegalArgumentException;
+  /**
+   * Assigns a set of output properties, as if made by multiple
+   * calls to {@link #setOutputProperty}.
+   * @see OutputKeys
+   * @param outputformat set of properties, or null to reset all
+   *	properties to their default values
+   */
+  public abstract void setOutputProperties(Properties outputformat) 
+    throws IllegalArgumentException;
 
-	/**
-	 * Assigns the value of a transformation property, affecting
-	 * generation of output (mostly text syntax).  Parameters include
-	 * those defined by the xslt:output element.  Default settings may
-	 * be explicitly overridden.
-	 * @see OutputKeys
-	 * @see #getOutputProperty
-	 * @see #setOutputProperties
-	 * @param name an XML name, or a namespace-scoped XML name
-	 *	encoded as <em>{uri}localName</em>.
-	 * @param value associated with the name
-	 */
-	public abstract void setOutputProperty(String name, String value) 
-		throws IllegalArgumentException;
+  /**
+   * Assigns the value of a transformation property, affecting
+   * generation of output (mostly text syntax).  Parameters include
+   * those defined by the xslt:output element.  Default settings may
+   * be explicitly overridden.
+   * @see OutputKeys
+   * @see #getOutputProperty
+   * @see #setOutputProperties
+   * @param name an XML name, or a namespace-scoped XML name
+   *	encoded as <em>{uri}localName</em>.
+   * @param value associated with the name
+   */
+  public abstract void setOutputProperty(String name, String value) 
+    throws IllegalArgumentException;
 
-	/**
-	 * Assigns the value of a parameter passed to this transform.
-	 * These are primarily for use access within transformations
-	 * and extensions.
-	 * @see #getParameter
-	 * @see #clearParameters
-	 * @param name an XML name, or a namespace-scoped XML name
-	 *	encoded as <em>{uri}localName</em>.
-	 * @param value associated with the name
-	 */
-	public abstract void setParameter(String name, Object value);
+  /**
+   * Assigns the value of a parameter passed to this transform.
+   * These are primarily for use access within transformations
+   * and extensions.
+   * @see #getParameter
+   * @see #clearParameters
+   * @param name an XML name, or a namespace-scoped XML name
+   *	encoded as <em>{uri}localName</em>.
+   * @param value associated with the name
+   */
+  public abstract void setParameter(String name, Object value);
 
-	/** Assigns the resolver applied to documents being transformed. */
-	public abstract void setURIResolver(URIResolver resolver);
+  /** Assigns the resolver applied to documents being transformed. */
+  public abstract void setURIResolver(URIResolver resolver);
 
-	/** Apply the appropriate transformation */
-	public abstract void transform(Source source, Result result) 
-		throws TransformerException;
+  /** Apply the appropriate transformation */
+  public abstract void transform(Source source, Result result) 
+    throws TransformerException;
+
+  // -- JAXP 1.3 methods --
+
+  /**
+   * Reset this Transformer to its original configuration.
+   */
+  public void reset()
+  {
+  }
 
 } // Transformer
 

@@ -45,26 +45,27 @@ package javax.xml.transform;
  * @author	Andrew Selkirk, David Brownell
  * @version	1.0
  */
-public interface Source {
+public interface Source
+{
 
-	//-------------------------------------------------------------
-	// Interface: Source ------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Interface: Source ------------------------------------------
+  //-------------------------------------------------------------
 
-	/**
-	 * Returns the URI for this source.  Some sources may not need URIs,
-	 * for example ones provided as an input stream, but such URIs
-	 * are important for resolving relative URIs and for providing
-	 * usable diagnostics.
-	 */
-	public String getSystemId();
+  /**
+   * Returns the URI for this source.  Some sources may not need URIs,
+   * for example ones provided as an input stream, but such URIs
+   * are important for resolving relative URIs and for providing
+   * usable diagnostics.
+   */
+  public String getSystemId();
 
-	/**
-	 * Associates a URI with this source.
-	 *
-	 * @param systemID the URI
-	 */
-	public void setSystemId(String systemID);
+  /**
+   * Associates a URI with this source.
+   *
+   * @param systemID the URI
+   */
+  public void setSystemId(String systemID);
 
 
 } // Source

@@ -46,149 +46,179 @@ import java.io.*;
  * @author	Andrew Selkirk, David Brownell
  * @version	1.0
  */
-public class TransformerException extends Exception {
+public class TransformerException
+  extends Exception
+{
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Variables --------------------------------------------------
+  //-------------------------------------------------------------
 
-	private	SourceLocator	locator			= null;
-	private Throwable	containedException	= null;
-	private boolean		causeKnown;
-
-
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
-
-	public TransformerException(String msg) {
-		super(msg);
-	}
-
-	public TransformerException(Throwable cause) {
-		super();
-		initCause (cause);
-	}
-
-	public TransformerException(String msg, Throwable cause) {
-		super(msg);
-		initCause (cause);
-	}
-
-	public TransformerException(String msg, SourceLocator locator) {
-		super(msg);
-		setLocator (locator);
-	}
-
-	public TransformerException(String msg, SourceLocator locator, 
-				Throwable cause) {
-		super(msg);
-		setLocator (locator);
-		initCause (cause);
-	}
+  private	SourceLocator	locator			= null;
+  private Throwable	containedException	= null;
+  private boolean		causeKnown;
 
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Initialization ---------------------------------------------
+  //-------------------------------------------------------------
 
-	/**
-	 * Returns the root cause of this exception,
-	 * or null if none is known.
-	 */
-	public Throwable getCause() {
-		return containedException;
-	}
+  public TransformerException(String msg)
+  {
+    super(msg);
+  }
 
-	/**
-	 * Synonym for {@link #getCause}.
-	 */
-	public Throwable getException() {
-		return containedException;
-	}
+  public TransformerException(Throwable cause)
+  {
+    super();
+    initCause (cause);
+  }
 
-	/**
-	 * Returns a readable version of the locator info, or null
-	 * if there is no locator.
-	 */
-	public String getLocationAsString() {
-	    if (locator == null)
-		return null;
+  public TransformerException(String msg, Throwable cause)
+  {
+    super(msg);
+    initCause (cause);
+  }
 
-	    StringBuffer	retval = new StringBuffer ();
+  public TransformerException(String msg, SourceLocator locator)
+  {
+    super(msg);
+    setLocator (locator);
+  }
 
-	    if (locator.getPublicId () != null) {
-		retval.append ("public='");
-		retval.append (locator.getPublicId ());
-		retval.append ("' ");
-	    }
-	    if (locator.getSystemId () != null) {
-		retval.append ("uri='");
-		retval.append (locator.getSystemId ());
-		retval.append ("' ");
-	    }
-	    if (locator.getLineNumber () != -1) {
-		retval.append ("line=");
-		retval.append (locator.getLineNumber ());
-		retval.append (" ");
-	    }
-	    if (locator.getColumnNumber () != -1) {
-		retval.append ("column=");
-		retval.append (locator.getColumnNumber ());
-		//retval.append (" ");
-	    }
-	    return retval.toString ();
-	}
-
-	public SourceLocator getLocator() {
-		return locator;
-	}
-
-	/**
-	 * Returns this exception's message, with readable location
-	 * information appended if it is available.
-	 */
-	public String getMessageAndLocation() {
-	    if (locator == null)
-		return getMessage ();
-	    return getMessage () + ": " + getLocationAsString ();
-	}
-
-	/**
-	 * Records the root cause of this exception; may be
-	 * called only once, normally during initialization.
-	 */
-	public synchronized Throwable initCause(Throwable cause) {
-	    if (cause == this)
-		throw new IllegalArgumentException ();
-	    if (containedException != null)
-		throw new IllegalStateException ();
-	    containedException = cause;
-	    causeKnown = true;
-// FIXME: spec implies "this" may be the right value; another bug?
-	    return cause;
-	}
+  public TransformerException(String msg, SourceLocator locator, 
+                              Throwable cause)
+  {
+    super(msg);
+    setLocator (locator);
+    initCause (cause);
+  }
 
 
-	public void printStackTrace() {
-		printStackTrace(System.out);// shouldn't it be System.err?
-	}
+  //-------------------------------------------------------------
+  // Methods ----------------------------------------------------
+  //-------------------------------------------------------------
 
-	public void printStackTrace(PrintStream stream) {
-		PrintWriter out = new PrintWriter(
-			new OutputStreamWriter(stream));
-		printStackTrace(out);
-		out.flush ();
-	}
+  /**
+   * Returns the root cause of this exception,
+   * or null if none is known.
+   */
+  public Throwable getCause()
+  {
+    return containedException;
+  }
 
-	public void printStackTrace(PrintWriter writer) {
-		if (containedException != null) {
-			containedException.printStackTrace(writer);
-		}
-		super.printStackTrace(writer);
-	}
+  /**
+   * Synonym for {@link #getCause}.
+   */
+  public Throwable getException()
+  {
+    return containedException;
+  }
 
-	public void setLocator (SourceLocator location) {
-		locator = location;
-	}
+  /**
+   * Returns a readable version of the locator info, or null
+   * if there is no locator.
+   */
+  public String getLocationAsString()
+  {
+    if (locator == null)
+      {
+        return null;
+      }
+
+    StringBuffer	retval = new StringBuffer ();
+
+    if (locator.getPublicId () != null)
+    {
+      retval.append ("public='");
+      retval.append (locator.getPublicId ());
+      retval.append ("' ");
+    }
+    if (locator.getSystemId () != null)
+    {
+      retval.append ("uri='");
+      retval.append (locator.getSystemId ());
+      retval.append ("' ");
+    }
+    if (locator.getLineNumber () != -1)
+    {
+      retval.append ("line=");
+      retval.append (locator.getLineNumber ());
+      retval.append (" ");
+    }
+    if (locator.getColumnNumber () != -1)
+    {
+      retval.append ("column=");
+      retval.append (locator.getColumnNumber ());
+      //retval.append (" ");
+    }
+    return retval.toString ();
+  }
+
+  public SourceLocator getLocator()
+  {
+    return locator;
+  }
+
+  /**
+   * Returns this exception's message, with readable location
+   * information appended if it is available.
+   */
+  public String getMessageAndLocation()
+  {
+    if (locator == null)
+      {
+        return getMessage ();
+      }
+    return getMessage () + ": " + getLocationAsString ();
+  }
+
+  /**
+   * Records the root cause of this exception; may be
+   * called only once, normally during initialization.
+   */
+  public synchronized Throwable initCause(Throwable cause)
+  {
+    if (cause == this)
+      {
+        throw new IllegalArgumentException ();
+      }
+    if (containedException != null)
+      {
+        throw new IllegalStateException ();
+      }
+    containedException = cause;
+    causeKnown = true;
+    // FIXME: spec implies "this" may be the right value; another bug?
+    return cause;
+  }
+
+  public void printStackTrace()
+  {
+    printStackTrace(System.out);// shouldn't it be System.err?
+  }
+
+  public void printStackTrace(PrintStream stream)
+  {
+    PrintWriter out = new PrintWriter(
+                                      new OutputStreamWriter(stream));
+    printStackTrace(out);
+    out.flush ();
+  }
+
+  public void printStackTrace(PrintWriter writer)
+  {
+    if (containedException != null)
+    {
+      containedException.printStackTrace(writer);
+    }
+    super.printStackTrace(writer);
+  }
+
+  public void setLocator (SourceLocator location)
+  {
+    locator = location;
+  }
+
 }

@@ -258,11 +258,16 @@ Klasses_jar_SRCS = \
 	$(javax_swing_undo_SRCS) \
 	$(javax_transaction_SRCS) \
 	$(javax_transaction_xa_SRCS) \
+	$(javax_xml_SRCS) \
+	$(javax_xml_datatype_SRCS) \
+	$(javax_xml_namespace_SRCS) \
 	$(javax_xml_parsers_SRCS) \
 	$(javax_xml_transform_SRCS) \
 	$(javax_xml_transform_dom_SRCS) \
 	$(javax_xml_transform_sax_SRCS) \
 	$(javax_xml_transform_stream_SRCS) \
+	$(javax_xml_validation_SRCS) \
+	$(javax_xml_xpath_SRCS) \
 	$(kaffe_beans_editors_SRCS) \
 	$(kaffe_io_SRCS) \
 	$(kaffe_jar_SRCS) \
@@ -3491,6 +3496,17 @@ javax_transaction_xa_SRCS = \
 	javax/transaction/xa/XAException.java \
 	javax/transaction/xa/XAResource.java \
 	javax/transaction/xa/Xid.java
+javax_xml_SRCS = \
+	javax/xml/XMLConstants.java
+javax_xml_datatype_SRCS = \
+	javax/xml/datatype/DatatypeConfigurationException.java \
+	javax/xml/datatype/DatatypeConstants.java \
+	javax/xml/datatype/DatatypeFactory.java \
+	javax/xml/datatype/Duration.java \
+	javax/xml/datatype/XMLGregorianCalendar.java
+javax_xml_namespace_SRCS = \
+	javax/xml/namespace/NamespaceContext.java \
+	javax/xml/namespace/QName.java
 javax_xml_parsers_SRCS = \
 	javax/xml/parsers/ClassStuff.java \
 	javax/xml/parsers/DocumentBuilder.java \
@@ -3526,6 +3542,24 @@ javax_xml_transform_sax_SRCS = \
 javax_xml_transform_stream_SRCS = \
 	javax/xml/transform/stream/StreamResult.java \
 	javax/xml/transform/stream/StreamSource.java
+javax_xml_validation_SRCS = \
+	javax/xml/validation/Schema.java \
+	javax/xml/validation/SchemaFactory.java \
+	javax/xml/validation/TypeInfoProvider.java \
+	javax/xml/validation/Validator.java \
+	javax/xml/validation/ValidatorHandler.java
+javax_xml_xpath_SRCS = \
+	javax/xml/xpath/XPath.java \
+	javax/xml/xpath/XPathConstants.java \
+	javax/xml/xpath/XPathException.java \
+	javax/xml/xpath/XPathExpression.java \
+	javax/xml/xpath/XPathExpressionException.java \
+	javax/xml/xpath/XPathFactory.java \
+	javax/xml/xpath/XPathFactoryConfigurationException.java \
+	javax/xml/xpath/XPathFunction.java \
+	javax/xml/xpath/XPathFunctionException.java \
+	javax/xml/xpath/XPathFunctionResolver.java \
+	javax/xml/xpath/XPathVariableResolver.java
 kaffe_beans_editors_SRCS = \
 	kaffe/beans/editors/BooleanEditor.java \
 	kaffe/beans/editors/ByteEditor.java \

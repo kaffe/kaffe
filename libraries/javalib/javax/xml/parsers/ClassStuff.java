@@ -59,109 +59,156 @@ import java.util.Properties;
  */
 final class ClassStuff
 {
-    private ClassStuff () { }
 
-    /**
-     * Get the default factory using the four-stage defaulting
-     * mechanism defined by JAXP.
-     */
-    static Object
-    createFactory (String label, String defaultClass)
+  private ClassStuff ()
+  {
+  }
+
+  /**
+   * Get the default factory using the four-stage defaulting
+   * mechanism defined by JAXP.
+   */
+  static Object createFactory(String label, String defaultClass)
     throws FactoryConfigurationError
-    {
-	String		name = null;
-	ClassLoader	loader = null;
+  {
+    String		name = null;
+    ClassLoader	loader = null;
 
-	// figure out which class loader to use.
-	// source compiles on jdk 1.1, but works with jdk 1.2+ security
-        try {
-	    Method 	m = null;
+    // figure out which class loader to use.
+    // source compiles on jdk 1.1, but works with jdk 1.2+ security
+    try
+      {
+        Method 	m = null;
+        
+        // Can we use JDK 1.2 APIs?  Preferred: security policies apply.
+        m = Thread.class.getMethod ("getContextClassLoader", null);
+        loader = (ClassLoader) m.invoke (Thread.currentThread(), null);
+      }
+    catch (NoSuchMethodException e)
+      {
+        // Assume that we are running JDK 1.1; use current ClassLoader
+        loader = ClassStuff.class.getClassLoader();
+      }
+    catch (NoSuchMethodError e)
+      {
+        // evidently IE does this (one of its bugs)
+        loader = ClassStuff.class.getClassLoader();
+      }
+    catch (Throwable e)
+      {
+        // "should not happen"
+        throw new UnknownError (e.getMessage());
+      }
 
-	    // Can we use JDK 1.2 APIs?  Preferred: security policies apply.
-            m = Thread.class.getMethod ("getContextClassLoader", null);
-            loader = (ClassLoader) m.invoke (Thread.currentThread(), null);
-        } catch (NoSuchMethodException e) {
-            // Assume that we are running JDK 1.1; use current ClassLoader
-            loader = ClassStuff.class.getClassLoader();
-        } catch (NoSuchMethodError e) {
-            // evidently IE does this (one of its bugs)
-            loader = ClassStuff.class.getClassLoader();
-	} catch (Throwable e) {
-	    // "should not happen"
-            throw new UnknownError (e.getMessage());
-        }
+    // 1. Check System Property
+    // ... normally fails in applet environments
+    try
+      {
+        name = System.getProperty (label);
+      }
+    catch (SecurityException e)
+      {
+        /* IGNORE */
+      }
 
-	// 1. Check System Property
-	// ... normally fails in applet environments
-	try { name = System.getProperty (label);
-	} catch (SecurityException e) { /* IGNORE */ }
+    // 2. Check in $JAVA_HOME/lib/jaxp.properties
+    try
+      {
+        if (name == null)
+          {
+            String	javaHome;
+            File	file;
+            
+            javaHome = System.getProperty ("java.home");
+            file = new File (new File (javaHome, "lib"), "jaxp.properties");
+            if (file.exists() == true)
+              {
+                FileInputStream	in = new FileInputStream (file);
+                Properties		props = new Properties();
+                
+                props.load (in);
+                name  = props.getProperty (label);
+                in.close ();
+              }
+          }
+      }
+    catch (Exception e)
+      {
+        /* IGNORE */
+      }
 
-	// 2. Check in $JAVA_HOME/lib/jaxp.properties
-	try {
-	    if (name == null) {
-		String	javaHome;
-		File	file;
+    // 3. Check Services API
+    if (name == null)
+      {
+        try
+          {
+            String		service = "META-INF/services/" + label;
+            InputStream	in;
+            BufferedReader	reader;
+            
+            if (loader == null)
+              {
+                in = ClassLoader.getSystemResourceAsStream (service);
+              }
+            else
+              {
+                in = loader.getResourceAsStream (service);
+              }
+            if (in != null)
+              {
+                reader = new BufferedReader (
+                                             new InputStreamReader (in, "UTF8"));
+                name = reader.readLine();
+                in.close ();
+              }
+          }
+        catch (Exception e2)
+          {
+            /* IGNORE */
+          }
+      }
+    
+    // 4. Distro-specific fallback
+    if (name == null)
+      {
+        name = defaultClass;
+      }
 
-		javaHome = System.getProperty ("java.home");
-		file = new File (new File (javaHome, "lib"), "jaxp.properties");
-		if (file.exists() == true) {
-		    FileInputStream	in = new FileInputStream (file);
-		    Properties		props = new Properties();
-
-		    props.load (in);
-		    name  = props.getProperty (label);
-		    in.close ();
-		}
-	    }
-	} catch (Exception e) { /* IGNORE */ }
-
-	// 3. Check Services API
-	if (name == null) {
-	    try {
-		String		service = "META-INF/services/" + label;
-		InputStream	in;
-		BufferedReader	reader;
-
-		if (loader == null)
-		    in = ClassLoader.getSystemResourceAsStream (service);
-		else
-		    in = loader.getResourceAsStream (service);
-		if (in != null) {
-		    reader = new BufferedReader (
-			new InputStreamReader (in, "UTF8"));
-		    name = reader.readLine();
-		    in.close ();
-		}
-	    } catch (Exception e2) { /* IGNORE */ }
-	}
-
-	// 4. Distro-specific fallback
-	if (name == null)
-	    name = defaultClass;
-	
-	// Instantiate!
-	try {
-	    Class	klass;
-
-	    if (loader == null)
-		klass = Class.forName (name);
-	    else
-		klass = loader.loadClass (name);
-	    return klass.newInstance ();
-
-	} catch (ClassNotFoundException e) {
-	    throw new FactoryConfigurationError (e,
-		"Factory class " + name
-		    + " not found");
-	} catch (IllegalAccessException e) {
-	    throw new FactoryConfigurationError (e,
-		"Factory class " + name
-		    + " found but cannot be loaded");
-	} catch (InstantiationException e) {
-	    throw new FactoryConfigurationError (e,
-		"Factory class " + name
-		    + " loaded but cannot be instantiated"
-		    + " ((no default constructor?)");
-	}
-    }
+    // Instantiate!
+    try
+      {
+        Class	klass;
+        
+        if (loader == null)
+          {
+            klass = Class.forName (name);
+          }
+        else
+          {
+            klass = loader.loadClass (name);
+          }
+        return klass.newInstance ();
+        
+      }
+    catch (ClassNotFoundException e)
+      {
+        throw new FactoryConfigurationError (e,
+                                             "Factory class " + name
+                                             + " not found");
+      }
+    catch (IllegalAccessException e)
+      {
+        throw new FactoryConfigurationError (e,
+                                             "Factory class " + name
+                                             + " found but cannot be loaded");
+      }
+    catch (InstantiationException e)
+      {
+        throw new FactoryConfigurationError (e,
+                                             "Factory class " + name
+                                             + " loaded but cannot be instantiated"
+                                             + " ((no default constructor?)");
+      }
+  }
+  
 }

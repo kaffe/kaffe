@@ -45,13 +45,15 @@ import javax.xml.transform.SourceLocator;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public interface DOMLocator extends SourceLocator {
+public interface DOMLocator
+  extends SourceLocator
+{
 
-	//-------------------------------------------------------------
-	// Interface: DOMLocator --------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Interface: DOMLocator --------------------------------------
+  //-------------------------------------------------------------
 
-	public Node getOriginatingNode();
+  public Node getOriginatingNode();
 
 
 } // DOMLocator

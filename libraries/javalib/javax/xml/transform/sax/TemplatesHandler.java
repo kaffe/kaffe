@@ -45,18 +45,20 @@ import javax.xml.transform.Templates;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public interface TemplatesHandler extends ContentHandler {
+public interface TemplatesHandler
+  extends ContentHandler
+{
 
-	//-------------------------------------------------------------
-	// Interface: TemplatesHandler --------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Interface: TemplatesHandler --------------------------------
+  //-------------------------------------------------------------
 
-	public Templates getTemplates();
+  public Templates getTemplates();
 
-	public void setSystemId(String systemID);
+  public void setSystemId(String systemID);
 
-	public String getSystemId();
+  public String getSystemId();
 
 
 } // TemplatesHandler
- 
+

@@ -42,19 +42,23 @@ package javax.xml.parsers;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public class ParserConfigurationException extends Exception {
+public class ParserConfigurationException
+  extends Exception
+{
 
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Initialization ---------------------------------------------
+  //-------------------------------------------------------------
 
-	public ParserConfigurationException() {
-		super();
-	} // ParserConfigurationException()
+  public ParserConfigurationException()
+  {
+    super();
+  } // ParserConfigurationException()
 
-	public ParserConfigurationException(String message) {
-		super(message);
-	} // ParserConfigurationException()
+  public ParserConfigurationException(String message)
+  {
+    super(message);
+  } // ParserConfigurationException()
 
 
 } // ParserConfigurationException

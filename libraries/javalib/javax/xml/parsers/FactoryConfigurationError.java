@@ -42,48 +42,56 @@ package javax.xml.parsers;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public class FactoryConfigurationError extends Error {
+public class FactoryConfigurationError
+  extends Error
+{
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Variables --------------------------------------------------
+  //-------------------------------------------------------------
 
-	private Exception	exception	= null;
-
-
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
-	public FactoryConfigurationError() {
-		super();
-	} // FactoryConfigurationError()
-
-	public FactoryConfigurationError(String msg) {
-		super(msg);
-	} // FactoryConfigurationError()
-
-	public FactoryConfigurationError(Exception ex) {
-		super();
-		exception = ex;
-	} // FactoryConfigurationError()
-
-	public FactoryConfigurationError(Exception ex, String msg) {
-		super(msg);
-		exception = ex;
-	} // FactoryConfigurationError()
+  private Exception	exception	= null;
 
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Initialization ---------------------------------------------
+  //-------------------------------------------------------------
+  public FactoryConfigurationError()
+  {
+    super();
+  } // FactoryConfigurationError()
 
-	public String getMessage() {
-		return super.getMessage();
-	} // getMessage()
+  public FactoryConfigurationError(String msg)
+  {
+    super(msg);
+  } // FactoryConfigurationError()
 
-	public Exception getException() {
-		return exception;
-	} // getException()
+  public FactoryConfigurationError(Exception ex)
+  {
+    super();
+    exception = ex;
+  } // FactoryConfigurationError()
+
+  public FactoryConfigurationError(Exception ex, String msg)
+  {
+    super(msg);
+    exception = ex;
+  } // FactoryConfigurationError()
+
+
+  //-------------------------------------------------------------
+  // Methods ----------------------------------------------------
+  //-------------------------------------------------------------
+
+  public String getMessage()
+  {
+    return super.getMessage();
+  } // getMessage()
+
+  public Exception getException()
+  {
+    return exception;
+  } // getException()
 
 
 } // FactoryConfigurationError

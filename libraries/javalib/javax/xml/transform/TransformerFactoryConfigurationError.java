@@ -43,42 +43,53 @@ package javax.xml.transform;
  * @author	Andrew Selkirk, David Brownell
  * @version	1.0
  */
-public class TransformerFactoryConfigurationError extends Error
+public class TransformerFactoryConfigurationError
+  extends Error
 {
-    private Exception	exception	= null;
+  private Exception	exception	= null;
 
 
-    //-------------------------------------------------------------
-    // Initialization ---------------------------------------------
-    //-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Initialization ---------------------------------------------
+  //-------------------------------------------------------------
 
-    public TransformerFactoryConfigurationError ()
-	{ }
+  public TransformerFactoryConfigurationError ()
+  {
+  }
 
-    public TransformerFactoryConfigurationError (Exception e)
-	{ exception = e; }
+  public TransformerFactoryConfigurationError (Exception e)
+  {
+    exception = e;
+  }
 
-    public TransformerFactoryConfigurationError (Exception e, String msg)
-    {
-	super (msg);
-	exception = e;
-    }
+  public TransformerFactoryConfigurationError (Exception e, String msg)
+  {
+    super (msg);
+    exception = e;
+  }
 
-    public TransformerFactoryConfigurationError (String msg)
-	{ super (msg); }
+  public TransformerFactoryConfigurationError (String msg)
+  {
+    super (msg);
+  }
 
 
-    //-------------------------------------------------------------
-    // Methods ----------------------------------------------------
-    //-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Methods ----------------------------------------------------
+  //-------------------------------------------------------------
 
-    public String getMessage ()
-    {
-	if (super.getMessage () == null && exception != null)
-	    return exception.getMessage ();
-	return super.getMessage ();
-    }
+  public String getMessage ()
+  {
+    if (super.getMessage () == null && exception != null)
+      {
+        return exception.getMessage ();
+      }
+    return super.getMessage ();
+  }
 
-    public Exception getException ()
-	{ return exception; }
+  public Exception getException ()
+  {
+    return exception;
+  }
+  
 }

@@ -50,125 +50,153 @@ import javax.xml.transform.Source;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public class StreamSource implements Source {
+public class StreamSource
+  implements Source
+{
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Variables --------------------------------------------------
+  //-------------------------------------------------------------
 
-	public static final String FEATURE =
-		"http://javax.xml.transform.stream.StreamSource/feature";
+  public static final String FEATURE =
+    "http://javax.xml.transform.stream.StreamSource/feature";
 
-	private String		publicId	= null;
-	private String		systemId	= null;
-	private InputStream	inputStream	= null;
-	private Reader		reader		= null;
-
-
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
-
-	public StreamSource() {
-	}
-
-	public StreamSource(File file) {
-	    setSystemId (file);
-	}
-
-	public StreamSource(InputStream stream) {
-		this.inputStream = stream;
-	}
-
-	public StreamSource(InputStream stream, String systemID) {
-		this.inputStream = stream;
-		this.systemId = systemID;
-	}
-
-	public StreamSource(Reader reader) {
-		this.reader = reader;
-	}
-
-	public StreamSource(Reader reader, String systemID) {
-		this.reader = reader;
-		this.systemId = systemID;
-	}
-
-	public StreamSource(String systemID) {
-		this.systemId = systemID;
-	}
+  private String		publicId	= null;
+  private String		systemId	= null;
+  private InputStream	inputStream	= null;
+  private Reader		reader		= null;
 
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Initialization ---------------------------------------------
+  //-------------------------------------------------------------
 
-	public InputStream getInputStream() {
-		return inputStream;
-	}
+  public StreamSource()
+  {
+  }
 
-	public String getPublicId() {
-		return publicId;
-	}
+  public StreamSource(File file)
+  {
+    setSystemId (file);
+  }
 
-	public Reader getReader() {
-		return reader;
-	}
+  public StreamSource(InputStream stream)
+  {
+    this.inputStream = stream;
+  }
 
-	public String getSystemId() {
-		return systemId;
-	}
+  public StreamSource(InputStream stream, String systemID)
+  {
+    this.inputStream = stream;
+    this.systemId = systemID;
+  }
+
+  public StreamSource(Reader reader)
+  {
+    this.reader = reader;
+  }
+
+  public StreamSource(Reader reader, String systemID)
+  {
+    this.reader = reader;
+    this.systemId = systemID;
+  }
+
+  public StreamSource(String systemID)
+  {
+    this.systemId = systemID;
+  }
 
 
-	public void setInputStream(InputStream stream) {
-		this.inputStream = stream;
-	}
+  //-------------------------------------------------------------
+  // Methods ----------------------------------------------------
+  //-------------------------------------------------------------
 
-	public void setPublicId(String publicID) {
-		this.publicId = publicID;
-	}
+  public InputStream getInputStream()
+  {
+    return inputStream;
+  }
 
-	public void setReader(Reader reader) {
-		this.reader = reader;
-	}
+  public String getPublicId()
+  {
+    return publicId;
+  }
 
-	public void setSystemId(File file) {
-	    try {
-		this.systemId = fileToURL (file).toString ();
-	    } catch (IOException e) {
-		// can't happen
-		throw new RuntimeException (e.getMessage ());
-	    }
-	}
+  public Reader getReader()
+  {
+    return reader;
+  }
 
-	public void setSystemId(String systemID) {
-		this.systemId = systemID;
-	}
+  public String getSystemId()
+  {
+    return systemId;
+  }
 
-	// we don't demand jdk 1.2 File.toURL() in the runtime
-	// keep in sync with gnu.xml.util.Resolver
-	// and javax.xml.parsers.DocumentBuilder
-	static String fileToURL (File f)
-	throws IOException
-	{
-	    String	temp;
 
-	    // FIXME: getAbsolutePath() seems buggy; I'm seeing components
-	    // like "/foo/../" which are clearly not "absolute"
-	    // and should have been resolved with the filesystem.
+  public void setInputStream(InputStream stream)
+  {
+    this.inputStream = stream;
+  }
 
-	    // Substituting "/" would be wrong, "foo" may have been
-	    // symlinked ... the URL code will make that change
-	    // later, so that things can get _really_ broken!
+  public void setPublicId(String publicID)
+  {
+    this.publicId = publicID;
+  }
 
-	    temp = f.getAbsolutePath ();
+  public void setReader(Reader reader)
+  {
+    this.reader = reader;
+  }
 
-	    if (File.separatorChar != '/')
-		temp = temp.replace (File.separatorChar, '/');
-	    if (!temp.startsWith ("/"))
-		temp = "/" + temp;
-	    if (!temp.endsWith ("/") && f.isDirectory ())
-		temp = temp + "/";
-	    return "file:" + temp;
-	}
+  public void setSystemId(File file)
+  {
+    try
+      {
+        this.systemId = fileToURL (file).toString ();
+      }
+    catch (IOException e)
+      {
+        // can't happen
+        throw new RuntimeException (e.getMessage ());
+      }
+  }
+
+  public void setSystemId(String systemID)
+  {
+    this.systemId = systemID;
+  }
+
+  // we don't demand jdk 1.2 File.toURL() in the runtime
+  // keep in sync with gnu.xml.util.Resolver
+  // and javax.xml.parsers.DocumentBuilder
+  static String fileToURL (File f)
+    throws IOException
+  {
+    String	temp;
+    
+    // FIXME: getAbsolutePath() seems buggy; I'm seeing components
+    // like "/foo/../" which are clearly not "absolute"
+    // and should have been resolved with the filesystem.
+    
+    // Substituting "/" would be wrong, "foo" may have been
+    // symlinked ... the URL code will make that change
+    // later, so that things can get _really_ broken!
+    
+    temp = f.getAbsolutePath ();
+    
+    if (File.separatorChar != '/')
+      {
+        temp = temp.replace (File.separatorChar, '/');
+      }
+    if (!temp.startsWith ("/"))
+      {
+        temp = "/" + temp;
+      }
+    if (!temp.endsWith ("/") && f.isDirectory ())
+      {
+        temp = temp + "/";
+      }
+    return "file:" + temp;
+  }
+  
 }

@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Properties;
+import javax.xml.validation.Schema;
 import org.w3c.dom.*;
 import org.xml.sax.*;
 
@@ -56,110 +57,161 @@ import org.xml.sax.*;
  * @author	Andrew Selkirk, David Brownell
  * @version	1.2
  */
-public abstract class DocumentBuilderFactory {
+public abstract class DocumentBuilderFactory
+{
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Variables --------------------------------------------------
+  //-------------------------------------------------------------
 
-	private static final	String defaultPropName	= 
-		"javax.xml.parsers.DocumentBuilderFactory";
+  private static final	String defaultPropName	= 
+    "javax.xml.parsers.DocumentBuilderFactory";
 
-	private 		boolean validating	= false;
-	private 		boolean namespaceAware	= false;
-	private 		boolean whitespace	= false;
-	private 		boolean expandEntityRef	= false;
-	private 		boolean ignoreComments	= false;
-	private 		boolean coalescing	= false;
+  private 		boolean validating	= false;
+  private 		boolean namespaceAware	= false;
+  private 		boolean whitespace	= false;
+  private 		boolean expandEntityRef	= false;
+  private 		boolean ignoreComments	= false;
+  private 		boolean coalescing	= false;
+
+  private Schema schema;
+  private boolean xIncludeAware;
+
+  //-------------------------------------------------------------
+  // Initialization ---------------------------------------------
+  //-------------------------------------------------------------
+
+  protected DocumentBuilderFactory()
+  {
+  } // DocumentBuilderFactory()
 
 
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
-
-	protected DocumentBuilderFactory() {
-	} // DocumentBuilderFactory()
-
-
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Methods ----------------------------------------------------
+  //-------------------------------------------------------------
 
   /**
    * @exception IllegalArgumentException if implementation doesn't recognize the attribute
    */
-	public abstract Object getAttribute(String name) 
-		throws IllegalArgumentException;
+  public abstract Object getAttribute(String name) 
+    throws IllegalArgumentException;
 
-	public boolean isCoalescing() {
-		return coalescing;
-	} // isCoalescing()
+  public boolean isCoalescing()
+  {
+    return coalescing;
+  } // isCoalescing()
 
-	public boolean isExpandEntityReferences() {
-		return expandEntityRef;
-	} // isExpandEntityReferences()
+  public boolean isExpandEntityReferences()
+  {
+    return expandEntityRef;
+  } // isExpandEntityReferences()
 
-	public boolean isIgnoringComments() {
-		return ignoreComments;
-	} // isIgnoringComments()
+  public boolean isIgnoringComments()
+  {
+    return ignoreComments;
+  } // isIgnoringComments()
 
-	public boolean isIgnoringElementContentWhitespace() {
-		return whitespace;
-	} // isIgnoringElementContentWhitespace()
+  public boolean isIgnoringElementContentWhitespace()
+  {
+    return whitespace;
+  } // isIgnoringElementContentWhitespace()
 
-	public boolean isNamespaceAware() {
-		return namespaceAware;
-	} // isNamespaceAware()
+  public boolean isNamespaceAware()
+  {
+    return namespaceAware;
+  } // isNamespaceAware()
 
-	public boolean isValidating() {
-		return validating;
-	} // isValidating()
+  public boolean isValidating()
+  {
+    return validating;
+  } // isValidating()
 
-	public abstract DocumentBuilder newDocumentBuilder()
-		throws ParserConfigurationException;
+  public abstract DocumentBuilder newDocumentBuilder()
+    throws ParserConfigurationException;
 
   /**
    * @exception FactoryConfigurationError if the implementation is not available
    */
-	public static DocumentBuilderFactory newInstance() {
-		try {
-		    return (DocumentBuilderFactory)
-			ClassStuff.createFactory (
-				defaultPropName, 
-				"gnu.xml.dom.JAXPFactory");
-		} catch (ClassCastException e) {
-			throw new FactoryConfigurationError (e,
-				"Factory class is the wrong type");
-		}
-	}
+  public static DocumentBuilderFactory newInstance()
+  {
+    try
+      {
+        return (DocumentBuilderFactory)
+          ClassStuff.createFactory (
+                                    defaultPropName, 
+                                    "gnu.xml.dom.JAXPFactory");
+      }
+    catch (ClassCastException e)
+      {
+        throw new FactoryConfigurationError (e,
+                                             "Factory class is the wrong type");
+      }
+  }
 
   /**
    * @exception IllegalArgumentException if implementation doesn't recognize the attribute
    */
-	public abstract void setAttribute(String name, Object value) 
-		throws IllegalArgumentException;
+  public abstract void setAttribute(String name, Object value) 
+    throws IllegalArgumentException;
 
-	public void setCoalescing(boolean value) {
-		coalescing = value;
-	} // setCoalescing()
+  public void setCoalescing(boolean value)
+  {
+    coalescing = value;
+  } // setCoalescing()
 
-	public void setExpandEntityReferences(boolean value) {
-		expandEntityRef = value;
-	} // setExpandEntityReferences()
+  public void setExpandEntityReferences(boolean value)
+  {
+    expandEntityRef = value;
+  } // setExpandEntityReferences()
 
-	public void setIgnoringComments(boolean value) {
-		ignoreComments = value;
-	} // setIgnoringComments()
+  public void setIgnoringComments(boolean value)
+  {
+    ignoreComments = value;
+  } // setIgnoringComments()
 
-	public void setIgnoringElementContentWhitespace(boolean value) {
-		whitespace = value;
-	} // setIgnoringElementContentWhitespace()
+  public void setIgnoringElementContentWhitespace(boolean value)
+  {
+    whitespace = value;
+  } // setIgnoringElementContentWhitespace()
 
-	public void setNamespaceAware(boolean value) {
-		namespaceAware = value;
-	} // setNamespaceAware()
+  public void setNamespaceAware(boolean value)
+  {
+    namespaceAware = value;
+  } // setNamespaceAware()
 
-	public void setValidating(boolean value) {
-		validating = value;
-	} // setValidating()
+  public void setValidating(boolean value)
+  {
+    validating = value;
+  } // setValidating()
+
+  // -- JAXP 1.3 methods --
+
+  /**
+   * Returns the schema.
+   * @see #setSchema
+   */
+  public Schema getSchema()
+  {
+    return schema;
+  }
+
+  /**
+   * Sets the schema.
+   * @see #getSchema
+   */
+  public void setSchema(Schema schema)
+  {
+    this.schema = schema;
+  }
+
+  public boolean isXIncludeAware()
+  {
+    return xIncludeAware;
+  }
+
+  public void setXIncludeAware(boolean state)
+  {
+    xIncludeAware = state;
+  }
+  
 }

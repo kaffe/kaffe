@@ -53,99 +53,107 @@ import java.util.Properties;
  * @author	Andrew Selkirk, David Brownell
  * @version	1.0
  */
-public abstract class TransformerFactory {
+public abstract class TransformerFactory
+{
 
-	/** Constructor, for use by subclasses. */
-	protected TransformerFactory() {
-	}
-
-
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
-
-	/**
-	 * Returns an object encapsulating the &lt;?xml-stylesheet&nbsp;?&gt;
-	 * processing instruction from the document that matches the
-	 * specified criteria.
-	 */
-	public abstract Source getAssociatedStylesheet(Source source, 
-		String media, String title, String charset) 
-		throws TransformerConfigurationException;
-
-	/** Returns an implementation-specific attribute */
-	public abstract Object getAttribute(String name) 
-		throws IllegalArgumentException;
-
-	/** Returns the ErrorListener used when parsing stylesheets. */
-	public abstract ErrorListener getErrorListener();
-
-	/**
-	 * Exposes capabilities of the underlying implementation.
-	 * Examples include SAXSource.FEATURE and DOMResult.FEATURE.
-	 */
-	public abstract boolean getFeature(String name);
-
-	/** Returns the URIResolver used when parsing stylesheets. */
-	public abstract URIResolver getURIResolver();
+  /** Constructor, for use by subclasses. */
+  protected TransformerFactory()
+  {
+  }
 
 
-	/**
-	 * Returns a new TransformerFactory.  The name of this class
-	 * is found by checking, in order:
-	 * the <em>javax.xml.transform.TransformerFactory</em>
-	 *	system property,
-	 * <em>$JAVA_HOME/lib/jaxp.properties</em> for the key with
-	 *	that same name,
-	 * JAR files in the class path with a <em>META-INF/services</em>
-	 *	file with that same name,
-	 * else the compiled-in platform default.
-	 */
-	public static TransformerFactory newInstance() 
-	throws TransformerFactoryConfigurationError
-	{
-	    try {
-		return (TransformerFactory) ClassStuff.createFactory (
-			"javax.xml.transform.TransformerFactory",
-			"gnu.xml.libxmlj.transform.GnomeTransformerFactory"
-			// "gnu.xml.util.SAXNullTransformerFactory"
-			// "org.apache.xalan.processor.TransformerFactoryImpl"
-			);
-	    } catch (ClassCastException e) {
-		throw new TransformerFactoryConfigurationError(e);
-	    }
-	}
+  //-------------------------------------------------------------
+  // Methods ----------------------------------------------------
+  //-------------------------------------------------------------
+
+  /**
+   * Returns an object encapsulating the &lt;?xml-stylesheet&nbsp;?&gt;
+   * processing instruction from the document that matches the
+   * specified criteria.
+   */
+  public abstract Source getAssociatedStylesheet(Source source, 
+                                                 String media,
+                                                 String title,
+                                                 String charset) 
+    throws TransformerConfigurationException;
+
+  /** Returns an implementation-specific attribute */
+  public abstract Object getAttribute(String name) 
+    throws IllegalArgumentException;
+
+  /** Returns the ErrorListener used when parsing stylesheets. */
+  public abstract ErrorListener getErrorListener();
+
+  /**
+   * Exposes capabilities of the underlying implementation.
+   * Examples include SAXSource.FEATURE and DOMResult.FEATURE.
+   */
+  public abstract boolean getFeature(String name);
+
+  /** Returns the URIResolver used when parsing stylesheets. */
+  public abstract URIResolver getURIResolver();
 
 
-	/**
-	 * Returns a pre-compiled stylesheet.
-	 * @param stylesheet XSLT stylesheet specifying transform
-	 */
-	public abstract Templates newTemplates (Source stylesheet) 
-		throws TransformerConfigurationException;
+  /**
+   * Returns a new TransformerFactory.  The name of this class
+   * is found by checking, in order:
+   * the <em>javax.xml.transform.TransformerFactory</em>
+   *	system property,
+   * <em>$JAVA_HOME/lib/jaxp.properties</em> for the key with
+   *	that same name,
+   * JAR files in the class path with a <em>META-INF/services</em>
+   *	file with that same name,
+   * else the compiled-in platform default.
+   */
+  public static TransformerFactory newInstance() 
+    throws TransformerFactoryConfigurationError
+  {
+    try
+      {
+        return (TransformerFactory) ClassStuff.createFactory (
+                                                            "javax.xml.transform.TransformerFactory",
+                                                            "gnu.xml.libxmlj.transform.GnomeTransformerFactory"
+                                                            // "gnu.xml.util.SAXNullTransformerFactory"
+                                                            // "org.apache.xalan.processor.TransformerFactoryImpl"
+                                                           );
+      }
+    catch (ClassCastException e)
+      {
+        throw new TransformerFactoryConfigurationError(e);
+      }
+  }
 
-	/**
-	 * Returns a transformer that performs the null transform.
-	 */
-	public abstract Transformer newTransformer() 
-		throws TransformerConfigurationException;
 
-	/**
-	 * Returns a transformer making a specified transform.
-	 * @param stylesheet XSLT stylesheet specifying transform
-	 */
-	public abstract Transformer newTransformer (Source stylesheet) 
-		throws TransformerConfigurationException;
+  /**
+   * Returns a pre-compiled stylesheet.
+   * @param stylesheet XSLT stylesheet specifying transform
+   */
+  public abstract Templates newTemplates (Source stylesheet) 
+    throws TransformerConfigurationException;
+
+  /**
+   * Returns a transformer that performs the null transform.
+   */
+  public abstract Transformer newTransformer() 
+    throws TransformerConfigurationException;
+
+  /**
+   * Returns a transformer making a specified transform.
+   * @param stylesheet XSLT stylesheet specifying transform
+   */
+  public abstract Transformer newTransformer (Source stylesheet) 
+    throws TransformerConfigurationException;
 
 
-	/** Assigns an implementation-specific attribute */
-	public abstract void setAttribute(String name, Object value)
-		throws IllegalArgumentException;
+  /** Assigns an implementation-specific attribute */
+  public abstract void setAttribute(String name, Object value)
+    throws IllegalArgumentException;
 
-	/** Assigns the ErrorListener used when parsing stylesheets. */
-	public abstract void setErrorListener(ErrorListener listener) 
-		throws IllegalArgumentException;
+  /** Assigns the ErrorListener used when parsing stylesheets. */
+  public abstract void setErrorListener(ErrorListener listener) 
+    throws IllegalArgumentException;
 
-	/** Assigns the URIResolver used when parsing stylesheets. */
-	public abstract void setURIResolver(URIResolver resolver);
+  /** Assigns the URIResolver used when parsing stylesheets. */
+  public abstract void setURIResolver(URIResolver resolver);
+
 }

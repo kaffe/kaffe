@@ -42,19 +42,20 @@ package javax.xml.transform;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public interface SourceLocator {
+public interface SourceLocator
+{
 
-	//-------------------------------------------------------------
-	// Interface: SourceLocator -----------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Interface: SourceLocator -----------------------------------
+  //-------------------------------------------------------------
 
-	public String getPublicId();
+  public String getPublicId();
 
-	public String getSystemId();
+  public String getSystemId();
 
-	public int getLineNumber();
+  public int getLineNumber();
 
-	public int getColumnNumber();
+  public int getColumnNumber();
 
 
 } // SourceLocator

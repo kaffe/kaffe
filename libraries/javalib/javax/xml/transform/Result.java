@@ -41,26 +41,27 @@ package javax.xml.transform;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public interface Result {
+public interface Result
+{
 
-	//-------------------------------------------------------------
-	// Constants --------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Constants --------------------------------------------------
+  //-------------------------------------------------------------
 
-	public static final String PI_DISABLE_OUTPUT_ESCAPING =
-			"javax.xml.transform.disable-output-escaping";
+  public static final String PI_DISABLE_OUTPUT_ESCAPING =
+    "javax.xml.transform.disable-output-escaping";
 
-	public static final String PI_ENABLE_OUTPUT_ESCAPING =
-			"javax.xml.transform.disable-output-escaping";
+  public static final String PI_ENABLE_OUTPUT_ESCAPING =
+    "javax.xml.transform.disable-output-escaping";
 
 
-	//-------------------------------------------------------------
-	// Interface: Result ------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Interface: Result ------------------------------------------
+  //-------------------------------------------------------------
 
-	public String getSystemId();
+  public String getSystemId();
 
-	public void setSystemId(String systemID);
+  public void setSystemId(String systemID);
 
 
 } // Result

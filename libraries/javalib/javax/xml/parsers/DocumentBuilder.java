@@ -45,6 +45,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 // import java.net.*;
+import javax.xml.validation.Schema;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -61,131 +62,161 @@ import org.xml.sax.SAXException;
  */
 public abstract class DocumentBuilder
 {
-	/** Only subclasses may use the constructor. */
-	protected DocumentBuilder() { }
+  /** Only subclasses may use the constructor. */
+  protected DocumentBuilder() { }
 
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Methods ----------------------------------------------------
+  //-------------------------------------------------------------
 
-	public abstract DOMImplementation getDOMImplementation ();
-	
-	public abstract boolean isNamespaceAware();
+  public abstract DOMImplementation getDOMImplementation ();
 
-	public abstract boolean isValidating();
+  public abstract boolean isNamespaceAware();
 
-	public abstract Document newDocument();
+  public abstract boolean isValidating();
 
-	// we don't demand jdk 1.2 File.toURL() in the runtime
-	// keep in sync with gnu.xml.util.Resolver
-	// and javax.xml.transform.stream.StreamSource
-	static String fileToURL (File f)
-	throws IOException
-	{
-	    String	temp;
+  public abstract Document newDocument();
 
-	    // FIXME: getAbsolutePath() seems buggy; I'm seeing components
-	    // like "/foo/../" which are clearly not "absolute"
-	    // and should have been resolved with the filesystem.
+  // we don't demand jdk 1.2 File.toURL() in the runtime
+  // keep in sync with gnu.xml.util.Resolver
+  // and javax.xml.transform.stream.StreamSource
+  static String fileToURL (File f)
+    throws IOException
+  {
+    String	temp;
 
-	    // Substituting "/" would be wrong, "foo" may have been
-	    // symlinked ... the URL code will make that change
-	    // later, so that things can get _really_ broken!
+    // FIXME: getAbsolutePath() seems buggy; I'm seeing components
+    // like "/foo/../" which are clearly not "absolute"
+    // and should have been resolved with the filesystem.
 
-	    temp = f.getAbsolutePath ();
+    // Substituting "/" would be wrong, "foo" may have been
+    // symlinked ... the URL code will make that change
+    // later, so that things can get _really_ broken!
 
-	    if (File.separatorChar != '/')
-		temp = temp.replace (File.separatorChar, '/');
-	    if (!temp.startsWith ("/"))
-		temp = "/" + temp;
-	    if (!temp.endsWith ("/") && f.isDirectory ())
-		temp = temp + "/";
-	    return "file:" + temp;
-	}
+    temp = f.getAbsolutePath ();
 
-	/**
-	 * Constructs an InputSource from the file, and invokes parse ().
-	 * The InputSource includes the URI for the file.
+    if (File.separatorChar != '/')
+      temp = temp.replace (File.separatorChar, '/');
+    if (!temp.startsWith ("/"))
+      temp = "/" + temp;
+    if (!temp.endsWith ("/") && f.isDirectory ())
+      temp = temp + "/";
+    return "file:" + temp;
+  }
+
+  /**
+   * Constructs an InputSource from the file, and invokes parse ().
+   * The InputSource includes the URI for the file.
    * @param file the file to parse
    * @return the DOM representation of the xml document
    * @exception IOException 
    * @exception SAXException if parse errors occur
    * @exception IllegalArgumentException if the file is null
-	 */
-	public Document parse (File file) 
-	throws SAXException, IOException
-	{
+   */
+  public Document parse (File file) 
+    throws SAXException, IOException
+  {
     if (file==null)
       {
         throw new IllegalArgumentException("File si 'null'");
       }
     InputSource	source;
-    
+
     source = new InputSource (fileToURL (file));
     source.setByteStream (new FileInputStream(file));
     return parse (source);
-	}
-  
+  }
+
   /**
    * 
    * @exception IllegalArgumentException if InputSource is null
    */
-	public abstract Document parse(InputSource source) 
-		throws SAXException, IOException;
+  public abstract Document parse(InputSource source) 
+    throws SAXException, IOException;
 
-	/**
-	 * Avoid using this call; provide the system ID wherever possible.
-	 * System IDs are essential when parsers resolve relative URIs,
-	 * or provide diagnostics.
+  /**
+   * Avoid using this call; provide the system ID wherever possible.
+   * System IDs are essential when parsers resolve relative URIs,
+   * or provide diagnostics.
    * @exception IllegalArgumentException if InputStream is null
-	 */
-	public Document parse(InputStream stream) 
-		throws SAXException, IOException {
+   */
+  public Document parse(InputStream stream) 
+    throws SAXException, IOException
+  {
     if (stream==null)
-    {
-      throw new IllegalArgumentException("InputStream si 'null'");
-    }
-		return parse(new InputSource(stream));
-	} // parse()
+      {
+        throw new IllegalArgumentException("InputStream si 'null'");
+      }
+    return parse(new InputSource(stream));
+  } // parse()
 
   /**
    * 
    * @exception IllegalArgumentException if InputStream is null
    */
-	public Document parse(InputStream stream, String systemID) 
-		throws SAXException, IOException {
+  public Document parse(InputStream stream, String systemID) 
+    throws SAXException, IOException
+  {
 
     if (stream==null)
       {
         throw new IllegalArgumentException("InputStream si 'null'");
       }
-		// Variables
-		InputSource	source;
+    // Variables
+    InputSource	source;
 
-		// Create Source
-		source = new InputSource(stream);
-		source.setSystemId(systemID);
+    // Create Source
+    source = new InputSource(stream);
+    source.setSystemId(systemID);
 
-		// Parse Input Source
-		return parse(source);
+    // Parse Input Source
+    return parse(source);
 
-	} // parse()
+  } // parse()
 
   /**
    * 
    * @exception IllegalArgumentException if the URI is null
    */
-	public Document parse(String uri) 
-		throws SAXException, IOException {
+  public Document parse(String uri) 
+    throws SAXException, IOException
+  {
     if (uri==null)
       {
         throw new IllegalArgumentException("URI si 'null'");
       }
-		return parse(new InputSource(uri));
-	} // parse()
-  
-	public abstract void setEntityResolver(EntityResolver resolver);
+    return parse(new InputSource(uri));
+  } // parse()
 
-	public abstract void setErrorHandler(ErrorHandler handler);
+  public abstract void setEntityResolver(EntityResolver resolver);
+
+  public abstract void setErrorHandler(ErrorHandler handler);
+
+  // -- JAXP 1.3 methods --
+  
+  /**
+   * Reset this document builder to its original configuration.
+   * @since 1.3
+   */
+  public void reset()
+  {
+  }
+
+  /**
+   * Returns the schema in use by the XML processor.
+   */
+  public Schema getSchema()
+  {
+    return null;
+  }
+
+  /**
+   * Returns the XInclude processing mode in use by the parser.
+   */
+  public boolean isXIncludeAware()
+  {
+    return false;
+  }
+  
 }

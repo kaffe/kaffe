@@ -48,57 +48,66 @@ import javax.xml.transform.Result;
  */
 public class SAXResult implements Result
 {
-	/**
-	 * Used with <em>TransformerFactory.getFeature()</em> to determine
-	 * whether the transformers it produces support SAXResult objects
-	 * as outputs.
-	 */
-	public static final String FEATURE =
-		"http://javax.xml.transform.sax.SAXResult/feature";
+  
+  /**
+   * Used with <em>TransformerFactory.getFeature()</em> to determine
+   * whether the transformers it produces support SAXResult objects
+   * as outputs.
+   */
+  public static final String FEATURE =
+    "http://javax.xml.transform.sax.SAXResult/feature";
 
-	private ContentHandler	handler		= null;
-	private LexicalHandler	lexhandler	= null;
-	private String		systemId	= null;
-
-
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
-
-	public SAXResult() {
-	} // SAXResult()
-
-	public SAXResult(ContentHandler handler) {
-		this.handler = handler;
-	} // SAXResult()
+  private ContentHandler	handler		= null;
+  private LexicalHandler	lexhandler	= null;
+  private String		systemId	= null;
 
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Initialization ---------------------------------------------
+  //-------------------------------------------------------------
 
-	public ContentHandler getHandler() {
-		return handler;
-	}
+  public SAXResult()
+  {
+  } // SAXResult()
 
-	public String getSystemId() {
-		return systemId;
-	}
-
-	public LexicalHandler getLexicalHandler() {
-		return lexhandler;
-	}
+  public SAXResult(ContentHandler handler)
+  {
+    this.handler = handler;
+  } // SAXResult()
 
 
-	public void setHandler(ContentHandler handler) {
-		this.handler = handler;
-	}
+  //-------------------------------------------------------------
+  // Methods ----------------------------------------------------
+  //-------------------------------------------------------------
 
-	public void setSystemId(String systemID) {
-		this.systemId = systemID;
-	}
+  public ContentHandler getHandler()
+  {
+    return handler;
+  }
 
-	public void setLexicalHandler(LexicalHandler lexHandler) {
-		this.lexhandler = lexHandler;
-	}
+  public String getSystemId()
+  {
+    return systemId;
+  }
+
+  public LexicalHandler getLexicalHandler()
+  {
+    return lexhandler;
+  }
+
+  public void setHandler(ContentHandler handler)
+  {
+    this.handler = handler;
+  }
+
+  public void setSystemId(String systemID)
+  {
+    this.systemId = systemID;
+  }
+
+  public void setLexicalHandler(LexicalHandler lexHandler)
+  {
+    this.lexhandler = lexHandler;
+  }
+  
 }

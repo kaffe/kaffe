@@ -41,14 +41,15 @@ package javax.xml.transform;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public interface URIResolver {
+public interface URIResolver
+{
 
-	//-------------------------------------------------------------
-	// Interface: URIResolver -------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Interface: URIResolver -------------------------------------
+  //-------------------------------------------------------------
 
-	public Source resolve(String href, String base)
-		throws TransformerException;
+  public Source resolve(String href, String base)
+    throws TransformerException;
 
 
 } // URIResolver

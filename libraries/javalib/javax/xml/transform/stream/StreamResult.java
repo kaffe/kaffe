@@ -50,78 +50,96 @@ import javax.xml.transform.Result;
  * @author	Andrew Selkirk, David Brownell
  * @version	1.0
  */
-public class StreamResult implements Result {
+public class StreamResult
+  implements Result
+{
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Variables --------------------------------------------------
+  //-------------------------------------------------------------
 
-	public static final String FEATURE =
-		"http://javax.xml.transform.stream.StreamResult/feature";
+  public static final String FEATURE =
+    "http://javax.xml.transform.stream.StreamResult/feature";
 
-	private String		systemId	= null;
-	private OutputStream	outputStream	= null;
-	private Writer		writer		= null;
-
-
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
-
-	public StreamResult() {
-	}
-
-	public StreamResult(OutputStream stream) {
-		this.outputStream = stream;
-	}
-
-	public StreamResult(Writer writer) {
-		this.writer = writer;
-	}
-
-	public StreamResult(String systemID) {
-		this.systemId = systemID;
-	}
-
-	public StreamResult(File file) {
-		setSystemId (file);
-	}
+  private String		systemId	= null;
+  private OutputStream	outputStream	= null;
+  private Writer		writer		= null;
 
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Initialization ---------------------------------------------
+  //-------------------------------------------------------------
 
-	public OutputStream getOutputStream() {
-		return outputStream;
-	}
+  public StreamResult()
+  {
+  }
 
-	public String getSystemId() {
-		return systemId;
-	}
+  public StreamResult(OutputStream stream)
+  {
+    this.outputStream = stream;
+  }
 
-	public Writer getWriter() {
-		return writer;
-	}
+  public StreamResult(Writer writer)
+  {
+    this.writer = writer;
+  }
 
-	public void setOutputStream(OutputStream stream) {
-		this.outputStream = stream;
-	}
+  public StreamResult(String systemID)
+  {
+    this.systemId = systemID;
+  }
 
-	public void setWriter(Writer writer) {
-		this.writer = writer;
-	}
+  public StreamResult(File file)
+  {
+    setSystemId (file);
+  }
 
-	public void setSystemId(File file) {
-	    try {
-		this.systemId = StreamSource.fileToURL (file).toString ();
-	    } catch (IOException e) {
-		// can't happen
-		throw new RuntimeException (e.getMessage ());
-	    }
-	}
 
-	public void setSystemId(String systemID) {
-		this.systemId = systemID;
-	}
+  //-------------------------------------------------------------
+  // Methods ----------------------------------------------------
+  //-------------------------------------------------------------
+
+  public OutputStream getOutputStream()
+  {
+    return outputStream;
+  }
+
+  public String getSystemId()
+  {
+    return systemId;
+  }
+
+  public Writer getWriter()
+  {
+    return writer;
+  }
+
+  public void setOutputStream(OutputStream stream)
+  {
+    this.outputStream = stream;
+  }
+
+  public void setWriter(Writer writer)
+  {
+    this.writer = writer;
+  }
+
+  public void setSystemId(File file)
+  {
+    try
+      {
+        this.systemId = StreamSource.fileToURL (file).toString ();
+      }
+    catch (IOException e)
+      {
+        // can't happen
+        throw new RuntimeException (e.getMessage ());
+      }
+  }
+
+  public void setSystemId(String systemID)
+  {
+    this.systemId = systemID;
+  }
+
 }

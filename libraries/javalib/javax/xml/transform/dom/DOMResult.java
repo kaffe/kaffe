@@ -45,55 +45,99 @@ import javax.xml.transform.Result;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public class DOMResult implements Result {
+public class DOMResult
+  implements Result
+{
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Variables --------------------------------------------------
+  //-------------------------------------------------------------
 
-	public static final String FEATURE =
-		"http://javax.xml.transform.dom.DOMResult/feature";
+  public static final String FEATURE =
+    "http://javax.xml.transform.dom.DOMResult/feature";
 
-	private Node	node		= null;
-	private String	systemId	= null;
-
-
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
-
-	public DOMResult() {
-	} // DOMResult()
-
-	public DOMResult(Node node) {
-		this.node = node;
-	} // DOMResult()
-
-	public DOMResult(Node node, String systemID) {
-		this.node = node;
-		this.systemId = systemID;
-	} // DOMResult()
+  private Node node;
+  private Node nextSibling;
+  private String systemId;
 
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Initialization ---------------------------------------------
+  //-------------------------------------------------------------
 
-	public void setNode(Node node) {
-		this.node = node;
-	} // setNode()
+  public DOMResult()
+  {
+    this(null, null, null);
+  } // DOMResult()
 
-	public Node getNode() {
-		return node;
-	} // getNode()
+  public DOMResult(Node node)
+  {
+    this(node, null, null);
+  } // DOMResult()
 
-	public void setSystemId(String systemID) {
-		this.systemId = systemID;
-	} // systemID()
+  /**
+   * @since 1.3
+   */
+  public DOMResult(Node node, Node nextSibling)
+  {
+    this(node, nextSibling, null);
+  } // DOMResult()
+  
+  public DOMResult(Node node, String systemID)
+  {
+    this(node, null, systemID);
+  } // DOMResult()
+  
+  /**
+   * @since 1.3
+   */
+  public DOMResult(Node node, Node nextSibling, String systemID)
+  {
+    this.node = node;
+    this.nextSibling = nextSibling;
+    this.systemId = systemID;
+  } // DOMResult()
 
-	public String getSystemId() {
-		return systemId;
-	} // getSystemId()
+
+  //-------------------------------------------------------------
+  // Methods ----------------------------------------------------
+  //-------------------------------------------------------------
+
+  public void setNode(Node node)
+  {
+    this.node = node;
+  } // setNode()
+
+  public Node getNode()
+  {
+    return node;
+  } // getNode()
+
+  /**
+   * @since 1.3
+   */
+  public void setNextSibling(Node nextSibling)
+  {
+    this.nextSibling = nextSibling;
+  }
+
+  /**
+   * @since 1.3
+   */
+  public Node getNextSibling()
+  {
+    return nextSibling;
+  }
+
+  public void setSystemId(String systemID)
+  {
+    this.systemId = systemID;
+  } // systemID()
+
+  public String getSystemId()
+  {
+    return systemId;
+  } // getSystemId()
 
 
 } // DOMResult

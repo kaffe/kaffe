@@ -55,109 +55,133 @@ import javax.xml.transform.stream.StreamSource;
  * @author	Andrew Selkirk, David Brownell
  * @version	1.0
  */
-public class SAXSource implements Source
+public class SAXSource
+  implements Source
 {
-	/**
-	 * Used with <em>TransformerFactory.getFeature()</em> to determine
-	 * whether the transformers it produces support SAXSource objects
-	 * (possibly without URIs) as inputs.
-	 */
-	public static final String FEATURE =
-		"http://javax.xml.transform.sax.SAXSource/feature";
+  /**
+   * Used with <em>TransformerFactory.getFeature()</em> to determine
+   * whether the transformers it produces support SAXSource objects
+   * (possibly without URIs) as inputs.
+   */
+  public static final String FEATURE =
+    "http://javax.xml.transform.sax.SAXSource/feature";
 
-	private XMLReader	reader		= null;
-	private InputSource	inputSource	= null;
-
-
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
-
-	public SAXSource() {
-	} // SAXSource()
-
-	public SAXSource(XMLReader reader, InputSource source) {
-		this.reader = reader;
-		this.inputSource = source;
-	} // SAXSource()
-
-	public SAXSource(InputSource source) {
-		this.inputSource = source;
-	} // SAXSource()
+  private XMLReader	reader		= null;
+  private InputSource	inputSource	= null;
 
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Initialization ---------------------------------------------
+  //-------------------------------------------------------------
 
-	public void setXMLReader(XMLReader reader) {
-		this.reader = reader;
-	} // setXMLReader()
+  public SAXSource()
+  {
+  } // SAXSource()
 
-	public XMLReader getXMLReader() {
-		return reader;
-	} // getXMLReader()
+  public SAXSource(XMLReader reader, InputSource source)
+  {
+    this.reader = reader;
+    this.inputSource = source;
+  } // SAXSource()
 
-	public void setInputSource(InputSource source) {
-		this.inputSource = source;
-	} // setInputSource()
+  public SAXSource(InputSource source)
+  {
+    this.inputSource = source;
+  } // SAXSource()
 
-	public InputSource getInputSource() {
-		return inputSource;
-	} // inputSource()
 
-	public void setSystemId(String systemID) {
-		if (inputSource != null) {
-			inputSource.setSystemId(systemID);
-		}
-	} // setSystemId()
+  //-------------------------------------------------------------
+  // Methods ----------------------------------------------------
+  //-------------------------------------------------------------
 
-	public String getSystemId() {
-		if (inputSource != null) {
-			return inputSource.getSystemId();
-		} // if
-		return null;
-	} // getSystemId()
+  public void setXMLReader(XMLReader reader)
+  {
+    this.reader = reader;
+  } // setXMLReader()
 
-	/**
-	 * Creates a SAX input source from its argument.
-	 * Understands StreamSource and System ID based input sources,
-	 * and insists on finding either a system ID (URI) or some kind
-	 * of input stream (character or byte).
-	 *
-	 * @param in TRAX style input source
-	 * @return SAX input source, or null if one could not be
-	 *	created.
-	 */
-	public static InputSource sourceToInputSource (Source in)
-	{
-	    InputSource	retval;
-	    boolean	ok = false;
-      
-      if (in instanceof SAXSource) {
+  public XMLReader getXMLReader()
+  {
+    return reader;
+  } // getXMLReader()
+
+  public void setInputSource(InputSource source)
+  {
+    this.inputSource = source;
+  } // setInputSource()
+
+  public InputSource getInputSource()
+  {
+    return inputSource;
+  } // inputSource()
+
+  public void setSystemId(String systemID)
+  {
+    if (inputSource != null)
+      {
+        inputSource.setSystemId(systemID);
+      }
+  } // setSystemId()
+
+  public String getSystemId()
+  {
+    if (inputSource != null)
+      {
+        return inputSource.getSystemId();
+      } // if
+    return null;
+  } // getSystemId()
+
+  /**
+   * Creates a SAX input source from its argument.
+   * Understands StreamSource and System ID based input sources,
+   * and insists on finding either a system ID (URI) or some kind
+   * of input stream (character or byte).
+   *
+   * @param in TRAX style input source
+   * @return SAX input source, or null if one could not be
+   *	created.
+   */
+  public static InputSource sourceToInputSource (Source in)
+  {
+    InputSource	retval;
+    boolean	ok = false;
+
+    if (in instanceof SAXSource)
+      {
         return ((SAXSource) in).inputSource;
       }
-      
-	    if (in.getSystemId () != null) {
-		retval = new InputSource (in.getSystemId ());
-		ok = true;
-	    } else
-		retval = new InputSource ();
-	    
-	    if (in instanceof StreamSource) {
-		StreamSource	ss = (StreamSource) in;
 
-		if (ss.getReader () != null) {
-		    retval.setCharacterStream (ss.getReader ());
-		    ok = true;
-		} else if (ss.getInputStream () != null) {
-		    retval.setByteStream (ss.getInputStream ());
-		    ok = true;
-		}
-		if (ss.getPublicId () != null)
-		    retval.setPublicId (ss.getPublicId ());
-	    }
+    if (in.getSystemId () != null)
+      {
+        retval = new InputSource (in.getSystemId ());
+        ok = true;
+      }
+    else
+      {
+        retval = new InputSource ();
+      }
 
-	    return ok ? retval : null;
-	}
+    if (in instanceof StreamSource)
+      {
+        StreamSource	ss = (StreamSource) in;
+        
+        if (ss.getReader () != null)
+          {
+            retval.setCharacterStream (ss.getReader ());
+            ok = true;
+          }
+        else if (ss.getInputStream () != null)
+          {
+            retval.setByteStream (ss.getInputStream ());
+            ok = true;
+          }
+        if (ss.getPublicId () != null)
+          {
+            retval.setPublicId (ss.getPublicId ());
+          }
+      }
+    
+    return ok ? retval : null;
+  }
+
 }

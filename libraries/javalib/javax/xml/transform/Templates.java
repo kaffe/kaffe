@@ -44,16 +44,17 @@ import java.util.Properties;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public interface Templates {
+public interface Templates
+{
 
-	//-------------------------------------------------------------
-	// Interface: Templates ---------------------------------------
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // Interface: Templates ---------------------------------------
+  //-------------------------------------------------------------
 
-	public Transformer newTransformer()
-		throws TransformerConfigurationException;
+  public Transformer newTransformer()
+    throws TransformerConfigurationException;
 
-	public Properties getOutputProperties();
+  public Properties getOutputProperties();
 
 
 } // Templates

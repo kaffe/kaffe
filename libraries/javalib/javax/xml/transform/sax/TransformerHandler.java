@@ -54,21 +54,23 @@ import javax.xml.transform.Transformer;
  * @version	1.0
  */
 public interface TransformerHandler
-    extends ContentHandler, LexicalHandler, DTDHandler
+  extends ContentHandler, LexicalHandler, DTDHandler
 {
-    /**
-     * Assigns the result of the transform.
-     */
-    public void setResult(Result result) 
-	    throws IllegalArgumentException;
+  
+  /**
+   * Assigns the result of the transform.
+   */
+  public void setResult(Result result) 
+    throws IllegalArgumentException;
 
-    public void setSystemId(String systemID);
+  public void setSystemId(String systemID);
 
-    public String getSystemId();
+  public String getSystemId();
 
-    /**
-     * Returns the associated transformer, for use in setting
-     * parameters and output properties.
-     */
-    public Transformer getTransformer();
+  /**
+   * Returns the associated transformer, for use in setting
+   * parameters and output properties.
+   */
+  public Transformer getTransformer();
+
 }

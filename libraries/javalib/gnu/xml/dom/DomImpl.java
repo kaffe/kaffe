@@ -117,7 +117,7 @@ public class DomImpl implements DOMImplementation
 	} else if ("xpath".equals (name)) {
           if (version == null || version.equals (""))
             return true;
-          if ("1.0".equals (version))
+          if ("3.0".equals (version))
             return true;
         }
 
