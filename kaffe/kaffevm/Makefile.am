@@ -81,6 +81,7 @@ noinst_HEADERS = \
 	itypes.h \
 	jar.h \
 	jnirefs.h \
+	lerrno.h \
 	locks.h \
 	lookup.h \
 	object.h \

@@ -12,9 +12,9 @@ INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl
 
 Kaffe_SOURCES = main.c
 
-Kaffe_LDFLAGS = $(LDFLAGS) -export-dynamic \
+Kaffe_LDADD_ = ../kaffevm/libkaffevm.la
+
+Kaffe_LDFLAGS = $(LDFLAGS) -export-dynamic $(Kaffe_LDADD_) \
 	`for lib in $(JAVA_LIBS); do echo -dlopen $$lib; done`
 
-Kaffe_LDADD = ../kaffevm/libkaffevm.la
-
-Kaffe_DEPENDENCIES = $(JAVA_LIBS) $(Kaffe_LDADD)
+Kaffe_DEPENDENCIES = $(Kaffe_LDADD_) $(JAVA_LIBS)

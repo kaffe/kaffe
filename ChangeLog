@@ -1,3 +1,24 @@
+Sun Jan 17 01:25:11 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffe/Makefile.am (Kaffe_LDADD_): add libkaffevm before
+	-dlopen JAVA_LIBS, so that shared libraries work on FreeBSD
+	* kaffe/kaffe/Makefile.in: regen
+
+	* test/regression/Makefile.am (EXTRA_DIST): new tests
+	* test/regression/Makefile.in: regen
+	
+	* configure.in (AM_DISABLE_SHARED, AM_DISABLE_STATIC): instead of
+	the macros, set enable_shared or enable_static directly, which
+	should not modify the help; also, use dynamic_libraries and
+	vm_dynamic_library for the tests, instead of the with_*
+	variables.
+	* acinclude.m4, aclocal.m4, configure: regen
+	* FAQ/FAQ.libtool: --with-staticlib is (almost) the same as
+	--disable-shared now
+
+	* kaffe/kaffevm/Makefile.am (noinst_HEADERS): lerrno.h was missing
+	* kaffe/kaffevm/Makefile.in: regen
+
 Sat Jan 16 19:09:49 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in: adjust spaces in --help for includes and timing

@@ -133,7 +133,7 @@ libkaffevm_la_LIBADD =  	$(top_builddir)/libltdl/libltdl.la 	$(ENGINE_NAME)/libe
 libkaffevm_la_SOURCES =  	baseClasses.c 	classMethod.c 	code-analyse.c 	code.c 	constants.c 	debug.c 	exception.c 	external.c 	findInJar.c 	gc-mem.c 	gc.c 	hashtab.c 	inflate.c 	itypes.c 	jar.c 	jni.c 	locks.c 	lookup.c 	md.c 	object.c 	readClass.c 	soft.c 	stackTrace.c 	string.c 	support.c 	thread.c 	utf8const.c 	verify.c
 
 
-noinst_HEADERS =  	access.h 	baseClasses.h 	bytecode.h 	classMethod.h 	code-analyse.h 	code.h 	constants.h 	debug.h 	errors.h 	exception.h 	external.h 	file.h 	gc.h 	gtypes.h 	hashtab.h 	inflate.h 	itypes.h 	jar.h 	jnirefs.h 	locks.h 	lookup.h 	object.h 	readClass.h 	readClassConfig.h 	slib.h 	soft.h 	stackTrace.h 	stringSupport.h 	support.h 	thread.h
+noinst_HEADERS =  	access.h 	baseClasses.h 	bytecode.h 	classMethod.h 	code-analyse.h 	code.h 	constants.h 	debug.h 	errors.h 	exception.h 	external.h 	file.h 	gc.h 	gtypes.h 	hashtab.h 	inflate.h 	itypes.h 	jar.h 	jnirefs.h 	lerrno.h 	locks.h 	lookup.h 	object.h 	readClass.h 	readClassConfig.h 	slib.h 	soft.h 	stackTrace.h 	stringSupport.h 	support.h 	thread.h
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h

@@ -82,10 +82,10 @@ dnl =========================================================================
 dnl Configure libtool
 dnl -------------------------------------------------------------------------
 
-case "$with_staticlib,$with_staticvm" in
-yes,yes) AM_DISABLE_SHARED;;
-no,no) AM_DISABLE_STATIC;;
-# otherwise, we should compile everything twice
+case "$dynamic_libraries,$vm_dynamic_library" in
+no,no) : ${enable_shared=no};;
+yes,yes) : ${enable_static=no};;
+# otherwise, we have to compile everything twice
 esac
 
 AM_PROG_LIBTOOL

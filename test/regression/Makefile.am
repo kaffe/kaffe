@@ -19,6 +19,8 @@ EXTRA_DIST = \
 	BadFloatTest.out \
 	Bean.java \
 	Bean.out \
+	BeanBug.java \
+	BeanBug.out \
 	BitSetTest.java \
 	BitSetTest.out \
 	CLTest.java \
@@ -82,6 +84,8 @@ EXTRA_DIST = \
 	LostFrame.out \
 	MarkResetTest.java \
 	MarkResetTest.out \
+	MethodBug.java \
+	MethodBug.out \
 	ModuloTest.java \
 	ModuloTest.out \
 	NullPointerTest.java \
@@ -145,7 +149,9 @@ EXTRA_DIST = \
 	ttest.java \
 	ttest.out \
 	tthrd1.java \
-	tthrd1.out
+	tthrd1.out \
+	wc.java \
+	wc.out
 
 CLEANFILES = *.class *.fail
 
