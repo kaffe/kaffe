@@ -99,4 +99,12 @@
   }									\
 } while (0)
 
+
+/*
+ * Do an atomic exchange.  The contents of address 'A' is exchanged
+ * with value 'N'.
+ */
+#define ATOMIC_EXCHANGE(A,N) \
+	asm volatile("swp       %0, %0, [%2]" : "=r" (N) : "0" (N), "r" (A) : "cc", "memory" );
+
 #endif

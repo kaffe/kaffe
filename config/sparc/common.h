@@ -23,4 +23,12 @@
 
 #endif /* NEED_sysdepCallMethod */
 
+
+/*
+ * Do an atomic exchange.  The contents of address 'A' is exchanged
+ * with value 'N'.
+ */
+#define ATOMIC_EXCHANGE(A,N) \
+	asm volatile("swap [%2],%0" : "=r" (N) : "0" (N), "r" (A) : "cc", "memory" );
+
 #endif
