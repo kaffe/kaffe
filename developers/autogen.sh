@@ -134,5 +134,6 @@ autoconf -Wall
  # screws up timestamps 	 
  autoreconf -i -Wall
  patch < ../developers/patch-config.sub-superh.diff
+ touch config-h.in
 ) 	 
  
