@@ -350,7 +350,20 @@ void*
 soft_checkcast(Hjava_lang_Class* c, Hjava_lang_Object* o)
 {
 	if (o != 0 && !instanceof(c, OBJECT_CLASS(o))) {
-		throwException(ClassCastException);
+		/* 
+		 * Let's be a bit more informative as to why the class 
+		 * cast exception happened.
+		 */
+		Hjava_lang_Object* ccexc;
+		char *fromtype = CLASS_CNAME(OBJECT_CLASS(o));
+		char *totype = CLASS_CNAME(c);
+		char *format = "can't cast `%s' to `%s'";
+		char *buf = gc_malloc_fixed(strlen(fromtype) 
+			+ strlen(totype) + strlen(format));
+		sprintf(buf, format, fromtype, totype);
+		ccexc = ClassCastException(buf);
+		gc_free_fixed(buf);
+		throwException(ccexc);
 	}
 	return (o);
 }

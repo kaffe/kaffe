@@ -41,7 +41,7 @@
 #define IncompatibleClassChangeError NEW_LANG_EXCEPTION(IncompatibleClassChangeError)
 #define IllegalAccessError NEW_LANG_EXCEPTION(IllegalAccessError)
 #define NegativeArraySizeException NEW_LANG_EXCEPTION(NegativeArraySizeException)
-#define ClassCastException NEW_LANG_EXCEPTION(ClassCastException)
+#define ClassCastException(M) NEW_LANG_EXCEPTION_MESSAGE(ClassCastException, M)
 #define IllegalMonitorStateException NEW_LANG_EXCEPTION(IllegalMonitorStateException)
 #define NullPointerException NEW_LANG_EXCEPTION(NullPointerException)
 #define ArrayIndexOutOfBoundsException NEW_LANG_EXCEPTION(ArrayIndexOutOfBoundsException)
