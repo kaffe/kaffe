@@ -12,67 +12,69 @@ package java.lang;
 
 public final class Float extends Number implements Comparable {
 
-  public static final float POSITIVE_INFINITY = 1.0f / 0.0f;
-  public static final float NEGATIVE_INFINITY = -1.0f / 0.0f;
-  public static final float NaN = 0.0f / 0.0f;
-  public static final float MIN_VALUE = intBitsToFloat(0x1);
-  public static final float MAX_VALUE = intBitsToFloat(0x7f7fffff);
-  public static final Class TYPE = Class.getPrimitiveClass("float");
+  private static final int NUM_MANTISSA_BITS	= 23;
+  private static final int EXPONENT_MASK	= 0x7f800000;
+  private static final int MANTISSA_MASK	= 0x007fffff;
+  private static final int NAN_BITS		= 0x7fc00000;
 
-  private static final int NUM_MANTISSA_BITS = 23;
-  private static final int EXPONENT_MASK = 0x7f800000;
-  private static final int MANTISSA_MASK = 0x007fffff;
+  public static final float POSITIVE_INFINITY	= intBitsToFloat(0x7f800000);
+  public static final float NEGATIVE_INFINITY	= intBitsToFloat(0xff800000);
+  public static final float NaN			= intBitsToFloat(NAN_BITS);
+  public static final float MIN_VALUE		= intBitsToFloat(0x00000001);
+  public static final float MAX_VALUE		= intBitsToFloat(0x7f7fffff);
+
+  public static final Class TYPE = Class.getPrimitiveClass("float");
 
   private final float value;
 
   /* This is what Sun's JDK1.1 "serialver java.lang.Float" spits out */  
   private static final long serialVersionUID = -2671257302660747028L;
 
-  public static native int floatToIntBits(float value);
+  public static native int floatToRawIntBits(float value);
   public static native float intBitsToFloat(int bits);
 
   public Float(float value) {
     this.value = value;
   }
-  
+
   public Float(double value) {
     this.value = (float) value;
   }
-  
+
   public Float(String s) throws NumberFormatException {
     this.value = valueOf(s).value;
   }
 
   public boolean equals(Object that) {
     return (that instanceof Float
-      && floatToIntBits(this.value) == floatToIntBits(((Float)that).value));
+      && floatToIntBits(value) == floatToIntBits(((Float)that).value));
   }
 
-  public int compareTo(Object o) {
+  public int compareTo(Object that) {
     final int bits1 = floatToIntBits(this.value);
-    final int bits2 = floatToIntBits(((Float)o).value);
+    final int bits2 = floatToIntBits(((Float)that).value);
 
-    return (bits1 == bits2) ? 0 : (bits1 < bits2) ? -1 : 1;
+    return (bits1 < bits2) ? -1 : (bits1 == bits2) ? 0 : 1;
   }
 
   public int hashCode() {
-    return this.intValue();
+    return floatToIntBits(value);
   }
-  
+
   public double doubleValue() {
-    return (double )value;
+    return (double)value;
   }
-  
+
   public float floatValue() {
     return value;
   }
-  
+
   public long longValue() {
-    return (long )value;
+    return (long)value;
   }
-  
+
   public int intValue() {
-    return (int )value;
+    return (int)value;
   }
 
   public static String toString(float value) {
@@ -87,7 +89,7 @@ public final class Float extends Number implements Comparable {
       return "-Infinity";
 
     // Determine number of digits of decimal precision to display
-    int bits = floatToIntBits(value);
+    int bits = floatToRawIntBits(value);
     if ((bits & EXPONENT_MASK) == 0) {			// denormalized value
 	    for (bitIndex = NUM_MANTISSA_BITS - 1;
 		bitIndex > 0 && ((1 << bitIndex) & bits) == 0;
@@ -107,23 +109,29 @@ public final class Float extends Number implements Comparable {
   public String toString() {
     return toString(value);
   }
-  
-  public static boolean isNaN(float v) {
-    int bits = floatToIntBits(v);
 
-    return ((bits & EXPONENT_MASK) == EXPONENT_MASK
-	&& (bits & MANTISSA_MASK) != 0);
+  public static int floatToIntBits(float value) {
+    int bits = floatToRawIntBits(value);
+
+    return isNaN(bits) ? NAN_BITS : bits;
   }
-  
+
+  public static boolean isNaN(float v) {
+    return isNaN(floatToRawIntBits(v));
+  }
+
   public boolean isNaN() {
-    return isNaN(value);
+    return isNaN(floatToRawIntBits(value));
   }
-  
+
+  private static boolean isNaN(int b) {
+    return ((b & EXPONENT_MASK) == EXPONENT_MASK && (b & MANTISSA_MASK) != 0);
+  }
+
   public static boolean isInfinite(float v) {
-    return (floatToIntBits(v)==floatToIntBits(POSITIVE_INFINITY))
-	|| (floatToIntBits(v)==floatToIntBits(NEGATIVE_INFINITY));
+    return ((v == POSITIVE_INFINITY) || (v == NEGATIVE_INFINITY));
   }
-  
+
   public boolean isInfinite() {
     return isInfinite(value);
   }
