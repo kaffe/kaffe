@@ -106,9 +106,9 @@ makeMethodActive(Method* meth)
 	}
 #endif	/* defined(DUMPMETHODCACHESTATS) */
 
-#if defined(DEBUG)
+#if defined(JIT3) && defined(DEBUG)
 	/* paranoia */
-	assert(findActiveMethod(pc_key) == 0);
+	assert(findMethodFromPC(pc_key) == 0);
 #endif
 
 	entry = (methCacheEntry*)KMALLOC(sizeof(methCacheEntry));
