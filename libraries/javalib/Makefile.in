@@ -2576,18 +2576,6 @@ serialized_converters = \
 	kaffe/io/CharToByteCP871.ser \
 	kaffe/io/CharToByteCP875.ser \
 	kaffe/io/CharToByteCP918.ser \
-	kaffe/io/CharToByteCP861.ser \
-	kaffe/io/CharToByteCP862.ser \
-	kaffe/io/CharToByteCP863.ser \
-	kaffe/io/CharToByteCP864.ser \
-	kaffe/io/CharToByteCP865.ser \
-	kaffe/io/CharToByteCP866.ser \
-	kaffe/io/CharToByteCP868.ser \
-	kaffe/io/CharToByteCP869.ser \
-	kaffe/io/CharToByteCP870.ser \
-	kaffe/io/CharToByteCP871.ser \
-	kaffe/io/CharToByteCP875.ser \
-	kaffe/io/CharToByteCP918.ser \
 	kaffe/io/CharToByteKOI8_R.ser
 
 
@@ -2623,7 +2611,7 @@ LIBDIR = lib
 rebuildLib = ./rebuildLib
 @HAVE_ZIP_FALSE@JAR_CMD1 = $(JAR) -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
 
-@HAVE_ZIP_TRUE@JAR_CMD1 = (cd $(srcdir) && $(ZIP) -r rt.tmp.jar META-INF) ; mv $(srcdir)/rt.tmp.jar rt.jar
+@HAVE_ZIP_TRUE@JAR_CMD1 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -r $$dstdir/rt.jar META-INF)
 @HAVE_ZIP_FALSE@JAR_CMD2 = $(JAR) -uvf rt.jar -C $(srcdir) META-INF/
 @HAVE_ZIP_TRUE@JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
 subdir = libraries/javalib

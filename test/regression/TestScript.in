@@ -142,6 +142,7 @@ for src in ${1+"$@"}; do
     *.class.save)
 	cp "$src" `mybasename "$src" | sed 's/\.save$//'`
 	run `mybasename "$src" | sed 's/\.class\.save$//'`
+	rm -f `mybasename "$src" | sed 's/\.save$//'`
 	;;
     *.class)
 	run `mybasename "$src" | sed 's/\.class$//'`

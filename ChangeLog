@@ -1,5 +1,20 @@
 2003-05-15 Tim Stack <stack@cs.utah.edu>
 
+	* configure,
+	configure.in:
+	Update AC_INIT to include program name, version number, and
+	maintainer address.
+
+	* libraries/javalib/Makefile.am:
+	Get rid of duplicate .ser listings and fix the zip commands used
+	to generate the JAR so that it doesn't create the file in the
+	source directory.
+
+	* test/regression/TestScript.in:
+	Remove the copied file when working on a *.class.save test file.
+
+2003-05-15 Tim Stack <stack@cs.utah.edu>
+
 	* Makefile.am:
 	Add DNSJAVA_JAR to the BUILD_ENVIRONMENT.
 

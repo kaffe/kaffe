@@ -2219,18 +2219,6 @@ serialized_converters = \
 	kaffe/io/CharToByteCP871.ser \
 	kaffe/io/CharToByteCP875.ser \
 	kaffe/io/CharToByteCP918.ser \
-	kaffe/io/CharToByteCP861.ser \
-	kaffe/io/CharToByteCP862.ser \
-	kaffe/io/CharToByteCP863.ser \
-	kaffe/io/CharToByteCP864.ser \
-	kaffe/io/CharToByteCP865.ser \
-	kaffe/io/CharToByteCP866.ser \
-	kaffe/io/CharToByteCP868.ser \
-	kaffe/io/CharToByteCP869.ser \
-	kaffe/io/CharToByteCP870.ser \
-	kaffe/io/CharToByteCP871.ser \
-	kaffe/io/CharToByteCP875.ser \
-	kaffe/io/CharToByteCP918.ser \
 	kaffe/io/CharToByteKOI8_R.ser
 
 gnu_regexp_message_bundles = \
@@ -2300,7 +2288,7 @@ bootstrap: $(srcdir)/Klasses.jar.bootstrap rt.jar
 $(srcdir)/Klasses.jar.bootstrap: bootstrap.classlist
 
 if HAVE_ZIP
-JAR_CMD1 = (cd $(srcdir) && $(ZIP) -r rt.tmp.jar META-INF) ; mv $(srcdir)/rt.tmp.jar rt.jar
+JAR_CMD1 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -r $$dstdir/rt.jar META-INF)
 JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
 else
 JAR_CMD1 = $(JAR) -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
