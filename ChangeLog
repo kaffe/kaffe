@@ -1,5 +1,57 @@
 2004-10-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/crypto/BadPaddingException.java,
+	libraries/javalib/javax/crypto/CipherInputStream.java,
+	libraries/javalib/javax/crypto/CipherOutputStream.java,
+	libraries/javalib/javax/crypto/CipherSpi.java,
+	libraries/javalib/javax/crypto/EncryptedPrivateKeyInfo.java,
+	libraries/javalib/javax/crypto/ExemptionMechanism.java,
+	libraries/javalib/javax/crypto/ExemptionMechanismSpi.java,
+	libraries/javalib/javax/crypto/IllegalBlockSizeException.java,
+	libraries/javalib/javax/crypto/KeyAgreement.java,
+	libraries/javalib/javax/crypto/KeyAgreementSpi.java,
+	libraries/javalib/javax/crypto/KeyGenerator.java,
+	libraries/javalib/javax/crypto/KeyGeneratorSpi.java,
+	libraries/javalib/javax/crypto/Mac.java,
+	libraries/javalib/javax/crypto/NoSuchPaddingException.java,
+	libraries/javalib/javax/crypto/NullCipher.java,
+	libraries/javalib/javax/crypto/NullCipherImpl.java,
+	libraries/javalib/javax/crypto/SealedObject.java,
+	libraries/javalib/javax/crypto/SecretKeyFactorySpi.java,
+	libraries/javalib/javax/crypto/ShortBufferException.java,
+	libraries/javalib/javax/crypto/interfaces/DHKey.java,
+	libraries/javalib/javax/crypto/interfaces/DHPrivateKey.java,
+	libraries/javalib/javax/crypto/interfaces/DHPublicKey.java,
+	libraries/javalib/javax/crypto/interfaces/PBEKey.java,
+	libraries/javalib/javax/crypto/spec/DESKeySpec.java,
+	libraries/javalib/javax/crypto/spec/DESedeKeySpec.java,
+	libraries/javalib/javax/crypto/spec/DHGenParameterSpec.java,
+	libraries/javalib/javax/crypto/spec/DHParameterSpec.java,
+	libraries/javalib/javax/crypto/spec/DHPrivateKeySpec.java,
+	libraries/javalib/javax/crypto/spec/DHPublicKeySpec.java,
+	libraries/javalib/javax/crypto/spec/IvParameterSpec.java,
+	libraries/javalib/javax/crypto/spec/PBEKeySpec.java,
+	libraries/javalib/javax/crypto/spec/PBEParameterSpec.java,
+	libraries/javalib/javax/crypto/spec/RC2ParameterSpec.java,
+	libraries/javalib/javax/crypto/spec/RC5ParameterSpec.java,
+	libraries/javalib/javax/crypto/spec/SecretKeySpec.java:
+	Resynced with GNU Classpath.
+
+	2004-10-21  Michael Koch  <konqueror@gmx.de>
+
+        * javax/crypto/Cipher.java,
+        javax/crypto/EncryptedPrivateKeyInfo.java,
+        javax/crypto/ExemptionMechanism.java,
+        javax/crypto/KeyAgreement.java,
+        javax/crypto/KeyGenerator.java,
+        javax/crypto/Mac.java,
+        javax/crypto/SecretKeyFactory.java,
+        javax/crypto/SecretKeyFactorySpi.java,
+        javax/crypto/spec/SecretKeySpec.java:
+        Import cleanup.
+
+2004-10-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/security/AlgorithmParametersSpi.java,
 	libraries/javalib/java/security/AllPermission.java,
 	libraries/javalib/java/security/BasicPermission.java,
