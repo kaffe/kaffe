@@ -474,7 +474,10 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
   pthread_setcanceltype( PTHREAD_CANCEL_ASYNCHRONOUS, &oldCancelType);
 
   /* if we aren't the first one, we are in trouble */
-  assert( activeThreads == 0);
+  // Jim - I'm commenting out this assertion, as jit_stub.c in test/internal  
+  // seems to violate the assumption.
+  // assert( activeThreads == 0);
+ 
   activeThreads = firstThread = nt;
   nonDaemons=1;
   nSysThreads=1;

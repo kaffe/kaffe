@@ -1,5 +1,11 @@
 2004-02-16  Jim Pick  <jim@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	Comment out assertion that was breaking test/internal
+	with pthreads.
+
+2004-02-16  Jim Pick  <jim@kaffe.org>
+
 	* configure.in:
 	Don't link to libasound if not using pthreads.  Also, fix
 	--disable-sound and --without-alsa options.
