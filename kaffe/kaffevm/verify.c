@@ -193,6 +193,7 @@ parseMethodTypeDescriptor(const char* sig)
  * Pass 2 Verification
  *********************************************************************************/
 
+static bool checkField(Field*, errorInfo*);
 static bool checkConstructor(Method*, errorInfo*);
 static bool checkMethodStaticConstraints(Method*, errorInfo*);
 static bool checkAbstractMethod(Method*, errorInfo*);
@@ -366,7 +367,18 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 		}
 	}
 	*/
-	
+
+	{
+		Field *fld;
+		int lpc;
+		
+		fld = CLASS_FIELDS(class);
+		for( lpc = 0; lpc < CLASS_NFIELDS(class); lpc++ )
+		{
+			if( !checkField(&fld[lpc], einfo) )
+				return(false);
+		}
+	}
 	
 	// java/lang/Object does not have a superclass, is not final, and is not an interface,
 	// so we skip all of those checks
@@ -643,6 +655,28 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 	return (true);
 }
 
+static
+bool
+checkField(Field *field, errorInfo *einfo)
+{
+	bool retval = true;
+	char *reason;
+
+	if( (reason = checkAccessFlags(CLASS_IS_INTERFACE(field->clazz) ?
+				       ACC_TYPE_INTERFACE_FIELD :
+				       ACC_TYPE_FIELD,
+				       field->accflags)) != NULL )
+	{
+		postExceptionMessage(einfo,
+				     JAVA_LANG(ClassFormatError),
+				     "(class: %s, field: %s) %s",
+				     CLASS_CNAME(field->clazz),
+				     field->name->data,
+				     reason);
+		retval = false;
+	}
+	return( retval );
+}
 
 
 /*
@@ -2764,7 +2798,7 @@ verifyBasicBlock(errorInfo* einfo,
 			GET_CONST_INDEX;
 		ISTORE_common:
 			OPSTACK_POP_T(TINT);
-				      block->locals[idx] = *TINT;
+			block->locals[idx] = *TINT;
 			break;
 			
 			
@@ -3698,7 +3732,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case WIDE:
 			wide = true;
-			pc = insnLen[code[pc]];
+			pc += insnLen[code[pc]];
 			continue;
 			
 		default:

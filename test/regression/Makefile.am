@@ -6,6 +6,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
+SUBDIRS = compile_time run_time
+
 SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
 # Redirect errors to /dev/null to avoid annoying job control
@@ -26,7 +28,9 @@ ALWAYS_TESTS = \
 	$(TEST_STOPPING_THREADS) \
 	$(TEST_ZIP) \
 	$(TEST_INTERRUPTING_IO) \
-	$(TEST_NATIVE)
+	$(TEST_NATIVE) \
+	$(JASMIN_TESTS) \
+	$(BCEL_TESTS)
 
 ## Simple health check
 SIMPLE_HEALTH_CHECK = \
@@ -185,6 +189,11 @@ TEST_CLASS_LOADING = \
 	HashtableTest1.java \
 	ReflectMultiArray.java \
 	ExecTest.java \
+	BadClassVersion.java \
+	InterfaceSuperClass.java \
+	ImplementClass.java \
+	FieldErrors.java \
+	MethodErrors.java \
 	ProhibitedClass.java \
 	KaffeInternal.java
 
@@ -212,6 +221,55 @@ TEST_INTERRUPTING_IO = \
 TEST_NATIVE = \
 	TestNative.java
 
+if HAVE_JASMIN
+JASMIN_TESTS = \
+	FloatAlias.j \
+	BadCatch1.j \
+	BadCatch2.j \
+	CircularClass.j \
+	CircularInterface.j \
+	ClassFlags1.j \
+	ClassFlags2.j \
+	DuplicateField.j \
+	EmptyMethod.j \
+	FieldFlags1.j \
+	FieldFlags2.j \
+	FieldFlags3.j \
+	FieldFlags4.j \
+	FieldRefSignature1.j \
+	FieldSignature1.j \
+	FieldSignature2.j \
+	FieldSignature3.j \
+	FieldSignature4.j \
+	InvokedMethodSignature1.j \
+	InvokedMethodSignature2.j \
+	InvokedMethodSignature3.j \
+	MethodFlags1.j \
+	MethodFlags2.j \
+	MethodFlags3.j \
+	MethodFlags4.j \
+	MethodFlags5.j \
+	MethodSignature1.j \
+	MethodSignature2.j \
+	MethodSignature3.j \
+	MethodSignature4.j \
+	MethodSignature5.j \
+	MethodSignature6.j \
+	MethodSignature7.j \
+	MethodSignature8.j \
+	MethodSignature9.j
+else
+JASMIN_TESTS =
+endif
+
+if HAVE_BCEL
+BCEL_TESTS = \
+	BadClassFileCode.java \
+	BadClassFileConstants.java
+else
+BCEL_TESTS =
+endif
+
 
 
 TEST_Overflow = Overflow.java
@@ -236,8 +294,7 @@ EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
 	LoaderTest_Class3.java \
 	LoaderTest_Loader1.java \
 	LoaderTest_Loader2.java \
-	CatchLimits.j \
-	FloatAlias.j
+	CatchLimits.j
 
 CLEANFILES = *.class *.fail *.out core *.core ExceptionTest ziptest1.zip \
 	ziptest2.zip frozen_serial

@@ -132,6 +132,8 @@ extern void kprintf(FILE*, const char*, ...);
 extern int addClasspath(const char*);
 extern int prependClasspath(const char*);
 
+int bitCount(int bits);
+
 /*
  * Macros to manipulate bit arrays.  
  */

@@ -55,6 +55,7 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
+BCEL_JAR = @BCEL_JAR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CCLD = @CCLD@
@@ -94,11 +95,15 @@ ENGINE_NAME = @ENGINE_NAME@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+HAVE_BCEL_FALSE = @HAVE_BCEL_FALSE@
+HAVE_BCEL_TRUE = @HAVE_BCEL_TRUE@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
 HAVE_DNSJAVA_FALSE = @HAVE_DNSJAVA_FALSE@
 HAVE_DNSJAVA_TRUE = @HAVE_DNSJAVA_TRUE@
 HAVE_GCJ_SUPPORT_FALSE = @HAVE_GCJ_SUPPORT_FALSE@
 HAVE_GCJ_SUPPORT_TRUE = @HAVE_GCJ_SUPPORT_TRUE@
+HAVE_JASMIN_FALSE = @HAVE_JASMIN_FALSE@
+HAVE_JASMIN_TRUE = @HAVE_JASMIN_TRUE@
 HAVE_JIKES_FALSE = @HAVE_JIKES_FALSE@
 HAVE_JIKES_TRUE = @HAVE_JIKES_TRUE@
 HAVE_MKTEMP_FALSE = @HAVE_MKTEMP_FALSE@
@@ -110,6 +115,7 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+JASMIN = @JASMIN@
 JAVA_LIBS = @JAVA_LIBS@
 JIKES = @JIKES@
 JIKESPROG = @JIKESPROG@
@@ -275,8 +281,12 @@ libkaffevm_la_GEN_SRCS = \
 	md.c
 
 
+nodist_libkaffevm_la_SOURCES = \
+	$(libkaffevm_la_GEN_SRCS)
+
+
 libkaffevm_la_SOURCES = \
-	$(libkaffevm_la_GEN_SRCS) \
+	access.c \
 	baseClasses.c \
 	classMethod.c \
 	classPool.c \
@@ -367,21 +377,23 @@ CONFIG_HEADER = $(top_builddir)/config/config.h \
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(native_LTLIBRARIES)
 
+am_libkaffevm_la_OBJECTS = access.lo baseClasses.lo classMethod.lo \
+	classPool.lo methodCache.lo code-analyse.lo code.lo \
+	constants.lo debug.lo exception.lo external.lo findInJar.lo \
+	fp.lo gc.lo hashtab.lo inflate.lo itypes.lo jar.lo jni.lo \
+	locks.lo lookup.lo object.lo readClass.lo sha-1.lo soft.lo \
+	stackTrace.lo stats.lo string.lo stringParsing.lo support.lo \
+	thread.lo utf8const.lo gcFuncs.lo gcRefs.lo verify.lo
 am__objects_1 = gc-mem.lo md.lo
-am_libkaffevm_la_OBJECTS = $(am__objects_1) baseClasses.lo \
-	classMethod.lo classPool.lo methodCache.lo code-analyse.lo \
-	code.lo constants.lo debug.lo exception.lo external.lo \
-	findInJar.lo fp.lo gc.lo hashtab.lo inflate.lo itypes.lo jar.lo \
-	jni.lo locks.lo lookup.lo object.lo readClass.lo sha-1.lo \
-	soft.lo stackTrace.lo stats.lo string.lo stringParsing.lo \
-	support.lo thread.lo utf8const.lo gcFuncs.lo gcRefs.lo \
-	verify.lo
-libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS)
+nodist_libkaffevm_la_OBJECTS = $(am__objects_1)
+libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
+	$(nodist_libkaffevm_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/baseClasses.Plo \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/access.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/baseClasses.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/classMethod.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/classPool.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/code-analyse.Plo ./$(DEPDIR)/code.Plo \
@@ -417,7 +429,7 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = $(noinst_HEADERS) Makefile.am Makefile.in
-SOURCES = $(libkaffevm_la_SOURCES)
+SOURCES = $(libkaffevm_la_SOURCES) $(nodist_libkaffevm_la_SOURCES)
 
 all: all-recursive
 
@@ -465,6 +477,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/access.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/baseClasses.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/classMethod.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/classPool.Plo@am__quote@
@@ -827,6 +840,8 @@ uninstall-info: uninstall-info-recursive
 @cpu_frag@
 @cpu_os_frag@
 @threads_frag@
+
+$(libkaffevm_la_SOURCES): $(libkaffevm_la_GEN_SRCS)
 
 gc-mem.c: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \

@@ -822,6 +822,25 @@ resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
 			success = false;
 			goto done;
 		}
+		if (!(class->interfaces[i]->accflags & ACC_INTERFACE)) {
+			postExceptionMessage(
+				einfo,
+				JAVA_LANG(IncompatibleClassChangeError),
+				"Class, %s, used as interface by %s",
+				class->interfaces[i]->name->data,
+				class->name->data);
+			success = false;
+			goto done;
+		}
+		if (instanceof(class, class->interfaces[i])) {
+			postExceptionMessage(
+				einfo,
+				JAVA_LANG(ClassCircularityError),
+				"%s",
+				class->name->data);
+			success = false;
+			goto done;
+		}
 		j += class->interfaces[i]->total_interface_len;
 	}
 	totalilen = j;
@@ -937,6 +956,7 @@ internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags,
 				     cl->name->data);
 		return 0;
 	}
+	cl->packageLength = findPackageLength(name->data);
 	CLASS_METHODS(cl) = NULL;
 	CLASS_NMETHODS(cl) = 0;
 	assert(cl->superclass == 0);
@@ -1053,6 +1073,7 @@ addInnerClasses(Hjava_lang_Class* c, uint32 len, classFile* fp,
 
 		if (c->this_index && ic->inner_class == c->this_index) {
 		    c->accflags = (c->accflags & ~ACC_MASK) | (ic->inner_class_accflags & ACC_MASK);
+		    c->this_inner_index = nr;
 		}
 	}
 	return true;
@@ -1190,7 +1211,8 @@ DBG(RESERROR,	dprintf("addField: no field name.\n");			)
 		index = CLASS_FSIZE(c) + CLASS_NSFIELDS(c);
 	}
 	ft = &CLASS_FIELDS(c)[index];
-
+	ft->clazz = c;
+	
 DBG(CLASSFILE,
 	dprintf("Adding field %s:%s\n",
 		CLASS_CNAME(c), CLASS_CONST_UTF8(c, nc)->data);
@@ -2915,4 +2937,14 @@ bail:
 
 	utf8ConstRelease(arr_name);
 	return (centry->data.cl);
+}
+
+int findPackageLength(const char *name)
+{
+	int retval;
+
+	for( retval = strlen(name) - 1;
+	     (name[retval] != '/') && (retval > 0);
+	     retval-- );
+	return( retval );
 }

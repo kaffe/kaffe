@@ -547,6 +547,24 @@ soft_nosuchfield(Utf8Const* c, Utf8Const* n)
 	throwException(NoSuchFieldError(buf));
 }
 
+void
+soft_linkage(Utf8Const *c, Utf8Const* n)
+{
+	char buf[256];
+
+	sprintf(buf, "%.100s.%.100s", c->data, n->data);
+	throwException(LinkageError(buf));
+}
+
+void
+soft_illegalaccess(Utf8Const *c, Utf8Const* n)
+{
+	char buf[256];
+
+	sprintf(buf, "%.100s.%.100s", c->data, n->data);
+	throwException(IllegalAccessError(buf));
+}
+
 /*
  * soft_incompatibleclasschange.
  */

@@ -17,6 +17,7 @@
 #include <stdarg.h>
 #include "errors.h"
 #include "kaffe/jtypes.h"
+#include "gtypes.h"
 #include "access.h"
 #include "object.h"
 #include "constants.h"
@@ -1157,6 +1158,19 @@ void
 leaveUnsafeRegion(void)
 {
 	jthread_spinoff(0);
+}
+
+/* XXX Ick */
+int bitCount(int bits)
+{
+	int lpc, retval = 0;
+
+	for( lpc = 0; lpc < (sizeof(int) * 8); lpc++ )
+	{
+		if( (1L << lpc) & bits )
+			retval++;
+	}
+	return( retval );
 }
 
 #if defined(NO_SHARED_LIBRARIES)

@@ -466,7 +466,7 @@ ac_includes_default="\
 #endif"
 
 ac_subdirs_all="$ac_subdirs_all libltdl"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD REGEN_FORWARD CONFIG_MD_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME ENABLE_JVMPI_TRUE ENABLE_JVMPI_FALSE DNSJAVA_JAR HAVE_DNSJAVA_TRUE HAVE_DNSJAVA_FALSE ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C KVER JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP MKTEMP HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE HAVE_MKTEMP_TRUE HAVE_MKTEMP_FALSE KAFFE_LIBS M_LIBS VM_LIBS NET_LIBS ZIP_LIBS MATH_LIBS SECURITY_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS LIBICONV LTLIBICONV USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK AWT_DIR COND_SOUND_ALSA_TRUE COND_SOUND_ALSA_FALSE COND_SOUND_ESD_TRUE COND_SOUND_ESD_FALSE COND_PURE_JAVA_MATH_TRUE COND_PURE_JAVA_MATH_FALSE MATH_LIB INCLUDED_EXTENSIONS PROFILE USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffeh_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG subdirs LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD REGEN_FORWARD CONFIG_MD_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME BCEL_JAR HAVE_BCEL_TRUE HAVE_BCEL_FALSE ENABLE_JVMPI_TRUE ENABLE_JVMPI_FALSE DNSJAVA_JAR HAVE_DNSJAVA_TRUE HAVE_DNSJAVA_FALSE ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C KVER JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP MKTEMP JASMIN HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE HAVE_MKTEMP_TRUE HAVE_MKTEMP_FALSE HAVE_JASMIN_TRUE HAVE_JASMIN_FALSE KAFFE_LIBS M_LIBS VM_LIBS NET_LIBS ZIP_LIBS MATH_LIBS SECURITY_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS LIBICONV LTLIBICONV USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK AWT_DIR COND_SOUND_ALSA_TRUE COND_SOUND_ALSA_FALSE COND_SOUND_ESD_TRUE COND_SOUND_ESD_FALSE COND_PURE_JAVA_MATH_TRUE COND_PURE_JAVA_MATH_FALSE MATH_LIB INCLUDED_EXTENSIONS PROFILE USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffeh_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG subdirs LTLIBOBJS'
 ac_subst_files='cpu_os_frag cpu_frag engine_frag threads_frag'
 
 # Initialize some variables set by options.
@@ -1070,6 +1070,7 @@ Optional Packages:
   --with-tags[=TAGS]
                           include additional configurations [automatic]
   --with-engine=ENGINE    Force use given execution engine (intrp, jit, or jit3)
+  --with-bcel=<jar>       Use the specified Bytecode Engineering Jar file.
   --with-dnsjava=<jar>       Use the specified DNS java Jar file.
   --with-profiling        Compile with gprof(1) profiling support
   --without-suncompat     Don't include Sun compatibility scripts
@@ -4173,7 +4174,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4176 "configure"' > conftest.$ac_ext
+  echo '#line 4177 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5248,7 +5249,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:5251:" \
+echo "$as_me:5252:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6259,11 +6260,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6262: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6263: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6266: \$? = $ac_status" >&5
+   echo "$as_me:6267: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6491,11 +6492,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6494: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6495: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6498: \$? = $ac_status" >&5
+   echo "$as_me:6499: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6558,11 +6559,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6561: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6562: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:6565: \$? = $ac_status" >&5
+   echo "$as_me:6566: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -8570,7 +8571,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 8573 "configure"
+#line 8574 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -8668,7 +8669,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 8671 "configure"
+#line 8672 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10800,11 +10801,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10803: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10804: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:10807: \$? = $ac_status" >&5
+   echo "$as_me:10808: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -10867,11 +10868,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10870: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10871: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10874: \$? = $ac_status" >&5
+   echo "$as_me:10875: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12110,7 +12111,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12113 "configure"
+#line 12114 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12208,7 +12209,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12211 "configure"
+#line 12212 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13030,11 +13031,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13033: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13034: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13037: \$? = $ac_status" >&5
+   echo "$as_me:13038: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -13097,11 +13098,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13100: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13101: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13104: \$? = $ac_status" >&5
+   echo "$as_me:13105: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15037,11 +15038,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15040: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15041: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15044: \$? = $ac_status" >&5
+   echo "$as_me:15045: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -15269,11 +15270,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15272: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15273: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15276: \$? = $ac_status" >&5
+   echo "$as_me:15277: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -15336,11 +15337,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15339: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15340: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15343: \$? = $ac_status" >&5
+   echo "$as_me:15344: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17348,7 +17349,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 17351 "configure"
+#line 17352 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -17446,7 +17447,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 17449 "configure"
+#line 17450 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -18863,6 +18864,28 @@ no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 esac
 
 
+
+# Check whether --with-bcel or --without-bcel was given.
+if test "${with_bcel+set}" = set; then
+  withval="$with_bcel"
+   BCEL_JAR="$withval"
+else
+   BCEL_JAR=""
+fi;
+
+
+
+
+if test x"$BCEL_JAR" != x""; then
+  HAVE_BCEL_TRUE=
+  HAVE_BCEL_FALSE='#'
+else
+  HAVE_BCEL_TRUE='#'
+  HAVE_BCEL_FALSE=
+fi
+
+
+
 # Check whether --enable-jvmpi or --disable-jvmpi was given.
 if test "${enable_jvmpi+set}" = set; then
   enableval="$enable_jvmpi"
@@ -19341,6 +19364,41 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
+# Extract the first word of "jasmin", so it can be a program name with args.
+set dummy jasmin; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_JASMIN+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$JASMIN"; then
+  ac_cv_prog_JASMIN="$JASMIN" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_JASMIN="jasmin"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+JASMIN=$ac_cv_prog_JASMIN
+if test -n "$JASMIN"; then
+  echo "$as_me:$LINENO: result: $JASMIN" >&5
+echo "${ECHO_T}$JASMIN" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
 
 
 
@@ -19370,6 +19428,16 @@ if test x"$MKTEMP" != x""; then
 else
   HAVE_MKTEMP_TRUE='#'
   HAVE_MKTEMP_FALSE=
+fi
+
+
+
+if test x"$JASMIN" != x""; then
+  HAVE_JASMIN_TRUE=
+  HAVE_JASMIN_FALSE='#'
+else
+  HAVE_JASMIN_TRUE='#'
+  HAVE_JASMIN_FALSE=
 fi
 
 
@@ -42325,6 +42393,14 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files test/regression/TestScript"
 
+          ac_config_files="$ac_config_files test/regression/compile_time/Makefile"
+
+          ac_config_files="$ac_config_files test/regression/compile_time/CompileScript"
+
+          ac_config_files="$ac_config_files test/regression/run_time/Makefile"
+
+          ac_config_files="$ac_config_files test/regression/run_time/CompileScript"
+
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -42452,6 +42528,13 @@ echo "$as_me: error: conditional \"USE_JIT\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${HAVE_BCEL_TRUE}" && test -z "${HAVE_BCEL_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"HAVE_BCEL\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"HAVE_BCEL\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${ENABLE_JVMPI_TRUE}" && test -z "${ENABLE_JVMPI_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"ENABLE_JVMPI\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -42505,6 +42588,13 @@ if test -z "${HAVE_MKTEMP_TRUE}" && test -z "${HAVE_MKTEMP_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"HAVE_MKTEMP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"HAVE_MKTEMP\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${HAVE_JASMIN_TRUE}" && test -z "${HAVE_JASMIN_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"HAVE_JASMIN\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"HAVE_JASMIN\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -43077,6 +43167,10 @@ do
   "test/internal/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/internal/Makefile" ;;
   "test/regression/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/regression/Makefile" ;;
   "test/regression/TestScript" ) CONFIG_FILES="$CONFIG_FILES test/regression/TestScript" ;;
+  "test/regression/compile_time/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/regression/compile_time/Makefile" ;;
+  "test/regression/compile_time/CompileScript" ) CONFIG_FILES="$CONFIG_FILES test/regression/compile_time/CompileScript" ;;
+  "test/regression/run_time/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/regression/run_time/Makefile" ;;
+  "test/regression/run_time/CompileScript" ) CONFIG_FILES="$CONFIG_FILES test/regression/run_time/CompileScript" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "config/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config/config.h" ;;
   "include/kaffe/jtypes.h" ) CONFIG_HEADERS="$CONFIG_HEADERS include/kaffe/jtypes.h" ;;
@@ -43244,6 +43338,9 @@ s,@HAVE_CONFIG_JIT_MD_H@,$HAVE_CONFIG_JIT_MD_H,;t t
 s,@USE_JIT_TRUE@,$USE_JIT_TRUE,;t t
 s,@USE_JIT_FALSE@,$USE_JIT_FALSE,;t t
 s,@ENGINE_NAME@,$ENGINE_NAME,;t t
+s,@BCEL_JAR@,$BCEL_JAR,;t t
+s,@HAVE_BCEL_TRUE@,$HAVE_BCEL_TRUE,;t t
+s,@HAVE_BCEL_FALSE@,$HAVE_BCEL_FALSE,;t t
 s,@ENABLE_JVMPI_TRUE@,$ENABLE_JVMPI_TRUE,;t t
 s,@ENABLE_JVMPI_FALSE@,$ENABLE_JVMPI_FALSE,;t t
 s,@DNSJAVA_JAR@,$DNSJAVA_JAR,;t t
@@ -43268,12 +43365,15 @@ s,@KPREFIX@,$KPREFIX,;t t
 s,@KAFFE_ARCHOS@,$KAFFE_ARCHOS,;t t
 s,@ZIP@,$ZIP,;t t
 s,@MKTEMP@,$MKTEMP,;t t
+s,@JASMIN@,$JASMIN,;t t
 s,@HAVE_ZIP_TRUE@,$HAVE_ZIP_TRUE,;t t
 s,@HAVE_ZIP_FALSE@,$HAVE_ZIP_FALSE,;t t
 s,@HAVE_JIKES_TRUE@,$HAVE_JIKES_TRUE,;t t
 s,@HAVE_JIKES_FALSE@,$HAVE_JIKES_FALSE,;t t
 s,@HAVE_MKTEMP_TRUE@,$HAVE_MKTEMP_TRUE,;t t
 s,@HAVE_MKTEMP_FALSE@,$HAVE_MKTEMP_FALSE,;t t
+s,@HAVE_JASMIN_TRUE@,$HAVE_JASMIN_TRUE,;t t
+s,@HAVE_JASMIN_FALSE@,$HAVE_JASMIN_FALSE,;t t
 s,@KAFFE_LIBS@,$KAFFE_LIBS,;t t
 s,@M_LIBS@,$M_LIBS,;t t
 s,@VM_LIBS@,$VM_LIBS,;t t

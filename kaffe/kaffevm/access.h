@@ -40,4 +40,74 @@
 #define	ACC_TRANSLATED		0x4000
 #define	ACC_VERIFIED		0x8000
 
+typedef enum {
+	ACC_TYPE_CLASS,
+	ACC_TYPE_INNER_CLASS,
+	ACC_TYPE_METHOD,
+	ACC_TYPE_INTERFACE_METHOD,
+	ACC_TYPE_FIELD,
+	ACC_TYPE_INTERFACE_FIELD,
+} access_type_t;
+
+struct Hjava_lang_Class;
+
+/*
+ * Check the validity of the given flags.
+ *
+ * access_flags - The flag set to check.
+ * return - NULL if the flags are valid, otherwise it returns a description
+ * of the problem.
+ */
+char *checkAccessFlags(access_type_t type, accessFlags access_flags);
+
+/*
+ * Check the accessibility of a slot from a specific context.
+ *
+ * context - The class that wishes to access another class' method/field.
+ * target - The class being accessed.
+ * target_flags - The access flags for the method/field being accessed in
+ *   target.
+ * returns - True if the slot is accessible.
+ */
+int checkAccess(struct Hjava_lang_Class *context,
+		struct Hjava_lang_Class *target,
+		accessFlags target_flags);
+/*
+ * Separate method for checking virtual method accessibility.  This is used to
+ * check the accessibility when inheritance matters.  For example:
+ *
+ * package one;
+ *
+ * class A
+ * {
+ *   public void foo(B b) { b.foo(); }
+ * }
+ *
+ * abstract class B
+ * {
+ *   protected abstract void foo();
+ * }
+ *
+ * package two;
+ *
+ * class C
+ *   extends C
+ * {
+ *   protected void foo() { }
+ * }
+ *
+ * context - The class that wishes to access another class' method.
+ * target - The original object class.  This must be specified since public
+ *   methods contained within package private classes become public when
+ *   inherited by public classes.
+ * meth - The method to check for accessibility.
+ * returns - True if the method is accessible.
+ */
+int checkMethodAccess(struct Hjava_lang_Class *context,
+		      struct Hjava_lang_Class *target,
+		      Method *meth);
+int checkFieldAccess(struct Hjava_lang_Class *context,
+		     struct Hjava_lang_Class *target,
+		     Field *field);
+
 #endif

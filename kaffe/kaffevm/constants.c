@@ -29,7 +29,6 @@
  * XXX move into readClass.c
  */
 
-
 /*
  * Read in constant pool from opened file.
  */
@@ -110,6 +109,16 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 			if (! checkBufSize(fp, 2, className, einfo))
 				goto fail;
 			readu2(&d2, fp);
+			if ( (d2 == 0) || (d2 >= info->size) )
+			{
+				postExceptionMessage(
+					einfo,
+					JAVA_LANG(ClassFormatError),
+					"%s (Invalid constant pool index: %d)",
+					className,
+					d2);
+				goto fail;
+			}
 			pool[i] = d2;
 			break;
 

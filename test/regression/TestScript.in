@@ -14,9 +14,10 @@ KAFFEHOME="@prefix@"
 export KAFFEHOME
 
 : ${JAVA=$KAFFEHOME/bin/kaffe} ${SRCDIR=@srcdir@} ${PATHSEP='@PATHSEP@'}
+: ${JASMIN=@JASMIN@}
 # If you want to use jikes as default compiler for the regression tests uncomment the line below.
 #test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn"}
-: ${JAVAC=${JIKES-"$JAVA at.dms.kjc.Main"}" -classpath \".$PATHSEP$SRCDIR$PATHSEP$CLASSPATH\""}
+: ${JAVAC=${JIKES-"$JAVA -noverify at.dms.kjc.Main"}" -classpath \".${PATHSEP}${SRCDIR}${PATHSEP}compile_time${PATHSEP}${CLASSPATH}\""}
 : ${TIMEOUT=300}
 overallerror=0
 error=0
@@ -68,7 +69,7 @@ run()
 	RESULT="$1.fail"
 	TMPRESULT="$1.tmp"
 	$VERBOSE $JAVA $*
-	$JAVA $* <&0 >$TMPRESULT 2>&1 &
+	env CLASSPATH=${CLASSPATH}${PATHSEP}run_time $JAVA -verifyremote $* <&0 >$TMPRESULT 2>&1 &
 	error=$?
 	pid=$!
 	$VERBOSE "Background pid: $pid"
@@ -83,6 +84,14 @@ run()
 	else
 	    # grep will take care of stripping \r from DOS-like output
 	    grep '.*' $TMPRESULT > "$RESULT"
+	fi
+	if test "x$NO_LINE_NUMBERS" = "xyes"; then
+	    mv "$RESULT" "$TMPRESULT"
+	    sed 's/\.java\:[0123456789]*/\.java\:XXXX/g' $TMPRESULT > $RESULT
+	fi
+	if test "x$NO_STACK_TRACE" = "xyes"; then
+	    mv "$RESULT" "$TMPRESULT"
+	    sed '/at .*\.java/d' $TMPRESULT > $RESULT
 	fi
 	rm -f $TMPRESULT
 	if test ! -f "$1.out"; then
@@ -152,6 +161,16 @@ runtest()
 	    else
 		SORT="no"
 	    fi
+	    if grep '// [Nn]o [Ll]ine [Nn]umbers' < "$1" > /dev/null; then
+		NO_LINE_NUMBERS="yes"
+	    else
+		NO_LINE_NUMBERS="no"
+	    fi
+	    if grep '// [Nn]o [Ss]tack [Tt]race' < "$1" > /dev/null; then
+		NO_STACK_TRACE="yes"
+	    else
+		NO_STACK_TRACE="no"
+	    fi
 	    sed '/^\/\* [Ee]xpected [Oo]utput:/,/\*\//p; d' < "$1" |
 	      sed '1d;$d' > $basename.out
 	    cmp -s $basename.out /dev/null && rm -f $basename.out
@@ -160,6 +179,51 @@ runtest()
 	    eval run $JAVA_FLAGS
 	fi
 	if test $error != 0 && test $overallerror != 1; then
+	    overallerror=$error
+	fi
+}
+
+runjasmintest()
+{
+	error=0
+	basename=`mybasename "$1" | sed 's/\.j$//'`
+	RESULT=$basename.fail
+	JAVA_SRCS=${1+"$@"}
+	EXTRA_SRCS=`sed 's/\/\/ [Ss]ources://p;d' < "$1"`
+	for SRC in $EXTRA_SRCS; do
+	    SRC=`dirname "$1"`/$SRC
+	    JAVA_SRCS="$JAVA_SRCS $SRC"
+	done
+	$VERBOSE JAVA_SRCS="$JAVA_SRCS"
+	JAVAC=$JASMIN
+	compile $JAVA_SRCS
+	if grep '; [Ss]kip [Rr]un' < "$1" > /dev/null; then
+	    error=0
+	elif test "$error" = 0 ; then
+	    if grep '; [Ss]ort [Oo]utput' < "$1" >/dev/null; then
+		SORT="yes"
+	    else
+		SORT="no"
+	    fi
+	    if grep '; [Nn]o [Ll]ine [Nn]umbers' < "$1" > /dev/null; then
+		NO_LINE_NUMBERS="yes"
+	    else
+		NO_LINE_NUMBERS="no"
+	    fi
+	    if grep '; [Nn]o [Ss]tack [Tt]race' < "$1" > /dev/null; then
+		NO_STACK_TRACE="yes"
+	    else
+		NO_STACK_TRACE="no"
+	    fi
+	    sed '/^; [Ee]xpected [Oo]utput:/,//p; d' < "$1" |
+		sed '1d' | sed '/^$/q' | sed '/^$/d' |
+		sed 's/^; //g;s/^;//g' > $basename.out
+	    cmp -s $basename.out /dev/null && rm -f $basename.out
+	    JAVA_FLAGS=`sed 's/; java args://p;d' < "$1"`
+	    test -n "$JAVA_FLAGS" || JAVA_FLAGS='$basename'
+	    eval run $JAVA_FLAGS
+	fi
+	if test "$error" != 0 && test "$overallerror" != 1; then
 	    overallerror=$error
 	fi
 }

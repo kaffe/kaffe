@@ -2221,6 +2221,32 @@ define_insn(GETSTATIC)
 			break;
 		}
 	}
+	else if (!(field_field()->accflags & ACC_STATIC)) {
+		softcall_incompatibleclasschange(field_classname(), field_name());
+		switch (field_sig()->data[0]) {
+		case 'J':
+		case 'D':
+			push(2);
+			break;
+		default:
+			push(1);
+			break;
+		}
+	}
+	else if (!checkFieldAccess(current_class(),
+				   field_class(),
+				   field_field())) {
+		softcall_illegalaccess(field_classname(), field_name());
+		switch (field_sig()->data[0]) {
+		case 'J':
+		case 'D':
+			push(2);
+			break;
+		default:
+			push(1);
+			break;
+		}
+	}
 	/* Use the proper load to increase the chances of the translator
 	   getting data in the right type of register.  */
 	else if (!FIELD_ISPRIM(field_field())) {
@@ -2300,6 +2326,35 @@ define_insn(PUTSTATIC)
 			break;
 		}
 	}
+	else if (!(field_field()->accflags & ACC_STATIC)) {
+		softcall_incompatibleclasschange(field_classname(), field_name());
+		switch (field_sig()->data[0]) {
+		case 'J':
+		case 'D':
+			pop(2);
+			break;
+		default:
+			pop(1);
+			break;
+		}
+	}
+	else if (((field_field()->accflags & ACC_FINAL) &&
+		  ((field_class() != current_class()))) ||
+		 !checkFieldAccess(current_class(),
+				   field_class(),
+				   field_field())) {
+		softcall_illegalaccess(field_classname(),
+				       field_name());
+		switch (field_sig()->data[0]) {
+		case 'J':
+		case 'D':
+			pop(2);
+			break;
+		default:
+			pop(1);
+			break;
+		}
+	}
 	else if (!FIELD_ISPRIM(field_field())) {
 		SOFT_ADDREFERENCE_STATIC(field_statics(), stack(0));
 		store_addr_ref(FIELD_ADDRESS(field_field()), stack(0));
@@ -2367,6 +2422,30 @@ define_insn(GETFIELD)
 			break;
 		}
 	}
+	else if (field_field()->accflags & ACC_STATIC) {
+		softcall_incompatibleclasschange(field_classname(), field_name());
+		switch (field_sig()->data[0]) {
+		case 'J':
+		case 'D':
+			pop(1);
+			break;
+		default:
+			break;
+		}
+	}
+	else if (!checkFieldAccess(current_class(),
+				   field_class(),
+				   field_field())) {
+		softcall_illegalaccess(field_classname(), field_name());
+		switch (field_sig()->data[0]) {
+		case 'J':
+		case 'D':
+			pop(1);
+			break;
+		default:
+			break;
+		}
+	}
 	/* Use the proper load to increase the chances of the translator
 	   getting data in the right type of register.  */
 	else if (!FIELD_ISPRIM(field_field())) {
@@ -2417,6 +2496,34 @@ define_insn(PUTFIELD)
 
 	if (field_field() == 0) {
 		softcall_nosuchfield(field_classname(), field_name());
+		switch (field_sig()->data[0]) {
+		case 'J':
+		case 'D':
+			pop(3);
+			break;
+		default:
+			pop(2);
+			break;
+		}
+	}
+	else if (field_field()->accflags & ACC_STATIC) {
+		softcall_incompatibleclasschange(field_classname(), field_name());
+		switch (field_sig()->data[0]) {
+		case 'J':
+		case 'D':
+			pop(3);
+			break;
+		default:
+			pop(2);
+			break;
+		}
+	}
+	else if (((field_field()->accflags & ACC_FINAL) &&
+		  ((field_class() != current_class()))) ||
+		 !checkFieldAccess(current_class(),
+				   field_class(),
+				   field_field())) {
+		softcall_illegalaccess(field_classname(), field_name());
 		switch (field_sig()->data[0]) {
 		case 'J':
 		case 'D':
@@ -2547,9 +2654,26 @@ define_insn(INVOKEVIRTUAL)
 		pop(method_nargs() + 1);
 		METHOD_RETURN_VALUE();
 	}
+	else if (method_method()->accflags & ACC_STATIC) {
+		softcall_incompatibleclasschange(method_classname(), method_name());
+		low = method_returntype();
+		pop(method_nargs() + 1);
+		METHOD_RETURN_VALUE();
+	}
 	else if (method_class()->accflags & ACC_INTERFACE) {
 		softcall_incompatibleclasschange(method_classname(),
 						 method_name());
+		low = method_returntype();
+		pop(method_nargs() + 1);
+		METHOD_RETURN_VALUE();
+	}
+	else if (!checkMethodAccess(current_class(),
+				    method_class(),
+				    method_method())) {
+		softcall_illegalaccess(method_classname(), method_name());
+		low = method_returntype();
+		pop(method_nargs() + 1);
+		METHOD_RETURN_VALUE();
 	}
 	else {
 		int is_virtual = method_method()->idx >= 0;
@@ -2638,6 +2762,31 @@ define_insn(INVOKESPECIAL)
 	else if (method_class()->accflags & ACC_INTERFACE) {
 		softcall_incompatibleclasschange(method_classname(),
 						 method_name());
+		low = method_returntype();
+		pop(method_nargs() + 1);
+		METHOD_RETURN_VALUE();
+	}
+	else if ((method_method()->accflags & ACC_CONSTRUCTOR) &&
+		 (method_method()->class != method_class())) {
+		/* XXX I think this test is wrong. */
+		softcall_nosuchmethod(method_class(), method_name(), method_sig());
+		low = method_returntype();
+		pop(method_nargs() + 1);
+		METHOD_RETURN_VALUE();
+	}
+	else if (method_method()->accflags & ACC_STATIC) {
+		softcall_incompatibleclasschange(method_classname(), method_name());
+		low = method_returntype();
+		pop(method_nargs() + 1);
+		METHOD_RETURN_VALUE();
+	}
+	else if (!checkMethodAccess(current_class(),
+				    method_class(),
+				    method_method())) {
+		softcall_illegalaccess(method_classname(), method_name());
+		low = method_returntype();
+		pop(method_nargs() + 1);
+		METHOD_RETURN_VALUE();
 	}
 	else {
 		idx = method_nargs();
@@ -2688,6 +2837,20 @@ define_insn(INVOKESTATIC)
 	/* If method doesn't exist, call 'NoSuchMethodError' */
 	else if (method_method() == 0) {
 		softcall_nosuchmethod(method_class(), method_name(), method_sig());
+		low = method_returntype();
+		pop(method_nargs());
+		METHOD_RETURN_VALUE();
+	}
+	else if (!(method_method()->accflags & ACC_STATIC)) {
+		softcall_incompatibleclasschange(method_classname(), method_name());
+		low = method_returntype();
+		pop(method_nargs());
+		METHOD_RETURN_VALUE();
+	}
+	else if (!checkMethodAccess(current_class(),
+				    method_class(),
+				    method_method())) {
+		softcall_illegalaccess(method_classname(), method_name());
 		low = method_returntype();
 		pop(method_nargs());
 		METHOD_RETURN_VALUE();
@@ -2744,6 +2907,9 @@ define_insn(INVOKEINTERFACE)
 	else if (!(method_class()->accflags & ACC_INTERFACE)) {
 		softcall_incompatibleclasschange(method_classname(),
 						 method_name());
+		low = method_returntype();
+		pop((uint8)getpc(2));
+		METHOD_RETURN_VALUE();
 	}
 	else {
 		idx = (uint8)getpc(2) - 1;

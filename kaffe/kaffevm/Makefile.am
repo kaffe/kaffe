@@ -46,8 +46,11 @@ libkaffevm_la_GEN_SRCS = \
 	gc-mem.c \
 	md.c
 
+nodist_libkaffevm_la_SOURCES = \
+	$(libkaffevm_la_GEN_SRCS)
+
 libkaffevm_la_SOURCES = \
-	$(libkaffevm_la_GEN_SRCS) \
+	access.c \
 	baseClasses.c \
 	classMethod.c \
 	classPool.c \
@@ -124,6 +127,8 @@ noinst_HEADERS = \
 	threadData.h \
 	utf8const.h \
 	verify.h
+
+$(libkaffevm_la_SOURCES): $(libkaffevm_la_GEN_SRCS)
 
 gc-mem.c: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \

@@ -12,8 +12,8 @@
 #ifndef __classmethod_h
 #define __classmethod_h
 
-#include "access.h"
 #include "gtypes.h"
+#include "access.h"
 #include "object.h"
 #include "md.h"	 /* XXX: need this here so KAFFE_PROFILER is accurately def'd */
 #include "constants.h"
@@ -56,6 +56,7 @@ struct Hjava_lang_Class {
 	struct _classEntry*	centry;
 
 	Utf8Const*		name;
+	int			packageLength;
 	char*			sourcefile;	/* source file name if known */
 	accessFlags		accflags;
 
@@ -119,6 +120,7 @@ struct Hjava_lang_Class {
 
 	/* InnerClasses attribute */
 	short			this_index;
+	short			this_inner_index;
 	short			nr_inner_classes;
 	struct _innerClass*	inner_classes;
 
@@ -306,6 +308,7 @@ typedef struct _dispatchTable {
 #define	DTABLE_METHODSIZE	(sizeof(void*))
 
 typedef struct _fields {
+	Hjava_lang_Class*	clazz;
 	Utf8Const*		name;
 	Utf8Const*		signature;
 	Hjava_lang_Class*	type;
@@ -506,6 +509,7 @@ void			finishFields(Hjava_lang_Class*);
 void			destroyClassLoader(Collector *, void *);
 struct Hjava_lang_String* resolveString(Hjava_lang_Class* clazz, int idx,
 					errorInfo *einfo);
+int			findPackageLength(const char *name);
 /*
  * Start a search for a class.  If no other thread is searching for this
  * mapping then the responsibility falls on the current thread.

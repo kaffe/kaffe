@@ -12,6 +12,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 
+#include "../../../kaffe/kaffevm/gtypes.h"
 #include "../../../kaffe/kaffevm/access.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "../../../kaffe/kaffevm/classMethod.h"

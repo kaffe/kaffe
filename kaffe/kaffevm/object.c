@@ -37,6 +37,14 @@ newObjectChecked(Hjava_lang_Class* class, errorInfo *info)
 {
 	Hjava_lang_Object* obj;
 
+	if (CLASS_IS_INTERFACE(class)) {
+		postExceptionMessage(info,
+				     JAVA_LANG(InstantiationError),
+				     "(class: %s) "
+				     "Abstract class.",
+				     CLASS_CNAME(class));
+		return (0);
+	}
 	obj = gc_malloc(CLASS_FSIZE(class), class->alloc_type);
 
 	if (!obj) {

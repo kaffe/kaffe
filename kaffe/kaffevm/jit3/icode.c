@@ -4878,6 +4878,38 @@ softcall_nosuchfield(Utf8Const* cls, Utf8Const* name)
 }
 
 void
+softcall_linkage(Utf8Const* cls, Utf8Const* name)
+{
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_utf8_const(cls, 0);
+	pusharg_utf8_const(name, 1);
+#else
+	pusharg_utf8_const(name, 1);
+	pusharg_utf8_const(cls, 0);
+#endif
+	call_soft(soft_linkage);
+	popargs();
+	end_func_sync();
+}
+
+void
+softcall_illegalaccess(Utf8Const* cls, Utf8Const* name)
+{
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_utf8_const(cls, 0);
+	pusharg_utf8_const(name, 1);
+#else
+	pusharg_utf8_const(name, 1);
+	pusharg_utf8_const(cls, 0);
+#endif
+	call_soft(soft_illegalaccess);
+	popargs();
+	end_func_sync();
+}
+
+void
 softcall_incompatibleclasschange(Utf8Const* cls, Utf8Const* name)
 {
 	begin_func_sync();

@@ -15,6 +15,7 @@
 #include "config-mem.h"
 #include "kaffe/jtypes.h"
 #include "errors.h"
+#include "gtypes.h"
 #include "access.h"
 #include "object.h"
 #include "constants.h"
@@ -272,6 +273,15 @@ DBG(FLOOKUP,	dprintf("*** getField(%s,%s,%s)\n",
 
 	field = lookupClassField(class, WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]), isStatic, einfo);
 	if (field == 0) {
+		return (false);
+	}
+	if (!utf8ConstEqual(field->signature, ret->signature)) {
+		postExceptionMessage(einfo,
+				     JAVA_LANG(NoSuchFieldError),
+				     "%s.%s %s",
+				     ret->cname->data,
+				     ret->name->data,
+				     ret->signature->data);
 		return (false);
 	}
 

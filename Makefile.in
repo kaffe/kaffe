@@ -58,6 +58,7 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
+BCEL_JAR = @BCEL_JAR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CCLD = @CCLD@
@@ -97,11 +98,15 @@ ENGINE_NAME = @ENGINE_NAME@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+HAVE_BCEL_FALSE = @HAVE_BCEL_FALSE@
+HAVE_BCEL_TRUE = @HAVE_BCEL_TRUE@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
 HAVE_DNSJAVA_FALSE = @HAVE_DNSJAVA_FALSE@
 HAVE_DNSJAVA_TRUE = @HAVE_DNSJAVA_TRUE@
 HAVE_GCJ_SUPPORT_FALSE = @HAVE_GCJ_SUPPORT_FALSE@
 HAVE_GCJ_SUPPORT_TRUE = @HAVE_GCJ_SUPPORT_TRUE@
+HAVE_JASMIN_FALSE = @HAVE_JASMIN_FALSE@
+HAVE_JASMIN_TRUE = @HAVE_JASMIN_TRUE@
 HAVE_JIKES_FALSE = @HAVE_JIKES_FALSE@
 HAVE_JIKES_TRUE = @HAVE_JIKES_TRUE@
 HAVE_MKTEMP_FALSE = @HAVE_MKTEMP_FALSE@
@@ -113,6 +118,7 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+JASMIN = @JASMIN@
 JAVA_LIBS = @JAVA_LIBS@
 JIKES = @JIKES@
 JIKESPROG = @JIKESPROG@
@@ -564,7 +570,7 @@ distcleancheck_listfiles = find . -type f -print
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkinstalldirs) $(distdir)/./include/kaffe $(distdir)/FAQ $(distdir)/compat-include $(distdir)/developers $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/test/regression
+	$(mkinstalldirs) $(distdir)/./include/kaffe $(distdir)/FAQ $(distdir)/compat-include $(distdir)/developers $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/run_time
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -787,7 +793,7 @@ BUILD_ENVIRONMENT: Makefile
 
 BUILD_ENVIRONMENT-make: Makefile
 	echo BOOTCLASSPATH=\$${BOOTCLASSPATH}\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/rt.jar\''$(PATHSEP)'\'$(DNSJAVA_JAR)\; export BOOTCLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' > BUILD_ENVIRONMENT.new; \
-	echo CLASSPATH=\$${CLASSPATH}\''$(PATHSEP)'\'.\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/kjc.jar\; export CLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' >> BUILD_ENVIRONMENT.new; \
+	echo CLASSPATH=\$${CLASSPATH}\''$(PATHSEP)'\'.\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/kjc.jar\''$(PATHSEP)'\'$(BCEL_JAR)\; export CLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' >> BUILD_ENVIRONMENT.new; \
 	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' ' '; echo) | sed -e 's/ $$//' -e "s/ /\'$(PATHSEP)\'/g"`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT.new; \
 	echo JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT.new
 	rm -f BUILD_ENVIRONMENT

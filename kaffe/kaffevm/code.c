@@ -28,6 +28,7 @@
 bool
 addCode(Method* m, uint32 len, classFile* fp, errorInfo *einfo)
 {
+	bool retval = false;
 	Code c;
 	int i;
 	u2 i2;
@@ -45,7 +46,7 @@ addCode(Method* m, uint32 len, classFile* fp, errorInfo *einfo)
 	dprintf("Code length = %d\n", c.code_length);
 		);
 	
-	if (c.code_length > 0) {
+	if ((c.code_length > 0) && (c.code_length < 65536)) {
 		c.code = gc_malloc(c.code_length, GC_ALLOC_BYTECODE);
 		if (c.code == 0) {
 			postOutOfMemory(einfo);
@@ -56,46 +57,71 @@ addCode(Method* m, uint32 len, classFile* fp, errorInfo *einfo)
 			);
 
 		readm(c.code, c.code_length, sizeof(bytecode), fp);
-	}
-	else {
-		c.code = 0;
-	}
-
-	readu2(&elen, fp);
-	DBG(CODEATTR,
-	    dprintf("Exception table length = %d\n", elen);
-		);
-
-	if (elen > 0) {
-		c.exception_table = gc_malloc(sizeof(jexception) + ((elen - 1) * sizeof(jexceptionEntry)), GC_ALLOC_EXCEPTIONTABLE);
-		if (c.exception_table == 0) {
-			if (c.code) {
-				gc_free(c.code);
+		readu2(&elen, fp);
+		DBG(CODEATTR,
+		    dprintf("Exception table length = %d\n", elen);
+		    );
+		
+		if (elen > 0) {
+			c.exception_table = gc_malloc(sizeof(jexception) + ((elen - 1) * sizeof(jexceptionEntry)), GC_ALLOC_EXCEPTIONTABLE);
+			if (c.exception_table == 0) {
+				if (c.code) {
+					gc_free(c.code);
+				}
+				return false;
 			}
-			return false;
+			c.exception_table->length = elen;
+			
+			for (i = 0; i < elen; i++) {
+				readu2(&i2, fp);
+				c.exception_table->entry[i].start_pc = i2;
+				readu2(&i2, fp);
+				c.exception_table->entry[i].end_pc = i2;
+				readu2(&i2, fp);
+				c.exception_table->entry[i].handler_pc = i2;
+				readu2(&i2, fp);
+				c.exception_table->entry[i].catch_idx = i2;
+				c.exception_table->entry[i].catch_type = NULL;
+			}
 		}
-		c.exception_table->length = elen;
-
-		for (i = 0; i < elen; i++) {
-			readu2(&i2, fp);
-			c.exception_table->entry[i].start_pc = i2;
-			readu2(&i2, fp);
-			c.exception_table->entry[i].end_pc = i2;
-			readu2(&i2, fp);
-			c.exception_table->entry[i].handler_pc = i2;
-			readu2(&i2, fp);
-			c.exception_table->entry[i].catch_idx = i2;
-			c.exception_table->entry[i].catch_type = NULL;
+		else {
+			c.exception_table = 0;
 		}
+		GC_WRITE(m, c.code);
+		GC_WRITE(m, c.exception_table);
+		addMethodCode(m, &c);
+		
+		retval = readAttributes(fp,
+					m->class,
+					READATTR_METHOD,
+					m,
+					einfo);
 	}
-	else {
-		c.exception_table = 0;
+	else if (c.code_length == 0)
+	{
+		postExceptionMessage(einfo,
+				     JAVA_LANG(ClassFormatError),
+				     "(class: %s, method: %s signature: %s) "
+				     "Code of a method has length 0",
+				     m->class->name->data,
+				     m->name->data,
+				     m->class->
+				     methods[m - CLASS_METHODS(m->class)].
+				     parsed_sig->signature->data);
 	}
-	GC_WRITE(m, c.code);
-	GC_WRITE(m, c.exception_table);
-	addMethodCode(m, &c);
-
-	return (readAttributes(fp, m->class, READATTR_METHOD, m, einfo));
+	else
+	{
+		postExceptionMessage(einfo,
+				     JAVA_LANG(ClassFormatError),
+				     "(class: %s, method: %s signature: %s) "
+				     "Code of a method longer than 65535 bytes",
+				     m->class->name->data,
+				     m->name->data,
+				     m->class->
+				     methods[m - CLASS_METHODS(m->class)].
+				     parsed_sig->signature->data);
+	}
+	return (retval);
 }
 
 /*

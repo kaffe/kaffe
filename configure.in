@@ -307,6 +307,18 @@ no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 esac
 
 dnl =========================================================================
+dnl Allow user to specify a bcel.jar file for class file testing.
+dnl -------------------------------------------------------------------------
+
+AC_ARG_WITH(bcel,
+  [  --with-bcel=<jar>       Use the specified Bytecode Engineering Jar file.],
+  [ BCEL_JAR="$withval" ],
+  [ BCEL_JAR="" ])
+
+AC_SUBST(BCEL_JAR)
+AM_CONDITIONAL(HAVE_BCEL, test x"$BCEL_JAR" != x"")
+
+dnl =========================================================================
 dnl Allow activation of jvmpi
 dnl -------------------------------------------------------------------------
 
@@ -506,10 +518,12 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_CHECK_PROG(ZIP, zip, zip)
 AC_CHECK_PROG(MKTEMP, mktemp, mktemp)
+AC_CHECK_PROG(JASMIN, jasmin, jasmin)
 
 AM_CONDITIONAL(HAVE_ZIP, test x"$ZIP" != x"")
 AM_CONDITIONAL(HAVE_JIKES, test x"$JIKES" != x"")
 AM_CONDITIONAL(HAVE_MKTEMP, test x"$MKTEMP" != x"")
+AM_CONDITIONAL(HAVE_JASMIN, test x"$JASMIN" != x"")
 
 dnl If symlink is overridden then don't bother with the test.
 if test x"$LN_S" = x"" ; then
@@ -1630,5 +1644,9 @@ AC_CONFIG_FILES([test/Makefile])
 AC_CONFIG_FILES([test/internal/Makefile])
 AC_CONFIG_FILES([test/regression/Makefile])
 AC_CONFIG_FILES([test/regression/TestScript])
+AC_CONFIG_FILES([test/regression/compile_time/Makefile])
+AC_CONFIG_FILES([test/regression/compile_time/CompileScript])
+AC_CONFIG_FILES([test/regression/run_time/Makefile])
+AC_CONFIG_FILES([test/regression/run_time/CompileScript])
 
 AC_OUTPUT

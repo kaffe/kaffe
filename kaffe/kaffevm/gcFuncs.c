@@ -219,7 +219,11 @@ DBG(CLASSGC,
 		}
 		GC_free(collector, clazz->itable2dtable);
 	}
-        KFREE(clazz->gc_layout);
+	if( clazz->gc_layout &&
+	    (clazz->superclass->gc_layout != clazz->gc_layout) )
+	{
+		KFREE(clazz->gc_layout);
+	}
 	KFREE(clazz->sourcefile);
 	KFREE(clazz->implementors);
 	KFREE(clazz->inner_classes);

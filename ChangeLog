@@ -1,3 +1,129 @@
+2003-08-31  Timothy S. Stack <stack@cs.utah.edu>
+
+	* Makefile.am:
+	Add BCEL Jar file to the CLASSPATH.
+
+	* configure.in:
+	Add --with-bcel option for activating BCEL based tests.  Detect
+	Jasmin for hostile class loading tests.
+
+	* include/errors.h:
+	Make LinkageError and IllegalAccessError take message arguments.
+
+	* kaffe/kaffevm/Makefile.am:
+	Add access.c and move GEN_SRCS to nodist_libkaffevm_la_SOURCES.
+
+	* kaffe/kaffevm/access.h,
+	kaffe/kaffevm/access.c:
+	Added run time access checking code.
+
+	* kaffe/kaffevm/classMethod.h,
+	kaffe/kaffevm/classMethod.c:
+	Verification related checking.
+
+	* kaffe/kaffevm/code.c:
+	Check for valid code lengths.
+
+	* kaffe/kaffevm/constants.c:
+	Check for valid CONSTANT_String values here since some code at the
+	end of the function dereferences the values.
+
+	* kaffe/kaffevm/exception.c,
+	kaffe/kaffevm/stackTrace.c,
+	kaffe/kaffevm/thread.c,
+	libraries/clib/native/Class.c:
+	Add #include for gtypes.h.
+
+	* kaffe/kaffevm/gcFuncs.c:
+	Don't free parent's gc_layout.
+
+	* kaffe/kaffevm/kaffe.def:
+	Add method/field access/link checks.
+
+	* kaffe/kaffevm/lookup.c:
+	Make sure the actual field signature jibe's with the requested
+	one.
+
+	* kaffe/kaffevm/object.c:
+	Don't allow instantiation of interface classes.
+
+	* kaffe/kaffevm/readClass.c:
+	Post an UnsupportedClassVersionError instead of print a warning.
+
+	* kaffe/kaffevm/soft.h,
+	kaffe/kaffevm/soft.c:
+	Add soft_linkage and soft_illegalaccess for throwing LinkageErrors
+	and IllegalAccessErrors.
+
+	* kaffe/kaffevm/support.h,
+	kaffe/kaffevm/support.c:
+	Add silly bitCount function (used by verifier code...).
+
+	* kaffe/kaffevm/verify.c:
+	Add checks for fields.  Fix error when computing the next PC for a
+	WIDE instruction.
+
+	* kaffe/kaffevm/jit3/codeproto.h,
+	kaffe/kaffevm/jit3/icode.c:
+	Add softcall_linkage and softcall_illegalaccess for throwing
+	LinkageErrors and IllegalAccessErrors.
+
+	* test/regression/LostTrampolineFrame.java:
+	Changed to use an error in a static initializer to cause the error
+	instead of a verification error.
+
+	* test/regression/Makefile.am:
+	Add new access/link, Jasmin, and BCEL tests.
+
+	* test/regression/TestScript.in:
+	Add support for Jasmin based tests.  Add support for tests that
+	use different classes at compile time and run time.
+
+	* test/regression/BadCatch1.j,
+	test/regression/BadCatch2.j,
+	test/regression/BadClassFileCode.java,
+	test/regression/BadClassFileConstants.java,
+	test/regression/BadClassVersion.java,
+	test/regression/CircularClass.j,
+	test/regression/CircularInterface.j,
+	test/regression/ClassFlags1.j,
+	test/regression/ClassFlags2.j,
+	test/regression/DuplicateField.j,
+	test/regression/EmptyMethod.j,
+	test/regression/FieldFlags1.j,
+	test/regression/FieldFlags2.j,
+	test/regression/FieldFlags3.j,
+	test/regression/FieldFlags4.j,
+	test/regression/FieldRefSignature1.j,
+	test/regression/FieldSignature1.j,
+	test/regression/FieldSignature2.j,
+	test/regression/FieldSignature3.j,
+	test/regression/FieldSignature4.j,
+	test/regression/ImplementClass.java,
+	test/regression/InterfaceSuperClass.java,
+	test/regression/InvokedMethodSignature1.j,
+	test/regression/InvokedMethodSignature2.j,
+	test/regression/InvokedMethodSignature3.j,
+	test/regression/MethodFlags1.j,
+	test/regression/MethodFlags2.j,
+	test/regression/MethodFlags3.j,
+	test/regression/MethodFlags4.j,
+	test/regression/MethodFlags5.j,
+	test/regression/MethodSignature1.j,
+	test/regression/MethodSignature2.j,
+	test/regression/MethodSignature3.j,
+	test/regression/MethodSignature4.j,
+	test/regression/MethodSignature5.j,
+	test/regression/MethodSignature6.j,
+	test/regression/MethodSignature7.j,
+	test/regression/MethodSignature8.j,
+	test/regression/MethodSignature9.j:
+	Tests designed to assault the class loader.
+
+	* test/regression/FieldErrors.java,
+	test/regression/MethodErrors.java:
+	Tests designed to check run-time access/link checking.
+
 2003-08-31  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
