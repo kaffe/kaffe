@@ -6475,7 +6475,7 @@ rm -f conftest*
 fi
 
 echo "$ac_t""$ac_cv_declared_select" 1>&6
-if test "x$ac_cv_declared_select"= "xyes"; then
+if test "x$ac_cv_declared_select" = "xyes"; then
   cat >> confdefs.h <<\EOF
 #define HAVE_DECLARED_SELECT 1
 EOF

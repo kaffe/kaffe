@@ -877,7 +877,7 @@ AC_CACHE_CHECK([for declaration of select],
 ], [ void *foo = select; ],
   ac_cv_declared_select=yes, ac_cv_declared_select=no)
 ])
-if test "x$ac_cv_declared_select"= "xyes"; then
+if test "x$ac_cv_declared_select" = "xyes"; then
   AC_DEFINE(HAVE_DECLARED_SELECT, 1, [Is function select declared])
 fi
 
