@@ -38,6 +38,30 @@ See license.terms for the text of the GNU General Public License.
 More information on GNU JAXP can be found at 
 http://www.gnu.org/software/classpathx/jaxp/.
 
+* libxmlj
+
+This code has been merged in from the GNU Classpath Extensions 
+project. Kaffe is tracking this project's CVS HEAD.
+
+Libxmlj is distributed under the GNU General Public License.
+
+See license.terms for the text of the GNU General Public License.
+
+More information on libxmlj can be found at
+http://www.gnu.org/software/classpathx/.
+
+* gjdoc
+
+This code has been merged in from the GNU Classpath tools project.
+Kaffe is tracking this project's CVS HEAD.
+
+Gjdoc is distributed under the GNU General Public License.
+
+See license.terms for the text of the GNU General Public License.
+
+More information on gjdoc can be found at
+http://www.gnu.org/software/cp-tools/.
+
 * java.util.regex
 
 This code has been merged in from GNU regexp. Kaffe tracks this
