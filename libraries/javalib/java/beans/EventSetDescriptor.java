@@ -21,10 +21,12 @@ public class EventSetDescriptor
 	private Method addListenerMethod;
 	private Method removeListenerMethod;
 	private boolean unicast;
-	private boolean indefault;
+	private boolean indefault = true;
 
 public EventSetDescriptor(Class sourceClass, String eventSetName, Class listenerType, String listenerMethodName) throws IntrospectionException
 {
+	super(eventSetName);
+
 	this.sourceClass = sourceClass;
 	this.eventSetName = eventSetName;
 	this.listenerType = listenerType;
@@ -32,27 +34,24 @@ public EventSetDescriptor(Class sourceClass, String eventSetName, Class listener
 	final String esname = capitalize(eventSetName);
 	final String addListenerMethodName = "add"+esname+"Listener";
 	final String removeListenerMethodName = "remove"+esname+"Listener";
-
 	listenerMethods = new MethodDescriptor[1];
 
 	// Get the methods on this interface and search out the listener names
-	Method meths[] = listenerType.getDeclaredMethods();
+	final Method meths[] = listenerType.getDeclaredMethods();
 	for (int i = 0; i < meths.length; i++) {
 		final String mname = meths[i].getName();
 		if (mname.equals(listenerMethodName)) {
 			listenerMethods[0] = new MethodDescriptor(meths[i]);
 		}
-		else if (mname.equals(addListenerMethodName)) {
-			addListenerMethod = meths[i];
-		}
-		else if (mname.equals(removeListenerMethodName)) {
-			removeListenerMethod = meths[i];
-		}
 	}
+
+	findAddAndRemoveListenerMethods(addListenerMethodName, removeListenerMethodName);
 }
 
 public EventSetDescriptor(Class sourceClass, String eventSetName, Class listenerType, String listenerMethodNames[], String addListenerMethodName, String removeListenerMethodName) throws IntrospectionException
 {
+	super(eventSetName);
+
 	this.sourceClass = sourceClass;
 	this.eventSetName = eventSetName;
 	this.listenerType = listenerType;
@@ -67,29 +66,27 @@ public EventSetDescriptor(Class sourceClass, String eventSetName, Class listener
 				listenerMethods[j] = new MethodDescriptor(meths[i]);
 			}
 		}
-		if (mname.equals(addListenerMethodName)) {
-			addListenerMethod = meths[i];
-		}
-		else if (mname.equals(removeListenerMethodName)) {
-			removeListenerMethod = meths[i];
-		}
 	}
+
+	findAddAndRemoveListenerMethods(addListenerMethodName, removeListenerMethodName);
 }
 
 public EventSetDescriptor(String eventSetName, Class listenerType, MethodDescriptor listenerMethodDescriptors[], Method addListenerMethod, Method removeListenerMethod) throws IntrospectionException
 {
+	super(eventSetName);
+
 	this.sourceClass = null;
 	this.eventSetName = eventSetName;
 	this.listenerType = listenerType;
 	this.listenerMethods = listenerMethodDescriptors;
 	this.addListenerMethod = addListenerMethod;
 	this.removeListenerMethod = removeListenerMethod;
-	this.unicast = false;
-	this.indefault = false;
-	}
+}
 
 public EventSetDescriptor(String eventSetName, Class listenerType, Method listenerMethods[], Method addListenerMethod, Method removeListenerMethod) throws IntrospectionException
 {
+	super(eventSetName);
+
 	this.sourceClass = null;
 	this.eventSetName = eventSetName;
 	this.listenerType = listenerType;
@@ -100,10 +97,22 @@ public EventSetDescriptor(String eventSetName, Class listenerType, Method listen
 	for (int i = 0; i < listenerMethods.length; i++) {
 		this.listenerMethods[i] = new MethodDescriptor(listenerMethods[i]);
 	}
+}
 
-	this.unicast = false;
-	this.indefault = false;
+private void findAddAndRemoveListenerMethods(String addListenerMethodName, String removeListenerMethodName) {
+	/* Get the add and remove methods from the source class */
+	Method [] meths = sourceClass.getDeclaredMethods();
+
+	for (int i = 0; i < meths.length; ++i) {
+		final String mname = meths[i].getName();
+		if (mname.equals(addListenerMethodName)) {
+			addListenerMethod = meths[i];
+		}
+		else if (mname.equals(removeListenerMethodName)) {
+			removeListenerMethod = meths[i];
+		}
 	}
+}
 
 public Method getAddListenerMethod()
 	{

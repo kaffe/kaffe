@@ -19,6 +19,24 @@ public class Introspector {
 
 private static String[] beansearch = { "kaffe.beans.infos" };
 
+private static Hashtable cache = new Hashtable();
+
+private static final String ADD = "add";
+private static final String GET = "get";
+private static final String IS = "is";
+private static final String LISTENER = "Listener";
+private static final String REMOVE = "remove";
+private static final String SET = "set";
+private static final int ADD_LENGTH = ADD.length();
+private static final int GET_LENGTH = GET.length();
+private static final int IS_LENGTH = IS.length();
+private static final int LISTENER_LENGTH = LISTENER.length();
+private static final int REMOVE_LENGTH = REMOVE.length();
+private static final int SET_LENGTH = SET.length();
+
+private static final String BEAN_INFO = "BeanInfo";
+private static final String ADD_PROPERTY_CHANGE_LISTENER = ADD + "PropertyChange" + LISTENER;
+
 private Introspector() {}
     
 public static String decapitalize(String name) {
@@ -37,8 +55,13 @@ public static BeanInfo getBeanInfo(Class beanClass) throws IntrospectionExceptio
 	return (getBeanInfo(beanClass, null));
 }
 
-public static BeanInfo getBeanInfo(Class beanClass, Class stopClass)
-		throws IntrospectionException {
+public static BeanInfo getBeanInfo(Class beanClass, Class stopClass) throws IntrospectionException {
+
+	Object cobj = cache.get(beanClass);
+	if (cobj != null) {
+		return ((BeanInfo)cobj);
+	}
+
 	BeanInfo bean = loadBeanInfo(beanClass);
 
 	// Check stop class is really a superclass of bean class
@@ -80,7 +103,9 @@ public static BeanInfo getBeanInfo(Class beanClass, Class stopClass)
 		events = getListeners(beanClass, stopClass);
 	}
 
-	return (new GenericBeanInfo(desc, props, meths, events, devents, dprops, bean));
+	bean = new GenericBeanInfo(desc, props, meths, events, devents, dprops, bean);
+	cache.put(beanClass, bean);
+	return (bean);
 }
 
 public static String[] getBeanInfoSearchPath() {
@@ -96,24 +121,26 @@ private static EventSetDescriptor[] getListeners(Class startClass, Class stopCla
 	for (Class cls = startClass; cls != stopClass; cls = cls.getSuperclass()) {
 		Method[] meths = cls.getDeclaredMethods();
 		for (int i = 0; i < meths.length; i++) {
-			if (Modifier.isPublic(meths[i].getModifiers()) && !Modifier.isStatic(meths[i].getModifiers())) {
-				String mname = meths[i].getName();
-				if (mname.startsWith("add") && mname.endsWith("Listener")) {
-					mname = mname.substring(3, mname.length() - 8);
+			Method method = meths[i];
+			int modifiers = method.getModifiers();
+			if (Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers)) {
+				String mname = method.getName();
+				if (mname.startsWith(ADD) && mname.endsWith(LISTENER)) {
+					mname = mname.substring(ADD_LENGTH, mname.length() - LISTENER_LENGTH);
 					keys.put(mname, mname);
 					/* XXX: Do we need to check that
 					 * there's only one parameter?
 					 */
-					listenerClasses.put(mname, meths[i].getParameterTypes()[0]);
+					listenerClasses.put(mname, method.getParameterTypes()[0]);
 					if (addMethods.get(mname) == null) {
-						addMethods.put(mname, meths[i]);
+						addMethods.put(mname, method);
 					}
 				}
-				else if (mname.startsWith("remove") && mname.endsWith("Listener")) {
-					mname = mname.substring(6, mname.length() - 8);
+				else if (mname.startsWith(REMOVE) && mname.endsWith(LISTENER)) {
+					mname = mname.substring(REMOVE_LENGTH, mname.length() - LISTENER_LENGTH);
 					keys.put(mname, mname);
 					if (removeMethods.get(mname) == null) {
-						removeMethods.put(mname, meths[i]);
+						removeMethods.put(mname, method);
 					}
 				}
 			}
@@ -129,7 +156,8 @@ private static EventSetDescriptor[] getListeners(Class startClass, Class stopCla
 		Method remove = (Method)removeMethods.get(key);
 		Class listenerType = (Class)listenerClasses.get(key);
 		if (add != null && remove != null) {
-			props[i] = new EventSetDescriptor(decapitalize(key), listenerType, new Method[]{}, add, remove);
+			props[i] = new EventSetDescriptor(decapitalize(key), listenerType, listenerType.getDeclaredMethods(), add, remove);
+
 			Class except[] = add.getExceptionTypes();
 			if (except != null) {
 				for (int j = 0; j < except.length; j++) {
@@ -202,17 +230,17 @@ private static PropertyDescriptor[] getProperties(Class startClass, Class stopCl
 
 			switch (mclasses.length) {
 			case 0:
-				if (mname.startsWith("get")
-				    && !mname.equals("get")) {
-					mname = mname.substring(3);
+				if (mname.startsWith(GET)
+				    && !mname.equals(GET)) {
+					mname = mname.substring(GET_LENGTH);
 					keys.put(mname, mname);
 					if (getMethods.get(mname) == null) {
 						getMethods.put(mname, meth);
 					}
 				}
-				else if (mname.startsWith("is")
-				    && !mname.equals("is")) {
-					mname = mname.substring(2);
+				else if (mname.startsWith(IS)
+				    && !mname.equals(IS)) {
+					mname = mname.substring(IS_LENGTH);
 					keys.put(mname, mname);
 					if (getMethods.get(mname) == null) {
 						getMethods.put(mname, meth);
@@ -221,19 +249,19 @@ private static PropertyDescriptor[] getProperties(Class startClass, Class stopCl
 				break;
 
 			case 1:
-				if (mname.startsWith("set")
-				    && !mname.equals("set")
+				if (mname.startsWith(SET)
+				    && !mname.equals(SET)
 				    && meth.getReturnType().equals(Void.TYPE)) {
-					mname = mname.substring(3);
+					mname = mname.substring(SET_LENGTH);
 					keys.put(mname, mname);
 					if (setMethods.get(mname) == null) {
 						setMethods.put(mname, meth);
 					}
 				}
-				else if (mname.startsWith("get")
-				    && !mname.equals("get")
+				else if (mname.startsWith(GET)
+				    && !mname.equals(GET)
 				    && mclasses[0] == Integer.TYPE) {
-					mname = mname.substring(3);
+					mname = mname.substring(GET_LENGTH);
 					keys.put(mname, mname);
 					if (getIdxMethods.get(mname) == null) {
 						getIdxMethods.put(mname, meth);
@@ -242,11 +270,11 @@ private static PropertyDescriptor[] getProperties(Class startClass, Class stopCl
 				break;
 
 			case 2:
-				if (mname.startsWith("set")
-				    && !mname.equals("set")
+				if (mname.startsWith(SET)
+				    && !mname.equals(SET)
 				    && meth.getReturnType().equals(Void.TYPE)
 				    && mclasses[0] == Integer.TYPE) {
-					mname = mname.substring(3);
+					mname = mname.substring(SET_LENGTH);
 					keys.put(mname, mname);
 					if (setIdxMethods.get(mname) == null) {
 						setIdxMethods.put(mname, meth);
@@ -258,6 +286,19 @@ private static PropertyDescriptor[] getProperties(Class startClass, Class stopCl
 		}
 	}
 
+	// check if the bean fires PropertyChangeEvent
+	boolean bound = false;
+
+	try {
+	    startClass.getMethod(ADD_PROPERTY_CHANGE_LISTENER, new Class [] {PropertyChangeListener.class});
+	    bound = true;
+	}
+	catch (NoSuchMethodException e) {
+	    /* the bean does not allow to add property change listeners,
+	     * thus it does not fire poperty change events, i.e. its
+	     * properties are not bound.
+	     */
+	}
 
 	// Now look through set/get methods and create desciptors.
 	// Eliminate any methods that don't make sense.
@@ -292,6 +333,10 @@ private static PropertyDescriptor[] getProperties(Class startClass, Class stopCl
 			props[i] = new IndexedPropertyDescriptor(
 			    decapitalize(key), get, set, getidx, setidx);
 		}
+
+		if (bound) {
+		    props[i].setBound(true);
+		}
 	}
 
 	return (props);
@@ -302,7 +347,7 @@ private static BeanInfo loadBeanInfo(Class beanClass) {
 
 	// First try to load bean info from package.
 	BeanInfo bean = loadNamedBean(beanClass.getClassLoader(),
-	    bname + "BeanInfo");
+	    bname + BEAN_INFO);
 	if (bean != null) {
 		return (bean);
 	}
@@ -319,7 +364,7 @@ private static BeanInfo loadBeanInfo(Class beanClass) {
 	// Next try the search paths
 	for (int i = 0; i < beansearch.length; i++) {
 		bean = loadNamedBean(beanClass.getClassLoader(),
-		    beansearch[i] + "." + bname + "BeanInfo");
+		    beansearch[i] + "." + bname + BEAN_INFO);
 		if (bean != null) {
 			return (bean);
 		}
@@ -346,5 +391,4 @@ private static BeanInfo loadNamedBean(ClassLoader loader, String cl) {
 public static void setBeanInfoSearchPath(String path[]) {
 	beansearch = path;
 }
-
 }

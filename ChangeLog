@@ -1,3 +1,36 @@
+Thu Jul  4 02:26:08 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/beans/BeanDescriptor.java:
+	(BeanDescriptor) set default names.
+	* libraries/javalib/java/beans/EventSetDescriptor.java:
+	(indefault) true by default.
+	(EventSetDescriptor) Cleaned up constructors. Set names. Use
+	findAddAndRemoveListenerMethods internally.
+	(findAddAndRemoveListenerMethods) new method.
+	* libraries/javalib/java/beans/IndexedPropertyDescriptor.java:
+	(IndexedPropertyDescriptor) Cleaned up constructors. Set
+	names. Added more correctness checks. Use init internally. Fixed
+	setting of return types.
+	(check) , (checkGetterAndSetterMatch), (checkSetter),
+	(checkGetter), (init) new methods.
+	* libraries/javalib/java/beans/Introspector.java:
+	merged caching code from Pocketlinux. Cleaned up to use explicit
+	string constants and ints for their length.
+	(getBeanInfo) merged with Pocketlinux.
+	(getListeners) Cleaned up. Construct EventSetDescriptor using
+	declared methods of listener type.
+	(getProperties) Cleaned up. Check is bean fires
+	PropertyChangeEvent and set bound for inferred properties
+	accordingly.
+	* libraries/javalib/java/beans/MethodDescriptor.java:
+	(MethodDescriptor) Set names.
+	* libraries/javalib/java/beans/PropertyDescriptor.java:
+	(PropertyDescriptor) Set names. Implemented introspection
+	according to the description in the Java Class Libraries 2nd Ed
+	Vol.2 book.
+	(chekGetterAndSetterMatch), (checkSetter), (checkGetter) new
+	checking methods.
+
 Thu Jul  4 02:10:25 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Makefile.am,

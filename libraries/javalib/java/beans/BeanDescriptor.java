@@ -24,6 +24,15 @@ public class BeanDescriptor extends FeatureDescriptor {
   {
     bclass = beanClass;
     cclass = customizerClass;
+    /* The default name is the class name without the package name.
+     * It is also the default value for display name and short
+     * description.
+     */
+    String name = beanClass.getName();
+    name = name.substring(name.lastIndexOf('.') + 1);
+    setName(name);
+    setDisplayName(name);
+    setShortDescription(name);
   }
 
   public Class getBeanClass()

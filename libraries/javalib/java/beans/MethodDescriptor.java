@@ -24,6 +24,7 @@ public MethodDescriptor(Method method)
 
 public MethodDescriptor(Method method, ParameterDescriptor parameterDescriptors[])
 	{
+	super(method.getName());
 	meth = method;
 	params = parameterDescriptors;
 }
