@@ -1,3 +1,7 @@
+Sat Nov 24 14:31:18 PST 2001  Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>
+
+	* libraries/javalib/java/util/TimeZone.java: fixes to getTimeZone()
+
 Fri Nov 23 17:45:48 PST 2001  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/applet/AppletContext.java
