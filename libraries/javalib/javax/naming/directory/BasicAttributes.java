@@ -40,7 +40,6 @@ package javax.naming.directory;
 
 import java.util.NoSuchElementException;
 import java.util.Vector;
-
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 
