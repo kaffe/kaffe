@@ -236,21 +236,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	setProperty(p, "user.region", "US");
 	setProperty(p, "user.timezone", "PST");
 
-	setProperty(p, "file.encoding.pkg", "sun.io");
-
-	/* Add in the awt.Toolkit we will be using */
-#if defined(HAVE_PACKAGE_BISS_NET_COM)
-	setProperty(p, "awt.toolkit", "biss.awt.kernel.Toolkit");
-#elif defined(HAVE_PACKAGE_EPFL_CH)
-	setProperty(p, "awt.toolkit", "kaffe.awt.simple.SimpleToolkit");
-#endif
-#if defined(HAVE_AWT_TOOLKIT_BISS) || defined(HAVE_AWT_TOOLKIT_SAWT)
-	jresources = malloc(strlen(jhome) + strlen("/lib") + 1);
-	strcpy(jresources, jhome);
-	strcat(jresources, "/lib");
-	setProperty(p, "java.resources", jresources);
-	free(jresources);
-#endif
+	setProperty(p, "file.encoding.pkg", "kaffe.io");
 
 	/* Now process user defined properties */
 	for (prop = userProperties; prop != 0; prop = prop->next) {

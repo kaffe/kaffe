@@ -28,16 +28,16 @@ EXEEXT=		@EXEEXT@
 OBJECT=		main$(OBJEXT)
 DEPENDS=	$(OBJECT:@OBJEXT@=.d)
 
-all:		kaffe$(EXEEXT)
+all:		Kaffe$(EXEEXT)
 
-kaffe$(EXEEXT):	$(OBJECT) @KAFFE_LIBDEP@
-		$(CC) $(ALL_CFLAGS) $(LDFLAGS) -o kaffe$(EXEEXT) $(OBJECT) $(LIBS)
+Kaffe$(EXEEXT):	$(OBJECT) @KAFFE_LIBDEP@
+		$(CC) $(ALL_CFLAGS) $(LDFLAGS) -o Kaffe$(EXEEXT) $(OBJECT) $(LIBS)
 
 .c$(OBJEXT):
 		$(CC) $(ALL_CFLAGS) -c $<
 
 clean:
-		rm -f $(LIB) kaffe$(EXEEXT) kaffe.core $(OBJECT)
+		rm -f $(LIB) Kaffe$(EXEEXT) Kaffe.core $(OBJECT)
 
 distclean:	clean
 		rm -f $(DEPENDS)
@@ -46,7 +46,7 @@ distclean:	clean
 
 install:
 		test -d $(bindir) || $(MKDIR) $(bindir)
-		$(INSTALL_PROGRAM) kaffe$(EXEEXT) $(bindir)/kaffe$(EXEEXT)
+		$(INSTALL_PROGRAM) Kaffe$(EXEEXT) $(bindir)/Kaffe$(EXEEXT)
 
 .SUFFIXES:	.d
 

@@ -14,7 +14,7 @@
 #define	GC_DEBUG 1
 
 #define	MIN_HEAPSIZE	0
-#define	MAX_HEAPSIZE	(16*1024*1024)
+#define	MAX_HEAPSIZE	(32*1024*1024)
 #define	ALLOC_HEAPSIZE	(1024*1024)
 
 /* ------------------------------------------------------------------------ */

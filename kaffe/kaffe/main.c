@@ -34,6 +34,7 @@ static char* java_version;
 JavaVMInitArgs vmargs;
 JNIEnv* env;
 JavaVM* vm;
+static int isJar = 0;
 
 static int options(char**);
 static void usage(void);
@@ -41,7 +42,10 @@ static size_t parseSize(char*);
 static void handleErrors(void);
 static int main2(JNIEnv* env, char *argv[], int farg, int argc);
 
-#define	CLASSPATH1	"KAFFE_CLASSPATH"
+#define	KAFFEHOME	"KAFFEHOME"
+#define	CLASSPATH1	"KAFFECLASSPATH"
+#define	LIBRARYHOME1	"KAFFELIBRARYPATH"
+
 #define	CLASSPATH2	"CLASSPATH"
 
 /*
@@ -64,13 +68,29 @@ main(int argc, char* argv[])
 		if (cp == 0) {
 #if defined(DEFAULT_CLASSPATH)
 			cp = DEFAULT_CLASSPATH;
-#else
-			fprintf(stderr, "CLASSPATH is not set!\n");
-			exit(1);
 #endif
 		}
 	}
 	vmargs.classpath = cp;
+
+        cp = getenv(LIBRARYHOME1);
+#if defined(DEFAULT_LIBRARYHOME)
+        if (cp == 0) {
+                cp = DEFAULT_LIBRARYHOME;
+        }
+#endif
+        vmargs.libraryhome = cp;
+
+        cp = getenv(KAFFEHOME);
+        if (cp == 0) {
+#if defined(DEFAULT_KAFFEHOME)
+                cp = DEFAULT_KAFFEHOME;
+#else
+                fprintf(stderr, "%s is not set!\n", KAFFEHOME);
+                exit(1);
+#endif
+        }
+        vmargs.classhome = cp;
 
 	/* Process program options */
 	farg = options(argv);
@@ -131,19 +151,27 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 	jmethodID mmth;
 	jobject str;
 	int i;
+	char* exec;
 
 	/* make sure no compiler optimizes this away */
 	gc_safe_zone[0] = gc_safe_zone[sizeof gc_safe_zone - 1] = 0;
 
-	mcls = (*env)->FindClass(env, argv[farg]);
+	/* Executable is a JAR?  Use the JAR launcher */
+	if (isJar != 0) {
+		exec = "kaffe.jar.ExecJar";
+	}
+	else {
+		exec = argv[farg];
+		farg++;
+		argc--;
+	}
+
+	mcls = (*env)->FindClass(env, exec);
 	handleErrors();
 
 	mmth = (*env)->GetStaticMethodID(env, mcls, "main", "([Ljava/lang/String;)V");
 	handleErrors();
 
-	farg++;
-	argc--;
-	
 	/* Build an array of strings as the arguments */
 	cls = (*env)->FindClass(env, "java/lang/String");
 	handleErrors();
@@ -259,6 +287,9 @@ options(char** argv)
 		else if (strcmp(argv[i], "-verbose") == 0 || strcmp(argv[i], "-v") == 0) {
 			vmargs.enableVerboseClassloading = 1;
 		}
+                else if (strcmp(argv[i], "-jar") == 0) {
+                        isJar = 1;
+                }
 #ifdef DEBUG
                 else if (strcmp(argv[i], "-vmdebug") == 0) {
 			extern void dbgSetMaskStr(char *);
@@ -336,6 +367,7 @@ usage(void)
 	fprintf(stderr, "	-noasyncgc *		Do not garbage collect asynchronously\n");
 	fprintf(stderr, "	-cs, -checksource *	Check source against class files\n");
 	fprintf(stderr, "	-oss <size> *		Maximum java stack size\n");
+        fprintf(stderr, "	-jar                    Executable is a JAR\n");
 #ifdef DEBUG
         fprintf(stderr, "	-vmdebug <flag{,flag}>	Internal VM debugging. Set flag=list for a list\n");                     
 #endif

@@ -12,6 +12,6 @@ else
 	# Uncomment the following two lines to make the VM part of
 	# the invocation program (kaffe).  This is necessary for debugging
 	# on some systems (notable Redhat 5.0).
-	KAFFELINK="-Wl,--export-dynamic"
-	vm_dynamic_library=no
+	# KAFFELINK="-Wl,--export-dynamic"
+	# vm_dynamic_library=no
 fi

@@ -1,7 +1,7 @@
 AC_INIT(kaffe)
 
 dnl Setup version number.
-KVER=0.100
+KVER=1.00
 
 dnl Find the compiler early on in case we need to override.
 AC_PROG_CC
@@ -22,7 +22,10 @@ dnl =========================================================================
 dnl Force use of static libraries
 dnl -------------------------------------------------------------------------
 
-AC_ARG_ENABLE(staticlib,[  --enable-staticlib        Force the use of static libraries rather than shared],dynamic_libraries=no)
+AC_ARG_WITH(staticlib,[  --with-staticlib        Force the use of static libraries rather than shared])
+if test "$with_staticlib" = "yes" ; then
+	dynamic_libraries=no
+fi
 
 changequote(<<, >>)dnl
 
@@ -128,7 +131,7 @@ dnl =========================================================================
 dnl Allow selection of a specific execution engine
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(engine,[  --with-engine={intrp|jit} Force use of a specific execution engine])
+AC_ARG_WITH(engine,[  --with-engine=ENGINE    Force use of a specific execution engine])
 
 dnl Translate 'interpreter' to 'intrp'
 if test "$with_engine" = "interpreter" ; then
@@ -172,13 +175,28 @@ else
 fi
 
 dnl =========================================================================
+dnl Do we include our Sun compatibility scripts?
+dnl -------------------------------------------------------------------------
+
+AC_ARG_WITH(suncompat,[  --without-suncompat     Don't include Sun compatibility scripts])
+AC_MSG_CHECKING(sun compatibility mode)
+if test "$with_suncompat" = "" ; then
+	with_suncompat=yes
+fi
+if test "$with_suncompat" = "yes" ; then
+	suncompatible="install-compat"
+	AC_SUBST(suncompatible)
+fi
+AC_MSG_RESULT($with_suncompat)
+
+dnl =========================================================================
 dnl Use the new internal threading system "jthreads"
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(threads,[  --with-threads={unix-internal|unix-jthreads} define which threading system to use])
+AC_ARG_WITH(threads,[  --with-threads=SYSTEM   Define which threading system to use])
 AC_MSG_CHECKING(thread system)
 if test "$with_threads" = "" ; then
-	with_threads=unix-internal
+	with_threads=unix-jthreads
 fi
 if test ! -d $srcdir/kaffe/kaffevm/systems/${with_threads} ; then
 	AC_MSG_ERROR(Configuration $host_cpu-$host_os does not support $with_threads threads)
@@ -406,6 +424,14 @@ AC_SUBST(X_INCLUDES)
 AC_SUBST(X_LIBRARIES)
 AC_CHECK_LIBRARY(ipc,shmat,X_LIBRARIES)
 
+OLIBS=$LIBS
+LIBS="$LIBS $X_LIBRARIES"
+AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBRARIES)
+LIBS=$LIBS
+AC_SUBST(JPEG_LIBRARIES)
+AWTLIB="$X_LIBRARIES $JPEG_LIBRARIES"
+AC_SUBST(AWTLIB)
+
 dnl -------------------------------------------------------------------------
 
 dnl =========================================================================
@@ -592,13 +618,25 @@ libraries/clib/native/Makefile \
 libraries/clib/net/Makefile \
 libraries/clib/zip/Makefile \
 libraries/clib/math/Makefile \
+libraries/clib/management/Makefile \
 "
 JAVA_LIBRARIES=" \
 ../../libraries/clib/native/libnative$LIBEXT \
 ../../libraries/clib/net/libnet$LIBEXT \
 ../../libraries/clib/zip/libzip$LIBEXT \
 ../../libraries/clib/math/libmath$LIBEXT \
+../../libraries/clib/math/libmanagement$LIBEXT \
 "
+
+dnl If we have X then include AWT support.
+if test "$have_x" = "yes" ; then
+make_output="$make_output \
+libraries/clib/awt/Makefile \
+"
+JAVA_LIBRARIES="$JAVA_LIBRARIES \
+../../libraries/clib/math/libawt$LIBEXT \
+"
+fi
 
 changequote([, ])dnl
 
@@ -637,8 +675,22 @@ AC_SUBST(subdirs)
 AC_SUBST(packages)
 AC_SUBST(KAFFE_LIBDEP)
 
+dnl A few extra files to process.
+output="$make_output \
+libraries/javalib/rebuildLib \
+kaffe/scripts/install-jar \
+kaffe/scripts/kaffe \
+"
+
+dnl =========================================================================
+dnl Define default classpath (not needed), kaffehome and libraryhome.
+dnl -------------------------------------------------------------------------
+
+kaffehome=`eval echo $datadir`/kaffe
+AC_DEFINE_UNQUOTED(DEFAULT_KAFFEHOME, "$kaffehome")
+
 AC_CONFIG_HEADER(config/config.h include/jtypes.h)
-AC_OUTPUT($make_output)
+AC_OUTPUT($output)
 
 dnl =========================================================================
 dnl Create empty .depend files to ensure that make works even 
@@ -663,19 +715,11 @@ libdir=`eval echo $libdir` ; libdir=`eval echo $libdir`
 bindir=`eval echo $bindir` ; bindir=`eval echo $bindir`
 datadir=`eval echo $datadir`
 
-if test "$SYSTEM" = "unix" ; then
-	echo CLASSPATH=.:$datadir/kaffe/klasses.zip:$datadir/kaffe/classes.zip > ENVIRONMENT
-	echo KAFFEHOME=$datadir/kaffe >> ENVIRONMENT
-	if test "$dynamic_libraries" = "yes" ; then
-		echo LD_LIBRARY_PATH=$libdir:\$LD_LIBRARY_PATH >> ENVIRONMENT
-	fi
-	echo PATH=$bindir:\$PATH >> ENVIRONMENT
-	echo export CLASSPATH KAFFEHOME LD_LIBRARY_PATH PATH >> ENVIRONMENT
-elif test "$SYSTEM" = "win32" ; then
-	echo @echo off > ENVIRONMENT.BAT
-	echo set CLASSPATH=.\;$datadir/kaffe/klasses.zip\;$datadir/kaffe/classes.zip >> ENVIRONMENT.BAT
-	echo set KAFFEHOME=$datadir/kaffe >> ENVIRONMENT.BAT
-	echo set PATH=%PATH%\;$bindir >> ENVIRONMENT.BAT
+cp /dev/null ENVIRONMENT
+if test "$dynamic_libraries" = "yes" ; then
+	echo LD_LIBRARY_PATH=$libdir:\$LD_LIBRARY_PATH >> ENVIRONMENT
 fi
+echo PATH=$bindir:\$PATH >> ENVIRONMENT
+echo export LD_LIBRARY_PATH PATH >> ENVIRONMENT
 
 dnl -------------------------------------------------------------------------

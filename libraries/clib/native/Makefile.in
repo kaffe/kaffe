@@ -36,7 +36,7 @@ LIBNAME=	libnative
 LIB=		$(LIBNAME)$(LIBEXT).$(KVER)
 LLIB=		$(LIBNAME)$(LIBEXT)
 
-WRAPPER_CMD=	"s%^\(java_[^(]*\).*$$%KAFFE_NATIVE(\1)%p"
+WRAPPER_CMD=	"s%^\([Jj]ava_[^(]*\).*$$%KAFFE_NATIVE(\1)%p"
 
 OBJECT.IO=\
 		FileDescriptor$(OBJEXT) \
@@ -62,7 +62,10 @@ OBJECT.LANG=\
 		System$(OBJEXT) \
 		Thread$(OBJEXT) \
 		Throwable$(OBJEXT) \
-		UNIXProcess$(OBJEXT)
+		UNIXProcess$(OBJEXT) \
+		CharToByteDefault$(OBJEXT) \
+		ByteToCharDefault$(OBJEXT) \
+		ZipFile$(OBJEXT) \
 
 OBJECT.LANG.REFLECT=\
 		Array$(OBJEXT) \
@@ -73,14 +76,11 @@ OBJECT.LANG.REFLECT=\
 OBJECT.UTIL=\
 		ResourceBundle$(OBJEXT)
 
-OBJECT.TEXT=\
-		DateFormat$(OBJEXT)
-
 OBJECT.TEST=\
 		TestNative$(OBJEXT)
 
 OBJECT=		$(OBJECT.LANG) $(OBJECT.LANG.REFLECT) \
-		$(OBJECT.IO) $(OBJECT.UTIL) $(OBJECT.TEXT) $(OBJECT.TEST)
+		$(OBJECT.IO) $(OBJECT.UTIL) $(OBJECT.TEST)
 
 DEPENDS=        $(OBJECT:@OBJEXT@=.d)
 
@@ -111,7 +111,6 @@ clean:
 
 distclean:	clean
 		rm -f Makefile .depend
-		-rmdir java.io java.lang java.lang.reflect java.util
 
 install:
 		test -d $(libdir) || $(MKDIR) $(libdir)

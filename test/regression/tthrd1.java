@@ -3,8 +3,7 @@ class btst1 extends Thread
 
   public void run()
     {
-      System.err.println(isAlive()+" 1");
-      this.stop();
+      System.out.println(isAlive()+" 1");
     }
 }
 

@@ -1,4 +1,3 @@
-
 Kaffe's build environment now has a depend target.
 
 Note that you must type "make depend" to create or recreate 

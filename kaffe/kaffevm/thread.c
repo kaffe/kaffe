@@ -66,16 +66,10 @@ initThreads(void)
 	unhand(standardGroup)->daemon = 0;
 	unhand(standardGroup)->vmAllowSuspension = 0;
 	unhand(standardGroup)->nthreads = 0;
-	unhand(standardGroup)->threads = 0;
+	unhand(standardGroup)->threads = (HArrayOfObject*)newArray(ThreadClass, 0);
 	unhand(standardGroup)->ngroups = 0;
-	/* 
-	 * Note that groups must be set to null, and *not* to a zero-length
-	 * array.  Otherwise, creating a new ThreadGroup will throw an
-	 * ArrayOutOfBoundsException with Sun's classes.zip when the 
-	 * new ThreadGroup is added as a child to this thread group.
-	 * This is known to work as of 5/29/98 with 1.1.3's classes.zip
-	 */
-	unhand(standardGroup)->groups = 0;
+	unhand(standardGroup)->groups = (HArrayOfObject*)newArray(ThreadGroupClass, 0);
+
 
 	/* Allocate a thread to be the main thread */
 	createInitialThread("main");
@@ -205,7 +199,6 @@ DBG(VMTHREAD,	dprintf("firstStartThread %x\n", tid);		)
 
 	/* Find the run()V method and call it */
 	do_execute_java_method(tid, "run", "()V", 0, 0);
-	do_execute_java_method(tid, "exit", "()V", 0, 0);
 
 	exitThread();
 }
@@ -236,15 +229,7 @@ setPriorityThread(Hjava_lang_Thread* tid, int prio)
 void
 exitThread(void)
 {
-	Hjava_lang_Thread* tid;
-
-	tid = (*Kaffe_ThreadInterface.currentJava)();
-
-	/* Remove thread from thread group */
-	if (unhand(tid)->group != NULL) {
-		do_execute_java_method(unhand(tid)->group, "remove", "(Ljava/lang/Thread;)V", 0, 0, tid);
-	}
-
+        do_execute_java_method(getCurrentThread(), "finish", "()V", 0, 0);
 	(*Kaffe_ThreadInterface.exit)();
 }
 

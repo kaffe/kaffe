@@ -96,7 +96,7 @@ java_lang_Object_clone(struct Hjava_lang_Object* o)
  * Wait for this object to be notified.
  */
 void
-java_lang_Object_wait(struct Hjava_lang_Object* o, jlong timeout)
+java_lang_Object_wait0(struct Hjava_lang_Object* o, jlong timeout)
 {
 	waitCond(o, timeout);
 }

@@ -54,6 +54,16 @@ typedef	jref		jstring;
 typedef	jref		jarray;
 typedef	jref		jthrowable;
 
+typedef	jref		jobjectArray;
+typedef	jref		jbooleanArray;
+typedef	jref		jbyteArray;
+typedef	jref		jcharArray;
+typedef	jref		jshortArray;
+typedef	jref		jintArray;
+typedef	jref		jlongArray;
+typedef	jref		jfloatArray;
+typedef	jref		jdoubleArray;
+
 union jvalue {
 	jboolean	z;
 	jbyte		b;

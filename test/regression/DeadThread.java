@@ -4,7 +4,6 @@ class btest extends Thread
   public void run()
     {
       System.out.println(isAlive()+" 1");
-      this.stop();
     }
 }
 

@@ -122,9 +122,6 @@ initialiseKaffe(void)
 
 	/* Init thread support */
 	initThreads();
-
-	/* Initialise the System */
-	do_execute_java_class_method("java.lang.System", "initializeSystemClass", "()V");
 }
 
 /*

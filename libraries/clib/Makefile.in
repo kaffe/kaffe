@@ -8,7 +8,7 @@
 
 srcdir=		@srcdir@
 MKDIR=		@MKDIR@
-subdirs=	native net zip math
+subdirs=	native net zip math management awt
 
 all:
 	@for i in $(subdirs); do (cd $$i && $(MAKE) all) || exit 1 ; done

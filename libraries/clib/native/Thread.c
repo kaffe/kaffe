@@ -35,7 +35,7 @@ java_lang_Thread_yield(void)
  * Put current thread to sleep for a time.
  */
 void
-java_lang_Thread_sleep(jlong time)
+java_lang_Thread_sleep0(jlong time)
 {
 	sleepThread(time);
 }

@@ -1,2 +1,2 @@
 #! /bin/sh
-kaffe sun.tools.serialver.SerialVer $@
+exec java sun.tools.serialver.SerialVer $@

@@ -101,7 +101,7 @@ java_lang_Runtime_execInternal(struct Hjava_lang_Runtime* this, HArrayOfObject* 
 {
 	struct Hjava_lang_Process* child;
 
-	child = (struct Hjava_lang_Process*)execute_java_constructor("java.lang.UNIXProcess", 0, "([Ljava/lang/String;[Ljava/lang/String;)V", argv, arge);
+	child = (struct Hjava_lang_Process*)execute_java_constructor("kaffe.lang.UNIXProcess", 0, "([Ljava/lang/String;[Ljava/lang/String;)V", argv, arge);
 
 	return (child);
 }

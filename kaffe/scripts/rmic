@@ -1,2 +1,2 @@
 #! /bin/sh
-kaffe sun.rmi.rmic.Main $@
+exec java sun.rmi.rmic.Main $@

@@ -24,14 +24,14 @@
 #include <native.h>
 
 typedef struct _child {
-	Hjava_lang_UNIXProcess*	proc;
+	Hkaffe_lang_UNIXProcess* proc;
 	int			pid;
 	struct _child*		next;
 } child;
 static child* children;
 
 jint
-java_lang_UNIXProcess_forkAndExec(Hjava_lang_UNIXProcess* this, HArrayOfObject* args, HArrayOfObject* envs)
+kaffe_lang_UNIXProcess_forkAndExec(Hkaffe_lang_UNIXProcess* this, HArrayOfObject* args, HArrayOfObject* envs)
 {
 	int pid;
 	int in[2];
@@ -157,7 +157,7 @@ DBG(	printf("args %d envs %d\n", arglen, envlen); fflush(stdout);	)
 }
 
 void
-java_lang_UNIXProcess_destroy(Hjava_lang_UNIXProcess* this)
+kaffe_lang_UNIXProcess_destroy(Hkaffe_lang_UNIXProcess* this)
 {
 #if defined(HAVE_KILL)
 	kill(unhand(this)->pid, SIGTERM);
@@ -171,7 +171,7 @@ java_lang_UNIXProcess_destroy(Hjava_lang_UNIXProcess* this)
  * interested in them.
  */
 void
-java_lang_UNIXProcess_run(Hjava_lang_UNIXProcess* this)
+kaffe_lang_UNIXProcess_run(Hkaffe_lang_UNIXProcess* this)
 {
 	int npid;
 	int status;
@@ -197,7 +197,7 @@ java_lang_UNIXProcess_run(Hjava_lang_UNIXProcess* this)
 }
 
 void
-java_lang_UNIXProcess_notifyReaders(Hjava_lang_UNIXProcess* this)
+kaffe_lang_UNIXProcess_notifyReaders(Hkaffe_lang_UNIXProcess* this)
 {
-	unimp("java.lang.UNIXProcess:notifyReaders not implemented");
+	unimp("kaffe.lang.UNIXProcess:notifyReaders not implemented");
 }

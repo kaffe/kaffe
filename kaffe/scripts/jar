@@ -1,2 +1,2 @@
 #! /bin/sh
-kaffe sun.tools.jar.Main $@
+exec java sun.tools.jar.Main $@

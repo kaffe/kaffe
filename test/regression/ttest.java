@@ -26,6 +26,5 @@ class TestThread extends Thread {
       System.err.println("run "+cnt);
       cnt++;
     }
-    stop();
   }
 }

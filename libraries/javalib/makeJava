@@ -12,7 +12,9 @@
 # of this file.
 #
 
-compile="javac"
+if test "$JAVAC" = "" ; then
+	JAVAC="javac"
+fi
 
 srcdir=.
 dstdir=.
@@ -45,7 +47,7 @@ do
 	fi
 	if test "$docompile" = "1" ; then
 		echo -n "Compiling $jf ... "
-		$compile -classpath $dstdir:$srcdir:.:$CLASSPATH -d $dstdir $srcdir/$jf || exit 1
+		$JAVAC -classpath $dstdir:$srcdir:.:$CLASSPATH:./Klasses.jar -d $dstdir $srcdir/$jf || exit 1
 		echo "done"
 	fi
 done

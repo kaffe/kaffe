@@ -20,8 +20,10 @@ MKDIR=		@MKDIR@
 TOUCH=		touch
 MAKEJAVA=	$(srcdir)/makeJava
 ZIP=		zip
+JAVAC=		javac
+JARS=		Klasses.jar pizza.jar
 
-CLASSFILE=	klasses.zip
+CLASSFILE=	Klasses.jar
 SRCDIR=		$(srcdir)
 LIBDIR=		lib
 
@@ -29,37 +31,29 @@ all:
 
 install:
 		test -d $(classdir) || $(MKDIR) $(classdir)
-		$(INSTALL_DATA) $(srcdir)/$(CLASSFILE) $(classdir)/$(CLASSFILE)
+		for i in $(JARS) ;\
+		do \
+			if test -f $(srcdir)/$$i ; then $(INSTALL_DATA) $(srcdir)/$$i $(classdir)/$$i ; fi ;\
+		done
 
 clean:
-		rm -rf $(LIBDIR) .dir-stamp
+		rm -rf $(LIBDIR)
 
 distclean:
-		rm -rf $(LIBDIR) klasses.zip
-		rm -f Makefile .depend
+		rm -rf $(LIBDIR) $(CLASSFILE)
+		rm -f Makefile .dir-stamp rebuildLib .depend
 
-#############################################################################
-
-SOURCES=\
-	java/lang/Thread.java \
-	kaffe/util/Ptr.java \
-
-classes:	.dir-stamp stuff
+classes:	.dir-stamp
+		sh rebuildLib
 
 .dir-stamp:
 		test -d $(LIBDIR) || $(MKDIR) $(LIBDIR)
 		$(TOUCH) .dir-stamp
 
-stuff:
-		@$(MAKEJAVA) -srcdir $(SRCDIR) -dstdir $(LIBDIR) $(SOURCES)
-
 build-classes:
 		rm -f $(CLASSFILE)
-		(cd $(LIBDIR) && $(ZIP) -r0 ../$(CLASSFILE) java kaffe)
+		(cd $(LIBDIR) && $(ZIP) -r ../$(CLASSFILE) java kaffe)
 
 install-classes:
 		test -d $(classdir) || $(MKDIR) $(classdir)
 		$(INSTALL_DATA) $(CLASSFILE) $(classdir)/$(CLASSFILE)
-
-# not yet implemented
-depend:

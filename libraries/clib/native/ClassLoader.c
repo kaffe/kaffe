@@ -156,17 +156,15 @@ java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
 
 /*
  * Locate the requested resource in the current Jar files and create a
- *  stream to the data.
+ *  byte array containing it.
  */
-struct Hjava_io_InputStream*
-java_lang_ClassLoader_getSystemResourceAsStream0(struct Hjava_lang_String* str)
+HArrayOfByte*
+java_lang_ClassLoader_getSystemResourceAsBytes0(struct Hjava_lang_String* str)
 {
 	char* name;
-	struct Hjava_io_InputStream* in;
 	classFile hand;
 	HArrayOfByte* data;
 
-	in = NULL;
 	name = makeCString(str);
 	hand = findInJar(name);
 	free(name);
@@ -183,16 +181,5 @@ java_lang_ClassLoader_getSystemResourceAsStream0(struct Hjava_lang_String* str)
 		free(hand.base);
 	}
 
-	/* Create input stream using byte array */
-	in = (struct Hjava_io_InputStream*)execute_java_constructor("java.io.ByteArrayInputStream", 0, "([B)V", data);
-	return (in);
-}
-
-/*
- * ???
- */
-struct Hjava_lang_String*
-java_lang_ClassLoader_getSystemResourceAsName0(struct Hjava_lang_String* str)
-{
-	return (NULL);
+	return (data);
 }

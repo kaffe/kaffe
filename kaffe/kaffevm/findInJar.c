@@ -46,7 +46,7 @@
 
 #define	IS_ZIP(B)	((B)[0] == 'P' && (B)[1] == 'K')
 
-static struct {
+typedef struct _classpathEntry {
 	int	type;
 	char*	path;
 	union {
@@ -55,10 +55,11 @@ static struct {
 			int	loaded;
 		} sof;
 	} u;
-} *classpath;
-int classpathlen;
+	struct _classpathEntry*	next;
+} classpathEntry;
 
-static char* splitClassPath;
+static classpathEntry* classpath;
+
 char* realClassPath;
 
 void initClasspath(void);
@@ -66,6 +67,8 @@ classFile findInJar(char*);
 
 static int getClasspathType(char*);
 static void generateMangledName(char*, char*);
+static void discoverClasspath(char*);
+static void makeClasspath(char*);
 
 /*
  * Find the named class in a directory or JAR file.
@@ -148,7 +151,6 @@ CDBG(	printf("Scanning for class %s\n", cname);		)
 classFile
 findInJar(char* cname)
 {
-	int i;
 	char buf[MAXBUF];
 	int fp;
 	struct stat sbuf;
@@ -157,6 +159,8 @@ findInJar(char* cname)
 	jarEntry* entry;
 	static iLock jarlock;
 	static bool init = false;
+	classpathEntry* ptr;
+	int i;
 
 	/* Initialise on first use */
 	if (init == false) {
@@ -170,30 +174,30 @@ CDBG(	printf("Scanning for element %s\n", cname);		)
 	/* One into the jar at once */
 	lockStaticMutex(&jarlock);
 
-	for (i = 0; classpath[i].path != 0; i++) {
-		hand.type = classpath[i].type;
-		switch (classpath[i].type) {
+	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
+		hand.type = ptr->type;
+		switch (ptr->type) {
 		case CP_ZIPFILE:
-ZDBG(			printf("Opening JAR file %s for %s\n", classpath[i].path, cname); )
-			if (classpath[i].u.jar == 0) {
-				classpath[i].u.jar = openJarFile(classpath[i].path);
-				if (classpath[i].u.jar == 0) {
+ZDBG(			printf("Opening JAR file %s for %s\n", ptr->path, cname); )
+			if (ptr->u.jar == 0) {
+				ptr->u.jar = openJarFile(ptr->path);
+				if (ptr->u.jar == 0) {
 					break;
 				}
 			}
 
-			entry = lookupJarFile(classpath[i].u.jar, cname);
+			entry = lookupJarFile(ptr->u.jar, cname);
 			if (entry == 0) {
 				break;
 			}
-			hand.base = getDataJarFile(classpath[i].u.jar, entry);
+			hand.base = getDataJarFile(ptr->u.jar, entry);
 			if (hand.base == 0) {
-				throwException(IOException(classpath[i].u.jar->error));
+				throwException(IOException(ptr->u.jar->error));
 			}
 			hand.size = entry->uncompressedSize;
 			hand.buf = hand.base;
 			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
-				fprintf(stderr, "Loading %s(%s)", cname, classpath[i].path);
+				fprintf(stderr, "Loading %s(%s)", cname, ptr->path);
 				if (entry->compressionMethod != COMPRESSION_STORED) {
 					fprintf(stderr, " [compressed]");
 				}
@@ -202,7 +206,7 @@ ZDBG(			printf("Opening JAR file %s for %s\n", classpath[i].path, cname); )
 			goto okay;
 
 		case CP_DIR:
-			strcpy(buf, classpath[i].path);
+			strcpy(buf, ptr->path);
 			strcat(buf, DIRSEP);
 			strcat(buf, cname);
 FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
@@ -236,11 +240,11 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 			goto okay;
 
 		case CP_SOFILE:
-			if (classpath[i].u.sof.loaded == 0) {
-				if (loadNativeLibrary(classpath[i].path) == 0) {
+			if (ptr->u.sof.loaded == 0) {
+				if (loadNativeLibrary(ptr->path) == 0) {
 					break;
 				}
-				classpath[i].u.sof.loaded = 1;
+				ptr->u.sof.loaded = 1;
 			}
 			generateMangledName(buf, cname);
 			hand.base = loadNativeLibrarySym(buf);
@@ -312,43 +316,98 @@ void
 initClasspath(void)
 {
 	char* cp;
-	int i;
-	int h;
-	int c;
+	char* hm;
+	int len;
+	classpathEntry* ptr;
 
 	cp = (char*)Kaffe_JavaVMArgs[0].classpath;
+	hm = (char*)Kaffe_JavaVMArgs[0].classhome;
 
-	realClassPath = gc_malloc_fixed(strlen(cp) + 1);
-	strcpy(realClassPath, cp);
+	if (cp != 0) {
+		makeClasspath(cp);
+	}
+	else {
+		discoverClasspath(hm);
+	}
 
-	splitClassPath = gc_malloc_fixed(strlen(cp) + 1);
-	strcpy(splitClassPath, cp);
-	cp = splitClassPath;
+	len = 0;
+	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
+		len += strlen(ptr->path) + 1;
+	}
+
+	realClassPath = gc_malloc_fixed(len);
+	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
+		if (ptr != classpath) {
+			realClassPath[strlen(realClassPath)] = PATHSEP;
+		}
+		strcat(realClassPath, ptr->path);
+	}
+}
+
+
+/*
+ * Build classpathEntries from the given classpath.
+ */
+static
+void
+makeClasspath(char* cp)
+{
+	char* end;
 
 PDBG(	printf("initClasspath(): '%s'\n", cp);				)
-	for (i = 0; cp != 0; i++) {
-		if (i >= classpathlen) {
-			void *old = classpath;
-			void *new = gc_malloc_fixed(sizeof(*classpath) * (classpathlen + MAXPATHELEM + 1));
-			if (classpath)
-				memcpy(new, classpath, sizeof(*classpath) * (classpathlen));
-			classpath = new;
-			classpathlen += MAXPATHELEM;
-			gc_free(old);
-		}
-		classpath[i].path = cp;
-		cp = strchr(cp, PATHSEP);
-		if (cp != 0) {
-			*cp = 0;
-			cp++;
-		}
 
-		classpath[i].type = getClasspathType(classpath[i].path);
-
-PDBG(		printf("path '%s' type %d\n", classpath[i].path, classpath[i].type); )
+	for (;;) {
+		end = strchr(cp, PATHSEP);
+		if (end != 0) {
+			*end = 0;
+			addClasspath(cp);
+			cp = end + 1;
+		}
+		else {
+			addClasspath(cp);
+			break;
+		}
 	}
-	i++;
-	classpath[i].path = 0;
+}
+
+/*
+ * Discover all available jar and zip files in this home location and
+ * build a classpath from them.
+ */
+static
+void
+discoverClasspath(char* home)
+{
+	DIR* dir;
+	struct dirent* entry;
+	int len;
+	int hlen;
+	char* name;
+	char buf[256];		/* FIXED SIZED BUFFER XXX */
+
+	dir = opendir(home);
+	if (dir == 0) {
+		return;
+	}
+
+	/* Add '.' and <home>/Klasses.zip at the beginning */
+	addClasspath(".");
+	strcpy(buf, home);
+	strcat(buf, "/Klasses.jar");
+	addClasspath(buf);
+
+	hlen = strlen(home);
+	while ((entry = readdir(dir)) != 0) {
+		name = entry->d_name;
+		len = strlen(name);
+		if (strcmp(&name[len-4], ".zip") == 0 || strcmp(&name[len-4], ".jar") == 0) {
+			strcpy(buf, home);
+			strcat(buf, "/");
+			strcat(buf, name);
+			addClasspath(buf);
+		}
+	}
+	closedir(dir);
 }
 
 /*
@@ -358,40 +417,32 @@ int
 addClasspath(char* cp)
 {
 	int i;
-
-	/* If classpath isn't set, initialize it */
-	if (realClassPath == 0) {
-		initClasspath();
-	}
+	classpathEntry* ptr;
+	classpathEntry* lptr;
 
 PDBG(	printf("addClasspath(): '%s'\n", cp);				)
 
-	for (i = 0; ; i++) {
-		if (i >= classpathlen) {
-			void *old = classpath, *new = gc_malloc_fixed(sizeof(*classpath) * (classpathlen + MAXPATHELEM + 1));
-			if (classpath)
-				memcpy(new, classpath, sizeof(*classpath) * (classpathlen));
-			classpath = new;
-			classpathlen += MAXPATHELEM;
-			gc_free(old);
+	lptr = 0;
+	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
+		if (strcmp(ptr->path, cp) == 0) {
+			/* Already in */
+			return (0);
 		}
-
-		if (classpath[i].path == 0) {
-			break;
-		}
-		if (!strcmp(cp, classpath[i].path)) {
-			return(0); /* already in */
-		}
+		lptr = ptr;
 	}
 
-	found:
-	classpath[i].path = strdup(cp);
+	ptr = gc_malloc_fixed(sizeof(classpathEntry) + strlen(cp) + 1);
+	ptr->type = getClasspathType(cp);
+	ptr->path = (char*)(ptr+1);
+	ptr->next = 0;
+	strcpy(ptr->path, cp);
 
-	classpath[i].type = getClasspathType(classpath[i].path);
-
-PDBG(	printf("path '%s' type %d\n", classpath[i].path, classpath[i].type); )
-	i++;
-	classpath[i].path = 0;
+	if (lptr == 0) {
+		classpath = ptr;
+	}
+	else {
+		lptr->next = ptr;
+	}
 	return(1);
 }
 
@@ -429,10 +480,5 @@ getClasspathType(char* path)
 	if (IS_ZIP(buf)) {
 		return (CP_ZIPFILE);
 	}
-
-	/* We should work out some way to check this ... */
-	return (CP_SOFILE);
-#if 0
 	return (CP_INVALID);
-#endif
 }

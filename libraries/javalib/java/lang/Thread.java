@@ -10,6 +10,8 @@
 
 package java.lang;
 
+import kaffe.util.Deprecated;
+
 public class Thread implements Runnable {
   public final static int MIN_PRIORITY = 1;
   public final static int NORM_PRIORITY = 5;
@@ -34,14 +36,10 @@ public class Thread implements Runnable {
   public native int countStackFrames();
   public static native Thread currentThread();
   public static native void yield();
-  public static native void sleep(long millis) throws InterruptedException;
   public final native boolean isAlive();
   public synchronized native void start();
   
   private native void setPriority0(int prio);
-  private native void stop0(Object obj);
-  private native void suspend0();
-  private native void resume0();
 
   public Thread()
   {
@@ -110,6 +108,14 @@ public class Thread implements Runnable {
     sleep(millis);
   }
 
+  public static void sleep(long millis) throws InterruptedException
+  {
+    sleep0(millis);
+    if (Thread.interrupted()) {
+      throw new InterruptedException();
+    }
+  }
+
   public void run()
   {
     if (target != null) {
@@ -117,49 +123,43 @@ public class Thread implements Runnable {
     }
   }
 
-  private void exit()
+  /*
+   * Called by system when thread terminates (for whatever reason)
+   */
+  private void finish()
   {
-    /* TSK.. Nice one Sun (Again).. Undocumented API call to Thread class.
-       Called by both Java and Kaffe..
-
-       Assume it does what any normal exit() does.. e.g. cleanup */
-    
     if (group != null) {
       group.remove(this);
     }
   }
 
+  /**
+   * @deprecated
+   */
   public final void stop()
   {
-    checkAccess();
-
-    //    if (group!=null) group.remove(this);
-
-    // Only stop thread if it's alive already.
-    if (isAlive()) {
-      stop0(null);
-    }
+    throw new Deprecated();
   }
 
+  /**
+   * @deprecated
+   */
   public final synchronized void stop(Throwable o)
   {
-    checkAccess();
-
-    if (o==null) throw new NullPointerException();
-
-    //    if (group!=null) group.remove(this);
-
-    stop0(o);
+    throw new Deprecated();
   }
 
   public void interrupt()
   {
     interrupting = true;
+    interrupt0();
   }
 
   public static boolean interrupted() 
   {
-    return (Thread.currentThread().isInterrupted());
+    boolean i = Thread.currentThread().interrupting;
+    Thread.currentThread().interrupting = false;
+    return (i);
   }
 
   public boolean isInterrupted()
@@ -167,28 +167,29 @@ public class Thread implements Runnable {
     return (interrupting);
   }
 
+  /**
+   * @deprecated
+   * Kill a thread immediately and don't try any kind of cleanup.
+   */
   public void destroy()
   {
-    stop0(null);
+    destroy0();
   }
 
+  /**
+   * @deprecated
+   */
   public final void suspend()
   {
-    checkAccess();
-
-    if (isAlive()) {
-      suspend0();
-    }
+    throw new Deprecated();
   }
 
-  
+  /**
+   * @deprecated
+   */
   public final void resume()
   {
-    checkAccess();
-
-    if (isAlive()) {
-      resume0();
-    }
+    throw new Deprecated();
   }
   
   public final void setPriority(int newPriority)
@@ -275,10 +276,7 @@ public class Thread implements Runnable {
   
   public void checkAccess()
   {
-    SecurityManager man = System.getSecurityManager();
-    if (man != null) {
-      man.checkAccess(this);
-    }
+    System.getSecurityManager().checkAccess(this);
   }
   
   public String toString()
@@ -292,5 +290,8 @@ public class Thread implements Runnable {
   }
 
   private final native void finalize0();
+  private static native void sleep0(long millis);
+  private native void interrupt0();
+  private native void destroy0();
 }
 

@@ -1,0 +1,9 @@
+FAQ for the AWT
+===============
+
+1.0.2 Event Model
+-----------------
+
+We do *not* support the old 1.0.2 Event Model since this has been deprecated.
+Beware that code exists which 'claims' to be JDK 1.1 compatiable but still
+uses some of the 1.0.2 features.

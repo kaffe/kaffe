@@ -215,7 +215,7 @@ java_lang_Class_getInterfaces(struct Hjava_lang_Class* this)
  * Return the class loader which loaded me.
  */
 struct Hjava_lang_ClassLoader*
-java_lang_Class_getClassLoader(struct Hjava_lang_Class* this)
+java_lang_Class_getClassLoader0(struct Hjava_lang_Class* this)
 {
 	return (this->loader);
 }

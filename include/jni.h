@@ -312,6 +312,8 @@ struct JavaVMInitArgs {
 	jint		enableVerboseClassloading;
 	jint		enableVerboseJIT;
 	jint		allocHeapSize;
+	const char*	classhome;
+	const char*	libraryhome;
 };
 
 extern JavaVMInitArgs Kaffe_JavaVMArgs[];

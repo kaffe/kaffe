@@ -46,8 +46,19 @@ java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 
 #if defined(HAVE_STRTOD)
 	value = strtod(buf, &endbuf);
-	if (*endbuf != 0) {
-		SignalError("java.lang.NumberFormatException", "Bad double format");
+	while (*endbuf != 0) {
+		switch (*endbuf) {
+		case ' ':
+		case '\t':
+		case '\n':
+		case '\r':	/* Ignore whitespace */
+		case 'f':	/* Ignore float suffix. */
+			endbuf++;
+			break;
+		default:
+			SignalError("java.lang.NumberFormatException", "Bad float/double format");
+			break;
+		}
 	}
 #else
 	/* Fall back on old atof - no error checking */

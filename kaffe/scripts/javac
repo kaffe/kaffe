@@ -1,3 +1,3 @@
 #! /bin/sh
-# Script to run Sun's compiler using Kaffe.
-kaffe sun.tools.javac.Main $@
+# Script to run Sun's compiler
+exec java sun.tools.javac.Main $@

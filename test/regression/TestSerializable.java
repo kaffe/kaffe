@@ -21,6 +21,6 @@ public class TestSerializable
 	System.out.println(s.isAssignableFrom(TestSerializable.class));
 	System.out.println(s.isAssignableFrom(TestSerializable[].class));
 	System.out.println(s.isAssignableFrom(boolean.class));
-	System.out.println(s.isAssignableFrom(boolean[].class));
+	System.out.println(s.isAssignableFrom((new boolean[0]).getClass()));
     }
 }

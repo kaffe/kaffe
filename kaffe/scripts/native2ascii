@@ -1,2 +1,2 @@
 #! /bin/sh
-kaffe sun.tools.native2ascii.Main $@
+exec java sun.tools.native2ascii.Main $@

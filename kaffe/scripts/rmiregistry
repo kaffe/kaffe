@@ -1,2 +1,2 @@
 #! /bin/sh
-kaffe sun.rmi.registry.RegistryImpl $@
+exec java sun.rmi.registry.RegistryImpl $@

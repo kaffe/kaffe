@@ -343,11 +343,6 @@
 /* Do we have X support */
 #undef	HAVE_X
 
-/* Define which packages are available */
-#undef	HAVE_PACKAGE_TRANSVIRTUAL_COM
-#undef	HAVE_PACKAGE_JAVASOFT_COM
-#undef	HAVE_PACKAGE_BISS_NET_COM
-
 /* Do we use native threads and locks */
 #undef	USE_NATIVE_THREADS
 #undef	USE_NATIVE_LOCKS
@@ -357,6 +352,9 @@
 
 /* Kaffe version number */
 #undef	KAFFEVERSION
+
+/* Define default KAFFEHOME */
+#undef  DEFAULT_KAFFEHOME
 
 /* Provide default types which might be missing */
 #undef	size_t

@@ -15,3 +15,7 @@
 #include "math/external_wrappers.h"
 #include "net/external_wrappers.h"
 #include "zip/external_wrappers.h"
+#include "management/external_wrappers.h"
+#if defined(HAVE_X)
+#include "awt/external_wrappers.h"
+#endif
