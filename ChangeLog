@@ -1,3 +1,28 @@
+2003-06-16  Dalibor Topic  <robilad@kaffe.org>
+
+        * libraries/javalib/java/text/BreakIterator.java,
+        libraries/javalib/java/text/Collator.java,
+        libraries/javalib/java/text/DateFormat.java,
+        libraries/javalib/java/text/DateFormatSymbols.java,
+        libraries/javalib/java/text/NumberFormat.java,
+        libraries/javalib/java/util/Calendar.java,
+        libraries/javalib/java/util/Currency.java,
+        libraries/javalib/java/util/GregorianCalendar.java:
+	Resynced with GNU Classpath.
+
+	2004-06-15  Bryce McKinlay  <mckinlay@redhat.com>
+
+        * java/util/Calendar.java: Use getSystemClassLoader as argument for
+        ResourceBundle.getBundle() calls.
+        * java/util/GregorianCalendar.java: Likewise.
+        * java/util/Currency.java: Likewise.
+        * java/text/BreakIterator.java: Likewise.
+        * java/text/Collator.java: Likewise.
+        * java/text/DateFormat.java: Likewise.
+        * java/text/DateFormatSymbols.java: Likewise.
+        * java/text/DecimalFormatSymbols.java: Likewise.
+        * java/text/NumberFormat.java: Likewise.
+
 2004-06-15  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/text/MessageFormat.java
