@@ -91,6 +91,12 @@ jthread_t jthread_current(void)
  */
 bool jthread_attach_current_thread (bool is_daemon);
 
+/**
+ * Detaches the calling thread from the vm.
+ *
+ */
+bool jthread_detach_current_thread (void);
+
 void jthread_sleep (jlong timeout);
 
 /**
@@ -119,7 +125,7 @@ void jthread_enable_stop(void)
  * @param tid the thread to stop.
  */
 static inline
-void jthread_stop(jthread_t tid)
+void jthread_stop(jthread_t tid UNUSED)
 {
 }
 
@@ -136,7 +142,7 @@ void jthread_interrupt(jthread_t tid);
  * @param func the func to execute.
  */
 static inline
-void jthread_atexit(void (* func)(void))
+void jthread_atexit(void (* func)(void) UNUSED)
 {
 }
 
@@ -146,7 +152,7 @@ void jthread_atexit(void (* func)(void))
  * @param tid the thread whose info is to be dumped.
  */
 static inline
-void jthread_dumpthreadinfo(jthread_t tid)
+void jthread_dumpthreadinfo(jthread_t tid UNUSED)
 {
 }
 
@@ -225,10 +231,10 @@ bool jthread_extract_stack(jthread_t tid, void** from, unsigned* len)
   assert(tid->suspendState == SS_SUSPENDED);
 #if defined(STACK_GROWS_UP)
   *from = tid->stackMin;
-  *len = tid->stackCur - tid->stackMin;
+  *len = (uintp)tid->stackCur - (uintp)tid->stackMin;
 #else
   *from = tid->stackCur;
-  *len = tid->stackMax - tid->stackCur;
+  *len = (uintp)tid->stackMax - (uintp)tid->stackCur;
 #endif
   return true;
 }
@@ -243,9 +249,9 @@ void* jthread_stacklimit(void)
 {
   jthread_t nt = jthread_current();
 #if defined(STACK_GROWS_UP)
-  return (nt->stackMax - STACKREDZONE);
+  return (void *)((uintp)nt->stackMax - STACKREDZONE);
 #else
-  return (nt->stackMin + STACKREDZONE);
+  return (void *)((uintp)nt->stackMin + STACKREDZONE);
 #endif
 }
 
@@ -259,17 +265,17 @@ void jthread_relaxstack(int yes)
 	if( yes )
 	{
 #if defined(STACK_GROWS_UP)
-		jthread_current()->stackMax += STACKREDZONE;
+		(uintp)jthread_current()->stackMax += STACKREDZONE;
 #else
-		jthread_current()->stackMin -= STACKREDZONE;
+		(uintp)jthread_current()->stackMin -= STACKREDZONE;
 #endif
 	}
 	else
 	{
 #if defined(STACK_GROWS_UP)
-		jthread_current()->stackMax -= STACKREDZONE;
+		(uintp)jthread_current()->stackMax -= STACKREDZONE;
 #else
-		jthread_current()->stackMin += STACKREDZONE;
+		(uintp)jthread_current()->stackMin += STACKREDZONE;
 #endif
 	}
 }
@@ -289,7 +295,7 @@ void jthread_yield (void)
  *
  */
 static inline
-void jthread_spinon(int dummy)
+void jthread_spinon(int dummy UNUSED)
 {
 }
 
@@ -298,7 +304,7 @@ void jthread_spinon(int dummy)
  *
  */
 static inline
-void jthread_spinoff(int dummy)
+void jthread_spinoff(int dummy UNUSED)
 {
 }
 
@@ -394,47 +400,33 @@ int jthread_get_status (jthread_t thread);
 void jthread_set_blocking (int fd, int blocking);
 
 static inline void
-jthread_suspend(jthread_t jt, void *suspender)
+jthread_suspend(jthread_t jt UNUSED, void *suspender UNUSED)
 {
 	/* TODO */
 }
 
 static inline void
-jthread_resume(jthread_t jt, void *suspender)
+jthread_resume(jthread_t jt UNUSED, void *suspender UNUSED)
 {
 	/* TODO */
 }
 
 static inline jthread_t
-jthread_from_data(threadData *td, void *suspender)
+jthread_from_data(threadData *td UNUSED, void *suspender UNUSED)
 {
 	/* TODO */
 	return NULL;
 }
 
 static inline
-jlong jthread_get_usage(jthread_t jt)
+jlong jthread_get_usage(jthread_t jt UNUSED)
 {
 	/* TODO */
 	return 0;
 }
 
 static inline
-int jthread_is_interrupted(jthread_t jt)
-{
-	/* TODO */
-	return 0;
-}
-
-static inline
-int jthread_on_mutex(jthread_t jt)
-{
-	/* TODO */
-	return 0;
-}
-
-static inline
-int jthread_on_condvar(jthread_t jt)
+int jthread_is_interrupted(jthread_t jt UNUSED)
 {
 	/* TODO */
 	return 0;

@@ -358,4 +358,10 @@ bool jthread_attach_current_thread(bool isDaemon UNUSED)
 	return false;
 }
 
+static inline
+bool jthread_detach_current_thread (void)
+{
+ 	return false;
+}
+
 #endif

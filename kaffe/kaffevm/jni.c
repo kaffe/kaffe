@@ -103,7 +103,9 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
  */
 #if defined(TRANSLATOR)
 #define KAFFE_JNI_SETEXCEPTFP(ebufp) {				\
-        vmExcept_setJNIFrame(ebufp, __builtin_frame_address(0));\
+	struct _exceptionFrame frame;				\
+	FIRSTFRAME (frame, NULL);				\
+	vmExcept_setJNIFrame(ebufp, FPFRAME(&frame));		\
         }
 #else
 /*
@@ -3645,8 +3647,11 @@ Kaffe_AttachCurrentThread(JavaVM* vm UNUSED, void** penv, ThreadAttachArgs* args
 static jint
 Kaffe_DetachCurrentThread(JavaVM* vm UNUSED)
 {
-	/* Does nothing */
-	return (0);
+	if (jthread_detach_current_thread ()) {
+		return 0;
+	} else {
+		return -1;
+	}
 }
 
 static jint

@@ -25,11 +25,11 @@ static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', '
 #if defined(KAFFE_VMDEBUG)
 
 #define TMSG_SHORT(_msg,_nt)     \
-   dprintf(_msg" %p [tid:%4ld, java:%p]\n", \
+   dprintf(_msg" %p [tid:%4lx, java:%p]\n", \
     _nt, _nt->tid, _nt->data.jlThread)
 
 #define TMSG_LONG(_msg,_nt)      \
-   dprintf(_msg" %p [tid:%4ld, java:%p], stack [%p..%p..%p], state: %c%c%c\n",         \
+   dprintf(_msg" %p [tid:%4lx, java:%p], stack [%p..%p..%p], state: %c%c%c\n",         \
         _nt, _nt->tid, _nt->data.jlThread, _nt->stackMin, _nt->stackCur, _nt->stackMax,  \
         stat_act[_nt->active], stat_susp[_nt->suspendState], stat_block[_nt->blockState])
 
@@ -483,9 +483,7 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
   pthread_setcanceltype( PTHREAD_CANCEL_ASYNCHRONOUS, &oldCancelType);
 
   /* if we aren't the first one, we are in trouble */
-  // Jim - I'm commenting out this assertion, as jit_stub.c in test/internal  
-  // seems to violate the assumption.
-  // assert( activeThreads == 0);
+  assert( activeThreads == 0);
  
   activeThreads = firstThread = nt;
   nonDaemons=1;
@@ -519,6 +517,15 @@ bool jthread_attach_current_thread (bool daemon)
   pthread_setspecific( ntKey, nt);
 
   /* and done */
+  return true;
+}
+
+bool jthread_detach_current_thread (void)
+{
+  jthread_t	cur = jthread_current ();
+
+  tDispose (cur);
+
   return true;
 }
 
@@ -1172,7 +1179,7 @@ TwalkThread ( Hjava_lang_Thread* thread )
 	return;
   }
 
-  DBG( vm_thread, TMSG_LONG( "walking ", nt));
+  DBG( JTHREAD, TMSG_LONG( "walking ", nt));
 
   if ( !nt->suspendState && !nt->blockState ){
 	t = GET_CURRENT_THREAD(&t);
@@ -1182,14 +1189,14 @@ TwalkThread ( Hjava_lang_Thread* thread )
 	}
 	else {
 	  /* everything else should be blocked or suspended by now */
-	  DBG( vm_thread, ("walking a running thread %p\n", nt));
+	  DBG( JTHREAD, ("walking a running thread %p\n", nt));
 	  //tDump();
 	  //ABORT();
 	  return;
 	}
   }
   else if ( nt->suspendState == SS_PENDING_SUSPEND ){
-	DBG( vm_thread, ("pending suspend, walk whole stack\n"));
+	DBG( JTHREAD, ("pending suspend, walk whole stack\n"));
 	/*
 	 * Assuming the very next thing after a context switch to this thread
 	 * would be calling the signal handler, we accept that case. Unfortunately,
@@ -1204,7 +1211,7 @@ TwalkThread ( Hjava_lang_Thread* thread )
 
   if ( ((uintp) nt->stackCur < (uintp) nt->stackMin) ||
 	   (((uintp) nt->stackCur > (uintp) nt->stackMax)) ) {
-	DBG( vm_thread, ("inconsistent stack\n"));
+	DBG( JTHREAD, ("inconsistent stack\n"));
 	tDump();
 	ABORT();
   }

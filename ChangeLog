@@ -1,3 +1,25 @@
+2004-04-25  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h
+	(jthread_detach_current_thread) implement
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.h,
+	kaffe/kaffevm/systems/unix-pthreads/thread-internal.h:
+	fixes for gcc warnings
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_detach_current_thread): implement
+	(TwalkThread): use JTHREAD instead of vm_thread for debug mask
+	
+	* kaffe/kaffevm/jni.c
+	(KAFFE_JNI_SETEXCEPTFP): use FIRSTFRAME/FPFRAME macros so we
+	can use the stack pointer if the architecture doesn't use
+	a frame pointer
+	(Kaffe_DetachCurrentThread): call jthread_detach_current_thread
+
+	* test/internal/jit_stub.c (main): don't call jthread_createfirst
+	since that's already done during initialiseKaffe
+	
 2004-04-24  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/kaffe/tools/jar/Jar.java

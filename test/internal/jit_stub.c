@@ -157,16 +157,6 @@ int main(int argc, char *argv[])
 		loadStaticClass(&javaLangNullPointerException, "java/lang/NullPointerException");
 		loadStaticClass(&javaLangArrayIndexOutOfBoundsException, "java/lang/ArrayIndexOutOfBoundsException");
 		memset(&mainThread, 0, sizeof(mainThread));
-#if defined(KAFFEMD_STACKSIZE)
-		stackSize = mdGetStackSize();
-		if (stackSize < 0)
-		  stackSize = MAINSTACKSIZE;
-#else
-		stackSize = MAINSTACKSIZE;
-#endif
-		jthread_createfirst(stackSize,
-				    java_lang_Thread_NORM_PRIORITY,
-				    &mainThread);
 
 		if( (tests = getenv(TEST_CLASSES)) )
 		{
