@@ -143,8 +143,6 @@ static inline void sysdepCallMethod(callMethodInfo *call)
 	int extraargs[(call)->nrargs];
 	register int d0 asm ("d0");
 	register int d1 asm ("d1");
-	register double f0d asm ("fp0");
-	register float f0f asm ("fp0");
 	int *res;
 	int *args = extraargs;
 	int argidx;

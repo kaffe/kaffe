@@ -1,3 +1,9 @@
+2003-12-11  Dalibor Topic <robilad@kaffe.org>
+
+	* config/m68k/common.h
+	(sysdemCallMethod)[!__linux__]: Removed unused 
+	variables.
+
 2003-12-10  Dalibor Topic <robilad@kaffe.org>
 
 	* config/m68k/common.h: Added missing include for 
