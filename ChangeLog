@@ -1,3 +1,10 @@
+Mon Jul 29 18:32:48 CEST 2002 RyosIII Suzuki <ryos@sinby.com>
+
+	* kaffe/kaffevm/kaffe.def: fixed compilation problems when kaffe
+	was configured with --with-engine=intrp and with
+	CREATE_NULLPOINTER_CHECKS explicitly defined in md.h.
+	
+	
 Mon Jul 29 18:27:32 CEST 2002 Robert N. Gonzalez <Robert.N.Gonzalez@williams.edu>
 
 	* kaffe/kaffevm/bytecode.h, kaffe/kaffevm/code-analyse.c:
