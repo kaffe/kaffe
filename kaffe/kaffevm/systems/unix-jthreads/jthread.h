@@ -64,20 +64,7 @@
 
 #endif  /* !KVER */
 
-/*
- * a mutex is represented by a two-word structure
- */
-typedef struct _jmutex
-{
-        struct _jthread *holder;
-        struct _jthread *waiting;
-} jmutex;
-
-/*
- * a condition variable is simply expressed as a list of threads
- * waiting to be notified
- */
-typedef struct _jthread *jcondvar;
+#include "lock-impl.h"
 
 /*
  * This is our internal structure representing the "native" threads.
@@ -352,25 +339,6 @@ int jthreadedForkExec(char **argv, char **arge,
 #define JTHREAD_RESTORE_FD
 void jthreadRestoreFD(int fd);
 
-/* 
- * Locking API
- */
-void jmutex_initialise(jmutex *lock);
-void jmutex_lock(jmutex *lock);
-void jmutex_unlock(jmutex *lock);
-
-#define JMUTEX_BLOCKED
-/* Return a list of threads blocked on a mutex.  Caller frees */
-int  jmutex_blocked(jmutex *lock, jthread_t **list);
-
-void jcondvar_initialise(jcondvar *cv);
-jbool jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
-void jcondvar_signal(jcondvar *cv, jmutex *lock);
-void jcondvar_broadcast(jcondvar *cv, jmutex *lock);
-
-#define JCONDVAR_WAITING
-/* Return a list of threads waiting on a condvar.  Caller frees */
-int  jcondvar_waiting(jcondvar *cv, jthread_t **list);
 
 /* Spinlocks: simple since we're uniprocessor */
 /* ARGSUSED */

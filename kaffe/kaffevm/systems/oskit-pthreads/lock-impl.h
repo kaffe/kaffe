@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1999 The University of Utah.  All rights reserved.
+ * Copyright (c) 1999, 2000 The University of Utah.  All rights reserved.
  *
  * This file is licensed under the terms of the GNU Public License.
  *
@@ -10,17 +10,19 @@
 #ifndef __lock_impl_h
 #define __lock_impl_h
 
-#define	SETUP_POSIX_LOCKS(L) \
-	(L)->mux = thread_malloc(sizeof(jmutex)); \
-        (L)->cv = thread_malloc(sizeof(jcondvar)); \
-        jmutex_initialise((L)->mux); \
-        jcondvar_initialise((L)->cv);
+/* OSKit pthreads provides the jmutex/jcondvar lock interface. */
 
-#define SEMGET          _SemGet
-#define SEMPUT          _SemPut
-#define LOCK(L)         jmutex_lock((L)->mux)
-#define UNLOCK(L)       jmutex_unlock((L)->mux)
-#define SIGNAL(L)       jcondvar_signal((L)->cv, (L)->mux)
-#define WAIT(L,T)       (!(jcondvar_wait((L)->cv, (L)->mux, (T))))
+typedef pthread_mutex_t		jmutex;
+typedef pthread_cond_t		jcondvar;
+
+void jmutex_initialise(jmutex *lock);
+void jmutex_lock(jmutex *lock);
+void jmutex_unlock(jmutex *lock);
+void jmutex_destroy(jmutex *lock);
+
+void jcondvar_initialise(jcondvar *cv);
+jbool jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
+void jcondvar_signal(jcondvar *cv, jmutex *lock);
+void jcondvar_destroy(jmutex *lock);
 
 #endif /* __lock_impl_h */

@@ -1,52 +1,205 @@
-Here is a brief summary of locking in kaffe.  jmutex's  and jcondvar's
-are a thin veneer over the locks provided by the threading system.
-(In the case of unix-jthreads, these actually are the locks provided
-by the threading system.)  jmutex's are not recursive.
+Here is a brief summary of locking in Kaffe.  
 
-The locks defined in kaffe/kaffevm/locks.h are closer to java
-monitors:  they including both lock and condition variable features,
-and are recursive.  Here is a table of the available functions:
+There are several layers to the locking abstractions in Kaffe.
+Ideally these layers are collapsed by the compiler.
 
-waitCond	waitStaticCond		
-signalCond	signalStaticCond	
-broadcastCond	broadcastStaticCond	
-lockMutex	lockStaticMutex		lockObject
-unlockMutex	unlockStaticMutex	unlockObject
+Java Object Locks
+=================
 
-Here are the rules to choose which one you should use:
+	files: kaffe/kaffevm/locks.[hc]
 
-Object: This one should only be used for Java monitors.  It takes just
-a pointer to a Java Object.  The intent is that, if we ever create a
+	lockObject(H_java_lang_Object*)
+	unlockObject(H_java_lang_Object*)
+
+These should only be used for Java object monitors.  They just take a
+pointer to the Java object.  The intent is that if we ever create a
 facility to log the execution of all monitorenter/exit bytecodes,
 entries and exits of synchronized methods and JNI MonitorEnter/Exit
-primitives, we'll be able to do it by tweaking this function.  Note
-that it is a function, and must remain so, since its address is taken
-in some engines.
+primitives, we'll be able to do it by tweaking this function.  These
+functions are implemented as a thin layer over the VM-internal locks
+(See the next section).
 
-plain: This one should be used for locks in the VM abstraction layer,
-but only when they're totally unrelated with Java monitors.  It takes
-a pointer to any structure that has a `lock' member of type `iLock*'
-and (implicitly) a pointer to a variable named `iLockRoot', assumed to
-be an automatic(*) variable declared in the caller function (used in
-the implementation of fast locks).  It is mostly used to lock non-Java
-objects, such as classEntries, but, in at least one situation, it is
-used to lock a Class object: when JIT-compiling a method, a lock on
-its Class is held.  Logging such a lock in the aforementioned facility
-would be unexpected: it would only be logged when the JIT was in use.
+NOTE: these are functions, and must remain so, since their addresses
+are taken in some engines.
+
+The wait and signal functions on Java objects map directly to the wait
+and signal functions in the VM-internal locks (see the next section).
+XXX There should probably be waitObject(), signalObject(), and
+broadcastObject() interfaces.  Currently the waitCond(), signalCond()
+and broadcastCond() interfaces are just invoked directly.  
+XXX should be a slowUnlockObjectIfHeld(), too (for stack unwinding due
+to an exception).
+
+NOTE: Two other functions are part of this interface:
+	slowLockObject(H_java_lang_Object*, void*);
+	slowUnlockObject(H_java_lang_Object*, void*);
+these are used by some engines when the inlined "fast lock" fails.
+See the "Kaffe Fast Locking" section, below.  There need not be
+"slow" versions of the wait/signal/broadcast functions.
+
+
+VM-internal object locks
+========================
+
+	files: kaffe/kaffevm/locks.[hc]
+
+	types: iLock
+
+	lockMutex	lockStaticMutex
+	unlockMutex	unlockStaticMutex
+	waitCond	waitStaticCond		
+	signalCond	signalStaticCond	
+	broadcastCond	broadcastStaticCond	
+
+There are two flavors of VM-internal locking interfaces.  One for
+dynamic locks (left column) and one for static locks (right column).
+Dynamic locks are used to protect VM-internal dynamic structures
+(e.g., classes).  Static locks are generally global locks (e.g., the
+gc lock or finalizer lock).
+
+The VM must use its own internal locks for most internal state, to
+avoid race conditions with arbitrary Java code that uses object locks.
+(For example on threads and classes, there are both logical Java-level
+locks, and VM-internal locks).
+
+There is one instance of using the VM-internal interfaces to lock a
+Java-level object: when JIT-compiling a method, a lock on its Class is
+held.  Logging such a lock via the lockObject() interface would be
+unexpected: it would only be logged when the JIT was in use.
 Moreover, it is not mandated nor directed by any of the Java monitor
 facilities.  Therefore, this case uses the VM variant, and so should
 similar cases that ever come up.
 
+These locks are recursive.  Despite the disjoint names, the same iLock
+object supports both the lock/unlock and wait/signal/broadcast
+interfaces.
+
+The non-static interfaces are a bit odd in that the argument passed in
+must be a pointer to a struct with a "lock" field.  The lock field
+must be an iLock pointer.  The static interfaces take a pointer to a
+iLock pointer.  
+
+Lastly, both static and non-static mutex functions assume an implicit
+"iLockRoot" automatic(*) variable exists on the current stack frame.
 (*) i.e., it must not be static nor global, otherwise its whole
 purpose, which is of speeding up locking by means of using stack
-information, would be defeated.
+information, would be defeated.  There is an implicit restriction in
+the use of lock/unlock: they must occur in the same stack frame.
+There is a way around this restriction, but if don't know what it is,
+you probably shouldn't try it.
 
-Static: This is the easiest.  When you have a stand-alone variable of
-type `iLock*', this is the variant you should use.  It takes a pointer
-to the lock variable (`iLock**') and (implicitly) a pointer to a
-variable named `iLockRoot', assumed to be in the current stack frame.
+XXX How many of the internal locks really need to be recursive?
+
+
+Threading System Synchronization Primitives
+===========================================
+
+The VM-internal locking scheme is implemented on top of the primitives
+provided by the Kaffe threading system.  The underlying threading
+system has two choices for implementing the lowest layer of locking in
+Kaffe.  First is the Ksem interface which provides a semaphore
+primitive on which the Kaffe run-time bases its "heavy locks".  (See
+the "Kaffe Fast Locking" section below.)  The second option is to
+implement the "jmutex/jcondvar" interface (which is just used to fill
+out a default Ksem implementation.)
+
+A. The Ksem interface:
+---------------------
+
+	files: kaffe/kaffevm/ksem.h, threading system lock files
+
+	types: Ksem
+
+	ksemInit(sem)
+	ksemGet(sem,timeout)
+	ksemPut(sem)
+	ksemDestroy(sem)
+
+The Ksem is a binary semaphore, and need not be recursive.  The Ksem
+is initialized to 0 (in semaphore-speak this means the resource is not
+available).  ksemGet() can timeout, thus it returns a boolean
+indication of whether it acquired the semaphore or not.
+
+As a side-effect of Kaffe's fast locking scheme, there is a one-to-one
+mapping between Ksem and threads.  Also, all Ksem's are dynamically
+allocated when a thread is created and all are initialized before
+being used.
+
+
+B. The jmutex/jcondvar interface:
+--------------------------------
+
+	files: kaffe/kaffevm/ksem.h, threading system lock files
+
+	types:	jmutex, jcondvar
+
+	jmutex_initialize
+	jmutex_lock
+	jmutex_unlock
+	jmutex_destroy
+	
+	jcondvar_initialize
+	jcondvar_signal
+	jcondvar_wait
+	jcondvar_destroy
+
+At this layer, mutexes are distinct from condition variables, though
+the condition variable wait and signal are provided with an associated
+mutex.  A jmutex should not be recursive.  Kaffe guarantees that a
+jmutex and jcondvar are used in a strict pair (see the implementation
+of Ksem).  Broadcast is never used on the condition variable.
+
+
+Kaffe Fast Locking
+==================
+
+Kaffe has a fast locking scheme that minimizes the cost of uncontended
+locks.  The fast locking scheme is implemented between VM-internal
+locking layer and the threading system's locking primitives.  The
+basic idea is that a "heavy" lock is not allocated unless there is
+some contention for it.  Additionally, another trick is used to avoid
+maintaining extraneous state for recursive locks.  The Kaffe Fast
+Locking scheme takes advantage of several observations.  First, all
+lockable objects have a pointer to a heavy lock, in case one is needed
+for the object.  Second, all pointers to heap-allocated objects in
+Kaffe are at least 4-byte aligned, thus making the bottom two bits of
+every pointer available.  Third, if a recursive lock is re-acquired by
+the same thread, it is necessairly acquired in a more recent stack
+frame (i.e., the frame in which the lock was originally acquired is
+still on the stack).  The recursion optimization can be considered
+separately from the fast lock acquistion.
+
+Here is some weak pseudo-code to explain the algorithm.
+
+if lock field is NULL
+	set lock field to current thread's "id".
+else 
+	/* lock field is a pointer */
+	if lock field bottom bit is set
+		/* lock field points to a heavy lock */
+		...
+	else
+		/* lock field points to some thread's "id" */
+		allocate a heavy lock and 
+		set the lock field to address of heavy lock
+
+This must all be done atomically.  Kaffe gets around this requirement
+by chaining atomic compare-and-swap operations and by swapping the
+magic value LOCKINPROGRESS into the field.  The common case requires a
+single atomic compare and swap.
+
+The "id" is where the recursive lock optimization comes in.  The id is
+actually the address of a local stack slot in the function that
+invoked "lockMutex".  This is used to decide if a thread owns a lock
+(if the address doesn't fall on its stack, then the thread cannot own
+the lock) and is used to optimize recursive locks (if the address is
+on the current thread's stack, then it must be from a previous stack
+frame).  This is why the iLock variable must be allocated as an
+automatic variable on the stack frame.
 
 Jason Baker <jbaker@cs.utah.edu>
 Jun 29, 1999
 updated by Alexandre Oliva <oliva@lsd.ic.unicamp.br>
 Sept 18, 1999
+updated by Patrick Tullmann <tullmann@cs.utah.edu>
+Mar 17, 2000

@@ -771,6 +771,12 @@ jmutex_unlock(jmutex *lock)
 }
 
 void
+jmutex_destroy(jmutex *lock)
+{
+	pthread_mutex_destroy(lock);
+}
+
+void
 jcondvar_initialise(jcondvar *cv)
 {
 	if (0 != pthread_cond_init(cv, (const pthread_condattr_t *)0)) {
@@ -811,7 +817,7 @@ jcondvar_signal(jcondvar *cv, jmutex *lock)
 }
 
 void
-jcondvar_broadcast(jcondvar *cv, jmutex *lock)
+jcondvar_destroy(jcondvar *cv)
 {
-	pthread_cond_broadcast(cv);
+	pthread_cond_destroy(cv);
 }

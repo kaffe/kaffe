@@ -20,7 +20,7 @@
 #include "support.h"
 #include "stats.h"
 #include "locks.h"
-#include "jthread.h"
+#include "thread.h"
 #include "gc.h"
 #include "gc-mem.h"
 #include "jni.h"

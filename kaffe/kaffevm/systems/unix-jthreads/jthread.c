@@ -193,40 +193,6 @@ isOnList(jthread *list, jthread *t)
 	return (0);
 }
 
-/*
- * Transform list of threads in linear array
- */
-static int
-makeListFromQueue(jthread *first, jthread_t **threads)
-{
-	int n = 0;
-	jthread *t;
-	jthread_t *list;
-
-	/* count them */
-	for (t = first; t; t = t->nextQ) {
-		n++;
-	}
-
-	/* list is empty */
-	if (n == 0) {
-		*threads = 0;
-		return (0);
-	}
-
-	/* allocate an array */
-	/* XXX: We use the real malloc here since we don't want to get
-	 * stuck in a gc */
-	list = malloc(n * sizeof(jthread_t *));
-	assert(list != 0);
-
-	/* and copy them in */
-	for (n = 0, t = first; t; t = t->nextQ) {
-		list[n++] = t;
-	}
-	*threads = list;
-	return (n);
-}
 
 /*
  * yield to another thread
@@ -1416,7 +1382,7 @@ jthread_stop(jthread *jtid)
 }
 
 /*
- * Have a thread exit.
+ * Have a thread exit.  This function does not return.
  */
 void
 jthread_exit(void)
@@ -1832,16 +1798,17 @@ jmutex_unlock(jmutex *lock)
 	intsRestore();
 }
 
-int
-jmutex_blocked(jmutex *lock, jthread_t **threads)
+void
+jmutex_destroy(jmutex *lock)
 {
-	return (makeListFromQueue(lock->waiting, threads));
+	assert(lock->holder == NULL);
+	assert(lock->waiting == NULL);
 }
 
 void
 jcondvar_initialise(jcondvar *cv)
 {
-	cv = NULL;
+	*cv = NULL;
 }
 
 jbool
@@ -1916,11 +1883,12 @@ jcondvar_broadcast(jcondvar *cv, jmutex *lock)
 	intsRestore();
 }
 
-int  
-jcondvar_waiting(jcondvar *cv, jthread_t **threads)
+void
+jcondvar_destroy(jcondvar* cv)
 {
-	return (makeListFromQueue(*cv, threads));
+	assert(*cv == NULL);
 }
+
 
 /*============================================================================
  * 

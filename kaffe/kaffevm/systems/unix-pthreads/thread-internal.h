@@ -30,10 +30,6 @@ typedef struct _nativeThread {
   /* this is our Java Thread object */
   Hjava_lang_Thread     *thread;
 
-  /* we need them to init the sem2posixLock object of our Thread object */
-  pthread_mutex_t       mux;
-  pthread_cond_t        cv;
-
   /* convars and mutexes aren't useful in signal handlers, semaphores are */
   sem_t                 sem;
 

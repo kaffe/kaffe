@@ -541,7 +541,7 @@ jthreadedForkExec(char **argv, char **arge,
 	 * we don't have them.
 	 */
 #if !defined(HAVE_EXECVE) && !defined(HAVE_EXECVP)
-	unimp("neither execve() nor execvp() not provided");
+	unimp("neither execve() nor execvp() provided");
 #endif
 #if !defined(HAVE_FORK)
 	unimp("fork() not provided");

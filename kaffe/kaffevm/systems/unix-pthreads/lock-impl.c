@@ -15,41 +15,14 @@
 #include "gtypes.h"
 
 #include "thread.h"
-#include "locks.h"
-
-
-/***********************************************************************
- * Interface functions
- *
- * All of them should eventually turned into compile time interfaces
- * (exported inlined funcs)
- */
+#include "lock-impl.h"
 
 /*
- * Lock the mutex associated with the sem2posixLock
- */
-void  
-Llock ( sem2posixLock* lk )
-{
-  lLock( lk);
-}
-
-/*
- * Unlock the mutex associated with the sem2posixLock
- */
-void    
-Lunlock ( sem2posixLock* lk )
-{
-  lUnlock( lk);
-}
-
-/*
- * Wait for the condvar associated with the sem2posixLock, with
- * a given relative timeout in ms (which we have to convert into
- * a absolute timespec now)
+ * Wait on the condvar with a given relative timeout in ms (which we
+ * have to convert into a absolute timespec now)
  */
 jboolean
-Lwait ( sem2posixLock* lk, jlong timeout )
+jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 {
   nativeThread    *cur = GET_CURRENT_THREAD(&cur);
   int             stat;
@@ -63,7 +36,7 @@ Lwait ( sem2posixLock* lk, jlong timeout )
   if ( timeout == 0 ) {
 	/* we handle this as "wait forever"	*/
 	cur->blockState |= BS_CV;
-	stat = pthread_cond_wait( (pthread_cond_t*)lk->cv, (pthread_mutex_t*)lk->mux);
+	stat = pthread_cond_wait( cv, mux );
 	cur->blockState &= ~BS_CV;
   }
   else {
@@ -73,19 +46,9 @@ Lwait ( sem2posixLock* lk, jlong timeout )
 	abst.tv_nsec = (now.tv_usec * 1000) + (timeout % 1000) * 1000000;
  
 	cur->blockState |= BS_CV_TO;
-	stat = pthread_cond_timedwait( (pthread_cond_t*)lk->cv, (pthread_mutex_t*)lk->mux, &abst);
+	stat = pthread_cond_timedwait( cv, mux, &abst);
 	cur->blockState &= ~BS_CV_TO;
   }
   
   return (stat == 0);
 }
-
-/*
- * Signal the condvar associated with the sem2posixLock, to wake one of
- * the threads waiting on it
- */
-void    
-Lsignal ( sem2posixLock* lk )
-{
-  lSignal( lk);
-}       

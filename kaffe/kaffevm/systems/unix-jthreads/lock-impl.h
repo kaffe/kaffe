@@ -11,17 +11,36 @@
 #ifndef __lock_impl_h
 #define __lock_impl_h
 
-#define	SETUP_POSIX_LOCKS(L) \
-	(L)->mux = thread_malloc(sizeof(jmutex)); \
-        (L)->cv = thread_malloc(sizeof(jcondvar)); \
-        jmutex_initialise((L)->mux); \
-        jcondvar_initialise((L)->cv);
+struct _jthread;
 
-#define SEMGET          _SemGet
-#define SEMPUT          _SemPut
-#define LOCK(L)         jmutex_lock((L)->mux)
-#define UNLOCK(L)       jmutex_unlock((L)->mux)
-#define SIGNAL(L)       jcondvar_signal((L)->cv, (L)->mux)
-#define WAIT(L,T)       (!jcondvar_wait((L)->cv, (L)->mux, (T)))
+/*
+ * a mutex has pointer to the holder and a queue of threads waiting
+ * on the mutex.
+ */
+typedef struct _jmutex
+{
+        struct _jthread *holder;
+        struct _jthread *waiting;
+} jmutex;
+
+/*
+ * a condition variable is simply expressed as a list of threads
+ * waiting to be notified
+ */
+typedef struct _jthread *jcondvar;
+
+
+/* 
+ * Locking API
+ */
+extern void jmutex_initialise(jmutex *lock);
+extern void jmutex_lock(jmutex *lock);
+extern void jmutex_unlock(jmutex *lock);
+extern void jmutex_destroy(jmutex *lock);
+
+extern void jcondvar_initialise(jcondvar *cv);
+extern jboolean jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
+extern void jcondvar_signal(jcondvar *cv, jmutex *lock);
+extern void jcondvar_destroy(jcondvar *lock);
 
 #endif /* __lock_impl_h */

@@ -213,11 +213,10 @@ tDumpList ( nativeThread *cur, nativeThread* list )
 	a3 = (t == firstThread) ? '1' : ' ';
 
 	DBG( vm_thread, ("%4d: %c%c%c %c%c%c   %p [tid: %4d, java: %p]  "
-					 "lock: [mux: %p cv: %p] stack: [%p..%p..%p]\n",
+					 "stack: [%p..%p..%p]\n",
 					 i, a1, a2, a3,
 					 stat_act[t->active], stat_susp[t->suspendState], stat_block[t->blockState],
 					 t, t->tid, t->thread,
-					 &t->mux, &t->cv,
 					 t->stackMin, t->stackCur, t->stackMax));
   }
 }
@@ -390,53 +389,14 @@ tMapPriorities (void)
 
 
 /*
- * per-native thread init of condvars, mutexes and semaphores
+ * per-native thread init of semaphore
  */
 static
 void
 tInitLock ( nativeThread* nt )
 {
-  pthread_condattr_t    cvAttr;
-  pthread_mutexattr_t   muxAttr;
-
-  /* init a process private condvar */
-  pthread_condattr_init( &cvAttr);
-#if defined(_POSIX_THREAD_PROCESS_SHARED)
-  pthread_condattr_setpshared( &cvAttr, PTHREAD_PROCESS_PRIVATE);
-#endif
-  pthread_cond_init( &nt->cv, &cvAttr);
-
-  /* init a process private mutex. We deal with priority inversion
-   * by means of inheriting the highest priority of any thread who
-   * requests the mutex
-   */
-  pthread_mutexattr_init( &muxAttr);
-#if defined(_POSIX_THREAD_PROCESS_SHARED)
-  pthread_mutexattr_setpshared( &muxAttr, PTHREAD_PROCESS_PRIVATE);
-#endif
-#if defined(_POSIX_THREAD_PRIO_INHERIT_POSIX_THREAD_PRIO_PROTECT)
-  pthread_mutexattr_setprotocol( &muxAttr, PTHREAD_PRIO_INHERIT);
-#endif
-  pthread_mutex_init( &nt->mux, &muxAttr);
-
   /* init a non-shared (process-exclusive) semaphore with value '0' */
   sem_init( &nt->sem, 0, 0);
-}
-
-/*
- * init the Java thread locking facilities (sem) from the native thread
- * condvar and mutex
- */
-static
-void
-tSetLock ( nativeThread* nt )
-{
-  sem2posixLock *lk;
-
-  lk = (sem2posixLock*)unhand(nt->thread)->sem;
-  lk->cv  = &nt->cv;
-  lk->mux = &nt->mux;
-  lk->thd = nt;
 }
 
 /*
@@ -526,7 +486,6 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
 
   /* init our cv and mux fields for locking */
   tInitLock( nt);
-  tSetLock( nt);
 
   /* Link native and Java thread objects
    * We already are executing in the right thread, so we can set the specific
@@ -706,7 +665,6 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 	nt->func = func;
 	nt->stackCur = 0;
 	unhand(thread)->PrivateInfo = (struct Hkaffe_util_Ptr*)nt;
-	tSetLock( nt);
 
 	pthread_setschedparam( nt->tid, SCHEDULE_POLICY, &sp);
 
@@ -745,7 +703,6 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 
 	/* init our cv and mux fields for locking */
 	tInitLock( nt);
-	tSetLock( nt);
 
 	/* Link the new one into the activeThreads list. We lock until
 	 * the newly created thread is set up correctly (i.e. is walkable)
@@ -788,8 +745,6 @@ tDispose ( nativeThread* nt )
 {
   pthread_detach( nt->tid);
 
-  pthread_mutex_destroy( &nt->mux);
-  pthread_cond_destroy( &nt->cv);
   sem_destroy( &nt->sem);
 
   thread_free( nt);

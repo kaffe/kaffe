@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999 The University of Utah. All rights reserved.
+ * Copyright (c) 1998, 1999, 2000 The University of Utah. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -34,9 +34,7 @@
 #include "support.h"
 #include "md.h"
 #include "lerrno.h"
-
-typedef pthread_mutex_t		jmutex;
-typedef pthread_cond_t		jcondvar;
+#include "lock-impl.h"
 
 /*
  * This is our internal structure representing a "jthread" which is mapped
@@ -275,17 +273,5 @@ void jthread_suspendall(void);
  * Reallow other threads.
  */
 void jthread_unsuspendall(void);
-
-/* 
- * Locking API
- */
-void jmutex_initialise(jmutex *lock);
-void jmutex_lock(jmutex *lock);
-void jmutex_unlock(jmutex *lock);
-
-void jcondvar_initialise(jcondvar *cv);
-jbool jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
-void jcondvar_signal(jcondvar *cv, jmutex *lock);
-void jcondvar_broadcast(jcondvar *cv, jmutex *lock);
 
 #endif

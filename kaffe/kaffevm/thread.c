@@ -27,6 +27,7 @@
 #include "thread.h"
 #include "jthread.h"
 #include "locks.h"
+#include "ksem.h"
 #include "exception.h"
 #include "support.h"
 #include "external.h"
@@ -143,13 +144,12 @@ static
 void
 initThreadLock(Hjava_lang_Thread* tid)
 {
-#if defined(SETUP_POSIX_LOCKS)
-	sem2posixLock* lk;
+	Ksem *sem;
+	sem = thread_malloc(sizeof(Ksem));
+	assert(sem);
+	ksemInit(sem);
 
-	unhand(tid)->sem = thread_malloc(sizeof(sem2posixLock));
-	lk = (sem2posixLock*)unhand(tid)->sem;
-	SETUP_POSIX_LOCKS(lk);
-#endif
+	unhand(tid)->sem = (struct Hkaffe_util_Ptr*)sem;
 }
 
 /*
@@ -445,12 +445,22 @@ setPriorityThread(Hjava_lang_Thread* tid, int prio)
 }
 
 /*
- * Terminate a thread.
+ * Terminate a thread.  This function never returns.
  */
 void
 exitThread(void)
 {
+	Hjava_lang_Thread* tid;
+
         do_execute_java_method(getCurrentThread(), "finish", "()V", 0, 0);
+
+	/* Destroy this thread's heavy lock */
+	tid = getCurrentThread();
+	assert(tid);
+	assert(unhand(tid)->sem);
+	ksemDestroy((Ksem*)unhand(tid)->sem);
+
+	/* This never returns */
 	jthread_exit();
 }
 
@@ -497,7 +507,11 @@ framesThread(Hjava_lang_Thread* tid)
 Hjava_lang_Thread*
 getCurrentThread(void)
 {
-	return (jthread_getcookie(jthread_current()));
+	Hjava_lang_Thread* tid;
+	
+	tid = jthread_getcookie(jthread_current());
+	assert(tid);
+	return tid;
 }
 
 /*

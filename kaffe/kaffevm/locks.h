@@ -1,6 +1,7 @@
 /*
- * fastlocks.h
- * Manage locking system.
+ * locks.h
+ *
+ * Manage the 'fastlock' locking system.
  *
  * Copyright (c) 1996-1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
@@ -9,8 +10,8 @@
  * of this file. 
  */
 
-#ifndef __fastlocks_h
-#define __fastlocks_h
+#ifndef __locks_h
+#define __locks_h
 
 #include "md.h"
 
@@ -33,6 +34,14 @@ struct _iLock;
 struct Hjava_lang_Thread;
 struct Hjava_lang_Object;
 
+/*
+ * The "heavy" alternative when fast-locking encounters true
+ * contention, and for some of the global locks.  The _iLock
+ * works like a monitor (i.e. Java locks).  The "holder" field
+ * is a pointer into the stack frame of the thread which
+ * acquired the lock (used for validating the holder on an
+ * unlock and for distinguishing recursive invocations).
+ */
 typedef struct _iLock {
 	void*				holder;
 	struct Hjava_lang_Thread*	mux;
@@ -42,19 +51,25 @@ typedef struct _iLock {
 #define	LOCKINPROGRESS	((iLock*)-1)
 #define	LOCKFREE	((iLock*)0)
 
+extern void	initLocking(void);
+
+/*
+ * Java Object locking interface.
+ */
+extern void	lockObject(struct Hjava_lang_Object*);
+extern void	unlockObject(struct Hjava_lang_Object*);
+extern void 	slowLockObject(struct Hjava_lang_Object*, void*);
+extern void 	slowUnlockObject(struct Hjava_lang_Object*, void*);
+
 extern void	_lockMutex(LOCKOBJECT, void*);
 extern void	_unlockMutex(LOCKOBJECT, void*);
 extern jboolean	_waitCond(LOCKOBJECT, jlong);
 extern void	_signalCond(LOCKOBJECT);
 extern void	_broadcastCond(LOCKOBJECT);
 extern void	_slowUnlockMutexIfHeld(LOCKOBJECT, void*);
-extern void	lockObject(struct Hjava_lang_Object*);
-extern void	unlockObject(struct Hjava_lang_Object*);
 extern void* 	_releaseLock(iLock**);
 extern void 	_acquireLock(iLock**, void*);
-extern void 	slowLockObject(struct Hjava_lang_Object*, void*);
-extern void 	slowUnlockObject(struct Hjava_lang_Object*, void*);
-extern void	initLocking(void);
+
 extern void	dumpLocks(void);
 
 /*
@@ -66,44 +81,5 @@ extern void	dumpLocks(void);
 		FUNC; \
 		_acquireLock(&((Hjava_lang_Object*)(OBJ))->lock, st); \
 	}
-
-/*
- * Used to convert POSIX locks to semaphores.
- */
-typedef struct {
-	void*	mux;
-	void*	cv;
-	int	count;
-	void*	thd;
-} sem2posixLock;
-
-#if 0
-/*
- * Lock interface.  Either define the lock/unlock/wait/signal/broadcast
- * set of operations (for POSIX style locking) or else define the
- * semget/semput operations for semaphore style locking.
- */
-typedef struct LockInterface {
-
-	void	(*lock)(sem2posixLock*);
-	void	(*unlock)(sem2posixLock*);
-	jboolean (*wait)(sem2posixLock*, jlong);
-	void	(*signal)(sem2posixLock*);
-
-	jboolean (*semget)(void*, jlong);
-	void	(*semput)(void*);
-
-} LockInterface;
-
-EXTERN_C LockInterface Kaffe_LockInterface;
-
-#endif
-
-#if !defined(KAFFEH)
-/*
- * Inject the LockInterface implementation header.
- */
-#include "lock-impl.h"
-#endif
 
 #endif

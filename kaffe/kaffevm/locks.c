@@ -9,8 +9,6 @@
  * of this file. 
  */
 
-#define	LDBG(s)
-
 #include "config.h"
 #include "config-std.h"
 #include "object.h"
@@ -18,15 +16,18 @@
 #include "baseClasses.h"
 #include "thread.h"
 #include "locks.h"
+#include "ksem.h"
 #include "errors.h"
 #include "exception.h"
 #include "md.h"
 #include "jthread.h"
+#include "debug.h"
 
 /*
- * If we don't have an atomic compare and exchange defined then make one
- * out of a simple atmoc exchange (using the LOCKINPROGRESS value the place
- * holder).  If we don't have that, we'll just fake it.
+ * If we don't have an atomic compare and exchange defined then make
+ * one out of a simple atomic exchange (using the LOCKINPROGRESS value
+ * as the place holder).  If we don't have ATOMIC_EXCHANGE, we'll just
+ * fake it.
  */
 #if !defined(COMPARE_AND_EXCHANGE)
 #if defined(ATOMIC_EXCHANGE)
@@ -65,10 +66,7 @@ static struct {
 };
 #define	NR_SPECIAL_LOCKS	(sizeof(specialLocks)/sizeof(specialLocks[0]))
 
-static jboolean _SemGet(void*, jlong);
-static void _SemPut(void*);
-
-/* Count number of backoffs */
+/* Count number of backoffs.  XXX move into the STAT infrastructure. */
 int backoffcount = 0;
 
 /*
@@ -100,24 +98,33 @@ getHeavyLock(iLock** lkp)
 	jlong timeout;
 	int i;
 
+DBG(SLOWLOCKS,
+    	dprintf("getHeavyLock(**lkp=%p, *lk=%p)\n",
+		lkp, *lkp);
+)
+ 
 	timeout = 1;
 	for (;;) {
-		/* Get the current lock and replace it with -1 to indicate
+		/* Get the current lock and replace it with LOCKINPROGRESS to indicate
 		 * changes are in progress.
 		 */
 		old = *lkp;
 		if (old == LOCKINPROGRESS || !COMPARE_AND_EXCHANGE(lkp, old, LOCKINPROGRESS)) {
+			/* Someone else put the lock in LOCKINPROGRESS state */
 			tid = getCurrentThread();
 			backoffcount++;
-			SEMGET(unhand(tid)->sem, timeout);
+			ksemGet((Ksem*)(unhand(tid)->sem), timeout);
 			/* Back off */
 			timeout = (timeout << 1)|timeout;
 			continue;
 		}
+
+		/* If bottom bit is set, strip off and use pointer as pointer to heavy lock */
 		if ((((uintp)old) & 1) == 1) {
 			lk = (iLock*)(((uintp)old) & (uintp)-2);
 		}
 		else {
+			/* Create a heavy lock object for others to find. */
 			lk = 0;
 			for (i = 0; i < NR_SPECIAL_LOCKS; i++) {
 				if (specialLocks[i].key == lkp) {
@@ -125,6 +132,10 @@ getHeavyLock(iLock** lkp)
 					break;
 				}
 			}
+DBG(SLOWLOCKS,
+    			dprintf("  got %s lock\n",
+				(lk == 0) ? "new" : "special");
+)
 			if (lk == 0) {
 				lk = (iLock*)jmalloc(sizeof(iLock));
 			}
@@ -145,6 +156,12 @@ void
 putHeavyLock(iLock** lkp, iLock* lk)
 {
 	assert(*lkp == LOCKINPROGRESS);
+
+DBG(SLOWLOCKS,
+	dprintf("putHeavyLock(**lkp=%p, *lk=%p)\n", 
+		lkp, lk);
+)
+
 	if (lk == LOCKFREE) {
 		*lkp = LOCKFREE;
 	}
@@ -163,7 +180,10 @@ slowLockMutex(iLock** lkp, void* where)
 	iLock* lk;
 	Hjava_lang_Thread* tid;
 
-LDBG(	printf("Slow lock\n");						)
+DBG(SLOWLOCKS,
+    	printf("slowLockMutex(**lkp=%p, where=%p)\n",
+	       lkp, where);
+)
 
 	for (;;) {
 		lk = getHeavyLock(lkp);
@@ -186,7 +206,7 @@ LDBG(	printf("Slow lock\n");						)
 		unhand(tid)->nextlk = lk->mux;
 		lk->mux = tid;
 		putHeavyLock(lkp, lk);
-		SEMGET(unhand(tid)->sem, 0);
+		ksemGet((Ksem*)(unhand(tid)->sem), 0);
 	}
 }
 
@@ -202,7 +222,10 @@ slowUnlockMutex(iLock** lkp, void* where)
 	Hjava_lang_Thread* tid;
 	int i;
 
-LDBG(	printf("Slow unlock\n");					)
+DBG(SLOWLOCKS,
+    	printf("slowUnlockMutex(**lkp=%p, where=%p)\n",
+	       lkp, where);
+)
 
 	lk = getHeavyLock(lkp);
 
@@ -227,7 +250,7 @@ LDBG(	printf("Slow unlock\n");					)
 		unhand(tid)->nextlk = 0;
 		lk->holder = 0;
 		putHeavyLock(lkp, lk);
-		SEMPUT(unhand(tid)->sem);
+		ksemPut((Ksem*)(unhand(tid)->sem));
 	}
 	/* If someone's waiting to be signaled keep the heavy in place */
 	else if (lk->cv != 0) {
@@ -310,7 +333,7 @@ _waitCond(iLock** lkp, jlong timeout)
 	lk->cv = tid;
 	putHeavyLock(lkp, lk);
 	slowUnlockMutex(lkp, holder);
-	r = SEMGET(unhand(tid)->sem, timeout);
+	r = ksemGet((Ksem*)unhand(tid)->sem, timeout);
 
 	/* Timeout */
 	if (r == false) {
@@ -333,7 +356,7 @@ _waitCond(iLock** lkp, jlong timeout)
 		/* Not on list - so must have been signalled after all -
 		 * decrease the semaphore to avoid problems.
 		 */
-		SEMGET(unhand(tid)->sem, 0);
+		ksemGet((Ksem*)(unhand(tid)->sem), 0);
 
 		found:;
 		putHeavyLock(lkp, lk);
@@ -410,6 +433,7 @@ _lockMutex(iLock** lkp, void* where)
 		}
 	}
 	else if (val - (uintp)where > 1024) {
+		/* XXX count this in the stats area */
 		slowLockMutex(lkp, where);
 	}
 }
@@ -428,8 +452,8 @@ _unlockMutex(iLock** lkp, void* where)
 	if ((val & 1) != 0) {
 		slowUnlockMutex(lkp, where);
 	}
-	else if (val == (uintp)where &&
-			!COMPARE_AND_EXCHANGE(lkp, (iLock*)where, LOCKFREE)) {
+	else if ((val == (uintp)where) /* XXX squirrely bit */
+		&& !COMPARE_AND_EXCHANGE(lkp, (iLock*)where, LOCKFREE)) {
 		slowUnlockMutex(lkp, where);
 	}
 }
@@ -463,52 +487,3 @@ dumpLocks(void)
 {
 }
 
-/******************************************************************************
- *
- *  The following routines are used to convert POSIX style locks into the
- *  semaphores we actually need here.
- *
- ******************************************************************************/
-
-#if defined(SETUP_POSIX_LOCKS)
-static
-jboolean
-_SemGet(void* sem, jlong timeout)
-{
-	jboolean r;
-	sem2posixLock* lk;
-
-	r = true;
-	lk = (sem2posixLock*)sem;
-
-	LOCK(lk);
-	if (lk->count == 0) {
-		(void)WAIT(lk, timeout);
-	}
-	if (lk->count == 1) {
-		lk->count = 0;
-		r = true;
-	}
-	else {
-		assert(lk->count == 0);
-		r = false;
-	}
-	UNLOCK(lk);
-	return (r);
-}
-
-static
-void
-_SemPut(void* sem)
-{
-	sem2posixLock* lk;
-
-	lk = (sem2posixLock*)sem;
-
-	LOCK(lk);
-	assert(lk->count == 0);
-        lk->count = 1;
-	SIGNAL(lk);
-	UNLOCK(lk);
-}
-#endif

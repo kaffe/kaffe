@@ -1,3 +1,30 @@
+Mon Mar 20 17:22:04 PST 2000  Patrick Tullmann <tullmann@cs.utah.edu>
+	* FAQ/FAQ.locks: Updated to clearly define the ksem and jmutex
+	interfaces and the boundary between vm locking and threading
+	layer locking.
+	* kaffe/kaffevm/mem/gc-mem.c: include thread.h instead of jthread.h
+	* kaffe/kaffevm/ksem.h, kaffe/kaffevm/locks.c,
+	kaffe/kaffevm/locks.h, kaffe/kaffevm/Makefile.am: Added
+	ksem.h.  Is a cleanup of the sem2posixLock defines and the
+	thread-dependent locking layer.  Added comments, removed
+	lots of #if0 and other dead code.  Use debug.h macros.
+	* kaffe/kaffevm/thread.c: Use the Ksem abstraction.  Destroy
+	the per-thread heavy lock when thread is killed.
+	* kaffe/kaffevm/systems/oskit-pthreads/*: move the lock
+	interfaces into lock-impl.h, add jcondvar_destroy() and
+	jmutex_destroy() methods.
+	* kaffe/kaffevm/systems/unix-jthreads/*: remove unused
+	functions for gettings lists of threads on mutex/cvs.
+	Remove dead support code for those functions.  Add
+	jmutex_destroy() and jcondvar_destroy().  Move lock
+	interfaces into lock-impl.h, out of jthread.h.  Clean up
+	lock-impl.h to match new ksem interfaces.
+	* kaffe/kaffevm/systems/unix-pthreads/*: Use the jmutex_ and
+	jcondvar_ interfaces for locking, remove lots of macro
+	layers.  Remove redundant per-native-thread lock
+	infrastructure.  (Its is redundant with the per-thread
+	ksem managed in kaffevm/thread.c).
+
 Mon Mar 20 19:56:24 CET 2000  Edouard G. Parmelan <egp@free.fr>
 
 	* configure.in: enclose AC_PROG_CXX in push and pop AC_MSG_ERROR to

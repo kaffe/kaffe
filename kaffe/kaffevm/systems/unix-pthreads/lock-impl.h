@@ -1,14 +1,8 @@
 /*
- * lock-impl.h - this is the part of the LockInterface implementation
- * we want to expose (by means of injection into the abstraction locks.h)
+ * lock-impl.h
  *
- * Use it only for two purposes:
- *  (1) redefine generic interface function macros of locks.h in order
- *      to turn the runtime interface (completely or partly) into a
- *      compile-time interface
- *  (2) VERY RESTRICTIVE - define macros which can be used in clients to
- *      check for a certain subsystem (but JUST if there are strong reasons
- *      against using a clean interface function instead)
+ * Unix pthreads implements the jmutex and jcondvar abstractions.
+ * Most of the functions are inlined.
  *
  * Copyright (c) 1999
  *      Transvirtual Technologies, Inc.  All rights reserved.
@@ -25,48 +19,99 @@
  */ 
 #include "thread.h"
 
+#include "thread-internal.h"
 
-/***********************************************************************
- * inlined LockInterface functions
- */
+typedef pthread_mutex_t jmutex;
+typedef pthread_cond_t jcondvar;
+
+/* prototypes for jmutex interfaces.  All inlined except jcondvar_wait() */
+
+static inline void jmutex_initialise( jmutex* lk ) __UNUSED__;
+static inline void jmutex_lock( jmutex* lk ) __UNUSED__;
+static inline void jmutex_unlock( jmutex* lk ) __UNUSED__;
+
+static inline void jcondvar_initialise( jcondvar* cv ) __UNUSED__;
+static inline void jcondvar_signal( jcondvar* cv, jmutex *mux ) __UNUSED__;
+extern jboolean jcondvar_wait( jcondvar* cv, jmutex* mux, jlong timeout );
+
+
+/* inline jmutex/jcondvar functions.  */
 
 static inline
 void
-lLock ( sem2posixLock* lk )
+jmutex_initialise( jmutex* lk )
+{
+  pthread_mutexattr_t   muxAttr;
+
+  /* init a process private mutex. We deal with priority inversion
+   * by means of inheriting the highest priority of any thread who
+   * requests the mutex
+   */
+  pthread_mutexattr_init( &muxAttr);
+#if defined(_POSIX_THREAD_PROCESS_SHARED)
+  pthread_mutexattr_setpshared( &muxAttr, PTHREAD_PROCESS_PRIVATE);
+#endif
+#if defined(_POSIX_THREAD_PRIO_INHERIT_POSIX_THREAD_PRIO_PROTECT)
+  pthread_mutexattr_setprotocol( &muxAttr, PTHREAD_PRIO_INHERIT);
+#endif
+  pthread_mutex_init( lk, &muxAttr);
+}
+
+static inline
+void
+jmutex_lock( jmutex* lk )
 {
   nativeThread  *cur = GET_CURRENT_THREAD(&cur);
 
   cur->stackCur  = (void*)&cur;
   cur->blockState |= BS_MUTEX;
 
-  pthread_mutex_lock( (pthread_mutex_t*)lk->mux);
+  pthread_mutex_lock( lk );
 
   cur->blockState &= ~BS_MUTEX;
 }
 
 static inline  
 void    
-lUnlock ( sem2posixLock* lk )
+jmutex_unlock( jmutex* lk )
 {
-  pthread_mutex_unlock( (pthread_mutex_t*)lk->mux);
+  pthread_mutex_unlock(lk);
 }
 
 static inline
 void
-lSignal ( sem2posixLock* lk )
+jmutex_destroy (jmutex* lk) 
 {
-  pthread_cond_signal( (pthread_cond_t*)lk->cv);
+  pthread_mutex_destroy( lk );
+}
+
+
+static inline
+void
+jcondvar_initialise( jcondvar* cv )
+{
+  pthread_condattr_t    cvAttr;
+
+  /* init a process private condvar */
+  pthread_condattr_init( &cvAttr);
+#if defined(_POSIX_THREAD_PROCESS_SHARED)
+  pthread_condattr_setpshared( &cvAttr, PTHREAD_PROCESS_PRIVATE);
+#endif
+  pthread_cond_init( cv, &cvAttr);
+}
+
+static inline
+void
+jcondvar_signal( jcondvar* cv, jmutex* mux )
+{
+  pthread_cond_signal( cv );
 }       
 
-extern jboolean Lwait ( sem2posixLock* lk, jlong timeout );
-
-#define SEMGET          _SemGet
-#define SEMPUT          _SemPut
-#define LOCK(L)         lLock(L)
-#define UNLOCK(L)       lUnlock(L)
-#define SIGNAL(L)       lSignal(L)
-#define WAIT(L,T)       Lwait((L), (T))
-
-#define SETUP_POSIX_LOCKS(X)
+static inline
+void
+jcondvar_destroy( jcondvar *cv )
+{
+  pthread_cond_destroy( cv );
+}
 
 #endif /* __lock_impl_h */
