@@ -1,3 +1,10 @@
+2002-11-24  Joon Hyuk Lee <leejoon1@hotmail.com>
+ 
+ 	* libraries/clib/awt/X/imgpng.c
+ 	(readPng) read number of row bytes after updating info.
+ 	(readRowData) check if file has 4 channels despite having
+ 	no alpha channel.
+
 2002-11-23  Dalibor Topic  <robilad@yahoo.com>
 
 	* libraries/javalib/java/io/RandomAccessFile.java: 

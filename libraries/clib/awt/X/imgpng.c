@@ -87,7 +87,9 @@ readRowData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Image *img
 	png_read_row( png_ptr, row, 0);
 
 	for ( j=0, p=(unsigned char*)row; j<info_ptr->width; j++ ) {
-	  argb = readARGB( &p, (img->alpha != 0));
+	  argb = readARGB( &p,
+			   (img->alpha != 0)
+			   || (info_ptr->channels == 4));
 	  setPixel( img, argb, i, j);
 	}
   }
@@ -208,11 +210,11 @@ readPng ( png_structp png_ptr, png_infop info_ptr )
   png_set_gray_to_rgb( png_ptr);
   png_set_swap_alpha( png_ptr); /* we need ARGB instead of the standard RGBA */
 
-  row_bytes     = png_get_rowbytes( png_ptr, info_ptr);
   number_passes = png_set_interlace_handling( png_ptr);
 
   /* Optional call to gamma correct and add the background to the palette */
   png_read_update_info( png_ptr, info_ptr);
+  row_bytes     = png_get_rowbytes( png_ptr, info_ptr);
 
   /* time to create the image */
   img = createImage( info_ptr->width, info_ptr->height);
