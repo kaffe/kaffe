@@ -240,7 +240,7 @@ do {                                                            \
                   : : "r"(_ebp), "r"(_eip));                    \
 } while (0)
 
-/* The following information is need to compile gcj/eh.c */
+/* The following information is needed to compile gcj/eh.c */
 #define STACK_GROWS_DOWNWARD   1
 typedef void *word_type;
 
