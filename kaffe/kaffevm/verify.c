@@ -1224,7 +1224,7 @@ cleanupInVerifyMethod(uint32* status, SigStack* sigs, UninitializedType* uninits
 	DBG(VERIFY3, dprintf("    cleaning up..."); );
 	KFREE(status);
 	if (blocks != NULL) {
-		while (numBlocks > 0) {
+		while (*numBlocks > 0) {
 			freeBlock(blocks[--(*numBlocks)]);
 		}
 		KFREE(blocks);
@@ -1232,6 +1232,20 @@ cleanupInVerifyMethod(uint32* status, SigStack* sigs, UninitializedType* uninits
         freeSigStack(sigs);
         freeUninits(uninits);
         DBG(VERIFY3, dprintf(" done\n"); );
+}
+
+static inline
+bool
+failInVerifyMethod(errorInfo *einfo, Method* method, uint32* status, SigStack* sigs, UninitializedType* uninits, uint32* numBlocks, BlockInfo ** blocks)
+{
+        DBG(VERIFY3, dprintf("    Verify Method 3b: %s.%s%s: FAILED\n",
+			     CLASS_CNAME(method->class), METHOD_NAMED(method), METHOD_SIGD(method)); );
+	if (einfo->type == 0) {
+		DBG(VERIFY3, dprintf("      DBG ERROR: should have raised an exception\n"); );
+		postException(einfo, JAVA_LANG(VerifyError));
+	}
+        cleanupInVerifyMethod(status, sigs, uninits, numBlocks, blocks);
+        return(false);
 }
 
 /*
@@ -1257,17 +1271,6 @@ verifyMethod(errorInfo *einfo, Method* method)
 	uint32      numBlocks = 0;
 	BlockInfo** blocks    = NULL;
 	
-#define FAIL \
-        DBG(VERIFY3, dprintf("    Verify Method 3b: %s.%s%s: FAILED\n", \
-			     CLASS_CNAME(method->class), METHOD_NAMED(method), METHOD_SIGD(method)); ); \
-	if (einfo->type == 0) { \
-		DBG(VERIFY3, dprintf("      DBG ERROR: should have raised an exception\n"); ); \
-		postException(einfo, JAVA_LANG(VerifyError)); \
-	} \
-        cleanupInVerifyMethod(status, sigs, uninits, &numBlocks, blocks); \
-        return(false)
-	
-	
 	/**************************************************************************************************
 	 * Memory Allocation
 	 **************************************************************************************************/
@@ -1281,7 +1284,7 @@ verifyMethod(errorInfo *einfo, Method* method)
 		DBG(VERIFY3, dprintf("        some kinda error finding the basic blocks in pass 3a\n"); );
 		
 		/* propagate error */
-		FAIL;
+		return failInVerifyMethod(einfo, method, status, sigs, uninits, &numBlocks, blocks);
 	}
 	
 	DBG(VERIFY3, dprintf("        done allocating memory\n"); );
@@ -1293,7 +1296,7 @@ verifyMethod(errorInfo *einfo, Method* method)
 	DBG(VERIFY3, dprintf("    about to load initial args...\n"); );
 	if (!loadInitialArgs(method, einfo, blocks[0], &sigs, &uninits)) {
 	        /* propagate error */
-		FAIL;
+		return failInVerifyMethod(einfo, method, status, sigs, uninits, &numBlocks, blocks);
 	}
 	DBG(VERIFY3, {
 	        /* print out the local arguments */
@@ -1309,15 +1312,12 @@ verifyMethod(errorInfo *einfo, Method* method)
 	if (!verifyMethod3b(einfo, method,
 			    status, blocks, numBlocks,
 			    &sigs, &uninits)) {
-		FAIL;
+		return failInVerifyMethod(einfo, method, status, sigs, uninits, &numBlocks, blocks);
 	}
 	
 	cleanupInVerifyMethod(status, sigs, uninits, &numBlocks, blocks);
 	DBG(VERIFY3, dprintf("    Verify Method 3b: done\n"); );
 	return(true);
-	
-
-#undef FAIL
 }
 
 
