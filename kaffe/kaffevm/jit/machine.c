@@ -609,6 +609,12 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz,
 	addToCounter(&jitcodeblock, "jitmem-codeblock", 1,
 		     (jlong) GCSIZEOF(codeblock));
 	CODEPC = 0;
+
+	/* 
+	 * add the method we're translating as the first entry to the constant pool,
+	 * so that we can look it up pretty easily when creating stack traces.
+	 */
+	newConstant(CPref, meth);
 	return true;
 }
 

@@ -40,8 +40,17 @@
 
 #if defined(INTERPRETER)
 #define	FIRSTFRAME(f, e)	/* Does nothing */
-#elif defined(TRANSLATOR)
-static Method* findExceptionInMethod(uintp, Hjava_lang_Class*, exceptionInfo*);
+
+#define FRAMEOBJECT(O, F, E)    (O) = vmExcept_getSyncObj((VmExceptHandler*)(F))
+
+
+#define DISPATCH_EXCEPTION(F, H, E) vmExcept_setPC((VmExceptHandler *)(F), (H));  \
+                                    vmExcept_jumpToHandler((VmExceptHandler *)(F)); /* Does not return */
+#else
+
+#define DISPATCH_EXCEPTION(F,H,E) unhand(ct)->exceptObj = 0;\
+                                  CALL_KAFFE_EXCEPTION((F),(H),(E));
+
 #endif	/* TRANSLATOR */
 
 static void nullException(struct _exceptionFrame *);
@@ -50,7 +59,7 @@ static void dispatchException(Hjava_lang_Throwable*, stackTraceInfo*) __NORETURN
 
 extern void printStackTrace(struct Hjava_lang_Throwable*, struct Hjava_lang_Object*, int);
 
-static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, exceptionInfo*);
+static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, uintp*);
 
 /*
  * Create an exception from error information.
@@ -267,127 +276,12 @@ throwOutOfMemory(void)
 }
 #endif
 
-void*
-nextFrame(void* fm)
+static void
+dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 {
-#if !defined(SPFRAME)
-#define SPFRAME(f)	FPFRAME(f)
-#endif
-
-#if defined(TRANSLATOR)
-#if defined(STACK_NEXT_FRAME)
-	STACK_NEXT_FRAME((exceptionFrame*)fm);
-        if (jthread_on_current_stack((void *)SPFRAME((exceptionFrame*)fm))) {
-		return (fm);
-	}
-	else {
-		return (0);
-	}
-#else
-        exceptionFrame* nfm;
-
-        nfm = (exceptionFrame*)NEXTFRAME((exceptionFrame*)fm);
-        /* Note: this should obsolete the FRAMEOKAY macro */
-        if (nfm) {
-                return (nfm);
-        }
-        else {
-                return (0);
-        }
-#endif
-#else	/* INTERPRETER */
-        VmExceptHandler* nfm;
-        nfm = ((VmExceptHandler*)fm)->prev;
-	return (nfm);
-#endif
-}
-
-#if defined(TRANSLATOR)
-
-/*
- * Perform all necessary actions to unwind one stack frame
- * and to deliver an exception if a handler exists
- *
- * First determine whether the method is a jitted method or not
- * If not, check if it's handled by JNI.
- * If not, determine whether unlocking must be done and do it.
- * If a handler for this exception exists, dispatch to it
- * Else return the method.
- */
-Method*
-unwindStackFrame(stackTraceInfo* frame, Hjava_lang_Throwable *eobj)
-{
-	Method *meth;
-	Hjava_lang_Object* obj;
-	Hjava_lang_Class* class;
-	Hjava_lang_Thread* ct;
-	exceptionInfo einfo;
-
-	ct = getCurrentThread();
-	class = OBJECT_CLASS(&eobj->base);
-
-	meth = findExceptionInMethod(frame->pc, class, &einfo);
-
-	assert(meth == einfo.method);
-
-	/*
-	 * If no exception block found in method, perhaps
-	 * it is a Kaffe_JNI entrypoint?  If so, jump to
-	 * the provided handler.
-	 */
-	if (einfo.method == 0)
-	{
-		VmExceptHandler* ebuf = (VmExceptHandler*)(unhand(getCurrentThread())->exceptPtr);
-		if ((ebuf != 0)
-		    && vmExcept_isJNIFrame(ebuf)
-		    && vmExcept_JNIContains(ebuf, frame->fp))
-		{
-			vmExcept_jumpToHandler(ebuf); /* Does not return */
-		}
-	}
-
-	/* Find the sync. object */
-	if (einfo.method == 0
-		|| (einfo.method->accflags & ACC_SYNCHRONISED) == 0)
-	{
-		obj = 0;
-	}
-	else if (einfo.method->accflags & ACC_STATIC) {
-		obj = &einfo.class->head;
-	}
-	else {
-		FRAMEOBJECT(obj, frame->fp, einfo);
-	}
-
-	/* Handler found - dispatch exception */
-	if (einfo.handler != 0) {
-		unhand(ct)->exceptObj = 0;
-		unhand(ct)->needOnStack = STACK_HIGH;
-		CALL_KAFFE_EXCEPTION(frame->fp, einfo.handler, eobj);
-	}
-
-	/* If method found and synchronised, unlock the lock */
-	if (obj != 0 && (meth->accflags & ACC_SYNCHRONISED) != 0) {
-		locks_internal_slowUnlockMutexIfHeld(&obj->lock, (void*)frame->fp, 0);
-	}
-
-	/* If method found and profiler enable, fix self+children time */
-#if defined(KAFFE_PROFILER)
-	if (profFlag && meth) {
-		profiler_click_t end;
-		profiler_get_clicks(end);
-		meth->totalClicks += end;
-	}
-#endif
-	return (meth);
-}
-#endif /* defined(TRANSLATOR) */
-
-static
-void
-dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
-{
-	Hjava_lang_Thread* ct;
+	Hjava_lang_Thread*	ct;
+	VmExceptHandler*	lastJniFrame;
+	stackTraceInfo*		frame;
 
 #if defined(INTS_DISABLED)
 	/*
@@ -404,71 +298,88 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 
 #if defined (HAVE_GCJ_SUPPORT)
 	/* XXX */
-	_Jv_Throw(eobj);
-	/* no return */
+	_Jv_Throw(eobj); /* no return */
 #endif
-
+  
 	/* Search down exception stack for a match */
-DBG(ELOOKUP,
-	dprintf ("dispatchException(): %s\n", ((Hjava_lang_Object*)eobj)->dtable->class->name->data);)
+	DBG(ELOOKUP,
+	    dprintf ("dispatchException(): %s\n", ((Hjava_lang_Object*)eobj)->dtable->class->name->data);)
 
-#if defined(INTERPRETER)
-	{
-		Hjava_lang_Object* obj;
-		exceptionInfo einfo;
-		VmExceptHandler* frame;
-		bool res;
+	/*
+	 * find the last jni frame
+	 * (there is _always_ a jni frame somewhere on the stack,
+	 *  except during initialiseKaffe() )
+	 */
+	for (lastJniFrame = (VmExceptHandler *)unhand(ct)->exceptPtr;
+	     lastJniFrame && !vmExcept_isJNIFrame(lastJniFrame);
+	     lastJniFrame = lastJniFrame->prev);
 
-		for (frame = (VmExceptHandler*)unhand(ct)->exceptPtr; frame != 0; frame = frame->prev) {
+	/*
+	 * now walk up the stack 
+	 */
+	for (frame = baseFrame; frame->meth != ENDOFSTACK; frame++) {
+		bool 			foundHandler;
+		uintp 			handler;
+		Hjava_lang_Object*	obj;
 
-			if (vmExcept_isJNIFrame(frame)) {
-				unhand(ct)->exceptPtr = (struct Hkaffe_util_Ptr*)frame;
-				vmExcept_jumpToHandler(frame); /* Does not return */
-			}
-
-			/* Look for handler */
-			res = findExceptionBlockInMethod(frame->frame.intrp.pc,
-							 eobj->base.dtable->class,
-							 frame->meth,
-							 &einfo);
-
-			/* Find the sync. object */
-			if (einfo.method == 0 || (einfo.method->accflags & ACC_SYNCHRONISED) == 0) {
-				obj = 0;
-			}
-			else if (einfo.method->accflags & ACC_STATIC) {
-				obj = &einfo.class->head;
-			}
-			else {
-				obj = vmExcept_getSyncobj(frame);
-			}
-
-			/* If handler found, call it */
-			if (res == true) {
-				unhand(ct)->needOnStack = STACK_HIGH;
-				vmExcept_setPC(frame, einfo.handler);
-				vmExcept_jumpToHandler(frame); /* Does not return */
-			}
-
-			/* If not here, exit monitor if synchronised. */
-			if (obj != 0 && (einfo.method->accflags & ACC_SYNCHRONISED) != 0) {
-				locks_internal_slowUnlockMutexIfHeld(&obj->lock, frame->jbuf, 0);
-			}
+		/*
+		 * if we reach the last jni frame, we're done
+		 */
+		if (lastJniFrame && vmExcept_JNIContains(lastJniFrame, frame->fp)) {
+			unhand(ct)->exceptPtr = (struct Hkaffe_util_Ptr *)lastJniFrame;
+			vmExcept_jumpToHandler(lastJniFrame); /* doesn't return */
 		}
-	}
-#elif defined(TRANSLATOR)
-	{
-		stackTraceInfo* frame;
 
-		assert (baseframe != NULL);
-
-		for (frame = baseframe; frame->meth != ENDOFSTACK; frame++) {
-			unwindStackFrame(frame, eobj);
+		/*
+		 * if we could not determine the java method of this stack frame,
+		 * simply ignore that frame
+		 */
+		if (frame->meth == 0) {
+			continue;
 		}
+
+		/*
+		 * check whether that method contains a suitable handler
+		 */
+		foundHandler = findExceptionBlockInMethod(frame->pc,
+							  eobj->base.dtable->class,
+							  frame->meth,
+							  &handler);
+
+		/* Find the sync. object */
+		if ((frame->meth->accflags & ACC_SYNCHRONISED)==0) {
+			obj = 0;
+		} else if (frame->meth->accflags & ACC_STATIC) {
+			obj = &frame->meth->class->head;
+		} else {
+			FRAMEOBJECT(obj, frame->fp, frame->meth);
+		}
+
+		/* If handler found, call it */
+		if (foundHandler) {
+			unhand(ct)->needOnStack = STACK_HIGH;
+			DISPATCH_EXCEPTION(frame->fp, handler, eobj); /* doesn't return */
+		}
+
+		/* If not here, exit monitor if synchronised. */
+		if (frame->meth->accflags & ACC_SYNCHRONISED) {
+			locks_internal_slowUnlockMutexIfHeld(&obj->lock, (void *)frame->fp, 0);
+		}	    
+
+		/* If method found and profiler enable, fix self+children time */
+#if defined(TRANSLATOR) && defined(KAFFE_PROFILER)
+		if (profFlag) {
+			profiler_click_t end;
+			profiler_get_clicks(end);
+			frame->meth->totalClicks += end;
+		}
+#endif    
 	}
-#endif
-	unhandledException(eobj);
-	/* Should not return */
+
+	/*
+	 * we did not find a handler...
+	 */
+	unhandledException (eobj);
 }
 
 void
@@ -558,29 +469,6 @@ floatingException(struct _exceptionFrame *frame)
 	dispatchException(ae, (stackTraceInfo*)unhand(ae)->backtrace);
 }
 
-#if defined(TRANSLATOR)
-/*
- * Find exception in method.
- */
-static Method *
-findExceptionInMethod(uintp pc, Hjava_lang_Class* class, exceptionInfo* info)
-{
-	Method* ptr;
-
-	info->handler = 0;
-	info->class = 0;
-	info->method = 0;
-
-	ptr = findMethodFromPC(pc);
-	if (ptr != 0) {
-		if (findExceptionBlockInMethod(pc, class, ptr, info) == true) {
-			return ptr;
-		}
-	}
-	return ptr;
-}
-#endif
-
 /*
  * Look for exception block in method.
  * Returns true if there is an exception handler, false otherwise.
@@ -589,19 +477,13 @@ findExceptionInMethod(uintp pc, Hjava_lang_Class* class, exceptionInfo* info)
  * the current frame (the 'throw' or from a nested method call).
  */
 static bool
-findExceptionBlockInMethod(uintp pc, Hjava_lang_Class* class, Method* ptr, exceptionInfo* info)
+findExceptionBlockInMethod(uintp pc, Hjava_lang_Class* class, Method* ptr, uintp* handler)
 {
 	jexceptionEntry* eptr;
 	Hjava_lang_Class* cptr;
 	int i;
 
-	assert(class);
-	assert(ptr);
-	assert(info);
-
-	/* Stash method & class */
-	info->method = ptr;
-	info->class = ptr->class;
+	assert(handler);
 
 	eptr = &ptr->exception_table->entry[0];
 
@@ -630,7 +512,7 @@ DBG(ELOOKUP,	dprintf("  Handler %d covers %#lx-%#lx\n", i,
 
 		/* Found exception - is it right type */
 		if (eptr[i].catch_idx == 0) {
-			info->handler = handler_pc;
+			*handler = handler_pc;
 DBG(ELOOKUP,		dprintf("  Found handler @ %#lx: catches all exceptions.\n", 
 				(long) handler_pc); )
 			return (true);
@@ -670,7 +552,7 @@ DBG(ELOOKUP|DBG_RESERROR,
                         if (cptr == eptr[i].catch_type) {
 DBG(ELOOKUP,	dprintf("  Found matching handler at %#lx: Handles %s.\n",
 			(long) handler_pc, CLASS_CNAME(eptr[i].catch_type)); )
-                                info->handler = handler_pc;
+                                *handler = handler_pc;
                                 return (true);
                         }
                 }

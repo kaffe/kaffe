@@ -35,7 +35,8 @@ EXTRA_DIST = \
 	machine.h \
 	registers.h \
 	seq.h \
-	slots.h
+	slots.h \
+	stackTrace-impl.h
 
 DISTCLEANFILES = icode.h jit.def trampolines.c
 

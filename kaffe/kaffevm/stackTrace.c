@@ -33,6 +33,8 @@
 #include "stackTrace.h"
 #include "support.h"
 
+static Method*
+stacktraceFindMethod (uintp fp, uintp pc);
 
 Hjava_lang_Object*
 buildStackTrace(struct _exceptionFrame* base)
@@ -47,9 +49,8 @@ buildStackTrace(struct _exceptionFrame* base)
 	    dprintf("STACKTRACEINIT(trace, %p, %p, orig);\n", base, base); );
 	STACKTRACEINIT(trace, base, base, orig);
 	cnt = 0;
-	while(!STACKTRACEEND(trace)) {
-		if (!STACKTRACESKIP(trace))
-		    cnt++;
+	while(STACKTRACEFRAME(trace) && jthread_on_current_stack ((void *)STACKTRACEFP(trace))) {
+		cnt++;
 		STACKTRACESTEP(trace);
 	}
 
@@ -67,13 +68,12 @@ buildStackTrace(struct _exceptionFrame* base)
 	    dprintf("STACKTRACEINIT(trace, &orig, %p, orig);\n", base); );
 	STACKTRACEINIT(trace, &orig, base, orig);
 
-	for(; !STACKTRACEEND(trace); STACKTRACESTEP(trace)) {
-		if (STACKTRACESKIP(trace))
-			continue;
+	while (STACKTRACEFRAME(trace) && jthread_on_current_stack ((void *)STACKTRACEFP(trace))) {
 		info[cnt].pc = STACKTRACEPC(trace);
 		info[cnt].fp = STACKTRACEFP(trace);
-		info[cnt].meth = STACKTRACEMETHCREATE(trace);
+		info[cnt].meth = stacktraceFindMethod (info[cnt].fp, info[cnt].pc);
 		cnt++;
+		STACKTRACESTEP(trace);
 	}
 	info[cnt].pc = 0;
 	info[cnt].meth = ENDOFSTACK;
@@ -88,18 +88,23 @@ buildStackTrace(struct _exceptionFrame* base)
  * We make these exported functions because we use them in classMethod.c
  */
 #if defined(TRANSLATOR)
-Method*
-stacktraceFindMethod(stackTraceInfo *info)
+static Method*
+stacktraceFindMethod(uintp fp, uintp pc)
 {
-	return (findMethodFromPC(info->pc));
+	void *pc_base = GC_getObjectBase(main_collector, (void *)pc);
+
+	if (pc_base) {
+		return *(Method **)pc_base;
+	}
+	return 0;
 }
 
 #elif defined(INTERPRETER)
 
-Method*
-stacktraceFindMethod(stackTraceInfo *info)
+static Method*
+stacktraceFindMethod(uintp fp, uintp pc)
 {
-	return (info->meth);
+	return (vmExcept_isJNIFrame ((VmExceptHandler *)fp)?0:((VmExceptHandler *)fp)->meth);
 }
 #endif
 
@@ -127,7 +132,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 	}
 	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
 		pc = info[i].pc;
-		meth = stacktraceFindMethod(&info[i]);
+		meth = info[i].meth; 
 		if (meth != 0) {
 			linepc = 0;
 			linenr = -1;

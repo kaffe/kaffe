@@ -3397,8 +3397,8 @@ softcall_nosuchmethod(Hjava_lang_Class* cls, Utf8Const* name, Utf8Const* sig)
 {
 	sync_registers();
 	prepare_function_call();
-	pusharg_utf8_const(sig, 0);
-	pusharg_utf8_const(name, 0);
+	pusharg_utf8_const(sig, 2);
+	pusharg_utf8_const(name, 1);
 	pusharg_class_const(cls, 0);
 	call_soft(soft_nosuchmethod);
 	popargs();
@@ -3415,6 +3415,18 @@ softcall_nosuchfield(Utf8Const* cls, Utf8Const* name)
 	call_soft(soft_nosuchfield);
 	popargs();
 	fixup_function_call();
+}
+
+void
+softcall_incompatibleclasschange(Utf8Const* cls, Utf8Const* name)
+{
+        sync_registers();
+        prepare_function_call();
+        pusharg_utf8_const(name, 1);
+        pusharg_utf8_const(cls, 0);
+        call_soft(soft_incompatibleclasschange);
+        popargs();
+        fixup_function_call();
 }
 
 void

@@ -298,6 +298,7 @@
 #define	softcall_checkarraystore(a, o)		soft_checkarraystore((a)[0].v.taddr, (o)[0].v.taddr)
 #define	softcall_addreference(f, t)		soft_addreference((f)[0].v.taddr, (t)[0].v.taddr)
 #define	softcall_addreference_static(f, t)	soft_addreference((f), (t)[0].v.taddr)
+#define softcall_incompatibleclasschange(a,b)	soft_incompatibleclasschange(a,b)
 
 #define	adjustpc(a)				/* Not needed for interpreter */
 

@@ -20,6 +20,8 @@
  * Written by Godmar Back <gback@cs.utah.edu>
  */
 
+#if 0
+
 #include "config.h"
 #include "debug.h"
 #include "config-std.h"
@@ -79,7 +81,7 @@ findMethodFromPC(uintp pc)
 				return (entry->meth);
 			}
 		}
-
+		
 		/* not found */
 		return (0);
         }
@@ -230,3 +232,4 @@ dumpMethodCacheStats(void)
 }
 #endif	/* defined(DUMPMETHODCACHESTATS) */
 
+#endif

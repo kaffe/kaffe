@@ -122,9 +122,6 @@ DBG(CLASSGC,
 									  ncode,
 									  m->c.ncode.ncode_end);
 #endif
-#if defined(JIT3)
-					makeMethodInactive(m);
-#endif
 #if defined(ENABLE_JVMPI)
 					if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_COMPILED_METHOD_UNLOAD)  )
 					{

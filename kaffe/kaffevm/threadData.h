@@ -3,8 +3,7 @@
 #define __thread_data_h
 
 #include "jni.h"
-#include "jit-md.h"
-#include "md.h"
+#include "stackTrace-impl.h"
 
 /*
  * Structure that defines any per-thread data needed by kaffe.

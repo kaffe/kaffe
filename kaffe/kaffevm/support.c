@@ -55,8 +55,6 @@ static nativeFunction null_funcs[1];
 nativeFunction* native_funcs = null_funcs;
 #endif
 
-extern struct JNIEnv_ Kaffe_JNIEnv;
-
 #ifdef HAVE_LIBFFI
 #include <ffi.h>
 static inline ffi_type *j2ffi(char type)
@@ -465,7 +463,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 	if (meth->accflags & ACC_JNI) {
 		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 		call.calltype[i] = 'L';
-		in[i].l = (void*)&Kaffe_JNIEnv;
+		in[i].l = THREAD_JNIENV(); 
 		s += call.callsize[i];
 		i++;
 
@@ -704,7 +702,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	if (meth->accflags & ACC_JNI) {
 		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 		call.calltype[i] = 'L';
-		in[i].l = (void*)&Kaffe_JNIEnv;
+		in[i].l = THREAD_JNIENV(); 
 		s += call.callsize[i];
 		i++;
 

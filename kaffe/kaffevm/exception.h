@@ -30,13 +30,11 @@
 #define SIG_T   void*
 #endif
 
-struct _exceptionFrame;
 struct Hjava_lang_Class;
 struct Hjava_lang_Object;
 struct Hjava_lang_Throwable;
 struct _methods;
 struct _errorInfo;
-struct _stackTraceInfo;
 
 #define UNRESOLVABLE_CATCHTYPE	((Hjava_lang_Class*)-1)
 
@@ -74,13 +72,13 @@ typedef struct VmExceptHandler {
 	{
 		/*
 		 * Only valid if meth == VMEXCEPTHANDLER_KAFFEJNI_HANDLER 
-		 * Only used in JIT:
+		 * Used to keep track of jni method invocations.
 		 */
 		struct
 		{
 			/* Frame address for JNI entry function. */
 			uintp	        		fp;
-		} jit;
+		} jni;
 		/*
 		 * The intrp bits are only valid if meth != 0 && meth
 		 * != VMEXCEPTHANDLER_KAFFEJNI_HANDLER
@@ -89,7 +87,7 @@ typedef struct VmExceptHandler {
 		struct
 		{
 			struct Hjava_lang_Object*	syncobj;
-	u4				pc;
+		  u4				pc;
 		} intrp;
 	} frame;
 	JTHREAD_JMPBUF		jbuf;
@@ -97,29 +95,21 @@ typedef struct VmExceptHandler {
 
 #define VMEXCEPTHANDLER_KAFFEJNI_HANDLER ((struct _methods*)1)
 
-struct _exceptionFrame;
-
 void throwException(struct Hjava_lang_Throwable*) __NORETURN__;
 void throwExternalException(struct Hjava_lang_Throwable*) __NORETURN__;
 struct Hjava_lang_Throwable* error2Throwable(struct _errorInfo* einfo);
-void* nextFrame(void*);
 
-struct Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
-struct _methods* unwindStackFrame(struct _stackTraceInfo* frame, 
-				  struct Hjava_lang_Throwable *eobj);
 void unhandledException(struct Hjava_lang_Throwable *eobj) __NORETURN__;
 
 extern void initExceptions(void);
 
 static inline bool vmExcept_isJNIFrame(VmExceptHandler* eh) __UNUSED__;
-#if defined(TRANSLATOR)
 static inline bool vmExcept_JNIContains(VmExceptHandler* eh, uintp pc) __UNUSED__;
-#endif
 static inline void vmExcept_setJNIFrame(VmExceptHandler* eh, uintp fp) __UNUSED__;
 static inline struct _methods* vmExcept_getMeth(VmExceptHandler* eh) __UNUSED__;
 static inline void vmExcept_setMeth(VmExceptHandler* eh, struct _methods* m) __UNUSED__;
-static inline void vmExcept_setSyncobj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj) __UNUSED__;
-static inline struct Hjava_lang_Object* vmExcept_getSyncobj(VmExceptHandler* eh) __UNUSED__;
+static inline void vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj) __UNUSED__;
+static inline struct Hjava_lang_Object* vmExcept_getSyncObj(VmExceptHandler* eh) __UNUSED__;
 static inline void vmExcept_setPC(volatile VmExceptHandler* eh, u4 pc) __UNUSED__;
 static inline u4 vmExcept_getPC(const VmExceptHandler* eh) __UNUSED__;
 static inline void vmExcept_jumpToHandler(VmExceptHandler* frame) __UNUSED__ __NORETURN__;
@@ -131,7 +121,6 @@ vmExcept_isJNIFrame(VmExceptHandler* eh)
 	return (eh->meth == VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
 }
 
-#if defined(TRANSLATOR)
 static inline bool
 vmExcept_JNIContains(VmExceptHandler* eh, uintp fp)
 {
@@ -139,9 +128,8 @@ vmExcept_JNIContains(VmExceptHandler* eh, uintp fp)
 	assert(eh->meth == VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
 	assert(fp);
 
-	return (eh->frame.jit.fp == fp);
+	return (eh->frame.jni.fp == fp);
 }
-#endif
 
 static inline void 
 vmExcept_setJNIFrame(VmExceptHandler* eh, uintp fp)
@@ -150,7 +138,7 @@ vmExcept_setJNIFrame(VmExceptHandler* eh, uintp fp)
 	assert(fp != 0);
 
 	eh->meth = VMEXCEPTHANDLER_KAFFEJNI_HANDLER;
-	eh->frame.jit.fp = fp;
+	eh->frame.jni.fp = fp;
 }
 
 static inline void
@@ -173,7 +161,7 @@ vmExcept_setIntrpFrame(VmExceptHandler* eh, u4 pc, struct _methods* meth, struct
 #endif
 
 static inline void 
-vmExcept_setSyncobj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj)
+vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj)
 {
 	assert(eh);
 	assert(eh->meth != 0);
@@ -182,7 +170,7 @@ vmExcept_setSyncobj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj)
 }
 
 static inline struct Hjava_lang_Object*
-vmExcept_getSyncobj(VmExceptHandler* eh)
+vmExcept_getSyncObj(VmExceptHandler* eh)
 {
 	assert(eh);
 	assert(eh->meth != 0);

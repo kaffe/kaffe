@@ -43,7 +43,6 @@ kaffe_lang_ThreadStack_getClassStack(void)
 
 	cnt = 0;
 	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
-		info[i].meth = stacktraceFindMethod(&info[i]);
 		if (info[i].meth != 0 && info[i].meth->class != 0) {
 			cnt++;
 		}

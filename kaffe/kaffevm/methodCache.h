@@ -12,6 +12,8 @@
  * Written by Godmar Back <gback@cs.utah.edu>
  */
 
+#if 0
+
 #ifndef __kaffevm_methodcache_h
 #define __kaffevm_methodcache_h
 
@@ -22,3 +24,5 @@ extern void walkActiveMethods(void *arg,
 			      void (*walker)(void *arg, Method *meth));
 
 #endif /* __kaffevm_methodcache_h */
+
+#endif

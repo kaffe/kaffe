@@ -116,7 +116,7 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
  * a JNIFrame so the stack trace code can ignore it.
  */
 #define KAFFE_JNI_SETEXCEPTFP(ebufp) {   \
-	vmExcept_setJNIFrame(ebufp, -1); \
+	vmExcept_setJNIFrame(ebufp, (uintp)ebufp); \
         }
 #endif 
 

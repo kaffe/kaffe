@@ -615,10 +615,6 @@ DBG(STATICINIT,
 							  meth->c.ncode.ncode_end);
 		}
 #endif
-#if defined(JIT3)
-		if ((exc == 0) && METHOD_JITTED(meth))
-			makeMethodInactive(meth);
-#endif
 #endif
 		if (
 #if defined(JIT3)

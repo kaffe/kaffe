@@ -11,65 +11,16 @@
 #ifndef __stacktrace_h
 #define __stacktrace_h
 
-#include "exception.h"
-#include "md.h"
-
-/*
- * STACKTRACEMETHCREATE is a pointer to a method object that is stored when 
- * the stack trace is built.  This value is easily available in the interpreter.
- *
- * In the jitter, however, it is found using findMethodFromPC, which is
- * expensive.  That is why there is STACKTRACEMETHPRINT, which will compute
- * the method ptr corresponding to a given pc if and only when the stack trace
- * is in fact printed.  This should speed up constructing stack traces.
- */
-#if defined(INTERPRETER)
-
-typedef struct _stackTrace {
-	VmExceptHandler* frame;
-} stackTrace;
-
-/* Dummy exceptionFrame */
-struct _exceptionFrame {
-	char	dummy;
-};
-
-#define STACKTRACEINIT(S,I,O,R)	((S).frame = (VmExceptHandler*)unhand(getCurrentThread())->exceptPtr)
-#define	STACKTRACESTEP(S)	((S).frame = nextFrame((S).frame))
-#define STACKTRACEPC(S)		(vmExcept_getPC((S).frame))
-#define STACKTRACEFP(S)		(0)
-#define STACKTRACEMETHCREATE(S)	(vmExcept_getMeth((S).frame))
-#define STACKTRACEEND(S)	((S).frame == 0)
-#define STACKTRACESKIP(S)	(vmExcept_isJNIFrame((S).frame))
-
-#elif defined(TRANSLATOR)
-
-typedef struct _stackTrace {
-	struct _exceptionFrame	nframe;
-	struct _exceptionFrame* frame;
-} stackTrace;
-
-#define STACKTRACEINIT(S, I, O, R)			\
-	{						\
-		if ((I) == NULL) {			\
-			FIRSTFRAME((S).nframe, O);	\
-			(S).frame = &((S).nframe);	\
-		} else {				\
-			(S).frame = (I);		\
-		}					\
-		(R) = *(S).frame;			\
-	}
-#define	STACKTRACESTEP(S)	((S).frame = nextFrame((S).frame))
-#define STACKTRACEPC(S)		(PCFRAME((S).frame))
-#define STACKTRACEFP(S)		(FPFRAME((S).frame))
-#define	STACKTRACEMETHCREATE(S)	(NULL)
-#define	STACKTRACEEND(S)	((S).frame == 0)
-#define STACKTRACESKIP(S)	(0)
-
-#endif
+#include "stackTrace-impl.h"
 
 struct _methods;
 
+/*
+ * A backtrace is modelled as an array of stackTraceInfo structs,
+ * with index 0 being the first function on the stack. It is
+ * terminated by an entry, whose meth field has the special value
+ * ENDOFSTACK.
+ */
 typedef struct _stackTraceInfo {
 	uintp   pc;
 	uintp	fp;
@@ -79,6 +30,5 @@ typedef struct _stackTraceInfo {
 #define ENDOFSTACK	((struct _methods*)-1)
 
 Hjava_lang_Object*	buildStackTrace(struct _exceptionFrame*);
-Method*			stacktraceFindMethod(stackTraceInfo *);
 
 #endif

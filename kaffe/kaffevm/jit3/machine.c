@@ -532,7 +532,6 @@ void
 installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 {
 	uint32 i;
-	bool res;
 	jexceptionEntry* e;
 	void *tramp;
 
@@ -692,9 +691,7 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 #if defined(KAFFE_XPROFILER) || defined(KAFFE_XDEBUGGING)
 	deleteMangledMethod(mm);
 #endif
-	res = makeMethodActive(meth);
-	assert(res == true);
-
+	
 	/* record framesize for gcj unwinding information */
 #if defined(LABEL_Lframe)
 	LABEL_Lframe(&meth->framesize, /* unused */ 0, /* unused */ 0);
@@ -737,6 +734,12 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz, errorInfo
 		return (false);
 	}
 	CODEPC = 0;
+
+	/*
+	 * add the method as the first entry to the constant pool to speed up
+	 * finding a method for a given pc.
+	 */
+	newConstant(CPref, meth);
 	
 	return (true);
 }

@@ -21,4 +21,5 @@ EXTRA_DIST = \
 	checks.h \
 	icode.h \
 	machine.h \
-	slots.h
+	slots.h \
+	stackTrace-impl.h

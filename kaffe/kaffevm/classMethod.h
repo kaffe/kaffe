@@ -501,7 +501,6 @@ parsed_signature_t*	parseSignature(Utf8Const *, errorInfo*);
 
 int			startFields(Hjava_lang_Class*, u2 fieldct, errorInfo*);
 void			finishFields(Hjava_lang_Class*);
-Method*			findMethodFromPC(uintp);
 
 void			destroyClassLoader(Collector *, void *);
 struct Hjava_lang_String* resolveString(Hjava_lang_Class* clazz, int idx,

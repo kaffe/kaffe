@@ -117,6 +117,7 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader,
 	return (entry);
 }
 
+#if 0
 #if defined(TRANSLATOR) && !defined(JIT3)
 /*
  * Find method containing pc.
@@ -161,6 +162,7 @@ findMethodFromPC(uintp pc)
 	}
 	return (NULL);
 }
+#endif
 #endif
 
 void
