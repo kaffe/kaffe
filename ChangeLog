@@ -1,3 +1,29 @@
+2004-07-25  Helmer Krämer <hkraemer@freenet.de>
+
+	* include/Makefile.am
+	(NOINSTALL_JNI_DERIVED_HDRS): Removed libxmlj's and awt's
+	headers. Removed duplicates of tritonus' headers.
+	(LIBGTKPEER_JNI_HDRS): Added AWT headers to be generated
+	after rt.jar build.
+	(LIBXMLJ_JNI_HDRS): Updated with new libxml's headers.
+	(stamp-libgtkpeer): New target to build the gtkpeer's headers
+	after rt.jar build.
+
+	* libraries/clib/Makefile.am
+	(SUBDIRS): Removed awt and libxmlj
+	
+	* libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.am:
+	(libgtkpeer_headers): Invoke include's Makefile to build
+	the JNI headers.
+	
+	* libraries/javalib/bootstrap.classlist: 
+	Removed all AWT and xmlj classes.
+
+	* include/Makefile.in, libraries/clib/Makefile.in,
+	libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.in,
+	libraries/javalib/Klasses.jar.bootstrap:
+	Regenerated.
+	
 2004-07-25  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* java/awt/image/ByteLookupTable.java,

@@ -1572,6 +1572,11 @@ uninstall-am: uninstall-info-am uninstall-nativeLTLIBRARIES
 	tags uninstall uninstall-am uninstall-info-am \
 	uninstall-nativeLTLIBRARIES
 
+
+$(libgtkpeer_la_SOURCES): libgtkpeer_headers
+.PHONY:libgtkpeer_headers
+libgtkpeer_headers:
+	@$(MAKE) -C $(top_builddir)/include libgtkpeer_headers
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

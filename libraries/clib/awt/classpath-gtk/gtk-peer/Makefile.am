@@ -41,3 +41,8 @@ libgtkpeer_la_SOURCES = \
 libgtkpeer_la_CPPFLAGS = $(AM_CPPFLAGS) @GTK_CFLAGS@ -I$(top_srcdir)/libraries/clib/awt/classpath-gtk/classpath/ -I$(top_builddir)/include/
 libgtkpeer_la_LIBADD = $(top_builddir)/libraries/clib/awt/classpath-gtk/classpath/native_state.lo
 libgtkpeer_la_LDFLAGS = @CLASSPATH_MODULE@ @GTK_LIBS@
+
+$(libgtkpeer_la_SOURCES): libgtkpeer_headers
+.PHONY:libgtkpeer_headers
+libgtkpeer_headers:
+	@$(MAKE) -C $(top_builddir)/include libgtkpeer_headers

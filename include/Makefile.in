@@ -431,54 +431,6 @@ NOINSTALL_DERIVED_HDRS = \
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 INSTALL_JNI_DERIVED_HDRS = 
 NOINSTALL_JNI_DERIVED_HDRS = \
-	gnu_java_awt_peer_gtk_GdkFontMetrics.h \
-	gnu_java_awt_peer_gtk_GdkGraphics.h \
-	gnu_java_awt_peer_gtk_GdkPixbufDecoder.h \
-	gnu_java_awt_peer_gtk_GtkButtonPeer.h \
-	gnu_java_awt_peer_gtk_GtkCanvasPeer.h \
-	gnu_java_awt_peer_gtk_GtkCheckboxGroupPeer.h \
-	gnu_java_awt_peer_gtk_GtkCheckboxMenuItemPeer.h \
-	gnu_java_awt_peer_gtk_GtkCheckboxPeer.h \
-	gnu_java_awt_peer_gtk_GtkChoicePeer.h \
-	gnu_java_awt_peer_gtk_GtkClipboard.h \
-	gnu_java_awt_peer_gtk_GtkComponentPeer.h \
-	gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.h \
-	gnu_java_awt_peer_gtk_GtkFileDialogPeer.h \
-	gnu_java_awt_peer_gtk_GtkFramePeer.h \
-	gnu_java_awt_peer_gtk_GtkGenericPeer.h \
-	gnu_java_awt_peer_gtk_GtkImagePainter.h \
-	gnu_java_awt_peer_gtk_GtkLabelPeer.h \
-	gnu_java_awt_peer_gtk_GtkListPeer.h \
-	gnu_java_awt_peer_gtk_GtkMainThread.h \
-	gnu_java_awt_peer_gtk_GtkMenuBarPeer.h \
-	gnu_java_awt_peer_gtk_GtkMenuComponentPeer.h \
-	gnu_java_awt_peer_gtk_GtkMenuItemPeer.h \
-	gnu_java_awt_peer_gtk_GtkMenuPeer.h \
-	gnu_java_awt_peer_gtk_GtkPanelPeer.h \
-	gnu_java_awt_peer_gtk_GtkPopupMenuPeer.h \
-	gnu_java_awt_peer_gtk_GtkScrollbarPeer.h \
-	gnu_java_awt_peer_gtk_GtkScrollPanePeer.h \
-	gnu_java_awt_peer_gtk_GtkTextAreaPeer.h \
-	gnu_java_awt_peer_gtk_GtkTextComponentPeer.h \
-	gnu_java_awt_peer_gtk_GtkTextFieldPeer.h \
-	gnu_java_awt_peer_gtk_GtkToolkit.h \
-	gnu_java_awt_peer_gtk_GtkWindowPeer.h \
-	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h \
-	gnu_xml_libxmlj_dom_GnomeAttr.h \
-	gnu_xml_libxmlj_dom_GnomeDocument.h \
-	gnu_xml_libxmlj_dom_GnomeDocumentBuilder.h \
-	gnu_xml_libxmlj_dom_GnomeDocumentType.h	\
-	gnu_xml_libxmlj_dom_GnomeElement.h \
-	gnu_xml_libxmlj_dom_GnomeEntity.h \
-	gnu_xml_libxmlj_dom_GnomeNamedNodeMap.h \
-	gnu_xml_libxmlj_dom_GnomeNode.h \
-	gnu_xml_libxmlj_dom_GnomeNodeList.h \
-	gnu_xml_libxmlj_dom_GnomeProcessingInstruction.h \
-	gnu_xml_libxmlj_dom_MatchingNodeList.h \
-	gnu_xml_libxmlj_sax_GnomeLocator.h \
-	gnu_xml_libxmlj_sax_GnomeXMLReader.h \
-	gnu_xml_libxmlj_transform_LibxsltStylesheet.h \
-	gnu_xml_libxmlj_transform_JavaContext.h \
 	java_math_BigInteger.h \
 	gnu_java_nio_channels_FileChannelImpl.h \
 	gnu_java_nio_NIOServerSocket.h \
@@ -526,10 +478,6 @@ LIBTRITONUSESD_JNI_HDRS = \
 	org_tritonus_lowlevel_esd_Esd.h \
 	org_tritonus_lowlevel_esd_EsdRecordingStream.h \
 	org_tritonus_lowlevel_esd_EsdSample.h \
-	org_tritonus_lowlevel_esd_EsdStream.h \
-	org_tritonus_lowlevel_esd_Esd.h \
-	org_tritonus_lowlevel_esd_EsdRecordingStream.h \
-	org_tritonus_lowlevel_esd_EsdSample.h \
 	org_tritonus_lowlevel_esd_EsdStream.h
 
 LIBXMLJ_JNI_HDRS = \
@@ -547,9 +495,42 @@ LIBXMLJ_JNI_HDRS = \
 	gnu_xml_libxmlj_sax_GnomeLocator.h \
 	gnu_xml_libxmlj_sax_GnomeXMLReader.h \
 	gnu_xml_libxmlj_transform_LibxsltStylesheet.h \
-	gnu_xml_libxmlj_transform_TransformerFactoryImpl.h \
-	gnu_xml_libxmlj_transform_JavaContext.h \
-	gnu_xml_libxmlj_transform_LibxmlDocument.h
+	gnu_xml_libxmlj_transform_JavaContext.h
+
+LIBGTKPEER_JNI_HDRS = \
+	gnu_java_awt_peer_gtk_GdkFontMetrics.h \
+	gnu_java_awt_peer_gtk_GdkGraphics.h \
+	gnu_java_awt_peer_gtk_GdkPixbufDecoder.h \
+	gnu_java_awt_peer_gtk_GtkButtonPeer.h \
+	gnu_java_awt_peer_gtk_GtkCanvasPeer.h \
+	gnu_java_awt_peer_gtk_GtkCheckboxGroupPeer.h \
+	gnu_java_awt_peer_gtk_GtkCheckboxMenuItemPeer.h \
+	gnu_java_awt_peer_gtk_GtkCheckboxPeer.h \
+	gnu_java_awt_peer_gtk_GtkChoicePeer.h \
+	gnu_java_awt_peer_gtk_GtkClipboard.h \
+	gnu_java_awt_peer_gtk_GtkComponentPeer.h \
+	gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.h \
+	gnu_java_awt_peer_gtk_GtkFileDialogPeer.h \
+	gnu_java_awt_peer_gtk_GtkFramePeer.h \
+	gnu_java_awt_peer_gtk_GtkGenericPeer.h \
+	gnu_java_awt_peer_gtk_GtkImagePainter.h \
+	gnu_java_awt_peer_gtk_GtkLabelPeer.h \
+	gnu_java_awt_peer_gtk_GtkListPeer.h \
+	gnu_java_awt_peer_gtk_GtkMainThread.h \
+	gnu_java_awt_peer_gtk_GtkMenuBarPeer.h \
+	gnu_java_awt_peer_gtk_GtkMenuComponentPeer.h \
+	gnu_java_awt_peer_gtk_GtkMenuItemPeer.h \
+	gnu_java_awt_peer_gtk_GtkMenuPeer.h \
+	gnu_java_awt_peer_gtk_GtkPanelPeer.h \
+	gnu_java_awt_peer_gtk_GtkPopupMenuPeer.h \
+	gnu_java_awt_peer_gtk_GtkScrollbarPeer.h \
+	gnu_java_awt_peer_gtk_GtkScrollPanePeer.h \
+	gnu_java_awt_peer_gtk_GtkTextAreaPeer.h \
+	gnu_java_awt_peer_gtk_GtkTextComponentPeer.h \
+	gnu_java_awt_peer_gtk_GtkTextFieldPeer.h \
+	gnu_java_awt_peer_gtk_GtkToolkit.h \
+	gnu_java_awt_peer_gtk_GtkWindowPeer.h \
+	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h
 
 @USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
 @USE_COMPAT_IFADDRS_TRUE@ifaddrs_compat = ifaddrs.h
@@ -609,7 +590,8 @@ DISTCLEANFILES = \
 	stamp-h1all \
 	stamp-libtritonusalsa \
 	stamp-libtritonusesd \
-	stamp-libxmlj
+	stamp-libxmlj \
+	stamp-libgtkpeer
 
 all: all-am
 
@@ -921,7 +903,6 @@ rebuild-jni-hdrs: stamp-kaffeh $(KLASSES_JAR)
 	    rm -f $$f; mv stamp-h1$$f $$f; \
 	  fi; \
 	done
-	@echo timestamp > $@
 
 #
 # jni headers of the core libraries
@@ -933,39 +914,67 @@ $(JNI_DERIVED_HDRS): stamp-h1all
 
 stamp-h1all: HDRS = $(JNI_DERIVED_HDRS)
 stamp-h1all: rebuild-jni-hdrs
+	@echo timestamp > $@
 
 #
 # header files for alsa backend of tritonus
 #
-libtritonusalsa_headers: stamp-libtritonusalsa
+.PHONY:libtritonusalsa_headers
+libtritonusalsa_headers: $(LIBTRITONUSALSA_JNI_HDRS)
+
+$(LIBTRITONUSALSA_JNI_HDRS): stamp-libtritonusalsa
 	@if test -f $@; then :; else \
-	  rm -f stamp-libtritonusalsa; $(MAKE) JNI_DERIVED_HDRS=$@ stamp-libtritonusalsa; \
+	  rm -f stamp-libtritonusalsa; $(MAKE) stamp-libtritonusalsa; \
 	fi
 
 stamp-libtritonusalsa: HDRS = $(LIBTRITONUSALSA_JNI_HDRS)
 stamp-libtritonusalsa: rebuild-jni-hdrs
+	@echo timestamp > $@
 
 #
 # header files for esd backend of tritonus
 #
-libtritonusesd_headers: stamp-libtritonusesd
+.PHONY:libtritonusesd_headers
+libtritonusesd_headers: $(LIBTRITONUSESD_JNI_HDRS)
+
+$(LIBTRITONUSESD_JNI_HDRS): stamp-libtritonusesd
 	@if test -f $@; then :; else \
-	  rm -f stamp-libtritonusesd; $(MAKE) JNI_DERIVED_HDRS=$@ stamp-libtritonusesd; \
+	  rm -f stamp-libtritonusesd; $(MAKE) stamp-libtritonusesd; \
 	fi
 
 stamp-libtritonusesd: HDRS = $(LIBTRITONUSESD_JNI_HDRS)
 stamp-libtritonusesd: rebuild-jni-hdrs
+	@echo timestamp > $@
 
 #
 # header files for libxmlj
 #
-libxmlj_headers: stamp-libxmlj
+.PHONY:libxmlj_headers
+libxmlj_headers: $(LIBXMLJ_JNI_HDRS)
+
+$(LIBXMLJ_JNI_HDRS): stamp-libxmlj
 	@if test -f $@; then :; else \
-	  rm -f stamp-libxmlj; $(MAKE) JNI_DERIVED_HDRS=$@ stamp-libxmlj; \
+	  rm -f stamp-libxmlj; $(MAKE) stamp-libxmlj; \
 	fi
 
 stamp-libxmlj: HDRS = $(LIBXMLJ_JNI_HDRS)
 stamp-libxmlj: rebuild-jni-hdrs
+	@echo timestamp > $@
+
+#
+# header files for classpath's gtk awt backend
+#
+.PHONY:libgtkpeer_headers
+libgtkpeer_headers: $(LIBGTKPEER_JNI_HDRS)
+
+$(LIBGTKPEER_JNI_HDRS): stamp-libgtkpeer
+	@if test -f $@; then :; else \
+	  rm -f stamp-libgtkpeer; $(MAKE) stamp-libgtkpeer; \
+	fi
+
+stamp-libgtkpeer: HDRS = $(LIBGTKPEER_JNI_HDRS)
+stamp-libgtkpeer: rebuild-jni-hdrs
+	@echo timestamp > $@
 
 dist-hook:
 	@for file in $(DISTCLEANFILES); do \

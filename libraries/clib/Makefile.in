@@ -336,13 +336,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-@COND_LIBXMLJ_FALSE@MAYBE_LIBXMLJ = 
-
-# Build libxmlj only desired
-@COND_LIBXMLJ_TRUE@MAYBE_LIBXMLJ = libxmlj
-@COND_NATIVE_AWT_FALSE@MAYBE_AWT = 
-@COND_NATIVE_AWT_TRUE@MAYBE_AWT = awt
-SUBDIRS = native io nio net zip math security management $(MAYBE_LIBXMLJ) $(MAYBE_AWT)
+SUBDIRS = native io nio net zip math security management
 DIST_SUBDIRS = native io nio net zip math libxmlj security management awt sound
 all: all-recursive
 
