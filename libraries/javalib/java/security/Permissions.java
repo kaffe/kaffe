@@ -227,9 +227,18 @@ public final class Permissions extends PermissionCollection
      * @param perm the permission to check
      * @return true if it is implied
      */
+    // FIXME: Should this method be synchronized?
     public boolean implies(Permission perm)
     {
-      return perms.get(perm) != null;
+      Enumeration elements = elements();
+      
+      while (elements.hasMoreElements())
+	{
+	  Permission p = (Permission)elements.nextElement();
+	  if (p.implies(perm))
+	    return true;
+	}
+      return false;
     }
 
     /**

@@ -2,6 +2,31 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-02-16  Andrew Haley  <aph@redhat.com>
+
+	* javax/security/auth/Subject.java (doAsPrivileged): If acc is
+	null, create a new AccessControlContext.
+	* java/security/SecureClassLoader.java (protectionDomainCache):
+	new field.
+	(defineClass): Create a new protection domain and add it to our
+	cache.
+
+	* java/rmi/server/UnicastRemoteObject.java (exportObject): Call
+	addStub() to keep track of the stub we've exported.
+	(unexportObject): Call deleteStub().
+	* java/rmi/server/RemoteObject.java (stubs): New field.
+	(addStub): New method.
+	(deleteStub): New method.
+	(toStub): Rewrite.
+	
+	* java/security/Permissions.java (PermissionsHash.implies):
+	Iterate over the collection and invoke implies() on each
+	element.
+	
+2005-02-19  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-02-16  Julian Scheid  <julian@sektor37.de>
 
 	* gnu/java/nio/charset/UTF_8.java (decodeLoop): Set inPos to
