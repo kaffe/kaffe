@@ -1,5 +1,26 @@
 2000-06-16  Edouard G. Parmelan  <egp@free.fr>
 
+	* kaffe/kaffevm/support.c (callMethodA, callMethodV): With INTRP,
+	save native method in vmException list.  This allow correct
+	buildStackTrace() and also correct synchronisation on exceptions.
+
+	* config/i386/jit.h (FIRSTFRAME): use __builtin_frame_address().
+
+	* kaffe/kaffevm/stackTrace.h (STACKTRACESKIP): new macro, is this
+	frame should be skipped (aka JNI marker).
+	(STACKTRACEEND): With INTRP, don't stop stack trace at JNI call.
+
+	* kaffe/kaffevm/stackTrace.c (buildStackTrace): use new macro
+	STACKTRACESKIP.
+
+	* kaffe/kaffevm/exception.c (nextFrame): don't stop on JNI frame.
+
+	* kaffe/kaffevm/jni.c (Kaffe_KNI_wrapper): With JIT3 always create
+	a wrapper, this is due to findMethodFromPC() methods cache lookup.
+
+	* libraries/javalib/java/lang/Class.java (getStackClass): frame
+	delta is 3 as expected.
+
 	* libraries/javalib/kaffe/util/IntegerIntegerHashtable.java:
 	Add serialVersionUID as kjc may add <clinit>() but Jikes don't.
 
@@ -1227,6 +1248,12 @@ Tue Nov  2 12:22:18 MST 1999  Godmar Back  <gback@cs.utah.edu>
 	kaffe.def soft.c intrp/icode.h jit/codeproto.h jit/icode.c
 	jit3/codeproto.h jit3/icode.c jit3/kaffe-jit.def:
 	fix problems with soft{call}_lookupinterfacemethod in intr/jit2/jit3
+
+1999-10-30  Tim Wilkinson <tim@transvirtual.com>
+
+	* libraries/javalib/java/text/NumberFormat.java: Fixed number
+	printing problem (PR#596).  Submitted by Klaus Guntermann
+	<guntermann@iti.informatik.tu-darmstadt.de>
 
 Thu Oct 28 11:16:49 PDT 1999  majiro@distribution.co.jp
 
