@@ -3,3 +3,5 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 exec @bindir@/@kaffe_TRANSF@ sun.tools.javac.Main ${1+"$@"}
+exit $?
+

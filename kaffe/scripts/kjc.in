@@ -2,5 +2,6 @@
 # Script to run kjc Java compiler
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-exec @bindir@/@kaffe_TRANSF@ at.dms.kjc.Main ${1+"$@"}
+exec @bindir@/@kaffe_TRANSF@ $JAVA_OPTS at.dms.kjc.Main ${1+"$@"}
+exit $?
 

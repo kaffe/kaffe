@@ -1,5 +1,32 @@
 2004-05-21  Dalibor Topic  <robilad@kaffe.org>
 
+        kaffe/scripts/appletviewer.in,
+        kaffe/scripts/jar.in,
+        kaffe/scripts/javac.in,
+        kaffe/scripts/javadoc.in,
+        kaffe/scripts/javah.in,
+        kaffe/scripts/javakey.in,
+        kaffe/scripts/javap.in,
+        kaffe/scripts/jdb.in,
+        kaffe/scripts/kjc.in,
+        kaffe/scripts/kopi.in,
+        kaffe/scripts/native2ascii.in,
+        kaffe/scripts/rmic.in,
+        kaffe/scripts/rmiregistry.in,
+        kaffe/scripts/serialver.in,
+        kaffe/scripts/compat/appletviewer.in,
+        kaffe/scripts/compat/java.in,
+        kaffe/scripts/compat/javac.in,
+        kaffe/scripts/compat/javadoc.in:
+	Return exit value of invoked kaffe, so that make scripts 
+	using them bail out on build failure. Added support for
+	JAVA_OPTS environment variable to pass options to kaffe
+	when it's invoked to run java apps.
+
+	Reported by: Michael Koch  <konqueror@gmx.de>
+
+2004-05-21  Dalibor Topic  <robilad@kaffe.org>
+
         * libraries/javalib/java/awt/peer/FontPeer.java,
         libraries/javalib/java/awt/peer/MenuComponentPeer.java:
 	Replaced by implemntations from GNU Classpath.
