@@ -129,3 +129,9 @@ autoconf -Wall
  autoreconf -i -Wall
  touch config-h.in
 ) 	 
+
+(
+  cd kaffe/kaffevm/boehm-gc/boehm
+
+  autoreconf -i -Wall
+)
