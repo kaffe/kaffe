@@ -1,3 +1,17 @@
+Thu Jul 18 11:30:43 CEST 2002 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/util/Calendar.java:
+	(Calendar) removed unnecessary initializations to default
+	values.
+	(clear) use Arrays.fill instead of setting the fields by hand.
+	(clone) use System.arraycopy instead of copying the fields by
+	hand. Clone all properties of a calendar.
+	(get) use internalGet.
+
+	* libraries/javalib/java/util/Vector.java:
+	(removeAllElements, toArray) use Arrays.fill instead of
+	manipulating fields manually.
+
 Wed Jul 17 23:26:19 CEST 2002 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/util/Calendar.java:

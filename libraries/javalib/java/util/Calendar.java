@@ -78,9 +78,6 @@ protected Calendar(TimeZone zne, Locale aLocale)
 {
 	fields = new int[FIELD_COUNT];
 	isSet = new boolean[FIELD_COUNT];
-	time = 0;
-	isTimeSet = false;
-	areFieldsSet = false;
 	lenient = true;
 	firstdayofweek = SUNDAY;
 	mindaysinfirstweek = 1;
@@ -106,10 +103,8 @@ abstract public boolean before(Object when);
 
 final public void clear()
 {
-	for (int i = 0; i < FIELD_COUNT; i++) {
-		fields[i] = 0;
-		isSet[i] = false;
-	}
+	Arrays.fill(fields, 0);
+	Arrays.fill(isSet, false);
 	areFieldsSet = false;
 }
 
@@ -124,13 +119,14 @@ public Object clone()
 {
 	Calendar cal = getInstance(zone, locale);
 
+	System.arraycopy(fields, 0, cal.fields, 0, fields.length);
+	System.arraycopy(isSet, 0, cal.isSet, 0, isSet.length);
 	cal.time = time;
-	for (int i = 0; i < FIELD_COUNT; i++) {
-		cal.fields[i] = fields[i];
-		cal.isSet[i] = isSet[i];
-	}
 	cal.isTimeSet = isTimeSet;
 	cal.areFieldsSet = areFieldsSet;
+	cal.lenient = lenient;
+	cal.firstdayofweek = firstdayofweek;
+	cal.mindaysinfirstweek = mindaysinfirstweek;
 
 	return (cal);
 }
@@ -155,7 +151,7 @@ final public int get(int field)
 {
 	if (!isSet[field])
 		complete();
-	return (fields[field]);
+	return (internalGet(field));
 }
 
 public static synchronized Locale[] getAvailableLocales()

@@ -319,9 +319,7 @@ public synchronized boolean removeAll(Collection c) {
 }
 
 public synchronized void removeAllElements () {
-	for ( int i=elementCount-1; i>= 0; i-- ) {
-		elementData[i] = null;
-	}
+	Arrays.fill(elementData, 0, elementCount, null);
 	elementCount = 0;
 	modCount++;
 }
@@ -387,9 +385,7 @@ public synchronized Object[] toArray( Object anArray[] ) {
 		elementCount);
     }
     copyInto(anArray);
-    for (int i = anArray.length; i-- > elementCount; ) {
-	anArray[i] = null;
-    }
+    Arrays.fill(anArray, elementCount, anArray.length, null);
     return anArray;
 }
 
