@@ -168,11 +168,22 @@ java_lang_Class_newInstance(struct Hjava_lang_Class* this)
 
 /*
  * Return super class.
+ *
+ * Note that the specs demands to return null if the class object is an
+ * interface or the class object representing java.lang.Object.
+ * That is, we're asked to NOT report superinterfaces for interfaces.
+ *
+ * NB: Since the class file (wrongly?) says that ALL interfaces extend 
+ * java.lang.Object, our superclass pointer will ALWAYS point to ObjectClass,
+ * thus the necessity for the extra test.  See also getMethods0.
  */
 struct Hjava_lang_Class*
 java_lang_Class_getSuperclass(struct Hjava_lang_Class* this)
 {
-	return (this->superclass);
+	if (!CLASS_IS_INTERFACE(this))
+		return (this->superclass);
+	else
+		return (NULL);
 }
 
 HArrayOfObject* /* [Ljava.lang.Class; */
@@ -437,6 +448,82 @@ makeField(struct Hjava_lang_Class* clazz, int slot)
 	return (field);
 }
  
+/*
+ * count the number of methods in a class that are not constructors.
+ * If declared is not set, count only public methods
+ */
+static int
+countMethods(struct Hjava_lang_Class* clas, jint declared)
+{
+	Method* mth = CLASS_METHODS(clas);
+	int i;
+	int count = 0;
+
+	for (i = CLASS_NMETHODS(clas)-1 ; i >= 0; i--) {
+		if (((mth[i].accflags & ACC_PUBLIC) || declared) && !(mth[i].accflags & ACC_CONSTRUCTOR)) {
+			count++;
+		}
+	}
+	return count;
+}
+
+/*
+ * create reflect.Method objects for all methods in a class that are 
+ * not constructors.  If declared is not set, include only public methods.
+ */
+static void
+addMethods(struct Hjava_lang_Class* clas, jint declared, 
+	Hjava_lang_reflect_Method*** ptr)
+{
+	Method* mth = CLASS_METHODS(clas);
+	int i;
+
+	for (i = CLASS_NMETHODS(clas)-1; i >= 0; i--) {
+		if (((mth[i].accflags & ACC_PUBLIC) || declared) && !(mth[i].accflags & ACC_CONSTRUCTOR)) {
+			**ptr = makeMethod(clas, i);
+			(*ptr)++;
+		}
+	}
+}
+
+/*
+ * reflect all methods implemented by an interface or one of its 
+ * super interfaces.
+ *
+ * Note that we do not reach the super interface via superclass--the
+ * compiler will compile a construct "interface A extends B" as 
+ * "interface A implements B", hence we look in interfaces.
+ */
+static
+HArrayOfObject*
+getInterfaceMethods0(struct Hjava_lang_Class* this, jint declared)
+{
+	int count;
+	Hjava_lang_reflect_Method** ptr;
+	HArrayOfObject* array;
+	int i;
+
+	count = 0;
+	count += countMethods(this, declared);
+	if (!declared) {
+		for (i = 0; i < this->total_interface_len; i++) {
+			count += countMethods(this->interfaces[i], declared);
+		}
+	}
+
+	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/reflect/Method;");
+	ptr = (Hjava_lang_reflect_Method**)&unhand(array)->body[0];
+
+	addMethods(this, declared, &ptr);
+	if (!declared) {
+		for (i = 0; i < this->total_interface_len; i++) {
+			addMethods(this->interfaces[i], declared, &ptr);
+		}
+	}
+
+	return (array);
+}
+
 HArrayOfObject*
 java_lang_Class_getMethods0(struct Hjava_lang_Class* this, jint declared)
 {
@@ -447,15 +534,21 @@ java_lang_Class_getMethods0(struct Hjava_lang_Class* this, jint declared)
 	HArrayOfObject* array;
 	int i;
 
+	/*
+	 * Note: the spec wants us to include the methods of all superclasses
+	 * and all superinterfaces.  
+	 *
+	 * Superinterfaces cannot be reached through the superclass
+	 * pointer.  We handle them in a separate function.
+	 */
+	if (CLASS_IS_INTERFACE(this))
+		return (getInterfaceMethods0(this, declared));
+
 	count = 0;
 	for (clas = this; clas != NULL; clas = clas->superclass) {
-		mth = CLASS_METHODS(clas);
-		i = CLASS_NMETHODS(clas);
-		for (i = CLASS_NMETHODS(clas)-1 ; i >= 0; i--) {
-			if (((mth[i].accflags & ACC_PUBLIC) || declared) && !(mth[i].accflags & ACC_CONSTRUCTOR)) {
-				count++;
-			}
-		}
+
+		count += countMethods(clas, declared);
+
 		if (declared) {
 			break;
 		}
@@ -463,14 +556,9 @@ java_lang_Class_getMethods0(struct Hjava_lang_Class* this, jint declared)
 	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/reflect/Method;");
 	ptr = (Hjava_lang_reflect_Method**)&unhand(array)->body[0];
 	for (clas = this; clas != NULL; clas = clas->superclass) {
-		mth = CLASS_METHODS(clas);
-		for (i = CLASS_NMETHODS(clas)-1; i >= 0; i--) {
-			if (((mth[i].accflags & ACC_PUBLIC) || declared) && !(mth[i].accflags & ACC_CONSTRUCTOR)) {
-				*ptr = makeMethod(clas, i);
-				ptr++;
-			}
-		}
-		/* End if looking at declared */
+
+		addMethods(clas, declared, &ptr);
+
 		if (declared) {
 			break;
 		}
