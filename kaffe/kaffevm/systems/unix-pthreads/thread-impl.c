@@ -577,6 +577,8 @@ tRun ( void* p )
   pthread_setspecific( ntKey, cur);
   pthread_setcanceltype( PTHREAD_CANCEL_ASYNCHRONOUS, &oldCancelType);
 
+  cur->tid = pthread_self();
+
   /* we are reasonably operational now, flag our creator that it's safe to give
    * up the thread lock */
   sem_post( &cur->sem);
