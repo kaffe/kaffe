@@ -187,7 +187,8 @@ public Field getDeclaredField(String name) throws NoSuchFieldException, Security
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkMemberAccess(this, Member.DECLARED);
-	return (getField0(name, true));
+
+	return getFieldInternal(name, true);
 }
 
 public Field[] getDeclaredFields() throws SecurityException
@@ -219,7 +220,27 @@ public Field getField(String name) throws NoSuchFieldException, SecurityExceptio
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkMemberAccess(this, Member.PUBLIC);
-	return (getField0(name, false));
+
+	return getFieldInternal(name, false);
+}
+
+/* Lookup a field in a class.
+
+   @param name a field name
+   @param declared true if the field is supposed to be declared in this class
+
+   @return a pointer to the field, if it can be found.
+
+   @throws NoSuchFieldException if no such field can be found
+*/
+private Field getFieldInternal(String name, boolean declared) throws NoSuchFieldException {
+	Field field = getField0(name, declared);
+
+        if (field == null) {
+		throw new NoSuchFieldException("Class " + getName() + " has no field named " + name);
+	}
+
+        return field;
 }
 
 native private Field getField0(String name, boolean declared);

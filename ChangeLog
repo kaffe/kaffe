@@ -1,3 +1,34 @@
+2003-07-26  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/clib/native/Class.c:
+	(java_lang_Class_getField0) modified to return NULL, when field is not
+	found. Added documentation.
+
+	* libraries/javalib/essential.files:
+	Added java/net/URLClassLoader.java, java/util/jar/JarInputStream.java, 
+	java/util/zip/DataFormatException.java, java/util/zip/Inflater.java,
+	java/util/zip/InflaterInputStream.java, java/util/zip/ZipInputStream.java
+	kaffe/util/zip/SwitchInflater.java
+
+	* libraries/javalib/java/lang/Class.java:
+	(getDeclaredField, getField) use getFieldInternal.
+	(getFieldInternal) new private method. Improved error message to include
+	class and field name.
+
+	* libraries/javalib/kaffe/lang/AppClassLoader.java:
+	Extend URLClassLoader. OpenEJB expects the application class loader to
+	extend URLClassLoader.
+	(AppClassLoader) cass superclass contructor with empty array of URLs.
+	(findResources, findResource) changed access to public as they are public
+	in URLClassLoader.
+
+	* test/regression/GetField.java:
+	Added more comments, and adapted expected output.
+
+	* test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java:
+	adapted expected output.
+
 2003-07-26  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* include/files.h: (jlong2size_t, size_t2jlong) added two converters

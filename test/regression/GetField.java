@@ -15,9 +15,14 @@ class GetField {
 		Class cls = GetField.class;
 		try {
 			fld = cls.getField("TEST");
+			/* should throw an illegal argument exception since
+			 * java.lang.Class has no public field TEST 
+			 */
 			System.out.println("public: "+fld.getInt(cls));
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			System.out.println(e);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		try {
@@ -25,6 +30,7 @@ class GetField {
 			System.out.println("public static: "+fld.getInt(cls));
 		} catch (Exception e) {
 			System.out.println(e);
+			e.printStackTrace();
 		}
 
 		try {
@@ -69,9 +75,9 @@ class GetField {
 /* Expected Output:
 java.lang.IllegalArgumentException
 public static: 20
-java.lang.NoSuchFieldException: PSTEST
+java.lang.NoSuchFieldException: Class GetField has no field named PSTEST
 java.lang.NullPointerException
 public static from null: 20
 SomeFields public: 10
-java.lang.NoSuchFieldException: PSOME
+java.lang.NoSuchFieldException: Class SomeFields has no field named PSOME
 */

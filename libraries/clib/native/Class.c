@@ -875,19 +875,19 @@ checkForField(struct Hjava_lang_Class* clazz, struct Hjava_lang_String* name, jb
 	return (0);
 }
 
+/* Lookup a field in a class.
+
+   @param clazz class to look in
+   @param name a field name
+   @param declared true if the field is supposed to be declared in clazz
+
+   @return a pointer to the field, if it can be found. NULL otherwise.
+*/
 Hjava_lang_reflect_Field*
 java_lang_Class_getField0(struct Hjava_lang_Class* clazz, struct Hjava_lang_String* name, jboolean declared)
 {
-	Hjava_lang_reflect_Field* f = checkForField(clazz, name, declared);
-	if (f != 0) {
-		return (f);
-	}
-	/* like SignalError, except that the name of the field that is
-	 * not found becomes the error message
-	 */
-	throwException((struct Hjava_lang_Throwable*)execute_java_constructor(
-		"java.lang.NoSuchFieldException", 0, 0,
-		"(Ljava/lang/String;)V", name));
+        Hjava_lang_reflect_Field* f = checkForField(clazz, name, declared);
+        return (f);
 }
 
 HArrayOfObject*

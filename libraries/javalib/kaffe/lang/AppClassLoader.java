@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.SecureClassLoader;
 import java.security.CodeSource;
 import java.security.cert.Certificate;
@@ -31,7 +32,7 @@ import java.util.jar.Manifest;
 /**
  * ClassLoader used to load application classes from the CLASSPATH.
  */
-public class AppClassLoader extends SecureClassLoader {
+public class AppClassLoader extends URLClassLoader {
 
 	private static final AppClassLoader SINGLETON =
 		new AppClassLoader();
@@ -235,7 +236,7 @@ public void addSource(String path) {
 }
 	
 private AppClassLoader() {
-	super(null);
+	super(new URL[0]);
 
 	StringTokenizer tok = new StringTokenizer (System.getProperty("java.class.path"), File.pathSeparator);
 
@@ -250,7 +251,7 @@ private AppClassLoader() {
  * the named resource (which may appear more than once). Make sure
  * it really exists in each place before adding it.
  */
-protected Enumeration findResources(String name) throws IOException {
+public Enumeration findResources(String name) throws IOException {
 	Vector v = new Vector();
 
 	if (name.charAt(0) == '/') {
@@ -263,7 +264,7 @@ protected Enumeration findResources(String name) throws IOException {
 	return v.elements();
 }
 
-protected URL findResource (String name) {
+public URL findResource (String name) {
 	Vector v = new Vector();
 
 	if (name.charAt(0) == '/') {
