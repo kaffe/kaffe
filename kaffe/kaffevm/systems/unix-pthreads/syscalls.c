@@ -19,9 +19,7 @@
 #include "jsyscall.h"
 #include "jsignal.h"
 #include "nets.h"
-#if defined(HAVE_SYS_POLL_H)
-#include <sys/poll.h>
-#endif
+
 #if defined(HAVE_SYS_WAIT_H)
 #include <sys/wait.h>
 #endif
@@ -617,13 +615,9 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 {
 	int r;
 	jlong deadline = 0;
-	int fd_flags;
 	int poll_timeout;
 
-	struct pollfd sp = {fd, POLLIN|POLLPRI, 0};
- 
-	fd_flags = fcntl(fd, F_GETFL);
-	fcntl(fd, F_SETFL, fd_flags|O_NONBLOCK);
+	jthread_set_blocking(fd, 0);
 	SET_DEADLINE(deadline, timeout)
 	for (;;) {
 		r = recvfrom(fd, buf, len, flags, from, fromlen);
@@ -634,11 +628,11 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 		IGNORE_EINTR(r)
 		poll_timeout = deadline - currentTime();
 		if (poll_timeout > 0) {
-			poll(&sp, 1, poll_timeout);
+			waitForTimeout(fd, poll_timeout);
 		}
 		BREAK_IF_LATE(deadline, timeout)
 	}
-	fcntl(fd, F_SETFL, fd_flags);
+	jthread_set_blocking(fd, 1);
 	SET_RETURN_OUT(r, out, r)
 	return (r);
 }

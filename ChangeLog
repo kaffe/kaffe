@@ -1,3 +1,9 @@
+2004-09-17  Noa Resare  <noa@resare.com>
+	Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
+	(jthreadedRecvfrom) use select() instead of poll()
+
 2004-09-16  Noa Resare  <noa@resare.com>
 
 	* kaffe/kaffevm/kaffe-gc/gc-mem.c (gc_block_alloc):
