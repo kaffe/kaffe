@@ -53,108 +53,10 @@
 
 #else	/* !KVER */
 
-/*======== begin of definitions that apply to plain UNIX only ========*/
-
-#include <assert.h>
-#include <setjmp.h>
-#include <sys/types.h>
-#include <sys/signal.h>
-#include <sys/time.h>
-#include <sys/socket.h>
-#include <sys/wait.h>
-#include <sys/socket.h>
-#include <signal.h>
-#include <errno.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#define HAVE_SETITIMER	1
-#define HAVE_WAITPID	1
-#define THREADSTACKSIZE         (32 * 1024)
-
-#if defined(__FreeBSD__)
 /*
- * Stack offset.
- * This is the offset into the setjmp buffer where the stack pointer is
- * stored.  In FreeBSD, that's 2 - normally it's 4 for a i386
- * On NetBSD and OpenBSD it's 2 as well.
+ * all definitions for compilation under plain UNIX are in this file
  */
-#define SP_OFFSET               2
-#define HAVE_SYS_FILIO_H 1
-
-#elif defined(__linux__)
-/* Linux */
-#define SP_OFFSET		4
-
-#elif defined(__svr4__) && defined(__sparc__)
-
-/* Solaris */
-#define SP_OFFSET		1
-#define HAVE_SYS_FILIO_H 1
-
-#elif defined(_AIX) && defined(_POWER)
-
-/* AIX on IBM PowerPC */
-#define SP_OFFSET		3
-#include <sys/select.h>		/* another AIX oddity */
-
-#elif defined(hpux)
-
-/* HPUX */
-#define STACK_GROWS_UP  	1
-#define SP_OFFSET		1
-
-#elif defined(hppa) && !defined(hpux)
-
-/* HP-BSD - this is a Utah thing */
-#define STACK_GROWS_UP  	1
-#define SP_OFFSET		2
-
-/* We will clear all signals rather than just the ones we want.
- * This is okay because of how sigprocmask is used - but it's not a
- * general solition.
- */
-#define sigprocmask(op, nsig, osig)     sigsetmask(0)
-typedef int sigset_t;
-
-#elif defined(sgi) && defined(mips)
-
-/* SGI running IRIX 6.2 */
-#define SP_OFFSET		2
-#define FP_OFFSET		13
-
-#else
-#error Your system was not yet tested
-#endif
-
-#if HAVE_SYS_FILIO_H
-#include <sys/filio.h>
-#endif
-
-#ifndef FD_COPY
-#define FD_COPY(from, to)	memcpy(from, to, sizeof(from))
-#endif
-
-/* define our own jlong and NOTIMEOUT */
-typedef signed long long	jlong;
-#define NOTIMEOUT	0
-#define true		1
-#define false		0
-
-#define catchSignal(s, h)	signal(s, h)
-
-static jlong currentTime()
-{
-    struct timeval tm;
-    gettimeofday(&tm, 0);
-    return (((jlong)tm.tv_sec * 1000L) + ((jlong)tm.tv_usec / 1000L));
-}
-
-/* let main thread loop until all threads finish, for tests */
-void 	jthread_exit_when_done();
+#include "config-jthreads.h"
 
 /*======== end of definitions that apply to plain UNIX only ========*/
 
@@ -199,13 +101,15 @@ typedef struct _jthread {
 	 */
 	void*				jlThread;
 	jmp_buf				env;
-#if 0
+	/* 
+	 * note that this causes gdb under Solaris to crash when trying to
+	 * print a struct jthread
+	 */
 	/* for alignment (Gcc extension) */
 	double				align[0];
-#endif
-} jthread;
+} jthread, *jthread_t;
 
-#define GET_COOKIE(jtid)	((jtid)->jlThread)
+#define GET_COOKIE()	(jthread_current()->jlThread)
 
 /****************************************************************************
  *
@@ -216,7 +120,7 @@ typedef struct _jthread {
 /* 
  * initialize the threading system
  */
-jthread *
+jthread_t 
 jthread_init(
 	int preemptive,			/* preemptive scheduling */
 	int maxpr, 			/* maximum priority */
@@ -232,7 +136,7 @@ jthread_init(
 /*
  * create a thread with a given priority
  */
-jthread *
+jthread_t
 jthread_create(unsigned char pri, 	/* initial priority */
 	void (*func)(void *), 		/* start function */
 	int daemon, 			/* is this thread a daemon? */
@@ -254,12 +158,12 @@ void 	jthread_walkLiveThreads(void (*func)(void *jlThread));
 /* 
  * destroy this jthread structure 
  */
-void	jthread_destroy(jthread *jtid);
+void	jthread_destroy(jthread_t jtid);
 
 /*
  * set the priority of a thread 
  */
-void	jthread_setpriority(jthread* jtid, int prio);
+void	jthread_setpriority(jthread_t jtid, int prio);
 
 /*
  * yield to another thread
@@ -274,32 +178,32 @@ void 	jthread_sleep(jlong time);
 /* 
  * return the current thread 
  */
-static inline jthread *
+static inline jthread_t
 jthread_current() 
 { 
-	extern jthread* currentJThread;
+	extern jthread_t currentJThread;
 	return currentJThread; 
 }
 
 /* 
  * count the number of stack frames - unimplemented 
  */
-int 	jthread_frames(jthread *thrd);
+int 	jthread_frames(jthread_t thrd);
 
 /* 
  * return whether this thread is alive or not
  */
-int 	jthread_alive(jthread *jtid);
+int 	jthread_alive(jthread_t jtid);
 
 /*
  * stop this thread
  */
-void 	jthread_stop(jthread *jtid);
+void 	jthread_stop(jthread_t jtid);
 
 /*
  * interrupt this thread
  */
-void 	jthread_interrupt(jthread *jtid);
+void 	jthread_interrupt(jthread_t jtid);
 
 /*
  * have the current thread exit
@@ -315,7 +219,7 @@ int 	jthread_on_current_stack(void *bp);
 /*
  * determine the "interesting" stack range a conservative gc must walk
  */
-void jthread_extract_stack(jthread *jtid, void **from, unsigned *len);
+void jthread_extract_stack(jthread_t jtid, void **from, unsigned *len);
 
 /*
  * Disallow cancellation for current thread

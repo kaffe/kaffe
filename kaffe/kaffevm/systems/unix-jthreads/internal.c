@@ -129,28 +129,28 @@ Tprio(Hjava_lang_Thread* tid, jint prio)
 	if (unhand(tid)->PrivateInfo == 0)
 		return;
 
-	jthread_setpriority((jthread *)unhand(tid)->PrivateInfo, prio);
+	jthread_setpriority((jthread_t)unhand(tid)->PrivateInfo, prio);
 }               
 
 static          
 void            
 Tstop(Hjava_lang_Thread* tid)
 {       
-	jthread_stop((jthread *)unhand(tid)->PrivateInfo);
+	jthread_stop((jthread_t)unhand(tid)->PrivateInfo);
 }       
 
 static  
 bool    
 Talive(Hjava_lang_Thread* tid)
 {
-	return jthread_alive((jthread *)unhand(tid)->PrivateInfo);
+	return jthread_alive((jthread_t)unhand(tid)->PrivateInfo);
 }
         
 static
 jint    
 Tframes(Hjava_lang_Thread* tid)
 {
-	return jthread_frames((jthread *)unhand(tid)->PrivateInfo);
+	return jthread_frames((jthread_t)unhand(tid)->PrivateInfo);
 }       
  
 static
@@ -158,7 +158,7 @@ void
 Tfinalize(Hjava_lang_Thread* tid)
 {
 	if (unhand(tid)->PrivateInfo != 0) {
-		jthread_destroy((jthread *)unhand(tid)->PrivateInfo);
+		jthread_destroy((jthread_t)unhand(tid)->PrivateInfo);
 		unhand(tid)->PrivateInfo = 0;
 	}
 }       
@@ -167,7 +167,7 @@ static
 Hjava_lang_Thread*      
 TcurrentJava(void)      
 {               
-	return GET_COOKIE(jthread_current());
+	return GET_COOKIE();
 }
 
 static
@@ -195,7 +195,7 @@ TwalkThread(Hjava_lang_Thread* tid)
 {
 	void *from;
 	unsigned len;
-	jthread *jtid = (jthread *)unhand(tid)->PrivateInfo;
+	jthread_t jtid = (jthread_t)unhand(tid)->PrivateInfo;
 
         if (jtid == 0)
                 return;
