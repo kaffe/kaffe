@@ -1,3 +1,10 @@
+Sun Jul 07 12:29:51 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+        From: Alexander Popov <s_popov@prosyst.bg>
+	
+	* FAQ/FAQ.embedded: New documentation for placing Kaffe on
+	embedded devices.
+
 Sat Jul  6 01:19:11 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* README: Added SuperH to support matrix.
