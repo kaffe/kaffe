@@ -1,7 +1,18 @@
-Status
-======
+PS2 Linux Kaffe Building FAQ
+============================
 
-last updated 18-dec-2002
+This document applies to kaffe-1.1.4 (and also contains hints 
+for building from CVS).
+
+FAQ.ps2linux Status
+===================
+
+Last updated 28-Jan-2005 by Patryk Laurent (patryk@pakl.net)
+Original document 18-dec-2002 Dylan Schell (dylans@xs4all.nl)
+
+
+Test Notes [not updated or confirmed on 28-Jan-2005]
+====================================================
 
 - kaffe in interpreter mode currently fails 5 regression tests related to 
   IEEE compliancy. ( See Notes )
@@ -12,25 +23,41 @@ last updated 18-dec-2002
 Building kaffe on the PS2
 =========================
 
-1. install jikes ( version 1.13 was tested )
-compiling jikes will take some time on the PS2 but building the
-kaffe runtime library with the supplied compiler is a bit of a problem
-(and a lot slower than compiling jikes) It is possible to use a more
-recent version of jikes, but you will have to manually change the calls
-to jikes in libraries/javalib/rebuildLib to avoid class version errors
-( add: -source 1.2 to the VERBOSE variable to force jikes to generate
-class files compatible with kaffe )
+1. Install jikes ( version 1.21 was tested ) on your PS2
 
-2. run configure to enable jikes and select the interpreter engine:
+http://ibm.com/developerworks/opensource/jikes/
+
+Compiling jikes will take some time on the PS2 but building the
+kaffe runtime library with the supplied compiler is a bit of a problem.
+Even if you get it to work, it is a lot slower than compiling jikes) 
+
+2. Untar kaffe.  Edit kaffe's libraries/javalib/rebuildLib.in 
+
+Add -target 1.2 to the VERBOSE variable to force jikes to generate
+class files compatible with kaffe.
+
+VERBOSE=-target 1.2 
+
+3. Run configure to enable jikes and select the interpreter engine:
+./configure --enable-pure-java-math --with-jikes --with-engine=intrp
+
+IF YOU ARE BUILDING FROM CVS, you probably should add --without-kaffe-qt-awt and --disable-native-awt (otherwise you will get gtk+-2.0 missing errors in the configure step.)
+January 22, 2005 From CVS:  ./configure --enable-pure-java-math --with-jikes --witth-engine=intrp --without-kaffe-qt-awt --disable-native-awt
+
+If you want to use faster native math, you supposedly need to install
+the GNU MP library.  But I don't know if GNU MP supports any PS2-specific
+math so it may not be worth it.  
+
+But, if GNU MP is installed, the following is sufficient:
 ./configure --with-jikes --with-engine=intrp
 
 Or if you don't need double precision floating point support, you can
 build the jit3 version:
 ./configure --with-jikes
 
-(Remember to run make clean if you change between interpreter and jit! )
+(Remember to run make clean if you change between interpreter and jit!)
 
-3. compile/install in the regular fashion.
+4. Compile/install in the regular fashion.
 make
 sudo make install
 
@@ -40,28 +67,16 @@ Notes about the PS2 Linux port
 The ps2 port is a work in progress, it works with the following limitations:
 
 1. Some IEEE constructs are not supported by the FPU: NaN/+Inf/-Inf/+0.0/-0.0
-If the PS2 kernel is ever updated to include a FPU emulator to add these missing
-constructs, then this port should pass all regression tests.
+If the PS2 kernel is ever updated to include a FPU emulator to add these missing constructs, then this port should pass all regression tests.
 (This goes for the interpreter as well as for the jit version)
 
-1. jit3 is functional but will cause problems when using double precision floating
-point operations. This is because the PS2 lacks a double precsion FPU. If, or when
-the linux kernel is updated with a FPU emulator (and a matching gcc is installed) 
-to make up for this problem, the port will have to be updated ( the PS2 specific 
-patches in config/mips/o32-sysdepCallMethod.h can go away ).
+1. jit3 is functional but will cause problems when using double precision floating point operations. This is because the PS2 lacks a double precsion FPU. If, or when the linux kernel is updated with a FPU emulator (and a matching gcc is installed) to make up for this problem, the port will have to be updated ( the PS2 specific patches in config/mips/o32-sysdepCallMethod.h can go away ).
 
-To make sure interpreter bugs don't interfere with building
-kaffe on the PS2 use jikes to compile the class library/tests. Some versions
-of jikes generate incorrect class files or class files that are too new for
-kaffe to handle. Using jikes 1.13 seems to work OK.
+To make sure interpreter bugs don't interfere with building kaffe on the PS2 use jikes to compile the class library/tests. Some versions of jikes generate incorrect class files or class files that are too new for kaffe to handle. Using jikes 1.13 seems to work OK.
 
-The PS2 also lacks the MIPS II "LL" and "SC" instructions. This means
-locking is somewhat slower. the MIPS II instructions are disabled in
-config/mips/common.h
+The PS2 also lacks the MIPS II "LL" and "SC" instructions. This means locking is somewhat slower. the MIPS II instructions are disabled in config/mips/common.h
 
-The PS2 register set is also different from basic mips processors. This means the
-FP_OFFSET is much larger ( general purpose registers are 128 bit wide for special
-multimedia/vector processing instructions )
+The PS2 register set is also different from basic mips processors. This means the FP_OFFSET is much larger ( general purpose registers are 128 bit wide for special multimedia/vector processing instructions )
 
 Note that the changes in o32-sysdepCallMethod.h pass 64 bit floats in a pair
 of general purpose registers. This is the convention gcc uses on the PS2 (
@@ -76,3 +91,6 @@ config/mips/linux/md.h ( FP_OFFSET=36 )
 
 Dylan Schell
 dylans@xs4all.nl
+
+Patryk Laurent
+patryk@pakl.net
