@@ -39,7 +39,6 @@ public InflaterInputStream(InputStream in, Inflater inf, int size) {
 	if (size < 1)
 	  throw new IllegalArgumentException("size < 1");
 	buf = new byte[size];
-	len = 0;
 }
 
 protected void fill() throws IOException {
@@ -69,7 +68,23 @@ public int read(byte b[], int off, int lenx) throws IOException {
 		inf.setInput(buf, 0, len);
 	}
 	try {
-		return (inf.inflate(b, off, lenx));
+		/* we have to call inflate until
+		 * it is finished or needs more input
+		 */
+		int inflated = 0;
+		do {
+			inflated += inf.inflate(b,
+						off + inflated,
+						lenx - inflated);
+		}
+		while (inflated < lenx && !inf.needsInput() && !inf.finished());
+ 
+		/* recurse if only 0 bytes were inflated */
+		if (inflated == 0 && lenx != 0) {
+		    return read(b, off, lenx);
+		}
+
+		return inflated;
 	}
 	catch (DataFormatException _) {
 		throw new IOException("bad data format");

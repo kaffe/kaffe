@@ -25,11 +25,6 @@ public class Inflater {
 
   public Inflater(boolean nowrap)
   {
-    buf = null;
-    off = 0;
-    len = 0;
-    finished = false;
-    needsDictionary = false;
     init(nowrap);
   }
 
@@ -62,12 +57,7 @@ public class Inflater {
 
   public synchronized boolean needsInput()
   {
-    if (len == 0 && !finished) {
-      return (true);
-    }
-    else {
-      return (false);
-    }
+    return (len == 0 && !finished());
   }
 
   public synchronized boolean needsDictionary()
@@ -90,6 +80,14 @@ public class Inflater {
     }
   }
 
+  public synchronized int inflate(byte b[], int off, int length) throws DataFormatException {
+    if (getRemaining() == 0) {
+      return 0;
+    }
+
+    return inflate0(b, off, length);
+  }
+
   protected void finalize() throws Throwable
   {
     /* We don't need to call super.finalize(),
@@ -102,7 +100,7 @@ public class Inflater {
   }
 
   public native synchronized void setDictionary(byte b[], int off, int len);
-  public native synchronized int inflate(byte b[], int off, int len) throws DataFormatException;
+  public native synchronized int inflate0(byte b[], int off, int len) throws DataFormatException;
   public native synchronized int getAdler();
   public native synchronized int getTotalIn();
   public native synchronized int getTotalOut();

@@ -19,7 +19,7 @@ protected CRC32 crc;
 protected boolean eos;
 private InputStream strm;
 
-public static final int GZIP_MAGIC		= 35615;
+public static final int GZIP_MAGIC		= 0x1f8b;
 static final int OLD_GZIP_MAGIC		= 0x1f9e;
 
 static final int GZIP_FLAG_ASCII_FLAG	= 0x01;	// probably ascii text

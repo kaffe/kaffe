@@ -39,7 +39,7 @@ java_util_zip_Inflater_setDictionary(struct Hjava_util_zip_Inflater* this, HArra
 }
 
 jint
-java_util_zip_Inflater_inflate(struct Hjava_util_zip_Inflater* this, HArrayOfByte* buf, jint off, jint len)
+java_util_zip_Inflater_inflate0(struct Hjava_util_zip_Inflater* this, HArrayOfByte* buf, jint off, jint len)
 {
 	int r;
 	int ilen;
@@ -48,11 +48,6 @@ java_util_zip_Inflater_inflate(struct Hjava_util_zip_Inflater* this, HArrayOfByt
 	dstream = GET_STREAM(this);
 
 	ilen = unhand(this)->len;
-
-	/* No data - force us to get some more */
-	if (ilen == 0) {
-		return (0);
-	}
 
 	dstream->next_in = &unhand_array(unhand(this)->buf)->body[unhand(this)->off];
 	dstream->avail_in = ilen;

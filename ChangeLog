@@ -1,3 +1,27 @@
+Fri Aug 16 19:38:09 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/util/zip/GZIPInputStream.java:
+	(GZIP_MAGIC) reverted the constant back to old value. New value
+	broke gzip streams on linux.
+
+	* libraries/javalib/java/util/zip/Inflater.java:
+	(Inflater) removed redundant initilization statements.
+	(inflate) split into native and java part. Handle case when
+	nothing remains in the buffer in java.
+	(inflate0) new native method.
+
+	* libraries/javalib/java/util/zip/InflaterInputStream.java:
+	(InflaterInputStream) removed redundant initilization statement.
+	(needsInput) simplified.
+	(read) fixed bug with buffers too small to generate inflated
+	output at once.
+	Reported by: Arne Woerner <woerner@mediabase-gmbh.de>
+
+	* libraries/clib/zip/Inflater.c:
+	(inflate) moved handling of empty input buffer to java, and
+	renamed the rest to
+	(inflate0) new method.
+
 Thu Aug 15 14:35:16 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* kaffe/kaffevm/jit/machine.h: fixed compilation error.
