@@ -120,7 +120,7 @@ class ThreadStop_SelfStop
 }
 
 
-class ThreadStop
+public class ThreadStop
 {
 	static int ct_ = 0;
 	static Object obj_ = new Object();
