@@ -12,6 +12,7 @@ java/io/DataOutput.class
 java/io/DataOutputStream.class
 java/io/EOFException.class
 java/io/File.class
+java/io/File$DeleteFileHelper.class
 java/io/File$DeleteOnExitHook.class
 java/io/FileDescriptor.class
 java/io/FileInputStream.class
@@ -134,6 +135,7 @@ java/util/AbstractMap$2$1.class
 java/util/AbstractMap$BasicMapEntry.class
 java/util/AbstractMapEntry.class
 java/util/AbstractMapEntrySet.class
+java/util/AbstractSequentialList.class
 java/util/AbstractSet.class
 java/util/ArrayList.class
 java/util/Collection.class
@@ -160,6 +162,7 @@ java/util/Hashtable.class
 java/util/Hashtable$Enumerator.class
 java/util/Hashtable$HashEntry.class
 java/util/Iterator.class
+java/util/LinkedList.class
 java/util/List.class
 java/util/ListIterator.class
 java/util/Locale.class
