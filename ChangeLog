@@ -1,5 +1,12 @@
 2004-03-17  Dalibor Topic <robilad@kaffe.org>
 
+        * libraries/javalib/java/util/regex/Matcher.java,
+        libraries/javalib/java/util/regex/Pattern.java,
+        libraries/javalib/java/util/regex/PatternSyntaxException.java:
+	Replaced by implementation from GNU Classpath.
+
+2004-03-17  Dalibor Topic <robilad@kaffe.org>
+
         * libraries/javalib/gnu/regexp/REException.java,
         libraries/javalib/gnu/regexp/REFilterInputStream.java,
         libraries/javalib/gnu/regexp/REMatch.java,
