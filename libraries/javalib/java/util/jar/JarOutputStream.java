@@ -15,39 +15,38 @@ package java.util.jar;
 import java.io.*;
 import java.util.zip.*;
 
-public class JarOutputStream extends ZipOutputStream
-{
-    public JarOutputStream(OutputStream out, Manifest man) throws IOException
-    {
-	super(out);
-	if (man != null) {
-	    ZipEntry ze = new ZipEntry(JarFile.MANIFEST_NAME);
-	    ze.setMethod(ZipEntry.DEFLATED); // compressed entry
-	    putNextEntry(ze);
-	    man.write(out);
-	    closeEntry();
+public class JarOutputStream extends ZipOutputStream {
+
+    	public JarOutputStream(OutputStream out, Manifest manifest)
+			throws IOException {
+		super(out);
+		if (manifest == null) {
+			return;
+		}
+		JarEntry ent = new JarEntry(JarFile.MANIFEST_NAME);
+		putNextEntry(ent);
+		manifest.write(new OutputStream() {
+			public void write(int b) throws IOException {
+				JarOutputStream.this.write(b);
+			}
+			public void write(byte[] buf, int off, int len)
+					throws IOException {
+				JarOutputStream.this.write(buf, off, len);
+			}
+			public void flush() throws IOException {
+				JarOutputStream.this.flush();
+			}
+		});
+		closeEntry();
 	}
-    }
 
-    public JarOutputStream(OutputStream out) throws IOException
-    {
-	super(out);
-    }
+	public JarOutputStream(OutputStream out) throws IOException {
+		super(out);
+	}
 
-    public void putNextEntry(ZipEntry ze) throws IOException
-    {
-	// FIXME : this method must be overridden for some reason.
-	// It must do something extra that super.putNextEntry() does not.
-
-	// so far I have been able to figure out that JarOutputStream
-	// will use the ZipEntry.setExtra() method to add 4 bytes
-	// of data. I have no idea what this data is but it seems to
-	// be the same for both uncompressed and compressed archives.
-
-	byte[] data = {-2,-54,0,0};
-	ze.setExtra(data);
-
-	super.putNextEntry(ze);
-    }
+	// Why is this method here?
+	public void putNextEntry(ZipEntry ze) throws IOException {
+		super.putNextEntry(ze);
+	}
 }
 
