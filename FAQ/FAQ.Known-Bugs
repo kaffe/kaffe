@@ -40,18 +40,13 @@ MISSING OR BROKEN FEATURES
 * Kaffe's java.lang.Character class does not conform to Sun's spec.  The 
   handling of unicode characters is incomplete.
 
-* Object serialization is broken.  Even simple tests fail.  Many run-time 
-  classes do not properly serialize or deserialize.
-  Class UIDs are not computed.
+* Some run-time classes may not serialize or deserialize according to their
+  serial forms.
 
-* Several classes do not have serialVersionUIDs hard-coded in them. This
-  makes these classes not interoperable with Sun's classes.  Note, however,
-  that simply putting in Sun's will not fix that: in order to allow 
-  interoperability, we will need to implement Sun's specification for
-  how classes are serialized.  As of 1.2, these specs are part of the
-  JDK documentation.
+* Several classes do not have serialVersionUIDs hard-coded in them.  This
+  makes these classes not interoperable with Sun's classes.  
   Note that some of our classes currently report Sun's serialVersionUIDs,
-  even though they're incompatible.
+  even though they're not following their serial form.
 
 * java.math.* is incomplete.  java.math.BigInteger is mostly written and
   relies on the GNU Multi-precision math package (GMP).  BigDecimal is
@@ -67,6 +62,19 @@ MISSING OR BROKEN FEATURES
   See http://rufus.w3.org/tools/Kaffe/messages/3785.html,
 	http://rufus.w3.org/tools/Kaffe/messages/3784.html
 
+* Runtime.runFinalizersOnExit() does not run the finalizers of all objects
+  on exit, but only of those objects that are finalizable at the time.  It 
+  hadn't even occurred to us that Sun wants us to run the finalizers of live 
+  objects when exiting, but this is what the 1.2 JDK doc says:
+  
+      Enable or disable finalization on exit; doing so specifies that the 
+      finalizers of all objects that have finalizers that have not yet been 
+      automatically invoked are to be run before the Java runtime exits. 
+      By default, finalization on exit is disabled. 
+      Deprecated. This method is inherently unsafe. It may result in 
+      finalizers being called on live objects while other threads are 
+      concurrently manipulating those objects, resulting in erratic behavior 
+      or deadlock.
 
 ARCHITECTURE-SPECIFIC PROBLEMS
 ---------------------------------------------------------------------------
