@@ -137,10 +137,8 @@ with_engine = @with_engine@
 SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
 TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript
-@HAVE_GCJ_SUPPORT_TRUE@TEST_Overflow = @HAVE_GCJ_SUPPORT_TRUE@#
-@HAVE_GCJ_SUPPORT_FALSE@TEST_Overflow = @HAVE_GCJ_SUPPORT_FALSE@Overflow.java
 
-TESTS = \
+ALWAYS_TESTS = \
 	HelloWorldApp.class.save \
 	HelloWorldApp.java \
 	TestIntLong.java \
@@ -200,6 +198,7 @@ TESTS = \
 	HashTest.java \
 	MapTest.java \
 	URLTest.java \
+	PropertiesTest.java \
 	ReaderTest.java \
 	CharArrayReaderTest.java \
 	LineNumberReaderTest.java \
@@ -230,7 +229,6 @@ TESTS = \
 	FindSystemClass.java \
 	ProcessClassLockTest.java \
 	DoubleBug.java \
-	$(TEST_Overflow) \
 	TestUnlock.java \
 	MarkResetTest.java \
 	HashtableTest1.java \
@@ -246,10 +244,16 @@ TESTS = \
 	ZipVerify.java \
 	TestNative.java
 
-FAILED_TESTS = \
+
+TEST_Overflow = Overflow.java
+@HAVE_GCJ_SUPPORT_TRUE@TESTS = @HAVE_GCJ_SUPPORT_TRUE@$(ALWAYS_TESTS) $(TEST_Overflow)
+@HAVE_GCJ_SUPPORT_FALSE@TESTS = @HAVE_GCJ_SUPPORT_FALSE@$(ALWAYS_TESTS)
+
+XFAIL_TESTS = \
 	PropertiesTest.java
 
-EXTRA_DIST = $(TESTS)
+
+EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow)
 
 CLEANFILES = *.class *.fail *.out core *.core ExceptionTest
 subdir = test/regression

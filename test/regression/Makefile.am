@@ -10,13 +10,7 @@ SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(
 
 TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript
 
-if HAVE_GCJ_SUPPORT
-TEST_Overflow = #
-else
-TEST_Overflow = Overflow.java
-endif
-
-TESTS = \
+ALWAYS_TESTS = \
 ## Simple health check
 	HelloWorldApp.class.save \
 ## Now test the compiler
@@ -84,6 +78,7 @@ TESTS = \
 	HashTest.java \
 	MapTest.java \
 	URLTest.java \
+	PropertiesTest.java \
 	ReaderTest.java \
 	CharArrayReaderTest.java \
 	LineNumberReaderTest.java \
@@ -117,7 +112,6 @@ TESTS = \
 	FindSystemClass.java \
 	ProcessClassLockTest.java \
 	DoubleBug.java \
-	$(TEST_Overflow) \
 	TestUnlock.java \
 	MarkResetTest.java \
 	HashtableTest1.java \
@@ -139,10 +133,18 @@ TESTS = \
 ## This one is skipped unless you --enable-debug.
 	TestNative.java
 
-FAILED_TESTS = \
+TEST_Overflow = Overflow.java
+
+if HAVE_GCJ_SUPPORT
+TESTS = $(ALWAYS_TESTS) $(TEST_Overflow)
+else
+TESTS = $(ALWAYS_TESTS)
+endif
+
+XFAIL_TESTS = \
 	PropertiesTest.java
 
-EXTRA_DIST = $(TESTS)
+EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow)
 
 CLEANFILES = *.class *.fail *.out core *.core ExceptionTest
 

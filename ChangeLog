@@ -1,3 +1,10 @@
+2000-07-24  Alexandre Oliva  <aoliva@redhat.com>
+
+	* test/regression/Makefile.am (TEST_Overflow): Do not allow
+	conditional definition make it to EXTRA_DIST.
+	(XFAIL_TEST): Mark PropertiesTest.
+	* test/regression/Makefile.in: Rebuilt.
+
 Mon Jul 24 10:12:53 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* test/regression/CharArrayReaderTest.java: fix expected output
