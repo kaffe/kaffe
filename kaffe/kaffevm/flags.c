@@ -14,7 +14,7 @@
 /*
  * Specify which version of Java we can use.
  */
-char* java_version = "1.1.2";
+char* java_version = "1.1.5";
 int java_major_version = 1;
 int java_minor_verison = 1;
 

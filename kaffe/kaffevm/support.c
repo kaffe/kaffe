@@ -47,16 +47,14 @@ static nativeFunction null_funcs[1];
 nativeFunction* native_funcs = null_funcs;
 #endif
 
-
 /*
  * Call a Java method from native code.
  */
 jvalue
-do_execute_java_method(void* obj, char* method_name, char* signature, Method* mb, int isStaticCall, ...)
+do_execute_java_method_v(void* obj, char* method_name, char* signature, Method* mb, int isStaticCall, va_list argptr)
 {
 	char* sig;
 	int args;
-	va_list argptr;
 	jvalue retval;
 
 	if (mb == 0) {
@@ -78,8 +76,19 @@ do_execute_java_method(void* obj, char* method_name, char* signature, Method* mb
 		throwException(NoSuchMethodError(method_name));
 	}
 
-	va_start(argptr, isStaticCall);
 	callMethodV(mb, METHOD_INDIRECTMETHOD(mb), obj, argptr, &retval);
+
+	return (retval);
+}
+
+jvalue
+do_execute_java_method(void* obj, char* method_name, char* signature, Method* mb, int isStaticCall, ...)
+{
+	va_list argptr;
+	jvalue retval;
+
+	va_start(argptr, isStaticCall);
+	retval = do_execute_java_method_v(obj, method_name, signature, mb, isStaticCall, argptr);
 	va_end(argptr);
 
 	return (retval);
@@ -89,11 +98,10 @@ do_execute_java_method(void* obj, char* method_name, char* signature, Method* mb
  * Call a Java static method on a class from native code.
  */
 jvalue
-do_execute_java_class_method(char* cname, char* method_name, char* signature, ...)
+do_execute_java_class_method_v(char* cname, char* method_name, char* signature, va_list argptr)
 {
 	char* sig;
 	int args;
-	va_list argptr;
 	Method* mb;
 	jvalue retval;
 	char cnname[CLASSMAXSIG];	/* Unchecked buffer - FIXME! */
@@ -109,8 +117,19 @@ do_execute_java_class_method(char* cname, char* method_name, char* signature, ..
 	}
 
 	/* Make the call */
-	va_start(argptr, signature);
 	callMethodV(mb, METHOD_INDIRECTMETHOD(mb), 0, argptr, &retval);
+
+	return (retval);
+}
+
+jvalue
+do_execute_java_class_method(char* cname, char* method_name, char* signature, ...)
+{
+	va_list argptr;
+	jvalue retval;
+
+	va_start(argptr, signature);
+	retval = do_execute_java_class_method_v(cname, method_name, signature, argptr);
 	va_end(argptr);
 
 	return (retval);

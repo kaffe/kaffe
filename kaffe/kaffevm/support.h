@@ -59,7 +59,9 @@ extern char*		javaString2CString(struct Hjava_lang_String*, char*, int);
 extern char*		makeCString(struct Hjava_lang_String*);
 extern struct Hjava_lang_String* makeReplaceJavaStringFromUtf8(unsigned char*, int, int, int);
 extern jvalue		do_execute_java_method(void*, char*, char*, struct _methods*, int, ...);
-extern jvalue		do_execute_java_class_method(char* cname, char* method_name, char* signature, ...);
+extern jvalue		do_execute_java_method_v(void*, char*, char*, struct _methods*, int, va_list);
+extern jvalue		do_execute_java_class_method(char*, char*, char*, ...);
+extern jvalue		do_execute_java_class_method_v(char*, char*, char*, va_list);
 
 extern Hjava_lang_Object* execute_java_constructor(char*, struct Hjava_lang_Class*, char*, ...);
 extern jlong		currentTime(void);
