@@ -27,7 +27,7 @@
 #define	LIBRARY_PREFIX	"/lib"
 
 #ifndef LIBRARYSUFFIX
-#define LIBRARYSUFFIX ".la"
+#define LIBRARYSUFFIX ""
 #endif
 
 extern char* libraryPath;

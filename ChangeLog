@@ -1,3 +1,9 @@
+Wed Feb  3 05:42:11 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/clib/native/Runtime.c (LIBRARYSUFFIX): default to
+	empty, since libltdl will take care of finding the appropriate
+	extension
+
 Wed Feb  3 03:48:27 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in (ac_cv_typedef_*): properly quoted the tests, so
