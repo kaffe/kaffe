@@ -9,10 +9,7 @@
  * of this file. 
  */
 
-#define DBG(s)
-#define FDBG(s)
-#define EDBG(s)
-
+#include "debug.h"
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
@@ -49,7 +46,7 @@ getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool loadClass, 
 	pool = CLASS_CONSTANTS(this);
 	if (pool->tags[idx] != CONSTANT_Methodref &&
 	    pool->tags[idx] != CONSTANT_InterfaceMethodref) {
-DBG(		printf("No Methodref found\n");				)
+DBG(MLOOKUP,	dprintf("No Methodref found\n");			)
                 throwNoSuchMethodError();
 	}
 
@@ -69,8 +66,8 @@ DBG(		printf("No Methodref found\n");				)
 		class = getClass(ci, this);
 		processClass(class, CSTATE_LINKED);
 
-DBG(		printf("getMethodSignatureClass(%s,%s,%s)\n",
-			class->name, name->data, sig->data);		)
+DBG(MLOOKUP,	dprintf("getMethodSignatureClass(%s,%s,%s)\n",
+			class->name->data, name->data, sig->data);	)
 
 		call->class = class;
 		call->method = 0;
@@ -162,7 +159,7 @@ getField(constIndex idx, Hjava_lang_Class* this, bool isStatic, fieldInfo* ret)
 
 	pool = CLASS_CONSTANTS(this);
 	if (pool->tags[idx] != CONSTANT_Fieldref) {
-FDBG(		printf("No Fieldref found\n");				)
+DBG(FLOOKUP,	dprintf("No Fieldref found\n");				)
                 throwException(NoSuchFieldError(""));
 	}
 
@@ -171,12 +168,15 @@ FDBG(		printf("No Fieldref found\n");				)
 
 	ni = FIELDREF_NAMEANDTYPE(idx, pool);
 
-FDBG(	printf("*** getField(%s,%s,%s)\n",
-		class->name, pool->data[NAMEANDTYPE_NAME(ni, pool)], pool->data[NAMEANDTYPE_SIGNATURE(ni, pool)]);	)
+DBG(FLOOKUP,	dprintf("*** getField(%s,%s,%s)\n",
+		class->name->data, 
+		WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)])->data, 
+		WORD2UTF(pool->data[NAMEANDTYPE_SIGNATURE(ni, pool)])->data);
+    )
 
 	field = lookupClassField(class, WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]), isStatic);
 	if (field == 0) {
-FDBG(		printf("Field not found\n");				)
+DBG(FLOOKUP,	printf("Field not found\n");				)
                 throwException(NoSuchFieldError(WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)])->data));
 	}
 
@@ -253,7 +253,7 @@ findExceptionInMethod(uintp pc, Hjava_lang_Class* class, exceptionInfo* info)
 			return;
 		}
 	}
-EDBG(	printf("Exception not found.\n");				)
+DBG(ELOOKUP,	dprintf("Exception not found.\n");			)
 }
 #endif
 
@@ -273,7 +273,8 @@ findExceptionBlockInMethod(uintp pc, Hjava_lang_Class* class, Method* ptr, excep
 
 	eptr = &ptr->exception_table->entry[0];
 
-EDBG(	printf("Nr of exceptions = %d\n", ptr->exception_table.length); )
+DBG(ELOOKUP,	
+	dprintf("Nr of exceptions = %d\n", ptr->exception_table->length); )
 
 	/* Right method - look for exception */
 	if (ptr->exception_table == 0) {
@@ -284,11 +285,11 @@ EDBG(	printf("Nr of exceptions = %d\n", ptr->exception_table.length); )
 		uintp end_pc = eptr[i].end_pc;
 		uintp handler_pc = eptr[i].handler_pc;
 
-EDBG(		printf("Exceptions %x (%x-%x)\n", pc, start_pc, end_pc); )
+DBG(ELOOKUP,	dprintf("Exceptions %x (%x-%x)\n", pc, start_pc, end_pc); )
 		if (pc < start_pc || pc > end_pc) {
 			continue;
 		}
-EDBG(		printf("Found exception 0x%x\n", handler_pc); )
+DBG(ELOOKUP,	dprintf("Found exception 0x%x\n", handler_pc); )
 
 		/* Found exception - is it right type */
 		if (eptr[i].catch_idx == 0) {
