@@ -750,8 +750,13 @@ jthread_init(int pre,
 	 */
 	atexit(restore_fds);
 	catchSignal(SIGINT, restore_fds_and_exit);
-	catchSignal(SIGHUP, restore_fds_and_exit);
 	catchSignal(SIGTERM, restore_fds_and_exit);
+	/* XXX this is f***ed.  On BSD, we get a SIGHUP if we try to put
+	 * a process that has a pseudo-tty in async mode in the background
+	 * So we'll just ignore it and keep running.  Note that this will
+	 * detach us from the session too.
+	 */
+	catchSignal(SIGHUP, SIG_IGN);
 
 	preemptive = pre;
 	max_priority = maxpr;
@@ -1520,7 +1525,12 @@ jthreadedOpen(const char* path, int flags, int mode)
 {
 	int fd;
 
-	fd = open(path, flags, mode);
+	/* Cygnus WinNT requires this */
+	fd = open(path, 
+#if defined(O_BINARY)
+		O_BINARY |
+#endif
+		flags, mode);
 	return (jthreadedFileDescriptor(fd));
 }
 
