@@ -1,3 +1,34 @@
+2001-04-21  Edouard G. Parmelan  <egp@free.fr>
+
+	* config.guess, config.sub: update from libtool 1.3.3 to support
+	QNX.
+
+	* kaffe/kaffevm/baseClasses.c, kaffe/kaffevm/classMethod.h,
+	kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classPool.c,
+	kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/readClassConfig.h: Read
+	InnerClasses attribute and save it into Hjava_lang_Class.  Access
+	flags found into InnerClasses attribute supersed class access
+	flags.
+
+	* libraries/clib/native/Class.c,
+	libraries/javalib/java/lang/Class.java: Implements or rewrite
+	methods getClasses(), getDeclaringClass(), getDeclaredClasses()
+	and native method getClasses0().
+
+	* developers/JavaClass.pm: Handle super vs synchronized and strictfp
+	access flags and InnerClasses attribute.
+
+	* kaffe/kaffevm/access.h: Add warning about Kaffe ACC_CONSTRUCTOR
+	flag vs standard ACC_STRICT flag.
+
+2001-04-19  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/java/text/StringCharacterIterator.java (next):
+	post-increment pos.  Close PR#747.
+	Reported by Evan Prodromou <evan@prodromou.san-francisco.ca.us>.
+	(next, previous): pos must be in range [begin, end] inclusive,
+	avoid infinite loop with Applix.
+
 2001-04-18  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/javalib/java/lang/reflect/Array.java,
@@ -7,7 +38,7 @@
 	libraries/javalib/java/lang/reflect/Member.java,
 	libraries/javalib/java/lang/reflect/Method.java,
 	libraries/javalib/java/lang/reflect/Modifier.java: dump to JDK 1.3 Spec.
-	
+
 	* java/lang/reflect/AccessibleObject.java,
 	java/lang/reflect/InvocationHandler.java,
 	java/lang/reflect/Proxy.java,
@@ -19,12 +50,12 @@
 	regen.
 
 	* test/regression/InvTarExcTest.java: Updated expected output.
-	
+
 2001-04-17  Archie Cobbs <archie@dellroad.org>
 
 	* test/regression/Reflect.java: Update expected output to Reflect
 	reality (new method in java.lang.System).
-	
+
 2001-04-12  Archie Cobbs <archie@dellroad.org>
 
 	* libraries/javalib/java/util/Properties.java: load(InputStream)
@@ -51,7 +82,7 @@ Mon Apr 02 16:41:59 MDT 2001  Jason Baker  <jbaker@cs.utah.edu>
 	Don't assume that char[]s are printed as Strings, they aren't
 	* test/regression/ReflectInterface.java:
 	Don't assume order of classfile members.
-	
+
 2001-04-01  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* Makefile.am, config/Makefile.am, kaffe/kaffe/Makefile.am,
@@ -90,7 +121,7 @@ Mon Apr 02 16:41:59 MDT 2001  Jason Baker  <jbaker@cs.utah.edu>
 	test/regression/SerialUID.java: new testcase, output is JDK1.1
 	compatible, see JDC Bug 4431318.
 
-	* test/regression/TestSerializable2.java: Fix exception output. 
+	* test/regression/TestSerializable2.java: Fix exception output.
 
 2001-03-14  Edouard G. Parmelan  <egp@free.fr>
 
@@ -100,7 +131,7 @@ Mon Apr 02 16:41:59 MDT 2001  Jason Baker  <jbaker@cs.utah.edu>
 
 Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 
-	* kaffe/kaffevm/code.c (addCheckedExceptions): 
+	* kaffe/kaffevm/code.c (addCheckedExceptions):
 	ignore empty Exceptions attributes
 
 2001-03-12  Edouard G. Parmelan  <egp@free.fr>
@@ -134,9 +165,9 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 	case where searched string is a substring.
 	Reported by Peter Graves <peter@armedbear.org>
 	Submitted by Olivier Lombart <olivier@envoii.com>
-	
+
 2001-03-06  Archie Cobbs <archie@dellroad.org>
-	
+
 	* java/util/zip/DeflateOutputStream.java (write): Throw
 	IndexOutOfBoundsException when parameters are nutty.
 	Fix PR#756.
@@ -152,7 +183,7 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 	float parameters as stack arguments.
 
 	* config/powerpc/common.h (COMPARE_AND_EXCHANGE): Add assembly version.
-	
+
 	* config/config-mem.h: Fix test for HAVE_DECLARED_SWAB.
 
 	* config/m68k/common.h (COMPARE_AND_EXCHANGE): Add assembly
@@ -183,17 +214,17 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 	uses as parameters name.  Close PR#745, PR#751 and PR#753.
 	Reported by Michael Rauch <mrauch@fs.tum.de>.
 	Reported by Delarue Christophe <cdelarue@bigfoot.com>.
-	
+
 2001-02-11  Edouard G. Parmelan  <egp@free.fr>
 
 	* config/alpha/trampolines.c: setup return register before
 	epilogue.
-	
+
 	* config/alpha/jit-alpha.def (lshr_int, lshr_int_const): Clear
 	high bits to avoid wrong sign propagation.
 	(cvt_float_int, cvt_float_long, cvt_double_int, cvt_double_long):
 	Disabled in flavor to soft_cvtXX().
-	
+
 	* config/alpha/jit-icode.h (HAVE_cvt_float_int,
 	HAVE_cvt_float_long, HAVE_cvt_double_int, HAVE_cvt_double_long):
 	Disabled in flavor to soft_cvtXX().
@@ -224,7 +255,7 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 2000-12-27  Edouard G. Parmelan  <egp@free.fr>
 
 	* test/regression/FPUStack.java: Add test for PR#737.
-	
+
 	* config/i386/jit.h, config/i386/jit3-i386.def,
 	config/i386/jit3-icode.h, kaffe/kaffevm/jit3/icode.c,
 	kaffe/kaffevm/jit3/machine.c, kaffe/kaffevm/jit3/registers.c,
@@ -239,12 +270,12 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 	slot_kill_readonce().  Mark return_float() and return_double()
 	sequences as use if HAVE_FLOATING_POINT_STACK.
 	Close PR#737 (and close PR#601 and PR#620 for JIT2).
-	
+
 2000-12-26  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/clib/math/BigInteger.c (toInt0): Use mpz_get_ui().
 	Close PR#677.
-	
+
 	* libraries/javalib/java/math/BigInteger.java (intValue,
 	longValue): rewrite with new toInt0() semantic.
 
@@ -252,7 +283,7 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 	libraries/javalib/java/net/ServerSocket.java: catch IOException in
 	<init> to close SocketImpl to immediate release file descriptor.
 	Workaround PR#649.
-	
+
 	* libraries/clib/net/InetAddressImpl.c,
 	kaffe/kaffevm/systems/unix-pthreads/syscalls.c,
 	kaffe/kaffevm/systems/unix-jthreads/syscalls.c,
@@ -289,13 +320,13 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 	in op_add_const() and op_sub_const().
 	Reported by Guillaume Jaunet <jaunet@lep-philips.fr> and Rauli
 	Ruohonen <rruohone@cc.hut.fi> on pocketlinux-devel.
-	
+
 	* kaffe/kaffevm/jit3/icode.c (add_int): don't optimize const +
 	const as it will not clear Carry bit and breaks add_long on ARM.
 	Reported by Guillaume Jaunet <jaunet@lep-philips.fr>.
-	
+
 	* config/arm/jit.h (FILL_IN_TRAMPOLINE): Use `ldr pc, [pc, #4]'.
-	Reported by Marcus Smith <marcus@ridgerun.com>. 
+	Reported by Marcus Smith <marcus@ridgerun.com>.
 
 	* config/i386/linux/md.h (SIGNAL_ARGS): fix prototype.
 
@@ -303,7 +334,7 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 	prefix to be SMP safe.
 
 	* developers/alignment_of_size.c: add `long' case.
-	
+
 	* libraries/clib/native/System.c (initProxyProperties): Cast
 	parameter of tolower() as int.
 
@@ -333,21 +364,21 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 	entry.
 	(__alpha_osf_register_jit_exc, __alpha_osf_unregister_jit_exc):
 	Third parameter is now end of code.
-	
+
 	* config/alpha/jit.h: Define PUSHARG_FORWARDS.  This workaround
 	bad stack offset for double and long in Kaffe_wrapper().
 	(FILL_IN_TRAMPOLINE): Add third parameter where.
 	(LABEL_Lrsa): frameoffset is a byte offset.
 	(FRAMEOBJECT): Object argument is now at fixed offset from $fp.
-	
-	* config/alpha/trampolines.c (alpha_do_fixup_trampoline): 
+
+	* config/alpha/trampolines.c (alpha_do_fixup_trampoline):
 	Handle new third parameter of FILL_IN_TRAMPOLINE.
 
 	* config/alpha/osf/jit-md.h (MD_REGISTER_JIT_EXCEPTION_INFO,
 	MD_UNREGISTER_JIT_EXCEPTION_INFO): Third parameter is now end of
 	code.
 	(SPFRAME): new macro used by nextFrame().
-	
+
 	* config/alpha/jit-alpha.def (prologue): Reverse order of spilled
 	arguments to speedup FRAMEOBJECT() macro.
 	(op_cpysn, op_mov): Use canonical formes describe in `Alpha
@@ -356,7 +387,7 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 	(load-load): use wreg_load() for result register.
 	(alpha_cbranch_const): It's not the test that must be negate but
 	the offset.
-	
+
 	* kaffe/kaffevm/exception.c (nextFrame): Use NEXTFRAME() only
 	_one_ time as it modifies exceptionFrame parameter on Alpha OSF/1.
 	Use SP to check current stack (some Alpha function does not have
@@ -375,7 +406,7 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 	* kaffe/kaffevm/jni.c (Kaffe_wrapper): Use pusharg_long_idx_inc
 	for long and double parameter.  This is only done for
 	PUSHARG_FORWARDS case.
-	
+
 	* kaffe/kaffevm/kaffe.def, kaffe/kaffevm/jit3/kaffe-jit.def: Merge
 	into kaffe/kaffevm/kaffe.def for INTRP, JIT2 and JIT3 engines.
 	Add JCODE debug traces.
@@ -383,25 +414,25 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/object.c, kaffe/kaffevm/object.h: Create new
 	function newMultiArrayChecked().
-	
+
 	* kaffe/kaffevm/soft.c (soft_vmultianewarray,
 	soft_multianewarray): Use newMultiArrayChecked().
 	(soft_lookupinterfacemethod): Proper handle bad method marker (-1)
 	with 64bit arch.
-	
+
 	* kaffe/kaffevm/jit/icode.c, kaffe/kaffevm/jit3/icode.c: Fix all
 	call places of add_ref(), third parameter is the offset, not the
 	reference.
 	(load_offset_scaled_long, store_offset_scaled_long): don't split
 	long slot as two int slots, it's not true for Alpha.
-	
+
 	* kaffe/kaffevm/intrp/icode.h, kaffe/kaffevm/intrp/machine.c,
 	kaffe/kaffevm/intrp/machine.h, kaffe/kaffevm/intrp/slots.h,
 	kaffe/kaffevm/jit/basecode.h, kaffe/kaffevm/jit/codeproto.h,
 	kaffe/kaffevm/jit/icode_internal.h, kaffe/kaffevm/jit/machine.h:
 	define (or create) JIT3 compatibility macros (or functions) for
 	new merged kaffe.def.
-	
+
 	* kaffe/kaffevm/jit/machine.c: define JIT3 compatibility macros
 	for new merged kaffe.def.
 	(finishInsnSequence): Don't forget exc_len.
@@ -423,7 +454,7 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 
 	* test/regression/DoublePrint.java: catch ArithmeticException to
 	avoid abort.
-	
+
 Thu Dec  7 17:41:44 MST 2000  Godmar Back <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.c: fix race condition in resolveFieldType
@@ -497,7 +528,7 @@ Fri Dec  1 18:41:36 MST 2000  Godmar Back <gback@cs.utah.edu>
 	Submitted by Win van Velthoven <ftu@fi.uu.nl>.
 
 	* test/regression/Makefile.am: new test case PipeTest.
-	
+
 	* kaffe/kaffeh/support.c (kstat, kfstat): Convert Tru64 silly macros
 	stat() and fstat() to functions.  Close PR#710.
 	Reported by Stephane Bortzmeyer <bortzmeyer@pasteur.fr>
@@ -507,7 +538,7 @@ Fri Dec  1 18:41:36 MST 2000  Godmar Back <gback@cs.utah.edu>
 
 	* Makefile.am: Add missing files from FAQ/ and developers/
 	directories into EXTRA_DIST list.
-	
+
 	* developers/EncodeEUC_JP.java, developers/README.EUC_JP: Build
 	tables for EUC-JP encoding.
 
@@ -528,7 +559,7 @@ Fri Dec  1 18:41:36 MST 2000  Godmar Back <gback@cs.utah.edu>
   	* libraries/javalib/kaffe/io/{ByteToChar,CharToByte}Converter.java
 	(getConverter): try with iconv() if getConverterInternal() fail.
 	(getDefault): use getConverter().
-	
+
 	* include/Makefile.am: add generation of header files
 	kaffe_io_ByteToCharIconv.h and kaffe_io_CharToByteIconv.h.
 
@@ -542,7 +573,7 @@ Fri Dec  1 18:41:36 MST 2000  Godmar Back <gback@cs.utah.edu>
 	test/regression/Makefile.in: regen.
 
 	* libraries/javalib/Klasses.jar: regen with Jikes 1.10.
-	
+
 Mon Nov 13 14:31:16 MST 2000  Godmar Back <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/gcFuncs.c: fixed race condition in destroyClass
@@ -566,7 +597,7 @@ Fri Oct 27 19:27:23 MDT 2000  Godmar Back <gback@cs.utah.edu>
 	kaffe/kaffevm/classPool.c, kaffe/kaffevm/gc.h,
 	kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/object.c,
 	test/regression/CLTestDelegate.java:
-	fix CLTestDelegate.  This is at least how I think it ought 
+	fix CLTestDelegate.  This is at least how I think it ought
 	to be.
 
 2000-10-26  Edouard G. Parmelan  <egp@free.fr>
@@ -589,14 +620,14 @@ Fri Oct 27 19:27:23 MDT 2000  Godmar Back <gback@cs.utah.edu>
 	pointer.
 	(gc_primitive_reserve): Declare size as size_t to avoid lost of
 	precision.
-	
+
 Wed Oct 25 10:23:10 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* test/regression/CLTestDelegate.java,
 	  test/regression/Makefile.*:
 	  A new regression test.  More than a year ago, we regressed to
-	  the point where finalizeClassLoader is no longer run.  This test 
-	  will trigger the destroyClass sanity check if there are dangling 
+	  the point where finalizeClassLoader is no longer run.  This test
+	  will trigger the destroyClass sanity check if there are dangling
 	  ClassPool entries.
 
 2000-10-24  Edouard G. Parmelan  <egp@free.fr>
@@ -616,7 +647,7 @@ Wed Oct  4 15:50:21 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 	uses of 'jlong'.  Defined to be 'long long int'.  #include "config.h"
 	to figure out how to define debugmask_t.
 	* kaffe/kaffevm/debug.c: use the new debugmask_t type.
-	* kaffe/kaffevm/jar.c: add a comment  
+	* kaffe/kaffevm/jar.c: add a comment
 	* kaffe/kaffevm/systems/unix-jthreads/syscalls.c: remove #include
 	of unneeded debug.h
 
@@ -624,7 +655,7 @@ Wed Sep 27 10:36:25 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
 	* libraries/javalib/java/util/zip/ZipFile.java: add size()
 	and native getZipFileSize0().
-	* libraries/clib/native/ZipFile.c: add 
+	* libraries/clib/native/ZipFile.c: add
 	java_util_zip_ZipFile_getZipFileSize0()
 
 Tue Sep 26 14:20:31 PDT 2000  Archie Cobbs <archie@whistle.com>
@@ -634,13 +665,13 @@ Tue Sep 26 14:20:31 PDT 2000  Archie Cobbs <archie@whistle.com>
 Wed Sep 13 12:27:17 MDT 2000  Godmar Back <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/utf8const.c: fix race condition in utf8ConstNew
-	* kaffe/kaffevm/locks.[ch], kaffe/kaffevm/string.c, 
+	* kaffe/kaffevm/locks.[ch], kaffe/kaffevm/string.c,
 	kaffe/kaffevm/utf8const.c: include string/utf8 lock among
 	the no-allocation locks.
 
 Sun Sep 10 18:55:53 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
-	* kaffe/kaffevm/systems/unix-jthreads/signal.c (nullException): 
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c (nullException):
 	In my last big checkin, I added a freebsd-specific hack to catch
 	SEGV's on addresses other than zero.  As it turns out, this is a
 	freebsd/jit specific hack, since we don't take a sigcontext * in
@@ -678,7 +709,7 @@ Sat Sep 09 11:49:51 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 	end any confusion, I have fixed all such references.
 
 	kaffeh defines dprintf in terms of vfprintf, and uses dprintf
-	rather than calling fprintf directly.  
+	rather than calling fprintf directly.
 
 Sat Sep 09 11:43:32 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
@@ -694,11 +725,11 @@ Mon Sep  4 20:05:05 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
 	* kaffe/kaffevm/utf8const.c: explicitly #include debug.h
 	* config/i386/oskit/*: Update for impending OSKit release
-	20000904.  Other minor cleanup 
+	20000904.  Other minor cleanup
 	* kaffe/kaffevm/systems/oskit-pthreads/*: Fix jthread_disable_stop
  	and jthread_enable_stop (called in context without thread at
  	startup).  Fix jcondvar_destroy() prototype.
-	
+
 Fri Sep 01 18:10:36 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/debug.c(dbgSysInit): Since this function exists in
@@ -721,7 +752,7 @@ Sat Aug 26 16:52:06 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	We don't want to make the standard ports blocking (not even in
 	debug mode).  Instead, dprintf does its own buffering, and polls
-	fd 2 until a message is completely written.  
+	fd 2 until a message is completely written.
 
 	dprintf is now defined regardless of the value of DEBUG, and all
 	occurrences of fprintf should really be fixed.  (As a side effect,
@@ -729,14 +760,14 @@ Sat Aug 26 16:52:06 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 Sat Aug 26 16:41:19 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
-	* kaffe/kaffevm/mem/gc-incremental.h, kaffe/kaffevm/mem/gc-mem.h 
+	* kaffe/kaffevm/mem/gc-incremental.h, kaffe/kaffevm/mem/gc-mem.h
  	kaffe/kaffevm/jni.c:
 	Move default heap sizes, gc_heap_base, gc_block_base and
 	gc_heap_range from gc-mem.h to gc-incremental.h.  Kaffe should get
 	all the info it needs from gc.h, and should not know that either
 	file exists.  (jni.c no longer needs to include mem/gc-mem.h.)
 
-	* libraries/clib/native/Method.c: 
+	* libraries/clib/native/Method.c:
 	Work around the fact that abstract methods may have the native bit
 	set.  We could elminate this behavior by cleaning up callMethod*,
 	and findLocalMethod.
@@ -818,7 +849,7 @@ Thu Aug  3 18:10:10 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* config/powerpc/linux/config.frag: don't force --without-libffi.
 	* config/Makefile.{am,in}: added powerpc/callmethod_ppc.h
-	
+
 Tue Jul 25 12:33:25 MDT 2000  Kevin B. Hendricks <khendricks@ivey.uwo.ca>
 
 	* acinclude.m4, aclocal.m4: added powerpc
@@ -835,7 +866,7 @@ Tue Jul 25 12:33:25 MDT 2000  Kevin B. Hendricks <khendricks@ivey.uwo.ca>
 Mon Jul 24 18:32:41 MDT 2000  Godmar Back <gback@cs.utah.edu>
 
     	* libraries/javalib/kaffe/util/UNIXTimeZone.java: close()
-	FileInputStreams to avoid possible problem with large number 
+	FileInputStreams to avoid possible problem with large number
 	of fds.
 
 Mon Jul 24 14:00:00 PDT 2000  Tim Wilkinson <tim@transvirtual.com>
@@ -890,15 +921,15 @@ Fri Jul 21 15:57:58 PDT 2000  Archie Cobbs <archie@whistle.com>
 	* libraries/javalib/java/lang/String.java (copyValueOf): Relax
 	IndexOutOfBoundsException to allow 0 length source as JDK does.
 	Reported by Brinkman, David N <DB132330@exchange.ColumbiaSC.NCR.com>.
-	
+
 	* libraries/javalib/java/util/Locale.java: Use canonical forms of
 	locals and avoid null pointers.
 	Reported by Brinkman, David N <DB132330@exchange.ColumbiaSC.NCR.com>.
-	
+
 	* libraries/javalib/java/util/Properties.java: Unicode escape is
 	`\u' not `\\u'.
 	Reported by Brinkman, David N <DB132330@exchange.ColumbiaSC.NCR.com>.
-	
+
 	* config/powerpc/linux/config.frag: Force with_libffi=yes as we
 	do not have assembler version of sysdepCallMethod() for PowerPC.
 	Close PR#647.
@@ -922,7 +953,7 @@ Fri Jul 14 16:14:39 PDT 2000  Dalibor Topic <robilad@yahoo.com>
 	stream is closed.
 	(close) Releases the reference to buf and allows it to be
 	garbage collected.
-	(read) Now checks if stream is open before reading. Fixed count. 
+	(read) Now checks if stream is open before reading. Fixed count.
 	(read(char[],int,int)) Now checks if stream is open before reading.
 	Fixed count. Added checks for arguments. Uses Math.min to determine
 	number of characters to copy.
@@ -953,7 +984,7 @@ Fri Jul 14 16:14:39 PDT 2000  Dalibor Topic <robilad@yahoo.com>
 	(readLine) skips over first \n, if it belongs to previous \r. Always
 	increases line count by one. If super.readLine() returns null,
 	doesn't increase line count.  (reset) restore skipnextlf.
-	(skip) Use a buffer for skipping, improves speed. Throws an exception 
+	(skip) Use a buffer for skipping, improves speed. Throws an exception
 	if skip count is negative.
 	* test/regression/CharArrayReaderTest.java: new test
 	* test/regression/LineNumberReaderTest.java: new test
@@ -987,7 +1018,7 @@ Wed Jun 28 13:15:32 PDT 2000  Archie Cobbs <archie@whistle.com>
 	* kaffe/kaffevm/jit3/kaffe-jit.def: Explicitly check that 'this'
  	is not null when dispatching to a final virtual method.
 	* kaffe/kaffevm/kaffe.def: Same thing, but for the interpreter.
-	
+
 Thu Jun 22 15:47:03 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
 	* test/regression/{NullPointerTest.java,NullInvoke.java}: move
@@ -1010,7 +1041,7 @@ Thu Jun 22 12:54:00 PDT 2000  Archie Cobbs <archie@whistle.com>
 	(Java_java_math_BigInteger_modinv0): convert negative remainder to
 	positive equivalent.
 	This fix Volano License bug.
-	
+
 	* libraries/javalib/java/math/BigInteger.java (toByteArray): don't
 	modify this by copy.  Close PR#627.
 
@@ -1039,14 +1070,14 @@ Thu Jun 22 12:54:00 PDT 2000  Archie Cobbs <archie@whistle.com>
 Tue Jun 20 21:59:44 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
 	* developers/gdbinit: Add three macros for tweaking the
-	kaffevmDebugMask from GDB, factor out the thread platform from the 
+	kaffevmDebugMask from GDB, factor out the thread platform from the
 	bt threads, and add 'pobject' and 'pobjecttype'.
-	
+
 	* config/i386/freebsd2/md.h,
 	kaffe/kaffevm/systems/unix-jthreads/jthread.c:  Add SET_BP macro
 	to clear the base pointer in a new thread's jmpbuf.  Cleans up
 	backtraces in GDB.  Defined a BP_OFFSET for FreeBSD.
-	
+
 	* kaffe/kaffevm/locks.h, kaffe/kaffevm/utf8const.c,
  	kaffe/kaffevm/systems/unix-jthreads/jthread.c,
  	kaffe/kaffevm/systems/unix-jthreads/jthread.h: Support for
@@ -1054,18 +1085,18 @@ Tue Jun 20 21:59:44 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
  	data structures.  Covers all internal locks. utf8const lock gets
  	special attention and some additional cleanup thrown in free.
   	Allows recursive disables.
-	
+
 	* kaffe/kaffevm/string.c: two comments
-	
-	* kaffe/kaffevm/thread.c, libraries/javalib/java/lang/Thread.java: 
+
+	* kaffe/kaffevm/thread.c, libraries/javalib/java/lang/Thread.java:
 	Remove old, unused support for disable/enable stop.
-	
+
 	* kaffe/kaffevm/ksem.h: remove erroneous assert(), cleanup other
  	asserts.
 
 	* kaffe/libraries/javalib/Klasses.jar: Rebuilt with Jikes.
 	Includes many of Edouard's fixes.
-	
+
 2000-06-20  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/javalib/java/text/SimpleDateFormat.java (format): use
@@ -1076,15 +1107,15 @@ Tue Jun 20 21:59:44 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
 	* libraries/javalib/java/text/DecimalFormat.java (parse):
 	reimplement, setup ParsePosition correctly and handle more cases.
-	
+
 	* libraries/javalib/java/text/SimpleDateFormat.java (parse):
 	reimplement, follow patterns format.  Close PR#565.
 	(SimpleDateFormat): retreive default pattern.
-	
+
 	* libraries/javalib/kaffe/applet/AppletViewer.java
 	(DefaultAppletStub): set documentBase with correct constructor
 	parameter.  Close PR#602.
-	
+
 2000-06-19  Edouard G. Parmelan  <egp@free.fr>
 
 	* kaffe/kaffevm/jit3/icode.c kaffe/kaffevm/jit3/kaffe-jit.def
@@ -1117,7 +1148,7 @@ Tue Jun 20 21:59:44 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
 	* libraries/javalib/Makefile.am libraries/javalib/Makefile.in: add
 	kaffe.util.SupportDisabled class.
-	
+
 	* libraries/clib/math/BigInteger.c libraries/clib/zip/Adler32.c
 	libraries/clib/zip/Deflater.c libraries/clib/zip/Inflater.c
 	libraries/clib/security/digest.c: create dummy native methods that
@@ -1152,7 +1183,7 @@ Tue Jun 20 21:59:44 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 	* libraries/javalib/kaffe/io/ConverterAlias.java: If they are not
 	aliases for encoding name, return it in uppercase.  This will
 	automaticly create aliases for Cp1250 and Co to our classes.
-	
+
 	* test/regression/FPUStack.java, test/regression/Makefile.am,
 	test/regression/Makefile.in: new testcase for PR#620.
 
@@ -1179,7 +1210,7 @@ Tue Jun 20 21:59:44 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 	kaffe/kaffevm/jit3/kaffe-jit.def (POP, POP2): Create new sequence
 	if HAVE_pop_slot is defined to avoid eliminate slots that force
 	some registers.
-	
+
 	* kaffe/kaffevm/jit3/codeproto.h (pop_slot): add prototype.
 
 	* kaffe/kaffevm/debug.h kaffe/kaffevm/debug.c: add vmdebug flag
@@ -1190,7 +1221,7 @@ Tue Jun 20 21:59:44 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
 	* libraries/javalib/kaffe/net/www/protocol/http/HttpURLConnection.java
 	(connect): fix typo.
-	
+
 	* libraries/javalib/java/io/InvalidClassException.java
 	(getMessage): Avoid recursive call.
 
@@ -1215,7 +1246,7 @@ Thu Jun 15 11:16:52 MDT 2000  Godmar Back <gback@cs.utah.edu>
 	* test/regression/TestSerializable2.java
 	test/regression/Makefile.am test/regression/Makefile.in: new test
 	case.
-	
+
 Wed Jun 14 16:12:53 MDT 2000  Godmar Back <gback@cs.utah.edu>
 
 	* libraries/clib/native/Class.c: fix getMethods0 to not report
@@ -1233,7 +1264,7 @@ Wed Jun 14 16:12:53 MDT 2000  Godmar Back <gback@cs.utah.edu>
 	assumption that the input length is equal to the output length, is
 	not necessarily true for non-ASCII characters.
 	Submitted by Ito Kazumitsu <ito@maczuka.gcd.org>
-	
+
 	* libraries/javalib/java/awt/event/KeyEvent.java
 	(getKeyModifiersText): Use StringBuffer().
 
@@ -1244,7 +1275,7 @@ Wed Jun 14 16:12:53 MDT 2000  Godmar Back <gback@cs.utah.edu>
 	Different implementation by Edouard G. Parmelan.
 
 Tue Jun 13 22:17:51 MDT 2000  Tim Stack  <stack@cs.utah.edu>
-	
+
 	* kaffe/kaffevm/baseClasses.[ch]: statically load and reference
  	java/lang/Throwable for the verifier.
 	* kaffe/kaffevm/code-analyse.c: check catch clause exceptions to
@@ -1253,9 +1284,9 @@ Tue Jun 13 22:17:51 MDT 2000  Tim Stack  <stack@cs.utah.edu>
  	code.
 	* test/regression/{ExceptionTestClassLoader.java,
 	ExceptionTestClassLoader2.java}: Tweaks.
-	* test/regression/Overflow.java: Make it more interesting by using 
+	* test/regression/Overflow.java: Make it more interesting by using
 	a ClassLoader.
-	
+
 2000-06-13  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/javalib/java/net/URL.java: Add serialization functions.
@@ -1268,7 +1299,7 @@ Sat Jun 10 14:09:48 MDT 2000  Tim Stack  <stack@cs.utah.edu>
 	memory while creating a utf8 constant.  Mark bad constants as bad.
 	* kaffe/kaffevm/external.c: free native code on error loading
 	native method.
-	* kaffe/kaffevm/findInJar.c: free raw class data if newClass fails 
+	* kaffe/kaffevm/findInJar.c: free raw class data if newClass fails
 	on it.
 	* kaffe/kaffevm/gcFuncs.c: free un-replaced trampolines when
 	destroying a class object's dtable, same of the itable2dtable.
@@ -1278,11 +1309,11 @@ Sat Jun 10 14:09:48 MDT 2000  Tim Stack  <stack@cs.utah.edu>
 	to throwAbstractMethodError.
 	* kaffe/kaffevm/thread.c: free the ksem when thread is destroyed
 	* kaffe/kaffevm/jit3/machine.c: free nativecode before setting to
-	nullCall.  Free nativecode and bytecode when installing translated 
+	nullCall.  Free nativecode and bytecode when installing translated
 	method.
-	* kaffe/libraries/clib/native/ZipFile.c: free temporary buffer in 
+	* kaffe/libraries/clib/native/ZipFile.c: free temporary buffer in
 	ZipFile.getZipData0() native method.
-	
+
 Fri Jun  2 10:15:55 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/kaffe/util/UNIXTimeZone.java: speed up reading
@@ -1300,7 +1331,7 @@ Fri May 26 15:45:43 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 	when allocating memory.
 
 	* kaffe/kaffevm/thread.c, libraries/javalib/java/lang/Thread.java,
-	ibraries/javalib/Klasses.jar: 
+	ibraries/javalib/Klasses.jar:
 	Throw the user-specified exception in response to an asynchornous
 	Thread.stop() exception.  Fill in the stopped thread's stack trace
 	when stop wakes us up from a wait.
@@ -1315,7 +1346,7 @@ Fri May 26 15:45:43 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 	o inline markObjectDontCheck
 	o turn off a slow assertion unless -vmdebug GCDIAG is specified
 
-	
+
 Tue May 23 14:15:30 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* libraries/clib/management/Makefile.am,
@@ -1336,24 +1367,24 @@ Tue May 23 11:21:08 MDT 2000  Timothy Stack <stack@cs.utah.edu>
 	signal handler state.
 	* config/i386/jit3-i386.def: Add preamble for JIT'd, profiled
 	methods.
-	* kaffe/kaffe/main.c: Add 5 new -X options for xprofiling, feedback 
+	* kaffe/kaffe/main.c: Add 5 new -X options for xprofiling, feedback
 	and xdebugging.
 	* kaffe/kaffevm/baseClasses.c: initialize profiling, if enabled
 	* kaffe/kaffevm/classMethod.c: don't drop class initializers if profiling.
-	* kaffe/kaffevm/external.[ch]: Add loadNativeLibrary2() to allow 
+	* kaffe/kaffevm/external.[ch]: Add loadNativeLibrary2() to allow
 	feedback code to pre-load native libraries.
 	* kaffe/kaffevm/jni.c: serialize JIT+record if recording info to
 	feedback file.
 	* kaffe/kaffevm/methodCache.[ch]: Add walkActiveMethods()
 	* kaffe/kaffevm/{stringSupport.h,utf8const.c}: move UTF8_GET()
 	macro to stringSupport.h from utf8const.c.
-	* kaffe/kaffevm/jit3/machine.c: Support for xprofiling, xdebugging 
+	* kaffe/kaffevm/jit3/machine.c: Support for xprofiling, xdebugging
 	and feedback.
 	* kaffe/kaffevm/jit3/registers.c: fix a typo
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: use vtAlarm to
 	record profile hits, if profiling.
 	* configure, */Makefile.in, Klasses.jar: regenerated
-	
+
 Mon May 22 17:18:45 PDT 2000  Timothy Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/gcFuncs.c: fix bug GC'ing interface methods
@@ -1591,11 +1622,11 @@ Mon Mar 20 17:46:38 MST 2000  Godmar Back <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.[ch], itypes.c: fix Mo's problem with
 	bad error checking in class lookup.  Distinguish between
-	getClassFromSignature (single name) and getClassFromSignaturePart 
+	getClassFromSignature (single name) and getClassFromSignaturePart
 	(name is part of signature)
 	* libraries/extensions/microsoft/clib/Delegate.c,
 	libraries/clib/native/Class.c: ditto.
-	* string.c, utf8const.c, stringSupport.h: added utf8 encoding 
+	* string.c, utf8const.c, stringSupport.h: added utf8 encoding
 	function to convert from java string to utf8 directly.
 
 Mon Mar 20 17:47:56 PST 2000  Archie Cobbs <archie@whistle.com>
@@ -1668,7 +1699,7 @@ Tue Mar 14 12:08:37 PST 2000  Mo DeJong <mdejong@cygnus.com>
 	* test/regression/ZipVerifyUtils.java: new support class
 
 Tue Mar 14 14:23:22 CET 2000  Edouard G. Parmelan  <egp@free.fr>
-	
+
 	* libraries/javalib/kjc.jar: update to version 1.4D from
 	kjc CVS Tree compiled with kjc-1.4B-egp1.
 
@@ -1699,7 +1730,7 @@ Thu Mar  9 13:50:06 PST 2000  Patrick Tullmann <tullmann@cs.utah.edu>
 	* kaffe/kaffevm/debug.[ch]: drop DBG_VMLOCKS, add
 	DBG_SLOWLOCKS, DBG_INITCLASSPATH and DBG_CLASSLOOKUP flags.
 	* kaffe/kaffevm/findInJar.c: drop old-style debugging, use
-	DBG_INITCLASSPATH and DBG_CLASSLOOKUP for debugging rumaging 
+	DBG_INITCLASSPATH and DBG_CLASSLOOKUP for debugging rumaging
 	around in jar files.
 	* kaffe/kaffevm/systems/oskit-pthreads/pjthread.c: Check for
 	newborn/dead thread before getting stack state.  Initialize
@@ -1716,7 +1747,7 @@ Thu Mar  9 12:45:14 CET 2000  Edouard G. Parmelan  <egp@free.fr>
 Mon Mar  6 17:17:16 MST 2000  Godmar Back <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/code-analyse.[ch]: added missing postExceptionMessage
-	calls to verifyBasicBlock macros. 
+	calls to verifyBasicBlock macros.
 
 Mon Mar  6 11:16:55 MST 2000  Patrick A Tullmann <tullmann@cs.utah.edu>
 
@@ -1783,7 +1814,7 @@ Sun Feb 20 17:00:34 PST 2000  Archie Cobbs <archie@whistle.com>
 Wed Feb 16 12:09:23 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/zip/ZipInputStream.java:
-	fix yet another bug 
+	fix yet another bug
 	* libraries/javalib/java/util/zip/Zip{In,Out}putStream.java:
 	encode/decode filenames with UTF-8
 	* test/regression/DosTimeVerify.java,
