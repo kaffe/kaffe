@@ -530,6 +530,9 @@ walkRefArray(void* base, uint32 size)
 	RECORD_MARKED(1, size)
 
 	arr = (Hjava_lang_Object*)base;
+	if (arr->dtable == 0) {			/* see walkObject */
+		return;
+	}
 
 	ptr = OBJARRAY_DATA(arr);
 	MARK_OBJECT_PRECISE(arr->dtable->class);
