@@ -637,7 +637,12 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	mkdir $(LIBDIR)
 	$(SHELL) $(rebuildLib) @essential.files
 	$(SHELL) $(rebuildLib) @@java_math_files@
-	for i in `cat $(srcdir)/profiles/$(PROFILE)/profile` ;  do $(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i ; done
+	for i in `cat $(srcdir)/profiles/$(PROFILE)/profile` ;  do \
+		$(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i ; \
+		if [ $${?} -ne 0 ]; then \
+			break ; \
+		fi ; \
+	done
 	echo timestamp > $(LIBDIR)/stamp
 
 $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
