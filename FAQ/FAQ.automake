@@ -3,7 +3,7 @@ IMPORTANT NOTE:
 
 - in order to modify the Makefiles and configure.in, you need rather
 recent versions of autoconf and automake: autoconf 2.59 and automake
-1.9.2.
+1.9.3.
 
 - in order to rebuild Makefile.in files and the configure script 
 please run the developers/autogen.sh script in the top level directory.
