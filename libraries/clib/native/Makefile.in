@@ -108,6 +108,7 @@ PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
 RANLIB = @RANLIB@
 REGEN_FORWARD = @REGEN_FORWARD@
+SECURITY_LIBS = @SECURITY_LIBS@
 THREAD_DIR = @THREAD_DIR@
 THREAD_SYSTEM = @THREAD_SYSTEM@
 VERSION = @VERSION@
@@ -133,8 +134,7 @@ with_engine = @with_engine@
 native_LTLIBRARIES = libnative.la
 
 IO_SRCS = \
-		ObjectStreamClassImpl.c \
-		sha-1.c
+		ObjectStreamClassImpl.c
 
 
 LANG_SRCS = \
@@ -177,10 +177,6 @@ UTIL_SRCS = \
 		Arrays.c
 
 
-noinst_HEADERS = \
-		sha-1.h
-
-
 libnative_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
 libnative_la_LIBADD = $(M_LIBS)
 libnative_la_SOURCES = $(IO_SRCS) $(LANG_SRCS) $(REFLECT_SRCS) $(TEXT_SRCS) $(TEST_SRCS) $(UTIL_SRCS)
@@ -201,11 +197,11 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libnative_la_DEPENDENCIES = 
-am_libnative_la_OBJECTS =  ObjectStreamClassImpl.lo sha-1.lo \
-ClassLoader.lo Class.lo Compiler.lo Double.lo Float.lo Math.lo \
-Object.lo Runtime.lo SecurityManager.lo String.lo System.lo Thread.lo \
-Throwable.lo UNIXProcess.lo CharToByteDefault.lo ByteToCharDefault.lo \
-ZipFile.lo MemoryAdvice.lo Array.lo Constructor.lo Field.lo Method.lo \
+am_libnative_la_OBJECTS =  ObjectStreamClassImpl.lo ClassLoader.lo \
+Class.lo Compiler.lo Double.lo Float.lo Math.lo Object.lo Runtime.lo \
+SecurityManager.lo String.lo System.lo Thread.lo Throwable.lo \
+UNIXProcess.lo CharToByteDefault.lo ByteToCharDefault.lo ZipFile.lo \
+MemoryAdvice.lo Array.lo Constructor.lo Field.lo Method.lo \
 DateFormat.lo TestNative.lo Arrays.lo
 libnative_la_OBJECTS =  $(am_libnative_la_OBJECTS)
 CFLAGS = @CFLAGS@
@@ -214,9 +210,7 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES =  $(libnative_la_SOURCES)
-HEADERS =  $(noinst_HEADERS)
-
-DIST_COMMON =  $(noinst_HEADERS) Makefile.am Makefile.in
+DIST_COMMON =  Makefile.am Makefile.in
 
 
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -232,7 +226,7 @@ $(DEPDIR)/MemoryAdvice.Plo $(DEPDIR)/Method.Plo $(DEPDIR)/Object.Plo \
 $(DEPDIR)/ObjectStreamClassImpl.Plo $(DEPDIR)/Runtime.Plo \
 $(DEPDIR)/SecurityManager.Plo $(DEPDIR)/String.Plo $(DEPDIR)/System.Plo \
 $(DEPDIR)/TestNative.Plo $(DEPDIR)/Thread.Plo $(DEPDIR)/Throwable.Plo \
-$(DEPDIR)/UNIXProcess.Plo $(DEPDIR)/ZipFile.Plo $(DEPDIR)/sha-1.Plo
+$(DEPDIR)/UNIXProcess.Plo $(DEPDIR)/ZipFile.Plo
 SOURCES = $(libnative_la_SOURCES)
 OBJECTS = $(am_libnative_la_OBJECTS)
 
@@ -293,7 +287,6 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 ObjectStreamClassImpl.lo:
-sha-1.lo:
 ClassLoader.lo:
 Class.lo:
 Compiler.lo:
@@ -411,7 +404,7 @@ install-am: all-am
 install: install-am
 uninstall-am: uninstall-nativeLTLIBRARIES
 uninstall: uninstall-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_STRIP_FLAG=-s install

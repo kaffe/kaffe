@@ -108,6 +108,7 @@ PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
 RANLIB = @RANLIB@
 REGEN_FORWARD = @REGEN_FORWARD@
+SECURITY_LIBS = @SECURITY_LIBS@
 THREAD_DIR = @THREAD_DIR@
 THREAD_SYSTEM = @THREAD_SYSTEM@
 VERSION = @VERSION@
@@ -182,6 +183,7 @@ libkaffevm_la_SOURCES = \
 	lookup.c \
 	object.c \
 	readClass.c \
+	sha-1.c \
 	soft.c \
 	stackTrace.c \
 	stats.c \
@@ -222,6 +224,7 @@ noinst_HEADERS = \
 	object.h \
 	readClass.h \
 	readClassConfig.h \
+	sha-1.h \
 	slib.h \
 	soft.h \
 	stackTrace.h \
@@ -252,8 +255,8 @@ am_libkaffevm_la_OBJECTS =  gc-mem.lo md.lo baseClasses.lo \
 classMethod.lo classPool.lo code-analyse.lo code.lo constants.lo \
 debug.lo exception.lo external.lo findInJar.lo fp.lo gc.lo hashtab.lo \
 inflate.lo itypes.lo jar.lo jni.lo locks.lo lookup.lo object.lo \
-readClass.lo soft.lo stackTrace.lo stats.lo string.lo support.lo \
-thread.lo utf8const.lo gcFuncs.lo gcRefs.lo verify.lo
+readClass.lo sha-1.lo soft.lo stackTrace.lo stats.lo string.lo \
+support.lo thread.lo utf8const.lo gcFuncs.lo gcRefs.lo verify.lo
 libkaffevm_la_OBJECTS =  $(am_libkaffevm_la_OBJECTS)
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -278,10 +281,10 @@ $(DEPDIR)/gc-mem.Plo $(DEPDIR)/gc.Plo $(DEPDIR)/gcFuncs.Plo \
 $(DEPDIR)/gcRefs.Plo $(DEPDIR)/hashtab.Plo $(DEPDIR)/inflate.Plo \
 $(DEPDIR)/itypes.Plo $(DEPDIR)/jar.Plo $(DEPDIR)/jni.Plo \
 $(DEPDIR)/locks.Plo $(DEPDIR)/lookup.Plo $(DEPDIR)/md.Plo \
-$(DEPDIR)/object.Plo $(DEPDIR)/readClass.Plo $(DEPDIR)/soft.Plo \
-$(DEPDIR)/stackTrace.Plo $(DEPDIR)/stats.Plo $(DEPDIR)/string.Plo \
-$(DEPDIR)/support.Plo $(DEPDIR)/thread.Plo $(DEPDIR)/utf8const.Plo \
-$(DEPDIR)/verify.Plo
+$(DEPDIR)/object.Plo $(DEPDIR)/readClass.Plo $(DEPDIR)/sha-1.Plo \
+$(DEPDIR)/soft.Plo $(DEPDIR)/stackTrace.Plo $(DEPDIR)/stats.Plo \
+$(DEPDIR)/string.Plo $(DEPDIR)/support.Plo $(DEPDIR)/thread.Plo \
+$(DEPDIR)/utf8const.Plo $(DEPDIR)/verify.Plo
 SOURCES = $(libkaffevm_la_SOURCES)
 OBJECTS = $(am_libkaffevm_la_OBJECTS)
 
@@ -364,6 +367,7 @@ locks.lo:
 lookup.lo:
 object.lo:
 readClass.lo:
+sha-1.lo:
 soft.lo:
 stackTrace.lo:
 stats.lo:

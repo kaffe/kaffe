@@ -61,6 +61,7 @@ libkaffevm_la_SOURCES = \
 	lookup.c \
 	object.c \
 	readClass.c \
+	sha-1.c \
 	soft.c \
 	stackTrace.c \
 	stats.c \
@@ -100,6 +101,7 @@ noinst_HEADERS = \
 	object.h \
 	readClass.h \
 	readClassConfig.h \
+	sha-1.h \
 	slib.h \
 	soft.h \
 	stackTrace.h \

@@ -9,8 +9,7 @@
 native_LTLIBRARIES = libnative.la
 
 IO_SRCS = \
-		ObjectStreamClassImpl.c \
-		sha-1.c
+		ObjectStreamClassImpl.c
 
 LANG_SRCS = \
 		ClassLoader.c \
@@ -46,9 +45,6 @@ TEST_SRCS = \
 
 UTIL_SRCS = \
 		Arrays.c
-
-noinst_HEADERS = \
-		sha-1.h
 
 libnative_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
 libnative_la_LIBADD = $(M_LIBS)

@@ -19,11 +19,11 @@
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/exception.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
+#include "../../../kaffe/kaffevm/sha-1.h"
 #include <native.h>
 #include "java_io_ObjectInputStream.h"
 #include "java_io_ObjectOutputStream.h"
 #include "kaffe_io_ObjectStreamClassImpl.h"
-#include "sha-1.h"
 
 extern jobject Kaffe_NewObject(JNIEnv*, jclass, jmethodID, ...);   /* XXX */
 
