@@ -91,6 +91,14 @@ jitflags willcatch;
 	}
 #endif
 
+/* For JIT3 compatibility */
+#define check_array_store(a,b)		softcall_checkarraystore(a,b)
+#define explicit_check_null(x,obj,y)	EXPLICIT_CHECK_NULL(x,obj,y)
+#define check_null(x,obj,y)		CHECK_NULL(x,obj,y)
+#define check_div(x,obj,y)
+#define check_div_long(x,obj,y)
+#define pop_slot(src,len)
+
 /* Unit in which code block is increased when overrun */
 #define	ALLOCCODEBLOCKSZ	8192
 /* Codeblock redzone - allows for safe overrun when generating instructions */
@@ -176,7 +184,7 @@ translate(Method* meth, errorInfo *einfo)
 {
 	jint low;
 	jint high;
-	jlong tmpl;
+	jvalue tmpl;
 	int idx;
 	SlotInfo* tmp;
 	SlotInfo* tmp2;
@@ -479,7 +487,7 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 
 	/* Note info on the compiled code for later installation */
 	code->mem = methblock;
-	code->memlen = constlen + CODEPC;
+	code->memlen = exc_len + constlen + CODEPC;
 	code->code = codebase;
 	code->codelen = CODEPC;
 	return (true);
@@ -516,12 +524,12 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	meth->c.ncode.ncode_end = (char*)code->code + code->codelen;
 
 	/* Flush code out of cache */
-	FLUSH_DCACHE(meth->ncode, meth->c.ncode.ncode_end);
+	FLUSH_DCACHE(METHOD_NATIVECODE(meth), meth->c.ncode.ncode_end);
 
 #if defined(MD_REGISTER_JIT_EXCEPTION_INFO)
 	MD_REGISTER_JIT_EXCEPTION_INFO (meth->c.ncode.ncode_start,
-		meth->ncode,
-		meth->c.ncode.ncode_end - meth->ncode);
+					METHOD_NATIVECODE(meth),
+					meth->c.ncode.ncode_end);
 #endif
 
 	/* Translate exception table and make it available */
