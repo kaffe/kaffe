@@ -23,6 +23,11 @@
 	occurred when using a ZipEntry that was created
 	from a String.
 
+2003-05-26 Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/lang/Boolean.java:
+	Added new static method valueOf(boolean)
+
 2003-05-27 Dalibor Topic <robilad@yahoo.com>
 
 	* kaffe/kaffe/main.c:
