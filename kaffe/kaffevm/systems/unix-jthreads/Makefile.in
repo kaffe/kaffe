@@ -123,7 +123,7 @@ with_engine = @with_engine@
 
 noinst_LTLIBRARIES = libkthread.la
 libkthread_la_SOURCES = jthread.c syscalls.c signal.c
-EXTRA_DIST = Makefile.frag config-jthreads.h jthread.h
+EXTRA_DIST = Makefile.frag config-jthreads.h jsignal.h jthread.h
 
 INCLUDES =  	-I. -I$(srcdir) -I../.. -I$(srcdir)/../.. 	-I$(top_builddir)/config -I$(top_srcdir)/config 	-I$(top_builddir)/include -I$(top_srcdir)/include
 

@@ -1,3 +1,9 @@
+Fri Feb 12 16:42:23 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/systems/unix-jthreads/Makefile.am (EXTRA_DIST):
+	add signal.h
+	* kaffe/kaffevm/systems/unix-jthreads/Makefile.in: regen
+
 Fri Feb 12 12:42:07 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/javalib/rebuildLib.in: reworked to accept list of
