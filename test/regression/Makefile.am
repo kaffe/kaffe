@@ -95,7 +95,6 @@ ALWAYS_TESTS = \
 	CLTestJLock.java \
 	CLTestLie.java \
 	CLTestFindLoaded.java \
-	CLTestDelegate.java \
 	ClassDeadLock.java \
 	ExceptionTest.java \
 	ExceptionTestClassLoader.java \
