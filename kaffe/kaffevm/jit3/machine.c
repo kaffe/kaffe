@@ -64,7 +64,6 @@ uint32 pc;
 uint32 npc;
 
 /* Various exception related things */
-extern Hjava_lang_Class javaLangArrayIndexOutOfBoundsException;
 extern struct JNIEnv_ Kaffe_JNIEnv;
 extern Method* jniMethod;
 extern void startJNIcall(void);
@@ -236,7 +235,7 @@ SUSE(
 				willCatch(BADARRAYINDEX);
 			}
 			else {
-				if (instanceof(&javaLangArrayIndexOutOfBoundsException, etype)) {
+				if (instanceof(javaLangArrayIndexOutOfBoundsException, etype)) {
 					willCatch(BADARRAYINDEX);
 				}
 			}
@@ -1044,7 +1043,7 @@ makeFakeCalls(void)
  * return what engine we're using
  */
 char*
-getEngine()
+getEngine(void)
 {
 	return "kaffe.jit";
 }

@@ -291,7 +291,7 @@ DBG(MOREJIT,
 	/* Next reduce bytecode to native code */
 	/***************************************/
 
-	if (!(success = initInsnSequence(codeperbytecode * len, meth->localsz,
+	if (!(success = initInsnSequence(meth, codeperbytecode * len, meth->localsz,
 					 meth->stacksz, einfo))) {
 		goto done1;
 	}
@@ -547,7 +547,7 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
  * Init instruction generation.
  */
 bool
-initInsnSequence(int codesize, int localsz, int stacksz,
+initInsnSequence(Method* meth, int codesize, int localsz, int stacksz,
 		 struct _errorInfo *einfo)
 {
 	/* Clear various counters */
