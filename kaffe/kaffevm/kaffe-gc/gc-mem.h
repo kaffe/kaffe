@@ -64,6 +64,8 @@ extern void	gc_heap_free(void*);
 extern void*	gc_heap_grow(size_t);
 extern size_t   gc_get_heap_total(void);
 extern size_t   gc_get_heap_limit(void);
+extern uintp    gc_get_heap_base(void);
+extern uintp    gc_get_heap_range(void);
 
 /**
  * One block of the heap managed by kaffe's gc.

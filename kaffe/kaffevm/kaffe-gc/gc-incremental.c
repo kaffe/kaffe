@@ -82,8 +82,8 @@ static counter gcfixedmem;
 
 /* Is this pointer within our managed heap? */
 #define IS_A_HEAP_POINTER(from) \
-        ((uintp) (from) >= gc_heap_base && \
-	 (uintp) (from) < gc_heap_base + gc_heap_range)
+        ((uintp) (from) >= gc_get_heap_base() && \
+	 (uintp) (from) < gc_get_heap_base() + gc_get_heap_range())
 
 static void *reserve;
 static void *outOfMem;
@@ -232,9 +232,9 @@ static void markObjectDontCheck(gc_unit *unit, gc_block *info, uintp idx);
 static inline int
 gc_heap_isobject(gc_block *info, gc_unit *unit)
 {
-	uintp p = (uintp) UTOMEM(unit) - gc_heap_base;
+	uintp p = (uintp) UTOMEM(unit) - gc_get_heap_base();
 
-	if (!(p & (MEMALIGN - 1)) && p < gc_heap_range && GCBLOCKINUSE(info)) {
+	if (!(p & (MEMALIGN - 1)) && p < gc_get_heap_range() && GCBLOCKINUSE(info)) {
 		/* Make sure 'unit' refers to the beginning of an
 		 * object.  We do this by making sure it is correctly
 		 * aligned within the block.

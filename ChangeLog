@@ -1,4 +1,21 @@
-2004-09-03  Dalibor Topic  <topic@mpiat2313>
+2004-09-03  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	Use gc_get_heap_base und gc_get_heap_range.
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.h:
+	(gc_heap_base, gc_heap_range) Removed prototypes.
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c:
+	(gc_heap_base, gc_heap_range) Made static.
+	(gc_get_heap_base, gc_get_heap_range) New functions.
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.h:
+	(gc_get_heap_base, gc_get_heap_range) Added prototypes.
+
+	Reported by: Michael Franz <developer.franz@verizon.net>
+	
+2004-09-03  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-mem.h: (gc_heap_limit) Removed.
 	(gc_get_heap_limit) Added prototype.

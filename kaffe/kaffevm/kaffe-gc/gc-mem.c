@@ -107,9 +107,8 @@ static size_t gc_heap_allocation_size;	/* amount of memory by which to grow heap
 static size_t gc_heap_initial_size;	/* amount of memory to initially allocate */
 static size_t gc_heap_total;		/* current size of the heap */
 static size_t gc_heap_limit;		/* maximum size to which heap should grow */
-
-uintp gc_heap_base;
-uintp gc_heap_range;
+static uintp gc_heap_base;              /* start of the heap */
+static uintp gc_heap_range;             /* last gc-able address - gc_heap_base */
 
 #ifndef gc_pgsize
 static size_t gc_pgsize;
@@ -1259,4 +1258,22 @@ size_t
 gc_get_heap_limit(void)
 {
   return gc_heap_limit;
+}
+
+/**
+ * Gets start of the heap.
+ */
+uintp
+gc_get_heap_base(void)
+{
+  return gc_heap_base;
+}
+
+/**
+ * Gets last gc-able address - start of the heap.
+ */
+uintp
+gc_get_heap_range(void)
+{
+  return gc_heap_range;
 }
