@@ -27,6 +27,18 @@ protected void setURL(URL u, String protocol, String host, int port, String file
 }
 
 protected String toExternalForm(URL u) {
-	return (u.toExternalForm());
+	StringBuffer buf = new StringBuffer();
+	buf.append(u.getProtocol());
+	buf.append(":");
+	if (!u.getHost().equals("")) {
+		buf.append("//");
+		buf.append(u.getHost());
+		if (u.getPort() != -1) {
+			buf.append(":");
+			buf.append(Integer.toString(u.getPort()));
+		}
+	}
+	buf.append(u.getFile());
+	return (buf.toString());
 }
 }

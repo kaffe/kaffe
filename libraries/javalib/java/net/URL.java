@@ -122,9 +122,38 @@ public URL(String protocol, String host, int port, String file) throws Malformed
 }
 
 public URL(URL context, String spec) throws MalformedURLException {
-//if (context != null) System.out.println("context = " + context);
-//if (spec != null) System.out.println("spec = " + spec);
-	this( merge( context, spec));
+	// First build the URL from the spec
+	this(spec != null ? spec : context.toString());
+	if (spec == null) {
+		return;
+	}
+	// If spec was absolute we ignore the context
+	if (context == null || !this.protocol.equals("file") || spec.equals("file")) {
+		return;
+	}
+
+	this.protocol = context.protocol;
+	this.host = context.host;
+	this.port = context.port;
+
+	// If file wasn't absolute then we append it to the context
+	// after removing any file it has
+	if (this.file.charAt(0) != '/') {
+		int last = context.file.lastIndexOf('/');
+		if (last == -1) {
+			this.file = context.file + '/' + this.file;
+		}
+		else if (last == context.file.length() - 1) {
+			this.file = context.file + this.file;
+		}
+		else {
+			this.file = context.file.substring(0, last+1) + this.file;
+		}
+	}
+
+	handler = getURLStreamHandler(protocol);
+
+//System.out.println("merging " + context.toString() + " and " + spec + " into " + this);
 }
 
 public boolean equals(Object obj) {
@@ -189,31 +218,6 @@ public int hashCode() {
 	return (protocol.hashCode() ^ host.hashCode() ^ file.hashCode());
 }
 
-private static String merge(URL context, String spec) {
-	if ( context == null )
-		return spec;
-
-	String cs = context.toString();
-	
-	if ( spec == null )
-		return (cs);
-		
-	//spec is a ref ( keep file )
-	if ( spec.indexOf( '#') == 0 )
-		return (cs+spec);
-		
-	//merge files
-	int ls = cs.lastIndexOf( '/');
-	if ( ls > -1 ) {
-		int ld = cs.lastIndexOf( '.');
-		if ( ld > ls ) {
-			return (cs.substring( 0, ls+1) + spec);
-		}
-	}
-	
-	return (cs + spec);
-}
-
 public URLConnection openConnection() throws IOException {
 	if (conn == null) {
 		conn = handler.openConnection(this);
@@ -257,22 +261,10 @@ public static synchronized void setURLStreamHandlerFactory(URLStreamHandlerFacto
 }
 
 public String toExternalForm() {
-	return (toString());
+	return (handler.toExternalForm(this));
 }
 
 public String toString() {
-	StringBuffer buf = new StringBuffer();
-	buf.append(protocol);
-	buf.append(":");
-	if (!host.equals("")) {
-		buf.append("//");
-		buf.append(host);
-		if (port != -1) {
-			buf.append(":");
-			buf.append(Integer.toString(port));
-		}
-	}
-	buf.append(file);
-	return (buf.toString());
+	return (toExternalForm());
 }
 }
