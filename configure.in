@@ -498,6 +498,19 @@ AC_CHECK_LIBRARY(gmp,mpz_add,MATH_LIBS)
 MATH_LIBS="$CTLIBS $MATH_LIBS"
 AC_SUBST(MATH_LIBS)
 
+dnl Check for libraries for security library.
+AC_CHECK_FUNCS(MD2Init MD4Init MD5Init)
+if test $ac_cv_func_MD5Init = no; then
+  AC_CHECK_LIBRARY(md, MD5Init, SECURITY_LIBS)
+fi
+SECURITY_LIBS="$CTLIBS $SECURITY_LIBS"
+AC_SUBST(SECURITY_LIBS)
+
+dnl Check for libraries for zip library.
+AC_CHECK_LIBRARY(z,deflate,ZIP_LIBS)
+ZIP_LIBS="$CTLIBS $ZIP_LIBS"
+AC_SUBST(ZIP_LIBS)
+
 dnl Checks for libraries for X related libraries.
 AC_PATH_XTRA
 if test x"$no_x" = x"yes"; then
@@ -828,6 +841,7 @@ JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/zip/libzip.la \
 \$(top_builddir)/libraries/clib/math/libmath.la \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
+\$(top_builddir)/libraries/clib/security/libsecurity.la \
 \$(top_builddir)/libraries/extensions/microsoft/clib/libmicrosoft.la \
 $AWT_LIB \
 $JAVA_LIBS \
@@ -966,6 +980,7 @@ libraries/clib/net/Makefile \
 libraries/clib/zip/Makefile \
 libraries/clib/math/Makefile \
 libraries/clib/management/Makefile \
+libraries/clib/security/Makefile \
 libraries/clib/awt/Makefile \
 libraries/clib/awt/X/Makefile \
 libraries/extensions/Makefile \
