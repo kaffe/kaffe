@@ -95,7 +95,7 @@ private static CharToByteConverter getConverterInternal(String enc)
 			for (int i = 0; i < realenc.length(); i++) {
 				if (realenc.charAt(i) == '-') {
 					try {
-						return (new CharToByteIconv (realenc);
+						return (new CharToByteIconv (realenc));
 					}
 					catch (UnsupportedEncodingException _) {
 						cache.put(enc, noConverter);

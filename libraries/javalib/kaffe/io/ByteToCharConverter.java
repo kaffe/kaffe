@@ -117,7 +117,7 @@ private static ByteToCharConverter getConverterInternal ( String enc ) {
 			for (int i = 0; i < realenc.length(); i++) {
 				if (realenc.charAt(i) == '-') {
 					try {
-						return (new ByteToCharIconv (realenc);
+						return (new ByteToCharIconv (realenc));
 					}
 					catch (UnsupportedEncodingException _) {
 						cache.put(enc, noConverter);
