@@ -387,10 +387,12 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/LocaleInformation_zh_SG.java \
 	gnu/java/locale/LocaleInformation_zh_TW.java
 gnu_java_net_SRCS = \
+	gnu/java/net/InetAddressImpl.java \
 	gnu/java/net/PlainDatagramSocketImpl.java \
 	gnu/java/net/PlainSocketImpl.java \
 	gnu/java/net/SocketInputStream.java \
-	gnu/java/net/SocketOutputStream.java
+	gnu/java/net/SocketOutputStream.java \
+	gnu/java/net/SysInetAddressImpl.java
 gnu_java_nio_SRCS = \
 	gnu/java/nio/DatagramChannelImpl.java \
 	gnu/java/nio/DatagramChannelSelectionKey.java \

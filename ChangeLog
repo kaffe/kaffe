@@ -1,5 +1,18 @@
 2003-10-28  Dalibor Topic <robilad@kafee.org>
 
+	Makefile.am:
+	(BUILD_ENVIRONMENT-make) Don't add existing 
+	CLASSPATH to CLASSPATH in BUILD_ENVIRONMENT.
+
+	Reported by: jrandom <auto97841@hushmail.com>
+
+	* Makefile.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+	
+2003-10-28  Dalibor Topic <robilad@kafee.org>
+
 	* libraries/javalib/java/util/Date.java:
 	Replaced by implementation from GNU Classpath.
 
