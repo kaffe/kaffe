@@ -159,11 +159,13 @@ public void defaultWriteObject() throws IOException {
 }
 
 public ObjectOutputStream.PutField putFields() throws IOException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(
+	    ObjectOutputStream.class.getName() + ".putFields()");
 }
 
 public void writeFields() throws IOException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(
+	    ObjectOutputStream.class.getName() + ".writeFields()");
 }
 
 }

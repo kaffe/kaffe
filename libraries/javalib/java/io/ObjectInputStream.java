@@ -161,7 +161,8 @@ protected void readStreamHeader() throws IOException, StreamCorruptedException
 
 public synchronized void registerValidation(ObjectInputValidation obj, int prio) throws NotActiveException, InvalidObjectException
 {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(
+	    ObjectInputStream.class.getName() + ".registerValidation()");
 }
 
 protected Object resolveObject(Object obj) throws IOException
@@ -205,7 +206,8 @@ public void defaultReadObject() throws IOException, ClassNotFoundException, NotA
 }
 
 public ObjectInputStream.GetField readFields() throws IOException, ClassNotFoundException, NotActiveException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(
+	    ObjectInputStream.class.getName() + ".readFields()");
 }
 
 }
