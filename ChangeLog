@@ -1,3 +1,10 @@
+Mon Apr 02 16:41:59 MDT 2001  Jason Baker  <jbaker@cs.utah.edu>
+
+	* test/regression/MarkResetTest.java:
+	Don't assume that char[]s are printed as Strings, they aren't
+	* test/regression/ReflectInterface.java:
+	Don't assume order of classfile members.
+	
 2001-04-01  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* Makefile.am, config/Makefile.am, kaffe/kaffe/Makefile.am,
