@@ -251,7 +251,7 @@ static int
 beos_native_sendto(int a, const void* b, size_t c, int d, 
 	const struct sockaddr* e, int f, ssize_t *out)
 {
-	*out = sendto(a, b, c, d, e, f);
+	*out = e ? sendto(a, b, c, d, e, f) : send(a, b, c, d);
 	return (*out < 0) ? errno : 0;
 }
 
