@@ -497,8 +497,10 @@ bool jthread_attach_current_thread (bool daemon)
 
   nt->func         = 0;
   nt->suspendState = 0;
-  nt->stackCur     = 0;
-  nt->daemon	 = daemon;
+  nt->stackMin     = (void *)((uintp)&nt - 0x8000);
+  nt->stackMax     = (void *)((uintp)&nt + 0x400);
+  nt->stackCur     = 0; 
+  nt->daemon       = daemon;
 
   /* link everything together */
   nt->tid = pthread_self();

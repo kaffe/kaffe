@@ -3585,7 +3585,9 @@ static jint
 Kaffe_AttachCurrentThread(JavaVM* vm, void** penv, ThreadAttachArgs* args)
 {
 	if (jthread_attach_current_thread (false)) {
+		ksemInit(&THREAD_DATA()->sem);
 		attachFakedThreadInstance ("test attach");
+		*penv = THREAD_JNIENV();
 		return 0;
 	}
 	return -1;

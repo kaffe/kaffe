@@ -858,7 +858,9 @@ public final class URL implements Serializable
          
             try
               {
-                Object obj = Class.forName (clsName).newInstance();
+                Object obj = Class.forName (clsName,
+                                            true,
+                                            Thread.currentThread().getContextClassLoader()).newInstance();
 	    
                 if (!(obj instanceof URLStreamHandler))
                   continue;

@@ -83,9 +83,6 @@ char* engine_name = "Interpreter";
 int profFlag;			 /* flag to control profiling */
 #endif
 
-/* Used to store overflow exception */
-static Hjava_lang_Throwable overflow;
-
 void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile VmExceptHandler *mjbuf, threadData *thread_data);
 
 void
@@ -121,7 +118,7 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 			th = (Hjava_lang_Throwable *)newObjectChecked (javaLangStackOverflowError, &einfo);
 			thread_data->needOnStack = STACK_HIGH;
 		
-			throwException(&overflow);
+			throwException(th);
 		}
 	}
 
