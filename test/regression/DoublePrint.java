@@ -30,20 +30,33 @@ class DoublePrint {
   public static void main(String[] args) {
     System.out.println("Double values:");
     System.out.println("  NaN -> " +
-      Long.toString(
+      Long.toHexString(
       Double.doubleToLongBits(
-      Double.longBitsToDouble(0x7ff000abacab0000L)), 16));
+      Double.longBitsToDouble(0x7ff000abacab0000L))));
     for (int k = 0; k < dcases.length; k++) {
       System.out.println("  " + dcases[k]);
     }
+    System.out.println("  0.0/0.0 = " + (dmeth() / dmeth()));
+
+    System.out.println();
+
     System.out.println("Float values:");
     System.out.println("  NaN -> " +
-      Integer.toString(
+      Integer.toHexString(
       Float.floatToIntBits(
-      Float.intBitsToFloat(0x7f80cb01)), 16));
+      Float.intBitsToFloat(0x7f80cb01))));
     for (int k = 0; k < fcases.length; k++) {
       System.out.println("  " + fcases[k]);
     }
+    System.out.println("  0.0/0.0 = " + (dmeth() / dmeth()));
+  }
+
+  public static double dmeth() {
+    return 0.0;
+  }
+
+  public static float fmeth() {
+    return 0.0f;
   }
 }
 
@@ -61,6 +74,8 @@ Double values:
   -9000000.0
   0.001
   1.05E+9
+  0.0/0.0 = NaN
+
 Float values:
   NaN -> 7fc00000
   0.0
@@ -73,5 +88,6 @@ Float values:
   123.75
   1.0E+7
   -0.001
+  0.0/0.0 = NaN
 */
 
