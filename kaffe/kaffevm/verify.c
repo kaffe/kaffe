@@ -2650,6 +2650,17 @@ opstackPopBlind(BlockInfo* block)
 }
 
 /*
+ * Helper function for opstack access in verifyBasicBlock.
+ */
+static inline
+void
+opstackWPopBlind(BlockInfo* block)
+{
+	opstackPopBlind(block);
+	opstackPopBlind(block);
+}
+
+/*
  * Helper function for error reporting in OPSTACK_PEEK_T_BLIND macro in verifyBasicBlock.
  */
 static inline
@@ -2796,24 +2807,18 @@ verifyBasicBlock(errorInfo* einfo,
 	OPSTACK_PEEK_T(_TINFO); \
         opstackPopBlind(block)
 
-
-
-#define OPSTACK_WPOP_BLIND \
-	opstackPopBlind(block); \
-	opstackPopBlind(block)
-
 #define OPSTACK_WPOP \
 	ENSURE_OPSTACK_SIZE(2); \
-	OPSTACK_WPOP_BLIND
+	opstackWPopBlind(block)
 
 	/* pop a wide type off the stack and typecheck it */
 #define OPSTACK_WPOP_T_BLIND(_TINFO) \
 	OPSTACK_WPEEK_T_BLIND(_TINFO); \
-	OPSTACK_WPOP_BLIND
+	opstackWPopBlind(block)
 
 #define OPSTACK_WPOP_T(_TINFO) \
         OPSTACK_WPEEK_T(_TINFO); \
-	OPSTACK_WPOP_BLIND
+	opstackWPopBlind(block)
         
 
 	
@@ -3958,7 +3963,6 @@ verifyBasicBlock(errorInfo* einfo,
 #undef OPSTACK_WPOP_T
 #undef OPSTACK_WPOP_T_BLIND
 #undef OPSTACK_WPOP
-#undef OPSTACK_WPOP_BLIND
 
 #undef OPSTACK_POP_T
 #undef OPSTACK_POP_T_BLIND

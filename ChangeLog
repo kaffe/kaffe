@@ -1,6 +1,13 @@
 2004-02-16  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+        (opstackWPopBlind): New static inline function.
+        (OPSTACK_WPOP_BLIND) Removed.
+        Replaced use of OPSTACK_WPOP_BLIND by opstackWPopBlind.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (opstackPopBlind): New static inline function.
         (OPSTACK_POP_BLIND) Removed.
         Replaced use of OPSTACK_POP_BLIND by opstackPopBlind.
