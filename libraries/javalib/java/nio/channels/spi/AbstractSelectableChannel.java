@@ -216,6 +216,9 @@ public abstract class AbstractSelectableChannel extends SelectableChannel
     if (! isOpen())
       throw new ClosedChannelException();
 
+    if ((ops & ~validOps()) != 0)
+      throw new IllegalArgumentException();
+    
     SelectionKey key = null;
     AbstractSelector selector = (AbstractSelector) selin;
 

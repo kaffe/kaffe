@@ -1,5 +1,67 @@
 2004-05-17  Dalibor Topic  <robilad@kaffe.org>
 
+        * libraries/javalib/java/nio/ByteBuffer.java,
+        libraries/javalib/java/nio/CharBuffer.java,
+        libraries/javalib/java/nio/DirectByteBufferImpl.java,
+        libraries/javalib/java/nio/DoubleBuffer.java,
+        libraries/javalib/java/nio/FloatBuffer.java,
+        libraries/javalib/java/nio/IntBuffer.java,
+        libraries/javalib/java/nio/LongBuffer.java,
+        libraries/javalib/java/nio/MappedByteBufferImpl.java,
+        libraries/javalib/java/nio/ShortBuffer.java,
+        libraries/javalib/java/nio/channels/spi/AbstractInterruptibleChannel.java,
+        libraries/javalib/java/nio/channels/spi/AbstractSelectableChannel.java,
+        libraries/javalib/java/nio/charset/IllegalCharsetNameException.java,
+        libraries/javalib/java/nio/charset/MalformedInputException.java,
+        libraries/javalib/java/nio/charset/spi/CharsetProvider.java:
+	Resynced with GNU Classpath.
+	
+	2004-04-23  Michael Koch  <konqueror@gmx.de>
+
+	* java/nio/charset/IllegalCharsetNameException.java
+	(charsetName): Made private.
+	(IllegalCharsetNameException): Added @param tag to javadoc.
+	(getCharsetName): Added @return tag to javadoc.
+	* java/nio/charset/MalformedInputException.java
+	(MalformedInputException): Added @param tag to javadoc.
+	(getInputLength): Revised method description, added @return tag.
+	(getMessage): Added @return tag.
+
+	2004-04-08  Michael Koch  <konqueror@gmx.de>
+
+	* java/nio/charset/spi/CharsetProvider.java:
+	Reworked coding style and javadocs.
+
+	2004-04-29  Michael Koch  <konqueror@gmx.de>
+
+	* java/nio/ByteBuffer.java,
+	java/nio/CharBuffer.java,
+	java/nio/DoubleBuffer.java,
+	java/nio/FloatBuffer.java,
+	java/nio/IntBuffer.java,
+	java/nio/LongBuffer.java,
+	java/nio/ShortBuffer.java:
+	(compareTo): Fixed bogus implementation in all buffer classes.
+
+	2004-04-22  Michael Koch  <konqueror@gmx.de>
+
+	* java/nio/DirectByteBufferImpl.java
+	(shiftDown): Overwrite shiftDown method from ByteBuffer.
+	* java/nio/MappedByteBufferImpl.java
+	(compact): Use optimized shiftDown() method.
+
+	2004-04-21  Michael Koch  <konqueror@gmx.de>
+
+	* java/nio/channels/spi/AbstractSelectableChannel.java
+	(register): Check ops for validity.
+
+	2004-04-23  Michael Koch  <konqueror@gmx.de>
+
+	* java/nio/channels/spi/AbstractInterruptibleChannel.java
+	(end): Throw AsynchronousCloseException if stream is close.
+
+2004-05-17  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/rmi/MarshalledObject.java,
         libraries/javalib/java/rmi/Naming.java,
         libraries/javalib/java/rmi/RemoteException.java,

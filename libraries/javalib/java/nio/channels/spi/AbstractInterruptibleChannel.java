@@ -1,5 +1,5 @@
-/* AbstractInterruptibleChannel.java --
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* AbstractInterruptibleChannel.java -- 
+   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -95,6 +95,9 @@ public abstract class AbstractInterruptibleChannel
   protected final void end(boolean completed)
     throws AsynchronousCloseException
   {
+    // FIXME: check more here.
+    
+    if (closed) throw new AsynchronousCloseException();
   }
 
   /**
