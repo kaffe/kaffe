@@ -12,7 +12,20 @@
  * last changed 2.15.98
  */
 
+#if defined(WORDS_BIGENDIAN)
+#define	LSLOT(_s)	((_s)+1)
+#define	HSLOT(_s)	(_s)
+#define LOFFSET		4
+#define HOFFSET		0
+#else
+#define	LSLOT(_s)	(_s)
+#define	HSLOT(_s)	((_s)+1)
+#define LOFFSET		0
+#define HOFFSET		4
+#endif
+
 #ifdef DEBUG
+extern int pc;
 int dbmsg = 0;
 #define	debug_name(x)	debug(x)
 #define	debug(x)	if (dbmsg) printf##x;fflush(stdout)
@@ -30,6 +43,11 @@ static char* rnames[] = {
 #else
 #define	debug_name(x)
 #define	debug(x)
+#endif
+
+#if defined(TRACE_METHOD_END)
+uint v0,v1;
+float f0,f1;
 #endif
 
 #include "classMethod.h"
@@ -128,6 +146,8 @@ static char* rnames[] = {
 #define _FCVT_D			041
 #define _FCVT_W			044
 #define _FCVT_L			045
+#define _FFLOOR_W		017
+#define _FFLOOR_L		013
 
 /* format for float.point registers. table:html 464*/
 #define WORD_FORMAT		20
@@ -250,25 +270,26 @@ define_insn(prologue, prologue_xxC) {
         insn_RRC(_ADDIU, REG_sp, REG_sp, 0); /* framesize */
         ldst_RRC(_SW, REG_ra, REG_fp, -4); /* save $ra */
         ldst_RRC(_SW, REG_i1, REG_fp, -8); /* save old $fp */
+        ldst_RRC(_SW, REG_gp, REG_fp, -12); /* save $gp */
 
         debug(("	mov	i1,fp\n"));
         debug(("	mov	fp,sp\n"));
         debug(("	addiu	sp,sp,-framesize\n"));
         debug(("	sw	ra,-4(fp)\n"));
         debug(("	sw	i1,-8(fp)\n"));
+        debug(("	sw	gp,-12(fp)\n"));
 
 #if defined(USE_JIT_CONSTANT_POOL)
 	/* Get pointer to constant pool */
         insn_RRR(_ADDU, CONSTPOOL_BASE, REG_i25, REG_i0);
-        ldst_RRC(_SW, REG_gp, REG_fp, -12); /* save $gp */
-
+        ldst_RRC(_SW, REG_gp, REG_fp, -16); 
         debug(("	move	gp,i25\n"));
-        debug(("	sw	gp,-12(fp)\n"));
+        debug(("	sw	gp,-16(fp)\n"));
 #endif
 
 	/* Save callee save regs */
 	for (i = 0; i < 8; i++) {
-		ldst_RRC(_SW, REG_s0+i, REG_fp, -SLOTSIZE*(4+i));
+		ldst_RRC(_SW, REG_s0+i, REG_fp, -SLOTSIZE*(5+i));
 		debug(("	sw	%s,%d(fp)\n",regname(REG_s0+i),-SLOTSIZE*(4+i)));
 	}
 
@@ -296,6 +317,7 @@ define_insn(prologue, prologue_xxC) {
 		 */
 		if ((meth->accflags & ACC_SYNCHRONISED) == ACC_SYNCHRONISED) {
 			ldst_RRC(_SW, REG_i4, REG_fp, 0);
+			debug(("	sw	i4,0(fp)\n"));
 		}
 	}
 
@@ -335,6 +357,7 @@ define_insn(prologue, prologue_xxC) {
 			}
 			/* Fall through ... */
 		case 'J':
+	/* dbmsg = 1; */
 			preloadRegister(slot_data(localinfo[i]), Rint, REG_i4+a);
 			preloadRegister(slot_data(localinfo[i+1]), Rint, REG_i4+a+1);
 			haveint = 1;
@@ -375,7 +398,7 @@ define_insn(epilogue, epilogue_xxx) {
 
 	/* Restore callee save regs */
 	for (i = 7; i >= 0; i--) {
-		ldst_RRC(_LW, REG_s0+i, REG_fp, -SLOTSIZE*(4+i)); 
+		ldst_RRC(_LW, REG_s0+i, REG_fp, -SLOTSIZE*(5+i)); 
 		debug(("	lw	%s,%d(fp)\n",regname(REG_s0+i),-SLOTSIZE*(4+i)));
 	}
 
@@ -427,12 +450,14 @@ define_insn(check_stack_limit, check_stack_limit_xRC) {
 	int r = rreg_int(1);
 	label* l = const_label(2);
 
+	debug_name(("check_stack_limit:\n"));
+
 	clobberRegister(REG_i25);
 
 	insn_RRR(_SLTU,REG_i25,r,REG_sp);
 	insn_cbr(_BNE,REG_i25,REG_i0,3); 
 
-	debug(("	sgtu	i25,sp,%s\n", regname(REG_i25), regname(r)));
+	debug(("	sgtu	i25,%s,sp\n", regname(r)));
 	debug(("	bne	i25,zero,+3\n"));
 
 	NOP();
@@ -444,6 +469,7 @@ define_insn(check_stack_limit, check_stack_limit_xRC) {
 
 	debug(("	call [soft_stackoverflow]\n"));
 
+	NOP();
 }
 
 /* --------------------------------------------------------------------- */
@@ -480,12 +506,11 @@ define_insn(spill_double, fspilll_Rxx) {
 	debug_name(("spill_double:\n"));
 
 	/* FIX: use ldc1 */
+	ldst_RRC(_SWC1, r, REG_fp, o+LOFFSET);
+	debug(("	swc1	%s,%d(fp)\n", fregname(r), o+LOFFSET));
 
-	ldst_RRC(_SWC1, r, REG_fp, o);
-	debug(("	swc1	%s,%d(fp)\n", fregname(r), o));
-
-	ldst_RRC(_SWC1, r+1, REG_fp, o+4);
-	debug(("	swc1	%s,%d(fp)\n", fregname(r+1), o+4));
+	ldst_RRC(_SWC1, r+1, REG_fp, o+HOFFSET);
+	debug(("	swc1	%s,%d(fp)\n", fregname(r+1), o+HOFFSET));
 }
 
 define_insn(reload_int, reload_Rxx) {
@@ -520,18 +545,18 @@ define_insn(reload_double, freloadl_Rxx) {
 	debug_name(("reload_double:\n"));
 
 	/* FIX: use ldc1 */
+	ldst_RRC(_LWC1, r, REG_fp, o+LOFFSET);
+	debug(("	lwc1	%s,%d(fp)\n", fregname(r), o+LOFFSET));
 
-	ldst_RRC(_LWC1, r, REG_fp, o);
-	debug(("	lwc1	%s,%d(fp)\n", fregname(r), o));
-
-	ldst_RRC(_LWC1, r+1, REG_fp, o+4);
-	debug(("	lwc1	%s,%d(fp)\n", fregname(r+1), o+4));
+	ldst_RRC(_LWC1, r+1, REG_fp, o+HOFFSET);
+	debug(("	lwc1	%s,%d(fp)\n", fregname(r+1), o+HOFFSET));
 }
 
 void
 movereg_RR(int toreg, int fromreg)
 {
 	insn_RRR(_ADDU, toreg, fromreg, REG_i0);
+	debug(("	mov	%s,%s\n", regname(toreg), regname(fromreg)));
 }
 
 /* --------------------------------------------------------------------- */
@@ -544,6 +569,7 @@ define_insn(move_int_const, move_RxC) {
 	debug_name(("move_int_const:\n"));
 
 	if (val == 0) {
+		debug(("	mov	%s,0\n", regname(w)));
 		insn_RRR(_ADDU, w, REG_i0, REG_i0);
 	}
 	else if ((val & NMASKL15BITS) == 0 || (val & NMASKL15BITS) == NMASKL15BITS) {
@@ -587,6 +613,9 @@ define_insn(move_label_const, move_RxL)  {
 define_insn(load_constpool_int, ld_RxL) {
 	label* l = const_label(2);
 	int w = wreg_int(0);
+
+	debug_name(("load_constpool_int:\n"));
+
 	l->type = Lconstant|Lfuncrelative|Llong16;
 	l->at = CODEPC;
 	ldst_RRC(_LW, w, CONSTPOOL_BASE, 0);
@@ -1021,7 +1050,7 @@ define_insn(and_int_const, and_RRC) {
 	w = wreg_int(0);
 
 	insn_RRC(_ANDI, w, r, o);
-	debug(("	andi	%s,%d,%s\n", regname(w), regname(r), o));
+	debug(("	andi	%s,%s,%d\n", regname(w), regname(r), o));
 }
 
 define_insn(or_int, or_RRR) {
@@ -1165,7 +1194,7 @@ define_insn(lshl_int_const, lshl_RRC) {
 	w = wreg_int(0);
 
 	insn_sRRC(_SLL, w, r, o);
-	debug(("	sll	%s,%s,%d\n", regname(w), regname(w), o));
+	debug(("	sll	%s,%s,%d\n", regname(w), regname(r), o));
 }
 
 /* --------------------------------------------------------------------- */
@@ -1212,12 +1241,11 @@ define_insn(load_double, floadl_RRx) {
 	debug_name(("load_double:\n"));
 
 	/* FIX: use ldc1 */
+	ldst_RRC(_LWC1, w, r, LOFFSET);
+	debug(("	lwc1	%s,%d[%s]\n", fregname(w), LOFFSET, regname(r)));
 
-	ldst_RRC(_LWC1, w, r, 0);
-	debug(("	lwc1	%s,0[%s]\n", fregname(w), regname(r)));
-
-	ldst_RRC(_LWC1, w+1, r, 4);
-	debug(("	lwc1	%s,4[%s]\n", fregname(w+1), regname(r)));
+	ldst_RRC(_LWC1, w+1, r, HOFFSET);
+	debug(("	lwc1	%s,%d[%s]\n", fregname(w+1), HOFFSET, regname(r)));
 }
 
 define_insn(load_byte, loadb_RRx) {
@@ -1295,11 +1323,11 @@ define_insn(store_double, fstorel_RRx) {
 	debug_name(("store_double:\n"));
 
 	/* FIX: use sdc1 */
-	ldst_RRC(_SWC1, r, w, 0);
-	debug(("	swc1	%s,0[%s]\n", fregname(r), regname(w)));
+	ldst_RRC(_SWC1, r, w, LOFFSET);
+	debug(("	swc1	%s,%d[%s]\n", fregname(r), LOFFSET, regname(w)));
 
-	ldst_RRC(_SWC1, r+1, w, 4);
-	debug(("	swc1	%s,4[%s]\n", fregname(r+1), regname(w)));
+	ldst_RRC(_SWC1, r+1, w, HOFFSET);
+	debug(("	swc1	%s,%d[%s]\n", fregname(r+1), HOFFSET, regname(w)));
 }
 
 define_insn(store_byte, storeb_RRx) {
@@ -1364,8 +1392,8 @@ define_insn(cvt_float_int, cvtfi_RRx) {
 	r = rreg_float(2);
 	w = wreg_float(0);
 
-	finsn_RRR(_FCVT_W, SINGLE_FORMAT, w, r, 0, COP1);
-	debug(("	cvt.w.s	%s,%s\n", fregname(w), fregname(r)));
+	finsn_RRR(_FFLOOR_W, SINGLE_FORMAT, w, r, 0, COP1);
+	debug(("	floor.w.s	%s,%s\n", fregname(w), fregname(r)));
 }
 
 define_insn(cvt_double_int, cvtdi_RRx) {
@@ -1378,8 +1406,8 @@ define_insn(cvt_double_int, cvtdi_RRx) {
 	r = rreg_double(2);
 	w = wreg_float(0);
 
-	finsn_RRR(_FCVT_W, DOUBLE_FORMAT, w, r, 0, COP1);
-	debug(("	cvt.w.d	%s,%s\n", fregname(w), fregname(r)));
+	finsn_RRR(_FFLOOR_W, DOUBLE_FORMAT, w, r, 0, COP1);
+	debug(("	floor.w.d	%s,%s\n", fregname(w), fregname(r)));
 }
 
 define_insn(cvt_float_double, cvtfd_RRx) {
@@ -1756,14 +1784,16 @@ define_insn(call_ref, call_xCC) {
 
 #if defined(USE_JIT_CONSTANT_POOL)
 	/* Restore pointer to constant pool */
-        ldst_RRC(_LW, REG_gp, REG_fp, -12); /* restore $gp */
-        debug(("	lw	gp,-12(fp)\n"));
+        ldst_RRC(_LW, REG_gp, REG_fp, -16); /* restore $gp */
+        debug(("	lw	gp,-16(fp)\n"));
 #endif
 }
 
 define_insn(call, call_xRC) {
 	int r = rreg_ideal_int(1, REG_i25);
 	assert(const_int(2) == ba);
+
+	debug_name(("call:\n"));
 
 	/* We might not get the ideal register (if the slot is global)
 	 * so handle this.
@@ -1778,11 +1808,11 @@ define_insn(call, call_xRC) {
 	debug(("        jalr    %s,%s\n",regname(REG_ra), regname(r)));
 
 	NOP();
-
+	
 #if defined(USE_JIT_CONSTANT_POOL)
 	/* Restore pointer to constant pool */
-        ldst_RRC(_LW, REG_gp, REG_fp, -12); /* restore $gp */
-        debug(("	lw	gp,-12(fp)\n"));
+        ldst_RRC(_LW, REG_gp, REG_fp, -16); /* restore $gp */
+        debug(("	lw	gp,-16(fp)\n"));
 #endif
 }
 
@@ -1801,7 +1831,7 @@ define_insn(push_int, push_xRC) {
 	/* This affect how flots are pushed */
 	pushed_int = 1;
 
-	debug(("I %d %d\n",arg_idx,pushed_int));
+	debug(("I -> [%d]\n",arg_idx));
 
 	if (arg_idx < NR_ARGUMENTS) {
 		o = REG_i4 + arg_idx;
@@ -1813,6 +1843,7 @@ define_insn(push_int, push_xRC) {
 		if (r != o) {
 			clobberRegister(o);
 			insn_RRR(_ADDU, o, r, REG_i0);
+			debug(("	mov	%s,%s\n", regname(o), regname(r)));
 			r = o;
 		}
 
@@ -1830,7 +1861,7 @@ define_insn(push_int, push_xRC) {
 }
 
 define_insn(push_long, pushl_xRC) {
-	int r;
+	int r, r2;
 	int w;
 	int o;
 
@@ -1842,7 +1873,7 @@ define_insn(push_long, pushl_xRC) {
 	/* We align arguments onto their natural boundaries */
 	arg_idx += arg_idx % 2;
 
-	debug(("L %d %d\n",arg_idx,pushed_int));
+	debug(("J -> [%d]\n",arg_idx));
 
 	if (arg_idx < NR_ARGUMENTS) {
 		o = REG_i4 + arg_idx;
@@ -1850,17 +1881,23 @@ define_insn(push_long, pushl_xRC) {
 		/* No macro for the following */
 		w = slotRegister(seq_slot(s, 1)+1, Rint, rread, o+1);
 
+		debug(("REG s1:[%d]->%d s2:[%d]->%d\n",
+			slotOffsetNoSpill(seq_slot(s,1),Rint),r,
+			slotOffsetNoSpill(seq_slot(s,1)+1,Rint),w));
+
 		/* We might not get the ideal register (if the slot is global)
 		 * so handle this.
 		 */
 		if (r != o) {
 			clobberRegister(o);
 			insn_RRR(_ADDU, o, r, REG_i0);
+			debug(("	mov	%s,%s\n", regname(o), regname(r)));
 			r = o;
 		}
 		if (w != o+1) {
 			clobberRegister(o+1);
 			insn_RRR(_ADDU, o+1, w, REG_i0);
+			debug(("	mov	%s,%s\n", regname(o+1), regname(w)));
 			w = o+1;
 		}
 		register_reserve(r);
@@ -1869,6 +1906,7 @@ define_insn(push_long, pushl_xRC) {
 		resreg[res_idx++] = w;
 	}
 	else {
+	/* dbmsg = 1; */
 		w = SLOT2PUSHOFFSET(arg_idx);
 
 		r = rreg_int(1);
@@ -1876,9 +1914,12 @@ define_insn(push_long, pushl_xRC) {
 		debug(("	sw	%s,%d[sp]\n", regname(r), w));
 
 		/* No macro for the following */
-		r = slotRegister(seq_slot(s, 1)+1, Rint, rread, NOREG);
-		ldst_RRC(_SW, r, REG_sp, w+4);
-		debug(("	sw	%s,%d[sp]\n", regname(r), w+4));
+		r2 = slotRegister(seq_slot(s, 1)+1, Rint, rread, NOREG);
+		debug(("STK s1:%d->[%d] s2:%d->[%d]\n",
+			r,w,r2,w+4));
+
+		ldst_RRC(_SW, r2, REG_sp, w+4);
+		debug(("	sw	%s,%d[sp]\n", regname(r2), w+4));
 	}
 
 	arg_idx += 2;
@@ -1892,7 +1933,7 @@ define_insn(push_float, fpush_xRC) {
 
 	debug_name(("push_float:\n"));
 
-	debug(("F %d %d\n",arg_idx,pushed_int));
+	debug(("F -> [%d]\n",arg_idx));
 
 	/* If we've beyond NR_ARGUMENTS then it get easy.
 	 */
@@ -1937,7 +1978,7 @@ define_insn(push_double, fpushl_xRC) {
 
 	arg_idx += arg_idx % 2;
 
-	debug(("D %d %d\n",arg_idx,pushed_int));
+	debug(("D -> [%d]\n",arg_idx));
 
 	/* If we've beyond NR_ARGUMENTS then it get easy.
 	 */
@@ -1945,16 +1986,17 @@ define_insn(push_double, fpushl_xRC) {
 		/* Put in argument stack */
 		r = rreg_double(1);
 		w = SLOT2PUSHOFFSET(arg_idx); /* FIX use sdc1 */
-		ldst_RRC(_SWC1, r, REG_sp, w);
-		debug(("	swc1	%s,%d[sp]\n", fregname(r), w));
-		ldst_RRC(_SWC1, r+1, REG_sp, w+4);
-		debug(("	swc1	%s,%d[sp]\n", fregname(r+1), w+4));
+		ldst_RRC(_SWC1, r, REG_sp, w+LOFFSET);
+		debug(("	swc1	%s,%d[sp]\n", fregname(r), w+LOFFSET));
+		ldst_RRC(_SWC1, r+1, REG_sp, w+HOFFSET);
+		debug(("	swc1	%s,%d[sp]\n", fregname(r+1), w+HOFFSET));
 	}
 	/* If we've pushed ints already or we've pushed more than
 	 * two floats then we put it in a0-a3.  Be careful since the
 	 * stack is backwards.
 	 */
 	else if (pushed_int || fp_idx >= 2) {
+	/* dbmsg = 1; */
 		r = rreg_ideal_int(1, REG_i4+arg_idx+1);
 		/* No macro for the following */
 		w = slotRegister(seq_slot(s, 1)+1, Rint, rread, REG_i4+arg_idx);
@@ -1975,7 +2017,6 @@ define_insn(push_double, fpushl_xRC) {
 		resreg[res_idx++] = r;
 		resreg[res_idx++] = r+1;
 	}
-
 	/* Count the double/longs we pushed */
 	fp_idx++;
 	arg_idx += 2;
@@ -2043,6 +2084,7 @@ define_insn(returnarg_long, returnargl_xxR)
 	debug_name(("returnarg_long:\n"));
 
 	r = seq_slot(s, 2);
+
 	r1 = _slowSlotRegister(r, Rint, rread);
 	r2 = _slowSlotRegister(r+1, Rint, rread);
 
@@ -2086,11 +2128,7 @@ define_insn(get_arg_ptr, get_arg_ptr_R)
 {
         int w;
 
-	/* Force arguments into registers */
-	clobberRegister(REG_i4); 
-	clobberRegister(REG_i5); 
-	clobberRegister(REG_i6); 
-	clobberRegister(REG_i7); 
+	debug_name(("get_arg_ptr:\n"));
 
 	w = wreg_int(0);
         insn_RRR(_ADDU, w, REG_fp, REG_i0);

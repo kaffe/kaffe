@@ -180,7 +180,7 @@ extern void mips_do_fixup_trampoline(void);
 /**/
 /* Number of registers saved in the prologue. */
 /**/
-#define	REGISTERS_SAVED	11
+#define	REGISTERS_SAVED	12
 
 /**/
 /* Opcode generation. */
@@ -239,7 +239,7 @@ extern void mips_do_fixup_trampoline(void);
 /* Size of each slot */
 #define	SLOTSIZE		4
 
-#define	FRAMEALIGN		8
+#define	FRAMEALIGN		16
 #define	STACKALIGN(v)		(((v) + FRAMEALIGN - 1) & -FRAMEALIGN)
 
 /* We push arguments low to high. */
