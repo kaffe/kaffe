@@ -9,8 +9,9 @@ the oskit build tools on your path.
 			*** VERY IMPORTANT ***
 
 If you have Version 0.96 of the oskit, you must first apply the patches in
-the file ./oskit-patches to your oskit source tree. Reconfigure, rebuild
-and reinstall your oskit!
+the file ./oskit-patches-0.96 to your oskit source tree. Reconfigure,
+rebuild and reinstall your oskit! You *do not* need to apply the oskit
+patches if you have Version 0.97 or later.
 
 If you have the daily snapshot of Kaffe OpenVM dated Jan 4 1999 or
 later (based on 1.0 Beta 3 but considerably changed from that), you

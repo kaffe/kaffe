@@ -35,4 +35,9 @@ void oskit_kaffe_init_md(void);
  */
 extern char *default_classpath;
 #define DEFAULT_CLASSPATH default_classpath
+
+/*
+ * Main thread uses default stacksize.
+ */
+#define MAINSTACKSIZE	threadStackSize
 #endif
