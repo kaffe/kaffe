@@ -329,7 +329,7 @@ initClasspath(void)
 		 */
 		char *writable_cp = gc_malloc_fixed(strlen(cp) + 1);
 		strcpy(writable_cp, cp);
-		makeClasspath(cp);
+		makeClasspath(writable_cp);
 		gc_free_fixed(writable_cp);
 	}
 	else {
