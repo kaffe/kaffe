@@ -1,3 +1,8 @@
+Mon Jul  5 16:04:55 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/io/Piped{Reader,Writer}.java: rewrite
+	in terms of PipedInputStream and PipedOutputStream.
+
 Mon Jul  5 13:19:51 PDT 1999 Edouard G. Parmelan <edouard.parmelan@quadratec.fr>
 
 	* libraries/javalib/java/io/File.java
