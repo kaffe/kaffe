@@ -1,3 +1,9 @@
+Fri Jul 21 15:57:58 PDT 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/Properties.java: escape chars < 0x20
+	* test/regression/PropertiesTest.java: new test
+	* test/regression/Makefile.{in,am}: add new test
+
 2000-07-21  Edouard G. Parmelan  <egp@free.fr>
 
 	* configure.in (--with-libffi, --with-engine=unix-pthread): Stop
