@@ -1,3 +1,7 @@
+Sat Jul  6 01:19:11 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* README: Added SuperH to support matrix.
+
 Sat Jul  6 00:36:20 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* WHATSNEW: included port to GNU/Linux on SuperH.
