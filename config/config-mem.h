@@ -42,7 +42,7 @@ void bcopy(void*, void*, size_t);
 #define	getpagesize()	8192
 #endif
 
-#if !(HAVE_DECLARED_SWAB)
+#if !defined(HAVE_DECLARED_SWAB)
 /* 
  * Some systems (Linux) do not declare swab in any standard header file
  */
