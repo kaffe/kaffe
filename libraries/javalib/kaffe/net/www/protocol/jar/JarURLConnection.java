@@ -87,7 +87,9 @@ public class JarURLConnection extends java.net.JarURLConnection {
 			jarEntry = jarFile.getEntry(jarEntryName);
 			if (jarEntry == null) {
 				throw new IOException("JAR entry \""
-				    + jarEntryName + "\" not found");
+						      + jarEntryName
+						      + "\" not found in JAR file "
+						      + jarFile.getName());
 			}
 		}
 		connected = true;

@@ -1,3 +1,20 @@
+2003-09-13  Dalibor Topic <robilad@kaffe.org>,
+            Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/javalib/javax/naming/spi/NamingManager.java:
+	(getURLContext, getObjectInstance, getStateToBind) Always use
+	current thread's context class loader when calling Class.forName.
+
+2003-09-13  Dalibor Topic <robilad@kaffe.org>
+	
+	* libraries/javalib/java/net/URLClassLoader.java
+	(findResourceInternal) Only attempt to call diconnect if
+	URLConnection u is a HttpURLConnection to avoid creating
+	unnecessary exceptions.
+
+	* libraries/javalib/kaffe/net/www/protocol/jar/JarURLConnection.java:
+	(connect) Improved exception message.
+	
 2003-09-13  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/clib/native/Runtime.c:

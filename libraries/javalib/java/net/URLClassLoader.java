@@ -185,12 +185,10 @@ public class URLClassLoader extends SecureClassLoader {
 
 				// Try to get it, to see if it's really there
 				URLConnection u = url.openConnection();
-
-				// Try not to leave a lingering connection
-				try {
-					u.getClass().getMethod("disconnect",
-					    null).invoke(u, new Object[0]);
-				} catch (Exception e) {
+			      
+				// Try not to leave a lingering HTTP connection
+				if (u instanceof HttpURLConnection) {
+				  ((HttpURLConnection) u).disconnect();
 				}
 			
 				if (v != null) {
@@ -199,8 +197,10 @@ public class URLClassLoader extends SecureClassLoader {
 					return url;
 				}
 			} catch (IOException e) {	// resource not found
+				// e.printStackTrace();
 			}
 		}
+
 		return null; 
 	}
 
