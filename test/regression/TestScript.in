@@ -90,6 +90,10 @@ run()
 	        $VERBOSE output differs from "$1.out", saving in "$1.fail"
 		error=1
 	fi
+	if test -f core; then
+		$VERBOSE saving core in "$1.core"
+		mv core "$1.core"
+	fi
 }
 
 runtest()
