@@ -1,7 +1,6 @@
-/* XMLFormatter.java
-   -- a class for formatting log messages into a standard XML format
-
-Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+/* XMLFormatter.java --
+   A class for formatting log messages into a standard XML format
+   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,9 +34,7 @@ module.  An independent module is a module which is not derived from
 or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
-exception statement from your version.
-
-*/
+exception statement from your version. */
 
 
 package java.util.logging;
@@ -101,10 +98,8 @@ public class XMLFormatter
    * @param content the element content, or <code>null</code> to
    *        have no output whatsoever appended to <code>buf</code>.
    */
-  private static final void appendTag(StringBuffer buf,
-				      int indent,
-				      String tag,
-				      String content)
+  private static void appendTag(StringBuffer buf, int indent,
+                                String tag, String content)
   {
     int i;
 
@@ -178,10 +173,8 @@ public class XMLFormatter
    *
    * @param content the element content.
    */
-  private static final void appendTag(StringBuffer buf,
-				      int indent,
-				      String tag,
-				      long content)
+  private static void appendTag(StringBuffer buf, int indent,
+                                String tag, long content)
   {
     appendTag(buf, indent, tag, Long.toString(content));
   }

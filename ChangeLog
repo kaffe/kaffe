@@ -1,5 +1,45 @@
 2004-10-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/util/logging/ConsoleHandler.java,
+	libraries/javalib/java/util/logging/ErrorManager.java,
+	libraries/javalib/java/util/logging/FileHandler.java,
+	libraries/javalib/java/util/logging/Filter.java,
+	libraries/javalib/java/util/logging/Formatter.java,
+	libraries/javalib/java/util/logging/Handler.java,
+	libraries/javalib/java/util/logging/Level.java,
+	libraries/javalib/java/util/logging/LogManager.java,
+	libraries/javalib/java/util/logging/LogRecord.java,
+	libraries/javalib/java/util/logging/Logger.java,
+	libraries/javalib/java/util/logging/LoggingPermission.java,
+	libraries/javalib/java/util/logging/MemoryHandler.java,
+	libraries/javalib/java/util/logging/SimpleFormatter.java,
+	libraries/javalib/java/util/logging/SocketHandler.java,
+	libraries/javalib/java/util/logging/StreamHandler.java,
+	libraries/javalib/java/util/logging/XMLFormatter.java:
+	Resynced with GNU Classpath.
+
+	2004-10-20  Michael Koch  <konqueror@gmx.de>
+
+        * java/util/logging/ConsoleHandler.java,
+        java/util/logging/ErrorManager.java,
+        java/util/logging/FileHandler.java,
+        java/util/logging/Filter.java,
+        java/util/logging/Formatter.java,
+        java/util/logging/Handler.java,
+        java/util/logging/Level.java,
+        java/util/logging/LogManager.java,
+        java/util/logging/LogRecord.java,
+        java/util/logging/Logger.java,
+        java/util/logging/LoggingPermission.java,
+        java/util/logging/MemoryHandler.java,
+        java/util/logging/SimpleFormatter.java,
+        java/util/logging/SocketHandler.java,
+        java/util/logging/StreamHandler.java,
+        java/util/logging/XMLFormatter.java:
+        Standardized copyrigth header.
+
+2004-10-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/security/Identity.java:
 	Replaced by implementation from GNU Classpath.
 
