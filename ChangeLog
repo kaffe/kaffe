@@ -1,6 +1,6 @@
 2004-12-18  Adam Heath  <doogieg@brainfood.com>
 
-	* configure.ac:
+	* configure.ac, configure:
 	  The processing of --disable-debug had the CPPFLAGS block only
 	  running when --disable-debug is specified.  It never ran in the
 	  default case, so -vmdebug was never a valid option.

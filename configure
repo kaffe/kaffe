@@ -27252,23 +27252,25 @@ ENGINE_NAME="$with_engine"
 engine_frag=$srcdir/kaffe/kaffevm/$with_engine/Makefile.frag
 
 
+set -x
 # Check whether --enable-debug or --disable-debug was given.
 if test "${enable_debug+set}" = set; then
   enableval="$enable_debug"
 
+
+else
+  enable_debug="yes"
+fi;
 case "$enable_debug" in
 no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 *) CPPFLAGS="$CPPFLAGS -DKAFFE_VMDEBUG";;
 esac
 
-else
-  enable_debug="yes"
-fi;
-
 echo "$as_me:$LINENO: checking whether to enable run-time debugging machinery" >&5
 echo $ECHO_N "checking whether to enable run-time debugging machinery... $ECHO_C" >&6
 echo "$as_me:$LINENO: result: $enable_debug" >&5
 echo "${ECHO_T}$enable_debug" >&6
+set +x
 
 
 
