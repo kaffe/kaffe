@@ -4561,17 +4561,17 @@ softcall_fakecall(label* from, label* to, void* func)
 }
 
 void
-softcall_nosuchmethod(Utf8Const* cls, Utf8Const* name, Utf8Const* sig)
+softcall_nosuchmethod(struct Hjava_lang_Class* cls, Utf8Const* name, Utf8Const* sig)
 {
 	begin_func_sync();
 #if defined(PUSHARG_FORWARDS)
-	pusharg_utf8_const(cls, 0);
+	pusharg_class_const(cls, 0);
 	pusharg_utf8_const(name, 1);
 	pusharg_utf8_const(sig, 2);
 #else
 	pusharg_utf8_const(sig, 2);
 	pusharg_utf8_const(name, 1);
-	pusharg_utf8_const(cls, 0);
+	pusharg_class_const(cls, 0);
 #endif
 	call_soft(soft_nosuchmethod);
 	popargs();
