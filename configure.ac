@@ -10,7 +10,7 @@ AC_CONFIG_SRCDIR([kaffe])
 # GPLed portions has been taken from the GPL-d configure.ac
 # file of gimp-print project
 
-AC_COPYRIGHT([Copyright 1996 - 2004 Kaffe.org project contributors. All rights reserved.
+AC_COPYRIGHT([Copyright 1996 - 2005 Kaffe.org project contributors. All rights reserved.
 Portions Copyright 1996 - 2002 Transvirtual Technologies, Inc.
 Portions Copyright by various third parties, see file THIRDPARTY for details.
 
@@ -33,7 +33,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ])
 
-AM_INIT_AUTOMAKE([1.9.3 tar-ustar])
+AM_INIT_AUTOMAKE([1.9.4 tar-ustar])
 
 AC_PREFIX_DEFAULT(/usr/local/kaffe)
 
@@ -1792,6 +1792,7 @@ esac
 
 AM_CONDITIONAL([COND_SOUND_ALSA], [test "$ALSA_DIR" = alsa])
 AM_CONDITIONAL([COND_SOUND_ESD], [test "$ESD_DIR" = esd])
+AM_CONDITIONAL([COND_NATIVE_SOUND], [test x"$enable_sound" != x"no"])
 
 dnl -----------------------------------------------------------------------
 dnl                 Pure java imlementation of java.math.*

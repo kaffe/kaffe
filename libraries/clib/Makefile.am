@@ -17,6 +17,10 @@ if COND_NATIVE_AWT
   MAYBE_NATIVE_AWT_DIR = awt
 endif
 
+if COND_NATIVE_SOUND
+  MAYBE_NATIVE_SOUND_DIR = sound
+endif
+
 SUBDIRS = \
 	classpath \
 	native \
@@ -29,4 +33,4 @@ SUBDIRS = \
 	management \
 	$(MAYBE_LIBXMLJ_DIR) \
 	$(MAYBE_NATIVE_AWT_DIR) \
-	sound
+	$(MAYBE_NATIVE_SOUND_DIR)
