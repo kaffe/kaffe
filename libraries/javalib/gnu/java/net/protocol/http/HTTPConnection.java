@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package gnu.java.net.protocol.http;
 
+import gnu.classpath.Configuration;
 import gnu.java.net.protocol.http.event.ConnectionEvent;
 import gnu.java.net.protocol.http.event.ConnectionListener;
 import gnu.java.net.protocol.http.event.RequestEvent;
@@ -55,9 +56,11 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.net.SocketFactory;
+import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -87,7 +90,9 @@ public class HTTPConnection
   {
     try
       {
-        StringBuffer buf = new StringBuffer("inetlib/1.1 (");
+        StringBuffer buf = new StringBuffer("classpath/");
+        buf.append(Configuration.CLASSPATH_VERSION);
+        buf.append(" (");
         buf.append(System.getProperty("os.name"));
         buf.append("; ");
         buf.append(System.getProperty("os.arch"));
@@ -149,11 +154,17 @@ public class HTTPConnection
 
   private final List connectionListeners;
   private final List requestListeners;
+  private final List handshakeCompletedListeners;
 
   /**
    * The socket this connection communicates on.
    */
   protected Socket socket;
+
+  /**
+   * The SSL socket factory to use.
+   */
+  private SSLSocketFactory sslSocketFactory;
 
   /**
    * The socket input stream.
@@ -246,8 +257,9 @@ public class HTTPConnection
     this.connectionTimeout = connectionTimeout;
     this.timeout = timeout;
     majorVersion = minorVersion = 1;
-    connectionListeners = Collections.synchronizedList(new ArrayList(4));
-    requestListeners = Collections.synchronizedList(new ArrayList(4));
+    connectionListeners = new ArrayList(4);
+    requestListeners = new ArrayList(4);
+    handshakeCompletedListeners = new ArrayList(2);
   }
 
   /**
@@ -434,17 +446,27 @@ public class HTTPConnection
           {
             try
               {
-                TrustManager tm = new EmptyX509TrustManager();
-                SSLContext context = SSLContext.getInstance("SSL");
-                TrustManager[] trust = new TrustManager[] { tm };
-                context.init(null, trust, null);
-                SSLSocketFactory factory =  context.getSocketFactory();
+                SSLSocketFactory factory = getSSLSocketFactory();
                 SSLSocket ss =
                   (SSLSocket) factory.createSocket(socket, connectHostname,
                                                    connectPort, true);
                 String[] protocols = { "TLSv1", "SSLv3" };
                 ss.setEnabledProtocols(protocols);
                 ss.setUseClientMode(true);
+                synchronized (handshakeCompletedListeners)
+                  {
+                    if (!handshakeCompletedListeners.isEmpty())
+                      {
+                        for (Iterator i =
+                             handshakeCompletedListeners.iterator();
+                             i.hasNext(); )
+                          {
+                            HandshakeCompletedListener l =
+                              (HandshakeCompletedListener) i.next();
+                            ss.addHandshakeCompletedListener(l);
+                          }
+                      }
+                  }
                 ss.startHandshake();
                 socket = ss;
               }
@@ -459,6 +481,25 @@ public class HTTPConnection
         out = new BufferedOutputStream(out);
       }
     return socket;
+  }
+
+  SSLSocketFactory getSSLSocketFactory()
+    throws GeneralSecurityException
+  {
+    if (sslSocketFactory == null)
+      {
+        TrustManager tm = new EmptyX509TrustManager();
+        SSLContext context = SSLContext.getInstance("SSL");
+        TrustManager[] trust = new TrustManager[] { tm };
+        context.init(null, trust, null);
+        sslSocketFactory = context.getSocketFactory();
+      }
+    return sslSocketFactory;
+  }
+
+  void setSSLSocketFactory(SSLSocketFactory factory)
+  {
+    sslSocketFactory = factory;
   }
 
   protected InputStream getInputStream()
@@ -631,6 +672,21 @@ public class HTTPConnection
             l[i].requestSent(event);
             break;
           }
+      }
+  }
+
+  void addHandshakeCompletedListener(HandshakeCompletedListener l)
+  {
+    synchronized (handshakeCompletedListeners)
+      {
+        handshakeCompletedListeners.add(l);
+      }
+  }
+  void removeHandshakeCompletedListener(HandshakeCompletedListener l)
+  {
+    synchronized (handshakeCompletedListeners)
+      {
+        handshakeCompletedListeners.remove(l);
       }
   }
 

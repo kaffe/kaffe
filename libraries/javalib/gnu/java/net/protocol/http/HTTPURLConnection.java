@@ -43,16 +43,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.cert.Certificate;
 import java.util.Date;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.net.ssl.HandshakeCompletedEvent;
+import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSocketFactory;
 
 /**
  * A URLConnection that uses the HTTPConnection class.
@@ -60,7 +66,8 @@ import java.util.Map;
  * @author Chris Burdess (dog@gnu.org)
  */
 public class HTTPURLConnection
-  extends HttpURLConnection
+  extends HttpsURLConnection
+  implements HandshakeCompletedListener
 {
 
   /*
@@ -79,11 +86,14 @@ public class HTTPURLConnection
   private Response response;
   private ByteArrayInputStream responseSink;
 
+  private HandshakeCompletedEvent handshakeEvent;
+
   /**
    * Constructor.
    * @param url the URL
    */
   public HTTPURLConnection(URL url)
+    throws IOException
   {
     super(url);
     requestHeaders = new Headers();
@@ -100,11 +110,15 @@ public class HTTPURLConnection
       if (proxyHostname != null && proxyHostname.length() > 0)
         {
           String port = System.getProperty("http.proxyPort");
-          proxyPort = (port != null && port.length() > 0) ? Integer.parseInt (port) : -1;
-        }
-      else
-        {
-            proxyHostname = null;
+          if (port != null && port.length() > 0)
+            {
+              proxyPort = Integer.parseInt (port);
+            }
+          else
+            {
+              proxyHostname = null;
+              proxyPort = -1;
+            }
         }
       return null;
     }
@@ -149,6 +163,17 @@ public class HTTPURLConnection
         if (connection == null)
           {
             connection = new HTTPConnection(host, port, secure);
+            if (secure)
+              {
+                SSLSocketFactory factory = getSSLSocketFactory();
+                HostnameVerifier verifier = getHostnameVerifier();
+                if (factory != null)
+                  {
+                    connection.setSSLSocketFactory(factory);
+                  }
+                connection.addHandshakeCompletedListener(this);
+                // TODO verifier
+              }
           }
         if (proxyHostname != null)
           {
@@ -517,6 +542,43 @@ public class HTTPURLConnection
         connect();
       }
     return response.getMessage();
+  }
+
+  // -- HTTPS specific --
+
+  public String getCipherSuite()
+  {
+    if (!connected)
+      {
+        throw new IllegalStateException("not connected");
+      }
+    return handshakeEvent.getCipherSuite();
+  }
+  
+  public Certificate[] getLocalCertificates()
+  {
+    if (!connected)
+      {
+        throw new IllegalStateException("not connected");
+      }
+    return handshakeEvent.getLocalCertificates();
+  }
+
+  public Certificate[] getServerCertificates()
+    throws SSLPeerUnverifiedException
+  {
+    if (!connected)
+      {
+        throw new IllegalStateException("not connected");
+      }
+    return handshakeEvent.getPeerCertificates();
+  }
+
+  // HandshakeCompletedListener
+
+  public void handshakeCompleted(HandshakeCompletedEvent event)
+  {
+    handshakeEvent = event;
   }
 
 }

@@ -1,3 +1,21 @@
+2004-12-06  Dalibor Topic  <topic@notebox>
+
+	* libraries/javalib/gnu/java/net/protocol/http/HTTPConnection.java,
+	libraries/javalib/gnu/java/net/protocol/http/HTTPURLConnection.java:
+	Resynced with GNU Classpath.
+	
+	2004-12-05  Chris Burdess  <dog@gnu.org>
+
+        * gnu/java/net/protocol/http/HTTPConnection.java,
+        gnu/java/net/protocol/http/HTTPURLConnection.java:
+        HTTPURLConnection now derives from HttpsURLConnection.
+
+	2004-12-01  Chris Burdess  <dog@gnu.org>
+
+        * gnu/java/net/protocol/http/HTTPConnection.java:
+        HTTPConnection's default User-Agent header set to "classpath/" plus
+        the version of Classpath in use.
+
 2004-12-06  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* include/Makefile.am,
