@@ -406,7 +406,7 @@ struct JNINativeInterface
   const char * (JNICALL *GetStringUTFChars)       (JNIEnv *, jstring, jboolean *);                 /* 169 */
   void     (JNICALL *ReleaseStringUTFChars)        (JNIEnv *, jstring, const char *);               /* 170 */
   jsize    (JNICALL *GetArrayLength)               (JNIEnv *, jarray);                              /* 171 */
-  jarray   (JNICALL *NewObjectArray)               (JNIEnv *, jsize, jclass, jobject);              /* 172 */
+  jobjectArray   (JNICALL *NewObjectArray)         (JNIEnv *, jsize, jclass, jobject);              /* 172 */
   jobject  (JNICALL *GetObjectArrayElement)        (JNIEnv *, jobjectArray, jsize);                 /* 173 */
   void     (JNICALL *SetObjectArrayElement)        (JNIEnv *, jobjectArray, jsize, jobject);        /* 174 */
 
@@ -1178,7 +1178,7 @@ struct _Jv_JNIEnv
   jsize GetArrayLength (jarray val0)
   { return p->GetArrayLength (this, val0); }
 
-  jarray NewObjectArray (jsize val0, jclass cl1, jobject obj2)
+  jobjectArray NewObjectArray (jsize val0, jclass cl1, jobject obj2)
   { return p->NewObjectArray (this, val0, cl1, obj2); }
 
   jobject GetObjectArrayElement (jobjectArray val0, jsize val1)
