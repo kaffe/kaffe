@@ -48,13 +48,21 @@ In order to test kaffe's compatibiity with some Java API release:
 
 make check KEYS="JDK 1.release \!java.lang.Character.unicode" > kaffe.log
 
+Mauve has an option to group the KEYS you are using. When you create a
+file "mauve-kaffe" with your normal KEYS settings then you can then do
+"make check KEYS=kaffe". Kaffe comes with a "mauve-kaffe" file in the
+developers directory. Don't forget to do a "rm .save-keys choices"
+after editing the "mauve-kaffe" file before rerunning "make check
+KEYS=kaffe" to make sure the changes get picked up.
+
 If you want extra verbose output, use make check KEYS=something
 TESTFLAGS="-verbose". You can pick single tests to run, by using make
 check KEYS="JDK1.release \!java. \!javax. package.class.test"
 
-Finally, you can pipe the output of the verbose runs into a perl script that
-generates nice web pages like http://www.japhar.org/mauve-results-12.html . The
-script is Japhar's CVS.
+Finally, you can pipe the output of the verbose runs into a perl
+script that generates nice web pages. The script mauve-html-gen.pl can
+be found in the developers directory.
+
 
 Helping Out
 ===========
@@ -93,4 +101,4 @@ The Unicode tests result in a ton of failures. According to
 developers/README.unicode, it's the Unicode tests that need fixing.
 
 Some tests can not be built since kaffe doesn't implement the APIs
-yet.
+yet. They have been commented out in the "mauve-kaffe" file.

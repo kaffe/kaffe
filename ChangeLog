@@ -1,3 +1,15 @@
+2003-05-27 Dalibor Topic <robilad@yahoo.com>
+
+	* FAQ/FAQ.mauve: added new documentation from Mark Wielaard.
+	* developers/mauve-html-gen-pl: new file, taken from Japhar (LGPLd
+	virtual machine).
+	* developers/mauve-results.sh: new file.
+	* developers/README: updated
+	
+2003-05-27 Mark Wielaard <mark@klomp.org>
+
+	* developers/mauve-kaffe: new file.
+
 2003-05-26 Jim Pick <jim@kaffe.org>
 
 	* libraries/javalib/java/util/zip/ZipFile.java:
