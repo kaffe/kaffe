@@ -1,5 +1,5 @@
 /* DirStateFactory.java --
-   Copyright (C) 2001 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -39,7 +39,6 @@ exception statement from your version. */
 package javax.naming.spi;
 
 import java.util.Hashtable;
-
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NamingException;
@@ -54,7 +53,7 @@ public interface DirStateFactory extends StateFactory
 {
   // Inner class
 
-  public static class Result
+  class Result
   {
     private Object obj;
     private Attributes outAttrs;
