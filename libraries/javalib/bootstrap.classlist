@@ -183,7 +183,17 @@ java/net/FileNameMap.class
 kaffe/net/DefaultStreamMap.class
 kaffe/net/StreamMap.class
 
-# Needed 
+# Additional classes used by -v option passed to kjc
+java/text/FieldPosition.class
+java/text/SimpleDateFormat.class
+java/text/NumberFormat.class
+java/text/DecimalFormat.class
+java/text/ChoiceFormat.class
+
+# Perhaps some additional classes are needed if kjc detects
+# errors.  That hasn't been tested.
+
+# Needed for kaffeh run when building vm and native libs
 java/io/ObjectOutputStream.class
 java/io/RandomAccessFile.class
 java/net/DatagramPacket.class

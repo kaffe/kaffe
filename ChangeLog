@@ -1,3 +1,20 @@
+Fri Jul 19 19:14:07 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* Rebuilding the classes takes forever on my 16MB
+	NetBSD box (it hits swap pretty hard).  So I limited
+	the max heap size when using kjc to 32MB, and cranked
+	up the verbosity.
+
+	* libraries/javalib/rebuildLib.in: Tweaked memory
+	settings for kjc and increased verbosity.
+
+	* libraries/javalib/Makefile.am: Don't hide output
+	when compiling classes.
+	
+	* libraries/javalib/bootstrap.classlist,
+	libraries/javalib/Klasses.jar.bootstrap: Added
+	a few classes needed to run kjc with the -v option.
+
 Fri Jul 19 12:03:13 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* Major change to build system - now rt.jar gets

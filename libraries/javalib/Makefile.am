@@ -992,9 +992,8 @@ rebuildLib = ./rebuildLib
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes
 compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
-	@echo $(SHELL) $(rebuildLib)
-	@$(SHELL) $(rebuildLib) $(Klasses_jar_SRCS)
-	@echo timestamp > $(LIBDIR)/stamp
+	$(SHELL) $(rebuildLib) $(Klasses_jar_SRCS)
+	echo timestamp > $(LIBDIR)/stamp
 
 $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
 	cp kaffe/lang/unicode.idx kaffe/lang/unicode.tbl lib/kaffe/lang
