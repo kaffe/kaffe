@@ -153,7 +153,7 @@ void dbgSetMaskStr(char *mask_str)
 			}
 		
 		printf("Exiting.\n");
-		EXIT(0);
+		exit(0);
 	}
 	
 
