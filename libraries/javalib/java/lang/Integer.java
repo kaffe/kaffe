@@ -121,7 +121,7 @@ public static int parseInt(String s) throws NumberFormatException
 
 public static int parseInt(String s, int radix) throws NumberFormatException
 {
-	if (s.length()<=0) throw new NumberFormatException();
+	if (s==null || s.length()<=0) throw new NumberFormatException();
 
 	/* Check for negativity */
 	if (s.charAt(0)=='-')
