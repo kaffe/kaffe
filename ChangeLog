@@ -1,5 +1,12 @@
 2004-01-19  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/scripts/kaffe.in:
+	Add all jars found in prefix/lib to the BOOTCLASSPATH,
+	thereby making jars installed by install-jars accessible
+	to the user.
+
+2004-01-19  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/scripts/install-jar.in:
 	Put the jars in $prefix/lib/ directory. Use
 	basename while copying the jars to avoid problems with

@@ -71,6 +71,12 @@ for f in rt.jar comm.jar pjava.jar servlet.jar tools.jar microsoft.jar kjc.jar r
     BOOTCLASSPATH="$KAFFE_JRELIBDIR/$f$PATHSEP$BOOTCLASSPATH"
   fi
 done
+
+# And now add all the installed jars to bootclasspath
+for f in "$KAFFE_LIBDIR"/*.jar ; do
+  BOOTCLASSPATH="$BOOTCLASSPATH$PATHSEP$f"
+done
+
 case "$DIRSEP" in /) ;;
 *) BOOTCLASSPATH=`echo "$BOOTCLASSPATH" | sed 's,/,'"$DIRSEP"',g'` ;;
 esac
