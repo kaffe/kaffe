@@ -294,6 +294,7 @@ else
 fi
 AC_SUBST(KPREFIX)
 AC_SUBST(INSTROOT)
+AC_DEFINE_UNQUOTED(ARCHOS, "$host_cpu-$host_os")
 
 dnl =========================================================================
 
@@ -701,6 +702,16 @@ fi
 AC_SUBST(subdirs)
 AC_SUBST(packages)
 AC_SUBST(KAFFE_LIBDEP)
+
+dnl =========================================================================
+dnl Define directory to put native library support
+dnl -------------------------------------------------------------------------
+
+# We do this hear to because we need prefixes set.
+test "x$prefix" = xNONE && prefix=$ac_default_prefix
+test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
+nativedir=$datadir/kaffe/lib/$host_cpu-$host_os
+AC_SUBST(nativedir)
 
 dnl A few extra files to process.
 output="$make_output \

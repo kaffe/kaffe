@@ -31,6 +31,7 @@
 #if defined(NO_SHARED_LIBRARIES)
 #include "../../libraries/clib/external_native.h"
 #endif
+#include "system.h"
 
 #if defined(NO_SHARED_LIBRARIES)
 
@@ -80,20 +81,59 @@ initNative(void)
 {
 #if !defined(NO_SHARED_LIBRARIES)
 	char lib[MAXLIBPATH];
-	char* ptr;
+	char* lpath;
+	char* home;
 	char* nptr;
+	char* ptr;
+	int len;
 
-	ptr = getenv(LIBRARYPATH);
-	if (ptr == 0) {
-#if defined(DEFAULT_LIBRARYPATH)
-		ptr = DEFAULT_LIBRARYPATH;
-#else
-		fprintf(stderr, "No library path set.\n");
-		return;
-#endif
+	lpath = getenv(LIBRARYPATH);
+	if (lpath != 0) {
+		lpath = strdup(lpath);
 	}
-	libraryPath = gc_malloc_fixed(strlen(ptr) + 1);
-	strcpy(libraryPath, ptr);
+#if defined(DEFAULT_LIBRARYPATH)
+	else {
+		lpath = DEFAULT_LIBRARYPATH;
+	}
+#endif
+	home = getenv(KAFFEHOME);
+	if (home != 0) {
+		home = strdup(home);
+	}
+#if defined(DEFAULT_KAFFEHOME)
+	else {
+		home = DEFAULT_KAFFEHOME;
+	}
+#endif
+
+	len = 0;
+	if (lpath != 0) {
+		len += strlen(lpath);
+	}
+	if (home != 0) {
+		len += strlen(home);
+	}
+	if (len == 0) {
+		fprintf(stderr, "Library path and Kaffe home not set!\n");
+		return;
+	}
+
+	/*
+	 * Build a library path from the given library path and one
+	 * constructed from the kaffe home + system type.
+	 */
+	libraryPath = gc_malloc_fixed(len + strlen(ARCHOS) + 7);
+	if (lpath != 0) {
+		strcat(libraryPath, lpath);
+		if (home != 0) {
+			strcat(libraryPath, ":");
+		}
+	}
+	if (home != 0) {
+		strcat(libraryPath, home);
+		strcat(libraryPath, "/lib/");
+		strcat(libraryPath, ARCHOS);
+	}
 
 	LIBRARYINIT();
 

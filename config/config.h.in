@@ -374,6 +374,9 @@
 /* Define default KAFFEHOME */
 #undef  DEFAULT_KAFFEHOME
 
+/* Define the version we're compiling for */
+#undef	ARCHOS
+
 /* Provide default types which might be missing */
 #undef	size_t
 #undef	ssize_t

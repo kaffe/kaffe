@@ -10,7 +10,7 @@
 srcdir=		@srcdir@
 prefix=		@prefix@
 exec_prefix=	@exec_prefix@
-nativedir=	@libdir@
+nativedir=	@nativedir@
 INSTROOT=	@INSTROOT@
 CC=		@CC@
 LD=		@LD@
