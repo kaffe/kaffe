@@ -37,19 +37,21 @@ exception statement from your version. */
 
 
 package gnu.java.awt.peer.gtk;
-import java.awt.peer.FontPeer;
-import java.awt.*;
-import java.awt.geom.*;
-import java.awt.font.*;
+
+import gnu.classpath.Configuration;
+import gnu.java.awt.peer.ClasspathFontPeer;
+
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
+import java.awt.font.LineMetrics;
+import java.awt.geom.Rectangle2D;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.MissingResourceException;
 import java.text.CharacterIterator;
-import java.text.AttributedCharacterIterator;
 import java.text.StringCharacterIterator;
-import gnu.classpath.Configuration;
-import gnu.java.awt.peer.ClasspathFontPeer;
 
 public class GdkFontPeer extends ClasspathFontPeer
 {

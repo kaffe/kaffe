@@ -53,7 +53,6 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.Permission;
-import java.security.AccessController;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;

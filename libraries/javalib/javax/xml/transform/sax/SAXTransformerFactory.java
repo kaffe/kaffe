@@ -37,13 +37,10 @@ exception statement from your version. */
 
 package javax.xml.transform.sax;
 
-import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
-import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 
 /**

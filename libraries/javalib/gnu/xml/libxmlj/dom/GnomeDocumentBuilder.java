@@ -37,12 +37,8 @@ exception statement from your version. */
 
 package gnu.xml.libxmlj.dom;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
-import java.io.PushbackInputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 

@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.gtk;
 
-import java.awt.AWTEvent;
-import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Graphics;
 import java.awt.Rectangle;

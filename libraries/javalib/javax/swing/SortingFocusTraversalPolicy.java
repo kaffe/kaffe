@@ -40,7 +40,6 @@ package javax.swing;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.FocusTraversalPolicy;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;

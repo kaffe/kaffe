@@ -50,7 +50,6 @@ import java.text.ParseException;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.EventListenerList;
 import javax.swing.plaf.SpinnerUI;
 
 

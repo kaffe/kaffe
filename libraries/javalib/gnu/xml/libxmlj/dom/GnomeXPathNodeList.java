@@ -37,7 +37,6 @@ exception statement from your version. */
 
 package gnu.xml.libxmlj.dom;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 

@@ -45,9 +45,6 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.Properties;
 import javax.xml.validation.Schema;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 
 /**
  * Factory for obtaining document builders.

@@ -51,7 +51,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.peer.DragSourceContextPeer;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextAttribute;
 import java.awt.im.InputMethodHighlight;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -68,7 +67,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.Properties;
 import javax.imageio.spi.IIORegistry;
 

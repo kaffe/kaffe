@@ -40,7 +40,6 @@ package gnu.java.awt.peer.gtk;
 
 import gnu.classpath.Configuration;
 import gnu.java.awt.ClasspathToolkit;
-import gnu.java.awt.peer.ClasspathFontPeer;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -60,9 +59,7 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.TexturePaint;
 import java.awt.Toolkit;
-import java.awt.color.ColorSpace;
 import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphJustificationInfo;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
@@ -80,7 +77,6 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
 import java.awt.image.DirectColorModel;
 import java.awt.image.FilteredImageSource;
-import java.awt.image.ImageConsumer;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImagingOpException;
 import java.awt.image.MultiPixelPackedSampleModel;

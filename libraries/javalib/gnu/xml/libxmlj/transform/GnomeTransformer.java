@@ -37,14 +37,9 @@ exception statement from your version. */
 
 package gnu.xml.libxmlj.transform;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PushbackInputStream;
 
 import java.net.URL;
 
@@ -65,7 +60,6 @@ import javax.xml.transform.URIResolver;
 
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;

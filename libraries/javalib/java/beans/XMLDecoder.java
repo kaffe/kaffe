@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package java.beans;
 
-import gnu.java.beans.decoder.DecoderContext;
 import gnu.java.beans.decoder.DefaultExceptionListener;
 import gnu.java.beans.decoder.PersistenceParser;
 

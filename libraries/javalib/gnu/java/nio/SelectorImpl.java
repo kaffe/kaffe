@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package gnu.java.nio;
 
-import gnu.classpath.Configuration;
-
 import java.io.IOException;
 import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.SelectableChannel;

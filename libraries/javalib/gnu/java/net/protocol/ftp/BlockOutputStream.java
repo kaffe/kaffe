@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package gnu.java.net.protocol.ftp;
 
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 

@@ -42,7 +42,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PushbackInputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.MalformedURLException;

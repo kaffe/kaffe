@@ -38,12 +38,10 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.gtk;
 
-import java.awt.AWTEvent;
 import java.awt.Dialog;
 import java.awt.FileDialog;
 import java.awt.Graphics;
 import java.awt.Window;
-import java.awt.event.WindowEvent;
 import java.awt.peer.FileDialogPeer;
 import java.io.File;
 import java.io.FilenameFilter;

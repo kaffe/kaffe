@@ -42,7 +42,6 @@ import java.awt.ItemSelectable;
 import java.awt.event.ItemEvent;
 import java.awt.CheckboxMenuItem;
 import java.awt.peer.CheckboxMenuItemPeer;
-import java.awt.peer.MenuItemPeer;
 
 public class GtkCheckboxMenuItemPeer extends GtkMenuItemPeer
   implements CheckboxMenuItemPeer

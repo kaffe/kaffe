@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.gtk;
 
-import gnu.classpath.Configuration;
-
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.Shape;
