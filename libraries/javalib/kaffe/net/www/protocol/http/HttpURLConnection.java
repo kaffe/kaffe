@@ -110,7 +110,7 @@ public InputStream getInputStream() throws IOException {
 
 public String getHeaderField(String name) {
 	for (int i = 0; i < headers.length; i++) {
-		if (headers[i].equals( name)) {
+		if (headers[i].equalsIgnoreCase( name)) {
 			return (getHeaderField(i));
 		}
 	}
@@ -133,7 +133,7 @@ public String getHeaderFieldKey(int pos) {
 
 protected void setHeaderField( String key, String value) {
 	for ( int i=0; i<headers.length; i++ ) {
-		if ( headers[i].equals( key) ) {
+		if ( headers[i].equalsIgnoreCase( key) ) {
 			headersValue[i] = value;
 			break;
 		}
