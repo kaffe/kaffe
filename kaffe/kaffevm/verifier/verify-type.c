@@ -13,6 +13,9 @@
 #include "debug.h"
 #include "itypes.h"
 #include "soft.h"
+#include "gc.h"
+#include "exception.h"
+#include "errors.h"
 #include "verify.h"
 #include "verify-debug.h"
 #include "verify-type.h"
@@ -206,9 +209,42 @@ resolveType(Verifier* v, Type *t)
  * list and puts it onto our SupertypeSet of memory allocations.
  */
 void
-mergeSupersets(SupertypeSet* supertypes, Type* t1, Type* t2)
+mergeSupersets(Verifier* v, Type* t1, Type* t2)
 {
-	/* TODO */
+	int i, j;
+	SupertypeSet* set = checkPtr(gc_malloc(sizeof(SupertypeSet), GC_ALLOC_VERIFIER));
+	
+	/* we allocate more memory than we'll ever use, but this is faster than
+	 * counting out all the common superinterfaces, allocating memory for the set,
+	 * and then finding all the common superinterfaces again.
+	 *
+	 * besides, we're just allocating a small amount of memory for pointers ;)
+	 */
+	(t1->data.class->total_interface_len > t2->data.class->total_interface_len) ?
+		(i = t1->data.class->total_interface_len + 1)
+		:
+		(i = t2->data.class->total_interface_len + 1);
+	set->list = checkPtr(gc_malloc(i * sizeof(Hjava_lang_Class*), GC_ALLOC_VERIFIER));
+	
+	/* the first common supertype is always a common class */
+	set->list[0] = getCommonSuperclass(t1->data.class, t2->data.class);
+	set->count = 1;
+	
+	/* cycle through all interfaces that both inherit from, adding them
+	 * to the list of common supertypes
+	 */
+	for (i = 0; i < t1->data.class->total_interface_len; i++) {
+		for (j = 0; j < t2->data.class->total_interface_len; j++) {
+			if (t1->data.class->interfaces[i] == t2->data.class->interfaces[i]) {
+				set->list[set->count] = t1->data.class->interfaces[i];
+				set->count++;
+				break;
+			}
+		}
+	}
+	
+	set->next = v->supertypes;
+	v->supertypes = set;
 }
 
 /**
@@ -282,7 +318,7 @@ mergeTypes(Verifier* v, Type* t1, Type* t2)
 		return false;
 	}
 	
-
+	
 	if (CLASS_IS_INTERFACE(t1->data.class)) {
 		if (instanceof_interface(t1->data.class, t2->data.class)) {
 			/* t1 is an interface and t2 implements or extends it,
@@ -291,38 +327,37 @@ mergeTypes(Verifier* v, Type* t1, Type* t2)
 			*t2 = *t1;
 			return true;
 		}
-		else if (!CLASS_IS_INTERFACE(t2->data.class)) {
-			t2->data.class = TOBJ->data.class;
-			return true;
-		}
 		/* we now know that t2 is an interface */
 		else if (instanceof_interface(t2->data.class, t1->data.class)) {
 			/* t2 is a superinterface of t1 */
 			return false;
 		}
-		else {
-			/* TODO: need to pass the actual SupertypeSet */
-			mergeSupersets(NULL, t1, t2);
-			return true;
+	}
+	else if (CLASS_IS_INTERFACE(t2->data.class)) {
+		/* t1 is not an interface here */
+		if (instanceof_interface(t2->data.class, t1->data.class)) {
+			/* t2 is a superinterface of t1 */
+			return false;
 		}
-	} else if (CLASS_IS_INTERFACE(t2->data.class)) {
-		/* TODO */
+	}
+	else {
+		/* neither is an interface */
 	}
 	
-	/* possibilities left:
-	 *   1) both are classes
-	 *   2) 
-		 *  1) both are classes
-		 * TODO: create supertypes here */
-	{
-		Hjava_lang_Class *tmp = t2->data.class;
-		
-		t2->data.class = getCommonSuperclass(t1->data.class, t2->data.class);
-		
-		return tmp != t2->data.class;
+	/* at this point, neither type implements or extends the other,
+	 * so we're going to build a supertype list.
+	 */
+	mergeSupersets(v, t1, t2);
+	if (v->supertypes->count == 1) {
+		*t2 = *TOBJ;
 	}
+	else {
+		t2->tinfo = TINFO_SUPERTYPES;
+		t2->data.supertypes = v->supertypes;
+		return true;
+	}
+	return true;
 }
-
 
 /*
  * returns the first (highest) common superclass of classes A and B.
@@ -350,8 +385,7 @@ getCommonSuperclass(Hjava_lang_Class* t1, Hjava_lang_Class* t2)
 
 
 /*
- * isReference()
- *    returns whether the type is a reference type
+ * @return true if the type is a reference type
  */
 bool
 isReference(const Type* t)
@@ -417,14 +451,24 @@ sameType(Type* t1, Type* t2)
 			 sameRefType(&(t1->data.uninit->type),
 				     &(t2->data.uninit->type))));
 		
-	case TINFO_SUPERTYPES:
-		/* if we're unsure as to what type t1 might be, then
-		 * we have to perform a merge
-		 * TODO: compare the supertype lists.  since we're merging
-		 * them in the order of the type hirearchy, then we simply
-		 * traverse each list until we get to a pair that doesn't match.
-		 */
-		return false;
+	case TINFO_SUPERTYPES: {
+		uint32 i;
+		if (t2->tinfo != TINFO_SUPERTYPES ||
+		    t1->data.supertypes->count != t2->data.supertypes->count) {
+			return false;
+		}
+		else if (t1->data.supertypes == t2->data.supertypes) {
+			return true;
+		}
+		
+		for (i = 0; i < t1->data.supertypes->count; i++) {
+			if (t1->data.supertypes->list[i] != t2->data.supertypes->list[i])
+				return false;
+		}
+		return true;
+	}
+		
+		
 		
 	default:
 		DBG(VERIFY3, dprintf("%ssameType(): unrecognized tinfo (%d)\n", indent, t1->tinfo); );
@@ -550,10 +594,9 @@ sameRefType(Type* t1, Type* t2)
  * Determines whether t2 can be used as a t1;  that is, whether
  * t2 implements or inherits from t1.
  *
- * As a side effect, it (potentially) modifies t2's supertype
- * list, if present, by removing those types incompatible with t1.
- * If t1 is represented by a list, then t1 could be *any* of the
- * elements on the list. TODO
+ * pre: t1 is NOT a supertype list.  (i believe that this can't
+ *      happen right now.  grep through the verifier sources to
+ *      confirm).
  *
  * @return whether t2 can be a t1.
  */
@@ -574,19 +617,32 @@ typecheck(Verifier* v, Type* t1, Type* t2)
 	else if (sameType(t1, TOBJ)) {
 		return true;
 	}
-	/* TODO: supertype checking */
 	else if (t1->tinfo & TINFO_SUPERTYPES) {
-
-	}
-	else if (t2->tinfo & TINFO_SUPERTYPES) {
-		/* t1 is NOTE a supertypes, so we simply 
-		 * TODO
-		 */
+		/* we should never get this when type checking */
+		postExceptionMessage(v->einfo, JAVA_LANG(InternalError),
+				     "in typecheck(): doing method %s.%s",
+				     CLASS_CNAME(v->class), METHOD_NAMED(v->method));
+		return false;
 	}
 	
 	
 	resolveType(v, t1);
 	if (t1->data.class == NULL) {
+		return false;
+	}
+	
+	if (t2->tinfo & TINFO_SUPERTYPES &&
+	    CLASS_IS_INTERFACE(t1->data.class)) {
+		uint32 i;
+		SupertypeSet* s = t2->data.supertypes;
+		
+		if (instanceof(t1->data.class, s->list[0]))
+			return true;
+		
+		for (i = 1; i < s->count; i++) {
+			if (s->list[i] == t1->data.class)
+				return true;
+		}
 		return false;
 	}
 

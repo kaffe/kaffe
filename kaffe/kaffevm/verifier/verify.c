@@ -1,14 +1,17 @@
 /*
  * verify.c
- * Perform stages 2 & 3 of class verification.  Stage 1 is performed
- *  when the class is being loaded (so isn't here) and stage 4 is performed
- *  as the method is being executed.
  *
- * verify2() was originally created by someone in Transvirtual Technologies.  however,
- * it did almost nothing (only a shrivel of the stuff needed by pass 2...
- * specifically part 3 of of pass 2, which has been modified),
- * so questions regarding pass 2 should be sent to:
- *     Rob Gonzalez <rob@kaffe.org>
+ * Copyright 2004
+ *   Kaffe.org contributors. See ChangeLog for details. All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ *
+ *
+ * Perform stages 3 of class verification.
+ * Stage 1 is performed when the class is being loaded (so isn't here).
+ * Stage 2 is performed in verify2.
+ * stage 4 is performed as the method is being executed.
  *
  * verify3() was also originally created by someone in Transvirtual, but it only
  * returned true :)  Questions regarding this one can be sent to Rob as well.
@@ -25,11 +28,9 @@
 #include "lookup.h"
 #include "exception.h"
 #include "errors.h"
-#include "jni.h"
 #include "debug.h"
 #include "utf8const.h"
 
-/* needed for pass 3 */
 #include "bytecode.h"
 #include "itypes.h"
 #include "soft.h"
@@ -254,28 +255,27 @@ static bool               verifyMethod(errorInfo* einfo,
 				       Method* method);
 
 /* checks static constraints in bytecode */
-static void               verifyMethod3a(errorInfo* einfo,
-					 Verifier* v);
+static void               verifyMethod3a(Verifier* v);
 
 /* typechecks bytecode and performs the rest of verification */
-static bool               verifyMethod3b(errorInfo* einfo,
-					 Verifier* v);
+static bool               verifyMethod3b(Verifier* v);
 
 
 static bool               loadInitialArgs(Verifier* v);
-static bool               verifyBasicBlock(errorInfo*,
-					   Verifier* v,
+static bool               verifyBasicBlock(Verifier* v,
 					   BlockInfo*);
 static bool               mergeBasicBlocks(Verifier* v,
 					   BlockInfo* fromBlock,
 					   BlockInfo* toBlock);
 
 /* for verifying method calls */
-static const char*        getReturnSig(const Method*);
+static const char*        getMethodReturnSig(const Method*);
 static uint32             countSizeOfArgsInSignature(const char* sig);
-static const char*        getNextArg(const char* sig, char* buf);
-static bool               checkMethodCall(errorInfo* einfo, Verifier* v,
-					  BlockInfo* binfo, uint32 pc);
+static const char*        getNextArg(const char* sig,
+				     char* buf);
+static bool               checkMethodCall(Verifier* v,
+					  BlockInfo* binfo,
+					  uint32 pc);
 
 /*
  * Verify pass 3:  Check the consistency of the bytecode.
@@ -294,7 +294,7 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
 	 * NOTE: we don't skip interfaces here because an interface may contain a <clinit> method with bytecode
 	 */
 	if (isTrustedClass(class)) {
-		return success;
+		return true;
 	}
 	
 	
@@ -363,10 +363,13 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
  **************************************************************************************************/
 /* to make sure we don't forget to unalloc anything...
  * should be called during ANY EXIT FROM verifyMethod
+ *
+ * NOTE: we don't free the Verifier object itself, just
+ * its data.
  */
 static
 void
-cleanupInVerifyMethod(Verifier* v)
+freeVerifierData(Verifier* v)
 {
 	DBG(VERIFY3, dprintf("    cleaning up..."); );
 	gc_free(v->status);
@@ -384,15 +387,15 @@ cleanupInVerifyMethod(Verifier* v)
 
 static inline
 bool
-failInVerifyMethod(errorInfo *einfo, Verifier* v)
+failInVerifyMethod(Verifier* v)
 {
         DBG(VERIFY3, dprintf("    Verify Method 3b: %s.%s%s: FAILED\n",
 			     CLASS_CNAME(v->method->class), METHOD_NAMED(v->method), METHOD_SIGD(v->method)); );
-	if (einfo->type == 0) {
+	if (v->einfo->type == 0) {
 		DBG(VERIFY3, dprintf("      DBG ERROR: should have raised an exception\n"); );
-		postException(einfo, JAVA_LANG(VerifyError));
+		postException(v->einfo, JAVA_LANG(VerifyError));
 	}
-        cleanupInVerifyMethod(v);
+        freeVerifierData(v);
         return(false);
 }
 
@@ -429,12 +432,12 @@ verifyMethod(errorInfo *einfo, Method* method)
         v.status = checkPtr((uint32*)gc_malloc(codelen * sizeof(uint32), GC_ALLOC_VERIFIER));
 	
 	/* find basic blocks and allocate memory for them */
-	verifyMethod3a(einfo, &v);
+	verifyMethod3a(&v);
 	if (!v.blocks) {
 		DBG(VERIFY3, dprintf("        some kinda error finding the basic blocks in pass 3a\n"); );
 		
 		/* propagate error */
-		return failInVerifyMethod(einfo, &v);
+		return failInVerifyMethod(&v);
 	}
 	
 	DBG(VERIFY3, dprintf("        done allocating memory\n"); );
@@ -446,7 +449,7 @@ verifyMethod(errorInfo *einfo, Method* method)
 	DBG(VERIFY3, dprintf("    about to load initial args...\n"); );
 	if (!loadInitialArgs(&v)) {
 	        /* propagate error */
-		return failInVerifyMethod(einfo, &v);
+		return failInVerifyMethod(&v);
 	}
 	DBG(VERIFY3, {
 	        /* print out the local arguments */
@@ -459,11 +462,11 @@ verifyMethod(errorInfo *einfo, Method* method)
 	} );
 	
 	
-	if (!verifyMethod3b(einfo, &v)) {
-		return failInVerifyMethod(einfo, &v);
+	if (!verifyMethod3b(&v)) {
+		return failInVerifyMethod(&v);
 	}
 	
-	cleanupInVerifyMethod(&v);
+	freeVerifierData(&v);
 	DBG(VERIFY3, dprintf("    Verify Method 3b: done\n"); );
 	return(true);
 }
@@ -510,7 +513,7 @@ getNextPC(const unsigned char * code, const uint32 pc)
  */
 static
 void
-verifyMethod3a(errorInfo* einfo, Verifier* v)
+verifyMethod3a(Verifier* v)
 {
 
 #define ENSURE_NON_WIDE \
@@ -1162,7 +1165,7 @@ verifyMethod3a(errorInfo* einfo, Verifier* v)
 			 */
 			if (entry->catch_type != 0) {
 				if (entry->catch_type == NULL) {
-					entry->catch_type = getClass(entry->catch_idx, v->method->class, einfo);
+					entry->catch_type = getClass(entry->catch_idx, v->method->class, v->einfo);
 				}
 				if (entry->catch_type == NULL) {
 					DBG(VERIFY3, dprintf("        ERROR: could not resolve catch type...\n"); );
@@ -1312,7 +1315,7 @@ verifyErrorInVerifyMethod3b(Verifier* v, BlockInfo* curBlock, const char * msg)
  */
 static
 bool
-verifyMethod3b(errorInfo* einfo, Verifier* v)
+verifyMethod3b(Verifier* v)
 {
 	const uint32 codelen      = METHOD_BYTECODE_LEN(v->method);
 	const unsigned char* code = METHOD_BYTECODE_CODE(v->method);
@@ -1362,7 +1365,7 @@ verifyMethod3b(errorInfo* einfo, Verifier* v)
 		}
 		
 		
-		if (!verifyBasicBlock(einfo, v, curBlock)) {
+		if (!verifyBasicBlock(v, curBlock)) {
 			return verifyErrorInVerifyMethod3b(v, curBlock, "failure to verify basic block");
 		}
 		
@@ -1855,7 +1858,7 @@ opstackPeekTBlindErrorInVerifyBasicBlock(Verifier* v,
  */
 static
 bool
-verifyBasicBlock(errorInfo* einfo, Verifier* v, BlockInfo* block)
+verifyBasicBlock(Verifier* v, BlockInfo* block)
 {
 	/**************************************************************************************************
 	 * VARIABLES
@@ -2662,7 +2665,7 @@ verifyBasicBlock(errorInfo* einfo, Verifier* v, BlockInfo* block)
 			if (pool->tags[idx] == CONSTANT_ResolvedClass) {
 				class = CLASS_CLASS(idx, pool);
 				type->tinfo = TINFO_CLASS;
-				type->data.class  = lookupArray(class, einfo);
+				type->data.class  = lookupArray(class, v->einfo);
 				
 				if (type->data.class == NULL) {
 					return verifyError(v, "anewarray: error creating array type");
@@ -2902,7 +2905,7 @@ verifyBasicBlock(errorInfo* einfo, Verifier* v, BlockInfo* block)
 		case INVOKEINTERFACE:
 			
 		case INVOKESTATIC:
-			if (!checkMethodCall(einfo, v, block, pc)) {
+			if (!checkMethodCall(v, block, pc)) {
 				DBG(VERIFY3,
 				    dprintf("\n                some problem with a method call...here's the block:\n");
 				    printBlock(v->method, block, "                "); );
@@ -2915,34 +2918,34 @@ verifyBasicBlock(errorInfo* einfo, Verifier* v, BlockInfo* block)
 			
 		case IRETURN:
 			OPSTACK_PEEK_T(TINT);
-			sig = getReturnSig(v->method);
+			sig = getMethodReturnSig(v->method);
 			if (strlen(sig) != 1 || (*sig != 'I' && *sig != 'Z' && *sig != 'S' && *sig != 'B' && *sig != 'C')) {
 				return verifyError(v, "ireturn: method doesn't return an integer");
 			}
 			break;
 		case FRETURN:
 			OPSTACK_PEEK_T(TFLOAT);
-			sig = getReturnSig(v->method);
+			sig = getMethodReturnSig(v->method);
 			if (strcmp(sig, "F")) {
 				return verifyError(v, "freturn: method doesn't return an float");
 			}
 			break;
 		case LRETURN:
 			OPSTACK_WPEEK_T(TLONG);
-			sig = getReturnSig(v->method);
+			sig = getMethodReturnSig(v->method);
 			if (strcmp(sig, "J")) {
 				return verifyError(v, "lreturn: method doesn't return a long");
 			}
 			break;
 		case DRETURN:
 			OPSTACK_WPEEK_T(TDOUBLE);
-			sig = getReturnSig(v->method);
+			sig = getMethodReturnSig(v->method);
 			if (strcmp(sig, "D")) {
 				return verifyError(v, "dreturn: method doesn't return a double");
 			}
 			break;
 		case RETURN:
-			sig = getReturnSig(v->method);
+			sig = getMethodReturnSig(v->method);
 			if (strcmp(sig, "V")) {
 				return verifyError(v, "return: must return something in a non-void function");
 			}
@@ -2950,7 +2953,7 @@ verifyBasicBlock(errorInfo* einfo, Verifier* v, BlockInfo* block)
 		case ARETURN:
 			ENSURE_OPSTACK_SIZE(1);
 			t->tinfo = TINFO_SIG;
-			t->data.sig  = getReturnSig(v->method);
+			t->data.sig  = getMethodReturnSig(v->method);
 			if (!typecheck(v, t, getOpstackTop(block))) {
 				return verifyError(v, "areturn: top of stack is not type compatible with method return type");
 			}
@@ -3253,7 +3256,7 @@ typeErrorInCheckMethodCall(Verifier* v,
  */
 static
 bool
-checkMethodCall(errorInfo* einfo, Verifier* v,
+checkMethodCall(Verifier* v,
 		BlockInfo* binfo, uint32 pc)
 {
 	const unsigned char* code        = METHOD_BYTECODE_CODE(v->method);
@@ -3498,7 +3501,7 @@ checkMethodCall(errorInfo* einfo, Verifier* v,
 	        /* shouldn't get here because of parsing during pass 2... */
 		DBG(VERIFY3, dprintf("                unrecognized return type signature: %s\n", argbuf); );
 		gc_free(argbuf);
-		postExceptionMessage(einfo, JAVA_LANG(InternalError),
+		postExceptionMessage(v->einfo, JAVA_LANG(InternalError),
 				     "unrecognized return type signature");
 		return(false);
 	}
@@ -3621,11 +3624,12 @@ loadInitialArgs(Verifier* v)
 
 
 /*
- * getReturnSig()
+ * returns a pointer to the first character of the method's return value
+ * in the method's type descriptor.
  */
 static
 const char*
-getReturnSig(const Method* method)
+getMethodReturnSig(const Method* method)
 {
 	const char* sig = METHOD_SIGD(method);
 	

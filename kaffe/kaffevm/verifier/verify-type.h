@@ -142,7 +142,7 @@ extern bool typecheck(struct Verifier* v,
 
 
 /* for dealing with the supertype lists */
-extern void mergeSupersets(SupertypeSet* supertypes,
+extern void mergeSupersets(struct Verifier* v,
 			   Type* t1,
 			   Type* t2);
 extern void freeSupertypes(SupertypeSet* supertypes);

@@ -1,4 +1,9 @@
 2004-06-26  Rob Gonzalez <rob@kaffe.org>
+	* kaffe/kaffevm/verify*.[ch]
+	Finished adding support for multiple inheritence.
+	Some more code cleaning:  checking off some basic TODOs.
+
+2004-06-26  Rob Gonzalez <rob@kaffe.org>
 	* kaffe/kaffevm/external.c
 	(Kaffe_JNI*) renamed to KaffeVM_JNI*
 	(Kaffe_KNI*) renamed to KaffeVM_KNI*

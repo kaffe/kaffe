@@ -23,7 +23,7 @@
 typedef struct SigStack
 {
 	const char* sig;
-	struct sig_stack* next;
+	struct SigStack* next;
 } SigStack;
 
 extern SigStack*          pushSig(SigStack* sigs, const char* sig);

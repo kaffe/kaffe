@@ -7,7 +7,12 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  *
- * Second verifier pass.
+ *
+ * verify2() was originally created by someone in Transvirtual Technologies.  however,
+ * it did almost nothing (only a shrivel of the stuff needed by pass 2...
+ * specifically part 3 of of pass 2, which has been modified),
+ * so questions regarding pass 2 should be sent to:
+ *     Rob Gonzalez <rob@kaffe.org>
  */
 
 #include "access.h"
