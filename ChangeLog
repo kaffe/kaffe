@@ -4,6 +4,32 @@
 
 	2005-02-27  Roman Kennke  <roman@ontographics.com>
 
+        * javax/swing/JList.java
+        (getPreferredScrollableViewportSize):
+        The previous implementation was merely guessing the size,
+        now it respects layoutOrientation, visibleRowCount
+        and preferredSize.
+        (getScrollableTracksViewportHeight):
+        Reimplemented so that layoutOrientation, visibleRowCount
+        and preferred size are respected.
+        (getScrollableTracksViewportWidth):
+        Reimplemented so that layoutOrientation, visibleRowCount
+        and preferred size are respected.
+        * javax/swing/plaf/basic/BasicListUI.java
+        (getPreferredSize):
+        Improved calculation of preferredSize when JList is
+        set to HORIZONTAL_WRAP or VERTICAL_WRAP.
+        (getCellBounds):
+        The previous implementation assumed a layoutOrientation of
+        JList.VERTICAL, now also ok with JList.HORIZONTAL_WRAP and
+        JList.VERTICAL_WRAP.
+
+2005-03-02  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-02-27  Roman Kennke  <roman@ontographics.com>
+
         * javax/swing/CellRendererPane.java:
         implemented all methods of this class.
         reformatted all wrong formatted code.

@@ -56,6 +56,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.CellRendererPane;
 import javax.swing.JComponent;
 import javax.swing.JList;
+import javax.swing.JViewport;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
@@ -386,16 +387,21 @@ public class BasicListUI extends ListUI
     if (l != list || cellWidth == -1)
       return null;
 
-    int lo = Math.min(index1, index2);
-    int hi = Math.max(index1, index2);
-    Point loLoc = indexToLocation(list, lo);
-    Point hiLoc = indexToLocation(list, hi);
-    Rectangle lobounds = new Rectangle(loLoc.x, loLoc.y, cellWidth,
-                                       getRowHeight(lo));
-    Rectangle hibounds = new Rectangle(hiLoc.x, hiLoc.y, cellWidth,
-                                       getRowHeight(hi));
+    int minIndex = Math.min(index1, index2);
+    int maxIndex = Math.max(index1, index2);
+    Point loc = indexToLocation(list, minIndex);
+    Rectangle bounds = new Rectangle(loc.x, loc.y, cellWidth,
+                                     getRowHeight(minIndex));
 
-    return lobounds.union(hibounds);
+    for (int i = minIndex + 1; i <= maxIndex; i++)
+      {
+        Point hiLoc = indexToLocation(list, i);
+        Rectangle hibounds = new Rectangle(hiLoc.x, hiLoc.y, cellWidth,
+                                       getRowHeight(i));
+        bounds = bounds.union(hibounds);
+      }
+
+    return bounds;
   }
 
   /**
@@ -639,10 +645,34 @@ public class BasicListUI extends ListUI
    */
   public Dimension getPreferredSize(JComponent c)
   {
-    if (list.getModel().getSize() == 0)
+    int size = list.getModel().getSize();
+    if (size == 0)
       return new Dimension(0, 0);
+    int visibleRows = list.getVisibleRowCount();
+    int layoutOrientation = list.getLayoutOrientation();
     Rectangle bounds = getCellBounds(list, 0, list.getModel().getSize() - 1);
-    return bounds.getSize();
+    Dimension retVal = bounds.getSize();
+    Component parent = list.getParent();
+    if ((visibleRows == -1) && (parent instanceof JViewport))
+      {
+        JViewport viewport = (JViewport) parent;
+
+        if (layoutOrientation == JList.HORIZONTAL_WRAP)
+          {
+            int h = viewport.getSize().height;
+            int cellsPerCol = h / cellHeight;
+            int w = size / cellsPerCol * cellWidth;
+            retVal = new Dimension(w, h);
+          }
+        else if (layoutOrientation == JList.VERTICAL_WRAP)
+          {
+            int w = viewport.getSize().width;
+            int cellsPerRow = Math.max(w / cellWidth, 1);
+            int h = size / cellsPerRow * cellHeight;
+            retVal = new Dimension(w, h);
+          }
+      }
+    return retVal;
   }
 
   /**
