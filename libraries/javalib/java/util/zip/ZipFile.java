@@ -33,9 +33,12 @@ public class ZipFile implements ZipConstants {
    */
   public static final int OPEN_DELETE = 0x4;
 
+  // Name of this zip file.
+  private final String name;
 
-private String name;
-private Ptr zip;
+  private Ptr zip;
+
+  private boolean closed;
 
 public ZipFile(String fname) throws IOException
 {
@@ -57,23 +60,32 @@ public ZipFile(File f, int mode) throws ZipException, IOException
 	this(f);
 }
 
+private void checkIfClosed()
+{
+  if (closed) {
+    throw new IllegalStateException("Zip file already closed: " + getName());
+  }
+}
+
 public void close() throws IOException
 {
-	if (zip != null) {
+	if (!closed) {
 		closeZipFile0(zip);
-		zip = null;
+		closed = true;
 	}
 }
 
 public Enumeration entries()
 {
-	Vector all = getZipEntries0(zip);
-	return (all.elements());
+  checkIfClosed();
+  Vector all = getZipEntries0(zip);
+  return (all.elements());
 }
 
 public ZipEntry getEntry(String zname)
 {
-	return (getZipEntry0(zip, zname));
+  checkIfClosed();
+  return (getZipEntry0(zip, zname));
 }
 
 public InputStream getInputStream(ZipEntry ze) throws IOException
@@ -101,7 +113,8 @@ public String getName()
 
 public int size()
 {
-	return getZipFileSize0(zip);
+  checkIfClosed();
+  return getZipFileSize0(zip);
 }
 
 protected void finalize() throws IOException

@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
@@ -35,6 +37,8 @@ private static final PrimordialClassLoader SINGLETON =
 
 private static final Package[] NO_PACKAGES = new Package[0];
 private static final ProtectionDomain DEFAULT_PROTECTION_DOMAIN = new ProtectionDomain(null, null);
+
+private static final Map bootjars = new Hashtable();
 
 private PrimordialClassLoader() {
 	super(null);
@@ -136,23 +140,19 @@ protected void findResources(Vector v, String name) throws IOException {
 			continue;
 		}
 		if (file.isFile()) {
-			ZipFile zip = null;
+			ZipFile zip = (ZipFile) bootjars.get(file.getName());
 			try {
-				zip = new ZipFile(file);
-				ZipEntry entry = zip.getEntry(name);
-				if (entry != null && !entry.isDirectory()) {
-				    URL ju = new URL("jar:file:"
-					+ file.getCanonicalPath().replace(File.separatorChar, '/') + "!/" + entry.getName());
-				    v.addElement(ju);
-				}
+			  if (zip == null) {
+			    zip = new ZipFile(file);
+			    bootjars.put(file.getName(), zip);
+			  }
+			  ZipEntry entry = zip.getEntry(name);
+			  if (entry != null && !entry.isDirectory()) {
+			    URL ju = new URL("jar:file:"
+					     + file.getCanonicalPath().replace(File.separatorChar, '/') + "!/" + entry.getName());
+			    v.addElement(ju);
+			  }
 			} catch (IOException e) {
-			} finally {
-				if (zip != null) {
-					try {
-						zip.close();
-					} catch (IOException e) {
-					}
-				}
 			}
 		}
 	}
