@@ -75,6 +75,7 @@ gnu/classpath/tools/rmi/rmic/CompilerProcess.java
 gnu/classpath/tools/rmi/rmic/RMIC.java
 gnu/classpath/tools/rmi/rmic/RMICException.java
 gnu/classpath/tools/rmi/rmic/TabbedWriter.java
+gnu/classpath/tools/serialver/SerialVer.java
 gnu/crypto/Properties.java
 gnu/crypto/Registry.java
 gnu/crypto/assembly/Assembly.java
@@ -3537,7 +3538,6 @@ kaffe/tools/jar/XPFileInputStream.java
 kaffe/tools/jar/XPFileOutputStream.java
 kaffe/tools/jar/XPFileReader.java
 kaffe/tools/jar/XPFileWriter.java
-kaffe/tools/serialver/SerialVer.java
 kaffe/util/Assert.java
 kaffe/util/Base64.java
 kaffe/util/DateParser.java

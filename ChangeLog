@@ -1,5 +1,21 @@
 2005-03-08  Dalibor Topic  <robilad@kaffe.org>
 
+        * kaffe/scripts/serialver.in:
+	Use gnu.classpath.tools.serialver.SerialVer.
+
+        * libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        libraries/javalib/all.files:
+	Regenerated.
+
+        * libraries/javalib/gnu/classpath/tools/serialver/SerialVer.java:
+	New file, taken from GNU Classpath tools project.
+
+        * libraries/javalib/kaffe/tools/serialver/SerialVer.java:
+	Removed.
+
+2005-03-08  Dalibor Topic  <robilad@kaffe.org>
+
         * kaffe/scripts/rmic.in:
 	Use gnu.classpath.tools.rmi.rmic.RMIC.
 

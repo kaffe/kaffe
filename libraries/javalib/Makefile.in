@@ -409,6 +409,7 @@ Klasses_jar_SRCS = \
 	$(gnu_classpath_tools_javap_SRCS) \
 	$(gnu_classpath_tools_native2ascii_SRCS) \
 	$(gnu_classpath_tools_rmi_rmic_SRCS) \
+	$(gnu_classpath_tools_serialver_SRCS) \
 	$(gnu_crypto_SRCS) \
 	$(gnu_crypto_assembly_SRCS) \
 	$(gnu_crypto_auth_SRCS) \
@@ -634,7 +635,6 @@ Klasses_jar_SRCS = \
 	$(kaffe_security_SRCS) \
 	$(kaffe_security_provider_SRCS) \
 	$(kaffe_tools_jar_SRCS) \
-	$(kaffe_tools_serialver_SRCS) \
 	$(kaffe_util_SRCS) \
 	$(kaffe_util_locale_SRCS) \
 	$(kaffe_util_log_SRCS) \
@@ -771,6 +771,9 @@ gnu_classpath_tools_rmi_rmic_SRCS = \
 	gnu/classpath/tools/rmi/rmic/RMIC.java \
 	gnu/classpath/tools/rmi/rmic/RMICException.java \
 	gnu/classpath/tools/rmi/rmic/TabbedWriter.java
+
+gnu_classpath_tools_serialver_SRCS = \
+	gnu/classpath/tools/serialver/SerialVer.java
 
 gnu_crypto_SRCS = \
 	gnu/crypto/Properties.java \
@@ -4683,9 +4686,6 @@ kaffe_tools_jar_SRCS = \
 	kaffe/tools/jar/XPFileOutputStream.java \
 	kaffe/tools/jar/XPFileReader.java \
 	kaffe/tools/jar/XPFileWriter.java
-
-kaffe_tools_serialver_SRCS = \
-	kaffe/tools/serialver/SerialVer.java
 
 kaffe_util_SRCS = \
 	kaffe/util/Assert.java \
