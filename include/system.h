@@ -14,17 +14,18 @@
 
 #define	kaffe_version			KAFFEVERSION
 #define	kaffe_vendor			"Transvirtual Technologies, Inc."
-#define	kaffe_vendor_url		"http://www.transvirtual.com"
+#define	kaffe_vendor_url		"http://www.kaffe.org"
+#define	kaffe_vendor_url_bug		"http://www.kaffe.org/cgi-bin/kaffe"
 
-#define	kaffe_vm_specification_version	"??"
-#define	kaffe_vm_specification_vendor	"??"
-#define	kaffe_vm_specification_name	"??"
+#define	kaffe_vm_specification_version	"1.0"
+#define	kaffe_vm_specification_vendor	"Sun Microsystems Inc."
+#define	kaffe_vm_specification_name	"Java Virtual Machine Specification"
 #define	kaffe_vm_version		kaffe_version
 #define	kaffe_vm_vendor			kaffe_vendor
-#define	kaffe_vm_name			"kaffe"
-#define	kaffe_specification_version	"??"
-#define	kaffe_specification_vendor	"??"
-#define	kaffe_specification_name	"??"
+#define	kaffe_vm_name			"Kaffe"
+#define	kaffe_specification_version	"1.2"
+#define	kaffe_specification_vendor	"Sun Microsystems Inc."
+#define	kaffe_specification_name	"Java Platform API Specification"
 #define	kaffe_class_version		"46"
 
 #if defined(unix) || defined(__BEOS__)
