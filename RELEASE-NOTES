@@ -1,39 +1,6 @@
-Release Notes for 1.1.1
-=======================
+Release Notes for 1.1.x-CVS
+===========================
 
-I've released Kaffe 1.1.1, the second release in the 1.1.x
-"development" branch.
-
-As this is a development release, it is essentially a snapshot of
-what's happening in CVS, with limited testing.  Even though this is
-not a production release, it contains a lot of improvements over
-1.0.7, which was release over half a year ago.  I anticipate that most
-people will have less trouble with this release.
-
-Here are some highlights of new things done since the last development
-release:
-
- * Much of the new bytecode verifier has been added (but not all of
-   it).  Soon, we will be able to safely run untrusted code!
- * Lots of configuration/compile fixes, including: NetBSD, OpenBSD,
-   Linux 2.0, Linux/S390, AmigaOS, OpenBSD/Sparc, Cygwin
- * Lots of class library fixes
- * Added JNI 1.2/1.4 features
- * The beginnings of JVMPI support
- * Some infrastructure for NIO support
- * Some successes: Eclipse (loads, doesn't completely work yet),
-     Jetty w/JSP, Java-Gnome, Qt AWT under QTopia, Snark, hsqldb
-
-We're going to try to stick to the schedule of doing a development
-release every two months, culminating in a heavily tested "production"
-release (1.2.0) in early 2004.
-
-Bug reports, comments and patches are always welcome -- send them to
-the team at kaffe@kaffe.org.
-
-Have fun!
-
-Cheers,
-
- - Jim
-
+This is a placeholder for the RELEASE-NOTES file that will be shipped
+with every production release.  It will contain a list of tested
+ports, and known problems with the release.

@@ -1,5 +1,14 @@
 2003-08-27  Jim Pick  <jim@kaffe.org>
 
+	* README, RELEASE-NOTES, configure.in:
+	Oops, it looks like I bumped the version number on the
+	HEAD branch instead of the Release_1_1_1_Branch.  Revert.
+	
+	* configure:
+	Regenerated.
+
+2003-08-27  Jim Pick  <jim@kaffe.org>
+
 	* libraries/javalib/javax/xml/transform/sax/SAXSource.java:
 	Handle case where sourceToInputSource() is called with an
 	existing SAXSource.
