@@ -21,7 +21,6 @@ public class SecureClassLoader extends ClassLoader {
 	}
 
 	protected SecureClassLoader() {
-		this(SecureClassLoader.class.getClassLoader());
 	}
 
 	protected final Class defineClass(String name, byte[] b,
