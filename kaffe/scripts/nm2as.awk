@@ -7,7 +7,7 @@ BEGIN {
 }
 
 /[0-9]/ {
-	if( $1 != "U" )
+	if( $1 != "U" && $1 != "w" )
 	{
 		printf(".weak %s\n", $3);
 		printf("%s = 0x%s\n", $3, $1);

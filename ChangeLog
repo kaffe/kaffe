@@ -1,3 +1,11 @@
+Thu May 30 11:31:58 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+        From: Jukka Santala <jsantala@tml.hut.fi>
+	
+	* kaffe/scripts/kaffexprof.in, kaffe/scripts/nm2as.awk:
+	Modifications to kaffexprof script to work with the new
+	directory-structure & changes to nm output.
+
 Thu May 30 11:20:14 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	From: Mariusz Mazur <mariusz@isn.pl>
