@@ -1,3 +1,8 @@
+2004-01-06  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/kjc.jar: Regenerated. Removed checkInitializer
+	patch.
+
 2004-01-06  Dalibor Topic <robilad@kaffe.org>
 
 	* kaffe/kaffevm/jar.c
