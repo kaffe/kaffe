@@ -1591,8 +1591,14 @@ static int
 jthreadedFileDescriptor(int fd)
 {
 	int r, on = 1;
-	int pid = getpid();
-
+#if (defined(FIOSSAIOOWN) && !(defined(hpux) && defined(F_SETOWN))) || \
+    defined(F_SETOWN)
+	/* cache pid to accommodate antique C libraries */
+	static int pid = -1;
+	
+	if (pid == -1)
+		pid = getpid();
+#endif
 	if (fd == -1)
 		return (fd);
 
