@@ -873,8 +873,17 @@ dnl needed for ia64
 AC_CHECK_HEADERS([ia64intrin.h])
 
 dnl needed to check for Linux 2.0
-AC_CHECK_HEADERS([linux/netlink.h])
-AC_CHECK_HEADERS([linux/rtnetlink.h])
+AC_CHECK_HEADERS([linux/socket.h])
+AC_CHECK_HEADERS([linux/netlink.h], [], [],[
+#if defined(HAVE_LINUX_SOCKET_H)
+#include <linux/socket.h>
+#endif /* HAVE_LINUX_SOCKET_H */
+])
+AC_CHECK_HEADERS([linux/rtnetlink.h], [], [], [
+#if defined(HAVE_LINUX_SOCKET_H)
+#include <linux/socket.h>
+#endif /* HAVE_LINUX_SOCKET_H */
+])
 AC_CHECK_HEADERS([netpacket/packet.h])
 
 AC_HEADER_SYS_WAIT

@@ -253,6 +253,9 @@
 /* Define to 1 if you have the <linux/rtnetlink.h> header file. */
 #undef HAVE_LINUX_RTNETLINK_H
 
+/* Define to 1 if you have the <linux/socket.h> header file. */
+#undef HAVE_LINUX_SOCKET_H
+
 /* Define to 1 if you have the `localtime' function. */
 #undef HAVE_LOCALTIME
 

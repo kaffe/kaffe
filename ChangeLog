@@ -1,6 +1,15 @@
 2004-01-15  Dalibor Topic <robilad@kaffe.org>
 
 	* configure.in:
+	Added test for <linux/socket.h> header.
+	Don't include standard headers when testing for
+	<linux/netlink.h> and <linux/rtnetlink.h> headers. 
+	Just include <linux/socket.h> header to fix 
+	autoconf warning message.
+
+2004-01-15  Dalibor Topic <robilad@kaffe.org>
+
+	* configure.in:
 	Don't include standard headers when testing for
 	asm/signal.h header. Just include <linux/types.h>
 	to fox autoconf warning message.
