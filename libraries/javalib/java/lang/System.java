@@ -90,13 +90,15 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 		Object[] d = (Object[])dst;
 		Object[] s = (Object[])src;
 		if (dst_position < src_position) {
-			for (int i = 0; i < length; i++) {
-				d[dst_position+i] = s[src_position+i];
+			for (int i = length - 1; i >= 0; --i) {
+				d[dst_position++] = s[src_position++];
 			}
 		}
 		else {
-			for (int i = length - 1; i >= 0; i--) {
-				d[dst_position+i] = s[src_position+i];
+			dst_position += length;
+			src_position += length;
+			for (int i = length - 1; i >= 0; --i) {
+				d[--dst_position] = s[--src_position];
 			}
 		}
 	}
@@ -104,13 +106,15 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 		int[] d = (int[])dst;
 		int[] s = (int[])src;
 		if (dst_position < src_position) {
-			for (int i = 0; i < length; i++) {
-				d[dst_position+i] = s[src_position+i];
+			for (int i = length - 1; i >= 0; --i) {
+				d[dst_position++] = s[src_position++];
 			}
 		}
 		else {
-			for (int i = length - 1; i >= 0; i--) {
-				d[dst_position+i] = s[src_position+i];
+			dst_position += length;
+			src_position += length;
+			for (int i = length - 1; i >= 0; --i) {
+				d[--dst_position] = s[--src_position];
 			}
 		}
 	}
@@ -118,13 +122,15 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 		float[] d = (float[])dst;
 		float[] s = (float[])src;
 		if (dst_position < src_position) {
-			for (int i = 0; i < length; i++) {
-				d[dst_position+i] = s[src_position+i];
+			for (int i = length - 1; i >= 0; --i) {
+				d[dst_position++] = s[src_position++];
 			}
 		}
 		else {
-			for (int i = length - 1; i >= 0; i--) {
-				d[dst_position+i] = s[src_position+i];
+			dst_position += length;
+			src_position += length;
+			for (int i = length - 1; i >= 0; --i) {
+				d[--dst_position] = s[--src_position];
 			}
 		}
 	}
@@ -132,13 +138,15 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 		long[] d = (long[])dst;
 		long[] s = (long[])src;
 		if (dst_position < src_position) {
-			for (int i = 0; i < length; i++) {
-				d[dst_position+i] = s[src_position+i];
+			for (int i = length - 1; i >= 0; --i) {
+				d[dst_position++] = s[src_position++];
 			}
 		}
 		else {
-			for (int i = length - 1; i >= 0; i--) {
-				d[dst_position+i] = s[src_position+i];
+			dst_position += length;
+			src_position += length;
+			for (int i = length - 1; i >= 0; --i) {
+				d[--dst_position] = s[--src_position];
 			}
 		}
 	}
@@ -146,13 +154,15 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 		double[] d = (double[])dst;
 		double[] s = (double[])src;
 		if (dst_position < src_position) {
-			for (int i = 0; i < length; i++) {
-				d[dst_position+i] = s[src_position+i];
+			for (int i = length - 1; i >= 0; --i) {
+				d[dst_position++] = s[src_position++];
 			}
 		}
 		else {
-			for (int i = length - 1; i >= 0; i--) {
-				d[dst_position+i] = s[src_position+i];
+			dst_position += length;
+			src_position += length;
+			for (int i = length - 1; i >= 0; --i) {
+				d[--dst_position] = s[--src_position];
 			}
 		}
 	}
@@ -160,13 +170,15 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 		boolean[] d = (boolean[])dst;
 		boolean[] s = (boolean[])src;
 		if (dst_position < src_position) {
-			for (int i = 0; i < length; i++) {
-				d[dst_position+i] = s[src_position+i];
+			for (int i = length - 1; i >= 0; --i) {
+				d[dst_position++] = s[src_position++];
 			}
 		}
 		else {
-			for (int i = length - 1; i >= 0; i--) {
-				d[dst_position+i] = s[src_position+i];
+			dst_position += length;
+			src_position += length;
+			for (int i = length - 1; i >= 0; --i) {
+				d[--dst_position] = s[--src_position];
 			}
 		}
 	}
@@ -174,13 +186,15 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 		byte[] d = (byte[])dst;
 		byte[] s = (byte[])src;
 		if (dst_position < src_position) {
-			for (int i = 0; i < length; i++) {
-				d[dst_position+i] = s[src_position+i];
+			for (int i = length - 1; i >= 0; --i) {
+				d[dst_position++] = s[src_position++];
 			}
 		}
 		else {
-			for (int i = length - 1; i >= 0; i--) {
-				d[dst_position+i] = s[src_position+i];
+			dst_position += length;
+			src_position += length;
+			for (int i = length - 1; i >= 0; --i) {
+				d[--dst_position] = s[--src_position];
 			}
 		}
 	}
@@ -188,13 +202,15 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 		char[] d = (char[])dst;
 		char[] s = (char[])src;
 		if (dst_position < src_position) {
-			for (int i = 0; i < length; i++) {
-				d[dst_position+i] = s[src_position+i];
+			for (int i = length - 1; i >= 0; --i) {
+				d[dst_position++] = s[src_position++];
 			}
 		}
 		else {
-			for (int i = length - 1; i >= 0; i--) {
-				d[dst_position+i] = s[src_position+i];
+			dst_position += length;
+			src_position += length;
+			for (int i = length - 1; i >= 0; --i) {
+				d[--dst_position] = s[--src_position];
 			}
 		}
 	}
@@ -202,13 +218,15 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 		short[] d = (short[])dst;
 		short[] s = (short[])src;
 		if (dst_position < src_position) {
-			for (int i = 0; i < length; i++) {
-				d[dst_position+i] = s[src_position+i];
+			for (int i = length - 1; i >= 0; --i) {
+				d[dst_position++] = s[src_position++];
 			}
 		}
 		else {
-			for (int i = length - 1; i >= 0; i--) {
-				d[dst_position+i] = s[src_position+i];
+			dst_position += length;
+			src_position += length;
+			for (int i = length - 1; i >= 0; --i) {
+				d[--dst_position] = s[--src_position];
 			}
 		}
 	}

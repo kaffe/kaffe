@@ -1,3 +1,7 @@
+Sat Oct 19 17:54:24 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* libraries/javalib/java/lang/System.java:
+	(arraycopy) improved performance a little bit.
+
 Sat Oct 19 13:18:05 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* config/arm/common.h, config/arm/linux/md.c:
 	fixed several ARM/Linux interpreter bugs. Kaffe now builds again
