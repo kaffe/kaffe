@@ -6,16 +6,10 @@ KVER=1.00
 dnl Find the compiler early on in case we need to override.
 AC_PROG_CC
 
-dnl =========================================================================
-dnl Lee Iverson  <leei@Canada.AI.SRI.COM> says:
-dnl
-dnl For building shared libraries.  'gcc -shared' may pass extra argumets
-dnl to ld that are necessary to link a shared library.  For example, on
-dnl the SGI machines we need specify 'ld -n32' and also include libgcc.a
-dnl in the shared library link in order to ensure that it is properly
-dnl closed.
-dnl -------------------------------------------------------------------------
-if test "$GCC" = "yes"; then LD="$CC"; fi
+dnl If gcc is the compiler, compile with -Wall for lots of warnings
+if test "$GCC" = "yes"; then
+	CFLAGS="$CFLAGS -Wall"
+fi
 
 dnl Find the machine type and setup the relevant links
 AC_CANONICAL_HOST
