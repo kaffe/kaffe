@@ -2,11 +2,14 @@
  * alpha/osf/md.c
  * OSF/1 Alpha specific functions.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1999, 2000, 2001
+ *	Edouard G. Parmelan.  All rights reserved.
+ *
+ * Copyright (c) 1996, 1997, 1999, 2000, 2001
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include <machine/fpu.h>
@@ -56,7 +59,7 @@ init_md(void)
 
 
 /* This bit turns off unaligned access fixups in favour of SIGBUS.  It
-   is not called by Kaffe, but it is useful to invoke from within 
+   is not called by Kaffe, but it is useful to invoke from within
    the debugger.  */
 
 void alpha_disable_uac(void)
@@ -72,6 +75,7 @@ void alpha_disable_uac(void)
 #if defined(TRANSLATOR)
 /* Native support for exception */
 
+#if defined(USE_LIBEXC)
 #include <pdsc.h>
 #include <excpt.h>
 
@@ -91,7 +95,7 @@ void __alpha_osf_firstFrame (exceptionFrame *frame)
 	exc_capture_context (&frame->sc);
 	exc_virtual_unwind (NULL, &frame->sc);
 	unlockStaticMutex (&excLock);
-	
+
 	DBG(STACKTRACE,
 	    dprintf("__alpha_osf_firstFrame(0x%p) pc 0x%p fp 0x%p sp 0x%p\n", frame,
 		    (void*)frame->sc.sc_pc, (void*)frame->sc.sc_regs[15],
@@ -217,4 +221,7 @@ void __alpha_osf_unregister_jit_exc (void *methblock, void *codebase, void *code
 	exc_remove_gp_range ((exc_address) codebase);
 	unlockStaticMutex (&excLock);
 }
+#else
+#include "alpha/alpha.c"
+#endif
 #endif
