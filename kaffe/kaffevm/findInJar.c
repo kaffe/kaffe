@@ -324,7 +324,13 @@ initClasspath(void)
 	hm = (char*)Kaffe_JavaVMArgs[0].classhome;
 
 	if (cp != 0) {
+		/* cp may reside in read-only memory, but 
+		 * makeClasspath writes to it
+		 */
+		char *writable_cp = gc_malloc_fixed(strlen(cp) + 1);
+		strcpy(writable_cp, cp);
 		makeClasspath(cp);
+		gc_free_fixed(writable_cp);
 	}
 	else {
 		discoverClasspath(hm);
