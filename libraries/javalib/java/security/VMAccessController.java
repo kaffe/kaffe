@@ -169,9 +169,11 @@ final class VMAccessController
         Class clazz = classes[i];
         String method = methods[i];
 
-        if (DEBUG) debug (">>> checking " + clazz + "." + method);
-
-        if (DEBUG) debug (">>> loader = " + clazz.getClassLoader());
+        if (DEBUG)
+          {
+            debug (">>> checking " + clazz + "." + method);
+            debug (">>> loader = " + clazz.getClassLoader());
+          }
 
         if (clazz.equals (AccessController.class)
             && method.equals ("doPrivileged"))

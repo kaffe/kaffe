@@ -14,6 +14,19 @@
 
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>
 
+	*  libraries/javalib/java/security/AccessControlContext.java,
+	libraries/javalib/java/security/VMAccessController.java:
+	Resynced with GNU Classpath.
+
+	2004-07-04  Casey Marshall <csm@gnu.org>
+
+        * java/security/AccessControlContext.java
+        (checkPermission): check for empty context.
+        * vm/reference/java/security/VMAccessController.java
+        (getContext): combine debugging statements.
+
+2004-07-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/URL.java:
 	Resynced with GNU Classpath.
 

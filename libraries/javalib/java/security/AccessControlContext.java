@@ -118,6 +118,8 @@ public final class AccessControlContext
    */
   public void checkPermission(Permission perm) throws AccessControlException
   {
+    if (protectionDomains.length == 0)
+      throw new AccessControlException ("permission not granted");
     for (int i = 0; i < protectionDomains.length; i++)
       if (!protectionDomains[i].implies(perm))
         throw new AccessControlException ("permission not granted");
