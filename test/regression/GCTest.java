@@ -279,9 +279,11 @@ public class GCTest
 			System.exit(11);
 	}
 
-	public synchronized void out(String msg)
+	public void out(String msg)
 	{
+	    synchronized (GCTest.class) {
 		System.out.println("[" +id_+ "]:  " +msg);
+	    }
 	}
 }
 
