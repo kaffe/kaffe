@@ -996,6 +996,14 @@ AC_DECL_IN6ADDR_ANY
 AC_DECL_IN6ADDR_LOOPBACK
 AC_TYPE_SA_FAMILY_T
 
+dnl some Linux IPv6 stacks don't have sin6_flowinfo and sin6_scope_id
+dnl in their struct sockaddr_in6
+AC_CHECK_MEMBERS([struct sockaddr_in6.sin6_flowinfo, struct sockaddr_in6.sin6_scope_id],,,[
+#if defined(HAVE_NETINET_IN_H)
+#include <netinet/in.h>
+#endif
+])
+
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
 AC_CHECK_FUNCS([remainder remainderf fmod fmodf drem])

@@ -1,7 +1,22 @@
 2003-06-14 Dalibor Topic <robilad@yahoo.com>
 
-      * Makefile.am:
-      (EXTRA_DIST) Added ChangeLog.5.
+	Compilation fixes for s390-linux.
+
+	* configure.in:
+	Added checks for sin6_flowinfo and sin6_scope_id in struct
+	sockaddr_in6.
+
+	* libraries/clib/net/InetAddressImpl.c:
+	(java_net_NativeInetAddressImpl_getHostByAddr0) Only set
+	sin6_flowinfo and sin6_scope_id if they are available on the
+	platform.
+
+	Reported by: Robert P. Nix <nix.robert@mayo.edu>
+
+2003-06-14 Dalibor Topic <robilad@yahoo.com>
+
+	* Makefile.am:
+	(EXTRA_DIST) Added ChangeLog.5.
 
 2003-06-14 Ito Kazumitsu <kaz@maczuka.gcd.org>
 

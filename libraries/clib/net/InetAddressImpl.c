@@ -412,11 +412,15 @@ java_net_NativeInetAddressImpl_getHostByAddr0(struct Hjava_net_NativeInetAddress
 #endif
 		sin6->sin6_family = AF_INET6;
 		sin6->sin6_port = 0;
+#if defined(HAVE_STRUCT_SOCKADDR_IN6_SIN6_FLOWINFO)
 		sin6->sin6_flowinfo = 0;
+#endif /* HAVE_STRUCT_SOCKADDR_IN6_SIN6_FLOWINFO */
 		memcpy(&sin6->sin6_addr,
 		       unhand_byte_array(addr),
 		       addr->length);
+#if defined(HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID)
 		sin6->sin6_scope_id = 0;
+#endif /* HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID */
 		break;
 #endif
 	default:
