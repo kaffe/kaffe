@@ -253,7 +253,7 @@ protected String findLibrary(String libname) {
 	return null;
 }
 
-void addNativeLibrary(NativeLibrary lib) {
+synchronized void addNativeLibrary(NativeLibrary lib) {
 	loadedLibraries.add(lib);
 }
 
