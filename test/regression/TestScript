@@ -727,6 +727,10 @@ runtest ProcessClassInst "tan java.lang.NoClassDefFoundError: Base
 m2 a base
 t2 a base"
 
+runtest ProcessClassStop "tan java.lang.NoClassDefFoundError: Base
+m2 a base
+t2 a base" deprecated
+
 runtest FindSystemClass "findSystemClass initializes me.
 staticMethod invoked."
 
