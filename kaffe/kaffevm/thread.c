@@ -42,6 +42,7 @@ Hjava_lang_ThreadGroup* standardGroup;
 static void firstStartThread(void*);
 static void createInitialThread(char*);
 static Hjava_lang_Thread* createDaemon(void*, char*, int);
+static iLock thread_start_lock;
 
 /*
  * Initialise threads.
@@ -73,6 +74,9 @@ initThreads(void)
 	/* Allocate a thread to be the main thread */
 	createInitialThread("main");
 
+	/* initialize start lock */
+	initStaticLock(&thread_start_lock);
+
 	/* Breaks encapsulation */
 	if (DBGEXPR(NOGC, false, true))
 	{
@@ -95,7 +99,14 @@ startThread(Hjava_lang_Thread* tid)
 	if (aliveThread(tid) == true) {
 		throwException(IllegalThreadStateException);
 	}
+	/* Hold the start lock while the thread is created.
+	 * This lock prevents the new thread from running until we're
+	 * finished in create.
+	 * See also firstStartThread.
+	 */
+	lockStaticMutex(&thread_start_lock);
 	(*Kaffe_ThreadInterface.create)(tid, &firstStartThread);
+	unlockStaticMutex(&thread_start_lock);
 }
 
 /*
@@ -191,6 +202,14 @@ void
 firstStartThread(void* arg)
 {
 	Hjava_lang_Thread* tid;
+
+	/* 
+	 * Make sure the thread who created us returned from
+	 * Kaffe_ThreadInterface.create.  This ensures that privateInfo
+	 * is set when we run.
+	 */
+	lockStaticMutex(&thread_start_lock);
+	unlockStaticMutex(&thread_start_lock);
 
 	tid  = (*Kaffe_ThreadInterface.currentJava)();
 
