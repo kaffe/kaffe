@@ -1,3 +1,8 @@
+2004-03-09  Timothy S. Stack <stack@cs.utah.edu>
+
+	kaffe/kaffevm/jit3/icode.c:
+	Back out part of popargs_noreturn() change for now.
+	
 2004-03-09  Dalibor Topic <robilad@kaffe.org>
 
 	config/arm/linux/md.h,

@@ -3506,12 +3506,17 @@ void
 popargs_internal(int does_return)
 {
  	if (argcount != 0) {
-		if( does_return )
-		{
 #if defined(HAVE_popargs)
-			slot_slot_const(0, 0, argcount, HAVE_popargs, Tnull);
+		/*
+		 * Must always call popargs so the backend can do cleanup.
+		 *
+		 * Might be able to get away with sending an argcount of zero,
+		 * but, well just send the whole thing for now.  Alternatively,
+		 * it might be better to add a new back end call to
+		 * end_func_sync.
+		 */
+		slot_slot_const(0, 0, argcount, HAVE_popargs, Tnull);
 #endif
-		}
 		if (argcount > maxPush) {
 			maxPush = argcount;
 		}
