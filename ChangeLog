@@ -1,5 +1,34 @@
 1999-04-14  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* config/i386/common.h (sysdepCallMethod): Do not use extern
+	inline, it prevents compilation without optimization; use static
+	inline instead.
+	* config/sparc/common.h (sysdepCallMethod): Rewrite as a static
+	inline function, in a well-documented way, suitable for easy
+	adaptation to other platforms, without *any* asm statement.
+	* kaffe/kaffevm/support.c (PROMOTE_TO_64bits): Define
+	PROMOTE_jint2jlong and PROMOTE_jfloat2jdouble.
+	(PROMOTE_jint2jlong): Arrange that all integer types are promoted
+	to 64bit words.  It currently doesn't cause padding arguments to
+	be added if needed.
+	(PROMOTE_jfloat2jdouble): Arrange that all floats are promoted to
+	double.
+	(PROM_DIV): If PROMOTE_jint2jlong and PROMOTE_jfloat2jdouble are
+	defined, and pointers are as wide as two ints, set to 2,
+	otherwise, set to 1.
+	(callMethodA, callMethodV): Promote jints to jlongs and jfloats to 
+	jdoubles where appropriate.  Divide all sizes of jfloats, jlongs,
+	jdoubles and jrefs by PROM_DIV, and eliminate padding arguments if
+	possible.
+	* config/alpha/common.h (sysdepCallMethod): Rewrite as a static
+	inline function very similar with the one for sparc.  Define
+	PROMOTE_TO_64bits, since all arguments are 64bits, so that we
+	don't have to skip holes.
+	* kaffe/kaffevm/support.c (ALIGN_AT_64bits, callMethodA,
+	callMethodV): If ALIGN_AT_64bits is defined, insert padding 32-bit 
+	arguments as needed for 64bit ones to be aligned at even positions 
+	in the array of arguments.
+
 	* config/config.alias: Cygnus has renamed cygwin32 to cygwin, but
 	our config directory is still named cygwin32.
 

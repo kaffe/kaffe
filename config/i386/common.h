@@ -2,7 +2,7 @@
  * i386/common.h
  * Common i386 configuration information.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -23,12 +23,8 @@
  *  have now been deprecated).
  */
 #if NEED_sysdepCallMethod
-/* gcc will never produce an out-of-line version of `extern inline'
-   functions.  So, if it fails to inline for some reason, we'll get a
-   linker error, and then we should try to rewrite this so that it is
-   inlined.  */
-extern inline void sysdepCallMethod(callMethodInfo *call) {
-  int args = call->nrargs;
+static inline void sysdepCallMethod(callMethodInfo *call) {
+  unsigned args = call->nrargs;
 
   /* Push all arguments into the stack, in last-to-first order.  This
      assumes that the second 32bit-word of longs and doubles is

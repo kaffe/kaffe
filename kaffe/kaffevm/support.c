@@ -210,6 +210,51 @@ execute_java_constructor(const char* cname, Hjava_lang_Class* cc, const char* si
 	return (obj);
 }
 
+/* This is defined in the alpha and mips N32 ports.  */
+#if PROMOTE_TO_64bits
+# define PROMOTE_jint2jlong 1
+# define PROMOTE_jfloat2jdouble 1
+#endif
+
+/* This is currently only defined by PROMOTE_TO_64bits.  It causes
+   32-bit integer types to be promoted to 64-bits.  */
+#if PROMOTE_jint2jlong
+# if ! PROMOTE_TO_64bits
+#  error "PROMOTE_jint2jlong is only supported with PROMOTE_TO_64bits"
+# endif
+# define PROM_i j
+#else
+# define PROM_i i
+#endif
+
+/* This is currently defined by PROMOTE_TO_64bits and in the mips O32
+   port.  It causes 32-bit float types to be promoted to 64-bit
+   doubles.  */
+#if PROMOTE_jfloat2jdouble
+# define PROM_f d
+#else
+# define PROM_f f
+#endif
+
+/* If we promote everything to 64bits, all sizes can be divided by 2.  */
+#if PROMOTE_jint2jlong && PROMOTE_jfloat2jdouble
+# define PROM_DIV 2
+# if PTR_TYPE_SIZE != 2 * SIZEOF_INT
+#  error "PROMOTE_TO_64bits requires 64bits pointers"
+# endif
+#else
+# define PROM_DIV 1
+#endif
+
+/* This is currently defined in the MIPS O32 port.  It causes 64bits
+   arguments to be forced into even arguments, by introducing a padding
+   integer argument. */
+#if ALIGN_AT_64bits
+# define ENSURE_ALIGN64() do { if (call.callsize[i] == 2 && (i & 1)) { call.callsize[i] = 1; call.calltype[i] = 'I'; ++i; ++s; call.callsize[i] = 2; } } while (0)
+#else
+# define ENSURE_ALIGN64() do {} while (0)
+#endif
+
 /*
  * Generic routine to call a native or Java method (array style).
  */
@@ -252,7 +297,8 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 
 	/* Insert the JNI environment */
 	if (meth->accflags & ACC_JNI) {
-		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
+		ENSURE_ALIGN64();
 		call.calltype[i] = 'L';
 		in[i].l = (void*)&Kaffe_JNIEnv;
 		s += call.callsize[i];
@@ -261,7 +307,8 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 
 		/* If method is static we must insert the class as an argument */
 		if (meth->accflags & ACC_STATIC) {
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
+			ENSURE_ALIGN64();
 			s += call.callsize[i];
 			call.calltype[i] = 'L';
 			in[i].l = meth->class;
@@ -275,7 +322,8 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 	 * an argument.
  	 */
 	if ((meth->accflags & ACC_STATIC) == 0) {
-		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
+		ENSURE_ALIGN64();
 		s += call.callsize[i];
 		call.calltype[i] = 'L';
 		in[i].l = obj;
@@ -289,42 +337,59 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 		switch (*sig) {
 		case 'Z':
 			call.callsize[i] = 1;
-			in[i].i = args[i].z;
+			in[i].PROM_i = args[i].z;
 			break;
 
 		case 'S':
 			call.callsize[i] = 1;
-			in[i].i = args[i].s;
+			in[i].PROM_i = args[i].s;
 			break;
 
 		case 'B':
 			call.callsize[i] = 1;
-			in[i].i = args[i].b;
+			in[i].PROM_i = args[i].b;
 			break;
 
 		case 'C':
 			call.callsize[i] = 1;
-			in[i].i = args[i].c;
+			in[i].PROM_i = args[i].c;
 			break;
 
 		case 'F':
+#if ! PROMOTE_jfloat2jdouble
+			call.callsize[i] = 1;
+			in[i].f = args[i].f;
+			break;
+#else
+			call.callsize[i] = 2 / PROM_DIV;
+			ENSURE_ALIGN64();
+			call.calltype[i] = 'D';
+			in[i].d = args[i].f;
+			goto second_word;
+#endif
 		case 'I':
 			call.callsize[i] = 1;
-			in[i] = args[i];
+			in[i].PROM_i = args[i].i;
 			break;
-
 		case 'D':
 		case 'J':
-			call.callsize[i] = 2;
+			call.callsize[i] = 2 / PROM_DIV;
+			ENSURE_ALIGN64();
 			in[i] = args[i];
-			in[i+1].i = (&args[i].i)[1];
-			i++;
-			call.callsize[i] = 0;
+		second_word:
+			if (call.callsize[i] > 1) {
+			  s += call.callsize[i];
+			  in[i+1].i = (&args[i].i)[1];
+			  i++;
+			  call.calltype[i] = 0;
+			  call.callsize[i] = 0;
+			}
 			break;
 
 		case '[':
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
+			ENSURE_ALIGN64();
 			call.calltype[i] = 'L';	/* Looks like an object */
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 			in[i] = args[i];
 			while (*sig == '[') {
 				sig++;
@@ -336,7 +401,8 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 			}
 			break;
 		case 'L':
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
+			ENSURE_ALIGN64();
 			in[i] = args[i];
 			while (*sig != ';') {
 				sig++;
@@ -442,7 +508,8 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 
 	/* Insert the JNI environment */
 	if (meth->accflags & ACC_JNI) {
-		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
+		ENSURE_ALIGN64();
 		call.calltype[i] = 'L';
 		in[i].l = (void*)&Kaffe_JNIEnv;
 		s += call.callsize[i];
@@ -452,7 +519,8 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		 * argument 
 		 */
 		if (meth->accflags & ACC_STATIC) {
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
+			ENSURE_ALIGN64();
 			s += call.callsize[i];
 			call.calltype[i] = 'L';
 			in[i].l = meth->class;
@@ -465,7 +533,8 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	 * the first argument and get the function code.
  	 */
 	if ((meth->accflags & ACC_STATIC) == 0) {
-		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
+		ENSURE_ALIGN64();
 		s += call.callsize[i];
 		call.calltype[i] = 'L';
 		in[i].l = obj;
@@ -482,30 +551,39 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		case 'B':
 		case 'C':
 			call.callsize[i] = 1;
-			in[i].i = va_arg(args, jint);
+			in[i].PROM_i = va_arg(args, jint);
 			break;
 		case 'F':
+#if ! PROMOTE_jfloat2jdouble
 			call.callsize[i] = 1;
-			in[i].f = (jfloat)va_arg(args, jdouble);
+			in[i].PROM_f = (jfloat)va_arg(args, jdouble);
 			break;
-		case 'D':
-			call.callsize[i] = 2;
+#else
+			call.callsize[i] = 2 / PROM_DIV;
+			ENSURE_ALIGN64();
+			call.calltype[i] = 'D';
 			in[i].d = va_arg(args, jdouble);
-			in[i+1].i = (&in[i].i)[1];
-			i++;
-			call.callsize[i] = 0;
-			s += 2;
-			break;
+			goto second_word;
+#endif
+		case 'D':
+			call.callsize[i] = 2 / PROM_DIV;
+			ENSURE_ALIGN64();
+			in[i].d = va_arg(args, jdouble);
+			goto second_word;
 		case 'J':
-			call.callsize[i] = 2;
+			call.callsize[i] = 2 / PROM_DIV;
+			ENSURE_ALIGN64();
 			in[i].j = va_arg(args, jlong);
-			in[i+1].i = (&in[i].i)[1];
-			i++;
-			call.callsize[i] = 0;
-			s += 2;
+		second_word:
+			if (call.callsize[i] > 1) {
+			  s += call.callsize[i];
+			  in[i+1].i = (&in[i].i)[1];
+			  i++;
+			  call.callsize[i] = 0;
+			}
 			break;
 		case '[':
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
 			call.calltype[i] = 'L';	/* Looks like an object */
 			in[i].l = va_arg(args, jref);
 			while (*sig == '[') {
@@ -518,7 +596,8 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 			}
 			break;
 		case 'L':
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
+			ENSURE_ALIGN64();
 			in[i].l = va_arg(args, jref);
 			while (*sig != ';') {
 				sig++;

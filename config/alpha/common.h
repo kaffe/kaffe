@@ -2,148 +2,128 @@
  * alpha/common.h
  * Common Alpha configuration information.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  *
- * 15 July, 1998:
- *      Modified by Rick Greer (rick@sandpiper.com) for use with Alpha Linux
+ * by Alexandre Oliva <oliva@dcc.unicamp.br>
  */
 
 #ifndef __alpha_common_h
 #define __alpha_common_h
 
+#if NEED_sysdepCallMethod
+/* This define will cause callMethodV and callMethodA to promote every
+   integer type to a 64bit word, and every float to double, so that
+   every value can be loaded as a single 64bit word.  It also causes
+   float arguments to be marked as 'D'.  */
+#define PROMOTE_TO_64bits 1
+
 /*
  * Make a call to a native or Java (JIT) method.
  *  This assembly code should build a standard C call using the passed
  *  call information.  By its nature this is highly processor specific.
- *  This function is mandatory for the JIT, but can be avoided for
- *  the interpreter if you don't define NO_KAFFE_STUBS.  However, the
- *  Kaffe stubs will be deprecated at some time in the future and
- *  this function will be needed for JNI support when it comes.
+ *  This function is mandatory for both JIT and Interpreter (since stubs
+ *  have now been deprecated).
  */
-#define	NO_KAFFE_STUBS
+static inline void sysdepCallMethod(callMethodInfo *call) {
+  unsigned args = call->nrargs;
 
-/*
- * For each argument, callsize[n] is either '1' or '2', saying
- * how many words are being used.
- */
+  /* ARG_TYPE is the type of a register used for passing arguments.  */
+#define ARG_TYPE long
+  /* ARG_TYPES is a parameter list declaration for a function type
+     that takes all possible arguments in registers.  */
+#define ARG_TYPES ARG_TYPE, ARG_TYPE, ARG_TYPE, ARG_TYPE, ARG_TYPE, ARG_TYPE
+  /* ARG_LIST is the argument list for such a function.  */
+#define ARG_LIST a0, a1, a2, a3, a4, a5
+  /* ARG_COUNT is the number of registers for passing arguments.  */
+#define ARG_COUNT 6
+  /* AG_DISPLACEMENT is the offset between the beginning of a
+     variable-sized array, allocated in the stack, and the position of
+     the first argument that can't be passed in a register.  */
+#define ARG_DISPLACEMENT 0
+  /* ARG_REG a case label and a statement that arranges for one
+     argument to be passed. */
+#define ARG_REG(n) \
+case n+1: (calltype[n]=='D') ? (f##n = callargs[n].d) : (a##n = callargs[n].j)
 
-#define getSingleJavaArg(CALL, n)			      \
-(   /*									      \
-     *  Sign-extend short arguments:					      \
-     *									      \
-     *  This macro sign extends short (i.e, 32-bit or less) arguments to a    \
-     *  64-bit "long" that can be inserted directly into a 64-bit register.   \
-     */									      \
-    ((CALL)->callsize[n] == 2) ? (CALL)->args[n].j : (long)((CALL)->args[n].i)\
-)
+  ARG_TYPE extraargs[((args>ARG_COUNT+ARG_DISPLACEMENT)
+		      ?(args-ARG_COUNT-ARG_DISPLACEMENT):0)];
+  void *func = call->function;
+  jvalue *callargs;
+  char *calltype;
 
-/*									      \
-*  Sign-extend short arguments:					      \
-*									      \
-*  This macro sign extends short (i.e, 32-bit or less) arguments to a    \
-*  64-bit "long" that can be inserted directly into a 64-bit register.   \
-*/									      \
-#define getJavaArg(CALL, n, iarg, farg) do { \
-    if ( (CALL) -> callsize[n] == 1 ) { \
-      iarg = (long)   ((CALL) -> args[n].i); \
-      farg = (double) ((CALL) ->  args[n].f); \
-    } else { \
-      iarg = (long)   ((CALL) -> args[n].j); \
-      farg = (double) ((CALL) -> args[n].d); \
-    } } while (0)
+  if (args == 0)
+    goto noargs;
+  
+  callargs = call->args;
+  calltype = call->calltype;
 
-#define javaArgCase(CALL,_x_,_y_) case _x_: getJavaArg(CALL, (_x_-1), r ## _y_, f ## _y_)
+  switch(args) {
+    register ARG_TYPE a0 asm("$16");
+    register ARG_TYPE a1 asm("$17");
+    register ARG_TYPE a2 asm("$18");
+    register ARG_TYPE a3 asm("$19");
+    register ARG_TYPE a4 asm("$20");
+    register ARG_TYPE a5 asm("$21");
 
-#define sysdepCallMethod(CALL) { \
-  /* \
-   *  Call a Java Method: \
-   * \
-   *  This macro generates an in-line call to the Java method described by \
-   *  the given method info structure ("CALL" argument) and stores the \
-   *  return value in the info struct as well. \
-   */ \
-\
-  int x, rags = 0; \
-  /* The parameter registers ... */ \
-  register long r16 asm("$16"); \
-  register long r17 asm("$17"); \
-  register long r18 asm("$18"); \
-  register long r19 asm("$19"); \
-  register long r20 asm("$20"); \
-  register long r21 asm("$21"); \
-\
-  register double f16 asm("$f16"); \
-  register double f17 asm("$f17"); \
-  register double f18 asm("$f18"); \
-  register double f19 asm("$f19"); \
-  register double f20 asm("$f20"); \
-  register double f21 asm("$f21"); \
-\
-  /* return values */ \
-  register double f0d asm("$f0"); \
-  register float f0f asm("$f0"); \
-  register long v0 asm("$0"); \
-\
-  for (x = 0; x < (CALL)->nrargs; x++) { \
-    /* \
-     *  The alpha has 64-bit registers, so we don't really need the ex- \
-     *  tra "callsize = 0" entries in the arg list.  This loop removes \
-     *  them by sliding any subsequent entries to the left. \
-     */ \
-\
-    if ((CALL)->callsize[x] > 0) \
-      { \
-	if (x > rags) \
-	  (CALL)->args[rags] = (CALL)->args[x]; \
-	rags++; \
-      } \
-  } \
-  { \
-    int margs = rags - 6; \
-    unsigned long xargs[MAX(margs,0)]; \
-    switch (rags)	{ \
-    default: \
-      { \
-	/* \
-	 * We're doing to hack the frame buffer the difficult way.. \
-	 */ \
-	/* Copy arguments to the stack we allocated */ \
-	for (x=0; rags > 6; --rags) { \
-	  xargs[x++] = getSingleJavaArg(CALL, rags); \
-	} \
-      } \
-\
-      /* The first 6 arguments are loaded into the parameter registers.   */ \
-      javaArgCase(CALL,6,21); \
-      javaArgCase(CALL,5,20); \
-      javaArgCase(CALL,4,19); \
-      javaArgCase(CALL,3,18); \
-      javaArgCase(CALL,2,17); \
-      javaArgCase(CALL,1,16); \
-    case 0:  /* nothing */ \
-    } \
-\
-    asm volatile \
-      ("" :: \
-       /* include all the argument registers least they get DCE'd away */ \
-       "r" (r16), "r" (r17), "r" (r18), "r" (r19), "r" (r20), "r" (r21), \
-       "m" (xargs) ); \
-    asm volatile \
-      ("" :: \
-       /* include all the argument registers least they get DCE'd away */ \
-       "f" (f16), "f" (f17), "f" (f18), "f" (f19), "f" (f20), "f" (f21) ); \
-    /* call the function as if it had no arguments */ \
-    ((void(*)())((CALL)->function))(); \
-  } \
-  /* choose return value */ \
-  switch ((CALL)->rettype) { \
-  case 'D': (CALL)->ret->d = f0d; break; \
-  case 'F': (CALL)->ret->f = f0f; break; \
-  default:  (CALL)->ret->j = v0;  break; \
-  } \
+    register double f0 asm("$f16");
+    register double f1 asm("$f17");
+    register double f2 asm("$f18");
+    register double f3 asm("$f19");
+    register double f4 asm("$f20");
+    register double f5 asm("$f21");
+
+  default:
+    memcpy(extraargs+ARG_DISPLACEMENT,
+	   &callargs[ARG_COUNT],
+	   (args-ARG_COUNT)*sizeof(ARG_TYPE));
+
+    ARG_REG(5);
+    ARG_REG(4);
+    ARG_REG(3);
+    ARG_REG(2);
+    ARG_REG(1);
+    ARG_REG(0);
+
+  case 0:
+    /* Ensure that the assignments to f* registers won't be optimized away. */
+    asm ("" :: "f" (f0), "f" (f1), "f" (f2), "f" (f3), "f" (f4), "f" (f5) );
+
+  noargs:
+    switch(call->retsize) {
+    case 0:
+      /* Must be void.  */
+      ((void (*)(ARG_TYPES))(func))(ARG_LIST);
+      break;
+
+    case 1:
+      if (call->rettype == 'F')
+	call->ret->f = ((jfloat (*)(ARG_TYPES))(func))(ARG_LIST);
+      else /* Must be 32-bit or smaller int.  */
+	call->ret->i = ((jint (*)(ARG_TYPES))(func))(ARG_LIST);
+      break;
+
+    default:
+      /* It could've been `case 2;', but then we'd get an additional cmp
+       * that we don't really need.  */
+      if (call->rettype == 'D')
+	call->ret->d = ((jdouble (*)(ARG_TYPES))(func))(ARG_LIST);
+      else /* Must be jlong.  */
+	call->ret->j = ((jlong (*)(ARG_TYPES))(func))(ARG_LIST);
+      break;
+    }
+  }
+
+#undef ARG_TYPE
+#undef ARG_TYPES
+#undef ARG_LIST
+#undef ARG_COUNT
+#undef ARG_DISPLACEMENT
+#undef ARG_REG
 }
+#endif /* NEED_sysdepCallMethod */
+
 #endif
