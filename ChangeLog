@@ -1,3 +1,10 @@
+2004-07-11  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/access.c (checkAccess): fix check when an inner class
+	accesses an inner class of its superclass
+
+	Reported by: Alan Tam <Tam@SiuLung.com>
+
 2004-07-11  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/ksem.c (ksemPut): Removed the assertion as
