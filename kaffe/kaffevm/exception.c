@@ -252,6 +252,20 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 	/* I don't know what to do here. */
 	fprintf(stderr, "Internal error.\n"
 		"Please check your CLASSPATH and your installation.\n");
+
+	/*
+	 * Print this so we get more informative mail...
+	 */
+	fprintf(stderr, "Exception thrown was of type `%s'\n", cname);
+	{
+		Hjava_lang_String *msg;
+		msg = unhand((Hjava_lang_Throwable*)eobj)->message;
+		if (msg) {
+			fprintf(stderr, "Message was `%s'\n", stringJava2C(msg));
+		} else {
+			fprintf(stderr, "NULL message\n");
+		}
+	}
 	ABORT();
 }
 
