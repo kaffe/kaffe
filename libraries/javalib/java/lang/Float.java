@@ -17,17 +17,24 @@ public final class Float extends Number implements Comparable {
   private static final int MANTISSA_MASK	= 0x007fffff;
   private static final int NAN_BITS		= 0x7fc00000;
 
-  public static final float POSITIVE_INFINITY	= intBitsToFloat(0x7f800000);
-  public static final float NEGATIVE_INFINITY	= intBitsToFloat(0xff800000);
-  public static final float NaN			= intBitsToFloat(NAN_BITS);
-  public static final float MIN_VALUE		= intBitsToFloat(0x00000001);
-  public static final float MAX_VALUE		= intBitsToFloat(0x7f7fffff);
+  private static final int POSITIVE_INFINITY_BITS = 0x7f800000;
+  private static final int NEGATIVE_INFINITY_BITS = 0xff800000;
+  private static final int MIN_VALUE_BITS	= 0x00000001;
+  private static final int MAX_VALUE_BITS	= 0x7f7fffff;
+
+  // Jacks requires that theses constants are _compile time_ constants.
+  // test-case DoubleConst will check that are correctly compiled.
+  public static final float POSITIVE_INFINITY	= 1.0f / 0.0f;
+  public static final float NEGATIVE_INFINITY	= -1.0f / 0.0f;
+  public static final float NaN			= 0.0f / 0.0f;
+  public static final float MIN_VALUE		= 1.4012984643248170709e-45f;
+  public static final float MAX_VALUE		= 3.4028234663852885981e+38f;
 
   public static final Class TYPE = Class.getPrimitiveClass("float");
 
   private final float value;
 
-  /* This is what Sun's JDK1.1 "serialver java.lang.Float" spits out */  
+  /* This is what Sun's JDK1.1 "serialver java.lang.Float" spits out */
   private static final long serialVersionUID = -2671257302660747028L;
 
   public static native int floatToRawIntBits(float value);
