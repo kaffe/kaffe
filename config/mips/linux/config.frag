@@ -1,5 +1,4 @@
 #
 # Mips/Linux configuration.
 #
-host_cpu=mips
-host_os=linux
+CFLAGS="-g -O2 -fno-omit-frame-pointer"

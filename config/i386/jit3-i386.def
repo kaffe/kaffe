@@ -1,7 +1,7 @@
 /* jit3-i386.def
  * i386 instruction definition.
  *
- * Copyright (c) 1996, 1997, 1998, 1999
+ * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -9,8 +9,11 @@
  */
 
 #include "classMethod.h"
+#include "md.h"
 
-double tStore;
+#if defined(TRACE_METHOD_END) && defined(__GNUC__)
+asm(".globl tStore\ntStore:	.long 0,0");
+#endif
 
 #ifdef DEBUG
 int jit_debug;
@@ -296,8 +299,10 @@ define_insn(spill_int, spill_Rxx)
 
 define_insn(spill_float, fspill_Rxx)
 {
-	int o = const_int(1);
+	int o;
+
 	sreg_float(0);
+	o = const_int(1);
 
 	OUT = 0xD9;
 	OUT = 0x98|REG_ebp;
@@ -308,8 +313,10 @@ define_insn(spill_float, fspill_Rxx)
 
 define_insn(spill_double, fspilll_Rxx)
 {
-	int o = const_int(1);
+	int o;
+
 	sreg_double(0);
+	o = const_int(1);
 
 	OUT = 0xDD;
 	OUT = 0x98|REG_ebp;
@@ -320,8 +327,11 @@ define_insn(spill_double, fspilll_Rxx)
 
 define_insn(reload_int, reload_Rxx)
 {
-	int r = lreg_int(0);
-	int o = const_int(1);
+	int o;
+	int r;
+
+	r = lreg_int(0);
+	o = const_int(1);
 
 	OUT = 0x8B; 
 	OUT = 0x80|(r<<3)|REG_ebp;
@@ -332,8 +342,10 @@ define_insn(reload_int, reload_Rxx)
 
 define_insn(reload_float, freload_Rxx)
 {
-	int o = const_int(1);
+	int o;
+
 	lreg_float(0);
+	o = const_int(1);
 
 	OUT = 0xD9;
 	OUT = 0x80|REG_ebp;
@@ -344,8 +356,10 @@ define_insn(reload_float, freload_Rxx)
 
 define_insn(reload_double, freloadl_Rxx)
 {
-	int o = const_int(1);
+	int o;
+
 	lreg_double(0);
+	o = const_int(1);
 
 	OUT = 0xDD;
 	OUT = 0x80|REG_ebp;
@@ -412,12 +426,12 @@ define_insn(move_float_const, fmove_RxC)
 
 		debug(("fldz\n"));
 
-		if (((d.j >> 63) & 1) != 0) {
+		if ((d.j >> 63) & 1) {
 			OUT = 0xD9;
-			OUT = 0xE0;
+			OUT = 0xe0;
 
-			debug(("fchsl\n"));
-		}
+			debug(("fchs\n"));
+                }
 	}
 	else if (d.d == 1.0) {
 		OUT = 0xD9;
@@ -458,13 +472,12 @@ define_insn(move_double_const, fmovel_RxC)
 		OUT = 0xEE;
 
 		debug(("fldz\n"));
-
-		if (((d.j >> 63) & 1) != 0) {
+		if ((d.j >> 63) & 1) {
 			OUT = 0xD9;
-			OUT = 0xE0;
+			OUT = 0xe0;
 
-			debug(("fchsl\n"));
-		}
+			debug(("fchs\n"));
+                }
 	}
 	else if (d.d == 1.0) {
 		OUT = 0xD9;
@@ -527,9 +540,12 @@ define_insn(adc_int, adc_RRR)
 
 define_insn(add_float, fadd_RRR)
 {
-	int r2 = rslot_float(2);	/* Get r2 into memory */
-	rreg_float(1);			/* Load r1 into the register stack */
-	wreg_float(0);			/* Result will be in register stack */
+	int r1;
+	int r2;
+
+	r2 = rslot_float(2);	/* Get r2 into memory */
+	r1 = rreg_float(1);		/* Load r1 into the register stack */
+	wreg_float(0);		/* Result will be in register stack */
 
 	OUT = 0xD8;
 	OUT = 0x80|REG_ebp;
@@ -540,9 +556,12 @@ define_insn(add_float, fadd_RRR)
 
 define_insn(add_double, faddl_RRR)
 {
-	int r2 = rslot_double(2);	/* Get r2 into memory */
-	rreg_double(1);			/* Load r1 into the register stack */
-	wreg_double(0);			/* Result will be in register stack */
+	int r1;
+	int r2;
+
+	r2 = rslot_double(2);	/* Get r2 into memory */
+	r1 = rreg_double(1);	/* Load r1 into the register stack */
+	wreg_double(0);		/* Result will be in register stack */
 
 	OUT = 0xDC;
 	OUT = 0x80|REG_ebp;
@@ -583,9 +602,12 @@ define_insn(sbc_int, sbc_RRR)
 
 define_insn(sub_float, fsub_RRR)
 {
-	int r2 = rslot_float(2);	/* Get r2 into memory */
-	rreg_float(1);			/* Load r1 into the register stack */
-	wreg_float(0);			/* Result will be in register stack */
+	int r1;
+	int r2;
+
+	r2 = rslot_float(2);	/* Get r2 into memory */
+	r1 = rreg_float(1);	/* Load r1 into the register stack */
+	wreg_float(0);		/* Result will be in register stack */
 
 	OUT = 0xD8;
 	OUT = 0xA0|REG_ebp;
@@ -596,37 +618,18 @@ define_insn(sub_float, fsub_RRR)
 
 define_insn(sub_double, fsubl_RRR)
 {
-	int r2 = rslot_double(2);	/* Get r2 into memory */
-	rreg_double(1);			/* Load r1 into the register stack */
-	wreg_double(0);			/* Result will be in register stack */
+	int r1;
+	int r2;
+
+	r2 = rslot_double(2);	/* Get r2 into memory */
+	r1 = rreg_double(1);	/* Load r1 into the register stack */
+	wreg_double(0);		/* Result will be in register stack */
 
 	OUT = 0xDC;
 	OUT = 0xA0|REG_ebp;
 	LOUT = r2;
 
 	debug(("fsubl %d(ebp)\n", r2));
-}
-
-define_insn(neg_float, negf_RxR)
-{
-    rreg_float(2);
-    wreg_float(0);
-
-    OUT = 0xD9;
-    OUT = 0xe0;
-
-    debug(("fchs\n"));
-}
-
-define_insn(neg_double, negd_RxR)
-{
-    rreg_double(2);
-    wreg_double(0);
-
-    OUT = 0xD9;
-    OUT = 0xe0;
-
-    debug(("fchsl\n"));
 }
 
 define_insn(mul_int, mul_RRR)
@@ -648,9 +651,12 @@ define_insn(mul_int, mul_RRR)
 
 define_insn(mul_float, fmul_RRR)
 {
-	int r2 = rslot_float(2);	/* Get r2 into memory */
-	rreg_float(1);			/* Load r1 into the register stack */
-	wreg_float(0);			/* Result will be in register stack */
+	int r1;
+	int r2;
+
+	r2 = rslot_float(2);	/* Get r2 into memory */
+	r1 = rreg_float(1);	/* Load r1 into the register stack */
+	wreg_float(0);		/* Result will be in register stack */
 
 	OUT = 0xD8;
 	OUT = 0x88|REG_ebp;
@@ -661,9 +667,12 @@ define_insn(mul_float, fmul_RRR)
 
 define_insn(mul_double, fmull_RRR)
 {
-	int r2 = rslot_double(2);	/* Get r2 into memory */
-	rreg_double(1);			/* Load r1 into the register stack */
-	wreg_double(0);			/* Result will be in register stack */
+	int r1;
+	int r2;
+
+	r2 = rslot_double(2);	/* Get r2 into memory */
+	r1 = rreg_double(1);	/* Load r1 into the register stack */
+	wreg_double(0);		/* Result will be in register stack */
 
 	OUT = 0xDC;
 	OUT = 0x88|REG_ebp;
@@ -706,9 +715,12 @@ define_insn(div_int, div_RRR)
 
 define_insn(div_float, fdiv_RRR)
 {
-	int r2 = rslot_float(2);	/* Get r2 into memory */
-	rreg_float(1);			/* Load r1 into the register stack */
-	wreg_float(0);			/* Result will be in register stack */
+	int r1;
+	int r2;
+
+	r2 = rslot_float(2);	/* Get r2 into memory */
+	r1 = rreg_float(1);	/* Load r1 into the register stack */
+	wreg_float(0);		/* Result will be in register stack */
 
 	OUT = 0xD8;
 	OUT = 0xB0|REG_ebp;
@@ -719,9 +731,12 @@ define_insn(div_float, fdiv_RRR)
 
 define_insn(div_double, fdivl_RRR)
 {
-	int r2 = rslot_double(2);	/* Get r2 into memory */
-	rreg_double(1);			/* Load r1 into the register stack */
-	wreg_double(0);			/* Result will be in register stack */
+	int r2;
+	int r1;
+
+	r2 = rslot_double(2);	/* Get r2 into memory */
+	r1 = rreg_double(1);	/* Load r1 into the register stack */
+	wreg_double(0);		/* Result will be in register stack */
 
 	OUT = 0xDC;
 	OUT = 0xB0|REG_ebp;
@@ -822,7 +837,7 @@ define_insn(ashr_int, ashr_RRR)
 
 	check_reg_01();
 
-	r = rreg_int(2);
+	r = rreg_ideal_int(2, REG_ecx);
 
 	/* Can only shift by ECX. */
 	safe_move_int(REG_ecx, r);
@@ -842,7 +857,7 @@ define_insn(lshr_int, lshr_RRR)
 
 	check_reg_01();
 
-	r = rreg_int(2);
+	r = rreg_ideal_int(2, REG_ecx);
 
 	/* Can only shift by ECX. */
 	safe_move_int(REG_ecx, r);
@@ -862,7 +877,7 @@ define_insn(lshl_int, lshl_RRR)
 
 	check_reg_01();
 
-	r = rreg_int(2);
+	r = rreg_ideal_int(2, REG_ecx);
 
 	/* Can only shift by ECX. */
 	safe_move_int(REG_ecx, r);
@@ -893,7 +908,9 @@ define_insn(load_int, load_RxR)
 
 define_insn(load_float, fload_RxR)
 {
-	int r = rreg_int(2);
+	int r;
+
+	r = rreg_int(2);
 	wreg_float(0);
 
 	OUT = 0xD9;
@@ -904,7 +921,9 @@ define_insn(load_float, fload_RxR)
 
 define_insn(load_double, floadl_RxR)
 {
-	int r = rreg_int(2);
+	int r;
+
+	r = rreg_int(2);
 	wreg_double(0);
 
 	OUT = 0xDD;
@@ -970,7 +989,9 @@ define_insn(cmp_int, cmp_xRR)
 
 define_insn(cvt_int_float, cvtif_RxR)
 {
-	int r = rslot_int(2);
+	int r;
+
+	r = rslot_int(2);
 	wreg_float(0);
 
 	OUT = 0xDB;
@@ -982,7 +1003,9 @@ define_insn(cvt_int_float, cvtif_RxR)
 
 define_insn(cvt_int_double, cvtid_RxR)
 {
-	int r = rslot_int(2);
+	int r;
+
+	r = rslot_int(2);
 	wreg_double(0);
 
 	OUT = 0xDB;
@@ -992,9 +1015,16 @@ define_insn(cvt_int_double, cvtid_RxR)
 	debug(("fild %d(ebp)\n", r));
 }
 
+#if 0
+
+	We cannot use these functions since the long is store in the
+	opposite order to what they expect.
+
 define_insn(cvt_long_float, cvtlf_RxR)
 {
-	int r = rslot_long(2);
+	int r;
+
+	r = rslot_long(2);
 	wreg_float(0);
 
 	OUT = 0xDF;
@@ -1006,7 +1036,9 @@ define_insn(cvt_long_float, cvtlf_RxR)
 
 define_insn(cvt_long_double, cvtld_RxR)
 {
-	int r = rslot_long(2);
+	int r;
+
+	r = rslot_long(2);
 	wreg_double(0);
 
 	OUT = 0xDF;
@@ -1016,9 +1048,13 @@ define_insn(cvt_long_double, cvtld_RxR)
 	debug(("fildll %d(ebp)\n", r));
 }
 
+#endif
+
 define_insn(cvt_float_double, cvtfd_RxR)
 {
-	int o = rslot_float(2);
+	int o;
+
+	o = rslot_float(2);
 	wreg_double(0);
 
 	OUT = 0xD9;
@@ -1030,7 +1066,9 @@ define_insn(cvt_float_double, cvtfd_RxR)
 
 define_insn(cvt_double_float, cvtdf_RxR)
 {
-	int o = rslot_double(2);
+	int o;
+
+	o = rslot_double(2);
 	wreg_float(0);
 
 	OUT = 0xDD;
@@ -1229,8 +1267,9 @@ define_insn(push_int, push_xRC)
 {
 	int r;
 
-	if (inRegister(1)) {
+	if (inRegister(1, Rint|Rref)) {
 		r = rreg_int(1);
+
 		OUT = 0xFF;
 		OUT = 0xF0|r;
 
@@ -1472,10 +1511,15 @@ define_insn(store_byte, storeb_xRR)
 	int w;
 
 	/* Can only store accumulators as bytes */
-	r = rreg_int(2);
-	if (r == REG_edi || r == REG_esi) {
+	r = rreg_subint(2);
+	/* If we cannot get the register into the subint
+	 * (it's probably global) then do it ourselves.
+	 */
+	if (r == NOREG) {
+		r = rreg_int(2);
 		safe_move_int(REG_eax, r);
 	}
+
 	w = rreg_int(1);
 
 	OUT = 0x88;
@@ -1542,6 +1586,7 @@ define_insn(lshl_int_const, lshl_RRC)
 }
 
 #if 0
+
 define_insn(mon_enter, monenter_xxRCC)
 {
 	Method* meth;
@@ -1559,28 +1604,28 @@ define_insn(mon_enter, monenter_xxRCC)
 
 		OUT = 0x8b;
 		OUT = 0x40|r;
-		OUT = 0x04;        debug(("movl   0x4(REG),%eax\n"));
+		OUT = 0x04;        debug(("movl   0x4(REG),eax\n"));
 		OUT = 0x85;
-		OUT = 0xc0;        debug(("testl  %eax,%eax\n"));
+		OUT = 0xc0;        debug(("testl  eax,eax\n"));
 		OUT = 0x75;
 		OUT = 0x0a;        debug(("jne    11 <start+11>\n"));
 		OUT = 0x89;
-		OUT = 0xe9;        debug(("movl   %ebp,%ecx\n"));
+		OUT = 0xe9;        debug(("movl   ebp,ecx\n"));
 		OUT = 0x0f;
 		OUT = 0xb1;
 		OUT = 0x48|r;
-		OUT = 0x04;        debug(("cmpxchgl %ecx,0x4(REG)\n"));
+		OUT = 0x04;        debug(("cmpxchgl ecx,0x4(REG)\n"));
 		OUT = 0x74;
 		OUT = 0x15;        debug(("je     27 <start+27>\n"));
 		OUT = 0x75;
 		OUT = 0x09;        debug(("jne    1a <start+1a>\n"));
 		OUT = 0x29;
-		OUT = 0xe8;        debug(("subl   %ebp,%eax\n"));
+		OUT = 0xe8;        debug(("subl   ebp,eax\n"));
 		OUT = 0x3d;
-		LOUT = 0x400;      debug(("cmpl   $0x400,%eax\n"));
+		LOUT = 0x400;      debug(("cmpl   $0x400,eax\n"));
 		OUT = 0x72;
 		OUT = 0x0a;        debug(("jb     27 <start+27>\n"));
-		OUT = 0x55;        debug(("pushl  %ebp\n"));
+		OUT = 0x55;        debug(("pushl  ebp\n"));
 		OUT = 0x50|r;      debug(("pushl  REG\n"));
 		OUT = 0xe8;
 		l->type |= Llong|Lrelative;
@@ -1589,34 +1634,34 @@ define_insn(mon_enter, monenter_xxRCC)
 		l->from = CODEPC;
 		OUT = 0x83;
 		OUT = 0xc4;
-		OUT = 0x08;        debug(("addl   $0x8,%esp\n"));
+		OUT = 0x08;        debug(("addl   $0x8,esp\n"));
 	}
 	else {
 		OUT = 0xa1;
 		LOUT = (uintp)&meth->class->head.lock;
-				   debug(("movl   ?,%eax\n"));
+				   debug(("movl   ?,eax\n"));
 		OUT = 0x85;
-		OUT = 0xc0;        debug(("testl  %eax,%eax\n"));
+		OUT = 0xc0;        debug(("testl  eax,eax\n"));
 		OUT = 0x75;
 		OUT = 0x0d;        debug(("jne    16 <start+16>\n"));
 		OUT = 0x89;
-		OUT = 0xe9;	   debug(("movl   %ebp,%ecx\n"));
+		OUT = 0xe9;	   debug(("movl   ebp,ecx\n"));
 		OUT = 0x0f;
 		OUT = 0xb1;
 		OUT = 0x0d;
 		LOUT = (uintp)&meth->class->head.lock;
-				   debug(("cmpxchgl %ecx,?\n"));
+				   debug(("cmpxchgl ecx,?\n"));
 		OUT = 0x74;
 		OUT = 0x19;        debug(("je     2d <start+2d>\n"));
 		OUT = 0x75;
 		OUT = 0x09;        debug(("jne    1f <start+1f>\n"));
 		OUT = 0x29;
-		OUT = 0xe8;        debug(("subl   %ebp,%eax\n"));
+		OUT = 0xe8;        debug(("subl   ebp,eax\n"));
 		OUT = 0x3d;
-		LOUT = 0x400;      debug(("cmpl   $0x400,%eax\n"));
+		LOUT = 0x400;      debug(("cmpl   $0x400,eax\n"));
 		OUT = 0x72;
 		OUT = 0x0e;        debug(("jb     2d <start+2d>\n"));
-		OUT = 0x55;        debug(("pushl  %ebp\n"));
+		OUT = 0x55;        debug(("pushl  ebp\n"));
 		OUT = 0x68;
 		LOUT = (uintp)meth->class;
 				   debug(("pushl  $?\n"));
@@ -1627,7 +1672,7 @@ define_insn(mon_enter, monenter_xxRCC)
 		l->from = CODEPC;
 		OUT = 0x83;
 		OUT = 0xc4;
-		OUT = 0x08;        debug(("addl   $0x4,%esp\n"));
+		OUT = 0x08;        debug(("addl   $0x4,esp\n"));
 	}
 }
 
@@ -1648,24 +1693,24 @@ define_insn(mon_exit, monexit_xxRCC)
 
 		OUT = 0x8b;
 		OUT = 0x40|r;
-		OUT = 0x04;        debug(("movl   0x4(REG),%eax\n"));
+		OUT = 0x04;        debug(("movl   0x4(REG),eax\n"));
 		OUT = 0xa9;
-		LOUT = 0x01;	   debug(("testl  $0x1,%eax\n"));
+		LOUT = 0x01;	   debug(("testl  $0x1,eax\n"));
 		OUT = 0x75;
 		OUT = 0x0c;        debug(("jne    16\n"));
 		OUT = 0x39;
-		OUT = 0xc5;        debug(("cmpl   %eax,%ebp\n"));
+		OUT = 0xc5;        debug(("cmpl   eax,ebp\n"));
 		OUT = 0x75;
 		OUT = 0x12;        debug(("jne    23\n"));
 		OUT = 0x31;
-		OUT = 0xc9;        debug(("xorl   %ecx,%ecx\n"));
+		OUT = 0xc9;        debug(("xorl   ecx,ecx\n"));
 		OUT = 0x0f;
 		OUT = 0xb1;
 		OUT = 0x48|r;
-		OUT = 0x04;        debug(("cmpxchgl %ecx,0x4(REG)\n"));
+		OUT = 0x04;        debug(("cmpxchgl ecx,0x4(REG)\n"));
 		OUT = 0x74;
 		OUT = 0x0a;        debug(("je     23\n"));
-		OUT = 0x55;        debug(("pushl  %ebp\n"));
+		OUT = 0x55;        debug(("pushl  ebp\n"));
 		OUT = 0x50|r;      debug(("pushl  REG\n"));
 		OUT = 0xe8;
 		l->type |= Llong|Lrelative;
@@ -1674,30 +1719,30 @@ define_insn(mon_exit, monexit_xxRCC)
 		l->from = CODEPC;
 		OUT = 0x83;
 		OUT = 0xc4;
-		OUT = 0x08;        debug(("addl   $0x8,%esp\n"));
+		OUT = 0x08;        debug(("addl   $0x8,esp\n"));
 	}
 	else {
 		OUT = 0xa1;
 		LOUT = (uintp)&meth->class->head.lock;
-				   debug(("movl   ?,%eax\n"));
+				   debug(("movl   ?,eax\n"));
 		OUT = 0xa9;
-		LOUT = 0x01;	   debug(("testl  $0x1,%eax\n"));
+		LOUT = 0x01;	   debug(("testl  $0x1,eax\n"));
 		OUT = 0x75;
 		OUT = 0x0f;        debug(("jne    1b\n"));
 		OUT = 0x39;
-		OUT = 0xc5;        debug(("cmpl   %eax,%ebp\n"));
+		OUT = 0xc5;        debug(("cmpl   eax,ebp\n"));
 		OUT = 0x75;
 		OUT = 0x19;        debug(("jne    29\n"));
 		OUT = 0x31;
-		OUT = 0xc9;        debug(("xorl   %ecx,%ecx\n"));
+		OUT = 0xc9;        debug(("xorl   ecx,ecx\n"));
 		OUT = 0x0f;
 		OUT = 0xb1;
 		OUT = 0x0d;
 		LOUT = (uintp)&meth->class->head.lock;
-				   debug(("cmpxchgl %ecx,?\n"));
+				   debug(("cmpxchgl ecx,?\n"));
 		OUT = 0x74;
 		OUT = 0x0e;        debug(("je     29\n"));
-		OUT = 0x55;        debug(("pushl  %ebp\n"));
+		OUT = 0x55;        debug(("pushl  ebp\n"));
 		OUT = 0x68;
 		LOUT = (uintp)meth->class;
 				   debug(("pushl  $?\n"));
@@ -1708,9 +1753,10 @@ define_insn(mon_exit, monexit_xxRCC)
 		l->from = CODEPC;
 		OUT = 0x83;
 		OUT = 0xc4;
-		OUT = 0x08;        debug(("addl   $0x8,%esp\n"));
+		OUT = 0x08;        debug(("addl   $0x8,esp\n"));
 	}
 }
+
 #endif
 
 define_insn(get_arg_ptr, get_arg_ptr_R)
@@ -1908,12 +1954,12 @@ define_insn(store_offset_scaled_byte, storeb_RRRC)
 	int w1;
 	int w2;
 
-	/* What we need here is a way to allocate from a sub-range of
-	 * registers.  We can't do this yet however so we must fix it
-	 * like this for the moment.
+	r = rreg_subint(2);
+	/* If we cannot get the register into the subint
+	 * (it's probably global) then do it ourselves.
 	 */
-	r = rreg_int(2);
-	if (r == REG_edi || r == REG_esi) {
+	if (r == NOREG) {
+		r = rreg_int(2);
 		safe_move_int(REG_eax, r);
 	}
 
@@ -1939,12 +1985,12 @@ define_insn(store_offset_scaled_short, stores_RRRC)
 	int w1;
 	int w2;
 
-	/* What we need here is a way to allocate from a sub-range of
-	 * registers.  We can't do this yet however so we must fix it
-	 * like this for the moment.
+	r = rreg_subint(2);
+	/* If we cannot get the register into the subint
+	 * (it's probably global) then do it ourselves.
 	 */
-	r = rreg_int(2);
-	if (r == REG_edi || r == REG_esi) {
+	if (r == NOREG) {
+		r = rreg_int(2);
 		safe_move_int(REG_eax, r);
 	}
 
@@ -2017,8 +2063,12 @@ define_insn(store_offset_byte, storeb_xRRC)
 	int r0;
 
 	/* Can only store accumulators as bytes */
-	r0 = rreg_int(0);
-	if (r0 == REG_edi || r0 == REG_esi) {
+	r0 = rreg_subint(0);
+	/* If we cannot get the register into the subint
+	 * (it's probably global) then do it ourselves.
+	 */
+	if (r0 == NOREG) {
+		r0 = rreg_int(0);
 		safe_move_int(REG_eax, r0);
 	}
 

@@ -63,6 +63,8 @@ typedef struct _exceptionFrame {
 #pragma pack ( push, 1 )
 #endif
 
+extern void i386_do_fixup_trampoline(void);
+
 typedef struct _methodTrampoline {
 	unsigned char call PACKED;
 	int fixup PACKED;
@@ -72,8 +74,6 @@ typedef struct _methodTrampoline {
 #if defined(_MSC_VER)
 #pragma pack ( pop )
 #endif
-
-extern void i386_do_fixup_trampoline(void);
 
 #define FILL_IN_TRAMPOLINE(t,m)						\
 	do {								\
@@ -85,17 +85,16 @@ extern void i386_do_fixup_trampoline(void);
 #define FIXUP_TRAMPOLINE_DECL	Method** _pmeth
 #define FIXUP_TRAMPOLINE_INIT	(meth = *_pmeth)
 
-
 /**/
 /* Register management information. */
 /**/
 
 /* Define the register set */
 #define	REGISTER_SET							\
-	{ /* eax */	0, 0, Rint|Rref,	0, 0, 0    },		\
-	{ /* ecx */	0, 0, Rint|Rref,	0, 0, 1    },		\
-	{ /* edx */	0, 0, Rint|Rref,	0, 0, 2    },		\
-	{ /* ebx */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 3 },\
+	{ /* eax */	0, 0, Rint|Rsubint|Rref,0, 0, 0    },		\
+	{ /* ecx */	0, 0, Rint|Rsubint|Rref,0, 0, 1    },		\
+	{ /* edx */	0, 0, Rint|Rsubint|Rref,0, 0, 2    },		\
+	{ /* ebx */	0, 0, Rint|Rsubint|Rref,Rglobal|Rnosaveoncall, 0, 3 },\
 	{ /* esp */	0, 0, Reserved,		0, 0, 4    },		\
 	{ /* ebp */	0, 0, Reserved,		0, 0, 5    },		\
 	{ /* esi */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 6 },\
@@ -136,7 +135,11 @@ extern void i386_do_fixup_trampoline(void);
 #define SLOT2ARGOFFSET(_n)	(8 + SLOTSIZE * (_n))
 
 /* Generate slot offset for a local (non-argument) */
+#if defined(JIT3)
+#define	SLOT2LOCALOFFSET(N)	(-SLOTSIZE * ((N) - maxArgs + 1))
+#else
 #define SLOT2LOCALOFFSET(_n)	(-SLOTSIZE * (maxTemp+maxLocal+maxStack - (_n)))
+#endif
 
 #if defined(JIT3)
 /* Generate the slot offset to the stack limit */

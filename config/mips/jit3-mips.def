@@ -1,0 +1,2097 @@
+/* jit-mips.def
+ * MIPS instruction definition.
+ *
+ * Copyright (c) 1996, 1997
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ *
+ * Written by Christian Krusel <chrkr@uni-paderborn.de>, 1997.
+ * Modified by Michael Chen <mikey@hydra.stanford.edu>, 1998.
+ * last changed 2.15.98
+ */
+
+#ifdef DEBUG
+int dbmsg = 0;
+#define	debug_name(x)	debug(x)
+#define	debug(x)	if (dbmsg) printf##x;fflush(stdout)
+static char* rnames[] = {
+	"i0",  "i1",  "i2",  "i3",  "i4",  "i5",  "i6",  "i7",
+	"i8",  "i9",  "i10", "i11", "i12", "i13", "i14", "i15",
+	"i16", "i17", "i18", "i19", "i20", "i21", "i22", "i23",	
+	"i24", "i25", "i26", "i27", "gp", "sp", "fp", "ra",
+	"f0",  "f1",  "f2",  "f3",  "f4",  "f5",  "f6",  "f7",
+	"f8",  "f9",  "f10", "f11", "f12", "f13", "f14", "f15",
+	"f16", "f17", "f18", "f19", "f20", "f21", "f22", "f23", 
+	"f24", "f25", "f26", "f27", "f28", "f29", "f30", "f31"			};
+#define	regname(n)	rnames[n]
+#define	fregname(n)	rnames[(n)+32]
+#else
+#define	debug_name(x)
+#define	debug(x)
+#endif
+
+#include "classMethod.h"
+#include "access.h"
+
+#define	return_dst()	slot_return(seq_dst(s))
+
+#define	REG_i0			0
+#define	REG_i1			1
+#define	REG_cmp			1
+#define	REG_i2			2
+#define	REG_i3			3
+#define	REG_i4			4
+#define	REG_i5			5
+#define	REG_i6			6
+#define	REG_i7			7
+#define	REG_s0			16
+#define	REG_i25			25
+#define	REG_gp			28
+#define	REG_sp			29
+#define	REG_fp			30
+#define	REG_ra			31
+#define	REG_f0			32
+#define	REG_f12			44
+
+#define	CONSTPOOL_BASE		REG_gp
+
+#define None			0	/* register not used */
+
+#define COP1			021
+#define REGIMM			0x1
+
+#define _ADD			041	/* 040 (w/overflow exception) */
+#define _ADDI			011	/* 010 (w/overflow exception) */
+#define _ADDU			041	
+#define _ADDIU			011
+#define _SUB			043	/* 042 (w/overflow exception) */
+#define _SUBU			043	
+#define _LUI			017
+#define _MULT			030
+#define _DIV			032
+#define _MFLO			022
+#define _MFHI			020
+
+#define _AND			044
+#define _ANDI			014
+#define _OR			045
+#define _ORI			015
+#define _XOR			046
+#define _NOR			047
+
+#define _SRAV			007
+#define _SRA			003
+#define _SRLV			006
+#define _SRL			002
+#define _SLLV			004
+#define _SLL			000
+
+#define _LW			043
+#define _SW			053
+#define _LB			040
+#define _SB			050
+#define _LHU			045
+#define _LH			041
+#define _SH			051
+
+#define _LWC1			061
+#define _SWC1			071
+#define _LDC1			065
+#define _SDC1			075
+#define _JR			010
+#define _JALR			011
+
+#define _LWC2			062
+#define _SWC2			072
+#define _COP2			022
+
+#define _SLT			052
+#define _SLTU			053
+#define _SLTIU			013
+#define _BEQ			004
+#define _BNE			005
+#define _BGEZ			001	/* regimm */
+#define _BGTZ			007
+#define _BLEZ			006
+#define _BLTZ			000	/* regimm */
+
+#define _FADD			000
+#define _FSUB			001
+#define _FMULT			002
+#define _FDIV			003
+#define _FMOV			006
+#define _FNEG			007
+
+#define _FCVT_S			040
+#define _FCVT_D			041
+#define _FCVT_W			044
+#define _FCVT_L			045
+
+/* format for float.point registers. table:html 464*/
+#define WORD_FORMAT		20
+#define LONG_FORMAT		21
+#define SINGLE_FORMAT		16
+#define DOUBLE_FORMAT		17
+
+
+/* --------------------------------------------------------------------- */
+/* Various masks							 */
+
+/* MIPS: */
+#define MASKL5BITS	0x0000001F	/* for lshl_int, RRR   */
+#define MASKL15BITS	0x00007FFF	/* 2 ^ 15 (prologue, move_int_const */
+#define	MASKL16BITS	0x0000FFFF
+#define	MASKL26BITS	0x03FFFFFF
+
+#define NMASKL5BITS	(~MASKL5BITS)
+#define NMASKL15BITS	(~MASKL15BITS)
+#define NMASKL16BITS	(~MASKL16BITS)
+
+
+
+/* -------------------------------------------------------------------- */
+/* MIPS Instruction formats						*/
+
+#define	insn_RRR(op, rd, rs, rt)			\
+	LOUT = 0x00000000 | ((rs) << 21) |		\
+	    ((rt) << 16) | ((rd) << 11) | (op)
+
+#define	insn_sRRC(op, rd, rt, sa)			\
+	LOUT = 0x00000000 | ((rt) << 16) |		\
+	    ((rd) << 11) | (((sa) & MASKL5BITS  ) << 6 ) | (op)
+
+#define	insn_RRC(op, rt, rs, cnst)			\
+	LOUT = 0x00000000 | ((op) << 26)  |		\
+	    ((rs) << 21) | ((rt) << 16) | ((cnst) & MASKL16BITS) 
+
+#define	ldst_RRC(op, rt, base, cnst)			\
+	LOUT = 0x00000000 | ((op) << 26)  |		\
+     	     ((base) << 21) | ((rt) << 16) | ((cnst) & MASKL16BITS) 
+
+#define	finsn_RRR(op, fmt, fd, fs, ft, copn)	\
+	LOUT = 0x00000000 | ((copn) << 26) |	\
+	    ((fmt) << 21) | ((ft) << 16)    |  	\
+	     ((fs) << 11) | ((fd) << 6)     | (op)
+
+#define insn_babranch(op, target)		\
+	LOUT = 0x00000000 | ((op) << 26) | ((target) &  MASKL26BITS)	
+
+#define	insn_cbr(op, rs, rt, offset)			\
+	LOUT = 0x00000000 | ((op) << 26) |		\
+     	      ((rs) << 21) | ((rt) << 16) | ((offset) & MASKL16BITS) 
+
+#define	insn_czbr(op, rs, offset)			\
+	LOUT = 0x00000000 | ((op) << 26) |		\
+     	      ((rs) << 21) | ((0x0) << 16) | ((offset) & MASKL16BITS) 
+
+#define	insn_czbr_ri(regimm_op, rs, offset)		\
+	LOUT = 0x00000000 | ((REGIMM) << 26) |		\
+     	      ((rs) << 21) | ((regimm_op) << 16)    | ((offset) & MASKL16BITS) 
+
+/* --------------------------------------------------------------------- */
+
+/*
+ * Kaffe currently doesn't have enough understanding of the wierd
+ * ways we can push arguments - so we do the handling here.
+ */
+static int arg_idx = 0;
+static int fp_idx = 0;
+static int pushed_int = 0;
+static int res_idx = 0;
+static int resreg[4];
+int max_args;
+
+/* --------------------------------------------------------------------- */
+
+#define	NOP()	insn_RRR(0x0, REG_i0, REG_i0, REG_i0); \
+		debug(("	nop\n"));
+
+define_insn(unimplemented, unimplemented) {
+	debug_name(("unimplemented:\n"));
+	abort();
+}
+
+define_insn(nop, nop) {
+	NOP();
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(prologue, prologue_xxC) {
+	label* l;
+	Method* meth;
+	int limit;
+	int haveint;
+	int j;
+	int i;
+	int fi;
+	int a;
+
+	/* Max_args is the maximum number of arguments this method pushed
+	 * onto the stack (allowing for alignment).  We always allow for
+	 * the 4 argument registers.
+	 */
+	max_args = NR_ARGUMENTS;
+
+	debug_name(("prologue:\n"));
+
+	/* Save and move sp, fp & r31 */
+        insn_RRR(_ADDU, REG_i1, REG_fp, REG_i0);
+        insn_RRR(_ADDU, REG_fp, REG_sp, REG_i0);
+
+	/* Remember where the framesize should go */
+	l = (label*)const_int(1);
+	l->type = Lframe|Labsolute|Lgeneral;
+	l->at = (uintp)CODEPC;
+
+        insn_RRC(_ADDIU, REG_sp, REG_sp, 0); /* framesize */
+        ldst_RRC(_SW, REG_ra, REG_fp, -4); /* save $ra */
+        ldst_RRC(_SW, REG_i1, REG_fp, -8); /* save old $fp */
+
+        debug(("	mov	i1,fp\n"));
+        debug(("	mov	fp,sp\n"));
+        debug(("	addiu	sp,sp,-framesize\n"));
+        debug(("	sw	ra,-4(fp)\n"));
+        debug(("	sw	i1,-8(fp)\n"));
+
+#if defined(USE_JIT_CONSTANT_POOL)
+	/* Get pointer to constant pool */
+        insn_RRR(_ADDU, CONSTPOOL_BASE, REG_i25, REG_i0);
+        ldst_RRC(_SW, REG_gp, REG_fp, -12); /* save $gp */
+
+        debug(("	move	gp,i25\n"));
+        debug(("	sw	gp,-12(fp)\n"));
+#endif
+
+	/* Save callee save regs */
+	for (i = 0; i < 8; i++) {
+		ldst_RRC(_SW, REG_s0+i, REG_fp, -SLOTSIZE*(4+i));
+		debug(("	sw	%s,%d(fp)\n",regname(REG_s0+i),-SLOTSIZE*(4+i)));
+	}
+
+	meth = (Method*)const_int(2);
+
+	limit = maxArgs;
+	if (limit > NR_ARGUMENTS) {
+		limit = NR_ARGUMENTS;
+	}
+	haveint = 0;
+	i = 0;
+	a = 0;
+	fi = 0;
+
+	/* We must now setup the register for the MIPS calling convention */
+	if (!isStatic) {
+		preloadRegister(slot_data(localinfo[i]), Rref, REG_i4+a);
+		argMap[i] = a;
+		haveint = 1;
+		i++;
+		a++;
+	}
+
+	for (j = 0; i < limit; j++) {
+		char ch = meth->sig->elem[j]->data[0];
+
+		/* We must align doubles and longs, and this might take
+		 * us past the end of our register arguments so check this.
+		 */
+		if (ch == 'D' || ch == 'J') {
+			a += a % 2;	/* Align */
+		}
+		if (a >= NR_ARGUMENTS) {
+			break;
+		}
+                switch (ch) {
+		case 'D':
+			if (haveint == 0 && fi < 2) {
+				preloadRegister(slot_data(localinfo[i]), Rdouble, REG_f12+2*fi);
+				i += 2;
+				a += 2;
+				fi++;
+				break;
+			}
+			/* Fall through ... */
+		case 'J':
+			preloadRegister(slot_data(localinfo[i]), Rint, REG_i4+a);
+			preloadRegister(slot_data(localinfo[i+1]), Rint, REG_i4+a+1);
+			haveint = 1;
+			i += 2;
+			a += 2;
+			break;
+		case 'F':
+			if (haveint == 0 && fi < 2) {
+				preloadRegister(slot_data(localinfo[i]), Rfloat, REG_f12+2*fi);
+				i++;
+				a++;
+				fi++;
+				break;
+			}
+			/* Fall through ... */
+		default:
+			preloadRegister(slot_data(localinfo[i]), Rint/*?*/, REG_i4+a);
+			haveint = 1;
+			i++;
+			a++;
+			break;
+		}
+	}
+#if defined(STACK_LIMIT)
+	if (a < NR_ARGUMENTS) {
+		preloadRegister(slot_data(stack_limit[0]), Rref, REG_i4+a);
+	}
+#endif
+}
+
+define_insn(epilogue, epilogue_xxx) {
+
+	int i;
+
+	debug_name(("epilogue:\n"));
+
+	/* Restore callee save regs */
+	for (i = 7; i >= 0; i--) {
+		ldst_RRC(_LW, REG_s0+i, REG_fp, -SLOTSIZE*(4+i)); 
+		debug(("	lw	%s,%d(fp)\n",regname(REG_s0+i),-SLOTSIZE*(4+i)));
+	}
+
+	/* Restore sp, fp & r31 */
+        ldst_RRC(_LW, REG_gp, REG_fp, -12);
+        ldst_RRC(_LW, REG_i1, REG_fp, -8);
+        ldst_RRC(_LW, REG_ra, REG_fp, -4);
+        insn_RRR(_ADDU, REG_sp, REG_fp, REG_i0);
+        insn_RRR(_ADDU, REG_fp, REG_i1, REG_i0);
+        insn_RRR(_JR, REG_i0, REG_ra, REG_i0);
+
+        debug(("	lw	gp,-12(fp)\n"));
+        debug(("	lw	r1,-8(fp)\n"));
+        debug(("	lw	ra,-4(fp)\n"));
+        debug(("	mov	sp,fp\n"));
+        debug(("	mov	fp,r1\n"));
+        debug(("	jr	ra\n"));
+
+        NOP();
+}
+
+define_insn(eprologue, eprologue_xxx) {
+	label* l;
+
+	/* exception handling */
+	debug_name(("eprologue:\n"));
+
+	/* Remember where the framesize should go */
+	l = (label*)const_int(1);
+	l->type = Lexception|Labsolute|Lgeneral;
+	l->at = (uintp)CODEPC;
+
+        insn_RRC(_ADDIU, REG_sp, REG_fp, 0); /* framesize */
+        debug(("	addiu	sp,fp,-framesize\n"));
+#if defined(USE_JIT_CONSTANT_POOL)
+	/*
+	 * The following opcodes re-establish the CONSTPOOL_BASE
+	 * registers. This is filled it in my Lexception.
+	 * There should be no space between this code and the frame
+	 * setup.
+	 */
+	insn_RRC(_LUI, CONSTPOOL_BASE, REG_i0, 0);
+	insn_RRC(_ORI, CONSTPOOL_BASE, CONSTPOOL_BASE, 0);
+#endif
+}
+
+define_insn(check_stack_limit, check_stack_limit_xRC) {
+
+	int r = rreg_int(1);
+	label* l = const_label(2);
+
+	clobberRegister(REG_i25);
+
+	insn_RRR(_SLTU,REG_i25,r,REG_sp);
+	insn_cbr(_BNE,REG_i25,REG_i0,3); 
+
+	debug(("	sgtu	i25,sp,%s\n", regname(REG_i25), regname(r)));
+	debug(("	bne	i25,zero,+3\n"));
+
+	NOP();
+
+	l->type = Lconstant|Lfuncrelative|Llong16;
+	l->at = CODEPC;
+	ldst_RRC(_LW, REG_i25, CONSTPOOL_BASE, 0);
+	insn_RRR(_JALR, REG_ra, REG_i25, REG_i0);
+
+	debug(("	call [soft_stackoverflow]\n"));
+
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(spill_int, spill_Rxx) {
+
+	int r = sreg_int(0);
+	int o = const_int(1);
+
+	debug_name(("spill_int:\n"));
+
+	ldst_RRC(_SW, r, REG_fp , o);
+	debug(("	sw	%s,%d(fp)\n", regname(r), o));
+
+}
+
+define_insn(spill_float, fspill_Rxx) {
+
+	int r = sreg_float(0);
+	int o = const_int(1);
+
+	debug_name(("spill_float:\n"));
+
+	ldst_RRC(_SWC1, r, REG_fp, o);
+	debug(("	swc1	%s,%d(fp)\n", fregname(r), o));
+
+}
+
+define_insn(spill_double, fspilll_Rxx) {
+
+	int r = sreg_double(0);
+	int o = const_int(1);
+
+	debug_name(("spill_double:\n"));
+
+	/* FIX: use ldc1 */
+
+	ldst_RRC(_SWC1, r, REG_fp, o);
+	debug(("	swc1	%s,%d(fp)\n", fregname(r), o));
+
+	ldst_RRC(_SWC1, r+1, REG_fp, o+4);
+	debug(("	swc1	%s,%d(fp)\n", fregname(r+1), o+4));
+}
+
+define_insn(reload_int, reload_Rxx) {
+
+	int r = lreg_int(0);
+	int o = const_int(1);
+
+	debug_name(("reload_int:\n"));
+
+	ldst_RRC(_LW, r, REG_fp, o);
+	debug(("	lw	%s,%d(fp)\n", regname(r), o));
+
+}
+
+define_insn(reload_float, freload_Rxx) {
+
+	int r = lreg_float(0);
+	int o = const_int(1);
+
+	debug_name(("reload_float:\n"));
+
+	ldst_RRC(_LWC1, r, REG_fp, o);
+	debug(("	lwc1	%s,%d(fp)\n", fregname(r), o));
+
+}
+
+define_insn(reload_double, freloadl_Rxx) {
+
+	int r = lreg_double(0);
+	int o = const_int(1);
+
+	debug_name(("reload_double:\n"));
+
+	/* FIX: use ldc1 */
+
+	ldst_RRC(_LWC1, r, REG_fp, o);
+	debug(("	lwc1	%s,%d(fp)\n", fregname(r), o));
+
+	ldst_RRC(_LWC1, r+1, REG_fp, o+4);
+	debug(("	lwc1	%s,%d(fp)\n", fregname(r+1), o+4));
+}
+
+void
+movereg_RR(int toreg, int fromreg)
+{
+	insn_RRR(_ADDU, toreg, fromreg, REG_i0);
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(move_int_const, move_RxC) {
+
+	int val = const_int(2);
+	int w = wreg_int(0);
+
+	debug_name(("move_int_const:\n"));
+
+	if (val == 0) {
+		insn_RRR(_ADDU, w, REG_i0, REG_i0);
+	}
+	else if ((val & NMASKL15BITS) == 0 || (val & NMASKL15BITS) == NMASKL15BITS) {
+		/* constants in [0,32767] or [-32768,0]  */
+		insn_RRC(_ADDIU, w, REG_i0, val & MASKL16BITS);
+		debug(("	movi	%s,%d\n", regname(w), val & MASKL16BITS));
+	}
+	else if((val & NMASKL16BITS) == 0) { /* [32768,65535] */
+		/* cosntants in [32768,65535] */
+		insn_RRC(_ORI, w, REG_i0, val & MASKL16BITS); 
+		debug(("	ori	%s,%s,%d\n", regname(w), regname(REG_i0), val & MASKL16BITS));
+	}
+	else {  /* constants not in range: [-32768,65535] */
+		insn_RRC(_LUI, w, REG_i0, (val >> 16) & MASKL16BITS); 
+		debug(("	lui	%s,%d\n", regname(w), (val >> 16) & MASKL16BITS));
+		if ((val & MASKL16BITS) != 0) {
+			/* load the lower half, if necessary */
+			insn_RRC(_ORI, w, w, val & MASKL16BITS);
+			debug(("	ori	%s,%s,%d\n", regname(w), regname(w), val & MASKL16BITS));
+		}
+	}
+} 
+
+define_insn(move_label_const, move_RxL)  {
+
+	label* l = (label*)const_int(2);
+	int w = wreg_int(0);
+
+	debug_name(("move_label_const:\n"));
+
+	l->type |= Llong16x16|Labsolute; 
+	l->at = (uintp)CODEPC;
+
+	insn_RRC(_LUI, w, 0, 0);
+	insn_RRC(_ORI, w, w, 0);
+
+	debug(("	lui	%s,?\n", regname(w)));
+	debug(("	ori	%s,%s,?\n", regname(w), regname(w)));
+}
+
+define_insn(load_constpool_int, ld_RxL) {
+	label* l = const_label(2);
+	int w = wreg_int(0);
+	l->type = Lconstant|Lfuncrelative|Llong16;
+	l->at = CODEPC;
+	ldst_RRC(_LW, w, CONSTPOOL_BASE, 0);
+	debug(("	lw	%s,?(gp)\n", regname(w)));
+}
+
+define_insn(move_int, move_RxR) {
+
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	debug_name(("move_int:\n"));
+
+	if (r != w) {
+		insn_RRR(_ADDU, w, r, REG_i0);
+		debug(("	mov	%s,%s\n", regname(w), regname(r)));
+	}
+}
+
+define_insn(move_float, fmove_RxR) {
+
+	int r = rreg_float(2);
+	int w = wreg_float(0);
+
+	debug_name(("move_float:\n"));
+
+	if (r != w) {
+		finsn_RRR(_FMOV, SINGLE_FORMAT, w, r, 0, COP1);
+		debug(("	mov.s	%s,%s\n", fregname(w), fregname(r)));
+	}
+}
+
+define_insn(move_double, fmovel_RxR) {
+
+	int r = rreg_double(2);
+	int w = wreg_double(0);
+
+	debug_name(("move_double:\n"));
+
+	if (r != w) {
+		finsn_RRR(_FMOV, DOUBLE_FORMAT, w, r, 0, COP1);
+		debug(("	mov.d	%s,%s\n", fregname(w), fregname(r)));
+	}
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(add_int, add_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("add_int:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_ADD, w, r1, r2);
+	debug(("	add	%s,%s,%s\n", regname(w), regname(r1), regname(r2)));
+}
+
+define_insn(add_int_const, add_RRC) {
+
+	int o;
+	int r;
+	int w;
+
+	debug_name(("add_int_const:\n"));
+
+	o = const_int(2);
+	r = rreg_int(1);
+	w = wreg_int(0);
+
+
+	insn_RRC(_ADDI, w, r, o); 
+	debug(("	addi	%s,%s,%d\n", regname(w), regname(r), o));
+}
+
+define_insn(add_ref, addu_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("add_ref:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_ADDU, w, r1, r2);
+	debug(("	addu	%s,%s,%s\n", regname(w), regname(r1), regname(r2)));
+}
+
+define_insn(add_ref_const, addu_RRC) {
+
+	int o;
+	int r;
+	int w;
+
+	debug_name(("add_ref_const:\n"));
+
+	o = const_int(2);
+	r = rreg_int(1);
+	w = wreg_int(0);
+
+
+	insn_RRC(_ADDIU, w, r, o); 
+	debug(("	addiu	%s,%s,%d\n", regname(w), regname(r), o));
+}
+
+define_insn(add_float, fadd_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("add_float:\n"));
+
+	r2 = rreg_float(2);
+	r1 = rreg_float(1);
+	w = wreg_float(0);
+
+	finsn_RRR(_FADD, SINGLE_FORMAT, w, r1, r2, COP1);
+	debug(("	add.s	%s,%s,%s\n", fregname(w), fregname(r1), fregname(r2)));
+}
+
+define_insn(add_double, faddl_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("add_double:\n"));
+
+	r2 = rreg_double(2);
+	r1 = rreg_double(1);
+	w = wreg_double(0);
+
+	finsn_RRR(_FADD, DOUBLE_FORMAT, w, r1, r2, COP1);
+	debug(("	add.d	%s,%s,%s\n", fregname(w), fregname(r1), fregname(r2)));
+}
+
+
+define_insn(neg_int, neg_RRR) {
+
+	int r;
+	int w;
+
+	debug_name(("neg_int:\n"));
+
+	r = rreg_int(2);
+	w = wreg_int(0);
+
+	insn_RRR(_SUB, w, REG_i0, r);
+	debug(("	sub	%s,%s,%s\n", regname(w), regname(REG_i0), regname(r)));
+}
+
+define_insn(neg_float, fneg_RRR) {
+
+	int r;
+	int w;
+
+	debug_name(("neg_float:\n"));
+
+	r = rreg_float(2);
+	w = wreg_float(0);
+
+	finsn_RRR(_FNEG, SINGLE_FORMAT, w, r, 0, COP1);
+	debug(("	neg.s	%s,%s\n", fregname(w), fregname(r)));
+}
+
+define_insn(neg_double, fnegl_RRR) {
+
+	int r;
+	int w;
+
+	debug_name(("neg_double:\n"));
+
+	r = rreg_double(2);
+	w = wreg_double(0);
+
+	finsn_RRR(_FNEG, DOUBLE_FORMAT, w, r, 0, COP1);
+	debug(("	neg.d	%s,%s\n", fregname(w), fregname(r)));
+}
+
+
+define_insn(sub_int, sub_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("sub_int:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_SUB, w, r1, r2); /*subu html 431*/
+	debug(("	sub	%s,%s,%s\n", regname(w), regname(r1), regname(r2)));
+}
+
+define_insn(sub_ref, subu_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("sub_ref:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_SUBU, w, r1, r2);
+	debug(("	subu	%s,%s,%s\n", regname(w), regname(r1), regname(r2)));
+}
+
+define_insn(sub_int_const, sub_RRC) {
+
+	int o;
+	int r;
+	int w;
+
+	debug_name(("sub_int_const:\n"));
+
+	o = -const_int(2);
+	r = rreg_int(1);
+	w = wreg_int(0);
+	insn_RRC(_ADDI, w, r, o); 
+	debug(("	addi	%s,%s,%d\n", regname(w), regname(w), o));
+}
+
+define_insn(sub_float, fsub_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("sub_float:\n"));
+
+	r2 = rreg_float(2);
+	r1 = rreg_float(1);
+	w = wreg_float(0);
+
+	finsn_RRR(_FSUB, SINGLE_FORMAT, w, r1, r2, COP1);
+	debug(("	sub.s	%s,%s,%s\n", fregname(w), fregname(r1), fregname(r2)));
+}
+
+define_insn(sub_double, fsubl_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("sub_double:\n"));
+
+	r2 = rreg_double(2);
+	r1 = rreg_double(1);
+	w = wreg_double(0);
+
+	finsn_RRR(_FSUB, DOUBLE_FORMAT, w, r1, r2, COP1);
+	debug(("	sub.d	%s,%s,%s\n", fregname(w), fregname(r1), fregname(r2)));
+}
+
+define_insn(mul_int, mul_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("mul_int:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_MULT, REG_i0, r1, r2);
+       	insn_RRR(_MFLO, w, REG_i0, REG_i0);
+
+	debug(("	mult	%s,%s\n", regname(r1), regname(r2)));
+	debug(("	mflo	%s\n", regname(w)));
+
+	/* the following instructions mustn't be a mult to keep the result in LO */
+	NOP();
+	NOP();
+
+}
+
+define_insn(mul_float, fmul_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("mul_float:\n"));
+
+	r2 = rreg_float(2);
+	r1 = rreg_float(1);
+	w = wreg_float(0);
+
+	finsn_RRR(_FMULT, SINGLE_FORMAT, w, r1, r2, COP1);
+	debug(("	mul.s	%s,%s,%s\n", fregname(w), fregname(r1), fregname(r2)));
+}
+
+define_insn(mul_double, fmull_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("mul_double:\n"));
+
+	r2 = rreg_double(2);
+	r1 = rreg_double(1);
+	w = wreg_double(0);
+
+	finsn_RRR(_FMULT, DOUBLE_FORMAT, w, r1, r2, COP1);
+	debug(("	mul.d	%s,%s,%s\n", fregname(w), fregname(r1), fregname(r2)));
+}
+
+define_insn(div_int, div_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("div_int:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_DIV, REG_i0, r1, r2);
+       	insn_RRR(_MFLO, w, REG_i0, REG_i0);
+
+	debug(("	div	%s,%s\n", regname(r1), regname(r2)));
+	debug(("	mflo	%s\n", regname(w)));
+
+	/* the following instructions mustn't be a mult to keep the result in LO */
+	NOP();
+	NOP();
+}
+
+define_insn(div_float, fdiv_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("div_float:\n"));
+
+	r2 = rreg_float(2);
+	r1 = rreg_float(1);
+	w = wreg_float(0);
+
+	finsn_RRR(_FDIV, SINGLE_FORMAT, w, r1, r2, COP1);
+	debug(("	div.s	%s,%s,%s\n", fregname(w), fregname(r1), fregname(r2)));
+}
+
+define_insn(div_double, fdivl_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("div_double:\n"));
+
+	r2 = rreg_double(2);
+	r1 = rreg_double(1);
+	w = wreg_double(0);
+
+	finsn_RRR(_FDIV, DOUBLE_FORMAT, w, r1, r2, COP1);
+	debug(("	div.d	%s,%s,%s\n", fregname(w), fregname(r1), fregname(r2)));
+}
+
+define_insn(rem_int, rem_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("rem_int:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_DIV, REG_i0, r1, r2);
+       	insn_RRR(_MFHI, w, REG_i0, REG_i0);
+
+	debug(("	div	%s,%s\n", regname(r1), regname(r2)));
+	debug(("	mfhi	%s\n", regname(w)));
+
+	/* the following instructions mustn't be a mult to keep the result in LO */
+	NOP();
+	NOP();
+
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(and_int, and_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("and_int:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_AND, w, r1, r2);
+	debug(("	and	%s,%s,%s\n", regname(w), regname(r1), regname(r2)));
+}
+
+define_insn(and_int_const, and_RRC) {
+
+	int r;
+	int o;
+	int w;
+
+	debug_name(("and_int_const:\n"));
+
+	o = const_int(2);
+	r = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRC(_ANDI, w, r, o);
+	debug(("	andi	%s,%d,%s\n", regname(w), regname(r), o));
+}
+
+define_insn(or_int, or_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("or_int:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_OR, w, r1, r2);
+	debug(("	or	%s,%s,%s\n", regname(w), regname(r1), regname(r2)));
+}
+
+define_insn(xor_int, xor_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("xor_int:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_XOR, w, r1, r2);
+	debug(("	xor	%s,%s,%s\n", regname(w), regname(r1), regname(r2)));
+}
+
+define_insn(nor_int, nor_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("nor_int:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_NOR, w, r1, r2);
+	debug(("	nor	%s,%s,%s\n", regname(w), regname(r1), regname(r2)));
+}
+
+define_insn(ashr_int, ashr_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("ashr_int:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_SRAV, w, r2, r1);
+	debug(("	srav	%s,%s,%s\n", regname(w), regname(r1), regname(r2)));
+}
+
+define_insn(ashr_int_const, ashr_RRC) {
+
+	int r;
+	int o;
+	int w;
+
+	debug_name(("ashr_int_const:\n"));
+
+	o = const_int(2);
+	r = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_sRRC(_SRA, w, r, o);
+	debug(("	sra	%s,%s,%d\n", regname(w), regname(r), o));
+}
+
+define_insn(lshr_int, lshr_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("lshr_int:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_SRLV, w, r2, r1);
+	debug(("	srlv	%s,%s,%s\n", regname(r1), regname(r2), regname(w)));
+}
+
+define_insn(lshr_int_const, lshr_RRC) {
+
+	int r;
+	int o;
+	int w;
+
+	debug_name(("lshr_int_const:\n"));
+
+	o = const_int(2);
+	r = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_sRRC(_SRL, w, r, o);
+	debug(("	srl	%s,%s,%d\n", regname(w), regname(r), o));
+}
+
+define_insn(lshl_int, lshl_RRR) {
+
+	int r1;
+	int r2;
+	int w;
+
+	debug_name(("lshl_int:\n"));
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(_SLLV, w, r2, r1);
+	debug(("	sllv	%s,%s,%s\n", regname(w), regname(r1), regname(r2)));
+}
+
+define_insn(lshl_int_const, lshl_RRC) {
+
+	int r;
+	int o;
+	int w;
+
+	debug_name(("lshl_int_const:\n"));
+
+	o = const_int(2);
+	r = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_sRRC(_SLL, w, r, o);
+	debug(("	sll	%s,%s,%d\n", regname(w), regname(w), o));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(load_int, load_RRx) {
+
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	debug_name(("load_int:\n"));
+
+	ldst_RRC(_LW, w, r, 0);
+	debug(("	lw	%s,0[%s]\n", regname(w), regname(r)));
+}
+
+define_insn(load_offset_int, load_RRC) {
+
+	int o = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	debug_name(("load_offset_int:\n"));
+
+	ldst_RRC(_LW, w, r, o);
+	debug(("	lw	%s,%d[%s]\n", regname(w), o, regname(r)));
+}
+
+define_insn(load_float, fload_RRx) {
+
+	int r = rreg_int(2);
+	int w = wreg_float(0);
+
+	debug_name(("load_float:\n"));
+
+	ldst_RRC(_LWC1, w, r, 0);
+	debug(("	lwc1	%s,0[%s]\n", fregname(w), regname(r)));
+}
+
+define_insn(load_double, floadl_RRx) {
+
+	int r = rreg_int(2);
+	int w = wreg_double(0);
+
+	debug_name(("load_double:\n"));
+
+	/* FIX: use ldc1 */
+
+	ldst_RRC(_LWC1, w, r, 0);
+	debug(("	lwc1	%s,0[%s]\n", fregname(w), regname(r)));
+
+	ldst_RRC(_LWC1, w+1, r, 4);
+	debug(("	lwc1	%s,4[%s]\n", fregname(w+1), regname(r)));
+}
+
+define_insn(load_byte, loadb_RRx) {
+
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	debug_name(("load_byte:\n"));
+
+	ldst_RRC(_LB, w, r, 0);
+	debug(("	lb	%s,0[%s]\n", regname(w), regname(r)));
+}
+
+define_insn(load_char, loadc_RRx) {
+
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	debug_name(("load_char:\n"));
+
+	ldst_RRC(_LHU, w, r, 0);
+	debug(("	lhu	%s,0[%s]\n", regname(w), regname(r)));
+}
+
+define_insn(load_short, loads_RRx) {
+
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+	
+	debug_name(("load_short:\n"));
+
+	ldst_RRC(_LH, w, r, 0);
+	debug(("	lh	%s,0[%s]\n", regname(w), regname(r)));
+}
+
+define_insn(store_int, store_RRx) {
+
+	int r = rreg_int(2);
+	int w = rreg_int(1);
+
+	debug_name(("store_int:\n"));
+
+	ldst_RRC(_SW, r, w, 0);
+	debug(("	sw	%s,0[%s]\n", regname(r), regname(w)));
+}
+
+define_insn(store_offset_int, store_RRC) {
+
+	int o = const_int(2);
+	int w = rreg_int(1);
+	int r = rreg_int(0);
+
+	debug_name(("store_offset_int:\n"));
+
+	ldst_RRC(_SW, r, w, o);
+	debug(("	sw	%s,%d[%s]\n", regname(r), o, regname(w)));
+}
+
+define_insn(store_float, fstore_RRx) {
+
+	int r = rreg_float(2);
+	int w = rreg_int(1);
+
+	debug_name(("store_float:\n"));
+
+	ldst_RRC(_SWC1, r, w, 0);
+	debug(("	swc1	%s,0[%s]\n", fregname(r), regname(w)));
+}
+
+define_insn(store_double, fstorel_RRx) {
+
+	int r = rreg_double(2);
+	int w = rreg_int(1);
+
+	debug_name(("store_double:\n"));
+
+	/* FIX: use sdc1 */
+	ldst_RRC(_SWC1, r, w, 0);
+	debug(("	swc1	%s,0[%s]\n", fregname(r), regname(w)));
+
+	ldst_RRC(_SWC1, r+1, w, 4);
+	debug(("	swc1	%s,4[%s]\n", fregname(r+1), regname(w)));
+}
+
+define_insn(store_byte, storeb_RRx) {
+
+	int r = rreg_int(2);
+	int w = rreg_int(1);
+
+	debug_name(("store_byte:\n"));
+
+	ldst_RRC(_SB, r, w, 0);
+	debug(("	sb	%s,0[%s]\n", regname(r), regname(w)));
+}
+
+define_insn(store_short, stores_RRx) {
+
+	int r = rreg_int(2);
+	int w = rreg_int(1);
+
+	debug_name(("store_short:\n"));
+
+	ldst_RRC(_SH, r, w, 0);
+	debug(("	sh	%s,0[%s]\n", regname(r), regname(w)));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(cvt_int_float, cvtif_RRx) {
+
+	int r;
+	int w;
+
+	debug_name(("cvt_int_float:\n"));
+
+	r = rreg_float(2);
+	w = wreg_float(0);
+
+	finsn_RRR(_FCVT_S, WORD_FORMAT, w, r, 0, COP1);
+	debug(("	cvt.s.w	%s,%s\n", fregname(w), fregname(r)));
+}
+
+define_insn(cvt_int_double, cvtid_RRx) {
+
+	int r;
+	int w;
+
+	debug_name(("cvt_int_double:\n"));
+
+	r = rreg_float(2);
+	w = wreg_double(0);
+
+	finsn_RRR(_FCVT_D, WORD_FORMAT, w, r, 0, COP1);
+	debug(("	cvt.d.w	%s,%s\n", fregname(w), fregname(r)));
+}
+
+define_insn(cvt_float_int, cvtfi_RRx) {
+
+	int r;
+	int w;
+
+	debug_name(("cvt_float_int:\n"));
+
+	r = rreg_float(2);
+	w = wreg_float(0);
+
+	finsn_RRR(_FCVT_W, SINGLE_FORMAT, w, r, 0, COP1);
+	debug(("	cvt.w.s	%s,%s\n", fregname(w), fregname(r)));
+}
+
+define_insn(cvt_double_int, cvtdi_RRx) {
+
+	int r;
+	int w;
+
+	debug_name(("cvt_double_int:\n"));
+
+	r = rreg_double(2);
+	w = wreg_float(0);
+
+	finsn_RRR(_FCVT_W, DOUBLE_FORMAT, w, r, 0, COP1);
+	debug(("	cvt.w.d	%s,%s\n", fregname(w), fregname(r)));
+}
+
+define_insn(cvt_float_double, cvtfd_RRx) {
+
+	int r;
+	int w;
+
+	debug_name(("cvt_float_double:\n"));
+
+	r = rreg_float(2);
+	w = wreg_double(0);
+
+	finsn_RRR(_FCVT_D, SINGLE_FORMAT, w, r, 0, COP1);
+	debug(("	cvt.d.s	%s,%s\n", fregname(w), fregname(r)));
+}
+
+define_insn(cvt_double_float, cvtdf_RRx) {
+
+	int r;
+	int w;
+
+	debug_name(("cvt_double_float:\n"));
+
+	r = rreg_double(2);
+	w = wreg_float(0);
+
+	finsn_RRR(_FCVT_S, DOUBLE_FORMAT, w, r, 0, COP1);
+	debug(("	cvt.s.d	%s,%s\n", fregname(w), fregname(r)));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(build_key, set_word_xxC) {
+
+	jint val = const_int(2);
+
+	debug_name(("build_key:\n"));
+
+	LOUT = val;
+
+	debug(("	.word	%08x\n", val));
+}
+
+define_insn(build_code_ref, set_wordpc_xxC) {
+
+	label* l = (label*)const_int(2);
+
+	debug_name(("build_code_ref:\n"));
+
+	l->type |= Llong|Labsolute;
+	l->at = (uintp)CODEPC;
+	LOUT = 0;
+	l->from = (uintp)CODEPC;
+	debug(("	.word	?\n"));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(set_lt_int, sltu_RRR) {
+
+	int r1 = rreg_int(1);
+	int r2 = rreg_int(2);
+	int w = wreg_int(0);
+
+	debug_name(("slt_int:\n"));
+
+	insn_RRR(_SLTU,w,r1,r2); 
+	debug(("	sltu	%s,%s,%s\n",regname(w),regname(r1),regname(r2)));
+}
+
+define_insn(set_lt_int_const, sltu_RRC) {
+
+	int o = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	debug_name(("slt_int_const:\n"));
+
+	insn_RRC(_SLTIU,w,r,o); 
+	debug(("	sltiu	%s,%s,%d\n",regname(w),regname(r),o));
+}
+
+define_insn(set_label, set_label_xxC) {
+
+	label* l = (label*)const_int(2);
+	debug_name(("set_label:\n"));
+
+	l->to = (uint32)CODEPC;
+}
+
+define_insn(cbranch_int, cbranch_RRC) {
+
+	int r1 = rreg_int(1);
+	int r2 = rreg_int(2);
+	label* l = (label*)const_int(3);
+	int bt = const_int(4);
+
+	debug_name(("cbranch_int:\n"));
+
+	l->type |= Llong16b|Lrelative;
+
+	switch (bt) {
+	case ba: 
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BEQ,REG_i0,REG_i0,0); 
+		debug(("	b	?\n"));
+		break;
+	case beq:
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BEQ,r1,r2,0); 
+		debug(("	beq	%s,%s,?\n",regname(r1),regname(r2)));
+		break;
+	case bne:
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BNE,r1,r2,0); 
+		debug(("	bne	%s,%s,?\n",regname(r1),regname(r2)));
+		break;
+	case blt:
+		clobberRegister(REG_cmp);
+		insn_RRR(_SLT,REG_cmp,r1,r2); 
+
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BNE,REG_cmp,REG_i0,0); 
+		debug(("	slt	%s,%s,%s\n",regname(REG_cmp),regname(r1),regname(r2)));
+		debug(("	bne	%s,%s,?\n",regname(REG_cmp),regname(REG_i0)));
+		break;
+	case ble:
+		clobberRegister(REG_cmp);
+		insn_RRR(_SLT,REG_cmp,r2,r1); 
+
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BEQ,REG_cmp,REG_i0,0); 
+		debug(("	slt	%s,%s,%s\n",regname(REG_cmp),regname(r2),regname(r1)));
+		debug(("	beq	%s,%s,?\n",regname(REG_cmp),regname(REG_i0)));
+		break;
+	case bgt: 
+		clobberRegister(REG_cmp);
+		insn_RRR(_SLT,REG_cmp,r2,r1); 
+
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BNE,REG_cmp,REG_i0,0); 
+		debug(("	slt	%s,%s,%s\n",regname(REG_cmp),regname(r2),regname(r1)));
+		debug(("	bne	%s,%s,?\n",regname(REG_cmp),regname(REG_i0)));
+		break;
+	case bge:
+		clobberRegister(REG_cmp);
+		insn_RRR(_SLT,REG_cmp,r1,r2); 
+
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BEQ,REG_cmp,REG_i0,0); 
+		debug(("	slt	%s,%s,%s\n",regname(REG_cmp),regname(r1),regname(r2)));
+		debug(("	beq	%s,%s,?\n",regname(REG_cmp),regname(REG_i0)));
+		break;
+	case bult:
+		clobberRegister(REG_cmp);
+		insn_RRR(_SLTU,REG_cmp,r1,r2); 
+
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BNE,REG_cmp,REG_i0,0); 
+		debug(("	sltu	%s,%s,%s\n",regname(REG_cmp),regname(r1),regname(r2)));
+		debug(("	bne	%s,%s,?\n",regname(REG_cmp),regname(REG_i0)));
+		break;
+	case buge:
+		clobberRegister(REG_cmp);
+		insn_RRR(_SLTU,REG_cmp,r1,r2); 
+
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BEQ,REG_cmp,REG_i0,0); 
+		debug(("	slt	%s,%s,%s\n",regname(REG_cmp),regname(r1),regname(r2)));
+		debug(("	beq	%s,%s,?\n",regname(REG_cmp),regname(REG_i0)));
+		break;
+	default:
+		/* Shouldn't get here */
+		printf ("unimplemented br type\n");
+		abort();
+	}
+
+	NOP();
+}
+
+define_insn(cbranch_int_const, cbranch_RRCC) {
+
+	int r = rreg_int(1);
+	int val = const_int(2);
+	label* l = (label*)const_int(3);
+	int bt = const_int(4);
+
+	debug_name(("cbranch_int_const:\n"));
+
+	/* FIX */ /* check for smaller constants/zero */
+
+	clobberRegister(REG_cmp);
+
+	insn_RRC(_LUI, REG_cmp, REG_i0, (val >> 16) & MASKL16BITS); 
+	debug(("	lui	%s,%d\n", regname(REG_cmp), (val >> 16) & MASKL16BITS));
+	
+	if ((val & MASKL16BITS) != 0) {
+		/* load the lower half, if necessary */
+		insn_RRC(_ORI, REG_cmp, REG_cmp, val & MASKL16BITS);
+		debug(("	ori	%s,%s,%d\n", regname(REG_cmp), regname(REG_cmp), val & MASKL16BITS));
+	}
+
+	l->type |= Llong16b|Lrelative;
+
+	switch (bt) {
+	case ba: 
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BEQ,REG_i0,REG_i0,0); 
+		debug(("	b	?\n"));
+		break;
+	case beq:
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BEQ,r,REG_cmp,0); 
+		debug(("	beq	%s,%s,?\n",regname(r),regname(REG_cmp)));
+		break;
+	case bne:
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BNE,r,REG_cmp,0); 
+		debug(("	bne	%s,%s,?\n",regname(r),regname(REG_cmp)));
+		break;
+	case blt:
+		insn_RRR(_SLT,REG_cmp,r,REG_cmp); 
+
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BNE,REG_cmp,REG_i0,0); 
+		debug(("	slt	%s,%s,%s\n",regname(REG_cmp),regname(r),regname(REG_cmp)));
+		debug(("	bne	%s,%s,?\n",regname(REG_cmp),regname(REG_i0)));
+		break;
+	case ble:
+		insn_RRR(_SLT,REG_cmp,REG_cmp,r); 
+
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BEQ,REG_cmp,REG_i0,0); 
+		debug(("	slt	%s,%s,%s\n",regname(REG_cmp),regname(REG_cmp),regname(r)));
+		debug(("	beq	%s,%s,?\n",regname(REG_cmp),regname(REG_i0)));
+		break;
+	case bgt: 
+		insn_RRR(_SLT,REG_cmp,REG_cmp,r); 
+
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BNE,REG_cmp,REG_i0,0); 
+		debug(("	slt	%s,%s,%s\n",regname(REG_cmp),regname(REG_cmp),regname(r)));
+		debug(("	bne	%s,%s,?\n",regname(REG_cmp),regname(REG_i0)));
+		break;
+	case bge:
+		insn_RRR(_SLT,REG_cmp,r,REG_cmp); 
+
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BEQ,REG_cmp,REG_i0,0); 
+		debug(("	slt	%s,%s,%s\n",regname(REG_cmp),regname(r),regname(REG_cmp)));
+		debug(("	beq	%s,%s,?\n",regname(REG_cmp),regname(REG_i0)));
+		break;
+	case bult:
+		insn_RRR(_SLTU,REG_cmp,r,REG_cmp); 
+
+		l->at = (uintp)CODEPC;
+		l->from = (uintp)CODEPC;
+
+		insn_cbr(_BNE,REG_cmp,REG_i0,0); 
+		debug(("	sltu	%s,%s,%s\n",regname(REG_cmp),regname(r),regname(REG_cmp)));
+		debug(("	bne	%s,%s,?\n",regname(REG_cmp),regname(REG_i0)));
+		break;
+	default:
+		/* Shouldn't get here */
+		printf ("unimplemented br type\n");
+		abort();
+	}
+
+	NOP();
+}
+
+define_insn(branch, branch_xCC) {
+
+	label* l = (label*)const_int(1);
+	int bt = const_int(2);
+
+	debug_name(("branch:\n"));
+
+	l->type |= Llong16b|Lrelative;
+	l->at = (uintp)CODEPC;
+	l->from = (uintp)CODEPC;
+
+	switch (bt) {
+	case ba: 
+		insn_cbr(_BEQ,REG_i0,REG_i0,0); 
+		debug(("	b	?\n"));
+		break;
+	case beq:
+	case bne:
+	case blt:
+	case ble:
+	case bgt: 
+	case bge:
+	case bult:
+	default:
+		/* Shouldn't get here */
+		printf ("unimplemented br type\n");
+		abort();
+	}
+
+	NOP();
+}
+
+define_insn(branch_indirect, branch_indirect_xRC) {
+
+	int r = rreg_int(1);
+	assert(const_int(2) == ba);
+
+	debug_name(("branch_indirect:\n"));
+
+	insn_RRR(_JR, REG_i0, r, REG_i0);
+	debug(("	jr	%s\n", regname(r)));
+
+	NOP();
+}
+
+define_insn(call_ref, call_xCC) {
+
+	label* l = (label*)const_int(1);
+	assert(const_int(2) == ba);
+
+	debug_name(("call_ref:\n"));
+
+	clobberRegister(REG_i25);
+
+	l->type |= Llong16x16|Labsolute; 
+	l->at = (uintp)CODEPC;
+	l->from = (uintp)CODEPC;
+
+	/* FIX USE JAL, but be sure to SRL by 2 (word address) */
+	insn_RRC(_LUI, REG_i25, REG_i0, 0);
+	insn_RRC(_ORI, REG_i25, REG_i25, 0);
+
+	debug(("	lui	i25,?\n"));
+	debug(("	ori	i25,i25,?\n"));
+
+	insn_RRR(_JALR, REG_ra, REG_i25, REG_i0);
+
+	debug(("	jalr	%s,%s\n",regname(REG_ra), regname(REG_i25)));
+
+	NOP();
+
+#if defined(USE_JIT_CONSTANT_POOL)
+	/* Restore pointer to constant pool */
+        ldst_RRC(_LW, REG_gp, REG_fp, -12); /* restore $gp */
+        debug(("	lw	gp,-12(fp)\n"));
+#endif
+}
+
+define_insn(call, call_xRC) {
+	int r = rreg_ideal_int(1, REG_i25);
+	assert(const_int(2) == ba);
+
+	/* We might not get the ideal register (if the slot is global)
+	 * so handle this.
+	 */
+	if (r != REG_i25) {
+		clobberRegister(REG_i25);
+		insn_RRR(_ADDU, REG_i25, r, REG_i0);
+		r = REG_i25;
+	}
+
+	insn_RRR(_JALR, REG_ra, r, REG_i0);
+	debug(("        jalr    %s,%s\n",regname(REG_ra), regname(r)));
+
+	NOP();
+
+#if defined(USE_JIT_CONSTANT_POOL)
+	/* Restore pointer to constant pool */
+        ldst_RRC(_LW, REG_gp, REG_fp, -12); /* restore $gp */
+        debug(("	lw	gp,-12(fp)\n"));
+#endif
+}
+
+define_insn(ret, ret_xxx) {
+	debug_name(("ret:\n"));
+
+}
+
+define_insn(push_int, push_xRC) {
+	/* pushes first 4 parameters in registers i4 to i7, rest -> stack */
+	int r;
+	int o;
+
+	debug_name(("push_int:\n"));
+
+	/* This affect how flots are pushed */
+	pushed_int = 1;
+
+	debug(("I %d %d\n",arg_idx,pushed_int));
+
+	if (arg_idx < NR_ARGUMENTS) {
+		o = REG_i4 + arg_idx;
+		r = rreg_ideal_int(1, o);
+
+		/* We might not get the ideal register (if the slot is global)
+		 * so handle this.
+		 */
+		if (r != o) {
+			clobberRegister(o);
+			insn_RRR(_ADDU, o, r, REG_i0);
+			r = o;
+		}
+
+		register_reserve(r);
+		resreg[res_idx++] = r;
+	}
+	else {
+		r = rreg_int(1);
+		o = SLOT2PUSHOFFSET(arg_idx);
+		ldst_RRC(_SW, r, REG_sp, o);
+		debug(("	sw	%s,%d[sp]\n", regname(r), o));
+	}
+
+	arg_idx++;
+}
+
+define_insn(push_long, pushl_xRC) {
+	int r;
+	int w;
+	int o;
+
+	debug_name(("push_long:\n"));
+
+	/* This affect how floats are pushed */
+	pushed_int = 1;
+
+	/* We align arguments onto their natural boundaries */
+	arg_idx += arg_idx % 2;
+
+	debug(("L %d %d\n",arg_idx,pushed_int));
+
+	if (arg_idx < NR_ARGUMENTS) {
+		o = REG_i4 + arg_idx;
+		r = rreg_ideal_int(1, o);
+		/* No macro for the following */
+		w = slotRegister(seq_slot(s, 1)+1, Rint, rread, o+1);
+
+		/* We might not get the ideal register (if the slot is global)
+		 * so handle this.
+		 */
+		if (r != o) {
+			clobberRegister(o);
+			insn_RRR(_ADDU, o, r, REG_i0);
+			r = o;
+		}
+		if (w != o+1) {
+			clobberRegister(o+1);
+			insn_RRR(_ADDU, o+1, w, REG_i0);
+			w = o+1;
+		}
+		register_reserve(r);
+		register_reserve(w);
+		resreg[res_idx++] = r;
+		resreg[res_idx++] = w;
+	}
+	else {
+		w = SLOT2PUSHOFFSET(arg_idx);
+
+		r = rreg_int(1);
+		ldst_RRC(_SW, r, REG_sp, w);
+		debug(("	sw	%s,%d[sp]\n", regname(r), w));
+
+		/* No macro for the following */
+		r = slotRegister(seq_slot(s, 1)+1, Rint, rread, NOREG);
+		ldst_RRC(_SW, r, REG_sp, w+4);
+		debug(("	sw	%s,%d[sp]\n", regname(r), w+4));
+	}
+
+	arg_idx += 2;
+}
+
+define_insn(push_float, fpush_xRC) {
+	/* pushes the first 4 parameters in registers i4 to i7, rest -> stack */
+
+	int r;
+	int w;
+
+	debug_name(("push_float:\n"));
+
+	debug(("F %d %d\n",arg_idx,pushed_int));
+
+	/* If we've beyond NR_ARGUMENTS then it get easy.
+	 */
+	if (arg_idx >= NR_ARGUMENTS) { 
+		/* Put in argument stack */
+		r = rreg_float(1);
+		w = SLOT2PUSHOFFSET(arg_idx);
+		ldst_RRC(_SWC1, r, REG_sp, w);
+		debug(("	swc1	%s,%d[sp]\n", fregname(r), w));
+	}
+	/* If we've pushed ints already or we've pushed more than
+	 * two floats then we put it in a0-a3.
+	 */
+	else if (pushed_int || fp_idx >= 2) {
+		r = rreg_ideal_int(1, REG_i4 + arg_idx);
+		assert(r == REG_i4 + arg_idx);
+		register_reserve(r);
+		resreg[res_idx++] = r;
+	}
+	/* Else we actually put the value in a float point register f12-f14.
+	 */
+	else {
+		r = rreg_ideal_float(1, REG_f12+2*fp_idx);
+		assert(r == 12+2*fp_idx);
+		register_reserve(r);
+		resreg[res_idx++] = r;
+	}
+
+	/* Count the float/ints we pushed */
+	fp_idx++;
+	arg_idx++;
+}
+
+
+define_insn(push_double, fpushl_xRC) {
+	/* pushes the first 4 parameters in registers i4 to i7, rest -> stack */
+
+	int r;
+	int w;
+
+	debug_name(("push_double:\n"));
+
+	arg_idx += arg_idx % 2;
+
+	debug(("D %d %d\n",arg_idx,pushed_int));
+
+	/* If we've beyond NR_ARGUMENTS then it get easy.
+	 */
+	if (arg_idx >= NR_ARGUMENTS) { 
+		/* Put in argument stack */
+		r = rreg_double(1);
+		w = SLOT2PUSHOFFSET(arg_idx); /* FIX use sdc1 */
+		ldst_RRC(_SWC1, r, REG_sp, w);
+		debug(("	swc1	%s,%d[sp]\n", fregname(r), w));
+		ldst_RRC(_SWC1, r+1, REG_sp, w+4);
+		debug(("	swc1	%s,%d[sp]\n", fregname(r+1), w+4));
+	}
+	/* If we've pushed ints already or we've pushed more than
+	 * two floats then we put it in a0-a3.  Be careful since the
+	 * stack is backwards.
+	 */
+	else if (pushed_int || fp_idx >= 2) {
+		r = rreg_ideal_int(1, REG_i4+arg_idx+1);
+		/* No macro for the following */
+		w = slotRegister(seq_slot(s, 1)+1, Rint, rread, REG_i4+arg_idx);
+		assert(r == REG_i4+arg_idx+1);
+		assert(w == r - 1);
+		register_reserve(r);
+		register_reserve(w);
+		resreg[res_idx++] = r;
+		resreg[res_idx++] = w;
+	}
+	/* Else we actually put the value in a float point register f12-f14.
+	 */
+	else {
+		r = rreg_ideal_double(1, REG_f12+2*fp_idx);
+		assert(r == 12+2*fp_idx);
+		register_reserve(r);
+		register_reserve(r+1);
+		resreg[res_idx++] = r;
+		resreg[res_idx++] = r+1;
+	}
+
+	/* Count the double/longs we pushed */
+	fp_idx++;
+	arg_idx += 2;
+}
+
+define_insn(popargs, popargs_xxC) {
+	int r;
+
+	debug_name(("popargs:\n"));
+
+	for (r = 0; r < res_idx; r++) {
+		register_unreserve(resreg[r]);
+	}
+
+	if (arg_idx > max_args) {
+		max_args = arg_idx;
+	}
+
+	arg_idx = 0;
+	fp_idx = 0;
+	pushed_int = 0;
+	res_idx = 0;
+}
+
+define_insn(return_int, return_Rxx) {
+	debug_name(("return_int:\n"));
+
+	forceRegister(seq_dst(s), REG_i2, Rint);
+}
+
+define_insn(return_long, returnl_Rxx) {
+	debug_name(("return_long:\n"));
+
+	forceRegister(seq_dst(s), REG_i2, Rint);
+	forceRegister(seq_dst(s)+1, REG_i3, Rint);
+}
+
+define_insn(return_float, freturn_Rxx) {
+	debug_name(("return_float:\n"));
+
+	forceRegister(seq_dst(s), REG_f0, Rfloat);
+}
+
+define_insn(return_double, freturnl_Rxx) {
+	debug_name(("return_double:\n"));
+
+	forceRegister(seq_dst(s), REG_f0, Rdouble);
+}
+
+define_insn(returnarg_int, returnarg_xxR)
+{
+	int r = rreg_int(2);
+	debug_name(("returnarg_int:\n"));
+
+	insn_RRR(_ADDU, REG_i2, r, REG_i0);
+	debug(("	mov	%s,%s\n", regname(REG_i2), regname(r)));
+}
+
+define_insn(returnarg_long, returnargl_xxR)
+{
+	int r1;
+	int r2;
+	REGSLOT* r;
+
+	debug_name(("returnarg_long:\n"));
+
+	r = seq_slot(s, 2);
+	r1 = _slowSlotRegister(r, Rint, rread);
+	r2 = _slowSlotRegister(r+1, Rint, rread);
+
+	if (REG_i2 != r2) {
+		insn_RRR(_ADDU, REG_i2, r1, REG_i0);
+		insn_RRR(_ADDU, REG_i3, r2, REG_i0);
+	}
+	else if (REG_i3 != r1) {
+		insn_RRR(_ADDU, REG_i2, r1, REG_i0);
+		insn_RRR(_ADDU, REG_i3, r2, REG_i0);
+	}
+	else {
+		/* gotta implement a swap */
+		abort();
+	}
+	debug(("	mov	%s,%s\n", regname(REG_i2), regname(r1)));
+	debug(("	mov	%s,%s\n", regname(REG_i3), regname(r2)));
+}
+
+define_insn(returnarg_float, freturnarg_xxR)
+{
+	int r = rreg_float(2);
+
+	debug_name(("returnarg_float:\n"));
+
+	finsn_RRR(_FMOV, SINGLE_FORMAT, 0 /* $f0 */, r, 0, COP1);
+	debug(("	mov.s	%s,%s\n", fregname(0), fregname(r)));
+}
+
+define_insn(returnarg_double, freturnargl_xxR)
+{
+	int r = rreg_double(2);
+
+	debug_name(("returnarg_double:\n"));
+
+	finsn_RRR(_FMOV, DOUBLE_FORMAT, 0 /* $f0 */, r, 0, COP1);
+	debug(("	mov.d	%s,%s\n", fregname(0), fregname(r)));
+}
+
+define_insn(get_arg_ptr, get_arg_ptr_R)
+{
+        int w;
+
+	/* Force arguments into registers */
+	clobberRegister(REG_i4); 
+	clobberRegister(REG_i5); 
+	clobberRegister(REG_i6); 
+	clobberRegister(REG_i7); 
+
+	w = wreg_int(0);
+        insn_RRR(_ADDU, w, REG_fp, REG_i0);
+
+        debug(("	mov	%s,fp\n", regname(w)));
+}
+
+define_insn(fake_call, fakecall_xCC)
+{
+        label* tol = const_label(2);
+        label* froml = const_label(1);
+
+        froml->type |= Lfuncrelative|Llong16;
+        froml->at = CODEPC;
+        ldst_RRC(_LW, REG_ra, REG_gp, 0);
+        debug(("	lw ra,?(gp)\n"));
+
+        tol->type |= Lfuncrelative|Llong16;
+        tol->at = CODEPC;
+        ldst_RRC(_LW, REG_i25, REG_gp, 0);
+        debug(("	lw t9,?(gp)\n"));
+
+	insn_RRR(_JALR, REG_i0, REG_i25, REG_i0);
+        debug(("	jr t9\n"));
+
+	NOP();
+}

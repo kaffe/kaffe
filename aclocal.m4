@@ -442,12 +442,14 @@ AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE", [Name of package])
 AC_DEFINE_UNQUOTED(VERSION, "$VERSION", [Version number of package]))
 AC_REQUIRE([AM_SANITY_CHECK])
 AC_REQUIRE([AC_ARG_PROGRAM])
-AM_MISSING_PROG(ACLOCAL, aclocal)
-AM_MISSING_PROG(AUTOCONF, autoconf)
-AM_MISSING_PROG(AUTOMAKE, automake)
-AM_MISSING_PROG(AUTOHEADER, autoheader)
-AM_MISSING_PROG(MAKEINFO, makeinfo)
-AM_MISSING_PROG(AMTAR, tar)
+dnl FIXME This is truly gross.
+missing_dir=`cd $ac_aux_dir && pwd`
+AM_MISSING_PROG(ACLOCAL, aclocal, $missing_dir)
+AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
+AM_MISSING_PROG(AUTOMAKE, automake, $missing_dir)
+AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
+AM_MISSING_PROG(MAKEINFO, makeinfo, $missing_dir)
+AM_MISSING_PROG(AMTAR, tar, $missing_dir)
 AC_REQUIRE([AC_PROG_MAKE_SET])
 AC_REQUIRE([AM_DEP_TRACK])
 AC_REQUIRE([AM_SET_DEPDIR])
@@ -500,26 +502,9 @@ fi
 rm -f conftest*
 AC_MSG_RESULT(yes)])
 
-dnl AM_MISSING_PROG(NAME, PROGRAM)
-AC_DEFUN(AM_MISSING_PROG, [
-AC_REQUIRE([AM_MISSING_HAS_RUN])
-$1=${$1-"${am_missing_run}$2"}
+dnl AM_MISSING_PROG(NAME, PROGRAM, DIRECTORY)
+AC_DEFUN(AM_MISSING_PROG, [$1=${$1-"$3/missing --run $2"}
 AC_SUBST($1)])
-
-dnl AM_MISSING_HAS_RUN.
-dnl Define MISSING if not defined so far and test if it supports --run.
-dnl If it does, set am_missing_run to use it, otherwise, to nothing.
-AC_DEFUN([AM_MISSING_HAS_RUN], [
-test x"${MISSING+set}" = xset || \
-  MISSING="\${SHELL} $ac_aux_dir/missing"
-dnl Use eval to expand $SHELL
-if eval "$MISSING --run :"; then
-  am_missing_run="$MISSING --run "
-else
-  am_missing_run=
-  AC_MSG_WARN([\`missing' script is too old or missing])
-fi
-])
 
 dnl See how the compiler implements dependency checking.
 dnl Usage:
@@ -611,14 +596,6 @@ else
   fi
 fi
 AC_SUBST(AMDEP)
-if test -z "$AMDEP"; then
-  AMDEPBACKSLASH='\'
-else
-  AMDEPBACKSLASH=
-fi
-pushdef([subst], defn([AC_SUBST]))
-subst(AMDEPBACKSLASH)
-popdef([subst])
 ])
 
 dnl Generate code to set up dependency tracking.
@@ -632,7 +609,6 @@ dnl is enabled.  FIXME.  This creates each `.P' file that we will
 dnl need in order to bootstrap the dependency handling code.
 AC_DEFUN(AM_OUTPUT_DEPENDENCY_COMMANDS,[
 AC_OUTPUT_COMMANDS([
-test x"$AMDEP" != x"" ||
 for mf in $CONFIG_FILES; do
   case "$mf" in
   Makefile) dirpart=.;;
@@ -666,7 +642,7 @@ for mf in $CONFIG_FILES; do
     echo '# dummy' > "$dirpart/$file"
   done
 done
-], [AMDEP="$AMDEP"])])
+])])
 
 # Add --enable-maintainer-mode option to configure.
 # From Jim Meyering
