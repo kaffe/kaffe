@@ -420,13 +420,14 @@ interrupt(int sig)
 		 * returns.
 		 */
 		/*
-		 * may get here more than once
-	         * but it's enough if we write just a byte
-		 * Do not reset wouldlosewakeup here
-        	 */  
-		if (wouldlosewakeup) {
+		 * Write a byte in the pipe if we get a signal if 
+		 * wouldlosewakeup is set.  
+		 * Do not write more than one byte, however.
+		 */
+		if (wouldlosewakeup == 1) {
 			write(sigPipe[1], &c, 1);
 			bytesInPipe++;
+			wouldlosewakeup++;
 		}
 
 #if KAFFE_SIGNAL_ONE_SHOT
