@@ -1,3 +1,9 @@
+Thu Jan 28 17:19:22 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* /kaffe/kaffevm/systems/unix-jthreads/jthread.[ch],
+	kaffe/kaffevm/lock.c: added and used jmutex_blocked and
+	jcondvar_waiting.
+
 Thu Jan 28 14:56:24 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/zip/GZIPInputStream.java:
