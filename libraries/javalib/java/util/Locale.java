@@ -214,17 +214,50 @@ public final class Locale implements Serializable, Cloneable
     getLocale(SystemProperties.getProperty("user.language", "en"),
               SystemProperties.getProperty("user.region", ""),
               SystemProperties.getProperty("user.variant", ""));
- 
+
+  /**
+   * Array storing all the available two-letter ISO639 languages.
+   */
+  private static transient String[] languageCache;
+
+  /**
+   * Array storing all the available two-letter ISO3166 country codes.
+   */
+  private static transient String[] countryCache;
+
+  /**
+   * Retrieves the locale with the specified language from the cache.
+   *
+   * @param language the language of the locale to retrieve.
+   * @return the locale.
+   */ 
   private static Locale getLocale(String language)
   {
     return getLocale(language, "", "");
   }
   
+  /**
+   * Retrieves the locale with the specified language and region
+   * from the cache.
+   *
+   * @param language the language of the locale to retrieve.
+   * @param region the region of the locale to retrieve.
+   * @return the locale.
+   */ 
   private static Locale getLocale(String language, String region)
   {
     return getLocale(language, region, "");
   }
   
+  /**
+   * Retrieves the locale with the specified language, region
+   * and variant from the cache.
+   *
+   * @param language the language of the locale to retrieve.
+   * @param region the region of the locale to retrieve.
+   * @param variant the variant of the locale to retrieve.
+   * @return the locale.
+   */ 
   private static Locale getLocale(String language, String region, String variant)
   {
     if (localeMap == null)
@@ -389,29 +422,12 @@ public final class Locale implements Serializable, Cloneable
    */
   public static String[] getISOCountries()
   {
-    return new String[]
-    {
-      "AD", "AE", "AF", "AG", "AI", "AL", "AM", "AN", "AO", "AQ", "AR", "AS",
-      "AT", "AU", "AW", "AZ", "BA", "BB", "BD", "BE", "BF", "BG", "BH", "BI",
-      "BJ", "BM", "BN", "BO", "BR", "BS", "BT", "BV", "BW", "BY", "BZ", "CA",
-      "CC", "CF", "CG", "CH", "CI", "CK", "CL", "CM", "CN", "CO", "CR", "CU",
-      "CV", "CX", "CY", "CZ", "DE", "DJ", "DK", "DM", "DO", "DZ", "EC", "EE",
-      "EG", "EH", "ER", "ES", "ET", "FI", "FJ", "FK", "FM", "FO", "FR", "FX",
-      "GA", "GB", "GD", "GE", "GF", "GH", "GI", "GL", "GM", "GN", "GP", "GQ",
-      "GR", "GS", "GT", "GU", "GW", "GY", "HK", "HM", "HN", "HR", "HT", "HU",
-      "ID", "IE", "IL", "IN", "IO", "IQ", "IR", "IS", "IT", "JM", "JO", "JP",
-      "KE", "KG", "KH", "KI", "KM", "KN", "KP", "KR", "KW", "KY", "KZ", "LA",
-      "LB", "LC", "LI", "LK", "LR", "LS", "LT", "LU", "LV", "LY", "MA", "MC",
-      "MD", "MG", "MH", "MK", "ML", "MM", "MN", "MO", "MP", "MQ", "MR", "MS",
-      "MT", "MU", "MV", "MW", "MX", "MY", "MZ", "NA", "NC", "NE", "NF", "NG",
-      "NI", "NL", "NO", "NP", "NR", "NU", "NZ", "OM", "PA", "PE", "PF", "PG",
-      "PH", "PK", "PL", "PM", "PN", "PR", "PT", "PW", "PY", "QA", "RE", "RO",
-      "RU", "RW", "SA", "SB", "SC", "SD", "SE", "SG", "SH", "SI", "SJ", "SK",
-      "SL", "SM", "SN", "SO", "SR", "ST", "SV", "SY", "SZ", "TC", "TD", "TF",
-      "TG", "TH", "TJ", "TK", "TM", "TN", "TO", "TP", "TR", "TT", "TV", "TW",
-      "TZ", "UA", "UG", "UM", "US", "UY", "UZ", "VA", "VC", "VE", "VG", "VI",
-      "VN", "VU", "WF", "WS", "YE", "YT", "YU", "ZA", "ZM", "ZR", "ZW"
-    };
+    if (countryCache == null)
+      {
+	countryCache = getISOStrings("territories");
+      }
+
+    return countryCache;
   }
 
   /**
@@ -422,21 +438,50 @@ public final class Locale implements Serializable, Cloneable
    */
   public static String[] getISOLanguages()
   {
-    return new String[]
-    {
-      "aa", "ab", "af", "am", "ar", "as", "ay", "az", "ba", "be", "bg", "bh",
-      "bi", "bn", "bo", "br", "ca", "co", "cs", "cy", "da", "de", "dz", "el",
-      "en", "eo", "es", "et", "eu", "fa", "fi", "fj", "fo", "fr", "fy", "ga",
-      "gd", "gl", "gn", "gu", "ha", "he", "hi", "hr", "hu", "hy", "ia", "id",
-      "ie", "ik", "in", "is", "it", "iu", "iw", "ja", "ji", "jw", "ka", "kk",
-      "kl", "km", "kn", "ko", "ks", "ku", "ky", "la", "ln", "lo", "lt", "lv",
-      "mg", "mi", "mk", "ml", "mn", "mo", "mr", "ms", "mt", "my", "na", "ne",
-      "nl", "no", "oc", "om", "or", "pa", "pl", "ps", "pt", "qu", "rm", "rn",
-      "ro", "ru", "rw", "sa", "sd", "sg", "sh", "si", "sk", "sl", "sm", "sn",
-      "so", "sq", "sr", "ss", "st", "su", "sv", "sw", "ta", "te", "tg", "th",
-      "ti", "tk", "tl", "tn", "to", "tr", "ts", "tt", "tw", "ug", "uk", "ur",
-      "uz", "vi", "vo", "wo", "xh", "yi", "yo", "za", "zh", "zu"
-    };
+    if (languageCache == null)
+      {
+	languageCache = getISOStrings("languages");
+      }
+    return languageCache;
+  }
+
+  /**
+   * Returns the set of keys from the specified resource hashtable, filtered
+   * so that only two letter strings are returned.
+   *
+   * @param tableName the name of the table from which to retrieve the keys.
+   * @return an array of two-letter strings.
+   */
+  private static String[] getISOStrings(String tableName)
+  {
+    List tempList;
+    ResourceBundle bundle;
+    Enumeration keys;
+    int count = 0;
+    String[] strings;
+
+    tempList = new ArrayList();
+    bundle = ResourceBundle.getBundle("gnu.java.locale.LocaleInformation");
+    keys = ((Hashtable) bundle.getObject(tableName)).keys();
+    while (keys.hasMoreElements())
+      {
+	String nextString;
+
+	nextString = (String) keys.nextElement();
+	if (nextString.length() == 2 &&
+	    Character.isLetter(nextString.charAt(0)) &&
+	    Character.isLetter(nextString.charAt(1)))
+	  {
+	    tempList.add(nextString);
+	    ++count;
+	  }
+      }
+    strings = new String[count];
+    for (int a = 0; a < count; ++a)
+      {
+	strings[a] = (String) tempList.get(a);
+      }
+    return strings;
   }
 
   /**

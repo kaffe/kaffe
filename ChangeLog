@@ -2,6 +2,22 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-02-16  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/util/Locale.java
+	Added two new String[] arrays for caching.
+	(getLocale(String)): Documentation.
+	(getLocale(String, String)): Documentation.
+	(getLocale(String, String, String)): Documentation.
+	(getISOCountries()): Now calls getISOStrings() and caches result.
+	(getISOLanguages()): Now calls getISOStrings() and caches result.
+	(getISOStrings(String)): Pulls all two-letter keys from the specified
+	hashtable in our locale information.
+	
+2005-02-19  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-02-16  Sven de Marothy  <sven@physto.se>
 
 	* java/util/logging/LogManager.java 
