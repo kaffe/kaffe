@@ -47,6 +47,7 @@ import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -128,6 +129,37 @@ public class SwingUtilities implements SwingConstants
     return calculateInsetArea(b, c.getInsets(), r);
   }
 
+  /**
+   * Returns the focus owner or <code>null</code> if <code>comp</code> is not
+   * the focus owner or a parent of it.
+   * 
+   * @param comp the focus owner or a parent of it
+   * 
+   * @return the focus owner, or <code>null</code>
+   * 
+   * @deprecated 1.4 Replaced by
+   * <code>KeyboardFocusManager.getFocusOwner()</code>.
+   */
+  public static Component findFocusOwner(Component comp)
+  {
+    // Get real focus owner.
+    Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager()
+					       .getFocusOwner();
+
+    // Check if comp is the focus owner or a parent of it.
+    Component tmp = focusOwner;
+    
+    while (tmp != null)
+      {
+	if (tmp == comp)
+	  return focusOwner;
+
+	tmp = tmp.getParent();
+      }
+    
+    return null;
+  }
+  
   /**
    * Calculates the bounds of a component in the component's own coordinate
    * space. The result has the same height and width as the component's
