@@ -28,13 +28,30 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/xprof \
 	-I$(top_builddir)/include
 
-kaffe_bin_SOURCES = main.c version.c version.h
+kaffe_bin_SOURCES = \
+	main.c \
+	version.c \
+	version.h
 
-LIBKAFFEVM = ../kaffevm/libkaffevm.la $(libjvmpi) $(libxprof)
+LIBKAFFEVM = \
+	../kaffevm/libkaffevm.la \
+	$(libjvmpi) \
+	$(libxprof)
 
-kaffe_bin_LDFLAGS = $(KVMBINFLAGS) -export-dynamic
-kaffe_bin_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS) @LIBLTDL@
-kaffe_bin_DEPENDENCIES = $(LIBKAFFEVM) $(JAVA_LIBS)
+kaffe_bin_LDFLAGS = \
+	$(KVMBINFLAGS) \
+	-export-dynamic
+
+kaffe_bin_LDADD = \
+	$(DLOPEN_JAVA_LIBS) \
+	$(LIBKAFFEVM) \
+	$(KAFFE_LIBS) \
+	$(top_builddir)/replace/libreplace.la \
+	@LIBLTDL@
+
+kaffe_bin_DEPENDENCIES = \
+	$(LIBKAFFEVM) \
+	$(JAVA_LIBS)
 
 ### Rules to generate the version-info header file
 version.o: version-info.h
