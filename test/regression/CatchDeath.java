@@ -27,6 +27,7 @@ public class CatchDeath implements Runnable
 	    }
 	    Thread.sleep(500);
 	}
+	System.out.flush();
     }
 }
 
