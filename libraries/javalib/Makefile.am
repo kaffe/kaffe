@@ -3602,6 +3602,7 @@ javax_swing_SRCS = \
 	javax/swing/SizeRequirements.java \
 	javax/swing/SizeSequence.java \
 	javax/swing/SortingFocusTraversalPolicy.java \
+	javax/swing/SpinnerDateModel.java \
 	javax/swing/SpinnerListModel.java \
 	javax/swing/SpinnerModel.java \
 	javax/swing/SpinnerNumberModel.java \

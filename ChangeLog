@@ -1,6 +1,14 @@
 2005-02-14  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+
+	2005-02-14  Sven de Marothy  <sven@physto.se>
+
+        * javax/swing/SpinnerDateModel.java: Implemented.
+
+2005-02-14  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 	
 	2005-02-14  Sven de Marothy  <sven@physto.se>
 
