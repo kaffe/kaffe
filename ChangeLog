@@ -1,5 +1,14 @@
 2003-03-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Check for -mregnames. It lets us use common register 
+	names on powerpc, and will hopefully make it simple to have a single 
+	assembler trampoline fiole for both darwin and linux.
+
+	* config/powerpc/trampolines.S: Changed powerpc floating point 
+	registers names from 'frX' to 'fX' and built fine on ppc-linux.
+
+2003-03-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Don't check for no-cpp-precomp. It confuses
 	libtool on 64 bit platforms to think that -fPIC is not supported, 
 	leading to fascinating relinking errors. A better way for older

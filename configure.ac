@@ -182,6 +182,8 @@ AX_CFLAGS_GCC_OPTION([-Wdisabled-optimization])
 ## and produces a ton of false warnings otherwise.
 ## AX_CFLAGS_GCC_OPTION([-no-cpp-precomp])
 
+AX_CFLAGS_GCC_OPTION([-mregnames])
+
 GCC_ATTRIBUTE_ALWAYS_INLINE
 GCC_ATTRIBUTE_CONST
 GCC_ATTRIBUTE_FORMAT
