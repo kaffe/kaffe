@@ -511,10 +511,9 @@ DBG(STATICINIT,
 #if defined(TRANSLATOR) && (defined (MD_UNREGISTER_JIT_EXCEPTION_INFO) || defined (JIT3))
 #if defined(MD_UNREGISTER_JIT_EXCEPTION_INFO)
 		if (exc == 0) {
-			MD_UNREGISTER_JIT_EXCEPTION_INFO(
-			    meth->c.ncode.ncode_start,
-			    METHOD_NATIVECODE(meth),
-			    meth->c.ncode.ncode_end - METHOD_NATIVECODE(meth));
+			MD_UNREGISTER_JIT_EXCEPTION_INFO (meth->c.ncode.ncode_start,
+							  METHOD_NATIVECODE(meth),
+							  meth->c.ncode.ncode_end);
 		}
 #endif
 #if defined(JIT3)
@@ -1798,8 +1797,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 			 * method with a static method or constructor.
 			 */
 			if (cmeth == 0) {
-				/* 64bit? */
-				class->itable2dtable[j] = (void*)0xffffffff;
+				class->itable2dtable[j] = (void *)-1;
 			} else {
 				if (buildTrampoline(cmeth, 
 					    class->itable2dtable + j, 
