@@ -50,9 +50,6 @@ Treat it as an TODO list.
   it's called.  This seems like a very obscure problem.  It should be fixed
   once 1.2 references are implemented.
 
-* If an exception, such as NoSuchField or NoSuchMethod is thrown in the 
-  verifier, the system bails.
-
 * Class.getFields() returns Fields in reverse order compared to Sun's jdk.
   Apparently, this causes some software such Cygnus's kawa to fail in 
   certain circumstances.  It seems like they should fix that.
@@ -63,4 +60,19 @@ Treat it as an TODO list.
   reports that FIELD_OFFSET in classMethod.h conflicts with winnt.h.
 
 * kaffe.util.Timer has several problems.  Peter has a fix in the pipeline.
+
+* JNI incompatibilities pointed out by Johannes Deisenhofer 
+  <joe@dillingen.baynet.de>:
+
+ - NewXXXArray() should return jXXXArray instead of jarray
+   This is a problem in C++, since these types are not simply casted to jref
+
+* If a thread stops in a static initializer, then this will cause problems.
+
+* The -mx and other options that take a numeric argument behave different
+  than Sun's.  Kaffe wants a space, Sun doesn't.
+  Example:	Kaffe:	-mx 32m  Sun:  -mx32m
+  Pointed out by David Tucker <dbtucker@acm.jhu.edu> on Sat, 21 Nov 1998
+
+* There is a problem with long remainders under FreeBSD.
 
