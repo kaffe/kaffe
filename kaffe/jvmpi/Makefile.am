@@ -5,7 +5,7 @@ lib_LTLIBRARIES = libkaffejvmpi.la
 
 libkaffejvmpi_la_LDFLAGS = \
 	-export-dynamic \
-	-release $(PACKAGE_PERSION)
+	-release $(PACKAGE_VERSION)
 
 libkaffejvmpi_la_DEPENDENCIES = \
 	$(LIBLTDL) \

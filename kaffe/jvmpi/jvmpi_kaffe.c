@@ -182,8 +182,8 @@ void jvmpiFillThreadStart(JVMPI_Event *ev, struct Hjava_lang_Thread *tid)
 	assert(tid != NULL);
 	
 	ev->event_type = JVMPI_EVENT_THREAD_START;
-	if( (name = stringCharArray2Java(unhand_char_array(tid->name),
-					 obj_length(tid->name))) != NULL )
+	if( (name = stringCharArray2Java(unhand_char_array(tid->name->value),
+					 tid->name->count)) != NULL )
 	{
 		ev->u.thread_start.thread_name = stringJava2C(name);
 	}
@@ -571,14 +571,14 @@ static jint jvmpiRequestEvent(jint event_type, void *arg)
 
 			cl = (struct Hjava_lang_Class *)arg;
 			jvmpi_methods = alloca(sizeof(JVMPI_Method) *
-					       cl->nmethods);
+					       CLASS_NMETHODS(cl));
 			jvmpi_fields = alloca(sizeof(JVMPI_Field) *
-					      (cl->nsfields +
-					       cl->nfields));
+					      (CLASS_NSFIELDS(cl) +
+					       CLASS_NFIELDS(cl)));
 			ev.u.class_load.methods = jvmpi_methods;
 			ev.u.class_load.statics = &jvmpi_fields[0];
 			ev.u.class_load.instances =
-				&jvmpi_fields[cl->nsfields];
+				&jvmpi_fields[CLASS_NSFIELDS(cl)];
 			jvmpiFillClassLoad(&ev, cl);
 			ev.event_type |= JVMPI_REQUESTED_EVENT;
 			jvmpiPostEvent(&ev);

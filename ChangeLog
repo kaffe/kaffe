@@ -1,4 +1,18 @@
-2004-03-08  Dalibor Topic <robilad@kaffe.org>
+2004-03-11  Jon Nall <nall@themountaingoats.net>
+
+	* kaffe/jvmpi/Makefile.am:
+	Fixed typo.
+
+	* kaffe/jvmpi/Makefile.in:
+	Regenerated.
+
+	* kaffe/jvmpi/jvmpi_kaffe.c:
+	Updated to new interfaces.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	Fixed typo.
+
+2004-03-11  Dalibor Topic <robilad@kaffe.org>
 
         Resynced with GNU Classpath
 

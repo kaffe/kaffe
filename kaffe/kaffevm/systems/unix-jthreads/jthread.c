@@ -2602,7 +2602,7 @@ int jthread_get_status(jthread_t jt)
 /*
  * Check if thread is interrupted.
  */
-int jthread_is_intrerrupted(jthread_t jt)
+int jthread_is_interrupted(jthread_t jt)
 {
 	return (jt->flags & THREAD_FLAGS_INTERRUPTED);
 }
