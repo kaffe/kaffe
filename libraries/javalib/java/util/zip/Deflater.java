@@ -85,7 +85,7 @@ public class Deflater {
 
   public synchronized void setLevel(int lvl)
   {
-    if (lvl < 0 || lvl > 9) {
+    if ((level != DEFAULT_COMPRESSION) && (lvl < 0 || lvl > 9)) {
       throw new IllegalArgumentException("levels 0-9 supported");
     }
     level = lvl;
