@@ -1,3 +1,9 @@
+Mon Jan 24 17:02:47 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/classPool(statClass): be careful of primitive
+	types, since their dtable is an invalid pointer.
+
+
 Sun Jan 23 18:46:20 PST 2000  Tatu Saloranta <tatu@hypermall.net>
 
 	* libraries/javalib/java/awt/widgets/Choice.java: fix bug
