@@ -120,7 +120,7 @@ public class BasicViewportUI extends ViewportUI
   }
 
   public void paint(Graphics g, JComponent c)
-  {      
+  {
     JViewport port = (JViewport)c;
     Component view = port.getView();
 

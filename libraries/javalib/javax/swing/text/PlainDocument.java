@@ -85,9 +85,9 @@ public class PlainDocument extends AbstractDocument
 
       }
     catch (BadLocationException e)
-  {
+      {
         lines = new Element[1];
-    lines[0] = createLeafElement(rootElement, null, 0, 1);
+        lines[0] = createLeafElement(rootElement, null, 0, 1);
       }
 
     ((BranchElement) rootElement).replace(0, rootElement.getElementCount(), lines);

@@ -58,7 +58,7 @@ public class SimpleAttributeSet
   {
     tab = new Hashtable();
     if (a != null)
-    addAttributes(a);
+      addAttributes(a);
   }
 
   public void addAttribute(Object name, Object value)
