@@ -180,14 +180,35 @@ public int hashCode() {
 /**
  * @deprecated
  */
-public static long parse(String s) {
-	DateFormat form = DateFormat.getDateTimeInstance();
-	try {
-		return (form.parse(s).time);
+public static long parse(String str) {
+	DateFormat form;
+	for (int ds = DateFormat.FULL; ds <= DateFormat.SHORT; ds++) {
+		for (int ts = DateFormat.FULL; ts <= DateFormat.SHORT; ts++) {
+			try {
+				form = DateFormat.getDateTimeInstance(ds, ts);
+				return (form.parse(str).time);
+			}
+			catch (ParseException _) {
+			}
+		}
 	}
-	catch (ParseException _) {
-		return (0);
+	for (int s = DateFormat.FULL; s <= DateFormat.SHORT; s++) {
+		try {
+			form = DateFormat.getDateInstance(s);
+			return (form.parse(str).time);
+		}
+		catch (ParseException _) {
+		}
 	}
+	for (int s = DateFormat.FULL; s <= DateFormat.SHORT; s++) {
+		try {
+			form = DateFormat.getTimeInstance(s);
+			return (form.parse(str).time);
+		}
+		catch (ParseException _) {
+		}
+	}
+	return (0);
 }
 
 /**
