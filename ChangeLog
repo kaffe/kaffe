@@ -1,5 +1,12 @@
 2004-07-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/alpha/jit-alpha.def:
+	Fix 'use of compound as lvalue is deprecated' warnings for jit.
+	Fixed op_* macros to use ';' after debug statements.
+	Fixed compilation problems resulting from that. Macros are no fun.
+
+2004-07-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/sparc/jit-sparc.def:
 	Fix 'use of compound as lvalue is deprecated' warnings for jit.
  

@@ -90,36 +90,36 @@ alpha_jit_info_t alpha_jit_info;
 /* Instruction formats							 */
 
 #define insn_bra(op, ra, disp)						\
-	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
-		| ((((disp) + 4) / 4) & 0x1FFFFF))
+	LOUT((((op) << 26) | (((ra) & 0x1F) << 21)			\
+		| ((((disp) + 4) / 4) & 0x1FFFFF)))
 
 #define insn_mem(op, ra, rb, off)					\
-	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
-		| (((rb) & 0x1F) << 16) | ((off) & 0xFFFF))
+	LOUT((((op) << 26) | (((ra) & 0x1F) << 21)			\
+		| (((rb) & 0x1F) << 16) | ((off) & 0xFFFF)))
 
 #define insn_mfc(op, fn, ra, rb)					\
-	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
-		| (((rb) & 0x1F) << 16) | ((fn) & 0xFFFF))
+	LOUT((((op) << 26) | (((ra) & 0x1F) << 21)			\
+		| (((rb) & 0x1F) << 16) | ((fn) & 0xFFFF)))
 
 #define insn_fp(op, fn, ra, rb, rc)					\
-	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
+	LOUT((((op) << 26) | (((ra) & 0x1F) << 21)			\
 		| (((rb) & 0x1F) << 16) | (((fn) & 0x7FF) << 5)		\
-		| ((rc) & 0x1F))
+		| ((rc) & 0x1F)))
 
 #define insn_opr(op, fn, ra, rb, rc)					\
-	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
+	LOUT((((op) << 26) | (((ra) & 0x1F) << 21)			\
 		| (((rb) & 0x1F) << 16) | (((fn) & 0x7F) << 5)		\
-		| ((rc) & 0x1F))
+		| ((rc) & 0x1F)))
 
 #define insn_oprl(op, fn, ra, lit, rc)					\
-	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
+	LOUT((((op) << 26) | (((ra) & 0x1F) << 21)			\
 		| (((lit) & 0xFF) << 13) | 0x1000 | (((fn) & 0x7F) << 5)\
-		| ((rc) & 0x1F))
+		| ((rc) & 0x1F)))
 
 #define insn_mbr(op, fn, ra, rb, extra)					\
-	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
+	LOUT((((op) << 26) | (((ra) & 0x1F) << 21)			\
 		| (((rb) & 0x1F) << 16) | (((fn) & 3) << 14)		\
-		| ((extra) & 0x3FFF))
+		| ((extra) & 0x3FFF)))
 
 
 /* --------------------------------------------------------------------- */
@@ -129,438 +129,438 @@ alpha_jit_info_t alpha_jit_info;
 int jit_debug;
 #define debug(x)	(jit_debug ? dprintf("%x:\t", CODEPC), dprintf x : 0)
 #else
-#define debug(x)	((void)0)
+#define debug(x)
 #endif
 
 #define op_addl(ra, rb, rc)						\
-	debug(("addl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("addl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x00, (ra), (rb), (rc))
 
 #define op_addl_i(ra, ib, rc)						\
-	debug(("addl\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	debug(("addl\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))); \
 	insn_oprl(0x10, 0x00, (ra), (ib), (rc))
 
 #define op_addq(ra, rb, rc)						\
-	debug(("addq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("addq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x20, (ra), (rb), (rc))
 
 #define op_addq_i(ra, ib, rc)						\
-	debug(("addq\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	debug(("addq\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))); \
 	insn_oprl(0x10, 0x20, (ra), (ib), (rc))
 
 #define op_adds(ra, rb, rc)						\
-	debug(("adds\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	debug(("adds\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))); \
 	insn_fp(0x16, 0x080, (ra), (rb), (rc))
 
 #define op_adds_su(ra, rb, rc)						\
-	debug(("adds/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	debug(("adds/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc)));\
 	insn_fp(0x16, 0x580, (ra), (rb), (rc))
 
 #define op_addt(ra, rb, rc)						\
-	debug(("addt\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	debug(("addt\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))); \
 	insn_fp(0x16, 0x0A0, (ra), (rb), (rc))
 
 #define op_addt_su(ra, rb, rc)						\
-	debug(("addt/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	debug(("addt/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc)));\
 	insn_fp(0x16, 0x5A0, (ra), (rb), (rc))
 
 #define op_and(ra, rb, rc)						\
-	debug(("and\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("and\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x11, 0x00, (ra), (rb), (rc))
 
 #define op_and_i(ra, ib, rc)						\
-	debug(("and\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	debug(("and\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))); \
 	insn_oprl(0x11, 0x00, (ra), (ib), (rc))
 
 #define op_andnot_i(ra, ib, rc)						\
-	debug(("andnot\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	debug(("andnot\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))); \
 	insn_oprl(0x11, 0x08, (ra), (ib), (rc))
 
 #define op_beq(ra, disp)						\
-	debug(("beq\t%s,%+d\n",regname(ra),(disp))),			\
+	debug(("beq\t%s,%+d\n",regname(ra),(disp)));			\
 	insn_bra(0x39, (ra), (disp))
 
 #define op_bge(ra, disp)						\
-	debug(("bge\t%s,%+d\n",regname(ra),(disp))),			\
+	debug(("bge\t%s,%+d\n",regname(ra),(disp)));			\
 	insn_bra(0x3E, (ra), (disp))
 
 #define op_bgt(ra, disp)						\
-	debug(("bgt\t%s,%+d\n",regname(ra),(disp))),			\
+	debug(("bgt\t%s,%+d\n",regname(ra),(disp)));			\
 	insn_bra(0x3F, (ra), (disp))
 
 #define op_ble(ra, disp)						\
-	debug(("ble\t%s,%+d\n",regname(ra),(disp))),			\
+	debug(("ble\t%s,%+d\n",regname(ra),(disp)));			\
 	insn_bra(0x3B, (ra), (disp))
 
 #define op_blt(ra, disp)						\
-	debug(("blt\t%s,%+d\n",regname(ra),(disp))),			\
+	debug(("blt\t%s,%+d\n",regname(ra),(disp)));			\
 	insn_bra(0x3A, (ra), (disp))
 
 #define op_bne(ra, disp)						\
-	debug(("bne\t%s,%+d\n",regname(ra),(disp))),			\
+	debug(("bne\t%s,%+d\n",regname(ra),(disp)));			\
 	insn_bra(0x3D, (ra), (disp))
 
 #define op_br(ra, disp)							\
-	debug(("br\t%s,%+d\n",regname(ra),(disp))),			\
+	debug(("br\t%s,%+d\n",regname(ra),(disp)));			\
 	insn_bra(0x30, (ra), (disp))
 
 #define op_cmpeq(ra, rb, rc)						\
-	debug(("cmpeq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("cmpeq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x2D, (ra), (rb), (rc))
 
 #define op_cmpeq_i(ra, ib, rc)						\
-	debug(("cmpeq\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	debug(("cmpeq\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))); \
 	insn_oprl(0x10, 0x2D, (ra), (ib), (rc))
 
 #define op_cmple(ra, rb, rc)						\
-	debug(("cmple\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("cmple\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x6D, (ra), (rb), (rc))
 
 #define op_cmple_i(ra, ib, rc)						\
-	debug(("cmple\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	debug(("cmple\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))); \
 	insn_oprl(0x10, 0x6D, (ra), (ib), (rc))
 
 #define op_cmplt(ra, rb, rc)						\
-	debug(("cmplt\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("cmplt\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x4D, (ra), (rb), (rc))
 
 #define op_cmplt_i(ra, ib, rc)						\
-	debug(("cmplt\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	debug(("cmplt\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))); \
 	insn_oprl(0x10, 0x4D, (ra), (ib), (rc))
 
 #define op_cmpult(ra, rb, rc)						\
-	debug(("cmpult\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("cmpult\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x1D, (ra), (rb), (rc))
 
 #define op_cmpult_i(ra, ib, rc)						\
-	debug(("cmpult\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	debug(("cmpult\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))); \
 	insn_oprl(0x10, 0x1D, (ra), (ib), (rc))
 
 #define op_cpysn(ra, rb, rc)						\
-	debug(("cpysn\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	debug(("cpysn\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))); \
 	insn_fp(0x17, 0x021, (ra), (rb), (rc))
 
 #define op_cvtlq(rb, rc)						\
-	debug(("cvtlq\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	debug(("cvtlq\t%s,%s\n",fregname(rb),fregname(rc)));		\
 	insn_fp(0x17, 0x010, REG_zero, (rb), (rc))
 
 #define op_cvtql(rb, rc)						\
-	debug(("cvtql\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	debug(("cvtql\t%s,%s\n",fregname(rb),fregname(rc)));		\
 	insn_fp(0x17, 0x030, REG_zero, (rb), (rc))
 
 #define op_cvtql_sv(rb, rc)						\
-	debug(("cvtql/sv\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	debug(("cvtql/sv\t%s,%s\n",fregname(rb),fregname(rc)));		\
 	insn_fp(0x17, 0x530, REG_zero, (rb), (rc))
 
 #define op_cvtqs(rb, rc)						\
-	debug(("cvtqs\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	debug(("cvtqs\t%s,%s\n",fregname(rb),fregname(rc)));		\
 	insn_fp(0x16, 0x0BC, REG_zero, (rb), (rc))
 
 #define op_cvtqt(rb, rc)						\
-	debug(("cvtqt\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	debug(("cvtqt\t%s,%s\n",fregname(rb),fregname(rc)));		\
 	insn_fp(0x16, 0x0BE, REG_zero, (rb), (rc))
 
 #define op_cvtst(rb, rc)						\
-	debug(("cvtst\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	debug(("cvtst\t%s,%s\n",fregname(rb),fregname(rc)));		\
 	insn_fp(0x16, 0x2AC, REG_zero, (rb), (rc))
 
 #define op_cvtst_s(rb, rc)						\
-	debug(("cvtst/s\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	debug(("cvtst/s\t%s,%s\n",fregname(rb),fregname(rc)));		\
 	insn_fp(0x16, 0x6AC, REG_zero, (rb), (rc))
 
 #define op_cvttq_c(rb, rc)						\
-	debug(("cvttq/c\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	debug(("cvttq/c\t%s,%s\n",fregname(rb),fregname(rc)));		\
 	insn_fp(0x16, 0x02F, REG_zero, (rb), (rc))
 
 #define op_cvttq_svc(rb, rc)						\
-	debug(("cvttq/svc\t%s,%s\n",fregname(rb),fregname(rc))),	\
+	debug(("cvttq/svc\t%s,%s\n",fregname(rb),fregname(rc)));	\
 	insn_fp(0x16, 0x52F, REG_zero, (rb), (rc))
 
 #define op_cvtts(rb, rc)						\
-	debug(("cvtts\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	debug(("cvtts\t%s,%s\n",fregname(rb),fregname(rc)));		\
 	insn_fp(0x16, 0x0AC, REG_zero, (rb), (rc))
 
 #define op_cvtts_su(rb, rc)						\
-	debug(("cvtts/su\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	debug(("cvtts/su\t%s,%s\n",fregname(rb),fregname(rc)));		\
 	insn_fp(0x16, 0x5AC, REG_zero, (rb), (rc))
 
 #define op_divs(ra, rb, rc)						\
-	debug(("divs\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	debug(("divs\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))); \
 	insn_fp(0x16, 0x083, (ra), (rb), (rc))
 
 #define op_divs_su(ra, rb, rc)						\
-	debug(("divs/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	debug(("divs/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc)));\
 	insn_fp(0x16, 0x583, (ra), (rb), (rc))
 
 #define op_divt(ra, rb, rc)						\
-	debug(("divt\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	debug(("divt\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))); \
 	insn_fp(0x16, 0x0A3, (ra), (rb), (rc))
 
 #define op_divt_su(ra, rb, rc)						\
-	debug(("divt/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	debug(("divt/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc)));\
 	insn_fp(0x16, 0x5A3, (ra), (rb), (rc))
 
 #define op_extbl(ra, rb, rc)						\
-	debug(("extbl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("extbl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x12, 0x06, (ra), (rb), (rc))
 
 #define op_extwl(ra, rb, rc)						\
-	debug(("extwl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("extwl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x12, 0x16, (ra), (rb), (rc))
 
 #define op_extqh(ra, rb, rc)						\
-	debug(("extqh\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("extqh\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x12, 0x7A, (ra), (rb), (rc))
 
 #define op_fmov(ra, rb)							\
-	debug(("fmov\t%s,%s\n",fregname(ra),fregname(rb))),		\
+	debug(("fmov\t%s,%s\n",fregname(ra),fregname(rb)));		\
 	insn_fp(0x17, 0x020, (ra), (ra), (rb))
 
 #define op_insbl(ra, rb, rc)						\
-	debug(("insbl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("insbl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x12, 0x0B, (ra), (rb), (rc))
 
 #define op_inswl(ra, rb, rc)						\
-	debug(("inswl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("inswl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x12, 0x1B, (ra), (rb), (rc))
 
 #define op_jmp(ra, rb, hint)						\
-	debug(("jmp\t%s,(%s),%+d\n",regname(ra),regname(rb),(hint))),	\
+	debug(("jmp\t%s,(%s),%+d\n",regname(ra),regname(rb),(hint)));	\
 	insn_mbr(0x1A, 0, (ra), (rb), (hint))
 
 #define op_jsr(ra, rb, hint)						\
-	debug(("jsr\t%s,(%s),%+d\n",regname(ra),regname(rb),(hint))),	\
+	debug(("jsr\t%s,(%s),%+d\n",regname(ra),regname(rb),(hint)));	\
 	insn_mbr(0x1A, 1, (ra), (rb), (hint))
 
 #define op_lda(ra, rb, off)						\
-	debug(("lda\t%s,%hd(%s)\n",regname(ra),(short)(off),regname(rb))), \
+	debug(("lda\t%s,%hd(%s)\n",regname(ra),(short)(off),regname(rb))); \
 	insn_mem(0x08, (ra), (rb), (off))
 
 #define op_ldah(ra, rb, off)						\
-	debug(("ldah\t%s,%hd(%s)\n",regname(ra),(short)(off),regname(rb))), \
+	debug(("ldah\t%s,%hd(%s)\n",regname(ra),(short)(off),regname(rb))); \
 	insn_mem(0x09, (ra), (rb), (off))
 
 #define op_ldl(ra, rb, off)						\
-	debug(("ldl\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	debug(("ldl\t%s,%hd(%s)\n",regname(ra),(off),regname(rb)));	\
 	insn_mem(0x28, (ra), (rb), (off))
 
 #define op_ldq(ra, rb, off)						\
-	debug(("ldq\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	debug(("ldq\t%s,%hd(%s)\n",regname(ra),(off),regname(rb)));	\
 	insn_mem(0x29, (ra), (rb), (off))
 
 #define op_ldq_u(ra, rb, off)						\
-	debug(("ldq_u\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	debug(("ldq_u\t%s,%hd(%s)\n",regname(ra),(off),regname(rb)));	\
 	insn_mem(0x0B, (ra), (rb), (off))
 
 #define op_lds(ra, rb, off)						\
-	debug(("lds\t%s,%hd(%s)\n",fregname(ra),(off),regname(rb))),	\
+	debug(("lds\t%s,%hd(%s)\n",fregname(ra),(off),regname(rb)));	\
 	insn_mem(0x22, (ra), (rb), (off))
 
 #define op_ldt(ra, rb, off)						\
-	debug(("ldt\t%s,%hd(%s)\n",fregname(ra),(off),regname(rb))),	\
+	debug(("ldt\t%s,%hd(%s)\n",fregname(ra),(off),regname(rb)));	\
 	insn_mem(0x23, (ra), (rb), (off))
 
 #define op_mov(ra, rb)							\
-	debug(("mov\t%s,%s\n",regname(ra),regname(rb))),		\
+	debug(("mov\t%s,%s\n",regname(ra),regname(rb)));		\
 	insn_opr(0x11, 0x20, (ra), (ra), (rb))
 
 #define op_mskbl(ra, rb, rc)						\
-	debug(("mskbl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("mskbl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x12, 0x02, (ra), (rb), (rc))
 
 #define op_mskwl(ra, rb, rc)						\
-	debug(("mskwl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("mskwl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x12, 0x12, (ra), (rb), (rc))
 
 #define op_mull(ra, rb, rc)						\
-	debug(("mull\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("mull\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x13, 0x00, (ra), (rb), (rc))
 
 #define op_mull_i(ra, ib, rc)						\
-	debug(("mull\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	debug(("mull\t%s,%d,%s\n",regname(ra),(ib),regname(rc)));	\
 	insn_oprl(0x13, 0x00, (ra), (ib), (rc))
 
 #define op_mulq(ra, rb, rc)						\
-	debug(("mulq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("mulq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x13, 0x20, (ra), (rb), (rc))
 
 #define op_mulq_i(ra, ib, rc)						\
-	debug(("mulq\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	debug(("mulq\t%s,%d,%s\n",regname(ra),(ib),regname(rc)));	\
 	insn_opr(0x13, 0x20, (ra), (ib), (rc))
 
 #define op_muls(ra, rb, rc)						\
-	debug(("muls\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	debug(("muls\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))); \
 	insn_fp(0x16, 0x082, (ra), (rb), (rc))
 
 #define op_muls_su(ra, rb, rc)						\
-	debug(("muls/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	debug(("muls/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc)));\
 	insn_fp(0x16, 0x582, (ra), (rb), (rc))
 
 #define op_mult(ra, rb, rc)						\
-	debug(("mult\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	debug(("mult\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))); \
 	insn_fp(0x16, 0x0A2, (ra), (rb), (rc))
 
 #define op_mult_su(ra, rb, rc)						\
-	debug(("mult/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	debug(("mult/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc)));\
 	insn_fp(0x16, 0x5A2, (ra), (rb), (rc))
 
 #define op_or(ra, rb, rc)						\
-	debug(("or\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))),	\
+	debug(("or\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc)));	\
 	insn_opr(0x11, 0x20, (ra), (rb), (rc))
 
 #define op_ret(ra, rb, code)						\
-	debug(("ret\t%s,(%s),%d\n",regname(ra),regname(rb),(code))),	\
+	debug(("ret\t%s,(%s),%d\n",regname(ra),regname(rb),(code)));	\
 	insn_mbr(0x1A, 2, (ra), (rb), (code))
 
 #define op_s4addl(ra, rb, rc)						\
-	debug(("s4addl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("s4addl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x02, (ra), (rb), (rc))
 
 #define op_s4addq(ra, rb, rc)						\
-	debug(("s4addq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("s4addq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x22, (ra), (rb), (rc))
 
 #define op_s4subl(ra, rb, rc)						\
-	debug(("s4subl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("s4subl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x0B, (ra), (rb), (rc))
 
 #define op_s4subq(ra, rb, rc)						\
-	debug(("s4subq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("s4subq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x2B, (ra), (rb), (rc))
 
 #define op_s8addl(ra, rb, rc)						\
-	debug(("s8addl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("s8addl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x12, (ra), (rb), (rc))
 
 #define op_s8addq(ra, rb, rc)						\
-	debug(("s8addq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("s8addq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x32, (ra), (rb), (rc))
 
 #define op_s8subl(ra, rb, rc)						\
-	debug(("s8subl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("s8subl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x1B, (ra), (rb), (rc))
 
 #define op_s8subq(ra, rb, rc)						\
-	debug(("s8subq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("s8subq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x10, 0x3B, (ra), (rb), (rc))
 
 #define op_sll(ra, rb, rc)						\
-	debug(("sll\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("sll\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x12, 0x39, (ra), (rb), (rc))
 
 #define op_sll_i(ra, ib, rc)						\
-	debug(("sll\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	debug(("sll\t%s,%d,%s\n",regname(ra),(ib),regname(rc)));	\
 	insn_oprl(0x12, 0x39, (ra), (ib), (rc))
 
 #define op_sra(ra, rb, rc)						\
-	debug(("sra\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("sra\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x12, 0x3C, (ra), (rb), (rc))
 
 #define op_sra_i(ra, ib, rc)						\
-	debug(("sra\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	debug(("sra\t%s,%d,%s\n",regname(ra),(ib),regname(rc)));	\
 	insn_oprl(0x12, 0x3C, (ra), (ib), (rc))
 
 #define op_srl(ra, rb, rc)						\
-	debug(("srl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))),	\
+	debug(("srl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc)));	\
 	insn_opr(0x12, 0x34, (ra), (rb), (rc))
 
 #define op_srl_i(ra, ib, rc)						\
-	debug(("srl\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	debug(("srl\t%s,%d,%s\n",regname(ra),(ib),regname(rc)));	\
 	insn_oprl(0x12, 0x34, (ra), (ib), (rc))
 
 #define op_stl(ra, rb, off)						\
-	debug(("stl\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	debug(("stl\t%s,%hd(%s)\n",regname(ra),(off),regname(rb)));	\
 	insn_mem(0x2C, (ra), (rb), (off))
 
 #define op_stq(ra, rb, off)						\
-	debug(("stq\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	debug(("stq\t%s,%hd(%s)\n",regname(ra),(off),regname(rb)));	\
 	insn_mem(0x2D, (ra), (rb), (off))
 
 #define op_stq_u(ra, rb, off)						\
-	debug(("stq_u\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	debug(("stq_u\t%s,%hd(%s)\n",regname(ra),(off),regname(rb)));	\
 	insn_mem(0x0F, (ra), (rb), (off))
 
 #define op_sts(ra, rb, off)						\
-	debug(("sts\t%s,%hd(%s)\n",fregname(ra),(off),regname(rb))),	\
+	debug(("sts\t%s,%hd(%s)\n",fregname(ra),(off),regname(rb)));	\
 	insn_mem(0x26, (ra), (rb), (off))
 
 #define op_stt(ra, rb, off)						\
-	debug(("stt\t%s,%hd(%s)\n",fregname(ra),(off),regname(rb))),	\
+	debug(("stt\t%s,%hd(%s)\n",fregname(ra),(off),regname(rb)));	\
 	insn_mem(0x27, (ra), (rb), (off))
 
 #define op_subl(ra, rb, rc)						\
-	debug(("subl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))),\
+	debug(("subl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc)));\
 	insn_opr(0x10, 0x09, (ra), (rb), (rc))
 
 #define op_subl_i(ra, ib, rc)						\
-	debug(("subl\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	debug(("subl\t%s,%d,%s\n",regname(ra),(ib),regname(rc)));	\
 	insn_oprl(0x10, 0x09, (ra), (ib), (rc))
 
 #define op_subq(ra, rb, rc)						\
-	debug(("subq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))),\
+	debug(("subq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc)));\
 	insn_opr(0x10, 0x29, (ra), (rb), (rc))
 
 #define op_subq_i(ra, ib, rc)						\
-	debug(("subq\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	debug(("subq\t%s,%d,%s\n",regname(ra),(ib),regname(rc)));	\
 	insn_oprl(0x10, 0x29, (ra), (ib), (rc))
 
 #define op_subs(ra, rb, rc)						\
-	debug(("subs\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	debug(("subs\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))); \
 	insn_fp(0x16, 0x081, (ra), (rb), (rc))
 
 #define op_subs_su(ra, rb, rc)						\
-	debug(("subs/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	debug(("subs/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc)));\
 	insn_fp(0x16, 0x581, (ra), (rb), (rc))
 
 #define op_subt(ra, rb, rc)						\
-	debug(("subt\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	debug(("subt\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))); \
 	insn_fp(0x16, 0x0A1, (ra), (rb), (rc))
 
 #define op_subt_su(ra, rb, rc)						\
-	debug(("subt/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	debug(("subt/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc)));\
 	insn_fp(0x16, 0x5A1, (ra), (rb), (rc))
 
 #define op_trapb()							\
-	debug(("trapb\n")),						\
+	debug(("trapb\n"));						\
 	insn_mfc(0x18, 0x0000, 0, 0)
 
 #define op_unop()							\
-	debug(("unop\n")),						\
+	debug(("unop\n"));						\
 	insn_mem(0x0B, REG_zero, REG_zero, 0)
 
 #define op_xor(ra, rb, rc)						\
-	debug(("xor\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	debug(("xor\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))); \
 	insn_opr(0x11, 0x40, (ra), (rb), (rc))
 
 #define op_zapnot_i(ra, ib, rc)						\
-	debug(("zapnot\t%s,%#x,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	debug(("zapnot\t%s,%#x,%s\n",regname(ra),(unsigned char)(ib),regname(rc))); \
 	insn_oprl(0x12, 0x31, (ra), (ib), (rc))
 
 
 /* The Byte-Word instruction extension present as of the EV56.  */
 
 #define op_ldbu(ra, rb, off)						\
-	debug(("ldbu\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	debug(("ldbu\t%s,%hd(%s)\n",regname(ra),(off),regname(rb)));	\
 	insn_mem(0x0A, (ra), (rb), (off))
 
 #define op_ldwu(ra, rb, off)						\
-	debug(("ldwu\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	debug(("ldwu\t%s,%hd(%s)\n",regname(ra),(off),regname(rb)));	\
 	insn_mem(0x0C, (ra), (rb), (off))
 
 #define op_sextb(rb, rc)						\
-	debug(("sextb\t%s,%s\n",regname(rb),regname(rc))),		\
+	debug(("sextb\t%s,%s\n",regname(rb),regname(rc)));		\
 	insn_opr(0x1C, 0x00, REG_zero, (rb), (rc))
 
 #define op_sextw(rb, rc)						\
-	debug(("sextw\t%s,%s\n",regname(rb),regname(rc))),		\
+	debug(("sextw\t%s,%s\n",regname(rb),regname(rc)));		\
 	insn_opr(0x1C, 0x01, REG_zero, (rb), (rc))
 
 #define op_stb(ra, rb, off)						\
-	debug(("stb\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	debug(("stb\t%s,%hd(%s)\n",regname(ra),(off),regname(rb)));	\
 	insn_mem(0x0E, (ra), (rb), (off))
 
 #define op_stw(ra, rb, off)						\
-	debug(("stw\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	debug(("stw\t%s,%hd(%s)\n",regname(ra),(off),regname(rb)));	\
 	insn_mem(0x0D, (ra), (rb), (off))
 
 
@@ -1303,10 +1303,14 @@ alpha_move_const_32(int w, int val)
 		extra = 0;
 	}
 
-	if (extra)
-		op_ldah(w, b, extra), b = w;
-	if (hi)
-		op_ldah(w, b, hi), b = w;
+	if (extra) {
+		op_ldah(w, b, extra); 
+		b = w;
+	}
+	if (hi) {
+		op_ldah(w, b, hi); 
+		b = w;
+	}
 	op_lda(w, b, lo);
 }
 
@@ -1879,10 +1883,12 @@ alpha_division(sequence *s, int type, void *fn)
 			r1 = slowSlotOffset(seq_slot(s, 1), type, rread);
 			assert(r1 >= -0x8000 && r1 < 0x8000);
 			forceRegister(seq_slot(s, 1), REG_t10, type);
-			if (type == Rint)
+			if (type == Rint) {
 				op_ldl(REG_t10, REG_fp, r1);
-			else
+			}
+			else {
 				op_ldq(REG_t10, REG_fp, r1);
+			}
 		}
 		else if (r1 != REG_t10) {
 			forceRegister(seq_slot(s, 1), REG_t10, type);
@@ -1892,10 +1898,12 @@ alpha_division(sequence *s, int type, void *fn)
 			r2 = slowSlotOffset(seq_slot(s, 2), type, rread);
 			assert(r2 >= -0x8000 && r2 < 0x8000);
 			forceRegister(seq_slot(s, 2), REG_t11, type);
-			if (type == Rint)
+			if (type == Rint) {
 				op_ldl(REG_t11, REG_fp, r2);
-			else
+			}
+			else {
 				op_ldq(REG_t11, REG_fp, r2);
+			}
 		}
 		else if (r2 != REG_t10 && r2 != REG_t11) {
 			forceRegister(seq_slot(s, 2), REG_t11, type);
@@ -2143,8 +2151,9 @@ define_insn(lshl_int_const, lshli_RRC)
 	   better on the EV5, and (2) they have better latency on the EV4.  */
 	switch (o) {
 	case 0:
-		if (r != w)
+		if (r != w) {
 			op_mov(r, w);
+		}
 		break;
 	case 1:
 		op_addl(r, r, w);
@@ -2172,8 +2181,9 @@ define_insn(lshl_long_const, lshll_RRC)
 	   better on the EV5, and (2) they have better latency on the EV4.  */
 	switch (o) {
 	case 0:
-		if (r != w)
+		if (r != w) {
 			op_mov(r, w);
+		}
 		break;
 	case 1:
 		op_addq(r, r, w);
@@ -2667,7 +2677,7 @@ define_insn(build_key, set_word_xxC)
 	jint val = const_int(2);
 
 	debug((".long %08x\n", val));
-	LOUT = val;
+	LOUT(val);
 }
 
 define_insn(build_code_ref, set_wordpc_xxC)
@@ -2679,7 +2689,7 @@ define_insn(build_code_ref, set_wordpc_xxC)
 	l->from = 0;
 
 	debug((".gprel ?\n"));
-	LOUT = 0;
+	LOUT(0);
 }
 
 define_insn(load_code_ref, loadpc_RxR)
@@ -2763,10 +2773,12 @@ alpha_cbranch(int r1, int r2, label *l, int bt)
 	l->type |= Llong21 | Lrelative | Lrangecheck;
 	l->at = CODEPC;
 
-	if (ne)
+	if (ne) {
 		op_bne(REG_at, 0);
-	else
+	}
+	else {
 		op_beq(REG_at, 0);
+	}
 
 	l->from = CODEPC;
 }
@@ -2827,10 +2839,12 @@ alpha_cbranch_const(int r, long o, label *l, int bt, bool is_int)
 		t = REG_at;
 	}
 	else if (o < 0 && o >= -0xFF) {
-		if (is_int)
+		if (is_int) {
 			op_addl_i(r, -o, REG_at);
-		else
+		}
+		else {
 			op_addq_i(r, -o, REG_at);
+		}
 		t = REG_at;
 	}
 	else {
@@ -2963,10 +2977,12 @@ alpha_pusharg_integer(sequence *s, int type)
 			r = slowSlotOffset(seq_slot(s, 1), type, rread);
 			assert(r >= -0x8000 && r < 0x8000);
 			clobberRegister(w);
-			if (type == Rint)
+			if (type == Rint) {
 				op_ldl(w, REG_fp, r);
-			else
+			}
+			else {
 				op_ldq(w, REG_fp, r);
+			}
 		}
 	}
 	else {
@@ -2977,10 +2993,12 @@ alpha_pusharg_integer(sequence *s, int type)
 		else {
 			r = slowSlotOffset(seq_slot(s, 1), type, rread);
 			assert(r >= -0x8000 && r < 0x8000);
-			if (type == Rint)
+			if (type == Rint) {
 				op_ldl(REG_at, REG_fp, r);
-			else
+			}
+			else {
 				op_ldq(REG_at, REG_fp, r);
+			}
 			r = REG_at;
 		}
 		assert(w >= -0x8000 && w < 0x8000);
@@ -3141,8 +3159,9 @@ define_insn(returnarg_int, returnargi_xxR)
 
 	if (slotInRegister(2, Rint)) {
 		r = rreg_int(2);
-		if (r != REG_v0)
+		if (r != REG_v0) {
 			op_mov(r, REG_v0);
+		}
 	}
 	else {
 		r = rslot_int(2);
@@ -3157,8 +3176,9 @@ define_insn(returnarg_ref, returnargr_xxR)
 
 	if (slotInRegister(2, Rref)) {
 		r = rreg_ref(2);
-		if (r != REG_v0)
+		if (r != REG_v0) {
 			op_mov(r, REG_v0);
+		}
 	}
 	else {
 		r = rslot_ref(2);
@@ -3173,8 +3193,9 @@ define_insn(returnarg_long, returnargl_xxR)
 
 	if (slotInRegister(2, Rlong)) {
 		r = rreg_long(2);
-		if (r != REG_v0)
+		if (r != REG_v0) {
 			op_mov(r, REG_v0);
+		}
 	}
 	else {
 		r = rslot_long(2);
@@ -3189,8 +3210,9 @@ define_insn(returnarg_float, returnargf_xxR)
 
 	if (slotInRegister(2, Rfloat)) {
 		r = rreg_float(2);
-		if (r != REG_f0)
+		if (r != REG_f0) {
 			op_fmov(r, REG_f0);
+		}
 	}
 	else {
 		r = rslot_float(2);
@@ -3205,8 +3227,9 @@ define_insn(returnarg_double, returnargd_xxR)
 
 	if (slotInRegister(2, Rdouble)) {
 		r = rreg_double(2);
-		if (r != REG_f0)
+		if (r != REG_f0) {
 			op_fmov(r, REG_f0);
+		}
 	}
 	else {
 		r = rslot_double(2);
