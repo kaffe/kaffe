@@ -423,7 +423,7 @@ Field: public static java.io.PrintStream java.lang.System.out
 Field: public static java.io.InputStream java.lang.System.in"
 
 runtest Bean "BeanDescriptor:
-  Class: class Bean
+  Class: Bean
   Method: public static void Bean.main(java.lang.String[])
   Method: public java.lang.String[] Bean.getArray()
   Method: public final native void java.lang.Object.notify()
