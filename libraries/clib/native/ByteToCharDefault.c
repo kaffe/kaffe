@@ -35,7 +35,7 @@ Java_kaffe_io_ByteToCharDefault_convert( JNIEnv* env, jobject _this,
   if ( m > clen ) m = clen - toPos;
 
   for ( i=fromPos, j=toPos; (i<n) && (j<clen); i++, j++ )
-	jc[j] = jb[i];
+	jc[j] = jb[i] & 0xFF;
 
   /*
    * in case we have some bytes left we cannot convert (because of exhausted 'to' buffer
