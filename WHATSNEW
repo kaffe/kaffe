@@ -7,7 +7,7 @@ What's New since Kaffe OpenVM 1.0.6
 
 * Support of PowerPC without libffi.
 
-* New version of KJC (1.5A).
+* New version of KJC (2.1A with patches from kopi CVS).
 
 * New encoding converters based on iconv().
 
