@@ -4077,7 +4077,7 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	xmeth->accflags |= ACC_JNI;
 }
 
-static void
+void
 Kaffe_KNI_wrapper(Method* xmeth, void* func)
 {
 	SET_METHOD_NATIVECODE(xmeth, func);
