@@ -65,7 +65,7 @@ xmljSetProperty (JNIEnv * env, jobject outputProperties,
 
 JNIEXPORT void JNICALL
 Java_gnu_classpath_VMSystemProperties_postInit(JNIEnv *env, 
-					       jclass klass __attribute__((__unused__)), 
+					       jclass klass UNUSED, 
 					       jobject outputProperties)
 {
   userProperty* prop;
@@ -114,7 +114,7 @@ Java_gnu_classpath_VMSystemProperties_postInit(JNIEnv *env,
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getLocale (JNIEnv *env,
-                                                 jclass klass __attribute__((__unused__)))
+                                                 jclass klass UNUSED)
 {
   const char *locale;
 
@@ -129,7 +129,7 @@ Java_gnu_classpath_VMSystemProperties_getLocale (JNIEnv *env,
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getKaffeLibraryPath (JNIEnv *env,
-                                                           jclass klass __attribute__((__unused__)))
+                                                           jclass klass UNUSED)
 {
   const char * path;
 
@@ -139,35 +139,35 @@ Java_gnu_classpath_VMSystemProperties_getKaffeLibraryPath (JNIEnv *env,
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getSunBootClassPath (JNIEnv *env,
-                                                           jclass klass __attribute__((__unused__)))
+                                                           jclass klass UNUSED)
 {
   return (*env)->NewStringUTF(env, realBootClassPath);
 }
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getFileSeparator (JNIEnv *env,
-                                                        jclass klass __attribute__((__unused__)))
+                                                        jclass klass UNUSED)
 {
   return (*env)->NewStringUTF(env, file_separator);
 }
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getLineSeparator (JNIEnv *env,
-                                                        jclass klass __attribute__((__unused__)))
+                                                        jclass klass UNUSED)
 {
   return (*env)->NewStringUTF(env, line_separator);
 }
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getPathSeparator (JNIEnv *env,
-                                                        jclass klass __attribute__((__unused__)))
+                                                        jclass klass UNUSED)
 {
   return (*env)->NewStringUTF(env, path_separator);
 }
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getJavaClassPath (JNIEnv *env,
-                                                        jclass klass __attribute__((__unused__)))
+                                                        jclass klass UNUSED)
 {
   const char *cpath;
 
@@ -181,7 +181,7 @@ Java_gnu_classpath_VMSystemProperties_getJavaClassPath (JNIEnv *env,
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getJavaIoTmpdir (JNIEnv *env,
-                                                       jclass klass __attribute__((__unused__)))
+                                                       jclass klass UNUSED)
 {
 #if defined(__WIN32__)
   return (*env)->NewStringUTF(env, "C:\\TEMP");
@@ -192,7 +192,7 @@ Java_gnu_classpath_VMSystemProperties_getJavaIoTmpdir (JNIEnv *env,
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getJavaCompiler (JNIEnv *env,
-                                                       jclass klass __attribute__((__unused__)))
+                                                       jclass klass UNUSED)
 {
   const char *engine;
 
@@ -202,7 +202,7 @@ Java_gnu_classpath_VMSystemProperties_getJavaCompiler (JNIEnv *env,
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getJavaHome (JNIEnv *env,
-                                                   jclass klass __attribute__((__unused__)))
+                                                   jclass klass UNUSED)
 {
   const char *jhome;
 
@@ -217,7 +217,7 @@ Java_gnu_classpath_VMSystemProperties_getJavaHome (JNIEnv *env,
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getOsName (JNIEnv *env,
-                                                 jclass klass __attribute__((__unused__)))
+                                                 jclass klass UNUSED)
 {
   int r;
   const char *osname;
@@ -239,7 +239,7 @@ Java_gnu_classpath_VMSystemProperties_getOsName (JNIEnv *env,
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getOsArch (JNIEnv *env,
-                                                 jclass klass __attribute__((__unused__)))
+                                                 jclass klass UNUSED)
 {
   int r;
   const char *osarch;
@@ -261,7 +261,7 @@ Java_gnu_classpath_VMSystemProperties_getOsArch (JNIEnv *env,
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getOsVersion (JNIEnv *env,
-                                                    jclass klass __attribute__((__unused__)))
+                                                    jclass klass UNUSED)
 {
   int r;
   const char *osversion;
@@ -283,7 +283,7 @@ Java_gnu_classpath_VMSystemProperties_getOsVersion (JNIEnv *env,
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getUserDir (JNIEnv *env,
-                                                  jclass klass __attribute__((__unused__)))
+                                                  jclass klass UNUSED)
 {
   const char *dir;
 
@@ -303,7 +303,7 @@ Java_gnu_classpath_VMSystemProperties_getUserDir (JNIEnv *env,
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getUserName (JNIEnv *env,
-                                                   jclass klass __attribute__((__unused__)))
+                                                   jclass klass UNUSED)
 {
   const char *name;
 #if defined(HAVE_PWD_H)
@@ -327,7 +327,7 @@ Java_gnu_classpath_VMSystemProperties_getUserName (JNIEnv *env,
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getUserHome (JNIEnv *env,
-                                                   jclass klass __attribute__((__unused__)))
+                                                   jclass klass UNUSED)
 {
   const char *home;
 #if defined(HAVE_PWD_H)
@@ -351,7 +351,7 @@ Java_gnu_classpath_VMSystemProperties_getUserHome (JNIEnv *env,
 
 JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getGnuCpuEndian (JNIEnv *env,
-                                                       jclass klass __attribute__((__unused__)))
+                                                       jclass klass UNUSED)
 {
   const char *endian;
 
