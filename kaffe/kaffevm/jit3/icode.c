@@ -4158,7 +4158,7 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 	int arg_idx;
 	int idx;
 	int limit;
-	char* sigptr;
+	const char* sigptr;
 
 	/* Make sure we have enough argument space */
 	if (sp_idx + 2 > sz_args) {

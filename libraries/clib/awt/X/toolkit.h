@@ -538,7 +538,7 @@ jobject selectionRequest ( JNIEnv* env, Toolkit* X );
 #define WND_DESTROYED  0x10
 
 static __inline__ int getFreeSourceIdx ( Toolkit* X, Window wnd ) {
-  register i, n;
+  register int i, n;
 
   /*
    * we don't use a double hashing here because collisions are very unlikely
