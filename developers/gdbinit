@@ -80,8 +80,8 @@ pCPool <class> <entry>:
 end
 
 define pmeth
-    printf "%s.%s;%s\n", ($arg0).class.name.data, ($arg0).name.data, \
-	($arg0).signature.data
+    printf "%s.%s;%s: %p %p\n", ($arg0).class.name.data, ($arg0).name.data, \
+	($arg0).signature.data, ($arg0).c.ncode.ncode_start, ($arg0).c.ncode.ncode_end
 end
 document pmeth
     Print full name of a method <meth>
@@ -92,7 +92,7 @@ define pmethods
   set $nMeths = ($arg0).methods
   set $i = 0
   while $i < (($arg0).nmethods)
-    printf "[%d] %s%s (%p %p)\n", $i, (char*)(($meths[$i]).name.data), (char*)(($meths[$i]).signature.data), $nMeths[$i].c.ncode.ncode_start, $nMeths[$i].c.ncode.ncode_end
+    pmeth $nMeths[$i]
     set $i = $i + 1
   end
 end
@@ -436,39 +436,17 @@ document restoreThread
 end
 
 define findNativeMethod
-  set $addr = $arg0
-  set $pool = classEntryPool
-
-  # Loop through the class pool
-  set $nel = 255
-  while $nel > 0 
-    set $class = $pool[$nel]
-    
-    # Loop thorugh the classes hashed at this index
-    while $class != 0
-      set $shClass = $class.class
-
-      if ($shClass.state == 10)
-        # Loop through all the methods defined in this class
-	set $nmeth = 0
-        while $nmeth < $shClass.nmethods
-          set $nat = $shClass.methods[$nmeth].c.ncode
-	  if (($nat.ncode_start) <= $addr) && (($nat.ncode_end) >= $addr)
-            set $meth = $shClass.methods + $nmeth
-	    printf "%s.%s%s: %p %p\n", $shClass.name.data, $meth.name.data, $meth.signature.data, $nat.ncode_start, $nat.ncode_end
-	  end
-	  set $nmeth = $nmeth + 1
-        end
-      end
-
-      set $class = $class.next
-    end
-    set $nel = $nel - 1
-  end
-  set $nel
+  pmeth findMethodFromPC($arg0)
 end
 document findNativeMethod
   Find the native method objet associated with the given address...
+end
+
+define JITwhere
+  findNativeMethod $pc
+end
+document JITwhere
+  Find information about the native method of the current PC
 end
 
 define restoreThread

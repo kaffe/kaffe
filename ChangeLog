@@ -1,3 +1,10 @@
+Thu Mar 25 08:06:47 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* developers/gdbinit (pmeth): print ncode data too
+	(findNativeMethod): implement in terms of pmeth and kaffevm's
+	findMethodFromPC()
+	(JITwhere): new; same as findNativeMethod $pc
+
 Wed Mar 24 23:07:19 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* FAQ/FAQ.Known-Bugs: update wrt. OutputStreamWriter and
