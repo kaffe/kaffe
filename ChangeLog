@@ -1,3 +1,38 @@
+Thu Oct 14 16:59:56 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/security/
+	InvalidAlgorithmParameterException.java,
+	libraries/javalib/java/security/InvalidKeyException.java,
+	libraries/javalib/java/security/InvalidParameterException.java,
+	libraries/javalib/java/security/Key.java,
+	libraries/javalib/java/security/KeyException.java,
+	libraries/javalib/java/security/KeyManagementException.java,
+	libraries/javalib/java/security/KeyPair.java,
+	libraries/javalib/java/security/KeyPairGenerator.java,
+	libraries/javalib/java/security/KeyPairGeneratorSpi.java,
+	libraries/javalib/java/security/Principal.java,
+	libraries/javalib/java/security/PrivateKey.java,
+	libraries/javalib/java/security/ProviderException.java,
+	libraries/javalib/java/security/PublicKey.java,
+	libraries/javalib/java/security/Signature.java,
+	libraries/javalib/java/security/SignatureException.java,
+	libraries/javalib/java/security/SignatureSpi.java: new classes
+	* libraries/javalib/java/security/MessageDigest.java: add comments,
+	remove unused leftover method
+	* libraries/javalib/java/security/SecureRandom.java,
+	libraries/javalib/java/security/Security.java: add getCryptInstance()
+	which doesn't require an algorithm to be specified
+	* kaffe/security/provider/UpdateDigest.java: add comment
+	* libraries/javalib/java/util/AbstractMap.java: fix clone() bug
+	* libraries/javalib/java/util/ArrayList.java,
+	libraries/javalib/java/util/HashMap.java,
+	libraries/javalib/java/util/HashSet.java,
+	libraries/javalib/java/util/LinkedList.java,
+	libraries/javalib/java/util/TreeSet.java: when something that
+	"should never happen" happens, don't be shy, throw an Error
+	* libraries/javalib/java/util/TreeMap.java: revert to previous version
+	* libraries/javalib/Klasses.jar: regen
+
 Thu Oct 14 04:04:00 1999  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* depcomp: Protect from MS-DOS CR+LF lossage.
