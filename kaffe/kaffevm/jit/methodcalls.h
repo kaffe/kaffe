@@ -32,6 +32,12 @@ void
 engine_callMethod (callMethodInfo *call);
 
 /*
+ * Fix up trampoline.
+ */
+nativecode*
+soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL);
+
+/*
  * extra args the engine wants to pass when using callMethodA / callMethodV
  */
 #define engine_reservedArgs(M) 0

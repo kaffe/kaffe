@@ -612,8 +612,8 @@ int getifaddrs(struct ifaddrs **ifap)
 	    case IFLA_LINK:
 	      break;
 	    case IFLA_QDISC:
-	      break;
 	    default:
+	      break;
 	    }
 	    break;
 	  case RTM_NEWADDR:
@@ -652,8 +652,8 @@ int getifaddrs(struct ifaddrs **ifap)
 	    case IFA_UNSPEC:
 	      break;
 	    case IFA_CACHEINFO:
-	      break;
 	    default:
+	      break;
 	    }
 	  }
 	}

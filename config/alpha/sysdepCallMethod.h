@@ -11,6 +11,9 @@
  * by Alexandre Oliva <oliva@dcc.unicamp.br>
  */
 
+/* Needed for callMethodInfo declaration */
+#include "support.h"
+
 /* This file is supposed to be included twice, once with LONG_SYSDEP
    defined, once without it.  The first version cannot be inlined by
    gcc/egcs at least up to 1.2, because it contains variable-sized

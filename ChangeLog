@@ -1,5 +1,20 @@
 2004-08-21  Dalibor Topic  <robilad@kaffe.org>
 
+	Fixed cross-compilation for alpha-linux.
+
+        * config/alpha/sysdepCallMethod.h:
+	Include missing file.
+
+        * kaffe/kaffevm/jit/methodcalls.c,
+        kaffe/kaffevm/jit/methodcalls.h:
+	Export soft_fixup_trampoline.
+
+        * replace/ifaddrs_linux.c:
+	Fix gcc 3.4.1 errors due to empty default:
+	statements.
+
+2004-08-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* m4/glibcver.m4:
 	Fixed for cross compilation.
 

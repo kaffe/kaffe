@@ -20,7 +20,7 @@
 /*
  * Trampolines come in here - do the translation and replace the trampoline.
  */
-static nativecode*
+nativecode*
 soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 {
 	Method* meth;
