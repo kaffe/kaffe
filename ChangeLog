@@ -1,3 +1,36 @@
+Thu Nov  7 09:16:19 CET 2002 Dalibor Topic <robilad@yahoo.com>
+	* libraries/javalib/java/lang/Character.java:
+	(Subset) new class. Imported from GNU Classpath.
+	(UnicodeBlock) new class. Imported from GNU Classpath.
+
+	* libraries/javalib/java/lang/System.java:
+	(arraycopy) improved speed in a special case.
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	Added gnu to source directories. Added java.nio and gnu.java.nio
+	sources.
+
+	* libraries/javalib/java/nio/Buffer.java,
+	libraries/javalib/java/nio/ByteBuffer.java,
+	libraries/javalib/java/nio/ByteOrder.java,
+	libraries/javalib/java/nio/CharBuffer.java,
+	libraries/javalib/java/nio/DoubleBuffer.java,
+	libraries/javalib/java/nio/FloatBuffer.java,
+	libraries/javalib/java/nio/IntBuffer.java,
+	libraries/javalib/java/nio/LongBuffer.java,
+	libraries/javalib/java/nio/MappedByteBuffer.java,
+	libraries/javalib/java/nio/ShortBuffer.java: new files. Imported
+	from GNU Classpath.
+
+	* libraries/javalib/gnu/java/nio/ByteBufferImpl.java,
+	libraries/javalib/gnu/java/nio/CharBufferImpl.java,
+	libraries/javalib/gnu/java/nio/DoubleBufferImpl.java,
+	libraries/javalib/gnu/java/nio/FloatBufferImpl.java,
+	libraries/javalib/gnu/java/nio/IntBufferImpl.java,
+	libraries/javalib/gnu/java/nio/LongBufferImpl.java,
+	libraries/javalib/gnu/java/nio/ShortBufferImpl.java: new
+	files. Imported from GNU Classpath.
+
 Wed Nov  6 11:13:42 CET 2002 Dalibor Topic
 	*  libraries/javalib/java/awt/image/DirectColorModel.java:
 	(getAlpha, getShift) fixed bugs that prevented pure java MPEG

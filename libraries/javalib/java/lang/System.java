@@ -115,7 +115,7 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 		throw new ArrayIndexOutOfBoundsException();
 	}
 
-	if (src == dst) {
+	if (src == dst && src_position < dst_position) {
 		Object tmp = Array.newInstance(dst_component, length);
 		System.arraycopy(src, src_position, tmp, 0, length);
 		System.arraycopy(tmp, 0, dst, dst_position, length);

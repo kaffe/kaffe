@@ -10,7 +10,7 @@
 # Class libraries are not currently part of the integrate Make cycle. 
 #
 
-SRCDIRS = java kaffe
+SRCDIRS = java kaffe gnu
 
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
@@ -37,6 +37,7 @@ Klasses_jar_SRCS = \
 	$(java_lang_reflect_SRCS) \
 	$(java_math_SRCS) \
 	$(java_net_SRCS) \
+	$(java_nio_SRCS) \
 	$(java_security_SRCS) \
 	$(java_security_acl_SRCS) \
 	$(java_security_cert_SRCS) \
@@ -49,6 +50,7 @@ Klasses_jar_SRCS = \
 	$(java_util_mime_SRCS) \
 	$(java_util_zip_SRCS) \
 	$(gnu_java_awt_SRCS) \
+	$(gnu_java_nio_SRCS) \
 	$(kaffe_applet_SRCS) \
 	$(kaffe_awt_SRCS) \
 	$(kaffe_beans_editors_SRCS) \
@@ -560,6 +562,17 @@ java_net_SRCS = \
 	java/net/URLStreamHandlerFactory.java \
 	java/net/UnknownHostException.java \
 	java/net/UnknownServiceException.java
+java_nio_SRCS = \
+	java/nio/Buffer.java \
+	java/nio/ByteBuffer.java \
+	java/nio/ByteOrder.java \
+	java/nio/CharBuffer.java \
+	java/nio/DoubleBuffer.java \
+	java/nio/FloatBuffer.java \
+	java/nio/IntBuffer.java \
+	java/nio/LongBuffer.java \
+	java/nio/MappedByteBuffer.java \
+	java/nio/ShortBuffer.java
 java_security_SRCS = \
 	java/security/AccessControlContext.java \
 	java/security/AccessControlException.java \
@@ -804,6 +817,14 @@ java_util_zip_SRCS = \
 	java/util/zip/ZipOutputStream.java
 gnu_java_awt_SRCS = \
 	gnu/java/awt/EventModifier.java
+gnu_java_nio_SRCS = \
+	gnu/java/nio/ByteBufferImpl.java \
+	gnu/java/nio/CharBufferImpl.java \
+	gnu/java/nio/DoubleBufferImpl.java \
+	gnu/java/nio/FloatBufferImpl.java \
+	gnu/java/nio/IntBufferImpl.java \
+	gnu/java/nio/LongBufferImpl.java \
+	gnu/java/nio/ShortBufferImpl.java
 kaffe_applet_SRCS = \
 	kaffe/applet/AppletTag.java \
 	kaffe/applet/AppletViewer.java \
