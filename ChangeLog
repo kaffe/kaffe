@@ -2,6 +2,25 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-01-20  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/awt/Checkbox.java:
+	(AccessibleAWTCheckbox): Added class documentation
+	* java/awt/Scrollbar.java:
+	(AccessibleAWTScrollBar): typo corrected and docs added
+	(AccessibleAWTScrollBar.getAccessibleRole()): documented
+	(AccessibleAWTScrollBar.getAccessibleStateSet()): likewise
+	(AccessibleAWTScrollBar.getAccessibleValue()): likewise
+	(AccessibleAWTScrollBar.getCurrentAccessibleValue()): likewise
+	(AccessibleAWTScrollBar.setCurrentAccessibleValue(java.lang.Number)): likewise
+	(AccessibleAWTScrollBar.getMinimumAccessibleValue()): likewise
+	(AccessibleAWTScrollBar.getMaximumAccessibleValue()): likewise
+	(getAccessibleContext()): name of accessible class corrected
+	
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-01-20  Mark Wielaard  <mark@klomp.org>
 
 	* java/util/Currency.java (Currency(Locale)): Clarify

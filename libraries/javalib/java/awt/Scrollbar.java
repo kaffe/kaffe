@@ -55,7 +55,8 @@ import javax.accessibility.AccessibleValue;
   * This class implements a scrollbar widget.
   *
   * @author Aaron M. Renn (arenn@urbanophile.com)
-  * @author Tom Tromey <tromey@cygnus.com>
+  * @author Tom Tromey (tromey@cygnus.com)
+  * @author Andrew John Hughes (gnu_andrew@member.fsf.org)
   */
 public class Scrollbar extends Component implements Accessible,
                                                     Adjustable
@@ -775,14 +776,43 @@ paramString()
     return next_scrollbar_number++;
   }
   
-  protected class AccessibleAWTScrollbar extends AccessibleAWTComponent
+  /**
+   * This class provides accessibility support for the
+   * scrollbar.
+   *
+   * @author Jerry Quinn (jlquinn@optonline.net)
+   * @author Andrew John Hughes (gnu_andrew@member.fsf.org)
+   */
+  protected class AccessibleAWTScrollBar extends AccessibleAWTComponent
   	implements AccessibleValue
   {
+
+    /**
+     * Serialization constant to match JDK 1.5
+     */
+    private static final long serialVersionUID = -344337268523697807L;
+
+    /**
+     * Returns the role of this accessible object.
+     *
+     * @return the instance of <code>AccessibleRole</code>,
+     *         which describes this object.
+     * @see javax.accessibility.AccessibleRole
+     */
     public AccessibleRole getAccessibleRole()
     {
       return AccessibleRole.SCROLL_BAR;
     }
     
+    /**
+     * Returns the state set of this accessible object.
+     *
+     * @return a set of <code>AccessibleState</code>s
+     *         which represent the current state of the
+     *         accessible object.
+     * @see javax.accessibility.AccessibleState
+     * @see javax.accessibility.AccessibleStateSet
+     */
     public AccessibleStateSet getAccessibleStateSet()
     {
       AccessibleStateSet states = super.getAccessibleStateSet();
@@ -795,12 +825,28 @@ paramString()
       return states;
     }
     
+    /**
+     * Returns an implementation of the <code>AccessibleValue</code>
+     * interface for this accessible object.  In this case, the
+     * current instance is simply returned (with a more appropriate
+     * type), as it also implements the accessible value as well as
+     * the context.
+     *
+     * @return the accessible value associated with this context.
+     * @see javax.accessibility.AccessibleValue
+     */
     public AccessibleValue getAccessibleValue()
     {
       return this;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Returns the current value of this accessible object.
+     * In this case, this is the same as the value for
+     * the scrollbar, wrapped in an <code>Integer</code>
+     * object.
+     *
+     * @return the numeric value of this scrollbar.
      * @see javax.accessibility.AccessibleValue#getCurrentAccessibleValue()
      */
     public Number getCurrentAccessibleValue()
@@ -808,7 +854,14 @@ paramString()
       return new Integer(getValue());
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the current value of this accessible object
+     * to that supplied.  In this case, the value of the
+     * scrollbar is set, and this method always returns
+     * true.
+     *
+     * @param number the new accessible value.
+     * @return true if the value was set.
      * @see javax.accessibility.AccessibleValue#setCurrentAccessibleValue(java.lang.Number)
      */
     public boolean setCurrentAccessibleValue(Number number)
@@ -817,7 +870,13 @@ paramString()
       return true;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Returns the minimum acceptable accessible value used
+     * by this object.  In this case, this is the same as
+     * the minimum value of the scrollbar, wrapped in an
+     * object.
+     *
+     * @return the minimum value of this scrollbar.
      * @see javax.accessibility.AccessibleValue#getMinimumAccessibleValue()
      */
     public Number getMinimumAccessibleValue()
@@ -825,7 +884,13 @@ paramString()
       return new Integer(getMinimum());
     }
 
-    /* (non-Javadoc)
+    /**
+     * Returns the maximum acceptable accessible value used
+     * by this object.  In this case, this is the same as
+     * the maximum value of the scrollbar, wrapped in an
+     * object.
+     *
+     * @return the maximum value of this scrollbar.
      * @see javax.accessibility.AccessibleValue#getMaximumAccessibleValue()
      */
     public Number getMaximumAccessibleValue()
@@ -844,7 +909,7 @@ paramString()
   {
     /* Create the context if this is the first request */
     if (accessibleContext == null)
-      accessibleContext = new AccessibleAWTScrollbar();
+      accessibleContext = new AccessibleAWTScrollBar();
     return accessibleContext;
   }
 

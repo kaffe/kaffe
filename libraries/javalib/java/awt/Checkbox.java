@@ -95,6 +95,13 @@ private boolean state;
 // The list of listeners for this object.
 private transient ItemListener item_listeners;
 
+/**
+ * This class provides accessibility support for the
+ * checkbox.
+ *
+ * @author Jerry Quinn  (jlquinn@optonline.net)
+ * @author Andrew John Hughes (gnu_andrew@member.fsf.org)
+ */
 protected class AccessibleAWTCheckbox
   extends AccessibleAWTComponent
   implements ItemListener, AccessibleAction, AccessibleValue
