@@ -1,3 +1,11 @@
+2003-08-26  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/clib/awt/qt/Makefile.am:
+	(AM_CPPFLAGS) new variable. Added generated include files.
+
+	* libraries/clib/awt/qt/Makefile.in:
+	Regenerated.
+	
 2003-08-26  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/text/SimpleDateFormat.java:

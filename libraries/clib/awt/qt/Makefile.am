@@ -14,6 +14,7 @@
 native_LTLIBRARIES = libawt.la
 
 AM_CXXFLAGS := -fno-exceptions -fno-rtti $(CXXFLAGS) $(QT_CXXFLAGS)
+AM_CPPFLAGS = -I$(top_builddir)/include
 
 AWT_LIBS = -L$(QTDIR)/lib
 
@@ -47,7 +48,5 @@ EXTRA_DIST = evt.h \
 	imggif.cc \
 	imgjpeg.cc \
 	imgpng.cc
-
-	
 
 
