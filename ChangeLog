@@ -1,3 +1,10 @@
+Sat Oct 16 04:58:46 1999  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* libltdl/ltdl.c (lt_dlopen): Do not search paths when the
+	specified library is not just a basename.
+	* kaffe/kaffevm/external.c (initNative): Use forward slash instead
+	of file_separator, since libltdl does not support backslashes.
+
 Fri Oct 15 15:36:19 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/kaffe/util/Base64.java: new class

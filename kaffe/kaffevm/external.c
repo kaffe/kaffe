@@ -155,7 +155,8 @@ initNative(void)
 			lib[nptr-ptr] = 0;
 			nptr++;
 		}
-		strcat(lib, file_separator);
+		strcat(lib, "/"); /* should be file_separator, libltdl
+				     does not handle backslashes yet */
 		strcat(lib, NATIVELIBRARY);
 		strcat(lib, LIBRARYSUFFIX);
 

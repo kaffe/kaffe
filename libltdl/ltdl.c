@@ -1366,7 +1366,7 @@ lt_dlopen (filename)
 		handle->deplibs = 0;
 		newhandle = handle;
 		if (tryall_dlopen(&newhandle, filename)
-		    && (!dir
+		    && (dir
 			|| (!find_file(basename, user_search_path,
 					  0, &newhandle)
 			    && !find_file(basename,
