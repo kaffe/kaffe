@@ -181,10 +181,14 @@ loadNativeLibrary(char* lib)
 	/* Open the library */
 	open:
 
+#if 0
 	/* If this file doesn't exist, ignore it */
 	if (access(lib, R_OK) != 0) {
 		return (0);
 	}
+#endif
+/* if we tested for existence here, libltdl wouldn't be able to look
+   for system-dependent library names */
 
         LIBRARYLOAD(libHandle[i].desc, lib);
 

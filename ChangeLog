@@ -1,3 +1,16 @@
+Wed Jan 13 16:46:02 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libltdl/configure.in, libltdl/ltdl.c: updated from libtool, to
+	introduce support for almost transparently dlopening non-libtool
+	libraries
+	* kaffe/kaffevm/external.c (loadNativeLibrary): don't check for
+	library existence, let libltdl do its work of looking for libtool
+	archives or system-dependent shared libraries
+	* libltdl/configure: regen
+	
+	* ltmain.sh: updated from libtool, to prevent FreeBSD from
+	including SYMDEF in a link command
+
 Wed Jan 13 11:13:02 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/external.h (LIBRARYPATH): default to

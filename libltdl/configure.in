@@ -21,6 +21,44 @@ AC_SUBST(NOINSTLIBS)
 AC_PROG_CC
 AM_PROG_LIBTOOL
 
+AC_CACHE_CHECK([which extension is used for shared libraries],
+  libltdl_cv_shlibext, [dnl
+(
+  rm -f conftest
+  ./libtool --config > conftest
+  . ./conftest
+  last=
+  for spec in $library_names_spec; do
+    last="$spec"
+  done
+  rm -f conftest
+changequote(, )
+  echo "$last" | sed 's/^[^.]*//;s/\$.*$//;s/\.$//' > conftest
+changequote([, ])
+)
+libltdl_cv_shlibext=`cat conftest`
+rm -f conftest
+])
+if test x"$libltdl_cv_shlibext" != x""; then
+  AC_DEFINE_UNQUOTED(LTDL_SHLIB_EXT, "$libltdl_cv_shlibext")
+fi
+
+AC_CACHE_CHECK([which variable specifies run-time library path],
+  libltdl_cv_shlibpath_var, [dnl
+(
+  rm -f conftest
+  ./libtool --config > conftest
+  . ./conftest
+  rm -f conftest
+  echo "$shlibpath_var" > conftest
+)
+libltdl_cv_shlibpath_var=`cat conftest`
+rm -f conftest
+])
+if test x"$libltdl_cv_shlibpath_var" != x""; then
+  AC_DEFINE_UNQUOTED(LTDL_SHLIBPATH_VAR, "$libltdl_cv_shlibpath_var")
+fi
+
 AC_HEADER_STDC
 AC_CHECK_HEADERS(malloc.h memory.h stdlib.h unistd.h stdio.h ctype.h dlfcn.h dl.h)
 AC_CHECK_HEADERS(string.h strings.h, break)

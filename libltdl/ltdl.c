@@ -504,12 +504,13 @@ typedef struct lt_dlsymlists_t {
 	lt_dlsymlist	*syms;
 } lt_dlsymlists_t;
 
-static lt_dlsymlists_t *preloaded_symbols;
+static lt_dlsymlists_t *preloaded_symbols = 0;
 
 static int
 dldpre_init ()
 {
-	preloaded_symbols = 0;
+	/* Don't nullify preloaded_symbols here, it would prevent one
+	   from calling lt_dlpreload_default() before lt_dlinit() */
 	return 0;
 }
 
@@ -530,7 +531,8 @@ dldpre_free_symlists ()
 static int
 dldpre_exit ()
 {
-	dldpre_free_symlists();
+	/* Don't reset preloaded_symbols here; adding/removing symbols
+           should be unrelated with init/exit */
 	return 0;
 }
 
@@ -963,6 +965,9 @@ lt_dlopen (filename)
 	lt_dlhandle handle;
 	char	dir[FILENAME_MAX];
 	const char *basename, *ext, *search_path;
+#ifdef LTDL_SHLIBPATH_VAR
+	const char *alt_search_path;
+#endif
 	const char *saved_error = last_error;
 	
 	basename = strrchr(filename, '/');
@@ -977,6 +982,9 @@ lt_dlopen (filename)
 	strncpy(dir, filename, basename - filename);
 	dir[basename - filename] = '\0';
 	search_path = getenv("LTDL_LIBRARY_PATH"); /* get the search path */
+#ifdef LTDL_SHLIBPATH_VAR
+	alt_search_path = getenv(LTDL_SHLIBPATH_VAR);
+#endif
 	/* check whether we open a libtool module (.la extension) */
 	ext = strrchr(basename, '.');
 	if (ext && strcmp(ext, ".la") == 0) {
@@ -1006,9 +1014,29 @@ lt_dlopen (filename)
 			return 0;
 		}
 		file = find_file(filename, *dir, basename, search_path);
+#ifdef LTDL_SHLIBPATH_VAR
+		if (!file)
+			file = find_file(filename, *dir, basename,
+					 alt_search_path);
+#endif
 		if (!file) {
 			free(name);
-			return 0;
+			handle = (lt_dlhandle)0;
+#ifdef LTDL_SHLIB_EXT
+			/* Try with the shared library extension */
+			name = malloc(strlen(filename) -
+				      3 /*i.e., strlen(".la") */
+				      + strlen(LTDL_SHLIB_EXT)
+				      + 1 /* '\0' */);
+			if (name) {
+				strcpy(name, filename);
+				strcpy(name + strlen(filename) - 3,
+				       LTDL_SHLIB_EXT);
+				handle = lt_dlopen(name);
+				free(name);
+			}
+#endif
+			return handle;
 		}
 		while (!feof(file)) {
 			if (!fgets(tmp, FILENAME_MAX, file))
@@ -1053,7 +1081,12 @@ lt_dlopen (filename)
 			return 0;
 		}
 		if (find_library(&handle, filename, *dir,
-				basename, search_path)) {
+				basename, search_path)
+#ifdef LTDL_SHLIBPATH_VAR
+		    && find_library(&handle, filename, *dir,
+				    basename, alt_search_path)
+#endif
+			) {
 			free(handle);
 			return 0;
 		}

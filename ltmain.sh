@@ -2293,7 +2293,7 @@ fi\
 	$show "(cd $xdir && $AR x ../$xlib)"
 	$run eval "(cd \$xdir && $AR x ../\$xlib)" || exit $?
 
-	oldobjs="$oldobjs `echo $xdir/*`"
+	oldobjs="$oldobjs "`find $xdir -name \*.o -print -o -name \*.lo -print | $NL2SP`
       done
 
       # Do each command in the archive commands.
