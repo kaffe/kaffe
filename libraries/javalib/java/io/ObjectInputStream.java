@@ -766,8 +766,6 @@ public class ObjectInputStream extends InputStream
 	  return Float.TYPE;
 	if (name.equals("double"))
 	  return Double.TYPE;
-	if (name.equals("void"))
-	  return Void.TYPE;
 
 	throw cnfe;
       }

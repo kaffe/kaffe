@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-02-13  Mark Wielaard  <mark@klomp.org>
+
+	# Fixes bug #11957
+	* java/io/ObjectInputStream.java (resolveClass): Don't check "void"
+	twice.
+
+2005-02-14  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-02-13  Tom Tromey  <tromey@redhat.com>
 
 	* gnu/xml/aelfred2/SAXDriver.java: Ensure that null is returned when
