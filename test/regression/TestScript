@@ -539,6 +539,7 @@ Done." deprecated
 compile CLTestConc_run
 runtest CLTestConc "Success." deprecated
 runtest CLTestJLock "Success."
+runtest CLTestLie "Success."
 
 # end of CLTest tests
 

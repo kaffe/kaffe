@@ -778,16 +778,15 @@ DBG(VMCLASSLOADER,
 					RethrowException, excobj)
 				clazz = NULL;
 			} else
-			if (clazz == NULL) {
+			if (clazz == NULL || 
+			    strcmp(clazz->name->data, name->data)) {
 DBG(VMCLASSLOADER,		
-				dprintf("clazz == NULL!\n");			
+				dprintf("clazz == NULL or wrong name!\n");
     )
 				SET_LANG_EXCEPTION_MESSAGE(einfo, 
 					ClassNotFoundException, name->data)
-			} else {
-				clazz->centry = centry;
-			}
-			/* XXX: should we check the name here? */
+				clazz = NULL;
+			} 
 DBG(VMCLASSLOADER,		
 			dprintf("classLoader: done %p\n", clazz);			
     )

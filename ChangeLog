@@ -1,5 +1,9 @@
 Sat Dec 12 19:04:18 1998  Godmar Back  <gback@cs.utah.edu>
 
+	* kaffe/kaffevm/classMethod.c: fixed loadClass to not overwrite
+	clazz->centry with initiating classloader.  Was pointed out by
+	Ben Reed <breed@almaden.ibm.com>.  Implemented name check.
+	* test/regression/CLTestLie.java: new test for name check.
 	* libraries/javalib/java/util/Properties.java: 
 	handle header == null in Properties.save.
 	* kaffe/kaffevm/stackTrace.c: make sure we find line numbers
