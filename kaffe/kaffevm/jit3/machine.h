@@ -166,8 +166,7 @@ struct SlotData;
 struct _label_;
 struct _sequence;
 struct _errorInfo;
-extern bool initInsnSequence(Method *meth, int codesize, int localsz, 
-	int stacksz, struct _errorInfo *einfo);
+extern jboolean initInsnSequence(Method *meth, int codesize, int localsz, int stacksz, struct _errorInfo *einfo);
 extern jboolean finishInsnSequence(void*, nativeCodeInfo*, struct _errorInfo*);
 extern void     installMethodCode(void*, Method*, nativeCodeInfo*);
 extern struct _label_* newFakeCall(void*, uintp);

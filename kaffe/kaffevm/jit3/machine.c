@@ -88,7 +88,9 @@ struct {
 	int time;
 } jitStats;
 
-static void generateInsnSequence(void);
+extern int enable_readonce;
+
+static jboolean generateInsnSequence(errorInfo*);
 static void nullCall(void);
 static void makeFakeCalls(void);
 
@@ -223,7 +225,7 @@ SUSE(
 	 * Initialise the translator.
 	 */
 	success = initInsnSequence(xmeth, codeperbytecode * METHOD_BYTECODE_LEN(xmeth), xmeth->localsz, xmeth->stacksz, einfo);
-	if (!success) {
+	if (success == false) {
 		goto done;
 	}
 
@@ -240,7 +242,10 @@ SUSE(
 	monitor_enter();
 	if (IS_STARTOFBASICBLOCK(0)) {
 		end_basic_block();
-		generateInsnSequence();
+		success = generateInsnSequence(einfo);
+		if (success == false) {
+			goto done;
+		}
 		start_basic_block();
 	}
 
@@ -294,7 +299,10 @@ SCHK(		sanityCheck();					)
 
 		if (IS_STARTOFBASICBLOCK(npc)) {
 			end_basic_block();
-			generateInsnSequence();
+			success = generateInsnSequence(einfo);
+			if (success == false) {
+				goto done;
+			}
 			start_basic_block();
 			stackno = STACKPOINTER(npc);
 SCHK(			sanityCheck();				)
@@ -346,9 +354,13 @@ finishInsnSequence(void* dummy, nativeCodeInfo* code, errorInfo* einfo)
 	uint32 constlen;
 	nativecode* methblock;
 	nativecode* codebase;
+	jboolean success;
 
 	/* Emit pending instructions */
-	generateInsnSequence();
+	success = generateInsnSequence(einfo);
+	if (success == false) {
+		return (false);
+	}
 
 	/* Okay, put this into malloc'ed memory */
 	constlen = nConst * sizeof(union _constpoolval);
@@ -446,8 +458,8 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 /*
  * Init instruction generation.
  */
-bool
-initInsnSequence(Method* meth, int codesize, int localsz, int stacksz, errorInfo *einfo)
+jboolean
+initInsnSequence(Method* meth, int codesize, int localsz, int stacksz, errorInfo* einfo)
 {
 	/* Clear various counters */
 	tmpslot = 0;
@@ -484,8 +496,8 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz, errorInfo
  * Generate instructions from current set of sequences.
  */
 static
-void
-generateInsnSequence(void)
+jboolean
+generateInsnSequence(errorInfo* einfo)
 {
 	sequence* t;
 	int i;
@@ -497,6 +509,10 @@ generateInsnSequence(void)
 		if (CODEPC >= codeblock_size) {
 			codeblock_size += ALLOCCODEBLOCKSZ;
 			codeblock = gc_realloc(codeblock, codeblock_size + CODEBLOCKREDZONE, GC_ALLOC_FIXED);
+			if (codeblock == 0) {
+				postOutOfMemory(einfo);
+				return (false);
+			}
 		}
 
 SCHK(		sanityCheck();					)
@@ -524,6 +540,8 @@ SCHK(		sanityCheck();					)
 
 	/* Reset */
 	initSeq();
+
+	return (true);
 }
 
 /*
