@@ -334,7 +334,8 @@ public class Hashtable extends Dictionary
   public synchronized boolean contains(Object value)
   {
     /* delegate to non-overridable worker method 
-     * to avoid blowing up the stack.
+     * to avoid blowing up the stack, when called 
+     * from overridden contains[Value]() method.
      */
     return internalContainsValue(value);
   }
@@ -353,10 +354,10 @@ public class Hashtable extends Dictionary
    */
   public boolean containsValue(Object value)
   {
-    /* delegate to non-overridable worker method 
-     * to avoid blowing up the stack.
+    /* delegate to older method to make sure code overwriting it 
+     * continues to work.
      */
-    return internalContainsValue(value);
+    return contains(value);
   }
 
   /**

@@ -1,3 +1,16 @@
+2003-11-28  Dalibor Topic <robilad@kaffe.org>
+
+	Reported by: Mark Wielaard  <mark@klomp.org>
+	
+	* libraries/javalib/java/util/Hashtable.java
+	(contains): Improved comment.
+
+	Reported by: Jeroen Frijters  <jeroen@frijters.net>
+
+	* libraries/javalib/java/util/Hashtable.java
+	(containsValue): Delegate to contains(Object) to make sure older
+	code overwriting it continues to work.
+	
 2003-11-27  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/kjc.jar: Regenerated.
