@@ -90,14 +90,21 @@ java_io_ObjectStreamClass_getMethodAccess(struct Hjava_lang_Class* cls, struct H
  * Write the type of a field in a buffer as a Utf8Const and return the 
  * first character of that buffer, which denotes its type.
  * 
+ * If the field is a primitive type, give its primitive signature.
  * If the field is not resolved, we can simply use the name.
  * If it was resolved, we must prepend an 'L' or '[' as appropriate.
+ *
+ * We must return the descriptor of a Field in UTF encoding.
  */
 static char
 convertFieldTypeToString(Field* fld, char *buf)
 {
 	char* type;
 
+	if (CLASS_IS_PRIMITIVE(FIELD_TYPE(fld))) {
+		buf[0] = CLASS_PRIM_SIG(FIELD_TYPE(fld));
+		buf[1] = 0;
+	} else 
 	if (!FIELD_RESOLVED(fld)) {
 		type = ((Utf8Const*)FIELD_TYPE(fld))->data;
 		strcpy(buf, type);
@@ -125,8 +132,8 @@ java_io_ObjectStreamClass_getFieldSignatures(struct Hjava_lang_Class* cls)
 	Field* fld;
 	char buf[256];		/* XXX FIXED SIZE BUFFER */
 
-	sz = CLASS_NIFIELDS(cls);
-	fld = CLASS_IFIELDS(cls);
+	sz = CLASS_NFIELDS(cls);
+	fld = CLASS_FIELDS(cls);
 	ss = (HArrayOfObject*)AllocObjectArray(sz, "Ljava/lang/String;");
 	for (i = 0; i < sz; i++, fld++) {
 		strcpy(buf, fld->name->data);
@@ -158,8 +165,8 @@ java_io_ObjectStreamClass_getFieldAccess(struct Hjava_lang_Class* cls, struct Hj
 		sig++;
 	*sig++ = '\0';
 
-	sz = CLASS_NIFIELDS(cls);
-	fld = CLASS_IFIELDS(cls);
+	sz = CLASS_NFIELDS(cls);
+	fld = CLASS_FIELDS(cls);
 
 	for (i = 0; i < sz; i++, fld++) {
 		char fsig[256];		/* XXX FIXED SIZE BUFFER */
@@ -209,12 +216,10 @@ java_io_ObjectStreamClass_getFields0(struct Hjava_io_ObjectStreamClass* stream, 
 		obj = (Hjava_io_ObjectStreamField*)unhand(sf)->body[i];
 		unhand(obj)->name = Utf8Const2JavaString(fld->name);
 		unhand(obj)->offset = FIELD_OFFSET(fld);
-		if (CLASS_IS_PRIMITIVE(FIELD_TYPE(fld))) {
-			unhand(obj)->type = CLASS_PRIM_SIG(FIELD_TYPE(fld));
-			unhand(obj)->typeString = 0;
-		}
-		else {
-			unhand(obj)->type = convertFieldTypeToString(fld, buf);
+		unhand(obj)->type = convertFieldTypeToString(fld, buf);
+
+		/* set typeString if not primitive */
+		if (!CLASS_IS_PRIMITIVE(FIELD_TYPE(fld))) {
 			unhand(obj)->typeString = makeJavaString(buf, strlen(buf));
 		}
 		i++;
