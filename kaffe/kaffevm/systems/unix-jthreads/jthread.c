@@ -1552,6 +1552,7 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 		 */
 		wouldlosewakeup = 1;
 		if (sigPending) {
+			wouldlosewakeup = 0;
 			processSignals();
 			continue;
 		}
