@@ -81,7 +81,6 @@ Method: public native void java.lang.Object.notify()
 Method: public native int java.lang.Object.hashCode()
 Method: public native java.lang.Class java.lang.Object.getClass()
 Method: public boolean java.lang.Object.equals(java.lang.Object)
-Constructor: public java.lang.System()
 Field: public static java.io.PrintStream java.lang.System.err
 Field: public static java.io.PrintStream java.lang.System.out
 Field: public static java.io.InputStream java.lang.System.in

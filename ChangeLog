@@ -1,3 +1,8 @@
+Wed Feb 24 05:36:24 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test/regression/Reflect.java (Reflect): constructor of
+	java.lang.System is no longer public
+
 Wed Feb 24 05:13:22 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/javalib/Klasses.jar: regen
