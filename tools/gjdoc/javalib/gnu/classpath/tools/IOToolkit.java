@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 
 import java.util.Set;
@@ -143,5 +144,28 @@ public class IOToolkit
       }
       in.close();
       out.close();
+   }
+
+   /**
+    *  Read the (remaining) contents of the given reader into a char
+    *  array. This method doesn't close the reader when it is done.
+    *
+    *  @param reader the Reader to read characters from
+    *  @return an array with the contents of the Reader
+    */
+   public static char[] readFully(Reader reader)
+      throws IOException
+   {
+      StringWriter writer = new StringWriter();
+      final int readBufferSize = 256;
+      char[] chunk = new char[readBufferSize];
+      int nread;
+      while ((nread=reader.read(chunk))>=0) {
+	 writer.write(chunk,0,nread);
+      }
+      StringBuffer buffer = writer.getBuffer();
+      char[] result = new char[buffer.length()];
+      buffer.getChars(0, buffer.length(), result, 0);
+      return result;
    }
 }

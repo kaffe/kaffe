@@ -31,6 +31,8 @@ import gnu.classpath.tools.doclets.DocletOptionString;
 import gnu.classpath.tools.doclets.PackageGroup;
 import gnu.classpath.tools.doclets.TagletPrinter;
 
+import gnu.classpath.tools.doclets.xmldoclet.HtmlRepairer;
+
 import gnu.classpath.tools.taglets.TagletContext;
 
 import gnu.classpath.tools.java2xhtml.Java2xhtml;
@@ -52,6 +54,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import java.net.MalformedURLException;
+
+import java.nio.charset.Charset;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -275,6 +279,21 @@ public class HtmlDoclet
 
    private void printNavBarBottom(HtmlPage output, String currentPage, ClassDoc currentClass)
    {
+      if ("class".equals(currentPage)) {
+         String boilerplate = null;
+         Tag[] boilerplateTags = getOuterClassDoc(currentClass).tags("@boilerplate");
+         if (boilerplateTags.length > 0) {
+            boilerplate = boilerplateTags[0].text();
+         }
+         if (null != boilerplate) {
+            output.hr();
+            output.beginDiv(CssClass.CLASS_BOILERPLATE);
+            output.print(boilerplate);
+            output.endDiv(CssClass.CLASS_BOILERPLATE);
+            output.hr();
+         }
+      }
+
       if (!optionNoNavBar.getValue()) {
          output.beginDiv(CssClass.NAVBAR_BOTTOM_SPACER);
          output.print(" ");
@@ -348,8 +367,9 @@ public class HtmlDoclet
    {
       HtmlPage output = new HtmlPage(new File(packageDir,
                                               "package-summary" + filenameExtension),
-                                     pathToRoot);
-      output.beginPage(packageDoc.name());
+                                     pathToRoot,
+                                     getOutputDocEncoding());
+      output.beginPage(packageDoc.name(), getOutputCharset());
       output.beginBody();
       printNavBarTop(output, "package");
 
@@ -528,8 +548,9 @@ public class HtmlDoclet
    {
       HtmlPage output = new HtmlPage(new File(packageDir,
                                               "tree" + filenameExtension),
-                                     pathToRoot);
-      output.beginPage(packageDoc.name() + " Hierarchy");
+                                     pathToRoot,
+                                     getOutputDocEncoding());
+      output.beginPage(packageDoc.name() + " Hierarchy", getOutputCharset());
       output.beginBody();
       printNavBarTop(output, "package-tree");
 
@@ -550,8 +571,9 @@ public class HtmlDoclet
    {
       HtmlPage output = new HtmlPage(new File(getTargetDirectory(),
                                               "tree" + filenameExtension),
-                                     ".");
-      output.beginPage("Hierarchy");
+                                     ".",
+                                     getOutputDocEncoding());
+      output.beginPage("Hierarchy", getOutputCharset());
       output.beginBody();
       printNavBarTop(output, "full-tree");
 
@@ -646,6 +668,7 @@ public class HtmlDoclet
       HtmlPage output = new HtmlPage(new File(getTargetDirectory(),
                                               "index" + filenameExtension),
                                      ".",
+                                     getOutputDocEncoding(),
                                      HtmlPage.DOCTYPE_FRAMESET);
       
       String title;
@@ -655,7 +678,7 @@ public class HtmlDoclet
       else {
          title = optionWindowTitle.getValue();
       }
-      output.beginPage(title);
+      output.beginPage(title, getOutputCharset());
       output.beginElement("frameset", "cols", "20%,80%");
       output.beginElement("frameset", "rows", "25%,75%");
       output.atomicElement("frame", 
@@ -678,8 +701,9 @@ public class HtmlDoclet
    {
       HtmlPage output = new HtmlPage(new File(getTargetDirectory(),
                                               "all-packages" + filenameExtension),
-                                     ".");
-      output.beginPage("Package Menu");
+                                     ".",
+                                     getOutputDocEncoding());
+      output.beginPage("Package Menu", getOutputCharset());
       output.beginBody();
 
       output.div(CssClass.PACKAGE_MENU_TITLE, "Packages");
@@ -735,8 +759,9 @@ public class HtmlDoclet
    {
       HtmlPage output = new HtmlPage(new File(getTargetDirectory(),
                                               "all-classes" + filenameExtension),
-                                     ".");
-      output.beginPage("Class Menu");
+                                     ".",
+                                     getOutputDocEncoding());
+      output.beginPage("Class Menu", getOutputCharset());
       output.beginBody();
 
       output.div(CssClass.CLASS_MENU_TITLE, "All Classes");
@@ -753,9 +778,10 @@ public class HtmlDoclet
    {
       HtmlPage output = new HtmlPage(new File(packageDir,
                                               "classes" + filenameExtension),
-                                     pathToRoot);
+                                     pathToRoot,
+                                     getOutputDocEncoding());
 
-      output.beginPage(packageDoc.name() + " Class Menu");
+      output.beginPage(packageDoc.name() + " Class Menu", getOutputCharset());
       output.beginBody();
 
       output.beginDiv(CssClass.CLASS_MENU_TITLE);
@@ -804,8 +830,9 @@ public class HtmlDoclet
       }
       HtmlPage output = new HtmlPage(new File(getTargetDirectory(),
                                               pageName + filenameExtension),
-                                     ".");
-      output.beginPage("Alphabetical Index");
+                                     ".",
+                                     getOutputDocEncoding());
+      output.beginPage("Alphabetical Index", getOutputCharset());
       output.beginBody();
       printNavBarTop(output, "index");
 
@@ -914,8 +941,9 @@ public class HtmlDoclet
    {
       HtmlPage output = new HtmlPage(new File(getTargetDirectory(),
                                               "deprecated" + filenameExtension),
-                                     ".");
-      output.beginPage("Deprecated API");
+                                     ".",
+                                     getOutputDocEncoding());
+      output.beginPage("Deprecated API", getOutputCharset());
       output.beginBody();
       printNavBarTop(output, "deprecated");
 
@@ -1045,8 +1073,9 @@ public class HtmlDoclet
    {
       HtmlPage output = new HtmlPage(new File(getTargetDirectory(),
                                               "index-noframes" + filenameExtension),
-                                     ".");
-      output.beginPage("Overview");
+                                     ".",
+                                     getOutputDocEncoding());
+      output.beginPage("Overview", getOutputCharset());
       output.beginBody();
 
       printNavBarTop(output, "overview");
@@ -1135,8 +1164,9 @@ public class HtmlDoclet
    {
       HtmlPage output = new HtmlPage(new File(packageDir,
                                               classDoc.name() + "-uses" + filenameExtension),
-                                     pathToRoot);
-      output.beginPage(classDoc.name());
+                                     pathToRoot,
+                                     getOutputDocEncoding());
+      output.beginPage(classDoc.name(), getOutputCharset());
       output.beginBody();
       printNavBarTop(output, "uses", classDoc);
 
@@ -1228,8 +1258,9 @@ public class HtmlDoclet
    {
       HtmlPage output = new HtmlPage(new File(packageDir,
                                               classDoc.name() + filenameExtension),
-                                     pathToRoot);
-      output.beginPage(classDoc.name());
+                                     pathToRoot,
+                                     getOutputDocEncoding());
+      output.beginPage(classDoc.name(), getOutputCharset());
       output.beginBody();
       printNavBarTop(output, "class", classDoc);
       
@@ -1322,6 +1353,7 @@ public class HtmlDoclet
                          "Method Details");
 
       printNavBarBottom(output, "class", classDoc);
+
       output.endBody();
       output.endPage();
       output.close();
@@ -1628,10 +1660,11 @@ public class HtmlDoclet
       }
    }
 
-   private void printTag(HtmlPage output, Tag tag, boolean firstSentence)
+   private void printTag(HtmlPage output, HtmlRepairer repairer,
+                         Tag tag, boolean firstSentence)
    {
       if ("Text".equals(tag.name())) {
-         output.print(tag.text());
+         output.print(repairer.getWellformedHTML(tag.text()));
       }
       else if ("@link".equals(tag.name())) {
          SeeTag seeTag = (SeeTag)tag;
@@ -1686,9 +1719,14 @@ public class HtmlDoclet
 
    private void printTags(HtmlPage output, Tag[] tags, boolean firstSentence)
    {
+      HtmlRepairer repairer = new HtmlRepairer(getRootDoc(), 
+                                               true, false,
+                                               null, null,
+                                               true);
       for (int i=0; i<tags.length; ++i) {
-         printTag(output, tags[i], firstSentence);
+         printTag(output, repairer, tags[i], firstSentence);
       }
+      output.print(repairer.terminateText());
    }
 
    private String getClassDocURL(HtmlPage output, ClassDoc classDoc)
@@ -1855,10 +1893,13 @@ public class HtmlDoclet
          if (!packageDir.exists() && !packageDir.mkdirs()) {
             throw new IOException("Couldn't create directory " + packageDir);
          }
-         File sourcePackageDir = null;
          try {
-            sourcePackageDir = getPackageSourceDir(packageDoc);
-            copyDocFiles(sourcePackageDir, packageDir);
+            List packageSourceDirs = getPackageSourceDirs(packageDoc);
+            Iterator pdIt = packageSourceDirs.iterator();
+            while (pdIt.hasNext()) {
+               File sourcePackageDir = (File)pdIt.next();
+               copyDocFiles(sourcePackageDir, packageDir);
+            }
          }
          catch (IOException ignore) {
          }
@@ -1882,7 +1923,9 @@ public class HtmlDoclet
                   printClassUsagePage(packageDir, pathToRoot, classDocs[j]);
                }
                if (optionLinkSource.getValue() && null == classDoc.containingClass()) {
-                  if (null != sourcePackageDir) {
+                  try {
+                     File sourceFile = getSourceFile(classDoc);
+
                      Java2xhtml java2xhtml = new Java2xhtml();
                      Properties properties = new Properties();
                      properties.setProperty("isCodeSnippet", "true");
@@ -1890,8 +1933,6 @@ public class HtmlDoclet
                      java2xhtml.setProperties(properties);
                      
                      StringWriter sourceBuffer = new StringWriter();
-                     File sourceFile = new File(sourcePackageDir,
-                                                classDoc.name() + ".java");
                      FileReader sourceReader = new FileReader(sourceFile);
                      IOToolkit.copyStream(sourceReader, sourceBuffer);
                      sourceReader.close();
@@ -1903,7 +1944,7 @@ public class HtmlDoclet
                      targetWriter.write(result);
                      targetWriter.close();
                   }
-                  else {
+                  catch (IOException e) {
                      printWarning("Cannot locate source file for class " + classDoc.qualifiedTypeName());
                   }
                }
@@ -2044,6 +2085,15 @@ public class HtmlDoclet
         }
      };
 
+   private DocletOptionString optionDocEncoding =
+     new DocletOptionString("-docencoding");
+
+   private DocletOptionString optionEncoding =
+     new DocletOptionString("-encoding");
+
+   private DocletOptionString optionCharset =
+     new DocletOptionString("-charset");
+
    private DocletOption[] options = 
       {
          optionNoNavBar,
@@ -2063,6 +2113,9 @@ public class HtmlDoclet
          optionLinkSource,
          optionLink,
          optionLinkOffline,
+         optionDocEncoding,
+         optionEncoding,
+         optionCharset,
       };
 
    static {
@@ -2072,5 +2125,21 @@ public class HtmlDoclet
    private static String replaceDocRoot(HtmlPage output, String str)
    {
       return StringToolkit.replace(str, "{@docRoot}", output.getPathToRoot());
+   }
+
+   private String getOutputDocEncoding()
+   {
+      String encoding = optionDocEncoding.getValue();
+
+      if (null == encoding) {
+         encoding = optionEncoding.getValue();
+      }
+
+      return encoding;
+   }
+
+   private String getOutputCharset()
+   {
+      return optionCharset.getValue();
    }
 }

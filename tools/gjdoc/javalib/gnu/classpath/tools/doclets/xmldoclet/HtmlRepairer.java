@@ -59,6 +59,8 @@ public final class HtmlRepairer {
    private MemberDoc contextMember;
    private StringBuffer output = new StringBuffer();
    private Stack tagStack = new Stack();
+   private boolean isLeadingTag = true;
+   private boolean throwAwayLeadingPara = false;
 
    private static Map tagInfoMap;
 
@@ -75,12 +77,14 @@ public final class HtmlRepairer {
 
    public HtmlRepairer(DocErrorReporter warningReporter, 
 		       boolean noWarn, boolean noEmailWarn,
-		       ClassDoc contextClass, MemberDoc contextMember) {
+		       ClassDoc contextClass, MemberDoc contextMember,
+                       boolean throwAwayLeadingPara) {
       this.warningReporter = warningReporter;
       this.noWarn = noWarn;
       this.noEmailWarn = noEmailWarn;
       this.contextClass = contextClass;
       this.contextMember = contextMember;
+      this.throwAwayLeadingPara = throwAwayLeadingPara;
    }
   
    private static String replaceStr(String haystack, String needle, String replacement) {
@@ -93,6 +97,12 @@ public final class HtmlRepairer {
    }
  
    private void haveText(String text) {
+
+      if (isLeadingTag && throwAwayLeadingPara) {
+         if (0 != text.trim().length()) {
+            isLeadingTag = false;
+         }
+      }
 
       text = replaceStr(text, "&lt1", "&lt;1");
       text = replaceStr(text, "&&", "&amp;&amp;");
@@ -107,6 +117,9 @@ public final class HtmlRepairer {
    }
 
    private void haveStartOrEndTag(String tag) {
+
+      boolean _isLeadingTag = isLeadingTag;
+      isLeadingTag = false;
 
       tag = tag.trim();
 
@@ -144,6 +157,11 @@ public final class HtmlRepairer {
       }
 
       tagName = tagName.toLowerCase();
+
+      if (_isLeadingTag && "p".equals(tagName) && !isEndTag && throwAwayLeadingPara) {
+         return;
+      }
+
       if ("p".equals(tagName) || "br".equals(tagName) || "hr".equals(tagName)) {
 	 // throw away </p> and </br>
 	 if (isEndTag) {

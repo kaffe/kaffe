@@ -21,8 +21,18 @@
 package gnu.classpath.tools.gjdoc;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CoderResult;
+import java.nio.charset.CodingErrorAction;
 import java.util.*;
+
 import com.sun.javadoc.*;
+
+import gnu.classpath.tools.IOToolkit;
+import gnu.classpath.tools.NotifyingInputStreamReader;
 
    abstract class SourceComponent {
 
@@ -96,6 +106,12 @@ import com.sun.javadoc.*;
 
 	    parser.setLastComment(new String(source, startIndex, endIndex-startIndex));
 	 }
+         else if (null == parser.getBoilerplateComment()) {
+            String boilerplateComment = new String(source, startIndex + 2, endIndex-startIndex - 4);
+            if (boilerplateComment.toLowerCase().indexOf("copyright") >= 0) {
+               parser.setBoilerplateComment(boilerplateComment);
+            }
+         }
 
 	 return endIndex;
       }
@@ -525,24 +541,15 @@ public class Parser {
 
    private int currentLine;
 
-   private static final int READ_BUFFER_SIZE = 512;
-
-   static char[] loadFile(File file, String encoding) throws IOException {
-      StringWriter writer = new StringWriter();
-      FileInputStream in = new FileInputStream(file);
-      Reader reader;
-      if (null != encoding) {
-         reader = new InputStreamReader(in, encoding);
-      }
-      else {
-         reader = new InputStreamReader(in);
-      }
-      char[] buffer = new char[READ_BUFFER_SIZE];
-      int nread;
-      while ((nread=reader.read(buffer))>=0) {
-	 writer.write(buffer,0,nread);
-      }
-      return writer.toString().toCharArray();
+   static char[] loadFile(File file, String encoding) 
+      throws IOException 
+   {
+      InputStream in = new FileInputStream(file);
+      Reader reader
+         = new BufferedReader(new NotifyingInputStreamReader(in, encoding));
+      char[] result = IOToolkit.readFully(reader);
+      reader.close();
+      return result;
    }
 
    static SourceComponent[] sourceLevelComponents;
@@ -588,6 +595,7 @@ public class Parser {
    {
       this.currentPackage = PackageDocImpl.DEFAULT_PACKAGE;
       this.outerClass = null;
+      this.boilerplateComment = null;
 
       this.addComments=addComments;
 
@@ -739,7 +747,8 @@ public class Parser {
       ctx.classDoc.setFilteredConstructors((ConstructorDoc[])toSortedArray(ctx.filteredConstructorList, new ConstructorDoc[0]));
 
       ctx.classDoc.setInnerClasses((ClassDocImpl[])toSortedArray(ctx.innerClassesList, new ClassDocImpl[0]));
-      
+      ctx.classDoc.setBoilerplateComment(boilerplateComment);
+
       Main.getRootDoc().addClassDoc(ctx.classDoc);
       
       if (Main.DESCEND_INTERFACES) {
@@ -791,6 +800,8 @@ public class Parser {
 
    List referencedClassesList = new LinkedList();
 
+   String boilerplateComment = null;
+
    void packageOpened(String packageName) {
       currentPackage=Main.getRootDoc().findOrCreatePackageDoc(packageName);
    }
@@ -814,7 +825,14 @@ public class Parser {
       return this.lastComment;
    }
 
-   public void finalize() throws Throwable {
-      super.finalize();
+   void setBoilerplateComment(String boilerplateComment)
+   {
+      this.boilerplateComment = boilerplateComment;
    }
+
+   String getBoilerplateComment()
+   {
+      return boilerplateComment;
+   }
+
 }

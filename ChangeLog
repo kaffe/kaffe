@@ -1,3 +1,115 @@
+2004-12-11  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	tools/gjdoc/javalib/Makefile.am,
+	tools/gjdoc/javalib/Makefile.in,:
+	Regenerated.
+
+	* tools/gjdoc/javalib/gnu/classpath/tools/MalformedInputEvent.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/MalformedInputListener.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/NotifyingInputStreamReader.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/IOToolkit.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/AbstractDoclet.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/htmldoclet/CssClass.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/Driver.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/HtmlRepairer.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/AbstractTagImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/DocImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/Main.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/PackageDocImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/Parser.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/java2xhtml/Java2xhtml.java:
+	Resynced with gjdoc.
+
+	2004-12-10  Julian Scheid <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/AbstractDoclet.java: handle
+	multiple source directories.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+	likewise.
+
+	2004-12-10  Julian Scheid <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: fix NPE when empty
+	directories are examined.
+
+	* src/gnu/classpath/tools/java2xhtml/Java2xhtml.java: fix
+	StringIndexOutOfBoundsException.
+
+	2004-12-10  Julian Scheid <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java: move
+	license text above bottom navigation bar.
+
+	* src/gnu/classpath/tools/gjdoc/DocImpl.java: fix bug which would
+	copy license text only for documented classes.
+
+	2004-12-10  Julian Scheid <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: add option
+	-licensetext, add to usage.
+
+	* src/gnu/classpath/tools/gjdoc/DocImpl.java: only copy license if
+	option -licensetext has been given on the command line.
+
+	* src/gnu/classpath/tools/gjdoc/Parser.java: only detect license
+	comment if it contains the string "copyright", case-insensitive.
+
+
+	2004-12-10  Julian Scheid <julian@sektor37.de>
+
+	* Makefile.am: added new files.
+
+	* src/gnu/classpath/tools/IOToolkit.java: added method
+	readFully(Reader).
+
+	* src/gnu/classpath/tools/gjdoc/Parser.java: use
+	NotifyingInputStreamReader for reading source files; extract
+	boilerplate comment.
+
+	* src/gnu/classpath/tools/gjdoc/PackageDocImpl.java: add null
+	boilerplate parameter to invocation of parseCommentTags().
+
+	* src/gnu/classpath/tools/gjdoc/ClassDocImpl.java: add null
+	boilerplate parameter to invocation of parseCommentTags().
+
+	* src/gnu/classpath/tools/gjdoc/AbstractTagImpl.java: likewise.
+
+	* src/gnu/classpath/tools/gjdoc/DocImpl.java: improved detection
+	of firstCommentTags. add support for boilerplate text.
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: updated usage text;
+	default locate now US english; default source encoding now
+	temporarily US-ASCII; use BreakIterator by default for
+	non-english languages.
+
+	* src/gnu/classpath/tools/doclets/xmldoclet/HtmlRepairer.java: add
+	parameter for dropping leading <p> tag.
+
+	* src/gnu/classpath/tools/doclets/xmldoclet/Driver.java: pass
+	additional parameter to HtmlRepairer constructor.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/CssClass.java: add
+	CSS class for boilerplate; support suggested attributes for divs.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java:
+	support output encoding; support suggested attributes.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+	support output encoding and charset; support boilerplate text;
+	repair HTML code;
+
+	2004-12-10  Julian Scheid <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/MalformedInputEvent.java:
+	* src/gnu/classpath/tools/MalformedInputListener.java:
+	* src/gnu/classpath/tools/NotifyingInputStreamReader.java: 
+	Initial version.
+	
 2004-12-10  Adam Heath  <doogie@brainfood.com>
 
 	* scripts/sort-warnings.pl:

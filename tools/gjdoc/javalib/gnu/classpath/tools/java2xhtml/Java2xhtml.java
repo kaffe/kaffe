@@ -683,7 +683,7 @@ public class Java2xhtml
         }
         // process the input Java code Stringbuffer
         // subtract 2 from the bufferIn.length() to get EOF marker
-        while (presentIndex++ != (bufferIn.length() - 2))
+        while (presentIndex++ < (bufferIn.length() - 2))
         {
             for (int i = 0; i < extraIndentation; i++)
             {

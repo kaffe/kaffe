@@ -20,11 +20,15 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 
 package gnu.classpath.tools.doclets.htmldoclet;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.BufferedWriter;
-import java.io.PrintWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Writer;
 
 import com.sun.javadoc.Tag;
 
@@ -41,16 +45,25 @@ public class HtmlPage
    public static final String DOCTYPE_FRAMESET = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Frameset//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\">";
    public static final String DOCTYPE_STRICT = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">";
 
-   public HtmlPage(File file, String pathToRoot)
+   public HtmlPage(File file, String pathToRoot, String encoding)
       throws IOException
    {
-      this(file, pathToRoot, DOCTYPE_STRICT);
+      this(file, pathToRoot, encoding, DOCTYPE_STRICT);
    }
 
-   public HtmlPage(File file, String pathToRoot, String docType)
+   public HtmlPage(File file, String pathToRoot, String encoding, String docType)
       throws IOException
    {
-      this.out = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+      OutputStream fileOut = new FileOutputStream(file);
+      Writer writer;
+      if (null != encoding) {
+         writer = new OutputStreamWriter(fileOut,
+                                         encoding);
+      }
+      else {
+         writer = new OutputStreamWriter(fileOut);
+      }
+      this.out = new PrintWriter(new BufferedWriter(writer));
       this.pathToRoot = pathToRoot;
       this.docType = docType;
    }
@@ -140,7 +153,22 @@ public class HtmlPage
    
    public void beginDiv(CssClass cssClass)
    {
-      beginElement(cssClass.getDivElementName(), "class", cssClass.getName());
+      String[] divAttributeNames = cssClass.getAttributeNames();
+      String[] divAttributeValues = cssClass.getAttributeValues();
+      if (null == divAttributeNames) {
+         divAttributeNames = new String[0];
+      }
+      if (null == divAttributeValues) {
+         divAttributeValues = new String[0];
+      }
+
+      String[] attributeNames = new String[1 + divAttributeNames.length];
+      String[] attributeValues = new String[1 + divAttributeValues.length];
+      
+      System.arraycopy(divAttributeNames, 0, attributeNames, 1, divAttributeNames.length);
+      System.arraycopy(divAttributeValues, 0, attributeValues, 1, divAttributeNames.length);
+
+      beginElement(cssClass.getDivElementName(), attributeNames, attributeValues);
    }
 
    public void endDiv(CssClass cssClass)
@@ -175,15 +203,18 @@ public class HtmlPage
       endDiv(cssClass);
    }
 
-   public void beginPage(String title)
+   public void beginPage(String title, String charset)
    {
-      print("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+      print("<?xml version=\"1.0\" encoding=\"" + charset + "\"?>\n");
       print(docType);
       print("<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\" xml:lang=\"en\">");
       beginElement("head");
       beginElement("title");
       print(title);
       endElement("title");
+      atomicElement("meta", 
+                    new String[] { "http-equiv", "content" },
+                    new String[] { "Content-Type", "text/html; charset=" + charset });
       endElement("head");
    }
 

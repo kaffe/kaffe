@@ -1376,7 +1376,8 @@ public class Driver {
             }
 
             htmlRepairer = new HtmlRepairer(rootDoc, noHTMLWarn, noEmailWarn,
-                                            currentClass, currentMember);
+                                            currentClass, currentMember,
+                                            false);
 
             collectUsage();
 

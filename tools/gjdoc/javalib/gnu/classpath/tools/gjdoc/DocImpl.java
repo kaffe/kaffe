@@ -37,6 +37,7 @@ public abstract class DocImpl implements Doc, TagContainer {
    protected static Tag[] paramTagEmptyArr = new ParamTagImpl[0];
    protected static Tag[] throwsTagEmptyArr = new ThrowsTagImpl[0];
    protected SourcePosition position;
+   private String boilerplateComment;
 
    // Return the text of the comment for this doc item. 
    public String commentText() {
@@ -170,12 +171,17 @@ public abstract class DocImpl implements Doc, TagContainer {
                                       length - endOffset,
                                       getContextClass(),
                                       getContextMember(),
-                                      null);
+                                      null,
+                                      boilerplateComment);
 
 	 rawDocOffset=Main.getRootDoc().writeRawComment(rawDocumentation);
 	 rawDocumentation=null;
 
 	 resolveTags();
+      }
+      else if (tagMap.isEmpty() && null != boilerplateComment) {
+         tagMap.put("all", new Tag[] { new TagImpl("@boilerplate", boilerplateComment) });
+         tagMap.put("@boilerplate", new Tag[] { new TagImpl("@boilerplate", boilerplateComment) });
       }
    }
 
@@ -225,8 +231,10 @@ public abstract class DocImpl implements Doc, TagContainer {
             if (text[startIndex] == '.'
                 && (startIndex+1 == endIndex
                     || Character.isWhitespace(text[startIndex+1])
-                    || isHTMLBreakTag(text, startIndex+1, endIndex)))
+                    || isHTMLBreakTag(text, startIndex+1, endIndex)
+                    )) {
                return startIndex;
+            }
             
 	    startIndex++;
          }
@@ -239,29 +247,34 @@ public abstract class DocImpl implements Doc, TagContainer {
     */
    private static boolean isHTMLBreakTag(char[] text, int start, int end)
    {
-     return
-	(text[start] == '<'
-	 &&
-	  (
-	   (
-	    start+2 < end
-	    && (text[start+1] == 'p' || text[start+1] == 'P')
-	    && (text[start+2] == '>' || Character.isWhitespace(text[start+2]))
-	   )
-	  ||
-	   (
-	    start+3 < end
-	    && (text[start+1] == 'b' || text[start+1] == 'B')
-	    && (text[start+2] == 'r' || text[start+2] == 'R')
-	    && (text[start+3] == '>' || Character.isWhitespace(text[start+3]))
-	   )
-	  )
-	);
+      String[] breakTags = {
+         "p>", "/p>", "h1>", "h2>", "h3>", "h4>", "h5>", "h6>", "hr>",
+         "pre>", "/pre>"
+      };
+
+      if (text[start] == '<') {
+
+      outer:
+         for (int i=0; i<breakTags.length; ++i) {
+            String tag = breakTags[i];
+            int len = tag.length();
+            if (start + len < end) {
+               for (int j=0; j<len; ++j) {
+                  char c = tag.charAt(j);
+                  if (Character.toLowerCase(text[start + 1 + j]) != c) {
+                     continue outer;
+                  }
+               }
+               return true;
+            }
+         }
+      }
+      return false;
    }
 
    public static Map parseCommentTags(char[] comment, int startIndex, int endIndex, 
-				      ClassDocImpl contextClass, MemberDocImpl contextMember,
-                                      AbstractTagImpl contextTag) {
+                                      ClassDocImpl contextClass, MemberDocImpl contextMember,
+                                      AbstractTagImpl contextTag, String boilerplateComment) {
 
       int rawDocStart=skipHtmlWhitespace(comment, startIndex);
 
@@ -566,6 +579,11 @@ public abstract class DocImpl implements Doc, TagContainer {
 	 }
       }
 
+
+      if (null == contextMember && null != boilerplateComment && Main.getInstance().isCopyLicenseText()) {
+         addTag(tags, "@boilerplate", boilerplateComment, false, contextClass, null, null, false);
+      }
+
       Map rc=new HashMap();
 
       for (Iterator it=tags.keySet().iterator(); it.hasNext(); ) {
@@ -613,12 +631,12 @@ public abstract class DocImpl implements Doc, TagContainer {
       }
    }
 
-   private static AbstractTagImpl addTag(Map tags, String name,
-                                         String value, boolean isFirstSentence,
-                                         ClassDocImpl contextClass,
-                                         MemberDocImpl contextMember,
-                                         AbstractTagImpl contextTag,
-                                         boolean isInline) {
+   protected static AbstractTagImpl addTag(Map tags, String name,
+                                           String value, boolean isFirstSentence,
+                                           ClassDocImpl contextClass,
+                                           MemberDocImpl contextMember,
+                                           AbstractTagImpl contextTag,
+                                           boolean isInline) {
 
       AbstractTagImpl tag;
 
@@ -919,6 +937,11 @@ public abstract class DocImpl implements Doc, TagContainer {
    public boolean isEmptyDoc()
    {
       return tagMap.isEmpty();
+   }
+
+   void setBoilerplateComment(String boilerplateComment)
+   {
+      this.boilerplateComment = boilerplateComment;
    }
 }
 

@@ -84,6 +84,7 @@ class PackageDocImpl extends DocImpl implements GjdocPackageDoc {
 				      rawDocumentation.length(),
 				      null,
                                       null,
+                                      null,
                                       null);
       }
 

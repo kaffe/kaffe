@@ -1,22 +1,22 @@
 /* gnu.classpath.tools.gjdoc.Main
- Copyright (C) 2001 Free Software Foundation, Inc.
+   Copyright (C) 2001 Free Software Foundation, Inc.
 
- This file is part of GNU Classpath.
+This file is part of GNU Classpath.
 
- GNU Classpath is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2, or (at your option)
- any later version.
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
  
- GNU Classpath is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- General Public License for more details.
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with GNU Classpath; see the file COPYING.  If not, write to the
- Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- 02111-1307 USA. */
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.gjdoc;
 
@@ -167,7 +167,7 @@ public final class Main
   /**
    * Option "-locale:" Specify the locale charset of Java source files.
    */
-  private Locale option_locale = Locale.getDefault();
+  private Locale option_locale = new Locale("en", "us");
 
   /**
    * Option "-encoding": Specify character encoding of Java source files.
@@ -201,6 +201,11 @@ public final class Main
    * detecting the end of the first sentence.
    */
   private boolean option_breakiterator;
+
+  /**
+   * Option "-licensetext" - whether to copy license text.
+   */
+  private boolean option_licensetext;
 
   /**
    * The locale-dependent collator used for sorting.
@@ -379,7 +384,7 @@ public final class Main
             options.add(optionAndValues);
           }
         }
-        else
+        else if (option.length() > 0)
         {
 
           //--- Add to list of packages/classes if not option or option
@@ -402,7 +407,7 @@ public final class Main
       for (Iterator it = option_subpackages.iterator(); it.hasNext();)
       {
         String subpackage = (String) it.next();
-        List foundPackages = new LinkedList();
+        Set foundPackages = new LinkedHashSet();
 
         for (Iterator pit = option_sourcepath.iterator(); pit.hasNext(); ) {
           File sourceDir = (File)pit.next();
@@ -642,24 +647,26 @@ public final class Main
    */
   private static void findPackages(String subpackage, 
                                    File packageDir, 
-                                   List result)
+                                   Set result)
   {
     File[] files = packageDir.listFiles();
-    for (int i=0; i<files.length; ++i) {
-      File file = files[i];
-      if (!file.isDirectory() && file.getName().endsWith(".java")) {
-        if (isValidJavaFile(file, subpackage)) {
-          result.add(subpackage);
-          break;
+    if (null != files) {
+      for (int i=0; i<files.length; ++i) {
+        File file = files[i];
+        if (!file.isDirectory() && file.getName().endsWith(".java")) {
+          if (isValidJavaFile(file, subpackage)) {
+            result.add(subpackage);
+            break;
+          }
         }
       }
-    }
-    for (int i=0; i<files.length; ++i) {
-      File file = files[i];
-      if (file.isDirectory()) {
-        findPackages(subpackage + "." + file.getName(),
-                     file,
-                     result);
+      for (int i=0; i<files.length; ++i) {
+        File file = files[i];
+        if (file.isDirectory()) {
+          findPackages(subpackage + "." + file.getName(),
+                       file,
+                       result);
+        }
       }
     }
   }
@@ -860,7 +867,12 @@ public final class Main
 
       //--- We have all information we need to start the doclet at this time
     
-      rootDoc.setSourceEncoding(option_encoding);
+      if (null != option_encoding) {
+        rootDoc.setSourceEncoding(option_encoding);
+      }
+      else {
+        rootDoc.setSourceEncoding("US-ASCII"); // FIXME
+      }
       rootDoc.setSourcePath(option_sourcepath);
 
       //addJavaLangClasses();
@@ -1158,6 +1170,13 @@ public final class Main
           option_breakiterator = true;
         }
       });
+    options.put("-licensetext", new OptionProcessor(1)
+      {
+        void process(String[] args)
+        {
+          option_licensetext = true;
+        }
+      });
     options.put("-overview", new OptionProcessor(2)
       {
         void process(String[] args)
@@ -1221,61 +1240,65 @@ public final class Main
     System.err
         .print("\n"
             + "USAGE: gjdoc [options] [packagenames] "
-            + /* "[sourcefiles] "+ */"[classnames] [@files]\n\n"
-            + "  -overview <file>        Read overview documentation from HTML file\n"
-            + "  -public                 Include only public classes and members\n"
-            + "  -protected              Include protected and public classes and members.\n"
-            + "                          This is the default.\n"
-            + "  -package                Include package/protected/public classes and members\n"
-            + "  -private                Include all classes and members\n"
-            + "  -help                   Show this information\n"
-            + "  -doclet <class>         Doclet class to use for generating output\n"
-            + "  -docletpath <classpath> Specifies the search path for the doclet and dependencies\n"
-            + "  -source <release>       Provide source compatibility with specified release (1.4 to handle assertion)\n"
-            + "  -sourcepath <pathlist>  Where to look for source files\n"
-            + "  -verbose                Output messages about what Gjdoc is doing [ignored]\n"
-            + "  -quiet                  Do not print non-error and non-warning messages\n"
+            + "[sourcefiles] [classnames] [@files]\n\n"
+            + "  -overview <file>         Read overview documentation from HTML file\n"
+            + "  -public                  Include only public classes and members\n"
+            + "  -protected               Include protected and public classes and members.\n"
+            + "                           This is the default.\n"
+            + "  -package                 Include package/protected/public classes and members\n"
+            + "  -private                 Include all classes and members\n"
+            + "  -help                    Show this information\n"
+            + "  -doclet <class>          Doclet class to use for generating output\n"
+            + "  -docletpath <classpath>  Specifies the search path for the doclet and dependencies\n"
+            + "  -source <release>        Provide source compatibility with specified release (1.4 to handle assertion)\n"
+            + "  -sourcepath <pathlist>   Where to look for source files\n"
+            + "  -verbose                 Output messages about what Gjdoc is doing [ignored]\n"
+            + "  -quiet                   Do not print non-error and non-warning messages\n"
             + "  -locale <name>           Locale to be used, e.g. en_US or en_US_WIN [ignored]\n"
             + "  -encoding <name>         Source file encoding name\n"
             + "  -breakiterator           Compute first sentence with BreakIterator\n"
 
+            + "Gjdoc extension options:\n"
+            + "  -licensetext             Include license text from source files\n"
+
             + "Standard doclet options:\n"
             + "  -d                      Set target directory\n"
-            /* + " -use                     Includes the 'Use' page for each documented class and package\n" */
-            + "  -version                 Includes the '@version' tag\n"
-            + "  -author                  Includes the '@author' tag\n"
-            + "  -splitindex              Splits the index file into multiple files\n"
-            + "  -windowtitle <text>      Browser window title\n"
-            + "  -doctitle <text>         Title near the top of the overview summary file (html allowed)\n"
-            + "  -title <text>            Title for this set of API documentation (deprecated, -doctitle should be used instead).\n"
-            + "  -header <text>           Text to include in the top navigation bar (html allowed)\n"
-            + "  -footer <text>           Text to include in the bottom navigation bar (html allowed)\n"
-            + "  -bottom <text>           Text to include at the bottom of each output file (html allowed)\n"
-            /* + " -link <extdoc URL>       Link to external javadoc-generated documentation you want to link to\n" */
-            /* + " -linkoffline <extdoc URL> <packagelistLoc>  Link to external javadoc-generated documentation for the specified package-list\n" */
-            + " -linksource              Creates an HTML version of each source file\n"
-            + " -group <groupheading> <packagepattern:packagepattern:...> Separates packages on the overview page into groups\n"
-            + " -nodeprecated            Prevents the generation of any deprecated API\n"
-            + " -nodeprecatedlist        Prevents the generation of the file containing the list of deprecated APIs and the link to the navigation bar to that page\n"
-            + "  -nosince                 Omit the '@since' tag\n"
-            + "  -notree                  Do not generate the class/interface hierarchy page\n"
-            + "  -noindex                 Do not generate the index file\n"
-            + "  -nohelp                  Do not generate the HELP link\n"
-            + "  -nonavbar                Do not generate the navbar, header and footer\n"
-            + "  -helpfile <filename>     Path of an alternate help file\n"
+            + "  -use                    Includes the 'Use' page for each documented class and package\n"
+            + "  -version                Includes the '@version' tag\n"
+            + "  -author                 Includes the '@author' tag\n"
+            + "  -splitindex             Splits the index file into multiple files\n"
+            + "  -windowtitle <text>     Browser window title\n"
+            + "  -doctitle <text>        Title near the top of the overview summary file (html allowed)\n"
+            + "  -title <text>           Title for this set of API documentation (deprecated, -doctitle should be used instead).\n"
+            + "  -header <text>          Text to include in the top navigation bar (html allowed)\n"
+            + "  -footer <text>          Text to include in the bottom navigation bar (html allowed)\n"
+            + "  -bottom <text>          Text to include at the bottom of each output file (html allowed)\n"
+            + "  -link <extdoc URL>      Link to external javadoc-generated documentation you want to link to\n"
+            + "  -linkoffline <extdoc URL> <packagelistLoc>  Link to external javadoc-generated documentation for the specified package-list\n"
+            + "  -linksource             Creates an HTML version of each source file\n"
+            + "  -group <groupheading> <packagepattern:packagepattern:...> Separates packages on the overview page into groups\n"
+            + "  -nodeprecated           Prevents the generation of any deprecated API\n"
+            + "  -nodeprecatedlist       Prevents the generation of the file containing the list of deprecated APIs and the link to the navigation bar to that page\n"
+            + "  -nosince                Omit the '@since' tag\n"
+            + "  -notree                 Do not generate the class/interface hierarchy page\n"
+            + "  -noindex                Do not generate the index file\n"
+            + "  -nohelp                 Do not generate the HELP link\n"
+            + "  -nonavbar               Do not generate the navbar, header and footer\n"
+            + "  -helpfile <filename>    Path of an alternate help file\n"
             + "  -stylesheetfile <filename>   Path of an alternate html stylesheet\n"
             /* + " -serialwarn              Generate compile time error for missing '@serial' tags\n" */
-            /* + " -charset <IANACharset>   Specifies the HTML charset\n" */
-            /* + " -docencoding <IANACharset> Specifies the encoding of the generated HTML files\n" */
+            + "  -charset <IANACharset>   Specifies the HTML charset\n"
+            + "  -docencoding <IANACharset> Specifies the encoding of the generated HTML files\n"
             + "  -tag <tagname>:Xaoptcmf:\"<taghead>\" Enables gjdoc to interpret a custom tag\n"
-            + "  -taglet                  Adds a Taglet class to the map of taglets.\n"
-            + "  -tagletpath              Sets the CLASSPATH to load subsequent Taglets from.\n"
-            + "  -subpackages <spkglist>  List of subpackages to recursively load\n"
-            + "  -exclude <pkglist>       List of packages to exclude\n"
-            + "  -docfilessubdirs         Enables deep copy of 'doc-files' directories\n"
-            + "  -excludedocfilessubdir <name1:name2:...> Excludes 'doc-files' subdirectories with a give name\n"
+            + "  -taglet                 Adds a Taglet class to the map of taglets.\n"
+            + "  -tagletpath             Sets the CLASSPATH to load subsequent Taglets from.\n"
+            + "  -subpackages <spkglist> List of subpackages to recursively load\n"
+            + "  -exclude <pkglist>      List of packages to exclude\n"
+            + "  -docfilessubdirs        Enables deep copy of 'doc-files' directories\n"
+            + "  -excludedocfilessubdir  <name1:name2:...> Excludes 'doc-files' subdirectories with a give name\n"
             /* + " -noqualifier all|<packagename1:packagename2:...> Do not qualify package name from ahead of class names\n" */
             /* + " -nocomment               Suppress the entire comment body including the main description and all tags, only generate the declarations\n" */
+               /**
             + "  -genhtml                Generate HTML code instead of XML code. This is the\n"
             + "                          default.\n"
             + "  -geninfo                Generate Info code instead of XML code.\n"
@@ -1305,6 +1328,7 @@ public final class Main
             + "     mailto-name            replace by <a>Real Name</a>.\n"
             + "     name-mailto-address    replace by Real Name (<a>abc@foo.com</a>).\n"
             + "     name-mangled-address   replace by Real Name (<a>abc AT foo DOT com</a>).\n"
+               **/
             );
   }
 
@@ -1392,7 +1416,16 @@ public final class Main
    */
   public boolean isUseBreakIterator()
   {
-    return this.option_breakiterator;
+    return this.option_breakiterator
+      || !getLocale().getLanguage().equals(Locale.ENGLISH.getLanguage());
+  }
+
+  /**
+   * Return whether boilerplate license text should be copied.
+   */
+  public boolean isCopyLicenseText()
+  {
+    return this.option_licensetext;
   }
 
   /**

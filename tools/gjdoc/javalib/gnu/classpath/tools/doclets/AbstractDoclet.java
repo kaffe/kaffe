@@ -904,8 +904,10 @@ public abstract class AbstractDoclet
     *
     *  @throws IOException if the source directory couldn't be
     *  located.
+    *
+    *  @return List of File
     */
-   protected File getPackageSourceDir(PackageDoc packageDoc)
+   protected List getPackageSourceDirs(PackageDoc packageDoc)
       throws IOException
    {
       if (null == sourcePaths) {
@@ -927,14 +929,36 @@ public abstract class AbstractDoclet
 
       String packageSubDir = packageDoc.name().replace('.', File.separatorChar);
       Iterator it = sourcePaths.iterator();
+      List result = new LinkedList();
       while (it.hasNext()) {
          File pathComponent = (File)it.next();
          File packageDir = new File(pathComponent, packageSubDir);
          if (packageDir.exists()) {
-            return packageDir;
+            result.add(packageDir);
          }
       }
-      throw new IOException("Couldn't locate source directory for package " + packageDoc.name());
+      if (result.isEmpty()) {
+         throw new IOException("Couldn't locate source directory for package " + packageDoc.name());
+      }
+      else {
+         return result;
+      }
+   }
+
+   protected File getSourceFile(ClassDoc classDoc)
+      throws IOException
+   {
+      List packageDirs = getPackageSourceDirs(classDoc.containingPackage());
+      Iterator it = packageDirs.iterator();
+      while (it.hasNext()) {
+         File packageDir = (File)it.next();
+         File sourceFile = new File(packageDir, getOuterClassDoc(classDoc).name() + ".java");
+         if (sourceFile.exists()) {
+            return sourceFile;
+         }
+      }
+
+      throw new IOException("Couldn't locate source file for class " + classDoc.qualifiedTypeName());
    }
 
    protected void printError(String error) 

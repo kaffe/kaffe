@@ -47,7 +47,8 @@ public abstract class AbstractTagImpl implements Tag, TagContainer {
 					   body.length(),
 					   contextClass,
                                            contextMember,
-                                           this);
+                                           this,
+                                           null);
    }
 
    public Tag[] firstSentenceTags() { 

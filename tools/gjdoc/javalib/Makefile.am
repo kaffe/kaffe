@@ -114,7 +114,10 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/java2xhtml/Java2xhtml.java \
 	gnu/classpath/tools/FileSystemClassLoader.java \
 	gnu/classpath/tools/IOToolkit.java \
-	gnu/classpath/tools/StringToolkit.java 
+	gnu/classpath/tools/StringToolkit.java \
+	gnu/classpath/tools/MalformedInputEvent.java \
+	gnu/classpath/tools/MalformedInputListener.java \
+	gnu/classpath/tools/NotifyingInputStreamReader.java
 
 
 ## Do not delete the previous blank line; update-class-list depends on it

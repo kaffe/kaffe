@@ -67,6 +67,7 @@ public class CssClass
    public static final CssClass INDEX_LETTERS = new CssClass("index letters");
    public static final CssClass INDEX_LETTER = new CssClass("index letter");
    public static final CssClass INDEX_LETTER_SPACER = new CssClass("index letter spacer");
+
    public static final CssClass CLASS_TITLE = new CssClass("class title outer");
    public static final CssClass CLASS_TITLE_PACKAGE = new CssClass("class title-package", "h3");
    public static final CssClass CLASS_TITLE_CLASS = new CssClass("class title-class", "h1");
@@ -80,6 +81,8 @@ public class CssClass
    public static final CssClass CLASS_SUMMARY = new CssClass("class summary");
    public static final CssClass CLASS_SUMMARY_LEFT = new CssClass("class summary left");
    public static final CssClass CLASS_SUMMARY_RIGHT = new CssClass("class summary right");
+   public static final CssClass CLASS_BOILERPLATE = new CssClass("boilerplate", "pre", new String[] { "style" }, new String[] { "font-size: x-small;" });
+
    public static final CssClass USAGE_TITLE = new CssClass("usage title", "h1");
    public static final CssClass USAGE_PACKAGE_TITLE = new CssClass("usage package title", "h2");
    public static final CssClass USAGE_USAGE_TITLE = new CssClass("usage usage title", "h3");
@@ -117,6 +120,8 @@ public class CssClass
 
    private String name;
    private String elementName;
+   private String[] attributeNames;
+   private String[] attributeValues;
 
    private CssClass(String name)
    {
@@ -125,8 +130,16 @@ public class CssClass
 
    private CssClass(String name, String elementName)
    {
+      this(name, elementName, null, null);
+   }
+
+
+   private CssClass(String name, String elementName, String[] attributeNames, String[] attributeValues)
+   {
       this.name = name;
       this.elementName = elementName;
+      this.attributeNames = attributeNames;
+      this.attributeValues = attributeValues;
    }
 
    public String getSpanElementName()
@@ -147,6 +160,16 @@ public class CssClass
       else {
          return "div";
       }
+   }
+
+   public String[] getAttributeNames()
+   {
+      return this.attributeNames;
+   }
+
+   public String[] getAttributeValues()
+   {
+      return this.attributeValues;
    }
 
    public String getName()
