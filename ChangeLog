@@ -1,5 +1,13 @@
 2003-06-14 Dalibor Topic <robilad@yahoo.com>
 
+	* configure.in:
+	Configuration fixes for m68k-amigaos. Split huge lines
+	into smaller ones.
+
+	Reported by: Tony Wyatt <wyattaw@optushome.com.au>
+	
+2003-06-14 Dalibor Topic <robilad@yahoo.com>
+
 	Compilation fixes for s390-linux.
 
 	* configure.in:

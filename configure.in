@@ -737,51 +737,56 @@ dnl Checks for header files.
 dnl -------------------------------------------------------------------------
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS(\
-alloca.h \
+AC_CHECK_HEADERS([alloca.h])
 dnl GNU/Linux sigcontext headers
-asm/sigcontext.h asm/signal.h \
-bsd/libc.h \
-dl.h \
-dlfcn.h \
-fcntl.h \
-features.h \
-gmp.h \
-iconv.h \
-jpeglib.h \
-kernel/OS.h \
-limits.h \
-mach-o/rld.h \
-malloc.h \
-memory.h \
-netdb.h \
-netinet/in.h \
-netinet/in_systm.h \
-netinet/tcp.h \
-png.h \
-poll.h \
-pwd.h \
-sigcontext.h \
-signal.h \
-stdlib.h \
-string.h \
-sys/filio.h \
-sys/ioctl.h \
-sys/param.h \
-sys/poll.h \
-sys/select.h \
-sys/socket.h \
-sys/stat.h \
-sys/time.h \
-sys/types.h \
-sys/utsname.h \
-syslog.h \
-time.h \
-unistd.h \
-utime.h \
+AC_CHECK_HEADERS([asm/sigcontext.h])
+AC_CHECK_HEADERS([asm/signal.h])
+AC_CHECK_HEADERS([bsd/libc.h])
+AC_CHECK_HEADERS([dl.h])
+AC_CHECK_HEADERS([dlfcn.h])
+AC_CHECK_HEADERS([fcntl.h])
+AC_CHECK_HEADERS([features.h])
+AC_CHECK_HEADERS([gmp.h])
+AC_CHECK_HEADERS([iconv.h])
+AC_CHECK_HEADERS([jpeglib.h])
+AC_CHECK_HEADERS([kernel/OS.h])
+AC_CHECK_HEADERS([limits.h])
+AC_CHECK_HEADERS([mach-o/rld.h])
+AC_CHECK_HEADERS([malloc.h])
+AC_CHECK_HEADERS([memory.h])
+AC_CHECK_HEADERS([netdb.h])
+AC_CHECK_HEADERS([netinet/in.h])
+AC_CHECK_HEADERS([netinet/in_systm.h])
+AC_CHECK_HEADERS([netinet/tcp.h])
+AC_CHECK_HEADERS([png.h])
+AC_CHECK_HEADERS([poll.h])
+AC_CHECK_HEADERS([pwd.h])
+AC_CHECK_HEADERS([sigcontext.h])
+AC_CHECK_HEADERS([signal.h])
+AC_CHECK_HEADERS([stdlib.h])
+AC_CHECK_HEADERS([string.h])
+AC_CHECK_HEADERS([sys/filio.h])
+AC_CHECK_HEADERS([sys/ioctl.h])
+AC_CHECK_HEADERS([sys/param.h])
+AC_CHECK_HEADERS([sys/poll.h])
+AC_CHECK_HEADERS([sys/select.h])
+AC_CHECK_HEADERS([sys/socket.h])
+AC_CHECK_HEADERS([sys/stat.h])
+AC_CHECK_HEADERS([sys/time.h])
+AC_CHECK_HEADERS([sys/types.h])
+AC_CHECK_HEADERS([sys/utsname.h])
+AC_CHECK_HEADERS([syslog.h])
+AC_CHECK_HEADERS([time.h])
+AC_CHECK_HEADERS([unistd.h])
+AC_CHECK_HEADERS([utime.h])
 dnl windows headers
-winbase.h windows.h winnt.h winsock.h wintypes.h wtypes.h \
-zlib.h)
+AC_CHECK_HEADERS([winbase.h])
+AC_CHECK_HEADERS([windows.h])
+AC_CHECK_HEADERS([winnt.h])
+AC_CHECK_HEADERS([winsock.h])
+AC_CHECK_HEADERS([wintypes.h])
+AC_CHECK_HEADERS([wtypes.h])
+AC_CHECK_HEADERS([zlib.h])
 
 dnl needed for ia64
 AC_CHECK_HEADERS([ia64intrin.h])
@@ -1641,83 +1646,83 @@ done
 AC_SUBST(CFLAGS_WITHOUT_PG)
 
 
-AC_CONFIG_SUBDIRS(libltdl)
+AC_CONFIG_SUBDIRS([libltdl])
 AC_CONFIG_HEADERS([config/config.h include/jtypes.h])
-AC_CONFIG_FILES([Makefile \
-config/Makefile \
-include/Makefile \
-replace/Makefile \
-kaffe/Makefile \
-libraries/Makefile \
-kaffe/kaffevm/Makefile \
-kaffe/kaffevm/intrp/Makefile \
-kaffe/kaffevm/jit/Makefile \
-kaffe/kaffevm/jit3/Makefile \
-kaffe/kaffevm/gcj/Makefile \
-kaffe/kaffevm/systems/Makefile \
-kaffe/kaffevm/systems/unix-jthreads/Makefile \
-kaffe/kaffevm/systems/oskit-pthreads/Makefile \
-kaffe/kaffevm/systems/beos-native/Makefile \
-kaffe/kaffevm/systems/unix-pthreads/Makefile \
-kaffe/kaffe/Makefile \
-kaffe/kaffeh/Makefile \
-kaffe/xprof/Makefile \
-kaffe/man/Makefile \
-kaffe/scripts/Makefile \
-kaffe/scripts/bat/Makefile \
-kaffe/scripts/compat/Makefile \
-libraries/javalib/Makefile \
-libraries/clib/Makefile \
-libraries/clib/native/Makefile \
-libraries/clib/io/Makefile \
-libraries/clib/net/Makefile \
-libraries/clib/zip/Makefile \
-libraries/clib/math/Makefile \
-libraries/clib/management/Makefile \
-libraries/clib/security/Makefile \
-libraries/clib/awt/Makefile \
-libraries/clib/awt/X/Makefile \
-libraries/clib/awt/qt/Makefile \
-libraries/extensions/Makefile \
-libraries/extensions/comm/Makefile \
-libraries/extensions/comm/javalib/Makefile \
-libraries/extensions/pjava/Makefile \
-libraries/extensions/pjava/javalib/Makefile \
-libraries/extensions/servlet/Makefile \
-libraries/extensions/servlet/javalib/Makefile \
-libraries/extensions/microsoft/Makefile \
-libraries/extensions/microsoft/javalib/Makefile \
-libraries/extensions/microsoft/clib/Makefile \
-libraries/extensions/sound/Makefile \
-libraries/extensions/sound/alsa/Makefile \
-libraries/extensions/sound/common/Makefile \
-libraries/extensions/sound/esd/Makefile \
-kaffe/man/kaffe.1 \
-libraries/javalib/rebuildLib \
-kaffe/scripts/install-jar \
-kaffe/scripts/kaffe \
-kaffe/scripts/kaffexprof \
-kaffe/scripts/javac \
-kaffe/scripts/javakey \
-kaffe/scripts/jar \
-kaffe/scripts/javah \
-kaffe/scripts/javap \
-kaffe/scripts/jdb \
-kaffe/scripts/kjc \
-kaffe/scripts/kopi \
-kaffe/scripts/javadoc \
-kaffe/scripts/appletviewer \
-kaffe/scripts/rmic \
-kaffe/scripts/rmiregistry \
-kaffe/scripts/serialver \
-kaffe/scripts/native2ascii \
-kaffe/scripts/compat/java \
-kaffe/scripts/compat/javac \
-kaffe/scripts/compat/appletviewer \
-kaffe/scripts/compat/javadoc \
-test/Makefile \
-test/internal/Makefile \
-test/regression/Makefile \
-test/regression/TestScript \
-])
+AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([config/Makefile])
+AC_CONFIG_FILES([include/Makefile])
+AC_CONFIG_FILES([replace/Makefile])
+AC_CONFIG_FILES([kaffe/Makefile])
+AC_CONFIG_FILES([libraries/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/intrp/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/jit/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/jit3/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/gcj/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/systems/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/systems/unix-jthreads/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/systems/oskit-pthreads/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/systems/beos-native/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/systems/unix-pthreads/Makefile])
+AC_CONFIG_FILES([kaffe/kaffe/Makefile])
+AC_CONFIG_FILES([kaffe/kaffeh/Makefile])
+AC_CONFIG_FILES([kaffe/xprof/Makefile])
+AC_CONFIG_FILES([kaffe/man/Makefile])
+AC_CONFIG_FILES([kaffe/scripts/Makefile])
+AC_CONFIG_FILES([kaffe/scripts/bat/Makefile])
+AC_CONFIG_FILES([kaffe/scripts/compat/Makefile])
+AC_CONFIG_FILES([libraries/javalib/Makefile])
+AC_CONFIG_FILES([libraries/clib/Makefile])
+AC_CONFIG_FILES([libraries/clib/native/Makefile])
+AC_CONFIG_FILES([libraries/clib/io/Makefile])
+AC_CONFIG_FILES([libraries/clib/net/Makefile])
+AC_CONFIG_FILES([libraries/clib/zip/Makefile])
+AC_CONFIG_FILES([libraries/clib/math/Makefile])
+AC_CONFIG_FILES([libraries/clib/management/Makefile])
+AC_CONFIG_FILES([libraries/clib/security/Makefile])
+AC_CONFIG_FILES([libraries/clib/awt/Makefile])
+AC_CONFIG_FILES([libraries/clib/awt/X/Makefile])
+AC_CONFIG_FILES([libraries/clib/awt/qt/Makefile])
+AC_CONFIG_FILES([libraries/extensions/Makefile])
+AC_CONFIG_FILES([libraries/extensions/comm/Makefile])
+AC_CONFIG_FILES([libraries/extensions/comm/javalib/Makefile])
+AC_CONFIG_FILES([libraries/extensions/pjava/Makefile])
+AC_CONFIG_FILES([libraries/extensions/pjava/javalib/Makefile])
+AC_CONFIG_FILES([libraries/extensions/servlet/Makefile])
+AC_CONFIG_FILES([libraries/extensions/servlet/javalib/Makefile])
+AC_CONFIG_FILES([libraries/extensions/microsoft/Makefile])
+AC_CONFIG_FILES([libraries/extensions/microsoft/javalib/Makefile])
+AC_CONFIG_FILES([libraries/extensions/microsoft/clib/Makefile])
+AC_CONFIG_FILES([libraries/extensions/sound/Makefile])
+AC_CONFIG_FILES([libraries/extensions/sound/alsa/Makefile])
+AC_CONFIG_FILES([libraries/extensions/sound/common/Makefile])
+AC_CONFIG_FILES([libraries/extensions/sound/esd/Makefile])
+AC_CONFIG_FILES([kaffe/man/kaffe.1])
+AC_CONFIG_FILES([libraries/javalib/rebuildLib])
+AC_CONFIG_FILES([kaffe/scripts/install-jar])
+AC_CONFIG_FILES([kaffe/scripts/kaffe])
+AC_CONFIG_FILES([kaffe/scripts/kaffexprof])
+AC_CONFIG_FILES([kaffe/scripts/javac])
+AC_CONFIG_FILES([kaffe/scripts/javakey])
+AC_CONFIG_FILES([kaffe/scripts/jar])
+AC_CONFIG_FILES([kaffe/scripts/javah])
+AC_CONFIG_FILES([kaffe/scripts/javap])
+AC_CONFIG_FILES([kaffe/scripts/jdb])
+AC_CONFIG_FILES([kaffe/scripts/kjc])
+AC_CONFIG_FILES([kaffe/scripts/kopi])
+AC_CONFIG_FILES([kaffe/scripts/javadoc])
+AC_CONFIG_FILES([kaffe/scripts/appletviewer])
+AC_CONFIG_FILES([kaffe/scripts/rmic])
+AC_CONFIG_FILES([kaffe/scripts/rmiregistry])
+AC_CONFIG_FILES([kaffe/scripts/serialver])
+AC_CONFIG_FILES([kaffe/scripts/native2ascii])
+AC_CONFIG_FILES([kaffe/scripts/compat/java])
+AC_CONFIG_FILES([kaffe/scripts/compat/javac])
+AC_CONFIG_FILES([kaffe/scripts/compat/appletviewer])
+AC_CONFIG_FILES([kaffe/scripts/compat/javadoc])
+AC_CONFIG_FILES([test/Makefile])
+AC_CONFIG_FILES([test/internal/Makefile])
+AC_CONFIG_FILES([test/regression/Makefile])
+AC_CONFIG_FILES([test/regression/TestScript])
+
 AC_OUTPUT
