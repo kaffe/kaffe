@@ -85,12 +85,16 @@ typedef int64	profiler_click_t;
  * We return '1' if the exchange is sucessful, otherwise 0.
  */
 #define COMPARE_AND_EXCHANGE(A,O,N) \
-       ({ \
-               asm volatile(" \
-                       movl %2,%%eax \n\
-                       cmpxchgl %1,%0" \
-                 : : "m" (*(A)), "r" (N), "r" (O) : "eax", "cc", "memory" ); \
-               (*(A)) == (N) ? 1 : 0; \
-       })
+	({ \
+		char ret; \
+		asm volatile(" \
+			movl %3,%%eax \n\
+			movl %2,%%ebx \n\
+			lock \n\
+			cmpxchgl %%ebx,%1 \n\
+			sete %0" \
+		  : "=q" (ret) : "m" (*(A)), "r" (N), "r" (O) : "eax", "ebx", "cc", "memory" ); \
+		(ret); \
+	})
 
 #endif

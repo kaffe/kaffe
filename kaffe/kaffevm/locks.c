@@ -53,7 +53,6 @@
 extern iLock* gc_lock;
 static iLock _gc_lock;
 
-static iLock* freeLocks;
 static jboolean _SemGet(void*, jlong);
 static void _SemPut(void*);
 
@@ -105,13 +104,6 @@ getHeavyLock(iLock** lkp)
 			if (lkp == &gc_lock) {
 				lk = &_gc_lock;
 			}
-#if 0
-			/* We don't protect these yet - so dont use them */
-			else if (freeLocks != 0) {
-				lk = freeLocks;
-				freeLocks = (iLock*)lk->holder;
-			}
-#endif
 			else {
 				lk = (iLock*)jmalloc(sizeof(iLock));
 			}
@@ -222,10 +214,6 @@ LDBG(	printf("Slow unlock\n");					)
 	}
 	else {
 		if (lk != &_gc_lock) {
-#if 0
-			lk->holder = (void*)freeLocks;
-			freeLocks = lk;
-#endif
 			jfree(lk);
 		}
 		putHeavyLock(lkp, LOCKFREE);
@@ -384,12 +372,16 @@ _broadcastCond(iLock** lkp)
 void
 _lockMutex(iLock** lkp, void* where)
 {
-	if (*lkp == 0) {
+	uintp val;
+
+	val = (uintp)*lkp;
+
+	if (val == 0) {
 		if (!COMPARE_AND_EXCHANGE(lkp, 0, (iLock*)where)) {
 			slowLockMutex(lkp, where);
 		}
 	}
-	else if ((uintp)*lkp - (uintp)where > 1024) {
+	else if (val - (uintp)where > 1024) {
 		slowLockMutex(lkp, where);
 	}
 }
@@ -401,10 +393,14 @@ _lockMutex(iLock** lkp, void* where)
 void
 _unlockMutex(iLock** lkp, void* where)
 {
-	if ((((uintp)*lkp) & 1) != 0) {
+	uintp val;
+
+	val = (uintp)*lkp;
+
+	if ((val & 1) != 0) {
 		slowUnlockMutex(lkp, where);
 	}
-	else if ((uintp)*lkp == (uintp)where &&
+	else if (val == (uintp)where &&
 			!COMPARE_AND_EXCHANGE(lkp, (iLock*)where, LOCKFREE)) {
 		slowUnlockMutex(lkp, where);
 	}
@@ -458,14 +454,16 @@ _SemGet(void* sem, jlong timeout)
 	lk = (sem2posixLock*)sem;
 
 	LOCK(lk);
-	assert(lk->count == 0 || lk->count == 1);
 	if (lk->count == 0) {
-		r = WAIT(lk, timeout);
-		assert((lk->count == 0 && r == false) ||
-		       (lk->count == 1 && r == true));
+		WAIT(lk, timeout);
 	}
-	if (r == true) {
-		lk->count--;
+	if (lk->count == 1) {
+		lk->count = 0;
+		r = true;
+	}
+	else {
+		assert(lk->count == 0);
+		r = false;
 	}
 	UNLOCK(lk);
 	return (r);
