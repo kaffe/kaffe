@@ -76,37 +76,3 @@ jboolean java_lang_VMThread_isInterrupted(Hjava_lang_VMThread *this)
 {
   return KTHREAD(is_interrupted)((jthread_t)unhand(this)->jthreadID);
 }
-
-
-void java_lang_VMThread_sleep(jlong timeout, UNUSED jint ns)
-{
-  jthread_t	cur = KTHREAD(current)();
-
-  if(KTHREAD(interrupted)(cur))
-    {
-      throwException(InterruptedException);
-    }
-
-DBG(VMTHREAD, dprintf ("%p (%p) sleeping for %d\n", cur,
-			KTHREAD(get_data)(cur)->jlThread, timeout); );
-
-  /*
-   * Using the semaphore of this thread for sleeping is safe, since
-   * there are only two reasons for another thread to invoke KSEM(put)
-   * on this semaphore:
-   *
-   *     - it releases a lock this thread is waiting for, or
-   *     - it has to signal this thread that it has been started.
-   *
-   * None of these apply here (we're neither waiting for a lock nor
-   * starting a new thread). Since the jthread implementation has to
-   * be able to interrupt a thread waiting for its semaphore anyway,
-   * this thread can still be interrupted.
-   */
-  KSEM(get)(&KTHREAD(get_data)(cur)->sem, timeout);
-
-  if(KTHREAD(interrupted)(cur))
-    {
-      throwException(InterruptedException);
-    }
-}

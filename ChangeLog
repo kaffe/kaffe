@@ -1,5 +1,10 @@
 2005-01-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/native/Thread.c (java_lang_VMThread_sleep): 
+	Removed. Replaced by java version in VMThread.
+
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-01-02  Archie Cobbs  <archie@dellroad.org>
