@@ -1,3 +1,12 @@
+Thu Jan  7 19:27:21 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/systems/oskit-pthreads/Makefile.am: was missing
+	* kaffe/kaffevm/systems/Makefile.am: add oskit-pthreads
+	* configure.in: generate oskit-pthreads/Makefile
+	* Makefile.am, config/Makefile.am (EXTRA_DIST): no wildcards
+	* libraries/javalib/Makefile.am, test/Makefile.am: ditto
+	* test/regression/Makefile.am: ditto
+
 Thu Jan  7 18:30:35 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* FAQ/FAQ.automake, FAQ/FAQ.libtool: some comments about the

@@ -119,7 +119,7 @@ nativedir = @nativedir@
 with_engine = @with_engine@
 
 SUBDIRS = $(THREAD_SYSTEM)
-DIST_SUBDIRS = unix-internal unix-jthreads
+DIST_SUBDIRS = unix-internal unix-jthreads oskit-pthreads
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 

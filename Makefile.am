@@ -10,7 +10,21 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = config include libltdl libraries kaffe test
 
-EXTRA_DIST = license.terms WHATSNEW FAQ/FAQ.*
+EXTRA_DIST = license.terms WHATSNEW \
+	FAQ/FAQ.Known-Bugs \
+	FAQ/FAQ.amigaos \
+	FAQ/FAQ.automake \
+	FAQ/FAQ.awt \
+	FAQ/FAQ.class-states \
+	FAQ/FAQ.depend \
+	FAQ/FAQ.gcblock \
+	FAQ/FAQ.gcstrategy \
+	FAQ/FAQ.install-root \
+	FAQ/FAQ.libtool \
+	FAQ/FAQ.linux \
+	FAQ/FAQ.nativemethods \
+	FAQ/FAQ.timing \
+	FAQ/FAQ.win32
 
 depend:
 	@echo `make depend' is no longer needed

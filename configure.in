@@ -642,6 +642,7 @@ kaffe/kaffevm/intrp/Makefile kaffe/kaffevm/jit/Makefile \
 kaffe/kaffevm/systems/Makefile \
 kaffe/kaffevm/systems/unix-internal/Makefile \
 kaffe/kaffevm/systems/unix-jthreads/Makefile \
+kaffe/kaffevm/systems/oskit-pthreads/Makefile \
 kaffe/kaffe/Makefile kaffe/kaffeh/Makefile \
 kaffe/man/Makefile kaffe/scripts/Makefile \
 kaffe/scripts/bat/Makefile kaffe/scripts/compat/Makefile \

@@ -9,10 +9,27 @@
 SUBDIRS = regression
 
 EXTRA_DIST = \
-	awt/Calc/Calc.java awt/Calc/Calc.sh awt/Calc/Calc.class \
-	awt/TextEdit/README  awt/TextEdit/copyright.txt \
-	awt/TextEdit/TextEdit.sh awt/TextEdit/TextEdit.jar \
-	awt/Unico/README awt/Unico/readme.txt awt/Unico/Unico.class \
-	awt/Unico/unico.jar awt/Unico/unico.sh \
-	awt/WidgetsDemo/README awt/WidgetsDemo/*.java awt/WidgetsDemo/*.class \
-	awt/WidgetsDemo/WidgetsDemo.sh awt/WidgetsDemo/*.jpg
+	awt/Calc/Calc.class \
+	awt/Calc/Calc.java \
+	awt/Calc/Calc.sh \
+	awt/TextEdit/README \
+	awt/TextEdit/TextEdit.jar \
+	awt/TextEdit/TextEdit.sh \
+	awt/TextEdit/copyright.txt \
+	awt/Unico/README \
+	awt/Unico/Unico.class \
+	awt/Unico/readme.txt \
+	awt/Unico/unico.jar \
+	awt/Unico/unico.sh \
+	awt/WidgetsDemo/DemoImageDict.class \
+	awt/WidgetsDemo/DemoImageDict.java \
+	awt/WidgetsDemo/README \
+	awt/WidgetsDemo/WidgetsDemo$$Person.class \
+	awt/WidgetsDemo/WidgetsDemo.class \
+	awt/WidgetsDemo/WidgetsDemo.java \
+	awt/WidgetsDemo/WidgetsDemo.sh \
+	awt/WidgetsDemo/back.jpg \
+	awt/WidgetsDemo/forward.jpg \
+	awt/WidgetsDemo/hand.up.jpg \
+	awt/WidgetsDemo/transfer.jpg \
+	awt/WidgetsDemo/tvt.jpg

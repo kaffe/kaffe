@@ -122,7 +122,8 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = config include libltdl libraries kaffe test
 
-EXTRA_DIST = license.terms WHATSNEW FAQ/FAQ.*
+EXTRA_DIST = license.terms WHATSNEW 	FAQ/FAQ.Known-Bugs 	FAQ/FAQ.amigaos 	FAQ/FAQ.automake 	FAQ/FAQ.awt 	FAQ/FAQ.class-states 	FAQ/FAQ.depend 	FAQ/FAQ.gcblock 	FAQ/FAQ.gcstrategy 	FAQ/FAQ.install-root 	FAQ/FAQ.libtool 	FAQ/FAQ.linux 	FAQ/FAQ.nativemethods 	FAQ/FAQ.timing 	FAQ/FAQ.win32
+
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ./config/config.h ./include/jtypes.h
