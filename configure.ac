@@ -33,7 +33,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ])
 
-AM_INIT_AUTOMAKE([1.9.4 tar-ustar])
+AM_INIT_AUTOMAKE([1.9.5 tar-ustar])
 
 AC_PREFIX_DEFAULT(/usr/local/kaffe)
 

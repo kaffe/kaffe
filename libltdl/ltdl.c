@@ -1,5 +1,5 @@
 /* ltdl.c -- system independent dlopen wrapper
-   Copyright (C) 1998, 1999, 2000, 2004 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2004  Free Software Foundation, Inc.
    Originally by Thomas Tanner <tanner@ffii.org>
    This file is part of GNU Libtool.
 
@@ -457,7 +457,9 @@ opendir (path)
   DIR *entry;
 
   assert(path != (char *) NULL);
-  (void) strncpy(file_specification,path,LT_FILENAME_MAX-1);
+  /* allow space for: path + '\\' '\\' '*' '.' '*' + '\0' */
+  (void) strncpy (file_specification, path, LT_FILENAME_MAX-6);
+  file_specification[LT_FILENAME_MAX-6] = LT_EOS_CHAR;
   (void) strcat(file_specification,"\\");
   entry = LT_DLMALLOC (DIR,sizeof(DIR));
   if (entry != (DIR *) 0)
@@ -498,6 +500,7 @@ static struct dirent *readdir(entry)
   entry->firsttime = FALSE;
   (void) strncpy(entry->file_info.d_name,entry->Win32FindData.cFileName,
     LT_FILENAME_MAX-1);
+  entry->file_info.d_name[LT_FILENAME_MAX - 1] = LT_EOS_CHAR;
   entry->file_info.d_namlen = strlen(entry->file_info.d_name);
   return(&entry->file_info);
 }
@@ -2997,6 +3000,9 @@ trim (dest, str)
 
   LT_DLFREE (*dest);
 
+  if (!end)
+    return 1;
+
   if (len > 3 && str[0] == '\'')
     {
       tmp = LT_EMALLOC (char, end - str);
@@ -3101,7 +3107,7 @@ try_dlopen (phandle, filename)
       ++base_name;
     }
   else
-    LT_DLMEM_REASSIGN (base_name, canonical);
+    base_name = canonical;
 
   assert (base_name && *base_name);
 

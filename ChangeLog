@@ -1,3 +1,13 @@
+2005-02-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* FAQ/FAQ.automake,
+	configure.ac,
+	developers/autogen.sh:
+	Updated to automake 1.9.5 and libtool 1.5.14.
+
+	* libraries/javalib/Makefile.am.in:
+	Removed bootstrap.
+
 2005-02-13  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c

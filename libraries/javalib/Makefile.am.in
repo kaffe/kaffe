@@ -159,28 +159,23 @@ classpath_resources = \
 EXTRA_DIST = \
 	Makefile.am.in \
 	META-INF \
-	com \
-	gnu \
-	java \
-	javax \
-	kaffe \
-	org \
 	all.files \
-        bootstrap.classlist \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
 	$(gnu_regexp_message_bundles) \
 	$(gnu_getopt_message_bundles) \
-	$(installed_properties)
+	$(installed_properties) \
+	com gnu java javax kaffe org
+
+LIBDIR = lib
 
 dist-hook:
 	rm -rf `find $(distdir) -name CVS`
 	rm -rf `find $(distdir) -name *~`
-
-LIBDIR = lib
+	rm $(distdir)/gnu/classpath/Configuration.java
 
 clean-local:
-	-rm -rf $(LIBDIR) rt.jar
+	rm -rf $(LIBDIR) rt.jar
 
 .PHONY: new-classes
 new-classes: $(top_srcdir)/developers/update-class-list
@@ -199,15 +194,6 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 		$(SHELL) $(rebuildLib) @$(PROFILE) `CDPATH=: && cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
 	fi
 	echo timestamp > $(LIBDIR)/stamp
-
-bootstrap: $(srcdir)/Klasses.jar.bootstrap
-$(srcdir)/Klasses.jar.bootstrap: rt.jar
-	rm -f $@.new
-	(cd $(LIBDIR) && $(ZIP) -DX -r $(CURDIR)/$@.new `grep '\.class$$' $(abssrcdir)/libraries/javalib/bootstrap.classlist`)
-	mv $@.new $@
-
-.PHONY: bootstrap
-$(srcdir)/Klasses.jar.bootstrap: bootstrap.classlist
 
 JAR_CMD1 = (cd $(srcdir) && $(ZIP) -q -r $(CURDIR)/$@.new META-INF)
 JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS))
