@@ -137,14 +137,14 @@ typedef long long int   debugmask_t;
  *	if debugging is enabled, resolve to statement.
  *	shortcut for #if DEBUG ... #endif
  */
-# define DBGIF(statement)  { ((void)0); }
+# define DBGIF(statement) { ((void)0); }
 
 /*
  * DBG:
  * 	if debugging is disabled, resolves to nothing.
  *	if debugging is enabled, statement is executed if mask matches.
  */
-# define DBG(mask, statement)  { ((void)0); }
+# define DBG(mask, statement) { ((void)0); }
 
 /*
  * DBGEXPR:

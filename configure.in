@@ -1135,11 +1135,41 @@ if test "x$ac_cv_declared_swab" = "xyes"; then
 fi
 
 dnl -------------------------------------------------------------------------
+dnl Configure AWT engine
+dnl -------------------------------------------------------------------------
 
-dnl If we have X then include AWT support.
-if test "$have_x" = "yes" ; then
-  AWT_DIR=X
+AC_ARG_WITH(awt,[  --with-awt=GRAPHICSYS	  specify AWT engine (no, X, qt)])
+
+dnl If no AWT defined, choose an appropriate default.
+if test "$with_awt" = "no" ; then
+	with_awt=no
 fi
+if test "$with_awt" = "" ; then
+	with_awt=X
+fi
+
+case $with_awt in
+no)
+	;;
+
+X)
+	if test "$have_x" = "no"; then
+		AC_MSG_ERROR(Configuration 'with-awt=$with_awt' not supported - missing X support)
+	else
+		AWT_DIR=X
+	fi
+	;;
+
+qt)
+	AC_PROG_CXX
+	gw_CHECK_QT
+	AWT_DIR=qt
+	;;
+
+*)
+	AC_MSG_ERROR(Configuration 'with-awt=$with_awt' not supported)
+	;;
+esac
 
 if test x"${AWT_DIR+set}" = x"set"; then
   AWT_LIB="\$(top_builddir)/libraries/clib/awt/$AWT_DIR/libawt.la"
@@ -1332,6 +1362,7 @@ libraries/clib/management/Makefile \
 libraries/clib/security/Makefile \
 libraries/clib/awt/Makefile \
 libraries/clib/awt/X/Makefile \
+libraries/clib/awt/qt/Makefile \
 libraries/extensions/Makefile \
 libraries/extensions/comm/Makefile \
 libraries/extensions/comm/javalib/Makefile \
@@ -1339,13 +1370,9 @@ libraries/extensions/pjava/Makefile \
 libraries/extensions/pjava/javalib/Makefile \
 libraries/extensions/servlet/Makefile \
 libraries/extensions/servlet/javalib/Makefile \
-libraries/extensions/tools/Makefile \
-libraries/extensions/tools/javalib/Makefile \
 libraries/extensions/microsoft/Makefile \
 libraries/extensions/microsoft/javalib/Makefile \
 libraries/extensions/microsoft/clib/Makefile \
-libraries/extensions/rmi/Makefile \
-libraries/extensions/rmi/javalib/Makefile \
 kaffe/man/kaffe.1 \
 libraries/javalib/rebuildLib \
 kaffe/scripts/install-jar \

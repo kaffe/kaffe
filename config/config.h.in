@@ -568,6 +568,9 @@
 /* Is function swab declared */
 #undef HAVE_DECLARED_SWAB
 
+/* Defined if on Win32 platform */
+#undef WIN32
+
 /* Define default KAFFEHOME */
 #undef DEFAULT_KAFFEHOME
 

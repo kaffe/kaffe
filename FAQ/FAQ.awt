@@ -20,3 +20,71 @@ Whatever Sun may tell you about Swing being 100% pure Java - just don't
 believe them.  Swing make a number of assumptions about the underlying AWT
 implementation and makes calls to a number of "banned" methods - oh and it
 makes extensive use of deprecates.
+
+Selecting an AWT implementation
+-------------------------------
+
+There are different AWT backends for Kaffe. You can configure it to
+use a specific one, by using the --with-awt option of the configure
+script.
+
+Currently you have the choice between:
+
+* --with-awt=no
+
+  no support for AWT needed. This option is useful in embedded
+  environments.
+
+* --with-awt=X
+
+  an X lib based AWT backend. It is the default AWT backend if the X
+  Windows system is detected by the configure script.
+
+  The X lib based AWT backend has been written by Peter Mehlitz from
+  Transvirtual.
+
+  See http://www.x.org for information on X Windows.
+
+* --with-awt=qt
+
+  a Qt based AWT backend. It uses Trolltech's cross-platform graphical
+  library. It works with Qt 3, embedded or x11 version. It may work
+  with Qt 2, or with other versions of Qt 3 (Win32, OS X), but it has
+  not been tested in such configurations. If you can test it in such
+  configurations, please report your experiences to the Kaffe Mailing
+  List, kaffe@kaffe.org.
+
+  In order to compile the Qt based AWT backend, you need to have an
+  installation of Qt libraries including the moc compiler and the Qt
+  header files. You have to pass the full path to the directory of
+  your Qt installation to the configure script using the --with-qtdir
+  option. 
+
+  You also have to make sure the moc compiler is in your $PATH. It can
+  usually be found in the bin directory of your Qt installation. If
+  you can not find it, you need to install the developer version of the
+  Qt libraries. How to do that is system dependant, on Linux you may
+  have to get a libqt3-developer package for your distribution, or
+  compile Qt from scratch.
+
+  Finally, in order to be able to dynamically link Kaffe's AWT backend
+  with the Qt libraries, you may have to add the lib directory of your
+  Qt installation to your native linker's library lookup path. On
+  Linux, that means you may have to add the lib directory to
+  LD_LIBRARY_PATH.
+
+  The Qt based AWT backend has been written by Murphy Chen and Ken-Hao
+  Liu from Dialogue Technologies, Inc.
+
+  More information on Qt is available from http://www.trolltech.com.
+
+Other AWT backends
+------------------
+
+The source code for the PocketLinux version of Kaffe includes AWT
+backends for many other graphical toolkits. If you are interested in
+helping the Kaffe developers merge them with the Kaffe.org sources,
+contact us on the Kaffe Mailing List kaffe@kaffe.org.
+
+The list of backends from PocketLinux includes Gtk, grx, peg, Allegro
+and a few others.

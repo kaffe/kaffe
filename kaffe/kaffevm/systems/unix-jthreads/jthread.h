@@ -229,7 +229,7 @@ jthread_on_current_stack(void *bp)
 DBG(JTHREADDETAIL,
 	dprintf("on current stack: base=%p size=%d bp=%p %s\n",
 		currentJThread->stackBase,
-		currentJThread->stackEnd-currentJThread->stackBase,
+		(char *) currentJThread->stackEnd - (char *) currentJThread->stackBase,
 		bp,
 		(rc ? "yes" : "no"));
     )
@@ -264,17 +264,25 @@ jthread_relaxstack(int yes)
 	if( yes )
 	{
 #if defined(STACK_GROWS_UP)
-		(uintp)currentJThread->stackEnd += REDZONE;
+		uintp end = (uintp) currentJThread->stackEnd;
+		end += REDZONE;
+		currentJThread->stackEnd = (void *) end;
 #else
-		(uintp)currentJThread->stackBase -= REDZONE;
+		uintp base = (uintp) currentJThread->stackBase;
+		base -= REDZONE;
+		currentJThread->stackBase = (void *) base;
 #endif
 	}
 	else
 	{
 #if defined(STACK_GROWS_UP)
-		(uintp)currentJThread->stackEnd -= REDZONE;
+		uintp end = (uintp) currentJThread->stackEnd;
+		end -= REDZONE;
+		currentJThread->stackEnd = (void *) end;
 #else
-		(uintp)currentJThread->stackBase += REDZONE;
+		uintp base = (uintp) currentJThread->stackBase;
+		base += REDZONE;
+		currentJThread->stackBase = (void *) base;
 #endif
 	}
 }

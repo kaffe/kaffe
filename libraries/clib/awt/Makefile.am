@@ -7,7 +7,8 @@
 # of this file. 
 
 SUBDIRS = $(AWT_DIR)
-DIST_SUBDIRS = X
+
+DIST_SUBDIRS = X qte
 
 EXTRA_DIST = \
 	win32/btn.cpp \

@@ -46,7 +46,10 @@ void bcopy(void*, void*, size_t);
 /* 
  * Some systems (Linux) do not declare swab in any standard header file
  */
+/*
 extern void swab(const void *from, void *to, size_t n);
+*/
+extern void swab(const void *from, void *to, int n);
 #endif
 
 #endif
