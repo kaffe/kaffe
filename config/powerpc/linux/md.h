@@ -18,4 +18,9 @@
 extern void init_md(void);
 #define	INIT_MD()	init_md()
 
+#ifdef SP_OFFSET
+#undef SP_OFFSET
+#endif
+#define SP_OFFSET	0
+
 #endif
