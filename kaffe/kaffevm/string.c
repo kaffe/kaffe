@@ -24,6 +24,7 @@
 /* Internal variables */
 static hashtab_t	hashTable;	/* intern hash table */
 static iLock*		stringLock;	/* mutex on all intern operations */
+static int *            stringLockRoot;	/* the string lock is not a monitor */
 
 /* Internal functions */
 static int		stringHashValue(const void *ptr);
@@ -198,21 +199,24 @@ static void*
 stringAlloc(size_t sz)
 {
 	void* p;
-	int iLockRoot;
+	int *myRoot = stringLockRoot;
 
-	unlockStaticMutex(&stringLock);
+	_unlockMutex(&stringLock, myRoot);
 	p = KCALLOC(1, sz);
-	lockStaticMutex(&stringLock);
+	_lockMutex(&stringLock, myRoot);
+	stringLockRoot = myRoot;
 	return (p);
 }
 
 static void
 stringFree(const void *ptr)
 {
-	int iLockRoot;
-	unlockStaticMutex(&stringLock);
+	int *myRoot = stringLockRoot;
+
+	_unlockMutex(&stringLock, myRoot);
 	KFREE(ptr);
-	lockStaticMutex(&stringLock);
+	_lockMutex(&stringLock, myRoot);
+	stringLockRoot = myRoot;
 }
 
 /*
@@ -227,6 +231,7 @@ stringInternString(Hjava_lang_String *string)
 
 	/* Lock intern table */
 	lockStaticMutex(&stringLock);
+	stringLockRoot = &iLockRoot;
 
 	/* See if string is already in the table */
 	if (hashTable != NULL) {
@@ -265,6 +270,7 @@ stringUninternString(Hjava_lang_String* string)
 	int iLockRoot;
 
 	lockStaticMutex(&stringLock);
+	stringLockRoot = &iLockRoot;
 	hashRemove(hashTable, string);
 	unhand(string)->interned = false;
 	unlockStaticMutex(&stringLock);
@@ -366,6 +372,7 @@ stringCharArray2Java(const jchar *data, int len)
 
 		/* Return existing copy of this string, if any */
 		lockStaticMutex(&stringLock);
+		stringLockRoot = &iLockRoot;
 		string = hashFind(hashTable, &fakeString);
 		unlockStaticMutex(&stringLock);
 
