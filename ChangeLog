@@ -1,3 +1,8 @@
+Wed Mar 31 15:26:04 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/kaffe/io/ObjectStreamClassImpl.java: added
+	forgotten Byte case
+
 Wed Mar 31 14:47:02 MST 1999  Mihai Surdeanu <mihai@seas.smu.edu>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: mark signals

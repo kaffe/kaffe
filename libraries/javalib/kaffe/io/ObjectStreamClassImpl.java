@@ -177,6 +177,12 @@ public Object getArray(ObjectInputStream in, ObjectInputStreamImpl impl) throws 
                                 arr[i] = in.readFloat();
                         }
                 }
+                else if (elem == Byte.TYPE) {
+                        byte[] arr = (byte[])obj;
+                        for (int i = 0; i < len; i++) {
+                                arr[i] = in.readByte();
+                        }
+                }
                 else { // Must be an array of objects.
                         Object[] arr = (Object[])obj;
                         for (int i = 0; i < len; i++) {
