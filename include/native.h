@@ -12,6 +12,7 @@
 #ifndef __native_h
 #define __native_h
 
+#include "stddef.h"
 #include <jni.h>
 
 struct _methods;
@@ -62,7 +63,7 @@ extern HString*	stringC2Java(const char*);
 extern int	utf8ConstEqualJavaString(const Utf8Const*, const HString*);
 
 extern HObject*	AllocObject(const char*, struct Hjava_lang_ClassLoader*);
-extern HObject*	AllocArray(int, int);
+extern HObject*	AllocArray(size_t len, int type);
 extern HObject*	AllocObjectArray(int, const char*, struct Hjava_lang_ClassLoader*);
 
 /*

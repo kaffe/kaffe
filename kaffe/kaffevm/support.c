@@ -860,12 +860,9 @@ AllocObject(const char* classname, Hjava_lang_ClassLoader* loader)
  * @return the new allocated array
  */
 Hjava_lang_Object*
-AllocArray(int len, int type)
+AllocArray(size_t len, int type)
 {
-	if (len < 0) {
-		throwException(NegativeArraySizeException);
-	}
-	return (newArray(TYPE_CLASS(type), (size_t)len));
+	return (newArray(TYPE_CLASS(type), len));
 }
 
 /**

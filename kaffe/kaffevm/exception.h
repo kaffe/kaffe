@@ -12,6 +12,7 @@
 #define __exception_h
 
 #include "config-setjmp.h"
+#include "gtypes.h"
 
 /*
  * Values for Thread.needOnStack.  This variable

@@ -1,5 +1,37 @@
 2004-10-12  Dalibor Topic <robilad@kaffe.org>
 
+	* include/errors.h:
+	Include support.h for execute_java_constructor prototype.
+	(NEW_LANG_EXCEPTION, NEW_LANG_EXCEPTION_MESSAGE,
+	NEW_IO_EXCEPTION, NEW_IO_EXCEPTION_MESSAGE) Added braces.
+
+	* include/native.h:
+	Include stddef.h for size_t.
+
+	* kaffe/kaffevm/exception.c (throwException): Made prototype
+	match declaration in header file exactly.
+
+	* kaffe/kaffevm/exception.h:
+	Include gtypes.h for uintp.
+
+	* libraries/clib/native/ZipFile.c:
+	Include errors.h, exception.h. Cleaned up includes.
+
+2004-10-12  Dalibor Topic <robilad@kaffe.org>
+
+	* include/native.h:
+	(AllocArray) Changed prototype to use size_t for len. 
+	Added parameter names.
+	* kaffe/kaffevm/support.c:
+	(AllocArray) Changed prototype to use size_t for len.
+	Removed no longer necessary check for negative array size.
+	* libraries/clib/native/ZipFile.c
+	(java_util_zip_ZipFile_getZipData0):
+	Check if zip entry size is negative first. Cast to size
+	to size_t when invoking AllocArray.
+
+2004-10-12  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/clib/native/ZipFile.c
 	(java_util_zip_ZipFile_getZipData0):
 	Use '\0' for an empty string to fix compiler warning.

@@ -245,7 +245,7 @@ throwError(errorInfo* einfo)
  * is in the exception object) and dispatch.
  */
 void
-throwException(Hjava_lang_Throwable* eobj)
+throwException(struct Hjava_lang_Throwable* eobj)
 {
 	Hjava_lang_VMThrowable* vmstate;
 	Hjava_lang_Object* backtrace;

@@ -12,14 +12,16 @@
 #include "config-std.h"
 #include "config-io.h"
 #include "config-mem.h"
-#include "gtypes.h"
-#include "java_util_zip_ZipFile.h"
-#include "jar.h"
-#include "itypes.h"
+#include "errors.h"
+#include "exception.h"
 #include "gc.h"
+#include "gtypes.h"
+#include "itypes.h"
+#include "jar.h"
+
 #include "java_util_zip_ZipEntry.h"
+#include "java_util_zip_ZipFile.h"
 #include "java_util_Vector.h"
-#include <errors.h>
 
 static Hjava_util_zip_ZipEntry* makeZipEntry(jarEntry*);
 
@@ -70,11 +72,17 @@ java_util_zip_ZipFile_getZipData0(struct Hkaffe_util_Ptr* zip, struct Hjava_util
 	jarEntry entry;
 	HArrayOfByte* array;
 	uint8* buf = 0;
+	jlong size;
 
-	if( unhand(zentry)->size > 0 )
+	size = unhand(zentry)->size;
+
+	if (size < 0) {
+                throwException(NegativeArraySizeException);
+        }
+	if( size > 0 )
 	{
 		entry.fileName = '\0';
-		entry.uncompressedSize = unhand(zentry)->size;
+		entry.uncompressedSize = size;
 		entry.compressionMethod = unhand(zentry)->method;
 		entry.compressedSize = unhand(zentry)->csize;
 		entry.localHeaderOffset = unhand(zentry)->offset;
@@ -84,7 +92,7 @@ java_util_zip_ZipFile_getZipData0(struct Hkaffe_util_Ptr* zip, struct Hjava_util
 			return (0);
 		}
 	}
-	array = (HArrayOfByte*)AllocArray(unhand(zentry)->size, TYPE_Byte);
+	array = (HArrayOfByte*)AllocArray((size_t)size, TYPE_Byte);
 	if( buf )
 	{
 		memcpy(unhand_array(array)->body, buf, unhand(zentry)->size);
