@@ -1,5 +1,17 @@
 2004-05-21  Dalibor Topic  <robilad@kaffe.org>
 
+        * libraries/javalib/gnu/java/beans/BeanInfoEmbryo.java,
+        libraries/javalib/java/io/SequenceInputStream.java:
+	Resynced with GNU Classpath.
+
+	2004-05-21  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/beans/BeanInfoEmbryo.java,
+        java/io/SequenceInputStream.java:
+        Rename enum to e because enum is a keyword in Java 1.5.
+
+2004-05-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/DeleteFileHelper.java:
 	Resynced with GNU Classpath.
 
