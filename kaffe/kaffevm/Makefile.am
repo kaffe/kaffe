@@ -42,6 +42,7 @@ libkaffevm_la_SOURCES = \
 	$(libkaffevm_la_GEN_SRCS) \
 	baseClasses.c \
 	classMethod.c \
+	classPool.c \
 	code-analyse.c \
 	code.c \
 	constants.c \
@@ -62,6 +63,7 @@ libkaffevm_la_SOURCES = \
 	readClass.c \
 	soft.c \
 	stackTrace.c \
+	stats.c \
 	string.c \
 	support.c \
 	thread.c \
@@ -101,6 +103,7 @@ noinst_HEADERS = \
 	slib.h \
 	soft.h \
 	stackTrace.h \
+	stats.h \
 	stringSupport.h \
 	support.h \
 	gcRefs.h \

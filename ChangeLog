@@ -1,3 +1,13 @@
+Wed May  5 12:27:21 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* configure.in,  kaffe/kaffe/main.c,
+	kaffe/kaffevm/*, kaffe/kaffevm/jit/*: extended Jason's timing scheme 
+	to do more general statistics gathering; try --with-stats
+	* kaffe/kaffevm/stats.[ch]: new file
+	* kaffe/kaffevm/classPool.c: new file (contains parts of classMethod.c 
+	that dealt with classEntryPools.
+	* *.in regenerated with automake1.4a as distributed with RH 6.0
+
 Tue May  4 12:10:46 PDT 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/constants.c, kaffe/kaffevm/classMethod.c: 

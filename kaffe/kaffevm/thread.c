@@ -51,8 +51,6 @@ jbool runFinalizerOnExit;	/* should we run finalizers? */
 
 Hjava_lang_Class* ThreadClass;
 Hjava_lang_Class* ThreadGroupClass;
-Hjava_lang_Thread* garbageman;
-Hjava_lang_Thread* finalman;
 Hjava_lang_ThreadGroup* standardGroup;
 
 static void firstStartThread(void*);
@@ -97,7 +95,7 @@ initThreads(void)
 }
 
 static void
-createThread(Hjava_lang_Thread* tid, void* func)
+createThread(Hjava_lang_Thread* tid, void* func, size_t stacksize)
 {
 	struct Hkaffe_util_Ptr* nativethread;
 
@@ -106,7 +104,7 @@ createThread(Hjava_lang_Thread* tid, void* func)
 		func,
 		unhand(tid)->daemon,
 		tid,
-		threadStackSize);
+		stacksize);
 	unhand(tid)->PrivateInfo = nativethread;
 	/* preallocate a stack overflow error for this thread in case it 
 	 * runs out 
@@ -133,7 +131,7 @@ startThread(Hjava_lang_Thread* tid)
 	 */
 	lockStaticMutex(&thread_start_lock);
 
-	createThread(tid, &firstStartThread);
+	createThread(tid, &firstStartThread, threadStackSize);
 
 	unlockStaticMutex(&thread_start_lock);
 }
@@ -201,10 +199,27 @@ createInitialThread(const char* nm)
 }
 
 /*
- * Start a daemon thread.
+ * helper function to start gc thread
+ */
+static
+void
+startSpecialThread(void* arg)
+{
+	Hjava_lang_Thread* tid = (Hjava_lang_Thread*)arg;
+	void (*func)(void *) = (void*)tid->target;
+	void *argument = (void*)tid->group;
+	tid->target = 0;
+	tid->group = 0;
+	func(argument);
+}
+
+/*
+ * Start a daemon thread, such as a gc or finalizer thread.
+ * We give these threads a java incarnation for consistency.
+ * It might not be strictly necessary for the gc thread.
  */
 Hjava_lang_Thread*
-createDaemon(void* func, const char* nm, int prio)
+createDaemon(void* func, const char* nm, void *arg, int prio, size_t stacksize)
 {
 	Hjava_lang_Thread* tid;
 
@@ -219,10 +234,11 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 	unhand(tid)->threadQ = 0;
 	unhand(tid)->daemon = 1;
 	unhand(tid)->interrupting = 0;
-	unhand(tid)->target = 0;
-	unhand(tid)->group = 0;
+	/* we abuse these two variables as carriers */
+	unhand(tid)->target = (void*)func;
+	unhand(tid)->group = (void*)arg;
   
-	createThread(tid, func);
+	createThread(tid, startSpecialThread, stacksize);
 
 	return (tid);
 }

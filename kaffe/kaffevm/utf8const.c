@@ -20,6 +20,7 @@
 #include "jsyscall.h"
 #include "hashtab.h"
 #include "stringSupport.h"
+#include "stats.h"
 
 /* For kaffeh, don't use the hash table or locks. Instead, just make these
    function calls into macros in such a way as to avoid compiler warnings.
@@ -98,6 +99,7 @@ utf8ConstNew(const char *s, int len)
 #ifdef DEBUG
 	assert(utf8ConstIsValidUtf8(s, len));
 #endif
+	hitCounter(&utf8new, "utf8-new");
 
 	/* Precompute hash value using String.hashCode() algorithm */
 	{
@@ -136,6 +138,7 @@ utf8ConstNew(const char *s, int len)
 		return(utf8);
 	}
 
+	hitCounter(&utf8newalloc, "utf8-new-alloc");
 	/* Not in table; create new Utf8Const struct */
 	utf8 = gc_malloc(sizeof(Utf8Const) + len + 1, GC_ALLOC_UTF8CONST);
 	memcpy((char *) utf8->data, s, len);
@@ -180,6 +183,7 @@ utf8ConstRelease(Utf8Const *utf8)
 	lockStaticMutex(&utf8Lock);
 	assert(utf8->nrefs >= 1);
 	if (--utf8->nrefs == 0) {
+		hitCounter(&utf8release, "utf8-release");
 		hashRemove(hashTable, utf8);
 		jfree(utf8);
 	}

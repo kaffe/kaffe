@@ -36,6 +36,7 @@
 #include "jni.h"
 #include "classpath.h"
 #include "stringSupport.h"
+#include "stats.h"
 
 #define	MAXBUF		256
 
@@ -100,6 +101,12 @@ CDBG(	printf("Scanning for class %s\n", cname);		)
 		class = readClass(class, &hand, NULL, einfo);
 
 		if (hand.base != 0) {
+#if defined(KAFFE_STATS)
+			if (hand.type == CP_ZIPFILE) {
+				addToCounter(&jarmem, "vmmem-jar files", 1, 
+					-(jlong)GCSIZEOF(hand.base));
+			}
+#endif
 			KFREE(hand.base);
 		}
 		return (class);
@@ -220,6 +227,7 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 						"Couldn't read: %s", 
 						SYS_ERROR(rc));
 					hand.type = CP_INVALID;
+					KFREE(hand.base);
 					break;
 				} else {
 					if (j > 0) {	/* more data */

@@ -10,6 +10,15 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
+# Misc. scripts
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -59,8 +68,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
-AMTAR = @AMTAR@
-AMTARFLAGS = @AMTARFLAGS@
 AS = @AS@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
@@ -118,40 +125,24 @@ kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
-# Misc. scripts
-#
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
-
-
 DIST_SUBDIRS = bat compat
 
-SCRIPTFILES_PIZZA = \
-		pizza pizzadoc
+SCRIPTFILES_PIZZA =  		pizza pizzadoc
 
 
-SCRIPTFILES_SUN = \
-		jar javakey javap jdb \
-		native2ascii rmic rmiregistry serialver
+SCRIPTFILES_SUN =  		jar javakey javap jdb 		native2ascii rmic rmiregistry serialver
 
 
-@SUN_COMPAT_TRUE@SUBDIRS = \
-@SUN_COMPAT_TRUE@compat
-@SUN_COMPAT_TRUE@SCRIPTFILES_COMPAT = \
-@SUN_COMPAT_FALSE@SCRIPTFILES_COMPAT = \
-@SUN_COMPAT_FALSE@appletviewer javac javadoc
+@SUN_COMPAT_TRUE@SUBDIRS = compat
+@SUN_COMPAT_TRUE@SCRIPTFILES_COMPAT = 
+@SUN_COMPAT_FALSE@SCRIPTFILES_COMPAT = appletviewer javac javadoc
 
 PSCRIPTFILES = install-jar kaffe
 
-bin_SCRIPTS = $(SCRIPTFILES_PIZZA) $(SCRIPTFILES_SUN) \
-	$(SCRIPTFILES_COMPAT) $(PSCRIPTFILES) report-kaffe-bug
+bin_SCRIPTS = $(SCRIPTFILES_PIZZA) $(SCRIPTFILES_SUN) 	$(SCRIPTFILES_COMPAT) $(PSCRIPTFILES) report-kaffe-bug
 
 
 EXTRA_DIST = report-kaffe-bug
-subdir = kaffe/scripts
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES =  install-jar kaffe javac javakey jar javap jdb \
@@ -159,15 +150,15 @@ pizza javadoc pizzadoc appletviewer rmic rmiregistry serialver \
 native2ascii
 SCRIPTS =  $(bin_SCRIPTS)
 
-DIST_SOURCES = 
 DIST_COMMON =  Makefile.am Makefile.in appletviewer.in install-jar.in \
 jar.in javac.in javadoc.in javakey.in javap.in jdb.in kaffe.in \
 native2ascii.in pizza.in pizzadoc.in rmic.in rmiregistry.in \
 serialver.in
 
 
-DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
+TAR = gtar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -213,22 +204,19 @@ install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)
 	$(mkinstalldirs) $(DESTDIR)$(bindir)
 	@list='$(bin_SCRIPTS)'; for p in $$list; do \
-	  f="`echo $$p|sed '$(transform)'`"; \
 	  if test -f $$p; then \
-	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/$$f"; \
-	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/$$f; \
-	  elif test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/$$f"; \
-	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/$$f; \
-	  else :; fi; \
+	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	  else if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	  else :; fi; fi; \
 	done
 
 uninstall-binSCRIPTS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(bin_SCRIPTS)'; for p in $$list; do \
-	  f="`echo $$p|sed '$(transform)'`"; \
-	  echo " rm -f $(DESTDIR)$(bindir)/$$f"; \
-	  rm -f $(DESTDIR)$(bindir)/$$f; \
+	list='$(bin_SCRIPTS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
 	done
 
 # This directory's subdirectories are mostly independent; you can cd
@@ -267,7 +255,7 @@ maintainer-clean-recursive:
 	dot_seen=no; \
 	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
 	  rev="$$subdir $$rev"; \
-	  if test "$$subdir" = "."; then dot_seen=yes; else :; fi; \
+	  test "$$subdir" = "." && dot_seen=yes; \
 	done; \
 	test "$$dot_seen" = "no" && rev=". $$rev"; \
 	target=`echo $@ | sed s/-recursive//`; \
@@ -321,6 +309,8 @@ distclean-tags:
 maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = kaffe/scripts
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
@@ -405,20 +395,18 @@ maintainer-clean-am:  maintainer-clean-tags maintainer-clean-generic \
 
 maintainer-clean: maintainer-clean-recursive
 
-.PHONY: uninstall-binSCRIPTS install-binSCRIPTS install-recursive \
-uninstall-recursive install-data-recursive uninstall-data-recursive \
-install-exec-recursive uninstall-exec-recursive installdirs-recursive \
-uninstalldirs-recursive all-recursive check-recursive \
-installcheck-recursive info-recursive dvi-recursive \
-mostlyclean-recursive distclean-recursive clean-recursive \
+.PHONY: uninstall-binSCRIPTS install-binSCRIPTS install-data-recursive \
+uninstall-data-recursive install-exec-recursive \
+uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
+all-recursive check-recursive installcheck-recursive info-recursive \
+dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
 maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
 distclean-tags clean-tags maintainer-clean-tags distdir info-am info \
 dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
 install-exec install-data-am install-data install-am install \
-uninstall-am uninstall all-redirect all-am all install-strip \
-installdirs-am installdirs mostlyclean-generic distclean-generic \
-clean-generic maintainer-clean-generic clean mostlyclean distclean \
-maintainer-clean
+uninstall-am uninstall all-redirect all-am all installdirs-am \
+installdirs mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 include $(top_srcdir)/include/distclean-hack

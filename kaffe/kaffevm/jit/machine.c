@@ -45,6 +45,7 @@
 #include "jni.h"
 #include "thread.h"
 #include "jthread.h"
+#include "stats.h"
 
 /*
  * Define information about this engine.
@@ -102,7 +103,6 @@ int codeblock_size;
 static int code_generated;
 static int bytecode_processed;
 static int codeperbytecode;
-static timespent jit_time;
 
 int CODEPC;
 
@@ -239,7 +239,7 @@ DBG(MOREJIT,
 
 	/* Only one in the translator at once. */
 	enterTranslator();
-	startTiming(&jit_time, "JIT");
+	startTiming(&jit_time, "jittime");
 
 DBG(MOREJIT,
 	if (jitting) {
@@ -414,6 +414,8 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code)
 		codebase = (void*)codebase + pad;
 	}
 	memcpy(codebase, codeblock, CODEPC);
+	addToCounter(&jitcodeblock, "jitmem-codeblock", 1,
+		-(jlong)GCSIZEOF(codeblock));
 	gc_free(codeblock);
 
 	/* Establish any code constants */
@@ -528,6 +530,7 @@ initInsnSequence(int codesize, int localsz, int stacksz)
 		codeblock_size = ALLOCCODEBLOCKSZ;
 	}
 	codeblock = KMALLOC(codeblock_size + CODEBLOCKREDZONE);
+	addToCounter(&jitcodeblock, "jitmem-codeblock", 1, GCSIZEOF(codeblock));
 	CODEPC = 0;
 }
 
@@ -545,7 +548,11 @@ generateInsnSequence(codeinfo* codeInfo)
 		/* If we overrun the codeblock, reallocate and continue.  */
 		if (CODEPC >= codeblock_size) {
 			codeblock_size += ALLOCCODEBLOCKSZ;
+			addToCounter(&jitcodeblock, "jitmem-codeblock", 0,
+				    -(jlong)GCSIZEOF(codeblock));
 			codeblock = KREALLOC(codeblock, codeblock_size + CODEBLOCKREDZONE);
+			addToCounter(&jitcodeblock, "jitmem-codeblock", 0,
+				    -GCSIZEOF(codeblock));
 		}
 
 		/* Generate sequences */

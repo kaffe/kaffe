@@ -25,6 +25,8 @@
 #include "constants.h"
 #include "classMethod.h"
 #include "gc.h"
+#include "support.h"
+#include "stats.h"
 #include "itypes.h"
 #include "md.h"
 #include "locks.h"
@@ -3175,6 +3177,9 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 
 	/* Make sure we have enough argument space */
 	if (sp_idx + 1 > sz_args) {
+		/* add differential */
+		addToCounter(&jitmem, "jitmem-temp", 1,
+			(sp_idx + 1 - sz_args) * sizeof(struct pusharg_info));
 		sz_args = sp_idx + 1;
 		args = KREALLOC(args, sizeof(struct pusharg_info) * sz_args);
 	}

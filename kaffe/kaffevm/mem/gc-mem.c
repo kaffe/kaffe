@@ -18,6 +18,7 @@
 #include "gtypes.h"
 #include "baseClasses.h"
 #include "support.h"
+#include "stats.h"
 #include "locks.h"
 #include "jthread.h"
 #include "gc.h"
@@ -29,6 +30,7 @@
 
 extern iLock gc_lock;
 
+static counter gcpages;
 static gc_block* gc_small_block(size_t);
 static gc_block* gc_large_block(size_t);
 
@@ -795,6 +797,7 @@ pagealloc(size_t size)
 	ptr = (void*)((((uintp)ptr) + gc_pgsize - 1) & -gc_pgsize);
 
 #endif
+	addToCounter(&gcpages, "gcmem-system pages", 1, size);
 	return ((uintp) ptr);
 }
 
@@ -847,7 +850,7 @@ gc_block_alloc(size_t size)
 		int min_nb;	/* minimum size of array to hold heap_addr */
 		static timespent growtime;
 
-		startTiming(&growtime, "gc block realloc");
+		startTiming(&growtime, "gctime-blockrealloc");
 		/* Pick a new size for the gc_block array.  Remember,
 		   malloc does not simply grow a memory segment.
 

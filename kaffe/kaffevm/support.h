@@ -162,32 +162,4 @@ extern int addClasspath(const char*);
 #define MAX(A,B) ((A) > (B) ? (A) : (B))
 #endif
 
-/*
- * Structures and prototypes for getrusage based execution timing.
- */
-#if defined(TIMING)
-
-typedef struct _timespent timespent;
-
-struct _timespent {
-	char *name;
-	timespent *next;
-	int calls;
-	struct timeval total;
-	struct timeval stotal;
-	struct timeval current;
-	struct timeval scurrent;
-};
-
-extern void startTiming(timespent *counter, char *name);
-extern void stopTiming(timespent *counter);
-#else
-/* We either can't or wont perform timing:  The first macro suppresses
-   unused variable warnings. */
-typedef char timespent;
-
-#define startTiming(C,N) (*(C) = 0)
-#define stopTiming(C)
-#endif
-
 #endif

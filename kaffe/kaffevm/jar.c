@@ -18,6 +18,8 @@
 #include "jsyscall.h"
 #include "inflate.h"
 #include "jar.h"
+#include "gc.h"
+#include "stats.h"
 #include "files.h"
 
 static inline int
@@ -120,6 +122,7 @@ readCentralDirRecord(jarFile* file)
 
 	len = sizeof(jarEntry) + (head.fileNameLength + 1);
 	ret = KMALLOC(len);
+	addToCounter(&jarmem, "vmmem-jar files", 1, GCSIZEOF(ret));
 DBG(JARFILES,	
 	dprintf("Entry at: %p/len=%d usize%d\n", ret, len, 
 	    head.uncompressedSize);	
@@ -218,6 +221,7 @@ openJarFile(char* name)
 		file->offset = 0;
 	}
 #endif
+	addToCounter(&jarmem, "vmmem-jar files", 1, GCSIZEOF(file));
 	i = findFirstCentralDirRecord(file);
 	file->count = i;
 	if (i > 0) {
@@ -262,7 +266,6 @@ getDataJarFile(jarFile* file, jarEntry* entry)
 		KFREE(buf);
 		return (0);
 	}
-
 	/* Decompress data */
 	switch (entry->compressionMethod) {
 	case COMPRESSION_STORED:
@@ -271,6 +274,7 @@ getDataJarFile(jarFile* file, jarEntry* entry)
 	case COMPRESSION_DEFLATED:
 		nbuf = KMALLOC(entry->uncompressedSize);
 		if (inflate_oneshot(buf, entry->compressedSize, nbuf, entry->uncompressedSize) == 0) {
+			addToCounter(&jarmem, "vmmem-jar files", 1, GCSIZEOF(nbuf));
 			KFREE(buf);
 			return (nbuf);
 		}
@@ -302,6 +306,7 @@ closeJarFile(jarFile* file)
 
 	for (curr = file->head; curr != 0; curr = next) {
 		next = curr->next;
+		addToCounter(&jarmem, "vmmem-jar files", 1, -(jlong)GCSIZEOF(curr));
 		KFREE(curr);
 	}
 
@@ -311,6 +316,7 @@ closeJarFile(jarFile* file)
 	else
 #endif
 	KCLOSE(file->fd);
+	addToCounter(&jarmem, "vmmem-jar files", 1, -(jlong)GCSIZEOF(file));
 	KFREE(file);
 }
 

@@ -10,6 +10,15 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
+# Top-level Makefile for Kaffe OpenVM.
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -59,8 +68,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
-AMTAR = @AMTAR@
-AMTARFLAGS = @AMTARFLAGS@
 AS = @AS@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
@@ -118,53 +125,11 @@ kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
-# Top-level Makefile for Kaffe OpenVM.
-#
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
-
-
 AUTOMAKE_OPTIONS = foreign 1.3e
 
 SUBDIRS = . config include libltdl libraries kaffe test
 
-EXTRA_DIST = \
-	ChangeLog.1 \
-	WHATSNEW \
-	license.terms \
-	FAQ/FAQ.BeOS \
-	FAQ/FAQ.Known-Bugs \
-	FAQ/FAQ.amigaos \
-	FAQ/FAQ.automake \
-	FAQ/FAQ.awt \
-	FAQ/FAQ.class-states \
-	FAQ/FAQ.classlibrary-compile \
-	FAQ/FAQ.depend \
-	FAQ/FAQ.gcblock \
-	FAQ/FAQ.gcstrategy \
-	FAQ/FAQ.hotjava \
-	FAQ/FAQ.install-root \
-	FAQ/FAQ.jsignal \
-	FAQ/FAQ.libtool \
-	FAQ/FAQ.linux \
-	FAQ/FAQ.nativemethods \
-	FAQ/FAQ.requiredlibraries \
-	FAQ/FAQ.timing \
-	FAQ/FAQ.unicode \
-	FAQ/FAQ.win32 \
-	developers/JavaClass.pm \
-	developers/README \
-	developers/README.unicode \
-	developers/autogen.sh \
-	developers/dumpClass.pl \
-	developers/gdbinit \
-	developers/sp_offset.c \
-	developers/update-class-list \
-	developers/unicode.pl \
-	developers/utf8munge.pl
+EXTRA_DIST =  	ChangeLog.1 	WHATSNEW 	license.terms 	FAQ/FAQ.BeOS 	FAQ/FAQ.Known-Bugs 	FAQ/FAQ.amigaos 	FAQ/FAQ.automake 	FAQ/FAQ.awt 	FAQ/FAQ.class-states 	FAQ/FAQ.classlibrary-compile 	FAQ/FAQ.depend 	FAQ/FAQ.gcblock 	FAQ/FAQ.gcstrategy 	FAQ/FAQ.hotjava 	FAQ/FAQ.install-root 	FAQ/FAQ.jsignal 	FAQ/FAQ.libtool 	FAQ/FAQ.linux 	FAQ/FAQ.nativemethods 	FAQ/FAQ.requiredlibraries 	FAQ/FAQ.timing 	FAQ/FAQ.unicode 	FAQ/FAQ.win32 	developers/JavaClass.pm 	developers/README 	developers/README.unicode 	developers/autogen.sh 	developers/dumpClass.pl 	developers/gdbinit 	developers/sp_offset.c 	developers/update-class-list 	developers/unicode.pl 	developers/utf8munge.pl
 
 
 CLEANFILES = BUILD_ENVIRONMENT
@@ -172,21 +137,20 @@ CLEANFILES = BUILD_ENVIRONMENT
 noinst_SCRIPTS = libtool BUILD_ENVIRONMENT
 
 CLASSDIRS = libraries/javalib
-subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ./config/config.h ./include/jtypes.h
 CONFIG_CLEAN_FILES = 
 SCRIPTS =  $(noinst_SCRIPTS)
 
-DIST_SOURCES = 
 DIST_COMMON =  README AUTHORS ChangeLog INSTALL Makefile.am Makefile.in \
 acinclude.m4 aclocal.m4 config.guess config.sub configure configure.in \
 install-sh ltconfig ltmain.sh missing mkinstalldirs
 
 
-DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
+TAR = gtar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -241,7 +205,7 @@ maintainer-clean-recursive:
 	dot_seen=no; \
 	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
 	  rev="$$subdir $$rev"; \
-	  if test "$$subdir" = "."; then dot_seen=yes; else :; fi; \
+	  test "$$subdir" = "." && dot_seen=yes; \
 	done; \
 	test "$$dot_seen" = "no" && rev=". $$rev"; \
 	target=`echo $@ | sed s/-recursive//`; \
@@ -302,7 +266,7 @@ top_distdir = $(distdir)
 # tarfile.
 distcheck: dist
 	-rm -rf $(distdir)
-	GZIP=$(GZIP_ENV) gunzip -c $(distdir).tar.gz | $(AMTAR) xf -
+	GZIP=$(GZIP_ENV) $(TAR) zxf $(distdir).tar.gz
 	mkdir $(distdir)/=build
 	mkdir $(distdir)/=inst
 	dc_install_base=`cd $(distdir)/=inst && pwd`; \
@@ -322,11 +286,11 @@ distcheck: dist
 	echo "$$dashes"
 dist: distdir
 	-chmod -R a+r $(distdir)
-	$(AMTAR) ch$(AMTARFLAGS)f - $(distdir) | GZIP=$(GZIP_ENV) gzip -c > $(distdir).tar.gz
+	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
 	-rm -rf $(distdir)
 dist-all: distdir
 	-chmod -R a+r $(distdir)
-	$(AMTAR) ch$(AMTARFLAGS)f - $(distdir) | GZIP=$(GZIP_ENV) gzip -c > $(distdir).tar.gz
+	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
 	-rm -rf $(distdir)
 distdir: $(DISTFILES)
 	-rm -rf $(distdir)
@@ -417,19 +381,18 @@ maintainer-clean-am:  maintainer-clean-tags maintainer-clean-generic \
 maintainer-clean: maintainer-clean-recursive
 	-rm -f config.status
 
-.PHONY: install-recursive uninstall-recursive install-data-recursive \
-uninstall-data-recursive install-exec-recursive \
-uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
-all-recursive check-recursive installcheck-recursive info-recursive \
-dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
+.PHONY: install-data-recursive uninstall-data-recursive \
+install-exec-recursive uninstall-exec-recursive installdirs-recursive \
+uninstalldirs-recursive all-recursive check-recursive \
+installcheck-recursive info-recursive dvi-recursive \
+mostlyclean-recursive distclean-recursive clean-recursive \
 maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
 distclean-tags clean-tags maintainer-clean-tags distdir info-am info \
 dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
 install-exec install-data-am install-data install-am install \
-uninstall-am uninstall all-redirect all-am all install-strip \
-installdirs-am installdirs mostlyclean-generic distclean-generic \
-clean-generic maintainer-clean-generic clean mostlyclean distclean \
-maintainer-clean
+uninstall-am uninstall all-redirect all-am all installdirs-am \
+installdirs mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 depend:

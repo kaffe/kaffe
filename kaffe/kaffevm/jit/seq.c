@@ -14,6 +14,8 @@
 #include "gtypes.h"
 #include "seq.h"
 #include "gc.h"
+#include "support.h"
+#include "stats.h"
 
 sequence* firstSeq;
 sequence* lastSeq;
@@ -40,6 +42,8 @@ nextSeq(void)
 	if (ret == 0) {
 		/* Allocate chunk of sequence elements */
 		ret = KCALLOC(ALLOCSEQNR, sizeof(sequence));
+		addToCounter(&jitmem, "jitmem-temp", 1,
+			ALLOCSEQNR * sizeof(sequence));
 
 		/* Attach to current chain */
 		if (lastSeq == 0) {

@@ -30,6 +30,7 @@
 #include "system.h"
 #include "jthread.h"
 #include "jsignal.h"
+#include "stats.h"
 #include "ltdl.h"
 
 #ifndef STUB_PREFIX
@@ -46,8 +47,15 @@
 #endif
 
 #ifndef LIBRARYINIT
-static inline lt_ptr_t kdlmalloc(size_t len) { return KMALLOC(len); }
-static inline void kdlfree(lt_ptr_t ptr) { KFREE(ptr); }
+static inline lt_ptr_t kdlmalloc(size_t len) { 
+	void *ptr = KMALLOC(len);
+	addToCounter(&ltmem, "vmmem-libltdl", 1, GCSIZEOF(ptr));
+	return (ptr);
+}
+static inline void kdlfree(lt_ptr_t ptr) { 
+	addToCounter(&ltmem, "vmmem-libltdl", 1, -((jlong)GCSIZEOF(ptr)));
+	KFREE(ptr); 
+}
 #define LIBRARYINIT() ((lt_dlmalloc=kdlmalloc),(lt_dlfree=kdlfree),lt_dlinit())
 #endif
 
@@ -131,6 +139,7 @@ initNative(void)
 	 * Build a library path from the given library path.
 	 */
 	libraryPath = KMALLOC(len+1);
+	addToCounter(&ltmem, "vmmem-libltdl", 1, GCSIZEOF(libraryPath));
 	if (lpath != 0) {
 		strcat(libraryPath, lpath);
 	}
@@ -219,6 +228,7 @@ loadNativeLibrary(char* lib)
 
 	libHandle[i].ref = 1;
 	libHandle[i].name = KMALLOC(strlen(lib) + 1);
+	addToCounter(&ltmem, "vmmem-libltdl", 1, GCSIZEOF(libHandle[i].name));
 	strcpy(libHandle[i].name, lib);
 
 	return (1);

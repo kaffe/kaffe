@@ -33,15 +33,12 @@
 #include "external.h"
 #include "lookup.h"
 #include "support.h"
+#include "stats.h"
 #include "gc.h"
 #include "locks.h"
 #include "md.h"
 #include "jni.h"
 #include "gcj/gcj.h"
-
-#define	CLASSHASHSZ	256	/* Must be a power of two */
-static iLock classHashLock;
-static classEntry* classEntryPool[CLASSHASHSZ];
 
 #if 0
 #define	METHOD_TRUE_NCODE(METH)			(METH)->c.ncode.ncode_start
@@ -1571,78 +1568,6 @@ done:
 }
 
 /*
- * Lookup an entry for a given (name, loader) pair.
- * Return null if none is found.
- */
-classEntry*
-lookupClassEntryInternal(Utf8Const* name, Hjava_lang_ClassLoader* loader)
-{
-	classEntry* entry;
-
-	entry = classEntryPool[utf8ConstHashValue(name) & (CLASSHASHSZ-1)];
-	for (; entry != 0; entry = entry->next) {
-		if (utf8ConstEqual(name, entry->name) && loader == entry->loader) {
-			return (entry);
-		}
-	}
-	return (0);
-}
-
-/*
- * Lookup an entry for a given (name, loader) pair.  
- * Create one if none is found.
- */
-classEntry*
-lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
-{
-	classEntry* entry;
-	classEntry** entryp;
-
-        if (!staticLockIsInitialized(&classHashLock)) {
-		initStaticLock(&classHashLock);
-        }
-
-	entry = lookupClassEntryInternal(name, loader);
-	if (entry != 0)
-		return (entry);
-
-	/* Failed to find class entry - create a new one */
-	entry = KMALLOC(sizeof(classEntry));
-	entry->name = name;
-	entry->loader = loader;
-	entry->class = 0;
-	entry->next = 0;
-
-	/* Lock the class table and insert entry into it (if not already
-	   there) */
-        lockStaticMutex(&classHashLock);
-
-	entryp = &classEntryPool[utf8ConstHashValue(name) & (CLASSHASHSZ-1)];
-	for (; *entryp != 0; entryp = &(*entryp)->next) {
-		if (utf8ConstEqual(name, (*entryp)->name) && loader == (*entryp)->loader) {
-			/* Someone else added it - discard ours and return
-			   the new one. */
-			unlockStaticMutex(&classHashLock);
-			KFREE(entry);
-			return (*entryp);
-		}
-	}
-
-	/* Add ours to end of hash */
-	*entryp = entry;
-
-	/* 
-	 * This reference to the utf8 name will be released if and when this 
-	 * class entry is freed in finalizeClassLoader.
-	 */
-	utf8ConstAddRef(entry->name);
-
-        unlockStaticMutex(&classHashLock);
-
-	return (entry);
-}
-
-/*
  * Lookup a named field.
  */
 Field*
@@ -1860,119 +1785,4 @@ lookupArray(Hjava_lang_Class* c)
 
 	utf8ConstRelease(arr_name);
 	return (centry->class);
-}
-
-#if defined(TRANSLATOR)
-/*
- * Find method containing pc.
- */
-Method*
-findMethodFromPC(uintp pc)
-{
-	classEntry* entry;
-	Method* ptr;
-	int ipool;
-	int imeth;
-
-	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
-		for (entry = classEntryPool[ipool];  entry != NULL; entry = entry->next) {
-			if (entry->class != 0) {
-				imeth = CLASS_NMETHODS(entry->class);
-				ptr = CLASS_METHODS(entry->class);
-				for (; --imeth >= 0;  ptr++) {
-					if (pc >= (uintp)METHOD_NATIVECODE(ptr) && pc < (uintp)ptr->c.ncode.ncode_end) {
-						return (ptr);
-					}
-				}
-			}
-		}
-	}
-	return (NULL);
-}
-#endif
-
-/*
- * Remove all entries from the class entry pool that belong to a given
- * class.  Return the number of entries removed.
- * NB: this will go in a sep file dealing with class entries some day.
- */
-int
-removeClassEntries(Hjava_lang_ClassLoader* loader)
-{
-	classEntry** entryp;
-	classEntry* entry;
-	int ipool;
-	int totalent = 0;
-
-        lockStaticMutex(&classHashLock);
-	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
-		entryp = &classEntryPool[ipool];
-		for (;  *entryp != NULL; entryp = &(*entryp)->next) {
-			entry = *entryp;
-			if (entry->loader == loader) {
-				/*
-				 * If class gc is turned off, no classloader 
-				 * should ever be finalized because they're all 
-				 * kept alive by their respective classes.
-				 */
-				assert(entry->class == 0 || 
-					Kaffe_JavaVMArgs[0].enableClassGC != 0);
-DBG(CLASSGC,
-				dprintf("removing %s l=%p/c=%p\n", 
-				    entry->name->data, loader, entry->class);
-    )
-				/* release reference to name */
-				utf8ConstRelease(entry->name);
-				(*entryp) = entry->next;
-				KFREE(entry);
-				totalent++;
-			}
-			/* if this was the last item, break */
-			if (*entryp == 0)
-				break;
-		}
-	}
-        unlockStaticMutex(&classHashLock);
-	return (totalent);
-}
-
-/*
- * Finalize a classloader and remove its entries in the class entry pool.
- */
-void
-finalizeClassLoader(Hjava_lang_ClassLoader* loader)
-{
-        int rmoved;
- 
-DBG(CLASSGC,
-        dprintf("Finalizing classloader @%p\n", loader);
-    )
-        rmoved = removeClassEntries(loader);
-   
-DBG(CLASSGC,
-        dprintf("removed entries from class entry pool: %d\n", rmoved);
-    )
-}
-
-/*
- * this is a diagnostic function that does a sanity check
- */
-void
-checkClass(Hjava_lang_Class *c, Hjava_lang_ClassLoader *loader)
-{
-	classEntry* entry;
-	int ipool;
-
-	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
-		entry = classEntryPool[ipool];
-		for (; entry != NULL; entry = entry->next) {
-			if (entry->class == c) {
-				fprintf(stderr, 
-				    "unloaded class still referenced by "
-				    "defining loader.  Kaffe does not handle "
-				    "this yet.\n");
-				ABORT();
-			}
-		}
-	}
 }

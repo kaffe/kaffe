@@ -14,6 +14,8 @@
 #include "gtypes.h"
 #include "constpool.h"
 #include "gc.h"
+#include "support.h"
+#include "stats.h"
 
 #include <stdarg.h>
 
@@ -71,6 +73,8 @@ newConstant(int type, ...)
 
 		/* Allocate chunk of label elements */
 		c = KCALLOC(ALLOCCONSTNR, sizeof(constpool));
+		addToCounter(&jitmem, "jitmem-temp", 1,
+				ALLOCCONSTNR * sizeof(constpool));
 
 		/* Attach to current chain */
 		if (lastConst == 0) {

@@ -9,7 +9,7 @@
  * of this file. 
  */
 
-#define	STATS
+#define	SUPPORT_VERBOSEMEM
 
 #include "config.h"
 #include "debug.h"
@@ -23,6 +23,10 @@
 #include "jthread.h"
 #include "errors.h"
 #include "md.h"
+#include "stats.h"
+
+#define GCSTACKSIZE		16384
+#define FINALIZERSTACKSIZE	THREADSTACKSIZE
 
 /*
  * Object implementing the collector interface.
@@ -45,8 +49,10 @@ static volatile bool finalRunning = false;
 static timespent gc_time;
 static timespent sweep_time;
 static void (*walkRootSet)(Collector*);
+static counter gcgcablemem;
+static counter gcfixedmem;
 
-#if defined(STATS)
+#if defined(SUPPORT_VERBOSEMEM)
 
 static void objectStatsChange(gc_unit*, int);
 static void objectStatsPrint(void);
@@ -319,7 +325,7 @@ gcMan(void* arg)
 	gc_unit* nunit;
 	gc_block* info;
 	int idx;
-	Collector *gcif = &gc_obj.collector;		/* XXX */
+	Collector *gcif = (Collector*)arg;
 
 	if (!staticLockIsInitialized(&gcman)) {
 		initStaticLock(&gcman);
@@ -468,7 +474,7 @@ startGC(Collector *gcif)
 	STOPWORLD();
 
 	/* measure time */
-	startTiming(&gc_time, "gc-scan");
+	startTiming(&gc_time, "gctime-scan");
 
 	/* Walk all objects on the finalizer list */
 	for (unit = gclists[finalise].cnext;
@@ -565,7 +571,7 @@ finishGC(Collector *gcif)
 	 * Now free the objects.  We can block here since we're the only
 	 * thread manipulating the "mustfree" list.
 	 */
-	startTiming(&sweep_time, "gc-sweep");
+	startTiming(&sweep_time, "gctime-sweep");
 
 	while (gclists[mustfree].cnext != &gclists[mustfree]) {
 		destroy_func_t destroy;
@@ -580,6 +586,8 @@ finishGC(Collector *gcif)
 		}
 
 		UREMOVELIST(unit);
+		addToCounter(&gcgcablemem, "gcmem-gcable objects", 1, 
+			-((jlong)GCBLOCKSIZE(info)));
 		gc_heap_free(unit);
 	}
 	stopTiming(&sweep_time);
@@ -607,7 +615,7 @@ finaliserMan(void* arg)
 	gc_block* info;
 	gc_unit* unit;
 	int idx;
-	Collector *gcif = &gc_obj.collector;	/* XXX */
+	Collector *gcif = (Collector*)arg;
 
 	if (!staticLockIsInitialized(&finman)) {
 		initStaticLock(&finman);
@@ -752,9 +760,11 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 	 * regime and must be freed explicitly.
 	 */
 	if (gcFunctions[fidx].final == GC_OBJECT_FIXED) {
+		addToCounter(&gcfixedmem, "gcmem-fixed objects", 1, bsz);
 		GC_SET_COLOUR(info, i, GC_COLOUR_FIXED);
 	}
 	else {
+		addToCounter(&gcgcablemem, "gcmem-gcable objects", 1, bsz);
 		/*
 		 * Note that as soon as we put the object on the white list,
 		 * the gc might come along and free the object if it can't
@@ -833,12 +843,14 @@ gcFree(Collector* gcif, void* mem)
 		idx = GCMEM2IDX(info, unit);
 
 		if (GC_GET_COLOUR(info, idx) == GC_COLOUR_FIXED) {
+			size_t sz = GCBLOCKSIZE(info);
 
 			OBJECTSTATSREMOVE(unit);
 
 			/* Keep the stats correct */
-			gcStats.totalmem -= GCBLOCKSIZE(info);
+			gcStats.totalmem -= sz;
 			gcStats.totalobj -= 1;
+			addToCounter(&gcfixedmem, "gcmem-fixed objects", 1, -(jlong)sz);
 
 			gc_heap_free(unit);
 		}
@@ -869,20 +881,17 @@ void
 /* ARGSUSED */
 gcEnable(Collector* collector)
 {
-	/* XXX This break encapsulation 
-	 * Gets fixed once threading interface gets fixed.
-	 */
         if (DBGEXPR(NOGC, false, true))
         {
                 /* Start the GC daemons we need */
                 finalman = createDaemon(&finaliserMan, "finaliser", 
-				THREAD_MAXPRIO);
+				collector, THREAD_MAXPRIO, FINALIZERSTACKSIZE);
                 garbageman = createDaemon(&gcMan, "gc", 
-				THREAD_MAXPRIO);
+				collector, THREAD_MAXPRIO, GCSTACKSIZE);
         }
 }
 
-#if defined(STATS)
+#if defined(SUPPORT_VERBOSEMEM)
 
 /* --------------------------------------------------------------------- */
 /* The following functions are strictly for statistics gathering	 */

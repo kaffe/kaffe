@@ -563,16 +563,16 @@ have_rusage=no
 AC_CHECK_HEADERS(sys/resource.h, AC_CHECK_FUNCS(getrusage, have_rusage=yes))
 
 dnl =========================================================================
-dnl Do we build a timing measuring vm?
+dnl Do we build a vm that collects statistics?
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(timing,[  --with-timing           Time vm execution])
+AC_ARG_WITH(stats,[  --with-stats           Gather statistics on vm execution])
 
-if test "$with_timing" = "yes" ; then
+if test "$with_stats" = "yes" ; then
 	if test $have_rusage = "no" ; then
-		echo "Can't build with timing but no rusage"
+		echo "Need rusage to build stats version"
 	else
-		AC_DEFINE(TIMING, 1, [Do we time various pieces of the vm?])
+		AC_DEFINE(KAFFE_STATS, 1, [Do we enable stats in the vm?])
 	fi
 fi
 

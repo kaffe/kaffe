@@ -445,8 +445,8 @@
 /* Do we have the right version of libungif */
 #undef HAVE_GIF_LIB_H
 
-/* Do we time various pieces of the vm? */
-#undef TIMING
+/* Do we enable stats in the vm? */
+#undef KAFFE_STATS
 
 /* Do we have int8 */
 #undef HAVE_INT8

@@ -43,7 +43,7 @@ void	finalizeThread(Hjava_lang_Thread*);
 char*	nameThread(Hjava_lang_Thread*);
 char*	nameNativeThread(void*);
 Hjava_lang_Thread* getCurrentThread(void);
-Hjava_lang_Thread* createDaemon(void*, const char*, int);
+Hjava_lang_Thread* createDaemon(void*, const char*, void *arg, int, size_t);
 extern  Hjava_lang_Class* ThreadClass;
 struct  _Collector;
 

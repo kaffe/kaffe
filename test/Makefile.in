@@ -10,6 +10,15 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
+# Testing
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -59,8 +68,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
-AMTAR = @AMTAR@
-AMTARFLAGS = @AMTARFLAGS@
 AS = @AS@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
@@ -118,49 +125,19 @@ kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
-# Testing
-#
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
-
-
 SUBDIRS = regression
 
-EXTRA_DIST = \
-	awt/Calc/Calc.java \
-	awt/Calc/Calc.sh \
-	awt/TextEdit/README \
-	awt/TextEdit/TextEdit.jar \
-	awt/TextEdit/TextEdit.sh \
-	awt/TextEdit/copyright.txt \
-	awt/Unico/README \
-	awt/Unico/Unico.class \
-	awt/Unico/readme.txt \
-	awt/Unico/unico.jar \
-	awt/Unico/unico.sh \
-	awt/WidgetsDemo/DemoImageDict.java \
-	awt/WidgetsDemo/README \
-	awt/WidgetsDemo/WidgetsDemo.java \
-	awt/WidgetsDemo/WidgetsDemo.sh \
-	awt/WidgetsDemo/back.jpg \
-	awt/WidgetsDemo/forward.jpg \
-	awt/WidgetsDemo/hand.up.jpg \
-	awt/WidgetsDemo/transfer.jpg \
-	awt/WidgetsDemo/tvt.jpg
+EXTRA_DIST =  	awt/Calc/Calc.java 	awt/Calc/Calc.sh 	awt/TextEdit/README 	awt/TextEdit/TextEdit.jar 	awt/TextEdit/TextEdit.sh 	awt/TextEdit/copyright.txt 	awt/Unico/README 	awt/Unico/Unico.class 	awt/Unico/readme.txt 	awt/Unico/unico.jar 	awt/Unico/unico.sh 	awt/WidgetsDemo/DemoImageDict.java 	awt/WidgetsDemo/README 	awt/WidgetsDemo/WidgetsDemo.java 	awt/WidgetsDemo/WidgetsDemo.sh 	awt/WidgetsDemo/back.jpg 	awt/WidgetsDemo/forward.jpg 	awt/WidgetsDemo/hand.up.jpg 	awt/WidgetsDemo/transfer.jpg 	awt/WidgetsDemo/tvt.jpg
 
-subdir = test
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config/config.h ../include/jtypes.h
 CONFIG_CLEAN_FILES = 
-DIST_SOURCES = 
 DIST_COMMON =  Makefile.am Makefile.in
 
 
-DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
+TAR = gtar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -208,7 +185,7 @@ maintainer-clean-recursive:
 	dot_seen=no; \
 	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
 	  rev="$$subdir $$rev"; \
-	  if test "$$subdir" = "."; then dot_seen=yes; else :; fi; \
+	  test "$$subdir" = "." && dot_seen=yes; \
 	done; \
 	test "$$dot_seen" = "no" && rev=". $$rev"; \
 	target=`echo $@ | sed s/-recursive//`; \
@@ -262,6 +239,8 @@ distclean-tags:
 maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = test
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
@@ -347,19 +326,18 @@ maintainer-clean-am:  maintainer-clean-tags maintainer-clean-generic \
 
 maintainer-clean: maintainer-clean-recursive
 
-.PHONY: install-recursive uninstall-recursive install-data-recursive \
-uninstall-data-recursive install-exec-recursive \
-uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
-all-recursive check-recursive installcheck-recursive info-recursive \
-dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
+.PHONY: install-data-recursive uninstall-data-recursive \
+install-exec-recursive uninstall-exec-recursive installdirs-recursive \
+uninstalldirs-recursive all-recursive check-recursive \
+installcheck-recursive info-recursive dvi-recursive \
+mostlyclean-recursive distclean-recursive clean-recursive \
 maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
 distclean-tags clean-tags maintainer-clean-tags distdir info-am info \
 dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
 install-exec install-data-am install-data install-am install \
-uninstall-am uninstall all-redirect all-am all install-strip \
-installdirs-am installdirs mostlyclean-generic distclean-generic \
-clean-generic maintainer-clean-generic clean mostlyclean distclean \
-maintainer-clean
+uninstall-am uninstall all-redirect all-am all installdirs-am \
+installdirs mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

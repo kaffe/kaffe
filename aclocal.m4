@@ -446,19 +446,6 @@ AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
 AM_MISSING_PROG(AUTOMAKE, automake, $missing_dir)
 AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
 AM_MISSING_PROG(MAKEINFO, makeinfo, $missing_dir)
-dnl We check for tar when the user configures the end package.
-dnl This is sad, since we only need this for "dist".  However,
-dnl there's no other good way to do it.  We prefer GNU tar if
-dnl we can find it.  If we can't find a tar, it doesn't really matter.
-AC_CHECK_PROGS(AMTAR, gnutar gtar tar)
-AMTARFLAGS=
-if test -n "$AMTAR"; then
-  if $SHELL -c "$AMTAR --version" > /dev/null 2>&1; then
-    dnl We have GNU tar.
-    AMTARFLAGS=o
-  fi
-fi
-AC_SUBST(AMTARFLAGS)
 AC_REQUIRE([AC_PROG_MAKE_SET])])
 
 #

@@ -346,7 +346,20 @@ options(char** argv)
                 else if (strcmp(argv[i], "-jar") == 0) {
                         isJar = 1;
                 }
-#ifdef DEBUG
+#if defined(KAFFE_STATS)
+                else if (strcmp(argv[i], "-vmstats") == 0) {
+			extern void statsSetMaskStr(char *);
+                        i++;
+                        if (argv[i] == 0) { /* forgot second arg */
+                                fprintf(stderr, 
+					"Error: -vmstats option requires a "
+					"second arg.\n");
+                                exit(1);
+                        }
+                        statsSetMaskStr(argv[i]);
+                }
+#endif
+#if defined(DEBUG)
                 else if (strcmp(argv[i], "-vmdebug") == 0) {
 			extern void dbgSetMaskStr(char *);
                         i++;
@@ -427,6 +440,9 @@ usage(void)
         fprintf(stderr, "	-jar                    Executable is a JAR\n");
 #ifdef DEBUG
         fprintf(stderr, "	-vmdebug <flag{,flag}>	Internal VM debugging.  Set flag=list for a list\n");                     
+#endif
+#ifdef KAFFE_STATS
+        fprintf(stderr, "	-vmstats <flag{,flag}>	Print VM statistics.  Set flag=all for all\n");                     
 #endif
 	fprintf(stderr, "	-prof *			?\n");
 	fprintf(stderr, "  * Option currently ignored.\n");

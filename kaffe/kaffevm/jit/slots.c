@@ -15,8 +15,10 @@
 #include "registers.h"
 #include "md.h"
 #include "gc.h"
+#include "support.h"
+#include "stats.h"
 
-SlotInfo* basicslots;
+static SlotInfo* basicslots;
 SlotInfo* slotinfo;
 int maxslot;
 
@@ -40,6 +42,8 @@ initSlots(int nrslots)
 	/* Make sure we have enough slots space */
 	if (nrslots > lastnrslots) {
 		basicslots = KREALLOC(basicslots, nrslots * sizeof(SlotInfo));
+		addToCounter(&jitmem, "jitmem-temp", 1,
+			(nrslots - lastnrslots) * sizeof(SlotInfo));
 		lastnrslots = nrslots;
 	}
 	/* Set 'maxslot' to the maximum slot usable (excluding returns) */

@@ -20,6 +20,8 @@
 #include "constpool.h"
 #include "gc.h"
 #include "md.h"
+#include "support.h"
+#include "stats.h"
 
 label* firstLabel;
 label* lastLabel;
@@ -136,6 +138,8 @@ newLabel(void)
 	if (ret == 0) {
 		/* Allocate chunk of label elements */
 		ret = KCALLOC(ALLOCLABELNR, sizeof(label));
+		addToCounter(&jitmem, "jitmem-temp", 1, 
+			ALLOCLABELNR * sizeof(label));
 
 		/* Attach to current chain */
 		if (lastLabel == 0) {
