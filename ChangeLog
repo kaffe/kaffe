@@ -1,3 +1,11 @@
+Fri Oct  9 10:36:19 PDT 1998 Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/external.c: fall back to using LIBRARYPATH if
+	nothing specified by Kaffe_JavaVMArgs, for backward compatibility
+	(suggested by James Lundblad <jamesl@eecs.berkeley.edu>)
+	* libraries/javalib/java/awt/widgets/Scrollbar.java:
+	check in bug fix patch from Peter.
+
 Thu Oct  8 12:34:22 PDT 1998 James Lundblad <jamesl@eecs.berkeley.edu>
 
 	* kaffe/kaffevm/jni.c: fix bug in JNI_GetCreatedJavaVMs()

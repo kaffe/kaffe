@@ -88,6 +88,9 @@ initNative(void)
 	int len;
 
 	lpath = (char*)Kaffe_JavaVMArgs[0].librarypath;
+	if (lpath == 0) {
+		lpath = getenv(LIBRARYPATH);
+	}
 	home = (char*)Kaffe_JavaVMArgs[0].classhome;
 
 	len = 0;
