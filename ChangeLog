@@ -1,5 +1,7 @@
 Thu Jul 13 12:17:42 PDT 2000  Archie Cobbs <archie@whistle.com>
 
+	* kaffe/kaffevm/classMethod.c: don't discard <clinit> if it
+	threw an exception
 	* libraries/javalib/Klasses.jar: regen
 
 Thu Jul  6 10:28:25 EDT 2000 Alan L. Batongbacal <alanlb@vt.edu>
