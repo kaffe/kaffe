@@ -39,8 +39,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 	int envlen;
 	int i;
 	jclass ioexc_class = (*env)->FindClass(env, "java.io.IOException");
-	jclass proc_class, fd_class;
-	jfieldID fd_field[4];
+	jclass proc_class;
 	/* the names given to the stream in Java */
 	const char *fd_names[] = { "stdin_fd", 
 				  "stdout_fd", 

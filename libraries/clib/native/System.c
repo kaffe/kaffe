@@ -133,7 +133,6 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	char* jhome;
 	char* cpath;
 	char* dir;
-	char* jresources;
 	userProperty* prop;
 #if defined(HAVE_SYS_UTSNAME_H)
 	struct utsname system;

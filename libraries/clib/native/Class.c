@@ -257,8 +257,6 @@ java_lang_Class_isArray(struct Hjava_lang_Class* this)
 Hjava_lang_Class*
 java_lang_Class_getComponentType(struct Hjava_lang_Class* this)
 {
-	Hjava_lang_Class* type;
-
 	if (CLASS_IS_ARRAY(this)) {
 		return (CLASS_ELEMENT_TYPE(this));
 	}
@@ -548,10 +546,8 @@ java_lang_Class_getMethods0(struct Hjava_lang_Class* this, jint declared)
 {
 	int count;
 	Hjava_lang_Class* clas;
-	Method* mth;
 	Hjava_lang_reflect_Method** ptr;
 	HArrayOfObject* array;
-	int i;
 
 	/*
 	 * Note: the spec wants us to include the methods of all superclasses
