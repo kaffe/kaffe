@@ -1,6 +1,6 @@
 public class Preempt implements Runnable
 {
-    public final static int TIMEOUT = 2000;
+    public final static int TIMEOUT = 5000;
 
     public static void main(String args[])
     {

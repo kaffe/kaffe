@@ -1,5 +1,10 @@
 2004-11-06  Eric Anholt  <eta@lclark.edu>
 
+	* test/regression/Preempt.java:
+	Increased the timeout to make test pass on amd64-freebsd.
+
+2004-11-06  Eric Anholt  <eta@lclark.edu>
+
 	* kaffe/kaffevm/code.c:
 	Cast a uintp to a long and use %ld to print instead of %d.
 
