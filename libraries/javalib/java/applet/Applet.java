@@ -29,10 +29,7 @@ public void destroy() {
 }
 
 public AppletContext getAppletContext() {
-	if (stub != null) {
-		return (stub.getAppletContext());
-	}
-	return (null);
+	return stub.getAppletContext();
 }
 
 public String getAppletInfo() {
@@ -40,11 +37,7 @@ public String getAppletInfo() {
 }
 
 public AudioClip getAudioClip( URL url) {
-	final AppletContext ac = getAppletContext();
-	if ( ac != null) {
-		return ac.getAudioClip( url);
-	}
-	return null;
+	return (getAppletContext().getAudioClip(url));
 }
 
 public AudioClip getAudioClip( URL url, String name) {
@@ -52,39 +45,34 @@ public AudioClip getAudioClip( URL url, String name) {
 		return getAudioClip( new URL( url, name));
 	}
 	catch ( MalformedURLException m) {
+		return null;
 	}
-	return null;
 }
 
 public URL getCodeBase() {
-	if (stub != null) {
-		return (stub.getCodeBase());
-	}
-	return (null);
+	return (stub.getCodeBase());
 }
 
 public URL getDocumentBase() {
-	if (stub != null) {
-		return (stub.getDocumentBase());
-	}
-	return (null);
+	return (stub.getDocumentBase());
 }
 
 public Image getImage( URL url) {
-	final AppletContext ac = getAppletContext();
-	if ( ac != null) {
-		return (ac.getImage( url));
-	}
-	return (null);
+	return getAppletContext().getImage( url);
 }
 
 public Image getImage( URL url, String name) {
+	if (url == null) {
+		url = getCodeBase();
+	}
 	try { 
 		return (getImage( new URL( url, name)));
 	}
 	catch ( MalformedURLException m) {
+		// Hmmm, this seems to be one of the JDK plaaces where a image
+		// factory method indeed returns null. No need to be more consistent
+		return (null);
 	}
-	return (null);
 }
 
 public Locale getLocale() {
@@ -92,10 +80,7 @@ public Locale getLocale() {
 }
 
 public String getParameter( String name) {
-	if (stub != null) {
-		return (stub.getParameter(name));
-	}
-	return (null);
+	return (stub.getParameter(name));
 }
 
 public String[][] getParameterInfo() {
@@ -106,10 +91,7 @@ public void init() {
 }
 
 public boolean isActive() {
-	if (stub != null) {
-		return (stub.isActive());
-	}
-	return (false);
+	return (stub == null ? false : stub.isActive());
 }
 
 final public static AudioClip newAudioClip( URL url) {
@@ -159,5 +141,3 @@ public void start() {
 public void stop() {
 }
 }
-
-
