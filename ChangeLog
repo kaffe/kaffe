@@ -1,3 +1,9 @@
+2004-12-05  Davanum Srinivas  <davanum@gmail.com>
+
+	* libraries/javalib/gnu/java/net/protocol/http/HTTPURLConnection.java:
+	Treat empty string as the same as null string for both proxyHost 
+	and proxyPort.
+
 2004-12-05  Mark Wielaard  <mark@klomp.org>
 
 	* libraries/javalib/java/lang/VMSecurityManager.java

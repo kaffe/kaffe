@@ -97,10 +97,14 @@ public class HTTPURLConnection
     public Object run()
     {
       proxyHostname = System.getProperty("http.proxyHost");
-      if (proxyHostname != null)
+      if (proxyHostname != null && proxyHostname.length() > 0)
         {
           String port = System.getProperty("http.proxyPort");
-          proxyPort = (port != null) ? Integer.parseInt (port) : -1;
+          proxyPort = (port != null && port.length() > 0) ? Integer.parseInt (port) : -1;
+        }
+      else
+        {
+            proxyHostname = null;
         }
       return null;
     }
