@@ -100,6 +100,7 @@ MATH_LIBS = @MATH_LIBS@
 M_LIBS = @M_LIBS@
 NET_LIBS = @NET_LIBS@
 NM = @NM@
+OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
 RANLIB = @RANLIB@
@@ -132,6 +133,7 @@ libmanagement_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols
 libmanagement_la_SOURCES = Classpath.c
 
 CLEANFILES = so_locations
+subdir = libraries/clib/management
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -256,8 +258,6 @@ distclean-tags:
 maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
-
-subdir = libraries/clib/management
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \

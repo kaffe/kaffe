@@ -97,9 +97,9 @@ yes,yes) : ${enable_static=no};;
 esac
 
 AC_LIBTOOL_DLOPEN
+AC_LIBLTDL_CONVENIENCE
 AM_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
-AC_LIBLTDL_CONVENIENCE
 AC_SUBST(LIBLTDL)
 
 dnl =========================================================================

@@ -71,7 +71,8 @@ AC_DEFINE_UNQUOTED(LTDL_OBJDIR, "$libltdl_cv_objdir/",
 AC_HEADER_STDC
 AC_CHECK_HEADERS(malloc.h memory.h stdlib.h stdio.h ctype.h dlfcn.h dl.h dld.h)
 AC_CHECK_HEADERS(string.h strings.h, break)
-AC_CHECK_FUNCS(strdup strchr strrchr index rindex)
+AC_CHECK_FUNCS(strchr index, break)
+AC_CHECK_FUNCS(strrchr rindex, break)
 
 AC_CACHE_CHECK([whether libtool supports -dlopen/-dlpreopen],
        libltdl_cv_preloaded_symbols, [dnl
@@ -86,24 +87,16 @@ if test x"$libltdl_cv_preloaded_symbols" = x"yes"; then
     [Define if libtool can extract symbol lists from object files. ])
 fi
 
-test_dlerror=no
 LIBADD_DL=
-AC_CHECK_FUNCS(dlopen, [AC_DEFINE(HAVE_LIBDL, 1,
-			  [Define if you have the libdl library or equivalent. ]) test_dlerror=yes],
-  [AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL, 1,
-			       [Define if you have the libdl library. ]) dnl
-			     LIBADD_DL="-ldl" test_dlerror=yes],
-    [AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD, 1,
-				    [Define if you have the GNU dld library. ]) dnl
-				  LIBADD_DL="-ldld"],
-      [AC_CHECK_FUNCS(shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1,
-				   [Define if you have the shl_load function. ])])]
-    )]
-  )]
-)
+AC_CHECK_FUNC(dlopen, [AC_DEFINE(HAVE_LIBDL, 1)],
+[AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL, 1) LIBADD_DL="-ldl"],
+[AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD, 1) LIBADD_DL="-ldld"],
+[AC_CHECK_FUNC(shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1)],
+[AC_CHECK_LIB(dld, shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1) LIBADD_DL="-ldld"])]
+)])])])
 AC_SUBST(LIBADD_DL)
 
-if test "$test_dlerror" = yes; then
+if test "x$ac_cv_func_dlopen" = xyes || test "x$ac_cv_lib_dl_dlopen" = yes; then
  LIBS_SAVE="$LIBS"
  LIBS="$LIBS $LIBADD_DL"
  AC_CHECK_FUNCS(dlerror)

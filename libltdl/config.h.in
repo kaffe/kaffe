@@ -9,11 +9,17 @@
 /* Define if you have the ANSI C header files.  */
 #undef STDC_HEADERS
 
+/* Define if you have the libdl library or equivalent.  */
+#undef HAVE_LIBDL
+
+/* Define if you have the GNU dld library.  */
+#undef HAVE_DLD
+
+/* Define if you have the shl_load function.  */
+#undef HAVE_SHL_LOAD
+
 /* Define if you have the dlerror function.  */
 #undef HAVE_DLERROR
-
-/* Define if you have the dlopen function.  */
-#undef HAVE_DLOPEN
 
 /* Define if you have the index function.  */
 #undef HAVE_INDEX
@@ -21,14 +27,8 @@
 /* Define if you have the rindex function.  */
 #undef HAVE_RINDEX
 
-/* Define if you have the shl_load function.  */
-#undef HAVE_SHL_LOAD
-
 /* Define if you have the strchr function.  */
 #undef HAVE_STRCHR
-
-/* Define if you have the strdup function.  */
-#undef HAVE_STRDUP
 
 /* Define if you have the strrchr function.  */
 #undef HAVE_STRRCHR
@@ -74,18 +74,6 @@
 
 /* Define if libtool can extract symbol lists from object files.  */
 #undef HAVE_PRELOADED_SYMBOLS
-
-/* Define if you have the libdl library or equivalent.  */
-#undef HAVE_LIBDL
-
-/* Define if you have the libdl library.  */
-#undef HAVE_LIBDL
-
-/* Define if you have the GNU dld library.  */
-#undef HAVE_DLD
-
-/* Define if you have the shl_load function.  */
-#undef HAVE_SHL_LOAD
 
 /* Define if dlsym() requires a leading underscode in symbol names.  */
 #undef NEED_USCORE

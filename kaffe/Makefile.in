@@ -100,6 +100,7 @@ MATH_LIBS = @MATH_LIBS@
 M_LIBS = @M_LIBS@
 NET_LIBS = @NET_LIBS@
 NM = @NM@
+OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
 RANLIB = @RANLIB@
@@ -127,6 +128,7 @@ with_engine = @with_engine@
 
 
 SUBDIRS = kaffeh kaffevm kaffe scripts man
+subdir = kaffe
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config/config.h ../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -237,8 +239,6 @@ distclean-tags:
 maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
-
-subdir = kaffe
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \

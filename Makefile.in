@@ -100,6 +100,7 @@ MATH_LIBS = @MATH_LIBS@
 M_LIBS = @M_LIBS@
 NET_LIBS = @NET_LIBS@
 NM = @NM@
+OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
 RANLIB = @RANLIB@
@@ -171,6 +172,7 @@ CLEANFILES = BUILD_ENVIRONMENT
 noinst_SCRIPTS = libtool BUILD_ENVIRONMENT
 
 CLASSDIRS = libraries/javalib
+subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ./config/config.h ./include/jtypes.h

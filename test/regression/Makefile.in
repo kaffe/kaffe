@@ -100,6 +100,7 @@ MATH_LIBS = @MATH_LIBS@
 M_LIBS = @M_LIBS@
 NET_LIBS = @NET_LIBS@
 NM = @NM@
+OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
 RANLIB = @RANLIB@
@@ -216,6 +217,7 @@ TESTS = \
 EXTRA_DIST = $(TESTS)
 
 CLEANFILES = *.class *.fail *.out core *.core ExceptionTest
+subdir = test/regression
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES =  TestScript
@@ -242,8 +244,6 @@ TAGS:
 
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
-
-subdir = test/regression
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \

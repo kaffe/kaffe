@@ -100,6 +100,7 @@ MATH_LIBS = @MATH_LIBS@
 M_LIBS = @M_LIBS@
 NET_LIBS = @NET_LIBS@
 NM = @NM@
+OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
 RANLIB = @RANLIB@
@@ -138,6 +139,7 @@ INCLUDES = \
 
 
 DEFS = $(ENGINE_DEFS) -DKVER=\"$(KVER)\" -D_REENTRANT
+subdir = kaffe/kaffevm/systems/beos-native
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../../config/config.h ../../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -245,8 +247,6 @@ distclean-tags:
 maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
-
-subdir = kaffe/kaffevm/systems/beos-native
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \

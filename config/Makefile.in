@@ -100,6 +100,7 @@ MATH_LIBS = @MATH_LIBS@
 M_LIBS = @M_LIBS@
 NET_LIBS = @NET_LIBS@
 NM = @NM@
+OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
 RANLIB = @RANLIB@
@@ -342,6 +343,7 @@ EXTRA_DIST = \
 	sparc/uxpds/md.c \
 	sparc/uxpds/md.h
 
+subdir = config
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h ../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -427,8 +429,6 @@ distclean-tags:
 maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
-
-subdir = config
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
