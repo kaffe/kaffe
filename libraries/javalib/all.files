@@ -801,6 +801,7 @@ gnu/java/locale/LocaleInformation_mk.java
 gnu/java/locale/LocaleInformation_ml_IN.java
 gnu/java/locale/LocaleInformation_ml.java
 gnu/java/locale/LocaleInformation_mn.java
+gnu/java/locale/LocaleInformation_mn_MN.java
 gnu/java/locale/LocaleInformation_mr_IN.java
 gnu/java/locale/LocaleInformation_mr.java
 gnu/java/locale/LocaleInformation_ms_BN.java

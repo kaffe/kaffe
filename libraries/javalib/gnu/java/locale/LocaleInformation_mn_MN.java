@@ -1,4 +1,4 @@
-/* LocaleInformation_pt_PT.java --
+/* LocaleInformation_mn_MN.java --
    Copyright (C) 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -45,11 +45,11 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.ListResourceBundle;
 
-public class LocaleInformation_pt_PT extends ListResourceBundle
+public class LocaleInformation_mn_MN extends ListResourceBundle
 {
-  private static final String currenciesDisplayNameKeys = "";
+  private static final String currenciesDisplayNameKeys = "MNT";
 
-  private static final String currenciesDisplayNameValues = "";
+  private static final String currenciesDisplayNameValues = "MNT";
 
   private static final Hashtable currenciesDisplayName;
   static
@@ -65,9 +65,9 @@ public class LocaleInformation_pt_PT extends ListResourceBundle
       }
   }
 
-  private static final String currenciesSymbolKeys = "";
+  private static final String currenciesSymbolKeys = "MNT";
 
-  private static final String currenciesSymbolValues = "";
+  private static final String currenciesSymbolValues = "\u20ae";
 
   private static final Hashtable currenciesSymbol;
   static
@@ -83,51 +83,10 @@ public class LocaleInformation_pt_PT extends ListResourceBundle
       }
   }
 
-  private static final String territoriesKeys = "PS|MP|GL|MO|YU|AE|MK|PL|SM|VN|MG|SI|PG|MD|VI|SG|MC|VG|CZ|SC|CX|YE|VC|VA|LV|UZ|CM|FK|RO|UM|RE|LA|BY|KZ|KY|ER|KR|KP|BJ|KN|HK|EH|EG|EE|TM|KG|BA|KE|TJ|NC|AZ|TF|TD|TC|GW|AQ|GS|MU|AM";
-
-  private static final String territoriesValues = "Territ\u00f3rio Palestiniano|Ilhas Mariana do Norte|Gronel\u00e2ndia|Macau - Regi\u00e3o Administrativa Especial da China|Jugosl\u00e1via|Emiratos \u00c1rabes Unidos|Maced\u00f3nia, Rep\u00fablica da|Pol\u00f3nia|S\u00e3o Marino|Vietname|Madag\u00e1scar|Eslov\u00e9nia|Papua Nova Guin\u00e9|Mold\u00e1via, Rep\u00fablica da|Ilhas Virgin E.U.A.|Singapura|M\u00f3naco|Ilhas Virgin Brit\u00e2nicas|Rep\u00fablica Checa|Seicheles|Ilha do Natal|I\u00e9men|Saint Vincent e Grenadines|Santa S\u00e9 (Estado da Cidade do Vaticano)|Let\u00f3nia|Uzbaquist\u00e3o|Camar\u00f5es|Ilhas Falkland|Rom\u00e9nia|Ilhas Minor Outlying (E.U.A)|Reunion|Lao, Rep\u00fablica Popular Democr\u00e1tica|Bielorr\u00fassia|Cazaquist\u00e3o|Ilhas Caim\u00e3o|Eritreia|Coreia do Sul|Coreia do Norte|Benim|Saint Kitts e Nevis|Hong Kong - Regi\u00e3o Administrativa Especial da China|Sahara Ocidental|Egipto|Est\u00f3nia|Turquemenist\u00e3o|Quirguizist\u00e3o|B\u00f3snia-Herzegovina|Qu\u00e9nia|Tajiquist\u00e3o|Nova Caled\u00f3nia|Azerbeij\u00e3o|Territ\u00f3rios Franceses a Sul|Tchade|Ilhas Turcas e Caicos|Guin\u00e9-Bissau|Ant\u00e1rctica|Ilhas South Georgia e South Sandwich|Maur\u00edcias|Arm\u00e9nia";
-
-  private static final Hashtable territories;
-  static
-  {
-    territories = new Hashtable();
-    Enumeration keys = new StringTokenizer(territoriesKeys, "|");
-    Enumeration values = new StringTokenizer(territoriesValues, "|");
-    while (keys.hasMoreElements())
-      {
-         String key = (String) keys.nextElement();
-         String value = (String) values.nextElement();
-         territories.put(key, value);
-      }
-  }
-
-  private static final String languagesKeys = "sl|pl|cs|et";
-
-  private static final String languagesValues = "esloveno|polaco|checo|est\u00f3nio";
-
-  private static final Hashtable languages;
-  static
-  {
-    languages = new Hashtable();
-    Enumeration keys = new StringTokenizer(languagesKeys, "|");
-    Enumeration values = new StringTokenizer(languagesValues, "|");
-    while (keys.hasMoreElements())
-      {
-         String key = (String) keys.nextElement();
-         String value = (String) values.nextElement();
-         languages.put(key, value);
-      }
-  }
-
   private static final Object[][] contents =
   {
-    { "currencyFormat", "#,##0.00 \u00a4;-#,##0.00 \u00a4" },
     { "currenciesDisplayName", currenciesDisplayName },
     { "currenciesSymbol", currenciesSymbol },
-    { "shortDateFormat", "yy/MM/dd" },
-    { "mediumDateFormat", "yyyy/MM/dd" },
-    { "territories", territories },
-    { "languages", languages },
   };
 
   public Object[][] getContents() { return contents; }
