@@ -151,7 +151,7 @@ public final class Character extends Object {
         (ch >= '\u000E' && ch <= '\u001B') ||
         (ch >= '\u007F' && ch <= '\u009F') ||
         (ch >= '\u200C' && ch <= '\u200F') ||
-        (ch >= '\u200A' && ch <= '\u200E') ||
+        (ch >= '\u202A' && ch <= '\u202E') ||
         (ch >= '\u206A' && ch <= '\u206F') ||
         (ch == '\uFEFF')) {
       return (true);
