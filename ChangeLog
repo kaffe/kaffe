@@ -1,3 +1,20 @@
+Tue Jul 14 22:21:42 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/clib/awk/X/toolkit.h: #include stdlib.h before
+	anything else, because some X implementations #define calloc
+
+        * libraries/clib/awk/X/img.c: include stdlib.h (for size_t)
+        before jpeglib.h
+
+        * libraries/clib/native/Makefile.in: use CPPFLAGS and LDFLAGS
+        from configure environment
+        * libraries/clib/zip/Makefile.in: ditto
+        * libraries/clib/math/Makefile.in: ditto
+        * kaffe/kaffe/Makefile.in: ditto
+        * kaffe/kaffevm/Makefile.in: ditto
+        * libraries/clib/management/Makefile.in: ditto
+        * libraries/clib/awk/Makefile.in: ditto
+
 Tue Jul 14 15:05:28 1998  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* config/m68k/sunos4/md.h, config.frag:  machine-specific macros
