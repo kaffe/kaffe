@@ -2,18 +2,16 @@ import java.lang.reflect.Method;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.beans.Introspector;
-import java.beans.BeanInfo;
-import java.beans.SimpleBeanInfo;
 
 public class LoaderTest {
 
 	public static void main(String argv[]) throws Exception {
 		System.out.println("Loading Class0 with default ClassLoader");
-		Class c0 = Class.forName("Class0");
+		Class c0 = Class.forName("LoaderTest_Class0");
 		show(c0);
-		ClassLoader l1 = new Loader1();
+		ClassLoader l1 = new LoaderTest_Loader1();
 		System.out.println("Loading Class1 with Loader1");
-		Class c1 = Class.forName("Class1", true, l1);
+		Class c1 = Class.forName("LoaderTest_Class1", true, l1);
 		show(c1);
 
 		System.out.println("Loading Class1BeanInfo");
@@ -31,8 +29,8 @@ public class LoaderTest {
 		show(c31);
 
 		System.out.println("Loading Class3 via Loader2");
-		ClassLoader l2 = new Loader2();
-		Class c3 = Class.forName("Class3", true, l2);
+		ClassLoader l2 = new LoaderTest_Loader2();
+		Class c3 = Class.forName("LoaderTest_Class3", true, l2);
 		show(c3);
 		System.out.println(c3.equals(c31));
 	}
@@ -63,126 +61,26 @@ public class LoaderTest {
 	}
 }
 
-public class Class0 {
-}
-
-public class Class1 {
-	public Class1 () {
-	}
-	public Class getClass2() throws Exception {
-		return Class.forName("Class2");
-	}
-	public static Class getClass3() throws Exception {
-		Class c = Class.class;
-		Method m = c.getMethod("forName", new Class[] { String.class });
-		return (Class)m.invoke(c, new Object[] { "Class3" });
-	}
-}
-
-public class Class1BeanInfo extends SimpleBeanInfo {
-}
-
-public class Class2 {
-	static {
-		try {
-			System.loadLibrary("Class2.lib");
-		} catch (UnsatisfiedLinkError e) {
-		}
-	}
-}
-
-public class Class3 {
-	static {
-		try {
-			System.loadLibrary("Class3.lib");
-		} catch (UnsatisfiedLinkError e) {
-		}
-	}
-}
-
-public class Loader1 extends ClassLoader {
-	public Class findClass(String name) throws ClassNotFoundException {
-		boolean debug = !name.startsWith("java");
-		if (debug)
-			System.out.print(this + ": finding " + name + "...");
-		try {
-			byte[] buf = LoaderTest.getClassBytes(name);
-			Class rtn = defineClass(name, buf, 0, buf.length);
-			if (debug)
-				System.out.println("found");
-			return rtn;
-		} catch (ClassNotFoundException e) {
-			if (debug)
-				System.out.println("not found");
-			return findSystemClass(name);
-		}
-	}
-	public Class loadClass(String name, boolean resolve)
-			throws ClassNotFoundException {
-		Class c;
-		if ((c = findClass(name)) == null)
-			throw new ClassNotFoundException(name);
-		if (resolve)
-			resolveClass(c);
-		return (c);
-	}
-	public String toString() {
-		return "Loader1";
-	}
-	protected String findLibrary(String libname) {
-		System.out.println(this + ".findLibrary(" + libname + ")");
-		return null;
-	}
-}
-
-public class Loader2 extends ClassLoader {
-	public Class findClass(String name) throws ClassNotFoundException {
-		if (!name.startsWith("java"))
-			System.out.println(this + ": finding " + name);
-		try {
-			byte[] buf = LoaderTest.getClassBytes(name);
-			return defineClass(name, buf, 0, buf.length);
-		} catch (ClassNotFoundException e) {
-			return findSystemClass(name);
-		}
-	}
-	public Class loadClass(String name, boolean resolve)
-			throws ClassNotFoundException {
-		Class c;
-		if ((c = findClass(name)) == null)
-			throw new ClassNotFoundException(name);
-		if (resolve)
-			resolveClass(c);
-		return (c);
-	}
-	public String toString() {
-		return "Loader2";
-	}
-	protected String findLibrary(String libname) {
-		System.out.println(this + ".findLibrary(" + libname + ")");
-		return null;
-	}
-}
-
+// Sources: LoaderTest_Class0.java LoaderTest_Class1.java LoaderTest_Class1BeanInfo.java LoaderTest_Class2.java LoaderTest_Class3.java LoaderTest_Loader1.java LoaderTest_Loader2.java
 /* Expected Output:
 Loading Class0 with default ClassLoader
--> class Class0 loader null
+-> class LoaderTest_Class0 loader null
 Loading Class1 with Loader1
-Loader1: finding Class1...found
--> class Class1 loader Loader1
+LoaderTest_Loader1: finding LoaderTest_Class1...found
+-> class LoaderTest_Class1 loader LoaderTest_Loader1
 Loading Class1BeanInfo
-Loader1: finding Class1BeanInfo...found
+LoaderTest_Loader1: finding LoaderTest_Class1BeanInfo...found
 Loading Class2 via Class1
-Loader1: finding Class2...found
-Loader1.findLibrary(Class2.lib)
--> class Class2 loader Loader1
+LoaderTest_Loader1: finding LoaderTest_Class2...found
+LoaderTest_Loader1.findLibrary(LoaderTest_Class2.lib)
+-> class LoaderTest_Class2 loader LoaderTest_Loader1
 Loading Class3 via Class1
-Loader1: finding Class3...found
-Loader1.findLibrary(Class3.lib)
--> class Class3 loader Loader1
+LoaderTest_Loader1: finding LoaderTest_Class3...found
+LoaderTest_Loader1.findLibrary(LoaderTest_Class3.lib)
+-> class LoaderTest_Class3 loader LoaderTest_Loader1
 Loading Class3 via Loader2
-Loader2: finding Class3
-Loader2.findLibrary(Class3.lib)
--> class Class3 loader Loader2
+LoaderTest_Loader2: finding LoaderTest_Class3
+LoaderTest_Loader2.findLibrary(LoaderTest_Class3.lib)
+-> class LoaderTest_Class3 loader LoaderTest_Loader2
 false
 */
