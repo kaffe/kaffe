@@ -91,8 +91,9 @@ xmljXsltErrorFunc (void *ctx, const char *msg, ...)
     {
       va_list va;
       va_start (va, msg);
-      printf ("libxslt error: ");
-      vprintf (msg, va);
+      fprintf (stderr, "libxslt error: ");
+      vfprintf (stderr, msg, va);
+      fflush (stderr);
       va_end (va);
     }
 }
@@ -112,12 +113,14 @@ xmljThrowException (JNIEnv *env,
   if (cls == NULL)
     {
       fprintf (stderr, "Can't find class %s\n", classname);
+      fflush (stderr);
       return;
     }
   method = (*env)->GetMethodID (env, cls, "<init>", "(Ljava/lang/String;)V");
   if (method == NULL)
     {
-      printf ("Can't find method %s.<init>\n", classname);
+      fprintf (stderr, "Can't find method %s.<init>\n", classname);
+      fflush (stderr);
       return;
     }
   jmsg = (message == NULL) ? NULL : (*env)->NewStringUTF (env, message);
@@ -125,6 +128,7 @@ xmljThrowException (JNIEnv *env,
   if (ex == NULL)
     {
       fprintf (stderr, "Can't instantiate new %s\n", classname);
+      fflush (stderr);
       return;
     }
   (*env)->Throw (env, ex);
@@ -149,12 +153,14 @@ xmljThrowDOMException (JNIEnv *env,
   if (cls == NULL)
     {
       fprintf (stderr, "Can't find DOMException class!\n");
+      fflush (stderr);
       return;
     }
   method = (*env)->GetMethodID (env, cls, "<init>", "(SLjava/lang/String;)V");
   if (method == NULL)
     {
       fprintf (stderr, "Can't find DOMException constructor!\n");
+      fflush (stderr);
       return;
     }
   jmsg = (message == NULL) ? NULL : (*env)->NewStringUTF (env, message);

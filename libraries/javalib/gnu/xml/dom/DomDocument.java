@@ -42,6 +42,10 @@ import java.util.Enumeration;
 
 import org.w3c.dom.*;
 import org.w3c.dom.traversal.*;
+import org.w3c.dom.xpath.XPathEvaluator;
+import org.w3c.dom.xpath.XPathException;
+import org.w3c.dom.xpath.XPathExpression;
+import org.w3c.dom.xpath.XPathNSResolver;
 
 
 /**
@@ -56,7 +60,7 @@ import org.w3c.dom.traversal.*;
  * @author David Brownell 
  */
 public class DomDocument extends DomNode
-    implements Document, DocumentTraversal
+    implements Document, DocumentTraversal, XPathEvaluator
 {
     private final DOMImplementation	implementation;
     private boolean			checkingCharacters = true;
@@ -802,82 +806,108 @@ nyi (); // FIXME createTreeWalker
     // DOM Level 3 methods
 
     public String getInputEncoding ()
-      {
-        // TODO
-        return null;
-      }
+    {
+      // TODO
+      return null;
+    }
 
     public String getXmlEncoding ()
-      {
-        // TODO
-        return null;
-      }
+    {
+      // TODO
+      return null;
+    }
 
     public boolean getXmlStandalone ()
-      {
-        // TODO
-        return false;
-      }
+    {
+      // TODO
+      return false;
+    }
 
     public void setXmlStandalone (boolean xmlStandalone)
-      {
-        // TODO
-      }
+    {
+      // TODO
+    }
 
     public String getXmlVersion ()
-      {
-        // TODO
-        return null;
-      }
+    {
+      // TODO
+      return null;
+    }
 
     public void setXmlVersion (String xmlVersion)
-      {
-        // TODO
-      }
+    {
+      // TODO
+    }
 
     public boolean getStrictErrorChecking ()
-      {
-        // TODO
-        return false;
-      }
+    {
+      // TODO
+      return false;
+    }
 
     public void setStrictErrorChecking (boolean strictErrorChecking)
-      {
-        // TODO
-      }
+    {
+      // TODO
+    }
 
     public String getDocumentURI ()
-      {
-        // TODO
-        return null;
-      }
+    {
+      // TODO
+      return null;
+    }
 
     public void setDocumentURI (String documentURI)
-      {
-        // TODO
-      }
+    {
+      // TODO
+    }
 
     public Node adoptNode (Node source)
-      {
-        // TODO
-        return null;
-      }
+    {
+      // TODO
+      return null;
+    }
 
     public DOMConfiguration getDomConfig ()
-      {
-        // TODO
-        return null;
-      }
+    {
+      // TODO
+      return null;
+    }
 
     public void normalizeDocument ()
-      {
-        // TODO
-      }
+    {
+      // TODO
+    }
 
     public Node renameNode (Node n, String namespaceURI, String qualifiedName)
-      {
-        // TODO
-        return null;
-      }
+    {
+      // TODO
+      return null;
+    }
+
+    // -- XPathEvaluator --
+
+    public XPathExpression createExpression (String expression,
+                                             XPathNSResolver resolver)
+      throws XPathException, DOMException
+    {
+      return new DomXPathExpression (this, expression, resolver);
+    }
+    
+    public XPathNSResolver createNSResolver (Node nodeResolver)
+    {
+      return new DomXPathNSResolver (nodeResolver);
+    }
+    
+    public Object evaluate (String expression,
+                            Node contextNode,
+                            XPathNSResolver resolver,
+                            short type,
+                            Object result)
+      throws XPathException, DOMException
+    {
+      XPathExpression xpe =
+        new DomXPathExpression (this, expression, resolver);
+      return xpe.evaluate (contextNode, type, result);
+    }
 
 }

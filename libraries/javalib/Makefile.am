@@ -1358,6 +1358,8 @@ gnu_xml_dom_SRCS = \
 	gnu/xml/dom/DomNsNode.java \
 	gnu/xml/dom/DomPI.java \
 	gnu/xml/dom/DomText.java \
+	gnu/xml/dom/DomXPathExpression.java \
+	gnu/xml/dom/DomXPathNSResolver.java \
 	gnu/xml/dom/ImplementationList.java \
 	gnu/xml/dom/ImplementationSource.java \
 	gnu/xml/dom/JAXPFactory.java
