@@ -594,13 +594,7 @@ soft_ldiv(jlong v1, jlong v2)
 jlong
 soft_lrem(jlong v1, jlong v2)
 {
-#if 0
-	long long r = (v1 % v2);
-	dprintf("%qd %% %qd = %qd\n", v1, v2, r);
-	return (r);
-#else
 	return (v1 % v2);
-#endif
 }
 
 jfloat
