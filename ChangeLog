@@ -1,3 +1,16 @@
+Wed Oct  6 15:36:27 CEST 1999  Edouard G. Parmelan <egp@quadratec.fr>
+
+	* config/alpha/osf/jit-md.h config/alpha/osf/md.c
+	kaffe/kaffevm/jit/machine.c: rename *REGISTER_JIT_METHOD* macros to
+	MD_*_JIT_EXCEPTION_INFO*.
+
+	* kaffe/kaffevm/classMethod.c kaffe/kaffevm/gcFuncs.c: call
+	MD_UNREGISTER_JIT_EXCEPTION_INFO() before makeMethodInactive().
+
+	* kaffe/kaffevm/systems/unix-jthread/jthread.c
+	kaffe/kaffevm/mem/gc-mem.c: change 0xffffffff pointer value to
+	((char *)0 - 1) to handle 64 bit correctly.
+
 Mon Oct  4 12:01:07 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/Thread.java,
