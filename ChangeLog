@@ -1,3 +1,8 @@
+Thu May 14 15:04:09 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/mem/gc-incremental.c: fixed nasty race condition
+	where gc freed newborn objects.	See comment in file.
+
 Wed, 13 May 1998 22:13:04 -0700	Lincoln Myers <lincoln@netapp.com>
 
 	* libraries/clib/net/PlainSocketImpl.c:  Added support for
