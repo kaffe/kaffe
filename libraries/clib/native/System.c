@@ -257,7 +257,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	 *
 	 */
 
-	setProperty(p, "java.version", "1.3");
+	setProperty(p, "java.version", "1.4");
 	setProperty(p, "java.vendor", kaffe_vendor);
 	setProperty(p, "java.vendor.url", kaffe_vendor_url);
 	setProperty(p, "java.vendor.url.bug", kaffe_vendor_url_bug);
