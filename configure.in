@@ -61,6 +61,7 @@ dnl -------------------------------------------------------------------------
 
 dynamic_libraries=yes
 vm_dynamic_library=yes
+vm_dynamic_binary=yes
 
 dnl -------------------------------------------------------------------------
 
@@ -71,6 +72,14 @@ dnl -------------------------------------------------------------------------
 AC_ARG_WITH(staticlib,[  --with-staticlib        Force the use of static libraries rather than shared])
 if test x"$with_staticlib" = x"yes" ; then
 	dynamic_libraries=no
+	if test x"${with_staticvm+set}" != x"set"; then
+		with_staticvm=yes
+	fi
+fi
+
+AC_ARG_WITH(staticbin,[  --with-staticbin        Force the the creation of a static virtual machine binary])
+if test x"$with_staticbin" = x"yes" ; then
+	vm_dynamic_binary=no
 	if test x"${with_staticvm+set}" != x"set"; then
 		with_staticvm=yes
 	fi
@@ -641,6 +650,10 @@ else
   OLIBS=$LIBS
   LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $OLIBS"
   AC_CHECK_LIBRARY(Xext,XShmQueryExtension,X_PRE_LIBS)
+  OCPPFLAGS=$CPPFLAGS
+  CPPFLAGS="$CPPFLAGS $X_CFLAGS"
+  AC_CHECK_HEADERS(sys/ipc.h sys/shm.h X11/extensions/XShm.h)
+  CPPFLAGS=$OCPPFLAGS	
   LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $OLIBS"
   AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
   AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
@@ -692,8 +705,8 @@ dnl -------------------------------------------------------------------------
 AC_HEADER_STDC
 AC_CHECK_HEADERS(\
 alloca.h \
-asm/sigcontext.h \
-asm/signal.h \
+dnl GNU/Linux sigcontext headers
+asm/sigcontext.h asm/signal.h \
 bsd/libc.h \
 dl.h \
 dlfcn.h \
@@ -731,12 +744,8 @@ sys/wait.h \
 time.h \
 unistd.h \
 utime.h \
-winbase.h \
-windows.h \
-winnt.h \
-winsock.h \
-wintypes.h \
-wtypes.h \
+dnl windows headers
+winbase.h windows.h winnt.h winsock.h wintypes.h wtypes.h \
 zlib.h)
 
 AC_HEADER_DIRENT
@@ -1136,7 +1145,13 @@ else
 fi
 AC_SUBST(KLIBFLAGS)
 
-AC_SUBST(KLIBFLAGS)
+if test "$vm_dynamic_binary" = no; then
+	KVMBINFLAGS=-all-static
+else
+	KVMBINFLAGS=
+fi
+AC_SUBST(KVMBINFLAGS)
+
 if test "$vm_dynamic_library" = no; then
 	KVMLIBFLAGS=-static
 else
