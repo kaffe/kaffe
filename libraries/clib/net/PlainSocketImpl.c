@@ -23,6 +23,8 @@
 #include "nets.h"
 #include <jsyscall.h>
 #include "../../../kaffe/kaffevm/debug.h"
+#include "../../../kaffe/kaffevm/object.h"
+#include "../../../kaffe/kaffevm/itypes.h"
 
 /*
  * Supported socket options
@@ -271,7 +273,8 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 	int rc;
 	int alen;
 	struct sockaddr_in addr;
-
+	HArrayOfByte *remote_addr;
+	
 	memset(&addr, 0, sizeof(addr));
 #if defined(BSD44)
 	addr.sin_len = sizeof(addr);
@@ -303,7 +306,36 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
 
-	unhand(unhand(sock)->address)->address = ntohl(addr.sin_addr.s_addr);
+	/* create a byte array containing the raw address of the connected socket */
+	switch (addr.sin_family) {	
+		case AF_INET:
+			remote_addr = (HArrayOfByte *)newArray(TYPE_CLASS(TYPE_Byte),
+							       sizeof(addr.sin_addr));
+			memcpy(unhand_byte_array(remote_addr),
+			       &addr.sin_addr,
+			       sizeof(addr.sin_addr));
+			break;
+
+#if notnow && defined(AF_INET6)
+		case AF_INET6:
+			remote_addr = (HArrayOfByte *)newArray(TYPE_CLASS(TYPE_Byte),
+							       sizeof(in6->sin6_addr));
+			memcpy(unhand_byte_array(remote_addr),
+			       &in6->sin6_addr,
+			       sizeof(in6->sin6_addr));
+			break;
+#endif
+		default:
+			/* Ignore */
+			break;
+	}
+
+	/* and use that byte array to create an appropriate Inet*Address instance */
+	unhand(sock)->address = do_execute_java_class_method ("java.net.InetAddress",
+							      0, 
+							      "getByAddress",
+							      "([B)Ljava/net/InetAddress;",
+							      remote_addr).l;
 	unhand(sock)->port = ntohs(addr.sin_port);
 
 	DBG(NATIVENET,
