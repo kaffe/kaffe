@@ -113,6 +113,16 @@ protected class AccessibleAWTCheckbox
   private static final long serialVersionUID = 7881579233144754107L;
 
   /**
+   * Default constructor which simply calls the
+   * super class for generic component accessibility
+   * handling.
+   */
+  public AccessibleAWTCheckbox()
+  {
+    super();
+  }
+
+  /**
    * Captures changes to the state of the checkbox and
    * fires appropriate accessible property change events.
    *
