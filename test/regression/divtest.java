@@ -15,3 +15,6 @@ public class divtest {
       System.out.println("Result is "+Integer.toHexString(k));
     }
 }
+/* Expected Output:
+Result is 80000000
+*/
