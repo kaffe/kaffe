@@ -1,3 +1,9 @@
+Mon May 25 15:02:26 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/debug.[ch]: new debug options.
+	kaffe/kaffevm/system/unix-jthreads/jthread.c various fixes
+	kaffe/kaffevm/mem/gc-mem.[ch]: new freelist scheme
+
 Fri May 22 14:55:35 PDT 1998	Alexandre Oliva <oliva@dcc.unicamp.br>
 
         * libraries/clib/math/BigInteger.c
