@@ -7,3 +7,9 @@
 # of this file. 
 
 man_MANS = kaffe.1
+
+EXTRA_DIST = \
+	kaffe.1.xml
+
+kaffe.1.in: kaffe.1.xml
+	xmltoman kaffe.1.xml > kaffe.1.in

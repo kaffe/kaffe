@@ -19,7 +19,7 @@ if [ "$1" != "--override" ]; then
 WANTED_AUTOMAKE_VERS="1.9.5"
 WANTED_AUTOCONF_VERS="2.59"
 WANTED_LIBTOOL_VERS="1.5.14"
-WANTED_AUTOPOINT_VERS="0.14.1"
+WANTED_AUTOPOINT_VERS="0.14.3"
 
 ACLOCAL_VERS=`aclocal --version | 
 	sed -n 's,^aclocal (GNU automake) \(.*\)$,\1,p'`

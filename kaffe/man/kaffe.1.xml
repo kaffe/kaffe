@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+                   [
+]>
+<!-- lifted from troff+man by doclifter -->
+<refentry id='kaffe1'>
+<!--  kaffe(1) manpage. Copyright: identical to that of kaffe itself, -->
+<!--  as documented under the COPYING section below. -->
+<!--  Contributed to the Kaffe project by Ray Dassen &lt;jdassen@wi.LeidenUniv.nl&gt; -->
+  <refmeta>
+    <refentrytitle>KAFFE</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class='date'>March 2005</refmiscinfo>
+    <refmiscinfo class='source'>Kaffe version 1.1.4-cvs</refmiscinfo>
+    <refmiscinfo class='manual'>Kaffe project</refmiscinfo>
+  </refmeta>
+  <refnamediv id='name'>
+    <refname>kaffe</refname>
+    <refpurpose>a virtual machine to execute Java(tm) bytecode</refpurpose>
+  </refnamediv>
+  <!-- body begins here -->
+  <refsynopsisdiv id='synopsis'>
+    <cmdsynopsis>
+      <command>kaffe</command>
+			<arg choice='opt'>options</arg>
+			<arg choice='plain'><replaceable>classname</replaceable></arg>
+			<arg choice='opt' rep='repeat'>argument</arg>
+			</cmdsynopsis>
+			<cmdsynopsis>
+			<command>kaffe</command>
+			<arg choice='opt'>options</arg>
+			<command> -jar</command>
+			<arg choice='plain'><replaceable>filename</replaceable></arg>
+			<arg choice='opt' rep='repeat'>argument</arg>
+			</cmdsynopsis>
+			
+			<para>The provided options are passed to kaffe virtual machine. Available options are described in the section OPTIONS. 
+			The provided arguments are passed to the main function of the called class.</para>            
+  </refsynopsisdiv>
+
+  <refsect1 id="description">
+    <title>DESCRIPTION</title>
+    <para><command>kaffe</command> executes Java(tm) bytecode, either as a pure bytecode interpreter, or by
+    doing "just-in-time" code conversion from the abstract code to the host machine's native code.</para>
+		<para>The specified <replaceable>classname</replaceable> has to be a fully-qualified classname (e.g. foo.bar.ClassName). If <command>kaffe</command> is used with the <command>-jar</command> flag, the class to execute is determined
+		through the manifest file included in the specified Jar-File <replaceable>filename</replaceable>.</para>
+		<para><command>kaffe</command> searches for needed classes during program execution on the bootclasspath (see <option>-Xbootclasspath</option> options) and the classpath given by the user (see the <option>-classpath</option> option).</para>
+  </refsect1>
+  
+	<refsect1 id="options">
+	  <title>OPTIONS</title>
+		<para>The options for the kaffe command are divided into general options (available on all kaffe installations), options provided for compatibility reasons and further options which
+		are depending on the configuration during compilation of kaffe.</para>
+		
+	  	<refsect2 id="general_options">
+	    <title>GENERAL OPTIONS</title>
+	     <para>These options are available on all kaffe installations.</para>
+	    <variablelist remap="TP">
+	      <varlistentry>
+	        <term><option>-help</option></term>
+	        <listitem>
+	          <para>Give a short usage message of all available options on your kaffe installation.</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-version</option></term>
+	        <listitem>
+	          <para>Print the version number.</para>
+	        </listitem>
+	      </varlistentry>
+				<varlistentry>
+	        <term><option>-fullversion</option></term>
+	        <listitem>
+	          <para>Same as <option>-version</option> plus compile date and flags,
+	          changelog head.</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-ss </option><replaceable>size</replaceable></term>
+	        <listitem>
+	          <para>Set the maximum stack size to
+	          <emphasis remap='I'>size</emphasis>.</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-mx </option><replaceable>size</replaceable></term>
+	        <listitem>
+	          <para>Set the maximum heap size to 
+	          <emphasis remap='I'>size</emphasis>. Kilobytes are indicated by the letters k or K and megabytes by m or M.</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-ms </option><replaceable>size</replaceable></term>
+	        <listitem>
+	          <para>Set the initial heap size to 
+	          <emphasis remap='I'>size</emphasis>. Kilobytes are indicated by the letters k or K and megabytes by m or M.</para>
+	        </listitem>
+	      </varlistentry>
+				<varlistentry>
+	        <term><option>-as </option><replaceable>size</replaceable></term>
+	        <listitem>
+	          <para>Set the heap increment size to 
+	          <emphasis remap='I'>size</emphasis></para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-classpath </option><replaceable>path</replaceable></term>
+	        <listitem>
+	          <para>Set the path which is searched for compiled classes. This can be a list of directories and Jar-Files containing compiled
+						classes. The entries in this list are separated by colons (:).</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-addclasspath </option><replaceable>path</replaceable></term>
+	        <listitem>
+	          <para>Appends the given path to the current classpath setting. Multiple
+	          instances of this flag may be given.</para>
+	        </listitem>
+	      </varlistentry>
+				  <varlistentry>
+	        <term><option>-Xbootclasspath:</option>
+	        <replaceable>bootclasspath</replaceable></term>
+	        <listitem>
+	          <para>Set the bootclasspath to the given path.</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-Xbootclasspath/a:</option>
+	        <replaceable>bootclasspath</replaceable></term>
+	        <listitem>
+	          <para>Appends the given path to the bootclasspath.</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-Xbootclasspath/p:</option>
+	        <replaceable>bootclasspath</replaceable></term>
+	        <listitem>
+	          <para>Prepends the given path to the bootclasspath.</para>
+	        </listitem>
+	      </varlistentry>
+				<varlistentry>
+	        <term><option>-Dproperty=value</option></term>
+	        <listitem>
+	          <para>Set a property to a given value.</para>
+	        </listitem>
+	      </varlistentry>			
+	      <varlistentry>
+	        <term><option>-verifyremote *</option></term>
+	        <listitem>
+	          <para>Verify all classes not loaded from the bootclasspath.
+	          This is the default behavior.</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-verify *</option></term>
+	        <listitem>
+	          <para>Verify all classes.</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-noverify</option></term>
+	        <listitem>
+	          <para>Do not verify any classes.</para>
+	        </listitem>
+	      </varlistentry>
+				 <varlistentry>
+	        <term><option>-noclassgc</option></term>
+	        <listitem>
+	          <para>Disable class garbage collection.</para>
+	        </listitem>
+	      </varlistentry>
+				<varlistentry>
+	        <term><option>-verbosegc</option></term>
+	        <listitem>
+	          <para>Print message during garbage collection.</para>
+	        </listitem>
+	      </varlistentry>
+				 <varlistentry>
+	        <term><option>-v, -verbose</option></term>
+	        <listitem>
+	          <para>Enable verbose output.</para>
+	        </listitem>
+	      </varlistentry>
+	        <varlistentry>
+	        <term><option>-verbosemem</option></term>
+	        <listitem>
+	          <para>Print detailed memory allocation statistics.</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-verbosejit</option></term>
+	        <listitem>
+	          <para>Print message during JIT code generation.</para>
+	        </listitem>
+	      </varlistentry>
+				 <varlistentry>
+	        <term><option>-verbosecall</option></term>
+	        <listitem>
+	          <para>Print detailed call flow information.</para>
+	        </listitem>
+	      </varlistentry>
+				 <varlistentry>
+	        <term><option>-nodeadlock</option></term>
+	        <listitem>
+	          <para>Disable deadlock detection.</para>
+	        </listitem>
+	      </varlistentry>		
+	     <varlistentry>
+	        <term><option>-debug *</option></term>
+	        <listitem>
+	          <para>Trace method calls.</para>
+	        </listitem>
+	      </varlistentry>
+				<varlistentry>
+	        <term><option>-noasyncgc *</option></term>
+	        <listitem>
+	          <para>Do not garbage collect asynchronously.</para>
+	        </listitem>
+	      </varlistentry>
+				 <varlistentry>
+	        <term><option>-cs, -checksource *</option></term>
+	        <listitem>
+	          <para>Check source against class files.</para>
+	        </listitem>
+	      </varlistentry>
+				<varlistentry>
+	        <term><option>-oss *</option> <replaceable>size</replaceable></term>
+	        <listitem>
+	          <para>Maximum stack size.</para>
+	        </listitem>
+	      </varlistentry>			 
+	     <varlistentry>
+	        <term><option>-debug-fd </option><replaceable>descriptor</replaceable></term>
+	        <listitem>
+	          <para>Descriptor to send debug info to.</para>
+	        </listitem>
+	      </varlistentry>
+				<varlistentry>
+	        <term><option>-jar</option> <replaceable>file</replaceable></term>
+	        <listitem>
+	          <para>Executes a Java(tm) program which is provided by the given Jar-File file.</para>
+	        </listitem>
+	      </varlistentry>
+	      </variablelist>
+				<para>* Option currently ignored.</para>
+	    </refsect2>
+			
+	    <refsect2 id="compatibility_options">
+	    <title>COMPATIBILITY OPTIONS</title>	
+			<para>These options are provided for compatibility reasons with other Java(tm) runtime environments.</para>
+			<variablelist>
+	      <varlistentry>
+	        <term><option>-Xss</option> <replaceable>size</replaceable></term>
+	        <listitem>
+	          <para>Maximum native stack size (see <option>-ss</option>).</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-Xmx</option> <replaceable>size</replaceable></term>
+	        <listitem>
+	          <para>Maximum heap size (see <option>-mx</option>).</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-Xms</option> <replaceable>size</replaceable></term>
+	        <listitem>
+	          <para>Initial heap size (see <option>-ms</option>).</para>
+	        </listitem>
+	      </varlistentry>			
+	      <varlistentry>
+	        <term><option>-cp</option> <replaceable>path</replaceable></term>
+	        <listitem>
+	          <para>Set classpath (see <option>-classpath</option>).</para>
+	        </listitem>
+	      </varlistentry>
+	      </variablelist>
+			</refsect2>
+			
+			<refsect2 id="further_options">
+	    <title>FURTHER OPTIONS</title>
+				<para>Further options may be available based on the configuration of kaffe during compilation. To get a
+				complete list of options available in your kaffe installation type <command>kaffe --help</command> on the commandline.</para>
+			<variablelist>	
+	      <varlistentry>			   
+	        <term><option>-ia32</option></term>
+	        <listitem>
+	          <para>Execute the ia32 version of Kaffe.</para>
+	        </listitem>
+	      </varlistentry>		
+	      	<varlistentry>
+	        <term><option>-prof</option></term>
+	        <listitem>
+	          <para>Enable profiling of methods.</para>
+	        </listitem>
+	      </varlistentry>
+					 <varlistentry>
+	        <term><option>-Xxprof</option></term>
+	        <listitem>
+	          <para>Enable cross language profiling.</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-Xxprof_syms</option> <replaceable>file</replaceable></term>
+	        <listitem>
+	          <para>Name of the profiling symbols file [Default: kaffe-jit-symbols.s].</para>
+	        </listitem>
+	      </varlistentry>
+	      <varlistentry>
+	        <term><option>-Xxprof_gmon</option> <replaceable>file</replaceable></term>
+	        <listitem>
+	          <para>Base name for gmon files [Default: xgmon.out]</para>
+	        </listitem>
+	      </varlistentry>			
+				   <varlistentry>
+	        <term><option>-Xxdebug_file</option> <replaceable>file</replaceable></term>
+	        <listitem>
+	          <para>Name of the debugging symbols file.</para>
+	        </listitem>
+	      </varlistentry>
+			   <varlistentry>
+	        <term><option>-Xfeedback</option></term>
+	        <listitem>
+	          <para>The file name to write feedback data to.</para>
+	        </listitem>
+	      </varlistentry>					
+	      <varlistentry>
+	        <term><option>-vmstats flag{,flag}</option></term>
+	        <listitem>
+	          <para>Print VM statistics.  Set flag=all for all</para>
+	        </listitem>
+	      </varlistentry>
+				<varlistentry>
+	        <term><option>-Xnative-big-math</option></term>
+	        <listitem>
+	          <para>Use GMP for faster, native bignum calculations.</para>
+	        </listitem>
+	      </varlistentry>
+				<varlistentry>
+	        <term><option>-vmdebug flag{,flag}</option></term>
+	        <listitem>
+	          <para>Enable VM debugging. Set &ldquo;-vmdebug list&rdquo;
+	          for a list.</para>
+	        </listitem>
+	      </varlistentry>
+				<varlistentry>
+	        <term><option>-Xkaffe-xlib-awt</option></term>
+	        <listitem>
+	          <para>Use Kaffe's Xlib AWT backend.</para>
+	        </listitem>
+	      </varlistentry>
+				<varlistentry>
+	        <term><option>-Xkaffe-qt-awt</option></term>
+	        <listitem>
+	          <para>Use Kaffe's Qt2/3/Embedded AWT backend.</para>
+	        </listitem>
+	      </varlistentry>
+				<varlistentry>
+	        <term><option>-Xkaffe-nanox-awt</option></term>
+	        <listitem>
+	          <para>Use Kaffe's Nano-X AWT backend.</para>
+	        </listitem>
+	      </varlistentry>
+				
+	      </variablelist>
+			</refsect2>
+	</refsect1>
+	
+  <refsect1 id='environment'><title>ENVIRONMENT</title>
+    <variablelist remap='TP'>
+      <varlistentry>
+        <term><envar>CLASSPATH</envar></term>
+        <listitem>
+        <para>A colon-separated list of directories and Jar-Files in which to search for 
+        <markup>.class</markup> files. The entries have to be separated by colons (:).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><envar>KAFFEHOME</envar></term>
+        <listitem>
+        <para>Base directory of kaffe installation.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><envar>LD_LIBRARY_PATH</envar></term>
+        <listitem>
+        <para>A colon-separated list of directories in which to search for libraries.
+        See
+        <citerefentry><refentrytitle>ld.so</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+        for details. This needs to be set if Kaffe's shared libraries are
+        installed in a location not part of the dynamic loader's default search
+        path.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1 id='files'><title>FILES</title>
+    <variablelist remap='B'>
+      <varlistentry>
+        <term><filename>@prefix@/share/kaffe/kafferc</filename></term>
+        <listitem>
+        <para>System-wide shell script read by kaffe script (optional).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>${HOME}/.kafferc</filename></term>
+        <listitem>
+        <para>Per-user shell script read by kaffe script (optional).</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1 id='diagnostics'><title>DIAGNOSTICS</title>
+    <para>Not documented yet.</para>
+  </refsect1>
+
+  <refsect1 id='notes'><title>NOTES</title>
+    <para>Java is a registered trademark of Sun Microsystems, Inc.</para>
+
+  <para>Kaffe is available from various sites, the primary one being
+    &lt;<emphasis remap='I'><ulink url='http://www.kaffe.org'>http://www.kaffe.org</ulink>&gt;</emphasis>.</para>
+
+  <para>There are several mailing lists for Kaffe:</para>
+    <variablelist remap='TP'>
+      <varlistentry>
+        <term><emphasis remap='I'>kaffe@kaffe.org</emphasis></term>
+        <listitem>
+        <para>General Kaffe discussions</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><emphasis remap='I'>kaffe-announce@kaffe.org</emphasis></term>
+        <listitem>
+        <para>Kaffe related announcements</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1 id='bugs'><title>BUGS</title>
+    <para>See the file FAQ.Known-Bugs for an updated list.</para>
+  </refsect1>
+
+  <refsect1 id='author'><title>AUTHOR</title>
+    <para>Kaffe was originally written by Tim Wilkinson, 1996. Many others contributed
+    to the Kaffe project. They are listed in the source distribution's
+    <emphasis remap='I'>AUTHORS</emphasis> file.</para>
+  </refsect1>
+
+  <refsect1 id='copying'><title>COPYING</title>
+    <para>Kaffe is distributed under the GNU GPL. For full details, see the file
+    <emphasis remap='I'>license.terms</emphasis>
+    in the source distribution for full details.</para>
+		<para>The included DOM bindings are published under the W3C Software Copyright Notice and License. For full details, see the file
+    <emphasis remap='I'>license-w3c.terms</emphasis>
+    in the source distribution for full details.</para>
+  </refsect1>
+
+  <refsect1 id='see_also'><title>SEE ALSO</title>
+    <para><emphasis remap='I'>jikes</emphasis>, a fast Java(tm) compiler</para>
+		<para><emphasis remap='I'>gjdoc</emphasis>, the GNU javadoc tool</para>		
+  </refsect1>
+
+</refentry>
