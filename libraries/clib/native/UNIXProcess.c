@@ -77,7 +77,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 		jstring envi;
 		const jbyte *envichars;
 
-		envi = (jstring)(*env)->GetObjectArrayElement(env, arge, i);
+		envi = (jstring)(*env)->GetObjectArrayElement(env, envs, i);
 		envichars = (*env)->GetStringUTFChars(env, envi, NULL);
 		arge[i] = malloc(strlen(envichars));
 		strcpy(arge[i], envichars);
