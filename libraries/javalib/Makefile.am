@@ -697,6 +697,34 @@ kaffe_util_log_SRCS = \
 	kaffe/util/log/SimpleLogViewer.java
 kaffe_util_zip_SRCS = \
 	kaffe/util/zip/SwitchInflater.java
+java_awt_win32_SRCS = \
+	java/awt/win32/ActionEvt.java \
+	java/awt/win32/Button.java \
+	java/awt/win32/Canvas.java \
+	java/awt/win32/Checkbox.java \
+	java/awt/win32/CheckboxMenuItem.java \
+	java/awt/win32/Choice.java \
+	java/awt/win32/Defaults.java \
+	java/awt/win32/FileDialog.java \
+	java/awt/win32/Frame.java \
+	java/awt/win32/Label.java \
+	java/awt/win32/List.java \
+	java/awt/win32/Menu.java \
+	java/awt/win32/MenuBar.java \
+	java/awt/win32/MenuItem.java \
+	java/awt/win32/NativeComponent.java \
+	java/awt/win32/NativeContainer.java \
+	java/awt/win32/Panel.java \
+	java/awt/win32/PopupMenu.java \
+	java/awt/win32/ScrollPane.java \
+	java/awt/win32/Scrollbar.java \
+	java/awt/win32/SystemColor.java \
+	java/awt/win32/TextArea.java \
+	java/awt/win32/TextComponent.java \
+	java/awt/win32/TextField.java \
+	java/awt/win32/Toolkit.java \
+	java/awt/win32/WMEvent.java \
+	java/awt/win32/Window.java
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
