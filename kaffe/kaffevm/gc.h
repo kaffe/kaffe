@@ -12,6 +12,8 @@
 #ifndef __gc_h
 #define __gc_h
 
+#include "gtypes.h"
+
 /* 
  * We do not support incremental collection as this time.
  */

@@ -94,6 +94,7 @@ libkaffevm_la_SOURCES = \
 	gcRefs.c \
 	verify.c \
 	verify-debug.c \
+	verify-sigstack.c \
 	verify-uninit.c
 
 noinst_HEADERS = \
@@ -138,6 +139,7 @@ noinst_HEADERS = \
 	utf8const.h \
 	verify.h \
 	verify-debug.h \
+	verify-sigstack.h \
 	verify-uninit.h
 
 gc-mem.c: stamp-h01

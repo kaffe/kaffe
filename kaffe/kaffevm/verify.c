@@ -36,6 +36,7 @@
 
 #include "verify.h"
 #include "verify-debug.h"
+#include "verify-sigstack.h"
 #include "verify-uninit.h"
 
 /*
@@ -1022,10 +1023,6 @@ static void               copyBlockState(const Method* method, BlockInfo* fromBl
 static void               freeBlock(BlockInfo* binfo);
 
 static BlockInfo*         inWhichBlock(uint32 pc, BlockInfo** blocks, uint32 numBlocks);
-
-
-static SigStack*          pushSig(SigStack* sigs, const char* sig);
-static void               freeSigStack(SigStack* sigs);
 
 static bool               verifyMethod(errorInfo* einfo, Method* method);
 static BlockInfo**        verifyMethod3a(errorInfo* einfo,
@@ -5013,38 +5010,3 @@ inWhichBlock(uint32 pc, BlockInfo** blocks, uint32 numBlocks)
 	
 	return NULL;
 }
-
-
-
-/*
- * pushSig()
- *     Pushes a new signature on the Stack
- */
-static
-SigStack*
-pushSig(SigStack* sigs, const char* sig)
-{
-	SigStack* new_sig = checkPtr(gc_malloc(sizeof(SigStack), GC_ALLOC_VERIFIER));
-	new_sig->sig = sig;
-	new_sig->next = sigs;
-	return new_sig;
-}
-
-
-/*
- * freeSigStack()
- *     Frees the memory consumed by a stack of names and signatures.
- */
-static
-void
-freeSigStack(SigStack* sigs)
-{
-	SigStack* tmp;
-	while(sigs != NULL) {
-		tmp = sigs->next;
-		gc_free(sigs);
-		sigs = tmp;
-	}
-}
-
-

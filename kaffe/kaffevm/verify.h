@@ -135,22 +135,6 @@ typedef struct block_info
 
 #define EXCEPTION_HANDLER 64
 
-
-/*
- * the sig stack is the stack of signatures that we have allocated memory for which
- * must be freed after verification.
- */
-/* TODO: use the builtin hash table data structure instead 
- * so we can avoid repeats
- */
-typedef struct sig_stack
-{
-	const char* sig;
-	struct sig_stack* next;
-} SigStack;
-
-
-
 void initVerifierPrimTypes(void);
 bool sameType(Type* t1, Type* t2);
 bool verify3(Hjava_lang_Class* class, errorInfo *einfo);

@@ -1,5 +1,27 @@
 2004-02-29  Dalibor Topic <robilad@kaffe.org>
 
+        * kaffe/kaffevm/verify-sigstack.c,
+        kaffe/kaffevm/verify-sigstack.h:
+	New files.
+
+        * kaffe/kaffevm/Makefile.am:
+	(libkaffevm_la_SOURCES): Added verify-sugstack.c.
+        (noinst_HEADERS): Added verify-sigstackt.h.
+
+        * kaffe/kaffevm/Makefile.in:
+	Regenerated.
+
+        * kaffe/kaffevm/gc.h:
+	Include gtypes.h.
+
+        * kaffe/kaffevm/verify.c,
+        kaffe/kaffevm/verify.h:
+	(pushSig, freeSigStack, SigStack) Moved to
+	kaffe/kaffevm/verify-sigstack.c and
+	kaffe/kaffevm/verify-sigstack.h.
+
+2004-02-29  Dalibor Topic <robilad@kaffe.org>
+
         * kaffe/kaffevm/verify-uninit.c,
         kaffe/kaffevm/verify-uninit.h:
 	New files.
