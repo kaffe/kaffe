@@ -1,10 +1,19 @@
+Thu Mar  9 13:50:06 PST 2000  Patrick Tullmann <tullmann@cs.utah.edu>
+
+	* kaffe/kaffe/main.c: update copyright
+	* config/config-std.h: clean namespace in __NORETURN__.  Add
+	__UNUSED__ magic for __attribute__((__unused__)).
+	* kaffe/kaffevm/debug.[ch]: drop DBG_VMLOCKS, add
+	DBG_SLOWLOCKS, DBG_INITCLASSPATH and DBG_CLASSLOOKUP flags.
+	* kaffe/kaffevm/findInJar.c: drop old-style debugging, use
+	DBG_INITCLASSPATH and DBG_CLASSLOOKUP for debugging rumaging 
+	around in jar files.
+
 Thu Mar  9 12:45:14 CET 2000  Edouard G. Parmelan  <egp@free.fr>
 
 	* FAQ/FAQ.ncr: new file for NCR MP-RAS.
-
 	* libraries/javalib/kaffe/io/CharToByteUTF8.java: fix test of buffer
-	overflow.
-	Reported by Ito Kazumitsu <ito@htk.hitachi-cable.co.jp>.
+	overflow reported by Ito Kazumitsu <ito@htk.hitachi-cable.co.jp>.
 
 Mon Mar  6 17:17:16 MST 2000  Godmar Back <gback@cs.utah.edu>
 
