@@ -55,6 +55,9 @@ public class HashMap extends AbstractMap
 		if (initialCapacity < 0 || loadFactor <= 0.0f) {
 			throw new IllegalArgumentException();
 		}
+		if (initialCapacity == 0) {
+			initialCapacity = 1;
+		}
 		table = new Entry[initialCapacity];
 		this.loadFactor = loadFactor;
 	}
