@@ -2,6 +2,8 @@
 
 	* config.rpath: Added to solve the dependence of "lib-link.m4" on it.
 
+	* Makefile.in: regenerated
+
 2003-07-27  Jim Pick  <jim@kaffe.org>
 
 	* libraries/javalib/kjc.jar:
