@@ -1,5 +1,5 @@
 /* SwingUtilities.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -59,6 +59,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleStateSet;
 import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.plaf.InputMapUIResource;
 
@@ -68,8 +70,10 @@ import javax.swing.plaf.InputMapUIResource;
  * regions which need painting.
  *
  * @author Graydon Hoare (graydon@redhat.com)
+ * @author Andrew John Hughes (gnu_andrew@member.fsf.org)
  */
-public class SwingUtilities implements SwingConstants
+public class SwingUtilities
+  implements SwingConstants
 {
   /** 
    * This frame should be used as parent for JWindow or JDialog 
@@ -160,6 +164,121 @@ public class SwingUtilities implements SwingConstants
     return null;
   }
   
+  /**
+   * Returns the <code>Accessible</code> child of the specified component
+   * which appears at the supplied <code>Point</code>.  If there is no
+   * child located at that particular pair of co-ordinates, null is returned
+   * instead.
+   *
+   * @param c the component whose children may be found at the specified
+   *          point.
+   * @param p the point at which to look for the existence of children
+   *          of the specified component.
+   * @return the <code>Accessible</code> child at the point, <code>p</code>,
+   *         or null if there is no child at this point.
+   * @see javax.accessibility.AccessibleComponent#getAccessibleAt
+   */
+  public static Accessible getAccessibleAt(Component c, Point p)
+  {
+    return c.getAccessibleContext().getAccessibleComponent().getAccessibleAt(p);
+  }
+
+  /**
+   * <p>
+   * Returns the <code>Accessible</code> child of the specified component
+   * that has the supplied index within the parent component.  The indexing
+   * of the children is zero-based, making the first child have an index of
+   * 0.
+   * </p>
+   * <p>
+   * Caution is advised when using this method, as its operation relies
+   * on the behaviour of varying implementations of an abstract method.
+   * For greater surety, direct use of the AWT component implementation
+   * of this method is advised.
+   * </p>
+   *
+   * @param c the component whose child should be returned.
+   * @param i the index of the child within the parent component.
+   * @return the <code>Accessible</code> child at index <code>i</code>
+   *         in the component, <code>c</code>.
+   * @see javax.accessibility.AccessibleContext#getAccessibleChild
+   * @see java.awt.Component.AccessibleAWTComponent#getAccessibleChild
+   */
+  public static Accessible getAccessibleChild(Component c, int i)
+  {
+    return c.getAccessibleContext().getAccessibleChild(i);
+  }
+
+  /**
+   * <p>
+   * Returns the number of <code>Accessible</code> children within
+   * the supplied component.
+   * </p>
+   * <p>
+   * Caution is advised when using this method, as its operation relies
+   * on the behaviour of varying implementations of an abstract method.
+   * For greater surety, direct use of the AWT component implementation
+   * of this method is advised.
+   * </p>
+   *
+   * @param c the component whose children should be counted.
+   * @return the number of children belonging to the component,
+   *         <code>c</code>.
+   * @see javax.accessibility.AccessibleContext#getAccessibleChildrenCount
+   * @see java.awt.Component.AccessibleAWTComponent#getAccessibleChildrenCount
+   */
+  public static int getAccessibleChildrenCount(Component c)
+  {
+    return c.getAccessibleContext().getAccessibleChildrenCount();
+  }
+
+  /**
+   * <p>
+   * Returns the zero-based index of the specified component
+   * within its parent.  If the component doesn't have a parent,
+   * -1 is returned.
+   * </p>
+   * <p>
+   * Caution is advised when using this method, as its operation relies
+   * on the behaviour of varying implementations of an abstract method.
+   * For greater surety, direct use of the AWT component implementation
+   * of this method is advised.
+   * </p>
+   *
+   * @param c the component whose parental index should be found.
+   * @return the index of the component within its parent, or -1
+   *         if the component doesn't have a parent.
+   * @see javax.accessibility.AccessibleContext#getAccessibleIndexInParent
+   * @see java.awt.Component.AccessibleAWTComponent#getAccessibleIndexInParent
+   */
+  public static int getAccessibleIndexInParent(Component c)
+  {
+    return c.getAccessibleContext().getAccessibleIndexInParent();
+  }
+
+  /**
+   * <p>
+   * Returns a set of <code>AccessibleState</code>s, which represent
+   * the state of the supplied component.
+   * </p>
+   * <p>
+   * Caution is advised when using this method, as its operation relies
+   * on the behaviour of varying implementations of an abstract method.
+   * For greater surety, direct use of the AWT component implementation
+   * of this method is advised.
+   * </p>
+   *
+   * @param c the component whose accessible state should be retrieved.
+   * @return a set of <code>AccessibleState</code> objects, which represent
+   *         the state of the supplied component.
+   * @see javax.accessibility.AccessibleContext#getAccessibleStateSet
+   * @see java.awt.Component.AccessibleAWTComponent#getAccessibleStateSet
+   */
+  public static AccessibleStateSet getAccessibleStateSet(Component c)
+  {
+    return c.getAccessibleContext().getAccessibleStateSet();
+  }
+
   /**
    * Calculates the bounds of a component in the component's own coordinate
    * space. The result has the same height and width as the component's
