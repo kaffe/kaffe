@@ -109,8 +109,8 @@ DBG(CLASSGC,
 				if (METHOD_JITTED(m)) {
 #if defined(MD_UNREGISTER_JIT_EXCEPTION_INFO)
 					MD_UNREGISTER_JIT_EXCEPTION_INFO (m->c.ncode.ncode_start,
-						ncode,
-						m->c.ncode.ncode_end - ncode);
+									  ncode,
+									  m->c.ncode.ncode_end);
 #endif
 #if defined(JIT3)
 					makeMethodInactive(m);
