@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# $Id: gnu-crypto.m4,v 1.2 2003/12/19 20:03:31 dalibor Exp $
+# $Id: gnu-crypto.m4,v 1.1 2003/12/24 19:07:24 dalibor Exp $
 #
 # Copyright (C) 2003 Free Software Foundation, Inc.
 #
@@ -43,7 +43,7 @@
 #
 # GNU Crypto m4 macro for use by VM Providers
 #
-# $Revision: 1.2 $
+# $Revision: 1.1 $
 #
 
 # process --with-gnu-crypto configure option.

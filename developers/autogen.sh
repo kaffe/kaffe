@@ -106,9 +106,9 @@ patch -p0 < developers/patch-libtool-openbsd.diff
 patch -p0 < developers/patch-libtool-realloc.diff
 patch -p0 < developers/patch-libtool-amiga-max-command-line-length.diff
 patch -p0 < developers/patch-libtool-ltdl-memory-header-warning.diff
-cp libltdl/acinclude.m4 libtool.m4
+cp libltdl/acinclude.m4 m4/libtool.m4
 
-aclocal -I .
+aclocal -I m4 
 autoheader -Wall
 automake --add-missing --copy -Wall || true  # ignore warnings
 autoconf -Wall

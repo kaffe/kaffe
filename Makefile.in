@@ -54,13 +54,14 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	depcomp install-sh ltmain.sh missing mkinstalldirs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/./gnu-crypto.m4 \
-	$(top_srcdir)/./gwqt.m4 $(top_srcdir)/./herrno.m4 \
-	$(top_srcdir)/./iconv.m4 $(top_srcdir)/./in6addr.m4 \
-	$(top_srcdir)/./lib-ld.m4 $(top_srcdir)/./lib-link.m4 \
-	$(top_srcdir)/./lib-prefix.m4 $(top_srcdir)/./libtool.m4 \
-	$(top_srcdir)/./sockaddrin6.m4 $(top_srcdir)/./sockinttypes.m4 \
-	$(top_srcdir)/./valist.m4 $(top_srcdir)/configure.in
+am__aclocal_m4_deps = $(top_srcdir)/m4/gnu-crypto.m4 \
+	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/herrno.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/sockinttypes.m4 $(top_srcdir)/m4/valist.m4 \
+	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -301,6 +302,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
+ACLOCAL_FLAGS = -I m4
 AUTOMAKE_OPTIONS = foreign 1.3e
 SUBDIRS = . config include replace libltdl libraries/clib libraries/extensions kaffe libraries/javalib test
 DIST_SUBDIRS = . config include replace libltdl kaffe libraries test
@@ -319,18 +321,6 @@ EXTRA_DIST = \
 	license.terms \
 	license-lesser.terms \
 	license-w3c.terms \
-	gnu-crypto.m4 \
-	gwqt.m4 \
-	herrno.m4 \
-	in6addr.m4 \
-	iconv.m4 \
-	lib-ld.m4 \
-	lib-link.m4 \
-	lib-prefix.m4 \
-	libtool.m4 \
-	sockaddrin6.m4 \
-	sockinttypes.m4 \
-	valist.m4 \
 	FAQ/FAQ.BeOS \
 	FAQ/FAQ.Known-Bugs \
 	FAQ/FAQ.amigaos \
@@ -598,7 +588,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/compat-include $(distdir)/developers $(distdir)/include/kaffe $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/run_time
+	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/compat-include $(distdir)/developers $(distdir)/include/kaffe $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/m4 $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/run_time
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

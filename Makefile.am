@@ -9,6 +9,9 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
+## Tell ac local to pick up the m4 macros from m4 directory
+ACLOCAL_FLAGS=-I m4
+
 AUTOMAKE_OPTIONS = foreign 1.3e
 
 SUBDIRS = . config include replace libltdl libraries/clib libraries/extensions kaffe libraries/javalib test
@@ -30,18 +33,6 @@ EXTRA_DIST = \
 	license.terms \
 	license-lesser.terms \
 	license-w3c.terms \
-	gnu-crypto.m4 \
-	gwqt.m4 \
-	herrno.m4 \
-	in6addr.m4 \
-	iconv.m4 \
-	lib-ld.m4 \
-	lib-link.m4 \
-	lib-prefix.m4 \
-	libtool.m4 \
-	sockaddrin6.m4 \
-	sockinttypes.m4 \
-	valist.m4 \
 	FAQ/FAQ.BeOS \
 	FAQ/FAQ.Known-Bugs \
 	FAQ/FAQ.amigaos \

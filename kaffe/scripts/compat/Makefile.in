@@ -48,13 +48,14 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/appletviewer.in $(srcdir)/java.in $(srcdir)/javac.in \
 	$(srcdir)/javadoc.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/./gnu-crypto.m4 \
-	$(top_srcdir)/./gwqt.m4 $(top_srcdir)/./herrno.m4 \
-	$(top_srcdir)/./iconv.m4 $(top_srcdir)/./in6addr.m4 \
-	$(top_srcdir)/./lib-ld.m4 $(top_srcdir)/./lib-link.m4 \
-	$(top_srcdir)/./lib-prefix.m4 $(top_srcdir)/./libtool.m4 \
-	$(top_srcdir)/./sockaddrin6.m4 $(top_srcdir)/./sockinttypes.m4 \
-	$(top_srcdir)/./valist.m4 $(top_srcdir)/configure.in
+am__aclocal_m4_deps = $(top_srcdir)/m4/gnu-crypto.m4 \
+	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/herrno.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/sockinttypes.m4 $(top_srcdir)/m4/valist.m4 \
+	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
