@@ -1,3 +1,9 @@
+Mon Feb  8 11:54:15 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* developers/, developers/README: new files
+	developers/sp_offset.c: program to guess SP_OFFSET
+	developers/gdbinit: set of gdb macros useful for debugging kaffe
+
 Mon Feb  8 16:34:32 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* include/Makefile.am (DERIVED_HDRS): create the header file with
