@@ -50,7 +50,7 @@ Java_java_lang_String_indexOf( JNIEnv* env, Hjava_lang_String* str, Hjava_lang_S
   m = unhand(pat)->count;
   m2 = m * 2;
 
-  if ( (n==0) || (m==0) ) return -1;
+  if ( m > n ) return -1;
 
   if ( offset < 0 ) offset = 0;
 
