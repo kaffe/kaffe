@@ -71,46 +71,6 @@ protected synchronized void listen(int count) throws IOException {
 	socketListen(count);
 }
 
-protected synchronized void setTcpNoDelay(boolean on) throws SocketException {
-	socketSetOption(TCP_NODELAY, new Integer(on ? 1 : 0));
-}
-
-protected synchronized boolean getTcpNoDelay() throws SocketException {
-	return socketGetOption(TCP_NODELAY) != 0;
-}
-
-protected synchronized void setSoLinger(boolean on, int howlong) throws SocketException {
-	socketSetOption(SO_LINGER, new Integer(on ? howlong : 0));
-}
-
-protected synchronized int getSoLinger() throws SocketException {
-	return socketGetOption(SO_LINGER);
-}
-
-protected synchronized void setSoTimeout(int timeout) throws SocketException {
-	socketSetOption(SO_TIMEOUT, new Integer(timeout));
-}
-
-protected synchronized int getSoTimeout() throws SocketException {
-	return socketGetOption(SO_TIMEOUT);
-}
-
-protected synchronized void setSendBufferSize(int size) throws SocketException {
-	socketSetOption(SO_SNDBUF, new Integer(size));
-}
-
-protected synchronized int getSendBufferSize() throws SocketException {
-	return socketGetOption(SO_SNDBUF);
-}
-
-protected synchronized void setReceiveBufferSize(int size) throws SocketException {
-	socketSetOption(SO_RCVBUF, new Integer(size));
-}
-
-protected synchronized int getReceiveBufferSize() throws SocketException {
-	return socketGetOption(SO_RCVBUF);
-}
-
 public void setOption(int option, Object data) throws SocketException {
 	final boolean disable = (data instanceof Boolean) && !((Boolean) data).booleanValue();
 	if (disable) {
