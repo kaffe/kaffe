@@ -1,0 +1,3101 @@
+2003-10-06  Jim Pick  <jim@kaffe.org>
+
+	* libraries/javalib/kaffe/util/zip/SwitchInflater.java:
+	Classpath version of InflaterInputStream expects a zero result
+	to be returned if the buffer hasn't been filled yet.
+
+2003-10-06  Helmer Kraemer <hkraemer@kaffe.org>
+
+	* config/superh/linux/md.h:
+	(SIGNAL_ARGS, SIGNAL_CONTEXT_POINTER, 
+	GET_SIGNAL_CONTEXT_POINTER, SIGNAL_PC) New macros.
+	
+2003-10-06  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/clib/native/System.c:
+	New system property kaffe.library.path.
+	(java_lang_System_initProperties) Set java.library.path initally
+	to empty. Set kaffe.library.path to library path.
+
+	* libraries/javalib/java/lang/NativeLibrary.java:
+	(getLibraryNames) Search kaffe.library.path first, and then look
+	for native libraries in java.library.path.
+
+	* libraries/javalib/Klasses.jar.bootstrap:
+	Regenerated.
+	
+	Reported by: Ben Burton <bab@debian.org>
+	
+2003-10-05  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/Hashtable.java:
+	(internalcontainsValue) new method.
+	(contains, containsValue) delegate to internalContainsValue.
+
+	Reported by: Jim Pick <jim@kaffe.org>
+	
+2003-10-05  Stuart Ballard <stuart.ballard@corp.fast.net>
+
+	* libraries/javalib/java/util/HashMap.java:
+	(putAll, putAllInternal) Iterate over collection using hasNext()
+	instead of using size().
+
+	* libraries/javalib/java/util/Hashtable.java
+	(putAll, putAllInternal) Iterate over collection using hasNext()
+	instead of using size().
+	
+2003-10-05  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* kaffe/kaffevm/stackTrace.c:
+	Removed no longer valid comment.
+	
+2003-10-05  Dalibor Topic <robilad@kaffe.org>
+
+	* config/superh/trampolines.c:
+	Changed multi-line strings to single line strings.
+
+2003-10-05  Dalibor Topic <robilad@kaffe.org>
+
+	* config/sparc/jit.h,
+	config/sparc/trampolines.c,
+	config/sparc/linux/md.c:
+	Changed multi-line strings to single line strings.
+
+2003-10-05  Dalibor Topic <robilad@kaffe.org>
+
+	* config/s390/common.h:
+	Changed multi-line strings to single line strings.
+
+2003-10-05  Dalibor Topic <robilad@kaffe.org>
+
+	* config/powerpc/netbsd1/md.c:
+	Changed multi-line strings to single line strings.
+
+2003-10-05  Dalibor Topic <robilad@kaffe.org>
+
+	* config/mips/jit.h,
+	config/mips/trampolines.c:
+	Changed multi-line strings to single line strings.
+
+2003-10-05  Dalibor Topic <robilad@kaffe.org>
+
+	* config/m68k/common.h,
+	config/m68k/trampolines.c,
+	config/m68k/amigaos/md.c:
+	Changed multi-line strings to single line strings.
+
+2003-10-05  Dalibor Topic <robilad@kaffe.org>
+
+	*  config/i386/bsdi/md.c
+	config/i386/common.h,
+ 	config/i386/dgux/jit-md.h,
+ 	config/i386/jit.h,
+ 	config/i386/qnx/md.h,
+ 	config/i386/trampolines.c:
+	Changed multi-line strings to single line strings.
+
+2003-10-04  Dalibor Topic <robilad@kaffe.org>
+
+	* configure.in:
+	Added warning message if mktemp is not found.
+
+	* configure, libraries/javalib/Makefile.am, 
+	libraries/javalib/Makefile.in:
+        Regenerated.
+
+	Reported by: Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+2003-10-04  Dalibor Topic <robilad@kaffe.org>
+
+	* WHATSNEW: Updated to reflect some of the work done
+	since 1.0.7.
+
+2003-10-04  Dalibor Topic <robilad@kaffe.org>
+
+	* FAQ/FAQ.hpux: New file.
+
+2003-10-04  Dalibor Topic <robilad@kaffe.org>
+
+	* configure.in:
+	Don't check for mprotect.
+
+	* configure, config/config.h.in:
+	Regenerated. 
+
+	* config/Makefile.am:
+	(EXTRA_DIST) Removed unused files parisc/hpux/md.c and
+	parisc/linux/md.c
+
+	* config/Makefile.in:
+	Regenerated.
+
+	* kaffe/kaffevm/mem/gc-mem.c:
+	Don't include <sys/mman.h> as we no longer use mprotect.
+	[PROT_NONE, HAVE_MPROTECT] Sections removed.
+	(gc_block_add,  gc_block_rm, gc_block_alloc) Don't use mprotect
+	on memory allocated by sbrk. It breaks on HP-UX.
+	
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	(jthreadedFileDescriptor) check if either hpux or __hpux__ is 
+	defined. Gcc automatically defines one or the other depending 
+	on some internals of hp-ux that don't matter in this case.
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	Regenerated.
+
+2003-10-04  Helmer Kraemer <hkraemer@kaffe.org>
+
+	* config/parisc/hpux/md.h:
+	Include siginfo.h and ucontext.h.
+	(SIGNAL_ARGS, SIGNAL_CONTEXT_POINTER, 
+	GET_SIGNAL_CONTEXT_POINTER, SIGNAL_PC) New macros.
+
+	* config/parisc/linux/md.h:
+	Include signal.h and ucontext.h.
+	(SIGNAL_ARGS, SIGNAL_CONTEXT_POINTER, 
+	GET_SIGNAL_CONTEXT_POINTER, SIGNAL_PC) New macros.
+
+	* config/parisc/hpux/md.c,
+	config/parisc/linux/md.c:
+	Removed.
+
+2003-10-02  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/arm/jit.h, config/arm/riscos/md.h:
+	Fixed multi-line string compiler breakage.
+
+2003-10-02  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/ia64/linux/md.c:
+	Fixed multi-line string compiler breakage.
+
+2003-09-30  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/clib/math/BigInteger.c
+	[!HAVE_GMP_H] (Java_java_math_BigInteger_assignString0): changed
+	return type to jint to match prototype of assignString0 when gmp
+	is used
+
+	* config/arm/common.h (sysdepCallMethod): changed into an inline
+	method, don't treat 'L' return type specially
+
+	* config/arm/jit.h (exceptionFrame): changed type of fields to
+	uintp to fix compilation warnings
+	(NEXTFRAME, PCFRAME, FPFRAME): remove now unnecessary casts
+
+	* config/arm/linux/jit-md.h (FIRSTFRAME): redefined using gcc's
+	__builtin_frame_address extension
+	(ARM_LINUX_HACK): removed since it's no longer necessary
+
+	* config/arm/linux/md.h (SP_OFFSET, FP_OFFSET): corrected to
+	match what current glibc does
+	(ARM_LINUX_HACK): removed since it's no longer necessary
+	
+2003-09-30  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/zip/ZipEntry.java:
+	(name, time, crc, size, method, extra, comment, csize) Changed
+	access to private.
+
+	* libraries/javalib/java/util/zip/ZipFile.java:
+	(getInputStream) Use accessor methods to access internal fields of
+	ZipEntry.
+
+	* libraries/javalib/java/util/zip/ZipInputStream.java:
+	(getNextEntry) Use accessor methods to access internal fields of
+	ZipEntry.
+
+	* libraries/javalib/java/util/zip/ZipOutputStream.java:
+	(closeEntry, finish, putNextEntry) Use accessor methods to access
+	internal fields of ZipEntry.
+
+2003-09-29  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/zip/GZIPOutputStream.java:
+	Replaced by implementation from GNU Classpath.
+
+2003-09-29  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/mem/gc-mem.c: (gc_heap_grow) don't forget
+	to unlock the gc_heap_lock if we bail out early
+
+	* test/internal/jit_stub.c: (main) initialise Kaffe_JavaVMArgs[0]
+	before initialising the collector
+	
+2003-09-29  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/text/SimpleDateFormat.java,
+	libraries/javalib/java/text/DateFormat.java: Synch'ed with GNU
+	Classpath.
+
+2003-09-29  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/zip/GZIPInputStream.java:
+	Replaced by implementation from GNU Classpath.
+	
+2003-09-29  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/zip/InflaterInputStream.java:
+	Replaced by implementation from GNU Classpath.
+
+2003-09-29  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/zip/CheckedInputStream.java,
+	libraries/javalib/java/util/zip/CheckedOutputStream.java:
+	Replaced by implementation from GNU Classpath.
+	
+2003-09-29  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/zip/ZipConstants.java:
+	Merged in from GNU Classpath to get the right constant names.
+	
+	* libraries/javalib/java/util/zip/ZipOutputStream.java,
+	libraries/javalib/java/util/zip/ZipInputStream.java:
+	Modified to use the right zip constant names.
+
+2003-09-28  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/exception.h:
+	{INTERPRETER] removed vmExcept_setIntrpFrame, moved to
+	intrp/machine.c and renamed to setFrame.
+
+	* kaffe/kaffevm/support.c:
+	(callMethodA, callMethodV)[INTERPRETER] Call new functions in
+	machine.c.
+	
+	* kaffe/kaffevm/intrp/machine.c:
+	(setFrame, setupExceptionHandling, cleanupExceptionHandling) New
+	functions.
+	(virtualMachine) Call the new functions.
+
+	* kaffe/kaffevm/intrp/machine.h:
+	Added prototypes for setupExceptionHandling,
+	cleanupExceptionHandling.
+
+2003-09-28  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/nio/ByteBufferHelper.java: added missing
+	file.
+
+2003-09-28  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/gnu/java/net/PlainDatagramSocketImpl.java,
+	libraries/javalib/gnu/java/net/PlainSocketImpl.java,
+	libraries/javalib/gnu/java/net/SocketInputStream.java,
+	libraries/javalib/gnu/java/net/SocketOutputStream.java,
+	Moved implementation dependent NET classes to gnu/java/net as
+	requested by new NET classes from GNU Classpath.
+	(PlainSocketImpl.getNativeFD) Added and also a field called native_fd.
+	(PlainDatagramSocketImpl.getNativeFD) Added and also a field called
+	native_fd.
+
+	* libraries/javalib/gnu/java/nio/DatagramChannelImpl.java,
+	libraries/javalib/gnu/java/nio/DatagramChannelSelectionKey.java,
+	libraries/javalib/gnu/java/nio/FileLockImpl.java,
+	libraries/javalib/gnu/java/nio/NIOConstants.java,
+	libraries/javalib/gnu/java/nio/NIODatagramSocket.java,
+	libraries/javalib/gnu/java/nio/NIOSocket.java,
+	libraries/javalib/gnu/java/nio/SelectionKeyImpl.java,
+	libraries/javalib/gnu/java/nio/SelectorImpl.java,
+	libraries/javalib/gnu/java/nio/SocketChannelImpl.java,
+	libraries/javalib/gnu/java/nio/SocketChannelSelectionKey.java,
+	libraries/javalib/java/nio/ByteBufferImpl.java,
+	libraries/javalib/java/nio/DirectByteBufferImpl.java,
+	libraries/javalib/java/nio/MappedByteBufferImpl.java,
+	libraries/javalib/java/nio/channels/FileChannelImpl.java:
+	Merged new NIO classes from GNU Classpath.
+
+	* libraries/javalib/java/net/DatagramSocket.java,
+	libraries/javalib/java/net/PlainDatagramSocketImpl.java,
+	libraries/javalib/java/net/PlainSocketImpl.java,
+	libraries/javalib/java/net/ServerSocket.java,
+	libraries/javalib/java/net/Socket.java,
+	libraries/javalib/java/net/SocketInputStream.java,
+	libraries/javalib/java/net/SocketOutputStream.java,
+	libraries/clib/net/PlainDatagramSocketImpl.c,
+	libraries/clib/net/PlainSocketImpl.c:
+	Updated NET classes from GNU Classpath. Native implementation must
+	initialize the new field called native_fd.
+	
+	* include/Makefile.am:
+	(NOINSTALL_DERIVED_HDRS) Changed java_net_PlainDatagramSocketImpl.h,
+	java_net_PlainSocketImpl.h into
+	gnu_java_net_PlainDatagramSocketImpl.h and
+	gnu_java_net_PlainSocketImpl.h.
+	
+	* include/Makefile.in, libraries/javalib/Klasses.jar.bootstrap,
+	libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	regenerated.
+
+	* libraries/javalib/bootstrap.classlist,
+	libraries/javalib/essential.files: updated to reflect the
+	new NIO and NET classes.
+	
+	* libraries/javalib/kjc.jar: Updated.
+
+2003-09-28  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/mem/gc-incremental.c:
+	(startGC, finaliserMan) properly deal with objects on the finaliser
+	list when starting a gc pass (fixes endless loop)
+	(createGC) initialise the heap and reserve primitive pages for OOM
+	handling
+	
+	* kaffe/kaffevm/gc-mem.h: (struct gc_block) added pnext and pprev
+	fields for management of primitive blocks; removed inuse field
+	(GCBLOCKINUSE) new macro to test whether a gc_block is used
+
+	replaced all uses of the inuse field by calls to the GCBLOCKINUSE
+	macro
+
+	* kaffe/kaffevm/gc-mem.c: (gc_get_prim_freelist, gc_add_to_prim_freelist,
+	gc_remove_from_prim_freelist, gc_merge_with_successor) new helper
+	methods for management of primitive blocks
+	(gc_primitive_alloc, gc_primitive_free) manage primitive blocks
+	using a best fit algorithm
+	(gc_heap_grow) don't forget to lock the gc_heap_lock 
+	
+2003-09-27  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/kjc.jar: Fix for path method invocation.
+
+2003-09-26  Dalibor Topic <robilad@kaffe.org>
+
+	*  kaffe/kaffevm/exception.c:
+	[INTERPRETER](FIRSTFRAME) Removed to fix compiler warning on
+	parisc-hpux with gcc 3.3.1.
+
+	* kaffe/kaffevm/intrp/stackTrace-impl.h:
+	(FIRSTFRAME) Added comment.
+
+2003-09-25  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/clib/awt/X/clr.c:
+	(Java_java_awt_Toolkit_clrGetColorModel) Removed unnecessary empty
+	default statement at end of a switch statement.
+	
+2003-09-25  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/clib/awt/X/fnt.c:
+	(Java_java_awt_Toolkit_fntStringWidth)  Only declare n if
+	WORDS_BIGENDIAN is defined.
+
+	* libraries/clib/awt/X/gra.c:
+	(Java_java_awt_Toolkit_graDrawString) Only declare n if
+	WORDS_BIGENDIAN is defined.
+	
+2003-09-25  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/clib/io/FileDescriptor.c
+	(java_io_FileDescriptor_nativeSetLength) Changed type of ret to
+	ssize_t to fix compiler warning with gcc 3.3.1 on parisc-hpux.
+
+2003-09-25  Dalibor Topic <robilad@kaffe.org>
+
+	* config/parisc/hpux/md.c, 
+	config/parisc/linux/md.c:
+	Changed multi-line string literals into single line
+	strings to fix compilation on gcc 3.3.1.
+	
+2003-09-25  Dalibor Topic <robilad@kaffe.org>
+
+	* configure.in:
+	Merged in ininf, isnan and finite checking code from 
+	Sablotron 1.0, licensed under MPL 1.1 and GPL.
+	
+	* THIRDPARTY:
+	Updated to reflect the inclusion of Sablotron's code.
+
+	* config/config.h.in, configure:
+	Regenerated.
+	
+2003-09-25  Dalibor Topic <robilad@kaffe.org>
+
+	Fix for jit and intrp engine compilation breakage.
+	
+	* kaffe/kaffevm/jni.c:
+	Include constpool.h to declare resetConstants, if available.
+	(Kaffe_wrapper) Only call resetConstants with jit3 engine.
+
+	Reported by: Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+2003-09-25  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/zip/ZipFile.java:
+	(OPEN_READ, OPEN_DELETE) New constants.
+
+	Reported by: Arnaud Vandyck <arnaud.vandyck@ulg.ac.be>
+	
+2003-09-24  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/rebuildLib.in:
+	Raised memory limit for class library compilation to 256M to fix
+	crash when compiling all of class library at once using kjc.
+
+	Reported by: James Simmons  <jsimmons@infradead.org>
+	
+2003-09-24  James Simmons  <jsimmons@infradead.org>
+
+	* libraries/javalib/java/util/EventObject.java:
+	Replaced by implementation from GNU Classpath.
+	
+2003-09-24  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/lang/Boolean.java:
+	Replaced by slightly adapted version from GNU Classpath.
+
+	Reported by: Hakon Gunsen <hakon_@everyday.com>
+
+2003-09-24  Jim Pick  <jim@kaffe.org>
+
+	* kaffe/kaffeh/support.c:
+	Fix kaffeh's handling of multidimensional arrays.
+
+	Patch by: Daniel Dittmann <ddittmann@gmx.de>	
+
+2003-09-22  Dalibor Topic <robilad@kaffe.org>
+
+	Fix for getaddrinfo on sparc-solaris2.9 compiler breakage.
+	
+	* configure.in:
+	Check for struct addrinfo.
+
+	* sockaddrin6.m4:
+	(AC_STRUCT_ADDRINFO) New check.
+
+	* include/getaddrinfo.h:
+	Redefine addrinfo away if struct addrinfo is declared.
+	
+	* aclocal.m4, configure, config/config.h.in:
+	Regenerated.
+	
+2003-09-22  Dalibor Topic <robilad@kaffe.org>
+
+	* sockinttypes.m4:
+	Updated to getaddrinfo-1.6.1. From the getaddrinfo docs:
+
+	Major changes in release 1.6.1
+
+	* Fix typo in m4/sockinttypes.m4.
+	configure exits with an error message if it fails to get size of
+	`sin_port' in `struct sockaddr_in' or `sa_family' in 
+	`struct sockaddr'.
+
+	* aclocal.m4, configure:
+	Regenerated.
+
+	* THIRDPARTY:
+	Added information on getaddrinfo.
+	
+2003-09-22  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/access.c: (findSuperMethod) minor tweak
+	to bail out immediately when the method is found
+	
+	* kaffe/kaffevm/classMethod.c: (userLoadClass) call
+	loadClass(String) instead of loadClass(String,boolean)
+	as per spec
+	(lookupClassField) search implemented interfaces when
+	searching for static fields; pass the class that owns
+	the field to resolveFieldType, not the class where we
+	started the search
+
+	* kaffe/kaffevm/exception.c: (throwException) when
+	allocating a new VMThrowable, we must also assign
+	it to eobj->vmState, so we don't loose stack traces
+	(floatingException) don't create the stack trace twice
+
+	* kaffe/kaffevm/lookup.c: (getField) initialise ret->class
+	with the class that owns the field, not the class that was
+	passed to getField
+
+	* kaffe/kaffevm/locks.c: (getHeavyLock) minor tweak so
+	we don't leak a heavy lock
+	
+	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classPool.c,
+	kaffe/kaffevm/code-analyse.c, kaffe/kaffevm/code-analyse.h,
+	kaffe/kaffevm/code.c, kaffe/kaffevm/external.c,
+	kaffe/kaffevm/gc.h, kaffe/kaffevm/gcFuncs.c,
+	kaffe/kaffevm/inflate.c, kaffe/kaffevm/string.c,
+	kaffe/kaffevm/support.h, kaffe/kaffevm/verify.c:
+	added several new allocation types to the gc
+
+2003-09-22  Dalibor Topic <robilad@kaffe.org>
+
+	* developers/patch-libtool-ltdl-memory-header-warning.diff:
+	New file.
+
+	* Makefile.am:
+	(EXTRA_DIST) Added
+	developers/patch-libtool-ltdl-memory-header-warning.diff.
+
+	* Makefile.in:
+	Regenerated.
+
+	* developers/autogen.sh:
+	Updated to apply
+	developers/patch-libtool-ltdl-memory-header-warning.diff.
+
+	* libltdl/ltdl.c:
+	Regenerated.
+
+	* libraries/extensions/sound/common/Makefile.am:
+	(AM_CPPFLAGS, noinst_SOURCES, noinst_HEADERS) Removed, since no
+	sources are being built, thus Automake left the files out of the
+	distribution.
+	(EXTRA_DIST) Put the sources in here.
+
+	* libraries/extensions/sound/common/Makefile.in:
+	Regenerated.
+	
+2003-09-21  Dalibor Topic <robilad@kaffe.org>
+
+	Fix for libtool problems with sound libraries.
+	
+	* libraries/extensions/sound/alsa/Makefile.am:
+	(libtritonusalsa_la_LIBADD) Removed unportable attempt to link in
+	common code as a shared library.
+	(libtritonusalsa_la_SOURCES) Added common.c.
+	
+        libraries/extensions/sound/common/Makefile.am:
+	(native_LTLIBRARIES, libtritonuscommon_la_LDFLAGS,
+	libtritonuscommon_la_SOURCES) Removed unneeded variables.
+	(noinst_SOURCES) New variable.
+	
+        libraries/extensions/sound/esd/Makefile.am:
+	(libtritonusesd_la_LDFLAGS) Reformatted.
+	(libtritonusesd_la_LIBADD) Removed unportable attempt to link in
+	common code as a shared library.
+	(libtritonusesd_la_SOURCES) Removed common.h. Added common.c.
+	(noinst_HEADERS) New variable.
+	
+        * libraries/extensions/sound/alsa/Makefile.in,
+        libraries/extensions/sound/common/Makefile.in,
+        libraries/extensions/sound/esd/Makefile.in:
+	Regenerated.
+
+	* libraries/extensions/sound/alsa/common.c,
+	libraries/extensions/sound/esd/common.c:
+	New files.
+
+	Reported by: Mark Wielaard  <mark@klomp.org>,
+	             James Simmons  <jsimmons@infradead.org>
+	
+2003-09-19  Timothy S. Stack <stack@cs.utah.edu>
+
+	* configure.in:
+	Add the tritonus alsa and esd libraries to the list that will be
+	linked into the executable.
+
+	* kaffe/kaffevm/gc.h,
+	kaffe/kaffevm/gcFuncs.c:
+	Add separate allocation types for temporary jitter data.
+
+	* kaffe/kaffevm/jit3/constpool.c,
+	kaffe/kaffevm/jit3/icode.c,
+	kaffe/kaffevm/jit3/labels.c,
+	kaffe/kaffevm/jit3/machine.c,
+	kaffe/kaffevm/jit3/slots.c:
+	Use separate allocation types for temporary jitter data.
+
+	* kaffe/kaffevm/jit3/seq.h,
+	kaffe/kaffevm/jit3/seq.c:
+	Change allocation behavior to free large pools of memory after
+	jitting is done.
+
+	* kaffe/xprof/callGraph.c:
+	Always write out a callgraph record, even if its out of bounds,
+	otherwise, a record might not make it into gmon file.
+
+2003-09-19  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/javax/sound/midi/MetaMessage.java,
+	libraries/javalib/org/tritonus/lowlevel/alsa/AlsaPcm.java,
+	libraries/javalib/org/tritonus/sampled/file/AiffAudioFileReader.java,
+	libraries/javalib/org/tritonus/sampled/file/AiffAudioFileWriter.java,
+	libraries/javalib/org/tritonus/sampled/file/AiffTool.java,
+	libraries/javalib/org/tritonus/sampled/file/WaveAudioFileReader.java,
+	libraries/javalib/org/tritonus/sampled/file/WaveTool.java,
+	libraries/javalib/org/tritonus/share/TCircularBuffer.java,
+	libraries/javalib/org/tritonus/share/TDebug.java,
+	libraries/javalib/org/tritonus/share/sampled/FloatSampleBuffer.java,
+	libraries/javalib/org/tritonus/share/sampled/TVolumeUtils.java,
+	libraries/javalib/org/tritonus/share/sampled/convert/TAsynchronousFilteredAudioInputStream.java,
+	libraries/javalib/org/tritonus/share/sampled/file/TAudioFileWriter.java:
+	Resynced with tritonus.
+	
+2003-09-19  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/jit/machine.c,
+	kaffe/kaffevm/jit/machine.h:
+	Always declare and define globalMethod, which is used
+	by jni. This fixes another compilation problem on arm-linux.
+
+2003-09-18  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/io/File.java:
+	(toURI) corrected the @auther.
+
+2003-09-18  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* config/arm/linux/md.h, config/arm/linux/jit-md.h: Implemented
+	SIGNAL_ARGS, SIGNAL_GET_CONTEXT_POINTER, SIGNAL_PC.
+
+	* libraries/javalib/java/io/File.java:
+	(toURI, File(URI) ) Reindented, removed unnecessary code which was
+	throwing NullPointerException.
+	
+2003-09-18  Dalibor Topic <robilad@kaffe.org>
+
+	* config/arm/trampolines.c:
+	Fixed multi-line string compiler breakage.
+	Reported by: Arnaud Vandyck <arnaud.vandyck@ulg.ac.be>
+	
+2003-09-18  Timothy S. Stack <stack@cs.utah.edu>
+
+	* libraries/clib/net/NetworkInterface.c:
+	Fix compile error for IPv6 stuff.
+	
+2003-09-17  Timothy S. Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/jit3/labels.c,
+	kaffe/kaffevm/jit3/constpool.c:
+	Fix for the last allocation fix.
+
+2003-09-17  Timothy S. Stack <stack@cs.utah.edu>
+
+	* libraries/clib/net/InetAddressImpl.c:
+	Fix a compilation error.
+	
+2003-09-16  Timothy S. Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/jit3/jni.c,
+	kaffe/kaffevm/jit3/constpool.h,
+	kaffe/kaffevm/jit3/constpool.c,
+	kaffe/kaffevm/jit3/labels.h,
+	kaffe/kaffevm/jit3/labels.c,
+	kaffe/kaffevm/jit3/machine.c:
+	Change allocation behavior to free large pools of memory after
+	jitting is done.
+	
+2003-09-16  Dalibor Topic <robilad@kaffe.org>
+
+	* developers/patch-libtool-amiga.diff,
+	developers/patch-libtool-openbsd.diff,
+	developers/patch-libtool-realloc.diff:
+	Updated merge status, since the patches have been merged into
+	libtool's CVS.
+
+2003-09-16  Dalibor Topic <robilad@kaffe.org>
+	
+	* test/regression/run_time/Makefile.am:
+	Don't use GNU make extensions to avoid build problems on platforms
+	using a BSD make.
+	
+	* test/regression/run_time/Makefile.in:
+	Regenerated.
+	
+2003-09-16  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/gnu/java/rmi/rmic/Compile_gcj.java,
+	libraries/javalib/gnu/java/rmi/rmic/Compile_jikes.java,
+	libraries/javalib/gnu/java/rmi/rmic/Compile_kjc.java,
+	libraries/javalib/gnu/java/rmi/rmic/Compiler.java,
+	libraries/javalib/gnu/java/rmi/rmic/CompilerProcess.java,
+	libraries/javalib/gnu/java/rmi/rmic/RMIC.java,
+	libraries/javalib/gnu/java/rmi/rmic/RMICException.java,
+	libraries/javalib/java/awt/BasicStroke.java,
+	libraries/javalib/java/awt/Color.java,
+	libraries/javalib/java/security/acl/Acl.java,
+	libraries/javalib/java/security/Policy.java,
+	libraries/javalib/java/util/logging/LogManager.java,
+	libraries/javalib/java/util/logging/Logger.java,
+	libraries/javalib/java/util/logging/SimpleFormatter.java:
+	Resynced with GNU Classpath.
+	
+2003-09-15  Dalibor Topic <robilad@kaffe.org>
+
+	* developers/check-classpath-merge-status:
+	Flexibilized, now uses $CPATH_SOURCE. Improved documentation.
+	
+2003-09-15  Dalibor Topic <robilad@kaffe.org>
+	
+	* libraries/javalib/javax/xml/parsers/DocumentBuilder.java,
+	libraries/javalib/javax/xml/parsers/DocumentBuilderFactory.java,
+	libraries/javalib/javax/xml/parsers/SAXParser.java,
+	libraries/javalib/javax/xml/transform/TransformerConfigurationException.java,
+	libraries/javalib/javax/xml/transform/TransformerException.java,
+	libraries/javalib/javax/xml/transform/sax/SAXSource.java:
+	Resynced with GNU JAXP.
+	
+2003-09-14  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/Klasses.jar.bootstrap:
+	Regenerated.
+
+	* libraries/javalib/bootstrap.classlist:
+	Added java/lang/InterruptedException.class.
+
+	* libraries/javalib/essential.files:
+	Added java/net/HttpURLConnection.java and
+	java/net/ProtocolException.java.
+	
+	* libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/core.files:
+	Removed java/net/HttpURLConnection.java and
+	java/net/ProtocolException.java.
+	
+2003-09-14  Dalibor Topic <robilad@kaffe.org>
+
+	* developers/mauve-results.sh:
+	Added a call to autoreconf to make build mauve's configure
+	script. Added missing '$' to dereference JTIDY_CPATH. Improved
+	documentation.
+	
+2003-09-14  Dalibor Topic <robilad@kaffe.org>
+
+	* test/regression/compile_time/Makefile.am:
+	Don't use GNU make extensions to avoid build problems on platforms
+	using a BSD make.
+
+	* config/Makefile.in,
+	include/Makefile.in,
+	kaffe/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	libraries/javalib/Makefile.in,
+	test/internal/Makefile.in,
+	test/regression/compile_time/Makefile.in:
+	Regenerated.
+
+2003-09-14  Dalibor Topic <robilad@kaffe.org>,
+            Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/javalib/java/net/URL.java:
+	(URL) Don't explicitely throw NullPointerExceptions.
+	
+2003-09-13  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/gnu/xml/aelfred2/XmlParser.java:
+	copied the new version from GNU JAXP,  where our bug fix
+	(2003-09-02  Ito Kazumitsu) has been adopted.
+
+2003-09-13  Dalibor Topic <robilad@kaffe.org>,
+            Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/javalib/javax/naming/spi/NamingManager.java:
+	(getURLContext, getObjectInstance, getStateToBind) Always use
+	current thread's context class loader when calling Class.forName.
+
+2003-09-13  Dalibor Topic <robilad@kaffe.org>
+	
+	* libraries/javalib/java/net/URLClassLoader.java
+	(findResourceInternal) Only attempt to call diconnect if
+	URLConnection u is a HttpURLConnection to avoid creating
+	unnecessary exceptions.
+
+	* libraries/javalib/kaffe/net/www/protocol/jar/JarURLConnection.java:
+	(connect) Improved exception message.
+	
+2003-09-13  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/clib/native/Runtime.c:
+	(java_lang_Runtime_maxMemory) New function.
+	(java_lang_Runtime_totalMemory) Return gc_heap_total instead of
+	gc_heap_limit.
+
+	* libraries/javalib/java/lang/Runtime.java:
+	(maxMemory) New native method.
+
+	* libraries/javalib/java/lang/StringBuffer.java:
+	Replaced by implementation from GNU Classpath.
+	
+	* libraries/javalib/java/lang/String.java:
+	(String) Adapted constructor to work with field names from new
+	StringBuffer implementation.
+
+	* libraries/javalib/java/net/URL.java:
+	(getUserInfo) New method.
+	
+2003-09-12  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/io/File.java:
+	added missing 1.4 features (toURI() and File(URI)) once implemented
+	in kaffe but lost when GNU Classpath's File.java was imported.
+
+2003-09-11  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/util/GregorianCalendar.java:
+	(getLinearTime) corrected a bug of counting leap days twice.
+
+2003-09-11  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/external.c:
+	(loadNativeLibrary2) Removed unused variable vars.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jqueue.c:
+	(KaffePoolReleaseNode) Removed unused variable node_id.
+
+	* include/kaffe/jmalloc.h:
+	[KAFFE_DEBUG](KFREE) Added const to parameter declaration to avoid
+	compiler warnings.
+
+	* kaffe/kaffevm/verify.c:
+	(resolveType) Initialize tmp before use.
+	
+2003-09-11  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* test/regression/InetAddressTest.java:
+	check whether InetAddress.getByName returns IPv6 address.
+
+	* test/regression/InetSocketAddressTest.java:
+	check whether new InetSocketAddress("localhost", 0) is an IPv6 address.
+
+2003-09-09  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/net/InetAddress.java:
+	(getAllByName) check whether getHostByName returns IPV6 address. If it
+	is the case we build Inet6Address instead of InetAddress.
+
+2003-09-05  Jim Pick  <jim@kaffe.org>
+
+	* include/kaffe/jmalloc.h:
+	Oops, my gcc 3.3 warning fix was braindamaged - I broke freevec() in
+	UNIXProcess.c (and probably other things too).  Try doing it with an
+	inlined function instead of a macro. 
+
+2003-09-05  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/net/InetSocketAddress.java:
+	Imported from classpath + fix.
+	(toString, equals) use hostname instead of addr if addr is null
+
+	* libraries/javalib/java/net/InetAddress.java:
+	(<clinit>) initialize ANY_IF with "" if it can't retrieve it from
+	the system.
+	(getInaddrAny) same thing for the returned any address.
+
+	* libraries/clib/net/NetworkInterfaceImpl.c:
+	(java_net_NetworkInterface_getRealNetworkInterfaces) builds a
+	hashtable as was previously done in kaffe.
+
+	* libraries/javalib/java/net/NetworkInterface.java:
+	(getRealNetworkInterface) return a Hashtable instead of a Vector
+	(getByName, getByInetAddress, getNetworkInterfaces) Use a hashtable
+	instead of a vector for the return value of getRealNetworkInterface.
+
+	* libraries/javalib/bootstrap.classlist: Deleted File$DeleteExitHook
+	and NetworkInterfaceImpl.
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated.
+
+2003-09-05  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/clib/math/BigInteger.c:
+	(Java_java_math_BigInteger_assignString0) Removed exception
+	throwing code. Changed protoype to return an int to determine
+	success or failure. Added doxygen comments.
+
+	* libraries/javalib/Klasses.jar.bootstrap:
+	Updated for BigInteger changes.
+
+	* libraries/javalib/java/math/BigInteger.java:
+	(BigInteger) Moved exception throwing code here. Improved
+	exception message to include offending string and radix.
+	
+2003-09-04  Jim Pick  <jim@kaffe.org>
+
+	* developers/gdbinit:
+	Update some of the gdb macros.
+
+2003-09-04  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/bootstrap.classlist:
+	Added missing files.
+	
+2003-09-03  Dalibor Topic <robilad@kaffe.org>,
+	    Edouard G. Parmelan <egp@free.fr>
+
+	* FAQ/FAQ.debugging: Added Edouard's explanation of special
+	comments in regression tests.
+	
+2003-09-03  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/awt/BasicStroke.java:
+	(BasicStroke) Fixed illegal argument checking to follow 1.4.2 spec.
+
+2003-09-02  Jim Pick  <jim@kaffe.org>
+
+	* libraries/clib/net/PlainDatagramSocketImpl.c:
+	Fix typo in call to constructor.
+
+2003-09-02  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/clib/io/FileDescriptor.c:
+	(java_io_FileDescriptor_nativeReadByte) check for EOF (rc == 0 && ret
+	== 0).
+
+2003-09-02  Timothy S. Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/intrp/icode.h,
+	kaffe/kaffevm/jit/icode_internal.h,
+	kaffe/kaffevm/jit/icode.c:
+	Add softcall_linkage and softcall_illegalaccess to make calls to
+	the corresponding soft_ functions.
+
+2003-09-02  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/gnu/xml/aelfred2/XmlParser.java:
+	Corrected parseCharRef() so that it may not flush data buffer
+	when not desired.
+
+2003-09-01  Jim Pick  <jim@kaffe.org>
+
+	* libraries/clib/net/NetworkInterface.c:
+	Really ignore non-IPv4/IPv6 interfaces (fixes NetworkInterfaceTest
+	regression test).
+
+2003-09-01  Jim Pick  <jim@kaffe.org>
+
+	* kaffe/kaffevm/jni.c:
+	Change casts to avoid "type punning" warnings in gcc 3.x.
+
+2003-09-01  Jim Pick  <jim@kaffe.org>
+
+	* include/kaffe/jmalloc.h:
+	Avoid KFREE() related "type punning" warnings in gcc 3.x
+	when compiling using --with-vmdebug.
+
+	This revert's egp's changes which were to "Avoid casting in
+	call to KFREE().".  I didn't understand why that was an
+	issue (or even why we're zeroing out the pointers, in the
+	first place, I assume it's got something to do with some
+	gc interaction).
+	
+2003-09-01  Jim Pick  <jim@kaffe.org>
+
+	* configure.in:
+	Check for stdarg.h (needed by valist.m4 varargs
+	checks, otherwise varargs.h is used, which fails
+	on gcc 3.3)
+	
+	* configure, config/config.h.in:
+	Regenerated.
+
+2003-09-01  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* test/regression/DeleteFile.java: added missing test case.
+
+2003-08-31  Timothy S. Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/access.c:
+	Allow inner classes to access members in the outer class.
+
+	* kaffe/kaffevm/classMethod.c:
+	Fix initial value of this_inner_index in the class struct.
+
+2003-08-31  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/text/SimpleDateFormat.java:
+	(compileFormat) corrected the way to check letters from 'A' to 'Z'
+	and from 'a' to 'z'.
+
+2003-08-31  Timothy S. Stack <stack@cs.utah.edu>
+
+	* Makefile.am:
+	Add BCEL Jar file to the CLASSPATH.
+
+	* configure.in:
+	Add --with-bcel option for activating BCEL based tests.  Detect
+	Jasmin for hostile class loading tests.
+
+	* include/errors.h:
+	Make LinkageError and IllegalAccessError take message arguments.
+
+	* kaffe/kaffevm/Makefile.am:
+	Add access.c and move GEN_SRCS to nodist_libkaffevm_la_SOURCES.
+
+	* kaffe/kaffevm/access.h,
+	kaffe/kaffevm/access.c:
+	Added run time access checking code.
+
+	* kaffe/kaffevm/classMethod.h,
+	kaffe/kaffevm/classMethod.c:
+	Verification related checking.
+
+	* kaffe/kaffevm/code.c:
+	Check for valid code lengths.
+
+	* kaffe/kaffevm/constants.c:
+	Check for valid CONSTANT_String values here since some code at the
+	end of the function dereferences the values.
+
+	* kaffe/kaffevm/exception.c,
+	kaffe/kaffevm/stackTrace.c,
+	kaffe/kaffevm/thread.c,
+	libraries/clib/native/Class.c:
+	Add #include for gtypes.h.
+
+	* kaffe/kaffevm/gcFuncs.c:
+	Don't free parent's gc_layout.
+
+	* kaffe/kaffevm/kaffe.def:
+	Add method/field access/link checks.
+
+	* kaffe/kaffevm/lookup.c:
+	Make sure the actual field signature jibe's with the requested
+	one.
+
+	* kaffe/kaffevm/object.c:
+	Don't allow instantiation of interface classes.
+
+	* kaffe/kaffevm/readClass.c:
+	Post an UnsupportedClassVersionError instead of print a warning.
+
+	* kaffe/kaffevm/soft.h,
+	kaffe/kaffevm/soft.c:
+	Add soft_linkage and soft_illegalaccess for throwing LinkageErrors
+	and IllegalAccessErrors.
+
+	* kaffe/kaffevm/support.h,
+	kaffe/kaffevm/support.c:
+	Add silly bitCount function (used by verifier code...).
+
+	* kaffe/kaffevm/verify.c:
+	Add checks for fields.  Fix error when computing the next PC for a
+	WIDE instruction.
+
+	* kaffe/kaffevm/jit3/codeproto.h,
+	kaffe/kaffevm/jit3/icode.c:
+	Add softcall_linkage and softcall_illegalaccess for throwing
+	LinkageErrors and IllegalAccessErrors.
+
+	* test/regression/LostTrampolineFrame.java:
+	Changed to use an error in a static initializer to cause the error
+	instead of a verification error.
+
+	* test/regression/Makefile.am:
+	Add new access/link, Jasmin, and BCEL tests.
+
+	* test/regression/TestScript.in:
+	Add support for Jasmin based tests.  Add support for tests that
+	use different classes at compile time and run time.
+
+	* test/regression/BadCatch1.j,
+	test/regression/BadCatch2.j,
+	test/regression/BadClassFileCode.java,
+	test/regression/BadClassFileConstants.java,
+	test/regression/BadClassVersion.java,
+	test/regression/CircularClass.j,
+	test/regression/CircularInterface.j,
+	test/regression/ClassFlags1.j,
+	test/regression/ClassFlags2.j,
+	test/regression/DuplicateField.j,
+	test/regression/EmptyMethod.j,
+	test/regression/FieldFlags1.j,
+	test/regression/FieldFlags2.j,
+	test/regression/FieldFlags3.j,
+	test/regression/FieldFlags4.j,
+	test/regression/FieldRefSignature1.j,
+	test/regression/FieldSignature1.j,
+	test/regression/FieldSignature2.j,
+	test/regression/FieldSignature3.j,
+	test/regression/FieldSignature4.j,
+	test/regression/ImplementClass.java,
+	test/regression/InterfaceSuperClass.java,
+	test/regression/InvokedMethodSignature1.j,
+	test/regression/InvokedMethodSignature2.j,
+	test/regression/InvokedMethodSignature3.j,
+	test/regression/MethodFlags1.j,
+	test/regression/MethodFlags2.j,
+	test/regression/MethodFlags3.j,
+	test/regression/MethodFlags4.j,
+	test/regression/MethodFlags5.j,
+	test/regression/MethodSignature1.j,
+	test/regression/MethodSignature2.j,
+	test/regression/MethodSignature3.j,
+	test/regression/MethodSignature4.j,
+	test/regression/MethodSignature5.j,
+	test/regression/MethodSignature6.j,
+	test/regression/MethodSignature7.j,
+	test/regression/MethodSignature8.j,
+	test/regression/MethodSignature9.j:
+	Tests designed to assault the class loader.
+
+	* test/regression/FieldErrors.java,
+	test/regression/MethodErrors.java:
+	Tests designed to check run-time access/link checking.
+
+2003-08-31  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
+	(jthreadedFSync) added.
+	(Kaffe_SystemCallInterface) added jthreadedFSync.
+
+	* libraries/clib/net/PlainDatagramSocketImpl.c:
+	(java_net_PlainDatagramSocketImpl_receive) check if pkt is NULL
+	and throw NullPointerException if it is the case.
+	Changed the way EINTR is handled (it must be ignored).
+	ETIMEDOUT throws a better exception with bytesTransferred set to
+	the right value.
+	
+	* libraries/clib/net/PlainSocketImpl.c:
+	(java_net_PlainSocketImpl_receive) see above for the changed behaviour.
+	(java_net_PlainSocketImpl_accept) EINTR is now ignored.
+
+	* libraries/clib/io/File.c:
+	(java_io_File_listInternal) check whether the pointer is null.
+
+	* libraries/clib/io/FileDescriptor.c:
+	(getFileSize) don't return an error if there isn't.
+
+	* include/Makefile.am:
+	(NOINSTALL_DERIVED_HDRS) added java_io_InterruptedIOException.h
+
+	* include/Makefile.in: regenerated.
+
+	* libraries/javalib/java/io/File.java:
+	(deleteOnExit) reimplemented deleteOnExit for classpath using 
+	shutdownHooks.
+
+	* libraries/javalib/java/lang/Runtime.java:
+	(runShutdownHooks) don't show InterruptedException because it may
+	be a remanant of a former interrupt. If it happens try to join again.
+
+
+	* test/regression/SoInterrupt.java: removed. This test was a
+	non-sense from the beginning to the end.
+
+	* test/regression/Makefile.am: removed SoInterrupt.java
+
+	* test/regression/Makefile.in: regenerated.
+
+2003-08-30  Timothy S. Stack <stack@cs.utah.edu>
+
+	* include/jni.h, include/jvmpi.h:
+	Change constant values to match the Sun versions so binaries are
+	compatible.
+
+	* kaffe/jvmpi/jvmpi_kaffe.c:
+	Update for change to stack trace stuff.  Add missing param in
+	jvmpiRawMonitorWait.  Implement jvmpiSuspendThread and
+	jvmpiThreadHasRun.
+
+	* kaffe/kaffe/main.c:
+	Add -Xrun command line argument.
+
+	* kaffe/kaffevm/classMethod.c:
+	Move up class load event so partially loaded classes aren't
+	missing from profiles.
+
+	* kaffe/kaffevm/exception.c:
+	Call soft_exit_method() when walking up the stack.
+
+	* kaffe/kaffevm/jni.c:
+	Add JVMPI stuff to GetEnv.  Call softcall_exit_method() when a
+	void method returns.
+
+	* kaffe/kaffevm/kaffe.def:
+	Call softcall_exit_method() when a void method returns.
+
+	* kaffe/kaffevm/soft.h, kaffe/kaffevm/soft.c:
+	Add soft_enter_method/soft_exit_method to call JVMPI stuff at
+	method entry/exit.
+
+	* kaffe/kaffevm/jit3/codeproto.h, 
+	kaffe/kaffevm/jit3/icode.c:
+	Add softcall_enter_method/softcall_exit_method to call JVMPI stuff
+	at method entry/exit.
+
+	* kaffe/kaffevm/jit3/machine.h,
+	kaffe/kaffevm/jit3/machine.c:
+	Always turn on globalMethod variable, not just when
+	--with-profiling is on...  Its also needed by JVMPI.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	Fix CPU usage computation.
+
+2003-08-30  Timothy S. Stack <stack@cs.utah.edu>
+
+	* libraries/clib/io/FileDescriptor.c:
+	Use '#ifdef's around O_SYNC/O_DSYNC since they are not defined on
+	FreeBSD.
+
+2003-08-30  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/rebuildLib.in: Check if SRCDIR represents an
+	absolute path. If it is not the case concatenant a `pwd` just in front
+	of it.
+
+2003-08-30  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/bootstrap.classlist: updated to be able to run
+	KJC.
+
+	* libraries/javalib/essential.files: Added NIO classes, socket
+	classes, and some IO classes.
+
+	* libraries/javalib/profiles/default/nio.files: removed.
+
+	* libraries/javalib/profiles/default/core.files: removed classes
+	already mentioned in essential.files
+
+	* libraries/javalib/profiles/allatone/all.files:
+	regenerated.
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated.
+
+2003-08-30  Guilhem Lavaux <guilhem@kaffe.org>
+
+	IO/net subsystem merging from Classpath. KJC's compile fix for next
+	check in.
+
+	* configure.in: Added detection of fsync and ftruncate.
+	
+	* include/Makefile.am: removed older kaffe's include files about
+	net subsystem. NOINSTALL_DERIVED_HDRS keep java_net_PlainSocketImpl.h,
+	java_net_PlainDatagramSocketImpl.h, java_net_InetAddress.h,
+	
+	* include/jsyscall.h:
+	(KFSYNC, _fsync) Added a new protected syscall to synchronize files.
+	
+	* kaffe/kaffevm/systems/unix-jthreads/syscalls.c:
+	(jthreadedFSync) added.
+
+	* libraries/clib/io/FileInputStream.c,
+	libraries/clib/io/FileOutputStream.c: removed.
+
+	* libraries/clib/io/File.c, libraries/clib/io/FileDescriptor.c,
+	libraries/clib/io/RandomAccessFile.c:
+	rewritten to match Classpath's native interface.
+
+	* libraries/clib/io/Makefile.am:
+	(libio_la_SOURCES) Removed FileInputStream.c, FileOutputStream.c,
+	RandomAccessFile.c
+
+	* libraries/clib/native/ClassLoader.c:
+	(java_lang_ClassLoader_defineClass0) check whether length==0 and
+	throws InvalidClassError (truncated class) in that case.
+
+	* libraries/clib/native/UNIXProcess.c:
+	(kaffe_lang_UNIXProcess_forkAndExec) Changed "fd" to "nativeFd" for
+	catched IO filedescriptors.
+	
+	* libraries/clib/net/Makefile.am:
+	(libnet_la_SOURCES) removed NetworkInterfaceImpl.c
+
+	* libraries/clib/net/InetAddressImpl.c: rewritten to match classpath's
+	native interface.
+
+	* libraries/clib/net/NetworkInterfaceImpl.c: removed.
+
+	* libraries/clib/net/NetworkInterface.c: rewritten.
+
+	* libraries/clib/net/PlainDatagramSocketImpl.c,
+	libraries/clib/net/PlainSocketImpl.c: adapted to classpath
+	structure. Kaffe's implementation is kept but external references have
+	changed.
+
+	* config/config.h.in, configure, include/Makefile.in,
+	libraries/clib/io/Makefile.in, libraries/clib/net/Makefile.in,
+	libraries/javalib/Klasses.jar.bootstrap,
+	libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	regenerated.
+
+	* libraries/javalib/bootstrap.classlist: Removed
+	java/net/NativeInetAddressImpl, java/net/InetAddressImpl.
+	Added gnu/java/io/PlatformHelper.
+	
+	* libraries/javalib/essential.files: Removed java/net/InetAddressImpl,
+	java/net/NativeInetAddressImpl.
+
+	* libraries/javalib/java/io/ByteArrayInputStream.java,
+	libraries/javalib/java/io/ByteArrayOutputStream.java,
+	libraries/javalib/java/io/Externalizable.java,
+	libraries/javalib/java/io/File.java,
+	libraries/javalib/java/io/FileDescriptor.java,
+	libraries/javalib/java/io/FileInputStream.java,
+	libraries/javalib/java/io/FileOutputStream.java,
+	libraries/javalib/java/io/FileReader.java,
+	libraries/javalib/java/io/FileWriter.java,
+	libraries/javalib/java/io/InputStream.java,
+	libraries/javalib/java/io/ObjectInputStream.java,
+	libraries/javalib/java/io/OutputStream.java,
+	libraries/javalib/java/io/PipedInputStream.java,
+	libraries/javalib/java/io/PipedOutputStream.java,
+	libraries/javalib/java/io/PipedReader.java,
+	libraries/javalib/java/io/PipedWriter.java,
+	libraries/javalib/java/io/RandomAccessFile.java,
+	libraries/javalib/java/io/StringBufferInputStream.java,
+	libraries/javalib/java/io/StringReader.java,
+	libraries/javalib/java/io/StringWriter.java,
+	libraries/javalib/java/net/DatagramPacket.java
+	libraries/javalib/java/net/DatagramSocketImpl.java
+	libraries/javalib/java/net/DatagramSocketImplFactory.java
+	libraries/javalib/java/net/InetAddress.java
+	libraries/javalib/java/net/MulticastSocket.java
+	libraries/javalib/java/net/DatagramSocket.java
+	libraries/javalib/java/net/NetworkInterface.java,
+	libraries/javalib/java/net/ServerSocket.java,
+	libraries/javalib/java/net/Socket.java,
+	libraries/javalib/java/net/SocketImpl.java,
+	libraries/javalib/java/net/SocketImplFactory.java,
+	libraries/javalib/java/net/SocketInputStream.java,
+	libraries/javalib/java/net/SocketOptions.java,
+	libraries/javalib/java/net/SocketOutputStream.java,
+	libraries/javalib/java/net/SocketPermission.java:
+	Imported from GNU Classpath + fixes to pass regression tests.
+	
+	* libraries/javalib/java/net/PlainSocketImpl.java:
+	(sendUrgentData) Added dummy method.
+	(connect) Added timeout conversion for kaffe.
+
+	* libraries/javalib/java/net/PlainDatagramSocketImpl.java:
+	(sendUrgentData) Added dummy method.
+	(setTimeToLive) changed the signature to match Java spec.
+	(PlainDatagramSocketImpl) Construct fd.
+	
+	
+	* libraries/javalib/java/net/DNSJavaInetAddressImpl.java,
+	libraries/javalib/java/net/InetAddressImpl.java,
+	libraries/javalib/java/net/NativeInetAddressImpl.java
+	libraries/javalib/java/net/NetworkInterfaceImpl.java: removed.
+
+	* libraries/javalib/profiles/default/core.files: Removed
+	java/net/NetworkInterfaceImpl, kaffe/net/DefaultSocketImplFactory,
+	kaffe/net/DefaultDatagramSocketImplFactory.
+
+	* libraries/javalib/profiles/default/allatonce/all.files: Regenerated.
+
+2003-08-29  Jim Pick  <jim@kaffe.org>
+
+	* libraries/javalib/java/io/RandomAccessFile.java:
+	Add unimplemented java.io.RandomAccessFile.setLength(int) method
+	(need for compiling ant from CVS).
+
+2003-08-29  Jim Pick  <jim@kaffe.org>
+
+	* kaffe/kaffe/main.c:
+	Add support for -Xbootclasspath/p: option.  Lazily not implementing
+	-Xbootclasspath: and -Xbootclasspath/a: for now.
+
+2003-08-28  Herve Roussain <Herve.Roussain@univ-ubs.fr>
+
+	* kaffe/scripts/rmic.in:
+	Add kaffe's bin directory to PATH variable, in order to be able
+	to run rmic even if kjc is not in the path.
+
+2003-08-27  Jim Pick  <jim@kaffe.org>
+
+	* configure.in:
+	Don't automatically default to --enable-pure-java-math if gmp
+	is not found.
+
+	* configure:
+	Regenerated.
+
+2003-08-27  Jim Pick  <jim@kaffe.org>
+
+	* README, RELEASE-NOTES, configure.in:
+	Oops, it looks like I bumped the version number on the
+	HEAD branch instead of the Release_1_1_1_Branch.  Revert.
+	
+	* configure:
+	Regenerated.
+
+2003-08-27  Jim Pick  <jim@kaffe.org>
+
+	* libraries/javalib/javax/xml/transform/sax/SAXSource.java:
+	Handle case where sourceToInputSource() is called with an
+	existing SAXSource.
+
+2003-08-27  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffe/main.c:
+	(options) fix parsing of -X<something><size> style options 
+
+	* kaffe/kaffevm/jni.c: include registers.h to fix compilation
+	problems for jit engine
+
+	* libraries/javalib/java/lang/Class.java:
+	(lookupMethod) don't crash if parameterTypes is null
+
+	* test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java:
+	adjust expected output to java.lang.Class changes
+
+	* config/arm/jit.h:
+	(FRAMEOBJECT) adapted to changes in exception.c to fix
+	compilation problems
+
+2003-08-29  Jim Pick  <jim@kaffe.org>
+
+	* libraries/javalib/java/text/DecimalFormat.java:
+	Added import java.util.Currency to fix compile.
+
+2003-08-28  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/util/Currency.java: new class.
+	
+	* libraries/javalib/java/text/DecimalFormatSymbols.java:
+	(locale) new field.
+	(readObject) check for version number and fix fields accordingly.
+	(getCurrency) new method.
+	(setCurrency) new method.
+
+	* libraries/javalib/java/text/NumberFormat.java:
+	(getCurrency) new method.
+	(setCurrency) new method. 
+
+	* libraries/javalib/java/text/DecimalFormat.java:
+	(getCurrency) new method.
+	(setCurrency) new method. 
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	regenerated.
+
+2003-08-28  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* config/m68k/a-ux/jit-md.h, config/m68k/netbsd1/jit-md.h,
+	config/m68k/linux/jit-md.h, config/m68k/openbsd2/jit-md.h,
+	config/m68k/a-ux/md.h, config/m68k/netbsd1/md.h,
+	config/m68k/linux/md.h, config/m68k/openbsd2/md.h:
+	Defined SIGNAL_ARGS using informations from EXCEPTIONPROTO.
+	Redefined EXCEPTIONPROTO as SIGNAL_ARGS(sig, ctx)
+	Moved some code from jit-md.h to md.h and defined
+	SIGNAL_CONTEXT_POINTER, GET_SIGNAL_CONTEXT_POINTER, SIGNAL_PC
+	wherever possible.
+
+2003-08-28  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* config/sparc/bsdi3/md.h, config/sparc/linux/md.h,
+	config/sparc/netbsd1/md.h, config/sparc/nextstep3/md.h,
+	config/sparc/openbsd2/md.h, config/sparc/solaris2/md.h,
+	config/sparc/sunos4/md.h, config/sparc/uxpds/md.h,
+	config/sparc/bsdi3/jit-md.h, config/sparc/linux/jit-md.h,
+	config/sparc/netbsd1/jit-md.h, config/sparc/nextstep3/jit-md.h,
+	config/sparc/openbsd2/jit-md.h, config/sparc/solaris2/jit-md.h,
+	config/sparc/sunos4/jit-md.h, config/sparc/uxpds/jit-md.h:
+	Defined SIGNAL_ARGS using informations from EXCEPTIONPROTO.
+	Redefined EXCEPTIONPROTO as SIGNAL_ARGS(sig, ctx)
+	Moved some code from jit-md.h to md.h and defined
+	SIGNAL_CONTEXT_POINTER, GET_SIGNAL_CONTEXT_POINTER, SIGNAL_PC.
+
+2003-08-28  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* config/i386/beos/md.h, config/i386/bsdi/md.h,
+	config/i386/cygwin32/md.h, config/i386/dgux/md.h,
+	config/i386/freebsd2/md.h, config/i386/gnu/md.h,
+	config/i386/linux/md.h, config/i386/netbsd1/md.h,
+	config/i386/nextstep3/md.h, config/i386/openbsd2/md.h,
+	config/i386/oskit/md.h, config/i386/qnx/md.h,
+	config/i386/sco3.2v5/md.h, config/i386/solaris2/md.h,
+	config/i386/univel_svr4/md.h, config/i386/win32/md.h,
+	config/i386/beos/jit-md.h, config/i386/bsdi/jit-md.h,
+	config/i386/cygwin32/jit-md.h, config/i386/dgux/jit-md.h,
+	config/i386/freebsd2/jit-md.h, config/i386/gnu/jit-md.h,
+	config/i386/linux/jit-md.h, config/i386/netbsd1/jit-md.h,
+	config/i386/nextstep3/jit-md.h, config/i386/openbsd2/jit-md.h,
+	config/i386/oskit/jit-md.h, config/i386/qnx/jit-md.h,
+	config/i386/sco3.2v5/jit-md.h, config/i386/solaris2/jit-md.h,
+	config/i386/univel_svr4/jit-md.h, config/i386/win32/jit-md.h:
+	Defined SIGNAL_ARGS using informations from EXCEPTIONPROTO.
+	Redefined EXCEPTIONPROTO as SIGNAL_ARGS(sig, ctx)
+	Moved some code from jit-md.h to md.h and defined
+	SIGNAL_CONTEXT_POINTER, GET_SIGNAL_CONTEXT_POINTER, SIGNAL_PC
+	wherever possible (not in win32).
+	CygWin32 fails completely for the moment.
+
+2003-08-26  Bernhard Rosenkraenzer <bero@arklinux.org>
+
+	* gwqt.m4:
+	If both qt and qt-mt are installed, kaffe uses qt
+	unconditionally. Preferring qt-mt is preferrable because
+	that's what KDE uses and therefore it's usually in memory [I
+	assume that people who want --with-awt=qt are mostly KDE users]
+
+	* configure:
+	Regenerated.
+	
+2003-08-26  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/clib/awt/qt/Makefile.am:
+	(AM_CPPFLAGS) new variable. Added generated include files.
+
+	* libraries/clib/awt/qt/Makefile.in:
+	Regenerated.
+	
+2003-08-26  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/text/DecimalFormat.java:
+	(formatToCharacterAttribute) new method.
+	(formatInternal) renamed from format(double) and added attributes
+	handling
+	(addAttribute) added a final method to add attributes in vectors
+	(format(double)) use formatInternal
+
+	* libraries/javalib/java/text/NumberFormat.java,
+	libraries/javalib/java/text/MessageFormat.java,
+	libraries/javalib/java/text/DateFormat.java,
+	libraries/javalib/java/text/DecimalFormat.java:
+	Added serialVersionUID to Field subclasses.
+
+	* libraries/javalib/java/text/RuleBasedCollator.java:
+	Removed an extra unused state of CollationElement.
+
+2003-08-26  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/text/SimpleDateFormat.java:
+	(formatWithAttribute) Added a if branch condition when we are not
+	setting attributes for an iterator.
+
+2003-08-25  Mark Wielaard  <mark@klomp.org>
+
+        * include/jni_cpp.h (JNIEnv::CheckException): Change to
+        ExceptionCheck.
+
+	Reported by:	Chris Halls <halls@debian.org>
+			Bernhard Rosenkraenzer <bero@arklinux.org>
+
+2003-08-24  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jqueue.c,
+	kaffe/kaffevm/systems/unix-jthreads/jqueue.h: Loads of compilation
+	fixes. (Sorry I have not checked what I have commited).
+
+	* kaffe/kaffevm/thread.c: Added thread_realloc.
+	(initNativeThreads) Add thread_realloc in the parameter list to
+	jthread_init
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.h,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.h:
+	(jthread_init) added a new parameter _reallocator to be able to
+	reallocate some memory.
+
+2003-08-24  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/essential.files: Added
+	AttributedCharacterIterator.java and CharacterIterator.java for KJC.
+
+	* libraries/javalib/java/text/DecimalFormat.java: Fixed a typo.
+
+	* libraries/javalib/java/text/FieldPosition.java:
+	(getFieldAttribute) added
+	(FieldPosition) Added one constructor and implemented the other one.
+
+2003-08-24  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* config/i386/openbsd2/md.h: Added signal defines for profiler in
+	jthreads.
+
+	* libraries/javalib/java/text/Format.java,
+	libraries/javalib/java/text/DateFormat.java,
+	libraries/javalib/java/text/NumberFormat.java,
+	libraries/javalib/java/text/SimpleDateFormat.java,
+	libraries/javalib/java/text/MessageFormat.java,
+	libraries/javalib/java/text/FormatCharacterIterator.java:
+	Implemented field description of returned formatted string.
+	Added object constants and constant resolution for all format types.
+	Added an AttributedCharacterIterator implementation called
+	FormatCharacterIterator (package protected).
+
+	* kaffe/kaffevm/systems/unix-jthreads/jqueue.c,
+	kaffe/kaffevm/systems/unix-jthreads/jqueue.h:
+	Implemented a variable node pool allocator for thread queues. The pool
+	size increase by step of DEFAULT_NUMBER_OF_NODES_IN_POOL.
+	(KaffeCreatePool) allocate one pool
+	(KaffePoolNewNode) build a new pool if the number of free nodes is
+	insufficient
+	(KaffePoolReleaseNode) deleted the assertion which was checking the
+	owner of the node. As nodes may be stored in different pools this may
+	not be achieved quickly.
+	(KaffeDestroyPool) destroy all pools
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	regenerated.
+
+2003-08-24  Jim Pick  <jim@kaffe.org>
+
+	* include/kaffe/.cvsignore,
+	kaffe/jvmpi/.cvsignore,
+	kaffe/scripts/.cvsignore,
+	libltdl/.cvsignore,
+	libraries/clib/awt/qt/.cvsignore,
+	libraries/extensions/sound/.cvsignore,
+	libraries/extensions/sound/alsa/.cvsignore,
+	libraries/extensions/sound/common/.cvsignore,
+	libraries/extensions/sound/esd/.cvsignore,
+	replace/.cvsignore,
+	test/internal/.cvsignore:
+	Update .cvsignore file for building in-tree.
+
+2003-08-23  Jim Pick  <jim@kaffe.org>
+
+	* test/regression/TestScript.in:
+	Fix for breakage introduced by killer process - need to explicitly
+	pipe standard input into test process.  The "wc.java" test was
+	broken by this.
+
+	Reported by: Ito Kazumitsu <kas@maczuka.gcd.org>
+
+2003-08-22  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* gnu/java/lang/reflect/TypeSignature.java:
+	(getClassForEncoding) added new method that accepts a class loader
+	and uses it to load and link the requested class.
+	
+	* java/io/ObjectInputStream.java:
+	(readClassDescriptor) Field types are passed as signatures, not
+	class names. That means it's not such a good idea to pass them
+	to Class.forName directly. 
+	(resolveClass) use Class.forName with given class loader. removed
+	resolveClass(String).
+	(currentLoader) new helper method.
+	
+	* java/io/ObjectStreamField.java:
+	(ObjectStreamField) new constructor that accepts a class loader
+	parameter and uses it load the requested type.
+
+	* java/rmi/server/RMIClassLoader.java:
+	(loadClass) link classes that get loaded, otherwise kaffe crashes.
+	
+2003-08-22  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/mem/gc-mem.c:
+	(gc_heap_free) properly free empty primitive blocks
+
+	* kaffe/kaffevm/mem/gc-incremental.c:
+	(gcWalkMemory, startGC, gcMan, finishGC,gcMalloc,createGC)
+	manage objects that have a finalizer and objects that don't
+	have one in different white and black lists
+	
+2003-08-22  Dalibor Topic <robilad@kaffe.org>,
+
+	* libraries/javalib/Klasses.jar.bootstrap:
+	Regenerated to fix build problems.
+
+	Reported by: Ito Kazumitsu <kas@maczuka.gcd.org>
+
+2003-08-21  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/gnu/java/rmi/RMIVoidValue.java: new file for a
+	class representing a void return.
+
+	* libraries/javalib/gnu/java/rmi/server/UnicastRemoteCall.java:
+	(DummyOutputStream) add a boolean before each written field to
+	know whether it is a primitive.
+	(releaseOutputStream) flush parameters at write time
+	
+	* libraries/javalib/gnu/java/rmi/server/UnicastServerRef.java:
+	(incomingMessageCall) return a RMIVoidValue if no value is to be
+	returned.
+
+	* libraries/javalib/gnu/java/rmi/server/UnicastServer.java:
+	(incomingMessageCall) do not write a returned object if it is
+	a RMIVoidValue.
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in,
+	libraries/javalib/profiles/default/rmi.files,
+	libraries/javalib/profiles/allatonce/all.files:
+	added RMIVoidValue.java and regenerated
+	
+2003-08-21  Dalibor Topic <robilad@kaffe.org>,
+            Helmer Kraemer  <hkraemer@freenet.de>
+
+	Final fix for RMI getStarted example from
+	http://java.sun.com/j2se/1.4.2/docs/guide/rmi/getstart.doc.html
+	
+	* libraries/javalib/kaffe/applet/AppletViewer.java:
+	(createApplet) set context class loader of current thread to
+	applet class loader.
+	
+2003-08-21  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/clib/native/Class.c:
+	(java_lang_Class_getMethod0) changed to return NULL on a failed
+	lookup. Added documentation.
+
+	* libraries/javalib/java/lang/Class.java:
+	(getDeclaredMethod, getMethod) use lookupMethod.
+	(lookupMethod) new helper method. Throw an exception if
+	java_lang_Class_getMethod0 returns null. Improved exception
+	message to include class and parameter types of not found method.
+
+	* test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java:
+	Fixed line numbers in expected results.
+	
+2003-08-20  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/kaffe/net/DefaultURLStreamHandlerFactory.java:
+	(tvtName) removed.
+	(createURLStreamHandler) don't try to load Transvirtual's classes.
+	
+2003-08-20  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/gnu/java/rmi/server/UnicastConnectionManager.java:
+	(startScavenger) set the client connection manager to daemon state
+	because it may block clients until TIMEOUT is reached when they are
+	exiting.
+
+2003-08-20  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/rmi/Naming.java:
+	(lookup,bind,rebind) check if the first character of the filename
+	returned by URL.getFile() is a '/', only if it is the case we cut
+	this first character and call the registry with the good name.
+
+2003-08-20  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/io/ObjectInputStream.java:
+	(readClassDescriptor) call resolveClass(ObjectStreamClass)
+	at the right moment ant not resolveClass(String) at the top of
+	the method. This could cause problems in RMI.
+
+2003-08-19  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/text/RuleBasedCollator.java:
+	implemented full rule parsing (near full reimplementation).
+	updated documentation.
+
+	* libraries/javalib/java/text/CollationElementIterator.java:
+	implemented full behaviour. getMaxExpansion is still missing
+	as its functionality is not clear for the moment.
+	
+2003-08-18  Dalibor Topic <robilad@kaffe.org>
+
+	Merged in GNU Classpath's RMI implementation.
+	
+	* include/Makefile.am:
+	Removed commented out kaffe_rmi_server_RMIHashes.h.
+	
+        * include/Makefile.in,
+        kaffe/Makefile.in,
+        kaffe/kaffe/Makefile.in,
+        kaffe/scripts/Makefile.in,
+        kaffe/scripts/compat/Makefile.in,
+        libraries/clib/native/Makefile.in,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        libraries/javalib/profiles/allatonce/all.files,
+        libraries/javalib/profiles/default/rmi.files,
+        test/internal/Makefile.in:
+	Regenerated.
+
+        * kaffe/scripts/rmic.in:
+	Execute gnu.java.rmi.rmic.RMI with kjc as the default compiler.
+	
+        * kaffe/scripts/rmiregistry.in:
+	Execute gnu.java.rmi.registry.RegistryImpl.
+	
+        * libraries/clib/native/Makefile.am:
+	(LANG_SRCS) Removed RMIHashes.c.
+
+        * libraries/clib/native/RMIHashes.c:
+	Removed. No longer necessary, since RMI hashes are now computed by
+	pure java code.
+	
+        * libraries/javalib/gnu/java/rmi/RMIMarshalledObjectInputStream.java,
+        libraries/javalib/gnu/java/rmi/RMIMarshalledObjectOutputStream.java,
+        libraries/javalib/gnu/java/rmi/dgc/DGCImpl.java,
+        libraries/javalib/gnu/java/rmi/dgc/DGCImpl_Skel.java,
+        libraries/javalib/gnu/java/rmi/dgc/DGCImpl_Stub.java,
+        libraries/javalib/gnu/java/rmi/registry/RegistryImpl.java,
+        libraries/javalib/gnu/java/rmi/registry/RegistryImpl_Skel.java,
+        libraries/javalib/gnu/java/rmi/registry/RegistryImpl_Stub.java,
+        libraries/javalib/gnu/java/rmi/rmic/Compile_gcj.java,
+        libraries/javalib/gnu/java/rmi/rmic/Compiler.java,
+        libraries/javalib/gnu/java/rmi/rmic/CompilerProcess.java,
+        libraries/javalib/gnu/java/rmi/rmic/RMIC.java,
+        libraries/javalib/gnu/java/rmi/rmic/RMICException.java,
+        libraries/javalib/gnu/java/rmi/rmic/TabbedWriter.java,
+        libraries/javalib/gnu/java/rmi/server/ConnectionRunnerPool.java,
+        libraries/javalib/gnu/java/rmi/server/ProtocolConstants.java,
+        libraries/javalib/gnu/java/rmi/server/RMIDefaultSocketFactory.java,
+        libraries/javalib/gnu/java/rmi/server/RMIHashes.java,
+        libraries/javalib/gnu/java/rmi/server/RMIObjectInputStream.java,
+        libraries/javalib/gnu/java/rmi/server/RMIObjectOutputStream.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastConnection.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastConnectionManager.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastRef.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastRemoteCall.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastRemoteStub.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastServer.java,
+        libraries/javalib/gnu/java/rmi/server/UnicastServerRef.java:
+	New files merged in from GNU Classpath.
+
+        * libraries/javalib/gnu/java/rmi/rmic/Compile_jikes.java,
+        libraries/javalib/gnu/java/rmi/rmic/Compile_kjc.java:
+	New files.
+
+
+        * libraries/javalib/java/rmi/MarshalledObject.java,
+        libraries/javalib/java/rmi/Naming.java,
+        libraries/javalib/java/rmi/Remote.java,
+        libraries/javalib/java/rmi/activation/Activatable.java,
+        libraries/javalib/java/rmi/activation/ActivationDesc.java,
+        libraries/javalib/java/rmi/activation/ActivationGroup.java,
+        libraries/javalib/java/rmi/activation/ActivationGroupDesc.java,
+        libraries/javalib/java/rmi/activation/ActivationGroupID.java,
+        libraries/javalib/java/rmi/activation/ActivationID.java,
+        libraries/javalib/java/rmi/activation/ActivationInstantiator.java,
+        libraries/javalib/java/rmi/activation/ActivationMonitor.java,
+        libraries/javalib/java/rmi/activation/ActivationSystem.java,
+        libraries/javalib/java/rmi/activation/Activator.java,
+        libraries/javalib/java/rmi/dgc/DGC.java,
+        libraries/javalib/java/rmi/dgc/Lease.java,
+        libraries/javalib/java/rmi/dgc/VMID.java,
+        libraries/javalib/java/rmi/registry/LocateRegistry.java,
+        libraries/javalib/java/rmi/registry/Registry.java,
+        libraries/javalib/java/rmi/registry/RegistryHandler.java,
+        libraries/javalib/java/rmi/server/LoaderHandler.java,
+        libraries/javalib/java/rmi/server/LogStream.java,
+        libraries/javalib/java/rmi/server/ObjID.java,
+        libraries/javalib/java/rmi/server/Operation.java,
+        libraries/javalib/java/rmi/server/RMIClassLoader.java,
+        libraries/javalib/java/rmi/server/RMIClientSocketFactory.java,
+        libraries/javalib/java/rmi/server/RMIFailureHandler.java,
+        libraries/javalib/java/rmi/server/RMIServerSocketFactory.java,
+        libraries/javalib/java/rmi/server/RMISocketFactory.java,
+        libraries/javalib/java/rmi/server/RemoteCall.java,
+        libraries/javalib/java/rmi/server/RemoteObject.java,
+        libraries/javalib/java/rmi/server/RemoteRef.java,
+        libraries/javalib/java/rmi/server/RemoteServer.java,
+        libraries/javalib/java/rmi/server/RemoteStub.java,
+        libraries/javalib/java/rmi/server/ServerRef.java,
+        libraries/javalib/java/rmi/server/Skeleton.java,
+        libraries/javalib/java/rmi/server/UID.java,
+        libraries/javalib/java/rmi/server/UnicastRemoteObject.java,
+        libraries/javalib/java/rmi/server/Unreferenced.java:
+	Replaced by implementation from GNU Classpath.
+	
+        * libraries/javalib/kaffe/rmi/dgc/DGCImpl.java,
+        libraries/javalib/kaffe/rmi/dgc/DGCImpl_Skel.java,
+        libraries/javalib/kaffe/rmi/dgc/DGCImpl_Stub.java,
+        libraries/javalib/kaffe/rmi/registry/RegistryImpl.java,
+        libraries/javalib/kaffe/rmi/registry/RegistryImpl_Skel.java,
+        libraries/javalib/kaffe/rmi/registry/RegistryImpl_Stub.java,
+        libraries/javalib/kaffe/rmi/rmic/RMIC.java,
+        libraries/javalib/kaffe/rmi/rmic/TabbedWriter.java,
+        libraries/javalib/kaffe/rmi/server/ProtocolConstants.java,
+        libraries/javalib/kaffe/rmi/server/RMIDefaultSocketFactory.java,
+        libraries/javalib/kaffe/rmi/server/RMIHashes.java,
+        libraries/javalib/kaffe/rmi/server/RMIObjectInputStream.java,
+        libraries/javalib/kaffe/rmi/server/RMIObjectOutputStream.java,
+        libraries/javalib/kaffe/rmi/server/UnicastConnection.java,
+        libraries/javalib/kaffe/rmi/server/UnicastConnectionManager.java,
+        libraries/javalib/kaffe/rmi/server/UnicastRef.java,
+        libraries/javalib/kaffe/rmi/server/UnicastRemoteCall.java,
+        libraries/javalib/kaffe/rmi/server/UnicastRemoteStub.java,
+        libraries/javalib/kaffe/rmi/server/UnicastServer.java,
+        libraries/javalib/kaffe/rmi/server/UnicastServerRef.java,
+        libraries/javalib/kaffe/tools/compiler/Compiler.java,
+        libraries/javalib/kaffe/tools/compiler/Compiler_default.java,
+        libraries/javalib/kaffe/tools/compiler/Compiler_jikes.java,
+        libraries/javalib/kaffe/tools/compiler/Compiler_kjc.java,
+        libraries/javalib/kaffe/tools/compiler/Compiler_pizza.java:
+	Removed.
+	
+2003-08-16  Jim Pick  <jim@kaffe.org>
+
+	* test/regression/TestScript.in:
+	Add TIMEOUT variable and process to kill hung tests.
+
+	* test/regression/Makefile.am:
+	Suppress shell job control messages caused by killer
+	process.
+
+	* test/regression/Makefile.in:
+	Regenerated.
+
+2003-08-16  Jim Pick  <jim@kaffe.org>
+
+	* test/regression/TestScript.in:
+	Remove -noverify, since it's turned on globally now.
+
+2003-08-16  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/gnu/java/text/BaseBreakIterator.java,
+	libraries/gnu/java/text/CharacterBreakIterator.java,
+	libraries/gnu/java/text/LineBreakIterator.java,
+	libraries/gnu/java/text/SentenceBreakIterator.java,
+	libraries/gnu/java/text/WordBreakIterator.java:
+	Added some missing files.
+
+	* libraries/javalib/bootstrap.classlist: Added java/util/Date.class
+	and java/text/DecimalFormatSymbols for "-v" in KJC.
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated.
+
+2003-08-16  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* java/text/Annotation.java,
+	java/text/AttributedCharacterIterator.java,
+	java/text/AttributedStringIterator.java,
+	java/text/AttributedString.java, java/text/BreakIterator.java,
+	java/text/CharacterIterator.java, java/text/ChoiceFormat.java,
+	java/text/CollationElementIterator.java, java/text/CollationKey.java,
+	java/text/Collator.java, java/text/DateFormat.java,
+	java/text/DateFormatSymbols.java, java/text/DecimalFormat.java,
+	java/text/DecimalFormatSymbols.java, java/text/FieldPosition.java,
+	java/text/Format.java, java/text/MessageFormat.java,
+	java/text/NumberFormat.java, java/text/ParseException.java,
+	java/text/ParsePosition.java, java/text/RuleBasedCollator.java,
+	java/text/SimpleDateFormat.java, java/text/SimpleLineIterator.java,
+	java/text/SimpleSentenceIterator.java,
+	java/text/SimpleWordIterator.java,
+	java/text/StringCharacterIterator.java:
+	Merged java/text from Classpath. Plus two fixes in DecimalFormat and
+	in SimpleDateFormat.
+	(SimpleDateFormat.parse) we should protect internal calendar from
+	modification by the parser.
+	(DecimalFormat.format) exponential format may have a fractional
+	part
+	(DecimalFormat.set*Digits) Use super to ensure minimum and maximum
+	are updated synchronously.
+
+	* libraries/javalib/java/util/GregorianCalendar.java: imported
+	(getDate) 12:00 (AM/PM) fix
+
+	* libraries/javalib/java/util/Locale.java,
+	libraries/javalib/java/util/TimeZone.java,
+	libraries/javalib/java/util/SimpleTimeZone.java:
+	imported.
+
+	* libraries/javalib/bootstrap.classlist: added TimeZone to
+	get the corresponding header file.
+
+	* libraries/javalib/essential.files: Replaced
+	MessageFormat$MessagePatternDescription by MessageFormatElement.
+	
+	* libraries/javalib/gnu/java/locale/LocaleInformation* (too many
+	to list): Added locale information from classpath.
+	
+	* libraries/javalib/profiles/default/rest.files:
+	Added gnu/java/locale/LocaleInformation*
+
+	* libraries/clib/native/TimeZone.c: Added to detect currently active
+	timezone.
+
+	* libraries/clib/native/Makefile.am:
+	(UTIL_SRCS) added TimeZone.c
+
+	* include/Makefile.am:
+	(NOINSTALL_DERIVED_HDRS) added java_util_TimeZone.h
+
+	* libraries/javalib/kaffe/text/: Removed.
+
+	* libaries/javalib/profiles/allatonce/all.files: Regenerated from
+	default. (Hope it is the way of making it)
+
+	* libraries/javalib/Makefile.am.in: added properties file in
+	gnu/java/locale and updated bundle packaging.
+
+	* libraries/javalib/Makefile.am: regenerated.
+	
+	* include/Makefile.in, libraries/javalib/Makefile.in,
+	libraries/clib/native/Makefile.in: regenerated.
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated.
+
+2003-08-15  Dalibor Topic <robilad@kaffe.org>
+
+	Merged in javax.net.ssl implementation JESSIE by Casey Marshall
+	<rsdio@metastatic.org> available under GPL + linking exception
+	from http://metastatic.org/source/jessie
+	
+	* kaffe/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	test/internal/Makefile.in:
+	Regenerated.
+	
+	* libraries/javalib/gnu/crypto/cipher/IBlockCipher.java,
+	libraries/javalib/gnu/crypto/hash/IMessageDigest.java,
+	libraries/javalib/gnu/crypto/mac/IMac.java,
+	libraries/javalib/gnu/crypto/mode/IMode.java,
+	libraries/javalib/gnu/crypto/prng/IRandom.java,
+	libraries/javalib/gnu/crypto/prng/LimitReachedException.java:
+	New files from GNU crypto.
+
+	* libraries/javalib/gnu/java/io/ASN1ParsingException.java,
+	libraries/javalib/gnu/java/security/OID.java,
+	libraries/javalib/gnu/java/security/der/BitString.java,
+	libraries/javalib/gnu/java/security/der/DER.java,
+	libraries/javalib/gnu/java/security/der/DEREncodingException.java,
+	libraries/javalib/gnu/java/security/der/DERReader.java,
+	libraries/javalib/gnu/java/security/der/DERValue.java,
+	libraries/javalib/gnu/java/security/der/DERWriter.java,
+	libraries/javalib/gnu/java/security/x509/X500DistinguishedName.java,
+	libraries/javalib/java/awt/AlphaComposite.java,
+	libraries/javalib/java/awt/ColorPaintContext.java,
+	libraries/javalib/java/awt/ComponentOrientation.java,
+	libraries/javalib/java/awt/GridBagLayoutInfo.java,
+	libraries/javalib/java/awt/Robot.java,
+	libraries/javalib/java/awt/TexturePaint.java,
+	libraries/javalib/java/awt/dnd/peer/DropTargetPeer.java,
+	libraries/javalib/java/awt/event/InvocationEvent.java,
+	libraries/javalib/java/awt/font/GraphicAttribute.java,
+	libraries/javalib/java/awt/font/ImageGraphicAttribute.java,
+	libraries/javalib/java/awt/font/LineBreakMeasurer.java,
+	libraries/javalib/java/awt/font/LineMetrics.java,
+	libraries/javalib/java/awt/font/NumericShaper.java,
+	libraries/javalib/java/awt/font/ShapeGraphicAttribute.java,
+	libraries/javalib/java/awt/font/TextAttribute.java,
+	libraries/javalib/java/awt/font/TextLayout.java,
+	libraries/javalib/java/awt/font/TextMeasurer.java,
+	libraries/javalib/java/awt/font/TransformAttribute.java,
+	libraries/javalib/java/awt/peer/ButtonPeer.java,
+	libraries/javalib/java/awt/peer/CanvasPeer.java,
+	libraries/javalib/java/awt/peer/CheckboxMenuItemPeer.java,
+	libraries/javalib/java/awt/peer/CheckboxPeer.java,
+	libraries/javalib/java/awt/peer/ChoicePeer.java,
+	libraries/javalib/java/awt/peer/ContainerPeer.java,
+	libraries/javalib/java/awt/peer/DialogPeer.java,
+	libraries/javalib/java/awt/peer/FileDialogPeer.java,
+	libraries/javalib/java/awt/peer/FramePeer.java,
+	libraries/javalib/java/awt/peer/LabelPeer.java,
+	libraries/javalib/java/awt/peer/ListPeer.java,
+	libraries/javalib/java/awt/peer/MenuBarPeer.java,
+	libraries/javalib/java/awt/peer/MenuItemPeer.java,
+	libraries/javalib/java/awt/peer/MenuPeer.java,
+	libraries/javalib/java/awt/peer/PanelPeer.java,
+	libraries/javalib/java/awt/peer/PopupMenuPeer.java,
+	libraries/javalib/java/awt/peer/RobotPeer.java,
+	libraries/javalib/java/awt/peer/ScrollPanePeer.java,
+	libraries/javalib/java/awt/peer/ScrollbarPeer.java,
+	libraries/javalib/java/awt/peer/TextAreaPeer.java,
+	libraries/javalib/java/awt/peer/TextComponentPeer.java,
+	libraries/javalib/java/awt/peer/TextFieldPeer.java,
+	libraries/javalib/java/beans/beancontext/BeanContextServicesSupport.java,
+	libraries/javalib/java/beans/beancontext/BeanContextSupport.java,
+	libraries/javalib/java/rmi/server/RMIClassLoaderSpi.java,
+	libraries/javalib/java/security/cert/CRLSelector.java,
+	libraries/javalib/java/security/cert/CertPathBuilder.java,
+	libraries/javalib/java/security/cert/CertPathBuilderResult.java,
+	libraries/javalib/java/security/cert/CertPathBuilderSpi.java,
+	libraries/javalib/java/security/cert/CertPathParameters.java,
+	libraries/javalib/java/security/cert/CertPathValidator.java,
+	libraries/javalib/java/security/cert/CertPathValidatorResult.java,
+	libraries/javalib/java/security/cert/CertPathValidatorSpi.java,
+	libraries/javalib/java/security/cert/CertSelector.java,
+	libraries/javalib/java/security/cert/CertStore.java,
+	libraries/javalib/java/security/cert/CertStoreParameters.java,
+	libraries/javalib/java/security/cert/CertStoreSpi.java,
+	libraries/javalib/java/security/cert/CollectionCertStoreParameters.java,
+	libraries/javalib/java/security/cert/LDAPCertStoreParameters.java,
+	libraries/javalib/java/security/cert/PKIXBuilderParameters.java,
+	libraries/javalib/java/security/cert/PKIXCertPathBuilderResult.java,
+	libraries/javalib/java/security/cert/PKIXCertPathChecker.java,
+	libraries/javalib/java/security/cert/PKIXCertPathValidatorResult.java,
+	libraries/javalib/java/security/cert/PKIXParameters.java,
+	libraries/javalib/java/security/cert/PolicyNode.java,
+	libraries/javalib/java/security/cert/PolicyQualifierInfo.java,
+	libraries/javalib/java/security/cert/TrustAnchor.java,
+	libraries/javalib/java/security/spec/PSSParameterSpec.java,
+	libraries/javalib/java/security/spec/RSAMultiPrimePrivateCrtKeySpec.java,
+	libraries/javalib/javax/security/cert/Certificate.java,
+	libraries/javalib/javax/security/cert/CertificateEncodingException.java,
+	libraries/javalib/javax/security/cert/CertificateException.java,
+	libraries/javalib/javax/security/cert/CertificateExpiredException.java,
+	libraries/javalib/javax/security/cert/CertificateNotYetValidException.java,
+	libraries/javalib/javax/security/cert/CertificateParsingException.java,
+	libraries/javalib/javax/security/cert/X509CertBridge.java,
+	libraries/javalib/javax/security/cert/X509Certificate.java:
+	New files from GNU Classpath.
+
+	* libraries/javalib/javax/net/ServerSocketFactory.java,
+	libraries/javalib/javax/net/SocketFactory.java,
+	libraries/javalib/javax/net/VanillaServerSocketFactory.java,
+	libraries/javalib/javax/net/VanillaSocketFactory.java,
+	libraries/javalib/javax/net/ssl/HandshakeCompletedEvent.java,
+	libraries/javalib/javax/net/ssl/HandshakeCompletedListener.java,
+	libraries/javalib/javax/net/ssl/HostnameVerifier.java,
+	libraries/javalib/javax/net/ssl/HttpsURLConnection.java,
+	libraries/javalib/javax/net/ssl/KeyManager.java,
+	libraries/javalib/javax/net/ssl/KeyManagerFactory.java,
+	libraries/javalib/javax/net/ssl/KeyManagerFactorySpi.java,
+	libraries/javalib/javax/net/ssl/ManagerFactoryParameters.java,
+	libraries/javalib/javax/net/ssl/SSLContext.java,
+	libraries/javalib/javax/net/ssl/SSLContextSpi.java,
+	libraries/javalib/javax/net/ssl/SSLException.java,
+	libraries/javalib/javax/net/ssl/SSLHandshakeException.java,
+	libraries/javalib/javax/net/ssl/SSLKeyException.java,
+	libraries/javalib/javax/net/ssl/SSLPeerUnverifiedException.java,
+	libraries/javalib/javax/net/ssl/SSLPermission.java,
+	libraries/javalib/javax/net/ssl/SSLProtocolException.java,
+	libraries/javalib/javax/net/ssl/SSLServerSocket.java,
+	libraries/javalib/javax/net/ssl/SSLServerSocketFactory.java,
+	libraries/javalib/javax/net/ssl/SSLSession.java,
+	libraries/javalib/javax/net/ssl/SSLSessionBindingEvent.java,
+	libraries/javalib/javax/net/ssl/SSLSessionBindingListener.java,
+	libraries/javalib/javax/net/ssl/SSLSessionContext.java,
+	libraries/javalib/javax/net/ssl/SSLSocket.java,
+	libraries/javalib/javax/net/ssl/SSLSocketFactory.java,
+	libraries/javalib/javax/net/ssl/TrivialHostnameVerifier.java,
+	libraries/javalib/javax/net/ssl/TrustManager.java,
+	libraries/javalib/javax/net/ssl/TrustManagerFactory.java,
+	libraries/javalib/javax/net/ssl/TrustManagerFactorySpi.java,
+	libraries/javalib/javax/net/ssl/X509KeyManager.java,
+	libraries/javalib/javax/net/ssl/X509TrustManager.java,
+	libraries/javalib/org/metastatic/jessie/CipherSuite.java,
+	libraries/javalib/org/metastatic/jessie/Constructed.java,
+	libraries/javalib/org/metastatic/jessie/ContentType.java,
+	libraries/javalib/org/metastatic/jessie/Context.java,
+	libraries/javalib/org/metastatic/jessie/Enumerated.java,
+	libraries/javalib/org/metastatic/jessie/Jessie.java,
+	libraries/javalib/org/metastatic/jessie/ProtocolVersion.java,
+	libraries/javalib/org/metastatic/jessie/SSLHMac.java,
+	libraries/javalib/org/metastatic/jessie/SSLSecurityParameters.java,
+	libraries/javalib/org/metastatic/jessie/SecurityParameters.java,
+	libraries/javalib/org/metastatic/jessie/Session.java,
+	libraries/javalib/org/metastatic/jessie/SessionContext.java,
+	libraries/javalib/org/metastatic/jessie/Text.java,
+	libraries/javalib/org/metastatic/jessie/X509KeyManagerFactory.java,
+	libraries/javalib/org/metastatic/jessie/X509TrustManagerFactory.java:
+	New files from JESSIE.
+
+	* libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/core.files,
+	libraries/javalib/profiles/default/jsse.files,
+	libraries/javalib/profiles/default/moreawt.files,
+	libraries/javalib/profiles/default/nio.files,
+	libraries/javalib/profiles/default/profile,
+	libraries/javalib/profiles/default/rest.files,
+	libraries/javalib/profiles/default/rmi.files,
+	Added new files and regenerated.
+	
+2003-08-14  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffe/jni.c
+	(Kaffe_JavaVMInitArgs) default verifyMode set to noverify until
+	verifier multiple inheritence is implemented and circulation
+	errors are fixed.
+
+	You can still use kaffe with verification by passing the
+	-verifyremote or -verify flags to it.
+
+2003-08-14  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffe/lookup.c
+	(getMethodSignatureClass) change
+	assert(class->state >= CSTATE_LINKED);
+	to
+	assert(class->state >= CSTATE_DOING_LINK);
+	so that getMethodSignatureClass() can be used in verifier testing.
+
+2003-08-14  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffevm/verify.c
+	(checkMethodCall) receiver->tinfo & TINFO_UNINIT_SUPER changed
+	to receiver->tinfo == TINFO_UNINIT_SUPER, which is correct.
+
+2003-08-14  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/io/ObjectInputStream.java:
+	(readClassDescriptor) use resolveClass to solve field type in the
+	special case where the type is a true object. If it is a primitive
+	fall back on the default behaviour.
+
+2003-08-14  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffevm/verify.h
+	* kaffe/kaffevm/verify.c
+	(TINFO_SIGSTR) renamed TINFO_SIG
+	(TINFO_NAMESTR) renamed TINFO_NAME
+	(UNINIT) renamed TINFO_UNINIT
+	(UNINIT_SUPER) renamed TINFO_UNINIT_SUPER
+	
+	(TINFO_SUPERLIST) added.
+	
+	(type_info) renamed Type.
+	(Type.data) Hjava_langClass** supertypes added to union.
+
+2003-08-14  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/kjc.jar: New KJC with fixed protected field
+	access control. Moreover some basic cleanup in the variable
+	propagation.
+
+2003-08-13  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffevm/verify.c
+	(verify3) Cosmetic return changes.  Use a success variable now
+	similar to classMethod.c:processClass().  Debugger should now,
+	in theory, print out a "done verifying class whatever" regardless
+	of success or failure.
+
+2003-08-13  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffevm/verify.h
+	(type_info) union expanded to support returnAddress type address
+	value.  Type.tinfo no longer used to hold return PC.
+	
+	(TINFO_SYSTEM) added.
+	(TINFO_ADDR) added.
+	(TINFO_PRIMITIVE) added.
+	(TINFO_CLASS) added.
+	tinfo constant tags expanded in preparation for interface set
+	type checking.
+
+	* kaffe/kaffevm/verify.c
+	(verify_VOID) removed.
+	(TVOID) removed.
+
+	(OPSTACK_PUSH_INFO) removed.
+	(OPSTACK_PUSH_INFO_BLIND) removed.
+
+	(initVerifierPrimTypes) modified to initialized static Types
+	with proper tinfo values.
+	
+	(printType) rewritten for new tinfo values.
+
+	(sameType) rewritten for new tinfo values.
+
+	(sameTypeRef) added.
+
+	(loadInitialArgs) modified how TLONG and TDOUBLE values are
+	put into the local type arrays.  Also added VERIFY_ERROR macro
+	to be consistent with other methods in verify.c.
+
+	(verifyBasicBlocK) NEW, NEWARRAY, etc., cases modified to take
+	advantage of new tinfo types.
+
+2003-08-13  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/kjc.jar: Regenerated and included the
+	new patch to fix the access in nested class of protected
+	inherited methods.
+	
+2003-08-13  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/Klasses.jar.bootstrap:
+	Regenerated.
+
+	* libraries/javalib/bootstrap.classlist:
+	Added files required since GNU Classpath collection merge.
+	
+2003-08-13  Dalibor Topic <robilad@kaffe.org>
+
+	* FAQ/FAQ.classlibrary-compile:
+	Updated information on make targets, setting the compiler, jikes,
+	javac and gcj.
+
+	* FAQ/FAQ.embedded:
+	Updated information on class library size, and building the class
+	library.
+	
+2003-08-12  Jim Pick  <jim@kaffe.org>
+
+	* Testing new loginfo / cvsps script.
+
+	Hopefully, we can get some more intelligent loginfo
+	emails out of this new script.  I'm using cvsps, see:
+
+	  http://www.cobite.com/cvsps/
+
+	It will generate a patchset number, generated by
+	analyzing the cvs log messages.
+	 
+	Also, we'll get diffs!  (limited to 1000 lines)
+
+	Because of the logic that cvsps uses, if you do
+	multiple checkins close to each other in time,
+	it will consider them part of the same patchset
+	(I think 5 minutes is the default).
+
+	Tell me if you see any strangeness. 
+
+2003-08-12  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/javalib/java/lang/Float.java,
+	libraries/javalib/java/lang/Double.java:
+	(compare) new methods found in jdk1.4
+
+	* libraries/javalib/java/util/AbstractMap.java,
+	libraries/javalib/java/util/AbstractSequentialList.java,
+	libraries/javalib/java/util/AbstractSet.java,
+	libraries/javalib/java/util/ArrayList.java,
+	libraries/javalib/java/util/Arrays.java,
+	libraries/javalib/java/util/Collections.java,
+	libraries/javalib/java/util/Dictionary.java,
+	libraries/javalib/java/util/HashMap.java,
+	libraries/javalib/java/util/HashSet.java,
+	libraries/javalib/java/util/Hashtable.java,
+	libraries/javalib/java/util/IdentityHashMap.java,
+	libraries/javalib/java/util/LinkedHashMap.java,
+	libraries/javalib/java/util/LinkedHashSet.java,
+	libraries/javalib/java/util/LinkedList.java,
+	libraries/javalib/java/util/TreeMap.java,
+	libraries/javalib/java/util/TreeSet.java,
+	libraries/javalib/java/util/Vector.java,
+	libraries/javalib/java/util/WeakHashMap.java:
+	Merged in part of the collection framework from GNU
+	Classpath
+
+	* libraries/javalib/java/util/LinkedListIterator.java:
+	removed
+
+	* libraries/javalib/Klasses.jar.bootstrap,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	regenerated
+
+	* libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/core.files:
+	added IdentityHashMap, LinkedHashMap and LinkedHashSet
+	
+2003-08-12  Jim Pick  <jim@kaffe.org>
+
+	* test/regression/TestScript.in:
+	Add -noverify temporarily until verifier can be fixed.
+
+2003-08-12  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffevm/verify.c
+	TYPE_LONG change to TYPE_Long.  Ooops!
+	
+2003-08-12  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffevm/verify.h
+	* kaffe/kaffevm/verify.c
+	(Type.type) change to a union Type.data.
+	This makes many current casts unnecessary and generally improves
+	code readability.
+
+	(CLASS_SIGSTR) renamed TINFO_SIGSTR
+	(CLASS_NAMESTR) renamed TINFO_NAMESTR
+	(TINFO_CLASS) added
+
+	* kaffe/kaffevm/verify.c
+	(initVerifierTypes) Initialization of all static Type objects
+	moved here for readability.
+
+	(verifyMethod3b:NEWARRAY) Take advantage of itypes.h constants,
+	such as TYPE_Boolean, to remove hard-coded values.
+
+2003-08-12  Rob Gonzalez <rob@kaffe.org>
+
+	* test/regression/TestScript.in
+	Made $JAVA dependent upon $KAFFEHOME to ensure that the
+	correct kaffe binary is used during make check.
+
+2003-08-12  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/clib/native/RMIHashes.c: copied back
+	pathname2ClassnameCopy from ObjectStreamClassImpl.c
+
+2003-08-12  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/lang/String.java:
+	(matches, replaceFirst, replaceAll, split) new methods
+	from GNU Classpath.
+
+2003-08-12  Dalibor Topic <robilad@kaffe.org>
+
+	Moved AWT widgets into the java/awt/ directory to fix build
+	problems due to directory/package name mismatch.
+	
+	* libraries/javalib/Makefile.am:
+	Regenerated.
+	
+	* libraries/javalib/java/awt/Button.java,
+        libraries/javalib/java/awt/Checkbox.java,
+        libraries/javalib/java/awt/CheckboxGroup.java,
+        libraries/javalib/java/awt/Choice.java,
+        libraries/javalib/java/awt/Label.java,
+        libraries/javalib/java/awt/List.java,
+        libraries/javalib/java/awt/RowCanvas.java,
+        libraries/javalib/java/awt/Scrollbar.java,
+        libraries/javalib/java/awt/TextArea.java,
+        libraries/javalib/java/awt/TextBuffer.java,
+        libraries/javalib/java/awt/TextComponent.java,
+        libraries/javalib/java/awt/TextCursor.java,
+        libraries/javalib/java/awt/TextField.java:
+	New files, moved from libraries/javalib/java/awt/widgets/.
+	
+        * libraries/javalib/java/awt/widgets/Button.java,
+        libraries/javalib/java/awt/widgets/Checkbox.java,
+        libraries/javalib/java/awt/widgets/CheckboxGroup.java,
+        libraries/javalib/java/awt/widgets/Choice.java,
+        libraries/javalib/java/awt/widgets/Label.java,
+        libraries/javalib/java/awt/widgets/List.java,
+        libraries/javalib/java/awt/widgets/RowCanvas.java,
+        libraries/javalib/java/awt/widgets/Scrollbar.java,
+        libraries/javalib/java/awt/widgets/TextArea.java,
+        libraries/javalib/java/awt/widgets/TextBuffer.java,
+        libraries/javalib/java/awt/widgets/TextComponent.java,
+        libraries/javalib/java/awt/widgets/TextCursor.java,
+        libraries/javalib/java/awt/widgets/TextField.java:
+	Removed, moved to libraries/javalib/java/awt/.
+
+        * libraries/javalib/profiles/allatonce/all.files,
+        libraries/javalib/profiles/default/awt.files,
+        libraries/javalib/profiles/default/coreawt.files:
+	Adapted for moved files.
+	
+2003-08-12  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/bootstrap.classlist: updated (added some
+	serialization class).
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated.
+
+	* libraries/javalib/java/io/Object*.java: fixed some coding style
+	typos.
+
+	* libraries/javalib/essential.files: Added missing files to compile
+	with KJC.
+
+	* libraries/javalib/Makefile.am:
+	(java_io_SRCS) added java/io/VMObjectStreamClass.java.
+	
+	* libraries/javalib/Makefile.in:
+	regenerated.
+
+	* libraries/javalib/java/io/VMObjectStreamClass.java:
+	Added missing file.
+	
+2003-08-11  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/clib/native/ObjectStreamClassImpl.c: removed
+
+	* libraries/clib/native/ObjectInputStream.c: added
+
+	* libraries/clib/native/Makefile.am:
+	(IO_SRCS) changed ObjectStreamClassImpl.c into ObjectInputStream.c
+
+	* libraries/clib/native/Makefile.in: regenerated.
+
+	* libraries/javalib/java/io/ObjectInputStream.java,
+	libraries/javalib/java/io/ObjectOutputStream.java,
+	libraries/javalib/java/io/ObjectStreamClass.java,
+	libraries/javalib/java/io/ObjectStreamField.java,
+	libraries/javalib/java/io/ObjectInput.java,
+	libraries/javalib/java/io/ObjectInputValidation.java,
+	libraries/javalib/java/io/ObjectOutput.java,
+	libraries/javalib/java/io/ObjectStreamConstants.java:
+	replaced with classpath's version (fixed).
+
+	* libraries/javalib/gnu/java/io/NullOutputStream.java,
+	libraries/javalib/gnu/java/io/ObjectIdentityWrapper.java:
+	added for serialization.
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated
+
+	* include/Makefile.am:
+	(NOINSTALL_DERIVED_HDRS) replaced java_io_ObjectStreamClass by
+	java_io_ObjectInputStream.
+
+	* include/Makefile.in: regenerated.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	(removeQueueFromBlockQueue) commented out to prevent a compiler warning.
+
+2003-08-11  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/verify.c:
+	(verifyMethod3b) fixed verification of blocks that contain RETs
+	and are branch targets of JSRs.  
+	(verifyBasicBlock) fixed handling of BALOAD and BASTORE as they
+	are not only used for byte arrays but also for boolean arrays.
+	(implements) removed since instanceof_interface does the same
+	(mergeTypes) check TADDR before doing checks that involve tinfo,
+	since TADDR uses tinfo to store the return address; return
+	immediately if resolving one of the two types fails; adapted to
+	the removal of implements
+	(typecheck) return immediately if resolving one of the types
+	fails; adapted to removal of implements
+	(printType) check TADDR before doing checks that involve tinfo
+
+	* kaffe/kaffevm/soft.h:
+	(instanceof_interface) made public so the verifier can use it
+	
+2003-08-10  Jim Pick  <jim@kaffe.org>
+
+	* ChangeLog.1:
+	Fixed some bad dates.
+
+2003-08-10  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	Regenerated.
+	
+	* libraries/javalib/gnu/java/nio/DatagramChannelImpl.java,
+	libraries/javalib/gnu/java/nio/FileChannelImpl.java,
+	libraries/javalib/gnu/java/nio/MappedByteFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedCharFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedDoubleFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedFloatFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedIntFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedLongFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedShortFileBuffer.java,
+	libraries/javalib/gnu/java/nio/SelectorImpl.java,
+	libraries/javalib/gnu/java/nio/ServerSocketChannelImpl.java,
+	libraries/javalib/gnu/java/nio/SocketChannelImpl.java,
+	libraries/javalib/java/awt/ScrollPaneAdjustable.java,
+	libraries/javalib/java/awt/color/ColorSpace.java,
+	libraries/javalib/java/awt/datatransfer/DataFlavor.java,
+	libraries/javalib/java/awt/dnd/DragSource.java,
+	libraries/javalib/java/awt/dnd/DragSourceContext.java,
+	libraries/javalib/java/awt/event/HierarchyEvent.java,
+	libraries/javalib/java/awt/event/MouseWheelEvent.java,
+	libraries/javalib/java/awt/geom/Arc2D.java,
+	libraries/javalib/java/awt/geom/CubicCurve2D.java,
+	libraries/javalib/java/awt/geom/Line2D.java,
+	libraries/javalib/java/awt/geom/QuadCurve2D.java,
+	libraries/javalib/java/awt/geom/Rectangle2D.java,
+	libraries/javalib/java/awt/im/InputSubset.java,
+	libraries/javalib/java/awt/image/BufferedImage.java,
+	libraries/javalib/java/awt/image/ColorModel.java,
+	libraries/javalib/java/awt/image/ComponentColorModel.java,
+	libraries/javalib/java/awt/image/DataBufferByte.java,
+	libraries/javalib/java/awt/image/DataBufferInt.java,
+	libraries/javalib/java/awt/image/DataBufferUShort.java,
+	libraries/javalib/java/awt/image/Raster.java,
+	libraries/javalib/java/awt/image/WritableRaster.java,
+	libraries/javalib/java/awt/print/PageFormat.java,
+	libraries/javalib/java/awt/print/PrinterJob.java,
+	libraries/javalib/java/io/FilePermission.java,
+	libraries/javalib/java/lang/StrictMath.java,
+	libraries/javalib/java/net/Authenticator.java,
+	libraries/javalib/java/net/PasswordAuthentication.java,
+	libraries/javalib/java/nio/Buffer.java,
+	libraries/javalib/java/nio/ByteBuffer.java,
+	libraries/javalib/java/nio/ByteBufferImpl.java,
+	libraries/javalib/java/nio/CharBuffer.java,
+	libraries/javalib/java/nio/CharBufferImpl.java,
+	libraries/javalib/java/nio/DirectByteBufferImpl.java,
+	libraries/javalib/java/nio/DoubleBuffer.java,
+	libraries/javalib/java/nio/DoubleBufferImpl.java,
+	libraries/javalib/java/nio/FloatBuffer.java,
+	libraries/javalib/java/nio/FloatBufferImpl.java,
+	libraries/javalib/java/nio/IntBuffer.java,
+	libraries/javalib/java/nio/IntBufferImpl.java,
+	libraries/javalib/java/nio/LongBuffer.java,
+	libraries/javalib/java/nio/LongBufferImpl.java,
+	libraries/javalib/java/nio/MappedByteBuffer.java,
+	libraries/javalib/java/nio/MappedByteBufferImpl.java,
+	libraries/javalib/java/nio/ShortBuffer.java,
+	libraries/javalib/java/nio/ShortBufferImpl.java,
+	libraries/javalib/java/nio/channels/Channels.java,
+	libraries/javalib/java/nio/channels/FileChannel.java,
+	libraries/javalib/java/nio/channels/FileChannelImpl.java,
+	libraries/javalib/java/nio/channels/FileLock.java,
+	libraries/javalib/java/nio/channels/ServerSocketChannel.java,
+	libraries/javalib/java/nio/channels/spi/AbstractSelector.java,
+	libraries/javalib/java/nio/charset/Charset.java,
+	libraries/javalib/java/sql/Timestamp.java,
+	libraries/javalib/java/util/logging/Handler.java,
+	libraries/javalib/java/util/prefs/AbstractPreferences.java,
+	libraries/javalib/java/util/prefs/Preferences.java,
+	libraries/javalib/java/util/prefs/PreferencesFactory.java,
+	libraries/javalib/javax/naming/CompositeName.java,
+	libraries/javalib/javax/naming/CompoundName.java,
+	libraries/javalib/javax/naming/InitialContext.java,
+	libraries/javalib/javax/naming/LinkRef.java,
+	libraries/javalib/javax/naming/NamingException.java,
+	libraries/javalib/javax/naming/NamingSecurityException.java,
+	libraries/javalib/javax/naming/ReferralException.java,
+	libraries/javalib/javax/naming/StringRefAddr.java,
+	libraries/javalib/javax/naming/directory/Attribute.java,
+	libraries/javalib/javax/naming/directory/BasicAttribute.java,
+	libraries/javalib/javax/naming/directory/BasicAttributes.java,
+	libraries/javalib/javax/naming/ldap/UnsolicitedNotificationEvent.java,
+	libraries/javalib/javax/naming/spi/NamingManager.java:
+	Resynced with GNU Classpath.
+
+	* libraries/javalib/java/net/Socket.java:
+	(Socket) made protected default constructor public as in JDK 1.4
+	API.
+	
+	* libraries/javalib/java/net/DatagramSocket.java:
+	(isConnected, connect) new methods from GNU Classpath.
+	
+	* libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/nio.files:
+	Removed gnu/java/nio/FileChannelImpl.java,
+	gnu/java/nio/MappedByteFileBuffer.java, 
+	gnu/java/nio/MappedCharFileBuffer.java,
+	gnu/java/nio/MappedDoubleFileBuffer.java,
+	gnu/java/nio/MappedFloatFileBuffer.java,
+	gnu/java/nio/MappedIntFileBuffer.java,
+	gnu/java/nio/MappedLongFileBuffer.java,
+	gnu/java/nio/MappedShortFileBuffer.java. Added
+	java/nio/channels/FileChannelImpl.java and
+	java/nio/MappedByteBufferImpl.java.
+
+2003-08-10  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/clib/native/Class.c:
+	(checkForField) check for "declared" before looping on interfaces to
+	fetch imported fields.
+	
+2003-08-09  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	(jthread_create) don't forget to set the daemon flag of the native
+	thread
+	* libraries/javalib/java/text/MessageFormat.java:
+	(format) properly handle null arguments
+	* libraries/javalib/Makefile.in: regenerated
+
+2003-08-08  Rob Gonzalez <rob@kaffe.org>
+
+	* libraries/javalib/Makefile.am
+	Removed:
+	kaffe_security_SRCS = \
+		kaffe/security/Engine.java
+	because Engine.java now comes from GNU's Classpath.
+
+2003-08-08  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
+	(jthreadedAccept) translate timeout == NOTIMEOUT in infinite timeout
+	for setsockopt.
+
+2003-08-08  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/Makefile.am:
+	Regenerated.
+
+	* libraries/javalib/gnu/java/security/Engine.java,
+	libraries/javalib/java/security/cert/CertPath.java,
+	libraries/javalib/java/security/cert/CertificateFactory.java,
+	libraries/javalib/java/security/cert/CertificateFactorySpi.java,
+	libraries/javalib/java/security/spec/RSAOtherPrimeInfo.java:
+	Merged in from GNU Classpath.
+
+	* libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/awt.files,
+	libraries/javalib/profiles/default/core.files,
+	libraries/javalib/profiles/default/coreawt.files:
+
+	Updated profile information.
+	
+2003-08-07  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/Makefile.am,
+	Regenerated to include new files.
+	
+	* libraries/javalib/java/applet/AppletStub.java,
+	libraries/javalib/java/applet/AudioClip.java,
+	libraries/javalib/java/awt/ActiveEvent.java,
+	libraries/javalib/java/awt/Adjustable.java,
+	libraries/javalib/java/awt/ItemSelectable.java,
+	libraries/javalib/java/awt/KeyEventDispatcher.java,
+	libraries/javalib/java/awt/KeyEventPostProcessor.java,
+	libraries/javalib/java/awt/LayoutManager.java,
+	libraries/javalib/java/awt/LayoutManager2.java,
+	libraries/javalib/java/awt/MenuContainer.java,
+	libraries/javalib/java/awt/PrintGraphics.java,
+	libraries/javalib/java/awt/Shape.java,
+	libraries/javalib/java/awt/datatransfer/ClipboardOwner.java,
+	libraries/javalib/java/awt/datatransfer/Transferable.java,
+	libraries/javalib/java/awt/datatransfer/UnsupportedFlavorException.java,
+	libraries/javalib/java/awt/event/AWTEventListener.java,
+	libraries/javalib/java/awt/event/ActionListener.java,
+	libraries/javalib/java/awt/event/AdjustmentListener.java,
+	libraries/javalib/java/awt/event/ComponentListener.java,
+	libraries/javalib/java/awt/event/ContainerListener.java,
+	libraries/javalib/java/awt/event/FocusListener.java,
+	libraries/javalib/java/awt/event/ItemListener.java,
+	libraries/javalib/java/awt/event/KeyListener.java,
+	libraries/javalib/java/awt/event/MouseListener.java,
+	libraries/javalib/java/awt/event/MouseMotionListener.java,
+	libraries/javalib/java/awt/event/TextListener.java,
+	libraries/javalib/java/awt/event/WindowListener.java,
+	libraries/javalib/java/awt/font/MultipleMaster.java,
+	libraries/javalib/java/awt/font/OpenType.java,
+	libraries/javalib/java/beans/BeanInfo.java,
+	libraries/javalib/java/beans/Customizer.java,
+	libraries/javalib/java/beans/PropertyChangeListener.java,
+	libraries/javalib/java/beans/PropertyEditor.java,
+	libraries/javalib/java/beans/VetoableChangeListener.java,
+	libraries/javalib/java/beans/Visibility.java,
+	libraries/javalib/java/util/ConcurrentModificationException.java,
+	libraries/javalib/java/util/EmptyStackException.java,
+	libraries/javalib/java/util/NoSuchElementException.java,
+	libraries/javalib/java/util/TooManyListenersException.java,
+	libraries/javalib/java/util/jar/JarException.java,
+	libraries/javalib/java/util/zip/DataFormatException.java:
+	Merged in from GNU Classpath.
+	
+2003-08-07  Rob Gonzalez <rob@kaffe.org>
+
+	Fixed the verifier so that -verify works properly.
+
+	* kaffe/kaffevm/baseClasses.c
+	* kaffe/kaffevm/classMethod.c
+	* kaffe/kaffevm/itypes.h
+	* kaffe/kaffevm/itypes.c
+	* kaffe/kaffevm/verify.h
+	* kaffe/kaffevm/verify.c
+
+2003-08-07  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/Makefile.am:
+	Regenerated to include new files.
+
+        * libraries/javalib/java/lang/reflect/InvocationTargetException.java,
+        libraries/javalib/java/lang/reflect/UndeclaredThrowableException.java,
+        libraries/javalib/java/net/BindException.java,
+        libraries/javalib/java/net/ConnectException.java,
+        libraries/javalib/java/net/MalformedURLException.java,
+        libraries/javalib/java/net/NoRouteToHostException.java,
+        libraries/javalib/java/net/ProtocolException.java,
+        libraries/javalib/java/net/SocketException.java,
+        libraries/javalib/java/net/UnknownServiceException.java,
+        libraries/javalib/java/rmi/AccessException.java,
+        libraries/javalib/java/rmi/AlreadyBoundException.java,
+        libraries/javalib/java/rmi/ConnectException.java,
+        libraries/javalib/java/rmi/ConnectIOException.java,
+        libraries/javalib/java/rmi/MarshalException.java,
+        libraries/javalib/java/rmi/NoSuchObjectException.java,
+        libraries/javalib/java/rmi/NotBoundException.java,
+        libraries/javalib/java/rmi/RMISecurityException.java,
+        libraries/javalib/java/rmi/RemoteException.java,
+        libraries/javalib/java/rmi/ServerError.java,
+        libraries/javalib/java/rmi/ServerException.java,
+        libraries/javalib/java/rmi/ServerRuntimeException.java,
+        libraries/javalib/java/rmi/StubNotFoundException.java,
+        libraries/javalib/java/rmi/UnexpectedException.java,
+        libraries/javalib/java/rmi/UnknownHostException.java,
+        libraries/javalib/java/rmi/UnmarshalException.java,
+        libraries/javalib/java/rmi/activation/ActivateFailedException.java,
+        libraries/javalib/java/rmi/activation/ActivationException.java,
+        libraries/javalib/java/rmi/activation/UnknownGroupException.java,
+        libraries/javalib/java/rmi/activation/UnknownObjectException.java,
+        libraries/javalib/java/rmi/server/ExportException.java,
+        libraries/javalib/java/rmi/server/ServerCloneException.java,
+        libraries/javalib/java/rmi/server/ServerNotActiveException.java,
+        libraries/javalib/java/rmi/server/SkeletonMismatchException.java,
+        libraries/javalib/java/rmi/server/SkeletonNotFoundException.java,
+        libraries/javalib/java/rmi/server/SocketSecurityException.java,
+        libraries/javalib/java/security/AccessControlException.java,
+        libraries/javalib/java/security/DigestException.java,
+        libraries/javalib/java/security/GeneralSecurityException.java,
+        libraries/javalib/java/security/InvalidAlgorithmParameterException.java,
+        libraries/javalib/java/security/InvalidKeyException.java,
+        libraries/javalib/java/security/InvalidParameterException.java,
+        libraries/javalib/java/security/KeyException.java,
+        libraries/javalib/java/security/KeyManagementException.java,
+        libraries/javalib/java/security/KeyStoreException.java,
+        libraries/javalib/java/security/NoSuchAlgorithmException.java,
+        libraries/javalib/java/security/NoSuchProviderException.java,
+        libraries/javalib/java/security/PrivilegedActionException.java,
+        libraries/javalib/java/security/ProviderException.java,
+        libraries/javalib/java/security/SignatureException.java,
+        libraries/javalib/java/security/UnrecoverableKeyException.java,
+        libraries/javalib/java/security/acl/Acl.java,
+        libraries/javalib/java/security/acl/AclEntry.java,
+        libraries/javalib/java/security/acl/AclNotFoundException.java,
+        libraries/javalib/java/security/acl/Group.java,
+        libraries/javalib/java/security/acl/LastOwnerException.java,
+        libraries/javalib/java/security/acl/NotOwnerException.java,
+        libraries/javalib/java/security/acl/Owner.java,
+        libraries/javalib/java/security/acl/Permission.java,
+        libraries/javalib/java/security/cert/CRLException.java,
+        libraries/javalib/java/security/cert/CertificateEncodingException.java,
+        libraries/javalib/java/security/cert/CertificateException.java,
+        libraries/javalib/java/security/cert/CertificateExpiredException.java,
+        libraries/javalib/java/security/cert/CertificateNotYetValidException.java,
+        libraries/javalib/java/security/cert/CertificateParsingException.java,
+        libraries/javalib/java/security/interfaces/DSAKey.java,
+        libraries/javalib/java/security/interfaces/DSAKeyPairGenerator.java,
+        libraries/javalib/java/security/interfaces/DSAParams.java,
+        libraries/javalib/java/security/interfaces/DSAPrivateKey.java,
+        libraries/javalib/java/security/interfaces/DSAPublicKey.java,
+        libraries/javalib/java/security/interfaces/RSAKey.java,
+        libraries/javalib/java/security/interfaces/RSAPrivateCrtKey.java,
+        libraries/javalib/java/security/interfaces/RSAPrivateKey.java,
+        libraries/javalib/java/security/interfaces/RSAPublicKey.java,
+        libraries/javalib/java/security/spec/AlgorithmParameterSpec.java,
+        libraries/javalib/java/security/spec/InvalidKeySpecException.java,
+        libraries/javalib/java/security/spec/InvalidParameterSpecException.java,
+        libraries/javalib/java/security/spec/KeySpec.java:
+	Merged in from GNU Classpath.
+
+2003-08-07  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffevm/verify.c
+	Disallow new to create array types.
+
+2003-08-07  Rob Gonzalez <rob@kaffe.org>
+
+	Committed full bytecode verifier.
+
+	* kaffe/kaffevm/verify.c
+	The bytecode verifier.
+	
+	* kaffe/kaffevm/verify.h
+	New file.
+
+	* kaffe/kaffevm/Makefile.am
+	Addition for verify.h
+
+	* kaffe/kaffevm/baseClasses.c
+	Added calls to initArrayClasses() and initVerifierTypes()
+	after finishTypes().
+
+	* kaffe/kaffevm/itypes.h
+	* kaffe/kaffevm/itypes.c
+	Added pointers and initialization method for array of primitive
+	types.
+
+2003-08-07 Milos Negovanovic <milosn@bmf.bounceme.net>,
+	   Dalibor Topic <robilad@kaffe.org>
+
+	Compilation fix for i386/netbsd.
+
+	* config/i386/netbsd1/md.h:
+	(SIGNAL_ARGS, SIGNAL_CONTEXT_POINTER, GET_SIGNAL_CONTEXT_POINTER,
+	SIGNAL_PC) new signal handling macros copied over from freebsd2.
+
+2003-08-07 Guilhem Lavaux <guilhem.lavaux@free.fr>
+
+	* libraries/javalib/java/net/Socket.java:
+	(bind,isClosed,isBound) added remaining Java 1.4 functions
+
+2003-08-06 Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/jvmpi/Makefile.am:
+	(libkaffejvmpi_la_DEPENDENCIES) added libkaffevm.la.
+
+2003-08-06 Marc Kleine-Budde <kleine-budde@gmx.de>
+
+	* configure.in:
+	(AC_ARG_ENABLE) jvmpi
+	changed first argument to jvmpi
+
+2003-08-05 Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/baseClasses.h:
+	removed unnecessary includes.
+
+        * kaffe/kaffevm/exception.c,
+        kaffe/kaffevm/stackTrace.c,
+        libraries/clib/native/System.c:
+	Added include statements for java_lang_Throwable.h and
+	java_lang_VMThrowable.h.
+
+2003-08-05 Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/net/UnknownHostException.java:
+	Merged in from GNU Classpath.
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/lock-impl.h,
+	kaffe/kaffevm/systems/unix-pthreads/thread-internal.h,
+	kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
+	Adapted to match the new jthread interface. Changed 0 in NOTIMEOUT
+	for timeout comparisons. Added jthread_set_blocking. Added
+	syscalls jthreadedMsync, jthreadedPipeCreate, jthreadedTimedWrite.
+	Fixed the behaviour of syscalls which may time out so they return
+	ETIMEDOUT and not EINTR.
+	
+2003-08-05 Dalibor Topic <robilad@kaffe.org>
+
+        libraries/javalib/awt/AWTError.java,
+        libraries/javalib/awt/AWTException.java,
+        libraries/javalib/awt/IllegalComponentStateException.java,
+        libraries/javalib/beans/IntrospectionException.java,
+        libraries/javalib/beans/PropertyVetoException.java,
+        libraries/javalib/io/CharConversionException.java,
+        libraries/javalib/io/EOFException.java,
+        libraries/javalib/io/FileNotFoundException.java,
+        libraries/javalib/io/IOException.java,
+        libraries/javalib/io/InvalidObjectException.java,
+        libraries/javalib/io/NotActiveException.java,
+        libraries/javalib/io/NotSerializableException.java,
+        libraries/javalib/io/ObjectStreamException.java,
+        libraries/javalib/io/StreamCorruptedException.java,
+        libraries/javalib/io/SyncFailedException.java,
+        libraries/javalib/io/UTFDataFormatException.java,
+        libraries/javalib/io/UnsupportedEncodingException.java:
+	Merged in from GNU Classpath.
+
+2003-08-04 Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/baseClasses.c:
+	(initBaseClasses) removed call to checkCorrectVersion.
+	(checkCorrectVersion) removed, since kaffe uses BOOTCLASSPATH
+	now and it has become impossible to mistakenly put some other
+	rt.jar in front of kaffe's.
+	
+	* libraries/javalib/java/lang/Cloneable.java:
+	Merged in from GNU Classpath.
+	
+2003-08-04 Dalibor Topic <robilad@kaffe.org>
+
+	Merged most of GNU Classpath's exceptions, errors and 
+	interfaces from java.lang .
+
+	* libraries/javalib/java/lang/AbstractMethodError.java,
+	libraries/javalib/java/lang/ArithmeticException.java,
+	libraries/javalib/java/lang/ArrayIndexOutOfBoundsException.java,
+	libraries/javalib/java/lang/ArrayStoreException.java,
+	libraries/javalib/java/lang/ClassCastException.java,
+	libraries/javalib/java/lang/ClassCircularityError.java,
+	libraries/javalib/java/lang/ClassFormatError.java,
+	libraries/javalib/java/lang/CloneNotSupportedException.java,
+	libraries/javalib/java/lang/Comparable.java,
+	libraries/javalib/java/lang/Exception.java,
+	libraries/javalib/java/lang/ExceptionInInitializerError.java,
+	libraries/javalib/java/lang/IllegalAccessError.java,
+	libraries/javalib/java/lang/IllegalAccessException.java,
+	libraries/javalib/java/lang/IllegalArgumentException.java,
+	libraries/javalib/java/lang/IllegalMonitorStateException.java,
+	libraries/javalib/java/lang/IllegalStateException.java,
+	libraries/javalib/java/lang/IllegalThreadStateException.java,
+	libraries/javalib/java/lang/IncompatibleClassChangeError.java,
+	libraries/javalib/java/lang/IndexOutOfBoundsException.java,
+	libraries/javalib/java/lang/InstantiationError.java,
+	libraries/javalib/java/lang/InstantiationException.java,
+	libraries/javalib/java/lang/InternalError.java,
+	libraries/javalib/java/lang/InterruptedException.java,
+	libraries/javalib/java/lang/LinkageError.java,
+	libraries/javalib/java/lang/NegativeArraySizeException.java,
+	libraries/javalib/java/lang/NoClassDefFoundError.java,
+	libraries/javalib/java/lang/NoSuchFieldError.java,
+	libraries/javalib/java/lang/NoSuchFieldException.java,
+	libraries/javalib/java/lang/NoSuchMethodError.java,
+	libraries/javalib/java/lang/NoSuchMethodException.java,
+	libraries/javalib/java/lang/NullPointerException.java,
+	libraries/javalib/java/lang/NumberFormatException.java,
+	libraries/javalib/java/lang/OutOfMemoryError.java,
+	libraries/javalib/java/lang/Runnable.java,
+	libraries/javalib/java/lang/RuntimeException.java,
+	libraries/javalib/java/lang/SecurityException.java,
+	libraries/javalib/java/lang/StackOverflowError.java,
+	libraries/javalib/java/lang/StringIndexOutOfBoundsException.java,
+	libraries/javalib/java/lang/UnknownError.java,
+	libraries/javalib/java/lang/UnsatisfiedLinkError.java,
+	libraries/javalib/java/lang/UnsupportedOperationException.java,
+	libraries/javalib/java/lang/VerifyError.java,
+	libraries/javalib/java/lang/VirtualMachineError.java:
+	Merged in from GNU Classpath.	
+
+	* test/regression/ProcessClassTest.java:
+	Adapted expected result to Classpath's implementation.
+
+2003-08-04 Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/net/Inet4Address.java:
+	(fromString) use initCause to set cause exception.
+
+	* libraries/javalib/java/net/InetAddress.java:
+	(static) use initCause to set cause exception.
+
+2003-08-04 Guilhem Lavaux <guilhem@kaffe.org>
+	
+	* libraries/clib/awt/X/img.c:
+	(initScaledImage) fix an overread when computing a scaled image, you
+	must stop just before the end of the image so GetPixel can still
+	interpolate without error.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jqueue.c,
+	kaffe/kaffevm/systems/unix-jthreads/jqueue.h:
+	Added management of a pool of nodes.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthreads.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthreads.h:
+	(general comment) changed the internal queueing system, thread
+	descriptor does not contain anymore the next elements but are
+	put in an external queue management. This new scheme provides a way
+	to wait on several queue at the same time.
+	(jthreadedSelect) moved from jsyscall.c and implemented using the new
+	queue management.
+	(NOTIMEOUT) changed to VM wide constant, moreover its value is now
+	-1 because we may need 0 for no wait.
+	(blockingFD) added to permit the use of non-blocking fd in a threaded
+	system.
+	(BREAK_IF_LATE) return ETIMEDOUT if we time out (and not EINTR).
+	(alarmException) removed THREAD_FLAGS_INTERRUPTED as alarm does not
+	interrupt a thread.
+	(jthread_set_blocking) new jthread call to specify the blocking state
+	of a file descriptor.
+	
+	* kaffe/kaffevm/systems/unix-jthreads/Makefile.am:
+	(libkthread_la_SOURCES) added jqueue.c
+	(EXTRA_DIST) added jqueue.h
+
+	* kaffe/kaffevm/systems/unix-jthreads/config-jthreads.h:
+	(NOTIMEOUT) changed value from 0 to -1
+	
+	* include/kaffe/jsyscall.h:
+	(macros) Added KPIPECREATE, KPIPEREAD, KPIPEWRITE,
+	KMSYNC and the relevant entry in SystemCallInterface.
+	(NOTIMEOUT) added with value -1
+
+	* kaffe/kaffevm/ksem.h: Fix the format of the timeout when entering
+	in JThreads (0 => NOTIMEOUT).
+
+	* libraries/clib/net/PlainSocketImpl.c
+	(socketConnect, socketRead, socketWrite) throw the right exception
+	when a time out occurs.
+	(socketConnect) new parameter "timeout".
+	(waitForConnection) wait for a non-blocking connect, if the socket is
+	non-blocking returns immediately but updates the value of connecting
+	and connected.
+	(setBlocking) set the blocking state of the socket fd.
+
+	* libraries/javalib/java/net/PlainDatagramSocketImpl.java:
+	(PlainDatagramSocketImpl) initialize timeout to -1
+	(receive) check if a ETIMEDOUT is returned and so throw
+	SocketTimeoutException.
+	
+	* libraries/javalib/java/net/PlainSocketImpl.java:
+	(blocking, connecting) added
+	(PlainSocketImpl) initialize timeout to -1 to take into account
+	NOTIMEOUT.
+	(setOption) take care of the timeout
+	(socketConnect, connect) new parameter timeout.
+
+	* libraries/javalib/java/net/Socket.java:
+	(connect) new overloads of connect to comply with Java 1.4
+	(getLocalSocketAddress) new method in Java 1.4
+
+	* libraries/javalib/java/net/SocketImpl.java:
+	(connect) added new overload of connect to comply with Java 1.4.
+
+	* test/regression/SoTimeout.java: updated to test the right exception
+	throwed when a socket timeout occurs.
+
+	* test/regression/ThreadStop.java: fixed the expected output according
+	to the JDK.
+
+	* kaffe/kaffevm/systems/unix-jthreads/Makefile.in: regenerated
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated
+
+2003-08-04 Kiyo Inaba <inaba@src.ricoh.co.jp>
+	
+	* config/alpha/linux/config.frag,
+	config/arm/linux/config.frag,
+	config/i386/linux/config.frag,
+	config/ia64/linux/config.frag,
+	config/m68k/linux/config.frag,
+	config/mips/linux/config.frag,
+	config/parisc/linux/config.frag,
+	config/powerpc/linux/config.frag,
+	config/s390/linux/config.frag,
+	config/sparc/linux/config.frag,
+	config/x86_64/linux/config.frag:
+	Delete 'Khost_cpu' and 'Khost_os' defined in some files.
+	'ac_cv_sizeof_int' etc. are now properly handled by 'configure'
+	even for cross compiling.
+	'ac_cv_c_char_unsigned' is now set to 'no', when cross compiling.
+	'CFLAGS' is now used only to append mandatory settings for the port.
+	Old notation of 'linux-threads' are changed to 'unix-pthreads'.
+	
+See ChangeLog.6 for earlier changes.
