@@ -251,12 +251,22 @@ AM_CPPFLAGS = -I$(top_builddir)/include
 
 native_LTLIBRARIES = libtritonusesd.la
 
-libtritonusesd_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|org)_"
-libtritonusesd_la_LIBADD = -lesd -L../common -ltritonuscommon
+libtritonusesd_la_LDFLAGS = \
+	$(KLIBFLAGS) \
+	-module \
+	-release $(KVER) \
+	-export-symbols-regex "^([Jj]ava|org)_"
+
+
+libtritonusesd_la_LIBADD = -lesd
 libtritonusesd_la_SOURCES = \
-	common.h \
+	common.c \
 	org_tritonus_lowlevel_esd_EsdRecordingStream.c \
 	org_tritonus_lowlevel_esd_EsdStream.c
+
+
+noinst_HEADERS = \
+	common.h 
 
 
 CLEANFILES = so_locations
@@ -269,7 +279,7 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(native_LTLIBRARIES)
 
 libtritonusesd_la_DEPENDENCIES =
-am_libtritonusesd_la_OBJECTS = \
+am_libtritonusesd_la_OBJECTS = common.lo \
 	org_tritonus_lowlevel_esd_EsdRecordingStream.lo \
 	org_tritonus_lowlevel_esd_EsdStream.lo
 libtritonusesd_la_OBJECTS = $(am_libtritonusesd_la_OBJECTS)
@@ -277,7 +287,7 @@ libtritonusesd_la_OBJECTS = $(am_libtritonusesd_la_OBJECTS)
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/common.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_esd_EsdRecordingStream.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_esd_EsdStream.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -287,7 +297,9 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES = $(libtritonusesd_la_SOURCES)
-DIST_COMMON = Makefile.am Makefile.in
+HEADERS = $(noinst_HEADERS)
+
+DIST_COMMON = $(noinst_HEADERS) Makefile.am Makefile.in
 SOURCES = $(libtritonusesd_la_SOURCES)
 
 all: all-am
@@ -336,6 +348,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_esd_EsdRecordingStream.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_esd_EsdStream.Plo@am__quote@
 
@@ -472,7 +485,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 
 installdirs:
 	$(mkinstalldirs) $(DESTDIR)$(nativedir)

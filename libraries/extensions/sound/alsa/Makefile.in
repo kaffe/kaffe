@@ -16,7 +16,7 @@
 
 # Alsa files for Tritonus javax.sound implementation
 #
-# Copyright (c) 2002
+# Copyright (c) 2002, 2003
 #	Dalibor Topic <robilad@yahoo.com>
 #
 # See the file "license.terms" for information on usage and redistribution 
@@ -252,8 +252,9 @@ AM_CPPFLAGS = -I$(top_builddir)/include
 native_LTLIBRARIES = libtritonusalsa.la
 
 libtritonusalsa_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|org)_"
-libtritonusalsa_la_LIBADD = -lasound  -L../common -ltritonuscommon
+libtritonusalsa_la_LIBADD = -lasound
 libtritonusalsa_la_SOURCES = \
+	common.c \
 	init.c \
 	org_tritonus_lowlevel_alsa_Alsa.c \
 	org_tritonus_lowlevel_alsa_AlsaCtl.c \
@@ -291,7 +292,7 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(native_LTLIBRARIES)
 
 libtritonusalsa_la_DEPENDENCIES =
-am_libtritonusalsa_la_OBJECTS = init.lo \
+am_libtritonusalsa_la_OBJECTS = common.lo init.lo \
 	org_tritonus_lowlevel_alsa_Alsa.lo \
 	org_tritonus_lowlevel_alsa_AlsaCtl.lo \
 	org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.lo \
@@ -316,7 +317,7 @@ libtritonusalsa_la_OBJECTS = $(am_libtritonusalsa_la_OBJECTS)
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/init.Plo \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/common.Plo ./$(DEPDIR)/init.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_Alsa.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaCtl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.Plo \
@@ -394,6 +395,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/init.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_Alsa.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/org_tritonus_lowlevel_alsa_AlsaCtl.Plo@am__quote@

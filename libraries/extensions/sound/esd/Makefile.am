@@ -10,11 +10,20 @@ AM_CPPFLAGS = -I$(top_builddir)/include
 
 native_LTLIBRARIES = libtritonusesd.la
 
-libtritonusesd_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|org)_"
-libtritonusesd_la_LIBADD = -lesd -L../common -ltritonuscommon
+libtritonusesd_la_LDFLAGS =\
+	$(KLIBFLAGS) \
+	-module \
+	-release $(KVER) \
+	-export-symbols-regex "^([Jj]ava|org)_"
+
+libtritonusesd_la_LIBADD = -lesd
 libtritonusesd_la_SOURCES = \
-	common.h \
+	common.c \
 	org_tritonus_lowlevel_esd_EsdRecordingStream.c \
 	org_tritonus_lowlevel_esd_EsdStream.c
+
+
+noinst_HEADERS = \
+	common.h 
 
 CLEANFILES = so_locations
