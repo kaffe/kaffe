@@ -1,3 +1,9 @@
+2004-11-06  Eric Anholt  <eta@lclark.edu>
+
+	* libraries/clib/native/AccessController.c:
+	Warnings fixes which probably matter on 64-bit (assuming that a
+	non-prototyped function returns int, instead of pointer).
+
 2004-11-06  Noa Resare  <noa@resare.com>
 
 	* test/regression/ThreadState.java: Call System.exit(-1) if there

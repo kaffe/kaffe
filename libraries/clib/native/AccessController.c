@@ -33,7 +33,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 #include "java_security_VMAccessController.h"
 #include "stackTrace.h"
 #include "support.h"
-
+#include "stringSupport.h"
 
 /*
  * Returns the call stack of the current thread as a pair of arrays: the
@@ -49,9 +49,9 @@ java_security_VMAccessController_getStack (void)
   errorInfo einfo;
   int cnt;
   int i;
-  HArrayOfArray *classes;
+  HArrayOfObject *classes;
   HArrayOfObject *meths;
-  HArrayOfObject *array;
+  HArrayOfArray *array;
 
   info = (stackTraceInfo *) buildStackTrace(0);
   if (info == NULL)
@@ -67,7 +67,7 @@ java_security_VMAccessController_getStack (void)
 	cnt++;
     }
 
-  array = (HArrayOfObject *) AllocObjectArray (2, "[Ljava/lang/Object;", 0);
+  array = (HArrayOfArray *) AllocObjectArray (2, "[Ljava/lang/Object;", 0);
   classes = (HArrayOfObject *) AllocObjectArray (cnt, "Ljava/lang/Class;", 0);
   meths = (HArrayOfObject *) AllocObjectArray (cnt, "Ljava/lang/String;", 0);
 
