@@ -530,13 +530,24 @@ public final class Character implements Serializable, Comparable {
 		StringTokenizer t = new StringTokenizer(classpath, pathSep);
 		InputStream in = null;
 		while (t.hasMoreTokens()) {
-			ZipFile zf = new ZipFile(t.nextToken());
-			if (zf != null) {
-				ZipEntry ze = zf.getEntry(name);
-				if (ze != null) {
-					in = zf.getInputStream(ze);
-					break;
+			try {
+				ZipFile zf = new ZipFile(t.nextToken());
+				if (zf != null) {
+					ZipEntry ze = zf.getEntry(name);
+					if (ze != null) {
+						in = zf.getInputStream(ze);
+						break;
+					}
 				}
+			}
+			catch (IOException e) {
+				/* Be more error tolerant: if a classpath
+				 * entry is not existant or corrupted,
+				 * ignore it.
+				 *
+				 * We can not print the exception since
+				 * CharacterProperties are not initialized yet.
+				 */
 			}
 		}
 //		InputStream in = Character.class.getResourceAsStream(name);

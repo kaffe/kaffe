@@ -1,3 +1,9 @@
+Mon May 13 23:46:47 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/lang/Character.java
+        (CharacterProperties getResource) Be more error tolerant with
+	missing or broken classpath entries.
+
 Mon May 13 23:36:21 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* libraries/javalib/java/lang/reflect/Array.java:
 	(typeCache), (SEPARATOR) new private fields.
