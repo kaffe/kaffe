@@ -2019,6 +2019,22 @@ verifyMethod3a(errorInfo* einfo,
 
 
 /*
+ * Helper function for error reporting in verifyMethod3b
+ */
+static inline 
+bool
+verifyErrorInVerifyMethod3b(errorInfo* einfo, const Method* method, BlockInfo* curBlock, const char * msg)
+{
+        KFREE(curBlock);
+        if (einfo->type == 0) {
+        	postExceptionMessage(einfo, JAVA_LANG(VerifyError),
+				     "in method \"%s.%s\": %s",
+				     CLASS_CNAME(method->class), METHOD_NAMED(method), msg);
+	}
+	return(false);
+}
+
+/*
  * verifyMethod3b()
  *    The Data-flow Analyzer
  *
@@ -2080,18 +2096,8 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 	
 	uint32 curIndex;
 	BlockInfo* curBlock;
-	BlockInfo* nextBlock;
-	
-#define VERIFY_ERROR(_MSG) \
-        KFREE(curBlock); \
-        if (einfo->type == 0) { \
-        	postExceptionMessage(einfo, JAVA_LANG(VerifyError), \
-				     "in method \"%s.%s\": %s", \
-				     CLASS_CNAME(method->class), METHOD_NAMED(method), _MSG); \
-	} \
-	return(false)
-	
-	
+	BlockInfo* nextBlock;	
+
 	uint32 pc = 0, newpc = 0, n = 0;
 	int32 high = 0, low = 0;  /* for the switching instructions */
 	
@@ -2127,12 +2133,12 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 		copyBlockData(method, blocks[curIndex], curBlock);
 		
 		if (curBlock->status & EXCEPTION_HANDLER && curBlock->stacksz > 0) {
-			VERIFY_ERROR("it's possible to reach an exception handler with a nonempty stack");
+			return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "it's possible to reach an exception handler with a nonempty stack");
 		}
 		
 		
 		if (!verifyBasicBlock(einfo, method, curBlock, sigs, uninits)) {
-			VERIFY_ERROR("failure to verify basic block");
+			return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "failure to verify basic block");
 		}
 		
 		
@@ -2153,7 +2159,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 				
 				if (!merge(einfo, method, curBlock, nextBlock)) {
-					VERIFY_ERROR("error merging operand stacks");
+					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging operand stacks");
 				}
 				break;
 				
@@ -2163,7 +2169,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 				
 				if (!merge(einfo, method, curBlock, nextBlock)) {
-					VERIFY_ERROR("error merging operand stacks");
+					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging operand stacks");
 				}
 				break;
 					
@@ -2178,7 +2184,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 				
 				if (!merge(einfo, method, curBlock, nextBlock)) {
-					VERIFY_ERROR("jsr: error merging operand stacks");
+					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "jsr: error merging operand stacks");
 				}
 	
 				/*
@@ -2197,7 +2203,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				}
 				
 				if (!IS_ADDRESS(&curBlock->locals[n])) {
-					VERIFY_ERROR("ret instruction does not refer to a variable with type returnAddress");
+					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "ret instruction does not refer to a variable with type returnAddress");
 				}
 				
 				newpc = curBlock->locals[n].tinfo;
@@ -2207,7 +2213,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				
 				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 				if (!merge(einfo, method, curBlock, nextBlock)) {
-					VERIFY_ERROR("error merging opstacks when returning from a subroutine");
+					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging opstacks when returning from a subroutine");
 				}
 
 				/* 
@@ -2230,16 +2236,16 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 				
 				if (!merge(einfo, method, curBlock, nextBlock)) {
-					VERIFY_ERROR("error merging operand stacks");
+					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging operand stacks");
 				}
 				
 				/* if the condition is false, then the next block is the one that will be executed */
 				curIndex++;
 				if (curIndex >= numBlocks) {
-					VERIFY_ERROR("execution falls off the end of a basic block");
+					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "execution falls off the end of a basic block");
 				}
 				else if (!merge(einfo, method, curBlock, blocks[curIndex])) {
-					VERIFY_ERROR("error merging operand stacks");
+					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging operand stacks");
 				}
 				break;
 				
@@ -2254,7 +2260,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				newpc = pc + DWORD(code, n);
 				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 				if (!merge(einfo, method, curBlock, nextBlock)) {
-					VERIFY_ERROR("error merging into the default branch of a lookupswitch instruction");
+					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging into the default branch of a lookupswitch instruction");
 				}
 				
 				/* get number of key/target pairs */
@@ -2266,7 +2272,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 					newpc = pc + DWORD(code, n+4);
 					nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 					if (!merge(einfo, method, curBlock, nextBlock)) {
-						VERIFY_ERROR("error merging into a branch of a lookupswitch instruction");
+						return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging into a branch of a lookupswitch instruction");
 					}
 				}
 				
@@ -2294,7 +2300,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 					newpc = pc + DWORD(code, n);
 					nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 					if (!merge(einfo, method, curBlock, nextBlock)) {
-						VERIFY_ERROR("error merging into a branch of a tableswitch instruction");
+						return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging into a branch of a tableswitch instruction");
 					}
 				}
 				break;
@@ -2316,10 +2322,10 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 					if (status[n] & IS_INSTRUCTION) break;
 				}
 				if (n == codelen) {
-					VERIFY_ERROR("execution falls off the end of a code block");
+					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "execution falls off the end of a code block");
 				}
 				else if (!merge(einfo, method, curBlock, blocks[curIndex+1])) {
-					VERIFY_ERROR("error merging operand stacks");
+					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging operand stacks");
 				}
 			}
 		
@@ -2335,7 +2341,6 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 	KFREE(curBlock);
 	return(true);
 	
-#undef VERIFY_ERROR
 #undef RETURN_3B
 }
 
