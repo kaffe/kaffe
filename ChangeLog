@@ -1,3 +1,13 @@
+2004-06-14  Dalibor Topic  <robilad@kaffe.org>,
+
+	* kaffe/kaffe/Makefile.am:
+	(kaffe_bin_LDADD) Added LTLIBINTL.
+
+	* kaffe/kaffe/Makefile.in:
+	Regenerated.
+
+	Reported by: Riccardo Mottola  <zuse@libero.it>
+
 2004-06-13  Dalibor Topic  <robilad@kaffe.org>,
 
         * configure.ac:

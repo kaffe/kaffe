@@ -47,6 +47,7 @@ kaffe_bin_LDADD = \
 	$(LIBKAFFEVM) \
 	$(KAFFE_LIBS) \
 	$(top_builddir)/replace/libreplace.la \
+	$(LTLIBINTL) \
 	@LIBLTDL@
 
 kaffe_bin_DEPENDENCIES = \
