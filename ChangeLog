@@ -1,3 +1,12 @@
+Fri Feb 12 09:50:37 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/clib/native/Array.c
+	(java_lang_reflect_Array_newArray): check that size is >= 0
+	(java_lang_reflect_Array_multiNewArray): ditto; check that # of
+	dimentions is >0; pass proper array type to newMultiArray
+	* test/regression/ReflectMultiArray.java: new test
+	Reported by Gerhard Paulus <gpaulus@stud.uni-frankfurt.de>
+
 Thu Feb 11 22:11:46 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/locks.c, kaffe/kaffevm/thread.h

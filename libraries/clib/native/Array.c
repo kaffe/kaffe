@@ -754,7 +754,11 @@ java_lang_reflect_Array_setDouble(struct Hjava_lang_Object* obj, jint elem, jdou
 struct Hjava_lang_Object*
 java_lang_reflect_Array_newArray(struct Hjava_lang_Class* clazz, jint size)
 {
-	return (newArray(clazz, size));
+	if (size < 0) {
+		SignalError("java.lang.NegativeArraySizeException", "");
+	} else {
+		return (newArray(clazz, size));
+	}
 }
 
 struct Hjava_lang_Object*
@@ -766,11 +770,20 @@ java_lang_reflect_Array_multiNewArray(struct Hjava_lang_Class* clazz, HArrayOfIn
 	Hjava_lang_Object* array;
 
 	s = obj_length(sizes);
+
+	if (s == 0) {
+		SignalError("java.lang.IllegalArgumentException", "zero dimensions");
+	}
+
 	dims = KCALLOC(s+1, sizeof(int));
 
 	/* Copy dimentions into array */
 	for( i = 0; i < s; i++ ) {
 		dims[i] = unhand(sizes)->body[i];
+		if (dims[i] < 0) {
+			SignalError("java.lang.NegativeArraySizeException", "");
+		}
+		clazz = lookupArray(clazz);
 	}
 	dims[i] = -1;
 
