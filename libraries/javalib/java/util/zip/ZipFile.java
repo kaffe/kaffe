@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 import kaffe.util.Ptr;
-import kaffe.util.NotImplemented;
 
 public class ZipFile implements ZipConstants {
 

@@ -141,7 +141,8 @@ java_util_zip_Deflater_init(struct Hjava_util_zip_Deflater* this, jbool val)
 	dstream->zfree = kaffe_zfree;
 	dstream->opaque = 0;
 
-	r = deflateInit2(dstream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -WSIZEBITS, 9, Z_DEFAULT_STRATEGY);
+	r = deflateInit2(dstream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, (val ? -WSIZEBITS : WSIZEBITS), 9, Z_DEFAULT_STRATEGY);
+
 	if (r != Z_OK) {
 		SignalError("java.lang.Error", dstream ? dstream->msg : "");
 	}
