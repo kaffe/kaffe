@@ -104,9 +104,9 @@ static int max_freelist;
 
 static size_t max_small_object_size;
 static size_t gc_heap_allocation_size;	/* amount of memory by which to grow heap */
+static size_t gc_heap_initial_size;	/* amount of memory to initially allocate */
 
 size_t gc_heap_total;		/* current size of the heap */
-size_t gc_heap_initial_size;	/* amount of memory to initially allocate */
 size_t gc_heap_limit;		/* maximum size to which heap should grow */
 uintp gc_heap_base;
 uintp gc_heap_range;
