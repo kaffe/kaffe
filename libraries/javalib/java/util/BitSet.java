@@ -45,6 +45,10 @@ final public class BitSet
     private void ensureSize(int nr) {
 	int len = bitOffset(nr + 0x3F);
 	if (len > bits.length) {
+	    if (len < 2 * bits.length) {
+		// at least double it to avoid frequent allocations
+		len = 2 * bits.length;
+	    }
 	    long b[] = new long[len];
 	    System.arraycopy(bits, 0, b, 0, bits.length);
 	    bits = b;
