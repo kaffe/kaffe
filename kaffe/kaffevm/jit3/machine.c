@@ -806,7 +806,7 @@ SCHK(	sanityCheck();						)
 		if (from->regno == to->regno) {
 			return;
 		}
-		assert((reginfo[to->regno].type & Rglobal) == 0);
+		assert(isGlobal(to) == 0);
 		slot_invalidate(to);
 	}
 
