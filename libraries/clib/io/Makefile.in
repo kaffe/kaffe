@@ -123,7 +123,7 @@ with_engine = @with_engine@
 
 native_LTLIBRARIES = libio.la
 
-libio_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER)
+libio_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^[Jj]ava_"
 libio_la_SOURCES =  	FileDescriptor.c 	File.c 	FileInputStream.c 	FileOutputStream.c 	RandomAccessFile.c 	AudioPlayer.c
 
 

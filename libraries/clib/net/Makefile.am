@@ -8,7 +8,7 @@
 
 native_LTLIBRARIES = libnet.la
 
-libnet_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER)
+libnet_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^[Jj]ava_"
 libnet_la_LIBADD = $(NET_LIBS)
 libnet_la_SOURCES = \
 	InetAddressImpl.c \

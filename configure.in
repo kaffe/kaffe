@@ -84,6 +84,7 @@ yes,yes) : ${enable_static=no};;
 # otherwise, we have to compile everything twice
 esac
 
+AC_LIBTOOL_DLOPEN
 AM_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 

@@ -1,3 +1,34 @@
+Sat Feb 20 14:14:53 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* acinclude.m4, ltconfig, ltmain.sh: update from libtool, it no
+	longer hard-codes build-dirs in programs, running a program in the 
+	build-dir will use libraries from the build-dir, introduced
+	support for selective exporting of symbols
+	* aclocal.m4: regen
+	* libltdl/acinclude.m4, libltdl/ltdl.c, libltdl/ltdl.h: ditto;
+	new lt_malloc and lt_free variables, that point to the functions 
+	libltdl will use for malloc and free.  It's not clear how we can
+	use them, though.
+	* libltdl/aclocal.m4, libltdl/configure: regen
+	* configure.in: added test for self-dlopening support, so that a
+	symbol table needs not be generated for the main program
+	* configure: regen
+	* libraries/clib/awt/X/Makefile.am: only export symbols starting
+	with [Jj]ava
+	* libraries/clib/io/Makefile.am: ditto
+	* libraries/clib/management/Makefile.am: ditto
+	* libraries/clib/math/Makefile.am: ditto
+	* libraries/clib/native/Makefile.am: ditto
+	* libraries/clib/net/Makefile.am: ditto
+	* libraries/clib/zip/Makefile.am: ditto
+	* libraries/clib/awt/X/Makefile.in: regen
+	* libraries/clib/io/Makefile.in: ditto
+	* libraries/clib/management/Makefile.in: ditto
+	* libraries/clib/math/Makefile.in: ditto
+	* libraries/clib/native/Makefile.in: ditto
+	* libraries/clib/net/Makefile.in: ditto
+	* libraries/clib/zip/Makefile.in: ditto
+
 Thu Feb 18 15:55:45 PST 1999 Archie Cobbs <archie@whistle.com>
 
 	* libltdl/ltdl.c: fix a free() when we shouldn't bug.

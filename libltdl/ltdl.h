@@ -41,26 +41,14 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #undef __P
 #undef lt_ptr_t
 #if defined (__STDC__) || defined (_AIX) || (defined (__mips) && defined (_SYSTYPE_SVR4)) || defined(WIN32) || defined(__cplusplus)
-# define __P(protos) protos
-# define lt_ptr_t     void*
+# define __P(protos)	protos
+# define lt_ptr_t	void*
 #else
-# define __P(protos) ()
-# define lt_ptr_t     char*
+# define __P(protos)	()
+# define lt_ptr_t	char*
 #endif
 
-#if defined(_WIN32) ||  defined(__CYGWIN__) || defined(__CYGWIN32__) || defined(WIN32)
-#  define _LTDLL_EXPORT __declspec(dllexport)
-#  define _LTDLL_IMPORT extern __declspec(dllimport)
-#  ifdef _LTDL_COMPILE_
-#    define _LTDLL_EXTERN _LTDLL_EXPORT
-#  else
-#    define _LTDLL_EXTERN _LTDLL_IMPORT
-#  endif
-#else
-#  define _LTDLL_EXPORT
-#  define _LTDLL_IMPORT extern
-#  define _LTDLL_EXTERN extern
-#endif
+#include <stdlib.h>
 
 #ifdef _LTDL_COMPILE_
 typedef	struct lt_dlhandle_t *lt_dlhandle;
@@ -74,21 +62,24 @@ typedef struct {
 } lt_dlsymlist;
 
 __BEGIN_DECLS
-_LTDLL_EXTERN int lt_dlinit __P((void));
-_LTDLL_EXTERN int lt_dlpreload __P((const lt_dlsymlist *preloaded));
-_LTDLL_EXTERN int lt_dlpreload_default __P((const lt_dlsymlist *preloaded));
-_LTDLL_EXTERN int lt_dlexit __P((void));
-_LTDLL_EXTERN lt_dlhandle lt_dlopen __P((const char *filename));
-_LTDLL_EXTERN lt_dlhandle lt_dlopenext __P((const char *filename));
-_LTDLL_EXTERN int lt_dlclose __P((lt_dlhandle handle));
-_LTDLL_EXTERN lt_ptr_t lt_dlsym __P((lt_dlhandle handle, const char *name));
-_LTDLL_EXTERN const char *lt_dlerror __P((void));
-_LTDLL_EXTERN int lt_dladdsearchdir __P((const char *search_dir));
-_LTDLL_EXTERN int lt_dlsetsearchpath __P((const char *search_path));
-_LTDLL_EXTERN const char *lt_dlgetsearchpath __P((void));
+extern int lt_dlinit __P((void));
+extern int lt_dlpreload __P((const lt_dlsymlist *preloaded));
+extern int lt_dlpreload_default __P((const lt_dlsymlist *preloaded));
+extern int lt_dlexit __P((void));
+extern lt_dlhandle lt_dlopen __P((const char *filename));
+extern lt_dlhandle lt_dlopenext __P((const char *filename));
+extern int lt_dlclose __P((lt_dlhandle handle));
+extern lt_ptr_t lt_dlsym __P((lt_dlhandle handle, const char *name));
+extern const char *lt_dlerror __P((void));
+extern int lt_dladdsearchdir __P((const char *search_dir));
+extern int lt_dlsetsearchpath __P((const char *search_path));
+extern const char *lt_dlgetsearchpath __P((void));
 
 extern const lt_dlsymlist lt_preloaded_symbols[];
 #define LTDL_SET_PRELOADED_SYMBOLS() lt_dlpreload_default(lt_preloaded_symbols)
+
+extern lt_ptr_t (*lt_dlmalloc)__P((size_t size));
+extern void (*lt_dlfree)__P((lt_ptr_t ptr));
 
 __END_DECLS
 

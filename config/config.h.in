@@ -64,6 +64,15 @@
 /* The number of bytes in a void*.  */
 #undef SIZEOF_VOIDP
 
+/* Define if you have the __get_eh_info function.  */
+#undef HAVE___GET_EH_INFO
+
+/* Define if you have the __terminate_func function.  */
+#undef HAVE___TERMINATE_FUNC
+
+/* Define if you have the __throw function.  */
+#undef HAVE___THROW
+
 /* Define if you have the alarm function.  */
 #undef HAVE_ALARM
 
@@ -232,15 +241,6 @@
 /* Define if you have the waitpid function.  */
 #undef HAVE_WAITPID
 
-/* Define if you have the __throw function */
-#undef	HAVE___THROW
-
-/* Define if you have the __terminate_func function */
-#undef	HAVE___TERMINATE_FUNC
-
-/* Define if you have the __get_eh_info function */
-#undef	HAVE___GET_EH_INFO
-
 /* Define if you have the <alloca.h> header file.  */
 #undef HAVE_ALLOCA_H
 
@@ -267,9 +267,6 @@
 
 /* Define if you have the <features.h> header file.  */
 #undef HAVE_FEATURES_H
-
-/* Define if you have the <gif_lib.h> header file.  */
-#undef HAVE_GIF_LIB_H
 
 /* Define if you have the <gmp.h> header file.  */
 #undef HAVE_GMP_H
@@ -432,6 +429,9 @@
 
 /* How are pointers aligned */
 #undef ALIGNMENTOF_VOIDP
+
+/* Do we have the right version of giflib */
+#undef HAVE_GIF_LIB_H
 
 /* Do we time various pieces of the vm? */
 #undef TIMING

@@ -99,8 +99,8 @@ const lt_dlsymlist lt_preloaded_symbols[1] = { { 0, 0 } };
 
 static const char *last_error = 0;
 
-lt_ptr_t (*lt_dlmalloc)(size_t size) = malloc;
-void	(*lt_dlfree)(lt_ptr_t ptr) = free;
+lt_ptr_t (*lt_dlmalloc) __P((size_t size)) = malloc;
+void	 (*lt_dlfree)  __P((lt_ptr_t ptr)) = free;
 
 typedef struct lt_dltype_t {
 	struct lt_dltype_t *next;
@@ -110,7 +110,7 @@ typedef struct lt_dltype_t {
 	int (*lib_open) __P((lt_dlhandle handle, const char *filename));
 	int (*lib_close) __P((lt_dlhandle handle));
 	lt_ptr_t (*find_sym) __P((lt_dlhandle handle, const char *symbol));
-} lt_dltype_t, *lt_dltype;
+} lt_dltype_t;
 
 #define LTDL_TYPE_TOP 0
 
@@ -619,15 +619,8 @@ presym_open (handle, filename)
 		last_error = no_symbols_error;
 		return 1;
 	}
-	if (!filename) {
-		if (!default_preloaded_symbols) {
-			last_error = file_not_found_error;
-			return 1;
-		} else {
-			handle->handle = (lt_ptr_t) default_preloaded_symbols;
-			return 0;
-		}
-	}
+	if (!filename)
+		filename = "@PROGRAM@";
 	while (lists) {
 		const lt_dlsymlist *syms = lists->syms;
 	
@@ -681,14 +674,14 @@ static char *user_search_path = 0;
 static lt_dlhandle handles = 0;
 static int initialized = 0;
 
-static lt_dltype types = LTDL_TYPE_TOP;
+static lt_dltype_t *types = LTDL_TYPE_TOP;
 #undef LTDL_TYPE_TOP
 
 int
 lt_dlinit ()
 {
 	/* initialize libltdl */
-	lt_dltype *type = &types;
+	lt_dltype_t **type = &types;
 	int typecount = 0;
 
 	if (initialized) {	/* Initialize only at first call. */
@@ -739,7 +732,7 @@ int
 lt_dlexit ()
 {
 	/* shut down libltdl */
-	lt_dltype type = types;
+	lt_dltype_t *type = types;
 	int	errors;
 	
 	if (!initialized) {
@@ -772,7 +765,7 @@ tryall_dlopen (handle, filename)
 	const char *filename;
 {
 	lt_dlhandle cur;
-	lt_dltype type = types;
+	lt_dltype_t *type = types;
 	const char *saved_error = last_error;
 	
 	/* check whether the module was already opened */
@@ -1055,13 +1048,11 @@ lt_dlopen (filename)
 		}
 		handle->usage = 0;
 		newhandle = handle;
-		if (tryall_dlopen(handle, 0) != 0) {
+		if (tryall_dlopen(&handle, 0) != 0) {
 			lt_dlfree(newhandle);
 			return 0;
 		}
-		if (newhandle != handle)
-			lt_dlfree(newhandle);
-		return handle;
+		goto register_handle;
 	}
 	basename = strrchr(filename, '/');
 	if (basename) {
@@ -1222,6 +1213,7 @@ lt_dlopen (filename)
 			return 0;
 		}
 	}
+register_handle:
 	if (newhandle != handle) {
 		lt_dlfree(handle);
 		handle = newhandle;

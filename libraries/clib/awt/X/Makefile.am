@@ -10,7 +10,7 @@ native_LTLIBRARIES = libawt.la
 
 CFLAGS = @CFLAGS@ @X_CFLAGS@
 
-libawt_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER)
+libawt_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^[Jj]ava_"
 libawt_la_LIBADD = $(AWT_LIBS)
 libawt_la_SOURCES = \
 	tlk.c \

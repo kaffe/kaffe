@@ -8,7 +8,7 @@
 
 native_LTLIBRARIES = libzip.la
 
-libzip_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER)
+libzip_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^[Jj]ava_"
 libzip_la_LIBADD = $(ZIP_LIBS)
 libzip_la_SOURCES = \
 	Adler32.c \
